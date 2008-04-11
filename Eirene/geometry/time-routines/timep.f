@@ -719,7 +719,7 @@ C           IF (NLTRC)
 C     .       WRITE (iunout,*) 'CHECK VALID RANGE: Y0TEST ',Y0TEST
             IF (Y0TEST.GE.PSURF(1).AND.Y0TEST.LE.PSURF(NP2ND)) THEN
               IPCELL=EIRENE_LEARCA(Y0TEST,PSURF,1,NP2ND,1,
-      .              'TIMEP 2     ')
+     .               'TIMEP 2     ')
             ELSE
               MRSURF=0
               MTSURF=0

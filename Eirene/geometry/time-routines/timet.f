@@ -158,7 +158,7 @@ C           IF (NLTRC)
 C     .       WRITE (iunout,*) 'CHECK VALID RANGE: Z0TEST ',Z0TEST
             IF (Z0TEST.GE.ZSURF(1).AND.Z0TEST.LE.ZSURF(NT3RD)) THEN
               ITCELL=EIRENE_LEARCA(Z0TEST,ZSURF,1,NT3RD,1,
-      .              'TIMET 2     ')
+     .               'TIMET 2     ')
             ELSE
               MRSURF=0
               NINCX=0
