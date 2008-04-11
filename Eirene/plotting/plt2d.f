@@ -2,6 +2,7 @@ cdr  28.4.04:  nhsts(ispz) option connected (to select species
 cdr            for trajectory plot. see modification to input.f, 28.4.04
 cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
+!pb  11.04.08: remove restriction NTTRA<100
  
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
  
@@ -36,7 +37,7 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
 C
       INTEGER,PARAMETER :: NTXHST=19
  
-      REAL(DP) :: XX(101), YY(101)
+      REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
       REAL(DP) :: TET(4,3), EBENE(4), CTPNTS(4,3)
       REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
@@ -91,6 +92,9 @@ C
 C  SYMBOL FOR PARTICLE TRACING ERROR
       ISYM_ERR=NTXHST-1
       IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
+
+      ALLOCATE (XX(MAX(101,NTTRA+1)))
+      ALLOCATE (YY(MAX(101,NTTRA+1)))
 C
 C  PREPARE PLOT OF STANDARD-MESH AND ADDITIONAL SURFACES
 C
@@ -288,10 +292,10 @@ C  X-Z-PLANE
               X=RMTOR+XW1
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
-              IF (NTTRA.GT.100) THEN
-                WRITE (iunout,*) 'ERROR IN PLT2D '
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+!pb              IF (NTTRA.GT.100) THEN
+!pb                WRITE (iunout,*) 'ERROR IN PLT2D '
+!pb                CALL EIRENE_EXIT_OWN(1)
+!pb              ENDIF
               CALL GRNWPN(IFARB(NU,1))
               IF (IDASH(NU,1) <= 0) THEN
                  CALL GRDSH(0.2,0.5,0.2)
@@ -469,10 +473,10 @@ C
               X=RMTOR+XW1
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
-              IF (NTTRA.GT.100) THEN
-                WRITE (iunout,*) 'ERROR IN PLT2D '
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+!pb              IF (NTTRA.GT.100) THEN
+!pb                WRITE (iunout,*) 'ERROR IN PLT2D '
+!pb                CALL EIRENE_EXIT_OWN(1)
+!pb              ENDIF
               DO J=1,NTTRA
                 XX(J)=RR*COS(ZSURF(J))
                 YY(J)=RR*SIN(ZSURF(J))
@@ -482,10 +486,10 @@ C
               X=RMTOR+XW2
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
-              IF (NTTRA.GT.100) THEN
-                WRITE (iunout,*) 'ERROR IN PLT2D '
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+!pb              IF (NTTRA.GT.100) THEN
+!pb                WRITE (iunout,*) 'ERROR IN PLT2D '
+!pb                CALL EIRENE_EXIT_OWN(1)
+!pb              ENDIF
               DO J=1,NTTRA
                 XX(J)=RR*COS(ZSURF(J))
                 YY(J)=RR*SIN(ZSURF(J))
@@ -807,10 +811,10 @@ C  NOW PLOT THAT RADIAL SURFACE
                 X=RMTOR+XW1
                 Z=TANAL*X
                 RR=SQRT(X*X+Z*Z)
-                IF (NTTRA.GT.100) THEN
-                  WRITE (iunout,*) 'ERROR IN PLT2D '
-                  CALL EIRENE_EXIT_OWN(1)
-                ENDIF
+!pb                IF (NTTRA.GT.100) THEN
+!pb                  WRITE (iunout,*) 'ERROR IN PLT2D '
+!pb                  CALL EIRENE_EXIT_OWN(1)
+!pb                ENDIF
                 DO J=1,NTTRA
                   XX(J)=RR*COS(ZSURF(J))
                   YY(J)=RR*SIN(ZSURF(J))
@@ -973,10 +977,10 @@ C  NOW PLOT THAT RADIAL SURFACE
                   X=RMTOR+XW1
                   Z=TANAL*X
                   RR=SQRT(X*X+Z*Z)
-                  IF (NTTRA.GT.100) THEN
-                    WRITE (iunout,*) 'ERROR IN PLT2D '
-                    CALL EIRENE_EXIT_OWN(1)
-                  ENDIF
+!pb                  IF (NTTRA.GT.100) THEN
+!pb                    WRITE (iunout,*) 'ERROR IN PLT2D '
+!pb                    CALL EIRENE_EXIT_OWN(1)
+!pb                  ENDIF
                   DO JJ=1,NTTRA
                     XX(JJ)=RR*COS(ZSURF(JJ))
                     YY(JJ)=RR*SIN(ZSURF(JJ))
@@ -1494,6 +1498,10 @@ C  IF NLTRA: 3D PLOTTING IS DONE IN THE LOCAL CO-ORD. SYSTEM NO. ITHPL
       ITHPL=ITH
 C
 400   CONTINUE
+
+      DEALLOCATE (XX)
+      DEALLOCATE (YY)
+
       RETURN
 C
 C  PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
