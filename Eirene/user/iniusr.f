@@ -1,0 +1,6 @@
+ 
+ 
+      SUBROUTINE EIRENE_iniUSR
+      IMPLICIT NONE
+      RETURN
+      END
