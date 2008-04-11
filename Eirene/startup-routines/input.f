@@ -1,3 +1,5 @@
+!pb  20.03.08:  allocate and nullify estiml(1) if no input block 10F 
+!pb             is available
 !pb  01.08.07:  save NLSRON in case of coupled run with short cycle
 !    20.06.07:  check NVOLPR against NSPEZV_DIM
 !pb  22.05.07:  input of NPTSDEL added in block 7
@@ -2728,6 +2730,9 @@ C
           ESTIML(J)%PSPC => ESPEC
         END DO
         IREAD=0
+      ELSE
+        ALLOCATE(ESTIML(1))
+        NULLIFY (ESTIML(1)%PSPC)
       END IF
 C
 C   READ DATA FOR NUMERICAL AND GRAPHICAL OUTPUT 1100--1199
