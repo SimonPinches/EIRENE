@@ -263,14 +263,16 @@ C
           ALLOCATE (D14I(N1ST,N2ND))
           ALLOCATE (OBSC(N1ST,N2ND))
           DO 1 I=1,NR1ST
-            DO 2 L=1,NP2NDM
+!pb            DO 2 L=1,NP2NDM
+            DO 2 L=1,NRPLG-1
               D12(I,L)=SQRT((XPOL(I,L)-XPOL(I,L+1))**2+
      .                      (YPOL(I,L)-YPOL(I,L+1))**2)
               D12I(I,L)=1./(ABS(D12(I,L))+EPS60)
 2           CONTINUE
 1         CONTINUE
           DO 3 I=1,NR1STM
-            DO 4 L=1,NP2ND
+!pb            DO 4 L=1,NP2ND
+            DO 4 L=1,NRPLG
               D14(I,L)=SQRT((XPOL(I,L)-XPOL(I+1,L))**2+
      .                      (YPOL(I,L)-YPOL(I+1,L))**2)
               D14I(I,L)=1./(ABS(D14(I,L))+EPS60)
@@ -289,7 +291,8 @@ C  SET EQUIDISTANT X-Y GRID, WHICH COVERS POLYGON GRID
           XMAX=-1.D60
           YMAX=-1.D60
           DO I=1,NR1ST
-            DO L=1,NP2ND
+!pb            DO L=1,NP2ND
+            DO L=1,NRPLG
               XMIN = MIN(XMIN,XPOL(I,L))
               YMIN = MIN(YMIN,YPOL(I,L))
               XMAX = MAX(XMAX,XPOL(I,L))
@@ -461,7 +464,8 @@ C
 C  CELL I,L ALREADY TESTED BEFORE ?
             IF (LG(I,L)) GOTO 20
             LG(I,L)=.TRUE.
-            IF ((I.LT.IA) .OR. (I.GT.IE) .OR. (L.GT.NP2NDM)) GOTO 20
+!pb            IF ((I.LT.IA) .OR. (I.GT.IE) .OR. (L.GT.NP2NDM)) GOTO 20
+            IF ((I.LT.IA) .OR. (I.GT.IE) .OR. (L.GT.NRPLG-1)) GOTO 20
 C  NORMAL CASE:  OBSC(I,L)=0
             IF (OBSC(I,L).EQ.0._DP) THEN
             X1=XPOL(I,L)
@@ -587,7 +591,8 @@ C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
           DO WHILE (ASSOCIATED(HELPP))
             I = HELPP%IX
             L = HELPP%IY
-121         IF (L.GT.NP2NDM) GOTO 21
+!pb121         IF (L.GT.NP2NDM) GOTO 21
+121         IF (L.GT.NRPLG-1) GOTO 21
             XMX1=X-XPOL(I,L)
             YMY1=Y-YPOL(I,L)
             XMX2=X-XPOL(I,L+1)
@@ -613,7 +618,8 @@ C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
         IF (ERRMIN.LE.EPS10) GOTO 1000
         IF (LOGX) GOTO 800
         IA=1
-        IEP=NP2ND
+!pb        IEP=NP2ND
+        IEP=NRPLG
 C
 C  NEXT TRY POLOIDAL SURFACES
 C  THIS SECTION ALSO: IF LOGY, CHECK ON POLOID. SURFACE IA  (750...)

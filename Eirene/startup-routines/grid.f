@@ -354,7 +354,8 @@ C
      .      'ARCLENGTH BGL(I,K) OF RADIAL SURFACES AT Z=0.'
           DO 153 I=1,NR1ST
             WRITE (iunout,*) 'I = ',I
-            WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NP2ND)
+!pb            WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NP2ND)
+            WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
             CALL EIRENE_LEER(1)
 153       CONTINUE
         ENDIF
@@ -984,12 +985,14 @@ C
 C
 C
         NPPLG=1
+        NRPLG=NP2ND
         NPOINT(1,1)=1
         NPOINT(2,1)=NP2ND
         IFLAG=2
         DO 1240 IR=1,NR1STM
           IRP=IR+1
-          DO 1250 IP=1,NP2NDM
+!pb          DO 1250 IP=1,NP2NDM
+          DO 1250 IP=1,NRPLG-1
             IPP=IP+1
             CALL EIRENE_ARELLP(EP1(IRP),EP1(IR),ELL(IRP),ELL(IR),
      .                  TRI(IRP),TRI(IR),
@@ -1014,7 +1017,8 @@ C
       IF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
 C
         IF (TRCGRD) THEN
-          DO 219 I=1,NP2ND
+!pb          DO 219 I=1,NP2ND
+          DO 219 I=1,NRPLG
             WRITE (iunout,*) ' PERP. POLYGON NO. I = ',I
             WRITE (iunout,*) ' JA = ',1,' JE = ',NR1ST
             WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(K,I),YPOL(K,I),
@@ -1022,13 +1026,15 @@ C
 219       CONTINUE
         ENDIF
 C
-        DO 220 K=1,NP2ND
+!pb        DO 220 K=1,NP2ND
+        DO 220 K=1,NRPLG
           DO 220 I=1,NR1STM
             VVTX(I,K)=XPOL(I+1,K)-XPOL(I,K)
             VVTY(I,K)=YPOL(I+1,K)-YPOL(I,K)
 220     CONTINUE
 C
-        DO 221 K=1,NP2ND
+!pb        DO 221 K=1,NP2ND
+        DO 221 K=1,NRPLG
           BGLP(1,K)=0.
           DO 222 I=1,NR1STM
             BGLP(I+1,K)=BGLP(I,K)+SQRT(VVTX(I,K)**2+VVTY(I,K)**2)
@@ -1039,7 +1045,8 @@ C
           CALL EIRENE_LEER(2)
           WRITE (iunout,*)
      .      'ARCLENGTH BGLP(I,K) OF POLOIDAL SURFACES AT Z=0.'
-          DO 223 K=1,NP2ND
+!pb          DO 223 K=1,NP2ND
+          DO 223 K=1,NRPLG
             WRITE (iunout,*) 'K = ',K
             WRITE (iunout,'(/1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
             CALL EIRENE_LEER(1)
@@ -1048,7 +1055,8 @@ C
 C
 C   CALCULATE THE OUTER NORMALS OF POLYGONS
 C
-        DO 224 K=1,NP2ND
+!pb        DO 224 K=1,NP2ND
+        DO 224 K=1,NRPLG
           DO 225 I=1,NR1STM
             IF (ABS(VVTY(I,K)).LT.EPS12) THEN
               PPLNX(I,K)=0.

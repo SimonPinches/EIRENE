@@ -4,6 +4,8 @@
 !pb            surfaces introduced
 !pb  07.12.06: cell number corrected for nltet option
 !pb  22.03.07: LEVGEO=6 --> LEVGEO=10
+!pb  18.04.08: typo corrected: NLSRFZ => NLSRFY in ELSEIF (IDIM==3) block
+!pb  25.07.07: periodicity in y-direction for LEVGEO=3 introduced
 C
       SUBROUTINE EIRENE_STDCOL (ISTS,IDIM,SG,*,*)
 C
@@ -43,7 +45,8 @@ C
       INTEGER, INTENT(IN) :: ISTS, IDIM
  
       REAL(DP) :: WINK, TANPHI, PHINM, X0E, Y0E, Z0E, SCOSE, X0SA,
-     .          Y0SA, Z0SA, COSROT, SINROT, VELX_OLD, DST0, DSTT, FR
+     .          Y0SA, Z0SA, COSROT, SINROT, VELX_OLD, DST0, DSTT, FR,
+     .          SINPHI, COSPHI
       INTEGER :: IDUM, EIRENE_LEARCA, EIRENE_LEARC1, IAN, IEN, NDUM, 
      .           EIRENE_LEARC2,
      .           IR, M, IP, IST, MSURFE, NACLLS, ICOS, IWEI, MSURFS
@@ -107,7 +110,7 @@ C
 C
       ELSEIF (IDIM.EQ.3) THEN
         NLSRFX=.FALSE.
-        NLSRFZ=.FALSE.
+        NLSRFY=.FALSE.
         NLSRFZ=.TRUE.
         IF (ILIIN(MSURF).LE.0) NTCELL=NTCELL+ICOS
       ENDIF
@@ -389,9 +392,10 @@ C
       IF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
         IF (NLRAD)      IR=IRCELL
 C       IF (.NOT.NLRAD) IR=???
-        CRTX=PPLNX(IR,MPSURF)*SCOS
-        CRTY=PPLNY(IR,MPSURF)*SCOS
-        CRTZ=0.
+!PB USE OUTER NORMAL OF PERIODICITY COUNTERPART
+!PB        CRTX=PPLNX(IR,MPSURF)*SCOS
+!PB        CRTY=PPLNY(IR,MPSURF)*SCOS
+!PB        CRTZ=0.
 C  PERIODICITY SURFACE IN Y DIRECTION
         IF (ILIIN(MSURF).GT.3) THEN
           M=EIRENE_IDEZ(ILIIN(MSURF),2,2)
@@ -400,6 +404,17 @@ C  PERIODICITY SURFACE IN Y DIRECTION
           FR = DST0 / DSTT
           X0 = XPOL(IR,M) + FR*VVTX(IR,M)
           Y0 = YPOL(IR,M) + FR*VVTY(IR,M)
+! NEW VELOCITY
+! (PPLNX,PPLNY) ARE ALREADY NORMALIZED
+          COSPHI=PPLNX(IR,MPSURF)*PPLNX(IR,M) +
+     .           PPLNY(IR,MPSURF)*PPLNY(IR,M)
+          SINPHI=SQRT(1._DP-COSPHI*COSPHI)
+! COS(-PHI)=COS(PHI) ; SIN(-PHI)=-SIN(PHI)
+          COSROT=COSPHI
+          SINROT= -SINPHI
+          VELX_OLD = VELX
+          VELX = VELX_OLD*COSROT - VELY*SINROT
+          VELY = VELX_OLD*SINROT + VELY*COSROT
 C  NEW CELL NUMBERS
           MPSURF=M
           IF (SCOS.GT.0) THEN
@@ -413,6 +428,10 @@ C  NEW CELL NUMBERS
             IPOLGN = M-1
           END IF
         END IF
+!PB USE OUTER NORMAL OF PERIODICITY COUNTERPART
+        CRTX=PPLNX(IR,MPSURF)*SCOS
+        CRTY=PPLNY(IR,MPSURF)*SCOS
+        CRTZ=0.
       ELSEIF (LEVGEO.EQ.1) THEN
         CRTX=0.
         CRTY=SCOS

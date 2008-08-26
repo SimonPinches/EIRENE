@@ -486,6 +486,7 @@ C
 C  SET INDICES OF STARTING CELL
         IR=NRCELL
         IP=NPCELL
+        IF (.NOT.NLPOL) IP=IPOLG
         IF (NJUMP.EQ.1) THEN
           IR=ICELLR
           IP=IPOLGN

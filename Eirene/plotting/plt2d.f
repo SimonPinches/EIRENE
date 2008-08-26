@@ -292,10 +292,6 @@ C  X-Z-PLANE
               X=RMTOR+XW1
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
-!pb              IF (NTTRA.GT.100) THEN
-!pb                WRITE (iunout,*) 'ERROR IN PLT2D '
-!pb                CALL EIRENE_EXIT_OWN(1)
-!pb              ENDIF
               CALL GRNWPN(IFARB(NU,1))
               IF (IDASH(NU,1) <= 0) THEN
                  CALL GRDSH(0.2,0.5,0.2)
@@ -473,10 +469,6 @@ C
               X=RMTOR+XW1
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
-!pb              IF (NTTRA.GT.100) THEN
-!pb                WRITE (iunout,*) 'ERROR IN PLT2D '
-!pb                CALL EIRENE_EXIT_OWN(1)
-!pb              ENDIF
               DO J=1,NTTRA
                 XX(J)=RR*COS(ZSURF(J))
                 YY(J)=RR*SIN(ZSURF(J))
@@ -486,10 +478,6 @@ C
               X=RMTOR+XW2
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
-!pb              IF (NTTRA.GT.100) THEN
-!pb                WRITE (iunout,*) 'ERROR IN PLT2D '
-!pb                CALL EIRENE_EXIT_OWN(1)
-!pb              ENDIF
               DO J=1,NTTRA
                 XX(J)=RR*COS(ZSURF(J))
                 YY(J)=RR*SIN(ZSURF(J))
@@ -809,12 +797,9 @@ C  NOW PLOT THAT RADIAL SURFACE
                 ENDIF
               ELSEIF (NLTRA) THEN
                 X=RMTOR+XW1
+                X=XW1
                 Z=TANAL*X
                 RR=SQRT(X*X+Z*Z)
-!pb                IF (NTTRA.GT.100) THEN
-!pb                  WRITE (iunout,*) 'ERROR IN PLT2D '
-!pb                  CALL EIRENE_EXIT_OWN(1)
-!pb                ENDIF
                 DO J=1,NTTRA
                   XX(J)=RR*COS(ZSURF(J))
                   YY(J)=RR*SIN(ZSURF(J))
@@ -977,10 +962,6 @@ C  NOW PLOT THAT RADIAL SURFACE
                   X=RMTOR+XW1
                   Z=TANAL*X
                   RR=SQRT(X*X+Z*Z)
-!pb                  IF (NTTRA.GT.100) THEN
-!pb                    WRITE (iunout,*) 'ERROR IN PLT2D '
-!pb                    CALL EIRENE_EXIT_OWN(1)
-!pb                  ENDIF
                   DO JJ=1,NTTRA
                     XX(JJ)=RR*COS(ZSURF(JJ))
                     YY(JJ)=RR*SIN(ZSURF(JJ))
