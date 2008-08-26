@@ -42,6 +42,10 @@ c  fetch data for process nrc of ipls
       ITYP0=EIRENE_IDEZ(IBULKP(ipls,nrc),1,3)
       ITYP1=EIRENE_IDEZ(ISCD1P(ipls,nrc),1,3)
       ITYP2=EIRENE_IDEZ(ISCD2P(ipls,nrc),1,3)
+
+      IF ((IPL0 < 1) .OR. (IPL0 > MAXSPC(ITYP0))) GOTO 994
+      IF ((IPL1 < 1) .OR. (IPL1 > MAXSPC(ITYP1))) GOTO 994
+      IF ((IPL2 < 1) .OR. (IPL2 > MAXSPC(ITYP2))) GOTO 994
  
       LGPRC(IPLS,IDSC)=IRRC
  
@@ -86,4 +90,12 @@ c  fetch data for process nrc of ipls
          call EIRENE_exit_own(1)
       end select
       return
+
+994   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK ',KK
+      CALL EIRENE_EXIT_OWN(1)
+
       END SUBROUTINE EIRENE_XSTRC

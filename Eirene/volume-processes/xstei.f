@@ -72,6 +72,9 @@ C ACCUMULATED MASS OF SECONDARIES: ACCMAS (AMU)
 C
       ICOUNT=1
  85   CONTINUE
+
+      IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
+
       IF (ITYP.EQ.1) THEN
         IAT=ISPE
         IAA=NSPH+IAT
@@ -603,6 +606,12 @@ C
 C
 C-----------------------------------------------------------------------
 C
+994   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK ',KK
+      CALL EIRENE_EXIT_OWN(1)
 996   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI, MODCLF(KK) ',MODCLF(KK)
       WRITE (iunout,*) IREI,KK

@@ -8,6 +8,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
       USE EIRMOD_COMSOU
+      USE EIRMOD_COMUSR
       USE EIRMOD_CZT1
       USE EIRMOD_PHOTON
  
@@ -45,6 +46,8 @@ C
         CALL EIRENE_ALLOC_COMXS(2)
         CALL EIRENE_ALLOC_COMSOU(2)
         CALL EIRENE_ALLOC_CZT1(2)
+
+        MAXSPC(0:4) = (/ NPHOTI,NATMI,NMOLI,NIONI,NPLSI /)
  
 !pb        tpb2 = second_own()
 !pb        write (6,*) ' cpu time for setamd(0) ',tpb2-tpb1

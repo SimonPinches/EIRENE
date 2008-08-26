@@ -26,12 +26,13 @@ C
 C
       REAL(DP) :: PLS(NSTORDR), CF(9,0:9)
       REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DSUB, DEIMIN, RMASS2, FACTKK,
-     .            RMASS2_2, CORSUM, COU, RATE_COEFF, ENERGY_RATE_COEFF,
-     .            BREMS, Z, ngffmh, ERATE
+     .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF, 
+     .            EIRENE_ENERGY_RATE_COEFF,
+     .            BREMS, Z, eirene_ngffmh, ERATE
       INTEGER :: IIRC, IION3, IPLS3, IATM3, IMOL3, KK, NRC, IATM,
      .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, I, MODC, IATM1,
      .           ITYP, ISPZ, ITYP2, ISPZ2, IPHOT3
-      INTEGER, EXTERNAL :: IDEZ
+      INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LEXP, LADAS
       SAVE
 C
@@ -132,8 +133,9 @@ C  RECOMBINATION MODEL FOR BULK IONS
               IRRC=NRRCI
               LGPRC(IPLS,IDSC)=IRRC
 C
-              ITYP=IDEZ(ISCD1P(IPLS,NRC),1,3)
-              ISPZ=IDEZ(ISCD1P(IPLS,NRC),3,3)
+              ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
+              ISPZ=EIRENE_IDEZ(ISCD1P(IPLS,NRC),3,3)
+              IF ((ISPZ < 1) .OR. (ISPZ > MAXSPC(ITYP))) GOTO 995
               IF (ITYP.EQ.3) THEN
                 NIOPRC(IRRC)=ISPZ
                 RMASS2=RMASSI(ISPZ)
@@ -151,8 +153,9 @@ C
                 RMASS2=0.
               ENDIF
  
-              ITYP2=IDEZ(ISCD2P(IPLS,NRC),1,3)
-              ISPZ2=IDEZ(ISCD2P(IPLS,NRC),3,3)
+              ITYP2=EIRENE_IDEZ(ISCD2P(IPLS,NRC),1,3)
+              ISPZ2=EIRENE_IDEZ(ISCD2P(IPLS,NRC),3,3)
+              IF ((ISPZ2 < 1) .OR. (ISPZ2 > MAXSPC(ITYP2))) GOTO 995
               IF (ITYP2.EQ.4) THEN
                 NPLPRC_2(IRRC)=ISPZ2
                 RMASS2_2      =RMASSP(ISPZ2)
@@ -171,13 +174,14 @@ C
 C  2.A) RATE COEFFICIENT = CONST.
 C           TO BE WRITTEN
 C  2.B) RATE COEFFICIENT(TE)
-              IF (IDEZ(MODCLF(KK),3,5).EQ.1) THEN
+              IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
                 IF (NSTORDR >= NRAD) THEN
                   LEXP = .NOT. (MOD(IFTFLG(KK,2),100) == 10)
                   DO J=1,NSBOX
 !pb                    IF (LGVAC(J,IPLS)) CYCLE
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
-                    COU = RATE_COEFF(KK,TEINL(J),0._DP,LEXP,0,ERATE)
+                    COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,
+     .                    LEXP,0,ERATE)
                     TABRC1(IRRC,J)=COU*FACTKK
                     IF (IFTFLG(KK,2) < 100)
      .                TABRC1(IRRC,J)=TABRC1(IRRC,J)*DEIN(J)
@@ -190,15 +194,16 @@ C  DON'T STORE DATA, BUT COMPUTE THEM THEN NEEDED
                   JEREARC(IRRC) = 1
                 END IF
                 MODCOL(6,2,IRRC)=1
-C             ELSEIF (IDEZ(MODCLF(KK),3,5).EQ.2) THEN
+C             ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TE,EBEAM): IRRELEVANT
-              ELSEIF (IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+              ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
 C  2.D) RATE COEFFICIENT(TE,NE)
                 IF (NSTORDR >= NRAD) THEN
                   DO J=1,NSBOX
 !pb                    IF (LGVAC(J,IPLS)) CYCLE
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
-                    COU = RATE_COEFF(KK,TEINL(J),PLS(J),.TRUE.,1,ERATE)
+                    COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),
+     .                   .TRUE.,1,ERATE)
                     TABRC1(IRRC,J)=COU*FACTKK
                     IF (IFTFLG(KK,2) < 100)
      .                TABRC1(IRRC,J)=TABRC1(IRRC,J)*DEIN(J)
@@ -221,7 +226,7 @@ C
 C
 C  4. ELECTRON ENERGY LOSS RATE
 C
-              NSERC5=IDEZ(ISCDEP(IPLS,NRC),5,5)
+              NSERC5=EIRENE_IDEZ(ISCDEP(IPLS,NRC),5,5)
               IF (NSERC5.EQ.0) THEN
 C  4.A)  ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
                 IF (NSTORDR >= NRAD) THEN
@@ -248,8 +253,8 @@ C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATECOEFF.
               ELSEIF (NSERC5.EQ.3) THEN
 C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                 KREAD=EELECP(IPLS,NRC)
-                MODC=IDEZ(MODCLF(KREAD),5,5)
-                LADAS = IS_RTCEW_ADAS(KREAD)
+                MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
+                LADAS = EIRENE_IS_RTCEW_ADAS(KREAD)
                 Z = NCHRGP(IPLS)
                 IF (MODC.EQ.1) THEN
                   IF (NSTORDR >= NRAD) THEN
@@ -261,10 +266,11 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                         BREMS = 0._DP
                       ELSE
                         BREMS = 1.54E-32_DP * TEIN(J)**0.5 * Z**2 *
-     .                          ngffmh(Z**2 * 13.6_DP/TEIN(J)) *
+     .                          eirene_ngffmh(Z**2 * 13.6_DP/TEIN(J)) *
      .                          DEIN(J)*FACTKK/ELCHA
                       END IF
-                      EELRC1(IRRC,J)=ENERGY_RATE_COEFF(KREAD,TEINL(J),
+                      EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
+     .                               TEINL(J),
      .                               0._DP,.TRUE.,0)*DEIN(J)*FACTKK
 C  SUBTRACT BREMSTRAHLUNG FROM ADAS PRB RATE
                       IF (LADAS) EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
@@ -292,10 +298,11 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                         BREMS = 0._DP
                       ELSE
                         BREMS = 1.54E-32_DP * TEIN(J)**0.5 * Z**2 *
-     .                          ngffmh(Z**2 * 13.6_DP/TEIN(J)) *
+     .                          eirene_ngffmh(Z**2 * 13.6_DP/TEIN(J)) *
      .                          DEIN(J)*FACTKK/ELCHA
                       END IF
-                      EELRC1(IRRC,J)=ENERGY_RATE_COEFF(KREAD,TEINL(J),
+                      EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
+     .                               TEINL(J),
      .                               PLS(J),.FALSE.,1)
                       EEMX=MAX(-100._DP,EELRC1(IRRC,J)+FCTKKL+DEINL(J))
                       EELRC1(IRRC,J)=-EXP(EEMX)
@@ -397,15 +404,15 @@ C
       RETURN
 C
 990   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR RECOMBINATION'
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'NREC TOO SMALL, CHECK PARAMETER STATEMENTS'
       CALL EIRENE_EXIT_OWN(1)
 993   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'MASS CONSERVATION VIOLATED, IPLS,IRRC ',
      .                  IPLS,IRRC
       CALL EIRENE_EXIT_OWN(1)
@@ -415,6 +422,12 @@ C
       WRITE (iunout,*) 'IPLS = ',IPLS
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED      EIRENE_'
+      CALL EIRENE_EXIT_OWN(1)
+995   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
 C
       END

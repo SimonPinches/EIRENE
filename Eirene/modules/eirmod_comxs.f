@@ -210,6 +210,8 @@ csw added OTHER (OT) reactions
  
       INTEGER, PUBLIC, SAVE ::
      I NREACI
+
+      INTEGER, PUBLIC, SAVE :: MAXSPC(0:4)
  
       CHARACTER(50), PUBLIC, ALLOCATABLE, SAVE :: REAC_NAME(:)
  

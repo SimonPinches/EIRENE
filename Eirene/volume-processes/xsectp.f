@@ -135,6 +135,7 @@ C  RECOMBINATION MODEL FOR BULK IONS
 C
               ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
               ISPZ=EIRENE_IDEZ(ISCD1P(IPLS,NRC),3,3)
+              IF ((ISPZ < 1) .OR. (ISPZ > MAXSPC(ITYP))) GOTO 995
               IF (ITYP.EQ.3) THEN
                 NIOPRC(IRRC)=ISPZ
                 RMASS2=RMASSI(ISPZ)
@@ -154,6 +155,8 @@ C
  
               ITYP2=EIRENE_IDEZ(ISCD2P(IPLS,NRC),1,3)
               ISPZ2=EIRENE_IDEZ(ISCD2P(IPLS,NRC),3,3)
+              IF ((ISCD2P(IPLS,NRC) /= 0) .AND.
+     .           ((ISPZ2 < 1) .OR. (ISPZ2 > MAXSPC(ITYP2)))) GOTO 995
               IF (ITYP2.EQ.4) THEN
                 NPLPRC_2(IRRC)=ISPZ2
                 RMASS2_2      =RMASSP(ISPZ2)
@@ -402,15 +405,15 @@ C
       RETURN
 C
 990   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR RECOMBINATION'
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'NREC TOO SMALL, CHECK PARAMETER STATEMENTS'
       CALL EIRENE_EXIT_OWN(1)
 993   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'MASS CONSERVATION VIOLATED, IPLS,IRRC ',
      .                  IPLS,IRRC
       CALL EIRENE_EXIT_OWN(1)
@@ -420,6 +423,12 @@ C
       WRITE (iunout,*) 'IPLS = ',IPLS
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED      EIRENE_'
+      CALL EIRENE_EXIT_OWN(1)
+995   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
 C
       END
