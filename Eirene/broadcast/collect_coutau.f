@@ -1,5 +1,5 @@
-      subroutine EIRENE_collect_coutau
- 
+      subroutine eirene_collect_coutau
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CPES
@@ -13,11 +13,13 @@
       USE EIRMOD_CSDVI
       USE EIRMOD_CSPEI
       IMPLICIT NONE
- 
+
       include 'mpif.h'
-      REAL(DP), ALLOCATABLE :: OUTAU(:)
-      integer :: ier, icolor, istr, icomgrp, ier1, isdv, i
- 
+      REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
+      integer :: ier, icolor, istr, icomgrp, ier1, isdv, i, my_pe_gr,
+     .           mxdim, ns, ir
+      logical, allocatable :: lhelp(:)
+
       if (nsteff < nprs) then
 ! collect from group leader pe
         icolor=MPI_UNDEFINED
@@ -33,113 +35,172 @@
 ! collect from all pes
         icolor = 1
       end if
- 
+
       call mpi_barrier(mpi_comm_world,ier)
- 
+
       call mpi_comm_split (mpi_comm_world,icolor,my_pe,icomgrp,ier)
- 
+      
       if (icolor == 1) then
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
- 
-        CALL MPI_REDUCE(OUTAU,OUTAU,NOUTAU,
+        
+        mxdim = max(noutau,nidv,nids,3*nsigci,nsigvi,nsigsi)
+        allocate (help(mxdim))
+        
+        call mpi_comm_rank(mpi_comm_world,my_pe_gr,ier)
+
+        CALL MPI_REDUCE(OUTAU,help,NOUTAU,
      .                  mpi_real8,mpi_sum,0,icomgrp,ier)
- 
-        if (my_pe == 0) CALL EIRENE_READ_COUTAU (OUTAU, IUNOUT)
+
+!pb        if (my_pe == 0) CALL EIRENE_READ_COUTAU (OUTAU, IUNOUT)
+        if (my_pe == 0) CALL EIRENE_READ_COUTAU (help, IUNOUT)
         DEALLOCATE (OUTAU)
- 
-        call mpi_reduce(LOGMOL,LOGMOL,(NMOLI+1)*(NSTRA+1),
+
+        mxdim = (max(NMOLI,NATMI,NIONI,NPHOTI,NPLSI)+1)*(NSTRA+1)
+        allocate (lhelp(mxdim))
+
+        call mpi_reduce(LOGMOL,lhelp,(NMOLI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-        call mpi_reduce(LOGATM,LOGATM,(NATMI+1)*(NSTRA+1),
+     	if (my_pe == 0) 
+     .    LOGMOL(0:nmoli,0:nstra) = 
+     .      reshape(lhelp(1:(NMOLI+1)*(NSTRA+1)),(/nmoli+1,nstra+1/))
+
+        call mpi_reduce(LOGATM,lhelp,(NATMI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-        call mpi_reduce(LOGION,LOGION,(NIONI+1)*(NSTRA+1),
+     	if (my_pe == 0) 
+     .    LOGATM(0:natmi,0:nstra) = 
+     .      reshape(lhelp(1:(NATMI+1)*(NSTRA+1)),(/natmi+1,nstra+1/))
+
+        call mpi_reduce(LOGION,lhelp,(NIONI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-        call mpi_reduce(LOGPHOT,LOGPHOT,(NPHOTI+1)*(NSTRA+1),
+     	if (my_pe == 0) 
+     .    LOGION(0:nIONi,0:nstra) = 
+     .      reshape(lhelp(1:(NIONI+1)*(NSTRA+1)),(/nIONi+1,nstra+1/))
+
+        call mpi_reduce(LOGPHOT,lhelp,(NPHOTI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-        call mpi_reduce(LOGPLS,LOGPLS,(NPLSI+1)*(NSTRA+1),
+     	if (my_pe == 0) 
+     .    LOGPHOT(0:nPHOTi,0:nstra) = 
+     .      reshape(lhelp(1:(NPHOTI+1)*(NSTRA+1)),(/nPHOTi+1,nstra+1/))
+
+        call mpi_reduce(LOGPLS,lhelp,(NPLSI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
- 
+     	if (my_pe == 0) 
+     .    LOGPLS(0:nPLSi,0:nstra) = 
+     .      reshape(lhelp(1:(NPLSI+1)*(NSTRA+1)),(/nPLSi+1,nstra+1/))
+
+        deallocate(lhelp)
+
         if (nsmstra > 0) then
- 
-        CALL MPI_REDUCE(SMESTV,SMESTV,NIDV*NRTAL,
-     .                mpi_real8,mpi_sum,0,icomgrp,ier1)
-        CALL MPI_REDUCE(SMESTS,SMESTS,NIDS*NLMPGS,
+
+	do ir = 1, nrtal
+          CALL MPI_REDUCE(SMESTV(1,ir),help,NIDV,
      .                  mpi_real8,mpi_sum,0,icomgrp,ier1)
- 
+          if (my_pe == 0) SMESTV(1:nidv,ir) = help(1:nidv)
+        end do
+
+	do ir = 1, nlmpgs
+          CALL MPI_REDUCE(SMESTS(1,ir),help,NIDS,
+     .                  mpi_real8,mpi_sum,0,icomgrp,ier1)
+          if (my_pe == 0) SMESTS(1:nids,ir) = help(1:nids)
+        end do
+
         DO I=1,NADSPC
-          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPC,SMESTL(I)%PSPC%SPC,
+          ns = SMESTL(I)%PSPC%NSPC
+          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPC,help,
      .                    SMESTL(I)%PSPC%NSPC+2,
      .                    MPI_REAL8,MPI_SUM,0,icomgrp,IER1)
-          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPCINT,SMESTL(I)%PSPC%SPCINT,
+          if (my_pe == 0) SMESTL(I)%PSPC%SPC(0:ns+1) = help(1:ns+2)
+
+          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPCINT,help,
      .                    1,MPI_REAL8,MPI_SUM,0,icomgrp,IER1)
+          if (my_pe == 0) SMESTL(I)%PSPC%SPCINT = help(1)
+
           if (nsigi_spc > 0) then
-            call mpi_reduce(smestl(i)%pspc%sdv,smestl(i)%pspc%sdv,
+            call mpi_reduce(smestl(i)%pspc%sdv,help,
      .                      smestl(i)%pspc%nspc+2,
      .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
-            call mpi_reduce(smestl(i)%pspc%sgm,smestl(i)%pspc%sgm,
+            if (my_pe == 0) SMESTL(I)%PSPC%SDV(0:ns+1) = help(1:ns+2)
+
+            call mpi_reduce(smestl(i)%pspc%sgm,help,
      .                      smestl(i)%pspc%nspc+2,
      .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+            if (my_pe == 0) SMESTL(I)%PSPC%SGM(0:ns+1) = help(1:ns+2)
+
             call mpi_reduce(smestl(i)%pspc%stvs,
-     .                      smestl(i)%pspc%stvs,1,
+     .                      help,1,
      .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+            if (my_pe == 0) SMESTL(I)%PSPC%STVS = help(1)
+  
             call mpi_reduce(smestl(i)%pspc%ees,
-     .                      smestl(i)%pspc%ees,1,
+     .                      help,1,
      .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+            if (my_pe == 0) SMESTL(I)%PSPC%EES = help(1)
           end if
         END DO
- 
+
         end if
- 
-        DO ISDV=1,NSIGCI
-          CALL MPI_REDUCE(STVC(0,ISDV,1:NSBOX_TAL),
-     .                    STVC(0,ISDV,1:NSBOX_TAL),NSBOX_TAL,mpi_real8,
-     .                    mpi_sum,0,icomgrp,ier1)
-          CALL MPI_REDUCE(STVC(1,ISDV,1:NSBOX_TAL),
-     .                    STVC(1,ISDV,1:NSBOX_TAL),NSBOX_TAL,mpi_real8,
-     .                    mpi_sum,0,icomgrp,ier1)
-          CALL MPI_REDUCE(STVC(2,ISDV,1:NSBOX_TAL),
-     .                    STVC(2,ISDV,1:NSBOX_TAL),NSBOX_TAL,mpi_real8,
-     .                    mpi_sum,0,icomgrp,ier1)
-        ENDDO
+
         IF (NSIGCI > 0) THEN
-          CALL MPI_REDUCE(STVCS(0,1:NSIGCI),STVCS(0,1:NSIGCI),NSIGCI,
+          DO IR=1,NSBOX_TAL
+            CALL MPI_REDUCE(STVC(0,1,IR),
+     .                      help,3*NSIGCI,mpi_real8,
+     .                      mpi_sum,0,icomgrp,ier1)
+            if (my_pe == 0) STVC(0:2,1:NSIGCI,IR) = 
+     .                      RESHAPE(help(1:3*nsigci),(/3,nsigci/))
+
+          ENDDO
+          CALL MPI_REDUCE(STVCS,help,3*NSIGCI,
      .                    mpi_real8,mpi_sum,0,icomgrp,ier1)
-          CALL MPI_REDUCE(STVCS(1,1:NSIGCI),STVCS(1,1:NSIGCI),NSIGCI,
-     .                    mpi_real8,mpi_sum,0,icomgrp,ier1)
-          CALL MPI_REDUCE(STVCS(2,1:NSIGCI),STVCS(2,1:NSIGCI),NSIGCI,
-     .                    mpi_real8,mpi_sum,0,icomgrp,ier1)
+          if (my_pe == 0) STVCS(0:2,1:NSIGCI) = 
+     .	                  RESHAPE(help(1:3*nsigci),(/3,nsigci/))
         END IF
- 
-        DO ISDV=1,NSIGVI
-          CALL MPI_REDUCE(STV(ISDV,1:NSBOX_TAL),STV(ISDV,1:NSBOX_TAL),
-     .                    NSBOX_TAL,MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
-          CALL MPI_REDUCE(EE(ISDV,1:NSBOX_TAL),EE(ISDV,1:NSBOX_TAL),
-     .                    NSBOX_TAL,MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
-        ENDDO
+
         IF (NSIGVI > 0) THEN
-          CALL MPI_REDUCE(STVS,STVS,NSIGVI,
+          DO IR=1,NSBOX_TAL
+            CALL MPI_REDUCE(STV(1,ir),help,
+     .                      NSIGVI,MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+            if (my_pe == 0) STV(1:NSIGVI,ir) = help(1:nsigvi)
+
+            CALL MPI_REDUCE(EE(1,IR),help,
+     .                      NSIGVI,MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+            if (my_pe == 0) EE(1:NSIGVI,ir) = help(1:nsigvi)
+          ENDDO
+
+          CALL MPI_REDUCE(STVS,help,NSIGVI,
      .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
-          CALL MPI_REDUCE(EES,EES,NSIGVI,
+          if (my_pe == 0) STVS(1:NSIGVI) = help(1:nsigvi)
+
+          CALL MPI_REDUCE(EES,help,NSIGVI,
      .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+          if (my_pe == 0) EES(1:NSIGVI) = help(1:nsigvi)
         END IF
- 
- 
+
+
         IF (NSIGSI > 0) THEN
-          CALL MPI_REDUCE(STVW(1:NSIGSI,1:NLIMPS),
-     .                    STVW(1:NSIGSI,1:NLIMPS),NSIGSI*NLIMPS,
+          do ir=1,nlimps
+            CALL MPI_REDUCE(STVW(1,IR),help,NSIGSI,
+     .                      MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+            if (my_pe == 0) STVW(1:NSIGSI,IR) = help(1:nsigsi)
+            
+            CALL MPI_REDUCE(FF(1,IR),help,NSIGSI,
+     .                      MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+            if (my_pe == 0) FF(1:NSIGSI,IR) = help(1:nsigsi)
+     	  end do
+          CALL MPI_REDUCE(STVWS,help,NSIGSI,
      .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
-          CALL MPI_REDUCE(FF(1:NSIGSI,1:NLIMPS),
-     .                    FF(1:NSIGSI,1:NLIMPS),NSIGSI*NLIMPS,
+          if (my_pe == 0) STVWS(1:NSIGSI) = help(1:nsigsi)
+
+          CALL MPI_REDUCE(FFS,help,NSIGSI,
      .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
-          CALL MPI_REDUCE(STVWS,STVWS,NSIGSI,
-     .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
-          CALL MPI_REDUCE(FFS,FFS,NSIGSI,
-     .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+          if (my_pe == 0) FFS(1:NSIGSI) = help(1:nsigsi)
         END IF
- 
+        
+        deallocate (help)
+
       end if ! icolor=1
- 
+      
       call mpi_barrier(mpi_comm_world,ier)
- 
+      
       return
-      end subroutine EIRENE_collect_coutau
+      end subroutine eirene_collect_coutau
