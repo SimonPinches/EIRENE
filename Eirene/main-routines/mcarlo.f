@@ -74,7 +74,7 @@ C
      .          SECND2, OVER, SECND1, WTT, SECDEL, DUMRAN, timan, timen
       REAL(DP), EXTERNAL :: RANF_EIRENE, RANSET_EIRENE
  
-      INTEGER :: NPTS_SAVE(NSTRA)
+      INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
       INTEGER :: ITAL, ISDV, IALS, ISTRAA, ISTRAE, ICELL,
      .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX, NINIST,
      .           IPANU, ISEED, ISTR, NPTTOT, NREC11, IB, N2,
@@ -169,11 +169,11 @@ C
       FISCL(0)=1.
       FPHSCL(0)=1.
 C
-      LOGATM=.FALSE.
-      LOGION=.FALSE.
-      LOGMOL=.FALSE.
-      LOGPLS=.FALSE.
-      LOGPHOT=.FALSE.
+!pb      LOGATM=.FALSE.
+!pb      LOGION=.FALSE.
+!pb      LOGMOL=.FALSE.
+!pb      LOGPLS=.FALSE.
+!pb      LOGPHOT=.FALSE.
 C
 C
 C   MAXIMAL CALCULATION TIME ALLOWED FOR EACH STRATUM,
@@ -188,6 +188,7 @@ C
       SECND=XTIM(0)
  
       NPTS_SAVE=NPTS
+      NINITL_SAVE = NINITL
  
       timan=secnd
 C
@@ -382,6 +383,12 @@ C
         FMSCL(ISTRA)=1.
         FISCL(ISTRA)=1.
         FPHSCL(ISTRA)=1.
+
+        LOGATM(:,ISTRA)=.FALSE.
+        LOGION(:,ISTRA)=.FALSE.
+        LOGMOL(:,ISTRA)=.FALSE.
+        LOGPLS(:,ISTRA)=.FALSE.
+        LOGPHOT(:,ISTRA)=.FALSE.
  
         timen=EIRENE_second_own()
 C
@@ -921,10 +928,12 @@ C*** STRATA LOOP FINISHED *******************************************
 C
  
       NPTS=NPTS_SAVE
+      NINITL = NINITL_SAVE
 C
       IF (NPRS > 1) THEN
         call EIRENE_collect_coutau
         CALL EIRENE_COLLECT_CENSUS
+        CALL EIRENE_COLLECT_USRDATA
       END IF
  
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN

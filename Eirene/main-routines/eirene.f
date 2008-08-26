@@ -64,7 +64,7 @@ C
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
  
-      INTEGER :: NA, NS, IAIN, ICELL, IERROR, IER
+      INTEGER :: NA, NS, IAIN, ICELL, IERROR, IER, ISTRAI
       REAL(DP) :: EIRENE_RESET_SECOND, EIRENE_SECOND_OWN, DUMMY, TIMI
       integer :: inentry=1
       character(20) :: outname
@@ -204,8 +204,8 @@ C  TURN OF ALL NON-ANALOG SAMPLING
 C 1: NO SPLITTING AND RUSSIAN ROULETTE
         WRITE (iunout,*) 'SUBROUTINE NANALG NOT CALLED EIRENE_'
 C 2: SPECIES SOURCE SAMPLING
-        DO ISTRA=1,NSTRAI
-          NSPEZ(ISTRA)=MAX(0,NSPEZ(ISTRA))
+        DO ISTRAI=1,NSTRAI
+          NSPEZ(ISTRAI)=MAX(0,NSPEZ(ISTRAI))
         ENDDO
         WRITE (iunout,*) 'NON-ANALOG SOURCE SPECIES SAMPLING TURNED OFF'
 C 3: SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF
@@ -252,10 +252,10 @@ C
         CALL EIRENE_RREC
         WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
         WRITE (iunout,*) 'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
-        DO 162 ISTRA=1,NSTRAI
-          WRITE (iunout,*) ISTRA,' NPTS(INP)= ',NPTS(ISTRA),
-     .                      ' NPTS(MOD)= ',NRECOM(ISTRA)
-          NPTS(ISTRA)=NRECOM(ISTRA)
+        DO 162 ISTRAI=1,NSTRAI
+          WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
+     .                      ' NPTS(MOD)= ',NRECOM(ISTRAI)
+          NPTS(ISTRAI)=NRECOM(ISTRAI)
 162     CONTINUE
       ENDIF
 C
@@ -353,7 +353,8 @@ C
 C  OUTPUT FOR SELECTED STRATA AND/OR SUM OVER STRATA
 C
       IF (MY_PE == 0) THEN
-      DO 450 ISTRA=1,NSTRAI
+      DO 450 ISTRAI=1,NSTRAI
+          ISTRA=ISTRAI
 !pb        if( ((mod(istra-1,nprs) .eq. my_pe).and.(nprs.le.nsteff)) .or.
 !pb     .     (nprs.gt.nsteff).and.(my_pe.eq.npesta(istra))) then
           IF (TRCSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.TRCSRC(0)))

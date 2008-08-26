@@ -27,7 +27,7 @@ C       "THERMAL RE-EMISSION" MODEL
 C
       DO J=1,NLIMPS
         IF (ILIIN(J).GT.0) THEN
-          ILIIN(J)=1
+          IF (ILIIN(J) < 4) ILIIN(J)=1
           ILSPT(J)=0
           ILSIDE(J)=0
           EWALL(J)=1.5

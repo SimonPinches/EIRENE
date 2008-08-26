@@ -15,7 +15,9 @@ C  RESCALING ARRAYS FOR NEUTRAL SOURCE TERMS IN SHORT LOOP
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SPLODA(:,:,:), SEIODA(:,:), SEEODA(:,:), SMOODA(:,:),
      R SPLODI(:,:,:), SEIODI(:,:), SEEODI(:,:), SMOODI(:,:),
-     R SPLODM(:,:,:), SEIODM(:,:), SEEODM(:,:), SMOODM(:,:),
+     R SPLODM(:,:,:), SEIODM(:,:), SEEODM(:,:), SMOODM(:,:)
+
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SPLNWA(:,:,:), SEINWA(:,:), SEENWA(:,:), SMONWA(:,:),
      R SPLNWI(:,:,:), SEINWI(:,:), SEENWI(:,:), SMONWI(:,:),
      R SPLNWM(:,:,:), SEINWM(:,:), SEENWM(:,:), SMONWM(:,:)
