@@ -43,7 +43,8 @@ C
 ! calculate the optimal number of additional processors according to
 ! distribution of cpu time done in mcarlo (according to number of particles
 ! and source strength specified in the input)
-        TIMPE(ISTRA)=MAX(delt-TMEAN,1.E-5_DP)/TMEAN
+!        TIMPE(ISTRA)=MAX(delt-TMEAN,1.E-5_DP)/TMEAN
+        TIMPE(ISTRA)=MAX(delt-TMEAN,0._DP)/TMEAN
         NPRS_OPT=NPRS_OPT+int(TIMPE(ISTRA))
       ENDDO
       WRITE (iunout,*) ' ISTRA, TIMPE '

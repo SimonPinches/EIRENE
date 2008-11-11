@@ -339,7 +339,7 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
      .                    NLERG,NLIDENT,NLONE,LTSTV
       END IF
  
-      READ (IUNIN,'(A80)') ZEILE
+      READ (IUNIN,'(A420)') ZEILE
       IREAD=1
       I1 = INDEX(ZEILE,'CFILE')
       DO WHILE (I1 /= 0)
@@ -359,7 +359,7 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
           WRITE (IUNOUT,*) ' DATABASE DEFINITION FOR ',HANDLE,
      .                     ' IGNORED '
         END IF
-        READ (IUNIN,'(A80)') ZEILE
+        READ (IUNIN,'(A420)') ZEILE
         I1 = INDEX(ZEILE,'CFILE')
       END DO
  
@@ -1422,7 +1422,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
      .                        IBGKA(IATM,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' THREE SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1A = ',ISCD1A(IATM,K)
             WRITE (iunout,*) ' ISCD2A = ',ISCD2A(IATM,K)
@@ -1438,7 +1438,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
      .                        IBGKA(IATM,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' FOUR SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1A = ',ISCD1A(IATM,K)
             WRITE (iunout,*) ' ISCD2A = ',ISCD2A(IATM,K)
@@ -1514,7 +1514,7 @@ C
      .                        IBGKM(IMOL,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' THREE SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1M = ',ISCD1M(IMOL,K)
             WRITE (iunout,*) ' ISCD2M = ',ISCD2M(IMOL,K)
@@ -1530,7 +1530,7 @@ C
      .                        IBGKM(IMOL,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' FOUR SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1M = ',ISCD1M(IMOL,K)
             WRITE (iunout,*) ' ISCD2M = ',ISCD2M(IMOL,K)
@@ -1686,7 +1686,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
      .                        IBGKPH(IPHOT,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' THREE SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1PH = ',ISCD1PH(IPHOT,K)
             WRITE (iunout,*) ' ISCD2PH = ',ISCD2PH(IPHOT,K)
@@ -1702,7 +1702,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
      .                        IBGKPH(IPHOT,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' FOUR SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1PH = ',ISCD1PH(IPHOT,K)
             WRITE (iunout,*) ' ISCD2PH = ',ISCD2PH(IPHOT,K)
@@ -1783,7 +1783,7 @@ C     WRITE (iunout,*) ZEILE
      .                        ISCD3P(IPLS,K),ISCDEP(IPLS,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' THREE SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1P = ',ISCD1P(IPLS,K)
             WRITE (iunout,*) ' ISCD2P = ',ISCD2P(IPLS,K)
@@ -1796,7 +1796,7 @@ C     WRITE (iunout,*) ZEILE
      .                        ISCDEP(IPLS,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
-     .        ' FOUR SECONDARY GROUPS USED EIRMOD_FOR SPECIES ',
+     .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
             WRITE (iunout,*) ' ISCD1P = ',ISCD1P(IPLS,K)
             WRITE (iunout,*) ' ISCD2P = ',ISCD2P(IPLS,K)
