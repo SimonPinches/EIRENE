@@ -1213,7 +1213,7 @@
         CALL MPI_BCAST (RP%POLY%DBLPOL,ND*ND2,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
  
-      ELSE IF (RP%IFIT > 2) THEN
+      ELSE IF (RP%IFIT == 3) THEN
 ! ADAS DATA
         IF (MY_PE .NE. 0) ALLOCATE (RP%ADAS)
  
@@ -1241,6 +1241,32 @@
         CALL MPI_BCAST (RP%ADAS%FIT,RP%ADAS%NTEMP*RP%ADAS%NDENS,
      .                  MPI_REAL8,0,MPI_COMM_WORLD,ier)
  
+      ELSE IF (RP%IFIT > 3) THEN
+! HYDKIN DATA
+        IF (MY_PE .NE. 0) ALLOCATE (RP%HYD)
+
+        CALL MPI_BCAST (RP%HYD%NTEMPS,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%HYD%REACNAME,50,MPI_CHARACTER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%HYD%REAC_STRING,50,MPI_CHARACTER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%HYD%RPRT,20,MPI_CHARACTER,
+     .                  0,MPI_COMM_WORLD,ier)
+
+        IF (MY_PE .NE. 0) THEN
+          ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
+          ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
+          ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
+        END IF
+
+        CALL MPI_BCAST (RP%HYD%TEMPS,RP%HYD%NTEMPS,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%HYD%RATES,RP%HYD%NTEMPS,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%HYD%RATIO,RP%HYD%NTEMPS,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+
       END IF
  
       RETURN
