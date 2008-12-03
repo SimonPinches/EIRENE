@@ -60,7 +60,7 @@ C
       LOGICAL :: PLSAV1, PLSAV2, LSTORE
       CHARACTER(20) :: TXTHST(NTXHST)
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
-      CHARACTER(4) :: CH
+      CHARACTER(6) :: CH
  
       SAVE
       DATA ABSMAX,ORDMAX/21.,21./
@@ -859,7 +859,7 @@ c  p: halber umfang des dreiecks
 c  r: radius des inkreises des dreiecks
               p=p*0.5
               r=((p-dsd(1))*(p-dsd(2))*(p-dsd(3))/p)**0.5
-              WRITE (CH,'(I4)') I
+              WRITE (CH,'(I6)') I
               slt=r/2.
               X=XCOM(I)
               IF (I.GE.1000) X=X-SLT
@@ -871,7 +871,7 @@ c  r: radius des inkreises des dreiecks
               slt=slt*sclfcx
               call grchrc(REAL(slt,KIND(1.E0)),0.,idummy)
               CALL GRTXT
-     .  (REAL(X,KIND(1.E0)),REAL(Y,KIND(1.E0)),4,CH)
+     .             (REAL(X,KIND(1.E0)),REAL(Y,KIND(1.E0)),6,CH)
               call grchrc(0.3,0.,idummy)
             ENDIF
 1010      CONTINUE
