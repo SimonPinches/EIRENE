@@ -486,7 +486,7 @@ C
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
           WRITE (iunout,*) ' I,(XTRIAN(J),YTRIAN(J),J=1,3) '
           DO 163 I=1,NTRII
-            WRITE (iunout,'(/1X,I4,1X,1P,6E12.4)')
+            WRITE (iunout,'(/1X,I6,1X,1P,6E12.4)')
      .                               I,(XTRIAN(NECKE(J,I)),
      .                                  YTRIAN(NECKE(J,I)),J=1,3)
 163       CONTINUE
@@ -954,6 +954,8 @@ C
           CALL EIRENE_MASRR1('  N, PSURF ',PSURF,NP2ND,3)
           CALL EIRENE_LEER(2)
         ENDIF
+C
+        CALL EIRENE_SNEIGH
 C
       ELSEIF (LEVGEO.EQ.2) THEN
 C
