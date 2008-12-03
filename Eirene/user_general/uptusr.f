@@ -103,16 +103,18 @@ C
 7473      CONTINUE
         END IF
 
-        IU = UBOUND(COPV,1)
+        IF (LCOPV) THEN
+          IU = UBOUND(COPV,1)
 
-        IF (IU >= NPLSI) 
-     .    COPV(1:NPLSI,:) = PPPL_COP(1:NPLSI,:)
-        IF (IU >= 2*NPLSI) 
-     .    COPV(NPLSI+1:2*NPLSI,:) = CPPV(1:NPLSI,:)
-        IF (IU >= 2*NPLSI+1) 
-     .    COPV(2*NPLSI+1,:) = EPPL_COP(:)
-        IF (IU >= 2*NPLSI+2) 
-     .    COPV(2*NPLSI+2,:) = EPEL(:)
+          IF (IU >= NPLSI) 
+     .      COPV(1:NPLSI,:) = PPPL_COP(1:NPLSI,:)
+          IF (IU >= 2*NPLSI) 
+     .      COPV(NPLSI+1:2*NPLSI,:) = CPPV(1:NPLSI,:)
+          IF (IU >= 2*NPLSI+1) 
+     .      COPV(2*NPLSI+1,:) = EPPL_COP(:)
+          IF (IU >= 2*NPLSI+2) 
+     .      COPV(2*NPLSI+2,:) = EPEL(:)
+        END IF
 
         DEALLOCATE (PPPL_COP)
         DEALLOCATE (CPPV)
