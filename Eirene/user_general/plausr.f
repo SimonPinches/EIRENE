@@ -20,7 +20,8 @@ c
       IMPLICIT NONE
       REAL(DP) :: FACTOR, EIRENE_STEP
       INTEGER :: NLINES, ITRI, ISIDE, I, NBIN, ISTRA, ISRFS, ISOR, JJJ,
-     .           ITEC1, ITEC2, ITEC3, ISTEP, INDSRF, IS1, IERROR, IPLS
+     .           ITEC1, ITEC2, ITEC3, ISTEP, INDSRF, IS1, IERROR, IPLS,
+     .           ITARG, IG, ISP
       INTEGER :: EIRENE_IDEZ
       INTEGER, ALLOCATABLE :: KSTEP(:), INOSRC(:), IPLAN(:), IPLEN(:)
       REAL(DP) :: FLX, TE, TI, DE, MC, FE, FI, FSH, VP, FEL, DUM
@@ -273,12 +274,15 @@ C     VP OVERRULES MC, IF VP IS GIVEN and MC=0
                      IF (MC.EQ.0.) MC=MCC
 !pb                     MCSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = abs(MC) ! 1
 C     THIS NEXT VECTOR IS V-PARALLEL, IN CARTESIAN COORDINATES 			   
-                     VXSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VXIN(IPLS,ITRI)
-                     VYSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VYIN(IPLS,ITRI)
-                     VZSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VZIN(IPLS,ITRI)
-c                     VXSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VX
-c                     VYSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VY
-c                     VZSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VZ
+                     IF (ABS(VX) > EPS10) THEN
+                       VXSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VX
+                       VYSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VY
+                       VZSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VZ
+                     ELSE
+                       VXSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VXIN(IPLS,ITRI)
+                       VYSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VYIN(IPLS,ITRI)
+                       VZSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VZIN(IPLS,ITRI)
+                     END IF
                      FLSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = ABS(FLX)/DELR
 C     IF NO ION KINETIC ENERGY FLUX IS SPECIFIED, DERIVE IT FROM  FI,MC,VP
                      ffel=0.
@@ -302,18 +306,35 @@ c           enddo nlines
 c        enddo isrfs
          ENDDO 
 
-c     enddo istra
-      ENDDO
-
-
-
-      DO ISTEP = 1, NSTEP
          IF (KSTEP(ISTEP) > 0) THEN
             NBIN=KSTEP(ISTEP)+1
             FL=EIRENE_STEP(IPLAN(ISTEP),IPLEN(ISTEP),NBIN,ISTEP)
             FLUX(INOSRC(ISTEP))=FL
          END IF
-      END DO
+
+         CALL EIRENE_LEER(1)
+         WRITE (6,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ISTRA
+         WRITE (6,*) 
+     .' IG,  ARC,     P-FLUX,   E-FLUX,     TE,       TI,    SHEATH/TE'
+         ITARG = ISTRA
+         DO 6100 IG=1,KSTEP(ISTEP)
+           WRITE (6,'(1X,I3,1P,6E11.3)')
+     .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
+     .             ELSTEP(0,ITARG,IG),
+     .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
+     .             SHSTEP(ITARG,IG)
+6100     CONTINUE
+         WRITE (6,'(1X,I3,1P,1E11.3)') KSTEP(ISTEP)+1,
+     .                                 RRSTEP(ITARG,KSTEP(ISTEP)+1)
+C
+         WRITE (6,*) 'PARTICLE FLUX(IPLS), IPLS=1,NPLSI '
+         WRITE (6,'(1X,1P,6E12.4)') (FLTOT(ISP,ITARG),ISP=1,NPLSI)
+         CALL EIRENE_LEER(2)
+C
+
+c     enddo istra
+      ENDDO
+
       
       DEALLOCATE (KSTEP)
       DEALLOCATE (INOSRC)
