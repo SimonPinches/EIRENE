@@ -832,6 +832,7 @@ C
         READ (IUNIN,6666) JDUMMY,IDIMP,INUMP(ISTS,IDIMP),IRPTA1,
      .                    IRPTE1,IRPTA2,IRPTE2,IRPTA3,IRPTE3
  
+        IF (.NOT.(NLFEM.OR.NLTET.OR.NLGEN)) THEN
         IF ((IDIMP == 1) .AND. (INUMP(ISTS,IDIMP) > N1ST)) THEN
           WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON DEFAULT '
           WRITE (iunout,*) ' SURFACE ',ISTS
@@ -853,6 +854,7 @@ C
           WRITE (iunout,*) ' NUMBER OF TOROIDAL SURFACE > N3RD '
           WRITE (iunout,*) ' CHECK INPUT FILE '
           CALL EIRENE_EXIT_OWN(1)
+        END IF
         END IF
 C
 C  OLD INPUT VERSION BEGIN
