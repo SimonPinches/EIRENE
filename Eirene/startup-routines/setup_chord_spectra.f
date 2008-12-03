@@ -73,8 +73,6 @@ C
           SVESTIML(ISPC)%PSPC => ESTIML(ISPC)%PSPC
         END DO
  
-        DEALLOCATE(ESTIML)
- 
         IF (ALLOCATED(SMESTL)) THEN
           ALLOCATE(SVSMESTL(NADSPC))
           DO ISPC = 1, NADSPC
@@ -84,6 +82,8 @@ C
         END IF
  
       END IF
+ 
+      IF (ALLOCATED(ESTIML)) DEALLOCATE(ESTIML)
  
 !  set up new arrays for spectra
  
