@@ -1,3 +1,5 @@
+!pb  070109  ff(2,2) introduced to avoid array temporaries
+
       function EIRENE_intp_adas(ad,p1,p2) result(res)
  
       use EIRMOD_precision
@@ -7,7 +9,7 @@
  
       type(adas_data), pointer :: ad
       real(dp), intent(in) :: p1, p2
-      real(dp) :: res, rx, ry
+      real(dp) :: res, rx, ry, ff(2,2)
       integer :: ide, ite
  
       if (p1 <= ad%temp(1)) then
@@ -28,8 +30,10 @@
  
       rx = (ad%temp(ite+1) - p1) * ad%dte(ite)
       ry = (ad%dens(ide+1) - p2) * ad%dde(ide)
-      call EIRENE_bilinear_int (ad%fit(ite:ite+1,ide:ide+1), rx, ry,
-     .  res)
+      ff = ad%fit(ite:ite+1,ide:ide+1)
+!      call EIRENE_bilinear_int (ad%fit(ite:ite+1,ide:ide+1), rx, ry,
+!     .  res)
+      call EIRENE_bilinear_int (ff, rx, ry, res)
  
       return
       end function EIRENE_intp_adas
