@@ -1,3 +1,6 @@
+!pb  060309  mpi_real8 --> moi_double_precision
+
+
       subroutine eirene_collect_coutau
 
       USE EIRMOD_PRECISION
@@ -50,7 +53,7 @@
         call mpi_comm_rank(mpi_comm_world,my_pe_gr,ier)
 
         CALL MPI_REDUCE(OUTAU,help,NOUTAU,
-     .                  mpi_real8,mpi_sum,0,icomgrp,ier)
+     .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
 
 !pb        if (my_pe == 0) CALL EIRENE_READ_COUTAU (OUTAU, IUNOUT)
         if (my_pe == 0) CALL EIRENE_READ_COUTAU (help, IUNOUT)
@@ -95,13 +98,13 @@
 
 	do ir = 1, nrtal
           CALL MPI_REDUCE(SMESTV(1,ir),help,NIDV,
-     .                  mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTV(1:nidv,ir) = help(1:nidv)
         end do
 
 	do ir = 1, nlmpgs
           CALL MPI_REDUCE(SMESTS(1,ir),help,NIDS,
-     .                  mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTS(1:nids,ir) = help(1:nids)
         end do
 
@@ -109,32 +112,32 @@
           ns = SMESTL(I)%PSPC%NSPC
           CALL MPI_REDUCE(SMESTL(I)%PSPC%SPC,help,
      .                    SMESTL(I)%PSPC%NSPC+2,
-     .                    MPI_REAL8,MPI_SUM,0,icomgrp,IER1)
+     .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,icomgrp,IER1)
           if (my_pe == 0) SMESTL(I)%PSPC%SPC(0:ns+1) = help(1:ns+2)
 
           CALL MPI_REDUCE(SMESTL(I)%PSPC%SPCINT,help,
-     .                    1,MPI_REAL8,MPI_SUM,0,icomgrp,IER1)
+     .                    1,MPI_DOUBLE_PRECISION,MPI_SUM,0,icomgrp,IER1)
           if (my_pe == 0) SMESTL(I)%PSPC%SPCINT = help(1)
 
           if (nsigi_spc > 0) then
             call mpi_reduce(smestl(i)%pspc%sdv,help,
      .                      smestl(i)%pspc%nspc+2,
-     .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) SMESTL(I)%PSPC%SDV(0:ns+1) = help(1:ns+2)
 
             call mpi_reduce(smestl(i)%pspc%sgm,help,
      .                      smestl(i)%pspc%nspc+2,
-     .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) SMESTL(I)%PSPC%SGM(0:ns+1) = help(1:ns+2)
 
             call mpi_reduce(smestl(i)%pspc%stvs,
      .                      help,1,
-     .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) SMESTL(I)%PSPC%STVS = help(1)
   
             call mpi_reduce(smestl(i)%pspc%ees,
      .                      help,1,
-     .                      mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) SMESTL(I)%PSPC%EES = help(1)
           end if
         END DO
@@ -144,14 +147,14 @@
         IF (NSIGCI > 0) THEN
           DO IR=1,NSBOX_TAL
             CALL MPI_REDUCE(STVC(0,1,IR),
-     .                      help,3*NSIGCI,mpi_real8,
+     .                      help,3*NSIGCI,mpi_double_precision,
      .                      mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) STVC(0:2,1:NSIGCI,IR) = 
      .                      RESHAPE(help(1:3*nsigci),(/3,nsigci/))
 
           ENDDO
           CALL MPI_REDUCE(STVCS,help,3*NSIGCI,
-     .                    mpi_real8,mpi_sum,0,icomgrp,ier1)
+     .                    mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) STVCS(0:2,1:NSIGCI) = 
      .	                  RESHAPE(help(1:3*nsigci),(/3,nsigci/))
         END IF
@@ -159,20 +162,20 @@
         IF (NSIGVI > 0) THEN
           DO IR=1,NSBOX_TAL
             CALL MPI_REDUCE(STV(1,ir),help,
-     .                      NSIGVI,MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .           NSIGVI,MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) STV(1:NSIGVI,ir) = help(1:nsigvi)
 
             CALL MPI_REDUCE(EE(1,IR),help,
-     .                      NSIGVI,MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .           NSIGVI,MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) EE(1:NSIGVI,ir) = help(1:nsigvi)
           ENDDO
 
           CALL MPI_REDUCE(STVS,help,NSIGVI,
-     .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) STVS(1:NSIGVI) = help(1:nsigvi)
 
           CALL MPI_REDUCE(EES,help,NSIGVI,
-     .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) EES(1:NSIGVI) = help(1:nsigvi)
         END IF
 
@@ -180,19 +183,19 @@
         IF (NSIGSI > 0) THEN
           do ir=1,nlimps
             CALL MPI_REDUCE(STVW(1,IR),help,NSIGSI,
-     .                      MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) STVW(1:NSIGSI,IR) = help(1:nsigsi)
             
             CALL MPI_REDUCE(FF(1,IR),help,NSIGSI,
-     .                      MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) FF(1:NSIGSI,IR) = help(1:nsigsi)
      	  end do
           CALL MPI_REDUCE(STVWS,help,NSIGSI,
-     .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) STVWS(1:NSIGSI) = help(1:nsigsi)
 
           CALL MPI_REDUCE(FFS,help,NSIGSI,
-     .                    MPI_REAL8,MPI_SUM,0,ICOMGRP,IER1)
+     .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) FFS(1:NSIGSI) = help(1:nsigsi)
         END IF
         
