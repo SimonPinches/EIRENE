@@ -19,98 +19,154 @@ C
  
       REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA)
       REAL(DP), INTENT(IN) :: XX1
-      REAL(DP) :: TIMPE(0:NSTRA)
-      REAL(DP) :: FACP, DELT, SUMTIM, TMEAN
+      REAL(DP) :: TIMPE(0:NSTRA), TSTRPE(NSTRA,0:NPRS-1)
+      REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
       INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT
  
+      PROCFORSTRA = .FALSE.
+
+      IF (NPRS == 1) THEN
+
+! 1 PROCESSOR: ALL STRATA ARE DONE BY PROCESSOR 0
+!              XTIM REMAINS UNCHANGED
+        
+        PROCFORSTRA(1:NSTRAI,0) = NLSRON(1:NSTRAI)
+
+      ELSE IF (NPRS <= COUNT(NLSRON(1:NSTRAI))) THEN
+
+! LESS PROCESSORS THAN STRATA
+! ROUND ROBIN DISTRIBUTION OF PROCESSORS
+! EACH PROCESSOR CAN CALCULATE SEVERAL STRATA
+! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
+! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME       
+        TSTRPE = 0._DP
+        IPE = -1
+        DO ISTRA = 1, NSTRAI
+          IF (NLSRON(ISTRA)) THEN
+            IPE = IPE + 1
+            IF (IPE >= NPRS) IPE = 0
+            PROCFORSTRA(ISTRA,IPE) = .TRUE.
+            TSTRPE(ISTRA,IPE) = XTIM(ISTRA)
+          END IF
+        END DO
+
+        sumtim=xtim(0)
+        DO IPE = 0, NPRS-1
+          TPE = SUM(TSTRPE(1:NSTRAI,IPE))
+          FACP = SUMTIM / TPE
+          TSTRPE(1:NSTRAI,IPE) = TSTRPE(1:NSTRAI,IPE) * FACP
+        END DO
+
+        IPE = -1
+        DO ISTRA = 1, NSTRAI
+          IF (NLSRON(ISTRA)) THEN
+            IPE = IPE + 1
+            IF (IPE >= NPRS) IPE = 0
+            XTIM(ISTRA) = TSTRPE(ISTRA,IPE)
+          ELSE
+            XTIM(ISTRA) = 0._DP
+          END IF
+        END DO
+
+        xtim(0) = sum(xtim(1:nstrai))
+        CALL EIRENE_MASAGE
+     .    ('REDEFINED CPU TIME ASSIGNED TO STRATA (SEC) :')
+        DO ISTRA=1,NSTRAI
+          CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
+        END DO
+
+      ELSE
+
 ! calculate mean cpu time per stratum
-      sumtim=xtim(nstrai)
-      TMEAN=SUMTIM/FLOAT(NPRS)
+        sumtim=xtim(0)
+        TMEAN=SUMTIM/FLOAT(NPRS)
  
-      WRITE (iunout,*) ' SUMTIM = ',SUMTIM,' MEAN TIME = ',TMEAN
+        WRITE (iunout,*) ' SUMTIM = ',SUMTIM,' MEAN TIME = ',TMEAN
  
-      NPRS_OPT=0
-      NPRS_FREE=NPRS
-      DO ISTRA=1,NSTRAI
-        delt=xtim(istra)-xtim(istra-1)
-        IF (delt.GE.1.E-5) THEN
+        NPRS_OPT=0
+        NPRS_FREE=NPRS
+        DO ISTRA=1,NSTRAI
+          delt=xtim(istra)
+          IF (delt/tmean.GE.1.E-5) THEN
 ! a stratum that has got computation time gets at least 1 processor
-          NPESTR(ISTRA)=1
-          NPRS_FREE=NPRS_FREE-1
-        ELSE
-          NPESTR(ISTRA)=0
-        ENDIF
+            NPESTR(ISTRA)=1
+            NPRS_FREE=NPRS_FREE-1
+          ELSE
+            NPESTR(ISTRA)=0
+          ENDIF
 ! calculate the optimal number of additional processors according to
 ! distribution of cpu time done in mcarlo (according to number of particles
 ! and source strength specified in the input)
-!        TIMPE(ISTRA)=MAX(delt-TMEAN,1.E-5_DP)/TMEAN
-        TIMPE(ISTRA)=MAX(delt-TMEAN,0._DP)/TMEAN
-        NPRS_OPT=NPRS_OPT+int(TIMPE(ISTRA))
-      ENDDO
-      WRITE (iunout,*) ' ISTRA, TIMPE '
-      DO ISTRA=1,NSTRAI
-        WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
-      ENDDO
+          TIMPE(ISTRA)=MAX(delt-TMEAN,0._DP)/TMEAN
+          NPRS_OPT=NPRS_OPT+int(TIMPE(ISTRA))
+        ENDDO
+        WRITE (iunout,*) ' ISTRA, TIMPE '
+        DO ISTRA=1,NSTRAI
+          WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
+        ENDDO
  
-      WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+        WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
  
 ! distribute free processors to strata by their optimal number of processors
-      FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
-     .             (REAL(NPRS_OPT,KIND(1.D0))+eps30))
-      write (iunout,*) ' facp ',facp
-      NPESTR(0)=NPRS
-      DO ISTRA=1,NSTRAI
-        NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
-        NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
-      ENDDO
-      WRITE (iunout,*) ' NPESTR ',(NPESTR(ISTRA),ISTRA=1,NSTRAI)
-      WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+        FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
+     .               (REAL(NPRS_OPT,KIND(1.D0))+eps30))
+        write (iunout,*) ' facp ',facp
+        NPESTR(0)=NPRS
+        DO ISTRA=1,NSTRAI
+          NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
+          NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
+        ENDDO
+        WRITE (iunout,*) ' NPESTR ',(NPESTR(ISTRA),ISTRA=1,NSTRAI)
+        WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
  
 ! if there are still free processors left distribute them to all
 ! strata with more than tmean cpu time assigned to them using a
 ! daisy chain mechanism
-      ISTRA=0
-      DO WHILE (NPRS_FREE.GT.0)
-        ISTRA=ISTRA+1
-        IF (ISTRA.GT.NSTRAI) ISTRA=1
-        IF (TIMPE(ISTRA).GT.1.E-10) THEN
-          NPESTR(ISTRA)=NPESTR(ISTRA)+1
-          NPRS_FREE=NPRS_FREE-1
-        ENDIF
-      ENDDO
-      WRITE (iunout,*) ' NPESTR '
-      WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRAI)
-      WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+        ISTRA=0
+        DO WHILE (NPRS_FREE.GT.0)
+          ISTRA=ISTRA+1
+          IF (ISTRA.GT.NSTRAI) ISTRA=1
+          IF (TIMPE(ISTRA).GT.1.E-10) THEN
+            NPESTR(ISTRA)=NPESTR(ISTRA)+1
+            NPRS_FREE=NPRS_FREE-1
+          ENDIF
+        ENDDO
+        WRITE (iunout,*) ' NPESTR '
+        WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRAI)
+        WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
  
 ! assign each processor the number of the stratum it shall work on
-      IPE=0
-      DO ISTRA=1,NSTRAI
-        DO K=1,NPESTR(ISTRA)
-          IPE=IPE+1
-          NSTRPE(IPE-1)=ISTRA
+        IPE=0
+        DO ISTRA=1,NSTRAI
+          DO K=1,NPESTR(ISTRA)
+            IPE=IPE+1
+            NSTRPE(IPE-1)=ISTRA
+            PROCFORSTRA(ISTRA,IPE-1) = .TRUE.
+          ENDDO
         ENDDO
-      ENDDO
-      WRITE (iunout,*) ' IPE, ISTRA '
-      WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
+        WRITE (iunout,*) ' IPE, ISTRA '
+        WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
  
 ! for each stratum define the number of the first processor
 ! that does calculations for this stratum
 ! this is used to determine the groups of processors in the
 ! accumulation of the results for one stratum
-      NPESTA(0)=0
-      NPESTA(1)=0
-      DO ISTRA=2,NSTRAI
-        NPESTA(ISTRA)=NPESTA(ISTRA-1)+NPESTR(ISTRA-1)
-      ENDDO
-      WRITE (iunout,*) ' NPESTA '
-      WRITE (iunout,'(12I6)') (NPESTA(I),I=0,NSTRAI)
+        NPESTA(0)=0
+        NPESTA(1)=0
+        DO ISTRA=2,NSTRAI
+          NPESTA(ISTRA)=NPESTA(ISTRA-1)+NPESTR(ISTRA-1)
+        ENDDO
+        WRITE (iunout,*) ' NPESTA '
+        WRITE (iunout,'(12I6)') (NPESTA(I),I=0,NSTRAI)
  
-      XTIM(1:NSTRAI) = XX1
-      CALL EIRENE_MASAGE
-     .  ('REDEFINED CPU TIME ASSIGNED TO STRATA (SEC) :')
-      DO ISTRA=1,NSTRAI
-        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
-      END DO
+        XTIM(1:NSTRAI) = XX1
+        CALL EIRENE_MASAGE
+     .    ('REDEFINED CPU TIME ASSIGNED TO STRATA (SEC) :')
+        DO ISTRA=1,NSTRAI
+          CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
+        END DO
+
+      END IF  
  
       RETURN
       END
