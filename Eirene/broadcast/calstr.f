@@ -4,7 +4,8 @@
 !pb 110707  calls to mpi_reduce corrected 
 !pb 060309  mpi_real8 --> mpi_double_precision
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
-!pb 090309  loops reorganized           
+!pb 090309  loops reorganized          
+!pb 270309  typos corrected             
 
       SUBROUTINE EIRENE_CALSTR
 
@@ -21,7 +22,7 @@
 
 C
       INCLUDE 'mpif.h'
-      real(dp), allocatable :: help(:)
+      real(dp), allocatable :: help(:), helpest(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
      .            helps(nlmpgs+1), helpc
@@ -41,7 +42,8 @@ C
 c
 c   collect data from pe's belonging to one stratum
 c
-      if (istra.eq.nstrpe(my_pe)) then
+!pb      if (istra.eq.nstrpe(my_pe)) then
+      if (procforstra(istra,my_pe)) then
         call mpi_barrier(icomgrp(istra),ier)
         my_pe_gr = my_pe-npesta(istra)
         
@@ -100,7 +102,7 @@ C
 
         call mpi_reduce(EELFI(0,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-	if (my_pe_gr==0) EELFI(0:nioni,istra) = help(0:nioni)
+	if (my_pe_gr==0) EELFI(0:nioni,istra) = helpi(0:nioni)
 
 
         call mpi_reduce(PPMLI(0,istra),helpm,nmoli+1,
@@ -109,7 +111,7 @@ C
 
         call mpi_reduce(PPATI(0,istra),helpa,natmi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-	if (my_pe_gr==0) PPATI(0:natmi,istra) = help(0:natmi)
+	if (my_pe_gr==0) PPATI(0:natmi,istra) = helpa(0:natmi)
 
         call mpi_reduce(PPIOI(0,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
@@ -164,28 +166,30 @@ C
 
         do ispc=1,nadspc
           ns = estiml(ispc)%pspc%nspc
-          call mpi_reduce(estiml(ispc)%pspc%spc,help,
+          allocate (helpest(ns+2))
+          call mpi_reduce(estiml(ispc)%pspc%spc,helpest,
      .                    estiml(ispc)%pspc%nspc+2,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-          if (my_pe_gr==0) estiml(ispc)%pspc%spc(0:ns+1) = help(1:ns+2)
+          if (my_pe_gr==0) estiml(ispc)%pspc%spc(0:ns+1)=helpest(1:ns+2)
           
           if (nsigi_spc > 0) then
-            call mpi_reduce(estiml(ispc)%pspc%sdv,help,
+            call mpi_reduce(estiml(ispc)%pspc%sdv,helpest,
      .                      estiml(ispc)%pspc%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0) 
-     .        estiml(ispc)%pspc%sdv(0:ns+1) = help(1:ns+2)
+     .        estiml(ispc)%pspc%sdv(0:ns+1) = helpest(1:ns+2)
             
-            call mpi_reduce(estiml(ispc)%pspc%sgm,help,
+            call mpi_reduce(estiml(ispc)%pspc%sgm,helpest,
      .                      estiml(ispc)%pspc%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0) 
-     .        estiml(ispc)%pspc%sgm(0:ns+1) = help(1:ns+2)
+     .        estiml(ispc)%pspc%sgm(0:ns+1) = helpest(1:ns+2)
             
-            call mpi_reduce(estiml(ispc)%pspc%sgms,help,1,
+            call mpi_reduce(estiml(ispc)%pspc%sgms,helpest,1,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-            if (my_pe_gr==0) estiml(ispc)%pspc%sgms = help(1)
+            if (my_pe_gr==0) estiml(ispc)%pspc%sgms = helpest(1)
           end if
+          deallocate (helpest)
         end do
 C
 	if (nsd > 0) then
