@@ -119,4 +119,9 @@ C
 51    CONTINUE
  
       RETURN
+csw 19apr07
+      entry EIRENE_uptbgk_reinit
+      ifirst=0
+      return
+csw
       END
