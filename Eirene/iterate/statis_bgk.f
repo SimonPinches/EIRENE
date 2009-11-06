@@ -37,6 +37,9 @@ C
 !pb      SAVE
 C
       ENTRY EIRENE_STATS0_BGK
+csw 05feb08
+      IF (NBGVI.EQ.0) RETURN
+csw
 C
       IF (.NOT.ALLOCATED(IND)) THEN
         AllOCATE (IND(NRTAL,8))
