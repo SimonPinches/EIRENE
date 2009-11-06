@@ -23,6 +23,8 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 !             now NTCPU is the amount of cpu time used for particle tracing
 !             times used for initialization and integration of result is not
 !             taken into account
+!   21.07.09: Sense of XTIM changed: now XTIM is the time allocated for each stratum
+!             no longer the end time
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -71,7 +73,8 @@ C
      .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX, 
      .          FLX, VAL, ZW, ZWW, VALUE, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
-     .          SECND2, OVER, SECND1, WTT, SECDEL, DUMRAN, timan, timen
+     .          SECND2, OVER, SECND1, WTT, SECDEL, DUMRAN, timan, timen,
+     .          tim1, tim2
       REAL(DP), EXTERNAL :: RANF_EIRENE, RANSET_EIRENE
  
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
@@ -90,10 +93,12 @@ C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
       TIMI=EIRENE_SECOND_OWN()
       timan=timi
+      tim1 = timi
 C
       IF (NFILEN.NE.0) THEN
         NREC11=NOUTAU
-        OPEN (UNIT=11,ACCESS='DIRECT',FORM='UNFORMATTED',RECL=8*NREC11)
+        OPEN (UNIT=11+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
+     .        RECL=8*NREC11)
       ENDIF
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
@@ -133,25 +138,54 @@ C  TO RANDOM SAMPLING ROUTINES
       IRNDVH=IRNDVC/2
  
       TIMen=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
+      tim1 = timen
 C
 C  INITIALIZE SUBR. STATIS
 C
       CALL EIRENE_LEER(1)
       CALL EIRENE_STATS0
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for stats0 ', tim2-tim1
+      tim1 = tim2
       CALL EIRENE_STATS0_BGK
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
+      tim1 = tim2
       CALL EIRENE_STATS0_COP
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
+      tim1 = tim2
       CALL EIRENE_STATS0_SPC
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
+      tim1 = tim2
 C  INITIALIZE SUBR. REFLEC AND SPUTER
       CALL EIRENE_REFLC0
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
+      tim1 = tim2
       IF (NPHOT > 0) THEN
         CALL EIRENE_REFLC0_PHOTON
         CALL EIRENE_LINE_CUTOFF
+        TIM2=EIRENE_SECOND_OWN()
+        write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
+        tim1 = tim2
       END IF
       CALL EIRENE_SPUTR0
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
+      tim1 = tim2
 C  INITIALIZE SUBR. SAMVOL
       CALL EIRENE_SAMVL0
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
+      tim1 = tim2
 C  INITIALIZE SUBR. SAMSRF
       CALL EIRENE_SAMSF0
+      TIM2=EIRENE_SECOND_OWN()
+      write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
+      tim1 = tim2
 C
 C
       IESTR=-1
@@ -184,8 +218,9 @@ C   BUT DO AT LEAST 2 PARTICLES, IN CASE NPTS(ISTRA).GE.2
 C
 !pb      CALL TRMAIN(XX,NTCPU)
       XX = NTCPU
-      XTIM(0)=EIRENE_SECOND_OWN()
-      SECND=XTIM(0)
+CVKMPI      XTIM(0)=EIRENE_SECOND_OWN()
+CVKMPI      SECND=XTIM(0)
+      SECND=EIRENE_SECOND_OWN()
  
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
@@ -201,16 +236,20 @@ C  REMAINING CPU TIME, SUBSTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
       DO 7 ISTRA=1,NSTRAI
         IF (NPTS(ISTRA).LE.0.AND.FLUX(ISTRA).GT.0.D0) THEN
           FLUX(ISTRA)=0.D0
+          NLSRON(ISTRA) = .FALSE.
           WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
      .                     ' TURNED OFF, BECAUSE NPTS=0'
           CALL EIRENE_LEER(1)
         ENDIF
         IF (NPTS(ISTRA).GT.0.AND.FLUX(ISTRA).LE.0.D0) THEN
           NPTS(ISTRA)=0
+          NLSRON(ISTRA) = .FALSE.
           WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
      .                     ' TURNED OFF, BECAUSE FLUX=0.0'
           CALL EIRENE_LEER(1)
         ENDIF
+        IF (NPTS(ISTRA).LE.0.OR.FLUX(ISTRA).LE.0.D0) 
+     .     NLSRON(ISTRA) = .FALSE.
         XPT=XPT+FLOAT(NPTS(ISTRA))
         XFL=XFL+FLUX(ISTRA)
 7     CONTINUE
@@ -219,25 +258,32 @@ C  REMAINING CPU TIME, SUBSTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
       nsteff=0
       DO 8 ISTRA=1,NSTRAI
         if (npts(istra) .gt. 0) then
-          XPT1=XPT1+NPTS(ISTRA)
-          XFL1=XFL1+FLUX(ISTRA)
-          XTIM(ISTRA)=XTIM(0)+XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
-     +                             (   ALLOC)*XFL1/(XFL+EPS60))
+CVKMPI          XPT1=XPT1+NPTS(ISTRA)
+CVKMPI          XFL1=XFL1+FLUX(ISTRA)
+CVKMPI          XTIM(ISTRA)=XTIM(0)+XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
+CVKMPI     +                             (   ALLOC)*XFL1/(XFL+EPS60))
+          XPT1=NPTS(ISTRA) !VKMPI
+          XFL1=FLUX(ISTRA) !VKMPI
+          XTIM(ISTRA)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
+     +                     (   ALLOC)*XFL1/(XFL+EPS60)) !VKMPI
           nsteff=nsteff+1
         else
-          xtim(istra)=xtim(istra-1)
+CVKMPI          xtim(istra)=xtim(istra-1)
+          xtim(istra)=0.0 !VKMPI
         end if
 8     CONTINUE
  
 C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE SWITCHED OFF (SHORT CYCLE)
-      DO ISTRA=1,NSTRAI
-        DXTIM(ISTRA)=XTIM(ISTRA)-XTIM(ISTRA-1)
-        IF (.NOT.NLSRON(ISTRA)) DXTIM(ISTRA)=0._DP
-      END DO
+CVKMPI      DO ISTRA=1,NSTRAI
+CVKMPI        DXTIM(ISTRA)=XTIM(ISTRA)-XTIM(ISTRA-1)
+CVKMPI        IF (.NOT.NLSRON(ISTRA)) DXTIM(ISTRA)=0._DP
+CVKMPI      END DO
  
-      DO ISTRA=1,NSTRAI
-        XTIM(ISTRA)=XTIM(ISTRA-1)+DXTIM(ISTRA)
-      END DO
+CVKMPI      DO ISTRA=1,NSTRAI
+CVKMPI        XTIM(ISTRA)=XTIM(ISTRA-1)+DXTIM(ISTRA)
+CVKMPI      END DO
+
+      XTIM(0)=SUM(XTIM(1:NSTRA))
 C
  
       TIMen=EIRENE_SECOND_OWN()
@@ -245,7 +291,8 @@ C
       CALL EIRENE_LEER(2)
       CALL EIRENE_MASAGE
      .  ('LOOP OVER STRATA STARTS AT CPU TIME(SEC):    ')
-      CALL EIRENE_MASR1 ('STARTTIM',XTIM(0))
+CVKMPI       CALL EIRENE_MASR1 ('STARTTIM',XTIM(0))
+      CALL EIRENE_MASR1 ('STARTTIM',SECND) !VKMPI
       CALL EIRENE_MASAGE
      .  ('CPU TIME ASSIGNED TO STRATA (SEC) :          ')
       IF (ALLOC.EQ.0.D0) THEN
@@ -259,8 +306,9 @@ C
      .  ('WEIGHTED ALLOCATION BETWEEN NPTS AND FLUX    ')
       ENDIF
       DO 9 ISTRA=1,NSTRAI
-        DELT=XTIM(ISTRA)-XTIM(ISTRA-1)
-        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,DELT)
+CVKMPI        DELT=XTIM(ISTRA)-XTIM(ISTRA-1)
+CVKMPI        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,DELT)
+        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA)) !VKMPI
 9     CONTINUE
       CALL EIRENE_LEER(2)
 C
@@ -273,7 +321,8 @@ C
         WRITE(iunout,*) 'FOR SNAPSHOT ESTIMATORS: PROPORTIONAL TO CPU-'
         WRITE(iunout,*) 'TIME ALLOCATED FOR EACH STRATUM'
         DO  ISTRA=1,NSTRAI
-          XFACT=(XTIM(ISTRA)-XTIM(ISTRA-1))/XX1
+CVKMPI          XFACT=(XTIM(ISTRA)-XTIM(ISTRA-1))/XX1
+          XFACT=XTIM(ISTRA)/XX1 !VKMPI
           XPRNLS       =NPRNLI*XFACT+0.5
           NPRNLS(ISTRA)=XPRNLS
         ENDDO
@@ -300,9 +349,10 @@ C  ROUND OFF ERRORS
 C
 C  ASSIGN PE'S TO STRATA
 C
-      IF ((NSTEFF > 0) .AND. (NPRS.GT.nsteff)) THEN
-        if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
-        call EIRENE_broad_pedist(xtim)
+!pb      IF ((NSTEFF > 0) .AND. (NPRS.GT.nsteff)) THEN
+      if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
+      if (nprs > 1) then
+        call EIRENE_broad_pedist(xtim,npts,nminpts,trcdbgmpi)
         if (.not.nlident) then
           do istra=1,nstrai
             ninitl(istra)=ninitl(istra)+my_pe*10000
@@ -322,36 +372,38 @@ C
  
         ISTRA=ISTR
         IF (.NOT.NLSRON(ISTRA)) CYCLE
-        IF (NLMOVIE) THEN
-          ISTRA=NSTRAI-ISTR+1
-          IF (ISTRA.EQ.NSTRAI-1) THEN
+        IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
+          IF (NLMOVIE) THEN
+            ISTRA=NSTRAI-ISTR+1
+            IF (ISTRA.EQ.NSTRAI-1) THEN
 C  TOTAL NUMBER OF PARTICLES TO BE LAUNCHED FROM ALL NON-CENSUS STRATA
-            NPTTOT=NPRNLI-NPANU
+              NPTTOT=NPRNLI-NPANU
 C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
-            CALL EIRENE_LEER(2)
-            WRITE (iunout,*)
-     .        'REDEFINE NPTS(ISTRA) BECAUSE OF NLMOVIE OPTION'
-            ISUM=0
-            DO IS=1,NSTRAI-1
-              XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
-              XPRNLI=NPTTOT*XFACT+0.5
-              NPTS(IS)=XPRNLI
-              ISUM=ISUM+NPTS(IS)
-              WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
-            ENDDO
+              CALL EIRENE_LEER(2)
+              WRITE (iunout,*)
+     .          'REDEFINE NPTS(ISTRA) BECAUSE OF NLMOVIE OPTION'
+              ISUM=0
+              DO IS=1,NSTRAI-1
+CVKMPI                XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
+                XFACT=XTIM(ISTRA)/(XTIM(0)-XTIM(NSTRA))  !VKMPI
+                XPRNLI=NPTTOT*XFACT+0.5
+                NPTS(IS)=XPRNLI
+                ISUM=ISUM+NPTS(IS)
+                WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
+              ENDDO
+            ENDIF
           ENDIF
-        ENDIF
-        CALL EIRENE_LEER(2)
-        IF (NPTS(ISTRA).GT.0) THEN
-          WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
-        ELSEIF (NPTS(ISTRA).LE.0) THEN
-          WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
-        ENDIF
-        CALL EIRENE_LEER(2)
-        XMCP(ISTRA)=0.
-        if( ((nprs.le.nsteff).and.(mod(ISTRA-1,nprs).eq.my_pe)) .or.
-     .      ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra)) ) then
-        IPANU=0
+          CALL EIRENE_LEER(2)
+          IF (NPTS(ISTRA).GT.0) THEN
+            WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
+          ELSEIF (NPTS(ISTRA).LE.0) THEN
+            WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
+          ENDIF
+          CALL EIRENE_LEER(2)
+          XMCP(ISTRA)=0.
+!pb        if( ((nprs.le.nsteff).and.(mod(ISTRA-1,nprs).eq.my_pe)) .or.
+!pb     .      ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra)) ) then
+          IPANU=0
 C
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
         IF (NINITL(ISTRA).GT.0) THEN
@@ -424,9 +476,12 @@ C
         OVER=EIRENE_SECOND_OWN()-SECND
 C  ACCUMULATED OVERHEAD BETWEEN STRATA
         OVER_ACC=OVER_ACC+OVER
-        CALL EIRENE_MASR1 ('OVERHEAD',OVER)
-        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
+CVKMPI        CALL EIRENE_MASR1 ('OVERHEAD',OVER)
+CVKMPI        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
         WRITE (iunout,*) 'XTIM(ISTRA)= ',XTIM(ISTRA)
+
+        TIMI=EIRENE_SECOND_OWN()            !VKMPI
+        XTIM(ISTRA)=XTIM(ISTRA)+TIMI !VKMPI
 C
         LGLAST=.FALSE.
         LGSTOP=.FALSE.
@@ -476,7 +531,8 @@ C
           ENDIF
           SECND1=EIRENE_SECOND_OWN()
           LGLAST = IPTSI.EQ.NPTS(ISTRA)
-          LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.IPTSI.GE.2.AND.
+          LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
+     .                        IPTSI.GE.NMINPTS(ISTRA).AND.
      .                        .NOT.NLMOVIE)
           LGSTOP = LGLAST
 C  NEXT MONTE CARLO HISTORY
@@ -622,7 +678,8 @@ c
 c     collect data for one stratum from all pe's performing calculations
 c     for this stratum
 c
-       if ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra))
+!pb       if ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra))
+        if (count(procforstra(istra,0:nprs-1)) > 1)
      .  call EIRENE_calstr
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
@@ -830,8 +887,8 @@ C
         IF (LALGV) THEN
           DO 830 IALV=1,NALVI
             DUMMY(1:NSBOX_TAL) = ALGV(IALV,1:NSBOX_TAL)
-            CALL EIRENE_INTTAL
-     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ALGVI(IALV,ISTRA),
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,
+     .                   NSBOX_TAL,ALGVI(IALV,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 830       CONTINUE
@@ -1012,8 +1069,8 @@ C
 C
           DO 1571 IALV=1,NALVI
             DUMMY(1:NSBOX_TAL) = ALGV(IALV,1:NSBOX_TAL)
-            CALL EIRENE_INTTAL
-     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ALGVI(IALV,0),
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,
+     .                   NSBOX_TAL,ALGVI(IALV,0),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 1571      CONTINUE
@@ -1056,22 +1113,22 @@ C
       IF (NFILEN.EQ.1.OR.NFILEN.EQ.6) THEN
         IF (TRCFLE) WRITE (iunout,*) 'WRITE DATA FOR RECALL OPTION '
         IRC=1
-        WRITE (11,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
+        WRITE (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
-        WRITE (11,REC=IRC) OUTAU
+        WRITE (11+ifoff,REC=IRC) OUTAU
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
       ELSEIF (NFILEN.EQ.2.OR.NFILEN.EQ.7) THEN
         IF (TRCFLE) WRITE (iunout,*) 'READ DATA FOR RECALL OPTION'
         IRC=1
-        READ (11,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
+        READ (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
         IF (TRCFLE)   WRITE (iunout,*) 'READ 11  IRC= ',IRC
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
-        READ (11,REC=IRC) OUTAU
+        READ (11+ifoff,REC=IRC) OUTAU
         CALL EIRENE_READ_COUTAU (OUTAU, IUNOUT)
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'READ 11  IRC= ',IRC
