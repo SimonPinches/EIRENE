@@ -14,7 +14,7 @@
       if (lanf == 0) return
       l = lend-lanf+1
       zeile(1:l) = zeile(lanf:lend)
-      if (lend > lanf) zeile(l+1:lend) = repeat(' ',lanf)
+      if (lanf > 1) zeile(l+1:lend) = repeat(' ',lanf-1)
       do i=1,l
         j=index(gross,zeile(i:i))
         if (j>0) zeile(i:i)=klein(j:j)
