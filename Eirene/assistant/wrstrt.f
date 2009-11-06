@@ -10,7 +10,7 @@ C
      .                  ISPCI,TRCFLE)
  
       USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, SPECT_ARRAY
+      USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, SPECT_ARRAY, IFOFF
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
  
@@ -57,8 +57,9 @@ C
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'WRITE STRATUM NO. ',IG
       IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'WRITE SUM OVER STRATA '
 C
-      OPEN (UNIT=10,ACCESS='DIRECT',FORM='UNFORMATTED',RECL=8*NRECL,
-     .      STATUS='UNKNOWN',FILE='fort.10')
+      OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
+!pb     .      RECL=8*NRECL,STATUS='UNKNOWN',FILE='fort.10')
+     .      RECL=8*NRECL,STATUS='UNKNOWN')
  
       JINI=1
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMV'
@@ -67,7 +68,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (TALLYV(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (TALLYV(J),J=JINI,JEND)
       IF (JEND.EQ.IESTM1) GOTO 12
       JINI=JEND+1
       IRC=IRC+1
@@ -82,7 +83,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (TALLYS(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (TALLYS(J),J=JINI,JEND)
       IF (JEND.EQ.IESTM2) GOTO 2
       JINI=JEND+1
       IRC=IRC+1
@@ -97,7 +98,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (STAT1(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (STAT1(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVI1) GOTO 21
       JINI=JEND+1
       IRC=IRC+1
@@ -112,7 +113,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (STAT2(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (STAT2(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVI2) GOTO 23
       JINI=JEND+1
       IRC=IRC+1
@@ -127,7 +128,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (SIGC(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (SIGC(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVC1) GOTO 25
       JINI=JEND+1
       IRC=IRC+1
@@ -142,7 +143,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (SIGCS(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (SIGCS(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVC2) GOTO 4
       JINI=JEND+1
       IRC=IRC+1
@@ -157,7 +158,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (SIG_BGK(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (SIG_BGK(J),J=JINI,JEND)
       IF (JEND.EQ.IBGKI) GOTO 6
       JINI=JEND+1
       IRC=IRC+1
@@ -172,7 +173,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (SIGS_BGK(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (SIGS_BGK(J),J=JINI,JEND)
       IF (JEND.EQ.JBGKI) GOTO 62
       JINI=JEND+1
       IRC=IRC+1
@@ -187,7 +188,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (SIG_COP(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (SIG_COP(J),J=JINI,JEND)
       IF (JEND.EQ.ICOPI) GOTO 8
       JINI=JEND+1
       IRC=IRC+1
@@ -202,7 +203,7 @@ C
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
       ENDIF
-      WRITE (10,REC=IRC) (SIGS_COP(J),J=JINI,JEND)
+      WRITE (10+ifoff,REC=IRC) (SIGS_COP(J),J=JINI,JEND)
       IF (JEND.EQ.JCOPI) GOTO 13
       JINI=JEND+1
       IRC=IRC+1
@@ -212,7 +213,7 @@ C
       IF (TRCFLE) WRITE (iunout,*) 'SPECTRA'
       DO ISPC=1,IESTM3
         IRC=IRC+1
-        WRITE (10,REC=IRC) TALLYL(ISPC)%PSPC%SPCMIN,
+        WRITE (10+ifoff,REC=IRC) TALLYL(ISPC)%PSPC%SPCMIN,
      .                     TALLYL(ISPC)%PSPC%SPCMAX,
      .                     TALLYL(ISPC)%PSPC%SPCDEL,
      .                     TALLYL(ISPC)%PSPC%SPCDELI,
@@ -229,23 +230,26 @@ C
         DO JINI=1,TALLYL(ISPC)%PSPC%NSPC,NRECL
           IRC=IRC+1
           JEND=MIN(TALLYL(ISPC)%PSPC%NSPC, JINI+NRECL-1)
-          WRITE (10,REC=IRC) (TALLYL(ISPC)%PSPC%SPC(J),J=JINI,JEND)
+          WRITE (10+ifoff,REC=IRC) 
+     .      (TALLYL(ISPC)%PSPC%SPC(J),J=JINI,JEND)
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=1,TALLYL(ISPC)%PSPC%NSPC,NRECL
             IRC=IRC+1
             JEND=MIN(TALLYL(ISPC)%PSPC%NSPC, JINI+NRECL-1)
-            WRITE (10,REC=IRC) (TALLYL(ISPC)%PSPC%SGM(J),J=JINI,JEND)
+            WRITE (10+ifoff,REC=IRC) 
+     .        (TALLYL(ISPC)%PSPC%SGM(J),J=JINI,JEND)
           END DO
           DO JINI=1,TALLYL(ISPC)%PSPC%NSPC,NRECL
             IRC=IRC+1
             JEND=MIN(TALLYL(ISPC)%PSPC%NSPC, JINI+NRECL-1)
-            WRITE (10,REC=IRC) (TALLYL(ISPC)%PSPC%SDV(J),J=JINI,JEND)
+            WRITE (10+ifoff,REC=IRC) 
+     .        (TALLYL(ISPC)%PSPC%SDV(J),J=JINI,JEND)
           END DO
         END IF
       END DO
  
-      CLOSE (UNIT=10)
+      CLOSE (UNIT=10+ifoff)
 C
       RETURN
 C
@@ -285,8 +289,9 @@ C
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'READ STRATUM NO. ',IG
       IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA '
  
-      OPEN (UNIT=10,ACCESS='DIRECT',FORM='UNFORMATTED',RECL=8*NRECL,
-     .      STATUS='OLD',FILE='fort.10')
+      OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
+!pb     .      RECL=8*NRECL,STATUS='OLD',FILE='fort.10')
+     .      RECL=8*NRECL,STATUS='OLD')
  
 C
       JINI=1
@@ -296,7 +301,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (TALLYV(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (TALLYV(J),J=JINI,JEND)
       IF (JEND.EQ.IESTM1) GOTO 15
       JINI=JEND+1
       IRC=IRC+1
@@ -311,7 +316,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (TALLYS(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (TALLYS(J),J=JINI,JEND)
       IF (JEND.EQ.IESTM2) GOTO 20
       JINI=JEND+1
       IRC=IRC+1
@@ -326,7 +331,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (STAT1(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (STAT1(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVI1) GOTO 31
       JINI=JEND+1
       IRC=IRC+1
@@ -341,7 +346,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                                      IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (STAT2(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (STAT2(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVI2) GOTO 33
       JINI=JEND+1
       IRC=IRC+1
@@ -356,7 +361,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (SIGC(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (SIGC(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVC1) GOTO 35
       JINI=JEND+1
       IRC=IRC+1
@@ -371,7 +376,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (SIGCS(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (SIGCS(J),J=JINI,JEND)
       IF (JEND.EQ.ISDVC2) GOTO 40
       JINI=JEND+1
       IRC=IRC+1
@@ -386,7 +391,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (SIG_BGK(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (SIG_BGK(J),J=JINI,JEND)
       IF (JEND.EQ.IBGKI) GOTO 60
       JINI=JEND+1
       IRC=IRC+1
@@ -401,7 +406,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (SIGS_BGK(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (SIGS_BGK(J),J=JINI,JEND)
       IF (JEND.EQ.JBGKI) GOTO 66
       JINI=JEND+1
       IRC=IRC+1
@@ -416,7 +421,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (SIG_COP(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (SIG_COP(J),J=JINI,JEND)
       IF (JEND.EQ.ICOPI) GOTO 80
       JINI=JEND+1
       IRC=IRC+1
@@ -431,7 +436,7 @@ C
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
       ENDIF
-      READ (10,REC=IRC) (SIGS_COP(J),J=JINI,JEND)
+      READ (10+ifoff,REC=IRC) (SIGS_COP(J),J=JINI,JEND)
       IF (JEND.EQ.JCOPI) GOTO 100
       JINI=JEND+1
       IRC=IRC+1
@@ -441,7 +446,7 @@ C
       IF (TRCFLE) WRITE (iunout,*) 'SPECTRA'
       DO ISPC=1,IESTM3
         IRC=IRC+1
-        READ (10,REC=IRC) TALLYL(ISPC)%PSPC%SPCMIN,
+        READ (10+ifoff,REC=IRC) TALLYL(ISPC)%PSPC%SPCMIN,
      .                    TALLYL(ISPC)%PSPC%SPCMAX,
      .                    TALLYL(ISPC)%PSPC%SPCDEL,
      .                    TALLYL(ISPC)%PSPC%SPCDELI,
@@ -458,23 +463,26 @@ C
         DO JINI=1,TALLYL(ISPC)%PSPC%NSPC,NRECL
           IRC=IRC+1
           JEND=MIN(TALLYL(ISPC)%PSPC%NSPC, JINI+NRECL-1)
-          READ (10,REC=IRC) (TALLYL(ISPC)%PSPC%SPC(J),J=JINI,JEND)
+          READ (10+ifoff,REC=IRC) 
+     .      (TALLYL(ISPC)%PSPC%SPC(J),J=JINI,JEND)
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=1,TALLYL(ISPC)%PSPC%NSPC,NRECL
             IRC=IRC+1
             JEND=MIN(TALLYL(ISPC)%PSPC%NSPC, JINI+NRECL-1)
-            READ (10,REC=IRC) (TALLYL(ISPC)%PSPC%SGM(J),J=JINI,JEND)
+            READ (10+ifoff,REC=IRC) 
+     .        (TALLYL(ISPC)%PSPC%SGM(J),J=JINI,JEND)
           END DO
           DO JINI=1,TALLYL(ISPC)%PSPC%NSPC,NRECL
             IRC=IRC+1
             JEND=MIN(TALLYL(ISPC)%PSPC%NSPC, JINI+NRECL-1)
-            READ (10,REC=IRC) (TALLYL(ISPC)%PSPC%SDV(J),J=JINI,JEND)
+            READ (10+ifoff,REC=IRC) 
+     .        (TALLYL(ISPC)%PSPC%SDV(J),J=JINI,JEND)
           END DO
         END IF
       END DO
  
-      CLOSE (UNIT=10)
+      CLOSE (UNIT=10+ifoff)
 C
       RETURN
       END

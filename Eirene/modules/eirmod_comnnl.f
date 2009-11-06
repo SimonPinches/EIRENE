@@ -47,7 +47,7 @@
       ALLOCATE (IPARTC(MPARTT,NPRNL))
       ALLOCATE (NPRNLS(NSTRA))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' COMNNL ',(2*NPRNL*NPARTT+NPRNL+1)*8 +
      .                 (2*NPRNL*MPARTT+NSTRA)*4
  

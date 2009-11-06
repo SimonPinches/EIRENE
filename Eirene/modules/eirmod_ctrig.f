@@ -72,7 +72,7 @@
  
       ALLOCATE (SURF_TRIAN(NLIMPS))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CTRIG ',NCTRIG*8+MCTRIG*4
  
       CALL EIRENE_INIT_CTRIG
@@ -115,7 +115,7 @@
  
       IF (ALLOCATED(COORTRI)) THEN
         DO I=1, NKNOT
-          CUR => COORTRI(NECKE(1,I))%PTRI
+          CUR => COORTRI(I)%PTRI
           DO WHILE(ASSOCIATED(CUR))
             CURN => CUR%NEXT_TRI
             DEALLOCATE (CUR)

@@ -103,12 +103,12 @@ c   LGVAC(...,0)     : background vacuum flag
         IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0) THEN
           CALL EIRENE_ALLOC_BCKGRND
           ALLOCATE(DEINTF(NRAD))
-          OPEN (UNIT=13,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-          REWIND 13
-          READ (13,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
+          OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+          REWIND 13+ifoff
+          READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
      .                        VXINTF,VYINTF,VZINTF
           IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
-          CLOSE (UNIT=13)
+          CLOSE (UNIT=13+ifoff)
           IF (IO.EQ.0) THEN
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
             IOLDTI=MPLSTI(IOLD)

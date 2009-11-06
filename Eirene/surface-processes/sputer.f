@@ -204,24 +204,24 @@ C
           CALL EIRENE_EXIT_OWN(1)
         END IF
  
-        OPEN (UNIT=33,FILE=DBFNAME(IFILE))
-        READ(33,*)
-        READ(33,*)
-        READ(33,*)
-        READ(33,*)
-        READ(33,*)
-        READ(33,*)
-        READ(33,*)
+        OPEN (UNIT=33+ifoff,FILE=DBFNAME(IFILE))
+        READ(33+ifoff,*)
+        READ(33+ifoff,*)
+        READ(33+ifoff,*)
+        READ(33+ifoff,*)
+        READ(33+ifoff,*)
+        READ(33+ifoff,*)
+        READ(33+ifoff,*)
         DO I28=1,28
-          READ(33,*)
-          READ(33,*)
-          READ(33,'(4X,E5.2)') ES(I28)
-          READ(33,'(12X,11(E8.2,1X))') (M2M1(I28,I11),I11=1,11)
-          READ(33,'(12X,11(I8,  1X))') (ETF(I28,I11),I11=1,11)
-          READ(33,'(12X,11(E8.2,1X))') (ETH(I28,I11),I11=1,11)
-          READ(33,'(12X,11(E8.2,1X))') (Q(I28,I11),I11=1,11)
+          READ(33+ifoff,*)
+          READ(33+ifoff,*)
+          READ(33+ifoff,'(4X,E5.2)') ES(I28)
+          READ(33+ifoff,'(12X,11(E8.2,1X))') (M2M1(I28,I11),I11=1,11)
+          READ(33+ifoff,'(12X,11(I8,  1X))') (ETF(I28,I11),I11=1,11)
+          READ(33+ifoff,'(12X,11(E8.2,1X))') (ETH(I28,I11),I11=1,11)
+          READ(33+ifoff,'(12X,11(E8.2,1X))') (Q(I28,I11),I11=1,11)
         ENDDO
-        CLOSE (UNIT=33)
+        CLOSE (UNIT=33+ifoff)
       END IF
  
       if (nprs > 1) call EIRENE_broadsput(es,m2m1,etf,eth,q,28,11)
@@ -806,6 +806,16 @@ C
       WRITE (iunout,*) 'COSIN.LT.0. ', COSIN
       WRITE (iunout,*) 'DO NOT SPUTTER FOR PARTICLE NO. NPANU= ',NPANU
       RETURN
+csw 18apr07
+      entry EIRENE_sputer_reinit
+      if(allocated(iproj)) then
+        deallocate(iproj)
+        deallocate(iprojs)
+        deallocate(itarg)
+        deallocate(ispzsp_def)
+      endif
+      return
+csw
       END
  
  

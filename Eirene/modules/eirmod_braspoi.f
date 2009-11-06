@@ -116,7 +116,7 @@
       NULLIFY(COLLECT_SIMARR)
       NULLIFY(COLLECT_MULARR)
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' BRASPOI ',18*NSTRA*8
  
       RETURN

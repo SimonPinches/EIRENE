@@ -45,7 +45,7 @@
         ALLOCATE (ZT1(NPLS,NRAD))
         ALLOCATE (ZRG(NPLS,NRAD))
  
-        WRITE (55,'(A,T25,I15)')
+        WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CZT1(1) ',(NZT1+2*NPLS*NRAD)*8
  
         IND = 0
@@ -80,7 +80,7 @@
  
         ALLOCATE (RCZT2(NZT2))
  
-        WRITE (55,'(A,T25,I15)')
+        WRITE (55+IFOFF,'(A,T25,I15)')
      .         ' CZT1(2) ',NZT2*8
  
         IND = 0

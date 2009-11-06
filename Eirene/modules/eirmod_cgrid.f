@@ -52,7 +52,7 @@ C  MCGRD, INTEGER
       ALLOCATE (RCGRID(NCGRD))
       ALLOCATE (ICGRID(MCGRD))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CGRID ',NCGRD*8 + MCGRD*4
  
       RSURF  => RCGRID(1+0*N1ST : 1*N1ST)

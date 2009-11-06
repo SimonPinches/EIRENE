@@ -47,7 +47,7 @@
         ALLOCATE (TEXTLA(5))
         ALLOCATE (TEXTLS(3))
  
-        WRITE (55,'(A,T25,I15)')
+        WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CTEXT(1) ',(NLIMPS+NSTRA+NCHOR+N2MX*NTALS+NALV+
      .                      NALS)*72 +
      .                     (2*N2MX*NTALS+8)*24
@@ -63,7 +63,7 @@
         ALLOCATE (TXTPSP(N1MX,NTALI))
         ALLOCATE (TXTPUN(N1MX,NTALI))
  
-        WRITE (55,'(A,T25,I15)')
+        WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CTEXT(2) ',N1MX*(NTALV*NTALI)*72 +
      .                     2*N1MX*(NTALV+NTALI)*24
  

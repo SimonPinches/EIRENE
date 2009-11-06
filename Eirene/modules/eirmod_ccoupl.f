@@ -26,7 +26,7 @@
      I  NDT(:,:),  NINCT(:,:), NIXY(:,:),
      I  NTIN(:,:), NTEN(:,:),  NIFLG(:,:),
      I  NPTC(:,:), NSPZI(:,:), NSPZE(:,:),
-     I  NEMOD(:,:)
+     I  NEMOD(:,:),NPTCM(:,:)  !VK NPTCM
  
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NTGPRT(:), IFLB(:), NAOTS(:), NAOTT(:),
@@ -60,17 +60,17 @@
         IF (ALLOCATED(RCCPL)) RETURN
  
         NCOUPL  = 4*NPLS+4+NSTRA
-        MCOUPL1 = 10*NSTEP*NPTRGT
+        MCOUPL1 = 11*NSTEP*NPTRGT
         MCOUPL2 = 1*NPLS+NSTEP+17+2*NLIMPS
         LCOUPL  = 6+NSTRA
  
         ALLOCATE (RCCPL(NCOUPL))
-        ALLOCATE (ICCPL1(10*NSTEP,NPTRGT))
+        ALLOCATE (ICCPL1(11*NSTEP,NPTRGT))
         ALLOCATE (ICCPL2(MCOUPL2))
         ALLOCATE (LCCPL(LCOUPL))
  
-        WRITE (55,'(A,T25,I15)')
-     .        ' CCOUPL ',NCOUPL*8 + (10*NSTEP*NPTRGT+MCOUPL2)*4
+        WRITE (55+IFOFF,'(A,T25,I15)')
+     .        ' CCOUPL ',NCOUPL*8 + (11*NSTEP*NPTRGT+MCOUPL2)*4
      .                   + LCOUPL*4
  
         FCTE     => RCCPL(1+0*NPLS : 1*NPLS)
@@ -83,16 +83,17 @@
         CHGEI    => RCCPL(3+4*NPLS+NSTRA)
         CHGMOM   => RCCPL(4+4*NPLS+NSTRA)
  
-        NDT    => ICCPL1(1+0*NSTEP : 1*NSTEP,:)
-        NINCT  => ICCPL1(1+1*NSTEP : 2*NSTEP,:)
-        NIXY   => ICCPL1(1+2*NSTEP : 3*NSTEP,:)
-        NTIN   => ICCPL1(1+3*NSTEP : 4*NSTEP,:)
-        NTEN   => ICCPL1(1+4*NSTEP : 5*NSTEP,:)
-        NIFLG  => ICCPL1(1+5*NSTEP : 6*NSTEP,:)
-        NPTC   => ICCPL1(1+6*NSTEP : 7*NSTEP,:)
-        NSPZI  => ICCPL1(1+7*NSTEP : 8*NSTEP,:)
-        NSPZE  => ICCPL1(1+8*NSTEP : 9*NSTEP,:)
-        NEMOD  => ICCPL1(1+9*NSTEP :10*NSTEP,:)
+        NDT    => ICCPL1(1+ 0*NSTEP :  1*NSTEP,:)
+        NINCT  => ICCPL1(1+ 1*NSTEP :  2*NSTEP,:)
+        NIXY   => ICCPL1(1+ 2*NSTEP :  3*NSTEP,:)
+        NTIN   => ICCPL1(1+ 3*NSTEP :  4*NSTEP,:)
+        NTEN   => ICCPL1(1+ 4*NSTEP :  5*NSTEP,:)
+        NIFLG  => ICCPL1(1+ 5*NSTEP :  6*NSTEP,:)
+        NPTC   => ICCPL1(1+ 6*NSTEP :  7*NSTEP,:)
+        NSPZI  => ICCPL1(1+ 7*NSTEP :  8*NSTEP,:)
+        NSPZE  => ICCPL1(1+ 8*NSTEP :  9*NSTEP,:)
+        NEMOD  => ICCPL1(1+ 9*NSTEP : 10*NSTEP,:)
+        NPTCM  => ICCPL1(1+10*NSTEP : 11*NSTEP,:)
  
         NTARGI     => ICCPL2( 1)
         NSTRI      => ICCPL2( 2)

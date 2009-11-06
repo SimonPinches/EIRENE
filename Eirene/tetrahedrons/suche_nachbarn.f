@@ -2,6 +2,8 @@
  
       SUBROUTINE EIRENE_SUCHE_NACHBARN
  
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
  
       IMPLICIT NONE
@@ -66,7 +68,7 @@
 !        END DO
 !        NULLIFY(COORTET(IC)%PTET)
 !      END DO
-      WRITE (55,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
+      WRITE (55+ifoff,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
  
       RETURN
       END

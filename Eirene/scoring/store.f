@@ -5,6 +5,7 @@ C  PURPOSE: STORE TRAJECTORIES
 C  TO BE WRITTEN
  
       USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD, ONLY: IFOFF
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
  
@@ -13,11 +14,11 @@ C  TO BE WRITTEN
  
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
-        OPEN (UNIT=16,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+        OPEN (UNIT=16+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       ENDIF
       GOTO (10,20,30,40,50,60,70,80,90),IFLAG
       WRITE (iunout,*) 'IFLAG OUT OF RANGE IN SUBR. STORE '
-      WRITE (iunout,*) 'EXIT CALLED EIRENE_'
+      WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
 C  LOCATE
 10    CONTINUE
@@ -33,4 +34,10 @@ C  SURFACE
 C  NEW CELL
 90    CONTINUE
       RETURN
+csw
+      entry EIRENE_store_reinit
+      close(unit=16+ifoff)
+      ifirst=0
+      return
+csw
       END

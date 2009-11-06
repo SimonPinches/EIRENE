@@ -18,6 +18,22 @@
      L TRCINT, TRCLST, TRCSOU, TRCREC, TRCTIM,
      L TRCBLA, TRCBLP, TRCBLE, TRCBLM, TRCBLI,
      L TRCBLPH, TRCTAL
+
+CVK TRACING FOR DEBUGGING VIA WRITE(0,...
+      INTEGER,PUBLIC,PARAMETER :: LDBGTRC=9
+      LOGICAL, PUBLIC, TARGET, SAVE :: TRCDBG(LDBGTRC)
+      LOGICAL, PUBLIC, POINTER, SAVE ::
+     L                         TRCDBG2,  !DEEPER LEVEL OF DEBUGGING
+     L                         TRCDBGE,  !TRACING OF EIRENE
+     L                         TRCDBGM,  !... MCARLO
+     L                         TRCDBGF,  !... FOLNEUT
+     L                         TRCDBGL,  !... LOCATE
+     L
+     L                         TRCDBGS,  !... SURFACE INTERACTION ROUTINES
+     L                         TRCDBGG,  !... GEOMETRY ROUTINES
+     L                         TRCDBGMPI,!... MPI ROUTINES
+     L                         TRCDBGC   !... COUPLING ROUTINES
+CVK END
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: TRCSRC(:)
  
@@ -52,9 +68,9 @@
       ALLOCATE (NSPEZV(NSPEZV_DIM,2))
       ALLOCATE (NSPEZS(NLIMPS,2))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CTRCEI ',(LCTRC+(NSTRA+1))*4
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CTRCEI ',(MCTRC+2*(NSPEZV_DIM+NLIMPS))*4
  
       TRCPLT => LTRCEI( 1)
@@ -79,6 +95,16 @@
       TRCBLI => LTRCEI(20)
       TRCBLPH=> LTRCEI(21)
       TRCTAL => LTRCEI(22)
+
+      TRCDBG2  => TRCDBG(1)
+      TRCDBGE  => TRCDBG(2)
+      TRCDBGM  => TRCDBG(3)
+      TRCDBGF  => TRCDBG(4)
+      TRCDBGL  => TRCDBG(5)
+      TRCDBGS  => TRCDBG(6)
+      TRCDBGG  => TRCDBG(7)
+      TRCDBGMPI=> TRCDBG(8)
+      TRCDBGC  => TRCDBG(9)
  
       NPRTLV => ITRCEI(  1 : 100)
       NFLAGV => ITRCEI(101 : 200)
@@ -121,6 +147,7 @@
       NSPEZV = 0
       NSPEZS = 0
       NFLAGV = 1
+      TRCDBG=.FALSE. !VK
  
       RETURN
       END SUBROUTINE EIRENE_INIT_CTRCEI

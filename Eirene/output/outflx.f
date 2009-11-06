@@ -259,7 +259,7 @@ C  SPECTRA
         IF (NTLSFL(ISPR) > 0) THEN
           ISF=I
           IF (I < 0) ISF=ABS(I)+NLIM
-          IOUT = NTLSFL(ISPR)
+          IOUT = NTLSFL(ISPR)+ifoff
  
           TEXTYP(0) = 'PHOTONS   '
           TEXTYP(1) = 'ATOMS     '

@@ -71,7 +71,7 @@
       ALLOCATE (SDVIAW(NSDW,NLIMPS))
       ALLOCATE (SDVIAC(2,NCV,NRTAL))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CSPEI ',(NIDV*NRTAL+(3*NSD+5*NCV)*NRTAL +
      .                  NIDS*NLMPGS + 3*NSDW*NLIMPS + 2*NSD +
      .                  2*NSDW + 3*NCV)*8

@@ -101,7 +101,7 @@ c  next 5 tallies added sept. 05     !dr
       ALLOCATE (NSPSTI(NSTEP))
       ALLOCATE (NSPSTE(NSTEP))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+3*NSTPP3 +
      .                  (NPLSTI+4*NPLSV)*NSTPP2)*8 +
      .                 (6*NSTPP2+4*NSTEP)*4

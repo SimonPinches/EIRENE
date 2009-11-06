@@ -70,7 +70,7 @@ C SPEED UP OF SUBROUTINE STATIS
         ALLOCATE (IIHC(2,NCV))
         ALLOCATE (IGHC(2,NCV))
  
-        WRITE (55,'(A,T25,I15)')
+        WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CSDVI ',(NSD*(NRTAL+1) + NSDW*(NLIMPS+1) +
      .                   (NRTAL+1)*3*NCV)*8 +
      .                  (MSDVI+4*NCV)*4

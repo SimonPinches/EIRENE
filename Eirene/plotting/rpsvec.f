@@ -45,13 +45,13 @@ C
 c
       data nvplot/0/
 C
-      WRITE (60,*) RUNID
-      WRITE (60,*) TXHEAD
-      WRITE (60,*) HEAD
-      WRITE (60,*) TEXT1
-      WRITE (60,*) TEXT2
-      WRITE (60,*) TEXT3
-      WRITE (60,*)
+      WRITE (60+ifoff,*) RUNID
+      WRITE (60+ifoff,*) TXHEAD
+      WRITE (60+ifoff,*) HEAD
+      WRITE (60+ifoff,*) TEXT1
+      WRITE (60+ifoff,*) TEXT2
+      WRITE (60+ifoff,*) TEXT3
+      WRITE (60+ifoff,*)
 c
       nraps2=80
       nvplot=nvplot+1
@@ -70,8 +70,8 @@ C
 C
 C  WRITE VALUE OF THE VECTOR TO RAPS-FILE IN ORDER TO HAVE A
 C  SHADED PLOT
-      OPEN (UNIT=NRAPS,ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      REWIND NRAPS
+      OPEN (UNIT=NRAPS+ifoff,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      REWIND NRAPS+ifoff
 C
       IF (LEVGEO.EQ.4) THEN
         ALLOCATE (YWERT1(NRAD,1))
@@ -108,7 +108,7 @@ C  PROJECTION INTO X,Z PLANE
             IF (ZMI.NE.666.) ZWERT(IR,IT)=MAX(ZWERT(IR,IT),ZMI)
             IF (ZMA.NE.666.) ZWERT(IR,IT)=MIN(ZWERT(IR,IT),ZMA)
             BETRAG = SQRT(YWERT(IR,IT)**2+ZWERT(IR,IT)**2)
-            WRITE (NRAPS,*) BETRAG
+            WRITE (NRAPS+ifoff,*) BETRAG
             YWERT(IR,IT)=YWERT(IR,IT)/(BETRAG+1.D-20)
             ZWERT(IR,IT)=ZWERT(IR,IT)/(BETRAG+1.D-20)
 3100      CONTINUE
@@ -125,7 +125,7 @@ C  PROJECTION INTO X,Y PLANE,  CARTHESIAN
             IF (ZMI.NE.666.) ZWERT(IR,IP)=MAX(ZWERT(IR,IP),ZMI)
             IF (ZMA.NE.666.) ZWERT(IR,IP)=MIN(ZWERT(IR,IP),ZMA)
             BETRAG = SQRT(YWERT(IR,IP)**2+ZWERT(IR,IP)**2)
-            WRITE (NRAPS,*) BETRAG
+            WRITE (NRAPS+ifoff,*) BETRAG
             YWERT(IR,IP)=YWERT(IR,IP)/(BETRAG+1.D-20)
             ZWERT(IR,IP)=ZWERT(IR,IP)/(BETRAG+1.D-20)
 3101      CONTINUE
@@ -142,7 +142,7 @@ C  PROJECTION INTO X,Y PLANE, POLAR OR GENERAL CURVILINEAR (POLYGON)
               IF (ZMI.NE.666.) ZWERT(IR,IP)=MAX(ZWERT(IR,IP),ZMI)
               IF (ZMA.NE.666.) ZWERT(IR,IP)=MIN(ZWERT(IR,IP),ZMA)
               BETRAG = SQRT(YWERT(IR,IP)**2+ZWERT(IR,IP)**2)
-              WRITE (NRAPS,*) BETRAG
+              WRITE (NRAPS+ifoff,*) BETRAG
               YWERT(IR,IP)=YWERT(IR,IP)/(BETRAG+1.D-20)
               ZWERT(IR,IP)=ZWERT(IR,IP)/(BETRAG+1.D-20)
 30          CONTINUE
@@ -156,7 +156,7 @@ C
           IF (ZMI.NE.666.) ZWERT1(I,1)=MAX(ZWERT1(I,1),ZMI)
           IF (ZMA.NE.666.) ZWERT1(I,1)=MIN(ZWERT1(I,1),ZMA)
           BETRAG = SQRT(YWERT1(I,1)**2+ZWERT1(I,1)**2)
-          WRITE (NRAPS,*) BETRAG
+          WRITE (NRAPS+ifoff,*) BETRAG
           YWERT1(I,1)=YWERT1(I,1)/(BETRAG+1.D-20)
           ZWERT1(I,1)=ZWERT1(I,1)/(BETRAG+1.D-20)
 60      CONTINUE
@@ -171,16 +171,16 @@ C
         RETURN
       ENDIF
 C
-      CLOSE (UNIT=NRAPS)
+      CLOSE (UNIT=NRAPS+ifoff)
 C
 C  WRITE VECTOR-COMPONENTS TO RAPS-FILE IN ORDER TO FORM A VECTORPLOT
 C
 C
-      OPEN (UNIT=NRAPS2,file=ch(1:lench),
+      OPEN (UNIT=NRAPS2+ifoff,file=ch(1:lench),
      .                  ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      REWIND NRAPS2
+      REWIND NRAPS2+ifoff
  
-      WRITE(NRAPS2,'(1X,A5,8X,A4,50(11X,I1))') '-1111',
+      WRITE(NRAPS2+ifoff,'(1X,A5,8X,A4,50(11X,I1))') '-1111',
      .'PFEI',1,3,1,1,1
 C
  
@@ -280,7 +280,7 @@ C  SIDE 8
             I=I+1
             BETRAG=SQRT(YWERT(IR,IP)**2+ZWERT(IR,IP)**2)
             IF (BETRAG .GT. 1.E-5)
-     .      WRITE(nraps2,'(I6,1P,5E12.4)')
+     .      WRITE(nraps2+ifoff,'(I6,1P,5E12.4)')
      .           I,YWERT(IR,IP),zwert(IR,IP),0.,0.,0.
           enddo
         enddo
@@ -384,7 +384,7 @@ C  SIDE 8
               I=I+1
               BETRAG=SQRT(YWERT(IR,IP)**2+ZWERT(IR,IP)**2)
               IF (BETRAG .GT. 1.E-5)
-     .        WRITE(nraps2,'(I6,1P,5E12.4)')
+     .        WRITE(nraps2+ifoff,'(I6,1P,5E12.4)')
      .             I,YWERT(IR,IP),zwert(IR,IP),0.,0.,0.
             enddo
           enddo
@@ -444,17 +444,17 @@ c   the computational volume. don't plot it.
         DO I=1,NRKNOT
           BETRAG=SQRT(YWERT1(I,1)**2+ZWERT1(I,1)**2)
           IF (BETRAG .GT. 1.D-5)
-     .    WRITE(nraps2,'(I6,1P,5E12.4)') I,YWERT1(I,1),ZWERT1(I,1),
-     .                                   0.,0.,0.
+     .    WRITE(nraps2+ifoff,'(I6,1P,5E12.4)') 
+     .          I,YWERT1(I,1),ZWERT1(I,1),0.,0.,0.
         enddo
       ELSE
         WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSVEC: PLOT ABANDONNED '
         WRITE (iunout,*) 'PRINTING OF RAPS FILE FAILED '
       ENDIF
 C
-      WRITE(NRAPS2,'(1X,A5,8X,A3,50(11X,I1))') '-9999',
+      WRITE(NRAPS2+ifoff,'(1X,A5,8X,A3,50(11X,I1))') '-9999',
      .           'FIN',0,0,0
-      CLOSE (UNIT=NRAPS2)
+      CLOSE (UNIT=NRAPS2+ifoff)
 C
       IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
       IF (ALLOCATED(YWERT1)) DEALLOCATE (YWERT1)

@@ -38,23 +38,23 @@ c
       if (istra == 1) then
         ll=len_trim(casename)
         filename=casename(1:ll) // '.neut_cell'
-        open (unit=fp1,file=filename,access='sequential',
+        open (unit=fp1+ifoff,file=filename,access='sequential',
      .        form='formatted')
 
-        write (fp1,'(A)') '* EIRENE NEUTRAL FILE '
-        write (fp1,'(A)') '* '
-        write (fp1,'(A)') '* No. of strata  No. of fluid species'
-        write (fp1,'(i10,5x,i10)') nstrai, nplsi
+        write (fp1+ifoff,'(A)') '* EIRENE NEUTRAL FILE '
+        write (fp1+ifoff,'(A)') '* '
+        write (fp1+ifoff,'(A)') '* No. of strata  No. of fluid species'
+        write (fp1+ifoff,'(i10,5x,i10)') nstrai, nplsi
 
 
         filename=casename(1:ll) // '.neut_vert'
-        open (unit=fp2,file=filename,access='sequential',
+        open (unit=fp2+ifoff,file=filename,access='sequential',
      .        form='formatted')
 
-        write (fp2,'(A)') '* EIRENE NEUTRAL FILE '
-        write (fp2,'(A)') '* '
-        write (fp2,'(A)') '* No. of strata  No. of fluid species'
-        write (fp2,'(i10,5x,i10)') nstrai, nplsi
+        write (fp2+ifoff,'(A)') '* EIRENE NEUTRAL FILE '
+        write (fp2+ifoff,'(A)') '* '
+        write (fp2+ifoff,'(A)') '* No. of strata  No. of fluid species'
+        write (fp2+ifoff,'(i10,5x,i10)') nstrai, nplsi
         
         allocate (algv_corner(nrknot,nalv))
         allocate (dummy(ntri))
@@ -66,48 +66,49 @@ c
       end if
 
 
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A,i2.2)') '*** STRATUM #', istra
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A,i2.2)') '*** STRATUM #', istra
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
       
-      write (fp1,'(A)') txtsou(istra)
-      write (fp1,'(es16.7)') flux(istra)
+      write (fp1+ifoff,'(A)') txtsou(istra)
+      write (fp1+ifoff,'(es16.7)') flux(istra)
       
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '*** PARTICLE SOURES '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '*** PARTICLE SOURES '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
       
-      write (fp1,'(i10)') ntrii
+      write (fp1+ifoff,'(i10)') ntrii
       do itr = 1, ntrii
-         write (fp1,'(i10,2es16.7)') itr, (algv(ip,itr), ip=1,nplsi)
+         write (fp1+ifoff,'(i10,2es16.7)') 
+     .          itr, (algv(ip,itr), ip=1,nplsi)
       end do
       
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '*** MOMENTUM SOURES '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '*** MOMENTUM SOURES '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
       
-      write (fp1,'(i10)') ntrii
+      write (fp1+ifoff,'(i10)') ntrii
       do itr = 1, ntrii
-         write (fp1,'(i10,2es16.7)') itr, 
-     .        (algv(nplsi+ip,itr), ip=1,nplsi)
+         write (fp1+ifoff,'(i10,2es16.7)')  
+     .          itr, (algv(nplsi+ip,itr), ip=1,nplsi)
       end do
       
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '*** ENERGY SOURES '
-      write (fp1,'(A)') '* '
-      write (fp1,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '*** ENERGY SOURES '
+      write (fp1+ifoff,'(A)') '* '
+      write (fp1+ifoff,'(A)') '* '
       
-      write (fp1,'(i10)') ntrii
+      write (fp1+ifoff,'(i10)') ntrii
       do itr = 1, ntrii
-         write (fp1,'(i10,2es16.7)') itr, algv(2*nplsi+1,itr), 
-     .        algv(2*nplsi+2,itr)
+         write (fp1+ifoff,'(i10,2es16.7)') 
+     .          itr, algv(2*nplsi+1,itr), algv(2*nplsi+2,itr)
       end do
       
 
@@ -118,56 +119,57 @@ c
          
       end do
 
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A,i2.2)') '*** STRATUM #', istra
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A,i2.2)') '*** STRATUM #', istra
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
       
-      write (fp2,'(A)') txtsou(istra)
-      write (fp2,'(es16.7)') flux(istra)
+      write (fp2+ifoff,'(A)') txtsou(istra)
+      write (fp2+ifoff,'(es16.7)') flux(istra)
 
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '*** PARTICLE SOURES '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '*** PARTICLE SOURES '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
       
-      write (fp2,'(i10)') nrknot
+      write (fp2+ifoff,'(i10)') nrknot
       do itr = 1, nrknot
-        write (fp2,'(i10,2es16.7)') itr, 
+        write (fp2+ifoff,'(i10,2es16.7)') itr, 
      .         (algv_corner(itr,ip), ip=1,nplsi)
       end do
 
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '*** MOMENTUM SOURES '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '*** MOMENTUM SOURES '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
 
-      write (fp2,'(i10)') nrknot
+      write (fp2+ifoff,'(i10)') nrknot
       do itr = 1, nrknot
-        write (fp2,'(i10,2es16.7)') itr, 
+        write (fp2+ifoff,'(i10,2es16.7)') itr, 
      .         (algv_corner(itr,nplsi+ip), ip=1,nplsi)
       end do
       
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '*** ENERGY SOURES '
-      write (fp2,'(A)') '* '
-      write (fp2,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '*** ENERGY SOURES '
+      write (fp2+ifoff,'(A)') '* '
+      write (fp2+ifoff,'(A)') '* '
       
-      write (fp2,'(i10)') nrknot
+      write (fp2+ifoff,'(i10)') nrknot
       do itr = 1, nrknot
-        write (fp2,'(i10,2es16.7)') itr, algv_corner(itr,2*nplsi+1), 
-     .                                   algv_corner(itr,2*nplsi+2)
+        write (fp2+ifoff,'(i10,2es16.7)') 
+     .         itr, algv_corner(itr,2*nplsi+1), 
+     .              algv_corner(itr,2*nplsi+2)
       end do
 
       if (istra == nstrai) then
         deallocate (dummy)
         deallocate (algv_corner)
-        close (fp1)
-        close (fp2)
+        close (fp1+ifoff)
+        close (fp2+ifoff)
       end if
 
       end if

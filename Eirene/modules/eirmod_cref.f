@@ -60,7 +60,7 @@
       ALLOCATE (HFTR2(NHD1,NHD2,NHD3,NHD4,NHD6))
       ALLOCATE (HFTR3(NHD1,NHD2,NHD3,NHD4,NHD5,NHD6))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*420 + 
      .                (NHD1*NHD2*NHD6*(1+NHD3*(1+NHD4*(1+NHD5))))*8
  

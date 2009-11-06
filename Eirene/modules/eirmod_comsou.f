@@ -42,7 +42,8 @@
      I NBSOR(:,:), NASOR(:,:), NISOR(:,:),
      I INDIM(:,:), INSOR(:,:), ISTOR(:,:),
      I NSPEZ(:),   NPTS(:),    NINITL(:),  NEMODS(:),
-     I NAMODS(:),  NSRFSI(:),  NPTSDEL(:), NRAYEN(:)
+     I NAMODS(:),  NSRFSI(:),  NPTSDEL(:), NRAYEN(:),
+     I NMINPTS(:)!VK
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I INGRDA(:,:,:), INGRDE(:,:,:)
@@ -61,6 +62,7 @@
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLSYMP(:), NLSYMT(:)
  
+      REAL(DP),PUBLIC,SAVE :: MPTS_COMSOU !VK
  
       CONTAINS
  
@@ -74,11 +76,11 @@
         IF (ALLOCATED(RCMSOU)) RETURN
  
         NOMSOU=11*NSTRA*NSRFS+13*NSTRA
-        MOMSOU=9*NSTRA*NSRFS+16*NSTRA
+        MOMSOU=9*NSTRA*NSRFS+17*NSTRA
         LOMSOU=14*NSTRA
  
         ALLOCATE (RCMSOU(13+11*NSRFS,NSTRA))
-        ALLOCATE (ICMSOU(16+9*NSRFS,NSTRA))
+        ALLOCATE (ICMSOU(17+9*NSRFS,NSTRA))
         ALLOCATE (LCMSOU(14,NSTRA))
  
         ALLOCATE (INGRDA(NSRFS,NSTRA,3))
@@ -87,7 +89,7 @@
         ALLOCATE (NLSYMP(0:NSTRA))
         ALLOCATE (NLSYMT(0:NSTRA))
  
-        WRITE (55,'(A,T25,I15)')
+        WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMSOU ',NOMSOU*8 + (MOMSOU+NSRFS*NSTRA*6)*4 +
      .                  (LOMSOU+2*(NSTRA+1))*4
  
@@ -132,15 +134,16 @@
         NSRFSI => ICMSOU(14,:)
         NPTSDEL=> ICMSOU(15,:)
         NRAYEN => ICMSOU(16,:)
-        NRSOR  => ICMSOU(17+ 0*NSRFS : 16+ 1*NSRFS,:)
-        NPSOR  => ICMSOU(17+ 1*NSRFS : 16+ 2*NSRFS,:)
-        NTSOR  => ICMSOU(17+ 2*NSRFS : 16+ 3*NSRFS,:)
-        NBSOR  => ICMSOU(17+ 3*NSRFS : 16+ 4*NSRFS,:)
-        NASOR  => ICMSOU(17+ 4*NSRFS : 16+ 5*NSRFS,:)
-        NISOR  => ICMSOU(17+ 5*NSRFS : 16+ 6*NSRFS,:)
-        INDIM  => ICMSOU(17+ 6*NSRFS : 16+ 7*NSRFS,:)
-        INSOR  => ICMSOU(17+ 7*NSRFS : 16+ 8*NSRFS,:)
-        ISTOR  => ICMSOU(17+ 8*NSRFS : 16+ 9*NSRFS,:)
+        NMINPTS=> ICMSOU(17,:)
+        NRSOR  => ICMSOU(18+ 0*NSRFS : 17+ 1*NSRFS,:)
+        NPSOR  => ICMSOU(18+ 1*NSRFS : 17+ 2*NSRFS,:)
+        NTSOR  => ICMSOU(18+ 2*NSRFS : 17+ 3*NSRFS,:)
+        NBSOR  => ICMSOU(18+ 3*NSRFS : 17+ 4*NSRFS,:)
+        NASOR  => ICMSOU(18+ 4*NSRFS : 17+ 5*NSRFS,:)
+        NISOR  => ICMSOU(18+ 5*NSRFS : 17+ 6*NSRFS,:)
+        INDIM  => ICMSOU(18+ 6*NSRFS : 17+ 7*NSRFS,:)
+        INSOR  => ICMSOU(18+ 7*NSRFS : 17+ 8*NSRFS,:)
+        ISTOR  => ICMSOU(18+ 8*NSRFS : 17+ 9*NSRFS,:)
  
         NLPNT  => LCMSOU( 1,:)
         NLLNE  => LCMSOU( 2,:)
@@ -187,6 +190,7 @@
  
         DEALLOCATE (NLSYMP)
         DEALLOCATE (NLSYMT)
+
       END IF
  
       IF (ALLOCATED(SREC)) THEN
@@ -216,6 +220,9 @@
  
         NLSYMP = .FALSE.
         NLSYMT = .FALSE.
+
+        NMINPTS = 1
+        MPTS_COMSOU=1.0_DP !VK
  
       ELSE IF (ICAL == 2) THEN
  

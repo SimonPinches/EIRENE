@@ -19,11 +19,12 @@
       LL=LEN_TRIM(CASENAME)
  
       FILENAME=CASENAME(1:LL) // '.npco_char'
-      OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
-         READ (30,'(A100)') ZEILE
+         READ (30+ifoff,'(A100)') ZEILE
       END DO
  
       READ (ZEILE,*) NRK
@@ -35,20 +36,21 @@
       END IF
  
       DO I=1,NRKNOT
-        READ(30,*) IND, XTRIAN(I), YTRIAN(I)
+        READ(30+ifoff,*) IND, XTRIAN(I), YTRIAN(I)
       END DO
  
 !pb      XTRIAN(1:NRKNOT) = XTRIAN(1:NRKNOT) * 100._DP
 !pb      YTRIAN(1:NRKNOT) = YTRIAN(1:NRKNOT) * 100._DP
  
-      CLOSE (UNIT=30)
+      CLOSE (UNIT=30+ifoff)
  
       FILENAME=CASENAME(1:LL) // '.elemente'
-      OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
-         READ (30,'(A100)') ZEILE
+         READ (30+ifoff,'(A100)') ZEILE
       END DO
  
       READ (ZEILE,*) NTRII
@@ -60,30 +62,34 @@
       END IF
  
       DO I=1,NTRII
-        READ (30,*) IND, NECKE(1,I), NECKE(2,I), NECKE(3,I)
+        READ (30+ifoff,*) IND, NECKE(1,I), NECKE(2,I), NECKE(3,I)
       END DO
  
-      CLOSE (UNIT=30)
+      CLOSE (UNIT=30+ifoff)
  
       FILENAME=CASENAME(1:LL) // '.neighbors'
-      OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
-         READ (30,'(A100)') ZEILE
+         READ (30+ifoff,'(A100)') ZEILE
       END DO
  
       DO I=1,NTRII
-        READ (30,*) IND, NCHBAR(1,I), NSEITE(1,I), INMTI(1,I),
+        READ (30+ifoff,*) IND, NCHBAR(1,I), NSEITE(1,I), INMTI(1,I),
      .                   NCHBAR(2,I), NSEITE(2,I), INMTI(2,I),
      .                   NCHBAR(3,I), NSEITE(3,I), INMTI(3,I),
      .                   IXTRI(I),    IYTRI(I)
-        IF (INMTI(1,I) /= 0) INMTI(1,I) = ABS(INMTI(1,I)) + NLIM
-        IF (INMTI(2,I) /= 0) INMTI(2,I) = ABS(INMTI(2,I)) + NLIM
-        IF (INMTI(3,I) /= 0) INMTI(3,I) = ABS(INMTI(3,I)) + NLIM
+!       IF (INMTI(1,I) /= 0) INMTI(1,I) = ABS(INMTI(1,I)) + NLIM
+!       IF (INMTI(2,I) /= 0) INMTI(2,I) = ABS(INMTI(2,I)) + NLIM
+!       IF (INMTI(3,I) /= 0) INMTI(3,I) = ABS(INMTI(3,I)) + NLIM
+        IF (INMTI(1,I) /= 0) INMTI(1,I) = INMTI(1,I) + NLIM
+        IF (INMTI(2,I) /= 0) INMTI(2,I) = INMTI(2,I) + NLIM
+        IF (INMTI(3,I) /= 0) INMTI(3,I) = INMTI(3,I) + NLIM
       END DO
  
-      CLOSE (UNIT=30)
+      CLOSE (UNIT=30+ifoff)
  
       IER = 0
       IF ((MAXVAL(NECKE(1:3,1:NTRII)) > NRKNOT) .OR.

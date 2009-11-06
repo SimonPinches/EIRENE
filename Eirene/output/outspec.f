@@ -20,7 +20,7 @@
  
 C  SPECTRA
  
-      IOUT = 20
+      IOUT = 20+ifoff
       OPEN (UNIT=IOUT,FILE='spectra.out')
  
       TEXTYP(0) = 'PHOTONS   '

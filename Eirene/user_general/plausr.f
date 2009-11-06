@@ -43,7 +43,7 @@ c
      .              usrvaltmp(:,:)
       REAL(DP), ALLOCATABLE :: PSI(:), PSI_CORNER(:), copy(:)
 
-      integer, parameter :: fp=31, ifoff=0
+      integer, parameter :: fp=31
       integer :: ll,ier,j,ind, jj
 
       CALL EIRENE_ALLOC_CSTEP

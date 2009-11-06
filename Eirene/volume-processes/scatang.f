@@ -41,6 +41,7 @@ c     --Parameter--
  
  
       USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD, ONLY: IFOFF
       USE EIRMOD_CCONA
  
       IMPLICIT NONE
@@ -70,7 +71,7 @@ c     -- Einlesen der Daten --
       IF (IFIRST == 0) THEN
         IFIRST = 1
  
-        iun=23
+        iun=23+ifoff
  
         do 10 i=1,31
           IF (I <= 10) THEN

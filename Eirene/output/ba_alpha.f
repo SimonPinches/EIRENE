@@ -489,7 +489,7 @@ C
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
-        WRITE (11,REC=IRC) OUTAU
+        WRITE (11+ifoff,REC=IRC) OUTAU
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
@@ -505,12 +505,18 @@ C
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
-        WRITE (11,REC=IRC) OUTAU
+        WRITE (11+ifoff,REC=IRC) OUTAU
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
       ENDIF
 C
       RETURN
+
+csw 19apr07
+      entry EIRENE_ba_alpha_reinit
+      ifirst=0
+      return
+csw
 999   CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. Ba_alpha '
       WRITE (iunout,*) 'NO STORAGE AVAILBALE ON ADDITIONAL TALLY ADDV '

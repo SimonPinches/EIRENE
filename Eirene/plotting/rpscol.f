@@ -49,18 +49,18 @@ C
       REAL(DP) :: WMIN, WMAX
       INTEGER :: IR, IERR, IT, I, IPART, IP, ICASE, IRD
 C
-      WRITE (60,*) RUNID
-      WRITE (60,*) TXHEAD
-      WRITE (60,*) HEAD
-      WRITE (60,*) TEXT1
-      WRITE (60,*) TEXT2
-      WRITE (60,*) TEXT3
+      WRITE (60+ifoff,*) RUNID
+      WRITE (60+ifoff,*) TXHEAD
+      WRITE (60+ifoff,*) HEAD
+      WRITE (60+ifoff,*) TEXT1
+      WRITE (60+ifoff,*) TEXT2
+      WRITE (60+ifoff,*) TEXT3
 C
       NRAPS=NRAPS+1
       IRAPS=IRAPS+1
 C
-      OPEN (UNIT=NRAPS,ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      REWIND NRAPS
+      OPEN (UNIT=NRAPS+ifoff,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      REWIND NRAPS+ifoff
 C
       ICASE=0
       IERR=0
@@ -108,8 +108,8 @@ C  3D MESH, TETRAHEDONS, PROJECTION INTO PLANE
       ENDIF
       IF (ZMI .NE. 666.) WMIN = MIN(ZMI, WMIN)
       IF (ZMA .NE. 666.) WMAX = MAX(ZMA, WMAX)
-      WRITE (60,*) WMIN, WMAX
-      WRITE (60,*)
+      WRITE (60+ifoff,*) WMIN, WMAX
+      WRITE (60+ifoff,*)
  
       IF (IERR.GT.0) THEN
         IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
@@ -128,7 +128,7 @@ C
                   IF (ZMA.NE.666.) YWERT1(IRD,1)=
      .                             MIN(YWERT1(IRD,1),ZMA)
                   IF (ABS(YWERT1(IRD,1)) < EPS30) YWERT1(IRD,1)=0._DP
-                  WRITE (NRAPS,*) YWERT1(IRD,1)
+                  WRITE (NRAPS+ifoff,*) YWERT1(IRD,1)
                enddo
             enddo
          enddo
@@ -148,7 +148,7 @@ C
             IF (ZMI.NE.666.) YWERT(IR,IT)=MAX(YWERT(IR,IT),ZMI)
             IF (ZMA.NE.666.) YWERT(IR,IT)=MIN(YWERT(IR,IT),ZMA)
             IF (ABS(YWERT(IR,IT)) < EPS30) YWERT(IR,IT)=0._DP
-            WRITE (NRAPS,*) YWERT(IR,IT)
+            WRITE (NRAPS+ifoff,*) YWERT(IR,IT)
 3100      CONTINUE
 1100    CONTINUE
 C
@@ -166,7 +166,7 @@ C
             IF (ZMI.NE.666.) YWERT(IR,IP)=MAX(YWERT(IR,IP),ZMI)
             IF (ZMA.NE.666.) YWERT(IR,IP)=MIN(YWERT(IR,IP),ZMA)
             IF (ABS(YWERT(IR,IP)) < EPS30) YWERT(IR,IP)=0._DP
-            WRITE (NRAPS,*) YWERT(IR,IP)
+            WRITE (NRAPS+ifoff,*) YWERT(IR,IP)
 3         CONTINUE
 1       CONTINUE
 C
@@ -185,7 +185,7 @@ C
               IF (ZMI.NE.666.) YWERT(IR,IP)=MAX(YWERT(IR,IP),ZMI)
               IF (ZMA.NE.666.) YWERT(IR,IP)=MIN(YWERT(IR,IP),ZMA)
               IF (ABS(YWERT(IR,IP)) < EPS30) YWERT(IR,IP)=0._DP
-              WRITE (NRAPS,*) YWERT(IR,IP)
+              WRITE (NRAPS+ifoff,*) YWERT(IR,IP)
 30          CONTINUE
 20        CONTINUE
 10      CONTINUE
@@ -199,7 +199,7 @@ C  icase=4
           IF (ZMI.NE.666.) YWERT1(I,1)=MAX(YWERT1(I,1),ZMI)
           IF (ZMA.NE.666.) YWERT1(I,1)=MIN(YWERT1(I,1),ZMA)
           IF (ABS(YWERT1(I,1)) < EPS30) YWERT1(I,1)=0._DP
-          WRITE(NRAPS,*) YWERT1(I,1)
+          WRITE(NRAPS+ifoff,*) YWERT1(I,1)
 60      CONTINUE
 C
 C  icase=5
@@ -208,14 +208,14 @@ C  icase=5
           IF (ZMI.NE.666.) YWERT1(I,1)=MAX(YWERT1(I,1),ZMI)
           IF (ZMA.NE.666.) YWERT1(I,1)=MIN(YWERT1(I,1),ZMA)
           IF (ABS(YWERT1(I,1)) < EPS30) YWERT1(I,1)=0._DP
-          WRITE(NRAPS,*) YWERT1(I,1)
+          WRITE(NRAPS+ifoff,*) YWERT1(I,1)
         enddo
 C
       ELSE
         WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSCOL: PLOT ABANDONNED '
       ENDIF
 C
-      CLOSE (UNIT=NRAPS)
+      CLOSE (UNIT=NRAPS+ifoff)
 C
       IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
       IF (ALLOCATED(YWERT1)) DEALLOCATE (YWERT1)

@@ -60,7 +60,7 @@
       ALLOCATE (ICTET1(17,NTETRA))
       ALLOCATE (ICTET2(MCTET2))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CTETRA ',(40*NTETRA+NCTET2)*8 +
      .                  (17*NTETRA+MCTET2)*4
  

@@ -107,7 +107,7 @@
       ALLOCATE (IGJUM2(0:NLIMPS,NLIMPB))
       ALLOCATE (IGJUM3(0:NOPTIM,NLIMPB))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CLGIN ',(NLIMPS+1)*(10*NSPZ+7)*8 +
      .                 (2*NOPTIM+(NLIMPS+1)*(9+4*NSPZ)+9*NSTS+
      .                  (N1ST+1)*(N2ND+1)*(N3RD+1))*4 +

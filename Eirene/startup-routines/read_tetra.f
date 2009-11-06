@@ -27,11 +27,12 @@ C
       LL=LEN_TRIM(CASENAME)
  
       FILENAME=CASENAME(1:LL) // '.npco_char'
-      OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
-         READ (30,'(A100)') ZEILE
+         READ (30+ifoff,'(A100)') ZEILE
       END DO
  
       READ (ZEILE,*) NRK
@@ -43,17 +44,18 @@ C
       END IF
  
       DO I=1,NCOORD
-        READ(30,*) IND, XTETRA(I), YTETRA(I), ZTETRA(I)
+        READ(30+ifoff,*) IND, XTETRA(I), YTETRA(I), ZTETRA(I)
       END DO
  
-      CLOSE (UNIT=30)
+      CLOSE (UNIT=30+ifoff)
  
       FILENAME=CASENAME(1:LL) // '.elemente'
-      OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
-         READ (30,'(A100)') ZEILE
+         READ (30+ifoff,'(A100)') ZEILE
       END DO
  
       READ (ZEILE,*) NTET
@@ -65,21 +67,23 @@ C
       END IF
  
       DO I=1,NTET
-        READ (30,*) IND, NTECK(1,I), NTECK(2,I), NTECK(3,I), NTECK(4,I)
+        READ (30+ifoff,*) IND, NTECK(1,I), NTECK(2,I), 
+     .                         NTECK(3,I), NTECK(4,I)
       END DO
  
-      CLOSE (UNIT=30)
+      CLOSE (UNIT=30+ifoff)
  
       FILENAME=CASENAME(1:LL) // '.neighbors'
-      OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
-         READ (30,'(A100)') ZEILE
+         READ (30+ifoff,'(A100)') ZEILE
       END DO
  
       DO I=1,NTET
-        READ (30,*) IND, NTBAR(1,I), NTSEITE(1,I), INMTIT(1,I),
+        READ (30+ifoff,*) IND, NTBAR(1,I), NTSEITE(1,I), INMTIT(1,I),
      .                   NTBAR(2,I), NTSEITE(2,I), INMTIT(2,I),
      .                   NTBAR(3,I), NTSEITE(3,I), INMTIT(3,I),
      .                   NTBAR(4,I), NTSEITE(4,I), INMTIT(4,I)
@@ -89,7 +93,7 @@ C
         IF (INMTIT(4,I) /= 0) INMTIT(4,I) = INMTIT(4,I) + NLIM
       END DO
  
-      CLOSE (UNIT=30)
+      CLOSE (UNIT=30+ifoff)
  
       IER = 0
       IF ((MAXVAL(NTECK(1:4,1:NTET)) > NCOORD) .OR.
@@ -120,13 +124,14 @@ C
  
       ntbar = 0
       ntseite = 0
- 
+
       call EIRENE_suche_nachbarn
  
       FILENAME=CASENAME(1:LL) // '.neighbors.out'
-      OPEN (UNIT=39,FILE=FILENAME,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
+     .      FORM='FORMATTED')
  
-      write (39,'(i10)') ntet
+      write (30+ifoff,'(i10)') ntet
  
       DO I=1,NTET
         i1 = 0
@@ -137,13 +142,13 @@ C
         IF (INMTIT(2,I) /= 0) i2 = INMTIT(2,I) - NLIM
         IF (INMTIT(3,I) /= 0) i3 = INMTIT(3,I) - NLIM
         IF (INMTIT(4,I) /= 0) i4 = INMTIT(4,I) - NLIM
-        write (39,'(13i10)')
+        write (30+ifoff,'(13i10)')
      .        I, NTBAR(1,I), NTSEITE(1,I), i1,
      .           NTBAR(2,I), NTSEITE(2,I), i2,
      .           NTBAR(3,I), NTSEITE(3,I), i3,
      .           NTBAR(4,I), NTSEITE(4,I), i4
       END DO
-      close (unit=39)
+      close (unit=30+ifoff)
  
       DO IT=1,NTET
         DO IS=1,4

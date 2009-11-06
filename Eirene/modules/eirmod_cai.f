@@ -23,7 +23,7 @@
       ALLOCATE (RATIO(NSTRA))
       ALLOCATE (NRECOM(NSTRA))
  
-      WRITE (55,'(A,T25,I15)')
+      WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CAI ',NSTRA*(8+4)
  
       CALL EIRENE_INIT_CAI

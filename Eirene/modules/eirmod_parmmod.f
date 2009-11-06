@@ -18,6 +18,8 @@
      P         NUM_PARM=200,
      P         NPARTC=12, NPARTT=12,
      P         MPARTC=14, MPARTT=9
+csw 13apr07
+      integer, parameter,public :: IFOFF = 0
  
       INTEGER, PUBLIC, SAVE ::
      I N1ST,   N2ND,   N3RD,   NADD,   NTOR,

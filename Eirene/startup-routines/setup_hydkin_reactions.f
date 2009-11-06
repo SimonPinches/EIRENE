@@ -55,24 +55,24 @@
       LL=LEN_TRIM(HYDKIN_DEFAULT)
       FILENAME=HYDKIN_DEFAULT(1:LL) // '.reactions'
  
-      OPEN (UNIT=27,FILE=FILENAME,ACCESS='SEQUENTIAL',
+      OPEN (UNIT=27+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
-      READ (27,*)
-      READ (27,*) CHR,n_reac
-      READ (27,*) CHR,n_spec
-      READ (27,*) CHR,n_atoms
-      READ (27,*) CHR,n_ions
-      READ (27,*) CHR,n_mol
+      READ (27+ifoff,*)
+      READ (27+ifoff,*) CHR,n_reac
+      READ (27+ifoff,*) CHR,n_spec
+      READ (27+ifoff,*) CHR,n_atoms
+      READ (27+ifoff,*) CHR,n_ions
+      READ (27+ifoff,*) CHR,n_mol
  
       ALLOCATE (HYDSPEC(N_SPEC))
       ALLOCATE (IEIGEN(N_SPEC))
       ALLOCATE (INRC(N_SPEC))
       ALLOCATE (IRC_PART(N_SPEC))
  
-      READ (27,*) HYDSPEC(1:N_SPEC)
-      READ (27,'(A1000)') HLINE
+      READ (27+ifoff,*) HYDSPEC(1:N_SPEC)
+      READ (27+ifoff,'(A1000)') HLINE
       READ (HLINE(52:),*) IEIGEN(1:N_SPEC)
-      READ (27,'(A1000)') HLINE
+      READ (27+ifoff,'(A1000)') HLINE
       READ (HLINE(52:),*) INRC(1:N_SPEC)
  
 !      N_BULKIONS = COUNT((SCAN(HYDSPEC(1:N_SPEC),'+') > 0) .AND.
@@ -462,7 +462,7 @@
       reac_loop: do irc=1, n_reac
         ir = nreaci+irc
         IRC_PART = 0
-        READ (27,'(A1000)') HLINE
+        READ (27+ifoff,'(A1000)') HLINE
         READ (HLINE(52:),*) IRC_PART(1:N_SPEC)
         reac = repeat(' ',50)
         ll = len_trim(adjustl(hline(1:52)))
@@ -511,7 +511,7 @@
           call EIRENE_leer(1)
           write (iunout,*) left(1:len_trim(left)),' = ',right
           write (iunout,*) ' IS NOT A VALID REACTION '
-          write (iunout,*) ' THIS REACTION IS NOT USED EIRMOD_'
+          write (iunout,*) ' THIS REACTION IS NOT USED'
           cycle reac_loop
         end if
  
@@ -546,7 +546,7 @@
         else
           write (iunout,*) ' REACTION WITHOUT INVOLVEMENT OF'
           write (iunout,*) ' p OR e IS NOT FORESEEN '
-          write (iunout,*) ' THIS REACTION IS NOT USED EIRMOD_'
+          write (iunout,*) ' THIS REACTION IS NOT USED'
           cycle reac_loop
         end if
  
@@ -563,7 +563,7 @@
           write (iunout,*) ' SPECIES NOT KNOWN IN REACTION'
           write (iunout,*) left(1:len_trim(left)), ' = ', right
           write (iunout,*) clparts(ip), ' NOT FOUND IN LIST '
-          write (iunout,*) ' THIS REACTION IS NOT USED EIRMOD_'
+          write (iunout,*) ' THIS REACTION IS NOT USED'
           cycle reac_loop
         end if
  
@@ -633,7 +633,7 @@
               call EIRENE_leer(1)
               write (iunout,*) ' TOO MANY SECONDARIES FOUND IN REACTION'
               write (iunout,*) left(1:len_trim(left)), ' = ', right
-              write (iunout,*) ' THIS REACTION IS NOT USED EIRMOD_'
+              write (iunout,*) ' THIS REACTION IS NOT USED'
               cycle reac_loop
             end if
           end if
@@ -795,59 +795,60 @@
         end if
       end do
  
-      CLOSE(27)
+      CLOSE(27+ifoff)
  
       NDUMM = 0
  
-      open (unit=27,file='block4.'//HYDKIN_DEFAULT)
-!pb      write (27,'(a)') '*** 4. '
-      WRITE (27,*)
+      open (unit=27+ifoff,file='block4.'//HYDKIN_DEFAULT)
+!pb      write (27+ifoff,'(a)') '*** 4. '
+      WRITE (27+ifoff,*)
      .  '*      ATOMIC REACTION CARDS, NREACI DATA FIELDS'
-      write (27,'(i6)') nreaci
+      write (27+ifoff,'(i6)') nreaci
 !pb      do il = 1, nreac_lines
       do il = 1, irlines
         ll = max(9,len_trim(REACLINES(IL)%REAC_STRING))
         ir = REACLINES(IL)%NO
-        write (27,'(I3,1X,A6,1X,A4,A,1X,A3,2I3,3E12.4)')
+        write (27+ifoff,'(I3,1X,A6,1X,A4,A,1X,A3,2I3,3E12.4)')
      .    REACLINES(IL)%NO, REACLINES(IL)%FILE, REACLINES(IL)%H_SELECT,
      .    REACLINES(IL)%REAC_STRING(1:LL), REACLINES(IL)%REACTYP,
      .    REACLINES(IL)%MP, REACLINES(IL)%MT,
      .    REACLINES(IL)%DPP, REACLINES(IL)%RMN,
      .    REACLINES(IL)%RMX
         if (verify(REACLINES(IL)%ELEMENT,' ') > 0)
-     .    write (27,'(4X,A2,1X,I3)')
+     .    write (27+ifoff,'(4X,A2,1X,I3)')
      .      REACLINES(IL)%ELEMENT, REACLINES(IL)%IZ
         if (index(REACLINES(IL)%FILE,'CONST') > 0) then
-          write (27,'(6es12.4)') (REACLINES(IL)%CONST(i),
+          write (27+ifoff,'(6es12.4)') (REACLINES(IL)%CONST(i),
      .                            I=1,REACLINES(IL)%NCONST)
         end if
         if (index(REACLINES(IL)%FILE,'PHOTON') > 0) then
-          write (27,'(12i6)')
+          write (27+ifoff,'(12i6)')
      .       reacdat(ir)%phr%line%iprofiletype,
      .       reacdat(ir)%phr%line%ignd,
      .       reacdat(ir)%phr%line%imess, reacdat(ir)%phr%line%ifremd,
      .       reacdat(ir)%phr%line%nrjprt
           do i = 1, reacdat(ir)%phr%line%ifremd
-            write(27,'(i6,1x,a2,3x,i6)') i,reacdat(ir)%phr%line%kenn(i),
-     .        reacdat(ir)%phr%line%iplsc6(i)
+            write(27+ifoff,'(i6,1x,a2,3x,i6)') 
+     .         i,reacdat(ir)%phr%line%kenn(i),
+     .           reacdat(ir)%phr%line%iplsc6(i)
           end do
         end if
         if (REACLINES(IL)%RMN > 0._DP)
-     .    write (27,'(I6,6X,5E12.4)')
+     .    write (27+ifoff,'(I6,6X,5E12.4)')
      .      REACLINES(IL)%JFEXMN,REACLINES(IL)%FP(1:3)
         if (REACLINES(IL)%RMX > 0._DP)
-     .    write (27,'(I6,6X,5E12.4)')
+     .    write (27+ifoff,'(I6,6X,5E12.4)')
      .      REACLINES(IL)%JFEXMX,REACLINES(IL)%FP(4:6)
       end do
  
-      write (27,'(a)') '* 4A. atom species cards '
-      write (27,'(i6)') natmi
+      write (27+ifoff,'(a)') '* 4A. atom species cards '
+      write (27+ifoff,'(i6)') natmi
       do iatm = 1, natmi
         ispz = nsph + iatm
         numsec = 0
         if (any(iscd3a(iatm,1:nrca(iatm)) /= 0)) numsec = 3
         if (any(iscd4a(iatm,1:nrca(iatm)) /= 0)) numsec = 4
-        write (27,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
+        write (27+ifoff,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
      .    IATM,TEXTS(ISPZ),NMASSA(IATM),NCHARA(IATM),
      .    NDUMM,NDUMM,
      .    ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
@@ -855,35 +856,35 @@
      .    NHSTS(ISPZ)
         do k=1,nrca(iatm)
           if (numsec < 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireaca(iatm,k),ibulka(iatm,k),iscd1a(iatm,k),
      .        iscd2a(iatm,k),iscdea(iatm,k),iestma(iatm,k),
      .        ibgka(iatm,k)
           else if (numsec == 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireaca(iatm,k),ibulka(iatm,k),iscd1a(iatm,k),
      .        iscd2a(iatm,k),iscd3a(iatm,k),iscdea(iatm,k),
      .        iestma(iatm,k),ibgka(iatm,k)
           else if (numsec == 4) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireaca(iatm,k),ibulka(iatm,k),iscd1a(iatm,k),
      .        iscd2a(iatm,k),iscd3a(iatm,k),iscd4a(iatm,k),
      .        iscdea(iatm,k),iestma(iatm,k),ibgka(iatm,k)
           end if
-          write (27,'(6es12.4)')
+          write (27+ifoff,'(6es12.4)')
      .      eeleca(iatm,k),ebulka(iatm,k),escd1a(iatm,k),
      .      escd2,freaca(iatm,k),fldlma(iatm,k)
         end do
       end do
  
-      write (27,'(a)') '* 4B. molecule species cards '
-      write (27,'(i6)') nmoli
+      write (27+ifoff,'(a)') '* 4B. molecule species cards '
+      write (27+ifoff,'(i6)') nmoli
       do imol = 1, nmoli
         ispz = nspa + imol
         numsec = 0
         if (any(iscd3m(imol,1:nrcm(imol)) /= 0)) numsec = 3
         if (any(iscd4m(imol,1:nrcm(imol)) /= 0)) numsec = 4
-        write (27,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
+        write (27+ifoff,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
      .    IMOL,TEXTS(ISPZ),NMASSM(IMOL),NCHARM(IMOL),
      .    NPRT(ISPZ),NDUMM,
      .    ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
@@ -891,35 +892,35 @@
      .    NHSTS(ISPZ)
         do k=1,nrcm(imol)
           if (numsec < 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacm(imol,k),ibulkm(imol,k),iscd1m(imol,k),
      .        iscd2m(imol,k),iscdem(imol,k),iestmm(imol,k),
      .        ibgkm(imol,k)
           else if (numsec == 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacm(imol,k),ibulkm(imol,k),iscd1m(imol,k),
      .        iscd2m(imol,k),iscd3m(imol,k),iscdem(imol,k),
      .        iestmm(imol,k),ibgkm(imol,k)
           else if (numsec == 4) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacm(imol,k),ibulkm(imol,k),iscd1m(imol,k),
      .        iscd2m(imol,k),iscd3m(imol,k),iscd4m(imol,k),
      .        iscdem(imol,k),iestmm(imol,k),ibgkm(imol,k)
           end if
-          write (27,'(6es12.4)')
+          write (27+ifoff,'(6es12.4)')
      .      eelecm(imol,k),ebulkm(imol,k),escd1m(imol,k),
      .      escd2,freacm(imol,k)
         end do
       end do
  
-      write (27,'(a)') '* 4C. test ion species cards '
-      write (27,'(i6)') nioni
+      write (27+ifoff,'(a)') '* 4C. test ion species cards '
+      write (27+ifoff,'(i6)') nioni
       do iion = 1, nioni
         ispz = nspam + iion
         numsec = 0
         if (any(iscd3i(iion,1:nrci(iion)) /= 0)) numsec = 3
         if (any(iscd4i(iion,1:nrci(iion)) /= 0)) numsec = 4
-        write (27,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
+        write (27+ifoff,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
      .    IION,TEXTS(ISPZ),NMASSI(IION),NCHARI(IION),
      .    NPRT(ISPZ),NCHRGI(IION),
      .    ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
@@ -927,35 +928,35 @@
      .    NHSTS(ISPZ)
         do k=1,nrci(iion)
           if (numsec < 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireaci(iion,k),ibulki(iion,k),iscd1i(iion,k),
      .        iscd2i(iion,k),iscdei(iion,k),iestmi(iion,k),
      .        ibgki(iion,k)
           else if (numsec == 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireaci(iion,k),ibulki(iion,k),iscd1i(iion,k),
      .        iscd2i(iion,k),iscd3i(iion,k),iscdei(iion,k),
      .        iestmi(iion,k),ibgki(iion,k)
           else if (numsec == 4) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireaci(iion,k),ibulki(iion,k),iscd1i(iion,k),
      .        iscd2i(iion,k),iscd3i(iion,k),iscd4i(iion,k),
      .        iscdei(iion,k),iestmi(iion,k),ibgki(iion,k)
           end if
-          write (27,'(6es12.4)')
+          write (27+ifoff,'(6es12.4)')
      .      eeleci(iion,k),ebulki(iion,k),escd1i(iion,k),
      .      escd2,freaci(iion,k)
         end do
       end do
  
-      write (27,'(a)') '* 4D. photon species cards '
-      write (27,'(i6)') nphoti
+      write (27+ifoff,'(a)') '* 4D. photon species cards '
+      write (27+ifoff,'(i6)') nphoti
       do iphot = 1, nphoti
         ispz = iphot
         numsec = 0
         if (any(iscd3ph(iphot,1:nrcph(iphot)) /= 0)) numsec = 3
         if (any(iscd4ph(iphot,1:nrcph(iphot)) /= 0)) numsec = 4
-        write (27,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
+        write (27+ifoff,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
      .    IPHOT,TEXTS(ISPZ),NDUMM,NDUMM,
      .    NDUMM,NDUMM,
      .    ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
@@ -963,30 +964,31 @@
      .    NHSTS(ISPZ)
         do k=1,nrcph(iphot)
           if (numsec < 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacph(iphot,k),ibulkph(iphot,k),iscd1ph(iphot,k),
      .        iscd2ph(iphot,k),iscdeph(iphot,k),iestmph(iphot,k),
      .        ibgkph(iphot,k)
           else if (numsec == 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacph(iphot,k),ibulkph(iphot,k),iscd1ph(iphot,k),
      .        iscd2ph(iphot,k),iscd3ph(iphot,k),iscdeph(iphot,k),
      .        iestmph(iphot,k),ibgkph(iphot,k)
           else if (numsec == 4) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacph(iphot,k),ibulkph(iphot,k),iscd1ph(iphot,k),
      .        iscd2ph(iphot,k),iscd3ph(iphot,k),iscd4ph(iphot,k),
      .        iscdeph(iphot,k),iestmph(iphot,k),ibgkph(iphot,k)
           end if
-          write (27,'(6es12.4)')
+          write (27+ifoff,'(6es12.4)')
      .      eelecph(iphot,k),ebulkph(iphot,k),escd1ph(iphot,k),
      .      escd2,freacph(iphot,k),fldlmph(iphot,k)
         end do
       end do
  
-      write (27,'(a)') '*** 5. bulk ion species cards '
-      WRITE (27,'(a)') '*5A.   BULK ION SPECIES CARDS, NPLSI SPECIES '
-      write (27,'(i6)') nplsi
+      write (27+ifoff,'(a)') '*** 5. bulk ion species cards '
+      WRITE (27+ifoff,'(a)') 
+     .       '*5A.   BULK ION SPECIES CARDS, NPLSI SPECIES '
+      write (27+ifoff,'(i6)') nplsi
       do ipls = 1, nplsi
         ispz = nspami + ipls
         numsec = 0
@@ -996,7 +998,7 @@
         if (LEN_TRIM(CDENMODEL(IPLS)) > 0) then
           nre = TDMPAR(IPLS)%TDM%NRE
         end if
-        write (27,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
+        write (27+ifoff,'(I2,1X,A8,12(I3),1X,A10,1X,I2)')
      .    IPLS,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
      .    NPRT(ISPZ),NCHRGP(IPLS),
      .    ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
@@ -1004,39 +1006,39 @@
      .    NHSTS(ISPZ),NDUMM,CDENMODEL(IPLS),NRE
         do k=1,nrcp(ipls)
           if (numsec < 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacp(ipls,k),ibulkp(ipls,k),iscd1p(ipls,k),
      .        iscd2p(ipls,k),iscdep(ipls,k)
           else if (numsec == 3) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacp(ipls,k),ibulkp(ipls,k),iscd1p(ipls,k),
      .        iscd2p(ipls,k),iscd3p(ipls,k),iscdep(ipls,k)
           else if (numsec == 4) then
-            write (27,'(12i6)')
+            write (27+ifoff,'(12i6)')
      .        ireacp(ipls,k),ibulkp(ipls,k),iscd1p(ipls,k),
      .        iscd2p(ipls,k),iscd3p(ipls,k),iscd4p(ipls,k),
      .        iscdep(ipls,k)
           end if
-          write (27,'(6es12.4)')
+          write (27+ifoff,'(6es12.4)')
      .      eelecp(ipls,k),ebulkp(ipls,k),escd1p(ipls,k),
      .      escd2,freacp(ipls,k)
         end do
  
         SELECT CASE (CDENMODEL(IPLS))
         CASE ('FORT.13   ')
-          WRITE (27,'(12i6)') TDMPAR(IPLS)%TDM%ISP(1)
+          WRITE (27+ifoff,'(12i6)') TDMPAR(IPLS)%TDM%ISP(1)
         CASE ('FORT.10   ')
-          WRITE (27,'(12i6)') TDMPAR(IPLS)%TDM%ISP(1),
+          WRITE (27+ifoff,'(12i6)') TDMPAR(IPLS)%TDM%ISP(1),
      .                        TDMPAR(IPLS)%TDM%ITP(1),
      .                        TDMPAR(IPLS)%TDM%ISTR(1)
         CASE ('CONSTANT  ')
-          WRITE (27,'(6es12.4)') TDMPAR(IPLS)%TDM%TVAL,
+          WRITE (27+ifoff,'(6es12.4)') TDMPAR(IPLS)%TDM%TVAL,
      .                           TDMPAR(IPLS)%TDM%DVAL,
      .                           TDMPAR(IPLS)%TDM%VXVAL,
      .                           TDMPAR(IPLS)%TDM%VYVAL,
      .                           TDMPAR(IPLS)%TDM%VZVAL
         CASE ('MULTIPLY  ')
-          WRITE (27,'(3I6,6x,3E12.4)')
+          WRITE (27+ifoff,'(3I6,6x,3E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
      .           TDMPAR(IPLS)%TDM%ISTR(1),
@@ -1046,14 +1048,14 @@
         CASE ('SAHA      ')
 !PB   TO BE WRITTEN
         CASE ('BOLTZMANN ')
-          WRITE (27,'(3I6,6x,2E12.4)')
+          WRITE (27+ifoff,'(3I6,6x,2E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
      .           TDMPAR(IPLS)%TDM%ISTR(1),
      .           TDMPAR(IPLS)%TDM%G_BOLTZ,
      .           TDMPAR(IPLS)%TDM%DELTAE
         CASE ('CORONA    ')
-          WRITE (27,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
+          WRITE (27+ifoff,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
      .           TDMPAR(IPLS)%TDM%ISTR(1),
@@ -1064,7 +1066,7 @@
      .           TDMPAR(IPLS)%TDM%A_CORONA
         CASE ('COLRAD    ')
           DO I=1, TDMPAR(IPLS)%TDM%NRE
-            WRITE (27,'(3I6,1X,A6,1X,A4,A9,A3)')
+            WRITE (27+ifoff,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             TDMPAR(IPLS)%TDM%ISP(I),
      .             TDMPAR(IPLS)%TDM%ITP(I),
      .             TDMPAR(IPLS)%TDM%ISTR(I),
@@ -1078,45 +1080,45 @@
         END SELECT
        end do
  
-      WRITE (27,'(a)') '*5B.   PLASMA BACKGROUND DATA '
-      WRITE (27,'(12i6)') (INDPRO(J),J=1,12)
+      WRITE (27+ifoff,'(a)') '*5B.   PLASMA BACKGROUND DATA '
+      WRITE (27+ifoff,'(12i6)') (INDPRO(J),J=1,12)
       IF (INDPRO(1).LE.5.AND.NPLSI.GT.0)
-     .  WRITE (27,'(6es12.4)') TE0,TE1,TE2,TE3,TE4,TE5
+     .  WRITE (27+ifoff,'(6es12.4)') TE0,TE1,TE2,TE3,TE4,TE5
       IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
         IF (NPLSTI == 1) THEN
-          WRITE (27,'(6es12.4)') TI0(1),TI1(1),TI2(1),
+          WRITE (27+ifoff,'(6es12.4)') TI0(1),TI1(1),TI2(1),
      .                           TI3(1),TI4(1),TI5(1)
         ELSE
-          WRITE (27,'(6es12.4)') (TI0(I),TI1(I),TI2(I),
+          WRITE (27+ifoff,'(6es12.4)') (TI0(I),TI1(I),TI2(I),
      .                            TI3(I),TI4(I),TI5(I),I=1,NPLSI)
         END IF
       END IF
       IF (INDPRO(3).LE.5)
-     .  WRITE (27,'(6es12.4)') (DI0(I),DI1(I),DI2(I),
+     .  WRITE (27+ifoff,'(6es12.4)') (DI0(I),DI1(I),DI2(I),
      .                          DI3(I),DI4(I),DI5(I),I=1,NPLSI)
       IF (INDPRO(4).LE.5) THEN
         IF (NPLSV == 1) THEN
-          WRITE (27,'(6es12.4)') VX0(1),VX1(1),VX2(1),
+          WRITE (27+ifoff,'(6es12.4)') VX0(1),VX1(1),VX2(1),
      .                           VX3(1),VX4(1),VX5(1)
-          WRITE (27,'(6es12.4)') VY0(1),VY1(1),VY2(1),
+          WRITE (27+ifoff,'(6es12.4)') VY0(1),VY1(1),VY2(1),
      .                           VY3(1),VY4(1),VY5(1)
-          WRITE (27,'(6es12.4)') VZ0(1),VZ1(1),VZ2(1),
+          WRITE (27+ifoff,'(6es12.4)') VZ0(1),VZ1(1),VZ2(1),
      .                           VZ3(1),VZ4(1),VZ5(1)
         ELSE
-          WRITE (27,'(6es12.4)') (VX0(I),VX1(I),VX2(I),
+          WRITE (27+ifoff,'(6es12.4)') (VX0(I),VX1(I),VX2(I),
      .                            VX3(I),VX4(I),VX5(I),I=1,NPLSI)
-          WRITE (27,'(6es12.4)') (VY0(I),VY1(I),VY2(I),
+          WRITE (27+ifoff,'(6es12.4)') (VY0(I),VY1(I),VY2(I),
      .                            VY3(I),VY4(I),VY5(I),I=1,NPLSI)
-          WRITE (27,'(6es12.4)') (VZ0(I),VZ1(I),VZ2(I),
+          WRITE (27+ifoff,'(6es12.4)') (VZ0(I),VZ1(I),VZ2(I),
      .                            VZ3(I),VZ4(I),VZ5(I),I=1,NPLSI)
         ENDIF
       ENDIF
       IF (INDPRO(5).LE.5)
-     .  WRITE (27,'(6es12.4)') B0,B1,B2,B3,B4,B5
+     .  WRITE (27+ifoff,'(6es12.4)') B0,B1,B2,B3,B4,B5
       IF (INDPRO(12).LE.5)
-     .  WRITE (27,'(6es12.4)') VL0,VL1,VL2,VL3,VL4,VL5
+     .  WRITE (27+ifoff,'(6es12.4)') VL0,VL1,VL2,VL3,VL4,VL5
  
-      close (unit=27)
+      close (unit=27+ifoff)
  
       return
  

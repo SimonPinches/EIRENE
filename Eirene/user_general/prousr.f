@@ -37,7 +37,7 @@ C
       INTEGER, ALLOCATABLE, SAVE :: INDAR_indep(:)
       INTEGER, ALLOCATABLE, SAVE :: INDAR_dep(:)
       integer, allocatable, save :: inmass(:), inchar(:), inchrg(:)
-      integer, parameter :: fp=31, ifoff=0
+      integer, parameter :: fp=31
       character(2) :: cstr2
       integer :: idum
       real(dp) :: rdum

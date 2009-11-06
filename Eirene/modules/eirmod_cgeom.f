@@ -66,7 +66,7 @@
  
          ALLOCATE (COORCELL(NRAD))
  
-         WRITE (55,'(A,T25,I15)')
+         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CGEOM(1) ',(NCGM1+2*N1STS*N2NDPLG)*8 +
      .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLG)*4
  
@@ -96,7 +96,7 @@
       ELSE IF (ICAL == 2) THEN
  
          ALLOCATE (AREAG(NLMPGS))
-         WRITE (55,'(A,T25,I15)') ' CGEOM(2) ',NLMPGS*8
+         WRITE (55+IFOFF,'(A,T25,I15)') ' CGEOM(2) ',NLMPGS*8
  
       END IF
  
