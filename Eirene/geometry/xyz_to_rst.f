@@ -6,6 +6,7 @@
       use eirmod_parmmod
       use eirmod_cgrid
       use eirmod_ccona
+      use eirmod_clogau
       use eirmod_comprt, only: iunout
 
       implicit none
@@ -30,7 +31,8 @@
       real(dp) :: dummy 
 
 
-      if ((levgeo == 2) .or. (levgeo == 3)) then
+      if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
+     .    (levgeo == 2) .or. (levgeo == 3)) then
 
 ! isoparametric quadrilateral (see chapter 23, AFEM)
         if (.not.allocated(visited)) then
@@ -79,11 +81,6 @@
 
         c_xi  = xp0*ycx(icell) - yp0*xcx(icell)
         c_eta = xp0*yce(icell) - yp0*xce(icell)
-
-!pb        xip = 2._dp*c_xi / 
-!pb     .        (-sqrt(b_xi*b_xi - 2._dp*j1(icell)*c_xi) - b_xi)
-!pb        etap = 2._dp*c_eta / 
-!pb     .        ( sqrt(b_eta*b_eta + 2._dp*j2(icell)*c_eta) - b_eta)
 
         root1 =  b_xi*b_xi - 2._dp*j1(icell)*c_xi         
         if ( root1 < 0 ) then

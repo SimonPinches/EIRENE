@@ -7,6 +7,7 @@
       use eirmod_ctetra
       use eirmod_ccona
       USE eirmod_CPOLYG
+      USE eirmod_CLOGAU
       
       implicit none
 
@@ -14,12 +15,56 @@
       real(dp), intent(out) :: fcorner(:)
 
       real(dp), allocatable :: volsum(:)
-      real(dp) :: dist, ages
-      integer :: i, j, ir, ipart, ip, ic, in
+      real(dp) :: dist, ages, xc, yc, dist1, dist2, dist3, dist4
+      integer :: i, j, ir, ipart, ip, ic, in, nrk, ic1, ic2, ic3, ic4,
+     .           it
       TYPE(CELL_ELEM), POINTER :: CUR
 
+      
+      if ((levgeo == 1) .and. nlrad .and. nlpol) then 
 
-      if ((levgeo == 2) .or. (levgeo == 3)) then
+         nrk = indpoint(nr1st,np2nd)
+         allocate(volsum(nrk))
+         fcorner = 0._dp
+         volsum = 0._dp
+
+         IT = 1 
+         DO IR=1,NR1STM
+           XC = 0.5_DP * (RSURF(IR) + RSURF(IR+1)) 
+           DO IP=1,NP2NDM
+             YC = 0.5_DP * (PSURF(IP) + PSURF(IP+1)) 
+             IN = IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2
+
+             IC1 = INDPOINT(IR,IP)
+             dist1 = 1._DP/SQRT((XC-RSURF(IR))**2+
+     .                          (YC-PSURF(IP))**2) 
+             FCORNER(IC1) = FCORNER(IC1) + F(IN)*DIST1
+             VOLSUM(IC1) = VOLSUM(IC1) + DIST1
+
+             IC2 = INDPOINT(IR+1,IP)
+             dist1 = 1._DP/SQRT((XC-RSURF(IR+1))**2+
+     .                          (YC-PSURF(IP))**2) 
+             FCORNER(IC2) = FCORNER(IC2) + F(IN)*DIST2
+             VOLSUM(IC2) = VOLSUM(IC2) + DIST2
+
+             IC3 = INDPOINT(IR+1,IP+1)
+             dist3 = 1._DP/SQRT((XC-RSURF(IR+1))**2+
+     .                          (YC-PSURF(IP+1))**2) 
+             FCORNER(IC3) = FCORNER(IC3) + F(IN)*DIST3
+             VOLSUM(IC3) = VOLSUM(IC3) + DIST3
+
+             IC4 = INDPOINT(IR,IP+1)
+             dist4 = 1._DP/SQRT((XC-RSURF(IR))**2+
+     .                          (YC-PSURF(IP+1))**2) 
+             FCORNER(IC4) = FCORNER(IC4) + F(IN)*DIST4
+             VOLSUM(IC4) = VOLSUM(IC4) + DIST4
+           END DO  ! ip
+         END DO  ! ir
+
+         fcorner(1:nrk) = fcorner(1:nrk)/(volsum(1:nrk)+eps60)
+         deallocate (volsum)
+
+      elseif ((levgeo == 2) .or. (levgeo == 3)) then
 
          fcorner = 0.
          DO IR=1,NR1ST

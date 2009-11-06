@@ -21,19 +21,32 @@
 
       res = 0._dp
 
-      if ((levgeo == 2) .or. (levgeo == 3)) then
+      if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
+     .    (levgeo == 2) .or. (levgeo == 3)) then
 
         call eirene_ncelln(icell,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
      .              nlrad,nlpol,nltor)
 
-        x1=xpol(ir+1,ip)
-        x2=xpol(ir,ip)
-        x3=xpol(ir,ip+1)
-        x4=xpol(ir+1,ip+1)
-        y1=ypol(ir+1,ip)
-        y2=ypol(ir,ip)
-        y3=ypol(ir,ip+1)
-        y4=ypol(ir+1,ip+1)
+        if (levgeo == 1) then
+          x1=rsurf(ir)
+          x2=rsurf(ir+1)
+          x3=rsurf(ir+1)
+          x4=rsurf(ir)
+          y1=psurf(ip)
+          y2=psurf(ip)
+          y3=psurf(ip+1)
+          y4=psurf(ip+1)
+        else if ((levgeo == 2) .or. (levgeo == 3)) then
+          x1=xpol(ir+1,ip)
+          x2=xpol(ir,ip)
+          x3=xpol(ir,ip+1)
+          x4=xpol(ir+1,ip+1)
+          y1=ypol(ir+1,ip)
+          y2=ypol(ir,ip)
+          y3=ypol(ir,ip+1)
+          y4=ypol(ir+1,ip+1)
+        end if
+
         f1=fecken(INDPOINT(IR+1,IP))
         f2=fecken(INDPOINT(IR,IP))
         f3=fecken(INDPOINT(IR,IP+1))

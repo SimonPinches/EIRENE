@@ -24,24 +24,38 @@
       real(dp) :: a(4,4), ad(4,4), am1(4,4), e(4,4), jt(2,2), jmt(2,2),
      .            dndr(4), dnds(4), j(2,2), jm1(2,2)
       integer :: itri, itet, ir, ip, it, ia, ib
+      integer, save :: icount=0
       
       real(dp) :: dummy
 
-      if ((levgeo == 2) .or. (levgeo == 3)) then
+      if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
+     .    (levgeo == 2) .or. (levgeo == 3)) then
 
         dfdz = 0._dp
 
         call  eirene_ncelln(icell,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,
      .              nbmlt,nlrad,nlpol,nltor)
 
-        x1=xpol(ir+1,ip)
-        x2=xpol(ir,ip)
-        x3=xpol(ir,ip+1)
-        x4=xpol(ir+1,ip+1)
-        y1=ypol(ir+1,ip)
-        y2=ypol(ir,ip)
-        y3=ypol(ir,ip+1)
-        y4=ypol(ir+1,ip+1)
+        if (levgeo == 1) then
+          x1=rsurf(ir)
+          x2=rsurf(ir+1)
+          x3=rsurf(ir+1)
+          x4=rsurf(ir)
+          y1=psurf(ip)
+          y2=psurf(ip)
+          y3=psurf(ip+1)
+          y4=psurf(ip+1)
+        else if ((levgeo == 2) .or. (levgeo == 3)) then
+          x1=xpol(ir+1,ip)
+          x2=xpol(ir,ip)
+          x3=xpol(ir,ip+1)
+          x4=xpol(ir+1,ip+1)
+          y1=ypol(ir+1,ip)
+          y2=ypol(ir,ip)
+          y3=ypol(ir,ip+1)
+          y4=ypol(ir+1,ip+1)
+        end if
+
         f1=fecken(INDPOINT(IR+1,IP))
         f2=fecken(INDPOINT(IR,IP))
         f3=fecken(INDPOINT(IR,IP+1))
@@ -124,6 +138,14 @@
         twoai=1._dp / (x1*y23 + x2*y31 + x3*y12)
         dfdx = twoai*(f1*y23 + f2*y31 + f3*y12)
         dfdy = twoai*(f1*x32 + f2*x13 + f3*x21)
+
+        icount=icount+1
+        if (icount <= 1000) then
+           write (56,*) ' icount = ',icount, ' icell = ',icell
+           write (56,*) ' x, y, z ', x, y, z
+           write (56,*) ' dfdx,dfdy,dfdz ', dfdx, dfdy, dfdz 
+           write (56,*)
+        end if
 
       else if (levgeo == 5) then
 
