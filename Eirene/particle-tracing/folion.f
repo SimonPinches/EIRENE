@@ -284,7 +284,7 @@ C  NOTHING TO BE DONE
 !PB NOTHING TO BE DONE
         ELSE
           write (iunout,*) 'levgeo in folion  ', levgeo
-          write (iunout,*) 'option not ready, exit calledEIRENE_'
+          write (iunout,*) 'option not ready, exit called'
           call EIRENE_exit_own(1)
         ENDIF
  

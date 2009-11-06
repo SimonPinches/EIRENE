@@ -259,7 +259,7 @@ C
 C
 999   CONTINUE
       WRITE (iunout,*)
-     .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLEDEIRENE_'
+     .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
  
 C     the following ENTRY is for reinitialization of EIRENE (DMH)

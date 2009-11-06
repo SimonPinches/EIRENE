@@ -423,7 +423,7 @@ C
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IPLS = ',IPLS
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
-      WRITE (iunout,*) 'EXIT CALLED      EIRENE_'
+      WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
 995   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '

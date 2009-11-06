@@ -13,7 +13,7 @@ C
         EIRENE_smach=huge(1.d0)
       ELSE
         WRITE(iunout,'(A)')
-     .  ' SMACH CALLED EIRENE_WITH PARAMETER JOB NOT EQUAL TO 1,2 OR 3.'
+     .  ' SMACH CALLED WITH PARAMETER JOB NOT EQUAL TO 1,2 OR 3.'
       ENDIF
       RETURN
       END

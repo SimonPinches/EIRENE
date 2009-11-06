@@ -437,14 +437,14 @@ C
       WRITE (iunout,*) 'BETWEEN REQUESTING SURFACE I= ',I,' AND IE= ',IE
       WRITE (iunout,*) 'JUMLIM(I),LINFX,LINFY,LINFZ ',
      .                  JUMLIM(I),LINFX,LINFY,LINFZ
-      WRITE (iunout,*) 'EXIT CALLED EIRENE_'
+      WRITE (iunout,*) 'EXIT CALLED '
       CALL EIRENE_EXIT_OWN(1)
 991   CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
       WRITE (iunout,*) 'FIT OPTION FOR RLB(IE) = ',RLB(IE),
      .                 ' NOT FORESEEN'
       WRITE (iunout,*) 'REQUEST FROM SURFACE NO. ',I
-      WRITE (iunout,*) 'IE = ',IE,' EXIT CALLED EIRENE_'
+      WRITE (iunout,*) 'IE = ',IE,' EXIT CALLED '
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '

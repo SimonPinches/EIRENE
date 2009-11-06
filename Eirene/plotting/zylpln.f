@@ -29,7 +29,7 @@ C
       PHID=180.-ACOS(1./SQRT(2.))*RADDEG
 C     PHID=0.
       ITEST=0
-      WRITE (iunout,*) ' ZYLPLN CALLED EIRENE_FOR JS = ',JS
+      WRITE (iunout,*) ' ZYLPLN CALLED FOR JS = ',JS
       WRITE (iunout,*) ' ZX0,ZY0,ZZ0 ',ZX0,ZY0,ZZ0
       WRITE (iunout,*) ' ZVX,ZVY,ZVZ ',ZVX,ZVY,ZVZ
 C  WINKEL ZWISCHEN (ZVX,ZVY,ZVZ) UND (0,0,1)

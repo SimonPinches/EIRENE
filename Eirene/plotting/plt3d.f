@@ -257,7 +257,7 @@ C**GEKRUEMMTE FLAECHE ODER  EBENENPAAR ?
      .                   A9LM(J),MERK,ZX0,ZY0,ZZ0,CX,CY,CZ,
      .                   RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10,NMACH)
               IF (TRCPLT) THEN
-                WRITE (iunout,*) 'FL2O CALLED EIRENE_'
+                WRITE (iunout,*) 'FL2O CALLED'
                 WRITE (iunout,*) 'MERK= ',MERK
               ENDIF
 C**ZYLINDER: FINDE ACHSE
@@ -385,7 +385,7 @@ C
      .                   A9LM(J),MERK,ZX0,ZY0,ZZ0,CX,CY,CZ,
      .                   RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10,NMACH)
               IF (TRCPLT) THEN
-                WRITE (iunout,*) 'FL2O CALLED EIRENE_'
+                WRITE (iunout,*) 'FL2O CALLED'
                 WRITE (iunout,*) 'MERK= ',MERK
               ENDIF
 C
@@ -426,7 +426,7 @@ C**ZYLINDER BEGRENZT DURCH MAXIMAL EINE FLAECHE ZWEITER ORDNUNG
      .                      CZB,RZYLB,B0B,B1B,B2B,B3B,F0B,F1B,F2B,F3B,
      .                      EPS10,NMACH)
                  IF (TRCPLT) THEN
-                   WRITE (iunout,*) 'FL2O CALLED EIRENE_'
+                   WRITE (iunout,*) 'FL2O CALLED'
                    WRITE (iunout,*) 'MERK2= ',MERK2
                  ENDIF
 C**ZYLINDER BEGRENZT VON 2 EBENEN
@@ -539,7 +539,7 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
      .                     ZLIMS3(IB,J),MERK2,ZX0,ZY0,ZZ0,CX,CY,CZ,
      .                     RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10,NMACH)
                 IF (TRCPLT) THEN
-                  WRITE (iunout,*) 'FL2O CALLED EIRENE_'
+                  WRITE (iunout,*) 'FL2O CALLED'
                   WRITE (iunout,*) 'MERK2= ',MERK2
                 ENDIF
                 IF (MERK2.EQ.4) THEN

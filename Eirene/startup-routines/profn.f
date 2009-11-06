@@ -42,7 +42,7 @@ C
         ENDIF
       ELSE
         WRITE (iunout,*)
-     .  'WARNING: SUBR. PROFN CALLED EIRENE_WITH LEVGEO.GT.3 '
+     .  'WARNING: SUBR. PROFN CALLED WITH LEVGEO.GT.3 '
         WRITE (iunout,*) 'NO PLASMA PARAMETERS RETURNED'
         RETURN
       ENDIF

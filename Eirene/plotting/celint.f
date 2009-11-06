@@ -705,7 +705,7 @@ C
          IF (LOGL)
      .    YWERT(1:NCOOR,1)=LOG10(MAX(1.E-48_DP,YWERT(1:NCOOR,1)))
       ELSE
-        WRITE (iunout,*) 'CELINT CALLED EIRENE_WITH INVALID OPTIONS '
+        WRITE (iunout,*) 'CELINT CALLED WITH INVALID OPTIONS '
         WRITE (iunout,*) 'PLOT ABANDONNED '
         IERR=1
       ENDIF

@@ -42,7 +42,7 @@ C
         ENDIF
       ELSE
         WRITE (iunout,*)
-     .  'WARNING: PROFE CALLED EIRENE_WITH LEVGEO.GT.2 '
+     .  'WARNING: PROFE CALLED WITH LEVGEO.GT.2 '
         WRITE (iunout,*) 'NO PLASMA PARAMETERS RETURNED'
         RETURN
       ENDIF

@@ -688,7 +688,7 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
      .                 E0,VELX,VELY,VELZ,VEL)
           E0_MEAN=2.*TW
         ELSE
-          WRITE (iunout,*) 'ERROR IN ESCAPE, EXIT CALLED EIRENE_'
+          WRITE (iunout,*) 'ERROR IN ESCAPE, EXIT CALLED'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
