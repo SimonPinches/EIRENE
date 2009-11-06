@@ -18,28 +18,28 @@ C
  
       INTEGER :: I, J
 C
-      OPEN (UNIT=15,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-      REWIND 15
+      OPEN (UNIT=15+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+      REWIND 15+ifoff
 C
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 15: IPRNL,FLUX,DTIMV '
-      WRITE (15) IPRNL,FLUX(NSTRAI),DTIMV
-      WRITE (15) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
-      WRITE (15)  (RPARTW(I)              ,I=0,IPRNL)
-      WRITE (15) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
-      CLOSE (UNIT=15)
+      WRITE (15+ifoff) IPRNL,FLUX(NSTRAI),DTIMV
+      WRITE (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
+      WRITE (15+ifoff)  (RPARTW(I)              ,I=0,IPRNL)
+      WRITE (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
+      CLOSE (UNIT=15+ifoff)
 C
       RETURN
 C
       ENTRY EIRENE_RSNAP
 C
-      OPEN (UNIT=15,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-      REWIND 15
-      READ (15) IPRNL,FLUX(NSTRAI),DTIMV
+      OPEN (UNIT=15+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+      REWIND 15+ifoff
+      READ (15+ifoff) IPRNL,FLUX(NSTRAI),DTIMV
       IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV '
-      READ (15) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
-      READ (15)  (RPARTW(I)              ,I=0,IPRNL)
-      READ (15) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
-      CLOSE (UNIT=15)
+      READ (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
+      READ (15+ifoff)  (RPARTW(I)              ,I=0,IPRNL)
+      READ (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
+      CLOSE (UNIT=15+ifoff)
 C
       RETURN
       END

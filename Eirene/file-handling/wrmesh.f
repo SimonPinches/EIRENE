@@ -312,8 +312,8 @@ C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
         IMN=0
         IF (ICONT .EQ. 1) THEN
           maxlen = maxlen / REAL(IPOIN,KIND(1.D0))
-          WRITE(78,*) maxlen
-          WRITE(78,*)
+          WRITE(78+ifoff,*) maxlen
+          WRITE(78+ifoff,*)
         endif
  
 C BESTIMMUNG DES UHRZEIGERSINNS DER KONTOUR
@@ -377,14 +377,14 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
           IWL=1
         ENDIF
  
-        WRITE(78,*) IPOIN+1
+        WRITE(78+ifoff,*) IPOIN+1
         IF (IUHR > 0) THEN
           ICO=ICO+1
           NCONPOINT(ICO)=IPOIN+1
           IPO=0
         END IF
         DO I=iwan,iwen,iwst
-          WRITE(78,'(1P,2(2X,E21.14))')
+          WRITE(78+ifoff,'(1P,2(2X,E21.14))')
      >          PARTCONT(I,IWP,1),PARTCONT(I,IWP,2)
           IF (IUHR > 0) THEN
             IPO=IPO+1
@@ -392,7 +392,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
             YCONTOUR(IPO,ICO) = PARTCONT(I,IWP,2)
           END IF
         ENDDO
-        WRITE(78,'(1P,2(2X,E21.14))') PARTCONT(IWEN,IWL,1),
+        WRITE(78+ifoff,'(1P,2(2X,E21.14))') PARTCONT(IWEN,IWL,1),
      >                               PARTCONT(IWEN,IWL,2)
         IF (IUHR > 0) THEN
           IPO=IPO+1

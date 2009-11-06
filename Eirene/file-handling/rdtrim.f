@@ -33,7 +33,7 @@ C
 C
       DO 7 IFILE=1,NFLR
 !pb        IUN=20
-        IUN=28
+        IUN=20+ifoff
         OPEN (UNIT=IUN,FILE=REFFIL(IFILE),ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
 C

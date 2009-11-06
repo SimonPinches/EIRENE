@@ -20,24 +20,24 @@
       integer :: ianf, iend, ier, ll, io, ie, iflg
       type(hydkin_data), pointer :: hp
  
-      open (unit=28,file=filename)
+      open (unit=28+ifoff,file=filename)
  
       zeile = repeat(' ',len(zeile))
  
 ! find number of temperatures
       do while (index(zeile,'Default energy mesh') == 0)
-         read (28,'(A132)') zeile
+         read (28+ifoff,'(A132)') zeile
       end do
  
       allocate (hp)
       hp%reacname = reac
  
-      read (28,'(A132)') zeile
+      read (28+ifoff,'(A132)') zeile
       ianf = index(zeile,'=')
       read (zeile(ianf+1:),*) hp%ntemps
  
       do while (index(zeile,'EeVDef') == 0)
-        read (28,'(A132)') zeile
+        read (28+ifoff,'(A132)') zeile
       end do
  
       allocate (hp%temps(hp%ntemps))
@@ -46,7 +46,7 @@
  
 ! read energies
       do ie=1, hp%ntemps
-        read (28,*) hp%temps(ie)
+        read (28+ifoff,*) hp%temps(ie)
       end do
  
       rmn = hp%temps(1)
@@ -62,7 +62,7 @@
  
       zeile = repeat(' ',len(zeile))
       do while (index(zeile,cpreac) == 0)
-        read (28,'(A132)',iostat=io) zeile
+        read (28+ifoff,'(A132)',iostat=io) zeile
       end do
  
       if (io .ne. 0) then
@@ -76,21 +76,21 @@
 ! now read data
       zeile = repeat(' ',len(zeile))
       do while (index(zeile,'E_el') == 0)
-        read (28,'(A132)',iostat=io) zeile
+        read (28+ifoff,'(A132)',iostat=io) zeile
       end do
       ianf = index(zeile,'=')+1
       read (zeile(ianf:),*) e_el
  
       zeile = repeat(' ',len(zeile))
       do while (index(zeile,'E_K') == 0)
-        read (28,'(A132)',iostat=io) zeile
+        read (28+ifoff,'(A132)',iostat=io) zeile
       end do
       ianf = index(zeile,'=')+1
       read (zeile(ianf:),*) e_k
  
       zeile = repeat(' ',len(zeile))
       do while (index(zeile,'RPrT') == 0)
-        read (28,'(A132)',iostat=io) zeile
+        read (28+ifoff,'(A132)',iostat=io) zeile
       end do
  
       ianf = index(zeile,'''')+1
@@ -99,7 +99,7 @@
  
       zeile = repeat(' ',len(zeile))
       do while (index(zeile,'RName') == 0)
-        read (28,'(A132)',iostat=io) zeile
+        read (28+ifoff,'(A132)',iostat=io) zeile
       end do
  
       ianf = index(zeile,'''')+1
@@ -108,15 +108,15 @@
  
       zeile = repeat(' ',len(zeile))
       do while (index(zeile,'RData') == 0)
-        read (28,'(A132)',iostat=io) zeile
+        read (28+ifoff,'(A132)',iostat=io) zeile
       end do
  
 ! read rates
       do ie=1, hp%ntemps
-        read (28,*) hp%rates(ie)
+        read (28+ifoff,*) hp%rates(ie)
       end do
  
-      close (unit=28)
+      close (unit=28+ifoff)
  
       do ie=1, hp%ntemps-1
         hp%ratio(ie) = (hp%rates(ie+1) - hp%rates(ie)) /
@@ -161,7 +161,7 @@ C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) FOR E0=0.
            iswr(ir) = 1
         else
            write (iunout,*) ' UNKNOWN REACTION TYPE ',HP%RPRT
-           write (iunout,*) ' USED EIRMOD_IN REACTION ',reac
+           write (iunout,*) ' USED IN REACTION ',reac
            write (iunout,*) ' PLEASE CHECK SPECIFICATION OF REACTIONS'
            call EIRENE_exit_own(1)
         end if

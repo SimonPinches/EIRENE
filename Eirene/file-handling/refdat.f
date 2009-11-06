@@ -152,7 +152,7 @@ C
         CALL EIRENE_EXIT_OWN(1)
       END IF
  
-      IUN=21
+      IUN=21+ifoff
       OPEN (UNIT=IUN,FILE=DBFNAME(IFILE))
       REWIND IUN
 C

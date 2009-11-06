@@ -16,7 +16,7 @@
       character(132) :: zeile
       type(adas_data), pointer :: ap
  
-      read (29,*,iostat=io) nz, nde, nte, iza, ize
+      read (29+ifoff,*,iostat=io) nz, nde, nte, iza, ize
  
       if (io .ne. 0) then
         write (iunout,*) ' ERROR READING FILE FROM ADAS DATABASE '
@@ -41,26 +41,26 @@
       ap%ndens = nde
       ap%ntemp = nte
  
-      read (29,*)
+      read (29+ifoff,*)
  
       lc = len_trim(reac)
       if (reac(lc:lc) == 'r') then
-        read (29,*)
-        read (29,*)
+        read (29+ifoff,*)
+        read (29+ifoff,*)
       end if
  
 ! read densities
-      read (29,*) (ap%dens(ide),ide=1,nde)
+      read (29+ifoff,*) (ap%dens(ide),ide=1,nde)
  
 ! read temperatures
-      read (29,*) (ap%temp(ite),ite=1,nte)
+      read (29+ifoff,*) (ap%temp(ite),ite=1,nte)
  
 ! find appropriate Z1-block
  
       do
  
 ! read line between data blocks
-        read (29,'(A132)') zeile
+        read (29+ifoff,'(A132)') zeile
         if (zeile(1:5) == '-----') then
           ind = index(zeile,'Z1')
           if (ind == 0) cycle
@@ -73,10 +73,10 @@
       end do
  
       do ite = 1, nte
-        read (29,*) (ap%fit(ite,ide), ide = 1,nde)
+        read (29+ifoff,*) (ap%fit(ite,ide), ide = 1,nde)
       end do
  
-      close (29)
+      close (29+ifoff)
  
 ! set up differenz arrays for densities and temperatures
  

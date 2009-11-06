@@ -49,12 +49,12 @@
  
       lr=len_trim(reac)
  
-      read (29,*)
-      read (29,*)
-      read (29,*)
+      read (29+ifoff,*)
+      read (29+ifoff,*)
+      read (29+ifoff,*)
  
       do
-        read (29,'(A1000)',end=990) zeile
+        read (29+ifoff,'(A1000)',end=990) zeile
         if (zeile(1:2) == '--') cycle
         call EIRENE_subcomma(zeile)
  
@@ -214,7 +214,7 @@
  
       end do
  
-      close (unit=29)
+      close (unit=29+ifoff)
  
       read (iunin,'(12i6)') iprftype, iplsc3, imess, ifremd, nrjprt
  
@@ -400,15 +400,15 @@
         CALL EIRENE_EXIT_OWN(1)
       END IF
  
-      open (unit=28,file=DBFNAME(IFILE),access='sequential',
+      open (unit=28+ifoff,file=DBFNAME(IFILE),access='sequential',
      .      form='formatted')
  
       n=0
-      read (28,*)
-      read (28,*)
+      read (28+ifoff,*)
+      read (28+ifoff,*)
  
       do
-        read (28,'(A200)',end=990) zeile
+        read (28+ifoff,'(A200)',end=990) zeile
         if (zeile(1:2) == '--') cycle
         call EIRENE_subcomma(zeile)
  

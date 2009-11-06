@@ -145,7 +145,7 @@ C
         IF (IFILE <= NDBNAMES) THEN
           LCONST=.FALSE.
           IF (INDEX(FILNAM,'ADAS') == 0) THEN
-            OPEN (UNIT=29,FILE=DBFNAME(IFILE))
+            OPEN (UNIT=29+ifoff,FILE=DBFNAME(IFILE))
           ELSE
 ! FIND NAME OF ADAS-FILE TO BE READ
             DIR = ' '
@@ -163,7 +163,7 @@ C
               DSN = DIR(1:IL) // ADJUSTL(TRIM(REAC)) // '_' //
      .              TRIM(ELNAME) // '.dat'
             END IF
-            OPEN (UNIT=29,FILE=DSN)
+            OPEN (UNIT=29+ifoff,FILE=DSN)
           END IF
         ELSE
           WRITE (iunout,*)
@@ -351,7 +351,7 @@ C  H.12
       END IF
  
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-        CLOSE (UNIT=29)
+        CLOSE (UNIT=29+ifoff)
         CH123 = H123
         CCRC = CRC
         CALL EIRENE_READ_HYDKIN
@@ -387,13 +387,13 @@ C
 C  READ FROM DATA FILE
 C
       ELSEIF (.NOT.LCONST) THEN
-100     READ (29,'(A80)',END=990) ZEILE
+100     READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
  
-1       READ (29,'(A80)',END=990) ZEILE
+1       READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
 C
-2       READ (29,'(A80)',END=990) ZEILE
+2       READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
         IF (INDEX(ZEILE,'Reaction ').EQ.0.or.
      .      INDEX(ZEILE,REACSTR(1:ireac)).EQ.0) GOTO 2
@@ -403,7 +403,7 @@ C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
       IF (ISW.EQ.0.OR.ISW.EQ.1.OR.ISW.EQ.2.OR.ISW.EQ.5.OR.ISW.EQ.8.OR.
      .    ISW.EQ.11) THEN
         IF (.NOT.LCONST) THEN
-3         READ (29,'(A80)',END=990) ZEILE
+3         READ (29+ifoff,'(A80)',END=990) ZEILE
           INDFF=INDEX(ZEILE,'fit-flag')
           IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
           IF (INDFF > 0) THEN
@@ -420,7 +420,7 @@ C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
                 IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
                 READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
 4             CONTINUE
-              READ (29,'(A80)',END=990) ZEILE
+              READ (29+ifoff,'(A80)',END=990) ZEILE
 9           CONTINUE
           END IF
 C
@@ -439,7 +439,7 @@ C  I0P1=2 FOR (WEIGHTED) RATE
               ENDIF
 5           CONTINUE
             LGEMIN=.true.
-            READ (29,'(A80)',END=990) ZEILE
+            READ (29+ifoff,'(A80)',END=990) ZEILE
           ENDIF
           IF (INDEX(ZEILE,CHRR).NE.0.AND.JFEXMX.EQ.0) THEN
             IND=0
@@ -451,7 +451,7 @@ C  I0P1=2 FOR (WEIGHTED) RATE
               ENDIF
 7           CONTINUE
             LGEMAX=.true.
-            READ (29,'(A80)',END=990) ZEILE
+            READ (29+ifoff,'(A80)',END=990) ZEILE
           ENDIF
 c
           if (lgemin.and.jfexmn.eq.0) then
@@ -459,14 +459,14 @@ c
             READ (ZEILE((IND+2):80),'(E12.5)') rcmin
             rcmin=log(rcmin)
             jfexmn=5
-            READ (29,'(A80)',END=990) ZEILE
+            READ (29+ifoff,'(A80)',END=990) ZEILE
           endif
           if (lgemax.and.jfexmx.eq.0) then
             IND=INDEX(ZEILE,'=')
             READ (ZEILE((IND+2):80),'(E12.5)') rcmax
             rcmax=log(rcmax)
             jfexmx=5
-            READ (29,'(A80)',END=990) ZEILE
+            READ (29+ifoff,'(A80)',END=990) ZEILE
           endif
 C
 C  ANY OTHER ASYMPTOTICS INFO ON FILE?  SEARCH FOR Tmin, or Emin
@@ -481,7 +481,7 @@ C  extrapolation from subr. CROSS
             if (I0P1.eq.1.and.iswr(ir).eq.5) jfexmn=-1
 C  extrapolation from subr. CDEF
 C   ??      if (I0PT.eq.2) jfexmn=-1
-            READ (29,'(A80)',END=990) ZEILE
+            READ (29+ifoff,'(A80)',END=990) ZEILE
           ENDIF
 12        CONTINUE
 C       ELSEIF (LCONST) THEN
@@ -492,20 +492,20 @@ C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
         DO 11 J=0,2
-16        READ (29,'(A80)',END=990) ZEILE
+16        READ (29+ifoff,'(A80)',END=990) ZEILE
           INDFF=INDEX(ZEILE,'fit-flag')
           IF (INDEX(ZEILE,'Index')+INDFF.EQ.0) GOTO 16
           IF (INDFF > 0) THEN
             READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
             GOTO 16
           ENDIF
-          READ (29,'(1X)')
+          READ (29+ifoff,'(1X)')
           IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
-            READ (29,*) IH,CREACD(1,1)
+            READ (29+ifoff,*) IH,CREACD(1,1)
             EXIT
           ELSE
             DO 17 I=1,9
-              READ (29,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
+              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
 17          CONTINUE
           END IF
 11      CONTINUE
@@ -517,18 +517,18 @@ C
      .  EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,
      .                       .TRUE.,RCMIN,RCMAX,FP,JFEXMN,JFEXMX)
 C
-      CLOSE (UNIT=29)
+      CLOSE (UNIT=29+ifoff)
 C
       RETURN
 C
 990   WRITE (iunout,*) ' NO DATA FOUND FOR REACTION ',H123,' ',REAC,
      .            ' IN DATA SET ',FILNAM
       WRITE (iunout,*) ' IR,MODCLF(IR) ',IR,MODCLF(IR)
-      CLOSE (UNIT=29)
+      CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
 991   WRITE (iunout,*) ' INVALID CONSTANT IN SLREAC. CONST= ',CONST
       WRITE (iunout,*) ' CHECK "REACTION CARDS" FOR REACTION NO. ',IR
-      CLOSE (UNIT=29)
+      CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
 6664  FORMAT (6E12.4)
       END
