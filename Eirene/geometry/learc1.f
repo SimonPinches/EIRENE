@@ -81,15 +81,40 @@ CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
       TYPE (POIFELD) :: HELPCUR(4)
       TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:)
       TYPE (CELL),POINTER :: CUR
+csw 04aug08
+      type(cell),pointer :: curhelp
+csw 04aug08
       TYPE (POI4) :: HELPCUR4(4)
       TYPE (POI4),ALLOCATABLE,SAVE :: HEADS4(:,:)
       TYPE (CELL4),POINTER :: CUR4,HELPP
 C
  
       DATA IFIRST /0/
+csw 04aug08
+      if(np .lt. 0 .and. levgeo.eq.4) then
+        if(allocated(obsc)) deallocate(obsc)
+        if(allocated(heads)) then
+          do i=1,100
+            do j=1,100
+              cur => heads(i,j)%p
+              do
+                if(.not.associated(cur)) exit
+                curhelp => cur
+                cur => curhelp%next
+                deallocate(curhelp)
+              enddo
+            enddo
+          enddo
+          deallocate(heads)
+        endif
+        ifirst=0
+        return
+      endif
+csw
 C
       IA=IAN
       IE=IEN
+      EIRENE_LEARC1 = -1
 C
       IF (LEVGEO.EQ.4) THEN
 C
@@ -241,13 +266,13 @@ C  CELL I ALREADY TESTED BEFORE ?
         IF (IM.LT.1.OR.IM.GT.NTRII) THEN
           WRITE (iunout,*) 'NO TRIANGLE FOUND IN LEARC1 FOR '
           WRITE (iunout,*) 'X = ',X,' Y = ',Y
-          WRITE (iunout,*) 'LEARC1 CALLED EIRENE_FROM SUBR. ',TEXT
+          WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,IM= ',NP,IM
         ELSEIF (INUM.GT.1) THEN
           CALL EIRENE_MASAGE
      .  ('WARNING FROM LEARC1, INUM.GT.1               ')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
-          WRITE (iunout,*) 'LEARC1 CALLED EIRENE_FROM SUBR. ',TEXT
+          WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,INUM,IM= ',NP,INUM,IM
           WRITE (iunout,*) 'IAN,IEN,LOGX,LOGY ',IAN,IEN,LOGX,LOGY
         ENDIF
@@ -586,6 +611,8 @@ C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
 C  FIRST TRY RADIAL SURFACES
 C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
 500     CONTINUE
+        IMARK = -1
+        LMARK = -1
         DO J=1,4
           HELPP => HELPCUR4(J)%P
           DO WHILE (ASSOCIATED(HELPP))
@@ -688,7 +715,7 @@ C
           CALL EIRENE_MASAGE
      .  ('X,Y OUT OF RANGE IN LEARC1                   ')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
-          WRITE (iunout,*) 'LEARC1 CALLED EIRENE_FROM SUBR. ',TEXT
+          WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'ERRMIN= ',ERRMIN
           WRITE (iunout,*) 'NPANU,IM,LM= ',NP,IM,LM
           WRITE (iunout,*) 'IAN,IEN,LOGX,LOGY ',IAN,IEN,LOGX,LOGY
@@ -697,7 +724,7 @@ C
           CALL EIRENE_MASAGE
      .  ('WARNING FROM LEARC1, INUM.GT.1               ')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
-          WRITE (iunout,*) 'LEARC1 CALLED EIRENE_FROM SUBR. ',TEXT
+          WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'ERRMIN= ',ERRMIN
           WRITE (iunout,*) 'NPANU,INUM,IM,LM= ',NP,INUM,IM,LM
           WRITE (iunout,*) 'IAN,IEN,LOGX,LOGY ',IAN,IEN,LOGX,LOGY
@@ -732,7 +759,7 @@ C
      .  ('X,Y OUT OF RANGE IN LEARC1                   ')
         CALL EIRENE_MASR2('X,Y             ',X,Y)
         WRITE (iunout,*) ATQ,RQ(NR1ST)
-        WRITE (iunout,*) 'LEARC1 CALLED EIRENE_FROM SUBR. ',TEXT
+        WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
         CALL EIRENE_EXIT_OWN(1)
 C
 15      CONTINUE
@@ -758,7 +785,7 @@ C
         CALL EIRENE_MASAGE
      .  ('X OUT OF RANGE IN LEARC1                   ')
         CALL EIRENE_MASR2('X,Y             ',X,Y)
-        WRITE (iunout,*) 'LEARC1 CALLED EIRENE_FROM SUBR. ',TEXT
+        WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
         CALL EIRENE_EXIT_OWN(1)
 C
 250     CONTINUE

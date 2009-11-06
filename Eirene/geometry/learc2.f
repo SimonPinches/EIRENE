@@ -36,6 +36,36 @@ C
      .          D12(:,:),D14(:,:),D32(:,:),D34(:,:)
 !pb      SAVE
       DATA IFIRST /0/
+csw 04aug08
+      if(np .lt. 0) then
+        if(allocated(x1)) then
+          DEALLOCATE (X1)
+          DEALLOCATE (Y1)
+          DEALLOCATE (X2)
+          DEALLOCATE (Y2)
+          DEALLOCATE (X3)
+          DEALLOCATE (Y3)
+          DEALLOCATE (X4)
+          DEALLOCATE (Y4)
+          DEALLOCATE (TX)
+          DEALLOCATE (TY)
+          DEALLOCATE (UX)
+          DEALLOCATE (UY)
+          DEALLOCATE (DET)
+          DEALLOCATE (VY1)
+          DEALLOCATE (WY1)
+          DEALLOCATE (WX1)
+          DEALLOCATE (DWY)
+          DEALLOCATE (HELP)
+          DEALLOCATE (D12)
+          DEALLOCATE (D14)
+          DEALLOCATE (D32)
+          DEALLOCATE (D34)
+        endif
+        ifirst=0
+        return
+      endif
+csw
 C
       IF (IFIRST .EQ. 0) THEN
         IFIRST = 1
@@ -226,14 +256,14 @@ C
         CALL EIRENE_MASAGE
      .  ('X,Y OUT OF RANGE IN LEARC2                   ')
         CALL EIRENE_MASR2('X,Y             ',X,Y)
-        WRITE (iunout,*) 'LEARC2 CALLED EIRENE_FROM SUBR. ',TEXT
+        WRITE (iunout,*) 'LEARC2 CALLED FROM SUBR. ',TEXT
         WRITE (iunout,*) 'ERRMIN= ',ERRMIN
         WRITE (iunout,*) 'NPANU,IM,LM= ',NP,IM,LM
       ELSEIF (INUM.GT.1.AND.ERRMIN.GT.EPS5) THEN
         CALL EIRENE_MASAGE
      .  ('WARNING FROM LEARC2, INUM.GT.1               ')
         CALL EIRENE_MASR2('X,Y             ',X,Y)
-        WRITE (iunout,*) 'LEARC2 CALLED EIRENE_FROM SUBR. ',TEXT
+        WRITE (iunout,*) 'LEARC2 CALLED FROM SUBR. ',TEXT
         WRITE (iunout,*) 'ERRMIN= ',ERRMIN
         WRITE (iunout,*) 'NPANU,INUM,IM,LM= ',NP,INUM,IM,LM
       ENDIF
