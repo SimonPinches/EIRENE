@@ -1,4 +1,4 @@
-!pb  060309  mpi_real8 --> moi_double_precision
+!pb  060309  mpi_real8 --> mpi_double_precision
 
 
       subroutine eirene_collect_coutau
