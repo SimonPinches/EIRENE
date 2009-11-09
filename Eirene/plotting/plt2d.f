@@ -57,7 +57,7 @@ C
      .           IR, IP, ISTS, IN, IY, IB, IT, IA, NRET, I, NSW, ISW,
      .           ISP, IHELP, K, IFL, ISYM_ERR, IRA, IRE, IPA, IPE,
      .           ITA, ITE, JJ
-      LOGICAL :: PLSAV1, PLSAV2, LSTORE
+      LOGICAL :: PLSAV1, PLSAV2, LSTORE, LWR
       CHARACTER(20) :: TXTHST(NTXHST)
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
       CHARACTER(6) :: CH
@@ -1619,8 +1619,7 @@ C  FX=FY=1.
           CALL GRNWPN (ICP)
           CALL GRJMP (REAL(XN1,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
           CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRTXT
-     .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
+          CALL GRTXT (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
 513     CONTINUE
  
@@ -1632,19 +1631,22 @@ C  FX=FY=1.
         CALL GRFONT(-1)
  
         IF (.NOT.NLPL3D)
-     .     CALL
-     .  GRSCLV(REAL(XMI2D,KIND(1.E0)),REAL(YMI2D,KIND(1.E0)),
+     .     CALL GRSCLV(REAL(XMI2D,KIND(1.E0)),REAL(YMI2D,KIND(1.E0)),
      .                 REAL(XMA2D,KIND(1.E0)),REAL(YMA2D,KIND(1.E0)))
       ENDIF
 C
 C  WRITE TRACK DATA
 C
-      IF (TRCHST) THEN
+      LWR = .TRUE.
+      DO I = 1, 8
+        IF (-ISYM == ISYPLT(I)) LWR = .FALSE. 
+      END DO
+      IF (TRCHST .AND. LWR) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TXTHST(ISYM)
         IF (ISPZ.GT.0.AND.ISPZ.LE.NSPZ) THEN
-          IF (ISYM.EQ.1.OR..NOT.NLTRC)  CALL
-     .  EIRENE_MASJ1('NPANU   ',NPANU)
+          IF (ISYM.EQ.1.OR..NOT.NLTRC)  
+     .      CALL EIRENE_MASJ1('NPANU   ',NPANU)
           WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
         ELSE
           WRITE (iunout,'(1X,A14,1X,I6)') 'LINE OF SIGHT ',NPANU
@@ -1792,10 +1794,10 @@ C
       IF (TESTN.EQ.0..AND.NHSTS(ISPZ).NE.-1) THEN
 C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
         DO 408 J=1,8
-          IF (ISYM.EQ.ISYPLT(J).OR.ISYM.EQ.ISYM_ERR) THEN
-            CALL
-     .  GRJMPS(REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)),
-     .                  ISPL(ISYM))
+          IF (ISYM.EQ.ABS(ISYPLT(J)).OR.ISYM.EQ.ISYM_ERR) THEN
+            CALL GRJMPS (REAL(XWN,KIND(1.E0)),
+     .                   REAL(YWN,KIND(1.E0)),
+     .                   ISPL(ISYM))
             GOTO 409
           ENDIF
 408     CONTINUE
@@ -1804,7 +1806,7 @@ C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
  
 C  CONTINUE PRINTOUT
  
-      IF (NLTRC.AND.TRCHST) THEN
+      IF (NLTRC.AND.TRCHST.AND.LWR) THEN
         WRITE (iunout,*) 'ICOLOR,IN,ISYM,IFLAG,NHSTS ',
      .                    ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ)
         CALL EIRENE_LEER(1)
@@ -1840,6 +1842,11 @@ C     following ENTRY is for reinitialization of EIRENE (DMH)
       IWRIT = 0
       ISPL = (/2,101,103,205,100,206,208,104,105,
      .         106,107,108,200,201,202,204,207,4,104/)
+csw 20oct08
+      if(allocated(icpspz)) deallocate(icpspz)
+      if(allocated(idash)) deallocate(idash)
+      if(allocated(ifarb)) deallocate(ifarb)
+csw
       return
  
       END
