@@ -709,7 +709,10 @@ C
             DO 6012 K=NPOINT(1,J),NPOINT(2,J)-1
               V1=(YPOL(I,K+1)-Y0)*VELX-(XPOL(I,K+1)-X0)*VELY
               V2=(YPOL(I,K)-Y0)*VELX-(XPOL(I,K)-X0)*VELY
-              LCUT(K)=V1*V2.LE.0.
+!pb allow only intersection with nondefault standard surfaces
+!pb no intersection with transparent parts
+!pb              LCUT(K)=V1*V2.LE.0.
+              LCUT(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
 6012      CONTINUE
 C
           IF (I.EQ.MPOL) LCUT(JPOL)=.FALSE.
@@ -1318,7 +1321,7 @@ C
  
 C
 9999  CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMER, EXIT CALLED EIRENE_AT 9999'
+      WRITE (iunout,*) 'ERROR IN TIMER, EXIT CALLED AT 9999'
       WRITE (iunout,*) 'NPANU ', NPANU
       CALL EIRENE_EXIT_OWN(1)
       END

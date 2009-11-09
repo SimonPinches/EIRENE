@@ -66,9 +66,8 @@ C
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1, 
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           EIRENE_LEARCA, I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
-     .           IADD,
-     .           ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2, NJC, 
-     .           EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2, 
+     .           NJC, EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN
       INTEGER :: NCOUNS(N2ND+N3RD)
       LOGICAL :: LCUTY(N2NDPLG), LCUTX(N1ST), lnincz
       SAVE
@@ -138,7 +137,10 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
               I1=IR+1
               V1=(YPOL(IR,MPTEST)-Y00)*VELX-(XPOL(IR,MPTEST)-X00)*VELY
               V2=(YPOL(I1,MPTEST)-Y00)*VELX-(XPOL(I1,MPTEST)-X00)*VELY
-              LCUTX(IR)=V1*V2.LE.0.
+!pb allow only intersections with nondefault standard surfaces
+!pb no intersections with transparent surfaces are calculated
+!pb              LCUTX(IR)=V1*V2.LE.0.
+              LCUTX(IR)=(V1*V2.LE.0.) .AND. (INMP2I(IR,MPTEST,0) /= 0)
 2           CONTINUE
             DO 4 IR=1,NR1STM
               IF (LCUTX(IR)) THEN
