@@ -146,7 +146,7 @@ C
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
-      IUNIN=1
+      IUNIN=1+ifoff
  
       REWIND IUNIN
 C
@@ -248,43 +248,43 @@ C
             NTRI=MAX(NTRI,NR1ST)
  
             FILENAME=CASENAME(1:LL) // '.npco_char'
-            OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',
+            OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .            FORM='FORMATTED')
             ZEILE='*   '
             DO WHILE (ZEILE(1:1) == '*')
-              READ (30,'(A)') ZEILE
+              READ (30+ifoff,'(A)') ZEILE
             END DO
  
             READ (ZEILE,*) NRKNOT
-            CLOSE (UNIT=30)
+            CLOSE (UNIT=30+ifoff)
             NKNOT=NRKNOT
  
             FILENAME=CASENAME(1:LL) // '.elemente'
-            OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',
+            OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .            FORM='FORMATTED')
  
             ZEILE='*   '
             DO WHILE (ZEILE(1:1) == '*')
-              READ (30,'(A)') ZEILE
+              READ (30+ifoff,'(A)') ZEILE
             END DO
  
             READ (ZEILE,*) NTRII
-            CLOSE (UNIT=30)
+            CLOSE (UNIT=30+ifoff)
             NTRI=NTRII+1
             NR1ST=NTRI
  
             FILENAME=CASENAME(1:LL) // '.neighbors'
-            OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',
+            OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .            FORM='FORMATTED')
  
             ZEILE='*   '
             DO WHILE (ZEILE(1:1) == '*')
-               READ (30,'(A)') ZEILE
+               READ (30+ifoff,'(A)') ZEILE
             END DO
  
             NGITT=1
             DO I=1,NTRII
-              READ (30,*) ID, NB1, NS1, INM1,
+              READ (30+ifoff,*) ID, NB1, NS1, INM1,
      .                        NB2, NS2, INM2,
      .                        NB3, NS3, INM3
               IF (INM1 /= 0) NGITT = NGITT + 1
@@ -292,7 +292,7 @@ C
               IF (INM3 /= 0) NGITT = NGITT + 1
             END DO
  
-            CLOSE (UNIT=30)
+            CLOSE (UNIT=30+ifoff)
  
           ENDIF
  
@@ -301,43 +301,43 @@ C
             NTETRA=MAX(NTETRA,NR1ST)
  
             FILENAME=CASENAME(1:LL) // '.npco_char'
-            OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',
+            OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .            FORM='FORMATTED')
             ZEILE='*   '
             DO WHILE (ZEILE(1:1) == '*')
-              READ (30,'(A)') ZEILE
+              READ (30+ifoff,'(A)') ZEILE
             END DO
  
             READ (ZEILE,*) NCOOR
-            CLOSE (UNIT=30)
+            CLOSE (UNIT=30+ifoff)
             NCOORD=NCOOR
  
             FILENAME=CASENAME(1:LL) // '.elemente'
-            OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',
+            OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .            FORM='FORMATTED')
  
             ZEILE='*   '
             DO WHILE (ZEILE(1:1) == '*')
-              READ (30,'(A)') ZEILE
+              READ (30+ifoff,'(A)') ZEILE
             END DO
  
             READ (ZEILE,*) NTET
-            CLOSE (UNIT=30)
+            CLOSE (UNIT=30+ifoff)
             NTETRA=NTET+1
             NR1ST=NTETRA
  
             FILENAME=CASENAME(1:LL) // '.neighbors'
-            OPEN (UNIT=30,FILE=FILENAME,ACCESS='SEQUENTIAL',
+            OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .            FORM='FORMATTED')
  
             ZEILE='*   '
             DO WHILE (ZEILE(1:1) == '*')
-               READ (30,'(A100)') ZEILE
+               READ (30+ifoff,'(A100)') ZEILE
             END DO
  
             NGITT=1
             DO I=1,NTET
-              READ (30,*) ID, NB1, NS1, INM1,
+              READ (30+ifoff,*) ID, NB1, NS1, INM1,
      .                        NB2, NS2, INM2,
      .                        NB3, NS3, INM3,
      .                        NB4, NS4, INM4
@@ -347,7 +347,7 @@ C
               IF (INM4 /= 0) NGITT = NGITT + 1
             END DO
  
-            CLOSE (UNIT=30)
+            CLOSE (UNIT=30+ifoff)
  
           ENDIF
         ELSEIF (INDGRD(1).EQ.6) THEN
@@ -492,7 +492,7 @@ C
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE,ITOK,IER,.FALSE.)
         LINCLUDE = .TRUE.
         IUNIN_SAVE = IUNIN
-        IUNIN = 2
+        IUNIN = 2+ifoff
         OPEN (IUNIN,FILE=FILE,FORM='FORMATTED',ACCESS='SEQUENTIAL')
       END IF
 C
@@ -620,23 +620,23 @@ C
         HYDKIN_DEFAULT=ADJUSTL(HYDKIN_DEFAULT)
         LL=LEN_TRIM(HYDKIN_DEFAULT)
         FILENAME=HYDKIN_DEFAULT(1:LL) // '.reactions'
-        OPEN (UNIT=27,FILE=FILENAME,ACCESS='SEQUENTIAL',
+        OPEN (UNIT=27+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
-        READ (27,*)
-        READ (27,*) CHR,n_reac
-        READ (27,*) CHR,n_spec
-        READ (27,*) CHR,n_atoms
-        READ (27,*) CHR,n_ions
-        READ (27,*) CHR,n_mol
+        READ (27+ifoff,*)
+        READ (27+ifoff,*) CHR,n_reac
+        READ (27+ifoff,*) CHR,n_spec
+        READ (27+ifoff,*) CHR,n_atoms
+        READ (27+ifoff,*) CHR,n_ions
+        READ (27+ifoff,*) CHR,n_mol
  
         ALLOCATE (HYDSPEC(N_SPEC))
         ALLOCATE (IEIGEN(N_SPEC))
  
-        READ (27,*) HYDSPEC(1:N_SPEC)
-        READ (27,'(A1000)') HLINE
+        READ (27+ifoff,*) HYDSPEC(1:N_SPEC)
+        READ (27+ifoff,'(A1000)') HLINE
         READ (HLINE(52:),*) IEIGEN(1:N_SPEC)
 
-        CLOSE (UNIT=27)
+        CLOSE (UNIT=27+ifoff)
  
 !pb        N_BULKIONS = COUNT((SCAN(HYDSPEC(1:N_SPEC),'+') > 0) .AND.
 !pb     .                     (IEIGEN(1:N_SPEC) == 0))
