@@ -38,6 +38,16 @@ C     reinitialization start
 !pb      call UPTCOP_REINIT
  
       call EIRENE_STATIS_BGK_REINIT
+
+csw 18apr07
+      call EIRENE_SPUTER_REINIT
+      call EIRENE_BA_ALPHA_REINIT
+      call EIRENE_UPTBGK_REINIT
+      call EIRENE_STORE_REINIT
+!out      call EIRENE_MKCENS_REINIT
+      call EIRENE_update_reinit
+      call EIRENE_calc_spectrum_reinit
+csw
  
 C     reinitialization end
  
