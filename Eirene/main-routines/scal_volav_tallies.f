@@ -1,3 +1,7 @@
+!pb  31.07.09: scaling for snapshot tallies corrected
+!              only for stationary calculations snapshot tallies 
+!              need to be scaled by timestep DTIMV
+
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
  
@@ -21,7 +25,7 @@
       REAL(DP), INTENT(INOUT) :: SCLTAL(N1DIM,*)
       REAL(DP), INTENT(IN) :: ZVOLIN(*), ZVOLIW(*)
  
-      REAL(DP) :: ZFAC
+      REAL(DP) :: ZFAC, FACDT
       INTEGER :: IATM, J, IMOL, IION, IPHOT, IPLS, IADV, ICLV,
      .           ISNV, ICPV, IBGV, ISPC, ICL
 C
@@ -272,35 +276,37 @@ C  ADDITIONAL SNAPSHOT ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY NO. NTALT, FIRST: SNAPV=SNAPV*DTIMV, THEN: SCALING
 C
       IF (LSNAPV) THEN
+        FACDT = 1._DP
+        IF (NTMSTP < 0) FACDT = DTIMV
         DO 245 ISNV=1,NSNVI
           IF (ISNVE(ISNV).EQ.1) THEN
 C  SCALE # PER VOLUME
             DO 246 J=1,NSBOX_TAL
-              SNAPV(ISNV,J)=SNAPV(ISNV,J)*DTIMV*ZVOLIN(J)
+              SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZVOLIN(J)
 246         CONTINUE
             SCLTAL(ISNV,NTALT)=1
           ELSEIF (ISNVE(ISNV).EQ.2) THEN
 C  SCALE # PER CELL
             DO 247 J=1,NSBOX_TAL
-              SNAPV(ISNV,J)=SNAPV(ISNV,J)*DTIMV*ZW
+              SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZW
 247         CONTINUE
             SCLTAL(ISNV,NTALT)=2
           ELSEIF (ISNVE(ISNV).EQ.3) THEN
 C  SCALE AMP/S PER VOLUME
             DO 248 J=1,NSBOX_TAL
-              SNAPV(ISNV,J)=SNAPV(ISNV,J)*DTIMV*ZVOLIW(J)
+              SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZVOLIW(J)
 248         CONTINUE
             SCLTAL(ISNV,NTALT)=3
           ELSEIF (ISNVE(ISNV).EQ.4) THEN
 C  SCALE AMP/S PER CELL
             DO 249 J=1,NSBOX_TAL
-              SNAPV(ISNV,J)=SNAPV(ISNV,J)*DTIMV*ZWW
+              SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZWW
 249         CONTINUE
             SCLTAL(ISNV,NTALT)=4
 C         ELSE
 C  DON'T SCALE AT ALL
             DO J=1,NSBOX_TAL
-              SNAPV(ISNV,J)=SNAPV(ISNV,J)*DTIMV
+              SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT
             ENDDO
             SCLTAL(ISNV,NTALT)=0
           ENDIF
