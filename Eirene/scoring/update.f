@@ -2227,4 +2227,12 @@ C
 133    CONTINUE
 131    CONTINUE
       RETURN
+csw 21oct08
+      entry EIRENE_update_reinit
+      if(allocated(cndyna)) deallocate(cndyna)
+      if(allocated(cndynm)) deallocate(cndynm)
+      if(allocated(cndyni)) deallocate(cndyni)
+      if(allocated(cndynp)) deallocate(cndynp)
+      return
+csw
       END

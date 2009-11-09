@@ -164,4 +164,12 @@
       END IF
  
       RETURN
+csw 21oct08
+      entry EIRENE_calc_spectrum_reinit
+      if(allocated(cndyna)) deallocate(cndyna)
+      if(allocated(cndynm)) deallocate(cndynm)
+      if(allocated(cndyni)) deallocate(cndyni)
+      if(allocated(cndynp)) deallocate(cndynp)
+      return
+csw
       END SUBROUTINE EIRENE_CALC_SPECTRUM
