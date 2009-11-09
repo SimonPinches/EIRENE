@@ -296,6 +296,8 @@ C
       ICOL=0
       XLEFT = HUGE(1._DP)
       XRIGHT = 0._DP
+csw 25sep08
+      ROTSAV_TORCOL=0._DP
 C
 C  DETAILED PRINTOUT OF TRAJECTORY FOR THIS PARTICLE?
 C
@@ -953,7 +955,7 @@ C              AROUND INNER (!) NORMAL AT TEMP. TW (EV) = TIWD
           IF (TIWD.LE.0.) TIWD=ABS(EMAX)
           VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
           CALL EIRENE_VELOCS
-     .  (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVA(IATM),
+     .                (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVA(IATM),
      .                 CVRSSA(IATM),
      .                 -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
 C  MODIFY ANGULAR DISTRIBUTION IN CASE SORCOS .NE. 0.5 (I.E., IN CASE
@@ -962,8 +964,8 @@ C  A NON-COSINE DISTRIBUTION IS REQUESTED
             VELX=CRTX
             VELY=CRTY
             VELZ=CRTZ
-            CALL
-     .  EIRENE_REFANG(SORCOS(ISTRA),SORMAX(ISTRA),SORCTX(ISTRA),
+            CALL EIRENE_REFANG
+     .                 (SORCOS(ISTRA),SORMAX(ISTRA),SORCTX(ISTRA),
      .                  SORCTY(ISTRA),SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
 C           VEL_MEAN=VEL
 C           E0_MEAN=E0
@@ -1035,7 +1037,7 @@ C
           IF (TIWD.LE.0.) TIWD=ABS(EMAX)
           VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
           CALL EIRENE_VELOCS
-     .  (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVM(IMOL),
+     .                (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVM(IMOL),
      .                 CVRSSM(IMOL),
      .                 -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
 C  MODIFY ANGULAR DISTRIBUTION IN CASE SORCOS .NE. 0.5 (I.E., IN CASE
@@ -1150,13 +1152,14 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
      .                SORCTY(ISTRA),SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
 C         VEL_MEAN=VEL
 C         E0_MEAN=E0
-        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND..NOT.NLVOL(ISTRA)) THEN
+!pbdr        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND..NOT.NLVOL(ISTRA)) THEN
+        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.NLSRF(ISTRA)) THEN
 C
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX
 C              AROUND INNER (!) NORMAL AT TEMP. TW (EV)
           VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
           CALL EIRENE_VELOCS
-     .  (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVI(IION),
+     .                 (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVI(IION),
      .                  CVRSSI(IION),
      .                 -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
 C  MODIFY ANGULAR DISTRIBUTION IN CASE SORCOS .NE. 0.5 (I.E., IN CASE
@@ -1169,7 +1172,9 @@ C  A NON-COSINE DISTRIBUTION IS REQUESTED
      .                 (SORCOS(ISTRA),SORMAX(ISTRA),SORCTX(ISTRA),
      .                  SORCTY(ISTRA),SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
           ENDIF
-        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.NLVOL(ISTRA)) THEN
+!pbdr        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.NLVOL(ISTRA)) THEN
+        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.
+     .          (NLVOL(ISTRA).OR.NLPNT(ISTRA))) THEN
 C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
 C
@@ -2072,15 +2077,15 @@ c          iestr=istra
 c          call plteir(istra)
  
 !pbct          DO ISPC=1,NADSPC
-!pbct             WRITE (56,*) ' SPECTRUM ',ISPC
+!pbct             WRITE (56+ifoff,*) ' SPECTRUM ',ISPC
 !pbct             DO IE=1, ESTIML(ISPC)%PSPC%NSPC
 !pbct                EN = ESTIML(ISPC)%PSPC%SPCMIN +
 !pbct     .               (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-!pbct                WRITE (56,'(I6,2ES12.4)') IE,EN,
+!pbct                WRITE (56+ifoff,'(I6,2ES12.4)') IE,EN,
 !pbct     .               ESTIML(ISPC)%PSPC%SPC(IE)
 !pbct             END DO
-!pbct             write (56,*) ' integral ',ESTIML(ISPC)%PSPC%SPCINT
-!pbct             WRITE (56,'(///1X)')
+!pbct             write (56+ifoff,*) ' integral ',ESTIML(ISPC)%PSPC%SPCINT
+!pbct             WRITE (56+ifoff,'(///1X)')
 !pbct          END DO
 c
 c  plot the calculated line profile once again (smooth curve)
@@ -2145,12 +2150,12 @@ C
 C
         ELSEIF (NLLNE(ISTRA)) THEN
           WRITE (iunout,*)
-     .      'BULK ION LINE SOURCE NOT READY, EXIT CALLED EIRENE_'
+     .      'BULK ION LINE SOURCE NOT READY, EXIT CALLED'
           CALL EIRENE_EXIT_OWN(1)
 C
         ELSEIF (NLPNT(ISTRA)) THEN
           WRITE (iunout,*)
-     .      'BULK ION POINT SOURCE NOT READY, EXIT CALLED EIRENE_'
+     .      'BULK ION POINT SOURCE NOT READY, EXIT CALLED'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
@@ -2281,7 +2286,7 @@ C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: ILSIDE OF SOURCE SURFACE IS 0.'
       WRITE (iunout,*)
-     .  'THUS NO OUTER NORMAL CAN BE DEFINED. EXIT CALLEDEIRENE_'
+     .  'THUS NO OUTER NORMAL CAN BE DEFINED. EXIT CALLED'
       WRITE (iunout,*)
      .  'SET EITHER ILSIDE NE 0 OR USE EIRMOD_SORIFL FLAG '
       WRITE (iunout,*) 'MSURF,ISTSF,NRCELL,NPCELL,NTCELL '
