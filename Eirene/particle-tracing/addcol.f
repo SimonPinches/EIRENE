@@ -1,4 +1,5 @@
 !pb  05.10.06: option for single sided switching of additional surfaces introduced
+!pb  07.07.09: additional surface is hit ==> NLSRFA=.TRUE.
 C
       SUBROUTINE EIRENE_ADDCOL (XLI,YLI,ZLI,SG,*,*)
 C
@@ -51,6 +52,8 @@ C  SET NEW POINT ON ADDITIONAL SURFACE MASURF. FLIGHT TIME: TL
       NLSRFX=.FALSE.
       NLSRFY=.FALSE.
       NLSRFZ=.FALSE.
+!pb
+      NLSRFA=.TRUE.
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
       SCOS=SG
       ICOS=SCOS
@@ -306,6 +309,8 @@ C
         CSAVE=CRTX
         CRTX=COS(ROT)*CSAVE-SIN(ROT)*CRTZ
         CRTZ=SIN(ROT)*CSAVE+COS(ROT)*CRTZ
+csw 28sep08
+c        ROTSAV_TORCOL=ROTSAV_TORCOL-rot
       ENDIF
       RETURN 2
 C

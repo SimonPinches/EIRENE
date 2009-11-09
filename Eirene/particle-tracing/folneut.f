@@ -902,6 +902,7 @@ C   RESTORE PRE COLLISION DATA AND SAMPLE FROM COLLISION KERNEL
       NLSRFX=.FALSE.
       NLSRFY=.FALSE.
       NLSRFZ=.FALSE.
+      NLSRFA=.FALSE.                                                 !pb 07.07.09
       MSURF=0
       MRSURF=0
       MPSURF=0
