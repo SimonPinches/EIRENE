@@ -73,6 +73,7 @@ c
         IFRST = 1
       END IF
  
+      E_ALPCR_T = 0._DP
 c
 c
 C ATOM
