@@ -1,3 +1,4 @@
+!  18.06.09  correction added for NLTRA if particle accidently on toroidal surface
 C
 C
       SUBROUTINE EIRENE_TIMET (ZRAD)
@@ -61,7 +62,7 @@ C
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: TTT, PHI0, X001, TO, AA, SUM, TU, XTO, EPSTST, XTU,
      .          F, FZ, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
-     .          Y0TEST
+     .          Y0TEST, z01_cell
       INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
      .           NZSAVE, INCZ, J1, IRSAVE, EIRENE_LEARCA
       INTEGER, SAVE :: MTSAVE=-1
@@ -296,16 +297,22 @@ C
         ITT=IDINT(REAL(Z001/(X001*TANAL),KIND(1.D0)))
         IF (NLTRC) WRITE (iunout,*) 'TIMET 1 ',X01,Z01,X001,Z001,ITT
       ELSE
-        TO=(Z01-X01*TANAL)/(TANAL*VELX-VELZ)
-        XTO=X01+TO*VELX
-        TU=(Z01+X01*TANAL)/(-TANAL*VELX-VELZ)
-        XTU=X01+TU*VELX
-        IF (NLTRC) WRITE (iunout,*) 'TU,TO ',TU,TO,XTU,XTO
-        EPSTST=EPS10*TANAL
-        IF (XTO.GT.0..AND.TO.GT.EPSTST) THEN
-          ITT=1
-        ELSEIF (XTU.GT.0..AND.TU.GT.EPSTST) THEN
-          ITT=-1
+        IF (1._DP-ABS(VELY) > EPS10) THEN
+          TO=(Z01-X01*TANAL)/(TANAL*VELX-VELZ)
+          XTO=X01+TO*VELX
+          TU=(Z01+X01*TANAL)/(-TANAL*VELX-VELZ)
+          XTU=X01+TU*VELX
+          IF (NLTRC) WRITE (iunout,*) 'TU,TO ',TU,TO,XTU,XTO
+          EPSTST=EPS10*TANAL
+          IF (XTO.GT.0..AND.TO.GT.EPSTST) THEN
+            ITT=1
+          ELSEIF (XTU.GT.0..AND.TU.GT.EPSTST) THEN
+            ITT=-1
+          ELSE
+            ITT=0
+            Z001=Z01
+            X001=X01
+          ENDIF
         ELSE
           ITT=0
           Z001=Z01
@@ -345,8 +352,10 @@ C
 C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         IF (ABS(AA).LE.EPS10.AND.NERR.LE.1) THEN
           IF (NLTRC) WRITE (iunout,*) 'TRY AGAIN IN TIMET'
-          Z01=Z01-VELZ*EPS10
-          X01=X01-VELX*EPS10
+!pb          Z01=Z01-VELZ*EPS10
+!pb          X01=X01-VELX*EPS10
+          z01_cell = x01*tanal
+          Z01=Z01-z01_cell*EPS10
           NERR=NERR+1
           GOTO 1010
         ENDIF
@@ -400,8 +409,10 @@ C
 C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         IF (ABS(AA).LE.EPS10.AND.NERR.LE.1) THEN
           IF (NLTRC) WRITE (iunout,*) 'TRY AGAIN IN TIMET'
-          Z01=Z01-VELZ*EPS10
-          X01=X01-VELX*EPS10
+!pb          Z01=Z01-VELZ*EPS10
+!pb          X01=X01-VELX*EPS10
+          z01_cell = x01*tanal
+          Z01=Z01+z01_cell*EPS10
           NERR=NERR+1
           GOTO 1010
         ENDIF
@@ -491,6 +502,6 @@ C
       WRITE (iunout,*) 'NPANU,AA,BB ',NPANU,AA,BB
       RETURN
 9999  CONTINUE
-      WRITE (iunout,*) 'INVALID OPTION IN TIMET. EXIT CALLED EIRENE_'
+      WRITE (iunout,*) 'INVALID OPTION IN TIMET. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
       END
