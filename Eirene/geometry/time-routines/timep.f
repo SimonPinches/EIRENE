@@ -137,7 +137,10 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
               I1=IR+1
               V1=(YPOL(IR,MPTEST)-Y00)*VELX-(XPOL(IR,MPTEST)-X00)*VELY
               V2=(YPOL(I1,MPTEST)-Y00)*VELX-(XPOL(I1,MPTEST)-X00)*VELY
-              LCUTX(IR)=V1*V2.LE.0.
+!pb allow only intersections with nondefault standard surfaces
+!pb no intersections with transparent surfaces are calculated
+!pb              LCUTX(IR)=V1*V2.LE.0.
+              LCUTX(IR)=(V1*V2.LE.0.) .AND. (INMP2I(IR,MPTEST,0) /= 0)
 2           CONTINUE
             DO 4 IR=1,NR1STM
               IF (LCUTX(IR)) THEN
