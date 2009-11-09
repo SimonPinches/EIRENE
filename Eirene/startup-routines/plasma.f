@@ -5,6 +5,9 @@ C
 !  6.8. 06  bugfix of bugfix: avoid calculation of B-field in dead cells, but
 !                             still make sure to set B-field in 1D cases.
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
+!  10.06.08 new:  default BFIN=1 T, rather than 0 T
+!  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
+
 !
       SUBROUTINE EIRENE_PLASMA
  
@@ -30,7 +33,7 @@ C
 C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(1) /= 9) TEIN = 0.D0
       IF (INDPRO(2) /= 9) TIIN = 0.D0
-      DEIN = 0.D0
+      DEIN = 0.D0 ! DEIN IS ANYWAY SET IN PLASMA_DERIV
       IF (INDPRO(3) /= 9) DIIN = 0.D0
       IF (INDPRO(4) /= 9) VXIN = 0.D0
       IF (INDPRO(4) /= 9) VYIN = 0.D0
@@ -239,13 +242,12 @@ C
 C  MAGNETIC FIELD UNIT VECTOR
 C  FOR IND=5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
-C  DEFAULT: BFIELD IN Z-DIRECTION, IE., PITCH=0
+C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
       IF (IND /= 9) THEN
-      DO J=1,NSBOX
-        BXIN(J)=0.
-        BYIN(J)=0.
-        BZIN(J)=1.
-      END DO
+        BXIN=0.
+        BYIN=0.
+        BZIN=1.
+        BFIN=1.
       END IF
       GOTO (141,142,143,144,145,146,147,150,150),IND
 C  HELP IS FIELD LINE PITCH ANGLE: B_POL/B_TOT
@@ -254,6 +256,7 @@ C  HELP IS FIELD LINE PITCH ANGLE: B_POL/B_TOT
 142     CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
         GOTO 1400
 143     CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
+        CALL EIRENE_PROFS (BFIN,B2,B3,B5,BVAC) ! new (2008) set constant B profile
         GOTO 1400
 C  INDPRO=4: read from stream B0:  NOT IN USE
 144     CONTINUE
@@ -288,6 +291,7 @@ C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
 1402      CONTINUE
         ELSEIF (LEVGEO.EQ.3.AND.NLPOL) THEN
           DO 1403 J=1,NSURF
+            IF (NSTGRD(J) /= 0) CYCLE
             CALL EIRENE_NCELLN(J,IR,IP,IT,IA,IB,
      .                  NR1ST,NP2ND,NT3RD,NBMLT,NLRAD,NLPOL,NLTOR)
             IF (IR.GE.NR1ST) GOTO 1403
@@ -302,7 +306,7 @@ C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
         ELSE
           CALL EIRENE_LEER(1)
           WRITE (iunout,*)
-     .      'DEFAULT MAGNETIC FIELD (IN Z-DIRECTION) IS USED EIRMOD_'
+     .      'DEFAULT MAGNETIC FIELD (IN Z-DIRECTION) IS USED'
           CALL EIRENE_LEER(1)
         ENDIF
         GOTO 150
