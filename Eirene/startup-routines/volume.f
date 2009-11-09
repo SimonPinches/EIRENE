@@ -451,6 +451,11 @@ C               CALL EXIT_OWN(1)
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
                 VOL(NCELL)=ABS(AREAP(I,J))*ZDF
+                IF ((NSTGRD(NCELL) == 0) .AND.
+     .              (ABS(VOL(NCELL)) < EPS10)) THEN
+                WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.EQ.0'
+                CALL EIRENE_MASJ2('J,I             ',I,J)
+                END IF
 268       CONTINUE
         ENDIF
 C
@@ -511,6 +516,6 @@ C
       RETURN
 C
 999   CONTINUE
-      WRITE (iunout,*) 'UNWRITTEN OPTION CALLED EIRENE_IN SUBR. VOLUME '
+      WRITE (iunout,*) 'UNWRITTEN OPTION CALLED IN SUBR. VOLUME '
       CALL EIRENE_EXIT_OWN(1)
       END
