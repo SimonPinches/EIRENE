@@ -1,6 +1,5 @@
 C
 C  may 05:  "no multip on averaging cells" corrected for 3D grids
-C  july 09: propagation of values added for B-field
 C
       SUBROUTINE EIRENE_MULTI
  
@@ -69,14 +68,6 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
               VYIN(K,I+(J-1)*NR1ST)=VYIN(K,I)
               VZIN(K,I+(J-1)*NR1ST)=VZIN(K,I)
 205       CONTINUE
-        ENDIF
-        IF (INDPRO(5).LE.4) THEN
-          DO 206 I=1,NR1ST
-           BXIN(I+(J-1)*NR1ST)=BXIN(I)
-           BYIN(I+(J-1)*NR1ST)=BYIN(I)
-           BZIN(I+(J-1)*NR1ST)=BZIN(I)
-           BFIN(I+(J-1)*NR1ST)=BFIN(I)
-206       CONTINUE
         ENDIF
         IF (INDPRO(6).LE.4) THEN
           DO 207 K=1,NAINI
