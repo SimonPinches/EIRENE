@@ -240,8 +240,8 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             NELREI(IREI) = -8
             NREAHV(IREI) = -4
           END IF
-          FACREA(-8,1) = FACTKK
-          FACREA(-8,2) = LOG(FACTKK)
+          FACREI(IREI,1) = FACTKK
+          FACREI(IREI,2) = LOG(FACTKK)
           IF (ICOUNT.EQ.1) THEN
             IA1=IATM2
             IP2=IPLS1
@@ -278,8 +278,8 @@ C  TRANSFERRED KINETIC ENERGY: 0.5 EV
             NELREI(IREI) = -9
             NREAHV(IREI) = -5
           END IF
-          FACREA(-9,1) = 1._DP
-          FACREA(-9,2) = 0._DP
+          FACREI(IREI,1) = 1._DP
+          FACREI(IREI,2) = 0._DP
 C  THIRD PROCESS
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -323,8 +323,8 @@ C  TRANSFERRED KINETIC ENERGY: INGOING ELECTRON ENERGY
             NELREI(IREI) = -10
             NREAHV(IREI) = -6
           END IF
-          FACREA(-10,1) = 1._DP
-          FACREA(-10,2) = 0._DP
+          FACREI(IREI,1) = 1._DP
+          FACREI(IREI,2) = 0._DP
 C
 76        CONTINUE
 C

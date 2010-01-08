@@ -91,8 +91,8 @@ C RATE COEFFICIENT
 C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
         IF (MODCOL(5,2,IREL).NE.3) GOTO 993
       ENDIF
-      FACREA(KK,1) = FACTKK
-      FACREA(KK,2) = LOG(FACTKK)
+      FACREL(IREL,1) = FACTKK
+      FACREL(IREL,2) = LOG(FACTKK)
  
       DEFEL(IREL)=LOG(CVELI2*PMASS)
       EEFEL(IREL)=LOG(CVELI2*TMASS)
@@ -206,8 +206,8 @@ c  use collision estimator for energy balance
               EPLEL3(IREL,1,1)=ADD
             ELSEIF (MODC.EQ.2) THEN
               ADDL=LOG(FACTKK)-ADDTL
-              FACREA(KREAD,1) = EXP(ADDL)
-              FACREA(KREAD,2) = ADDL
+              FACREL(IREL,1) = EXP(ADDL)
+              FACREL(IREL,2) = ADDL
             END IF
           END IF
         ENDIF

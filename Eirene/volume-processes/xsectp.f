@@ -219,8 +219,8 @@ C  DON'T STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                 END IF
                 MODCOL(6,2,IRRC)=1
               ENDIF
-              FACREA(KK,1) = FACTKK
-              FACREA(KK,2) = LOG(FACTKK)
+              FACRRC(IRRC,1) = FACTKK
+              FACRRC(IRRC,2) = LOG(FACTKK)
 C
 C  3. ELECTRON MOMENTUM LOSS RATE
 C
@@ -321,8 +321,8 @@ C  SUBTRACT BREMSTRAHLUNG FROM ADAS PRB RATE
                   MODCOL(6,4,IRRC)=1
                 ENDIF
  
-                FACREA(KREAD,1) = FACTKK
-                FACREA(KREAD,2) = LOG(FACTKK)
+                FACRRC(IRRC,1) = FACTKK
+                FACRRC(IRRC,2) = LOG(FACTKK)
  
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)

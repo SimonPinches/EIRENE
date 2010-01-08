@@ -243,8 +243,8 @@ C  2.D) RATE COEFFICIENT(TE,NE)
         GOTO 996
       ENDIF
  
-      FACREA(KK,1) = FACTKK
-      FACREA(KK,2) = LOG(FACTKK)
+      FACREI(IREI,1) = FACTKK
+      FACREI(IREI,2) = LOG(FACTKK)
 C
 C  3. ELECTRON MOMENTUM LOSS RATE
 C
@@ -321,8 +321,8 @@ C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                   END IF
                   MODCOL(1,4,IREI)=1
                 ENDIF
-                FACREA(KREAD,1)=FACTKK
-                FACREA(KREAD,2)=LOG(FACTKK)
+                FACREI(IREI,1)=FACTKK
+                FACREI(IREI,2)=LOG(FACTKK)
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN
@@ -356,8 +356,8 @@ C        NOT A VALID OPTION
 C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
         KREAD=EHEAVY
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
-        FACREA(KREAD,1)=FACTKK
-        FACREA(KREAD,2)=LOG(FACTKK)
+        FACREI(IREI,1)=FACTKK
+        FACREI(IREI,2)=LOG(FACTKK)
         IF (MODC.EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
             DO 202 J=1,NSBOX

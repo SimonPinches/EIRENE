@@ -1,7 +1,7 @@
 C 0406: default resonant cx for He in He+/He++ plasma added:
 C       Janev (HYDHEL) ,1987, reactions 5.3.1 and 6.3.1
 C
-      FUNCTION EIRENE_CROSS(AL,K,IR,TEXT)
+      FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
 C
 C  CROSS SECTION
 C    AL=LN(ELAB), ELAB IN (EV)
@@ -30,7 +30,7 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(IN) :: AL
+      REAL(DP), INTENT(IN) :: AL, FACT
       INTEGER, INTENT(IN) :: K, IR
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
       REAL(DP) :: B(8), FP(6)
@@ -49,7 +49,7 @@ C
      .                     RP%IFEXMN,RP%IFEXMX)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
  
-          EIRENE_CROSS = EIRENE_CROSS*FACREA(K,1)
+          EIRENE_CROSS = EIRENE_CROSS*FACT
  
         ELSE IF (IFTFLG(K,1) == 3) THEN
 C  default extrapolation ifexmn=-1 not yet available
@@ -59,14 +59,14 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
             FP = REACDAT(K)%CRS%POLY%FPARM
             EIRENE_CROSS=EIRENE_EXTRAP(AL,REACDAT(K)%CRS%POLY%IFEXMN,
      .                   FP(1),FP(2),FP(3))
-            EIRENE_CROSS = EIRENE_CROSS*FACREA(K,1)
+            EIRENE_CROSS = EIRENE_CROSS*FACT
 C  ELAB ABOVE MAXIMUM ENERGY FOR FIT:
           ELSEIF (AL.GT.REACDAT(K)%CRS%POLY%RCMX) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX(K,1)
             FP = REACDAT(K)%CRS%POLY%FPARM
             EIRENE_CROSS=EIRENE_EXTRAP(AL,REACDAT(K)%CRS%POLY%IFEXMX,
      .                   FP(4),FP(5),FP(6))
-            EIRENE_CROSS = EIRENE_CROSS*FACREA(K,1)
+            EIRENE_CROSS = EIRENE_CROSS*FACT
           ELSE
             E = EXP(AL)
             XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
@@ -76,7 +76,7 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX(K,1)
               EIRENE_CROSS = EIRENE_CROSS + B(I+1)*(1.D0-XI/E)**I
             END DO
             EIRENE_CROSS = EIRENE_CROSS * 1.D-13/(XI*E)
-            EIRENE_CROSS = EIRENE_CROSS*FACREA(K,1)
+            EIRENE_CROSS = EIRENE_CROSS*FACT
           ENDIF
         ELSE
           WRITE (iunout,*) ' WRONG FITTING FLAG IN CROSS '

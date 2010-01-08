@@ -125,8 +125,8 @@ C  NO RADIATION LOSS INCLUDED
             JEREAEI(IREI) = 1
             NELREI(IREI) = ISTORE
           ENDIF
-          FACREA(ISTORE,1) = 1._DP
-          FACREA(ISTORE,2) = 0._DP
+          FACREI(IREI,1) = 1._DP
+          FACREI(IREI,2) = 0._DP
  
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1

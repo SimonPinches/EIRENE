@@ -49,8 +49,8 @@ c  fetch data for process nrc of ipls
  
       LGPRC(IPLS,IDSC)=IRRC
  
-      facrea(kk,1) = factkk
-      facrea(kk,2) = log(factkk)
+      facrrc(irrc,1) = factkk
+      facrrc(irrc,2) = log(factkk)
       NREARC(irrc) = kk
       do j=1,nrad
          tabrc1(irrc,j)=aik*factkk

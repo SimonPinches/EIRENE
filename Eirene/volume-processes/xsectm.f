@@ -274,8 +274,8 @@ C  TRANSFERRED KINETIC ENERGY: 6 EV
             NELREI(IREI)=-5
             NREAHV(IREI)=-2
           END IF
-          FACREA(-5,1) = 1._DP
-          FACREA(-5,2) = 0._DP
+          FACREI(IREI,1) = 1._DP
+          FACREI(IREI,2) = 0._DP
 C  SECOND PROCESS (MAY BE SPLITTED INTO 2A AND 2B)
           IF (IATM1.NE.IATM2) THEN
             FACTKK=0.5
@@ -327,8 +327,8 @@ C  TRANSFERRED KINETIC ENERGY: 10 EV
             NELREI(IREI) = -6
             NREAHV(IREI) = -3
           END IF
-          FACREA(-6,1) = FACTKK
-          FACREA(-6,2) = LOG(FACTKK)
+          FACREI(IREI,1) = FACTKK
+          FACREI(IREI,2) = LOG(FACTKK)
           IF (ICOUNT.EQ.1) THEN
             IA1=IATM2
             IP2=IPLS1
@@ -366,8 +366,8 @@ C  THIRD PROCESS
             NELREI(IREI) = -7
             EELDS1(IREI,1)=EELEC
           END IF
-          FACREA(-7,1) = 1._DP
-          FACREA(-7,2) = 0._DP
+          FACREI(IREI,1) = 1._DP
+          FACREI(IREI,2) = 0._DP
 C
 76        CONTINUE
           NMDSI(IMOL)=IDSC1

@@ -39,14 +39,14 @@
  
         IF (JELRRC(IRRC) == 1) THEN
           ELRC = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),0._DP,.FALSE.,0)
-          ELRC=ELRC+FACREA(KK,2)
+          ELRC=ELRC+FACRRC(IRRC,2)
           ELRC=EXP(MAX(-100._DP,ELRC))
           EIRENE_FEELRC1=-ELRC*DEIN(K)
         ELSE
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
           ELRC = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
-          EE=MAX(-100._DP,ELRC+DEINL(K)+FACREA(KK,2))
+          EE=MAX(-100._DP,ELRC+DEINL(K)+FACRRC(IRRC,2))
           EIRENE_FEELRC1=-EXP(EE)
         END IF
  
@@ -55,7 +55,7 @@
           Z = NCHRGP(IPLS)
           BREMS = 1.54E-32_DP * TEIN(K)**0.5 * Z**2 *
      .            eirene_ngffmh(Z**2 * 13.6_DP/TEIN(K))*
-     .            DEIN(K)*FACREA(KK,1)/ELCHA
+     .            DEIN(K)*FACRRC(IRRC,1)/ELCHA
           EIRENE_FEELRC1=EIRENE_FEELRC1 + BREMS
         END IF
  

@@ -31,7 +31,7 @@
         PL=MAX(DEIMIN,DEINL(K))
  
         TBRC = EIRENE_RATE_COEFF(KK,TEINL(K),PL,.TRUE.,1,ERATE)*
-     .         FACREA(KK,1)
+     .         FACRRC(IRRC,1)
         IF (IFTFLG(KK,2) < 100) TBRC=TBRC*DEIN(K)
  
       ENDIF
