@@ -268,9 +268,11 @@ C
             ELSEIF (LEVGEO.EQ.5) THEN
               K=0
               RRSTEP(ISTEP,1) = 0._DP
+              INDSRF=INSOR(ISRFS,ISTRA)
+              IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
               DO ITET=1,NTET
                 DO IS=1,4
-                  IF (INMTIT(IS,ITET) == NLIM+INSOR(ISRFS,ISTRA)) THEN
+                  IF (INMTIT(IS,ITET) == INDSRF) THEN
                     CALL EIRENE_TET_STEP (ISTEP,ITET,IS,K)
                   END IF
                 END DO
