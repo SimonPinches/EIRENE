@@ -236,8 +236,8 @@ C  X-Z-PLANE
                   ELSE
                     CALL GRDSH(1.,0.,1.)
                   END IF
-                  CALL
-     .  EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+                  CALL EIRENE_PLTLNE
+     .                 (2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
                 END DO
               ELSE
                 XX(1)=XW1
@@ -250,8 +250,8 @@ C  X-Z-PLANE
                 ELSE
                   CALL GRDSH(1.,0.,1.)
                 END IF
-                CALL
-     .  EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+                CALL EIRENE_PLTLNE
+     .               (2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
               END IF
             ENDIF
           ELSEIF (PLCUT(2)) THEN
@@ -270,8 +270,8 @@ C  X-Z-PLANE
                     ELSE
                       CALL GRDSH(1.,0.,1.)
                     END IF
-                    CALL
-     .  EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+                    CALL EIRENE_PLTLNE
+     .                   (2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
                   END DO
                 ELSE ! .NOT.NLTOR
                   XX(1)=XW1
@@ -284,8 +284,8 @@ C  X-Z-PLANE
                   ELSE
                     CALL GRDSH(1.,0.,1.)
                   END IF
-                  CALL
-     .  EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+                  CALL EIRENE_PLTLNE
+     .                 (2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
                 END IF
               ENDIF
             ELSEIF (NLTRA) THEN
@@ -302,8 +302,8 @@ C  X-Z-PLANE
                 XX(J)=RR*COS((J-1)*2.*ALPHA)
                 YY(J)=RR*SIN((J-1)*2.*ALPHA)
               ENDDO
-              CALL
-     .  EIRENE_PLTLNE(NTTRA+1,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+              CALL EIRENE_PLTLNE
+     .            (NTTRA+1,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
             ENDIF
           ENDIF
         END DO
@@ -473,8 +473,8 @@ C
                 XX(J)=RR*COS(ZSURF(J))
                 YY(J)=RR*SIN(ZSURF(J))
               ENDDO
-              CALL
-     .  EIRENE_PLTLNE(NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+              CALL EIRENE_PLTLNE
+     .             (NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
               X=RMTOR+XW2
               Z=TANAL*X
               RR=SQRT(X*X+Z*Z)
@@ -482,8 +482,8 @@ C
                 XX(J)=RR*COS(ZSURF(J))
                 YY(J)=RR*SIN(ZSURF(J))
               ENDDO
-              CALL
-     .  EIRENE_PLTLNE(NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+              CALL EIRENE_PLTLNE
+     .             (NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
             ENDIF
             CALL GRNWPN(1)
 134       CONTINUE
@@ -520,8 +520,8 @@ C    X-Y PLOT
                 XX(I)=XX(I)+RMTOR
               ENDDO
             ENDIF
-            CALL
-     .  EIRENE_PLTLNE(NRET,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+            CALL EIRENE_PLTLNE 
+     .           (NRET,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
             CALL GRNWPN(1)
 140       CONTINUE
           CALL GRDSH(1.,0.,1.)
@@ -804,8 +804,8 @@ C  NOW PLOT THAT RADIAL SURFACE
                   XX(J)=RR*COS(ZSURF(J))
                   YY(J)=RR*SIN(ZSURF(J))
                 ENDDO
-                CALL
-     .  EIRENE_PLTLNE(NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+                CALL EIRENE_PLTLNE
+     .               (NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
 C             ELSEIF (NLTRT) THEN
               ENDIF
 1549        CONTINUE
