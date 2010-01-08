@@ -298,7 +298,7 @@ C
                 KK=NREAEL(IREL)
                 PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
                 TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
-     .                 *DIIN(IPLS,IRAD)*FACREA(KK,1)
+     .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 81            CONTINUE
 C DELTA_N
@@ -356,7 +356,7 @@ C
             KK=NREAEL(IREL)
             PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
             TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
-     .             *DIIN(IPLS,IRAD)*FACREA(KK,1)
+     .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 91        CONTINUE
 C DELTA_N
@@ -422,7 +422,7 @@ C
                 KK=NREAEL(IREL)
                 PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
                 TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
-     .                 *DIIN(IPLS,IRAD)*FACREA(KK,1)
+     .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 181           CONTINUE
 c             EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
@@ -481,7 +481,7 @@ C
             KK=NREAEL(IREL)
             PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
             TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
-     .             *DIIN(IPLS,IRAD)*FACREA(KK,1)
+     .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 191       CONTINUE
 C         EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
