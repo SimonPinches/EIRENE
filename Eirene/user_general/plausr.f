@@ -82,9 +82,20 @@ c firstly, read misc target data
       enddo
       READ (line,*) NLINES
       if(nlines <= 0) then
-         write(iunout,*) ' PLAUSR: error, nlines=',nlines
+         call eirene_leer(2)
+         write(iunout,*) ' WARNING!!! '
+         write(iunout,*) ' NO TARGET DATA FOUND IN FILE ',trim(filename)
+         write(iunout,*) ' TRY TO CONTINUE WITHOUT THIS DATA'
+         call eirene_leer(2)
          close(fp+ifoff)
-         call EIRENE_exit_own(1)
+         DEALLOCATE (KSTEP)
+         DEALLOCATE (INOSRC)
+         DEALLOCATE (IPLAN)
+         DEALLOCATE (IPLEN)
+         deallocate (inmass)
+         deallocate (inchar)
+         deallocate (inchrg)
+         return
       endif
 
       allocate(itritmp(nlines))
