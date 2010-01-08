@@ -1,5 +1,5 @@
-! 23.08.06: VPX, VPY, VRX, VRY changed to ALLOCATABLE, SAVE to speed up
-!           subroutine call (save time in storage allocation)
+! 20.11.09: use NSBOX as number of accounted cells instead of NTRII in order to 
+!           generalize the routine 
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -74,7 +74,8 @@ C
                 SUMM=0.0
                 SUMEI=0.0
                 SUMEE=0.0
-                DO IN=1,NTRII
+!pb                DO IN=1,NTRII
+                DO IN=1,NSBOX
                   INC=NCLTAL(IN)
                   IF (NSTORDR >= NRAD) THEN
                     RECADD=-TABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
