@@ -87,10 +87,14 @@ C
      .                   NTBAR(2,I), NTSEITE(2,I), INMTIT(2,I),
      .                   NTBAR(3,I), NTSEITE(3,I), INMTIT(3,I),
      .                   NTBAR(4,I), NTSEITE(4,I), INMTIT(4,I)
-        IF (INMTIT(1,I) /= 0) INMTIT(1,I) = INMTIT(1,I) + NLIM
-        IF (INMTIT(2,I) /= 0) INMTIT(2,I) = INMTIT(2,I) + NLIM
-        IF (INMTIT(3,I) /= 0) INMTIT(3,I) = INMTIT(3,I) + NLIM
-        IF (INMTIT(4,I) /= 0) INMTIT(4,I) = INMTIT(4,I) + NLIM
+!pb        IF (INMTIT(1,I) /= 0) INMTIT(1,I) = INMTIT(1,I) + NLIM
+!pb        IF (INMTIT(2,I) /= 0) INMTIT(2,I) = INMTIT(2,I) + NLIM
+!pb        IF (INMTIT(3,I) /= 0) INMTIT(3,I) = INMTIT(3,I) + NLIM
+!pb        IF (INMTIT(4,I) /= 0) INMTIT(4,I) = INMTIT(4,I) + NLIM
+        IF (INMTIT(1,I) /= 0) INMTIT(1,I) = ABS(INMTIT(1,I)) + NLIM
+        IF (INMTIT(2,I) /= 0) INMTIT(2,I) = ABS(INMTIT(2,I)) + NLIM
+        IF (INMTIT(3,I) /= 0) INMTIT(3,I) = ABS(INMTIT(3,I)) + NLIM
+        IF (INMTIT(4,I) /= 0) INMTIT(4,I) = ABS(INMTIT(4,I)) + NLIM
       END DO
  
       CLOSE (UNIT=30+ifoff)
@@ -122,8 +126,8 @@ C
  
 !for testing
  
-      ntbar = 0
-      ntseite = 0
+!PB      ntbar = 0
+!PB      ntseite = 0
 
       call EIRENE_suche_nachbarn
  
@@ -173,6 +177,7 @@ C
      .                         ' SIDE ',NTSEITE(JS,JT)
               IER = 4
             END IF
+            IF (JT < 0) CYCLE
             IP(1)=NTECK(ITSIDE(1,IS),IT)
             IP(2)=NTECK(ITSIDE(2,IS),IT)
             IP(3)=NTECK(ITSIDE(3,IS),IT)
