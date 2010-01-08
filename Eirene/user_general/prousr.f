@@ -121,6 +121,8 @@ c     .       i,te,ne,bx,by,bz,ex,ey,ez,pot,psi
         enddo
 ! default BZ to 1
         plas_indep(5,ntr+1:nrad) = 1._dp
+! default BF to 1
+        plas_indep(11,ntr+1:nrad) = 1._dp
 
 c loop over species:
         do i=1,nplsi
