@@ -99,7 +99,7 @@ C
         JJ=1
         do j=1,1000
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
-          CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,'VELOCX 1')
+          CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 1')
           vrq=exp(elab-defCX(IRCX))
           vr=sqrt(vrq)
           if (cXS*vr.gt.SGCVMX(IRCX)) then
@@ -212,7 +212,7 @@ C   PRESENT VERSION: REJECTION
         VREL=SQRT(VRELQ)
         ELAB=LOG(VRELQ)+DEFCX(IRCX)
         IREAC=MODCOL(3,1,IRCX)
-        CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,'VELOCX 2')
+        CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
 C       IF (NLREJC) THEN    !  REJECTION IS NOW DEFAULT OPTION
 C
