@@ -120,6 +120,9 @@ csw added OTHER (OT) reactions
      R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),
      R FDLMPI(:),     FDLMCX(:),     FDLMEL(:),
      R ADDPI(:,:),    ADDCX(:,:),    ADDEL(:,:)
+
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+     R FACRRC(:,:), FACRPI(:,:), FACREL(:,:), FACREI(:,:), FACRCX(:,:) 
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PELDS(:),  PATDS(:,:), PMLDS(:,:), PIODS(:,:), PPLDS(:,:),
@@ -388,7 +391,8 @@ C
 C
         NTAB=NSTORDR*(NRDS+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+NRPI)+
-     P       (NPLS+1)*(NRPI+NRCX+NREL)
+     P       (NPLS+1)*(NRPI+NRCX+NREL)+
+     P       2*(NREC+NRPI+NREL+NRDS+NRCX)
 C
         NDAT=NSTORDR*(2*NRDS+NREC+NRPI+
      P       NSTORDT*(NRCX+NREL+2*NRPI+NROT))+
@@ -399,14 +403,14 @@ C
      P       NRDS*2*(NATMP+NMOLP+NIONP+1)
 C
         NMDTA=NTAB+NDAT
+ 
+        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
 C
-        MMDTA=7*4*NSPZ*(1+NCOLMC)+3*(NRCX+NREL+NRPI+NRDS)+6+
-     P        9*(NATM+NMOL+NION)+4*NPLS+
+        MMDTA=7*5*MXCOLLS+3*(NRCX+NREL+NRPI+NRDS)+6+
      P        5*NREC+
      P        6*NRCX+
-     P        10*NPLS*(NATM+NMOL+NION)+
      P        10*NREC+
-     P        2*NRCX+2*NRPI+2*NREL+5*NRDS+4*NREC+NREAC+
+     P        2*NRCX+4*NRPI+2*NREL+5*NRDS+4*NREC+NREAC+2*NROT+
      P        (NRDS+NRPI)*
      P        (NATMP+NMOLP+NIONP+NPLSP)+
 C  LG... ARRAYS
@@ -421,8 +425,6 @@ csw added NROT (photon.f)
         MSTOR1 = MAX(NRCX, NRPI, NRDS, NREL, NROT)
 c
         MSTOR2 = 24
- 
-        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
  
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
  
@@ -456,6 +458,12 @@ c       vsigot  : fehlt noch
         ALLOCATE (ADDPI(NRPI,NPLS))
         ALLOCATE (ADDCX(NRCX,NPLS))
         ALLOCATE (ADDEL(NREL,NPLS))
+
+        ALLOCATE (FACRRC(NREC,2)) 
+        ALLOCATE (FACRPI(NRPI,2)) 
+        ALLOCATE (FACREL(NREL,2)) 
+        ALLOCATE (FACREI(NRDS,2))
+        ALLOCATE (FACRCX(NRCX,2)) 
  
         ALLOCATE (PELDS(NRDS))
         ALLOCATE (PATDS(NRDS,0:NATM))
@@ -556,9 +564,7 @@ c       vsigot  : fehlt noch
  
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMXS(2) ',(MSTOR1*MSTOR2+NMDTA)*8 +
-     .                     (MMDTA -
-     .                      9*(NATM+NMOL+NION)-4*NPLS-
-     .                      10*NPLS*(NATM+NMOL+NION))*4
+     .                      MMDTA*4
  
       END IF
  
@@ -587,6 +593,12 @@ c       vsigot  : fehlt noch
       DEALLOCATE (ADDPI)
       DEALLOCATE (ADDCX)
       DEALLOCATE (ADDEL)
+
+      DEALLOCATE (FACRRC) 
+      DEALLOCATE (FACRPI) 
+      DEALLOCATE (FACREL) 
+      DEALLOCATE (FACREI)
+      DEALLOCATE (FACRCX) 
  
       DEALLOCATE (PELDS)
       DEALLOCATE (PATDS)
@@ -1002,6 +1014,17 @@ c       vsigot  : fehlt noch
         ADDPI   = 0._DP
         ADDCX   = 0._DP
         ADDEL   = 0._DP
+
+        FACRRC(:,1) = 1._DP
+        FACRRC(:,2) = 0._DP
+        FACRPI(:,1) = 1._DP 
+        FACRPI(:,2) = 0._DP 
+        FACREL(:,1) = 1._DP 
+        FACREL(:,2) = 0._DP 
+        FACREI(:,1) = 1._DP
+        FACREI(:,2) = 0._DP
+        FACRCX(:,1) = 1._DP
+        FACRCX(:,2) = 0._DP
  
         PELDS   = 0._DP
         PATDS   = 0._DP
@@ -1118,6 +1141,7 @@ c       vsigot  : fehlt noch
      . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
+     . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
      . PELDS  ,PATDS  ,PMLDS  ,PIODS  ,PPLDS  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
@@ -1161,6 +1185,7 @@ c       vsigot  : fehlt noch
      . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
+     . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
      . PELDS  ,PATDS  ,PMLDS  ,PIODS  ,PPLDS  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
@@ -1214,6 +1239,11 @@ c
       CALL FXDRDBL (IUN,ADDPI,NRPI*NPLS)
       CALL FXDRDBL (IUN,ADDCX,NRCX*NPLS)
       CALL FXDRDBL (IUN,ADDEL,NREL*NPLS)
+      CALL FXDRDBL (IUN,FACRRC,NREC*2)
+      CALL FXDRDBL (IUN,FACRPI,NRPI*2)
+      CALL FXDRDBL (IUN,FACREL,NREL*2)
+      CALL FXDRDBL (IUN,FACREI,NRDS*2)
+      CALL FXDRDBL (IUN,FACRCX,NRCX,2)
  
       CALL FXDRDBL (IUN,PELDS,NRDS)
       CALL FXDRDBL (IUN,PATDS,NRDS*(NATM+1))
