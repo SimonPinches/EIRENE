@@ -46,7 +46,7 @@ C
      .          X, Y, Z, XW2, DM, RR, XW1, ABSMAX, ORDMAX, XPLO, YPLO,
      .          ZPLO, XNULL, XMI2D, XMA2D, YNULL, XWN, YWN, YT2, TESTN,
      .          XT2, XTIP, P, YTIP, TR, RS, EP, EL, XT, YT, XTN, YTN,
-     .          DXX, DYY, A, B, XN0
+     .          DXX, DYY, A, B, XN0, timpb
       REAL(SP) :: XPS(5), YPS(5)
       INTEGER :: ISPL(NTXHST),ICLR(2*NSTS+1),IDSH(2*NSTS+1),
      .           ISWC(2*NSTS+1)
@@ -689,6 +689,7 @@ C
  
 c  fill in isolated cells (defined in couple_... or any other user
 c  segment): all cells j with nstgrd(j)=1
+          call grclp(1)
           do j=1,nsurf
             if (nstgrd(j).eq.1) then
               call
@@ -708,6 +709,7 @@ c  segment): all cells j with nstgrd(j)=1
               CALL GRFILL(5,XPS,YPS,1,1)
             ENDIF
           enddo
+          call grclp(0)
           IF (PLARR) THEN
             CALL GRNWPN(2)
             do ir=1,nr1st
@@ -1499,6 +1501,7 @@ C
       YN=YN2D
       FX=FX2D
       FY=FY2D
+      timpb = time
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
         IF (.NOT.NLPL3D) CALL
