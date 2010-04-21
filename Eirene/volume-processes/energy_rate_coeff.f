@@ -99,7 +99,7 @@
         end if
         rate = rate - xlnelch
  
-      else if (reacdat(ir)%rtcew%ifit == 3) then
+      else if (reacdat(ir)%rtcew%ifit == 5) then
  
 ! H-colrad
  
