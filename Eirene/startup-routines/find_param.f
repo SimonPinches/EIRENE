@@ -818,7 +818,7 @@ C  DATA FOR STANDARD DEVIATION
       NSDW = MAX(NSDW,NSIGSI)
       NCV = MAX(NCV,NSIGCI)
  
-C  FIND START OF NEXT INPUT BLOCK: 7
+C  FIND START OF NEXT INPUT BLOCK: 10
  
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:3) .NE. '***')
@@ -890,7 +890,11 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
-      READ (IUNIN,*)
+C   READ TRCSRC (60 LOGICALS PER LINE)
+      do j=0, nstrai, 60
+        READ (IUNIN,*)
+      end do
+
       READ (IUNIN,6666) NVOLPR
       NVOLPR=MIN(NVOLPR,100)
       DO J=1,NVOLPR
@@ -931,7 +935,10 @@ C
 C
       NPLT = 1
       IF (NVOLPL > 0) THEN
-        READ (IUNIN,*)
+C   READ PLTSRC (60 LOGICALS PER LINE)
+        DO J=0, NSTRAI, 60
+          READ (IUNIN,*)
+        END DO
         IF (LRPSCUT) READ (IUNIN,*)
         DO J=1,NVOLPL
           READ (IUNIN,'(A72)') ZEILE
