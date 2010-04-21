@@ -179,11 +179,12 @@ C
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR, JFEXMN, JFEXMX, ITOK, IER, IL, ILOGS,
-     .           IUNIN_SAVE
+     .           IUNIN_SAVE, NLOGIN
       INTEGER, SAVE :: NZADD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
       LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCLUDE, TRCDUMM
+      LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
       CHARACTER(420) :: ZEILE, FILE, ULINE
@@ -659,6 +660,7 @@ C
           ENDIF
           IF (NLFEM .OR. NLTET) THEN
             READ (IUNIN,'(A72)') ZEILE
+            IREAD = 1
             CLAB = ZEILE(1:4)
             CALL EIRENE_UPPERCASE(CLAB)
             IF (INDEX(ZEILE,'CASE')==0) THEN
@@ -670,6 +672,7 @@ C
             END IF
  
             READ (ZEILE(6:),'(A66)') CASENAME
+            IREAD = 0
             CASENAME=ADJUSTL(CASENAME)
             I2=INDEX(CASENAME,' ')
  
@@ -679,8 +682,10 @@ C
             READ (IUNIN,'(A72)') ZEILE
             IREAD = 1
             IF ( (ZEILE(1:1) .NE. '*') .AND.
-     .           (INDEX('FTft',ZEILE(1:1)) == 0) )
-     .        READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
+     .           (INDEX('FTft',ZEILE(1:1)) == 0) ) THEN
+              READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
+              IREAD = 0
+            END IF
           END IF
           IF (NLGEN) THEN
             NRGEN=NR1ST
@@ -688,6 +693,7 @@ C
         ELSEIF (INDGRD(1).EQ.6) THEN
 C  IS THERE ONE MORE LINE, OR IS NLPOL THE NEXT VARIABLE
           READ (IUNIN,'(A72)') ZEILE
+          IREAD = 1
           IPOS1=INDEX(ZEILE,'T')
           IPOS2=INDEX(ZEILE,'F')
           IF (IPOS1.GT.0.OR.IPOS2.GT.0) THEN
@@ -695,16 +701,21 @@ C  IS THERE ONE MORE LINE, OR IS NLPOL THE NEXT VARIABLE
             WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED '
 !pb            READ (ZEILE(IPOS1:IPOS1),'(L1)') NLPOL
             READ (ZEILE,'(L1)') NLPOL
+            IREAD = 0
             GOTO 222
           ENDIF
           IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
             READ (ZEILE,6664) RIA,RGA,RAA
+            IREAD = 0
           ELSEIF (NLPLG) THEN
             READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
+            IREAD = 0
           ELSEIF (NLFEM) THEN
             READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
+            IREAD = 0
           ELSEIF (NLTET) THEN
             READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
+            IREAD = 0
           ENDIF
         ENDIF
       ENDIF
@@ -714,8 +725,13 @@ C
 C INPUT SUB-BLOCK 2B
 C
 220   IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
-      IF (ZEILE(1:1) .EQ. '*') GOTO 220
+      IF (ZEILE(1:1) .EQ. '*') THEN
+        READ (IUNIN,'(A72)') ZEILE
+        IREAD = 1
+        GOTO 220
+      END IF
       READ (ZEILE,6665) NLPOL
+      IREAD = 0
 C
 222   READ (IUNIN,6665) NLPLY,NLPLA,NLPLP
       READ (IUNIN,6666) NP2ND,NPSEP,NPPLA,NPPER
@@ -2139,6 +2155,20 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
         ALLOCATE (REFCUR%RCYCSR(nspz))
         ALLOCATE (REFCUR%RCYCCR(nspz))
         ALLOCATE (REFCUR%STPRMR(nspz))
+
+        REFCUR%JSRS = 0
+        REFCUR%JSRC = 0
+        REFCUR%TRANSPR = 0._DP
+        REFCUR%RCYCFR  = 0._DP
+        REFCUR%RCYCTR  = 0._DP
+        REFCUR%RCPRMR  = 0._DP
+        REFCUR%EXPPLR  = 0._DP
+        REFCUR%EXPELR  = 0._DP
+        REFCUR%EXPILR  = 0._DP
+        REFCUR%RCYCSR  = 0._DP
+        REFCUR%RCYCCR  = 0._DP
+        REFCUR%STPRMR  = 0._DP
+
         REFCUR%REFNAME = TRIM(ADJUSTL(ZEILE(9:)))
         IREAD=0
         READ (IUNIN,6666) REFCUR%JLREF,REFCUR%JLSPT,
@@ -2468,11 +2498,27 @@ C
 910   READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 910
 C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
-      READ (ZEILE,6665) (NLPRCA(J),J=1,NATMI_IN),
-     .                  (NLPRCM(J),J=1,NMOLI_IN),
-     .                  (NLPRCI(J),J=1,NIONI_IN),
-     .                  (NLPRCPH(J),J=1,NPHOTI_IN)
-      READ (IUNIN,6666) NPRCSF
+      NLOGIN = NATMI_IN + NMOLI_IN + NIONI_IN + NPHOTI_IN
+      ALLOCATE (LOGRDH(NLOGIN))
+      LOGRDH = .FALSE.
+      DO J=1, NLOGIN, 60
+        READ (ZEILE,6665) LOGRDH(J:MIN(J+59,NLOGIN))
+        READ (IUNIN,'(A72)') ZEILE
+      END DO
+      IF (NATMI_IN > 0) NLPRCA(1:NATMI_IN) = LOGRDH(1:NATMI_IN)
+      IF (NMOLI_IN > 0) 
+     .    NLPRCM(1:NMOLI_IN) = LOGRDH(NATMI_IN+1 : NATMI_IN+NMOLI_IN)
+      IF (NIONI_IN > 0) NLPRCI(1:NIONI_IN) = 
+     .       LOGRDH(NATMI_IN+NMOLI_IN+1 : NATMI_IN+NMOLI_IN+NIONI_IN)
+      IF (NPHOTI_IN > 0) NLPRCPH(1:NPHOTI_IN) = 
+     .       LOGRDH(NATMI_IN+NMOLI_IN+NIONI_IN+1 : NLOGIN)
+      DEALLOCATE (LOGRDH)
+      READ (ZEILE,6666) NPRCSF
+!      READ (ZEILE,6665) (NLPRCA(J),J=1,NATMI_IN),
+!     .                  (NLPRCM(J),J=1,NMOLI_IN),
+!     .                  (NLPRCI(J),J=1,NIONI_IN),
+!     .                  (NLPRCPH(J),J=1,NPHOTI_IN)
+!      READ (IUNIN,6666) NPRCSF
       NPRCSF=MIN0(NLIMPS,NPRCSF)
       IPRCSF=1
 911   CONTINUE
