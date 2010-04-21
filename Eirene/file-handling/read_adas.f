@@ -61,15 +61,23 @@
  
 ! read line between data blocks
         read (29+ifoff,'(A132)') zeile
-        if (zeile(1:5) == '-----') then
+        if (zeile(2:5) == '----') then
           ind = index(zeile,'Z1')
           if (ind == 0) cycle
-          ian = ind + scan(zeile(ind+1:),' ')
+          ian = ind + scan(zeile(ind+1:),'=') + 1
           ien = ian + scan(zeile(ian+1:),'/') - 1
           read (zeile(ian:ien),*) iz
           if (iz == iz1) exit
         end if
- 
+        if (zeile(2:5) == '____') then
+          ind = index(zeile,'Q=')
+          if (ind == 0) cycle
+          ian = ind + scan(zeile(ind+1:),' ')
+          ien = len_trim(zeile)
+          read (zeile(ian:ien),*) iz
+          if (iz+1 == iz1) exit
+        end if
+
       end do
  
       do ite = 1, nte
