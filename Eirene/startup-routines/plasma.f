@@ -430,6 +430,7 @@ C
       ENDIF
  
       DEALLOCATE(HELP)
+      DEALLOCATE(HELP2)
 C
       RETURN
       END
