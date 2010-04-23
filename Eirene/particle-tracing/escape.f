@@ -1,3 +1,4 @@
+CDR 21.04.2010:  ILIIN=2: DO NOT SPUTTER (CRTX,... ETC. IS NOT DEFINED).
 !   20.06.07: maximum number of stored splitting particle MAXLEVEL introduced
 CDR 07.12.06: comments, correction for ILIIN=-3 option:
 c             old: prf... and erf... tallies have also been filled in
@@ -302,6 +303,7 @@ C
 C  STOP TRAJECTORY, FOR SOME REASON IN SUBROUTINE ADDCOL OR STDCOL
 C
       IF (.NOT.LGPART) RETURN
+      IF (ILIIN(MSURF).EQ.2) GOTO 50
 C
 C   ........................
 C   .                      .
@@ -383,8 +385,9 @@ C     .         SPTPL(IPLS,MSURFG)=SPTPL(IPLS,MSURFG)+WGHTSP+WGHTSC
           ENDIF
         ENDIF
 C
-      ENDIF
+      ENDIF ! SPUTTER MODEL DONE
 C
+50    CONTINUE
 C
 C   ...................................................................
 C   .                                                                 .
