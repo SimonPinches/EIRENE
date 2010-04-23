@@ -1,3 +1,9 @@
+c jan. 10:  printout warning in case of missing sputter data: 991
+c jan. 10:  evaluate Q and ETH for Sigmund theory, if missing in DATABASE
+c           see Eckstein, IPP 9/82  1993
+c           note: this is now "consistent with rest of modpys=2 sputter model
+c                 but less well justified for heavy projectiles on light targets
+c
 c jan. 08:  lower ceiling for FLX (flux dependence of Y_chem)
 c           increased from 1e4 to 1e19. Otherwise at high twall (e.g. 700K)
 c           the Y_chem scaled unphysically with 1/FLX.
@@ -137,7 +143,20 @@ C
       INTEGER, INTENT(OUT) :: ISPZC, ISPZP
 C
 C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTIL
-      REAL(DP), SAVE :: ETH(28,11),Q(28,11),M2M1(28,11),ES(28)
+C  target index 1-11: data read from file: SPUTER, fort.33
+C  target index 0   : data evaluated "on the fly"
+      REAL(DP), SAVE :: ETH(28,0:11),Q(28,0:11),M2M1(28,0:11),ES(28)
+      INTEGER,  SAVE :: ETF(28,0:11)
+
+      REAL(DP),      SAVE :: RTAMU(28),ZTAR(28)
+      REAL(DP),      SAVE :: BT1,BT2,BT3,BT4
+      INTEGER,       SAVE :: NPROJ(11),NTARG(28),NTAMU(28)
+      CHARACTER(20), SAVE :: TTARG(28)
+
+      REAL(DP),      SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
+     .                       FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
+      REAL(DP),SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
+
       REAL(DP), SAVE :: D(3),EDAM(3),EDES(3)
       REAL(DP) :: RSQDV, CVRSS, RT, EIRENE_FTHOMP, VX, UB, GAMMA, EMAX,
      .          F1, F2, F3, SQE, QQP, ANGFAC, CAOPT, F, VY, VZ, YDES,
@@ -145,21 +164,22 @@ C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTIL
      .          PRFCC, FLX, G2, G3, YTHERM, ERELKT, C, EREL,
      .          ENWALL, TWALL, PRFCS, ETHE0, E0ETF, SE, COSIN, QQS
       REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER, SAVE :: ETF(28,11)
-      INTEGER, SAVE :: NPROJ(11),NTARG(28),NTAMU(28)
       INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
      .                              ISPZSP_DEF(:)
       INTEGER :: MS, ITYPP, IATMP, IATMC, MSS, IMOLC, ITYPC,
      .           I28, I11, IT, MODCHM, IPS, IPR,
      .           MODPYS, IIO, IPL, ILIM, ISP, IAT, IP, ISTSI, ISURF,
-     .           ITA, NT, IA, NA, IFILE
+     .           ITA, NT, IA, NA, IFILE,ICOUNT
       integer :: isam
       real(dp) :: wg(5),pm(5),final,flxlim
       real(dp) :: EIRENE_YHAASZ97M, EIRENE_YHAASZ97
-      CHARACTER(20), SAVE :: TTARG(28)
       CHARACTER(8) :: TEXT
- 
+
+C  NPROJ: PROJECTILE IDENTIFIER
+C  NPROJ(7) CORRESPONDS TO SELF SPUTTERING.
       DATA NPROJ/1,2,3,4,12,16,0,20,40,84,131/
+
+C  NTARG:  TARGET IDENTIFIER
       DATA NTARG/703,904,1105,1206,2713,2814,4822,5123,
      .           5224,5525,5626,5927,5928,6429,7031,7332,
      .           9140,9341,9642,10646,10847,11549,18173,
@@ -178,6 +198,7 @@ C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTIL
      .           'TANTALUM            ', 'TUNGSTEN            ',
      .           'PLATINUM            ', 'GOLD                ',
      .           'LEAD                ', 'URANIUM             '/
+      DATA BT1,BT2,BT3,BT4 /7.0,-0.54,0.15,1.12/
 C  CHEMICAL EROSION DATA
       DATA D /250.,125.,83./
       DATA EDAM /15.,15.,15./
@@ -193,35 +214,42 @@ C
 C
 C  INITIALIZE SPUTER OPTION MODPYS=2
 C
+      ICOUNT=0
+
+      ONETHIRD =1._DP/3._DP
+      TWOTHIRD =2._DP/3._DP
+      ONESIXTH =1._DP/6._DP
+      FIVESIXTH=5._DP/6._DP
+
       IF (MY_PE == 0) THEN
         DO IFILE=1, NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),'SPUTER') /= 0) EXIT
         END DO
  
         IF (IFILE > NDBNAMES) THEN
-          WRITE (IUNOUT,*) ' NO DATABASENAME FOR SPUTTERING DEFINED '
+          WRITE (IUNOUT,*) ' NO DATABASE NAME FOR SPUTTERING DEFINED '
           WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
           CALL EIRENE_EXIT_OWN(1)
         END IF
  
-        OPEN (UNIT=33+ifoff,FILE=DBFNAME(IFILE))
-        READ(33+ifoff,*)
-        READ(33+ifoff,*)
-        READ(33+ifoff,*)
-        READ(33+ifoff,*)
-        READ(33+ifoff,*)
-        READ(33+ifoff,*)
-        READ(33+ifoff,*)
+        OPEN (UNIT=33,FILE=DBFNAME(IFILE))
+        READ(33,*)
+        READ(33,*)
+        READ(33,*)
+        READ(33,*)
+        READ(33,*)
+        READ(33,*)
+        READ(33,*)
         DO I28=1,28
-          READ(33+ifoff,*)
-          READ(33+ifoff,*)
-          READ(33+ifoff,'(4X,E5.2)') ES(I28)
-          READ(33+ifoff,'(12X,11(E8.2,1X))') (M2M1(I28,I11),I11=1,11)
-          READ(33+ifoff,'(12X,11(I8,  1X))') (ETF(I28,I11),I11=1,11)
-          READ(33+ifoff,'(12X,11(E8.2,1X))') (ETH(I28,I11),I11=1,11)
-          READ(33+ifoff,'(12X,11(E8.2,1X))') (Q(I28,I11),I11=1,11)
+          READ(33,*)
+          READ(33,*)
+          READ(33,'(4X,E5.2)') ES(I28)
+          READ(33,'(12X,11(E8.2,1X))') (M2M1(I28,I11),I11=1,11)
+          READ(33,'(12X,11(I8,  1X))') (ETF(I28,I11),I11=1,11)
+          READ(33,'(12X,11(E8.2,1X))') (ETH(I28,I11),I11=1,11)
+          READ(33,'(12X,11(E8.2,1X))') (Q(I28,I11),I11=1,11)
         ENDDO
-        CLOSE (UNIT=33+ifoff)
+        CLOSE (UNIT=33)
       END IF
  
       if (nprs > 1) call EIRENE_broadsput(es,m2m1,etf,eth,q,28,11)
@@ -229,9 +257,13 @@ C
 C  ASSIGN SPUTER DATA TO EIRENE PROJECTILE-TARGET COMBINATIONS
 C  FOR THIS PARTICULAR RUN
 C
-C  SELF SPUTTERING: IDENTIFY TARGET ATOMIC MASS NUMBER
+C  IDENTIFY TARGET ATOMIC MASS NUMBER NTAMU
+C                  ATOMIC MASS (AMU)
+C                  NUCLEAR CHARGE NUMBER ZTAR
       DO IT=1,28
         NTAMU(IT)=NTARG(IT)/100
+        RTAMU(IT)=M2M1(IT,1)*1.0067
+        ZTAR (IT)=NTARG(IT)-NTAMU(IT)*100
       ENDDO
 C
       IF (.NOT.ALLOCATED(IPROJ)) THEN
@@ -331,7 +363,9 @@ C
      .    'PRINTOUT FROM SUBR. SPUTER, AFTER INITIALISATION'
 C
         WRITE (iunout,*)
-        WRITE (iunout,*) 'ISPZ,IPROJ(ISPZ),IPROJS(ISPZ)'
+        WRITE (iunout,*)
+     .    'EIRENE-SPECIES, SPUTTER PROJ. NO., SELF-SPUTTER TARGET NO.'
+        WRITE (iunout,*) 'ISPZ,   IPROJ(ISPZ),IPROJS(ISPZ)'
         DO ISP=1,NSPTOT
           WRITE (iunout,*) TEXTS(ISP),IPROJ(ISP),IPROJS(ISP)
         ENDDO
@@ -442,7 +476,33 @@ C
 C
 C   ECKSTEIN/ROTH/BOHDANSKY/MODEL: IPP 9/82, FEB. 1993
 C
-        IF (IPR.GT.0.AND.ITA.GT.0) THEN
+        IF (IPR.EQ.0.AND.ITA.NE.0) THEN
+C   FOR THIS PROJECTILE THERE ARE NO DATA IN SPUTTER TABLE
+C   EVALUATE ETF FROM EQ. 7 IN REPORT IPP 9/82
+C   EVALUATE ETH  AND Q FROM EQS. 28 AND 27, RESP. IN REPORT IPP 9/82
+C   I.E. USE SAME "SIGMUND-THEORY APPROXIMATION, AND "V(R)=A*1/R^^6",
+C   AS IT IS ALSO THE CASE FOR REST OF THE SPUTTER DATA IN THIS MODEL
+          RM1=FMASS
+          RM2=RTAMU(ITA)
+          Z1=FCHAR
+          Z2=ZTAR(ITA)
+          Z123=Z1**TWOTHIRD
+          Z223=Z2**TWOTHIRD
+          ES23=ES(ITA)**TWOTHIRD
+          FM2M1=RM2/RM1
+          GM2M1=(RM1**FIVESIXTH*RM2**ONESIXTH)/(RM1+RM2)
+          GZ1Z213=(Z123+Z223)**ONETHIRD
+          GZ1Z212=(Z123+Z223)**(0.5)
+C   EQ. 7
+          XETF=30.74*(RM1+RM2)/RM2*Z1*Z2*GZ1Z212
+          ETF(ITA,0)=XETF  ! EFT IS INTEGER...
+C   EQ. 28
+          ETH(ITA,0)=(BT1*FM2M1**BT2+BT3*FM2M1**BT4)*ES(ITA)
+C   EQ. 27
+          Q(ITA,0)=0.278*Z123*Z223*GZ1Z213*GM2M1/ES23
+        ENDIF
+
+        IF (IPR.GE.0.AND.ITA.GT.0) THEN
           PRFCS=RECYCS(ISPZ,MSURF)
 C  NO SPUTTERING BELOW THRESHOLD
           IF (E0.LE.ETH(ITA,IPR).OR.PRFCS.LE.0.D0) GOTO 5000
@@ -478,6 +538,9 @@ C         CAOPT=COS(AOPT*PIA/180.D0)
           F=2.
           ANGFAC=COSIN**(-F)*EXP(F*(1.-1./COSIN)*CAOPT)
           YIELD1=YIELD1*ANGFAC
+        ELSE
+C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE 
+          GOTO 991
         ENDIF
 C
       ELSEIF (MODPYS.EQ.9) THEN
@@ -638,7 +701,7 @@ cdr all older eirene versions and warrier-code
 cdr
           ETHERM=pm(isam)
           ETHEKT=EXP(-ETHERM/TWALL)
-C
+C                                
           ERELKT=EXP(-EREL/TWALL)
  
 cdr  continuous merging of option A6 and A7, as in Warrier code. Out!
@@ -707,11 +770,13 @@ C  NO CHEM. SPUTTERING DATA FOR THIS TARGET-PROJECTILE COMBINATION
 C
       CASE(6)
 C  Haasz-Davis formula, 1998
-         yield2=EIRENE_yhaasz97m(e0,twall)
+         PRFCC = RECYCC(ISPZ,MSURF)
+         yield2=EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(7)
 C  Haasz-Davis formula, 1998, with flx. dep from Roth, Nucl.Fus 2004
+         PRFCC = RECYCC(ISPZ,MSURF)
          C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
-         yield2=C * EIRENE_yhaasz97m(e0,twall)
+         yield2=C * EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(9)
 C  USER SUPPLIED SPUTER MODEL
         CALL EIRENE_SP1USR
@@ -798,6 +863,16 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
 C
 20000 RETURN
 C
+991   CONTINUE
+      ICOUNT=ICOUNT+1
+      IF (ICOUNT.GT.10) RETURN
+      WRITE (iunout,*) 'ERROR IN SUBR. SPUTER, PHYSICAL SPUTTERING '
+      WRITE (iunout,*) 'NO SPUTTER DATA FOUND IN DATAFILE: ',TEXTS(ISPZ)
+      WRITE (iunout,*) 'MODPYS= ',MODPYS
+      MSS=MSURF
+      IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
+      WRITE (iunout,*) 'MSURF = ',MSS
+      WRITE (iunout,*) 'DO NOT SPUTTER FOR PARTICLE NO. NPANU= ',NPANU
 999   CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SPUTER '
       MSS=MSURF
