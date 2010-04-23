@@ -81,12 +81,12 @@
      .                   NCHBAR(2,I), NSEITE(2,I), INMTI(2,I),
      .                   NCHBAR(3,I), NSEITE(3,I), INMTI(3,I),
      .                   IXTRI(I),    IYTRI(I)
-!       IF (INMTI(1,I) /= 0) INMTI(1,I) = ABS(INMTI(1,I)) + NLIM
-!       IF (INMTI(2,I) /= 0) INMTI(2,I) = ABS(INMTI(2,I)) + NLIM
-!       IF (INMTI(3,I) /= 0) INMTI(3,I) = ABS(INMTI(3,I)) + NLIM
-        IF (INMTI(1,I) /= 0) INMTI(1,I) = INMTI(1,I) + NLIM
-        IF (INMTI(2,I) /= 0) INMTI(2,I) = INMTI(2,I) + NLIM
-        IF (INMTI(3,I) /= 0) INMTI(3,I) = INMTI(3,I) + NLIM
+        IF (INMTI(1,I) /= 0) INMTI(1,I) = ABS(INMTI(1,I)) + NLIM
+        IF (INMTI(2,I) /= 0) INMTI(2,I) = ABS(INMTI(2,I)) + NLIM
+        IF (INMTI(3,I) /= 0) INMTI(3,I) = ABS(INMTI(3,I)) + NLIM
+!       IF (INMTI(1,I) /= 0) INMTI(1,I) = INMTI(1,I) + NLIM
+!       IF (INMTI(2,I) /= 0) INMTI(2,I) = INMTI(2,I) + NLIM
+!       IF (INMTI(3,I) /= 0) INMTI(3,I) = INMTI(3,I) + NLIM
       END DO
  
       CLOSE (UNIT=30+ifoff)
