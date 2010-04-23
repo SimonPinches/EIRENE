@@ -4,6 +4,18 @@ C  feb06:   check for valid MODREF added
 C  apr06:   spelling error corrected: rprop --> rprob (2 times)
 C  aug06:   printout of reflection properties of surfaces only for
 C           nontransparent surfaces
+C  jan2010  ireduc and freduc introduced, to store reduced energy
+C           scaling factors vs. ispz and msurf. This reduces overhead in
+C           subr reflec. Previously: freduc was re-calculated at each entry.
+C  jan2010  bug fix: dimension of arrays for behrisch matrix spline 12-->13
+C           This can be needed if ERCUT is between Zengy(1) and Zengy(2)
+C  jan2010  in case of reduced enery scaled database reflection model:
+C           use also scaled eminr and emaxr, in order to stay within
+C           correct limits after scaling E_ref back to real system
+C           Was a problem only in case of very large/small (compared to one)
+C           reduced energy scaling factors.
+C  Oct2009  Behrisch reflection Matrix saved, to avoid restart problems
+C           with reduced energy scaling.
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -47,13 +59,19 @@ C
 C
 C---------------------------------------------------------------------
 C
+C  DATA FOR STOCHASTIC BEHRISCH REFLECTION MATRIX
       REAL(DP) :: 
      .  ZRANGES(0:12),ZENGYS(0:12),ZRS(0:12),ZIDES(12,12)
       REAL(DP) ::
      .  ZRANGE(0:12),ZDE(12),ZDEL(12),ZENGY(0:12),ZR(0:12),ZIDE(12,12),
-     .  ZIDED(12,12),XSP(12),YSP(12),ASP(12),BSP(12),CSP(12),DSP(12),
+     .  ZIDED(12,12),XSP(13),YSP(13),ASP(13),BSP(13),CSP(13),DSP(13),
      .  E0AV(0:12),QUOTR(0:11),QUOTE(0:11)
-      REAL(DP) :: EREDC, VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
+C  DATA FOR REDUCED ENERGY SCALING
+      REAL(DP), ALLOCATABLE, SAVE :: EREDUC(:,:), FREDUC(:,:)
+      REAL(DP)       :: ERDUC, EREDC, EFCT
+      INTEGER , ALLOCATABLE, SAVE :: IREDUC(:,:)
+
+      REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
      .          ZSPHI, RO5, PRBRF, EIRENE_FTHOMP, WATOM, RPROBA, ZE0, 
      .          ZA, A, VXR, VYR, VZR,
      .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
@@ -62,7 +80,7 @@ C
      .          PRFCF, XMW, CON, ZWDR, EOQ, XMP, WMIN,
      .          XCP, XCFE, DX, EXPP, RO1, EQSAVE, ZEP1, RO3,
      .          EMINR, EMAXR, RPROB, COSIN, EXPI, EXPE, RINTG, AINTG,
-     .          EINTG, EFCT, EQTO, ETEST, EQT, F1, WFAC, F2, EREDUC,
+     .          EINTG, EQTO, ETEST, EQT, F1, WFAC, F2, 
      .          FR1, XMTT, XCTT, XMPP, XCPP, RO2
       REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
      .          RF11, RF12, RF13, RF14, RF15, RF16,
@@ -160,6 +178,14 @@ C  COMBINATIONS AVAILABLE IN DATABASE MODEL
         DO 3 J=1,NFLR
           ERDC(J)=EREDC(WM(J),WC(J),TM(J),TC(J))
 3       CONTINUE
+        IF (.NOT.ALLOCATED(EREDUC)) ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
+        IF (.NOT.ALLOCATED(FREDUC)) ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
+        IF (.NOT.ALLOCATED(IREDUC)) ALLOCATE(IREDUC(NSPZ,0:NLIMPS))
+        EREDUC=0._DP
+        FREDUC=0._DP
+        IREDUC=0
+
+
 C  SET UNIFORM DISTRIBUTION OF AZIMUTAL ANGLE FOR DATABASE MODEL
 C  FOR PERPENDICULAR INCIDENCE (INDW=1)
         DO 4 INDR3=1,INR
@@ -338,9 +364,9 @@ C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD)) THEN
 C  INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
 C       Call RANSET_EIRENE(ISEED)
-        dummy=ranset_eirene(iseedR)
+        DUMMY=RANSET_EIRENE(ISEEDR)
         DUMMY=RANF_EIRENE( )
-        ISEEDR=ranget_eirene(isee)
+        ISEEDR=RANGET_EIRENE(ISEE)
         ISEEDR=INTMAX-ISEEDR
         NPANOLD=NPANU
       END IF
@@ -395,7 +421,9 @@ C       ENDIF
       ENDIF
 C
 C   FACTOR FOR CONVERSION TO REDUCED ENERGY
-      EREDUC=EREDC(XMW,XCW,XMP,XCP)
+      IF (EREDUC(ISPZ,MSURF).EQ.0.)
+     .             EREDUC(ISPZ,MSURF)=EREDC(XMW,XCW,XMP,XCP)
+      ERDUC=EREDUC(ISPZ,MSURF)
 C
 C
 C   MODREF=1: "DATABASE REFLECTION MODEL" (TRIM)
@@ -424,13 +452,27 @@ C
 100   CONTINUE
 C
 C   CHECK IF WALL REFLECTION DATA FOR IATM/IION INCIDENT ON
-C   XWALL/ZWALL ARE AVAILABLE
+C   XWALL/ZWALL ARE AVAILABLE, OR KNOWN FROM PREVIOUS PARTICLE
 C
+      IF (IREDUC(ISPZ,MSURF).NE.0) THEN
+        IFILE=IREDUC(ISPZ,MSURF)
+        EFCT=FREDUC(ISPZ,MSURF)
+        GOTO 125
+      ENDIF
+C
+C  IDENTIFY REDUCED ENERGY SCALING FILE AND FACTOR
       EQTO=1.D40
       EFCT=1.
       DO 120 IFILE=1,NFLR
-        IF (ABS(ERDC(IFILE)-EREDUC).LE.EPS12) GOTO 130
-        EQT=EREDUC/ERDC(IFILE)
+        IF (ABS(ERDC(IFILE)-ERDUC).LE.EPS12) THEN
+C  EXCACT TRIM DATABASE FILE FOUND: IFILE, SCALING FACTOR=1.
+          IREDUC(ISPZ,MSURF)=IFILE
+          FREDUC(ISPZ,MSURF)=1.
+          EFCT=1.
+          GOTO 130
+        ENDIF
+C  FIND DATABASE FILE WITH SCALING RATIO CLOSEST TO ONE
+        EQT=ERDUC/ERDC(IFILE)
         ETEST=ABS(EQT-1.)
         IF (ETEST.LT.EQTO) THEN
           ISAVE=IFILE
@@ -441,21 +483,28 @@ C
       IF (ICOUNT.LT.5.AND.TRCREF) THEN
         WRITE (iunout,*) 'TRIM-REFLECTION DATA REQUESTED BUT NOT'
         WRITE (iunout,*) 'AVAILABLE FOR THE TARGET-PROJECTIL SYSTEM:'
-        WRITE (iunout,*) 'XMWALL,XCWALL,XMPART,XCPART '
-        WRITE (iunout,*)  XMW,XCW,XMP,XCP
-        WRITE (iunout,*) 'EREDUC = ',EREDUC
+        WRITE (iunout,*) 'ISP,ISURF,XMWALL,XCWALL,XMPART,XCPART '
+        MSS=MSURF
+        IF (MSURF.GT.NLIM) MSS=-(MSURF-NLIM)
+        WRITE (IUNOUT,*)  ISPZ,MSS,XMW,XCW,XMP,XCP
+        WRITE (iunout,*) 'EREDUC = ',EREDUC(ISPZ,MSURF)
         WRITE (iunout,*) 'THE REDUCED ENERGY FORMULAS ARE APPLIED WITH'
         WRITE (iunout,*) 'THE DATA FOR THE TARGET-PROJECTIL SYSTEM:'
         WRITE (iunout,*) 'J,WM(J),WC(J),TM(J),TC(J) '
         WRITE (iunout,*)  ISAVE,WM(ISAVE),WC(ISAVE),TM(ISAVE),TC(ISAVE)
-        WRITE (iunout,*) 'ERDC(J),J=1,NFLR = ',(ERDC(J),J=1,NFLR)
+        WRITE (iunout,*) 'ERDC(J), F_REDUC = ',ERDC(ISAVE),EQSAVE
         CALL EIRENE_LEER(1)
         ICOUNT=ICOUNT+1
       ENDIF
       IFILE=ISAVE
       EFCT=EQSAVE
+      IREDUC(ISPZ,MSURF)=IFILE
+      FREDUC(ISPZ,MSURF)=EFCT
 C
+125   CONTINUE
       E0=E0*EFCT
+      EMINR=EMINR*EFCT
+      EMAXR=EMAXR*EFCT
 C
 130   CONTINUE
 C
@@ -694,7 +743,7 @@ C  MODIFIED BEHRISCH MATRIX MODEL STARTS HERE
 C
 200   CONTINUE
 C
-      E0=E0*EREDUC
+      E0=E0*EREDUC(ISPZ,MSURF)
 C
 C  DETERMINE INTERVAL FOR INCIDENT ENERGY: IRM, ED
 C
@@ -785,7 +834,7 @@ C  E0 IS FOUND NOW. NEXT:
 C  NEW WEIGHT, RESCALE ENERGY, SET VELOCITY
 C
 350   WEIGHT=WEIGHT*WFAC
-      E0=E0/EREDUC
+      E0=E0/EREDUC(ISPZ,MSURF)
       VEL=RSQDVA(IATM)*SQRT(E0)
 C     GOTO 400
 C
@@ -1028,7 +1077,9 @@ C
 C     The following ENTRY is for reinitialization of EIRENE (DMH)
  
       ENTRY EIRENE_REFLEC_REINIT
+      IF (ALLOCATED(EREDUC)) DEALLOCATE(EREDUC)
+      IF (ALLOCATED(FREDUC)) DEALLOCATE(FREDUC)
+      IF (ALLOCATED(IREDUC)) DEALLOCATE(IREDUC)
       ICOUNT = 0
-      IFIRST = 0
       NPANOLD = 0
       END
