@@ -24,7 +24,7 @@
       private
  
       public :: EIRENE_NewTree, EIRENE_DestroyTree, EIRENE_Insert, 
-     P          EIRENE_Search, EIRENE_Remove
+     P          EIRENE_Search, EIRENE_Remove, Eirene_Dump
  
       integer, parameter :: less = -1,
      .                      equal = 0,
@@ -525,21 +525,19 @@
       integer, intent(in) :: iunout
  
       IF (ASSOCIATED(node)) THEN
-         if (abs(node%balance) > 2) then
-            write (iunout,*) node%balance,node%ind
-            write (iunout,*) node%xco, node%yco, node%zco
-         end if
-!         write (iunout,*) node%balance,node%ind, node%xco, node%yco,
-!     .                    node%zco
-         IF (ASSOCIATED(node%left) .OR. ASSOCIATED(node%right)) THEN
-!            Write (iunout,*) "("
+        write (iunout,*) node%ind, node%xco, node%yco, node%zco
+        IF (ASSOCIATED(node%left) .OR. ASSOCIATED(node%right)) THEN
+          IF (ASSOCIATED(node%left)) THEN
+            Write (iunout,*) "Left", node%ind, '--> ', node%left%ind
             Call EIRENE_Traverse(node%left,iunout)
-!            IF (ASSOCIATED(node%right))  THEN
-!               Write (iunout,*) ","
-!            END IF
+          END IF
+          IF (ASSOCIATED(node%right)) THEN
+            Write (iunout,*) "Right", node%ind, '--> ', node%right%ind
             Call EIRENE_Traverse(node%right,iunout)
-!            Write (iunout,*) ")"
-         END IF
+          END IF
+        ELSE
+          Write (iunout,*) "Ende"
+        END IF
       END IF
  
       END SUBROUTINE EIRENE_Traverse
@@ -548,7 +546,7 @@
       Subroutine EIRENE_Dump(tree)
       type(TAVLTree), pointer :: tree
  
-      call EIRENE_Traverse(tree%root,0)
+      call EIRENE_Traverse(tree%root,6)
       END SUBROUTINE EIRENE_Dump
  
  
@@ -557,16 +555,15 @@
       real(dp), intent(in) :: x1, y1, z1, x2, y2, z2, dist
       real(dp) :: dx, dy, dz
  
-!      IF ( (X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2 < 1.D-10) THEN
-!      IF ( SQRT((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist < EPS5) THEN
-      IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < EPS10) THEN
+!pb 5.1.10      IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < EPS10) THEN
+      IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < 1.D-8) THEN
          EIRENE_cmp = equal
       else
-!         if (abs(x1-x2) > 1.E-5) then
-         if (abs(x1-x2)/max(x1,x2,eps10) > eps5) then
+!pb         if (abs(x1-x2)/max(x1,x2,eps10) > eps5) then
+         if (abs(x1-x2)/max(x1,x2,eps10) > eps10) then
             EIRENE_cmp=merge(less,more,x1 < x2)
-!         else if (abs(y1-y2) > 1.e-5) then
-         else if (abs(y1-y2)/max(y1,y2,eps10) > eps5) then
+!pb         else if (abs(y1-y2)/max(y1,y2,eps10) > eps5) then
+         else if (abs(y1-y2)/max(y1,y2,eps10) > eps10) then
             EIRENE_cmp=merge(less,more,y1 < y2)
          else
             EIRENE_cmp=merge(less,more,z1 < z2)
