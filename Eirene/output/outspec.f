@@ -1,4 +1,7 @@
 !pb  25.10.06:  format specifications corrected
+!pb  17.05.10:  write spectrum if the integral is nonzero
+!               this change is necessary because spectra for bulk ions are sampled 
+!               using negative weights
  
       SUBROUTINE EIRENE_OUTSPEC
  
@@ -116,7 +119,7 @@ C  SPECTRA
         WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
      .         ESTIML(ISPC)%PSPC%NSPC
         WRITE (IOUT,*)
-        IF (ESTIML(ISPC)%PSPC%SPCINT > EPS60) THEN
+        IF (ABS(ESTIML(ISPC)%PSPC%SPCINT) > EPS60) THEN
           IF (NSIGI_SPC == 0) THEN
             DO IE=1, ESTIML(ISPC)%PSPC%NSPC
               EN = ESTIML(ISPC)%PSPC%SPCMIN +
