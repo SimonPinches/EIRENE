@@ -9,7 +9,6 @@ c
  
       IMPLICIT NONE
  
-!JS      REAL(DP) :: AMUAKG
  
       CALL EIRENE_ALLOC_CCONA
  
