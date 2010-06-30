@@ -3,6 +3,9 @@ C
 !pb  3.12.06: specify NGITT in case of NLTET
 !pb           initialize XDIFF=0
 !pb 22.03.07: LEVGEO=6 --> LEVGEO=10
+!pb 28.06.10: consistency check for LEVGEO=3 or LEVGEO=4 introduced
+!             stop run if cell side is transparent but no neighbor cell
+!             is defined 
  
       SUBROUTINE EIRENE_GRID (IND)
  
@@ -37,6 +40,7 @@ C
       INTEGER :: IP, IRP, IPP, IT, KDN, KUP, NCELL, IR, I, K, IUP, IDN,
      .           J, IND, NLOCAL, ND, IC3, IC4, ITET, IC1, IC2, IC, NLJ,
      .           IFLAG, ISTS, IECKE2, MSURFG, IS, IT1, NCELL1, NSRFTR
+      LOGICAL :: LERROR
 !pb
       TYPE(TRI_ELEM), POINTER :: CUR
  
@@ -366,16 +370,14 @@ C
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.4
 C
-!pb        IF (INDGRD(1).NE.6) THEN
-!pb          WRITE (iunout,*)
-!PB     .      ' WRONG GRID OPTION SPECIFIED FOR FEM GRID '
-!pb          CALL EXIT_OWN(1)
-!pb        ENDIF
 C
 C  SET DERIVED GRID DATA FOR LEVGEO = 4 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
 !pb initialize list of triangles per gridpoint
+         
+        NCORNER = NKNOT
+
         ALLOCATE (COORTRI(NKNOT))
         DO I=1,NKNOT
           NULLIFY(COORTRI(I)%PTRI)
@@ -467,10 +469,16 @@ C
           END IF
         END DO
  
+        LERROR = .FALSE.
         DO I=1,NTRII
           DO IS = 1, 3
             J = INMTI(IS,I)
             IF ( J .NE. 0) THEN
+              IF ((NCHBAR(IS,I) == 0) .AND. (ILIIN(J) <= 0)) THEN
+                WRITE (iunout,*) 'SIDE',IS,' OF TRIANGLE ',I,
+     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
+                LERROR = .TRUE.
+              END IF
               SURF_TRIAN(J)%NUMTR = SURF_TRIAN(J)%NUMTR + 1
               SURF_TRIAN(J)%ITRIAS(SURF_TRIAN(J)%NUMTR) = I
               SURF_TRIAN(J)%ITRISI(SURF_TRIAN(J)%NUMTR) = IS
@@ -480,7 +488,12 @@ C
             END IF
           END DO
         END DO
- 
+
+        IF (LERROR) THEN
+          WRITE (iunout,*) ' CALCULATION STOPPED DUE TO ERRORS',
+     .                     ' LISTED ABOVE '
+          CALL EIRENE_EXIT_OWN(1)
+        END IF
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
@@ -510,17 +523,14 @@ C
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.5
 C
-!pb        IF (INDGRD(1).NE.6) THEN
-!pb          WRITE (iunout,*) ' WRONG GRID OPTION SPECIFIED FOR',
-!pb     .                ' TETRAHEDRON GRID '
-!pb          CALL EXIT_OWN(1)
-!pb        ENDIF
 C  GRID DATA FOR TETRAHEDRONS ARE SET IN COUPLING ROUTINE
 C  NOTHING TO BE DONE HERE
 C
 C  SET DERIVED GRID DATA FOR LEVGEO = 10 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
+         
+        NCORNER = NCOORD
  
         DO ITET=1,NTET
           IC1 = NTECK(1,ITET)
@@ -618,6 +628,7 @@ C  SIDE 3-1-4
  
         IC=0
         NTET_COLLAPS=0
+        LERROR = .FALSE.
         DO ITET=1,NTET
           DO IS=1,4
             IF ((NTBAR(IS,ITET) == 0) .AND. (INMTIT(IS,ITET) == 0)) THEN
@@ -642,10 +653,20 @@ C  SIDE 3-1-4
                 EXIT
               END IF
             END IF
+            J = INMTIT(IS,ITET)
+            IF ((NTBAR(IS,ITET) == 0) .AND. (ILIIN(J) <= 0)) THEN
+                WRITE (iunout,*) 'SIDE',IS,' OF TETRAHEDRON ',ITET,
+     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
+                LERROR = .TRUE.
+              END IF
           END DO
         END DO
- 
-        IF (IC > 0) CALL EIRENE_EXIT_OWN(1)
+
+        IF ((IC > 0) .OR. LERROR) THEN
+          WRITE (iunout,*) ' CALCULATION STOPPED DUE TO ERRORS',
+     .                     ' LISTED ABOVE '
+          CALL EIRENE_EXIT_OWN(1)
+        END IF
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF COORDINATES = ',NCOOR
