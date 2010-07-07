@@ -869,7 +869,13 @@ C  DURCHSUCHE NACHBARDREIECK
           NLSRFX=.FALSE.
           GOTO 8020
         ENDIF
+
 C  KEIN SCHNITTPUNKT GEFUNDEN UND NLSRFX=.FALSE.
+        write (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
+        write (iunout,*) ' PARTICLE TRAJECTORY STOPPED'
+        write (iunout,*) ' NPANU ',NPANU
+        LGPART = .FALSE.
+
         RETURN
 C
 C
@@ -1119,6 +1125,10 @@ C  DURCHSUCHE NACHBARDREIECK
           GOTO 11020
         ENDIF
 C  KEIN SCHNITTPUNKT GEFUNDEN UND NLSRFX=.FALSE.
+        write (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
+        write (iunout,*) ' PARTICLE TRAJECTORY STOPPED'
+        write (iunout,*) ' NPANU ',NPANU
+        LGPART = .FALSE.
         RETURN
 C
 C
