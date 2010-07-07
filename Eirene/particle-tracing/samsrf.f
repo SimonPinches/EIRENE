@@ -375,22 +375,36 @@ C
           ELSEIF (LEVGEO.EQ.4.OR.LEVGEO.EQ.5) THEN
             ISTEP=MOD(IDINT(REAL(SORIND(ISRFS,ISTRA),KIND(1.D0))),100)
             ISTEP_SPEZ=SORIND(ISRFS,ISTRA)/100
-            IF (ISTEP.NE.0.AND.NSMAX(ISTEP).NE.0) THEN
-              ALEFT(2,ISRFS,ISTRA)=RRSTEP(ISTEP,1)
-              BRGHT(2,ISRFS,ISTRA)=RRSTEP(ISTEP,NSMAX(ISTEP))
-            ELSE IF ((ISTEP == 0) .AND. (LEVGEO == 4)) THEN
-!PB
-              INS = INSOR(ISRFS,ISTRA)
-              ALEFT(2,ISRFS,ISTRA)=SURF_TRIAN(INS)%BGLT(1)
-              BRGHT(2,ISRFS,ISTRA)=SURF_TRIAN(INS)%
-     .                             BGLT(SURF_TRIAN(INS)%NUMTR+1)
-            ELSE
-              WRITE (iunout,*) ' ERROR IN SAMSRF '
-              WRITE (iunout,*)
-     .          ' INDIM=1 ONLY FORESEEN WITH STEPFUNCTION '
-              WRITE (iunout,*) ' FOR LEVGEO=4 OR LEVGEO=5 '
-              CALL EIRENE_EXIT_OWN(1)
-            ENDIF
+
+            IF (ISTEP == 0) THEN
+              IF (LEVGEO == 4) THEN
+                INS = INSOR(ISRFS,ISTRA)
+                IF (INS < 0) INS = ABS(INS) + NLIM
+                ALEFT(2,ISRFS,ISTRA)=SURF_TRIAN(INS)%BGLT(1)
+                BRGHT(2,ISRFS,ISTRA)=SURF_TRIAN(INS)%
+     .                               BGLT(SURF_TRIAN(INS)%NUMTR+1)
+              ELSE
+                WRITE (iunout,*) ' ERROR IN SAMSRF '
+                WRITE (iunout,*)
+     .            ' SAMPLING ON NONDEFAULT STANDARD SURFACES '
+                WRITE (iunout,*) ' ONLY FORESEEN FOR LEVGEO=4 '
+                CALL EIRENE_EXIT_OWN(1)
+              END IF
+
+            ELSE IF (ISTEP.NE.0) THEN
+              IF (NSMAX(ISTEP).NE.0) THEN
+                ALEFT(2,ISRFS,ISTRA)=RRSTEP(ISTEP,1)
+                BRGHT(2,ISRFS,ISTRA)=RRSTEP(ISTEP,NSMAX(ISTEP))
+              ELSE
+                WRITE (iunout,*) ' ERROR IN SAMSRF '
+                WRITE (iunout,*)
+     .            ' INDIM=1 ONLY FORESEEN WITH STEPFUNCTION '
+                WRITE (iunout,*) ' FOR LEVGEO=4 '
+                CALL EIRENE_EXIT_OWN(1)
+              END IF
+
+            END IF
+
           ELSE
             ALEFT(2,ISRFS,ISTRA)=SORAD3(ISRFS,ISTRA)
             BRGHT(2,ISRFS,ISTRA)=SORAD4(ISRFS,ISTRA)
@@ -446,9 +460,16 @@ C
 C
           ISTEP=MOD(IDINT(REAL(SORIND(ISRFS,ISTRA),KIND(1.D0))),100)
           ISTEP_SPEZ=SORIND(ISRFS,ISTRA)/100
-          IF (ISTEP.NE.0.AND.NSMAX(ISTEP).NE.0) THEN
-            ALEFT(1,ISRFS,ISTRA)=RRSTEP(ISTEP,1)
-            BRGHT(1,ISRFS,ISTRA)=RRSTEP(ISTEP,NSMAX(ISTEP))
+          IF (ISTEP.NE.0) THEN
+            IF (NSMAX(ISTEP).NE.0) THEN
+              ALEFT(1,ISRFS,ISTRA)=RRSTEP(ISTEP,1)
+              BRGHT(1,ISRFS,ISTRA)=RRSTEP(ISTEP,NSMAX(ISTEP))
+            ELSE
+              WRITE (iunout,*) ' ERROR IN SAMSRF '
+              WRITE (iunout,*) 
+     .           ' INDIM=4 ONLY FORESEEN WITH STEPFUNCTION '
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
           ELSE
             WRITE (iunout,*) ' ERROR IN SAMSRF '
             WRITE (iunout,*) ' INDIM=4 ONLY FORESEEN WITH STEPFUNCTION '
@@ -920,6 +941,7 @@ C
           Y0=YPOL(MRSURF,IPLG)+D*VVY*VVI
         ELSEIF (LEVGEO.EQ.4) THEN
           BL=ZZ(2)
+          IF (MRSURF < 0) MRSURF=ABS(MRSURF) + NLIM
           IF (ISTEP.LE.0) THEN
             DO I=1,SURF_TRIAN(MRSURF)%NUMTR
               IF (BL.LE.SURF_TRIAN(MRSURF)%BGLT(I+1)) GOTO 1503
