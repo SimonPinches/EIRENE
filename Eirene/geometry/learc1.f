@@ -1,4 +1,5 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
+!pb  01.07.10:  for LEVGEO==3 a search for the nearest triangle side was added 
  
       FUNCTION EIRENE_LEARC1 (X,Y,Z,IPO,IAN,IEN,LOGX,LOGY,NP,TEXT)
 C
@@ -45,14 +46,15 @@ C
      .          XMX1, XMX2, YMY1, YMY2, YMY4, ERR1, DX1, XMX4, DET3,
      .          DET1, DET2, D1, D2, D3, XTRMIN, XTRMAX, YTRMIN, YTRMAX,
      .          D4, DELTAX, DELTAY, O23, O12, O31, O41, O34, O13, XS1,
-     .          XS2, YS1, YS2, O1, O2
+     .          XS2, YS1, YS2, O1, O2, DD
       REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
      .                  EPDY, EPDXDY, EPDX
       INTEGER, SAVE :: IFIRST
       INTEGER :: K, L, IM, LM, IEP, KH, EIRENE_LEARCT, EIRENE_LEAUSR, 
      .           IMARK, LMARK,
      .           I, J, IE, EIRENE_LEARC1, IA, INTR1, INTR2,
-     .           IX, IY, INUM, IHEADX1, IHEADX2, IHEADY1, IHEADY2
+     .           IX, IY, INUM, IHEADX1, IHEADX2, IHEADY1, IHEADY2,
+     .           EIRENE_LEARC1_RESET, I1, I2, I3
  
       REAL(DP), ALLOCATABLE, SAVE ::
      R D12(:,:), D12I(:,:), D14(:,:), D14I(:,:), OBSC(:,:)
@@ -277,6 +279,32 @@ C  CELL I ALREADY TESTED BEFORE ?
           WRITE (iunout,*) 'IAN,IEN,LOGX,LOGY ',IAN,IEN,LOGX,LOGY
         ENDIF
         EIRENE_LEARC1=IM
+
+!  find nearest side
+        i1 = necke(1,im)
+        i2 = necke(2,im)
+        i3 = necke(3,im)
+
+!  find distances to the triangles sides
+        d1 = dist_point_line(x,y,xtrian(i1),ytrian(i1),
+     .                           vtrix(1,im),vtriy(1,im))
+        d2 = dist_point_line(x,y,xtrian(i2),ytrian(i2),
+     .                           vtrix(2,im),vtriy(2,im))
+        d3 = dist_point_line(x,y,xtrian(i3),ytrian(i3),
+     .                           vtrix(3,im),vtriy(3,im))
+        ipo = 1
+        dd = d1
+        
+        if (d2 < dd) then
+           ipo = 2
+           dd = d2
+        end if
+
+        if (d3 < dd) then
+           ipo = 3
+           dd = d3
+        end if
+        
 C
       ELSEIF (LEVGEO.EQ.3) THEN
 C
@@ -804,4 +832,98 @@ C
       ENDIF
 C
       RETURN
+
+
+      ENTRY EIRENE_LEARC1_RESET ()
+      
+      EIRENE_LEARC1_RESET = 0
+
+      if (levgeo == 3) then
+
+        IFIRST=0
+        DEALLOCATE (D12)
+        DEALLOCATE (D12I)
+        DEALLOCATE (D14)
+        DEALLOCATE (D14I)
+        DEALLOCATE (OBSC)
+        do i=1,100
+          do j=1,100
+            cur4 => heads4(i,j)%p
+            do
+              if(.not.associated(cur)) exit
+              helpp => cur4
+              cur4 => helpp%next
+              deallocate(helpp)
+            enddo
+          enddo
+        enddo
+        deallocate(heads4)
+
+
+      elseif(levgeo.eq.4) then
+        if(allocated(obsc)) deallocate(obsc)
+        if(allocated(heads)) then
+          do i=1,100
+            do j=1,100
+              cur => heads(i,j)%p
+              do
+                if(.not.associated(cur)) exit
+                curhelp => cur
+                cur => curhelp%next
+                deallocate(curhelp)
+              enddo
+            enddo
+          enddo
+          deallocate(heads)
+        endif
+        ifirst=0
+        return
+      endif
+
+      return
+
+      contains
+
+      function dist_point_line (px, py, gx, gy, vx, vy)
+
+!  compute distance between point P=(px,py) and straight line
+!  g = (gx,gy) + t_g*(vx,vy)
+
+      implicit none
+      real(dp), intent(in) :: px, py, gx, gy, vx, vy
+      real(dp) :: dist_point_line, wx, wy, det, deth, t_h
+
+!  find straight line h = P + t_h*(wx,wy) and h perpendicular to g
+      if (abs(vy) < eps10) then
+        wy = 1._dp
+        wx = 0._dp
+      else
+        wx = 1._dp
+        wy = -vx / vy
+      end if
+
+!  find intersection point of g and h from
+!  (px,py)+t_h*(wx,wy) = (gx,gy) + t_g*(vx,vy)
+      det = vx*wy - vy*wx
+
+      if (abs(det) < eps10) then
+! if line collapses to a point take distance P=(px,py) to (gx,gy)       
+        dist_point_line = sqrt ((px-gy)**2 + (py-gy)**2)
+      
+      else   
+
+        deth = vx*(gy-py) - vy*(gx-px)
+        t_h = deth / det
+
+!  footpoint f=(fx,fy) is given by 
+!      fx = px + t_h*wx
+!      fy = py + t_h*wy
+!      dist_point_line = sqrt((fx-px)**2+(fy-py)**2)
+        dist_point_line = sqrt( t_h**2*(wx**2+wy**2) )
+      
+      end if
+
+      return
+      end function dist_point_line
+      
       END
