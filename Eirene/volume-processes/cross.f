@@ -1,6 +1,9 @@
 C 0406: default resonant cx for He in He+/He++ plasma added:
 C       Janev (HYDHEL) ,1987, reactions 5.3.1 and 6.3.1
 C
+C 0710: provide value of cross section for reaction K=0
+C       K=0 means no cross section available for this reaction
+
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
 C
 C  CROSS SECTION
@@ -42,7 +45,12 @@ C
  
 C
       IF ((K >= -10) .AND. (K <= NREAC)) THEN
-        IF (IFTFLG(K,1) == 0) THEN
+
+        IF (K == 0) THEN
+        
+          EIRENE_CROSS = 0._DP
+
+        ELSE IF (IFTFLG(K,1) == 0) THEN
  
           RP => REACDAT(K)%CRS%POLY
           EXPO = EIRENE_SNGL_POLY(RP%DBLPOL,AL,RP%RCMN,RP%RCMX,RP%FPARM,
