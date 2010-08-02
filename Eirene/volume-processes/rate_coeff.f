@@ -111,6 +111,8 @@
  
       else if (reacdat(ir)%rtc%ifit == 4) then
  
+! HYDKIN
+ 
         q1 = exp(p1)
         rate = eirene_intp_table(reacdat(ir)%rtc%hyd,q1,p2)
  
