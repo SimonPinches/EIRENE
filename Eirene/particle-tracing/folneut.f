@@ -372,6 +372,7 @@ C
       IF (ITIME.EQ.1) THEN
         IF (NLRAD) THEN
           CALL EIRENE_TIMER(TS)
+          IF (.NOT.LGPART) GOTO 9911
 C
           T=TS/TL-1.0_DP
           IF (ABS(T).LE.EPS10.AND.TL.NE.1.E30_DP) GOTO 992
@@ -963,6 +964,16 @@ C
      .  ('PARTICLE IS KILLED                             ')
       WRITE (iunout,*) 'NPANU,NRCELL,ZDT1,ZTST,TL,TS '
       WRITE (iunout,*) NPANU,NRCELL,ZDT1,ZTST,TL,TS
+      GOTO 995
+C
+9911  CONTINUE
+      CALL EIRENE_LEER(1)
+      CALL EIRENE_MASAGE
+     .  ('ERROR IN FOLNEUT,  NO INTERSECTION FOUND       ')
+      CALL EIRENE_MASAGE
+     .  ('PARTICLE IS KILLED                            ')
+      WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
+      WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
       GOTO 995
 C
 992   CONTINUE
