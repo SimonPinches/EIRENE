@@ -57,8 +57,12 @@
  
       OPEN (UNIT=27+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
-      READ (27+ifoff,*)
-      READ (27+ifoff,*) CHR,n_reac
+      DO 
+        READ (27+ifoff,'(A80)') HLINE
+        CALL EIRENE_UPPERCASE(HLINE)
+        IF (INDEX(HLINE,'N_REAC') /= 0) EXIT
+      END DO
+      READ (HLINE,*) CHR,n_reac
       READ (27+ifoff,*) CHR,n_spec
       READ (27+ifoff,*) CHR,n_atoms
       READ (27+ifoff,*) CHR,n_ions
@@ -90,7 +94,7 @@
         else
           cor = cadapt(1:ic-1)
           crep = cadapt(ic+3:ic+4)
-          call EIRENE_replace_string(pchr,cor,crep)
+          call EIRENE_replace_string(pchr,cor,crep,iunout)
         end if
       end if
  
@@ -106,8 +110,8 @@
         if (ladapt) then
           oriname = hydspec(isp)
           iori = EIRENE_find_element(oriname(1:2))
-          call EIRENE_replace_string(hydspec(isp),cor,crep)
-          call EIRENE_replace_string(species(isp)%name,cor,crep)
+          call EIRENE_replace_string(hydspec(isp),cor,crep,iunout)
+          call EIRENE_replace_string(species(isp)%name,cor,crep,iunout)
         end if
  
  
@@ -496,7 +500,7 @@
         rstring = reacdat(ir)%rtc%hyd%reac_string
         write (iunout,'(i6,1x,a)') ir, rstring
         if (ladapt) then
-          call EIRENE_replace_string(rstring,cor,crep)
+          call EIRENE_replace_string(rstring,cor,crep,iunout)
           write (iunout,'(i6,1x,a/1x)') ir, rstring
         end if
  
@@ -1124,72 +1128,7 @@
  
       contains
  
- 
-      subroutine EIRENE_replace_string (inchar,rem,rep)
-      character(len=*), intent(inout) :: inchar
-      character(len=*), intent(in) :: rem, rep
-      character(len=2*len(inchar)) :: outchar
-      integer :: lin, lout, lrem, lrep, i, io, ii, linc
- 
-      linc = len(inchar)
- 
-      lout = len(outchar)
-      outchar = repeat(' ',lout)
- 
-      lin=len_trim(inchar)
-      lrem=len_trim(rem)
-      lrep=len_trim(rep)
- 
-      io = 0
-      ii = 0
- 
-      i = index(inchar(ii+1:lin),rem(1:lrem)) - 1
- 
-      do while (i >= 0)
- 
-        if (io+i > lout) exit
-        outchar(io+1:io+i) = inchar(ii+1:ii+i)
-        io = io + i
-        if (io+lrep > lout) exit
-        outchar(io+1:io+lrep) = rep(1:lrep)
-        io = io + lrep
- 
-        ii = ii + i + lrem
- 
-        i = index(inchar(ii+1:lin),rem(1:lrem)) - 1
- 
-      end do
- 
-      if (i > = 0) then
-        write (iunout,*) ' ERROR IN REPLACE_STRING '
-        write (iunout,*) ' STRING IS TOO SHORT TO HOLD ALL REPLACEMENTS'
-        write (iunout,*) ' INCHAR = ',inchar
-        write (iunout,*) ' REMCHAR = ',rem
-        write (iunout,*) ' REPCHAR = ',rep
-        write (iunout,*) ' STRING SHORTENED TO ',outchar(1:linc)
-        inchar(1:linc) = outchar(1:linc)
-        return
-      end if
- 
-      outchar(io+1:io+lin-ii) = inchar(ii+1:lin)
-      io = io + lin-ii
- 
-      if (io > linc) then
-        write (iunout,*) ' ERROR IN REPLACE_STRING '
-        write (iunout,*) ' STRING IS TOO SHORT TO HOLD ALL REPLACEMENTS'
-        write (iunout,*) ' INCHAR = ',inchar
-        write (iunout,*) ' REMCHAR = ',rem
-        write (iunout,*) ' REPCHAR = ',rep
-        write (iunout,*) ' STRING SHORTENED TO ',outchar(1:linc)
-      end if
- 
-      inchar = outchar(1:linc)
- 
-      return
-      end subroutine EIRENE_replace_string
- 
- 
- 
+
       subroutine EIRENE_find_ingred (name,mass,icharge,ipart)
  
       character(len=*), intent(in) :: name
