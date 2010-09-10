@@ -41,6 +41,7 @@ C
      .           J, IND, NLOCAL, ND, IC3, IC4, ITET, IC1, IC2, IC, NLJ,
      .           IFLAG, ISTS, IECKE2, MSURFG, IS, IT1, NCELL1, NSRFTR
       LOGICAL :: LERROR
+      LOGICAL, ALLOCATABLE :: VISITED(:,:)
 !pb
       TYPE(TRI_ELEM), POINTER :: CUR
  
@@ -881,34 +882,77 @@ C
           NLJ=NLIM+ISTS
           SAREA(NLJ)=0.
         ENDDO
-        DO I=1,NTRII
-          DO J=1,3
-            IECKE2 = J+1
-            IF (IECKE2 .EQ. 4) IECKE2 = 1
-            ISTS=ABS(INMTI(J,I))
-            IF (ISTS .GT. NLIM) THEN
+!        DO I=1,NTRII
+!          DO J=1,3
+!            IECKE2 = J+1
+!            IF (IECKE2 .EQ. 4) IECKE2 = 1
+!            ISTS=ABS(INMTI(J,I))
+!            IF (ISTS .GT. NLIM) THEN
 C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
-              XX1=XTRIAN(NECKE(J,I))
-              YY1=YTRIAN(NECKE(J,I))
-              XX2=XTRIAN(NECKE(IECKE2,I))
-              YY2=YTRIAN(NECKE(IECKE2,I))
-              DSD=((XX1-XX2)**2+(YY1-YY2)**2)**0.5
-              IF (NLTRA) THEN
-                XX1=XX1+RMTOR
-                XX2=XX2+RMTOR
-                COM=0.5*(XX1+XX2)
-                DSD=DSD*COM*2.*PIA
-              ELSE
-                DSD=DSD*ZDF
-              ENDIF
-              IF (NLMPGS.GT.NLIMPS) THEN
-                MSURFG=NLIM+NSTS+INSPAT(J,I)
+!              XX1=XTRIAN(NECKE(J,I))
+!              YY1=YTRIAN(NECKE(J,I))
+!              XX2=XTRIAN(NECKE(IECKE2,I))
+!              YY2=YTRIAN(NECKE(IECKE2,I))
+!              DSD=((XX1-XX2)**2+(YY1-YY2)**2)**0.5
+!              IF (NLTRA) THEN
+!                XX1=XX1+RMTOR
+!                XX2=XX2+RMTOR
+!                COM=0.5*(XX1+XX2)
+!                DSD=DSD*COM*2.*PIA
+!              ELSE
+!                DSD=DSD*ZDF
+!              ENDIF
+!              IF (NLMPGS.GT.NLIMPS) THEN
+!                MSURFG=NLIM+NSTS+INSPAT(J,I)
+!                SAREA(MSURFG)=DSD
+!              END IF
+!              SAREA(ISTS)=SAREA(ISTS)+DSD
+!            ENDIF
+!          ENDDO
+!        ENDDO
+
+        ALLOCATE (VISITED(3,NTRI))
+        VISITED = .FALSE.
+
+        DO ISTS = 1, NLIMPS
+          DO J= 1, SURF_TRIAN(ISTS)%NUMTR
+            I = SURF_TRIAN(ISTS)%ITRIAS(J)
+            IS = SURF_TRIAN(ISTS)%ITRISI(J)
+            IF (VISITED(IS,I)) CYCLE
+            IF (NCHBAR(IS,I) > 0) THEN
+              IF (VISITED(NSEITE(IS,I),NCHBAR(IS,I))) CYCLE
+            END IF
+            IECKE2 = IS+1
+            IF (IECKE2 .EQ. 4) IECKE2 = 1
+            XX1=XTRIAN(NECKE(IS,I))
+            YY1=YTRIAN(NECKE(IS,I))
+            XX2=XTRIAN(NECKE(IECKE2,I))
+            YY2=YTRIAN(NECKE(IECKE2,I))
+            DSD=((XX1-XX2)**2+(YY1-YY2)**2)**0.5
+            VISITED(IS,I) = .TRUE.
+            VISITED(NSEITE(IS,I),NCHBAR(IS,I)) = .TRUE.
+            IF (NLTRA) THEN
+              XX1=XX1+RMTOR
+              XX2=XX2+RMTOR
+              COM=0.5*(XX1+XX2)
+              DSD=DSD*COM*TANAL/ALPHA*PI2A
+            ELSE
+              DSD=DSD*ZDF
+            ENDIF
+            IF (NLMPGS.GT.NLIMPS) THEN
+              MSURFG=NLIM+NSTS+INSPAT(IS,I)
+              SAREA(MSURFG)=DSD
+              IF (NCHBAR(IS,I) > 0) THEN
+                MSURFG=NLIM+NSTS+INSPAT(NSEITE(IS,I),NCHBAR(IS,I))
                 SAREA(MSURFG)=DSD
               END IF
-              SAREA(ISTS)=SAREA(ISTS)+DSD
-            ENDIF
-          ENDDO
-        ENDDO
+            END IF
+            SAREA(ISTS)=SAREA(ISTS)+DSD
+          END DO
+        END DO
+
+        DEALLOCATE (VISITED)
+
       ELSEIF (LEVGEO.EQ.5) THEN
         DO ISTS=1,NSTSI
           NLJ=NLIM+ISTS
