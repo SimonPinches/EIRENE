@@ -39,9 +39,9 @@ C
      .           ICUT, ISURF
       LOGICAL :: L1, L2, L3, L4, L5
       LOGICAL :: LBOX, LLISTE
-      CHARACTER(1) :: CH1
-      CHARACTER(2) :: CH2
-      CHARACTER(3) :: CH3
+      CHARACTER(2) :: CH1
+      CHARACTER(3) :: CH2
+      CHARACTER(4) :: CH3
       TYPE(PPOINT), POINTER :: CUR, SURFAN, SURFEN
  
       EXTERNAL EIRENE_ELLO,EIRENE_ELLU,EIRENE_PARA1,EIRENE_PARA2O,
@@ -921,27 +921,32 @@ c
           ENDIF
 C  PLOT SURFACE NUMBERS
           IF (PLNUMS) THEN
-            IF (CUR%NUMSUR.LT.10) THEN
-              WRITE (CH1,'(I1)') CUR%NUMSUR
+            IF (CUR%NUMSUR.EQ.0) THEN
+! do nothing
+            ELSEIF (ABS(CUR%NUMSUR).LT.10) THEN
+              WRITE (CH1,'(I2)') CUR%NUMSUR
               CALL GRTXT
      .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
-     .                    1,CH1)
-            ELSEIF (CUR%NUMSUR.LT.100) THEN
-              WRITE (CH2,'(I2)') CUR%NUMSUR
+     .                    2,CH1)
+            ELSEIF (ABS(CUR%NUMSUR).LT.100) THEN
+              WRITE (CH2,'(I3)') CUR%NUMSUR
               CALL GRTXT
      .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
-     .                    2,CH2)
-            ELSEIF (CUR%NUMSUR.LT.1000) THEN
-              WRITE (CH3,'(I3)') CUR%NUMSUR
+     .                    3,CH2)
+            ELSEIF (ABS(CUR%NUMSUR).LT.1000) THEN
+              WRITE (CH3,'(I4)') CUR%NUMSUR
               CALL GRTXT
      .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
-     .                    3,CH3)
+     .                    4,CH3)
             ENDIF
           ENDIF
           CUR => SURFEN%NXTPNT
         END DO
       ENDIF
 C
+
+!pb      call eirene_vtkout
+
       RETURN
 6660  FORMAT (//1X,' CLOSED POLYGON OUTSIDE PLOTREGION')
 6661  FORMAT (/1X,' A,C,D,E,F',/1X,1P,5E12.4)
