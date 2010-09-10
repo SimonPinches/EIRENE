@@ -1,16 +1,16 @@
  
  
-      subroutine EIRENE_replace_string (inchar,rem,rep)
+      subroutine EIRENE_replace_string (inchar,rem,rep,iunout)
 
       use eirmod_precision
       use eirmod_parmmod
-      use eirmod_comprt, only: iunout 
 
       implicit none
 
       character(len=*), intent(inout) :: inchar
       character(len=*), intent(in) :: rem, rep
       character(len=2*len(inchar)) :: outchar
+      integer, intent(in) :: iunout
       integer :: lin, lout, lrem, lrep, i, io, ii, linc
  
       linc = len(inchar)
