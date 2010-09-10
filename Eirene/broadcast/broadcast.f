@@ -454,31 +454,87 @@
      .                  0,MPI_COMM_WORLD,ier)
  
         IF (REACDAT(IR)%LPOT) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%POT)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
+              ALLOCATE(REACDAT(IR)%POT)
+              NULLIFY (REACDAT(IR)%POT%POLY))
+              NULLIFY (REACDAT(IR)%POT%ADAS))
+              NULLIFY (REACDAT(IR)%POT%LINE))
+              NULLIFY (REACDAT(IR)%POT%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
         END IF
         IF (REACDAT(IR)%LCRS) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%CRS)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
+              ALLOCATE(REACDAT(IR)%CRS)
+              NULLIFY (REACDAT(IR)%CRS%POLY))
+              NULLIFY (REACDAT(IR)%CRS%ADAS))
+              NULLIFY (REACDAT(IR)%CRS%LINE))
+              NULLIFY (REACDAT(IR)%CRS%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS)
         END IF
         IF (REACDAT(IR)%LRTC) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%RTC)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
+              ALLOCATE(REACDAT(IR)%RTC)
+              NULLIFY (REACDAT(IR)%RTC%POLY))
+              NULLIFY (REACDAT(IR)%RTC%ADAS))
+              NULLIFY (REACDAT(IR)%RTC%LINE))
+              NULLIFY (REACDAT(IR)%RTC%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
         END IF
         IF (REACDAT(IR)%LRTCMW) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%RTCMW)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
+              ALLOCATE(REACDAT(IR)%RTCMW)
+              NULLIFY (REACDAT(IR)%RTCMW%POLY))
+              NULLIFY (REACDAT(IR)%RTCMW%ADAS))
+              NULLIFY (REACDAT(IR)%RTCMW%LINE))
+              NULLIFY (REACDAT(IR)%RTCMW%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
         END IF
         IF (REACDAT(IR)%LRTCEW) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%RTCEW)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
+              ALLOCATE(REACDAT(IR)%RTCEW)
+              NULLIFY (REACDAT(IR)%RTCEW%POLY))
+              NULLIFY (REACDAT(IR)%RTCEW%ADAS))
+              NULLIFY (REACDAT(IR)%RTCEW%LINE))
+              NULLIFY (REACDAT(IR)%RTCEW%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
         END IF
         IF (REACDAT(IR)%LOTH) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%OTH)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
+              ALLOCATE(REACDAT(IR)%OTH)
+              NULLIFY (REACDAT(IR)%OTH%POLY))
+              NULLIFY (REACDAT(IR)%OTH%ADAS))
+              NULLIFY (REACDAT(IR)%OTH%LINE))
+              NULLIFY (REACDAT(IR)%OTH%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH)
         END IF
         IF (REACDAT(IR)%LPHR) THEN
-          IF (MY_PE .NE. 0) ALLOCATE(REACDAT(IR)%PHR)
+          IF (MY_PE .NE. 0) THEN
+            IF (.NOT.ASSOCIATED(REACDAT(IR)%PHR)) THEN
+             ALLOCATE(REACDAT(IR)%PHR)
+              NULLIFY (REACDAT(IR)%PHR%POLY))
+              NULLIFY (REACDAT(IR)%PHR%ADAS))
+              NULLIFY (REACDAT(IR)%PHR%LINE))
+              NULLIFY (REACDAT(IR)%PHR%HYD))
+            END IF
+          END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR)
         END IF
       END DO
@@ -1253,7 +1309,7 @@
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%HYD%REAC_STRING,50,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RPRT,20,MPI_CHARACTER,
+        CALL MPI_BCAST (RP%HYD%RPRT,100,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)
 
         IF (MY_PE .NE. 0) THEN
