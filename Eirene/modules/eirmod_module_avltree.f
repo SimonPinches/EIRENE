@@ -91,6 +91,81 @@
       END SUBROUTINE EIRENE_DestroyNode
  
  
+      SUBROUTINE EIRENE_DestroyNodes(node)
+ 
+      type(tavlnode), pointer :: node
+      
+      type TNodelist
+         type(tavlnode), pointer :: cnode
+         type(TNodelist), pointer :: next
+      end type TNodelist
+
+      type(tavlnode), pointer :: cur, actu
+      type(TNodelist), pointer :: tliste, nliste
+
+      logical :: fertig
+
+      fertig = .false.
+
+      IF (.not.ASSOCIATED(node)) return
+
+      cur => node
+
+      do while (associated(cur))
+
+        if (associated(cur%left)) then
+
+           allocate (nliste)
+           nliste%cnode => cur
+           nliste%next => tliste
+           tliste => nliste
+           cur => cur%left
+           fertig =.false.
+           
+        else if (associated(cur%right)) then
+
+           allocate (nliste)
+           nliste%cnode => cur
+           nliste%next => tliste
+           tliste => nliste
+           cur => cur%right
+           fertig =.false.
+
+        else
+
+           actu => cur
+           if (associated(actu,node)) then
+              write (*,*) ' hier bin ich '
+           end if
+
+
+           if (fertig) then
+              deallocate(cur)
+              exit
+           end if
+
+           if (associated(tliste)) then
+             cur => tliste%cnode
+             if (associated(cur)) then
+               if (associated(actu,cur%left)) nullify(cur%left)
+               if (associated(actu,cur%right)) nullify(cur%right)
+               deallocate(actu)
+               nliste => tliste
+               tliste => tliste%next
+               if (associated(nliste)) deallocate (nliste)
+             end if
+!pb           if (.not.associated(tliste)) then
+           else
+             fertig = .true.
+           end if
+
+        end if
+        
+      end do
+
+      END SUBROUTINE EIRENE_DestroyNodes
+ 
+ 
       FUNCTION EIRENE_NewTree () result(tree)
  
       type (tavltree), pointer :: tree
@@ -106,7 +181,8 @@
       type (tavltree), pointer :: tree
  
       IF (ASSOCIATED(tree)) THEN
-         call EIRENE_DestroyNode(tree%root)
+!pb         call EIRENE_DestroyNode(tree%root)
+         call EIRENE_DestroyNodes(tree%root)
          DEALLOCATE(tree)
       END IF
       END SUBROUTINE EIRENE_DestroyTree
