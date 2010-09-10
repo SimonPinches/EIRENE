@@ -1,5 +1,5 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-!pb  01.07.10:  for LEVGEO==3 a search for the nearest triangle side was added 
+!pb  01.07.10:  for LEVGEO==4 a search for the nearest triangle side was added 
  
       FUNCTION EIRENE_LEARC1 (X,Y,Z,IPO,IAN,IEN,LOGX,LOGY,NP,TEXT)
 C
