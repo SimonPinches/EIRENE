@@ -49,7 +49,7 @@ C
      .          DXX, DYY, A, B, XN0, timpb
       REAL(SP) :: XPS(5), YPS(5)
       INTEGER :: ISPL(NTXHST),ICLR(2*NSTS+1),IDSH(2*NSTS+1),
-     .           ISWC(2*NSTS+1)
+     .           ISWC(2*NSTS+1), INON(2*NSTS+1)
       INTEGER, ALLOCATABLE :: IFARB(:,:), IDASH(:,:), ICPSPZ(:)
       INTEGER :: ICP, ISTR, IC, IC1, IC2, NCTPNT, IDUMMY, ICT, IEN,
      .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA, 
@@ -542,10 +542,12 @@ C
                 NSW=NSW+1
                 ICLR(NSW)=ILCOL(NLIM+J)
                 IDSH(NSW)=1
+                INON(NSW)=J
                 IF (ILIIN(NLIM+J).GT.0) IDSH(NSW)=0
                 ISWC(NSW)=MAX(1,IRPTA(J,2))
                 ICLR(NSW+1)=1
                 IDSH(NSW+1)=1
+                INON(NSW+1)=J
                 ISWC(NSW+1)=MIN(NPOINT(2,NPPLG),IRPTE(J,2))
                 NSW=NSW+1
               ENDIF
@@ -578,6 +580,13 @@ C  SORTIEREN, NACH "POLOIDALEM BEGIN" < "POLOIDALEM ENDE"
                 IHELP=IDSH(I+1)
                 IDSH(I+1)=IDSH(I+3)
                 IDSH(I+3)=IHELP
+ 
+                IHELP=INON(I)
+                INON(I)=INON(I+2)
+                INON(I+2)=IHELP
+                IHELP=INON(I+1)
+                INON(I+1)=INON(I+3)
+                INON(I+3)=IHELP
               ENDIF
 159         CONTINUE
             IF (ISW.GT.0) GOTO 157
@@ -588,10 +597,12 @@ C
 1585        IF (ISWC(I).EQ.ISWC(I+1)) THEN
               ICLR(I)=ICLR(I+1)
               IDSH(I)=IDSH(I+1)
+              INON(I)=INON(I+1)
               DO 1596 J=I+2,NSW
                 ISWC(J-1)=ISWC(J)
                 ICLR(J-1)=ICLR(J)
                 IDSH(J-1)=IDSH(J)
+                INON(J-1)=INON(J)
 1596          CONTINUE
               NSW=NSW-1
               IF (I.LT.NSW) GOTO 1585
@@ -603,6 +614,7 @@ C
             ISWC(NSW)=100000
             ICLR(NSW)=1
             IDSH(NSW)=1
+            INON(NSW)=999
 C
             ISW=1
             CALL GRDSH (0.2,0.5,0.2)
@@ -619,7 +631,7 @@ C               IF (NLTRT) XTN=XTN+RMTOR
 C
                 IF (IFL.EQ.0.AND.K.EQ.ISWC(ISW)) THEN
                   LSTORE = PLSTOR
-                  INOSF=0
+                  INOSF = -INON(ISW)
                   IF (.NOT.NLSPLT(NU)) CALL GRNWPN (ICLR(ISW))
                   IF (IDSH(ISW).EQ.0) CALL GRDSH (1.,0.,1.)
                   IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
@@ -674,6 +686,7 @@ C
                   IF (.NOT.NLSPLT(NU)) CALL GRNWPN (ICLR(ISW))
                   IF (IDSH(ISW).EQ.0) CALL GRDSH (1.,0.,1.)
                   IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
+                  INOSF = -INON(ISW)
                   ISW=ISW+1
                   CALL GRJMP (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                   LSTORE = PLSTOR
@@ -1196,10 +1209,12 @@ C
               NSW=NSW+1
               ICLR(NSW)=ILCOL(NLIM+J)
               IDSH(NSW)=1
+              INON(NSW)=J
               IF (ILIIN(NLIM+J).GT.0) IDSH(NSW)=0
               ISWC(NSW)=MAX(IAN,IRPTA(J,1))
               ICLR(NSW+1)=1
               IDSH(NSW+1)=1
+              INON(NSW+1)=J
               ISWC(NSW+1)=MIN(IEN,IRPTE(J,1))
               NSW=NSW+1
             ENDIF
@@ -1232,6 +1247,13 @@ C  SORTIEREN, NACH "RADIALEM BEGIN" < "RADIALEM ENDE"
               IHELP=IDSH(I+1)
               IDSH(I+1)=IDSH(I+3)
               IDSH(I+3)=IHELP
+
+              IHELP=INON(I)
+              INON(I)=INON(I+2)
+              INON(I+2)=IHELP
+              IHELP=INON(I+1)
+              INON(I+1)=INON(I+3)
+              INON(I+3)=IHELP
             ENDIF
 178       CONTINUE
           IF (ISW.GT.0) GOTO 179
@@ -1241,10 +1263,12 @@ C
 1785      IF (ISWC(I).EQ.ISWC(I+1)) THEN
             ICLR(I)=ICLR(I+1)
             IDSH(I)=IDSH(I+1)
+            INON(I)=INON(I+1)
             DO 1796 J=I+2,NSW
               ISWC(J-1)=ISWC(J)
               ICLR(J-1)=ICLR(J)
               IDSH(J-1)=IDSH(J)
+              INON(J-1)=INON(J)
 1796        CONTINUE
             NSW=NSW-1
             IF (I.LT.NSW) GOTO 1785
@@ -1256,6 +1280,8 @@ C
           ISWC(NSW)=100000
           ICLR(NSW)=1
           IDSH(NSW)=1
+          INON(NSW)=99
+
           ISW=1
           CALL GRDSH (0.2,0.5,0.2)
           LSTORE = .FALSE.
@@ -1270,7 +1296,7 @@ C
             IF (IFL.EQ.0.AND.I.EQ.ISWC(ISW)) THEN
               IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
               LSTORE = PLSTOR
-              INOSF=0
+              INOSF=-INON(ISW)
               IF (IDSH(ISW).EQ.0) CALL GRDSH (1.,0.,1.)
               IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
               ISW=ISW+1
@@ -1324,6 +1350,7 @@ C
             IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
             IF (IDSH(ISW).EQ.0) CALL GRDSH (1.,0.,1.)
             IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
+            INOSF=-INON(ISW)
             ISW=ISW+1
             LSTORE = PLSTOR
             INOSF=0
