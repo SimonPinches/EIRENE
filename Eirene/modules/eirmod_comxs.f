@@ -56,7 +56,7 @@
         INTEGER :: NTEMPS
         REAL(DP), POINTER :: TEMPS(:), RATES(:), RATIO(:)
         CHARACTER(50) :: REAC_STRING, REACNAME
-        CHARACTER(20) :: RPRT
+        CHARACTER(100) :: RPRT
       END TYPE HYDKIN_DATA
  
       TYPE FIT_FORMS
@@ -403,8 +403,6 @@ C
      P       NRDS*2*(NATMP+NMOLP+NIONP+1)
 C
         NMDTA=NTAB+NDAT
- 
-        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
 C
         MMDTA=7*5*MXCOLLS+3*(NRCX+NREL+NRPI+NRDS)+6+
      P        5*NREC+
@@ -425,6 +423,8 @@ csw added NROT (photon.f)
         MSTOR1 = MAX(NRCX, NRPI, NRDS, NREL, NROT)
 c
         MSTOR2 = 24
+ 
+        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
  
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
  
