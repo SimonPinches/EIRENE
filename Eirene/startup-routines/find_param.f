@@ -32,7 +32,8 @@ C
      .           IPLS, NRC, NRE, NLINES, I2, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
-     .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1
+     .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1,
+     .           IATM, IMOL, IION, IPHOT, NUMSEC, ISPZ, IC
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
@@ -41,11 +42,13 @@ C
      .           NLGEN
       LOGICAL :: NLRAD, NLPOL,  NLTOR, NLADD,  NLMLT, NLTRIM
       LOGICAL :: NLTRA, NLTRT, NLTRZ
-      LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF
+      LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       CHARACTER(80) :: ZEILE, CASENAME, FILENAME, ULINE, FILE
-      CHARACTER(12) :: HYDKIN_DEFAULT, CHR
+      CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
       CHARACTER(4) :: CLAB
-      CHARACTER(15), ALLOCATABLE :: HYDSPEC(:), BULK_NAME(:)
+      CHARACTER(2) :: COR, CREP
+      CHARACTER(15), ALLOCATABLE :: HYDSPEC(:), BULK_NAME(:), 
+     .                              PART_NAME(:)
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
 C
@@ -506,10 +509,13 @@ C
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
       IF (IEND > 0) THEN
-        CALL
-     .  EIRENE_READ_TOKEN(ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,
-     .                  .FALSE.)
+        CALL EIRENE_READ_TOKEN
+     .       (ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,.FALSE.)
         LHYDDEF=.TRUE.
+ 
+        IEND = IEND + 7 + ITOK
+        CALL EIRENE_READ_TOKEN(ZEILE(IEND+1:),' ',CADAPT,ITOK,IER,
+     .                  .FALSE.)
         READ (IUNIN,'(A72)') ZEILE
       END IF
       READ (ZEILE,*) NREACI
@@ -522,14 +528,24 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
+      ALLOCATE (PART_NAME(500))
+      PART_NAME=REPEAT(' ',15)
+C
       WRITE (iunout,*)
      .  '*4A.   NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       READ (IUNIN,*) NATMI
       NATM = MAX(NATM,NATMI)
  
-      READ (IUNIN,'(A72)') ZEILE
-      DO WHILE (ZEILE(1:1) .NE. '*')
+      ISPZ = 0
+      DO IATM=1,NATMI
         READ (IUNIN,'(A72)') ZEILE
+        ISPZ = ISPZ + 1
+        PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+        READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
+        DO K=1,NRC
+          READ (IUNIN,*)
+          READ (IUNIN,*)
+        END DO
       END DO
 C
 C  READ NEUTRAL MOLECULES SPECIES CARDS
@@ -539,9 +555,15 @@ C
       READ (IUNIN,*) NMOLI
       NMOL = MAX(NMOL,NMOLI)
  
-      READ (IUNIN,'(A72)') ZEILE
-      DO WHILE (ZEILE(1:1) .NE. '*')
+      DO IMOL=1,NMOLI
         READ (IUNIN,'(A72)') ZEILE
+        ISPZ = ISPZ + 1
+        PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+        READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
+        DO K=1,NRC
+          READ (IUNIN,*)
+          READ (IUNIN,*)
+        END DO
       END DO
 C
 C  READ TEST PARTICLE IONS SPECIES CARDS
@@ -550,23 +572,34 @@ C
       READ (IUNIN,*) NIONI
       NION = MAX(NION,NIONI)
  
-C  FIND START OF NEXT INPUT BLOCK: 4
- 
-      READ (IUNIN,'(A72)') ZEILE
-      DO WHILE (ZEILE(1:1) .NE. '*')
+      DO IION=1,NIONI
         READ (IUNIN,'(A72)') ZEILE
+        ISPZ = ISPZ + 1
+        PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+        READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
+        DO K=1,NRC
+          READ (IUNIN,*)
+          READ (IUNIN,*)
+        END DO
       END DO
  
 C  FIND START OF NEXT INPUT BLOCK: 4D
+      READ (IUNIN,'(A72)') ZEILE
       NPHOTI=0
       IF (ZEILE(1:3) == '***') GOTO 500
       WRITE (iunout,*) '*4D.   PHOTONS SPECIES CARDS, NPHOTI SPECIES '
       READ (IUNIN,*) NPHOTI
       NPHOT = MAX(NPHOT,NPHOTI)
  
-      READ (IUNIN,'(A72)') ZEILE
-      DO WHILE (ZEILE(1:3) .NE. '***')
+      DO IPHOT=1,NPHOTI
         READ (IUNIN,'(A72)') ZEILE
+        ISPZ = ISPZ + 1
+        PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+        READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
+        DO K=1,NRC
+          READ (IUNIN,*)
+          READ (IUNIN,*)
+        END DO
       END DO
 C
 C  READ DATA FOR PLASMA-BACKGROUND , 500--599
@@ -590,6 +623,8 @@ C
       DO IPLS=1,NPLSI
         READ (IUNIN,'(A72)') ZEILE
         BULK_NAME(IPLS)(1:8) = ZEILE(4:11)
+        ISPZ = ISPZ + 1
+        PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         ULINE = ZEILE
         CALL EIRENE_UPPERCASE(ULINE)
         INMDL=INDEX(ULINE,'FORT')+INDEX(ULINE,'SAHA')+
@@ -623,8 +658,12 @@ C
         FILENAME=HYDKIN_DEFAULT(1:LL) // '.reactions'
         OPEN (UNIT=27+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
-        READ (27+ifoff,*)
-        READ (27+ifoff,*) CHR,n_reac
+        DO 
+          READ (27+ifoff,'(A80)') ZEILE
+          CALL EIRENE_UPPERCASE(ZEILE)
+          IF (INDEX(ZEILE,'N_REAC') /= 0) EXIT
+        END DO
+        READ (ZEILE,*) CHR,n_reac
         READ (27+ifoff,*) CHR,n_spec
         READ (27+ifoff,*) CHR,n_atoms
         READ (27+ifoff,*) CHR,n_ions
@@ -638,7 +677,20 @@ C
         READ (HLINE(52:),*) IEIGEN(1:N_SPEC)
 
         CLOSE (UNIT=27+ifoff)
- 
+
+        cor = '  '
+        crep = '  '
+        ladapt = len_trim(cadapt) > 0
+        if (ladapt) then
+          ic = index(cadapt,'-->')
+          if (ic == 0) then
+            ladapt = .false.
+          else
+            cor = cadapt(1:ic-1)
+            crep = cadapt(ic+3:ic+4)
+          end if
+        end if
+
 !pb        N_BULKIONS = COUNT((SCAN(HYDSPEC(1:N_SPEC),'+') > 0) .AND.
 !pb     .                     (IEIGEN(1:N_SPEC) == 0))
 !pb        N_TESTIONS = N_IONS - N_BULKIONS
@@ -650,8 +702,10 @@ C
           IF (IEIGEN(I) == 0) THEN
             BNAME = REPEAT(' ',15)
             call EIRENE_remove_char (hydspec(i),BNAME,'_^')
-            DO IPLS = 1, NPLSI
-              IF (BULK_NAME(IPLS)(1:8) == BNAME(1:8)) CYCLE ILOOP
+            if (ladapt) 
+     .        call EIRENE_replace_string(BNAME,cor,crep,iunout)
+            DO IPLS = 1, ISPZ
+              IF (PART_NAME(IPLS)(1:8) == BNAME(1:8)) CYCLE ILOOP
             END DO
 ! SPECIES NAME IS UNKNOWN IN INPUTFILE ==> INCREASE NO. OF BULKS
             N_BULKIONS = N_BULKIONS + 1
@@ -1098,5 +1152,4 @@ C
 6664  FORMAT (6E12.4)
 6665  FORMAT (12(5L1,1X))
 6666  FORMAT (12I6)
- 
       END
