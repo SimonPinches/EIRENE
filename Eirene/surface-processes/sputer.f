@@ -1,3 +1,7 @@
+c aug. 10:  bug fix: selecting of the sputtered molecule by specifying 
+c           ISRC > NATMI in Eirene input resulted in a sputtered atom of 
+c           undefined species.  
+c
 c jan. 10:  printout warning in case of missing sputter data: 991
 c jan. 10:  evaluate Q and ETH for Sigmund theory, if missing in DATABASE
 c           see Eckstein, IPP 9/82  1993
@@ -791,7 +795,7 @@ C  ATOMS OR MOLECULES
 C
       IF (YIELD2.GT.0.D0) THEN
         IF (IGASC.GT.0.AND.IGASC.LE.NATMI+NMOLI) THEN
-          IF (ISPZC.GT.NATMI) THEN
+          IF (IGASC.GT.NATMI) THEN
             ITYPC=2
             IMOLC=IGASC-NATMI
             ISPZC=IMOLC+NSPA
