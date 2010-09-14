@@ -47,7 +47,7 @@ C
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN OUT) :: IFLAG
       REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, VELQ, CNDYNPH, WTRV,
-     .            V0_PARB, PARMOM_0, P, BX, BY, BZ, VION
+     .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS)
       REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
@@ -562,13 +562,8 @@ C
 C
         IF (LMAPL) THEN
  
-          IF (INDPRO(5) == 8) THEN
-            CALL EIRENE_VECUSR (1,BX,BY,BZ,1)
-          ELSE
-            BX=BXIN(IRDO)
-            BY=BYIN(IRDO)
-            BZ=BZIN(IRDO)
-          END IF
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF)
+
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
               CALL EIRENE_VECUSR (2,VX(IPL),VY(IPL),VZ(IPL),IPL)
@@ -1171,13 +1166,8 @@ C
 C
         IF (LMMPL) THEN
  
-          IF (INDPRO(5) == 8) THEN
-            CALL EIRENE_VECUSR (1,BX,BY,BZ,1)
-          ELSE
-            BX=BXIN(IRDO)
-            BY=BYIN(IRDO)
-            BZ=BZIN(IRDO)
-          END IF
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF)
+
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
               CALL EIRENE_VECUSR (2,VX(IPL),VY(IPL),VZ(IPL),IPL)
@@ -1781,13 +1771,8 @@ C
 C
         IF (LMIPL) THEN
  
-          IF (INDPRO(5) == 8) THEN
-            CALL EIRENE_VECUSR (1,BX,BY,BZ,1)
-          ELSE
-            BX=BXIN(IRDO)
-            BY=BYIN(IRDO)
-            BZ=BZIN(IRDO)
-          END IF
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF)
+ 
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
               CALL EIRENE_VECUSR (2,VX(IPL),VY(IPL),VZ(IPL),IPL)

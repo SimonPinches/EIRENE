@@ -268,7 +268,7 @@ C
 
       call mpi_barrier(mpi_comm_world,ier)
       
-      call eirene_calstr_usr
+      call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
 
       call mpi_barrier(mpi_comm_world,ier)
 

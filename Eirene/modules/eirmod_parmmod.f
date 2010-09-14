@@ -205,7 +205,7 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
         NALSP=NALS+1
         NSNVP=NSNV+1
  
-        NTALI=17
+        NTALI=21
         NTALN=12
         NTALO=14
         NTALV=100

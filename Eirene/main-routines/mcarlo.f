@@ -5,7 +5,7 @@ c                 v.kotov
 c  19.12.05:  bug: no printout of surface tally std. dev., for sum over strata
 c             bug fix: here in macrlo.f: sigmaw = stvw and sgmws=stvws added
 c             also needed for this bug fix: clear_sumostra, stat_sumostra
- 
+
 !PB 02.03.06: storing of trajectories
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
@@ -25,6 +25,7 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 !             taken into account
 !   21.07.09: Sense of XTIM changed: now XTIM is the time allocated for each stratum
 !             no longer the end time
+!dr 10.05.10: LOCAT0 might also turn off a stratum. Then: skip this is MCARLO, added after call to LOCAT0
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -57,26 +58,26 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       INCLUDE 'mpif.h'
 C
       CHARACTER(6) :: CIS
       CHARACTER(10) :: CDATE, CTIME
- 
+
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP) :: ZVOLIN(NRTAL), ZVOLIW(NRTAL),
      .          XTIM(0:NSTRA), SCLTAL(N1MX,NTALV), DXTIM(0:NSTRA)
       REAL(DP) :: ST, FFF, DELT, XFL1,
      .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
-     .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX, 
+     .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
      .          FLX, VAL, ZW, ZWW, VALUE, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          SECND2, OVER, SECND1, WTT, SECDEL, DUMRAN, timan, timen,
      .          tim1, tim2
       REAL(DP), EXTERNAL :: RANF_EIRENE, RANSET_EIRENE
- 
+
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
       INTEGER :: ITAL, ISDV, IALS, ISTRAA, ISTRAE, ICELL,
      .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX, NINIST,
@@ -136,7 +137,7 @@ C  TO RANDOM SAMPLING ROUTINES
         IRNDVC=64
       ENDIF
       IRNDVH=IRNDVC/2
- 
+
       TIMen=EIRENE_SECOND_OWN()
       write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
       tim1 = timen
@@ -221,10 +222,10 @@ C
 CVKMPI      XTIM(0)=EIRENE_SECOND_OWN()
 CVKMPI      SECND=XTIM(0)
       SECND=EIRENE_SECOND_OWN()
- 
+
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
- 
+
       timan=secnd
 C
 C  REMAINING CPU TIME, SUBSTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
@@ -248,7 +249,7 @@ C  REMAINING CPU TIME, SUBSTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
      .                     ' TURNED OFF, BECAUSE FLUX=0.0'
           CALL EIRENE_LEER(1)
         ENDIF
-        IF (NPTS(ISTRA).LE.0.OR.FLUX(ISTRA).LE.0.D0) 
+        IF (NPTS(ISTRA).LE.0.OR.FLUX(ISTRA).LE.0.D0)
      .     NLSRON(ISTRA) = .FALSE.
         XPT=XPT+FLOAT(NPTS(ISTRA))
         XFL=XFL+FLUX(ISTRA)
@@ -272,22 +273,22 @@ CVKMPI          xtim(istra)=xtim(istra-1)
           xtim(istra)=0.0 !VKMPI
         end if
 8     CONTINUE
- 
+
 C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE SWITCHED OFF (SHORT CYCLE)
 CVKMPI      DO ISTRA=1,NSTRAI
 CVKMPI        DXTIM(ISTRA)=XTIM(ISTRA)-XTIM(ISTRA-1)
 CVKMPI        IF (.NOT.NLSRON(ISTRA)) DXTIM(ISTRA)=0._DP
 CVKMPI      END DO
- 
+
 CVKMPI      DO ISTRA=1,NSTRAI
 CVKMPI        XTIM(ISTRA)=XTIM(ISTRA-1)+DXTIM(ISTRA)
 CVKMPI      END DO
 
       XTIM(0)=SUM(XTIM(1:NSTRA))
 C
- 
+
       TIMen=EIRENE_SECOND_OWN()
- 
+
       CALL EIRENE_LEER(2)
       CALL EIRENE_MASAGE
      .  ('LOOP OVER STRATA STARTS AT CPU TIME(SEC):    ')
@@ -367,9 +368,9 @@ C
       OVER_ACC=0.D0
       NEW_ITER=0
       DO 1000 ISTR=1,NSTRAI
- 
+
         timan=EIRENE_second_own()
- 
+
         ISTRA=ISTR
         IF (.NOT.NLSRON(ISTRA)) CYCLE
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
@@ -441,7 +442,7 @@ C
         LOGMOL(:,ISTRA)=.FALSE.
         LOGPLS(:,ISTRA)=.FALSE.
         LOGPHOT(:,ISTRA)=.FALSE.
- 
+
         timen=EIRENE_second_own()
 C
 C  CLEAR WORK AREA FOR THIS STRATUM
@@ -467,6 +468,7 @@ C
 C  INITIALIZE SUBR. LOCATE
 C
         CALL EIRENE_LOCAT0
+        IF (NPTS(ISTRA).LE.0) GOTO 1000 ! LOCAT0 might also turn off a stratum        
 C
 C  LOCATE AND FOLLOW MC-PARTICLES
 C
@@ -580,7 +582,7 @@ C  NEXT GENERATION ?
           IF (LGPART) GOTO 102
 C
 110       CONTINUE
- 
+
           IF (NLRAY(ISTRA)) THEN
             CALL EIRENE_CLEAR_TRAJECTORY (ITRJ)
           END IF
@@ -634,7 +636,7 @@ C
           ENDIF
 C
 C   MEAN SQUARE
-          IF (NSIGI.GT.0) CALL EIRENE_STATS1    
+          IF (NSIGI.GT.0) CALL EIRENE_STATS1
      .  (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
@@ -713,7 +715,7 @@ C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
       if ((nsteff.ge.nprs).or.(npesta(istra).eq.my_pe)) then
- 
+
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
 C
       WTT=0.
@@ -803,7 +805,7 @@ C  CONVERT TO %
       ENDIF
 C
 219   CONTINUE
- 
+
       CALL EIRENE_SCAL_VOLAV_TALLIES (ISTRA, ZWW, ZW,
      .                         ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
@@ -985,7 +987,7 @@ C
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
- 
+
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
 C
@@ -1016,11 +1018,11 @@ C  STRATA
         GOTO 2000
       ENDIF
       IF (XMCP(0).LE.1) GOTO 2000
- 
+
 C SEQUENTIAL REGION
- 
+
       IF(MY_PE .EQ. 0) THEN
- 
+
 C
 C    STATISTICS, SUM OVER STRATA
 C
@@ -1039,13 +1041,13 @@ C
             ESTIML(ISPC)%PSPC%SGMS = SMESTL(ISPC)%PSPC%STVS
           END IF
         END DO
- 
- 
+
+
         SIGMA  = STV
         SGMS   = STVS
         SIGMAW = STVW
         SGMWS  = STVWS
- 
+
         IF (NSIGI_BGK.GT.0) THEN
           DO 1271 IB=1,NBGVI_STAT
             SGMS_BGK(IB)=STVS_BGK(IB)
@@ -1103,9 +1105,9 @@ C
       ENDIF
 C
 2000  CONTINUE
- 
+
       CALL EIRENE_BROAD_IESTR(IESTR)
- 
+
       IF(MY_PE .EQ. 0) THEN
 C
 C  SAVE OR RESTORE SOME DATA FOR "EIRENE RECALL OPTION NFILE.NE.0"
@@ -1135,12 +1137,12 @@ C
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'READ 11  IRC= ',IRC
       ENDIF
- 
+
 C END SEQUENTIAL REGION
       ENDIF
- 
+
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
- 
+
 C
       RETURN
       END

@@ -74,7 +74,7 @@
           lhit1 = ihit1 > 0
           lhit2 = ihit2 > 0
  
-          write (0,*) ' ilim, ic1, ic2 ', ilim, ic1, ic2
+!         write (0,*) ' ilim, ic1, ic2 ', ilim, ic1, ic2
  
           IF (NLIMPB >= NLIMPS) THEN
             IGJUM3(IC1,ILIM) = 0
@@ -102,7 +102,7 @@
  
           lalong: do
  
-            write (0,*) ' izell ',izell
+!           write (0,*) ' izell ',izell
  
 ! last cell reached
             if (lhit2) then

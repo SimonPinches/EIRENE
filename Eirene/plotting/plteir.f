@@ -285,6 +285,14 @@ C
                   VECTOR(1:NSBOX,ICURV) = BXPERP(1:NSBOX)
                 CASE (17)
                   VECTOR(1:NSBOX,ICURV) = BYPERP(1:NSBOX)
+                CASE (18)
+                  VECTOR(1:NSBOX,ICURV) = EXIN(1:NSBOX)
+                CASE (19)
+                  VECTOR(1:NSBOX,ICURV) = EYIN(1:NSBOX)
+                CASE (20)
+                  VECTOR(1:NSBOX,ICURV) = EZIN(1:NSBOX)
+                CASE (21)
+                  VECTOR(1:NSBOX,ICURV) = EFIN(1:NSBOX)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
@@ -328,6 +336,14 @@ C
                   VECTOR(1:NSBOX,ICURV) = BXPERP(1:NSBOX)
                 CASE (17)
                   VECTOR(1:NSBOX,ICURV) = BYPERP(1:NSBOX)
+                CASE (18)
+                  VECTOR(1:NSBOX,ICURV) = EXIN(1:NSBOX)
+                CASE (19)
+                  VECTOR(1:NSBOX,ICURV) = EYIN(1:NSBOX)
+                CASE (20)
+                  VECTOR(1:NSBOX,ICURV) = EZIN(1:NSBOX)
+                CASE (21)
+                  VECTOR(1:NSBOX,ICURV) = EFIN(1:NSBOX)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL

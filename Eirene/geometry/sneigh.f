@@ -43,7 +43,8 @@ C
             INDPOINT(IR,IP) = IC
           ENDDO
         ENDDO
-         
+      
+        NCORNER = IC
       
       ELSE IF ((LEVGEO == 2) .OR. (LEVGEO == 3)) THEN
  
@@ -195,6 +196,9 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
             ENDDO
           ENDDO
         ENDDO
+      
+        NCORNER = NNODES
+
         call EIRENE_DestroyTree(baum)
  
 C       WRITE (iunout,*) '  IR    IP    S1    S2    S3    S4'

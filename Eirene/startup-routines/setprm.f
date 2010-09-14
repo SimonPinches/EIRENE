@@ -588,8 +588,12 @@ C
       NFRSTP(15)=NSPZMC
       NFRSTP(16)=0
       NFRSTP(17)=0
+      NFRSTP(18)=0
+      NFRSTP(19)=0
+      NFRSTP(20)=0
+      NFRSTP(21)=0
 C
-C  NTALI=17?
+C  NTALI=21?
 C
       DO 5 J=1,NTALI
         NFRSTP(J)=MAX0(1,NFRSTP(J))

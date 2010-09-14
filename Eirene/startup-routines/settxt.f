@@ -493,6 +493,11 @@ C     TXTPLS(1,12)='TO BE READ                                       '
       TXTPLS(1,15)='SPACE-SPECIES WEIGHT FUNCTION                    '
       TXTPLS(1,16)='PERP. MAGN. FIELD VECTOR, X DIRECTION            '
       TXTPLS(1,17)='PERP. MAGN. FIELD VECTOR, Y DIRECTION            '
+
+      TXTPLS(1,18)='ELEC. FIELD UNIT VECTOR, X DIRECTION             '
+      TXTPLS(1,19)='ELEC. FIELD UNIT VECTOR, Y DIRECTION             '
+      TXTPLS(1,20)='ELEC. FIELD UNIT VECTOR, Z DIRECTION             '
+      TXTPLS(1,21)='ELEC. FIELD STRENGTH                             '
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN
@@ -520,6 +525,10 @@ C     TXTPUN(1,12)='TO BE READ              '
       TXTPUN(1,15)=' ---                    '
       TXTPUN(1,16)=' ---                    '
       TXTPUN(1,17)=' ---                    '
+      TXTPUN(1,18)=' ---                    '
+      TXTPUN(1,19)=' ---                    '
+      TXTPUN(1,20)=' ---                    '
+      TXTPUN(1,21)='V/CM                    '
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN
@@ -690,12 +699,12 @@ C
 C
 C
       NFSTPI(1)=1
-      NFSTPI(2)=NPLSI
+      NFSTPI(2)=NPLSTI
       NFSTPI(3)=1
       NFSTPI(4)=NPLSI
-      NFSTPI(5)=NPLSI
-      NFSTPI(6)=NPLSI
-      NFSTPI(7)=NPLSI
+      NFSTPI(5)=NPLSV
+      NFSTPI(6)=NPLSV
+      NFSTPI(7)=NPLSV
       NFSTPI(8)=1
       NFSTPI(9)=1
       NFSTPI(10)=1
@@ -706,6 +715,10 @@ C
       NFSTPI(15)=NATMI+NMOLI+NIONI
       NFSTPI(16)=1
       NFSTPI(17)=1
+      NFSTPI(18)=1
+      NFSTPI(19)=1
+      NFSTPI(20)=1
+      NFSTPI(21)=1
 C
 C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
  
@@ -1135,6 +1148,10 @@ C
       TXTPSP(1,14)=' ---                    '
       TXTPSP(1,16)=' ---                    '
       TXTPSP(1,17)=' ---                    '
+      TXTPSP(1,18)=' ---                    '
+      TXTPSP(1,19)=' ---                    '
+      TXTPSP(1,20)=' ---                    '
+      TXTPSP(1,21)=' ---                    '
 C
 C     TXTPSP(IAIN,12)='TO BE READ            '
 C

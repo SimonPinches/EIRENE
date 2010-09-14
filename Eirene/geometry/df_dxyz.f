@@ -17,14 +17,17 @@
       real(dp), intent(out) :: dfdx, dfdy, dfdz
       integer, intent(in) :: icell
 
-      real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4, twoai,
-     .            z1, z2, z3, z4, x32, x13, x21, y23, y31, y12, det, 
-     .            eirene_deter4x4, deti, r, s, t, u, dxdr, dxds, dydr, 
-     .            dyds, drdx, dsdx, drdy, dsdy
+      real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4, 
+     .            z1, z2, z3, z4, det, eirene_deter4x4, 
+     .            deti, r, s, t, u, dxdr, dxds, dydr, dyds,  
+     .            drdx, dsdx, drdy, dsdy
       real(dp) :: a(4,4), ad(4,4), am1(4,4), e(4,4), jt(2,2), jmt(2,2),
      .            dndr(4), dnds(4), j(2,2), jm1(2,2)
+      real(dp), allocatable, save :: x32(:), x13(:), x21(:), 
+     .                               y23(:), y31(:), y12(:), twoai(:)
       integer :: itri, itet, ir, ip, it, ia, ib
       integer, save :: icount=0
+      logical, allocatable, save :: visited(:)
       
       real(dp) :: dummy
 
@@ -91,8 +94,6 @@
         jm1(2,1) = -j(2,1)
         jm1(2,2) = j(1,1)
 
-!pb        jm1 = jm1 / (j(1,1)*j(2,2) - j(1,2)*j(2,1))
-
         dummy = (j(1,1)*j(2,2) - j(1,2)*j(2,1))
 
         if ( abs(dummy) > eps30 ) then
@@ -119,25 +120,43 @@
          
       elseif (levgeo == 4) then
 
-        dfdz = 0._dp
-        x1=xtrian(necke(1,icell)) 
-        x2=xtrian(necke(2,icell)) 
-        x3=xtrian(necke(3,icell)) 
-        y1=ytrian(necke(1,icell)) 
-        y2=ytrian(necke(2,icell)) 
-        y3=ytrian(necke(3,icell))
+        if (.not.allocated(visited)) then
+          allocate (x32(0:nrad))
+          allocate (x13(0:nrad))
+          allocate (x21(0:nrad))
+          allocate (y23(0:nrad))
+          allocate (y31(0:nrad))
+          allocate (y12(0:nrad))
+          allocate (twoai(0:nrad))
+          allocate (visited(0:nrad))
+          visited = .false.
+        end if
+
+        if (.not.visited(icell)) then
+          x1=xtrian(necke(1,icell)) 
+          x2=xtrian(necke(2,icell)) 
+          x3=xtrian(necke(3,icell)) 
+          y1=ytrian(necke(1,icell)) 
+          y2=ytrian(necke(2,icell)) 
+          y3=ytrian(necke(3,icell))
+          x32(icell)=x3-x2
+          x13(icell)=x1-x3
+          x21(icell)=x2-x1
+          y23(icell)=y2-y3
+          y31(icell)=y3-y1
+          y12(icell)=y1-y2
+          twoai(icell)=1._dp / 
+     .         (x1*y23(icell) + x2*y31(icell) + x3*y12(icell))
+        end if
+
         f1=fecken(necke(1,icell)) 
         f2=fecken(necke(2,icell)) 
         f3=fecken(necke(3,icell))
-        x32=x3-x2
-        x13=x1-x3
-        x21=x2-x1
-        y23=y2-y3
-        y31=y3-y1
-        y12=y1-y2
-        twoai=1._dp / (x1*y23 + x2*y31 + x3*y12)
-        dfdx = twoai*(f1*y23 + f2*y31 + f3*y12)
-        dfdy = twoai*(f1*x32 + f2*x13 + f3*x21)
+        dfdx = twoai(icell) *
+     .         (f1*y23(icell) + f2*y31(icell) + f3*y12(icell))
+        dfdy = twoai(icell) *
+     .         (f1*x32(icell) + f2*x13(icell) + f3*x21(icell))
+        dfdz = 0._dp
 
         icount=icount+1
         if (icount <= 1000) then
@@ -146,6 +165,9 @@
            write (56,*) ' dfdx,dfdy,dfdz ', dfdx, dfdy, dfdz 
            write (56,*)
         end if
+
+        visited(icell) = .true.
+        visited(0) = .false.    ! reset cell 0 for cell outside mesh
 
       else if (levgeo == 5) then
 

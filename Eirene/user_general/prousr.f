@@ -224,22 +224,22 @@ c vz
          pro(1:n) = plas_dep(5,1:n,ipl)
          indar_dep(5) = indar_dep(5) + 1
 
-      elseif (indx == 1+5*npls) then
+      elseif (indx == 1+1*npls+nplsti+3*nplsv) then
 c bx
          pro(1:n) = plas_indep(3,1:n)
          indar_indep(3) = indar_indep(3) + 1
 
-      elseif (indx == 2+5*npls) then
+      elseif (indx == 2+1*npls+nplsti+3*nplsv) then
 c by
          pro(1:n) = plas_indep(4,1:n)
          indar_indep(4) = indar_indep(4) + 1
 
-      elseif (indx == 3+5*npls) then
+      elseif (indx == 3+1*npls+nplsti+3*nplsv) then
 c bz
          pro(1:n) = plas_indep(5,1:n)
          indar_indep(5) = indar_indep(5) + 1
 
-      elseif (indx == 4+5*npls) then
+      elseif (indx == 4+1*npls+nplsti+3*nplsv) then
 c bf
          pro(1:n) = plas_indep(11,1:n)
          indar_indep(11) = indar_indep(11) + 1

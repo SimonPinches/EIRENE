@@ -139,6 +139,18 @@ C
             CASE (17)
               OP(1:NSBOX) = BYPERP(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
+            CASE (18)
+              OP(1:NSBOX) = EXIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (19)
+              OP(1:NSBOX) = EYIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (20)
+              OP(1:NSBOX) = EZIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (21)
+              OP(1:NSBOX) = EFIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
             CASE DEFAULT
               WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
      .                           IALV
@@ -248,6 +260,18 @@ C
               WEI(1:NSBOX) = 1._DP
             CASE (17)
               OP(1:NSBOX) = BYPERP(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (18)
+              OP(1:NSBOX) = EXIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (19)
+              OP(1:NSBOX) = EYIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (20)
+              OP(1:NSBOX) = EZIN(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
+            CASE (21)
+              OP(1:NSBOX) = EFIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE DEFAULT
               WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',

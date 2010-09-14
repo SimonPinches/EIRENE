@@ -737,9 +737,9 @@ C
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
  
       NPLSTI = 1
-      IF ((INDPRO(2) < 0) .OR. (INDPRO(2) > 9)) NPLSTI=NPLS
+      IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
       NPLSV = NPLS
-      IF (ABS(INDPRO(4)) > 9) NPLSV = 1
+      IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
  
 C  FIND START OF NEXT INPUT BLOCK: 6
  

@@ -28,7 +28,9 @@
      R TE0,    TE1,    TE2,    TE3,    TE4,   TE5,
      R BP0,    BP1,    BP2,    BP3,    BP4,   BP5,
      R B0,     B1,     B2,     B3,     B4,    B5,
-     R VL0,    VL1,    VL2,    VL3,    VL4,   VL5
+     R VL0,    VL1,    VL2,    VL3,    VL4,   VL5,
+     R EF0,    EF1,    EF2,    EF3,    EF4,   EF5
+     
  
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R TI0(:),TI1(:),TI2(:),TI3(:),TI4(:),TI5(:),
@@ -76,7 +78,7 @@
  
       IF (ALLOCATED(RCINIT)) RETURN
  
-      NCINIT=36+30*NPLS
+      NCINIT=42+30*NPLS
       MCINIT=12+3+NSTRA
       LCINIT=3
  
@@ -125,36 +127,42 @@
       VL3    => RCINIT(34)
       VL4    => RCINIT(35)
       VL5    => RCINIT(36)
-      TI0    => RCINIT(37         : 36+ 1*NPLS)
-      TI1    => RCINIT(37+ 1*npls : 36+ 2*NPLS)
-      TI2    => RCINIT(37+ 2*npls : 36+ 3*NPLS)
-      TI3    => RCINIT(37+ 3*npls : 36+ 4*NPLS)
-      TI4    => RCINIT(37+ 4*npls : 36+ 5*NPLS)
-      TI5    => RCINIT(37+ 5*npls : 36+ 6*NPLS)
-      VX0    => RCINIT(37+ 6*npls : 36+ 7*NPLS)
-      VX1    => RCINIT(37+ 7*npls : 36+ 8*NPLS)
-      VX2    => RCINIT(37+ 8*npls : 36+ 9*NPLS)
-      VX3    => RCINIT(37+ 9*npls : 36+10*NPLS)
-      VX4    => RCINIT(37+10*npls : 36+11*NPLS)
-      VX5    => RCINIT(37+11*npls : 36+12*NPLS)
-      VY0    => RCINIT(37+12*npls : 36+13*NPLS)
-      VY1    => RCINIT(37+13*npls : 36+14*NPLS)
-      VY2    => RCINIT(37+14*npls : 36+15*NPLS)
-      VY3    => RCINIT(37+15*npls : 36+16*NPLS)
-      VY4    => RCINIT(37+16*npls : 36+17*NPLS)
-      VY5    => RCINIT(37+17*npls : 36+18*NPLS)
-      VZ0    => RCINIT(37+18*npls : 36+19*NPLS)
-      VZ1    => RCINIT(37+19*npls : 36+20*NPLS)
-      VZ2    => RCINIT(37+20*npls : 36+21*NPLS)
-      VZ3    => RCINIT(37+21*npls : 36+22*NPLS)
-      VZ4    => RCINIT(37+22*npls : 36+23*NPLS)
-      VZ5    => RCINIT(37+23*npls : 36+24*NPLS)
-      DI0    => RCINIT(37+24*npls : 36+25*NPLS)
-      DI1    => RCINIT(37+25*npls : 36+26*NPLS)
-      DI2    => RCINIT(37+26*npls : 36+27*NPLS)
-      DI3    => RCINIT(37+27*npls : 36+28*NPLS)
-      DI4    => RCINIT(37+28*npls : 36+29*NPLS)
-      DI5    => RCINIT(37+29*npls : 36+30*NPLS)
+      EF0    => RCINIT(37)
+      EF1    => RCINIT(38)
+      EF2    => RCINIT(39)
+      EF3    => RCINIT(40)
+      EF4    => RCINIT(41)
+      EF5    => RCINIT(42)
+      TI0    => RCINIT(43         : 42+ 1*NPLS)
+      TI1    => RCINIT(43+ 1*npls : 42+ 2*NPLS)
+      TI2    => RCINIT(43+ 2*npls : 42+ 3*NPLS)
+      TI3    => RCINIT(43+ 3*npls : 42+ 4*NPLS)
+      TI4    => RCINIT(43+ 4*npls : 42+ 5*NPLS)
+      TI5    => RCINIT(43+ 5*npls : 42+ 6*NPLS)
+      VX0    => RCINIT(43+ 6*npls : 42+ 7*NPLS)
+      VX1    => RCINIT(43+ 7*npls : 42+ 8*NPLS)
+      VX2    => RCINIT(43+ 8*npls : 42+ 9*NPLS)
+      VX3    => RCINIT(43+ 9*npls : 42+10*NPLS)
+      VX4    => RCINIT(43+10*npls : 42+11*NPLS)
+      VX5    => RCINIT(43+11*npls : 42+12*NPLS)
+      VY0    => RCINIT(43+12*npls : 42+13*NPLS)
+      VY1    => RCINIT(43+13*npls : 42+14*NPLS)
+      VY2    => RCINIT(43+14*npls : 42+15*NPLS)
+      VY3    => RCINIT(43+15*npls : 42+16*NPLS)
+      VY4    => RCINIT(43+16*npls : 42+17*NPLS)
+      VY5    => RCINIT(43+17*npls : 42+18*NPLS)
+      VZ0    => RCINIT(43+18*npls : 42+19*NPLS)
+      VZ1    => RCINIT(43+19*npls : 42+20*NPLS)
+      VZ2    => RCINIT(43+20*npls : 42+21*NPLS)
+      VZ3    => RCINIT(43+21*npls : 42+22*NPLS)
+      VZ4    => RCINIT(43+22*npls : 42+23*NPLS)
+      VZ5    => RCINIT(43+23*npls : 42+24*NPLS)
+      DI0    => RCINIT(43+24*npls : 42+25*NPLS)
+      DI1    => RCINIT(43+25*npls : 42+26*NPLS)
+      DI2    => RCINIT(43+26*npls : 42+27*NPLS)
+      DI3    => RCINIT(43+27*npls : 42+28*NPLS)
+      DI4    => RCINIT(43+28*npls : 42+29*NPLS)
+      DI5    => RCINIT(43+29*npls : 42+30*NPLS)
  
       INDPRO => ICINIT( 1 : 12)
       INDGRD => ICINIT(13 : 15)

@@ -28,6 +28,7 @@ c
 !pb            'CONSTANT' sets constant plasma profiles
 !pb            'MULTIPLY' creates a new bulkdensity by multiplying an
 !pb            existing plasma density with a factor specified in input block 5
+!pb  11.01.10: interpolation of plasma profiles to cell vertices added 
  
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
@@ -77,7 +78,7 @@ c   LGVAC(...,0)     : background vacuum flag
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI, 
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
      .            TEI, DEJ, TVACL, DVACL, BOLTZFAC, RCORONA, RCOLRAD,
-     .            TEIDEJ, EIRENE_RATE_COEFF, RCMIN, RCMAX, ERATE
+     .            TEIDEJ, EIRENE_RATE_COEFF, RCMIN, RCMAX, ERATE, BNORMI
       REAL(DP) :: tpb1, tpb2, EIRENE_second_own
       REAL(DP) :: COEF(0:8), COEF2D(0:8,0:8), FP(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
@@ -87,6 +88,14 @@ c   LGVAC(...,0)     : background vacuum flag
  
       TYPE(EIRENE_SPECTRUM), POINTER :: SPEC
       LOGICAL :: FOUND
+
+      interface
+        subroutine eirene_cell_to_corner (f,fcorner)
+          use eirmod_precision
+          real(dp), intent(in) :: f(:)
+          real(dp), intent(out) :: fcorner(:)
+        end subroutine eirene_cell_to_corner
+      end interface
  
       FP = 0._DP
       RCMIN = -HUGE(1._DP)
@@ -668,7 +677,58 @@ C
 5161    CONTINUE
       ENDIF
  
-!
+!     INTERPOLATE PLASMA PROFILES TO CELL VERTICES
+
+      CALL EIRENE_ALLOC_CORNERS(IUNOUT)
+      IF (LTESMO) THEN
+        call eirene_cell_to_corner(TEIN,TEINCORNER)
+      END IF
+
+      IF (LTISMO) THEN
+        do iplsti = 1, nplsti
+ 	  call eirene_cell_to_corner(TIIN(iplsti,:),TIINCORNER(:,iplsti))
+        end do
+      END IF
+
+      IF (LDISMO) THEN
+	call eirene_cell_to_corner(DEIN,DEINCORNER)
+        do ipls = 1, npls
+ 	  call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
+        end do
+      END IF
+
+      IF (LVSMO) THEN
+        do iplsv = 1, nplsv
+ 	  call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
+ 	  call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
+ 	  call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
+ 	  call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
+        end do
+      END IF
+
+      IF (LBSMO) THEN
+        call eirene_cell_to_corner(BXIN,BXINCORNER)
+        call eirene_cell_to_corner(BYIN,BYINCORNER)
+        call eirene_cell_to_corner(BZIN,BZINCORNER)
+        call eirene_cell_to_corner(BFIN,BFINCORNER)
+
+!pb taken out for comparison
+!        do i=1,ncorner
+!          bnormi = 1._dp / sqrt(bxincorner(i)**2 + byincorner(i)**2 +
+!     .                          bzincorner(i)**2)
+!          bxincorner(i) = bxincorner(i) * bnormi 
+!          byincorner(i) = byincorner(i) * bnormi 
+!          bzincorner(i) = bzincorner(i) * bnormi 
+!        end do
+      END IF
+
+      IF (LESMO) THEN
+        call eirene_cell_to_corner(EXIN,EXCORNER)
+        call eirene_cell_to_corner(EYIN,EYCORNER)
+        call eirene_cell_to_corner(EZIN,EZCORNER)
+        call eirene_cell_to_corner(EFIN,EFCORNER)
+      END IF
+     
  
 C
 C

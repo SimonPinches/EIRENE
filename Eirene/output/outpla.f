@@ -60,6 +60,10 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(15)=3
       TALTYP(16)=3
       TALTYP(17)=3
+      TALTYP(18)=0
+      TALTYP(19)=0
+      TALTYP(20)=0
+      TALTYP(21)=0
  
       IF (ICAL == 1) THEN
 !  IS ANY DENSITY MODEL DEFINED ?
@@ -145,6 +149,14 @@ C
               HELPP(1:NSBOX) = BXPERP(1:NSBOX)
             CASE (17)
               HELPP(1:NSBOX) = BYPERP(1:NSBOX)
+            CASE (18)
+              HELPP(1:NSBOX) = EXIN(1:NSBOX)
+            CASE (19)
+              HELPP(1:NSBOX) = EYIN(1:NSBOX)
+            CASE (20)
+              HELPP(1:NSBOX) = EZIN(1:NSBOX)
+            CASE (21)
+              HELPP(1:NSBOX) = EFIN(1:NSBOX)
             CASE DEFAULT
               WRITE (iunout,*) ' WRONG TALLY NUMBER, ITAL = ',ITAL
               WRITE (iunout,*) ' NO OUTPUT PERFORMED '
@@ -186,6 +198,9 @@ C  ADDITIONAL TALLY, CELL VOLUME ,WEIGHT FUNCTION " 1 - WEIGHTED" AVERAGES
               ELSEIF (ITALI.EQ.13) THEN
 C  ION DRIFT ENERGY
                 HELPW(I)=DIIN(K,I)*VOL(I)
+              ELSEIF (ITALI.GE.18.AND.ITALI.LE.21) THEN
+C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
+                HELPW(I)=1.D0
               ENDIF
               TOTAL=TOTAL+HELPW(I)
 121         CONTINUE
@@ -221,6 +236,9 @@ C  WEIGHT FUNCTION  (NO.15)
               ELSEIF (ITALI.EQ.13) THEN
 C  ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
                 HELPW(I)=DIIN(K,I)*VOL(I)
+              ELSEIF (ITALI.GE.18.AND.ITALI.LE.21) THEN
+C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
+                HELPW(I)=1.D0
               ENDIF
               TOTAL=TOTAL+HELPW(I)
 122         CONTINUE

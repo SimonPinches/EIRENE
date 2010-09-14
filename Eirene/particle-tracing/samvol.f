@@ -51,7 +51,7 @@ C
      .            VX, VY, VZ, VPARA, EELRC, 
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, 
-     .            EIRENE_ngffmh
+     .            EIRENE_ngffmh, BF
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IC1, IC2, ICOUNT, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
@@ -185,13 +185,7 @@ C
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
                 EIO(IPLS,IRRC)=EIO(IPLS,IRRC)-ADD
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
-                IF (INDPRO(5) == 8) THEN
-                  CALL EIRENE_VECUSR(1,BX,BY,BZ,1)
-                ELSE
-                  BX=BXIN(J)
-                  BY=BYIN(J)
-                  BZ=BZIN(J)
-                END IF
+                CALL EIRENE_BFIELD (J, X0, Y0, Z0, BX, BY, BZ, BF)
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLSV)
                   VPARA=VX*BX+VY*BY+VZ*BZ
