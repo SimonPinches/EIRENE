@@ -384,6 +384,8 @@ C
  
         IF (ALLOCATED(XSTOR)) RETURN
  
+        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
+ 
         NSTOR1 = NREL+NRCX+NRPI+NRDS
         NSTOR  = NSTOR1+
      .           2*(NREL+NRCX+NRPI)+5*NRDS+
@@ -423,8 +425,6 @@ csw added NROT (photon.f)
         MSTOR1 = MAX(NRCX, NRPI, NRDS, NREL, NROT)
 c
         MSTOR2 = 24
- 
-        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
  
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
  
