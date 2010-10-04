@@ -134,9 +134,9 @@
         else
 
            actu => cur
-           if (associated(actu,node)) then
-              write (*,*) ' hier bin ich '
-           end if
+!           if (associated(actu,node)) then
+!              write (*,*) ' hier bin ich '
+!           end if
 
 
            if (fertig) then
