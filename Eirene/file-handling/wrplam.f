@@ -35,12 +35,14 @@ C  REAL
      R           TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN,
      R           BXIN,BYIN,BZIN,BFIN,ADIN,EDRIFT,
      R           VOL,WGHT,BXPERP,BYPERP,
+     R           EXIN,EYIN,EZIN,EFIN,
      R           FLXOUT,SAREA,
      R           TEINL,TIINL,DEINL,DIINL,BVIN,PARMOM,
      R           RMASSI,RMASSA,RMASSM,RMASSP,
      R           DIOD,DATD,DMLD,DPLD,DPHD,
      R           DION,DATM,DMOL,DPLS,DPHOT,
      R           TVAC,DVAC,VVAC,ALLOC,
+     R           CORNER_PROFILES,
      T           TEXTS,
 C  MUSR, INTEGER
      I           NSPH  ,NPHOTI,NPHOTIM,NFOLPH,NGENPH,
@@ -51,7 +53,7 @@ C  MUSR, INTEGER
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
      I           NPRT,ISPEZ,ISPEZI,
 C  LUSR, LOGICAL
-     L           LGVAC,LGDFT
+     L           LGVAC,LGDFT,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
       CALL EIRENE_WRITE_CMDTA
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMDTA,ICMDTA'
@@ -82,12 +84,14 @@ C  REAL
      R           TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN,
      R           BXIN,BYIN,BZIN,BFIN,ADIN,EDRIFT,
      R           VOL,WGHT,BXPERP,BYPERP,
+     R           EXIN,EYIN,EZIN,EFIN,
      R           FLXOUT,SAREA,
      R           TEINL,TIINL,DEINL,DIINL,BVIN,PARMOM,
      R           RMASSI,RMASSA,RMASSM,RMASSP,
      R           DIOD,DATD,DMLD,DPLD,DPHD,
      R           DION,DATM,DMOL,DPLS,DPHOT,
      R           TVAC,DVAC,VVAC,ALLOC,
+     R           CORNER_PROFILES,
      T           TEXTS,
 C  MUSR, INTEGER
      I           NSPH  ,NPHOTI,NPHOTIM,NFOLPH,NGENPH,
@@ -98,7 +102,7 @@ C  MUSR, INTEGER
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
      I           NPRT,ISPEZ,ISPEZI,
 C  LUSR, LOGICAL
-     L           LGVAC,LGDFT
+     L           LGVAC,LGDFT,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f '
       CALL EIRENE_READ_CMDTA
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMDTA,ICMDTA'
