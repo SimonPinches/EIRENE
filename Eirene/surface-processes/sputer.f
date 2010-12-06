@@ -61,6 +61,8 @@ C sept 05: use database name for opening SPUTER database
 c may 06:  modifications for: photons do not sputter !
 c march 07: some species flags for chemical sputtering:
 c           programming cleaned up (no change in model)
+C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
+C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
  
       SUBROUTINE EIRENE_SPUTER
 C
@@ -166,7 +168,8 @@ C  target index 0   : data evaluated "on the fly"
      .          F1, F2, F3, SQE, QQP, ANGFAC, CAOPT, F, VY, VZ, YDES,
      .          EDESE0, EDAME0, QSE, YDAM, YSURF, ETHERM, ETHEKT,
      .          PRFCC, FLX, G2, G3, YTHERM, ERELKT, C, EREL,
-     .          ENWALL, TWALL, PRFCS, ETHE0, E0ETF, SE, COSIN, QQS
+     .          ENWALL, TWALL, PRFCS, ETHE0, E0ETF, SE, COSIN, QQS,
+     .          VXR, VYR, VZR
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
      .                              ISPZSP_DEF(:)
@@ -633,8 +636,13 @@ C
 C
 1100  CONTINUE
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+!pb these variables are necessary as the corresponding arguments in velocs
+!pb are INTENT(INOUT) !
+      VXR = 0._DP
+      VYR = 0._DP
+      VZR = 0._DP
       CALL EIRENE_VELOCS
-     .  (TWALL,0._DP,0._DP,0._DP,0._DP,0._DP,RSQDV,CVRSS,
+     .  (TWALL,0._DP,0._DP,VXR,VYR,VZR,RSQDV,CVRSS,
      .             -CRTX,-CRTY,-CRTZ,
      .             ESPTP,VXSPTP,VYSPTP,VZSPTP,VSPTP)
 C
@@ -861,8 +869,13 @@ C
 C
 11000 CONTINUE
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+!pb these variables are necessary as the corresponding arguments in velocs
+!pb are INTENT(INOUT) !
+      VXR = 0._DP
+      VYR = 0._DP
+      VZR = 0._DP
       CALL EIRENE_VELOCS
-     .  (TWALL,0._DP,0._DP,0._DP,0._DP,0._DP,RSQDV,CVRSS,
+     .  (TWALL,0._DP,0._DP,VXR,VYR,VZR,RSQDV,CVRSS,
      .             -CRTX,-CRTY,-CRTZ,
      .             ESPTC,VXSPTC,VYSPTC,VZSPTC,VSPTC)
 C

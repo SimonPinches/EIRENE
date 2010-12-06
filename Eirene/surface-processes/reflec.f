@@ -16,6 +16,8 @@ C           Was a problem only in case of very large/small (compared to one)
 C           reduced energy scaling factors.
 C  Oct2009  Behrisch reflection Matrix saved, to avoid restart problems
 C           with reduced energy scaling.
+C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
+C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -1017,8 +1019,13 @@ C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE LIKE
       ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         TW=-E0TERM
+!pb these variables are necessary as the corresponding arguments in velocs
+!pb are INTENT(INOUT) !
+        VXR = 0._DP
+        VYR = 0._DP
+        VZR = 0._DP
         CALL EIRENE_VELOCS
-     .  (TW,0._DP,0._DP,0._DP,0._DP,0._DP,RSQDVA(IATM),
+     .  (TW,0._DP,0._DP,VXR,VYR,VZR,RSQDVA(IATM),
      .                CVRSSA(IATM),
      .               -CRTX,-CRTY,-CRTZ,
      .               E0,VELX,VELY,VELZ,VEL)
