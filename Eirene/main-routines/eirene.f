@@ -82,7 +82,7 @@ C
 
 csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF, add rewind iunout
       IUNOUT = IUNOUT + IFOFF
-      REWIND(IUNOUT)
+!pb   REWIND(IUNOUT)
 csw
       IF (MY_PE > 0) THEN
         IUNOUT = 7
@@ -122,12 +122,12 @@ csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF
         IPRNLI=0
         DTIMVN=DT
         NLPLAS=NLMODE
- 
-      END IF  ! MY_PE == 0
 
-      TIME=EIRENE_SECOND_OWN()
-      write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
+        TIME=EIRENE_SECOND_OWN()
+        write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
  
+       END IF  ! MY_PE == 0
+
 C
 100   CONTINUE
 C
@@ -135,8 +135,9 @@ C  READ FORMATTED INPUT FILE OR RESTART FOR NEXT ITERATION
 C
       ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR)
  
-      TIMI=EIRENE_SECOND_OWN()
       IF (MY_PE == 0) THEN
+
+      TIMI=EIRENE_SECOND_OWN()
 C
       IF (INENTRY == 1) THEN
         CALL EIRENE_SET_PARMMOD(1)
