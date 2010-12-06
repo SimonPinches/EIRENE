@@ -49,7 +49,7 @@
       IMPLICIT NONE
  
       INCLUDE 'mpif.h'
-      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN
+      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
       CHARACTER, ALLOCATABLE :: CHELP(:)
@@ -77,6 +77,8 @@ c     ------------------------------------------------------------     c
         CALL EIRENE_ALLOCATE_MODULES
 	call eirene_allocate_timvars
         IUNOUT = 7   ! reset to 0 in alloc_comprt
+Else
+        CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       END IF
  
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
@@ -467,10 +469,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
               ALLOCATE(REACDAT(IR)%POT)
-              NULLIFY (REACDAT(IR)%POT%POLY))
-              NULLIFY (REACDAT(IR)%POT%ADAS))
-              NULLIFY (REACDAT(IR)%POT%LINE))
-              NULLIFY (REACDAT(IR)%POT%HYD))
+              NULLIFY (REACDAT(IR)%POT%POLY)
+              NULLIFY (REACDAT(IR)%POT%ADAS)
+              NULLIFY (REACDAT(IR)%POT%LINE)
+              NULLIFY (REACDAT(IR)%POT%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
@@ -479,10 +481,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
               ALLOCATE(REACDAT(IR)%CRS)
-              NULLIFY (REACDAT(IR)%CRS%POLY))
-              NULLIFY (REACDAT(IR)%CRS%ADAS))
-              NULLIFY (REACDAT(IR)%CRS%LINE))
-              NULLIFY (REACDAT(IR)%CRS%HYD))
+              NULLIFY (REACDAT(IR)%CRS%POLY)
+              NULLIFY (REACDAT(IR)%CRS%ADAS)
+              NULLIFY (REACDAT(IR)%CRS%LINE)
+              NULLIFY (REACDAT(IR)%CRS%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS)
@@ -491,10 +493,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
               ALLOCATE(REACDAT(IR)%RTC)
-              NULLIFY (REACDAT(IR)%RTC%POLY))
-              NULLIFY (REACDAT(IR)%RTC%ADAS))
-              NULLIFY (REACDAT(IR)%RTC%LINE))
-              NULLIFY (REACDAT(IR)%RTC%HYD))
+              NULLIFY (REACDAT(IR)%RTC%POLY)
+              NULLIFY (REACDAT(IR)%RTC%ADAS)
+              NULLIFY (REACDAT(IR)%RTC%LINE)
+              NULLIFY (REACDAT(IR)%RTC%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
@@ -503,10 +505,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
               ALLOCATE(REACDAT(IR)%RTCMW)
-              NULLIFY (REACDAT(IR)%RTCMW%POLY))
-              NULLIFY (REACDAT(IR)%RTCMW%ADAS))
-              NULLIFY (REACDAT(IR)%RTCMW%LINE))
-              NULLIFY (REACDAT(IR)%RTCMW%HYD))
+              NULLIFY (REACDAT(IR)%RTCMW%POLY)
+              NULLIFY (REACDAT(IR)%RTCMW%ADAS)
+              NULLIFY (REACDAT(IR)%RTCMW%LINE)
+              NULLIFY (REACDAT(IR)%RTCMW%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
@@ -515,10 +517,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
               ALLOCATE(REACDAT(IR)%RTCEW)
-              NULLIFY (REACDAT(IR)%RTCEW%POLY))
-              NULLIFY (REACDAT(IR)%RTCEW%ADAS))
-              NULLIFY (REACDAT(IR)%RTCEW%LINE))
-              NULLIFY (REACDAT(IR)%RTCEW%HYD))
+              NULLIFY (REACDAT(IR)%RTCEW%POLY)
+              NULLIFY (REACDAT(IR)%RTCEW%ADAS)
+              NULLIFY (REACDAT(IR)%RTCEW%LINE)
+              NULLIFY (REACDAT(IR)%RTCEW%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
@@ -527,10 +529,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
               ALLOCATE(REACDAT(IR)%OTH)
-              NULLIFY (REACDAT(IR)%OTH%POLY))
-              NULLIFY (REACDAT(IR)%OTH%ADAS))
-              NULLIFY (REACDAT(IR)%OTH%LINE))
-              NULLIFY (REACDAT(IR)%OTH%HYD))
+              NULLIFY (REACDAT(IR)%OTH%POLY)
+              NULLIFY (REACDAT(IR)%OTH%ADAS)
+              NULLIFY (REACDAT(IR)%OTH%LINE)
+              NULLIFY (REACDAT(IR)%OTH%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH)
@@ -539,10 +541,10 @@ c     ------------------------------------------------------------     c
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%PHR)) THEN
              ALLOCATE(REACDAT(IR)%PHR)
-              NULLIFY (REACDAT(IR)%PHR%POLY))
-              NULLIFY (REACDAT(IR)%PHR%ADAS))
-              NULLIFY (REACDAT(IR)%PHR%LINE))
-              NULLIFY (REACDAT(IR)%PHR%HYD))
+              NULLIFY (REACDAT(IR)%PHR%POLY)
+              NULLIFY (REACDAT(IR)%PHR%ADAS)
+              NULLIFY (REACDAT(IR)%PHR%LINE)
+              NULLIFY (REACDAT(IR)%PHR%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR)
@@ -795,6 +797,25 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (INSPAT,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRKNOT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NTRII,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      DO I = 1, NLIMPS
+        NMT = SURF_TRIAN(I)%NUMTR
+        CALL MPI_BCAST (NMT,1 MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        IF (NMT > 0) THEN
+          IF (MY_PE /= 0) THEN
+            SURF_TRIAN(I)%NUMTR = NMT 
+            ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))
+            ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))
+            ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))
+          END IF 
+          CALL MPI_BCAST (SURF_TRIAN(I)%ITRIAS,NMT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (SURF_TRIAN(I)%ITRISI,NMT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (SURF_TRIAN(I)%BGLT,NMT+1,
+     .                    MPI_REAL8,MPI_COMM_WORLD,ier)
+        END IF
+      END DO
  
       CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
