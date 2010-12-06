@@ -35,6 +35,9 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !  TRUE VELOCITIES ARE NEEDED IN FPATHI ROUTINES, AS WELL AS AT SOLID BOUNDARIES.
 !  ONLY REDUCED VELOCITIES (GUIDING CENTRE) AT ALL TRANSPARENT BOUNDARIES AND TO
 !  PUSH PARTICLES
+!DR  eps12 --> eps6 for testing cosine of angle of incidence.
+!DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
+
 C
       SUBROUTINE EIRENE_FOLION
 C
@@ -88,6 +91,8 @@ C
 
       IMPLICIT NONE
  
+      REAL(DP) :: a,aa,aaa
+c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: CFLAG(7,3), DUMT(3), DUMV(3)
       REAL(DP) :: AX(2),v,vv,vx,vy,vz
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -101,7 +106,7 @@ C
      .          VCOS, 
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
      .          ZMFP, PN, SH, EIRENE_FPATHI, ZTC,
-     .          FNUEQI, XNI, TI,
+     .          XNI, TI,
      .          DELFAC,TIFAC,
      .          SCOS_NEW, XOLD, YOLD
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -115,9 +120,6 @@ C
 C
 C  NO CONDITIONAL EXPECTATION ESTIMATORS FOR TEST IONS
 C
-C  ENERGY LOSS FREQUENCY (LANGER APPROXIMATION) (1/SEC)
-C  NUCL.FUS. 22, NO. 6, (1986) P754
-      FNUEQI(XNI,TI)=8.8E-8*XNI*TI**(-1.5)
 C
 C  ALL CELL INDICES MUST BE KNOWN AT THIS POINT
 C  TENTATIVELY ASSUME: A NEXT GENERATION PARTICLE WILL BE BORN
@@ -223,7 +225,7 @@ C
           PUX=PUX/PN
           PUY=PUY/PN
           SG=VLXPAR*PUX+VLYPAR*PUY
-          IF (ABS(SG) .LT. EPS12) THEN
+          IF (ABS(SG) .LT. EPS6) THEN
             NLSRFX=.FALSE.
             SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
             X0 = X0 + SH*PUX
@@ -241,7 +243,7 @@ C
           IDUM = NPCELL
           SG=VLXPAR*PLNX(MRSURF,NPCELL)+VLYPAR*PLNY(MRSURF,NPCELL)
           DO
-            IF (ABS(SG) .LT. EPS12) THEN
+            IF (ABS(SG) .LT. EPS6) THEN
               NLSRFX=.FALSE.
               SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
               X0 = XOLD + SH*PLNX(MRSURF,NPCELL)*IFPB
@@ -261,20 +263,29 @@ C
         ELSEIF (LEVGEO.EQ.4) THEN
           SG=VLXPAR*PTRIX(IPOLG,MRSURF)+
      .       VLYPAR*PTRIY(IPOLG,MRSURF)
-          IF (ABS(SG) .LT. EPS12) THEN
-            SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-8
+          IF (ABS(SG) .LT. EPS6) THEN
+            SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
             X0 = X0  +SH*PTRIX(IPOLG,MRSURF)
             Y0 = Y0  +SH*PTRIY(IPOLG,MRSURF)
             WRITE (iunout,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
-            WRITE (iunout,*) 'and moving parallel to SURFACE'
-            WRITE (iunout,*) 'push into suspected cell, sh = ',sh
-c dr: I think, if SG gt.0, then NRCELL should be modified !!!
+            WRITE (IUNOUT,*) 'AND MOVING PARALLEL TO SURFACE'
+            WRITE (IUNOUT,*) 'PUSH INTO SUSPECTED NEXT CELL, SH = ',SH
             NLSRFX=.FALSE.
-          ELSEIF (SG.GT.0) THEN
+            IF (SG.GT.0.0_DP) THEN
+c             NTEST=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,1,NR1STM,
+c    .                            NLSRFX,NLSRFY,NPANU,'FOLION      ')
+c             if (ntest.ne.nrcell)
+c    .           write (iunout,*) 'sg,ntest,nchbar ',
+C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
+              NRCELL=NCHBAR(IPOLG,MRSURF)
+              IPOLG=NSEITE(IPOLG,MRSURF)
+              MRSURF=NRCELL
+            ENDIF
+          ELSEIF (SG.GT.0) THEN  !  SG IS GT EPS6
             NTEST=NCHBAR(IPOLG,MRSURF)
             IF (NTEST.EQ.0) THEN
 c  no neighbor. push back into old cell.
-              SH=-CELDIA(NCELL)*1.D-8
+              SH=-CELDIA(NCELL)*1.D-2
               WRITE (iunout,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
               WRITE (iunout,*) 'push back into old cell: sh = ',sh
               WRITE (iunout,*) 'NRCELL = ',NRCELL
@@ -288,7 +299,7 @@ c  neighbor found. continue in neighbor cell.
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.LT.0) THEN
+          ELSEIF (SG.LT.0) THEN ! SG IS LT.- EPS6
 C  CONTINUE FLIGHT IN ORIGINAL CELL.
 C  NOTHING TO BE DONE
           ENDIF
@@ -296,7 +307,7 @@ C  NOTHING TO BE DONE
           SG=VLXPAR*PTETX(IPOLG,MRSURF)+
      .       VLYPAR*PTETY(IPOLG,MRSURF)+
      .       VLZPAR*PTETZ(IPOLG,MRSURF)
-          IF (ABS(SG) .LT. EPS12) THEN
+          IF (ABS(SG) .LT. EPS6) THEN
 C  TO BE WRITTEN
             WRITE (iunout,*) 'PARALLEL TO SURFACE IN FOLION ',NPANU
             WRITE (IUNOUT,*) 'CORRECTION FOR LEVGEO=5: TO BE DONE'
@@ -577,6 +588,8 @@ C                            SURFACES FROM THIS POINT
 104   CONTINUE
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+C  AT THIS POINT: LCART=F
+
       NJUMP=0
       DO I=1,NIMINT
         IM=IIMINT(I)
@@ -634,6 +647,15 @@ C FNUI: COLLISION FREQUENCY WITH BACKGROUND IONS.
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
+ctest     nmassi(1)=16.
+ctest     nmassp(1)=1.
+ctest     a=fnueqi(1.d14,200.d0)
+ctest     a=a*(1.+1./16.)**0.5-a*1.5*200./0.1
+ctest     aa=fnueqi_1(0.1d0,1.d14,200.d0,1,1)
+ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
+ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
+ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
+ctest     stop
           IF (.NOT.LGVAC(NCELL,IPL))
      .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
         ENDDO
@@ -650,6 +672,7 @@ C  DELTA_S = DELTA_T * VELPAR  ! = TF
 C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
 C     LATER: VELPAR --> VEL_GC
       TF=TAUE*VELPAR*0.1*DELFAC
+      if (nldfst) tf=1.E-5_DP*vel
  
       IF (TF.LT.ZTST) THEN
         ZTST=TF
@@ -667,6 +690,7 @@ C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
 C
 C  USE PARALLEL VELOCITY, I.E., COMPUTE PARALLEL DISTANCES IN GRID
 C  THUS ZT,TS,ZTST,ZDT1,CLPD ETC. ARE PARALLEL DISTANCES
+C  I.E., LCART=F AT THIS POINT
 C
       IF (ITIME.EQ.1) THEN
         IF (LCART) THEN
@@ -684,6 +708,7 @@ C
  
         IF (NLRAD) THEN
           CALL EIRENE_TIMER(TS)
+          IF (.NOT.LGPART) GOTO 9911
 C
           IF (TL.LT.TS.OR.TT.LT.TS.OR.TF.LT.TS) THEN
             MRSURF=0
@@ -872,10 +897,18 @@ CDR: Daher auch wg. x = x + dist/vel  parallele geschwindigkeiten.
         VEL =VELPAR
         LCART=.FALSE.
       ENDIF
-      IF (ISRFCL.EQ.1) CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,*104,*380)
-      IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL(AX(2),         *104,*800)
-      IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL(               *104)
-      IF (ISRFCL.EQ.4) CALL EIRENE_FPKCOL(               *104,*100)
+      IF (ISRFCL.EQ.1) THEN
+c  will fpkcol change the collision with additional surface?
+2214    CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,*104,*380)
+      ELSEIF (ISRFCL.EQ.2) THEN
+        CALL EIRENE_FPKCOL(               *104,*2215,3)
+2215    CALL EIRENE_TIMCOL(AX(2),         *104,*800)
+      ELSEIF (ISRFCL.EQ.3) THEN
+        CALL EIRENE_FPKCOL(               *104,*2216,3)
+2216    CALL EIRENE_TORCOL(               *104)
+      ELSEIF (ISRFCL.EQ.4) THEN
+        CALL EIRENE_FPKCOL(               *104,*100,0)
+      ENDIF
 
       VELX=VELXS
       VELY=VELYS
@@ -1035,8 +1068,19 @@ C     ENDIF
 CCC
 C  EARLIER CLPD WAS FULL GYRO DISTANCE, FOR SCORING.
 C  NOW WE NEED AGAIN THE PARALLEL DISTANCE, FOR TRACKING TO
-C  POINT OF COLLISION OR SURFACE EVENT.
+C  POINT OF COLLISION OR SURFACE EVENT. (I.E. LCART=F)
       ZTC=CLPD(1)*VELPAR/VEL
+      IF (LCART) THEN
+        VELXS=VELX
+        VELYS=VELY
+        VELZS=VELZ
+        VELS =VEL
+        VELX=VLXPAR
+        VELY=VLYPAR
+        VELZ=VLZPAR
+        VEL =VELPAR
+        LCART=.FALSE.
+      ENDIF
       GOTO 2211
 CCC
 CCC   GOTO 210
@@ -1055,7 +1099,10 @@ C  RESET CLPD TO REAL PATH LENGTH OF GYRO MOTION FOR SCORING
         CALL EIRENE_UPDION (XSTOR2,XSTORV2,4)
         CALL EIRENE_CALC_SPECTRUM (WEIGHT,4,1)
       ENDIF
-2211  continue
+
+C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
+
+2211  CONTINUE
       X0=X0+VLXPAR*ZTC
       Y0=Y0+VLYPAR*ZTC
       Z0=Z0+VLZPAR*ZTC
@@ -1151,8 +1198,10 @@ C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN INTO MORE GENERAL TERMS)
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
 C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND
 
+        CALL EIRENE_FPKCOL(*104,*229,3)
+
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
-        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+229     CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 
         ICO = 0
         GOTO 1004
@@ -1212,10 +1261,6 @@ C
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
         ICOUN=0
         DO
-cdr     write (iunout,*) 'before newfield ', vel,velx,vely,velz,e0
-cdr     write (iunout,*) 'before newf., save ', vels,velxs,velys,velzs
-cdr     write (iunout,*) 'par,per ',velpar,velper,
-cdr  .      sqrt(velpar*velpar+velper*velper)
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
 C  DOES THE PARTICLE SPEED POINT TOWARDS THE SURFACE
@@ -1224,7 +1269,7 @@ C  NO, TRY NEXT GYRO PHASE
           ICOUN=ICOUN+1
           IF (ICOUN.EQ.100) THEN
             WRITE (IUNOUT,*) 'PARTICLE KILLED AT SURFACE IN FOLION'
-            WRITE (IUNOUT,*) 'NPANU ',NPANU
+            WRITE (IUNOUT,*) 'NPANU, MSURF ',NPANU, MSURF
             WRITE (IUNOUT,*) 'VELPER,VELPAR ',VELPER,VELPAR
             LGPART=.FALSE.
             WEIGHT=0.
@@ -1232,7 +1277,7 @@ C  NO, TRY NEXT GYRO PHASE
           ENDIF
  
         ENDDO
-C  NOW A PARTICLE WITH FULL CARTESIAN VELOCITY VECTOR (LCART=0)
+C  NOW A PARTICLE WITH FULL CARTESIAN VELOCITY VECTOR (LCART=T)
 C  IS SET. ITS SPEED VECTOR POINTS TOWARDS THE SURFACE (COSIN.GT.0)
       ENDIF
 C
@@ -1279,6 +1324,15 @@ C
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
       GOTO 995
+9911  CONTINUE
+      CALL EIRENE_LEER(1)
+      CALL EIRENE_MASAGE
+     .  ('ERROR IN FOLION,  NO INTERSECTION FOUND       ')
+      CALL EIRENE_MASAGE
+     .  ('PARTICLE IS KILLED                            ')
+      WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
+      WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
+      GOTO 995
 992   CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
@@ -1292,7 +1346,7 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
      .  ('ERROR IN FOLION,  LCART HAS WRONG VALUE       ')
-      WRITE (iunout,*) 'npanu,lcart ',npanu,lcart
+      WRITE (IUNOUT,*) 'NPANU,LCART ',NPANU,LCART
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       GOTO 999
 993   CALL EIRENE_MASAGE
@@ -1340,9 +1394,74 @@ C
       WEIGHT=0.
       CALL EIRENE_LEER(1)
       RETURN
+
+      CONTAINS
+C  ION-ION ENERGY LOSS FREQUENCY (LANGER APPROXIMATION) (1/SEC)
+C  NUCL.FUS. 22, NO. 6, (1986) P754, FOR CH4+ ON H+
+      FUNCTION FNUEQI(XNI,TI)
+      REAL(DP) ::  FNUEQI,XNI,TI
+c     FNUEQI=8.8E-8*XNI*TI**(-1.5)
+      FNUEQI=8.5E-8*XNI*TI**(-1.5)  ! times  factor
+      RETURN
+      END FUNCTION FNUEQI
+
+C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
+C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
+
+      FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
+      REAL(DP) ::  FNUEQI_1,EA,XNI,TI
+      INTEGER ::  ION,IPL
+      REAL(DP) ::  Coullog,fact,za,zb,XMUA,XMUB
+      Coullog=10.
+      ZA=NCHRGI(ION)
+      ZB=NCHRGP(IPL)
+      XMUA=nMASSI(ION)
+      XMUB=nMASSP(IPL)
+      FACT=XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**0.5
+      FNUEQI_1=FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
+      RETURN
+      END FUNCTION FNUEQI_1
+
+C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
+
+      FUNCTION FNUEQI_2(EA,XNI,TI,ION,IPL)
+      REAL(DP) ::  FNUEQI_2,EA,XNI,TI
+      INTEGER ::  ION,IPL
+      REAL(DP) ::  Coullog,XNUE0,za,zb,XMUA,XMUB,XAB,
+     .             vela,xma,xmb,eza,ezb
+      COULLOG=10.
+      ZA=NCHRGI(ION)
+      ZB=NCHRGP(IPL)
+      eZA=ZA*4.8032d-10  ! charge in statcoul (cgs)
+      eZB=ZB*4.8032d-10
+      XMUA=nMASSI(ION)
+      XMUB=nMASSP(IPL)
+      XMA=xmua*amua   ! in g
+      XMB=xmub*amua   ! in g
+      VELA=CVELAA*SQRT(EA/XMUA) ! cm/s
+      XNUE0=XNI*eZA**2*eZB**2*COULLOG*4.*PIA/XMA**2/VELA**3
+      XAB=XMUB/(2.*TI)*EA/XMUA*2  ! DIMENSIONLESS
+      XAB=XMB/(2.*TI*1.6e-12)*vela*vela  ! DIMENSIONLESS
+      FNUEQI_2=2.*XNUE0*(XMUA/XMUB*PSI_CHAND(XAB)-DPSI_CHAND(XAB))
+      RETURN
+      END FUNCTION FNUEQI_2
+
+      FUNCTION PSI_CHAND(X)
+      REAL(DP) :: PSI_CHAND,X
+      PSI_CHAND=-ERF(SQRT(X))+2./SQRT(PIA)*EXP(-X)*SQRT(X)
+      RETURN
+      END FUNCTION PSI_CHAND
+
+      FUNCTION DPSI_CHAND(X)
+      REAL(DP) :: DPSI_CHAND,X
+      DPSI_CHAND=2./SQRT(PIA)*EXP(-X)*SQRT(X)
+      RETURN
+      END FUNCTION DPSI_CHAND
+
+
       END
  
-      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
+      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)                   
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
 C
 C  IF (IND.GE.1) ALSO PROVIDE REDUCED (GC) VELOCITY
@@ -1364,22 +1483,16 @@ C
       IMPLICIT NONE
       REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
-      REAL(DP) :: BVEC_1(3), VVEC(3), GYRO
+      REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
  
-      IF (INDPRO(5) == 8) THEN
-        CALL EIRENE_VECUSR(1,BBX,BBY,BBZ,1)
-      ELSE
-        BBX=BXIN(NCELL)
-        BBY=BYIN(NCELL)
-        BBZ=BZIN(NCELL)
-      END IF
+      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF)
       BVEC = (/ BBX, BBY, BBZ /)
 
       IF (IND.LT.1) RETURN
 
+C  FIND NEW REDUCED (GUIDING CENTRE) VELOCITY, LCART=F
 C  RETAIN VEL, V_PARALLEL, V_PERP, SIGPAR,
-C  SAMPLE PHASE, AND FIND NEW CARTESIAN VELX,VELY,VELZ (SAME VEL=VELS)
       VLXPAR=SIGPAR*BBX
       VLYPAR=SIGPAR*BBY
       VLZPAR=SIGPAR*BBZ
@@ -1391,6 +1504,7 @@ C  SAMPLE PHASE, AND FIND NEW CARTESIAN VELX,VELY,VELZ (SAME VEL=VELS)
 
       IF (IND.LT.2) RETURN
                                             
+C  FIND NEW CARTESIAN VELX,VELY,VELZ (SAME VEL=VELS), LCART=T
 C  NEW GYRO PHASE
       GYRO=RANF_EIRENE()*PI2A
 C  BACK TO CARTESIAN COORDIANTES
