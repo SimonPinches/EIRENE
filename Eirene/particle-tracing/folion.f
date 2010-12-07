@@ -1003,6 +1003,26 @@ C
           IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
+
+        ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
+        IF (NLTOR.AND.ISTS.NE.0) THEN
+          SG=ISIGN(1,NINCZ)
+          NLSRFZ=.TRUE.
+          MSURFG=NRCELL+(NPCELL-1)*NR1P2
+          IF (LCART) THEN
+            VELXS=VELX
+            VELYS=VELY
+            VELZS=VELZ
+            VELS =VEL
+            VELX=VLXPAR
+            VELY=VLYPAR
+            VELZ=VLZPAR
+            VEL =VELPAR
+            LCART=.FALSE.
+          ENDIF
+          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
+     .                                             (ISTS,3,SG,*104,*380)
+        ENDIF
 C
       ELSEIF (LEVGEO.EQ.5) THEN
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
