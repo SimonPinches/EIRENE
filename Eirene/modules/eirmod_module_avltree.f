@@ -106,6 +106,7 @@
       logical :: fertig
 
       fertig = .false.
+      nullify(tliste)
 
       IF (.not.ASSOCIATED(node)) return
 
