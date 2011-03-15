@@ -114,6 +114,8 @@ C  ATOMIC DATA
       NCHOR=0
       NCHEN=0
       NPRNL=0
+      NVLPR=0
+      NSRPR=0
  
 C  Stellarator geometry?
 C  NGEOM_USR = 1  ==> Stellarator-Geometrie
@@ -958,13 +960,13 @@ C   READ TRCSRC (60 LOGICALS PER LINE)
       end do
 
       READ (IUNIN,6666) NVOLPR
-      NVOLPR=MIN(NVOLPR,100)
+      NVLPR=NVOLPR
       DO J=1,NVOLPR
         READ (IUNIN,*)
       END DO
 C
       READ (IUNIN,6666) NSURPR
-      NSURPR=MIN(NSURPR,100)
+      NSRPR=NSURPR
       DO J=1,NSURPR
         READ (IUNIN,*)
       END DO
