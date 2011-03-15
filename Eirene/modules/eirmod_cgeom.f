@@ -95,6 +95,7 @@
  
       ELSE IF (ICAL == 2) THEN
  
+         IF (ALLOCATED(AREAG)) RETURN
          ALLOCATE (AREAG(NLMPGS))
          WRITE (55+IFOFF,'(A,T25,I15)') ' CGEOM(2) ',NLMPGS*8
  
