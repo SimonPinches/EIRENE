@@ -67,7 +67,7 @@
 
 c     ------------------------------------------------------------     c
 c     for the tim  
-      CALL EIRENE_BROAD_TIM_PARMS
+!pb      CALL EIRENE_BROAD_TIM_PARMS
 c     ------------------------------------------------------------     c
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
@@ -76,9 +76,9 @@ c     ------------------------------------------------------------     c
         CALL EIRENE_ALLOC_COMUSR(0)
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL EIRENE_ALLOCATE_MODULES
-	call eirene_allocate_timvars
+!pb	call eirene_allocate_timvars
         IUNOUT = 7   ! reset to 0 in alloc_comprt
-Else
+      Else
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       END IF
  
@@ -110,6 +110,7 @@ Else
      .                MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NCLTAL,NRAD,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NNODES,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LDAMCEL,NRAD,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
  
       CALL MPI_BCAST (RCGRID,NCGRD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ICGRID,MCGRD,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -810,10 +811,12 @@ Else
       CALL MPI_BCAST (INSPAT,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRKNOT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NTRII,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (INMTI3,NTRIS*N3RD,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
 
       DO I = 1, NLIMPS
         NMT = SURF_TRIAN(I)%NUMTR
-        CALL MPI_BCAST (NMT,1 MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (NMT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         IF (NMT > 0) THEN
           IF (MY_PE /= 0) THEN
             SURF_TRIAN(I)%NUMTR = NMT 
@@ -1111,7 +1114,7 @@ Else
               DO I=1, NADSPC
                 NULLIFY (ESTIML(I)%PSPC)
                 NULLIFY (SMESTL(I)%PSPC)
-              END IF
+              END DO
             END IF
          END IF
          DO I=1,NADSPC
