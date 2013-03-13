@@ -191,6 +191,8 @@ c  binary search
         end if
  
 ! broadcast numbers of needed particles per processor
+
+       	if (.not.allocated(rdistrib)) allocate(rdistrib(nprnl))
  
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
         call mpi_scatter(icopro ,1,MPI_INTEGER,
