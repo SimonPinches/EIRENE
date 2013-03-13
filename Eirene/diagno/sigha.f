@@ -45,17 +45,33 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
 C  INITIALISE H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD)) then
           if (PEN.EQ.12.089_DP) THEN
-            CALL
-     .  EIRENE_Ly_beta(ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,
-     .                   NADVI+6)
-          elseif (PEN.EQ.2.8560_DP) THEN
-            CALL
-     .  EIRENE_Ba_gamma(ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,
-     .                    NADVI+6)
-          else !  default: H-alpha line. Also: PEN=1.8889
-            CALL
-     .  EIRENE_Ba_alpha(ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,
-     .                    NADVI+6)
+            CALL EIRENE_Ly_beta 
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.10.2375_DP) THEN
+            CALL EIRENE_Ly_alpha 
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.3.0222_DP) THEN
+            CALL EIRENE_Ba_delta
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+           elseif (PEN.EQ.2.8560_DP) THEN
+            CALL EIRENE_Ba_gamma
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.2.5500_DP) THEN
+            CALL EIRENE_Ba_beta
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.1.8889_DP) THEN 
+            CALL EIRENE_Ba_alpha
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          else
+            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
+            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
+            ADDV(NADVI+1:NADVI+7,:) = 0._DP
           endif
         endif
         ISTOLD=ISTRA
@@ -76,13 +92,15 @@ C
       PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
       PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
       PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
-      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+6,NCELC)
+      PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
+      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
       ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
       ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
       ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
       ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
       ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
-      ARGST(0,JJJ)=ADDV(NADVI+6,NCELC)
+      ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
+      ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
 C
       RETURN
  
