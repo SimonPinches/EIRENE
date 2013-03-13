@@ -67,7 +67,7 @@ C
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           EIRENE_LEARCA, I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2, 
-     .           NJC, EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN
+     .           NJC, EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
       LOGICAL :: LCUTY(N2NDPLG), LCUTX(N1ST), lnincz
       SAVE
@@ -261,7 +261,13 @@ C
 C
           ITEST=INMP2I(NRCELL,LUPC(J),0)
           IN=ITEST+NLIM
-          IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
+          if (LUPC(J) > 0) then
+             itc = NRCELL+((LUPC(J)-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
+          else
+             itc = ncell
+          end if
+!pb          IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
+          IF (.not.ldamcel(itc).and.(ITEST.NE.0.AND.ILIIN(IN).NE.0))THEN
 C
 C  TRACK ENDS ON ONE OF THE NON DEFAULT POLOIDAL SURFACES
 C
@@ -283,7 +289,7 @@ C
             NCOUP=NCOUPE
             GOTO 311
  
-          ELSEIF (ityp==3) THEN
+          ELSEIF (ldamcel(itc).or.(ityp==3)) THEN
 C
 C  STOP TRACK ANYHOW
 C
@@ -291,6 +297,7 @@ C
               WRITE (iunout,*) ' TRACK TERMINATED'
               WRITE (iunout,*) ' ITYP,ILIIN ',ITYP,ILIIN(IN)
             ENDIF
+            if (ldamcel(itc)) lgpart=.false.
             NCOUPE=J
             MPSURF=LUPC(NCOUPE)
             IF (LUPC(NCOUPE) /= 0) IPOLGN=LUPC(NCOUPE)
