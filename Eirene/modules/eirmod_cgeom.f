@@ -24,9 +24,12 @@
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NPOINT(:,:),   NSTGRD(:), NGHPLS(:,:,:),
-     I NGHPOL(:,:,:), NCLTAL(:), INDPOINT(:,:)
+     I NGHPOL(:,:,:), NCLTAL(:), INDPOINT(:,:), NOPNT(:)
  
       INTEGER, PUBLIC, SAVE :: NCGM1, NCGM2, NNODES
+
+      LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
+     L LDAMCEL(:)
  
       TYPE :: CELL_ELEM
         INTEGER :: NOCELL
@@ -63,12 +66,15 @@
          ALLOCATE (NGHPOL(4,N1STS,N2NDPLG))
          ALLOCATE (NCLTAL(NRAD))
          ALLOCATE (INDPOINT(N1STS,N2NDPLG))
+         ALLOCATE (NOPNT(NRAD))
  
          ALLOCATE (COORCELL(NRAD))
+
+         ALLOCATE (LDAMCEL(NRAD))
  
          WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CGEOM(1) ',(NCGM1+2*N1STS*N2NDPLG)*8 +
-     .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLG)*4
+     .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLG)*4 + nrad*4
  
          VOLADD => RCGM1(1 : NADD)
          VOLTAL => RCGM1(1+NADD : NADD+NRTAL)
@@ -121,8 +127,11 @@
       DEALLOCATE (NGHPOL)
       DEALLOCATE (NCLTAL)
       DEALLOCATE (INDPOINT)
+      DEALLOCATE (NOPNT)
  
       DEALLOCATE (COORCELL)
+
+      DEALLOCATE (LDAMCEL)
  
       DEALLOCATE (AREAG)
  
@@ -146,10 +155,13 @@
          NGHPOL   = 0
          NCLTAL   = 0
          INDPOINT = 0
+         NOPNT = 0
  
          DO I=1,NRAD
             NULLIFY (COORCELL(I)%PCELL)
          END DO
+
+         LDAMCEL = .FALSE.
  
       ELSE IF (ICAL == 2) THEN
  
