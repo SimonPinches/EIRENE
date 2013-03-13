@@ -29,7 +29,7 @@ C
  
       IMPLICIT NONE
  
-      INTEGER :: IR, IP, IPART, JP, K, IC, IN
+      INTEGER :: IR, IP, IPART, JP, K, IC, IN, NPUNKT, IPPLG
       TYPE(CELL_ELEM), POINTER :: CUR
       type(TAVLTree), pointer :: baum
       logical :: inserted
@@ -129,6 +129,64 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
  
         baum => EIRENE_NewTree()
         NNODES=0
+
+        if (.true.) then
+
+          DO IR=1,NR1ST
+            NPUNKT = 0
+            DO IPPLG=1,NPPLG
+              NPUNKT = NPUNKT+NPOINT(2,IPPLG)-NPOINT(1,IPPLG)+1
+            END DO
+            DO K=1,NPPLG
+              DO IP=NPOINT(1,K),NPOINT(2,K)
+                IC=NNODES+1
+                inserted=.false.
+                call EIRENE_insert (baum, xpol(ir,ip), ypol(ir,ip),
+     .                0._DP, 1._DP, ic, inserted)
+                INDPOINT(IR,IP) = IC
+                IF (INSERTED) THEN
+                   NNODES=NNODES+1
+                   XPOINT(NNODES)=XPOL(IR,IP)
+                   YPOINT(NNODES)=YPOL(IR,IP)
+                   NOPNT(NNODES) = (IR-1)*NPUNKT+IP
+                END IF
+              END DO
+            END DO
+          END DO
+
+          DO IR=1,NR1STM
+            DO K=1,NPPLG
+              DO IP=NPOINT(1,K),NPOINT(2,K)-1
+                IN=IR+(IP-1)*NR1ST
+!     IR, IP
+                IC = INDPOINT(IR,IP)
+                ALLOCATE (CUR)
+                CUR%NOCELL = IN
+                CUR%NEXT_CELL => COORCELL(IC)%PCELL
+                COORCELL(IC)%PCELL => CUR
+!     IR+1, IP
+                IC = INDPOINT(IR+1,IP)
+                ALLOCATE (CUR)
+                CUR%NOCELL = IN
+                CUR%NEXT_CELL => COORCELL(IC)%PCELL
+                COORCELL(IC)%PCELL => CUR
+!     IR+1, IP+1
+                IC = INDPOINT(IR+1,IP+1)
+                ALLOCATE (CUR)
+                CUR%NOCELL = IN
+                CUR%NEXT_CELL => COORCELL(IC)%PCELL
+                COORCELL(IC)%PCELL => CUR
+!     IR, IP+1
+                IC = INDPOINT(IR,IP+1)
+                ALLOCATE (CUR)
+                CUR%NOCELL = IN
+                CUR%NEXT_CELL => COORCELL(IC)%PCELL
+                COORCELL(IC)%PCELL => CUR
+              END DO
+            END DO
+          END DO
+          
+        else
         DO IR=1,NR1STM
           DO K=1,NPPLG
             DO IP=NPOINT(1,K),NPOINT(2,K)-1
@@ -196,6 +254,7 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
             ENDDO
           ENDDO
         ENDDO
+        end if ! if (.true.)
       
         NCORNER = NNODES
 
