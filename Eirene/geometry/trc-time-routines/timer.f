@@ -104,7 +104,7 @@ C
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
-     .           ISTS_CELL, ISD
+     .           ISTS_CELL, ISD, nclpb
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
@@ -522,6 +522,8 @@ C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
 6001    CONTINUE
         IF (NLTRC) WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
      .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
+        IF (NLTRC) WRITE (iunout,*) ' velx, vely, velz ',
+     .                           velx, vely, velz
         T1=-1.D30
         T2=-1.D30
         T3=-1.D30
@@ -603,7 +605,13 @@ C  IF INTERSECTION WITH POLOIDAL BOUNDARY CONTINUE WITH NEIGHBORING CELL
           ENDIF
           ISTS=INMP2I(IR,LUPC(NCOUP),0)
 !pb          IF ((.not.NLPOL.or.ISTS.eq.0).and.ip.ne.0) goto 6001
-          IF (ityp.ne.3.and.(.not.NLPOL.or.ISTS.eq.0).and.ip.ne.0)
+          if (ip > 0) then
+            nclpb = IR+((IP-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
+          else
+            nclpb = ncell
+          end if
+          IF ((ityp.ne.3.and.(.not.NLPOL.or.ISTS.eq.0).and.ip.ne.0)
+     .       .and. (.not.ldamcel(nclpb)))
      .       goto 6001
 C  NO NEIGHBORING CELL: PARTICLE HAS HIT A POLOIDAL BOUNDARY OF THE MESH
           MRSURF=0
