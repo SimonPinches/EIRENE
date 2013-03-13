@@ -1,5 +1,6 @@
 !pb  24.11.06: flag for shifting of first parameter of rate-coeff introduced
 !pb  24.11.06: BZIN initialized with 1
+!pb  05.04.11: BFIN initialized with 1
 C
 C
       SUBROUTINE EIRENE_MODBGK
@@ -86,6 +87,10 @@ C
       ALLOCATE (PDEN2(NRAD))
       ALLOCATE (EDEN2(NRAD))
       ALLOCATE (ENERGY(NPLS,NRAD))
+
+      NXM=MAX(1,NR1STM)
+      NYM=MAX(1,NP2NDM)
+      NZM=MAX(1,NT3RDM)
 c
 C  LOOP OVER THOSE BACKGROUND ION SPECIES, WHICH ARE ARTIFICIAL
 C  SPECIES FOR (NON-LINEAR) ITERATIONS
@@ -260,11 +265,7 @@ C
         ENDIF
 C
         CNDYN=AMUA*RMAS1
-C
-        NXM=MAX(1,NR1STM)
-        NYM=MAX(1,NP2NDM)
-        NZM=MAX(1,NT3RDM)
-C
+CC
         RRN=0.
         RRE=0.
         RRM=0.
@@ -577,6 +578,8 @@ C
       PLASMA_BCKGRND(1:NRWK1,:) = 0.D0
 !pb initialize BZIN=1
       PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
+!pb initialize BFIN=1
+      PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
       DO 550 IR=1,NXM
         DO 550 IP=1,NYM
           DO 550 IT=1,NZM
