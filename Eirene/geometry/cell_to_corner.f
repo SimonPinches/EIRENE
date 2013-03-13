@@ -42,7 +42,7 @@
              VOLSUM(IC1) = VOLSUM(IC1) + DIST1
 
              IC2 = INDPOINT(IR+1,IP)
-             dist1 = 1._DP/SQRT((XC-RSURF(IR+1))**2+
+             dist2 = 1._DP/SQRT((XC-RSURF(IR+1))**2+
      .                          (YC-PSURF(IP))**2) 
              FCORNER(IC2) = FCORNER(IC2) + F(IN)*DIST2
              VOLSUM(IC2) = VOLSUM(IC2) + DIST2
