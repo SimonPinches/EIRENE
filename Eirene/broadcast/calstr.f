@@ -6,6 +6,7 @@
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
 !pb 090309  loops reorganized          
 !pb 270309  typos corrected             
+!sw 091112  added support for csdvi_cop and csdvi_bgk
 
       SUBROUTINE EIRENE_CALSTR
 
@@ -17,6 +18,8 @@
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
       USE EIRMOD_CSDVI
+      USE EIRMOD_CSDVI_COP
+      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COUTAU
       IMPLICIT NONE
 
@@ -27,6 +30,7 @@ C
      .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
      .            helps(nlmpgs+1), helpc
       real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1) 
+      real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: igrp(0:nstra), icomgrp(0:nstra)
       integer :: ier1, ier, ir, npean, npeen, i, mpicw, ispc, my_pe_gr,
      .           mxdim, ns, j
@@ -43,7 +47,9 @@ c
 c   collect data from pe's belonging to one stratum
 c
 !pb      if (istra.eq.nstrpe(my_pe)) then
-      if (procforstra(istra,my_pe)) then
+!pb      if (procforstra(istra,my_pe)) then
+      if(      count( procforstra(istra,0:nprs-1) ) >1 
+     .   .and. procforstra(istra,my_pe)) then
         call mpi_barrier(icomgrp(istra),ier)
         my_pe_gr = my_pe-npesta(istra)
         
@@ -232,6 +238,107 @@ C
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	  if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
 	end if
+csw 09nov2012 reduce csdvi_cop
+        if (ncpv_stat > 0) then
+         allocate(dummyw(max(nrtals,ncpv_stat)+1))
+         allocate(helpw(max(nrtals,ncpv_stat)+1))
+
+         do i=1,ncpv_stat
+           dummyw(1:nrtals) = sigma_cop(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) sigma_cop(i,1:nrtals) = helpw(1:nrtals)
+
+           dummyw(1:nrtals) = stv_cop(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) stv_cop(i,1:nrtals) = helpw(1:nrtals)
+
+           dummyw(1:nrtals) = sdvia_cop(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) sdvia_cop(i,1:nrtals) = helpw(1:nrtals)
+
+           dummyw(1:nrtals) = ee_cop(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) ee_cop(i,1:nrtals) = helpw(1:nrtals)
+         enddo
+
+         call mpi_reduce(sgms_cop(1:ncpv_stat),helpv,ncpv_stat,
+     .                   mpi_double_precision,mpi_sum,
+     .                   0,icomgrp(istra),ier1)
+         if (my_pe_gr==0) sgms_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
+
+         call mpi_reduce(stvs_cop(1:ncpv_stat),helpv,ncpv_stat,
+     .                   mpi_double_precision,mpi_sum,
+     .                   0,icomgrp(istra),ier1)
+         if (my_pe_gr==0) stvs_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
+
+         call mpi_reduce(ees_cop(1:ncpv_stat),helpv,ncpv_stat,
+     .                   mpi_double_precision,mpi_sum,
+     .                   0,icomgrp(istra),ier1)
+         if (my_pe_gr==0) ees_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
+
+         deallocate(dummyw)
+         deallocate(helpw)
+        endif
+csw
+
+csw 09nov2012 reduce csdvi_bgk
+        if (nbgv_stat > 0) then
+         allocate(dummyw(max(nrtals,nbgv_stat)+1))
+         allocate(helpw(max(nrtals,nbgv_stat)+1))
+
+         do i=1,nbgv_stat
+           dummyw(1:nrtals) = sigma_bgk(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) sigma_bgk(i,1:nrtals) = helpw(1:nrtals)
+
+           dummyw(1:nrtals) = stv_bgk(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) stv_bgk(i,1:nrtals) = helpw(1:nrtals)
+
+           dummyw(1:nrtals) = sdvia_bgk(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) sdvia_bgk(i,1:nrtals) = helpw(1:nrtals)
+
+           dummyw(1:nrtals) = ee_bgk(i,1:nrtals)
+           call mpi_reduce(dummyw,helpw,nrtals,
+     .                     mpi_double_precision,mpi_sum,
+     .                     0,icomgrp(istra),ier1)
+           if(my_pe_gr==0) ee_bgk(i,1:nrtals) = helpw(1:nrtals)
+         enddo
+
+         call mpi_reduce(sgms_bgk(1:nbgv_stat),helpv,nbgv_stat,
+     .                   mpi_double_precision,mpi_sum,
+     .                   0,icomgrp(istra),ier1)
+         if (my_pe_gr==0) sgms_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
+
+         call mpi_reduce(stvs_bgk(1:nbgv_stat),helpv,nbgv_stat,
+     .                   mpi_double_precision,mpi_sum,
+     .                   0,icomgrp(istra),ier1)
+         if (my_pe_gr==0) stvs_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
+
+         call mpi_reduce(ees_bgk(1:nbgv_stat),helpv,nbgv_stat,
+     .                   mpi_double_precision,mpi_sum,
+     .                   0,icomgrp(istra),ier1)
+         if (my_pe_gr==0) ees_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
+
+         deallocate(dummyw)
+         deallocate(helpw)
+        endif
+csw
 
 	deallocate(help)
 	mxdim = max (nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
@@ -262,14 +369,12 @@ C
 	deallocate(lhelp)
 
         call mpi_barrier(icomgrp(istra),ier)
-        call mpi_comm_free (icomgrp(istra),ier)
+        call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
 
       endif
 
-      call mpi_barrier(mpi_comm_world,ier)
-      
-      call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
-
+      call mpi_comm_free (icomgrp(istra),ier)
+      call mpi_group_free(mpicw,ier)
       call mpi_barrier(mpi_comm_world,ier)
 
       RETURN
