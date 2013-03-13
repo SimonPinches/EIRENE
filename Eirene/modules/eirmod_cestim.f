@@ -802,7 +802,10 @@ C  VOLUME AVERAGED TALLIES
         MIPL => CEMETERYV(0:0,:)
       END IF
       IF (LMPHPL) THEN
-        MPHPL => ESTIMV(NADDV(100)+1: ,:)
+!pb   I would have expected the compiler to find the length of
+!pb   array ESTIMV automatically but ifort version 12.0.4 doesn't
+!pb 20.06.2012        MPHPL => ESTIMV(NADDV(100)+1: ,:)
+        MPHPL => ESTIMV(NADDV(100)+1:NVOLTL ,:)
       ELSE
         MPHPL => CEMETERYV(0:0,:)
       END IF
