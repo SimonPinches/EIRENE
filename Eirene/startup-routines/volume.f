@@ -423,12 +423,23 @@ C
               DO 265 J=NPOINT(1,JP),NPOINT(2,JP)-1
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
+                LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
+                IF (LDAMCEL(NCELL)) THEN
+                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
+                  CALL EIRENE_MASJ2('IR,IP           ',I,J)
+                  WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
+     .                 'WILL BE KILLED '
+                END IF
 !PB                VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2A
-                VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*ZDF
-                IF (VOL(NCELL).GE.0.D0) GOTO 265
-                WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-                CALL EIRENE_MASJ2('J,I             ',I,J)
-C               CALL EXIT_OWN(1)
+                IF (NSTGRD(NCELL) == 0) THEN
+                  VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*ZDF
+                  IF (VOL(NCELL).GE.0.D0) GOTO 265
+                  WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
+                  CALL EIRENE_MASJ2('J,I             ',I,J)
+C                 CALL EXIT_OWN(1)
+                ELSE
+                  VOL(NCELL) = 0._DP
+                END IF  
 265       CONTINUE
         ELSEIF (NLTRA) THEN
 !PB          PI2AT=TANAL/ALPHA*PI2A
@@ -438,11 +449,22 @@ C               CALL EXIT_OWN(1)
               DO 267 J=NPOINT(1,JP),NPOINT(2,JP)-1
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
-                VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2AT
-                IF (VOL(NCELL).GE.0.D0) GOTO 267
-                WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-                CALL EIRENE_MASJ2('J,I             ',I,J)
-C               CALL EXIT_OWN(1)
+                LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
+                IF (LDAMCEL(NCELL)) THEN
+                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
+                  CALL EIRENE_MASJ2('IR,IP           ',I,J)
+                  WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
+     .                 'WILL BE KILLED '
+                END IF
+                IF (NSTGRD(NCELL) == 0) THEN
+                  VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2AT
+                  IF (VOL(NCELL).GE.0.D0) GOTO 267
+                  WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
+                  CALL EIRENE_MASJ2('J,I             ',I,J)
+C                 CALL EXIT_OWN(1)
+                ELSE
+                  VOL(NCELL) = 0._DP
+                END IF  
 267       CONTINUE
         ELSEIF (NLTRZ) THEN
           DO 268 I=1,NR1STM
@@ -450,12 +472,22 @@ C               CALL EXIT_OWN(1)
               DO 268 J=NPOINT(1,JP),NPOINT(2,JP)-1
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
-                VOL(NCELL)=ABS(AREAP(I,J))*ZDF
-                IF ((NSTGRD(NCELL) == 0) .AND.
-     .              (ABS(VOL(NCELL)) < EPS10)) THEN
-                WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.EQ.0'
-                CALL EIRENE_MASJ2('J,I             ',I,J)
+                LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
+                IF (LDAMCEL(NCELL)) THEN
+                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
+                  CALL EIRENE_MASJ2('IR,IP           ',I,J)
+                  WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
+     .                 'WILL BE KILLED '
                 END IF
+                IF (NSTGRD(NCELL) == 0) THEN
+                  VOL(NCELL)=ABS(AREAP(I,J))*ZDF
+                  IF (ABS(VOL(NCELL)) < EPS10) THEN
+                    WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.EQ.0'
+                    CALL EIRENE_MASJ2('J,I             ',I,J)
+                  END IF
+                ELSE
+                  VOL(NCELL) = 0._DP
+                END IF  
 268       CONTINUE
         ENDIF
 C
