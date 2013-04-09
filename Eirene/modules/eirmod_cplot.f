@@ -46,7 +46,8 @@ cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
      L NLPL2D, NLPL3D,
      L PL1ST,  PL2ND,  PL3RD,  PLADD,   PLHST,   PLCUT(3),
      L PLCHOR, PLSPEC, PLSTOR, PLNUMV,  PLNUMS,  PLARR,
-     L LPRADR, LPPOLR, LPTORR, LRAPS3D, LR3DCON, LRPSCUT
+     L LPRADR, LPPOLR, LPTORR, LRAPS3D, LR3DCON, LRPSCUT,
+     L PLIDL
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L PLTSRC(:),
@@ -212,6 +213,7 @@ cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
       LRAPS3D = .FALSE.
       LR3DCON = .FALSE.
       LRPSCUT = .FALSE.
+      PLIDL   = .FALSE.
  
       PLTSRC = .FALSE.
       PLTL2D = .FALSE.
