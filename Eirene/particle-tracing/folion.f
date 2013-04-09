@@ -114,12 +114,15 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           NRCELL_OLD,
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
-     .           EIRENE_LEARC1, IDUM, IFPB
+     .           EIRENE_LEARC1, IDUM, IFPB, indf
       LOGICAL :: LCNDEXP
 
 C
 C  NO CONDITIONAL EXPECTATION ESTIMATORS FOR TEST IONS
 C
+
+
+
 C
 C  ALL CELL INDICES MUST BE KNOWN AT THIS POINT
 C  TENTATIVELY ASSUME: A NEXT GENERATION PARTICLE WILL BE BORN
@@ -150,6 +153,7 @@ C       PARALLEL AND PERPENDICULAR UNIT VELOCITY COMPONENTES  VELPAR
 C
 1005  NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
       NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
+      IF (LDAMCEL(NCELL)) GOTO 9912
       IF (NCELL.GT.NSBOX.OR.NCELL.LT.1) GOTO 991
 C  FIND B-FIELD IN CELL NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
@@ -267,7 +271,7 @@ C
             SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
             X0 = X0  +SH*PTRIX(IPOLG,MRSURF)
             Y0 = Y0  +SH*PTRIY(IPOLG,MRSURF)
-            WRITE (iunout,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
+            WRITE (IUNOUT,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
             WRITE (IUNOUT,*) 'AND MOVING PARALLEL TO SURFACE'
             WRITE (IUNOUT,*) 'PUSH INTO SUSPECTED NEXT CELL, SH = ',SH
             NLSRFX=.FALSE.
@@ -284,10 +288,10 @@ C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
           ELSEIF (SG.GT.0) THEN  !  SG IS GT EPS6
             NTEST=NCHBAR(IPOLG,MRSURF)
             IF (NTEST.EQ.0) THEN
-c  no neighbor. push back into old cell.
+C  NO NEIGHBOR. PUSH BACK INTO OLD CELL.
               SH=-CELDIA(NCELL)*1.D-2
-              WRITE (iunout,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
-              WRITE (iunout,*) 'push back into old cell: sh = ',sh
+              WRITE (IUNOUT,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
+              WRITE (IUNOUT,*) 'PUSH BACK INTO OLD CELL: SH = ',SH
               WRITE (iunout,*) 'NRCELL = ',NRCELL
               NLSRFX=.FALSE.
 c  strictly: particle should be pushed towards COM.
@@ -587,6 +591,7 @@ C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS THROUGH TRANSPARENT
 C                            SURFACES FROM THIS POINT
 104   CONTINUE
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
+      IF (LDAMCEL(NCELL)) GOTO 9912
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 C  AT THIS POINT: LCART=F
 
@@ -647,6 +652,11 @@ C FNUI: COLLISION FREQUENCY WITH BACKGROUND IONS.
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
+ctest     ti=200
+ctest     ni=1e14
+ctest     ea=0.1
+ctest     iion=1
+ctest     ipls=1
 ctest     nmassi(1)=16.
 ctest     nmassp(1)=1.
 ctest     a=fnueqi(1.d14,200.d0)
@@ -807,6 +817,7 @@ C         VEL=VELS
         DO 212 J=1,NCOU
           JJ=J
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
+          IF (LDAMCEL(NCELL)) GOTO 9912
           ZMFP=EIRENE_FPATHI(NCELL,CFLAG,J,NCOU)
           IF (NCOU.GT.1) THEN
             XSTOR2(:,:,J)=XSTOR(:,:)
@@ -1004,25 +1015,28 @@ C
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
 
-        ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
-        IF (NLTOR.AND.ISTS.NE.0) THEN
-          SG=ISIGN(1,NINCZ)
-          NLSRFZ=.TRUE.
-          MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          IF (LCART) THEN
-            VELXS=VELX
-            VELYS=VELY
-            VELZS=VELZ
-            VELS =VEL
-            VELX=VLXPAR
-            VELY=VLYPAR
-            VELZ=VLZPAR
-            VEL =VELPAR
-            LCART=.FALSE.
+!pb        ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
+        IF (MTSURF > 0) THEN
+          ISTS=INMTI3(IRCELL,MTSURF)
+          IF (NLTOR.AND.ISTS.NE.0) THEN
+            SG=ISIGN(1,NINCZ)
+            NLSRFZ=.TRUE.
+            MSURFG=NRCELL+(NPCELL-1)*NR1P2
+            IF (LCART) THEN
+              VELXS=VELX
+              VELYS=VELY
+              VELZS=VELZ
+              VELS =VEL
+              VELX=VLXPAR
+              VELY=VLYPAR
+              VELZ=VLZPAR
+              VEL =VELPAR
+              LCART=.FALSE.
+            ENDIF
+            IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
+     .                                        (ISTS,3,SG,*104,*380)
           ENDIF
-          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                             (ISTS,3,SG,*104,*380)
-        ENDIF
+        END IF
 C
       ELSEIF (LEVGEO.EQ.5) THEN
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
@@ -1216,6 +1230,7 @@ C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN INTO MORE GENERAL TERMS)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,19)
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
+        IF (LDAMCEL(NCELL)) GOTO 9912
 C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND
 
         CALL EIRENE_FPKCOL(*104,*229,3)
@@ -1279,9 +1294,16 @@ C
       IF (.NOT.LCART) THEN
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
+        IF (LDAMCEL(NCELL)) GOTO 9912
+!pb for the time being
+        ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
+        indf=2
+        if (abs(transp(ispz,1,msurf))+abs(transp(ispz,2,msurf)) > 0)
+     .     indf = 1
         ICOUN=0
         DO
-          CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
+!pb          CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
+          CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
 C  DOES THE PARTICLE SPEED POINT TOWARDS THE SURFACE
           IF (COSIN.GT.0.) EXIT
@@ -1353,6 +1375,15 @@ C
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
       GOTO 995
+9912  CONTINUE
+      CALL EIRENE_LEER(1)
+      CALL EIRENE_MASAGE
+     .  ('ERROR IN FOLION,  DAMAGED CELL HIT            ')
+      CALL EIRENE_MASAGE
+     .  ('PARTICLE IS KILLED                            ')
+      WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
+      WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
+      GOTO 995
 992   CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
@@ -1417,11 +1448,20 @@ C
 
       CONTAINS
 C  ION-ION ENERGY LOSS FREQUENCY (LANGER APPROXIMATION) (1/SEC)
-C  NUCL.FUS. 22, NO. 6, (1986) P754, FOR CH4+ ON H+
+C  NUCL.FUS. 22, NO. 6, (1986) P754, FOR CH4+ (ma=16) ON H+ (mb=1)
       FUNCTION FNUEQI(XNI,TI)
       REAL(DP) ::  FNUEQI,XNI,TI
 c     FNUEQI=8.8E-8*XNI*TI**(-1.5)
-      FNUEQI=8.5E-8*XNI*TI**(-1.5)  ! times  factor
+c  this is not exactly the relaxation time, but instead a time
+c  which appears in the analytical (BGK-like) solution EA(t)
+c  to obtain an effective  nu(Ti) that can be compared with a
+c  "relaxation time"
+c  in the dgl dEA/dt=-nu(Ti,EA,...) times EA
+c  in the present limit: this must be multiplied by a factor(EA,Ti)
+      FNUEQI=8.5E-8*XNI*TI**(-1.5)  
+c  in calling program: FNUEQI = FNUEQI*(1.+mB/mA)**0.5-1.5*Ti/EA
+c  but this is already implicitly contained in the analytic BGK solution
+c  written for fnueqi without that factor.
       RETURN
       END FUNCTION FNUEQI
 
@@ -1467,7 +1507,7 @@ C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
       END FUNCTION FNUEQI_2
 
       FUNCTION PSI_CHAND(X)
-      REAL(DP) :: PSI_CHAND,X
+      REAL(DP) :: PSI_CHAND,X,erf
       PSI_CHAND=-ERF(SQRT(X))+2./SQRT(PIA)*EXP(-X)*SQRT(X)
       RETURN
       END FUNCTION PSI_CHAND
