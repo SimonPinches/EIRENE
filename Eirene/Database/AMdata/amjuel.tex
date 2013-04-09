@@ -1,9 +1,14 @@
-%CSW changed from latex2.0.9 to latex2e (needed for usepackage-command)
-%\documentstyle[12pt,epsf]{article}
-\documentclass[12pt]{article}
+\documentclass[12pt,dvips]{article}
+
+\usepackage[hypertex,unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{pdftitle={AMJUEL Documentation},linkcolor=black, citecolor=black, urlcolor=blue, filecolor=blue}
+
 \usepackage{epsf}
 \oddsidemargin 0. true cm
-\topmargin -1 true cm
+\topmargin -2.5 true cm
 \textheight 24 true cm
 \textwidth 16 true cm
 %CSW latex2html related commands, have no effect on
@@ -38,8 +43,10 @@ Available via E-mail from d.reiter@fz-juelich.de
 \tableofcontents
 %ende titelpage
 \newpage
-\section{Introduction}
-\subsection{Record:}
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+\subsection*{Record:}
+\addcontentsline{toc}{subsection}{Record:}
 \begin{itemize}
 \item update  6.12/94 \\
    Bor ionization raten H.2, 2.5B0, 2.5B1 \\
@@ -221,7 +228,25 @@ Available via E-mail from d.reiter@fz-juelich.de
   and H.10 2.1.5  (FU) is newly added.\\
   to be done: H.12 2.1.5de  (JH to be replaced by FU: H.12 2.1.5de)\\
   H.4 2.1.8 already renamed to H.4 2.1.8JH, and new default is FU: H.4 2.1.8\\
-  to be done: H.10 2.1.8 H.12 2.1.5de  (JH to be replaced by FU)
+  to be done: H.10 2.1.8 H.12 2.1.8de  (JH to be replaced by FU)
+  \item update   17.08/07  H.0 0.100 to H.0 0.103: defaults for \\
+  Fokker-Planck collisions between charged particles,\\
+  $ee, ei, ie$, and $ii$ collisions. Fit-Flag: 10
+  \item update Nov. 07:  introduce subsections for H.1, to order
+  reactions according to electron impact, proton impact, He+ impact, etc..
+  \item update oct. 09:  fit H.3: 2.1.5, for electron impact
+  of H beam (Eb $>$ 700 eV, across cold edge (Te $<$ 1000 eV)
+  \item update oct. 09:  fit H.3: 2.3.9, for electron impact
+  of He beam across cold edge
+  \item update jan. 2010: some text added regarding ADAS CR rates
+  ...A0, in H.4, H.10 and H.12
+  \item update Mar. 2011:  fit H.3: 3.2.3 corrected. Was completely off.
+  Figure was ok, i.e. bug in fit program. Newly fitted using odrpack95.
+  \item remove blanks from parenthesis (e.g. H2(a bc) $\rightarrow$ H2(abc), for online plots under www.eirene.de)
+  \item update Dec. 08 2011:  O ionisation, O+ recombination: ADAS 96, H4 and H10 fits added 2.8A0 and 2.3.8A0, resp.
+  \item update Dec. 09 2011:  N ionisation, N+ recombination: ADAS 96, H4 and H10 fits added 2.7A0 and 2.3.7A0, resp.
+  \item update July 12:  H.2: 3.2.3o re-introduced, for backward compatibility, i.e. $E_{H_2}=0.37$ eV, (as around year 2000) 
+  whereas now (since 2004) in  H.2: 3.2.3 this energy is 0.1 eV.  
 \end{itemize}
 \newpage
 Additional atomic data fits, read by EIRENE
@@ -230,7 +255,8 @@ Format as HYDHEL DATEN \cite{kn:Janev}
 or METHANE DATEN \cite{kn:Ehrhardt}.
 \newpage
 
-\subsection {Reading Data from AMJUEL}
+\subsection*{Reading Data from AMJUEL}
+\addcontentsline{toc}{subsection}{Reading Data from AMJUEL}
 Single parameter fits are identified by the character string
 \begin{small}\begin{verbatim}
 'p0' in case of H.0  (potential)
@@ -673,10 +699,54 @@ C
       END
 \end{verbatim}\end{small}
 \newpage
-\subsection{Types of Data, general prescriptions}\label{sec1.3}
-\subsubsection{H.0: interaction potentials}\label{sec1.3.1}
-\subsubsection{H.1: cross section vs. energy}\label{sec1.3.2}
-\subsubsection{H.2: rate coefficient vs. temperature (zero beam energy)}
+\subsection*{Types of Data, general prescriptions}\label{sec1.3}
+\addcontentsline{toc}{subsection}{Types of Data, general prescriptions}
+
+\subsubsection*{H.0: interaction potentials}\label{sec1.3.0}
+\addcontentsline{toc}{subsubsection}{H.0: interaction potentials}
+The classical  elastic collision kinetics is determined by the
+interaction potential $V(r)$. In EIRENE for given  (random sampling)
+impact parameter $b$ and relative collision energy $E_r$ (in eV) the
+deflection angle $\chi$ in the center of mass system is computed and
+the test particle velocity is then changed accordingly in the
+laboratory system. There are various options for potential functions
+$V(r)$. The potential is always in eV, and the distance $r$ (and
+also $b$ in EIRENE) are in (atomic) units of the Bohr radius
+$a_0=0.529 \times 10^{-8}$ cm. The parameter FIT-FLAG determines
+which particular fit expression is used for the potential. The
+potential $V(r)$ can be specified then by up
+to 9 fit coefficients $p_0,\dots,p_8$, see Section \ref{secpot}.\\
+
+FIT-FLAG=
+\begin{itemize}
+\item [=1]
+purely repulsive potential: to be written
+\item [=2]
+Morse like potential:\\
+\begin{equation}\nonumber
+V(r) = \epsilon \left[e^{2g(1-\rho)}-2 e^{g(1-\rho)}\right]
+\end{equation}
+with
+\begin{equation}
+ \rho:= r/r_m \quad; \quad g:=\left\{ {g_1  \ \  \ \ \mbox{for} \ \rho < 1 \atop g_1g_2
+\ \mbox{for} \
+ \rho \geq 1} \right.
+\end{equation}
+with the parameters:\\  $p_0=\epsilon$ (eV)\\ $p_1=g_1$\\ $p_2=g_2
+$\\ $p_3=r_m $ (in units of $a_0$), the minimum of $V(r): V(r_m)=-\epsilon$\\
+Derived Parameters are: \\
+$p_4=r_0=r_m\left(1-\frac{\ln 2}{g_1}\right)$, the root of $V(r):
+V(r_0)=0$\\
+$p_5=r_w=r_m\left(1+\frac{\ln 2}{g_1g_2}\right)$, the point of
+inflection of $V(r)$\\
+$p_6$  not in use\\
+$p_7  = V(r_w)=-\frac{3\epsilon}{4}$ \\
+$p_8$  not in use
+\end{itemize}
+\subsubsection*{H.1: cross section vs. energy}\label{sec1.3.1}
+\addcontentsline{toc}{subsubsection}{H.1: cross section vs. energy}
+\subsubsection*{H.2: rate coefficients vs. temperature (zero beam energy)}\label{sec1.3.2}
+\addcontentsline{toc}{subsubsection}{H.2: rate coefficient vs. temperature (zero beam energy)}
 Fits for $\langle\sigma \cdot v  \rangle (T) \ [cm^3/s]$
 
 Maxwellian rate coefficients are taken for neutral particle energy = 0.0 eV
@@ -695,39 +765,47 @@ $T_{eff} = \frac {M}{M_1} T_1 + \frac{M}{M_2} T_2 $
 Here $M$ is the mass of the ion as used in the rate coefficients,
 $M_1$ and $M_2$ are the masses of the two isotopes in the particular collision
 process considered, and $T_1$ and $T_2$ are the two temperatures.
-\subsubsection{H.3: rate coefficient vs. temperature and energy}\label{sec1.3.3}
+\subsubsection*{H.3: rate coefficient vs. temperature and energy}\label{sec1.3.3}
+\addcontentsline{toc}{subsubsection}{H.3: rate coefficient vs. temperature and energy}
 Fits for $\langle\sigma \cdot v_{rel}  \rangle (E,T) \ [cm^3/s]$
-\subsubsection{H.4: rate coefficient vs. temperature and density}\label{sec1.3.4}
+\subsubsection*{H.4: rate coefficient vs. temperature and density}\label{sec1.3.4}
+\addcontentsline{toc}{subsubsection}{H.4: rate coefficient vs. temperature and density}
 Fits for $\langle\sigma \cdot v  \rangle (n_e,T) \ [cm^3/s]$
 
-Same expression of fit as in Section \ref{sec1.3.3}, but with energy $E$ (eV) replaced by
-density $n$. The density $n$ in this fit must be given in $10^8 cm^{-3}$, i.e., in $cm^{-3}$ and then divided by
-$10^8$, or in $m^{-3}$ and then divided by 100.
-\subsubsection{H.5: momentum weighted rates vs. temperature}
-\subsubsection{H.6: momentum weighted rates vs. temperature and energy}
-\subsubsection{H.7: momentum weighted rates vs. temperature and density}
-\subsubsection{H.8: energy weighted rates vs. temperature}
-\subsubsection{H.9: energy weighted rates vs. temperature and energy}
-\subsubsection{H.10: energy weighted rates vs. temperature and density}
+Same expression of fit as in Section \ref{sec1.3.3}, but with energy
+$E$ (eV) replaced by density $n$. For historic reasons and to
+preserve backward compatibility, the density $n$ in this fit must be
+given in $10^8 cm^{-3}$, i.e., with density given in $cm^{-3}$ and
+then divided by $10^8$, or density given in $m^{-3}$ and then
+divided by 100.
+\subsubsection*{H.5: momentum weighted rates vs. temperature}
+\addcontentsline{toc}{subsubsection}{H.5: momentum weighted rates vs. temperature}
+\subsubsection*{H.6: momentum weighted rates vs. temperature and energy}
+\addcontentsline{toc}{subsubsection}{H.6: momentum weighted rates vs. temperature and energy}
+\subsubsection*{H.7: momentum weighted rates vs. temperature and density}
+\addcontentsline{toc}{subsubsection}{H.7: momentum weighted rates vs. temperature and density}
+\subsubsection*{H.8: energy weighted rates vs. temperature}
+\addcontentsline{toc}{subsubsection}{H.8: energy weighted rates vs. temperature}
+\subsubsection*{H.9: energy weighted rates vs. temperature and energy}
+\addcontentsline{toc}{subsubsection}{H.9: energy weighted rates vs. temperature and energy}
+\subsubsection*{H.10: energy weighted rates vs. temperature and density}
+\addcontentsline{toc}{subsubsection}{H.10: energy weighted rates vs. temperature and density}
 Fits for $\langle\sigma \cdot v \cdot E \rangle (n_e,T) \ [cm^3/s \cdot eV]$
 
-$E$ is the total energy loss for the electron or ion gas per collision event,
-in eV.
-These rates, therefore, if multiplied by the electron charge 1.6022 10$^{-19}$,
-are electron- or ion energy loss rates in Watt/cm$^3$.
-Unless otherwise noted
-these are total energy loss rate coefficients associated
-with the particular process.
-If such a process is an ``effective process",
-implicitly including fast transitions between excited
-states of particles which are considered to be in a certain
-(collisional radiative) equilibrium,
-then these total effective rates include also line- (bound-bound) and continuum
-(free-bound) radiation losses, kinetic energy of
-products (e.g. in case of dissociation processes) and
-internal (potential) energy
-differences between pre- and post collision particles,
-but {\bf not} bremsstrahlung (free-free) losses.
+The units of $T$ and $n$ in the fits are the same as for H.4 and H.7
+rates. $E$ is the total energy loss for the electron or ion gas per
+collision event, in eV. These rates, therefore, if multiplied by the
+electron charge 1.6022 10$^{-19}$, are electron- or ion energy loss
+rates in Watt/cm$^3$. Unless otherwise noted these are total energy
+loss rate coefficients associated with the particular process. If
+such a process is an ``effective process", implicitly including fast
+transitions between excited states of particles which are considered
+to be in a certain (collisional radiative) equilibrium, then these
+total effective rates include also line- (bound-bound) and continuum
+(free-bound) radiation losses, kinetic energy of products (e.g. in
+case of dissociation processes) and internal (potential) energy
+differences between pre- and post collision particles, but {\bf not}
+bremsstrahlung (free-free) losses.
 
 If the potential energy difference in a particular collision process
 is negative, as, e.g., in recombination processes
@@ -777,9 +855,12 @@ is just the effective rate coefficient
 for the process under consideration, i.e. the coefficient for the same process as given
 in section H.4.
 \newpage
-\subsubsection{H.11: other data, e.g. reduced population coefficients}
-\subsubsection{H.12: other data, e.g. reduced population coefficients}
-\subsection{End of preface}
+\subsubsection*{H.11: other data, e.g. reduced population coefficients}
+\addcontentsline{toc}{subsubsection}{H.11: other data, e.g. reduced population coefficients}
+\subsubsection*{H.12: other data, e.g. reduced population coefficients}
+\addcontentsline{toc}{subsubsection}{H.12: other data, e.g. reduced population coefficients}
+\subsection*{End of preface}
+\addcontentsline{toc}{subsection}{End of preface}
 This next string is searched by EIRENE in subroutine SLREAC
 to initialize search for a particular set of fit coefficients.
 
@@ -793,11 +874,11 @@ to initialize search for a particular set of fit coefficients.
 \end{verbatim}\end{small}
 \newpage
 
-
-\section{H.0 :  Fits for Potentials}
+\setcounter{section}{-1}
+\section{H.0 :  Fits for Potentials}\label{secpot}
 
 \subsection{
-Reaction 0.1T $ p + H (1s) \rightarrow p + H (1s) $ potential }
+Reaction 0.1T $ p + H (1s) \rightarrow p + H (1s) $ potential, binary elastic }
 This potential is not yet implemented here. It is still explicitly
 programmed in EIRENE, elastics.f. It is the first repulsive $H_2^+$
 potential.
@@ -814,7 +895,7 @@ potential.
 
 \subsection{
 Reaction 0.2T   $ p + He(1|1s) \rightarrow p + He (1|1s) $
-potential }
+potential, binary elastic}
 
 Morse potential, see \cite{kn:Bachmann}
 
@@ -829,7 +910,7 @@ Morse potential, see \cite{kn:Bachmann}
 \newpage
 
 \subsection{
-Reaction 0.3T    $p + H_2 \rightarrow p + H_2 $ potential
+Reaction 0.3T    $p + H_2 \rightarrow p + H_2 $ potential, binary elastic
 }
 
 Morse potential, see \cite{kn:Bachmann}
@@ -844,7 +925,7 @@ Morse potential, see \cite{kn:Bachmann}
 \newpage
 
 \subsection{
-Reaction 0.4T   $  He^+ + He \rightarrow He^+ + He $ potential
+Reaction 0.4T   $  He^+ + He \rightarrow He^+ + He $ potential, binary elastic
 }
 
 Morse potential, see \cite{kn:Bachmann}
@@ -859,7 +940,7 @@ Morse potential, see \cite{kn:Bachmann}
 \newpage
 
 \subsection{
-Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ potential
+Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ potential, binary elastic
 }
 
 \begin{small}\begin{verbatim}
@@ -873,7 +954,7 @@ Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ potential
 \newpage
 
 \subsection{
-Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ potential }
+Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ potential, binary elastic }
 
 \begin{small}\begin{verbatim}
    fit-flag 2
@@ -886,7 +967,7 @@ Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ potential }
 \newpage
 
 \subsection{
-Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ potential }
+Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ potential, binary elastic }
 
 \begin{small}\begin{verbatim}
    fit-flag 2
@@ -899,7 +980,7 @@ Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ potential }
 \newpage
 
 \subsection{
-Reaction 0.8T   $ p + Xe \rightarrow p + Xe $ potential }
+Reaction 0.8T   $ p + Xe \rightarrow p + Xe $ potential, binary elastic }
 
 \begin{small}\begin{verbatim}
    fit-flag 2
@@ -911,465 +992,75 @@ Reaction 0.8T   $ p + Xe \rightarrow p + Xe $ potential }
 
 \newpage
 
+\subsection{
+Reaction 0.100  bulk-electrons on test-electron, Fokker-Planck elastic }
+Data for Trubnikov Potentials for Fokker-Planck collision
+operator, bulk-ions on test-electrons.
+
+currently: none
+
+
+\begin{small}\begin{verbatim}
+   fit-flag 10
+   p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
+   p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
+   p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.101   bulk-electrons + test-ions, Fokker-Planck elastic }
+Data for Trubnikov Potentials for Fokker-Planck collision
+operator, bulk-ions on test-ions.
+
+currently: none
+
+
+\begin{small}\begin{verbatim}
+   fit-flag 10
+   p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
+   p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
+   p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.102   bulk-ions on test-electron, Fokker-Planck elastic }
+Data for Trubnikov Potentials for Fokker-Planck collision
+operator, bulk-ions on test-electrons.
+
+
+currently: none
+
+\begin{small}\begin{verbatim}
+   fit-flag 10
+   p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
+   p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
+   p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.103   bulk-ions + test-ions, Fokker-Planck elastic }
+Data for Trubnikov Potentials for Fokker-Planck collision
+operator, bulk-ions on test-ions.
+
+currently: none
+
+\begin{small}\begin{verbatim}
+   fit-flag 10
+   p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
+   p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
+   p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
+\end{verbatim}\end{small}
+
+
+\newpage
+
 \section{H.1 :  Fits for  \    $\sigma(E_{lab})$}\label{sect1}
 
-\bigskip
-Elastic collisions between neutral and charged particles,
-Bachmann/Reiter (\cite{kn:Bachmann})
-cross sections as function of $E_{lab}$,
 
-$E_{lab} = m_{lab}/2 \cdot v^2$
-
-$m_{lab}$ is the ion mass throughout
-
-\subsection{
-Reaction 0.1T $p + H (1s) \rightarrow p + H (1s) $ total cross
-section}
-
-\begin{small}\begin{verbatim}
-   a0  0.000000000000D+00  a1  0.000000000000D+00  a2  0.000000000000D+00
-   a3  0.000000000000D+00  a4  0.000000000000D+00  a5  0.000000000000D+00
-   a6  0.000000000000D+00  a7  0.000000000000D+00  a8  0.000000000000D+00
-  al0 -3.253031352541D+01 al1 -2.559032645641D-01 al2 -1.449996483552D-02
-  ar0 -3.262937357400D+01 ar1 -8.719626183599D-02 ar2 -7.346647926269D-02
-ELABMIN=   1.82060E 00 eV
-ELABMAX=   1.82060E 00 eV
-\end{verbatim}\end{small}
-
-
-
-\subsection{
-Reaction 0.1D    $ p + H (1s) \rightarrow p + H (1s)$  diff. cross
-section}
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.349115100108D+01  a1 -4.047040620920D-01  a2 -4.340959073105D-02
-   a3 -5.224890973622D-03  a4 -1.019115858754D-04  a5 -3.314157761518D-06
-   a6 -4.336259011986D-05  a7 -1.781020734395D-06  a8  1.220393550627D-06
-  al0 -3.320677627738D+01 al1 -2.205942040112D-01 al2  0.000000000000D+00
-  ar0 -2.753878563969D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.02000E 00 eV
-ELABMAX=  2.00000E 02 eV
-\end{verbatim}\end{small}
-
-
-\subsection{
-Reaction 0.1V    $p + H (1s) \rightarrow p + H (1s)$ visc. cross section
-}
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.353420922048D+01  a1 -3.522409780724D-01  a2 -3.587214262651D-02
-   a3 -4.282561006823D-03  a4 -3.230618998917D-04  a5 -4.343173698940D-05
-   a6 -1.753965583282D-05  a7 -4.580920664987D-07  a8  3.738689325195D-07
-  al0 -3.330015157525D+01 al1 -1.992625366488D-01 al2  0.000000000000D+00
-  ar0 -2.709329427260D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.02000E 00 eV
-ELABMAX=  2.00000E 02 eV
-\end{verbatim}\end{small}
-Note: This elastic reaction should only be used, if the resonant charge
-exchange differential cross section (and hence: diffusion cross section)
-is reduced accordingly. The sum: elastic plus charge exchange transport
-(``diffusion"-) cross section should be twice the charge exchange total
-cross section. The assumption of an exchange of identity (scattering
-angle $\pi$ in the center of mass system) at charge exchange produces
-that factor 2. Hence the need for a revised (smaller) charge exchange
-scattering angle, if the elastic collision contribution is explicitly
-added in.
-
-\begin{figure} \label{0.1}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast01.ps}
-\end{figure}
-\newpage
-
-\subsection{
-Reaction 0.2T   $ p + He(1|1s) \rightarrow p + He (1|1s)$ total cross section
-}
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.357907136508D+01  a1 -9.811659406594D-02   a2  3.798308269292D-01
-   a3 -1.259671949006D+00  a4 -4.473947519984D-02   a5  1.565182597363D+00
-   a6 -1.203733922915D+00  a7  3.525830383820D-01   a8 -3.668922671043D-02
-  al0 -3.355838377904D+01 al1 -2.845473342853D-01  al2 -1.351427675077D-02
-  ar0 -3.706830076698D+01 ar1  4.204258692619D-01  ar2 -9.648359210100D-02
-ELABMIN=  0.50810E 00 eV
-ELABMAX=  2.94431E 01 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.2D    $p + He(1|1s) \rightarrow p + He (1|1s) $ diff. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.425585328953D+01   a1 -8.999762959781D-01  a2 -3.434858124811D-01
-   a3  1.549750110754D-02   a4  3.963555202866D-02  a5  3.343570605088D-04
-   a6 -2.207534449376D-03   a7 -3.378852519380D-05  a8  4.224511209820D-05
-  al0 -3.390101844960D+01  al1 -2.111706771112D-01 al2  0.000000000000D+00
-  ar0 -3.034765152080D+01  ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.01250E 00 eV
-ELABMAX=  1.25000E 02 eV
-\end{verbatim}\end{small}
-
-
-\subsection{
-Reaction 0.2V   $ p + He(1|1s) \rightarrow p + He (1|1s) $ visc. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-  a0 -3.443725345071D+01   a1 -4.337427858507D-01  a2 -2.896488696126D-01
-  a3 -6.451669335555D-02   a4  2.950009865269D-02  a5  5.752283385868D-03
-  a6 -1.589840628629D-03   a7 -1.502468439244D-04  a8  3.151161681447D-05
- al0 -3.432276031579D+01  al1 -2.111706771112D-01 al2  0.000000000000D+00
- ar0 -2.978907423990D+01  ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.01250e 00 eV
-ELABMAX=  1.25000e 02 eV
-\end{verbatim}\end{small}
-
-
-\begin{figure} \label{0.2}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast02.ps}
-\end{figure}
-\newpage
-
-\subsection{
-Reaction 0.3T    $p + H_2 \rightarrow p + H_2 $  total cross section
-}
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.452141819446D+01  a1  1.092015526305D+01  a2 -2.732690257819D+01
-   a3  3.466297654768D+01  a4 -2.524607958646D+01  a5  1.092376446349D+01
-   a6 -2.770065796605D+00  a7  3.796353200921D-01  a8 -2.168988142310D-02
-  al0 -3.275286840950D+01 al1 -2.351764912137D-01 al2 -1.045602118569D-02
-  ar0 -3.537275807146D+01 ar1  2.144573517210D-01 ar2 -4.643079956637D-02
-ELABMIN=  1.55980E 00 eV
-ELABMAX=  6.18164E 01 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.3D   $ p + H_2 \rightarrow p + H_2 $  diff. cross section
-}
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.318680874597D+01  a1 -3.580417289312D-01  a2 -2.274382376951D-01
-   a3 -5.005702120342D-02  a4  2.369248748869D-02  a5  5.013459267775D-03
-   a6 -1.357018742589D-03  a7 -1.393776090855D-04  a8  3.029808591929D-05
-  al0 -3.319348529474D+01 al1 -1.726918000000D-01 al2  0.000000000000D+00
-  ar0 -2.668769803274D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.01500E 00 eV
-ELABMAX=  1.50000E 02 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.3V   $  p + H_2 \rightarrow p + H_2  $ visc. cross section
-}
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.362402037774D+01  a1 -2.337285826242D-01  a2 -5.404526201247D-02
-   a3 -4.473235272373D-02  a4 -4.691524784882D-03  a5  3.121568334037D-03
-   a6  4.229065229431D-04  a7 -6.739555319843D-05  a8 -7.756198335533D-06
-  al0 -3.342235494450D+01 al1 -1.726917299089D-01 al2  0.000000000000D+00
-  ar0 -2.658939177532D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.01500E 00 eV
-ELABMAX=  1.50000E 02 eV
-\end{verbatim}\end{small}
-
-
-\begin{figure} \label{0.3}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast03.ps}
-\end{figure}
-\newpage
-
-
-\subsection{
-Reaction 0.4T   $  He^+ + He \rightarrow He^+ + He $  total cross section
-}
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.336949020454D+01  a1  4.374909804779D+00  a2 -1.517973301721D+01
-   a3  2.345459194687D+01  a4 -1.969436659467D+01  a5  9.472303986781D+00
-   a6 -2.604153028956D+00  a7  3.801132783280D-01  a8 -2.282922057203D-02
-  al0 -3.291071330248D+01 al1 -2.416669402887D-01 al2 -9.821377921757D-03
-  ar0 -3.664691925424D+01 ar1  4.752719886448D-01 ar2 -8.280792916138D-02
-ELABMIN=  1.21220E 00 eV
-ELABMAX=  6.46090E 01 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.4D    $He^+ + He \rightarrow He^+ + He$   diff. cross section
-}
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.332091557452D+01  a1 -3.823354679977D-01  a2 -2.666453887008D-01
-   a3 -8.177418933677D-02  a4  2.593188019755D-02  a5  8.320863897668D-03
-   a6 -1.649825718076D-03  a7 -2.491587647454D-04  a8  4.351897658362D-05
-  al0 -3.302935901459D+01 al1 -1.115060000000D-01 al2  0.000000000000D+00
-  ar0 -2.789589583796D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.02000E 00 eV
-ELABMAX=  2.00000E 02 eV
-\end{verbatim}\end{small}
-
-
-\subsection{
-Reaction 0.4V   $  He^+ + He \rightarrow He^+ + He $  visc. cross section
-}
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.379346231200D+01  a1 -1.740525006979D-01  a2 -8.091712353563D-02
-   a3 -8.223847315134D-02  a4 -1.443276051210D-03  a5  6.530393601967D-03
-   a6 -5.593294441844D-05  a7 -1.742244159818D-04  a8  1.068285383642D-05
-  al0 -3.335648222384D+01 al1 -1.115060177785D-01 al2  0.000000000000D+00
-  ar0 -2.751718958486D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
-ELABMIN=  0.02000E 00 eV
-ELABMAX=  2.00000E 02 eV
-\end{verbatim}\end{small}
-
-
-\begin{figure} \label{0.4}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast04.ps}
-\end{figure}
-\newpage
-
-\subsection{
-Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ total cross
-section }
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.333282545037D+01    a1 -2.591757686627D-01    a2  5.905962318567D-02
-   a3 -2.001826855775D-01    a4 -5.669049674832D-02    a5  3.137174515541D-01
-   a6 -2.299821550060D-01    a7  6.688038706682D-02    a8 -6.994996779393D-03
-  al0 -3.334100609281D+01   al1 -2.660471531811D-01   al2 -1.171591760471D-02
-  ar0 -3.771378768853D+01   ar1  9.099449063061D-01   ar2 -1.337354731926D-01
-ELABMIN=  0.62790E 00 eV
-ELABMAX=  3.19973E 01 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.5D    $p + Ne \rightarrow p + Ne  $ diff. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.397612223333D+01    a1 -7.944741087630D-01    a2 -3.200443973964D-01
-   a3  2.143674395544D-02    a4  4.021546316704D-02    a5 -4.263678799110D-04
-   a6 -2.276386458638D-03    a7 -3.001154820480D-06    a8  4.436110664443D-05
-  al0 -3.344006570082D+01   al1 -1.264736732177D-01   al2  0.000000000000D+00
-  ar0 -2.871071324009D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01050E 00 eV
-ELABMAX=  1.05000E 02 eV
-\end{verbatim}\end{small}
-
-
-\subsection{
-Reaction 0.5V   $ p + Ne \rightarrow p + Ne  $ visc. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.425296680643D+01    a1 -4.079254123231D-01    a2 -2.051623201200D-01
-   a3 -4.669640022898D-02    a4  1.746802660208D-02    a5  4.241270429401D-03
-   a6 -7.397954249705D-04    a7 -1.059957777533D-04    a8  1.168831982170D-05
-  al0 -3.373988599214D+01   al1 -1.264736732177D-01   al2  0.000000000000D+00
-  ar0 -2.849668424775D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01050e 00 eV
-ELABMAX=  1.05000e 02 eV
-\end{verbatim}\end{small}
-
-
-
-\begin{figure} \label{0.5}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast05.ps}
-\end{figure}
-\newpage
-
-
-
-\subsection{
-Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ total cross
-section }
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.252771558768D+01    a1 -2.994313973955D-01    a2 -3.235294539387D-01
-   a3  1.292660022245D+00    a4 -1.875728041457D+00    a5  1.314385161305D+00
-   a6 -4.834707764434D-01    a7  8.976263360824D-02    a8 -6.639912411263D-03
-  al0 -3.255656992304D+01   al1 -2.557987010452D-01   al2 -1.142012674223D-02
-  ar0 -3.733310020910D+01   ar1  9.621654379319D-01   ar2 -1.332505124850D-01
-ELABMIN=  1.00563E 00 eV
-ELABMAX=  5.43280E 01 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.6D    $p + Ar \rightarrow p + Ar  $ diff. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.300046179597D+01    a1 -5.241652502840D-01    a2 -2.862188345952D-01
-   a3 -3.808042387800D-02    a4  2.731692136471D-02    a5  3.732186449899D-03
-   a6 -1.323867831716D-03    a7 -9.428149507977D-05    a8  2.340068227020D-05
-  al0 -3.200195937779D+01   al1  3.219272946637D-02   al2  0.000000000000D+00
-  ar0 -2.798873683611D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01025E 00 eV
-ELABMAX=  1.02500E 02 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.6V   $ p + Ar \rightarrow p + Ar  $ visc. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.344659528005D+01    a1 -2.316327281065D-01    a2 -7.902810934692D-02
-   a3 -7.081702521173D-02    a4 -8.163451484200D-03    a5  5.173767719011D-03
-   a6  8.930487483240D-04    a7 -1.149225205768D-04    a8 -2.179416064042D-05
-  al0 -3.222949872234D+01   al1  3.219272946637D-02   al2  0.000000000000D+00
-  ar0 -2.777200494194D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01025e 00 eV
-ELABMAX=  1.02500e 02 eV
-\end{verbatim}\end{small}
-
-
-
-\begin{figure} \label{0.6}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast06.ps}
-\end{figure}
-\newpage
-
-
-
-\subsection{
-Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ total cross
-section }
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.217099198301D+01    a1 -2.966377676688D-01    a2 -2.616163755904D-01
-   a3  1.046180820426D+00    a4 -1.532374878331D+00    a5  1.080443653930D+00
-   a6 -3.994323904320D-01    a7  7.448807486523D-02    a8 -5.532560545765D-03
-  al0 -3.219832641289D+01   al1 -2.577194242716D-01   al2 -1.156457632593D-02
-  ar0 -3.656299611480D+01   ar1  7.386503642992D-01   ar2 -1.095842303625D-01
-ELABMIN=  0.99496E 00 eV
-ELABMAX=  5.69606E 01 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.7D    $p + Kr \rightarrow p + Kr  $ diff. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.262831875045D+01    a1 -5.132763454362D-01    a2 -2.834710685102D-01
-   a3 -4.303577717283D-02    a4  2.549874332091D-02    a5  4.067614437201D-03
-   a6 -1.176633809631D-03    a7 -1.008012190920D-04    a8  1.995735768760D-05
-  al0 -3.206995069647D+01   al1 -5.998480905376D-02   al2  0.000000000000D+00
-  ar0 -2.770706826427D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01011E 00 eV
-ELABMAX=  1.01114E 02 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.7V   $ p + Kr \rightarrow p + Kr  $ visc. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.308937458718D+01    a1 -2.158553767021D-01    a2 -6.932630020130D-02
-   a3 -7.534625980338D-02    a4 -1.066481934150D-02    a5  5.423170191562D-03
-   a6  1.055574923129D-03    a7 -1.193974259452D-04    a8 -2.508108481903D-05
-  al0 -3.227537561040D+01   al1 -5.998480905376D-02   al2  0.000000000000D+00
-  ar0 -2.750803302740D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01011e 00 eV
-ELABMAX=  1.01114e 02 eV
-\end{verbatim}\end{small}
-
-
-\begin{figure} \label{0.7}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast07.ps}
-\end{figure}
-\newpage
-
-
-\subsection{
-Reaction 0.8T   $ p + Xe \rightarrow p + Xe $ total cross
-section }
-
-
-
-\begin{small}\begin{verbatim}
-   a0 -8.022745305889D+01    a1  1.563497534909D+02    a2 -2.198787103607D+02
-   a3  1.720041600893D+02    a4 -8.202458014402D+01    a5  2.443504314279D+01
-   a6 -4.445085155020D+00    a7  4.519723658716D-01    a8 -1.969077046350D-02
-  al0 -3.273372765185D+01   al1 -1.978370734932D-01   al2 -7.780729379878D-03
-  ar0 -3.529762555521D+01   ar1  2.820997908369D-01   ar2 -4.141441372472D-02
-ELABMIN=  4.11282E 00 eV
-ELABMAX=  1.22993E 02 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.8D    $p + Xe \rightarrow p + Xe  $ diff. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.318665017785D+01    a1 -1.652711162673D-01    a2 -8.820446797035D-02
-   a3 -4.031476436668D-02    a4  4.816376369566D-03    a5  2.865304171410D-03
-   a6 -2.624353623005D-04    a7 -6.271242694944D-05    a8  6.709771809639D-06
-  al0 -3.367397269144D+01   al1 -2.502739321615D-01   al2  0.000000000000D+00
-  ar0 -2.275819247054D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01008E 00 eV
-ELABMAX=  1.00760E 03 eV
-\end{verbatim}\end{small}
-
-\subsection{
-Reaction 0.8V   $ p + Xe \rightarrow p + Xe  $ visc. cross
-section }
-
-
-\begin{small}\begin{verbatim}
-   a0 -3.353160943338D+01    a1 -1.556474053592D-01    a2 -3.165283483361D-02
-   a3 -2.954761000116D-02    a4 -1.020213798216D-04    a5  1.787583845145D-03
-   a6 -4.672186377936D-05    a7 -3.577368889534D-05    a8  2.586881672353D-06
-  al0 -3.326401521314D+01   al1 -1.220855990887D-01   al2  0.000000000000D+00
-  ar0 -2.266117187300D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
-ELABMIN=  0.01008e 00 eV
-ELABMAX=  1.00760e 03 eV
-\end{verbatim}\end{small}
-
-
-\begin{figure} \label{0.8}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/elast08.ps}
-\end{figure}
-\newpage
-
-\subsection{
+\subsection{electron impact processes}
+\subsubsection{
 Reaction 2.2.5
-$ e + H_2 (X_g^+ S ) \rightarrow . . . \rightarrow e + H(1s) + H(1s) $ }
+$ e + H_2 (X_g^+S) \rightarrow . . . \rightarrow e + H(1s) + H(1s) $ }
 
 Fit as given in \cite{kn:Janev} (given here only for reference purposes).
 EIRENE uses fit as given in the unpublished preprint for
@@ -1402,7 +1093,418 @@ This page is intentionally left blank
 \newpage
 
 
-\subsection{
+\subsection{proton impact collisions}\label{sect1.1}
+\bigskip
+Elastic collisions between neutral and charged particles,
+Bachmann/Reiter (\cite{kn:Bachmann})
+cross sections as function of $E_{lab}$,
+
+$E_{lab} = m_{lab}/2 \cdot v^2$
+
+$m_{lab}$ is the ion mass throughout
+
+\subsubsection{
+Reaction 0.1T $p + H (1s) \rightarrow p + H (1s) $ total cross
+section}
+
+\begin{small}\begin{verbatim}
+   a0  0.000000000000D+00  a1  0.000000000000D+00  a2  0.000000000000D+00
+   a3  0.000000000000D+00  a4  0.000000000000D+00  a5  0.000000000000D+00
+   a6  0.000000000000D+00  a7  0.000000000000D+00  a8  0.000000000000D+00
+  al0 -3.253031352541D+01 al1 -2.559032645641D-01 al2 -1.449996483552D-02
+  ar0 -3.262937357400D+01 ar1 -8.719626183599D-02 ar2 -7.346647926269D-02
+ELABMIN=   1.82060E 00 eV
+ELABMAX=   1.82060E 00 eV
+\end{verbatim}\end{small}
+
+
+
+\subsubsection{
+Reaction 0.1D    $ p + H (1s) \rightarrow p + H (1s)$  diff. cross
+section}
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.349115100108D+01  a1 -4.047040620920D-01  a2 -4.340959073105D-02
+   a3 -5.224890973622D-03  a4 -1.019115858754D-04  a5 -3.314157761518D-06
+   a6 -4.336259011986D-05  a7 -1.781020734395D-06  a8  1.220393550627D-06
+  al0 -3.320677627738D+01 al1 -2.205942040112D-01 al2  0.000000000000D+00
+  ar0 -2.753878563969D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.02000E 00 eV
+ELABMAX=  2.00000E 02 eV
+\end{verbatim}\end{small}
+
+
+\subsubsection{
+Reaction 0.1V    $p + H (1s) \rightarrow p + H (1s)$ visc. cross section
+}
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.353420922048D+01  a1 -3.522409780724D-01  a2 -3.587214262651D-02
+   a3 -4.282561006823D-03  a4 -3.230618998917D-04  a5 -4.343173698940D-05
+   a6 -1.753965583282D-05  a7 -4.580920664987D-07  a8  3.738689325195D-07
+  al0 -3.330015157525D+01 al1 -1.992625366488D-01 al2  0.000000000000D+00
+  ar0 -2.709329427260D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.02000E 00 eV
+ELABMAX=  2.00000E 02 eV
+\end{verbatim}\end{small}
+Note: This elastic reaction should only be used, if the resonant charge
+exchange differential cross section (and hence: diffusion cross section)
+is reduced accordingly. The sum: elastic plus charge exchange transport
+(``diffusion"-) cross section should be twice the charge exchange total
+cross section. The assumption of an exchange of identity (scattering
+angle $\pi$ in the center of mass system) at charge exchange produces
+that factor 2. Hence the need for a revised (smaller) charge exchange
+scattering angle, if the elastic collision contribution is explicitly
+added in.
+
+\begin{figure} \label{0.1}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast01.ps}
+\end{figure}
+\newpage
+
+\subsubsection{
+Reaction 0.2T   $ p + He(1|1s) \rightarrow p + He (1|1s)$ total cross section
+}
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.357907136508D+01  a1 -9.811659406594D-02   a2  3.798308269292D-01
+   a3 -1.259671949006D+00  a4 -4.473947519984D-02   a5  1.565182597363D+00
+   a6 -1.203733922915D+00  a7  3.525830383820D-01   a8 -3.668922671043D-02
+  al0 -3.355838377904D+01 al1 -2.845473342853D-01  al2 -1.351427675077D-02
+  ar0 -3.706830076698D+01 ar1  4.204258692619D-01  ar2 -9.648359210100D-02
+ELABMIN=  0.50810E 00 eV
+ELABMAX=  2.94431E 01 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.2D    $p + He(1|1s) \rightarrow p + He (1|1s) $ diff. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.425585328953D+01   a1 -8.999762959781D-01  a2 -3.434858124811D-01
+   a3  1.549750110754D-02   a4  3.963555202866D-02  a5  3.343570605088D-04
+   a6 -2.207534449376D-03   a7 -3.378852519380D-05  a8  4.224511209820D-05
+  al0 -3.390101844960D+01  al1 -2.111706771112D-01 al2  0.000000000000D+00
+  ar0 -3.034765152080D+01  ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.01250E 00 eV
+ELABMAX=  1.25000E 02 eV
+\end{verbatim}\end{small}
+
+
+\subsubsection{
+Reaction 0.2V   $ p + He(1|1s) \rightarrow p + He (1|1s) $ visc. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+  a0 -3.443725345071D+01   a1 -4.337427858507D-01  a2 -2.896488696126D-01
+  a3 -6.451669335555D-02   a4  2.950009865269D-02  a5  5.752283385868D-03
+  a6 -1.589840628629D-03   a7 -1.502468439244D-04  a8  3.151161681447D-05
+ al0 -3.432276031579D+01  al1 -2.111706771112D-01 al2  0.000000000000D+00
+ ar0 -2.978907423990D+01  ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.01250e 00 eV
+ELABMAX=  1.25000e 02 eV
+\end{verbatim}\end{small}
+
+
+\begin{figure} \label{0.2}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast02.ps}
+\end{figure}
+\newpage
+
+\subsubsection{
+Reaction 0.3T    $p + H_2 \rightarrow p + H_2 $  total cross section
+}
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.452141819446D+01  a1  1.092015526305D+01  a2 -2.732690257819D+01
+   a3  3.466297654768D+01  a4 -2.524607958646D+01  a5  1.092376446349D+01
+   a6 -2.770065796605D+00  a7  3.796353200921D-01  a8 -2.168988142310D-02
+  al0 -3.275286840950D+01 al1 -2.351764912137D-01 al2 -1.045602118569D-02
+  ar0 -3.537275807146D+01 ar1  2.144573517210D-01 ar2 -4.643079956637D-02
+ELABMIN=  1.55980E 00 eV
+ELABMAX=  6.18164E 01 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.3D   $ p + H_2 \rightarrow p + H_2 $  diff. cross section
+}
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.318680874597D+01  a1 -3.580417289312D-01  a2 -2.274382376951D-01
+   a3 -5.005702120342D-02  a4  2.369248748869D-02  a5  5.013459267775D-03
+   a6 -1.357018742589D-03  a7 -1.393776090855D-04  a8  3.029808591929D-05
+  al0 -3.319348529474D+01 al1 -1.726918000000D-01 al2  0.000000000000D+00
+  ar0 -2.668769803274D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.01500E 00 eV
+ELABMAX=  1.50000E 02 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.3V   $  p + H_2 \rightarrow p + H_2  $ visc. cross section
+}
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.362402037774D+01  a1 -2.337285826242D-01  a2 -5.404526201247D-02
+   a3 -4.473235272373D-02  a4 -4.691524784882D-03  a5  3.121568334037D-03
+   a6  4.229065229431D-04  a7 -6.739555319843D-05  a8 -7.756198335533D-06
+  al0 -3.342235494450D+01 al1 -1.726917299089D-01 al2  0.000000000000D+00
+  ar0 -2.658939177532D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.01500E 00 eV
+ELABMAX=  1.50000E 02 eV
+\end{verbatim}\end{small}
+
+\begin{figure}[hb] \label{0.3a}
+\epsfxsize=12truecm
+\epsffile{Amjuel_PS/krstic.eps}
+\end{figure}
+Comparison of the classical cross sections given here with quantal calculations
+by Krstic et al., J. Phys. B, \textbf{32}, 2415 (1999), the latter converted from center of mass energy to (proton) laboratory energy.
+
+\newpage
+
+\begin{figure} \label{0.3}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast03.ps}
+\end{figure}
+\newpage
+
+
+
+\subsubsection{
+Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ total cross
+section }
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.333282545037D+01    a1 -2.591757686627D-01    a2  5.905962318567D-02
+   a3 -2.001826855775D-01    a4 -5.669049674832D-02    a5  3.137174515541D-01
+   a6 -2.299821550060D-01    a7  6.688038706682D-02    a8 -6.994996779393D-03
+  al0 -3.334100609281D+01   al1 -2.660471531811D-01   al2 -1.171591760471D-02
+  ar0 -3.771378768853D+01   ar1  9.099449063061D-01   ar2 -1.337354731926D-01
+ELABMIN=  0.62790E 00 eV
+ELABMAX=  3.19973E 01 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.5D    $p + Ne \rightarrow p + Ne  $ diff. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.397612223333D+01    a1 -7.944741087630D-01    a2 -3.200443973964D-01
+   a3  2.143674395544D-02    a4  4.021546316704D-02    a5 -4.263678799110D-04
+   a6 -2.276386458638D-03    a7 -3.001154820480D-06    a8  4.436110664443D-05
+  al0 -3.344006570082D+01   al1 -1.264736732177D-01   al2  0.000000000000D+00
+  ar0 -2.871071324009D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01050E 00 eV
+ELABMAX=  1.05000E 02 eV
+\end{verbatim}\end{small}
+
+
+\subsubsection{
+Reaction 0.5V   $ p + Ne \rightarrow p + Ne  $ visc. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.425296680643D+01    a1 -4.079254123231D-01    a2 -2.051623201200D-01
+   a3 -4.669640022898D-02    a4  1.746802660208D-02    a5  4.241270429401D-03
+   a6 -7.397954249705D-04    a7 -1.059957777533D-04    a8  1.168831982170D-05
+  al0 -3.373988599214D+01   al1 -1.264736732177D-01   al2  0.000000000000D+00
+  ar0 -2.849668424775D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01050e 00 eV
+ELABMAX=  1.05000e 02 eV
+\end{verbatim}\end{small}
+
+
+
+\begin{figure} \label{0.5}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast05.ps}
+\end{figure}
+\newpage
+
+
+
+\subsubsection{
+Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ total cross
+section }
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.252771558768D+01    a1 -2.994313973955D-01    a2 -3.235294539387D-01
+   a3  1.292660022245D+00    a4 -1.875728041457D+00    a5  1.314385161305D+00
+   a6 -4.834707764434D-01    a7  8.976263360824D-02    a8 -6.639912411263D-03
+  al0 -3.255656992304D+01   al1 -2.557987010452D-01   al2 -1.142012674223D-02
+  ar0 -3.733310020910D+01   ar1  9.621654379319D-01   ar2 -1.332505124850D-01
+ELABMIN=  1.00563E 00 eV
+ELABMAX=  5.43280E 01 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.6D    $p + Ar \rightarrow p + Ar  $ diff. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.300046179597D+01    a1 -5.241652502840D-01    a2 -2.862188345952D-01
+   a3 -3.808042387800D-02    a4  2.731692136471D-02    a5  3.732186449899D-03
+   a6 -1.323867831716D-03    a7 -9.428149507977D-05    a8  2.340068227020D-05
+  al0 -3.200195937779D+01   al1  3.219272946637D-02   al2  0.000000000000D+00
+  ar0 -2.798873683611D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01025E 00 eV
+ELABMAX=  1.02500E 02 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.6V   $ p + Ar \rightarrow p + Ar  $ visc. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.344659528005D+01    a1 -2.316327281065D-01    a2 -7.902810934692D-02
+   a3 -7.081702521173D-02    a4 -8.163451484200D-03    a5  5.173767719011D-03
+   a6  8.930487483240D-04    a7 -1.149225205768D-04    a8 -2.179416064042D-05
+  al0 -3.222949872234D+01   al1  3.219272946637D-02   al2  0.000000000000D+00
+  ar0 -2.777200494194D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01025e 00 eV
+ELABMAX=  1.02500e 02 eV
+\end{verbatim}\end{small}
+
+
+
+\begin{figure} \label{0.6}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast06.ps}
+\end{figure}
+\newpage
+
+
+
+\subsubsection{
+Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ total cross
+section }
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.217099198301D+01    a1 -2.966377676688D-01    a2 -2.616163755904D-01
+   a3  1.046180820426D+00    a4 -1.532374878331D+00    a5  1.080443653930D+00
+   a6 -3.994323904320D-01    a7  7.448807486523D-02    a8 -5.532560545765D-03
+  al0 -3.219832641289D+01   al1 -2.577194242716D-01   al2 -1.156457632593D-02
+  ar0 -3.656299611480D+01   ar1  7.386503642992D-01   ar2 -1.095842303625D-01
+ELABMIN=  0.99496E 00 eV
+ELABMAX=  5.69606E 01 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.7D    $p + Kr \rightarrow p + Kr  $ diff. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.262831875045D+01    a1 -5.132763454362D-01    a2 -2.834710685102D-01
+   a3 -4.303577717283D-02    a4  2.549874332091D-02    a5  4.067614437201D-03
+   a6 -1.176633809631D-03    a7 -1.008012190920D-04    a8  1.995735768760D-05
+  al0 -3.206995069647D+01   al1 -5.998480905376D-02   al2  0.000000000000D+00
+  ar0 -2.770706826427D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01011E 00 eV
+ELABMAX=  1.01114E 02 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.7V   $ p + Kr \rightarrow p + Kr  $ visc. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.308937458718D+01    a1 -2.158553767021D-01    a2 -6.932630020130D-02
+   a3 -7.534625980338D-02    a4 -1.066481934150D-02    a5  5.423170191562D-03
+   a6  1.055574923129D-03    a7 -1.193974259452D-04    a8 -2.508108481903D-05
+  al0 -3.227537561040D+01   al1 -5.998480905376D-02   al2  0.000000000000D+00
+  ar0 -2.750803302740D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01011e 00 eV
+ELABMAX=  1.01114e 02 eV
+\end{verbatim}\end{small}
+
+
+\begin{figure} \label{0.7}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast07.ps}
+\end{figure}
+\newpage
+
+
+\subsubsection{
+Reaction 0.8T   $ p + Xe \rightarrow p + Xe $ total cross
+section }
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -8.022745305889D+01    a1  1.563497534909D+02    a2 -2.198787103607D+02
+   a3  1.720041600893D+02    a4 -8.202458014402D+01    a5  2.443504314279D+01
+   a6 -4.445085155020D+00    a7  4.519723658716D-01    a8 -1.969077046350D-02
+  al0 -3.273372765185D+01   al1 -1.978370734932D-01   al2 -7.780729379878D-03
+  ar0 -3.529762555521D+01   ar1  2.820997908369D-01   ar2 -4.141441372472D-02
+ELABMIN=  4.11282E 00 eV
+ELABMAX=  1.22993E 02 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.8D    $p + Xe \rightarrow p + Xe  $ diff. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.318665017785D+01    a1 -1.652711162673D-01    a2 -8.820446797035D-02
+   a3 -4.031476436668D-02    a4  4.816376369566D-03    a5  2.865304171410D-03
+   a6 -2.624353623005D-04    a7 -6.271242694944D-05    a8  6.709771809639D-06
+  al0 -3.367397269144D+01   al1 -2.502739321615D-01   al2  0.000000000000D+00
+  ar0 -2.275819247054D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01008E 00 eV
+ELABMAX=  1.00760E 03 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.8V   $ p + Xe \rightarrow p + Xe  $ visc. cross
+section }
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.353160943338D+01    a1 -1.556474053592D-01    a2 -3.165283483361D-02
+   a3 -2.954761000116D-02    a4 -1.020213798216D-04    a5  1.787583845145D-03
+   a6 -4.672186377936D-05    a7 -3.577368889534D-05    a8  2.586881672353D-06
+  al0 -3.326401521314D+01   al1 -1.220855990887D-01   al2  0.000000000000D+00
+  ar0 -2.266117187300D+01   ar1 -2.000000000000D+00   ar2  0.000000000000D+00
+ELABMIN=  0.01008e 00 eV
+ELABMAX=  1.00760e 03 eV
+\end{verbatim}\end{small}
+
+
+\begin{figure} \label{0.8}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast08.ps}
+\end{figure}
+\newpage
+
+
+
+\subsubsection{
 Reaction 3.1.6FJ
 $ p + H \rightarrow . . . \rightarrow p + e + p $ }
 
@@ -1419,7 +1521,7 @@ E is the proton energy, \cite{kn:Freeman}.
 This page is intentionally left blank
 \newpage
 
-\subsection{
+\subsubsection{
 Reaction 3.1.8R $  p + H(1s) \rightarrow H(1s) + p  $
 }
 Riviere cross section formula for charge exchange
@@ -1434,7 +1536,7 @@ Riviere cross section formula for charge exchange
   Mean rel. Error:    .2304 %
 \end{verbatim}\end{small}
 
-\subsection{
+\subsubsection{
 Reaction 3.1.8S $  p + H(1s) \rightarrow H(1s) + p  $
 }
 
@@ -1449,7 +1551,7 @@ fitted into ``Janev format"
   ar0 -3.291743242047D+01   ar1 -1.358551000000D-01   ar2  0.000000000000D+00
 ELABMAX=  2.00000E 01 eV
 \end{verbatim}\end{small}
-\subsection{
+\subsubsection{
 Reaction 3.1.8T $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz cross section for charge exchange *2
@@ -1463,7 +1565,7 @@ increase absolute coefficients by ln(2)
 ELABMAX=  2.00000E 01 eV
 \end{verbatim}\end{small}
 
-\subsection{
+\subsubsection{
 Reaction 3.1.8M $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz cross section for momentum exchange (elastic plus cx)
@@ -1476,7 +1578,7 @@ fitted into ``Janev format"
   ar0 -3.221533966214D+01   ar1 -1.386002000000D-01   ar2  0.000000000000D+00
 ELABMAX=  2.00000E 01 eV
 \end{verbatim}\end{small}
-\subsection{
+\subsubsection{
 Reaction 3.1.8J $  p + H(1s) \rightarrow H(1s) + p  $
 }
 Janev cross section for momentum exchange (cx*2)
@@ -1495,7 +1597,7 @@ ELABMIN=   0.10000E 00 eV
 \epsffile{Amjuel_PS/sigmacx.ps}
 \end{figure}
 \newpage
-\subsection{
+\subsubsection{
 Reaction 3.1.8d $  p + H(1s) \rightarrow H(1s) + p  $
 }
 For testing purposes:
@@ -1508,7 +1610,61 @@ Langevin cross section, $\sigma \times v_{rel} = const = 2e-8$
 \end{verbatim}\end{small}
 
 \newpage
+\subsection{He$^+$ impact processes}
+\subsubsection{
+Reaction 0.4T   $  He^+ + He \rightarrow He^+ + He $  total cross section
+}
 
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.336949020454D+01  a1  4.374909804779D+00  a2 -1.517973301721D+01
+   a3  2.345459194687D+01  a4 -1.969436659467D+01  a5  9.472303986781D+00
+   a6 -2.604153028956D+00  a7  3.801132783280D-01  a8 -2.282922057203D-02
+  al0 -3.291071330248D+01 al1 -2.416669402887D-01 al2 -9.821377921757D-03
+  ar0 -3.664691925424D+01 ar1  4.752719886448D-01 ar2 -8.280792916138D-02
+ELABMIN=  1.21220E 00 eV
+ELABMAX=  6.46090E 01 eV
+\end{verbatim}\end{small}
+
+\subsubsection{
+Reaction 0.4D    $He^+ + He \rightarrow He^+ + He$   diff. cross section
+}
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.332091557452D+01  a1 -3.823354679977D-01  a2 -2.666453887008D-01
+   a3 -8.177418933677D-02  a4  2.593188019755D-02  a5  8.320863897668D-03
+   a6 -1.649825718076D-03  a7 -2.491587647454D-04  a8  4.351897658362D-05
+  al0 -3.302935901459D+01 al1 -1.115060000000D-01 al2  0.000000000000D+00
+  ar0 -2.789589583796D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.02000E 00 eV
+ELABMAX=  2.00000E 02 eV
+\end{verbatim}\end{small}
+
+
+\subsubsection{
+Reaction 0.4V   $  He^+ + He \rightarrow He^+ + He $  visc. cross section
+}
+
+
+
+\begin{small}\begin{verbatim}
+   a0 -3.379346231200D+01  a1 -1.740525006979D-01  a2 -8.091712353563D-02
+   a3 -8.223847315134D-02  a4 -1.443276051210D-03  a5  6.530393601967D-03
+   a6 -5.593294441844D-05  a7 -1.742244159818D-04  a8  1.068285383642D-05
+  al0 -3.335648222384D+01 al1 -1.115060177785D-01 al2  0.000000000000D+00
+  ar0 -2.751718958486D+01 ar1 -2.000000000000D+00 ar2  0.000000000000D+00
+ELABMIN=  0.02000E 00 eV
+ELABMAX=  2.00000E 02 eV
+\end{verbatim}\end{small}
+
+
+\begin{figure} \label{0.4}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/elast04.ps}
+\end{figure}
+\newpage
 \section{H.2 : Fits for $\langle\sigma v \rangle (T)$} \label{sect2}
 
 \bigskip
@@ -1635,6 +1791,8 @@ repulsive triplett $^3b....$ state.
   Max. rel. Error:  11.6159 %
   Mean rel. Error:   5.8452 %
 \end{verbatim}\end{small}
+
+
 \subsection{
 Reaction 3.2.3   $p + H_2 \rightarrow H + H_2^+  $
 }
@@ -1659,17 +1817,42 @@ Reaction 3.2.3   $p + H_2 \rightarrow H + H_2^+  $
   Mean rel. Error:   6.3799 %
 
 \end{verbatim}\end{small}
-Competing process at low T: see above
+Competing process at low T: see above: dissociative electron attachment, process 2-2-17 
 \begin{figure} \label{3.2.3}
 \epsfxsize=16truecm
 \epsffile{Amjuel_PS/ionconv1.ps}
 \end{figure}
 \newpage
+\subsection{
+Reaction 3.2.3o   $p + H_2 \rightarrow H + H_2^+  $}
 
+  Effective ion conversion rate (charge exchange on $H_2$ (old version before 2004)
 
+  $ <\sigma v>_{eff} = <\sigma v>_{H_2(\nu=0)} + \sum_{\nu=1}^{14}
+<\sigma v>_{H_2(\nu)} \cdot pH_2(\nu) $
+
+  Same vibrational distribution (as function of $T_e$) as above.
+  Therefore:
+  single parameter fit vs. $T_e$,
+  since vibrational distribution does not depend upon density, $E_0$ is fixed
+  (0.37 eV) and $T_p = T_e = T$.
+
+\begin{small}\begin{verbatim}
+  b0 -2.141025782776D+01  b1  2.159799627973D+00  b2 -2.275674008102D+00
+  b3  5.413573872835D-01  b4 -6.391621888218D-03  b5  1.566655266221D-02
+  b6 -1.068539042185D-02  b7  1.770824218105D-03  b8 -9.267718112477D-05
+
+  Max. rel. Error:  10.9657 %
+  Mean rel. Error:   6.2957 %
+\end{verbatim}\end{small}
+same as 3-2-3, above, previous reaction, but evaluated with old $H_2$ energy: 0.37 eV, rather than 0.1 eV.
+Kept here only for backward compatibility.(Mostly used in ITER applications).
+\newpage
+this page is intentionally left blanc
+\newpage
 \subsection{
 Reaction 2.2FJ  $e + He(1|1S) \rightarrow e + He^+ + e$ } Freeman
-and Jones rate for electron impact ionization of helium atoms \cite{kn:Freeman} .
+and Jones rate coefficient for electron impact ionization of helium atoms \cite{kn:Freeman} .
 
 \begin{small}\begin{verbatim}
    b0 -0.445091700000e+02    b1  0.244298800000e+02    b2 -0.102571400000e+02
@@ -2791,7 +2974,114 @@ Reaction 0.8D  $p + Xe \rightarrow p + Xe ,\ $
 \newpage
 This page is intentionally left blank
 \newpage
+\subsection{
+Reaction 2.1.5  $e + H \rightarrow 2e + H^+ ,\ $ }
 
+Valid for $ 700 < E_H < 1.0~ E5$ and $T_e  < 1000$ eV.
+Needed for beam penetration across cold electron (edge) plasma.
+
+\begin{small}\begin{verbatim}
+        E-Index:     0                     1                     2
+  T-Index:
+        0   -3.250886702080D+02    2.690772962219D+02   -9.333762356936D+01
+        1   -6.667333547390D+01    7.233538183560D+01   -2.570910666822D+01
+        2   -4.983434468076D+01    2.412479733168D+01   -3.884870450118D+00
+        3    2.670550884979D+00   -1.723167957478D+00    5.587782905216D-01
+        4    6.674948903612D-01   -4.124756061678D-01    1.712842277416D-02
+        5    6.808976023219D-02    2.688754230792D-03    6.611670857544D-03
+        6   -1.438915473788D-02   -1.901194630463D-04    7.298416521085D-05
+        7    1.098989211142D-03    2.219783796362D-05   -3.960365474618D-05
+        8   -6.711866174955D-05    2.280924070357D-05   -4.884031598541D-06
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0    1.424150846209D+01   -4.467268971241D-01   -1.584732741666D-01
+        1    4.380976345270D+00   -3.009427651758D-01   -8.501949526254D-03
+        2   -3.398932408165D-02    4.907514406262D-02    2.703730871097D-05
+        3   -3.351001372815D-02   -6.702807790436D-03    7.244114949870D-04
+        4    5.697717251645D-03   -2.395062750188D-04   -2.620114677424D-06
+        5   -1.699139379366D-03    5.177635368277D-05    6.870966611037D-06
+        6    2.324432128978D-05    5.858353012396D-06   -1.366593951118D-06
+        7    5.355353697737D-06   -6.855890659797D-07    9.381430540897D-08
+        8    7.838237578617D-07   -9.827043958796D-08    9.095791108734D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    2.361460417677D-02   -1.345770476010D-03    2.864129137742D-05
+        1    2.358018185463D-03   -1.102091465927D-04    1.382211119292D-06
+        2   -5.608636378890D-04    3.536474507865D-05   -5.535259754631D-07
+        3   -8.650970561566D-06    6.995157343181D-08   -5.266956839472D-08
+        4   -3.717702510307D-06    2.369570100312D-07    5.319224060533D-10
+        5    1.019488700190D-07   -4.942023555843D-08    1.311808222738D-09
+        6    8.201753350995D-08   -2.693263792508D-09    8.430296741463D-11
+        7   -1.145196074924D-08    9.355510173137D-10   -3.109161125504D-11
+        8   -3.977195669572D-10   -6.688281017183D-12    7.995091233984D-13
+
+  Max. rel. Error:  22.9827 %
+  Mean rel. Error:   1.3423 %
+
+\end{verbatim}\end{small}
+
+\begin{figure} \label{2.1.5H3}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/H3-2.1.5.ps}
+\end{figure}
+
+\newpage
+\subsection{
+Reaction 2.3.9  $e + He \rightarrow 2e + He^+ ,\ $ }
+
+Valid for $ 700 < E_{He} < 1.0~ E5$ and $T_e  < 1000$ eV.
+Needed for beam penetration across cold electron (edge) plasma.
+
+\begin{small}\begin{verbatim}
+        E-Index:     0                     1                     2
+  T-Index:
+        0    1.310034245752D+03   -8.508771372056D+02    2.066760366749D+02
+        1   -2.508353150675D+02    1.015419189021D+02   -1.581037633890D+01
+        2    9.417451507809D+01   -1.778751771269D+01   -2.824530306780D+00
+        3   -3.009050226462D+01    6.654788597405D+00    2.915588715563D-01
+        4    4.385660180646D+00   -1.117837142443D+00   -1.511745757585D-02
+        5   -4.443019677779D-02    4.662788141049D-02   -5.658517658565D-04
+        6   -5.383557897871D-02    3.946435769665D-03    1.039284516303D-03
+        7    5.931731041041D-03   -7.716369089119D-04   -2.018331102194D-05
+        8   -1.677718659922D-04    1.297692472884D-05    1.627194163577D-06
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -2.021517461823D+01   -6.037177234072D-01    3.448434382624D-01
+        1    2.160874670018D+00   -3.181962238105D-01    3.285332322121D-02
+        2    6.741447605303D-01   -3.148060740119D-02    7.078822091135D-04
+        3   -8.288011998601D-02   -1.758799128561D-03   -1.384555059849D-04
+        4    1.167648389744D-02   -1.409170634544D-04    9.546658161713D-05
+        5   -6.515681704203D-04   -4.715250869462D-05    9.071842143868D-06
+        6   -1.534799377103D-05   -1.066216257020D-05   -4.208681902142D-07
+        7   -1.528843582156D-05    2.822659922448D-06    1.096321036847D-07
+        8    1.009911437330D-06   -2.105689698877D-07    4.570730739908D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0   -3.436317750271D-02    1.530379719746D-03   -2.666449302822D-05
+        1   -2.281896275305D-03    1.104943101710D-04   -2.667926304328D-06
+        2   -1.624346097258D-05   -1.339087397064D-05    8.519546024053D-07
+        3    5.890695384015D-05    1.457482299662D-06   -2.463663989543D-07
+        4   -1.459401479449D-05   -8.971022779692D-08    3.962468074256D-08
+        5    3.123976730622D-08   -1.013694223158D-08   -7.468250327850D-10
+        6    2.419036579858D-09    1.458105491288D-08   -7.464201861260D-10
+        7   -2.457770000492D-08   -9.361060954216D-11    5.503065552145D-11
+        8    8.004030822610D-10   -1.580695841260D-11   -1.314359641034D-12
+
+  Max. rel. Error:   7.5847 %
+  Mean rel. Error:   0.8667 %
+
+\end{verbatim}\end{small}
+
+
+\begin{figure} \label{2.3.9H3}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/H3-2.3.9.ps}
+\end{figure}
+\newpage
 \subsection{
 Reaction 3.1.8  $ p + H(1s) \rightarrow H(1s) + p   $
 }
@@ -2956,53 +3246,53 @@ Reaction 3.2.3  $  p + H_2(\nu) \rightarrow H + H_2^+  $
   Effective ion conversion (Charge exchange on $H_2$)
   as function of $T_p$ (from Janev,\cite{kn:Janev}).
 
-  vibrational distribution $H2(v)$ is density independent, assume: $T_e = T_p = T$
+  vibrational distribution $H_2(v)$ is density independent, assume: $T_e = T_p = T$
 
-  hence: function of $E_{beam} = E_{H2}$ and T
+  hence: function of $E_{beam} = E_{H2}$ and $T$
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
   T-Index:
-        0   -9.645230885771D+03   -3.312562293674D+03   -4.642008863875D+02
-        1    9.635139317586D+02    1.431209981817D+02   -1.623113446476D+01
-        2   -3.238552524703D+02   -1.045021110299D+02   -1.247030415569D+01
-        3   -7.958948816096D+01   -1.564243498893D+01   -8.126692776267D-01
-        4    1.795249783907D+01    4.608298344746D+00    3.409881486918D-01
-        5    3.327095557246D+00    3.248359051912D-01   -2.959384898339D-02
-        6   -4.996203651405D-01   -7.156952880369D-02    1.244172796212D-03
-        7   -1.042737933528D-01   -2.286145982917D-02   -1.923616091088D-03
-        8    7.531901795379D-03    9.800034496803D-04   -2.725923286539D-05
+        0   -2.133104980000E+01    2.961905900000E-01   -2.876892150000E-02
+        1    2.308461720000E+00   -1.064800460000E+00    2.310120950000E-01
+        2   -2.026151710000E+00    1.142806740000E+00   -2.621943460000E-01
+        3    1.648000330000E-01   -4.675786500000E-01    1.242261910000E-01
+        4    1.651993580000E-01    5.766584690000E-02   -3.659922760000E-02
+        5   -2.598458070000E-02    1.349144350000E-02    8.871659800000E-03
+        6   -4.330453510000E-03   -5.246404340000E-03   -1.636107180000E-03
+        7    1.187405610000E-03    6.281964210000E-04    1.740000360000E-04
+        8   -6.897815380000E-05   -2.667160440000E-05   -7.528040300000E-06
 
         E-Index:     3                     4                     5
   T-Index:
-        0   -3.341516413973D+01   -1.253133090148D+00   -1.969917158282D-02
-        1   -5.063990966680D+00   -4.479998578191D-01   -1.834077278807D-02
-        2   -6.865550615891D-01   -1.928755581441D-02   -4.268078616899D-04
-        3    2.143166881350D-02    3.497082036304D-03    1.578307875059D-04
-        4   -2.095566222471D-04   -7.255924192706D-04   -3.707123917753D-06
-        5   -4.145707357196D-03   -7.361702041078D-05    5.249460348237D-06
-        6    4.659917001708D-04    3.904853189629D-06   -6.450609749607D-07
-        7   -6.403548983914D-05    7.574816575503D-07    7.494387755209D-08
-        8   -9.947192276480D-06   -5.919454475128D-07   -1.962353959902D-08
+        0   -3.323271590000E-02    7.234558340000E-03    2.940230100000E-04
+        1    6.809382980000E-02   -4.241210420000E-02    8.271152020000E-03
+        2   -6.877694430000E-02    4.012716970000E-02   -6.143307540000E-03
+        3    1.774294860000E-02   -1.157658350000E-02    1.311061300000E-03
+        4    7.083346120000E-03    3.403537010000E-04   -2.752152790000E-04
+        5   -5.231162040000E-03    3.324241650000E-04    1.985585660000E-04
+        6    1.242023150000E-03   -4.524774630000E-05   -6.369415730000E-05
+        7   -1.337853740000E-04    6.784609160000E-07    8.284840740000E-06
+        8    5.516687380000E-06    1.140207820000E-07   -3.837975410000E-07
 
         E-Index:     6                     7                     8
   T-Index:
-        0    6.484329142648D-05    3.673451315592D-06   -9.872104337110D-09
-        1   -3.261356373574D-04   -8.929589681768D-07    2.353018979277D-08
-        2   -4.544184994978D-06    5.951797088816D-07    1.949475247030D-08
-        3    5.690389745524D-06    1.553911576456D-07    1.720385042997D-09
-        4    3.068887469389D-07   -5.270953529262D-08   -1.818374530299D-09
-        5    2.757680430193D-07    1.117682102273D-08    2.740369015702D-10
-        6    3.398565803833D-08    2.670966708170D-09    3.346957195127D-11
-        7   -1.467276797896D-09   -9.460129351949D-11   -1.542043001723D-13
-        8   -9.289671920073D-10   -4.157042085906D-11   -7.220730215109D-13
+        0   -8.005031610000E-05    0.000000000000E+00    0.000000000000E+00
+        1   -6.275988100000E-04    0.000000000000E+00    0.000000000000E+00
+        2    3.233852920000E-04    0.000000000000E+00    0.000000000000E+00
+        3   -1.125957730000E-05    0.000000000000E+00    0.000000000000E+00
+        4    2.225165850000E-05    0.000000000000E+00    0.000000000000E+00
+        5   -2.813630850000E-05    0.000000000000E+00    0.000000000000E+00
+        6    8.679231940000E-06    0.000000000000E+00    0.000000000000E+00
+        7   -1.075372230000E-06    0.000000000000E+00    0.000000000000E+00
+        8    4.793672020000E-08    0.000000000000E+00    0.000000000000E+00
 
-  Max. rel. Error:  12.4260 %
-  Mean rel. Error:   5.1714 %
+ Max. rel. Error:   16.7 %
+ Mean rel. Error:   5.09 %
 
 \end{verbatim}\end{small}
 \begin{figure} \label{3.2.3b}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/ionconv3.ps}
+\epsffile{Amjuel_PS/ionconv3.eps}
 \end{figure}
 \newpage
 
@@ -4892,13 +5182,118 @@ $  \langle sigma*vrel \rangle(Te,ne) $(cm**3/s)
 \end{figure}
 \newpage
 
-Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+\subsection{
+Reaction 2.7A0 $e + N \rightarrow N^+  + 2e $ }
+  Ionization Rates for neutral  nitrogen,   ADAS 96
 
-  Recombination Rates for single charged Helium Ions
+$  \langle sigma*vrel \rangle(Te,ne) $(cm**3/s)
+\begin{small}\begin{verbatim}
+       E-Index:     0                     1                     2
+  T-Index:
+        0   -3.125599079514D+01    8.881344790721D-02    3.875689690924D-02
+        1    1.501972942719D+01   -2.245019983323D-01   -1.170266566017D-01
+        2   -8.563505396323D+00    2.563611550679D-01    5.993043917730D-02
+        3    3.259172785778D+00   -1.459562059574D-01   -3.629785517504D-03
+        4   -8.028485847461D-01    4.560133800137D-02   -3.579706539679D-03
+        5    1.239955993583D-01   -8.202838629323D-03    9.221893790607D-04
+        6   -1.152891908930D-02    8.472922768697D-04   -8.914562423314D-05
+        7    5.889464965188D-04   -4.669795084986D-05    3.515034526935D-06
+        8   -1.269186213968D-05    1.064343317380D-06   -3.611292369142D-08
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -7.367355926910D-03   -8.933351435213D-04    1.937451469905D-04
+        1    4.426863655734D-02   -4.430861799571D-03    3.253064203736D-05
+        2   -3.020399271227D-02    3.927234491519D-03   -1.959177270882D-04
+        3    6.189975576309D-03   -7.279341465385D-04    2.546794744614D-05
+        4   -2.466055005611D-04   -1.287111351337D-05    7.621210137952D-06
+        5   -3.039643456169D-05    9.491026278127D-06   -1.535906103316D-06
+        6   -2.900624448150D-06    3.745360666294D-07    3.692979682516D-08
+        7    8.586152612035D-07   -1.356120392220D-07    4.747296972249D-09
+        8   -3.812958439511D-08    5.487542777793D-09   -1.437006614531D-10
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0   -4.302425039372D-06   -4.449062046116D-07    1.641092601069D-08
+        1    1.829955290678D-05   -1.088030063258D-06    2.060046531889D-08
+        2    1.624638825366D-06    2.150911835291D-07   -6.785152839285D-09
+        3   -1.935192712324D-07   -2.396214128585D-10    1.822600582381D-10
+        4   -2.751092797923D-07   -9.878792756722D-09    3.880864455805D-10
+        5    3.342842434144D-08    3.080573580529D-09   -1.004120274888D-10
+        6    5.903820424145D-10   -3.124143842671D-10    8.467756187765D-12
+        7    3.173842995092D-11   -2.659413955852D-12    4.729814633051D-14
+        8   -1.577918732137D-11    1.171782749066D-12   -2.466359817399D-14
+
+  Max. rel. Error:   2.9930 %
+  Mean rel. Error:   0.7199 %
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.7A0}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/niti-rate.eps}
+\end{figure}
+\newpage
+
+
+\subsection{
+Reaction 2.8A0 $e + O \rightarrow O^+  + 2e $ }
+  Ionization Rates for neutral  oxygen,   ADAS 96
+
+$  \langle sigma*vrel \rangle(Te,ne) $(cm**3/s)
+\begin{small}\begin{verbatim}
+        E-Index:     0                     1                     2
+  T-Index:
+        0   -3.328362393733D+01   -4.484395495461D-01    6.167722720177D-01
+        1    1.655302385400D+01    9.070420476255D-01   -7.492202987359D-01
+        2   -9.246899232716D+00   -6.861308571709D-01    3.853130674026D-01
+        3    3.468152479829D+00    2.653279717129D-01   -9.503130449306D-02
+        4   -8.532829072212D-01   -5.834222497364D-02    9.030518658158D-03
+        5    1.333834015615D-01    7.496194087446D-03    4.753498599348D-04
+        6   -1.265465442757D-02   -5.453745857810D-04   -1.638438870269D-04
+        7    6.624459298778D-04    2.000567259474D-05    1.131325208597D-05
+        8   -1.465832842295D-05   -2.619665824220D-07   -2.369684156977D-07
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -2.589961397492D-01    4.118976653137D-02   -1.959950990473D-03
+        1    2.638779663615D-01   -3.490775262239D-02    5.793136771074D-04
+        2   -1.247067819410D-01    1.680118594677D-02   -5.089127052875D-04
+        3    2.929033903989D-02   -4.430118646918D-03    2.507450743683D-04
+        4   -2.550710866039D-03    4.693149835285D-04   -3.225531357806D-05
+        5   -1.298585181626D-04   -1.260782059434D-06   -6.674084144123D-07
+        6    3.005970684014D-05   -2.808693744681D-07    3.437325607970D-08
+        7   -5.378571580338D-07   -4.142319433039D-07    5.148458125516D-08
+        8   -5.436002215866D-08    2.927695957962D-08   -3.654799869508D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0   -9.739946501376D-05    1.139459064885D-05   -2.689494629827D-07
+        1    2.088106459889D-04   -1.507734725052D-05    3.066201565961D-07
+        2   -5.644498060513D-05    4.238399098405D-06   -7.745613330596D-08
+        3   -3.986851509525D-06    7.226554994339D-08   -6.046272342238D-09
+        4    1.782158795226D-06   -1.325057610801D-07    4.204627741204D-09
+        5    2.320632028445D-08    9.646974765235D-09   -4.535319182284D-10
+        6   -1.080831526075D-08    1.525797006183D-10    1.266728082419D-11
+        7   -2.138597283955D-09    3.312940600087D-11   -2.535541525696D-13
+        8    1.982722701483D-10   -4.851782342710D-12    4.242787336605D-14
+
+  Max. rel. Error:   8.8515 %
+  Mean rel. Error:   0.9745 %
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.8A0}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/oxyi-rate.eps}
+\end{figure}
+\newpage
 
 \subsection{
 Reaction 2.3.2B0  $e + He^+ \rightarrow He + h\nu$
 }
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for single charged Helium Ions (w/o threebody)
+
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -4946,7 +5341,7 @@ Reaction 2.3.2B0  $e + He^+ \rightarrow He + h\nu$
 \epsffile{Amjuel_PS/helir1.ps}
 \end{figure}
 \newpage
-  Recombination Rates for double charged Helium Ions
+  Recombination Rates for double charged Helium Ions (w/o threebody)
 
 \subsection{
 Reaction 2.3.2B1  $e + He^{++} \rightarrow He^+ + h\nu$
@@ -4999,7 +5394,7 @@ Reaction 2.3.2B1  $e + He^{++} \rightarrow He^+ + h\nu$
 \epsffile{Amjuel_PS/helir2.ps}
 \end{figure}
 \newpage
-
+COLRAD (Hydrogen-like-ion) code:
 \subsection{
 Reaction 2.3.2C   $\  e + He^{++} \rightarrow  He^+ + h\nu$
 }
@@ -5051,6 +5446,9 @@ Reaction 2.3.2C   $\  e + He^{++} \rightarrow  He^+ + h\nu$
 \epsffile{Amjuel_PS/helr.ps}
 \end{figure}
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for single charged Be Ions (w/o threebody)
 
 \subsection{
 Reaction 2.3.4B0  $e + Be^+ \rightarrow Be + h\nu$
@@ -5103,6 +5501,9 @@ Reaction 2.3.4B0  $e + Be^+ \rightarrow Be + h\nu$
 \epsffile{Amjuel_PS/beryr1.ps}
 \end{figure}
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for doubly charged Be Ions (w/o threebody)
 \subsection{
 Reaction 2.3.4B1  $e + Be^{++} \rightarrow Be^+ + h\nu$
 }
@@ -5154,6 +5555,9 @@ Reaction 2.3.4B1  $e + Be^{++} \rightarrow Be^+ + h\nu$
 \epsffile{Amjuel_PS/beryr2.ps}
 \end{figure}
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for singly charged B Ions (w/o threebody)
 \subsection{
 Reaction 2.3.5B0 $ e + B^+ \rightarrow B + h\nu $
 }
@@ -5203,6 +5607,9 @@ Reaction 2.3.5B0 $ e + B^+ \rightarrow B + h\nu $
 \newpage
 This page is intentionally left blank
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for doubly charged B Ions (w/o threebody)
 \subsection{
 Reaction 2.3.5B1  $e + B^{++} \rightarrow B^+ + h\nu$
 }
@@ -5251,11 +5658,12 @@ Reaction 2.3.5B1  $e + B^{++} \rightarrow B^+ + h\nu$
 \newpage
 This page is intentionally left blank
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for singly charged C Ions (w/o threebody)
 \subsection{
 Reaction 2.3.6B0  $e + C^{+} \rightarrow C + h\nu$
 }
- Recombination Rates for single
- charged Carbon Ions, STRAHL DATA
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -5307,7 +5715,7 @@ this page is intentionally left blank
 Reaction 2.3.6A0  $e + C^{+} \rightarrow C + h\nu$
 }
  Recombination Rates for single
- charged Carbon Ions, ADAS 93
+ charged Carbon Ions, ADAS 96
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -5353,16 +5761,116 @@ Reaction 2.3.6A0  $e + C^{+} \rightarrow C + h\nu$
 \end{verbatim}\end{small}
 \begin{figure} \label{2.3.6A0}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/carbr.ps}
+\epsffile{Amjuel_PS/carbr-rate.eps}
+\end{figure}
+\newpage
+\subsection{
+Reaction 2.3.7A0  $e + N^{+} \rightarrow N + h\nu$ }
+ Recombination Rates for single  charged Nitrogen Ions, ADAS 96
+
+\begin{small}\begin{verbatim}
+       E-Index:     0                     1                     2
+  T-Index:
+        0   -2.890979447961D+01    3.404781058304D-02    3.109171343385D-02
+        1   -1.174542935934D-01   -6.300786378143D-02    1.285451136251D-02
+        2    1.062396631545D+00   -4.594988800022D-02   -2.144355651778D-02
+        3   -1.281784857503D-01    1.750663794712D-02   -4.218563857410D-04
+        4   -1.778575430266D-01    7.578877787156D-03    3.404271527997D-03
+        5    6.798785783958D-02   -4.597105849322D-03   -4.739820114489D-04
+        6   -1.028526325632D-02    8.617482106535D-04   -6.225202836732D-05
+        7    7.268082281380D-04   -7.084122217378D-05    1.512785518009D-05
+        8   -1.988053691842D-05    2.183474002160D-06   -7.348547415367D-07
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -2.959597171711D-02    9.972437524383D-03   -1.611047280109D-03
+        1   -3.284720599538D-03   -3.277710167038D-04    1.453494237233D-04
+        2    1.590875283251D-02   -4.416788978628D-03    6.137394728855D-04
+        3   -4.267873772733D-03    1.898156366712D-03   -3.376326628079D-04
+        4   -9.522209957584D-04    9.592101950028D-06    2.643190197805D-05
+        5    2.795617403751D-04   -5.664874714649D-05    5.086981091994D-06
+        6    1.044379154837D-05    1.194568825982D-07   -2.192339608178D-07
+        7   -5.854382133761D-06    1.051704842577D-06   -9.578564349722D-08
+        8    3.249656113647D-07   -6.545647058295D-08    6.814062555229D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    1.362263347704D-04   -5.786235879715D-06    9.750444797037D-08
+        1   -1.452433975975D-05    5.648617057221D-07   -7.117648875509D-09
+        2   -4.553987913630D-05    1.730678240365D-06   -2.652544738754D-08
+        3    2.933958065856D-05   -1.240562994480D-06    2.045493282478D-08
+        4   -3.634440120548D-06    1.885575439239D-07   -3.485971868424D-09
+        5   -1.949862893743D-07    2.024442443875D-09    2.630734008273D-11
+        6    2.521164443225D-08   -1.296752613661D-09    2.627656129565D-11
+        7    4.358665026882D-09   -7.347981360072D-11   -2.477653636206D-13
+        8   -3.772451802902D-10    1.008260868721D-11   -9.316575573714D-14
+
+  Max. rel. Error:  21.5715 %
+  Mean rel. Error:   6.5304 %
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.3.7A0}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/nitr-rate.eps}
 \end{figure}
 \newpage
 
 \subsection{
-Reaction 2.3.10B0   $e + Ne^+ \rightarrow  Ne + h\nu$
-}
+Reaction 2.3.8A0  $e + O^{+} \rightarrow O + h\nu$ }
+ Recombination Rates for single  charged Oxygen Ions, ADAS 96
 
- Recombination Rates for single
- charged Neon Ions
+\begin{small}\begin{verbatim}
+       E-Index:     0                     1                     2
+  T-Index:
+        0   -2.950202333277D+01    3.417421048652D-02    5.550176406244D-04
+        1   -3.905878105714D-01   -3.366885804101D-02    5.611644267242D-03
+        2    8.142161905922D-01   -2.619980609301D-02    1.119917102498D-02
+        3   -6.314301870760D-02   -6.677833838048D-04   -4.595557614154D-03
+        4   -1.300209551942D-01    7.344464113626D-03    1.010388603060D-03
+        5    4.543327490228D-02   -2.431608679889D-03   -1.605807371797D-04
+        6   -6.551209458023D-03    3.385675498043D-04    1.776299449335D-05
+        7    4.487444713804D-04   -2.208733089758D-05   -1.188982868102D-06
+        8   -1.202054123175D-05    5.549447564031D-07    3.573244244320D-08
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -4.878404722759D-03    2.496704857025D-03   -4.801811432048D-04
+        1   -6.846315928181D-03    1.781404680449D-03   -2.299350278961D-04
+        2   -7.650465593431D-03    2.291477501261D-03   -3.428663325456D-04
+        3    3.319766657887D-03   -8.305632223570D-04    9.687240430638D-05
+        4   -7.429595897823D-04    1.597082088291D-04   -1.586721570563D-05
+        5    9.174847318131D-05   -1.791485541629D-05    2.557912304553D-06
+        6   -3.656971171905D-06    4.415203015131D-07   -2.729885842433D-07
+        7   -2.390420213573D-07    8.850471294306D-08    1.320290015666D-08
+        8    1.760145190417D-08   -5.311149778654D-09   -1.932208107521D-10
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    4.414828976029D-05   -1.913653761986D-06    3.169334833101D-08
+        1    1.629563730611D-05   -6.508094947057D-07    1.168016914799D-08
+        2    2.801630724815D-05   -1.195893028045D-06    2.066069583201D-08
+        3   -5.817227023091D-06    1.815236921961D-07   -2.440874713720D-09
+        4    6.876080976925D-07   -7.143508700482D-09   -1.579410946829D-10
+        5   -2.191883763675D-07    9.084875748335D-09   -1.438945391695D-10
+        6    4.429673221310D-08   -2.592667144327D-09    5.218677785470D-11
+        7   -3.785422204476D-09    2.552603164217D-10   -5.520425235115D-12
+        8    1.170863046694D-10   -8.639504027193D-12    1.945039811844D-13
+
+  Max. rel. Error:  17.6166 %
+  Mean rel. Error:   5.7730 %
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.3.8A0}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/oxyr-rate.eps}
+\end{figure}
+\newpage
+\subsection{
+Reaction 2.3.10B0   $e + Ne^+ \rightarrow  Ne + h\nu$ }
+
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for singly charged Ne Ions (w/o threebody)
+
+
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -5410,13 +5918,14 @@ Reaction 2.3.10B0   $e + Ne^+ \rightarrow  Ne + h\nu$
 \epsffile{Amjuel_PS/neonr1.ps}
 \end{figure}
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for doubly  charged Ne Ions (w/o threebody)
 \subsection{
 Reaction 2.3.10B1   $e + Ne^{++}\rightarrow  Ne^+ + h\nu$
 }
 
 
- Recombination Rates for double
- charged Neon Ions
 
 \begin{small}\begin{verbatim}
 
@@ -5465,12 +5974,13 @@ Reaction 2.3.10B1   $e + Ne^{++}\rightarrow  Ne^+ + h\nu$
 \epsffile{Amjuel_PS/neonr2.ps}
 \end{figure}
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for singly  charged Ar Ions (w/o threebody)
 \subsection{
 Reaction 2.3.18B0  $ \  e + Ar^+ \rightarrow  Ar + h\nu $
 }
 
-  Recombination Rates for single
-  charged Argon Ions
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -5518,12 +6028,13 @@ Reaction 2.3.18B0  $ \  e + Ar^+ \rightarrow  Ar + h\nu $
 \epsffile{Amjuel_PS/argr1.ps}
 \end{figure}
 \newpage
+Data from impurity transport code ``STRAHL'', \cite{kn:Behringer}
+
+  Recombination Rates for doubly  charged Ar Ions (w/o threebody)
 \subsection{
 Reaction 2.3.18B1   $\  e + Ar^{++} \rightarrow  Ar^+ + h\nu$
 }
 
-  Recombination Rates for double
-  charged Argon Ions
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -5877,7 +6388,6 @@ $H^*$ production based on HYHDEL 7.2.2, 7.2.3 (not included 7.2.1).
 \end{figure}
 \newpage
 
-
 \section{H.5 : Fits for $\langle\sigma \cdot v \cdot momentum \rangle (T) $}
 
 to be written
@@ -5893,17 +6403,30 @@ to be written
 This page is intentionally left blank
 \newpage
 
-\section{H.8 : Fits for $\langle\sigma \cdot v \cdot E_{kin} \rangle (T) \ [cm^3/s
+\section{H.8 : Fits for $\langle\sigma \cdot v \cdot E \rangle (T) \ [cm^3/s
 \cdot eV]$}
 
-$E_{kin}$ is the kinetic Energy of the impacting electron or ion in eV.
-The energy weighted rate is a function of temperature [eV] of the
+$E$ is a relevant energy related to the process, e.g. it may be the impacting electron or ion in eV,
+or the radiation energy loss per reaction, etc.
+In the present section
+the energy weighted rate is a function of temperature [eV] of the
 impacting electron or ion
 
 \subsection{
 Reaction 2.2.14   $e + H_2^+(v) \rightarrow H(1s) + H^*(n)   (v=0-9, n \ge 2) $
 }
+The energy weighting in this rate coefficient is done with the kinetic energy of
+impacting electron. The general expression for this type of incident particle energy weighted
+rate, in which the second particle is at rest, reads:
 
+$\langle\sigma v_e E_{elec}\rangle(T_e) = kT_e \cdot \langle\sigma v_e\rangle \cdot
+\left(3/2 + \frac{d \ln \langle\sigma v_e\rangle}{d \ln(kT_e)}\right)$
+
+The fit should result in
+
+$\langle\sigma v_e E_{elec}\rangle(T_e) \approx 0.88 ~kT_e ~\langle\sigma v_e\rangle$,
+
+i.e. low energy electrons are preferred in this reaction, rather than the average electrons with $3/2~kT_e$
 
 
 \begin{small}\begin{verbatim}
@@ -5918,7 +6441,7 @@ This page is intentionally left blank
 
 
 \subsection{
-Reaction 2.2B0                    11/94 update
+Reaction 2.2B0 $e + He \rightarrow e + He^+ + e $ 11/94 update
 }
 
 \begin{small}\begin{verbatim}
@@ -5929,7 +6452,7 @@ Reaction 2.2B0                    11/94 update
 \end{verbatim}\end{small}
 
 \subsection{
-Reaction 2.2B1                    11/94 update
+Reaction 2.2B1 $e + He^+ \rightarrow e + He^{++} + e$ 11/94 update
 }
 
 
@@ -5946,7 +6469,7 @@ Reaction 2.2B1                    11/94 update
 \newpage
 
 \subsection{
-Reaction 2.4B0                     1/96 update
+Reaction 2.4B0 $e + Be \rightarrow e + Be^+ + e $ 1/96 update
 }
 
   Electron cooling rates for neutral
@@ -5966,7 +6489,7 @@ Reaction 2.4B0                     1/96 update
 
 
 \subsection{
-Reaction 2.4B1                     1/96 update
+Reaction 2.4B1 $e + Be^+ \rightarrow e + Be^{++} + e $ 1/96 update
 }
 
   Electron cooling rates for single
@@ -5991,7 +6514,7 @@ Reaction 2.4B1                     1/96 update
 \newpage
 
 \subsection{
-Reaction 2.5B0                     1/96 update
+Reaction 2.5B0 $e + B \rightarrow e + B^+ + e $ 1/96 update
 }
 
  Electron cooling rates for neutral
@@ -6007,7 +6530,7 @@ $  \langle de*sigma*vrel \rangle(T_e)  (eV*cm**3/s), B   \rightarrow B^* $
 \end{verbatim}\end{small}
 
 \subsection{
-Reaction 2.5B1                     1/96 update
+Reaction 2.5B1 $e + B^+ \rightarrow e + B^{++} + e $ 1/96 update
 }
 
  Electron cooling rates for single
@@ -6027,7 +6550,7 @@ This page is intentionally left blank
 \newpage
 
 \subsection{
-Reaction 2.6B0                     1/98 update
+Reaction 2.6B0 $e + C \rightarrow e + C^+ + e  $ 1/98 update
 }
 
  Electron cooling rates for neutral
@@ -6047,7 +6570,7 @@ $  \langle de*sigma*vrel \rangle(T_e)  (eV*cm**3/s), C   \rightarrow C^* $
 \end{verbatim}\end{small}
 
 \subsection{
-Reaction 2.6B1                     1/98 update
+Reaction 2.6B1 $e + C^+ \rightarrow e + C^{++} + e  $ 1/98 update
 }
 
  Electron cooling rates for single
@@ -6071,7 +6594,7 @@ This page is intentionally left blank
 \newpage
 
 \subsection{
-Reaction 2.10B0                   1/96 update
+Reaction 2.10B0 $e + Ne \rightarrow e + Ne^+ + e  $ 1/96 update
 }
 
   Electron cooling rates for neutral and single
@@ -6091,7 +6614,7 @@ Reaction 2.10B0                   1/96 update
 
 
 \subsection{
-Reaction 2.10B1                   1/96 update
+Reaction 2.10B1 $ e + Ne^+ \rightarrow e + Ne^{++} + e $ 1/96 update
 }
 
   Electron cooling rates for neutral and single
@@ -6115,7 +6638,7 @@ Reaction 2.10B1                   1/96 update
 \newpage
 
 \subsection{
-Reaction 2.18B0                   1/96 update
+Reaction 2.18B0 $e + Ar  \rightarrow e + Ar^+  + e$ 1/96 update
 }
 
   Electron cooling rates for neutral and single
@@ -6134,7 +6657,7 @@ Reaction 2.18B0                   1/96 update
 
 
 \subsection{
-Reaction 2.18B1                   1/96 update
+Reaction 2.18B1 $e + Ar^+ \rightarrow e + Ar^{++} + e$ 1/96 update
 }
 
   Electron cooling rates for neutral and single
@@ -6159,7 +6682,7 @@ Reaction 2.18B1                   1/96 update
 
 
 \subsection{
-Reaction 2.26B0                   2/06 update
+Reaction 2.26B0 $e + Fe  \rightarrow e + Fe^+  + e$ 2/06 update
 }
 
   Electron cooling rates for neutral and single
@@ -6178,7 +6701,7 @@ Reaction 2.26B0                   2/06 update
 
 
 \subsection{
-Reaction 2.26B1                   2/06 update
+Reaction 2.26B1 $e + Fe^+ \rightarrow e + Fe^{++} + e$ 2/06 update
 }
 
   Electron cooling rates for neutral and single
@@ -6976,11 +7499,125 @@ ADAS 93
 \newpage
 
 \subsection{
+  Reaction 2.7A0  $e + N  \rightarrow N^+   + 2e $
+}
+electron cooling rate due to ionization of N atoms [eV * cm**3/s]
+ADAS 96
+
+\begin{small}\begin{verbatim}
+
+      E-Index:     0                     1                     2
+  T-Index:
+        0   -2.253812547614D+01   -6.608569288276D-01    1.150452384879D-01
+        1    5.432527437912D+00    1.539439865129D+00   -1.576693820511D-01
+        2   -2.952608997109D-01   -1.412585437109D+00    4.638775789522D-02
+        3   -8.226013960740D-01    6.717054943053D-01    2.187384074057D-02
+        4    3.729388695172D-01   -1.832836584927D-01   -1.722342009795D-02
+        5   -7.841898395520D-02    2.976002632760D-02    4.564235143138D-03
+        6    8.985696288257D-03   -2.839310501238D-03   -6.044432608775D-04
+        7   -5.395985855412D-04    1.468399332248D-04    4.023312734034D-05
+        8    1.328834197911D-05   -3.174449965134D-06   -1.072687574774D-06
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -1.065634043574D-02    9.532285913431D-04   -1.346476910993D-04
+        1    5.813528015171D-03   -1.646122278862D-03    3.939136003165D-04
+        2    1.251511770456D-02    1.934102369820D-04   -2.591298980417D-04
+        3   -1.391948893870D-02    6.061371309834D-04    4.715854993637D-05
+        4    5.665942301636D-03   -2.864541076848D-04   -2.009919110756D-06
+        5   -1.191674192800D-03    5.671367249642D-05    1.560417026937D-07
+        6    1.394992142385D-04   -6.170732864889D-06   -5.745521323400D-08
+        7   -8.635747882439D-06    3.695648390668D-07    5.028838822894D-09
+        8    2.207714212398D-07   -9.661992346983D-09   -1.002410123923D-10
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    1.499025275503D-05   -8.381690183270D-07    1.754250184956D-08
+        1   -4.099253727990D-05    2.056031618879D-06   -4.072262920583D-08
+        2    2.795198852134D-05   -1.439391948855D-06    3.065144075600D-08
+        3   -5.768287114529D-06    3.294456589515D-07   -8.730420469452D-09
+        4    3.415790996484D-07   -2.777746715732D-08    1.367779235643D-09
+        5    1.791473635965D-09    7.602227311451D-10   -1.668997333521D-10
+        6    9.035743229573D-10   -4.011075190405D-11    1.670019578529D-11
+        7   -1.822072807905D-10    6.518277639583D-12   -1.040108515933D-12
+        8    4.463372771101D-12   -1.949905209490D-13    2.634684643675D-14
+
+  Max. rel. Error:   5.8662 %
+  Mean rel. Error:   1.3550 %
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.7il}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/nitil-erate.eps}
+\end{figure}
+\newpage
+
+\subsection{
+  Reaction 2.8A0  $e + O  \rightarrow O^+   + 2e $
+}
+electron cooling rate due to ionization of O atoms [eV * cm**3/s]
+ADAS 96
+
+\begin{small}\begin{verbatim}
+
+        E-Index:     0                     1                     2
+  T-Index:
+        0   -2.445741605915D+01   -7.558170805452D-01    6.462171267483D-02
+        1    5.492606381344D+00    1.669520214597D+00   -1.021865903908D-01
+        2    9.943826013037D-01   -1.499918897355D+00    6.087399488466D-02
+        3   -1.654552652454D+00    7.182604764825D-01   -1.614322696382D-02
+        4    6.113756777865D-01   -2.013060379640D-01    1.632283021337D-03
+        5   -1.156778163561D-01    3.398915754215D-02    8.787006821195D-05
+        6    1.226872019465D-02   -3.396064383950D-03   -3.540766244850D-05
+        7   -6.927024005103D-04    1.846756585347D-04    3.021508483124D-06
+        8    1.622250023780D-05   -4.207838369666D-06   -8.903799103489D-08
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0    1.750162767171D-02   -7.322414636615D-03    1.347646519764D-03
+        1   -2.873370694294D-02    8.462882768193D-03   -1.412980882660D-03
+        2    1.848835552799D-02   -2.365388843634D-03    2.826588118171D-04
+        3   -8.427594128571D-03    1.652841141310D-04    5.183935809798D-05
+        4    2.680245268321D-03   -2.704851290479D-05   -2.072676809016D-05
+        5   -5.202897127637D-04    1.692837429290D-05    1.540185566308D-06
+        6    5.734498698465D-05   -3.001759890924D-06    7.192469818350D-08
+        7   -3.294622184638D-06    2.062548801876D-07   -1.157818482174D-08
+        8    7.669410612531D-08   -4.861603869267D-09    2.925221400690D-10
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0   -1.286672269176D-04    6.000293275220D-06   -1.078783359137D-07
+        1    1.379642813223D-04   -6.752421303830D-06    1.268943574449D-07
+        2   -3.651758284440D-05    2.307784252948D-06   -5.079380257776D-08
+        3    1.044710535961D-06   -3.994468803276D-07    1.234290357456D-08
+        4    3.081389976655D-07    8.140394138239D-08   -2.815585650608D-09
+        5    1.040513862277D-07   -1.905054927605D-08    5.310423435817D-10
+        6   -2.833458966155D-08    2.502214203633D-09   -5.916747741154D-11
+        7    2.098501461403D-09   -1.497495555462D-10    3.217115168440D-12
+        8   -4.734353103748D-11    3.144698339762D-12   -6.342196909047D-14
+
+  Max. rel. Error:   3.7053 %
+  Mean rel. Error:   0.5707 %
+
+
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.8il}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/oxyil-erate.eps}
+\end{figure}
+\newpage
+
+\subsection{
   Reaction 2.3.6A0  $C^+ + electron(s) \rightarrow C   + ... $
 }
-electron cooling rate due to recombination of C+ ions [eV * cm**3/s]
-ADAS 93  (must substract: 11.3 eV per recombination).
-Hence: the quantitity given here happens to be the radiation loss only.
+electron cooling rate due to recombination of C$^+$ ions [eV * cm**3/s],
+ADAS 96
+
+One must subtract: 11.3 eV per recombination to turn ADAS radiation
+rate into electron cooling (or heating) rate. Hence: the quantity
+``PRB" given here happens to be the radiation loss only. Note: these
+ADAS ``PRB" rates include Bremsstrahlung.
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -7027,8 +7664,126 @@ Hence: the quantitity given here happens to be the radiation loss only.
 \end{verbatim}\end{small}
 \begin{figure} \label{2.3.6rl}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/carbrl.ps}
+\epsffile{Amjuel_PS/carbrl-erate.eps}
 \end{figure}
+
+
+\subsection{
+  Reaction 2.3.7A0  $N^+ + electron(s) \rightarrow N   + ... $
+}
+electron cooling rate due to recombination of N$^+$ ions [eV *
+cm**3/s], ADAS 96
+
+One must subtract: 14.53 eV per recombination to turn ADAS radiation
+rate into electron cooling (or heating) rate. Hence: the quantity
+``PRB" given here happens to be the radiation loss only. Note: these
+ADAS ``PRB" rates include Bremsstrahlung.
+
+\begin{small}\begin{verbatim}
+      E-Index:     0                     1                     2
+  T-Index:
+        0   -2.586820731518D+01   -3.773123878982D-04    7.482871509909D-02
+        1    4.400357172984D-01   -5.955879689023D-02   -6.069655421640D-02
+        2    1.523969394400D+00    3.425371495869D-02   -8.101981223987D-02
+        3   -3.077040183629D-01    5.713803828212D-03    4.307965640960D-02
+        4   -2.499858560511D-01   -1.181574525071D-02    3.378336563136D-03
+        5    1.122891964175D-01    4.206198954046D-03   -4.429675538662D-03
+        6   -1.845412035984D-02   -6.674583671370D-04    8.097511152946D-04
+        7    1.383369072901D-03    5.032061800809D-05   -5.815584065023D-05
+        8   -3.962101000292D-05   -1.468219566959D-06    1.461427252466D-06
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -4.804133327132D-02    1.306447013294D-02   -1.812654742590D-03
+        1    5.106007492864D-02   -1.546284626871D-02    2.268830444441D-03
+        2    4.279413046901D-02   -1.024270007475D-02    1.316026883921D-03
+        3   -3.115909800990D-02    8.767085102681D-03   -1.239304971154D-03
+        4    2.713999948320D-03   -1.295602004725D-03    2.196982388776D-04
+        5    1.151215043288D-03   -1.200389519219D-04    3.592098287396D-06
+        6   -2.493973858283D-04    3.804621927607D-05   -3.384244902180D-06
+        7    1.658217707026D-05   -2.328052761042D-06    1.932298218606D-07
+        8   -3.196107515802D-07    2.507602295919D-08   -5.676151311100D-11
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    1.354629644171D-04   -5.174213693006D-06    7.914218642264D-08
+        1   -1.751819021358D-04    6.833826024190D-06   -1.061582477502D-07
+        2   -9.341518771019D-05    3.450572575050D-06   -5.173974255663D-08
+        3    9.351800226170D-05   -3.596490667485D-06    5.541585525207D-08
+        4   -1.805778311706D-05    7.263438826071D-07   -1.148112128372D-08
+        5    2.332387839470D-07   -1.879365909923D-08    3.676966892592D-10
+        6    1.870011605909D-07   -6.064415580300D-09    8.687600130338D-11
+        7   -1.049655308155D-08    3.552860851546D-10   -5.454408362195D-12
+        8   -8.202530145299D-11    3.479987632860D-12   -4.036153078945D-14
+
+  Max. rel. Error:  32.2303 %
+  Mean rel. Error:  12.2391 %
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.3.7rl}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/nitrl-erate.eps}
+\end{figure}
+\newpage
+
+\subsection{
+  Reaction 2.3.8A0  $O^+ + electron(s) \rightarrow O   + ... $
+}
+electron cooling rate due to recombination of O$^+$ ions [eV *
+cm**3/s], ADAS 96
+
+One must subtract: 13.62 eV per recombination to turn ADAS radiation
+rate into electron cooling (or heating) rate. Hence: the quantity
+``PRB" given here happens to be the radiation loss only. Note: these
+ADAS ``PRB" rates include Bremsstrahlung.
+
+\begin{small}\begin{verbatim}
+
+       E-Index:     0                     1                     2
+  T-Index:
+        0   -2.653313950168D+01    2.216925829689D-02    5.476125200862D-03
+        1   -6.354270172271D-02   -2.970370946175D-02   -2.924232567362D-03
+        2    1.136262534246D+00   -1.638321618233D-02    4.543680765812D-03
+        3   -1.281599573767D-01    3.819386824901D-03    3.005270657055D-04
+        4   -1.909197964757D-01    5.701759939452D-03   -1.426212735570D-03
+        5    7.244841497960D-02   -2.697317691499D-03    5.384553818515D-04
+        6   -1.085354529891D-02    4.751006113548D-04   -9.079081560679D-05
+        7    7.572289001622D-04   -3.780469918978D-05    7.402729380985D-06
+        8   -2.041631801536D-05    1.138361613897D-06   -2.361510545802D-07
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -4.314967559213D-03    1.308676572081D-03   -1.736787698498D-04
+        1    1.081523218557D-03   -3.561991531376D-04    4.308167373509D-05
+        2    8.372086622214D-04   -3.337360481944D-04    3.545299576488D-05
+        3   -4.893123129767D-04    7.578633030575D-05    2.917876532730D-06
+        4   -3.128536602414D-05    7.234833821022D-05   -1.233696295835D-05
+        5    3.583912600700D-05   -2.670990378994D-05    2.932629504712D-06
+        6   -2.993913602201D-06    2.724569084701D-06   -9.569324831913D-08
+        7   -2.244802134509D-07   -2.933697608069D-08   -2.654846978216D-08
+        8    2.401245642186D-08   -5.331361909937D-09    1.859310874804D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    1.143937144703D-05   -3.426119753220D-07    3.343988039951D-09
+        1   -2.436289695706D-06    4.547126890253D-08    2.943681279832D-10
+        2   -9.130986620243D-07   -5.056377574243D-08    2.244312734391D-09
+        3   -1.421649431925D-06    1.060528794829D-07   -2.467404974614D-09
+        4    9.066971436761D-07   -3.076963252506D-08    3.790588865731D-10
+        5   -7.287895559905D-08   -4.525321022016D-09    1.980047129074D-10
+        6   -2.908578180313D-08    2.796398755095D-09   -7.153988149004D-11
+        7    5.437629784614D-09   -3.630282613909D-10    8.162616568071D-12
+        8   -2.565417747456D-10    1.497599750014D-11   -3.151739443995D-13
+
+  Max. rel. Error:  29.6584 %
+  Mean rel. Error:   9.6090 %
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.3.8rl}
+\epsfxsize=16truecm \epsffile{Amjuel_PS/oxyrl-erate.eps}
+\end{figure}
+\newpage
+
 \section{H.11: Other single polynomial fits}
 
 \subsection{
@@ -7140,31 +7895,19 @@ Reaction 2.18B0  $  <de>(T_e) \ [eV], Ar \rightarrow Ar^*$
 \end{figure}
 \newpage
 
-\subsection{
-Reaction 2.0a   Ratio $H_2^+/H_2,$ only from  CX on cold $H_2(v)$
-}
-(coll. model for vibr. excitation, Greenland, Reiter, \cite{kn:Green})
 
-Assumptions:
-
-$E_{H2} = 0.1$ eV, $T_i = T_e$, vibrational distribution with
-no coupling to B,C states,
-hence: independent of $n_e$
-
-\begin{small}\begin{verbatim}
-  k0 -5.281428900665D+00  k1  3.115995571855D+00  k2 -3.690629726865D+00
-  k3  1.448918180601D+00  k4 -3.928689243481D-01  k5  1.236809448625D-01
-  k6 -2.877121006548D-02  k7  3.391113110854D-03  k8 -1.521565312043D-04
-
-  Max. rel. Error:   9.3977 %
-  Mean rel. Error:   5.6685 %
-\end{verbatim}\end{small}
 
 \subsection{
-Reaction 2.0b   Ratio $H_2^+/H_2,$ only from CX on cold $H_2(v=0)$
+Reaction 2.0b   Ratio $H_2^+/H_2,$ gain of $H_2^+$:  CX on cold $H_2(v=0)$ only
 }
-(coll. model for vibr. excitation, Greenland, Reiter, \cite{kn:Green})
-same as 2.0a, but cx (ion conversion) only from vibr. ground state
+
+Note: the contribution 2.0a to this ratio from EI processes alone is electron density dependent
+and given in the next chapter under the ``H12 fits''.
+\medskip
+
+same as 2.0c below, but $H_2^+$ production by CX (ion conversion, proton impact) only from vibr. ground state $H_2(v=0)$
+rather than from vibrationally distributed $H_2(v)$.
+
 
 \begin{small}\begin{verbatim}
   k0 -8.061954078771D+00  k1  2.475896585902D+00  k2 -2.933737852849D+00
@@ -7176,6 +7919,31 @@ same as 2.0a, but cx (ion conversion) only from vibr. ground state
 
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.0c   Ratio $H_2^+/H_2,$ gain of $H_2^+$:  CX on cold $H_2(v)$
+}
+\textbf{gain }of $H_2^+$: coll. model for vibr. excitation, Greenland, Reiter, \cite{kn:Green}),
+and then: $H_2^+$ production by CX (ion conversion, proton impact) on these $H_2(v)$\\
+\textbf{loss }of $H_2^+$: coll. rad. model for $H_2, H_2^+$, Sawada, Fujimoto, \cite{kn:Sawada},
+electron impact dissociative recombination, excitation and ionization. Total loss: electron density independent.\\
+
+
+Assumptions:
+
+$E_{H2} = 0.1$ eV, $T_i = T_e$, vibrational distribution with
+no coupling to B,C states,
+hence: also gain rate of $H_2^+$ due to this process is independent of $n_e$
+
+\begin{small}\begin{verbatim}
+  k0 -5.281428900665D+00  k1  3.115995571855D+00  k2 -3.690629726865D+00
+  k3  1.448918180601D+00  k4 -3.928689243481D-01  k5  1.236809448625D-01
+  k6 -2.877121006548D-02  k7  3.391113110854D-03  k8 -1.521565312043D-04
+
+  Max. rel. Error:   9.3977 %
+  Mean rel. Error:   5.6685 %
+\end{verbatim}\end{small}
+
+
 \begin{figure} \label{2.0a}
 \epsfxsize=16truecm
 \epsffile{Amjuel_PS/ratioH11_2ab.ps}
@@ -7184,13 +7952,17 @@ same as 2.0a, but cx (ion conversion) only from vibr. ground state
 \newpage
 
 \subsection{
-Reaction 7.0a      Ratio $H^-/H_2, H_2: $ from DA on $H_2(v)$
+Reaction 7.0a      Ratio $H^-/H_2: $ gain of $H^-$:  DA on cold $H_2(v)$
 }
 
-  (coll. model for vibr. excitation, Greenland, Reiter, \cite{kn:Green})\\
-  Ratio of densities: $n_{H^-}/n_{H_2}$. Vibrational distribution $H_2(v)$ evaluated
+
+
+  Ratio of densities: $n_{H^-}/n_{H_2}$. \\
+  vibr. distribution of $H_2(v)$: coll. model for vibr. excitation, Greenland, Reiter, \cite{kn:Green}\\
+
+  Vibrational distribution $H_2(v)$ evaluated
   at $E_{H_2} = 0.1 eV$, $T_p = T_e$ and $n_p = n_e$.\\
-  Production of $H^-$ from $H_2(v)$:    \\
+  Production of $H^-$ from $H_2(v)$:  Dissociative attachment on $H_2(v):  e+H_2(v) \rightarrow H^- + H$  \\
   Destruction of $H^-$: .... with $E_{H^-}=0.1$ and $T_p = T_e$ and $n_p = n_e$.
 
 \begin{small}\begin{verbatim}
@@ -7203,14 +7975,14 @@ Reaction 7.0a      Ratio $H^-/H_2, H_2: $ from DA on $H_2(v)$
 \end{verbatim}\end{small}
 
 \subsection{
-Reaction 7.0b      Ratio $H^-/H_2, H_2: $ only from DA on $H_2(v=0)$
+Reaction 7.0b      Ratio $H^-/H_2: $ gain of $H^-$:  DA on cold $H_2(v=0)$ only
 }
 
 
  same as 7.0a, but DA (diss. attachment) only from vibr. ground state
 
   Ratio of densities: $n_{H^-}/n_{H_2}$\\
-  Production of $H^-$ from $H_2(v=0)$:    \\
+  Production of $H^-$ from $H_2(v=0)$: Dissociative attachment on $H_2(v=0):  e+H_2(0) \rightarrow H^- + H$    \\
   Destruction of $H^-$:
 
 \begin{small}\begin{verbatim}
@@ -7291,7 +8063,7 @@ Assumed:  $n^+ = n_e$
 \newpage
 
 \subsection{
-Reaction 2.1.5a  $H + e \rightarrow H^+ + 2e $, Ratio H(3)/H(1)
+Reaction 2.1.5a  $H + e \rightarrow H^+ + 2e $, Ratio $H(3)/H(1)$
 }
 
 \begin{small}\begin{verbatim}
@@ -7345,7 +8117,7 @@ Reaction 2.1.5a  $H + e \rightarrow H^+ + 2e $, Ratio H(3)/H(1)
 
 \newpage
 \subsection{
-Reaction 2.1.5b  $H + e \rightarrow H^+ + 2e$, Ratio H(2)/H(1)
+Reaction 2.1.5b  $H + e \rightarrow H^+ + 2e$, Ratio $H(2)/H(1)$
 }
 
 
@@ -7399,7 +8171,7 @@ Reaction 2.1.5b  $H + e \rightarrow H^+ + 2e$, Ratio H(2)/H(1)
 
 \newpage
 \subsection{
-Reaction 2.1.5c  $H + e \rightarrow H^+ + 2e$, Ratio H(4)/H(1)
+Reaction 2.1.5c  $H + e \rightarrow H^+ + 2e$, Ratio $H(4)/H(1)$
 }
 
 
@@ -7454,7 +8226,7 @@ Reaction 2.1.5c  $H + e \rightarrow H^+ + 2e$, Ratio H(4)/H(1)
 
 \newpage
 \subsection{
-Reaction 2.1.5d  $H + e \rightarrow H^+ + 2e$, Ratio H(5)/H(1)
+Reaction 2.1.5d  $H + e \rightarrow H^+ + 2e$, Ratio $H(5)/H(1)$
 }
 
 
@@ -7508,7 +8280,7 @@ Reaction 2.1.5d  $H + e \rightarrow H^+ + 2e$, Ratio H(5)/H(1)
 
 \newpage
 \subsection{
-Reaction 2.1.5e  $H + e \rightarrow H^+ + 2e$, Ratio H(6)/H(1)
+Reaction 2.1.5e  $H + e \rightarrow H^+ + 2e$, Ratio $H(6)/H(1)$
 }
 
 
@@ -7561,7 +8333,7 @@ Reaction 2.1.5e  $H + e \rightarrow H^+ + 2e$, Ratio H(6)/H(1)
 
 \newpage
 \subsection{
-Reaction 2.1.5tot $ H + e \rightarrow H^+ + 2e$, Ratio H(tot)/H(1)
+Reaction 2.1.5tot $ H + e \rightarrow H^+ + 2e$, Ratio $H(tot)/H(1)$
 }
 
 
@@ -8280,7 +9052,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.2a $e + He \rightarrow He^* + ... $ Ratio He(6)/He(1)
+  Reaction 2.2a $e + He \rightarrow He^* + ... $ Ratio $He(6)/He(1)$
 }
 
   $3^1S$ state
@@ -8341,7 +9113,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.2b $e + He \rightarrow He^* + ... $ Ratio He(7)/He(1)
+  Reaction 2.2b $e + He \rightarrow He^* + ... $ Ratio $He(7)/He(1)$
 }
 
   $3^3S$ state,
@@ -8403,7 +9175,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.2c $e + He \rightarrow He^* + ... $ Ratio He(8)/He(1)
+  Reaction 2.2c $e + He \rightarrow He^* + ... $ Ratio $He(8)/He(1)$
 }
 
   $3^1P$ state,
@@ -8464,7 +9236,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.2d $e + He \rightarrow He^* + ... $ Ratio He(10)/He(1)
+  Reaction 2.2d $e + He \rightarrow He^* + ... $ Ratio $He(10)/He(1)$
 }
 
   $3^1D$ state,
@@ -8525,7 +9297,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.2e $e + He \rightarrow He^* + ... $ Ratio He(16)/He(1)
+  Reaction 2.2e $e + He \rightarrow He^* + ... $ Ratio $He(16)/He(1)$
 }
 
   $4^1D$ state,
@@ -8586,7 +9358,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.3.2a $e + He^+ \rightarrow He^* + ... $ Ratio He(6)/He$^+$
+  Reaction 2.3.2a $e + He^+ \rightarrow He^* + ... $ Ratio $He(6)/He^+$
 }
 
   $3^1S$ state
@@ -8647,7 +9419,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.3.2b $e + He^+ \rightarrow He^* + ... $ Ratio He(7)/He$^+$
+  Reaction 2.3.2b $e + He^+ \rightarrow He^* + ... $ Ratio $He(7)/He^+$
 }
 
   $3^3S$ state,
@@ -8708,7 +9480,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.3.2c $e + He^+ \rightarrow He^* + ... $ Ratio He(8)/He$^+$
+  Reaction 2.3.2c $e + He^+ \rightarrow He^* + ... $ Ratio $He(8)/He^+$
 }
 
   $3^1P$ state,
@@ -8768,7 +9540,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.3.2d $e + He^+ \rightarrow He^* + ... $ Ratio He(10)/He$^+$
+  Reaction 2.3.2d $e + He^+ \rightarrow He^* + ... $ Ratio $He(10)/He^+$
 }
 
   $3^1D$ state,
@@ -8829,7 +9601,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) + ...$, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.3.2e $e + He^+ \rightarrow He^* + ... $ Ratio He(16)/He$^+$
+  Reaction 2.3.2e $e + He^+ \rightarrow He^* + ... $ Ratio $He(16)/He^+$
 }
 
   $4^1D$ state,
@@ -9110,7 +9882,7 @@ recombination.
 \end{verbatim}\end{small}
 \begin{figure} \label{2.3.6lr1}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/carbrl1.ps}
+\epsffile{Amjuel_PS/carbrl-de.eps}
 \end{figure}
 \newpage
 
@@ -10181,11 +10953,11 @@ Reaction 2.0b Ratio $H_2^+/H_2$, from EI plus CX on cold $H_2(v=0)$
  Data: T.Fujimoto, P.T. Greenland
 
 
-  Ratio H2+ to H2 density
+  Ratio $H_2^+$ to $H_2$ density
   (coll.rad model, Sawada/Fujimoto/Greenland)
 
-  only contribution from  EI on $H_2$ and $H_2^*$  and from CX on cold $H_2(v=0)$,
-($E_{H_2}(v)=0.1$ eV)
+  contribution from  EI on $H_2$ and $H_2^*$  plus from CX on cold $H_2(v=0)$,
+($E_{H_2}(v)=0.1$ eV) and assuming $n_e=n_p, T_e=T_p$
 
 
 \begin{small}\begin{verbatim}
