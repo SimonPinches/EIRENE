@@ -76,7 +76,7 @@ C
       INTEGER :: JPART, JP, K, JTEST, IRG, I, J, IT, IR, IP, IPA, IPE,
      .           IRA, IRE, IRD, IPART, IRMEGM, IRMAG, IREGM, IRAG,
      .           IRMIP, IRIP, IRMIPM, IRIPM, IC, IN, IRM1, IPM1, ITM1,
-     .           IN1, IN2, IN3, IN4, IN5, IN6, IN7, IN8
+     .           IN1, IN2, IN3, IN4, IN5, IN6, IN7, IN8, INTA
 C
  
       IF ((LEVGEO <= 3) .AND. .NOT.ALLOCATED(XSTGRD)) THEN
@@ -639,10 +639,11 @@ C
               CUR => COORCELL(IC)%PCELL
               DO WHILE (ASSOCIATED(CUR))
                 IN=CUR%NOCELL
+                inta = in + (it-1)*nr1st*np2nd
                 DIST1=1._DP/SQRT((XCOM(IN)-XPOL(IR,IP))**2+
      .                           (YCOM(IN)-YPOL(IR,IP))**2)
                 AGES = AGES + DIST1*XSTGRD(IN)
-                YWERT(IR,IP) = YWERT(IR,IP) + AORIG(IN)*DIST1*XSTGRD(IN)
+                YWERT(IR,IP) = YWERT(IR,IP)+AORIG(INTA)*DIST1*XSTGRD(IN)
                 CUR => CUR%NEXT_CELL
               END DO
               YWERT(IR,IP) = YWERT(IR,IP) / (AGES+EPS60)
