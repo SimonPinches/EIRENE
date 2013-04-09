@@ -1,6 +1,8 @@
 !pb  100107: ENTRY VELOCX_REINIT added for reinitialization of EIRENE
 !pb  110311: avoid relative velocity VREL=0
 !pb  110311: ensure ELMIN <= ELAB <= ELMAX
+!DR  250311: ensure ELMIN <= ELAB <= ELMAX disabled again: would lead
+!DR          to wrong cross sections, e.g. for beam penetration
 C
       SUBROUTINE EIRENE_VELOCX(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                  IRCX,DUMT,DUMV)
@@ -212,7 +214,9 @@ C   OR: REJECTION     DUE TO ENERGY DEPENDENCE IN CROSS SECTION
 C   PRESENT VERSION: REJECTION
         VRELQ=MAX((VXN-VX)**2+(VYN-VY)**2+(VZN-VZ)**2, EPS30)
         VREL=SQRT(VRELQ)
-        ELAB=MIN(MAX(LOG(VRELQ)+DEFCX(IRCX),ELMIN),ELMAX)
+cdr     ELAB=MIN(MAX(LOG(VRELQ)+DEFCX(IRCX),ELMIN),ELMAX)
+        ELAB=LOG(VRELQ)+DEFCX(IRCX)
+        
         IREAC=MODCOL(3,1,IRCX)
         CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
