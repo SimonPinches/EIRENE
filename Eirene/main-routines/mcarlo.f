@@ -375,8 +375,9 @@ C
         IF (.NOT.NLSRON(ISTRA)) CYCLE
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
           IF (NLMOVIE) THEN
-            ISTRA=NSTRAI-ISTR+1
-            IF (ISTRA.EQ.NSTRAI-1) THEN
+!pb            ISTRA=NSTRAI-ISTR+1
+!pb            IF (ISTRA.EQ.NSTRAI-1) THEN
+            IF (ISTR.EQ.1) THEN
 C  TOTAL NUMBER OF PARTICLES TO BE LAUNCHED FROM ALL NON-CENSUS STRATA
               NPTTOT=NPRNLI-NPANU
 C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
@@ -386,7 +387,8 @@ C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
               ISUM=0
               DO IS=1,NSTRAI-1
 CVKMPI                XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
-                XFACT=XTIM(ISTRA)/(XTIM(0)-XTIM(NSTRA))  !VKMPI
+!pb                XFACT=XTIM(ISTRA)/(XTIM(0)-XTIM(NSTRA))  !VKMPI
+                XFACT=XTIM(IS)/XTIM(0)  !PB
                 XPRNLI=NPTTOT*XFACT+0.5
                 NPTS(IS)=XPRNLI
                 ISUM=ISUM+NPTS(IS)
@@ -634,6 +636,11 @@ C
               ENDIF
             ENDIF
           ENDIF
+
+!pb 16012013
+!pb  update couple tally after finishing trajektory
+          call eirene_upfcop
+
 C
 C   MEAN SQUARE
           IF (NSIGI.GT.0) CALL EIRENE_STATS1
@@ -1140,6 +1147,9 @@ C
 
 C END SEQUENTIAL REGION
       ENDIF
+
+!pb 30012013
+      call eirene_reset_upfcop
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 
