@@ -45,6 +45,7 @@ C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:),VECSAV(:,:),VSDVI(:,:)
       REAL(DP), ALLOCATABLE :: XSPEC(:),YSPEC(:,:),VSPEC(:,:),
      .          WLSPEC(:),YSPECWL(:,:),VSPECWL(:,:)
+      REAL(DP) :: DUMMY(NRTAL)
       REAL(DP) :: XXP3D_DUM(1), YYP3D_DUM(1)
       REAL(DP) :: YMN2(NPLT), YMX2(NPLT), YMNLG2(NPLT), YMXLG2(NPLT)
       REAL(DP) :: XMI, XMA, TMIN, TMAX, XI, XE, DEL, OUTAUI,
@@ -211,9 +212,11 @@ C  REDO ALGEBRAIC TALLY IN CASE NFILEN=2 OR NFILEN=7
               CALL EIRENE_ALGTAL
               IALG=1
               DO 105 IALV=1,NALVI
-                CALL EIRENE_INTTAL (ALGV,VOLTAL,IALV,NALV,NSBOX_TAL,
+                DUMMY(1:NSBOX_TAL) = ALGV(IALV,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
      .                       ALGVI(IALV,ISTRA),
      .                       NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 105           CONTINUE
             ENDIF
             ITL=IABS(JTAL)
@@ -763,7 +766,7 @@ C
               ITL=IABS(JTAL)
               ISPZ=ISPTAL(IBLD,ICURV)
               IF (ISPZ.EQ.0) THEN
-                TXSPEC(1)='SUM OVER SPECIES        '
+                TXSPC1='SUM OVER SPECIES        '
                 IF (JTAL.LT.0) TXUNT1=TXTPUN(1,ITL)
                 IF (JTAL.LT.0) TXTLL1=TXTPLS(1,ITL)
                 IF (JTAL.GE.0) TXUNT1=TXTUNT(1,ITL)
