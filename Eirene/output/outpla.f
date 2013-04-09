@@ -113,7 +113,6 @@ C
               CALL EIRENE_LEER(1)
               GOTO 119
             ENDIF
-            IF ((ICAL == 1) .AND. (VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
             SELECT CASE (ITALI)
             CASE (1)
               HELPP(1:NSBOX) = TEIN(1:NSBOX)
@@ -122,12 +121,16 @@ C
             CASE (3)
               HELPP(1:NSBOX) = DEIN(1:NSBOX)
             CASE (4)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = DIIN(K,1:NSBOX)
             CASE (5)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = VXIN(MPLSV(K),1:NSBOX)
             CASE (6)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = VYIN(MPLSV(K),1:NSBOX)
             CASE (7)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = VZIN(MPLSV(K),1:NSBOX)
             CASE (8)
               HELPP(1:NSBOX) = BXIN(1:NSBOX)
@@ -140,6 +143,7 @@ C
             CASE (12)
               HELPP(1:NSBOX) = ADIN(K,1:NSBOX)
             CASE (13)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = EDRIFT(K,1:NSBOX)
             CASE (14)
               HELPP(1:NSBOX) = VOL(1:NSBOX)
