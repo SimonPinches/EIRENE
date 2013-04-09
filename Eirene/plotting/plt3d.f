@@ -1,5 +1,6 @@
 C  3D GEOMETRY (AND TRAJECTORY) PLOT
-C
+C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
+
       SUBROUTINE EIRENE_PLT3D
      .  (XR,YR,FAKX,FAKY,ITH,ABSMIN,ABSMAX,ORDMIN,ORDMAX)
  
@@ -46,7 +47,7 @@ C
       INTEGER :: IR, IBR, IST, IS, NR, I1, IZ, NP, II, K, ID, NA, ISTP,
      .           IA, IAN, IEN, KIN, ISSTD, IBA, NJZ, J, JJ, IPZ,
      .           IP, I, NINNE, NZAD, NIN, MERK2, IPR, IB, MERK,
-     .           IJZ, JP, IPRT
+     .           IJZ, JP, IPRT, ibp, ibz
       LOGICAL :: PLABLE(NLIM), LPERID(NLIM), LSYMET(NLIM),
      .           LERR1, LERR2, LSAVE, PLT1, PLT2, PLT3
       TYPE(PPOINT), POINTER :: CUR
@@ -632,7 +633,8 @@ C
         ENDIF
 C
         DO 3100 IZ=1,NJZ
-          CALL GRNWPN(2)
+!pb          CALL GRNWPN(2)
+          CALL GRNWPN(1)
           PHI=ZPLOT(IZ)
 C
 C  PHI = CONST , PLOT POLOIDAL CROSS SECTION AT TOROIDAL POSITION PHI
@@ -651,7 +653,30 @@ C
 C
 C NR: POINTS TO BE PLOTTED ON RADIAL SURFACE IR
 C
-              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
+              IF (NLSLB) THEN
+                NR = 0
+                DO J=1,np2nd
+                  x = rsurf(ir)
+                  y = psurf(j)
+                  NR=NR+1
+                  IF (NLTRA) THEN
+                    RR=X+RMTOR
+                    X=RR*COS(PHI)
+                    Z=RR*SIN(PHI)
+                    CALL EIRENE_TORLOC(WIN,RMT,X,Z)
+                    WINJ=WIN
+                  ELSEIF (NLTRZ) THEN
+                    Z=PHI
+                  ENDIF
+                  CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
+                END DO
+                do jj=1,nr
+                  xps(jj)=xp(jj)
+                  yps(jj)=yp(jj)
+                end do
+                CALL GRLN (XPS,YPS,NR)
+
+              ELSE IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
                 DM=0.
                 RS=RSURF(IR)
                 EP=EP1(IR)
@@ -840,6 +865,94 @@ C
 C
 3000  CONTINUE
 C
+C  POLOIDAL GRID 
+C
+      DO IBP=1,IPLTS(2)
+        DO IP=IPLAS(2,IBP),IPLES(2,IBP)
+
+          IF (NLSLB) THEN
+            y = psurf(ip)
+
+            do ibz = 1,iplts(3)
+              do iz = IPLAS(3,IBZ),IPLES(3,IBZ)
+
+                NR = 0
+                phi = zsurf(iz)
+
+                DO ir=1,nr1st
+                  x = rsurf(ir)
+                  NR=NR+1
+                  IF (NLTRA) THEN
+                    RR=X+RMTOR
+                    X=RR*COS(PHI)
+                    Z=RR*SIN(PHI)
+                    CALL EIRENE_TORLOC(WIN,RMT,X,Z)
+                    WINJ=WIN
+                  ELSEIF (NLTRZ) THEN
+                    Z=PHI
+                  ENDIF
+                  CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
+                END DO
+                do jj=1,nr
+                  xps(jj)=xp(jj)
+                  yps(jj)=yp(jj)
+                end do
+                CALL GRLN (XPS,YPS,NR)
+              end do
+            end do
+          ELSE
+C  TO BE WRITTEN
+          ENDIF
+        END DO
+      
+      END DO
+C
+C  RADIAL GRID
+C
+!pb      CALL GRNWPN(3)
+      CALL GRNWPN(1)
+      DO IBR=1,IPLTS(1)
+        DO IR=IPLAS(1,IBR),IPLES(1,IBR)
+
+          IF (NLSLB) THEN
+            x = rsurf(ir)
+
+            do ibp = 1,iplts(2)
+              do ip = IPLAS(2,IBP),IPLES(2,IBP)
+
+                NR = 0
+                y = psurf(ip)
+
+                DO iz=1,nt3rd
+                  phi = zsurf(iz)
+                  NR=NR+1
+                  IF (NLTRA) THEN
+                    RR=X+RMTOR
+                    X=RR*COS(PHI)
+                    Z=RR*SIN(PHI)
+                    CALL EIRENE_TORLOC(WIN,RMT,X,Z)
+                    WINJ=WIN
+                  ELSEIF (NLTRZ) THEN
+                    Z=PHI
+                  ENDIF
+                  CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
+                END DO
+                do jj=1,nr
+                  xps(jj)=xp(jj)
+                  yps(jj)=yp(jj)
+                end do
+                CALL GRLN (XPS,YPS,NR)
+              end do
+            end do
+          ELSE
+C  TO BE WRITTEN
+          ENDIF
+        END DO
+      
+      END DO
+
+      CALL GRNWPN(1)
+
 10000 CONTINUE
 C
 C  BESCHRIFTUNG
