@@ -66,7 +66,8 @@ C
  
       INTEGER :: NA, NS, IAIN, ICELL, IERROR, IER, ISTRAI
       REAL(DP) :: EIRENE_RESET_SECOND, EIRENE_SECOND_OWN, DUMMY, TIMI
-      integer :: inentry=1
+      integer, save :: inentry=1, init_log=0
+      logical :: nlplas_save
       character(20) :: outname
 C
 C               1.         INITIALIZE PACKAGE
@@ -133,17 +134,20 @@ C
 C
 C  READ FORMATTED INPUT FILE OR RESTART FOR NEXT ITERATION
 C
-      ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR)
+      ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
  
       IF (MY_PE == 0) THEN
 
       TIMI=EIRENE_SECOND_OWN()
 C
       IF (INENTRY == 1) THEN
+        nlplas_save = nlplas
         CALL EIRENE_SET_PARMMOD(1)
-        CALL EIRENE_ALLOC_CLOGAU
+        if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT
+        nlplas = nlplas_save
       END IF
+      init_log = 1
       CALL EIRENE_ALLOC_CESTIM(1)
       CALL EIRENE_ALLOC_COMUSR(1)
       CALL EIRENE_ALLOC_CADGEO
@@ -442,16 +446,16 @@ C
       ENDIF
 
       IF (MY_PE == 0) THEN
-csw
-csw 18apr07 user defined output
-csw
-      CALL EIRENE_OUTUSR
-csw
 C
 C  CALL DIAGNOSTIC MODULE (COMPUTE LINE INTEGRALS FROM EIRENE TALLIES)
 C
  
       IF (NCHORI.GT.0) CALL EIRENE_DIAGNO
+csw
+csw 18apr07 user defined output
+csw
+      CALL EIRENE_OUTUSR
+csw
  
       END IF   ! MY_PE == 0
 C
@@ -474,6 +478,12 @@ C  DO ONE MORE COMPLETE TIME-CYCLE IN THIS EIRENE RUN
         ENDIF
       ENDIF
  
+      IF (PLIDL) THEN
+        call eirene_outidlconf
+        call eirene_outidlpla
+        call eirene_outidltal
+      END IF
+
       call EIRENE_REINITIALIZATION_OF_EIRENE
  
       IF (NLLAST) THEN
