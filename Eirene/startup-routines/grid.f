@@ -915,6 +915,8 @@ C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
         VISITED = .FALSE.
 
         DO ISTS = 1, NLIMPS
+
+          write (iunout,*) ' area for surface ',ists
           DO J= 1, SURF_TRIAN(ISTS)%NUMTR
             I = SURF_TRIAN(ISTS)%ITRIAS(J)
             IS = SURF_TRIAN(ISTS)%ITRISI(J)
@@ -930,11 +932,15 @@ C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
             YY2=YTRIAN(NECKE(IECKE2,I))
             DSD=((XX1-XX2)**2+(YY1-YY2)**2)**0.5
             VISITED(IS,I) = .TRUE.
-            VISITED(NSEITE(IS,I),NCHBAR(IS,I)) = .TRUE.
+            IF (NCHBAR(IS,I) > 0) THEN
+              VISITED(NSEITE(IS,I),NCHBAR(IS,I)) = .TRUE.
+            END IF
             IF (NLTRA) THEN
               XX1=XX1+RMTOR
               XX2=XX2+RMTOR
               COM=0.5*(XX1+XX2)
+              write (iunout,'(3i6,2es12.4)') 
+     .            i, ixtri(i), iytri(i), dsd, com
               DSD=DSD*COM*TANAL/ALPHA*PI2A
             ELSE
               DSD=DSD*ZDF
@@ -949,6 +955,7 @@ C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
             END IF
             SAREA(ISTS)=SAREA(ISTS)+DSD
           END DO
+          write (iunout,*) ' sarea ', ists, SAREA(ISTS)
         END DO
 
         DEALLOCATE (VISITED)
@@ -1204,6 +1211,7 @@ C
           IF (INUMP(ISTS,1).NE.0) THEN
             IR=INUMP(ISTS,1)
             NLJ=NLIM+ISTS
+            write (iunout,*) ' area for surface ',nlj
             IF (NLTRZ) THEN
               SAREA(NLJ)=BGL(IR,IRPTE(ISTS,2))-BGL(IR,IRPTA(ISTS,2))
               SAREA(NLJ)=SAREA(NLJ)*ZDF
@@ -1212,8 +1220,11 @@ C
               DO 291 IP=IRPTA(ISTS,2),IRPTE(ISTS,2)-1
                 XS=((XPOL(IR,IP+1)+XPOL(IR,IP))*0.5)+RMTOR
                 SAREA(NLJ)=SAREA(NLJ)+(BGL(IR,IP+1)-BGL(IR,IP))*XS
+                write (iunout,'(2i6,2es12.4)') 
+     .             ir, ip, BGL(IR,IP+1)-BGL(IR,IP), xs
 291           CONTINUE
               SAREA(NLJ)=SAREA(NLJ)*TANAL/ALPHA*PI2A
+              write (iunout,*) 'sarea ', nlj, SAREA(NLJ)
             ENDIF
           ENDIF
 290     CONTINUE
