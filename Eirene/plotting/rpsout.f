@@ -35,7 +35,7 @@ C
      .            ygeomin, ygeomax, epsrel, ahelp, vecax, vecay, vecbx,
      .            vecby,length_veca, length_vecb, del_eps,
      .            x1,x2,x3,x4,y1,y2,y3,y4,atri1,atri2
-      integer :: icont, ipoint, iloop,ncont, ip_start, idel
+      integer :: icont, ipoint, iloop,ncont, ip_start, idel, ifc
       logical :: del_point
  
       TYPE(PPOINT), POINTER :: CUR
@@ -79,6 +79,16 @@ C
         OPEN (UNIT=NRPS,ACCESS='SEQUENTIAL',FORM='FORMATTED')
         REWIND NRPS
 5     CONTINUE
+!pb 
+!pb find index of first RAPS plot, to be used for scaling with FCABS
+
+      IFC = 1
+      DO I = 1, NVOLPL
+        IF (LRAPS3(I)) THEN
+           IFC = I
+           EXIT
+        END IF
+      END DO
 C
 C  3D
       if ((levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz) .or.
@@ -162,8 +172,8 @@ C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
  
              IF (IP .NE. NP2ND) THEN
                I = I + 1
-               WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR)*FCABS1(1),
-     .                                      PSURF(IP)*FCABS2(1)
+               WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR)*FCABS1(IFC),
+     .                                      PSURF(IP)*FCABS2(IFC)
 C  EXCLUDE DEAD CELLS ON FORT.18
                NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
                IF (IR.LT.NR1ST.AND.NSTGRD(NCELL).EQ.0) THEN
@@ -183,8 +193,8 @@ C  EXCLUDE DEAD CELLS ON FORT.18
              ENDIF
 110        CONTINUE
            I = I + 1
-           WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR)*FCABS1(1),
-     .                                  PSURF(NP2ND)*FCABS2(1)
+           WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR)*FCABS1(IFC),
+     .                                  PSURF(NP2ND)*FCABS2(IFC)
 100     CONTINUE
         NCO=I
 C
@@ -310,40 +320,54 @@ C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
                   I = I + 1
                   if (lraps3d.and.nltra) then
                     WRITE(17+ifoff,'(I6,1P,3E12.4)')
-     .                    I,XPOL(IR,IP)*cos(ipl*rapsdel)*FCABS1(1),
-     .                      YPOL(IR,IP)*FCABS2(1),
-     .                      xpol(ir,ip)*sin(ipl*rapsdel)*FCABS1(1)
+     .                    I,XPOL(IR,IP)*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                      YPOL(IR,IP)*FCABS2(IFC),
+     .                      xpol(ir,ip)*sin(ipl*rapsdel)*FCABS1(IFC)
                   elseif (lraps3d.and.nltrz) then
                     WRITE(17+ifoff,'(I6,1P,3E12.4)')
-     .                    I,XPOL(IR,IP)*FCABS1(1),YPOL(IR,IP)*FCABS2(1),
-     .                      ipl*rapsdel
+     .                    I,XPOL(IR,IP)*FCABS1(IFC),
+     .                      YPOL(IR,IP)*FCABS2(IFC),ipl*rapsdel
                   else
                     WRITE(17+ifoff,'(I6,1P,2E12.4)') 
-     .                    I,XPOL(IR,IP)*FCABS1(1),
-     .                      YPOL(IR,IP)*FCABS2(1)
+     .                    I,XPOL(IR,IP)*FCABS1(IFC),
+     .                      YPOL(IR,IP)*FCABS2(IFC)
                   endif
 C  EXCLUDE DEAD CELLS ON FORT.18
                   NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
                   IF (IR.LT.NR1ST.AND.NSTGRD(NCELL).EQ.0) THEN
                     if (lraps3d.and.lr3dcon) then
                       if (ipl < iplane-1) then
+!                        WRITE(18+ifoff,'(1X,A1,8I10)') '0',
+!     .                       (IR-1)*NPUNKT+IP+ipl*ipoints,
+!     .                       (IR-1)*NPUNKT+IP+1+ipl*ipoints,
+!     .                        IR*NPUNKT+IP+1+ipl*ipoints,
+!     .                        IR*NPUNKT+IP+ipl*ipoints,
+!     .                       (IR-1)*NPUNKT+IP+(ipl+1)*ipoints,
+!     .                       (IR-1)*NPUNKT+IP+1+(ipl+1)*ipoints,
+!     .                        IR*NPUNKT+IP+1+(ipl+1)*ipoints,
+!     .                        IR*NPUNKT+IP+(ipl+1)*ipoints
                         WRITE(18+ifoff,'(1X,A1,8I10)') '0',
-     .                       (IR-1)*NPUNKT+IP+ipl*ipoints,
-     .                       (IR-1)*NPUNKT+IP+1+ipl*ipoints,
-     .                        IR*NPUNKT+IP+1+ipl*ipoints,
-     .                        IR*NPUNKT+IP+ipl*ipoints,
-     .                       (IR-1)*NPUNKT+IP+(ipl+1)*ipoints,
-     .                       (IR-1)*NPUNKT+IP+1+(ipl+1)*ipoints,
-     .                        IR*NPUNKT+IP+1+(ipl+1)*ipoints,
-     .                        IR*NPUNKT+IP+(ipl+1)*ipoints
+     .                       NOPNT(INDPOINT(IR,IP))+ipl*ipoints,
+     .                       NOPNT(INDPOINT(IR,IP+1))+ipl*ipoints,
+     .                       NOPNT(INDPOINT(IR+1,IP+1))+ipl*ipoints,
+     .                       NOPNT(INDPOINT(IR+1,IP))+ipl*ipoints,
+     .                       NOPNT(INDPOINT(IR,IP))+(ipl+1)*ipoints,
+     .                       NOPNT(INDPOINT(IR,IP+1))+(ipl+1)*ipoints,
+     .                       NOPNT(INDPOINT(IR+1,IP+1))+(ipl+1)*ipoints,
+     .                       NOPNT(INDPOINT(IR+1,IP))+(ipl+1)*ipoints
                       endif
                     else
-                      WRITE(18+ifoff,'(1X,A1,4I10)') '0',
-     .                     (IR-1)*NPUNKT+IP+ipl*ipoints,
-     .                     (IR-1)*NPUNKT+IP+1+ipl*ipoints,
-     .                      IR*NPUNKT+IP+1+ipl*ipoints,
-     .                      IR*NPUNKT+IP+ipl*ipoints
-                    endif
+!                      WRITE(18+ifoff,'(1X,A1,4I10)') '0',
+!     .                     (IR-1)*NPUNKT+IP+ipl*ipoints,
+!     .                     (IR-1)*NPUNKT+IP+1+ipl*ipoints,
+!     .                      IR*NPUNKT+IP+1+ipl*ipoints,
+!     .                      IR*NPUNKT+IP+ipl*ipoints
+                      WRITE(18,'(1X,A1,4I10)') '0',
+     .                     NOPNT(INDPOINT(IR,IP))+ipl*ipoints,
+     .                     NOPNT(INDPOINT(IR,IP+1))+ipl*ipoints,
+     .                     NOPNT(INDPOINT(IR+1,IP+1))+ipl*ipoints,
+     .                     NOPNT(INDPOINT(IR+1,IP))+ipl*ipoints
+                   endif
                   ENDIF
                 ENDIF
                 IF (IP .NE. NPOINT(2,IPPLG)) THEN
@@ -357,17 +381,17 @@ C  EXCLUDE DEAD CELLS ON FORT.18
               I = I + 1
               if (lraps3d.and.nltra) then
                 WRITE(17+ifoff,'(I6,1P,3E12.4)')
-     .            I,XPOL(IR,NPOINT(2,IPPLG))*cos(ipl*rapsdel)*FCABS1(1),
-     .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(1),
-     .              xpol(ir,NPOINT(2,IPPLG))*sin(ipl*rapsdel)*FCABS1(1)
+     .          I,XPOL(IR,NPOINT(2,IPPLG))*cos(ipl*rapsdel)*FCABS1(IFC),
+     .            YPOL(IR,NPOINT(2,IPPLG))*FCABS2(IFC),
+     .            xpol(ir,NPOINT(2,IPPLG))*sin(ipl*rapsdel)*FCABS1(IFC)
               elseif (lraps3d.and.nltrz) then
                 WRITE(17+ifoff,'(I6,1P,3E12.4)')
-     .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(1),
-     .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(1),ipl*rapsdel
+     .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(IFC),
+     .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(IFC),ipl*rapsdel
               else
                 WRITE(17+ifoff,'(I6,1P,2E12.4)') 
-     .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(1),
-     .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(1)
+     .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(IFC),
+     .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(IFC)
               endif
 20          CONTINUE
 10        CONTINUE
@@ -412,15 +436,15 @@ C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
      .                                  (YWERT(IF),IF=1,IRAPS)
             if (lraps3d.and.nltra) then
               WRITE(17+ifoff,'(I6,1P,3E12.4)') I+ipl*nrknot,
-     .              XTRIAN(I)*cos(ipl*rapsdel)*FCABS1(1),
-     .              YTRIAN(I)*FCABS2(1),
-     .              XTRIAN(I)*sin(ipl*rapsdel)*FCABS1(1)
+     .              XTRIAN(I)*cos(ipl*rapsdel)*FCABS1(IFC),
+     .              YTRIAN(I)*FCABS2(IFC),
+     .              XTRIAN(I)*sin(ipl*rapsdel)*FCABS1(IFC)
             elseif (lraps3d.and.nltrz) then
               WRITE(17+ifoff,'(I6,1P,3E12.4)') I+ipl*nrknot,
-     .              XTRIAN(I)*FCABS1(1),YTRIAN(I)*FCABS2(1),ipl*rapsdel
+     .           XTRIAN(I)*FCABS1(IFC),YTRIAN(I)*FCABS2(IFC),ipl*rapsdel
             else
-              WRITE(17+ifoff,'(I6,1P,2E12.4)') I,XTRIAN(I)*FCABS1(1),
-     .                                           YTRIAN(I)*FCABS2(1)
+              WRITE(17+ifoff,'(I6,1P,2E12.4)') I,XTRIAN(I)*FCABS1(IFC),
+     .                                           YTRIAN(I)*FCABS2(IFC)
             endif
 40        CONTINUE
           DO IF=1,IRAPS
@@ -478,6 +502,7 @@ C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHNEN.
      .      WRITE(18+ifoff,'(1X,A1,4I10)') '0',NTECK(1,I),NTECK(2,I),
      .                                  NTECK(3,I),NTECK(4,I)
         enddo
+        nco = anz
       ELSE
       ENDIF
 C
@@ -504,34 +529,34 @@ C
                 if (lraps3d.and.nltra) then
                   NCO=NCO+1
                   WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                   CUR%XPL2D*cos(ipl*rapsdel)*FCABS1(1),
-     .                   CUR%YPL2D*FCABS2(1),
-     .                   CUR%XPL2D*sin(ipl*rapsdel)*FCABS1(1)
+     .                   CUR%XPL2D*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                   CUR%YPL2D*FCABS2(IFC),
+     .                   CUR%XPL2D*sin(ipl*rapsdel)*FCABS1(IFC)
                   NCO=NCO+1
                   WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                   CUR%NXTPNT%XPL2D*cos(ipl*rapsdel)*FCABS1(1),
-     .                   CUR%NXTPNT%YPL2D*FCABS2(1),
-     .                   CUR%NXTPNT%XPL2D*sin(ipl*rapsdel)*FCABS1(1)
+     .                   CUR%NXTPNT%XPL2D*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                   CUR%NXTPNT%YPL2D*FCABS2(IFC),
+     .                   CUR%NXTPNT%XPL2D*sin(ipl*rapsdel)*FCABS1(IFC)
                 elseif (lraps3d.and.nltrz) then
                   NCO=NCO+1
                   WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                   CUR%XPL2D*FCABS1(1),
-     .                   CUR%YPL2D*FCABS2(1),
+     .                   CUR%XPL2D*FCABS1(IFC),
+     .                   CUR%YPL2D*FCABS2(IFC),
      .                   ipl*rapsdel
                   NCO=NCO+1
                   WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                   CUR%NXTPNT%XPL2D*FCABS1(1),
-     .                   CUR%NXTPNT%YPL2D*FCABS2(1),
+     .                   CUR%NXTPNT%XPL2D*FCABS1(IFC),
+     .                   CUR%NXTPNT%YPL2D*FCABS2(IFC),
      .                   ipl*rapsdel
                 else
                   NCO=NCO+1
                   WRITE (17+ifoff,'(I6,1P,2E12.4)') NCO,
-     .                   CUR%XPL2D*FCABS1(1),
-     .                   CUR%YPL2D*FCABS2(1)
+     .                   CUR%XPL2D*FCABS1(IFC),
+     .                   CUR%YPL2D*FCABS2(IFC)
                   NCO=NCO+1
                   WRITE (17+ifoff,'(I6,1P,2E12.4)')
-     .                   NCO,CUR%NXTPNT%XPL2D*FCABS1(1),
-     .                       CUR%NXTPNT%YPL2D*FCABS2(1)
+     .                   NCO,CUR%NXTPNT%XPL2D*FCABS1(IFC),
+     .                       CUR%NXTPNT%YPL2D*FCABS2(IFC)
                 endif
                 if (lraps3d.and.lr3dcon) then
                   if (ipl < iplane-1)
@@ -561,34 +586,34 @@ C
                     if (lraps3d.and.nltra) then
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR,IP)*cos(ipl*rapsdel)*FCABS1(1),
-     .                       YPOL(IR,IP)*FCABS2(1),
-     .                       XPOL(IR,IP)*sin(ipl*rapsdel)*FCABS1(1)
+     .                       XPOL(IR,IP)*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                       YPOL(IR,IP)*FCABS2(IFC),
+     .                       XPOL(IR,IP)*sin(ipl*rapsdel)*FCABS1(IFC)
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR,IP+1)*cos(ipl*rapsdel)*FCABS1(1),
-     .                       YPOL(IR,IP+1)*FCABS2(1),
-     .                       XPOL(IR,IP+1)*sin(ipl*rapsdel)*FCABS1(1)
+     .                       XPOL(IR,IP+1)*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                       YPOL(IR,IP+1)*FCABS2(IFC),
+     .                       XPOL(IR,IP+1)*sin(ipl*rapsdel)*FCABS1(IFC)
                     elseif (lraps3d.and.nltrz) then
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR,IP)*FCABS1(1),
-     .                       YPOL(IR,IP)*FCABS2(1),
+     .                       XPOL(IR,IP)*FCABS1(IFC),
+     .                       YPOL(IR,IP)*FCABS2(IFC),
      .                       ipl*rapsdel
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR,IP+1)*FCABS1(1),
-     .                       YPOL(IR,IP+1)*FCABS2(1),
+     .                       XPOL(IR,IP+1)*FCABS1(IFC),
+     .                       YPOL(IR,IP+1)*FCABS2(IFC),
      .                       ipl*rapsdel
                     else
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,2E12.4)')
-     .                       NCO,XPOL(IR,IP)*FCABS1(1),
-     .                           YPOL(IR,IP)*FCABS2(1)
+     .                       NCO,XPOL(IR,IP)*FCABS1(IFC),
+     .                           YPOL(IR,IP)*FCABS2(IFC)
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,2E12.4)')
-     .                       NCO,XPOL(IR,IP+1)*FCABS1(1),
-     .                           YPOL(IR,IP+1)*FCABS2(1)
+     .                       NCO,XPOL(IR,IP+1)*FCABS1(IFC),
+     .                           YPOL(IR,IP+1)*FCABS2(IFC)
                     endif
                     if (lraps3d.and.lr3dcon) then
                       if (ipl < iplane-1)
@@ -608,34 +633,34 @@ C
                     if (lraps3d.and.nltra) then
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR,IP)*cos(ipl*rapsdel)*FCABS1(1),
-     .                       YPOL(IR,IP)*FCABS2(1),
-     .                       XPOL(IR,IP)*sin(ipl*rapsdel)*FCABS1(1)
+     .                       XPOL(IR,IP)*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                       YPOL(IR,IP)*FCABS2(IFC),
+     .                       XPOL(IR,IP)*sin(ipl*rapsdel)*FCABS1(IFC)
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR+1,IP)*cos(ipl*rapsdel)*FCABS1(1),
-     .                       YPOL(IR+1,IP)*FCABS2(1),
-     .                       XPOL(IR+1,IP)*sin(ipl*rapsdel)*FCABS1(1)
+     .                       XPOL(IR+1,IP)*cos(ipl*rapsdel)*FCABS1(IFC),
+     .                       YPOL(IR+1,IP)*FCABS2(IFC),
+     .                       XPOL(IR+1,IP)*sin(ipl*rapsdel)*FCABS1(IFC)
                     elseif (lraps3d.and.nltrz) then
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR,IP)*FCABS1(1),
-     .                       YPOL(IR,IP)*FCABS2(1),
+     .                       XPOL(IR,IP)*FCABS1(IFC),
+     .                       YPOL(IR,IP)*FCABS2(IFC),
      .                       ipl*rapsdel
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,3E12.4)') NCO,
-     .                       XPOL(IR+1,IP)*FCABS1(1),
-     .                       YPOL(IR+1,IP)*FCABS2(1),
+     .                       XPOL(IR+1,IP)*FCABS1(IFC),
+     .                       YPOL(IR+1,IP)*FCABS2(IFC),
      .                       ipl*rapsdel
                     else
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,2E12.4)')
-     .                       NCO,XPOL(IR,IP)*FCABS1(1),
-     .                           YPOL(IR,IP)*FCABS2(1)
+     .                       NCO,XPOL(IR,IP)*FCABS1(IFC),
+     .                           YPOL(IR,IP)*FCABS2(IFC)
                       NCO=NCO+1
                       WRITE (17+ifoff,'(I6,1P,2E12.4)')
-     .                       NCO,XPOL(IR+1,IP)*FCABS1(1),
-     .                           YPOL(IR+1,IP)*FCABS2(1)
+     .                       NCO,XPOL(IR+1,IP)*FCABS1(IFC),
+     .                           YPOL(IR+1,IP)*FCABS2(IFC)
                     endif
                     if (lraps3d.and.lr3dcon) then
                       if (ipl < iplane-1)
@@ -643,7 +668,7 @@ C
      .                         NCO-1,NCO,nco+ipl*2*nstab,
      .                         nco-1+ipl*2*nstab
                     else
-                      WRITE (18+ifoff,'(1X,A1,2I6)') '0',NCO-1,NCO
+                      WRITE (18+ifoff,'(1X,A1,2I10)') '0',NCO-1,NCO
                     endif
                   END DO
                 END IF
