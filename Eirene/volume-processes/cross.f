@@ -18,11 +18,11 @@ C  K=-1:  H + H+ --> H+ + H   CROSS SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 3.1.8
+C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 5.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
 C
-C  K=-3:  He + He++ --> H++ + He   CROSS SECTION, JANEV, 3.1.8
+C  K=-3:  He + He++ --> H++ + He   CROSS SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
 C
@@ -49,6 +49,12 @@ C
         IF (K == 0) THEN
         
           EIRENE_CROSS = 0._DP
+          WRITE (IUNOUT,*) ' ERROR IN CROSS '
+          WRITE (iunout,*) 'CALLED FROM ',TEXT
+          WRITE (iunout,*) 'REACTION NO. ',IR
+          WRITE (IUNOUT,*) ' NO CROSS SECTION DATA AVAILABLE FOR ',
+     .                     'THIS REACTION'
+          CALL EIRENE_EXIT_OWN(1)
 
         ELSE IF (IFTFLG(K,1) == 0) THEN
  
