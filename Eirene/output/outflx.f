@@ -163,6 +163,10 @@ C
               HELPP(J)=ESTIMS(NADDW(ITALS)+K,J)
             END DO
 C
+            sum1 = 0._dp
+            n1 = 0
+            n2 = 0
+            n3 = 0
             IF (LEVGEO.LE.3) THEN
               IF (INUMP(ISTS,2).NE.0) then
 C  POLOIDAL SURFACE
@@ -232,23 +236,25 @@ C  TOROIDAL SURFACE
             END IF
             write (iunout,*) 'test ',sum1
             NTOTAL=N1*N2*N3
-            CALL EIRENE_INTVOL (HELP,1,1,NTOTAL,DUMMY,N1,N2,N3,1)
-            IF (ABS(DUMMY) > EPS60) THEN
-              CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
+            IF (NTOTAL > 0) THEN
+              CALL EIRENE_INTVOL (HELP,1,1,NTOTAL,DUMMY,N1,N2,N3,1)
+              IF (ABS(DUMMY) > EPS60) THEN
+                CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
      .                  HELP,N1,N2,N3,1,NTOTAL,NFLAGS(ISPR),
      .                  NTLSFL(ISPR),
      .                  IRPTA(ISTS,1),IRPTE(ISTS,1),IRPTA(ISTS,2),
      .                  IRPTE(ISTS,2),1,1)
-            ELSE
-              CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
+              ELSE
+                CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
      .                  HELP,N1,N2,N3,1,NTOTAL,-1,NTLSFL(ISPR),
      .                  IRPTA(ISTS,1),IRPTE(ISTS,1),IRPTA(ISTS,2),
      .                  IRPTE(ISTS,2),1,1)
-              CALL EIRENE_MASAGE
+                CALL EIRENE_MASAGE
      .            ('IDENTICAL ZERO, NOT PRINTED                  ')
-              CALL EIRENE_LEER(2)
+                CALL EIRENE_LEER(2)
+              END IF
             END IF
 10        CONTINUE
 11        CONTINUE
