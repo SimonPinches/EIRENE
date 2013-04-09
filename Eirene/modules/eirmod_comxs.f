@@ -1243,7 +1243,7 @@ c
       CALL FXDRDBL (IUN,FACRPI,NRPI*2)
       CALL FXDRDBL (IUN,FACREL,NREL*2)
       CALL FXDRDBL (IUN,FACREI,NRDS*2)
-      CALL FXDRDBL (IUN,FACRCX,NRCX,2)
+      CALL FXDRDBL (IUN,FACRCX,NRCX*2)
  
       CALL FXDRDBL (IUN,PELDS,NRDS)
       CALL FXDRDBL (IUN,PATDS,NRDS*(NATM+1))
@@ -1862,16 +1862,24 @@ c
       IF (COUNT(ISW2D == ISW) > 0) NDIM2=9
  
       IF (LTEST) THEN
-        DO J = 1, NDIM2
-          CTEST = SUM(ABS(RDATA(1:NDIM,J)))
-          IF (CTEST.LE.1.E-30_DP) THEN
-            WRITE (iunout,*)
+!pb        DO J = 1, NDIM2
+!pb          CTEST = SUM(ABS(RDATA(1:NDIM,J)))
+!pb          IF (CTEST.LE.1.E-30_DP) THEN
+!pb            WRITE (iunout,*)
+!pb     .            'ERROR IN SUBROUTINE EIRENE_SET_REACTION_DATA:',
+!pb     .            ' ZERO FIT COEFFICIENTS'
+!pb            WRITE (iunout,*) 'J,IR = ',J,IR,'  EXIT CALLED!'
+!pb            CALL EIRENE_EXIT_OWN(1)
+!pb          END IF
+!pb        END DO
+        CTEST = SUM(ABS(RDATA(1:NDIM,1:NDIM2)))
+        IF (CTEST.LE.1.E-30_DP) THEN
+           WRITE (iunout,*)
      .            'ERROR IN SUBROUTINE EIRENE_SET_REACTION_DATA:',
      .            ' ZERO FIT COEFFICIENTS'
-            WRITE (iunout,*) 'J,IR = ',J,IR,'  EXIT CALLED!'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-        END DO
+           WRITE (iunout,*) 'IR = ',IR,'  EXIT CALLED!'
+           CALL EIRENE_EXIT_OWN(1)
+        END IF
       END IF
  
       ALLOCATE (REA)
