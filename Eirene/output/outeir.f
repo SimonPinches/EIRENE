@@ -28,6 +28,7 @@ C
 C
       INTEGER, INTENT(IN) :: INDOUT
       REAL(DP) :: VECTOR(NRAD)
+      REAL(DP) :: DUMMY(NRTAL)
       REAL(DP) :: TOTA(0:NATM),DIFA(0:NATM,0:NSTRA),
      .            DIFRA(0:NATM,0:NSTRA)
       REAL(DP) :: TOTM(0:NMOL),DIFM(0:NMOL,0:NSTRA),
@@ -36,6 +37,7 @@ C
      .            DIFRI(0:NION,0:NSTRA)
       REAL(DP) :: TOTPH(0:NPHOT),DIFPH(0:NPHOT,0:NSTRA),
      .            DIFRPH(0:NPHOT,0:NSTRA)
+      REAL(DP) :: SPATOT(0:NSPZ)
       REAL(DP) :: DIFR, TOTT, PGAINP, PLOSSP, DIFT, EGAINE, SPA, ELOSSE,
      .            EGAINP, ELOSSP, PGAINE, PLOSSE, SMEAN, OUTAUI, TALAV,
      .            TALTOT, DIF
@@ -189,8 +191,8 @@ C
             TALTOT=OUTAUI
             TALAV=TALTOT/VOLTOT
 C
-            CALL
-     .  EIRENE_PRTTAL(TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
+            CALL EIRENE_PRTTAL
+     .                 (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
      .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),NTLVFL(IPRV))
             CALL EIRENE_LEER(2)
@@ -256,8 +258,8 @@ C
               CALL EIRENE_MASAGE
      .        ('RELATIVE STANDARD DEVIATION (BGK)              ')
               TXTSP=TXTSPC(K,ITAL)
-              CALL
-     .  EIRENE_PRTTAL(TXTTAL(K,ITAL),TXTSP,'%                     ',
+              CALL EIRENE_PRTTAL
+     .                   (TXTTAL(K,ITAL),TXTSP,'%                     ',
      .                    VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                    NFLAGV(IPRV),NTLVFL(IPRV))
               CALL EIRENE_LEER(2)
@@ -284,8 +286,8 @@ C
               CALL EIRENE_MASAGE
      .        ('RELATIVE STANDARD DEVIATION (COPV)             ')
               TXTSP=TXTSPC(K,ITAL)
-              CALL
-     .  EIRENE_PRTTAL(TXTTAL(K,ITAL),TXTSP,'%                     ',
+              CALL EIRENE_PRTTAL
+     .                   (TXTTAL(K,ITAL),TXTSP,'%                     ',
      .                    VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                    NFLAGV(IPRV),NTLVFL(IPRV))
               CALL EIRENE_LEER(2)
@@ -377,11 +379,11 @@ C
             GOTO 119
 C
 118         CONTINUE
-            CALL
-     .  EIRENE_PRTTAL(TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
+            CALL EIRENE_PRTTAL
+     .               (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
      .                VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,-1,0)
-            CALL
-     .  EIRENE_MASAGE('IDENTICAL ZERO, NOT PRINTED                  ')
+            CALL EIRENE_MASAGE
+     .         ('IDENTICAL ZERO, NOT PRINTED                  ')
             CALL EIRENE_LEER(2)
 119       CONTINUE
 C
@@ -395,9 +397,11 @@ C   REDO ALGEBRAIC EXPRESSION IN TALLIES, IN CASE NFILEN=2
             CALL EIRENE_ALGTAL
 C
             DO 130 IALV=1,NALVI
-              CALL EIRENE_INTTAL (ALGV,VOLTAL,IALV,NALV,NSBOX_TAL,
+              DUMMY(1:NSBOX_TAL) = ALGV(IALV,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
      .                     ALGVI(IALV,ISTRA),
      .                     NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 130         CONTINUE
 C
             DO 132 IALS=1,NALSI
@@ -427,8 +431,8 @@ C
 155         CONTINUE
             TALTOT=OUTAUI
             TALAV=TALTOT/VOLTOT
-            CALL
-     .  EIRENE_PRTTAL(TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
+            CALL EIRENE_PRTTAL
+     .                 (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
      .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),NTLVFL(IPRV))
             CALL EIRENE_LEER(2)
@@ -439,11 +443,11 @@ C
             GOTO 159
 C
 158         CONTINUE
-            CALL
-     .  EIRENE_PRTTAL(TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
+            CALL EIRENE_PRTTAL
+     .                 (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
      .                  VECTOR,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,-1,0)
-            CALL
-     .  EIRENE_MASAGE('IDENTICAL ZERO, NOT PRINTED                  ')
+            CALL EIRENE_MASAGE
+     .         ('IDENTICAL ZERO, NOT PRINTED                  ')
             CALL EIRENE_LEER(2)
 159       CONTINUE
 C
@@ -2445,6 +2449,7 @@ C
       IF (LSPUMP) THEN
         WRITE (iunout,'(1X,A5,1X,A8,A12)')
      .        'NO.','SPECIES ',' PUMPED FLUX'
+        SPATOT = 0._DP
         DO J=1,NLIMPS
           JJ=J
           IF (J.GT.NLIM) JJ=-(J-NLIM)
@@ -2454,10 +2459,22 @@ C
               WRITE (iunout,'(1X,I5,1X,A8,1PE12.4)')
      .               JJ,TEXTS(IS),SPUMP(IS,J)
               SPA=SPA+SPUMP(IS,J)*NPRT(IS)
+              SPATOT(IS) = SPATOT(IS) + SPUMP(IS,J)*NPRT(IS)
             ENDIF
           ENDDO
           IF (SPA.GT.0.D0) CALL EIRENE_LEER(1)
+          SPATOT(0) = SPATOT(0) + SPA
         ENDDO
+        CALL EIRENE_MASAGE
+     .  ('PUMPED FLUX (ATOMIC) PER SPECIES               ')
+        DO IS=1,NSPTOT
+          IF (SPATOT(IS) > 0.D0) WRITE (iunout,'(1X,A8,1PE12.4)')
+     .                           TEXTS(IS),SPATOT(IS)
+        END DO
+        CALL EIRENE_LEER(1)
+        CALL EIRENE_MASAGE
+     .  ('TOTAL PUMPED FLUX (ATOMIC)             ')
+        CALL EIRENE_MASR1 ('SPATOT=  ',SPATOT)       
       ELSE IF (LMSSPUMP) THEN
         CALL EIRENE_MASAGE
      .  ('SPUMP SWITCHED OFF => MISSING IN BALANCE       ')
