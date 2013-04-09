@@ -214,6 +214,7 @@
       ICINIT = 0
       LCNIT  = .FALSE.
       CDENMODEL = REPEAT(' ',LEN(CDENMODEL))
+      CASENAME = REPEAT(' ',LEN(CASENAME))
 
       DO I = 1, NPLS
          NULLIFY(TDMPAR(I)%TDM)
