@@ -17,7 +17,9 @@
       INTEGER :: ISDV, ITAL, ICELL, ISPZ
  
       DO 900 ISDV=1,NSIGCI
-        DO 901 ITAL=1,NTALR
+!pb 16.07.2013        DO 901 ITAL=1,NTALR
+        DO 901 ITAL=1,NTALV
+          IF (ITAL == NTALR) GOTO 901
           IF (IIHC(1,ISDV).NE.ITAL) GOTO 901
           ISPZ=MAX(1,IGHC(1,ISDV))
           IF (SCLTAL(ISPZ,ITAL).EQ.1) THEN
@@ -59,7 +61,9 @@
           ENDIF
 901     CONTINUE
 C
-        DO 911 ITAL=1,NTALR
+!pb 16.07.2013        DO 911 ITAL=1,NTALR
+        DO 911 ITAL=1,NTALV
+          IF (ITAL == NTALR) GOTO 911
           IF (IIHC(2,ISDV).NE.ITAL) GOTO 911
           ISPZ=MAX(1,IGHC(2,ISDV))
           IF (SCLTAL(ISPZ,ITAL).EQ.1) THEN
