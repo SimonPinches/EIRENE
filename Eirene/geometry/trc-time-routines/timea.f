@@ -22,9 +22,37 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
       USE EIRMOD_COMSPL
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CPLOT
+      USE EIRMOD_COMPRT, ONLY: IUNOUT, IVTKOUT
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CPES
+
+c     using our special octree stuff...
+      USE EIRMOD_OCTREE
  
       IMPLICIT NONE
+
+      INTERFACE
+        FUNCTION EIRENE_TIMEA_BuildOctree() RESULT(tree)
+          USE EIRMOD_OCTREE
+          TYPE(octree), POINTER :: tree
+        END FUNCTION
+        
+        SUBROUTINE EIRENE_TIMEA_CheckInter(
+     .             MSURF,NCELL,NLI,NLE,NNTCL,XX,YY,ZZ,TMT,
+     .             VXX,VYY,VZZ,VV,
+     .             MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP,
+     .             ACTSURFS, NACTSURFS)
+          USE EIRMOD_PRECISION
+          INTEGER, INTENT(in) :: MSURF,NCELL,NLI,NLE,NNTCL,NACTSURFS
+          INTEGER, DIMENSION(:), INTENT(in) :: ACTSURFS
+          INTEGER, INTENT(out) :: MASURF
+          LOGICAL, INTENT(out) :: LCNDEXP
+          LOGICAL, INTENT(in) :: NLTRC
+          REAL(DP), INTENT(in) :: XX, YY, ZZ, VXX, VYY, VZZ, VV, TMT
+          REAL(DP), INTENT(out) :: XR, YR, ZR, SG, TL
+        END SUBROUTINE
+      END INTERFACE
 C
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
       REAL(DP) :: TADD, TMIN, XXR, V, VSAVE, A1, A2, PPP, ROT, VX, VY,
@@ -35,13 +63,30 @@ C
      .          VV, VXX, VYY, VZZ, TMT, B, XK5, V445, XN5, V335, XK4,
      .          V334, V3V45, XN4, YS, ZS, AT, XNORM, V224, CG1, CG2,
      .          CG3, AR1, C, D, E, F, G, XK3, HELP, V2V34, XN3, V223
-     .          AR3, AR2, V113, V1V23, V223, AR3, DY2
-      INTEGER :: NN, NLLLI, NTNEW, NNTCLS, NNR, ICOUNT, IPLGN, ITRII,
-     .           ISTS, I1000, J, I, IPERID, NTCELL, NCELL, MSURF,
-     .           NLI, NLE, MASURF, ISPZ, NNTCL, LM2, LM1, IAB, JUM
+     .          AR3, AR2, V113, V1V23, V223, AR3, DY2, X_S, Y_S, Z_S,
+     .          SG_S
+
+      INTEGER :: NLLLI, NTNEW, NNR, ICOUNT, IPLGN, ITRII,
+     .           ISTS, I1000, K, J, I, IPERID, NTCELL, NCELL, MSURF,
+     .           NLI, NLE, MASURF, ISPZ, NNTCL, IAB, JUM, MASURF_S,
+     .           TRCNUM
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      LOGICAL :: LGJ, NLTRC, EIRENE_BITGET, LCNDEXP, LTSTCXP
+      LOGICAL :: LGJ, NLTRC, EIRENE_BITGET, LCNDEXP, LTSTCXP, LCNDEXP_S
       LOGICAL :: LMTSRF(NLIMPS)
+
+c     the octree
+      TYPE(octree), POINTER :: TREE
+c     active surface ids of surfs not in octree saved in lookup table
+      INTEGER, DIMENSION(:), ALLOCATABLE :: NOTOCSURFS
+c     how many surfaces are not in the octree (NSURFNOT)
+      INTEGER :: NSURFNOT = 0
+c     some vars for checking on intersection/where we are
+      TYPE(ocnode), POINTER :: block
+      LOGICAL :: status
+      REAL(DP), DIMENSION(3) :: ip, start, direction
+      REAL(DP) :: runlength, norm
+      INTEGER :: surf, lastsurf
+
       SAVE
 C
       ENTRY EIRENE_TIMEA0
@@ -53,18 +98,18 @@ C
       IF (NLIMI.LT.1) RETURN
 C
 C
-      DO 2 J=1,NLIMI
+      DO J=1,NLIMI
         IF (IGJUM0(J).NE.0) THEN
           IF (NLIMPB >= NLIMPS) THEN
-            DO 1 I=0,NLIMI
+            DO I=0,NLIMI
               IGJUM1(I,J)=1
-1           CONTINUE
+            END DO
           ELSE
             DO I=0,NLIMI
               CALL EIRENE_BITSET (IGJUM1,0,NLIMPS,I,J,1,NBITS)
             END DO
           END IF
-        ENDIF
+        END IF
 C
         ISWICH(1,J)=EIRENE_IDEZ(ILSWCH(J),1,6)
         IF (ISWICH(1,J).EQ.1) ISWICH(1,J)=-1
@@ -91,20 +136,22 @@ C
           I1000=1000*ILBLCK(J)
           ILACLL(J)=ILCELL(J)-I1000
         ENDIF
-2     CONTINUE
-C
+      END DO
+
+C     iterate over all additional surfaces
       DO 97 J=1,NLIMI
         IF (IGJUM0(J).NE.0) THEN
           IF (LEVGEO.EQ.4) THEN
             DO ITRII=1,NTRII
-            DO IPLGN=1,3
-              ISTS=ABS(INMTI(IPLGN,ITRII))
-              IF (J.EQ.ISTS) GOTO 85
-            ENDDO
+              DO IPLGN=1,3
+                ISTS=ABS(INMTI(IPLGN,ITRII))
+                IF (J.EQ.ISTS) GOTO 85
+              ENDDO
             ENDDO
           ENDIF
           GOTO 97
         ENDIF
+
 85      IF (RLB(J).LT.2.0) THEN
 C
 C   SURFACE COEFFICIENTS ARE INPUT
@@ -282,21 +329,23 @@ C
 C  SET PLANE SURFACE FROM CO-ORDINATES OF THE FIRST 3 VERTICES
 C  RLB.GE.3.0 AT THIS POINT
 C
-        DO 82 I=1,3
+c     vektoren bilden (alle die in einem fuenfeck vorkommen koennen)
+c     -> bei dreiecken/vierecken sind halt welche gleich...
+        DO I=1,3
           XB(I)=P1(I,J)-P3(I,J)
           XC(I)=P2(I,J)-P3(I,J)
           XD(I)=P2(I,J)-P4(I,J)
           XE(I)=P3(I,J)-P4(I,J)
           XF(I)=P3(I,J)-P5(I,J)
           XG(I)=P4(I,J)-P5(I,J)
-82      CONTINUE
-C
+        END DO
+C     coordinaten darstellung der ebene
         A1LM(J)=XB(2)*XC(3)-XB(3)*XC(2)
         A2LM(J)=XB(3)*XC(1)-XB(1)*XC(3)
         A3LM(J)=XB(1)*XC(2)-XB(2)*XC(1)
         A0LM(J)=-(A1LM(J)*P1(1,J)+A2LM(J)*P1(2,J)+A3LM(J)*P1(3,J))
 C
-C   SURFACE AREA: SAREA
+C   SURFACE AREA: SAREA (flaeche berechnen)
         B=SQRT(XB(1)**2+XB(2)**2+XB(3)**2+EPS60)
         C=SQRT(XC(1)**2+XC(2)**2+XC(3)**2+EPS60)
         D=SQRT(XD(1)**2+XD(2)**2+XD(3)**2+EPS60)
@@ -323,6 +372,7 @@ C  PREPARE ARRAYS FOR COMPUTATION OF XLS1,...XMS3
         V1V23=XB(1)*XC(1)+XB(2)*XC(2)+XB(3)*XC(3)
         V113=XB(1)*XB(1)+XB(2)*XB(2)+XB(3)*XB(3)
         V223=XC(1)*XC(1)+XC(2)*XC(2)+XC(3)*XC(3)
+
 C
         IF (ABS(V113).LE.EPS12) GOTO 98
         HELP=V1V23*V1V23/V113-V223
@@ -461,6 +511,7 @@ C
         ALM(J)=2.*A4LM(J)
         BLM(J)=2.*A5LM(J)
         CLM(J)=2.*A6LM(J)
+c       if first order surface:
         IF (A4LM(J).EQ.0..AND.A5LM(J).EQ.0..AND.A6LM(J).EQ.0..AND.
      .      A7LM(J).EQ.0..AND.A8LM(J).EQ.0..AND.A9LM(J).EQ.0.) THEN
           IF (NLIMPB >= NLIMPS) THEN
@@ -472,11 +523,14 @@ C
           IF (ABS(A1LM(J)).EQ.AT) JUMLIM(J)=1
           IF (ABS(A2LM(J)).EQ.AT) JUMLIM(J)=2
           IF (ABS(A3LM(J)).EQ.AT) JUMLIM(J)=3
+          
+c         create HNF coefficients (normalized vector and distance)
           XNORM=SQRT(A1LM(J)*A1LM(J)+A2LM(J)*A2LM(J)+A3LM(J)*A3LM(J))
           A0LM(J)=A0LM(J)/XNORM
           A1LM(J)=A1LM(J)/XNORM
           A2LM(J)=A2LM(J)/XNORM
           A3LM(J)=A3LM(J)/XNORM
+          
           JUM=JUMLIM(J)
           GOTO (91,92,93),JUM
 91          ALM(J)=-A0LM(J)/A1LM(J)
@@ -492,50 +546,31 @@ C
             CLM(J)=-A2LM(J)/A3LM(J)
         ENDIF
 97    CONTINUE
-C
+c     calling the internal subroutine for building the octree...
+      CALL EIRENE_TIMEA0_BUILDOC()
+
       CALL EIRENE_LEER(2)
 99    CONTINUE
       RETURN
+      
+c     write the octree to vtk tool output
+      ENTRY EIRENE_TIMEA3_VTKOUT()
+        if (associated(tree) .and. NLOCTREE) then
+c         call octree function to plot the tree recursive
+          call OCTREE_PrintVTK(tree, IVTKOUT)
+          
+          open(200,file='graphviz.out')
+          call OCTREE_PrintGraphviz(tree, 200)
+          close(200)
+        end if
+      RETURN
+      
 C
       ENTRY
      .  EIRENE_TIMEA1(MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
      .             VXX,VYY,VZZ,VV,
      .             MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
-C
-C  AT THIS ENTRY: THE RAY STARTS AT "XX,YY,ZZ", IN DIRECTION "VXX,VYY,VZZ"
-C                 STARTING POINT IS IN CELL "NCELL", AND TOROIDAL PERIODICITY
-C                 SEGMENT "IPERID, NTCELL".
-C                 SEARCH FOR LEGAL INTERSECTIONS WITH ADDITIONAL SURFACES
-C                 MASURF, IN THE RANGE "NLI LE. MASURF LE. NLE". (DO LOOP: 100)
-C                 IN DO 100 LOOP: TMIN IS THE TIME TO INTERSECTION ALREADY FOUND
-C                                 FOR SURFACES ALREADY CHECKED.
-C                                 LATER SURFACES ARE ONLY CHECKED IF
-C                                 SMALLER TIMES TL ARE POSSIBLE. OTHERWISE
-C                                 GOTO 100, ALREADY WITHOUT FULL EVALUATION.
-C                                 HENCE: TRY TO FIND OUT FOR EACH SURFACE
-C                                        IF THERE IS A CANDIDATE INTERSECTION
-C                                        WITH TL LT TMIN. OTHERWISE: NEXT SURFACE.
-!    NEW OPTION SINCE 2005: IF NLPRCS(J) FOR SURFACE "J": CARRY OUT FULL CHECK,
-!                           EVEN IF TL > TMIN, TO IDENTIFY POSSIBLE LEGAL INTERSECTION.
-!                           THIS INTERSECTION IS NOT NECESSARILY RETURNED AS VALID
-!                           INTERSECTION WITH SMALLEST DISTANCE,
-!                           BUT THE FLAG LCNDEXP=TRUE, INDICATING
-!                           A POSSIBLE VALID INTERSECTION WITH AT LEAST ONE OF THE SURFACES J
-!                           FOR WHICH NLPRCS(J)=.TRUE.
-!                           THIS OPTION IS USED FOR CONDITIONAL EXPECTATION ESTIMATORS.
-C                 RETURN THE SURFACE NUMBER "MASURF" WITH CLOSEST LEGAL INTERSECTION
-C                 RETURN MASURF=0 IF NO LEGAL INTERSECTION WAS FOUND
-C                 IF MASURF.GT.0: ALSO RETURN POINT OF INTERSECTION XR,YR,ZR,
-C                 THE ORIENTATION "SG" OF RAY RELATIVE TO SURFACE NORMAL
-C                 AND THE DISTANCE "TL" ALONG RAY UNTIL INTERSECTION POINT.
-      LM1=NLI
-      LM2=NLE
-      LMTSRF=.FALSE.
- 
-C  TENTATIVELY ASSUME: NO LEGAL INTERSECTION WITH ANY OF THE
-C                      SURFACES J FOR WHICH NLPRCS(J)=TRUE
-      LCNDEXP=.FALSE.
- 
+     
 C  PARTICLE ON STANDARD SURFACE?
       IF (MSURF.GT.NLIM) MSURF=0
 C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
@@ -545,453 +580,217 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
       ELSEIF (NLTRA.AND..NOT.NLTOR) THEN
         NNTCL=IPERID
       ENDIF
-C  SAVE INITIAL CO-ORDINATES
-      XS=XX
-      YS=YY
-      ZS=ZZ
-      TS=TMT
-      VXS=VXX
-      VYS=VYY
-      VZS=VZZ
-      VVS=VV
-      NNTCLS=NNTCL
-C  WORKING CO-ORDINATES
-      X=XX
-      Y=YY
-      Z=ZZ
-      T=TMT
-      VX=VXX
-      VY=VYY
-      VZ=VZZ
-      V=VV
-      NN=NNTCL
-C
-      NLLLI=MSURF
-!PB PARTICLE IS ON SURFACE THAT HAS BEEN SWITCHED OF IN INFCOP
-      IF(IGJUM0(MSURF).NE.0) NLLLI=0     !VK!!!!!!!!!
- 
+
+c     tracing output shall be generated never the less we do our octree stuff ;)
       IF (NLTRC) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'TIMEA ,X,Y,Z,T ',X,Y,Z,T
-        WRITE (iunout,*) '      VX,VY,VZ,V ',VX,VY,VZ,V
+        WRITE (iunout,*) 'TIMEA ,X,Y,Z,T ',XX,YY,ZZ,TMT
+        WRITE (iunout,*) '      VX,VY,VZ,V ',VXX,VYY,VZZ,VV
         IF (NLTRA) WRITE (iunout,*) 'MSURF,NNTCL ',MSURF,NNTCL
         IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
       ENDIF
-C
-      TADD=0.
-C
-1000  TMIN=1.D30
+      
+!trc      if(msurf .eq. 0 .and. pladd) then
+!trc        WRITE(trcnum,*) 'RESTART', XX, YY, ZZ, VXX, VYY, VZZ
+!trc      end if
+      
+      TMIN=1.D30
       TL=1.D30
       MASURF=0
-C
-C  LOOP OVER SURFACE NUMBER, DO 100
-C
-      DO 100 J=LM1,LM2
-C  FIRST ELIMINATE ALL SURFACES WHICH ARE KNOWN A PRIORI TO BE
-C        NOT POSSIBLE CANDIATES  (IGJUM FLAGS)
-C
-        IF (IGJUM0(J).NE.0) GOTO 100
-        IF (NLIMPB >= NLIMPS) THEN
-          IF (IGJUM1(NLLLI,J) .NE. 0) GOTO 100
-        ELSE
-          IF (EIRENE_BITGET(IGJUM1,0,NLIMPS,NLLLI,J,NBITS)) GOTO 100
-        END IF
-        IF (NCELL.LE.NOPTIM) THEN
-          IF (NLIMPB >= NLIMPS) THEN
-            IF (IGJUM3(NCELL,J).NE.0) GOTO 100
-          ELSE
-            IF (EIRENE_BITGET(IGJUM3,0,NOPTIM,NCELL,J,NBITS)) GOTO 100
-          END IF
-        ENDIF
-C
-C  FOR NLTRA OPTION ONLY:
-C  X,Z,VX AND VZ ARE GIVEN IN TOROIDAL CELL NN,
-C  TRANSFORM CO-ORDINATES FOR THIS TRACK FROM LOCAL SYSTEM NN
-C  TO THE LOCAL SYSTEM ILTOR(J), IN WHICH SURFACE J IS GIVEN
-C  IF (ILTOR(J).LE.0) THIS SURFACE HAS TOROIDAL SYMMETRY
-C
-        IF (NLTRA) THEN
-          IF (ILTOR(J).GT.0.AND.ILTOR(J).NE.NN) THEN
-            CALL EIRENE_FZRTOR (X,Z,NN,XXR,PPP,NTNEW,.FALSE.,0)
-            CALL EIRENE_FZRTRI (X,Z,ILTOR(J),XXR,PPP,NTNEW)
-            ROT=2.*(NN-ILTOR(J))*ALPHA
-            VSAVE=VX
-            VX=COS(ROT)*VSAVE-SIN(ROT)*VZ
-            VZ=SIN(ROT)*VSAVE+COS(ROT)*VZ
-            NN=ILTOR(J)
-C           WRITE (iunout,*) 'J,ILTOR(J),X,Z,VX,VZ ',
-C    .                        J,ILTOR(J),X,Z,VX,VZ
-C  X,Z,VX AND VZ ARE NOW GIVEN IN CELL NN=ILTOR(J). SO ARE THE COEFFICIENTS
-C  OF SURFACE NO. J. FIND INTERSECTION IN THIS LOCAL SYSTEM
-          ELSEIF (ILTOR(J).EQ.0) THEN
-C  TOROIDALLY SYMMETRIC SURFACE, SURFACE COEFFICIENTS ARE THE SAME
-C  IN EACH TOROIDAL CELL, THUS ESPECIALLY IN CELL NN
-            NN=NNTCLS
-            X=XS
-            Z=ZS
-            VX=VXS
-            VZ=VZS
-C           WRITE (iunout,*) 'J,ILTOR(J),X,Z,VX,VZ ',
-C    .                        J,ILTOR(J),X,Z,VX,VZ
-          ENDIF
-        ENDIF
-C
-C  FIND INTERSECTION TIME TMX WITH BOUNDARY NO. J
-C
-C  TENTATIVELY ASSUME: NO LEGAL INTERSECTION WITH SURFACE J WITH DISTANCE
-C                      LARGER THAN TMIN
-        LTSTCXP=.FALSE.
-        A1=0.
- 
-C  FIRST ORDER SURFACE ?
-        GOTO (60,63,66),JUMLIM(J)
- 
-C  NO. THIS IS A SECOND ORDER SURFACE
- 
-C  A1*TMX*TMX+A2*TMX+A3=0
-        A1=(A4LM(J)*VX+A7LM(J)*VY+A8LM(J)*VZ)*VX+
-     .     (A5LM(J)*VY+A9LM(J)*VZ)*VY+A6LM(J)*VZ*VZ
-        A2=(A1LM(J)+ALM(J)*X)*VX+(A2LM(J)+BLM(J)*Y)*VY+
-     .     (A3LM(J)+CLM(J)*Z)*VZ+
-     .      A7LM(J)*(VX*Y+VY*X)+A8LM(J)*(VX*Z+VZ*X)+A9LM(J)*(VY*Z+VZ*Y)
-C  A3 =  0. ?
-        IF (NLIMPB >= NLIMPS) THEN
-          IF (IGJUM2(NLLLI,J).NE.0) GOTO 40
-        ELSE
-          IF (EIRENE_BITGET(IGJUM2,0,NLIMPS,NLLLI,J,NBITS)) GOTO 40
-        END IF
-C  NO
-        A3=A0LM(J)+(A1LM(J)+A4LM(J)*X+A7LM(J)*Y+A8LM(J)*Z)*X
-     .            +(A2LM(J)+A5LM(J)*Y+A9LM(J)*Z)*Y
-     .            +(A3LM(J)+A6LM(J)*Z)*Z
-        IF (A1.EQ.0.) GOTO 50
-        F=-A2/(A1+A1)
-        G=F*F-A3/A1
-        IF (G.LT.0.) GOTO 100
-        G=SQRT(G)
-        TMA=F+G
-        TMI=F-G
-        IF (NLTRC) WRITE (iunout,*) 'TIMEA, J,TMI,TMA ',J,TMI,TMA
-        IF (TMA.LE.EPS12) GOTO 100
-        IF (TMI.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-!  NO SWITCHING SURFACE FOR CONDITIONAL EXPECTATION ESTIMATOR
-            GOTO 100
-          ELSE
-!  SWITCHING SURFACE FOR CONDITIONAL EXPECTATION ESTIMATOR
-!  SURFACE J IS A CANDIDATE, BUT NOT ONE WITH THE SMALLEST DISTANCE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
- 
-!  AT THIS POINT: EITHER TMI.LE.TMIN, OR LTSTCXP=TRUE
- 
-        IF (RLB(J).LT.0.) GOTO 21
-        IF (RLB(J).GT.0.) GOTO 31
-C
-C  RLB(J) .EQ. 0.  NO FURTHER CONSTRAINS FOR THIS SURFACE. STATEMENT 11---20
-C
-11      IF (TMI.LE.EPS12) GOTO 12
-        IF (LTSTCXP) THEN
-          LCNDEXP =.TRUE.
-          GOTO 100
-        END IF
-        WR=A2+A1*(TMI+TMI)
-        XN=X+TMI*VX
-        YN=Y+TMI*VY
-        ZN=Z+TMI*VZ
-        TMX=TMI
-        GOTO 70
-C
-12      IF (TMA.GT.TMIN) THEN
-          IF (LTSTCXP) LCNDEXP =.TRUE.
-          GOTO 100
-        END IF
-        WR=A2+A1*(TMA+TMA)
-16      XN=X+TMA*VX
-        YN=Y+TMA*VY
-        ZN=Z+TMA*VZ
-18      TMX=TMA
-        GOTO 70
-C
-C  CHECK BOUNDARY INEQUALITIES OF SURFACE
-C  LGJ=.TRUE.: INTERSECTION POINT IS STILL VALID
-C  LGJ=.FALSE.: INTERSECTION POINT IS OUTSIDE THE SPECIFIED AREA
-C
-C  RLB(J) .LT. 0.  STATEMENT 21---30
-C
-21      IF (TMI.LE.EPS12) GOTO 22
-        WR=A2+A1*(TMI+TMI)
-        XN=X+TMI*VX
-        YN=Y+TMI*VY
-        ZN=Z+TMI*VZ
-        TUP=TMI
-        ICOUNT=1
-        GOTO 28
-C
-22      IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=A2+A1*(TMA+TMA)
-26      XN=X+TMA*VX
-        YN=Y+TMA*VY
-        ZN=Z+TMA*VZ
-        TUP=TMA
-        ICOUNT=2
-C
-28      LGJ=.TRUE.
-        IF (ILIN(J).GT.0) THEN
-          I=0
-27        I=1+I
-          TST=ALIMS(I,J)+XLIMS(I,J)*XN+YLIMS(I,J)*YN+ZLIMS(I,J)*ZN
-          LGJ=TST.LE.0.
-          IF (LGJ.AND.I.LT.ILIN(J)) GOTO 27
-        ENDIF
-        IF (LGJ.AND.ISCN(J).GT.0) THEN
-          I=0
-29        I=1+I
-          TST=ALIMS0(I,J)+
-     .        XN*(XLIMS1(I,J)+XN*XLIMS2(I,J)+YN*XLIMS3(I,J))+
-     .        YN*(YLIMS1(I,J)+YN*YLIMS2(I,J)+ZN*ZLIMS3(I,J))+
-     .        ZN*(ZLIMS1(I,J)+ZN*ZLIMS2(I,J)+XN*YLIMS3(I,J))
-          LGJ=TST.LE.0.
-          IF (LGJ.AND.I.LT.ISCN(J)) GOTO 29
-        ENDIF
-        IF (NLPRCS(J).AND.LGJ) LCNDEXP=.TRUE.
-        IF (LGJ) THEN
-          IF (LTSTCXP) GOTO 100
-          TMX=TUP
-          GOTO 70
-        ELSEIF (ICOUNT.EQ.1) THEN
-          GOTO 22
-        ENDIF
-        GOTO 100
-C
-C   RLB(J) .GT. 0.  STATEMENT 31---40
-C
-31      IF (TMI.LE.EPS12) GOTO 32
-        WR=A2+A1*(TMI+TMI)
-        XN=X+TMI*VX
-        YN=Y+TMI*VY
-        ZN=Z+TMI*VZ
-        LGJ=XN.LE.XLIMS2(1,J).AND.XN.GE.XLIMS1(1,J).AND.
-     .      YN.LE.YLIMS2(1,J).AND.YN.GE.YLIMS1(1,J).AND.
-     .      ZN.LE.ZLIMS2(1,J).AND.ZN.GE.ZLIMS1(1,J)
-        IF (RLBNOT(J)) LGJ=.NOT.LGJ
-        IF (NLPRCS(J).AND.LGJ) LCNDEXP=.TRUE.
- 
-C  IF DISTANCE TOO LARGE: LOOSE INTEREST IN THIS SURFACE
-        IF (LTSTCXP) GOTO 100
- 
-        TMX=TMI
-        IF (LGJ) GOTO 70
-C
-32      IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=A2+A1*(TMA+TMA)
-36      XN=X+TMA*VX
-        YN=Y+TMA*VY
-        ZN=Z+TMA*VZ
-38      CONTINUE
-        IF (RLB(J).LT.2.) THEN
-          LGJ=XN.LE.XLIMS2(1,J).AND.XN.GE.XLIMS1(1,J).AND.
-     .        YN.LE.YLIMS2(1,J).AND.YN.GE.YLIMS1(1,J).AND.
-     .        ZN.LE.ZLIMS2(1,J).AND.ZN.GE.ZLIMS1(1,J)
-        ELSE
-          XMS1=XN*PS13(1,J)+YN*PS13(2,J)+ZN*PS13(3,J)+P1A(J)
-          XLS1=XN*PS23(1,J)+YN*PS23(2,J)+ZN*PS23(3,J)+P2A(J)
-          LGJ=XMS1.GE.0..AND.XLS1.GE.0..AND.XMS1+XLS1.LE.1.
-          IF (RLB(J).GE.4.AND..NOT.LGJ) THEN
-            XMS2=XN*PS24(1,J)+YN*PS24(2,J)+ZN*PS24(3,J)+P1B(J)
-            XLS2=XN*PS34(1,J)+YN*PS34(2,J)+ZN*PS34(3,J)+P2B(J)
-            LGJ=XMS2.GE.0..AND.XLS2.GE.0..AND.XMS2+XLS2.LE.1.
-            IF (RLB(J).GE.5.AND..NOT.LGJ) THEN
-              XMS3=XN*PS35(1,J)+YN*PS35(2,J)+ZN*PS35(3,J)+P1C(J)
-              XLS3=XN*PS45(1,J)+YN*PS45(2,J)+ZN*PS45(3,J)+P2C(J)
-              LGJ=XMS3.GE.0..AND.XLS3.GE.0..AND.XMS3+XLS3.LE.1.
-            ENDIF
-          ENDIF
-        ENDIF
-        IF (RLBNOT(J)) LGJ=.NOT.LGJ
-        IF (NLPRCS(J).AND.LGJ) LCNDEXP=.TRUE.
- 
-C  IF DISTANCE TOO LARGE: LOOSE INTEREST IN THIS SURFACE
-        IF (LTSTCXP) GOTO 100
- 
-        TMX=TMA
-        IF (LGJ) GOTO 70
-        GOTO 100
-C
-C   A1*TMX+A2=0
-C
-40      TMA=-A2/A1
-        IF (NLTRC)
-     .    WRITE (iunout,*) 'TIMEA AT 40, J,TMA,A1,A2 ',J,TMA,A1,A2
-        IF (TMA.LE.EPS12) GOTO 100
-        IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=-A2
-        IF (RLB(J)) 26,16,36
-C
-C   A2*TMX+A3=0
-C
-50      IF (A2.EQ.0.) GOTO 100
-        TMA=-A3/A2
-        IF (NLTRC) WRITE (iunout,*) 'TIMEA AT 50, J,TMA,A2,A3 ',
-     .                                            J,TMA,A2,A3
-        IF (TMA.LE.EPS12) GOTO 100
-        IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=A2
-        IF (RLB(J)) 26,16,36
-C
-C  A1LM(J).NE.0
-C
-60      CONTINUE
-        A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
-        A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
-        IF (A2.EQ.0.) GOTO 100
-        TMA=-A3/A2
-        IF (TMA.LE.EPS12) GOTO 100
-        IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=A2
-        YN=Y+TMA*VY
-        ZN=Z+TMA*VZ
-        XN=ALM(J)+BLM(J)*YN+CLM(J)*ZN
-        TUP=TMA
-        ICOUNT=2
-        IF (RLB(J)) 28,18,38
-C
-C  A2LM(J).NE.0
-C
-63      CONTINUE
-        A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
-        A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
-        IF (A2.EQ.0.) GOTO 100
-        TMA=-A3/A2
-        IF (TMA.LE.EPS12) GOTO 100
-        IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=A2
-        XN=X+TMA*VX
-        ZN=Z+TMA*VZ
-        YN=ALM(J)+BLM(J)*XN+CLM(J)*ZN
-        TUP=TMA
-        ICOUNT=2
-        IF (RLB(J)) 28,18,38
-C
-C  A3LM(J).NE.0
-C
-66      CONTINUE
-        A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
-        A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
-        IF (A2.EQ.0.) GOTO 100
-        TMA=-A3/A2
-        IF (TMA.LE.EPS12) GOTO 100
-        IF (TMA.GT.TMIN) THEN
-          IF (.NOT.NLPRCS(J)) THEN
-            GOTO 100
-          ELSE
-            LTSTCXP=.TRUE.
-          END IF
-        END IF
-        WR=A2
-        XN=X+TMA*VX
-        YN=Y+TMA*VY
-        ZN=ALM(J)+BLM(J)*XN+CLM(J)*YN
-        TUP=TMA
-        ICOUNT=2
-        IF (RLB(J)) 28,18,38
-C
-C
-C   DATA RETURNED TO CALLING PROGRAM
-C   TENTATIVELY FOR SURFACE NO. J
-C
-70      TL=TMX+TADD
-        TMIN=TMX
-        XR=XN
-        YR=YN
-        ZR=ZN
-        NNR=NN
-        VXJ=VX
-        VZJ=VZ
-        MASURF=J
-        SG=SIGN(1._DP,WR)
-        IF (NLTRC) THEN
-          WRITE (iunout,*) 'TIMEA, TL,XR,YR,ZR,NNR,MASURF,SG '
-          WRITE (iunout,*)         TL,XR,YR,ZR,NNR,MASURF,SG
-        ENDIF
-C
-C  LOOP OVER SURFACE-INDEX FINISHED
-C
-100   CONTINUE
-C
-C **********************************************************************
-C
-C  IF NO INTERSECTION FOUND, RETURN
-      IF (MASURF.EQ.0) RETURN
-C  INTERSECTION AT SURFACE NO. MASURF
-C  IF NOT TRANSPARENT, RETURN
-      IF (ILIIN(MASURF).GT.0) RETURN
-C  IF TRANSPARENT BUT WRONG SIDE, RETURN
-      IF (ILSIDE(MASURF)*SG.LT.0) RETURN
-C
-      IF (NLTRC) WRITE (iunout,*) 'NOT RETURNED FROM TIMEA, OTHER LOOP '
-C  ILIIN=0, CONTINUE WITH ANOTHER LOOP IN SUBR. TIMEA
-C  E.G.: THIS SURFACE MASURF IS A HOLE IN ANOTHER SURFACE.
-C  SET STARTING POINT OF RAY TO THIS INTERSECTION AND REPEAT
-C  SEARCH FROM THIS NEW POINT.
-C
-      IF (ILIIN(MASURF).EQ.0) THEN
-        X=XR
-        XS=X
-        Y=YR
-        YS=Y
-        Z=ZR
-        ZS=Z
-C
-        TADD=TL
-        NLLLI=MASURF
-        NN=NNR
-        NNTCLS=NN
-        VX=VXJ
-        VXS=VXJ
-        VZ=VZJ
-        VZS=VZJ
-        GOTO 1000
-      ELSEIF (ILIIN(MASURF).LT.0) THEN
-C  TRANSPARENT, BUT SWITCH AND/OR SURFACE TALLIES
-        RETURN
-      ENDIF
-C
+      
+      if (NLOCTREE .and. trcoc) then
+        WRITE(iunout,*)
+        WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB < 3"
+      endif
+      
+c      call timea2 for all those stuff which is no triangle or higher
+c     -> we will get a time minimum out of this, if any of these
+c     surfaces are hit.
+      CALL EIRENE_TIMEA_CheckInter(MSURF,NCELL,NLI,NLE,NNTCL,
+     .                             XX,YY,ZZ,TMT,VXX,VYY,VZZ,VV,
+     .                             MASURF_S,X_S,Y_S,Z_S,SG_S,TMIN,
+     .                             NLTRC,LCNDEXP_S,
+     .                             NOTOCSURFS, NSURFNOT)
+
+c     if we actually found a valid intersection on second order surfs,
+c     etc, save these values for later comparison with octree surfs values
+      if (masurf_s .gt. 0) then
+        if (NLOCTREE .and. trcoc) then
+          WRITE(iunout,*) "found intersection with surface", masurf_s
+          WRITE(iunout,*) "-> continuing with this candidate in octree"
+        end if
+        XR = X_S
+        YR = Y_S
+        ZR = Z_S
+        TL = TMIN
+        SG = SG_S
+        MASURF = MASURF_S
+        LCNDEXP = LCNDEXP_S
+      end if
+      
+c     if we do not have a tree (or don't want octrees ;)), skip this part
+      if(.not. associated(tree) .or. .not. NLOCTREE) then
+c       debug trace output
+!trc        if(MASURF .gt. 0 .and. pladd) 
+!trc     .    WRITE(TRCNUM,*) MASURF, XX, YY, ZZ, XR, YR, ZR, VXX, VYY, VZZ
+        return
+      end if
+      
+      if (trcoc) then
+        WRITE(iunout,*)
+        WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB >= 3"
+      end if
+      
+c     set working coords to initial coords (xx,yy,zz)
+      start = (/XX, YY, ZZ/)
+      direction = (/VXX, VYY, VZZ/)
+c     we give status an initial "true" - if we do not hit the block
+c     (and if outside), it will be set to false
+      status = .TRUE.
+
+c     we want to find out which tri/quad/quintangles are possible candidates
+c     for our intersection by analysing our octree.
+c     first: are we within our octree or outside of it?
+c     -> transform point to octree space
+      if (.not. OCTREE_CheckVolume(start, tree%root, .true.)) then
+c       second: if we are outside, check if we could ever hit our octree-block
+        call OCTREE_CheckBlock(start, direction,
+     .                         tree%root, status, ip, runlength)
+        if (status) then
+c         TODO: make a check if we hit the space within proper time... -> PETRA?
+c               -> for now presume that this is the case
+c         third: get a new starting point with moving the start to the
+c                intersection point with the block (then we are inside)
+          if (trcoc) then
+            WRITE(iunout,*) "moving ray into octree space first:"
+            WRITE(iunout,*) "start: ", start
+            WRITE(iunout,*) "new start: ", ip
+          end if
+          start = ip
+        end if
+      end if
+
+c     if we are inside the block (or if we moved there as we hit the
+c     konvex hull while following the path...), continue with octree
+c     processing. if we are not within (even with the check if we intersect),
+c     just continue with the other add. surfaces not in our octree...
+      if(status) then
+        if(trcoc) then
+          WRITE(iunout,*) "starting trace @",start, "in direction",
+     .                    (/VXX, VYY, VZZ/)
+        end if
+c       calc the norm of the direction vector, we need this for traversal
+        norm = sqrt(dot_product(direction,direction))
+      end if
+c     step through the octree until we have found an intersection
+c     or we leave the octree space
+      do while(status)
+c       now find out where the hell we are in the octree space...
+c       -> get the pointer to our leaf-block containing the IP
+        block => OCTREE_GetLeafchild(start, tree)
+        if (trcoc) then
+          WRITE(iunout,*) "searching in block:",block%number,
+     .                    " on layer", block%layer, " testing",
+     .                    block%nsurfaces, " surfaces"
+        end if
+     
+c       if we have no surfaces to check in this block, continue to next
+        if(block%nsurfaces .gt. 0) then
+c         now get all surfaces in this block and search with these
+c         in CheckInter
+          CALL EIRENE_TIMEA_CheckInter(MSURF,NCELL,NLI,NLE,NNTCL,
+     .                             XX,YY,ZZ,TMT,VXX,VYY,VZZ,VV,
+     .                             MASURF_S,X_S,Y_S,Z_S,SG_S,TMIN,
+     .                             NLTRC,LCNDEXP_S,
+     .                             block%surfaces, block%nsurfaces)
+          
+c         if we found a valid intersection and the time is less than TL 
+c         save these values for later comparison with octree surfs values
+          if (masurf_s .gt. 0 .and. tmin .lt. TL) then
+c            WRITE(iunout,*) "found intersection with surface", masurf_s
+            XR = X_S
+            YR = Y_S
+            ZR = Z_S
+            IP = (/XR, YR, ZR/)
+            TL = TMIN
+            SG = SG_S
+            MASURF = MASURF_S
+            LCNDEXP = LCNDEXP_S
+c           if we got a intersection WITHIN our octet, we can stop here
+c           (there is no one with a smaller time reachable) else continue...
+            if(OCTREE_CheckVolume(ip, block, .true.)) exit
+          end if
+        end if
+        
+c       if we did not end the search before, we need to traverse 
+c       through this block and start over in the neighbor.
+c       -> if we get out of octree space, start%p will be =-1
+        start = OCTREE_Traverse(tree, block, start, 
+     .                          direction, norm)
+c       check if we are inside of the octree space anymore...
+        status = OCTREE_CheckVolume(start, tree%root, .true.)
+        if(.not.status.and.trcoc) WRITE(iunout,*)'left octree space...'
+      end do
+      
+!trc      if(MASURF .gt. 0 .and. pladd) then
+!trc        WRITE(TRCNUM,*) MASURF, XX, YY, ZZ, XR, YR, ZR, VXX, VYY, VZZ
+!trc      end if
+      
+      RETURN
+      
+c     entry to call the octree building internal subroutine
+      ENTRY EIRENE_TIMEA0_OC()
+        CALL EIRENE_TIMEA0_BUILDOC()
+      RETURN
+      
+c     defining the internal subroutine for the octree build
+      CONTAINS
+        SUBROUTINE EIRENE_TIMEA0_BUILDOC()
+c         unit number for the tracing dabug ouput
+          if (pladd) then
+            TRCNUM = 27
+!trc            OPEN(unit=TRCNUM,file='timea-trace.out')
+          end if
+
+C         as the code above is pretty much with gotos, simply put
+C         the octree stuff in here...
+          if (NLOCTREE) then
+c         build our octree
+            tree => EIRENE_TIMEA_BuildOctree()
+      
+c         count the surfaces that wont be in our octree to get the
+c         right dimension for the array NOTOCSURFS (so we do not overprovide
+c         this array with unused memory)
+            DO J=1,NLIMI
+c           only add surfaces that are valid and only surfaces
+c           that are no tri/quad/quintangles
+              IF(RLB(J) .lt. 3 .and. IGJUM0(J) .eq. 0) THEN
+                NSURFNOT = NSURFNOT +1
+              END IF
+            END DO
+      
+c         allocate enough space for our lookup table we will use for 
+c         surfaces we don't have in the octree (like 2nd order)
+            ALLOCATE(NOTOCSURFS(NSURFNOT))
+            NSURFNOT = 0
+c         add the second order surfaces, etc into this
+            DO J=1,NLIMI
+c           only add surfaces that are valid and only surfaces
+c           that are no tri/quad/quintangles
+              IF(RLB(J) .lt. 3 .and. IGJUM0(J) .eq. 0) THEN
+                NSURFNOT = NSURFNOT +1
+                NOTOCSURFS(NSURFNOT) = J
+              END IF
+            END DO
+c         if we do not want to use the octree stuff build an array
+c         with all surfaces we can put in CheckInter (which is former TIMEA1)
+          else
+            if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
+            DO J=1,NLIMI
+              NOTOCSURFS(J) = J
+            END DO
+            NSURFNOT = NLIMI
+          end if
+        END SUBROUTINE EIRENE_TIMEA0_BUILDOC
+      
       END
