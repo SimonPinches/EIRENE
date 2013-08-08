@@ -501,6 +501,15 @@ C  RESET INDEX-ARRAY
           END DO
           LMETSP=.FALSE.
           NCLMTS = 0
+
+          DO I=1,NWLMT
+            IN=IWLMT(I)
+            IMETWL(IN) = 0
+          END DO
+          LMETSPW=.FALSE.
+          NWLMT = 0
+          NWLMTS = 0
+
           IF (NADSPC > 0) THEN
             DO ISPC=1,NADSPC
               ESTIML(ISPC)%PSPC%IMETSP = 0
@@ -688,7 +697,8 @@ c     collect data for one stratum from all pe's performing calculations
 c     for this stratum
 c
 !pb       if ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra))
-        if (count(procforstra(istra,0:nprs-1)) > 1)
+!csw        if (count(procforstra(istra,0:nprs-1)) > 1)
+       if (nprs.gt.nsteff)
      .  call EIRENE_calstr
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
