@@ -255,7 +255,7 @@ C
           DO  IPPLG=1,NPPLG
             DO  IP=NPOINT(1,IPPLG),NPOINT(2,IPPLG)-1
               NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
-              IF (NSTGRD(NCELL).EQ.0) ANZ=ANZ+1
+              IF((NSTGRD(NCELL).EQ.0).or.(NSTGRD(NCELL).EQ.3)) ANZ=ANZ+1
             ENDDO
           ENDDO
         ENDDO
@@ -334,7 +334,8 @@ C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
                   endif
 C  EXCLUDE DEAD CELLS ON FORT.18
                   NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
-                  IF (IR.LT.NR1ST.AND.NSTGRD(NCELL).EQ.0) THEN
+                  IF (IR.LT.NR1ST.AND.((NSTGRD(NCELL).EQ.0) .OR.
+     .               (NSTGRD(NCELL).EQ.3))) THEN
                     if (lraps3d.and.lr3dcon) then
                       if (ipl < iplane-1) then
 !                        WRITE(18+ifoff,'(1X,A1,8I10)') '0',
