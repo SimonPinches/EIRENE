@@ -73,7 +73,7 @@ C
       ENDIF
 C
       IF (TRCPLT)
-     .    WRITE (iunout,*) 'PLTEIR CALLED, EIRENE_ISTRA, XMCP: ',
+     .    WRITE (iunout,*) 'PLTEIR CALLED, ISTRA, XMCP: ',
      .                      ISTRA,XMCP(ISTRA)
 C
 C  NULLPUNKT AUF DEM PAPIER
@@ -171,7 +171,7 @@ C
      .           '
       HEAD6='BGK TALLY
      .           '
-      HEAD7='ALGEBRAIC FUNCTION EIRENE_OF VOLUME AVERAGED TALLIES
+      HEAD7='ALGEBRAIC FUNCTION OF VOLUME AVERAGED TALLIES         
      .           '
       HEAD8='RELATIVE STANDARD DEVIATION
      .           '
