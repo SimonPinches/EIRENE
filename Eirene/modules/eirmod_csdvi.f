@@ -30,13 +30,14 @@
      I NSIGI,     NSIGVI,   NSIGSI, NSIGCI, NSIGI_BGK, NSIGI_COP,
      I NSIGI_SPC,
 C SPEED UP OF SUBROUTINE STATIS
-     I IMETCL(:), ICLMT(:), NCLMT, NCLMTS
+     I IMETCL(:), ICLMT(:), NCLMT, NCLMTS,
+     I IMETWL(:), IWLMT(:), NWLMT, NWLMTS
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I IIHC(:,:), IGHC(:,:)
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
-     L LMETSP(:)
+     L LMETSP(:), LMETSPW(:)
  
       INTEGER, PUBLIC, SAVE ::
      I NSDVI1, NSDVI2, NSDVC1, NSDVC2, NSDVI, MSDVI
@@ -58,7 +59,7 @@ C SPEED UP OF SUBROUTINE STATIS
         NSDVC1 = 3*NCV*NRTAL
         NSDVC2 = 3*NCV
         NSDVI  = NSDVI1+NSDVI2+NSDVC1+NSDVC2
-        MSDVI  = NSD*2+NSDW*2+NCV+7+2*NRTAL+2
+        MSDVI  = NSD*2+NSDW*2+NCV+7+2*NRTAL+2+2*NLIMPS+2
  
  
         ALLOCATE (SDVI1(NSD,NRTAL+1))
@@ -90,14 +91,20 @@ C SPEED UP OF SUBROUTINE STATIS
         NSIGI_SPC => ISDVI(7)
         NCLMT     => ISDVI(8)
         NCLMTS    => ISDVI(9)
-        IIH       => ISDVI(10                  : 9+  NSD)
-        IGH       => ISDVI(10+  NSD            : 9+2*NSD)
-        IIHW      => ISDVI(10+2*NSD            : 9+2*NSD+  NSDW)
-        IGHW      => ISDVI(10+2*NSD+  NSDW     : 9+2*NSD+2*NSDW)
-        ICOV      => ISDVI(10+2*NSD+2*NSDW     : 9+2*NSD+2*NSDW+NCV)
-        IMETCL    => ISDVI(10+2*NSD+2*NSDW+NCV :
-     .                     9+2*NSD+2*NSDW+NCV+NRTAL)
-        ICLMT     => ISDVI(10+2*NSD+2*NSDW+NCV+NRTAL : MSDVI)
+        NWLMT     => ISDVI(10)
+        NWLMTS    => ISDVI(11)
+        IIH       => ISDVI(12                  : 11+  NSD)
+        IGH       => ISDVI(12+  NSD            : 11+2*NSD)
+        IIHW      => ISDVI(12+2*NSD            : 11+2*NSD+  NSDW)
+        IGHW      => ISDVI(12+2*NSD+  NSDW     : 11+2*NSD+2*NSDW)
+        ICOV      => ISDVI(12+2*NSD+2*NSDW     : 11+2*NSD+2*NSDW+NCV)
+        IMETCL    => ISDVI(12+2*NSD+2*NSDW+NCV :
+     .                     11+2*NSD+2*NSDW+NCV+NRTAL)
+        ICLMT     => ISDVI(12+2*NSD+2*NSDW+NCV+NRTAL : 
+     .                     11+2*NSD+2*NSDW+NCV+2*NRTAL)
+        IMETWL    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL : 
+     .                     11+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS)
+        IWLMT    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
  
       ELSE IF (ICAL == 2) THEN
  
@@ -105,6 +112,7 @@ C SPEED UP OF SUBROUTINE STATIS
  
 !pb        ALLOCATE (LMETSP(N1MX+NSNV))
         ALLOCATE (LMETSP(NSPZTOT+NSNV))
+        ALLOCATE (LMETSPW(NSPZ+NADS+NALS+NSPZ))
  
       END IF
  
@@ -128,6 +136,7 @@ C SPEED UP OF SUBROUTINE STATIS
       DEALLOCATE (IGHC)
  
       DEALLOCATE (LMETSP)
+      DEALLOCATE (LMETSPW)
  
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CSDVI
@@ -151,6 +160,7 @@ C SPEED UP OF SUBROUTINE STATIS
       ELSE IF (ICAL == 2) THEN
  
         LMETSP = .FALSE.
+        LMETSPW = .FALSE.
  
       END IF
  
