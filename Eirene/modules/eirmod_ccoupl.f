@@ -33,7 +33,7 @@
      I NTARGI, NSTRI,  NFLA,   NCUTB,  NCUTL,  NDXA,   NDYA,
      I NCLMI,  NBLCKI, NPRNVI, NPRTVI, NPRDVI,
      I NMODEI, NFILNN, NCUTB_SAVE,
-     I NAINB,  NAOTB
+     I NAINB,  NAOTB,  NFULL
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NAINS(:), NAINT(:)
@@ -61,7 +61,7 @@
  
         NCOUPL  = 4*NPLS+4+NSTRA
         MCOUPL1 = 11*NSTEP*NPTRGT
-        MCOUPL2 = 1*NPLS+NSTEP+17+2*NLIMPS
+        MCOUPL2 = 1*NPLS+NSTEP+18+2*NLIMPS
         LCOUPL  = 6+NSTRA
  
         ALLOCATE (RCCPL(NCOUPL))
@@ -112,12 +112,13 @@
         NCUTB_SAVE => ICCPL2(15)
         NAINB      => ICCPL2(16)
         NAOTB      => ICCPL2(17)
-        NTGPRT     => ICCPL2(18 : 17+NSTEP)
-        IFLB       => ICCPL2(18+NSTEP : 17+NSTEP+NPLS)
-        NAOTS      => ICCPL2(18+NSTEP+NPLS :
-     .                       17+NSTEP+NPLS+NLIMPS)
-        NAOTT      => ICCPL2(18+NSTEP+NPLS+NLIMPS :
-     .                       17+NSTEP+NPLS+2*NLIMPS)
+        NFULL      => ICCPL2(18)
+        NTGPRT     => ICCPL2(19 : 18+NSTEP)
+        IFLB       => ICCPL2(19+NSTEP : 18+NSTEP+NPLS)
+        NAOTS      => ICCPL2(19+NSTEP+NPLS :
+     .                       18+NSTEP+NPLS+NLIMPS)
+        NAOTT      => ICCPL2(19+NSTEP+NPLS+NLIMPS :
+     .                       19+NSTEP+NPLS+2*NLIMPS)
  
         LBALAN => LCCPL(1)
         LSYMET => LCCPL(2)
