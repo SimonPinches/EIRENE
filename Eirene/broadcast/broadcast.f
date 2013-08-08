@@ -797,6 +797,13 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (NSPEZV,2*NVLPR,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSPEZS,2*NSRPR,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      IF (MY_PE .NE. 0) THEN
+         IF (SIZE(XTRIAN) .NE. NKNOTS) THEN
+            call EIRENE_dealloc_ctrig
+            call EIRENE_alloc_ctrig
+         END IF
+      END IF
  
       CALL MPI_BCAST (XTRIAN,NKNOTS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (YTRIAN,NKNOTS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -1251,7 +1258,13 @@ c     distribute seppis arrays all over the world
 !      call eirene_broadcast_tim()
 c	
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
- 
+       
+cOS   now call the octree-builder to build an octree on every node except
+c     on the "root" node, where this is already done via timea0 after input
+      IF (MY_PE .NE. 0) THEN
+        CALL EIRENE_TIMEA0_OC()
+      END IF
+
       RETURN
  
  
