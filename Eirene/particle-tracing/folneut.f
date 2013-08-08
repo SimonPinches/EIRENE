@@ -611,7 +611,10 @@ C
           NLSRFX=.TRUE.
           MSURFG=INSPAT(IPOLGN,MRSURF)
           IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                 (ISTS,1,SG,*104,*380)
+     .                                 (ISTS,1,SG,*104,*381)
+381       CONTINUE
+          SG=INMTINSS(IPOLGN,MRSURF)                            !VK
+          GOTO 380                                              !VK
         ENDIF
 
 !pb        ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
