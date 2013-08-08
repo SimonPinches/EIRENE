@@ -159,7 +159,7 @@ C
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, RCMIN, RCMAX, ESCD2A, ESCD2M, ESCD2I, ESCD2PH,
      .          ESCD2P
-      REAL(DP) :: tpb1, tpb2, SECOND_OWN
+      REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
       REAL(DP) :: MPTS 
       REAL(DP), ALLOCATABLE :: SAREA_SAVE(:)
       INTEGER :: IHELP(NLIMPS), IPRSF(12), NUMTAL(12), IADTYP(0:4)
@@ -327,7 +327,7 @@ C
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL1,NREAC_ADD
         READ (IUNIN,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                    NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
-     .                    NLCASCAD
+     .                    NLCASCAD, NLOCTREE
       ELSE
 C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
 !       NOPTIM = 1
@@ -2105,7 +2105,7 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
           ELSE
             NFR=NFR+1
             READ (ZEILE,'(A72)') RFILNM
-            WRITE (iunout,*) ' NFR =',NFR,' FILNAM = ',FILNAM
+            WRITE (iunout,*) ' NFR =',NFR,' FILNAM = ',RFILNM
             FILE(I2:)=RFILNM
             WRITE (iunout,'(A,A)') ' FILE = ',FILE
             ALLOCATE (CURFILE)
@@ -2618,9 +2618,10 @@ C
       READ (IUNIN,*)
       CALL
      .  EIRENE_MASAGE('*** 10A. DATA FOR ADDITIONAL TALLIES           ')
-      ALLOCATE (TXTTLA(NADVI))
-      ALLOCATE (TXTSCA(NADVI))
-      ALLOCATE (TXTUTA(NADVI))
+!pb for special purposes increase NADVI by 1
+      ALLOCATE (TXTTLA(NADVI+2))    !pb
+      ALLOCATE (TXTSCA(NADVI+2))    !pb
+      ALLOCATE (TXTUTA(NADVI+2))    !pb
       DO 1020 J=1,NADVI
 1021    READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1021
@@ -2628,6 +2629,25 @@ C
         READ (IUNIN,'(A72)') TXTTLA(J)
         READ (IUNIN,'(2A24)') TXTSCA(J),TXTUTA(J)
 1020  CONTINUE
+
+!pb for special purposes increase NADVI by 1
+      IADVE(NADVI+1) = 3
+      IADVS(NADVI+1) = 0
+      IADVT(NADVI+1) = 0
+      IADRC(NADVI+1) = 1
+      TXTTLA(NADVI+1) = 'special purpose tally (mapl)'
+      TXTSCA(NADVI+1) = '??         '
+      TXTUTA(NADVI+1) = '??         '
+      IADVE(NADVI+2) = 3
+      IADVS(NADVI+2) = 0
+      IADVT(NADVI+2) = 0
+      IADRC(NADVI+2) = 1
+      TXTTLA(NADVI+2) = 'special purpose tally (eapl)'
+      TXTSCA(NADVI+2) = '??         '
+      TXTUTA(NADVI+2) = '??         '
+      NADVI = NADVI + 2
+!pb
+
       READ (IUNIN,*)
       CALL
      .  EIRENE_MASAGE('*** 10B. DATA FOR COLLISION ESTIMATORS         ')
@@ -2834,7 +2854,7 @@ c  search for input block 11a
      .                  TRCGRD,TRCSUR,TRCREF,TRCFLE,TRCAMD,
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
-     .                  TRCBLPH,TRCTAL,TRCDUMM,TRCDUMM,TRCDUMM,
+     .                  TRCBLPH,TRCTAL,TRCOC,TRCDUMM,TRCDUMM,
 CVK TRACING FOR DEBUGGING
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
      .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
@@ -3414,6 +3434,7 @@ C
       NR1TAL = NR1ST
       NP2TAL = NP2ND
       NT3TAL = NT3RD
+      NRADD_TAL = NRADD
 C
 C  SOURCE PARAMETERS AND (REFLECTING) BOUNDARY CONDITIONS,
 C  ON ADDITIONAL AND NON DEFAULT STANDARD SURFACES
@@ -4014,6 +4035,15 @@ C
  
       IF (.NOT.LBGKV) NSIGI_BGK=0
       IF (.NOT.LCOPV) NSIGI_COP=0
+
+      IF ((NSIGI_COP > 0) .AND. (NCPVI >= 3*NPLSI+4))  THEN
+        IIH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = NTALM
+        IGH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = (/ (I,I=1,3*NPLSI+4) /)
+        NSIGVI = NSIGVI + 3*NPLSI+4
+        WRITE (IUNOUT,*) ' STANDARD DEVIATION SWITCHED ON FOR',
+     .                   ' COUPLING TALLY '
+        WRITE (IUNOUT,*) ' NSIGVI SET TO ', NSIGVI
+      END IF
 C
 C  NO MODIFICATION OF INPUT VARIABLES BEYOND THIS POINT
 C  WITHOUT WARNING
@@ -4029,7 +4059,8 @@ C
       NSTRD=NR1ST*NP2ND*NT3RD
       NBLCKS=NBMLT*NP2ND*NT3RD
       NSBOX=NSURF+NRADD
-      NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD
+!pb      NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD
+      NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD_TAL
       IF (NSBOX.GT.NRAD) THEN
         CALL EIRENE_MASPRM('NRAD',4,NRAD,'NSBOX',5,NSBOX,IERROR)
         CALL EIRENE_EXIT_OWN(1)
@@ -4056,7 +4087,8 @@ C
 C
       NSIGI=NSIGVI+NSIGSI+NSIGCI
       NCPVI_STAT=0
-      IF (NSIGI_COP > 0) NCPVI_STAT=NCPVI+NPLSI+2
+!pb  arrays in module CSDVI_COP no longer needed
+!pb      IF (NSIGI_COP > 0) NCPVI_STAT=NCPVI+NPLSI+2
       IF (NCPVI_STAT > NCPV_STAT) THEN
         CALL EIRENE_MASPRM('NCPVI_STAT',10,NCPVI_STAT,
      .              'NCPV_STAT',9,NCPV_STAT,IERROR)
@@ -4156,7 +4188,10 @@ C
 C
 C  SET SOME DATA FOR ADDITIONAL SURFACES: INITIALIZE SUBR. TIMEA
 C
+        timea = EIRENE_SECOND_OWN()
         CALL EIRENE_TIMEA0
+        WRITE(iunout,*)'cpu time for timea0 ',EIRENE_SECOND_OWN()-timea
+        WRITE(iunout,*)
 C
 C   MODIFY THE BOUNDARIES OF SOME SURFACES TO AVOID ROUND OFF
 C   ERRORS
