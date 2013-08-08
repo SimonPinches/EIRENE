@@ -270,34 +270,6 @@ C
               GOTO 119
             ENDIF
 C
-C  CHECK IF COP-STANDARD DEVIATION IS AVAILABLE FOR THIS TALLY "ITAL"
-            IF (NSIGI_COP.GT.0) THEN
-              IF (ITAL.EQ.NTALM) THEN
-                KMAX=NCPVI_STAT
-              ELSE
-                KMAX=0
-              ENDIF
-              IF (K.GT.KMAX) GOTO 119
-              DO I=1,NSBOX_TAL
-                VECTOR(I)=SIGMA_COP(K,I)
-              ENDDO
-              SMEAN=SGMS_COP(K)
-C
-              CALL EIRENE_MASAGE
-     .        ('RELATIVE STANDARD DEVIATION (COPV)             ')
-              TXTSP=TXTSPC(K,ITAL)
-              CALL EIRENE_PRTTAL
-     .                   (TXTTAL(K,ITAL),TXTSP,'%                     ',
-     .                    VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
-     .                    NFLAGV(IPRV),NTLVFL(IPRV))
-              CALL EIRENE_LEER(2)
-              CALL EIRENE_MASAGE
-     .        ('STANDARD DEVIATION OF MEAN VALUE (%)          ')
-              CALL EIRENE_MASR1 ('MEAN    ',SMEAN)
-              CALL EIRENE_LEER(3)
-              GOTO 119
-            ENDIF
-C
 C  CHECK IF COVARIANCE IS AVAILABLE
             DO 103 N=1,NSIGCI
               IF (LCOVN(N)) GOTO 103
