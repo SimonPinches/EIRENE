@@ -26,18 +26,18 @@ C
 C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:),TALAV(:),TALTOT(:)
       REAL(DP) :: OUTAUI
-      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT
+      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, IN
       LOGICAL :: LFIRST
 C
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
 C
-      IF (NSBOX_TAL /= NSBOX) THEN
-         WRITE (IUNOUT,*) ' ERROR IN OUTIDLTAL '
-         WRITE (IUNOUT,*) ' NSBOX_TAL /= NSBOX '
-         WRITE (IUNOUT,*) ' THIS CASE IS NOT YET FORESEEN '
-         WRITE (IUNOUT,*) ' NO DATA WRITTEN '
-         RETURN
-      END IF   
+!      IF (NSBOX_TAL /= NSBOX) THEN
+!         WRITE (IUNOUT,*) ' ERROR IN OUTIDLTAL '
+!         WRITE (IUNOUT,*) ' NSBOX_TAL /= NSBOX '
+!         WRITE (IUNOUT,*) ' THIS CASE IS NOT YET FORESEEN '
+!         WRITE (IUNOUT,*) ' NO DATA WRITTEN '
+!         RETURN
+!      END IF   
 
       MXSPZ = MAXVAL(NFSTVI(1:NTALV))
       ALLOCATE (VECTOR(NRAD,MXSPZ))
@@ -117,9 +117,16 @@ C
           DO 119 K=NFTI,NFTE
             CALL EIRENE_FETCH_OUTAU (OUTAUI,ITAL,K,ISTRA,IUNOUT)
 C
-            DO 110 I=1,NSBOX_TAL
-              VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,I)
-110         CONTINUE
+            IF (NSBOX_TAL /= NSBOX) THEN
+              DO I=1,NSBOX
+                IN = NCLTAL(I)
+                VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,IN)
+              END DO
+            ELSE
+              DO 110 I=1,NSBOX_TAL
+                VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,I)
+110           CONTINUE
+          END IF
 
             TALTOT(K)=OUTAUI
             TALAV(K)=TALTOT(K)/VOLTOT
