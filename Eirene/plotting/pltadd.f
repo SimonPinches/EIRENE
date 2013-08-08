@@ -945,7 +945,10 @@ C  PLOT SURFACE NUMBERS
       ENDIF
 C
 
-!pb      call eirene_vtkout
+      call eirene_vtkout_head
+      call eirene_vtkout_surfaces
+      call eirene_timea3_vtkout
+      call eirene_vtkout_tail
 
       RETURN
 6660  FORMAT (//1X,' CLOSED POLYGON OUTSIDE PLOTREGION')
