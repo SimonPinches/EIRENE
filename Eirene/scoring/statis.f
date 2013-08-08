@@ -1,4 +1,5 @@
 C  may 06:  bug fix: SDC initialized to zero
+C  march 12: optimize calculations for surface tallies
 C
       SUBROUTINE EIRENE_STATIS
  
@@ -42,6 +43,11 @@ C
       NCLMT = 0
       NCLMTS = 0
       LMETSP = .FALSE.
+ 
+      IMETWL = 0
+      NWLMT = 0
+      NWLMTS = 0
+      LMETSPW = .FALSE.
  
       IF (NSIGI.EQ.0) RETURN
 C
@@ -242,26 +248,42 @@ C
         INP=IADDW(IC)
         IGF=IGFFW(IC)
         IGS=IGHW(IC)
+        ITL=IIHW(IC)
+        IF (NSPANW(ITL) == 0) THEN
+          ISCO = 1
+        ELSE
+          ISCO = 0
+          IF (IGS == 0) THEN
+            IF ( ANY(LMETSPW(NSPANW(ITL):NSPENW(ITL))) ) ISCO = 1
+          ELSE
+            IF (LMETSPW(NSPANW(ITL)+IGS-1)) ISCO = 1
+          END IF
+        END IF
+        IF (ISCO == 0) GOTO 1022
+
         IF (IGS.NE.0) THEN
-          DO 1023 IR=1,NRW
-            VECTOR(IR)=ESTIMS(INP+IGS,IR)
+          DO 1023 ICO=1,NWLMT
+            IR = IWLMT(ICO)
+            VECTOR(ICO)=ESTIMS(INP+IGS,IR)
 1023      CONTINUE
         ELSE
-          DO 1024 IR=1,NRW
-            VECTOR(IR)=0.
+          DO 1024 ICO=1,NWLMT
+            VECTOR(ICO)=0.
 1024      CONTINUE
           DO 1025 IS=1,IGF
-          DO 1025 IR=1,NRW
-            VECTOR(IR)=VECTOR(IR)+ESTIMS(INP+IS,IR)
+          DO 1025 ICO=1,NWLMT
+            IR = IWLMT(ICO)
+            VECTOR(ICO)=VECTOR(ICO)+ESTIMS(INP+IS,IR)
 1025      CONTINUE
         ENDIF
 C
         SD1S=0.
-        DO 1021 IR=1,NRW
-          SD1=VECTOR(IR)-SDVIAW(IC,IR)
+        DO 1021 ICO=1,NWLMT
+          IR = IWLMT(ICO)
+          SD1=VECTOR(ICO)-SDVIAW(IC,IR)
           SD1S=SD1S+SD1
           SIGMAW(IC,IR)=SIGMAW(IC,IR)+SD1*SD1
-          SDVIAW(IC,IR)=VECTOR(IR)
+          SDVIAW(IC,IR)=VECTOR(ICO)
 1021    CONTINUE
         SGMWS(IC)=SGMWS(IC)+SD1S*SD1S
 1022  CONTINUE
