@@ -2,7 +2,8 @@
  
 !pb 07.12.06: use POINTER rather than ALLOCATABLE in datatype definition
 !pb           at this place ALLOCATABLE is allowed only in FORTRAN 2000
- 
+!pb 23.09.11: array INMTINSS introduced based on V.Kotovs changes  
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
  
@@ -20,8 +21,11 @@
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NECKE(:,:), NCHBAR(:,:), NSEITE(:,:),
-     I INMTI(:,:), INSPAT(:,:), IXTRI(:), IYTRI(:),
+     I INMTI(:,:), INSPAT(:,:), IXTRI(:), IYTRI(:), IREVERS(:,:),
      I INMTI3(:,:)
+
+CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS 
+      INTEGER,ALLOCATABLE,SAVE, PUBLIC :: INMTINSS(:,:)         !VK
  
       INTEGER, PUBLIC, SAVE ::
      I NRKNOT, NTRII, NCTRIG, MCTRIG
@@ -54,7 +58,7 @@
       IF (ALLOCATED(XTRIAN)) RETURN
  
       NCTRIG = 2*NKNOTS+4*3*NTRIS
-      MCTRIG = (5*3+2+N3RD)*NTRIS+2
+      MCTRIG = (7*3+2+N3RD)*NTRIS+2
  
       ALLOCATE (XTRIAN(NKNOTS))
       ALLOCATE (YTRIAN(NKNOTS))
@@ -70,7 +74,9 @@
       ALLOCATE (INSPAT(3,NTRIS))
       ALLOCATE (IXTRI(NTRIS))
       ALLOCATE (IYTRI(NTRIS))
+      ALLOCATE (IREVERS(3,NTRIS))
       ALLOCATE (INMTI3(NTRIS,N3RD))
+      ALLOCATE (INMTINSS(3,NTRIS)) !VK
  
       ALLOCATE (SURF_TRIAN(NLIMPS))
  
@@ -104,7 +110,9 @@
       DEALLOCATE (INSPAT)
       DEALLOCATE (IXTRI)
       DEALLOCATE (IYTRI)
+      DEALLOCATE (IREVERS)
       DEALLOCATE (INMTI3)
+      DEALLOCATE (INMTINSS)
  
       DO I=1, NLIMPS
         IF (SURF_TRIAN(I)%NUMTR > 0) THEN
@@ -149,7 +157,9 @@
       INSPAT = 0
       IXTRI = 0
       IYTRI = 0
+      IREVERS = 1
       INMTI3 = 0
+      INMTINSS = 1  !VK
  
       SURF_TRIAN(:)%NUMTR = 0
  
