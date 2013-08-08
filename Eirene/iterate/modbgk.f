@@ -1,6 +1,7 @@
 !pb  24.11.06: flag for shifting of first parameter of rate-coeff introduced
 !pb  24.11.06: BZIN initialized with 1
 !pb  05.04.11: BFIN initialized with 1
+!pb  18.02.13: take index transformition via NCLTAL into account
 C
 C
       SUBROUTINE EIRENE_MODBGK
@@ -30,6 +31,9 @@ C
 C
       REAL(DP), ALLOCATABLE :: PDEN(:),  EDEN(:),
      .                       PDEN2(:), EDEN2(:), ENERGY(:,:)
+!pb 05.02.2013
+      REAL(DP), ALLOCATABLE :: GBGKV(:,:)
+
       REAL(DP) :: RATM(3)
       REAL(DP) :: VXIN1, VXIN2, VYIN1, VYIN2, VZIN1, VZIN2, VYMIX, T1,
      .          T2, ED1, ED2, VXMIX, VZMIX, DELX, DELY, DELZ, VX, VY,
@@ -44,7 +48,7 @@ C
      .           IAEL, IMEL, IUP12, IUP22, IION2, IBGK2, IMOL2, IUP2,
      .           IUP3, IUP1, IBGK1, IP, NRC, IRAD, IR, IT, IREL,
      .           II, KK, NXM, NYM, NZM, IUP32, IPLSTI, IPLSTI1, IPLSTI2,
-     .           IPLSV
+     .           IPLSV, IRD, IBGV !pb
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LMARK(NPLS)
       LOGICAL :: TRCSAV
@@ -88,6 +92,16 @@ C
       ALLOCATE (EDEN2(NRAD))
       ALLOCATE (ENERGY(NPLS,NRAD))
 
+!pb 05.02.2013  take care of scoring cells
+      ALLOCATE (GBGKV(NBGV,NRAD))
+      GBGKV = 0._DP
+      DO IBGV = 1, NBGVI 
+        DO IRAD=1,NRAD
+          IRD = NCLTAL(IRAD)
+          GBGKV(IBGV,IRAD)=BGKV(IBGV,IRD)
+        END DO
+      END DO
+
       NXM=MAX(1,NR1STM)
       NYM=MAX(1,NP2NDM)
       NZM=MAX(1,NT3RDM)
@@ -123,8 +137,10 @@ C  TRY ATOMS
             FACT1=CVRSSA(IATM)
             RMAS1=RMASSA(IATM)
             DO IRAD=1,NRAD
-              PDEN(IRAD)=PDENA(IATM,IRAD)
-              EDEN(IRAD)=EDENA(IATM,IRAD)
+!pb 05.02.2013  take care of scoring cells
+              IRD = NCLTAL(IRAD)
+              PDEN(IRAD)=PDENA(IATM,IRD)
+              EDEN(IRAD)=EDENA(IATM,IRD)
             ENDDO
 C  FIND INDEX  NRC
             DO NRC=1,NRCA(IATM)
@@ -153,8 +169,10 @@ C  TRY MOLECULES
             FACT1=CVRSSM(IMOL)
             RMAS1=RMASSM(IMOL)
             DO IRAD=1,NRAD
-              PDEN(IRAD)=PDENM(IMOL,IRAD)
-              EDEN(IRAD)=EDENM(IMOL,IRAD)
+!pb 05.02.2013  take care of scoring cells
+              IRD = NCLTAL(IRAD)
+              PDEN(IRAD)=PDENM(IMOL,IRD)
+              EDEN(IRAD)=EDENM(IMOL,IRD)
             ENDDO
 C  FIND INDEX  NRC
             DO NRC=1,NRCM(IMOL)
@@ -183,8 +201,10 @@ C  TRY TEST IONS
             FACT1=CVRSSI(IION)
             RMAS1=RMASSI(IION)
             DO IRAD=1,NRAD
-              PDEN(IRAD)=PDENI(IION,IRAD)
-              EDEN(IRAD)=EDENI(IION,IRAD)
+!pb 05.02.2013  take care of scoring cells
+              IRD = NCLTAL(IRAD)
+              PDEN(IRAD)=PDENI(IION,IRD)
+              EDEN(IRAD)=EDENI(IION,IRD)
             ENDDO
 C  FIND INDEX NRC
             DO NRC=1,NRCI(IION)
@@ -229,8 +249,10 @@ C
             FACT2=CVRSSA(IATM2)
             RMAS2=RMASSA(IATM2)
             DO IRAD=1,NRAD
-              PDEN2(IRAD)=PDENA(IATM2,IRAD)
-              EDEN2(IRAD)=EDENA(IATM2,IRAD)
+!pb 05.02.2013  take care of scoring cells
+              IRD = NCLTAL(IRAD)
+              PDEN2(IRAD)=PDENA(IATM2,IRD)
+              EDEN2(IRAD)=EDENA(IATM2,IRD)
             ENDDO
             IBGK2=NPBGKA(IATM2)
           ELSEIF (ITYP2(IPLS).EQ.2) THEN
@@ -238,8 +260,10 @@ C
             FACT2=CVRSSM(IMOL2)
             RMAS2=RMASSM(IMOL2)
             DO IRAD=1,NRAD
-              PDEN2(IRAD)=PDENM(IMOL2,IRAD)
-              EDEN2(IRAD)=EDENM(IMOL2,IRAD)
+!pb 05.02.2013  take care of scoring cells
+              IRD = NCLTAL(IRAD)
+              PDEN2(IRAD)=PDENM(IMOL2,IRD)
+              EDEN2(IRAD)=EDENM(IMOL2,IRD)
             ENDDO
             IBGK2=NPBGKM(IMOL2)
           ELSEIF (ITYP2(IPLS).EQ.3) THEN
@@ -247,8 +271,10 @@ C
             FACT2=CVRSSI(IION2)
             RMAS2=RMASSI(IION2)
             DO IRAD=1,NRAD
-              PDEN2(IRAD)=PDENI(IION2,IRAD)
-              EDEN2(IRAD)=EDENI(IION2,IRAD)
+!pb 05.02.2013  take care of scoring cells
+              IRD = NCLTAL(IRAD)
+              PDEN2(IRAD)=PDENI(IION2,IRD)
+              EDEN2(IRAD)=EDENI(IION2,IRD)
             ENDDO
             IBGK2=NPBGKI(IION2)
           ENDIF
@@ -265,7 +291,7 @@ C
         ENDIF
 C
         CNDYN=AMUA*RMAS1
-CC
+C
         RRN=0.
         RRE=0.
         RRM=0.
@@ -323,16 +349,16 @@ c    .             DIIN(IPLS,IRAD)
               RATE=RATE+TBEL*DEL*VOL(IRAD)
               RESE=RESE+TBEL*ABS(DEL)*VOL(IRAD)
 C DELTA_V
-              DELX=BGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-              DELY=BGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-              DELZ=BGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+              DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+              DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+              DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
               RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
               RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
               RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C NEW T, NEW V
-              VX=BGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60)
-              VY=BGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60)
-              VZ=BGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60)
+              VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60) !pb
+              VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60) !pb
+              VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60) !pb
               VXIN(IPLSV,IRAD)=VX
               VYIN(IPLSV,IRAD)=VY
               VZIN(IPLSV,IRAD)=VZ
@@ -380,16 +406,16 @@ c    .          DIIN(IPLS,IRAD)
           RATE=RATE+TBEL*DEL*VOL(IRAD)
           RESE=RESE+TBEL*ABS(DEL)*VOL(IRAD)
 C DELTA_V
-          DELX=BGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-          DELY=BGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-          DELZ=BGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+          DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+          DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+          DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
           RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
           RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
           RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C NEW T, NEW V
-          VX=BGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60)
-          VY=BGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60)
-          VZ=BGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60)
+          VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60) !pb
+          VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60) !pb
+          VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60) !pb
           VXIN(IPLSV,IRAD)=VX
           VYIN(IPLSV,IRAD)=VY
           VZIN(IPLSV,IRAD)=VZ
@@ -433,21 +459,21 @@ c    .              DIIN(IPLS,IRAD)
               DOLD=DIIN(IPLS,IRAD)
               DEL=EOLD-EDEN(IRAD)
               RATE=RATE+TBEL*DEL*VOL(IRAD)
-              DELX=BGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-              DELY=BGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-              DELZ=BGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+              DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+              DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+              DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
               RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
               RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
               RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C
-              VXIN1=BGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60)
-              VXIN2=BGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60)
+              VXIN1=GBGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
+              VXIN2=GBGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60) !pb
               VXMIX=(RMAS1*VXIN1+RMAS2*VXIN2)/(RMAS1+RMAS2)
-              VYIN1=BGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60)
-              VYIN2=BGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60)
+              VYIN1=GBGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
+              VYIN2=GBGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60) !pb
               VYMIX=(RMAS1*VYIN1+RMAS2*VYIN2)/(RMAS1+RMAS2)
-              VZIN1=BGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60)
-              VZIN2=BGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60)
+              VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
+              VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60) !pb
               VZMIX=(RMAS1*VZIN1+RMAS2*VZIN2)/(RMAS1+RMAS2)
               ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
               ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
@@ -492,21 +518,21 @@ C    .          DIIN(IPLS,IRAD)
           DOLD=DIIN(IPLS,IRAD)
           DEL=EOLD-EDEN(IRAD)
           RATE=RATE+TBEL*DEL*VOL(IRAD)
-          DELX=BGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-          DELY=BGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
-          DELZ=BGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+          DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+          DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+          DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
           RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
           RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
           RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C
-          VXIN1=BGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60)
-          VXIN2=BGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60)
+          VXIN1=GBGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
+          VXIN2=GBGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60) !pb
           VXMIX=(RMAS1*VXIN1+RMAS2*VXIN2)/(RMAS1+RMAS2)
-          VYIN1=BGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60)
-          VYIN2=BGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60)
+          VYIN1=GBGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
+          VYIN2=GBGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60) !pb
           VYMIX=(RMAS1*VYIN1+RMAS2*VYIN2)/(RMAS1+RMAS2)
-          VZIN1=BGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60)
-          VZIN2=BGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60)
+          VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
+          VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60) !pb
           VZMIX=(RMAS1*VZIN1+RMAS2*VZIN2)/(RMAS1+RMAS2)
           ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
           ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
