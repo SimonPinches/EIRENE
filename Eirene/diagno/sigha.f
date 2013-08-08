@@ -45,26 +45,32 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
 C  INITIALISE H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD)) then
           if (PEN.EQ.12.089_DP) THEN
+            write (iunout,*) ' ly_beta '
             CALL EIRENE_Ly_beta 
      .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
           elseif (PEN.EQ.10.2375_DP) THEN
+            write (iunout,*) ' ly_alpha '
             CALL EIRENE_Ly_alpha 
      .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
           elseif (PEN.EQ.3.0222_DP) THEN
+            write (iunout,*) ' ba_delta '
             CALL EIRENE_Ba_delta
      .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
            elseif (PEN.EQ.2.8560_DP) THEN
+            write (iunout,*) ' ba_gamma '
             CALL EIRENE_Ba_gamma
      .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
           elseif (PEN.EQ.2.5500_DP) THEN
+            write (iunout,*) ' ba_beta '
             CALL EIRENE_Ba_beta
      .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
           elseif (PEN.EQ.1.8889_DP) THEN 
+            write (iunout,*) ' ba_alpha '
             CALL EIRENE_Ba_alpha
      .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
