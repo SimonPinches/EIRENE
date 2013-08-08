@@ -91,7 +91,9 @@ C FROM HERE ON: NO EQUIVALENCE
      I         ICPVE(:),  ICPVS(:), ICPVT(:),  ICPRC(:),
      I         IBGVE(:),  IBGVS(:), IBGVT(:),  IBGRC(:),
      I         IADSE(:),  IADSS(:), IADST(:),  IADSC(:),
-     I         NFRSTP(:), NADDP(:), NSPAN(:),  NSPEN(:)
+     I         NFRSTP(:), NADDP(:), NSPAN(:),  NSPEN(:),
+     I         NSPANW(:), NSPENW(:)
+
  
       INTEGER, PUBLIC, SAVE ::
      I         NMACH, NMODE,  NTCPU,
@@ -216,6 +218,8 @@ C
         ALLOCATE (NADDP(NTALI))
         ALLOCATE (NSPAN(NTALV))
         ALLOCATE (NSPEN(NTALV))
+        ALLOCATE (NSPANW(NTALS))
+        ALLOCATE (NSPENW(NTALS))
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
         ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
@@ -465,6 +469,8 @@ C
       DEALLOCATE (NADDP)
       DEALLOCATE (NSPAN)
       DEALLOCATE (NSPEN)
+      DEALLOCATE (NSPANW)
+      DEALLOCATE (NSPENW)
       DEALLOCATE (LGVAC)
       DEALLOCATE (LGDFT)
       DEALLOCATE (LSPCCLL)
@@ -589,6 +595,8 @@ C
         NADDP  = 0
         NSPAN  = 0
         NSPEN  = 0
+        NSPANW = 0
+        NSPENW = 0
         LGVAC  = .FALSE.
         LGDFT  = .FALSE.
         LSPCCLL = .FALSE.
