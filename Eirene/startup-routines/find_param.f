@@ -843,7 +843,7 @@ C
           ISOR = INT(SORLIM)
           DO WHILE (ISOR > 0)
             ID = MOD(ISOR,10)
-            IF (ID == 4) NSTEP = MAX(NSTEP,INT(SORIND))
+            IF ((ID == 4).OR.(ID==5)) NSTEP = MAX(NSTEP,INT(SORIND))
             ISOR = ISOR / 10
           END DO
           READ (IUNIN,*)
@@ -882,6 +882,8 @@ C  DATA FOR STANDARD DEVIATION
       WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION '
       READ (IUNIN,6666) NSIGVI,NSIGSI,NSIGCI,NSIGI_BGK,NSIGI_COP
       NSD = MAX(NSD,NSIGVI)
+!pb allow for standard deviations of coupling tallies
+      IF (NSIGI_COP > 0) NSD = NSD + 3*NPLS+4
       NSDW = MAX(NSDW,NSIGSI)
       NCV = MAX(NCV,NSIGCI)
  
@@ -902,6 +904,8 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) NADVI,NCLVI,NALVI,NADSI,NALSI,NADSPC
+!pb for special purposes increase NADVI by 1
+      NADVI = NADVI + 2
       NADV = MAX(NADV,NADVI)
       NCLV = MAX(NCLV,NCLVI)
       NALV = MAX(NALV,NALVI)
