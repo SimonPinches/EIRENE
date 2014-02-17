@@ -1,6 +1,15 @@
 %CSW switch to latex2e, needed for \usepackage command
 %\documentstyle[12pt,epsf]{article}
-\documentclass[12pt]{article}
+\documentclass[12pt,dvips]{article}
+
+\usepackage[hypertex,unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{pdftitle={AMJUEL Documentation},linkcolor=black,
+citecolor=black, urlcolor=blue, filecolor=blue}
+
+
 \usepackage{epsf}
 
 \oddsidemargin 0. true cm
@@ -10,7 +19,7 @@
 %CSW latex2html related commands, have no effect on
 %CSW layout, style etc...
 \usepackage{color}
-\pagecolor{white}
+\pagecolor{white} \setcounter{secnumdepth}{3}
 \usepackage{times}
 %CSW that's it...
 \begin{document}
@@ -20,7 +29,7 @@
 \vspace*{3truecm}
 
 The data file H2VIBR: \\
-Additional Atomic and Molecular Data for EIRENE
+Additional  Molecular Data for EIRENE: vibrationally resolved H$2$
 \vspace*{3truecm}
 
 D.Reiter \\
@@ -30,7 +39,8 @@ FZ, Forschungszentrum J\"ulich GmbH \\
 FRG
 \vspace{5truecm}
 
-Version: \today
+Version: April 2005
+
 \vspace{3truecm}
 
 Available via E-mail from d.reiter@fz-juelich.de
@@ -38,8 +48,26 @@ Available via E-mail from d.reiter@fz-juelich.de
 \tableofcontents
 %ende titelpage
 \newpage
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+\subsection*{Record:}
+\addcontentsline{toc}{subsection}{Record:}
 
-\section{Record:}
+
+This file contains some rate coefficients (cross sections)
+supplementing the AMJUEL data. This area is the playground for
+ongoing FZ Juelich internal (EIRENE group) work, in parallel and
+supplementing the HYDKIN online database.
+
+
+None of the material here has been prepared for external (3rd party)
+use. No documentation is planned either. All reaction rates in this
+file are for internal applications and testing of EIRENE code
+development needs at FZ Juelich.
+
+
+Detlev Reiter
+
 \begin{itemize}
 \item update  nov.00  \\
 Nov.00: Tennyson Daten fuer H2(v) $\rightarrow$ $b_{triplet}$ zusaetzlich zu\\
@@ -72,15 +100,33 @@ Nov.00: Tennyson Daten fuer H2(v) $\rightarrow$ $b_{triplet}$ zusaetzlich zu\\
 \end{verbatim}\end{small}
 
 \newpage
+\section{H.1 :  Fits for $\sigma(E) $}
 
+$E$ is the ``laboratory energy" (in eV) for the charged collision
+partner. In case of proton impact collisions this happens to
+coincide with the collision energy in eV/amu units.
+\newpage
 \section{H.2 :  Fits for $<\sigma v> (T)$}
 
+Maxwellian averaged rate coefficients $\langle \sigma v\rangle$ in this section are given as fct. of temperatur  T(eV).
+
+If both collision partners (masses $M_1, M_2$) have a different temperature $T_1$ and $T_2$, respectively,
+then the rate coefficient has to be evaluated with $T_{eff} = \frac{M}{M_1} T_1 + \frac{M}{M_2} T_2$, were M is the mass
+used for definition of the rate coefficient. For electron impact collision this was the electron mass: $M_e$,
+but since usually $M_2 \gg M_e$ we have $T_{eff} \simeq T_1 (=T_e)$ \\
+
+For proton impact collisions $M$ is the proton mass, with the $H_2$ molecule at rest (here: 0.1 eV).
+
+\vspace{3cm}
+
+
+next:
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
 here: rates for v=0
 \subsection{
 Reaction 2.0v1
-$  H_2(v=0) \rightarrow  H_2(v=1) $
+$ e + H_2(v=0) \rightarrow e + H_2(v=1) $
 }
 
 v=  0 $\rightarrow$ v= 1
@@ -109,6 +155,7 @@ $\Delta_{E_{elec}}=-0.485491$
 
 \subsection{
 Reaction 2.1v2
+$ e + H_2(v=1) \rightarrow e + H_2(v=2) $
 }
 
 \begin{small}\begin{verbatim}
@@ -128,6 +175,7 @@ $\Delta_{E_{elec}}=+0.515579$
 
 \subsection{
 Reaction 2.1v0
+$ e + H_2(v=1) \rightarrow e + H_2(v=0) $
 }
 
 \begin{small}\begin{verbatim}
@@ -151,6 +199,7 @@ $\Delta_{E_{elec}}=-0.455403$
 
 \subsection{
 Reaction 2.2v3
+$ e + H_2(v=2) \rightarrow e + H_2(v=3) $
 }
 
 
@@ -170,6 +219,7 @@ $\Delta_{E_{elec}}=+0.485491$
 
 \subsection{
 Reaction 2.2v1
+$ e + H_2(v=2) \rightarrow e + H_2(v=1) $
 }
 
 
@@ -195,6 +245,7 @@ $\Delta_{E_{elec}}=-0.425316$
 
 \subsection{
 Reaction 2.3v4
+$ e + H_2(v=3) \rightarrow e + H_2(v=4) $
 }
 
 
@@ -214,6 +265,7 @@ $\Delta_{E_{elec}}=+0.455403$
 
 \subsection{
 Reaction 2.3v2
+$ e + H_2(v=3) \rightarrow e + H_2(v=2) $
 }
 
 
@@ -239,6 +291,7 @@ $\Delta_{E_{elec}}=-0.395228$
 
 \subsection{
 Reaction 2.4v5
+$ e + H_2(v=4) \rightarrow e + H_2(v=5) $
 }
 
 \begin{small}\begin{verbatim}
@@ -254,6 +307,7 @@ Reaction 2.4v5
 
 \subsection{
 Reaction 2.4v3
+$ e + H_2(v=4) \rightarrow e + H_2(v=3) $
 }
 
   v=  4 $\rightarrow$ v= 3
@@ -279,6 +333,7 @@ here: rates for v=5
 
 \subsection{
 Reaction 2.5v6
+$ e + H_2(v=5) \rightarrow e + H_2(v=6) $
 }
 
   v=  5 $\rightarrow$ v= 6
@@ -300,6 +355,7 @@ $\Delta_{E_{elec}}=-0.365140$
 
 \subsection{
 Reaction 2.5v4
+$ e + H_2(v=5) \rightarrow e + H_2(v=4) $
 }
 
   v=  5 $\rightarrow$ v= 4
@@ -329,6 +385,7 @@ $\Delta_{E_{elec}}=-0.335052$
 
 \subsection{
 Reaction 2.6v7
+$ e + H_2(v=6) \rightarrow e + H_2(v=7) $
 }
 
 \begin{small}\begin{verbatim}
@@ -348,6 +405,7 @@ $\Delta_{E_{elec}}= 0.365140$
 
 \subsection{
 Reaction 2.6v5
+$ e + H_2(v=6) \rightarrow e + H_2(v=5) $
 }
 
 
@@ -373,6 +431,7 @@ $\Delta_{E_{elec}}=-0.304965$
 
 \subsection{
 Reaction 2.7v8
+$ e + H_2(v=7) \rightarrow e + H_2(v=8) $
 }
 
 
@@ -393,6 +452,7 @@ $\Delta_{E_{elec}}= 0.335052$
 
 \subsection{
 Reaction 2.7v6
+$ e + H_2(v=7) \rightarrow e + H_2(v=6) $
 }
 
 
@@ -418,6 +478,7 @@ $\Delta_{E_{elec}}=-0.274877$
 
 \subsection{
 Reaction 2.8v9
+$ e + H_2(v=8) \rightarrow e + H_2(v=9) $
 }
 
 \begin{small}\begin{verbatim}
@@ -437,6 +498,7 @@ $\Delta_{E_{elec}}= 0.304965$
 
 \subsection{
 Reaction 2.8v7
+$ e + H_2(v=8) \rightarrow e + H_2(v=7) $
 }
 
 
@@ -462,6 +524,7 @@ $\Delta_{E_{elec}}=-0.244789$
 
 \subsection{
 Reaction 2.9v10
+$ e + H_2(v=9) \rightarrow e + H_2(v=10) $
 }
 
 
@@ -482,6 +545,7 @@ $\Delta_{E_{elec}}= 0.274877$
 
 \subsection{
 Reaction 2.9v8
+$ e + H_2(v=9) \rightarrow e + H_2(v=8) $
 }
 
 
@@ -507,6 +571,7 @@ $\Delta_{E_{elec}}=-0.214702$
 
 \subsection{
 Reaction 2.10v11
+$ e + H_2(v=10) \rightarrow e + H_2(v=11) $
 }
 
 
@@ -527,6 +592,7 @@ $\Delta_{E_{elec}}= 0.244789$
 
 \subsection{
 Reaction 2.10v9
+$ e + H_2(v=10) \rightarrow e + H_2(v=9) $
 }
 
 
@@ -553,6 +619,7 @@ $\Delta_{E_{elec}}=-0.184614$
 
 \subsection{
 Reaction 2.11v12
+$ e + H_2(v=11) \rightarrow e + H_2(v=12) $
 }
 
 
@@ -573,6 +640,7 @@ $\Delta_{E_{elec}}= 0.214702$
 
 \subsection{
 Reaction 2.11v10
+$ e + H_2(v=11) \rightarrow e + H_2(v=10) $
 }
 
 
@@ -599,6 +667,7 @@ $\Delta_{E_{elec}}=-0.154526$
 
 \subsection{
 Reaction 2.12v13
+$ e + H_2(v=12) \rightarrow e + H_2(v=13) $
 }
 
 
@@ -619,6 +688,7 @@ $\Delta_{E_{elec}}= 0.184614$
 
 \subsection{
 Reaction 2.12v11
+$ e + H_2(v=12) \rightarrow e + H_2(v=11) $
 }
 
 
@@ -644,6 +714,7 @@ $\Delta_{E_{elec}}=-0.124438$
 
 \subsection{
 Reaction 2.13v14
+$ e + H_2(v=13) \rightarrow e + H_2(v=14) $
 }
 
 
@@ -664,6 +735,7 @@ $\Delta_{E_{elec}}= 0.154526$
 
 \subsection{
 Reaction 2.13v12
+$ e + H_2(v=13) \rightarrow e + H_2(v=12) $
 }
 
 
@@ -690,6 +762,7 @@ $\Delta_{E_{elec}}= 0.124438$
 
 \subsection{
 Reaction 2.14v13
+$ e + H_2(v=14) \rightarrow e + H_2(v=13) $
 }
 
 
@@ -705,25 +778,34 @@ Reaction 2.14v13
 
 \newpage
 
-now: loss from vibrational state v: channel a=1 to 3. notation: ..2.vla,
+now: loss from vibrational state $v$: loss channel $a=1, a=2, a=3$. Notation: ..2.vla,
+\begin{itemize}
 
-a=1: to triplet b3sigma$\rightarrow$H+H
+\item{a=1}: $e + H_2(v) $ to repulsive triplet state $b^3\Sigma \rightarrow H+H $ \\
 
-     currently available: Hydhel 2.2.5 (v=0) and Greenland scaling,
+     currently available: Hydhel 2.2.5 (v=0) and Greenland scaling \cite{kn:Green},
 
-                      or: Tennyson-rate
+                      or, as alternative: Tennyson rate coefficient (J. Tennyson, 2001)
 
-a=2: ion conversion
+\item{a=2}: ion conversion $p+H_2(v) \rightarrow H_2^+  +  H$
 
-     currently available: Hydhel 3.2.3 (v=0) and Greenland scaling,
+     currently available: Hydhel 3.2.3 $(v=0)$ and Greenland scaling \cite{kn:Green}, i.e.:
+     
+     the data given here are evaluated from HYDHEL, H.3 3.2.3, at $E_{H_2}=0.37\approx 0.0$. The temperature scale here
+     is $T=T_{H_2} = T_p$, i.e. the HYDHEL H.3 fit is evaluated at 
+     
+     $T_{eff}= m/m_1 T_1 + m/m_2 T_2 = 1.5 T$, with $m=1, m_1=1, m_2=2$
+     and $T_1=T_p, T_2=T_{H_2}$. 
 
-a=3: to H2- $\rightarrow$ H + H-
+\item{a=3}: dissociative attachment to $e + H_2(v) \rightarrow H_2^- \rightarrow H(n) + H^-$, 
 
-
+Greenland scaling, \cite{kn:Green}
+\end{itemize}
+\newpage
 
 \subsection{
 Reaction 2.0l1
-$ H_2(v=0) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=0) \rightarrow b_{triplet}\rightarrow e +  H + H $ (Greenland)
 }
 
 (HYDHEL 2.2.5, and Greenland scaling)
@@ -739,7 +821,7 @@ $ H_2(v=0) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 \end{verbatim}\end{small}
 \subsection{
 Reaction 2.0l1T
-$  H_2(v=0) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=0) \rightarrow b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 \begin{small}\begin{verbatim}
@@ -766,7 +848,7 @@ $ p + H_2(v=0) \rightarrow H + H_2^+$ (ion conversion)
 \end{verbatim}\end{small}
 \subsection{
 Reaction 2.0l3
- $ H_2(v=0) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=0) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -782,7 +864,7 @@ Reaction 2.0l3
 \newpage
 \subsection{
 Reaction 2.1l1
-$ H_2(v=1) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=1) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -799,7 +881,7 @@ $ H_2(v=1) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.1l1T
-$  H_2(v=1) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=1) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 \begin{small}\begin{verbatim}
@@ -832,7 +914,7 @@ $ p + H_2(v=1) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.1l3
- $ H_2(v=2) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=2) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -848,7 +930,7 @@ Reaction 2.1l3
 \newpage
 \subsection{
 Reaction 2.2l1
-$ H_2(v=2) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=2) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -864,7 +946,7 @@ $ H_2(v=2) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.2l1T
-$  H_2(v=2) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=2) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -896,7 +978,7 @@ $ p + H_2(v=2) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.2l3
- $ H_2(v=2) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=2) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -913,7 +995,7 @@ Reaction 2.2l3
 \newpage
 \subsection{
 Reaction 2.3l1
-$ H_2(v=3) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=3) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -930,7 +1012,7 @@ $ H_2(v=3) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.3l1T
-$  H_2(v=3) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$  e + H_2(v=3) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -955,6 +1037,7 @@ $ p + H_2(v=3) \rightarrow H + H_2^+$ (ion conversion)
   b3  6.341146465792D-01  b4 -7.939962165046D-02  b5 -3.858201085727D-03
   b6  1.748100436976D-03  b7 -1.472792368815D-04  b8  4.123039365518D-06
 
+
   Max. rel. Error:    .0010 %
   Mean rel. Error:    .0003 %
 
@@ -963,7 +1046,7 @@ $ p + H_2(v=3) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.3l3
- $ H_2(v=3) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=3) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -981,7 +1064,7 @@ Reaction 2.3l3
 \newpage
 \subsection{
 Reaction 2.4l1
-$ H_2(v=4) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=4) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -999,7 +1082,7 @@ $ H_2(v=4) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.4l1T
-$  H_2(v=4) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$  e + H_2(v=4) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1032,7 +1115,7 @@ $ p + H_2(v=4) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.4l3
- $ H_2(v=4) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=4) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1050,7 +1133,7 @@ Reaction 2.4l3
 \newpage
 \subsection{
 Reaction 2.5l1
-$ H_2(v=5) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=5) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1067,8 +1150,8 @@ $ H_2(v=5) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 
 \subsection{
-$  H_2(v=5) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
 Reaction 2.5l1T
+$  e + H_2(v=5) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 \begin{small}\begin{verbatim}
@@ -1100,7 +1183,7 @@ $ p + H_2(v=5) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.5l3
- $ H_2(v=5) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=5) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1118,7 +1201,7 @@ Reaction 2.5l3
 \newpage
 \subsection{
 Reaction 2.6l1
-$ H_2(v=6) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=6) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1135,7 +1218,7 @@ $ H_2(v=6) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.6l1T
-$  H_2(v=6) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$  e + H_2(v=6) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1169,7 +1252,7 @@ $ p + H_2(v=6) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.6l3
- $ H_2(v=6) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=6) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1188,7 +1271,7 @@ Reaction 2.6l3
 \newpage
 \subsection{
 Reaction 2.7l1
-$ H_2(v=7) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=7) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1206,7 +1289,7 @@ $ H_2(v=7) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.7l1T
-$  H_2(v=7) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=7) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1240,7 +1323,7 @@ $ p + H_2(v=7) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.7l3
- $ H_2(v=7) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=7) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1259,7 +1342,7 @@ Reaction 2.7l3
 \newpage
 \subsection{
 Reaction 2.8l1
-$ H_2(v=8) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=8) \rightarrow e + b_{triplet}\rightarrow e +  H + H $ (Greenland)
 }
 
 
@@ -1277,7 +1360,7 @@ $ H_2(v=8) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.8l1T
-$  H_2(v=8) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=8) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1311,7 +1394,7 @@ $ p + H_2(v=8) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.8l3
- $ H_2(v=8) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=8) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1330,7 +1413,7 @@ Reaction 2.8l3
 \newpage
 \subsection{
 Reaction 2.9l1
-$ H_2(v=9) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=9) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1348,7 +1431,7 @@ $ H_2(v=9) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.9l1T
-$  H_2(v=9) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=9) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1382,7 +1465,7 @@ $ p + H_2(v=9) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.9l3
- $ H_2(v=9) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=9) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1401,7 +1484,7 @@ Reaction 2.9l3
 \newpage
 \subsection{
 Reaction 2.10l1
-$ H_2(v=10) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=10) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1419,7 +1502,7 @@ $ H_2(v=10) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.10l1T
-$  H_2(v=10) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=10) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1453,7 +1536,7 @@ $ p + H_2(v=10) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.10l3
- $ H_2(v=10) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=10) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1472,7 +1555,7 @@ Reaction 2.10l3
 \newpage
 \subsection{
 Reaction 2.11l1
-$ H_2(v=11) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=11) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1490,7 +1573,7 @@ $ H_2(v=11) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.11l1T
-$  H_2(v=11) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$  e + H_2(v=11) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1524,7 +1607,7 @@ $ p + H_2(v=11) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.11l3
- $ H_2(v=11) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=11) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1543,7 +1626,7 @@ Reaction 2.11l3
 \newpage
 \subsection{
 Reaction 2.12l1
-$ H_2(v=12) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=12) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1561,7 +1644,7 @@ $ H_2(v=12) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.12l1T
-$  H_2(v=12) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$  e + H_2(v=12) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1595,7 +1678,7 @@ $ p + H_2(v=12) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.12l3
- $ H_2(v=12) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=12) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1614,7 +1697,7 @@ Reaction 2.12l3
 \newpage
 \subsection{
 Reaction 2.13l1
-$ H_2(v=13) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=13) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1632,7 +1715,7 @@ $ H_2(v=13) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.13l1T
-$  H_2(v=13) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=13) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1666,7 +1749,7 @@ $ p + H_2(v=13) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.13l3
- $ H_2(v=13) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=13) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1685,7 +1768,7 @@ Reaction 2.13l3
 \newpage
 \subsection{
 Reaction 2.14l1
-$ H_2(v=14) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland) 
+$ e + H_2(v=14) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Greenland)
 }
 
 
@@ -1703,7 +1786,7 @@ $ H_2(v=14) \rightarrow b_{triplet}\rightarrow H + H $ (Greenland)
 
 \subsection{
 Reaction 2.14l1T
-$  H_2(v=14) \rightarrow b_{triplet}\rightarrow H + H $ (Tennyson)
+$ e +  H_2(v=14) \rightarrow e + b_{triplet}\rightarrow e + H + H $ (Tennyson)
 }
 
 
@@ -1737,7 +1820,7 @@ $ p + H_2(v=14) \rightarrow H + H_2^+$ (ion conversion)
 
 \subsection{
 Reaction 2.14l3
- $ H_2(v=14) \rightarrow H_2^- \rightarrow H + H^-$
+ $ e + H_2(v=14) \rightarrow e + H_2^- \rightarrow e + H + H^-$
 }
 
 
@@ -1754,7 +1837,7 @@ Reaction 2.14l3
 \newpage
 \subsection{
 Reaction 2.1.8rs
- $ p + e \rightarrow H(n=1) + h\nu$, direct rad.rec 
+ $ p + e \rightarrow H(n=1) + h\nu$, direct rad.rec
 }
 Fujimoto, single step rate, for Lyman rad.rec. continuum emission
 to be used as Lyman-cont. source rate
@@ -1838,9 +1921,9 @@ Reaction 2.1.5a  $H + e \rightarrow H^+ + 2e, Ly_\alpha$-removed }
 Reaction 2.1.5b  $H(n=1) + e \rightarrow H^+ + 2e, Ly_\alpha$-removed}
 
 
-   Effective hydrogenic ionisation rate. 
+   Effective hydrogenic ionisation rate.
    Ly-alpha removed, Formulation I, data for radiation transfer
-   or for Lyman-alpha opaque case, all other Lyman lines transparent, 
+   or for Lyman-alpha opaque case, all other Lyman lines transparent,
    and n=2 state metastable
 \begin{small}\begin{verbatim}
 
@@ -1894,7 +1977,7 @@ Reaction 2.1.5b  $H(n=1) + e \rightarrow H^+ + 2e, Ly_\alpha$-removed}
 Reaction 2.1.5c  $H(n=1) + e \rightarrow H(n=2) + e, Ly_\alpha$-removed}
 
 
-   Effective hydrogenic ionisation rate. 
+   Effective hydrogenic ionisation rate.
    Ly-alpha removed, Formulation I, data for radiation transfer
 
 \begin{small}\begin{verbatim}
@@ -1948,7 +2031,7 @@ Reaction 2.1.5c  $H(n=1) + e \rightarrow H(n=2) + e, Ly_\alpha$-removed}
 Reaction 2.1.5d  $H(n=2) + e \rightarrow H(n=1) + e, Ly_\alpha$-removed}
 
 
-   Effective hydrogenic ionisation rate. 
+   Effective hydrogenic ionisation rate.
    Ly-alpha removed, Formulation I, data for radiation transfer
 
 \begin{small}\begin{verbatim}
@@ -2003,7 +2086,7 @@ Reaction 2.1.5e  $H(n=2) + e \rightarrow H+ + 2e, Ly_\alpha$-removed
 }
 
 
-   Effective hydrogenic ionisation rate. 
+   Effective hydrogenic ionisation rate.
    Ly-alpha removed, Formulation I, data for radiation transfer
 
 \begin{small}\begin{verbatim}
@@ -2222,4 +2305,16 @@ Reaction 2.1.8c  $H^+ + e \rightarrow H(n=2), Ly_\alpha$-removed
 \epsffile{H2vibr_PS/hydrc.eps}
 \end{figure}
 \newpage
+\section{Appendix}
+\newpage
+\begin{thebibliography}{99}
+\bibitem{kn:Sawada} Sawada,K.,  Fujimoto,T., J. Appl. Phys.78 (5), (1995), p2913
+\bibitem{kn:Green} Greenland, T., Reiter, D.,
+                   ``The Role of Molecular Hydrogen in Plasma
+                    Recombination", Report, JUEL-3258 (1996), FZ-J\"ulich
+\bibitem{kn:JRS} R.K. Janev, Reiter, D., U. Samm
+                   ``Collision Processes in Low-Temperature Hydrogen Plasmas"
+Report, JUEL-4105 (December 2003), FZ-J\"ulich, ISSN 0944-2952
+ \end{thebibliography}
+
 \end{document}
