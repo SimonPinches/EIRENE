@@ -12,6 +12,7 @@ c           otherwise sometimes problems with non-closing polygons encountered.
       USE EIRMOD_CGRPTL
       USE EIRMOD_CTRIG
       USE EIRMOD_CGRID
+      USE EIRMOD_CTRCEI
       IMPLICIT NONE
  
  
@@ -25,6 +26,7 @@ c           otherwise sometimes problems with non-closing polygons encountered.
       INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
       REAL(SP) :: xmin,xmax,ymin,ymax,deltax,deltay,delta,xcm,ycm
       REAL(SP) :: XP,YP
+      LOGICAL  :: LCLOSED
  
 C INITIALISIERUNG DER PLOTDATEN
       xmin = CH2X0-CH2MX
@@ -42,6 +44,7 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED '
       CALL EIRENE_LEER(1)
+
       NCONT = 0
       DO I=1,NLIMI
         NCONT = MAX(NCONT,ABS(ILPLG(I)))
@@ -50,8 +53,11 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
         NCONT = MAX(NCONT,ABS(ILPLG(I)))
       ENDDO
  
-      WRITE (iunout,*) 'NUMBER OF CONTOURS FOR FEM MESH: ',NCONT
-      CALL EIRENE_LEER(1)
+      IF (TRCSUR) THEN
+        WRITE (iunout,*) 'NUMBER OF CONTOURS FOR FEM MESH: ',NCONT
+        CALL EIRENE_LEER(1)
+      END IF
+
       if (ncont == 0) return
  
       ALLOCATE (NCONPOINT(NCONT))
@@ -287,14 +293,18 @@ CDR  >              (YPE .EQ. PARTCONT(J,2,2))) THEN
         IF ((PARTCONT(1,1,1) .NE. PARTCONT(IPOIN,2,1)) .OR.
      >      (PARTCONT(1,1,2) .NE. PARTCONT(IPOIN,2,2))) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' IS NOT CLOSED'
+          LCLOSED = .FALSE.
         ELSE
           WRITE(iunout,*) 'CLOSED CONTOUR ',ICONT
+          LCLOSED = .TRUE.
         ENDIF
-        do i=1,ipoin
-          write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
-     >                 partcont(i,1,1),partcont(i,1,2),
-     >                 partcont(i,2,1),partcont(i,2,2)
-        enddo
+        IF (TRCSUR) THEN
+          do i=1,ipoin
+            write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
+     >                   partcont(i,1,1),partcont(i,1,2),
+     >                   partcont(i,2,1),partcont(i,2,2)
+          enddo
+        END IF
         XP = PARTCONT(1,1,1)
         YP = PARTCONT(1,1,2)
         call grjmp(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
@@ -303,9 +313,15 @@ CDR  >              (YPE .EQ. PARTCONT(J,2,2))) THEN
           YP = PARTCONT(I,1,2)
           call grdrw(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
         ENDDO
-        XP = PARTCONT(1,1,1)
-        YP = PARTCONT(1,1,2)
-        call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
+        IF (LCLOSED) THEN
+          XP = PARTCONT(1,1,1)
+          YP = PARTCONT(1,1,2)
+          call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
+        ELSE 
+          XP = PARTCONT(IPOIN,2,1)
+          YP = PARTCONT(IPOIN,2,2)
+          call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
+        END IF
  
 C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
 C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
@@ -329,39 +345,46 @@ C  - GEGEN UHRZEIGERSINN FUER AEUSSERE BEGRENZUNGEN DES GEBIETES (NEGATIV)
           ENDIF
         ENDDO
  
-        IF (IMN .EQ. 0) THEN
-          XT = PARTCONT(1,1,1)
-          YT = PARTCONT(1,1,2)
+        IF (IPOIN > 1) THEN
+          IF (IMN .EQ. 0) THEN
+            XT = PARTCONT(1,1,1)
+            YT = PARTCONT(1,1,2)
 C  PUNKT, DER IM UMLAUF DER VORHERGEHENDE IST
-          X1 = PARTCONT(IPOIN,1,1)
-          Y1 = PARTCONT(IPOIN,1,2)
+            X1 = PARTCONT(IPOIN,1,1)
+            Y1 = PARTCONT(IPOIN,1,2)
 C  PUNKT, DER IM UMLAUF DER NAECHSTE IST
-          X2 = PARTCONT(1,2,1)
-          Y2 = PARTCONT(1,2,2)
-        ELSE
+            X2 = PARTCONT(1,2,1)
+            Y2 = PARTCONT(1,2,2)
+          ELSE
 C  SONDERFALL IMN=IPOIN ENTFAELLT, DA ERSTER PUNKT GLEICH LETZTER
 C  PUNKT GILT
-          XT = PARTCONT(IMN,2,1)
-          YT = PARTCONT(IMN,2,2)
+            XT = PARTCONT(IMN,2,1)
+            YT = PARTCONT(IMN,2,2)
 C  PUNKT, DER IM UMLAUF DER VORHERGEHENDE IST
-          X1 = PARTCONT(IMN,1,1)
-          Y1 = PARTCONT(IMN,1,2)
+            X1 = PARTCONT(IMN,1,1)
+            Y1 = PARTCONT(IMN,1,2)
 C  PUNKT, DER IM UMLAUF DER NAECHSTE IST
-          X2 = PARTCONT(IMN+1,2,1)
-          Y2 = PARTCONT(IMN+1,2,2)
- 
-        ENDIF
+            X2 = PARTCONT(IMN+1,2,1)
+            Y2 = PARTCONT(IMN+1,2,2)
+          ENDIF
  
 C  BESTIMME POLARWINKEL VON (X1,Y1) UND (X2,Y2) MIT (XT,YT) ALS URSPRUNG
-        PHI1 = ATAN2 (Y1-YT,X1-XT)
-        PHI2 = ATAN2 (Y2-YT,X2-XT)
+          PHI1 = ATAN2 (Y1-YT,X1-XT)
+          PHI2 = ATAN2 (Y2-YT,X2-XT)
  
-        IF (PHI2 .GT. PHI1) THEN
+          IF (PHI2 .GT. PHI1) THEN
 C  ABSPEICHERUNG ERFOLGTE IM UHRZEIGERSINN
+            ISTORE = 1
+          ELSE
+            ISTORE = -1
+          ENDIF
+        
+        ELSE 
+           
           ISTORE = 1
-        ELSE
-          ISTORE = -1
+
         ENDIF
+
 C  IUHR=ILPLG > 0 ==> IM UHRZEIGERSINN AUSGEBEN
 C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
         IWAN=1

@@ -209,6 +209,7 @@ csw 25sep08
       NJUMP  = 0
       IUNIN  = 0
       IUNOUT = 6 + IFOFF
+      IF (NRPES > 1) IUNOUT = 7 + IFOFF
       NIMINT = 0
       ITRJ   = 0
       IVTKOUT= 28

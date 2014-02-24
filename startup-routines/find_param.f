@@ -6,6 +6,7 @@ C
 !pb  02.03.07:  NUMSEC=4 introduced
 !pb  20.03.07:  include input block written by HYDKIN default model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
+!dr  16.01.14:  default NOPTIM changed from 1 to NRAD, some printout rearranged
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -37,12 +38,14 @@ C
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
-     .           LHABER, NLONE, LTSTV, LINCLUDE, NLCASCAD, NLDFST
+     .           LHABER, NLONE, LTSTV, LINCLUDE, NLCASCAD, NLDFST,
+     .           NLOLDRAN, NLOCTREE
       LOGICAL :: NLSLB, NLCRC,  NLELL, NLTRI,  NLPLG, NLFEM, NLTET,
      .           NLGEN
       LOGICAL :: NLRAD, NLPOL,  NLTOR, NLADD,  NLMLT, NLTRIM
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
+      LOGICAL :: LDEFSTOR
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
@@ -59,7 +62,7 @@ C  GEOMETRY
       N1ST=1
       N2ND=1
       N3RD=1
-!pb      NADD=1
+!pb   NADD=1
       NADD=0
       NTOR=1
       NRTAL=0
@@ -72,8 +75,6 @@ C  GEOMETRY
       NTRII=0
       NTETRA=1
       NCOORD=1
-      NOPTIM=1
-      NOPTM1=1
 C  PRIMARY SOURCE
       NSTRA=1
       NSRFS=1
@@ -117,11 +118,23 @@ C  ATOMIC DATA
       NPRNL=0
       NVLPR=0
       NSRPR=0
+
+
+C  OPTIMIZATION OF GEOMETRICAL CALCULATIONS: STROAGE FOR IGJUM3(NCELL,NSURF)
+C  ALSO AFFECTS NLIMI(NCELL), NLIME(NCELL) OPTIMIZATION OF CALLS TO TIMEA.F
+C  NOPTIM=1   IGJUM3 AND NLIMI, NLIME ARRAYS ARE REMOVED, NO OPTIMIZATION
+C  ELSE:  STORAGE PROVIDED, CH3 OPTIONS CAN BE USED,  IGJUM3(NOPTIM,NSURF), ETC.
+      NOPTIM=1  ! DEFAULT WILL BE AUTOMATICALLY SET TO NRAD, BELOW, LDEFSTOR
+
+C  BIT ARITHMETIC FOR (LARGE) IGJUM.. ARRAYS: ONLY VALUES 0 OR 1 ARE ON THESE ARRAYS
+C  NOPTIM=1   USE REGULAR INTEGER ARITHMETIC (8 BIT PER INTEGER)
+C  NOPTM1= ???   DO WHAT ??  DEFAULT  ?  LDEFSTOR ?
+      NOPTM1=1
  
-C  Stellarator geometry?
-C  NGEOM_USR = 1  ==> Stellarator-Geometrie
-C  NGEOM_USR = 0  ==> keine Stellarator-Geometrie
-      NGEOM_USR=0
+C  USER DEFINED GEOMETRY (LEVGEO=10)?
+C  NGEOM_USR = 1  ==> STORAGE PROVIDED FOR USER DEFINED GEOMETRY OPTION
+C  NGEOM_USR = 0  ==> NO STORAGE FOR USER DEFINED GEOMETRY
+      NGEOM_USR=0   ! LDEFSTOR:  SHOULD BE MADE DEPENDENT ON WHETHER LEVGEO=10 OR NOT
  
 C  Input from coupling routine
 C  NCOUP_INPUT = 0  ==> NO PLASMA INPUT FROM COUPLING ROUTINE
@@ -156,27 +169,32 @@ C  13,14, AND 15
  
       REWIND IUNIN
 C
+      CALL EIRENE_LEER(3)
+      WRITE (IUNOUT,*) 'PRINTOUT FROM EIRENE PRE-PROCESSING:'
+      WRITE (IUNOUT,*) 'BROWSE INPUT FOR STORAGE NEEDS (FIND_PARAM.F)'
+      CALL EIRENE_LEER(1)	
 C
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1).EQ.'*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
-     .                    NTIME0,NTIME
+     .                  NTIME0,NTIME
  
       READ (IUNIN,'(A72)') ZEILE
+      LDEFSTOR = .FALSE.
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
+        LDEFSTOR = .TRUE.
         READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL,NREAC_ADD
-        READ (IUNIN,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
-     .                    NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
-     .                    NLCASCAD
-      ELSE
-        READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
-     .                    NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
-     .                    NLCASCAD
-      END IF
+        READ (IUNIN,'(A72)') ZEILE
+      ENDIF
+C
+      READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
+     .                  NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
+     .                  NLOLDRAN,NLCASCAD,NLOCTREE
+
  
       NSTORAM = MIN(NSTORAM,9)
       IF (NSTORAM < 9) NSTORAM = 0
@@ -968,12 +986,16 @@ C   READ TRCSRC (60 LOGICALS PER LINE)
 
       READ (IUNIN,6666) NVOLPR
       NVLPR=NVOLPR
+C  ERGODIC OPTION NEEDS PRINTOUT OF VOLUME, AND ONE, TWO OR THREE FURTHER TALLIES AT LEAST
+      IF (NLERG) NVLPR=MAX(4,NVLPR)
       DO J=1,NVOLPR
         READ (IUNIN,*)
       END DO
 C
       READ (IUNIN,6666) NSURPR
       NSRPR=NSURPR
+C  ERGODIC OPTION NEEDS PRINTOUT FROM TIME-HORIZON
+      IF (NLERG) NSRPR=MAX(1,NSRPR)
       DO J=1,NSURPR
         READ (IUNIN,*)
       END DO
@@ -1120,6 +1142,9 @@ C
       ENDIF
  
       REWIND IUNIN
+      CALL EIRENE_LEER(1)
+      WRITE (IUNOUT,*) 'AUTOMATTED STORAGE SETTING (FIND_PARAM.F)'
+      CALL EIRENE_LEER(1)	
 C
       WRITE (iunout,*) 'N1ST = ',N1ST
       WRITE (iunout,*) 'N2ND = ',N2ND
@@ -1135,15 +1160,20 @@ C
       WRITE (iunout,*) 'NTRI = ',NTRI
       WRITE (iunout,*) 'NTETRA = ',NTETRA
       WRITE (iunout,*) 'NCOORD = ',NCOORD
-      WRITE (iunout,*) 'NOPTIM = ',NOPTIM
-      WRITE (iunout,*) 'NOPTM1 = ',NOPTM1
+
+      CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NSTRA = ',NSTRA
       WRITE (iunout,*) 'NSRFS = ',NSRFS
       WRITE (iunout,*) 'NSTEP = ',NSTEP
+
+      CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NATM = ',NATM
       WRITE (iunout,*) 'NMOL = ',NMOL
       WRITE (iunout,*) 'NION = ',NION
+      WRITE (iunout,*) 'NPHOT= ',NPHOT
       WRITE (iunout,*) 'NPLS = ',NPLS
+
+      CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NADV = ',NADV
       WRITE (iunout,*) 'NADS = ',NADS
       WRITE (iunout,*) 'NCLV = ',NCLV
@@ -1153,21 +1183,38 @@ C
       WRITE (iunout,*) 'NAIN = ',NAIN
       WRITE (iunout,*) 'NCOP = ',NCOP
       WRITE (iunout,*) 'NBGK = ',NBGK
-      WRITE (iunout,*) 'NSD = ',NSD
+      WRITE (iunout,*) 'NSD =  ',NSD
       WRITE (iunout,*) 'NSDW = ',NSDW
-      WRITE (iunout,*) 'NCV = ',NCV
+      WRITE (iunout,*) 'NCV =  ',NCV
+
+      CALL EIRENE_LEER(1)
+      WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS" '
       WRITE (iunout,*) 'NREAC = ',NREAC
-      WRITE (iunout,*) 'NREC = ',NREC
-      WRITE (iunout,*) 'NRDS = ',NRDS
-      WRITE (iunout,*) 'NRCX = ',NRCX
-      WRITE (iunout,*) 'NREL = ',NREL
-      WRITE (iunout,*) 'NRPI = ',NRPI
-      WRITE (iunout,*) 'NGEOM_USR = ',NGEOM_USR
+      WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
+C     WRITE (iunout,*) 'NREC =  ',NREC
+C     WRITE (iunout,*) 'NRDS =  ',NRDS
+C     WRITE (iunout,*) 'NRCX =  ',NRCX
+C     WRITE (iunout,*) 'NREL =  ',NREL
+C     WRITE (iunout,*) 'NRPI =  ',NRPI
+
+      CALL EIRENE_LEER(1)
+      WRITE (IUNOUT,*) 'SETTING OF STORAGE OPTIMIZATION OPTIONS'
+      IF (.NOT.LDEFSTOR) THEN
+C  ADJUST SOME DEFAULT STORAGE OPTIMIZATION SETTING
+        NOPTIM=N1ST*N2ND*N3RD+NADD     ! = NRAD ??
+C       NOPTM1=   ??
+      ENDIF
+C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
+      WRITE (iunout,*) 'NOPTIM =      ',NOPTIM
+      WRITE (iunout,*) 'NOPTM1 =      ',NOPTM1
+      WRITE (iunout,*) 'NGEOM_USR =   ',NGEOM_USR
       WRITE (iunout,*) 'NCOUP_INPUT = ',NCOUP_INPUT
-      WRITE (iunout,*) 'NSMSTRA = ',NSMSTRA
-      WRITE (iunout,*) 'NSTORAM = ',NSTORAM
-      WRITE (iunout,*) 'NGSTAL = ',NGSTAL
-      WRITE (iunout,*) 'NRPES  = ',NRPES
+      WRITE (iunout,*) 'NSMSTRA =     ',NSMSTRA
+      WRITE (iunout,*) 'NSTORAM =     ',NSTORAM
+      WRITE (iunout,*) 'NGSTAL =      ',NGSTAL
+      WRITE (iunout,*) 'NRPES  =      ',NRPES
+C
+      CALL EIRENE_LEER(2)
 C
       RETURN
 C

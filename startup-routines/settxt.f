@@ -390,21 +390,41 @@ C
       TXTTLW(1,49)='ENERGY FLUX, EMITTED, B.I. => PHOTONS            '
       TXTTLW(1,50)='ENERGY FLUX, INCIDENT, BULK IONS                 '
  
-      TXTTLW(1,51)='SPUTTERED FLUX BY INCIDENT ATOMS                 '
-      TXTTLW(1,52)='SPUTTERED FLUX BY INCIDENT MOLECULES             '
-      TXTTLW(1,53)='SPUTTERED FLUX BY INCIDENT TEST IONS             '
-      TXTTLW(1,54)='SPUTTERED FLUX BY INCIDENT PHOTONS               '
-      TXTTLW(1,55)='SPUTTERED FLUX BY INCIDENT BULK IONS             '
-      TXTTLW(1,56)='SPUTTERED FLUX, TOTAL                            '
-C  TALLY NTLSA=57 (SEE PARMMOD.F)
+      TXTTLW(1,51)='SPUTTERED FLUX BY INCIDENT ATS. => ATOMS         '
+      TXTTLW(1,52)='SPUTTERED FLUX BY INCIDENT MLS. => ATOMS         '
+      TXTTLW(1,53)='SPUTTERED FLUX BY INCIDENT T.I. => ATOMS         '
+      TXTTLW(1,54)='SPUTTERED FLUX BY INCIDENT PHS. => ATOMS         '
+      TXTTLW(1,55)='SPUTTERED FLUX BY INCIDENT B.I. => ATOMS         '
+      TXTTLW(1,56)='SPUTTERED FLUX BY INCIDENT ATS. => MOLECULES     '
+      TXTTLW(1,57)='SPUTTERED FLUX BY INCIDENT MLS. => MOLECULES     '
+      TXTTLW(1,58)='SPUTTERED FLUX BY INCIDENT T.I. => MOLECULES     '
+      TXTTLW(1,59)='SPUTTERED FLUX BY INCIDENT PHS. => MOLECULES     '
+      TXTTLW(1,60)='SPUTTERED FLUX BY INCIDENT B.I. => MOLECULES     '
+      TXTTLW(1,61)='SPUTTERED FLUX BY INCIDENT ATS. => TEST IONS     '
+      TXTTLW(1,62)='SPUTTERED FLUX BY INCIDENT MLS. => TEST IONS     '
+      TXTTLW(1,63)='SPUTTERED FLUX BY INCIDENT T.I. => TEST IONS     '
+      TXTTLW(1,64)='SPUTTERED FLUX BY INCIDENT PHS. => TEST IONS     '
+      TXTTLW(1,65)='SPUTTERED FLUX BY INCIDENT B.I. => TEST IONS     '
+      TXTTLW(1,66)='SPUTTERED FLUX BY INCIDENT ATS. => PHOTONS       '
+      TXTTLW(1,67)='SPUTTERED FLUX BY INCIDENT MLS. => PHOTONS       '
+      TXTTLW(1,68)='SPUTTERED FLUX BY INCIDENT T.I. => PHOTONS       '
+      TXTTLW(1,69)='SPUTTERED FLUX BY INCIDENT PHS. => PHOTONS       '
+      TXTTLW(1,70)='SPUTTERED FLUX BY INCIDENT B.I. => PHOTONS       '
+      TXTTLW(1,71)='SPUTTERED FLUX BY INCIDENT ATS. => BULK IONS     '
+      TXTTLW(1,72)='SPUTTERED FLUX BY INCIDENT MLS. => BULK IONS     '
+      TXTTLW(1,73)='SPUTTERED FLUX BY INCIDENT T.I. => BULK IONS     '
+      TXTTLW(1,74)='SPUTTERED FLUX BY INCIDENT PHS. => BULK IONS     '
+      TXTTLW(1,75)='SPUTTERED FLUX BY INCIDENT B.I. => BULK IONS     '
+      TXTTLW(1,76)='SPUTTERED FLUX, TOTAL                            '
+C  TALLY NTLSA=77 (SEE PARMMOD.F)
 C   ADDIT. TALLIES, SUBR. UPSUSR.F
 C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10D
-      TXTTLW(1,57)='ADDITIONAL SURFACE TALLY, SUBR. UPSUSR.F         '
-C  TALLY NTLSR=58 (SEE PARMMOD.F)
+      TXTTLW(1,77)='ADDITIONAL SURFACE TALLY, SUBR. UPSUSR.F         '
+C  TALLY NTLSR=78 (SEE PARMMOD.F)
 C   ADDIT. TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
 C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10E
-      TXTTLW(1,58)='ALGEBRAIC EXPRESSION IN SURFACE AVERAGED TALLIES '
-      TXTTLW(1,59)='PUMPED FLUX BY SPECIES                           '
+      TXTTLW(1,78)='ALGEBRAIC EXPRESSION IN SURFACE AVERAGED TALLIES '
+      TXTTLW(1,79)='PUMPED FLUX BY SPECIES                           '
 C
       DO J=1,NTALS
         TXTTLW(2:N2MX,J)=TXTTLW(1,J)
@@ -468,9 +488,35 @@ C
       TXTUNW(1,54)='AMP                     '
       TXTUNW(1,55)='AMP                     '
       TXTUNW(1,56)='AMP                     '
-      TXTUNW(1,57)='TO BE READ              '
-      TXTUNW(1,58)='TO BE READ              '
+      TXTUNW(1,51)='AMP                     '
+      TXTUNW(1,52)='AMP                     '
+      TXTUNW(1,53)='AMP                     '
+      TXTUNW(1,54)='AMP                     '
+      TXTUNW(1,55)='AMP                     '
+      TXTUNW(1,56)='AMP                     '
+      TXTUNW(1,57)='AMP                     '
+      TXTUNW(1,58)='AMP                     '
       TXTUNW(1,59)='AMP                     '
+      TXTUNW(1,60)='AMP                     '
+      TXTUNW(1,61)='AMP                     '
+      TXTUNW(1,62)='AMP                     '
+      TXTUNW(1,63)='AMP                     '
+      TXTUNW(1,64)='AMP                     '
+      TXTUNW(1,65)='AMP                     '
+      TXTUNW(1,66)='AMP                     '
+      TXTUNW(1,67)='AMP                     '
+      TXTUNW(1,68)='AMP                     '
+      TXTUNW(1,69)='AMP                     '
+      TXTUNW(1,70)='AMP                     '
+      TXTUNW(1,71)='AMP                     '
+      TXTUNW(1,72)='AMP                     '
+      TXTUNW(1,73)='AMP                     '
+      TXTUNW(1,74)='AMP                     '
+      TXTUNW(1,75)='AMP                     '
+      TXTUNW(1,76)='AMP                     '
+      TXTUNW(1,77)='TO BE READ              '
+      TXTUNW(1,78)='TO BE READ              '
+      TXTUNW(1,79)='AMP                     '
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
@@ -498,6 +544,7 @@ C     TXTPLS(1,12)='TO BE READ                                       '
       TXTPLS(1,19)='ELEC. FIELD UNIT VECTOR, Y DIRECTION             '
       TXTPLS(1,20)='ELEC. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,21)='ELEC. FIELD STRENGTH                             '
+      TXTPLS(1,21)='POTENTIAL                                        '
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN
@@ -529,6 +576,7 @@ C     TXTPUN(1,12)='TO BE READ              '
       TXTPUN(1,19)=' ---                    '
       TXTPUN(1,20)=' ---                    '
       TXTPUN(1,21)='V/CM                    '
+      TXTPUN(1,22)='??                      '
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN
@@ -688,11 +736,31 @@ C
       NFSTWI(50)=NPLSI
  
       NFSTWI(51)=NATMI
-      NFSTWI(52)=NMOLI
-      NFSTWI(53)=NIONI
-      NFSTWI(54)=NPHOTI
-      NFSTWI(55)=NPLSI
-      NFSTWI(56)=1
+      NFSTWI(52)=NATMI
+      NFSTWI(53)=NATMI
+      NFSTWI(54)=NATMI
+      NFSTWI(55)=NATMI
+      NFSTWI(56)=NMOLI
+      NFSTWI(57)=NMOLI
+      NFSTWI(58)=NMOLI
+      NFSTWI(59)=NMOLI
+      NFSTWI(60)=NMOLI
+      NFSTWI(61)=NIONI
+      NFSTWI(62)=NIONI
+      NFSTWI(63)=NIONI
+      NFSTWI(64)=NIONI
+      NFSTWI(65)=NIONI
+      NFSTWI(66)=NPHOTI
+      NFSTWI(67)=NPHOTI
+      NFSTWI(68)=NPHOTI
+      NFSTWI(69)=NPHOTI
+      NFSTWI(70)=NPHOTI
+      NFSTWI(71)=NPLSI
+      NFSTWI(72)=NPLSI
+      NFSTWI(73)=NPLSI
+      NFSTWI(74)=NPLSI
+      NFSTWI(75)=NPLSI
+      NFSTWI(76)=1
       NFSTWI(NTLSA)=NADSI
       NFSTWI(NTLSR)=NALSI
       NFSTWI(NTALS)=NSPTOT
@@ -719,6 +787,7 @@ C
       NFSTPI(19)=1
       NFSTPI(20)=1
       NFSTPI(21)=1
+      NFSTPI(22)=1
 C
 C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
  
@@ -1116,14 +1185,34 @@ C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
       NSPANW(49)=1
       NSPANW(50)=N4+1
       NSPANW(51)=N1+1
-      NSPANW(52)=N2+1
-      NSPANW(53)=N3+1
-      NSPANW(54)=1
-      NSPANW(55)=N4+1
-      NSPANW(56)=0
-      NSPANW(57)=N5+1
-      NSPANW(58)=N6+1
-      NSPANW(59)=N7+1
+      NSPANW(52)=N1+1
+      NSPANW(53)=N1+1
+      NSPANW(54)=N1+1
+      NSPANW(55)=N1+1
+      NSPANW(56)=N2+1
+      NSPANW(57)=N2+1
+      NSPANW(58)=N2+1
+      NSPANW(59)=N2+1
+      NSPANW(60)=N2+1
+      NSPANW(61)=N3+1
+      NSPANW(62)=N3+1
+      NSPANW(63)=N3+1
+      NSPANW(64)=N3+1
+      NSPANW(65)=N3+1
+      NSPANW(66)=1
+      NSPANW(67)=1
+      NSPANW(68)=1
+      NSPANW(69)=1
+      NSPANW(70)=1
+      NSPANW(71)=N4+1
+      NSPANW(72)=N4+1
+      NSPANW(73)=N4+1
+      NSPANW(74)=N4+1
+      NSPANW(75)=N4+1
+      NSPANW(76)=0
+      NSPANW(77)=N5+1
+      NSPANW(78)=N6+1
+      NSPANW(79)=N7+1
  
       NSPENW(1)=N2
       NSPENW(2)=N2
@@ -1176,14 +1265,34 @@ C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
       NSPENW(49)=N1
       NSPENW(50)=N5
       NSPENW(51)=N2
-      NSPENW(52)=N3
-      NSPENW(53)=N4
-      NSPENW(54)=N1
-      NSPENW(55)=N5
-      NSPENW(56)=0
-      NSPENW(57)=N6
-      NSPENW(58)=N7
-      NSPENW(59)=N8
+      NSPENW(52)=N2
+      NSPENW(53)=N2
+      NSPENW(54)=N2
+      NSPENW(55)=N2
+      NSPENW(56)=N3
+      NSPENW(57)=N3
+      NSPENW(58)=N3
+      NSPENW(59)=N3
+      NSPENW(60)=N3
+      NSPENW(61)=N4
+      NSPENW(62)=N4
+      NSPENW(63)=N4
+      NSPENW(64)=N4
+      NSPENW(65)=N4
+      NSPENW(66)=N1
+      NSPENW(67)=N1
+      NSPENW(68)=N1
+      NSPENW(69)=N1
+      NSPENW(70)=N1
+      NSPENW(71)=N5
+      NSPENW(72)=N5
+      NSPENW(73)=N5
+      NSPENW(74)=N5
+      NSPENW(77)=N5
+      NSPENW(76)=0
+      NSPENW(77)=N6
+      NSPENW(78)=N7
+      NSPENW(79)=N8
 
       DO IPHOT=1,NPHOTI
         ISPZ=IPHOT
@@ -1199,7 +1308,11 @@ C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
         TXTSPW(IPHOT,47)=TEXTS(ISPZ)
         TXTSPW(IPHOT,48)=TEXTS(ISPZ)
         TXTSPW(IPHOT,49)=TEXTS(ISPZ)
-        TXTSPW(IPHOT,54)=TEXTS(ISPZ)
+        TXTSPW(IPHOT,66)=TEXTS(ISPZ)
+        TXTSPW(IPHOT,67)=TEXTS(ISPZ)
+        TXTSPW(IPHOT,68)=TEXTS(ISPZ)
+        TXTSPW(IPHOT,69)=TEXTS(ISPZ)
+        TXTSPW(IPHOT,60)=TEXTS(ISPZ)
       END DO
  
       DO IATM=1,NATMI
@@ -1217,6 +1330,10 @@ C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
         TXTSPW(IATM,30)=TEXTS(ISPZ)
         TXTSPW(IATM,31)=TEXTS(ISPZ)
         TXTSPW(IATM,51)=TEXTS(ISPZ)
+        TXTSPW(IATM,52)=TEXTS(ISPZ)
+        TXTSPW(IATM,53)=TEXTS(ISPZ)
+        TXTSPW(IATM,54)=TEXTS(ISPZ)
+        TXTSPW(IATM,55)=TEXTS(ISPZ)
       END DO
 C
       DO IMOL=1,NMOLI
@@ -1233,7 +1350,11 @@ C
         TXTSPW(IMOL,35)=TEXTS(ISPZ)
         TXTSPW(IMOL,36)=TEXTS(ISPZ)
         TXTSPW(IMOL,37)=TEXTS(ISPZ)
-        TXTSPW(IMOL,52)=TEXTS(ISPZ)
+        TXTSPW(IMOL,56)=TEXTS(ISPZ)
+        TXTSPW(IMOL,57)=TEXTS(ISPZ)
+        TXTSPW(IMOL,58)=TEXTS(ISPZ)
+        TXTSPW(IMOL,59)=TEXTS(ISPZ)
+        TXTSPW(IMOL,60)=TEXTS(ISPZ)
       END DO
 C
       DO IION=1,NIONI
@@ -1250,14 +1371,22 @@ C
         TXTSPW(IION,41)=TEXTS(ISPZ)
         TXTSPW(IION,42)=TEXTS(ISPZ)
         TXTSPW(IION,43)=TEXTS(ISPZ)
-        TXTSPW(IION,53)=TEXTS(ISPZ)
+        TXTSPW(IION,61)=TEXTS(ISPZ)
+        TXTSPW(IION,62)=TEXTS(ISPZ)
+        TXTSPW(IION,63)=TEXTS(ISPZ)
+        TXTSPW(IION,64)=TEXTS(ISPZ)
+        TXTSPW(IION,65)=TEXTS(ISPZ)
       END DO
 C
       DO IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         TXTSPW(IPLS,25)=TEXTS(ISPZ)
         TXTSPW(IPLS,50)=TEXTS(ISPZ)
-        TXTSPW(IPLS,55)=TEXTS(ISPZ)
+        TXTSPW(IPLS,71)=TEXTS(ISPZ)
+        TXTSPW(IPLS,72)=TEXTS(ISPZ)
+        TXTSPW(IPLS,73)=TEXTS(ISPZ)
+        TXTSPW(IPLS,74)=TEXTS(ISPZ)
+        TXTSPW(IPLS,75)=TEXTS(ISPZ)
       END DO
 C
       TXTSPW(1,42)='                        '
@@ -1278,6 +1407,7 @@ C
       TXTPSP(1,19)=' ---                    '
       TXTPSP(1,20)=' ---                    '
       TXTPSP(1,21)=' ---                    '
+      TXTPSP(1,22)=' ---                    '
 C
 C     TXTPSP(IAIN,12)='TO BE READ            '
 C

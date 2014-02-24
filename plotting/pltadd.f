@@ -921,6 +921,9 @@ c
           ENDIF
 C  PLOT SURFACE NUMBERS
           IF (PLNUMS) THEN
+csw
+            call grchrc(0.1,0.,16)
+csw
             IF (CUR%NUMSUR.EQ.0) THEN
 ! do nothing
             ELSEIF (ABS(CUR%NUMSUR).LT.10) THEN

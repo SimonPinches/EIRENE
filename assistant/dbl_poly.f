@@ -39,6 +39,32 @@ C
         COU=EIRENE_EXTRAP(AL,IFEX,FPAR1,FPAR2,FPAR3)
         cou=log(cou)
  
+csw 09aug2011
+      elseif ((ifexmx .ne. 0) .and. (al > rcmax)) then
+C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. IN LN(<S*V>)
+        S01=RCMAX-log(2._dp)
+        S02=RCMAX
+        DS12=S02-S01
+        EXPO1=0.
+        EXPO2=0.
+        DO J=1,9
+          JJ=J-1
+          DO I=1,9
+            II=I-1
+            EXPO1=EXPO1+S01**II*PL**JJ*CF(I,J)
+            EXPO2=EXPO2+S02**II*PL**JJ*CF(I,J)
+          enddo
+        enddo
+        CCXM1=EXPO1
+        CCXM2=EXPO2
+        FPAR1=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
+        FPAR2=      (CCXM2-CCXM1)/DS12
+        FPAR3=0.D0
+C
+        IFEX=5
+        COU=EIRENE_EXTRAP(AL,IFEX,FPAR1,FPAR2,FPAR3)
+        cou=log(cou)
+csw
       else
  
         do jj = je, ji, -1

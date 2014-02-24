@@ -3,7 +3,8 @@
 !pb  100107  call to reinitialisation routine
  
  
-      SUBROUTINE EIRENE_EIRENE(DT,NLMODE,NLLAST,ITNR,MPI_INITIALIZE)
+      RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
+     .                                    MPI_INITIALIZE)
 C
 C  DT >  0.      : RUN EIRENE FOR A TIMESTEP DT (S),
 C  DT <= 0.      : RUN EIRENE IN QUASI STEADY STATE MODE
@@ -80,13 +81,15 @@ C
       IF (NPRS == 1) NSTEFF=1
  
       IUNOUT = 6
+      IF (NRPES > 1) IUNOUT = 7
 
 csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF, add rewind iunout
       IUNOUT = IUNOUT + IFOFF
 !pb   REWIND(IUNOUT)
 csw
-      IF (MY_PE > 0) THEN
-        IUNOUT = 7
+!pb 021213      IF (MY_PE > 0) THEN
+!pb 021213        IUNOUT = 7
+      IF (NPRS > 1) THEN
         OUTNAME='output.'
         WRITE (OUTNAME(8:),'(I4.4)') MY_PE
         OPEN (UNIT=IUNOUT,FILE=OUTNAME,ACCESS='SEQUENTIAL',
@@ -111,9 +114,9 @@ csw
  
       IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
       CALL EIRENE_ALLOC_COMPRT
-      IUNOUT = 6  ! has been reset to 0 in INIT_COMPRT
+!pb 021213      IUNOUT = 6  ! has been reset to 0 in INIT_COMPRT
 csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF
-      IUNOUT = IUNOUT + IFOFF
+!pb 021213      IUNOUT = IUNOUT + IFOFF
       inentry = 0
  
         NRAPS=60
@@ -530,7 +533,8 @@ C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF
  
-      IF (MY_PE > 0) THEN
+!pb      IF (MY_PE > 0) THEN
+      IF (NPRS > 1) THEN
          CLOSE (UNIT=IUNOUT)
       END IF
  

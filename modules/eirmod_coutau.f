@@ -1,3 +1,4 @@
+csw 19feb2013: added XMCT array
       MODULE EIRMOD_COUTAU
  
       USE EIRMOD_PRECISION
@@ -61,7 +62,16 @@
      R EOTPHTI(:,:), ERFAPHTI(:,:), ERFMPHTI(:,:), ERFIPHTI(:,:),
      R ERFPHPHTI(:,:), ERFPPHTI(:,:),
      R EOTPLI(:,:),
-     R SPTATI(:,:), SPTMLI(:,:), SPTIOI(:,:), SPTPHTI(:,:), SPTPLI(:,:),
+     R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:), 
+     R SPTPATI(:,:),
+     R SPTAMLI(:,:), SPTMMLI(:,:), SPTIMLI(:,:), SPTPHMLI(:,:), 
+     R SPTPMLI(:,:),
+     R SPTAIOI(:,:), SPTMIOI(:,:), SPTIIOI(:,:), SPTPHIOI(:,:), 
+     R SPTPIOI(:,:),
+     R SPTAPHTI(:,:), SPTMPHTI(:,:), SPTIPHTI(:,:), SPTPHPHTI(:,:), 
+     R SPTPPHTI(:,:),
+     R SPTAPLI(:,:), SPTMPLI(:,:), SPTIPLI(:,:), SPTPHPLI(:,:), 
+     R SPTPPLI(:,:),
      R SPTTTI(:),
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
@@ -71,7 +81,7 @@
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
      R ETOTA(:),    ETOTM(:),    ETOTI(:),    ETOTP(:),    ETOTPH(:),
-     R XMCP(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
+     R XMCP(:),     XMCT(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
      R PTRASH(:),   ETRASH(:),
      R FASCL(:),    FMSCL(:),    FISCL(:),    FPHSCL(:)
  
@@ -91,7 +101,7 @@
  
       NOUTA1 = NVLTLP*NSTRAP
       NOUTA2 = NSFTLP*NSTRAP
-      NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+15)*NSTRAP
+      NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+16)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
       NOUTTL = 3*(NTALV+NTALS)+NTALI
  
@@ -247,11 +257,31 @@
       ALLOCATE (ERFPHPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (ERFPPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (EOTPLI(0:NPLS,0:NSTRA))
-      ALLOCATE (SPTATI(0:NATM,0:NSTRA))
-      ALLOCATE (SPTMLI(0:NMOL,0:NSTRA))
-      ALLOCATE (SPTIOI(0:NION,0:NSTRA))
-      ALLOCATE (SPTPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (SPTPLI(0:NPLS,0:NSTRA))
+      ALLOCATE (SPTAATI(0:NATM,0:NSTRA))
+      ALLOCATE (SPTMATI(0:NATM,0:NSTRA))
+      ALLOCATE (SPTIATI(0:NATM,0:NSTRA))
+      ALLOCATE (SPTPHATI(0:NATM,0:NSTRA))
+      ALLOCATE (SPTPATI(0:NATM,0:NSTRA))
+      ALLOCATE (SPTAMLI(0:NMOL,0:NSTRA))
+      ALLOCATE (SPTMMLI(0:NMOL,0:NSTRA))
+      ALLOCATE (SPTIMLI(0:NMOL,0:NSTRA))
+      ALLOCATE (SPTPHMLI(0:NMOL,0:NSTRA))
+      ALLOCATE (SPTPMLI(0:NMOL,0:NSTRA))
+      ALLOCATE (SPTAIOI(0:NION,0:NSTRA))
+      ALLOCATE (SPTMIOI(0:NION,0:NSTRA))
+      ALLOCATE (SPTIIOI(0:NION,0:NSTRA))
+      ALLOCATE (SPTPHIOI(0:NION,0:NSTRA))
+      ALLOCATE (SPTPIOI(0:NION,0:NSTRA))
+      ALLOCATE (SPTAPHTI(0:NPHOT,0:NSTRA))
+      ALLOCATE (SPTMPHTI(0:NPHOT,0:NSTRA))
+      ALLOCATE (SPTIPHTI(0:NPHOT,0:NSTRA))
+      ALLOCATE (SPTPHPHTI(0:NPHOT,0:NSTRA))
+      ALLOCATE (SPTPPHTI(0:NPHOT,0:NSTRA))
+      ALLOCATE (SPTAPLI(0:NPLS,0:NSTRA))
+      ALLOCATE (SPTMPLI(0:NPLS,0:NSTRA))
+      ALLOCATE (SPTIPLI(0:NPLS,0:NSTRA))
+      ALLOCATE (SPTPHPLI(0:NPLS,0:NSTRA))
+      ALLOCATE (SPTPPLI(0:NPLS,0:NSTRA))
       ALLOCATE (SPTTTI(0:NSTRA))
       ALLOCATE (ADDSI(0:NADS,0:NSTRA))
       ALLOCATE (ALGSI(0:NALS,0:NSTRA))
@@ -269,6 +299,7 @@
       ALLOCATE (ETOTP(0:NSTRA))
       ALLOCATE (ETOTPH(0:NSTRA))
       ALLOCATE (XMCP(0:NSTRA))
+      ALLOCATE (XMCT(0:NSTRA))
       ALLOCATE (FLUXT(0:NSTRA))
       ALLOCATE (FLXFAC(0:NSTRA))
       ALLOCATE (EELFI(0:NION,0:NSTRA))
@@ -297,6 +328,9 @@
       NFSTVI = 0
       NFSTWI = 0
       NFSTPI = 0
+csw 19mar2013
+      xmct=0.0
+      xmcp=0
  
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COUTAU
@@ -458,11 +492,31 @@
       DEALLOCATE (ERFPHPHTI)
       DEALLOCATE (ERFPPHTI)
       DEALLOCATE (EOTPLI)
-      DEALLOCATE (SPTATI)
-      DEALLOCATE (SPTMLI)
-      DEALLOCATE (SPTIOI)
-      DEALLOCATE (SPTPHTI)
-      DEALLOCATE (SPTPLI)
+      DEALLOCATE (SPTAATI)
+      DEALLOCATE (SPTAMLI)
+      DEALLOCATE (SPTAIOI)
+      DEALLOCATE (SPTAPHTI)
+      DEALLOCATE (SPTAPLI)
+      DEALLOCATE (SPTMATI)
+      DEALLOCATE (SPTMMLI)
+      DEALLOCATE (SPTMIOI)
+      DEALLOCATE (SPTMPHTI)
+      DEALLOCATE (SPTMPLI)
+      DEALLOCATE (SPTIATI)
+      DEALLOCATE (SPTIMLI)
+      DEALLOCATE (SPTIIOI)
+      DEALLOCATE (SPTIPHTI)
+      DEALLOCATE (SPTIPLI)
+      DEALLOCATE (SPTPHATI)
+      DEALLOCATE (SPTPHMLI)
+      DEALLOCATE (SPTPHIOI)
+      DEALLOCATE (SPTPHPHTI)
+      DEALLOCATE (SPTPHPLI)
+      DEALLOCATE (SPTPATI)
+      DEALLOCATE (SPTPMLI)
+      DEALLOCATE (SPTPIOI)
+      DEALLOCATE (SPTPPHTI)
+      DEALLOCATE (SPTPPLI)
       DEALLOCATE (SPTTTI)
       DEALLOCATE (ADDSI)
       DEALLOCATE (ALGSI)
@@ -480,6 +534,7 @@
       DEALLOCATE (ETOTP)
       DEALLOCATE (ETOTPH)
       DEALLOCATE (XMCP)
+      DEALLOCATE (XMCT)
       DEALLOCATE (FLUXT)
       DEALLOCATE (FLXFAC)
       DEALLOCATE (EELFI)
@@ -666,11 +721,31 @@
         ERFPHPHTI(:,ISTRA)= 0._DP
         ERFPPHTI(:,ISTRA) = 0._DP
         EOTPLI(:,ISTRA) = 0._DP
-        SPTATI(:,ISTRA) = 0._DP
-        SPTMLI(:,ISTRA) = 0._DP
-        SPTIOI(:,ISTRA) = 0._DP
-        SPTPHTI(:,ISTRA) = 0._DP
-        SPTPLI(:,ISTRA) = 0._DP
+        SPTAATI(:,ISTRA) = 0._DP
+        SPTMATI(:,ISTRA) = 0._DP
+        SPTIATI(:,ISTRA) = 0._DP
+        SPTPHATI(:,ISTRA) = 0._DP
+        SPTPATI(:,ISTRA) = 0._DP
+        SPTAMLI(:,ISTRA) = 0._DP
+        SPTMMLI(:,ISTRA) = 0._DP
+        SPTIMLI(:,ISTRA) = 0._DP
+        SPTPHMLI(:,ISTRA) = 0._DP
+        SPTPMLI(:,ISTRA) = 0._DP
+        SPTAIOI(:,ISTRA) = 0._DP
+        SPTMIOI(:,ISTRA) = 0._DP
+        SPTIIOI(:,ISTRA) = 0._DP
+        SPTPHIOI(:,ISTRA) = 0._DP
+        SPTPIOI(:,ISTRA) = 0._DP
+        SPTAPHTI(:,ISTRA) = 0._DP
+        SPTMPHTI(:,ISTRA) = 0._DP
+        SPTIPHTI(:,ISTRA) = 0._DP
+        SPTPHPHTI(:,ISTRA) = 0._DP
+        SPTPPHTI(:,ISTRA) = 0._DP
+        SPTAPLI(:,ISTRA) = 0._DP
+        SPTMPLI(:,ISTRA) = 0._DP
+        SPTIPLI(:,ISTRA) = 0._DP
+        SPTPHPLI(:,ISTRA) = 0._DP
+        SPTPPLI(:,ISTRA) = 0._DP
         SPTTTI(ISTRA) = 0._DP
         ADDSI(:,ISTRA)  = 0._DP
         ALGSI(:,ISTRA)  = 0._DP
@@ -699,6 +774,7 @@
  
 !pb      IF (IFRST == 0) THEN
         XMCP(ISTRA)   = 0._DP
+        XMCT(ISTRA)   = 0._DP
 !pb        IFRST = 1
 !pb      END IF
  
@@ -1333,24 +1409,104 @@ C     The following ENTRY is for reinitialization of EIRENE
       OUTAU(IA:IE) = PACK(EOTPLI,.TRUE.)
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTATI)
-      OUTAU(IA:IE) = PACK(SPTATI,.TRUE.)
+      IE = IA - 1 + SIZE(SPTAATI)
+      OUTAU(IA:IE) = PACK(SPTAATI,.TRUE.)
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTMLI)
-      OUTAU(IA:IE) = PACK(SPTMLI,.TRUE.)
+      IE = IA - 1 + SIZE(SPTMATI)
+      OUTAU(IA:IE) = PACK(SPTMATI,.TRUE.)
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTIOI)
-      OUTAU(IA:IE) = PACK(SPTIOI,.TRUE.)
+      IE = IA - 1 + SIZE(SPTIATI)
+      OUTAU(IA:IE) = PACK(SPTIATI,.TRUE.)
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTPHTI)
-      OUTAU(IA:IE) = PACK(SPTPHTI,.TRUE.)
+      IE = IA - 1 + SIZE(SPTPHATI)
+      OUTAU(IA:IE) = PACK(SPTPHATI,.TRUE.)
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTPLI)
-      OUTAU(IA:IE) = PACK(SPTPLI,.TRUE.)
+      IE = IA - 1 + SIZE(SPTPATI)
+      OUTAU(IA:IE) = PACK(SPTPATI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAMLI)
+      OUTAU(IA:IE) = PACK(SPTAMLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMMLI)
+      OUTAU(IA:IE) = PACK(SPTMMLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIMLI)
+      OUTAU(IA:IE) = PACK(SPTIMLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHMLI)
+      OUTAU(IA:IE) = PACK(SPTPHMLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPMLI)
+      OUTAU(IA:IE) = PACK(SPTPMLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAIOI)
+      OUTAU(IA:IE) = PACK(SPTAIOI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMIOI)
+      OUTAU(IA:IE) = PACK(SPTMIOI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIIOI)
+      OUTAU(IA:IE) = PACK(SPTIIOI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHIOI)
+      OUTAU(IA:IE) = PACK(SPTPHIOI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPIOI)
+      OUTAU(IA:IE) = PACK(SPTPIOI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAPHTI)
+      OUTAU(IA:IE) = PACK(SPTAPHTI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMPHTI)
+      OUTAU(IA:IE) = PACK(SPTMPHTI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIPHTI)
+      OUTAU(IA:IE) = PACK(SPTIPHTI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHPHTI)
+      OUTAU(IA:IE) = PACK(SPTPHPHTI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPPHTI)
+      OUTAU(IA:IE) = PACK(SPTPPHTI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAPLI)
+      OUTAU(IA:IE) = PACK(SPTAPLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMPLI)
+      OUTAU(IA:IE) = PACK(SPTMPLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIPLI)
+      OUTAU(IA:IE) = PACK(SPTIPLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHPLI)
+      OUTAU(IA:IE) = PACK(SPTPHPLI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPPLI)
+      OUTAU(IA:IE) = PACK(SPTPPLI,.TRUE.)
  
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTTTI)
@@ -1418,6 +1574,10 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(XMCP)
       OUTAU(IA:IE) = PACK(XMCP  ,.TRUE.)
+
+      IA = IE + 1
+      IE = IA - 1 + SIZE(XMCT)
+      OUTAU(IA:IE) = PACK(XMCT  ,.TRUE.)
  
       IA = IE + 1
       IE = IA - 1 + SIZE(FLUXT)
@@ -2083,24 +2243,104 @@ C     The following ENTRY is for reinitialization of EIRENE
       EOTPLI = RESHAPE(OUTAU(IA:IE),SHAPE(EOTPLI))
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTATI)
-      SPTATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTATI))
+      IE = IA - 1 + SIZE(SPTAATI)
+      SPTAATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAATI))
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTMLI)
-      SPTMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMLI))
+      IE = IA - 1 + SIZE(SPTMATI)
+      SPTMATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMATI))
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTIOI)
-      SPTIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIOI))
+      IE = IA - 1 + SIZE(SPTIATI)
+      SPTIATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIATI))
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTPHTI)
-      SPTPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHTI))
+      IE = IA - 1 + SIZE(SPTPHATI)
+      SPTPHATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHATI))
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTPLI)
-      SPTPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPLI))
+      IE = IA - 1 + SIZE(SPTPATI)
+      SPTPATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPATI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAMLI)
+      SPTAMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAMLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMMLI)
+      SPTMMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMMLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIMLI)
+      SPTIMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIMLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHMLI)
+      SPTPHMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHMLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPMLI)
+      SPTPMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPMLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAIOI)
+      SPTAIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAIOI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMIOI)
+      SPTMIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMIOI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIIOI)
+      SPTIIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIIOI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHIOI)
+      SPTPHIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHIOI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPIOI)
+      SPTPIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPIOI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAPHTI)
+      SPTAPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAPHTI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMPHTI)
+      SPTMPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMPHTI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIPHTI)
+      SPTIPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIPHTI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHPHTI)
+      SPTPHPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHPHTI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPPHTI)
+      SPTPPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPPHTI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTAPLI)
+      SPTAPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAPLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTMPLI)
+      SPTMPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMPLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTIPLI)
+      SPTIPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIPLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPHPLI)
+      SPTPHPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHPLI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTPPLI)
+      SPTPPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPPLI))
  
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTTTI)
@@ -2168,6 +2408,10 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(XMCP)
       XMCP   = RESHAPE(OUTAU(IA:IE),SHAPE(XMCP  ))
+
+      IA = IE + 1
+      IE = IA - 1 + SIZE(XMCT)
+      XMCT   = RESHAPE(OUTAU(IA:IE),SHAPE(XMCT  ))
  
       IA = IE + 1
       IE = IA - 1 + SIZE(FLUXT)

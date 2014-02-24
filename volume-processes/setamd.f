@@ -69,6 +69,13 @@ C
       NREII=0
       NRRCI=0
       NRBGI=0
+csw 27jul2011
+      NPBGKP=0 !VK
+      NPBGKA=0 !VK
+      NPBGKM=0 !VK
+      NPBGKI=0 !VK
+csw
+
       CALL EIRENE_XSECTA
  
 !pb        tpb2 = second_own()
@@ -139,21 +146,25 @@ C
       IPPLPI = 0
       DO IRPI=1,NRPI
         ipatpi(IRPI,0)=COUNT(PATPI(IRPI,1:) > 0)
-        IF (ipatpi(IRPI,0).GT.0)              ! inserted by Derek Harting 26.03.
-     &       IPATPI(IRPI,1:ipatpi(IRPI,0))=PACK( (/ (i,i=1,natm) /),
-     .                                     PATPI(IRPI,1:) > 0)
+        IF (ipatpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+          IPATPI(IRPI,1:ipatpi(IRPI,0))=PACK( (/ (i,i=1,natm) /),
+     .                                  PATPI(IRPI,1:) > 0)
+        endif
         ipmlpi(IRPI,0)=COUNT(PMLPI(IRPI,1:) > 0)
-        IF (ipmlpi(IRPI,0).GT.0)              ! inserted by Derek Harting 26.03.
-     &       IPMLPI(IRPI,1:ipmlpi(IRPI,0))=PACK( (/ (i,i=1,nmol) /),
-     .                                     PMLPI(IRPI,1:) > 0)
+        IF (ipmlpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+          IPMLPI(IRPI,1:ipmlpi(IRPI,0))=PACK( (/ (i,i=1,nmol) /),
+     .                                  PMLPI(IRPI,1:) > 0)
+        endif
         ipiopi(IRPI,0)=COUNT(PIOPI(IRPI,1:) > 0)
-        IF (ipiopi(IRPI,0).GT.0)              ! inserted by Derek Harting 26.03.
-     &       IPIOPI(IRPI,1:ipiopi(IRPI,0))=PACK( (/ (i,i=1,nion) /),
-     .                                     PIOPI(IRPI,1:) > 0)
+        IF (ipiopi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+          IPIOPI(IRPI,1:ipiopi(IRPI,0))=PACK( (/ (i,i=1,nion) /),
+     .                                  PIOPI(IRPI,1:) > 0)
+        endif
         ipplpi(IRPI,0)=COUNT(PPLPI(IRPI,1:) > 0)
-        IF (ipplpi(IRPI,0).GT.0)              ! inserted by Derek Harting 26.03.
-     &       IPPLPI(IRPI,1:ipplpi(IRPI,0))=PACK( (/ (i,i=1,npls) /),
-     .                                     PPLPI(IRPI,1:) > 0)
+        IF (ipplpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+          IPPLPI(IRPI,1:ipplpi(IRPI,0))=PACK( (/ (i,i=1,npls) /),
+     .                                  PPLPI(IRPI,1:) > 0)
+        endif
       END DO
  
 !pb        tpb2 = second_own()

@@ -17,6 +17,9 @@
       logical :: lc1(3), lc2(3), lhit1, lhit2
       TYPE(TRI_ELEM), POINTER :: CUR1, cur2
  
+! pb for the time being
+      if (.true.) return
+
       if (levgeo /= 4) return
       IF (NOPTIM < NR1ST) return
  
@@ -62,10 +65,14 @@
           ihit1 = 0
           ihit2 = 0
  
+          lc1 = .true.
+          lc2 = .true.
           do i = 1, 3
-            lc1(i) = sqrt((xtrian(necke(i,ic1))-p1(1,ilim))**2 +
+            if (ic1 > 0)
+     .      lc1(i) = sqrt((xtrian(necke(i,ic1))-p1(1,ilim))**2 +
      .                    (ytrian(necke(i,ic1))-p1(2,ilim))**2) < eps5
-            lc2(i) = sqrt((xtrian(necke(i,ic2))-p2(1,ilim))**2 +
+            if (ic2 > 0)
+     .      lc2(i) = sqrt((xtrian(necke(i,ic2))-p2(1,ilim))**2 +
      .                    (ytrian(necke(i,ic2))-p2(2,ilim))**2) < eps5
             if (lc1(i)) ihit1 = necke(i,ic1)
             if (lc2(i)) ihit2 = necke(i,ic2)

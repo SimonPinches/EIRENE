@@ -12,32 +12,38 @@ C (2**31) * R (N) AND CAN BE USED FOR THE FUTURE CALLS
 C RETURNS ONE RANDOM NUMBER FROM 0 TO 1
 C
       USE EIRMOD_PRECISION
+      USE EIRMOD_CLOGAU
       implicit none
       integer :: iseed
       common /cmem/ iseed
       integer, save :: ifirst=0
       integer :: ise
       real(dp) :: ra, dummy, ranf_eirene, ranset_eirene,
-     &            ranf_eirene_reinit
+     &            ranf_eirene_reinit, h1rn
  
       INTEGER D2P32M
       DOUBLE PRECISION Z,D2P31M,D2PN31,DMOD,DFLOAT
       DATA  D2PN31/4.656612873077393D-10/,D2P31M/
      .             2147483647.D0/,D2P32M/16807/
  
-      if (ifirst == 0) then
-         ise = -1
-         dummy = ranset_eirene(ise)
-         ifirst = 1
-      end if
- 
+      IF (NLOLDRAN) THEN
+         ranf_eirene=h1rn(dummy)
+      ELSE
+         if (ifirst == 0) then
+            ise = -1
+            dummy = ranset_eirene(ise)
+            ifirst = 1
+         end if
+         
 !pb      Z=DFLOAT(ISEED)
-      Z=REAL(ISEED,KIND=DP)
-      Z=DMOD(D2P32M*Z,D2P31M)
-      RA=Z*D2PN31
-      ISEED=Z
- 
-      ranf_eirene=ra
+         Z=REAL(ISEED,KIND=DP)
+         Z=DMOD(D2P32M*Z,D2P31M)
+         RA=Z*D2PN31
+         ISEED=Z
+         
+         ranf_eirene=ra
+         
+      END IF
       return
  
 C     The following ENTRY is for reinitialization of EIRENE

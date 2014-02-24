@@ -6,11 +6,18 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
 !pb      USE PARMMOD
  
       IMPLICIT NONE
+
+csw mpi
+      include 'mpif.h'
+csw 
  
       PRIVATE
  
       PUBLIC :: EIRENE_ALLOC_EIRBRA, EIRENE_DEALLOC_EIRBRA, 
      P          EIRENE_INIT_EIRBRA
+csw mpi
+      public :: eirene_broadcast_eirbra
+csw 
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SNI(:,:,:,:), SMO(:,:,:,:),
@@ -23,8 +30,9 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
  
 C AK
       REAL(DP),PUBLIC,ALLOCATABLE,SAVE ::
-     .                srcstrn(:),flxspci(:,:),
-     .                srccrfc(:,:)
+     .                srcstrn(:)
+!pb     .               ,flxspci(:,:),
+!pb     .                srccrfc(:,:)
 c*** srcstrn: intensities of different neutral sources (fluxt)
 c*** flxspci: fluxes of plasma ions to the recycling surfaces
 c*** srccrfc: source correction factors (from infcop)
@@ -43,7 +51,10 @@ C AK END
       NDXD = NDXP+1
       NDYD = NDYP+1
       NFLD = NFL
-      NSTRAD = NSTRA
+!pb  obviously SOLPS always assumes there is a time stratum
+!pb  therefore add additional space in arrays
+csw      NSTRAD = NSTRA
+      NSTRAD = NSTRA + 1
  
       ALLOCATE (SNI(0:NDXD,0:NDYD,NFLD,NSTRAD))
       ALLOCATE (SMO(0:NDXD,0:NDYD,NFLD,NSTRAD))
@@ -54,6 +65,8 @@ C AK END
       ALLOCATE (VOLSUMM(NSTRA))
       ALLOCATE (VOLSUMEI(NSTRA))
       ALLOCATE (VOLSUMEE(NSTRA))
+
+      ALLOCATE (SRCSTRN(NSTRA))
  
       WRITE (55+IFOFF,'(A,T25,I15)')
      .             ' EIRBRA ',((NDXD+1)*(NDYD+1)*NSTRAD*2*NFLD+
@@ -98,6 +111,35 @@ C AK END
       RETURN
       END SUBROUTINE EIRENE_INIT_EIRBRA
  
+
+csw mpi
+      subroutine eirene_broadcast_eirbra
+
+      integer :: inum, ierr
+
+      inum = (ndxd+1)*(ndyd+1)*nfld*nstrad
+      call mpi_bcast (sni,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast (smo,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+
+      inum = (ndxd+1)*(ndyd+1)*nstrad
+      call mpi_bcast (see,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast (sei,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+
+      inum = nstrad
+      call mpi_bcast (volsumn,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast (volsumm,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast (volsumee,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast (volsumei,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      end subroutine eirene_broadcast_eirbra
+csw 
       END MODULE EIRMOD_EIRBRA
  
  

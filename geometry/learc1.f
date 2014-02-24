@@ -281,28 +281,30 @@ C  CELL I ALREADY TESTED BEFORE ?
         EIRENE_LEARC1=IM
 
 !  find nearest side
-        i1 = necke(1,im)
-        i2 = necke(2,im)
-        i3 = necke(3,im)
+        if (im > 0) then
+           i1 = necke(1,im)
+           i2 = necke(2,im)
+           i3 = necke(3,im)
 
 !  find distances to the triangles sides
-        d1 = dist_point_line(x,y,xtrian(i1),ytrian(i1),
+           d1 = dist_point_line(x,y,xtrian(i1),ytrian(i1),
      .                           vtrix(1,im),vtriy(1,im))
-        d2 = dist_point_line(x,y,xtrian(i2),ytrian(i2),
+           d2 = dist_point_line(x,y,xtrian(i2),ytrian(i2),
      .                           vtrix(2,im),vtriy(2,im))
-        d3 = dist_point_line(x,y,xtrian(i3),ytrian(i3),
+           d3 = dist_point_line(x,y,xtrian(i3),ytrian(i3),
      .                           vtrix(3,im),vtriy(3,im))
-        ipo = 1
-        dd = d1
-        
-        if (d2 < dd) then
-           ipo = 2
-           dd = d2
-        end if
-
-        if (d3 < dd) then
-           ipo = 3
-           dd = d3
+           ipo = 1
+           dd = d1
+           
+           if (d2 < dd) then
+              ipo = 2
+              dd = d2
+           end if
+           
+           if (d3 < dd) then
+              ipo = 3
+              dd = d3
+           end if
         end if
         
 C

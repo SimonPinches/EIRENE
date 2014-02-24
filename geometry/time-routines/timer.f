@@ -104,12 +104,12 @@ C
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
-     .           ISTS_CELL, ISD
+     .           ISTS_CELL, ISD, nclpb
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
       INTEGER :: NSTS_CELL
-      LOGICAL :: LCUT(N2NDPLG), LCTS(4)
+      LOGICAL :: LLCUT(N2NDPLG), LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
  
@@ -603,7 +603,13 @@ C  IF INTERSECTION WITH POLOIDAL BOUNDARY CONTINUE WITH NEIGHBORING CELL
           ENDIF
           ISTS=INMP2I(IR,LUPC(NCOUP),0)
 !pb          IF ((.not.NLPOL.or.ISTS.eq.0).and.ip.ne.0) goto 6001
-          IF (ityp.ne.3.and.(.not.NLPOL.or.ISTS.eq.0).and.ip.ne.0)
+          if (ip > 0) then
+            nclpb = IR+((IP-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
+          else
+            nclpb = ncell
+          end if
+          IF ((ityp.ne.3.and.(.not.NLPOL.or.ISTS.eq.0).and.ip.ne.0)
+     .       .and. (.not.ldamcel(nclpb)))
      .       goto 6001
 C  NO NEIGHBORING CELL: PARTICLE HAS HIT A POLOIDAL BOUNDARY OF THE MESH
           MRSURF=0
@@ -705,7 +711,7 @@ C
 C   SEARCH FOR ALL POSSIBLE INTERSECTIONS WITHIN THE CELL
 C
           DO 6011 J=1,NRPLG
-6011        LCUT(J)=.FALSE.
+6011        LLCUT(J)=.FALSE.
 C
           DO 6012 J=1,NPPLG
             DO 6012 K=NPOINT(1,J),NPOINT(2,J)-1
@@ -713,18 +719,18 @@ C
               V2=(YPOL(I,K)-Y0)*VELX-(XPOL(I,K)-X0)*VELY
 !pb allow only intersection with nondefault standard surfaces
 !pb no intersection with transparent parts
-!pb              LCUT(K)=V1*V2.LE.0.
-              LCUT(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
+!pb              LLCUT(K)=V1*V2.LE.0.
+              LLCUT(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
 6012      CONTINUE
 C
-          IF (I.EQ.MPOL) LCUT(JPOL)=.FALSE.
-          KAN=EIRENE_ILLZ(NRPLG,LCUT,1)+1
-          KEN=NRPLG-EIRENE_ILLZ(NRPLG,LCUT,-1)
+          IF (I.EQ.MPOL) LLCUT(JPOL)=.FALSE.
+          KAN=EIRENE_ILLZ(NRPLG,LLCUT,1)+1
+          KEN=NRPLG-EIRENE_ILLZ(NRPLG,LLCUT,-1)
 C
 C   COMPUTE THE FLIGHT TIMES TO THE INTERSECTION POINTS
 C
           DO 6013 K=KAN,KEN
-            IF (LCUT(K)) THEN
+            IF (LLCUT(K)) THEN
               T1=((XPOL(I,K)-X0)*VPLY(I,K)-(YPOL(I,K)-Y0)*VPLX(I,K))
      .           /(VELX*VPLY(I,K)-VELY*VPLX(I,K)+EPS60)
               IF (T1.GT.0.) THEN

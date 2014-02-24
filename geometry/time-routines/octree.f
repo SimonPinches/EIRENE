@@ -22,13 +22,14 @@ c       has been worked on before this function is called for the first time
         USE EIRMOD_PRECISION
         USE EIRMOD_CADGEO
         USE EIRMOD_CLGIN
+        USE EIRMOD_COMPRT, only: iunout
+        USE EIRMOD_CTRCEI, only: trcoc
         USE EIRMOD_OCTREE
-        USE EIRMOD_COMPRT
-        USE EIRMOD_CTRCEI
         IMPLICIT NONE
 c       define an explicit interface to the block building function
         INTERFACE
           RECURSIVE SUBROUTINE EIRENE_TIMEA_BuildBlocks(TREE, PARENT)
+            USE EIRMOD_PRECISION
             USE EIRMOD_OCTREE
             TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
             TYPE(ocTree), POINTER, INTENT(IN) :: TREE
@@ -145,22 +146,24 @@ c     RETURNS: number of surfaces that have been assigned to a node
 c       this imports all points (p1-p5), rlb, igjum0 stuff, which
 c       has been worked on before this function is called for the first time
         USE EIRMOD_PRECISION
-        USE EIRMOD_COMPRT
+        USE EIRMOD_COMPRT, only: iunout
         USE EIRMOD_CADGEO
         USE EIRMOD_CLGIN
         USE EIRMOD_CCONA
         USE EIRMOD_OCTREE
-        USE EIRMOD_CTRCEI
+        USE EIRMOD_CTRCEI, only: trcoc
         IMPLICIT NONE
 
 c       definie explicit interfaces to the checking routines
         INTERFACE
           LOGICAL FUNCTION EIRENE_TIMEA_FirstCheck(SID,CHILD)
+            USE EIRMOD_PRECISION
             USE EIRMOD_OCTREE
             TYPE(ocNode), POINTER, INTENT(IN) :: CHILD
             INTEGER, INTENT(IN) :: SID
           END FUNCTION
           LOGICAL FUNCTION EIRENE_TIMEA_ThirdCheck(SID,CHILD)
+            USE EIRMOD_PRECISION
             USE EIRMOD_OCTREE
             TYPE(ocNode), POINTER, INTENT(IN) :: CHILD
             INTEGER, INTENT(IN) :: SID

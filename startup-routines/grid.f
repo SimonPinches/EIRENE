@@ -6,8 +6,16 @@ C
 !pb 28.06.10: consistency check for LEVGEO=3 or LEVGEO=4 introduced
 !             stop run if cell side is transparent but no neighbor cell
 !             is defined 
+!dr 17.01.14  test-printout removed, some comments added
  
       SUBROUTINE EIRENE_GRID (IND)
+
+C  SET STANDARD GRIDS AND RELATED DATA
+C    INPUT:   IND
+C    OUTPUT:  IN MODULES
+C    IND=1:  1ST GRID, X OR RADIAL COORDINATE, AS WELL AS TRIANGULAR (LEVGEO=4) AND TETRAHEDON (LEVGEO=5) GRIDS.
+C    IND=2:  2ND GRID, Y OR POLOIDAL COORDINATE
+C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -34,12 +42,14 @@ C
      .          GESFL, FRING, CONST, RRR, FL, FR, RL, RR, RRL, XD,
      .          PLEN, XDIFF, RORIG, XS3, PLABS2, PLABS3, XD1, YD,
      .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2, R, PIN,
-     .          POUT, EX1, SDSD, XX1, XX2, YY1, YY2, DSD, COM, S, SQ
+     .          POUT, EX1, SDSD, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
+     .          DP1, DS1, DS2
       REAL(DP), EXTERNAL :: EIRENE_ARTRI3
       INTEGER :: ITSIDE(3,4)
       INTEGER :: IP, IRP, IPP, IT, KDN, KUP, NCELL, IR, I, K, IUP, IDN,
      .           J, IND, NLOCAL, ND, IC3, IC4, ITET, IC1, IC2, IC, NLJ,
-     .           IFLAG, ISTS, IECKE2, MSURFG, IS, IT1, NCELL1, NSRFTR
+     .           IFLAG, ISTS, IECKE2, MSURFG, IS, IT1, NCELL1, NSRFTR,
+     .           NT, IS1, IM, IMP
       LOGICAL :: LERROR
       LOGICAL, ALLOCATABLE :: VISITED(:,:)
 !pb
@@ -495,6 +505,95 @@ C
      .                     ' LISTED ABOVE '
           CALL EIRENE_EXIT_OWN(1)
         END IF
+
+! ADDITIONAL SURFACES
+        DO J=1, NLIMI
+          IF (ILPLG(J) /= 0) THEN
+            NT = SURF_TRIAN(J)%NUMTR
+!pb31072012            IF (NT == 1) CYCLE
+            IF (NT <= 1) CYCLE
+            DP1 = HUGE(1._DP)
+! FIND TRIANGLE STARTING AT FIRST POINT OF SURFACE J
+            DO I = 1, NT
+              IT = SURF_TRIAN(J)%ITRIAS(I)
+              IS = SURF_TRIAN(J)%ITRISI(I)
+              IS1 = IS + 1
+              IF (IS1 > 3) IS1 = 1
+              DS1 = SQRT((P1(1,J)-XTRIAN(NECKE(IS,IT)))**2 + 
+     .                   (P1(2,J)-YTRIAN(NECKE(IS,IT)))**2)
+              DS2 = SQRT((P1(1,J)-XTRIAN(NECKE(IS1,IT)))**2 + 
+     .                   (P1(2,J)-YTRIAN(NECKE(IS1,IT)))**2)
+              IF (DS1 < DP1) THEN
+                DP1 = DS1
+                IM = I
+                IMP = NECKE(IS1,IT)
+              END IF
+              IF (DS2 < DP1) THEN
+                DP1 = DS2
+                IM = I
+                IMP = NECKE(IS,IT)
+              END IF
+            END DO 
+            IF ((DP1/SURF_TRIAN(J)%BGLT(NT+1) > 1.D-2)
+     .          .OR. (IM*IMP == 0)) THEN
+               WRITE (IUNOUT,*) ' PROBLEM FINDING STARTING POINT',
+     .                          ' FOR SORTING OF TRIANGLES '
+               WRITE (IUNOUT,*) 
+     .            ' SORTING ABANDONNED FOR SURFACE NUMBER ',I
+               CYCLE
+            END IF
+
+! SET FIRST TRIANGLE ALONG SURFACE 
+            IF (IM /= 1) THEN
+              IT = SURF_TRIAN(J)%ITRIAS(1)
+              IS = SURF_TRIAN(J)%ITRISI(1)
+              SURF_TRIAN(J)%ITRIAS(1) = SURF_TRIAN(J)%ITRIAS(IM)
+              SURF_TRIAN(J)%ITRISI(1) = SURF_TRIAN(J)%ITRISI(IM)
+              SURF_TRIAN(J)%ITRIAS(IM) = IT
+              SURF_TRIAN(J)%ITRISI(IM) = IS
+              IT = SURF_TRIAN(J)%ITRIAS(1)
+              IS = SURF_TRIAN(J)%ITRISI(1)
+              SURF_TRIAN(J)%BGLT(2) =
+     .             SURF_TRIAN(J)%BGLT(1) +
+     .             SQRT(VTRIX(IS,IT)**2+VTRIY(IS,IT)**2)
+            END IF
+
+! SORT THE TRIANGLES
+            DO I = 2, NT-1            
+              DO K = I, NT
+                IT = SURF_TRIAN(J)%ITRIAS(K)
+                IS = SURF_TRIAN(J)%ITRISI(K)
+                IS1 = IS + 1
+                IF (IS1 > 3) IS1 = 1
+                IF (IMP == NECKE(IS,IT)) THEN
+                  IMP = NECKE(IS1,IT)
+                  EXIT
+                END IF
+                IF (IMP == NECKE(IS1,IT)) THEN
+                  IMP = NECKE(IS,IT)
+                  EXIT
+                END IF
+              END DO
+              IF (K > NT) THEN
+                WRITE (IUNOUT,*) ' NO MATCHING TRIANGLE FOUND '
+              ELSE
+                IF (I /= K) THEN
+                   IT = SURF_TRIAN(J)%ITRIAS(I)
+                   IS = SURF_TRIAN(J)%ITRISI(I)
+                   SURF_TRIAN(J)%ITRIAS(I) = SURF_TRIAN(J)%ITRIAS(K)
+                   SURF_TRIAN(J)%ITRISI(I) = SURF_TRIAN(J)%ITRISI(K)
+                   SURF_TRIAN(J)%ITRIAS(K) = IT
+                   SURF_TRIAN(J)%ITRISI(K) = IS   
+                END IF
+                IT = SURF_TRIAN(J)%ITRIAS(I)
+                IS = SURF_TRIAN(J)%ITRISI(I)
+                SURF_TRIAN(J)%BGLT(I+1) =
+     .               SURF_TRIAN(J)%BGLT(I) +
+     .               SQRT(VTRIX(IS,IT)**2+VTRIY(IS,IT)**2)
+              END IF
+            END DO
+          END IF
+        END DO
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
@@ -787,7 +886,7 @@ C  GENERAL GEOMETRY OPTION: NOTHING TO BE DONE HERE
 C
         ENDIF
 C
-C  TOROIDAL ANGLE, IN RADIANS
+C  TOROIDAL ANGLE, INPUT IS IN DEGREES, CONVERT TO RADIANS
         ZDF=(ZAA-ZIA)*DEGRAD
 C
 C  ALPHA: HALF OF THE ANGLE INCREMENT IN EQUIDISTANT TOROIDAL ANGLE GRID
@@ -877,6 +976,7 @@ C
             ENDIF
           ENDIF
 180     CONTINUE
+
       ELSEIF (LEVGEO.EQ.4) THEN
         DO ISTS=1,NSTSI
           NLJ=NLIM+ISTS
@@ -911,12 +1011,12 @@ C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
 !          ENDDO
 !        ENDDO
 
-        ALLOCATE (VISITED(3,NTRI))
+        ALLOCATE (VISITED(0:3,0:NTRI))
         VISITED = .FALSE.
 
         DO ISTS = 1, NLIMPS
 
-          write (iunout,*) ' area for surface ',ists
+cdr       write (iunout,*) ' area for surface ',ists
           DO J= 1, SURF_TRIAN(ISTS)%NUMTR
             I = SURF_TRIAN(ISTS)%ITRIAS(J)
             IS = SURF_TRIAN(ISTS)%ITRISI(J)
@@ -939,8 +1039,9 @@ C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
               XX1=XX1+RMTOR
               XX2=XX2+RMTOR
               COM=0.5*(XX1+XX2)
-              write (iunout,'(3i6,2es12.4)') 
-     .            i, ixtri(i), iytri(i), dsd, com
+cdr           write (iunout,'(3i6,2es12.4)') 
+cdr  .            i, ixtri(i), iytri(i), dsd, com
+
               DSD=DSD*COM*TANAL/ALPHA*PI2A
             ELSE
               DSD=DSD*ZDF
@@ -955,7 +1056,7 @@ C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
             END IF
             SAREA(ISTS)=SAREA(ISTS)+DSD
           END DO
-          write (iunout,*) ' sarea ', ists, SAREA(ISTS)
+cdr       write (iunout,*) ' sarea ', ists, SAREA(ISTS)
         END DO
 
         DEALLOCATE (VISITED)
@@ -1002,7 +1103,7 @@ C
 C
 C  IF NLSYMP, Y-GRID MUST BE SYMMETRIC: PSURF(I)=PSURF(NP2ND-I+1)
 C
-      IF (LEVGEO.EQ.1) THEN
+      IF (LEVGEO.EQ.1) THEN  !  CARTHESIAN, Y-DIRECTION
 C   Y-GRID
         IF (INDGRD(IND).LE.4) THEN
           CALL EIRENE_GRID_1(PSURF,NP2ND,NPSEP,NPPLA,YIA,YGA,YAA,YYA,2)
@@ -1029,7 +1130,7 @@ C
 C
         CALL EIRENE_SNEIGH
 C
-      ELSEIF (LEVGEO.EQ.2) THEN
+      ELSEIF (LEVGEO.EQ.2) THEN  ! POLAR ANGLE GRID, "THETA"-GRID, IN RADIANS
 C
         IF (INDGRD(IND).EQ.1) THEN
           ND=NPSEP
@@ -1211,7 +1312,7 @@ C
           IF (INUMP(ISTS,1).NE.0) THEN
             IR=INUMP(ISTS,1)
             NLJ=NLIM+ISTS
-            write (iunout,*) ' area for surface ',nlj
+cdr         write (iunout,*) ' area for surface ',nlj
             IF (NLTRZ) THEN
               SAREA(NLJ)=BGL(IR,IRPTE(ISTS,2))-BGL(IR,IRPTA(ISTS,2))
               SAREA(NLJ)=SAREA(NLJ)*ZDF
@@ -1220,11 +1321,11 @@ C
               DO 291 IP=IRPTA(ISTS,2),IRPTE(ISTS,2)-1
                 XS=((XPOL(IR,IP+1)+XPOL(IR,IP))*0.5)+RMTOR
                 SAREA(NLJ)=SAREA(NLJ)+(BGL(IR,IP+1)-BGL(IR,IP))*XS
-                write (iunout,'(2i6,2es12.4)') 
-     .             ir, ip, BGL(IR,IP+1)-BGL(IR,IP), xs
+cdr             write (iunout,'(2i6,2es12.4)') 
+cdr  .             ir, ip, BGL(IR,IP+1)-BGL(IR,IP), xs
 291           CONTINUE
               SAREA(NLJ)=SAREA(NLJ)*TANAL/ALPHA*PI2A
-              write (iunout,*) 'sarea ', nlj, SAREA(NLJ)
+cdr           write (iunout,*) 'sarea ', nlj, SAREA(NLJ)
             ENDIF
           ENDIF
 290     CONTINUE
@@ -1306,7 +1407,7 @@ C
 C  IF NLSYMT, Z-GRID MUST BE SYMMETRIC
 C
       IF (NLTRZ) THEN
-C   Z-GRID
+C   Z-GRID, CARTHESIAN
         IF (INDGRD(IND).LE.4) THEN
           CALL EIRENE_GRID_1(ZSURF,NT3RD,NTSEP,NTTRA,ZIA,ZGA,ZAA,ZZA,3)
 C       ELSEIF (INDGRD(IND).EQ.5) THEN
@@ -1323,20 +1424,24 @@ C
 310       ZZONE(J)=(ZSURF(J)+ZSURF(J+1))/2.
 C
 C     ELSEIF (NLTRA) THEN
-C   GRID FOR TOROIDAL APPROXIMATION OF CYLINDER: ALREADY DONE
+C   GRID FOR TOROIDAL APPROXIMATION OF CYLINDER: ALREADY DONE IN CALL GRID(1)
+C   THERE: ZSURF, ZZONE HAVE BEEN DEFINED IN RADIANS
 C
       ENDIF
 C
       IF (TRCGRD) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'GRIDPOINTS IN Z DIRECTION'
+        IF (NLTRZ)
+     .   WRITE (iunout,*) 'GRIDPOINTS IN Z DIRECTION'
+        IF (NLTRA)
+     .   WRITE (iunout,*) 'GRIDPOINTS IN TOROIDAL DIRECTION, IN RADIANS'
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NT3RD,3)
         CALL EIRENE_LEER(2)
       ENDIF
  
  
-!  SET NSTGRD FOR AVERAGING CELLS
+!  SET NSTGRD FOR CELLS IT=NT3RD CONTAINING 2-DIMENSIONAL AVERAGES
  
       IT = NT3RD
       DO IR = 1, NR1ST
@@ -1347,6 +1452,8 @@ C
       END DO
  
 !  COPY SWITCHING OFF OF DEAD CELLS FOR TOROIDAL CELL 1 TO ALL OTHERS
+!  i.e.:
+!  SET NSTGRD FOR CELLS IT CONTAINING 0D AND 1D AVERAGES OF 2D PROJECTION
  
       IT1=1
       DO IR=1,NR1ST

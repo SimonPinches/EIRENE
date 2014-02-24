@@ -93,8 +93,16 @@ C
 C
      R EOTPL(:,:),
 C
-     R SPTAT(:,:), SPTML(:,:),
-     R SPTIO(:,:), SPTPHT(:,:), SPTPL(:,:),
+     R SPTAAT(:,:), SPTMAT(:,:), SPTIAT(:,:), SPTPHAT(:,:), 
+     R SPTPAT(:,:),
+     R SPTAML(:,:), SPTMML(:,:), SPTIML(:,:), SPTPHML(:,:), 
+     R SPTPML(:,:),
+     R SPTAIO(:,:), SPTMIO(:,:), SPTIIO(:,:), SPTPHIO(:,:), 
+     R SPTPIO(:,:), 
+     R SPTAPHT(:,:), SPTMPHT(:,:), SPTIPHT(:,:), SPTPHPHT(:,:), 
+     R SPTPPHT(:,:), 
+     R SPTAPL(:,:), SPTMPL(:,:), SPTIPL(:,:), SPTPHPL(:,:), 
+     R SPTPPL(:,:),
      R SPTTOT(:),
      R ADDS(:,:),  ALGS(:,:),
      R SPUMP(:,:)
@@ -209,7 +217,11 @@ C
 C
      L LEOTPL,
 C
-     L LSPTAT, LSPTML, LSPTIO, LSPTPHT, LSPTPL,
+     L LSPTAAT,  LSPTMAT,  LSPTIAT,  LSPTPHAT,  LSPTPAT,
+     L LSPTAML,  LSPTMML,  LSPTIML,  LSPTPHML,  LSPTPML,
+     L LSPTAIO,  LSPTMIO,  LSPTIIO,  LSPTPHIO,  LSPTPIO, 
+     L LSPTAPHT, LSPTMPHT, LSPTIPHT, LSPTPHPHT, LSPTPPHT, 
+     L LSPTAPL,  LSPTMPL,  LSPTIPL,  LSPTPHPL,  LSPTPPL,
      L LSPTTOT,
      L LADDS,  LALGS,
      L LSPUMP
@@ -229,7 +241,11 @@ C
 C
      L LMSEOTPL,
 C
-     L LMSSPTAT, LMSSPTML, LMSSPTIO, LMSSPTPHT, LMSSPTPL,
+     L LMSSPTAAT,  LMSSPTMAT,  LMSSPTIAT,  LMSSPTPHAT,  LMSSPTPAT,
+     L LMSSPTAML,  LMSSPTMML,  LMSSPTIML,  LMSSPTPHML,  LMSSPTPML,
+     L LMSSPTAIO,  LMSSPTMIO,  LMSSPTIIO,  LMSSPTPHIO,  LMSSPTPIO, 
+     L LMSSPTAPHT, LMSSPTMPHT, LMSSPTIPHT, LMSSPTPHPHT, LMSSPTPPHT, 
+     L LMSSPTAPL,  LMSSPTMPL,  LMSSPTIPL,  LMSSPTPHPL,  LMSSPTPPL,
      L LMSSPTTOT,
      L LMSADDS,  LMSALGS,
      L LMSSPUMP
@@ -1074,48 +1090,148 @@ C
         EOTPL => CEMETERYS(0:0,:)
       END IF
 C
-      IF (LSPTAT) THEN
-        SPTAT => ESTIMS(NADDW(51)+1:NADDW(52),:)
+      IF (LSPTAAT) THEN
+        SPTAAT => ESTIMS(NADDW(51)+1:NADDW(52),:)
       ELSE
-        SPTAT => CEMETERYS(0:0,:)
+        SPTAAT => CEMETERYS(0:0,:)
       END IF
-      IF (LSPTML) THEN
-        SPTML => ESTIMS(NADDW(52)+1:NADDW(53),:)
+      IF (LSPTMAT) THEN
+        SPTMAT => ESTIMS(NADDW(52)+1:NADDW(53),:)
       ELSE
-        SPTML => CEMETERYS(0:0,:)
+        SPTMAT => CEMETERYS(0:0,:)
       END IF
-      IF (LSPTIO) THEN
-        SPTIO => ESTIMS(NADDW(53)+1:NADDW(54),:)
+      IF (LSPTIAT) THEN
+        SPTIAT => ESTIMS(NADDW(53)+1:NADDW(54),:)
       ELSE
-        SPTIO => CEMETERYS(0:0,:)
+        SPTIAT => CEMETERYS(0:0,:)
       END IF
-      IF (LSPTPHT) THEN
-        SPTPHT => ESTIMS(NADDW(54)+1:NADDW(55),:)
+      IF (LSPTPHAT) THEN
+        SPTPHAT => ESTIMS(NADDW(54)+1:NADDW(55),:)
       ELSE
-        SPTPHT => CEMETERYS(0:0,:)
+        SPTPHAT => CEMETERYS(0:0,:)
       END IF
-      IF (LSPTPL) THEN
-        SPTPL => ESTIMS(NADDW(55)+1:NADDW(56),:)
+      IF (LSPTPAT) THEN
+        SPTPAT => ESTIMS(NADDW(55)+1:NADDW(56),:)
       ELSE
-        SPTPL => CEMETERYS(0:0,:)
+        SPTPAT => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTAML) THEN
+        SPTAML => ESTIMS(NADDW(56)+1:NADDW(57),:)
+      ELSE
+        SPTAML => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTMML) THEN
+        SPTMML => ESTIMS(NADDW(57)+1:NADDW(58),:)
+      ELSE
+        SPTMML => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTIML) THEN
+        SPTIML => ESTIMS(NADDW(58)+1:NADDW(59),:)
+      ELSE
+        SPTIML => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPHML) THEN
+        SPTPHML => ESTIMS(NADDW(59)+1:NADDW(60),:)
+      ELSE
+        SPTPHML => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPML) THEN
+        SPTPML => ESTIMS(NADDW(60)+1:NADDW(61),:)
+      ELSE
+        SPTPML => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTAIO) THEN
+        SPTAIO => ESTIMS(NADDW(61)+1:NADDW(62),:)
+      ELSE
+        SPTAIO => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTMIO) THEN
+        SPTMIO => ESTIMS(NADDW(62)+1:NADDW(63),:)
+      ELSE
+        SPTMIO => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTIIO) THEN
+        SPTIIO => ESTIMS(NADDW(63)+1:NADDW(64),:)
+      ELSE
+        SPTIIO => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPHIO) THEN
+        SPTPHIO => ESTIMS(NADDW(64)+1:NADDW(65),:)
+      ELSE
+        SPTPHIO => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPIO) THEN
+        SPTPIO => ESTIMS(NADDW(65)+1:NADDW(66),:)
+      ELSE
+        SPTPIO => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTAPHT) THEN
+        SPTAPHT => ESTIMS(NADDW(66)+1:NADDW(67),:)
+      ELSE
+        SPTAPHT => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTMPHT) THEN
+        SPTMPHT => ESTIMS(NADDW(67)+1:NADDW(68),:)
+      ELSE
+        SPTMPHT => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTIPHT) THEN
+        SPTIPHT => ESTIMS(NADDW(68)+1:NADDW(69),:)
+      ELSE
+        SPTIPHT => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPHPHT) THEN
+        SPTPHPHT => ESTIMS(NADDW(69)+1:NADDW(70),:)
+      ELSE
+        SPTPHPHT => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPPHT) THEN
+        SPTPPHT => ESTIMS(NADDW(70)+1:NADDW(71),:)
+      ELSE
+        SPTPPHT => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTAPL) THEN
+        SPTAPL => ESTIMS(NADDW(71)+1:NADDW(72),:)
+      ELSE
+        SPTAPL => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTMPL) THEN
+        SPTMPL => ESTIMS(NADDW(72)+1:NADDW(73),:)
+      ELSE
+        SPTMPL => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTIPL) THEN
+        SPTIPL => ESTIMS(NADDW(73)+1:NADDW(74),:)
+      ELSE
+        SPTIPL => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPHPL) THEN
+        SPTPHPL => ESTIMS(NADDW(74)+1:NADDW(75),:)
+      ELSE
+        SPTPHPL => CEMETERYS(0:0,:)
+      END IF
+      IF (LSPTPPL) THEN
+        SPTPPL => ESTIMS(NADDW(75)+1:NADDW(76),:)
+      ELSE
+        SPTPPL => CEMETERYS(0:0,:)
       END IF
       IF (LSPTTOT) THEN
-        SPTTOT => ESTIMS(NADDW(56)+1,:)
+        SPTTOT => ESTIMS(NADDW(76)+1,:)
       ELSE
         SPTTOT => CEMETERYS(0,:)
       END IF
       IF (LADDS) THEN
-        ADDS => ESTIMS(NADDW(57)+1:NADDW(58),:)
+        ADDS => ESTIMS(NADDW(77)+1:NADDW(78),:)
       ELSE
         ADDS => CEMETERYS(0:0,:)
       END IF
       IF (LALGS) THEN
-        ALGS => ESTIMS(NADDW(58)+1:NADDW(59),:)
+        ALGS => ESTIMS(NADDW(78)+1:NADDW(79),:)
       ELSE
         ALGS => CEMETERYS(0:0,:)
       END IF
       IF (LSPUMP) THEN
-        SPUMP => ESTIMS(NADDW(59)+1:,:)
+        SPUMP => ESTIMS(NADDW(79)+1:,:)
       ELSE
         SPUMP => CEMETERYS(0:0,:)
       END IF
@@ -1437,15 +1553,35 @@ C
         LERFPHPHT => LIVTALS(48)
         LERFPPHT  => LIVTALS(49)
         LEOTPL    => LIVTALS(50)
-        LSPTAT    => LIVTALS(51)
-        LSPTML    => LIVTALS(52)
-        LSPTIO    => LIVTALS(53)
-        LSPTPHT   => LIVTALS(54)
-        LSPTPL    => LIVTALS(55)
-        LSPTTOT   => LIVTALS(56)
-        LADDS     => LIVTALS(57)
-        LALGS     => LIVTALS(58)
-        LSPUMP    => LIVTALS(59)
+        LSPTAAT    => LIVTALS(51)
+        LSPTAML    => LIVTALS(52)
+        LSPTAIO    => LIVTALS(53)
+        LSPTAPHT   => LIVTALS(54)
+        LSPTAPL    => LIVTALS(55)
+        LSPTMAT    => LIVTALS(56 )
+        LSPTMML    => LIVTALS(57)
+        LSPTMIO    => LIVTALS(58)
+        LSPTMPHT   => LIVTALS(59)
+        LSPTMPL    => LIVTALS(60)
+        LSPTIAT    => LIVTALS(61)
+        LSPTIML    => LIVTALS(62)
+        LSPTIIO    => LIVTALS(63)
+        LSPTIPHT   => LIVTALS(64)
+        LSPTIPL    => LIVTALS(65)
+        LSPTPHAT    => LIVTALS(66)
+        LSPTPHML    => LIVTALS(67)
+        LSPTPHIO    => LIVTALS(68)
+        LSPTPHPHT   => LIVTALS(69)
+        LSPTPHPL    => LIVTALS(70)
+        LSPTPAT    => LIVTALS(71)
+        LSPTPML    => LIVTALS(72)
+        LSPTPIO    => LIVTALS(73)
+        LSPTPPHT   => LIVTALS(74)
+        LSPTPPL    => LIVTALS(75)
+        LSPTTOT   => LIVTALS(76)
+        LADDS     => LIVTALS(77)
+        LALGS     => LIVTALS(78)
+        LSPUMP    => LIVTALS(79)
  
         LMSPOTAT    => LMISTALS(1)
         LMSPRFAAT   => LMISTALS(2)
@@ -1497,15 +1633,35 @@ C
         LMSERFPHPHT => LMISTALS(48)
         LMSERFPPHT  => LMISTALS(49)
         LMSEOTPL    => LMISTALS(50)
-        LMSSPTAT    => LMISTALS(51)
-        LMSSPTML    => LMISTALS(52)
-        LMSSPTIO    => LMISTALS(53)
-        LMSSPTPHT   => LMISTALS(54)
-        LMSSPTPL    => LMISTALS(55)
-        LMSSPTTOT   => LMISTALS(56)
-        LMSADDS     => LMISTALS(57)
-        LMSALGS     => LMISTALS(58)
-        LMSSPUMP    => LMISTALS(59)
+        LMSSPTAAT   => LMISTALS(51)
+        LMSSPTAML   => LMISTALS(52)
+        LMSSPTAIO   => LMISTALS(53)
+        LMSSPTAPHT  => LMISTALS(54)
+        LMSSPTAPL   => LMISTALS(55)
+        LMSSPTMAT   => LMISTALS(56)
+        LMSSPTMML   => LMISTALS(57)
+        LMSSPTMIO   => LMISTALS(58)
+        LMSSPTMPHT  => LMISTALS(59)
+        LMSSPTMPL   => LMISTALS(60)
+        LMSSPTIAT   => LMISTALS(61)
+        LMSSPTIML   => LMISTALS(62)
+        LMSSPTIIO   => LMISTALS(63)
+        LMSSPTIPHT  => LMISTALS(64)
+        LMSSPTIPL   => LMISTALS(65)
+        LMSSPTPHAT  => LMISTALS(66)
+        LMSSPTPHML  => LMISTALS(67)
+        LMSSPTPHIO  => LMISTALS(68)
+        LMSSPTPHPHT => LMISTALS(69)
+        LMSSPTPHPL  => LMISTALS(70)
+        LMSSPTPAT   => LMISTALS(71)
+        LMSSPTPML   => LMISTALS(72)
+        LMSSPTPIO   => LMISTALS(73)
+        LMSSPTPPHT  => LMISTALS(74)
+        LMSSPTPPL   => LMISTALS(75)
+        LMSSPTTOT   => LMISTALS(76)
+        LMSADDS     => LMISTALS(77)
+        LMSALGS     => LMISTALS(78)
+        LMSSPUMP    => LMISTALS(79)
  
         NFIRST = 0
         NADDV  = 0

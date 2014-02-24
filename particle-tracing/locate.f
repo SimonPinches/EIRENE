@@ -1380,7 +1380,12 @@ C
           ISSPTC=0
 C
           NLSPUT=.FALSE.
-          IF (ILSPT(MSURF).NE.0) THEN
+csw 10jan2011
+CVK          IF (ILSPT(MSURF).NE.0) THEN
+!pb  allow for bulk particle to sputter at transparent surface
+!pb  because of gap between outer plasma surface and wall in SOLPS
+          IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN !VK from AK's locate
+csw
 C  SAVE INCIDENT PARTICLE'S SPEED AND ENERGY
             E0S=E0
             WEIGHS=WEIGHT
@@ -1403,23 +1408,28 @@ C
 C
 C  UPDATE SPUTTER SURFACE TALLIES. SAME AS IN SUBR. ESCAPE, BUT HERE
 C                                  FOR INCICENT BULK IONS
-C
+C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY 
+C  FOR PHSSICAL AND CHEMICAL SPUTTERING RESP.
+            ITOLD = 4
             IF (NLSPUT) THEN
+C
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP+WGHTSC)
+C
 C  UPDATE TOTAL SPUTTERED FLUX TALLY
-              IF (LSPTTOT)
-     .        SPTTOT(MSURF)=SPTTOT(MSURF)+WGHTSP+WGHTSC
+!              IF (LSPTTOT)
+!     .        SPTTOT(MSURF)=SPTTOT(MSURF)+WGHTSP+WGHTSC
 C             IF (ITYP.EQ.4) THEN
-                IF (LSPTPL)
-     .          SPTPL(IPLS,MSURF)=SPTPL(IPLS,MSURF)+WGHTSP+WGHTSC
+!                IF (LSPTPL)
+!     .          SPTPL(IPLS,MSURF)=SPTPL(IPLS,MSURF)+WGHTSP+WGHTSC
 C             ENDIF
-              IF (MSURFG.GT.0) THEN
-                IF (LSPTTOT)
-     .          SPTTOT(MSURFG)=SPTTOT(MSURFG)+WGHTSP+WGHTSC
+!              IF (MSURFG.GT.0) THEN
+!                IF (LSPTTOT)
+!     .          SPTTOT(MSURFG)=SPTTOT(MSURFG)+WGHTSP+WGHTSC
 C               IF (ITYP.EQ.4) THEN
-                  IF (LSPTPL)
-     .            SPTPL(IPLS,MSURFG)=SPTPL(IPLS,MSURFG)+WGHTSP+WGHTSC
+!                  IF (LSPTPL)
+!     .            SPTPL(IPLS,MSURFG)=SPTPL(IPLS,MSURFG)+WGHTSP+WGHTSC
 C               ENDIF
-              ENDIF
+!              ENDIF
             ENDIF
           ENDIF
 C
@@ -1467,6 +1477,8 @@ C
      .           'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
      .            VELX,VELY,VELZ,VEL,E0,WEIGHT)
             ENDIF
+C
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -1531,6 +1543,8 @@ C
      .            VELX,VELY,VELZ,VEL,E0,WEIGHT)
             ENDIF
 C
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC)
+C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
               IF (LPPAT) PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
@@ -1552,7 +1566,10 @@ C
 C
 C  RESTORE INCIDENT PARTICLE, FOR SURFACE REFLECTION ROUTINE
 C
-          IF (ILSPT(MSURF).NE.0) THEN
+csw 10jan2012
+cvk          IF (ILSPT(MSURF).NE.0) THEN
+          IF (NLSPUT) THEN
+csw
             E0=E0S
             WEIGHT=WEIGHS
             VEL=VELS

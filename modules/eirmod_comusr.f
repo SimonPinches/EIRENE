@@ -21,7 +21,8 @@ C  NPLPRM, REAL. THE FIRST NPLPR1 DATA ARE SET IN SUBROUTINE PLASMA
      R        BXIN(:),   BYIN(:),     BZIN(:),   BFIN(:),
      R        ADIN(:,:), EDRIFT(:,:), VOL(:),    WGHT(:,:),
      R        BXPERP(:), BYPERP(:),
-     R        EXIN(:),   EYIN(:),     EZIN(:),   EFIN(:),
+     R        EXIN(:),   EYIN(:),     EZIN(:),   EFIN(:), 
+     R        POT(:),
 C  NSFPRM
      R        FLXOUT(:), SAREA(:),
 C  NPLPR2, REAL
@@ -42,7 +43,7 @@ C     PLASMA PROFILES ON CELL VERTICES
      .        BXINCORNER(:),   BYINCORNER(:),   BZINCORNER(:),
      .        BFINCORNER(:),   BVINCORNER(:,:),
      .        EXCORNER(:),     EYCORNER(:),     EZCORNER(:),
-     .        EFCORNER(:)
+     .        EFCORNER(:),     POTCORNER(:)
  
       REAL(DP), PUBLIC, SAVE :: TVAC, DVAC, VVAC, ALLOC
  
@@ -80,7 +81,7 @@ C  LUSR, LOGICAL
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L         LTESMO, LTISMO, LDESMO, LDISMO,
-     L         LVSMO,  LBSMO, LESMO
+     L         LVSMO,  LBSMO,  LESMO,  LPOTSMO
 
  
 C FROM HERE ON: NO EQUIVALENCE
@@ -118,7 +119,7 @@ C FROM HERE ON: NO EQUIVALENCE
  
         IF (ALLOCATED(TEIN)) RETURN
  
-        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
+        NPLPR1=(13+1*NPLS+NPLSTI+3*NPLSV)*NRAD
         NPLPRM=NPLPR1+(NAIN+1+1*NPLS+NSPZMC)*NRAD
         NPLPR2=(2+3*NPLS+NPLSTI)*NRAD+
      .          3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT
@@ -147,6 +148,7 @@ C
         ALLOCATE (EYIN(NRAD))
         ALLOCATE (EZIN(NRAD))
         ALLOCATE (EFIN(NRAD))
+        ALLOCATE (POT(NRAD))
         ALLOCATE (TEINL(NRAD))
         ALLOCATE (TIINL(NPLSTI,NRAD))
         ALLOCATE (BVIN(NPLSV,NRAD))
@@ -231,7 +233,7 @@ C
  
         IF (ALLOCATED(ADIN)) RETURN
  
-        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
+        NPLPR1=(13+1*NPLS+NPLSTI+3*NPLSV)*NRAD
         NPLPRM=NPLPR1+(NAIN+1+1*NPLS+NSPZMC)*NRAD
         ALLOCATE (ADIN(NAIN,NRAD))
         ALLOCATE (ICPVE(NCPV))
@@ -281,6 +283,7 @@ C
       IF (LVSMO)  NTOT = NTOT + 4*NPLSV 
       IF (LBSMO)  NTOT = NTOT + 4
       IF (LESMO)  NTOT = NTOT + 4
+      IF (LPOTSMO)  NTOT = NTOT + 1
       
       IF (NTOT > 0) THEN
         ALLOCATE (CORNER_PROFILES(NCORNER,NTOT))
@@ -352,6 +355,13 @@ C
         NULLIFY(EFCORNER)
       END IF
 
+      IF (LPOTSMO) THEN
+        POTCORNER => CORNER_PROFILES(:,ICO+1)
+        ICO = ICO + 1
+      ELSE
+        NULLIFY(POTCORNER)
+      END IF
+
       IF (ICO /= NTOT) THEN
         WRITE (IUNOUT,*) ' ERROR IN EIRENE_ALLOC_CORNERS '
         WRITE (IUNOUT,*) ' NTOT = ',NTOT,' /= ICO = ',ICO
@@ -388,6 +398,7 @@ C
       DEALLOCATE (EYIN)
       DEALLOCATE (EZIN)
       DEALLOCATE (EFIN)
+      DEALLOCATE (POT)
       DEALLOCATE (FLXOUT)
       DEALLOCATE (SAREA)
       DEALLOCATE (TEINL)
@@ -493,12 +504,13 @@ C
       IF (IFIRST == 0) THEN
         LSMOPRO = .FALSE.
 
-        LTESMO => LSMOPRO(1) 
-        LTISMO => LSMOPRO(2) 
-        LDISMO => LSMOPRO(3)
-        LVSMO  => LSMOPRO(4)  
-        LBSMO  => LSMOPRO(5) 
-        LESMO  => LSMOPRO(6)
+        LTESMO   => LSMOPRO(1) 
+        LTISMO   => LSMOPRO(2) 
+        LDISMO   => LSMOPRO(3)
+        LVSMO    => LSMOPRO(4)  
+        LBSMO    => LSMOPRO(5) 
+        LESMO    => LSMOPRO(6)
+        LPOTSMO  => LSMOPRO(7)
 
         IFIRST = 1
       ENDIF
@@ -524,6 +536,7 @@ C
         EYIN   = 0._DP
         EZIN   = 0._DP
         EFIN   = 0._DP
+        POT    = 0._DP
         TEINL  = 0._DP
         TIINL  = 0._DP
         BVIN   = 0._DP

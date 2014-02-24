@@ -82,6 +82,12 @@ C
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	if (my_pe_gr==0) XMCP(istra) = helpc
 
+csw 19feb2013, added XMCT
+        call mpi_reduce(XMCT(istra),helpc,1,
+     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+	if (my_pe_gr==0) XMCT(istra) = helpc
+csw
+
         call mpi_reduce(PTRASH(istra),helpc,1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	if (my_pe_gr==0) PTRASH(istra) = helpc

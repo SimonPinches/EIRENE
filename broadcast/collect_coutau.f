@@ -201,6 +201,9 @@
         
         deallocate (help)
 
+!csw 08jul2011 missing comm_free fixed (invalid comms from icolor/=1 are actually not allocated, is this conform to MPI standard?)
+        call mpi_comm_free(icomgrp,ier)
+
       end if ! icolor=1
       
       call mpi_barrier(mpi_comm_world,ier)

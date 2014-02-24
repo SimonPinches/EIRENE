@@ -85,6 +85,12 @@ C
      .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
      .           INODES, J, ISEE, IPTSI, I1, I2, I3, IA, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
+csw
+!pb 03122013      real(dp) :: timstart,timend,timused
+!pb 03122013      real(dp), external :: mpi_wtime
+      real(dp) :: timused
+      integer :: itimstart, itimend, itimrate
+csw
       INTEGER, EXTERNAL :: RANGET_EIRENE
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
@@ -195,15 +201,7 @@ C
 C**** CLEAR WORK AREA FOR SUM OVER STRATA ****************************
 C
       CALL EIRENE_CLEAR_SUMOSTRA
-C
-C**** INITIALIZE COMMONS COUTAU AND CSPEZ
-C
-      CALL EIRENE_INIT_COUTAU(NLSRON)
-      FASCL(0)=1.
-      FMSCL(0)=1.
-      FISCL(0)=1.
-      FPHSCL(0)=1.
-C
+
 !pb      LOGATM=.FALSE.
 !pb      LOGION=.FALSE.
 !pb      LOGMOL=.FALSE.
@@ -353,7 +351,8 @@ C
 !pb      IF ((NSTEFF > 0) .AND. (NPRS.GT.nsteff)) THEN
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
-        call EIRENE_broad_pedist(xtim,npts,nminpts,trcdbgmpi)
+!pb021213        call EIRENE_broad_pedist(xtim,npts,nminpts,trcdbgmpi)
+        call EIRENE_broad_pedist(xtim)
         if (.not.nlident) then
           do istra=1,nstrai
             ninitl(istra)=ninitl(istra)+my_pe*10000
@@ -361,6 +360,16 @@ C
         endif
         NPRNLS=NPRNLI
       ENDIF
+C
+C**** INITIALIZE COMMONS COUTAU AND CSPEZ
+C
+csw 19mar2013 moved to here after call to pedist (xmct/xmcp)
+      CALL EIRENE_INIT_COUTAU(NLSRON)
+      FASCL(0)=1.
+      FMSCL(0)=1.
+      FISCL(0)=1.
+      FPHSCL(0)=1.
+C
 C
 C**** STRATA LOOP ****************************************************
 C
@@ -404,6 +413,9 @@ CVKMPI                XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
           ENDIF
           CALL EIRENE_LEER(2)
           XMCP(ISTRA)=0.
+csw 19feb2013
+          XMCT(ISTRA)=0.
+csw
 !pb        if( ((nprs.le.nsteff).and.(mod(ISTRA-1,nprs).eq.my_pe)) .or.
 !pb     .      ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra)) ) then
           IPANU=0
@@ -491,7 +503,15 @@ C
         LGSTOP=.FALSE.
 C
 C
-        DO 100 IPTSI=1,NPTS(ISTRA)
+csw 19feb2013
+!pb 03122013        timstart=mpi_wtime()
+        call system_clock (itimstart, itimrate)
+csw
+
+csw 18oct2012 TEST
+csw        DO 100 IPTSI=1,NPTS(ISTRA)
+        DO 100 IPTSI=1,NPTS(ISTRA)/max(1,npestr(istra))
+csw
 C
 C  RESET INDEX-ARRAY
           NCLMT = 0
@@ -688,6 +708,14 @@ C
 C       GOTO 101
 101     CONTINUE
 C
+C
+csw 19feb2019
+!pb 03122013        timend=mpi_wtime()
+        call system_clock (itimend, itimrate)
+        timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
+        write(iunout,'(a,2i8,e13.6)') 'TIMUSED: ',istra,ipanu,timused
+        XMCT(istra)=timused
+csw
         SECND=EIRENE_SECOND_OWN()
 C
 C**** PARTICLE TRACING FOR THIS STRATUM FINISHED **********************
@@ -731,7 +759,8 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-      if ((nsteff.ge.nprs).or.(npesta(istra).eq.my_pe)) then
+csw      if ((nsteff.ge.nprs).or.(npesta(istra).eq.my_pe)) then
+      if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
 
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
 C
@@ -950,8 +979,13 @@ C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
 cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
+cpara  csw 08mar2013: hat sich jetzt erledigt..
       IESTR=ISTRA
       IF (NFILEN.EQ.1) THEN
+csw 18jul2011
+csw 08mar2013 added check nprs < nstrai
+        if(nprs==1.or.(nprs > 1 .and. npesta(istra)==my_pe)
+     .            .or.(nprs > 1 .and. nprs < nstrai) ) then
         CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -959,6 +993,7 @@ cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
+        endif
       ENDIF
 C
 C  UPDATE TALLIES FOR  "SUM OVER STRATA"

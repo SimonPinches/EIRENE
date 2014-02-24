@@ -1,3 +1,5 @@
+!               options AMPTS,
+!dr  03.03.10:  READING A&M DATA in block 4, commented, sorted,.....
 !pb  20.03.08:  allocate and nullify estiml(1) if no input block 10F 
 !pb             is available
 !pb  01.08.07:  save NLSRON in case of coupled run with short cycle
@@ -39,9 +41,9 @@ cdr           for trajectory plot
 cdr           default: = 0: "plot trajectory for this species"
 cdr           new    : =-1: "do not plot trajectory for this species"
 cdr           see modifications in plt2d.f from 28.4.04
-cpb sept-05:  specification of filenames for reaction databases in input
-cpb           block 4 added. Lines are inserted between number of reactions
-cpb           and reaction cards
+cpb sept-05:  specification of filenames and pathes for external
+cpb           databases in input block 1 added. (CFILE-cards)
+cpb
 cpb           example:
 cpb           CFILE AMJUEL /home/boerner/Database/AMdata/amjuel.tex
  
@@ -61,7 +63,6 @@ C
       USE EIRMOD_CINIT
       USE EIRMOD_COMSIG
       USE EIRMOD_CREF
-!pb      USE EIRMOD_CREFMOD
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGRID
       USE EIRMOD_CZT1
@@ -159,8 +160,12 @@ C
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, RCMIN, RCMAX, ESCD2A, ESCD2M, ESCD2I, ESCD2PH,
      .          ESCD2P
+
+C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
       REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
-      REAL(DP) :: MPTS 
+C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
+      REAL(DP) :: AMPTS 
+
       REAL(DP), ALLOCATABLE :: SAREA_SAVE(:)
       INTEGER :: IHELP(NLIMPS), IPRSF(12), NUMTAL(12), IADTYP(0:4)
       INTEGER :: JP, KT, IM, II, IP, IA, NFLGS, NSPZS1, NSPZS2, IPH,
@@ -179,7 +184,7 @@ C
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR, JFEXMN, JFEXMX, ITOK, IER, IL, ILOGS,
-     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG
+     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -223,7 +228,7 @@ C
       IF (IITER.GT.1) GOTO 4000
       IF (ITIMV.GT.1) GOTO 4000
  
-!pb      TPB1=SECOND_OWN()
+!pb   TPB1=EIRENE_SECOND_OWN()
 C
       IREAD=0
       IERROR=0
@@ -291,7 +296,7 @@ C
 100   CONTINUE
 C
 !pb      TPB2=SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time vo einlesen ',tpb2-tpb1
+!pb      write (iunout,*) ' cpu-time vor einlesen ',tpb2-tpb1
 !pb      tpb1 = tpb2
  
       CALL DATE_AND_TIME(CDATE,CTIME)
@@ -321,29 +326,39 @@ C
       ITIMV=MAX0(1,NTIME0)
  
       READ (IUNIN,'(A72)') ZEILE
+C  IS THERE AN ADDITIONAL INPUT LINE FOR STORAGE OPTIMIZATION? 
+
+C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
+!     NOPTIM = ...
+!     NOPTM1 = 1
+!     NGEOM_USR = 0
+!     NCOUP_INPUT = 1
+!     NSMSTRA = 1
+!     NSTORAM = 9
+!     NGSTAL = 0
+!     NRTAL1 = 0     ONLY FOR FIND-PARAM, NOT USED ANY FURTHER
+!     NREAC_ADD = 0  ONLY FOR FIND-PARAM, NOT USED ANY FURTHER    
+
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
-        READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
+C  YES  
+!pb NOPTIM read in EIRENE_FIND_PARAM and changed in EIRENE_SET_PARMMOD(1)
+!pb do not overwrite here 
+        READ (ZEILE,6666) IDUM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL1,NREAC_ADD
-        READ (IUNIN,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
-     .                    NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
-     .                    NLCASCAD, NLOCTREE
-      ELSE
-C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
-!       NOPTIM = 1
-!       NOPTM1 = 1
-!       NGEOM_USR = 0
-!       NCOUP_INPUT = 1
-!       NSMSTRA = 1
-!       NSTORAM = 9
-!       NGSTAL = 0
-!       NRTAL1 = 0     ONLY FOR FIND-PARAM, NOT USED ANY FURTHER
-!       NREAC_ADD = 0  ONLY FOR FIND-PARAM, NOT USED ANY FURTHER
+        READ (IUNIN,'(A72)') ZEILE
+      END IF
+C
         READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                    NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
-     .                    NLCASCAD
-      END IF
+     .                    NLOLDRAN, NLCASCAD, NLOCTREE
  
+C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
+C                        FOR EXTENRAL DATABASES: AMJUEL, HYDHEL,.....
+C  DATA FILES NOT ENTERED HERE: 
+c              BY DEFAULT: THE EXTERNAL DATA FILES ARE EXPECTED IN THE SAME
+C              DIRECTORY AS THE ONE FROM WHICH THE RUN IS STARTED.
+C 
       READ (IUNIN,'(A420)') ZEILE
       IREAD=1
       I1 = INDEX(ZEILE,'CFILE')
@@ -367,6 +382,11 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         READ (IUNIN,'(A420)') ZEILE
         I1 = INDEX(ZEILE,'CFILE')
       END DO
+
+C  READING OF OPTIONAL DATABASE NAME AND PATH-CARDS DONE.
+C  CONTINUE WITH MANDATORY INPUT.  IREAD=1 AT THIS POINT
+
+C  READING OF INPUT BLOCK 1 DONE
  
       NFILEN=EIRENE_IDEZ(NFILE,1,5)
       NFILEM=EIRENE_IDEZ(NFILE,2,5)
@@ -430,6 +450,7 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
       WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPUTIME '
       WRITE (iunout,*) '       OF ',NTCPU,' SECONDS'
       CALL EIRENE_LEER(1)
+
       IF (NFILEN.EQ.1) THEN
         WRITE (iunout,*) '       EIRENE SAVES OUTPUT DATA '
         WRITE (iunout,*) '       ON FILES FT10 AND FT11 AFTER'
@@ -453,7 +474,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         WRITE (iunout,*) '       FOR THE SUM OVER STRATA TALLIES ONLY '
         WRITE (iunout,*) '       NO NEW HISTORIES ARE COMPUTED       '
       ENDIF
-      CALL EIRENE_LEER(1)
+      IF (NFILEN.NE.0) CALL EIRENE_LEER(1)
+
       IF (NFILEM.EQ.1) THEN
         WRITE (iunout,*) '       EIRENE SAVES GEOMETRICAL DATA '
         WRITE (iunout,*) '       ON FILE FT12'
@@ -461,7 +483,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         WRITE (iunout,*) '       EIRENE READS GEOMETRICAL DATA FROM '
         WRITE (iunout,*) '       AN EARLIER RUN FROM FILE FT12 '
       ENDIF
-      CALL EIRENE_LEER(1)
+      IF (NFILEM.NE.0) CALL EIRENE_LEER(1)
+
       IF (NFILEL.EQ.1) THEN
         WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
         WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -525,7 +548,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         WRITE (iunout,*)
      .  '       SOURCE DISTRIBUTION IS NEWLY DETERMINED'
       ENDIF
-      CALL EIRENE_LEER(1)
+      IF (NFILEL.NE.0) CALL EIRENE_LEER(1)
+
       IF (NFILEK.EQ.1) THEN
         WRITE (iunout,*)
      .    '       EIRENE SAVES DATA FOR RECOMMENDED INPUT'
@@ -547,7 +571,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         WRITE (iunout,*)
      .    '       MODIFICATIONS ON FILE FT14 FOR NEXT RUN'
       ENDIF
-      CALL EIRENE_LEER(1)
+      IF (NFILEK.NE.0) CALL EIRENE_LEER(1)
+
       IF (NFILEJ.EQ.1) THEN
         WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT '
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
@@ -562,7 +587,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         WRITE (iunout,*) '       EIRENE SAVES NEW SNAPSHOT POPULATION'
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ENDIF
-      CALL EIRENE_LEER(1)
+      IF (NFILEJ.NE.0) CALL EIRENE_LEER(1)
+
       IF (NITER.GE.1) THEN
         WRITE (iunout,*) '       EIRENE RUN IN ITERATIVE MODE.      '
         WRITE (iunout,*) '       ITERATIONS: ',IITER,' TO ',NITER
@@ -583,6 +609,10 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND-PARAM
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE         '
       ENDIF
       CALL EIRENE_LEER(1)
+C
+C  to be done:
+C  printout:  which date files have we found.
+c  printout:  which default storage settings have we overruled (consequences thereof?)
 C
 C
 C  READ DATA FOR STANDARD MESH, 200---299
@@ -685,7 +715,9 @@ C
             READ (IUNIN,'(A72)') ZEILE
             IREAD = 1
             IF ( (ZEILE(1:1) .NE. '*') .AND.
+C  DOES THE NEXT LINE START WITH A 'LOGICAL' INPUT 
      .           (INDEX('FTft',ZEILE(1:1)) == 0) ) THEN
+C  NO: READ COORDINATE TRANSLATION CARD
               READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
               IREAD = 0
             END IF
@@ -998,8 +1030,7 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
      .                        ISTS
             WRITE (iunout,*)
      .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-            WRITE (iunout,*)
-     .  'DEFAULT MODEL: "NO SPUTTERING" IS USED. EIRMOD_'
+            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
             ILSPT(NLJ)=0
           ENDIF
@@ -1170,8 +1201,7 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
             WRITE (iunout,*) 'WARNING: SPUTTERING FOR ADD. SURFACE ',I
             WRITE (iunout,*)
      .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-            WRITE (iunout,*)
-     .  'DEFAULT MODEL: "NO SPUTTERING" IS USED. EIRMOD_'
+            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
             ILSPT(I)=0
           ENDIF
@@ -1237,21 +1267,29 @@ C
       CALL EIRENE_UPPERCASE(ULINE)
       I1 = INDEX(ULINE,'INCLUDE')
       LINCLUDE = .FALSE.
+
       IF (I1 > 0) THEN
+C  "Include" found. Skip all the rest of block 4 and 5
+C    and only use "include-file" instead
+C
         IREAD = 0
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE,ITOK,IER,.FALSE.)
         LINCLUDE = .TRUE.
         IUNIN_SAVE = IUNIN
-        IUNIN = 2+ifoff
+        IUNIN = 2+ifoff !  fort.2 is the include file. read block 4 and 5 from
+!                          fort.2 rather than fort.iunin
+!                          close fort.2 at end of block 5.
         OPEN (IUNIN,FILE=FILE,FORM='FORMATTED',ACCESS='SEQUENTIAL')
       END IF
 C
       IF (IREAD == 0) READ (IUNIN,*)
-      WRITE (iunout,*)
+      WRITE (iunout,*) 
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
  
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
+
+C  special only in case of HYDKIN INTERFACE: find string "DEFAULT"
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
       IF (IEND > 0) THEN
@@ -1267,29 +1305,38 @@ C
         READ (IUNIN,'(A72)') ZEILE
  
       END IF
+
+C  Normal start of reading database A&M processes
  
       READ (ZEILE,*) NREACI
       WRITE (iunout,*) '       NREACI= ',NREACI
       CALL EIRENE_LEER(1)
+
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(0)
       IL = 0
 C
 411   READ (IUNIN,'(A80)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 C
-C  READ ONE REACTION FROM FILE "FILNAM"
+C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. 
 C
         IL = IL + 1
         READ (ZEILE,66661) IR,FILNAM,H123
         IEND = 16
-!  READ REAC
+
+!  READ 'REAC'
+
         IF (INDEX(FILNAM,'CONST') == 0) THEN
+C  INPUT FOR A CONSTANT CROSS SECTION, REACTION RATE, ETC.
+C        OR FOR A HARD WIRED POLYNOMIAL FIT. FIT COEFFICIENTS ARE READ
+C        FROM CURRENT INPUT FILE, STREAM IUNIN,
+C        NOT FROM EXTERNAL A&M DATA FILE
           CALL
-     .  EIRENE_READ_TOKEN(ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
+     .    EIRENE_READ_TOKEN(ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
           IEND = IEND + ITOK
           IF (IER > 0) THEN
             WRITE (iunout,*)
-     .        ' REACTIONSTRING FOR REACTION ',IR,' TOO LONG '
+     .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG '
             CALL EIRENE_EXIT_OWN(1)
           END IF
         ELSE
@@ -1297,12 +1344,17 @@ C
 !  CHECK LINE FOR FT-FLAG (IFTFLG)
           ITOK = INDEX(ZEILE(IEND:),'FT')
           IF (ITOK /= 0) THEN
+C  STRING "FT" FOUND. READ 9 CHARACTERS INCLUDING THE STARTING "FT"
+C                     PUT THESE ON REAC2. THE ORIGINAL PARAMETER REAC
+C                     IS NOT USED IN CASE OF CONST - OPTION
             REAC2(1:9) = ZEILE(IEND+ITOK:IEND+ITOK+8)
+C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
             IEND = IEND+ITOK+2
             CALL
-     .  EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
+     .      EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
             IEND = IEND + ITOK
           END IF
+
         END IF
 !  READ CRC
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CRC,ITOK,IER,.FALSE.)
@@ -1359,7 +1411,10 @@ C
           ELNAME = ' '
           IZ = 0
         END IF
- 
+
+C  SAVE INPUT LINES ON REACLINES,  FOR SETUP-HYDKIN REACTIONS.
+C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
+
         REACLINES(IL)%NO = IR
         REACLINES(IL)%FILE = FILNAM
         REACLINES(IL)%H_SELECT = H123
@@ -1377,7 +1432,10 @@ C
         REACLINES(IL)%FP = 0._DP
  
         IRLINES = IL
- 
+C  DONE
+
+C  SAVE SOME OF THE INPUT FLAGS FOR LATER
+C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,... 
         IF (IR.GT.NREACI) THEN
             CALL EIRENE_MASPRM('NREACI',6,NREACI,'IR',2,IR,IERROR)
         ENDIF
@@ -1387,11 +1445,12 @@ C
 C  IFEXMN,IFEXMX,FPARM:
 C  ASYMPTOTICS FOR CROSS SECTIONS (SECOND INDEX=1) OR RATES (SECOND
 C  INDEX=2) , OVERWRITES ASYMPTOTICS IN DATA FILES, IF THERE ARE SUCH
-csw added branch
+
         FP = 0._DP
         IF (INDEX(H123,'P.').eq.0) then
-          IF (INDEX(H123,'H.1 ').NE.0) J=1
-          IF (INDEX(H123,'H.1 ').EQ.0) J=2
+C  either cross section or a (weighted?) rate coefficient
+          IF (INDEX(H123,'H.1 ').NE.0) J=1  ! cross section
+          IF (INDEX(H123,'H.1 ').EQ.0) J=2  ! (weighted) rate coefficient
           RCMIN = -20.
           RCMAX =  20.
           JFEXMN = 0
@@ -1407,13 +1466,16 @@ csw added branch
           REACLINES(IL)%JFEXMN = JFEXMN
           REACLINES(IL)%JFEXMX = JFEXMX
           REACLINES(IL)%FP = FP
-        else
+        else  ! identifier "P" found in H123. Data for photon processes! No assymptotics available
           RCMIN=-20.
           RCMAX= 20.
           JFEXMN=0
           JFEXMX=0
         endif
-csw end branch
+C
+C REAC2 HAS TWO DIFFERENT MEANINGS:
+C       FILNAM=CONST:   REAC2 = FTFLAG
+C       ELSE:           REAC2 = 'REAC' AS READ IN. (UP TO 50 CHARACTERS)
 C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC2,CRC,
      .               RCMIN,RCMAX,FP,JFEXMN,JFEXMX,ELNAME,IZ)
@@ -1493,7 +1555,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
      .              ' PREVIOUSLY WAS ',REACDAT(IREACA(IATM,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
-              WRITE (IUNOUT,*) ' USE EIRMOD_',
+              WRITE (IUNOUT,*) ' USE ',
      .              MAX(REACDAT(IREACA(IATM,K))%NOSEC,NSC),
      .              ' SECONDARIES '
               REACDAT(IREACA(IATM,K))%NOSEC =
@@ -1584,7 +1646,7 @@ C
      .              ' PREVIOUSLY WAS ',REACDAT(IREACM(IMOL,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
-              WRITE (IUNOUT,*) ' USE EIRMOD_',
+              WRITE (IUNOUT,*) ' USE ',
      .              MAX(REACDAT(IREACM(IMOL,K))%NOSEC,NSC),
      .              ' SECONDARIES '
               REACDAT(IREACM(IMOL,K))%NOSEC =
@@ -1665,7 +1727,7 @@ C
      .              ' PREVIOUSLY WAS ',REACDAT(IREACI(IION,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
-              WRITE (IUNOUT,*) ' USE EIRMOD_',
+              WRITE (IUNOUT,*) ' USE ',
      .              MAX(REACDAT(IREACI(IION,K))%NOSEC,NSC),
      .              ' SECONDARIES '
               REACDAT(IREACI(IION,K))%NOSEC =
@@ -1757,7 +1819,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
      .              ' PREVIOUSLY WAS ',REACDAT(IREACPH(IPHOT,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
-              WRITE (IUNOUT,*) ' USE EIRMOD_',
+              WRITE (IUNOUT,*) ' USE ',
      .              MAX(REACDAT(IREACPH(IPHOT,K))%NOSEC,NSC),
      .              ' SECONDARIES '
               REACDAT(IREACPH(IPHOT,K))%NOSEC =
@@ -1848,7 +1910,7 @@ C     WRITE (iunout,*) ZEILE
      .              ' PREVIOUSLY WAS ',REACDAT(IREACP(IPLS,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
-              WRITE (IUNOUT,*) ' USE EIRMOD_',
+              WRITE (IUNOUT,*) ' USE ',
      .              MAX(REACDAT(IREACP(IPLS,K))%NOSEC,NSC),
      .              ' SECONDARIES '
               REACDAT(IREACP(IPLS,K))%NOSEC =
@@ -2069,24 +2131,22 @@ C
 C  NO PATH SPECIFIED FOR REFLECTION DATA BASE
           WRITE (iunout,*)
      .      ' NO PATH SPECIFIED FOR REFLECTION DATA BASE '
-          WRITE (iunout,*) ' OLD VERSION USED '
+          WRITE (iunout,*) ' OLD TRIM DATABASE VERSION USED '
           LTRMOL=.TRUE.
 C  SKIP LINES CONTAINING SPECIFICATIONS FOR DATA BASES AND
-C  CONTINUE READING
-615       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').EQ.0) THEN
-            READ (ZEILE,6664) (DATD(IATM),IATM=1,NATMI_IN)
-            IREAD=0
-            GOTO 620
-          ELSE
+C  CONTINUE READING with DATD
+615       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             READ (IUNIN,'(A72)') ZEILE
-            IREAD=1
             GOTO 615
+          ELSE
+C  NEXT VALID INPUT CARD FOUND
+            IREAD=1
+            GOTO 620
           ENDIF
         ELSE
 C  PATH SPECIFICATION FOR DATA BASE FOUND
           LTRMOL=.FALSE.
           READ (ZEILE(7:),'(A400)') PATH
-          WRITE (iunout,*) ' PATH = ',PATH
           PATH=ADJUSTL(PATH)
           I2=INDEX(PATH,' ')
           IF ((I2 == 0) .AND. (ZEILE(408:408) /= ' ')) THEN
@@ -2096,29 +2156,34 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
           END IF
           FILE=REPEAT(' ',420)
           FILE(1:)=PATH(1:I2-1)
+          WRITE (iunout,*) ' PATH = ',FILE(1:I2-1)
+C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
           NFR=0
           READ (IUNIN,'(A72)') ZEILE
-625       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').EQ.0) THEN
-            READ (ZEILE,6664) (DATD(IATM),IATM=1,NATMI_IN)
-            IREAD=0
-            GOTO 620
-          ELSE
+625       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             NFR=NFR+1
             READ (ZEILE,'(A72)') RFILNM
-            WRITE (iunout,*) ' NFR =',NFR,' FILNAM = ',RFILNM
             FILE(I2:)=RFILNM
-            WRITE (iunout,'(A,A)') ' FILE = ',FILE
+            WRITE (iunout,*) ' NFR =',NFR,' FILNAM = ',FILE(I2:I2+20)         
+C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
             ALLOCATE (CURFILE)
             CURFILE%RFILE = FILE
             CURFILE%NEXT => REFFILES
             REFFILES => CURFILE
             READ (IUNIN,'(A72)') ZEILE
             GOTO 625
+          ELSE
+            IREAD=1
+            GOTO 620         
           ENDIF
         ENDIF
       ENDIF
-      READ (IUNIN,6664) (DATD(IATM),IATM=1,NATMI_IN)
-620   READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
+
+620   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE 
+
+      READ (ZEILE,6664) (DATD(IATM),IATM=1,NATMI_IN)
+      IREAD=0
+      READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
       READ (IUNIN,6664) (DIOD(IION),IION=1,NIONI_IN)
       READ (IUNIN,6664) (DPLD(IPLS),IPLS=1,NPLSI_IN)
       IF (NPHOTI > 0)
@@ -2304,8 +2369,7 @@ C
           WRITE (iunout,*) 'WARNING: SPUTTERING FOR MODEL ',
      .                      REFCUR%REFNAME
           WRITE (iunout,*) 'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-          WRITE (iunout,*)
-     .  'DEFAULT MODEL: "NO SPUTTERING" IS USED. EIRMOD_'
+          WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
           WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
           REFCUR%JLSPT=0
         ENDIF
@@ -2331,17 +2395,17 @@ C
       IREAD=0
       WRITE (iunout,*) '       NSTRAI= ',NSTRAI
       CALL EIRENE_LEER(1)
-!pb      READ (IUNIN,6666) (INDSRC(ISTRA),ISTRA=1,NSTRAI)
       READ (IUNIN,6666) (INDSRC(IST),IST=1,NSTRAI)
-      READ (IUNIN,6664) ALLOC, MPTS
-CVK
-      IF(MPTS.GT.0.0) THEN
-       MPTS_COMSOU=MPTS
-       NTCPU=INT(REAL(NTCPU)*MPTS)
+      READ (IUNIN,6664) ALLOC, AMPTS
+
+C  AMPTS: (option added 2014) multiplier for max. allowed cpu time NTCPU, and for number of histories (see below)
+      IF(AMPTS.GT.0.0) THEN
+        MPTS_COMSOU=AMPTS
+        NTCPU=INT(REAL(NTCPU)*AMPTS)
       ELSE
-       MPTS_COMSOU=1.0
+        MPTS_COMSOU=1.0
       END IF
-CVK END
+C
       DO 712 ISTRA=1,NSTRAI
         IF (INDSRC(ISTRA).EQ.6) GOTO 712
         I=ISTRA
@@ -2360,12 +2424,12 @@ CVK END
         READ (IUNIN,6666) NPTS(ISTRA),NINITL(I),NEMODS(I),NAMODS(I),
      .                    NMINPTS(ISTRA), !VK MINIMUM NUMBER OF HISTORIES
      .                    NPTSDEL(I),NRAYEN(ISTRA)
-CVK MPTS
-        IF(MPTS.GT.0) THEN
-         NPTS(ISTRA)=INT(NPTS(ISTRA)*MPTS)
-         NMINPTS(ISTRA)=INT(NMINPTS(ISTRA)*MPTS)
+C APPLY MULTIPLIER AMPTS TO SELECTED MC PARTICLE NUMBER RANGE
+        IF(AMPTS.GT.0) THEN
+         NPTS(ISTRA)=INT(NPTS(ISTRA)*AMPTS)
+         NMINPTS(ISTRA)=INT(NMINPTS(ISTRA)*AMPTS)
         END IF
-CVK END
+C 
 
 csw if npts < 0 --> npts = infty
         if(npts(istra).lt.0) npts(istra) = huge(1)-1
@@ -2373,7 +2437,8 @@ csw if npts < 0 --> npts = infty
      .                    ISCLS(ISTRA),ISCLT(ISTRA),ISCL1(ISTRA),
      .                    ISCL2(ISTRA),ISCL3(ISTRA),ISCLB(ISTRA),
      .                    ISCLA(ISTRA)
-        READ (IUNIN,6665) NLATM(ISTRA),NLMOL(ISTRA),NLION(I),NLPLS(I)
+        READ (IUNIN,6665) NLATM(ISTRA),NLMOL(ISTRA),NLION(I),NLPLS(I),
+     .                    NLPHOT(ISTRA) 
         READ (IUNIN,6666) NSPEZ(ISTRA)
         READ (IUNIN,6665) NLPNT(ISTRA),NLLNE(ISTRA),
      .                    NLSRF(ISTRA),NLVOL(ISTRA),NLCNS(ISTRA)
@@ -2420,9 +2485,13 @@ C
       NULLIFY(VELLIST)
       NULLIFY(VOLLIST)
       DO 811 I=1,NZADD
-        IF (IREAD.EQ.0) READ (IUNIN,*)
+CDR  skip reading optional comment lines      
+814     READ (IUNIN,'(A72)') ZEILE
+        IREAD=1
+        IF (ZEILE(1:1) .EQ. '*') GOTO 814
+CDR        
+        READ (ZEILE,6666) INI,INE
         IREAD=0
-        READ (IUNIN,6666) INI,INE
         IF (INI.GT.NRAD.OR.INI.LE.0) GOTO 998
         IF (INE.GT.NRAD) GOTO 998
         IF (INE.LE.0) INE=INI
@@ -2430,15 +2499,19 @@ C
 C  IGJUM3 FLAG
         IF (ZEILE(1:3).EQ.'CH3') THEN
           INILGJ=MAX(1,MIN(NOPTIM,INI))
+          if (inilgj.ne.ini) write (iunout,*) 
+     .      'CH3 option failed. ini, noptim =',ini,NOPTIM
           INELGJ=MIN(NOPTIM,INE)
+          if (inelgj.ne.ine) write (iunout,*) 
+     .      'CH3 option failed. ine, noptim =',ine,NOPTIM
           DO 821 IN=INILGJ,INELGJ
-          IF (NLIMPB >= NLIMPS) THEN
-            CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM3,0,NOPTIM,IN,NLIMPS)
-          ELSE
-            CALL EIRENE_DEKEYB
-     .  (ZEILE(4:72),IGJUM3,0,NOPTIM,IN,NLIMPB,NBITS)
-          END IF
-821         CONTINUE
+            IF (NLIMPB >= NLIMPS) THEN
+              CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM3,0,NOPTIM,IN,NLIMPS)
+            ELSE
+              CALL EIRENE_DEKEYB
+     .                    (ZEILE(4:72),IGJUM3,0,NOPTIM,IN,NLIMPB,NBITS)
+            END IF
+821       CONTINUE
           GOTO 812
 C  TEMPERATURE
         ELSEIF (ZEILE(1:1).EQ.'T') THEN
@@ -2525,11 +2598,7 @@ C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
      .       LOGRDH(NATMI_IN+NMOLI_IN+NIONI_IN+1 : NLOGIN)
       DEALLOCATE (LOGRDH)
       READ (ZEILE,6666) NPRCSF
-!      READ (ZEILE,6665) (NLPRCA(J),J=1,NATMI_IN),
-!     .                  (NLPRCM(J),J=1,NMOLI_IN),
-!     .                  (NLPRCI(J),J=1,NIONI_IN),
-!     .                  (NLPRCPH(J),J=1,NPHOTI_IN)
-!      READ (IUNIN,6666) NPRCSF
+
       NPRCSF=MIN0(NLIMPS,NPRCSF)
       IPRCSF=1
 911   CONTINUE
@@ -2618,10 +2687,19 @@ C
       READ (IUNIN,*)
       CALL
      .  EIRENE_MASAGE('*** 10A. DATA FOR ADDITIONAL TALLIES           ')
-!pb for special purposes increase NADVI by 1
-      ALLOCATE (TXTTLA(NADVI+2))    !pb
-      ALLOCATE (TXTSCA(NADVI+2))    !pb
-      ALLOCATE (TXTUTA(NADVI+2))    !pb
+      IF (.TRUE.) THEN
+        ALLOCATE (TXTTLA(NADVI))    
+        ALLOCATE (TXTSCA(NADVI))    
+        ALLOCATE (TXTUTA(NADVI))
+ 
+!pb for internal testing of control variate options (2013)  
+!pb for special purposes increase NADVI by 2
+      ELSE
+        ALLOCATE (TXTTLA(NADVI+2))    !pb
+        ALLOCATE (TXTSCA(NADVI+2))    !pb
+        ALLOCATE (TXTUTA(NADVI+2))    !pb
+      ENDIF
+
       DO 1020 J=1,NADVI
 1021    READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1021
@@ -2629,24 +2707,27 @@ C
         READ (IUNIN,'(A72)') TXTTLA(J)
         READ (IUNIN,'(2A24)') TXTSCA(J),TXTUTA(J)
 1020  CONTINUE
+ 
 
-!pb for special purposes increase NADVI by 1
-      IADVE(NADVI+1) = 3
-      IADVS(NADVI+1) = 0
-      IADVT(NADVI+1) = 0
-      IADRC(NADVI+1) = 1
-      TXTTLA(NADVI+1) = 'special purpose tally (mapl)'
-      TXTSCA(NADVI+1) = '??         '
-      TXTUTA(NADVI+1) = '??         '
-      IADVE(NADVI+2) = 3
-      IADVS(NADVI+2) = 0
-      IADVT(NADVI+2) = 0
-      IADRC(NADVI+2) = 1
-      TXTTLA(NADVI+2) = 'special purpose tally (eapl)'
-      TXTSCA(NADVI+2) = '??         '
-      TXTUTA(NADVI+2) = '??         '
-      NADVI = NADVI + 2
-!pb
+      IF (.FALSE.) THEN     
+!pb for internal testing of control variate options (2013)
+!pb for special purposes increase NADVI by 2
+        IADVE(NADVI+1) = 3
+        IADVS(NADVI+1) = 0
+        IADVT(NADVI+1) = 0
+        IADRC(NADVI+1) = 1
+        TXTTLA(NADVI+1) = 'special purpose tally (mapl)'
+        TXTSCA(NADVI+1) = '??         '
+        TXTUTA(NADVI+1) = '??         '
+        IADVE(NADVI+2) = 3
+        IADVS(NADVI+2) = 0
+        IADVT(NADVI+2) = 0
+        IADRC(NADVI+2) = 1
+        TXTTLA(NADVI+2) = 'special purpose tally (eapl)'
+        TXTSCA(NADVI+2) = '??         '
+        TXTUTA(NADVI+2) = '??         '
+        NADVI = NADVI + 2
+      ENDIF
 
       READ (IUNIN,*)
       CALL
@@ -2816,6 +2897,10 @@ C
 !          IF (NSIGI_SPC > 0) THEN
             ALLOCATE(ESPEC%SDV(0:NSPS+1))
             ALLOCATE(ESPEC%SGM(0:NSPS+1))
+C REAC2 HAS TWO DIFFERENT MEANINGS:
+C       FILNAM=CONST:   REAC2 = FTFLAG
+C       ELSE:           REAC2 = REAC (UP TO 50 CHARACTERS)
+C
 !          END IF
           ESPEC%SPC(0:NSPS+1) = 0._DP
           IF (NSMSTRA > 0) THEN
@@ -3113,14 +3198,19 @@ C
 C
       NINITL_READ = 0
       READ (IUNIN,6666) NPRNLI, NINITL_READ, NPRMUL
-      IF (NPRMUL > 1) NPRNLI=NPRNLI * NPRMUL
-      WRITE (iunout,*) '        NPRNLI= ',NPRNLI
+      IF (NPRMUL > 1) NPRNLI=NPRNLI * NPRMUL  
       CALL EIRENE_LEER(1)
+
       IF (NLERG.AND.NPRNLI.LE.0) THEN
 C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
+        WRITE (iunout,*) '        NPRNLI= ',NPRNLI,
+     .                   ' (MODIFIED DUE TO NLERG)'
+      ELSE
+        WRITE (iunout,*) '        NPRNLI= ',NPRNLI
       ENDIF
+
       IF (NPRNLI.LE.0) GOTO 1350
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
@@ -3145,9 +3235,11 @@ C   READ DATA FOR SNAPSHOT TALLIES
       READ (IUNIN,6666) NSNVI
       WRITE (iunout,*) '        NSNVI= ',NSNVI
       CALL EIRENE_LEER(1)
-      ALLOCATE (TXTTLT(NSNVI))
-      ALLOCATE (TXTSCT(NSNVI))
-      ALLOCATE (TXTUTT(NSNVI))
+      IF (NSNVI.GT.0) THEN
+        ALLOCATE (TXTTLT(NSNVI))
+        ALLOCATE (TXTSCT(NSNVI))
+        ALLOCATE (TXTUTT(NSNVI))
+      ENDIF
       DO 1320 J=1,NSNVI
 1321    READ (IUNIN,'(A72)') ZEILE
         IREAD=1
@@ -3347,9 +3439,9 @@ C
       IF (NLFEM) LEVGEO=4
       IF (NLTET) LEVGEO=5
       IF (NLGEN) LEVGEO=10
+
       IF (NLFEM) THEN
         NLPOL=.FALSE.
-!pbjs        NLTOR=.FALSE.
         IF (INDPRO(1).NE.3.AND.INDPRO(1).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(1),
      .                     ' NOT FORESEEN FOR'
@@ -3383,7 +3475,10 @@ C
           INDPRO(4)=3
         ENDIF
       ENDIF
+
       IF (NLTET) THEN
+        NLPOL=.FALSE.
+        NLTOR=.FALSE.
         IF (INDPRO(1).NE.3.AND.INDPRO(1).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(1),
      .                     ' NOT FORESEEN FOR'
@@ -3533,11 +3628,23 @@ C
       DO 2000 J=0,NLIMPS
         IF (ILCOL(J).LT.0) IGFIL(J)=1
         ILCOL(J)=MAX0(1,IABS(ILCOL(J)))
-        IF (ILIIN(J).LE.0.OR.ILIIN(J).GE.3) ILSPT(J)=0
-!pb        IF (ILIIN(J).LE.0) TRANSP(:,1,J)=0.D0
-!pb        IF (ILIIN(J).LE.0) TRANSP(:,2,J)=0.D0
+
+csw 10jan2012 
+        IF ((ILIIN(J).LE.0.OR.ILIIN(J).GE.3).AND.(ILSPT(J).NE.0)) THEN 
+          JJ=J
+          IF (JJ.GT.NLIMI) JJ=-(J-NLIMI)
+          WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
+     .      ' IS TRANSPARENT BUT IS USED TO SPUTTER '          
+        END IF
+
         ISPUT(1,J)=EIRENE_IDEZ(ILSPT(J),1,2)
         ISPUT(2,J)=EIRENE_IDEZ(ILSPT(J),2,2)
+
+        IF (ILIIN(J).LE.0.OR.ILIIN(J).GE.3) ILSPT(J)=0
+
+        IF (ILIIN(J).LE.0) TRANSP(:,1,J)=0.D0
+        IF (ILIIN(J).LE.0) TRANSP(:,2,J)=0.D0
+
         IF (ISPUT(1,J).NE.0.AND.ALL(RECYCS(:,J).EQ.0._DP)) THEN
           JJ=J
           IF (JJ.GT.NLIMI) JJ=-(J-NLIMI)
@@ -3888,7 +3995,7 @@ C  1ST: SPECIES FLAGS:
       DEALLOCATE (TXTTLR)
       DEALLOCATE (TXTSCR)
       DEALLOCATE (TXTUTR)
-      IF (NPRNLI > 0) THEN
+      IF (NSNVI > 0) THEN
         DEALLOCATE (TXTTLT)
         DEALLOCATE (TXTSCT)
         DEALLOCATE (TXTUTT)
@@ -4188,10 +4295,10 @@ C
 C
 C  SET SOME DATA FOR ADDITIONAL SURFACES: INITIALIZE SUBR. TIMEA
 C
-        timea = EIRENE_SECOND_OWN()
+cdr     timea = EIRENE_SECOND_OWN()
         CALL EIRENE_TIMEA0
-        WRITE(iunout,*)'cpu time for timea0 ',EIRENE_SECOND_OWN()-timea
-        WRITE(iunout,*)
+cdr     WRITE(iunout,*)'cpu time for timea0 ',EIRENE_SECOND_OWN()-timea
+cdr     WRITE(iunout,*)
 C
 C   MODIFY THE BOUNDARIES OF SOME SURFACES TO AVOID ROUND OFF
 C   ERRORS
@@ -4354,7 +4461,8 @@ C
 !pb      write (iunout,*) ' cpu-time fuer intvol(voltal) ',tpb2-tpb1
 !pb      tpb1 = tpb2
 C
-      IF ((NFILEL.LE.1).OR.(NFILEL == 6)) THEN
+!pb      IF ((NFILEL.LE.1).OR.(NFILEL == 6)) THEN
+      IF ((NFILEL.LE.1).OR.(NFILEL == 6) .OR. NLSHRT13) THEN
 C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS
 C
@@ -4418,6 +4526,12 @@ C
 !pb      write (iunout,*) ' cpu-time fuer plausr ',tpb2-tpb1
 !pb      tpb1 = tpb2
  
+csw 23dec2011
+        IF (NFILEL == 3) THEN
+          CALL EIRENE_RPLAM(TRCFLE,0)
+        endif
+csw
+
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
@@ -4621,7 +4735,7 @@ C
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
       WRITE (iunout,*)
-     .  'FINITE ELEMENT OPTION USED, EIRMOD_BUT GRID INDICATOR '
+     .  'FINITE ELEMENT OPTION USED, BUT GRID INDICATOR '
       WRITE (iunout,*) 'LESS THAN 6. '
       CALL EIRENE_EXIT_OWN(1)
 994   CONTINUE

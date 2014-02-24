@@ -28,6 +28,9 @@ C NCPLYG, REAL
  
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NRPLG,  NPPLG
+
+csw 14apr2011
+      LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LCUT(:)
  
  
       CONTAINS
@@ -68,6 +71,10 @@ C NCPLYG, REAL
 C MCPLYG, INTEGER
       NRPLG => ICPLYG(1)
       NPPLG => ICPLYG(2)
+
+csw 14apr2011
+!pb 03122013 use N2NDPLG instead of NDXP (NDXP might be unknown in not B2 cases)
+      allocate(lcut(0:N2NDPLG)) 
  
       CALL EIRENE_INIT_CPOLYG
  
@@ -82,6 +89,9 @@ C MCPLYG, INTEGER
       DEALLOCATE (RCPLYG)
       DEALLOCATE (RCPLY2)
       DEALLOCATE (ICPLYG)
+
+csw 14apr2011
+      deallocate (lcut)
  
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CPOLYG
@@ -92,6 +102,8 @@ C MCPLYG, INTEGER
       RCPLYG = 0._DP
       RCPLY2 = 0._DP
       ICPLYG = 0
+csw 14apr2011
+      lcut=.false.
  
       RETURN
       END SUBROUTINE EIRENE_INIT_CPOLYG

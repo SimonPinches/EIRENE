@@ -14,6 +14,8 @@ C
       USE EIRMOD_CPES
       USE EIRMOD_COMSOU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+csw 18mar2013
+      use EIRMOD_COUTAU
  
       IMPLICIT NONE
  
@@ -21,7 +23,7 @@ C
       REAL(DP), INTENT(IN) :: XX1
       REAL(DP) :: TIMPE(0:NSTRA), TSTRPE(NSTRA,0:NPRS-1)
       REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
-      INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT
+      INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT,n
  
       PROCFORSTRA = .FALSE.
 
@@ -85,39 +87,76 @@ C
  
         NPRS_OPT=0
         NPRS_FREE=NPRS
-        DO ISTRA=1,NSTRAI
-          delt=xtim(istra)
-          IF (delt/tmean.GE.1.E-5) THEN
+
+
+csw 18mar2013 added branch to test xmct from previous run
+        if(xmct(0) <= 0.0 ) then
+          DO ISTRA=1,NSTRAI
+            delt=xtim(istra)
+            IF (delt/tmean.GE.1.E-5) THEN
 ! a stratum that has got computation time gets at least 1 processor
-            NPESTR(ISTRA)=1
-            NPRS_FREE=NPRS_FREE-1
-          ELSE
-            NPESTR(ISTRA)=0
-          ENDIF
+              NPESTR(ISTRA)=1
+              NPRS_FREE=NPRS_FREE-1
+            ELSE
+              NPESTR(ISTRA)=0
+            ENDIF
 ! calculate the optimal number of additional processors according to
 ! distribution of cpu time done in mcarlo (according to number of particles
 ! and source strength specified in the input)
-          TIMPE(ISTRA)=MAX(delt-TMEAN,0._DP)/TMEAN
-          NPRS_OPT=NPRS_OPT+int(TIMPE(ISTRA))
-        ENDDO
-        WRITE (iunout,*) ' ISTRA, TIMPE '
-        DO ISTRA=1,NSTRAI
-          WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
-        ENDDO
+            TIMPE(ISTRA)=MAX(delt-TMEAN,0._DP)/TMEAN
+            NPRS_OPT=NPRS_OPT+int(TIMPE(ISTRA))
+          ENDDO
+          WRITE (iunout,*) ' ISTRA, TIMPE '
+          DO ISTRA=1,NSTRAI
+            WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
+          ENDDO
  
-        WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
- 
+          WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+        
 ! distribute free processors to strata by their optimal number of processors
-        FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
+          FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
      .               (REAL(NPRS_OPT,KIND(1.D0))+eps30))
-        write (iunout,*) ' facp ',facp
-        NPESTR(0)=NPRS
-        DO ISTRA=1,NSTRAI
-          NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
-          NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
-        ENDDO
-        WRITE (iunout,*) ' NPESTR ',(NPESTR(ISTRA),ISTRA=1,NSTRAI)
-        WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+          write (iunout,*) ' facp ',facp
+          NPESTR(0)=NPRS
+          DO ISTRA=1,NSTRAI
+            NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
+            NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
+          ENDDO
+          WRITE (iunout,*) ' NPESTR ',(NPESTR(ISTRA),ISTRA=1,NSTRAI)
+          WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+
+
+        else
+
+csw attempting better work load balancing           
+          npestr(0)=nprs
+          tmean=xtim(0)/dble(nprs)
+          do istra=1,nstrai
+            timpe(istra) = max(xtim(istra)-tmean,0.d0)/tmean
+            if(xtim(istra) > 0.) then
+             facp=max(1.0, dble(nprs)*xmct(istra)/xmct(0))
+             n=int(facp)
+             npestr(istra)=n
+             nprs_free=nprs_free-n
+            else
+             npestr(istra)=0
+            endif
+          enddo
+
+          do istra=1,nstrai
+            write(iunout,'(a,2i6,2(1x,e13.6))') 
+     .              'XMCT ',istra,npestr(istra),xmct(istra),xmcp(istra)
+          enddo
+        endif
+ 
+csw 14jul2011
+        do while (nprs_free < 0) 
+          WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+          i=maxloc(npestr(1:nstrai),dim=1)
+          npestr(i)=npestr(i)-1
+          nprs_free=nprs_free+1
+        enddo
+csw
  
 ! if there are still free processors left distribute them to all
 ! strata with more than tmean cpu time assigned to them using a
@@ -134,6 +173,13 @@ C
         WRITE (iunout,*) ' NPESTR '
         WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRAI)
         WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
+
+csw 14jul2011
+        if(sum(npestr(1:nstrai)) /= npestr(0) ) then
+          write(iunout,*) 'pedist: wrong number of processors in npestr'
+          call eirene_exit_own(1)
+        endif
+csw
  
 ! assign each processor the number of the stratum it shall work on
         IPE=0
