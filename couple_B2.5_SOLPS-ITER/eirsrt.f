@@ -502,7 +502,7 @@ C
 csw mpi
         if(rank_mpi .eq. 0) then
 
-        CALL HEADNG ("NEXT EIRENE RUN STARTS HERE")
+        CALL EIRENE_HEADNG ("NEXT EIRENE RUN STARTS HERE")
 csw
 
 csw 23dec2011
