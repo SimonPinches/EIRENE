@@ -27,7 +27,7 @@ C
       REAL(DP), INTENT(OUT) :: E0S, VELXS, VELYS, VELZS, VELS
       REAL(DP) :: ARBV, A1, A2, A3, VLLX, VLLY, VLLZ, VMX, SHIFT,
      .          CCM, A4, FNOM, VMXSQ, FACTOR, VELSQ, VELSH, A5, A6,
-     .          VFKT, VLX, RCCM, ZARG, ZARG2, VXDR, VYDR, VZDR, ERF
+     .          VFKT, VLX, RCCM, ZARG, ZARG2, VXDR, VYDR, VZDR, DERF
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C
 C---------------------------------------------------------------------
@@ -96,7 +96,7 @@ CDR
 C
         VMXSQ=-VMX*VMX
         FNOM=EXP(VLX*(VMX+VMX-CCM*VLX))*RCCM
-        FACTOR=FNOM/(1.+VMX*PISQ*(1.+ERF(VMX))/EXP(VMXSQ))
+        FACTOR=FNOM/(1.+VMX*PISQ*(1.+DERF(VMX))/EXP(VMXSQ))
         WEIGHT=WEIGHT*FACTOR
       ENDIF
 1000  CONTINUE
