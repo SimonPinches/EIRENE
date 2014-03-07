@@ -131,6 +131,8 @@
 
 !  Detlevs tests
 
+      if (.false.) then
+! taken out again
       if (laddv) then
 
         DO ICO = 1,NCLMT
@@ -150,6 +152,7 @@
           END DO
 
         END DO
+      end if
       end if
 
       RETURN

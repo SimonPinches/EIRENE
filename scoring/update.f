@@ -449,8 +449,8 @@ C
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGEI(IREI,4)
 !              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+
 !     .                                   WTRSIG*ESIGEI(IREI,4)
-              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+
-     .                                   WTRSIG*EDRIFT(1,IRDO)
+!!!              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+
+!!!     .                                   WTRSIG*EDRIFT(1,IRDO)
 C
             ENDIF
           ENDIF
