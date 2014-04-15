@@ -7,10 +7,12 @@
 !pb  22.11.06: DELPOT introduced
 !dr  30.01.07: if lgvac(..,npls+1)  cycle (do not evaluate rates in vacuum)
 !pb  20.04.07: allow for third and fourth secondary
+
 !pb  June  07: LHCOL: indicate: direct coupling to col-rad code, rather
 !pb            than reading fits or data tables.
 !dr  to be done: also for recombination, and generalize to other species (He,...)
-!dr             currently: lable H.4 2.1.5 or H.10 2.1.5 not used.
+!dr             currently: label H.4 2.1.5 or H.10 2.1.5 are not used in case LHCOL?
+!   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -23,6 +25,8 @@ C
 c   rmass: mass of incident test particle
 c   irei: counting index for this particular electron impact collision
 c   isp:  incident test particle species identifier
+c   PLS:   precomputed log of electron density
+  
  
 C
 C  SET NON DEFAULT ELECTRON IMPACT COLLISION PROCESS NO. IREI
@@ -48,7 +52,7 @@ C
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF, DELE, ERATE
-      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPL, I, IP, IRAD, IO,
+      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
      .           ION, ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -109,12 +113,12 @@ C
         EIODS(IREI,IIO,1)=RMASSI(IIO)
         EIODS(IREI,IIO,2)=1./RMASSI(IIO)
       ELSEIF (ITYP.EQ.4) THEN
-        IPL=ISPE
-        PPLDS(IREI,IPL)=PPLDS(IREI,IPL)+INUM
-        ACCMAS=ACCMAS+INUM*RMASSP(IPL)
-        ACCMSP=ACCMSP+INUM*RMASSP(IPL)
-        ACCINV=ACCINV+INUM/RMASSP(IPL)
-        ACCINP=ACCINP+INUM/RMASSP(IPL)
+        IPP=ISPE
+        PPLDS(IREI,IPP)=PPLDS(IREI,IPP)+INUM
+        ACCMAS=ACCMAS+INUM*RMASSP(IPP)
+        ACCMSP=ACCMSP+INUM*RMASSP(IPP)
+        ACCINV=ACCINV+INUM/RMASSP(IPP)
+        ACCINP=ACCINP+INUM/RMASSP(IPP)
       ENDIF
 C
       IF (ISCND.NE.0.AND.ICOUNT.EQ.1) THEN
@@ -170,8 +174,8 @@ C
       DO 83 IIO=1,NIONI
         CHRDIF=CHRDIF+PIODS(IREI,IIO)*NCHRGI(IIO)
 83    CONTINUE
-      DO 84 IPL=1,NPLSI
-        CHRDIF=CHRDIF+PPLDS(IREI,IPL)*NCHRGP(IPL)
+      DO 84 IPP=1,NPLSI
+        CHRDIF=CHRDIF+PPLDS(IREI,IPP)*NCHRGP(IPP)
 84    CONTINUE
       PELDS(IREI)=PELDS(IREI)+CHRDIF
 C
@@ -188,8 +192,8 @@ C     TO BE WRITTEN
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
 C  2.B) RATE COEFFICIENT(TE)
         IF (NSTORDR >= NRAD) THEN
-C  RATE:  (1/S)
-C  RATE COEFFICIENT: (CM^3/S)
+C  RATE:  (1/S) =
+C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,.TRUE.,0,ERATE)
@@ -199,7 +203,7 @@ C  RATE COEFFICIENT: (CM^3/S)
           END DO
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 1
-        ELSE
+        ELSE ! NOT SUFFICIENT STORADE ON TABDS1
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 1
         ENDIF
@@ -212,6 +216,8 @@ C       MODCOL(1,2,IREI)=2
 C  2.D) RATE COEFFICIENT(TE,NE)
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
+C .....................................
+C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??
           KREAD=EELEC
           IF ((REACDAT(KK)%RTC%IFIT == 5) .AND.
      .        (EIRENE_IDEZ(ISCDE,5,5) == 3)) THEN
@@ -219,6 +225,7 @@ C  2.D) RATE COEFFICIENT(TE,NE)
               IF (REACDAT(KREAD)%RTCEW%IFIT == 5) LHCOL=.TRUE.
             END IF
           END IF
+C .......................................
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
@@ -226,10 +233,13 @@ C  2.D) RATE COEFFICIENT(TE,NE)
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
             TB=MAX(-100._DP,TB)
             TABDS1(IREI,J)=EXP(TB)
+C .....................................
+C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE only needed for this?
             IF (LHCOL) THEN
               EE = MAX(-100._DP,ERATE+FCTKKL+DEINL(J))
               EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
             END IF
+C .......................................
           END DO
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 9
@@ -436,9 +446,9 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
 530   CONTINUE
-      DO 540 IPL=1,NPLSI
+      DO 540 IPP=1,NPLSI
         PPLDS(IREI,0)=PPLDS(IREI,0)+
-     +                      PPLDS(IREI,IPL)
+     +                      PPLDS(IREI,IPP)
 540   CONTINUE
 C
 C  TOTAL NUMBER OF SECONDARIES
@@ -487,7 +497,7 @@ C
      .    'ELECTRONS: PELEI, ENERGY RANGE: EEL_MIN,EEL_MAX'
         WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELDS(IREI),EI,EA
       ENDIF
-CDR   write (iunout,*) ' imin = ', imin, ' imax = ',imax
+c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
       EI=1.D30
       EA=-1.D30
@@ -503,10 +513,10 @@ C
 876   CONTINUE
       IF (PPLDS(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'BULK IONS: PPLEI '
-        DO 874 IPL=1,NPLSI
-          IP=NSPAMI+IPL
-          IF (PPLDS(IREI,IPL).NE.0.D0)
-     .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLDS(IREI,IPL)
+        DO 874 IPP=1,NPLSI
+          IP=NSPAMI+IPP
+          IF (PPLDS(IREI,IPP).NE.0.D0)
+     .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLDS(IREI,IPP)
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '

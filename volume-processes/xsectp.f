@@ -4,6 +4,8 @@ C  aug. 05:  corrected electron energy loss rate for default rec. rate
 ! 22.11.06: flag for shift of first parameter to rate_coeff introduced
 !           setting of modcol corrected
 ! 25.03.07: check of mass conservation only for up to two secondaries
+! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
 C
       SUBROUTINE EIRENE_XSECTP
 C

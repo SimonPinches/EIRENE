@@ -11,6 +11,11 @@ c          (was ok already for call to xstei)
 ! 02.03.07: remove escd2* arrays
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
+!
+! 2011-13 : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
+! 2011-13 : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
+! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -41,13 +46,11 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
 C
-!pb      DSUB=LOG(1.D8)
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
-!pb          PLS(J)=MAX(DEIMIN,DEINL(J))-DSUB
           PLS(J)=MAX(DEIMIN,DEINL(J))
-!pbvk          TEPLS(J)=MAX(-2.3_DP,TEINL(J)) !VK TEINL->TEPLS EVERYWHERE
+!pbvk     TEPLS(J)=MAX(-2.3_DP,TEINL(J)) !VK TEINL->TEPLS EVERYWHERE
 10      CONTINUE
       END IF
 C
@@ -332,6 +335,8 @@ C
 C
 C
 C  NON DEFAULT MODEL SPECIFIED IN INPUT BLOCK 4
+
+C  FIRSTLY: DEAL WITH ELECTRON IMPACT PROCESSES
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 90 NRC=1,NRCI(IION)
@@ -386,6 +391,12 @@ C  NON DEFAULT CX MODEL:
           DO 130 NRC=1,NRCI(IION)
             KK=IREACI(IION,NRC)
             IF (ISWR(KK).NE.3) GOTO 130
+            IF (EIRENE_IDEZ(IBULKI(IION,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR CX PROCESS, IION,KK ',IION,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
 C
             FACTKK=FREACI(IION,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
@@ -405,7 +416,7 @@ C
             IESTM=IESTMI(IION,NRC)
             EBULK=EBULKI(IION,NRC)
             CALL EIRENE_XSTCX(RMASS,IRCX,IIO,IPL,IFRST,ISCND,EBULK,
-     .                       CHRDF0,ISCDE,IESTM,KK,FACTKK)
+     .                        CHRDF0,ISCDE,IESTM,KK,FACTKK,PLS)
 C
 130       CONTINUE
 C
@@ -522,6 +533,7 @@ C
             IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
 C  INCIDENT BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKI(IION,NRC),3,3)
+            CHRDF0=-NCHRGI(IION)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
             IDSC=IDSC+1
             NRPII=NRPII+1
@@ -530,7 +542,8 @@ C  INCIDENT BULK PARTICLE INDEX
             NREAPI(IRPI) = KK
             LGIPI(IION,IDSC,0)=IRPI
             LGIPI(IION,IDSC,1)=IPLS
- 
+
+            III=NSPAM+IION
             IPL=IPLS
             RMASS=RMASSI(IION)
             IFRST=ISCD1I(IION,NRC)
@@ -541,8 +554,10 @@ C  INCIDENT BULK PARTICLE INDEX
             IESTM=IESTMI(IION,NRC)
             EBULK=EBULKI(IION,NRC)
             EHEAVY=ESCD1I(IION,NRC)
-            CALL EIRENE_XSTPI (RMASS,IRPI,IPL,EBULK,EHEAVY,
-     .                  IFRST,ISCND,ITHRD,IFRTH,ISCDE,IESTM,KK,FACTKK)
+            CALL EIRENE_XSTPI (RMASS,IRPI,III,IPL,
+     .                  EBULK,EHEAVY,CHRDF0,
+     .                  IFRST,ISCND,ITHRD,IFRTH,ISCDE,IESTM,
+     .                  KK,FACTKK,PLS)
           END DO
 C
           NIPII(IION)=IDSC

@@ -11,6 +11,10 @@ c          (was ok already for call to xstei)
 ! 02.03.07: remove escd2* arrays
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
+! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
+! 23.02.14: call to xstpi: additional arguments: IML, pls (for H.4 option)
 C
       SUBROUTINE EIRENE_XSECTM
 C
@@ -42,11 +46,9 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
 C
-!pb      DSUB=LOG(1.D8)
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
-!pb          PLS(J)=MAX(DEIMIN,DEINL(J))-DSUB
           PLS(J)=MAX(DEIMIN,DEINL(J))
 10      CONTINUE
       END IF
@@ -373,6 +375,8 @@ C
           NMDSI(IMOL)=IDSC1
 C
 C  NON DEFAULT MODEL SPECIFIED IN INPUT BLOCK 4
+
+C  FIRSTLY: DEAL WITH ELECTRON IMPACT PROCESSES
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 90 NRC=1,NRCM(IMOL)
@@ -415,6 +419,8 @@ C   CHARGE EXCHANGE:
         LGMCX(IMOL,0,0)=0
         LGMCX(IMOL,0,1)=0
 C
+C  THERE ARE CURRENTLY NO DEFAULT CX RATES FOR TEST IONS
+C
         IF (NRCM(IMOL).EQ.0) THEN
           NMCXI(IMOL)=0
 C
@@ -423,16 +429,24 @@ C  NON DEFAULT CX MODEL:
           DO 130 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.3) GOTO 130
-C
+            IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR CX PROCESS, IMOL,KK ',IMOL,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+C  CX PROCESS IDENTIFIED
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.
+            
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IDSC2=IDSC2+1
             NRCXI=NRCXI+1
             IRCX=NRCXI
             LGMCX(IMOL,IDSC2,0)=IRCX
             LGMCX(IMOL,IDSC2,1)=IPLS
+
             IML=NSPA+IMOL
             IPL=IPLS
             RMASS=RMASSM(IMOL)
@@ -443,7 +457,7 @@ C
             EBULK=EBULKM(IMOL,NRC)
             CALL EIRENE_XSTCX(RMASS,IRCX,IML,IPL,
      .                 IFRST,ISCND,EBULK,CHRDF0,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                 ISCDE,IESTM,KK,FACTKK,PLS)
 C
 130       CONTINUE
 C
@@ -569,7 +583,8 @@ C  INCIDENT BULK PARTICLE INDEX
             NREAPI(IRPI) = KK
             LGMPI(IMOL,IDSC,0)=IRPI
             LGMPI(IMOL,IDSC,1)=IPLS
- 
+
+            IML=NSPA+IMOL
             IPL=IPLS
             RMASS=RMASSM(IMOL)
             IFRST=ISCD1M(IMOL,NRC)
@@ -580,8 +595,10 @@ C  INCIDENT BULK PARTICLE INDEX
             IESTM=IESTMM(IMOL,NRC)
             EBULK=EBULKM(IMOL,NRC)
             EHEAVY=ESCD1M(IMOL,NRC)
-            CALL EIRENE_XSTPI (RMASS,IRPI,IPL,EBULK,EHEAVY,
-     .                  IFRST,ISCND,ITHRD,IFRTH,ISCDE,IESTM,KK,FACTKK)
+            CALL EIRENE_XSTPI (RMASS,IRPI,IML,IPL,
+     .                  EBULK,EHEAVY,CHRDF0,
+     .                  IFRST,ISCND,ITHRD,IFRTH,ISCDE,IESTM,
+     .                  KK,FACTKK,PLS)
           END DO
 C
           NMPII(IMOL)=IDSC

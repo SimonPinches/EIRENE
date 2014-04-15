@@ -2,7 +2,8 @@
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
-! 01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
+!    01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
+cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
@@ -115,10 +116,10 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
           ELSE
             NELREL(IREL) = -3
           END IF
-        ELSE
+        ELSE ! EBULK GT.0
           IF (NSTORDR >= NRAD) THEN
             DO 251 J=1,NSBOX
-              EPLEL3(IREL,J,1)=EBULK
+              EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
 251         CONTINUE
             NELREL(IREL) = -1
           ELSE
@@ -139,7 +140,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           ELSE
             NELREL(IREL) = -3
           END IF
-        ELSE
+        ELSE ! EBULK GT.0
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTEL '
           WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5

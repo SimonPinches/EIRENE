@@ -10,6 +10,11 @@ C           also modified: cross.f, xsecta_param.f
 ! 02.03.07: remove escd2* arrays
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
+! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
+! 23.02.14: call to xstpi: additional arguments: IAT, pls (for H.4 option)
+
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -42,6 +47,15 @@ C
      .           ISTORE_MDCL, ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
+
+      ALLOCATE (PLS(NSTORDR))
+ 
+      DEIMIN=LOG(1.D8)
+      IF (NSTORDR >= NRAD) THEN
+        DO 70 J=1,NSBOX
+          PLS(J)=MAX(DEIMIN,DEINL(J))
+70      CONTINUE
+      END IF
  
 C
 C
@@ -52,14 +66,7 @@ C  ELECTRON IMPACT IONIZATION MODELS FROM INPUT MASS AND
 C  AND CHARGE NUMBER
 C
 C
-      ALLOCATE (PLS(NSTORDR))
- 
-      DEIMIN=LOG(1.D8)
-      IF (NSTORDR >= NRAD) THEN
-        DO 70 J=1,NSBOX
-          PLS(J)=MAX(DEIMIN,DEINL(J))
-70      CONTINUE
-      END IF
+      
 C
       DO 100 IATM=1,NATMI
         IDSC1=0
@@ -194,7 +201,7 @@ C                 140 --- 149: RESONANT CX FOR HE + HE++,
 C
         IF (NRCA(IATM).EQ.0) THEN
           DO 155 IPLS=1,NPLSI
-C CHECK: "ATOMIC" COLLISION PARTNERS ONLY
+C CHECK: "ATOMIC" BULK COLLISION PARTNERS ONLY
             IF (NPRT(NSPAMI+IPLS).NE.1.OR.NPRT(NSPH+IATM).NE.1) GOTO 155
 C
             IF (NCHARA(IATM).EQ.1.AND.NCHARP(IPLS).EQ.1.AND.
@@ -222,7 +229,7 @@ C
 C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-1
               ISTORE_MDCL = -1
 C
-C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
+C  TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
 C
             ELSEIF (NCHARA(IATM).EQ.2.AND.NCHARP(IPLS).EQ.2.AND.
      .              NCHRGP(IPLS).EQ.1) THEN
@@ -322,7 +329,7 @@ C
             MODCOL(3,2,IRCX)=3
             MODCOL(3,4,IRCX)=3
 C
-155       CONTINUE
+155       CONTINUE   ! end of nplsi loop, bulk collision partners for default cx models
 C
           NACXI(IATM)=IDSC
 C
@@ -332,6 +339,12 @@ C
           DO 160 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.3) GOTO 160
+            IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR CX PROCESS, IATM,KK ',IATM,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
 C
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
@@ -343,6 +356,7 @@ C
             LGACX(IATM,IDSC,0)=IRCX
             LGACX(IATM,IDSC,1)=IPLS
             FDLMCX(IRCX)=FLDLMA(IATM,NRC)
+
             IAT=NSPH+IATM
             IPL=IPLS
             RMASS=RMASSA(IATM)
@@ -353,7 +367,7 @@ C
             EBULK=EBULKA(IATM,NRC)
             CALL EIRENE_XSTCX(RMASS,IRCX,IAT,IPL,
      .                 IFRST,ISCND,EBULK,CHRDF0,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                 ISCDE,IESTM,KK,FACTKK,PLS)
 C
 160       CONTINUE
 C
@@ -434,7 +448,7 @@ C
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             CALL EIRENE_XSTEL(IREL,IAT,IPL,EBULK,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                        ISCDE,IESTM,KK,FACTKK)
 C
 230       CONTINUE
  
@@ -481,7 +495,8 @@ C  INCIDENT BULK PARTICLE INDEX
             NREAPI(IRPI) = KK
             LGAPI(IATM,IDSC,0)=IRPI
             LGAPI(IATM,IDSC,1)=IPLS
- 
+
+            IAT=NSPH+IATM
             IPL=IPLS
             RMASS=RMASSA(IATM)
             IFRST=ISCD1A(IATM,NRC)
@@ -492,9 +507,11 @@ C  INCIDENT BULK PARTICLE INDEX
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             EHEAVY=ESCD1A(IATM,NRC)
-            CALL EIRENE_XSTPI (RMASS,IRPI,IPL,EBULK,EHEAVY,
+            CALL EIRENE_XSTPI (RMASS,IRPI,IAT,IPL,
+     .                  EBULK,EHEAVY,CHRDF0,
      .                  IFRST,ISCND,ITHRD,IFRTH,
-     .                  ISCDE,IESTM,KK,FACTKK)
+     .                  ISCDE,IESTM,
+     .                  KK,FACTKK,PLS)
           END DO
 C
           NAPII(IATM)=IDSC

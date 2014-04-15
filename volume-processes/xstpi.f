@@ -1,13 +1,34 @@
 ! 30.08.06: data structure for reaction data redefined
 ! 12.10.06: modcol revised
 ! 22.11.06: flag for shift of first parameter to rate_coeff introduced
+! 01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
+! 20.01.14:  H.4 option for pi rate coefficients (e.g. CR rates: p + H-minus)
+c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
+C            additional argument  CHRDF0, also in calling routines 
+c 23.02.14:  additional argument IPL (was ISP, now ISP is incident test particle)
+c            this fixes bug in printout texts(isp)
+C            Option 4.3C: now ready,  lgvac for IPL, not for electrons.  corrected !
+c 25.03.14:  further corrections. TII instead of plsti(:) array
+
 C
 C
-      SUBROUTINE EIRENE_XSTPI (RMASS,IRPI,ISP,EBULK,EHEAVY,
+      SUBROUTINE EIRENE_XSTPI (RMASS,IRPI,ISP,IPL,
+     .                  EBULK,EHEAVY,CHRDF0,
      .                  IFRST,ISCND,ITHRD,IFRTH,
-     .                  ISCDE,IESTM,KK,FACTKK)
+     .                  ISCDE,IESTM,
+     .                  KK,FACTKK,PLS)
 C
-C       SET UP TABLES (E.G. OF REACTION RATE ) FOR ATOMIC SPECIES
+C       SET UP TABLES (E.G. OF REACTION RATE ) FOR PI PROCESSES
+C
+C   MEANING OF INPUT VARIABLES: SEE XSTCX
+
+C  RETURNS:
+C    MODCOL(4,...)
+C    TABPI3(IRPI,NCELL,...)
+C    EPLPI3(IRPI,NCELL,...)
+C    DEFPI(IRPI)
+C    EEFPI(IRPI)
+C    IESTPI(IRPI,...)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -23,29 +44,31 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(IN) :: EBULK, EHEAVY, FACTKK, RMASS
-      INTEGER, INTENT(IN) :: IRPI, ISP, IFRST, ISCND, ITHRD,IFRTH,
+      REAL(DP), INTENT(IN) :: EBULK, EHEAVY, CHRDF0, FACTKK, RMASS
+      REAL(DP), INTENT(IN) :: PLS(NSTORDR)
+      INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD,IFRTH,
      .                       ISCDE, KK, IESTM
       REAL(DP) :: CF(9),CFF(9)
-      REAL(DP), ALLOCATABLE :: PLS(:)
+      
       REAL(DP) :: ADD,ADDL,FCTKKL, P2N, TMASS, ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, EIRENE_RATE_COEFF, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
      .            ACCINM, ACCMSP, ACCINV, EFLAG, EIRENE_FEHVPI3, 
      .            EIRENE_FEELPI1,
-     .            EIRENE_ENERGY_RATE_COEFF, EI, EA, EN, ERATE
-      INTEGER :: NSEPI4, NSEPI5, IAPI, I, NEND, J, IO, ION, IA, INUM,
-     .           IML, IM, MODC, NRC, IIO, IPLTI, IP, IAT, IPL, II, IS,
-     .           ICOUNT, IAA, IMM, III, KREAD, IERR, IMIN, IMAX, IRAD
+     .            EIRENE_ENERGY_RATE_COEFF, 
+     .            EI, EA, EN, ERATE, TB, TII
+      INTEGER :: NSEPI4, NSEPI5, IAPI, I, NEND, J, IO, IA, INUM,
+     .           IML, IM, MODC, NRC, IIO, IPLTI, IP, IAT, II, IS,
+     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR, IMIN, IMAX, 
+     .           IRAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       SAVE
 C
 C   ION IMPACT COLLISIONS
 C
-      ALLOCATE (PLS(NSTORDR))
  
-      IPLTI=MPLSTI(ISP)
-      XLFTMAS=RMASS+RMASSP(ISP)
+      IPLTI=MPLSTI(IPL)
+      XLFTMAS=RMASS+RMASSP(IPL)
  
 C ACCUMULATED MASS OF SECONDARIES: ACCMAS (AMU)
       ACCMAS=0.D0
@@ -121,18 +144,19 @@ C  SECONDARY INDEX, SECOND SECONDARY
           EIOPI(IRPI,IIO,1)=RMASSI(IIO)
           EIOPI(IRPI,IIO,2)=1./RMASSI(IIO)
         ELSE IF (ITYP.EQ.4) THEN
-          IPL=ISPZ
-          PPLPI(IRPI,IPL)=PPLPI(IRPI,IPL)+INUM
-          ACCMAS=ACCMAS+INUM*RMASSP(IPL)
-          ACCMSP=ACCMSP+INUM*RMASSP(IPL)
-          ACCINV=ACCINV+INUM/RMASSP(IPL)
-          ACCINP=ACCINP+INUM/RMASSP(IPL)
+          IPP=ISPZ
+          PPLPI(IRPI,IPP)=PPLPI(IRPI,IPP)+INUM
+          ACCMAS=ACCMAS+INUM*RMASSP(IPP)
+          ACCMSP=ACCMSP+INUM*RMASSP(IPP)
+          ACCINV=ACCINV+INUM/RMASSP(IPP)
+          ACCINP=ACCINP+INUM/RMASSP(IPP)
         END IF
       END DO
  
       IF (ABS(ACCMAS-XLFTMAS).GT.1.D-10) THEN
         WRITE (IUNOUT,*) 'MESSAGE FROM XSTPI.F: '
-        WRITE (IUNOUT,*) 'FOR INCIDENT SPECIES ',TEXTS(ISP)
+        WRITE (IUNOUT,*) 'FOR INCIDENT TEST SPECIES ',TEXTS(ISP)
+        WRITE (IUNOUT,*) 'FOR INCIDENT BULK SPECIES ',TEXTS(NSPAMI+IPL)
         WRITE (iunout,*)
      .    'MASS CONSERVATION VIOLATED FOR REACT. KK= ',KK
         CALL EIRENE_EXIT_OWN(1)
@@ -160,9 +184,9 @@ C
       EPLPI(IRPI,1)=ACCMSP/ACCMAS
       EPLPI(IRPI,2)=ACCINP/ACCINV
 C
-      CHRDIF=0.
+      CHRDIF=CHRDF0
  
-      CHRDIF = CHRDIF-NCHRGP(ISP)
+      CHRDIF = CHRDIF-NCHRGP(IPL)
       DO 133 IIO=1,NIONI
         CHRDIF=CHRDIF+PIOPI(IRPI,IIO)*NCHRGI(IIO)
 133   CONTINUE
@@ -179,9 +203,9 @@ C  PROJECTILE MASS IN <SIGMA*V> FORMULA: MONOENERG. TEST PARTICLE
 C  (= TARGET PARTICLE IN CROSS SECTION MEASUREMENT: TARGET AT REST)
       TMASS=MASST(KK)*PMASSA
 C
-      ADDT=PMASS/RMASSP(ISP)
+      ADDT=PMASS/RMASSP(IPL)
       ADDTL=LOG(ADDT)
-      ADDPI(IRPI,ISP) = ADDTL
+      ADDPI(IRPI,IPL) = ADDTL
 C
 C CROSS SECTION (E-LAB)
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
@@ -199,28 +223,46 @@ C  MODC=2:  VS. T_IPLS,E_TEST (DOUBLE PARAMETER DATASET OR FIT)
         MODCOL(4,2,IRPI)=MODC
         IF (MODC.EQ.1) NEND=1
         IF (MODC.EQ.2) NEND=NSTORDT
-        IF (NSTORDR >= NRAD) THEN  !  USE PRECOMPUTED TABLES: TABPI3
-          DO 142 J=1,NSBOX
-            PLS(J)=TIINL(IPLTI,J)+ADDTL
-142       CONTINUE
+        IF (NSTORDR >= NRAD) THEN  !  USE PRECOMPUTED TABLES: TABPI3        
           IF (MODC.EQ.1) THEN
             DO 145 J=1,NSBOX
-              IF (LGVAC(J,ISP)) CYCLE
-              COU = EIRENE_RATE_COEFF(KK,PLS(J),0._DP,.TRUE.,0,ERATE)
-              TABPI3(IRPI,J,1)=COU*DIIN(ISP,J)*FACTKK
+              IF (LGVAC(J,IPL)) CYCLE
+              TII=TIINL(IPLTI,J)+ADDTL
+              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
+              TABPI3(IRPI,J,1)=COU*DIIN(IPL,J)*FACTKK
 145         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
             FCTKKL=LOG(FACTKK)
             DO J=1,NSBOX
-              IF (LGVAC(J,ISP)) CYCLE
-              CALL EIRENE_PREP_RTCS (KK,3,1,NEND,PLS(J),CF)
+              IF (LGVAC(J,IPL)) CYCLE
+              TII=TIINL(IPLTI,J)+ADDTL
+              CALL EIRENE_PREP_RTCS (KK,3,1,NEND,TII,CF)
               TABPI3(IRPI,J,1:NEND)=CF(1:NEND)
               TABPI3(IRPI,J,1)=TABPI3(IRPI,J,1)+
-     .                         DIINL(ISP,J)+FCTKKL
+     .                         DIINL(IPL,J)+FCTKKL
             END DO
           END IF
         ELSE  ! DO NOT USE PRECOMPUTED TABLES. COMPUTE DURING TRACKING
         END IF
+      ELSEIF (MODC.EQ.3) THEN
+C  2.D) RATE COEFFICIENT(TI=TE, NE, EBEAM=0)
+        MODCOL(4,2,IRPI)=1
+        FCTKKL=LOG(FACTKK)
+        IF (NSTORDR >= NRAD) THEN                 
+          DO J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
+            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            TB = COU + FCTKKL
+            IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
+            TB=MAX(-100._DP,TB)
+            TABPI3(IRPI,J,1)=EXP(TB)
+          END DO
+C         JEREAPI(IRPI) = 9
+        ELSE  ! ??
+C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
+        ENDIF
+      ELSE
+        GOTO 996
       ENDIF
  
       FACRPI(IRPI,1) = FACTKK
@@ -232,27 +274,27 @@ C
 C  3. BULK ION MOMENTUM LOSS RATE
 C
 C
-C  4A. HEAVY BULK PARTICLE ENERGY LOSS RATE
+C  4.1. HEAVY BULK PARTICLE ENERGY LOSS RATE
 C
 C  SET ENERGY LOSS RATE OF IMPACTING ION
  
       NSEPI4=EIRENE_IDEZ(ISCDE,4,5)
       IF (NSEPI4.EQ.0) THEN
-C  4.A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
+C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
             DO J=1,NSBOX
-              EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(ISP,J)
+              EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
             ENDDO
             NELRPI(IRPI) = -3
           ELSE
             NELRPI(IRPI) = -3
           END IF
-        ELSE
+        ELSE ! EBULK GT.0
           IF (NSTORDR >= NRAD) THEN
             DO 151 J=1,NSBOX
-              EPLPI3(IRPI,J,1)=EBULK+EDRIFT(ISP,J)
+              EPLPI3(IRPI,J,1)=EBULK+EDRIFT(IPL,J)
 151         CONTINUE
             NELRPI(IRPI) = -2
           ELSE
@@ -262,18 +304,18 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         ENDIF
         MODCOL(4,4,IRPI)=3
       ELSEIF (NSEPI4.EQ.1) THEN
-C  4.B) ENERGY LOSS RATE OF IMP. ION = 1.5*TI* RATECOEFF.
-C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
+C  4.1B) ENERGY LOSS RATE OF IMP. ION = 1.5*TI* RATECOEFF.
+C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
             DO 252 J=1,NSBOX
-              EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(ISP,J)
+              EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
 252         CONTINUE
             NELRPI(IRPI) = -3
           ELSE
             NELRPI(IRPI) = -3
           END IF
-        ELSE
+        ELSE ! EBULK GT.0
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTPI '
           WRITE (iunout,*) 'MODIFIED TREATMENT OF BULK ION IMPACT '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
@@ -281,7 +323,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
-              EPLPI3(IRPI,J,1)=EBULK+EDRIFT(ISP,J)
+              EPLPI3(IRPI,J,1)=EBULK+EDRIFT(IPL,J)
 2511        CONTINUE
             NELRPI(IRPI) = -2
           ELSE
@@ -293,8 +335,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
 C     ELSEIF (NSEPI4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSEPI4.EQ.3) THEN
-C  4.B)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
-C  4.C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
@@ -316,24 +357,23 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
           IF (NSTORDR >= NRAD) THEN
-            PLS=0._DP
-            DO 253 J=1,NSBOX
-              PLS(J)=TIINL(IPLTI,J)+ADDTL
-253         CONTINUE
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
-                IF (LGVAC(J,ISP)) CYCLE
-                EPLPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,PLS(J),
-     .                           0._DP,.FALSE.,0)*DIIN(ISP,J)*ADD
+                IF (LGVAC(J,IPL)) CYCLE
+                TII=TIINL(IPLTI,J)+ADDTL
+                EPLPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,
+     .                           TII,
+     .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
-                IF (LGVAC(J,ISP)) CYCLE
-                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,PLS(J),CFF)
+                IF (LGVAC(J,IPL)) CYCLE
+                TII=TIINL(IPLTI,J)+ADDTL
+                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CFF)
                 EPLPI3(IRPI,J,1:NEND) = CFF(1:NEND)
-                EPLPI3(IRPI,J,1) = EPLPI3(IRPI,J,1)+DIINL(ISP,J)+ADDL
+                EPLPI3(IRPI,J,1) = EPLPI3(IRPI,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
           ELSE
@@ -353,7 +393,7 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-C  4B. BULK ELECTRON ENERGY LOSS RATE
+C  4.2. BULK ELECTRON ENERGY LOSS RATE
 C
 C  SET NET ENERGY LOSS RATE OF ELECTRON (IF ANY INVOLVED)
       NSEPI5=EIRENE_IDEZ(ISCDE,5,5)
@@ -364,11 +404,11 @@ C       MODCOL(4,4,IRPI)=1
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-C  4.C: HEAVY PARTICLE ENERGY GAIN RATE
+C  4.3. HEAVY PARTICLE ENERGY GAIN RATE
 C
       EFLAG=EIRENE_IDEZ(ISCDE,3,5)
       IF (EFLAG.EQ.0) THEN
-C  4.C1)  RATE = CONST.*RATECOEFF.
+C  4.3A)  RATE = CONST.*RATECOEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
             EHVPI3(IRPI,J,1)=EHEAVY
@@ -381,16 +421,17 @@ C  4.C1)  RATE = CONST.*RATECOEFF.
 C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.C3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
+C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.WEIGHTED RATE(TE)
         KREAD=EHEAVY
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
             DO 202 J=1,NSBOX
-!pb              IF (LGVAC(J,ISP)) CYCLE
-              IF (LGVAC(J,NPLS+1)) CYCLE
-              EHVPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
-     .          0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABPI3(IRPI,J,1)+EPS60)
+              IF (LGVAC(J,IPL)) CYCLE
+                TII=TIINL(IPLTI,J)+ADDTL
+                EHVPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,
+     .                           TII,0._DP,.TRUE.,0)*
+     .          DIIN(IPL,J)*FACTKK/(TABPI3(IRPI,J,1)+EPS60)
 202         CONTINUE
             NRHVPI(IRPI)=KREAD
           ELSE
@@ -437,7 +478,7 @@ C
         IESTEI(IRPI,3)=0
       ENDIF
  
-      DEALLOCATE (PLS)
+      
  
       RETURN
 C
@@ -464,16 +505,16 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2NP(IRPI,IM)=P2NP(IRPI,IM-1)+
      +                      P2NP(IRPI,IM)
 520   CONTINUE
-      DO 530 ION=1,NIONI
-        IO=NSPAM+ION
+      DO 530 IIO=1,NIONI
+        IO=NSPAM+IIO
         PIOPI(IRPI,0)=PIOPI(IRPI,0)+
-     +                      PIOPI(IRPI,ION)
+     +                      PIOPI(IRPI,IIO)
         P2NP(IRPI,IO)=P2NP(IRPI,IO-1)+
      +                      P2NP(IRPI,IO)
 530   CONTINUE
-      DO 540 IPL=1,NPLSI
+      DO 540 IPP=1,NPLSI
         PPLPI(IRPI,0)=PPLPI(IRPI,0)+
-     +                      PPLPI(IRPI,IPL)
+     +                      PPLPI(IRPI,IPP)
 540   CONTINUE
 C
 C
@@ -491,7 +532,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      ENTRY EIRENE_XSTPI_2(IRPI,ISP)
+      ENTRY EIRENE_XSTPI_2(IRPI,IPL)
  
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'GENERAL ION IMPACT REACTION NO. IRPI= ', IRPI
@@ -501,7 +542,7 @@ C
       imin=0
       imax=0
       DO 875 IRAD=1,NSBOX
-        IF (LGVAC(IRAD,ISP)) GOTO 875
+        IF (LGVAC(IRAD,IPL)) GOTO 875
         IF (NSTORDR >= NRAD) THEN
           EN=EELPI1(IRPI,IRAD)
         ELSE
@@ -522,12 +563,12 @@ C
      .    'ELECTRONS: PELPI, ENERGY RANGE: EEL_MIN,EEL_MAX'
         WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELPI(IRPI),EI,EA
       ENDIF
-      write (iunout,*) ' imin = ', imin, ' imax = ',imax
+cdr   write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
       EI=1.D30
       EA=-1.D30
       DO 876 IRAD=1,NSBOX
-        IF (LGVAC(IRAD,ISP)) GOTO 876
+        IF (LGVAC(IRAD,IPL)) GOTO 876
         IF (NSTORDR >= NRAD) THEN
           EN=EHVPI3(IRPI,IRAD,1)
         ELSE
@@ -537,13 +578,14 @@ C
         EA=MAX(EA,EN)
 876   CONTINUE
       IF (PPLPI(IRPI,0).GT.0.D0) THEN
-        WRITE (iunout,*) 'BULK IONS: PPLPI '
-        DO 874 IPL=1,NPLSI
-          IP=NSPAMI+IPL
-          IF (IPL.EQ.ISP) THEN
-            WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLPI(IRPI,IPL)-1
-          ELSEIF (PPLPI(IRPI,IPL).NE.0.D0) THEN
-            WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLPI(IRPI,IPL)
+        WRITE (iunout,*) 'BULK IONS: PPLPI, INCIDENT BULK SUBTRACTED '
+        DO 874 IPP=1,NPLSI
+          IP=NSPAMI+IPP
+          IF (IPP.EQ.IPL) THEN
+C  SUBTRACT ONE, BECAUSE INCIDENT BULK IS LOST
+            WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLPI(IRPI,IPP)-1
+          ELSEIF (PPLPI(IRPI,IPP).NE.0.D0) THEN
+            WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLPI(IRPI,IPP)
           ENDIF
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
@@ -658,6 +700,10 @@ C
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
+      CALL EIRENE_EXIT_OWN(1)
+996   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTPI: INVALID DATA OPTION'
+      WRITE (iunout,*) 'IRPI, MODC ',IRPI, MODC
       CALL EIRENE_EXIT_OWN(1)
 997   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: ISCDE FLAG'

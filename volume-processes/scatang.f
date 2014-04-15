@@ -84,7 +84,7 @@ c     -- Einlesen der Daten --
  
           read(iUN,*)
           read(iUN,100) energy(i)
-100       format(T19,E9.4)
+100       format(T19,E11.4)
  
           do 20 j=1,13
             read(iUN,*)
@@ -98,7 +98,7 @@ c           read(iun,200,end=5) theta(k,i), el(k), ct(k)
             dat= dat+1
 30        continue
  
-200       format(T5, E11.6, T20, E11.6, T35, E11.6)
+200       format(T5, E13.6, T20, E13.6, T35, E13.6)
 5         continue
           close(iUN)
  
