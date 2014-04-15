@@ -1107,8 +1107,15 @@ C
           VVX=VTRIX(IPLG,ITRI)
           VVY=VTRIY(IPLG,ITRI)
           VVI=1./SQRT(VVX*VVX+VVY*VVY)
-          X0=XTRIAN(NECKE(IPLG,ITRI))+D*VVX*VVI
-          Y0=YTRIAN(NECKE(IPLG,ITRI))+D*VVY*VVI
+          IF (IREVERS(IPLG,ITRI) > 0) THEN
+            X0=XTRIAN(NECKE(IPLG,ITRI))+D*VVX*VVI
+            Y0=YTRIAN(NECKE(IPLG,ITRI))+D*VVY*VVI
+          ELSE
+            IS1=IPLG+1
+            IF (IS1 > 3) IS1 = 1
+            X0=XTRIAN(NECKE(IS1,ITRI))-D*VVX*VVI
+            Y0=YTRIAN(NECKE(IS1,ITRI))-D*VVY*VVI
+          END IF  
         ELSEIF (LEVGEO.EQ.5) THEN
           BL=ZZ(2)
           DO J=2,NSMAX(ISTEP)
@@ -1261,8 +1268,15 @@ C
           VVX=VTRIX(ISID,ITRI)
           VVY=VTRIY(ISID,ITRI)
           VVI=1./SQRT(VVX*VVX+VVY*VVY)
-          X0=XTRIAN(NECKE(ISID,ITRI))+D*VVX*VVI
-          Y0=YTRIAN(NECKE(ISID,ITRI))+D*VVY*VVI
+          IF (IREVERS(ISID,ITRI) > 0) THEN
+            X0=XTRIAN(NECKE(ISID,ITRI))+D*VVX*VVI
+            Y0=YTRIAN(NECKE(ISID,ITRI))+D*VVY*VVI
+          ELSE
+            IS1=ISID+1
+            IF (IS1 > 3) IS1 = 1
+            X0=XTRIAN(NECKE(IS1,ITRI))-D*VVX*VVI
+            Y0=YTRIAN(NECKE(IS1,ITRI))-D*VVY*VVI
+          END IF  
         ELSEIF (LEVGEO.EQ.5) THEN
           IF (ISTEP.LE.0) GOTO 995
           NLSRFX=.TRUE.
