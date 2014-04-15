@@ -1,4 +1,6 @@
-!               options AMPTS,
+!cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
+!               some minor changes at transition from end of block ***3 and re-entry to block ***6    
+!pb  01.01.14:  options AMPTS, multiplier for ntcpu.... added (input block 7)
 !dr  03.03.10:  READING A&M DATA in block 4, commented, sorted,.....
 !pb  20.03.08:  allocate and nullify estiml(1) if no input block 10F 
 !pb             is available
@@ -16,7 +18,7 @@
 !pb  02.03.07:  remove ESCD2* arrays, use local variables instead
 !pb             sum up ESCD1 and ESCD2 contributions
 !pb  12.01.07:  one additional line in input block 4 defining the
-!pb             HYDKIN default model
+!pb             HYDKIN model
 !pb  09.01.07:  input of reaction cards (block 4) rewritten using
 !pb             read_token
 !pb  01.12.06:  bug fix: advance line in input for tetrahedrons
@@ -50,6 +52,8 @@ cpb           CFILE AMJUEL /home/boerner/Database/AMdata/amjuel.tex
       SUBROUTINE EIRENE_INPUT
 C
 C   READ INPUT DATA AND SET DEFAULT VALUES
+c   IN CASE IITER.GT.1 OR ITIMV.GT.1 : SKIP READING NEW INPUT FROM IUNIN.
+C                                      ONLY INPUT DATA PROCESSING (STATEMENT 4000 FF)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -184,7 +188,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR, JFEXMN, JFEXMX, ITOK, IER, IL, ILOGS,
-     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM
+     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM, IO
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -193,7 +197,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
       CHARACTER(420) :: ZEILE, ULINE
-      CHARACTER(500) :: FILE
+      CHARACTER(500) :: FILE, FILE45
       CHARACTER(8) :: FILNAM, varname, spcname
       CHARACTER(4) :: H123, CLAB
       CHARACTER(9) :: REAC
@@ -368,13 +372,18 @@ C
         I3 = SCAN(ZEILE(I2+1:),' ')
         HANDLE=REPEAT(' ',6)
         HANDLE(1:I3) = ZEILE(I2:I2+I3-1)
+c   cfile card found. this is one of the permitted external files?
         DO IFILE = 1,NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),HANDLE) /= 0) EXIT
         END DO
         IF (IFILE <= NDBNAMES) THEN
+c   yes, file type no 'ifile' as stored on dbhandle, in eirmod_cinit.
+c   currently: 16 files types are recognized
           IANF = I2+I3+VERIFY(ZEILE(I2+I3:),' ')-1
           IEND = IANF+SCAN(ZEILE(IANF+1:),' ')-1
           DBFNAME(IFILE)(1:IEND-IANF+1) = ZEILE(IANF:IEND)
+          WRITE (IUNOUT,*) 'PATH SET FOR FILE ',HANDLE 
+          WRITE (IUNOUT,*) 'PATH = ',ZEILE(IANF:IEND) 
         ELSE
           WRITE (IUNOUT,*) ' WRONG NAME FOR DATABASE ENTERED '
           WRITE (IUNOUT,*) ' DATABASE DEFINITION FOR ',HANDLE,
@@ -1031,7 +1040,7 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
      .                        ISTS
             WRITE (iunout,*)
      .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
+            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED.'
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
             ILSPT(NLJ)=0
           ENDIF
@@ -1253,8 +1262,14 @@ C  400--499
 C
 400   CONTINUE
 C
-      IF (IREAD.EQ.0) READ (IUNIN,*)
+C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
+      IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       IREAD=0
+      IF ((ZEILE(1:3) .NE. '***') .OR. (INDEX(ZEILE,'4.') == 0)) THEN
+        WRITE (IUNOUT,*) 'INPUT ERROR, BLOCK *** 4. NOT FOUND '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+
       CALL EIRENE_MASAGE
      .  ('*** 4. DATA FOR SPECIES SPECIFICATION AND   ')
       CALL EIRENE_MASAGE
@@ -1270,17 +1285,26 @@ C
       LINCLUDE = .FALSE.
 
       IF (I1 > 0) THEN
-C  "Include" found. Skip all the rest of block 4 and 5
-C    and only use "include-file" instead
-C
-        IREAD = 0
-        CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE,ITOK,IER,.FALSE.)
+
+        
+
+C  "Include" found. Skip all the rest of block 4 and 5 of input file (fort.iunin),
+C   and read this information only from the "include-file" instead
+C   Zeile  = INLCUDE 'FILE45' 
+
         LINCLUDE = .TRUE.
+C
+        CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE45,ITOK,IER,.FALSE.)
+        IREAD = 0
+        
         IUNIN_SAVE = IUNIN
-        IUNIN = 2+ifoff !  fort.2 is the include file. read block 4 and 5 from
-!                          fort.2 rather than fort.iunin
+        IUNIN = 2+ifoff !  FILE45 is the include file. read block 4 and 5 from
+!                          FILE45 (stream fort.2) rather than fort.iunin
 !                          close fort.2 at end of block 5.
-        OPEN (IUNIN,FILE=FILE,FORM='FORMATTED',ACCESS='SEQUENTIAL')
+        WRITE (IUNOUT,*) 'EXTERNAL A&M INPUT BLOCK 4 AND 5 FOUND'
+        WRITE (IUNOUT,*) 'FILE45 = ',TRIM(FILE45)
+        CALL EIRENE_LEER(1)
+        OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
       END IF
 C
       IF (IREAD == 0) READ (IUNIN,*)
@@ -1327,22 +1351,30 @@ C
 
 !  READ 'REAC'
 
-        IF (INDEX(FILNAM,'CONST') == 0) THEN
-C  INPUT FOR A CONSTANT CROSS SECTION, REACTION RATE, ETC.
-C        OR FOR A HARD WIRED POLYNOMIAL FIT. FIT COEFFICIENTS ARE READ
-C        FROM CURRENT INPUT FILE, STREAM IUNIN,
-C        NOT FROM EXTERNAL A&M DATA FILE
+        IF (INDEX(FILNAM,'CONST') == 0) THEN   !  INPUT FROM EXTERNAL A&M DATA FILE
+
+C  THE INPUT FLAG  "FT...." IS NOT  AVAILABEL HERE
+C  IT MIGHT BE READ LATER FROM A&M DATA FILE AMJUEL, IN SUBR. SLREAC
+C  READ INPUT FLAG "REAC", UP TO 50 CHARACTERS ALLOWED.
+C  PUT THIS FLAG ON REAC2.
           CALL
      .    EIRENE_READ_TOKEN(ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
-          IEND = IEND + ITOK
           IF (IER > 0) THEN
             WRITE (iunout,*)
      .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG '
             CALL EIRENE_EXIT_OWN(1)
           END IF
-        ELSE
+C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
+          IEND = IEND + ITOK
+
+        ELSE  !  FILNAM=CONST OPTION
+
+C  INPUT FOR A CONSTANT CROSS SECTION, REACTION RATE, ETC.
+C        OR FOR A HARD WIRED POLYNOMIAL FIT. FIT COEFFICIENTS ARE READ
+C        FROM CURRENT INPUT FILE, STREAM IUNIN,
+C        NOT FROM EXTERNAL A&M DATA FILE
           REAC2=REPEAT(' ',LEN(REAC2))
-!  CHECK LINE FOR FT-FLAG (IFTFLG)
+!  CHECK CURRENT INPUT LINE FOR FT-FLAG (IFTFLG)
           ITOK = INDEX(ZEILE(IEND:),'FT')
           IF (ITOK /= 0) THEN
 C  STRING "FT" FOUND. READ 9 CHARACTERS INCLUDING THE STARTING "FT"
@@ -1357,6 +1389,7 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
           END IF
 
         END IF
+
 !  READ CRC
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CRC,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
@@ -1364,6 +1397,11 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
           WRITE (iunout,*) ' CRC-STRING FOR REACTION ',IR,' TOO LONG '
           CALL EIRENE_EXIT_OWN(1)
         END IF
+
+C  THE REST OF INPUT DATA FROM THIS REACTION CARD IS NOW ON 'CHR'
+C  FIRST READ CHR FROM "ZEILE", THEN
+C  READ FLAGS MP, MT, DPP, RMN AND RMX FROM CHR
+
 !  READ MP
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
@@ -1934,7 +1972,7 @@ C     WRITE (iunout,*) ZEILE
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
-                              TDMPAR(IPLS)%TDM%ITP(1)=4
+            TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
      .                        TDMPAR(IPLS)%TDM%ITP(1),
@@ -1953,6 +1991,7 @@ C     WRITE (iunout,*) ZEILE
      .           TDMPAR(IPLS)%TDM%DFACTOR,
      .           TDMPAR(IPLS)%TDM%TFACTOR,
      .           TDMPAR(IPLS)%TDM%VFACTOR
+            TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('SAHA      ')
 !PB   TO BE WRITTEN
           CASE ('BOLTZMANN ')
@@ -2082,9 +2121,9 @@ c  pitch -profile
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
 c  cell volume -profile
       IF (INDPRO(12).LE.5) THEN
-        READ (IUNIN,'(A72)') ZEILE
+        READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
         IREAD=1
-        IF (ZEILE(1:3) .EQ. '***') THEN
+        IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) THEN
           WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 5 '
           WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED '
           VL0=0
@@ -2695,6 +2734,7 @@ C
  
 !pb for internal testing of control variate options (2013)  
 !pb for special purposes increase NADVI by 2
+!dr currently disabled, also in upfcop.f
       ELSE
         ALLOCATE (TXTTLA(NADVI+2))    !pb
         ALLOCATE (TXTSCA(NADVI+2))    !pb
@@ -2713,6 +2753,7 @@ C
       IF (.FALSE.) THEN     
 !pb for internal testing of control variate options (2013)
 !pb for special purposes increase NADVI by 2
+!dr currently disabled, also in upfcop.f
         IADVE(NADVI+1) = 3
         IADVS(NADVI+1) = 0
         IADVT(NADVI+1) = 0
@@ -3042,7 +3083,8 @@ C  search for input block 11b
 C  2D GEOMETRY PLOT
       READ (ZEILE,6665) PL1ST,PL2ND,PL3RD,PLADD,PLHST,
      .                  PLCUT(1),PLCUT(2),PLCUT(3),PLBOX,PLSTOR,
-     .                  PLNUMV,PLNUMS,PLARR,LRPSCUT,PLIDL
+     .                  PLNUMV,PLNUMS,PLARR,LRPSCUT,PLIDL,
+     .                  PLVTK
       READ (IUNIN,6666) NPLINR,NPLOTR,NPLDLR,NPLINP,NPLOTP,NPLDLP,
      .                  NPLINT,NPLOTT,NPLDLT
 C  3D GEOMETRY PLOT
