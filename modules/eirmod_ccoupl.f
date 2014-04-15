@@ -118,7 +118,7 @@
         NAOTS      => ICCPL2(19+NSTEP+NPLS :
      .                       18+NSTEP+NPLS+NLIMPS)
         NAOTT      => ICCPL2(19+NSTEP+NPLS+NLIMPS :
-     .                       19+NSTEP+NPLS+2*NLIMPS)
+     .                       18+NSTEP+NPLS+2*NLIMPS)
  
         LBALAN => LCCPL(1)
         LSYMET => LCCPL(2)
