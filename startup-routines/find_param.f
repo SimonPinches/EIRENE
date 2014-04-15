@@ -2,9 +2,9 @@ C
 !pb  11.12.06:  allow letters 'f' or 't' in case name of fem or tetrahedron
 !pb             calculation
 !pb  27.12.06:  bug fix: increase NSTS in case of time dependent mode
-!pb  15.01.07:  additional line in input block 4 defining HYDKIN default model
+!pb  15.01.07:  additional line in input block 4 defining HYDKIN  model
 !pb  02.03.07:  NUMSEC=4 introduced
-!pb  20.03.07:  include input block written by HYDKIN default model
+!pb  20.03.07:  include input block written by HYDKIN model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
 !dr  16.01.14:  default NOPTIM changed from 1 to NRAD, some printout rearranged
 C
@@ -47,7 +47,7 @@ C
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
-      character(420) :: ZEILE, FILE
+      character(420) :: ZEILE, FILE, FILE45
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
       CHARACTER(4) :: CLAB
       CHARACTER(2) :: COR, CREP
@@ -516,11 +516,11 @@ C
       LINCLUDE = .FALSE.
       IF (I1 > 0) THEN
         IREAD = 0
-        CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE,ITOK,IER,.FALSE.)
+        CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE45,ITOK,IER,.FALSE.)
         LINCLUDE = .TRUE.
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff
-        OPEN (IUNIN,FILE=FILE,FORM='FORMATTED',ACCESS='SEQUENTIAL')
+        OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
       END IF
 C
 C
