@@ -32,18 +32,30 @@ c
  
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
+
 c  input:
+c    nlmlti (via cinit.f):  all bulks have own temperature Ti, on Ti(iplsti), set new Ti for ipls
+c    nlmlv  (via cinit.f):  all bulks have own velocity, set new flow velocity for ipls   
+c    icall               :
+
 c    icall=0
-c      called prior to Monte Carlo Loop
+c      called prior to Monte Carlo Loop (from subr. input)
 c      in this call all density models referring to output tallies
-c      are ignored.
+c      are ignored (e.g. 'fort.10').
 c    icall=1
-c      called after to Monte Carlo Loop and sum over strata
+c      called after Monte Carlo Loop and sum over strata
 c        this allows to put output tallies from a run onto the
 c        background for a next iteration or post processing.
-c        in this call all density models referring to input tallies  are
-c        ignored.
+c        In this call all density models referring to input tallies  are
+c        ignored, because they are aready done in previous call
+
 c      write fort.13 after all density models are done.
+
+c   carry out specific "background models", 
+c   for bulk species IPLS
+c      'fort.13':  take background data from fort.13, species: iold
+c      'fort.10':  take test particle data from fort.10, species: iold
+
 c  set derived plasma parameters:
 c   DEIN             : electron density (from quasineutrality)
 c   DEINL            : log electron density (with cutoffs)
@@ -109,7 +121,9 @@ c   LGVAC(...,0)     : background vacuum flag
       DO IPLS=1,NPLSI
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
+
         IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0) THEN
+
           CALL EIRENE_ALLOC_BCKGRND
           ALLOCATE(DEINTF(NRAD))
           OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
@@ -131,6 +145,7 @@ c   LGVAC(...,0)     : background vacuum flag
             END IF
           ENDIF
           DEALLOCATE(DEINTF)
+
         ELSEIF (INDEX(CDENMODEL(IPLS),'FORT.10') > 0) THEN
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
@@ -182,6 +197,7 @@ c   LGVAC(...,0)     : background vacuum flag
  
         ELSEIF (INDEX(CDENMODEL(IPLS),'MULTIPLY') > 0) THEN
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+          
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
  

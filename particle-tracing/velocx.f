@@ -96,7 +96,7 @@ C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY
 C  IS CROSS SECTION AVAILABLE?
         IREAC=MODCOL(3,1,IRCX)
         IF (IREAC.EQ.0) GOTO 1
-C
+C CURRENTLY: HARD WIRED SEARCH RANGE
         elmin=log(0.1_dp)
         elmax=log(1.e4_dp)
         SGCVMX(IRCX)=-1.D60
@@ -127,8 +127,11 @@ C
         CALL EIRENE_LEER(1)
       ENDIF
 1     CONTINUE
-C
+
+C   SET COUNTER FOR REJECTION SAMPLING
       ICOUNT=1
+
+C   set parameters for random sampling in cell icell=K
  
       IF (K.GT.0) THEN
         ZARGX=ZRG(IPLS,K)
@@ -157,6 +160,9 @@ C
         VZDR=DUMV(3)
       ENDIF
 C
+
+c   start random sampling here
+
 123   CONTINUE
       IF (INIV2.LE.0) CALL EIRENE_FGAUSS
 C
@@ -181,7 +187,7 @@ C  ZT1 CORRESPONDS TO ROOT MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VZN=VZN*ZARGZ+VZDR
       ENDIF
 C
-C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-POTENTIAL: SIGMA*V = CONST.)
+C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONST.)
 C
       IF (NFLAG.EQ.2) THEN
 C
@@ -268,7 +274,7 @@ C
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
  
-C     the following ENTRY is for reinitialization of EIRENE (DMH)
+C  the following ENTRY is for reinitialization of EIRENE (DMH)
  
       ENTRY EIRENE_VELOCX_REINIT
       IFIRST = 0

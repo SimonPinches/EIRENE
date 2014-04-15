@@ -5,21 +5,50 @@ C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                   RCMIN, RCMAX, FP, JFEXMN, JFEXMX, ELNAME, IZ1)
 c
+c  open data stream 29 and read atomic data set no. IR
+c          (note: general input-stream/output-stream no. offset ifoff
+c           may have been set (for entire eirene run),
+c           then stream is "29+ifoff".  default: ifoff=0)
+c
+c
 C  input
-C    FILNAM: read a&m data from file filnam, e.g. AMJUEL, HYDHEL, METHAN, CONST
 c    IR    : store data on eirene array CREAC(...,...,IR)
+cdr:  changed in 2011:  new atomic/molecular data structure introduced, 
+c                       REACDAT(IR)% ...
+c 
+c
+c
+C    FILNAM: read a&m data from file filnam,
+c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST
+CC           FILNAM=ADAS:  special treatment, see below.
+C            FILNAM=H-COL: nothing to be done here, use internal CR code h-colrad.f
+C            FILNAM=HYDRTC: nothing to be done here  ??
+C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
-c    REAC  : number of reaction in filnam, e.g. 2.2.5
-c    CRC   : type of process, e.g. EI, CX, OT, etc
+
+
+c    REAC  : in case FILNAM.ne.CONST: 
+c               number of reaction in data file "filnam", e.g. 2.2.5
+c               and parameter fit-flag is found from the datafile (if available)
+c    REAC  : in case FILNAM.eq.CONST: 
+c               reac IS MIS-USED AS  fit-flag: iftflg. 
+C               not NICE, VERY CONFUSING.
+C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
+
+c    CRC   : type of process, e.g. EI, CX, OT, etc.
 C  internal
 C    ISW   <-- H123
-C    IO    derived from ISW, initial value of 2nd index in CREAC
+C    IO    derived from ISW, initial value of 2nd index in CREAC-array
+
 C  output
-c    ISWR  : eirene flag for type of process  (1,2,...7)
-c    CREAC : eirene storage array for a&m data CREAC(9,-1:9,IR)
-c    MODCLF: see below
+c    ISWR  : eirene flag for type of process  (1,2,...7), coding EI,CX,EL,... 
+
+c    CREAC : (old version) eirene storage array for a&m data CREAC(9,-1:9,IR)  
+c    REACDAT(IR)%.... (new version) eirene atomic data structure.
+
+c    MODCLF: see below: further information on input a&m data structure
 c    DELPOT: ionisation potential (for H.10 data),
-c            currently handeled in input.f. not nice!
+c            currently handeled in input.f. not nice! also missing still for: H.8, H.9
 c
 C    IFTFLG=IFTFLG(IR,IFLG)
 C    IFLG  derived from ISW
@@ -32,7 +61,7 @@ C                         IFLG > 0:
 C                         NOT IN USE
 C                      =0 FOR ALL OTHERS (POLYNOM, DOUBLE POLYNOM)
 C                      =3, IFLG=1:
-C                          ionisation/exciation FORMULA (METHANE,...)
+C                          ionisation/excitation cross section formula (METHANE,...)
 C                          IFLG > 1, IFLG=0:
 C                          NOT IN USE
 C                      =L10 (L=0,1): ONLY ONE CONSTANT RATE OR RATE-COEFF.
@@ -97,7 +126,7 @@ C
       REAL(DP), INTENT(IN OUT) :: RCMIN, RCMAX, FP(6)
       CHARACTER(50) :: REACSTR
       REAL(DP) :: CONST, E_EL, E_K
-      REAL(DP) :: CREACD(9,9)
+      REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
       INTEGER :: I, IND, J, K, IH, I0P1, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, INC, IANF, IFILE, IL
       CHARACTER(80) :: ZEILE
@@ -136,18 +165,22 @@ C
 C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         LCONST=.TRUE.
+!  nothing to be done
       ELSEIF (INDEX(FILNAM,'H-COL').NE.0) THEN
-! nothing to be done
+!  nothing to be done
       ELSE
+!  open data file, stream 29+ifoff. 
         DO IFILE=1,NDBNAMES
           IF (INDEX(FILNAM,DBHANDLE(IFILE)).NE.0) EXIT
         END DO
         IF (IFILE <= NDBNAMES) THEN
           LCONST=.FALSE.
           IF (INDEX(FILNAM,'ADAS') == 0) THEN
+! FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, ....: open data file
             OPEN (UNIT=29+ifoff,FILE=DBFNAME(IFILE))
           ELSE
-! FIND NAME OF ADAS-FILE TO BE READ
+! FIND NAME OF SPECIFIC ADAS-FILE TO BE READ,  DSN=abc.dat
+!           reconstruct 'DSN' from:  reac, elname
             DIR = ' '
             IL = 0
             IF (VERIFY(DBFNAME(IFILE),' ') .NE. 0) THEN
@@ -165,11 +198,18 @@ C
             END IF
             OPEN (UNIT=29+ifoff,FILE=DSN)
           END IF
+
+C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
+
         ELSE
           WRITE (iunout,*)
-     .      ' NO SPECIFICATION FOR FILENAME IN REACTION CARD'
+     .      ' NO VALID FILENAME IN REACTION CARD'
           WRITE (iunout,*) ' CHOOSE EITHER '
-          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR, SPECTR '
+          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR, PHOTON '
+          WRITE (iunout,*) ' OR '
+          WRITE (iunout,*) ' ADAS '
+          WRITE (iunout,*) ' OR '
+          WRITE (iunout,*) ' H-COL'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*)
      .      ' CONST FOR ENTERING REACTION COEFFICIENTS VIA '
@@ -347,6 +387,7 @@ C  H.12
  
       IF (INDEX(FILNAM,'ADAS').NE.0) THEN
         CALL EIRENE_READ_ADAS (IR,REAC,ISW,IZ1)
+c  close unit=29+ifoff:   done in READ_TABLE2.f
         RETURN
       END IF
  
@@ -355,8 +396,8 @@ C  H.12
         CH123 = H123
         CCRC = CRC
         CALL EIRENE_READ_HYDKIN
-     .  (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RCMIN,RCMAX,
-     .                    E_EL,E_K,.FALSE.)
+     .      (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RCMIN,RCMAX,
+     .       E_EL,E_K,.FALSE.)
         RETURN
       END IF
 C
@@ -368,13 +409,13 @@ C
  
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
 C
-C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE
+C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) CREACD(1,1)
           REACLINES(IRLINES)%NCONST = 1
           REACLINES(IRLINES)%CONST(1) = CREACD(1,1)
         ELSE
 C
-C  READ 9 FIT COEFFICIENTS FROM INPUT FILE
+C  READ 9 FIT COEFFICIENTS FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) (CREACD(IC,1),IC=1,9)
           REACLINES(IRLINES)%NCONST = 9
           REACLINES(IRLINES)%CONST(1:9) = CREACD(1:9,1)
@@ -383,116 +424,139 @@ C  READ 9 FIT COEFFICIENTS FROM INPUT FILE
         CALL EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,
      .                         IUNOUT,.FALSE.)
         RETURN
+      ENDIF
 C
-C  READ FROM DATA FILE
+C  READ FROM DATA FILE, stream 29
 C
-      ELSEIF (.NOT.LCONST) THEN
+C  already ruled out here (done at this point) :
+C  FILNAM= "H-COL", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  in these cases: already returned to calling program
+C
+!dr   ELSEIF (.NOT.LCONST) THEN
+C  AT THIS POINT: FILNAM= AMJUEL, HYDHEL, H2VIBR, METHAN, i.e. single or double polynomial fits
+
+CC  now identify proper dataset within file FILNAM
+ 
 100     READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
  
 1       READ (29+ifoff,'(A80)',END=990) ZEILE
-        IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
+        IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     !  infinite loop passible !
 C
 2       READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
         IF (INDEX(ZEILE,'Reaction ').EQ.0.or.
-     .      INDEX(ZEILE,REACSTR(1:ireac)).EQ.0) GOTO 2
-      ENDIF
+     .      INDEX(ZEILE,REACSTR(1:ireac)).EQ.0) GOTO 2  ! infinite loop possible  !
+!dr   ENDIF
 C
 C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
       IF (ISW.EQ.0.OR.ISW.EQ.1.OR.ISW.EQ.2.OR.ISW.EQ.5.OR.ISW.EQ.8.OR.
      .    ISW.EQ.11) THEN
-        IF (.NOT.LCONST) THEN
-3         READ (29+ifoff,'(A80)',END=990) ZEILE
-          INDFF=INDEX(ZEILE,'fit-flag')
-          IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
-          IF (INDFF > 0) THEN
-            READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
-            GOTO 3
-          ENDIF
-          IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
-            IND=INDEX(ZEILE,CHR(1:1))
-            READ (ZEILE((IND+2):80),'(E20.12)') CREACD(1,1)
-          ELSE
-            DO 9 J=0,2
-              IND=0
-              DO 4 I=1,3
-                IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
-                READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
-4             CONTINUE
-              READ (29+ifoff,'(A80)',END=990) ZEILE
-9           CONTINUE
-          END IF
+C       IF (.NOT.LCONST) THEN
+3       READ (29+ifoff,'(A80)',END=990) ZEILE
+        INDFF=INDEX(ZEILE,'fit-flag')
+        IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
+        IF (INDFF > 0) THEN
+          READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
+          GOTO 3
+        ENDIF
+        IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
+          IND=INDEX(ZEILE,CHR(1:1))
+          READ (ZEILE((IND+2):80),'(E20.12)') CREACD(1,1)
+        ELSE
+          DO 9 J=0,2
+            IND=0
+            DO 4 I=1,3
+              IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+C  READ 9 FIT COEFFICIENTS, SEPARATED BY 'CHR'  FIXED FORMAT E20.12
+C  THREE LINES WITH THREE DATA PER LINE
+              READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
+4           CONTINUE
+            READ (29+ifoff,'(A80)',END=990) ZEILE
+9         CONTINUE
+        END IF
 C
 C  READ ASYMPTOTICS, IF AVAILABLE
 C  I0P1=1 FOR CROSS SECTION
-C  I0P1=2 FOR (WEIGHTED) RATE
-          I0P1=I0+1
-          IF (ISW.EQ.0) GOTO 12 ! NO ASYMPTOTICS FOR POTENTIALS
-          IF (INDEX(ZEILE,CHRL).NE.0.AND.JFEXMN.EQ.0) THEN
-            IND=0
-            DO 5 I=1,3
-              INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
-              IF (INC.GT.0) THEN
-                IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
-                READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
-              ENDIF
-5           CONTINUE
-            LGEMIN=.true.
-            READ (29+ifoff,'(A80)',END=990) ZEILE
-          ENDIF
-          IF (INDEX(ZEILE,CHRR).NE.0.AND.JFEXMX.EQ.0) THEN
-            IND=0
-            DO 7 I=4,6
-              INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
-              IF (INC.GT.0) THEN
-                IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
-                READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
-              ENDIF
-7           CONTINUE
-            LGEMAX=.true.
-            READ (29+ifoff,'(A80)',END=990) ZEILE
-          ENDIF
+C  I0P1=2 FOR (WEIGHTED) RATE COEFFICIENT
+        I0P1=I0+1
+        IF (ISW.EQ.0) GOTO 12 ! NO ASYMPTOTICS FOR POTENTIALS
+
+c  CHRL is label of left (low E,T) extrapolation fit parameters, a0l, b0l,....
+        IF (INDEX(ZEILE,CHRL).NE.0.AND.JFEXMN.EQ.0) THEN
+c  at this point: left extrapolation fit found in dataset fort.29, and
+c                 left extrapolation was not overruled explicitly in input file 'fort.iunin'.
+c  read three parameters FP(i), i=1,3 for 'left' extrapolation
+          IND=0
+          DO 5 I=1,3
+            INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
+            IF (INC.GT.0) THEN
+              IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+              READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
+            ENDIF
+5         CONTINUE
+          LGEMIN=.true.
+          READ (29+ifoff,'(A80)',END=990) ZEILE
+        ENDIF
+c  same as above. for right (high E,T) extraploation fit
+        IF (INDEX(ZEILE,CHRR).NE.0.AND.JFEXMX.EQ.0) THEN
+c  read three parameters FP(i), i=4,6 for 'right' extrapolation
+          IND=0
+          DO 7 I=4,6
+            INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
+            IF (INC.GT.0) THEN
+              IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+              READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
+            ENDIF
+7         CONTINUE
+          LGEMAX=.true.
+          READ (29+ifoff,'(A80)',END=990) ZEILE
+        ENDIF
 c
-          if (lgemin.and.jfexmn.eq.0) then
-            IND=INDEX(ZEILE,'=')
-            READ (ZEILE((IND+2):80),'(E12.5)') rcmin
-            rcmin=log(rcmin)
-            jfexmn=5
-            READ (29+ifoff,'(A80)',END=990) ZEILE
-          endif
-          if (lgemax.and.jfexmx.eq.0) then
-            IND=INDEX(ZEILE,'=')
-            READ (ZEILE((IND+2):80),'(E12.5)') rcmax
-            rcmax=log(rcmax)
-            jfexmx=5
-            READ (29+ifoff,'(A80)',END=990) ZEILE
-          endif
+        if (lgemin.and.jfexmn.eq.0) then
+          IND=INDEX(ZEILE,'=')
+          READ (ZEILE((IND+2):80),'(E12.5)') rcmin
+          rcmin=log(rcmin)
+          jfexmn=5
+          READ (29+ifoff,'(A80)',END=990) ZEILE
+        endif
+        if (lgemax.and.jfexmx.eq.0) then
+          IND=INDEX(ZEILE,'=')
+          READ (ZEILE((IND+2):80),'(E12.5)') rcmax
+          rcmax=log(rcmax)
+          jfexmx=5
+          READ (29+ifoff,'(A80)',END=990) ZEILE
+        endif
 C
 C  ANY OTHER ASYMPTOTICS INFO ON FILE?  SEARCH FOR Tmin, or Emin
-          IF ((INDEX(ZEILE,'Tmin').NE.0.and.I0P1==2).or.
-     .        (INDEX(ZEILE,'Emin').NE.0.and.I0P1==1)) then
-            IND=INDEX(ZEILE,'n')
-            READ (ZEILE((IND+2):80),'(E9.2)') rcmin
-            rcmin=log(rcmin)
+        IF ((INDEX(ZEILE,'Tmin').NE.0.and.I0P1==2).or.
+     .      (INDEX(ZEILE,'Emin').NE.0.and.I0P1==1)) then
+          IND=INDEX(ZEILE,'n')
+          READ (ZEILE((IND+2):80),'(E9.2)') rcmin
+          rcmin=log(rcmin)
 C  extrapolation from subr. CROSS
-            if (I0P1.eq.1.and.iswr(ir).eq.1) jfexmn=1
-            if (I0P1.eq.1.and.iswr(ir).eq.3) jfexmn=-1
-            if (I0P1.eq.1.and.iswr(ir).eq.5) jfexmn=-1
+          if (I0P1.eq.1.and.iswr(ir).eq.1) jfexmn=1
+          if (I0P1.eq.1.and.iswr(ir).eq.3) jfexmn=-1
+          if (I0P1.eq.1.and.iswr(ir).eq.5) jfexmn=-1
 C  extrapolation from subr. CDEF
-C   ??      if (I0PT.eq.2) jfexmn=-1
-            READ (29+ifoff,'(A80)',END=990) ZEILE
-          ENDIF
-12        CONTINUE
+C   ??    if (I0PT.eq.2) jfexmn=-1
+          READ (29+ifoff,'(A80)',END=990) ZEILE
+        ENDIF
+12      CONTINUE
 C       ELSEIF (LCONST) THEN
 C  NOTHING TO BE DONE
-        ENDIF
+C       ENDIF
+
+C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg:  
+C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
+C   9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
 C
 C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
         DO 11 J=0,2
 16        READ (29+ifoff,'(A80)',END=990) ZEILE
+C  SEARCH FOR STRING 'fit-flag'  or 'Index'
           INDFF=INDEX(ZEILE,'fit-flag')
           IF (INDEX(ZEILE,'Index')+INDFF.EQ.0) GOTO 16
           IF (INDFF > 0) THEN
@@ -501,15 +565,21 @@ C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
           ENDIF
           READ (29+ifoff,'(1X)')
           IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
+C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
             READ (29+ifoff,*) IH,CREACD(1,1)
             EXIT
           ELSE
             DO 17 I=1,9
+C   READ BLOCK OF 9 LINES, THREE DATA EACH, UNFORMATTED 
               READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
 17          CONTINUE
           END IF
 11      CONTINUE
-C   NO ASYMPTOTICS AVAILABLE YET
+C   AT THIS POINT WE HAVE STORED FOR REACTION ir:  
+C   IFTFLG(IR)   (DEFAUT:   =0)
+C   81 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1...9)
+
+C   NO ASYMPTOTICS AVAILABLE YET FOR 2 PARAMETER FIT
 C
       ENDIF
  

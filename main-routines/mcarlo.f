@@ -23,7 +23,7 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 !             now NTCPU is the amount of cpu time used for particle tracing
 !             times used for initialization and integration of result is not
 !             taken into account
-!   21.07.09: Sense of XTIM changed: now XTIM is the time allocated for each stratum
+!   21.07.09: Meaning of XTIM changed: now XTIM is the time allocated for each stratum
 !             no longer the end time
 !dr 10.05.10: LOCAT0 might also turn off a stratum. Then: skip this is MCARLO, added after call to LOCAT0
 c
@@ -94,6 +94,7 @@ csw
       INTEGER, EXTERNAL :: RANGET_EIRENE
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
+C  OVERHEAD FOR POST PROCESING (SECONDS)
       DATA N2/2/
 C
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -227,9 +228,11 @@ CVKMPI      SECND=XTIM(0)
       timan=secnd
 C
 C  REMAINING CPU TIME, SUBSTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
-!pb      XX1=XX-N2
-!pb  use XX=NTCPU seconds of cpu-time for calculation of trajectories
+!pb   XX1=XX-N2
+
+C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
       XX1 = XX
+
       XPT=0.
       XFL=0.
       DO 7 ISTRA=1,NSTRAI
@@ -383,6 +386,8 @@ C
         ISTRA=ISTR
         IF (.NOT.NLSRON(ISTRA)) CYCLE
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
+
+C  SPECIAL TREATMENT FOR MOVIE OPTION:
           IF (NLMOVIE) THEN
 !pb            ISTRA=NSTRAI-ISTR+1
 !pb            IF (ISTRA.EQ.NSTRAI-1) THEN
@@ -405,6 +410,9 @@ CVKMPI                XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
               ENDDO
             ENDIF
           ENDIF
+
+C  MOVIE OPTION (NLMOVIE):  DONE
+
           CALL EIRENE_LEER(2)
           IF (NPTS(ISTRA).GT.0) THEN
             WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA

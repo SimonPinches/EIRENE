@@ -10,8 +10,10 @@
  
       MODULE EIRMOD_OCTREE
  
-      USE EIRMOD_PRECISION !real precision parameter
-      USE EIRMOD_CCONA  !constants like EPS12, etc
+      USE EIRMOD_PRECISION 
+!real precision parameter
+      USE EIRMOD_CCONA  
+!constants like EPS12, etc
       USE EIRMOD_COMPRT, only: iunout !common printing (unit nums)
       USE EIRMOD_CTRCEI, only: trcoc !tracing switches
  

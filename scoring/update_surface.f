@@ -1,5 +1,23 @@
  
       SUBROUTINE EIRENE_UPDATE_SURFACE (ITOLD)
+
+c  SCORE "EMITTED" SURFACE FLUX TALLIES, FOR SURFACE MSURF, OR SURFACE SEGMENT MSURFG.
+c  update tallies PRF_A_B(iout,msurf) and ERF_A_B(iout,msurf)
+c  A code-letter for incident type of particle: A, M, I, P, PH
+c  B code-letter for emitted type of particle :  AT, ML, IO, PL, PHT
+c  iout:  species index for emitted particle
+ 
+c     CURRENTLY:  
+C       PARTICLE FLUXES (WEIGHT)
+C       ENERGY FLUXES   (E0*WEIGHT)
+
+c  input:
+c     itold:  TYPE IF INCIDENT SPECIES
+c     msurf:  surface index
+c     msurfg:  sub-segement of surface MSURF, for spatial resolution on surface
+c     ityp :  type of emitted particle
+c     ispez  (iatm, imol, iion, ipls, iphot): of emitted particle
+
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -14,7 +32,7 @@
       INTEGER, INTENT(IN) :: ITOLD
  
       IF (MSURF .LE. 0) RETURN
- 
+c  emitted photons ,  currently: only for incident photons
       IF (ITYP.EQ.0) THEN
         LOGPHOT(IPHOT,ISTRA)=.TRUE.
         IF (ITOLD.EQ.0) THEN
@@ -31,6 +49,7 @@
           ENDIF
           IF (LPRFPHPHT .OR. LERFPHPHT) LMETSPW(IPHOT) = .TRUE.
         ENDIF
+c  emitted atoms
       ELSEIF (ITYP.EQ.1) THEN
         LOGATM(IATM,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN
@@ -79,6 +98,7 @@
           ENDIF
           IF (LPRFPAT .OR. LERFPAT) LMETSPW(NSPH+IATM) = .TRUE.
         ENDIF
+c  emitted molecules
       ELSEIF (ITYP.EQ.2) THEN
         LOGMOL(IMOL,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN
@@ -127,6 +147,7 @@
           ENDIF
           IF (LPRFPML .OR. LERFPML) LMETSPW(NSPA+IMOL) = .TRUE.
         ENDIF
+c  emitted test ions
       ELSEIF (ITYP.EQ.3) THEN
         LOGION(IION,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN
@@ -175,6 +196,7 @@
           ENDIF
           IF (LPRFPIO .OR. LERFPIO) LMETSPW(NSPAM+IION) = .TRUE.
         ENDIF
+c  no tallies for emitted bulk particles
       ENDIF
  
       RETURN

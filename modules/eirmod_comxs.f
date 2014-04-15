@@ -9,6 +9,7 @@
 !            is defined via ADAS database
 !  02.03.07: remove ESCD2* arrays
 !  02.03.07: fourth secondary group specifier introduced
+!
 !  02.03.07: IMESS added in photon line reaction data in order to allow for
 !            a complete printout of input data in case of HYDKIN default
 !            database option
