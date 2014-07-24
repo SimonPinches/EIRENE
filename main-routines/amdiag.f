@@ -348,6 +348,9 @@ c  volume recombination rate coefficent no. irrc
           mm=0
           kk=0
           GOTO 171
+        ELSE
+! 0 < NA < 20 OR NA > 29
+          GOTO 180
         ENDIF
 
 171     CONTINUE
