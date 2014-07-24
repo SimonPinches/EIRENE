@@ -67,9 +67,12 @@ C
       CHARACTER(10) :: CDATE, CTIME
 
       REAL(DP), ALLOCATABLE :: OUTAU(:)
-      REAL(DP) :: DUMMY(NRTAL)
-      REAL(DP) :: ZVOLIN(NRTAL), ZVOLIW(NRTAL),
-     .          XTIM(0:NSTRA), SCLTAL(N1MX,NTALV), DXTIM(0:NSTRA)
+!      REAL(DP) :: DUMMY(NRTAL)
+!      REAL(DP) :: ZVOLIN(NRTAL), ZVOLIW(NRTAL),
+!     .          XTIM(0:NSTRA), SCLTAL(N1MX,NTALV), DXTIM(0:NSTRA)
+      REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
+     .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
+      REAL(DP) :: XTIM(0:NSTRA), DXTIM(0:NSTRA)
       REAL(DP) :: ST, FFF, DELT, XFL1,
      .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
@@ -108,6 +111,14 @@ C
         OPEN (UNIT=11+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
      .        RECL=8*NREC11)
       ENDIF
+
+      IF (.NOT.ALLOCATED(DUMMY)) THEN
+        ALLOCATE ( DUMMY(NRTAL),
+     .             ZVOLIN(NRTAL),
+     .             ZVOLIW(NRTAL),
+     .             SCLTAL(N1MX,NTALV))
+      END IF
+
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
 C-------------------------------------------------------------------
@@ -1226,5 +1237,13 @@ C END SEQUENTIAL REGION
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 
 C
+      RETURN
+
+      ENTRY MCARLO2
+
+      IF (ALLOCATED(DUMMY)) THEN
+         DEALLOCATE (DUMMY,ZVOLIN,ZVOLIW,SCLTAL)
+      END IF
+
       RETURN
       END
