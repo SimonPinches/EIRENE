@@ -79,6 +79,9 @@ C
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
       NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
+
+      CALL USR_DEFAULTS
+      IUNIN = IUNIN + IFOFF
  
       IUNOUT = 6
       IF (NRPES > 1) IUNOUT = 7
