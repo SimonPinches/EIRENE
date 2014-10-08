@@ -118,7 +118,7 @@
         
         DO IPL = 1,NPLSI
 
-!pb          EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
+!pb       EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
           EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                  ! in eV
           COPV(ICP3+3,IR) = COPV(ICP3+3,IR)
      .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO

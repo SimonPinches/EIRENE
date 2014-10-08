@@ -12,6 +12,11 @@ c  geometry data not any longer via work array into eirene
 c                due to module structure
 c  eliminate cut cells from balances (llcut(..))
 c  new input: ncopib, ncopeb
+C  SEPT. 2014 GENERAL RELATIONS BETWEEN FINE (UNSTRUCTURED)  AND COARSE (STRUCTURED)
+C             GRID MADE MORE EXPLICIT.  NEW NSBOX FOR FINE GRID SET.  
+C             NP2NDQ REMOVED (REDUNDANT: =NP2TAL)
+C             NR1STQ REMOVED (REDUNDANT: =NR1TAL), 
+C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NSTGRD ARRAYS VIA FILES FROM FORT.29?
 C
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -155,11 +160,12 @@ C
      .          par, fniprt, fltt, e0b2, frac, celdel, dd, cfac  !pb 22012013
       INTEGER, SAVE :: NREC11, IRC, JC, K, IADD, NAS, IPUNKT, NSSIR, 
      .           NUMSI, NBAR, ISNR, ISC, IS, NASMOD, NRS, NADMOD, 
-     .           NBARSI, IP1, NP2NDQ, IFL, IS1, IR1, IAIN, IAOT, IREAD,
+     .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
      .           NTGPRI, IPRT, IO29, NEND, NCOPI, NINI, NSSIP,
-     .           LTARG, I,IT, IPL, IERROR, IMODE, NPLP, INC,
-     .           NRED, J, IDUMMY, NR1STQ, ISTS, ITRI, 
-     .           IR, IP, IN, IX, IY, NDX2, NEM, IIRC, NDXY,
+     .           LTARG, I, IPL, IERROR, IMODE, NPLP, INC,
+     .           NRED, J, IDUMMY,  ISTS, ITRI, 
+     .           IR, IP, IT, IA, IB, 
+     .           IN, IX, IY, NDX2, NEM, IIRC, NDXY,
      .           IFIRST, IF, ICPV, ISTRAI, NPES, MTRI, NPEC, NPBS,
      .           NPBC, IACT, IANF, IO, IIPLS, IEPLS, IG, ITARG, IGITT,
      .           I34, IRRC, ICOG, ISC1, ISC2, ISCS, ICOU, ISP,
@@ -274,10 +280,10 @@ C
      .    WRITE (iunout,*)          IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
 20      CONTINUE
         READ (IUNIN,'(2I6)') NDXA,NDYA
-        IF (TRCINT) WRITE (6,*) 'NDXA,NDYA ',NDXA,NDYA
+        IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
 C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
         READ (IUNIN,'(I6)') NTARGI
-        WRITE (iunout,*) '        NTARGI= ',NTARGI
+        IF (TRCINT) WRITE (iunout,*) 'NTARGI=    ',NTARGI
         CALL EIRENE_LEER(1)
         IF (NTARGI.GT.NSTEP) THEN
           CALL EIRENE_MASPRM ('NSTEP',5,NSTEP,'NTARGI',6,NTARGI,IERROR)
@@ -664,8 +670,10 @@ C
         WRITE (iunout,*) 
      .    ' NO FILE FORT.29 WITH MODIFIED GRID INFO. FOUND '
         WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
-     .               'GRID IS USED '
+     .                   'GRID IS USED '
         WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL '
+        WRITE (iunout,*) ' NO INFO RE. ISOLATED CELLS FROM THIS FILE '
+        CALL EIRENE_LEER(1)
       END IF
 C
 C  TRANSFER FLAGS
@@ -686,7 +694,7 @@ C
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
       READ(34,*) NTRII
-      WRITE(iunout,*) 'NTRII = ',NTRII
+      WRITE(iunout,*) 'NTRII  = ',NTRII
 
 C
 C  EACH ELEMENT (TRIANGLE) IS GIVEN BY 3 POINTS
@@ -724,7 +732,7 @@ C
       IF (IDUMMY /= NTRII) THEN
         WRITE (IUNOUT,*) ' NUMBER OF TRIANGLES DO NOT MATCH '
         WRITE (IUNOUT,*) ' IN ELEMENTE AND NEIGHBOR FILES'
-        WRITE (IUNOUT,*) ' PLEASE CHECK THE GEOMETRY '
+        WRITE (IUNOUT,*) ' CHECK THE GEOMETRY '
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
@@ -734,14 +742,16 @@ C
      >               NCHBAR(3,I),NSEITE(3,I),IDUMMY,
 C
      >               IXTRI(I),IYTRI(I)
-C       WRITE(iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
-C    >                  NCHBAR(1,J),NSEITE(1,J),
-C    >                  NCHBAR(2,J),NSEITE(2,J),NCHBAR(3,J),NSEITE(3,J)
+C       WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
+C    >                   NCHBAR(1,J),NSEITE(1,J),
+C    >                   NCHBAR(2,J),NSEITE(2,J),NCHBAR(3,J),NSEITE(3,J)
 
 C THE SPECIAL SURFACE PROPERTY (IF ANY) IS ON INMTI ARRAY, AND TRANSFERED INTO
 C EIRENE VIA COMMON.
       ENDDO
 
+C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
+C  TO THE QUADRANGLE
       ALLOCATE (HEADS(N1ST,N2ND))
       DO IR=1,NR1ST
         DO IP=1,NP2ND
@@ -749,8 +759,6 @@ C EIRENE VIA COMMON.
         ENDDO
       ENDDO
 
-C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
-C  TO THE QUADRANGLE
       DO ITRI=1,NTRII
         IF (IXTRI(ITRI).GT.0) THEN
           IR=IYTRI(ITRI)
@@ -761,13 +769,15 @@ C  TO THE QUADRANGLE
           HEADS(IR,IP)%P => CURPOI
         ENDIF
       ENDDO
-
+ 
+C  BUILD NSTGRD ARRAY OF "BLOCKED" TRANGLES FROM XAISO ARRAY FROM FORT.29
       IF (IO29.EQ.0) THEN
         DO ITRI=1,NTRII
           IY=IYTRI(ITRI)
           IX=IXTRI(ITRI)
           IF (IX .GT. 0) THEN
-            IN=IY+(IX-1)*NR1STQ
+cdr         IN=IY+(IX-1)*NR1STQ  !nr1stq undefined at this point
+            IN=IY+(IX-1)*NR1ST
             NSTGRD(ITRI)=ABS(XAISO(IX,IY)-1.)
           ENDIF
         ENDDO
@@ -795,13 +805,13 @@ C  FIRST: RADIAL SURFACES
                 CURPOI => HEADS(IR1,IP)%P
               ENDIF
               DO WHILE (ASSOCIATED(CURPOI))
-                IT=CURPOI%TRIANGLE
+                ITRI=CURPOI%TRIANGLE
 CVKG TO FIX A BUG WITH GEOMETRY
                 ISC1=0
                 ISC2=0
                 DO IS=1,3
-                  IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,IT)),
-     f                             YTRIAN(NECKE(IS,IT)),
+                  IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,ITRI)),
+     f                             YTRIAN(NECKE(IS,ITRI)),
      f                             XPOL(IR,IP),YPOL(IR,IP),
      f                             XPOL(IR,IP+1),YPOL(IR,IP+1))) THEN
                   IF(ISC1.GT.0) THEN
@@ -812,18 +822,18 @@ CVKG TO FIX A BUG WITH GEOMETRY
                 END IF 
               ENDDO
 
-C  NODES ISC1 AND ISC2 OF TRIANGLE IT ARE LOCATED ON RADIAL SURFACE IR
-C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "IT" BELONGS TO NDS
+C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON RADIAL SURFACE IR
+C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
               IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
                 NUMSI=MIN(ISC1,ISC2) 
                 IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
 C
                   ICOG=ICOG+1
-                  INSPAT(NUMSI,IT)=ICOG
-                  INMTI(NUMSI,IT)=NLIM+ISTS
-                  NBAR=NCHBAR(NUMSI,IT)
+                  INSPAT(NUMSI,ITRI)=ICOG
+                  INMTI(NUMSI,ITRI)=NLIM+ISTS
+                  NBAR=NCHBAR(NUMSI,ITRI)
                   IF (NBAR.GT.0) THEN
-                    NBARSI=NSEITE(NUMSI,IT)
+                    NBARSI=NSEITE(NUMSI,ITRI)
                     ICOG=ICOG+1
                     INSPAT(NBARSI,NBAR)=ICOG
                     INMTI(NBARSI,NBAR)=NLIM+ISTS
@@ -850,13 +860,13 @@ C  NEXT: POLOIDAL SURFACES
                 CURPOI => HEADS(IR,IP1)%P
               ENDIF
               DO WHILE (ASSOCIATED(CURPOI))
-                IT=CURPOI%TRIANGLE
+                ITRI=CURPOI%TRIANGLE
 CVKG TO FIX GEOMETRY BUG
                 ISC1=0
                 ISC2=0
                 DO IS=1,3
-                  IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,IT)),
-     f                             YTRIAN(NECKE(IS,IT)),
+                  IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,ITRI)),
+     f                             YTRIAN(NECKE(IS,ITRI)),
      f                             XPOL(IR,IP),YPOL(IR,IP),
      f                             XPOL(IR+1,IP),YPOL(IR+1,IP))) THEN
                   IF(ISC1.GT.0) THEN
@@ -867,18 +877,18 @@ CVKG TO FIX GEOMETRY BUG
                 END IF 
               ENDDO
 
-C  NODES ISC1 AND ISC2 OF TRIANGLE IT ARE LOCATED ON POLOIDAL SURFACE IP
-C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "IT" BELONGS TO NDS
+C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON POLOIDAL SURFACE IP
+C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
               IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
                   NUMSI=MIN(ISC1,ISC2) 
                   IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
 C
                   ICOG=ICOG+1
-                  INSPAT(NUMSI,IT)=ICOG
-                  INMTI(NUMSI,IT)=NLIM+ISTS
-                  NBAR=NCHBAR(NUMSI,IT)
+                  INSPAT(NUMSI,ITRI)=ICOG
+                  INMTI(NUMSI,ITRI)=NLIM+ISTS
+                  NBAR=NCHBAR(NUMSI,ITRI)
                   IF (NBAR.GT.0) THEN
-                    NBARSI=NSEITE(NUMSI,IT)
+                    NBARSI=NSEITE(NUMSI,ITRI)
                     ICOG=ICOG+1
                     INSPAT(NBARSI,NBAR)=ICOG
                     INMTI(NBARSI,NBAR)=NLIM+ISTS
@@ -1108,11 +1118,70 @@ C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
         ENDIF
       ENDDO
 
-      DO IT=1,NTRII
+C
+      NLPLG=.FALSE.
+      NLPOL=.FALSE.
+      NLFEM=.TRUE.
+      LEVGEO=4
+
+C  SAVE OLD, STRUCTURED, 2D GRID INFO FOR TALLY OUTPUT, ETC...
+      NR1TAL=NR1ST
+      NP2TAL=NP2ND
+      NT3TAL=NT3RD
+      NSURF_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT
+C     NSBOX_TAL, NRADD_TAL: SEE BELOW
+
+C  SET NEW, FINER GRID STRUCTURE
+      NR1ST=NTRII+1
+      NP2ND=1
+      NT3RD=1
+      NSURF=NR1ST*NP2ND*NT3RD*NBMLT
+      NSBOX=NSURF+NRADD
+ 
+
+C  counter for additional cells outside original 2D standard grid
+      ico = NSURF_TAL
+
+C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
+C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
+C                 NCELL=NCLTAL(ITRI)
+C                 SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
+      DO ITRI=1,NTRII
+        IY=IYTRI(ITRI)
+        IX=IXTRI(ITRI)
+        IF (IX .GT. 0) THEN
+           IN=IY+(IX-1)*NR1TAL
+           NCLTAL(ITRI)=IN
+        ELSE   ! ADDITIONAL CELLS, OUTSIDE OLD STRUCTURED GRID
+           ico = ico+1
+           NCLTAL(ITRI)=ico
+        ENDIF
+      ENDDO
+
+C  ADDITIONAL CELLS: THOSE CELLS THAT ARE ADDED FROM OUTSIDE ORIGINAL GRID, PLUS THOSE FROM INPUT FILE (NRADD)
+      NRADD_TAL = (ICO - NSURF_TAL) + NRADD
+C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
+      NSBOX_TAL=NSURF_TAL+NRADD_TAL
+      NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
+
+C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
+      DO ITRI=1,NTRII
         DO IS=1,3
-          IF (NCHBAR(IS,IT).EQ.0.AND.INMTI(IS,IT).EQ.0) THEN
+          IF (NCHBAR(IS,ITRI).EQ.0.AND.INMTI(IS,ITRI).EQ.0) THEN
             WRITE (iunout,*) ' ERROR IN INFCOP '
-            WRITE (iunout,*) ' OPEN SIDE OF TRIANGLE ',IT,' SIDE ',IS
+            WRITE (iunout,*) ' OPEN SIDE OF TRIANGLE ',ITRI,' SIDE ',IS
+            call eirene_ncelln(ncltal(itri),ir,ip,it,ia,ib,
+     .                           nr1tal,np2tal,nt3tal,nbmlt,
+     .                          .true.,.true.,.false.)
+            if (ia.gt.0) then
+              write (iunout,*) 
+     .               'triangle outside original structured grid'
+              call eirene_masj2('itri,  ia      ',itri,ia)
+            else
+              write (iunout,*) 
+     .               'triangle inside original structured grid'          
+              call eirene_masj3('nr,np,na                ',ir,ip,ia)
+            endif
             write (iunout,*) ' necke ',necke(1:3,it)
             write (iunout,*) ' xtrian,ytrian(1) ',xtrian(necke(1,it)),
      .                                       ytrian(necke(1,it))
@@ -1129,47 +1198,21 @@ C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
           ENDIF
         ENDDO
       ENDDO
-C
-      NLPLG=.FALSE.
-      NLFEM=.TRUE.
-      LEVGEO=4
-      NR1STQ=NR1ST
-      NP2NDQ=NP2ND
-      NR1ST=NTRII+1
-      NLPOL=.FALSE.
-      NP2ND=1
-!pb 21012013 ncltal
-!      NR1TAL=NR1ST
-!      NP2TAL=NP2ND
-!      NT3TAL=NT3RD
-      NR1TAL=NR1STQ
-      NP2TAL=NP2NDQ
-      NT3TAL=NT3RD
-      NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT
-      ico = NSBOX_TAL
-      DO ITRI=1,NTRII
-        IY=IYTRI(ITRI)
-        IX=IXTRI(ITRI)
-        IF (IX .GT. 0) THEN
-           IN=IY+(IX-1)*NR1STQ
-           NCLTAL(ITRI)=IN
-        ELSE
-           ico = ico+1
-           NCLTAL(ITRI)=ico
-        ENDIF
-      ENDDO
-!pb
-      nradd_tal = ico - nsbox_tal + nradd
-      NSBOX_TAL=ICO+NRADD
-      NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
+
+
 
       CALL EIRENE_LEER(2)
       CALL EIRENE_HEADNG(' CASE REDEFINED IN COUPLE_TRIA: ',32)
       WRITE (iunout,*) 'NLPLG,NLFEM ',NLPLG,NLFEM
       WRITE (iunout,*) 'NLPOL       ',NLPOL
-      WRITE (iunout,*) 'NR1ST,NP2ND ',NR1ST,NP2ND
-      WRITE (iunout,*) 'NR1TAL,NP2TAL,NSBOX_TAL,NRADD_TAL,NRADD ',
-     .                  NR1TAL,NP2TAL,NSBOX_TAL,NRADD_TAL,NRADD
+      
+      WRITE (IUNOUT,*) 'NEW (FINE, UN-STRUCTURED) GRID '
+      CALL EIRENE_MASJ4('NR1ST,  NP2ND,  NSBOX,  NRADD   ',
+     .                   NR1ST,NP2ND,NSBOX,NRADD)
+      
+      WRITE (IUNOUT,*) 'OLD (COARSE, STRUCTURED) GRID '
+      CALL EIRENE_MASJ4('NR1TAL ,NP2TAL NSBOX_TL,NRADD_TL',
+     .                   NR1TAL, NP2TAL,NSBOX_TAL,NRADD_TAL)
       CALL EIRENE_LEER(2)
 CTRIG E
       RETURN
@@ -1390,13 +1433,18 @@ CTRIG E
         FL(IPLS)=ELCHA*FCTE(IPLS)
 2105  CONTINUE
 C
+C  SET PLASMA BACKGROUND ON TRIANGULAR GRID
+C  A TRIANGULAR CELL ITRI RECEIVED THE PLASMA DATA FROM ITS LARGER HOST CELL IX,IY,
+C  WITHOUT ANY WEIGHTING/INTERPOLATION ETC...
+C
+
       BZINTF = 1._DP
       BFINTF = 1._DP
       DO ITRI=1,NTRII
         IY=IYTRI(ITRI)
         IX=IXTRI(ITRI)
         IF (IX .GT. 0) THEN
-          IN=IY+(IX-1)*NR1STQ
+          IN=IY+(IX-1)*NR1TAL
           TEINTF(ITRI)=TEB(IX,IY)*T
 C
 C  ONLY ONE ION TEMPERATURE AVAILABLE FROM PLASMA FLUID CODE,
@@ -1447,7 +1495,7 @@ C
                   IXM1 = NGHPOL(4,IY,IX)
                 END IF
 C  SET PLASMA DENSITY, AND INTERPOLATE PLASMA VELOCITIES TO CELL CENTERS.
-                IN=IY+(IX-1)*NR1STQ
+                IN=IY+(IX-1)*NR1TAL
                 DIINTF(IPLS,ITRI)=DNIB(IX,IY,IFL)*D(IPLS)
                 UUBC=0.5*(UUB(IXM1,IY,IFL)+UUB(IX,IY,IFL))
                 UPBC=0.5*(UPB(IXM1,IY,IFL)+UPB(IX,IY,IFL))
@@ -1886,7 +1934,7 @@ C  SET ION ENERGY FLUXES FROM B2-BOUNDARY CONDITIONS
 C  VXSTEP,VYSTEP,VZSTEP: SURFACE CENTERED FLOW VELOCITY (CM/S)
 C  NOTE: PV VECTOR IS CELL CENTERED, BUT EXACT VECTOR CAN BE FOUND FROM
 C        DATA FOR POLOIDAL POLYGON NPES
-            IN=IY+(NPEC-1)*NR1STQ
+            IN=IY+(NPEC-1)*NR1TAL
             PVXS=PVXE(IN)
             PVYS=PVYE(IN)
             PUXS=PUXE(IN)
@@ -2119,7 +2167,7 @@ C  SET ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
 C  VXSTEP,VYSTEP,VZSTEP: SURFACE CENTERED FLOW VELOCITY (CM/S)
 C  NOTE: PU VECTOR IS CELL CENTERED, BUT EXACT VECTOR CAN BE FOUND FROM
 C        RADIAL POLYGON NPES DATA
-            IN=NPEC+(IX-1)*NR1STQ
+            IN=NPEC+(IX-1)*NR1TAL
             PVXS=PVXN(IN)
             PVYS=PVYN(IN)
             PUXS=PUXN(IN)
@@ -2488,7 +2536,7 @@ C
       LSTP3=.TRUE.
       LSTOP=LSTP3
       IFIRST=0
-      NDXY=(NDXA-1)*NR1STQ+NDYA
+      NDXY=(NDXA-1)*NR1TAL+NDYA
       GOTO 99992
 C
       ENTRY EIRENE_INTER3(LSTP,IFRST,ISTRAA,ISTRAE,NEW_ITER)
@@ -2505,7 +2553,7 @@ C
       LSTP3=LSTP
       LSTOP=LSTP
       IFIRST=IFRST
-      NDXY=(NDXA-1)*NR1STQ+NDYA
+      NDXY=(NDXA-1)*NR1TAL+NDYA
 C
 99992 CONTINUE
 
@@ -3052,7 +3100,7 @@ C
 !                DO WHILE (ASSOCIATED(CURPOI))
 !                  IT=CURPOI%TRIANGLE
 !                  IN=NCLTAL(IT)
-                  IN=IY+(IX-1)*NR1STQ
+                  IN=IY+(IX-1)*NR1TAL
 !pb                  
                   SNICL=(PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN)+
      .                  PPPL_COP(IPLS,IN))*VOLTAL(IN)*FLX_EIR
@@ -3072,7 +3120,7 @@ C
               IY=IYTRI(ITRI)
               IX=IXTRI(ITRI)
               if ((ix<=0).or.(iy <= 0)) cycle
-              IN=IY+(IX-1)*NR1STQ
+              IN=IY+(IX-1)*NR1TAL
               if (lhit(in)) cycle
               cfac = (PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN)) /
      .             (copv(icp+ipls,in) + eps60)
@@ -3107,7 +3155,7 @@ C
 !                  DO WHILE (ASSOCIATED(CURPOI))
 !                    IT=CURPOI%TRIANGLE
 !                    IN=NCLTAL(IT)
-                    IN=IY+(IX-1)*NR1STQ
+                    IN=IY+(IX-1)*NR1TAL
 !pb                  
                     SNIRES=(PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN))*
      .                      VOLTAL(IN)*FLX_EIR
@@ -3139,7 +3187,7 @@ C
 ! use BVIN from first triangle belonging the quadrangular cell
                   CURPOI => HEADS(IY,IX)%P
                   IT=CURPOI%TRIANGLE
-                  INC=IY+(IX-1)*NR1STQ
+                  INC=IY+(IX-1)*NR1TAL
 !pb                  
                   SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
 !pb                  SMOCL=(COPV(IADD+IPLS,INC)+CPPV(IADD+IPLS,INC))*
@@ -3162,7 +3210,7 @@ C
               IY=IYTRI(ITRI)
               IX=IXTRI(ITRI)
               if ((ix<=0).or.(iy <= 0)) cycle
-              IN=IY+(IX-1)*NR1STQ
+              IN=IY+(IX-1)*NR1TAL
               if (lhit(in)) cycle
               SIGNUM=SIGN(1._DP,BVIN(IPLSV,ITRI))
               cfac = (MAPL(IPLS,IN)+MMPL(IPLS,IN)+MIPL(IPLS,IN))/
@@ -3198,7 +3246,7 @@ C
 !                  DO WHILE (ASSOCIATED(CURPOI))
 !                    IT=CURPOI%TRIANGLE
 !                    IN=NCLTAL(IT)
-                    IN=IY+(IX-1)*NR1STQ
+                    IN=IY+(IX-1)*NR1TAL
 !pb                  
                     SMORES=(MAPL(IPLS,IN)+MMPL(IPLS,IN)+MIPL(IPLS,IN))*
      .                     VOLTAL(IN)*1.D-5*SIGNUM*FLX_EIR
@@ -3230,7 +3278,7 @@ C
 !            DO WHILE (ASSOCIATED(CURPOI))
 !              IT=CURPOI%TRIANGLE
 !              IN=NCLTAL(IT)
-              IN=IY+(IX-1)*NR1STQ
+              IN=IY+(IX-1)*NR1TAL
 !pb                  
               SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
      .           (EAEL(IN)+EMEL(IN)+EIEL(IN)+EPEL(IN))*VOLTAL(IN)*ELCHA
@@ -3256,7 +3304,7 @@ C
               IY=IYTRI(ITRI)
               IX=IXTRI(ITRI)
               if ((ix<=0).or.(iy <= 0)) cycle
-              IN=IY+(IX-1)*NR1STQ
+              IN=IY+(IX-1)*NR1TAL
               if (lhit(in)) cycle
 !pb 22012013 copv
               cfac = (EAEL(IN)+EMEL(IN)+EIEL(IN)) /
@@ -3299,7 +3347,7 @@ C
 !            DO WHILE (ASSOCIATED(CURPOI))
 !              IT=CURPOI%TRIANGLE
 !              IN=NCLTAL(IT)
-                IN=IY+(IX-1)*NR1STQ
+                IN=IY+(IX-1)*NR1TAL
 !pb                  
                 SEERES=(EAEL(IN)+EMEL(IN)+EIEL(IN))*VOLTAL(IN)*FLX_EIR
 !pb              RESSEE(ISTRAI)=RESSEE(ISTRAI)+
@@ -3333,7 +3381,7 @@ C
 !            DO WHILE (ASSOCIATED(CURPOI))
 !              IT=CURPOI%TRIANGLE
 !              IN=NCLTAL(IT)
-                IN=IY+(IX-1)*NR1STQ
+                IN=IY+(IX-1)*NR1TAL
                 SEIRES=(EAPL(IN)+EMPL(IN)+EIPL(IN))*VOLTAL(IN)*FLX_EIR
 !pb                RESSEI(ISTRAI)=RESSEI(ISTRAI)+
 !pb     .                       ABS(SIGMA_COP(2*NPLSI+2,IN)*
