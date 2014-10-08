@@ -9,6 +9,9 @@ c             directly to be included in line shape sampling
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
 !   04.01.07: updating of sputter tallies ordered as in ESCAPE
+cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species index)
+cdr 24.09.14: levgeo=2, surface normal on radial surface from algebraic relation, rather than from polygon
+cdr           levgeo=2 and 1D run: no polygons are set any more. 
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:
@@ -1385,6 +1388,8 @@ CVK          IF (ILSPT(MSURF).NE.0) THEN
 !pb  allow for bulk particle to sputter at transparent surface
 !pb  because of gap between outer plasma surface and wall in SOLPS
           IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN !VK from AK's locate
+cdr  ilspt=0 in case of transparent surfaces was a safety procedure in subr. input.f
+cdr  this has now been bypassed. Better: do that in couple_b2 (case specific), but not in eirene itself
 csw
 C  SAVE INCIDENT PARTICLE'S SPEED AND ENERGY
             E0S=E0
@@ -1409,11 +1414,20 @@ C
 C  UPDATE SPUTTER SURFACE TALLIES. SAME AS IN SUBR. ESCAPE, BUT HERE
 C                                  FOR INCICENT BULK IONS
 C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY 
-C  FOR PHSSICAL AND CHEMICAL SPUTTERING RESP.
+C  FOR PHYSICAL AND CHEMICAL SPUTTERING RESP.
             ITOLD = 4
             IF (NLSPUT) THEN
 C
-            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP+WGHTSC)
+CDR  THIS CALL IS INCORRECT, SINCE ITYP AND ISPZ OF SPUTTERED PARTICLE ARE NOT YET SET.
+CDR         CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP+WGHTSC)
+C
+C   update total sputter fluxes for those cases in which sputtered particle species index is not set
+C   (e.g. target material is not an eirene test particle in this run)
+            IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
+     .        CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP,0)
+            IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
+     .        CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC,0)
+ 
 C
 C  UPDATE TOTAL SPUTTERED FLUX TALLY
 !              IF (LSPTTOT)
@@ -1478,7 +1492,9 @@ C
      .            VELX,VELY,VELZ,VEL,E0,WEIGHT)
             ENDIF
 C
-            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP)
+cdr  species index of physically sputtered particle is known.
+cdr  update total and sputtered species resolved sputtered fluxes
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP,1)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -1543,7 +1559,9 @@ C
      .            VELX,VELY,VELZ,VEL,E0,WEIGHT)
             ENDIF
 C
-            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC)
+cdr  species index of physically sputtered particle is known.
+cdr  update total and sputtered species resolved sputtered fluxes
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC,1)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -2256,11 +2274,13 @@ C  TEST FOR CORRECT CELL NUMBER AT BIRTH POINT
 C  KILL PARTICLE, IF WRONG CELL INDICES
 C
       IF (NLSRFX) THEN
-C  RADIAL CELL NO. MAY BE WRONG
-!pb 14.05.2013
+C  PARTICLE ON SURFACE. RADIAL CELL NO. MAY BE WRONG
+C  FIND SIGN SG OF FLIGHT RELATIVE TO SURFACE NORMAL
         IF (LEVGEO.EQ.1) THEN
           SG=SIGN(1._DP,VELX)
-        ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+        ELSEIF (LEVGEO.EQ.2) THEN
+          SG=VELX*(X0-EP1(MRSURF))*ELLQ(MRSURF)+VELY*Y0
+        ELSEIF (LEVGEO.EQ.3) THEN
           SG=VELX*PLNX(MRSURF,NPCELL)+VELY*PLNY(MRSURF,NPCELL)
         ELSEIF ((LEVGEO==4) .OR. (LEVGEO==5)) THEN
           SG = 1

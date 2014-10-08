@@ -1,5 +1,17 @@
- 
-      SUBROUTINE EIRENE_UPDATE_SPTFLX (ITOLD, WGH)
+c  score sputtered fluxes
+c  modified in spring 2014: old version: resolved wrt. incident type
+cdr:  Sept. 2014: flag ind added
+
+C  present version: resolved with respect to incidence species type (for nlscl option)
+C  and also resolved wrt.  emitted species type and species 
+c  incident type :                      itold  (parameter list)
+c  ind=0:  species index of sputtered particle not known: update only total sputtered fluxes
+c  ind=1:  species index of sputtered particle is known: update total and species resolved fluxes
+c  sputtered type:                      ityp   (common)
+c  sputtered species:                   iphot,iatm,imol,iion,ipls  (common)
+c  weight of sputtered particle:        wgh    (parameter list)
+
+      SUBROUTINE EIRENE_UPDATE_SPTFLX (ITOLD, WGH,IND)
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -11,22 +23,29 @@
  
       IMPLICIT NONE
  
-      INTEGER, INTENT(IN) :: ITOLD
+      INTEGER, INTENT(IN) :: ITOLD,IND
       REAL(DP), INTENT(IN) :: WGH
  
       IF (MSURF .LE. 0) RETURN
+
+C  UPDATE TOTAL FLUXES, NOT RESOLVED WRT. EMITTED PARTICLE SPECIES
+C  THIS IS NEEDED IN CASE SPUTTERED SPECIES IS NOT AN EIRENE TEST SPECIES IN THIS RUN
       
       IF (LSPTTOT) SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
       IF (MSURFG.GT.0) THEN
          IF (LSPTTOT) SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
       ENDIF
+      IF (IND.EQ.0) RETURN
+
+C  FROM HERE ON:  INCIDENT TYPE AND SPUTTERED TYPE AND SPECIES RESOLVED FLUXES, 
+C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
               
       SELECT CASE (ITOLD)
 
 ! INCIDENT PARTICLE IS PHOTON
       CASE (0)
          SELECT CASE (ITYP)
-! OUTGOING PARTICLE IS PHOTON
+!      OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTPHPHT) THEN
                SPTPHPHT(IPHOT,MSURF)=SPTPHPHT(IPHOT,MSURF)+WGH
@@ -34,7 +53,7 @@
      .              SPTPHPHT(IPHOT,MSURFG)=SPTPHPHT(IPHOT,MSURFG)+WGH
                LMETSPW(IPHOT) = .TRUE.
             END IF
-! OUTGOING PARTICLE IS ATOM
+!     OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTPHAT) THEN
                SPTPHAT(IATM,MSURF)=SPTPHAT(IATM,MSURF)+WGH
@@ -50,7 +69,7 @@
      .              SPTPHML(IMOL,MSURFG)=SPTPHML(IMOL,MSURFG)+WGH
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
-!     OUTGOING PARTICLE IS ATOMTEST ION
+!     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTPHIO) THEN
                SPTPHIO(IION,MSURF)=SPTPHIO(IION,MSURF)+WGH
@@ -78,7 +97,7 @@
 ! INCIDENT PARTICLE IS ATOM
       CASE (1)
          SELECT CASE (ITYP)
-! OUTGOING PARTICLE IS PHOTON
+!      OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTAPHT) THEN
                SPTAPHT(IPHOT,MSURF)=SPTAPHT(IPHOT,MSURF)+WGH
@@ -86,7 +105,7 @@
      .              SPTAPHT(IPHOT,MSURFG)=SPTAPHT(IPHOT,MSURFG)+WGH
                LMETSPW(IPHOT) = .TRUE.
             END IF
-! OUTGOING PARTICLE IS ATOM
+!     OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTAAT) THEN
                SPTAAT(IATM,MSURF)=SPTAAT(IATM,MSURF)+WGH
@@ -102,7 +121,7 @@
      .              SPTAML(IMOL,MSURFG)=SPTAML(IMOL,MSURFG)+WGH
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
-!     OUTGOING PARTICLE IS ATOMTEST ION
+!     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTAIO) THEN
                SPTAIO(IION,MSURF)=SPTAIO(IION,MSURF)+WGH
@@ -121,8 +140,7 @@
 !     OUTGOING PARTICLE IS OF UNKNOWN TYPE
          CASE DEFAULT
             WRITE (IUNOUT,*) ' ERROR IN EIRENE_UPDATE_SPTFLX '
-            WRITE (IUNOUT,*) 
-     .           ' PARTICLE OF UNKNOWN TYPE SPUTERED '
+            WRITE (IUNOUT,*) ' PARTICLE OF UNKNOWN TYPE SPUTTERED '
             WRITE (IUNOUT,*) ' ITYP = ', ITYP
          END SELECT
 
@@ -206,7 +224,7 @@
      .              SPTIML(IMOL,MSURFG)=SPTIML(IMOL,MSURFG)+WGH
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
-!     OUTGOING PARTICLE IS ATOMTEST ION
+!     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTIIO) THEN
                SPTIIO(IION,MSURF)=SPTIIO(IION,MSURF)+WGH
@@ -258,7 +276,7 @@
      .              SPTPML(IMOL,MSURFG)=SPTPML(IMOL,MSURFG)+WGH
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
-!     OUTGOING PARTICLE IS ATOMTEST ION
+!     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTPIO) THEN
                SPTPIO(IION,MSURF)=SPTPIO(IION,MSURF)+WGH
