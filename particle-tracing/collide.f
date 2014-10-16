@@ -12,6 +12,8 @@ C          GENERATION LIMIT FOR POST COLLISION ATOMS FROM PHOTONS: REMOVED
 C 10.3.06: bug fix: LGEI_RED(NRDS) --> LGEI_RED(0:NRDS)
 C          (some compilers had been unhappy with this)
 C 20.3.07: PI reactions revised
+
+c oct 2014 some hard wired additional tallies ADDV removed again
 C
       SUBROUTINE EIRENE_COLLIDE
 C
@@ -181,10 +183,6 @@ C  COLLISION ESTIMATOR FOR EAAT, EAPL AND EAEL
         IF (IESTEI(IREI,3).NE.0) THEN
           IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)-WEIGHT*E0
           IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)+WEIGHT*ESIGEI(IREI,4)
-!          IF (LADDV) ADDV(NADVI,NCELL)=ADDV(NADVI,NCELL)+
-!     .                                 WEIGHT*ESIGEI(IREI,4)
-          IF (LADDV) ADDV(NADVI,NCELL)=ADDV(NADVI,NCELL)+
-     .                                 WEIGHT*EDRIFT(1,NCELL)
           IF (LEAEL) EAEL(NCELL)=EAEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
         ENDIF
 C
@@ -375,8 +373,8 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
           NFLAG=CFLAG(3,1)
           CALL
-     .  EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
-     .                NFLAG,IRCX,DUMT,DUMV)
+     .    EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
+     .                  NFLAG,IRCX,DUMT,DUMV)
  
           SELECT CASE(ITYP)
 C
@@ -471,14 +469,13 @@ C  IPLSN ION SPECIES AFTER CX
                 GOTO 999
               ENDIF
             ENDIF
+c  collision estimator for CX energy exchange tallies
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)-E0O*WGHTO
               IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)+E0*WEIGHT
               IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)-E0*WEIGHT
-!              IF (LADDV) ADDV(NADVI,NCELL)=ADDV(NADVI,NCELL)-E0*WEIGHT
               IF (N2NDX(IRCX,1).EQ.4) THEN
                 IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)+E0O*WGHTO
-!                IF (LADDV) ADDV(NADVI,NCELL)=ADDV(NADVI,NCELL)+E0O*WGHTO
               ELSE
                 GOTO 999
               ENDIF
@@ -639,11 +636,11 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
             LMETSP(NSPH+IATM)=.TRUE.
           END IF
         ENDIF
+c  collision estimator for EL energy exchange tallies
         IF (IESTEL(IREL,3).NE.0) THEN
           EDEL=E0O*WGHTO-E0*WEIGHT
           IF (LEAAT) EAAT(NCELL)      =EAAT(NCELL)-EDEL
           IF (LEAPL) EAPL(NCELL)      =EAPL(NCELL)+EDEL
-!          IF (LADDV) ADDV(NADVI,NCELL)=ADDV(NADVI,NCELL)+EDEL
         ENDIF
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
@@ -1753,8 +1750,8 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
           NFLAG=CFLAG(3,1)
           CALL
-     .  EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
-     .                NFLAG,IRCX,DUMT,DUMV)
+     .    EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
+     .                  NFLAG,IRCX,DUMT,DUMV)
  
           SELECT CASE (ITYP)
 C

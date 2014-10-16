@@ -1,7 +1,17 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
+!pb  22.11.06: flag (T/F) for shift of first parameter to rate_coeff introduced.
+c              this transformation of parameter PLS is now done in rate-coeff.f
  
  
       FUNCTION EIRENE_FTABRC1 (IRRC,K)
+c  evaluate volume-recombination rate (1/s), also spontaneous volumetric transition rate (1/s)  
+c  include density factor, if rate_coeff is in cm*3/s  (controlled by fitting flag iftflg) 
+c  for rc process no. IRRC,
+c         in cell no. K
+
+
+c  hard wired: cut off (density) parameter for H.4 fits: 1e8
+c  hard wired: density parameter in fit reduced by DSUB=1e8, done in rate_coeff.f
+ 
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -12,7 +22,7 @@
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: DEIMIN, DSUB, EIRENE_FTABRC1, ZX, TBRC, PL,
+      REAL(DP) :: DEIMIN, DSUB, EIRENE_FTABRC1, ZX, TBRC, PLS,
      .            EIRENE_RATE_COEFF, ERATE
       INTEGER :: II, KK
  
@@ -25,12 +35,14 @@
  
       ELSE
  
-!pb        DSUB=LOG(1.D8)
+
         DEIMIN=LOG(1.D8)
-!pb        PL=MAX(DEIMIN,DEINL(K))-DSUB
-        PL=MAX(DEIMIN,DEINL(K))
+        PLS=MAX(DEIMIN,DEINL(K))
+
+!pb     PL=MAX(DEIMIN,DEINL(K))-DSUB
+!pb     DSUB=LOG(1.D8)
  
-        TBRC = EIRENE_RATE_COEFF(KK,TEINL(K),PL,.TRUE.,1,ERATE)*
+        TBRC = EIRENE_RATE_COEFF(KK,TEINL(K),PLS,.TRUE.,1,ERATE)*
      .         FACRRC(IRRC,1)
         IF (IFTFLG(KK,2) < 100) TBRC=TBRC*DEIN(K)
  
