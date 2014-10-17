@@ -17,7 +17,7 @@ C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
- 
+c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
  
 C
       SUBROUTINE EIRENE_UPDATE
@@ -249,8 +249,6 @@ C
 C  PRE COLLISION RATES, BULK IONS
 C
               IF (LEAPL) EAPL(IRD)   = EAPL(IRD) - WTRSIG*ESIGCX(IRCX,1)
-!              IF (LADDV) ADDV(NADVI,IRD) = ADDV(NADVI,IRD) - 
-!     .                                     WTRSIG*ESIGCX(IRCX,1)
 C
 C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C  FIRST SECONDARY: PREVIOUS BULK ION IPL
@@ -270,8 +268,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LEAPL) EAPL(IRD) = EAPL(IRD) + WTRSIG*ESIGCX(IRCX,1)
-!                IF (LADDV) ADDV(NADVI,IRD) = ADDV(NADVI,IRD) + 
-!     .                                       WTRSIG*ESIGCX(IRCX,1)
               ENDIF
 C  SECOND SECONDARY: PREVIOUS ATOM IATM
               IF (N2NDX(IRCX,1).EQ.1) THEN
@@ -289,8 +285,6 @@ C  SECOND SECONDARY: PREVIOUS ATOM IATM
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
-                IF (LEAPL) EAPL(IRD) = EAPL(IRD) + WTRSIG*E0
-!                IF (LADDV) ADDV(NADVI,IRD) = ADDV(NADVI,IRD) + WTRSIG*E0
               ENDIF
             ENDIF
           ENDIF
@@ -345,12 +339,9 @@ C
 C  PRE COLLISION RATES, BULK IONS
 C
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)-WTRSIG*ESIGEL(IREL,1)
-!              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)-
-!     .                                   WTRSIG*ESIGEL(IREL,1)
 C
 C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*E0
-!              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+WTRSIG*E0
 C  SECOND SECONDARY: = INCIDENT ATOM. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEAAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGEL(IREL,1)
             ENDIF
@@ -447,10 +438,6 @@ C
               IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGEI(IREI,4)
-!              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+
-!     .                                   WTRSIG*ESIGEI(IREI,4)
-!!!              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+
-!!!     .                                   WTRSIG*EDRIFT(1,IRDO)
 C
             ENDIF
           ENDIF
@@ -553,8 +540,6 @@ C SO NICHT    EAML(IRD)     = EAML(IRD)     +WTRSIG*E0
 C SO NICHT    EAIO(IRD)     = EAIO(IRD)     +WTRSIG*E0
 C SO NICHT    EAPL(IRD)     = EAPL(IRD)     +WTRSIG*E0
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
-!              IF (LADDV) ADDV(NADVI,IRD)=ADDV(NADVI,IRD)+
-!     .                                   WTRSIG*ESIGPI(IRPI,4)
             ENDIF
           ENDIF
 58      CONTINUE
