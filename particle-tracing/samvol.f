@@ -1,11 +1,14 @@
-cdr  111107: "istep out of range" error message removed once again.
-!pb  220307: LEVGEO=6 --> LEVGEO=10
-!pb  271006: use flux set by user defined sampling routine
-!pb  100106: ENTRY SAMVOL_REINIT added for reinitialsation of Eirene
-!pb  181206: calculate bremsstrahlung
-!pb  240806: set output values for DIWL and SHWL
-cdr  200806: tiwl(*), ... instead of tiwl(npls),... to unify code.
-cdr  060406: check "istep out of range" moved to correct place
+cdr  2110.14: bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
+cdr           -->now runs again on eirene default vol.rec model.
+
+cdr  1111.07: "istep out of range" error message removed once again.
+!pb  2203.07: LEVGEO=6 --> LEVGEO=10
+!pb  2710.06: use flux set by user defined sampling routine
+!pb  1001.06: ENTRY SAMVOL_REINIT added for reinitialsation of Eirene
+!pb  1812.06: calculate bremsstrahlung
+!pb  2408.06: set output values for DIWL and SHWL
+cdr  2008.06: tiwl(*), ... instead of tiwl(npls),... to unify code.
+cdr  0604.06: check "istep out of range" moved to correct place
 c  031105
 c  iplsti moved after check of validity of ipls, to produce legal exit
 c         rather than code crash
@@ -123,7 +126,11 @@ C
         DO 3 IIRC=1,NPRCI(IPLS)
           IRRC=LGPRC(IPLS,IIRC)
           KK=NREARC(IRRC)
-          ICCT=NREACT(KK)
+          ICCT=0
+C  SPECTRAL CUT OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
+          IF (KK.GT.0) THEN 
+            ICCT=NREACT(KK)
+          ENDIF
           DO 3 J=1,NSBOX
             ADD=0.
 C  EXCLUDE DEAD CELLS (GRID CUTS, ISOLATED CELLS FROM COUPLE_.., ETC)
@@ -135,9 +142,11 @@ C  EXCLUDE IPLS-VACUUM CELLS
                 ADD=EIRENE_FTABRC1(IRRC,J)*DIIN(IPLS,J)*VOL(J)*ELCHA
               END IF
             END IF
+C  SPECTRAL CUT OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
             IF (ICCT > 0)
      .        ADD = ADD*(XINTLEFT(ICCT,J) +
      .                   XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
+
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
 3       CONTINUE
@@ -174,17 +183,24 @@ C
           DO 6 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
             KK=NREARC(IRRC)
-            ICCT=NREACT(KK)
+
+            ICCT=0
+            IF (KK.GT.0) THEN 
+              ICCT=NREACT(KK)
+            ENDIF
             DO 6 J=1,NSBOX
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
                 IF (REC.LE.0.D0) GOTO 6
                 ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
+C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
+
                 EIO(IPLS,IRRC)=EIO(IPLS,IRRC)-ADD
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
+
                 CALL EIRENE_BFIELD (J, X0, Y0, Z0, BX, BY, BZ, BF)
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLSV)
@@ -200,9 +216,11 @@ C
                   MOMPARA=PARMOM(IPLS,J)
                 ENDIF
                 ADD=MOMPARA*REC
+
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
+
                 MOM(IPLS,IRRC)=MOM(IPLS,IRRC)-ADD
                 MOM(IPLS,0)   =MOM(IPLS,0   )-ADD
               ENDIF
@@ -211,7 +229,11 @@ C
           DO 8 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
             KK=NREARC(IRRC)
-            ICCT=NREACT(KK)
+
+            ICCT=0
+            IF (KK.GT.0) THEN 
+              ICCT=NREACT(KK)
+            ENDIF
             DO 8 J=1,NSBOX
               ADD=0.D0
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
@@ -221,9 +243,11 @@ C
                   EELRC = EIRENE_FEELRC1(IRRC,J)
                 END IF
                 ADD=EELRC*DIIN(IPLS,J)*VOL(J)*ELCHA
+C  SPECTRAL CUT OFF (PHOTONS ONLY)
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
+
               ENDIF
               EEL(IPLS,IRRC)=EEL(IPLS,IRRC)+ADD
               EEL(IPLS,0   )=EEL(IPLS,0   )+ADD
@@ -311,7 +335,7 @@ C
 16      CONTINUE
         CALL EIRENE_LEER(1)
  
-        WRITE (iunout,*) 'BREMSSTRAHLUNG: '
+        WRITE (iunout,*) 'BREMSSTRAHLUNG (WATT): '
         DO IPLS=1,NPLSI
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           CALL EIRENE_MASAJR('IPLS,TOT.BREMSSTRAHLUNG ',
