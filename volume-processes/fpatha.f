@@ -1,20 +1,24 @@
-C   29.11.05:   comments,  empty lines, etc... to syncronize with
-C               other fpath.. routines
-C               use CSPEI removed
-C               IRDS --> IREI
-C               SIGMAX NOW SET ONLY FOR ACTIVE REACTIONS
+c  25.11.05: option modcol(3,4...)=3 added
+c            (adopted from fpatha)
+c            cx rate option 4 added (adopted from fpatha)
+
+
 C               added: jcou,ncou
 !pb  30.08.06:  data structure for reaction data redefined
 !pb  12.10.06:  modcol revised
 !pb  22.11.06:  flag for shift of first parameter to rate_coeff introduced
 !pb  28.11.06:  initialization of XSTOR reactivated because of trouble in
 !pb             BGK iteration
+!pb  22.03.07:  PI reactions revised
+cdr  oct.14  :  ftabcx3 added. Full tests still to be done
+cdr  oct.14  :  syncronized with fpathm, fpathi
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
 C
-C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR
-C   "BEAM OF NEUTRAL ATOMS" OF VELOCITY VEL
-C   IN DRIFTING MAXWELLIAN PLASMA-BACKGROUND
+C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR NEUTRAL
+C   "BEAM ATOMS" OF VELOCITY VEL IN DRIFTING MAXWELLIAN PLASMA-BACKGROUND
+C   IN CELL K
+
 C
 C   INPUT:
 C   K         :  CURRENT GRID CELL
@@ -45,7 +49,7 @@ C
       USE EIRMOD_CZT1
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
-      USE EIRMOD_CESTIM
+      USE EIRMOD_CESTIM , ONLY: LEA
  
       IMPLICIT NONE
  
@@ -57,15 +61,18 @@ C
       REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
       REAL(DP) :: EPPI3(9), EPCX3(9), EPEL3(9)
       REAL(DP) :: CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, TBCX, VEFF,
-     .          EIRENE_FEPLCX3, SIG, EIRENE_FEPLEL3, TBEL,
+     .          SIG,  TBEL,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
-     .          ELTHDUM, CTCHDUM, SIGMAX, EIRENE_FTABEI1, EHEAVY,
+     .          ELTHDUM, CTCHDUM, SIGMAX,  EHEAVY,
      .          DENEL, EIRENE_FPATHA, VX, VY, VZ, PVELQ0, ELAB,
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVDS1, EIRENE_FEHVPI3,
-     .          VRELQ, VREL, EIRENE_FEPLPI3, CII, EIRENE_CROSS, ELB,
+     .          VRELQ, VREL, 
+     ,          EIRENE_FEPLPI3, EIRENE_FEPLCX3, EIRENE_FEPLEL3, 
+     .          CII, EIRENE_CROSS, ELB,TII,TEST,
      .          PLS, TBPI, EXPO,
-     .          RCMIN, RCMAX, EIRENE_ENERGY_RATE_COEFF, EIRENE_FTABPI3,
+     .          RCMIN, RCMAX, EIRENE_ENERGY_RATE_COEFF, 
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3, EIRENE_FTABEI1,
      .          ERATE
       INTEGER :: IBGK, IRCX, IAEL, IREL, IPL, IAT, IAEI, IREI, IAPI,
      .           IRPI, KK, IREAC, IACX, II, IF8, JAN, J, I1, I2, IPLSTI,
@@ -137,7 +144,7 @@ C
         ESIGEI(IREI,2)=EMLDS(IREI,0,1)*E0+EMLDS(IREI,0,2)*EHEAVY
         ESIGEI(IREI,3)=EIODS(IREI,0,1)*E0+EIODS(IREI,0,2)*EHEAVY
         ESIGEI(IREI,4)=EPLDS(IREI,  1)*E0+EPLDS(IREI,  2)*EHEAVY
- 
+C
         SIGMAX=MAX(SIGMAX,SIGVEI(IREI))
         SIGEIT=SIGEIT+SIGVEI(IREI)
 10    CONTINUE
@@ -160,6 +167,12 @@ C  MAXWELL
           IF (NSTORDR >= NRAD) THEN
             SIGVPI(IRPI)=TABPI3(IRPI,K,1)
           ELSE
+CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
+!pb         KK=NREAPI(IRPI)
+!pb         PLS=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+!pb         TBPI = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)*DIIN(IPLS,K)
+!pb         SIGVPI(IRPI)=TBPI
+c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
           END IF
         ELSEIF (MODCOL(4,2,IRPI).EQ.2) THEN
@@ -176,8 +189,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
           ELSE
 ! CALCULATE RATE-COEFFICIENT
             KK=NREAPI(IRPI)
-            PLS=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-            EXPO = EIRENE_RATE_COEFF(KK,PLS,ELB,.FALSE.,0,ERATE)
+            TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+            EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
           END IF
           SIGVPI(IRPI)=EXP(EXPO)
@@ -207,7 +220,7 @@ C
         ESIGPI(IRPI,2)=EMLPI(IRPI,0,1)*E0+EMLPI(IRPI,0,2)*EHEAVY
         ESIGPI(IRPI,3)=EIOPI(IRPI,0,1)*E0+EIOPI(IRPI,0,2)*EHEAVY
         ESIGPI(IRPI,4)=EPLPI(IRPI,  1)*E0+EPLPI(IRPI,  2)*EHEAVY
- 
+C
         SIGMAX=MAX(SIGMAX,SIGVPI(IRPI))
         SIGPIT=SIGPIT+SIGVPI(IRPI)
 C
@@ -246,12 +259,18 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
           IF (NSTORDR >= NRAD) THEN
             SIGVCX(IRCX)=TABCX3(IRCX,K,1)
           ELSE
-CDR  SIGVCX(IRCX)=FTABCX3 : NOT READY
-            KK=NREACX(IRCX)
-            PLS=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-            TBCX = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)*
-     .             DIIN(IPLS,K)
-            SIGVCX(IRCX)=TBCX
+            SIGVCX(IRCX)=EIRENE_FTABCX3(IRCX,K)
+CDR  SIGVCX(IRCX)=FTABCX3 : NOT READY.  test !!
+cdr         KK=NREACX(IRCX)
+cdr         TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
+cdr         TBCX = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
+cdr  .             DIIN(IPLS,K)
+cdr         TEST=TBCX
+cdr         if (tEST.ne.sigvcx(ircx)) then
+cdr           write (iunout,*) 'fpatha: ircx,tEST,sigvcx ',
+cdr  .             ircx,tEST,sigvcx(ircx)
+cdr           CALL EIRENE_EXIT_OWN(1)
+cdr         ENDIF
           END IF
         ELSEIF (MODCOL(3,2,IRCX).EQ.2) THEN
 C  MODEL 2:
@@ -280,8 +299,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELSE
 ! CALCULATE RATE-COEFFICIENT
               KK=NREACX(IRCX)
-              PLS=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,PLS,ELB,.FALSE.,0,ERATE)
+              TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
+              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             SIGVCX(IRCX)=EXP(EXPO)
@@ -333,8 +352,8 @@ C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM WEIGHTED DRIFTING MAXWELLIAN (E.G., BY REJECTION)
           IF (LEA.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength estimator only
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-          ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
-          IF (NSTORDR >= NRAD) THEN
+            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+            IF (NSTORDR >= NRAD) THEN
 ! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRECALCULATING TEMPERATURE DEPENDENCIES
             EPCX3(1:NSTORDT) = EPLCX3(IRCX,K,1:NSTORDT)
@@ -345,8 +364,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
           ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT
             KK=NELRCX(IRCX)
-            PLS=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-            EXPO = EIRENE_ENERGY_RATE_COEFF(KK,PLS,ELB,.FALSE.,0)
+            TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
+            EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRCX(IRCX,2)
           END IF
           ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
@@ -364,7 +383,7 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
             ELSE
               ESIGCX(IRCX,1)=EIRENE_FEPLCX3(IRCX,K)
             END IF
-          END IF  ! this was for tracklength estimator only
+          ENDIF  ! this was for tracklength estimator only
           CFLAG(3,1)=1
         ELSE
           GOTO 992
@@ -388,13 +407,13 @@ C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(5,2,IREL).EQ.1) THEN
 C  MODEL 1:
-C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
+C  MAXWELLIAN RATE, IGNORE ATOM VELOCITY
           IF (NSTORDR >= NRAD) THEN
             SIGVEL(IREL)=TABEL3(IREL,K,1)
           ELSE
             KK=NREAEL(IREL)
-            PLS=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)*
+            TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
+            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
      .             DIIN(IPLS,K)
             SIGVEL(IREL)=TBEL
           END IF
@@ -423,8 +442,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELSE
 ! CALCULATE RATE-COEFFICIENT
               KK=NREAEL(IREL)
-              PLS=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,PLS,ELB,.FALSE.,0,ERATE)
+              TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
+              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             SIGVEL(IREL)=EXP(EXPO)
@@ -501,8 +520,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT
               KK=NELREL(IREL)
-              PLS=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,PLS,ELB,.FALSE.,0)
+              TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
@@ -557,7 +576,7 @@ C
           END IF
         END DO
       END IF
- 
+C
       IF (SIGELT.GT.0._DP) THEN
         DO IREL=1,NREL
           IF (SIGVEL(IREL) .LE. SIGMAX*1.D-10) THEN
@@ -566,17 +585,8 @@ C
           END IF
         END DO
       END IF
- 
-      IF (SIGOTT.GT.0._DP) THEN
-        DO IROT=1,NROT
-          IF (SIGVOT(IROT) .LE. SIGMAX*1.D-10) THEN
-            SIGOTT=SIGOTT-SIGVOT(IROT)
-            SIGVOT(IROT) = 0.D0
-          END IF
-        END DO
-      END IF
 C
-      SIGTOT=SIGEIT+SIGPIT+SIGCXT+SIGELT+SIGOTT
+      SIGTOT=SIGEIT+SIGPIT+SIGCXT+SIGELT
       IF (SIGTOT.GT.1.D-20) THEN
         EIRENE_FPATHA=VEL/SIGTOT
         ZMFPI=1./EIRENE_FPATHA
