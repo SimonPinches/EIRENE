@@ -7,24 +7,32 @@ C           also modified: cross.f, xsecta_param.f
 ! 30.08.06: data structure for reaction data redefined
 ! 12.10.06: modcol revised
 ! 22.11.06: flag for shift of first parameter to rate_coeff introduced
+!           setting of modcol corrected
 ! 02.03.07: remove escd2* arrays
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
+! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
+! 23.02.14: call to xstpi: additional arguments: IAT, pls (for H.4 option)
+! oct.2014: call to xstpi: additional argument: chrdf0
+cdr  oct.14:  comsou, clogau removed
+cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing) 
+cdr  oct.14:  further syncronization with xsectm,xsecti
+cdr           remaining relevant differences in default models only.
 C
       SUBROUTINE EIRENE_XSECTA
 C
-C       SET UP TABLES (E.G. OF REACTION RATE ) FOR ATOMIC SPECIES
+C       SET UP TABLES (E.G. OF REACTION RATES) FOR ATOMIC SPECIES
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
       USE EIRMOD_CGRID
       USE EIRMOD_CZT1
       USE EIRMOD_CTRCEI
-      USE EIRMOD_COMSOU
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
@@ -33,8 +41,10 @@ C
  
       REAL(DP) :: CF(9,0:9)
       REAL(DP), ALLOCATABLE :: PLS(:)
-      REAL(DP) :: FACTKK, CHRDF0, EELEC, RMASS, DSUB, DEIMIN, EHEAVY,
-     .            EBULK, TMASS, PMASS, COU, EIRENE_RATE_COEFF, ERATE
+      REAL(DP) :: FACTKK, CHRDF0, EELEC, RMASS, DEIMIN, EHEAVY,
+     .            EBULK, COU, EIRENE_RATE_COEFF, ERATE,
+     .            TMASS, PMASS   ! FOR DEFAULT CX MODEL 
+
       INTEGER :: II, IML, IM, IIO, NTE, ISTORE, ISCND, ISCDE, IFRST,
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
      .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK, IA, ISP, IP,
@@ -42,24 +52,24 @@ C
      .           ISTORE_MDCL, ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
+
+      ALLOCATE (PLS(NSTORDR))
+
+
+cdr: set hard wired lower density for H.4 type fits 
+      DEIMIN=LOG(1.D8)
+      IF (NSTORDR >= NRAD) THEN
+        DO 10 J=1,NSBOX
+          PLS(J)=MAX(DEIMIN,DEINL(J))
+10      CONTINUE
+      END IF
  
 C
 C
 C   ELECTRON IMPACT COLLISIONS:
 C
-C  FIND SPECIES INDEX OF ION AFTER IONIZATION EVENT FOR THE DEFAULT
-C  ELECTRON IMPACT IONIZATION MODELS FROM INPUT MASS AND
-C  AND CHARGE NUMBER
+
 C
-C
-      ALLOCATE (PLS(NSTORDR))
- 
-      DEIMIN=LOG(1.D8)
-      IF (NSTORDR >= NRAD) THEN
-        DO 70 J=1,NSBOX
-          PLS(J)=MAX(DEIMIN,DEINL(J))
-70      CONTINUE
-      END IF
 C
       DO 100 IATM=1,NATMI
         IDSC1=0
@@ -70,9 +80,24 @@ C
           IF (ISWR(KK).LE.0.OR.ISWR(KK).GT.6) GOTO 994
         ENDDO
 C
+C  CHECK IF THIS REALLY IS AN ATOM: USE NPRT(ISPZ).EQ.1?
+ 
+        IF (NPRT(IATM).NE.1) THEN
+          WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTA: '
+          WRITE (IUNOUT,*) 'IATM= ',IATM,' CARRIES NOT ONE FLUX UNIT'
+          WRITE (IUNOUT,*) 'EXIT CALLED FROM XSECTA '
+          
+        ENDIF
+ 
+C  YES, "IATM" IS AN ATOM !
+ 
         IF (NRCA(IATM).EQ.0.AND.NCHARA(IATM).LE.2) THEN
 C
 C  DEFAULT H,D,T OR HE ELEC. IMP. IONIZATION MODEL
+
+C  FIND SPECIES INDEX OF ION AFTER IONIZATION EVENT FOR THE DEFAULT
+C  ELECTRON IMPACT IONIZATION MODELS FROM INPUT MASS AND
+C  AND CHARGE NUMBER
 C
           IION1=0
           IPLS1=0
@@ -94,6 +119,7 @@ C
               GOTO 50
             ENDIF
 52        CONTINUE
+
           GOTO 100
 C
 50        CONTINUE
@@ -108,6 +134,9 @@ c  helium atoms
             ISTORE=-1
             EELEC=-EIONHE
           ENDIF
+
+          MODCOL(1,2,IREI)=1
+          MODCOL(1,4,IREI)=1
 C
           IF (NSTORDR >= NRAD) THEN
             DO 80 J=1,NSBOX
@@ -120,18 +149,17 @@ C  NO RADIATION LOSS INCLUDED
             NREAEI(IREI) = ISTORE
             JEREAEI(IREI) = 1
             NELREI(IREI) = ISTORE
-          ELSE
+          ELSE  ! storage save mode
+            EELDS1(IREI,1)=EELEC
             NREAEI(IREI) = ISTORE
             JEREAEI(IREI) = 1
             NELREI(IREI) = ISTORE
-          ENDIF
+
+          END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
- 
-          MODCOL(1,2,IREI)=1
-          MODCOL(1,4,IREI)=1
 C
-C  TRACKLENGTH ESTIMATOR FOR ALL COLLISION RATE CONTRIBUTIONS
+C  TRACKLENGTH ESTIMATOR IS DEFAULT FOR ALL DEFAULT COLLISION RATE CONTRIBUTIONS
 C
           IESTEI(IREI,1)=0
           IESTEI(IREI,2)=0
@@ -139,12 +167,13 @@ C
 C
           NAEII(IATM)=IDSC1
 C
-C  NON DEFAULT ELEC. IMP. COLLISION MODEL,
+C  NON DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 90 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
+C
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
@@ -167,16 +196,17 @@ C
      .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
 90        CONTINUE
           NAEII(IATM)=IDSC1
-       ENDIF
+        ENDIF
 C
         NAEIIM(IATM)=NAEII(IATM)-1
         LGAEI(IATM,0)=NAEII(IATM)
 C
-        DO 95 IAEI=1,NAEII(IATM)
+        DO IAEI=1,NAEII(IATM)
           IREI=LGAEI(IATM,IAEI)
           CALL EIRENE_XSTEI_1(IREI)
-95      CONTINUE
-C
+        ENDDO
+
+
 100   CONTINUE
 C
 C
@@ -194,7 +224,7 @@ C                 140 --- 149: RESONANT CX FOR HE + HE++,
 C
         IF (NRCA(IATM).EQ.0) THEN
           DO 155 IPLS=1,NPLSI
-C CHECK: "ATOMIC" COLLISION PARTNERS ONLY
+C CHECK: "ATOMIC" BULK COLLISION PARTNERS ONLY
             IF (NPRT(NSPAMI+IPLS).NE.1.OR.NPRT(NSPH+IATM).NE.1) GOTO 155
 C
             IF (NCHARA(IATM).EQ.1.AND.NCHARP(IPLS).EQ.1.AND.
@@ -222,7 +252,7 @@ C
 C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-1
               ISTORE_MDCL = -1
 C
-C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
+C  TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
 C
             ELSEIF (NCHARA(IATM).EQ.2.AND.NCHARP(IPLS).EQ.2.AND.
      .              NCHRGP(IPLS).EQ.1) THEN
@@ -322,7 +352,7 @@ C
             MODCOL(3,2,IRCX)=3
             MODCOL(3,4,IRCX)=3
 C
-155       CONTINUE
+155       CONTINUE   ! end of nplsi loop, bulk collision partners for default cx models
 C
           NACXI(IATM)=IDSC
 C
@@ -332,10 +362,17 @@ C
           DO 160 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.3) GOTO 160
-C
+            IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR CX PROCESS, IATM,KK ',IATM,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+C  CX PROCESS IDENTIFIED
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
+
             IPLS=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
             IDSC=IDSC+1
             NRCXI=NRCXI+1
@@ -343,6 +380,7 @@ C
             LGACX(IATM,IDSC,0)=IRCX
             LGACX(IATM,IDSC,1)=IPLS
             FDLMCX(IRCX)=FLDLMA(IATM,NRC)
+
             IAT=NSPH+IATM
             IPL=IPLS
             RMASS=RMASSA(IATM)
@@ -353,7 +391,7 @@ C
             EBULK=EBULKA(IATM,NRC)
             CALL EIRENE_XSTCX(RMASS,IRCX,IAT,IPL,
      .                 IFRST,ISCND,EBULK,CHRDF0,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                 ISCDE,IESTM,KK,FACTKK,PLS)
 C
 160       CONTINUE
 C
@@ -366,9 +404,9 @@ C
         NACXIM(IATM)=NACXI(IATM)-1
 C
         LGACX(IATM,0,0)=0.
-        DO 180 IACX=1,NACXI(IATM)
+        DO IACX=1,NACXI(IATM)
           LGACX(IATM,0,0)=LGACX(IATM,0,0)+LGACX(IATM,IACX,0)
-180     CONTINUE
+        ENDDO
 C
 200   CONTINUE
 C
@@ -379,7 +417,7 @@ C
         LGAEL(IATM,0,0)=0
         LGAEL(IATM,0,1)=0
 C
-C   AT PRESENT NO DEFAULT MODEL
+C  DEFAULT EL MODEL: NOT AVAILABLE
 C
         IF (NRCA(IATM).EQ.0) THEN
           NAELI(IATM)=0
@@ -390,6 +428,7 @@ C
           DO 230 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.5) GOTO 230
+C
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
 C  BULK PARTICLE INDEX
@@ -434,7 +473,7 @@ C
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             CALL EIRENE_XSTEL(IREL,IAT,IPL,EBULK,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                        ISCDE,IESTM,KK,FACTKK)
 C
 230       CONTINUE
  
@@ -447,6 +486,7 @@ C
         DO 280 IAEL=1,NAELI(IATM)
           LGAEL(IATM,0,0)=LGAEL(IATM,0,0)+LGAEL(IATM,IAEL,0)
 280     CONTINUE
+C
 C
 300   CONTINUE
 C
@@ -477,11 +517,13 @@ C  INCIDENT BULK PARTICLE INDEX
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
             IDSC=IDSC+1
             NRPII=NRPII+1
+            IF (NRPII.GT.NRPI) GOTO 998
             IRPI=NRPII
             NREAPI(IRPI) = KK
             LGAPI(IATM,IDSC,0)=IRPI
             LGAPI(IATM,IDSC,1)=IPLS
- 
+
+            IAT=NSPH+IATM
             IPL=IPLS
             RMASS=RMASSA(IATM)
             IFRST=ISCD1A(IATM,NRC)
@@ -492,9 +534,11 @@ C  INCIDENT BULK PARTICLE INDEX
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             EHEAVY=ESCD1A(IATM,NRC)
-            CALL EIRENE_XSTPI (RMASS,IRPI,IPL,EBULK,EHEAVY,
+            CALL EIRENE_XSTPI (RMASS,IRPI,IAT,IPL,
+     .                  EBULK,EHEAVY,CHRDF0,
      .                  IFRST,ISCND,ITHRD,IFRTH,
-     .                  ISCDE,IESTM,KK,FACTKK)
+     .                  ISCDE,IESTM,
+     .                  KK,FACTKK,PLS)
           END DO
 C
           NAPII(IATM)=IDSC
@@ -509,7 +553,7 @@ C
         DO IAPI=1,NAPII(IATM)
           LGAPI(IATM,0,0)=LGAPI(IATM,0,0)+LGAPI(IATM,IAPI,0)
         END DO
- 
+
         DO IAPI=1,NAPII(IATM)
           IRPI=LGAPI(IATM,IAPI,0)
           CALL EIRENE_XSTPI_1(IRPI)
@@ -521,12 +565,13 @@ C
 C
         IF (TRCAMD) THEN
           CALL EIRENE_MASBOX
-     .  ('ATOMIC SPECIES IATM = '//TEXTS(NSPH+IATM))
+     .    ('ATOMIC SPECIES IATM = '//TEXTS(NSPH+IATM))
           CALL EIRENE_LEER(1)
 C
           IF (LGAEI(IATM,0).EQ.0) THEN
+
             CALL EIRENE_LEER(1)
-            WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS '
+            WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS'
             CALL EIRENE_LEER(1)
           ELSE
             DO 870 IAEI=1,NAEII(IATM)
@@ -548,7 +593,8 @@ C
               CALL EIRENE_XSTCX_2(IRCX,IPL)
 890         CONTINUE
           ENDIF
- 
+C
+C
           CALL EIRENE_LEER(2)
           IF (LGAEL(IATM,0,0).EQ.0) THEN
             CALL EIRENE_LEER(1)
@@ -561,7 +607,7 @@ C
               CALL EIRENE_XSTEL_2(IREL,IPL)
 895         CONTINUE
           ENDIF
- 
+C
           CALL EIRENE_LEER(2)
           IF (LGAPI(IATM,0,0).EQ.0) THEN
             CALL EIRENE_LEER(1)
@@ -576,6 +622,7 @@ C
           ENDIF
  
         ENDIF
+C
 1000  CONTINUE
  
       DEALLOCATE (PLS)
@@ -600,10 +647,21 @@ C
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IATM = ',IATM
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
-      WRITE (iunout,*) 'EXIT CALLED '
+      WRITE (iunout,*) 'EXIT CALLED'
+      CALL EIRENE_EXIT_OWN(1)
+996   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
+      WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE  '
+      WRITE (iunout,*) 'OF POST COLLISION SAMPLING FLAG ISCDEA'
+      WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENY '
+      CALL EIRENE_EXIT_OWN(1)
+998   CONTINUE
+      WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI
       CALL EIRENE_EXIT_OWN(1)
 999   CONTINUE
       WRITE (iunout,*) 'SPECIES CONFLICT FOR BGK COLLISIONS. IATM,IREL '
       WRITE (iunout,*) IATM,IREL,IPLS
       CALL EIRENE_EXIT_OWN(1)
+      RETURN
+C
       END

@@ -2,7 +2,11 @@
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
-! 01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
+!    01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
+
+cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
+cdr    oct.14: bug fix: use kread rather than kk in eplel3.
+cdr    oct.14: remove pls array, synconize with xstcx started
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
@@ -17,6 +21,7 @@ C    DEFEL(IREL)
 C    EEFEL(IREL)
 C    IESTEL(IREL,...)
 C
+ 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -29,14 +34,20 @@ C
       IMPLICIT NONE
  
       REAL(DP), INTENT(IN) :: EBULK, FACTKK
-      INTEGER, INTENT(IN) :: IREL, ISP, IPL, ISCDE, IESTM, KK
-      REAL(DP) :: PLS(NSTORDR), CF(9,0:9), CFF(9)
+      INTEGER, INTENT(IN) :: IREL, ISP, IPL, ISCDE, 
+     .                       IESTM, KK
+      REAL(DP) :: CF(9,0:9), CFF(9)
       REAL(DP) :: FCTKKL, ADD, ADDL, ADDT, ADDTL, PMASS, TMASS, COU,
-     .            EIRENE_RATE_COEFF, EIRENE_ENERGY_RATE_COEFF, ERATE
-      INTEGER :: I, NSEEL4, NEND, J, KREAD, MODC, EIRENE_IDEZ, IERR, 
-     .           IPLTI
- 
+     .            EIRENE_RATE_COEFF, 
+     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TII
+      INTEGER :: I, NSEEL4, NEND, J, KREAD, MODC,  IERR, IPLTI
+      INTEGER, EXTERNAL :: EIRENE_IDEZ
+
       SAVE
+
+C
+C  SET NON DEFAULT ELASTIC COLLISION PROCESS NO. IREL
+C
 C
 C  TARGET MASS IN <SIGMA*V> FORMULA: MAXW. BULK PARTICLE
 C  (= PROJECTILE MASS IN CROSS SECTION MEASUREMENT: TARGET AT REST)
@@ -44,6 +55,7 @@ C  (= PROJECTILE MASS IN CROSS SECTION MEASUREMENT: TARGET AT REST)
 C  PROJECTILE MASS IN <SIGMA*V> FORMULA: MONOENERG. TEST PARTICLE
 C  (= TARGET PARTICLE IN CROSS SECTION MEASUREMENT; TARGET AT REST)
       TMASS=MASST(KK)*PMASSA
+C
       ADDT=PMASS/RMASSP(IPL)
       ADDTL=LOG(ADDT)
       ADDEL(IREL,IPL) = ADDTL
@@ -55,56 +67,76 @@ C POTENTIAL
         MODCOL(5,0,IREL)=KK
       ENDIF
 C
-C CROSS SECTION (E-LAB), IN FUNCTION CROSS, K=KK
+C CROSS SECTION (E-LAB) AVAILABLE ?
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
         MODCOL(5,1,IREL)=KK
+C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
         MODCOL(5,2,IREL)=3
       ENDIF
 C
 C RATE COEFFICIENT
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
+
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
+
         MODCOL(5,2,IREL)=MODC
-        IF (MODC.EQ.1) NEND=1
-        IF (MODC.EQ.2) NEND=NSTORDT
+C  2.B)
+        IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
+C  2.C)
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
+C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
-          DO 242 J=1,NSBOX
-            PLS(J)=TIINL(IPLTI,J)+ADDTL
-242       CONTINUE
+C   NO
+          
+C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
           IF (MODC.EQ.1) THEN
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
-              COU = EIRENE_RATE_COEFF(KK,PLS(J),0._DP,.TRUE.,0,ERATE)
+              TII=TIINL(IPLTI,J)+ADDTL
+              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
+C  2.C) RATE COEFFICIENT(TI,EBEAM)
             FCTKKL=LOG(FACTKK)
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
-              CALL EIRENE_PREP_RTCS(KK,3,1,NEND,PLS(J),CFF)
+              TII=TIINL(IPLTI,J)+ADDTL
+              CALL EIRENE_PREP_RTCS(KK,3,1,NEND,TII,CFF)
               TABEL3(IREL,J,1:NEND) = CFF(1:NEND)
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
           END IF
+        ELSE   ! ??
+C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         END IF
+CDR   ELSEIF (MODC.EQ.3) THEN
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
+C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
+CDR  MODEL NOT IMPLEMENTED FOR ELASTIC COLLISIONS, BUT SEE: XSTCX, XSTPI,....
+
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
         IF (MODCOL(5,2,IREL).NE.3) GOTO 993
       ENDIF
+
       FACREL(IREL,1) = FACTKK
       FACREL(IREL,2) = LOG(FACTKK)
  
       DEFEL(IREL)=LOG(CVELI2*PMASS)
       EEFEL(IREL)=LOG(CVELI2*TMASS)
 C
-C  3. BULK ION MOMENTUM LOSS RATE
+C  3. BULK PARTICLE MOMENTUM LOSS RATE
 C
 C
-C  4. BULK ION ENERGY LOSS RATE
+C  4. BULK PARTICLE ENERGY LOSS RATE
+C  4.1. HEAVY BULK PARTICLE ENERGY LOSS RATE
+C
+C  SET ENERGY LOSS RATE OF IMPACTING ION
 C
       NSEEL4=EIRENE_IDEZ(ISCDE,4,5)
       IF (NSEEL4.EQ.0) THEN
-C  4.A)  ENERGY LOSS RATE OF IMP. BULK ION = CONST.*RATECOEFF.
+C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -115,10 +147,10 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
           ELSE
             NELREL(IREL) = -3
           END IF
-        ELSE
+        ELSE ! EBULK GT.0
           IF (NSTORDR >= NRAD) THEN
             DO 251 J=1,NSBOX
-              EPLEL3(IREL,J,1)=EBULK
+              EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
 251         CONTINUE
             NELREL(IREL) = -1
           ELSE
@@ -139,7 +171,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           ELSE
             NELREL(IREL) = -3
           END IF
-        ELSE
+        ELSE ! EBULK GT.0
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTEL '
           WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
@@ -159,8 +191,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
 C     ELSEIF (NSEEL4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
-C  4.B)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
-C  4.C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
@@ -173,7 +204,8 @@ c  use collision estimator for energy balance
           ENDIF
           IESTEL(IREL,3)=1
           MODCOL(5,4,IREL)=2
-        ELSE  ! ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
+        ELSE
+C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         NELREL(IREL) = KREAD
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.GE.1.AND.MODC.LE.2) THEN
@@ -181,26 +213,27 @@ c  use collision estimator for energy balance
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
           IF (NSTORDR >= NRAD) THEN
-            DO 253 J=1,NSBOX
-              PLS(J)=TIINL(IPLTI,J)+ADDTL
-253         CONTINUE
+            
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
-                EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,PLS(J),
+                TII=TIINL(IPLTI,J)+ADDTL
+                EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
-                CALL EIRENE_PREP_RTCS(KK,5,1,NEND,PLS(J),CFF)
+                TII=TIINL(IPLTI,J)+ADDTL
+                CALL EIRENE_PREP_RTCS(KREAD,5,1,NEND,TII,CFF)
                 EPLEL3(IREL,J,1:NEND) = CFF(1:NEND)
                 EPLEL3(IREL,J,1) = EPLEL3(IREL,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
-          ELSE
+
+          ELSE  ! STORAGE SAVING MODE
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLEL3(IREL,1,1)=ADD
@@ -242,9 +275,12 @@ C
       ENDIF
       RETURN
 C
+C-----------------------------------------------------------------------
+C
+
       ENTRY EIRENE_XSTEL_2(IREL,IPL)
 C
-      CALL EIRENE_LEER(1)
+      CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELASTIC COLLISION NO. IREL= ',IREL
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'ELASTIC COLLISION WITH BULK IONS IPLS:'
@@ -258,6 +294,8 @@ C
       IF (IESTEL(IREL,3).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
       CALL EIRENE_LEER(1)
+
+
       RETURN
 C
 993   CONTINUE

@@ -1,5 +1,6 @@
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
+cdr  Jan. 2014:  minor bug in printout corrected
  
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr
@@ -92,7 +93,7 @@ c  fetch data for process nrc of ipls
       return
 
 994   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTRC: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK

@@ -4,6 +4,9 @@ C  aug. 05:  corrected electron energy loss rate for default rec. rate
 ! 22.11.06: flag for shift of first parameter to rate_coeff introduced
 !           setting of modcol corrected
 ! 25.03.07: check of mass conservation only for up to two secondaries
+! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+cdr  oct.14:  pls made allocatable, plus minor syncronisation with other xsect... routines
 C
       SUBROUTINE EIRENE_XSECTP
 C
@@ -23,9 +26,10 @@ C
       USE EIRMOD_PHOTON
  
       IMPLICIT NONE
-C
-      REAL(DP) :: PLS(NSTORDR), CF(9,0:9)
-      REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DSUB, DEIMIN, RMASS2, FACTKK,
+ 
+      REAL(DP) :: CF(9,0:9)
+      REAL(DP), ALLOCATABLE :: PLS(:)
+      REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF, 
      .            EIRENE_ENERGY_RATE_COEFF,
      .            BREMS, Z, eirene_ngffmh, ERATE
@@ -35,13 +39,18 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LEXP, LADAS
       SAVE
-C
+
+      ALLOCATE (PLS(NSTORDR))
+
+
+cdr: set hard wired lower density for H.4 type fits 
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 70 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
 70      CONTINUE
       END IF
+ 
 C
 C   RECOMBINATION
 C
@@ -256,13 +265,15 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                 KREAD=EELECP(IPLS,NRC)
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 996
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
+c  special treatment in case bremsstrahlung is contained in energy loss rate
+c  as e.g. the case in ADAS PRB files
                 LADAS = EIRENE_IS_RTCEW_ADAS(KREAD)
                 Z = NCHRGP(IPLS)
+
                 IF (MODC.EQ.1) THEN
                   IF (NSTORDR >= NRAD) THEN
  
                     DO J = 1, NSBOX
-!pb                      IF (LGVAC(J,IPLS)) CYCLE
                       IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
                       IF (LGVAC(J,NPLS+1).OR.(NCHRGP(IPLS)==0)) THEN
                         BREMS = 0._DP
@@ -274,6 +285,7 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
      .                               TEINL(J),
      .                               0._DP,.TRUE.,0)*DEIN(J)*FACTKK
+
 C  SUBTRACT BREMSTRAHLUNG FROM ADAS PRB RATE
                       IF (LADAS) EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
                     END DO
@@ -349,10 +361,14 @@ C
 C
         IF (TRCAMD) THEN
           CALL EIRENE_MASBOX
-     .  ('BULK ION SPECIES IPLS = '//TEXTS(NSPAMI+IPLS))
+     .    ('BULK ION SPECIES IPLS = '//TEXTS(NSPAMI+IPLS))
           CALL EIRENE_LEER(1)
+C
           IF (LGPRC(IPLS,0).EQ.0) THEN
+
+            CALL EIRENE_LEER(1)
             WRITE (iunout,*) 'NO RECOMBINATION '
+            CALL EIRENE_LEER(1)
           ELSE
             DO 220 IIRC=1,NPRCI(IPLS)
               IRRC=LGPRC(IPLS,IIRC)
@@ -402,6 +418,8 @@ C             END IF
         ENDIF
 C
 1000  CONTINUE
+ 
+      DEALLOCATE (PLS)
 C
       RETURN
 C
