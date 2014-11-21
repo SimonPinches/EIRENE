@@ -1,5 +1,10 @@
-cdr  2110.14: bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
+
+cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
+cdr            replaces explicit expression.
+cdr  21.10.14: bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
 cdr           -->now runs again on eirene default vol.rec model.
+cdr 30.10.14 :  lplssr true even if npts=0, to allow setting up volume source tallies,
+cdr             even if npts=0 for the vol-rec stratum
 
 cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2203.07: LEVGEO=6 --> LEVGEO=10
@@ -53,8 +58,8 @@ C
      .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CNDYNP, 
      .            VX, VY, VZ, VPARA, EELRC, 
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
-     .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, 
-     .            EIRENE_ngffmh, BF
+     .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
+     .            EIRENE_BREMS
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IC1, IC2, ICOUNT, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
@@ -90,7 +95,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
         ALLOCATE (LPLSSR(NPLSI))
         LPLSSR = .FALSE.
         DO ISTR=1,NSTRAI
-          IF (NLVOL(ISTR) .AND. NLPLS(ISTR) .AND. (NPTS(ISTR) > 0)
+          IF (NLVOL(ISTR) .AND. NLPLS(ISTR)
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
@@ -135,6 +140,10 @@ C  SPECTRAL CUT OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
             ADD=0.
 C  EXCLUDE DEAD CELLS (GRID CUTS, ISOLATED CELLS FROM COUPLE_.., ETC)
 C  EXCLUDE IPLS-VACUUM CELLS
+
+C  tabrc1 is a volumetric rate per ion  (1/s)
+c  turn this into rate in (amp per ion), factor 'elch'
+c  and then into source rate amp per cell, factor di * vol
             IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
               IF (NSTORDR >= NRAD) THEN
                 ADD=TABRC1(IRRC,J)*DIIN(IPLS,J)*VOL(J)*ELCHA
@@ -253,17 +262,17 @@ C  SPECTRAL CUT OFF (PHOTONS ONLY)
               EEL(IPLS,0   )=EEL(IPLS,0   )+ADD
 8         CONTINUE
 7       CONTINUE
- 
+
+C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS) 
         TOT_BREMS = 0._DP
         DO IPLS=1,NPLSI
           IF (NCHRGP(IPLS) == 0) CYCLE
           Z = NCHRGP(IPLS)
           DO J = 1, NSBOX
             IF (LGVAC(J,NPLS+1).OR.LGVAC(J,IPLS)) CYCLE
-            BREMS = 1.54E-32_DP * TEIN(J)**0.5 * Z**2 *
-     .              EIRENE_ngffmh(Z**2 * 13.6_DP/TEIN(J))
+            BREMS=EIRENE_BREMS(TEIN(J),DEIN(J),Z)  ! Watt per ion
             TOT_BREMS(IPLS) = TOT_BREMS(IPLS) +
-     .                        BREMS*DEIN(J)*DIIN(IPLS,J)*VOL(J)
+     .                        BREMS*DIIN(IPLS,J)*VOL(J) ! Watt per cell
           END DO
         END DO
 C

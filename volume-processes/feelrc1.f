@@ -1,6 +1,11 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
+!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced,
+cdr            (dsub), but later moved into eirene_energy_rate_coeff.
+
 !pb  19.12.06: bremsstrahlung added
 !dr  31.07.07: bug fix: tein(j) --> tein(k)
+cdr  nov.14:  function brems, replaces gaunt factor function,
+cdr           reaction scaling factor factkk removed from bremsstrahlung
+
  
       FUNCTION EIRENE_FEELRC1 (IRRC,K)
  
@@ -15,9 +20,9 @@
  
       INTEGER, INTENT(IN) :: IRRC, K
       REAL(DP) :: ELRC1(9), PLS, DELE, EE, EIRENE_FEELRC1,
-     .            EIRENE_FTABRC1, DSUB,
+     .            EIRENE_FTABRC1, 
      .            DEIMIN, ELRC, EIRENE_ENERGY_RATE_COEFF, BREMS, Z,
-     .            eirene_ngffmh
+     .            eirene_brems
       INTEGER :: J, I, KK, II
       LOGICAL :: LADAS
  
@@ -53,9 +58,7 @@
         LADAS = EIRENE_IS_RTCEW_ADAS(KK)
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN
           Z = NCHRGP(IPLS)
-          BREMS = 1.54E-32_DP * TEIN(K)**0.5 * Z**2 *
-     .            eirene_ngffmh(Z**2 * 13.6_DP/TEIN(K))*
-     .            DEIN(K)*FACRRC(IRRC,1)/ELCHA
+          BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion
           EIRENE_FEELRC1=EIRENE_FEELRC1 + BREMS
         END IF
  
