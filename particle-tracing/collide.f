@@ -13,7 +13,10 @@ C 10.3.06: bug fix: LGEI_RED(NRDS) --> LGEI_RED(0:NRDS)
 C          (some compilers had been unhappy with this)
 C 20.3.07: PI reactions revised
 
-c oct 2014 some hard wired additional tallies ADDV removed again
+c oct 14.14 some hard wired additional tallies ADDV removed again
+c oct.21.14 evaluate v-parallel of incident particle only in case of need
+c           i.e.  momentum collision estimators, or generation limit
+c           otherwise: avoid calls to bfield.f
 C
       SUBROUTINE EIRENE_COLLIDE
 C
@@ -83,11 +86,14 @@ C  INCIDENT SPECIES: IOLD
       VELO=VEL
       NCLLO = NCELL
       NCELL = NCLTAL(NCLLO)
- 
-      CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
- 
-      V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-      V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
+
+C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION 
+      IF (LMAPL.OR.NGENA(IATM).NE.0) THEN
+        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+        V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
+        V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
+      ENDIF
+
       E0O=E0
       WGHTO=WEIGHT
       IOLD=IATM
@@ -469,7 +475,7 @@ C  IPLSN ION SPECIES AFTER CX
                 GOTO 999
               ENDIF
             ENDIF
-c  collision estimator for CX energy exchange tallies
+c  UPDATE collision estimator for CX energy exchange tallies
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)-E0O*WGHTO
               IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)+E0*WEIGHT
@@ -480,9 +486,10 @@ c  collision estimator for CX energy exchange tallies
                 GOTO 999
               ENDIF
             ENDIF
-C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (COPV)
+C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (FORMERLY: COPV)
             IF (IESTCX(IRCX,2).NE.0) THEN
               IF (LMAPL) THEN
+C  SET THE POST COLLISION NEUTRAL PARALLEL VELOCITY = OLD PRE COLLISION ION VELOCITY
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSA(IATM)
                 IF (INDPRO(4) == 8) THEN
@@ -496,6 +503,7 @@ C ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW ATOM MOMENTUM
                 MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)-WEIGHT*V0_PARB*SIG
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
+
               IF (N2NDX(IRCX,1).EQ.4) THEN
                 IF (LMAPL) THEN
 C  IPLSN ION SPECIES AFTER CX
@@ -636,17 +644,19 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
             LMETSP(NSPH+IATM)=.TRUE.
           END IF
         ENDIF
-c  collision estimator for EL energy exchange tallies
+c  UPDATE collision estimator for EL energy exchange tallies
         IF (IESTEL(IREL,3).NE.0) THEN
           EDEL=E0O*WGHTO-E0*WEIGHT
           IF (LEAAT) EAAT(NCELL)      =EAAT(NCELL)-EDEL
           IF (LEAPL) EAPL(NCELL)      =EAPL(NCELL)+EDEL
         ENDIF
-C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (COPV)
+C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (FORMERLY: COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
           IF (LMAPL) THEN
+C  SET THE POST COLLISION NEUTRAL PARALLEL VELOCITY 
             V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
             V0_PARB=V0_PARB*AMUA*RMASSA(IATM)
+C
             VDEL=V0_PARBO*WGHTO-V0_PARB*WEIGHT
             IF (INDPRO(4) == 8) THEN
               CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLSV)
@@ -654,8 +664,8 @@ C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (COPV)
             ELSE
               VPLASP=BVIN(IPLSV,NCLLO)
             ENDIF
-            VDEL=VDEL*SIGN(1._DP,VPLASP)
-            MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)+VDEL
+            SIG=SIGN(1._DP,VPLASP)
+            MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)+VDEL*SIG
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF
         ENDIF
@@ -797,9 +807,13 @@ C  INCIDENT SPECIES: IOLD
       VELO=VEL
       NCLLO = NCELL
       NCELL = NCLTAL(NCLLO)
-      CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
-      V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-      V0_PARBO=V0_PARBO*AMUA*RMASSM(IMOL)
+
+      IF (LMMPL.OR.NGENM(IMOL).NE.0) THEN
+        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+        V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
+        V0_PARBO=V0_PARBO*AMUA*RMASSM(IMOL)
+      ENDIF
+
       E0O=E0
       WGHTO=WEIGHT
       IOLD=IMOL
@@ -1478,9 +1492,13 @@ C  INCIDENT SPECIES: IOLD
       VELO=VEL
       NCLLO = NCELL
       NCELL = NCLTAL(NCLLO)
-      CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
-      V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-      V0_PARBO=V0_PARBO*AMUA*RMASSI(IION)
+  
+      IF (LMIPL.OR.NGENI(IION).NE.0) THEN
+        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+        V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
+        V0_PARBO=V0_PARBO*AMUA*RMASSI(IION)
+      ENDIF
+
       E0O=E0
       WGHTO=WEIGHT
       IOLD=IION
@@ -2057,9 +2075,12 @@ C  INCIDENT SPECIES: IOLD
       VELO=VEL
       NCLLO = NCELL
       NCELL = NCLTAL(NCLLO)
-      CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+
+C  parallel momentum of photon:  not ready
+C     CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
 C     V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
 c     V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
+
       E0O=E0
       WGHTO=WEIGHT
       IOLD=IPHOT
