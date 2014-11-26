@@ -19,7 +19,7 @@
           if (iwr.eq.0) then
             WRITE (iunout,*) 'REJECTION SAMPLING EFFICIENCY IN VELOCX '
             write (iunout,*)
-     .        'IRCX, MEAN NO. OF SAMPLING, TOTAL NO. OF CALLSEIRENE_'
+     .        'IRCX, MEAN NO. OF SAMPLINGS, TOTAL NO. OF CALLS'
             iwr=1
           endif
           SMMEAN=xcmean(ircx)/(ncmean(ircx)+eps60)
@@ -33,7 +33,7 @@
           if (iwr.eq.0) then
             WRITE (iunout,*) 'REJECTION SAMPLING EFFICIENCY IN VELOEL '
             write (iunout,*)
-     .        'IREL, MEAN NO. OF SAMPLING, TOTAL NO. OF CALLSEIRENE_'
+     .        'IREL, MEAN NO. OF SAMPLINGS, TOTAL NO. OF CALLS'
             iwr=1
           endif
           SMMEAN=xemean(irel)/(nemean(irel)+eps60)
@@ -47,7 +47,7 @@
           if (iwr.eq.0) then
             WRITE (iunout,*) 'REJECTION SAMPLING EFFICIENCY IN VELOPI '
             write (iunout,*)
-     .        'IRPI, MEAN NO. OF SAMPLING, TOTAL NO. OF CALLSEIRENE_'
+     .        'IRPI, MEAN NO. OF SAMPLINGS, TOTAL NO. OF CALLS'
             iwr=1
           endif
           SMMEAN=xpmean(irpi)/(npmean(irpi)+eps60)

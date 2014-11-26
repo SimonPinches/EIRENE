@@ -117,12 +117,12 @@ c         generation limit activated
       LEXTALV(55) =               NPHOT>0
       LEXTALV(56) = (NPLS<0).and.(NPHOT>0)
  
-      LEXTALV(NTALA) = NADV>0
-      LEXTALV(NTALC) = NCLV>0
-      LEXTALV(NTALT) = NSNV>0
+      LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally (update.f)
+      LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally   (collide.f)
+      LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
       LEXTALV(NTALM) = NCPV>0
       LEXTALV(NTALB) = NBGV>0
-      LEXTALV(NTALR) = NALV>0
+      LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, post processing
 C  GENERATION LIMIT TALLIES
 C  some of these tallies may be
 c  turned off, depending upon whether generation limits
@@ -173,10 +173,10 @@ C  PRIMARY SOURCE RATES
       LIVTALV = LEXTALV .AND. .NOT.LMISTALV
       LMISTALV = LMISTALV .AND. LEXTALV
  
-      LEA = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL
-      LEM = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL
-      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL
-      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL
+      LEA  = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL      ! ATOM PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEM  = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL      ! MOLECULE PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
+      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL      ! TEST ION PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
+      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL ! PHOTON PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
  
 C
 C  LEADING DIMENSIONS OF FIELDS IN COMMON BLOCK CESTIM AND COUTAU

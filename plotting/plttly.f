@@ -6,6 +6,15 @@ C
      .                   TXTSPC,TXTUNT,TXTRUN,TXHEAD,
      .                   LBAR,XMI,XMA,YMNLG,YMXLG,LPLOT,LHIST,IERR,
      .                   N1BAR,N1DIM,L_SAME)
+CDR
+c  make a x-y plot, with or without error bars (VBAR), up to ncurv curvres into single picture  
+
+C    input
+c
+c
+c   l_same  :  plot one more curve (or histogram) into previous picture
+c              if true :  add the tally text under the previous legend 
+c              if false:  make a new picture, and new frame
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

@@ -1,9 +1,31 @@
-C
+C  oct.2014  only comments added
 C
       SUBROUTINE EIRENE_GETSCL4 (ISTRA,FA,FM,FI,FPH)
 C
-C  FIND SCALING FACTORS TO ENFORCE PARTICLE BALANCE
-C  SIMPLE VERSION: NOT SPLIT BY SPECIES, ONLY BY TYPE
+C  FIND SCALING FACTORS TO ENFORCE PARTICLE BALANCE,
+c  BECAUSE OF NON-CONSERVATIVE PROPERTY OF TRACKLENGTH ESTIMATORS
+C  SIMPLE VERSION: NOT SPLIT BY SPECIES, ONLY BY TYPE.
+C  THE OUTPUT SCALING FACTORS FC=(FA,FM,FI,FPH) ARE "PER STRATUM"
+c
+c  build a 4 x 4 matrix P of 4 global balance equations,
+c  one for atoms, molecules, test ions and photons each.
+c
+c  solve for the 4 factors FC(1)...FC(4), such that
+c
+c    P * FC = B
+c
+c  B is the external (fixed, given) source strength for each type of particle,
+c  per stratum, B = B(1),....,B(4).
+c
+c  The factor FC(1) is then to be applied to all tallies (volumetric or surface fluxes)
+c  which scale linearly with the external source B(1) for particles of type 1 (i.e. for "atoms").
+c  Similarly for the other typs, FC(2),... etc...
+
+c  most of the programming below deals with possible zeros in rows and columns,
+c  i.e. with cases that some type of particle (e.g. photons) may no be present.
+c
+c
+c
 C  MODIFIED JAN/95: INCLUDE SURFACE TALLIES IN MATRIX, NOT IN
 C  INHOMOGENITY
 C
@@ -12,13 +34,13 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_COUTAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
 C
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP), INTENT(OUT) :: FA, FM, FI, FPH
       REAL(DP) :: FC(4), P(4,5), B(4), PP(4,4), FFC(3), BB(3)
-      REAL(DP) :: DTB1, DTB2, DTA, EIRENE_DETER, DTB3, FNEN, DTB4, 
+      REAL(DP) :: DTB1, DTB2, DTA, EIRENE_DETER, DTB3, FNEN, DTB4,
      .            EIRENE_DETER4X4
       REAL(DP) :: P11, P12, P13, P21, P22, P23, P31, P32, P33,
      .            B1, B2, B3
@@ -155,7 +177,7 @@ C  DETERMINE THE ROW WHICH IS COMPLETELY ZERO
         DO J=1,4
           IF (.NOT.LROW(J)) JOUT=J
         END DO
- 
+
         IF (ICOL.EQ.1) THEN
 C  ONLY ONE COLUMN IS NON ZERO
           J1=1
@@ -163,14 +185,14 @@ C  ONLY ONE COLUMN IS NON ZERO
           DO  I=1,4
             IF (LCOLM(I)) FC(I)=B(J1)/P(J1,I)
           END DO
- 
+
         ELSEIF (ICOL.EQ.2) THEN
 C  TWO COLUMNS ARE NON ZERO
           J1=1
           IF (JOUT.EQ.J1) J1=J1+1
           J2=J1+1
           IF (JOUT.EQ.J2) J2=J2+1
- 
+
 C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
           I1=0
           DO I=1,4
@@ -183,7 +205,7 @@ C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
               ENDIF
             ENDIF
           END DO
- 
+
           FNEN=P(J1,I1)*P(J2,I2)-P(J2,I1)*P(J1,I2)
           IF (ABS(FNEN).GT.EPS12) THEN
             FC(I1)=(B(J1)*P(J2,I2)-B(J2)*P(J1,I2))/FNEN
@@ -193,9 +215,9 @@ C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
               FC(I2)=(B(J2)-P(J2,I1)*FC(I1))/P(J2,I2)
             ENDIF
           ENDIF
- 
+
         ELSE
- 
+
 C  AT LEAST THREE COLUMNS ARE NON ZERO
           IF (ICOL.EQ.4) THEN
             DO J=1,4
@@ -208,7 +230,7 @@ C  AT LEAST THREE COLUMNS ARE NON ZERO
               IF (.NOT.LCOLM(I)) IOUT=I
             END DO
           END IF
- 
+
           J1=0
           DO J=1,4
             IF (J.EQ.JOUT) CYCLE
@@ -221,7 +243,7 @@ C  AT LEAST THREE COLUMNS ARE NON ZERO
               PP(J1,I1)=P(J,I)
             END DO
           END DO
- 
+
           P11=PP(1,1)
           P21=PP(2,1)
           P31=PP(3,1)
@@ -249,7 +271,7 @@ C  AT LEAST THREE COLUMNS ARE NON ZERO
           Ffc(1)=dtb1/(dta+1.d-30)
           Ffc(2)=dtb2/(dta+1.d-30)
           Ffc(3)=dtb3/(dta+1.d-30)
- 
+
           IC = 0
           DO I=1,4
             IF (LCOLM(I)) THEN
@@ -294,7 +316,7 @@ C
           ENDIF
 C
         ELSEIF (ICOL.EQ.3) THEN
- 
+
           IC=0
           DO I=1,4
             IF (LCOLM(I)) THEN
@@ -302,7 +324,7 @@ C
               PP(1:3,IC) = P(1:3,I)
             END IF
           END DO
- 
+
           P11=PP(1,1)
           P21=PP(2,1)
           P31=PP(3,1)
@@ -330,7 +352,7 @@ C
           Ffc(1)=dtb1/(dta+1.d-30)
           Ffc(2)=dtb2/(dta+1.d-30)
           Ffc(3)=dtb3/(dta+1.d-30)
- 
+
           IC = 0
           DO I=1,4
             IF (LCOLM(I)) THEN
@@ -338,28 +360,28 @@ C
               FC(I) = FFC(IC)
             END IF
           END DO
- 
+
         ELSE
 C  THE WHOLE MATRIX IS TO BE USED
           pp(1:4,1:4) = p(1:4,1:4)
           dta=EIRENE_deter4x4(pp)
- 
+
           pp(1:4,1:4) = p(1:4,1:4)
           pp(1:4,1) = b(1:4)
           dtb1=EIRENE_deter4x4(pp)
- 
+
           pp(1:4,1:4) = p(1:4,1:4)
           pp(1:4,2) = b(1:4)
           dtb2=EIRENE_deter4x4(pp)
- 
+
           pp(1:4,1:4) = p(1:4,1:4)
           pp(1:4,3) = b(1:4)
           dtb3=EIRENE_deter4x4(pp)
- 
+
           pp(1:4,1:4) = p(1:4,1:4)
           pp(1:4,4) = b(1:4)
           dtb4=EIRENE_deter4x4(pp)
- 
+
           fc(1)=dtb1/(dta+1.d-30)
           fc(2)=dtb2/(dta+1.d-30)
           fc(3)=dtb3/(dta+1.d-30)
@@ -368,9 +390,9 @@ C  THE WHOLE MATRIX IS TO BE USED
       ENDIF
 C
 1000  CONTINUE
- 
+
 !  FOR THE TIME BEING
- 
+
       CALL EIRENE_LEER(1)
       WRITE (iunout,*)
      .  'EIRENE RECOMMENDED RESCALING OF VOLUME AVERAGED '
@@ -383,8 +405,8 @@ C
       FM=FC(2)
       FI=FC(3)
       FPH=FC(4)
- 
- 
+
+
 C
       RETURN
       END

@@ -12,15 +12,19 @@ C               added: jcou,ncou
 !pb  22.03.07:  PI reactions revised
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  syncronized with fpathm, fpathi
+cdr 31.10.14 :  speedup of final cut off evaluations
+cdr note:  sgnl_poly evaluations are just the 8th order polynom, plus rcmin,rcmax consideration.
+cdr      unless rcmin,rcmax are set (as it is the case currently here), there is no need to call  --> move to in-line 
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
 C
 C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR NEUTRAL
-C   "BEAM ATOMS" OF VELOCITY VEL IN DRIFTING MAXWELLIAN PLASMA-BACKGROUND
+C   "BEAM ATOMS" , SPECIES IATM, OF VELOCITY VEL IN DRIFTING MAXWELLIAN PLASMA-BACKGROUND
 C   IN CELL K
 
 C
 C   INPUT:
+C   IATM      :  ATOM SPECIES INDEX (INPUT VIA COMMON)
 C   K         :  CURRENT GRID CELL
 C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
 C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
@@ -81,9 +85,9 @@ C
 C  SET DEFAULTS: NO REACTIONS
 C
       XSTORV=0.D0
-!pb      IF (NCOU.GT.1) THEN
+!pb   IF (NCOU.GT.1) THEN
         XSTOR=0.D0
-!pb      ENDIF
+!pb   ENDIF
       EIRENE_FPATHA=1.D10
       SIGMAX=0.D0
 C
@@ -549,9 +553,15 @@ C
 C     TOTAL
 C
 100   CONTINUE
+
+C
+C  CUT OF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
+C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
 C
       IF (SIGEIT.GT.0._DP) THEN
-        DO IREI=1,NRDS
+        DO IAEI=1,NAEII(IATM)
+          IREI=LGAEI(IATM,IAEI)
           IF (SIGVEI(IREI) .LE. SIGMAX*1.D-10) THEN
             SIGEIT=SIGEIT-SIGVEI(IREI)
             SIGVEI(IREI) = 0.D0
@@ -560,7 +570,8 @@ C
       END IF
  
       IF (SIGPIT.GT.0._DP) THEN
-        DO IRPI=1,NRPI
+        DO IAPI=1,NAPII(IATM)
+          IRPI=LGAPI(IATM,IAPI,0)
           IF (SIGVPI(IRPI) .LE. SIGMAX*1.D-10) THEN
             SIGPIT=SIGPIT-SIGVPI(IRPI)
             SIGVPI(IRPI) = 0.D0
@@ -569,7 +580,8 @@ C
       END IF
  
       IF (SIGCXT.GT.0._DP) THEN
-        DO IRCX=1,NRCX
+        DO IACX=1,NACXI(IATM)
+          IRCX=LGACX(IATM,IACX,0)
           IF (SIGVCX(IRCX) .LE. SIGMAX*1.D-10) THEN
             SIGCXT=SIGCXT-SIGVCX(IRCX)
             SIGVCX(IRCX) = 0.D0
@@ -578,7 +590,8 @@ C
       END IF
 C
       IF (SIGELT.GT.0._DP) THEN
-        DO IREL=1,NREL
+        DO IAEL=1,NAELI(IATM)
+          IREL=LGAEL(IATM,IAEL,0)
           IF (SIGVEL(IREL) .LE. SIGMAX*1.D-10) THEN
             SIGELT=SIGELT-SIGVEL(IREL)
             SIGVEL(IREL) = 0.D0

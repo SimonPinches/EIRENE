@@ -1,10 +1,15 @@
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 !pb  24.11.06: get extrapolation parameters for polynomial fit only
 !pb  30.11.06: divide energy rate coefficient by ELCHA to get correct units
+
+c  to be done: h_colrad called twice per cell ??
+c              re-use erate from previous call to rate_coeff
  
       function EIRENE_energy_rate_coeff (ir, p1, p2, lexp, iprshft)
      .                           result (rate)
- 
+
+cdr  return an energy weighted rate, eV/s per incident particle  
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
@@ -20,7 +25,10 @@
      .            q1, q2,
      .            ALPCR, SCR, SCRRAD, E_ALPCR, E_SCR, E_SCRRAD,
      .            E_ALPCR_T, E_SCR_T, E_SCRRAD_T
-      real(dp), save :: xlog10e, xln10, dsub, xlnelch
+      real(dp), save :: xlog10e =  4.34294482d-01,       !1./ln(10) = log10(e) 
+     .                  xln10   =  2.30258509299_dp,     !ln(10)  
+     .                  dsub    = 18.420680744_dp,       !ln(1e8) 
+     .                  xlnelch =-43.2777390821          !ln(elcha) 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), qcol2(:)
       integer :: jfexmn, jfexmx
       integer, save :: ifirst=0, ifsub=0
@@ -64,10 +72,6 @@
  
       else if (reacdat(ir)%rtcew%ifit == 2) then
  
-        if (ifsub == 0) then
-          ifsub = 1
-          dsub = log(1.e8_dp)
-        end if
  
         q2 = p2
         if (iprshft > 0) q2 = q2 - dsub
@@ -80,13 +84,6 @@
       else if (reacdat(ir)%rtcew%ifit == 3) then
  
 ! ADAS
- 
-        if (ifirst == 0) then
-          ifirst = 1
-          xln10 = log(10._dp)
-          xlog10e = 1._dp/xln10
-          xlnelch = log(elcha)
-        end if
  
         q1 = xlog10e*p1
         q2 = xlog10e*p2

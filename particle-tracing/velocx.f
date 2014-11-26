@@ -96,12 +96,13 @@ C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY
 C  IS CROSS SECTION AVAILABLE?
         IREAC=MODCOL(3,1,IRCX)
         IF (IREAC.EQ.0) GOTO 1
-C
+C CURRENTLY: HARD WIRED SEARCH RANGE
         elmin=log(0.1_dp)
         elmax=log(1.e4_dp)
         SGCVMX(IRCX)=-1.D60
         JJ=1
         do j=1,1000
+c  elab:  here ln(E), with E from 0.1 to 1e4 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
           CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 1')
           vrq=exp(elab-defCX(IRCX))
@@ -115,20 +116,23 @@ C
         WRITE (iunout,*) 'FIRST CALL EIRENE_TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
-        WRITE (iunout,*) 'SGCVMX IN VELOCX,JJ ',SGCVMX(IRCX),JJ
+        CALL EIRENE_MASJ1R('JJ, SGCVMX      ',JJ, SGCVMX(IRCX))
         IF (JJ.NE.1.AND.JJ.NE.1000) THEN
           elab=elmin+(JJ-1)/999.*(elmax-elmin)
           ELAB=EXP(ELAB)
           WRITE (iunout,*) 'TRUE MAXIMUM FOUND AT ELAB(EV) = ',ELAB
           IFLRCX(IRCX)=1
         ELSE
-          WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE EIRMOD_WEIGHING '
+          WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE WEIGHTING '
         ENDIF
         CALL EIRENE_LEER(1)
       ENDIF
 1     CONTINUE
-C
+
+C   SET COUNTER FOR REJECTION SAMPLING
       ICOUNT=1
+
+C   set parameters for random sampling in cell icell=K
  
       IF (K.GT.0) THEN
         ZARGX=ZRG(IPLS,K)
@@ -157,6 +161,9 @@ C
         VZDR=DUMV(3)
       ENDIF
 C
+
+c   start random sampling here
+
 123   CONTINUE
       IF (INIV2.LE.0) CALL EIRENE_FGAUSS
 C
@@ -181,7 +188,7 @@ C  ZT1 CORRESPONDS TO ROOT MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VZN=VZN*ZARGZ+VZDR
       ENDIF
 C
-C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-POTENTIAL: SIGMA*V = CONST.)
+C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONST.)
 C
       IF (NFLAG.EQ.2) THEN
 C
@@ -227,7 +234,8 @@ C
           if (test.gt.cxs*vrel) then
 c  reject
             icount=icount+1
-            if (icount.lt.500) goto 123
+            if (icount.lt.500) goto 123  ! fetch a new bulk ion velocity
+c  rejection loop failed, too many attempts.
             write (iunout,*)
      .        'icount too large ( > 500) IN VELOCX. ACCEPT SAMPLE '
             ELLAB=EXP(ELAB)
@@ -268,7 +276,7 @@ C
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
  
-C     the following ENTRY is for reinitialization of EIRENE (DMH)
+C  the following ENTRY is for reinitialization of EIRENE (DMH)
  
       ENTRY EIRENE_VELOCX_REINIT
       IFIRST = 0

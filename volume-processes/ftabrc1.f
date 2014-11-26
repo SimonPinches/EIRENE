@@ -28,11 +28,13 @@ c  hard wired: density parameter in fit reduced by DSUB=1e8, done in rate_coeff.
  
       TBRC=0.D0
       KK = NREARC(IRRC)
- 
+
+c  default radiative rate coefficient, see xstrc.f 
       IF (KK == 0) THEN
         ZX=EIONH/MAX(1.E-5_DP,TEIN(K))
         TBRC=1.27E-13*ZX**1.5/(ZX+0.59)*DEIN(K)
- 
+
+c  kk >  0  (to be done: error exit for kk < 0) 
       ELSE
  
 

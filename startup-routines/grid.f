@@ -1,4 +1,7 @@
 C
+c sept 2014 : some indexing unified, comments added.
+c             ngitt (storage for spatial resolution on single surface) now evaluated in calling program input.f 
+c
 !pb  3.12.06: allow INDGRD /= 6 for NLTET option
 !pb  3.12.06: specify NGITT in case of NLTET
 !pb           initialize XDIFF=0
@@ -6,6 +9,8 @@ C
 !pb 28.06.10: consistency check for LEVGEO=3 or LEVGEO=4 introduced
 !             stop run if cell side is transparent but no neighbor cell
 !             is defined 
+!pb   ??      use nrplg rather than np2nd for 1D radial polygons,
+!             to allow 1D levgeo=3 runs
 !dr 17.01.14  test-printout removed, some comments added
  
       SUBROUTINE EIRENE_GRID (IND)
@@ -16,7 +21,7 @@ C    OUTPUT:  IN MODULES
 C    IND=1:  1ST GRID, X OR RADIAL COORDINATE, AS WELL AS TRIANGULAR (LEVGEO=4) AND TETRAHEDON (LEVGEO=5) GRIDS.
 C    IND=2:  2ND GRID, Y OR POLOIDAL COORDINATE
 C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -33,9 +38,9 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
       USE EIRMOD_CTETRA
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: PC1(3), EDGELEN(6)
       REAL(DP) :: ELPARM, X1, X2, SY, Y1, Y2, SX, AELL, X3, Y3, X4, Y4,
      .          VPXX, RN, RRN, FN, VPYY, PLABS, XNORM, VPX, VPY, QUOTI,
@@ -54,7 +59,7 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
       LOGICAL, ALLOCATABLE :: VISITED(:,:)
 !pb
       TYPE(TRI_ELEM), POINTER :: CUR
- 
+
       DATA ITSIDE /1,2,3,
      .             1,4,2,
      .             2,4,3,
@@ -369,7 +374,6 @@ C
      .      'ARCLENGTH BGL(I,K) OF RADIAL SURFACES AT Z=0.'
           DO 153 I=1,NR1ST
             WRITE (iunout,*) 'I = ',I
-!pb            WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NP2ND)
             WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
             CALL EIRENE_LEER(1)
 153       CONTINUE
@@ -393,7 +397,7 @@ C
         DO I=1,NKNOT
           NULLIFY(COORTRI(I)%PTRI)
         END DO
- 
+
         DO 165 I=1,NTRII
           VTRIX(1,I)=XTRIAN(NECKE(2,I))-XTRIAN(NECKE(1,I))
           VTRIY(1,I)=YTRIAN(NECKE(2,I))-YTRIAN(NECKE(1,I))
@@ -401,17 +405,17 @@ C
           VTRIY(2,I)=YTRIAN(NECKE(3,I))-YTRIAN(NECKE(2,I))
           VTRIX(3,I)=XTRIAN(NECKE(1,I))-XTRIAN(NECKE(3,I))
           VTRIY(3,I)=YTRIAN(NECKE(1,I))-YTRIAN(NECKE(3,I))
- 
+
           ALLOCATE (CUR)
           CUR%NOTRI = I
           CUR%NEXT_TRI => COORTRI(NECKE(1,I))%PTRI
           COORTRI(NECKE(1,I))%PTRI => CUR
- 
+
           ALLOCATE (CUR)
           CUR%NOTRI = I
           CUR%NEXT_TRI => COORTRI(NECKE(2,I))%PTRI
           COORTRI(NECKE(2,I))%PTRI => CUR
- 
+
           ALLOCATE (CUR)
           CUR%NOTRI = I
           CUR%NEXT_TRI => COORTRI(NECKE(3,I))%PTRI
@@ -458,44 +462,47 @@ C
           PTRIY(3,I)=PTRIY(3,I)*XS3
 162     CONTINUE
 C
-C  DETERMINE NGITT FROM NUMBER OF NONDEFAULT STANDARD SURFACES
+C  BUILD LIST OF TRIANGLE SIDES COMPRISING A NONDEFAULT STANDARD SURFACE
+C                               OR AN ADDITIONAL SURFACE
 C
-!pb        NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0) + 1
- 
         IF (MAXVAL(INMTI(1:3,1:NTRII)) > NSTSI+NLIM) THEN
           WRITE (iunout,*)
-     .      ' WRONG NUMBER OF REFLECTION MODEL SPECIFIED '
+     .      ' WRONG INDEX OF REFLECTION MODEL SPECIFIED '
           WRITE (iunout,*) ' CHECK DEFINITION OF TRIANGLES ',
-     .                'AND THEIR NEIGHBORS '
+     .                     ' AND THEIR MODEL-FLAGS FOR SIDES '
           CALL EIRENE_EXIT_OWN(1)
         END IF
+
+C  INDEX J:            EIRENE SURFACE  (NON DEFAULT, OR ADDITIONAL)
+C  INDEX IT, OR ITRI:  TRIANGLE
+C  INDEX IS:           TRIANGLE SIDE
  
-        DO I = 1, NLIMPS
-          NSRFTR = COUNT(INMTI(1:3,1:NTRII) .EQ. I)
+        DO J = 1, NLIMPS
+          NSRFTR = COUNT(INMTI(1:3,1:NTRII) .EQ. J)
           IF (NSRFTR > 0) THEN
-            ALLOCATE (SURF_TRIAN(I)%ITRIAS(NSRFTR))
-            ALLOCATE (SURF_TRIAN(I)%ITRISI(NSRFTR))
-            ALLOCATE (SURF_TRIAN(I)%BGLT(NSRFTR+1))
-            SURF_TRIAN(I)%BGLT(1) = 0._DP
+            ALLOCATE (SURF_TRIAN(J)%ITRIAS(NSRFTR))
+            ALLOCATE (SURF_TRIAN(J)%ITRISI(NSRFTR))
+            ALLOCATE (SURF_TRIAN(J)%BGLT(NSRFTR+1))
+            SURF_TRIAN(J)%BGLT(1) = 0._DP
           END IF
         END DO
  
         LERROR = .FALSE.
-        DO I=1,NTRII
+        DO IT=1,NTRII
           DO IS = 1, 3
-            J = INMTI(IS,I)
+            J = INMTI(IS,IT)
             IF ( J .NE. 0) THEN
-              IF ((NCHBAR(IS,I) == 0) .AND. (ILIIN(J) <= 0)) THEN
-                WRITE (iunout,*) 'SIDE',IS,' OF TRIANGLE ',I,
+              IF ((NCHBAR(IS,IT) == 0) .AND. (ILIIN(J) <= 0)) THEN
+                WRITE (iunout,*) 'SIDE',IS,' OF TRIANGLE ',IT,
      .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
                 LERROR = .TRUE.
               END IF
               SURF_TRIAN(J)%NUMTR = SURF_TRIAN(J)%NUMTR + 1
-              SURF_TRIAN(J)%ITRIAS(SURF_TRIAN(J)%NUMTR) = I
+              SURF_TRIAN(J)%ITRIAS(SURF_TRIAN(J)%NUMTR) = IT
               SURF_TRIAN(J)%ITRISI(SURF_TRIAN(J)%NUMTR) = IS
               SURF_TRIAN(J)%BGLT(SURF_TRIAN(J)%NUMTR+1) =
      .          SURF_TRIAN(J)%BGLT(SURF_TRIAN(J)%NUMTR) +
-     .          SQRT(VTRIX(IS,I)**2+VTRIY(IS,I)**2)
+     .          SQRT(VTRIX(IS,IT)**2+VTRIY(IS,IT)**2)
             END IF
           END DO
         END DO
@@ -599,21 +606,21 @@ C
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
           WRITE (iunout,*) ' I,(XTRIAN(J),YTRIAN(J),J=1,3) '
           DO 163 I=1,NTRII
-            WRITE (iunout,'(/1X,I6,1X,1P,6E12.4)')
+            WRITE (iunout,'(/1X,I4,1X,1P,6E12.4)')
      .                               I,(XTRIAN(NECKE(J,I)),
      .                                  YTRIAN(NECKE(J,I)),J=1,3)
 163       CONTINUE
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) ' NGITT SET TO ',NGITT
  
-          DO I=1, NLIMPS
+          DO J=1, NLIMPS
             WRITE (IUNOUT,*)
-            WRITE (IUNOUT,*) ' SURFACE NO. ',I
+            WRITE (IUNOUT,*) ' SURFACE NO. ',J
             WRITE (IUNOUT,'(3A6,A12)') 'J','ITRI','ISIDE','BLGT'
-            DO J=1, SURF_TRIAN(I)%NUMTR
-              WRITE (IUNOUT,'(3I6,ES12.4)') J, SURF_TRIAN(I)%ITRIAS(J),
-     .                                         SURF_TRIAN(I)%ITRISI(J),
-     .                                         SURF_TRIAN(I)%BGLT(J+1)
+            DO I=1, SURF_TRIAN(J)%NUMTR
+              WRITE (IUNOUT,'(3I6,ES12.4)') I, SURF_TRIAN(J)%ITRIAS(I),
+     .                                         SURF_TRIAN(J)%ITRISI(I),
+     .                                         SURF_TRIAN(J)%BGLT(I+1)
             END DO
           END DO
         ENDIF
@@ -626,7 +633,7 @@ C
 C  GRID DATA FOR TETRAHEDRONS ARE SET IN COUPLING ROUTINE
 C  NOTHING TO BE DONE HERE
 C
-C  SET DERIVED GRID DATA FOR LEVGEO = 10 OPTION
+C  SET DERIVED GRID DATA FOR LEVGEO = 5 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
          
@@ -663,7 +670,7 @@ C  EDGE  3-4
           VTETX(6,ITET) = XTETRA(IC4) - XTETRA(IC3)
           VTETY(6,ITET) = YTETRA(IC4) - YTETRA(IC3)
           VTETZ(6,ITET) = ZTETRA(IC4) - ZTETRA(IC3)
- 
+
           EDGELEN(1:6) = SQRT(VTETX(1:6,ITET)**2 +
      .                        VTETY(1:6,ITET)**2 +
      .                        VTETZ(1:6,ITET)**2)
@@ -712,7 +719,7 @@ C  SIDE 3-1-4
           SQ = SQRT( (S-EDGELEN(3)) *
      .               (S-EDGELEN(4)) * (S-EDGELEN(6)) / S)
           IF (SQ > EPS30) RINCRC(4,ITET) = 1._DP / SQ
- 
+
           DO J=1,4
             PLEN=SQRT(PTETX(J,ITET)**2+PTETY(J,ITET)**2+
      .                PTETZ(J,ITET)**2)+EPS60
@@ -721,11 +728,10 @@ C  SIDE 3-1-4
             PTETZ(J,ITET)=PTETZ(J,ITET)/PLEN
           END DO
         END DO
- 
-!pb        NGITT = COUNT(INMTIT(1:4,1:NTET) .NE. 0) + 1
- 
+
+
         CALL EIRENE_SUCHE_NACHBARN
- 
+
         IC=0
         NTET_COLLAPS=0
         LERROR = .FALSE.
@@ -749,7 +755,7 @@ C  SIDE 3-1-4
                 IC=IC+1
               ELSE
                 NTET_COLLAPS=NTET_COLLAPS+1
-!pb                WRITE(iunout,*) ' COLLAPSED TETRAHEDRON ITET = ',ITET
+!pb             WRITE(iunout,*) ' COLLAPSED TETRAHEDRON ITET = ',ITET
                 EXIT
               END IF
             END IF
@@ -776,7 +782,7 @@ C
      .             I,XTETRA(I),YTETRA(I),ZTETRA(I)
           END DO
           CALL EIRENE_LEER(2)
- 
+
           WRITE (iunout,*) ' NUMBER OF TETRAHEDRONS = ',NTET
           DO ITET=1,NTET
             WRITE (iunout,*)
@@ -801,7 +807,7 @@ C
      .              PTETX(J,ITET),PTETY(J,ITET),PTETZ(J,ITET)
             END DO
           END DO
- 
+
 C  CHECK OUTER NORMALS
           DO ITET = 1,NTET
             DO J=1,4
@@ -823,7 +829,7 @@ C  CHECK OUTER NORMALS
              END IF
             END DO
           END DO
- 
+
         ENDIF
 C
       ELSEIF (LEVGEO.EQ.10) THEN
@@ -838,7 +844,10 @@ C
       IF (LEVGEO.EQ.1) THEN
         YDF=YAA-YIA
         PSURF(1)=YIA
-      ELSEIF (LEVGEO.EQ.2) THEN
+      ELSEIF (LEVGEO.EQ.2.AND..NOT.NLPOL) THEN
+        YDF=1.
+        PSURF(1)=YIA
+      ELSEIF (LEVGEO.EQ.2.AND.NLPOL) THEN
         YDF=(YAA-YIA)*DEGRAD
         PSURF(1)=YIA
       ELSEIF (LEVGEO.EQ.3) THEN
@@ -870,6 +879,7 @@ C
 C  A) IN TOROIDAL APPROXIMATION:
 C
       IF (NLTRA) THEN
+
         IF (NTTRA.LE.3.OR.ROA.LT.0._DP) GOTO 991
         IF (LEVGEO.EQ.1) THEN
           XDIFF=0.
@@ -919,6 +929,7 @@ C  B) IN CYLIND. APPROXIMATION:
 C     ROA AND RMTOR ARE IRRELEVANT IN THIS CASE, AND ARE NOT DEFINED
 C
       ELSEIF (NLTRZ) THEN
+
         ZDF=ZAA-ZIA
         IF (ZDF.LE.0._DP) GOTO 991
         ZSURF(1)=ZIA
@@ -951,7 +962,7 @@ C
           CALL EIRENE_MASR3('ZDF,ZIA,ZAA=            ',ZDF,ZIA,ZAA)
         ENDIF
         IF (NLTRA) THEN
-          WRITE (iunout,*) 'ROA,RMTOR= ',ROA,RMTOR
+          CALL EIRENE_MASR2('ROA,RMTOR=      ',ROA,RMTOR)
           IF (.NOT.NLTOR) THEN
             CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NTTRA,3)
             CALL EIRENE_MASRR1 (' N,  ZZONE ',ZZONE,NTTRAM,3)
@@ -1083,9 +1094,9 @@ cdr       write (iunout,*) ' sarea ', ists, SAREA(ISTS)
         END DO
 C     ELSEIF (LEVGEO.EQ....) THEN
       ENDIF
- 
+
 !  SET NSTGRD FOR AVERAGING CELLS
- 
+
       IR = NR1ST
       DO IT = 1, NT3RD
         DO IP = 1, NP2ND
@@ -1093,7 +1104,7 @@ C     ELSEIF (LEVGEO.EQ....) THEN
           NSTGRD(NCELL) = 3
         END DO
       END DO
- 
+
 C
       RETURN
 C
@@ -1166,7 +1177,6 @@ C
         IFLAG=2
         DO 1240 IR=1,NR1STM
           IRP=IR+1
-!pb          DO 1250 IP=1,NP2NDM
           DO 1250 IP=1,NRPLG-1
             IPP=IP+1
             CALL EIRENE_ARELLP(EP1(IRP),EP1(IR),ELL(IRP),ELL(IR),
@@ -1186,13 +1196,12 @@ C
 1240    CONTINUE
 C
         CALL EIRENE_SNEIGH
- 
+
       ENDIF
 C
       IF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
 C
         IF (TRCGRD) THEN
-!pb          DO 219 I=1,NP2ND
           DO 219 I=1,NRPLG
             WRITE (iunout,*) ' PERP. POLYGON NO. I = ',I
             WRITE (iunout,*) ' JA = ',1,' JE = ',NR1ST
@@ -1201,14 +1210,12 @@ C
 219       CONTINUE
         ENDIF
 C
-!pb        DO 220 K=1,NP2ND
         DO 220 K=1,NRPLG
           DO 220 I=1,NR1STM
             VVTX(I,K)=XPOL(I+1,K)-XPOL(I,K)
             VVTY(I,K)=YPOL(I+1,K)-YPOL(I,K)
 220     CONTINUE
 C
-!pb        DO 221 K=1,NP2ND
         DO 221 K=1,NRPLG
           BGLP(1,K)=0.
           DO 222 I=1,NR1STM
@@ -1220,7 +1227,6 @@ C
           CALL EIRENE_LEER(2)
           WRITE (iunout,*)
      .      'ARCLENGTH BGLP(I,K) OF POLOIDAL SURFACES AT Z=0.'
-!pb          DO 223 K=1,NP2ND
           DO 223 K=1,NRPLG
             WRITE (iunout,*) 'K = ',K
             WRITE (iunout,'(/1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
@@ -1230,7 +1236,6 @@ C
 C
 C   CALCULATE THE OUTER NORMALS OF POLYGONS
 C
-!pb        DO 224 K=1,NP2ND
         DO 224 K=1,NRPLG
           DO 225 I=1,NR1STM
             IF (ABS(VVTY(I,K)).LT.EPS12) THEN
@@ -1386,9 +1391,9 @@ C
       ELSE
 C TO BE WRITTEN
       ENDIF
- 
+
 !  SET NSTGRD FOR AVERAGING CELLS
- 
+
       IP = NP2ND
       DO IT = 1, NT3RD
         DO IR = 1, NR1ST
@@ -1396,7 +1401,7 @@ C TO BE WRITTEN
           NSTGRD(NCELL) = 3
         END DO
       END DO
- 
+
 C
       RETURN
 C
@@ -1439,10 +1444,10 @@ C
         CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NT3RD,3)
         CALL EIRENE_LEER(2)
       ENDIF
- 
- 
+
+
 !  SET NSTGRD FOR CELLS IT=NT3RD CONTAINING 2-DIMENSIONAL AVERAGES
- 
+
       IT = NT3RD
       DO IR = 1, NR1ST
         DO IP = 1, NP2ND
@@ -1450,11 +1455,11 @@ C
           NSTGRD(NCELL) = 3
         END DO
       END DO
- 
+
 !  COPY SWITCHING OFF OF DEAD CELLS FOR TOROIDAL CELL 1 TO ALL OTHERS
 !  i.e.:
 !  SET NSTGRD FOR CELLS IT CONTAINING 0D AND 1D AVERAGES OF 2D PROJECTION
- 
+
       IT1=1
       DO IR=1,NR1ST
         DO IP=1,NP2ND

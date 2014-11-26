@@ -1,4 +1,5 @@
-C
+C  ifoff offset for output stream introduced
+C  a little bit further than 2014-dell version
 C
       SUBROUTINE EIRENE_RPSOUT
 C
@@ -21,9 +22,9 @@ C
       USE EIRMOD_CTETRA
       USE EIRMOD_CGRPTL
       USE EIRMOD_CCONA
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: YWERT(2*NPTAL)
       INTEGER :: NCELL, NCO, IR, IP, IGR, IPPLG, NPUNKT, ISTS, IDIMP,
      .           NST, I, NSTAB, NRPS, IT, IF, IA, IE, ANZ
@@ -37,7 +38,7 @@ C
      .            x1,x2,x3,x4,y1,y2,y3,y4,atri1,atri2
       integer :: icont, ipoint, iloop,ncont, ip_start, idel, ifc
       logical :: del_point
- 
+
       TYPE(PPOINT), POINTER :: CUR
 C
       allocate(valcont(iraps))
@@ -79,7 +80,7 @@ C
         OPEN (UNIT=NRPS,ACCESS='SEQUENTIAL',FORM='FORMATTED')
         REWIND NRPS
 5     CONTINUE
-!pb 
+!pb
 !pb find index of first RAPS plot, to be used for scaling with FCABS
 
       IFC = 1
@@ -93,11 +94,11 @@ C
 C  3D
       if ((levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz) .or.
      .    (levgeo.eq.5.and..not.lrpscut).or.lraps3d) then
-         WRITE(17+ifoff,'(1X,A5,8X,A4,11X,A1,11X,A1,11X,A1,11X,A1)') 
+         WRITE(17+ifoff,'(1X,A5,8X,A4,11X,A1,11X,A1,11X,A1,11X,A1)')
      .        '-1111','NPCO','1','3','1','1'
 C  2D
       else
-         WRITE(17+ifoff,'(1X,A5,8X,A4,11X,A1,11X,A1,11X,A1,11X,A1)') 
+         WRITE(17+ifoff,'(1X,A5,8X,A4,11X,A1,11X,A1,11X,A1,11X,A1)')
      .        '-1111','NPCO','1','2','1','1'
       endif
 C
@@ -114,18 +115,18 @@ C
                      READ(60+ifoff+IF,*) YWERT(IF)
                   enddo
                   i = i+1
-                  WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+                  WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .                  I,(YWERT(IF),IF=1,IRAPS)
                   WRITE(17+ifoff,'(I6,1P,3E12.4)')
      .                  I,rsurf(ir),psurf(ip),zsurf(it)
                enddo
             enddo
          enddo
- 
+
 !pb         WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',ANZ+NSTAB
          WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',-3334
          WRITE(18+ifoff,'(A8,I6,I9,I6)') 'HEXE8   ',1,ANZ,8
- 
+
          do ir=1,nr1st-1
             do ip=1,np2nd-1
                do it=1,nt3rd-1
@@ -142,7 +143,7 @@ C
                enddo
             enddo
          enddo
- 
+
       ELSEIF (LEVGEO.EQ.1.AND.LPTORR) THEN
         ANZ = 0
         IT=IPTORR
@@ -156,20 +157,20 @@ C
 !pb        WRITE(18+ifoff,'(A3,2X,A14,45X,I8)') 'PSS','1BEISPIELDATEN',ANZ+NSTAB
         WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',-3334
         WRITE(18+ifoff,'(A8,I6,I9,I6)') 'QUAM4   ',1,ANZ,4
- 
+
 C  DO 100, DO 110: RETAIN SAME SEQUENCE FOR READING FROM FORT(60+IF)
 C                  AS IT WAS THE CASE FOR WRITING (RPSCOL,RPSVEC)
- 
+
         I=0
         IT=IPTORR
         DO 100 IR=1,NR1ST
            DO 110 IP=1,NP2ND
- 
+
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
              DO 105 IF=1,IRAPS
                READ (60+ifoff+IF,*) YWERT(IF)
 105          CONTINUE
- 
+
              IF (IP .NE. NP2ND) THEN
                I = I + 1
                WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR)*FCABS1(IFC),
@@ -185,10 +186,10 @@ C  EXCLUDE DEAD CELLS ON FORT.18
                ENDIF
              ENDIF
              IF (IP .NE. NP2ND) THEN
-               WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+               WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .               I,  (YWERT(IF),IF=1,IRAPS)
              ELSE
-               WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+               WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .               I+1,(YWERT(IF),IF=1,IRAPS)
              ENDIF
 110        CONTINUE
@@ -211,17 +212,17 @@ C
 !pb        WRITE(18+ifoff,'(A3,2X,A14,45X,I8)') 'PSS','1BEISPIELDATEN',ANZ+NSTAB
         WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',-3334
         WRITE(18+ifoff,'(A8,I6,I9,I6)') 'QUAM4   ',1,ANZ,4
- 
+
         I=0
         IP=IPPOLR
         DO 1100 IR=1,NR1ST
           DO 2100 IT=1,NT3RD
- 
+
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
             DO 2105 IF=1,IRAPS
               READ (60+ifoff+IF,*) YWERT(IF)
 2105        CONTINUE
- 
+
             IF (IT .NE. NT3RD) THEN
               I = I + 1
               WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR),ZSURF(IT)
@@ -236,10 +237,10 @@ C  EXCLUDE DEAD CELLS ON FORT.18
               ENDIF
             ENDIF
             IF (IT .NE. NT3RD) THEN
-              WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+              WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .              I,  (YWERT(IF),IF=1,IRAPS)
             ELSE
-              WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+              WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .              I+1,(YWERT(IF),IF=1,IRAPS)
             ENDIF
 2100      CONTINUE
@@ -259,7 +260,7 @@ C
             ENDDO
           ENDDO
         ENDDO
- 
+
         if (lraps3d.and.lr3dcon) then
 !pb          WRITE(18+ifoff,'(A3,2X,A14,45X,I8)')
 !pb     .         'PSS','1BEISPIELDATEN',(ANZ+nstab)*(iplane-1)
@@ -270,14 +271,14 @@ C
 !pb     .                                   (ANZ+NSTAB)*iplane
           WRITE(18+ifoff,'(A3,I3,A60,I6)')'PSS',1,'BEISPIELDATEN',-3334
         endif
- 
+
         I=0
         ipoints=0
         do ipl=0,iplane-1
           DO IF=1,IRAPS
             open (60+ifoff+IF)
           enddo
- 
+
           if (lraps3d.and.lr3dcon) then
 !pb            if (ipl < iplane-1)
 !pb     .        WRITE(18+ifoff,'(A8,2I6,5X,A1)') 'HEXE8        ',ipl+1,ANZ,'8'
@@ -289,7 +290,7 @@ C
             WRITE(18+ifoff,'(A8,I6,I9,I6)') 'QUAM4   ',ipl+1,ANZ,4
             igroups = iplane
           endif
- 
+
           IT=IPTORR
           xgeomin = huge(1._dp)
           xgeomax = -xgeomin
@@ -310,12 +311,12 @@ C
               ygeomax = max(ygeomax,maxval(
      .                  ypol(ir,NPOINT(1,IPPLG):NPOINT(2,IPPLG))))
               DO 30 IP=NPOINT(1,IPPLG),NPOINT(2,IPPLG)
- 
+
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
                 DO 25 IF=1,IRAPS
                   READ (60+ifoff+IF,*) YWERT(IF)
  25             CONTINUE
- 
+
                 IF (IP .NE. NPOINT(2,IPPLG)) THEN
                   I = I + 1
                   if (lraps3d.and.nltra) then
@@ -328,7 +329,7 @@ C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
      .                    I,XPOL(IR,IP)*FCABS1(IFC),
      .                      YPOL(IR,IP)*FCABS2(IFC),ipl*rapsdel
                   else
-                    WRITE(17+ifoff,'(I6,1P,2E12.4)') 
+                    WRITE(17+ifoff,'(I6,1P,2E12.4)')
      .                    I,XPOL(IR,IP)*FCABS1(IFC),
      .                      YPOL(IR,IP)*FCABS2(IFC)
                   endif
@@ -372,10 +373,10 @@ C  EXCLUDE DEAD CELLS ON FORT.18
                   ENDIF
                 ENDIF
                 IF (IP .NE. NPOINT(2,IPPLG)) THEN
-                  WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+                  WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .                  I,(YWERT(IF),IF=1,IRAPS)
                 ELSE
-                  WRITE(19+ifoff,'(I6,1P,50E12.4)') 
+                  WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .                  I+1,(YWERT(IF),IF=1,IRAPS)
                 ENDIF
 30            CONTINUE
@@ -390,7 +391,7 @@ C  EXCLUDE DEAD CELLS ON FORT.18
      .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(IFC),
      .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(IFC),ipl*rapsdel
               else
-                WRITE(17+ifoff,'(I6,1P,2E12.4)') 
+                WRITE(17+ifoff,'(I6,1P,2E12.4)')
      .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(IFC),
      .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(IFC)
               endif
@@ -405,12 +406,13 @@ C  EXCLUDE DEAD CELLS ON FORT.18
 C
       ELSEIF ((LEVGEO.EQ.4.AND.LPTORR) .OR.
      .        (LEVGEO.EQ.5.AND.LRPSCUT)) THEN
-C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
+C NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
         IT=IPTORR
         ANZ=0
         DO I=1,NTRII
           IF (NSTGRD(I).EQ.0) ANZ=ANZ+1
         END DO
+
         xgeomin = minval(xtrian(1:nrknot))
         xgeomax = maxval(xtrian(1:nrknot))
         ygeomin = minval(ytrian(1:nrknot))
@@ -455,10 +457,10 @@ C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
             if (ipl < iplane-1) then
 !pb              WRITE(18+ifoff,'(A8,2I6,5X,A1)') 'PENTA6  ',ipl+1,ANZ,'6'
               WRITE(18+ifoff,'(A8,I6,I9,I6)') 'PENTA6  ',ipl+1,ANZ,6
- 
+
               DO I=1,NTRII
                 IF (NSTGRD(I).EQ.0)
-     .            WRITE(18+ifoff,'(1X,A1,6I10)') 
+     .            WRITE(18+ifoff,'(1X,A1,6I10)')
      .                                  '0',NECKE(1,I)+ipl*nrknot,
      .                                      NECKE(2,I)+ipl*nrknot,
      .                                      NECKE(3,I)+ipl*nrknot,
@@ -471,10 +473,10 @@ C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
           else
 !pb            WRITE(18+ifoff,'(A8,2I6,5X,A1)') 'TRIM3   ',ipl+1,ANZ,'3'
             WRITE(18+ifoff,'(A8,I6,I9,I6)') 'TRIM3   ',ipl+1,ANZ,3
- 
+
             DO 60 I=1,NTRII
               IF (NSTGRD(I).EQ.0)
-     .          WRITE(18+ifoff,'(1X,A1,3I10)') 
+     .          WRITE(18+ifoff,'(1X,A1,3I10)')
      .                                '0',NECKE(1,I)+ipl*nrknot,
      .                                    NECKE(2,I)+ipl*nrknot,
      .                                    NECKE(3,I)+ipl*nrknot
@@ -513,7 +515,7 @@ c ist das jemals getestet worden ???
         do ipl=0,iplane-1
           if (lraps3d.and.lr3dcon) then
              if (ipl < iplane-1) then
-                 WRITE(18+ifoff,'(A8,I6,I9,I6)') 
+                 WRITE(18+ifoff,'(A8,I6,I9,I6)')
      .                'QUAM4   ',IGR+ipl,NSTAB,4
                  igroups = igroups+1
               endif
@@ -578,7 +580,7 @@ C
             DO ISTS=1,NST
               IF (ILIIN(NLIM+ISTS) > 0) THEN
                 IDIMP=TRANSFER(MAXLOC(INUMP(ISTS,1:3)),1)
- 
+
                 IF (IDIMP == 1) THEN
                   IR=INUMP(ISTS,1)
                   IA=IRPTA(ISTS,2)
@@ -625,7 +627,7 @@ C
                       WRITE (18+ifoff,'(1X,A1,2I10)') '0',NCO-1,NCO
                     endif
                   END DO
- 
+
                 ELSEIF (IDIMP ==2) THEN
                   IP=INUMP(ISTS,IDIMP)
                   IA=IRPTA(ISTS,1)
@@ -845,7 +847,7 @@ c     punkt in richtung m verschieben
             do ipl=0,iplane-1
                write(65+ifoff,*) 'origx origy neux neuy'
                do ipoint=1,ncont-1
-                  write(65+ifoff,'(4es12.4)')  
+                  write(65+ifoff,'(4es12.4)')
      .                 xcont(ipoint), ycont(ipoint),
      .                 phelp(ipoint,1),phelp(ipoint,2)
 c     punkte schreiben
@@ -893,12 +895,12 @@ c     element schreiben
           deallocate(ycont)
         endif
       endif
- 
-      WRITE(17+ifoff,'(1X,A5,8X,A3,12X,A1,11X,A1,11X,A1,11X,A1)') 
+
+      WRITE(17+ifoff,'(1X,A5,8X,A3,12X,A1,11X,A1,11X,A1,11X,A1)')
      .           '-9999','FIN','0','0','0','0'
       WRITE(19+ifoff,'(1X,A5,8X,A3,50(11X,I1))') '-9999',
      .           'FIN',(0,IF=1,IRAPS)
       deallocate(valcont)
- 
+
       RETURN
       END

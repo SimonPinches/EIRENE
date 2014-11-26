@@ -84,9 +84,9 @@ C
 C  SET DEFAULTS: NO REACTIONS
 C
       XSTORV=0.D0
-!pb      IF (NCOU.GT.1) THEN
+!pb   IF (NCOU.GT.1) THEN
         XSTOR=0.D0
-!pb      ENDIF
+!pb   ENDIF
       EIRENE_FPATHI=1.D10
       SIGMAX=0.D0
 C

@@ -1,8 +1,10 @@
-c  bug fix:  text(71-13) --> text(71)
-c  17.3.06: txttal and txttlw added for additional tallies
-C
+c  bug fix : text(71-13) --> text(71)
+c    17.03.06: txttal and txttlw added for additional tallies
+cdr  29.09.14: TXTUNT corrected for generation limits, momentum sources
+c    oct.14  : input tally 22 (potential) connnected to text arrays
+
       SUBROUTINE EIRENE_SETTXT
- 
+c  set default texts  (volume tallies: name, species, units), ditto: surface and input tallies 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -121,34 +123,35 @@ C
       TXTTAL(1,56)=
      . 'ENERGY SOURCE (BULK IONS) FROM PHOTON-PLASMA INTERACTION    '
 C  TALLY NTALA=57 (SEE PARMMOD.F)
-C        ADDIT. TRACKLENGTH ESTIMATED TALLIES
+C        ADDITIONAL TRACKLENGTH ESTIMATED TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10A
       TXTTAL(1,NTALA)=
      . 'ADDITIONAL TALLIES, TRACKLENGTH ESTIMATOR, SUBR. UPTUSR.F   '
 C  TALLY NTALC=58 (SEE PARMMOD.F)
-C        ADDIT. COLLISION ESTIMATED TALLIES
+C        ADDITIONAL COLLISION ESTIMATED TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10B
       TXTTAL(1,NTALC)=
      . 'ADDITIONAL TALLIES, COLLISION ESTIMATOR, SUBR. UPCUSR.F     '
 C  TALLY NTALT=59 (SEE PARMMOD.F)
-C        ADDIT. SNAPSHOT ESTIMATED TALLIES
+C        ADDITIONAL SNAPSHOT ESTIMATED TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 13B
       TXTTAL(1,NTALT)=
      . 'ADDITIONAL TALLIES, SNAPSHOT ESTIMATOR, SUBR. UPNUSR.F      '
 C  TALLY NTALM=60 (SEE PARMMOD.F)
-C        ADDIT. TALLIES FOR INTERFACING TO OTHER CODES
+C        ADDITIONAL TALLIES FOR INTERFACING TO OTHER CODES
 C        TXTTAL MAY BE OVERWRITTEN IN SUBR. INFCOP
       TXTTAL(1,NTALM)=
      . 'ADDITIONAL TALLIES FOR INTERFACING, SUBR. INFCOP.F          '
 C  TALLY NTALB=61 (SEE PARMMOD.F)
-C        ADDIT. TALLIES FOR ITERATIVE MODE (BGK-ITERATION)
+C        ADDITIONAL TALLIES FOR ITERATIVE MODE (BGK-ITERATION)
       TXTTAL(1,NTALB)=
      . 'ADDITIONAL TALLIES FOR ITERATIVE MODE, SUBR. UPTBGK.F       '
 C  TALLY NTALB=62 (SEE PARMMOD.F)
-C        ADDIT. TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
+C        ADDITIONAL TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
       TXTTAL(1,NTALR)=
      . 'ADDITIONAL TALLIES, ALGEBRAIC EXPRESSIONS, INPUT BLOCK 10C  '
+C  GENERATION LIMIT TALLIES
       TXTTAL(1,63)=
      . 'PARTICLE SINK (ATOMS) DUE TO GENERATION LIMIT               '
       TXTTAL(1,64)=
@@ -173,6 +176,7 @@ C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
      . 'MOMENTUM SINK (TEST IONS) DUE TO GENERATION LIMIT           '
       TXTTAL(1,74)=
      . 'MOMENTUM SINK (PHOTONS) DUE TO GENERATION LIMIT             '
+C  VOLUMETRIC PRIMARY SOURCE TALLIES  (E.G. RECOMBINATION)
       TXTTAL(1,75)=
      . 'PRIMARY PARTICLE SOURCE (ATOMS) FROM PLASMA INTERACTIONS    '
       TXTTAL(1,76)=
@@ -193,6 +197,7 @@ C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
      . 'PRIMARY ENERGY SOURCE (PHOTONS) FROM PLASMA INTERACTIONS    '
       TXTTAL(1,84)=
      . 'PRIMARY ENERGY SOURCE (BULK IONS) FROM PLASMA INTERACTIONS  '
+C  MOMENTUM DENSITY TALLIES
       TXTTAL(1,85)=
      . 'MOMENTUM DENSITY, X-DIRECTION (ATOMS)                       '
       TXTTAL(1,86)=
@@ -201,6 +206,7 @@ C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
      . 'MOMENTUM DENSITY, X-DIRECTION (TEST IONS)                   '
       TXTTAL(1,88)=
      . 'MOMENTUM DENSITY, X-DIRECTION (PHOTONS)                     '
+
       TXTTAL(1,89)=
      . 'MOMENTUM DENSITY, Y-DIRECTION (ATOMS)                       '
       TXTTAL(1,90)=
@@ -209,6 +215,7 @@ C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
      . 'MOMENTUM DENSITY, Y-DIRECTION (TEST IONS)                   '
       TXTTAL(1,92)=
      . 'MOMENTUM DENSITY, Y-DIRECTION (PHOTONS)                     '
+
       TXTTAL(1,93)=
      . 'MOMENTUM DENSITY, Z-DIRECTION (ATOMS)                       '
       TXTTAL(1,94)=
@@ -217,6 +224,7 @@ C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
      . 'MOMENTUM DENSITY, Z-DIRECTION (TEST IONS)                   '
       TXTTAL(1,96)=
      . 'MOMENTUM DENSITY, Z-DIRECTION (PHOTONS)                     '
+
       TXTTAL(1,97)=
      . 'MOMENTUM SOURCE (BULK IONS) FROM ATOM-PLASMA INTERACTION    '
       TXTTAL(1,98)=
@@ -288,6 +296,7 @@ C
       TXTUNT(1,54)='WATT*CM**-3             '
       TXTUNT(1,55)='WATT*CM**-3             '
       TXTUNT(1,56)='WATT*CM**-3             '
+C  ADDITIONAL TALLIES
       TXTUNT(1,NTALA)='TO BE READ              '
       TXTUNT(1,NTALC)='TO BE READ              '
       TXTUNT(1,NTALM)='TO BE DEFINED IN INFCOP '
@@ -298,14 +307,15 @@ C  GENERATION LIMIT TALLIES
       TXTUNT(1,64)='AMP*CM**-3              '
       TXTUNT(1,65)='AMP*CM**-3              '
       TXTUNT(1,66)='AMP*CM**-3              '
-      TXTUNT(1,67)='EV*CM**-3               '
-      TXTUNT(1,68)='EV*CM**-3               '
-      TXTUNT(1,69)='EV*CM**-3               '
-      TXTUNT(1,70)='EV*CM**-3               '
-      TXTUNT(1,71)='CM/S*CM**-3             '
-      TXTUNT(1,72)='CM/S*CM**-3             '
-      TXTUNT(1,73)='CM/S*CM**-3             '
-      TXTUNT(1,74)='CM/S*CM**-3             '
+      TXTUNT(1,67)='WATT*CM**-3             '
+      TXTUNT(1,68)='WATT*CM**-3             '
+      TXTUNT(1,69)='WATT*CM**-3             '
+      TXTUNT(1,70)='WATT*CM**-3             '
+      TXTUNT(1,71)='G*CM/S*AMP*CM**-3       '
+      TXTUNT(1,72)='G*CM/S*AMP*CM**-3       '
+      TXTUNT(1,73)='G*CM/S*AMP*CM**-3       '
+      TXTUNT(1,74)='G*CM/S*AMP*CM**-3       '
+
       TXTUNT(1,75)='AMP*CM**-3              '
       TXTUNT(1,76)='AMP*CM**-3              '
       TXTUNT(1,77)='AMP*CM**-3              '
@@ -316,6 +326,7 @@ C  GENERATION LIMIT TALLIES
       TXTUNT(1,82)='WATT*CM**-3             '
       TXTUNT(1,83)='WATT*CM**-3             '
       TXTUNT(1,84)='WATT*CM**-3             '
+C  MOMENTUM DENSITY TALLIES
       TXTUNT(1,85)='G*CM/SEC*CM**-3         '
       TXTUNT(1,86)='G*CM/SEC*CM**-3         '
       TXTUNT(1,87)='G*CM/SEC*CM**-3         '
@@ -328,10 +339,11 @@ C  GENERATION LIMIT TALLIES
       TXTUNT(1,94)='G*CM/SEC*CM**-3         '
       TXTUNT(1,95)='G*CM/SEC*CM**-3         '
       TXTUNT(1,96)='G*CM/SEC*CM**-3         '
-      TXTUNT(1,97)='AMP*CM**-3              '
-      TXTUNT(1,98)='AMP*CM**-3              '
-      TXTUNT(1,99)='AMP*CM**-3              '
-      TXTUNT(1,100)='AMP*CM**-3             '
+C  MOMENTUM SOURCES (BULK IONS)
+      TXTUNT(1,97)='G*CM/S*AMP*CM**-3       '
+      TXTUNT(1,98)='G*CM/S*AMP*CM**-3       '
+      TXTUNT(1,99)='G*CM/S*AMP*CM**-3       '
+      TXTUNT(1,100)='G*CM/S*AMP*CM**-3       '
       DO 2 J=1,NTALV
         DO 2 I=2,N1MX
           TEXT24=TXTUNT(1,J)
@@ -521,6 +533,8 @@ C
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
 C
+C  TEXT FOR INPUT (BACKGROUND) TALLIES
+C
       TXTPLS(1,1)='PLASMA TEMPERATURE                               '
       TXTPLS(1,2)='PLASMA TEMPERATURE                               '
       TXTPLS(1,3)='PLASMA DENSITY (BULK PARTICLES)                  '
@@ -544,7 +558,7 @@ C     TXTPLS(1,12)='TO BE READ                                       '
       TXTPLS(1,19)='ELEC. FIELD UNIT VECTOR, Y DIRECTION             '
       TXTPLS(1,20)='ELEC. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,21)='ELEC. FIELD STRENGTH                             '
-      TXTPLS(1,21)='POTENTIAL                                        '
+      TXTPLS(1,22)='POTENTIAL                                        '
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN
@@ -576,7 +590,7 @@ C     TXTPUN(1,12)='TO BE READ              '
       TXTPUN(1,19)=' ---                    '
       TXTPUN(1,20)=' ---                    '
       TXTPUN(1,21)='V/CM                    '
-      TXTPUN(1,22)='??                      '
+      TXTPUN(1,22)='V                       '
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN
@@ -647,6 +661,7 @@ C
       NFSTVI(54)=1
       NFSTVI(55)=1
       NFSTVI(56)=1
+C
       NFSTVI(NTALA)=NADVI
       NFSTVI(NTALC)=NCLVI
       NFSTVI(NTALT)=NSNVI
@@ -859,6 +874,7 @@ C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
       NSPAN(54)=0
       NSPAN(55)=0
       NSPAN(56)=0
+C  ADDITIONAL TALLIES
       NSPAN(NTALA)=N5+1
       NSPAN(NTALC)=N7+1
       NSPAN(NTALT)=N10+1
@@ -961,6 +977,7 @@ C  GENERATION LIMIT TALLIES
       NSPEN(54)=0
       NSPEN(55)=0
       NSPEN(56)=0
+C  ADDITIONAL TALLIES
       NSPEN(NTALA)=N6
       NSPEN(NTALC)=N8
       NSPEN(NTALT)=N11
