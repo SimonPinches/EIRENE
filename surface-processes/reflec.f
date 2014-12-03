@@ -18,6 +18,7 @@ C  Oct2009  Behrisch reflection Matrix saved, to avoid restart problems
 C           with reduced energy scaling.
 C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
 C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
+C  Oct 14:  arguments of velocs changed. "weight" now in argument list
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -76,7 +77,7 @@ C  DATA FOR REDUCED ENERGY SCALING
 
       REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
      .          ZSPHI, RO5, PRBRF, EIRENE_FTHOMP, WATOM, RPROBA, ZE0, 
-     .          ZA, A, VXR, VYR, VZR,
+     .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
      .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
      .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
      .          XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
@@ -168,8 +169,10 @@ C
 C
         if (my_pe .eq. 0) then
           IF (NLTRIM) THEN
+C  OLD VERSION: READ ALL REFLECTION DATA FROM ONE SINGLE BIG, FIXED SET OF TARGET -- PROJECTILES, FILE
             IF (LTRMOL) THEN
               CALL EIRENE_REFDAT(TM,TC,WM,WC)
+C  NEWER VERSION:  READ SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
             ELSE
               CALL EIRENE_RDTRIM
             ENDIF
@@ -948,13 +951,14 @@ C  MONOENERGETIC, E0 (EV),  COSINE
       ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         TW=-E0TERM
-!pb these variables are necessary as the corresponding arguments in velocs
-!pb are INTENT(INOUT) !
+! these variables are INTENT(IN) (not altered in velocs)
         VXR = 0._DP
         VYR = 0._DP
         VZR = 0._DP
-        CALL EIRENE_VELOCS
-     .  (TW,0._DP,0._DP,VXR,VYR,VZR,RSQDVM(IMOL),
+        VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        CALL EIRENE_VELOCS(WGHTVS,
+     .          TW,0._DP,VWL,VXR,VYR,VZR,RSQDVM(IMOL),
      .                CVRSSM(IMOL),
      .               -CRTX,-CRTY,-CRTZ,
      .               E0,VELX,VELY,VELZ,VEL)
@@ -1026,16 +1030,17 @@ C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE LIKE
       ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         TW=-E0TERM
-!pb these variables are necessary as the corresponding arguments in velocs
-!pb are INTENT(INOUT) !
+! these variables for velocs.f are INTENT(IN) 
         VXR = 0._DP
         VYR = 0._DP
         VZR = 0._DP
-        CALL EIRENE_VELOCS
-     .  (TW,0._DP,0._DP,VXR,VYR,VZR,RSQDVA(IATM),
-     .                CVRSSA(IATM),
-     .               -CRTX,-CRTY,-CRTZ,
-     .               E0,VELX,VELY,VELZ,VEL)
+        VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        CALL EIRENE_VELOCS(WGHTVS,
+     .            TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .             CVRSSA(IATM),
+     .             -CRTX,-CRTY,-CRTZ,
+     .             E0,VELX,VELY,VELZ,VEL)
         RETURN
       ELSEIF (E0TERM.EQ.0.D0) THEN
 C  SAMPLE FROM ENERGY FROM THOMPSON DISTRIBUTION + STAND. ANGULAR DISTR.
