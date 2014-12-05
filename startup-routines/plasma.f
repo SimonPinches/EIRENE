@@ -7,7 +7,7 @@ C
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
 !  10.06.08 new:  default BFIN=1 T, rather than 0 T
 !  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
-
+!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 . help2 was undefined --> zero b-field
 !
       SUBROUTINE EIRENE_PLASMA
  
@@ -262,13 +262,14 @@ C  HELP IS FIELD LINE PITCH ANGLE: B_POL/B_TOT
 142     CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
         GOTO 1400
 143     CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
-        CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008) set constant B profile
+        CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008) set constant B profile, ONLY INDPRO(5)=3
         GOTO 1400
 C  INDPRO=4: read from stream B0:  NOT IN USE
 144     CONTINUE
         GOTO 150
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
 1400    CONTINUE
+C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
         IF (LEVGEO.EQ.1) THEN
           DO 1401 J=1,NSURF
             CALL EIRENE_NCELLN(J,IR,IP,IT,IA,IB,
@@ -278,7 +279,11 @@ C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
             BXIN(J)=0.0
             BYIN(J)=HELP(IR)
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
-            BFIN(J)=HELP2(IR)
+            IF (IND.EQ.3) THEN 
+              BFIN(J)=HELP2(IR)
+            ELSE
+              BFIN(J)=1.
+            ENDIF
 1401      CONTINUE
         ELSEIF (LEVGEO.EQ.2.AND.NLPOL) THEN
           DO 1402 J=1,NSURF
@@ -295,7 +300,11 @@ C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
             BXIN(J)=HELP(IR)*PUX/PN
             BYIN(J)=HELP(IR)*PUY/PN
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
-            BFIN(J)=HELP2(IR)
+            IF (IND.EQ.3) THEN 
+              BFIN(J)=HELP2(IR)
+            ELSE
+              BFIN(J)=1.
+            ENDIF
 1402      CONTINUE
         ELSEIF (LEVGEO.EQ.3.AND.NLPOL) THEN
           DO 1403 J=1,NSURF
@@ -310,7 +319,11 @@ C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
             BXIN(J)=HELP(IR)*PUX/PN
             BYIN(J)=HELP(IR)*PUY/PN
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
-            BFIN(J)=HELP2(IR)
+            IF (IND.EQ.3) THEN 
+              BFIN(J)=HELP2(IR)
+            ELSE
+              BFIN(J)=1.
+            ENDIF
 1403      CONTINUE
         ELSE
           CALL EIRENE_LEER(1)

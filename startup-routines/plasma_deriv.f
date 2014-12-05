@@ -1,5 +1,5 @@
 c  new in 2004:
-c  density models to contruct backgound data from other given data :
+c  density models to contruct background data from other given data :
 c      Saha, Boltzmann, Corona, Colrad, File (fort.13,or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
@@ -21,7 +21,7 @@ c  march 06
 c     new option: icall > 0, and call base_density
 c       allows to use output tallies and special "density model" to
 c       construct new input tallies (densities, temperatures, drift velocities)
-c       e.g. for post processing (diagno), or for iterations.
+c       e.g. for post processing (diagno), or for iterations (bgk).
 c
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 !pb  06.03.07: new density models 'CONSTANT' and 'MULTIPLY' introduced
@@ -32,18 +32,30 @@ c
  
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
+
 c  input:
+c    nlmlti (via cinit.f):  all bulk ions have own temperature Ti, on Ti(iplsti), set new Ti for ipls
+c    nlmlv  (via cinit.f):  all bulk ions have own velocity, set new flow velocity for ipls   
+c    icall               :
+
 c    icall=0
-c      called prior to Monte Carlo Loop
+c      called prior to Monte Carlo Loop (from subr. input)
 c      in this call all density models referring to output tallies
-c      are ignored.
+c      are ignored (e.g. 'fort.10').
 c    icall=1
-c      called after to Monte Carlo Loop and sum over strata
+c      called after Monte Carlo Loop and sum over strata
 c        this allows to put output tallies from a run onto the
 c        background for a next iteration or post processing.
-c        in this call all density models referring to input tallies  are
-c        ignored.
+c        In this call all density models referring to input tallies  are
+c        ignored, because they are aready done in a previous call
+
 c      write fort.13 after all density models are done.
+
+c   carry out specific "background models", 
+c   for bulk species IPLS
+c      'fort.13':  take background data from fort.13, species: iold
+c      'fort.10':  take test particle data from fort.10, species: iold
+
 c  set derived plasma parameters:
 c   DEIN             : electron density (from quasineutrality)
 c   DEINL            : log electron density (with cutoffs)
@@ -82,7 +94,8 @@ c   LGVAC(...,0)     : background vacuum flag
       REAL(DP) :: tpb1, tpb2, EIRENE_second_own
       REAL(DP) :: COEF(0:8), COEF2D(0:8,0:8), FP(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
-     .                         BASE_DENSITY(:), BASE_TEMP(:)
+     .                         BASE_DENSITY(:), BASE_TEMP(:),
+     .                         BASE_VELX(:), BASE_VELY(:),BASE_VELZ(:)
       INTEGER :: I, IR, IN, IP, IPM, J, IPLS, IOLD, ISW, IRE, I1,
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, JFEXMN, JFEXMX
  
@@ -103,7 +116,7 @@ c   LGVAC(...,0)     : background vacuum flag
       JFEXMN = 0
       JFEXMX = 0
  
-      tpb1 = EIRENE_second_own()
+cdr   tpb1 = EIRENE_second_own()
  
       IBS = 0
       DO IPLS=1,NPLSI
@@ -393,7 +406,7 @@ C  ARE THERE MULTIPLE ION DRIFT VELOCITIES?
             I1=INDEX(TDMPAR(IPLS)%TDM%H2(IRE),'.')
             READ (TDMPAR(IPLS)%TDM%H2(IRE)(I1+1:),*) ISW
             SELECT CASE (ISW)
-            CASE (11)
+            CASE (11)  !  H.11 format, reduced population coefficient
 c  only temperature dependence in reduced population coefficient
               COEF(0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1)
               DO IR=1,NSURF
