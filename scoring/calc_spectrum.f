@@ -1,7 +1,20 @@
 !pb  24.04.07:  allow for logarithmic equidistant energy bins
+cdr  29.09.14:  only comments 
+cdr             meaning of isc=1, 2,... unclear. All current calls are with either isc=0 or isc=1
  
       SUBROUTINE EIRENE_CALC_SPECTRUM (WT,IND,ISC)
- 
+C  update contributions to surface or volume/line averaged energy spectra
+c  wt:  particle weight
+
+c  isc:    =0: surface averaged spectra, 
+c       ind:  =1: particle incident on surface
+c       ind:  =2: particle re-emitted from surface
+
+c  isc:  =1,2: else (cell based spectra)
+c       ind:  not in use  (often: ind = iflag in calling programs, 
+c                          iflag is a flag used for special (non-standard) options for volume averged tally estimators)
+c  ityp:  type of particle
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -21,9 +34,11 @@
       REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
      .                               CNDYNP(:)
       TYPE(EIRENE_SPECTRUM), POINTER :: P
- 
+c  currently: surface based spectra only from particles incident onto surface (ind=1)
+c             no spectra of emitted particles (ind=2)
       IF ((ISC == 0) .AND. (IND .NE. 1)) RETURN
- 
+
+C  set "type" specific parameters
       SELECT CASE (ITYP)
       CASE (0)
         IS = IPHOT
@@ -66,7 +81,7 @@
         CDYN = CNDYNP(IPLS)
       END SELECT
  
-      IF (ISC == 0) THEN    ! SURFACE
+      IF (ISC == 0) THEN    ! SURFACE AVERAGED SPECTRUM
  
         DO ISPC=1,NADSPC
           P => ESTIML(ISPC)%PSPC
@@ -103,7 +118,9 @@
           END IF
         END DO
  
-      ELSE     ! CELL
+      ELSE     ! CELL based spectra
+
+cdr  meaning of isc = 1,2  ?? see subr. input, flag ISRFCLL
  
         WV=WEIGHT/VEL
         DO IC=1,NCOU

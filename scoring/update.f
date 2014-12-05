@@ -18,6 +18,7 @@ C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
+
  
 C
       SUBROUTINE EIRENE_UPDATE
@@ -25,6 +26,14 @@ C
 C ESTIMATORS ARE UPDATED FOR EACH TRACK TAKING T/VEL SEC.
 C T (CM) IS STORED ON CLPD ARRAY FOR ONE OR MORE CELLS, THAT HAVE
 C BEEN CROSSED WITHOUT COLLISION.
+C
+C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELATION OF TERMS
+
+C  IFLAG=1:  
+C  IFLAG=2:  
+C  IFLAG=3:  
+C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR AT POINT OF COLLISION
+C  IFLAG=5:  
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -1152,7 +1161,7 @@ C SO NICHT    EMPL(IRD)     = EMPL(IRD)     +WTRSIG*E0
 C
 C.........................................................................
 C
-C   PARALLEL MOMENTUM EXCHANGE RATE: DYN/CM**3,  CONTRIBUTIONS FROM ATOMS
+C   PARALLEL MOMENTUM EXCHANGE RATE: DYN/CM**3,  CONTRIBUTIONS FROM MOLECULES
 C
 C   CONTRIBUTIONS FROM CX, EI, PI, EL
 C   PI: TO BE WRITTEN
