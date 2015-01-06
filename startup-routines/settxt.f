@@ -428,15 +428,20 @@ C
       TXTTLW(1,74)='SPUTTERED FLUX BY INCIDENT PHS. => BULK IONS     '
       TXTTLW(1,75)='SPUTTERED FLUX BY INCIDENT B.I. => BULK IONS     '
       TXTTLW(1,76)='SPUTTERED FLUX, TOTAL                            '
-C  TALLY NTLSA=77 (SEE PARMMOD.F)
+      TXTTLW(1,77)='SPUTTERED FLUX BY INCIDENT ATS., TOTAL           '
+      TXTTLW(1,78)='SPUTTERED FLUX BY INCIDENT MLS., TOTAL           '
+      TXTTLW(1,79)='SPUTTERED FLUX BY INCIDENT T.I., TOTAL           '
+      TXTTLW(1,80)='SPUTTERED FLUX BY INCIDENT PHS., TOTAL           '
+      TXTTLW(1,81)='SPUTTERED FLUX BY INCIDENT B.I., TOTAL           '
+C  TALLY NTLSA=82 (SEE PARMMOD.F)
 C   ADDIT. TALLIES, SUBR. UPSUSR.F
 C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10D
-      TXTTLW(1,77)='ADDITIONAL SURFACE TALLY, SUBR. UPSUSR.F         '
-C  TALLY NTLSR=78 (SEE PARMMOD.F)
+      TXTTLW(1,82)='ADDITIONAL SURFACE TALLY, SUBR. UPSUSR.F         '
+C  TALLY NTLSR=83 (SEE PARMMOD.F)
 C   ADDIT. TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
 C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10E
-      TXTTLW(1,78)='ALGEBRAIC EXPRESSION IN SURFACE AVERAGED TALLIES '
-      TXTTLW(1,79)='PUMPED FLUX BY SPECIES                           '
+      TXTTLW(1,83)='ALGEBRAIC EXPRESSION IN SURFACE AVERAGED TALLIES '
+      TXTTLW(1,84)='PUMPED FLUX BY SPECIES                           '
 C
       DO J=1,NTALS
         TXTTLW(2:N2MX,J)=TXTTLW(1,J)
@@ -526,9 +531,14 @@ C
       TXTUNW(1,74)='AMP                     '
       TXTUNW(1,75)='AMP                     '
       TXTUNW(1,76)='AMP                     '
-      TXTUNW(1,77)='TO BE READ              '
-      TXTUNW(1,78)='TO BE READ              '
+      TXTUNW(1,77)='AMP                     '
+      TXTUNW(1,78)='AMP                     '
       TXTUNW(1,79)='AMP                     '
+      TXTUNW(1,80)='AMP                     '
+      TXTUNW(1,81)='AMP                     '
+      TXTUNW(1,82)='TO BE READ              '
+      TXTUNW(1,83)='TO BE READ              '
+      TXTUNW(1,84)='AMP                     '
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
@@ -776,6 +786,11 @@ C
       NFSTWI(74)=NPLSI
       NFSTWI(75)=NPLSI
       NFSTWI(76)=1
+      NFSTWI(77)=1
+      NFSTWI(78)=1
+      NFSTWI(79)=1
+      NFSTWI(80)=1
+      NFSTWI(81)=1
       NFSTWI(NTLSA)=NADSI
       NFSTWI(NTLSR)=NALSI
       NFSTWI(NTALS)=NSPTOT
@@ -1227,9 +1242,14 @@ C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
       NSPANW(74)=N4+1
       NSPANW(75)=N4+1
       NSPANW(76)=0
-      NSPANW(77)=N5+1
-      NSPANW(78)=N6+1
-      NSPANW(79)=N7+1
+      NSPANW(77)=0
+      NSPANW(78)=0
+      NSPANW(79)=0
+      NSPANW(80)=0
+      NSPANW(81)=0
+      NSPANW(82)=N5+1
+      NSPANW(83)=N6+1
+      NSPANW(84)=N7+1
  
       NSPENW(1)=N2
       NSPENW(2)=N2
@@ -1305,11 +1325,16 @@ C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
       NSPENW(72)=N5
       NSPENW(73)=N5
       NSPENW(74)=N5
-      NSPENW(77)=N5
+      NSPENW(75)=N5
       NSPENW(76)=0
-      NSPENW(77)=N6
-      NSPENW(78)=N7
-      NSPENW(79)=N8
+      NSPENW(77)=0
+      NSPENW(78)=0
+      NSPENW(79)=0
+      NSPENW(80)=0
+      NSPENW(81)=0
+      NSPENW(82)=N6
+      NSPENW(83)=N7
+      NSPENW(84)=N8
 
       DO IPHOT=1,NPHOTI
         ISPZ=IPHOT

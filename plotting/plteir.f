@@ -956,7 +956,8 @@ C  y axis: cell averages (approx: cell centres)
         TXHEAD=REPEAT(' ',72)
         TXHEAD(1:30)=HEAD9(1:30)
         TXHEAD(32:42)='INTEGRAL: '
-        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
+!pb        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
+        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
         IERR=0   
 C  MANY SPECTRA INTO ONE PICTURE_        
         L_SAME=ESTIML(ISPC)%PSPC%SPC_SAME .NE. 1.D0
@@ -1056,7 +1057,8 @@ C  rescaling:  flux/ev to flux/nm
         TXHEAD=REPEAT(' ',72)
         TXHEAD(1:30)=HEAD10(1:30)
         TXHEAD(32:42)='INTEGRAL: '
-        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
+!pb        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
+        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
         IERR=0
         L_SAME=.TRUE.
         IF (ISPC.EQ.1) L_SAME=.FALSE.

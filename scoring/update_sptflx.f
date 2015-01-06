@@ -35,7 +35,8 @@ C  THIS IS NEEDED IN CASE SPUTTERED SPECIES IS NOT AN EIRENE TEST SPECIES IN THI
       IF (MSURFG.GT.0) THEN
          IF (LSPTTOT) SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
       ENDIF
-      IF (IND.EQ.0) RETURN
+!pb  additional sputter tallies introduced
+!pb      IF (IND.EQ.0) RETURN
 
 C  FROM HERE ON:  INCIDENT TYPE AND SPUTTERED TYPE AND SPECIES RESOLVED FLUXES, 
 C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
@@ -44,6 +45,10 @@ C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
 
 ! INCIDENT PARTICLE IS PHOTON
       CASE (0)
+
+         if (lsptphtot) sptphtot(msurf) = sptphtot(msurf) + wgh
+         if (ind == 0) return
+
          SELECT CASE (ITYP)
 !      OUTGOING PARTICLE IS PHOTON
          CASE(0)
@@ -96,6 +101,10 @@ C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
 
 ! INCIDENT PARTICLE IS ATOM
       CASE (1)
+
+         if (lsptatot) sptatot(msurf) = sptatot(msurf) + wgh
+         if (ind == 0) return
+
          SELECT CASE (ITYP)
 !      OUTGOING PARTICLE IS PHOTON
          CASE(0)
@@ -147,6 +156,10 @@ C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
 
 ! INCIDENT PARTICLE IS MOLECULE
       CASE (2)
+
+         if (lsptmtot) sptmtot(msurf) = sptmtot(msurf) + wgh
+         if (ind == 0) return
+
          SELECT CASE (ITYP)
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
@@ -199,6 +212,10 @@ C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
 
 ! INCIDENT PARTICLE IS TEST ION
       CASE (3)
+
+         if (lsptitot) sptitot(msurf) = sptitot(msurf) + wgh
+         if (ind == 0) return
+
          SELECT CASE (ITYP)
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
@@ -251,6 +268,10 @@ C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
 
 ! INCIDENT PARTICLE IS BULK ION
       CASE (4)
+
+         if (lsptpltot) sptpltot(msurf) = sptpltot(msurf) + wgh
+         if (ind == 0) return
+
          SELECT CASE (ITYP)
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)

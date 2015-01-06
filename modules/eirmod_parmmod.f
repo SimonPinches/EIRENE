@@ -3,6 +3,7 @@
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
+cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
       MODULE EIRMOD_PARMMOD
  
       USE EIRMOD_PRECISION
@@ -218,7 +219,7 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
         NTALM=60   ! NTALV-24, WITH NTALV=84
         NTALB=61   ! NTALV-23, WITH NTALV=84
         NTALR=62   ! NTALV-22, WITH NTALV=84
-        NTALS=79   ! SURFACE AVERAGED TALLIES: INCREASED IN 2014 FROM 59 TO 79 (MORE SPUTTER TALLIES)
+        NTALS=84   ! SURFACE AVERAGED TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)
         NTLSA=NTALS-2
         NTLSR=NTALS-1
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
@@ -229,7 +230,7 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
  
 C  TOTAL NUMBER OF SURFACE AVERAGED TALLIES
 C  SET IN SETPRM ACCORDING TO THE LIVING TALLIES SPECIFIED IN LIVTALS
-        NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+1+
+        NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+6+
      P        1*NADSP+1*NALSP+1*NSPZP
  
 C  SURFACE REFLECTION DATA

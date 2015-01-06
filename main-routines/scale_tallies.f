@@ -85,8 +85,11 @@ cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
             IF (LSPUMP) SPUMP (NSPH+IATM,J)=SPUMP (NSPH+IATM,J)*FATM
 310       CONTINUE
 
-c  integrated atomic tallies, both volumetric and surface averaged 
 2101    CONTINUE
+
+        if (lsptatot) sptatot = sptatot * fatm
+
+c  integrated atomic tallies, both volumetric and surface averaged 
         DO 2111 IATM=0,NATMI
           PDENAI(IATM,ISTRA)=PDENAI(IATM,ISTRA)*FATM
           EDENAI(IATM,ISTRA)=EDENAI(IATM,ISTRA)*FATM
@@ -121,6 +124,9 @@ cdr       SPTPATI(IATM,ISTRA)=SPTPATI(IATM,ISTRA)*FATM
           SPUMPI(NSPH+IATM,ISTRA)=SPUMPI(NSPH+IATM,ISTRA)*FATM
           
 2111    CONTINUE
+
+        sptatti(istra) = sptatti(istra)*fatm
+
         DO 2112 J=1,NSBOX_TAL
           IF (LEAAT) EAAT(J)=EAAT(J)*FATM
           IF (LEMAT) EMAT(J)=EMAT(J)*FMOL
@@ -168,7 +174,9 @@ cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPML) SPTPML(IMOL,J)=SPTPML(IMOL,J)*FMOL
             IF (LSPUMP) SPUMP (NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
 315       CONTINUE
-2115     CONTINUE
+2115    CONTINUE
+
+        if (lsptmtot) sptmtot = sptmtot*fmol 
  
         DO 2116 IMOL=0,NMOLI
           PDENMI(IMOL,ISTRA)=PDENMI(IMOL,ISTRA)*FMOL
@@ -203,6 +211,8 @@ cdr       SPTPMLI(IMOL,ISTRA)=SPTPMLI(IMOL,ISTRA)*FMOL
           SPUMPI(NSPA+IMOL,ISTRA)=SPUMPI(NSPA+IMOL,ISTRA)*FMOL
           
 2116    CONTINUE
+
+        sptmtti(istra) = sptmtti(istra)*fmol
  
         DO 2117 J=1,NSBOX_TAL
           IF (LEAML) EAML(J)=EAML(J)*FATM
@@ -253,6 +263,8 @@ cdr         IF (LSPTPIO) SPTPIO(IION,J)=SPTPIO(IION,J)*FION
 422       CONTINUE
 420     CONTINUE
  
+        if (lsptitot) sptitot = sptitot*fion
+
         DO 431 IION=0,NIONI
           PDENII(IION,ISTRA)=PDENII(IION,ISTRA)*FION
           EDENII(IION,ISTRA)=EDENII(IION,ISTRA)*FION
@@ -286,6 +298,9 @@ cdr       SPTPIOI(IION,ISTRA)=SPTPIOI(IION,ISTRA)*FION
           SPUMPI(NSPAM+IION,ISTRA)=SPUMPI(NSPAM+IION,ISTRA)*FION
           
 431     CONTINUE
+
+        sptitti(istra) = sptitti(istra)*fion
+        
         DO 432 J=1,NSBOX_TAL
           IF (LEAIO) EAIO(J)=EAIO(J)*FATM
           IF (LEMIO) EMIO(J)=EMIO(J)*FMOL
@@ -337,7 +352,9 @@ cdr         IF (LSPTPPHT) SPTPPHT(IPHOT,J)=SPTPPHT(IPHOT,J)*FPHOT
             IF (LSPUMP) SPUMP (IPHOT,J)=SPUMP (IPHOT,J)*FPHOT
           END DO
         END DO
- 
+
+        if (lsptphtot) sptphtot = sptphtot*fphot
+
         DO IPHOT=0,NPHOTI
           PDENPHI(IPHOT,ISTRA)=PDENPHI(IPHOT,ISTRA)*FPHOT
           EDENPHI(IPHOT,ISTRA)=EDENPHI(IPHOT,ISTRA)*FPHOT
@@ -371,6 +388,9 @@ cdr       SPTPPHTI(IPHOT,ISTRA)=SPTPPHTI(IPHOT,ISTRA)*FPHOT
           SPUMPI(IPHOT,ISTRA)=SPUMPI(IPHOT,ISTRA)*FPHOT
           
         END DO
+
+        sptphtti(istra) = sptphtti(istra)*fphot
+
         DO J=1,NSBOX_TAL
           IF (LEAPHT) EAPHT(J)=EAPHT(J)*FATM
           IF (LEMPHT) EMPHT(J)=EMPHT(J)*FMOL
