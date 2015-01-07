@@ -1,0 +1,18 @@
+C
+C
+      SUBROUTINE EIRENE_OUTUSR
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CPLOT
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_COUTAU
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CSPEZ
+      IMPLICIT NONE
+      real(dp) :: dummy(nrtal)
+      integer :: iadv
+
+      RETURN
+      END
