@@ -103,10 +103,10 @@ C
      R SPTPPHT(:,:), 
      R SPTAPL(:,:), SPTMPL(:,:), SPTIPL(:,:), SPTPHPL(:,:), 
      R SPTPPL(:,:),
-     R SPTTOT(:),   
 ! (incident type: atoms, but no emitted species indes, nur surface index
 ! analog spttot, aber nach a,m,i,pl,ph incident type aufgeloest, im tally namen)     
      R sptatot(:), sptmtot(:), sptitot(:), sptphtot(:), sptpltot(:),  
+     R SPTTOT(:),   
 
      R ADDS(:,:),  ALGS(:,:),
      R SPUMP(:,:)
@@ -226,8 +226,8 @@ C
      L LSPTAIO,  LSPTMIO,  LSPTIIO,  LSPTPHIO,  LSPTPIO, 
      L LSPTAPHT, LSPTMPHT, LSPTIPHT, LSPTPHPHT, LSPTPPHT, 
      L LSPTAPL,  LSPTMPL,  LSPTIPL,  LSPTPHPL,  LSPTPPL,
-     L LSPTTOT,
      L Lsptatot, Lsptmtot, Lsptitot, Lsptpltot, Lsptphtot,   
+     L LSPTTOT,
 
      L LADDS,  LALGS,
      L LSPUMP
@@ -1222,35 +1222,35 @@ C
       ELSE
         SPTPPL => CEMETERYS(0:0,:)
       END IF
-      IF (LSPTTOT) THEN
-        SPTTOT => ESTIMS(NADDW(76)+1,:)
-      ELSE
-        SPTTOT => CEMETERYS(0,:)
-      END IF
       IF (LSPTATOT) THEN
-        SPTATOT => ESTIMS(NADDW(77)+1,:)
+        SPTATOT => ESTIMS(NADDW(76)+1,:)
       ELSE
         SPTATOT => CEMETERYS(0,:)
       END IF
       IF (LSPTMTOT) THEN
-        SPTMTOT => ESTIMS(NADDW(78)+1,:)
+        SPTMTOT => ESTIMS(NADDW(77)+1,:)
       ELSE
         SPTMTOT => CEMETERYS(0,:)
       END IF
       IF (LSPTITOT) THEN
-        SPTITOT => ESTIMS(NADDW(79)+1,:)
+        SPTITOT => ESTIMS(NADDW(78)+1,:)
       ELSE
         SPTITOT => CEMETERYS(0,:)
       END IF
       IF (LSPTPHTOT) THEN
-        SPTPHTOT => ESTIMS(NADDW(80)+1,:)
+        SPTPHTOT => ESTIMS(NADDW(79)+1,:)
       ELSE
         SPTPHTOT => CEMETERYS(0,:)
       END IF
       IF (LSPTPLTOT) THEN
-        SPTPLTOT => ESTIMS(NADDW(81)+1,:)
+        SPTPLTOT => ESTIMS(NADDW(80)+1,:)
       ELSE
         SPTPLTOT => CEMETERYS(0,:)
+      END IF
+      IF (LSPTTOT) THEN
+        SPTTOT => ESTIMS(NADDW(81)+1,:)
+      ELSE
+        SPTTOT => CEMETERYS(0,:)
       END IF
       IF (LADDS) THEN
         ADDS => ESTIMS(NADDW(82)+1:NADDW(83),:)
@@ -1610,12 +1610,12 @@ C
         LSPTPIO    => LIVTALS(73)
         LSPTPPHT   => LIVTALS(74)
         LSPTPPL    => LIVTALS(75)
-        LSPTTOT    => LIVTALS(76)
-        LSPTATOT   => LIVTALS(77)
-        LSPTMTOT   => LIVTALS(78)
-        LSPTITOT   => LIVTALS(79)
-        LSPTPHTOT  => LIVTALS(80)
-        LSPTPLTOT  => LIVTALS(81)
+        LSPTATOT   => LIVTALS(76)
+        LSPTMTOT   => LIVTALS(77)
+        LSPTITOT   => LIVTALS(78)
+        LSPTPHTOT  => LIVTALS(79)
+        LSPTPLTOT  => LIVTALS(80)
+        LSPTTOT    => LIVTALS(81)
         LADDS     => LIVTALS(82)
         LALGS     => LIVTALS(83)
         LSPUMP    => LIVTALS(84)
@@ -1695,12 +1695,12 @@ C
         LMSSPTPIO   => LMISTALS(73)
         LMSSPTPPHT  => LMISTALS(74)
         LMSSPTPPL   => LMISTALS(75)
-        LMSSPTTOT   => LMISTALS(76)
-        LMSSPTATOT  => LMISTALS(77)
-        LMSSPTMTOT  => LMISTALS(78)
-        LMSSPTITOT  => LMISTALS(79)
-        LMSSPTPHTOT => LMISTALS(80)
-        LMSSPTPLTOT => LMISTALS(81)
+        LMSSPTATOT  => LMISTALS(76)
+        LMSSPTMTOT  => LMISTALS(77)
+        LMSSPTITOT  => LMISTALS(78)
+        LMSSPTPHTOT => LMISTALS(79)
+        LMSSPTPLTOT => LMISTALS(80)
+        LMSSPTTOT   => LMISTALS(81)
         LMSADDS     => LMISTALS(82)
         LMSALGS     => LMISTALS(83)
         LMSSPUMP    => LMISTALS(84)
