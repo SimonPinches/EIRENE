@@ -294,6 +294,7 @@ C  SECOND SECONDARY: PREVIOUS ATOM IATM
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
+                IF (LEAPL) EAPL(IRD) = EAPL(IRD) + WTRSIG*E0
               ENDIF
             ENDIF
           ENDIF

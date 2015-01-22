@@ -72,8 +72,8 @@ csw 19feb2013: added XMCT array
      R SPTPPHTI(:,:),
      R SPTAPLI(:,:), SPTMPLI(:,:), SPTIPLI(:,:), SPTPHPLI(:,:), 
      R SPTPPLI(:,:),
-     R SPTTTI(:),
      R sptatti(:), sptmtti(:), sptitti(:), sptphtti(:), sptpltti(:),   
+     R SPTTTI(:),
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
  
@@ -283,12 +283,12 @@ csw 19feb2013: added XMCT array
       ALLOCATE (SPTIPLI(0:NPLS,0:NSTRA))
       ALLOCATE (SPTPHPLI(0:NPLS,0:NSTRA))
       ALLOCATE (SPTPPLI(0:NPLS,0:NSTRA))
-      ALLOCATE (SPTTTI(0:NSTRA))
       ALLOCATE (SPTATTI(0:NSTRA))
       ALLOCATE (SPTMTTI(0:NSTRA))
       ALLOCATE (SPTITTI(0:NSTRA))
       ALLOCATE (SPTPHTTI(0:NSTRA))
       ALLOCATE (SPTPLTTI(0:NSTRA))
+      ALLOCATE (SPTTTI(0:NSTRA))
       ALLOCATE (ADDSI(0:NADS,0:NSTRA))
       ALLOCATE (ALGSI(0:NALS,0:NSTRA))
       ALLOCATE (SPUMPI(0:NSPZ,0:NSTRA))
@@ -523,12 +523,12 @@ csw 19mar2013
       DEALLOCATE (SPTPIOI)
       DEALLOCATE (SPTPPHTI)
       DEALLOCATE (SPTPPLI)
-      DEALLOCATE (SPTTTI)
       DEALLOCATE (SPTATTI)
       DEALLOCATE (SPTMTTI)
       DEALLOCATE (SPTITTI)
       DEALLOCATE (SPTPHTTI)
       DEALLOCATE (SPTPLTTI)
+      DEALLOCATE (SPTTTI)
       DEALLOCATE (ADDSI)
       DEALLOCATE (ALGSI)
       DEALLOCATE (SPUMPI)
@@ -757,12 +757,12 @@ csw 19mar2013
         SPTIPLI(:,ISTRA) = 0._DP
         SPTPHPLI(:,ISTRA) = 0._DP
         SPTPPLI(:,ISTRA) = 0._DP
-        SPTTTI(ISTRA) = 0._DP
         SPTATTI(ISTRA) = 0._DP
         SPTMTTI(ISTRA) = 0._DP
         SPTITTI(ISTRA) = 0._DP
         SPTPHTTI(ISTRA) = 0._DP
         SPTPLTTI(ISTRA) = 0._DP
+        SPTTTI(ISTRA) = 0._DP
         ADDSI(:,ISTRA)  = 0._DP
         ALGSI(:,ISTRA)  = 0._DP
         SPUMPI(:,ISTRA) = 0._DP
@@ -1525,10 +1525,6 @@ C     The following ENTRY is for reinitialization of EIRENE
       OUTAU(IA:IE) = PACK(SPTPPLI,.TRUE.)
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTTTI)
-      OUTAU(IA:IE) = PACK(SPTTTI,.TRUE.)
- 
-      IA = IE + 1
       IE = IA - 1 + SIZE(SPTATTI)
       OUTAU(IA:IE) = PACK(SPTATTI,.TRUE.)
  
@@ -1547,6 +1543,10 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPLTTI)
       OUTAU(IA:IE) = PACK(SPTPLTTI,.TRUE.)
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTTTI)
+      OUTAU(IA:IE) = PACK(SPTTTI,.TRUE.)
  
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDSI)
@@ -2379,10 +2379,6 @@ C     The following ENTRY is for reinitialization of EIRENE
       SPTPPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPPLI))
  
       IA = IE + 1
-      IE = IA - 1 + SIZE(SPTTTI)
-      SPTTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTTTI))
- 
-      IA = IE + 1
       IE = IA - 1 + SIZE(SPTATTI)
       SPTATTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTATTI))
   
@@ -2401,6 +2397,10 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPLTTI)
       SPTPLTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPLTTI))
+ 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(SPTTTI)
+      SPTTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTTTI))
 
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDSI)
