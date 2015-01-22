@@ -1,3 +1,5 @@
+!cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
+!               (same in find-param)
 !cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
 !cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
 !               some minor changes at transition from end of block ***3 and re-entry to block ***6    
@@ -190,7 +192,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR, JFEXMN, JFEXMX, ITOK, IER, IL, ILOGS,
-     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM
+     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,IO
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -1262,7 +1264,7 @@ C  READ DATA FOR SPECIES SPECIFICATION AND ATOMIC PHYSICS MODULE
 C  400--499
 C
 400   CONTINUE
-C    
+C
 C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
       IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       IREAD=0
@@ -1279,7 +1281,7 @@ C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
  
 ! CHECK FOR INCLUDE LINE
       READ (IUNIN,'(A420)') ZEILE
-      IREAD=1
+      IREAD=1  !  next input line is already read from iunin, now on 'ZEILE'
       ULINE = ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       I1 = INDEX(ULINE,'INCLUDE')
@@ -1293,8 +1295,9 @@ C   Zeile  = INLCUDE 'FILE45'
 C
         LINCLUDE = .TRUE.
 C
-        IREAD = 0
+
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE45,ITOK,IER,.FALSE.)
+        IREAD = 0
         
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff !  FILE45 is the include file. read block 4 and 5 from
@@ -1304,14 +1307,20 @@ C
         WRITE (IUNOUT,*) 'FILE45 = ',TRIM(FILE45)
         CALL EIRENE_LEER(1)
         OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
+c  read comment lines on external A&M data file FILE45, stream fort.2
+401     READ (IUNIN,'(A72)') ZEILE
+        IF (ZEILE(1:1) .EQ. '*') GOTO 401
+        IREAD=1
+        GOTO 402
       END IF
 C
-      IF (IREAD == 0) READ (IUNIN,*)
+      IF (IREAD == 0) READ (IUNIN,*)  
+      
       WRITE (iunout,*) 
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
  
-      READ (IUNIN,'(A72)') ZEILE
-      CALL EIRENE_UPPERCASE(ZEILE)
+      READ (IUNIN,'(A72)') ZEILE  ! THIS IS THE FIRST NON-COMMENT LINE
+402   CALL EIRENE_UPPERCASE(ZEILE)
 
 C  special only in case of HYDKIN INTERFACE: find string "DEFAULT"
       IEND=INDEX(ZEILE,'DEFAULT')
@@ -1969,6 +1978,7 @@ C     WRITE (iunout,*) ZEILE
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
+c  default: only for bulk ions
                               TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
@@ -2118,9 +2128,9 @@ c  pitch -profile
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
 c  cell volume -profile
       IF (INDPRO(12).LE.5) THEN
-        READ (IUNIN,'(A72)') ZEILE
+        READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
         IREAD=1
-        IF (ZEILE(1:3) .EQ. '***') THEN
+        IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) THEN
           WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 5 '
           WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED '
           VL0=0

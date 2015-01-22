@@ -7,10 +7,12 @@ C
 !pb  20.03.07:  include input block written by HYDKIN default model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
 !dr  16.01.14:  default NOPTIM changed from 1 to NRAD, some printout rearranged
+!cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
+!               (same in find-param)
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
-C   SEARCH FOR PARAMETERS AND SET DEFAULT VALUES
+C   SET DIMENSIONS (PARAMETERS) FOR ALLOCATABLE ARRAYS (TALLIES, GRIDS, ETC..) AND SET SOME FURTHER DEFAULT VALUES
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -515,12 +517,18 @@ C
       I1 = INDEX(ULINE,'INCLUDE')
       LINCLUDE = .FALSE.
       IF (I1 > 0) THEN
+c   read block 4 and block 5 from external include file, stream fort.2
         IREAD = 0
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE,ITOK,IER,.FALSE.)
         LINCLUDE = .TRUE.
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff
         OPEN (IUNIN,FILE=FILE,FORM='FORMATTED',ACCESS='SEQUENTIAL')
+c  read comment lines on external A&M data file FILE45, stream fort.2
+401     READ (IUNIN,'(A72)') ZEILE
+        IF (ZEILE(1:1) .EQ. '*') GOTO 401
+        IREAD=1  ! now ZEILE contains the first non-comment line from fort.2
+        GOTO 402
       END IF
 C
 C
@@ -528,7 +536,8 @@ C
       WRITE (iunout,*)
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
       READ (IUNIN,'(A420)') ZEILE
-      CALL EIRENE_UPPERCASE(ZEILE)
+
+402   CALL EIRENE_UPPERCASE(ZEILE)
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
       IF (IEND > 0) THEN
@@ -993,12 +1002,13 @@ C  ERGODIC OPTION NEEDS PRINTOUT OF VOLUME, AND ONE, TWO OR THREE FURTHER TALLIE
 C
       READ (IUNIN,6666) NSURPR
       NSRPR=NSURPR
-C  ERGODIC OPTION NEEDS PRINTOUT FROM TIME-HORIZON
+C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
       IF (NLERG) NSRPR=MAX(1,NSRPR)
       DO J=1,NSURPR
         READ (IUNIN,*)
       END DO
-C
+
+C  SEARCH START OF PLOTTING INPUT
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
       DO WHILE (SCAN(ZEILE,'*FT') == 0)
@@ -1009,9 +1019,10 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
- 
-      READ (ZEILE(16:16),'(L1)') LRPSCUT
- 
+C  FIRST CARD FOR (LOGICAL) PLOTTING FLAGS NOW ON 'zeile' 
+      READ (ZEILE(16:16),'(L1)') LRPSCUT  ! needed below for fruther storage considerationes
+
+c  there are 13 geometry plotting input cards following,  before plotting of volume tallies 
       DO J=1,13
         READ (IUNIN,*)
       END DO
@@ -1176,12 +1187,14 @@ C
       WRITE (iunout,*) 'NPLS = ',NPLS
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NADV = ',NADV
-      WRITE (iunout,*) 'NADS = ',NADS
+      WRITE (iunout,*) 'NADV = ',NADV    
       WRITE (iunout,*) 'NCLV = ',NCLV
       WRITE (iunout,*) 'NSNV = ',NSNV
       WRITE (iunout,*) 'NALV = ',NALV
+
+      WRITE (iunout,*) 'NADS = ',NADS
       WRITE (iunout,*) 'NALS = ',NALS
+
       WRITE (iunout,*) 'NAIN = ',NAIN
       WRITE (iunout,*) 'NCOP = ',NCOP
       WRITE (iunout,*) 'NBGK = ',NBGK
