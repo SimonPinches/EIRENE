@@ -145,7 +145,7 @@ C  TO RANDOM SAMPLING ROUTINES
       IRNDVH=IRNDVC/2
 
       TIMen=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
+cdr      write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
       tim1 = timen
 C
 C  INITIALIZE SUBR. STATIS
@@ -153,45 +153,45 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_STATS0
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for stats0 ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for stats0 ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_BGK
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_COP
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. REFLEC AND SPUTER
       CALL EIRENE_REFLC0
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
       tim1 = tim2
       IF (NPHOT > 0) THEN
         CALL EIRENE_REFLC0_PHOTON
         CALL EIRENE_LINE_CUTOFF
         TIM2=EIRENE_SECOND_OWN()
-        write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
+cdr        write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
         tim1 = tim2
       END IF
       CALL EIRENE_SPUTR0
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMVOL
       CALL EIRENE_SAMVL0
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMSRF
       CALL EIRENE_SAMSF0
       TIM2=EIRENE_SECOND_OWN()
-      write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
+cdr      write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
       tim1 = tim2
 C
 C
@@ -543,7 +543,11 @@ C
             WRITE (iunout,*)
      .        'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
             WRITE (iunout,*) 'THIS STRATUM'
-            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+cdr            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+            call system_clock (itimend, itimrate)
+            timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
+            CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
+     .                          ISTRA,IPANU,TIMUSED)
             IF (NPRNLI.GT.0) THEN
               WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
               CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
@@ -556,7 +560,11 @@ C
             WRITE (iunout,*)
      .        'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
             WRITE (iunout,*) 'THIS STRATUM'
-            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+            call system_clock (itimend, itimrate)
+            timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
+            CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
+     .                          ISTRA,IPANU,TIMUSED)
+cdr            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
             CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
             IF (TRCLST) CALL EIRENE_OUTLST
@@ -699,7 +707,16 @@ C
         WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
         WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
         WRITE (iunout,*) 'THIS STRATUM'
-        CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+CDR        CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+
+csw 19feb2019
+!pb 0312 2013        timend=mpi_wtime()
+        call system_clock (itimend, itimrate)
+        timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
+        CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
+     .                      ISTRA,IPANU,TIMUSED)
+CDR     write(iunout,'(a,2i8,e13.6)') 'TIMUSED: ',istra,ipanu,timused
+
         IF (NPRNLI.GT.0) THEN
           WRITE (iunout,*) 'M.C. HISTORIES THAT SURVIVED TO CENSUS'
           CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
@@ -709,11 +726,7 @@ C       GOTO 101
 101     CONTINUE
 C
 C
-csw 19feb2019
-!pb 03122013        timend=mpi_wtime()
-        call system_clock (itimend, itimrate)
-        timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
-        write(iunout,'(a,2i8,e13.6)') 'TIMUSED: ',istra,ipanu,timused
+
         XMCT(istra)=timused
 csw
         SECND=EIRENE_SECOND_OWN()
