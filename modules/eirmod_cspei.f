@@ -44,6 +44,9 @@
  
       SUBROUTINE EIRENE_ALLOC_CSPEI
  
+      INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
+      INTEGER(IL) :: MEM
+
       IF (ALLOCATED(SMESTV)) RETURN
  
       IF (NSMSTRA > 0) THEN
@@ -70,12 +73,14 @@
       ALLOCATE (SDVIA(NSD,NRTAL))
       ALLOCATE (SDVIAW(NSDW,NLIMPS))
       ALLOCATE (SDVIAC(2,NCV,NRTAL))
- 
-      WRITE (55+IFOFF,'(A,T25,I15)')
-     .       ' CSPEI ',(NIDV*NRTAL+(3*NSD+5*NCV)*NRTAL +
+
+      MEM = (NIDV*NRTAL+(3*NSD+5*NCV)*NRTAL +
      .                  NIDS*NLMPGS + 3*NSDW*NLIMPS + 2*NSD +
      .                  2*NSDW + 3*NCV)*8
  
+      WRITE (55+IFOFF,'(A,T25,I15)')
+     .       ' CSPEI ', MEM
+
       CALL EIRENE_INIT_CSPEI
  
       RETURN
