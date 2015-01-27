@@ -37,7 +37,7 @@ C
       REAL(DP), ALLOCATABLE :: YWERT(:,:), YWERT1(:,:),
      .                       ZWERT(:,:), ZWERT1(:,:)
       INTEGER :: I, IP, IPART, IA, IB, IC, J, K, IT, LENCH, IERR, IR,
-     .           NRAPS2, NVPLOT
+     .           NRAPS2, NVPLOT, IFC
       INTEGER :: ZUORD(NKNOT,0:20,2)
       REAL(SP) :: XY(800)
       REAL(SP) :: YH
@@ -67,6 +67,16 @@ C
       NRAPS2=NRAPS2+nvplot
       nraps=nraps+1
       IRAPS=IRAPS+1
+!pb 
+!pb find index of first RAPS plot, to be used for scaling with FCABS
+
+      IFC = 1
+      DO I = 1, NVOLPL
+        IF (LRAPS3(I)) THEN
+           IFC = I
+           EXIT
+        END IF
+      END DO
 C
 C  WRITE VALUE OF THE VECTOR TO RAPS-FILE IN ORDER TO HAVE A
 C  SHADED PLOT
@@ -281,7 +291,8 @@ C  SIDE 8
             BETRAG=SQRT(YWERT(IR,IP)**2+ZWERT(IR,IP)**2)
             IF (BETRAG .GT. 1.E-5)
      .      WRITE(nraps2+ifoff,'(I6,1P,5E12.4)')
-     .           I,YWERT(IR,IP),zwert(IR,IP),0.,0.,0.
+     .           I,YWERT(IR,IP)*fcabs1(ifc),
+     .             zwert(IR,IP)*fcabs2(ifc),0.,0.,0.
           enddo
         enddo
  
@@ -385,7 +396,8 @@ C  SIDE 8
               BETRAG=SQRT(YWERT(IR,IP)**2+ZWERT(IR,IP)**2)
               IF (BETRAG .GT. 1.E-5)
      .        WRITE(nraps2+ifoff,'(I6,1P,5E12.4)')
-     .             I,YWERT(IR,IP),zwert(IR,IP),0.,0.,0.
+     .             I,YWERT(IR,IP)*fcabs1(ifc),
+     .               zwert(IR,IP)*fcabs2(ifc),0.,0.,0.
             enddo
           enddo
         enddo
@@ -445,7 +457,8 @@ c   the computational volume. don't plot it.
           BETRAG=SQRT(YWERT1(I,1)**2+ZWERT1(I,1)**2)
           IF (BETRAG .GT. 1.D-5)
      .    WRITE(nraps2+ifoff,'(I6,1P,5E12.4)') 
-     .          I,YWERT1(I,1),ZWERT1(I,1),0.,0.,0.
+     .          I,YWERT1(I,1)*fcabs1(ifc),
+     .            ZWERT1(I,1)*fcabs2(ifc),0.,0.,0.
         enddo
       ELSE
         WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSVEC: PLOT ABANDONNED '
