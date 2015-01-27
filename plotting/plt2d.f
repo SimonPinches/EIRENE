@@ -3,6 +3,8 @@ cdr            for trajectory plot. see modification to input.f, 28.4.04
 cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
 !pb  11.04.08: remove restriction NTTRA<100
+cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
+cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces 
  
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
  
@@ -35,7 +37,7 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
  
       IMPLICIT NONE
 C
-      INTEGER,PARAMETER :: NTXHST=19
+      INTEGER,PARAMETER :: NTXHST=20
  
       REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
@@ -66,7 +68,7 @@ C
       DATA ABSMAX,ORDMAX/21.,21./
       DATA XNULL,YNULL/9.,4./,XWN,YWN/0.,0./
       DATA IWRIT/0/,ISPL/2,101,103,205,100,206,208,104,105,
-     .                   106,107,108,200,201,202,204,207,4,104/
+     .                   106,107,108,200,201,202,204,207,4,104,105/
       DATA TXTHST
      .           /'LOCATE(1)           ',
      .            'ELECTR. IMPACT(2)   ',
@@ -87,7 +89,8 @@ C
      .            'FLUID LIMIT(17)     ',
      .            'ERROR DETECTED      ',
 c  next symbols/text: only for printout, not on plot.
-     .            'INT. GRID SURFACE(8)'/
+     .            'INT. GRID SURFACE(8)',
+     .            'DIFFUSION STEP(19)  '/
 C
 C  SYMBOL FOR PARTICLE TRACING ERROR
       ISYM_ERR=NTXHST-1
@@ -178,9 +181,8 @@ C  X-DIRECTION:
 C  Y-DIRECTION:
       SCLFCY=ORDMAX/(YMA2d-YMI2d)
 C
-C   PLOT R-GRID
+C  PLOT X OR R-GRID
 C
-C  PLOT RADIAL GRID
 C
       IF (.NOT.PL1ST.OR.NR1ST.LE.1.OR.(PLCUT(1).AND.(LEVGEO.NE.5)))
      .    GOTO 170
@@ -216,10 +218,15 @@ C  X-Z-PLANE
             IDASH(NU,ITA:ITE) = ILIIN(NLIM+J)
             IF (NLSPLT(NU)) IFARB(NU,:) = 2
           END DO
+        ELSEIF (PLCUT(1)) THEN
+          WRITE (IUNOUT,*) 
+     .    'PLT2D: LEVGEO=1, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
         ENDIF
+
         DO NU=NPLINR,NPLOTR,NPLDLR
           LSTORE = .FALSE.
           XW1=RSURF(NU)
+C  X-Y PLANE
           IF (PLCUT(3)) THEN
             IF (NLTRA) XW1=XW1+RMTOR
             IF (XW1.GE.XMI2D.AND.XW1.LE.XMA2D) THEN
@@ -254,6 +261,7 @@ C  X-Z-PLANE
      .               (2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
               END IF
             ENDIF
+C  Y-Z PLANE
           ELSEIF (PLCUT(2)) THEN
             IF (NLTRZ) THEN
               IF (XW1.GE.XMI2D.AND.XW1.LE.XMA2D) THEN
@@ -349,62 +357,10 @@ C  X-Z-PLANE
           DEALLOCATE (IDASH)
         END IF
  
-!        DO 144 NU=NPLINR,NPLOTR,NPLDLR
-!          LSTORE = .FALSE.
-!          DO 145 J=1,NSTSI
-!            IF (NU.EQ.INUMP(J,1)) THEN
-!              IF (ILCOL(NLIM+J) == 666) GOTO 144
-!              CALL GRNWPN(ILCOL(NLIM+J))
-!              LSTORE = PLSTOR
-!              INOSF=NLIM+J
-!              IF (ILIIN(NLIM+J).LE.0) GOTO 146
-!              CALL GRDSH(1.,0.,1.)
-!              GOTO 147
-!            ENDIF
-!145       CONTINUE
-!146       CALL GRDSH(0.2,0.5,0.2)
-!147       CONTINUE
-!          IF (NLSPLT(NU)) CALL GRNWPN(2)
-!          XW1=RSURF(NU)
-!          IF (PLCUT(3)) THEN
-!            IF (NLTRA) XW1=XW1+RMTOR
-!            IF (XW1.GE.XMI2D.AND.XW1.LE.XMA2D) THEN
-!              XX(1)=XW1
-!              XX(2)=XW1
-!              YY(1)=YW1
-!              YY(2)=YW2
-!              CALL PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
-!            ENDIF
-!          ELSEIF (PLCUT(2)) THEN
-!            IF (NLTRZ) THEN
-!              IF (XW1.GE.XMI2D.AND.XW1.LE.XMA2D) THEN
-!                XX(1)=XW1
-!                XX(2)=XW1
-!                YY(1)=YW1
-!                YY(2)=YW2
-!                CALL PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
-!              ENDIF
-!            ELSEIF (NLTRA) THEN
-!              X=RMTOR+XW1
-!              Z=TANAL*X
-!              RR=SQRT(X*X+Z*Z)
-!              IF (NTTRA.GT.100) THEN
-!                WRITE (iunout,*) 'ERROR IN PLT2D '
-!                CALL EXIT_OWN(1)
-!              ENDIF
-!              DO J=1,NTTRA+1
-!                XX(J)=RR*COS((J-1)*2.*ALPHA)
-!                YY(J)=RR*SIN((J-1)*2.*ALPHA)
-!              ENDDO
-!              CALL PLTLNE(NTTRA+1,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
-!            ENDIF
-!          ENDIF
-!          CALL GRNWPN(1)
-!144     CONTINUE
- 
+
         CALL GRDSH(1.,0.,1.)
 C
-      ELSEIF (LEVGEO.EQ.2) THEN
+      ELSEIF (LEVGEO.EQ.2) THEN  !  and radial grid
 C
         IF (PLCUT(2)) THEN
 C
@@ -491,7 +447,7 @@ C
 C
         ELSEIF (PLCUT(3)) THEN
 C
-C    X-Y PLOT
+C    X-Y PLANE
           DO 140 NU=NPLINR,NPLOTR,NPLDLR
             LSTORE = .FALSE.
             DO 141 J=1,NSTSI
@@ -514,7 +470,7 @@ C    X-Y PLOT
             EL=ELL(NU)
             TR=TRI(NU)
             CALL EIRENE_PLGELR
-     .  (RS,EP,EL,TR,DM,100,XX,YY,NRET,PSURF,NP2ND)
+     .          (RS,EP,EL,TR,DM,100,XX,YY,NRET,PSURF,NP2ND)
             IF (NLTRA) THEN
               DO I=1,NRET
                 XX(I)=XX(I)+RMTOR
@@ -525,15 +481,21 @@ C    X-Y PLOT
             CALL GRNWPN(1)
 140       CONTINUE
           CALL GRDSH(1.,0.,1.)
+
+        ELSEIF (PLCUT(1)) THEN
+          WRITE (IUNOUT,*) 
+     .     'PLT2D: LEVGEO=2, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
+
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.3) THEN
+      ELSEIF (LEVGEO.EQ.3) THEN  !  and radial grid
 C
         IF (PLCUT(3)) THEN
+C    X-Y PLANE
 C
           DO 158 NU=NPLINR,NPLOTR,NPLDLR
             IF (NLSPLT(NU)) CALL GRNWPN(2)
-C  NSW/2 VERSCHIEDENE STUECKE ZU FLAECHE NU, NSW GERADE
+C  NSW/2 VERSCHIEDENE STUECKE ZU FLAECHE NU, NSW GERADE ZAHL
             NSW=0
             DO 1561 J=1,NSTSI
 C
@@ -552,6 +514,12 @@ C
                 NSW=NSW+1
               ENDIF
 1561        CONTINUE
+
+C           IF (TRCPLT) WRITE (IUNOUT,*) 'plt2d: plot pol surf. ',nu,nsw
+            IF (TRCPLT.AND.NSW.GT.0) THEN
+              WRITE (IUNOUT,*) 'PLT2D: RADIAL SURF. No. ',NU
+              WRITE (IUNOUT,*) ' COLOR(1), NSW= ',ICLR(1),NSW
+            ENDIF
 C
 C  SORTIEREN, NACH "POLOIDALEM BEGIN" < "POLOIDALEM ENDE"
             IF (NSW.EQ.0) GOTO 1597
@@ -706,8 +674,8 @@ c  segment): all cells j with nstgrd(j)=1
           do j=1,nsurf
             if (nstgrd(j).eq.1) then
               call
-     .  EIRENE_ncelln(j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
-     .                                     nlrad,nlpol,nltor)
+     .         EIRENE_ncelln(j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
+     .                                        nlrad,nlpol,nltor)
               XPS(1)=XPOL(IR,IP)
               YPS(1)=YPOL(IR,IP)
               XPS(2)=XPOL(IR,IP+1)
@@ -827,6 +795,11 @@ C             ELSEIF (NLTRT) THEN
             CALL GRNWPN(1)
 1544      CONTINUE
           CALL GRDSH(1.,0.,1.)
+
+        ELSEIF (PLCUT(1)) THEN
+          WRITE (IUNOUT,*) 
+     .     'PLT2D: LEVGEO=3, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
+
 C
         ENDIF
 C
@@ -843,7 +816,7 @@ C             SEITE J GEHOERT ZUM RAND
               ISTS=ABS(INMTI(J,I))
               IF (ISTS .GT. 0 .AND.
      .            ISTS .LE. NLIM+NSTSI) THEN
-C   SEITE J HAT BESONDERE EIGENSHAFTEN (NON-DEFAULT STD.FLAECHE)
+C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD.FLAECHE)
                 IF (ILCOL(ISTS) == 666) CYCLE
                 CALL GRDSH (1.,0.,1.)
                 CALL GRNWPN (ILCOL(ISTS))
@@ -895,7 +868,7 @@ c  r: radius des inkreises des dreiecks
  
         ELSEIF (PLCUT(2)) THEN
 C
-C  X-Z PLOT
+C  X-Z PLOT  
           Y=CH2Z0
           IF (NLTOR) THEN
             IF (NLTRZ) THEN
@@ -949,7 +922,7 @@ C  Y=CONST
                 ISTS=ABS(INMTI(J,I))
                 IF (ISTS .GT. 0 .AND.
      .              ISTS .LE. NLIM+NSTSI) THEN
-C   SEITE J HAT BESONDERE EIGENSCHAFTEN (NON-DEFAULT STD.FLAECHE)
+C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD. SURFACE)
                   IF (ILCOL(ISTS) == 666) CYCLE
                   CALL GRDSH (1.,0.,1.)
                   CALL GRNWPN (ILCOL(ISTS))
@@ -1119,7 +1092,12 @@ C Y-Z-PLANE
               GOTO 990
             ENDIF
           ENDIF
+        ELSEIF (PLCUT(2)) THEN
+          WRITE (IUNOUT,*)
+     .     'PLT2D, LEVEGEO=1, POLOIDAL GRID IN X-Z PLANE NOT MEANINGFUL'
         ENDIF
+
+
         DO NU=NPLINP,NPLOTP,NPLDLP
           LSTORE = .FALSE.
           YW1=PSURF(NU)
@@ -1161,49 +1139,18 @@ C Y-Z-PLANE
           DEALLOCATE (IDASH)
         END IF
  
-!        DO 1171 NU=NPLINP,NPLOTP,NPLDLP
-!          LSTORE = .FALSE.
-!          DO 1172 J=1,NSTSI
-!            IF (NU.EQ.INUMP(J,2)) THEN
-!              IF (ILCOL(NLIM+J) == 666) GOTO 1171
-!              CALL GRNWPN(ILCOL(NLIM+J))
-!              LSTORE = PLSTOR
-!              INOSF=NLIM+J
-!              IF (ILIIN(NLIM+J).LE.0) GOTO 1173
-!              CALL GRDSH(1.,0.,1.)
-!              GOTO 1174
-!            ENDIF
-!1172      CONTINUE
-!1173      CALL GRDSH(0.2,0.5,0.2)
-!1174      CONTINUE
-!          IF (NLSPLT(N1ST+NU)) CALL GRNWPN(2)
-!          YW1=PSURF(NU)
-!          IF (PLCUT(3)) THEN
-!            XX(1)=XW1
-!            XX(2)=XW2
-!            YY(1)=YW1
-!            YY(2)=YW1
-!            CALL PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
-!          ELSEIF (PLCUT(1)) THEN
-!            XX(1)=ZW1
-!            XX(2)=ZW2
-!            YY(1)=YW1
-!            YY(2)=YW1
-!            CALL PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
-!          ENDIF
-!          CALL GRNWPN(1)
-!1171    CONTINUE
         CALL GRDSH(1.,0.,1.)
 C
-      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN
+      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  !AND POLOIDAL GRID
 C
         DO 176 NU=NPLINP,NPLOTP,NPLDLP
           IF (NLSPLT(N1ST+NU)) CALL GRNWPN(2)
           IAN=MAX(1,NPLINR)
           IEN=MIN(NR1ST,NPLOTR)
+
+C  DEAL WITH NONDEFAULT POLOIDAL SURFACES, SPECIAL COLORS, LINE STYLES
           NSW=0
           DO 177 J=1,NSTSI
-C
             IF (NU.EQ.INUMP(J,2)) THEN
               IF (ILCOL(NLIM+J) == 666) CYCLE
               NSW=NSW+1
@@ -1219,6 +1166,11 @@ C
               NSW=NSW+1
             ENDIF
 177       CONTINUE
+C         IF (TRCPLT) WRITE (IUNOUT,*) 'plt2d: plot pol surf. ',nu,nsw
+          IF (TRCPLT.AND.NSW.GT.0) THEN
+            WRITE (IUNOUT,*) 'PLT2D: POLOIDAL SURF. No ',NU
+            WRITE (IUNOUT,*) ' COLOR(1), NSW= ',ICLR(1),NSW
+          ENDIF
 C
 C  SORTIEREN, NACH "RADIALEM BEGIN" < "RADIALEM ENDE"
           IF (NSW.EQ.0) GOTO 1797
@@ -1256,6 +1208,7 @@ C  SORTIEREN, NACH "RADIALEM BEGIN" < "RADIALEM ENDE"
               INON(I+3)=IHELP
             ENDIF
 178       CONTINUE
+
           IF (ISW.GT.0) GOTO 179
 C
           I=0
@@ -1303,48 +1256,48 @@ C
             ENDIF
 C
             IF (IN.EQ.0) IN=4
-            GOTO (171,172,173,174,1752),IN
+            GOTO (171,172,173,174,175),IN
 171           CONTINUE
                 CALL GRDRW
-     .  (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+     .          (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
-                GOTO 175
+                GOTO 1752
 172           CONTINUE
                 CALL
-     .  GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+     .          GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
                 CALL
-     .  GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+     .          GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
-                GOTO 175
+                GOTO 1752
 173           CONTINUE
                 CALL
-     .  GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+     .          GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
                 CALL
-     .  GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+     .          GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
-                GOTO 175
+                GOTO 1752
 174           CONTINUE
                 CALL
-     .  GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+     .          GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
-                GOTO 175
-1752          CONTINUE
+                GOTO 1752
+175           CONTINUE
                 CALL
-     .  GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+     .          GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
                 CALL
-     .  GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
+     .          GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XT2,YT2,1)
                 END IF
-                GOTO 175
-175       CONTINUE
+                GOTO 1752
+1752      CONTINUE
 C
           IF (IFL.GT.0.AND.I.EQ.ISWC(ISW)) THEN
             IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
@@ -1355,14 +1308,19 @@ C
             LSTORE = PLSTOR
             INOSF=0
             CALL GRJMP
-     .  (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+     .      (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
           ENDIF
 C
 1751      CONTINUE
           CALL GRNWPN(1)
+C  POLOIDAL SURFACE NO. NU IS NOW PLOTTED
 176     CONTINUE
+
+
         CALL GRDSH(1.,0.,1.)
+
+C  PLOT ARROWS TO INDICATE SURFACE NORMAL
 C
         if (PLARR) then
           call grnwpn(2)
@@ -1531,10 +1489,11 @@ C
       timpb = time
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
-        IF (.NOT.NLPL3D) CALL
-     .  GRSCLV(0.,0.,REAL(ABSMAX,KIND(1.E0)),
-     .                                     REAL(ORDMAX,KIND(1.E0)))
+        IF (.NOT.NLPL3D) CALL GRSCLV (
+     .                         0.,0.,REAL(ABSMAX,KIND(1.E0)),
+     .                               REAL(ORDMAX,KIND(1.E0)))
         XNP05=XN+0.5/FX
+        CALL GRNWPN(1)
         DO IA=1,NTXHST-1
           YYIA=YN-(0.75*(IA-1))/FY
           CALL GRJMPS
@@ -1567,6 +1526,7 @@ C  FX=FY=1.
      .              'EIRENE TEST PARTICLES')
  
         IC=1
+        IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
         ICPSPZ=0
         DO 505 I=1,NPHOTI
           ISP=I
@@ -1871,7 +1831,7 @@ C     following ENTRY is for reinitialization of EIRENE (DMH)
       YWN =0.
       IWRIT = 0
       ISPL = (/2,101,103,205,100,206,208,104,105,
-     .         106,107,108,200,201,202,204,207,4,104/)
+     .         106,107,108,200,201,202,204,207,4,104,105/)
 csw 20oct08
       if(allocated(icpspz)) deallocate(icpspz)
       if(allocated(idash)) deallocate(idash)
