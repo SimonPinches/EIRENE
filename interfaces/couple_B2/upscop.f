@@ -1,0 +1,5 @@
+C
+C
+      SUBROUTINE EIRENE_UPSCOP
+      RETURN
+      END
