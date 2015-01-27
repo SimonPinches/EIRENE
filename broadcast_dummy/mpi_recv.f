@@ -5,5 +5,6 @@
       real*8, pointer, INTENT(INOUT) :: buffer
       integer, intent(in) :: cnt,datatype,source,tag,comm
       IER=0
+      st = 0
       RETURN
       END
