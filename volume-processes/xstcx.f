@@ -1,3 +1,9 @@
+cdr modc=3 fuer cx rate coeff angefangen: um multi-step cx auch vs. t und n zu kriegen,
+cdr aber dann die Frage:  te=Ti,  ne=ni ? und E0 immer sehr klein? Korrektes te,ti,ne,ni 
+cdr koennen zellweise kommen, z.b. aus H-colrad. 
+cdr dann bleibt es bei einem 9-parameter fit (fuer E0 abhaengigkeit)  pro Zelle.
+
+
 C 24.11.05: chrdf0 introduced (called from xsecta, xsectm, xsecti)
 C 08.08.06: error exit 991 introduced: charge conservation violation
 ! 30.08.06: data structure for reaction data redefined
@@ -5,6 +11,7 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 ! 22.11.06: flag for shift of first parameter to rate_coeff introduced
 ! 08.01.07: pls = 0.dp, twice, preset.
 ! 01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
+! 21.09.09: dr: a few more comments
 ! 20.01.14:  H.4 option for cx rate coefficients (e.g. CR rates: p + H-minus)
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
 C            remove plsti(nstordt), now: TII 
@@ -17,23 +24,24 @@ C
 
 c  set NON DEFAUKT cx collision cross sections and rates  ISP + IPL{n+} -->  ISP+ + IPL{(n-1)+}
 c  defaults for CX type processes:  exchange of identity
- 
+
 c  carry out some consistency checks
 c  first  secondary == previous bulk particle
 c  second secondary == previous test particle
- 
-c   rmass: incident test particle mass
+
+c   rmass: incident test particle mass (needed for check of mass conservation)
 c   ircx:  counter for CX reaction in this run
 c   isp:   incident test species index
 c   ipl:   incident bulk ion species index (0 < ipl <= nplsi)
+c
 c   KK :   reaction number in modclf (input) array
 c   FACTKK: scaling factor for this collision process (cross section and rates)
 c   PLS:   precomputed log of electron density
 
 C  RETURNS:
 C    MODCOL(3,...)
-C    TABCX3(IRCX,NCELL,...)
-C    EPLCX3(IRCX,NCELL,...)
+C    TABCX3(IRCX,NCELL,...)  1/s per incident test particle
+C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle 
 C    DEFCX(IRCX)
 C    EEFCX(IRCX)
 C    IESTCX(IRCX,...)
@@ -47,22 +55,22 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CZT1
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: RMASS, EBULK, FACTKK, CHRDF0
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
-      INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, ISCDE,
-     .                       IESTM, KK
+      INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, 
+     .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9,0:9), CFF(9)
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, ADDTL, CHRDIF,
      .            ADDT, TMASS, PMASS, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII
-      INTEGER :: ITYP1, ITYP2, ISPZ1, IERR, ISPZ2, IATM, IPLS, KREAD,
+      INTEGER :: ITYP1, ITYP2, ISPZ1, IERR, ISPZ2, KREAD,
      .           J, NEND, MODC, NSECX4, I, IPL2, IIO2, IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
- 
+
       SAVE
 
       NREACX(IRCX) = KK   ! needed for storage saving mode
@@ -138,6 +146,7 @@ C  (= PROJECTILE MASS IN CROSS SECTION MEASUREMENT: TARGET AT REST)
 C  PROJECTILE MASS IN <SIGMA*V> FORMULA: MONOENERG. TEST PARTICLE
 C  (= TARGET PARTICLE IN CROSS SECTION MEASUREMENT; TARGET AT REST)
       TMASS=MASST(KK)*PMASSA
+C
       ADDT=PMASS/RMASSP(IPL)
       ADDTL=LOG(ADDT)
       ADDCX(IRCX,IPL) = ADDTL
@@ -145,12 +154,15 @@ C
 C CROSS SECTION (E-LAB) AVAILABLE ?
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
         MODCOL(3,1,IRCX)=KK
+C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
         MODCOL(3,2,IRCX)=3
       ENDIF
 C
 C RATE COEFFICIENT
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
+
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
+
         MODCOL(3,2,IRCX)=MODC
 C  2.B)
         IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
@@ -160,7 +172,7 @@ C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO
           
-C  2.C) RATE COEFFICIENT(TI, EBEAM=0)
+C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
           IF (MODC.EQ.1) THEN
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
@@ -183,10 +195,13 @@ C  2.C) RATE COEFFICIENT(TI,EBEAM)
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         END IF
       ELSEIF (MODC.EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE, EBEAM=0)
-        MODCOL(3,2,IRCX)=1
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
+C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
+
+        MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN                 
+        IF (NSTORDR >= NRAD) THEN 
+                
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
@@ -198,7 +213,12 @@ C  2.D) RATE COEFFICIENT(TI=TE, NE, EBEAM=0)
 C         JEREACX(IRCX) = 9
         ELSE  ! ??
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
+          write (iunout,*) 'storage save mode not available yet for CX'
+          write (iunout,*) 'in case modc=3  (n,t-dependence).'
+          write (iunout,*) 'exit called '
+          call eirene_exit_own(1) 
         ENDIF
+
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
@@ -206,18 +226,20 @@ C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
  
       FACRCX(IRCX,1) = FACTKK
       FACRCX(IRCX,2) = LOG(FACTKK)
- 
+
       DEFCX(IRCX)=LOG(CVELI2*PMASS)
       EEFCX(IRCX)=LOG(CVELI2*TMASS)
 C
 C  3. BULK PARTICLE MOMENTUM LOSS RATE
 C
-C
 C  4. BULK PARTICLE ENERGY LOSS RATE
+C  4.1. HEAVY BULK PARTICLE ENERGY LOSS RATE
+C
+C  SET ENERGY LOSS RATE OF IMPACTING ION
 C
       NSECX4=EIRENE_IDEZ(ISCDE,4,5)
       IF (NSECX4.EQ.0) THEN
-C  4.A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
+C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -241,7 +263,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         ENDIF
         MODCOL(3,4,IRCX)=3
       ELSEIF (NSECX4.EQ.1) THEN
-C  4.B) ENERGY LOSS RATE OF IMP. ION = 1.5*TI* RATECOEFF.
+C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -272,8 +294,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
 C     ELSEIF (NSECX4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSECX4.EQ.3) THEN
-C  4.B)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
-C  4.C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
@@ -315,7 +336,8 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
                 EPLCX3(IRCX,J,1) = EPLCX3(IRCX,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
-          ELSE
+
+          ELSE  ! STORAGE SAVING MODE
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLCX3(IRCX,1,1)=ADD
@@ -328,10 +350,11 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         ENDIF
         ENDIF
       ELSE
-        IERR=5
-        GOTO 996
+        WRITE (iunout,*) 'NSECX4 ILL DEFINED IN XSTCX '
+        WRITE (iunout,*) 'check parameter ISCDE for process ircx ',ircx
+        CALL EIRENE_EXIT_OWN(1)
       ENDIF
- 
+
 C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
       IESTCX(IRCX,1)=EIRENE_IDEZ(IESTM,1,3)
       IESTCX(IRCX,2)=EIRENE_IDEZ(IESTM,2,3)
@@ -365,13 +388,20 @@ C
       ENDIF
       RETURN
 C
+C-----------------------------------------------------------------------
+C
+
       ENTRY EIRENE_XSTCX_2(IRCX,IPL)
 C
-      CALL EIRENE_LEER(1)
+      CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'CHARGE EXCHANGE REACTION NO. IRCX= ',IRCX
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'CHARGE EXCHANGE WITH BULK IONS IPLS:'
+      WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL)
+      CALL EIRENE_LEER(1)
+
       WRITE (iunout,*) '1ST AND 2ND NEXT GEN. SPECIES I2ND1, I2ND2:'
+
       ITYP1=N1STX(IRCX,1)
       ITYP2=N2NDX(IRCX,1)
       ISPZ1=N1STX(IRCX,2)
@@ -384,8 +414,7 @@ C
       IF (ITYP2.EQ.2) TEXTS2=TEXTS(NSPA+ISPZ2)
       IF (ITYP2.EQ.3) TEXTS2=TEXTS(NSPAM+ISPZ2)
       IF (ITYP2.EQ.4) TEXTS2=TEXTS(NSPAMI+ISPZ2)
-      WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL),'I2ND1= ',TEXTS1,
-     .                    'I2ND2= ',TEXTS2
+      WRITE (iunout,*) 'I2ND1= ',TEXTS1, 'I2ND2= ',TEXTS2
       CALL EIRENE_LEER(1)
       IF (IESTCX(IRCX,1).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
@@ -394,8 +423,8 @@ C
       IF (IESTCX(IRCX,3).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
       CALL EIRENE_LEER(1)
- 
- 
+
+
       RETURN
 C
 990   CONTINUE

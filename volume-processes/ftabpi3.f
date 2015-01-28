@@ -1,14 +1,16 @@
-cdr  feb 2014  :  iftflg :  select rate or rate coeficient 
+cdr  feb 2014  :  iftflg :  select rate or rate coeficient produced by rate-coeff. 
 cdr  march 2014:  density parameter added, H.4 option for rate coeff, ifit=2
+c    already accommodates H.4 option (two parameter fits vs TII,PLS)
+cdr  sept. 2014:  use heavy bulk particle (ipls) density, rather than electron density)
  
       FUNCTION EIRENE_FTABPI3 (IRPI,K)
-c  evaluate general heavy particle impact rate coefficient (or rate), 
+c  evaluate general heavy particle impact rate (1/s), 
 c  for pi process no. IRPI,
 c         in cell no. K
 c  input via common: 
 c         bulk collision partner: IPLS
 
-c  FTABPI3 is only called in case MODCOL(4,2,IRPI)=1, i.e. rate depends only
+c  FTABPI3 is currently only called in case MODCOL(4,2,IRPI)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.
 c 
 c
@@ -32,7 +34,7 @@ c  hard wired: cut off (density) parameter for fits: 1e8
 
 
       DEIMIN=LOG(1.D8)
-      PLS=MAX(DEIMIN,DEINL(K))
+      PLS=MAX(DEIMIN,DIINL(IPLS,K))
  
       IPLSTI=MPLSTI(IPLS)
       TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)

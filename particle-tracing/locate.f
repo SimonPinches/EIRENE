@@ -1,29 +1,3 @@
-!PB 12.01.06: index added to calc_spectrum indicating particle starts on surface
-!PB 02.03.06: store startpoint of trajectory
-cdr 12.05.06: argument vn added to ph_energy, for doppler+motional stark effect
-c             directly to be included in line shape sampling
-!pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
-!pb           spatial resolution of sptpl and spttot added
-!pb  8.11.06: set timestep index for time dependent mode
-!pb  8.11.06: as SORLIM can be negative ISOR=ABS(SORLIM)
-!pb 08.11.06: definition of splitting arrays changed
-!             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
-!   04.01.07: updating of sputter tallies ordered as in ESCAPE
- 
-      SUBROUTINE EIRENE_LOCATE
-c  old option:
-c              sorind=irrc for volume sources
-c  new option (additionally):
-c              sorind=0 for volume sources
-c              then: automatically detect all relevant irrc and
-c                    sample, if more than one:
-c                    1.) ipls (must be specified), and icell
-c                    2.) find irrc (random) amongst tabrc1
-c                    3.) find ityp, iatm,....
-c
-c  to be done?  pppl and eppl: primary particle/energy source rates,
-c                              bulk particles
-c  done in jan05
 c  jan05:  2nd bulk secondary for irrc processes in pppl, eppl
 c          (also affected: comxs, xstrc, xsectp)
 c
@@ -36,6 +10,39 @@ c           shwl in parameter list for calls to smvol1, smpnt1, smsrf1.
 c           shstep overrules all other sheath options, if shstep (=shwl) gt.0
 c           elstep is now nemod1=8,9  (was previously: -2, -3, but this
 c           could not be chosen in input, due to use of IDEZ function for nemods
+c
+!PB 12.01.06: index "ind" added to update_spectrum indicating particle starts on surface
+!PB 02.03.06: store startpoint of trajectory
+cdr 12.05.06: argument vn added to ph_energy, for doppler+motional stark effect
+c             directly to be included in line shape sampling
+!pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
+!pb           spatial resolution of sptpl and spttot added
+!pb  8.11.06: set timestep index for time dependent mode
+!pb  8.11.06: as SORLIM can be negative ISOR=ABS(SORLIM)
+!pb 08.11.06: definition of splitting arrays changed
+!             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
+!   04.01.07: updating of sputter tallies ordered as in ESCAPE
+c
+cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species index)
+cdr 24.09.14: levgeo=2, surface normal on radial surface from algebraic relation, rather than from polygon
+cdr           levgeo=2 and 1D run: no polygons are set any more. 
+cdr oct   14: weight now as argument in velocs (not via comprt).
+CDR           RSQDV2:  factor for Mach number conversion to cm/s
+
+ 
+      SUBROUTINE EIRENE_LOCATE
+c  old option:
+c              sorind=irrc for volume sources
+c  new option (additionally):
+c              sorind=0 for volume sources
+c              then: automatically detect all relevant irrc and
+c                    sample, if more than one:
+c                    1.) ipls (must be specified), and icell
+c                    2.) find irrc (random) amongst tabrc1
+c                    3.) find ityp, iatm,....
+c
+c  
+
 C
 C  LOCATE MONTE-CARLO PARTICLE
 C
@@ -121,9 +128,9 @@ C
      .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
      .          VXSPTC, VYSPTC, VZSPTC, A, ZV, SUM1, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
-     .          VXO, VYO, VZO, DAT, RSQDV, DML, FR, DIO, DPL, TIWD,
-     .          TEWD, DPH, E00, DE, HW, SHIFT, DVDW, FAC, dwde, prmax,
-     .          raw, res
+     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL, 
+     .          TIWD, TEWD, DPH, E00, DE, HW, SHIFT, DVDW, FAC, 
+     .          dwde, prmax, raw, res
       REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
      .            yr, ym, prmin, sig, zmfp, ean, een, ye,
      .            EIRENE_fpathph, flxfc, zmfp_cut, zmfp_e0, zmfp_e00,
@@ -655,7 +662,8 @@ C  ANALOG SPECIES SAMPLING FROM WEISPZ
           IATM=NATMI
 111       CONTINUE
         ENDIF
-        RSQDV=RSQDVA(IATM)*SQ2I
+        RSQDV2=RSQDVA(IATM)*SQ2I
+
       ELSEIF (NLMOL(ISTRA)) THEN
         ITYP=2
         IF (NSPEZ(ISTRA).LT.0) THEN
@@ -696,7 +704,8 @@ C  ANALOG SPECIES SAMPLING
           IMOL=NMOLI
 113       CONTINUE
         ENDIF
-        RSQDV=RSQDVM(IMOL)*SQ2I
+        RSQDV2=RSQDVM(IMOL)*SQ2I
+
       ELSEIF (NLION(ISTRA)) THEN
         ITYP=3
         IF (NSPEZ(ISTRA).LT.0) THEN
@@ -737,7 +746,8 @@ C  ANALOG SPECIES SAMPLING
           IION=NIONI
 115       CONTINUE
         ENDIF
-        RSQDV=RSQDVI(IION)*SQ2I
+        RSQDV2=RSQDVI(IION)*SQ2I
+
       ELSEIF (NLPLS(ISTRA)) THEN
         ITYP=4
         IF (NSPEZ(ISTRA).LT.0) THEN
@@ -779,7 +789,8 @@ C  ANALOG SPECIES SAMPLING
           IPLS=NPLSI
 117       CONTINUE
         ENDIF
-        RSQDV=RSQDVP(IPLS)*SQ2I
+        RSQDV2=RSQDVP(IPLS)*SQ2I
+
       ELSEIF(NLPHOT(ISTRA)) THEN
         ITYP=0
         IF (NSPEZ(ISTRA).LT.0) THEN
@@ -820,8 +831,7 @@ C  ANALOG SPECIES SAMPLING FROM WEISPZ
           IPHOT=NPHOTI
 1111      CONTINUE
         ENDIF
-        RSQDV=0.
-csw end branch
+        RSQDV2=0.
       ENDIF
 C
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -874,17 +884,18 @@ C  SET SAMPLING ION-TEMPERATURE TO ZERO
       ENDIF
 C
       IF (NEMOD3.EQ.1) THEN
-C  SET SAMPLING DRIFT VELOCITIES FROM INPUT DATA FOR DRIFT VELOCITY
+C  SET SAMPLING DRIFT VELOCITIES (CM/S) FROM INPUT DATA FOR DRIFT VELOCITY (CM/S)
         VXWD=SORVDX(ISTRA)
         VYWD=SORVDY(ISTRA)
         VZWD=SORVDZ(ISTRA)
       ELSEIF (NEMOD3.EQ.2) THEN
-C  SET SAMPLING DRIFT VELOCITIES FROM INPUT DATA FOR MACH NUMBER
-        CS=SQRT(1.*TIWD+TEWD)*RSQDV
+C  SET SAMPLING DRIFT VELOCITIES (CM/S) FROM INPUT DATA FOR DRIFT VELOCITY (MACH NUMBER UNITS)
+        CS=SQRT(1.*TIWD+TEWD)*RSQDV2
         VXWD=SORVDX(ISTRA)*CS
         VYWD=SORVDY(ISTRA)*CS
         VZWD=SORVDZ(ISTRA)*CS
       ELSEIF (NEMOD3.EQ.3) THEN
+C  SET SAMPLING DRIFT VELOCITIES (CM/S) FROM A CORRESPONDING (IPLV) BULK ION VELOCITY (CM/S)
         IPLV=NEMDSP
         IF (IPLV.LT.1.OR.IPLV.GT.NPLSI) GOTO 999
         VXWD=VXWL(IPLV)
@@ -912,6 +923,7 @@ C  SET SAMPLING DRIFT VELOCITIES FROM BACKGROUND DATA FOR SPECIES IPL
               VZWD=VZWL(IPL)
             ENDIF
           ENDDO
+C  DEFAULT FOR ATOMS, MOLECULES, PHOTONS:  ZERO DRIFT VELOCITY
         ELSE
           VXWD=0.
           VYWD=0.
@@ -957,10 +969,10 @@ C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX
 C              AROUND INNER (!) NORMAL AT TEMP. TW (EV) = TIWD
           IF (TIWD.LE.0.) TIWD=ABS(EMAX)
           VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
-          CALL EIRENE_VELOCS
-     .                (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVA(IATM),
+          CALL EIRENE_VELOCS (WEIGHT,
+     .                 TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVA(IATM),
      .                 CVRSSA(IATM),
-     .                 -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
+     .                -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
 C  MODIFY ANGULAR DISTRIBUTION IN CASE SORCOS .NE. 0.5 (I.E., IN CASE
 C  A NON-COSINE DISTRIBUTION IS REQUESTED
           IF (ABS(SORCOS(ISTRA)-0.5).GT.1.D-5) THEN
@@ -1031,7 +1043,7 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
      .                SORCTY(ISTRA),SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
 C         VEL_MEAN=VEL
 C         E0_MEAN=E0
-!pb        ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND..NOT.NLVOL(ISTRA)) THEN
+!pb     ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND..NOT.NLVOL(ISTRA)) THEN
         ELSEIF (EMAX.LE.0..AND..NOT.NLVOL(ISTRA)) THEN
 C
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX
@@ -1039,10 +1051,10 @@ C              AROUND INNER (!) NORMAL AT TEMP. TIWL
 C
           IF (TIWD.LE.0.) TIWD=ABS(EMAX)
           VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
-          CALL EIRENE_VELOCS
-     .                (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVM(IMOL),
+          CALL EIRENE_VELOCS (WEIGHT,
+     .                 TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVM(IMOL),
      .                 CVRSSM(IMOL),
-     .                 -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
+     .                -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
 C  MODIFY ANGULAR DISTRIBUTION IN CASE SORCOS .NE. 0.5 (I.E., IN CASE
 C  A NON-COSINE DISTRIBUTION IS REQUESTED
           IF (ABS(SORCOS(ISTRA)-0.5).GT.1.D-5) THEN
@@ -1161,10 +1173,10 @@ C
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX
 C              AROUND INNER (!) NORMAL AT TEMP. TW (EV)
           VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
-          CALL EIRENE_VELOCS
-     .                 (TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVI(IION),
-     .                  CVRSSI(IION),
-     .                 -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
+          CALL EIRENE_VELOCS (WEIGHT,
+     .                 TIWD,0._DP,VWD,VXWD,VYWD,VZWD,RSQDVI(IION),
+     .                 CVRSSI(IION),
+     .                -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
 C  MODIFY ANGULAR DISTRIBUTION IN CASE SORCOS .NE. 0.5 (I.E., IN CASE
 C  A NON-COSINE DISTRIBUTION IS REQUESTED
           IF (ABS(SORCOS(ISTRA)-0.5).GT.EPS10) THEN
@@ -1294,9 +1306,9 @@ C           VEL_MEAN=VEL
           ELSEIF (EMAX.LE.0.D0.AND.TIWD.GT.0.D0) THEN
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX AND ACCELERATE IN SHEATH
             VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
-            CALL EIRENE_VELOCS
-     .                 (TIWD,ESHET,VWD,VXWD,VYWD,VZWD,RSQDVP(IPLS),
-     .                  CVRSSP(IPLS),
+            CALL EIRENE_VELOCS (WEIGHT,
+     .                   TIWD,ESHET,VWD,VXWD,VYWD,VZWD,RSQDVP(IPLS),
+     .                   CVRSSP(IPLS),
      .                  -CRTX,-CRTY,-CRTZ,E0,VELX,VELY,VELZ,VEL)
           ELSE
             GOTO 998
@@ -1380,12 +1392,17 @@ C
           ISSPTC=0
 C
           NLSPUT=.FALSE.
+
 csw 10jan2011
-CVK          IF (ILSPT(MSURF).NE.0) THEN
+CVK       IF (ILSPT(MSURF).NE.0) THEN
 !pb  allow for bulk particle to sputter at transparent surface
 !pb  because of gap between outer plasma surface and wall in SOLPS
           IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN !VK from AK's locate
 csw
+
+cdr  ilspt=0 in case of transparent surfaces was a safety procedure in subr. input.f
+cdr  this has now been bypassed. Better: do that in couple_b2 (case specific), but not in eirene itself
+
 C  SAVE INCIDENT PARTICLE'S SPEED AND ENERGY
             E0S=E0
             WEIGHS=WEIGHT
@@ -1409,11 +1426,21 @@ C
 C  UPDATE SPUTTER SURFACE TALLIES. SAME AS IN SUBR. ESCAPE, BUT HERE
 C                                  FOR INCICENT BULK IONS
 C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY 
-C  FOR PHSSICAL AND CHEMICAL SPUTTERING RESP.
+C  FOR PHYSICAL AND CHEMICAL SPUTTERING RESP.
             ITOLD = 4
             IF (NLSPUT) THEN
 C
-            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP+WGHTSC)
+CDR  THIS CALL IS INCORRECT, SINCE ITYP AND ISPZ OF SPUTTERED PARTICLE ARE NOT YET SET.
+CDR           CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP+WGHTSC)
+C
+C   update total sputter fluxes for those cases in which sputtered particle species index is not set
+C   (e.g. target material is not an eirene test particle in this run)
+
+              IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
+     .          CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP,0)
+              IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
+     .          CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC,0)
+ 
 C
 C  UPDATE TOTAL SPUTTERED FLUX TALLY
 !              IF (LSPTTOT)
@@ -1478,7 +1505,9 @@ C
      .            VELX,VELY,VELZ,VEL,E0,WEIGHT)
             ENDIF
 C
-            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP)
+cdr  species index of physically sputtered particle is known.
+cdr  update total and sputtered species resolved sputtered fluxes
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP,1)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -1543,7 +1572,10 @@ C
      .            VELX,VELY,VELZ,VEL,E0,WEIGHT)
             ENDIF
 C
-            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC)
+cdr  species index of physically sputtered particle is known.
+cdr  update total and sputtered species resolved sputtered fluxes
+
+            CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSC,1)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -1567,7 +1599,7 @@ C
 C  RESTORE INCIDENT PARTICLE, FOR SURFACE REFLECTION ROUTINE
 C
 csw 10jan2012
-cvk          IF (ILSPT(MSURF).NE.0) THEN
+cvk       IF (ILSPT(MSURF).NE.0) THEN
           IF (NLSPUT) THEN
 csw
             E0=E0S
@@ -1637,6 +1669,7 @@ c         DUMV(3)=0._DP
           ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
           IF (LPPPL) PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
           IF (LEPPL) EPPL(NCELLT)=EPPL(NCELLT)-E0*WEIGHT
+C         IF (LEPEL) EPEL(NCELLT)=EPEL(NCELLT)- ???  ELECTRON ENERGY LOSS/GAIN ASSOCIATED WITH PROCESS IRRC
           IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
           IF (NLSTOR) CALL EIRENE_STORE(2)
 C
@@ -2011,153 +2044,8 @@ C
  
 c         end do ! iloop
 c         IF (NLTRC) CALL CHCTRC(X0,Y0,Z0,0,1)
-c
-c  for (computed) spectrum no. 2: use spectral range as set in input block 10F
-c         if (nadspc < 2) then
-c           write (iunout,*) 'locate: no storage for spectr. no. 2  '
-c           call exit_own(1)
-c         endif
-c  use spectral range as set in input block 10F
-c         ean=estiml(2)%pspc%spcmin+0.5_dp*estiml(2)%pspc%spcdel
-c         een=estiml(2)%pspc%spcmax
-c         de=estiml(2)%pspc%spcdel
-c         nen=estiml(2)%pspc%nspc
-c         allocate(eplot(nen))
-c         allocate(y1plot(nen))
-c         allocate(y2plot(nen))
-cdr  this test is comparison of sampled and evaluated line profiles.
-cdr  sampling is done using upper bulk species ipls. Hence: use also
-cdr  same ipls for evaluation of same line profile in getcoeff.
-c         ipl=reaction%ignd
-c         ipl=ipls
-c
-! Achtung!!!!!!!!!
-! irot =1 ist falsch, wenn das Photon mehrere Reaktionen ausfuehren kann
-c          irot=1
-!pbct          ictoff = nreact(kk)
-c          do i=1,nen
-c            e0=ean+(i-1)*de
-c            eplot(i)=e0
-c            call PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac,res)
-cdr  fac is 1/eV. hence: here times delta_E, because in calc-spectrum
-cdr                      there is a division by delta_E.
-cdr  times nloop, because: nloop particles sampled with ph_energy
-cdr             further below: both spectra will be rescaled with 1/nloop
-c            msurf=estiml(2)%pspc%ispcsrf
-c            call calc_spectrum (fac*ESTIML(2)%PSPC%SPCDEL*nloop,1,0)
-!pbct            spcvl = fac*ESTIML(2)%PSPC%SPCDEL*nloop
-!pbct            call calc_spectrum (spcvl,1,0)
-c
-c  for second plot, not from plteir but explicitly done below
-c  "flux" or "energy flux" units ?
-c            y1plot(i) = fac
-c            y1plot(i) = fac*E0
-c            y2plot(i) = EIRENE_fpathph(ncell,cflag,1,1)
-c          end do
-!pbct          do i=1,nen
-!pbct            ESTIML(2)%PSPC%SPC(I) =
-!pbct     .          ESTIML(2)%PSPC%SPC(I)/(xintleft(ictoff,ncell) +
-!pbct     .              xint_inf(ictoff,ncell)
-!pbct     .             -xintright(ictoff,ncell))*xint_inf(ictoff,ncell)
-!pbct          end do
-c
-c          flxfc=1._dp/nloop
-c  substract line center energy e00 from abscissa
-c          e00_plot=reaction%e0
-c          eplot=eplot-e00_plot
-c          DO ISPC=1,NADSPC
-c            ESTIML(ISPC)%PSPC%SPC = ESTIML(ISPC)%PSPC%SPC*FLXFC*
-c    .                               ESTIML(ISPC)%PSPC%SPCDELI
-c            ESTIML(ISPC)%PSPC%SPCINT = SUM(ESTIML(ISPC)%PSPC%SPC*
-c    .                                      ESTIML(ISPC)%PSPC%SPCDEL)
-c            ESTIML(ISPC)%PSPC%ESP_00 = e00_plot
-c          END DO
-c  plot the sampled and the calculated line profiles
-C  using the spectrum tallies (histograms).
-c          EMINSP=ESTIML(1)%PSPC%ESP_MIN
-c          EMAXSP=ESTIML(1)%PSPC%ESP_MAX
- 
-!pbct          iloc = maxloc(ESTIML(1)%PSPC%SPC(1:nen),dim=1)+1
-!pbct          spcvl = ESTIML(1)%PSPC%SPC(iloc)/ESTIML(2)%PSPC%SPC(iloc)
- 
-!pbct          write (iunout,*) ' estiml(1)   ',ESTIML(1)%PSPC%SPC(iloc)
-!pbct          write (iunout,*) ' estiml(2)   ',ESTIML(2)%PSPC%SPC(iloc)
-!pbct          write (iunout,*) ' scal.factor ',spcvl
- 
-!pbct          spcmx = maxval(ESTIML(1)%PSPC%SPC(1:nen))
-c
-!pbct          do i=1,nen
-!pbct            ESTIML(2)%PSPC%SPC(I) = MIN(SPCMX,
-!pbct     .          ESTIML(2)%PSPC%SPC(I))
-!pbct          end do
-c
-c          nadspc=2
-c          xmcp(istra)=nloop
-c          iestr=istra
-c          call plteir(istra)
- 
-!pbct          DO ISPC=1,NADSPC
-!pbct             WRITE (56+ifoff,*) ' SPECTRUM ',ISPC
-!pbct             DO IE=1, ESTIML(ISPC)%PSPC%NSPC
-!pbct                EN = ESTIML(ISPC)%PSPC%SPCMIN +
-!pbct     .               (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-!pbct                WRITE (56+ifoff,'(I6,2ES12.4)') IE,EN,
-!pbct     .               ESTIML(ISPC)%PSPC%SPC(IE)
-!pbct             END DO
-!pbct             write (56+ifoff,*) ' integral ',ESTIML(ISPC)%PSPC%SPCINT
-!pbct             WRITE (56+ifoff,'(///1X)')
-!pbct          END DO
-c
-c  plot the calculated line profile once again (smooth curve)
-c          call grnxtb(1,'LOCATE.F')
-c          call grsclc (5.,2.,32.,24.)
-c          y1a=minval(y1plot)
-c          y1e=maxval(y1plot)
-c          if (y1e.gt.y1a) then
-c            call grsclv (eplot(1),y1a,eplot(nen),y1e)
-c            call graxs (9,'X=1,Y=1,A',1,' ',1,' ')
-c            call grnwpn(2)
-c            call grln(eplot,y1plot,nen)
-c            call grnwpn(3)
-c  indicate line center on plot
-c  here: e00_plot=0, because shift already done on eplot.
-c            e00_plot=reaction%e0-e00_plot
-c            call grjmp(e00_plot,y1a)
-c            call grdrw(e00_plot,y1e)
-c          endif
-c  plot the mean free path vs. photon energy, if finite
-c          y2a=minval(y2plot)
-c          y2e=maxval(y2plot)
-c          if (y2e.gt.y2a) then
-c            call grsclv (eplot(1),y2a,eplot(nen),y2e)
-c            call grnwpn(1)
-c            call graxs (9,'X=2,Y=2,A',1,' ',1,' ')
-c            call grnwpn(4)
-c            call grln(eplot,y2plot,nen)
-c            call grnwpn(1)
-c          endif
-c          call grend
- 
-c  print on stream inuout, for further processing
-c          write (iunout,*)
-c    .       'spectrum in locate, emin, emax ',eminsp,emaxsp
-c          write (iunout,*) 'nloop,ncell,Tiin(mplsti(ipls),ncell),',
-c    .                      'Bfin(ncell),dein(ncell),tein(ncell)'
-c          write (iunout,*)  nloop,ncell,Tiin(mplsti(ipls),ncell),
-c    .                       Bfin(ncell),dein(ncell),tein(ncell)
-c          write (iunout,*) 'energy(eV), spectral energy flux,samp,',
-c    .                                  'spectral energy flux,eval,',
-c    .                                  'line shape*E0, mfp(cm)'
-c          do i=1,nen
-c            write (iunout,*) eplot(i), estiml(1)%pspc%spc(i),
-c    .                                  estiml(2)%pspc%spc(i),
-c    .                                  y1plot(i),
-c    .                                  y2plot(i)
-c          enddo
-c          write (iunout,*)
-c    .       'spectrum in locate, emin, emax ',eminsp,emaxsp
-c          stop
-C
+
+c  parts for plotting emission spectrum removed from here --> development branch
  
           IF (NLTRC.AND.TRCHST) THEN
             WRITE (iunout,*) 'AFTER RECOMBINATION: '
@@ -2215,6 +2103,7 @@ C  TALLIES FOR BULK-SECONDARIES (IF ANY)
           IF (LPPPL) PPPL(IPLS_B2,NCELLT)=PPPL(IPLS_B2,NCELLT)+WEIGHT_B2
           IF (LEPPL) EPPL(NCELLT)=EPPL(NCELLT)+E0_B2*WEIGHT_B2
         ENDIF
+C  TALLIES FOR SECONDARY ELECTRONS  (TO BE DONE)
 C
       ENDIF
 C
@@ -2256,11 +2145,13 @@ C  TEST FOR CORRECT CELL NUMBER AT BIRTH POINT
 C  KILL PARTICLE, IF WRONG CELL INDICES
 C
       IF (NLSRFX) THEN
-C  RADIAL CELL NO. MAY BE WRONG
-!pb 14.05.2013
+C  PARTICLE ON SURFACE. RADIAL CELL NO. MAY BE WRONG
+C  FIND SIGN SG OF FLIGHT RELATIVE TO SURFACE NORMAL
         IF (LEVGEO.EQ.1) THEN
           SG=SIGN(1._DP,VELX)
-        ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+        ELSEIF (LEVGEO.EQ.2) THEN
+          SG=VELX*(X0-EP1(MRSURF))*ELLQ(MRSURF)+VELY*Y0
+        ELSEIF (LEVGEO.EQ.3) THEN
           SG=VELX*PLNX(MRSURF,NPCELL)+VELY*PLNY(MRSURF,NPCELL)
         ELSEIF ((LEVGEO==4) .OR. (LEVGEO==5)) THEN
           SG = 1

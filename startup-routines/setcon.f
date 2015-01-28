@@ -1,3 +1,4 @@
+C  30.09.14:  only comments
 C  06.12.05:  added: au_to_cm2 (was previously defined in fpatha)
 C  25.08.06:  use double precision constant for definition of PMASSA
 C  22.12.06:  set up periodic table of elements
@@ -36,7 +37,7 @@ C  BOHR MAGNETON, [EV/TESLA]
       MUB=5.788381804D-5
 C  ATOMIC MASS UNIT [G]
       AMUA=1.6606D-24
-C  PROTON, ELECTRON MASS
+C  PROTON, ELECTRON MASS [AMU]
       PMASSA=1.0073D0
       PMASSE=5.448D-4
 C  CONVERT CROSS SECTIONS FROM ATOMIC UNITS TO CM**2

@@ -1,4 +1,4 @@
-C
+cdr  tally 22 (electric potential) added, and a few comments, started...
 C
       SUBROUTINE EIRENE_OUTIDLPLA
 C
@@ -35,6 +35,8 @@ C                 TALTYP=1: #-DENSITY      (#-UNITS/CM**3)
 C                 TALTYP=2: VOLUME         (CM**3)
 C                 TALTYP=3: DIMENSIONLESS  (1)
 C                 TALTYP=4: UNKNOWN        (?)
+c
+c  number of volumetric input tallies: ntali = 22
       TALTYP(1)=0
       TALTYP(2)=0
       TALTYP(3)=1
@@ -56,6 +58,7 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(19)=0
       TALTYP(20)=0
       TALTYP(21)=0
+      TALTYP(22)=0
 
       MXSPZ = MAXVAL(NFSTPI(1:NTALI))
       
@@ -134,8 +137,11 @@ C
             HELPP(1:NSBOX,K) = EZIN(1:NSBOX)
           CASE (21)
             HELPP(1:NSBOX,K) = EFIN(1:NSBOX)
+          CASE (22)
+            HELPP(1:NSBOX,K) = POT(1:NSBOX)
           CASE DEFAULT
-            WRITE (iunout,*) ' WRONG TALLY NUMBER, ITAL = ',ITAL
+            WRITE (iunout,*) ' WRONG TALLY NUMBER (OUTIDLPLA), ITAL = '
+     .                        ,ITAL
             WRITE (iunout,*) ' NO OUTPUT PERFORMED '
             CALL EIRENE_LEER(1)
             GOTO 100
@@ -178,6 +184,9 @@ C  ION DRIFT ENERGY
             ELSEIF (ITAL.GE.18.AND.ITAL.LE.21) THEN
 C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
               HELPW(I,K)=1.D0
+            ELSEIF (ITAL.EQ.22) THEN
+C  ELECTRIC POTENTIAL   
+              HELPW(I,K)=1.D0
             ENDIF
             TOTAL=TOTAL+HELPW(I,K)
 121       CONTINUE
@@ -215,6 +224,9 @@ C  ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             ELSEIF (ITAL.GE.18.AND.ITAL.LE.21) THEN
 C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
+              HELPW(I,K)=1.D0
+            ELSEIF (ITAL.EQ.22) THEN
+C  ELECTRIC POTENTIAL   
               HELPW(I,K)=1.D0
             ENDIF
             TOTAL=TOTAL+HELPW(I,K)

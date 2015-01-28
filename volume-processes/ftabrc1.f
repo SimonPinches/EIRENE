@@ -1,13 +1,17 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
+!pb  22.11.06: flag (T/F) for shift of first parameter to rate_coeff introduced.
+c              this transformation of parameter PLS is now done in rate-coeff.f
  
  
       FUNCTION EIRENE_FTABRC1 (IRRC,K)
-c  evaluate volume-recombination rate coefficient (or rate), 
+c  evaluate volume-recombination rate (1/s), also spontaneous volumetric transition rate (1/s)  
+c  include density factor, if rate_coeff is in cm*3/s  (controlled by fitting flag iftflg) 
 c  for rc process no. IRRC,
 c         in cell no. K
 
+
 c  hard wired: cut off (density) parameter for H.4 fits: 1e8
 c  hard wired: density parameter in fit reduced by DSUB=1e8, done in rate_coeff.f
+ 
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -24,11 +28,13 @@ c  hard wired: density parameter in fit reduced by DSUB=1e8, done in rate_coeff.
  
       TBRC=0.D0
       KK = NREARC(IRRC)
- 
+
+c  default radiative rate coefficient, see xstrc.f 
       IF (KK == 0) THEN
         ZX=EIONH/MAX(1.E-5_DP,TEIN(K))
         TBRC=1.27E-13*ZX**1.5/(ZX+0.59)*DEIN(K)
- 
+
+c  kk >  0  (to be done: error exit for kk < 0) 
       ELSE
  
 

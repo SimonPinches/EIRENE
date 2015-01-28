@@ -1,4 +1,4 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
+!pb  22.11.06: flag iprshft for shift of second parameter to rate_coeff introduced
 !pb  24.11.06: get extrapolation parameters for polynomial fit only
 !pb  07.12.06: double declaration of dsub removed
 !dr  19.02.14: COMMENTS
@@ -7,7 +7,7 @@
      .                     result (rate)
 !  evaluate reaction rate coefficient (cm^3/s), and return this as "rate"
 
-!  currently 5 different options controlled by :reacdat(ir)%rtc%ifit
+!  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
 !  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
 !  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
@@ -28,6 +28,8 @@
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
 !              remove erate in case of ifit=5 and generalize to more cr models.
 !              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
+!              what happens if later call with other shift ?  coding to be reconsidered !
+!              remove ifirst and ifsub conditions and set the data once, and save. 
  
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -44,10 +46,12 @@
      .            fp(6), q1, q2,
      .            ALPCR, SCR, SCRRAD, E_ALPCR, E_SCR, E_SCRRAD,
      .            E_ALPCR_T, E_SCR_T, E_SCRRAD_T
-      real(dp), save :: xlog10e, xln10, dsub
+      real(dp), save :: xlog10e= 4.34294482d-01,      !1./ln(10) = log10(e)
+     .                  xln10  = 2.30258509299_dp,    !ln(10) 
+     .                  dsub   =18.420680744_dp       !ln(1e8)
       real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), qcol2(:)
       integer :: jfexmn, jfexmx
-      integer, save :: ifirst=0, ifsub=0
+            
  
       interface
         function EIRENE_intp_adas (ad,p1,p2) result(res)
@@ -102,10 +106,7 @@ c  extrapolation data: currently only for polynomial fits
       else if (reacdat(ir)%rtc%ifit == 2) then
 
 ! DOUPLE POLYNOMIAL FIT
-        if (ifsub == 0) then
-          ifsub = 1
-          dsub = log(1.e8_dp)
-        end if
+
 c  rescale parameter p2  (currently only by 1e-8):  q2 
         q2 = p2
         if (iprshft > 0) q2 = q2 - dsub
@@ -117,14 +118,10 @@ c  rescale parameter p2  (currently only by 1e-8):  q2
  
       else if (reacdat(ir)%rtc%ifit == 3) then
  
-! DOUBLE PARAMETER TABLE  (E.G. ADAS)
+! DOUBLE PARAMETER (N,T) TABLE OF LOG10(RATE COEFFICIENTS)  (E.G. ADAS ADF11 files)
 
 !  currently hard wired:  input parameters q1, q2 and table coefficients are log10
-        if (ifirst == 0) then
-          ifirst = 1
-          xln10 = log(10._dp)
-          xlog10e = 1._dp/xln10
-        end if
+
 c  convert parameters p1 and p2 from ln to log10:  q1,q2 
         q1 = xlog10e*p1
         q2 = xlog10e*p2
@@ -133,24 +130,24 @@ C  assume here: tabulated data are log10  (to be generalized)
  
         if (lexp) then
           rate=10._dp**rate
-        else
+        else ! convert from log_10 to ln_e
           rate = xln10*rate
         end if
  
       else if (reacdat(ir)%rtc%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
-!  currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
+! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
         q1 = exp(p1)
-C  assume here: tabulated data are not ln nor log10  (to be generalized)
+C  assume here: tabulated data are neither ln nor log10  (to be generalized)
         rate = eirene_intp_table(reacdat(ir)%rtc%hyd,q1,p2)
 
 !  lexp option not connected here !
  
       else if (reacdat(ir)%rtc%ifit == 5) then
  
-! H-colrad   RATE AND ENERGY LOSS RATE IN ONE SIGNLE STEP
+! H-colrad   RATE AND ENERGY LOSS RATE IN ONE SINGLE STEP
  
         if (.not.allocated(pop0)) then
           allocate(pop0(40))

@@ -1,8 +1,8 @@
-CX UNIX PORT - SCCS info: Module @(#)$Header: /home/boerner/Eirene-Repository/Eirene/volume-processe
-CX
-!pb       REAL*8 FUNCTION NGFFMH(GAM2)
+c  free free gaunt factor routine, obtained from Martin O'Mullane in 2007 
+c  slightly adapted to use eirene precision convention (eirmod_precision) 
+
        FUNCTION EIRENE_NGFFMH(GAM2)
-!pb       IMPLICIT REAL*8(A-H,O-Z)
+!pb    IMPLICIT REAL*8(A-H,O-Z)
        USE EIRMOD_PRECISION
        IMPLICIT NONE
 C-----------------------------------------------------------------------
@@ -41,7 +41,7 @@ C-----------------------------------------------------------------------
        REAL(DP) :: EIRENE_NGFFMH, GAM2L
        INTEGER :: K
  
-!PB       DIMENSION GAM2LA(17),GA(17)
+!PB    DIMENSION GAM2LA(17),GA(17)
        REAL(DP) :: GAM2LA(17),GA(17)
        DATA GAM2LA/-3.0D0,-2.75D0,-2.50D0,-2.25D0,-2.00D0,-1.75D0,
      &-1.50D0,-1.25D0,-1.00D0,-0.75D0,-0.50D0,-0.25D0,0.00D0,0.25D0,

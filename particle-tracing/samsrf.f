@@ -14,7 +14,8 @@ c          pointer to species of step function
 C  june 13: some comments, clean up, further checks and error exits.
 C           DELR REMOVED FROM LOOP 3010
 C           ELSTEP and SHSTEP added in definition of default step function
-!pb 21.06.13: introduce INDIM=5 option, sample uniformly along step function
+C  oct. 14: some preliminary options for correlation sampling removed, 
+C           back to development branch
 C
       SUBROUTINE EIRENE_SAMSRF
 C
@@ -102,6 +103,9 @@ C
         ISORFL=EIRENE_IDEZ(INT(SORIFL(ISRFS,ISTRA)),4,4)
 C
         IF (SORLIM(ISRFS,ISTRA).GT.0.AND.INDIM(ISRFS,ISTRA).EQ.1.) THEN
+c  source is on radial (x-) grid surface x= const. r= const, etc...
+c  the poloidal range of source region should be on ingrd..(...,2),
+c  not on ingrd..(...,1)
           IF (INGRDA(ISRFS,ISTRA,1).NE.INGRDE(ISRFS,ISTRA,1)) THEN
             WRITE (iunout,*) 'WARNING FROM SAMSF0, ISTRA= ',ISTRA
             WRITE (iunout,*) 'NEW INPUT FOR INGRDA,INGRDE....'
@@ -128,6 +132,7 @@ C  YES
         NL1J=ISRFS
         NL2J=NL1J+NSRFS
         NL3J=NL2J+NSRFS
+c  FLAG FOR SPATIAL SAMPLING IS CODED ON INDTEC (ORIGINALLY: INPUT FLAG SORLIM)
         INDTEC(NL1J,ISTRA)=EIRENE_IDEZ(ISOR,1,4)
         INDTEC(NL2J,ISTRA)=EIRENE_IDEZ(ISOR,2,4)
         INDTEC(NL3J,ISTRA)=EIRENE_IDEZ(ISOR,3,4)
@@ -137,9 +142,7 @@ C
         ISTEP=0
         ISTEP_SPEZ=0
         IF (INDTEC(NL1J,ISTRA).NE.4.AND.INDTEC(NL2J,ISTRA).NE.4.AND.
-     .      INDTEC(NL3J,ISTRA).NE.4.AND. 
-     .      INDTEC(NL1J,ISTRA).NE.5.AND.INDTEC(NL2J,ISTRA).NE.5.AND.
-     .      INDTEC(NL3J,ISTRA).NE.5) GOTO 7
+     .      INDTEC(NL3J,ISTRA).NE.4) GOTO 7
 C
 C  YES. CHECK INPUT DATA AND STORAGE
 C
@@ -172,8 +175,7 @@ C       source surfaces must hence be either x-y or x-z surface
 c       IN CASE OF UNSTRUCTURED GRIDS: LEVGEO 4 AND LEVGEO 5,
 C       ALL NON-DEFAULT SURFACES ARE REGARDED as x-s surface, t=const
 C
-          IF ((INDTEC(NL1J,ISTRA).EQ.4) .OR. 
-     .        (INDTEC(NL1J,ISTRA).EQ.5)) THEN
+          IF (INDTEC(NL1J,ISTRA).EQ.4) THEN
 C
 C  USE X-OR RADIAL DISTRIBUTION OF ION FLUX 0.5*NI(R,Y0,Z0)*CS(R,Y0,Z0)*(DELTA-Z
 C  WITH: CS = COMMON ION ACOUSTIC SPEED
@@ -367,8 +369,7 @@ C             RRSTEP(ISTEP,NBIN) ALREADY SET ABOVE
 C
 c  NO DEFAULT STEP FUNCTIONS AVAILABLE FOR Y OR Z SURFACE SOURCES
 C
-          ELSEIF ((INDTEC(NL2J,ISTRA).EQ.4) .OR. 
-     .            (INDTEC(NL2J,ISTRA).EQ.5)) THEN
+          ELSEIF (INDTEC(NL2J,ISTRA).EQ.4) THEN
             WRITE (iunout,*) 'DEFAULT STEP FUNCTIONS ONLY AVAILABLE FOR'
             WRITE (iunout,*) 'SAMPLING OF RADIAL CO-ORDINATE '
             WRITE (iunout,*)
@@ -376,8 +377,7 @@ C
             WRITE (iunout,*) 'CALL EXIT '
             CALL EIRENE_EXIT_OWN(1)
 C
-          ELSEIF ((INDTEC(NL3J,ISTRA).EQ.4).OR. 
-     .            (INDTEC(NL3J,ISTRA).EQ.5)) THEN
+          ELSEIF (INDTEC(NL3J,ISTRA).EQ.4) THEN
             WRITE (iunout,*) 'DEFAULT STEP FUNCTIONS ONLY AVAILABLE FOR'
             WRITE (iunout,*) 'SAMPLING OF RADIAL CO-ORDINATE '
             WRITE (iunout,*)
@@ -416,6 +416,9 @@ C  IDENTIFY THOSE BULK SPECIES WITH NON-ZERO FLUX
      .               FF*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*NCHRGP(IPLS)
 !pb 08.01.14
               ELSE
+c  employ default eirene sheath model. 
+c    to be done. plasma flow velocity v..step should first be projected 
+c    towards surface normal. 
                 GAMMA=0.
                 CUR=0.
                 TESH=TESTEP(ISTEP,K)
@@ -566,9 +569,7 @@ C         ENDIF
           BRGHT(2,ISRFS,ISTRA)=SORAD4(ISRFS,ISTRA)
         ENDIF
 C
-!pb        IF (INDIM(ISRFS,ISTRA).EQ.4) THEN
-        IF ((INDIM(ISRFS,ISTRA).EQ.4) .OR. 
-     .      (INDIM(ISRFS,ISTRA).EQ.5)) THEN
+        IF (INDIM(ISRFS,ISTRA).EQ.4) THEN
 C  SOURCE ON COMBINATION OF RADIAL AND POLOIDAL SURFACE SEGMENTS:
 C  ONLY FOR EXTERNALLY DEFINED STEP FUNCTIONS
 C      SAMPLE ARC-LENGTH AND THIRD CO-ORDINATE,
@@ -583,13 +584,12 @@ C
             ELSE
               WRITE (iunout,*) ' ERROR IN SAMSRF '
               WRITE (iunout,*) 
-     .           ' INDIM=4 AND 5 ONLY FORESEEN WITH STEPFUNCTION '
+     .           ' INDIM=4 ONLY FORESEEN WITH STEPFUNCTION '
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
           ELSE
             WRITE (iunout,*) ' ERROR IN SAMSRF '
-            WRITE (iunout,*) 
-     .       ' INDIM=4 AND 5 ONLY FORESEEN WITH STEPFUNCTION '
+            WRITE (iunout,*) ' INDIM=4 ONLY FORESEEN WITH STEPFUNCTION '
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
           ALEFT(3,ISRFS,ISTRA)=SORAD5(ISRFS,ISTRA)
@@ -624,20 +624,11 @@ C
           IF (ISPZ.GT.0.AND.ISPZ.LT.NSPSTI(ISTEP)) GOTO 991
           IF (              ISPZ.GT.NSPSTE(ISTEP)) GOTO 991
 C
-          IF ((INDTEC(NL1J,ISTRA).EQ.4) .OR.
-     .        (INDTEC(NL1J,ISTRA).EQ.5)) THEN
-!pb            IF ((INDIM(ISRFS,ISTRA) == 4) .AND. 
-            IF ((INDIM(ISRFS,ISTRA) <= 4) .AND. 
-     .          (INDTEC(NL1J,ISTRA).EQ.4))THEN
-              XI(1,ISRFS,ISTRA)=
+          IF (INDTEC(NL1J,ISTRA).EQ.4) THEN
+            XI(1,ISRFS,ISTRA)=
      .           EIRENE_STEP0(ISPZ,ISTEP,ALEFT(1,ISRFS,ISTRA))
-              XE(1,ISRFS,ISTRA)=
+            XE(1,ISRFS,ISTRA)=
      .           EIRENE_STEP0(ISPZ,ISTEP,BRGHT(1,ISRFS,ISTRA))
-            ELSE IF ((INDIM(ISRFS,ISTRA).EQ.5) .OR.
-     .               (INDTEC(NL1J,ISTRA).EQ.5))  THEN
-              XI(1,ISRFS,ISTRA)=ALEFT(1,ISRFS,ISTRA)
-              XE(1,ISRFS,ISTRA)=BRGHT(1,ISRFS,ISTRA)
-            END IF
             IF (TRCSOU) THEN
               WRITE (IUNOUT,*) 'SAMPLING INTERVAL ON STEP FUNCTION '
               CALL EIRENE_MASR2('ALEFT, BRGHT    ',
@@ -651,20 +642,11 @@ C
      .                 FLX(IPLSD(IPL))
               END DO
             END IF
-          ELSEIF ((INDTEC(NL2J,ISTRA).EQ.4) .OR.
-     .            (INDTEC(NL2J,ISTRA).EQ.5)) THEN
-!pb            IF ((INDIM(ISRFS,ISTRA) == 4) .AND. 
-            IF ((INDIM(ISRFS,ISTRA) <= 4) .AND. 
-     .          (INDTEC(NL2J,ISTRA).EQ.4)) THEN
-              XI(2,ISRFS,ISTRA)=
+          ELSEIF (INDTEC(NL2J,ISTRA).EQ.4) THEN
+            XI(2,ISRFS,ISTRA)=
      .           EIRENE_STEP0(ISPZ,ISTEP,ALEFT(2,ISRFS,ISTRA))
-              XE(2,ISRFS,ISTRA)=
+            XE(2,ISRFS,ISTRA)=
      .           EIRENE_STEP0(ISPZ,ISTEP,BRGHT(2,ISRFS,ISTRA))
-            ELSE IF ((INDIM(ISRFS,ISTRA).EQ.5) .OR.
-     .               (INDTEC(NL2J,ISTRA).EQ.5)) THEN
-              XI(2,ISRFS,ISTRA)=ALEFT(2,ISRFS,ISTRA)
-              XE(2,ISRFS,ISTRA)=BRGHT(2,ISRFS,ISTRA)
-            END IF
             IF (TRCSOU) THEN
               WRITE (IUNOUT,*) 'SAMPLING INTERVAL ON STEP FUNCTION '
               CALL EIRENE_MASR2('ALEFT, BRGHT    ',
@@ -678,20 +660,11 @@ C
      .                 FLX(IPLSD(IPL))
               END DO
             END IF
-          ELSEIF ((INDTEC(NL3J,ISTRA).EQ.4) .OR.
-     .            (INDTEC(NL3J,ISTRA).EQ.5)) THEN
-!pb            IF ((INDIM(ISRFS,ISTRA) == 4) .AND. 
-            IF ((INDIM(ISRFS,ISTRA) <= 4) .AND. 
-     .          (INDTEC(NL2J,ISTRA).EQ.4)) THEN
-              XI(3,ISRFS,ISTRA)=
+          ELSEIF (INDTEC(NL3J,ISTRA).EQ.4) THEN
+            XI(3,ISRFS,ISTRA)=
      .           EIRENE_STEP0(ISPZ,ISTEP,ALEFT(3,ISRFS,ISTRA))
-              XE(3,ISRFS,ISTRA)=
+            XE(3,ISRFS,ISTRA)=
      .           EIRENE_STEP0(ISPZ,ISTEP,BRGHT(3,ISRFS,ISTRA))
-            ELSE IF ((INDIM(ISRFS,ISTRA).EQ.5) .OR.
-     .               (INDTEC(NL3J,ISTRA).EQ.5)) THEN
-              XI(3,ISRFS,ISTRA)=ALEFT(3,ISRFS,ISTRA)
-              XE(3,ISRFS,ISTRA)=BRGHT(3,ISRFS,ISTRA)
-            END IF
             IF (TRCSOU) THEN
               WRITE (IUNOUT,*) 'SAMPLING INTERVAL ON STEP FUNCTION '
               CALL EIRENE_MASR2('ALEFT, BRGHT    ',
@@ -753,7 +726,7 @@ C
       ZZ = 0._DP
       DO 1000 J=1,3
         IK=NLSF+(J-1)*NSRFS
-        GOTO (10,20,30,40,50),INDTEC(IK,ISTRA)
+        GOTO (10,20,30,40),INDTEC(IK,ISTRA)
 C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE-EQUATION
           IF (JCALC.NE.0) GOTO 997
           JCALC=J
@@ -784,26 +757,10 @@ C   PARAMETER: SORIND
           ISTEP_SPEZ = SORIND(NLSF,ISTRA)/100
           ISPZ=NSPEZ(ISTRA)
           IF (ISTEP_SPEZ.GT.0) ISPZ=ISTEP_SPEZ
+c  RNF: uniform in spatial sampling interval
           RNF=XI(J,NLSF,ISTRA)+RANF_EIRENE( )*
      .        (XE(J,NLSF,ISTRA)-XI(J,NLSF,ISTRA))
-          IF (INDIM(NLSF,ISTRA) == 5) THEN
-            ZZ(J) = RNF
-            ICHWGHT = 1
-          ELSE
-            ZZ(J)=EIRENE_STEP1(IINDEX,ISTEP,RNF,ISPZ)
-          END IF
-          GOTO 1000
-C   STEPFUNCTION NO. ISTEP, FOR ONE CO-ORDINATE ONLY
-C   PARAMETER: SORIND
-50      CONTINUE
-          ISTEP=MOD(IDINT(REAL(SORIND(NLSF,ISTRA),KIND(1.D0))),100)
-          ISTEP_SPEZ = SORIND(NLSF,ISTRA)/100
-          ISPZ=NSPEZ(ISTRA)
-          IF (ISTEP_SPEZ.GT.0) ISPZ=ISTEP_SPEZ
-          RNF=XI(J,NLSF,ISTRA)+RANF_EIRENE( )*
-     .        (XE(J,NLSF,ISTRA)-XI(J,NLSF,ISTRA))
-          ZZ(J) = RNF
-          ICHWGHT = 1
+          ZZ(J)=EIRENE_STEP1(IINDEX,ISTEP,RNF,ISPZ)
           GOTO 1000
 1000  CONTINUE
 C
@@ -1063,6 +1020,7 @@ C
           X0=RSURF(MRSURF)*COS(ZZ(2)*DEGRAD)+EP1(MRSURF)
           Y0=RSURF(MRSURF)*SIN(ZZ(2)*DEGRAD)*ELL(MRSURF)
         ELSEIF (LEVGEO.EQ.3) THEN
+C  SAMPLING ON A RADIAL POLYGONIAL SURFACE
           BL=ZZ(2)
           DO 1501 I=1,NPPLG
             DO 1501 J=NPOINT(1,I),NPOINT(2,I)
@@ -1071,7 +1029,6 @@ C
           GOTO 996
 1502      CONTINUE
           IPLG=J-1
-          IF (ICHWGHT /= 0) IINDEX=IPLG
           D=BL-BGL(MRSURF,IPLG)
           VVX=VPLX(MRSURF,IPLG)
           VVY=VPLY(MRSURF,IPLG)
@@ -1079,9 +1036,11 @@ C
           X0=XPOL(MRSURF,IPLG)+D*VVX*VVI
           Y0=YPOL(MRSURF,IPLG)+D*VVY*VVI
         ELSEIF (LEVGEO.EQ.4) THEN
+C  SAMPLING ON SURFACE COMPOSED OF TRIANGLE SIDES
           BL=ZZ(2)
           IF (MRSURF < 0) MRSURF=ABS(MRSURF) + NLIM
           IF (ISTEP.LE.0) THEN
+C  NO STEP FUNCTION, 
             DO I=1,SURF_TRIAN(MRSURF)%NUMTR
               IF (BL.LE.SURF_TRIAN(MRSURF)%BGLT(I+1)) GOTO 1503
             END DO
@@ -1091,19 +1050,13 @@ C
             IPLG = SURF_TRIAN(MRSURF)%ITRISI(I)
             D = BL - SURF_TRIAN(MRSURF)%BGLT(I)
             MRSURF=ITRI
+C  USE STEP FUNCTION ISTEP
           ELSE
-            DO J=2,NSMAX(ISTEP)
-              IF (BL.LE.RRSTEP(ISTEP,J)) GOTO 1504
-            END DO
-            GOTO 996
- 1504       CONTINUE
-            IPLG=J-1
-            D=BL-RRSTEP(ISTEP,IPLG)
-            ITRI=IRSTEP(ISTEP,IPLG)
-            IPLG=IPSTEP(ISTEP,IPLG)
+            ITRI=IRSTEP(ISTEP,IINDEX)
+            IPLG=IPSTEP(ISTEP,IINDEX)
             MRSURF=ITRI
+            D=BL-RRSTEP(ISTEP,IINDEX)
           END IF
-          IF (ICHWGHT /= 0) IINDEX=IPLG
           VVX=VTRIX(IPLG,ITRI)
           VVY=VTRIY(IPLG,ITRI)
           VVI=1./SQRT(VVX*VVX+VVY*VVY)
@@ -1117,17 +1070,10 @@ C
             Y0=YTRIAN(NECKE(IS1,ITRI))-D*VVY*VVI
           END IF  
         ELSEIF (LEVGEO.EQ.5) THEN
-          BL=ZZ(2)
-          DO J=2,NSMAX(ISTEP)
-            IF (BL.LE.RRSTEP(ISTEP,J)) GOTO 1505
-          END DO
-          GOTO 996
- 1505     CONTINUE
-          IPLG=J-1
-          IF (ICHWGHT /= 0) IINDEX=IPLG
+C  SAMPLING ON A SURFACE COMPOSED OF TETRAHEDON SIDES
           IF (ISTEP.LE.0) GOTO 995
-          ITET=IRSTEP(ISTEP,IPLG)
-          ISID=IPSTEP(ISTEP,IPLG)
+          ITET=IRSTEP(ISTEP,IINDEX)
+          ISID=IPSTEP(ISTEP,IINDEX)
           MRSURF=ITET
           X1=XTETRA(NTECK(ITSIDE(1,ISID),ITET))
           Y1=YTETRA(NTECK(ITSIDE(1,ISID),ITET))
@@ -1225,9 +1171,7 @@ C  TO BE WRITTEN
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-!pb      ELSEIF (INDIM(NLSF,ISTRA).EQ.4) THEN
-      ELSEIF ((INDIM(NLSF,ISTRA).EQ.4) .OR. 
-     .        (INDIM(NLSF,ISTRA).EQ.5)) THEN
+      ELSEIF (INDIM(NLSF,ISTRA).EQ.4) THEN
 C  LEVGEO=3,4:
 C     BIRTH POINT ON STANDARD RADIAL OR POLOIDAL SURFACE
 C     ARC-LENGTH CO-ORDINATE IS SAMPLED FROM STEP FUNCTION
@@ -1256,7 +1200,6 @@ C
         GOTO 996
 1702    CONTINUE
         IPLG=J-1
-        IF (ICHWGHT /= 0) IINDEX=IPLG
         D=BL-RRSTEP(ISTEP,IPLG)
         IF (LEVGEO.EQ.4) THEN
           IF (ISTEP.LE.0) GOTO 995
@@ -1321,12 +1264,6 @@ C  POLOIDAL PART
         ELSE
           GOTO 992
         ENDIF
-!        IF (INDIM(NLSF,ISTRA) == 5) THEN
-        IF (ICHWGHT /= 0) THEN
-           WEIGHT = WEIGHT * ((VF(0,ISTEP,IPLG+1)-VF(0,ISTEP,IPLG)) /
-     .              (RRSTEP(ISTEP,IPLG+1)-RRSTEP(ISTEP,IPLG))) /
-     .              (1._DP/RRSTEP(ISTEP,NSMAX(ISTEP)))      
-        END IF
       ENDIF
 C
 2000  CONTINUE

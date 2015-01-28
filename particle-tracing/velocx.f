@@ -102,6 +102,7 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
         SGCVMX(IRCX)=-1.D60
         JJ=1
         do j=1,1000
+c  elab:  here ln(E), with E from 0.1 to 1e4 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
           CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 1')
           vrq=exp(elab-defCX(IRCX))
@@ -115,14 +116,14 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
         WRITE (iunout,*) 'FIRST CALL EIRENE_TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
-        WRITE (iunout,*) 'SGCVMX IN VELOCX,JJ ',SGCVMX(IRCX),JJ
+        CALL EIRENE_MASJ1R('JJ, SGCVMX      ',JJ, SGCVMX(IRCX))
         IF (JJ.NE.1.AND.JJ.NE.1000) THEN
           elab=elmin+(JJ-1)/999.*(elmax-elmin)
           ELAB=EXP(ELAB)
           WRITE (iunout,*) 'TRUE MAXIMUM FOUND AT ELAB(EV) = ',ELAB
           IFLRCX(IRCX)=1
         ELSE
-          WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE EIRMOD_WEIGHING '
+          WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE WEIGHTING '
         ENDIF
         CALL EIRENE_LEER(1)
       ENDIF
@@ -233,7 +234,8 @@ C
           if (test.gt.cxs*vrel) then
 c  reject
             icount=icount+1
-            if (icount.lt.500) goto 123
+            if (icount.lt.500) goto 123  ! fetch a new bulk ion velocity
+c  rejection loop failed, too many attempts.
             write (iunout,*)
      .        'icount too large ( > 500) IN VELOCX. ACCEPT SAMPLE '
             ELLAB=EXP(ELAB)

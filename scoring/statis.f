@@ -240,8 +240,10 @@ C  I.E., AVERAGES OVER COORDINATES OR OVER THE ENTIRE COMPUTATIONAL DOMAIN
         END DO
         SGMS(IC)=SGMS(IC)+SD1S*SD1S
 1012  CONTINUE
+c  updating of statistical variance (once per flight) for volume tallies: done 
+
 C
-C
+C  update statistical variance for surface tallies, once after each flight
 1020  CONTINUE
       IF (NSIGSI.EQ.0) GOTO 1030
       DO 1022 IC=1,NSIGSI
@@ -261,12 +263,18 @@ C
         END IF
         IF (ISCO == 0) GOTO 1022
 
+c  fill 'vector'
+c  vector is cummulated contribution after present flight no. n
+c   
         IF (IGS.NE.0) THEN
+c  
           DO 1023 ICO=1,NWLMT
+c  tally is for single species igs
             IR = IWLMT(ICO)
             VECTOR(ICO)=ESTIMS(INP+IGS,IR)
 1023      CONTINUE
         ELSE
+c  tally is for sum over species
           DO 1024 ICO=1,NWLMT
             VECTOR(ICO)=0.
 1024      CONTINUE
@@ -276,10 +284,15 @@ C
             VECTOR(ICO)=VECTOR(ICO)+ESTIMS(INP+IS,IR)
 1025      CONTINUE
         ENDIF
-C
+
+c  next:
+C  contribution from current flight no. n only: sd1 =vector-sdviaw
+c  sdvia  is cummulated contribution after previous flight no. n-1 (previous call)
+
         SD1S=0.
         DO 1021 ICO=1,NWLMT
           IR = IWLMT(ICO)
+c  
           SD1=VECTOR(ICO)-SDVIAW(IC,IR)
           SD1S=SD1S+SD1
           SIGMAW(IC,IR)=SIGMAW(IC,IR)+SD1*SD1
@@ -287,9 +300,12 @@ C
 1021    CONTINUE
         SGMWS(IC)=SGMWS(IC)+SD1S*SD1S
 1022  CONTINUE
+c  sigma  now is cummulated squared contribution after flight no. n
 C
 1030  CONTINUE
 C
+
+c  surface tallies done.  next: covariances
       IF (NSIGCI.EQ.0) GOTO 1050
 C
       DO 1032 IC=1,NSIGCI
@@ -416,6 +432,8 @@ C
 1050  CONTINUE
       RETURN
 C
+c  scale statistical variance. called after all flights from a given stratum istra
+
       ENTRY EIRENE_STATS2(XN,FSIG,ZFLUX)
 C
 C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1
@@ -447,7 +465,7 @@ C
             VECTOR(IR)=VECTOR(IR)+ESTIMV(INP+IS,IR)
 2115      CONTINUE
         ENDIF
-C
+C  tally is now on vector
         DS=0.
         DO 2011 IR=1,NSB
           SD1=VECTOR(IR)
@@ -467,7 +485,7 @@ C
 C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA(IC,IR)=SG*FSIG
-C CUMULATED VARIANCE FOR SUM OVER STRATA
+C CUMMULATED VARIANCE FOR SUM OVER STRATA
           STV(IC,IR)=STV(IC,IR)+SG2*ZFLUXQ/XNM/XN
           EE(IC,IR)=EE(IC,IR)+D*ZFLUX/XN
           SD(IR)=0._DP
@@ -481,19 +499,24 @@ C
         STVS(IC)=STVS(IC)+SG2*ZFLUXQ/XNM/XN
         EES(IC)=EES(IC)+DS*ZFLUX/XN
 2112  CONTINUE
+
+
 C
 2200  CONTINUE
       IF (NSIGSI.EQ.0) GOTO 2300
+c  put requested tally on 'vector'
       DO 2212 IC=1,NSIGSI
         INP=IADDW(IC)
         IGF=IGFFW(IC)
         IGS=IGHW(IC)
         DS=0.
         IF (IGS.NE.0) THEN
+c  tally for individual species
           DO 2213 IR=1,NRW
             VECTOR(IR)=ESTIMS(INP+IGS,IR)
 2213      CONTINUE
         ELSE
+c  tally for sum over species
           DO 2214 IR=1,NRW
             VECTOR(IR)=0.
 2214      CONTINUE
@@ -502,6 +525,7 @@ C
             VECTOR(IR)=VECTOR(IR)+ESTIMS(INP+IS,IR)
 2215      CONTINUE
         ENDIF
+
         DO 2211 IR=1,NRW
           D=VECTOR(IR)
           DS=DS+D
@@ -511,7 +535,7 @@ C
 C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMAW(IC,IR)=SG*FSIG
-C CUMULATED VARIANCE FOR SUM OVER STRATA
+C CUMMULATED VARIANCE FOR SUM OVER STRATA
           STVW(IC,IR)=STVW(IC,IR)+SG2*ZFLUXQ/XNM/XN
           FF(IC,IR)=FF(IC,IR)+D*ZFLUX/XN
 2211    CONTINUE
@@ -527,6 +551,8 @@ C
 C
 2300  CONTINUE
 C
+
+c  now deal with covariances
       IF (NSIGCI.EQ.0) GOTO 2400
 C
       DO 2312 IC=1,NSIGCI

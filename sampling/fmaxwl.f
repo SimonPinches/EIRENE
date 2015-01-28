@@ -1,4 +1,4 @@
-C
+C  sept.2014: very minor coding clean up.
 C
       SUBROUTINE EIRENE_FMAXWL
 C
@@ -43,7 +43,8 @@ C  SAMPLE FROM MAXWELLIAN FLUX BY INVERSION RULE
 C
       DO 2 JJ=1,IRNDVC
         AR=LOG(RANF_EIRENE( ))
-        FM1(JJ)=SQRT(-(AR+AR))
+        ZT=SQRT(-(AR+AR))
+        FM1(JJ)=ZT
 2     CONTINUE
       INIV1=IRNDVC
       RETURN

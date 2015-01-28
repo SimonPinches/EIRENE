@@ -1,3 +1,5 @@
+C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
+
 CDR 21.04.2010:  ILIIN=2: DO NOT SPUTTER (CRTX,... ETC. IS NOT DEFINED).
 !   20.06.07: maximum number of stored splitting particle MAXLEVEL introduced
 CDR 07.12.06: comments, correction for ILIIN=-3 option:
@@ -17,12 +19,12 @@ c             now: do not fill prf... and erf... tallies at all in case ILIIN=-3
 !pb 01.03.06: switch off storing of trajectory if a nontransparent surface is hit
 c   20.01.06: sheath repulsion added for negative ions (or
 c             positive ions and positive sheath potentials).
-!PB 12.01.06: index added to calc_spectrum indicating particle has hit a surface
+!PB 12.01.06: index added to update_spectrum indicating particle has hit a surface
 CVK 25.02.04: splitting for sputtering is re-introduced, (from eirene_02)
 CVK 25.02.04: the ILIIN=-3 option support is re-introduced
 CVK 25.02.04: spttot updated (total sputtered flux tally)
 CDR 25.02.04: return, return1 for reflected flux tallies moved after call
-CDR 25.02.04:                 to upsusr, calc_spectrum (from eirene_02)
+CDR 25.02.04:                 to upsusr, update_spectrum (from eirene_02)
 C
       SUBROUTINE EIRENE_ESCAPE(PR,SG,*,*,*)
 C
@@ -74,7 +76,7 @@ C
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
      .          VSHETQ, V, VELSH, VC, VCQ, VC2,EIRENE_SHEATH, SPLFLG,
-     .          VXR, VYR, VZR, RATR
+     .          VXR, VYR, VZR, VWL, WGHTVS, RATR
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ITOLD, ISTS,
      .           ISSPTP, ISSPTC, IPV, mspb, nrcpb
@@ -363,8 +365,9 @@ C  SAVE PARAMETERS OF INCIDENT PARTICLE
 C
 C  UPDATE SPUTTERED FLUX IF AVAILABLE. SORTED BY INCIDENT PARTICLE TYPE
 C
-C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY 
+C  SCORING SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY 
 C  FOR PHYSICAL AND CHEMICAL SPUTTERING RESP.
+C  at this point: ityp, iatm,.... incident particle, not the sputtered particle
 C
         ITOLD = ITYP
 !        IF (NLSPUT) THEN
@@ -743,16 +746,18 @@ C   POLAR ANGLE: COSINE
         ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
           TW=-E0TERM
-!pb these variables are necessary as the corresponding arguments in velocs
-!pb are INTENT(INOUT) !
+c these variables are necessary as the corresponding arguments in velocs
+c are INTENT(IN) !
           VXR = 0._DP
           VYR = 0._DP
           VZR = 0._DP
-          CALL EIRENE_VELOCS
-     .  (TW,0._DP,0._DP,VXR,VYR,VZR,RSQDVM(IMOL),
-     .                 CVRSSM(IMOL),
-     .                -CRTX,-CRTY,-CRTZ,
-     .                 E0,VELX,VELY,VELZ,VEL)
+          VWL = 0._DP  !  INDICATE: NON-DRIFTING MAXWELLIAN FLUX, WEIGHT IS NOT MODIFIED
+          WGHTVS= WEIGHT
+          CALL EIRENE_VELOCS(WGHTVS,
+     .       TW,0._DP,VWL,VXR,VYR,VZR,RSQDVM(IMOL),
+     .                      CVRSSM(IMOL),
+     .                     -CRTX,-CRTY,-CRTZ,
+     .                      E0,VELX,VELY,VELZ,VEL)
           E0_MEAN=2.*TW
         ELSE
           WRITE (iunout,*) 'ERROR IN ESCAPE, EXIT CALLED'
@@ -770,6 +775,12 @@ C
 C  THESE INCIDENT PARTICLES MAY HAVE SPUTTERED AT THIS  SURFACE
 C
         SPLFLG=0.
+C  UPDATE TOTAL SPUTTERED FLUXES IN CASE OF UNKNOWN SPECIES INDEX FOR SPUTTERED PARTICLE
+C  IF ISSPT... GT.0 ('EMITTED SPECIES KNOWN') THEN SPUTTERED FLUXES WILL BE UPDATED BELOW
+        IF (WGHTSP.GT.0..AND.ISSPTP.EQ.0) 
+     .    CALL EIRENE_UPDATE_SPTFLX (ITOLD,WGHTSP,0)
+        IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0) 
+     .    CALL EIRENE_UPDATE_SPTFLX (ITOLD,WGHTSC,0)
 C
         IF (WGHTSP.GT.0..AND.ISSPTP.GT.0) THEN
 C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
@@ -795,12 +806,13 @@ C
           VELZ=VZSPTP
 C  ITOLD.NE.ITNEW=ITYP POSSIBLE
 C
-          CALL EIRENE_UPDATE_SPTFLX (ITOLD,WGHTSP)
+          CALL EIRENE_UPDATE_SPTFLX (ITOLD,WGHTSP,1)
           CALL EIRENE_UPDATE_SURFACE (ITOLD)
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,2,0)
 C
 C.....................................................................
+C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
 C  SPLITTING
 C
           NLEVEL=NLEVEL+1
@@ -845,7 +857,7 @@ C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
           VELZ=VZSPTC
 C  ITOLD.NE.ITNEW=ITYP POSSIBLE
 C
-          CALL EIRENE_UPDATE_SPTFLX (ITOLD,WGHTSC)
+          CALL EIRENE_UPDATE_SPTFLX (ITOLD,WGHTSC,1)
           CALL EIRENE_UPDATE_SURFACE (ITOLD)
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,2,0)

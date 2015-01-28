@@ -1,13 +1,21 @@
-c  introduced march 2014. currenty identical to ftabpi3
+c  introduced march 2014. currenty largely identical to ftabpi3
+c  already accommodates H.4 option (two parameter fits vs TII,PLS)
+
+c  calls of ftabcx3 in fpath..: not ready
+
+
 
       FUNCTION EIRENE_FTABCX3 (IRCX,K)
-c  evaluate charge exchange rate coefficient (or rate), 
+c  evaluate charge exchange rate (1/s), 
 c  for cx process no. IRCX,
 c         in cell no. K
 c  input via common: 
 c         bulk collision partner: IPLS
+c 
+c  ftabcx3 is currently not called. 
 
-c  FTABCX3 is only called in case MODCOL(3,2,IRCX)=1, i.e. rate depends only
+c  soon (first stage):
+c  FTABCX3 is currently only called in case MODCOL(3,2,IRCX)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.
 c 
 c
@@ -31,7 +39,7 @@ c  hard wired: cut off (density) parameter for fits: 1e8
 
 
       DEIMIN=LOG(1.D8)
-      PLS=MAX(DEIMIN,DEINL(K))
+      PLS=MAX(DEIMIN,DIINL(IPLS,K))
  
       IPLSTI=MPLSTI(IPLS)
       TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)

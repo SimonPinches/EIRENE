@@ -1,9 +1,11 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
-c              rather than shifting pls directly here.
+!pb  22.11.06:   flag for shift of first parameter to rate_coeff introduced
+c                rather than shifting pls directly here.
+cdr  jan 2014:   comments.
+cdr: to be done: remove erate from here (needed only for H-colrad option, move to better place)
  
  
       FUNCTION EIRENE_FTABEI1 (IREI,K)
-c  evaluate electron impact rate coefficient (or rate), 
+c  evaluate electron impact rate (1/s),  include density factor  
 c  for ei process no. IREI,
 c         in cell no. K
 

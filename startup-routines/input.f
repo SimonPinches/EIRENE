@@ -1,3 +1,6 @@
+!cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
+!               (same in find-param)
+!cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
 !cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
 !               some minor changes at transition from end of block ***3 and re-entry to block ***6    
 !pb  01.01.14:  options AMPTS, multiplier for ntcpu.... added (input block 7)
@@ -184,7 +187,8 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IN, INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
      .           IPRCSF, IR, MT, MP, NDUMM, NUMSEC, NDUMM1, NDUMM2,
      .           NRTAL1, NCOPI, NCOPII, NCOPIE, NFR, NREAC_ADD, IPLN,
-     .           NDUMM3, NDUMM4, NRE, ISPSRF, ISPTYP, NSPS, IPTYP, IPSP,
+     .           NDUMM3, NDUMM4, NRE, 
+     .           ISPSRF, ISPTYP, NSPS, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR, JFEXMN, JFEXMX, ITOK, IER, IL, ILOGS,
@@ -373,13 +377,13 @@ C
         I3 = SCAN(ZEILE(I2+1:),' ')
         HANDLE=REPEAT(' ',6)
         HANDLE(1:I3) = ZEILE(I2:I2+I3-1)
-c   cfile card found. this is one of the permitted external files?
+c   cfile card found. Is this one of the permitted external files?
         DO IFILE = 1,NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),HANDLE) /= 0) EXIT
         END DO
         IF (IFILE <= NDBNAMES) THEN
 c   yes, file type no 'ifile' as stored on dbhandle, in eirmod_cinit.
-c   currently: 16 files types are recognized
+c   currently: 16 types of files are recognized
           IANF = I2+I3+VERIFY(ZEILE(I2+I3:),' ')-1
           IEND = IANF+SCAN(ZEILE(IANF+1:),' ')-1
           DBFNAME(IFILE)(1:IEND-IANF+1) = ZEILE(IANF:IEND)
@@ -622,7 +626,6 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_LEER(1)
 C
 C  to be done:
-C  printout:  which date files have we found.
 c  printout:  which default storage settings have we overruled (consequences thereof?)
 C
 C
@@ -1282,7 +1285,7 @@ C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
  
 ! CHECK FOR INCLUDE LINE
       READ (IUNIN,'(A420)') ZEILE
-      IREAD=1
+      IREAD=1  !  next input line is already read from iunin, now on 'ZEILE'
       ULINE = ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       I1 = INDEX(ULINE,'INCLUDE')
@@ -1290,33 +1293,38 @@ C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
 
       IF (I1 > 0) THEN
 
-        
-
 C  "Include" found. Skip all the rest of block 4 and 5 of input file (fort.iunin),
 C   and read this information only from the "include-file" instead
 C   Zeile  = INLCUDE 'FILE45' 
-
+C
         LINCLUDE = .TRUE.
 C
+
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE45,ITOK,IER,.FALSE.)
         IREAD = 0
         
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff !  FILE45 is the include file. read block 4 and 5 from
-!                          FILE45 (stream fort.2) rather than fort.iunin
+!                          FILE45 (stream fort.2) rather than from stream fort.iunin
 !                          close fort.2 at end of block 5.
         WRITE (IUNOUT,*) 'EXTERNAL A&M INPUT BLOCK 4 AND 5 FOUND'
         WRITE (IUNOUT,*) 'FILE45 = ',TRIM(FILE45)
         CALL EIRENE_LEER(1)
         OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
+c  read comment lines on external A&M data file FILE45, stream fort.2
+401     READ (IUNIN,'(A72)') ZEILE
+        IF (ZEILE(1:1) .EQ. '*') GOTO 401
+        IREAD=1
+        GOTO 402
       END IF
 C
-      IF (IREAD == 0) READ (IUNIN,*)
+      IF (IREAD == 0) READ (IUNIN,*)  
+      
       WRITE (iunout,*) 
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
  
-      READ (IUNIN,'(A72)') ZEILE
-      CALL EIRENE_UPPERCASE(ZEILE)
+      READ (IUNIN,'(A72)') ZEILE  ! THIS IS THE FIRST NON-COMMENT LINE
+402   CALL EIRENE_UPPERCASE(ZEILE)
 
 C  special only in case of HYDKIN INTERFACE: find string "DEFAULT"
       IEND=INDEX(ZEILE,'DEFAULT')
@@ -1391,7 +1399,6 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
      .      EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
             IEND = IEND + ITOK
           END IF
-
         END IF
 
 !  READ CRC
@@ -1976,7 +1983,8 @@ C     WRITE (iunout,*) ZEILE
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
-            TDMPAR(IPLS)%TDM%ITP(1)=4
+c  default: only for bulk ions
+                              TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
      .                        TDMPAR(IPLS)%TDM%ITP(1),
@@ -1995,7 +2003,7 @@ C     WRITE (iunout,*) ZEILE
      .           TDMPAR(IPLS)%TDM%DFACTOR,
      .           TDMPAR(IPLS)%TDM%TFACTOR,
      .           TDMPAR(IPLS)%TDM%VFACTOR
-            TDMPAR(IPLS)%TDM%ITP(1)=4
+                 TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('SAHA      ')
 !PB   TO BE WRITTEN
           CASE ('BOLTZMANN ')
@@ -2641,6 +2649,8 @@ C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
       IF (NPHOTI_IN > 0) NLPRCPH(1:NPHOTI_IN) = 
      .       LOGRDH(NATMI_IN+NMOLI_IN+NIONI_IN+1 : NLOGIN)
       DEALLOCATE (LOGRDH)
+C  READ NON-DEFAULT OR ADDITIONAL SURFACES, TOWARDS WHICH COND. EXP. EST. IS USED
+C  DEFAULT: ???
       READ (ZEILE,6666) NPRCSF
 
       NPRCSF=MIN0(NLIMPS,NPRCSF)
@@ -2731,20 +2741,11 @@ C
       READ (IUNIN,*)
       CALL
      .  EIRENE_MASAGE('*** 10A. DATA FOR ADDITIONAL TALLIES           ')
-      IF (.TRUE.) THEN
-        ALLOCATE (TXTTLA(NADVI))    
-        ALLOCATE (TXTSCA(NADVI))    
-        ALLOCATE (TXTUTA(NADVI))
- 
-!pb for internal testing of control variate options (2013)  
-!pb for special purposes increase NADVI by 2
-!dr currently disabled, also in upfcop.f
-      ELSE
-        ALLOCATE (TXTTLA(NADVI+2))    !pb
-        ALLOCATE (TXTSCA(NADVI+2))    !pb
-        ALLOCATE (TXTUTA(NADVI+2))    !pb
-      ENDIF
 
+      ALLOCATE (TXTTLA(NADVI))    
+      ALLOCATE (TXTSCA(NADVI))    
+      ALLOCATE (TXTUTA(NADVI))
+ 
       DO 1020 J=1,NADVI
 1021    READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1021
@@ -2752,28 +2753,6 @@ C
         READ (IUNIN,'(A72)') TXTTLA(J)
         READ (IUNIN,'(2A24)') TXTSCA(J),TXTUTA(J)
 1020  CONTINUE
- 
-
-      IF (.FALSE.) THEN     
-!pb for internal testing of control variate options (2013)
-!pb for special purposes increase NADVI by 2
-!dr currently disabled, also in upfcop.f
-        IADVE(NADVI+1) = 3
-        IADVS(NADVI+1) = 0
-        IADVT(NADVI+1) = 0
-        IADRC(NADVI+1) = 1
-        TXTTLA(NADVI+1) = 'special purpose tally (mapl)'
-        TXTSCA(NADVI+1) = '??         '
-        TXTUTA(NADVI+1) = '??         '
-        IADVE(NADVI+2) = 3
-        IADVS(NADVI+2) = 0
-        IADVT(NADVI+2) = 0
-        IADRC(NADVI+2) = 1
-        TXTTLA(NADVI+2) = 'special purpose tally (eapl)'
-        TXTSCA(NADVI+2) = '??         '
-        TXTUTA(NADVI+2) = '??         '
-        NADVI = NADVI + 2
-      ENDIF
 
       READ (IUNIN,*)
       CALL
@@ -2839,7 +2818,7 @@ C
             READ (IUNIN,'(A72)') ZEILE
             IF (ZEILE(1:1) .NE. '*') EXIT
           END DO
-          READ (ZEILE,'(12I6)') ISPSRF, IPTYP, IPSP, ISPTYP, NSPS,
+          READ (ZEILE,'(12I6)') ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS,
      .                          ISRFCLL, IDIREC
           READ (IUNIN,'(6E12.4)') SPCMN, SPCMX, SPC_SHIFT,
      .                             SPCPLT_X,SPCPLT_Y,SPCPLT_SAME
@@ -2863,12 +2842,14 @@ C
           END IF
           IF (ISPSRF > 0) THEN
             IF ((ISRFCLL == 0) .AND. (ISPSRF > NLIMI)) THEN
+C  SPECTRUM AT AN ADDITIONAL SURFACE
               WRITE (iunout,*)
      .          ' SURFACE INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
               WRITE (iunout,*) ' SURFACE NUMBER = ',ISPSRF
               IERROR = IERROR + 1
             END IF
+C  SPECTRUM IN CELL, POSSIBLY ALONG A CERTAIN DIRECTION
             IF (((ISRFCLL == 1) .AND. (ISPSRF > NRTAL)) .OR.
      .          ((ISRFCLL == 2) .AND. (ISPSRF > NRAD))) THEN
               WRITE (iunout,*)
@@ -2879,7 +2860,8 @@ C
             END IF
           ELSEIF (ISPSRF < 0) THEN
             ISPSRF = ABS(ISPSRF)
-            IF (ISPSRF > NSTSI) THEN
+            IF ((ISRFCLL == 0) .AND. (ISPSRF > NSTSI)) THEN
+C  SPECTRUM AT A NON DEFAULT STANDARD SURFACE
               WRITE (iunout,*)
      .          ' SURFACE INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
@@ -2887,6 +2869,10 @@ C
               IERROR = IERROR + 1
             END IF
             ISPSRF = NLIM+ISPSRF
+C           IF (((ISRFCLL == 1) .AND. (ISPSRF < 0)) .OR.
+C    .          ((ISRFCLL == 2) .AND. (ISPSRF < 0))) THEN
+C    .      ... TO BE DONE   
+            
           ELSE
             WRITE (iunout,*) ' SURFACE INDEX 0 NOT FORSEEN '
             WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
@@ -2898,14 +2884,19 @@ C
             WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
             IERROR = IERROR + 1
           ELSE
-            IF (((IPTYP == 0).AND.((IPSP < 0).OR.(IPSP > NPHOTI))) .OR.
-     .          ((IPTYP == 1).AND.((IPSP < 0).OR.(IPSP > NATMI))) .OR.
-     .          ((IPTYP == 2).AND.((IPSP < 0).OR.(IPSP > NMOLI))) .OR.
-     .          ((IPTYP == 3).AND.((IPSP < 0).OR.(IPSP > NIONI))) .OR.
-     .          ((IPTYP == 4).AND.((IPSP < 0).OR.(IPSP > NPLSI)))) THEN
+            IF (((IPTYP == 0)
+     .        .AND.((IPSPZ < 0).OR.(IPSPZ > NPHOTI))) .OR.
+     .          ((IPTYP == 1)
+     .        .AND.((IPSPZ < 0).OR.(IPSPZ > NATMI))) .OR.
+     .          ((IPTYP == 2) 
+     .        .AND.((IPSPZ < 0).OR.(IPSPZ > NMOLI))) .OR.
+     .          ((IPTYP == 3) 
+     .        .AND.((IPSPZ < 0).OR.(IPSPZ > NIONI))) .OR.
+     .          ((IPTYP == 4) 
+     .        .AND.((IPSPZ < 0).OR.(IPSPZ > NPLSI)))) THEN
               WRITE (iunout,*) ' PARTICLE SPECIES INDEX OUT OF BOUNDS '
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
-              WRITE (iunout,*) ' SPECIES NUMBER = ',IPSP
+              WRITE (iunout,*) ' SPECIES NUMBER = ',IPSPZ
               IERROR = IERROR + 1
             END IF
           END IF
@@ -2919,7 +2910,7 @@ C
           ALLOCATE(ESPEC)
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
-          ESPEC%IPRSP = IPSP
+          ESPEC%IPRSP = IPSPZ
           ESPEC%ISPCTYP = ISPTYP
           ESPEC%NSPC = NSPS
           ESPEC%IMETSP = 0
@@ -2940,18 +2931,16 @@ C
           ESPEC%SPCDEL=(SPCMX-SPCMN)/REAL(NSPS,DP)
           ESPEC%SPCDELI=1._DP/ESPEC%SPCDEL
           ALLOCATE(ESPEC%SPC(0:NSPS+1))
+c  standard deviation of spectra tallies
 !          IF (NSIGI_SPC > 0) THEN
             ALLOCATE(ESPEC%SDV(0:NSPS+1))
             ALLOCATE(ESPEC%SGM(0:NSPS+1))
-C REAC2 HAS TWO DIFFERENT MEANINGS:
-C       FILNAM=CONST:   REAC2 = FTFLAG
-C       ELSE:           REAC2 = REAC (UP TO 50 CHARACTERS)
-C
 !          END IF
           ESPEC%SPC(0:NSPS+1) = 0._DP
           IF (NSMSTRA > 0) THEN
             ALLOCATE(SSPEC)
             ALLOCATE(SSPEC%SPC(0:NSPS+1))
+c  standard deviation of spectra tallies, sum over strata intermediate storage
 !            IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPS+1))
               ALLOCATE(SSPEC%SGM(0:NSPS+1))
@@ -2986,7 +2975,7 @@ c  search for input block 11a
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOC,TRCDUMM,TRCDUMM,
-CVK TRACING FOR DEBUGGING
+CVK TRACING FOR DEBUGGING:  not in use in present eirene 
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
      .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
@@ -4090,7 +4079,7 @@ C
 3020    CONTINUE
       ELSEIF (NMODE.NE.0) THEN
         NAINI=0
-C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30)
+C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30), also set NAINI, NCOPII, NCOPIE there
         CALL EIRENE_IF0COP
       ENDIF
  
@@ -4263,8 +4252,7 @@ C
 C  SET RADIAL OR X GRID
         IF (NLRAD) CALL EIRENE_GRID (1)
 C  SET POLOIDAL OR Y GRID
-!pb        IF (NLPOL) CALL EIRENE_GRID (2)
-        IF (NLPOL.OR.(LEVGEO ==2).OR.(LEVGEO == 3)) CALL EIRENE_GRID (2)
+        IF (NLPOL.OR.(LEVGEO == 3)) CALL EIRENE_GRID (2)  ! NO NEED TO SET UP POLYGON GRID IN CASE OF 1D RUN, LEVGEO=2
 C  SET TOROIDAL OR Z GRID
         IF (NLTOR) CALL EIRENE_GRID (3)
 C
@@ -4504,11 +4492,11 @@ C
      .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
       WRITE (iunout,*) ' VOLTOT_TAL ',VOLTOT_TAL
  
-!pb      TPB2=SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time fuer intvol(voltal) ',tpb2-tpb1
-!pb      tpb1 = tpb2
+!pb   TPB2=SECOND_OWN()
+!pb   write (iunout,*) ' cpu-time fuer intvol(voltal) ',tpb2-tpb1
+!pb   tpb1 = tpb2
 C
-!pb      IF ((NFILEL.LE.1).OR.(NFILEL == 6)) THEN
+!pb   IF ((NFILEL.LE.1).OR.(NFILEL == 6)) THEN
       IF ((NFILEL.LE.1).OR.(NFILEL == 6) .OR. NLSHRT13) THEN
 C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS

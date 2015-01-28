@@ -117,12 +117,12 @@ c         generation limit activated
       LEXTALV(55) =               NPHOT>0
       LEXTALV(56) = (NPLS<0).and.(NPHOT>0)
  
-      LEXTALV(NTALA) = NADV>0
-      LEXTALV(NTALC) = NCLV>0
-      LEXTALV(NTALT) = NSNV>0
+      LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally (update.f)
+      LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally   (collide.f)
+      LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
       LEXTALV(NTALM) = NCPV>0
       LEXTALV(NTALB) = NBGV>0
-      LEXTALV(NTALR) = NALV>0
+      LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, post processing
 C  GENERATION LIMIT TALLIES
 C  some of these tallies may be
 c  turned off, depending upon whether generation limits
@@ -173,10 +173,10 @@ C  PRIMARY SOURCE RATES
       LIVTALV = LEXTALV .AND. .NOT.LMISTALV
       LMISTALV = LMISTALV .AND. LEXTALV
  
-      LEA = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL
-      LEM = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL
-      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL
-      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL
+      LEA  = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL      ! ATOM PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEM  = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL      ! MOLECULE PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
+      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL      ! TEST ION PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
+      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL ! PHOTON PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
  
 C
 C  LEADING DIMENSIONS OF FIELDS IN COMMON BLOCK CESTIM AND COUTAU
@@ -318,16 +318,21 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
       NTESTI=NADDI(NTALV)+NFRSTI(NTALV)
       NTEST=NTEST*NRTAL
       NTESTI=NTESTI*NSTRAP
- 
- 
-      LEXTALS(1) =                (NATM>0)
-      LEXTALS(2) =                (NATM>0)
-      LEXTALS(3) = (NMOL>0)  .and.(NATM>0)
+C
+c  now do the same for surface averaged tallies, incident, emitted, sputtered 
+c  three times similar structure, 25 tallies each. sputter tallies: total by emitted type and species missing
+c  surface tallies:  incident bulk ions resolved wrt. emitted type and species missing 
+C   1 --25  particle fluxes
+      LEXTALS(1) =                (NATM>0)  ! outgoing, atoms
+
+      LEXTALS(2) =                (NATM>0)  ! ingoing, atoms, from atoms
+      LEXTALS(3) = (NMOL>0)  .and.(NATM>0)  ! ingoing, atoms from molecules
       LEXTALS(4) = (NION>0)  .and.(NATM>0)
       LEXTALS(5) = (NPHOT>0) .and.(NATM>0)
       LEXTALS(6) = (NPLS>0)  .and.(NATM>0)
  
       LEXTALS(7) =                (NMOL>0)
+
       LEXTALS(8) = (NATM>0)  .and.(NMOL>0)
       LEXTALS(9) =                (NMOL>0)
       LEXTALS(10) =(NION>0)  .and.(NMOL>0)
@@ -335,6 +340,7 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
       LEXTALS(12) =(NPLS>0)  .and.(NMOL>0)
  
       LEXTALS(13) =               (NION>0)
+
       LEXTALS(14) =(NATM>0)  .and.(NION>0)
       LEXTALS(15) =(NMOL>0)  .and.(NION>0)
       LEXTALS(16) =               (NION>0)
@@ -342,15 +348,18 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
       LEXTALS(18) =(NPLS>0)  .and.(NION>0)
  
       LEXTALS(19) =               (NPHOT>0)
+
       LEXTALS(20) =(NATM>0)  .and.(NPHOT>0)
       LEXTALS(21) =(NMOL>0)  .and.(NPHOT>0)
       LEXTALS(22) =(NION>0)  .and.(NPHOT>0)
       LEXTALS(23) =               (NPHOT>0)
       LEXTALS(24) =(NPLS>0)  .and.(NPHOT>0)
  
-      LEXTALS(25) = NPLS>0
- 
+      LEXTALS(25) =               (NPLS>0)
+
+C   26 --> 50  energy fluxes
       LEXTALS(26) =               (NATM>0)
+
       LEXTALS(27) =               (NATM>0)
       LEXTALS(28) =(NMOL>0)  .and.(NATM>0)
       LEXTALS(29) =(NION>0)  .and.(NATM>0)
@@ -358,6 +367,7 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
       LEXTALS(31) =(NPLS>0)  .and.(NATM>0)
  
       LEXTALS(32) =               (NMOL>0)
+
       LEXTALS(33) =(NATM>0)  .and.(NMOL>0)
       LEXTALS(34) =               (NMOL>0)
       LEXTALS(35) =(NION>0)  .and.(NMOL>0)
@@ -365,6 +375,7 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
       LEXTALS(37) =(NPLS>0)  .and.(NMOL>0)
  
       LEXTALS(38) =               (NION>0)
+
       LEXTALS(39) =(NATM>0)  .and.(NION>0)
       LEXTALS(40) =(NMOL>0)  .and.(NION>0)
       LEXTALS(41) =               (NION>0)
@@ -372,41 +383,53 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
       LEXTALS(43) =(NPLS>0)  .and.(NION>0)
  
       LEXTALS(44) =               (NPHOT>0)
+
       LEXTALS(45) =(NATM>0)  .and.(NPHOT>0)
       LEXTALS(46) =(NMOL>0)  .and.(NPHOT>0)
       LEXTALS(47) =(NION>0)  .and.(NPHOT>0)
       LEXTALS(48) =               (NPHOT>0)
       LEXTALS(49) =(NPLS>0)  .and.(NPHOT>0)
  
-      LEXTALS(50) = NPLS>0
-C  SPUTTERED FLUXES; BY OUTGOING SPECIES
-      LEXTALS(51) = NATM>0
-      LEXTALS(52) = NATM>0
-      LEXTALS(53) = NATM>0
-      LEXTALS(54) = NATM>0
-      LEXTALS(55) = NATM>0
-      LEXTALS(56) = NMOL>0
-      LEXTALS(57) = NMOL>0
-      LEXTALS(58) = NMOL>0
-      LEXTALS(59) = NMOL>0
-      LEXTALS(60) = NMOL>0
-      LEXTALS(61) = NION>0
-      LEXTALS(62) = NION>0
-      LEXTALS(63) = NION>0
-      LEXTALS(64) = NION>0
-      LEXTALS(65) = NION>0
-      LEXTALS(66) = NPHOT>0
-      LEXTALS(67) = NPHOT>0
-      LEXTALS(68) = NPHOT>0
-      LEXTALS(69) = NPHOT>0
-      LEXTALS(70) = NPHOT>0
-      LEXTALS(71) = NPLS>0
-      LEXTALS(72) = NPLS>0
-      LEXTALS(73) = NPLS>0
-      LEXTALS(74) = NPLS>0
-      LEXTALS(75) = NPLS>0
+      LEXTALS(50) =               (NPLS>0)
+
+C  SPUTTERED FLUXES; BY INGOING TYPE AND OUTGOING SPECIES
+      LEXTALS(51) =                (NATM>0)  !A -AT
+      LEXTALS(52) = (NMOL>0)  .AND.(NATM>0)  !M -AT
+      LEXTALS(53) = (NION>0)  .AND.(NATM>0)  !I -AT
+      LEXTALS(54) = (NPHOT>0) .AND.(NATM>0)  !PH-AT
+      LEXTALS(55) = (NPLS>0)  .AND.(NATM>0)  !P -AT
+
+      LEXTALS(56) = (NATM>0)  .AND.(NMOL>0)  
+      LEXTALS(57) =                (NMOL>0)
+      LEXTALS(58) = (NION>0)  .AND.(NMOL>0)
+      LEXTALS(59) = (NPHOT>0) .AND.(NMOL>0)
+      LEXTALS(60) = (NPLS>0)  .AND.(NMOL>0)
+
+      LEXTALS(61) = (NATM>0)  .AND.(NION>0)
+      LEXTALS(62) = (NMOL>0)  .AND.(NION>0)
+      LEXTALS(63) =                (NION>0) 
+      LEXTALS(64) = (NPHOT>0) .AND.(NION>0)
+      LEXTALS(65) = (NPLS>0)  .AND.(NION>0)
+
+      LEXTALS(66) = (NATM>0)  .AND.(NPHOT>0)
+      LEXTALS(67) = (NMOL>0)  .AND.(NPHOT>0)
+      LEXTALS(68) = (NION>0)  .AND.(NPHOT>0)
+      LEXTALS(69) =                (NPHOT>0) 
+      LEXTALS(70) = (NPLS>0)  .AND.(NPHOT>0)
+
+      LEXTALS(71) = (NATM>0)  .AND.(NPLS>0)
+      LEXTALS(72) = (NMOL>0)  .AND.(NPLS>0)
+      LEXTALS(73) = (NION>0)  .AND.(NPLS>0)
+      LEXTALS(74) = (NPHOT>0) .AND.(NPLS>0)
+      LEXTALS(75) =                (NPLS>0) 
 C  SPUTTERED FLUX; TOTAL
       LEXTALS(76) = .TRUE.
+C  SPUTTERED FLUX; TOTAL BY INGOING TYPE
+      LEXTALS(77) = .TRUE.
+      LEXTALS(78) = .TRUE.
+      LEXTALS(79) = .TRUE.
+      LEXTALS(80) = .TRUE.
+      LEXTALS(81) = .TRUE.
 
       LEXTALS(NTLSA) = NADS>0
       LEXTALS(NTLSR) = NALS>0
@@ -492,7 +515,14 @@ C
       NFRSTW(73)=NPLS
       NFRSTW(74)=NPLS
       NFRSTW(75)=NPLS
+C  TOTAL SPUTTER TALLY
       NFRSTW(76)=0
+      NFRSTW(77)=0
+      NFRSTW(78)=0
+      NFRSTW(79)=0
+      NFRSTW(80)=0
+      NFRSTW(81)=0
+
       NFRSTW(NTLSA)=NADS
       NFRSTW(NTLSR)=NALS
       NFRSTW(NTALS)=NSPZ

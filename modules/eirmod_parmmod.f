@@ -1,6 +1,9 @@
 !pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
 !pb  30.01.07:  NREAC_LINES introduced
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
+cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
+cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
+cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
       MODULE EIRMOD_PARMMOD
  
       USE EIRMOD_PRECISION
@@ -206,17 +209,17 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
         NALSP=NALS+1
         NSNVP=NSNV+1
  
-        NTALI=22
+        NTALI=22   ! INPUT TALLIES:  INCREASED IN 2014 FROM 21 TO 22
         NTALN=12
         NTALO=14
-        NTALV=100
+        NTALV=100  ! VOLUME AVERAGED TALLIES
         NTALA=57   ! NTALV-27, WITH NTALV=84
         NTALC=58   ! NTALV-26, WITH NTALV=84
         NTALT=59   ! NTALV-25, WITH NTALV=84
         NTALM=60   ! NTALV-24, WITH NTALV=84
         NTALB=61   ! NTALV-23, WITH NTALV=84
         NTALR=62   ! NTALV-22, WITH NTALV=84
-        NTALS=79
+        NTALS=84   ! SURFACE AVERAGED TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)
         NTLSA=NTALS-2
         NTLSR=NTALS-1
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
@@ -227,7 +230,7 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
  
 C  TOTAL NUMBER OF SURFACE AVERAGED TALLIES
 C  SET IN SETPRM ACCORDING TO THE LIVING TALLIES SPECIFIED IN LIVTALS
-        NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+1+
+        NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+6+
      P        1*NADSP+1*NALSP+1*NSPZP
  
 C  SURFACE REFLECTION DATA

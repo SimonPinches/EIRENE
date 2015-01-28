@@ -1,3 +1,8 @@
+C  OCT. 14: WGHTVS (WEIGHT) AND VWL AS ARGUMENT IN SAMPLING ROUTINE VELOCS
+
+C  Nov. 10  bug fix: use variables for the input of a drift vector to subroutine
+C            VELOCS as these arguments are of INTENT(INOUT) in VELOCS
+
 c aug. 10:  bug fix: selecting of the sputtered molecule by specifying 
 c           ISRC > NATMI in Eirene input resulted in a sputtered atom of 
 c           undefined species.  
@@ -26,7 +31,7 @@ c           modchm=3 is the "flux dep option A7" (Roth, 1999)
 c           modchm=4 is the "flux dep option A8" (Roth, Nucl.Fus 44 (2004) L21-L)
 c
 c
-C cvs repository jan.05  bug fix, ispz--> ispz+nsph in several places,
+C cvs repository jan.05  bug fix, IATMP--> IATMP+nsph in several places,
 C                        due to photon species offset nsph
 C cvs repository sept.04
 C
@@ -61,8 +66,7 @@ C sept 05: use database name for opening SPUTER database
 c may 06:  modifications for: photons do not sputter !
 c march 07: some species flags for chemical sputtering:
 c           programming cleaned up (no change in model)
-C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
-C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
+
  
       SUBROUTINE EIRENE_SPUTER
 C
@@ -169,7 +173,7 @@ C  target index 0   : data evaluated "on the fly"
      .          EDESE0, EDAME0, QSE, YDAM, YSURF, ETHERM, ETHEKT,
      .          PRFCC, FLX, G2, G3, YTHERM, ERELKT, C, EREL,
      .          ENWALL, TWALL, PRFCS, ETHE0, E0ETF, SE, COSIN, QQS,
-     .          VXR, VYR, VZR
+     .          VXR, VYR, VZR, VWL, WGHTVS   ! FOR SAMPLING WITH VELOCS
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
      .                              ISPZSP_DEF(:)
@@ -513,6 +517,7 @@ C   EQ. 27
           PRFCS=RECYCS(ISPZ,MSURF)
 C  NO SPUTTERING BELOW THRESHOLD
           IF (E0.LE.ETH(ITA,IPR).OR.PRFCS.LE.0.D0) GOTO 5000
+
           ETHE0=ETH(ITA,IPR)/E0
           E0ETF=E0/ETF(ITA,IPR)
           SQE=SQRT(E0ETF)
@@ -560,6 +565,7 @@ C  FIND TYPE AND SPECIES INDEX OF SPUTTERED PARTICLE
 C  ONLY ATOMS
 C
       IF (YIELD1.GT.0.D0) THEN
+
         IF (IGASP.GT.0.AND.IGASP.LE.NATMI) THEN
           ITYPP=1
           IATMP=IGASP
@@ -635,14 +641,14 @@ C
       GOTO 5000
 C
 1100  CONTINUE
-C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
-!pb these variables are necessary as the corresponding arguments in velocs
-!pb are INTENT(INOUT) !
-      VXR = 0._DP
-      VYR = 0._DP
-      VZR = 0._DP
-      CALL EIRENE_VELOCS
-     .  (TWALL,0._DP,0._DP,VXR,VYR,VZR,RSQDV,CVRSS,
+
+      VXR = 0._DP  ! intent(in)
+      VYR = 0._DP  ! intent(in)
+      VZR = 0._DP  ! intent(in)
+      VWL = 0._DP  !  SAMPLE FROM NON-DRIFTING (I.E. STATIONARY) MAXWELLIAN FLUX
+      WGHTVS= 1._DP  !  STAT. WEIGHT SHOULD NOT BE MODIFIED IN VELOCS IN CASE OF STATIONARY MAXWELLIAN
+      CALL EIRENE_VELOCS(WGHTVS,
+     .   TWALL,0._DP,VWL,VXR,VYR,VZR,RSQDV,CVRSS,
      .             -CRTX,-CRTY,-CRTZ,
      .             ESPTP,VXSPTP,VYSPTP,VZSPTP,VSPTP)
 C
@@ -874,10 +880,12 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
       VXR = 0._DP
       VYR = 0._DP
       VZR = 0._DP
-      CALL EIRENE_VELOCS
-     .  (TWALL,0._DP,0._DP,VXR,VYR,VZR,RSQDV,CVRSS,
-     .             -CRTX,-CRTY,-CRTZ,
-     .             ESPTC,VXSPTC,VYSPTC,VZSPTC,VSPTC)
+      VWL = 0._DP  !  SAMPLE FROM NON-DRIFTING (I.E. STATIONARY) MAXWELLIAN FLUX
+      WGHTVS= 1._DP  !  STAT. WEIGHT SHOULD NOT BE MODIFIED IN VELOCS IN CASE OF STATIONARY MAXWELLIAN
+      CALL EIRENE_VELOCS(WGHTVS,
+     .            TWALL,0._DP,VWL,VXR,VYR,VZR,RSQDV,CVRSS,
+     .            -CRTX,-CRTY,-CRTZ,
+     .            ESPTC,VXSPTC,VYSPTC,VZSPTC,VSPTC)
 C
 20000 RETURN
 C

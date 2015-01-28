@@ -8,12 +8,15 @@ c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop--> sgms_bgk
 !pb  18.12.06: general checking of XMCP removed to allow plots of
 !              input tallies even is no Monte Carlo particle has been followed
 !    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
+cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
+cdr            even if other (volumetric) output tallies have already been plotted
+cdr            from same stratum in same call to plteir.
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
 C
 C  ISTRA IS THE STRATUM NUMBER. ISTRA=0 STANDS FOR: SUM OVER STRATA
-C  PLOT PLASMA TALLIES ONLY ONCE.
+C  PLOT PLASMA TALLIES ONLY ONCE, BUT OUTPUT TALLIES FOR ALL STRATA AS REQUESTED.
 C
 C
       USE EIRMOD_PRECISION
@@ -72,9 +75,13 @@ C
         IFIRST=1
       ENDIF
 C
-      IF (TRCPLT)
-     .    WRITE (iunout,*) 'PLTEIR CALLED, ISTRA, XMCP: ',
-     .                      ISTRA,XMCP(ISTRA)
+      IF (TRCPLT) THEN
+        WRITE (iunout,*) 'PLTEIR CALLED, ISTRA, XMCP: ',
+     .                                   ISTRA,XMCP(ISTRA)
+        IF (XMCP(ISTRA).EQ.0.0) THEN
+          WRITE (iunout,*) 'PLOTTING ABANDONNED FOR ALL OUTPUT TALLIES'
+        ENDIF
+      ENDIF
 C
 C  NULLPUNKT AUF DEM PAPIER
  
@@ -105,10 +112,11 @@ C  NEW FRAME FOR EACH PICTURE IN PLTTLY
       L_SAME=.FALSE.
 C
 C
+      IF (XMCP(ISTRA).EQ.0.0) GOTO 10
+C  PROVIDE EIRENE OUTPUT TALLIES FOR STRATUM ISTRA
       IF (IESTR.EQ.ISTRA) THEN
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-        IF (XMCP(ISTRA).GT.1.) THEN
         IESTR=ISTRA
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
@@ -122,10 +130,8 @@ C  NOTHING TO BE DONE
 !pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
-        ENDIF
         ENDIF
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
-        IF (XMCP(ISTRA).GT.1.) THEN
         IESTR=ISTRA
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
@@ -139,7 +145,6 @@ C  NOTHING TO BE DONE
 !pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
-        ENDIF
         ENDIF
       ELSE
         WRITE (iunout,*) 'ERROR IN PLTEIR: DATA FOR STRATUM ISTRA= ',
@@ -147,6 +152,8 @@ C  NOTHING TO BE DONE
         WRITE (iunout,*) 'ARE NOT AVAILABLE. PLOTS ABANDONNED'
         RETURN
       ENDIF
+
+10    CONTINUE
 C
       IF (ISTRA.EQ.0)
      .HEAD='SUM OVER STRATA
@@ -892,9 +899,13 @@ C
         ENDIF
 C
 10000 CONTINUE
-C  LOOP IBLD FINISHED
+
+C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
- 
+C  NEXT: PLOT SPECTRA, IF ANY HAVE BEEN SCORED 
+
+      IF (XMCP(ISTRA).LE.1.0) GOTO 20000
+C 
       DO ISPC=1,NADSPC
 C  THERE ARE NSPS BINS, AND NSPS+1 ENERGY BIN BOUNDARIES
         NSPS=ESTIML(ISPC)%PSPC%NSPC
@@ -945,11 +956,13 @@ C  y axis: cell averages (approx: cell centres)
         TXHEAD=REPEAT(' ',72)
         TXHEAD(1:30)=HEAD9(1:30)
         TXHEAD(32:42)='INTEGRAL: '
+!pb        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
         WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
-        IERR=0
-        L_SAME=.TRUE.
-        IF (ISPC.EQ.1) L_SAME=.FALSE.
+        IERR=0   
+C  MANY SPECTRA INTO ONE PICTURE_        
         L_SAME=ESTIML(ISPC)%PSPC%SPC_SAME .NE. 1.D0
+C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
+        IF (ISPC.EQ.1) L_SAME=.FALSE.
         CALL EIRENE_PLTTLY (XSPEC,YSPEC,VSPEC,YMN2,YMX2,
      .       IR1,IR2,IRS,
      .       1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
@@ -962,6 +975,8 @@ C  y axis: cell averages (approx: cell centres)
       END DO
  
 C  NOW REPEAT SAME PLOTS, BUT VS. WAVELENGTH
+      IF (NPHOTI > 0) THEN
+CDR TO BE DONE: DISTUINGISH BETWEEN PHOTON AND PARTICLE SPECTRA
  
       DO ISPC=1,NADSPC
 C  THERE ARE NSPS BINS, AND NSPS+1 ENERGY BIN BOUNDARIES
@@ -984,83 +999,83 @@ C  y axis: cell averages (approx: cell centres)
         DO I=1,NSPS
           YSPEC(I,1)=ESTIML(ISPC)%PSPC%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%PSPC%SGM(I)
-        END DO
- 
-        IF (NPHOTI > 0) THEN
+        END DO        
 C  PLOT ALSO VS. WAVELENGTH (NM)
-          WL00            =HPCL/MAX(1.E-6_DP,SPC00)*1.E7_DP
+        WL00            =HPCL/MAX(1.E-6_DP,SPC00)*1.E7_DP
 C  x axis: cell faces
-          DO I=1,NSPS+1
-            WLSPEC(NSPS-I+1+1)=HPCL/MAX(1.E-6_DP,XSPEC(I))*1.E7_DP
-            WLSPEC(NSPS-I+1+1)=WLSPEC(NSPS-I+1+1)-WL00
-          END DO
+        DO I=1,NSPS+1
+          WLSPEC(NSPS-I+1+1)=HPCL/MAX(1.E-6_DP,XSPEC(I))*1.E7_DP
+          WLSPEC(NSPS-I+1+1)=WLSPEC(NSPS-I+1+1)-WL00
+        END DO
 C  y axis: cell averages (approx: cell centres)
-          DO I=1,NSPS
-            YSPECWL(NSPS-I+1,1)=YSPEC(I,1)
-            IF (NSIGI_SPC > 0) VSPECWL(NSPS-I+1,1)=VSPEC(I,1)
-          END DO
+        DO I=1,NSPS
+          YSPECWL(NSPS-I+1,1)=YSPEC(I,1)
+          IF (NSIGI_SPC > 0) VSPECWL(NSPS-I+1,1)=VSPEC(I,1)
+        END DO
 C  rescaling:  flux/ev to flux/nm
-          DO I=1,NSPS
-            DE=XSPEC(NSPS-I+1+1)-XSPEC(NSPS-I+1)
-            DW=WLSPEC(I+1)-WLSPEC(I)
-            YSPECWL(I,1) = YSPECWL(I,1)*DE/DW
-          END DO
-        END IF
+        DO I=1,NSPS
+          DE=XSPEC(NSPS-I+1+1)-XSPEC(NSPS-I+1)
+          DW=WLSPEC(I+1)-WLSPEC(I)
+          YSPECWL(I,1) = YSPECWL(I,1)*DE/DW
+        END DO
  
         DEALLOCATE (XSPEC)
         DEALLOCATE (YSPEC)
         DEALLOCATE (VSPEC)
  
-        IF (NPHOTI > 0) THEN
-          YMN2(1)=MINVAL(YSPECWL(1:NSPS,1))
-          YMX2(1)=MAXVAL(YSPECWL(1:NSPS,1))
-          IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
-          YMNLG2(1)=YMN2(1)
-          YMXLG2(1)=YMX2(1)
-          LSDVI(1)=NSIGI_SPC > 0
-          LPLOT2(1)=.TRUE.
-          IR1(1)=1
-          IR2(1)=NSPS+1
-          IRS(1)=1
-          XMI=WLSPEC(1)
-          XMA=WLSPEC(NSPS+1)
-          LOGY=.TRUE.
-          FITY=.TRUE.
-          IF (ESTIML(ISPC)%PSPC%ISRFCLL == 0) THEN
-            TXTALL(1)=
-     .      'SPECTRUM FOR SURFACE        PARTICLE TYPE        '//
-     .      'SPECIES                '
-          ELSE
-            TXTALL(1)=
-     .      'SPECTRUM FOR CELL           PARTICLE TYPE        '//
-     .      'SPECIES                '
-          END IF
-          WRITE (TXTALL(1)(22:27),'(I6)') ESTIML(ISPC)%PSPC%ISPCSRF
-          WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%PSPC%IPRTYP
-          WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%PSPC%IPRSP
-          TXSPEC=REPEAT(' ',24)
-          TXUNIT=REPEAT(' ',24)
-          IF (IT == 1) TXUNIT='AMP/BIN(NM),            '
-          IF (IT == 2) TXUNIT='WATT/BIN(NM),           '
-          TXHEAD=REPEAT(' ',72)
-          TXHEAD(1:30)=HEAD10(1:30)
-          TXHEAD(32:42)='INTEGRAL: '
-          WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
-          IERR=0
-          L_SAME=.TRUE.
-          IF (ISPC.EQ.1) L_SAME=.FALSE.
-          L_SAME=ESTIML(ISPC)%PSPC%SPC_SAME .NE. 1.D0
-          CALL EIRENE_PLTTLY (WLSPEC,YSPECWL,VSPECWL,YMN2,YMX2,
-     .       IR1,IR2,IRS,
-     .       1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
-     .       LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
-     .       NSPS+1,NSPS+1,L_SAME)
-          DEALLOCATE (WLSPEC)
-          DEALLOCATE (YSPECWL)
-          DEALLOCATE (VSPECWL)
+        
+        YMN2(1)=MINVAL(YSPECWL(1:NSPS,1))
+        YMX2(1)=MAXVAL(YSPECWL(1:NSPS,1))
+        IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
+        YMNLG2(1)=YMN2(1)
+        YMXLG2(1)=YMX2(1)
+        LSDVI(1)=NSIGI_SPC > 0
+        LPLOT2(1)=.TRUE.
+        IR1(1)=1
+        IR2(1)=NSPS+1
+        IRS(1)=1
+        XMI=WLSPEC(1)
+        XMA=WLSPEC(NSPS+1)
+        LOGY=.TRUE.
+        FITY=.TRUE.
+        IF (ESTIML(ISPC)%PSPC%ISRFCLL == 0) THEN
+          TXTALL(1)=
+     .    'SPECTRUM FOR SURFACE        PARTICLE TYPE        '//
+     .    'SPECIES                '
+        ELSE
+          TXTALL(1)=
+     .    'SPECTRUM FOR CELL           PARTICLE TYPE        '//
+     .    'SPECIES                '
         END IF
-      END DO
- 
+        WRITE (TXTALL(1)(22:27),'(I6)') ESTIML(ISPC)%PSPC%ISPCSRF
+        WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%PSPC%IPRTYP
+        WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%PSPC%IPRSP
+        TXSPEC=REPEAT(' ',24)
+        TXUNIT=REPEAT(' ',24)
+        IF (IT == 1) TXUNIT='AMP/BIN(NM),            '
+        IF (IT == 2) TXUNIT='WATT/BIN(NM),           '
+        TXHEAD=REPEAT(' ',72)
+        TXHEAD(1:30)=HEAD10(1:30)
+        TXHEAD(32:42)='INTEGRAL: '
+!pb        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
+        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
+        IERR=0
+        L_SAME=.TRUE.
+        IF (ISPC.EQ.1) L_SAME=.FALSE.
+        L_SAME=ESTIML(ISPC)%PSPC%SPC_SAME .NE. 1.D0
+        CALL EIRENE_PLTTLY (WLSPEC,YSPECWL,VSPECWL,YMN2,YMX2,
+     .     IR1,IR2,IRS,
+     .     1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
+     .     LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
+     .     NSPS+1,NSPS+1,L_SAME)
+        DEALLOCATE (WLSPEC)
+        DEALLOCATE (YSPECWL)
+        DEALLOCATE (VSPECWL)
+      END DO  !  LOOP OVER PHOTON SPECTRA ENDS HERE
+
+      END IF 
+
+20000 CONTINUE
  
       IF (ALLOCATED(VECTOR)) DEALLOCATE(VECTOR)
       IF (ALLOCATED(VECSAV)) DEALLOCATE(VECSAV)

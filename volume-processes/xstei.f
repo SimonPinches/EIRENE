@@ -10,6 +10,7 @@
 
 !pb  June  07: LHCOL: indicate: direct coupling to col-rad code, rather
 !pb            than reading fits or data tables.
+cdr  Jan. 2014:
 !dr  to be done: also for recombination, and generalize to other species (He,...)
 !dr             currently: label H.4 2.1.5 or H.10 2.1.5 are not used in case LHCOL?
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
