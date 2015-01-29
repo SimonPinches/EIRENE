@@ -31,8 +31,7 @@ C  1) EFFICIANCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI
             iwr=1
           endif
           SMMEAN=xcmean(ircx)/(ncmean(ircx)+eps60)
-          CALL EIRENE_MASJ2R('IRCX, NCMEAN, SMMEAN    ',
-     .                        IRCX, NCMEAN(IRCX),SMMEAN) 
+          write (iunout,*) ircx,SMMEAN,NCMEAN(IRCX)
         endif
       enddo
       call EIRENE_leer(1)
@@ -46,8 +45,7 @@ C  1) EFFICIANCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI
             iwr=1
           endif
           SMMEAN=xemean(irel)/(nemean(irel)+eps60)
-          CALL EIRENE_MASJ2R('IREL, NEMEAN, SMMEAN    ',
-     .                        IREL, NEMEAN(IREL),SMMEAN) 
+          write (iunout,*) irel,SMMEAN,NEMEAN(IREL)
         endif
       enddo
       call EIRENE_leer(1)
@@ -61,8 +59,7 @@ C  1) EFFICIANCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI
             iwr=1
           endif
           SMMEAN=xpmean(irpi)/(npmean(irpi)+eps60)
-          CALL EIRENE_MASJ2R('IRPI, NPMEAN, SMMEAN    ',
-     .                        IRPI, NPMEAN(IRPI),SMMEAN) 
+          write (iunout,*) irpi,SMMEAN,NPMEAN(IRPI)
         endif
       enddo
       call EIRENE_leer(1)

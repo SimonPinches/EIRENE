@@ -524,7 +524,7 @@ c   read block 4 and block 5 from external include file, stream fort.2
         LINCLUDE = .TRUE.
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff
-        OPEN (IUNIN,FILE=FILE,FORM='FORMATTED',ACCESS='SEQUENTIAL')
+        OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
 c  read comment lines on external A&M data file FILE45, stream fort.2
 401     READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 401
