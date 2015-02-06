@@ -1,4 +1,4 @@
-C
+Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
 Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum? 
 c   Oct.14             spectra scoring only called if cell based spectra are defined
 C
@@ -447,12 +447,14 @@ C
 C
 C  LOCAL MEAN FREE PATH
 C
+C  ONE "RADIAL" (FIRST GRID) AND IN TOTAL
 C  NCOU CELLS ARE CROSSED BY THE CURRENT TRACK.
-C  EVALUATE REACTION RATES, MFP, ETC. IN THESE CELLS
+C  EVALUATE REACTION RATES, MEAN FREE PATH, ETC. IN THESE CELLS
 C
       IFLAG=3
  
       IF (NLTRJ) THEN
+C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATION SAMPLING
         TRAJ(ITRJ)%TRJ%NCOU_CELL = TRAJ(ITRJ)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA

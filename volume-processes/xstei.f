@@ -14,6 +14,7 @@ cdr  Jan. 2014:
 !dr  to be done: also for recombination, and generalize to other species (He,...)
 !dr             currently: label H.4 2.1.5 or H.10 2.1.5 are not used in case LHCOL?
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
+!   02.02.15:   ONLY COMMENTS ADDED
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -235,7 +236,7 @@ C .......................................
             TB=MAX(-100._DP,TB)
             TABDS1(IREI,J)=EXP(TB)
 C .....................................
-C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE only needed for this?
+C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE in subr. rate_coeff only needed for this?
             IF (LHCOL) THEN
               EE = MAX(-100._DP,ERATE+FCTKKL+DEINL(J))
               EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
@@ -278,6 +279,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               END IF
               MODCOL(1,4,IREI)=1
       ELSEIF (EFLAG.EQ.1) THEN
+C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
               IF (NSTORDR >= NRAD) THEN
                 DO 103 J=1,NSBOX
                   IF (LGVAC(J,NPLS+1)) CYCLE
@@ -289,7 +291,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               END IF
               MODCOL(1,4,IREI)=1
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
+C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                 KREAD=EELEC
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 998
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
@@ -309,9 +311,9 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                     JELREI(IREI)=1
                   ENDIF
                   MODCOL(1,4,IREI)=1
-C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,EBEAM)
+C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,EBEAM)
 C        TO BE WRITTEN
-C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
+C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                 ELSEIF (MODC.EQ.3) THEN
                   IF (NSTORDR >= NRAD) THEN
                     FCTKKL=LOG(FACTKK)
@@ -347,7 +349,7 @@ C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
         GOTO 997
       ENDIF
 C
-C  4.B: HEAVY PARTICLE ENERGY GAIN RATE
+C  4.B: HEAVY PARTICLE ENERGY GAIN RATE, "KINETIC ENERGY RELEASE" KER
 C
       EFLAG=EIRENE_IDEZ(ISCDE,3,5)
       IF (EFLAG.EQ.0) THEN

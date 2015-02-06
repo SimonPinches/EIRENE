@@ -1,5 +1,5 @@
 c  14.5.06:  bug fix: 1 line added: if nchtal.ne.1 and. nchtal.ne.3:  cycle
- 
+C  oct.14.  variance tallies corrected
       subroutine EIRENE_setup_chord_spectra
  
       use EIRMOD_precision
@@ -62,11 +62,13 @@ C
       end do
  
       IF (NTOT_CELL == 0) RETURN
+
+!  there are 'NTOT_CELL'  FURTHER CELL BASED SPECTRA TO BE ADDED TO SPECTRUM TALLIES
  
 !  SAVE SPECTRA SPECIFIED VIA INPUT
  
       IF (NADSPC > 0) THEN
- 
+C  SAVE ESTIML, SMESTL,...
         ALLOCATE(SVESTIML(NADSPC))
  
         DO ISPC = 1, NADSPC
@@ -85,7 +87,7 @@ C
  
       IF (ALLOCATED(ESTIML)) DEALLOCATE(ESTIML)
  
-!  set up new arrays for spectra
+!  set up additional arrays for cell based spectra
  
       NTOTSP = NADSPC + NTOT_CELL
  
@@ -128,11 +130,11 @@ C
 !  loop over all cells along trajectory
          do
            allocate(espec)
-           espec%isrfcll = 2
+           espec%isrfcll = 2 ! SURFACE OR CELL BASED OR DIRECTIONAL CELL BASED
            espec%ispcsrf = cur%no_cell
-           espec%iprtyp = iprtyp
-           espec%iprsp = nspspz(ichori)
-           espec%ispctyp = 1
+           espec%iprtyp = iprtyp   !TYP
+           espec%iprsp = nspspz(ichori)  !SPECIES
+           espec%ispctyp = 1  ! TYPE OF SPECTRUM AMP/EV, OR WATT/EV,  ETC...
            espec%nspc = abs(ncheni)
            espec%imetsp = 0
            espec%idirec = 1
@@ -156,19 +158,29 @@ C
            espec%esp_max = -1.e30_dp
            espec%spcdel=(espec%spcmax-espec%spcmin)/real(espec%nspc,dp)
            espec%spcdeli = 1._dp / (espec%spcdel+eps60)
+
            allocate(espec%spc(0:espec%nspc+1))
+
            allocate(espec%sdv(0:espec%nspc+1))
            allocate(espec%sgm(0:espec%nspc+1))
+           allocate(espec%stv(0:espec%nspc+1))
+           allocate(espec%gg(0:espec%nspc+1))
+
            espec%spc(0:espec%nspc+1) = 0
  
            ispc = ispc + 1
            estiml(ispc)%pspc => espec
  
            if (allocated(smestl)) then
+C SUM OVER STRATA SPECTRA TALLIES
              allocate(sspec)
              allocate(sspec%spc(0:espec%nspc+1))
+
              allocate(sspec%sdv(0:espec%nspc+1))
              allocate(sspec%sgm(0:espec%nspc+1))
+             allocate(sspec%stv(0:espec%nspc+1))
+             allocate(sspec%gg(0:espec%nspc+1))
+
              sspec = espec
              smestl(ispc)%pspc => sspec
            end if

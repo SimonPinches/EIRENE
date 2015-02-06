@@ -479,8 +479,8 @@ C   SCALE AND INTEGRATE SPECTRA
           END IF
           ESTIML(ISPC)%PSPC%SPC = ESTIML(ISPC)%PSPC%SPC * ZFAC *
      .                            ESTIML(ISPC)%PSPC%SPCDELI
-          ESTIML(ISPC)%PSPC%SPCINT = SUM(ESTIML(ISPC)%PSPC%SPC*
-     .                                   ESTIML(ISPC)%PSPC%SPCDEL)
+          ESTIML(ISPC)%PSPC%SPCS = SUM(ESTIML(ISPC)%PSPC%SPC*
+     .                                 ESTIML(ISPC)%PSPC%SPCDEL)
         END IF
       END DO
  

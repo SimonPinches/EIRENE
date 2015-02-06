@@ -18,7 +18,7 @@ C
       character(200) :: zeile
       REAL(DP) :: br(0:ndxp,0:ndyp,4),bz(0:ndxp,0:ndyp,4)
 C
-C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
+C  GEOMETRY DATA: CELL VERTICES (SONNET ---> EIRENE)
       REAL(DP) ::
      R  X1(NDX),Y1(NDX),X2(NDX),Y2(NDX),X3(NDX),Y3(NDX),
      R  X4(NDX),Y4(NDX)

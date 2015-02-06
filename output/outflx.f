@@ -317,7 +317,7 @@ C  SPECTRA
               WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
      .               ESTIML(ISPC)%PSPC%NSPC
               WRITE (IOUT,*)
-              IF (ESTIML(ISPC)%PSPC%SPCINT > EPS60) THEN
+              IF (ESTIML(ISPC)%PSPC%SPCS > EPS60) THEN
                 IF (NSIGI_SPC == 0) THEN
                   DO IE=1, ESTIML(ISPC)%PSPC%NSPC
                     EN = ESTIML(ISPC)%PSPC%SPCMIN +
@@ -339,7 +339,7 @@ C  SPECTRA
               END IF
               WRITE (IOUT,*)
               WRITE (IOUT,*) ' INTEGRAL OF SPECTRUM ',
-     .               ESTIML(ISPC)%PSPC%SPCINT
+     .               ESTIML(ISPC)%PSPC%SPCS
               IF (NSIGI_SPC > 0)
      .          WRITE (IOUT,*) ' STANDARD DEVIATION  ',
      .               ESTIML(ISPC)%PSPC%SGMS
@@ -3151,7 +3151,7 @@ C  SPECTRA
      .                   ESTIML(ISPC)%PSPC%IPRSP)
           END IF
           WRITE (iunout,'(A22,ES12.4)') ' INTEGRAL OF SPECTRUM ',
-     .           ESTIML(ISPC)%PSPC%SPCINT
+     .           ESTIML(ISPC)%PSPC%SPCS
           IF (NSIGI_SPC > 0)
      .      WRITE (iunout,'(A22,ES12.4)') ' STANDARD DEVIATION   ',
      .           ESTIML(ISPC)%PSPC%SGMS

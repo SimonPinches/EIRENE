@@ -1,12 +1,19 @@
 C  TO BE DONE: ADD PARAMETER ESBPARM, AS IN EIRENE_RDTRIM
 C
+C  read (try to read) NFLR = NHD6  target projectile combinations.
+C
+C
       SUBROUTINE EIRENE_REFDAT(TMM,TCC,WMM,WCC)
+C  This is the old (and default) model for reading TRIM conditional quantile tables, for reflection.
+
+c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files A_on_B 
+c  as selected in input block 6.
 C
 C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE CARLO CODES,
 C  DATA ARE STORED IN CONDITIONAL QUANTILE FORMAT (E.G. TRIM)
 C
-C  distinct from rdtrim.f this routines reads one single file containing many (but less than 12)
-C  fixes target-projectile combinations
+C  distinct from rdtrim.f this routines reads one single file containing many (but less-equal than 12)
+C  fixed target-projectile combinations, hard wired in the following order
 C
 C    IFILE=1  H ON FE
 C    IFILE=2  D ON FE
@@ -20,6 +27,8 @@ C    IFILE=9  D ON W
 C    IFILE=10 HE ON W
 C    IFILE=11 H ON W
 C    IFILE=12 T ON W
+C
+C  
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

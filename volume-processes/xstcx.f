@@ -214,7 +214,7 @@ C         JEREACX(IRCX) = 9
         ELSE  ! ??
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for CX'
-          write (iunout,*) 'in case modc=3  (n,t-dependence).'
+          write (iunout,*) 'in case modc=3  (n,T-dependence).'
           write (iunout,*) 'exit called '
           call eirene_exit_own(1) 
         ENDIF

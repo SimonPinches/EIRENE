@@ -37,6 +37,7 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !  PUSH PARTICLES
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
+C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
 
 C
       SUBROUTINE EIRENE_FOLION
@@ -452,6 +453,7 @@ C
       ELSE
         NUPC(1)=(NCELL-NRCELL-NBLCKA)/NR1P2
       END IF
+
 C     IF (ITYP.EQ.3) THEN
         LOGION(IION,ISTRA)=.TRUE.
         ZMFP=EIRENE_FPATHI(NCELL,CFLAG,1,1)
@@ -467,7 +469,7 @@ C
       IF (IUPDTE.GE.1) THEN
         IFLAG=4
         CALL EIRENE_UPDION (XSTOR2,XSTORV2,IFLAG)
-        CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
       ENDIF
       ZTC=0.
 C  CARRY OUT INELASTIC COLLISION EVENT, DIRECTLY AT PLACE OF BIRTH
@@ -889,7 +891,7 @@ C  UPDATE CONTRIBUTION TO VOLUME AVERAGED ESTIMATORS
 C
       IF (IUPDTE.GE.1) THEN
         CALL EIRENE_UPDION(XSTOR2,XSTORV2,3)
-        CALL EIRENE_CALC_SPECTRUM (WEIGHT,3,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,3,1)
       ENDIF
 C
 C  STOP TRACK ?
@@ -1131,7 +1133,7 @@ C  RESET CLPD TO REAL PATH LENGTH OF GYRO MOTION FOR SCORING
 221   CONTINUE
       IF (IUPDTE.GE.1) THEN
         CALL EIRENE_UPDION (XSTOR2,XSTORV2,4)
-        CALL EIRENE_CALC_SPECTRUM (WEIGHT,4,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,4,1)
       ENDIF
 
 C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
@@ -1250,7 +1252,7 @@ C
       IF (NCLVI.GT.0) THEN
         WS=WEIGHT/SIGTOT
         CALL EIRENE_UPCUSR(WS,1)
-        CALL EIRENE_CALC_SPECTRUM (WS,1,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WS,1,1)
       ENDIF
 C
 C
@@ -1271,7 +1273,7 @@ C
       IF (NCLVI.GT.0) THEN
         WS=WEIGHT/SIGTOT
         CALL EIRENE_UPCUSR(WS,2)
-        CALL EIRENE_CALC_SPECTRUM (WS,2,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WS,2,1)
       ENDIF
 C
       IF (COLTYP.EQ.2.) GOTO 700
@@ -1461,7 +1463,7 @@ c  in the present limit: this must be multiplied by a factor(EA,Ti)
       FNUEQI=8.5E-8*XNI*TI**(-1.5)  
 c  in calling program: FNUEQI = FNUEQI*(1.+mB/mA)**0.5-1.5*Ti/EA
 c  but this is already implicitly contained in the analytic BGK solution
-c  written for fnueqi without that factor.
+cÂ  written for fnueqi without that factor.
       RETURN
       END FUNCTION FNUEQI
 

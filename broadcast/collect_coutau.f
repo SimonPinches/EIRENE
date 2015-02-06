@@ -115,30 +115,30 @@
      .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,icomgrp,IER1)
           if (my_pe == 0) SMESTL(I)%PSPC%SPC(0:ns+1) = help(1:ns+2)
 
-          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPCINT,help,
+          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPCS,help,
      .                    1,MPI_DOUBLE_PRECISION,MPI_SUM,0,icomgrp,IER1)
-          if (my_pe == 0) SMESTL(I)%PSPC%SPCINT = help(1)
+          if (my_pe == 0) SMESTL(I)%PSPC%SPCS = help(1)
 
           if (nsigi_spc > 0) then
-            call mpi_reduce(smestl(i)%pspc%sdv,help,
+            call mpi_reduce(smestl(i)%pspc%GG,help,
      .                      smestl(i)%pspc%nspc+2,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%SDV(0:ns+1) = help(1:ns+2)
+            if (my_pe == 0) SMESTL(I)%PSPC%GG(0:ns+1) = help(1:ns+2)
 
-            call mpi_reduce(smestl(i)%pspc%sgm,help,
+            call mpi_reduce(smestl(i)%pspc%STV,help,
      .                      smestl(i)%pspc%nspc+2,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%SGM(0:ns+1) = help(1:ns+2)
+            if (my_pe == 0) SMESTL(I)%PSPC%STV(0:ns+1) = help(1:ns+2)
 
             call mpi_reduce(smestl(i)%pspc%stvs,
      .                      help,1,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) SMESTL(I)%PSPC%STVS = help(1)
   
-            call mpi_reduce(smestl(i)%pspc%ees,
+            call mpi_reduce(smestl(i)%pspc%ggs,
      .                      help,1,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%EES = help(1)
+            if (my_pe == 0) SMESTL(I)%PSPC%GGS = help(1)
           end if
         END DO
 

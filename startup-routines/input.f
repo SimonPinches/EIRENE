@@ -1295,10 +1295,10 @@ C   Zeile  = INLCUDE 'FILE45'
 C
         LINCLUDE = .TRUE.
 C
-
+        
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE45,ITOK,IER,.FALSE.)
         IREAD = 0
-        
+
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff !  FILE45 is the include file. read block 4 and 5 from
 !                          FILE45 (stream fort.2) rather than from stream fort.iunin
@@ -2237,8 +2237,12 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
      .  READ (IUNIN,6664) (DPHD(IPHOT),IPHOT=1,NPHOTI_IN)
  
       IF (ASSOCIATED(REFFILES)) THEN
+c  trim files for NFR target projectile combinations are requested.
+c  read them in subr. RDTRIM 
         NHD6 = NFR
       ELSE
+c  old default: all TRIM data in one single file.
+c  read this (single) file in subr. REFDAT 
         NHD6 = 8
       END IF
       NH0=NHD1*NHD2*NHD6
@@ -2246,7 +2250,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
       NH2=NH1*NHD4
       NH3=NH2*NHD5
       CALL EIRENE_ALLOC_CREF
-!pb      CALL EIRENE_ALLOC_CREFMOD
+!pb   CALL EIRENE_ALLOC_CREFMOD
       NFLR = 0
       DO WHILE (ASSOCIATED(REFFILES))
         NFLR = NFLR + 1
@@ -2845,8 +2849,8 @@ C  SPECTRUM AT AN ADDITIONAL SURFACE
               IERROR = IERROR + 1
             END IF
 C  SPECTRUM IN CELL, POSSIBLY ALONG A CERTAIN DIRECTION
-            IF (((ISRFCLL == 1) .AND. (ISPSRF > NRTAL)) .OR.
-     .          ((ISRFCLL == 2) .AND. (ISPSRF > NRAD))) THEN
+            IF (((ISRFCLL == 1) .AND. (ISPSRF > NRTAL)) .OR.   ! cell based spectrum in scoring cell ISPSRF
+     .          ((ISRFCLL == 2) .AND. (ISPSRF > NRAD))) THEN   ! directional cell based spectrum in scoring cell ISPSRF 
               WRITE (iunout,*)
      .          ' CELL INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
@@ -2862,14 +2866,15 @@ C  SPECTRUM AT A NON DEFAULT STANDARD SURFACE
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
               WRITE (iunout,*) ' SURFACE NUMBER = ',ISPSRF
               IERROR = IERROR + 1
-            END IF
-            ISPSRF = NLIM+ISPSRF
+            ELSEIF (ISRFCLL == 0) THEN
+              ISPSRF = NLIM+ISPSRF
+            ELSE
 C           IF (((ISRFCLL == 1) .AND. (ISPSRF < 0)) .OR.
 C    .          ((ISRFCLL == 2) .AND. (ISPSRF < 0))) THEN
-C    .      ... TO BE DONE   
-            
-          ELSE
-            WRITE (iunout,*) ' SURFACE INDEX 0 NOT FORSEEN '
+C    .      ... WRONG INPUT !   
+            END IF           
+          ELSEIF (ISPSRF == 0) THEN
+            WRITE (iunout,*) ' SURFACE OR CELL INDEX = 0: NOT FORSEEN '
             WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
             IERROR = IERROR + 1
           END IF
@@ -2927,11 +2932,14 @@ C    .      ... TO BE DONE
           ESPEC%SPCDELI=1._DP/ESPEC%SPCDEL
           ALLOCATE(ESPEC%SPC(0:NSPS+1))
 c  standard deviation of spectra tallies
-!          IF (NSIGI_SPC > 0) THEN
+!         IF (NSIGI_SPC > 0) THEN
             ALLOCATE(ESPEC%SDV(0:NSPS+1))
             ALLOCATE(ESPEC%SGM(0:NSPS+1))
-!          END IF
+            ALLOCATE(ESPEC%STV(0:NSPS+1))
+            ALLOCATE(ESPEC%GG(0:NSPS+1))
+!         endif
           ESPEC%SPC(0:NSPS+1) = 0._DP
+
           IF (NSMSTRA > 0) THEN
             ALLOCATE(SSPEC)
             ALLOCATE(SSPEC%SPC(0:NSPS+1))
@@ -2939,6 +2947,8 @@ c  standard deviation of spectra tallies, sum over strata intermediate storage
 !            IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPS+1))
               ALLOCATE(SSPEC%SGM(0:NSPS+1))
+              ALLOCATE(SSPEC%STV(0:NSPS+1))
+              ALLOCATE(SSPEC%GG(0:NSPS+1))
 !            END IF
             SSPEC = ESPEC
             SMESTL(J)%PSPC => SSPEC
@@ -3000,7 +3010,7 @@ C
          WRITE (iunout,*) ' NSURPR, NSRPR ', NSURPR, NSRPR
          CALL EIRENE_EXIT_OWN(1)
       ENDIF
-!PB      NSURPR=MIN(NSURPR,NLIMPS)
+C
       WRITE (iunout,*) '        NSURPR= ',NSURPR
       CALL EIRENE_LEER(1)
       DO 1130 J=1,NSURPR
@@ -3018,16 +3028,16 @@ C
  
 c  overrule default switching on/off of volume averaged tallies
  
-      READ (IUNIN,'(A72)') ZEILE
+1131  READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
       IREAD=1
       IF ((ZEILE(1:1) .NE.'*') .AND. (SCAN(ZEILE,'FT') == 0)) THEN
  
 c  there are ntlvout volume tallies to be dealt with
 c  and ntlsout surface tallies
- 
-        IREAD=0
+         
         READ (ZEILE,6666) NTLVOUT
+        IREAD=0
         ITLVOUT=0
         DO WHILE ((NTLVOUT > 0) .AND. (ITLVOUT < NTLVOUT))
           READ (IUNIN,6666) (NUMTAL(J),J=1,12)
@@ -3060,14 +3070,18 @@ c  overrule default switching on/off of surface averaged tallies
           END DO
           ITLSOUT=ITLSOUT+12
         END DO
+      ELSE
+C EITHER A COMMENT LINE, OR THE NEXT INPUT CARD (LOGICALS FOR PLOTTING) IS ON 'zeile'
+        IF (ZEILE(1:1) .eq.'*')  goto 1131
+c  reading 'switch tallies off' done
       END IF
  
  
 C  search for input block 11b
  
-1131  IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
+1132  IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
       IREAD=0
-      IF (ZEILE(1:1) .EQ. '*') GOTO 1131
+      IF (ZEILE(1:1) .EQ. '*') GOTO 1132
 C  2D GEOMETRY PLOT
       READ (ZEILE,6665) PL1ST,PL2ND,PL3RD,PLADD,PLHST,
      .                  PLCUT(1),PLCUT(2),PLCUT(3),PLBOX,PLSTOR,
@@ -3106,6 +3120,7 @@ C
 C
       IF (NVOLPL.LE.0) GOTO 1175
       READ (IUNIN,6665) (PLTSRC(J),J=0,NSTRA)
+C
       IF (LRPSCUT) THEN
         READ (IUNIN,6664) CUTPLANE(1:4)
 !  TEST IF CUTPLANE IS AXIS-PARALLEL
@@ -3119,10 +3134,12 @@ C
           LRPSCUT = .FALSE.
         END IF
       END IF
+C
       IPLANE=1
       LRAPS3D=.FALSE.
       LR3DCON=.FALSE.
       RAPSDEL=-HUGE(1._DP)
+C
       DO 1150 J=1,NVOLPL
 1152    READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1152
@@ -3207,7 +3224,7 @@ C
      .                     XPIVOT(ICHORI),YPIVOT(ICHORI),ZPIVOT(ICHORI)
         READ (IUNIN,66664) ICHORD(ICHORI),
      .                     XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI)
-        NLSTCHR(ICHORI) = ISTCHR > 0
+        NLSTCHR(ICHORI) = ISTCHR > 0  ! automatically add directional cell based spectra, along line of sight
 1220  CONTINUE
       READ (IUNIN,6665) PLCHOR,PLSPEC
 1230  CONTINUE
@@ -4732,15 +4749,31 @@ C
 !  determine number of background spectra
  
       NBACK_SPEC = 0
+      NADSPC_S = 0   !  surface based
+      NADSPC_C = 0   !  cell based
+      NADSPC_D = 0   !  cell based, directional
+      NADSPC_CD = 0  !  cell based, total
  
       DO J = 1, NADSPC
-!  spectrum in geometrical cell
+!  directional spectrum in geometrical cell
         IF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
           ISPZ=IADTYP(ESTIML(J)%PSPC%IPRTYP) + ESTIML(J)%PSPC%IPRSP
           NBACK_SPEC = NBACK_SPEC + COUNT(ISPZ_BACK(ISPZ,:)>0)
           LSPCCLL(ESTIML(J)%PSPC%ISPCSRF) = .TRUE.
         END IF
+
+        IF (ESTIML(J)%PSPC%ISRFCLL == 0) THEN
+C  COUNT SURFACE SPECTRA
+          NADSPC_S=NADSPC_S+1
+        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 1) THEN
+C  COUNT CELL BASED SPECTRA
+          NADSPC_C=NADSPC_C+1
+        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
+C  COUNT DIRECTIONAL CELL BASED SPECTRA
+          NADSPC_D=NADSPC_D+1
+        ENDIF
       END DO
+      NADSPC_CD=NADSPC_C+NADSPC_D
  
       IF (.NOT.ALLOCATED(BACK_SPEC) .AND. (NBACK_SPEC > 0))
      .   ALLOCATE(BACK_SPEC(NBACK_SPEC))

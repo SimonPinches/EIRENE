@@ -10,7 +10,7 @@
 !  20.06.07:  NLOGAU used for broadcast of LLOGAU
 !  01.07.09:  broadcast of HFTR0-3 arrays removed. this is done in broadref.f
 !  01.03.11:  NSPEZV_DIM removed
- 
+!  15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
       SUBROUTINE EIRENE_BROADCAST
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -1183,9 +1183,14 @@ csw 14apr2011
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%SDV(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%SGM(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%PSPC%STV(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%PSPC%GG(0:NSPS+1))
+C  variances for sum over strata
+               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1)) 
                ALLOCATE(SMESTL(I)%PSPC%SDV(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))             
+               ALLOCATE(SMESTL(I)%PSPC%STV(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%PSPC%GG(0:NSPS+1))
              END IF
              ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC

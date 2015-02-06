@@ -1,12 +1,13 @@
 c  score sputtered fluxes
 c  modified in spring 2014: old version: resolved wrt. incident type
-cdr:  Sept. 2014: flag ind added
+cdr:  Sept. 2014: input flag 'IND' added, FOR TOTAL TALLIES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
 
 C  present version: resolved with respect to incidence species type (for nlscl option)
 C  and also resolved wrt.  emitted species type and species 
+c  INPUT:
 c  incident type :                      itold  (parameter list)
 c  ind=0:  species index of sputtered particle not known: update only total sputtered fluxes
-c  ind=1:  species index of sputtered particle is known: update total and species resolved fluxes
+c  ind=1:  species index of sputtered particle is known:  update total and species resolved fluxes
 c  sputtered type:                      ityp   (common)
 c  sputtered species:                   iphot,iatm,imol,iion,ipls  (common)
 c  weight of sputtered particle:        wgh    (parameter list)
@@ -40,7 +41,20 @@ C  THIS IS NEEDED IN CASE SPUTTERED SPECIES IS NOT AN EIRENE TEST SPECIES IN THI
 
 C  FROM HERE ON:  INCIDENT TYPE AND SPUTTERED TYPE AND SPECIES RESOLVED FLUXES, 
 C  ITPY AND ISPEZ ARE SET TO SPUTTERED PARTICLE SPECIES
-              
+ 
+      SELECT CASE (ITYP)
+      CASE (0)
+        LOGPHOT(IPHOT,ISTRA)=.TRUE.
+      CASE (1)
+        LOGATM(IATM,ISTRA)=.TRUE.
+      CASE (2)
+        LOGMOL(IMOL,ISTRA)=.TRUE.
+      CASE (3)
+        LOGION(IION,ISTRA)=.TRUE.
+      CASE (4)
+        LOGPLS(IPLS,ISTRA)=.TRUE.
+      END SELECT
+             
       SELECT CASE (ITOLD)
 
 ! INCIDENT PARTICLE IS PHOTON

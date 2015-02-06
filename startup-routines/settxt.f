@@ -1,10 +1,12 @@
-c  bug fix : text(71-13) --> text(71)
+c    2005 bug fix : text(ntalv-13) --> text(71)
 c    17.03.06: txttal and txttlw added for additional tallies
 cdr  29.09.14: TXTUNT corrected for generation limits, momentum sources
 c    oct.14  : input tally 22 (potential) connnected to text arrays
 
       SUBROUTINE EIRENE_SETTXT
 c  set default texts  (volume tallies: name, species, units), ditto: surface and input tallies 
+C  set first (leading) dimension of tally arrays: nfstvi, nfstwi
+c  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -315,7 +317,7 @@ C  GENERATION LIMIT TALLIES
       TXTUNT(1,72)='G*CM/S*AMP*CM**-3       '
       TXTUNT(1,73)='G*CM/S*AMP*CM**-3       '
       TXTUNT(1,74)='G*CM/S*AMP*CM**-3       '
-
+C  VOLUMETRIC PRIMARY SOURCE TALLIES  (E.G. RECOMBINATION)
       TXTUNT(1,75)='AMP*CM**-3              '
       TXTUNT(1,76)='AMP*CM**-3              '
       TXTUNT(1,77)='AMP*CM**-3              '
@@ -326,20 +328,22 @@ C  GENERATION LIMIT TALLIES
       TXTUNT(1,82)='WATT*CM**-3             '
       TXTUNT(1,83)='WATT*CM**-3             '
       TXTUNT(1,84)='WATT*CM**-3             '
-C  MOMENTUM DENSITY TALLIES
+C  MOMENTUM DENSITY TALLIES, X,Y,Z
       TXTUNT(1,85)='G*CM/SEC*CM**-3         '
       TXTUNT(1,86)='G*CM/SEC*CM**-3         '
       TXTUNT(1,87)='G*CM/SEC*CM**-3         '
       TXTUNT(1,88)='G*CM/SEC*CM**-3         '
+
       TXTUNT(1,89)='G*CM/SEC*CM**-3         '
       TXTUNT(1,90)='G*CM/SEC*CM**-3         '
       TXTUNT(1,91)='G*CM/SEC*CM**-3         '
       TXTUNT(1,92)='G*CM/SEC*CM**-3         '
+
       TXTUNT(1,93)='G*CM/SEC*CM**-3         '
       TXTUNT(1,94)='G*CM/SEC*CM**-3         '
       TXTUNT(1,95)='G*CM/SEC*CM**-3         '
       TXTUNT(1,96)='G*CM/SEC*CM**-3         '
-C  MOMENTUM SOURCES (BULK IONS)
+C  PARALLEL MOMENTUM SOURCES (BULK IONS)
       TXTUNT(1,97)='G*CM/S*AMP*CM**-3       '
       TXTUNT(1,98)='G*CM/S*AMP*CM**-3       '
       TXTUNT(1,99)='G*CM/S*AMP*CM**-3       '
@@ -349,7 +353,10 @@ C  MOMENTUM SOURCES (BULK IONS)
           TEXT24=TXTUNT(1,J)
           TXTUNT(I,J)=TEXT24
 2     CONTINUE
-C
+
+C  SURFACE AVERAGED TALLIES
+
+C  PARTICLE FLUXES, INCIDENT AND EMITTED
       TXTTLW(1,1)='PARTICLE FLUX, INCIDENT, ATOMS                   '
       TXTTLW(1,2)='PARTICLE FLUX, EMITTED, ATS. => ATOMS            '
       TXTTLW(1,3)='PARTICLE FLUX, EMITTED, MLS. => ATOMS            '
@@ -375,7 +382,7 @@ C
       TXTTLW(1,23)='PARTICLE FLUX, EMITTED, PHS. => PHOTONS          '
       TXTTLW(1,24)='PARTICLE FLUX, EMITTED, B.I. => PHOTONS          '
       TXTTLW(1,25)='PARTICLE FLUX, INCIDENT, BULK IONS               '
- 
+C  ENERGY FLUXES, INCIDENT AND EMITTED
       TXTTLW(1,26)='ENERGY FLUX, INCIDENT, ATOMS                     '
       TXTTLW(1,27)='ENERGY FLUX, EMITTED, ATS. => ATOMS              '
       TXTTLW(1,28)='ENERGY FLUX, EMITTED, MLS. => ATOMS              '
@@ -401,7 +408,7 @@ C
       TXTTLW(1,48)='ENERGY FLUX, EMITTED, PHS. => PHOTONS            '
       TXTTLW(1,49)='ENERGY FLUX, EMITTED, B.I. => PHOTONS            '
       TXTTLW(1,50)='ENERGY FLUX, INCIDENT, BULK IONS                 '
- 
+C  SPUTTERED FLUXES,  EMITTED FROM SURFACE
       TXTTLW(1,51)='SPUTTERED FLUX BY INCIDENT ATS. => ATOMS         '
       TXTTLW(1,52)='SPUTTERED FLUX BY INCIDENT MLS. => ATOMS         '
       TXTTLW(1,53)='SPUTTERED FLUX BY INCIDENT T.I. => ATOMS         '
@@ -446,7 +453,7 @@ C
       DO J=1,NTALS
         TXTTLW(2:N2MX,J)=TXTTLW(1,J)
       END DO
-C
+C  particle fluxes
       TXTUNW(1,1)='AMP                     '
       TXTUNW(1,2)='AMP                     '
       TXTUNW(1,3)='AMP                     '
@@ -472,7 +479,7 @@ C
       TXTUNW(1,23)='AMP                     '
       TXTUNW(1,24)='AMP                     '
       TXTUNW(1,25)='AMP                     '
- 
+c  energy fluxes 
       TXTUNW(1,26)='WATT                    '
       TXTUNW(1,27)='WATT                    '
       TXTUNW(1,28)='WATT                    '
@@ -498,7 +505,7 @@ C
       TXTUNW(1,48)='WATT                    '
       TXTUNW(1,49)='WATT                    '
       TXTUNW(1,50)='WATT                    '
- 
+c  sputter tallies 
       TXTUNW(1,51)='AMP                     '
       TXTUNW(1,52)='AMP                     '
       TXTUNW(1,53)='AMP                     '

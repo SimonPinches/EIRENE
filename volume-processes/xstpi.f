@@ -116,6 +116,13 @@ C  SECONDARY INDEX, SECOND SECONDARY
 
         IF ((ISPZ1 < 1) .OR. (ISPZ1 > MAXSPC(ITYP1))) GOTO 994
 
+!  ACCMAS: accumulated mass of all secondaries (all types)
+!  ACCINV: accumulated invers mass of all secondaries (all types)
+
+!  ACCMSA: accumulated mass of ATOMIC secondaries (type ITYP=1)
+!  ACCINA: accumulated invers mass of ATOMIC secondaries (type ITYP=1)
+!  analogously for molecule, test ion and bulk secondaries
+
         IF (ITYP1.EQ.1) THEN
           IAT=ISPZ1
           IAA=NSPH+IAT
@@ -462,7 +469,7 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.WEIGHTED RATE(TE)
             NRHVPI(IRPI)=KREAD
           END IF
         ELSE
-          WRITE (iunout,*) 'INVALID OPTION IN XSTPI '
+          WRITE (iunout,*) 'INVALID OPTION IN XSTPI: MODC=EFLAG=3 '
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         FACRPI(IRPI,1)=FACTKK
@@ -623,11 +630,13 @@ C  SUBTRACT ONE, BECAUSE INCIDENT BULK IS LOST
           WRITE (iunout,*) 'ENERGY: EPLPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,1),
      .                                 ' * E0 + ',EPLPI(IRPI,2)*EI
+C  PROBABLY INCORRECT: com IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
         ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLPI(IRPI,1),
      .                                 ' * E0 + ',EPLPI(IRPI,2),
      .                                 ' * EHEAVY '
+C  PROBABLY INCORRECT: com IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
