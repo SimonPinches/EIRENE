@@ -248,7 +248,10 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             NELREI(IREI) = -8
             NREAHV(IREI) = -4
           ELSE ! storage save mode
-            EELDS1(IREI,1:NSBOX)=-10.5
+!pb  in storage save mode EELDS1 has dimensions (NREI,1)
+!pb            EELDS1(IREI,1:NSBOX)=-10.5
+            EELDS1(IREI,1)=-10.5
+            EHVDS1(IREI,1)=8.6
             NREAEI(IREI) = -8
             JEREAEI(IREI) = 1
             NELREI(IREI) = -8
@@ -291,6 +294,7 @@ C  TRANSFERRED KINETIC ENERGY: 0.5 EV
             NREAHV(IREI) = -5
           ELSE  ! storage save mode
             EELDS1(IREI,1)=-15.5
+            EHVDS1(IREI,1)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
