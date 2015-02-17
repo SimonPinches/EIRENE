@@ -13,5 +13,8 @@ C
  
       PP1=0.d0
       PP2=0.d0
+
+      ENTRY EIRENE_PL3D_REINIT
+
       return
       end

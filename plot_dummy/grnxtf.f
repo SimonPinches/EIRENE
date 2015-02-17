@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRNXTF
+      SUBROUTINE GRNXTF
       RETURN
       END

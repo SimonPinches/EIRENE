@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRDSH(A1,A2,A3)
+      SUBROUTINE GRDSH(A1,A2,A3)
       RETURN
       END

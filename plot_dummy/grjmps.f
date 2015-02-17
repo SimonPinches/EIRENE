@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRJMPS(X,Y,NR)
+      SUBROUTINE GRJMPS(X,Y,NR)
       RETURN
       END

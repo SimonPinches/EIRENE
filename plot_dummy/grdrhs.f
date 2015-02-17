@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRDRHS(PA,NPKNT,PNKT,X,Y)
+      SUBROUTINE GRDRHS(PA,NPKNT,PNKT,X,Y)
       RETURN
       END

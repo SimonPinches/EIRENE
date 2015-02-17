@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRNWPN(I)
+      SUBROUTINE GRNWPN(I)
       RETURN
       END

@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GSTXAL(IALH,IALV)
+      SUBROUTINE GSTXAL(IALH,IALV)
       RETURN
       END
