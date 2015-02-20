@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRDRW(X,Y)
+      SUBROUTINE GRDRW(X,Y)
       RETURN
       END

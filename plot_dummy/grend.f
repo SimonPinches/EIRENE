@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GREND
+      SUBROUTINE GREND
       RETURN
       END

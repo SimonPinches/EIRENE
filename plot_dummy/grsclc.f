@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRSCLC(XA,YA,XB,YB)
+      SUBROUTINE GRSCLC(XA,YA,XB,YB)
       RETURN
       END

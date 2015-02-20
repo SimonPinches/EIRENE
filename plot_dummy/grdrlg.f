@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRDRLG(PA,TEXTX,TEXTY,TEXTZ,IOPT)
+      SUBROUTINE GRDRLG(PA,TEXTX,TEXTY,TEXTZ,IOPT)
       RETURN
       END

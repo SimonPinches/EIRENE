@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRJMP(X,Y)
+      SUBROUTINE GRJMP(X,Y)
       RETURN
       END

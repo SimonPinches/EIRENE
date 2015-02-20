@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRHHNL
+      SUBROUTINE GRHHNL
       RETURN
       END

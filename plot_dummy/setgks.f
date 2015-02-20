@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_SETGKS(IVECT,IERR)
+      SUBROUTINE SETGKS(IVECT,IERR)
       RETURN
       END

@@ -823,7 +823,8 @@ c       vsigot  : fehlt noch
       DEALLOCATE (IBGKPH)
       DEALLOCATE (REAC_NAME)
  
-      DEALLOCATE (REACDAT)
+!pb      DEALLOCATE (REACDAT)
+      CALL EIRENE_FREE_REACDAT
       DEALLOCATE (REACLINES)
  
       RETURN
@@ -2059,6 +2060,95 @@ c
       END IF
  
       END FUNCTION EIRENE_IS_RTCMW_ADAS
- 
+  
+
+      SUBROUTINE EIRENE_FREE_REACDAT
+
+      type(fit_forms), pointer :: rea
+      integer :: ir
+
+      DO IR = -10, NREAC
+
+        IF (REACDAT(IR)%LPOT) THEN
+           rea => REACDAT(IR)%POT
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+        IF (REACDAT(IR)%LCRS) THEN
+           rea => REACDAT(IR)%CRS
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+        IF (REACDAT(IR)%LRTC) THEN
+           rea => REACDAT(IR)%RTC
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+        IF (REACDAT(IR)%LRTCMW) THEN
+           rea => REACDAT(IR)%RTCMW
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+        IF (REACDAT(IR)%LRTCEW) THEN
+           rea => REACDAT(IR)%RTCEW
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+        IF (REACDAT(IR)%LOTH) THEN
+           rea => REACDAT(IR)%OTH
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+        IF (REACDAT(IR)%LPHR) THEN
+           rea => REACDAT(IR)%PHR
+           call eirene_free_fit_form (rea)
+           deallocate (rea)
+        END IF
+
+      END DO
+
+      deallocate (reacdat)
+
+      END SUBROUTINE EIRENE_FREE_REACDAT
+
+
+
+      SUBROUTINE EIRENE_FREE_FIT_FORM(RP)
+
+      TYPE(FIT_FORMS),POINTER :: RP
+
+      IF (ASSOCIATED(RP%POLY)) THEN
+         DEALLOCATE (RP%POLY%DBLPOL)
+         DEALLOCATE (RP%POLY)
+      END IF
+
+      IF (ASSOCIATED(RP%ADAS)) THEN
+         DEALLOCATE (RP%ADAS%DENS)
+         DEALLOCATE (RP%ADAS%DENS)
+         DEALLOCATE (RP%ADAS%FIT)
+         DEALLOCATE (RP%ADAS%DDE)
+         DEALLOCATE (RP%ADAS%DTE)
+         DEALLOCATE (RP%ADAS)
+      END IF
+
+      IF (ASSOCIATED(RP%LINE)) THEN
+         DEALLOCATE (RP%LINE)
+      END IF
+
+      IF (ASSOCIATED(RP%HYD)) THEN
+         DEALLOCATE (RP%HYD%TEMPS)
+         DEALLOCATE (RP%HYD%RATES)
+         DEALLOCATE (RP%HYD%RATIO)
+         DEALLOCATE (RP%HYD)
+      END IF
+
+      END SUBROUTINE EIRENE_FREE_FIT_FORM
+
+
       END MODULE EIRMOD_COMXS
- 
