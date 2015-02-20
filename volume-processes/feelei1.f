@@ -62,8 +62,8 @@ c  non default models, data from external databases
           PLS=MAX(DEIMIN,DEINL(K))
 
           ELEI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
-          EE=MAX(-100._DP,ELEI+FACREI(IREI,2)+DEINL(K))
-          EIRENE_FEELEI1=-EXP(EE)/(EIRENE_FTABEI1(IREI,K)+EPS60)
+          EE=MAX(-100._DP,ELEI+FACREI(IREI,2))
+          EIRENE_FEELEI1=-EXP(EE)*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
         END IF
         IF (DELPOT(KK).NE.0.D0) THEN
           DELE=DELPOT(KK)

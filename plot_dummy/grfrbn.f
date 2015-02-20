@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRFRBN(IFU,IKA,IKS,IRA,IRI)
+      SUBROUTINE GRFRBN(IFU,IKA,IKS,IRA,IRI)
       RETURN
       END

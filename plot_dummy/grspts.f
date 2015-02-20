@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRSPTS(INT)
+      SUBROUTINE GRSPTS(INT)
       RETURN
       END

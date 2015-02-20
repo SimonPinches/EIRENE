@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRFTOC(F,C,L)
+      SUBROUTINE GRFTOC(F,C,L)
       RETURN
       END

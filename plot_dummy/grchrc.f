@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRCHRC(HEIGHT,ANGLE,INTS)
+      SUBROUTINE GRCHRC(HEIGHT,ANGLE,INTS)
       RETURN
       END

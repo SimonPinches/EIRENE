@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRDRNE(PA,NROW,XYZ)
+      SUBROUTINE GRDRNE(PA,NROW,XYZ)
       RETURN
       END

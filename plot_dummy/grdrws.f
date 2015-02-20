@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE GRJMP(X,Y)
+      SUBROUTINE GRDRWS(X,Y,ISYM)
       RETURN
       END

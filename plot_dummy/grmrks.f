@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRMRKS(X)
+      SUBROUTINE GRMRKS(X)
       RETURN
       END
