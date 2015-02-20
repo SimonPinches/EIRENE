@@ -793,7 +793,8 @@ C  FIND START OF NEXT INPUT BLOCK: 6
       DO
         READ (IUNIN,'(A72)') ZEILE
         IF ((ZEILE(1:3) == '***') .AND.
-     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
+!     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
+     ,      (INDEX(ZEILE,'6') > 0)) EXIT
       END DO
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699
