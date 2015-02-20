@@ -113,15 +113,15 @@ C    READING OF POLYGON DATA
        IF (IX.LE.nxcut1(1)-1) THEN
         DO 12 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,3333) DUMMI(1),
+          READ (30,*) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),XPOL(IY,IX)
-          READ (30,3333) DUMMI(1),
+          READ (30,*) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,3333) DUMMI(1),
+          READ (30,*) DUMMI(1),
      .                   DUMMI(2),XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,3333) DUMMI(1),
+          READ (30,*) DUMMI(1),
      .                   DUMMI(2),YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
 12      CONTINUE
@@ -129,15 +129,15 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.nxcut1(1)) THEN
         DO 14 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,3333) XPOL(IY,nxcut2(2)),DUMMI(1),
+         READ (30,*) XPOL(IY,nxcut2(2)),DUMMI(1),
      .                  DUMMI(2),XPOL(IY,IX)
-         READ (30,3333) YPOL(IY,nxcut2(2)),DUMMI(1),
+         READ (30,*) YPOL(IY,nxcut2(2)),DUMMI(1),
      .                  DUMMI(2),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,3333) XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
+          READ (30,*) XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
      .                                XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,3333) YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
+          READ (30,*) YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
      .                                YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
 14      CONTINUE
@@ -145,15 +145,15 @@ C    READING OF POLYGON DATA
        IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(2)-1)) THEN
         DO 16 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,3333) DUMMI(1),
+          READ (30,*) DUMMI(1),
      .                   DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
-          READ (30,3333) DUMMI(1),
+          READ (30,*) DUMMI(1),
      .                   DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,3333) DUMMI(1),DUMMI(2),
+          READ (30,*) DUMMI(1),DUMMI(2),
      .                   XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,3333) DUMMI(1),DUMMI(2),
+          READ (30,*) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
 16      CONTINUE
@@ -161,15 +161,15 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.nxcut1(2)) THEN
         DO 18 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,3333) XPOL(IY,nxcut2(1)+1),DUMMI(1),
+         READ (30,*) XPOL(IY,nxcut2(1)+1),DUMMI(1),
      .                  DUMMI(2),XPOL(IY,IX+1)
-         READ (30,3333) YPOL(IY,nxcut2(1)+1),DUMMI(1),
+         READ (30,*) YPOL(IY,nxcut2(1)+1),DUMMI(1),
      .                  DUMMI(2),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,3333) XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
+          READ (30,*) XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
      .                                XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,3333) YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
+          READ (30,*) YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
      .                                YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
 18      CONTINUE
@@ -177,15 +177,15 @@ C    READING OF POLYGON DATA
        IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
         DO 22 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,3333) DUMMI(1),DUMMI(2),DUMMI(3),
+          READ (30,*) DUMMI(1),DUMMI(2),DUMMI(3),
      .                   XPOL(IY,IX+2)
-          READ (30,3333) DUMMI(1),DUMMI(2),DUMMI(3),
+          READ (30,*) DUMMI(1),DUMMI(2),DUMMI(3),
      .                   YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,3333) DUMMI(1),DUMMI(2),
+          READ (30,*) DUMMI(1),DUMMI(2),
      .                   XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,3333) DUMMI(1),DUMMI(2),
+          READ (30,*) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
 22      CONTINUE
@@ -193,15 +193,15 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.dimxh) THEN
         DO 24 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,3333) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
+         READ (30,*) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
      .                  XPOL(IY,IX+2)
-         READ (30,3333) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
+         READ (30,*) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
      .                  YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,3333) XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
+          READ (30,*) XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
      .                                XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,3333) YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
+          READ (30,*) YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
      .                                YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
 24      CONTINUE
