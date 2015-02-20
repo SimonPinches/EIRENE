@@ -4051,6 +4051,11 @@ C
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time vor block 14 ',tpb2-tpb1
 !pb      tpb1 = tpb2
+
+! CALL TO ALLOC_BCKGRND MOVED HERE TO ALLOW SPECIFICATION OF VOL
+! IN IF0COP
+
+      IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
  
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
@@ -4468,7 +4473,6 @@ C
 !pb      write (iunout,*) ' cpu-time vor plasma definition ',tpb2-tpb1
 !pb      tpb1 = tpb2
  
-      IF (ANY(INDPRO(1:6) == 6)) CALL EIRENE_ALLOC_BCKGRND
 !pb      IF (NMODE.NE.0.AND.IITER.LE.1) THEN
       IF (NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) THEN
 C  READ PLASMA BACKGROUND FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
