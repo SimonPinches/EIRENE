@@ -130,11 +130,11 @@ c  directional spectra in cell
         END IF
 
  
-        WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
+        WRITE (IOUT,'(A19,5X,ES12.4)') ' MINIMAL ENERGY (EV) ',
      .         ESTIML(ISPC)%PSPC%SPCMIN
-        WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
+        WRITE (IOUT,'(A19,5X,ES12.4)') ' MAXIMAL ENERGY (EV) ',
      .         ESTIML(ISPC)%PSPC%SPCMAX
-        WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
+        WRITE (IOUT,'(A20,4x,I6)') ' NUMBER OF BINS     ',
      .         ESTIML(ISPC)%PSPC%NSPC
 C  HEADER DONE.
 
@@ -156,17 +156,29 @@ c  first and last bin: all the fluxes outside specified spectral range
      .          WRITE (IOUT,*) '.......................................'   
             END DO
           ELSE
-C  STANDARD DEVIATION IS AVAILABLE          
-            DO IE=IINI,IEND
+C  STANDARD DEVIATION IS AVAILABLE
+C     
+c  first bin: all the fluxes below specified spectral range
+            EN = ESTIML(ISPC)%PSPC%SPCMIN  
+            WRITE (IOUT,'(I6,A4,3ES12.4)') IINI,' <= ',EN,
+     .             ESTIML(ISPC)%PSPC%SPC(IINI),
+     .             ESTIML(ISPC)%PSPC%SGM(IINI)
+            WRITE (IOUT,*) '.......................................'          
+            DO IE=IINI+1,IEND-1
               EN = ESTIML(ISPC)%PSPC%SPCMIN +
      .             (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-              WRITE (IOUT,'(I6,3ES12.4)') IE,EN,
+              WRITE (IOUT,'(I6,A4,3ES12.4)') IE,'    ',EN,
      .               ESTIML(ISPC)%PSPC%SPC(IE),
      .               ESTIML(ISPC)%PSPC%SGM(IE)
-c  first and last bin: all the fluxes outside specified spectral range
-              IF (IE.EQ.IINI.OR.IE.EQ.IEND-1)
-     .          WRITE (IOUT,*) '.......................................'   
             END DO
+c  last bin: all the fluxes above specified spectral range
+            WRITE (IOUT,*) '.......................................' 
+            EN = ESTIML(ISPC)%PSPC%SPCMIN +
+     .             (IEND-1)*ESTIML(ISPC)%PSPC%SPCDEL
+            WRITE (IOUT,'(I6,A4,3ES12.4)') IEND,' >= ',EN,
+     .             ESTIML(ISPC)%PSPC%SPC(IEND),
+     .             ESTIML(ISPC)%PSPC%SGM(IEND)  
+
           END IF
         ELSE
           WRITE (IOUT,'(A)') ' SPECTRUM IDENTICAL 0 '

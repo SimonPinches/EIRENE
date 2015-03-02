@@ -148,14 +148,14 @@ C
 C
       TYPE(SURFACE), POINTER :: SURFLIST, SURFCUR, SURFCUR2
       TYPE(REFMODEL), POINTER :: REFLIST, REFCUR
- 
+
       TYPE REFFILE
         CHARACTER(500) :: RFILE
         TYPE(REFFILE), POINTER :: NEXT
       END TYPE REFFILE
- 
+
       TYPE(REFFILE), POINTER :: REFFILES, CURFILE
- 
+
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
 C
       REAL(DP) :: AFF(3,3), AFFI(3,3), FP(6)
@@ -236,7 +236,7 @@ C  13,14, AND 15 AND IUNIN
 C
       IF (IITER.GT.1) GOTO 4000
       IF (ITIMV.GT.1) GOTO 4000
- 
+
 !pb   TPB1=EIRENE_SECOND_OWN()
 C
       IREAD=0
@@ -250,7 +250,7 @@ C
 C  SET DEFAULT REACTION MODELS
 C
       CALL EIRENE_SETUP_DEFAULT_REACTIONS
- 
+
 C
 C  SET DEFAULT SOURCE MODEL
 C
@@ -260,10 +260,10 @@ C  SET DEFAULT 'ADDITIONAL SURFACE' AND 'STANDARD SURFACE' DATA
 C
       NBITS=BIT_SIZE(I)
       CALL EIRENE_SET_DEF_SURF_DATA
- 
+
       ALLOCATE (SAREA_SAVE(NLIMPS))
       SAREA_SAVE = 666.
- 
+
       NULLIFY(SURFLIST)
       NULLIFY(REFLIST)
 C
@@ -273,11 +273,11 @@ C
       TIME0=0.
       NSNVI=0
       NTMSTP=1
- 
+
 C  BY DEFAULT SWITCH OFF MOMENTUM DENSITY TALLIES
 C  FOR USE OF THOSE TALLIES THEY NEED TO BE
 C  SWITCHED ON IN BLOCK 11 EXPLICITELY
- 
+
 C  LV?DEN.. IS AN ALIAS FOR AN ENTRY IN ARRAY LMISTALV
 C  THEREFORE .TRUE. MEANS: SWITCHED OFF
       LVXDENA  = .TRUE.
@@ -292,7 +292,7 @@ C  THEREFORE .TRUE. MEANS: SWITCHED OFF
       LVZDENM  = .TRUE.
       LVZDENI  = .TRUE.
       LVZDENPH = .TRUE.
- 
+
 C  SET DEFAULT VALUE FOR LHABER
       LHABER = .FALSE.
 C
@@ -307,7 +307,7 @@ C
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time vor einlesen ',tpb2-tpb1
 !pb      tpb1 = tpb2
- 
+
       CALL DATE_AND_TIME(CDATE,CTIME)
       READ(CDATE(1:4),*) I1
       READ(CDATE(5:6),*) I2
@@ -658,7 +658,7 @@ C  RADIAL MESH
 C
         READ (IUNIN,6665) NLSLB,NLCRC,NLELL,NLTRI,NLPLG,NLFEM,NLTET,
      .                    NLGEN
- 
+
 ! CHECK GEOMETRY SWITCHES
        ILOGS = 0
        IF (NLSLB) ILOGS = ILOGS + 1
@@ -683,7 +683,7 @@ C
          WRITE (IUNOUT,*) 'NLGEN = ',NLGEN
          CALL EIRENE_EXIT_OWN(1)
        END IF
- 
+
        READ (IUNIN,6666) NR1ST,NRSEP,NRPLG,NPPLG,NRKNOT,NCOOR
         IF (INDGRD(1).LE.5) THEN
           IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
@@ -716,15 +716,15 @@ C
               WRITE (IUNOUT,*) ' BUT NO CASENAME SPECIFIED '
               CALL EIRENE_EXIT_OWN(1)
             END IF
- 
+
             READ (ZEILE(6:),'(A66)') CASENAME
             IREAD = 0
             CASENAME=ADJUSTL(CASENAME)
             I2=INDEX(CASENAME,' ')
- 
+
             IF (NLFEM) CALL EIRENE_READ_TRIANG (CASENAME(1:I2))
             IF (NLTET) CALL EIRENE_READ_TETRA (CASENAME(1:I2))
- 
+
             READ (IUNIN,'(A72)') ZEILE
             IREAD = 1
             IF ( (ZEILE(1:1) .NE. '*') .AND.
@@ -899,6 +899,7 @@ C
      .                    IRPTE1,IRPTA2,IRPTE2,IRPTA3,IRPTE3
  
         IF (.NOT.(NLFEM.OR.NLTET.OR.NLGEN)) THEN
+
         IF ((IDIMP == 1) .AND. (INUMP(ISTS,IDIMP) > N1ST)) THEN
           WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON DEFAULT '
           WRITE (iunout,*) ' SURFACE ',ISTS
@@ -911,7 +912,6 @@ C
           WRITE (iunout,*) ' NUMBER OF POLOIDAL SURFACE > N2ND '
           WRITE (iunout,*) ' CHECK INPUT FILE '
           CALL EIRENE_EXIT_OWN(1)
-!pb        ELSEIF ((IDIMP == 3) .AND. (INUMP(ISTS,IDIMP) > N3RD)) THEN
         ELSEIF ((IDIMP == 3) .AND.
      .          ((NLTOR.AND.(INUMP(ISTS,IDIMP) > N3RD)) .OR.
      .           (NLTRA.AND.(INUMP(ISTS,IDIMP) > NTTRA)))) THEN
@@ -921,6 +921,7 @@ C
           WRITE (iunout,*) ' CHECK INPUT FILE '
           CALL EIRENE_EXIT_OWN(1)
         END IF
+
         END IF
 C
 C  OLD INPUT VERSION BEGIN
@@ -1278,7 +1279,7 @@ C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
       CALL EIRENE_MASAGE
      .  ('       ATOMIC PHYSICS MODULE                ')
       CALL EIRENE_LEER(1)
- 
+
 ! CHECK FOR INCLUDE LINE
       READ (IUNIN,'(A420)') ZEILE
       IREAD=1  !  next input line is already read from iunin, now on 'ZEILE'
@@ -1330,17 +1331,17 @@ C  special only in case of HYDKIN INTERFACE: find string "DEFAULT"
         CALL
      .  EIRENE_READ_TOKEN(ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,
      .                  .FALSE.)
- 
+
         IEND = IEND + 7 + ITOK
         CALL EIRENE_READ_TOKEN(ZEILE(IEND+1:),' ',CADAPT,ITOK,IER,
      .                  .FALSE.)
- 
+
         READ (IUNIN,'(A72)') ZEILE
- 
+
       END IF
 
 C  Normal start of reading database A&M processes
- 
+
       READ (ZEILE,*) NREACI
       WRITE (iunout,*) '       NREACI= ',NREACI
       CALL EIRENE_LEER(1)
@@ -1600,7 +1601,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
      .              ' PREVIOUSLY WAS ',REACDAT(IREACA(IATM,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
-              WRITE (IUNOUT,*) ' USE ',
+              WRITE (IUNOUT,*) ' USE',
      .              MAX(REACDAT(IREACA(IATM,K))%NOSEC,NSC),
      .              ' SECONDARIES '
               REACDAT(IREACA(IATM,K))%NOSEC =
@@ -2817,6 +2818,11 @@ C
             READ (IUNIN,'(A72)') ZEILE
             IF (ZEILE(1:1) .NE. '*') EXIT
           END DO
+cdr  this input and this code segment should be modified:
+c  first read isrfcll: "type of spectrum", then ispsrf "where is this sepctrum scored"
+c  then further details (species: iptyp,ipspz, and then: direction,....)
+c  
+
           READ (ZEILE,'(12I6)') ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS,
      .                          ISRFCLL, IDIREC
           READ (IUNIN,'(6E12.4)') SPCMN, SPCMX, SPC_SHIFT,
@@ -2839,6 +2845,13 @@ C
               IDIREC = 0
             END IF
           END IF
+
+cdr  better: first discriminate by isrfcll,  then, for each value of isrfcll: do the rest
+c   isrcfll=0 : surface averaged tally
+c   isrfcll=1 : volume averaged tally, integrated over all directions
+c   isrfcll=2 : volume averaged tally, along a specific direction
+c  it seems: furace averages directional tallies: not yet forseen
+
           IF (ISPSRF > 0) THEN
             IF ((ISRFCLL == 0) .AND. (ISPSRF > NLIMI)) THEN
 C  SPECTRUM AT AN ADDITIONAL SURFACE
@@ -2849,6 +2862,7 @@ C  SPECTRUM AT AN ADDITIONAL SURFACE
               IERROR = IERROR + 1
             END IF
 C  SPECTRUM IN CELL, POSSIBLY ALONG A CERTAIN DIRECTION
+cdr:  next 2 lines: why different condition for cell based spectra cell numbers ?? 
             IF (((ISRFCLL == 1) .AND. (ISPSRF > NRTAL)) .OR.   ! cell based spectrum in scoring cell ISPSRF
      .          ((ISRFCLL == 2) .AND. (ISPSRF > NRAD))) THEN   ! directional cell based spectrum in scoring cell ISPSRF 
               WRITE (iunout,*)
@@ -3052,9 +3066,9 @@ c  and ntlsout surface tallies
           END DO
           ITLVOUT=ITLVOUT+12
         END DO
- 
+
 c  overrule default switching on/off of surface averaged tallies
- 
+
         READ (IUNIN,6666) NTLSOUT
         ITLSOUT=0
         DO WHILE ((NTLSOUT > 0) .AND. (ITLSOUT < NTLSOUT))
@@ -3075,8 +3089,8 @@ C EITHER A COMMENT LINE, OR THE NEXT INPUT CARD (LOGICALS FOR PLOTTING) IS ON 'z
         IF (ZEILE(1:1) .eq.'*')  goto 1131
 c  reading 'switch tallies off' done
       END IF
- 
- 
+
+
 C  search for input block 11b
  
 1132  IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
@@ -3569,7 +3583,7 @@ C
       IF (NLTOR) NP2T3=NP2ND
       IF (.NOT.NLADD) NRADD=0
       IF (.NOT.NLMLT) NBMLT=1
- 
+
       DO IN=1,NRAD
         NCLTAL(IN)=IN
       END DO
@@ -3602,7 +3616,7 @@ C
           SPTPRM(ISPZ,J)=SPTPRM(1,J)
         end do
       end do
- 
+
       DO WHILE (ASSOCIATED(REFLIST))
         NULLIFY(SURFCUR2)
         SURFCUR => SURFLIST
@@ -3658,7 +3672,7 @@ C
         DEALLOCATE (REFCUR%STPRMR)
         DEALLOCATE (REFCUR)
       ENDDO
- 
+
       IF (ASSOCIATED(SURFLIST)) THEN
         WRITE (iunout,*)
      .    ' SURFACE DATA HAVE NOT BEEN DEFINED FOR MODEL:'
@@ -3671,7 +3685,7 @@ C
         WRITE (iunout,*) ' EXECUTION IS STOPPED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       DO 2000 J=0,NLIMPS
         IF (ILCOL(J).LT.0) IGFIL(J)=1
         ILCOL(J)=MAX0(1,IABS(ILCOL(J)))
@@ -4006,33 +4020,33 @@ C  1ST: SPECIES FLAGS:
       CALL EIRENE_SETAMD(0)
       CALL EIRENE_ALLOC_COMUSR(2)
       CALL EIRENE_ALLOC_CTEXT(2)
- 
+
       CALL EIRENE_SETTXT
- 
+
       IF (NADVI > 0) THEN
         TXTTAL(1:NADVI,NTALA) = TXTTLA(1:NADVI)
         TXTSPC(1:NADVI,NTALA) = TXTSCA(1:NADVI)
         TXTUNT(1:NADVI,NTALA) = TXTUTA(1:NADVI)
       END IF
- 
+
       IF (NCLVI > 0) THEN
         TXTTAL(1:NCLVI,NTALC) = TXTTLC(1:NCLVI)
         TXTSPC(1:NCLVI,NTALC) = TXTSCC(1:NCLVI)
         TXTUNT(1:NCLVI,NTALC) = TXTUTC(1:NCLVI)
       END IF
- 
+
       IF (NALVI > 0) THEN
         TXTTAL(1:NALVI,NTALR) = TXTTLR(1:NALVI)
         TXTSPC(1:NALVI,NTALR) = TXTSCR(1:NALVI)
         TXTUNT(1:NALVI,NTALR) = TXTUTR(1:NALVI)
       END IF
- 
+
       IF (NSNVI > 0) THEN
         TXTTAL(1:NSNVI,NTALT) = TXTTLT(1:NSNVI)
         TXTSPC(1:NSNVI,NTALT) = TXTSCT(1:NSNVI)
         TXTUNT(1:NSNVI,NTALT) = TXTUTT(1:NSNVI)
       END IF
- 
+
       DEALLOCATE (TXTTLA)
       DEALLOCATE (TXTSCA)
       DEALLOCATE (TXTUTA)
@@ -4058,11 +4072,11 @@ C  INPUT BLOCK 14 BEGIN
 C
 C  READ DATA IN INTERFACING SUBROUTINE INFCOP  1400 -- 1499
 C
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time vor block 14 ',tpb2-tpb1
 !pb      tpb1 = tpb2
- 
+
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"   ')
@@ -4416,7 +4430,7 @@ C
               END IF
             END DO
           END IF
- 
+
           NLIMII(J)=IIN
           NLIMIE(J)=IEN
 8004    CONTINUE
@@ -4474,11 +4488,11 @@ C
 C
 4000  CONTINUE
 C
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time vor plasma definition ',tpb2-tpb1
 !pb      tpb1 = tpb2
- 
+
       IF (ANY(INDPRO(1:6) == 6)) CALL EIRENE_ALLOC_BCKGRND
 !pb      IF (NMODE.NE.0.AND.IITER.LE.1) THEN
       IF (NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) THEN
@@ -4486,7 +4500,7 @@ C  READ PLASMA BACKGROUND FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
 C  OR FROM COMMON BRAEIR (NLPLAS)
         CALL EIRENE_IF1COP
       ENDIF
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time fuer if1cop ',tpb2-tpb1
 !pb      tpb1 = tpb2
@@ -4513,7 +4527,7 @@ C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS
 C
         CALL EIRENE_PLASMA
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time fuer plasma ',tpb2-tpb1
 !pb      tpb1 = tpb2
@@ -4534,14 +4548,14 @@ C
             TEMPLIST => TEMPLIST%NEXT
             DEALLOCATE(TEMPCUR)
           ENDDO
- 
+
           DO WHILE (ASSOCIATED(DENLIST))
             DIIN(DENLIST%IDION,DENLIST%IN) = DENLIST%DI
             DENCUR => DENLIST
             DENLIST => DENLIST%NEXT
             DEALLOCATE(DENCUR)
           ENDDO
- 
+
           DO WHILE (ASSOCIATED(VELLIST))
             IPLS = VELLIST%IDION
             IPLSTI = MPLSTI(IPLS)
@@ -4567,7 +4581,7 @@ C
 C  MODIFY SOME PLASMA DATA, USER SUPPLIED ROUTINE
 C
         CALL EIRENE_PLAUSR
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time fuer plausr ',tpb2-tpb1
 !pb      tpb1 = tpb2
@@ -4582,7 +4596,7 @@ C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
         CALL EIRENE_PLASMA_DERIV(0)
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time fuer plasma_deriv ',tpb2-tpb1
 !pb      tpb1 = tpb2
@@ -4590,14 +4604,14 @@ C
 C  SET ATOMIC DATA TABLES
 C
         CALL EIRENE_SETAMD(1)
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time fuer setamd ',tpb2-tpb1
 !pb      tpb1 = tpb2
 C
         IF (NFILEL.EQ.1) CALL EIRENE_WRPLAM(TRCFLE,0)
         IF (NFILEL.EQ.6) CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time fuer wrplam ',tpb2-tpb1
 !pb      tpb1 = tpb2
@@ -4624,20 +4638,20 @@ C
           CALL EIRENE_RPLAM_XDR(TRCFLE,NFILEL)
         END IF
         CALL EIRENE_XSECTPH
- 
+
         IF (IITER > 1) NLSRON = NLSRON_SAVE
 C
       ENDIF
- 
+
 !pb      TPB2=SECOND_OWN()
 !pb      write (iunout,*) ' cpu-time nach plasma definition ',tpb2-tpb1
 !pb      tpb1 = tpb2
- 
+
 C
 C  SETUP TABLE OF CONTRIBUTIONS OF MONTE-CARLO PARTICLES TO BACKGROUND SPECIES
 C
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
- 
+
       DO IPLS = 1, NPLSI
         IF ((LEN_TRIM(CDENMODEL(IPLS)) > 0) .AND.
      .      (INDEX(CDENMODEL(IPLS),'CONSTANT') == 0)) THEN
@@ -4648,7 +4662,7 @@ C
           END DO
         END IF
       END DO
- 
+
       CALL EIRENE_LEER(2)
       WRITE (IUNOUT,*) ' LIST OF CONTRIBUTIONS TO BACKGROUND SPECIES '
       DO ISPZ = 1, NSPZ
@@ -4726,7 +4740,7 @@ C
 7702    CONTINUE
 C
       ENDIF
- 
+
       CALL EIRENE_DEALLOC_BCKGRND
 C
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(3)
@@ -4734,21 +4748,24 @@ C
 !  allocate and initialize storage for trajectories
       IF (.NOT.ALLOCATED(TRAJ)) THEN
         ALLOCATE (TRAJ(NCHORI+NTRJ))
- 
+
         DO ITRJ = 1, NCHORI+NTRJ
           ALLOCATE(TRAJ(ITRJ)%TRJ)
           TRAJ(ITRJ)%TRJ%NCOU_CELL = 0
           NULLIFY(TRAJ(ITRJ)%TRJ%CELLS)
         END DO
       END IF
- 
+
       IF (NCHORI > 0) THEN
         IF (ANY(NLSTCHR)) CALL EIRENE_SETUP_CHORD_SPECTRA
       END IF
- 
+
 !  determine number of background spectra
- 
+
       NBACK_SPEC = 0
+
+c  number of spectra from Monte Carlo trajectories
+
       NADSPC_S = 0   !  surface based
       NADSPC_C = 0   !  cell based
       NADSPC_D = 0   !  cell based, directional

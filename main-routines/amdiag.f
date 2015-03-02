@@ -1,8 +1,13 @@
-C  PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT
+cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
+
+CDR:  A&M Data diagnostics routine, added in Jan. 2014
+C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT
+C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS
 c 
 c  modcol=1: only dependent on local background data, not on test particle parameters
 c            tabcx3(...,1),tabel3(...1),tabpi3(...1),tabds1(...) 
-c               are rates, density of impacting bulk ion included.
+c            are rates, density of impacting bulk ion included, 
+c            so here we divide again by ne or ni.
 c
 c  modcol=2: depends on Eb = energy of impacting test particle
 c            tabcx3(...,1,nend),tabel3(...,1,nend),tabpi3(...,1,nend) 
@@ -12,6 +17,7 @@ c
 c
 C
 C  RATE COEFFCIENTS IN ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E8 CM^3-S
+C  TO CONVERT THESE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e08
 c
 c  done for naint=20,22,24,26 and modcol=1
 
@@ -45,10 +51,12 @@ c                            nidsi(iio) --> nieii(iio)
 
       IMPLICIT NONE
 
-      REAL(DP) :: AU
+      REAL(DP) :: AU, ELB, EXPO, FP, RCMIN,RCMAX,
+     .            TBCX3(9),
+     .            EIRENE_SNGL_POLY
       INTEGER :: NS,NA,IAIN,MM,KK,
      .           irei,ircx,irpi,irel,irrc,
-     .           iat,iml,iio,ipl,isp,
+     .           iat,iml,iio,ipl,isp,iplti,
      .           icell,iapi,impi,iipi,iacx,imcx,iicx,
      .           iael,imel,iiel,iaei,imei,iiei
       CHARACTER(4) :: CNO, CN1
@@ -133,7 +141,7 @@ c  no interacting particle species found
 1720        CONTINUE
 
             goto 180
-          else  !  MODCOL(1,2,irei)=2, not ready            
+          else  !  mm= MODCOL(1,2,irei)=2, not ready            
             goto 171
           endif
 
@@ -150,9 +158,13 @@ c  not ready
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = 'eV times A.U. (0.612 E-8 cm3/s)'
           irei=ns
-          DO 1721 ICELL=1,NSBOX
-            ADIN(IAIN,ICELL)=EELDS1(irei,ICELL)
-1721      CONTINUE     
+          if (mm.eq.1) then
+            DO 1721 ICELL=1,NSBOX
+              ADIN(IAIN,ICELL)=EELDS1(irei,ICELL)
+1721        CONTINUE
+          else  !  mm= MODCOL(1,2,irei)=2, not ready
+            goto 171
+          endif     
           GOTO 171
         endif
 
@@ -225,8 +237,23 @@ c  no interacting particle species found
      .        TABCX3(IRCX,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1722        CONTINUE
             
-            GOTO 180
-          ELSE ! MODCOL=2:  NOT READY            
+            GOTO 180 !done
+          ELSEIF (MM.EQ.2) THEN
+C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
+            IPLTI = MPLSTI(IPL)
+            FP = 0._DP
+            RCMIN = -HUGE(1._DP)
+            RCMAX = HUGE(1._DP)
+c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+            DO ICELL=1,NSBOX
+              ELB=log(1.5*TIIN(iplti,icell))
+              TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)             
+              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
+              ADIN(IAIN,ICELL)=
+     .        exp(expo)/(diin(ipl,icell)+eps30)/AU
+            enddo
+            goto 180  !done
+          ELSE ! MODCOL.gt.2:  NOT READY            
             GOTO 171
           ENDIF
 

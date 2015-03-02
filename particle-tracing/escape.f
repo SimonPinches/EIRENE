@@ -757,7 +757,8 @@ C
           IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,2,0) 
 
           IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES ON SURFACE TALLIES ONLY
-C                                         IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
+C                                         IF THEY ARE FOLLOWED. 
+C                                         OTHERWISE: ONLY ON SPUTTER TALLIES
           CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)
 C
 C.....................................................................

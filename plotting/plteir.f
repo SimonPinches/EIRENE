@@ -8,6 +8,9 @@ c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop--> sgms_bgk
 !pb  18.12.06: general checking of XMCP removed to allow plots of
 !              input tallies even is no Monte Carlo particle has been followed
 !    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
+!    30.01.09: TEXT CORRECTED FOR PLOTS OF SPECTRA (INPUT BLOCK 10F)
+!    30.01.09: additional wavelength unit plots only for photon spectra.
+C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
@@ -58,7 +61,7 @@ C
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IFIRST, IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I0, I1, I2, IT,
-     .           INDX
+     .           INDX, ITT, ITP
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LPLTT2, LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -83,6 +86,8 @@ C
         ENDIF
       ENDIF
 C
+C  prepare plot frame. 
+
 C  NULLPUNKT AUF DEM PAPIER
  
       X0PL=10.
@@ -111,9 +116,11 @@ C  MACHE GRADE GRENZEN, X-ACHSE (Y ACHSE, NUR WENN TALZMI=TALZMA=666.)
 C  NEW FRAME FOR EACH PICTURE IN PLTTLY
       L_SAME=.FALSE.
 C
-C
+C  prepare plotting output tallies for present stratum ISTRA
+
       IF (XMCP(ISTRA).EQ.0.0) GOTO 10
-C  PROVIDE EIRENE OUTPUT TALLIES FOR STRATUM ISTRA
+
+C  PROVIDE EIRENE OUTPUT TALLIES FOR SELECTED STRATUM ISTRA
       IF (IESTR.EQ.ISTRA) THEN
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
@@ -126,8 +133,6 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb          CALL EIRENE_SYMET(ESTIMV,NTALV,NRAD,NR1ST,NP2ND,NT3RD,
-!pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
         ENDIF
@@ -141,8 +146,6 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb          CALL EIRENE_SYMET(ESTIMV,NTALV,NRAD,NR1ST,NP2ND,NT3RD,
-!pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
         ENDIF
@@ -902,8 +905,10 @@ C
 
 C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
-C  NEXT: PLOT SPECTRA, IF ANY HAVE BEEN SCORED 
-
+C  NEXT: PLOT ENERGY (WAVELENGTH)SPECTRA, IF ANY HAVE BEEN SCORED 
+C        PLOTTING IS NOT YET CONDITIONED BY FLAGS
+C        ALL PLOTS FOR ALL SPECTRA ARE ALWAYS DONE
+C
       IF (XMCP(ISTRA).LE.1.0) GOTO 20000
 C 
       DO ISPC=1,NADSPC
@@ -914,11 +919,11 @@ C  THERE ARE NSPS BINS, AND NSPS+1 ENERGY BIN BOUNDARIES
         ALLOCATE (VSPEC(NSPS+1,1))
         SPCAN=ESTIML(ISPC)%PSPC%SPCMIN
         SPC00=ESTIML(ISPC)%PSPC%ESP_00
-C  x axis: cell faces
+C  x axis: ENERGY-BIN FACES
         DO I=1,NSPS+1
           XSPEC(I)=SPCAN+(I-1)*ESTIML(ISPC)%PSPC%SPCDEL-SPC00
         END DO
-C  y axis: cell averages (approx: cell centres)
+C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
         DO I=1,NSPS
           YSPEC(I,1)=ESTIML(ISPC)%PSPC%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%PSPC%SGM(I)
@@ -949,15 +954,20 @@ C  y axis: cell averages (approx: cell centres)
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%PSPC%IPRTYP
         WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%PSPC%IPRSP
         IT = ESTIML(ISPC)%PSPC%ISPCTYP
+        ITT= ESTIML(ISPC)%PSPC%ISRFCLL 
         TXSPEC=REPEAT(' ',24)
         TXUNIT=REPEAT(' ',24)
-        IF (IT == 1) TXUNIT='AMP/BIN(EV)             '
-        IF (IT == 2) TXUNIT='WATT/BIN(EV)            '
+        IF (ITT.EQ.0.AND.IT == 1) TXUNIT='AMP/BIN(EV)             '
+        IF (ITT.EQ.0.AND.IT == 2) TXUNIT='WATT/BIN(EV)            '
+        IF (ITT.EQ.1.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)         '
+        IF (ITT.EQ.1.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)        '
+cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
+        IF (ITT.EQ.2.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)/STERAD  '
+        IF (ITT.EQ.2.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)/STERAD '
         TXHEAD=REPEAT(' ',72)
         TXHEAD(1:30)=HEAD9(1:30)
         TXHEAD(32:42)='INTEGRAL: '
-!pb        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
-        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
+        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
         IERR=0   
 C  MANY SPECTRA INTO ONE PICTURE_        
         L_SAME=ESTIML(ISPC)%PSPC%SPC_SAME .NE. 1.D0
@@ -979,27 +989,28 @@ C  NOW REPEAT SAME PLOTS, BUT VS. WAVELENGTH
 CDR TO BE DONE: DISTUINGISH BETWEEN PHOTON AND PARTICLE SPECTRA
  
       DO ISPC=1,NADSPC
+        ITP=ESTIML(ISPC)%PSPC%IPRTYP
+        IF (ITP.NE.0) CYCLE
 C  THERE ARE NSPS BINS, AND NSPS+1 ENERGY BIN BOUNDARIES
         NSPS=ESTIML(ISPC)%PSPC%NSPC
         ALLOCATE (XSPEC(NSPS+1))
         ALLOCATE (YSPEC(NSPS+1,1))
         ALLOCATE (VSPEC(NSPS+1,1))
-        IF (NPHOTI > 0) THEN
-          ALLOCATE (WLSPEC(NSPS+1))
-          ALLOCATE (YSPECWL(NSPS+1,1))
-          ALLOCATE (VSPECWL(NSPS+1,1))
-        END IF
+        ALLOCATE (WLSPEC(NSPS+1))
+        ALLOCATE (YSPECWL(NSPS+1,1))
+        ALLOCATE (VSPECWL(NSPS+1,1))
         SPCAN=ESTIML(ISPC)%PSPC%SPCMIN
         SPC00=ESTIML(ISPC)%PSPC%ESP_00
-C  x axis: cell faces
+C  x axis: ENERGY-BIN FACES
         DO I=1,NSPS+1
           XSPEC(I)=SPCAN+(I-1)*ESTIML(ISPC)%PSPC%SPCDEL
         END DO
-C  y axis: cell averages (approx: cell centres)
+C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
         DO I=1,NSPS
           YSPEC(I,1)=ESTIML(ISPC)%PSPC%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%PSPC%SGM(I)
-        END DO        
+        END DO
+ 
 C  PLOT ALSO VS. WAVELENGTH (NM)
         WL00            =HPCL/MAX(1.E-6_DP,SPC00)*1.E7_DP
 C  x axis: cell faces
@@ -1023,7 +1034,6 @@ C  rescaling:  flux/ev to flux/nm
         DEALLOCATE (YSPEC)
         DEALLOCATE (VSPEC)
  
-        
         YMN2(1)=MINVAL(YSPECWL(1:NSPS,1))
         YMX2(1)=MAXVAL(YSPECWL(1:NSPS,1))
         IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
@@ -1050,24 +1060,30 @@ C  rescaling:  flux/ev to flux/nm
         WRITE (TXTALL(1)(22:27),'(I6)') ESTIML(ISPC)%PSPC%ISPCSRF
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%PSPC%IPRTYP
         WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%PSPC%IPRSP
+        IT = ESTIML(ISPC)%PSPC%ISPCTYP
+        ITT= ESTIML(ISPC)%PSPC%ISRFCLL 
         TXSPEC=REPEAT(' ',24)
         TXUNIT=REPEAT(' ',24)
-        IF (IT == 1) TXUNIT='AMP/BIN(NM),            '
-        IF (IT == 2) TXUNIT='WATT/BIN(NM),           '
+        IF (ITT.EQ.0.AND.IT == 1) TXUNIT='AMP/BIN(NM)             '
+        IF (ITT.EQ.0.AND.IT == 2) TXUNIT='WATT/BIN(NM)            '
+        IF (ITT.EQ.1.AND.IT == 1) TXUNIT='#/CM**3/BIN(NM)         '
+        IF (ITT.EQ.1.AND.IT == 2) TXUNIT='EV/CM**3/BIN(NM)        '
+cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
+        IF (ITT.EQ.2.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)/STERAD  '
+        IF (ITT.EQ.2.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)/STERAD '
         TXHEAD=REPEAT(' ',72)
         TXHEAD(1:30)=HEAD10(1:30)
         TXHEAD(32:42)='INTEGRAL: '
-!pb        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
-        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCINT
+        WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%PSPC%SPCS
         IERR=0
         L_SAME=.TRUE.
         IF (ISPC.EQ.1) L_SAME=.FALSE.
         L_SAME=ESTIML(ISPC)%PSPC%SPC_SAME .NE. 1.D0
         CALL EIRENE_PLTTLY (WLSPEC,YSPECWL,VSPECWL,YMN2,YMX2,
-     .     IR1,IR2,IRS,
-     .     1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
-     .     LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
-     .     NSPS+1,NSPS+1,L_SAME)
+     .       IR1,IR2,IRS,
+     .       1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
+     .       LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
+     .       NSPS+1,NSPS+1,L_SAME)
         DEALLOCATE (WLSPEC)
         DEALLOCATE (YSPECWL)
         DEALLOCATE (VSPECWL)
