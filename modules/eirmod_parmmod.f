@@ -22,7 +22,7 @@ cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
      P         NPARTC=12, NPARTT=12,
      P         MPARTC=14, MPARTT=9
 csw 13apr07
-      integer, parameter,public :: IFOFF = 0
+      integer, public :: IFOFF = 0
  
       INTEGER, PUBLIC, SAVE ::
      I N1ST,   N2ND,   N3RD,   NADD,   NTOR,
