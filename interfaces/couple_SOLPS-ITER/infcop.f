@@ -1670,7 +1670,10 @@ C
 csw
 csw 24oct2011
       if(my_pe==0) then
-        if (.not.allocated(flux_save)) allocate(flux_save(nstra))
+        if (.not.allocated(flux_save)) then
+           allocate(flux_save(nstra))
+           flux_save = 0._dp
+        end if
         DO ISTRAI=NTARGI+1,NSTRAI
           ISTRA = ISTRAI
 csw 20mar2013
