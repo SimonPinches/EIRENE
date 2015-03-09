@@ -27,8 +27,10 @@ C
       IMPLICIT NONE
 C
       INTEGER, INTENT(IN) :: INDOUT
-      REAL(DP) :: VECTOR(NRAD)
-      REAL(DP) :: DUMMY(NRTAL)
+!pb      REAL(DP) :: VECTOR(NRAD)
+!pb      REAL(DP) :: DUMMY(NRTAL)
+      REAL(DP), allocatable :: VECTOR(:)
+      REAL(DP), allocatable :: DUMMY(:)
       REAL(DP) :: TOTA(0:NATM),DIFA(0:NATM,0:NSTRA),
      .            DIFRA(0:NATM,0:NSTRA)
       REAL(DP) :: TOTM(0:NMOL),DIFM(0:NMOL,0:NSTRA),
@@ -110,6 +112,8 @@ C  NOTHING TO BE DONE
         RETURN
       ENDIF
 C
+      allocate (vector(nrad))
+      allocate (dummy(nrtal))
 C
       CALL EIRENE_PAGE
       IF (ISTRA.NE.0) THEN
@@ -2865,6 +2869,10 @@ C
       CALL EIRENE_PAGE
 C
 1000  CONTINUE
+
+      if (allocated(vector)) deallocate (vector)
+      if (allocated(dummy)) deallocate (dummy)
+
 6666  FORMAT (3X,1A8,8X,12(A4,2X,A8,3X))
 7777  FORMAT (1X,3A8)
       RETURN
