@@ -61,7 +61,7 @@ C
      .           IBUSR, IRUSR, IPUSR, ITUSR, IK, J, JCALC, IINDEX,
      .           KAN, KEN, ISRPB, ISRND, ITRI, IS, NBIN, INDSRF,
      .           IPLSTI, IPLSV, IT, IPL, NANZ, IPLSD(NPLS), ISORFL, INS,
-     .           ISTEP_SPEZ, ICHWGHT
+     .           ISTEP_SPEZ, ICHWGHT, ISTS
       REAL(DP):: FF, TORL(NSTEP,NGITT)
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
      .           DISH(NPLS),VPSH(NPLS)
@@ -185,11 +185,19 @@ C  AT SOME GIVEN TOROIDAL (Z) POSITION IT
 C  SCALE FLUX DENSITY WITH A TOROIDAL LENGTH, I.E.
 C  WITH: DELTA-Z = LENGTH IN TOROIDAL OR Z-DIRECTION: EITHER "ZDF" OR "2 PI R"
 
+!pb INDSRF is used to set SHSTEP parameter of default stepfunction 
+            INDSRF = 0
 C  Y0:
             IF (INDIM(ISRFS,ISTRA).NE.2.OR..NOT.NLPOL) THEN
               IP=1
             ELSEIF (INDIM(ISRFS,ISTRA).EQ.2.AND.NLPOL) THEN
               IP=INSOR(ISRFS,ISTRA)
+              do ists=1,nstsi
+                if ((inump(ists,2) == ip) .and.
+     .              (irpta(ists,1) <= ingrda(isrfs,istra,1)) .and.
+     .              (irpte(ists,1) >= ingrde(isrfs,istra,1))) 
+     .             indsrf=nlim+ists
+              end do           
             ENDIF
 C  Z0:
             IF (INDIM(ISRFS,ISTRA).NE.3.OR..NOT.NLTOR) THEN
@@ -316,8 +324,8 @@ C  toroidal length: already included in RRSTEP, which is a surface area
 C
 C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS SURFACE TE, TI, V-PLASMA, NI
 C
-            INDSRF=INSOR(ISRFS,ISTRA)
-            IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
+!pb 02032015            INDSRF=INSOR(ISRFS,ISTRA)
+!pb 02032015            IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
             DO K=KAN,KEN
               NBLCKA=NSTRD*(IBSTEP(ISTEP,K)-1)+IASTEP(ISTEP,K)
               IF ((LEVGEO == 4) .OR. (LEVGEO == 5)) THEN
@@ -348,7 +356,11 @@ C
      .             RMASSP(IPLS))
                 FF=ELCHA*CS
                 FLSTEP(IPLS,ISTEP,K)=FF*DIIN(IPLS,NCELL)*TORL(ISTEP,K)
-                SHSTEP(ISTEP,K)=FSHEAT(INDSRF)
+                IF (INDSRF == 0) THEN
+                   SHSTEP(ISTEP,K) = 0._DP
+                ELSE
+                   SHSTEP(ISTEP,K)=FSHEAT(INDSRF)
+                END IF
                 ELSTEP(IPLS,ISTEP,K)=(3._DP*TISTEP(IPLSTI,ISTEP,K) +
      .                               0.5_DP*TESTEP(ISTEP,K)) *
      .                               FLSTEP(IPLS,ISTEP,K)        
