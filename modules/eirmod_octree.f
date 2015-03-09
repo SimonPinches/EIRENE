@@ -242,6 +242,7 @@ c     parent : pointer to the parent node (whos childs we born ;) )
 c       the x, y, z coordinates for building the new nodes
 c       -> these coords save the lower and upper edge...
         REAL(DP), DIMENSION(3,3) :: B
+        REAL(DP), DIMENSION(2) :: C1, C2, C3
         
         if (trcoc) then
           WRITE (iunout,*)'WE CREATE CHILDREN FOR BLOCK', 
@@ -275,10 +276,15 @@ c         so reuse this tables! => 1 = 0, 3 = 1
             tmpnumber(3) = ibset(tmpnumber(3), layer)
           end if
 c         create the node
-          tmpnode=>OCTREE_NewNode(tree,
-     .                           (/B(1,xtab(I,1)), B(1,xtab(I,2))/),
-     .                           (/B(2,ytab(I,1)), B(2,ytab(I,2))/),
-     .                           (/B(3,ztab(I,1)), B(3,ztab(I,2))/),
+!          tmpnode=>OCTREE_NewNode(tree,
+!     .                           (/B(1,xtab(I,1)), B(1,xtab(I,2))/),
+!     .                           (/B(2,ytab(I,1)), B(2,ytab(I,2))/),
+!     .                           (/B(3,ztab(I,1)), B(3,ztab(I,2))/),
+!     .                           tmpnumber, parent)
+          c1 = (/B(1,xtab(I,1)), B(1,xtab(I,2))/)
+          c2 = (/B(2,ytab(I,1)), B(2,ytab(I,2))/)
+          c3 = (/B(3,ztab(I,1)), B(3,ztab(I,2))/)
+          tmpnode=>OCTREE_NewNode(tree, c1, c2, c3,
      .                           tmpnumber, parent)
 
 c         put the child into the parents basket
