@@ -496,7 +496,7 @@ C  SET INDICES OF STARTING CELL
           IF (NINCX.EQ.-1) LNGB3=.FALSE.
         ENDIF
         IF (NLSRFX) THEN
-          NLSRFX=.FALSE.
+!pb05032015          NLSRFX=.FALSE.
           IF (NRCELL.EQ.MRSURF) THEN
             LNGB1=.FALSE.
           ELSE
@@ -641,7 +641,32 @@ C  INTERSECTION WITH RADIAL CELL BOUNDARY FOUND
           ENDIF
         ELSE
 C  NO INTERSECTION FOUND
-          IF (NLSRFY.AND.NJUMP.EQ.0) THEN
+          IF (NLSRFX.AND.NJUMP.EQ.0) THEN
+C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
+!            WRITE (iunout,*)
+!     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+            MMSURF=MSURF
+            IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
+            WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+            IF (.NOT.LNGB1) THEN
+              ICELLR=IR-1
+              IRCELL=IR-1
+              IR=IR-1
+              LNGB1=.TRUE.
+              LNGB3=.FALSE.
+            ELSEIF (.NOT.LNGB3) THEN
+              ICELLR=IR+1
+              IRCELL=IR+1
+              IR=IR+1
+              LNGB1=.FALSE.
+              LNGB3=.TRUE.
+            ENDIF
+            LNGB2=.TRUE.
+            LNGB4=.TRUE.
+            NJUMP=1
+            NRCELL=IR
+            GOTO 6001
+          ELSEIF (NLSRFY.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
             WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
