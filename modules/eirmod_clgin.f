@@ -20,7 +20,7 @@
      R RECPRM(:,:),
      R EXPPL(:,:),  EXPEL(:,:),  EXPIL(:,:),
      R RECYCS(:,:),
-     R RECYCC(:,:), SPTPRM(:,:)
+     R RECYCC(:,:), SPTPRM(:,:), ESPUTS(:,:), ESPUTC(:,:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I ILSWCH(:),     ILEQUI(:),     ILTOR(:),
@@ -69,6 +69,8 @@
       ALLOCATE (RECYCS(NSPZ,0:NLIMPS))
       ALLOCATE (RECYCC(NSPZ,0:NLIMPS))
       ALLOCATE (SPTPRM(NSPZ,0:NLIMPS))
+      ALLOCATE (ESPUTS(NSPZ,0:NLIMPS))
+      ALLOCATE (ESPUTC(NSPZ,0:NLIMPS))
  
       ALLOCATE (ILSWCH(0:NLIMPS))
       ALLOCATE (ILEQUI(0:NLIMPS))
@@ -108,11 +110,11 @@
       ALLOCATE (IGJUM3(0:NOPTIM,NLIMPB))
  
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .       ' CLGIN ',(NLIMPS+1)*(10*NSPZ+7)*8 +
-     .                 (2*NOPTIM+(NLIMPS+1)*(9+4*NSPZ)+9*NSTS+
-     .                  (N1ST+1)*(N2ND+1)*(N3RD+1))*4 +
+     .       ' CLGIN ',(NLIMPS+1)*(13*NSPZ+7)*8 +
+     .                 (2*NOPTIM+(NLIMPS+1)*(14+9+4*NSPZ)+9*NSTS+
+     .                  (N1ST+1)*(N2ND+1)*(N3RD+1)*3)*4 +
      .                 ((NLIMPS+1)*(2+2*NLIMPB)+
-     .                  NLIMPS*(NOPTIM+1))*4
+     .                  NLIMPB*(NOPTIM+1))*4
  
       CALL EIRENE_INIT_CLGIN
  
@@ -141,6 +143,8 @@
       DEALLOCATE (RECYCS)
       DEALLOCATE (RECYCC)
       DEALLOCATE (SPTPRM)
+      DEALLOCATE (ESPUTS)
+      DEALLOCATE (ESPUTC)
  
       DEALLOCATE (ILSWCH)
       DEALLOCATE (ILEQUI)
@@ -202,6 +206,8 @@
       RECYCS = 1._DP
       RECYCC = 1._DP
       SPTPRM = 0._DP
+      ESPUTS = 0._DP
+      ESPUTC = 0._DP
  
       ILSWCH = 0
       ILEQUI = 0

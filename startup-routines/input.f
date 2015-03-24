@@ -142,7 +142,8 @@ C
         REAL(DP), DIMENSION(:), POINTER ::
      .                                   RCYCFR,RCYCTR,RCPRMR,
      .                                   EXPPLR,EXPELR,EXPILR,
-     .                                   RCYCSR,RCYCCR,STPRMR
+     .                                   RCYCSR,RCYCCR,STPRMR,
+     .                                   ESPTSR,ESPTCR
         TYPE(REFMODEL),POINTER :: NEXT
       END TYPE REFMODEL
 C
@@ -1040,7 +1041,8 @@ C  SKIP READING LOCAL SURFACE INTERACTION MODEL, USE: DEFAULT
           IREAD=1
 C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           IF (ZEILE(1:1).NE.'*') THEN
-            READ (ZEILE,6664) RECYCS(1,NLJ),RECYCC(1,NLJ),SPTPRM(1,NLJ)
+            READ (ZEILE,6664) RECYCS(1,NLJ),RECYCC(1,NLJ),SPTPRM(1,NLJ),
+     .                        ESPUTS(1,NLJ),ESPUTC(1,NLJ)
             IREAD=0
           ELSEIF (ILSPT(NLJ).NE.0) THEN
             WRITE (iunout,*) 'WARNING: SPUTTERING AT NON DEF. SURFACE ',
@@ -1212,7 +1214,8 @@ C  READ LOCAL REFLECTION MODEL
           IREAD=1
 C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           IF (ZEILE(1:1).NE.'*'.AND.ZEILE(1:9).NE.'TRANSFORM') THEN
-            READ (ZEILE,6664) RECYCS(1,I),RECYCC(1,I),SPTPRM(1,I)
+            READ (ZEILE,6664) RECYCS(1,I),RECYCC(1,I),SPTPRM(1,I),
+     .                        ESPUTS(1,I),ESPUTC(1,I)
             IREAD=0
           ELSEIF (ILSPT(I).NE.0) THEN
             WRITE (iunout,*) 'WARNING: SPUTTERING FOR ADD. SURFACE ',I
@@ -2322,6 +2325,8 @@ C  DEFAULT
         REFCUR%RCYCSR=RECYCS(1,0)
         REFCUR%RCYCCR=RECYCC(1,0)
         REFCUR%STPRMR=SPTPRM(1,0)
+        REFCUR%ESPTSR=ESPUTS(1,0)
+        REFCUR%ESPTCR=ESPUTC(1,0)
 C
         READ (IUNIN,'(A72)') ZEILE
         IREAD=1
@@ -2391,16 +2396,25 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           case ('SPTPRM')
             if (ispz > 0)
      .          read (zeile(18:),'(E12.4)') REFCUR%STPRMR(ispz)
+          case ('ESPUTS')
+            if (ispz > 0)
+     .          read (zeile(18:),'(E12.4)') REFCUR%ESPTSR(ispz)
+          case ('ESPUTC')
+            if (ispz > 0)
+     .          read (zeile(18:),'(E12.4)') REFCUR%ESPTCR(ispz)
  
           case default
 c  not a species card, hence: a sputer model card
             if (ispz < 0) then
               READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
-     .                          REFCUR%STPRMR(1)
+     .                          REFCUR%STPRMR(1),REFCUR%ESPTSR(ispz),
+     .                          REFCUR%ESPTCR(ispz)
               DO I=2,NSPZ
                 REFCUR%RCYCSR(I) = REFCUR%RCYCSR(1)
                 REFCUR%RCYCCR(I) = REFCUR%RCYCCR(1)
                 REFCUR%STPRMR(I) = REFCUR%STPRMR(1)
+                REFCUR%ESPTSR(I) = REFCUR%ESPTSR(1)
+                REFCUR%ESPTCR(I) = REFCUR%ESPTCR(1)
               ENDDO
               ideflt_sput=1
               ideflt_spez=-1
@@ -3589,6 +3603,8 @@ C
           RECYCS(ISPZ,J)=RECYCS(1,J)
           RECYCC(ISPZ,J)=RECYCC(1,J)
           SPTPRM(ISPZ,J)=SPTPRM(1,J)
+          ESPUTS(ISPZ,J)=ESPUTS(1,J)
+          ESPUTC(ISPZ,J)=ESPUTC(1,J)
         end do
       end do
  
@@ -3617,6 +3633,8 @@ C
             RECYCS(:,NLJ) = REFLIST%RCYCSR
             RECYCC(:,NLJ) = REFLIST%RCYCCR
             SPTPRM(:,NLJ) = REFLIST%STPRMR
+            ESPUTS(:,NLJ) = REFLIST%ESPTSR
+            ESPUTC(:,NLJ) = REFLIST%ESPTCR
             IF (.NOT.ASSOCIATED(SURFCUR2)) THEN
               SURFLIST => SURFCUR%NEXT
               DEALLOCATE(SURFCUR)
@@ -3645,6 +3663,8 @@ C
         DEALLOCATE (REFCUR%RCYCSR)
         DEALLOCATE (REFCUR%RCYCCR)
         DEALLOCATE (REFCUR%STPRMR)
+        DEALLOCATE (REFCUR%ESPTSR)
+        DEALLOCATE (REFCUR%ESPTCR)
         DEALLOCATE (REFCUR)
       ENDDO
  

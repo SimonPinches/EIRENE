@@ -50,7 +50,8 @@
       IMPLICIT NONE
  
       INCLUDE 'mpif.h'
-      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT
+      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT, 
+     .           imerk
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
       CHARACTER, ALLOCATABLE :: CHELP(:)
@@ -141,6 +142,10 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (RECYCC,NSPZ*(NLIMPS+1),
      .                MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (SPTPRM,NSPZ*(NLIMPS+1),
+     .                MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ESPUTS,NSPZ*(NLIMPS+1),
+     .                MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ESPUTC,NSPZ*(NLIMPS+1),
      .                MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ILSWCH,NLIMPS+1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ILEQUI,NLIMPS+1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1131,9 +1136,11 @@ csw 14apr2011
          END IF
          DO I=1,NADSPC
            IF (MY_PE .NE. 0) THEN
+             IMERK=0
              IF (.NOT.ASSOCIATED(ESTIML(I)%PSPC)) THEN
                ALLOCATE(ESTIML(I)%PSPC)
                ALLOCATE(SMESTL(I)%PSPC)
+               IMERK = 1
              END IF
            END IF
            CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
@@ -1181,7 +1188,10 @@ csw 14apr2011
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%PSPC%NSPC
-             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
+             write (0,*) ' smestl, my_pe, imerk, nsps ',
+     .                     my_pe, imerk, nsps
+!pb             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
+             IF (IMERK > 0) THEN
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%SDV(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%SGM(0:NSPS+1))
@@ -1191,6 +1201,7 @@ csw 14apr2011
              END IF
              ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC
+             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
            END IF
          END DO
       ELSE
