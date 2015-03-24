@@ -12,6 +12,7 @@
 !  02.03.07: IMESS added in photon line reaction data in order to allow for
 !            a complete printout of input data in case of HYDKIN default
 !            database option
+!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -235,7 +236,7 @@ C
      P       NREAC*(9*11+18+ 6*NPHOT+ 6*NATM+ 6*NMOL+ 6*NION+ 6*NPLS)
         MAMF=NREAC*(      8+ 8*NPHOT+ 8*NATM+ 8*NMOL+ 8*NION+ 6*NPLS)+
      P       1*NATM+ 1*NMOL+ 1*NION+ 1*NPLS+ 1 +
-     P       (11+NREAC)*10
+     P       (12+NREAC)*10
  
         ALLOCATE (XSTORV(NSTORV))
  
@@ -370,7 +371,7 @@ C
  
         ALLOCATE (REAC_NAME(NREAC))
  
-        ALLOCATE (REACDAT(-10:NREAC))
+        ALLOCATE (REACDAT(-11:NREAC))
         ALLOCATE (REACLINES(NREAC_LINES))
  
         WRITE (55+IFOFF,'(A,T25,I15)')
