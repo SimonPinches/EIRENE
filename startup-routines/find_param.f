@@ -9,6 +9,8 @@ C
 !dr  16.01.14:  default NOPTIM changed from 1 to NRAD, some printout rearranged
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
+!cd  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
+!cd             because nflr (common CREF) is later used in RDTRIM and REFDAT with a slightly other meaning.
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -23,7 +25,7 @@ C
  
       INTEGER :: INDGRD(3), INDPRO(12)
       INTEGER, ALLOCATABLE :: INDSRC(:), IEIGEN(:)
-      INTEGER :: ISTRA, NSTRAI, NFLR, ISOR, NSRFSI, NRADD,
+      INTEGER :: ISTRA, NSTRAI, NFR, ISOR, NSRFSI, NRADD,
      .           NREACI, NSTSI, NLIMI, NVOLPL, NSP, ICO,
      .           NSURPR, NVOLPR, NPRNLI, NCHORI,
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
@@ -806,21 +808,21 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6665) NLTRIM
-      NFLR=0
+      NFR=0
       IF (NLTRIM) THEN
         READ (IUNIN,'(A72)') ZEILE
         IF (INDEX(ZEILE,'PATH')+INDEX(ZEILE,'path').NE.0) THEN
 C  PATH SPECIFICATION FOR DATA BASE FOUND
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE ((INDEX(ZEILE,'ON')+INDEX(ZEILE,'on')) > 0)
-            NFLR=NFLR+1
+            NFR=NFR+1
             READ (IUNIN,'(A72)') ZEILE
           END DO
         ENDIF
       ENDIF
  
-      IF (NFLR > 0) THEN
-        NHD6 = NFLR
+      IF (NFR > 0) THEN
+        NHD6 = NFR
       ELSE
         NHD6 = 8
       END IF

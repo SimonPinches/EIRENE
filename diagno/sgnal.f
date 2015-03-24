@@ -161,7 +161,7 @@ C  H(n=3)/H(n=1)
      .                              estiml(ispc)%pspc%spc(1:ncheni)
  
           chksum = chksum + zds * rate * FAC32 /(4.*PIA) *
-     .                      estiml(ispc)%pspc%spcint
+     .                      estiml(ispc)%pspc%spcs
  
  500      continue
           cur => cur%nextc

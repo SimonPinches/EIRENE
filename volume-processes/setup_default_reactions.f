@@ -1,5 +1,14 @@
       subroutine EIRENE_setup_default_reactions
- 
+c  fill reacdat(k)%... with default reaction data, k < 0.
+c  first set default rate coefficients k=-1,     ,-4,-5,...-10  (-2 and -3 are not used)
+c                                                  (extrapolation flags: 0)                     
+c  and
+c  then  set default cross sections    K=-1,-2,-3  (extrapolation flags: 5)
+c
+c  warning !!!!
+c  possible conflict:   K=-1 is used   for He electron impact ionisation rate coeff.
+c                             and also for H +H+ resonant CX cross section 
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
@@ -9,10 +18,11 @@
       integer :: ir
  
  
-!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS
+!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS, HERE: K= -1,-4,-5,...-10  
+!                                              (K=-2,-3: currently not used)
  
 C
-C -K=1:   E + HE --> 2E + HE+
+C K=-1:   E + HE --> 2E + HE+
 C  RATE COEFFICIENT, JANEV, 2.3.9
       IR = -1
       ALLOCATE(REACDAT(IR)%RTC)
@@ -25,19 +35,15 @@ C  RATE COEFFICIENT, JANEV, 2.3.9
       REACDAT(IR)%RTC%POLY%FPARM = 0._DP
       REACDAT(IR)%RTC%POLY%IFEXMN = 0
       REACDAT(IR)%RTC%POLY%IFEXMX = 0
-!pb      REACDAT(IR)%RTC%DBLPOL(1:9,1) =
-!pb     . (/-4.409865E+01,2.391597E+01,-1.075323E+01,3.058039,
-!pb     .   -5.685119E-01,6.795391E-02,-5.009056E-03,2.067236E-04,
-!pb     .   -3.649161E-06/)
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      .  (/-4.409864886561d+01, 2.391596563469d+01,-1.075323019821d+01,
      .     3.058038757198d+00,-5.685118909884d-01, 6.795391233790d-02,
      .    -5.009056101857d-03, 2.067236157507d-04,-3.649161410833d-06/)
  
-C -K=2:   FREE
-C -K=3:   FREE
+C K=-2:   FREE
+C K=-3:   FREE
  
-C -K=4:   E + H --> H+ + 2E
+C K=-4:   E + H --> H+ + 2E
 C  RATE COEFFICIENT, JANEV, 2.1.5
       IR = -4
       ALLOCATE(REACDAT(IR)%RTC)
@@ -59,7 +65,7 @@ C  RATE COEFFICIENT, JANEV, 2.1.5
      .    1.563154982022D+00, -2.877056004391D-01,  3.482559773737D-02,
      .   -2.631976175590D-03,  1.119543953861D-04, -2.039149852002D-06/)
  
-C -K=5:  E + H2 --> H + H + E
+C K=-5:  E + H2 --> H + H + E
 C  RATE COEFFICIENT, JANEV, 2.2.5, PREPRINT (CORRECT), NOT "BOOK"
       IR = -5
       ALLOCATE(REACDAT(IR)%RTC)
@@ -81,7 +87,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.5, PREPRINT (CORRECT), NOT "BOOK"
      .    1.451198183114D+00, -3.062790554644D-01,  4.433379509258D-02,
      .   -4.096344172875D-03,  2.159670289222D-04, -4.928545325189D-06/)
  
-C -K=6:  E + H2 --> H+ + H + 2E
+C K=-6:  E + H2 --> H+ + H + 2E
 C  RATE COEFFICIENT, JANEV, 2.2.10
       IR = -6
       ALLOCATE(REACDAT(IR)%RTC)
@@ -103,7 +109,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.10
      .    1.727940947913D+00, -3.598120866343D-01,  4.822199350494D-02,
      .   -3.909402993006D-03,  1.738776657690D-04, -3.252844486351D-06/)
  
-C -K=7: E + H2 --> H2+(VIB) + 2E
+C K=-7: E + H2 --> H2+(VIB) + 2E
 C  RATE COEFFICIENT, JANEV, 2.2.9
       IR = -7
       ALLOCATE(REACDAT(IR)%RTC)
@@ -125,7 +131,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.9
      .    2.211579405415D+00, -4.169840174384D-01,  5.088289820867D-02,
      .   -3.832737518325D-03,  1.612863120371D-04, -2.893391904431D-06/)
  
-C -K=8: E + H2+(VIB) --> H + H+ + E
+C K=-8: E + H2+(VIB) --> H + H+ + E
 C  RATE COEFFICIENT, JANEV, 2.2.12
       IR = -8
       ALLOCATE(REACDAT(IR)%RTC)
@@ -147,7 +153,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.12
      .    4.296170447419D-01, -9.609908013189D-02,  1.387958040699D-02,
      .   -1.231349039470D-03,  6.042383126281D-05, -1.247521040900D-06/)
  
-C -K=9: E + H2+(VIB) --> H+ + H+ + 2E
+C K=-9: E + H2+(VIB) --> H+ + H+ + 2E
 C  RATE COEFFICIENT, JANEV, 2.2.11
       IR = -9
       ALLOCATE(REACDAT(IR)%RTC)
@@ -169,7 +175,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.11
      .    1.981700292134D+00, -4.044820889297D-01,  5.352391623039D-02,
      .   -4.317451841436D-03,  1.918499873454D-04, -3.591779705419D-06/)
  
-C -K=10: E + H2+(VIB) --> H + H(N)
+C K=-10: E + H2+(VIB) --> H + H(N)
 C  RATE COEFFICIENT, JANEV, 2.2.14
       IR = -10
       ALLOCATE(REACDAT(IR)%RTC)
@@ -210,10 +216,6 @@ C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
       ALLOCATE(REACDAT(IR)%CRS%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LCRS = .TRUE.
       REACDAT(IR)%CRS%IFIT = 1
-!pb   REACDAT(IR)%CRS%POLY%DBLPOL(1:9,1) =
-!pb  . (/-3.274124E+01,-8.916457E-02,-3.016991E-02,
-!pb  .    9.205482E-03, 2.400267E-03,-1.927122E-03,
-!pb  .    3.654750E-04,-2.788866E-05, 7.422296E-07/)
       REACDAT(IR)%CRS%POLY%DBLPOL(1:9,1) =
      . (/-3.274123792568D+01, -8.916456579806D-02, -3.016990732025D-02,
      .    9.205482406462D-03,  2.400266568315D-03, -1.927122311323D-03,
@@ -253,7 +255,7 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
       REACDAT(IR)%CRS%POLY%IFEXMX = 5
  
 C
-C  K=-3:  He + He++ --> H++ + He   CROSS SECTION, JANEV, 3.1.8
+C  K=-3:  He + He++ --> He++ + He   CROSS SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
       IR = -3

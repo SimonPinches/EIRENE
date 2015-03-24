@@ -1,4 +1,5 @@
-      function eirene_femint (fecken, icell, x, y, z, lsame) result(res)
+      function eirene_femint (fecken, icell, x, y, z, lsame) 
+     .         result(res)
       
       use eirmod_precision
       use eirmod_parmmod
@@ -24,7 +25,8 @@
       res = 0._dp
 
       if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
-     .    (levgeo == 2) .or. (levgeo == 3)) then
+     .    ((levgeo == 2) .and. nlpol) .or. 
+     .    (levgeo == 3)) then
 
         if (.not.lsame) then
 

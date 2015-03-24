@@ -18,7 +18,7 @@ C
  
       REAL(DP) :: ST
       INTEGER :: K, I, ISPC, J, ISDV, ICELL, IB
- 
+C  VOLUME TALLIES 
       DO 1207 K=1,NSIGVI
         DO 1208 I=1,NSBOX_TAL
           ST=MAX(0._DP,STV(K,I))
@@ -27,7 +27,7 @@ C
         ST=MAX(0._DP,STVS(K))
         STVS(K)=SQRT(ST)/(ABS(EES(K))+EPS60)
 1207  CONTINUE
-C
+C  BGK TALLIES
       IF (NSIGI_BGK.GT.0) THEN
         DO 1217 K=1,NBGVI_STAT
           DO 1218 I=1,NSBOX_TAL
@@ -38,7 +38,7 @@ C
           STVS_BGK(K)=SQRT(ST)/(ABS(EES_BGK(K))+EPS60)
 1217    CONTINUE
       ENDIF
-C
+C  COUPLE TALLIES
       IF (NSIGI_COP.GT.0) THEN
         DO K=1,NCPVI_STAT
           DO I=1,NSBOX_TAL
@@ -49,22 +49,22 @@ C
           STVS_COP(K)=SQRT(ST)/(ABS(EES_COP(K))+EPS60)
         END DO
       ENDIF
-C
+C  SPECTRUM TALLIES
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         IF (NSIGI_SPC.GT.0) THEN
           DO ISPC=1,NADSPC
             DO I=0,SMESTL(ISPC)%PSPC%NSPC+1
-              ST=MAX(0._DP,SMESTL(ISPC)%PSPC%SGM(I))
-              SMESTL(ISPC)%PSPC%SGM(I)=SQRT(ST)/
-     .                     (ABS(SMESTL(ISPC)%PSPC%SDV(I))+EPS60)
+              ST=MAX(0._DP,SMESTL(ISPC)%PSPC%STV(I))
+              SMESTL(ISPC)%PSPC%STV(I)=SQRT(ST)/
+     .                     (ABS(SMESTL(ISPC)%PSPC%GG(I))+EPS60)
             END DO
             ST=MAX(0._DP,SMESTL(ISPC)%PSPC%STVS)
             SMESTL(ISPC)%PSPC%STVS=SQRT(ST)/
-     .                             (ABS(SMESTL(ISPC)%PSPC%EES)+EPS60)
+     .                             (ABS(SMESTL(ISPC)%PSPC%GGS)+EPS60)
           END DO
         ENDIF
       ENDIF
-C
+C  SURFACE TALLIES
       DO 1221 K=1,NSIGSI
         DO 1222 J=1,NLIMPS
           ST=MAX(0._DP,STVW(K,J))
@@ -113,7 +113,7 @@ C
           DO ISPC=1,NADSPC
             SMESTL(ISPC)%PSPC%STVS=SMESTL(ISPC)%PSPC%STVS*100.D0
             DO J=0,SMESTL(ISPC)%PSPC%NSPC+1
-              SMESTL(ISPC)%PSPC%SGM(J)=SMESTL(ISPC)%PSPC%SGM(J)*100.D0
+              SMESTL(ISPC)%PSPC%STV(J)=SMESTL(ISPC)%PSPC%STV(J)*100.D0
             END DO
           END DO
         ENDIF

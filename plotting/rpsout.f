@@ -1,5 +1,4 @@
 C  ifoff offset for output stream introduced
-C  a little bit further than 2014-dell version
 C
       SUBROUTINE EIRENE_RPSOUT
 C

@@ -1,3 +1,6 @@
+c  interpolate cell averaged tallies onto cell vertices
+
+
       subroutine eirene_cell_to_corner (f, fcorner)      
       use eirmod_precision
       use eirmod_parmmod
@@ -20,7 +23,7 @@
      .           it
       TYPE(CELL_ELEM), POINTER :: CUR
 
-      
+c  2d carthesian x-y- grid      
       if ((levgeo == 1) .and. nlrad .and. nlpol) then 
 
          nrk = indpoint(nr1st,np2nd)
@@ -64,7 +67,9 @@
          fcorner(1:nrk) = fcorner(1:nrk)/(volsum(1:nrk)+eps60)
          deallocate (volsum)
 
-      elseif ((levgeo == 2) .or. (levgeo == 3)) then
+c  2d  r-theta grid, cell vertices along a coordinate line are given as polygons
+      elseif (((levgeo == 2) .and. nlpol) .or.
+     .         (levgeo == 3)) then
 
          fcorner = 0.
          DO IR=1,NR1ST
@@ -89,7 +94,8 @@
              END DO  ! ip
            END DO  ! ipart 
          END DO  ! ir
-         
+
+c  2d grid of triangles         
       elseif (levgeo == 4) then
 
          allocate(volsum(nrknot))
@@ -106,6 +112,7 @@
          fcorner(1:nrknot) = fcorner(1:nrknot)/volsum(1:nrknot)
          deallocate (volsum)
 
+c  3d grid of tetrahedons
       elseif (levgeo.eq.5) then
          
          allocate(volsum(ncoord))

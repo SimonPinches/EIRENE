@@ -1,4 +1,4 @@
-C
+C icts introduced, lcut --> llcut
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
 C
@@ -104,7 +104,7 @@ C
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
-     .           ISTS_CELL, ISD, nclpb
+     .           ISTS_CELL, ISD, nclpb, icts
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
@@ -569,7 +569,9 @@ C  TO THE BOUNDARY OF THE ACTUELL CELL
         IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
      .                           LCT1,LCT2,LCT3,LCT4
         IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
-        IF (COUNT(LCTS) > 1) THEN
+
+        ICTS=COUNT(LCTS) 
+        IF (ICTS > 1) THEN
           WHERE (PTS < 0._DP)
             PTS = 1.E30_DP
           END WHERE
@@ -577,8 +579,14 @@ C  TO THE BOUNDARY OF THE ACTUELL CELL
           LCTS = .FALSE.
           LCTS(ISD) = .TRUE.
           T = PTS(ISD)
-        ELSE
+        ELSE IF (ICTS == 1) THEN
           T=MAX(PT1,PT2,PT3,PT4)
+        ELSE ! ICTS == 0
+          write (iunout,*) ' NO INTERSECTION FOUND IN QUADRANGLE '
+          write (iunout,*) ' PARTICLE TRAJECTORY STOPPED'
+          write (iunout,*) ' NPANU ',NPANU
+          LGPART = .FALSE.
+          RETURN
         END IF
         IF (NLTRC) WRITE (iunout,*) ' T = ',T
 C  IF INTERSECTION WITH POLOIDAL BOUNDARY CONTINUE WITH NEIGHBORING CELL

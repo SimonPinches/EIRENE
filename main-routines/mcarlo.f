@@ -26,6 +26,8 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 !   21.07.09: Meaning of XTIM changed: now XTIM is the time allocated for each stratum
 !             no longer the end time
 !dr 10.05.10: LOCAT0 might also turn off a stratum. Then: skip this is MCARLO, added after call to LOCAT0
+cdr 22.09.14: upfcop only to be called in coupled mode: nmode.gt.0
+cdr 22.09.14: cpu time output removed. To be collected and printout made conditional
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -97,7 +99,7 @@ csw
       INTEGER, EXTERNAL :: RANGET_EIRENE
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
-C  OVERHEAD FOR POST PROCESING (SECONDS)
+C  OVERHEAD FOR POST PROCESSING (SECONDS)
       DATA N2/2/
 C
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -157,7 +159,7 @@ C  TO RANDOM SAMPLING ROUTINES
       IRNDVH=IRNDVC/2
 
       TIMen=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
+cdr   write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
       tim1 = timen
 C
 C  INITIALIZE SUBR. STATIS
@@ -165,45 +167,45 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_STATS0
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for stats0 ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for stats0 ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_BGK
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_COP
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. REFLEC AND SPUTER
       CALL EIRENE_REFLC0
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
       tim1 = tim2
       IF (NPHOT > 0) THEN
         CALL EIRENE_REFLC0_PHOTON
         CALL EIRENE_LINE_CUTOFF
         TIM2=EIRENE_SECOND_OWN()
-cdr        write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
+cdr     write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
         tim1 = tim2
       END IF
       CALL EIRENE_SPUTR0
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMVOL
       CALL EIRENE_SAMVL0
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMSRF
       CALL EIRENE_SAMSF0
       TIM2=EIRENE_SECOND_OWN()
-cdr      write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
+cdr   write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
       tim1 = tim2
 C
 C
@@ -440,27 +442,36 @@ csw
           IPANU=0
 C
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
+
+C  find iseed, and iseedr from input flag NINITL(ISTRA)
         IF (NINITL(ISTRA).GT.0) THEN
           NINIST=NINITL(ISTRA)
+c  initialize random number generator with chosen input iseed
           dumran=ranset_eirene(ninist)
+C  seed for first call to random number of this stratum (probably: locate)
           iseed=ranget_eirene(isee)
+c  seed for first call to subr. reflec (only used for NLCRR)
           ISEEDR=ISEED*0.3D0
           INIV1=0
           INIV2=0
           INIV3=0
           INIV4=0
+
+c  find iseed from truely random procedure from wall clock time (use date and time)
         ELSEIF (NINITL(ISTRA).LT.0) THEN
           CALL DATE_AND_TIME(CDATE,CTIME)
           READ(CTIME(1:6),*) NINITL(ISTRA)
           WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
           NINIST=NINITL(ISTRA)
           dumran=ranset_eirene(ninist)
+c  initialize random number generator from wall clock time
           iseed=ranget_eirene(isee)
           ISEEDR=ISEED*0.3D0
           INIV1=0
           INIV2=0
           INIV3=0
           INIV4=0
+
 C       ELSEIF (NINITL(ISTRA).EQ.0) THEN
 C  DON'T INITIALIZE FOR THIS STRATUM, NOTHING TO BE DONE HERE
         ENDIF
@@ -562,7 +573,7 @@ C
             WRITE (iunout,*)
      .        'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
             WRITE (iunout,*) 'THIS STRATUM'
-cdr            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             call system_clock (itimend, itimrate)
             timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
             CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
@@ -583,7 +594,7 @@ cdr            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
             CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
      .                          ISTRA,IPANU,TIMUSED)
-cdr            CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
             CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
             IF (TRCLST) CALL EIRENE_OUTLST
@@ -694,9 +705,9 @@ C
           ENDIF
 
 !pb 16012013
-!pb  update couple tally after finishing trajektory
-          call eirene_upfcop
-
+!pb  update couple tally after finishing trajectory
+          if (nmode.gt.0) call eirene_upfcop  !cdr  currently upfcop is hard wired for B2 coupling
+cdr       upfcop should be generalized for "tallies per trajectory" from "tallies per event"
 C
 C   MEAN SQUARE
           IF (NSIGI.GT.0) CALL EIRENE_STATS1
@@ -726,7 +737,7 @@ C
         WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
         WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
         WRITE (iunout,*) 'THIS STRATUM'
-CDR        CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+CDR     CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
 
 csw 19feb2019
 !pb 0312 2013        timend=mpi_wtime()
@@ -742,9 +753,12 @@ CDR     write(iunout,'(a,2i8,e13.6)') 'TIMUSED: ',istra,ipanu,timused
         ENDIF
         IF (TRCLST) CALL EIRENE_OUTLST
 C       GOTO 101
+
+
 101     CONTINUE
 C
 C
+
 
         XMCT(istra)=timused
 csw
@@ -1035,23 +1049,27 @@ C  UPDATE TALLIES FOR  "SUM OVER STRATA"
 C
       IF (NSTRAI.EQ.1) GOTO 1111
 C
-      CALL EIRENE_SUMOSTRA (ISTRA)
+      CALL EIRENE_SUMOSTRA (ISTRA)  ! Integrals only
 C
 C
       IF (NSMSTRA == 1) THEN
+C  VOLUME TALLIES
         do idv=1,nidv
           smestv(idv,1:nrtal) = smestv(idv,1:nrtal) +
      .                          estimv(idv,1:nrtal)
         end do
+C  SURFACE TALLIES
         SMESTS = SMESTS + ESTIMS
+C  SPECTRA
         DO ISPC=1,NADSPC
           SMESTL(ISPC)%PSPC%SPC = SMESTL(ISPC)%PSPC%SPC +
      .                            ESTIML(ISPC)%PSPC%SPC
-          SMESTL(ISPC)%PSPC%SPCINT = SMESTL(ISPC)%PSPC%SPCINT +
-     .                               ESTIML(ISPC)%PSPC%SPCINT
+          SMESTL(ISPC)%PSPC%SPCS = SMESTL(ISPC)%PSPC%SPCS +
+     .                               ESTIML(ISPC)%PSPC%SPCS
         END DO
       END IF
-C
+
+C  covariances
       DO 1170 ISDV=1,NSIGCI
         DO 1172 ICELL=1,NSBOX_TAL
           STVC(0,ISDV,ICELL)=STVC(0,ISDV,ICELL)+SIGMAC(0,ISDV,ICELL)
@@ -1131,26 +1149,34 @@ C    STATISTICS, SUM OVER STRATA
 C
       CALL EIRENE_STAT_SUMOSTRA
 C
-C  PUT SUM OVER STRATA BACK ONTO CESTIM, CSDVI
+C  PUT SUM OVER STRATA BACK ONTO CESTIM, CSDVI, ESTIML...
 C
       IF (NSMSTRA == 1) THEN
+C  VOLUME AVERAGED TALLIES
         ESTIMV(1:NIDV,1:NRTAL) = SMESTV(1:NIDV,1:NRTAL)
+C  SURFACE AVERAGED TALLIES
         ESTIMS = SMESTS
+C  SPECTRA TALLIES
         DO ISPC=1,NADSPC
           ESTIML(ISPC)%PSPC%SPC = SMESTL(ISPC)%PSPC%SPC
-          ESTIML(ISPC)%PSPC%SPCINT = SMESTL(ISPC)%PSPC%SPCINT
+          ESTIML(ISPC)%PSPC%SPCS = SMESTL(ISPC)%PSPC%SPCS
+        END DO
+C
+C  NOW PUT VARIANCES FOR SUM OVER STRATA BACK ONTO VARIANCE TALLIES
+C
+C  SPECTRA TALLY VARIANCES
+        DO ISPC=1,NADSPC
           IF (NSIGI_SPC > 0) THEN
-            ESTIML(ISPC)%PSPC%SGM = SMESTL(ISPC)%PSPC%SGM
+            ESTIML(ISPC)%PSPC%SGM = SMESTL(ISPC)%PSPC%STV
             ESTIML(ISPC)%PSPC%SGMS = SMESTL(ISPC)%PSPC%STVS
           END IF
         END DO
-
-
+C  CELL AND SURFACE AVERAGED DEFAULT TALLY VARIANCES
         SIGMA  = STV
         SGMS   = STVS
         SIGMAW = STVW
         SGMWS  = STVWS
-
+C  BGK TALLY VARIANCES
         IF (NSIGI_BGK.GT.0) THEN
           DO 1271 IB=1,NBGVI_STAT
             SGMS_BGK(IB)=STVS_BGK(IB)
@@ -1159,6 +1185,7 @@ C
 1272        CONTINUE
 1271      CONTINUE
         ENDIF
+C  PROBLEM SPECIFIC COUPLING TALLY VARIANCES
         IF (NSIGI_COP.GT.0) THEN
           DO 1273 IC=1,NCPVI_STAT
             SGMS_COP(IC)=STVS_COP(IC)
@@ -1168,7 +1195,7 @@ C
 1273      CONTINUE
         ENDIF
 C
-C   ALGEBRAIC EXPRESSION IN TALLIES, SUM OVER STRATA  1271--1279
+C   ALGEBRAIC EXPRESSION IN TALLIES, SUM OVER STRATA  1571--1579
 C
         IF (NALVI.GT.0.OR.NALSI.GT.0) THEN
 C
@@ -1201,7 +1228,9 @@ C
      .                NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .                NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .                NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
-     .                NSIGI_SPC,TRCFLE)
+     .                NSIGI_SPC,  
+cdr spectrum tally variances are already in ESTIML   
+     .                TRCFLE)
         ENDIF
       ENDIF
 C
@@ -1245,7 +1274,7 @@ C END SEQUENTIAL REGION
       ENDIF
 
 !pb 30012013
-      call eirene_reset_upfcop
+      if (nmode.gt.0) call eirene_reset_upfcop  !cdr  see above. upfcop contains hard wired features for coupling
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 

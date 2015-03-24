@@ -48,7 +48,7 @@ csw 18apr07
       call EIRENE_STORE_REINIT
 !out      call EIRENE_MKCENS_REINIT
       call EIRENE_update_reinit
-      call EIRENE_calc_spectrum_reinit
+      call EIRENE_update_spectrum_reinit
 csw
  
 C     reinitialization end

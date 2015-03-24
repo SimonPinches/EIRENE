@@ -12,6 +12,7 @@ c  geometry data not any longer via work array into eirene
 c                due to module structure
 c  eliminate cut cells from balances (lcut(..))
 c  new input: ncopib, ncopeb
+
 C
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29

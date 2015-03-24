@@ -13,6 +13,7 @@
 !  02.03.07: IMESS added in photon line reaction data in order to allow for
 !            a complete printout of input data in case of HYDKIN default
 !            database option
+!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -238,7 +239,7 @@ C
      P       NREAC*(9*11+18+ 6*NPHOT+ 6*NATM+ 6*NMOL+ 6*NION+ 6*NPLS)
         MAMF=NREAC*(      8+ 8*NPHOT+ 8*NATM+ 8*NMOL+ 8*NION+ 6*NPLS)+
      P       1*NATM+ 1*NMOL+ 1*NION+ 1*NPLS+ 1 +
-     P       (11+NREAC)*10
+     P       (12+NREAC)*10
  
         ALLOCATE (XSTORV(NSTORV))
  
@@ -290,7 +291,7 @@ C
         ALLOCATE (NSEIEL(NION,NPLS,5))
  
         ALLOCATE (DELPOT(NREAC))
-        ALLOCATE (FACREA(-10:NREAC,2))
+        ALLOCATE (FACREA(-11:NREAC,2))
         ALLOCATE (FREACA(NATM,NREAC))
         ALLOCATE (FREACM(NMOL,NREAC))
         ALLOCATE (FREACI(NION,NREAC))
@@ -321,7 +322,7 @@ C
         ALLOCATE (MODCLF(NREAC))
         ALLOCATE (MASSP(NREAC))
         ALLOCATE (MASST(NREAC))
-        ALLOCATE (IFTFLG(-10:NREAC,0:5))
+        ALLOCATE (IFTFLG(-11:NREAC,0:5))
         ALLOCATE (NRCP(NPLS))
         ALLOCATE (NRCA(NATM))
         ALLOCATE (NRCM(NMOL))
@@ -373,7 +374,7 @@ C
  
         ALLOCATE (REAC_NAME(NREAC))
  
-        ALLOCATE (REACDAT(-10:NREAC))
+        ALLOCATE (REACDAT(-11:NREAC))
         ALLOCATE (REACLINES(NREAC_LINES))
 
         MEM = (NSTORV+NAMF)*8_IL + (MAMF+
@@ -967,7 +968,7 @@ c       vsigot  : fehlt noch
  
         XSTORV  = 0._DP
  
-        DO IREAC= -10, NREAC
+        DO IREAC= -11, NREAC
           REACDAT(IREAC)%LPOT   = .FALSE.
           REACDAT(IREAC)%LCRS   = .FALSE.
           REACDAT(IREAC)%LRTC   = .FALSE.
@@ -2067,7 +2068,7 @@ c
       type(fit_forms), pointer :: rea
       integer :: ir
 
-      DO IR = -10, NREAC
+      DO IR = -11, NREAC
 
         IF (REACDAT(IR)%LPOT) THEN
            rea => REACDAT(IR)%POT

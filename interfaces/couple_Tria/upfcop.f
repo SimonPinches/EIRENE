@@ -1,7 +1,10 @@
       SUBROUTINE EIRENE_UPFCOP
 
-!  update sources portions on couple tally COPV after completion of 
-!  trajektory
+!  update sources on couple tally COPV after completion of 
+!  trajectory.  case specific. here: coupling to B2 and/or B2.5
+
+c  more general: algebraic expressions of tallies, per history,
+c                from individual tally scores along past history
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -118,7 +121,6 @@
         
         DO IPL = 1,NPLSI
 
-!pb       EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
           EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                  ! in eV
           COPV(ICP3+3,IR) = COPV(ICP3+3,IR)
      .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO

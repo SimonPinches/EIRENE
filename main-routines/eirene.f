@@ -192,7 +192,7 @@ C
 C
 C  each internal iteration or time-step starts here
 101   CONTINUE
-C   IITER, ITIME
+C  IITER=... , ITIME=...
 c  re-initialize some "ifirst"-blocks
       CALL EIRENE_GRNXTB(3,'EIRENE.F')
  
@@ -316,7 +316,7 @@ C
 C               2.         PLOT GEOMETRY
 C
 200   CONTINUE
-      IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300
+      IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
  
       TIMI=EIRENE_SECOND_OWN()
       CALL EIRENE_PLT2D
@@ -445,7 +445,8 @@ C  HENCE: RESET IITER TO 1
           GOTO 101
         ENDIF
       ENDIF
- 
+
+CDR  WHAT IS THIS?  
       IF (PLIDL) THEN
         call eirene_outidlconf
         call eirene_outidlpla

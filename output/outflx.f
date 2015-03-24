@@ -1,7 +1,11 @@
 C  printout surface fluxes (incl. sputter fluxes) for stratum 'istra'
 C  loop over all surfaces selected in input block 11 for printout
 
-
+cdr Feb. 2015:  total sputer tallies now included, resolved wrt. incident type
+cdr these total tallies may include sputtering of unidentified wall material,
+cdr  hence may be different from the totals obtained by sum over sputtered species resolved fluxes
+cdr  e.g. sptatot may be larger than summt, etc....
+  
 cdr SEPT.2014:  PRINTPOUT OF SPUTTERED FLUXES REVISED
 cdr  total sputter fluxes spttot(msurf) added.
 CDR  TO BE DONE:
@@ -321,7 +325,7 @@ C  SPECTRA
               WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
      .               ESTIML(ISPC)%PSPC%NSPC
               WRITE (IOUT,*)
-              IF (ESTIML(ISPC)%PSPC%SPCINT > EPS60) THEN
+              IF (ESTIML(ISPC)%PSPC%SPCS > EPS60) THEN
                 IF (NSIGI_SPC == 0) THEN
                   DO IE=1, ESTIML(ISPC)%PSPC%NSPC
                     EN = ESTIML(ISPC)%PSPC%SPCMIN +
@@ -343,7 +347,7 @@ C  SPECTRA
               END IF
               WRITE (IOUT,*)
               WRITE (IOUT,*) ' INTEGRAL OF SPECTRUM ',
-     .               ESTIML(ISPC)%PSPC%SPCINT
+     .               ESTIML(ISPC)%PSPC%SPCS
               IF (NSIGI_SPC > 0)
      .          WRITE (IOUT,*) ' STANDARD DEVIATION  ',
      .               ESTIML(ISPC)%PSPC%SGMS
@@ -3015,13 +3019,15 @@ C  SURFACE AVERAGED TALLY NO. 75
         IF (ABS(TTSPTP) > EPS10) CALL EIRENE_MASR1 ('BULKIONS',TTSPTP)
 
         CALL EIRENE_LEER(1)
-        WRITE (IUNOUT,*) 'TOTAL FLUX SPUTTERED FROM SURFACE '
+        WRITE (IUNOUT,*) 'TOTAL FLUX SPUTTERED FROM SURFACE' 
         CALL EIRENE_MASR1 ('TOT. FLX',TTSPT)       
       END IF 
 
-      IF (SPTTOT(I) > 0._DP) THEN
+      IF (SPTTOT(I) > 0._DP.and.spttot(i).ne.ttspt) THEN
         CALL EIRENE_LEER (1)
         WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED  '
+        write (iunout,*) '(not scaled by NLSCL option). '
+        write (iunout,*) 'May include unidentified sputtered species'
         CALL EIRENE_MASR1 ('TOT. FLX',SPTTOT(I))
         DO N=1,NSIGSI
           IF (IIHW(N).EQ.81) THEN
@@ -3155,7 +3161,7 @@ C  SPECTRA
      .                   ESTIML(ISPC)%PSPC%IPRSP)
           END IF
           WRITE (iunout,'(A22,ES12.4)') ' INTEGRAL OF SPECTRUM ',
-     .           ESTIML(ISPC)%PSPC%SPCINT
+     .           ESTIML(ISPC)%PSPC%SPCS
           IF (NSIGI_SPC > 0)
      .      WRITE (iunout,'(A22,ES12.4)') ' STANDARD DEVIATION   ',
      .           ESTIML(ISPC)%PSPC%SGMS

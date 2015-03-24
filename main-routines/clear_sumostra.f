@@ -50,13 +50,13 @@ C  SPECTRA
         DO ISPC=1,NADSPC
           SMESTL(ISPC)%PSPC%SPC = 0._DP
           IF (NSIGI_SPC > 0) THEN
-            SMESTL(ISPC)%PSPC%SGM = 0._DP
-            SMESTL(ISPC)%PSPC%SDV = 0._DP
+            SMESTL(ISPC)%PSPC%STV = 0._DP
+            SMESTL(ISPC)%PSPC%GG = 0._DP
           END IF
-          SMESTL(ISPC)%PSPC%SPCINT = 0._DP
+          SMESTL(ISPC)%PSPC%SPCS = 0._DP
           SMESTL(ISPC)%PSPC%SGMS = 0._DP
           SMESTL(ISPC)%PSPC%STVS = 0._DP
-          SMESTL(ISPC)%PSPC%EES = 0._DP
+          SMESTL(ISPC)%PSPC%GGS = 0._DP
         END DO
       END IF
  

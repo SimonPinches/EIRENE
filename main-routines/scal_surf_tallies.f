@@ -43,8 +43,8 @@ C   SCALE AND INTEGRATE SPECTRA
         IF (ESTIML(ISPC)%PSPC%ISRFCLL == 0) THEN
           ESTIML(ISPC)%PSPC%SPC = ESTIML(ISPC)%PSPC%SPC * FLXFAC(ISTR) *
      .                            ESTIML(ISPC)%PSPC%SPCDELI
-          ESTIML(ISPC)%PSPC%SPCINT = SUM(ESTIML(ISPC)%PSPC%SPC*
-     .                                   ESTIML(ISPC)%PSPC%SPCDEL)
+          ESTIML(ISPC)%PSPC%SPCS = SUM(ESTIML(ISPC)%PSPC%SPC*
+     .                                 ESTIML(ISPC)%PSPC%SPCDEL)
         END IF
       END DO
  

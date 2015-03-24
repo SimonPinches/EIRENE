@@ -1,3 +1,18 @@
+c??   ???     additional input read from block 14:
+c             LCHKQUD       
+c             IMF,ITCO 
+c  unused ??
+
+CDR  09. 2014 GENERAL RELATIONS BETWEEN FINE (UNSTRUCTURED)  AND COARSE (STRUCTURED)
+C             GRID MADE MORE EXPLICIT.  NEW NSBOX FOR FINE GRID SET.  
+C             NP2NDQ REMOVED (REDUNDANT: =NP2TAL)
+C             NR1STQ REMOVED (REDUNDANT: =NR1TAL), 
+C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NSTGRD ARRAYS
+C             VIA FILES FROM FORT.29?
+
+c             plus minor notational cleanup, comments added
+
+
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
 C                                                           B2.5,
 C                                                           DIVIMP,
@@ -10,13 +25,9 @@ C   THIS VERSION: $=Tria,  NOV. 2002
 C
 c  geometry data not any longer via work array into eirene
 c                due to module structure
-c  eliminate cut cells from balances (llcut(..))
+c  eliminate cut cells from balances ( plus: rename lcut to llcut(..)... why?)
 c  new input: ncopib, ncopeb
-C  SEPT. 2014 GENERAL RELATIONS BETWEEN FINE (UNSTRUCTURED)  AND COARSE (STRUCTURED)
-C             GRID MADE MORE EXPLICIT.  NEW NSBOX FOR FINE GRID SET.  
-C             NP2NDQ REMOVED (REDUNDANT: =NP2TAL)
-C             NR1STQ REMOVED (REDUNDANT: =NR1TAL), 
-C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NSTGRD ARRAYS VIA FILES FROM FORT.29?
+
 C
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -212,9 +223,11 @@ C
       REAL(DP), ALLOCATABLE, save :: uuba(:,:,:), upba(:,:,:)
       REAL(DP), ALLOCATABLE, save :: uubh(:,:,:), upbh(:,:,:)
 
-!pb 21012013 ncltal
+
       logical :: lhit(nrad)
-!pb
+
+      real(dp), allocatable, save :: helpw(:)
+
 
       INTEGER, ALLOCATABLE :: IHELP(:)
 C
@@ -1207,12 +1220,12 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
       WRITE (iunout,*) 'NLPOL       ',NLPOL
       
       WRITE (IUNOUT,*) 'NEW (FINE, UN-STRUCTURED) GRID '
-      CALL EIRENE_MASJ4('NR1ST,  NP2ND,  NSBOX,  NRADD   ',
-     .                   NR1ST,NP2ND,NSBOX,NRADD)
+      CALL EIRENE_MASJ4(' NR1ST,   NP2ND,   NSBOX,  NRADD',
+     .                     NR1ST,  NP2ND,  NSBOX,  NRADD)
       
       WRITE (IUNOUT,*) 'OLD (COARSE, STRUCTURED) GRID '
-      CALL EIRENE_MASJ4('NR1TAL ,NP2TAL NSBOX_TL,NRADD_TL',
-     .                   NR1TAL, NP2TAL,NSBOX_TAL,NRADD_TAL)
+      CALL EIRENE_MASJ4('NR1TAL,  NP2TAL,  NSBTAL, NRATAL',
+     .                    NR1TAL, NP2TAL, NSBOX_TAL,NRADD_TAL)
       CALL EIRENE_LEER(2)
 CTRIG E
       RETURN
@@ -4061,10 +4074,13 @@ C
      .        RESSEE(0),RESSEI(0),SUM(RESSNI(0,1:NFLA)),
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
+        ALLOCATE (HELPW(NFLA))
         WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
-        CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
+        HELPW(1:NFLA) = RESSNI(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5)
         WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
-        CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
+        HELPW(1:NFLA) = RESSMO(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
       ENDIF
 C
       CALL EIRENE_LEER (1)

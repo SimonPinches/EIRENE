@@ -10,7 +10,7 @@
 !  20.06.07:  NLOGAU used for broadcast of LLOGAU
 !  01.07.09:  broadcast of HFTR0-3 arrays removed. this is done in broadref.f
 !  01.03.11:  NSPEZV_DIM removed
- 
+!  15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
       SUBROUTINE EIRENE_BROADCAST
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -454,7 +454,7 @@ c     ------------------------------------------------------------     c
 !pb      CALL MPI_BCAST (CREAC,99*(NREAC+11),MPI_REAL8,
 !pb     .                0,MPI_COMM_WORLD,ier)
  
-      DO IR=-10, NREAC
+      DO IR=-11, NREAC
         CALL MPI_BCAST (REACDAT(IR)%LPOT,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (REACDAT(IR)%LCRS,1,MPI_LOGICAL,
@@ -558,7 +558,7 @@ c     ------------------------------------------------------------     c
         END IF
       END DO
  
-      CALL MPI_BCAST (FACREA,(NREAC+11)*2,MPI_REAL8,0,
+      CALL MPI_BCAST (FACREA,(NREAC+12)*2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (DELPOT,NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FREACA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -596,7 +596,7 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (MODCLF,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASSP,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASST,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IFTFLG,6*(NREAC+11),MPI_INTEGER,0,
+      CALL MPI_BCAST (IFTFLG,6*(NREAC+12),MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRCP,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRCA,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1195,9 +1195,14 @@ csw 14apr2011
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%SDV(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%SGM(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%PSPC%STV(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%PSPC%GG(0:NSPS+1))
+C  variances for sum over strata
+               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1)) 
                ALLOCATE(SMESTL(I)%PSPC%SDV(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))             
+               ALLOCATE(SMESTL(I)%PSPC%STV(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%PSPC%GG(0:NSPS+1))
              END IF
              ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC

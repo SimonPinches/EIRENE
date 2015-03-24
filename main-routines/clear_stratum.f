@@ -15,8 +15,15 @@ C
       INTEGER :: ISPC
  
       IESTR=-1
+C  TALLIES
       ESTIMV=0.
       ESTIMS=0.
+      DO ISPC=1,NADSPC
+        ESTIML(ISPC)%PSPC%SPC = 0._DP
+        ESTIML(ISPC)%PSPC%SPCS = 0._DP
+      ENDDO
+
+C  VARIANCES, COVARIANCES,...
       SDVI1=0.
       SDVI2=0.
       SIGMAC=0.
@@ -34,15 +41,13 @@ C  COP-ARRAYS
       SIGMA_COP=0.D0
       SDVIA_COP=0.D0
 C  SPECTRA
-      DO ISPC=1,NADSPC
-        ESTIML(ISPC)%PSPC%SPC = 0._DP
-        ESTIML(ISPC)%PSPC%SPCINT = 0._DP
-        IF (NSIGI_SPC > 0) THEN
+      IF (NSIGI_SPC > 0) THEN
+        DO ISPC=1,NADSPC       
           ESTIML(ISPC)%PSPC%SGMS = 0._DP
           ESTIML(ISPC)%PSPC%SGM = 0._DP
           ESTIML(ISPC)%PSPC%SDV = 0._DP
-        END IF
-      END DO
+        END DO
+      END IF
  
       RETURN
  

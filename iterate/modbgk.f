@@ -1,8 +1,22 @@
+c   modbgk  eirene_git, sept.2014
+
+C       ??     INDIRECT SPECIES INDEXING IPLSV, IPLSTI INCLUDED, FOR TIIN and VXIN,VYIN,VZIN  
+CDR            This is risky, because bgk collisions may then overwrite temperatures/velocities for non-bgk background
+CDR            depending on setting of MPLSTI(ipls) and MPLSV(ipls) arrays.
+c         
+c  to be done: cross temperature correction (Kotov)  (already done in solps-iter part)
+C              HERE: ALLOCATION, DEALLOCATION: DONE
+c
 !pb  24.11.06: flag for shifting of first parameter of rate-coeff introduced
 !pb  24.11.06: BZIN initialized with 1
+
 !pb  05.04.11: BFIN initialized with 1
-!pb  18.02.13: take index transformition via NCLTAL into account
-C
+!pb  18.02.13: take index transformation via NCLTAL into account
+cdr
+C  NCLTAL(I-FINE):  CELL I-FINE IS PART OF COARSER GRID CELL NCELL,
+C                   NCELL=NCLTAL(I-FINE)
+C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
+cdr
 C
       SUBROUTINE EIRENE_MODBGK
 
@@ -44,9 +58,9 @@ C
      .          RM1, RM2, TCSUM, !VK
      .          EIRENE_RATE_COEFF, ERATE
       INTEGER :: ITYP1(NPLS), ITYP2(NPLS), ISPZ1(NPLS), ISPZ2(NPLS),
-     .           IREL1(NPLS), INRC1(NPLS), CROSSINDEX(NPLS), NCROSS,
-     .           ICROSS1, ICROSS2, ICROSS
-      INTEGER :: J, IESTM, IBGK, ISTRAI, !VK
+     .           IREL1(NPLS), INRC1(NPLS),CROSSINDEX(NPLS),NCROSS,
+     .           ICROSS1,ICROSS2,ICROSS     
+      INTEGER :: J, IESTM,
      .           ISCDE, IAIN, IPLS1, NRWK1, I, ISP, IPLS2, IATM2, IIEL,
      .           IAEL, IMEL, IUP12, IUP22, IION2, IBGK2, IMOL2, IUP2,
      .           IUP3, IUP1, IBGK1, IP, NRC, IRAD, IR, IT, IREL,
@@ -95,8 +109,8 @@ C
       ALLOCATE (EDEN2(NRAD))
       ALLOCATE (ENERGY(NPLS,NRAD))
 
-CVK  CALCULATES NUMBER OF CROSS COLLISIONS AND ALLOCATES MEMORY FOR
-C    "CROSSCOLLISION TEMPERATURE" 
+CVK  CALCULATES NUMBER OF CROSS COLLISION PROCESSES 'ncross' AND ALLOCATES MEMORY FOR
+C    "CROSS-COLLISION TEMPERATURE" CORRECTION
       NCROSS=0
       DO I=1,NPLS
         IF(NPBGKP(I,2).NE.0) NCROSS=NCROSS+1
@@ -109,6 +123,10 @@ C    "CROSSCOLLISION TEMPERATURE"
 CVK END
 
 !pb 05.02.2013  take care of scoring cells
+
+cdr  set bgk volume averaged tallies BGKV, which had been scored on goarse grid, now also on fine grid
+cdr  assume: constant "extensive" fine grid values PER CELL within one coarse grid cell
+
       ALLOCATE (GBGKV(NBGV,NRAD))
       GBGKV = 0._DP
       DO IBGV = 1, NBGVI 
@@ -241,6 +259,9 @@ C  FIND INDEX IREL
           ENDIF
         ENDDO
         GOTO 995
+
+C  AT THIS POINT: COLLISION PARTNER AMONST TEST PARTICLES HAS BEEN IDENTIFIED (ITYP1, IATM1, IMOL1, IION1)
+C  AS WELL AS THE NUMBER OF COLLISION PROCESS IREL1
 C
 C  SELF COLLISION OR CROSS COLLISION
 C
@@ -253,9 +274,9 @@ C
         ELSEIF (NPBGKP(IPLS,2).NE.0) THEN
 C
 C  CROSS COLLISION, FIND SECOND COLLISION PARTNER
-C  THIS IS NOT THE INGOING COLLIDING TESTPARTICLE,
-C  (DETERMINING, E.G., MASS AND DENSITY OF BACKGROUND PARTICLE)
-C  BUT THE SECOND, 'ARTIFICIAL', PARTNER
+C  THIS IS NOT THE INGOING COLLIDING TESTPARTICLE, WHICH WE HAVE ALREADY IDENTIFIED,
+C  (AND WHICH, E.G., DETERMINES MASS AND DENSITY OF ARTIFICIAL BACKGROUND PARTICLE IPLS)
+C  BUT, INSTEAD, IT IS THE TEST PARTICLE WHICH PLAYS THE ROLE OF THE "SECOND" PARTICLE, AMONGST THE TEST PARTICLES
 C
           ITYP2(IPLS)=EIRENE_IDEZ(NPBGKP(IPLS,2),1,3)
           ISPZ2(IPLS)=EIRENE_IDEZ(NPBGKP(IPLS,2),3,3)
@@ -301,8 +322,9 @@ C
         ENDIF
 C
         IF (RMASSP(IPLS).NE.RMAS1) THEN
-          WRITE (iunout,*) 'INCONSISTENT MASS FOR IPLS= ',IPLS
-          WRITE (iunout,*) 'RMASSP(IPLS),RMAS1 ',RMASSP(IPLS),RMAS1
+          RM=RMAS1
+          WRITE (iunout,*) 'MODBGK: INCONSISTENT MASS FOR IPLS= ',IPLS
+          WRITE (iunout,*) '        RMASSP(IPLS),RM= ',RMASSP(IPLS),RM
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
@@ -322,12 +344,16 @@ C
 C
         IF (ITYP2(IPLS).EQ.-1) THEN
 C
-        WRITE (iunout,*) 'MODBGK: SELF COLLISION, IPLS',IPLS
-        WRITE (iunout,*) 'ITYP,ISPZ,IBGK,IREL ',ITYP1(IPLS),ISPZ1(IPLS),
-     .                                     IBGK1,IREL1(IPLS)
+        IF (TRCMOD) THEN
+          WRITE (iunout,*) 'MODBGK: SELF COLLISION, IPLS',IPLS
+          WRITE (iunout,*) 'ITYP,ISPZ,IBGK,IREL ',ITYP1(IPLS),
+     .                                ISPZ1(IPLS),IBGK1,IREL1(IPLS)
+        ENDIF 
 C
 100     CONTINUE
-C
+
+C  this cell loop is referring to the underlying 'fine' grid, not the coarse grid
+C                              on which the eirene tallies had been updated.
         DO 80 IR=1,NXM
           DO 80 IP=1,NYM
             DO 80 IT=1,NZM
@@ -338,6 +364,7 @@ C
               IF (NSTORDR >= NRAD) THEN
                 TBEL = TABEL3(IREL,IRAD,1)
               ELSE
+cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
                 PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
                 TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
@@ -371,13 +398,14 @@ C DELTA_V
               RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
               RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
               RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
-C NEW T, NEW V
+C NEW V
               VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60) !pb
               VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60) !pb
               VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60) !pb
               VXIN(IPLSV,IRAD)=VX
               VYIN(IPLSV,IRAD)=VY
               VZIN(IPLSV,IRAD)=VZ
+C NEW T
               ED=(VX**2+VY**2+VZ**2)*FACT1
               TIIN(IPLSTI,IRAD)=(EDEN(IRAD)/(PDEN(IRAD)+EPS60)-ED)/1.5
 C NEW N
@@ -396,6 +424,7 @@ C
           IF (NSTORDR >= NRAD) THEN
             TBEL = TABEL3(IREL,IRAD,1)
           ELSE
+cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
             PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
             TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
@@ -428,36 +457,44 @@ C DELTA_V
           RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
           RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
           RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
-C NEW T, NEW V
+C NEW V
           VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60) !pb
           VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60) !pb
           VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60) !pb
           VXIN(IPLSV,IRAD)=VX
           VYIN(IPLSV,IRAD)=VY
           VZIN(IPLSV,IRAD)=VZ
+C NEW T
           ED=(VX**2+VY**2+VZ**2)*FACT1
           TIIN(IPLSTI,IRAD)=(EDEN(IRAD)/(PDEN(IRAD)+EPS60)-ED)/1.5
 C NEW N
           DIIN(IPLS,IRAD)=PDEN(IRAD)
+
+C FOR GLOBAL BALANCES
           RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C         RRM=?
           RRE=RRE+EDEN(IRAD)*VOL(IRAD)
 90      CONTINUE
 C
+C   IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A  SELF COLLISION  :  DONE !
+C
+C   NEXT, IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A CROSS COLLISION BETWEEN TWO DISTINCT
+C        SPECIES OF TEST PARTICLES
         ELSE
 C
-        WRITE (iunout,*) 'MODBGK: CROSS COLLISION, IPLS ',IPLS
-        WRITE (iunout,*) 'ITYP1,ISPZ1,IBGK1,IREL1 ',
-     .                    ITYP1(IPLS),ISPZ1(IPLS),
-     .                    IBGK1,IREL1(IPLS)
-        WRITE (iunout,*) 'ITYP2,ISPZ2,IBGK2       ',
-     .                    ITYP2(IPLS),ISPZ2(IPLS),IBGK2
+          WRITE (iunout,*) 'MODBGK: CROSS COLLISION, IPLS ',IPLS
+          WRITE (iunout,*) 'ITYP1,ISPZ1,IBGK1,IREL1 ',
+     .                      ITYP1(IPLS),ISPZ1(IPLS),
+     .                      IBGK1,IREL1(IPLS)
+          WRITE (iunout,*) 'ITYP2,ISPZ2,IBGK2       ',
+     .                      ITYP2(IPLS),ISPZ2(IPLS),IBGK2
 
-CVK FOR "CROSSCOLLISION TEMPERATURE"
-         ICROSS=ICROSS+1
-         CROSSINDEX(IPLS)=ICROSS
-         RM1=RMAS1/(RMAS1+RMAS2)
-         RM2=RMAS2/(RMAS1+RMAS2)
+CVK FOR "CROSS-COLLISION TEMPERATURE"
+          ICROSS=ICROSS+1
+          CROSSINDEX(IPLS)=ICROSS
+          RM1=RMAS1/(RMAS1+RMAS2)
+          RM2=RMAS2/(RMAS1+RMAS2)
+          RM=2.D0*RMAS1*RMAS2/(RMAS1+RMAS2)**2
 CVK END
 
         DO 180 IR=1,NXM
@@ -470,6 +507,7 @@ C
               IF (NSTORDR >= NRAD) THEN
                 TBEL = TABEL3(IREL,IRAD,1)
               ELSE
+cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
                 PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
                 TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
@@ -499,23 +537,29 @@ C
               VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
               VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60) !pb
               VZMIX=(RMAS1*VZIN1+RMAS2*VZIN2)/(RMAS1+RMAS2)
-              ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
-              ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
+C  SET NEW VELOCITY OF ARTIFICIAL BACKGROUND SPECIES              
               VXIN(IPLSV,IRAD)=VXMIX
               VYIN(IPLSV,IRAD)=VYMIX
               VZIN(IPLSV,IRAD)=VZMIX
+
+              ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
+              ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
               T1=(EDEN(IRAD)/(PDEN(IRAD)+EPS60)-ED1)/1.5
               T2=(EDEN2(IRAD)/(PDEN2(IRAD)+EPS60)-ED2)/1.5
-              CROSSTEMP(ICROSS,IRAD)=T1*RM2+T2*RM1 !VK THE "COLLISION RATE" TEMPE
-              RM=2.D0*RMAS1*RMAS2/(RMAS1+RMAS2)**2
+              CROSSTEMP(ICROSS,IRAD)=T1*RM2+T2*RM1 !VK THE "COLLISION RATE" TEMPERATURE 
+            
               TMIX=T1+RM*(T2-T1+
      .             FACT2/3.D0*((VXIN1-VXIN2)**2+(VYIN1-VYIN2)**2+
      .                         (VZIN1-VZIN2)**2))
               TIIN(IPLSTI,IRAD)=TMIX
+
               DEL=DIIN(IPLS,IRAD)-PDEN(IRAD)
               RATN=RATN+TBEL*DEL*VOL(IRAD)
               RESN=RESN+TBEL*ABS(DEL)*VOL(IRAD)
+
+C  SET NEW DENSITY OF ARTIFICIAL BACKGROUND SPECIES
               DIIN(IPLS,IRAD)=PDEN(IRAD)
+
               RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C             RRM=?
               RRE=RRE+EDEN(IRAD)*VOL(IRAD)
@@ -530,6 +574,7 @@ C
           IF (NSTORDR >= NRAD) THEN
             TBEL = TABEL3(IREL,IRAD,1)
           ELSE
+cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
             PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
             TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
@@ -559,23 +604,29 @@ C
           VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
           VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60) !pb
           VZMIX=(RMAS1*VZIN1+RMAS2*VZIN2)/(RMAS1+RMAS2)
-          ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
-          ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
+ 
+C  SET NEW VELOCITY OF ARTIFICIAL BACKGROUND SPECIES    
           VXIN(IPLSV,IRAD)=VXMIX
           VYIN(IPLSV,IRAD)=VYMIX
           VZIN(IPLSV,IRAD)=VZMIX
+
+          ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
+          ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
           T1=(EDEN(IRAD)/(PDEN(IRAD)+EPS60)-ED1)/1.5
           T2=(EDEN2(IRAD)/(PDEN2(IRAD)+EPS60)-ED2)/1.5
-          CROSSTEMP(ICROSS,IRAD)=T1*RM2+T2*RM1 !VK THE "COLISION RATE" TEMPERATURE
-          RM=2.D0*RMAS1*RMAS2/(RMAS1+RMAS2)**2
+          CROSSTEMP(ICROSS,IRAD)=T1*RM2+T2*RM1 !VK THE "COLLISION RATE" TEMPERATURE
+
           TMIX=T1+RM*(T2-T1+
      .         FACT2/3.D0*((VXIN1-VXIN2)**2+(VYIN1-VYIN2)**2+
      .                     (VZIN1-VZIN2)**2))
           TIIN(IPLSTI,IRAD)=TMIX
+
           DEL=DIIN(IPLS,IRAD)-PDEN(IRAD)
           RATN=RATN+TBEL*DEL*VOL(IRAD)
           RESN=RESN+TBEL*ABS(DEL)*VOL(IRAD)
+C  SET NEW DENSITY OF ARTIFICIAL BACKGROUND SPECIES
           DIIN(IPLS,IRAD)=PDEN(IRAD)
+
           RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C         RRM=?
           RRE=RRE+EDEN(IRAD)*VOL(IRAD)
@@ -628,10 +679,13 @@ C
       END IF
       CALL EIRENE_ALLOC_BCKGRND
       PLASMA_BCKGRND(1:NRWK1,:) = 0.D0
+
+cdr  
 !pb initialize BZIN=1
       PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
 !pb initialize BFIN=1
       PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
+
       DO 550 IR=1,NXM
         DO 550 IP=1,NYM
           DO 550 IT=1,NZM
@@ -640,7 +694,7 @@ C
             DO IPLSTI=1,NPLSTI
               PLASMA_BCKGRND(1+0*NPLS+IPLSTI,IRAD)= TIIN(IPLSTI,IRAD)
             END DO
-            DO 520 IPLS=1,NPLSI
+            DO 520 IPLS=1,NPLS
               PLASMA_BCKGRND(1+0*NPLS+NPLSTI+IPLS,IRAD)= DIIN(IPLS,IRAD)
 520         CONTINUE
             DO IPLSV=1,NPLSV
@@ -699,7 +753,7 @@ C .........................................................................
 C  NOW: NEW COLLISION RATES MUST BE SET FOR THE NEXT ITERATION
 C .........................................................................
 C
-C  IN CASE OF CROSS COLLISION, SOME MODIFICATIONS ON THE
+C  IN CASE OF CROSS COLLISION, SOME MODIFICATIONS OF THE
 C  BACKGROUND PARAMETERS ARE REQUIRED TEMPORARYLY TO ENFORCE
 C  A SPECIFIC RELATION BETWEEN TAU_1,2 AND TAU_2,1
 C
@@ -727,14 +781,20 @@ C  FIND CORRESPONDING 2ND CROSS COLLISION TALLY
           ENDDO
           IF (IPLS2.EQ.0) GOTO 800
           CALL EIRENE_LEER(1)
-          WRITE (iunout,*) 'CORRESPONDING CROSS COLLISION SPECIES '
-          WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
+          IF (TRCAMD) THEN
+            WRITE (iunout,*) 
+     .        'MODBGK: CORRESPONDING CROSS COLLISION SPECIES '
+            WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
+          ENDIF
           IF (LMARK(IPLS1).OR.LMARK(IPLS2)) GOTO 800
 C  IPLS2 IS THE SECOND CROSS COLLISION TALLY
-          WRITE (iunout,*) 
-     .      'MODIFY PARAMETERS FOR CROSS COLLISIONALITIES '
-          WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
-          CALL EIRENE_LEER(1)
+          IF (TRCAMD) THEN
+            WRITE (iunout,*) 
+     .        'MODBGK: MODIFY PARAMETERS FOR CROSS COLLISIONALITIES '
+            WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
+            CALL EIRENE_LEER(1)
+          ENDIF
+
           LMARK(IPLS1)=.TRUE.
           LMARK(IPLS2)=.TRUE.
 CVK
@@ -856,7 +916,7 @@ C
       DEALLOCATE (PDEN2)
       DEALLOCATE (EDEN2)
       DEALLOCATE (ENERGY)
-      IF(ALLOCATED(CROSSTEMP)) DEALLOCATE(CROSSTEMP) !VK
+      IF(ALLOCATED(CROSSTEMP)) DEALLOCATE(CROSSTEMP) 
 C
       RETURN
 C

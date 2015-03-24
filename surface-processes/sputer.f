@@ -1,3 +1,7 @@
+c  feb. 15: Flag: ITA=0: do not even try to sputer with modpys=2, if target is not identified.
+c           this avoids huge amounts of irrelevant error messages
+
+C  Nov. 14: meaning of igasp=0 and igasc=0 changed, see comments below
 C  OCT. 14: WGHTVS (WEIGHT) AND VWL AS ARGUMENT IN SAMPLING ROUTINE VELOCS
 
 C  Nov. 10  bug fix: use variables for the input of a drift vector to subroutine
@@ -10,7 +14,7 @@ c
 c jan. 10:  printout warning in case of missing sputter data: 991
 c jan. 10:  evaluate Q and ETH for Sigmund theory, if missing in DATABASE
 c           see Eckstein, IPP 9/82  1993
-c           note: this is now "consistent with rest of modpys=2 sputter model
+c           note: this is now "consistent" with rest of modpys=2 sputter model
 c                 but less well justified for heavy projectiles on light targets
 c
 c jan. 08:  lower ceiling for FLX (flux dependence of Y_chem)
@@ -31,7 +35,7 @@ c           modchm=3 is the "flux dep option A7" (Roth, 1999)
 c           modchm=4 is the "flux dep option A8" (Roth, Nucl.Fus 44 (2004) L21-L)
 c
 c
-C cvs repository jan.05  bug fix, IATMP--> IATMP+nsph in several places,
+C cvs repository jan.05  bug fix, ispz--> ispz+nsph in several places,
 C                        due to photon species offset nsph
 C cvs repository sept.04
 C
@@ -114,11 +118,18 @@ C                 MODCHM = 9:  USER SUPPLIED SPUTTER MODEL, CALL SPTUSR
 C            EWALL(MSURF)= ENWALL
 C    IGASP: SPECIES INDEX FLAG FOR PHYS. SPUTTERED PARTICLE
 C    IGASC: SPECIES INDEX FLAG FOR CHEM. SPUTTERED PARTICLE
+C    IGAS..  <= 0 TRY TO AUTOMATICALLY IDENTIFY SPUTTERED PARTICLE SPECIES
+C    IF IGAS..= 0 DO NOT FOLLOW SPUTTERED PARTICLES, EVEN IF SPECIES AND TYPE OF
+C                 SPUTTERED PARTICLE COULD BE IDENTIFIED.
+C
 C  OUTPUT:
 C      YIELD1: THE PHYSICAL SPUTTERING YIELD PER INCIDENT PARTICLE
 C      YIELD2: THE CHEMICAL SPUTTERING YIELD PER INCIDENT PARTICLE
 C      ISPZP: SPECIES INDEX ISPZ OF PHYSICALLY SPUTTERED PARTICLE
 C      ISPZC: SPECIES INDEX ISPZ OF CHEMICALLY SPUTTERED PARTICLE
+C      IF ISPZ..= 0:  SPUTTERED SPECIES NOT IDENTIFIED
+
+
 C    ESPTP: ENERGY OF PHYS. SPUTTERED PARTICLE
 C    VSPTP: VELOCITY OF PHYS. SPUTTERED PARTICLE
 C    VXSPTP:
@@ -142,9 +153,9 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_CINIT
       USE EIRMOD_CPES
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: WMIN, FMASS, FCHAR, FLXSP
       REAL(DP), INTENT(OUT) :: YIELD1, YIELD2, ESPTC, VSPTC, ESPTP,
      .                         VSPTP, VXSPTP, VYSPTP, VZSPTP,
@@ -236,13 +247,13 @@ C
         DO IFILE=1, NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),'SPUTER') /= 0) EXIT
         END DO
- 
+
         IF (IFILE > NDBNAMES) THEN
           WRITE (IUNOUT,*) ' NO DATABASE NAME FOR SPUTTERING DEFINED '
           WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
           CALL EIRENE_EXIT_OWN(1)
         END IF
- 
+
         OPEN (UNIT=33,FILE=DBFNAME(IFILE))
         READ(33,*)
         READ(33,*)
@@ -262,9 +273,9 @@ C
         ENDDO
         CLOSE (UNIT=33)
       END IF
- 
+
       if (nprs > 1) call EIRENE_broadsput(es,m2m1,etf,eth,q,28,11)
- 
+
 C  ASSIGN SPUTER DATA TO EIRENE PROJECTILE-TARGET COMBINATIONS
 C  FOR THIS PARTICULAR RUN
 C
@@ -283,7 +294,7 @@ C
         ALLOCATE (ITARG(NLIMPS))
         ALLOCATE (ISPZSP_DEF(NLIMPS))
       END IF
- 
+
 C  SPUTTERING BY PHOTONS
       DO 1 ISP=1,NSPH
         IPROJ(ISP)=0
@@ -343,7 +354,7 @@ C  ANY TARGET DATA FOR SELF SPUTTERING WITH IPL?
      .    IPROJS(ISP)=IT
         ENDDO
 40    CONTINUE
- 
+
       ITARG=0
       ISPZSP_DEF=0
       DO ILIM=1,NLIMI
@@ -391,7 +402,8 @@ C
           ELSEIF (IGJUM0(ILIM).EQ.1) THEN
             WRITE(iunout,*) ILIM, ' SURFACE OUT '
           ELSEIF (ITARG(ILIM).GT.0.AND.ITARG(ILIM).LE.28) THEN
-            WRITE(iunout,*) ILIM,' ',TTARG(ITARG(ILIM)),ISPZSP_DEF(ILIM)
+            WRITE(iunout,*) ILIM,'    ',TTARG(ITARG(ILIM)),
+     .                      ISPZSP_DEF(ILIM)
           ELSE
             WRITE(iunout,*) ILIM, ' TARGET MATERIAL NOT IDENTIFIED '
           ENDIF
@@ -403,10 +415,10 @@ C
           ELSEIF (ILIIN(ISURF).GE.3) THEN
             WRITE(iunout,*) -ISTSI,' PERIODICITY- OR MIRROR SURFACE '
           ELSEIF (ITARG(ISURF).GT.0.AND.ITARG(ISURF).LE.28) THEN
-            WRITE(iunout,*) -ISTSI,' ',TTARG(ITARG(ISURF)),
+            WRITE(iunout,*) -ISTSI,'    ',TTARG(ITARG(ISURF)),
      .                      ISPZSP_DEF(ISURF)
           ELSE
-            WRITE(iunout,*) -ISTSI,' TARGET MATERIAL NOT IDENTIFIED '
+            WRITE(iunout,*) -ISTSI,'     ','MATERIAL NOT IDENTIFIED '
           ENDIF
         ENDDO
         WRITE (iunout,*)
@@ -434,20 +446,20 @@ C
      .             IGASC,
      .             YIELD2,
      .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC)
- 
+
 C  TENTATIVELY ASSUME: NO SPUTTERED PARTICLES
       YIELD1=0.D0
       YIELD2=0.D0
       ISPZP=0
       ISPZC=0
- 
+
 C  CURRENTLY: PHOTONS DO NOT SPUTTER
       IF (ISPZ.LE.NSPH) RETURN
 C
 C
 C  SURFACE NUMBER :  MSURF  (MSURF=0: DEFAULT MODEL)
 C  SPECIES INDEX  :  ISPZ   (INCIDENT SPECIES)
-C  IDENTIFY PROJECTILE AND TARGET
+C  IDENTIFY PROJECTILE (IPR) AND TARGET (ITA) FROM SPUTER DATA TABLE
 C
       ITA=ITARG(MSURF)
       IPS=IPROJS(ISPZ)
@@ -459,12 +471,18 @@ C
 C
       MODPYS=ISPUT(1,MSURF)
       MODCHM=ISPUT(2,MSURF)
+
+C  SET WALL TEMPERATURE FOR SPUTTERING MODEL AND FOR SAMPLING OF SPUTTERED PARTICLE VELOCITY
       ENWALL=EWALL(MSURF)
       IF (ENWALL.GT.0.D0) THEN
+C  ENWALL=1.5 TWALL, MEAN ENERGY OF THERMALLY REEMITTED PARTICLES
         TWALL=ENWALL*0.66667
-      ELSE
+      ELSEIF (ENWALL.LT.0.D0) THEN
         TWALL=-ENWALL
+      ELSE
+        GOTO 998
       ENDIF
+      
       SE=0.D0
 C
       COSIN=CRTX*VELX+CRTY*VELY+CRTZ*VELZ
@@ -484,11 +502,13 @@ C  NO SUBLIMATION YIELD IN THIS MODEL:
         QQS=0.
 C
       ELSEIF (MODPYS.EQ.2) THEN
+
+        IF (ITA.EQ.0) GOTO 5000  ! TARGET NOT IDENTIFIED, SO NO SPUTTERING WITH MODPYS=2
 C
 C   ECKSTEIN/ROTH/BOHDANSKY/MODEL: IPP 9/82, FEB. 1993
 C
         IF (IPR.EQ.0.AND.ITA.NE.0) THEN
-C   FOR THIS PROJECTILE THERE ARE NO DATA IN SPUTTER TABLE
+C   FOR THIS PROJECTILE THERE ARE NO DATA IN SPUTTER TABLE, BUT TARGET ITA IS IDENTIFIED
 C   EVALUATE ETF FROM EQ. 7 IN REPORT IPP 9/82
 C   EVALUATE ETH  AND Q FROM EQS. 28 AND 27, RESP. IN REPORT IPP 9/82
 C   I.E. USE SAME "SIGMUND-THEORY APPROXIMATION, AND "V(R)=A*1/R^^6",
@@ -551,7 +571,7 @@ C         CAOPT=COS(AOPT*PIA/180.D0)
           ANGFAC=COSIN**(-F)*EXP(F*(1.-1./COSIN)*CAOPT)
           YIELD1=YIELD1*ANGFAC
         ELSE
-C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE 
+C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
           GOTO 991
         ENDIF
 C
@@ -574,26 +594,27 @@ C
           WRITE (iunout,*) 'ERROR: ISPZP OUT OF RANGE IN SPUTER ?'
           ISPZP=0
           GOTO 5000
-        ELSEIF (IGASP.LT.0) THEN
+        ELSEIF (IGASP.LE.0) THEN
 C  DEFAULT: TRY TO FIND SPECIES INDEX OF SPUTTERED PARTICLE AUTOMATICALLY
           ISPZP=ISPZSP_DEF(MSURF)
           IF (ISPZP.LE.0) THEN
             MS=MSURF
             IF (MSURF.GT.NLIM) MS=-(MSURF-NLIM)
-            WRITE (iunout,*) 'WARNING FROM SPUTER '
-            WRITE (iunout,*) 'SPECIES INDEX, PHYS. SPUTER ? MSURF ',MS
+CDR         WRITE (iunout,*) 'WARNING FROM SPUTER '
+CDR         WRITE (iunout,*) 'SPECIES INDEX, PHYS. SPUTER ? MSURF ',MS
             ISPZP=0
             GOTO 5000
           ENDIF
           ITYPP=1
           IATMP=ISPZP
           ISPZP=IATMP+NSPH
-        ELSE
+        ENDIF
+
 C  IGASP=0 :
 C  RETURN ONLY SPUTTER YIELD, NOT THE COORDINATES OF SPUTTERED PARTICLE
-          ISPZP=0
-          GOTO 5000
-        ENDIF
+C       ISPZP=0
+C       GOTO 5000
+        
       ELSE
         GOTO 5000
       ENDIF
@@ -618,6 +639,8 @@ C
       GAMMA=4.*FMASS*ZNML(MSURF)/(FMASS+ZNML(MSURF))**2
       EMAX=GAMMA*E0
       UB=ES(ITA)
+
+C  SAMPLE ENERGY OF SPUTTERED PARTICLE FROM THOMPSON DISTRIBUTION
       ESPTP=EIRENE_FTHOMP(UB,EMAX)
       RSQDV=RSQDVA(IATMP)
       GOTO 1000
@@ -626,7 +649,9 @@ C  ANGULAR DISTRIBUTIONS
 C
 1000  CONTINUE
 C
-      IF (ESPTP.LE.0.D0) GOTO 1100
+      IF (ESPTP.LT.0.D0) GOTO 1100
+C
+C  AT THIS POINT: ESPTP > 0.0, MONOENERGETIC AND COSINE DISTRIBUTION OF SPUTTERED PARTICLE
 C
       VSPTP=RSQDV*SQRT(ESPTP)
 C
@@ -641,6 +666,7 @@ C
       GOTO 5000
 C
 1100  CONTINUE
+C  AT THIS POINT: ESPTP < 0.0, THERMAL (TWALL) DISTRIBUTION OF SPUTTERED PARTICLE
 
       VXR = 0._DP  ! intent(in)
       VYR = 0._DP  ! intent(in)
@@ -720,13 +746,13 @@ cdr all older eirene versions and warrier-code
 cdr
           ETHERM=pm(isam)
           ETHEKT=EXP(-ETHERM/TWALL)
-C                                
+C
           ERELKT=EXP(-EREL/TWALL)
- 
+
 cdr  continuous merging of option A6 and A7, as in Warrier code. Out!
 cdr        FLXLIM=1.D30*EXP(-1.4/TWALL)
 cdr        IF (FLX.LE.FLXLIM) THEN ! A6,  else: A7
- 
+
 C  EXPRESSION A.6 FOR C, WEAK-FLUX DEPENDENCE
             IF (MODCHM.EQ.2) C=1._DP/(1._DP+3.E7_DP*EXP(-1.4_DP/TWALL))
 C  EXPRESSION A.7 FOR C, STRONG-FLUX DEPENDENCE
@@ -810,10 +836,12 @@ C
       IF (YIELD2.GT.0.D0) THEN
         IF (IGASC.GT.0.AND.IGASC.LE.NATMI+NMOLI) THEN
           IF (IGASC.GT.NATMI) THEN
+C  species index of chemically sputtered molecule
             ITYPC=2
             IMOLC=IGASC-NATMI
             ISPZC=IMOLC+NSPA
           ELSE
+c   species index of chemicaly sputtered atom
             ITYPC=1
             IATMC=IGASC
             ISPZC=IATMC+NSPH
@@ -822,14 +850,14 @@ C
           WRITE (iunout,*) 'ERROR: ISPZC OUT OF RANGE IN SPUTER ?'
           ISPZC=0
           GOTO 20000
-        ELSEIF (IGASC.LT.0) THEN
+        ELSEIF (IGASC.LE.0) THEN
 C  DEFAULT: TRY TO FIND SPECIES INDEX OF SPUTTERED PARTICLE AUTOMATICALLY
           ISPZC=ISPZSP_DEF(MSURF)
           IF (ISPZC.LE.0) THEN
             MS=MSURF
             IF (MSURF.GT.NLIM) MS=-(MSURF-NLIM)
-            WRITE (iunout,*) 'WARNING FROM SPUTER '
-            WRITE (iunout,*) 'SPECIES INDEX, CHEM. SPUTER ? MSURF ',MS
+CDR         WRITE (iunout,*) 'WARNING FROM SPUTER '
+CDR         WRITE (iunout,*) 'SPECIES INDEX, CHEM. SPUTER ? MSURF ',MS
             ISPZC=0
             GOTO 20000
           ENDIF
@@ -838,14 +866,15 @@ C  DEFAULT: TRY TO FIND SPECIES INDEX OF SPUTTERED PARTICLE AUTOMATICALLY
           ISPZC=IATMC+NSPH
         ELSE
 C  IGASC=0 :
-C  RETURN ONLY SPUTTER YIELD, NOT THE COORDINATES OF SPUTTERED PARTICLE
-          ISPZC=0
-          GOTO 20000
+C  RETURN ONLY SPUTTER YIELD, NOT THE SPECIES NOR COORDINATES OF SPUTTERED PARTICLE
+C         ISPZC=0
+C         GOTO 20000
         ENDIF
       ELSE
         GOTO 20000
       ENDIF
 C
+C  PARAMETER FOR ENERGY OF CHEMICALLY SPUTTERED PARTICLE
       ESPTC=ESPUTC(ISPZ,MSURF)
       IF(ESPTC.LE.TINY(ESPTC))  ESPTC=ENWALL !USE DEFAULT
 
@@ -861,34 +890,39 @@ C  ANGULAR DISTRIBUTIONS
 C
 10000 CONTINUE
 C
-      IF (ESPTC.LE.0.D0) GOTO 11000
 C
-      VSPTC=RSQDV*SQRT(ESPTC)
+      IF (ESPTC.GT.0.D0) THEN
+C  MONOENERGETIC CHEMICALLY SPUTTERED PARTICLES 
+        VSPTC=RSQDV*SQRT(ESPTC)
 C
 C  SAMPLE SPEED VECTOR FROM COSINE
 C
-      IF (INIV4.LE.0) CALL EIRENE_FCOSIN
-      VX=FC1(INIV4)
-      VY=FC2(INIV4)
-      VZ=FC3(INIV4)
-      INIV4=INIV4-1
-      CALL EIRENE_ROTATF (VXSPTC,VYSPTC,VZSPTC,VX,VY,VZ,CRTX,CRTY,CRTZ)
-      RETURN
+        IF (INIV4.LE.0) CALL EIRENE_FCOSIN
+        VX=FC1(INIV4)
+        VY=FC2(INIV4)
+        VZ=FC3(INIV4)
+        INIV4=INIV4-1
+        CALL EIRENE_ROTATF 
+     .       (VXSPTC,VYSPTC,VZSPTC,VX,VY,VZ,CRTX,CRTY,CRTZ)
+        RETURN
 C
-11000 CONTINUE
+      ELSEIF (ESPTC.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
 !pb these variables are necessary as the corresponding arguments in velocs
-!pb are INTENT(INOUT) !
-      VXR = 0._DP
-      VYR = 0._DP
-      VZR = 0._DP
-      VWL = 0._DP  !  SAMPLE FROM NON-DRIFTING (I.E. STATIONARY) MAXWELLIAN FLUX
-      WGHTVS= 1._DP  !  STAT. WEIGHT SHOULD NOT BE MODIFIED IN VELOCS IN CASE OF STATIONARY MAXWELLIAN
-      CALL EIRENE_VELOCS(WGHTVS,
-     .            TWALL,0._DP,VWL,VXR,VYR,VZR,RSQDV,CVRSS,
-     .            -CRTX,-CRTY,-CRTZ,
-     .            ESPTC,VXSPTC,VYSPTC,VZSPTC,VSPTC)
+!pb are INTENT(IN) !
+        VXR = 0._DP
+        VYR = 0._DP
+        VZR = 0._DP
+        VWL = 0._DP  !  SAMPLE FROM NON-DRIFTING (I.E. STATIONARY) MAXWELLIAN FLUX
+        WGHTVS= 1._DP  !  STAT. WEIGHT SHOULD NOT BE MODIFIED IN VELOCS IN CASE OF STATIONARY MAXWELLIAN
+        CALL EIRENE_VELOCS(WGHTVS,
+     .              TWALL,0._DP,VWL,VXR,VYR,VZR,RSQDV,CVRSS,
+     .              -CRTX,-CRTY,-CRTZ,
+     .              ESPTC,VXSPTC,VYSPTC,VZSPTC,VSPTC)
 C
+
+      ENDIF
+
 20000 RETURN
 C
 991   CONTINUE
@@ -901,6 +935,15 @@ C
       IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
       WRITE (iunout,*) 'MSURF = ',MSS
       WRITE (iunout,*) 'DO NOT SPUTTER FOR PARTICLE NO. NPANU= ',NPANU
+      RETURN
+998   CONTINUE
+      WRITE (iunout,*) 'ERROR IN SUBR. SPUTER '
+      MSS=MSURF
+      IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
+      WRITE (iunout,*) 'MSURF = ',MSS
+      WRITE (iunout,*) 'ENWALL=0 --> TWALL=0. '
+      CALL EIRENE_EXIT_OWN(1)
+      RETURN
 999   CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SPUTER '
       MSS=MSURF
@@ -920,9 +963,9 @@ csw 18apr07
       return
 csw
       END
- 
- 
- 
+
+
+
       FUNCTION EIRENE_YHAASZ97(E0,TEMP_eV)
 c  this is the haasz/davis chemical sputtering yield (1997).
 c  program provided via Toronto group (p.c. stangeby/d. elder)
@@ -940,7 +983,7 @@ C  *********************************************************************
 C
       use EIRMOD_precision
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: E0, TEMP_EV
       REAL(DP) ::TEMP
       REAL(DP) ::FITC300(4),FITC350(4),FITC400(4),FITC450(4),FITC500(4),
@@ -1051,11 +1094,11 @@ C
       DO I = 1,4
         YFIT = YFIT + POLY_C(I)*LOG10(FITE0)**(I-1)
       ENDDO
- 
+
       EIRENE_YHAASZ97 = YFIT
- 
+
 CW    WRITE(iunout,*) 'YHAASZ97 = ',YHAASZ97
- 
+
       RETURN
       END
 c
@@ -1081,29 +1124,29 @@ C  *********************************************************************
 C
       use EIRMOD_precision
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: E0, TEMP_EV
       real(dp) :: TEMP
       real(dp) :: EIRENE_YHAASZ97M, YDAVIS98, EIRENE_YHAASZ97
       real(dp) :: m1,m2,m3,reducf,FRAC
- 
+
       DATA m1/602.39/, m2/202.24/, m3/43.561/, reducf/0.2/
 C
 C in calling program (eirene), TEMP_EV is in eV
 c convert to K
       TEMP=TEMP_EV*11604.
- 
+
       IF (E0 .GE. 10) THEN
          EIRENE_YHAASZ97M = EIRENE_YHAASZ97(E0,TEMP_eV)
       ELSEIF (E0 .LT. 10. .AND. E0 .GE. 5.) THEN
          FRAC = (E0-5.)/5.
          YDAVIS98 = reducf/(m2*((TEMP/m1)**2 - 1)**2 + m3)
-         EIRENE_YHAASZ97M = FRAC*EIRENE_YHAASZ97(E0,TEMP_eV)+ 
+         EIRENE_YHAASZ97M = FRAC*EIRENE_YHAASZ97(E0,TEMP_eV)+
      .                      (1.-FRAC)*YDAVIS98
       ELSEIF (E0 .LT. 5.) THEN
          YDAVIS98 = reducf/(m2*((TEMP/m1)**2 - 1)**2 + m3)
          EIRENE_YHAASZ97M = YDAVIS98
       ENDIF
- 
+
       RETURN
       END

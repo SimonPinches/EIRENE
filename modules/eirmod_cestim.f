@@ -1,5 +1,7 @@
 c   march 19, 2006:  corrected pointer for spttot in "associate_cestim"
 !   20.06.07:        deallocate ESTIML and SMESTL
+cdr 14.10.14:        naming of arrays in smestl adapted to those of other eirene std. dev. tallies
+cdr                  two further tallies introduced (gg, stv) for stand. dev. of sum over strata
  
       MODULE EIRMOD_CESTIM
  
@@ -1279,14 +1281,20 @@ C
          DEALLOCATE (ESTIMV)
          DEALLOCATE (ESTIMS)
          IF (NADSPC > 0) THEN
+c  spectra tallies: standard deviation 
            DO I=1,NADSPC
              DEALLOCATE(ESTIML(I)%PSPC%SPC)
              DEALLOCATE(ESTIML(I)%PSPC%SDV)
              DEALLOCATE(ESTIML(I)%PSPC%SGM)
+             DEALLOCATE(ESTIML(I)%PSPC%GG)
+             DEALLOCATE(ESTIML(I)%PSPC%STV)
+c  spectra tallies: standard deviation for sum over strata, intermediate storage
              IF (NSMSTRA > 0) THEN
                DEALLOCATE(SMESTL(I)%PSPC%SPC)
                DEALLOCATE(SMESTL(I)%PSPC%SDV)
                DEALLOCATE(SMESTL(I)%PSPC%SGM)
+               DEALLOCATE(SMESTL(I)%PSPC%GG)
+               DEALLOCATE(SMESTL(I)%PSPC%STV)
              END IF
            END DO
            DEALLOCATE (ESTIML)

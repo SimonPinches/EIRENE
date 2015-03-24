@@ -1,7 +1,8 @@
 c  introduced march 2014. currenty largely identical to ftabpi3
 c  already accommodates H.4 option (two parameter fits vs TII,PLS)
 
-c  calls of ftabcx3 in fpath..: not ready
+c  calls of ftabel3 in fpath..: not ready
+
 
 
 
