@@ -288,7 +288,7 @@ C
         ALLOCATE (NSEIEL(NION,NPLS,5))
  
         ALLOCATE (DELPOT(NREAC))
-        ALLOCATE (FACREA(-10:NREAC,2))
+        ALLOCATE (FACREA(-11:NREAC,2))
         ALLOCATE (FREACA(NATM,NREAC))
         ALLOCATE (FREACM(NMOL,NREAC))
         ALLOCATE (FREACI(NION,NREAC))
@@ -319,7 +319,7 @@ C
         ALLOCATE (MODCLF(NREAC))
         ALLOCATE (MASSP(NREAC))
         ALLOCATE (MASST(NREAC))
-        ALLOCATE (IFTFLG(-10:NREAC,0:5))
+        ALLOCATE (IFTFLG(-11:NREAC,0:5))
         ALLOCATE (NRCP(NPLS))
         ALLOCATE (NRCA(NATM))
         ALLOCATE (NRCM(NMOL))
@@ -961,7 +961,7 @@ c       vsigot  : fehlt noch
  
         XSTORV  = 0._DP
  
-        DO IREAC= -10, NREAC
+        DO IREAC= -11, NREAC
           REACDAT(IREAC)%LPOT   = .FALSE.
           REACDAT(IREAC)%LCRS   = .FALSE.
           REACDAT(IREAC)%LRTC   = .FALSE.

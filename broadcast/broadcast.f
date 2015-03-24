@@ -449,7 +449,7 @@ c     ------------------------------------------------------------     c
 !pb      CALL MPI_BCAST (CREAC,99*(NREAC+11),MPI_REAL8,
 !pb     .                0,MPI_COMM_WORLD,ier)
  
-      DO IR=-10, NREAC
+      DO IR=-11, NREAC
         CALL MPI_BCAST (REACDAT(IR)%LPOT,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (REACDAT(IR)%LCRS,1,MPI_LOGICAL,
@@ -553,7 +553,7 @@ c     ------------------------------------------------------------     c
         END IF
       END DO
  
-      CALL MPI_BCAST (FACREA,(NREAC+11)*2,MPI_REAL8,0,
+      CALL MPI_BCAST (FACREA,(NREAC+12)*2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (DELPOT,NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FREACA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -591,7 +591,7 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (MODCLF,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASSP,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASST,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IFTFLG,6*(NREAC+11),MPI_INTEGER,0,
+      CALL MPI_BCAST (IFTFLG,6*(NREAC+12),MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRCP,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRCA,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
