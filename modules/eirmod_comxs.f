@@ -2061,7 +2061,7 @@ c
       type(fit_forms), pointer :: rea
       integer :: ir
 
-      DO IR = -10, NREAC
+      DO IR = -11, NREAC
 
         IF (REACDAT(IR)%LPOT) THEN
            rea => REACDAT(IR)%POT
