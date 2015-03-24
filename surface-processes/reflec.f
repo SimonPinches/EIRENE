@@ -19,6 +19,7 @@ C           with reduced energy scaling.
 C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
 C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
 C  Oct 14:  arguments of velocs changed. "weight" now in argument list
+C  MAR 15:  remove Thompson distribution for thermal atom model: TWALL=0 now leads to error exit
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -962,7 +963,7 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
      .                CVRSSM(IMOL),
      .               -CRTX,-CRTY,-CRTZ,
      .               E0,VELX,VELY,VELZ,VEL)
-      ELSE
+      ELSE  ! E0TERM=0
         GOTO 991
       ENDIF
       RETURN
@@ -1042,12 +1043,8 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
      .             -CRTX,-CRTY,-CRTZ,
      .             E0,VELX,VELY,VELZ,VEL)
         RETURN
-      ELSEIF (E0TERM.EQ.0.D0) THEN
-C  SAMPLE FROM ENERGY FROM THOMPSON DISTRIBUTION + STAND. ANGULAR DISTR.
-        E0=EIRENE_FTHOMP(EBIND,EMAXR)
-        VEL=RSQDVA(IATM)*SQRT(E0)
-        F1=1.
-        GOTO 400
+      ELSE
+        GOTO 991
       ENDIF
 C
 C  ABSORB PARTICLE AT THIS SURFACE

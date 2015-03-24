@@ -494,10 +494,10 @@ C  INDIRECT ADDRESSING
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED '
               CALL EIRENE_MASJ2R
-     .  ('ISRFSI,ISTRA,SORWGT     ',ISRFSI,ISTRA,SUM)
+     .          ('ISRFSI,ISTRA,SORWGT     ',ISRFSI,ISTRA,SUM)
               IF (TRCSOU) THEN
                 CALL EIRENE_MASJ3 ('IRRC,IPLS,ICMX          ',
-     .                       IRC ,IPLS,ICC)
+     .                              IRC ,IPLS,ICC)
                 CALL EIRENE_LEER(1)
               ENDIF
               SUMM=SUMM+SUM

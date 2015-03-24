@@ -905,7 +905,7 @@ C
 
 C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
-C  NEXT: PLOT ENERGY (WAVELENGTH)SPECTRA, IF ANY HAVE BEEN SCORED 
+C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED 
 C        PLOTTING IS NOT YET CONDITIONED BY FLAGS
 C        ALL PLOTS FOR ALL SPECTRA ARE ALWAYS DONE
 C
@@ -941,14 +941,24 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
         IRS(1)=1
         XMI=XSPEC(1)
         XMA=XSPEC(NSPS+1)
+
+C  LINEAR OR LOGARITHMIC Y SCALE ?  
         LOGY=.FALSE.
         FITY=.FALSE.
+
+CDR  PLOT SPECTRUM LOGARITHMICALLY ???
+        IF (ESTIML(ISPC)%PSPC%SPC_YPLT.GT.0.0)  THEN
+          LOGY=.TRUE.
+          FITY=.TRUE.
+        ENDIF
+CDR 
+ 
         IF (ESTIML(ISPC)%PSPC%ISRFCLL == 0) THEN
          TXTALL(1)='SPECTRUM FOR SURFACE        PARTICLE TYPE        '//
-     .            'SPECIES                '
+     .             'SPECIES                '
         ELSE
          TXTALL(1)='SPECTRUM FOR CELL           PARTICLE TYPE        '//
-     .            'SPECIES                '
+     .             'SPECIES                '
         ENDIF
         WRITE (TXTALL(1)(22:27),'(I6)') ESTIML(ISPC)%PSPC%ISPCSRF
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%PSPC%IPRTYP

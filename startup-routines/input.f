@@ -1006,17 +1006,17 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
           WRITE (iunout,*) 'COLOUR FLAG ILCOL CHANGED FOR SURFACE NO. ',
      .                      NLJ
           WRITE (iunout,*) 'COLOUR NO. 7 IS RESERVED FOR "NON-ANALOG'
-          WRITE (iunout,*)
-     .      'SURFACES" (SPLITTING, R.R., WEIGHT WINDOWS,..)'
+          WRITE (iunout,*) 'SURFACES" (SPLITTING, R.R., ETC,..)'
           ILCOL(NLJ)=ILCOL(NLJ)-2
         ENDIF
 312     READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1).EQ.'*') THEN
-C  SKIP READING LOCAL SURFACE INTERACTION MODEL, USE: DEFAULT
+C  NO LOCAL SURFACE INTERACTION MODEL FOUND, USE: DEFAULT
           GOTO 314
-!pb        ELSEIF (ILIIN(NLJ).LE.0) THEN
-!pb          GOTO 312
+!pb     ELSEIF (ILIIN(NLJ).LE.0) THEN
+!pb       GOTO 312
+C  ASSIGN ONE OF THE SURFACE MODELLS (BLOCK 6) TO THIS SURFACE
         ELSEIF (ZEILE(1:8).EQ.'SURFMOD_') THEN
           ALLOCATE(SURFCUR)
           SURFCUR%MODNAME = TRIM(ADJUSTL(ZEILE(9:)))
@@ -1025,6 +1025,7 @@ C  SKIP READING LOCAL SURFACE INTERACTION MODEL, USE: DEFAULT
           SURFLIST => SURFCUR
           IREAD=0
           GOTO 314
+C  READ LOCAL (FOR THIS SURFACE) SURFACE INTERACTION MODEL, NEXT 3 OR 4 INPUT CARDS
         ELSE
           READ (ZEILE,6666) ILREF(NLJ),ILSPT(NLJ),ISRS(1,NLJ),
      .                      ISRC(1,NLJ)
@@ -2819,7 +2820,7 @@ C
             IF (ZEILE(1:1) .NE. '*') EXIT
           END DO
 cdr  this input and this code segment should be modified:
-c  first read isrfcll: "type of spectrum", then ispsrf "where is this sepctrum scored"
+c  first read isrfcll: "type of spectrum", then ispsrf "where is this spectrum scored"
 c  then further details (species: iptyp,ipspz, and then: direction,....)
 c  
 
@@ -2967,6 +2968,7 @@ c  standard deviation of spectra tallies, sum over strata intermediate storage
             SSPEC = ESPEC
             SMESTL(J)%PSPC => SSPEC
           END IF
+C
           ESTIML(J)%PSPC => ESPEC
         END DO
         IREAD=0

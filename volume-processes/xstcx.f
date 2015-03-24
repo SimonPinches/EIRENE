@@ -326,7 +326,7 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
      .                          (KREAD,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
-            ELSEIF (MODC.EQ.2) THEN
+            ELSEIF (MODC.EQ.2) THEN 
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE

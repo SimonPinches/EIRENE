@@ -11,13 +11,15 @@ C            Option 4.3C: now ready,  lgvac for IPL, not for electrons.  correct
 c 25.03.14:  further corrections. TII instead of plsti(:) array
 cdr oct.14:  remove ctrcei, clogau, cspei
 cdr oct.14:  syncronize with xstcx started
+cdr march 15:  IN VERSION ..-new: nplrpl introduced: flag for bulk particle energy loss/gain
+cdr            (was nelrpl, but that is also the flag for electron energy loss/gain)
+CDR            eelec in parameterlist, before chrdf0
 
 C
 C
       SUBROUTINE EIRENE_XSTPI (RMASS,IRPI,ISP,IPL,
-     .                  EBULK,EHEAVY,CHRDF0,
      .                  IFRST,ISCND,ITHRD,IFRTH,
-     .                  ISCDE,IESTM,
+     .                  EBULK,EHEAVY,EELEC,CHRDF0,ISCDE,IESTM,
      .                  KK,FACTKK,PLS)
 C
 C       SET UP TABLES (E.G. OF REACTION RATE ) FOR PI PROCESSES
@@ -44,7 +46,7 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: RMASS, EBULK, EHEAVY, FACTKK, CHRDF0
+      REAL(DP), INTENT(IN) :: RMASS, EBULK, EHEAVY, EELEC, FACTKK,CHRDF0
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD,IFRTH,
      .                       ISCDE, IESTM, KK
@@ -233,10 +235,10 @@ C RATE COEFFICIENT
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
 
         MODCOL(4,2,IRPI)=MODC
-
-        IF (MODC.EQ.1) NEND=1
-
-        IF (MODC.EQ.2) NEND=NSTORDT
+C  2.B)
+        IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
+C  2.C)
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN 
 C   NO
@@ -257,8 +259,7 @@ C  2.C) RATE COEFFICIENT(TI,EBEAM)
               TII=TIINL(IPLTI,J)+ADDTL
               CALL EIRENE_PREP_RTCS (KK,3,1,NEND,TII,CF)
               TABPI3(IRPI,J,1:NEND)=CF(1:NEND)
-              TABPI3(IRPI,J,1)=TABPI3(IRPI,J,1)+
-     .                         DIINL(IPL,J)+FCTKKL
+              TABPI3(IRPI,J,1)=TABPI3(IRPI,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
           END IF
         ELSE   ! ??
@@ -270,7 +271,8 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
         MODCOL(4,2,IRPI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN                 
+        IF (NSTORDR >= NRAD) THEN 
+                
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
@@ -429,7 +431,17 @@ C
 C  SET NET ENERGY LOSS RATE OF ELECTRON (IF ANY INVOLVED)
       NSEPI5=EIRENE_IDEZ(ISCDE,5,5)
       IF (NSEPI5.EQ.0) THEN
-C       MODCOL(4,4,IRPI)=1
+C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
+        IF (NSTORDR >= NRAD) THEN
+          DO J=1,NSBOX
+            EELPI1(IRPI,J)=EELEC
+          ENDDO
+          NELRPI(IRPI)=0
+        ELSE
+          NELRPI(IRPI)=0
+          EELPI1(IRPI,1)=EELEC
+        END IF
+        MODCOL(4,4,IRPI)=1
       ELSE
         WRITE (iunout,*) 'NSEPI5 ILL DEFINED IN XSTPI '
         CALL EIRENE_EXIT_OWN(1)
@@ -630,13 +642,13 @@ C  SUBTRACT ONE, BECAUSE INCIDENT BULK IS LOST
           WRITE (iunout,*) 'ENERGY: EPLPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,1),
      .                                 ' * E0 + ',EPLPI(IRPI,2)*EI
-C  PROBABLY INCORRECT: com IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
+C  PROBABLY INCORRECT: COM IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
         ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLPI(IRPI,1),
      .                                 ' * E0 + ',EPLPI(IRPI,2),
      .                                 ' * EHEAVY '
-C  PROBABLY INCORRECT: com IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
+C  PROBABLY INCORRECT: COM IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF

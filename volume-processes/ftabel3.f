@@ -1,6 +1,11 @@
 c  introduced sept 2014. currenty largely identical to ftabpi3
 c  already accommodates H.4 option (two parameter fits vs TII,PLS)
 
+c  calls of ftabel3 in fpath..: not ready
+
+
+
+
       FUNCTION EIRENE_FTABEL3 (IREL,K)
 c  evaluate elastic collision rate (1/s), 
 c  for el process no. IREL,

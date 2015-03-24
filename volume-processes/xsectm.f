@@ -247,9 +247,9 @@ C  T2:
           ITEST=IATM1*IATM2*IPLS1*IPLS2*IION3
           IF (ITEST.EQ.0) GOTO 76
 C
-C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES
+C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, DEFAULT PROCESSES KK=-5,-6, -7
 C
-C  FIRST PROCESS
+C  FIRST PROCESS, KK=-5
           ACCMAS=0.D0
           ACCINV=0.D0
           IDSC1=IDSC1+1
@@ -290,7 +290,7 @@ C  TRANSFERRED KINETIC ENERGY: 6 EV
             EELDS1(IREI,1)=-10.5
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
-            NELREI(IREI)=-5
+            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
             NREAHV(IREI)=-2
           END IF
           FACREI(IREI,1) = 1._DP
@@ -347,7 +347,7 @@ C  TRANSFERRED KINETIC ENERGY: 10 EV
             EELDS1(IREI,1)=-25.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
-            NELREI(IREI) = -6
+            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
             NREAHV(IREI) = -3
           END IF
           FACREI(IREI,1) = FACTKK
@@ -382,15 +382,15 @@ C
               TABDS1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
-            EELDS1(IREI,1:NSBOX)=EELEC
+            EELDS1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
             NREAEI(IREI) = -7
             JEREAEI(IREI) = 1
             NELREI(IREI) = -7
           ELSE  ! storage save mode
-            EELDS1(IREI,1)=EELEC
+            EELDS1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
             NREAEI(IREI) = -7
             JEREAEI(IREI) = 1
-            NELREI(IREI) = -7
+            NELREI(IREI) = -7    ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
 
           END IF
           FACREI(IREI,1) = 1._DP
@@ -633,9 +633,10 @@ C  INCIDENT BULK PARTICLE INDEX
             IESTM=IESTMM(IMOL,NRC)
             EBULK=EBULKM(IMOL,NRC)
             EHEAVY=ESCD1M(IMOL,NRC)
+            EELEC=EELECM(IMOL,NRC)
             CALL EIRENE_XSTPI (RMASS,IRPI,IML,IPL,
-     .                  EBULK,EHEAVY,CHRDF0,
-     .                  IFRST,ISCND,ITHRD,IFRTH,ISCDE,IESTM,
+     .                  IFRST,ISCND,ITHRD,IFRTH,
+     .                  EBULK,EHEAVY,EELEC,CHRDF0,ISCDE,IESTM,
      .                  KK,FACTKK,PLS)
           END DO
 C

@@ -12,6 +12,7 @@ c    locally in cell K
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA
       USE EIRMOD_COMXS
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
  
       IMPLICIT NONE
  
@@ -26,22 +27,22 @@ c    locally in cell K
 
 
       IF (KK < 0) THEN
-c   electron energy losses per collision from the 10 default EI processes
+c   electron energy losses per collision from the 11 default EI processes
         SELECT CASE (KK)
         CASE (-1)
-            EIRENE_FEELEI1=-EIONHE
+            EIRENE_FEELEI1=-EIONHE   !  DEFAULT PROCESS KK=-1  HE+E --> HE+ +2E should be moved to kk=-11
         CASE (-2)
-            EIRENE_FEELEI1=EELDS1(IREI,1)
+            EIRENE_FEELEI1=EELDS1(IREI,1)  ! DEFAULT EI PROCESS K=-2: NOT IN USE
         CASE (-3)
-            EIRENE_FEELEI1=-1.5*TEIN(K)
+            EIRENE_FEELEI1=-1.5*TEIN(K)    ! DEFAULT EI PROCESS K=-2: NOT IN USE
         CASE (-4)
-            EIRENE_FEELEI1=-EIONH
-        CASE (-5)
-            EIRENE_FEELEI1=-10.5
+            EIRENE_FEELEI1=-EIONH   !  DEFAULT PROCESS KK=-4  H+E --> H+ + 2E
+        CASE (-5)    
+            EIRENE_FEELEI1=-10.5  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,  
         CASE (-6)
-            EIRENE_FEELEI1=-25.0
+            EIRENE_FEELEI1=-25.0  ! DEFAULT PROCESS KK=-6:  H2+E --> H + H+  +2E 
         CASE (-7)
-            EIRENE_FEELEI1=EELDS1(IREI,1)
+            EIRENE_FEELEI1=EELDS1(IREI,1) ! DEFAULT PROCESS KK=-7: H2+E --> H2+  +2E
         CASE (-8)
             EIRENE_FEELEI1=-10.5
         CASE (-9)
@@ -57,13 +58,16 @@ c  non default models, data from external databases
           ELEI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),0._DP,.TRUE.,0)
           EIRENE_FEELEI1=-ELEI*DEIN(K)*FACREI(IREI,1)/
      .                   (EIRENE_FTABEI1(IREI,K)+EPS60)
-        ELSE    !  Te, ne dependence. missing still:  EB,Te dependence
+        ELSEIF(JELREI(IREI) == 9) THEN    !  Te, ne dependence. 
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
-
           ELEI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
           EE=MAX(-100._DP,ELEI+FACREI(IREI,2))
           EIRENE_FEELEI1=-EXP(EE)*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
+        ELSE
+CDR: missing still:  EB,Te dependence
+          WRITE (IUNOUT,* ) 'ERROR IN FEELPI1, INVALID JELRPI '
+          CALL EIRENE_EXIT_OWN(1)
         END IF
         IF (DELPOT(KK).NE.0.D0) THEN
           DELE=DELPOT(KK)

@@ -1,4 +1,4 @@
-cdr  feb 2014  :  iftflg :  select rate or rate coeficient produced by rate-coeff. 
+cdr  feb 2014  :  iftflg :  select rate or rate coefficient produced by rate-coeff. 
 cdr  march 2014:  density parameter added, H.4 option for rate coeff, ifit=2
 c    already accommodates H.4 option (two parameter fits vs TII,PLS)
 cdr  sept. 2014:  use heavy bulk particle (ipls) density, rather than electron density)
@@ -9,6 +9,12 @@ c  for pi process no. IRPI,
 c         in cell no. K
 c  input via common: 
 c         bulk collision partner: IPLS
+
+
+
+
+
+
 
 c  FTABPI3 is currently only called in case MODCOL(4,2,IRPI)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.

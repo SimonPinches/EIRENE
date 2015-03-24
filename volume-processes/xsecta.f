@@ -534,10 +534,10 @@ C  INCIDENT BULK PARTICLE INDEX
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             EHEAVY=ESCD1A(IATM,NRC)
+            EELEC=EELECA(IATM,NRC)
             CALL EIRENE_XSTPI (RMASS,IRPI,IAT,IPL,
-     .                  EBULK,EHEAVY,CHRDF0,
      .                  IFRST,ISCND,ITHRD,IFRTH,
-     .                  ISCDE,IESTM,
+     .                  EBULK,EHEAVY,EELEC,CHRDF0,ISCDE,IESTM,
      .                  KK,FACTKK,PLS)
           END DO
 C
