@@ -122,7 +122,9 @@ cdr   tpb1 = EIRENE_second_own()
       DO IPLS=1,NPLSI
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
+
         IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0) THEN
+
           CALL EIRENE_ALLOC_BCKGRND
           ALLOCATE(DEINTF(NRAD))
           OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
@@ -133,6 +135,7 @@ cdr   tpb1 = EIRENE_second_own()
           CLOSE (UNIT=13+ifoff)
           IF (IO.EQ.0) THEN
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
             IF (NLMLTI) TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
@@ -144,7 +147,11 @@ cdr   tpb1 = EIRENE_second_own()
             END IF
           ENDIF
           DEALLOCATE(DEINTF)
+
         ELSEIF (INDEX(CDENMODEL(IPLS),'FORT.10') > 0) THEN
+
+c   itold = ?? 
+c   check: itold ge 0 and itold.le 3
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
@@ -194,6 +201,7 @@ cdr   tpb1 = EIRENE_second_own()
           END IF
  
         ELSEIF (INDEX(CDENMODEL(IPLS),'MULTIPLY') > 0) THEN
+c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)

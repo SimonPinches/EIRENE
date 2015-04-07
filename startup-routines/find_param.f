@@ -632,7 +632,7 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
       WRITE (iunout,*) '*4D.   PHOTONS SPECIES CARDS, NPHOTI SPECIES '
       READ (IUNIN,*) NPHOTI
       NPHOT = MAX(NPHOT,NPHOTI)
- 
+
       DO IPHOT=1,NPHOTI
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
@@ -710,10 +710,10 @@ C
         READ (27+ifoff,*) CHR,n_atoms
         READ (27+ifoff,*) CHR,n_ions
         READ (27+ifoff,*) CHR,n_mol
- 
+
         ALLOCATE (HYDSPEC(N_SPEC))
         ALLOCATE (IEIGEN(N_SPEC))
- 
+
         READ (27+ifoff,*) HYDSPEC(1:N_SPEC)
         READ (27+ifoff,'(A1000)') HLINE
         READ (HLINE(52:),*) IEIGEN(1:N_SPEC)
@@ -782,7 +782,7 @@ C
       IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
- 
+
 C  FIND START OF NEXT INPUT BLOCK: 6
  
       IF (LINCLUDE) THEN
@@ -818,7 +818,7 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
           END DO
         ENDIF
       ENDIF
- 
+
       IF (NFR > 0) THEN
         NHD6 = NFR
       ELSE
@@ -1108,7 +1108,7 @@ C
 C
       READ (IUNIN,6666) NPRNLI, NINITL_READ, NPRMUL
       IF (NPRMUL > 1) NPRNLI = NPRNLI * NPRMUL
- 
+
       IF (NPRNLI > 0) THEN
         READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1).NE.'*') THEN

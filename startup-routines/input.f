@@ -1006,7 +1006,8 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
           WRITE (iunout,*) 'COLOUR FLAG ILCOL CHANGED FOR SURFACE NO. ',
      .                      NLJ
           WRITE (iunout,*) 'COLOUR NO. 7 IS RESERVED FOR "NON-ANALOG'
-          WRITE (iunout,*) 'SURFACES" (SPLITTING, R.R., ETC,..)'
+          WRITE (iunout,*)
+     .      'SURFACES" (SPLITTING, R.R., WEIGHT WINDOWS,..)'
           ILCOL(NLJ)=ILCOL(NLJ)-2
         ENDIF
 312     READ (IUNIN,'(A72)') ZEILE
@@ -1045,7 +1046,8 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
      .                        ISTS
             WRITE (iunout,*)
      .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
+            WRITE (iunout,*)
+     .        'DEFAULT MODEL: "NO SPUTTERING" IS USED.'
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
             ILSPT(NLJ)=0
           ENDIF
@@ -1353,7 +1355,7 @@ C
 411   READ (IUNIN,'(A80)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 C
-C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. 
+C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
         IL = IL + 1
         READ (ZEILE,66661) IR,FILNAM,H123
@@ -1397,7 +1399,7 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
             IEND = IEND + ITOK
           END IF
         END IF
-
+C
 !  READ CRC
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CRC,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
@@ -1450,7 +1452,7 @@ C  READ FLAGS MP, MT, DPP, RMN AND RMX FROM CHR
           WRITE (iunout,*) ' ERROR READING RMX FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
- 
+
         IF (INDEX(ZEILE,'ADAS') .NE. 0) THEN
           READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
           CALL EIRENE_LOWERCASE(ELNAME)
@@ -1489,10 +1491,11 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
         MASSP(IR)=MP
         MASST(IR)=MT
         DELPOT(IR)=DPP
-C  IFEXMN,IFEXMX,FPARM:
-C  ASYMPTOTICS FOR CROSS SECTIONS (SECOND INDEX=1) OR RATES (SECOND
-C  INDEX=2) , OVERWRITES ASYMPTOTICS IN DATA FILES, IF THERE ARE SUCH
 
+C  IFEXMN,IFEXMX,FPARM:
+C  ASYMPTOTICS FOR CROSS SECTIONS             (SECOND INDEX=1)
+C                        OR RATE COEFFICIENTS (SECOND INDEX=2),
+C  OVERWRITES ASYMPTOTICS IN DATA FILES, IF THERE ARE SUCH
         FP = 0._DP
         IF (INDEX(H123,'P.').eq.0) then
 C  either cross section or a (weighted?) rate coefficient
@@ -2102,7 +2105,7 @@ c  vi profile(s)
       NLMACH=INDPRO(4).LT.0
       NPLSV = NPLS
       IF (IABS(INDPRO(4)) > 9) NPLSV = 1
- 
+
       INDPRO(4)=IABS(INDPRO(4))
       IF (INDPRO(4) > 9) INDPRO(4) = MOD(INDPRO(4),10)
       NLMLV = NPLSV > 1
@@ -2141,12 +2144,12 @@ c  cell volume -profile
           IREAD=0
         ENDIF
       ENDIF
- 
+
       IF (LINCLUDE) THEN
         CLOSE (IUNIN)
         IUNIN = IUNIN_SAVE
         LINCLUDE =.FALSE.
- 
+
         DO
           READ (IUNIN,'(A72)') ZEILE
           IF ((ZEILE(1:3) == '***') .AND.
@@ -2154,7 +2157,7 @@ c  cell volume -profile
         END DO
         IREAD = 1
       END IF
- 
+
       IF (LHYDDEF) CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,
      .  CADAPT)
 C
@@ -3837,10 +3840,11 @@ C
       NLSYMP(0)=.TRUE.
       DO 2028 ISTRA=1,NSTRAI
         IF (INDSRC(ISTRA).EQ.6) GOTO 2028
+
         IF (.NOT.NLSRF(ISTRA))
-     .  THMAX=MAX(0._DP,MIN(PIA,SORMAX(ISTRA)*DEGRAD))
+     .    THMAX=MAX(0._DP,MIN(PIA,SORMAX(ISTRA)*DEGRAD))
         IF (NLSRF(ISTRA))
-     .  THMAX=MAX(0._DP,MIN(PIHA,SORMAX(ISTRA)*DEGRAD))
+     .    THMAX=MAX(0._DP,MIN(PIHA,SORMAX(ISTRA)*DEGRAD))
         IF (NAMODS(ISTRA).EQ.1) THEN
           RP1=SORCOS(ISTRA)+1.
           SORCOS(ISTRA)=1./RP1

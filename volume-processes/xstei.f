@@ -500,7 +500,7 @@ C
      .    'ELECTRONS: PELEI, ENERGY RANGE: EEL_MIN,EEL_MAX'
         WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELDS(IREI),EI,EA
       ENDIF
-CDR   write (iunout,*) ' imin = ', imin, ' imax = ',imax
+c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
       EI=1.D30
       EA=-1.D30
