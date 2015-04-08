@@ -71,6 +71,12 @@ c                            nidsi(iio) --> nieii(iio)
         NS=NAINS(IAIN)    !  ns stands for ircx,irei,irel,irpi,irpi,..., internal number of process
         NA=NAINT(IAIN)    !  na stands for tally:  TAB..3(...),  EPL..3(...)
 
+        IF ((NA < 20) .OR. (NA > 29)) CYCLE
+
+!pb   avoid undefined MM
+        mm = 0
+        kk = 0
+
 c  currently:  only tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1
 c
         IF (NA.EQ.20.OR.NA.EQ.21) THEN       
