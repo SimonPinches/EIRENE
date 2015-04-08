@@ -171,7 +171,7 @@ C
      .          BVAC,TX,TY,VPRO,VTY,XMUE,PX,PY,
      .          XANF,YANF,PIPV,FLX_EIR,
      .          SUMN_OLD,SNIRES,SMORES,SEERES,SEIRES,UU,PITB,
-     .          DXPOL,DYPOL,PAR
+     .          DXPOL,DYPOL,PAR,brad,bpol,btor
 
        INTEGER, SAVE :: J, IRC, JC, INC, IADD, IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
@@ -186,7 +186,7 @@ C
      .           NEND,NINI,NSSIP,MTRI,
      .           IDUMMY,NR1STQ,ISTS,ITRI,IACT,IANF,ICOG,
      .           ISC1,ISC2,ISCS,ICOU,IXI,IXE,NCOPIB,NCOPEB,
-     .           IST_RATE, MSHFRM, IMF, istat_cop
+     .           IST_RATE, MSHFRM, IMF, istat_cop,ibrad,ibpol,ibtor
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1, 
      .            EIRENE_SHEATH, EIRENE_EMAXW  
@@ -283,8 +283,14 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
         READ (IUNIN,'(5L1)') LSYMET,LBALAN,LCHKQUD
         IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN = ',LSYMET,LBALAN
-        READ (IUNIN,'(4I6)') NFLA,NCUTB,NCUTL,IMF
+        READ (IUNIN,'(7I6)') NFLA,NCUTB,NCUTL,IMF,ibrad,ibpol,ibtor
         IF (IMF /= 0) MSHFRM=IMF
+        brad = 1._dp
+        if (ibrad < 0) brad = -brad
+        bpol = 1._dp
+        if (ibpol < 0) bpol = -bpol
+        btor = 1._dp
+        if (ibtor < 0) btor = -btor
         NCUTB_SAVE=NCUTB
         IF (TRCINT) THEN
           WRITE (iunout,*) ' NFLA,NCUTB,NCUTL = ',NFLA,NCUTB,NCUTL
@@ -1431,8 +1437,8 @@ C
           BY=PUY(IN)*RRB(IX,IY)+PVY(IN)*0.
           BZ=SQRT(1.-RRB(IX,IY)**2)
           BN=SQRT(BX*BX+BY*BY+BZ*BZ)
-          BXINTF(ITRI)=BX/BN
-          BYINTF(ITRI)=BY/BN
+          BXINTF(ITRI)=BX/BN*bpol
+          BYINTF(ITRI)=BY/BN*bpol
           BZINTF(ITRI)=BZ/BN
           BFINTF(ITRI)=BN
           VLINTF(ITRI)=VOLB(IX,IY)*VL
