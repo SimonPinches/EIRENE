@@ -2291,6 +2291,8 @@ c  read this (single) file in subr. REFDAT
         ALLOCATE (REFCUR%RCYCSR(nspz))
         ALLOCATE (REFCUR%RCYCCR(nspz))
         ALLOCATE (REFCUR%STPRMR(nspz))
+        ALLOCATE (REFCUR%ESPTSR(nspz))
+        ALLOCATE (REFCUR%ESPTCR(nspz))
 
         REFCUR%JSRS = 0
         REFCUR%JSRC = 0
@@ -2304,6 +2306,8 @@ c  read this (single) file in subr. REFDAT
         REFCUR%RCYCSR  = 0._DP
         REFCUR%RCYCCR  = 0._DP
         REFCUR%STPRMR  = 0._DP
+        REFCUR%ESPTSR  = 0._DP
+        REFCUR%ESPTCR  = 0._DP
 
         REFCUR%REFNAME = TRIM(ADJUSTL(ZEILE(9:)))
         IREAD=0
@@ -2413,8 +2417,8 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
 c  not a species card, hence: a sputer model card
             if (ispz < 0) then
               READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
-     .                          REFCUR%STPRMR(1),REFCUR%ESPTSR(ispz),
-     .                          REFCUR%ESPTCR(ispz)
+     .                          REFCUR%STPRMR(1),REFCUR%ESPTSR(1),
+     .                          REFCUR%ESPTCR(1)
               DO I=2,NSPZ
                 REFCUR%RCYCSR(I) = REFCUR%RCYCSR(1)
                 REFCUR%RCYCCR(I) = REFCUR%RCYCCR(1)
