@@ -1,3 +1,6 @@
+cdr   feb 2014:  only started to add comments, then copied to read_table1_hydkin
+cdr              for generalization
+
       subroutine EIRENE_read_hydkin (ir,filename,h123,reac,crc,rmn,rmx,
      .                        e_el,e_k,lffl)
  
@@ -18,20 +21,24 @@
       character(12) :: chr
       character(len=len(reac)+10) :: cpreac
       integer :: ianf, iend, ier, ll, io, ie, iflg
+
       type(hydkin_data), pointer :: hp
  
       open (unit=28+ifoff,file=filename)
- 
+
+c  skip blank lines at top of file
+  
       zeile = repeat(' ',len(zeile))
  
-! find number of temperatures
+
       do while (index(zeile,'Default energy mesh') == 0)
          read (28+ifoff,'(A132)') zeile
       end do
  
       allocate (hp)
       hp%reacname = reac
- 
+
+! find number of temperatures 
       read (28+ifoff,'(A132)') zeile
       ianf = index(zeile,'=')
       read (zeile(ianf+1:),*) hp%ntemps

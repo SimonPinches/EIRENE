@@ -948,10 +948,12 @@ csw
       ENDIF
 C
 
-      call eirene_vtkout_head
-      call eirene_vtkout_surfaces
-      call eirene_timea3_vtkout
-      call eirene_vtkout_tail
+      if (plvtk) then
+         call eirene_vtkout_head
+         call eirene_vtkout_surfaces
+         call eirene_timea3_vtkout
+         call eirene_vtkout_tail
+      end if
 
       RETURN
 6660  FORMAT (//1X,' CLOSED POLYGON OUTSIDE PLOTREGION')

@@ -13,11 +13,11 @@
  
       INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
-     .                         rscat(:)
+     .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, weight, peflux, totflux, sumrpw, sclfac, add,
      .            totrpw
       real(dp), external :: ranf_eirene
-      integer, allocatable :: iranpro(:)
+      integer, allocatable :: iranpro(:), ibuf(:,:)
       integer :: ier, i, istr, ncoreal, itotal, il, im, iu, ipe,
      .           ityp, iphot, iatm, imol, iion
       integer :: icopro(0:nprs), idistrib(0:nprs), icosend(0:nprs)
@@ -74,6 +74,11 @@
       write (iunout,*) ' itotal, totflux', itotal, totflux
       if (itotal <= nprnl) then
  
+        allocate (rbuf(size(rpart,1),size(rpart,2)))
+        allocate (ibuf(size(ipart,1),size(rpart,2)))
+        rbuf = 0._dp
+        ibuf = 0
+         
         call mpi_gather(iprnli,1,MPI_INTEGER,
      .                  icopro,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
  
@@ -87,8 +92,11 @@
           end do
         end if
         call mpi_gatherv(rpart,iprnli*npartt,MPI_REAL8,
-     .                   rpart,icosend,idistrib,MPI_REAL8,
+     .                   rbuf,icosend,idistrib,MPI_REAL8,
      .                   0,MPI_COMM_WORLD,ier)
+        if (my_pe == 0) then
+           rpart = rbuf
+        end if        
  
         if (my_pe == 0) then
           icosend = icopro*mpartt
@@ -98,13 +106,18 @@
           end do
         end if
         call mpi_gatherv(ipart,iprnli*mpartt,MPI_INTEGER,
-     .                   ipart,icosend,idistrib,MPI_INTEGER,
+     .                   ibuf,icosend,idistrib,MPI_INTEGER,
      .                   0,MPI_COMM_WORLD,ier)
- 
- 
+        if (my_pe == 0) then
+           ipart = ibuf
+        end if        
+  
         iprnli = itotal
         write (iunout,*) 'total flux on census ', totflux
  
+        deallocate (rbuf)
+        deallocate (ibuf)
+
       else
  
         itotal = nprnl

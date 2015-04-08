@@ -69,6 +69,8 @@ C MPARTC PARTICLE COORDINATES, INTEGER, (E.G.: SPLITTING)
      I ITYP,   IATM,   IMOL,   IION,   IPLS,   IPHOT,
      I ICOL,   IPOLGN, NINCX,  NINCY,  NINCZ,  NINCA,  NJUMP,
      I IUNIN,  IUNOUT, NIMINT, ITRJ,   IVTKOUT
+
+      DATA IUNIN / 1 /
  
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
@@ -207,7 +209,7 @@ csw 25sep08
       NINCZ  = 0
       NINCA  = 0
       NJUMP  = 0
-      IUNIN  = 0
+!pb      IUNIN  = 0
       IUNOUT = 6 + IFOFF
       IF (NRPES > 1) IUNOUT = 7 + IFOFF
       NIMINT = 0

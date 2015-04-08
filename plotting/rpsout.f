@@ -506,6 +506,7 @@ C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHNEN.
         enddo
         nco = anz
       ELSE
+        nco = 0
       ENDIF
 C
       if (nstab > 0) then

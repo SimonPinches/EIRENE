@@ -9,6 +9,7 @@
 !            is defined via ADAS database
 !  02.03.07: remove ESCD2* arrays
 !  02.03.07: fourth secondary group specifier introduced
+!
 !  02.03.07: IMESS added in photon line reaction data in order to allow for
 !            a complete printout of input data in case of HYDKIN default
 !            database option
@@ -225,7 +226,9 @@ csw added OTHER (OT) reactions
       SUBROUTINE EIRENE_ALLOC_COMXS (ICAL)
  
       INTEGER, INTENT(IN) :: ICAL
- 
+      INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
+      INTEGER(IL) :: MEM
+
       IF (ICAL == 1) THEN
  
         IF (ALLOCATED(XSTORV)) RETURN
@@ -373,12 +376,14 @@ C
  
         ALLOCATE (REACDAT(-11:NREAC))
         ALLOCATE (REACLINES(NREAC_LINES))
+
+        MEM = (NSTORV+NAMF)*8_IL + (MAMF+
+     .                      9_IL*(NATM+NMOL+NION)+4_IL*NPLS+
+     .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
+     .                      NREAC*LEN(REAC_NAME(1))
  
         WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' COMXS(1) ',(NSTORV+NAMF)*8 + (MAMF+
-     .                      9*(NATM+NMOL+NION)+4*NPLS+
-     .                      10*NPLS*(NATM+NMOL+NION))*4 +
-     .                      NREAC*LEN(REAC_NAME(1))
+     .        ' COMXS(1) ', MEM
  
  
       ELSE IF (ICAL == 2) THEN
@@ -562,10 +567,12 @@ c       vsigot  : fehlt noch
         ALLOCATE (LGAPI(0:NATM,0:NRPI,0:1))
         ALLOCATE (LGMPI(0:NMOL,0:NRPI,0:1))
         ALLOCATE (LGIPI(0:NION,0:NRPI,0:1))
+
+        MEM = (MSTOR1*MSTOR2+NMDTA)*8_IL +
+     .                      MMDTA*4_IL
  
         WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' COMXS(2) ',(MSTOR1*MSTOR2+NMDTA)*8 +
-     .                      MMDTA*4
+     .        ' COMXS(2) ', MEM
  
       END IF
  

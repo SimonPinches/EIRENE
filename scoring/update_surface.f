@@ -198,6 +198,7 @@ c  a test-ion is reemitted
           ENDIF
           IF (LPRFPIO .OR. LERFPIO) LMETSPW(NSPAM+IION) = .TRUE.
         ENDIF
+c  no tallies for emitted bulk particles
       ENDIF
  
       RETURN

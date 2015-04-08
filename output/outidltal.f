@@ -51,8 +51,8 @@ C
       WRITE (FORMA(5:7),'(I3)') MXSPZ
       
       FORME=REPEAT(' ',50)
-      FORME='(I6,   ES25.7)'
-      WRITE (FORME(5:7),'(I3)') MXSPZ 
+      FORME='(I10,   ES25.7)'
+      WRITE (FORME(6:8),'(I3)') MXSPZ 
       
       FORME2=REPEAT(' ',50)
       FORME2='(6X,   ES25.7)'
@@ -150,8 +150,8 @@ C
      .      '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
           WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
-          WRITE (IOUT,'(A,I6)') 'NCELLS:   ',NSBOX
-          WRITE (IOUT,'(A,I6)') 'NSPECIES: ',NFSTVI(ITAL)
+          WRITE (IOUT,'(A,I10)') 'NCELLS:   ',NSBOX
+          WRITE (IOUT,'(A,I10)') 'NSPECIES: ',NFSTVI(ITAL)
           WRITE (IOUT,'(A)') 'SPECIES'
           WRITE (IOUT,FORMA) (TRIM(TXTSPC(K,ITAL)), K=NFTI, NFTE)
           WRITE (IOUT,'(A)') 'UNITS'

@@ -27,9 +27,13 @@ C
       REAL(DP), INTENT(IN) :: X, Y
       INTEGER, INTENT(IN) :: NSPZ1, ISTEP, NSPZI, NSPZE, NS
       INTEGER, INTENT(OUT) :: IINDEX
-      REAL(DP) :: SP0(NSPZ,NGITT),SP1(NSPZ,NGITT),SP2(NSPZ,NGITT),
-     .            SP3(NSPZ,NGITT),SP4(NSPZ,NGITT),SP5(NSPZ,NGITT)
-      INTEGER :: IP0(NGITT),IP1(NGITT),IP2(NGITT),IP3(NGITT),IP4(NGITT)
+!pb      REAL(DP) :: SP0(NSPZ,NGITT),SP1(NSPZ,NGITT),SP2(NSPZ,NGITT),
+!pb     .            SP3(NSPZ,NGITT),SP4(NSPZ,NGITT),SP5(NSPZ,NGITT)
+      REAL(DP), ALLOCATABLE :: 
+     .            SP0(:,:),SP1(:,:),SP2(:,:),
+     .            SP3(:,:),SP4(:,:),SP5(:,:)
+!pb      INTEGER :: IP0(NGITT),IP1(NGITT),IP2(NGITT),IP3(NGITT),IP4(NGITT)
+      INTEGER, ALLOCATABLE :: IP0(:),IP1(:),IP2(:),IP3(:),IP4(:)
       REAL(DP) ::  DELR, XX, EIRENE_STEP, EIRENE_STEP0, EIRENE_STEP1
       INTEGER :: NS1, ISPZ1, ISPZ, EIRENE_LEARCA, I, IS, JJ, JJM, NSM,  
      .           J, IND, ISPZTI, ISPZV
@@ -46,6 +50,20 @@ C
       NLINV=.FALSE.
 1     CONTINUE
       IF (NLINV) THEN
+
+!pb  necessary for large geometries on supercomputer
+
+        allocate (sp0(nspz,ngitt))
+        allocate (sp1(nspz,ngitt))
+        allocate (sp2(nspz,ngitt))
+        allocate (sp3(nspz,ngitt))
+        allocate (sp4(nspz,ngitt))
+        allocate (ip0(ngitt))
+        allocate (ip1(ngitt))
+        allocate (ip2(ngitt))
+        allocate (ip3(ngitt))
+        allocate (ip4(ngitt))
+
         DO 2 J=1,NS
           SP0(1,J)=RRSTEP(ISTEP,J)
 2       CONTINUE
@@ -125,6 +143,17 @@ C
           IASTEP(ISTEP,J)=IP3(NSM-J+1)
           IBSTEP(ISTEP,J)=IP4(NSM-J+1)
 7       CONTINUE
+
+        deallocate (sp0)
+        deallocate (sp1)
+        deallocate (sp2)
+        deallocate (sp3)
+        deallocate (sp4)
+        deallocate (ip0)
+        deallocate (ip1)
+        deallocate (ip2)
+        deallocate (ip3)
+        deallocate (ip4)
       ENDIF
  
 C  inverting stepfunction: done

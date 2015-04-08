@@ -25,11 +25,13 @@
 
 C
       INCLUDE 'mpif.h'
-      real(dp), allocatable :: help(:), helpest(:)
+      real(dp), allocatable :: help(:), helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
-     .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
+C     .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
+     .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc
-      real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1) 
+C      real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1) 
+      real(dp) :: dummys(nlmpgs+1) 
       real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: igrp(0:nstra), icomgrp(0:nstra)
       integer :: ier1, ier, ir, npean, npeen, i, mpicw, ispc, my_pe_gr,
@@ -162,6 +164,7 @@ csw
 
 C
 C
+        allocate (helpv(nrtal+1), dummyv(nrtal+1))
         do ir=1,nvoltl
           dummyv(1:nrtal) = estimv(ir,1:nrtal)
           call mpi_reduce(dummyv,helpv,nrtal,
@@ -383,5 +386,7 @@ csw
       call mpi_group_free(mpicw,ier)
       call mpi_barrier(mpi_comm_world,ier)
 
+      if (allocated(helpv)) deallocate (helpv)
+      if (allocated(dummyv)) deallocate (dummyv)
       RETURN
       END

@@ -53,7 +53,7 @@ c     RETURNS: logical result (true/false) if surface hits block or not
         TYPE(ocNode), POINTER, INTENT(IN) :: CHILD
         INTEGER, INTENT(IN) :: SID
         INTEGER :: I, T, IND
-        REAL(DP), DIMENSION(3) :: A, B, C, O, d, RES, ip
+        REAL(DP), DIMENSION(3) :: A, B, C, O, d, RES, ip, h
         LOGICAL :: STATUS
         REAL(DP) :: S
 
@@ -154,17 +154,20 @@ c              use this as simplification of code here
 c           -> ONLY use this if abs(S) <= 1 ==> only use the edge one time,
 c               do not make it longer as it actually is!
 c           line from A to B:
-            CALL OCTREE_CheckBlock(A, B-A, CHILD, STATUS, IP, S)
+            H = B-A
+            CALL OCTREE_CheckBlock(A, H, CHILD, STATUS, IP, S)
             IF (STATUS .and. abs(S) .le. 1) THEN
               RETURN
             END IF
 c           line from B to C
-            CALL OCTREE_CheckBlock(B, C-B, CHILD, STATUS, IP, S)
+            H = C-B
+            CALL OCTREE_CheckBlock(B, H, CHILD, STATUS, IP, S)
             IF (STATUS .and. abs(S) .le. 1) THEN
               RETURN
             END IF
 c           line from C to A
-            CALL OCTREE_CheckBlock(C, A-C, CHILD, STATUS, IP, S)
+            H = A-C
+            CALL OCTREE_CheckBlock(C, H, CHILD, STATUS, IP, S)
             IF (STATUS .and. abs(S) .le. 1) THEN
               RETURN
             END IF

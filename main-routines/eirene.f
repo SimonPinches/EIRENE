@@ -79,6 +79,9 @@ C
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
       NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
+
+      CALL USR_DEFAULTS
+      IUNIN = IUNIN + IFOFF
  
       IUNOUT = 6
       IF (NRPES > 1) IUNOUT = 7
@@ -98,26 +101,26 @@ csw
  
       IF (MY_PE == 0) THEN
  
-      IF (ITNR == 1) THEN
-        CALL EIRENE_FIND_PARAM
-        CALL EIRENE_SET_PARMMOD(1)
-      ELSE
-        DUMMY=EIRENE_RESET_SECOND()
-      END IF
+        IF (ITNR == 1) THEN
+          CALL EIRENE_FIND_PARAM
+          CALL EIRENE_SET_PARMMOD(1)
+        ELSE
+          DUMMY=EIRENE_RESET_SECOND()
+        END IF
  
-      write (iunout,*) ' Number of PEs ',nprs
-      if (nprs .gt. nrpes) then
-        write (iunout,*) ' Number of PE too large '
-        write (iunout,*) ' increase parameter NRPES = ',nrpes
-        call EIRENE_exit_own(1)
-      endif
+        write (iunout,*) ' Number of PEs ',nprs
+        if (nprs .gt. nrpes) then
+          write (iunout,*) ' Number of PE too large '
+          write (iunout,*) ' increase parameter NRPES = ',nrpes
+          call EIRENE_exit_own(1)
+        endif
  
-      IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
-      CALL EIRENE_ALLOC_COMPRT
+        IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
+        CALL EIRENE_ALLOC_COMPRT
 !pb 021213      IUNOUT = 6  ! has been reset to 0 in INIT_COMPRT
 csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF
 !pb 021213      IUNOUT = IUNOUT + IFOFF
-      inentry = 0
+        inentry = 0
  
         NRAPS=60
         IRAPS=0
@@ -141,44 +144,45 @@ C
  
       IF (MY_PE == 0) THEN
 
-      TIMI=EIRENE_SECOND_OWN()
+        TIMI=EIRENE_SECOND_OWN()
 C
-      IF (INENTRY == 1) THEN
-        nlplas_save = nlplas
-        CALL EIRENE_SET_PARMMOD(1)
-        if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
-        CALL EIRENE_ALLOC_COMPRT
-        nlplas = nlplas_save
-      END IF
-      init_log = 1
-      CALL EIRENE_ALLOC_CESTIM(1)
-      CALL EIRENE_ALLOC_COMUSR(1)
-      CALL EIRENE_ALLOC_CADGEO
-      CALL EIRENE_ALLOC_CAI
-      CALL EIRENE_ALLOC_CPLOT
-      CALL EIRENE_ALLOC_CINIT
-      CALL EIRENE_ALLOC_CUPD
-      CALL EIRENE_ALLOC_CPOLYG
-      CALL EIRENE_ALLOC_CGRID
-      CALL EIRENE_ALLOC_CSPEZ
-      CALL EIRENE_ALLOC_CZT1(1)
-      CALL EIRENE_ALLOC_CTRCEI
-      CALL EIRENE_ALLOC_CGEOM(1)
-      CALL EIRENE_ALLOC_CSDVI(1)
-      CALL EIRENE_ALLOC_CTETRA
-      CALL EIRENE_ALLOC_CPES
-      IF (ITNR == 1) CALL EIRENE_ALLOC_COMSOU(1)
-      CALL EIRENE_ALLOC_COMSPL
-      CALL EIRENE_ALLOC_CTEXT(1)
-      CALL EIRENE_ALLOC_CLGIN
-      CALL EIRENE_ALLOC_COMXS(1)
-      CALL EIRENE_ALLOC_CTRIG
-      CALL EIRENE_ALLOC_COMNNL
+        IF (INENTRY == 1) THEN
+          nlplas_save = nlplas
+          CALL EIRENE_SET_PARMMOD(1)
+          if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
+          CALL EIRENE_ALLOC_COMPRT
+          nlplas = nlplas_save
+        END IF
 
-      TIME=EIRENE_SECOND_OWN()
-      write (iunout,*) ' CPU TIME for memory allocation ',time-timi
+        init_log = 1
+        CALL EIRENE_ALLOC_CESTIM(1)
+        CALL EIRENE_ALLOC_COMUSR(1)
+        CALL EIRENE_ALLOC_CADGEO
+        CALL EIRENE_ALLOC_CAI
+        CALL EIRENE_ALLOC_CPLOT
+        CALL EIRENE_ALLOC_CINIT
+        CALL EIRENE_ALLOC_CUPD
+        CALL EIRENE_ALLOC_CPOLYG
+        CALL EIRENE_ALLOC_CGRID
+        CALL EIRENE_ALLOC_CSPEZ
+        CALL EIRENE_ALLOC_CZT1(1)
+        CALL EIRENE_ALLOC_CTRCEI
+        CALL EIRENE_ALLOC_CGEOM(1)
+        CALL EIRENE_ALLOC_CSDVI(1)
+        CALL EIRENE_ALLOC_CTETRA
+        CALL EIRENE_ALLOC_CPES
+        IF (ITNR == 1) CALL EIRENE_ALLOC_COMSOU(1)
+        CALL EIRENE_ALLOC_COMSPL
+        CALL EIRENE_ALLOC_CTEXT(1)
+        CALL EIRENE_ALLOC_CLGIN
+        CALL EIRENE_ALLOC_COMXS(1)
+        CALL EIRENE_ALLOC_CTRIG
+        CALL EIRENE_ALLOC_COMNNL
+
+        TIME=EIRENE_SECOND_OWN()
+        write (iunout,*) ' CPU TIME for memory allocation ',time-timi
  
-      IF (ITNR == 1) NLSRON = .TRUE.
+        IF (ITNR == 1) NLSRON = .TRUE.
 C
 C   SET SOME CONSTANTS
 C
@@ -395,7 +399,10 @@ C  MODUSR IS ALSO CALLED AFTER THE LAST ITERATION TO ALLOW
 C  WRITING OF DATA ONTO SOME FILE AFTER EACH ITERATION
 C
       IF (NITER.GE.1.AND.IITER.LE.NITER) THEN
-        IF (MY_PE == 0) CALL EIRENE_MODUSR
+        IF (MY_PE == 0) THEN
+          IF (NBGK > 0) CALL EIRENE_MODBGK
+          CALL EIRENE_MODUSR
+        END IF
         IITER=IITER+1
         IF (IITER.LE.NITER) THEN
           DUMMY=EIRENE_RESET_SECOND()
@@ -450,7 +457,7 @@ CDR  WHAT IS THIS?
  
       IF (NLLAST) THEN
          CALL EIRENE_DEALLOC_COMUSR
-!pb         CALL EIRENE_DEALLOC_CREFMOD
+!pb      CALL EIRENE_DEALLOC_CREFMOD
          CALL EIRENE_DEALLOC_CREF
          CALL EIRENE_DEALLOC_CESTIM
          CALL EIRENE_DEALLOC_CADGEO

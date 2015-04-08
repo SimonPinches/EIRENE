@@ -28,6 +28,12 @@ c======================================================================
       REAL(DP), PARAMETER :: hlp_tol=0.001
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
+csw 03sep2013
+      INTEGER :: NADMOD,NASMOD, NRS,IPUNKT !VK
+      REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
+      real(dp) ::  xpt, ypt, XN, YN
+      integer ixn,iyn
+csw
       save first,onetwo,limpos,geometry_comment
       data first /.true./
 c======================================================================
@@ -75,9 +81,64 @@ C INNER RIGHT TARGET
           ypolpos(8)=npoint(2,6)
         end if
 
+csw 03sep2013
+        READ (IUNIN,'(2I6)') NADMOD,NASMOD
+        WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
+        DO I=1,NADMOD
+          READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+
+          GOTO (1,2,3,4,5,6),IPUNKT
+          WRITE (iunout,*) 'WRONG POINTNUMBER IN INFCOP '
+          WRITE (iunout,*) 'INPUT LINE READING'
+          WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+          WRITE (iunout,*) ' IS IGNORED '
+          GOTO 10
+
+    1     CONTINUE
+          P1(1,NRS)=XCOOR
+          P1(2,NRS)=YCOOR
+          P1(3,NRS)=ZCOOR
+          GOTO 10
+
+    2     CONTINUE
+          P2(1,NRS)=XCOOR
+          P2(2,NRS)=YCOOR
+          P2(3,NRS)=ZCOOR
+          GOTO 10
+
+    3     CONTINUE
+          P3(1,NRS)=XCOOR
+          P3(2,NRS)=YCOOR
+          P3(3,NRS)=ZCOOR
+          GOTO 10
+
+    4     CONTINUE
+          P4(1,NRS)=XCOOR
+          P4(2,NRS)=YCOOR
+          P4(3,NRS)=ZCOOR
+          GOTO 10
+
+    5     CONTINUE
+          P5(1,NRS)=XCOOR
+          P5(2,NRS)=YCOOR
+          P5(3,NRS)=ZCOOR
+          GOTO 10
+
+    6      CONTINUE
+          P6(1,NRS)=XCOOR
+          P6(2,NRS)=YCOOR
+          P6(3,NRS)=ZCOOR
+
+   10     CONTINUE
+        ENDDO
+C
+csw
+
         normalcase=.true.
-        do i=1,max(npplg/3,1)*4
-          read(iunin,*) onetwo(i),limpos(i)
+csw 03sep2013        do i=1,max(npplg/3,1)*4
+        do i=1,NASMOD
+csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
+          read(iunin,*) limpos(i),onetwo(i)
           if(onetwo(i).lt.0) then
             normalcase=.false.
             onetwo(i)=-onetwo(i)
@@ -87,7 +148,17 @@ C INNER RIGHT TARGET
         first=.false.
 !        write(*,*) 'GEOMETRY FOR'
 !        write(*,'(a80)') geometry_comment
-        if (npplg.le.3) then
+        N=max(npplg/3,1)*4
+csw 03sep2013
+        IF(NASMOD.NE.N) THEN
+          WRITE(iunout,*) "WARNING: NASMOD.NE.npplg", NASMOD,npplg
+          DO I=1,NASMOD
+           WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
+     w                   ONETWO(I),LIMPOS(I)
+          END DO
+csw
+csw        if (npplg.le.3) then
+        elseif (npplg.le.3) then
           if(onetwo(1).eq.0) then
             write(*,*) 'Geometry fixup skipped'
             goto 1001
@@ -128,7 +199,8 @@ c*** corners.
 c
       n=max(npplg/3,1)*4
 c      print '(/(2i8))',(limpos(i),onetwo(i),i=1,n)
-      do 990 i=1,n
+csw 03sep2013      do 990 i=1,n
+      do 990 i=1,nasmod
         if(onetwo(i).eq.2) then
           m=limpos(i)
           hlp_p1=p2(1,m)
@@ -185,14 +257,34 @@ c*** The chain is broken
 C
 C  ANFANG: MODIFY GEOMETRY
 C
-      do i=1,max(npplg/3,1)*4
-        if(onetwo(i).eq.1) then
+csw 03sep2013      do i=1,max(npplg/3,1)*4
+      do i=1,nasmod
+        select case(onetwo(i))
+        case(1)
           p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        else if(onetwo(i).eq.2) then
+        case(2) 
           p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        end if
+        CASE(10)
+          CALL FIND_NEAREST_NDS(p1(1,limpos(i)),p1(2,limpos(i)),
+     .                          XN,YN,J,IXN,IYN)
+          WRITE(iunout,*) "REPLACE i, limpos, p1(1), p1(2)",
+     w                i, limpos(i), p1(1,limpos(i)), p1(2,limpos(i))
+          WRITE(iunout,*) "...WITH NEAREST, INDS, IX, IY, XN, YN",
+     w               j,IXN,IYN,XN,YN
+          p1(1,limpos(i))=XN
+          p1(2,limpos(i))=YN
+        CASE(20)
+          CALL FIND_NEAREST_NDS(p2(1,limpos(i)),p2(2,limpos(i)),
+     .                          XN,YN,J,IXN,IYN)
+          WRITE(iunout,*) "REPLACE i, limpos, p2(1), p2(2)",
+     w                i, limpos(i), p2(1,limpos(i)), p2(2,limpos(i))
+          WRITE(iunout,*) "...WITH NEAREST, INDS, IX, IY, XN, YN",
+     w               j,IXN,IYN,XN,YN
+          p2(1,limpos(i))=XN
+          p2(2,limpos(i))=YN
+        end select
       end do
 c=====================================================
 C  ABSCHALTEN NICHT ERREICHBARER ODER DOPPELT VORHANDENER FLAECHEN
@@ -265,4 +357,61 @@ C  MODIFY REFLECTION MODEL AT TARGET PLATES
 C
 C
       RETURN
-      END
+      CONTAINS
+
+CVK
+C LOOKING FOR THE NODE OF NON-DEFAULT STANDARD SURFACES (NDS) WHICH IS
+C THE CLOSEST TO XP,YP. PUT IT TO XN,YN. INDS ISR THE INDEX OF CORRESPONDING NDS
+C
+      SUBROUTINE FIND_NEAREST_NDS(XP,YP,XN,YN,INDS,IXN,IYN)
+
+      IMPLICIT NONE
+
+      REAL(DP),INTENT(IN) :: XP,YP
+      REAL(DP),INTENT(OUT) :: XN,YN
+      INTEGER,INTENT(OUT) :: INDS,IXN,IYN
+      INTEGER :: IS,J,IR
+      REAL(DP) :: DIST,MINDIST
+
+      INTRINSIC HUGE
+
+       INDS=0
+       MINDIST=HUGE(MINDIST)
+       DO IS=1,NSTS
+          IF (INUMP(IS,2) .NE. 0) THEN
+           IR=INUMP(IS,2)
+           DO J=IRPTA(IS,1),IRPTE(IS,1)
+             DIST=(XP-XPOL(J,IR))**2+(YP-YPOL(J,IR))**2
+             IF(DIST.LT.MINDIST) THEN
+              IXN=J
+              IYN=IR
+              MINDIST=DIST
+              INDS=IS
+             END IF
+           END DO
+          ELSE IF(INUMP(IS,1) .NE. 0) THEN
+           IR=INUMP(IS,1)
+           DO J=IRPTA(IS,2),IRPTE(IS,2)
+             DIST=(XP-XPOL(IR,J))**2+(YP-YPOL(IR,J))**2
+             IF(DIST.LT.MINDIST) THEN
+              IXN=IR
+              IYN=J
+              MINDIST=DIST
+              INDS=IS
+             END IF
+           END DO
+          ELSE
+C  ERROR
+            WRITE(iunout,*) "GEOUSR,FIND_NEAREST_NDS, ",
+     w                 'CASE NOT FORESEEN: INS,INUMP: ',
+     >                  IS,(INUMP(IS,J),J=1,3)
+          ENDIF
+       END DO
+       XN=XPOL(IXN,IYN)
+       YN=YPOL(IXN,IYN)
+       IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
+     w                          "CAN NOT FIND A NEAREST POINT"
+      END SUBROUTINE  FIND_NEAREST_NDS
+
+      END subroutine eirene_geousr_biased
+

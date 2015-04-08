@@ -19,7 +19,7 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
  
       IMPLICIT NONE
  
@@ -30,7 +30,8 @@ C
      .           NSURPR, NVOLPR, NPRNLI, NCHORI,
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
-     .           NP1, NP2, NRKNOT, NRPLG, NPPLG, IERROR, IUNIN,
+!pb     .           NP1, NP2, NRKNOT, NRPLG, NPPLG, IERROR, IUNIN,
+     .           NP1, NP2, NRKNOT, NRPLG, NPPLG, IERROR,
      .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
      .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPI, NCOPII, NCOPIE, NREAC_ADD,
@@ -169,7 +170,7 @@ C
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
-      IUNIN=1+ifoff
+!pb      IUNIN=1+ifoff
  
       REWIND IUNIN
 C
@@ -794,7 +795,8 @@ C  FIND START OF NEXT INPUT BLOCK: 6
       DO
         READ (IUNIN,'(A72)') ZEILE
         IF ((ZEILE(1:3) == '***') .AND.
-     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
+!     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
+     ,      (INDEX(ZEILE,'6') > 0)) EXIT
       END DO
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699

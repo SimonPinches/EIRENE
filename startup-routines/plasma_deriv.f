@@ -203,6 +203,7 @@ c   check: itold ge 0 and itold.le 3
         ELSEIF (INDEX(CDENMODEL(IPLS),'MULTIPLY') > 0) THEN
 c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+          
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
  

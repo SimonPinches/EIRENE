@@ -37,7 +37,7 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
  
       IMPLICIT NONE
 C
-      INTEGER,PARAMETER :: NTXHST=19
+      INTEGER,PARAMETER :: NTXHST=20
  
       REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
@@ -68,7 +68,7 @@ C
       DATA ABSMAX,ORDMAX/21.,21./
       DATA XNULL,YNULL/9.,4./,XWN,YWN/0.,0./
       DATA IWRIT/0/,ISPL/2,101,103,205,100,206,208,104,105,
-     .                   106,107,108,200,201,202,204,207,4,104/
+     .                   106,107,108,200,201,202,204,207,4,104,105/
       DATA TXTHST
      .           /'LOCATE(1)           ',
      .            'ELECTR. IMPACT(2)   ',
@@ -89,7 +89,8 @@ C
      .            'FLUID LIMIT(17)     ',
      .            'ERROR DETECTED      ',
 c  next symbols/text: only for printout, not on plot.
-     .            'INT. GRID SURFACE(8)'/
+     .            'INT. GRID SURFACE(8)',
+     .            'DIFFUSION STEP(19)  '/
 C
 C  SYMBOL FOR PARTICLE TRACING ERROR
       ISYM_ERR=NTXHST-1
@@ -1488,10 +1489,11 @@ C
       timpb = time
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
-        IF (.NOT.NLPL3D) CALL
-     .  GRSCLV(0.,0.,REAL(ABSMAX,KIND(1.E0)),
-     .                                     REAL(ORDMAX,KIND(1.E0)))
+        IF (.NOT.NLPL3D) CALL GRSCLV (
+     .                         0.,0.,REAL(ABSMAX,KIND(1.E0)),
+     .                               REAL(ORDMAX,KIND(1.E0)))
         XNP05=XN+0.5/FX
+        CALL GRNWPN(1)
         DO IA=1,NTXHST-1
           YYIA=YN-(0.75*(IA-1))/FY
           CALL GRJMPS
@@ -1524,6 +1526,7 @@ C  FX=FY=1.
      .              'EIRENE TEST PARTICLES')
  
         IC=1
+        IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
         ICPSPZ=0
         DO 505 I=1,NPHOTI
           ISP=I
@@ -1828,7 +1831,7 @@ C     following ENTRY is for reinitialization of EIRENE (DMH)
       YWN =0.
       IWRIT = 0
       ISPL = (/2,101,103,205,100,206,208,104,105,
-     .         106,107,108,200,201,202,204,207,4,104/)
+     .         106,107,108,200,201,202,204,207,4,104,105/)
 csw 20oct08
       if(allocated(icpspz)) deallocate(icpspz)
       if(allocated(idash)) deallocate(idash)

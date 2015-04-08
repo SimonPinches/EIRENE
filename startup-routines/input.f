@@ -142,7 +142,8 @@ C
         REAL(DP), DIMENSION(:), POINTER ::
      .                                   RCYCFR,RCYCTR,RCPRMR,
      .                                   EXPPLR,EXPELR,EXPILR,
-     .                                   RCYCSR,RCYCCR,STPRMR
+     .                                   RCYCSR,RCYCCR,STPRMR,
+     .                                   ESPTSR,ESPTCR
         TYPE(REFMODEL),POINTER :: NEXT
       END TYPE REFMODEL
 C
@@ -192,7 +193,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR, JFEXMN, JFEXMX, ITOK, IER, IL, ILOGS,
-     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,IO
+     .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM, IO
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -227,7 +228,8 @@ C
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
-      IUNIN=1+ifoff
+!pb IUNIN set in EIRMOD_COMPRT
+!pb      IUNIN=1+ifoff
 C
 C  UNIT NUMBER FOR OUTPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15 AND IUNIN
@@ -685,6 +687,9 @@ C
        END IF
 
        READ (IUNIN,6666) NR1ST,NRSEP,NRPLG,NPPLG,NRKNOT,NCOOR
+       IF (NR1ST < 0) THEN
+          NR1ST = NRAD
+       END IF
         IF (INDGRD(1).LE.5) THEN
           IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
             READ (IUNIN,6664) RIA,RGA,RAA,RRA
@@ -1039,7 +1044,8 @@ C  READ LOCAL (FOR THIS SURFACE) SURFACE INTERACTION MODEL, NEXT 3 OR 4 INPUT CA
           IREAD=1
 C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           IF (ZEILE(1:1).NE.'*') THEN
-            READ (ZEILE,6664) RECYCS(1,NLJ),RECYCC(1,NLJ),SPTPRM(1,NLJ)
+            READ (ZEILE,6664) RECYCS(1,NLJ),RECYCC(1,NLJ),SPTPRM(1,NLJ),
+     .                        ESPUTS(1,NLJ),ESPUTC(1,NLJ)
             IREAD=0
           ELSEIF (ILSPT(NLJ).NE.0) THEN
             WRITE (iunout,*) 'WARNING: SPUTTERING AT NON DEF. SURFACE ',
@@ -1212,7 +1218,8 @@ C  READ LOCAL REFLECTION MODEL
           IREAD=1
 C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           IF (ZEILE(1:1).NE.'*'.AND.ZEILE(1:9).NE.'TRANSFORM') THEN
-            READ (ZEILE,6664) RECYCS(1,I),RECYCC(1,I),SPTPRM(1,I)
+            READ (ZEILE,6664) RECYCS(1,I),RECYCC(1,I),SPTPRM(1,I),
+     .                        ESPUTS(1,I),ESPUTC(1,I)
             IREAD=0
           ELSEIF (ILSPT(I).NE.0) THEN
             WRITE (iunout,*) 'WARNING: SPUTTERING FOR ADD. SURFACE ',I
@@ -1363,11 +1370,12 @@ C
 
 !  READ 'REAC'
 
-        IF (INDEX(FILNAM,'CONST') == 0) THEN
-C  INPUT FOR A CONSTANT CROSS SECTION, REACTION RATE, ETC.
-C        OR FOR A HARD WIRED POLYNOMIAL FIT. FIT COEFFICIENTS ARE READ
-C        FROM CURRENT INPUT FILE, STREAM IUNIN,
-C        NOT FROM EXTERNAL A&M DATA FILE
+        IF (INDEX(FILNAM,'CONST') == 0) THEN   !  INPUT FROM EXTERNAL A&M DATA FILE
+
+C  THE INPUT FLAG  "FT...." IS NOT  AVAILABEL HERE
+C  IT MIGHT BE READ LATER FROM A&M DATA FILE AMJUEL, IN SUBR. SLREAC
+C  READ INPUT FLAG "REAC", UP TO 50 CHARACTERS ALLOWED.
+C  PUT THIS FLAG ON REAC2.
           CALL
      .    EIRENE_READ_TOKEN(ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
           IF (IER > 0) THEN
@@ -2326,6 +2334,8 @@ C  DEFAULT
         REFCUR%RCYCSR=RECYCS(1,0)
         REFCUR%RCYCCR=RECYCC(1,0)
         REFCUR%STPRMR=SPTPRM(1,0)
+        REFCUR%ESPTSR=ESPUTS(1,0)
+        REFCUR%ESPTCR=ESPUTC(1,0)
 C
         READ (IUNIN,'(A72)') ZEILE
         IREAD=1
@@ -2395,16 +2405,25 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           case ('SPTPRM')
             if (ispz > 0)
      .          read (zeile(18:),'(E12.4)') REFCUR%STPRMR(ispz)
+          case ('ESPUTS')
+            if (ispz > 0)
+     .          read (zeile(18:),'(E12.4)') REFCUR%ESPTSR(ispz)
+          case ('ESPUTC')
+            if (ispz > 0)
+     .          read (zeile(18:),'(E12.4)') REFCUR%ESPTCR(ispz)
  
           case default
 c  not a species card, hence: a sputer model card
             if (ispz < 0) then
               READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
-     .                          REFCUR%STPRMR(1)
+     .                          REFCUR%STPRMR(1),REFCUR%ESPTSR(ispz),
+     .                          REFCUR%ESPTCR(ispz)
               DO I=2,NSPZ
                 REFCUR%RCYCSR(I) = REFCUR%RCYCSR(1)
                 REFCUR%RCYCCR(I) = REFCUR%RCYCCR(1)
                 REFCUR%STPRMR(I) = REFCUR%STPRMR(1)
+                REFCUR%ESPTSR(I) = REFCUR%ESPTSR(1)
+                REFCUR%ESPTCR(I) = REFCUR%ESPTCR(1)
               ENDDO
               ideflt_sput=1
               ideflt_spez=-1
@@ -3104,7 +3123,8 @@ C  search for input block 11b
 C  2D GEOMETRY PLOT
       READ (ZEILE,6665) PL1ST,PL2ND,PL3RD,PLADD,PLHST,
      .                  PLCUT(1),PLCUT(2),PLCUT(3),PLBOX,PLSTOR,
-     .                  PLNUMV,PLNUMS,PLARR,LRPSCUT,PLIDL
+     .                  PLNUMV,PLNUMS,PLARR,LRPSCUT,PLIDL,
+     .                  PLVTK
       READ (IUNIN,6666) NPLINR,NPLOTR,NPLDLR,NPLINP,NPLOTP,NPLDLP,
      .                  NPLINT,NPLOTT,NPLDLT
 C  3D GEOMETRY PLOT
@@ -3619,6 +3639,8 @@ C
           RECYCS(ISPZ,J)=RECYCS(1,J)
           RECYCC(ISPZ,J)=RECYCC(1,J)
           SPTPRM(ISPZ,J)=SPTPRM(1,J)
+          ESPUTS(ISPZ,J)=ESPUTS(1,J)
+          ESPUTC(ISPZ,J)=ESPUTC(1,J)
         end do
       end do
 
@@ -3647,6 +3669,8 @@ C
             RECYCS(:,NLJ) = REFLIST%RCYCSR
             RECYCC(:,NLJ) = REFLIST%RCYCCR
             SPTPRM(:,NLJ) = REFLIST%STPRMR
+            ESPUTS(:,NLJ) = REFLIST%ESPTSR
+            ESPUTC(:,NLJ) = REFLIST%ESPTCR
             IF (.NOT.ASSOCIATED(SURFCUR2)) THEN
               SURFLIST => SURFCUR%NEXT
               DEALLOCATE(SURFCUR)
@@ -3675,6 +3699,8 @@ C
         DEALLOCATE (REFCUR%RCYCSR)
         DEALLOCATE (REFCUR%RCYCCR)
         DEALLOCATE (REFCUR%STPRMR)
+        DEALLOCATE (REFCUR%ESPTSR)
+        DEALLOCATE (REFCUR%ESPTCR)
         DEALLOCATE (REFCUR)
       ENDDO
 
@@ -4083,6 +4109,11 @@ C
 !pb      write (iunout,*) ' cpu-time vor block 14 ',tpb2-tpb1
 !pb      tpb1 = tpb2
 
+! CALL TO ALLOC_BCKGRND MOVED HERE TO ALLOW SPECIFICATION OF VOL
+! IN IF0COP
+
+      IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
+ 
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"   ')
@@ -4499,7 +4530,8 @@ C
 !pb      write (iunout,*) ' cpu-time vor plasma definition ',tpb2-tpb1
 !pb      tpb1 = tpb2
 
-      IF (ANY(INDPRO(1:6) == 6)) CALL EIRENE_ALLOC_BCKGRND
+!  NOTHING IS DONE IF ARRAYS FOR BACKGROUND ARE ALREADY ALLOCATGED
+      IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
 !pb      IF (NMODE.NE.0.AND.IITER.LE.1) THEN
       IF (NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) THEN
 C  READ PLASMA BACKGROUND FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)

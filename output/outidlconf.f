@@ -26,24 +26,24 @@
 
       select case (levgeo)
       case (1,2)
-        write (iout,'(A,I6)') ' NR1ST ',NR1ST
-        write (iout,'(A,I6)') ' NP2ND ',NP2ND
-        write (iout,'(A,I6)') ' NT3RD ',NT3RD
+        write (iout,'(A,I10)') ' NR1ST ',NR1ST
+        write (iout,'(A,I10)') ' NP2ND ',NP2ND
+        write (iout,'(A,I10)') ' NT3RD ',NT3RD
       case (3)
-        write (iout,'(A,I6)') ' NR1ST ',NR1ST
-        write (iout,'(A,I6)') ' NP2ND ',NP2ND
-        write (iout,'(A,I6)') ' NT3RD ',NT3RD
-        write (iout,'(A,I6)') ' NRPLG ',NRPLG
+        write (iout,'(A,I10)') ' NR1ST ',NR1ST
+        write (iout,'(A,I10)') ' NP2ND ',NP2ND
+        write (iout,'(A,I10)') ' NT3RD ',NT3RD
+        write (iout,'(A,I10)') ' NRPLG ',NRPLG
       case (4)
         CNAME=CASENAME
         IF (LEN_TRIM(CNAME) == 0) CNAME='triang'
         write (iout,'(A,A)')  ' CASENAME ',CNAME
-        write (iout,'(A,I6)') ' NRKNOT ',NRKNOT
-        write (iout,'(A,I6)') ' NTRII  ',NTRII
+        write (iout,'(A,I10)') ' NRKNOT ',NRKNOT
+        write (iout,'(A,I10)') ' NTRII  ',NTRII
       case (5)
         write (iout,'(A,A)')  ' CASENAME ',CASENAME
-        write (iout,'(A,I6)') ' NCOORD ',NCOORD
-        write (iout,'(A,I6)') ' NTET   ',NTET
+        write (iout,'(A,I10)') ' NCOORD ',NCOORD
+        write (iout,'(A,I10)') ' NTET   ',NTET
       case default
        
       end select
