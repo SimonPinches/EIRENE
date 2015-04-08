@@ -830,15 +830,42 @@ csw 14apr2011
       CALL MPI_BCAST (INMTI3,NTRIS*N3RD,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
 
+!+++++++++++ In this block dynamical structures are proceeded with care
+!+++++++++++ IYS 27.02.2015
+
       DO I = 1, NLIMPS
         NMT = SURF_TRIAN(I)%NUMTR
         CALL MPI_BCAST (NMT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         IF (NMT > 0) THEN
           IF (MY_PE /= 0) THEN
             SURF_TRIAN(I)%NUMTR = NMT 
-            ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))
-            ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))
-            ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))
+            IF (ASSOCIATED(SURF_TRIAN(I)%ITRIAS)) THEN! IYS
+              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRIAS,1)) THEN ! IYS 
+                DEALLOCATE (SURF_TRIAN(I)%ITRIAS)  ! IYS 
+                NULLIFY (SURF_TRIAN(I)%ITRIAS)      ! IYS 
+                ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT)) ! IYS 
+              ENDIF
+            ELSE  ! IYS 
+              ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))
+            ENDIF
+            IF (ASSOCIATED(SURF_TRIAN(I)%ITRISI)) THEN! IYS
+              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRISI,1)) THEN ! IYS 
+                DEALLOCATE (SURF_TRIAN(I)%ITRISI)  ! IYS 
+                NULLIFY (SURF_TRIAN(I)%ITRISI)      ! IYS 
+                ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT)) ! IYS 
+              ENDIF
+            ELSE  ! IYS 
+              ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))
+            ENDIF
+            IF (ASSOCIATED(SURF_TRIAN(I)%BGLT)) THEN! IYS
+              IF (NMT+1.ne.UBOUND(SURF_TRIAN(I)%BGLT,1)) THEN ! IYS 
+                DEALLOCATE (SURF_TRIAN(I)%BGLT)  ! IYS 
+                NULLIFY (SURF_TRIAN(I)%BGLT)      ! IYS 
+                ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1)) ! IYS 
+              ENDIF
+            ELSE  ! IYS 
+              ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))
+            END IF 
           END IF 
           CALL MPI_BCAST (SURF_TRIAN(I)%ITRIAS,NMT,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -848,6 +875,10 @@ csw 14apr2011
      .                    MPI_REAL8,0,MPI_COMM_WORLD,ier)
         END IF
       END DO
+!+++++++++++ IYS 27.02.2015
+!+++++++++++ In this block dynamical structures are proceeded with care
+
+
  
       CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -901,15 +932,20 @@ csw 14apr2011
      .                MPI_COMM_WORLD,ier)
  
         IF (MY_PE > 0) THEN
-          ALLOCATE (TDMPAR(IPLS)%TDM)
-          ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
-          ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
-          ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
-          ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
-          ALLOCATE (TDMPAR(IPLS)%TDM%H2(NREF))
-          ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
-          ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
- 
+csw
+          if(.not.allocated(tdmpar)) then
+csw
+            ALLOCATE (TDMPAR(IPLS)%TDM)
+            ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%H2(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
+csw
+          endif
+csw  
           TDMPAR(IPLS)%TDM%NRE = NREF
           TDMPAR(IPLS)%TDM%G_BOLTZ = RHELP(1)
           TDMPAR(IPLS)%TDM%DELTAE = RHELP(2)
@@ -1291,6 +1327,10 @@ c     on the "root" node, where this is already done via timea0 after input
  
       CONTAINS
  
+!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM, 
+!++++++ where dynamical data structures are proceeded with care
+!++++++ IYS 27.02.2015
+
       SUBROUTINE EIRENE_BROAD_FIT_FORM (RP)
  
       IMPLICIT NONE
@@ -1301,7 +1341,9 @@ c     on the "root" node, where this is already done via timea0 after input
  
       IF (RP%IFIT < 0) THEN
  
-        IF (MY_PE .NE. 0) ALLOCATE (RP%LINE)
+        IF (MY_PE .NE. 0) THEN
+          IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)  ! IYS
+        ENDIF
 ! DATA FOR PHOTONIC LINE
         CALL MPI_BCAST (RP%LINE%E0,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
@@ -1357,8 +1399,22 @@ c     on the "root" node, where this is already done via timea0 after input
         CALL MPI_BCAST (ND2,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
  
         IF (MY_PE .NE. 0) THEN
-          ALLOCATE (RP%POLY)
-          ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+          IF (associated(RP%POLY)) THEN ! IYS 27.02.2015
+            IF (associated(RP%POLY%DBLPOL)) THEN
+              IF (ND.ne.UBOUND(RP%POLY%DBLPOL,1) .and.
+     #             ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
+                DEALLOCATE(RP%POLY%DBLPOL)
+                NULLIFY(RP%POLY%DBLPOL)
+                ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+              ELSE
+              ENDIF
+            ELSE
+              ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%POLY)
+            ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+          END IF
         END IF
  
         CALL MPI_BCAST (RP%POLY%IFEXMN,1,MPI_INTEGER,
@@ -1376,7 +1432,9 @@ c     on the "root" node, where this is already done via timea0 after input
  
       ELSE IF (RP%IFIT == 3) THEN
 ! ADAS DATA
-        IF (MY_PE .NE. 0) ALLOCATE (RP%ADAS)
+        IF (MY_PE .NE. 0) THEN
+          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
+        END IF
  
         CALL MPI_BCAST (RP%ADAS%NDENS,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
@@ -1384,11 +1442,52 @@ c     on the "root" node, where this is already done via timea0 after input
      .                  0,MPI_COMM_WORLD,ier)
  
         IF (MY_PE .NE. 0) THEN
-          ALLOCATE (RP%ADAS%DENS(RP%ADAS%NDENS))
-          ALLOCATE (RP%ADAS%TEMP(RP%ADAS%NTEMP))
-          ALLOCATE (RP%ADAS%DDE(RP%ADAS%NDENS))
-          ALLOCATE (RP%ADAS%DTE(RP%ADAS%NTEMP))
-          ALLOCATE (RP%ADAS%FIT(RP%ADAS%NTEMP,RP%ADAS%NDENS))
+          IF (ASSOCIATED(RP%ADAS%DENS)) THEN
+            IF (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%DENS,1)) THEN
+               DEALLOCATE (RP%ADAS%DENS)
+               NULLIFY (RP%ADAS%DENS)
+               ALLOCATE (RP%ADAS%DENS(RP%ADAS%NDENS))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%ADAS%DENS(RP%ADAS%NDENS))
+          ENDIF
+          IF (ASSOCIATED(RP%ADAS%TEMP)) THEN
+            IF (RP%ADAS%NTEMP.ne.UBOUND(RP%ADAS%TEMP,1)) THEN
+               DEALLOCATE (RP%ADAS%TEMP)
+               NULLIFY (RP%ADAS%TEMP)
+               ALLOCATE (RP%ADAS%TEMP(RP%ADAS%NTEMP))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%ADAS%TEMP(RP%ADAS%NTEMP))
+          ENDIF
+          IF (ASSOCIATED(RP%ADAS%DDE)) THEN
+            IF (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%DDE,1)) THEN
+               DEALLOCATE (RP%ADAS%DDE)
+               NULLIFY (RP%ADAS%DDE)
+               ALLOCATE (RP%ADAS%DDE(RP%ADAS%NDENS))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%ADAS%DDE(RP%ADAS%NDENS))
+          ENDIF
+          IF (ASSOCIATED(RP%ADAS%DTE)) THEN
+            IF (RP%ADAS%NTEMP.ne.UBOUND(RP%ADAS%DTE,1)) THEN
+               DEALLOCATE (RP%ADAS%DTE)
+               NULLIFY (RP%ADAS%DTE)
+               ALLOCATE (RP%ADAS%DTE(RP%ADAS%NTEMP))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%ADAS%DTE(RP%ADAS%NTEMP))
+          ENDIF
+          IF (ASSOCIATED(RP%ADAS%FIT)) THEN
+            IF ((RP%ADAS%NTEMP.ne.UBOUND(RP%ADAS%FIT,1)) .or.
+     #         (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%FIT,2))) THEN
+              DEALLOCATE (RP%ADAS%FIT)
+              NULLIFY (RP%ADAS%FIT)
+              ALLOCATE (RP%ADAS%FIT(RP%ADAS%NTEMP,RP%ADAS%NDENS))
+            END IF
+          ELSE
+            ALLOCATE (RP%ADAS%FIT(RP%ADAS%NTEMP,RP%ADAS%NDENS))
+          ENDIF
         END IF
  
         CALL MPI_BCAST (RP%ADAS%DENS,RP%ADAS%NDENS,MPI_REAL8,
@@ -1404,7 +1503,9 @@ c     on the "root" node, where this is already done via timea0 after input
  
       ELSE IF (RP%IFIT > 3) THEN
 ! HYDKIN DATA
-        IF (MY_PE .NE. 0) ALLOCATE (RP%HYD)
+        IF (MY_PE .NE. 0) THEN
+          IF (.NOT.ASSOCIATED(RP%HYD)) ALLOCATE (RP%HYD)
+        END IF
 
         CALL MPI_BCAST (RP%HYD%NTEMPS,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
@@ -1416,9 +1517,33 @@ c     on the "root" node, where this is already done via timea0 after input
      .                  0,MPI_COMM_WORLD,ier)
 
         IF (MY_PE .NE. 0) THEN
-          ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
-          ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
-          ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
+          IF (ASSOCIATED(RP%HYD%TEMPS)) THEN
+            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%TEMPS,1)) THEN
+               DEALLOCATE (RP%HYD%TEMPS)
+               NULLIFY (RP%HYD%TEMPS)
+               ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
+          ENDIF
+          IF (ASSOCIATED(RP%HYD%RATES)) THEN
+            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%RATES,1)) THEN
+               DEALLOCATE (RP%HYD%RATES)
+               NULLIFY (RP%HYD%RATES)
+               ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
+            ENDIF
+          ELSE
+            ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
+          ENDIF
+          IF (ASSOCIATED(RP%HYD%RATIO)) THEN
+            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%RATIO,1)) THEN
+               DEALLOCATE (RP%HYD%RATIO)
+               NULLIFY (RP%HYD%RATIO)
+               ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
+            END IF
+          ELSE
+            ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
+          ENDIF
         END IF
 
         CALL MPI_BCAST (RP%HYD%TEMPS,RP%HYD%NTEMPS,MPI_REAL8,
@@ -1432,5 +1557,10 @@ c     on the "root" node, where this is already done via timea0 after input
  
       RETURN
       END SUBROUTINE EIRENE_BROAD_FIT_FORM
+ 
+!++++++ IYS 27.02.2015
+!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM, 
+!++++++ where dynamical data structures are proceeded with care
+
  
       END
