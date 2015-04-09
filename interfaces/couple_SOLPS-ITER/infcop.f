@@ -228,6 +228,8 @@ C
       REAL(DP), ALLOCATABLE ::
      . TORL(:,:), ESHT(:,:), ORI(:,:)
 
+      REAL(DP) :: OUTHELP(NFL)
+
 
       INTEGER, ALLOCATABLE :: IHELP(:)
 C
@@ -3997,7 +3999,7 @@ C
 C
 C
         WRITE (37,*) 'FLUXES TO TARGET NO. ',I
-        WRITE (37,8888) SFNIT(I,:),SFEIT(I),SFEET(I)
+        WRITE (37,8888) (SFNIT(I,IF),IF=1,NFL),SFEIT(I),SFEET(I)
 C
         SFEIT(0)=SFEIT(0)+SFEIT(I)
         SFEET(0)=SFEET(0)+SFEET(I)
@@ -4174,9 +4176,15 @@ C
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
-        CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
+!pb  copy RESSNI to OUTHELP to avoid warnings from Intel compiler
+!PB        CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
+        OUTHELP(1:NFLA) = RESSNI(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSNI    ',OUTHELP,NFLA,5)
         WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
-        CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
+!pb  copy RESSMO to OUTHELP to avoid warnings from Intel compiler
+!PB        CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
+        OUTHELP(1:NFLA) = RESSMO(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSMO    ',OUTHELP,NFLA,5)
       ENDIF
 C
 c sputtering

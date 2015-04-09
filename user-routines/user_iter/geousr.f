@@ -489,17 +489,14 @@ C
         write(*,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-!  do not change IGJUM3 for additional cells
-            do J=1,NSURF
+            do J=1,NOPTIM
               IGJUM3(J,I)=1
             end do
           end do
         else
           nbits=bit_size(1)
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
+            do J=1,NOPTIM
               call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
             end do
           end do
@@ -508,16 +505,14 @@ C
         write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
+            do J=1,NOPTIM
               IGJUM3(J,I)=0
             end do
           end do
         else
           nbits=bit_size(1)
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
+            do J=1,NOPTIM
               call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
             end do
           end do
@@ -815,17 +810,14 @@ C
         write(*,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-!  do not change IGJUM3 for additional cells
-            do J=1,NSURF
+            do J=1,NOPTIM
               IGJUM3(J,I)=1
             end do
           end do
         else
           nbits=bit_size(1)
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
+            do J=1,NOPTIM
               call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
             end do
           end do
@@ -834,16 +826,14 @@ C
         write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
+            do J=1,NOPTIM
               IGJUM3(J,I)=0
             end do
           end do
         else
           nbits=bit_size(1)
           do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
+            do J=1,NOPTIM
               call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
             end do
           end do

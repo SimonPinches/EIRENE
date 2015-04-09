@@ -99,6 +99,7 @@ csw
       INTEGER, EXTERNAL :: RANGET_EIRENE
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
+      LOGICAL :: LOGHELP(NSTRA)
 C  OVERHEAD FOR POST PROCESSING (SECONDS)
       DATA N2/2/
 C
@@ -380,7 +381,10 @@ C
 C**** INITIALIZE COMMONS COUTAU AND CSPEZ
 C
 csw 19mar2013 moved to here after call to pedist (xmct/xmcp)
-      CALL EIRENE_INIT_COUTAU(NLSRON)
+!pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
+!pb      CALL EIRENE_INIT_COUTAU(NLSRON)
+      LOGHELP(1:NSTRA) = NLSRON(1:NSTRA)
+      CALL EIRENE_INIT_COUTAU(LOGHELP)
       FASCL(0)=1.
       FMSCL(0)=1.
       FISCL(0)=1.

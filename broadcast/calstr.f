@@ -235,15 +235,18 @@ C
             end do
           end do
 
-          call mpi_reduce(sgmcs(0,1:ncv),helpv,ncv,
+          dummyv(1:ncv) = sgmcs(0,1:ncv)
+          call mpi_reduce(dummyv,helpv,ncv,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	  if (my_pe_gr==0) sgmcs(0,1:ncv) = helpv(1:ncv)
 
-          call mpi_reduce(sgmcs(1,1:ncv),helpv,ncv,
+          dummyv(1:ncv) = sgmcs(1,1:ncv)
+          call mpi_reduce(dummyv,helpv,ncv,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	  if (my_pe_gr==0) sgmcs(1,1:ncv) = helpv(1:ncv)
 
-          call mpi_reduce(sgmcs(2,1:ncv),helpv,ncv,
+          dummyv(1:ncv) = sgmcs(2,1:ncv)
+          call mpi_reduce(dummyv,helpv,ncv,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	  if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
 	end if
