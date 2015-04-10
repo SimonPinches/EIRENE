@@ -186,6 +186,7 @@ C  2.C) RATE COEFFICIENT(TI,EBEAM)
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
+              tii = max(-2.3_dp,tii)
               CALL EIRENE_PREP_RTCS (KK,3,1,NEND,TII,CFF)
               TABCX3(IRCX,J,1:NEND) = CFF(1:NEND)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL

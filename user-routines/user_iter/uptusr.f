@@ -19,6 +19,8 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CPOLYG
       USE EIRMOD_CZT1
+      USE EIRMOD_CTRIG
+      use eirmod_extrab25
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                         XSTORV2(NSTORV,N2ND+N3RD), WV
@@ -49,24 +51,20 @@ CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
 CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
 CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
 C
+        if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
         ALLOCATE (VPX(NRAD))
         ALLOCATE (VPY(NRAD))
         ALLOCATE (VRX(NRAD))
         ALLOCATE (VRY(NRAD))
-        DO I=1,NRAD
-          VPX(I)=0.
-          VPY(I)=0.
-          VRX(I)=0.
-          VRY(I)=0.
-        END DO
-        DO IR=1,NR1STM
-          DO IP=1,NP2NDM
-            IRD=IR+(IP-1)*NR1P2
-            VPX(IRD)=PLNX(IR,IP)
-            VPY(IRD)=PLNY(IR,IP)
-            VRX(IRD)=PPLNX(IR,IP)
-            VRY(IRD)=PPLNY(IR,IP)
-          END DO
+        VPX=0.
+        VPY=0.
+        VRX=0.
+        VRY=0.
+        DO I=1,ntrii
+            VPX(I)=PLNXTRI(i)
+            VPY(I)=PLNYTRI(i)
+            VRX(I)=PPLNXTRI(i)
+            VRY(I)=PPLNYTRI(i)
         END DO
         IA1=NATMI+NMOLI
         IA2=2*IA1

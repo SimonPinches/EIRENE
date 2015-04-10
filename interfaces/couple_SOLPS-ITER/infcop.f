@@ -1,3 +1,10 @@
+cdr  150407:  orientation of B field made optional, additional input flags ibrad,ibpol,ibtor in block 14.
+cdr           magnitude of bfield (T) tranfered.
+cdr           do be checked: orientation of uudiag for reconstruction of carthesian flow velocity components.
+cdr           apparently not used: vvdiag.
+
+
+
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
 C                                                           B2.5,
 C                                                           DIVIMP,
@@ -171,7 +178,7 @@ C
      .          BVAC,TX,TY,VPRO,VTY,XMUE,PX,PY,
      .          XANF,YANF,PIPV,FLX_EIR,
      .          SUMN_OLD,SNIRES,SMORES,SEERES,SEIRES,UU,PITB,
-     .          DXPOL,DYPOL,PAR,brad,bpol,btor
+     .          DXPOL,DYPOL,PAR,dx,dy,brad,bpol,btor
 
        INTEGER, SAVE :: J, IRC, JC, INC, IADD, IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
@@ -186,7 +193,8 @@ C
      .           NEND,NINI,NSSIP,MTRI,
      .           IDUMMY,NR1STQ,ISTS,ITRI,IACT,IANF,ICOG,
      .           ISC1,ISC2,ISCS,ICOU,IXI,IXE,NCOPIB,NCOPEB,
-     .           IST_RATE, MSHFRM, IMF, istat_cop,ibrad,ibpol,ibtor
+     .           IST_RATE, MSHFRM, IMF, istat_cop,ibrad,ibpol,ibtor,
+     .           ntrfrm
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1, 
      .            EIRENE_SHEATH, EIRENE_EMAXW  
@@ -275,6 +283,7 @@ C
       lchkqud = .false.
       mshfrm = 0
       NLSHRT13 = .TRUE.
+      ntrfrm = 0
 C
       IF (.NOT.LSHORT.AND.ITIMV.LE.1) THEN
         WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
@@ -285,14 +294,20 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
         READ (IUNIN,'(5L1)') LSYMET,LBALAN,LCHKQUD
         IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN = ',LSYMET,LBALAN
-        READ (IUNIN,'(7I6)') NFLA,NCUTB,NCUTL,IMF,ibrad,ibpol,ibtor
+        READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
+     .                       ntrfrm, nfull,ibrad,ibpol,ibtor
         IF (IMF /= 0) MSHFRM=IMF
+
+cdr added in april 2015:
+c  flags for orientation of radial (not in use), poloidal and toroidal magnetic field components
         brad = 1._dp
         if (ibrad < 0) brad = -brad
         bpol = 1._dp
         if (ibpol < 0) bpol = -bpol
         btor = 1._dp
         if (ibtor < 0) btor = -btor
+
+
         NCUTB_SAVE=NCUTB
         IF (TRCINT) THEN
           WRITE (iunout,*) ' NFLA,NCUTB,NCUTL = ',NFLA,NCUTB,NCUTL
@@ -719,11 +734,14 @@ C          1.................2
 C                  1
 C
 C
-!pb      READ(33,*) (XTRIAN(I),I=1,NRKNOT)
-!pb      READ(33,*) (YTRIAN(I),I=1,NRKNOT)
-      DO I=1,NRKNOT
-        READ(33,*) J,XTRIAN(I),YTRIAN(I)
-      ENDDO
+      if (ntrfrm == 0) then
+         READ(33,*) (XTRIAN(I),I=1,NRKNOT)
+         READ(33,*) (YTRIAN(I),I=1,NRKNOT)
+      else
+         DO I=1,NRKNOT
+           READ(33,*) J,XTRIAN(I),YTRIAN(I)
+         ENDDO
+      end if
 C
       IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
         WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
@@ -1292,6 +1310,7 @@ C  MAGNETIC FIELD STRENGTH (TESLA)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHXB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHYB)
  
+c  now removed again: fluxes: y-fluxes across x-cell-faces, and vice versa
 C  X-SURFACE MAY BE INCLINED, HENCE: IT MAY RECEIVE A Y-FLUX TOO
 !      CALL PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,FNIX_YB)
 C  Y-SURFACE MAY BE INCLINED, HENCE: IT MAY RECEIVE A X-FLUX TOO
@@ -1336,17 +1355,19 @@ C  FIRST THE ZONE CENTERED DATA
      .             NPOINT,NPLP)
       CALL EIRENE_INDMAP (PRB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,NCUTB,NCUTL,
      .             NPOINT,NPLP)
-C  NOW THE SURFACE CENTERED DATA
+C  NOW THE SURFACE CENTERED PARTICLE FLUXES
       CALL EIRENE_INDMAP (FNIXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FNIYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+C  distinct from B2: these velocities are now cell centered in b2.5
       CALL EIRENE_INDMAP (UUB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VVB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (UPB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+C   same as in B2:  these ENERGY fluxes are surface centered
       CALL EIRENE_INDMAP (FEIXB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FEIYB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
@@ -1355,16 +1376,20 @@ C  NOW THE SURFACE CENTERED DATA
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FEEYB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+c  b2.5 only: additional velocities from plasma drifts, cell centered
       CALL EIRENE_INDMAP (UUDIAB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOInt,NPLP)
       CALL EIRENE_INDMAP (VVDIAB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+
+c  presumably:  POB  (electric potential ??) and BFELDB  are cell centered
       CALL EIRENE_INDMAP (POB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VOLB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (BFELDB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+
       CALL EIRENE_INDMAP (VPARXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VPARYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -1393,6 +1418,7 @@ C  NOW THE SURFACE CENTERED DATA
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (DELTA_SHEATHYB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+c
 !pb      CALL EIRENE_INDMAP (FNIX_YB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
 !pb     .             NCUTB,NCUTL,NPOINT,NPLP)
 !pb      CALL EIRENE_INDMAP (FNIY_XB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -1435,22 +1461,38 @@ C  ONLY ONE ION TEMPERATURE AVAILABLE FROM PLASMA FLUID CODE,
 C  SEE LOOP 2150 BELOW
           TIINTF(1,ITRI)=TIB(IX,IY)*T
 C
-          BX=PUX(IN)*RRB(IX,IY)+PVX(IN)*0.
-          BY=PUY(IN)*RRB(IX,IY)+PVY(IN)*0.
+CDR Construct magnetic field from:
+C    a) poloidal field direction is given by that of the poloidal cell face PU..(in),
+C      (PU(...) is cell centered)
+C       and in the direction of increasing poloidal B2 cell index
+c    b) toroidal field is in eirene positive z-direction (periodic cylinder, nltrz-option)
+c                                (or positive 3rd coodinate "phi", in case nltra-option)
+c    modulus of the ratio poloidal to poloidal field is given by the B2-array pitch RRB
+C    magnitude of B-field is given by B2-array BFELDB
+
+C  polodial field
+          BX=PUX(IN)*RRB(IX,IY)   ! +PVX(IN)*0., but radial field is zero
+          BY=PUY(IN)*RRB(IX,IY)   ! +PVY(IN)*0.
+c  toroidal field
           BZ=SQRT(1.-RRB(IX,IY)**2)
+c  normalize B-field vector to length 1 (one)
+c  and apply input flagts for b-field orientation
           BN=SQRT(BX*BX+BY*BY+BZ*BZ)
           BXINTF(ITRI)=BX/BN*bpol
           BYINTF(ITRI)=BY/BN*bpol
-          BZINTF(ITRI)=BZ/BN
-          BFINTF(ITRI)=BN
+          BZINTF(ITRI)=BZ/BN*btor
+          BFINTF(ITRI)=BFELDB(IX,IY)
+c
           VLINTF(ITRI)=VOLB(IX,IY)*VL
         ELSE
+c  outside the b2 grid: set default b-field: (0,0,1)
           TEINTF(ITRI)=TVAC
           TIINTF(1,ITRI)=TVAC
           BXINTF(ITRI)=0.
           BYINTF(ITRI)=0.
           BZINTF(ITRI)=1.
           BFINTF(ITRI)=1.
+c
 C         VLINTF(ITRI)=1.
         ENDIF
       ENDDO
@@ -1463,6 +1505,22 @@ C
         TIINTF(IPLS,ITRI)=TIINTF(1,ITRI)
 2150  CONTINUE
 C
+CDR  set density from B2 array DNIB, for each fluid
+CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
+c  without drifts:
+c  upb * pitch:  poloidal velocity (i.e. carthesian x,y direction).
+c  poloidal field direction is given by that of the poloidal cell face PU..(in),
+C  i.e. along a flux surface. (PU(...) is cell centered)
+c  and upb*(1-pitch^2): toroidal velocity  (i.e. carthesian z direction (nltrz) or
+c                                                toroidal phi direction (nltra)
+c  sign of flowfield follows the sign of poloidal grid in B2.
+c
+c  with drifts:
+c  uudia and vvdia are additional flow velocities in b2.5 only.
+c
+c
+c
+c
       IREAD=0
       DO 2200 IPLS=1,NPLSI
         IF (IFLB(IPLS).GT.0) THEN
@@ -1475,11 +1533,19 @@ C
               IF (IX .GT. 0) THEN
                 IN=IY+(IX-1)*NR1STQ
                 DIINTF(IPLS,ITRI)=DNIB(IX,IY,IFL)*D(IPLS)
+cdr  parallel velocity, cell centered
                 UPBC=UPB(IX,IY,IFL)
+cdr  diamagnetic velocity, i.e. in (B x grad-PSI) direction.
+cdr  take grad PSI ("radial") to be in direction of B2 iy grid.
+cdr  unclear: orientation
                 UDBC=UUDIAB(IX,IY,IFL)
+cdr  radial velocity
                 VVBC=0.5*(VVB(IX,IY-1,IFL)+VVB(IX,IY,IFL))
+cdr  ???  perhaps a radial component of drift velocities?  not used any further currently
                 VDBC=VVDIAB(IX,IY,IFL)
+cdr  pitch  B_pol/B_total
                 RRBC=RRB(IX,IY)
+cdr  now set carthesina flow velocity components
                 VXINTF(IPLSV,ITRI)=
      &           (PUX(IN)*(UPBC*RRBC-UDBC*SQRT(1.-RRBC**2))+
      &            PVX(IN)*VVBC)*V
@@ -1488,14 +1554,16 @@ C
      &            PVY(IN)*VVBC)*V
                 VZINTF(IPLSV,ITRI)=(UPBC*SQRT(1.-RRBC**2)+UDBC*RRBC)*V
               ELSE
+c  region outside  B2 grid
                 DIINTF(IPLS,ITRI)=DVAC
                 VXINTF(IPLSV,ITRI)=VVAC
                 VYINTF(IPLSV,ITRI)=VVAC
                 VZINTF(IPLSV,ITRI)=VVAC
               ENDIF
             ENDDO
-C  EIRENE BACKGROUND SPECIES "IPLS" FILLED WITH B2 DATA "IFL"
+C  EIRENE BACKGROUND SPECIES "IPLS" IS NOW FILLED WITH B2 DATA "IFL"
 2201      CONTINUE
+
 C  NO DATA FOR "IPLS" IN B2 FILES
         ELSEIF (IFLB(IPLS).EQ.-13) THEN
 C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
@@ -1509,6 +1577,7 @@ csw            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
 csw            CLOSE (UNIT=13)
 csw          ENDIF
 csw          IF (IO.EQ.0) THEN
+
             IPLSTI = MPLSTI(IPLS)
             IPLSV = MPLSV(IPLS)
             DO ITRI=1,NTRII
@@ -1672,6 +1741,49 @@ C
 2336      CONTINUE
         ENDIF
 2300  CONTINUE
+C
+
+csw 04dec2014 collecting normals for B2.5/B2 cells per triangle
+      write(iunout,*) 'IF0COP: collecting normals'
+      if(allocated(plnxtri)) then
+        deallocate(plnxtri, plnytri, pplnxtri, pplnytri)
+      endif
+      allocate(plnxtri(ntrii))
+      allocate(plnytri(ntrii))
+      allocate(pplnxtri(ntrii))
+      allocate(pplnytri(ntrii))
+      do it=1,ntrii
+        ix=ixtri(it)
+        iy=iytri(it)
+        ir = iy
+        ip = ix
+        if (ix<=0 .or. iy<=0) cycle
+
+!  set radial unit vector  e_r:
+!  set poloidal unit vector from underlying polygon grid, then take normal
+!  to that vector to be the radial unit vector
+        dx=xpol(ir,ip+1) - xpol(ir,ip)
+        dy=ypol(ir,ip+1) - ypol(ir,ip)
+        dd=sqrt(dx**2 + dy**2)+1.d-60
+c  normal to that vector dx,dy. But: orientation ???
+        plnxtri(it) = dy/dd
+        plnytri(it) =-dx/dd
+
+!  set poloidal unit vector  e_p:
+        dx=xpol(ir+1,ip) - xpol(ir,ip)
+        dy=ypol(ir+1,ip) - ypol(ir,ip)
+        dd=sqrt(dx**2 + dy**2)+1.d-60
+        if(dy .lt. 1.d-12) then
+          pplnxtri(it) = 0.d0
+          pplnytri(it) = 1.d0
+        else
+          pplnxtri(it) = 1.d0
+          pplnytri(it) =-dx/dy
+        endif
+        dd=(pplnxtri(it)**2 + pplnytri(it)**2)+1.d-60
+        pplnxtri(it)=pplnxtri(it)/dd
+        pplnytri(it)=pplnytri(it)/dd
+      enddo !it
 C
 !pb 22.01.2014 change of source strength for gas puff as required
 !pb            from SOLPS moved here from subroutine EIRENE_MCARLO
