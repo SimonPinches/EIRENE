@@ -4,7 +4,7 @@
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
 cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
-dr  naming conventions for variance tallies also for spectra tallies
+cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
       MODULE EIRMOD_PARMMOD
  
@@ -24,7 +24,7 @@ cdr  spcint --> spcs
      P         NPARTC=12, NPARTT=12,
      P         MPARTC=14, MPARTT=9
 csw 13apr07
-      integer, public :: IFOFF = 0
+      integer, public, save :: IFOFF = 0
  
       INTEGER, PUBLIC, SAVE ::
      I N1ST,   N2ND,   N3RD,   NADD,   NTOR,
