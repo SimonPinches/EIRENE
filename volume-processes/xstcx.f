@@ -15,6 +15,8 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 ! 20.01.14:  H.4 option for cx rate coefficients (e.g. CR rates: p + H-minus)
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
 C            remove plsti(nstordt), now: TII 
+c 25.03.15:  rename nelrcx  to nplrcx, in order to enable 
+c            consistency in notation with PI processes: not ready 
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,

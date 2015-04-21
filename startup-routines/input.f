@@ -1,3 +1,4 @@
+!    april 15:  esptcr, esptsr: sputtered particle energy flags introduced
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
 !cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
@@ -760,13 +761,7 @@ C  IS THERE ONE MORE LINE, OR IS NLPOL THE NEXT VARIABLE
           IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
             READ (ZEILE,6664) RIA,RGA,RAA
             IREAD = 0
-          ELSEIF (NLPLG) THEN
-            READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
-            IREAD = 0
-          ELSEIF (NLFEM) THEN
-            READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
-            IREAD = 0
-          ELSEIF (NLTET) THEN
+          ELSEIF (NLPLG.OR.NLFEM.OR.NLTET) THEN
             READ (ZEILE,6664) XPCOR,YPCOR,ZPCOR
             IREAD = 0
           ENDIF
@@ -4268,7 +4263,6 @@ C
       NSTRD=NR1ST*NP2ND*NT3RD
       NBLCKS=NBMLT*NP2ND*NT3RD
       NSBOX=NSURF+NRADD
-!pb      NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD
       NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD_TAL
       IF (NSBOX.GT.NRAD) THEN
         CALL EIRENE_MASPRM('NRAD',4,NRAD,'NSBOX',5,NSBOX,IERROR)

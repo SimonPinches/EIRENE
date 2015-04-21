@@ -69,18 +69,18 @@ c           some more speed ups in lorvdwprof. still much more to be done
       USE EIRMOD_CZT1
  
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-csw public funcs/subs
-       PUBLIC :: eirene_ph_init, eirene_ph_energy, eirene_ph_getcoeff,
+
+
+      PUBLIC :: eirene_ph_init, eirene_ph_energy, eirene_ph_getcoeff,
      .    eirene_ph_xsectph,
      .    eirene_ph_post_energy, eirene_ph_alloc_xsectph,
      .    eirene_ph_lorvdw, eirene_planck,
      .    eirene_ph_b21,
 !pb black body removal (core saturation)
      .    eirene_line_cutoff
-csw public vars
+
       integer, public, save  :: phv_muldens
       integer, public, save, allocatable ::
      .   PHV_LGAOT(:,:,:),PHV_LGPHOT(:,:,:),
@@ -92,12 +92,14 @@ csw public vars
 csw constants
       real(dp), public, save :: STEFBCON
       real(dp), public, save :: hwvdw
- 
+
 csw external
       integer, external :: eirene_idez, eirene_learc1, eirene_learc2
       real(dp), external :: ranf_eirene
  
-!pb black body removal (core saturation)
+!pb black body removal begin (try to eliminate saturated line core part)
+!     unfinished
+
       real(dp), allocatable, public, save  ::
      .          ecutleft(:,:), ecutright(:,:),
      .          phicut(:,:), phi_rj_left(:,:,:),
@@ -106,10 +108,11 @@ csw external
      .          xintleft(:,:), xintright(:,:), xint_inf(:,:),
      .          xint_cut(:,:)
       logical, allocatable, public, save :: lsrcpls(:)
- 
+
+!pb black body removal  end
  
       CONTAINS
- 
+
 c I/O & MISC-ROUTINES
       SUBROUTINE EIRENE_PH_INIT(ICAL)
  
@@ -119,8 +122,9 @@ c I/O & MISC-ROUTINES
       real(dp),allocatable,dimension(:,:) :: dummytgt
       integer, allocatable :: idummy(:)
       character(72) :: cline
+
       integer, intent(in) :: ical
- 
+
       select case(ical)
 csw ICAL == 0
       CASE(0)
@@ -152,12 +156,15 @@ c ICAL=3
       end select
       RETURN
       END SUBROUTINE EIRENE_PH_INIT
- 
+
+
 c CROSS-SECTIONS, RATES, RATE COEFFICIENTS
- 
+
       SUBROUTINE EIRENE_PH_GETCOEFF(kkin,isp,ity,icell,iipl,fac,res)
 c  evaluate absorption, emission and stim. emission rate coeff.
 c  for a photon with energy E=E0, in cell icell.
+C  This requires evaluation of the absorption line shape profiles "iptype"
+C  current version: iptype=0,1,2,3,4,5,6,7,8,9,10,11
  
 c  input:
 c          kkin: nrearc(irrc), nreaot(irot), reaction number from input block 4
@@ -184,20 +191,22 @@ c
       real(dp), intent(out) :: fac,res
       integer :: iid,ii,nrc,n1,n2,n,i,iflag,iwarn,ivs,kk,n4,pil,
      .           iil,ignd,iptype,ipl2
-      real(dp)::gam,e1,e2,e00,l00,l0,
-     .          v,dv,val,w,valm,dnd,xx,yy,pnue,pnue0,
-     .          fwhm,shift,dvdw,g1,g2,d1,d2,cvel,drft
+      real(dp):: gam,e1,e2,e00,l00,l0,
+     .           v,dv,val,w,valm,dnd,xx,yy,pnue,pnue0,
+     .           fwhm,shift,dvdw,g1,g2,d1,d2,cvel,drft
       real(dp):: ctheta2,dbz,bf
       real(dp):: t_e,t_p,t_g,omega_min,omega_max
- 
+
+c  reaction data for process kkin are now loaded into "reaction"
+c  includes also reaction%b12.
+c  
       if (kkin /= idreac) call EIRENE_get_reaction(kkin)
- 
       kk=kkin
- 
+
       iid = reaction%ircart
       fac=0._dp
       hwvdw=0._dp
- 
+
  
       select case(iid)
 c  case 1,2,3  : atoms point of view in radiation field
@@ -205,23 +214,23 @@ c  case 4,5,6  : photons point of view in neutral gas field
 c  to be done: remove case 7 from this routine. And add
 c              rates for stim. emission in calling program, e.g.
 c              all absorb. and stim emiss rates.
- 
+
       case(4,5,6)
 c     P.2 PH_ABS OT, P.2 PH_STIM OT
          if(lgvac(icell,iipl)) then
             res=0.
             return
          endif
- 
+
          e00=reaction%e0
          pnue0 = e00*EV2HZ
          pnue  = e0 *EV2HZ
- 
- 
+
+
          iptype = reaction%iprofiletype
          select case(iptype)
          case(0)
-c  discrete distribution, all mass at e0=e00
+c  delta distribution, all mass at e0=e00
             FAC=0._DP
             if (abs(E0-e00)/e00.lt.eps12) fac=1._DP
          case(1)
@@ -256,7 +265,7 @@ c  use energy scale
             write (iunout,*) ' iptype == 5 not implemented yet'
             call EIRENE_exit_own(1)
          case(6,7)
-!normal zeeman delta or doppler
+!normal zeeman: delta or doppler components
             gam=0._dp
             call EIRENE_zeeman_normalprof(icell,ctheta2,dbz)
             if(iptype == 6) then
@@ -270,7 +279,7 @@ c  use energy scale
      .                                 e00,7)
             endif
          case(8,9)
-!normal zeeman lorentz or voigt
+!normal zeeman:  lorentz or voigt components
            call EIRENE_zeeman_normalprof(icell,ctheta2,dbz)
            call EIRENE_naturalprof(gam)
            if(iptype == 8) then
@@ -321,10 +330,10 @@ c            npt=1
  
 c    .             npt,omega_min,omega_max)
            endif
-         end select ! iptype
-         end select ! iid
+        end select ! iptype
+      end select ! iid
  
-         select case(iid)
+      select case(iid)
  
          case(4)    ! absorption
             res=e00*reaction%b12
@@ -386,20 +395,23 @@ c           write (iunout,*) ' RATE CHANGED ACCORDINGLY '
 c        END IF
 c
 c        res=e00*reaction%B12*(1._dp- g1*d2/g2/d1)
+c result should have units cm**3/s --> multiply backgr. density!
+c        phv_muldens=1
 c        res=res*fac*clight/(4._dp*PIA)
 c
-c yes, multiply density
-c        phv_muldens=1
+
 c     case default
 c        write(iunout,*)'PHOTON MODULE (PH_GETCOEFF): iid=',iid,'not in use'
 c        res=0.
 c     end select
- 
+
       return
       END SUBROUTINE EIRENE_PH_GETCOEFF
  
+
+
       FUNCTION EIRENE_ZM_PROFILE(X, CTHETA2, DBZ, GAM,DND,
-     .  DRFT,E00,IPROF)
+     .                           DRFT,E00,IPROF)
      .         RESULT(RES)
 c  zeeman - profile - splitting
 c  input: photon energy x (ev)
@@ -413,7 +425,7 @@ c           9:  lorentz+doppler, i.e., voigt
       integer, intent(in) :: iprof
       real(dp) :: xx,yy,val,del(-1:1),e00d,res
       integer :: ipol
- 
+
       res = 0.
       del(-1)=-dbz
       del(0) = 0._dp
@@ -440,28 +452,31 @@ c           9:  lorentz+doppler, i.e., voigt
           xx = (x-(e00d+drft))/dnd
           yy=gam*0.5_dp/dnd
           val = DBLE(EIRENE_PH_FADDEEVA(xx,yy,dnd))
- 
+c
 c  next cases:  perhaps from atoms point of view?
 c               all taken out.
+
         case default
            write(*,*) 'zm_profile: error(1)'
            stop
        end select
  
        select case(ipol)
-        case(1,-1)
-           val = val * (1.d0+ctheta2)/4.d0
+       case(1,-1)
+          val = val * (1.d0+ctheta2)/4.d0
         case(0)
-           val = val * (1.d0-ctheta2)/2.d0
+          val = val * (1.d0-ctheta2)/2.d0
         case default
            write(*,*) 'zm_profile: error(2)'
            stop
         end select
- 
+
        res=res+val
-       end do  !  loop over 3 normal zeeman components done
-       return
-       end function EIRENE_zm_profile
+      end do  !  loop over 3 normal zeeman components done
+      return
+      end function EIRENE_zm_profile
+
+
  
       function EIRENE_zm_stark_profile(N,Te,Ti,T_g,B,
      .                          ctheta2,v,e00,e0)
@@ -747,6 +762,7 @@ c  was normalized to 4 for any fixed ctheta2.
         res=0.25*line_shape
 c     end do
       end function EIRENE_zm_stark_doppler_profile
+
  
 !******************************************************************
       function EIRENE_coll(N,Te,Ti,epsilon)
@@ -785,6 +801,7 @@ c     end do
 c  parameter for checking validity of approximation
 c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
       end function EIRENE_coll
+
 !******************************************************************
       function EIRENE_expint(arg)
 !Integral from x=arg to x=infinity of exp(-x)/x
@@ -810,8 +827,11 @@ c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
       end if
       end function EIRENE_expint
 !****************************** END *******************************
+
+
  
       REAL(DP) FUNCTION EIRENE_PH_B12() result(res)
+c  photon absorption B12 coefficient, obtained from stim. em. B21 coefficient by detailed balancing
       IMPLICIT NONE
 c calculates B12 Einstein coefficient in units: cm**2
       integer :: g1,g2,n1,n2
@@ -824,24 +844,27 @@ c calculates B12 Einstein coefficient in units: cm**2
       res=res*g2/g1
       return
       END FUNCTION EIRENE_PH_B12
- 
+
+
       REAL(DP) FUNCTION EIRENE_PH_B21() result(res)
+c stim. photon emission B21 coefficient, obtained from A21, by detailed balancing
       IMPLICIT NONE
 c calculates B21 Einstein coefficient in units: cm**2
- 
+
       real(DP) :: e00,pnue0
- 
+
       e00=reaction%e0
- 
+
       res=reaction%aik
       res=res * (hplnk*clight)**2 / (2.*e00**3)
 c convert [cm^2 / (eV*s) ] --> [cm^2]
       res=res*hplnk
+
       return
       END FUNCTION EIRENE_PH_B21
- 
-c SAMPLING
-! 020205  comments, cleaned up, otherwise identical to photon.f in eirene_04
+
+
+
 !
       REAL(dp) FUNCTION EIRENE_PH_ENERGY(icell,kk,ipl2,VN,nldoppl)
      .  result(res)
@@ -917,7 +940,7 @@ c  lorentz, no doppler
 c  lorentz plus doppler
 cdr      call voigtprof(ipl2,icell,dnd,drft,gam)
 cdr      res = sam_voigt(gam,dnd,drft,e00)
-         call EIRENE_naturalprof(gam)
+         call EIRENE_NATURALPROF(gam)
          res = EIRENE_sam_lorentz(gam,e00)
          nldoppl=.true.
       case(4)
@@ -1050,7 +1073,7 @@ c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
      .  'profiletype in ph_energy ? exit called EIRENE_'
         call EIRENE_exit_own(1)
       end select
- 
+
       return
       END FUNCTION EIRENE_PH_ENERGY
 c
@@ -1409,13 +1432,20 @@ c        n=2 on photon background , removed in july 05
       end select
  
       write(iunout,*) 'PHOTON MODULE EIRMOD_(PH_POST_ENERGY):'
-      write(iunout,*) '   end of subroutine EIRENE_reached'
+      write(iunout,*) '   end of subroutine reached'
       write(iunout,*) '   there has to be an error, check input!'
       call EIRENE_exit_own(1)
+      return
       END SUBROUTINE EIRENE_PH_POST_ENERGY
+
  
- 
-c PROFILE PARAMETERS
+c ROUTINES FOR EVALUATING SOME PARAMETERS OF LINE SHAPE FUNCTIONS:
+C  LORENTZ * VD WAALS      = eirene_LORVDWprof
+C  LORENTZ * DOPPLER       = eirene_VOIGTprof
+C  DOPPLER                 = eirene_Dopplerprof
+C  NATURAL LINE BROADENING = NATURALprof
+C  STARK FOR LYMAN ALPHA   = STRKprof
+C  NORMAL-ZEEMANN
  
       SUBROUTINE EIRENE_LORVDWPROF(icell,fwhm,shift,dvdw,lscale)
 !
@@ -1436,7 +1466,7 @@ c PROFILE PARAMETERS
       fwhm=0.
       shift=0.
       dvdw=0.
- 
+
       ipl=reaction%ignd
       e00=reaction%e0
       l00=hpcl/e00
@@ -1506,7 +1536,8 @@ c dE / dlambda = -hc*lambda^-2 = -E^2/(hc)
  
       return
       end subroutine EIRENE_lorvdwprof
- 
+
+
       subroutine EIRENE_voigtprof(ipl,icell,dnd,drft,gam)
 !  return gam, the FWHM of the Lorentz profile (natural broadening)
 !  return dnd, the doppler width (half width at 1/e maximum)
@@ -1515,7 +1546,7 @@ c dE / dlambda = -hc*lambda^-2 = -E^2/(hc)
       implicit none
       integer, intent(in) :: ipl,icell
       real(dp), intent(out) :: dnd,drft,gam
- 
+
       call EIRENE_dopplerprof(ipl,icell,dnd,drft)
       call EIRENE_naturalprof(gam)
       return
@@ -1538,7 +1569,7 @@ c dE / dlambda = -hc*lambda^-2 = -E^2/(hc)
       real(dp), intent(out) :: dnd,drft
       real(dp) :: e00,t
       integer :: ipl,iplti,iplv
- 
+
       ipl=iipl
       e00=reaction%e0
       iplti=mplsti(ipl)
@@ -1553,7 +1584,7 @@ c dE / dlambda = -hc*lambda^-2 = -E^2/(hc)
       endif
       return
       end subroutine EIRENE_DOPPLERPROF
- 
+
       subroutine EIRENE_NATURALPROF(gam)
 !  this routines returnes the FWHM parameter (gam)
 !  for the Lorentzian Natural line broadening profile
@@ -1561,7 +1592,7 @@ c dE / dlambda = -hc*lambda^-2 = -E^2/(hc)
 !  still to be done: precomputation of scaling factors
       IMPLICIT NONE
       real(dp), intent(out) :: gam
- 
+
       gam=0.
 c  NATURAL LINE BROADENING, Radians/s
       gam=gam+reaction%aik
@@ -1569,6 +1600,7 @@ c  convert to frequency (Hz), and then to energy, eV
       gam=gam*hplnk_bar
       return
       END subroutine EIRENE_NATURALPROF
+
  
       subroutine EIRENE_STRKPROF(icell, fwhm,shift)
 !
@@ -1652,7 +1684,7 @@ c  FWHM-Griem, done,  not in use.
       return
       end subroutine EIRENE_strkprof
  
- 
+
       subroutine EIRENE_zeeman_normalprof(icell,ctheta2,dbz)
 !
 !  return the angle theta of the photon relative to B
@@ -1664,14 +1696,24 @@ c  FWHM-Griem, done,  not in use.
       integer, intent(in) :: icell
       real(dp), intent(out) :: ctheta2,dbz
       real(dp)  :: ctheta
- 
+
       ctheta=velx*bxin(icell)+vely*byin(icell)+velz*bzin(icell)
       ctheta2=ctheta*ctheta
 c
       dbz=bfin(icell)*mub
- 
+
       return
       END subroutine EIRENE_zeeman_normalprof
+
+C.........................................................................................
+c  evaluate line shape functions at fixed frequency (or wavelength or energy) x
+c  1) lorentz                          --> evaluates lorentz profile
+c  2) doppler                          --> evaluates doppler profile
+c  planck
+c  3) faddeeva  (via humlick function) --> evaluates lorentz-doppler convol. (Voigt profile)
+c  faddeeva2
+c  lorvdw                              --> evaluates lorentz-vdWalls convolution
+
  
       REAL(dp) FUNCTION EIRENE_LORENTZ(xx,gm) result(res)
 !  evaluate lorentzian profile at x, with xx=x-shift,
@@ -1740,11 +1782,11 @@ c          i.e.   in 1/cm**2/s/sterad
       complex(dp) function EIRENE_ph_faddeeva(x,y,dnd) result(cres)
       implicit none
       real(dp), intent(in) :: x,y,dnd
- 
+
       cres=EIRENE_ph_humlik(x,y)/(dnd*sqrt(pia))
       return
       end function EIRENE_ph_faddeeva
- 
+c
       complex(dp) function EIRENE_ph_faddeeva2(x,y,icell,ipl)
      .  result(cres)
       implicit none
@@ -1752,9 +1794,7 @@ c          i.e.   in 1/cm**2/s/sterad
       integer, intent(in) :: icell,ipl
       real(dp) :: u,v
       logical :: flag
- 
-      !cres=EIRENE_ph_humlik(x,y)
- 
+   
       call EIRENE_ph_wofz(x,y,u,v,flag)
       if(flag) then
          write(iunout,*) 'PHOTON MODULE EIRMOD_(PH_FADDEEVA2):'
@@ -1806,8 +1846,71 @@ c  next: part with imag. fadeeva function
  
       return
       end function EIRENE_ph_lorvdw
+
+
+c...............................................................................
+
+c RANDOM SAMPLING x  (frequency, energy or wavelength) from line shape routines
+! 020205  comments, cleaned up, otherwise identical to photon.f in eirene_04
+c  0) delta          (nothing to be done)
+c  1)         lorentz           (Reiter)
+c  2)         doppler           (Reiter)
+c  6,7,8,9)   normal zeemann    (Reiter)
+c  zeemann-stark1               (Rosato)
+c  10,11)     zeemann-stark     (Rosato)
+c  3) voigt                     (Reiter)
+c  vdwqs                        (Reiter)
+
+
+      REAL(dp) FUNCTION EIRENE_SAM_LORENTZ(alph,shift) result(res)
+!  sample from a Lorentzian line profile.
+!  alph is the FWHM, shift is the shift.
+!  alphh = alph/2 is the HWHM (half width half maximum)
+!  the distribution is g(x)=1/pi*[alphh/{(x-shift)**2+alphh**2}]
+!  sampling is first from a standardized Lorentzian (alph=2, shift=0)
+!  i.e., from a Cauchy-distribution (x),
+!  then transform: xx=x*alphh+shift
+
+      IMPLICIT NONE
+      real(dp), intent(in) :: alph, shift
+      real(dp) :: rr, x, xx, alphh
+      alphh=alph*0.5
+      do
+        rr=PIHA*(RANF_EIRENE()*2._DP-1._DP)
+        x=tan(rr)
+!  x is sampled from Cauchy. Now transform to Lorentz(gam,shift)
+        xx=alphh*x+shift
+        res=xx
+        if (res > 0._dp) exit
+      end do
+      return
+      END FUNCTION EIRENE_SAM_LORENTZ
+
+      REAL(dp) FUNCTION EIRENE_SAM_DOPPLER(dnd,drft,e00) result(res)
+!
+!  sample from a central doppler profile
+!  dnd is the doppler width. drft is drift contribution in case of drifting maxw.
+!  dnd*sqrt(4.*log(2.)) is the FWHM
+!  i.e., sample from a Gaussian with standard deviation sig=dnd/sqrt(2)
+!
+      IMPLICIT NONE
+      real(dp), intent(in) :: dnd,drft,e00
+      real(dp) :: v1,v2,s,ar,f1,sig
  
- 
+      sig=dnd/sqrt(2._dp)
+c  now sample from a gaussian with standard deviation sig
+      do
+         v1=2.*RANF_EIRENE()-1.
+         v2=2.*RANF_EIRENE()-1.
+         s=v1*v1+v2*v2
+         if(s < 1.) exit
+      enddo
+      ar=log(s)
+      f1=v1*sqrt(-(ar+ar)/s)*sig
+c     f2=v2*sqrt(-(ar+ar)/s)*sig
+      res=f1+drft+e00
+      END FUNCTION EIRENE_SAM_DOPPLER
+
       function
      .  EIRENE_sam_zeeman_normal(ctheta2,dbz,gam,dnd,drft,e00,iprof)
      .                                result(res)
@@ -1831,9 +1934,9 @@ c   build sampling distribution for sampling the component, given theta
       strength(0)  =  1._dp-ctheta2  ! = sin(theta)^2
       strength(1)  =  strength(-1)
       dsum=2._dp
- 
+
       r0 = ranf_eirene()*dsum
- 
+
       ssum = 0.
       do ipol = -1,1
         ssum = ssum + strength(ipol)
@@ -2149,30 +2252,7 @@ c  EIRENE function "Lorentz" needs FWHM, gamma is HWHM.
  
       end function EIRENE_sam_zm_stark
  
-      REAL(dp) FUNCTION EIRENE_SAM_DOPPLER(dnd,drft,e00) result(res)
-!
-!  sample from a central doppler profile
-!  dnd is the doppler width. drft is drift contribution in case of drifting maxw.
-!  dnd*sqrt(4.*log(2.)) is the FWHM
-!  i.e., sample from a Gaussian with standard deviation sig=dnd/sqrt(2)
-!
-      IMPLICIT NONE
-      real(dp), intent(in) :: dnd,drft,e00
-      real(dp) :: v1,v2,s,ar,f1,sig
- 
-      sig=dnd/sqrt(2._dp)
-c  now sample from a gaussian with standard deviation sig
-      do
-         v1=2.*RANF_EIRENE()-1.
-         v2=2.*RANF_EIRENE()-1.
-         s=v1*v1+v2*v2
-         if(s < 1.) exit
-      enddo
-      ar=log(s)
-      f1=v1*sqrt(-(ar+ar)/s)*sig
-c     f2=v2*sqrt(-(ar+ar)/s)*sig
-      res=f1+drft+e00
-      END FUNCTION EIRENE_SAM_DOPPLER
+      
  
       REAL(dp) FUNCTION EIRENE_SAM_VOIGT(alph,dnd,drft,e00) result(res)
 !
@@ -2203,6 +2283,36 @@ c gauss*lorentz:
       res=f1+f2+drft+e00
       return
       END FUNCTION EIRENE_SAM_VOIGT
+
+
+
+
+
+
+
+ 
+      REAL(dp) FUNCTION EIRENE_SAM_VDWQS(dvdw,x0)
+     .         result(res)
+c  sample exponential (quasistatic van der Waals, red wing)
+c  in wavelength units: return l0-l00, l0>l00
+c  in energy (frequency) units: return e00-e0, e0<e00
+c  x0 is needed in case of energy sampling to ensure positive energies
+c  from convoluted profile.
+      IMPLICIT NONE
+      real(dp), intent(in) :: dvdw,x0
+      real(dp) :: xx,sig,beta, xxq
+ 
+      beta=piqu*dvdw
+      sig=1._dp/sqrt(beta)
+      do
+        xx=EIRENE_sam_doppler(sig,0._dp,0._dp)
+        xxq=xx*xx
+        if (xxq > 1._dp/x0) exit
+      end do
+      res=1._dp / xxq
+ 
+      return
+      end function EIRENE_sam_vdwqs
 c
 c
 c
@@ -2431,52 +2541,7 @@ C
 *
       END SUBROUTINE EIRENE_PH_WOFZ
  
-      REAL(dp) FUNCTION EIRENE_SAM_LORENTZ(alph,shift) result(res)
-!  sample from a Lorentzian line profile.
-!  alph is the FWHM, shift is the shift.
-!  alphh = alph/2 is the HWHM (half width half maximum)
-!  the distribution is g(x)=1/pi*[alphh/{(x-shift)**2+alphh**2}]
-!  sampling is first from a standardized Lorentzian (alph=2, shift=0)
-!  i.e., from a Cauchy-distribution (x),
-!  then transform: xx=x*alphh+shift
- 
-      IMPLICIT NONE
-      real(dp), intent(in) :: alph, shift
-      real(dp) :: rr, x, xx, alphh
-      alphh=alph*0.5
-      do
-        rr=PIHA*(RANF_EIRENE()*2._DP-1._DP)
-        x=tan(rr)
-!  x is sampled from Cauchy. Now transform to Lorentz(gam,shift)
-        xx=alphh*x+shift
-        res=xx
-        if (res > 0._dp) exit
-      end do
-      return
-      END FUNCTION EIRENE_SAM_LORENTZ
- 
-      REAL(dp) FUNCTION EIRENE_SAM_VDWQS(dvdw,x0)
-     .         result(res)
-c  sample exponential (quasistatic van der Waals, red wing)
-c  in wavelength units: return l0-l00, l0>l00
-c  in energy (frequency) units: return e00-e0, e0<e00
-c  x0 is needed in case of energy sampling to ensure positive energies
-c  from convoluted profile.
-      IMPLICIT NONE
-      real(dp), intent(in) :: dvdw,x0
-      real(dp) :: xx,sig,beta, xxq
- 
-      beta=piqu*dvdw
-      sig=1._dp/sqrt(beta)
-      do
-        xx=EIRENE_sam_doppler(sig,0._dp,0._dp)
-        xxq=xx*xx
-        if (xxq > 1._dp/x0) exit
-      end do
-      res=1._dp / xxq
- 
-      return
-      end function EIRENE_sam_vdwqs
+
 c
 c
 c
@@ -2489,20 +2554,20 @@ c R0=1.51*EXP(1.144*R) and R1=1.60*EXP(0.554*R) can be set by the the user
 c subject to the constraints 14.88<R0<460.4 and 4.85<R1<25.5
       REAL(dp) :: K,L
       real(dp), PARAMETER :: R0 = 146.7, R1 = 14.67 ! for R=4, region boundaries
- 
+
 c Constants
       real(dp), PARAMETER :: RRTPI = 0.56418958     ! 1/sqrt(pi)
       real(dp), PARAMETER :: Y0 = 1.5, Y0PY0 = Y0+Y0, Y0Q = Y0*Y0 ! for cpf12 algor.
       REAL(dp), save :: C(0:5), S(0:5), T(0:5)
 c SAVE preserves values of C, S and T (static) arrays between procedure calls
- 
+
       DATA C / 1.0117281,     -0.75197147,        0.012557727,
      .     0.010022008,   -0.00024206814,     0.00000050084806 /
       DATA S / 1.393237,       0.23115241,       -0.15535147,
      .     0.0062183662,   0.000091908299,   -0.00000062752596 /
       DATA T / 0.31424038,     0.94778839,        1.5976826,
      .     2.2795071,      3.0206370,         3.8897249 /
- 
+
 c Local variables
       INTEGER :: I, J              ! Loop variables
       INTEGER :: RG1, RG2, RG3     ! y polynomial flags
@@ -2514,20 +2579,20 @@ c Local variables
       REAL(dp) :: XP(0:5), XM(0:5), YP(0:5), YM(0:5) ! CPF12 temporary values
       REAL(dp) :: MQ(0:5), PQ(0:5), MF(0:5), PF(0:5)
       REAL(dp) :: D, YF, YPY0, YPY0Q
- 
+
 c**** Start of executable code *****************************************
- 
+
       RG1 = 1                   ! Set flags
       RG2 = 1
       RG3 = 1
       YQ  = Y*Y                 ! y^2
       YRRTPI = Y*RRTPI          ! y/SQRT(pi)
- 
+
 c Region boundaries when both K and L are required or when R<>4
       XLIM0 = R0 - Y
       XLIM1 = R1 - Y
       XLIM3 = 3.097*Y - 0.45
- 
+
       XLIM2 = 6.8 - Y
       XLIM4 = 18.1*Y + 1.65
       IF ( Y .LE. 0.000001 ) THEN ! When y<10^-6
@@ -2622,7 +2687,7 @@ c.....
             YP(J) = PF(J)*YPY0
             L=L+c(j)*(xm(j)+xp(j)) + s(j)*(ym(j)-yp(j))
          ENDDO
- 
+
          IF ( ABX .LE. XLIM4 ) THEN ! Humlicek CPF12 Region I
             DO J = 0, 5
                K = K + C(J)*(YM(J)+YP(J)) - S(J)*(XM(J)-XP(J))
@@ -2641,10 +2706,11 @@ c.....
       cres = CMPLX(K,L)
       RETURN
       END FUNCTION EIRENE_PH_HUMLIK
- 
- 
+
 c EIRENE utilities:
  
+
+
       SUBROUTINE EIRENE_PH_ALLOC_XSECTPH(nnrot)
 c  some parameters for OT processes are already in COMXS
 c  and arrays are allocated there. Some remain here. still needs
@@ -2679,39 +2745,41 @@ c allocate
       endif
       return
       END SUBROUTINE EIRENE_PH_ALLOC_XSECTPH
- 
+
+
+
       SUBROUTINE EIRENE_PH_XSECTPH(ipht,nrc,idsc)
       IMPLICIT NONE
       integer, intent(in) :: ipht,nrc,idsc,ipl
       integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,il,n0,n1,n2,
      .    nh,nl,iid,ifnd,mode,updf, j, nseot4, ierr, ipl0ti
       real(dp) :: factkk, ebulk
- 
+
       kk=ireacph(ipht,nrc)
       factkk=freacph(ipht,nrc)
       if(factkk == 0.) factkk=1.
- 
+
       IPL0 =eirene_IDEZ(IBULKPH(ipht,nrc),3,3)
       IPL1 =eirene_IDEZ(ISCD1PH(ipht,nrc),3,3)
       IPL2 =eirene_IDEZ(ISCD2PH(ipht,nrc),3,3)
       ITYP0=eirene_IDEZ(IBULKPH(ipht,nrc),1,3)
       ITYP1=eirene_IDEZ(ISCD1PH(ipht,nrc),1,3)
       ITYP2=eirene_IDEZ(ISCD2PH(ipht,nrc),1,3)
- 
+
 c collect niveau information data, N0, N1, N2
 cdr besser: anstatt dessen ein einziges E00 als funktion von KK
  
       updf=1
       mode=0
       ifnd=999
- 
+
       PHV_LGPHOT(ipht,idsc,0)=idsc
       PHV_LGPHOT(ipht,idsc,1)=ipl0
       PHV_LGPHOT(ipht,idsc,2)=ifnd
       PHV_LGPHOT(ipht,idsc,3)=kk
       PHV_LGPHOT(ipht,idsc,4)=updf
       PHV_LGPHOT(ipht,idsc,5)=mode
- 
+
 CDR  1ST SECONDARY
       PHV_N1STOTph(ipht,idsc,1) = ityp1
       PHV_N1STOTph(ipht,idsc,2) = ipl1
@@ -2724,8 +2792,8 @@ CDR  2ND SECONDARY
       PHV_N2NDOTph(ipht,idsc,3) = 0
       IF (ityp2 < 4)
      .  PHV_N2NDOTph(ipht,idsc,3) = eirene_IDEZ(ISCD2PH(ipht,nrc),2,3)
- 
- 
+
+
 cdr  CROSS SECTION: HERE: BEAM-BEAM, NO DOPPLER FROM THERMAL MOTION
       MODCOL(7,1,IDSC)=KK
 cdr  COLLISION MODEL 4: BEAM-BEAM
@@ -2818,9 +2886,9 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
         IERR=5
         GOTO 996
       ENDIF
- 
+
 C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
- 
+
       PHV_IESTOTph(ipht,idsc,1) = eirene_IDEZ(IESTMPH(IPHT,idsc),1,3)
       PHV_IESTOTph(ipht,idsc,2) = eirene_IDEZ(IESTMPH(IPHT,idsc),2,3)
       PHV_IESTOTph(ipht,idsc,3) = eirene_IDEZ(IESTMPH(IPHT,idsc),3,3)
@@ -2877,31 +2945,30 @@ c     CALL LEER(1)
       RETURN
 C
 990   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph. EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSectph. EXIT CALLED  '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR OT '
-      CALL EIRENE_EXIT_own(1)
+      CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
       WRITE (IUNOUT,*) 'MASS NUMBERS OF INTERACTING PARTICLES ',
      .                 'INCONSISTENT'
-      CALL EIRENE_EXIT_own(1)
+      CALL EIRENE_EXIT_OWN(1)
 993   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
       WRITE (IUNOUT,*) 'EBULK_ION .LE.0, BUT MONOENERGETIC ',
      .                 'DISTRIBUTION?'
       WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
-      CALL EIRENE_EXIT_own(1)
+      CALL EIRENE_EXIT_OWN(1)
 996   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED  EIRENE_'
+      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
       WRITE (iunout,*) 'NO CROSS SECTION AVAILABLE FOR NON DEFAULT OT'
       WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
-      WRITE (iunout,*)
-     .  'EITHER PROVIDE CROSS SECTION OR USE EIRMOD_DIFFERENT '
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS SECTION OR USE DIFFERENT '
       WRITE (iunout,*) 'POST COLLISION SAMPLING FLAG ISCDEA'
-      CALL EIRENE_EXIT_own(1)
+      CALL EIRENE_EXIT_OWN(1)
       return
       END SUBROUTINE EIRENE_PH_XSECTPH
- 
+
 c
 c  experimental routine for black body removal
 c

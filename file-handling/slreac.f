@@ -1,5 +1,12 @@
 !  03.08.06:  data structure for reaction data redefined
 !  25.04.07:  reading of rate coefficients from HYDKIN database added
+c  changed in 2011:  new atomic/molecular data structure introduced, 
+c                       REACDAT(IR)% ...
+!  jan.14: started to comment, cleanup
+!  april 2015: further commenting cleanup
+
+cdr:  possible conflict with file fort.29, which is also used in coupling to B2
+cdr:  subr. infcop.f, there to provide extra information regarding grid distortion   
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -13,8 +20,7 @@ c
 c
 C  input
 c    IR    : store data on eirene array CREAC(...,...,IR)
-cdr:  changed in 2011:  new atomic/molecular data structure introduced, 
-c                       REACDAT(IR)% ...
+
 c 
 c
 c
@@ -35,7 +41,28 @@ c               reac IS MIS-USED AS  fit-flag: iftflg.
 C               not NICE, VERY CONFUSING.
 C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
 
+c  what does that mean for H-COL? ADAS ?  what about "spectral database"?  where described, where read ?
+
+c  is iftflg not known in case of AMJUEL?
+
+C            in case FILNAM=ADAS:  the file name DSN = REAC_ELNAME.dat is opened (stream 29+ifoff)
+C                                  and then subroutine read_adas.f is called.
 c    CRC   : type of process, e.g. EI, CX, OT, etc.
+c  parameters for extrapolation beyond specified range [RMN,RMX] of data (asymptotics),
+c  these asymptotics parameters are read from input file, block 4., subroutine input.f
+c
+c    RCMIN: LOG(RMN), RMN: lower boundary for indep. dependent variable (energy, temperature, density)
+c           Default: RMX = exp(-20.)
+c    RCMAX: LOG(RMX), RMX: upper boundary for indep. dependent variable (energy, temperature, density)
+c           Default: RMX = exp(20.)
+c    FP
+c    JFEXMN
+c    JFEXMX
+
+c  specific input, only available in case FILNAM=ADAS
+c    ELNAME:  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
+C    IZ1   :  only in case FILNAM=ADAS:    ???????????????  ion charge in filename ?????
+
 C  internal
 C    ISW   <-- H123
 C    IO    derived from ISW, initial value of 2nd index in CREAC-array
@@ -55,6 +82,10 @@ C    IFLG  derived from ISW
 C          0 for potential, 1 for cross section, 2 for rate-coeff,
 C          3 for mom-weighted rate coeff. 4 for energy weighted rate coeff.
 c    IFTFLG: eirene flag for type of fitting expression ("fit-flag=...")
+c
+c   iftflg only kown for filname=const ?????
+c
+c
 C            DEFAULTS: =2 IFLG=0
 C                         FOR POTENTIAL (GEN. MORSE)
 C                         IFLG > 0:
@@ -64,6 +95,7 @@ C                      =3, IFLG=1:
 C                          ionisation/excitation cross section formula (METHANE,...)
 C                          IFLG > 1, IFLG=0:
 C                          NOT IN USE
+C
 C                      =L10 (L=0,1): ONLY ONE CONSTANT RATE OR RATE-COEFF.
 C                      =LMN L=0: rate coefficient.
 c                                multiply with density
@@ -130,8 +162,6 @@ C
       INTEGER :: I, IND, J, K, IH, I0P1, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, INC, IANF, IFILE, IL
       CHARACTER(80) :: ZEILE
-      CHARACTER(6) :: AMJUEL, HYDHEL, H2VIBR, SPECTR
-      CHARACTER(7) :: METHANE
       CHARACTER(2) :: CHR
       CHARACTER(3) :: CHRL, CHRR
       CHARACTER(200) :: DSN, DIR
@@ -147,12 +177,6 @@ C
       CHR='l0'
       I0=0
       CREACD = 0._DP
-C
-      AMJUEL='AMJUEL'
-      HYDHEL='HYDHEL'
-      METHANE='METHANE'
-      H2VIBR='H2VIBR'
-      SPECTR='SPECTR  '
 C
       IF (INDEX(CRC,'EI').NE.0.OR.
      .    INDEX(CRC,'DS').NE.0) ISWR(IR)=1
@@ -178,6 +202,7 @@ C
           IF (INDEX(FILNAM,'ADAS') == 0) THEN
 ! FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, ....: open data file
             OPEN (UNIT=29+ifoff,FILE=DBFNAME(IFILE))
+! FILNAM=ADAS: open data file
           ELSE
 ! FIND NAME OF SPECIFIC ADAS-FILE TO BE READ,  DSN=abc.dat
 !           reconstruct 'DSN' from:  reac, elname
@@ -428,7 +453,7 @@ C  READ 9 FIT COEFFICIENTS FROM INPUT FILE 'iunin'
 C
 C  READ FROM DATA FILE, stream 29
 C
-C  already ruled out here (done at this point) :
+C  already ruled out here (done at this point):
 C  FILNAM= "H-COL", "CONST", "ADAS", "HYDRTC", "PHOTON"
 C  in these cases: already returned to calling program
 C
@@ -452,24 +477,28 @@ C
 C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
       IF (ISW.EQ.0.OR.ISW.EQ.1.OR.ISW.EQ.2.OR.ISW.EQ.5.OR.ISW.EQ.8.OR.
      .    ISW.EQ.11) THEN
-C       IF (.NOT.LCONST) THEN
+C       IF (.NOT.LCONST) THEN  ! this is redundant, LCONST = TRUE is completely done already, 
+c                                already returned to calling program
 3       READ (29+ifoff,'(A80)',END=990) ZEILE
         INDFF=INDEX(ZEILE,'fit-flag')
         IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
-        IF (INDFF > 0) THEN
+c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
+        IF (INDFF > 0) THEN  !OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
+c  read parameter for type of fitting expression from data file
           READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
           GOTO 3
         ENDIF
+C  read only one constant:  (FIT-FLAG = 10, 110, ....)
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
           IND=INDEX(ZEILE,CHR(1:1))
           READ (ZEILE((IND+2):80),'(E20.12)') CREACD(1,1)
         ELSE
+C  READ 9 FIT COEFFICIENTS, SEPARATED BY 'CHR'  FIXED FORMAT E20.12
+C  THREE LINES WITH THREE DATA PER LINE
           DO 9 J=0,2
             IND=0
             DO 4 I=1,3
               IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
-C  READ 9 FIT COEFFICIENTS, SEPARATED BY 'CHR'  FIXED FORMAT E20.12
-C  THREE LINES WITH THREE DATA PER LINE
               READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
 4           CONTINUE
             READ (29+ifoff,'(A80)',END=990) ZEILE

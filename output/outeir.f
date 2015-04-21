@@ -1,5 +1,7 @@
 C  11.01.05:   text re. switching off generation limit corrected
 C              electron particle balance wtote instead of wtotp
+c  AUTUMN 2014:  Sputter tallies revised, also their printout
+c  11.04.15:  SPATOT RENAMED TO PMPTOT (pumped flux, rather than sputtered flux)
 C
       SUBROUTINE EIRENE_OUTEIR(INDOUT)
 
@@ -39,7 +41,7 @@ C
      .            DIFRI(0:NION,0:NSTRA)
       REAL(DP) :: TOTPH(0:NPHOT),DIFPH(0:NPHOT,0:NSTRA),
      .            DIFRPH(0:NPHOT,0:NSTRA)
-      REAL(DP) :: SPATOT(0:NSPZ)
+      REAL(DP) :: PMPTOT(0:NSPZ)
       REAL(DP) :: DIFR, TOTT, PGAINP, PLOSSP, DIFT, EGAINE, SPA, ELOSSE,
      .            EGAINP, ELOSSP, PGAINE, PLOSSE, SMEAN, OUTAUI, TALAV,
      .            TALTOT, DIF, SMSPT
@@ -2838,7 +2840,7 @@ C
       IF (LSPUMP) THEN
         WRITE (iunout,'(1X,A5,1X,A8,A12)')
      .        'NO.','SPECIES ',' PUMPED FLUX'
-        SPATOT = 0._DP
+        PMPTOT = 0._DP
         DO J=1,NLIMPS
           JJ=J
           IF (J.GT.NLIM) JJ=-(J-NLIM)
@@ -2848,22 +2850,22 @@ C
               WRITE (iunout,'(1X,I5,1X,A8,1PE12.4)')
      .               JJ,TEXTS(IS),SPUMP(IS,J)
               SPA=SPA+SPUMP(IS,J)*NPRT(IS)
-              SPATOT(IS) = SPATOT(IS) + SPUMP(IS,J)*NPRT(IS)
+              PMPTOT(IS) = PMPTOT(IS) + SPUMP(IS,J)*NPRT(IS)
             ENDIF
           ENDDO
           IF (SPA.GT.0.D0) CALL EIRENE_LEER(1)
-          SPATOT(0) = SPATOT(0) + SPA
+          PMPTOT(0) = PMPTOT(0) + SPA
         ENDDO
         CALL EIRENE_MASAGE
      .  ('PUMPED FLUX (ATOMIC) PER SPECIES               ')
         DO IS=1,NSPTOT
-          IF (SPATOT(IS) > 0.D0) WRITE (iunout,'(1X,A8,1PE12.4)')
-     .                           TEXTS(IS),SPATOT(IS)
+          IF (PMPTOT(IS) > 0.D0) WRITE (iunout,'(1X,A8,1PE12.4)')
+     .                           TEXTS(IS),PMPTOT(IS)
         END DO
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASAGE
      .  ('TOTAL PUMPED FLUX (ATOMIC)             ')
-        CALL EIRENE_MASR1 ('PUMPTOT= ',SPATOT)       
+        CALL EIRENE_MASR1 ('PUMPTOT= ',PMPTOT)       
       ELSE IF (LMSSPUMP) THEN
         CALL EIRENE_MASAGE
      .  ('SPUMP SWITCHED OFF => MISSING IN BALANCE       ')
