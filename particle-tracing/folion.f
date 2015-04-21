@@ -1,14 +1,3 @@
-C  DIFFERENCES FROM SUBR. FOLNEUT:
-C    0) INTRODUCE PARAMETERS VELPAR, VELPER: 
-C       VELOCITY PARALLEL AND PERP TO B FIELD, RESP.
-C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B-FIELD: VEL= VELPAR
-C                              B) GUIDING CENTRE, INCL DRIFTS (EXPL. EULER: JOSEF)
-C                              C) FULL GYRO MOTION (CORRECTIONS) NEAR TARGETS (TO BE DONE)
-C    2) ADDITIONALLY: "FOKKER PLANCK COLLISIONS", ISRFCL=4
-C                              A) LANGER MODEL NF, ANALYTICAL
-C                              B) TRUBNIKOV REFINED, SEMI-ANALYTICAL
-C                              C) BINARY: TAKIZUKA  (BENJAMIN)
-C                              D) HYBRID: PARTICLE-FLUID-FOKKER PLANCK (JOSEF)
 C  MAY05: CALL UPDATE FROM STATIC LOOP WITH IFLAG=4 (RATHER =1)
 C         WG. COLL EST. ON 1ST FLIGHT AFTER BIRTH.
 C  Sept 05: also vel=velpar before call  to ...col  routines.
@@ -22,7 +11,6 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !             is reset to full cartesian velocity in subr. NEWFIELD
 !PB 22.03.07: LEVGEO=6 --> LEVGEO=10
 
-
 !DR: introduce LCART=TRUE:
 !                              velx,vely,velx,vel: "true particle velocities"
 !                              in this case the reduced "guiding centre" velocity vector
@@ -32,12 +20,35 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !                              i.e. excluding the gyromotion.
 !                              in this latter case the last "true" velocity vector
 !                              is stored in: velxts, velyts, velzts, velts, velt(3)
-!  TRUE VELOCITIES ARE NEEDED IN FPATHI ROUTINES, AS WELL AS AT SOLID BOUNDARIES.
+!  TRUE (full) VELOCITIES ARE NEEDED IN FPATHI ROUTINES, AS WELL AS AT SOLID BOUNDARIES.
 !  ONLY REDUCED VELOCITIES (GUIDING CENTRE) AT ALL TRANSPARENT BOUNDARIES AND TO
 !  PUSH PARTICLES
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
 C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
+c  April 2015:  call to escape at periodicidy surfaces:  with reduced velocity, lcart=f
+c               no gyro phase sampling then.
+c               also for proper printout from chctrc for trace ions.
+
+
+
+C  .......................................................................................
+C  DIFFERENCES FROM SUBR. FOLNEUT:
+
+
+
+C    0) INTRODUCE PARAMETERS VELPAR, VELPER: 
+C       VELOCITY PARALLEL AND PERP TO B FIELD, RESP.
+C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B-FIELD: VEL= VELPAR
+C                              B) GUIDING CENTRE, INCL DRIFTS (EXPL. EULER: JOSEF)
+C                              C) FULL GYRO MOTION (CORRECTIONS) NEAR TARGETS (TO BE DONE)
+C    2) ADDITIONALLY: "FOKKER PLANCK COLLISIONS", ISRFCL=4
+C                              A) LANGER MODEL NF, ANALYTICAL
+C                              B) TRUBNIKOV REFINED, SEMI-ANALYTICAL
+C                              C) BINARY: TAKIZUKA  (BENJAMIN)
+C                              D) HYBRID: PARTICLE-FLUID-FOKKER PLANCK (JOSEF)
+
+
 
 C
       SUBROUTINE EIRENE_FOLION
@@ -1308,6 +1319,13 @@ C   USE FULL VELOCITY, NOT ONLY THE REDUCED PARALLEL VELOCITY.
 C   THIS IS DONE BY SAMPLING THE GYRO-PHASE IN SUBR. NEWFIELD
 C   REJECT THOSE GYROPHASES WHICH WOULD LEAD TO NEGATIVE ANGLE OF INCIDENCE
 C
+C   EXCEPTION: PERIODICITY SURFACE. THEN: NO NEED TO CONVERT TO 
+C              FULL CARTESIAN VELOCITY COMPONENTS
+      IF (ILIIN(MSURF).GE.4) THEN
+        PR=1.0
+        GOTO 385
+      ENDIF
+C
       IF (.NOT.LCART) THEN
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
@@ -1319,12 +1337,12 @@ C
      .     indf = 1
         ICOUN=0
         DO
-!pb          CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
+!pb       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-C  DOES THE PARTICLE SPEED POINT TOWARDS THE SURFACE
+C  DOES THE PARTICLE SPEED UNIT VECTOR POINT TOWARDS THE SURFACE ?
           IF (COSIN.GT.0.) EXIT
-C  NO, TRY NEXT GYRO PHASE
+C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1
           IF (ICOUN.EQ.100) THEN
             WRITE (IUNOUT,*) 'PARTICLE KILLED AT SURFACE IN FOLION'
@@ -1347,7 +1365,7 @@ C
 C  FOR NONTRANSPARENT SURFACES:
 C  ACCELERATION IN SHEATH IS DONE IN SUBR. ESCAPE
 C
-      CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+385   CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
       RETURN
 C
 C   100: START NEW ION TRACK
@@ -1482,7 +1500,7 @@ c  written for fnueqi without that factor.
       RETURN
       END FUNCTION FNUEQI
 
-C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
+C  ION-IONELSEIF (NINCY.NE.0) THEN ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
 C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
 
       FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
