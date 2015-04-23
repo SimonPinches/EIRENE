@@ -1,3 +1,16 @@
+cdr  23.04.2015    
+cdr  issue: unterlying coarse grid format for printout?
+cdr  see previous version.
+cdr  now: 
+cdr  ncelln test for coarse grid cell number replaced, by ixtri(itri)=0 test
+cdr 
+cdr  distinct from solps-iter version:  
+cdr  nr1tal, np2tal still set such that underlying structured grid is enabled for printout
+cdr  with PRTTAL, and SYMET option.  To be checked: is this consistent with NCLTAL coarse graining 
+cdr  to be done: 
+cdr  can one always find an "ncltal map" such that underlying structured grid is preserved 
+cdr  for printing and plotting?              
+c
 c??   ???     additional input read from block 14:
 c             LCHKQUD       
 c             IMF,ITCO 
@@ -138,9 +151,9 @@ C
       REAL(DP) :: CHPM(NPLS,NRAD), CHEEM(NRAD), CHEIM(NRAD),
      .            CHMOM(NPLS,NRAD)
       REAL(DP) :: DI(NPLS), VP(NPLS)
-      REAL(DP) :: PPPL_COP(NPLS,NRAD), CPPV(NCPV,NRAD), 
+      REAL(DP) :: PPPL_COP(NPLS,NRAD), CPPV(NCPV,NRAD),
      .            EPPL_COP(NRAD), EPEL(NRAD)
-      REAL(DP) :: PPLODA(NPLS,NRAD), CPVODA(NCPV,NRAD), 
+      REAL(DP) :: PPLODA(NPLS,NRAD), CPVODA(NCPV,NRAD),
      .            EPLODA(NRAD), EPEODA(NRAD)
 C
       REAL(DP) :: EFLX(NSTRA),
@@ -185,8 +198,8 @@ C
      .           ico, icp, icp2, icp3, istat_cop, IXM1, IYM1, NPBSN  !pb
      
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
-      REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1, 
-     .            EIRENE_SHEATH, EIRENE_EMAXW  
+      REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,
+     .            EIRENE_SHEATH, EIRENE_EMAXW
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
       LOGICAL, INTENT(INOUT) :: LSTP
@@ -263,6 +276,7 @@ C
       IERROR=0
 C
       IMODE=IABS(NMODE)
+!pb
       lchkqud = .false.
       mshfrm = 0
       itfrm = 0
@@ -281,12 +295,11 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
         IF (IMF /= 0) MSHFRM=IMF
         IF (ITCO /= 0) ITFRM=ITCO
         NCUTB_SAVE=NCUTB
-        IF (TRCINT) 
-     .  WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF,ITCO = ',
-     .                     NFLA,NCUTB,NCUTL,IMF,ITCO                              
-C
-        IF (TRCINT) 
-     .  WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'   
+        IF (TRCINT) THEN
+          WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF,ITCO = ',
+     .                       NFLA,NCUTB,NCUTL,IMF,ITCO                              
+          WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)' 
+        ENDIF
         DO 20 IPL=1,NPLSI
           READ (IUNIN,'(2I6,2E12.4)') I,IFLB(IPL),FCTE(IPL),BMASS(IPL)
           IF (TRCINT)
@@ -326,7 +339,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
 331         READ (IUNIN,'(A72)') ZEILE
             IREAD=1
             IF (ZEILE(1:1).EQ.'*') THEN
-C             WRITE (6,......)
+C             WRITE (iunout,......)
               GOTO 331
             ENDIF
             READ (ZEILE,'(12I6)') I,NDT(IT,IPRT),NINCT(IT,IPRT),
@@ -377,6 +390,11 @@ C  HERE: B2 VOLUME TALLIES
         NAIN = MAX(NAIN,NAINB)
         CALL EIRENE_ALLOC_CCOUPL(2)
         WRITE (iunout,*) '        NAINI = ',NAINB
+        IF (NAINB.GT.NAIN) THEN
+          CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
+          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
         IF (TRCINT.AND.NAINB.GT.0)
      .      WRITE (iunout,*) 'I,NAINS(IAIN),NAINT(IAIN)'
         DO 40 IAIN=1,NAINB
@@ -455,9 +473,9 @@ C
         ICPVE(2*NPLSI+IPLS)=3
         ICPRC(2*NPLSI+IPLS)=0
         TXTTAL(2*NPLSI+IPLS,NTALM)=
-     .  'MOMENTUM SOURCE                                    '
+     .  'PAR. MOM. SOURCE,  FOR IPLS         '
         TXTSPC(2*NPLSI+IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
-        TXTUNT(2*NPLSI+IPLS,NTALM)='AMP*CM**-3                 '
+        TXTUNT(2*NPLSI+IPLS,NTALM)='G*CM/S* AMP * CM**-3       '
 C
       ENDDO
 C
@@ -643,7 +661,7 @@ C
      .               NCUTL,NPOINT,NPLP)
 1020    CONTINUE
 C
-!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE 
+!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
 !  CARTHESIAN PLANE
         DO IY=1,NDYA
           DO IX =1,NDXA
@@ -680,7 +698,7 @@ C
 C
       ELSE
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 
+        WRITE (iunout,*)
      .    ' NO FILE FORT.29 WITH MODIFIED GRID INFO. FOUND '
         WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
      .                   'GRID IS USED '
@@ -828,17 +846,17 @@ CVKG TO FIX A BUG WITH GEOMETRY
      f                             XPOL(IR,IP),YPOL(IR,IP),
      f                             XPOL(IR,IP+1),YPOL(IR,IP+1))) THEN
                   IF(ISC1.GT.0) THEN
-                    ISC2=IS 
+                    ISC2=IS
                   ELSE
                     ISC1=IS
                   END IF
-                END IF 
+                END IF
               ENDDO
 
 C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON RADIAL SURFACE IR
 C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
               IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
-                NUMSI=MIN(ISC1,ISC2) 
+                NUMSI=MIN(ISC1,ISC2)
                 IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
 C
                   ICOG=ICOG+1
@@ -883,17 +901,17 @@ CVKG TO FIX GEOMETRY BUG
      f                             XPOL(IR,IP),YPOL(IR,IP),
      f                             XPOL(IR+1,IP),YPOL(IR+1,IP))) THEN
                   IF(ISC1.GT.0) THEN
-                    ISC2=IS 
+                    ISC2=IS
                   ELSE
                     ISC1=IS
                   END IF
-                END IF 
+                END IF
               ENDDO
 
 C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON POLOIDAL SURFACE IP
 C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
               IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
-                  NUMSI=MIN(ISC1,ISC2) 
+                  NUMSI=MIN(ISC1,ISC2)
                   IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
 C
                   ICOG=ICOG+1
@@ -915,6 +933,10 @@ C
           ENDIF
         ENDDO
 
+C  NEXT TOROIDAL SURFACES
+
+C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2
+
         DO IT = 1, NT3RD
           IF (IT.EQ.INUMP(ISTS,3)) THEN
             DO ITRI = 1, NTRII
@@ -929,13 +951,14 @@ C
             END DO
           END IF
         END DO
+
       ENDDO
 C
-C  NOW THE ADJUSTMENTS, WHICH ARE AUTOMATICALLY DONE IN GEOUSR OTHERWISE 
+C  NOW THE ADJUSTMENTS, WHICH ARE AUTOMATICALLY DONE IN GEOUSR OTHERWISE
 C  (INPUT BLOCK 15, B2-CODE SPECIFIC)
 C
-      if (.true.) then
-         call eirene_geousr
+      if(.true.) then
+        call eirene_geousr
       else
       READ (IUNIN,*)
       READ (IUNIN,'(2I6)') NADMOD,NASMOD
@@ -1003,7 +1026,8 @@ C
           WRITE (iunout,*) ' IS IGNORED '
         ENDIF
       ENDDO
-      end if
+
+      endif
 C
 C  DETERMINE THE ARRAY INMTI FOR ALL ADDITIONAL SURFACES
 C  ISTS=INMTI(ISIDE,NRCELL), ISIDE=1, 2, OR 3
@@ -1017,23 +1041,23 @@ C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESHGENERATOR
             VSY=P2(2,I)-P1(2,I)
             VS=SQRT(VSX**2+VSY**2)+EPS60
 C
-            DO 1111 IT=1,NTRII
+            DO 1111 ITRI=1,NTRII
               DO IS=1,3
                 IF (IS.EQ.1) THEN
-                  VTX=XTRIAN(NECKE(2,IT))-XTRIAN(NECKE(1,IT))
-                  VTY=YTRIAN(NECKE(2,IT))-YTRIAN(NECKE(1,IT))
+                  VTX=XTRIAN(NECKE(2,ITRI))-XTRIAN(NECKE(1,ITRI))
+                  VTY=YTRIAN(NECKE(2,ITRI))-YTRIAN(NECKE(1,ITRI))
                   ISCS=1
                   ISC1=1
                   ISC2=2
                 ELSEIF (IS.EQ.2) THEN
-                  VTX=XTRIAN(NECKE(3,IT))-XTRIAN(NECKE(2,IT))
-                  VTY=YTRIAN(NECKE(3,IT))-YTRIAN(NECKE(2,IT))
+                  VTX=XTRIAN(NECKE(3,ITRI))-XTRIAN(NECKE(2,ITRI))
+                  VTY=YTRIAN(NECKE(3,ITRI))-YTRIAN(NECKE(2,ITRI))
                   ISCS=2
                   ISC1=2
                   ISC2=3
                 ELSEIF (IS.EQ.3) THEN
-                  VTX=XTRIAN(NECKE(1,IT))-XTRIAN(NECKE(3,IT))
-                  VTY=YTRIAN(NECKE(1,IT))-YTRIAN(NECKE(3,IT))
+                  VTX=XTRIAN(NECKE(1,ITRI))-XTRIAN(NECKE(3,ITRI))
+                  VTY=YTRIAN(NECKE(1,ITRI))-YTRIAN(NECKE(3,ITRI))
                   ISCS=3
                   ISC1=3
                   ISC2=1
@@ -1049,24 +1073,25 @@ C  THE SURFACE
                   PY=P1(2,I)
                   ICOU=1
                   ISC=ISC1
-1112              TX=XTRIAN(NECKE(ISC,IT))
-                  TY=YTRIAN(NECKE(ISC,IT))
+1112              TX=XTRIAN(NECKE(ISC,ITRI))
+                  TY=YTRIAN(NECKE(ISC,ITRI))
 
                   if(.true.) then
                     l1=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
      .                                                p2(1,i),p2(2,i))
-                    TX=XTRIAN(NECKE(ISC2,IT))
-                    TY=YTRIAN(NECKE(ISC2,IT))
+                    TX=XTRIAN(NECKE(ISC2,ITRI))
+                    TY=YTRIAN(NECKE(ISC2,ITRI))
                     l2=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
      .                                                p2(1,i),p2(2,i))
                     if(l1 .and. l2) then
                       IGJUM0(I)=1
                       ICOG=ICOG+1
-                      INSPAT(ISCS,IT)=ICOG
-                      INMTI(ISCS,IT)=I
+                      INSPAT(ISCS,ITRI)=ICOG
+                      INMTI(ISCS,ITRI)=I
                       IF (LCHKQUD)
-     .                IREVERS(ISCS,IT)=INT(SIGN(1._DP,PX*VTRIX(ISCS,IT)+ 
-     .                                          PY*VTRIY(ISCS,IT)))
+     .                IREVERS(ISCS,ITRI)=
+     .                         INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
+     .                                        PY*VTRIY(ISCS,ITRI)))
                     endif
                   else
 
@@ -1081,12 +1106,12 @@ C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
 C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
                           IGJUM0(I)=1
                           ICOG=ICOG+1
-                          INSPAT(ISCS,IT)=ICOG
-                          INMTI(ISCS,IT)=I
+                          INSPAT(ISCS,ITRI)=ICOG
+                          INMTI(ISCS,ITRI)=I
                           IF (LCHKQUD)
-     .                    IREVERS(ISCS,IT)=
-     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,IT)+ 
-     .                                       PY*VTRIY(ISCS,IT)))
+     .                    IREVERS(ISCS,ITRI)=
+     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
+     .                                       PY*VTRIY(ISCS,ITRI)))
                           GOTO 1111
                         ELSE
                           ICOU=2
@@ -1106,12 +1131,12 @@ C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
 C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
                           IGJUM0(I)=1
                           ICOG=ICOG+1
-                          INSPAT(ISCS,IT)=ICOG
-                          INMTI(ISCS,IT)=I
-                          IF (LCHKQUD) 
-     .                    IREVERS(ISCS,IT)=
-     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,IT)+ 
-     .                                       PY*VTRIY(ISCS,IT)))
+                          INSPAT(ISCS,ITRI)=ICOG
+                          INMTI(ISCS,ITRI)=I
+                          IF (LCHKQUD)
+     .                    IREVERS(ISCS,ITRI)=
+     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
+     .                                       PY*VTRIY(ISCS,ITRI)))
                           GOTO 1111
                         ELSE
                           ICOU=2
@@ -1126,7 +1151,7 @@ C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
 
                 ENDIF
               ENDDO
-1111        CONTINUE
+1111        CONTINUE  ! END OF ITRI LOOP
           ENDIF
         ENDIF
       ENDDO
@@ -1175,6 +1200,7 @@ C  ADDITIONAL CELLS: THOSE CELLS THAT ARE ADDED FROM OUTSIDE ORIGINAL GRID, PLUS
       NRADD_TAL = (ICO - NSURF_TAL) + NRADD
 C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
       NSBOX_TAL=NSURF_TAL+NRADD_TAL
+
       NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
 
 C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
@@ -1183,34 +1209,35 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
           IF (NCHBAR(IS,ITRI).EQ.0.AND.INMTI(IS,ITRI).EQ.0) THEN
             WRITE (iunout,*) ' ERROR IN INFCOP '
             WRITE (iunout,*) ' OPEN SIDE OF TRIANGLE ',ITRI,' SIDE ',IS
-            call eirene_ncelln(ncltal(itri),ir,ip,it,ia,ib,
-     .                           nr1tal,np2tal,nt3tal,nbmlt,
-     .                          .true.,.true.,.false.)
-            if (ia.gt.0) then
+
+            if (ixtri(itri) == 0) then
               write (iunout,*) 
      .               'triangle outside original structured grid'
-              call eirene_masj2('itri,  ia      ',itri,ia)
+              call eirene_masj1('itri  ',itri)
             else
               write (iunout,*) 
      .               'triangle inside original structured grid'          
-              call eirene_masj3('nr,np,na                ',ir,ip,ia)
+              call eirene_masj2('nr,np          ',
+     .                  iytri(itri),ixtri(itri))
             endif
-            write (iunout,*) ' necke ',necke(1:3,it)
-            write (iunout,*) ' xtrian,ytrian(1) ',xtrian(necke(1,it)),
-     .                                       ytrian(necke(1,it))
-            write (iunout,*) ' xtrian,ytrian(2) ',xtrian(necke(2,it)),
-     .                                       ytrian(necke(2,it))
-            write (iunout,*) ' xtrian,ytrian(3) ',xtrian(necke(3,it)),
-     .                                       ytrian(necke(3,it))
+
+            write (iunout,*) ' necke ',necke(1:3,itri)
+            write (iunout,*) ' xtrian,ytrian(1) ',xtrian(necke(1,itri)),
+     .                                       ytrian(necke(1,itri))
+            write (iunout,*) ' xtrian,ytrian(2) ',xtrian(necke(2,itri)),
+     .                                       ytrian(necke(2,itri))
+            write (iunout,*) ' xtrian,ytrian(3) ',xtrian(necke(3,itri)),
+     .                                       ytrian(necke(3,itri))
             IS1=IS+1
             IF (IS.EQ.3) IS1=1
-            WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS,IT)),
-     .                                    YTRIAN(NECKE(IS,IT))
-            WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS1,IT)),
-     .                                    YTRIAN(NECKE(IS1,IT))
+            WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS,ITRI)),
+     .                                    YTRIAN(NECKE(IS,ITRI))
+            WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS1,ITRI)),
+     .                                    YTRIAN(NECKE(IS1,ITRI))
           ENDIF
         ENDDO
       ENDDO
+C
 
 
 
@@ -1218,7 +1245,7 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
       CALL EIRENE_HEADNG(' CASE REDEFINED IN COUPLE_TRIA: ',32)
       WRITE (iunout,*) 'NLPLG,NLFEM ',NLPLG,NLFEM
       WRITE (iunout,*) 'NLPOL       ',NLPOL
-      
+
       WRITE (IUNOUT,*) 'NEW (FINE, UN-STRUCTURED) GRID '
       CALL EIRENE_MASJ4(' NR1ST,   NP2ND,   NSBOX,  NRADD',
      .                     NR1ST,  NP2ND,  NSBOX,  NRADD)
@@ -1263,7 +1290,8 @@ C
      .          INDPRO(4).EQ.6)) RETURN
 C
       IF (NLPLAS) WRITE (iunout,*) 'PLASMA DATA EXPECTED ON BRAEIR'
-      IF (.NOT.NLPLAS) WRITE (6,*) 'PLASMA DATA EXPECTED ON FORT.31'
+      IF (.NOT.NLPLAS)
+     .   WRITE (iunout,*) 'PLASMA DATA EXPECTED ON FORT.31'
 C
       OPEN (UNIT=31,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND 31
@@ -1386,6 +1414,7 @@ C  ADDITIONAL INPUT TALLIES
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (BFELDB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+
 C  ADDITIONAL INPUT TALLIES FOR BOUNDARY CONDITIONS
       CALL EIRENE_INDMAP (VPARXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
@@ -1447,7 +1476,7 @@ CTRIG E
 2105  CONTINUE
 C
 C  SET PLASMA BACKGROUND ON TRIANGULAR GRID
-C  A TRIANGULAR CELL ITRI RECEIVED THE PLASMA DATA FROM ITS LARGER HOST CELL IX,IY,
+C  A TRIANGULAR CELL ITRI RECEIVES THE PLASMA DATA FROM ITS LARGER HOST CELL IX,IY,
 C  WITHOUT ANY WEIGHTING/INTERPOLATION ETC...
 C
 
@@ -1474,12 +1503,16 @@ C
           BFINTF(ITRI)=BN
           VLINTF(ITRI)=VOLB(IX,IY)*VL
         ELSE
+c  outside the b2 grid: 
+C    set default vaccum temperatures TVAC
+C    set default b-field: (0,0,1)
           TEINTF(ITRI)=TVAC
           TIINTF(1,ITRI)=TVAC
           BXINTF(ITRI)=0.
           BYINTF(ITRI)=0.
           BZINTF(ITRI)=1.
           BFINTF(ITRI)=1.
+c
 C         VLINTF(ITRI)=1.
         ENDIF
       ENDDO
@@ -1526,14 +1559,16 @@ C        NOTE: IN LINEAR DEVICES: RRB=1
                 VYINTF(IPLSV,ITRI)=(PUY(IN)*UUBC+PVY(IN)*VVBC)*V
                 VZINTF(IPLSV,ITRI)=(RBC*UPBC-RRB(IX,IY)*UDBC)*V
               ELSE
+c  region outside  B2 grid
                 DIINTF(IPLS,ITRI)=DVAC
                 VXINTF(IPLSV,ITRI)=VVAC
                 VYINTF(IPLSV,ITRI)=VVAC
                 VZINTF(IPLSV,ITRI)=VVAC
               ENDIF
             ENDDO
-C  EIRENE BACKGROUND SPECIES "IPLS" FILLED WITH B2 DATA "IFL"
+C  EIRENE BACKGROUND SPECIES "IPLS" IS NOW FILLED WITH B2 DATA "IFL"
 2201      CONTINUE
+
 C  NO DATA FOR "IPLS" IN B2 FILES
         ELSEIF (IFLB(IPLS).EQ.-13) THEN
 C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
@@ -1699,7 +1734,7 @@ C
       IF (ITARG.GT.NTARGI) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'SOURCE DATA FOR STRATUM ISTRA= ',ITARG
-        WRITE (iunout,*) 
+        WRITE (iunout,*)
      .    'CANNOT BE DEFINED IN IF2COP. CHANGE INDSRC(ISTRA)'
         CALL EIRENE_LEER(1)
         RETURN
@@ -1794,10 +1829,10 @@ C  TEST WHETHER TRIANGLE BELONGS TO QUADRANGULAR CELLS ALONG THE TARGET
      f                             YTRIAN(NECKE(IS1,IT)),
      f                             XPOL(IY,NPES),YPOL(IY,NPES),
      f                             XPOL(IY+1,NPES),YPOL(IY+1,NPES))
-                  IF ( L1 .AND. L2 ) THEN 
+                  IF ( L1 .AND. L2 ) THEN
                     ITRI=ITRI+1
                     IF (ITRI.GT.NGITT) THEN
-                      WRITE (iunout,*) 
+                      WRITE (iunout,*)
      .                        ' NOT ENOUGH GRIDPOINTS FOR DEFINING',
      .                        ' STEP-FUNCTION '
                       WRITE (iunout,*) ' INCREASE PARAMETER NGITT '
@@ -1807,10 +1842,10 @@ C  TEST WHETHER TRIANGLE BELONGS TO QUADRANGULAR CELLS ALONG THE TARGET
 !  triangle found
                     NUMTRI(ITRI)=IT
                     NUMSID(ITRI)=IS
-                    IF (LCHKQUD) 
-     .              IREVERS(IS,IT) = INT(SIGN(1._DP,DXPOL*VTRIX(IS,IT) + 
+                    IF (LCHKQUD)
+     .              IREVERS(IS,IT) = INT(SIGN(1._DP,DXPOL*VTRIX(IS,IT) +
      .                                              DYPOL*VTRIY(IS,IT)))
-                     ICOU = ICOU + 1
+                    ICOU = ICOU + 1
                     EXIT
                   END IF
                 end if
@@ -1899,7 +1934,7 @@ C  TORL: TOROIDAL LENGTH (CM) AT TARGET SEGMENT IY: CENTER OF GRAVITY
             IPLSV=MPLSV(IPLS)
             ELSTEP(IPLS,ITARG,IG)=0.
             TISTEP(IPLSTI,ITARG,IG) = TIB(NPBC,IY)*T
-C  DISTEP: ZONE CENTERED DENSITY IN BOUNDARY ZONE 
+C  DISTEP: ZONE CENTERED DENSITY IN BOUNDARY ZONE
             IFL=IFLB(IPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3013
             DISTEP(IPLS,ITARG,IG)=DNIB(NPBC,IY,IFL)*D(IPLS)
@@ -2028,10 +2063,10 @@ C  TEST WHETHER TRIANGLE BELONGS TO QUADRANGULAR CELLS ALONG THE TARGET
      f                             YTRIAN(NECKE(IS1,IT)),
      f                             XPOL(NPES,IX),YPOL(NPES,IX),
      f                             XPOL(NPES,IX+1),YPOL(NPES,IX+1))
-                  IF ( L1 .AND. L2 ) THEN 
+                  IF ( L1 .AND. L2 ) THEN
                     ITRI=ITRI+1
                     IF (ITRI.GT.NGITT) THEN
-                      WRITE (iunout,*) 
+                      WRITE (iunout,*)
      .                        ' NOT ENOUGH GRIDPOINTS FOR DEFINING',
      .                        ' STEP-FUNCTION '
                       WRITE (iunout,*) ' INCREASE PARAMETER NGITT '
@@ -2042,8 +2077,8 @@ C  TEST WHETHER TRIANGLE BELONGS TO QUADRANGULAR CELLS ALONG THE TARGET
                     NUMTRI(ITRI)=IT
                     NUMSID(ITRI)=IS
                     ICOU = ICOU + 1
-                    IF (LCHKQUD) 
-     .              IREVERS(IS,IT) = INT(SIGN(1._DP,DXPOL*VTRIX(IS,IT) + 
+                    IF (LCHKQUD)
+     .              IREVERS(IS,IT) = INT(SIGN(1._DP,DXPOL*VTRIX(IS,IT) +
      .                                              DYPOL*VTRIY(IS,IT)))
                     EXIT
                   END IF
@@ -2487,8 +2522,9 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
       WRITE (iunout,*) TXTSOU(ISTRA)
-      WRITE (iunout,*) 
-     .' IG,  ARC,     P-FLUX,   E-FLUX,     TE,       TI,    SHEATH/TE'
+      WRITE (iunout,'(1X,A3,9A11,A3)')
+     .'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
+     . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
 
         IF (IGSTEP(ITARG,IG).GT.200000) THEN
@@ -2499,11 +2535,13 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='S'
           IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
-        WRITE (iunout,'(1X,I3,1P,6E11.3,A3)')
+        WRITE (iunout,'(1X,I3,1P,9E11.3,A3)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
-     .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60),NSEW
+     .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60),
+     .             VXSTEP(1,ITARG,IG),VYSTEP(1,ITARG,IG),
+     .             VZSTEP(1,ITARG,IG),NSEW
 6100  CONTINUE
       WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
@@ -2643,7 +2681,7 @@ C  FLUX FROM EIRENE TO PLASMA CODE: NEGATIVE
         ELSEIF (ISTRAI.LE.NTARGI.AND.WTOTP(0,ISTRAI).EQ.0.) THEN
           WRITE (iunout,*) 'NO PLASMA FLUX FROM STRATUM NO. ISTRAI= ',
      .                     ISTRAI
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .       'NO DATA RETURNED TO PLASMA CODE FOR THIS STRATUM'
           GOTO 7999
         ELSEIF (ISTRAI.GT.NTARGI) THEN
@@ -2678,8 +2716,8 @@ C
         IF (.NOT.LSHORT) GOTO 7400
 
         IST_RATE = ITS(ISTRAI)
-        RTIS => RTS(IST_RATE)%RTA       
- 
+        RTIS => RTS(IST_RATE)%RTA
+
         COPV=0.D0
         CPMUL => COPVS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
@@ -3014,18 +3052,18 @@ cdr
           IF (LSHORT) THEN
             DO IPLS=1,NPLSI
               CHPM(IPLS,1:NSBOX_TAL) = CHPM(IPLS,1:NSBOX_TAL) +
-     .             PPPL_COP(IPLS,1:NSBOX_TAL) - PPLODA(IPLS,1:NSBOX_TAL) 
+     .             PPPL_COP(IPLS,1:NSBOX_TAL) - PPLODA(IPLS,1:NSBOX_TAL)
 !pb            ICPV=NPLSI+IPLS
 !pb            CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
-!pb     .           CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL) 
+!pb     .           CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
             END DO
 
             CHEEM(1:NSBOX_TAL) = CHEEM(1:NSBOX_TAL) +
-     .            EPEL(1:NSBOX_TAL) - EPEODA (1:NSBOX_TAL) 
+     .            EPEL(1:NSBOX_TAL) - EPEODA (1:NSBOX_TAL)
             CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
-     .            EPPL_COP(1:NSBOX_TAL) - EPLODA (1:NSBOX_TAL)     
+     .            EPPL_COP(1:NSBOX_TAL) - EPLODA (1:NSBOX_TAL)
           END IF
-          
+
 C
 C  SAVE RECOMBINATION SOURCES FOR USE BY SHORT CYCLE
 C
@@ -3151,7 +3189,7 @@ C
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop 
+!pb replace sigma_cop
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == NPLSI+IPLS)) then
@@ -3160,7 +3198,7 @@ C
                 end if
               end do
 
-              if (istat_cop > 0) then 
+              if (istat_cop > 0) then
                 DO IX=1,NDXA
                   DO IY=1,NDYA
 !pb 21012013 ncltal
@@ -3242,7 +3280,7 @@ C
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop 
+!pb replace sigma_cop
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == 2*NPLSI+IPLS)) then
@@ -3343,7 +3381,7 @@ C
 
         IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop 
+!pb replace sigma_cop
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == 3*NPLSI+1)) then
@@ -3351,15 +3389,15 @@ C
               exit
             end if
           end do
-           
-          if (istat_cop > 0) then 
-          DO IX=1,NDXA
-            DO IY=1,NDYA
+
+          if (istat_cop > 0) then
+            DO IX=1,NDXA
+              DO IY=1,NDYA
 !pb 21012013 ncltal
-!            CURPOI => HEADS(IY,IX)%P
-!            DO WHILE (ASSOCIATED(CURPOI))
-!              IT=CURPOI%TRIANGLE
-!              IN=NCLTAL(IT)
+!             CURPOI => HEADS(IY,IX)%P
+!             DO WHILE (ASSOCIATED(CURPOI))
+!               IT=CURPOI%TRIANGLE
+!               IN=NCLTAL(IT)
                 IN=IY+(IX-1)*NR1TAL
 !pb                  
                 SEERES=(EAEL(IN)+EMEL(IN)+EIEL(IN))*VOLTAL(IN)*FLX_EIR
@@ -3377,7 +3415,7 @@ C
             END DO
           end if
 
-!pb replace sigma_cop 
+!pb replace sigma_cop
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == 3*NPLSI+2)) then
@@ -3385,8 +3423,8 @@ C
               exit
             end if
           end do
-           
-          if (istat_cop > 0) then 
+
+          if (istat_cop > 0) then
             DO IX=1,NDXA
               DO IY=1,NDYA
 !pb 21012013 ncltal
@@ -3594,12 +3632,12 @@ C  THE BEGINNING OF THE CYCLING PROCEDURE, BECAUSE THE PLASMA STILL
 C  HAS TO ADJUST TO THE NEW SOURCES
 C
 C
-C..................................................................................
+C...............................................................................
 C
 C  CHECK FLUXES AT THE GRID BOUNDARY, SIGN, RECYCLING OR NON-RECYCLING BOUNDARY
 C  COUNT FLUXES FROM OUTSIDE INTO GRID AS POSITIVE
 C
-C..................................................................................
+C...............................................................................
 C
 C  FIRST: SOUTH EDGE: IY=0
 C
@@ -3832,7 +3870,7 @@ C
       WRITE (37,*) 'NON RECYCLING FLUXES TO EAST EDGE '
       WRITE (37,8888) SFNIEX,SFEIEX,SFEEEX
 C
-C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY 
+C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY
 C        CONDITIONS ARE SPECIFIED
 C
 10130 CONTINUE
@@ -4100,10 +4138,10 @@ C
        LOGICAL :: EIRENE_POINT_ON_INTERVAL
        REAL(DP),INTENT(IN) :: X,Y,X1,Y1,X2,Y2
        REAL(DP) :: A,B,C,D,L, EPS4
-      
+
        EIRENE_POINT_ON_INTERVAL=.FALSE.
        EPS4 = 10._DP * EPS5
-       
+
        IF(X1.LT.X2.AND.
      f    (X.GT.X2+EPS4.OR.X.LT.X1-EPS4)) RETURN
        IF(X1.GT.X2.AND.
@@ -4112,20 +4150,20 @@ C
      f    (Y.GT.Y2+EPS4.OR.Y.LT.Y1-EPS4)) RETURN
        IF(Y1.GT.Y2.AND.
      f    (Y.GT.Y1+EPS4.OR.Y.LT.Y2-EPS4)) RETURN
-       
+
        A=Y2-Y1
        B=X1-X2
        C=Y1*X2-Y2*X1
        D=A*X+B*Y+C
        D=D*D
-       L=A*A+B*B 
+       L=A*A+B*B
        IF(L.LT.EPS5) THEN
         WRITE(iunout,*) "WARNING FROM  POINT_ON_INTERVAL"
         WRITE(iunout,*) "THE LENGTH OF THE INTERVAL IS TOO SMALL"
         WRITE(iunout,*) "L,X1,Y1,X2,Y2 ",L,X1,Y1,X2,Y2
         RETURN
        END IF
-       IF(D.LT.1.D-8*L) EIRENE_POINT_ON_INTERVAL=.TRUE.   
+       IF(D.LT.1.D-8*L) EIRENE_POINT_ON_INTERVAL=.TRUE.
 
        RETURN
 
@@ -4147,7 +4185,7 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
 
          IF ((IXTRI(IT) > 0) .AND. (IYTRI(IT) > 0) .AND.
      .       (IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
-!  both triangles inside mesh 
+!  both triangles inside mesh
             IF (IXTRI(IT) == IXTRI(NBAR)) THEN
               IF (IYTRI(IT) > IYTRI(NBAR)) THEN
                 INMTINSS(NUMSI,IT) = -1
@@ -4164,7 +4202,7 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
             END IF
 
 
-!  triangle IT inside mesh, triangle NBAR outside mesh  
+!  triangle IT inside mesh, triangle NBAR outside mesh
           ELSE IF ((IXTRI(IT) > 0) .AND. (IYTRI(IT) > 0)) THEN
 
 !  poloidal surface
@@ -4182,7 +4220,7 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
               ELSE                            ! 'N SURFACE'
                 INMTINSS(NBARSI,NBAR) = -1
               END IF
-            
+
             END IF
 
 !  triangle NBAR inside mesh, triangle IT outside mesh
@@ -4203,10 +4241,10 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
               ELSE                            ! 'N SURFACE'
                 INMTINSS(NUMSI,IT) = -1
               END IF
-            
+
             END IF
 
-!  both triangles outside mesh --> don't know - do nothing 
+!  both triangles outside mesh --> don't know - do nothing
           END IF
 
        END  SUBROUTINE CORRECTNSS

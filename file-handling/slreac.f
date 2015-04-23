@@ -55,9 +55,9 @@ c    RCMIN: LOG(RMN), RMN: lower boundary for indep. dependent variable (energy,
 c           Default: RMX = exp(-20.)
 c    RCMAX: LOG(RMX), RMX: upper boundary for indep. dependent variable (energy, temperature, density)
 c           Default: RMX = exp(20.)
-c    FP
-c    JFEXMN
-c    JFEXMX
+c    FP     Fitting coefficients for extrapolation (three for MIN and three for MAX
+c    JFEXMN Flag for selecting extrapolation expression, left end (minimum)
+c    JFEXMX Flag for selecting extrapolation expression, right end (maximum)
 
 c  specific input, only available in case FILNAM=ADAS
 c    ELNAME:  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
@@ -377,7 +377,7 @@ C  H.12
           IF (REACDAT(IR)%LRTC) THEN
             WRITE (IUNOUT,*) ' RATE COEFFICIENT ALREADY SPECIFIED',
      .                       ' FOR REACTION', IR
-            WRITE (IUNOUT,*) ' PLEASE CHECK SPECIFICATION OF REACTIONS'
+            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)
           END IF
           ALLOCATE (REACDAT(IR)%RTC)
@@ -391,7 +391,7 @@ C  H.12
           IF (REACDAT(IR)%LRTCEW) THEN
             WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
      .                       ' ALREADY SPECIFIED FOR REACTION', IR
-            WRITE (IUNOUT,*) ' PLEASE CHECK SPECIFICATION OF REACTIONS'
+            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)
           END IF
           ALLOCATE (REACDAT(IR)%RTCEW)
@@ -621,7 +621,7 @@ C
       RETURN
 C
 990   WRITE (iunout,*) ' NO DATA FOUND FOR REACTION ',H123,' ',REAC,
-     .            ' IN DATA SET ',FILNAM
+     .                 ' IN DATA SET ',FILNAM
       WRITE (iunout,*) ' IR,MODCLF(IR) ',IR,MODCLF(IR)
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
