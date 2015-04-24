@@ -1,6 +1,0 @@
-
-
-      SUBROUTINE EIRENE_BROAD_USR
-      IMPLICIT NONE
-      RETURN
-      END
