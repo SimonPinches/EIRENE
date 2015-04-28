@@ -1092,8 +1092,9 @@ C  THE SURFACE
                       INSPAT(ISCS,ITRI)=ICOG
                       INMTI(ISCS,ITRI)=I
                       IF (LCHKQUD)
-     .                IREVERS(ISCS,ITRI)=INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
-     .                                                  PY*VTRIY(ISCS,ITRI)))
+     .                IREVERS(ISCS,ITRI)=
+     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
+     .                                       PY*VTRIY(ISCS,ITRI)))
                     endif
                   else
 csw
