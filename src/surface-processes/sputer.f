@@ -1,3 +1,5 @@
+c  apr. 15: For external use of sputer.f: reduce commons, 
+c           remove: ccona
 c  feb. 15: Flag: ITA=0: do not even try to sputer with modpys=2, if target is not identified.
 c           this avoids huge amounts of irrelevant error messages
 
@@ -143,16 +145,20 @@ C    VZSPTC:
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CADGEO
-      USE EIRMOD_CCONA
-      USE EIRMOD_CRAND
-      USE EIRMOD_CZT1
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CLGIN
-      USE EIRMOD_CINIT
-      USE EIRMOD_CPES
+      USE EIRMOD_COMUSR, only: NSPH,NSPA,NSPAM,NSPAMI,NSPTOT,
+     .                         NMASSA,NMASSI,NMASSP,NCHARA,
+     .                         NPRT,NATMI,NMOLI,
+     .                         TEXTS
+      USE EIRMOD_CADGEO, only: NLIMI
+      USE EIRMOD_CRAND, only:  INIV4, FC1, FC2, FC3
+      USE EIRMOD_CZT1, only:   RSQDVA, RSQDVM, CVRSSA, CVRSSM
+      USE EIRMOD_CTRCEI, only: TRCREF
+      USE EIRMOD_COMPRT, only: IUNOUT, NPANU, ISPZ, MSURF,
+     .                         E0,VELX,VELY,VELZ,CRTX,CRTY,CRTZ
+      USE EIRMOD_CLGIN, only:  ZNML,ZNCL,EWALL,RECYCS,RECYCC,ESPUTC,
+     .                         IGJUM0, ISPUT, ILIIN, NSTSI
+      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME
+      USE EIRMOD_CPES, only: MY_PE, NPRS
 
       IMPLICIT NONE
 
@@ -195,7 +201,7 @@ C  target index 0   : data evaluated "on the fly"
       integer :: isam
       real(dp) :: wg(5),pm(5),final,flxlim
       real(dp) :: EIRENE_YHAASZ97M, EIRENE_YHAASZ97
-      CHARACTER(8) :: TEXT
+
 
 C  NPROJ: PROJECTILE IDENTIFIER
 C  NPROJ(7) CORRESPONDS TO SELF SPUTTERING.
@@ -358,7 +364,7 @@ C  ANY TARGET DATA FOR SELF SPUTTERING WITH IPL?
       ITARG=0
       ISPZSP_DEF=0
       DO ILIM=1,NLIMI
-        NT=100.*ZNML(ILIM)+ZNCL(ILIM)+EPS10
+        NT=100.0*ZNML(ILIM)+ZNCL(ILIM)+1.0D-10
         ITARG(ILIM)=0
         DO IT=1,28
           IF (NT.EQ.NTARG(IT)) ITARG(ILIM)=IT
@@ -369,7 +375,7 @@ C  ANY TARGET DATA FOR SELF SPUTTERING WITH IPL?
         ENDDO
       ENDDO
       DO ILIM=NLIM+1,NLIM+NSTSI
-        NT=100.*ZNML(ILIM)+ZNCL(ILIM)+EPS10
+        NT=100.*ZNML(ILIM)+ZNCL(ILIM)+1.0D-10
         ITARG(ILIM)=0
         DO IT=1,28
           IF (NT.EQ.NTARG(IT)) ITARG(ILIM)=IT
@@ -875,9 +881,10 @@ C         GOTO 20000
       ENDIF
 C
 C  PARAMETER FOR ENERGY OF CHEMICALLY SPUTTERED PARTICLE
-      ESPTC=ESPUTC(ISPZ,MSURF)
-      IF(ESPTC.LE.TINY(ESPTC))  ESPTC=ENWALL !USE DEFAULT
-
+      ESPTC=ESPUTC(ISPZ,MSURF)  !  OPTION APRIL 2015: PRESCRIBE CONSTANT ENERGY FOR SPUTTERED PARTICLE
+C  USE DEFAULT, WHEN ESPUTC LE. 0.0
+      IF(ESPTC.LE.TINY(ESPTC))  ESPTC=ENWALL 
+C  
       IF (ITYPC.EQ.1) THEN
         RSQDV=RSQDVA(IATMC)
         CVRSS=CVRSSA(IATMC)
