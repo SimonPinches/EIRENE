@@ -1,4 +1,5 @@
-C
+C   may 15:  plot all triangle sides, not only those with no neighbor.
+c            changed by adding .true.or. ...  in "itr" loop for levgeo=4
 C
       SUBROUTINE EIRENE_VECLNE (AORIG,BORIG,IBLD,ICURV,
      .                   IXXI,IXXE,IYYI,IYYE,
@@ -201,6 +202,7 @@ C
 15      CONTINUE
       ELSEIF (LEVGEO.EQ.4) THEN
         DO ITR=1,NTRII
+c   .true.or. .... added, to plot all triangles, not only those with no neighbor
           IF (.true..or.NCHBAR(1,ITR) .EQ. 0) THEN
             CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),KIND(1.E0)),
      .                 REAL(YTRIAN(NECKE(1,ITR)),KIND(1.E0)))
