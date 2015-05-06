@@ -201,19 +201,19 @@ C
 15      CONTINUE
       ELSEIF (LEVGEO.EQ.4) THEN
         DO ITR=1,NTRII
-          IF (NCHBAR(1,ITR) .EQ. 0) THEN
+          IF (.true..or.NCHBAR(1,ITR) .EQ. 0) THEN
             CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),KIND(1.E0)),
      .                 REAL(YTRIAN(NECKE(1,ITR)),KIND(1.E0)))
             CALL GRDRW(REAL(XTRIAN(NECKE(2,ITR)),KIND(1.E0)),
      .                 REAL(YTRIAN(NECKE(2,ITR)),KIND(1.E0)))
           ENDIF
-          IF (NCHBAR(2,ITR) .EQ. 0) THEN
+          IF (.true..or.NCHBAR(2,ITR) .EQ. 0) THEN
             CALL GRJMP(REAL(XTRIAN(NECKE(3,ITR)),KIND(1.E0)),
      .                 REAL(YTRIAN(NECKE(3,ITR)),KIND(1.E0)))
             CALL GRDRW(REAL(XTRIAN(NECKE(2,ITR)),KIND(1.E0)),
      .                 REAL(YTRIAN(NECKE(2,ITR)),KIND(1.E0)))
           ENDIF
-          IF (NCHBAR(3,ITR) .EQ. 0) THEN
+          IF (.true..or.NCHBAR(3,ITR) .EQ. 0) THEN
             CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),KIND(1.E0)),
      .                 REAL(YTRIAN(NECKE(1,ITR)),KIND(1.E0)))
             CALL GRDRW(REAL(XTRIAN(NECKE(3,ITR)),KIND(1.E0)),
