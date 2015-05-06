@@ -1,3 +1,4 @@
+C icts introduced, lcut --> llcut
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
@@ -104,7 +105,7 @@ C
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
-     .           ISTS_CELL, ISD, nclpb
+     .           ISTS_CELL, ISD, nclpb, icts
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
@@ -131,7 +132,7 @@ C
       SAVE
 C
 C     IF (NLTRC) THEN
-C       CALL LEER(1)
+C       CALL EIRENE_LEER(1)
 C       WRITE (iunout,*) 'TIMER, INIT.: NRCELL,NLSRFX,MRSURF,TT,TL'
 C       WRITE (iunout,*)                NRCELL,NLSRFX,MRSURF,TT,TL
 C       WRITE (iunout,*) '              NPCELL,NLSRFY,MPSURF'
@@ -522,6 +523,8 @@ C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
 6001    CONTINUE
 C       IF (NLTRC) WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
 C    .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
+C       IF (NLTRC) WRITE (iunout,*) ' velx, vely, velz ',
+C    .                           velx, vely, velz
         T1=-1.D30
         T2=-1.D30
         T3=-1.D30
@@ -567,6 +570,7 @@ C  TO THE BOUNDARY OF THE ACTUELL CELL
 C       IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
 C    .                           LCT1,LCT2,LCT3,LCT4
 C       IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
+
         IF (COUNT(LCTS) > 1) THEN
           WHERE (PTS < 0._DP)
             PTS = 1.E30_DP
@@ -839,7 +843,7 @@ C       IF (NLTRC) THEN
 C         WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
 C         WRITE (iunout,*) ' X0,Y0 ',X0,Y0
 C         WRITE (iunout,*) ' VELX,VELY ',VELX,VELY
-C         CALL LEER(1)
+C         CALL EIRENE_LEER(1)
 C       ENDIF
         XX = X0
         YY = Y0
@@ -889,7 +893,7 @@ C               ENDIF
 8010    CONTINUE
 C
 C       IF (NLTRC)
-C      .  WRITE (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
+C    .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
         PT=1.D30
         NINCX=0
 C  DURCHSUCHE NACHBARDREIECK
@@ -900,6 +904,7 @@ C  DURCHSUCHE NACHBARDREIECK
           NLSRFX=.FALSE.
           GOTO 8020
         ENDIF
+
 C  KEIN SCHNITTPUNKT GEFUNDEN UND NLSRFX=.FALSE.
         write (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
         write (iunout,*) ' PARTICLE TRAJECTORY STOPPED'
@@ -1121,7 +1126,7 @@ C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                   NTIMT = J
 C                 IF (NLTRC) THEN
 C                   WRITE (iunout,*) 'IZELL,XX,YY,ZZ,J ',
-C     .                               IZELL,XX,YY,ZZ,J
+C    .                                IZELL,XX,YY,ZZ,J
 C                 ENDIF
 C  ZELLENNUMMER DES NEUEN DREIECKS
                   IZELLO=IZELL
@@ -1143,7 +1148,7 @@ C                 ENDIF
         END DO
 C
 C       IF (NLTRC)
-C      .  WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
+C    .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
         PT=1.D30
         NINCX=0
 C  DURCHSUCHE NACHBARDREIECK
@@ -1185,7 +1190,7 @@ C  ON NON DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
           GOTO 9999
         ENDIF
 C       IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-C    .                           NRCELL,MRSURF,PT,NINCX,IPOLGN
+C    .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
  
         RETURN
  
@@ -1320,7 +1325,7 @@ C         ENDIF
         IPOLGN=NTMS
         NINCX=NTMZ-NRCELL
 C       IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-C    .                           NRCELL,MRSURF,PT,NINCX,IPOLGN
+C    .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
       END IF
       RETURN
  
@@ -1330,6 +1335,9 @@ C  GENERAL GEOMETRY OPTION: PROVIDE FLIGHT TIME IN CURRENT CELL
 C
       IF (ICALL == 0) THEN
         ICALL = 1
+c  set nrmsrf:  = a "free radial" surface index, between 1 and nsurf, such that none
+c              of the block 3a defined nstsi "radial" non-default standard surfaces
+c              coincides with this "radial" surface.
         MXSF = MAXVAL(INUMP(1:NSTSI,1))
         IF (MXSF < NSURF) THEN
           NRMSRF = MXSF+1
@@ -1350,11 +1358,18 @@ C
       IF (IERR.NE.0) GOTO 9999
       PT=TIM
       IF (NEWCEL.GT.0) THEN
+cdr  an intersection with the surface of cell nrcell has been found. 
+cdr  but this is not one of the "radial" non-default standard surfaces defined in 3a.
         NINCX=NEWCEL-NRCELL
+cdr  make sure that mrsurf is not pointing to any of the defined non-default standard surfaces
+cdr  but why not just mrsurf=0 ???      
+cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, no matter if non-default (3a) or not. 
         MRSURF=NRMSRF
       ELSEIF (NEWCEL.LT.0) THEN
+cdr  one of the non-default surfaces has been hit. set this surface index to mrsurf.
         NINCX=ICOS
         MRSURF=INUMP(-NEWCEL,1)
+cdr  
       ELSEIF (NEWCEL.EQ.0) THEN
         WRITE (iunout,*) 'NEWCEL=0, EXIT FROM MESH '
         CALL EIRENE_EXIT_OWN(1)

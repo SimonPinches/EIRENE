@@ -212,7 +212,7 @@ C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
 
                 CALL EIRENE_BFIELD (J, X0, Y0, Z0, BX, BY, BZ, BF)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLSV)
+                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
                   VPARA=VX*BX+VY*BY+VZ*BZ
                   MOMPARA=VPARA*CNDYNP*SIGN(1._DP,VPARA)
                 ELSE IF (INDPRO(5) == 8) THEN

@@ -1,8 +1,8 @@
 cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
-C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT
-C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS
+C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
+C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS 
 c 
 c  modcol=1: only dependent on local background data, not on test particle parameters
 c            tabcx3(...,1),tabel3(...1),tabpi3(...1),tabds1(...) 
@@ -33,6 +33,9 @@ c  naint=25:   eplel3(irel,..,1) elastic   energy weighted rate, eV/s --> cm^3 e
 
 c  naint=26:   Tabpi3(irpi,..,1) heavy particle imp.  coll.rate, 1/s --> cm^3/s      ! done 
 c  naint=27:   eplpi3(irpi,..,1) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
+
+c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s     ! not ready 
+c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 
 c  to be done:  nomenclature nmdsi(iml) --> nmeii(iml)

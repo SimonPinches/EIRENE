@@ -1,3 +1,4 @@
+c   may 15       argument in vecusr: ip or ipv?, now : IP, everywhere
 C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
 C   OCT.14    :  SPUTTERING:  SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
 c                new meaning of isrs, isrc=0:  sputter, score fluxes, but do not follow.
@@ -28,6 +29,7 @@ CVK 25.02.04: the ILIIN=-3 option support is re-introduced
 CVK 25.02.04: spttot updated (total sputtered flux tally)
 CDR 25.02.04: return, return1 for reflected flux tallies moved after call
 CDR 25.02.04:                 to upsusr, update_spectrum (from eirene_02)
+ 
 C
       SUBROUTINE EIRENE_ESCAPE(PR,SG,*,*,*)
 C
