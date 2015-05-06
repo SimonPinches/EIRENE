@@ -499,7 +499,19 @@ C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF
  
-!pb      IF (MY_PE > 0) THEN
+
+
+cdr april 2015
+c  nprs: total number of processors used in this run
+c  my_pe is the current processor
+c
+c  in case of multi-timesteps, t-dep coupling, (or internal iterations?),
+c  output is reduced by the next three lines. 
+c  this leads to confusing (missing) output then.
+c  probably these next three lines must go out?
+cdr april 2015
+
+!pb   IF (MY_PE > 0) THEN 
       IF (NPRS > 1) THEN
          CLOSE (UNIT=IUNOUT)
       END IF

@@ -12,8 +12,8 @@ C
 c  geometry data not any longer via work array into eirene
 c                due to module structure
 c  eliminate cut cells from balances (lcut(..))
-c  new input: ncopib,ncopeb2.8532E+07
-C            fniprt = 0.
+c  new input: ncopib,ncopeb
+C             fniprt 
 
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -157,12 +157,12 @@ C
      .          RN, TOTI, TOTE, TOTN, SFEENY, SFNINY, SFEIWX,
      .          SFNIEX, SSNI, SSEI, SFNIWX, SFEIEX, SFEEEX, VVBC,
      .          UUBC, UPBC, RBC, UDBC, VL, V, T, BX, BY, BZ, BN,
-     .          DELTE_PARA, DELTI_PARA, DELY, DELTI_PERP, TES, TIS,
-     .          DELTE_PERP, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
-     .          FLX, ESUM, DR, VR, VTEST, EADD, SI,
+c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
+     .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
+     .          FLX, ESUM, VR, VTEST, EADD, 
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI, CHP,
      .          CNDYNP, CHI, CHE, CS, THMAX, EESHT, EEMAX,
-     .          RP1, DELX, PNORM, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
+     .          RP1, DELX, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFNISY, SFEEWX, SFEINY, PM1, DRR, UU, PITB,
      .          FLX_EIR, SUMN_OLD, SNIRES, SMORES, SEERES, SEIRES,
@@ -279,7 +279,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
         IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA ',NDXA,NDYA
 C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
         READ (IUNIN,'(I6)') NTARGI
-        WRITE (iunout,*) '        NTARGI= ',NTARGI
+        IF (TRCINT) WRITE (iunout,*) 'NTARGI=    ',NTARGI
         CALL EIRENE_LEER(1)
         IF (NTARGI.GT.NSTEP) THEN
           CALL EIRENE_MASPRM ('NSTEP',5,NSTEP,'NTARGI',6,NTARGI,IERROR)
@@ -291,8 +291,7 @@ C  NUMBER OF PARTS PER TARGET SOURCE
         DO 22 IT=1,NTARGI
           IF (NTGPRT(IT).GT.NGITT) THEN
             NTGPRI=NTGPRT(IT)
-            CALL EIRENE_MASPRM 
-     .           ('NGITT',5,NGITT,'NTGPRT',6,NTGPRI,IERROR)
+            CALL EIRENE_MASPRM('NGITT',5,NGITT,'NTGPRT',6,NTGPRI,IERROR)
             WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
@@ -361,6 +360,11 @@ C  HERE: B2 VOLUME TALLIES
         NAIN = MAX(NAIN,NAINB)
         CALL EIRENE_ALLOC_CCOUPL(2)
         WRITE (iunout,*) '        NAINI = ',NAINB
+        IF (NAINB.GT.NAIN) THEN
+          CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
+          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
         IF (TRCINT.AND.NAINB.GT.0)
      .      WRITE (iunout,*) 'I,NAINS(IAIN),NAINT(IAIN)'
         DO 40 IAIN=1,NAINB
@@ -397,12 +401,14 @@ C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
       NCOPI=0
+
 !pb 16012013
-!pb      IF (NMODE.GT.0) NCOPI=4
+!pb    IF (NMODE.GT.0) NCOPI=4
 !      IF (NMODE.GT.0) NCOPI=1
 !      IF (NCOPEB.NE.0) NCOPI=MAX(0,NCOPEB)
 !      NCPVI=NCOPI*NPLSI
 !pb 30012013
+
       NCOPI = 3*NPLSI + 4
       NCPVI = NCOPI
       NCOP = NCOPI
@@ -412,8 +418,8 @@ C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       LNLDRF=NLDRFT
       LTRCFL=TRCFLE
       NSTRI=NSTRAI
-      DO 60 ISTR=1,NSTRAI
-        LNLVOL(ISTR)=NLVOL(ISTR)
+      DO 60 ISTRA=1,NSTRAI
+        LNLVOL(ISTRA)=NLVOL(ISTRA)
 60    CONTINUE
       NMODEI=NMODE
       NFILNN=NFILEN
@@ -459,14 +465,14 @@ C
       ICPVE(3*NPLSI+3)=3
       ICPRC(3*NPLSI+3)=0
       TXTTAL(3*NPLSI+3,NTALM)=
-     .  'ION ENERGY SOURCE (INTERN)                         '
+     .  'ION ENERGY SOURCE (INTERNAL)                         '
       TXTSPC(3*NPLSI+3,NTALM)='BULK IONS                  '
       TXTUNT(3*NPLSI+3,NTALM)='WATT*CM**-3                '
 C
       ICPVE(3*NPLSI+4)=3
       ICPRC(3*NPLSI+4)=0
       TXTTAL(3*NPLSI+4,NTALM)=
-     .  'ION ENERGY SOURCE (INTERN) special               '
+     .  'ION ENERGY SOURCE (INTERNAL) special               '
       TXTSPC(3*NPLSI+4,NTALM)='BULK IONS                  '
       TXTUNT(3*NPLSI+4,NTALM)='WATT*CM**-3                '
 C
@@ -541,7 +547,7 @@ C            | (TE,TI,NI,PR,RR,|
 C            |  VOL,GX,GY)     |
 C            -------------------   -----> ALONG POLYGON NO. (IY)
 C         X1,Y1               X2,Y2
-C                                         DIRECTION OF INCREASING IX ("POLOIDAL"
+C                                         DIRECTION OF INCREASING IX ("POLOIDAL")
 C
 C
       NPOINT = 0
@@ -643,25 +649,33 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE 
 !  CARTHESIAN PLANE
+        write (iunout,*) 'testoutput from fort.29 in infcop'
+        write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
             IN=IY+(IX-1)*NR1ST
             ALE=ALPHXB(IX,IY)
             ALW=ALPHXB(IX-1,IY)
             IF (MAX(ALE,ALW)-MIN(ALE,ALW) > PIA) THEN
+              write (iunout,*) 'modulus 2PI used', ale,alw 
               AL=MIN(ALE,ALW)
               ALW=MAX(ALE,ALW)
               ALE=AL+PI2A
+              write (iunout,*) 'new values ale,alw ',ale,alw
             END IF
             ALN=ALPHYB(IX,IY)
             ALS=ALPHYB(IX,IY-1)
+! cell centered angle of B_pol (psi-contour line) against eirene x-coordinate
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
-! cell centered
+            write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
+     .                                          ale,alw,aln,als,alx
+! cell centered unit vector along poloidal direcion
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
+! cell centered unit vector along "radial" (grad psi) direcion
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
-! surface centered
+! surface centered: nothing to be done, the values on fort.29 are already surface centered
             PUXE(IN)=COS(ALE)
             PUYE(IN)=SIN(ALE)
             PUXN(IN)=COS(ALN)
@@ -834,7 +848,7 @@ C  FIRST THE ZONE CENTERED DATA
      .             NPOINT,NPLP)
       CALL EIRENE_INDMAP (PRB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,NCUTB,NCUTL,
      .             NPOINT,NPLP)
-C  NOW THE SURFACE CENTERED DATA
+C  NOW THE SURFACE CENTERED PARTICLE FLUXES
       CALL EIRENE_INDMAP (FNIXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FNIYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -857,6 +871,8 @@ C  NOW THE SURFACE CENTERED DATA
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (BFELDB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+
+C  ADDITIONAL INPUT TALLIES FOR BOUNDARY CONDITIONS
       CALL EIRENE_INDMAP (VPARXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VPARYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -1025,6 +1041,7 @@ C
 C
 C  READ OTHER B2 ARRAYS INTO EIRENE, FOR PRINTOUT AND PLOTTING
 C
+c  density, species index as in B2 code, cell centered
       DO 2300 IAIN=1,NAINB
         IF (NAINT(IAIN).EQ.1.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
@@ -1033,6 +1050,7 @@ C
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=DNIB(IX,IY,NAINS(IAIN))
 2321      CONTINUE
+c  poloidal (projection) flow velocity, species index as in B2 code, north surface centered
         ELSEIF (NAINT(IAIN).EQ.2.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2322 IY=1,NDYA
@@ -1040,6 +1058,7 @@ C
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=UUB(IX,IY,NAINS(IAIN))
 2322      CONTINUE
+c  radial drift velocity, species index as in B2 code, east surface centered
         ELSEIF (NAINT(IAIN).EQ.3.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2323 IY=1,NDYA
@@ -1047,12 +1066,14 @@ C
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=VVB(IX,IY,NAINS(IAIN))
 2323      CONTINUE
+c  plasma pressure, cell centered, no species index
         ELSEIF (NAINT(IAIN).EQ.6) THEN
           DO 2326 IY=1,NDYA
           DO 2326 IX=1,NDXA
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=PRB(IX,IY)
 2326      CONTINUE
+c  parallel velocity, species index as in B2 code, north surface centered
         ELSEIF (NAINT(IAIN).EQ.7.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2327 IY=1,NDYA
@@ -1060,6 +1081,7 @@ C
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=UPB(IX,IY,NAINS(IAIN))
 2327      CONTINUE
+c  pitch angle, no species index
         ELSEIF (NAINT(IAIN).EQ.8) THEN
           DO 2328 IY=1,NDYA
           DO 2328 IX=1,NDXA
@@ -1104,18 +1126,41 @@ C
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=FEEYB(IX,IY)
 2334      CONTINUE
+c   cell volume as in b2 code, no species index (cell centered)
         ELSEIF (NAINT(IAIN).EQ.15) THEN
           DO 2335 IY=1,NDYA
           DO 2335 IX=1,NDXA
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=VOLB(IX,IY)
 2335      CONTINUE
+cdr  magnetic field strength, Tesla
         ELSEIF (NAINT(IAIN).EQ.16) THEN
           DO 2336 IY=1,NDYA
           DO 2336 IX=1,NDXA
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=BFELDB(IX,IY)
 2336      CONTINUE
+
+cdr:  free: NAINT(IAIN)=17
+
+cdr:  added in may 2015:  put cartesian unit vector along B_poloidal on ADIN
+
+        ELSEIF (NAINT(IAIN).EQ.18) THEN
+          DO 2338 IY=1,NDYA
+          DO 2338 IX=1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            ADINTF(IAIN,IN)=PUX(IN)
+2338      CONTINUE
+        ELSEIF (NAINT(IAIN).EQ.19) THEN
+          DO 2339 IY=1,NDYA
+          DO 2339 IX=1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            ADINTF(IAIN,IN)=PUY(IN)
+2339      CONTINUE
+
+cdr  free: NAINT=20 --29:  reserved for AMDIAG:  scaled atomic/molecular rate coefficients
+cdr                        evaluated on computational grid. See Manual.
+
         ENDIF
 2300  CONTINUE
 C
@@ -1729,9 +1774,9 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
       WRITE (iunout,*) TXTSOU(ISTRA)
-      WRITE (iunout,*)
-     .' IG,  ARC,      P-FLUX,    E-FLUX,    TE,        TI,',
-     . '        SHEATH/TE,  CELL FACE'
+      WRITE (iunout,'(1X,A3,9A11,A3)')
+     .'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
+     . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
 
         IF (IGSTEP(ITARG,IG).GT.200000) THEN
@@ -1742,13 +1787,13 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='N'
           IF (ORI(ITARG,IG).GT.0) NSEW='S'
         ENDIF
-        WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
+        WRITE (iunout,'(1X,I3,1P,9E11.3,A3)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
      .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60),
-     .             vxstep(1,itarg,ig),vystep(1,itarg,ig),
-     .             vzstep(1,ITARG,IG),NSEW
+     .             VXSTEP(1,ITARG,IG),VYSTEP(1,ITARG,IG),
+     .             VZSTEP(1,ITARG,IG),NSEW
 6100  CONTINUE
       WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
@@ -2462,8 +2507,8 @@ C
               end if
             END IF
 
-!pb            DO 7539 IADD=NPLSI,3*NPLSI,NPLSI
-!pb            IF (NCPVI.LT.IADD+NPLSI) GOTO 7539
+!pb         DO 7539 IADD=NPLSI,3*NPLSI,NPLSI
+
             DO 7536 IX=1,NDXA
               IF (LLCUT(IX)) CYCLE
               DO 7533 IY=1,NDYA
@@ -2716,7 +2761,7 @@ C
             ENDIF
 7558      CONTINUE
           TEST=CHEES/(SEES+1.D-60)*100.
-            write (iunout,*) ' change in see,ifl ',test,ifl
+          write (iunout,*) ' change in see,ifl ',test,ifl
           IF (ABS(TEST).GT.CHGEE) THEN
             LSTP3=.TRUE.
             LTEST=.FALSE.
@@ -2827,8 +2872,7 @@ C
           IF (JC == NOUTAU) THEN
             IRC=IRC+1
             WRITE (11,REC=IRC) IHELP
-            IF (TRCINT.OR.TRCFLE)   
-     .        WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+            IF (TRCINT.OR.TRCFLE) WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
             JC=0
           END IF
         END DO
@@ -2859,6 +2903,7 @@ C  BALANCES, SHOULD BE DONE ONLY AT THE END OF B2 RUN
 C  AT THE END OF AN EIRENE RUN THE BALANCES MAY BE OFF AT LEAST AT
 C  THE BEGINNING OF THE CYCLING PROCEDURE, BECAUSE THE PLASMA STILL
 C  HAS TO ADJUST TO THE NEW SOURCES
+C
 C
 C...............................................................................
 C
