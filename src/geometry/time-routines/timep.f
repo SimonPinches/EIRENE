@@ -66,14 +66,14 @@ C
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1, 
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           EIRENE_LEARCA, I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2,  
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2, 
      .           NJC, EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
       LOGICAL :: LCUTY(N2NDPLG), LCUTX(N1ST), lnincz
       SAVE
 C
 C     IF (NLTRC) THEN
-C       CALL LEER(1)
+C       CALL EIRENE_LEER(1)
 C       IF (NRCELL.GT.0) THEN
 C         WRITE (iunout,*) 'TIMEP FROM INSIDE, NPANU ', NPANU
 C         WRITE (iunout,*) 'ZRAD,NRCELL,NPCELL '
@@ -98,7 +98,7 @@ C       NCOUT=NCOUT
         NTCELL=NCOUNT(1)
         IF (NCOUT.GT.1) IPOLGN=0
 C       IF (NLTRC)
-C     .   WRITE (iunout,*) 'WG. NLTOR: ZRAD,NTCELL ',ZRAD,NTCELL
+C    .    WRITE (iunout,*) 'WG. NLTOR: ZRAD,NTCELL ',ZRAD,NTCELL
       ELSE
         NCOUT=1
 C       ZRAD=ZRAD
@@ -150,7 +150,7 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
 C               IF (NLTRC) WRITE (iunout,*) 'IR,MPTEST,T1 ',IR,MPTEST,T1
                 IF (T1.LT.0..OR.T1.GE.ZRD) GOTO 4
 C               IF (NLTRC)
-C     .           WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+C    .            WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
                 NCOUP=1
                 LUPC(NCOUP)=MPTEST
                 IRSAVE=IR
@@ -726,7 +726,7 @@ C  NO REENTRY FOUND
 C  CHECK VALID RANGE ON MRSURF
             Y0TEST=Y00+VELY*ZRAD
 C           IF (NLTRC)
-C     .       WRITE (iunout,*) 'CHECK VALID RANGE: Y0TEST ',Y0TEST
+C    .        WRITE (iunout,*) 'CHECK VALID RANGE: Y0TEST ',Y0TEST
             IF (Y0TEST.GE.PSURF(1).AND.Y0TEST.LE.PSURF(NP2ND)) THEN
               IPCELL=EIRENE_LEARCA(Y0TEST,PSURF,1,NP2ND,1,
      .               'TIMEP 2     ')
@@ -853,7 +853,7 @@ C
      .                      J,IADD+J,ALPD(J),JUPC(J)
         ENDIF
 C       IF (NLTRC) WRITE (iunout,*) 'TIMEP ',
-C     .     J+IADD,CLPD(J+IADD),NUPC(J+IADD),NCOUNP(J+IADD)
+C    .      J+IADD,CLPD(J+IADD),NUPC(J+IADD),NCOUNP(J+IADD)
 5100  CONTINUE
 C
       IF (ICOUT.LT.NCOUT.AND.MPSURF.EQ.0) THEN
@@ -875,8 +875,8 @@ C
         IADD=IADD+NCOUP
         ncoup=jn
 C       IF (NLTRC)
-C    .  WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
-C    .                                    ZRAD,NTCELL,IADD
+C    .    WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
+C    .                                      ZRAD,NTCELL,IADD
         GOTO 10000
       ENDIF
 C

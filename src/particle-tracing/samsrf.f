@@ -16,6 +16,7 @@ C           DELR REMOVED FROM LOOP 3010
 C           ELSTEP and SHSTEP added in definition of default step function
 C  oct. 14: some preliminary options for correlation sampling removed, 
 C           back to development branch
+c  may  15: argument in first call to vecusr: ipls, rather then iplsv, now everywhere
 C
       SUBROUTINE EIRENE_SAMSRF
 C
@@ -52,7 +53,8 @@ C
      .          WINK, XR, EIRENE_STEP0, DELR, CS, EIRENE_STEP, FL, DET,
      .          X0TEST, Y0TEST, S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
      .          Z0TEST, RNF, ZH, EIRENE_STEP1, DELTA, ZM, XLAMDA, BABS,
-     .          CTETHA, GAMMA, CUR, TESH
+     .          CTETHA, GAMMA, CUR, TESH,
+     .          VX,VY,VZ 
       INTEGER :: ISID, IDUM, EIRENE_LEARC1, NDUM, EIRENE_LEARC2, NT, 
      .           IEN, IAN,
      .           EIRENE_LEARCA, ITET, ISGRD1, IS2, IP, ISTEP, ISGRD2,
@@ -343,9 +345,10 @@ C
                 IPLSV = MPLSV(IPLS)
                 TISTEP(IPLSTI,ISTEP,K)=TIIN(IPLSTI,NCELL)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VXSTEP(IPLSV,ISTEP,K),
-     .                          VYSTEP(IPLSV,ISTEP,K),
-     .                          VZSTEP(IPLSV,ISTEP,K),IPLSV)
+                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+                  VXSTEP(IPLSV,ISTEP,K)=VX
+                  VYSTEP(IPLSV,ISTEP,K)=VY
+                  VZSTEP(IPLSV,ISTEP,K)=VZ
                 ELSE
                   VXSTEP(IPLSV,ISTEP,K)=VXIN(IPLSV,NCELL)
                   VYSTEP(IPLSV,ISTEP,K)=VYIN(IPLSV,NCELL)
@@ -1489,7 +1492,10 @@ C                              IN SAMPLED CELL NCELL
           IPLSV = MPLSV(IPLS)
           TIWL(IPLS)=TIIN(IPLSTI,NCELL)
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VXWL(IPLS),VYWL(IPLS),VZWL(IPLS),IPLS)
+            CALL EIRENE_VECUSR (2,VX,VY,VZ,IPLS)
+            VXWL(IPLS)=VX
+            VYWL(IPLS)=VY
+            VZWL(IPLS)=VZ
           ELSE
             VXWL(IPLS)=VXIN(IPLSV,NCELL)
             VYWL(IPLS)=VYIN(IPLSV,NCELL)

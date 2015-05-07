@@ -586,13 +586,13 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
       ENDIF
 
 c     tracing output shall be generated never the less we do our octree stuff ;)
-      IF (NLTRC) THEN
-        CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'TIMEA ,X,Y,Z,T ',XX,YY,ZZ,TMT
-        WRITE (iunout,*) '      VX,VY,VZ,V ',VXX,VYY,VZZ,VV
-        IF (NLTRA) WRITE (iunout,*) 'MSURF,NNTCL ',MSURF,NNTCL
-        IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
-      ENDIF
+c     IF (NLTRC) THEN
+c       CALL EIRENE_LEER(1)
+c       WRITE (iunout,*) 'TIMEA ,X,Y,Z,T ',XX,YY,ZZ,TMT
+c       WRITE (iunout,*) '      VX,VY,VZ,V ',VXX,VYY,VZZ,VV
+c       IF (NLTRA) WRITE (iunout,*) 'MSURF,NNTCL ',MSURF,NNTCL
+c       IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
+c     ENDIF
       
 !trc      if(msurf .eq. 0 .and. pladd) then
 !trc        WRITE(trcnum,*) 'RESTART', XX, YY, ZZ, VXX, VYY, VZZ

@@ -70,7 +70,7 @@ C
       ZRADS=ZRAD
 C
 C     IF (NLTRC) THEN
-C       CALL LEER(1)
+C       CALL EIRENE_LEER(1)
 C       WRITE (iunout,*) 'TIMET: ZRAD,NRCELL,NTCELL,MTSURF '
 C       WRITE (iunout,*) '      ',ZRAD,NRCELL,NTCELL,MTSURF
 C       WRITE (iunout,*) 'INITIAL: X0,X01,Z01,PHI ',
@@ -156,7 +156,7 @@ C  NO REENTRY FOUND
 C  CHECK VALID RANGE ON MRSURF
             Z0TEST=Z00+VELZ*ZRAD
 C           IF (NLTRC)
-C     .       WRITE (iunout,*) 'CHECK VALID RANGE: Z0TEST ',Z0TEST
+C    .        WRITE (iunout,*) 'CHECK VALID RANGE: Z0TEST ',Z0TEST
             IF (Z0TEST.GE.ZSURF(1).AND.Z0TEST.LE.ZSURF(NT3RD)) THEN
               ITCELL=EIRENE_LEARCA(Z0TEST,ZSURF,1,NT3RD,1,
      .               'TIMET 2     ')
