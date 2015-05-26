@@ -1101,6 +1101,13 @@ C
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
 C
+      IF (NPRS > 1) THEN
+        call EIRENE_collect_coutau
+        IF (NPRNLI > 0) CALL EIRENE_COLLECT_CENSUS
+        CALL EIRENE_COLLECT_USRDATA
+      END IF
+
+C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 C
 csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
@@ -1116,13 +1123,7 @@ C   AND MORE PROCESSES THEN STRATA
         ENDIF
       ENDIF
 csw
-
-C
-      IF (NPRS > 1) THEN
-        call EIRENE_collect_coutau
-        IF (NPRNLI > 0) CALL EIRENE_COLLECT_CENSUS
-        CALL EIRENE_COLLECT_USRDATA
-      END IF
+      CALL EIRENE_COLLECT_USRDATA(2)
 
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN
 C
