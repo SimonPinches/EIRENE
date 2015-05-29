@@ -1104,7 +1104,6 @@ C
       IF (NPRS > 1) THEN
         call EIRENE_collect_coutau
         IF (NPRNLI > 0) CALL EIRENE_COLLECT_CENSUS
-        CALL EIRENE_COLLECT_USRDATA
       END IF
 
 C
@@ -1123,7 +1122,9 @@ C   AND MORE PROCESSES THEN STRATA
         ENDIF
       ENDIF
 csw
-      CALL EIRENE_COLLECT_USRDATA(2)
+      IF (NPRS > 1) THEN
+        CALL EIRENE_COLLECT_USRDATA
+      END IF
 
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN
 C
