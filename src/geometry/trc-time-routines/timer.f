@@ -1,3 +1,5 @@
+cdr:  njump=3 option: continue new flight from previously found 
+cdr                   intersection with cell boundary. used from levgeo=10
 C icts introduced, lcut --> llcut
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C
@@ -6,14 +8,15 @@ C
 C
       SUBROUTINE EIRENE_TIMER (PT)
 C
-C  THIS SUBROUTINE CALCULATES INTERSECTION TIMES IN THE STANDARD
+C  THIS SUBROUTINE CALCULATES DISTANCES TO INTERSECTION POINTS IN THE 1ST STANDARD
 C  MESH "RSURF" (X- OR RADIAL DIRECTION)
 C
 C  INPUT:
 C       NRCELL = CELL NUMBER FOR WHICH NEXT INTERSECTION
 C                TIME IS TO BE CALCULATED (I.E. NOT NECESSARLY THE
 C                CELL WHICH CONTAINS THE STARTING POINT X0,Y0,Z0)
-C                NRCELL=0 IF PARTICLE OUTSIDE STANDARD MESH
+C       NRCELL=0 IF PARTICLE OUTSIDE STANDARD MESH
+C
 C       NJUMP = 0 MEANS: THIS IS THE FIRST CALL OF TIMER FOR THIS TRACK
 C                        IN THIS CASE , NLSRFX MUST BE KNOWN
 C           NLSRFX = .TRUE. :PARTICLE ON A SURFACE, IN THIS CASE
@@ -23,13 +26,16 @@ C
 C           NLSRFX = .FALSE.:PARTICLE NOT ON A SURFACE
 C
 C           X0,Y0,Z0 = STARTING POINT OF THIS TRACK
-C           VELX,VELY,VELZ = VELOCITY OF PARTICLE
+C           VELX,VELY,VELZ = SPEED UNIT VECTOR OF PARTICLE
 C       NJUMP = 1  X0,Y0,Z0,VELX,VELY,VELZ ARE THE SAME
 C                  AS IN THE PREVIOUS CALL
 C       NJUMP = 2  ONLY VELX,VELY,VELZ ARE THE SAME
 C                  AS IN THE PREVIOUS CALL, I.E. PARTICLE HAS
 C                  BEEN MOVED BUT VELOCITY HAS NOT BEEN CHANGED
 C                  (TO BE WRITTEN)
+C       NJUMP = 3  PARTICLE HAS
+C                  BEEN MOVED, VELOCITY HAS CHANGED, BUT PARTICLE CONTINUES FLIGHT
+C                  FROM PREVIOUSLY FOUND CELL BOUNDARY INTERSECTION POINT
 C  IF (LEVGEO=1 OR LEVGEO=2):
 C       TIMINT NE 0. MEANS: INTERSECTION TIME IS KNOWN FROM AN EARLIER
 C                CALL AND ITS VALUE IS TIMINT.
@@ -49,12 +55,13 @@ C       TIMINT NE 0. MEANS: NOTHING
 C
 C  OUTPUT :
 C       NJUMP = 1
+C       NLSRFX=.FALSE.
 C       MRSURF = INDEX OF NEXT SURFACE ALONG TRACK
 C              = 0 IF NO NEXT SURFACE IS FOUND
-C       PT = TIME TO REACH THIS SURFACE
+C       PT = TIME (DISTANCE) TO REACH THIS SURFACE
 C          = 1.D30 IF NO NEXT SURFACE IS FOUND
-C       TIMINT(MRSURF) NE 0 INDICATES FURTHER INTERSECTION TIMES FOUND
-C                      IN THIS CALL, WHICH MAY BE USED IN A LATER CALL
+C       TIMINT(MRSURF) NE 0 INDICATES THAT FURTHER INTERSECTION WITH SAME SURFACE MRSURF WAS FOUND
+C                      ALREADY IN THIS CALL, WHICH MAY BE USED IN A LATER CALL
 C       NINCX = INDEX FOR DIRECTION IN GRID "RSURF": +1 OR -1
 C             = 0 IF NO NEXT SURFACE FOUND
 C       NRCELL:  NUMBER OF FINAL RADIAL CELL (IE. NOT MODIFIED)
@@ -70,6 +77,14 @@ C           IPOLGN=IPOLGO IS RETURNED, THE INDEX OF THE LAST
 C           VALID POINT OF INTERSECTION FOUND IN EARLIER CALLS
 C           (WHICH MAY BE THE INPUT VALUE IPOLG ITSELF) )
 C
+C
+C  ADDITIONALLY, IF NLFEM:
+C
+C    TO BE WRITTEN
+C
+C  ADDITIONALLY, IF NLTET:
+C
+C    TO BE WRITTEN
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -98,7 +113,8 @@ C
      .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
      .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
      .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
-     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
+     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
+     .          X0N,Y0N,Z0N,X0NS,Y0NS,Z0NS,scosi,scosa
       INTEGER :: IRICH(2,4), ITSIDE(3,4)
       INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF, 
@@ -109,7 +125,7 @@ C
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
-      INTEGER :: NSTS_CELL
+      INTEGER :: NSTS_CELL,nrtest,ist
       LOGICAL :: LLCUT(N2NDPLG), LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
@@ -1354,8 +1370,37 @@ c              coincides with this "radial" surface.
         END IF
       END IF
 C
+
+      
+C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
+      IF (NJUMP.EQ.3.or.njump.eq.0) then 
+       TIM=0.        
+      endif
+      if (nlsrfx.and.njump.eq.3) then
+c  particle continues from internal grid surface
+c  try to set particle position more precisely, from previously found intersection point
+c  problem: v_new from b-field after surface delta event is not seen in timusr.
+c  but njump=0 also seems not to work.
+        x0=x0ns
+        y0=y0ns
+        z0=z0ns
+        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
+     .                     VELX,VELY,VELZ,Nrtest)
+        scosi=crtx*velx+crty*vely+crtz*velz
+        write (6,*) 'norusr, before: nrtest, scos', nrtest,scosi 
+c       njump=-7  
+      endif
+
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
+        WRITE (iunout,*)                        NJUMP,TIM,ZT
+      ENDIF
+      
+      if (tim.ne.zt) write (6,*) 'fehler, npanu ',npanu,tim,zt
+
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
-     .            NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
+     .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX,
+     .                   X0N,Y0N,Z0N)
       IF (IERR.NE.0) GOTO 9999
       PT=TIM
       IF (NEWCEL.GT.0) THEN
@@ -1366,6 +1411,15 @@ cdr  make sure that mrsurf is not pointing to any of the defined non-default sta
 cdr  but why not just mrsurf=0 ???      
 cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, no matter if non-default (3a) or not. 
         MRSURF=NRMSRF
+cdr  save tentative intersection point. To be used in case of
+c    internal grid boundary delta event,  to enhance precision.
+        x0ns=x0n
+        y0ns=y0n
+        z0ns=z0n
+        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
+     .                     VELX,VELY,VELZ,Nrtest)
+        scosa=crtx*velx+crty*vely+crtz*velz
+        write (6,*) 'norusr, after: nrtest, scos', nrtest,scosa 
       ELSEIF (NEWCEL.LT.0) THEN
 cdr  one of the non-default surfaces has been hit. set this surface index to mrsurf.
         NINCX=ICOS
@@ -1376,6 +1430,12 @@ cdr
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       NLSRFX=.FALSE.
+
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX,NRCELL'
+        WRITE (iunout,*)              PT,MRSURF,NINCX,NRCELL
+      ENDIF
+
       RETURN
  
 C

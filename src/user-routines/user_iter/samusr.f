@@ -5,7 +5,7 @@ C
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
 C
-C  SAMPLE INITAL COORDIANTES X,Y,Z ON ADDITIONAL SURFACE NLLI
+C  SAMPLE INITAL COORDIANTES X0,Y0,Z0 ON SURFACE NLSF
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -21,26 +21,32 @@ C
       REAL(DP) :: X, Y, T, B0, B1, B2, Z1, Z2
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IER
- 
-      entry EIRENE_sm0usr
+
+C  CALLED IN INITIALIZATION PHASE
+C  E.G. TO INITIALIZE SAMPLING ON SURFACE 
+      ENTRY EIRENE_sm0usr
      .  (is1,is2,sorad1,sorad2,sorad3,sorad4,sorad5,sorad6)
       return
- 
-      entry EIRENE_SM1USR (NLSF,X0,Y0,Z0,
+
+C.............................................................................
+C  CALLED FROM SUBR. SAMSRF, FOR SURFACE SAMPLING 
+      ENTRY EIRENE_SM1USR (NLSF,X0,Y0,Z0,
      .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
- 
+
+
+C  RETURN BIRTH POINT OF TEST PARTICLE 
       x0 = 0._dp
       y0 = 0._dp
       z0 = 0._dp
- 
+C  RETURN CELL NO. INFORMATION AT BIRTH POINT 
       irusr = 0
       ipusr = 0
       itusr = 0
       iausr = 0
       ibusr = 0
- 
+C  RETURN BACKGROUND MEDIUM PARAMETERS AT BIRTHPOINT 
       tiwl(1:nplsti) = 0._dp
       tewl = 0._dp
       diwl(1:nplsi) = 0._dp

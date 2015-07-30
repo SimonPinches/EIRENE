@@ -257,16 +257,21 @@ C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
       END IF
       GOTO (141,142,143,144,145,146,147,150,150),IND
 C  HELP IS FIELD LINE PITCH ANGLE: B_POL/B_TOT
+
+C  INDPRO=1:
 141     CALL EIRENE_PROFN (HELP,B0,B1,B2,B3,B4,B5,BVAC)
         GOTO 1400
+C  INDPRO=2:
 142     CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
         GOTO 1400
+C  INDPRO=3:
 143     CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
         CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008) set constant B profile, ONLY INDPRO(5)=3
         GOTO 1400
 C  INDPRO=4: read from stream B0:  NOT IN USE
 144     CONTINUE
         GOTO 150
+
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
 1400    CONTINUE
 C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
@@ -328,6 +333,8 @@ C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
         ELSE
           CALL EIRENE_LEER(1)
           WRITE (iunout,*)
+     .      'NO MAGNETIC PITCH PROFILE COULD BE DEFINED FOR THIS CASE'
+          WRITE (iunout,*)
      .      'DEFAULT MAGNETIC FIELD (IN Z-DIRECTION) IS USED'
           CALL EIRENE_LEER(1)
         ENDIF
@@ -344,7 +351,7 @@ c  INDPRO=5:  call prousr
      .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
         GOTO 150
 c  INDPRO=6:  call profr (information comes from interfacing code)
-c             default (vaccum) parameters in additional cells
+c             default (vacuum) parameters in additional cells
 146     CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
