@@ -1,12 +1,13 @@
 C  sept. 05: use only parallel velocity, vel=velpar,....
-C            this is now made consistent in calling program folion.f
-C  aug 06: move call to chctrc: pre-collision status at point of collision
-C          and: return new velocity vector in full cartesian coord.
+C              this is now made consistent in calling program folion.f
+C  aug 06:   move call to chctrc: pre-collision status at point of collision
+C            and: return new velocity vector in full cartesian coord.
 C               fetch new BVEC at point of collision
-C  mai 10: flag ind:  if ind=2, only FP collision, but no push to
+C  mai 10:   flag ind:  if ind=2, only FP collision, but no push to
 C                               new position.
+c  july 15:  set E0PAR,  (was missing). 
 C
-      SUBROUTINE EIRENE_FPKCOL(*,*,IND)
+      SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
 C
 C  IF IND=0 (DEFAULT)
 C  1.) ADVANCE PARTICLE BY TIMESTEP DUR, AND THEN
@@ -31,6 +32,7 @@ C  RETURN  :  NOT IN USE
 C  RETURN 1:  NOT IN USE
 C  RETURN 2:  START COMPLETELY NEW TEST ION TRACK, SAME SPECIES
 C             LCART=TRUE
+C  RETURN 3:  ERROR, STOP TRACK IN CALLING PROGRAM. PTRASH AND ETRASH ALREADY DONE HERE
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -60,6 +62,7 @@ C  SAVE INCIDENT SPECIES: IOLD
       E0OLD=E0
       NCELLT=NCLTAL(NCELL)
       DUR=ZT/VEL   ! TIMESTEP UNTIL THIS FP COLLISION, [S]
+
 C
       IF (LCART) GOTO 991
 
@@ -67,7 +70,7 @@ C  SKIP PUSH ?
       IF (IND.EQ.1.OR.IND.EQ.3) GOTO 200
 
 C  1.) PUSH TO NEW POSITION ALONG REDUCED (GUIDING CENTRE) TRACK
-
+C     write (6,*) 'fpkcol push, zt used', zt
       X0=X0+VELX*ZT
       Y0=Y0+VELY*ZT
       Z0=Z0+VELZ*ZT
@@ -127,7 +130,8 @@ C
 
         FAC=SQRT(E0NEW/E0OLD)
         VELPAR=VELPAR*FAC
-        VELPER=VELPER*FAC
+        VELPER=VELPER*FAC 
+        E0PAR=E0PAR*FAC*FAC     
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
@@ -192,5 +196,5 @@ C
       LGPART=.FALSE.
       WEIGHT=0.
       CALL EIRENE_LEER(1)
-      RETURN 2
+      RETURN 3
       END

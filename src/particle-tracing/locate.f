@@ -32,6 +32,7 @@ cdr           also: scoring sputter tallies revised, igasp,igasc=0 option:
 cdr           means: score (if sputtered particle species found), but do not follow.
 cdr           to be done: epel volume tally (electron energy loss associated with vol.rec,
 cdr                       or with sheath, etc)
+cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:
@@ -2185,15 +2186,25 @@ C  FIND SIGN SG OF FLIGHT RELATIVE TO SURFACE NORMAL
         ELSEIF ((LEVGEO==4) .OR. (LEVGEO==5)) THEN
           SG = 1
         ELSEIF (LEVGEO==10) THEN
+C  IN USER SUPPLIED GEOMETRY OPTION: NRCELL MUST BE CORRECT ALREADY
+C                                    MRSURF IS NOT NCESSARILY TRANSFERRED
           SG = 1
         ENDIF
-        IF (SG.LT.0) THEN
-          NRCELL=MRSURF-1
-        ELSEIF (SG.GT.0) THEN
-          NRCELL=MRSURF
-        ELSE
-          WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0 '
-          CALL EIRENE_EXIT_OWN(1)
+C
+C  IN CASE OF LEVGEO 10 NRCELL MUST BE KNOWN ALREADY, AND MRSURF NOT NECESSARILY
+C  NO FURTHER CORRECTION TO NRCELL DONE.
+        IF (LEVGEO .NE. 10) THEN
+
+C  SET NRCELL FROM MRSURF AND SG 
+          IF (SG.LT.0) THEN
+            NRCELL=MRSURF-1
+          ELSEIF (SG.GT.0) THEN
+            NRCELL=MRSURF
+          ELSE
+            WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0 '
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
+
         ENDIF
       ELSEIF (NLSRFY) THEN
 C  POLOIDAL CELL NO. MAY BE WRONG

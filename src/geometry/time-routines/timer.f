@@ -587,7 +587,8 @@ C       IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
 C    .                           LCT1,LCT2,LCT3,LCT4
 C       IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
 
-        ICTS=COUNT(LCTS) 
+        ICTS=COUNT(LCTS)
+C  MORE THAN ONE TENTATIVE INTERECTIONS FOUND 
         IF (ICTS > 1) THEN
           WHERE (PTS < 0._DP)
             PTS = 1.E30_DP
@@ -596,10 +597,16 @@ C       IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
           LCTS = .FALSE.
           LCTS(ISD) = .TRUE.
           T = PTS(ISD)
+C  EXACTLY ONE TENTATIVE INTERESECTION FOUND
         ELSE IF (ICTS == 1) THEN
           T=MAX(PT1,PT2,PT3,PT4)
+C  NO TENTATIVE INTERSECTION FOUND, T IS NOT SET.
+C       ELSE
+C  THIS MAY BE A RESULT OF NUMERICAL ROUNDING ERRORS,
+C  SO SOME FURTHER ATTEMPTS WILL BE MADE BELOW.....
         END IF
 C       IF (NLTRC) WRITE (iunout,*) ' T = ',T
+
 C  IF INTERSECTION WITH POLOIDAL BOUNDARY CONTINUE WITH NEIGHBORING CELL
         IF (LCT2.OR.LCT4) THEN
           LNGB1=.TRUE.
@@ -659,6 +666,7 @@ C  INTERSECTION WITH RADIAL CELL BOUNDARY FOUND
             NINCX=1
           ENDIF
         ELSE
+C..................................................................................
 C  NO INTERSECTION FOUND
           IF (NLSRFX.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
@@ -1370,8 +1378,38 @@ c              coincides with this "radial" surface.
         END IF
       END IF
 C
+
+      if (.false.) then  ! detlevs attempt
+C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
+      IF (NJUMP.EQ.3.or.njump.eq.0) then 
+       TIM=0.        
+      endif
+      if (nlsrfx.and.njump.eq.3) then
+c  particle continues from internal grid surface
+c  try to set particle position more precisely, from previously found intersection point
+c  problem: v_new from b-field after surface delta event is not seen in timusr.
+c  but njump=0 also seems not to work.
+        x0=x0ns
+        y0=y0ns
+        z0=z0ns
+        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
+     .                     VELX,VELY,VELZ,Nrtest)
+        scosi=crtx*velx+crty*vely+crtz*velz
+        write (6,*) 'norusr, before: nrtest, scos', nrtest,scosi 
+c       njump=-7  
+      endif
+      endif  ! detlevs attempt
+
+c     IF (NLTRC) THEN
+c       WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
+c       WRITE (iunout,*)                        NJUMP,TIM,ZT
+c     ENDIF
+      
+c     if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
+
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
-     .            NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
+     .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX,
+     .                   X0N,Y0N,Z0N)
       IF (IERR.NE.0) GOTO 9999
       PT=TIM
       IF (NEWCEL.GT.0) THEN
@@ -1382,6 +1420,19 @@ cdr  make sure that mrsurf is not pointing to any of the defined non-default sta
 cdr  but why not just mrsurf=0 ???      
 cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, no matter if non-default (3a) or not. 
         MRSURF=NRMSRF
+c
+        if (.false.) then  ! detlevs attempt
+cdr  save tentative intersection point. To be used in case of
+c    internal grid boundary delta event,  to enhance precision.
+        x0ns=x0n
+        y0ns=y0n
+        z0ns=z0n
+        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
+     .                     VELX,VELY,VELZ,Nrtest)
+        scosa=crtx*velx+crty*vely+crtz*velz
+        write (6,*) 'norusr, after: nrtest, scos', nrtest,scosa
+        endif  ! false, detlevs attempt 
+
       ELSEIF (NEWCEL.LT.0) THEN
 cdr  one of the non-default surfaces has been hit. set this surface index to mrsurf.
         NINCX=ICOS
@@ -1392,6 +1443,12 @@ cdr
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       NLSRFX=.FALSE.
+
+c     IF (NLTRC) THEN
+c       WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX,NRCELL'
+c       WRITE (iunout,*)              PT,MRSURF,NINCX,NRCELL
+c     ENDIF
+
       RETURN
  
 C
