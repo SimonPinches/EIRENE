@@ -1,4 +1,6 @@
 cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
+cdr  aug,  4., 2015, added: naint=24, modcol=2 option, EB=1.5 Ti
+cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
@@ -55,7 +57,7 @@ c                            nidsi(iio) --> nieii(iio)
       IMPLICIT NONE
 
       REAL(DP) :: AU, ELB, EXPO, FP, RCMIN,RCMAX,
-     .            TBCX3(9),
+     .            TBCX3(9),TBPI3(9),TBEL3(9),
      .            EIRENE_SNGL_POLY
       INTEGER :: NS,NA,IAIN,MM,KK,
      .           irei,ircx,irpi,irel,irrc,
@@ -262,7 +264,7 @@ c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
             goto 180  !done
-          ELSE ! MODCOL.gt.2:  NOT READY            
+          ELSE ! MM=MODCOL.gt.2:  NOT READY            
             GOTO 171
           ENDIF
 
@@ -347,8 +349,22 @@ c  no interacting particle species found
      .        TABEL3(IREL,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1724        CONTINUE
             GOTO 180
-          ELSE ! MODCOL(...)=2:  NOT READY             
-            
+          ELSEIF (MM.EQ.2) THEN
+C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
+            IPLTI = MPLSTI(IPL)
+            FP = 0._DP
+            RCMIN = -HUGE(1._DP)
+            RCMAX = HUGE(1._DP)
+c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
+            DO ICELL=1,NSBOX
+              ELB=log(1.5*TIIN(iplti,icell))
+              TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)             
+              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
+              ADIN(IAIN,ICELL)=
+     .        exp(expo)/(diin(ipl,icell)+eps30)/AU
+            enddo
+            goto 180  !done
+          ELSE ! MM=MODCOL.gt.2:  NOT READY            
             GOTO 171
           ENDIF
 
@@ -435,10 +451,25 @@ c  no interacting particle species found
 1726        CONTINUE
             GOTO 180  !DONE !
 
-          ELSE   ! MODCOL(.....) =2:  NOT READY           
-            
+          ELSEIF (MM.EQ.2) THEN
+C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
+            IPLTI = MPLSTI(IPL)
+            FP = 0._DP
+            RCMIN = -HUGE(1._DP)
+            RCMAX = HUGE(1._DP)
+c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+            DO ICELL=1,NSBOX
+              ELB=log(1.5*TIIN(iplti,icell))
+              TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)             
+              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
+              ADIN(IAIN,ICELL)=
+     .        exp(expo)/(diin(ipl,icell)+eps30)/AU
+            enddo
+            goto 180  !done
+          ELSE ! MM= MODCOL.gt.2:  NOT READY            
             GOTO 171
           ENDIF
+          
         ELSEIF (NA.EQ.27) THEN
           mm=modcol(4,3,irpi)
           kk=NELRPI(irpi)
