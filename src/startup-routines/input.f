@@ -2258,7 +2258,6 @@ c  read this (single) file in subr. REFDAT
       NH2=NH1*NHD4
       NH3=NH2*NHD5
       CALL EIRENE_ALLOC_CREF
-!pb   CALL EIRENE_ALLOC_CREFMOD
       NFLR = 0
       DO WHILE (ASSOCIATED(REFFILES))
         NFLR = NFLR + 1
@@ -2753,7 +2752,7 @@ C
       READ (ZEILE,6666) NADVI,NCLVI,NALVI,NADSI,NALSI,NADSPC
       WRITE (iunout,*) '        NADVI,NCLVI,NALVI= ',
      .                     NADVI,NCLVI,NALVI
-      WRITE (iunout,*) '        NADSI,NALSI,NADSPC= ',
+      WRITE (iunout,*) '        NADSI,NALSI,NADSPC=',
      .                     NADSI,NALSI,NADSPC
       CALL EIRENE_LEER(1)
 C

@@ -10,6 +10,7 @@ c            cx rate option 4 added (adopted from fpatha)
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  syncronized with fpatha, fpathi
 cdr  oct.14  :  bug fix, elastic energy exchange tally in case of tracklength estimator
+cdr 06.08.15 :  arguments added to vecusr
 C
       FUNCTION EIRENE_FPATHM (K,CFLAG,JCOU,NCOU)
 C
@@ -61,7 +62,7 @@ C
      .          EXPO, ELB, CEL,
      .          RMN, RLMS, ER, RMI, RMSI, SIG,
      .          SIGMAX, EIRENE_FEPLEL3, VX, VY, VZ, EHEAVY, 
-     .          EIRENE_FPATHM,
+     .          EIRENE_FPATHM, XC,YC,ZC,
      .          PVELQ0, DENEL, VEFF, VEFFQ, CXS, ELAB,
      .          TBCX, PLS, TII, CII,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY, RCMIN, 
@@ -98,7 +99,10 @@ C
       DO 3 IPLS=1,NPLSV
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VX,VY,VZ,IPLS)
+            XC=0.
+            YC=0.
+            ZC=0.
+            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
             VX=VXIN(IPLS,K)
             VY=VYIN(IPLS,K)

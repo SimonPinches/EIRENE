@@ -14,6 +14,8 @@ C               added: jcou,ncou
 cdr  oct.14  :  ftabcx3 added. Full tests to be done
 cdr  oct.14  :  syncronized with fpatha, fpathm
 cdr  oct.14  :  bug fix:  cx energy loss tally
+cdr 06.08.15 :  arguments added to vecusr
+            
 
 C
       FUNCTION EIRENE_FPATHI (K,CFLAG,JCOU,NCOU)
@@ -65,7 +67,7 @@ C
       REAL(DP) :: ELB, EXPO,  ELAB, VEFF, EIRENE_CROSS, 
      .          CXS, SIGMAX, RMN, RLMS, ER, RMI, RMSI, SIG,
      .          VX, VY, VZ, PVELQ0, EIRENE_FPATHI, DENEL, 
-     .          PLS, TII,
+     .          PLS, TII, XC,YC,ZC,
      .          TBCX, VEFFQ, EHEAVY, EIRENE_RATE_COEFF,
      .          ELTHDUM, CTCHDUM,
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
@@ -104,7 +106,10 @@ C
       DO 3 IPLS=1,NPLSV
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VX,VY,VZ,IPLS)
+            XC=0.
+            YC=0.
+            ZC=0.
+            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
             VX=VXIN(IPLS,K)
             VY=VYIN(IPLS,K)

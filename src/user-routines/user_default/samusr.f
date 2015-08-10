@@ -24,14 +24,18 @@ C
 
 C  CALLED IN INITIALIZATION PHASE
 C  E.G. TO INITIALIZE SAMPLING ON SURFACE 
-      entry EIRENE_sm0usr
+      ENTRY EIRENE_SM0USR
      .  (is1,is2,sorad1,sorad2,sorad3,sorad4,sorad5,sorad6)
       return
+
+C.............................................................................
 C  CALLED FROM SUBR. SAMSRF, FOR SURFACE SAMPLING 
-      entry EIRENE_SM1USR (NLSF,X0,Y0,Z0,
+      ENTRY EIRENE_SM1USR (NLSF,X0,Y0,Z0,
      .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+
+
 C  RETURN BIRTH POINT OF TEST PARTICLE 
       x0 = 0._dp
       y0 = 0._dp

@@ -13,11 +13,14 @@ C 10.3.06: bug fix: LGEI_RED(NRDS) --> LGEI_RED(0:NRDS)
 C          (some compilers had been unhappy with this)
 C 20.3.07: PI reactions revised
 
-c oct 14.14 some hard wired additional tallies ADDV removed again
-c oct.21.14 evaluate v-parallel of incident particle only in case of need
-c           i.e.  momentum collision estimators, or generation limit
-c           otherwise: avoid calls to bfield.f
-C
+cdr oct 14.14 some hard wired additional tallies ADDV removed again
+cdr oct.21.14 evaluate v-parallel of incident particle only in case of need
+c             i.e.  momentum collision estimators, or generation limit
+c             otherwise: avoid calls to bfield.f
+c
+cdr  5.8.15: ARGUMENTS ADDED TO VECUSR
+
+
       SUBROUTINE EIRENE_COLLIDE
 C
 C  SAMPLE FROM COLLISION KERNEL C
@@ -89,7 +92,7 @@ C  INCIDENT SPECIES: IOLD
 
 C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION 
       IF (LMAPL.OR.NGENA(IATM).NE.0) THEN
-        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
         V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
         V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
       ENDIF
@@ -498,7 +501,8 @@ C  SET THE POST COLLISION NEUTRAL PARALLEL VELOCITY = OLD PRE COLLISION ION VELO
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSA(IATM)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+                  CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+     .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
                 ELSE
                   VPLASP = BVIN(IPLSV,NCLLO)
@@ -664,7 +668,8 @@ C  SET THE POST COLLISION NEUTRAL PARALLEL VELOCITY
 C
             VDEL=V0_PARBO*WGHTO-V0_PARB*WEIGHT
             IF (INDPRO(4) == 8) THEN
-              CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+              CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+     .                           .TRUE.)
               VPLASP=VX*BX+VY*BY+VZ*BZ
             ELSE
               VPLASP=BVIN(IPLSV,NCLLO)
@@ -814,7 +819,7 @@ C  INCIDENT SPECIES: IOLD
       NCELL = NCLTAL(NCLLO)
 
       IF (LMMPL.OR.NGENM(IMOL).NE.0) THEN
-        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
         V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
         V0_PARBO=V0_PARBO*AMUA*RMASSM(IMOL)
       ENDIF
@@ -1158,7 +1163,8 @@ C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MMPL (COPV)
                 V0_PARB=V0_PARB*AMUA*RMASSM(IMOL)
                 IPLSV=MPLSV(IPLS)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+                  CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+     .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
                 ELSE
                   VPLASP=BVIN(IPLSV,NCLLO)
@@ -1344,7 +1350,8 @@ C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MMPL (COPV)
             VDEL=V0_PARBO*WGHTO-V0_PARB*WEIGHT
             IPLSV=MPLSV(IPLS)
             IF (INDPRO(4) == 8) THEN
-              CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+              CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+     .                           .TRUE.)
               VPLASP=VX*BX+VY*BY+VZ*BZ
             ELSE
               VPLASP=BVIN(IPLSV,NCLLO)
@@ -1499,7 +1506,7 @@ C  INCIDENT SPECIES: IOLD
       NCELL = NCLTAL(NCLLO)
   
       IF (LMIPL.OR.NGENI(IION).NE.0) THEN
-        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+        CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
         V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
         V0_PARBO=V0_PARBO*AMUA*RMASSI(IION)
       ENDIF
@@ -1831,7 +1838,8 @@ C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MIPL (COPV)
                 V0_PARB=V0_PARB*AMUA*RMASSI(IION)
                 IPLSV=MPLSV(IPLS)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+                  CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+     .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
                 ELSE
                   VPLASP=BVIN(IPLSV,NCLLO)
@@ -2082,7 +2090,7 @@ C  INCIDENT SPECIES: IOLD
       NCELL = NCLTAL(NCLLO)
 
 C  parallel momentum of photon:  not ready
-C     CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF)
+C     CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
 C     V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
 c     V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
 

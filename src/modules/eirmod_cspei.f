@@ -43,11 +43,17 @@
  
  
       SUBROUTINE EIRENE_ALLOC_CSPEI
- 
+cdr
+c  called from main routine eirene.f, allocates storage for 
+c  storage arrays which are needed for "sum over strata"
+c  smestv, smests, smestl
+c  and for intermediate storage arrays for variance per history evaluation
+c  stv,sdvia,....
+cdr  
       INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
       INTEGER(IL) :: MEM
 
-      IF (ALLOCATED(SMESTV)) RETURN
+      IF (ALLOCATED(SMESTV)) RETURN  ! allocated smestv is used as indicator for: 'all fields are allocated' 
  
       IF (NSMSTRA > 0) THEN
         NIDV=NVOLTL
@@ -56,10 +62,14 @@
         NIDV=1
         NIDS=1
       END IF
- 
+C  storage for for sum over strata.... 
       ALLOCATE (SMESTV(NIDV,NRTAL))
       ALLOCATE (SMESTS(NIDS,NLMPGS))
- 
+CDR   same for spectra, but:
+cdr   ALLOCATE (SEMSTL(NADSPC))   ! TO BE MOVED HERE FROM INPUT.F,  NOT POSSIBLE BECAUSE DIFFERENT DATA TYPE FOR SMESTL
+
+
+cdr  these next arrays are intermediate storage array to perform variance per history calculations. 
       ALLOCATE (STV(NSD,NRTAL))
       ALLOCATE (STVW(NSDW,NLIMPS))
       ALLOCATE (STVC(0:2,NCV,NRTAL))
@@ -73,6 +83,22 @@
       ALLOCATE (SDVIA(NSD,NRTAL))
       ALLOCATE (SDVIAW(NSDW,NLIMPS))
       ALLOCATE (SDVIAC(2,NCV,NRTAL))
+CDR  same again: intermediate storage for spectra, data type prevents this from having it here?
+CDR BEGIN:  TO BE MOVED HERE FROM INPUT.F, NOT POSSIBLE, BECAUSE DIFFERENT DATA TYPE FOR SSPEC
+c     ALLOCATE(SSPEC)
+c     ALLOCATE(SSPEC%SPC(0:NSPS+1))
+c  standard deviation of spectra tallies, sum over strata intermediate storage
+!     IF (NSIGI_SPC > 0) THEN
+c       ALLOCATE(SSPEC%SDV(0:NSPS+1))
+c       ALLOCATE(SSPEC%SGM(0:NSPS+1))
+c       ALLOCATE(SSPEC%STV(0:NSPS+1))
+c       ALLOCATE(SSPEC%GG(0:NSPS+1))
+!     END IF
+c     SSPEC = ESPEC   !  ????
+c     SMESTL(J)%PSPC => SSPEC   !  ???? not sure here !!!!
+CDR END
+
+C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
 
       MEM = (NIDV*NRTAL+(3*NSD+5*NCV)*NRTAL +
      .                  NIDS*NLMPGS + 3*NSDW*NLIMPS + 2*NSD +

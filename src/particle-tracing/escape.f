@@ -1,4 +1,5 @@
-c   may 15       argument in vecusr: ip or ipv?, now : IP, everywhere
+c   06.08.15  :  arguments added to vecusr
+c   aug.15    :  periodicity and icol=1, return 3 rather than return 2
 C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
 C   OCT.14    :  SPUTTERING:  SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
 c                new meaning of isrs, isrc=0:  sputter, score fluxes, but do not follow.
@@ -109,9 +110,10 @@ C  CURRENTLY: ONLY IN CASE (LEVGEO=1, NLTRZ). HENCE: VEL_OLD=VEL_NEW
 C  TO BE WRITTEN: TOROIDICITY AS SPECIAL CASE OF PERIODICITY
 C  ALL FIDELLING WITH VELOCITIES AT PERIODIC SURFACES MUST HAVE BEEN DONE ALREADY IN
 C  CALLING PROGRAMS, E.G. STDNOR.F
+C  CURRENTLY: NO SURFACE TALLIES AT PERIODICITY SURFACES
  
       IF (ILIIN(MSURF).GE.4) THEN
-cdr: unfinished option: store tracejtories for later post processing 
+cdr: unfinished option: store trajectories for later post processing 
 cdr: unused
         NLTRJ = .FALSE.
         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
@@ -119,9 +121,9 @@ C  CONDITIONAL EXPECTATION ESTIMATOR: HAS THIS PARTICLE COLLIDED IN THE VOLUME,
 C  BEFORE IT HIT THE WALL?     
         IF (ICOL.EQ.1) then
           colflag = .true.  ! probably unused, perhaps in TIM?
-          RETURN 2
+          RETURN 3
         ENDIF
-C  NO, PARTICLE HAS ARRIVED AT SURFACE MSURF
+C  NO, PARTICLE HAS ARRIVED AT PERIODICITY SURFACE MSURF
         IF (.NOT.LGPART) THEN
           WRITE (IUNOUT,*) 'ERROR AT PERIODICITY SURFACE, LGPART=FALSE '
           RETURN
@@ -150,6 +152,10 @@ C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
         ELSE IF (LEVGEO.EQ.4) THEN
           MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
           FLX=FLXOUT(MSURFG)
+        ELSE IF (LEVGEO.EQ.5) THEN
+cdr  to be written    
+c         MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
+c         FLX=FLXOUT(MSURFG)
         ELSE
           MSURFG=0
           FLX=FLXOUT(MSURF)
@@ -171,6 +177,8 @@ C
       IF ((ILIIN(MSURF).LT.0).AND.(SG.LT.0.D0).AND.(ILIIN(MSURF).NE.-3))
      .GOTO 10
 C
+C   HERE: EITHER: ILIIN .GE.0, OR ILIIN.EQ.-3, OR SG .GT.0
+C         SCORE OUTGOING FLUX
       IF (ITYP.EQ.1) THEN
         IF (LEOTAT) EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WPR
         IF (LPOTAT) POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WPR
@@ -184,10 +192,11 @@ C
         FMASS=DBLE(NMASSM(IMOL))
         FCHAR=DBLE(NCHARM(IMOL))
       ELSEIF (ITYP.EQ.3) THEN
-!b ispz calculated for check of semitransparency
+!pb ispz calculated for check of semitransparency
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
         IF ((ILIIN(MSURF).GT.0) .AND.
      .    (abs(transp(ispz,1,msurf))+abs(transp(ispz,2,msurf))==0)) then
+C  SURFACE MSURF IS NOT MADE (PARTIALLY) TRANSPARENT FOR TEST ION SPECIES IION (ISPZ)
           ESHET=0.D0
 C  ACCOUNT FOR ELECTROSTATIC SHEATH AT SURFACE FOR TEST IONS
           IF (FSHEAT(MSURF).LE.0.D0) THEN
@@ -199,7 +208,8 @@ C  ACCOUNT FOR ELECTROSTATIC SHEATH AT SURFACE FOR TEST IONS
               DO 30 IP=1,NPLSI
                 IPV=MPLSV(IP)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR (2,VX,VY,VZ,IP)
+                  CALL EIRENE_VECUSR (2,IC,X0,Y0,Z0,VX,VY,VZ,IP,
+     .                                .TRUE.)
                 ELSE
                   VX=VXIN(IPV,IC)
                   VY=VYIN(IPV,IC)
@@ -236,6 +246,8 @@ C  VC = NORMAL COMPONENT OF VELOCITY VECTOR:
           VC=VEL*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)
           VCQ=VC*VC
 C
+cdr       eshet=0.  !  no sheath acceleration,  for testing only
+c
           IF (ESHET.GT.0.D0) THEN
 C  POSITIVELY CHARGED  IONS, ATTRACTIVE SHEATH POTENTIAL
 C  ADD VELOCITY DUE TO SHEATH ACCELERATION
@@ -304,6 +316,9 @@ C             VEL=SQRT(E0)*RSQDVI(IION)
         FMASS=0._dp
         FCHAR=0._dp
       ENDIF
+C
+C   NOW THE SAME OUTGOING SURFACE FLUX TALLIES, BUT SPATIALLY RESOLVED
+C
       IF (MSURFG.GT.0) THEN
         IF (ITYP.EQ.1) THEN
           IF (LEOTAT) EOTAT(IATM,MSURFG)=EOTAT(IATM,MSURFG)+E0*WPR
@@ -323,6 +338,7 @@ C             VEL=SQRT(E0)*RSQDVI(IION)
           IF (LEOTPHT .OR. LPOTPHT) LMETSPW(IPHOT) = .TRUE. 
         ENDIF
       ENDIF
+
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
 10    CONTINUE

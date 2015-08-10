@@ -13,8 +13,9 @@ C               added: jcou,ncou
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  syncronized with fpathm, fpathi
 cdr 31.10.14 :  speedup of final cut off evaluations
-cdr note:  sgnl_poly evaluations are just the 8th order polynom, plus rcmin,rcmax consideration.
-cdr      unless rcmin,rcmax are set (as it is the case currently here), there is no need to call  --> move to in-line 
+cdr note:       sgnl_poly evaluations are just the 8th order polynom, plus rcmin,rcmax consideration.
+cdr             unless rcmin,rcmax are set (as it is the case currently here), there is no need to call  --> move to in-line 
+cdr 06.08.15 :  arguments added to vecusr
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
 C
@@ -71,7 +72,7 @@ C
      .          DENEL, EIRENE_FPATHA, VX, VY, VZ, PVELQ0, ELAB,
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVDS1, EIRENE_FEHVPI3,
-     .          VRELQ, VREL, 
+     .          VRELQ, VREL, XC,YC,ZC,
      ,          EIRENE_FEPLPI3, EIRENE_FEPLCX3, EIRENE_FEPLEL3, 
      .          CII, EIRENE_CROSS, ELB,TII,TEST,
      .          PLS, TBPI, EXPO,
@@ -106,7 +107,10 @@ C
       DO 3 IPLS=1,NPLSV
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VX,VY,VZ,IPLS)
+            XC=0.
+            YC=0.
+            ZC=0.
+            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
             VX=VXIN(IPLS,K)
             VY=VYIN(IPLS,K)

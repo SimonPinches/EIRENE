@@ -1,5 +1,6 @@
 !pb 22.03.07:  LEVGEO=6 --> LEVGEO=10
 c  jet-2005, patch 1:  new arguments shwl and efwl in parameter list
+c   06.08.15:  arguments added to vecusr
 C
 C       ..............................
 C       .                            .
@@ -14,6 +15,8 @@ C     SUBROUTINE SAMVOL
 C
       SUBROUTINE EIRENE_SAMPNT (NLPT,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,
      .                        EFWL,SHWL,WEISPZ)
+
+cdr  point source. identify the starting point coordinates (from IPOINT)
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -169,7 +172,8 @@ C
         IPLSV=MPLSV(IPLS)
         TIWL(IPLS)=TIIN(IPLSTI,NCELL)
         IF (INDPRO(4) == 8) THEN
-          CALL EIRENE_VECUSR (2,VXWL(IPLS),VYWL(IPLS),VZWL(IPLS),IPLS)
+          CALL EIRENE_VECUSR (2,NCELL,X0,Y0,Z0,
+     .         VXWL(IPLS),VYWL(IPLS),VZWL(IPLS),IPLS,.TRUE.)
         ELSE
           VXWL(IPLS)=VXIN(IPLSV,NCELL)
           VYWL(IPLS)=VYIN(IPLSV,NCELL)

@@ -1,23 +1,29 @@
-\documentclass[12pt]{article}
+\documentclass[12pt,dvipdfm]{article}
 
-\usepackage[hypertex,unicode=true,
- bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
- breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
- {hyperref}
-\hypersetup{pdftitle={HYDHEL Documentation},linkcolor=black, citecolor=black, urlcolor=blue, filecolor=blue}
+
+
 \usepackage{epsf}
-
 \oddsidemargin 0. true cm
 \topmargin -1 true cm
 \textheight 24 true cm
 \textwidth 16 true cm
-%CSW latex2html related commands, have no effect on
-%CSW layout, style etc...
 \usepackage{color}
 \pagecolor{white}
 \setcounter{secnumdepth}{1}
 \usepackage{times}
-%CSW that's it...
+
+\usepackage[unicode=true,
+% hypertex, % use for activating links in DVI file
+ dvipdfm, % use for bookmarks in final version
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{pdftitle={HYDHEL Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
+ \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
+
+
+
+
 \begin{document}
 \parindent 0pt
 %titelpage
@@ -44,6 +50,7 @@ Available via E-mail from d.reiter@fz-juelich.de
 }
 
 \newpage
+\addcontentsline{toc}{section}{Table of contents}
 \tableofcontents
 %ende titelpage
 \newpage
@@ -54,10 +61,10 @@ Available via E-mail from d.reiter@fz-juelich.de
 
 The cross section and rate coefficients for this reaction are about a
 factor 3 too low. This error has been introduced between the draft version and
-the final printed version of the book. Here we have corrected this error,
+the final printed version of the book in 1987. Here we have corrected this error,
 i.e., the fit coefficients from the (unpublished) draft version of the book are
 given here, whereas the erroneous fit coefficients from the printed version
-of the book are retained in the database AMJUEL, (reaction 2.2.5), for reference
+of the book are retained in the database AMJUEL, (reaction 2.2.5o), for reference
 purposes.
 \item{Reaction 3.1.8}
 
@@ -70,7 +77,7 @@ This leads to significantly improved energy balance in case of
 tracklength estimators for the CX energy loss.
 
 The original fit from the 1987 book has been kept in file amjuel.tex,
-under H.3, 3.1.8
+under H.3, 3.1.8o
 \item{Feb 2013}
 
 Some reaction and species formulas in section headers slightly changed to permit automated CR
@@ -90,7 +97,7 @@ Not yet corrected here in fits. (Can be done by a modification of coefficients $
 \item{Reaction 2.2.13}
 
 The cross section and rate coefficient plotted on page 61 of the 1987 version of the book are both by
-a factor 10 too large. The fitting coefficients for  cross section and rate coefficient are correct.
+a factor 10 too large. The fitting coefficients for  cross section and rate coefficient appear to be correct, however.
 
 \item{Reaction 3.1.7}
 
@@ -103,11 +110,58 @@ Both the cross section and rate coefficient for this reaction are incorrect, by 
 Do not use these data !
 
 \item{Reaction 2.1.8}
+
 In the original book a closed form expression is given for the radiative recombination rate coefficients
-into the \emph{nl} states of H. Added in Jan. 2014:  polynomial fitting of these rate coefficients, for recombination into
+into the \emph{nl} states of H. Added in Jan. 2014:  H.2 rate coefficient polynomial fitting of these rate coefficients, for recombination into
 $1s, 2s$ and $2p$ states, to allow
 automated processing with same format as for other cross sections and rate coefficients in this data-base
 
+\item{June 2015: Reaction 3.1.8}
+
+A single parameter fit: H.2  3.1.8 is added, vs. proton temperature only and for ``stationary" H(1s). It has been derived
+algebraically from the H.3 fit, evaluated at
+E=0.1 eV, and this procedure was verified by independent Maxwellian averaging of the asymptotically correct cross section fit H.1  3.1.8, (vs.T)
+
+\item{July 2015-I}
+
+Some state notations, in particular for He excited states in section headers slightly changed to permit automated CR
+model construction (species and reaction type identification) for HYDKIN online tool. Notation also now consistent with
+AMJUEL He CR model data.
+
+\item{July 2015-II}
+
+Reaction 2.2.14: In AMJUEL the reaction fits for H.1 and H.2 are reduced to be linear in log-log scale and hence $\ln \sigma(E) = a_0 + a_1 \ln(T)$ and $\ln \langle\sigma v\rangle(T) = b_0 + b_1 \ln(T)$, respectively,
+because higher non-
+zero coefficients in original book \cite{kn:Janev87} seem to be spurious for this reaction. In this simpler (AMJUEL) form for the rate coefficient H.2 the corresponding H.8 fit
+is exact: $\ln \langle\sigma v E_{elec}\rangle(T) = h_0 +h_1 \ln(T)$ with $h_0 = b_0+\ln(3/2+b_1)$ and $h_1=b_1+1$, see H.8  2.2.14 in AMJUEL.
+An independently computed H.8 fit using a table from the full H.2 rate fit is still retained in the present HYDHEL file here, (formerly at AMJUEL H.8),
+for backward compatibility
+
+
+\end{itemize}
+\section*{to be done}
+\addcontentsline{toc}{section}{to be done}
+\begin{itemize}
+\item {2.1.8  and 2.3.13 missing fits for H.2 rate coefs.}
+In original monograph only closed form analytic expressions are given for H+ and He+ rad rec. rate coefficients.
+(and nothing for the cross sections).
+2.1.8, 2.1.8a and 2.1.8b fits for H.2 rad rec rate coefficients had already been added earlier (see list of changes/errata in previous section).
+The same is needed still for
+2.3.13 (helium rad. rec), in particular since the closed form expression from the book is hard wired as default rate in EIRENE code for He+.
+
+Perhaps the closed form expression allow a direct (analytical) translation into polynomial fit? It seems to be the case indeed from
+the new 2.1.8 fits that only two coefficients may be needed. To be checked.
+\item {H.8 rates for recombination processes}
+for the closed form expressions for 2.1.8 and 2.3.13 these rates can be given also in closed form (and are coded in
+the EIRENE default model routines). It might be desirable to add them also as H.8 into the database. Same
+for 2.2.14 (diss. rec of H2+). This latter is already here in HYDHEL (update from July 2015), and EIRENE default was 0.88*Te times rate 2.2.14.
+So the H.8  2.2.14 is approximately, but not exactly, the previous EIRENE default.
+Check: can the H.8 fit be derived from the H.2 fit exactly? If yes: then this should become default in EIRENE, rather then 0.88*Te.
+Done:  H.8 follows from H.2 directly if only b0 and b1 coefficients are non-zero, see: AMJUEL. change eirene default to that 2 parameter fit
+from AMJUEL for H.8  2.2.14
+\item{state notation for process 2.3.4b: final state wrong}
+to be corrected
+\item{process 2.2.15 is linear in log log scale. Check coefficients, make H.8, set spurious coeffs. to zero}
 \end{itemize}
 \newpage
 
@@ -751,7 +805,7 @@ Reaction 2.2.12 $e + H_2^+(v) \rightarrow e + H_2^+(2p\sigma_u) \rightarrow e + 
 
 \newpage
 \subsection{
-Reaction 2.2.13 $ e + H_2^+(v) \rightarrow e + H_2^+ (2p\pi_u) \rightarrow e + H^+ + H(n=2),  (v=0\ldots 9)$}
+Reaction 2.2.13 $ e + H_2^+(v) \rightarrow e + H_2^+(2p\pi_u) \rightarrow e + H^+ + H(n=2),  (v=0\ldots 9)$}
 
 
 
@@ -792,8 +846,6 @@ Reaction 2.2.14 $   e + H_2^+(v) \rightarrow H(1s) + H(n), (v=0\ldots 9, n\geq 2
        Eth  0.0
        Mcross 9.1093826E-31
 \end{verbatim}\end{small}
-
-
 
 
 \newpage
@@ -871,7 +923,7 @@ Reaction 2.2.17 $   e + H_2(v \geq 4) \rightarrow (H_2^-) \rightarrow H^- + H$}
 
 \newpage
 \subsection{
-Reaction 2.3.1a $e + He(1s^2|^1S) \rightarrow e + He(1s2p|^1P)$}
+Reaction 2.3.1a $e + He(1s^21S) \rightarrow e + He(1s^12p^11P)$}
 
 
 
@@ -918,7 +970,7 @@ Reaction 2.3.1a $e + He(1s^2|^1S) \rightarrow e + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.1b $e + He(1s^2|^1S) \rightarrow e + He(1s3p|^1P)$}
+Reaction 2.3.1b $e + He(1s^21S) \rightarrow e + He(1s^13p^11P)$}
 
 
 
@@ -967,7 +1019,7 @@ Reaction 2.3.1b $e + He(1s^2|^1S) \rightarrow e + He(1s3p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.2 $e + He(1s^2|^1S) \rightarrow e + He(1s2s|^1S)$}
+Reaction 2.3.2 $e + He(1s^21S) \rightarrow e + He(1s^12s^11S)$}
 
 
 
@@ -1015,7 +1067,7 @@ Reaction 2.3.2 $e + He(1s^2|^1S) \rightarrow e + He(1s2s|^1S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3a $e + He(1s^2|^1S) \rightarrow e + He(1s2s|^3S)$}
+Reaction 2.3.3a $e + He(1s^21S) \rightarrow e + He(1s^12s^13S)$}
 
 
 
@@ -1072,7 +1124,7 @@ Reaction 2.3.3a $e + He(1s^2|^1S) \rightarrow e + He(1s2s|^3S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3b $e + He(1s^2|^1S) \rightarrow e + He(1s2p|^3P)$}
+Reaction 2.3.3b $e + He(1s^21S) \rightarrow e + He(1s^12p^13P)$}
 
 
 
@@ -1120,7 +1172,7 @@ Reaction 2.3.3b $e + He(1s^2|^1S) \rightarrow e + He(1s2p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3c $e + He(1s^2|^1S) \rightarrow e + He(1s3s|^3S)$}
+Reaction 2.3.3c $e + He(1s^21S) \rightarrow e + He(1s^13s^13S)$}
 
 
 
@@ -1170,7 +1222,7 @@ Reaction 2.3.3c $e + He(1s^2|^1S) \rightarrow e + He(1s3s|^3S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3d $e + He(1s^2|^1S) \rightarrow e + He(1s3p|^3P)$}
+Reaction 2.3.3d $e + He(1s^21S) \rightarrow e + He(1s^13p^13P)$}
 
 
 
@@ -1220,7 +1272,7 @@ Reaction 2.3.3d $e + He(1s^2|^1S) \rightarrow e + He(1s3p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4a $e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1S)$}
+Reaction 2.3.4a $e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11S)$}
 
 
 
@@ -1270,7 +1322,7 @@ Reaction 2.3.4a $e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4b $e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1P)$}
+Reaction 2.3.4b $e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11P)$}
 
 
 
@@ -1316,7 +1368,7 @@ Reaction 2.3.4b $e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4c $e + He(1s2s|^1S) \rightarrow e + He(1s2p|^3P)$}
+Reaction 2.3.4c $e + He(1s^12s^11S) \rightarrow e + He(1s^12p^13P)$}
 
 
 
@@ -1362,7 +1414,7 @@ Reaction 2.3.4c $e + He(1s2s|^1S) \rightarrow e + He(1s2p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4d $e + He(1s2p|^3P) \rightarrow e + He(1s2p|^1P)$}
+Reaction 2.3.4d $e + He(1s^12p^13P) \rightarrow e + He(1s^12p^11P)$}
 
 
 
@@ -1411,7 +1463,7 @@ Reaction 2.3.4d $e + He(1s2p|^3P) \rightarrow e + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.5a $   e + He(1s2s|^1S) \rightarrow e + He(1s2p|^1P)$}
+Reaction 2.3.5a $   e + He(1s^12s^11S) \rightarrow e + He(1s^12p^11P)$}
 
 
 
@@ -1437,7 +1489,7 @@ Reaction 2.3.5a $   e + He(1s2s|^1S) \rightarrow e + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.5b $   e + He(1s2s|^3S) \rightarrow e + He(1s2p|^3P)$}
+Reaction 2.3.5b $   e + He(1s^12s^13S) \rightarrow e + He(1s^12p^13P)$}
 
 
 
@@ -1459,7 +1511,7 @@ Reaction 2.3.5b $   e + He(1s2s|^3S) \rightarrow e + He(1s2p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.6a $   e + He(1s2s|^1S) \rightarrow e + He(1s3p|^1P)$}
+Reaction 2.3.6a $   e + He(1s^12s^11S) \rightarrow e + He(1s^13p^11P)$}
 
 
 
@@ -1481,7 +1533,7 @@ Reaction 2.3.6a $   e + He(1s2s|^1S) \rightarrow e + He(1s3p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.6b $  e + He(1s2s|^3S) \rightarrow e + He(1s3p|^3P)$}
+Reaction 2.3.6b $  e + He(1s^12s^13S) \rightarrow e + He(1s^13p^13P)$}
 
 
 
@@ -1512,7 +1564,7 @@ Reaction 2.3.6b $  e + He(1s2s|^3S) \rightarrow e + He(1s3p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.7a $e + He(1s2p|^1P) \rightarrow e + He(1s3d|^1D)$}
+Reaction 2.3.7a $e + He(1s^12p^11P) \rightarrow e + He(1s^13d^11D)$}
 
 
 
@@ -1552,7 +1604,7 @@ Reaction 2.3.7a $e + He(1s2p|^1P) \rightarrow e + He(1s3d|^1D)$}
 
 \newpage
 \subsection{
-Reaction 2.3.7b $e + He(1s2p|^3P) \rightarrow e + He(1s3d|^3D)$}
+Reaction 2.3.7b $e + He(1s^12p^13P) \rightarrow e + He(1s^13d^13D)$}
 
 
 
@@ -1592,7 +1644,7 @@ Reaction 2.3.7b $e + He(1s2p|^3P) \rightarrow e + He(1s3d|^3D)$}
 
 \newpage
 \subsection{
-Reaction 2.3.9 $   e + He(1s^2|^1S) \rightarrow e + He^+ + e$}
+Reaction 2.3.9 $   e + He(1s^21S) \rightarrow e + He^+(1s) + e$}
 
 
 
@@ -1615,7 +1667,7 @@ Reaction 2.3.9 $   e + He(1s^2|^1S) \rightarrow e + He^+ + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10a $ e + He(1s2s|^1S) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10a $ e + He(1s^12s^11S) \rightarrow e + He^+(1s) + e$}
 
 
 
@@ -1650,7 +1702,7 @@ Reaction 2.3.10a $ e + He(1s2s|^1S) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10b $e + He(1s2p|^1P) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10b $e + He(1s^12p^11P) \rightarrow e + He^+(1s) + e$}
 
 
 
@@ -1696,7 +1748,7 @@ Reaction 2.3.10b $e + He(1s2p|^1P) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10c $e + He(1s2s|^3S) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10c $e + He(1s^12s^13S) \rightarrow e + He^+(1s) + e$}
 
 
 
@@ -1742,7 +1794,7 @@ Reaction 2.3.10c $e + He(1s2s|^3S) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10d $e + He(1s2p|^3P) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10d $e + He(1s^12p^13P) \rightarrow e + He^+(1s) + e$}
 
 
 
@@ -1790,7 +1842,7 @@ Reaction 2.3.10d $e + He(1s2p|^3P) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.12 $e + He(1snl|^{2S+1}L) \rightarrow e + He^+(nl)+e$}
+Reaction 2.3.12 $e + He(1snl^1{2S+1}L) \rightarrow e + He^+(nl)+e$}
 
 
 
@@ -1833,7 +1885,7 @@ Reaction 2.3.12 $e + He(1snl|^{2S+1}L) \rightarrow e + He^+(nl)+e$}
 
 \newpage
 \subsection{
-Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1snl|^{2S+1}L) + h\nu$}
+Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1snl^1{2S+1}L) + h\nu$}
 
        See text for analytic formulas.
 
@@ -2220,7 +2272,7 @@ Reaction 3.2.6 $   p + H_2^+(v) \rightarrow p + H(1s) + H^+$}
 
 \newpage
 \subsection{
-Reaction 3.3.1 $   p + He \rightarrow  H + He^+$}
+Reaction 3.3.1 $   p + He \rightarrow  H + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -2237,7 +2289,7 @@ Reaction 3.3.1 $   p + He \rightarrow  H + He^+$}
 
 \newpage
 \subsection{
-Reaction 3.3.2 $    p + He \rightarrow p + He^+ + e$}
+Reaction 3.3.2 $    p + He \rightarrow p + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -2252,7 +2304,7 @@ Reaction 3.3.2 $    p + He \rightarrow p + He^+ + e$}
 
 \newpage
 \subsection{
-Reaction 3.3.3 $p + He(1s^2|^1S) \rightarrow p + He(1s2p|^1P)$}
+Reaction 3.3.3 $p + He(1s^21S) \rightarrow p + He(1s^12p^11P)$}
 
 
 
@@ -2283,7 +2335,7 @@ Reaction 3.3.3 $p + He(1s^2|^1S) \rightarrow p + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 3.3.6a $   p + He(1s2s|^1S) \rightarrow H(2s) + He^+(1s)$}
+Reaction 3.3.6a $   p + He(1s^12s^11S) \rightarrow H(2s) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -2304,7 +2356,7 @@ Reaction 3.3.6a $   p + He(1s2s|^1S) \rightarrow H(2s) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 3.3.6b $   p + He(1s2s|^3S) \rightarrow H(2s) + He^+(1s)$}
+Reaction 3.3.6b $   p + He(1s^12s^13S) \rightarrow H(2s) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -2320,7 +2372,7 @@ Reaction 3.3.6b $   p + He(1s2s|^3S) \rightarrow H(2s) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 3.3.7a $   p + He(1s2p|^1P) \rightarrow H(2p) + He^+(1s)$}
+Reaction 3.3.7a $   p + He(1s^12p^11P) \rightarrow H(2p) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -2334,7 +2386,7 @@ Reaction 3.3.7a $   p + He(1s2p|^1P) \rightarrow H(2p) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 3.3.7b $   p + He(1s2p|^3P) \rightarrow H(2p) + He^+(1s)$}
+Reaction 3.3.7b $   p + He(1s^12p^13P) \rightarrow H(2p) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -2428,7 +2480,7 @@ Reaction 4.3.3 $   H_2^+ + H_2 \rightarrow H_3^+ + H$}
 
 \newpage
 \subsection{
-Reaction 4.4.1 $   H_2^+ + He \rightarrow H_2^+ + He^+ + e$}
+Reaction 4.4.1 $   H_2^+ + He \rightarrow H_2^+ + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -2442,7 +2494,7 @@ Reaction 4.4.1 $   H_2^+ + He \rightarrow H_2^+ + He^+ + e$}
 
 \newpage
 \subsection{
-Reaction 5.2.1 $   He^+ + H_2 \rightarrow He^+ + H_2^+ + e$}
+Reaction 5.2.1 $   He^+(1s) + H_2 \rightarrow He^+(1s) + H_2^+ + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -2457,7 +2509,7 @@ Reaction 5.2.1 $   He^+ + H_2 \rightarrow He^+ + H_2^+ + e$}
 
 \newpage
 \subsection{
-Reaction 5.2.2 $   He^+ + H_2 \rightarrow He + H_2^+$}
+Reaction 5.2.2 $   He^+(1s) + H_2 \rightarrow He(1s^21S) + H_2^+$}
 
 
 \begin{small}\begin{verbatim}
@@ -2471,7 +2523,7 @@ Reaction 5.2.2 $   He^+ + H_2 \rightarrow He + H_2^+$}
 
 \newpage
 \subsection{
-Reaction 5.2.3 $   He^+ + H_2 \rightarrow He + H^+ + H$}
+Reaction 5.2.3 $   He^+(1s) + H_2 \rightarrow He(1s^21S) + H^+ + H$}
 
 
 \begin{small}\begin{verbatim}
@@ -2487,7 +2539,7 @@ Reaction 5.2.3 $   He^+ + H_2 \rightarrow He + H^+ + H$}
 
 \newpage
 \subsection{
-Reaction 5.3.1 $   He^+ + He \rightarrow He + He^+$}
+Reaction 5.3.1 $   He^+(1s) + He \rightarrow He + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -2639,7 +2691,7 @@ Reaction 6.3.1 $   He^{++} + He \rightarrow He + He^{++}$}
 
 \newpage
 \subsection{
-Reaction 6.3.2 $   He^{++} + He \rightarrow He^{++} + He^+ + e$}
+Reaction 6.3.2 $   He^{++} + He \rightarrow He^{++} + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -2776,7 +2828,7 @@ Reaction 7.3.2b $   H^- + H \rightarrow H_2^-(\Sigma_u) \rightarrow H_2 + e$}
 
 
 \newpage
-\section{H.2  POLYNOMIAL FITS FOR $<\sigma v>$ FOR FIXED $E$:  ELECTRON REACTIONS}
+\section{H.2  POLYNOMIAL FITS FOR $<\sigma v>$ FOR FIXED $E$}
 
 
 \subsection{
@@ -2882,8 +2934,8 @@ Reaction 2.1.7 $   e + H(n=3) \rightarrow e + H^+ + e$}
 
 \newpage
 \subsection{
-Reaction 2.1.8 $  e + H^+ \rightarrow H(nP) + h\nu $}
-Formula: see original text. Here:  fit to rate for recomb into 1s ground state
+Reaction 2.1.8 $  e + H^+ \rightarrow H(1s) + hv $}
+general formula: see original text. Here:  added fit to rate for recomb into 1s ground state
 
 \begin{small}\begin{verbatim}
    b0 -2.95894689000e+01     b1 -0.529779950000e+00    b2 -0.005968130000e+00
@@ -2894,8 +2946,8 @@ Formula: see original text. Here:  fit to rate for recomb into 1s ground state
 
 
 \subsection{
-Reaction 2.1.8a $  e + H^+ \rightarrow H(2s) + h\nu $}
-Formula: see original text. Here:  added fit to rate for recomb into 2s excited state
+Reaction 2.1.8a $  e + H^+ \rightarrow H(2s) + hv $}
+general formula: see original text. Here:  added fit to rate for recomb into 2s excited state
 
 \begin{small}\begin{verbatim}
    b0 -3.14497513000e+01     b1 -0.525649298000e+00    b2 -0.011206549700e+00
@@ -2907,8 +2959,8 @@ Formula: see original text. Here:  added fit to rate for recomb into 2s excited 
 
 
 \subsection{
-Reaction 2.1.8b $  e + H^+ \rightarrow H(2p) + h\nu $}
-Formula: see original text. Here:  added fit to rate for recomb into 2p excited state
+Reaction 2.1.8b $  e + H^+ \rightarrow H(2p) + hv $}
+general formula: see original text. Here:  added fit to rate for recomb into 2p excited state
 
 \begin{small}\begin{verbatim}
    b0 -3.06473715000e+01     b1 -0.653170766000e+00    b2 -0.068667509300e+00
@@ -3209,7 +3261,7 @@ Reaction 2.2.11 $  e + H_2^+(v) \rightarrow e + H^+ + H^+ + e, (v=0\ldots 9)$}
 
 \newpage
 \subsection{
-Reaction 2.2.12 $  e + H_2^+(v) \rightarrow e + H_2^+ (2p\sigma_u) \rightarrow e + H^+ + H(1s), (v=0\ldots 9)$}
+Reaction 2.2.12 $  e + H_2^+(v) \rightarrow e + H_2^+(2p\sigma_u) \rightarrow e + H^+ + H(1s), (v=0\ldots 9)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3221,7 +3273,7 @@ Reaction 2.2.12 $  e + H_2^+(v) \rightarrow e + H_2^+ (2p\sigma_u) \rightarrow e
 
 \newpage
 \subsection{
-Reaction 2.2.13 $ e + H_2^+(v) \rightarrow e + H_2^+ (2p\pi_u) \rightarrow e + H^+ + H(n=2),  (v=0\ldots 9)$}
+Reaction 2.2.13 $ e + H_2^+(v) \rightarrow e + H_2^+(2p\pi_u) \rightarrow e + H^+ + H(n=2),  (v=0\ldots 9)$}
 
 
 
@@ -3302,7 +3354,7 @@ Reaction 2.2.17 $  e + H_2(v \geq 4) \rightarrow (H_2^-) \rightarrow H^- + H$}
 
 \newpage
 \subsection{
-Reaction 2.3.1a $e + He(1s^2|^1S) \rightarrow e + He(1s2p|^1P)$}
+Reaction 2.3.1a $e + He(1s^21S) \rightarrow e + He(1s^12p^11P)$}
 
 
 
@@ -3329,7 +3381,7 @@ Reaction 2.3.1a $e + He(1s^2|^1S) \rightarrow e + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.1b $e + He(1s^2|^1S) \rightarrow e + He(1s3p|^1P)$}
+Reaction 2.3.1b $e + He(1s^21S) \rightarrow e + He(1s^13p^11P)$}
 
 
 
@@ -3356,7 +3408,7 @@ Reaction 2.3.1b $e + He(1s^2|^1S) \rightarrow e + He(1s3p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.2 $e + He(1s^2|^1S) \rightarrow e + He(1s2s|^1S)$}
+Reaction 2.3.2 $e + He(1s^21S) \rightarrow e + He(1s^12s^11S)$}
 
 
 
@@ -3383,7 +3435,7 @@ Reaction 2.3.2 $e + He(1s^2|^1S) \rightarrow e + He(1s2s|^1S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3a $  e + He(1s^2|^1S) \rightarrow e + He(1s2s|^3S)$}
+Reaction 2.3.3a $  e + He(1s^21S) \rightarrow e + He(1s^12s^13S)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3401,7 +3453,7 @@ Reaction 2.3.3a $  e + He(1s^2|^1S) \rightarrow e + He(1s2s|^3S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3b $  e + He(1s^2|^1S) \rightarrow e + He(1s2p|^3P)$}
+Reaction 2.3.3b $  e + He(1s^21S) \rightarrow e + He(1s^12p^13P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3413,7 +3465,7 @@ Reaction 2.3.3b $  e + He(1s^2|^1S) \rightarrow e + He(1s2p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3c $  e + He(1s^2|^1S) \rightarrow e + He(1s3s|^3S)$}
+Reaction 2.3.3c $  e + He(1s^21S) \rightarrow e + He(1s^13s^13S)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3425,7 +3477,7 @@ Reaction 2.3.3c $  e + He(1s^2|^1S) \rightarrow e + He(1s3s|^3S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.3d $  e + He(1s^2|^1S) \rightarrow e + He(1s3p|^3P)$}
+Reaction 2.3.3d $  e + He(1s^21S) \rightarrow e + He(1s^13p^13P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3437,7 +3489,7 @@ Reaction 2.3.3d $  e + He(1s^2|^1S) \rightarrow e + He(1s3p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4a $  e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1S)$}
+Reaction 2.3.4a $  e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11S)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3449,7 +3501,7 @@ Reaction 2.3.4a $  e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4b $  e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1P)$}
+Reaction 2.3.4b $  e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3461,7 +3513,7 @@ Reaction 2.3.4b $  e + He(1s2s|^3S) \rightarrow e + He(1s2s|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4c $  e + He(1s2s|^1S) \rightarrow e + He(1s2p|^3P)$}
+Reaction 2.3.4c $  e + He(1s^12s^11S) \rightarrow e + He(1s^12p^13P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3478,7 +3530,7 @@ Reaction 2.3.4c $  e + He(1s2s|^1S) \rightarrow e + He(1s2p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4d $  e + He(1s2p|^3P) \rightarrow e + He(1s2p|^1P)$}
+Reaction 2.3.4d $  e + He(1s^12p^13P) \rightarrow e + He(1s^12p^11P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3490,7 +3542,7 @@ Reaction 2.3.4d $  e + He(1s2p|^3P) \rightarrow e + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.5a $  e + He(1s2s|^1S) \rightarrow e + He(1s2p|^1P)$}
+Reaction 2.3.5a $  e + He(1s^12s^11S) \rightarrow e + He(1s^12p^11P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3502,7 +3554,7 @@ Reaction 2.3.5a $  e + He(1s2s|^1S) \rightarrow e + He(1s2p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.5b $  e + He(1s2s|^3S) \rightarrow e + He(1s2p|^3P)$}
+Reaction 2.3.5b $  e + He(1s^12s^13S) \rightarrow e + He(1s^12p^13P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3514,7 +3566,7 @@ Reaction 2.3.5b $  e + He(1s2s|^3S) \rightarrow e + He(1s2p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.6a $  e + He(1s2s|^1S) \rightarrow e + He(1s3p|^1P)$}
+Reaction 2.3.6a $  e + He(1s^12s^11S) \rightarrow e + He(1s^13p^11P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3526,7 +3578,7 @@ Reaction 2.3.6a $  e + He(1s2s|^1S) \rightarrow e + He(1s3p|^1P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.6b $  e + He(1s2s|^3S) \rightarrow e + He(1s3p|^3P)$}
+Reaction 2.3.6b $  e + He(1s^12s^13S) \rightarrow e + He(1s^13p^13P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3538,7 +3590,7 @@ Reaction 2.3.6b $  e + He(1s2s|^3S) \rightarrow e + He(1s3p|^3P)$}
 
 \newpage
 \subsection{
-Reaction 2.3.7a $  e + He(1s2p|^1P) \rightarrow e + He(1s3d|^1D)$}
+Reaction 2.3.7a $  e + He(1s^12p^11P) \rightarrow e + He(1s^13d^11D)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3557,7 +3609,7 @@ Reaction 2.3.7a $  e + He(1s2p|^1P) \rightarrow e + He(1s3d|^1D)$}
 
 \newpage
 \subsection{
-Reaction 2.3.7b $  e + He(1s2s|^3P) \rightarrow e + He(1s3d|^3D)$}
+Reaction 2.3.7b $  e + He(1s^12s^13P) \rightarrow e + He(1s^13d^13D)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3569,7 +3621,7 @@ Reaction 2.3.7b $  e + He(1s2s|^3P) \rightarrow e + He(1s3d|^3D)$}
 
 \newpage
 \subsection{
-Reaction 2.3.9 $   e + He(1s^2|^1S) \rightarrow e + He^+ + e$}
+Reaction 2.3.9 $   e + He(1s^21S) \rightarrow e + He^+ + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3581,7 +3633,7 @@ Reaction 2.3.9 $   e + He(1s^2|^1S) \rightarrow e + He^+ + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10a $ e + He(1s2s|^1S) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10a $ e + He(1s^12s^11S) \rightarrow e + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3593,7 +3645,7 @@ Reaction 2.3.10a $ e + He(1s2s|^1S) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10b $  e + He(1s2p|^1P) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10b $  e + He(1s^12p^11P) \rightarrow e + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3605,7 +3657,7 @@ Reaction 2.3.10b $  e + He(1s2p|^1P) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10c $  e + He(1s2s|^3S) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10c $  e + He(1s^12s^13S) \rightarrow e + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3617,7 +3669,7 @@ Reaction 2.3.10c $  e + He(1s2s|^3S) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.10d $ e + He(1s2p|^3P) \rightarrow e + He^+(1s) + e$}
+Reaction 2.3.10d $ e + He(1s^12p^13P) \rightarrow e + He^+(1s) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3635,7 +3687,7 @@ Reaction 2.3.10d $ e + He(1s2p|^3P) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.12 $  e + He(1snl|^{2S+1}L) \rightarrow e + He^+(nl) + e$}
+Reaction 2.3.12 $  e + He(1snl^1{2S+1}L) \rightarrow e + He^+(nl) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3647,7 +3699,7 @@ Reaction 2.3.12 $  e + He(1snl|^{2S+1}L) \rightarrow e + He^+(nl) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1snl|^{2S+1}L) + h\nu$}
+Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1snl^1{2S+1}L) + h\nu$}
 
        See text for analytic formulas.
 
@@ -3688,6 +3740,28 @@ Reaction 2.3.19 $  e + He^+(1s) \rightarrow e + He^{++} + e$}
 \end{verbatim}\end{small}
 
 \newpage
+
+\subsection{
+Reaction 3.1.8 $  p + H(1s) \rightarrow H(1s) + p$}
+
+added by DR: single parameter Maxwellian rate coeff., vs. $T_p$, for neutral target at rest,
+obtained from corresponding fit for Beam-Maxwellian rate coeff. evaluated at $E_b =0.1$ eV
+and then verified by independent integration of cross section with proper low energy asymptotics.
+
+\begin{small}\begin{verbatim}
+   b0 -1.850280000000E+01    b1  3.708409000000E-01    b2  7.949876000000E-03
+   b3 -6.143769000000E-04    b4 -4.698969000000E-04    b5 -4.096807000000E-04
+   b6  1.440382000000E-04    b7 -1.514243000000E-05    b8  5.122435000000E-07
+\end{verbatim}\end{small}
+
+\newpage
+
+
+
+
+
+
+
 \subsection{
 Reaction 7.1.1 $   e + H^- \rightarrow e + H(1s) + e$}
 
@@ -4687,7 +4761,7 @@ Reaction 3.3.2 $   p + He \rightarrow p + He^+ + e$}
 
 \newpage
 \subsection{
-Reaction 3.3.6a $  p + He(1s2s|^1S) \rightarrow H(2s) + He^+(1s)$}
+Reaction 3.3.6a $  p + He(1s^12s^11S) \rightarrow H(2s) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -4737,7 +4811,7 @@ Reaction 3.3.6a $  p + He(1s2s|^1S) \rightarrow H(2s) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 3.3.6b $  p + He(1s2s|^3S) \rightarrow H(2s) + He^+(1s)$}
+Reaction 3.3.6b $  p + He(1s^12s^13S) \rightarrow H(2s) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -4787,7 +4861,7 @@ Reaction 3.3.6b $  p + He(1s2s|^3S) \rightarrow H(2s) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 3.3.7a $  p + He(1s2p|^1P) \rightarrow H(2p) + He^+(1s)$}
+Reaction 3.3.7a $  p + He(1s^12p^11P) \rightarrow H(2p) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -4837,7 +4911,7 @@ Reaction 3.3.7a $  p + He(1s2p|^1P) \rightarrow H(2p) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 3.3.7b $  p + He(1s2p|^3P) \rightarrow H(2p) + He^+(1s)$}
+Reaction 3.3.7b $  p + He(1s^12p^13P) \rightarrow H(2p) + He^+(1s)$}
 
 
 \begin{small}\begin{verbatim}
@@ -5990,5 +6064,39 @@ Reaction 7.3.2b $  H^- + H \rightarrow H_2^-(\Sigma_g) \rightarrow H_2 + e$}
 
      Error  2.06e-05 (A)
 \end{verbatim}\end{small}
+
+\section{H.8 : Fits for $\langle\sigma \cdot v \cdot E_p \rangle (T_b) \ [cm^3/s
+\cdot eV]$}
+
+$E_p$ is a relevant energy related to the process, e.g. it may be the kinetic energy of the impacting electron or ion in eV,
+or the radiation energy loss per reaction, etc.
+In the present section (newly added to this database by DR)
+the energy weighted rate is a function of temperature [eV] of the
+impacting electron or ion
+
+\subsection{
+Reaction 2.2.14   $e + H_2^+(v) \rightarrow H(1s) + H^*(n)   (v=0-9, n \ge 2) $
+}
+The energy weighting in this rate coefficient is done with the kinetic energy of
+impacting electron. The general expression for this type of incident particle energy weighted
+rate, in which the second particle is at rest, reads:
+
+$\langle\sigma v_e E_{elec}\rangle(T_e) = kT_e \cdot \langle\sigma v_e\rangle \cdot
+\left(3/2 + \frac{d \ln \langle\sigma v_e\rangle}{d \ln(kT_e)}\right)$
+
+The fit should result in
+
+$\langle\sigma v_e E_{elec}\rangle(T_e) \approx 0.89 ~kT_e ~\langle\sigma v_e\rangle$,
+
+i.e. low energy electrons are preferred in this reaction, rather than the average electrons with $3/2~kT_e$
+
+
+\begin{small}\begin{verbatim}
+   h0 -1.682072926000e+01    h1  3.964351525300e-01    h2 -2.501012514300e-11
+   h3  1.066503238000e-11    h4  2.724261514100e-12    h5 -2.120710160500e-12
+   h6  4.248055273200e-13    h7 -3.653955751100e-14    h8  1.187177640600e-15
+
+\end{verbatim}\end{small}
+\newpage
 
 \end{document}

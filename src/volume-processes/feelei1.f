@@ -19,7 +19,7 @@ c    locally in cell K
       INTEGER, INTENT(IN) :: IREI, K
       REAL(DP) :: ELEIC(9), EIRENE_FEELEI1, PLS, DEIMIN, EE,
      .            EIRENE_FTABEI1, 
-     .            ELEI, EIRENE_ENERGY_RATE_COEFF, DELE
+     .            ELEI, EIRENE_ENERGY_RATE_COEFF, DELE, DE_10
       INTEGER :: J, I, KK, II
  
       EIRENE_FEELEI1=0.D0
@@ -48,8 +48,9 @@ c   electron energy losses per collision from the 11 default EI processes
         CASE (-9)
             EIRENE_FEELEI1=-15.5
         CASE (-10)
-C  FOR THE FACTOR -0.88 SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
-            EIRENE_FEELEI1=-0.88*TEIN(K)
+C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
+            DE_10=8.964355004318D-01
+            EIRENE_FEELEI1=-DE_10*TEIN(K)
         END SELECT
 
 c  non default models, data from external databases

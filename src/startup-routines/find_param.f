@@ -1163,58 +1163,58 @@ C
       WRITE (IUNOUT,*) 'AUTOMATTED STORAGE SETTING (FIND_PARAM.F)'
       CALL EIRENE_LEER(1)	
 C
-      WRITE (iunout,*) 'N1ST = ',N1ST
-      WRITE (iunout,*) 'N2ND = ',N2ND
-      WRITE (iunout,*) 'N3RD = ',N3RD
-      WRITE (iunout,*) 'NADD = ',NADD
-      WRITE (iunout,*) 'NTOR = ',NTOR
-      WRITE (iunout,*) 'NRTAL = ',NRTAL
-      WRITE (iunout,*) 'NLIM = ',NLIM
-      WRITE (iunout,*) 'NSTS = ',NSTS
-      WRITE (iunout,*) 'NPLG = ',NPLG
+      WRITE (iunout,*) 'N1ST =   ',N1ST
+      WRITE (iunout,*) 'N2ND =   ',N2ND
+      WRITE (iunout,*) 'N3RD =   ',N3RD
+      WRITE (iunout,*) 'NADD =   ',NADD
+      WRITE (iunout,*) 'NTOR =   ',NTOR
+      WRITE (iunout,*) 'NRTAL =  ',NRTAL
+      WRITE (iunout,*) 'NLIM =   ',NLIM
+      WRITE (iunout,*) 'NSTS =   ',NSTS
+      WRITE (iunout,*) 'NPLG =   ',NPLG
       WRITE (iunout,*) 'NPPART = ',NPPART
-      WRITE (iunout,*) 'NKNOT = ',NKNOT
-      WRITE (iunout,*) 'NTRI = ',NTRI
+      WRITE (iunout,*) 'NKNOT =  ',NKNOT
+      WRITE (iunout,*) 'NTRI =   ',NTRI
       WRITE (iunout,*) 'NTETRA = ',NTETRA
       WRITE (iunout,*) 'NCOORD = ',NCOORD
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NSTRA = ',NSTRA
-      WRITE (iunout,*) 'NSRFS = ',NSRFS
-      WRITE (iunout,*) 'NSTEP = ',NSTEP
+      WRITE (iunout,*) 'NSTRA =  ',NSTRA
+      WRITE (iunout,*) 'NSRFS =  ',NSRFS
+      WRITE (iunout,*) 'NSTEP =  ',NSTEP
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NATM = ',NATM
-      WRITE (iunout,*) 'NMOL = ',NMOL
-      WRITE (iunout,*) 'NION = ',NION
-      WRITE (iunout,*) 'NPHOT= ',NPHOT
-      WRITE (iunout,*) 'NPLS = ',NPLS
+      WRITE (iunout,*) 'NATM =   ',NATM
+      WRITE (iunout,*) 'NMOL =   ',NMOL
+      WRITE (iunout,*) 'NION =   ',NION
+      WRITE (iunout,*) 'NPHOT =  ',NPHOT
+      WRITE (iunout,*) 'NPLS =   ',NPLS
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NADV = ',NADV    
-      WRITE (iunout,*) 'NCLV = ',NCLV
-      WRITE (iunout,*) 'NSNV = ',NSNV
-      WRITE (iunout,*) 'NALV = ',NALV
+      WRITE (iunout,*) 'NADV =   ',NADV    
+      WRITE (iunout,*) 'NCLV =   ',NCLV
+      WRITE (iunout,*) 'NSNV =   ',NSNV
+      WRITE (iunout,*) 'NALV =   ',NALV
 
-      WRITE (iunout,*) 'NADS = ',NADS
-      WRITE (iunout,*) 'NALS = ',NALS
+      WRITE (iunout,*) 'NADS =   ',NADS
+      WRITE (iunout,*) 'NALS =   ',NALS
 
-      WRITE (iunout,*) 'NAIN = ',NAIN
-      WRITE (iunout,*) 'NCOP = ',NCOP
-      WRITE (iunout,*) 'NBGK = ',NBGK
-      WRITE (iunout,*) 'NSD =  ',NSD
-      WRITE (iunout,*) 'NSDW = ',NSDW
-      WRITE (iunout,*) 'NCV =  ',NCV
+      WRITE (iunout,*) 'NAIN =   ',NAIN
+      WRITE (iunout,*) 'NCOP =   ',NCOP
+      WRITE (iunout,*) 'NBGK =   ',NBGK
+      WRITE (iunout,*) 'NSD =    ',NSD
+      WRITE (iunout,*) 'NSDW =   ',NSDW
+      WRITE (iunout,*) 'NCV =    ',NCV
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS" '
-      WRITE (iunout,*) 'NREAC = ',NREAC
+      WRITE (iunout,*) 'NREAC =  ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
-C     WRITE (iunout,*) 'NREC =  ',NREC
-C     WRITE (iunout,*) 'NRDS =  ',NRDS
-C     WRITE (iunout,*) 'NRCX =  ',NRCX
-C     WRITE (iunout,*) 'NREL =  ',NREL
-C     WRITE (iunout,*) 'NRPI =  ',NRPI
+C     WRITE (iunout,*) 'NREC =   ',NREC
+C     WRITE (iunout,*) 'NRDS =   ',NRDS
+C     WRITE (iunout,*) 'NRCX =   ',NRCX
+C     WRITE (iunout,*) 'NREL =   ',NREL
+C     WRITE (iunout,*) 'NRPI =   ',NRPI
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF STORAGE OPTIMIZATION OPTIONS'
