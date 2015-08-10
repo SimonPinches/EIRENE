@@ -1306,9 +1306,10 @@ C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
         CALL EIRENE_FPKCOL(*104,*229,*9991,3)
 
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
-229     CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
-!  falsch, bei levgeo=10 weil dort neue zellenummer erst spaeter kommt.
-!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel wieder kaputt gemacht
+229     CONTINUE
+        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
+!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
+!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
 
         ICO = 0
         GOTO 1004
@@ -1367,10 +1368,17 @@ C   EXCEPTION: PERIODICITY SURFACE. THEN: NO NEED TO CONVERT TO
 C              FULL CARTESIAN VELOCITY COMPONENTS
 cdr but needed at restart point 100 in this routine ! 
 !  die naechsten (auskommentierten) Zeilen sind irgendwie im master gelandet ...
-c     IF (ILIIN(MSURF).GE.4) THEN
-c       PR=1.0
-c       GOTO 385
-c     ENDIF
+      IF (ILIIN(MSURF).GE.4) THEN
+        PR=1.0
+        ICO=0
+        IF (.NOT.LGPART) THEN
+          WRITE (IUNOUT,*) 'ERROR AT PERIODICITY SURFACE, LGPART=FALSE'
+          RETURN
+        ENDIF
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+        GOTO 1004
+C       GOTO 385
+      ENDIF
 C
       IF (.NOT.LCART) THEN
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
@@ -1637,7 +1645,7 @@ C
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
  
-      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF)
+      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF,.TRUE.)
       BVEC = (/ BBX, BBY, BBZ /)
 
       IF (IND.LT.1) RETURN
@@ -1653,7 +1661,8 @@ C  ONLY THE NEW DIRECTION (REDUCED SPEED UNIT VECTORS) ARE EVALUATED
       VELZ = VLZPAR
       VEL  = VELPAR
       LCART=.FALSE.
-C     write (iunout,*) 'newfield',bbx,bby,bbz,sigpar,vel
+      if (nltrc) 
+     .  write (iunout,*) 'newfield',ncell,bbx,bby,bbz,sigpar,vel
 
       IF (IND.LT.2) RETURN
                                             

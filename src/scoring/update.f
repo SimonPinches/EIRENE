@@ -18,6 +18,7 @@ C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
+c  06.08.15 arguments added to vecusr
 
  
 C
@@ -26,6 +27,12 @@ C
 C ESTIMATORS ARE UPDATED FOR EACH TRACK TAKING T/VEL SEC.
 C T (CM) IS STORED ON CLPD ARRAY FOR ONE OR MORE CELLS, THAT HAVE
 C BEEN CROSSED WITHOUT COLLISION.
+
+C
+C  NCOU:  NUMBER OF PIECES OF TRACK IN DIFFERENT CELLS SCORED IN THIS PRESENT CALL (BUT FIXED NRCELL)
+C     I:  INDIVIDUAL TRACK, I=1,NCOU
+C  IRDO:  TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
+C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD  (=NCLTAL(IRDO))
 C
 C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELATION OF TERMS
 
@@ -58,7 +65,7 @@ C
       REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, VELQ, CNDYNPH, WTRV,
      .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
-     .            VZ(NPLS)
+     .            VZ(NPLS),XC,YC,ZC
       REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
      .                               CNDYNP(:)
       INTEGER :: IRD,  I, IRDO, INUM,
@@ -125,6 +132,8 @@ C
         WTRV=WTR*VEL*CNDYNA(IATM)
         IRDO=NRCELL+NUPC(I)*NR1P2+NBLCKA
         IRD=NCLTAL(IRDO)
+
+C  FOR STANDARD DEVIATION: INDICATE CELLS THAT HAVE BEEN MET BY THE PRESENT MC HISTORY
         IF (IMETCL(IRD) == 0) THEN
           NCLMT = NCLMT+1
           ICLMT(NCLMT) = IRD
@@ -571,11 +580,15 @@ C
 C
         IF (LMAPL) THEN
  
-          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF)
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF,.FALSE.)
 
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
-              CALL EIRENE_VECUSR (2,VX(IPL),VY(IPL),VZ(IPL),IPL)
+              XC=0.
+              YC=0.
+              ZC=0.
+              CALL EIRENE_VECUSR (2,IRDO,XC,YC,ZC,
+     .             VX(IPL),VY(IPL),VZ(IPL),IPL,.FALSE.)
             ELSE
               IPLV=MPLSV(IPL)
               VX(IPL)=VXIN(IPLV,IRDO)
@@ -1175,11 +1188,15 @@ C
 C
         IF (LMMPL) THEN
  
-          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF)
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF,.FALSE.)
 
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
-              CALL EIRENE_VECUSR (2,VX(IPL),VY(IPL),VZ(IPL),IPL)
+              XC=0.
+              YC=0.
+              ZC=0.
+              CALL EIRENE_VECUSR (2,IRDO,XC,YC,ZC,
+     .             VX(IPL),VY(IPL),VZ(IPL),IPL,.FALSE.)
             ELSE
               IPLV=MPLSV(IPL)
               VX(IPL)=VXIN(IPLV,IRDO)
@@ -1782,11 +1799,15 @@ C
 C
         IF (LMIPL) THEN
  
-          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF)
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF,.FALSE.)
  
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
-              CALL EIRENE_VECUSR (2,VX(IPL),VY(IPL),VZ(IPL),IPL)
+              XC=0.
+              YC=0.
+              ZC=0.
+              CALL EIRENE_VECUSR (2,IRDO,XC,YC,ZC,
+     .             VX(IPL),VY(IPL),VZ(IPL),IPL,.FALSE.)
             ELSE
               IPLV=MPLSV(IPL)
               VX(IPL)=VXIN(IPLV,IRDO)

@@ -4,6 +4,7 @@ C               added: jcou,ncou
 !pb  12.10.06:  modcol revised
 !pb  28.11.06:  initialization of XSTOR reactivated because of trouble in
 !pb             BGK iteration
+cdr 06.08.15 :  arguments added to vecusr
 C
       FUNCTION EIRENE_FPATHPH (K,CFLAG,JCOU,NCOU)
 C
@@ -31,7 +32,7 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplot3, 
-     .            vx, vy, vz,
+     .            vx, vy, vz, XC,YC,ZC,
      .            DENEL, PVELQ0, fac
       integer :: il, kk, ipl, irot, ipot, j, iph, i1, i2
 C
@@ -57,7 +58,10 @@ C
       DO 3 IPLS=1,NPLSV
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VX,VY,VZ,IPLS)
+            XC=0.
+            YC=0.
+            ZC=0.
+            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
             VX=VXIN(IPLS,K)
             VY=VYIN(IPLS,K)

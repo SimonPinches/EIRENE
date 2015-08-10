@@ -3,6 +3,7 @@
 !pb  110311: ensure ELMIN <= ELAB <= ELMAX
 !DR  250311: ensure ELMIN <= ELAB <= ELMAX disabled again: would lead
 !DR          to wrong cross sections, e.g. for beam penetration
+CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
 C
       SUBROUTINE EIRENE_VELOCX(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                  IRCX,DUMT,DUMV)
@@ -144,7 +145,8 @@ C
         ZARGZ=ZRG(IPLS,K)
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VXDR,VYDR,VZDR,IPLS)
+            CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
+     .                          .TRUE.)
           ELSE
             VXDR=VXIN(IPLS,K)
             VYDR=VYIN(IPLS,K)

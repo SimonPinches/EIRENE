@@ -113,7 +113,8 @@ C
      .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
      .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
      .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
-     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
+     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
+     .          X0N,Y0N,Z0N,X0NS,Y0NS,Z0NS,scosi,scosa
       INTEGER :: IRICH(2,4), ITSIDE(3,4)
       INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF, 
@@ -146,13 +147,13 @@ C
       DATA ITFRST /0/
       SAVE
 C
-C     IF (NLTRC) THEN
-C       CALL EIRENE_LEER(1)
-C       WRITE (iunout,*) 'TIMER, INIT.: NRCELL,NLSRFX,MRSURF,TT,TL'
-C       WRITE (iunout,*)                NRCELL,NLSRFX,MRSURF,TT,TL
-C       WRITE (iunout,*) '              NPCELL,NLSRFY,MPSURF'
-C       WRITE (iunout,*)                NPCELL,NLSRFY,MPSURF
-C     ENDIF
+      IF (NLTRC) THEN
+        CALL EIRENE_LEER(1)
+        WRITE (iunout,*) 'TIMER, INIT.: NRCELL,NLSRFX,MRSURF,TT,TL'
+        WRITE (iunout,*)                NRCELL,NLSRFX,MRSURF,TT,TL
+        WRITE (iunout,*) '              NPCELL,NLSRFY,MPSURF'
+        WRITE (iunout,*)                NPCELL,NLSRFY,MPSURF
+      ENDIF
 C
       IRCELL=NRCELL
       PT=1.D30
@@ -225,10 +226,10 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON DEFAULT RADIAL SURFACES
 10      CONTINUE
         IF (MRSURF.EQ.0) NINCX=0
       ENDIF
-C     IF (NLTRC) THEN
-C       WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX'
-C       WRITE (iunout,*)              PT,MRSURF,NINCX
-C     ENDIF
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX'
+        WRITE (iunout,*)              PT,MRSURF,NINCX
+      ENDIF
       RETURN
 C
 C
@@ -241,10 +242,10 @@ C
 C
 C****CIRCULAR MESH   (CONCENTRIC)
 C
-C     IF (NLTRC) THEN
-C       WRITE (iunout,*) 'NJUMP,NINCX,NRCELL '
-C       WRITE (iunout,*)  NJUMP,NINCX,NRCELL
-C     ENDIF
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'NJUMP,NINCX,NRCELL '
+        WRITE (iunout,*)  NJUMP,NINCX,NRCELL
+      ENDIF
       IF (NJUMP.EQ.0) THEN
         ZA=VELX*VELX+VELY*VELY
         ZB=X0*VELX+Y0*VELY
@@ -471,8 +472,8 @@ C
       XTEST=X0+PT*VELX
       YTEST=Y0+PT*VELY
       IF (NLPOL) IPOLGN=EIRENE_LEARC2(XTEST,YTEST,NRCELL,NPANU,'TIMER')
-C     IF (NLTRC)
-C    .  WRITE (iunout,*) 'IPOLGN,NRCELL FROM TIMER ',IPOLGN,NRCELL
+      IF (NLTRC)
+     .  WRITE (iunout,*) 'IPOLGN,NRCELL FROM TIMER ',IPOLGN,NRCELL
       IF (NRI.EQ.0) THEN
         RETURN
       ELSE
@@ -496,7 +497,7 @@ C
 C  POLYGON MESH
 C
       IF (NRCELL.NE.0) THEN
-C       IF (NLTRC) WRITE (iunout,*) ' TIMER: IN NEIGHBOR PART'
+        IF (NLTRC) WRITE (iunout,*) ' TIMER: IN NEIGHBOR PART'
         LNGB1=.TRUE.
         LNGB2=.TRUE.
         LNGB3=.TRUE.
@@ -536,10 +537,10 @@ C
         NCOUP=0
 C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
 6001    CONTINUE
-C       IF (NLTRC) WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
-C    .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
-C       IF (NLTRC) WRITE (iunout,*) ' velx, vely, velz ',
-C    .                           velx, vely, velz
+        IF (NLTRC) WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
+     .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
+        IF (NLTRC) WRITE (iunout,*) ' velx, vely, velz ',
+     .                           velx, vely, velz
         T1=-1.D30
         T2=-1.D30
         T3=-1.D30
@@ -560,7 +561,7 @@ C    .                           velx, vely, velz
         IF (LNGB4)
      .  T4=((XPOL(IR,IP)-X0)*VELY-(YPOL(IR,IP)-Y0)*VELX)/
      .      (VELX*VVTY(IR,IP)-VELY*VVTX(IR,IP)+EPS60)
-C       IF (NLTRC) WRITE (iunout,*) ' T1,T2,T3,T4 ',T1,T2,T3,T4
+        IF (NLTRC) WRITE (iunout,*) ' T1,T2,T3,T4 ',T1,T2,T3,T4
         LCT1 = T1.GE.0.D0 .AND. T1.LE.1.D0
         LCT2 = T2.GE.0.D0 .AND. T2.LE.1.D0
         LCT3 = T3.GE.0.D0 .AND. T3.LE.1.D0
@@ -582,9 +583,9 @@ C  TO THE BOUNDARY OF THE ACTUELL CELL
         LCT2 = LCT2 .AND. PT2.GE.0.D0
         LCT3 = LCT3 .AND. PT3.GE.0.D0
         LCT4 = LCT4 .AND. PT4.GE.0.D0
-C       IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
-C    .                           LCT1,LCT2,LCT3,LCT4
-C       IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
+        IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
+     .                           LCT1,LCT2,LCT3,LCT4
+        IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
 
         ICTS=COUNT(LCTS)
 C  MORE THAN ONE TENTATIVE INTERECTIONS FOUND 
@@ -604,7 +605,7 @@ C       ELSE
 C  THIS MAY BE A RESULT OF NUMERICAL ROUNDING ERRORS,
 C  SO SOME FURTHER ATTEMPTS WILL BE MADE BELOW.....
         END IF
-C       IF (NLTRC) WRITE (iunout,*) ' T = ',T
+        IF (NLTRC) WRITE (iunout,*) ' T = ',T
 
 C  IF INTERSECTION WITH POLOIDAL BOUNDARY CONTINUE WITH NEIGHBORING CELL
         IF (LCT2.OR.LCT4) THEN
@@ -722,14 +723,14 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
           IPOLGN=IP
         ENDIF
         NJUMP=1
-C       IF (NLTRC) THEN
-C         WRITE (iunout,*) ' PT,MRSURF,NINCX,IPOLGN ',
-C    .                  PT,MRSURF,NINCX,IPOLGN
-C         WRITE (iunout,*) 'NCOUP ',NCOUP
-C         DO ICOUP=1,NCOUP
-C           WRITE (iunout,*) 'ICOUP,ALPD(ICOUP) ',ICOUP,ALPD(ICOUP)
-C         ENDDO
-C       ENDIF
+        IF (NLTRC) THEN
+          WRITE (iunout,*) ' PT,MRSURF,NINCX,IPOLGN ',
+     .                  PT,MRSURF,NINCX,IPOLGN
+          WRITE (iunout,*) 'NCOUP ',NCOUP
+          DO ICOUP=1,NCOUP
+            WRITE (iunout,*) 'ICOUP,ALPD(ICOUP) ',ICOUP,ALPD(ICOUP)
+          ENDDO
+        ENDIF
         RETURN
       ENDIF
 C
@@ -807,11 +808,11 @@ C
             ENDIF
 6020      CONTINUE
           IF (ISW.GT.0.AND.NTIM(I).GT.2) GOTO 6015
-C         IF (NLTRC) THEN
-C           WRITE (iunout,*) ' SURFACE NO. = ',I
-C           WRITE (iunout,*) ' TIMPOL ',(TIMPOL(I,J),J=1,NTIM(I))
-C           WRITE (iunout,*) ' IIMPOL ',(IIMPOL(I,J),J=1,NTIM(I))
-C         ENDIF
+          IF (NLTRC) THEN
+            WRITE (iunout,*) ' SURFACE NO. = ',I
+            WRITE (iunout,*) ' TIMPOL ',(TIMPOL(I,J),J=1,NTIM(I))
+            WRITE (iunout,*) ' IIMPOL ',(IIMPOL(I,J),J=1,NTIM(I))
+          ENDIF
 C
         ENDIF
 C
@@ -836,8 +837,8 @@ C
       NJUMP=1
       IPOLGO=IPOLGN
 C
-C     IF (NLTRC) WRITE (iunout,*) 'PT,MRSURF,IPOLGN,NINCX ',
-C    .                        PT,MRSURF,IPOLGN,NINCX
+      IF (NLTRC) WRITE (iunout,*) 'PT,MRSURF,IPOLGN,NINCX ',
+     .                        PT,MRSURF,IPOLGN,NINCX
       RETURN
 C
 C
@@ -847,10 +848,10 @@ C
 C
 C   FINITE ELEMENT DISCRETISATION
 C
-C     IF (NLTRC) THEN
-C       WRITE (iunout,*) ' TIMER,NJUMP,NRCELL ',NJUMP,NRCELL
-C       WRITE (iunout,*) '       NLSRFX,IPOLG ',NLSRFX,IPOLG
-C     ENDIF
+      IF (NLTRC) THEN
+        WRITE (iunout,*) ' TIMER,NJUMP,NRCELL ',NJUMP,NRCELL
+        WRITE (iunout,*) '       NLSRFX,IPOLG ',NLSRFX,IPOLG
+      ENDIF
 C
       IF (NJUMP.EQ.0) THEN
 8001    CONTINUE
@@ -863,12 +864,12 @@ C     ELSEIF (NJUMP.EQ.1) THEN
       ENDIF
  
       IF (NRCELL > 0) THEN
-C       IF (NLTRC) THEN
-C         WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
-C         WRITE (iunout,*) ' X0,Y0 ',X0,Y0
-C         WRITE (iunout,*) ' VELX,VELY ',VELX,VELY
-C         CALL EIRENE_LEER(1)
-C       ENDIF
+        IF (NLTRC) THEN
+          WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
+          WRITE (iunout,*) ' X0,Y0 ',X0,Y0
+          WRITE (iunout,*) ' VELX,VELY ',VELX,VELY
+          CALL EIRENE_LEER(1)
+        ENDIF
         XX = X0
         YY = Y0
         TM=0.
@@ -897,27 +898,27 @@ C
                 IIMINT(NIMINT) = IZELL
 C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                 NTIM(IZELL) = J
-C               IF (NLTRC) THEN
-C                 WRITE (iunout,*) 'IZELL,XX,YY,J ',IZELL,XX,YY,J
-C               ENDIF
+                IF (NLTRC) THEN
+                  WRITE (iunout,*) 'IZELL,XX,YY,J ',IZELL,XX,YY,J
+                ENDIF
 C  ZELLENNUMMER DES NEUEN DREIECKS
                 IZELLO=IZELL
                 IZELL = NCHBAR(J,IZELLO)
                 IF (IZELL .EQ. 0) GOTO 8050
 C  SEITENNUMMER DES NEUEN DREIECKS
                 IPOLGO = NSEITE(J,IZELLO)
-C               IF (NLTRC) THEN
-C                 WRITE(iunout,*) 'GEHE IN ZELLE ',IZELL,' TM= ',TM
-C                 WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
-C               ENDIF
+                IF (NLTRC) THEN
+                  WRITE(iunout,*) 'GEHE IN ZELLE ',IZELL,' TM= ',TM
+                  WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+                ENDIF
                 GOTO 8050
               ENDIF
             ENDIF
           ENDIF
 8010    CONTINUE
 C
-C       IF (NLTRC)
-C    .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
+        IF (NLTRC)
+     .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
         PT=1.D30
         NINCX=0
 C  DURCHSUCHE NACHBARDREIECK
@@ -963,8 +964,8 @@ C  ON NON DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
       ELSE
         GOTO 9999
       ENDIF
-C     IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-C    .                         NRCELL,MRSURF,PT,NINCX,IPOLGN
+      IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .                         NRCELL,MRSURF,PT,NINCX,IPOLGN
  
       RETURN
       END IF
@@ -1016,9 +1017,9 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
           ELSE
             T=(AY+V*RICHTY)/VELY
           ENDIF
-C         IF (NLTRC)
-C    .      WRITE (IUNOUT,*) ' INTERSECTION WITH TRIANGLE ',IZELL,
-C    .                       ' SIDE ',J,' FOUND, PT,T = ',PT,T
+          IF (NLTRC)
+     .      WRITE (IUNOUT,*) ' INTERSECTION WITH TRIANGLE ',IZELL,
+     .                       ' SIDE ',J,' FOUND, PT,T = ',PT,T
           IF ((T .GT. 0.) .AND. ( T < PT)) THEN
             PT = T
             ISTS_CELL = I
@@ -1033,8 +1034,8 @@ C    .                       ' SIDE ',J,' FOUND, PT,T = ',PT,T
         MRSURF = ITRINO(ISTS_CELL)
         IPOLGN = ISIDNO(ISTS_CELL)
         NINCX = ITRINO(ISTS_CELL)
-C       IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-C    .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
+        IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
       END IF
  
       RETURN
@@ -1056,11 +1057,11 @@ C
           ENDIF
 C       ELSEIF (NJUMP.EQ.1) THEN
         ENDIF
-C       IF (NLTRC) THEN
-C         WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
-C         WRITE (iunout,*) ' X0,Y0,Z0 ',X0,Y0,Z0
-C         WRITE (iunout,*) ' VELX,VELY,VELZ ',VELX,VELY,VELZ
-C       ENDIF
+        IF (NLTRC) THEN
+          WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
+          WRITE (iunout,*) ' X0,Y0,Z0 ',X0,Y0,Z0
+          WRITE (iunout,*) ' VELX,VELY,VELZ ',VELX,VELY,VELZ
+        ENDIF
  
         XX = X0
         YY = Y0
@@ -1130,28 +1131,28 @@ C
                   XX = XX + T * VELX
                   YY = YY + T * VELY
                   ZZ = ZZ + T * VELZ
-C                 if (nltrc) then
-C                    write(iunout,*) ' i1, i2 ',i1,i2
-C                    write(iunout,'(1x,a,3es14.7)') ' velxyz ',
-C    .                     velx,vely,velz
-C                    write(iunout,'(1x,a,3es14.7)') ' a11, a12, a13 ',
-C    .                     a(1,:)
-C                    write(iunout,'(1x,a,3es14.7)') ' a21, a22, a23 ',
-C    .                     a(2,:)
-C                    write(iunout,'(1x,a,3es14.7)') ' a31, a32, a33 ',
-C    .                     a(3,:)
-C                    write(iunout,'(1x,a,3es14.7)') ' b1, b2, b3 ',b(:)
-C                    write (iunout,'(1x,a,3es14.7)') ' det, xmu ',
-C    .                     det,xmu
-C                 end IF
+                  if (nltrc) then
+                     write(iunout,*) ' i1, i2 ',i1,i2
+                     write(iunout,'(1x,a,3es14.7)') ' velxyz ',
+     .                     velx,vely,velz
+                     write(iunout,'(1x,a,3es14.7)') ' a11, a12, a13 ',
+     .                     a(1,:)
+                     write(iunout,'(1x,a,3es14.7)') ' a21, a22, a23 ',
+     .                     a(2,:)
+                     write(iunout,'(1x,a,3es14.7)') ' a31, a32, a33 ',
+     .                     a(3,:)
+                     write(iunout,'(1x,a,3es14.7)') ' b1, b2, b3 ',b(:)
+                     write (iunout,'(1x,a,3es14.7)') ' det, xmu ',
+     .                     det,xmu
+                  end IF
                   TM = TM + T
                   TIMTET = TM
 C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                   NTIMT = J
-C                 IF (NLTRC) THEN
-C                   WRITE (iunout,*) 'IZELL,XX,YY,ZZ,J ',
-C    .                                IZELL,XX,YY,ZZ,J
-C                 ENDIF
+                  IF (NLTRC) THEN
+                    WRITE (iunout,*) 'IZELL,XX,YY,ZZ,J ',
+     .                                IZELL,XX,YY,ZZ,J
+                  ENDIF
 C  ZELLENNUMMER DES NEUEN DREIECKS
                   IZELLO=IZELL
                   IPOLGOO=IPOLGO
@@ -1160,10 +1161,10 @@ C  ZELLENNUMMER DES NEUEN DREIECKS
                   IF (IZELL .EQ. 0) GOTO 11050
 C  SEITENNUMMER DES NEUEN DREIECKS
                   IPOLGO = NTSEITE(J,IZELLO)
-C                 IF (NLTRC) THEN
-C                   WRITE(iunout,*) 'GEHE IN ZELLE ',IZELL,' TM= ',TM
-C                   WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
-C                 ENDIF
+                  IF (NLTRC) THEN
+                    WRITE(iunout,*) 'GEHE IN ZELLE ',IZELL,' TM= ',TM
+                    WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+                  ENDIF
                   GOTO 11050
                 ENDIF
               ENDIF
@@ -1171,8 +1172,8 @@ C                 ENDIF
           ENDIF
         END DO
 C
-C       IF (NLTRC)
-C    .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
+        IF (NLTRC)
+     .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
         PT=1.D30
         NINCX=0
 C  DURCHSUCHE NACHBARDREIECK
@@ -1213,8 +1214,8 @@ C  ON NON DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
         ELSE
           GOTO 9999
         ENDIF
-C       IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-C    .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
+        IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
  
         RETURN
  
@@ -1337,10 +1338,10 @@ C
         IF (NTMZ .NE. 0) THEN
 C  SEITENNUMMER DES NEUEN DREIECKS
           IPOLGO = NTMS
-C         IF (NLTRC) THEN
-C           WRITE(iunout,*) 'OUTSIDE; GEHE IN ZELLE ',NTMZ,' TM= ',TM
-C           WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
-C         ENDIF
+          IF (NLTRC) THEN
+            WRITE(iunout,*) 'OUTSIDE; GEHE IN ZELLE ',NTMZ,' TM= ',TM
+            WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+          ENDIF
         END IF
  
         NLSRFX=.FALSE.
@@ -1348,8 +1349,8 @@ C         ENDIF
         MRSURF=NTMZ
         IPOLGN=NTMS
         NINCX=NTMZ-NRCELL
-C       IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-C    .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
+        IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
       END IF
       RETURN
  
@@ -1384,12 +1385,31 @@ C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
         TIM=0.        
       endif
 
-c     IF (NLTRC) THEN
-c       WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
-c       WRITE (iunout,*)                        NJUMP,TIM,ZT
-c     ENDIF
+      if (.false.) then  ! detlevs attempt
+      if (nlsrfx.and.njump.eq.3) then
+c  particle continues from internal grid surface
+c  try to set particle position more precisely, from previously found intersection point
+c  problem: v_new from b-field after surface delta event is not seen in timusr.
+c  but njump=0 also seems not to work.
+        x0=x0ns
+        y0=y0ns
+        z0=z0ns
+        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
+     .                     VELX,VELY,VELZ,Nrtest)
+        scosi=crtx*velx+crty*vely+crtz*velz
+        if (nltrc) then
+          write (6,*) 'norusr, before: nrtest, scos', nrtest,scosi
+          write (6,*) 'velx,vely,velz', velx,velz,vely
+        endif 
+      endif
+      endif  ! detlevs attempt
+
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
+        WRITE (iunout,*)                        NJUMP,TIM,ZT
+      ENDIF
       
-c     if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
+      if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
 
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
      .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
@@ -1404,7 +1424,22 @@ cdr  make sure that mrsurf is not pointing to any of the defined non-default sta
 cdr  but why not just mrsurf=0 ???      
 cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, no matter if non-default (3a) or not. 
         MRSURF=NRMSRF
-c    
+c
+        if (.false.) then  ! detlevs attempt
+cdr  save tentative intersection point. To be used in case of
+c    internal grid boundary delta event,  to enhance precision.
+        x0ns=x0n
+        y0ns=y0n
+        z0ns=z0n
+        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
+     .                     VELX,VELY,VELZ,Nrtest)
+        scosa=crtx*velx+crty*vely+crtz*velz
+        if (nltrc) then
+          write (6,*) 'norusr, after: nrtest, scos', nrtest,scosa
+          write (6,*) 'velx,vely,velz', velx,velz,vely
+        endif
+        endif  ! false, detlevs attempt 
+
       ELSEIF (NEWCEL.LT.0) THEN
 cdr  one of the non-default surfaces has been hit. set this surface index to mrsurf.
         NINCX=ICOS
@@ -1416,10 +1451,10 @@ cdr
       ENDIF
       NLSRFX=.FALSE.
 
-c     IF (NLTRC) THEN
-c       WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX,NRCELL'
-c       WRITE (iunout,*)              PT,MRSURF,NINCX,NRCELL
-c     ENDIF
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX,NRCELL'
+        WRITE (iunout,*)              PT,MRSURF,NINCX,NRCELL
+      ENDIF
 
       RETURN
  

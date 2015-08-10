@@ -113,8 +113,7 @@ C
      .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
      .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
      .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
-     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
-     .          X0N,Y0N,Z0N,X0NS,Y0NS,Z0NS,scosi,scosa
+     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
       INTEGER :: IRICH(2,4), ITSIDE(3,4)
       INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF, 
@@ -1379,26 +1378,11 @@ c              coincides with this "radial" surface.
       END IF
 C
 
-      if (.false.) then  ! detlevs attempt
+      
 C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
       IF (NJUMP.EQ.3.or.njump.eq.0) then 
-       TIM=0.        
+        TIM=0.        
       endif
-      if (nlsrfx.and.njump.eq.3) then
-c  particle continues from internal grid surface
-c  try to set particle position more precisely, from previously found intersection point
-c  problem: v_new from b-field after surface delta event is not seen in timusr.
-c  but njump=0 also seems not to work.
-        x0=x0ns
-        y0=y0ns
-        z0=z0ns
-        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
-     .                     VELX,VELY,VELZ,Nrtest)
-        scosi=crtx*velx+crty*vely+crtz*velz
-        write (6,*) 'norusr, before: nrtest, scos', nrtest,scosi 
-c       njump=-7  
-      endif
-      endif  ! detlevs attempt
 
       IF (NLTRC) THEN
         WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
@@ -1408,8 +1392,8 @@ c       njump=-7
       if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
 
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
-     .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX,
-     .                   X0N,Y0N,Z0N)
+     .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
+
       IF (IERR.NE.0) GOTO 9999
       PT=TIM
       IF (NEWCEL.GT.0) THEN
@@ -1420,19 +1404,7 @@ cdr  make sure that mrsurf is not pointing to any of the defined non-default sta
 cdr  but why not just mrsurf=0 ???      
 cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, no matter if non-default (3a) or not. 
         MRSURF=NRMSRF
-c
-        if (.false.) then  ! detlevs attempt
-cdr  save tentative intersection point. To be used in case of
-c    internal grid boundary delta event,  to enhance precision.
-        x0ns=x0n
-        y0ns=y0n
-        z0ns=z0n
-        CALL EIRENE_NORUSR(IST,X0ns,Y0ns,Z0ns,CRTX,CRTY,CRTZ,SCOS,
-     .                     VELX,VELY,VELZ,Nrtest)
-        scosa=crtx*velx+crty*vely+crtz*velz
-        write (6,*) 'norusr, after: nrtest, scos', nrtest,scosa
-        endif  ! false, detlevs attempt 
-
+c    
       ELSEIF (NEWCEL.LT.0) THEN
 cdr  one of the non-default surfaces has been hit. set this surface index to mrsurf.
         NINCX=ICOS

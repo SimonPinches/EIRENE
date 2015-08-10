@@ -1,7 +1,7 @@
-
+cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
 cdr            replaces explicit expression.
-cdr  21.10.14: bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
+cdr 21.10.14 : bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
 cdr           -->now runs again on eirene default vol.rec model.
 cdr 30.10.14 :  lplssr true even if npts=0, to allow setting up volume source tallies,
 cdr             even if npts=0 for the vol-rec stratum
@@ -14,7 +14,7 @@ cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2408.06: set output values for DIWL and SHWL
 cdr  2008.06: tiwl(*), ... instead of tiwl(npls),... to unify code.
 cdr  0604.06: check "istep out of range" moved to correct place
-c  031105
+c    0311.05
 c  iplsti moved after check of validity of ipls, to produce legal exit
 c         rather than code crash
 C  JET 2005, PATCH 1: NEW ARGUMENTS EFWL AND SHWL IN PARAMETER LIST
@@ -59,7 +59,7 @@ C
      .            VX, VY, VZ, VPARA, EELRC, 
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
-     .            EIRENE_BREMS
+     .            EIRENE_BREMS,XC,YC,ZC
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IC1, IC2, ICOUNT, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
@@ -209,10 +209,16 @@ C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
 
                 EIO(IPLS,IRRC)=EIO(IPLS,IRRC)-ADD
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
-
-                CALL EIRENE_BFIELD (J, X0, Y0, Z0, BX, BY, BZ, BF)
+                 
+CDR  position x0,y0,z0 not yet known here. to be done: add logical argument to bfield
+cdr  as already done in vecusr ?
+cdr  take center of gravity in cell, if needed.
+                xc=0.
+                yc=0.
+                zc=0.                
+                CALL EIRENE_BFIELD (J, XC,YC,ZC, BX,BY,BZ, BF,.FALSE.)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+                  CALL EIRENE_VECUSR(2,J,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
                   VPARA=VX*BX+VY*BY+VZ*BZ
                   MOMPARA=VPARA*CNDYNP*SIGN(1._DP,VPARA)
                 ELSE IF (INDPRO(5) == 8) THEN
@@ -746,6 +752,7 @@ C
         ELSE
           Y0=YIA+RANF_EIRENE()*(YAA-YIA)
         END IF
+C..........................................................................
       ELSEIF (LEVGEO.EQ.2) THEN
         IF (NLCRC) THEN
 C  POLOIDAL CO-ORDINATE
@@ -783,6 +790,7 @@ C
         ELSEIF (NLTRI) THEN
           GOTO 999
         ENDIF
+C...................................................................  
       ELSEIF (LEVGEO.EQ.3.OR.LEVGEO.EQ.4) THEN
         IF (LEVGEO.EQ.3) THEN
           IF (.NOT.NLPOL) THEN
@@ -821,6 +829,7 @@ C   PUNKT IN DREIECK 2
         Z2=0.
         Z3=0.
         CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,ZZ)
+C.................................................................
       ELSEIF (LEVGEO.EQ.5) THEN
         X1=XTETRA(NTECK(1,NCELL))
         Y1=YTETRA(NTECK(1,NCELL))
@@ -836,8 +845,10 @@ C   PUNKT IN DREIECK 2
         Z4=ZTETRA(NTECK(4,NCELL))
         CALL
      .  EIRENE_FPOLYT_4(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,X0,Y0,Z0)
+C....................................................................
       ELSEIF (LEVGEO.EQ.10) THEN
         WRITE (iunout,*) 'ERROR EXIT FROM SAMVOL. LEVGEO ',LEVGEO
+        WRITE (iunout,*) 'TO BE DONE: RETURN CENTER OF GRAVITY IN NCELL'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C

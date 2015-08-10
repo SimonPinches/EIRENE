@@ -1,4 +1,5 @@
-c   may 15       argument in vecusr: ip or ipv?, now : IP, everywhere
+c   06.08.15  :  arguments added to vecusr
+c   aug.15    :  periodicity and icol=1, return 3 rather than return 2
 C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
 C   OCT.14    :  SPUTTERING:  SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
 c                new meaning of isrs, isrc=0:  sputter, score fluxes, but do not follow.
@@ -112,7 +113,7 @@ C  CALLING PROGRAMS, E.G. STDNOR.F
 C  CURRENTLY: NO SURFACE TALLIES AT PERIODICITY SURFACES
  
       IF (ILIIN(MSURF).GE.4) THEN
-cdr: unfinished option: store tracejtories for later post processing 
+cdr: unfinished option: store trajectories for later post processing 
 cdr: unused
         NLTRJ = .FALSE.
         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
@@ -120,7 +121,7 @@ C  CONDITIONAL EXPECTATION ESTIMATOR: HAS THIS PARTICLE COLLIDED IN THE VOLUME,
 C  BEFORE IT HIT THE WALL?     
         IF (ICOL.EQ.1) then
           colflag = .true.  ! probably unused, perhaps in TIM?
-          RETURN 2
+          RETURN 3
         ENDIF
 C  NO, PARTICLE HAS ARRIVED AT PERIODICITY SURFACE MSURF
         IF (.NOT.LGPART) THEN
@@ -207,7 +208,8 @@ C  ACCOUNT FOR ELECTROSTATIC SHEATH AT SURFACE FOR TEST IONS
               DO 30 IP=1,NPLSI
                 IPV=MPLSV(IP)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR (2,VX,VY,VZ,IP)
+                  CALL EIRENE_VECUSR (2,IC,X0,Y0,Z0,VX,VY,VZ,IP,
+     .                                .TRUE.)
                 ELSE
                   VX=VXIN(IPV,IC)
                   VY=VYIN(IPV,IC)
