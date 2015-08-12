@@ -2078,7 +2078,7 @@ C  Te profile
 C  Ti profile(s)
       NPLSTI = 1
       IF ((INDPRO(2) < 0) .OR. (INDPRO(2) > 9)) NPLSTI=NPLS
-      NLMLTI=NPLSTI > 1
+      NLMLTI= (NPLSTI > 1)
       MPLSTI=1
       IF (NLMLTI) MPLSTI = (/ (I,I=1,NPLS) /)
       INDPRO(2)=IABS(INDPRO(2))
@@ -2111,7 +2111,7 @@ c  vi profile(s)
 
       INDPRO(4)=IABS(INDPRO(4))
       IF (INDPRO(4) > 9) INDPRO(4) = MOD(INDPRO(4),10)
-      NLMLV = NPLSV > 1
+      NLMLV = (NPLSV > 1)
       IF (.not.NLMLV) THEN
         MPLSV = 1
       ELSE
