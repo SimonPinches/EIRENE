@@ -1188,7 +1188,6 @@ C  RESET CLPD TO REAL PATH LENGTH OF GYRO MOTION FOR SCORING
 C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
 
 2211  CONTINUE
-c     write (6,*) 'push to coll, time used: ',ztc
       X0=X0+VLXPAR*ZTC
       Y0=Y0+VLYPAR*ZTC
       Z0=Z0+VLZPAR*ZTC
@@ -1307,6 +1306,8 @@ C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
 
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
 229     CONTINUE
+C STORE NEW FULL VELOCITY
+        VELS = VEL
         CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
 !  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
 !  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
@@ -1366,8 +1367,6 @@ C   REJECT THOSE GYROPHASES WHICH WOULD LEAD TO NEGATIVE ANGLE OF INCIDENCE
 C
 C   EXCEPTION: PERIODICITY SURFACE. THEN: NO NEED TO CONVERT TO 
 C              FULL CARTESIAN VELOCITY COMPONENTS
-cdr but needed at restart point 100 in this routine ! 
-!  die naechsten (auskommentierten) Zeilen sind irgendwie im master gelandet ...
       IF (ILIIN(MSURF).GE.4) THEN
         PR=1.0
         ICO=0
@@ -1377,7 +1376,6 @@ cdr but needed at restart point 100 in this routine !
         ENDIF
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
         GOTO 1004
-C       GOTO 385
       ENDIF
 C
       IF (.NOT.LCART) THEN
@@ -1426,7 +1424,7 @@ C
 C  FOR NONTRANSPARENT SURFACES:
 C  ACCELERATION IN SHEATH IS DONE IN SUBR. ESCAPE
 C
-385   CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+      CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
       RETURN
 C
 C   100: START NEW ION TRACK
@@ -1661,8 +1659,6 @@ C  ONLY THE NEW DIRECTION (REDUCED SPEED UNIT VECTORS) ARE EVALUATED
       VELZ = VLZPAR
       VEL  = VELPAR
       LCART=.FALSE.
-      if (nltrc) 
-     .  write (iunout,*) 'newfield',ncell,bbx,bby,bbz,sigpar,vel
 
       IF (IND.LT.2) RETURN
                                             

@@ -1389,8 +1389,6 @@ C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
         WRITE (iunout,*)                        NJUMP,TIM,ZT
       ENDIF
       
-      if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
-
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
      .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
 
