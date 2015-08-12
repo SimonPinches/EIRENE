@@ -591,7 +591,7 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (ESCD1P,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ESCD1PH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-      write (0,*) ' marke 14 '
+!      write (0,*) ' marke 14 '
       CALL MPI_BCAST (ISWR,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MODCLF,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASSP,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1224,8 +1224,8 @@ csw
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%PSPC%NSPC
-             write (0,*) ' smestl, my_pe, imerk, nsps ',
-     .                     my_pe, imerk, nsps
+!             write (0,*) ' smestl, my_pe, imerk, nsps ',
+!     .                     my_pe, imerk, nsps
 !pb             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
              IF (IMERK > 0) THEN
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
@@ -1242,7 +1242,7 @@ C  variances for sum over strata
              END IF
              ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC
-             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
+!             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
            END IF
          END DO
       ELSE
