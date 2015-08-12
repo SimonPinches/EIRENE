@@ -1018,15 +1018,16 @@ C
 C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE 
+C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STATA THEN PROCESSES
 C
       IF (NMODE.GT.0) THEN
-        if(nprs == 1) then
+        IF (NPRS <= NSTEFF) THEN
           IESTR=ISTRA
           ISTRAA=ISTRA
           ISTRAE=ISTRA
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
           NEW_ITER=1
-        endif
+        ENDIF
       ENDIF
 C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
@@ -1103,7 +1104,6 @@ C
       IF (NPRS > 1) THEN
         call EIRENE_collect_coutau
         IF (NPRNLI > 0) CALL EIRENE_COLLECT_CENSUS
-        CALL EIRENE_COLLECT_USRDATA
       END IF
 
 C
@@ -1111,16 +1111,20 @@ C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 C
 csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here iff in parallel mode
+C   AND MORE PROCESSES THEN STRATA
       IF (NMODE.GT.0) THEN
-        if(nprs > 1) then
-          iestr=istra
-          istraa=1
-          istrae=nstrai
+        IF (NPRS > NSTEFF) THEN
+          IESTR=ISTRA
+          ISTRAA=1
+          ISTRAE=NSTRAI
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
           NEW_ITER=1
-        endif
+        ENDIF
       ENDIF
 csw
+      IF (NPRS > 1) THEN
+        CALL EIRENE_COLLECT_USRDATA
+      END IF
 
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN
 C

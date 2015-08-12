@@ -4653,28 +4653,28 @@ C
 C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
        SUBROUTINE CORRECTNSS
 
-         IF(IT.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
+         IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
      .     NUMSI.GT.3.OR.NBARSI.GT.3)
      .     WRITE(iunout,*) "ERROR IN CORRECTNSS",
-     .                  "IT,NTRIS,NBAR,NTRIS,NUMSI,NBARSI",
-     .                   IT,NTRIS,NBAR,NTRIS,NUMSI,NBARSI
+     .                  "ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI",
+     .                   ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI
 
-         INMTINSS(NUMSI,IT)=1
+         INMTINSS(NUMSI,ITRI)=1
          INMTINSS(NBARSI,NBAR)=1
 
-         IF ((IXTRI(IT) > 0) .AND. (IYTRI(IT) > 0) .AND.
+         IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0) .AND.
      .       (IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
 !  both triangles inside mesh
-            IF (IXTRI(IT) == IXTRI(NBAR)) THEN
-              IF (IYTRI(IT) > IYTRI(NBAR)) THEN
-                INMTINSS(NUMSI,IT) = -1
+            IF (IXTRI(ITRI) == IXTRI(NBAR)) THEN
+              IF (IYTRI(ITRI) > IYTRI(NBAR)) THEN
+                INMTINSS(NUMSI,ITRI) = -1
               ELSE
                 INMTINSS(NBARSI,NBAR) = -1
               END IF
 
-            ELSE IF (IYTRI(IT) == IYTRI(NBAR)) THEN
-              IF (IXTRI(IT) > IXTRI(NBAR)) THEN
-                INMTINSS(NUMSI,IT) = -1
+            ELSE IF (IYTRI(ITRI) == IYTRI(NBAR)) THEN
+              IF (IXTRI(ITRI) > IXTRI(NBAR)) THEN
+                INMTINSS(NUMSI,ITRI) = -1
               ELSE
                 INMTINSS(NBARSI,NBAR) = -1
               END IF
@@ -4682,20 +4682,20 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
 
 
 !  triangle IT inside mesh, triangle NBAR outside mesh
-          ELSE IF ((IXTRI(IT) > 0) .AND. (IYTRI(IT) > 0)) THEN
+          ELSE IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0)) THEN
 
 !  poloidal surface
             IF (LXSRF) THEN
-              IF (IXTRI(IT).EQ.1) THEN        ! 'W SURFACE'
-                INMTINSS(NUMSI,IT ) = -1
+              IF (IXTRI(ITRI).EQ.1) THEN        ! 'W SURFACE'
+                INMTINSS(NUMSI,ITRI ) = -1
               ELSE                            ! 'E SURFACE'
                 INMTINSS(NBARSI,NBAR) = -1
               END IF
 
 !  radial surface
             ELSE
-              IF (IYTRI(IT).EQ.1) THEN        ! 'S SURFACE'
-                INMTINSS(NUMSI,IT ) = -1
+              IF (IYTRI(ITRI).EQ.1) THEN        ! 'S SURFACE'
+                INMTINSS(NUMSI,ITRI ) = -1
               ELSE                            ! 'N SURFACE'
                 INMTINSS(NBARSI,NBAR) = -1
               END IF
@@ -4710,7 +4710,7 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
               IF (IXTRI(NBAR).EQ.1) THEN      ! 'W SURFACE'
                 INMTINSS(NBARSI,NBAR ) = -1
               ELSE                            ! 'E SURFACE'
-                INMTINSS(NUMSI,IT) = -1
+                INMTINSS(NUMSI,ITRI) = -1
               END IF
 
 !  radial surface
@@ -4718,7 +4718,7 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
               IF (IYTRI(NBAR).EQ.1) THEN      ! 'S SURFACE'
                 INMTINSS(NBARSI,NBAR ) = -1
               ELSE                            ! 'N SURFACE'
-                INMTINSS(NUMSI,IT) = -1
+                INMTINSS(NUMSI,ITRI) = -1
               END IF
 
             END IF
