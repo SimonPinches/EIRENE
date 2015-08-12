@@ -8,7 +8,9 @@
 C
 C  DT >  0.      : RUN EIRENE FOR A TIMESTEP DT (S),
 C  DT <= 0.      : RUN EIRENE IN QUASI STEADY STATE MODE
-C  NLMODE=.FALSE.: STAND ALONE EIRENE RUN
+C  NLMODE=.FALSE.: FULL EIRENE INITIALIZATION
+C                  PLASMA DATA TRANSFER INTO EIRENE CONTROLLED BY REGULAR INPUT OPTIONS
+C                  INCLUDING, POSSIBLY, TRANSFER VIA INFCOP, ARRAYS.....
 C  NLMODE=.TRUE. : CALLED FROM INTERFACING ROUTINE EIRSRT
 C                  PLASMA DATA ON COMMON BRAEIR IN SUBROUTINE INFCOP.
 C  ITNR          : ITERATION NUMBER, FOR ITERATIONS WITH EXTERNAL CODE (IF ANY)
@@ -310,7 +312,7 @@ C
       CALL EIRENE_OUTPLA(0)
 C
       TIME=EIRENE_SECOND_OWN()
-      WRITE (iunout,*) 'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
+C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
       CALL EIRENE_LEER(1)
 C
 C               2.         PLOT GEOMETRY
@@ -321,7 +323,7 @@ C
       TIMI=EIRENE_SECOND_OWN()
       CALL EIRENE_PLT2D
       TIME=EIRENE_SECOND_OWN()
-      WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
+C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION
 C
@@ -499,7 +501,19 @@ C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF
  
-!pb      IF (MY_PE > 0) THEN
+
+
+cdr april 2015
+c  nprs: total number of processors used in this run
+c  my_pe is the current processor
+c
+c  in case of multi-timesteps, t-dep coupling, (or internal iterations?),
+c  output is reduced by the next three lines. 
+c  this leads to confusing (missing) output then.
+c  probably these next three lines must go out?
+cdr april 2015
+
+!pb   IF (MY_PE > 0) THEN 
       IF (NPRS > 1) THEN
          CLOSE (UNIT=IUNOUT)
       END IF

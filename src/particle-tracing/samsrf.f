@@ -17,6 +17,7 @@ C           ELSTEP and SHSTEP added in definition of default step function
 C  oct. 14: some preliminary options for correlation sampling removed, 
 C           back to development branch
 c  may  15: argument in first call to vecusr: ipls, rather then iplsv, now everywhere
+c  aug. 15: arguments in vecusr added: ncell, x0, y0, z0
 C
       SUBROUTINE EIRENE_SAMSRF
 C
@@ -54,7 +55,7 @@ C
      .          X0TEST, Y0TEST, S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
      .          Z0TEST, RNF, ZH, EIRENE_STEP1, DELTA, ZM, XLAMDA, BABS,
      .          CTETHA, GAMMA, CUR, TESH,
-     .          VX,VY,VZ 
+     .          VX,VY,VZ,XC,YC,ZC
       INTEGER :: ISID, IDUM, EIRENE_LEARC1, NDUM, EIRENE_LEARC2, NT, 
      .           IEN, IAN,
      .           EIRENE_LEARCA, ITET, ISGRD1, IS2, IP, ISTEP, ISGRD2,
@@ -187,7 +188,10 @@ C  AT SOME GIVEN TOROIDAL (Z) POSITION IT
 C  SCALE FLUX DENSITY WITH A TOROIDAL LENGTH, I.E.
 C  WITH: DELTA-Z = LENGTH IN TOROIDAL OR Z-DIRECTION: EITHER "ZDF" OR "2 PI R"
 
-!pb INDSRF is used to set SHSTEP parameter of default stepfunction 
+!  INDSRF IS THE SURFACE NUMBER OF THIS SOURCE. 
+!         IT CAN BE EITHER AN ADDITIONAL SURFACE (1,...NLIM)
+!         OR A NON-DEFAULT STANDARD SURFACE (THEN  NLIM+1...NLIM+NSTS)
+ 
             INDSRF = 0
 C  Y0:
             IF (INDIM(ISRFS,ISTRA).NE.2.OR..NOT.NLPOL) THEN
@@ -326,8 +330,7 @@ C  toroidal length: already included in RRSTEP, which is a surface area
 C
 C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS SURFACE TE, TI, V-PLASMA, NI
 C
-!pb 02032015            INDSRF=INSOR(ISRFS,ISTRA)
-!pb 02032015            IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
+
             DO K=KAN,KEN
               NBLCKA=NSTRD*(IBSTEP(ISTEP,K)-1)+IASTEP(ISTEP,K)
               IF ((LEVGEO == 4) .OR. (LEVGEO == 5)) THEN
@@ -345,7 +348,14 @@ C
                 IPLSV = MPLSV(IPLS)
                 TISTEP(IPLSTI,ISTEP,K)=TIIN(IPLSTI,NCELL)
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,VX,VY,VZ,IPLS)
+cdr  no spatial information x0,y0,z0 of birth point available here for vecusr.
+c    set drift velocities at cell center 
+                  XC=0.
+                  YC=0.
+                  ZC=0. 
+                  CALL EIRENE_VECUSR(2,NCELL,XC,YC,ZC,VX,VY,VZ,IPLS,
+     .                               .FALSE.)
+                  
                   VXSTEP(IPLSV,ISTEP,K)=VX
                   VYSTEP(IPLSV,ISTEP,K)=VY
                   VZSTEP(IPLSV,ISTEP,K)=VZ
@@ -1492,7 +1502,13 @@ C                              IN SAMPLED CELL NCELL
           IPLSV = MPLSV(IPLS)
           TIWL(IPLS)=TIIN(IPLSTI,NCELL)
           IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR (2,VX,VY,VZ,IPLS)
+cdr  no spatial information x0,y0,z0 of birth point available here for vecusr.
+c    set drift velocities at cell center 
+            XC=0.
+            YC=0.
+            ZC=0. 
+            CALL EIRENE_VECUSR (2,NCELL,XC,YC,ZC,VX,VY,VZ,IPLS,
+     .                          .FALSE.)
             VXWL(IPLS)=VX
             VYWL(IPLS)=VY
             VZWL(IPLS)=VZ

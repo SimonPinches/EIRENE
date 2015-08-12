@@ -9,6 +9,8 @@ C  aug. 05:  corrected electron energy loss rate for default rec. rate
 cdr  oct.14:  pls made allocatable, plus minor syncronisation with other xsect... routines
 cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung. 
 CDR           bremsstrahlung: new function eirene_brems, replaces gaunt factor function
+cdr  June 15:  added: default He+ --> He(1S) + rad  model. same from of rate as for H+ default model.
+
 C
       SUBROUTINE EIRENE_XSECTP
 C
@@ -66,23 +68,23 @@ C
           IF (ISWR(KK).LE.0.OR.ISWR(KK).GT.7) GOTO 994
         ENDDO
 C
-        IF (NRCP(IPLS).EQ.0) THEN
+        IF (NRCP(IPLS).EQ.0) THEN   ! default model for bulk ion IPLS
 C
-          IF (NCHARP(IPLS).EQ.1.AND.NCHRGP(IPLS).EQ.1) THEN
+          IF (NCHARP(IPLS).EQ.1.AND.NCHRGP(IPLS).EQ.1) THEN   ! this is now H+, or D+, or T+
 C
-C  DEFAULT HYDROGENIC RECOMBINATION MODEL
+C  DEFAULT HYDROGENIC RECOMBINATION MODEL, for capture on all levels of H
 C  HYDR. RECOMBINATION RATE-COEFFICIENT (1/S/CCM) E + H+ --> H + RAD.
 C  GORDEEV ET. AL., PIS'MA ZH. EHKSP. TEOR. FIZ. 25 (1977) 223.
 C
             DO 52 IATM=1,NATMI
-              IF (NMASSP(IPLS).EQ.NMASSA(IATM).AND.
-     .                            NCHRGP(IPLS).EQ.1) THEN
+              IF (NMASSP(IPLS).EQ.NMASSA(IATM)) THEN
 C
                 IDSC=IDSC+1
                 NRRCI=NRRCI+1
                 IF (NRRCI.GT.NREC) GOTO 992
                 IRRC=NRRCI
                 LGPRC(IPLS,IDSC)=IRRC
+
                 IF (NSTORDR >= NRAD) THEN
                   DO 51 J=1,NSBOX
                     ZX=EIONH/MAX(1.E-5_DP,TEIN(J))
@@ -93,7 +95,7 @@ c                   corsum=0._dp  !  old default: 1.5*Te
 C  correction due to energy dependence in rec. cross section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
-c  corsum approx  0.0 for Te approx 11.5
+c  corsum approx  0.0 for Te approx 11.43
 c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
@@ -101,7 +103,7 @@ c  corsum approx +1.0 for Te --> infty
                   NREARC(IRRC) = 0
                   JEREARC(IRRC) = 0
                   NELRRC(IRRC) = -1
-                ELSE
+                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"  
                   NREARC(IRRC) = 0
                   JEREARC(IRRC) = 0
                   NELRRC(IRRC) = -1
@@ -116,6 +118,59 @@ C
                 MODCOL(6,4,IRRC)=1
               ENDIF
 52          CONTINUE
+C
+            NPRCI(IPLS)=IDSC
+
+          ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN  ! this is now He+
+C
+C  DEFAULT HELIUM + RADIATIVE RECOMBINATION MODEL
+C  HELIUM-ION (HE+) RECOMBINATION RATE-COEFFICIENT (1/S/CCM) E + HE+ --> HE(1S) + RAD.
+C  JANEV ET. AL. FORMULA H.2. 2.3.13, BASED ON SOBELMAN 1979
+C  (BORN-COULOMB APPROXIMATION), SIMILAR EXPRESSION AS FOR HYDROGEN DEFAULT RECOMBINATION MODEL
+C
+            DO 54 IATM=1,NATMI
+              IF (NMASSP(IPLS).EQ.NMASSA(IATM)) THEN
+C
+                IDSC=IDSC+1
+                NRRCI=NRRCI+1
+                IF (NRRCI.GT.NREC) GOTO 992
+                IRRC=NRRCI
+                LGPRC(IPLS,IDSC)=IRRC
+
+                IF (NSTORDR >= NRAD) THEN
+                  DO 53 J=1,NSBOX
+                    ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
+C  rate = rate coeff: <sig v> times electr. density,  1/s per ion
+c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
+                    TABRC1(IRRC,J)=3.5487-14*ZX**1.5/(ZX+0.35)*DEIN(J)
+C  maxw. electron energy loss rate due to recombination
+c                   corsum=0._dp  !  old default: 1.5*Te
+C  correction due to energy dependence in rec. cross section
+C  corsum=d(ln<sig v>)/d(ln Te)
+c  corsum approx -0.5 for Te --> 0
+c  corsum approx  0.0 for Te approx 11.5
+c  corsum approx +1.0 for Te --> infty
+                    corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
+                    EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
+53                CONTINUE
+                  NREARC(IRRC) = 0
+                  JEREARC(IRRC) = 0
+                  NELRRC(IRRC) = -1
+                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"  
+                  NREARC(IRRC) = 0
+                  JEREARC(IRRC) = 0
+                  NELRRC(IRRC) = -1
+                END IF
+                IATM1=IATM
+                NATPRC(IRRC)=IATM1
+                NIOPRC(IRRC)=0
+                NPLPRC(IRRC)=0
+                NMLPRC(IRRC)=0
+C
+                MODCOL(6,2,IRRC)=1
+                MODCOL(6,4,IRRC)=1
+              ENDIF
+54          CONTINUE
 C
             NPRCI(IPLS)=IDSC
           ENDIF

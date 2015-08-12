@@ -3,7 +3,7 @@ C
       SUBROUTINE EIRENE_TIMEA
 C
 C   1 ST INTERSECTION OF THE RAY X+T*VX,Y+T*VY,Z+T*VZ WITH ONE OF THE NLIM
-C   ADDITIONAL SURFACES, DEFINED BY 2.ND ORDER EQUATIONS IN INPUT BLOCK 3B.
+C   ADDITIONAL SURFACES, DEFINED BY 1.ST OR 2.ND ORDER EQUATIONS IN INPUT BLOCK 3B.
 C   IT IS ALSO CHECKED, WHETHER THIS INTERSECTION TAKES PLACE INSIDE THE
 C   SPECIFIED BOUNDARIES OF THOSE SURFACES
 C
@@ -525,7 +525,7 @@ c       if first order surface:
           IF (ABS(A2LM(J)).EQ.AT) JUMLIM(J)=2
           IF (ABS(A3LM(J)).EQ.AT) JUMLIM(J)=3
           
-c         create HNF coefficients (normalized vector and distance)
+c  create HNF coefficients (normalized vector and distance)
           XNORM=SQRT(A1LM(J)*A1LM(J)+A2LM(J)*A2LM(J)+A3LM(J)*A3LM(J))
           A0LM(J)=A0LM(J)/XNORM
           A1LM(J)=A1LM(J)/XNORM
@@ -547,7 +547,7 @@ c         create HNF coefficients (normalized vector and distance)
             CLM(J)=-A2LM(J)/A3LM(J)
         ENDIF
 97    CONTINUE
-c     calling the internal subroutine for building the octree...
+c   calling the internal subroutine for building the octree...
       CALL EIRENE_TIMEA0_BUILDOC()
 
       CALL EIRENE_LEER(2)
@@ -585,6 +585,8 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
         NNTCL=IPERID
       ENDIF
 
+
+!OS
 c     tracing output shall be generated never the less we do our octree stuff ;)
       IF (NLTRC) THEN
         CALL EIRENE_LEER(1)
@@ -594,9 +596,9 @@ c     tracing output shall be generated never the less we do our octree stuff ;)
         IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
       ENDIF
       
-!trc      if(msurf .eq. 0 .and. pladd) then
-!trc        WRITE(trcnum,*) 'RESTART', XX, YY, ZZ, VXX, VYY, VZZ
-!trc      end if
+!trc  if(msurf .eq. 0 .and. pladd) then
+!trc    WRITE(trcnum,*) 'RESTART', XX, YY, ZZ, VXX, VYY, VZZ
+!trc  end if
       
       TMIN=1.D30
       TL=1.D30
@@ -607,17 +609,17 @@ c     tracing output shall be generated never the less we do our octree stuff ;)
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB < 3"
       endif
       
-c      call timea2 for all those stuff which is no triangle or higher
-c     -> we will get a time minimum out of this, if any of these
-c     surfaces are hit.
+c   call timea2 for all those SURFACES which ARE no plane triangle 
+c   -> we will get a time minimum out of this, if any of these
+c   surfaces are hit.
       CALL EIRENE_TIMEA_CheckInter(MSURF,NCELL,NLI,NLE,NNTCL,
      .                             XX,YY,ZZ,TMT,VXX,VYY,VZZ,VV,
      .                             MASURF_S,X_S,Y_S,Z_S,SG_S,TMIN,
      .                             NLTRC,LCNDEXP_S,
      .                             NOTOCSURFS, NSURFNOT)
 
-c     if we actually found a valid intersection on second order surfs,
-c     etc, save these values for later comparison with octree surfs values
+c   if we actually found a valid intersection on second order surfs,
+c   etc, save these values for later comparison with octree surfs values
       if (masurf_s .gt. 0) then
         if (NLOCTREE .and. trcoc) then
           WRITE(iunout,*) "found intersection with surface", masurf_s

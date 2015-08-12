@@ -8,7 +8,7 @@ c
       implicit NONE
       integer, intent(in) :: icount
       integer, intent(out) :: ilast
-      real(dp), intent(in) :: VECTOR(*), TALTOT, TALAV
+      real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 
       character(len=*) :: txttl,txtsp,txtun
       

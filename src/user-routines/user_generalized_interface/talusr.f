@@ -16,7 +16,7 @@ c
       implicit NONE
       integer, intent(in) :: icount
       integer, intent(out) :: ilast
-      real(dp), intent(inout) :: vector(*), TALTOT, TALAV
+      real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
       real(dp), allocatable, save :: algv_corner(:,:), dummy(:)
       character(len=*) :: txttl,txtsp,txtun
       CHARACTER(256) :: FILENAME

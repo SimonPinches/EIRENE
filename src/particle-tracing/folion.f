@@ -29,7 +29,9 @@ C  OCT 14.:  cell based spectra scoring called only if cell based spectra are de
 c  April 2015:  call to escape at periodicidy surfaces:  with reduced velocity, lcart=f
 c               no gyro phase sampling then.
 c               also for proper printout from chctrc for trace ions.
-
+c   
+c  njump=3, for internal grid surface und timusr. reset time=0
+c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
 
 
 C  .......................................................................................
@@ -74,6 +76,15 @@ C           ITYP=1  NEXT GENERATION ATOM IATM IS GENERATED
 C           ITYP=2  NEXT GENERATION MOLECULE IMOL IS GENERATED
 C           ITYP=4  NO NEXT GENERATION PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
+c
+c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true 
+c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
+C  at 1001:   particle enters static loop
+C  at 1002:   particle leaves static loop
+c  at 101 :   full new trajectory starts here.
+c  at 104 :   an earlier track continues here. 
+c             initial position of track and cummulated integral for mfp sampling is not refreshed. 
+c             meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -126,7 +137,7 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           NRCELL_OLD,
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
-     .           EIRENE_LEARC1, IDUM, IFPB, indf
+     .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
       LOGICAL :: LCNDEXP
 
 C
@@ -159,14 +170,15 @@ C  IF NLSRFY, SURFACE INDEX MPSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFZ, SURFACE INDEX MTSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFA, SURFACE INDEX MASURF MUST BE DEFINED AT THIS POINT
 C
-C  FIND DIRECTION PARALLEL AND PERPENDICULAR TO B-FIELD, AND VELOCITY COMPONENTS
-C  I.E. CONVERT CARTESIAN VELOCITY UNIT VECTOR VELX,VELY,VELX INTO
-C       PARALLEL AND PERPENDICULAR UNIT VELOCITY COMPONENTES  VELPAR
-C
 1005  NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
       NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
       IF (LDAMCEL(NCELL)) GOTO 9912
       IF (NCELL.GT.NSBOX.OR.NCELL.LT.1) GOTO 991
+
+
+C  FIND DIRECTION PARALLEL AND PERPENDICULAR TO B-FIELD, AND VELOCITY COMPONENTS
+C  I.E. CONVERT CARTESIAN VELOCITY UNIT VECTOR VELX,VELY,VELX INTO
+C       PARALLEL AND PERPENDICULAR UNIT VELOCITY COMPONENTES  VELPAR
 C  FIND B-FIELD IN CELL NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
@@ -498,10 +510,15 @@ C  AT THIS POINT: PARTICLE INCIDENT ON SURFACE, IC_ION GT 1 NECESSARILY
 C
 C
 1002  CONTINUE
-C  NO STATIC APPROXIMATION, FOLLOW MOTION
+
+C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION, 
+C                 BUT NOW IT RETURNS TO FULL MOTION
 C
       IF (IC_ION.GT.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY LEAVES STATIC LOOP, ITYP=',ITYP
+
+C  IN CASE THAT THE PARTICLE WAS IN STATTIC LOOP AND ON A SURFACE,
+C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
       IF (IC_ION.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
 C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" ?
@@ -571,7 +588,7 @@ C**********************************************************************
       IC_ION=0
       IC_NEUT=0
 C
-C  PARTICLE IN VOLUME OR ON SURFACE BUT NOT FROM "STATIC LOOP"
+C  PARTICLE IN VOLUME OR ON SURFACE 
 C
 C  EACH TEST ION TRACK STARTS AT THIS POINT, IC_ION=0 HERE
 C
@@ -609,6 +626,10 @@ C                            SURFACES FROM THIS POINT
 C  AT THIS POINT: LCART=F
 
       NJUMP=0
+      IF (NJUMP_EMC3 == 3) THEN
+        NJUMP = 3
+        NJUMP_EMC3 = 0
+      ENDIF
       DO I=1,NIMINT
         IM=IIMINT(I)
         TIMINT(IM)=0._DP
@@ -648,7 +669,7 @@ C       NLPR= :NOT AVAILABLE FOR TEST IONS
       ENDIF
 C
 C TT: DISTANCE UNTIL NEXT TIMESTEP LIMIT IS REACHED
-C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
+C     USE VEL_GC INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
 C     LATER: VELPAR --> VEL_GC
       IF (LGTIME) THEN
         TT=(DTIMVI-TIME)*VELPAR
@@ -705,11 +726,15 @@ C     LATER: VELPAR --> VEL_GC
       ENDIF
 C
 C  SCAN OVER RADIAL CELLS
+
+C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME STEP, FP_COL OR ADD. SURF. 
 C
 210   CONTINUE
 C
+C
 C  TS:   DISTANCE TO NEXT RADIAL SURFACE OF STANDARD MESH
 C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
+C  ZT:   ACCUMULATED DISTANCE, UNTIL THIS SEGMENT
 C
 C  USE PARALLEL VELOCITY, I.E., COMPUTE PARALLEL DISTANCES IN GRID
 C  THUS ZT,TS,ZTST,ZDT1,CLPD ETC. ARE PARALLEL DISTANCES
@@ -890,9 +915,11 @@ C     IF (NLPR)    ......
       IF (ZINT1.GE.ZLOG) GO TO 220
 C
       ZINT2=ZINT1
+
+C  SET NEW ACCUMULATED FLIGHT LENGTH, TENTATIVE
       ZT=ZTST
 C
-C  RESET CLPD TO REAL PATH LENGTH OF GYRO MOTION
+C  RESET CLPD TO REAL PATH LENGTH OF FULL GYRO MOTION
 
       DO 217 ICOU=1,NCOU
         CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
@@ -925,13 +952,13 @@ CDR: Daher auch wg. x = x + dist/vel  parallele geschwindigkeiten.
 c  will fpkcol change the collision with additional surface?
 2214    CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,*104,*380)
       ELSEIF (ISRFCL.EQ.2) THEN
-        CALL EIRENE_FPKCOL(               *104,*2215,3)
+        CALL EIRENE_FPKCOL(               *104,*2215,*9991,3)
 2215    CALL EIRENE_TIMCOL(AX(2),         *104,*800)
       ELSEIF (ISRFCL.EQ.3) THEN
-        CALL EIRENE_FPKCOL(               *104,*2216,3)
+        CALL EIRENE_FPKCOL(               *104,*2216,*9991,3)
 2216    CALL EIRENE_TORCOL(               *104)
       ELSEIF (ISRFCL.EQ.4) THEN
-        CALL EIRENE_FPKCOL(               *104,*100,0)
+        CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
       ENDIF
 
       VELX=VELXS
@@ -1190,7 +1217,10 @@ CCC
 C  DELTA EVENT AT CELL BOUNDARY: STOP TEST ION, AND RESTART WITH REFRESHED E AND B FIELDS 
 
       IF (ZINT1.LT.ZLOG) THEN
+C  CELL SURFACE HAS BEEN REACHED BEFORE COLLISION EVENT
+
         IF (NINCX.NE.0) THEN
+C  IT WAS A "RADIAL" (1 ST) GRID SURFACE
           NLSRFX=.TRUE.
 C  AT THIS POINT: NRCELL IS THE NEW CELL TO BE ENTERED
 C                 FIND MRSURF: SURFACE OF CELL BOUNDARY
@@ -1209,12 +1239,15 @@ C                 BETWEEN OLD AND NEW CELL.
           ELSEIF (LEVGEO == 10) THEN
 !PB EXPLICITELY ALLOW FOR LEVGEO=10
 !PB NOTHING DONE FOR DELTA EVENT AT CELL BOUNDARY
+             NJUMP_EMC3 = 3
           ELSE
-            WRITE (iunout,*) 'DELTA EVENT AT CELL BOUNDARY NOT READY '
-            WRITE (iunout,*) 'FOR LEVGEO=10 IN SUBR. FOLION. '
+            WRITE (iunout,*) 'DELTA EVENT AT CELL BOUNDARY '
+            WRITE (iunout,*) 'FOR INVALID LEVGEO IN SUBR. FOLION. '
             CALL EIRENE_EXIT_OWN(1)
           END IF
+
         ELSEIF (NINCZ.NE.0) THEN
+C  IT WAS A "TOROIDAL" (3 RD) GRID SURFACE
           NLSRFZ=.TRUE.
           NTCELL=KUPC(1)+NINCZ
           IF (NINCZ == 1) THEN
@@ -1222,6 +1255,8 @@ C                 BETWEEN OLD AND NEW CELL.
           ELSEIF (NINCZ.EQ.-1) THEN
             MTSURF=NTCELL+1
           ENDIF
+
+C  IT WAS A "POLOIDAL" (2 ND) GRID SURFACE
         ELSEIF (NINCY.NE.0) THEN
           NLSRFY=.TRUE.
           IF (LEVGEO.EQ.1) THEN
@@ -1235,7 +1270,7 @@ C                 BETWEEN OLD AND NEW CELL.
             MPSURF=LUPC(1)
             IF (MUPC(1).EQ.1) NPCELL=NGHPLS(2,NRCELL,MPSURF)
             IF (MUPC(1).NE.1) NPCELL=NGHPLS(4,NRCELL,MPSURF)
-C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN INTO MORE GENERAL TERMS)
+C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN IN MORE GENERAL TERMS)
             IF (NPCELL.EQ.0.AND.LEVGEO.EQ.2) THEN
               WRITE (iunout,*) 'should not be here '
               MPSURF=NP2ND
@@ -1251,20 +1286,31 @@ C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN INTO MORE GENERAL TERMS)
               IPOLG=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'FOLION neu   ')
             ENDIF
           ENDIF
-        ELSE
+
+        ELSE   !NONE OF THE ninc_x,y,z flags are set, 
+cdr  all the nincx,...y,...z=0. This can happen only in levgeo=10,
+cdr  for an internal surface which is only known to external geometry block but not to eirene 
+cdr  try to tell external code: particle on surface, but it is an old particle, which continues.
           NLSRFX=.TRUE.
-          IF (LEVGEO /= 10) GOTO 994
+          IF (LEVGEO .NE. 10) GOTO 994
+          NJUMP_EMC3 = 3
         ENDIF
+
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,19)
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
         IF (LDAMCEL(NCELL)) GOTO 9912
-C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND
+C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
 
-        CALL EIRENE_FPKCOL(*104,*229,3)
+        CALL EIRENE_FPKCOL(*104,*229,*9991,3)
 
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
-229     CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+229     CONTINUE
+C STORE NEW FULL VELOCITY
+        VELS = VEL
+        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
+!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
+!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
 
         ICO = 0
         GOTO 1004
@@ -1323,18 +1369,31 @@ C   EXCEPTION: PERIODICITY SURFACE. THEN: NO NEED TO CONVERT TO
 C              FULL CARTESIAN VELOCITY COMPONENTS
       IF (ILIIN(MSURF).GE.4) THEN
         PR=1.0
-        GOTO 385
+        ICO=0
+        IF (.NOT.LGPART) THEN
+          WRITE (IUNOUT,*) 'ERROR AT PERIODICITY SURFACE, LGPART=FALSE'
+          RETURN
+        ENDIF
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+        GOTO 1004
       ENDIF
 C
       IF (.NOT.LCART) THEN
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
+C  ???
         IF (LDAMCEL(NCELL)) GOTO 9912
 !pb for the time being
+cdr:  try to distuingish: transparent or not. use arrays "transp(ispz...) dafuer
+cdr:  indf=1: transparent, indf=2: non-transparent
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
+cdr  for solid surface: produce a full cartesian velocity vector, lcart=.true.  
         indf=2
+cdr  for transparent surface: stick to reduced (GC) velocity, lcart=false
+cdr:  here: if any of "transp" flags ne. zero ???
         if (abs(transp(ispz,1,msurf))+abs(transp(ispz,2,msurf)) > 0)
      .     indf = 1
+c
         ICOUN=0
         DO
 !pb       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
@@ -1365,7 +1424,7 @@ C
 C  FOR NONTRANSPARENT SURFACES:
 C  ACCELERATION IN SHEATH IS DONE IN SUBR. ESCAPE
 C
-385   CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+      CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
       RETURN
 C
 C   100: START NEW ION TRACK
@@ -1478,7 +1537,7 @@ C
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       WEIGHT=0.
-      CALL EIRENE_LEER(1)
+9991  CALL EIRENE_LEER(1)
       RETURN
 
       CONTAINS
@@ -1558,14 +1617,17 @@ C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
  
       SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)                   
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
+C  IF (IND.EQ.0) RETURN WITH NEW B-FIELD
 C
 C  IF (IND.GE.1) ADDITIONALLY ALSO PROVIDE REDUCED (GC) VELOCITY VECTOR (SPEED UNIT VECTOR)
-C    BUT RETAIN MODULI: V_PARALLEL, V_PERP
+C    BUT RETAIN MODULI: V_PARALLEL, V_PERP.
+C    NEW REDUCED SPEED VECTOR:  LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),  
 C    CHECKS DONE THAT VELPER AND VERPAR ARE PRESERVED, CHECKS REMOVED.
 
 C  IF (IND.GE.2) ADDITIONALLY ALSO PROVIDE NEW CARTESIAN VELOCITY
 C  BY SAMPLING THE GYRO PHASE, AND A COORDINATE TRANSFORMATION IN
 C  VEL-SPACE.
+C  NEW CARTESIAN VELOCITY VECTOR: LCART=.TRUE., VELX,VELZ,VELZ, VEL
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -1581,7 +1643,7 @@ C
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
  
-      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF)
+      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF,.TRUE.)
       BVEC = (/ BBX, BBY, BBZ /)
 
       IF (IND.LT.1) RETURN

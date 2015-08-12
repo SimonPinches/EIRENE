@@ -28,8 +28,14 @@ c
 !pb            'CONSTANT' sets constant plasma profiles
 !pb            'MULTIPLY' creates a new bulkdensity by multiplying an
 !pb            existing plasma density with a factor specified in input block 5
+
 !pb  11.01.10: interpolation of plasma profiles to cell vertices added 
- 
+
+cdr:  may 2015
+cdr:  output tallies for new background: in case of multiple strata: how to get sum over strata?
+cdr:  do we need fort.10 ?
+cdr:  edrift, vdion:  only for ipls=1 available?
+cdr:  warnings in case of missing edrift removed: have been too many (one per cell)
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
 
@@ -303,7 +309,10 @@ cdr      write (6,*) ' cputime for log values ',tpb2-tpb1
 cdr      tpb1 = tpb2
  
 C
-C   SPECIAL DENSITY MODELS
+C   SPECIAL DENSITY MODELS:
+C   SAHA  (NOT READY)
+C   CORONA
+C   COLRAD
 C
       ALLOCATE (BASE_DENSITY(NRAD))
       ALLOCATE (BASE_TEMP(NRAD))
@@ -479,7 +488,7 @@ c  only temperature dependence in reduced population coefficient
  
               END DO
               IF (.NOT.FOUND) DEALLOCATE(SPEC)
-            CASE (12)
+            CASE (12)!  H.12 format, reduced population coefficient
 c  temperature and density dependence in reduced population coefficient
               COEF2D(0:8,0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1:9)
               DO IR=1,NSURF
@@ -569,9 +578,9 @@ c  temperature and density dependence in reduced population coefficient
 !  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
  
-cdr      tpb2 = EIRENE_second_own()
-cdr      write (6,*) ' cputime for colrad ',ipls,tpb2-tpb1
-cdr      tpb1 = tpb2
+cdr   tpb2 = EIRENE_second_own()
+cdr   write (6,*) ' cputime for colrad ',ipls,tpb2-tpb1
+cdr   tpb1 = tpb2
  
       END DO
       IF (ALLOCATED(SUMNI)) THEN
@@ -583,23 +592,26 @@ cdr      tpb1 = tpb2
  
       NBACK_SPEC = IBS
  
-cdr      tpb2 = EIRENE_second_own()
-cdr      write (6,*) ' cputime for density models ',tpb2-tpb1
-cdr      tpb1 = tpb2
+cdr   tpb2 = EIRENE_second_own()
+cdr   write (6,*) ' cputime for density models ',tpb2-tpb1
+cdr   tpb1 = tpb2
  
 C
-C  special density models done
+C  SPECIAL PLASMA BACKGROUND MODELS DONE
+C
+C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
  
 C  SET DRIFT ENERGY (EV)
       DO J=1,NSBOX
         DO IPLS=1,NPLSI
           IPLSV=MPLSV(IPLS)
           IF (NLDRFT) THEN
+C
             IF (INDPRO(4) == 8) THEN
               IF(IPLS.EQ.1) THEN
                 EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
               ELSE
-                WRITE(iunout,*)'WARNING! IPLS>1 NO DRIFT!'
+C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
                 EDRIFT(IPLS,J)=0.D0
               END IF
             ELSE
@@ -631,6 +643,8 @@ C  CHECK ORIENTATION
            BYPERP(J) = -BYPERP(J)
         END IF
       END DO
+
+
  
       DO 5103 J=1,NSBOX
 C  SET 'VACUUM REGION FLAGS'
@@ -646,8 +660,21 @@ C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
           LGVAC(J,0)   =LGVAC(J,0).AND.LGVAC(J,IPLS)
 5106    CONTINUE
 5103  CONTINUE
+
+      IF (LEVGEO.EQ.3) THEN
+        DO 5161 I=1,NPPLG-1
+          DO 5162 IP=NPOINT(2,I),NPOINT(1,I+1)-1
+            IPM=IP-1
+            DO 5163 IPLS=0,NPLS+1
+              DO 5163 IR=1,NR1STM
+                IN=IR+IPM*NR1ST
+                LGVAC(IN,IPLS)=.TRUE.
+5163        CONTINUE
+5162      CONTINUE
+5161    CONTINUE
+      ENDIF
 C
-      DO 5105 IPLS=1,NPLSI
+      DO 5205 IPLS=1,NPLSI
 C  FACTOR FOR MOST PROBABLE SPEED
         FCT0=1./RMASSP(IPLS)*2.*CVEL2A*CVEL2A
 C  FACTOR FOR MEAN SPEED
@@ -659,16 +686,15 @@ C  FACTOR FOR ROOT MEAN SQUARE SPEED
         IPLSV=MPLSV(IPLS)
         BVIN(IPLSV,:)=0._DP
         PARMOM(IPLS,:)=0._DP
-        DO 5105 J=1,NSBOX
+        DO 5205 J=1,NSBOX
           ZTII=MAX(TVAC,MIN(TIIN(IPLSTI,J),1.E10_DP))
           TIINL(IPLSTI,J)=LOG(ZTII)
-!pb          IF (NLDRFT) THEN
-            BVIN(IPLSV,J)=BXIN(J)*VXIN(IPLSV,J)+
-     .                    BYIN(J)*VYIN(IPLSV,J)+
-     .                    BZIN(J)*VZIN(IPLSV,J)
-            PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
-     .                     AMUA*RMASSP(IPLS)
-!pb          ENDIF
+          BVIN(IPLSV,J)=BXIN(J)*VXIN(IPLSV,J)+
+     .                  BYIN(J)*VYIN(IPLSV,J)+
+     .                  BZIN(J)*VZIN(IPLSV,J)
+          PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
+     .                   AMUA*RMASSP(IPLS)
+
 C
 C  ZT1: FOR "EFFECTIVE" PLASMA PARTICLE VELOCITY IN CROSS SECTIONS
 C       FOR HEAVY PARTICLE INTERACTIONS
@@ -684,20 +710,9 @@ C
 C
           ZTNI=MAX(DVAC,MIN(DIIN(IPLS,J),1.E20_DP))
           DIINL(IPLS,J)=LOG(ZTNI)
-5105  CONTINUE
+5205  CONTINUE
 C
-      IF (LEVGEO.EQ.3) THEN
-        DO 5161 I=1,NPPLG-1
-          DO 5162 IP=NPOINT(2,I),NPOINT(1,I+1)-1
-            IPM=IP-1
-            DO 5163 IPLS=0,NPLS+1
-              DO 5163 IR=1,NR1STM
-                IN=IR+IPM*NR1ST
-                LGVAC(IN,IPLS)=.TRUE.
-5163        CONTINUE
-5162      CONTINUE
-5161    CONTINUE
-      ENDIF
+
  
 !     INTERPOLATE PLASMA PROFILES TO CELL VERTICES
 
@@ -733,15 +748,6 @@ C
         call eirene_cell_to_corner(BYIN,BYINCORNER)
         call eirene_cell_to_corner(BZIN,BZINCORNER)
         call eirene_cell_to_corner(BFIN,BFINCORNER)
-
-!pb taken out for comparison
-!        do i=1,ncorner
-!          bnormi = 1._dp / sqrt(bxincorner(i)**2 + byincorner(i)**2 +
-!     .                          bzincorner(i)**2)
-!          bxincorner(i) = bxincorner(i) * bnormi 
-!          byincorner(i) = byincorner(i) * bnormi 
-!          bzincorner(i) = bzincorner(i) * bnormi 
-!        end do
       END IF
 
       IF (LESMO) THEN
@@ -757,9 +763,9 @@ C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
  
-cdr      tpb2 = EIRENE_second_own()
-cdr      write (6,*) ' cputime for edrift, b_perp, etc. ',tpb2-tpb1
-cdr      tpb1 = tpb2
+cdr   tpb2 = EIRENE_second_own()
+cdr   write (6,*) ' cputime for edrift, b_perp, etc. ',tpb2-tpb1
+cdr   tpb1 = tpb2
  
       IF ((NFILEL >=1) .AND. (NFILEL <=5)) THEN
          NFILEL=3
@@ -770,9 +776,9 @@ cdr      tpb1 = tpb2
          CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
       END IF
  
-cdr      tpb2 = EIRENE_second_own()
-cdr      write (6,*) ' cputime for wrplam ',tpb2-tpb1
-cdr      tpb1 = tpb2
+cdr   tpb2 = EIRENE_second_own()
+cdr   write (6,*) ' cputime for wrplam ',tpb2-tpb1
+cdr   tpb1 = tpb2
  
  
       RETURN

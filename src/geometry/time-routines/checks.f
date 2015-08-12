@@ -390,7 +390,7 @@ C  NO
         G=SQRT(G)
         TMA=F+G
         TMI=F-G
-!        IF (NLTRC) WRITE (iunout,*) 'TIMEA, J,TMI,TMA ',J,TMI,TMA
+!       IF (NLTRC) WRITE (iunout,*) 'TIMEA, J,TMI,TMA ',J,TMI,TMA
         IF (TMA.LE.EPS12) GOTO 100
         IF (TMI.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
@@ -553,8 +553,8 @@ C
 C   A1*TMX+A2=0
 C
 40      TMA=-A2/A1
-!        IF (NLTRC)
-!     .    WRITE (iunout,*) 'TIMEA AT 40, J,TMA,A1,A2 ',J,TMA,A1,A2
+!       IF (NLTRC)
+!    .    WRITE (iunout,*) 'TIMEA AT 40, J,TMA,A1,A2 ',J,TMA,A1,A2
         IF (TMA.LE.EPS12) GOTO 100
         IF (TMA.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
@@ -570,8 +570,8 @@ C   A2*TMX+A3=0
 C
 50      IF (A2.EQ.0.) GOTO 100
         TMA=-A3/A2
-!        IF (NLTRC) WRITE (iunout,*) 'TIMEA AT 50, J,TMA,A2,A3 ',
-!     .                                            J,TMA,A2,A3
+!       IF (NLTRC) WRITE (iunout,*) 'TIMEA AT 50, J,TMA,A2,A3 ',
+!    .                                            J,TMA,A2,A3
         IF (TMA.LE.EPS12) GOTO 100
         IF (TMA.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
@@ -666,10 +666,10 @@ C
         VZJ=VZ
         MASURF=J
         SG=SIGN(1._DP,WR)
-!        IF (NLTRC) THEN
-!          WRITE (iunout,*) 'TIMEA, TL,XR,YR,ZR,NNR,MASURF,SG '
-!          WRITE (iunout,*)         TL,XR,YR,ZR,NNR,MASURF,SG
-!        ENDIF
+!       IF (NLTRC) THEN
+!         WRITE (iunout,*) 'TIMEA, TL,XR,YR,ZR,NNR,MASURF,SG '
+!         WRITE (iunout,*)         TL,XR,YR,ZR,NNR,MASURF,SG
+!       ENDIF
 C
 C  LOOP OVER SURFACE-INDEX FINISHED
 C
@@ -685,7 +685,7 @@ C  IF NOT TRANSPARENT, RETURN
 C  IF TRANSPARENT BUT WRONG SIDE, RETURN
       IF (ILSIDE(MASURF)*SG.LT.0) RETURN
 C
-!      IF (NLTRC) WRITE (iunout,*) 'NOT RETURNED FROM TIMEA, OTHER LOOP '
+!     IF (NLTRC) WRITE (iunout,*) 'NOT RETURNED FROM TIMEA, OTHER LOOP '
 C  ILIIN=0, CONTINUE WITH ANOTHER LOOP IN SUBR. TIMEA
 C  E.G.: THIS SURFACE MASURF IS A HOLE IN ANOTHER SURFACE.
 C  SET STARTING POINT OF RAY TO THIS INTERSECTION AND REPEAT

@@ -10,9 +10,6 @@ C
       IMPLICIT NONE
       LOGICAL, INTENT(INOUT) :: PLABLE
       INTEGER, INTENT(IN) :: J
-      INTEGER :: IB, MERK, IER
-      REAL(DP) :: XS, YS, ZX0, ZY0, ZZ0, CX, CY, CZ, RZYLB, B0B, B1B,
-     .          B2B, B3B, F0B, F1B, F2B, F3B, X0, Y0, B0, B1, B2, Z1, Z2
-      INTEGER :: IN
+ 
       RETURN
       END
