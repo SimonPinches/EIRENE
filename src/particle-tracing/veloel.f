@@ -124,7 +124,7 @@ C
           endif
         enddo
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'FIRST CALL EIRENE_TO VELOEL FOR IREL= ',IREL
+        WRITE (iunout,*) 'FIRST CALL TO VELOEL FOR IREL= ',IREL
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'SGEVMX IN VELOEL,JJ ',SGEVMX(IREL),JJ
         IF (JJ.NE.1.AND.JJ.NE.1000) THEN
