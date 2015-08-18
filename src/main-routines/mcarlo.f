@@ -368,12 +368,25 @@ C
 !pb      IF ((NSTEFF > 0) .AND. (NPRS.GT.nsteff)) THEN
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
-!pb021213        call EIRENE_broad_pedist(xtim,npts,nminpts,trcdbgmpi)
         call EIRENE_broad_pedist(xtim)
         if (.not.nlident) then
           do istra=1,nstrai
             ninitl(istra)=ninitl(istra)+my_pe*10000
           enddo
+        ELSE
+          CALL EIRENE_LEER(1)
+          WRITE (IUNOUT,*) '......................................... '
+          WRITE (IUNOUT,*) 'NLIDENT: '
+          WRITE (IUNOUT,*) 'DEBUG MODUS FOR PARALLELIZATION IS ACTIVE'
+          WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
+          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED. '
+          WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
+          WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL '
+          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST  '
+          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),' 
+          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE' 
+          WRITE (IUNOUT,*) '......................................... '
+          CALL EIRENE_LEER(1)         
         endif
         NPRNLS=NPRNLI
       ENDIF
@@ -401,34 +414,40 @@ C
         timan=EIRENE_second_own()
 
         ISTRA=ISTR
+        
+C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
+C  IN TIME DEP. MODE
+        IF (NPTST.LT.0.OR.NLMOVIE) THEN
+C  revert sequence of strata, so that census stratum is dealt with first
+c  to ensure: ALL particles from census are re-launched, one by one (not: by sampling)
+          ISTRA=NSTRAI-ISTR+1
+          IF (ISTRA.EQ.NSTRAI-1) THEN
+C  TOTAL STORAGE STILL AVAILABLE ON NEW CENSUS
+C  AFTER ONE TO ONE RESTART FROM OLD CENSUS IS COMPLETED
+            NPTTOT=NPRNLI-IPRNLI
+C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
+            CALL EIRENE_LEER(2)
+            WRITE (iunout,*)
+     .        'REDEFINE NPTS FOR OF ONE-BY-ONE RELAUNCH FROM CENSUS'
+            ISUM=0
+            DO IS=1,NSTRAI-1
+              XFACT=XTIM(IS)/XTIM(0)  !PB  XTIM(IS): CPU TIME ASSIGNED TO STRATUM IS
+              XPRNLI=NPTTOT*XFACT+0.5
+              NPTS(IS)=XPRNLI
+              ISUM=ISUM+NPTS(IS)
+              WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
+            ENDDO
+          ENDIF
+        ENDIF
+
+C  MOVIE OPTION (NLMOVIE):  DONE, 
+C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai comes first!
+C                    one by one re-launch of ALL particles from census
+c    if not nlmovie: census stratum istra=nstrai comes last.
+
         IF (.NOT.NLSRON(ISTRA)) CYCLE
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
 
-C  SPECIAL TREATMENT FOR MOVIE OPTION:
-          IF (NLMOVIE) THEN
-!pb            ISTRA=NSTRAI-ISTR+1
-!pb            IF (ISTRA.EQ.NSTRAI-1) THEN
-            IF (ISTR.EQ.1) THEN
-C  TOTAL NUMBER OF PARTICLES TO BE LAUNCHED FROM ALL NON-CENSUS STRATA
-              NPTTOT=NPRNLI-NPANU
-C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
-              CALL EIRENE_LEER(2)
-              WRITE (iunout,*)
-     .          'REDEFINE NPTS(ISTRA) BECAUSE OF NLMOVIE OPTION'
-              ISUM=0
-              DO IS=1,NSTRAI-1
-CVKMPI                XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
-!pb                XFACT=XTIM(ISTRA)/(XTIM(0)-XTIM(NSTRA))  !VKMPI
-                XFACT=XTIM(IS)/XTIM(0)  !PB
-                XPRNLI=NPTTOT*XFACT+0.5
-                NPTS(IS)=XPRNLI
-                ISUM=ISUM+NPTS(IS)
-                WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
-              ENDDO
-            ENDIF
-          ENDIF
-
-C  MOVIE OPTION (NLMOVIE):  DONE
 
           CALL EIRENE_LEER(2)
           IF (NPTS(ISTRA).GT.0) THEN
