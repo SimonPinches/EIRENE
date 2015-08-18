@@ -77,10 +77,7 @@ C MPARTC PARTICLE COORDINATES, INTEGER, (E.G.: SPLITTING)
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
      L NLTRC,  NLSTOR, NLTRJ
  
-csw 25sep08
-      REAL(DP), PUBLIC, SAVE ::
-     R ROTSAV_TORCOL
- 
+
  
       CONTAINS
  
@@ -237,8 +234,7 @@ csw 25sep08
       DE0_RAYL = 0._DP
       DE0_RAYR = 0._DP
       
-      ROTSAV_TORCOL  = 0._DP
-      
+            
       RETURN
       END SUBROUTINE EIRENE_INIT_COMPRT
  
