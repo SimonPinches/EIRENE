@@ -1,4 +1,9 @@
       subroutine EIRENE_collect_census
+cdr:  Aug. 2015 comments added
+c
+c this routine is called for each processer my_pe
+c it first defines the census array rpartw(i) and total flux peflux, for each processor.
+c it then tries to combine these onto a single new census.
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -23,16 +28,14 @@
       integer :: icopro(0:nprs), idistrib(0:nprs), icosend(0:nprs)
  
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
-!pb   CALL MPI_ALLREDUCE (FLXFAC,FLXFAC,NSTRAI+1,MPI_REAL8,
-!pb  .                    MPI_SUM,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FLXFAC,NSTRAI+1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
  
       RPARTW(0)=0.0
  
-! each processor prepares his census for transfer to processor 0
+!  each processor prepares his census for transfer to processor 0
  
-!pb      write (iunout,*) ' my_pe, iprnli ',my_pe, iprnli
-!pb      write (iunout,*) ' i,x0,y0,z0,weight '
+!  processor my_pe has accumulated iprnli scores on census
+
       PEFLUX=0._DP
       DO I=1,IPRNLI
         ISTR=IPART(8,I)
@@ -53,15 +56,16 @@
         ENDIF
         RPARTW(I)=RPARTW(I-1)+WEIGHT*FLXFAC(ISTR)
         PEFLUX = PEFLUX + ADD
-!pb        write (iunout,'(i6,4es12.4)') i,rpart(1:3,i),weight
       END DO
+
+c  peflux is the total, fully scaled census "atomic" flux accumulated on my_pe
+c  rpartw(i) is the cummulative, scaled, flux distribution on census accumulated on my_pe 
+      write (iunout,*) ' collect census, from my_pe            ',my_pe
+      write (iunout,*) ' scores on census from my_pe: iprnli   ',iprnli
+      write (iunout,*) ' atomic flux on census from my_pe (Amp)',peflux
  
-      write (iunout,*) ' my_pe ',my_pe
-      write (iunout,*) ' flux on census ',peflux
- 
-!      write (iunout,*) 'rpartw'
-!      write (iunout,'(6es12.4)') rpartw(1:iprnli)
-! transfer maximum rpartw to processor 0
+
+! transfer maximum possible rpartw to processor 0
  
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
  
@@ -70,20 +74,25 @@
  
       call mpi_allreduce(peflux,totflux,1,MPI_REAL8,
      .                   MPI_SUM,MPI_COMM_WORLD,ier)
- 
-      write (iunout,*) ' itotal, totflux', itotal, totflux
+c
+c  cummulated scores, and atomic flux 
+      write (iunout,*) ' tentative: itotal, totflux', itotal, totflux
+
       if (itotal <= nprnl) then
+! THERE IS ENOUGH STORAGE for all scores from all processors.
+!                          send all particles to processor 0
+ 
  
         allocate (rbuf(size(rpart,1),size(rpart,2)))
-        allocate (ibuf(size(ipart,1),size(rpart,2)))
+        allocate (ibuf(size(ipart,1),size(ipart,2)))       
         rbuf = 0._dp
         ibuf = 0
          
         call mpi_gather(iprnli,1,MPI_INTEGER,
-     .                  icopro,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+     .                  icopro,1,MPI_INTEGER,0,
+     .                  MPI_COMM_WORLD,ier)
  
-! send all particles to processor 0
- 
+
         if (my_pe == 0) then
           icosend = icopro*npartt
           idistrib(0) = 0
@@ -113,34 +122,39 @@
         end if        
   
         iprnli = itotal
-        write (iunout,*) 'total flux on census ', totflux
+        write (iunout,*) 'total no. of scores on census ', itotal
+        write (iunout,*) 'total atomic flux on census   ', totflux
  
         deallocate (rbuf)
         deallocate (ibuf)
 
-      else
+! THERE IS NOT ENOUGH STORAGE for all scores from all processors.
+
+      else  ! here: itotal > nprnl:  carry out some condensation: 
+!                                    sample exactly nprnl scores from the full set of itotal scores
  
         itotal = nprnl
  
         allocate (rpselect(-1:nprs))
         if (my_pe == 0) then
           rpselect(-1) = 0._dp
-          rpselect(0) = RPARTW(iprnli)
+          rpselect(0) = RPARTW(iprnli)  !cdr  start with my_pe=0 
         end if
  
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
         call mpi_gather(rpartw(iprnli),1,MPI_REAL8,
-     .                rpselect(0:),1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+     .                    rpselect(0:),1,MPI_REAL8,0,
+     .                    MPI_COMM_WORLD,ier)
  
 !pb        write (iunout,*) ' rpselect before summation '
 !pb        write (iunout,'(i6,es12.4)') (ipe,rpselect(ipe),ipe=-1,nprs)
  
         if (my_pe == 0) then
           do ipe=1, nprs-1
-            rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
+            rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe) !cdr rpselect(0) war schon gesetzt.
           end do
  
-!pb          write (iunout,*) 'total flux on census ', totflux
+!pb          write (iunout,*) 'total cummulated flux on census ', totflux
 !pb          write (iunout,*) 'rpselect '
 !pb          write (iunout,'(i6,es12.4)') (ipe,rpselect(ipe),ipe=-1,nprs-1)
  
@@ -150,7 +164,8 @@
           allocate (iranpro(nprnl))
           icopro = 0
  
-!pb          write (iunout,*) ' randomly chosen particles '
+!  first step : find processor iu, from which to sample a census score
+!  second step:  after that sample from that processor iu
           do i = 1, nprnl
             ra = ranf_eirene() * rpselect(nprs-1)
  
@@ -160,7 +175,7 @@
             if ( ra <= rpselect(0) ) then
               iu = 0
             else
-c  binary search
+c  binary search amongst processors
               DO WHILE (IU-IL.gt.1)
                 IM=(IU+IL)*0.5
                 IF (RA.GE.rpselect(IM)) THEN
@@ -174,8 +189,8 @@ c  binary search
             icopro(iu) = icopro(iu) + 1
             iranpro(i) = iu
             rand(i) = ra - rpselect(iu-1)
- 
-!pb            write (iunout,*) i, ra, iu, rand(i)
+c  processor iu identified, random number rand(i) set for sampling from census
+c                           restricted to this processor 
           end do
  
 ! setup displacements for distribution of random numbers
@@ -198,30 +213,33 @@ c  binary search
             idistrib(ipe) = idistrib(ipe-1) + icopro(ipe-1)
           end do
  
-        write (iunout,*) 'no of particles per processor '
+        write (iunout,*) 'number of particles per processor '
         write (iunout,'(10i6)') (icopro(ipe),ipe=0,nprs)
  
         end if
  
-! broadcast numbers of needed particles per processor
+! broadcast numbers of required particles per processor
 
        	if (.not.allocated(rdistrib)) allocate(rdistrib(nprnl))
  
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
         call mpi_scatter(icopro ,1,MPI_INTEGER,
-     .                   ncoreal,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+     .                   ncoreal,1,MPI_INTEGER,0,
+     .                   MPI_COMM_WORLD,ier)
  
-! broadcast random numbers for each processor
+! broadcast random numbers (position) for each processor
         allocate(rscat(ncoreal))
         call mpi_scatterv(rdistrib,icopro,idistrib,MPI_REAL8,
-     .                    rscat,ncoreal,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+     .                       rscat,ncoreal,        MPI_REAL8,0,
+     .                       MPI_COMM_WORLD,ier)
  
  
 ! on each processor look for the indices of the particles to be
-! put into the global census array
+! put into the global census arrays rpartc,ipartc. 
+! Sampling with replacement, fill rpartc,ipartc per processor, 
+! then gather theses into one single array on my_pe=0
  
-!pb        write (iunout,*) ' ncoreal ',ncoreal
-!pb        write (iunout,*) ' particles selected '
+
         sumrpw = 0._dp
         do i = 1, ncoreal
  
@@ -259,8 +277,9 @@ c  binary search
              IION=ISPEZI(IPARTC(9,I),3)
              ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
           ENDIF
+c   accumulated atomic flux from current processor
           sumrpw = sumrpw + add
-!pb          write (iunout,'(i6,4es12.4)') i,rpart(1:3,i),weight
+
  
 !          write (iunout,*) i, ra, iu
 !          write (iunout,'(15i6)') ipartc(:,i)

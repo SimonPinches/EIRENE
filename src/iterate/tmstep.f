@@ -197,6 +197,8 @@ C
       WRITE (IUNOUT,*) '"ATOMIC" FLUX AT CENSUS (AMP):'
       CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
       CALL EIRENE_MASR1('+-%     ',SGMREL)
+      WRITE (IUNOUT,*) '...............................................'
+      CALL EIRENE_LEER(2)
 C
       RETURN
       END

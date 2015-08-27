@@ -2480,7 +2480,8 @@ C  AMPTS: (option added 2014) multiplier for max. allowed cpu time NTCPU, and fo
       END IF
 C
       DO 712 ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA).EQ.6) GOTO 712
+        IF (INDSRC(ISTRA).EQ.6) GOTO 712  ! SKIP READING INPUT FOR THIS STRATUM.
+
         I=ISTRA
         IF (IREAD.EQ.0) THEN
           READ (IUNIN,'(A72)') TXTSOU(ISTRA)
@@ -3289,13 +3290,26 @@ C
 C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
+        IF (NTIME.EQ.0) NTIME=1
         WRITE (iunout,*) '        NPRNLI= ',NPRNLI,
      .                   ' (MODIFIED DUE TO NLERG)'
       ELSE
         WRITE (iunout,*) '        NPRNLI= ',NPRNLI
       ENDIF
 
-      IF (NPRNLI.LE.0) GOTO 1350
+      IF (NPRNLI.LE.0.OR.NTIME.EQ.0) THEN
+C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
+        IF (NPRNLI.GT.0) THEN
+          WRITE (IUNOUT,*) 'TIME DEP. MODE TURNED OFF, BECAUSE NTIME=0'
+          NPRNLI=0
+        ENDIF
+        IF (NTIME.GT.0) THEN
+          WRITE (IUNOUT,*) 'TIME DEP. MODE TURNED OFF, BECAUSE NPRNLI=0'
+          NTIME=0
+        ENDIF
+        GOTO 1350
+      ENDIF
+
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:1).EQ.'*') THEN
