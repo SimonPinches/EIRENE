@@ -3,6 +3,10 @@
       use EIRMOD_parmmod
       use EIRMOD_cinit
       use EIRMOD_comprt, only: iunout
+      use EIRMOD_cpes, only: MY_PE
+#ifdef USE_MPI
+      use mpi
+#endif
       implicit none
 
       private
@@ -14,56 +18,63 @@
       real(dp), save, dimension(9, 16) :: graphite
       real(dp), save, dimension(9, 16) :: mo
       real(dp), external :: ranf_eirene
-
+      integer ::  ierr
       contains
 
       subroutine EIRENE_init_refl_hlm()
       integer :: i, ifile
+      if (my_pe==0) then
 ! Fehler abfragen...
 !pb      open(unit = 23, file = "graphite_ext.dat")
-      DO IFILE=1, NDBNAMES
-        IF (INDEX(DBHANDLE(IFILE),'gr_ext') /= 0) EXIT
-      END DO
-
-      IF (IFILE > NDBNAMES) THEN
-          WRITE (IUNOUT,*)
+        DO IFILE=1, NDBNAMES
+          IF (INDEX(DBHANDLE(IFILE),'gr_ext') /= 0) EXIT
+        END DO
+ 
+        IF (IFILE > NDBNAMES) THEN
+          WRITE (IUNOUT,*) 
      .      ' NO DATABASE NAME FOR graphite.ext.dat DEFINED'
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
-
-      OPEN (UNIT=23,FILE=DBFNAME(IFILE))
-
-      do i = 1, 9
-        read(unit = 23, fmt = *)
+          WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
+          CALL EIRENE_EXIT_OWN(1)
+        END IF
+ 
+        OPEN (UNIT=23,FILE=DBFNAME(IFILE))
+ 
+        do i = 1, 9
+          read(unit = 23, fmt = *)
      .     graphite(i, 1),graphite(i, 2),graphite(i, 3),graphite(i, 4),
      .     graphite(i, 5),graphite(i, 6),graphite(i, 7),graphite(i, 8),
      .     graphite(i, 9),graphite(i,10),graphite(i,11),graphite(i,12),
      .     graphite(i,13),graphite(i,14),graphite(i,15),graphite(i,16)
-      end do
-      close(unit = 23)
-
+        end do
+        close(unit = 23)
+ 
 !pb      open(unit = 23, file = "mo_ext.dat")
-      DO IFILE=1, NDBNAMES
-        IF (INDEX(DBHANDLE(IFILE),'mo_ext') /= 0) EXIT
-      END DO
-
-      IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR mo.ext.dat DEFINED'
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
-
-      OPEN (UNIT=23,FILE=DBFNAME(IFILE))
-      do i = 1, 9
-        read(unit = 23, fmt = *)
+        DO IFILE=1, NDBNAMES
+          IF (INDEX(DBHANDLE(IFILE),'mo_ext') /= 0) EXIT
+        END DO
+ 
+        IF (IFILE > NDBNAMES) THEN
+          WRITE (IUNOUT,*) ' NO DATABASE NAME FOR mo.ext.dat DEFINED'
+          WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
+          CALL EIRENE_EXIT_OWN(1)
+        END IF
+ 
+        OPEN (UNIT=23,FILE=DBFNAME(IFILE))
+        do i = 1, 9
+          read(unit = 23, fmt = *)
      .     mo(i, 1),mo(i, 2),mo(i, 3),mo(i, 4),mo(i, 5),mo(i, 6),
      .     mo(i, 7),mo(i, 8),mo(i, 9),mo(i,10),mo(i,11),mo(i,12),
      .     mo(i,13),mo(i,14),mo(i,15),mo(i,16)
-      end do
-      close(unit = 23)
-
-
+        end do
+        close(unit = 23)
+      endif
+#ifdef USE_MPI
+      call mpi_bcast(graphite, size(graphite), MPI_REAL8, 0, 
+     &               MPI_COMM_WORLD, ierr)
+      call mpi_bcast(mo, size(mo), MPI_REAL8, 0,
+     &               MPI_COMM_WORLD, ierr)
+#endif
+ 
       end subroutine EIRENE_init_refl_hlm
 
       subroutine EIRENE_interpolate(theta_i, lambda_in, mat, theta_0,
