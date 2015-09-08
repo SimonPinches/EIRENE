@@ -933,7 +933,8 @@ csw 14apr2011
  
         IF (MY_PE > 0) THEN
 csw
-          if(.not.allocated(tdmpar)) then
+!pb          if(.not.allocated(tdmpar)) then
+          if(.not.associated(tdmpar(ipls)%tdm)) then
 csw
             ALLOCATE (TDMPAR(IPLS)%TDM)
             ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
