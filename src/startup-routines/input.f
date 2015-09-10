@@ -2872,7 +2872,8 @@ cdr  better: first discriminate by isrfcll,  then, for each value of isrfcll: do
 c   isrcfll=0 : surface averaged tally
 c   isrfcll=1 : volume averaged tally, integrated over all directions
 c   isrfcll=2 : volume averaged tally, along a specific direction
-c  it seems: furace averages directional tallies: not yet forseen
+c  it seems: surface averaged directional tallies: not yet forseen
+c  one may try to score coefficients of orthogonal angular expansion, per energy bin.
 
           IF (ISPSRF > 0) THEN
             IF ((ISRFCLL == 0) .AND. (ISPSRF > NLIMI)) THEN
@@ -2980,12 +2981,12 @@ c  standard deviation of spectra tallies
             ALLOCATE(SSPEC)
             ALLOCATE(SSPEC%SPC(0:NSPS+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
-!            IF (NSIGI_SPC > 0) THEN
+!           IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPS+1))
               ALLOCATE(SSPEC%SGM(0:NSPS+1))
               ALLOCATE(SSPEC%STV(0:NSPS+1))
               ALLOCATE(SSPEC%GG(0:NSPS+1))
-!            END IF
+!           END IF
             SSPEC = ESPEC
             SMESTL(J)%PSPC => SSPEC
           END IF

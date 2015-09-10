@@ -35,12 +35,13 @@ C
  
       REAL(DP), INTENT(IN) :: EBULK, FACTKK
       INTEGER, INTENT(IN) :: IREL, ISP, IPL, ISCDE, 
-     .                       IESTM, KK
+     .                       IESTM, KK    
       REAL(DP) :: CF(9,0:9), CFF(9)
       REAL(DP) :: FCTKKL, ADD, ADDL, ADDT, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF, 
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TII
-      INTEGER :: I, NSEEL4, NEND, J, KREAD, MODC,  IERR, IPLTI
+      INTEGER :: I, NSEEL4, NEND, J, KREAD, MODC,  IERR, IPLTI,
+     .           IBGK,ISPECB,ISPZB,ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
       SAVE
@@ -288,6 +289,21 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'ELASTIC COLLISION WITH BULK IONS IPLS:'
       WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL)
+      IF (NPBGKP(IPL,1).NE.0) THEN
+        WRITE (iunout,*) 'THIS IS ALSO BGK COLLISION NO. IBGK= ',IBGK
+        IF (NPBGKP(IPL,2).NE.0) THEN
+          ISPECB=NPBGKP(IPL,2)
+          ITYPB=EIRENE_IDEZ(ISPECB,1,3)
+          ISPZB=EIRENE_IDEZ(ISPECB,3,3)
+          IF (ITYPB.EQ.1)
+     .      WRITE (iunout,*) 'CROSS COLLISION WITH ATOM     ',ISPZB 
+          IF (ITYPB.EQ.2)
+     .      WRITE (iunout,*) 'CROSS COLLISION WITH MOLECULE ',ISPZB
+          IF (ITYPB.EQ.3)
+     .      WRITE (iunout,*) 'CROSS COLLISION WITH TEST ION ',ISPZB  
+        ENDIF
+      ENDIF
+
       CALL EIRENE_LEER(1)
 
       IF (IESTEL(IREL,1).NE.0)

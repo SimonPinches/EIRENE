@@ -1,11 +1,27 @@
+cdr Aug. 2015: revisited:  comments,...
+c
 c  code segment: bgk
 c
 c  only needed, if some test species are labeled as bgk-species
-c               with non-linear self interactions
+c               with one or more non-linear self interactions
 c               this segment contains a routine which updates the tallies
-c               required for iteration (UPTBGK),
-C               and a routine (MODBGK) for doing the iterations.
-c               the standard deviations for the "bgk-tallies" are
+c               required for iteration (UPTBGK).
+c
+C  CURRENTLY:  3 TALLIES ARE SCORED PER BGK COLLISION IBGK_SP, IBGK_SP=1,NRBGI/3
+c              on input: npbgk= npbgka(iatm), or npbgkm(imol), npbgki(iion) 
+c              ibgk=npbgk, and update three tallies for bgk collision no. ibgk_sp.
+c
+c  no not confuse: ibgk is the bgk reaction number, the bgk reactions form a subset of the elastic reactions
+c                  ibgk_sp is the counter for the number of test particle species which have at least one bgk collision.
+c                  For each test particle species ibgk_sp there are currently three so called additional "bgk tallies" scored
+c                  (by default: the transport flux vector components). 
+c  Note:  for velocity dependent bgk collision rates probably 5 tallies per bgk collision (ibgk)
+c         need to be scored, rather than the three per bgk species (ibgk_sp),
+c         to enforce the 5 collision invariants by iteration.
+c
+c               A routine (MODBGK) carries out the iterations at the end of an
+c               iteration.
+c               The standard deviations for the "bgk-tallies" are
 c               computed in subroutine STATIS_BGK
 C
 c
@@ -13,6 +29,8 @@ c
       SUBROUTINE EIRENE_UPTBGK(XSTOR2,XSTORV2,WV,NPBGK,IFLAG)
 C
 C  UPDATE BGK-SPECIFIC TALLIES, TRACKLENGTH ESTIMATORS
+C
+C  INPUT:  NPBGK IDENTIFIER FOR THE BGK-SPECIES 
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -32,19 +50,24 @@ C
       REAL(DP), INTENT(IN) :: WV
       INTEGER, INTENT(IN) :: NPBGK, IFLAG
       REAL(DP) :: DIST, WTRV, WTRVX, WTRVY, WTRVZ
-      INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, IFIRST, NSBGK, IBGK,
+      INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, IFIRST, NSBGK, IBGK_SP,
      .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDD
       CHARACTER(8) :: TXT
       DATA IFIRST/0/
       SAVE
 C
       IF (IFIRST.EQ.0) THEN
+
+C  FIND TEST PARTICLE SPECIES FLAG (TYPE ITP, TEXT 'TXT') FOR BGK SPECIES NO. IBGK_SP
         IFIRST=1
+C  NUMBER OF (ADDITIONAL) BGK TALLIES: NRBGI
+C  NUMBER OF BGK-SPECIES:  NSBGK
         NSBGK=NRBGI/3
-        DO IBGK=1,NSBGK
+        DO IBGK_SP=1,NSBGK
           ITP=0
           DO ISP=1,NATMI
-            IF (NPBGKA(ISP).EQ.IBGK) THEN
+            IF (NPBGKA(ISP).EQ.IBGK_SP) THEN
+C  ISP IS ONE OF THE ATOMIC TEST SPECIES WHICH HAVE AT LEAST ONE BKG COLLISION
               ITP=1
               IAT=ISP
               TXT=TEXTS(NSPH+IAT)
@@ -52,7 +75,8 @@ C
             ENDIF
           ENDDO
           DO ISP=1,NMOLI
-            IF (NPBGKM(ISP).EQ.IBGK) THEN
+            IF (NPBGKM(ISP).EQ.IBGK_SP) THEN
+C  ISP IS ONE OF THE MOLECULAR TEST SPECIES WHICH HAVE AT LEAST ONE BKG COLLISION
               ITP=2
               IML=ISP
               TXT=TEXTS(NSPA+IML)
@@ -60,27 +84,29 @@ C
             ENDIF
           ENDDO
           DO ISP=1,NIONI
-            IF (NPBGKI(ISP).EQ.IBGK) THEN
+            IF (NPBGKI(ISP).EQ.IBGK_SP) THEN
               ITP=3
               IIO=ISP
               TXT=TEXTS(NSPAM+IIO)
               GOTO 1
             ENDIF
           ENDDO
+C  PHOTONIC BGK COLLISIONS:  TO BE DONE ??
+
           WRITE (iunout,*) 'SPECIES ERROR IN UPTBGK'
           CALL EIRENE_EXIT_OWN(1)
 1         CONTINUE
 C
-C  BGK-SPECIES NO. IBGK
-          IUPD1=(IBGK-1)*3+1
-          IUPD2=(IBGK-1)*3+2
-          IUPD3=(IBGK-1)*3+3
+C  BGK-SPECIES NO. IBGK_SP
+          IUPD1=(IBGK_SP-1)*3+1
+          IUPD2=(IBGK_SP-1)*3+2
+          IUPD3=(IBGK_SP-1)*3+3
           TXTTAL(IUPD1,NTALB)='BGK TALLY: FLUX DENSITY IN X DIRECTION '
           TXTTAL(IUPD2,NTALB)='BGK TALLY: FLUX DENSITY IN Y DIRECTION '
           TXTTAL(IUPD3,NTALB)='BGK TALLY: FLUX DENSITY IN Z DIRECTION '
-          TXTUNT(IUPD1,NTALB)='#/CM**2/S               '
-          TXTUNT(IUPD2,NTALB)='#/CM**2/S               '
-          TXTUNT(IUPD3,NTALB)='#/CM**2/S               '
+          TXTUNT(IUPD1,NTALB)='#/CM**3*CM/S            '
+          TXTUNT(IUPD2,NTALB)='#/CM**3*CM/S            '
+          TXTUNT(IUPD3,NTALB)='#/CM**3*CM/S            '
           TXTSPC(IUPD1,NTALB)=TXT
           TXTSPC(IUPD2,NTALB)=TXT
           TXTSPC(IUPD3,NTALB)=TXT
@@ -97,13 +123,15 @@ C
 C  END OF IFIRST BLOCK
       ENDIF
 C
-C  UPDATE BGK TALLIES
-C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV-TALLY
+C  UPDATE BGK TALLIES FOR THE NPBGK "BGK-SPECIES"
+C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV-TALLY, THREE TALLIES PER BGK-SPECIES
 C
-      IBGK=NPBGK
-      IUPD1=(IBGK-1)*3+1
-      IUPD2=(IBGK-1)*3+2
-      IUPD3=(IBGK-1)*3+3
+      IBGK_SP=NPBGK
+C  FROM CALLING PROGRAM: IBGK_SP.NE.0, I.E. FOR THIS TEST PARTICLE (IATM, IMOL OR IION)
+C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED. 
+      IUPD1=(IBGK_SP-1)*3+1
+      IUPD2=(IBGK_SP-1)*3+2
+      IUPD3=(IBGK_SP-1)*3+3
       LMETSP(NMTSP+IUPD1)=.TRUE.
       LMETSP(NMTSP+IUPD2)=.TRUE.
       LMETSP(NMTSP+IUPD3)=.TRUE.
@@ -113,7 +141,7 @@ C
         WTRVX=WTRV*VELX
         WTRVY=WTRV*VELY
         WTRVZ=WTRV*VELZ
-!pb 05.02.2013  BGKV is output tally thus only defined for NRTAL cells
+!pb 05.02.2013  BGKV is output tally thus only defined for (COARSE) NRTAL cells
         IRDD=NRCELL+NUPC(I)*NR1P2+NBLCKA
         IRD=NCLTAL(IRDD)
         BGKV(IUPD1,IRD)=BGKV(IUPD1,IRD)+WTRVX
