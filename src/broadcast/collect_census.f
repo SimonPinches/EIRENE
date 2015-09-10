@@ -185,13 +185,23 @@ c  binary search amongst processors
                 ENDIF
               END DO
             end if
- 
+
+
+c  there are icopro(iu) entries to be sampled from sub-census from processor iu
+c  random number i samples from sub-census from processor iranpro(i) = iu 
+c  rand(i) is the reduced random number, for sampling within sub-census iu only   
             icopro(iu) = icopro(iu) + 1
             iranpro(i) = iu
             rand(i) = ra - rpselect(iu-1)
-c  processor iu identified, random number rand(i) set for sampling from census
-c                           restricted to this processor 
+c
+c  for each random numer i the processor iu identified, random number rand(i) set for sampling from census
+c                           restricted to this processor iu
           end do
+
+ 
+          write (iunout,*) 'number of particles per processor '
+          write (iunout,'(10i6)') (icopro(ipe),ipe=0,nprs)
+ 
  
 ! setup displacements for distribution of random numbers
           idistrib(0) = 0
@@ -212,10 +222,7 @@ c                           restricted to this processor
           do ipe = 1, nprs
             idistrib(ipe) = idistrib(ipe-1) + icopro(ipe-1)
           end do
- 
-        write (iunout,*) 'number of particles per processor '
-        write (iunout,'(10i6)') (icopro(ipe),ipe=0,nprs)
- 
+
         end if
  
 ! broadcast numbers of required particles per processor
@@ -277,6 +284,7 @@ c  binary search
              IION=ISPEZI(IPARTC(9,I),3)
              ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
           ENDIF
+
 c   accumulated atomic flux from current processor
           sumrpw = sumrpw + add
 
