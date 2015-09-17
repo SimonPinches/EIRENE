@@ -94,7 +94,7 @@
       IER = 0
       IF ((MAXVAL(NECKE(1:3,1:NTRII)) > NRKNOT) .OR.
      .    (MINVAL(NECKE(1:3,1:NTRII)) <= 0 )) THEN
-        WRITE (iunout,*) ' WRONG COORDINATE NUMBER IS DEFINITION OF',
+        WRITE (iunout,*) ' WRONG COORDINATE NUMBER IN DEFINITION OF',
      .              ' TRIANGLES FOUND '
         IER = 2
       END IF
