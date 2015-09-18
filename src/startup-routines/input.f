@@ -2072,6 +2072,14 @@ C       WRITE (iunout,*) ZEILE
      .  ('*5B.   PLASMA BACKGROUND DATA                ')
       CALL EIRENE_LEER(1)
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
+      
+      DO J=1,12
+        IF (ABS(INDPRO(J)) > 100) THEN
+          LSMOPRO(J) = .TRUE.
+          INDPRO(J) = MOD(INDPRO(J),100)
+        END IF
+      ENDDO
+
 C  Te profile
       IF (INDPRO(1).LE.5.AND.NPLSI.GT.0)
      .  READ (IUNIN,6664) TE0,TE1,TE2,TE3,TE4,TE5
