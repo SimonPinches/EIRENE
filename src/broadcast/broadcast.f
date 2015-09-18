@@ -1505,7 +1505,12 @@ c     on the "root" node, where this is already done via timea0 after input
       ELSE IF (RP%IFIT > 3) THEN
 ! HYDKIN DATA
         IF (MY_PE .NE. 0) THEN
-          IF (.NOT.ASSOCIATED(RP%HYD)) ALLOCATE (RP%HYD)
+          IF (.NOT.ASSOCIATED(RP%HYD)) THEN
+             ALLOCATE (RP%HYD)
+             NULLIFY(RP%HYD%TEMPS)
+             NULLIFY(RP%HYD%RATES)
+             NULLIFY(RP%HYD%RATIO)
+          END IF
         END IF
 
         CALL MPI_BCAST (RP%HYD%NTEMPS,1,MPI_INTEGER,
