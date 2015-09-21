@@ -8,7 +8,8 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 
 !PB 02.03.06: storing of trajectories
 !pb 08.11.06: definition of splitting arrays changed
-!             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
+!             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
+!             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
 !pb 01.12.06: open and close of fort.10 moved to WRSTRT
 !pb 05.12.06: COLLECT_CENSUS introduced to allow for time dependent mode in
 !             parallel calculation
@@ -615,12 +616,13 @@ cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
             CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
      .                          ISTRA,IPANU,TIMUSED)
-cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
             CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
             IF (TRCLST) CALL EIRENE_OUTLST
             GOTO 101
           ENDIF
+
+C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
           SECND1=EIRENE_SECOND_OWN()
           LGLAST = IPTSI.EQ.NPTS(ISTRA)
           LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
@@ -755,12 +757,12 @@ C
           ENDIF
 100     CONTINUE
         CALL EIRENE_LEER(1)
+
         WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
         WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
         WRITE (iunout,*) 'THIS STRATUM'
 CDR     CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
 
-csw 19feb2019
 !pb 0312 2013        timend=mpi_wtime()
         call system_clock (itimend, itimrate)
         timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)

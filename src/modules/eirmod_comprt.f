@@ -1,4 +1,19 @@
 !pb  30.10.06:  XNUE removed
+cdr  sept. 2015: npartt=11, rather than 12 (xgener not stored on census)
+
+c.........................................................................
+c 
+c  comprt contains particle coordinates along track
+c  the full information for respart after splitting is contained in the
+c  npartc (real) and mpartc (integer) variables.
+c
+c  a reduced set for re-start from a census array (initital condition in time)
+c  is contained in the 
+c  npartt (real) and mpartt (integer) variables.
+
+c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
+
+
       MODULE EIRMOD_COMPRT
  
       USE EIRMOD_PRECISION
@@ -24,11 +39,16 @@
  
 C NPARTT PARTICLE COORDINATES FOR CENSUS ARRAY
 C NPARTC PARTICLE COORDINATES, REAL, (E.G.: SPLITTING)
+C NPARTT AND NPARTC ARE SET IN EIRMOD_PARMMOD, CURRENTLY:
+C NPARTT=11
+C NPARTC=12
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R X0,     Y0,     Z0,
      R VEL,    VELX,   VELY,   VELZ,
-     R E0,     WEIGHT, TIME,   PHI,
-     R XGENER
+     R E0,     WEIGHT, TIME,   PHI,  ! UP TO HERE: STORE ON CENSUS
+     R XGENER  ! UP TO HERE: STORE FULL PARTILCE INFORMATION
+
+C  SOME FURTHER REAL VARIABLES USED ALONG PARTICLE TRAJECTORY
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TIMINT(:), TIMPOL(:,:)
@@ -49,16 +69,22 @@ C NPARTC PARTICLE COORDINATES, REAL, (E.G.: SPLITTING)
  
       INTEGER, PUBLIC, POINTER, SAVE :: IPST(:), IPSTT(:)
  
-C MPARTT PARTICLE COORDINATES FOR CENSUS ARRAY
-C MPARTC PARTICLE COORDINATES, INTEGER, (E.G.: SPLITTING)
+C MPARTT PARTICLE COORDINATES, REDUCED SET FOR CENSUS ARRAY
+C MPARTC PARTICLE COORDINATES, FULL SET, INTEGER, (E.G.: SPLITTING)
+C MPARTT AND MPARTC ARE SET IN EIRMOD_PARMMOD, CURRENTLY:
+C MPARTT= 9
+C MPARTC=14
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NPANU,
      I IPOLG,  IPERID, NCELL,
      I ITIME,  IFPATH, IUPDTE,
      I ISTRA,
-     I ISPZ,
-     I MRSURF, MPSURF, MTSURF, MASURF, MSURF,
+     I ISPZ,  ! UP TO HERE: STORE ON CENSUS
+     I MRSURF, MPSURF, MTSURF, MASURF, MSURF,  ! UP TO HERE: STORE FULL PARTICLE INFORMATION
      I MSURFG
+
+C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NTIM(:), IIMPOL(:,:), IIMINT(:)
@@ -99,7 +125,7 @@ C MPARTC PARTICLE COORDINATES, INTEGER, (E.G.: SPLITTING)
      .      ' COMPRT ',(NPARTC+NRADS+N1STS*N2NDPLG)*8 +
      .                 (MPARTC+1+NRADS+N1STS*N2NDPLG+NRADS)*4
  
-      RPSTT => RPST
+      RPSTT => RPST      !  full (1: npartc) particle information, real
  
       X0     => RPST( 1)
       Y0     => RPST( 2)
@@ -112,10 +138,13 @@ C MPARTC PARTICLE COORDINATES, INTEGER, (E.G.: SPLITTING)
       WEIGHT => RPST( 9)
       TIME   => RPST(10)
       PHI    => RPST(11)
+c  up to here: for census, npartt
       XGENER => RPST(12)
+c  up to here: for splitting, npartc 
  
-      IPST  => IPSTD(2:MPARTC+1)
-      IPSTT => IPSTD(1:MPARTT)
+      IPST  => IPSTD(2:MPARTC+1)  !  full (2: mpartc+1) particle information, integer
+
+      IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census 
  
       NPANU  => IPSTD( 1)
       IPOLG  => IPSTD( 2)
@@ -126,11 +155,13 @@ C MPARTC PARTICLE COORDINATES, INTEGER, (E.G.: SPLITTING)
       IUPDTE => IPSTD( 7)
       ISTRA  => IPSTD( 8)
       ISPZ   => IPSTD( 9)
+c  up to here: for census, mpartt
       MRSURF => IPSTD(10)
       MPSURF => IPSTD(11)
       MTSURF => IPSTD(12)
       MASURF => IPSTD(13)
       MSURF  => IPSTD(14)
+c  up to here: for splitting, mpartc
       MSURFG => IPSTD(15)
  
       CALL EIRENE_INIT_COMPRT

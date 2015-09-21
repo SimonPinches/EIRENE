@@ -1,3 +1,4 @@
+!cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
 !pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
 !pb  30.01.07:  NREAC_LINES introduced
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
@@ -21,7 +22,7 @@ cdr  spcint --> spcs
  
       INTEGER, PUBLIC, PARAMETER ::
      P         NUM_PARM=200,
-     P         NPARTC=12, NPARTT=12,
+     P         NPARTC=12, NPARTT=11,
      P         MPARTC=14, MPARTT=9
 csw 13apr07
       integer, public, save :: IFOFF = 0
