@@ -20,7 +20,13 @@ c             directly to be included in line shape sampling
 !pb  8.11.06: set timestep index for time dependent mode
 !pb  8.11.06: as SORLIM can be negative ISOR=ABS(SORLIM)
 !pb 08.11.06: definition of splitting arrays changed
-!             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
+!             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
+!             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
+!             definition of census arrays changed
+!             RPARTC(NPRNL,1:NPARTT) --> RPARTC(1:NPARTT,NPRNL)
+!             IPARTC(NPRNL,1:MPARTT) --> IPARTC(1:MPARTT,NPRNL)
+!             RPART(NPRNL,1:NPARTT) --> RPART(1:NPARTT,NPRNL)
+!             IPART(NPRNL,1:MPARTT) --> IPART(1:MPARTT,NPRNL)
 !   04.01.07: updating of sputter tallies ordered as in ESCAPE
 c
 cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species index)
@@ -57,7 +63,7 @@ C
 C  CALLED AT ENTRY LOCAT1 FOR EACH NEW LAUNCHED MONTE CARLO TRAJECTORY
 C  FROM PARTICLE LOOP IN SUBR. MCARLO
 C     PURPOSE: SET INITIAL TEST FLIGHT STATE, DEFINED BY THE VARIABLES
-C              NO. 1 ... TO NPARTC+MPARTC OF COMMON BLOCK "COMPRT"
+C              NO. 1 ... TO NPARTC,  AND 1 ... TO MPARTC OF COMMON BLOCK "COMPRT"
 C              I.E.,
 C                  X0... TO IUPDTE
 C     UPDATE SOURCE ESTIMATORS FOR BALANCES: PPPL,PPML,PPAT, EPPL,  ETC.
@@ -361,6 +367,8 @@ C
         DO 12 J=1,MPARTT
           IPSTT(J)=IPARTC(J,IMP)
 12      CONTINUE
+C  DETERMINE THE REMAINING PARTICLE PARAMETERS
+        XGENER=0.D0
         ITYP=ISPEZI(ISPZ,-1)
         IPHOT=ISPEZI(ISPZ,0)
         IATM=ISPEZI(ISPZ,1)
@@ -381,6 +389,7 @@ C  IGNORE THE WEIGHT RPARTC(9,IMP) OF THE SAMPLED PARTICLE,
 C  BECAUSE THIS WEIGHT HAS ALREADY BEEN TAKEN INTO ACCOUNT 
 C  IN THE SAMPLING DISTRIBUTION
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
+C  ONE BY ONE RE-LAUNCH FROM CENSUS
           WEIGHT=RPARTC(J,IMP)
         ELSE
           WEIGHT=1.D0

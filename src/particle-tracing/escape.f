@@ -15,7 +15,8 @@ c                  output was produced from outflx.f
 c                  The correct "net" fluxes are on POT.... and EOT.... tallies.
 c             now: do not fill prf... and erf... tallies at all in case ILIIN=-3
 !pb 08.11.06: definition of splitting arrays changed
-!             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
+!             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
+!             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
 !pb 21.08.06: calls to update_surface introduced
 !pb 18.08.06: if a particle hits a periodic surface with the conditional
 !             expectation estimator switched on and a collision is already stored
