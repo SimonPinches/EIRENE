@@ -403,15 +403,15 @@
       !  enddo
       !enddo
       !close(555)
-      write(*,'(a,i6,1x,e13.6)') 'DBG: ISTRA, ENEUTRAD',istra,value
+cdr    write(*,'(a,i6,1x,e13.6)') 'DBG: ISTRA, ENEUTRAD',istra,value
       !csw
 
       !c
       !C map 1d-EIRENE neutral densities and temperatures on 2d-arrays
       !c and change the units to SI for plotting in B2
       !c
-      write(6,*) 'istra ',istra
-      write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
+cdr   write(6,*) 'istra ',istra
+cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       !crfs     IF (WTOTP(0,ISTRA).EQ.0.) GOTO 60
       do iatm=1,natmi
         volcel = 0.d0
