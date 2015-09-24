@@ -1,6 +1,11 @@
+cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
 Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum? 
-c   Oct.14             spectra scoring only called if cell based spectra are defined
+cdr Oct.14             spectra scoring only called if cell based spectra are defined
+c
+c   ???     LDAMCEL(icell) introduced ??  "damaged cell" ??, comes via eirmod_cgeom.
+c   ???     checking for 3rd grid intersection in case levgeo=4 
+c           (triangles plus resolution in z-direction)
 C
 !PB 30.01.08: optimization of calculation of intersection with additional surfaces
 !             corrected
@@ -83,9 +88,11 @@ C  TENTATIVELY ASSUME: A NEXT GENERATION PARTICLE WILL BE BORN
 C
 C  IC_NEUT, IC_ION: COUNTER FOR GENERATIONS WITHIN STATIC LOOP
       IC_NEUT=IC_ION
+C  XGENER:  COUNTER FOR GENERATION LIMIT
+      XGENER=0.D0
+
 100   LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
-!pb 25.06.2014      XGENER=0
       NLPR=.FALSE.
       AX(1)=1.
       AX(2)=1.
@@ -208,8 +215,6 @@ C  AT THIS POINT: PARTICLE INCIDENT ON SURFACE, IC_NEUT GT 1 NECESSARILY
             GOTO 230
           END IF
         ENDIF
-!pb 25.06.2014
-        XGENER = 0.D0
 C
 C
 1002  CONTINUE
@@ -217,9 +222,13 @@ C  NO STATIC APPROXIMATION, FOLLOW MOTION
 C
       IF (IC_NEUT.GT.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY LEAVES STATIC LOOP, ITYP=',ITYP
+
+
       IF (IC_NEUT.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
-C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" ?
+
+C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" 
+C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
         IC_ION=0
         IC_NEUT=0
         SCOS_NEW = SIGN(1.D0,VELX*CRTXG+VELY*CRTYG+VELZ*CRTZG)
@@ -343,12 +352,15 @@ C
       IF (LDAMCEL(NCELL)) GOTO 9912
 C
 C TL: DISTANCE TO NEXT ADDITIONAL SURFACE
-      IF (NCELL.LE.NOPTIM) THEN
+      IF (NCELL.GT.0.AND.NCELL.LE.NOPTIM) THEN
         NLI=NLIMII(NCELL)
         NLE=NLIMIE(NCELL)
-      ELSE
+      ELSEIF (NCELL.GT.0) THEN
         NLI=1
         NLE=NLIMI
+      ELSE
+C  NEGATIVE CELL INDEX. STOP THIS PARTICLE
+        GOTO 990
       ENDIF
       IF (NLI.LE.NLE) THEN
         CALL EIRENE_TIMEA1
@@ -600,6 +612,7 @@ C
           IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .  (ISTS,1,SG,*104,*380)
         ENDIF
+
         ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
         IF (NLPOL.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCY)
@@ -608,6 +621,7 @@ C
           IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .  (ISTS,2,SG,*104,*380)
         ENDIF
+
         ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
         IF (NLTOR.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCZ)
@@ -632,7 +646,6 @@ C
           GOTO 380                                              !VK
         ENDIF
 
-!pb        ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
         IF (MTSURF > 0) THEN
           ISTS=INMTI3(IRCELL,MTSURF)
           IF (NLTOR.AND.ISTS.NE.0) THEN
@@ -857,7 +870,7 @@ C
 C
 C
 C
-C   SAVE DATA OF FIRST COLLISION ALONG CONDITIONAL TRACK
+C   SAVE PRE COLLISION DATA OF FIRST COLLISION ALONG CONDITIONAL TRACK
 505   CONTINUE
       IF (NCOU.GT.1) THEN
         ZMFP=1./XSTORV2(NSTORV,JCOL)
@@ -995,11 +1008,13 @@ C
 990   CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLNEUT, ZDT1 OR NRCELL OUT OF RANGE  ')
+     .  ('ERROR IN FOLNEUT, ZDT1 OR NCELL OUT OF RANGE  ')
       CALL EIRENE_MASAGE
      .  ('PARTICLE IS KILLED                             ')
-      WRITE (iunout,*) 'NPANU,NRCELL,ZDT1,ZTST,TL,TS '
-      WRITE (iunout,*) NPANU,NRCELL,ZDT1,ZTST,TL,TS
+      WRITE (iunout,*) 'NPANU,NCELL,ZDT1,ZTST,TL,TS '
+      WRITE (iunout,*) NPANU,NCELL,ZDT1,ZTST,TL,TS
+      WRITE (iunout,*) 'NRCELL,NPCELL,NTCELL,NACELL '
+      WRITE (iunout,*) NRCELL,NPCELL,NTCELL,NACELL
       GOTO 995
 C
 9911  CONTINUE
