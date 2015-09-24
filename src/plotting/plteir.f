@@ -14,6 +14,7 @@ C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
+cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !  
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)

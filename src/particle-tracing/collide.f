@@ -101,7 +101,7 @@ C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION
       WGHTO=WEIGHT
       IOLD=IATM
       NOLD=NSPH+IATM
- 
+
       IF (IMETCL(NCELL) == 0) THEN
         NCLMT = NCLMT+1
         ICLMT(NCLMT) = NCELL
@@ -159,7 +159,7 @@ C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOG GAME
 C  WEIGHT MAY HAVE BEEN REDUCED NOW, AND ALSO THE NUMBER OF ACTIVE EI PROCESSES.
 C  
 C
-C  FIRST DECIDE: ELECTRON IMPACT OR ION IMPACT
+C  FIRST DECIDE: ELECTRON IMPACT (COLLISION TYPE: EI) OR OTHER PROCESS
 C
       ZEP1=SIG_ELIM+RANF_EIRENE( )*SIG_TOT_N
       SIGSUM=SIG_ELIM
@@ -174,7 +174,7 @@ C  ELECTRON IMPACT COLLISION:
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,2)
         IF (NLSTOR) CALL EIRENE_STORE(2)
- 
+
 C  FIND TYP OF ELECTR. IMPACT COLLISION PROCESS: IREI
         DO 240 IAEI=1,NEIIM_RED
           IREI=LGEI_RED(IAEI)
@@ -186,7 +186,8 @@ C  FIND TYP OF ELECTR. IMPACT COLLISION PROCESS: IREI
 C
 C  CALCULATE WEIGHT OF THE NEXT GENERATION PARTICLE
 C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
-C  IS FOLLOWED
+C  IS FOLLOWED. 
+C  PTOT IS THE (INTEGER) NUMBER OF ANALOGUE NEXT GENERATION TEST PARTICLES
 C
         PTOT=P2NDS(IREI)
 C       PTOTAL=PTOT+PPLDS(IREI,0)
@@ -205,18 +206,23 @@ C  ABSORBTION (INTO BULK SPECIES) IS SUPPRESSED
 C
 C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
         IF (WEIGHT.LE.EPS30) THEN
+C  NO !
           LGPART=.FALSE.
           ITYP=4
           COLTYP=2
           NCELL=NCLLO
           RETURN
         ENDIF
-C
+
+Cdr  PTOT=0,1,2,etc..., = integer number of next generation particles
+
+c.......................................................................
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
           IF (.NOT.ALLOCATED(NAMIDS)) THEN
             ALLOCATE(NAMIDS(NSPAMI))
           END IF
+cdr  build one single distribution of secondary particle species, all typs
           NAMIDS = 0
           NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
           NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
@@ -232,22 +238,24 @@ C
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
 C.....................................................................
-C  SPLITTING
+C  SPLITTING: EACH SECONDARY IS A NEW SPLITTING LEVEL.
 C
               NLEVEL=NLEVEL+1
 C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
               RSPLST(1:NPARTC,NLEVEL)=RPST(1:NPARTC)
               ISPLST(1:MPARTC,NLEVEL)=IPST(1:MPARTC)
 C  NUMBER OF NODES AT THIS LEVEL
-              NODES(NLEVEL)=2
+              NODES(NLEVEL)=2  !  CDR  ONE PARTICLE SCORE IN EACH LEVEL
 
               IF (NLTRC) WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
             END DO
           END DO
 
 !  REMOVE LAST PARTICLE FROM STORAGE AS IT'S TRAJECTORY IS CONTINUED
-          NLEVEL = NLEVEL - 1
+          NLEVEL = NLEVEL - 1   !  
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
+
+CDR:   VELOEI FOR THIS CONTINUED PARTICLE HAS ALREADY BEEN SET
 
         ELSE
 
@@ -257,12 +265,16 @@ C  NUMBER OF NODES AT THIS LEVEL
             WRITE (iunout,*) 'CASCADE OVERFLOW: NEVEL: ',NLEVEL
           ENDIF
 
+CDR:  (NORMAL) NON-ANALOG GAME AT EI PROCESSES
+
           CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,-1._DP)
 
         END IF
+
         XGENER=0.D0
 C
 C  UPDATE COLLISION ESTIMATORS CONTRIBUTION TO EAAT;EAML;EAIO
+C         ACCOUNT FOR POST COLLISION CONTRIBUTIONS
         IF (ITYP.EQ.1) THEN
           IF (IESTEI(IREI,3).NE.0) THEN
             IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)+WEIGHT*E0
@@ -405,10 +417,12 @@ C  GENERATION LIMIT
                 XGENER=0.D0
               ENDIF
               IF (XGENER.GE.NGENA(IATM)) THEN
-C  UPDATE GENERATION LIMIT TALLIES
+C  UPDATE GENERATION LIMIT TALLIES, THEN STOP TRAJECTORY
 C  USE POST COLLISION WEIGHT, VELOCITY AND ENERGY
 C  SHOULD MAKE NO DIFFERENCE ON AVERAGE, IF GENERATION LIMIT IS VALID.
 C  IF NOT, ONLY THIS GIVES CORRECT BALANCES.
+c               write (iunout,*) 'stopped at generation limit ',
+c    .                            npanu,xgener
                 IF (LPGENA) PGENA(IATM,NCELL)=PGENA(IATM,NCELL)-WEIGHT
                 IF (LEGENA)
      .            EGENA(IATM,NCELL)=EGENA(IATM,NCELL)-WEIGHT*E0
@@ -529,7 +543,7 @@ C  ASSUME: NEW ION MOMENTUM IS EQUAL TO INCIDENT ATOM MOMENTUM
             COLTYP=1
             NCELL=NCLLO
             RETURN
- 
+
           CASE(2)
 C  1ST SECONDARY IS MOLECULE
             IMOL=N1STX(IRCX,2)
@@ -542,7 +556,7 @@ C
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE(3)
 C  1ST SECONDARY IS TEST ION
             IION=N1STX(IRCX,2)
@@ -555,16 +569,16 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP = ',ITYP,' AS FIRST SECONDARY IS',
      .                  ' NOT FORESEEN IN COLLIDE '
           END SELECT
- 
+
         ELSE
 C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
- 
+
           SELECT CASE(ITYP)
 C
           CASE(1)
@@ -602,12 +616,12 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
          CASE DEFAULT
             WRITE (iunout,*) ' ITYP = ',ITYP,' AS SECOND SECONDARY IS',
      .                  ' NOT FORESEEN IN COLLIDE '
           END SELECT
- 
+
         ENDIF
 C
 C  ELASTIC COLLISION
@@ -811,6 +825,7 @@ C
       ENTRY EIRENE_COLMOL(CFLAG,COLTYP,DIST)
 C
 C  INCIDENT SPECIES: IOLD
+
       VELXO=VELX
       VELYO=VELY
       VELZO=VELZ
@@ -1191,7 +1206,7 @@ C ASSUME: NEW ION MOMENTUM IS EQUAL TO INCIDENT MOLECULE MOMENTUM
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE (2)
 C  1ST SECONDARY IS MOLECULE
             IMOL=N1STX(IRCX,2)
@@ -1229,7 +1244,7 @@ C
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE (3)
 C  1ST SECONDARY IS TEST ION
             IION=N1STX(IRCX,2)
@@ -1242,12 +1257,12 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP ',ITYP,' AS 1ST SECONDARY IS NOT',
      .                  ' FORESEEN IN COLLIDE '
           END SELECT
- 
+
         ELSE
  
 C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
@@ -1265,7 +1280,7 @@ C
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE (2)
             IMOL=N2NDX(IRCX,2)
             XGENER=0.D0
@@ -1277,7 +1292,7 @@ C
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE(3)
             IION=N2NDX(IRCX,2)
             XGENER=0.D0
@@ -1289,7 +1304,7 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP ',ITYP,' AS 2ND SECONDARY IS NOT',
      .                  ' FORESEEN IN COLLIDE '
@@ -1515,7 +1530,7 @@ C  INCIDENT SPECIES: IOLD
       WGHTO=WEIGHT
       IOLD=IION
       NOLD=NSPAM+IION
- 
+
       IF (IMETCL(NCELL) == 0) THEN
         NCLMT = NCLMT+1
         ICLMT(NCLMT) = NCELL
@@ -1865,7 +1880,7 @@ C ASSUME: NEW ION MOMENTUM IS EQUAL TO INCIDENT ATOM MOMENTUM
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE (2)
 C  1ST SECONDARY IS MOLECULE
             IMOL=N1STX(IRCX,2)
@@ -1878,7 +1893,7 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE (3)
 C  1ST SECONDARY IS TEST ION
             IION=N1STX(IRCX,2)
@@ -1891,16 +1906,16 @@ C
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP ',ITYP,' AS 1ST SECONDARY IS NOT ',
      .                  ' FORESEEN IN COLLIDE '
           END SELECT
- 
+
         ELSE
 C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
- 
+
           SELECT CASE (ITYP)
 C
           CASE (1)
@@ -1914,7 +1929,7 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE (2)
             IMOL=N2NDX(IRCX,2)
             E0=CVRSSM(IMOL)*VELO*VELO
@@ -1926,19 +1941,19 @@ C
             COLTYP=2
             NCELL = NCLLO
             RETURN
- 
+
           CASE (3)
             IION=N2NDX(IRCX,2)
             E0=CVRSSI(IION)*VELO*VELO
             XGENER=0.D0
- 
+
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
             IF (IESTCX(IRCX,2).NE.0) GOTO 999
             IF (IESTCX(IRCX,3).NE.0) GOTO 999
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP ',ITYP,' AS 2ND SECONDARY IS NOT ',
      .                  ' FORESEEN IN COLLIDE '
@@ -2098,7 +2113,7 @@ c     V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
       WGHTO=WEIGHT
       IOLD=IPHOT
       NOLD=0+IPHOT
- 
+
       IF (IMETCL(NCELL) == 0) THEN
         NCLMT = NCLMT+1
         ICLMT(NCLMT) = NCELL
@@ -2158,7 +2173,7 @@ C  ARE THERE SECONDARY TEST PARTICLES AT ALL?
           NCELL = NCLLO
           RETURN
         ENDIF
- 
+
 csw check type first secondary
          if(phv_n1stotph(iphot,irot,1) == 4) then
             t1=phv_n2ndotph(iphot,irot,1)
@@ -2201,11 +2216,11 @@ csw check ipl
                return
             end select
          endif
- 
- 
+
+
 C
 C  NEW SPECIES TYPE, INDEX AND ENERGY
- 
+
 C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         WEIGHT=WEIGHT*SUMP
         ZEP3=RANF_EIRENE( )*SUMP
@@ -2241,7 +2256,7 @@ C
             COLTYP=1
             NCELL=NCLLO
             RETURN
- 
+
           CASE(2)
 C  1ST SECONDARY IS MOLECULE
             IMOL=PHV_N1STOTph(iphot,IROT,2)
@@ -2251,7 +2266,7 @@ C
             COLTYP=1
             NCELL = NCLLO
             RETURN
- 
+
           CASE(3)
 C  1ST SECONDARY IS TEST ION
             IION=PHV_N1STOTph(iphot,IROT,2)
@@ -2266,16 +2281,16 @@ c
             lgpart=.false.
             ipls=phv_n1stotph(iphot,irot,2)
             e0=cvrssp(ipls)*vel*vel
- 
+
             coltyp=2
             ncell=ncllo
             return
- 
+
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP = ',ITYP,' AS FIRST SECONDARY IS',
      .                  ' NOT FORESEEN IN COLLIDE '
           END SELECT
- 
+
         ELSE
 C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
 csw no coll.estim.
@@ -2300,7 +2315,7 @@ csw e0 set by ph_post energy
             coltyp=1
             ncell=ncllo
             return
- 
+
 C
             CASE(1)
               IATM=PHV_N2NDOTph(iphot,IROT,2)
@@ -2342,13 +2357,13 @@ c
      .                    ' AS SECOND SECONDARY IS',
      .                    ' NOT FORESEEN IN COLLIDE '
             END SELECT
- 
+
          ENDIF
- 
+
       ELSE
 C     GENERAL IMPACT COLLISION: NOT READY
       ENDIF
- 
+
       GOTO 999
 C
 990   WRITE (iunout,*) 'ERROR IN COLLIDE '
