@@ -114,7 +114,7 @@ c  elab:  here ln(E), with E from 0.1 to 1e4 eV
           endif
         enddo
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'FIRST CALL EIRENE_TO VELOCX FOR IRCX= ',IRCX
+        WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
         CALL EIRENE_MASJ1R('JJ, SGCVMX      ',JJ, SGCVMX(IRCX))
