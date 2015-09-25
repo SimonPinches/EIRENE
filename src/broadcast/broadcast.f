@@ -592,7 +592,7 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (ESCD1P,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ESCD1PH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-      write (0,*) ' marke 14 '
+!      write (0,*) ' marke 14 '
       CALL MPI_BCAST (ISWR,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MODCLF,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASSP,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -934,7 +934,8 @@ csw 14apr2011
  
         IF (MY_PE > 0) THEN
 csw
-          if(.not.allocated(tdmpar)) then
+!pb          if(.not.allocated(tdmpar)) then
+          if(.not.associated(tdmpar(ipls)%tdm)) then
 csw
             ALLOCATE (TDMPAR(IPLS)%TDM)
             ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
@@ -1225,8 +1226,8 @@ csw
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%PSPC%NSPC
-             write (0,*) ' smestl, my_pe, imerk, nsps ',
-     .                     my_pe, imerk, nsps
+!             write (0,*) ' smestl, my_pe, imerk, nsps ',
+!     .                     my_pe, imerk, nsps
 !pb             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
              IF (IMERK > 0) THEN
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
@@ -1243,7 +1244,7 @@ C  variances for sum over strata
              END IF
              ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC
-             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
+!             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
            END IF
          END DO
       ELSE
@@ -1505,7 +1506,12 @@ c     on the "root" node, where this is already done via timea0 after input
       ELSE IF (RP%IFIT > 3) THEN
 ! HYDKIN DATA
         IF (MY_PE .NE. 0) THEN
-          IF (.NOT.ASSOCIATED(RP%HYD)) ALLOCATE (RP%HYD)
+          IF (.NOT.ASSOCIATED(RP%HYD)) THEN
+             ALLOCATE (RP%HYD)
+             NULLIFY(RP%HYD%TEMPS)
+             NULLIFY(RP%HYD%RATES)
+             NULLIFY(RP%HYD%RATIO)
+          END IF
         END IF
 
         CALL MPI_BCAST (RP%HYD%NTEMPS,1,MPI_INTEGER,
