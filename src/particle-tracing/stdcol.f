@@ -318,8 +318,15 @@ C
 C
       ENTRY EIRENE_STDNOR (X0E,Y0E,Z0E,IDIMM,SCOSE,MSURFE,*,*)
 c
-c  find (outer) surface normal vector at point of intersection X0E,Y0E,Z0E
-c               on non-default standard surface MSURFE
+c  a) find (outer) surface normal vector at point of intersection X0E,Y0E,Z0E
+c     on non-default standard surface MSURFE, (e.g. for surface reflection routines)
+c  b) if iliin.gt.3: this is a periodicity surface.
+c
+c     In this case additionally change particle position, cell number, 
+c     and velocity of particle accordingly.
+c     Note: this periodicity is ready only for some geometry options 
+c           and surfaces
+c
 c
 c  idimm=1:  radial surface
 c  idimm=2:  poloidal surface
@@ -424,6 +431,8 @@ C  PERIODICITY SURFACE IN TETRAHEDAL GRID
 C
 C  GENERAL GEOMETRY OPTION: PROVIDE OUTER SURFACE NORMAL UNIT VECTOR
 C                           CRTX,CRTY,CRTZ
+C  IN CASE OF PERIODICITY: ALSO NEW POSITION, SPEED, SURFACE- AND CELL NUMBERS
+C
         IST=MSURF-NLIM
         CALL EIRENE_NORUSR(IST,X0,Y0,Z0,CRTX,CRTY,CRTZ,SCOS,
      .                     VELX,VELY,VELZ,NRCELL)
@@ -610,7 +619,7 @@ C
 C  IWEI.LT.0, I.E., ILIIN OPTION IS OVERRULED FROM THIS SIDE
 C
       IF (IWEI.EQ.-1) THEN
-C  PARTICLE HAS HITTEN A SURFACE FROM AN ABSORBING SIDE
+C  PARTICLE HAS HIT A SURFACE FROM AN ABSORBING SIDE
 C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0) AND ABSORB PARTICLE
         IF (NLTRC) THEN
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)

@@ -21,6 +21,7 @@ cdr  oct.14:  clogau removed
 cdr  oct.14:  PLS made allocatable, 
 cdr  oct.14:  further syncronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
+cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
 C
       SUBROUTINE EIRENE_XSECTM
 C
@@ -48,7 +49,7 @@ C
 
       INTEGER :: ITEST, IATM, IPLS, IION, IA1, IP2, ION, ICOUNT,
      .           IION3, IDSC1, NRC, KK, J, IMOL, IPLS1, IPLS2, IPLS3,
-     .           IATM1, IATM2, ITYPB, ISPZB, IMEL, IDSC, IREL, IBGK,
+     .           IATM1, IATM2, ITYPB, ISPZB, IMEL, IDSC, IREL, IBGK_SP,
      .           IMEI, IERR, IMCX, ISCND, ISCDE, IESTM, IML, IFRST,
      .           IRCX, IREI, IPL, IMPI, IRPI, ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -543,9 +544,11 @@ C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
+C  IMOL HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
+C  DO THIS HERE: IMOL IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
-                IBGK=NRBGI/3
-                NPBGKM(IMOL)=IBGK
+                IBGK_SP=NRBGI/3
+                NPBGKM(IMOL)=IBGK_SP
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKM(IMOL)

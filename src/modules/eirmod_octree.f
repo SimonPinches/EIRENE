@@ -1,6 +1,6 @@
 !****************************************
 !* Description:
-!*   Implementiert einen OCTREE
+!*   Implementation of an OCTREE
 !*   in Fortran
 !* Author:
 !*   Oliver Schmidt <o.schmidt@fz-juelich.de>
@@ -15,7 +15,7 @@
       USE EIRMOD_CCONA  
 !constants like EPS12, etc
       USE EIRMOD_COMPRT, only: iunout !common printing (unit nums)
-      USE EIRMOD_CTRCEI, only: trcoc !tracing switches
+      USE EIRMOD_CTRCEI, only: trcoct !tracing switches
  
       IMPLICIT NONE
  
@@ -113,7 +113,7 @@ c     RETURNS: pointer to the new tree
 
         INTEGER, DIMENSION(3) :: rootnumber = (/0, 0, 0/)
 
-        if(trcoc) WRITE (iunout,*) 'ALLOCATING NEW TREE OBJECT'
+        if(trcoct) WRITE (iunout,*) 'ALLOCATING NEW TREE OBJECT'
 
 c       strech the konvex hull a bit, so we have a closed intervall
 c       at the right ends of all directions, as we only check with .lt.
@@ -206,7 +206,7 @@ c         convex hull, this will do...
         B(3,1:2) = z
         B(3,3) = z(1) + abs(z(2)-z(1))*0.5
 
-        if (trcoc) then
+        if (trcoct) then
           WRITE (iunout,*) 'ALLOCATING NEW NODE OBJECT', NUMBER,
      .                     'ON LAYER', parent%layer-1
           WRITE (iunout,*) 'B1: ', B(:,1)
@@ -244,7 +244,7 @@ c       -> these coords save the lower and upper edge...
         REAL(DP), DIMENSION(3,3) :: B
         REAL(DP), DIMENSION(2) :: C1, C2, C3
         
-        if (trcoc) then
+        if (trcoct) then
           WRITE (iunout,*)'WE CREATE CHILDREN FOR BLOCK', 
      .                     parent%number,'ON LAYER', parent%layer
         end if

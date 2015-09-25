@@ -11,6 +11,7 @@ cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  syncronized with fpatha, fpathi
 cdr  oct.14  :  bug fix, elastic energy exchange tally in case of tracklength estimator
 cdr 06.08.15 :  arguments added to vecusr
+cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 C
       FUNCTION EIRENE_FPATHM (K,CFLAG,JCOU,NCOU)
 C
@@ -175,7 +176,7 @@ CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
 !pb         SIGVPI(IRPI)=TBPI
 
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
-          END IF
+          END IF          
         ELSEIF (MODCOL(4,2,IRPI).EQ.2) THEN
 C  BEAM - MAXWELL
 C
@@ -194,7 +195,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
           END IF
-          SIGVPI(IRPI)=EXP(EXPO)
+          SIGVPI(IRPI)=EXP(EXPO)          
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
@@ -202,7 +203,7 @@ C  BEAM - BEAM
           ELAB=LOG(VRELQ)+DEFPI(IRPI)
           IREAC=MODCOL(4,1,IRPI)
           CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'FPATHM II')
-          SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
+          SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)         
         ELSE
           GOTO 991
         ENDIF
@@ -232,7 +233,10 @@ cdr       ESIGPI(IRPI,4)=EPLPI3(IRPI,K,1)
 cdr     ELSE
 cdr       ESIGPI(IRPI,4)=EIRENE_FEPLPI3(IRPI,K)
 cdr     END IF
-        CFLAG(4,1)=2
+cdr     CFLAG(4,1)=2
+c  cflag (4,...) sollte cflag4(irpi,...) werden.
+c  tentatively:
+        CFLAG(4,1)=1
 36    CONTINUE
 C
 C  CHARGE EXCHANGE RATE COEFFICIENT FOR MOLECULE IMOL

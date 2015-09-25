@@ -19,6 +19,7 @@ cdr  oct.14:  pls made allocatable
 cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing) 
 cdr  oct.14:  further syncronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
+cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -46,9 +47,9 @@ C
 
       INTEGER :: ICOUNT, IA1, IP2, IPLS, ITEST, IIO, IION, IDSC1,
      .           NRC, J, IPLS1, IPLS2, IATM, KK, IATM1, IATM2, ITYPB,
-     .           ISPZB, III, IDSC, IREL, IBGK, IIDS, IERR, IMOL, IIEL,
-     .           IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL, IICX,
-     .           IRCX, ITHRD, IFRTH, IRPI, IIPI
+     .           ISPZB, III, IDSC, IREL, IBGK_SP, IIDS, IERR, IMOL, 
+     .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL, 
+     .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
 
@@ -498,9 +499,11 @@ C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
             IF (IBGKI(IION,NRC).NE.0) THEN
               IF (NPBGKI(IION).EQ.0) THEN
+C  IION HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
+C  DO THIS HERE: IION IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
-                IBGK=NRBGI/3
-                NPBGKI(IION)=IBGK
+                IBGK_SP=NRBGI/3
+                NPBGKI(IION)=IBGK_SP
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKI(IION)

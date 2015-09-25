@@ -23,7 +23,7 @@ c       has been worked on before this function is called for the first time
         USE EIRMOD_CADGEO
         USE EIRMOD_CLGIN
         USE EIRMOD_COMPRT, only: iunout
-        USE EIRMOD_CTRCEI, only: trcoc
+        USE EIRMOD_CTRCEI, only: trcoct
         USE EIRMOD_OCTREE
         IMPLICIT NONE
 c       define an explicit interface to the block building function
@@ -42,7 +42,7 @@ c       define an explicit interface to the block building function
         REAL(DP) :: EIRENE_SECOND_OWN, start
         INTEGER :: J, LAYERS, NSURFACES
         
-        if (trcoc) then
+        if (trcoct) then
           WRITE (iunout,*)
           WRITE (iunout,*) 'STARTING ON BUILDING OCTREE...'
           start = EIRENE_SECOND_OWN()
@@ -79,7 +79,7 @@ c           find out how many surfaces we will get as a maximum
         
 c       if we do not have any surfaces we could add, do not build a tree
         if(nsurfaces == 0) then
-          if(trcoc) WRITE(iunout,*)'NO USABLE SURFACES FOUND, SKIPPING'
+          if(trcoct) WRITE(iunout,*)'NO USABLE SURFACES FOUND, SKIPPING'
           tree => null()
           return
         end if
@@ -95,7 +95,7 @@ c       -> this shall be the same criteria we have for deciding of
 c          splitting up child nodes
         IF(nsurfaces .le. 10) LAYERS=1
 
-        if (trcoc) then
+        if (trcoct) then
           WRITE (iunout,*) 'CONVEX HULL: X,   Y,   Z'
           WRITE (iunout,*) 'MIN:', xlim(1), ylim(1), zlim(1)
           WRITE (iunout,*) 'MAX:', xlim(2), ylim(2), zlim(2)
@@ -129,7 +129,7 @@ c          which actually have been associated with the root node
           CALL EIRENE_TIMEA_BuildBlocks(tree, root)
         END IF
         
-        if (trcoc) then
+        if (trcoct) then
           WRITE(iunout,*)
           WRITE(iunout,*) 'OCTREE BUILD PHASE FINISHED'
           WRITE(iunout,*)'CPU TIME USED IN BUILD:',
@@ -151,7 +151,7 @@ c       has been worked on before this function is called for the first time
         USE EIRMOD_CLGIN
         USE EIRMOD_CCONA
         USE EIRMOD_OCTREE
-        USE EIRMOD_CTRCEI, only: trcoc
+        USE EIRMOD_CTRCEI, only: trcoct
         IMPLICIT NONE
 
 c       definie explicit interfaces to the checking routines
@@ -196,7 +196,8 @@ c           only for nice 3,4 or 5 edge objects
 c             first check: is at least one point of this surface
 c                          in the block?
               IF (EIRENE_TIMEA_FirstCheck(SID, CHILD)) THEN
-                if(trcoc) WRITE(iunout,*) 'FIRST CHECK: ASSOC. SURFACE',
+                if(trcoct) 
+     .            WRITE(iunout,*) 'FIRST CHECK: ASSOC. SURFACE',
      .                             SID, 'WITH NODE', child%number,
      .                             'ON LAYER', child%layer
                   CALL OCTREE_AddSurface(SID, CHILD)
@@ -218,7 +219,8 @@ c             is this distance smaller than the radius + very tiny epsilon?
 c               third check: now we have to check on real intersections.
 c                           if we intersect, add this surface to the block
                 IF (EIRENE_TIMEA_ThirdCheck(SID, CHILD)) THEN
-                  if(trcoc)WRITE(iunout,*)'THIRD CHECK: ASSOC. SURFACE',
+                  if(trcoct)
+     .            WRITE(iunout,*)'THIRD CHECK: ASSOC. SURFACE',
      .                             SID, 'WITH NODE', child%number,
      .                             'ON LAYER', child%layer
                   CALL OCTREE_AddSurface(SID, CHILD)

@@ -362,8 +362,8 @@ C  YES
       END IF
 C
         READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
-     .                    NLERG,NLIDENT,NLONE,LTSTV,NLDFST,
-     .                    NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH
+     .                    NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
+     .                    NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH    
  
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTENRAL DATABASES: AMJUEL, HYDHEL,.....
@@ -2086,7 +2086,7 @@ C  Te profile
 C  Ti profile(s)
       NPLSTI = 1
       IF ((INDPRO(2) < 0) .OR. (INDPRO(2) > 9)) NPLSTI=NPLS
-      NLMLTI=NPLSTI > 1
+      NLMLTI= (NPLSTI > 1)
       MPLSTI=1
       IF (NLMLTI) MPLSTI = (/ (I,I=1,NPLS) /)
       INDPRO(2)=IABS(INDPRO(2))
@@ -2119,13 +2119,13 @@ c  vi profile(s)
 
       INDPRO(4)=IABS(INDPRO(4))
       IF (INDPRO(4) > 9) INDPRO(4) = MOD(INDPRO(4),10)
-      NLMLV = NPLSV > 1
+      NLMLV = (NPLSV > 1)
       IF (.not.NLMLV) THEN
         MPLSV = 1
       ELSE
         MPLSV = (/ (I,I=1,NPLS) /)
       ENDIF
-      IF (INDPRO(4).LE.5) THEN
+      IF (INDPRO(4).LE.5.AND.NPLSI.GT.0) THEN
         IF (.not. NLMLV) THEN
           READ (IUNIN,6664) VX0(1),VX1(1),VX2(1),VX3(1),VX4(1),VX5(1)
           READ (IUNIN,6664) VY0(1),VY1(1),VY2(1),VY3(1),VY4(1),VY5(1)
@@ -2169,8 +2169,14 @@ c  cell volume -profile
         IREAD = 1
       END IF
 
-      IF (LHYDDEF) CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,
-     .  CADAPT)
+C  TRY TO GENERATE INPUT FOR EIRENE CORRESPONDING TO A HYDKIN RUN.
+C  NOT READY
+      IF (LHYDDEF) THEN
+c       WRITE (IUNOUT,*) 
+c    .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
+c       CALL EIRENE_EXIT_OWN(1)
+        CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
+      ENDIF
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699
 C
@@ -2488,7 +2494,8 @@ C  AMPTS: (option added 2014) multiplier for max. allowed cpu time NTCPU, and fo
       END IF
 C
       DO 712 ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA).EQ.6) GOTO 712
+        IF (INDSRC(ISTRA).EQ.6) GOTO 712  ! SKIP READING INPUT FOR THIS STRATUM.
+
         I=ISTRA
         IF (IREAD.EQ.0) THEN
           READ (IUNIN,'(A72)') TXTSOU(ISTRA)
@@ -2879,7 +2886,8 @@ cdr  better: first discriminate by isrfcll,  then, for each value of isrfcll: do
 c   isrcfll=0 : surface averaged tally
 c   isrfcll=1 : volume averaged tally, integrated over all directions
 c   isrfcll=2 : volume averaged tally, along a specific direction
-c  it seems: furace averages directional tallies: not yet forseen
+c  it seems: surface averaged directional tallies: not yet forseen
+c  one may try to score coefficients of orthogonal angular expansion, per energy bin.
 
           IF (ISPSRF > 0) THEN
             IF ((ISRFCLL == 0) .AND. (ISPSRF > NLIMI)) THEN
@@ -2987,12 +2995,12 @@ c  standard deviation of spectra tallies
             ALLOCATE(SSPEC)
             ALLOCATE(SSPEC%SPC(0:NSPS+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
-!            IF (NSIGI_SPC > 0) THEN
+!           IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPS+1))
               ALLOCATE(SSPEC%SGM(0:NSPS+1))
               ALLOCATE(SSPEC%STV(0:NSPS+1))
               ALLOCATE(SSPEC%GG(0:NSPS+1))
-!            END IF
+!           END IF
             SSPEC = ESPEC
             SMESTL(J)%PSPC => SSPEC
           END IF
@@ -3023,7 +3031,7 @@ c  search for input block 11a
      .                  TRCGRD,TRCSUR,TRCREF,TRCFLE,TRCAMD,
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
-     .                  TRCBLPH,TRCTAL,TRCOC,TRCDUMM,TRCDUMM,
+     .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCDUMM,
 CVK TRACING FOR DEBUGGING:  not in use in present eirene 
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
      .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
@@ -3297,13 +3305,26 @@ C
 C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
+        IF (NTIME.EQ.0) NTIME=1
         WRITE (iunout,*) '        NPRNLI= ',NPRNLI,
      .                   ' (MODIFIED DUE TO NLERG)'
       ELSE
         WRITE (iunout,*) '        NPRNLI= ',NPRNLI
       ENDIF
 
-      IF (NPRNLI.LE.0) GOTO 1350
+      IF (NPRNLI.LE.0.OR.NTIME.EQ.0) THEN
+C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
+        IF (NPRNLI.GT.0) THEN
+          WRITE (IUNOUT,*) 'TIME DEP. MODE TURNED OFF, BECAUSE NTIME=0'
+          NPRNLI=0
+        ENDIF
+        IF (NTIME.GT.0) THEN
+          WRITE (IUNOUT,*) 'TIME DEP. MODE TURNED OFF, BECAUSE NPRNLI=0'
+          NTIME=0
+        ENDIF
+        GOTO 1350
+      ENDIF
+
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:1).EQ.'*') THEN
@@ -3385,7 +3406,7 @@ C  CHECK STORAGE
           ENDIF
 C
 C  SET DEFAULTS FOR SOURCE DUE TO INITIAL CONDITION, VALID ONLY FOR
-C  FIRST TIMESTEP. MODIFIED FOR LATER TIMESTEPS IN SUBR. TMSTEP
+C  FIRST TIMESTEP. MODIFIED FOR LATER TIMESTEPS IN SUBR. MOD_TMSTEP
 C
           TXTSOU(NSTRAI)='SOURCE DUE TO INITIAL CONDITION          '
 C  SOURCE DISTRIBUTION SAMPLED FROM CENSUS ARRAYS RPARTC,IPARTC
@@ -3474,13 +3495,21 @@ C
 C
         IF (NPTST.EQ.0) THEN
           NPTS(NSTRAI)=IPRNL
-          NLMOVIE=.FALSE.
+          IF (NLMOVIE) THEN
+            WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.GE.0'
+            NLMOVIE=.FALSE.
+          ENDIF
         ELSEIF (NPTST.GT.0) THEN
           NPTS(NSTRAI)=NPTST
-          NLMOVIE=.FALSE.
-        ELSEIF (NPTST.LT.0) THEN
+          IF (NLMOVIE) THEN
+            WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.GE.0'
+            NLMOVIE=.FALSE.
+          ENDIF
+        ELSEIF (NPTST.LT.0.OR.NLMOVIE) THEN
+C  ONE BY ONE RELAUNCH FROM OLD CENSUS
+C  OLD CENSUS CONTAINS IPRNL ENTRIES.
           NPTS(NSTRAI)=IPRNL
-          NLMOVIE=.TRUE.
+          NMINPTS(NSTRAI)=IPRNL           
         ENDIF
 C
         IF (NPTS(NSTRAI).GT.0.AND.FLUX(NSTRAI).GT.0) THEN

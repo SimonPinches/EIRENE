@@ -3,6 +3,7 @@ c   modbgk  eirene_git, sept.2014
 C       ??     INDIRECT SPECIES INDEXING IPLSV, IPLSTI INCLUDED, FOR TIIN and VXIN,VYIN,VZIN  
 CDR            This is risky, because bgk collisions may then overwrite temperatures/velocities for non-bgk background
 CDR            depending on setting of MPLSTI(ipls) and MPLSV(ipls) arrays.
+cdr            in case of bgk: always multiple temperatures and multiple flow velocities.
 c         
 c  to be done: cross temperature correction (Kotov)  (already done in solps-iter part)
 C              HERE: ALLOCATION, DEALLOCATION: DONE
@@ -13,10 +14,11 @@ c
 !pb  05.04.11: BFIN initialized with 1
 !pb  18.02.13: take index transformation via NCLTAL into account
 cdr
-C  NCLTAL(I-FINE):  CELL I-FINE IS PART OF COARSER GRID CELL NCELL,
+C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER GRID CELL NCELL,
 C                   NCELL=NCLTAL(I-FINE)
 C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
-cdr
+cdr  29.08.15:  CROSSTEMP WAS INTRODUCED BY VK SO THAT NEW EFFECTIVE COLLISION RATE IS EVALUATED 
+c               WITH THIS EEFECTIVE TEMPERATUR
 C
       SUBROUTINE EIRENE_MODBGK
 
@@ -124,8 +126,9 @@ CVK END
 
 !pb 05.02.2013  take care of scoring cells
 
-cdr  set bgk volume averaged tallies BGKV, which had been scored on goarse grid, now also on fine grid
-cdr  assume: constant "extensive" fine grid values PER CELL within one coarse grid cell
+cdr  set bgk volume averaged tallies BGKV, which had been scored on goarse grid, 
+CDR  now also on fine grid
+cdr  assume: constant "extensive" fine grid values IN ALL IRAD within one coarse grid cell IRD
 
       ALLOCATE (GBGKV(NBGV,NRAD))
       GBGKV = 0._DP
@@ -156,7 +159,7 @@ C
 C
         IF (NPBGKP(IPLS,1).EQ.0) GOTO 1000
 C
-C  YES. FIND INCIDENT TEST PARTICLE COLLISION PARTNER: ITYP, ISPZ, IREL
+C  YES. FIND CORRESPONDING INCIDENT TEST PARTICLE COLLISION PARTNER: ITYP, ISPZ, IREL
 
         IBGK1=NPBGKP(IPLS,1)
         IUP1=(IBGK1-1)*3+1
@@ -171,7 +174,8 @@ C  TRY ATOMS
             FACT1=CVRSSA(IATM)
             RMAS1=RMASSA(IATM)
             DO IRAD=1,NRAD
-!pb 05.02.2013  take care of scoring cells
+!pb 05.02.2013  take care of coarse scoring cells
+c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
               IRD = NCLTAL(IRAD)
               PDEN(IRAD)=PDENA(IATM,IRD)
               EDEN(IRAD)=EDENA(IATM,IRD)
@@ -203,7 +207,8 @@ C  TRY MOLECULES
             FACT1=CVRSSM(IMOL)
             RMAS1=RMASSM(IMOL)
             DO IRAD=1,NRAD
-!pb 05.02.2013  take care of scoring cells
+!pb 05.02.2013  take care of coarse scoring cells
+c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
               IRD = NCLTAL(IRAD)
               PDEN(IRAD)=PDENM(IMOL,IRD)
               EDEN(IRAD)=EDENM(IMOL,IRD)
@@ -235,7 +240,8 @@ C  TRY TEST IONS
             FACT1=CVRSSI(IION)
             RMAS1=RMASSI(IION)
             DO IRAD=1,NRAD
-!pb 05.02.2013  take care of scoring cells
+!pb 05.02.2013  take care of coarse scoring cells
+c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
               IRD = NCLTAL(IRAD)
               PDEN(IRAD)=PDENI(IION,IRD)
               EDEN(IRAD)=EDENI(IION,IRD)
@@ -262,6 +268,8 @@ C  FIND INDEX IREL
 
 C  AT THIS POINT: COLLISION PARTNER AMONST TEST PARTICLES HAS BEEN IDENTIFIED (ITYP1, IATM1, IMOL1, IION1)
 C  AS WELL AS THE NUMBER OF COLLISION PROCESS IREL1
+C  DENSITY AND ENERGY DENSITY TALLIES OF COLLISION PARTNER "PDEN,EDEN"
+C  HAVE NOW BEEN SET ON FINE GRID
 C
 C  SELF COLLISION OR CROSS COLLISION
 C
@@ -346,7 +354,7 @@ C
 C
         IF (TRCMOD) THEN
           WRITE (iunout,*) 'MODBGK: SELF COLLISION, IPLS',IPLS
-          WRITE (iunout,*) 'ITYP,ISPZ,IBGK,IREL ',ITYP1(IPLS),
+          WRITE (iunout,*) 'ITYP,ISPZ,IBGK_SP,IREL ',ITYP1(IPLS),
      .                                ISPZ1(IPLS),IBGK1,IREL1(IPLS)
         ENDIF 
 C
@@ -925,6 +933,7 @@ C
       CALL EIRENE_EXIT_OWN(1)
 C
 999   CONTINUE
-      WRITE (iunout,*) 'ERROR IN MODBGK. IPLS,IBGK= ',IPLS,IBGK1,IBGK2
+      WRITE (iunout,*) 'ERROR IN MODBGK. IPLS,IBGK_SP= ',
+     .                  IPLS,IBGK1,IBGK2
       CALL EIRENE_EXIT_OWN(1)
       END

@@ -19,6 +19,8 @@ C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NST
 C             VIA FILES FROM FORT.29?
 
 c             plus minor notational cleanup, comments added
+cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell wise. 
+
 
 
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
@@ -459,11 +461,6 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
-csw 26jan2011 extra B25, not used anymore (called in eirene_mc)
-c      if(my_pe == 0) then
-c        call eirene_extrab25_eirpbls_init(2,0,0,0,0,0,nfla)
-c      endif
-csw
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
@@ -1331,6 +1328,13 @@ C  CELL VOLUMES AS USED IN B2
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,VOLB)
 C  MAGNETIC FIELD STRENGTH (TESLA)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BFELDB)
+      
+!pb 15.09.2015
+      where (bfeldb == 0._dp)
+         bfeldb = 1._dp
+      elsewhere
+! nothing to be done
+      end where
 
       CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VPARXB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VPARYB)

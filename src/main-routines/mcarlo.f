@@ -8,7 +8,8 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 
 !PB 02.03.06: storing of trajectories
 !pb 08.11.06: definition of splitting arrays changed
-!             RSPLST(NLEVEL,1:NPARTT) --> RSPLST(1:NPARTT,NLEVEL)
+!             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
+!             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
 !pb 01.12.06: open and close of fort.10 moved to WRSTRT
 !pb 05.12.06: COLLECT_CENSUS introduced to allow for time dependent mode in
 !             parallel calculation
@@ -332,12 +333,10 @@ C  ASSIGN NUMBER OF PARTICLES TO BE STORED ON CENSUS, PROPORTIONAL
 C  TO CPU TIME ASSIGNED TO EACH STRATUM
 C
       IF (NPRNLI.GT.0) THEN
-        WRITE(iunout,*)
-     .    'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED '
-        WRITE(iunout,*) 'FOR SNAPSHOT ESTIMATORS: PROPORTIONAL TO CPU-'
-        WRITE(iunout,*) 'TIME ALLOCATED FOR EACH STRATUM'
+        WRITE(iunout,*) 'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED'
+        WRITE(iunout,*) 'ON CENSUS (TIME DEP MODE): '
+        WRITE(iunout,*) 'PROP. TO CPU-TIME ALLOCATED FOR EACH STRATUM'
         DO  ISTRA=1,NSTRAI
-CVKMPI          XFACT=(XTIM(ISTRA)-XTIM(ISTRA-1))/XX1
           XFACT=XTIM(ISTRA)/XX1 !VKMPI
           XPRNLS       =NPRNLI*XFACT+0.5
           NPRNLS(ISTRA)=XPRNLS
@@ -368,12 +367,25 @@ C
 !pb      IF ((NSTEFF > 0) .AND. (NPRS.GT.nsteff)) THEN
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
-!pb021213        call EIRENE_broad_pedist(xtim,npts,nminpts,trcdbgmpi)
         call EIRENE_broad_pedist(xtim)
         if (.not.nlident) then
           do istra=1,nstrai
             ninitl(istra)=ninitl(istra)+my_pe*10000
           enddo
+        ELSE
+          CALL EIRENE_LEER(1)
+          WRITE (IUNOUT,*) '......................................... '
+          WRITE (IUNOUT,*) 'NLIDENT: '
+          WRITE (IUNOUT,*) 'DEBUG MODUS FOR PARALLELIZATION IS ACTIVE'
+          WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
+          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED. '
+          WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
+          WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL '
+          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST  '
+          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),' 
+          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE' 
+          WRITE (IUNOUT,*) '......................................... '
+          CALL EIRENE_LEER(1)         
         endif
         NPRNLS=NPRNLI
       ENDIF
@@ -401,34 +413,40 @@ C
         timan=EIRENE_second_own()
 
         ISTRA=ISTR
+        
+C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
+C  IN TIME DEP. MODE
+        IF (NPTST.LT.0.OR.NLMOVIE) THEN
+C  revert sequence of strata, so that census stratum is dealt with first
+c  to ensure: ALL particles from census are re-launched, one by one (not: by sampling)
+          ISTRA=NSTRAI-ISTR+1
+          IF (ISTRA.EQ.NSTRAI-1) THEN
+C  TOTAL STORAGE STILL AVAILABLE ON NEW CENSUS
+C  AFTER ONE TO ONE RESTART FROM OLD CENSUS IS COMPLETED
+            NPTTOT=NPRNLI-IPRNLI
+C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
+            CALL EIRENE_LEER(2)
+            WRITE (iunout,*)
+     .        'REDEFINE NPTS FOR OF ONE-BY-ONE RELAUNCH FROM CENSUS'
+            ISUM=0
+            DO IS=1,NSTRAI-1
+              XFACT=XTIM(IS)/XTIM(0)  !PB  XTIM(IS): CPU TIME ASSIGNED TO STRATUM IS
+              XPRNLI=NPTTOT*XFACT+0.5
+              NPTS(IS)=XPRNLI
+              ISUM=ISUM+NPTS(IS)
+              WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
+            ENDDO
+          ENDIF
+        ENDIF
+
+C  MOVIE OPTION (NLMOVIE):  DONE, 
+C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai comes first!
+C                    one by one re-launch of ALL particles from census
+c    if not nlmovie: census stratum istra=nstrai comes last.
+
         IF (.NOT.NLSRON(ISTRA)) CYCLE
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
 
-C  SPECIAL TREATMENT FOR MOVIE OPTION:
-          IF (NLMOVIE) THEN
-!pb            ISTRA=NSTRAI-ISTR+1
-!pb            IF (ISTRA.EQ.NSTRAI-1) THEN
-            IF (ISTR.EQ.1) THEN
-C  TOTAL NUMBER OF PARTICLES TO BE LAUNCHED FROM ALL NON-CENSUS STRATA
-              NPTTOT=NPRNLI-NPANU
-C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
-              CALL EIRENE_LEER(2)
-              WRITE (iunout,*)
-     .          'REDEFINE NPTS(ISTRA) BECAUSE OF NLMOVIE OPTION'
-              ISUM=0
-              DO IS=1,NSTRAI-1
-CVKMPI                XFACT=(XTIM(IS)-XTIM(IS-1))/XTIM(NSTRAI-1)
-!pb                XFACT=XTIM(ISTRA)/(XTIM(0)-XTIM(NSTRA))  !VKMPI
-                XFACT=XTIM(IS)/XTIM(0)  !PB
-                XPRNLI=NPTTOT*XFACT+0.5
-                NPTS(IS)=XPRNLI
-                ISUM=ISUM+NPTS(IS)
-                WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
-              ENDDO
-            ENDIF
-          ENDIF
-
-C  MOVIE OPTION (NLMOVIE):  DONE
 
           CALL EIRENE_LEER(2)
           IF (NPTS(ISTRA).GT.0) THEN
@@ -598,12 +616,13 @@ cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
             CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
      .                          ISTRA,IPANU,TIMUSED)
-cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
             WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
             CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
             IF (TRCLST) CALL EIRENE_OUTLST
             GOTO 101
           ENDIF
+
+C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
           SECND1=EIRENE_SECOND_OWN()
           LGLAST = IPTSI.EQ.NPTS(ISTRA)
           LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
@@ -659,6 +678,8 @@ C
           IF (NLRAY(ISTRA)) THEN
             CALL EIRENE_CLEAR_TRAJECTORY (ITRJ)
           END IF
+
+
 C  NUMBER OF REMAINING NODES AND NUMBER OF LEVELS AT NEXT NODE
           IF (NLEVEL.GT.0) THEN
 104         INODES=NODES(NLEVEL)-1
@@ -738,12 +759,12 @@ C
           ENDIF
 100     CONTINUE
         CALL EIRENE_LEER(1)
+
         WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
         WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
         WRITE (iunout,*) 'THIS STRATUM'
 CDR     CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
 
-csw 19feb2019
 !pb 0312 2013        timend=mpi_wtime()
         call system_clock (itimend, itimrate)
         timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
