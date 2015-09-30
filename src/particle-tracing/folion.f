@@ -1405,11 +1405,13 @@ C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1
           IF (ICOUN.EQ.100) THEN
             WRITE (IUNOUT,*) 'PARTICLE KILLED AT SURFACE IN FOLION'
+            WRITE (IUNOUT,*) 'NO PROPER GYRO ANGLE FOUND'
             WRITE (IUNOUT,*) 'NPANU, MSURF ',NPANU, MSURF
             WRITE (IUNOUT,*) 'VELPER,VELPAR ',VELPER,VELPAR
             LGPART=.FALSE.
             WEIGHT=0.
-            RETURN
+            ZT=0.0
+            GOTO 9951
           ENDIF
  
         ENDDO
@@ -1487,6 +1489,7 @@ C
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       ZT=0.
       GOTO 9951
+
 9921  CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
