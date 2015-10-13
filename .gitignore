@@ -1,0 +1,4 @@
+# files that are ignored
+.cproject
+.project
+.settings

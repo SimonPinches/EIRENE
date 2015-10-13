@@ -48,7 +48,7 @@ C
      .          X, Y, Z, XW2, DM, RR, XW1, ABSMAX, ORDMAX, XPLO, YPLO,
      .          ZPLO, XNULL, XMI2D, XMA2D, YNULL, XWN, YWN, YT2, TESTN,
      .          XT2, XTIP, P, YTIP, TR, RS, EP, EL, XT, YT, XTN, YTN,
-     .          DXX, DYY, A, B, XN0, timpb
+     .          DXX, DYY, A, B, XN0
       REAL(SP) :: XPS(5), YPS(5)
       INTEGER :: ISPL(NTXHST),ICLR(2*NSTS+1),IDSH(2*NSTS+1),
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
@@ -87,13 +87,13 @@ C
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',
+     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR. 
 c  next symbols/text: only for printout, not on plot.
      .            'INT. GRID SURFACE(8)',
      .            'DIFFUSION STEP(19)  '/
 C
-C  SYMBOL FOR PARTICLE TRACING ERROR
-      ISYM_ERR=NTXHST-1
+C  SYMBOL FOR PARTICLE TRACING ERROR, CURRENTLY NO. 18
+      ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD WIRED FOR TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...
       IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
 
       ALLOCATE (XX(MAX(101,NTTRA+1)))
@@ -1485,8 +1485,7 @@ C
       XN=XN2D
       YN=YN2D
       FX=FX2D
-      FY=FY2D
-      timpb = time
+      FY=FY2D 
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
         IF (.NOT.NLPL3D) CALL GRSCLV (
@@ -1652,8 +1651,10 @@ C  FOR TRACE IONS: VELOCITY IS EITHER CARTESIAN (LCART) OR THE REDUCED (GC) VELO
      .           VELX,VELY,VELZ,VEL,E0)
           ELSE
           CALL EIRENE_MASR6
-     .         ('VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0             ',
-     .           VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
+C     .         ('VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0             ',
+C     .           VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
+     .           ('VLXPAR,VLYPAR,VLZPAR,VELPAR,VELPER,E0             ', C FHa
+     .             VLXPAR,VLYPAR,VLZPAR,VELPAR,VELPER,E0)
           ENDIF
         ELSE
 C  FOR NEUTRALS OF PHOTONS: VELOCITY IS ALWAYS GIVEN BY THE CARTESIAN COMPONENTS
