@@ -231,7 +231,7 @@ c  VL_PAR: parallel unit speed vector, VL_PAR = SIG*B
 c  VL_PAR = (/ VLXPAR, VLYPAR, VLZPAR /)
 
 c  set ion energy = parallel energy of the ionized test particle
-c  FHac WHY?
+c  FHa WHY?
       E0PAR=CVRSSI(IION)*VELPAR*VELPAR
 
 1004  CONTINUE
@@ -1615,6 +1615,8 @@ c  written for fnueqi without that factor.
 
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
 C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
+C  this corresponds to the formula (11.102) of the EIRENE manual,
+C  Version 11/2009
 
       FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_1,EA,XNI,TI
@@ -1626,7 +1628,11 @@ C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
       XMUA=nMASSI(ION)
       XMUB=nMASSP(IPL)
       FACT=XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**0.5
-      FNUEQI_1=FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
+      FNUEQI_1 = FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
+C  FHa The new version - to be implemented and tested
+C     FNUEQI_1 corresponds to \tilde \nu_\epsilon of the EIRENE manual,
+C     compare eq. (11.104), v11/2009
+C     FNUEQI_1 = 2*XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**1.5
       RETURN
       END FUNCTION FNUEQI_1
 
