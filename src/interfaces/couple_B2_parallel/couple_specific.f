@@ -905,15 +905,28 @@ C=======================================================================
       INTEGER, INTENT(IN) :: KARD, NDIMX, NDIMY, NDIMF, N, M, NF
       REAL(DP), INTENT(INOUT) :: DUMMY(0:N+1,0:M+1,NF)
       INTEGER :: ND1, LIM, IF, III, IX, IY
+, i1, i2, i3
+      character(50) :: form
+      character(200) :: zeile
+
+      form = repeat(' ',50)
+      read (kard,'(a200)',END=500) zeile
+      i1 = index(zeile,'.')
+      i2 = scan(zeile,'E,e')
+      i3 = index(zeile(i2+1:),' ')
+      write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
+      backspace kard
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
       DO    110  IF = 1,NDIMF
       DO    110  IY = 0,NDIMY+1
       DO    100  IX = 1,LIM,5
-100     READ(KARD,910,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+!100     READ(KARD,910,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+100     READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
         IF( (LIM+4).EQ.ND1 )     GOTO 110
-        READ(KARD,910,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+!        READ(KARD,910,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+        READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
 110   CONTINUE
 500   RETURN
 910   FORMAT(5(E16.8))

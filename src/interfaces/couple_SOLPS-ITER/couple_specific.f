@@ -108,6 +108,9 @@
       !flux_save
       real*8, save, public, allocatable :: flux_save(:)
 
+!
+      integer, public, save :: ini_iniusr=0
+
       contains
 
       subroutine eirene_extrab25_alloc_mods(nnx,nny)
@@ -1234,6 +1237,8 @@ cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       bsps_spch(1:n_spcsrf) = sps_spch(1:n_spcsrf)
       bsps_mtrl(1:n_spcsrf) = sps_mtrl(1:n_spcsrf)
       bsps_id(1:n_spcsrf) = sps_id(1:n_spcsrf)
+
+      ini_iniusr = 1
       end subroutine
 
       subroutine eirene_extrab25_cleanup
@@ -2219,7 +2224,17 @@ C=======================================================================
 
       INTEGER, INTENT(IN) :: KARD, NDIMX, NDIMY, NDIMF, N, M, NF
       REAL(DP), INTENT(INOUT) :: DUMMY(0:N+1,0:M+1,NF)
-      INTEGER :: ND1, LIM, IF, III, IX, IY
+      INTEGER :: ND1, LIM, IF, III, IX, IY, i1, i2, i3
+      character(50) :: form
+      character(200) :: zeile
+
+      form = repeat(' ',50)
+      read (kard,'(a200)',END=500) zeile
+      i1 = index(zeile,'.')
+      i2 = scan(zeile,'E,e')
+      i3 = index(zeile(i2+1:),' ')
+      write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
+      backspace kard
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
@@ -2227,9 +2242,11 @@ C=======================================================================
       DO    110  IF = 1,NDIMF
       DO    110  IY = 0,NDIMY+1
       DO    100  IX = 1,LIM,5
-100     READ(KARD,910,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+!100     READ(KARD,910,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+100     READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
         IF( (LIM+4).EQ.ND1 )     GOTO 110
-        READ(KARD,910,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+!        READ(KARD,910,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+        READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
 110   CONTINUE
 500   RETURN
 910   FORMAT(5(E16.8))
