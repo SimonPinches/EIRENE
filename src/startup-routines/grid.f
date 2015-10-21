@@ -177,7 +177,7 @@ C  SOLVE RSURF**2*ELL(RSURF)-(J-1)*FRING/PIA=0., RSURF(J-1)<RSURF<RAA
             ENDIF
           ELSE
             WRITE (iunout,*) 'INVALID OPTION ENCOUNTERED IN SUBR. GRID'
-            WRITE (iunout,*) 'INDGRD(IND),NLCRC ',INDGRD(IND),NLCRC
+            WRITE (iunout,*) 'INDGRD(1),LEVGEO ',INDGRD(IND),LEVGEO
             WRITE (iunout,*) 'EXIT CALLED FROM SUBR. GRID'
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
@@ -1156,6 +1156,11 @@ C
           DO 213 J=1,NP2ND
             PSURF(J)=(YIA+(J-1)/DBLE(NP2NDM)*(YAA-YIA))*DEGRAD
 213       CONTINUE
+        ELSE
+          WRITE (iunout,*) 'INVALID OPTION ENCOUNTERED IN SUBR. GRID'
+          WRITE (iunout,*) 'INDGRD(2),LEVGEO ',INDGRD(IND),LEVGEO
+          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. GRID'
+          CALL EIRENE_EXIT_OWN(1)
         ENDIF
         DO 215 J=1,NP2ND
           COSPH(J)=COS(PSURF(J))

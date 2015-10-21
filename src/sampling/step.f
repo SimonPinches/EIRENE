@@ -1,6 +1,6 @@
-C jet-2005, patch 1, nov. 05:  add mcstep, fistep, festep, shstep, vpstep
+C nov. 05:  add mcstep, fistep, festep, shstep, vpstep
 c                              ve and eltot
-c requires also:  jet-2005, patch 1 of cstep.f
+c requires also:  2005, patch 1 of cstep.f
 C
       FUNCTION EIRENE_STEP(NSPZI,NSPZE,NS,ISTEP)
 C
@@ -48,7 +48,11 @@ C
       NSPSTE(ISTEP)=NSPZE
 C
       NLINV=.FALSE.
-1     CONTINUE
+
+1     CONTINUE  !  POSSIBLY: COME BACK HERE FROM DO 21 LOOP, 
+CDR                AND REVERT THE ORDERING OF STEP FUNCION
+CDR                SUCH THAT RRSTEP IS MONOTONICALLY INCREASING
+
       IF (NLINV) THEN
 
 !pb  necessary for large geometries on supercomputer
@@ -216,9 +220,9 @@ C  save totals before normalization
         ELTOT(ISPZ,ISTEP)=VE(ISPZ,ISTEP,NS)
  
         IF (FLTOT(ISPZ,ISTEP).LE.0.D0) THEN
-          WRITE (iunout,*) 'WARNING FROM FUNCTION EIRENE_"STEP"'
+          WRITE (iunout,*) 'WARNING FROM FUNCTION "STEP"'
           WRITE (iunout,*)
-     .      'DENSITY FUNCTION EIRENE_FLSTEP(ISPZ,ISTEP) VANISHES '
+     .      'DENSITY FUNCTION FLSTEP(ISPZ,ISTEP) VANISHES '
           WRITE (iunout,*) 'ISPZ,ISTEP ',ISPZ,ISTEP
         ENDIF
 25    CONTINUE
@@ -259,7 +263,7 @@ C
       ENTRY EIRENE_STEP0(NSPZ1,ISTEP,X)
       ISPZ1=NSPZ1
 C
-C   COMPUTE VF(X) NO. ISTEP BY LINEAR INTERPOLATION
+C   EVALUATE CUMULATIVE DISTRIBUTION VF(X) NO. ISTEP, AT POINT X,  BY LINEAR INTERPOLATION
 C
       IF (ISPZ1.LT.0) GOTO 990
       IF (ISPZ1.GT.0.AND.ISPZ1.LT.NSPSTI(ISTEP)) GOTO 990

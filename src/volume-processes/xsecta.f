@@ -20,6 +20,7 @@ cdr  oct.14:  comsou, clogau removed
 cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing) 
 cdr  oct.14:  further syncronization with xsectm,xsecti
 cdr           remaining relevant differences in default models only.
+cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -47,7 +48,7 @@ C
 
       INTEGER :: II, IML, IM, IIO, NTE, ISTORE, ISCND, ISCDE, IFRST,
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
-     .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK, IA, ISP, IP,
+     .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP, IA, ISP, IP,
      .           IAPI, IRPI, IACX, IDSC, IPL, IAEI, IESTM, IRCX, IPLSTI,
      .           ISTORE_MDCL, ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -86,7 +87,7 @@ C  CHECK IF THIS REALLY IS AN ATOM: USE NPRT(ISPZ).EQ.1?
           WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTA: '
           WRITE (IUNOUT,*) 'IATM= ',IATM,' CARRIES NOT ONE FLUX UNIT'
           WRITE (IUNOUT,*) 'EXIT CALLED FROM XSECTA '
-          
+          CALL EIRENE_EXIT_OWN(1)
         ENDIF
  
 C  YES, "IATM" IS AN ATOM !
@@ -444,9 +445,11 @@ C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
             IF (IBGKA(IATM,NRC).NE.0) THEN
               IF (NPBGKA(IATM).EQ.0) THEN
+C  IATM HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
+C  DO THIS HERE: IATM IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
-                IBGK=NRBGI/3
-                NPBGKA(IATM)=IBGK
+                IBGK_SP=NRBGI/3
+                NPBGKA(IATM)=IBGK_SP
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKA(IATM)

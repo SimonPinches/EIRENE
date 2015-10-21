@@ -154,7 +154,7 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
 c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
       IF (.NOT.LCART) GOTO 9921
       IC_ION=IC_ION+1
-      XGENER=0
+      XGENER=0.D0
       ico=0
       IF (ITYP.EQ.3.AND.(IION.LE.0.OR.IION.GT.NIONI)) GOTO 998
 C

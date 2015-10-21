@@ -1,11 +1,14 @@
 !pb  26.10.06: close file after read or write
-!pb  31.10.06:  definition of RPART, RPARTC, IPART, IPARTC changed
-!               RPART(NPARTT,NPRNL) --> RPART(NPRNL,NPARTT)
+!pb  31.10.06:  definition of census arrays RPART, RPARTC, IPART, IPARTC changed
+!               RPART (NPARTT,NPRNL) (now) <-- RPART (NPRNL,NPARTT) (formerly)
+!               RPARTC(NPARTT,NPRNL) (now) <-- RPARTC(NPRNL,NPARTT) (formerly)
+!               IPART (MPARTT,NPRNL) (now) <-- IPART (NPRNL,MPARTT) (formerly)
+!               IPARTC(MPARTT,NPRNL) (now) <-- IPARTC(NPRNL,MPARTT) (formerly)
 C
 C
       SUBROUTINE EIRENE_WRSNAP
 C
-C  SAVE SNAPSHOT POPULATION AT END OF TIMESTEP
+C  SAVE SNAPSHOT POPULATION RPARTC,IPARTC, AT END OF TIMESTEP
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

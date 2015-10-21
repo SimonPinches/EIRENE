@@ -6,19 +6,19 @@ CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
 C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS 
 c 
-c  modcol=1: only dependent on local background data, not on test particle parameters
+c  modcol=1: rate coefficients only dependent on local background data, not on test particle parameters
 c            tabcx3(...,1),tabel3(...1),tabpi3(...1),tabds1(...) 
 c            are rates, density of impacting bulk ion included, 
 c            so here we divide again by ne or ni.
 c
-c  modcol=2: depends on Eb = energy of impacting test particle
+c  modcol=2: rate coefficients depend on Eb = energy of impacting test particle
 c            tabcx3(...,1,nend),tabel3(...,1,nend),tabpi3(...,1,nend) 
 c               are ln(rate)
 c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
 c  
 c
 C
-C  RATE COEFFCIENTS IN ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
+C  RATE COEFFCIENTS TO ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
 C  TO CONVERT THESE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e-08
 c
 c  done for naint=20,22,24,26 and modcol=1
@@ -58,7 +58,8 @@ c                            nidsi(iio) --> nieii(iio)
 
       REAL(DP) :: AU, ELB, EXPO, FP, RCMIN,RCMAX,
      .            TBCX3(9),TBPI3(9),TBEL3(9),
-     .            EIRENE_SNGL_POLY
+     .            EIRENE_SNGL_POLY,
+     .            RMASSS,EBFAC
       INTEGER :: NS,NA,IAIN,MM,KK,
      .           irei,ircx,irpi,irel,irrc,
      .           iat,iml,iio,ipl,isp,iplti,
@@ -191,6 +192,7 @@ c  first: try atoms
             if (IRCX.eq.LGACX(IAT,IACX,0)) then
               IPL =LGACX(IAT,IACX,1)
               ISP=NSPH+IAT
+              RMASSS=RMASSA(IAT)
               GOTO 172
             endif
           enddo
@@ -203,6 +205,7 @@ c  next: try molecules
             if (IRCX.eq.LGMCX(IML,IMCX,0)) then
               IPL =LGMCX(IML,IMCX,1)
               ISP=NSPA+IML
+              RMASSS=RMASSM(IML)
               goto 172
             endif
           enddo
@@ -215,6 +218,7 @@ c  next: try test ions
             if (IRCX.eq.LGICX(IIO,IICX,0)) then
               IPL =LGICX(IIO,IICX,1)
               ISP=NSPAM+IIO
+              RMASSS=RMASSI(IIO)
               goto 172
             endif
           enddo
@@ -255,9 +259,12 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             FP = 0._DP
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
-c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
+c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
+            EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
-              ELB=log(1.5*TIIN(iplti,icell))
+c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+              ELB=log(1.5*TIIN(iplti,icell)*EBFAC)
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
               ADIN(IAIN,ICELL)=
@@ -293,6 +300,7 @@ c  first: try atoms
             if (IREL.eq.LGAEL(IAT,IAEL,0)) then
               IPL =LGAEL(IAT,IAEL,1)
               ISP=NSPH+IAT
+              RMASSS=RMASSA(IAT)
               GOTO 174
             endif
           enddo
@@ -305,6 +313,7 @@ c  next: try molecules
             if (IREL.eq.LGMEL(IML,IMEL,0)) then
               IPL =LGMEL(IML,IMEL,1)
               ISP=NSPA+IML
+              RMASSS=RMASSM(IML)
               goto 174
             endif
           enddo
@@ -317,6 +326,7 @@ c  next: try test ions
             if (IREL.eq.LGIEL(IIO,IIEL,0)) then
               IPL =LGIEL(IIO,IIEL,1)
               ISP=NSPAM+IIO
+              RMASSS=RMASSI(IIO)
               goto 174
             endif
           enddo
@@ -355,9 +365,12 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             FP = 0._DP
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
-c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
+c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
+c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
+            EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
-              ELB=log(1.5*TIIN(iplti,icell))
+c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
+              ELB=log(1.5*TIIN(iplti,icell)*EBFAC)
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
               ADIN(IAIN,ICELL)=
@@ -393,6 +406,7 @@ c  first: try atoms
             if (IRPI.eq.LGAPI(IAT,IAPI,0)) then
               IPL =LGAPI(IAT,IAPI,1)
               ISP=NSPH+IAT
+              RMASSS=RMASSA(IAT)
               GOTO 176
             endif
           enddo
@@ -405,6 +419,7 @@ c  next: try molecules
             if (IRPI.eq.LGMPI(IML,IMPI,0)) then
               IPL =LGMPI(IML,IMPI,1)
               ISP=NSPA+IML
+              RMASSS=RMASSM(IML)
               goto 176
             endif
           enddo
@@ -417,6 +432,7 @@ c  next: try test ions
             if (IRPI.eq.LGIPI(IIO,IIPI,0)) then
               IPL =LGIPI(IIO,IIPI,1)
               ISP=NSPAM+IIO
+              RMASSS=RMASSI(IIO)
               goto 176
             endif
           enddo
@@ -457,9 +473,12 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             FP = 0._DP
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
-c           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE T_TEST = T-IPLS, and apply mass scaling
+c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
+            EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
-              ELB=log(1.5*TIIN(iplti,icell))
+c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+              ELB=log(1.5*TIIN(iplti,icell)*EBFAC)
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
               ADIN(IAIN,ICELL)=

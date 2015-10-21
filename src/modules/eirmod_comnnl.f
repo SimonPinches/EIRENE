@@ -1,11 +1,14 @@
-!pb  31.10.06:  definition of RPART, RPARTC, IPART, IPARTC changed
-!               RPART(NPARTT,NPRNL) --> RPART(NPRNL,NPARTT)
+!pb  31.10.06:  definition of census arrays RPART, RPARTC, IPART, IPARTC changed
+!               RPART (NPRNL,NPARTT) --> RPART (NPARTT,NPRNL)
+!               IPART (MPRNL,NPARTT) --> IPART (MPARTT,NPRNL)
+!               RPARTC(NPRNL,NPARTT) --> RPARTC(NPARTT,NPRNL)
+!               IPARTC(MPRNL,NPARTT) --> IPARTC(MPARTT,NPRNL)        
  
       MODULE EIRMOD_COMNNL
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-!pb      USE COMPRT , ONLY : NPARTT, MPARTT
+
  
       IMPLICIT NONE
  

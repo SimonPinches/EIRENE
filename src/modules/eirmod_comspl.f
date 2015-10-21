@@ -1,12 +1,13 @@
 !pb  31.10.06:  definition of RSPLST, ISPLST changed
 !               RSPLST(15,NPARTC) --> RSPLST(NPARTC,15)
+!               ISPLST(15,MPARTC) --> ISPLST(MPARTC,15)
 !    20.06.07:  MAXLEVEL=15 defined, used in dimensioning of RSPLST and ISPLST
  
       MODULE EIRMOD_COMSPL
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-!pb      USE COMPRT , ONLY : NPARTC, MPARTC
+
  
       IMPLICIT NONE
  

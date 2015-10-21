@@ -14,6 +14,7 @@ C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
+cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !  
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
@@ -934,6 +935,15 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
         IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
         YMNLG2(1)=YMN2(1)
         YMXLG2(1)=YMX2(1)
+
+CDR:  NOT READY: ABUSE SPCPLT FOR MIN MAX ON PLOT, ALWAYS: LIN-LOG SCALE
+        IF (ESTIML(ISPC)%PSPC%SPC_XPLT.NE.666.)  THEN
+          YMN2(1)=ESTIML(ISPC)%PSPC%SPC_XPLT
+        ENDIF
+        IF (ESTIML(ISPC)%PSPC%SPC_YPLT.NE.666.)  THEN
+          YMX2(1)=ESTIML(ISPC)%PSPC%SPC_YPLT
+        ENDIF
+
         LSDVI(1)=NSIGI_SPC > 0
         LPLOT2(1)=.TRUE.
         IR1(1)=1
@@ -947,7 +957,8 @@ C  LINEAR OR LOGARITHMIC Y SCALE ?
         FITY=.FALSE.
 
 CDR  PLOT SPECTRUM LOGARITHMICALLY ???
-        IF (ESTIML(ISPC)%PSPC%SPC_YPLT.GT.0.0)  THEN
+CDR     IF (ESTIML(ISPC)%PSPC%SPC_YPLT.GT.0.0)  THEN
+        IF (.TRUE.)  THEN
           LOGY=.TRUE.
           FITY=.TRUE.
         ENDIF

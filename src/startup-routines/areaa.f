@@ -1,4 +1,5 @@
 C  OCT 03: return best guess, even if R out of range, rather then exit
+C  Sept.2015: allow N<=nr1stm, rather than N<nr1stm   
 C
       FUNCTION EIRENE_AREAA (R,N,ARCA,Y,EP1R,ELLR)
 C
@@ -36,7 +37,7 @@ C
       INTEGER :: NP
 C
       NP=N+1
-      IF (N.LE.0.OR.N.GE.NR1STM) GOTO 998
+      IF (N.LE.0.OR.N.GT.NR1STM) GOTO 998
       IF (R.LT.RSURF(N).OR.R.GT.RSURF(NP)) GOTO 999
       RRI=RSURF(N)
       RRD=RSURF(NP)-RRI

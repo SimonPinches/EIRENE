@@ -24,7 +24,7 @@ C
       USE EIRMOD_COMSPL
       USE EIRMOD_CPLOT
       USE EIRMOD_COMPRT, ONLY: IUNOUT, IVTKOUT
-      USE EIRMOD_CTRCEI, only: trcoc
+      USE EIRMOD_CTRCEI, only: trcoct
       USE EIRMOD_CPES
 
 c     using our special octree stuff...
@@ -604,7 +604,7 @@ c     tracing output shall be generated never the less we do our octree stuff ;)
       TL=1.D30
       MASURF=0
       
-      if (NLOCTREE .and. trcoc) then
+      if (NLOCTREE .and. trcoct) then
         WRITE(iunout,*)
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB < 3"
       endif
@@ -621,7 +621,7 @@ c   surfaces are hit.
 c   if we actually found a valid intersection on second order surfs,
 c   etc, save these values for later comparison with octree surfs values
       if (masurf_s .gt. 0) then
-        if (NLOCTREE .and. trcoc) then
+        if (NLOCTREE .and. trcoct) then
           WRITE(iunout,*) "found intersection with surface", masurf_s
           WRITE(iunout,*) "-> continuing with this candidate in octree"
         end if
@@ -642,7 +642,7 @@ c       debug trace output
         return
       end if
       
-      if (trcoc) then
+      if (trcoct) then
         WRITE(iunout,*)
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB >= 3"
       end if
@@ -667,7 +667,7 @@ c         TODO: make a check if we hit the space within proper time... -> PETRA?
 c               -> for now presume that this is the case
 c         third: get a new starting point with moving the start to the
 c                intersection point with the block (then we are inside)
-          if (trcoc) then
+          if (trcoct) then
             WRITE(iunout,*) "moving ray into octree space first:"
             WRITE(iunout,*) "start: ", start
             WRITE(iunout,*) "new start: ", ip
@@ -681,7 +681,7 @@ c     konvex hull while following the path...), continue with octree
 c     processing. if we are not within (even with the check if we intersect),
 c     just continue with the other add. surfaces not in our octree...
       if(status) then
-        if(trcoc) then
+        if(trcoct) then
           WRITE(iunout,*) "starting trace @",start, "in direction",
      .                    (/VXX, VYY, VZZ/)
         end if
@@ -694,7 +694,7 @@ c     or we leave the octree space
 c       now find out where the hell we are in the octree space...
 c       -> get the pointer to our leaf-block containing the IP
         block => OCTREE_GetLeafchild(start, tree)
-        if (trcoc) then
+        if (trcoct) then
           WRITE(iunout,*) "searching in block:",block%number,
      .                    " on layer", block%layer, " testing",
      .                    block%nsurfaces, " surfaces"
@@ -735,7 +735,7 @@ c       -> if we get out of octree space, start%p will be =-1
      .                          direction, norm)
 c       check if we are inside of the octree space anymore...
         status = OCTREE_CheckVolume(start, tree%root, .true.)
-        if(.not.status.and.trcoc) WRITE(iunout,*)'left octree space...'
+        if(.not.status.and.trcoct) WRITE(iunout,*)'left octree space...'
       end do
       
 !trc      if(MASURF .gt. 0 .and. pladd) then
