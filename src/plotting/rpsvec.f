@@ -38,7 +38,7 @@ C
      .                       ZWERT(:,:), ZWERT1(:,:)
       INTEGER :: I, IP, IPART, IA, IB, IC, J, K, IT, LENCH, IERR, IR,
      .           NRAPS2, NVPLOT, IFC
-      INTEGER :: ZUORD(NKNOT,0:20,2)
+      INTEGER :: ZUORD(NKNOT,0:30,2)
       REAL(SP) :: XY(800)
       REAL(SP) :: YH
       CHARACTER(17) :: CH
@@ -404,7 +404,7 @@ C  SIDE 8
  
       ELSEIF (LEVGEO.EQ.4) THEN
         DO 41 I=1,NRKNOT
-          DO 51 J=0,20
+          DO 51 J=0,30
             DO 51 K=1,2
             ZUORD(I,J,K) = 0
 51        CONTINUE
@@ -412,8 +412,8 @@ C  SIDE 8
         DO 40 J=1,NTRII
           DO 50 I=1,3
             ZUORD(NECKE(I,J),0,1) = ZUORD(NECKE(I,J),0,1) + 1
-c zuord darf maximal 20 werden
-            if (zuord(necke(i,j),0,1).gt.20) then
+c zuord darf maximal 30 werden
+            if (zuord(necke(i,j),0,1).gt.30) then
               write (iunout,*) 'error in rpsvec: zuord'
               call EIRENE_exit_own(1)
             endif
