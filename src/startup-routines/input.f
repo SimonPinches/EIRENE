@@ -747,6 +747,11 @@ C  NO: READ COORDINATE TRANSLATION CARD
         ELSEIF (INDGRD(1).EQ.6) THEN
 C  IS THERE ONE MORE LINE, OR IS NLPOL THE NEXT VARIABLE
           READ (IUNIN,'(A72)') ZEILE
+          do while (zeile(1:1) == '*')
+            WRITE (iunout,'(1X,A72)') ZEILE
+            CALL EIRENE_LEER(1)
+            READ (IUNIN,'(A72)') ZEILE
+          end do
           IREAD = 1
           IPOS1=INDEX(ZEILE,'T')
           IPOS2=INDEX(ZEILE,'F')
