@@ -19,7 +19,7 @@ C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
 c  06.08.15 arguments added to vecusr
-c  24.08.15  comments and doocumention wrt. BGK collision treatmen
+c  24.08.15  comments and documention wrt. BGK collision treatmen
 
  
 C

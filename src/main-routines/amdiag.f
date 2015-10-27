@@ -15,11 +15,12 @@ c  modcol=2: rate coefficients depend on Eb = energy of impacting test particle
 c            tabcx3(...,1,nend),tabel3(...,1,nend),tabpi3(...,1,nend) 
 c               are ln(rate)
 c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
+c            ADIN is evaluated with Eb = 3/2 T, T =T(ipls)
 c  
 c
-C
-C  RATE COEFFCIENTS TO ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
-C  TO CONVERT THESE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e-08
+C  
+C  ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
+C  TO CONVERT THE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e-08
 c
 c  done for naint=20,22,24,26 and modcol=1
 

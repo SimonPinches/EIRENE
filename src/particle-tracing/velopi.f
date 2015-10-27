@@ -98,7 +98,7 @@ C           CPI= SIGHABER*AU_TO_CM2
           endif
         enddo
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'FIRST CALL EIRENE_TO VELOPI FOR IRPI= ',IRPI
+        WRITE (iunout,*) 'FIRST CALL TO VELOPI FOR IRPI= ',IRPI
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGPVMX" OF SIGMA(VEL) * VEL '
         CALL EIRENE_MASJ1R('JJ, SGPVMX      ',JJ, SGPVMX(IRPI))
