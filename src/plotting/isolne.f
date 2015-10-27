@@ -52,7 +52,19 @@ C
       RMI=1.D60
       RMA=-1.D60
 C
-      IF (LEVGEO .LE. 2.AND.LPTOR3(IBLD)) THEN
+      IF (LEVGEO .EQ. 1.AND.LPRAD3(IBLD)) THEN
+        IR=1
+        IF (NLRAD) IR=IPROJ3(IBLD,ICURV)
+        IF (IR.LE.0.OR.IR.GT.NR1ST) IR=1
+        DO IP=1,IXX-1
+          DO IT=1,IYY-1
+            I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
+            RMI=MIN(RMI,AORIG(I))
+            RMA=MAX(RMA,AORIG(I))
+          END DO
+        END DO
+c       write (6,*) ' rmi, rma ',rmi, rma
+      ELSEIF (LEVGEO .LE. 2.AND.LPTOR3(IBLD)) THEN
         IT=1
         IF (NLTOR) IT=IPROJ3(IBLD,ICURV)
         IF (IT.LE.0.OR.IT.GT.NT3RD) IT=1
@@ -100,9 +112,10 @@ C
         ALLOCATE (AA(NRAD,1))
         CALL EIRENE_CELINT(AORIG,AA,LOGL,IBLD,ICURV,NRAD,IERR)
       ELSEIF (LEVGEO.LE.3) THEN
-         ALLOCATE (A(N1ST,N2ND+N3RD))
-        CALL EIRENE_CELINT(AORIG,A,LOGL,IBLD,ICURV,N1ST,IERR)
+         ALLOCATE (A(N1ST+N2ND,N2ND+N3RD))
+        CALL EIRENE_CELINT(AORIG,A,LOGL,IBLD,ICURV,N1ST+N2ND,IERR)
       ENDIF
+c     write (6,*) ' nach celint, ierr ',ierr
       IF (IERR.GT.0) RETURN
 C
 C  SEARCH FOR XMIN,XMAX,YMIN,YMAX
@@ -117,6 +130,13 @@ C
         XMAX = RHOSRF(NR1ST)
         YMIN = ZSURF(1)
         YMAX = ZSURF(NT3RD)
+      ELSEIF (LEVGEO.EQ.1.AND.LPRAD3(IBLD)) THEN
+        XMIN = PSURF(1)
+        XMAX = PSURF(NP2ND)
+        YMIN = ZSURF(1)
+        YMAX = ZSURF(NT3RD)
+c       write (6,*) ' xmin, xmax ',xmin,xmax
+c 	    write (6,*) ' ymin, ymax ',ymin, ymax
       ELSEIF (LEVGEO.EQ.1.AND.LPTOR3(IBLD)) THEN
         XMIN = RHOSRF(1)
         XMAX = RHOSRF(NR1ST)

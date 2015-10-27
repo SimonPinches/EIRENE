@@ -1,5 +1,6 @@
 C
 !pb  19.12.06:  initialise YWERT
+c    15.10.15:  add option levgeo01, lprad3
 C
       SUBROUTINE EIRENE_CELINT (AORIG,YWERT,LOGL,IBLD,ICURV,N1DIM,IERR)
 C
@@ -16,7 +17,7 @@ C  IN CASE (LEVGEO=1 OR LEVGEO=2).AND.LPPOL3, THE RHOSRF AND ZSURF GRIDS
 C                                             ARE USED.
 C  IN CASE (LEVGEO=1            ).AND.LPTOR3, THE RHOSRF AND PSURF GRIDS
 C                                             ARE USED.
-C  IN CASE (LEVGEO=1            ).AND.LPRAD3, TO BE WRITTEN: PSURF AND ZSURF
+C  IN CASE (LEVGEO=1            ).AND.LPRAD3, PSURF AND ZSURF  (added: oct.2015)
 C
 C  IN CASE (LEVGEO=3 OR LEVGEO=2).AND.LPTOR3, THE FULL POLYGON GRIDS
 C                                             ARE USED.
@@ -246,6 +247,86 @@ C
             IF (LOGL) YWERT(IR,IP)=LOG10(MAX(1.E-48_DP,YWERT(IR,IP)))
 3110      CONTINUE
 1110    CONTINUE
+
+C   Y-Z PLOT ON X=CONST PLANE
+      ELSEIF (LEVGEO.EQ.1.AND.LPRAD3(IBLD)) THEN
+        IR=1
+        write (6,*) ' celint in lprad3 block '
+        IF (NLRAD) IR=IPROJ3(IBLD,ICURV)
+        IF (IR.LE.0.OR.IR.GT.NR1ST) IR=1
+        YWERT(1:N1ST+N2ND,1:N2ND+N3RD) = 0._DP
+        DO 1120 IP=1,NP2ND
+          DO 3120 IT=1,NT3RD
+C   WERTEBEARBEITUNG
+            DO 3121,J=1,4
+              TEILA(J) = 0.
+              TEILWERT(J) = 0.
+3121        CONTINUE
+C  UNTEN RECHTS
+            IF ((IP .NE. 1) .AND. (IT .NE. 1)) THEN
+C             AKTUELLER PUNKT LIEGT NICHT AUF DEM 1. POLYGON
+C             UND IST NICHT ANFANG EINES POLYGONS
+              AX = PSURF(IP)
+              AY = ZSURF(IT)
+              JX = PSURF(IP-1)
+              KY = ZSURF(IT-1)
+              GY = 0.5 * (AY + KY)
+              FX = 0.5 * (AX + JX)
+              IRD=IR-1+((IP-1)+(IT-2)*NP2T3)*NR1P2
+              TEILWERT(1) = AORIG(IRD)*XSTGRD(IRD)
+              TEILA(1) = ABS(AX-FX)*ABS(AY-GY)*XSTGRD(IRD)
+            ENDIF
+C  UNTEN LINKS
+            IF ((IP .NE. NP2ND) .AND. (IT .NE. 1)) THEN
+C  AKTUELLER PUNKT LIEGT NICHT AUF DEM LETZTEN
+C  POLYGON UND IST NICHT ANFANGSPUNKT EINES POLYGONS
+              AX = PSURF(IP)
+              AY = ZSURF(IT)
+              LX = PSURF(IP+1)
+              KY = ZSURF(IT-1)
+              GY = 0.5 * (AY + KY)
+              HX = 0.5 * (AX + LX)
+              IRD=IR+((IP-1)+(IT-2)*NP2T3)*NR1P2
+              TEILWERT(2) = AORIG(IRD)*XSTGRD(IRD)
+              TEILA(2) = ABS(AX-HX)*ABS(AY-GY)*XSTGRD(IRD)
+            ENDIF
+C  OBEN LINKS
+            IF ((IP .NE. NP2ND) .AND. (IT .NE. NT3RD)) THEN
+C             AKTUELLER PUNKT LIEGT NICHT AUF DEM LETZTEN POLYGON
+C             UND IST NICHT DER ENDPUNKT EINES POLYGONS
+              AX = PSURF(IP)
+              AY = ZSURF(IT)
+              LX = PSURF(IP+1)
+              MY = ZSURF(IT+1)
+              IY = 0.5 * (AY + MY)
+              HX = 0.5 * (AX + LX)
+              IRD=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
+              TEILWERT(3) = AORIG(IRD)*XSTGRD(IRD)
+              TEILA(3) = ABS(AX-HX)*ABS(AY-IY)*XSTGRD(IRD)
+            ENDIF
+C  OBEN RECHTS
+            IF ((IP .NE. 1) .AND. (IT .NE. NT3RD)) THEN
+C             AKTUELLER PUNKT LIEGT NICHT AUF DEM 1. POLYGON
+C             UND IST NICHT DER ENDPUNKT EINES POLYGONS
+              AX = PSURF(IP)
+              AY = ZSURF(IT)
+              JX = PSURF(IP-1)
+              MY = ZSURF(IT+1)
+              IY = 0.5 * (AY + MY)
+              FX = 0.5 * (AX + JX)
+              IRD=IR-1+((IP-1)+(IT-1)*NP2T3)*NR1P2
+              TEILWERT(4) = AORIG(IRD)*XSTGRD(IRD)
+              TEILA(4) = ABS(AX-FX)*ABS(AY-IY)*XSTGRD(IRD)
+            ENDIF
+C
+            AGES = TEILA(1) + TEILA(2) + TEILA(3) + TEILA(4) + EPS60
+            YWERT(IP,IT) = 0.
+            DO 3123,J=1,4
+              YWERT(IP,IT) = YWERT(IP,IT) + TEILA(J)/AGES*TEILWERT(J)
+3123        CONTINUE
+            IF (LOGL) YWERT(IP,IT)=LOG10(MAX(1.E-48_DP,YWERT(IP,IT)))
+3120      CONTINUE
+1120    CONTINUE
 C
 C  X-Y-Z PLOT (CUBE)
       ELSEIF (LEVGEO.EQ.1.AND.NLTRZ
