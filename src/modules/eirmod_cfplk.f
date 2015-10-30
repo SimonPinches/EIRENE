@@ -7,8 +7,9 @@ C   parameters for fokker planck collision operator
       PUBLIC
  
       REAL(DP), PUBLIC, SAVE ::
-     R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR, TAUE,
-     R BVEC(3), BBX, BBY, BBZ
+     R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR,
+     R BVEC(3), BBX, BBY, BBZ,
+     R TAUE, TAUE01, TAUE02
       LOGICAL, public, save :: LCART,COLFLAG
  
       CONTAINS

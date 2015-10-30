@@ -121,11 +121,9 @@ C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
 C  PARALLEL DISTANCE ZT (CM)
 C  ENERGY RELAXATION CONSTANT TAUE
 C
-        E0NEW=E0OLD*EXP(-DUR/TAUE)+1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
-C  FHa: new version - to be implemented and tested
-C  corresponds to eq. (11.107), v11/2009 of the EIRENE manual
-C        E0NEW = E0OLD*EXP(-DUR*(1.+XMUB/XMUA)**0.5/TAUE)
-C     >        + 1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
+C  FHa: new version of energy relaxation of minimal model (Oct. 2015)
+        E0NEW = E0OLD*EXP(-DUR/TAUE01)
+     >        + 1.5*TAUE01/TAUE02*(1.-EXP(-DUR/TAUE01))
 
         VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C

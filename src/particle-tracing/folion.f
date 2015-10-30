@@ -121,9 +121,9 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD),
      .            BVEC_1(3), VVEC(3)
-      REAL(DP) :: GYRO, COSIN, XLI, YLI, ZLI, FNUI, DIST,
+      REAL(DP) :: GYRO, COSIN, XLI, YLI, ZLI, DIST,
      .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
-
+     .          FNUI, FNUI01, FNUI02, MASSREL,
      .          VELXS, VELYS, VELZS, VELS,
      .          PUX, PUY, SG,
      .          VCOS, 
@@ -176,7 +176,7 @@ c  find direction parallel and perpendicular to B-field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
 c  parallel and perpendicular unit velocity componentes VELPAR
 c  find B-field in cell ncell
-c  FHac: WHERE DOES VELS COME FROM???
+c  FHa: WHERE DOES VELS COME FROM???
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
 c1003  CONTINUE ORIGINAL
@@ -208,11 +208,6 @@ c  BBX, BBY, BBZ are normalized!
       SIGPAR=SIGN(1._DP,VCOS)
       VELPAR=ABS(VEL*VCOS)
       VELPER=SQRT(MAX(0._DP,VEL**2 - VELPAR**2))
-      print*, ' FHa VELS                   = ', VELS
-      print*, ' FHa sqrt(VEL**2-VELPAR**2) = ', sqrt(VEL**2-VELPAR**2)
-      print*, ' FHa VEL                    = ', VEL
-      print*, ' FHa VELPAR                 = ', VELPAR
-      print*, ' FHa VELPER = ', VELPER
 c  VELOCITY WITH RESPECT TO B-FIELD IS NOW DEFINED:
 c  VELPAR: full parallel velocity, absolute value
 c  VELPER: full perpendicular velocity, always non-negative
@@ -316,7 +311,6 @@ c  check orientation of parallel motion relativ to radidal coordinate
             IFPB = -1
           END DO
         ELSEIF (LEVGEO.EQ.4) THEN
-          print*, ' Here 1!'
           SG=VLXPAR*PTRIX(IPOLG,MRSURF)+
      .       VLYPAR*PTRIY(IPOLG,MRSURF)
           print*
@@ -714,7 +708,9 @@ C     LATER: VELPAR --> VEL_GC
       ENDIF
 C
 C FNUI: collision frequency with background ions.
-      FNUI=1.D-30
+      FNUI   = 1.D-30
+      FNUI01 = 1.D-30
+      FNUI02 = 1.D-30
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
@@ -732,13 +728,24 @@ ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
-          IF (.NOT.LGVAC(NCELL,IPL))
-     .    FNUI = FNUI + FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+
+C   FHa: Determination of new frequencies for corrected minimal collision model (Oct. 2015)
+          MASSREL = (1 + RMASSP(IPL)/RMASSI(IION))**(-0.5)
+          IF (.NOT.LGVAC(NCELL,IPL)) THEN
+          FNUI01 = FNUI01
+     >      + FNUEQI_1(0._DP,DIIN(IPL,NCELL),TIIN(IPLTI,NCELL),IION,IPL)
+     >      * MASSREL
+          FNUI02 = FNUI02
+     >      + FNUEQI_1(0._DP,DIIN(IPL,NCELL),TIIN(IPLTI,NCELL),IION,IPL)
+     >      * TIIN(IPLTI,NCELL)
+          END IF
+
         ENDDO
       ENDIF
 
 c  TAUE: relaxation time
-      TAUE=1./FNUI
+      TAUE01 = 1./FNUI01
+      TAUE02 = 1./FNUI02
 
 c  STEPSIZE = 0.1*VEL_PARALLEL*TAUE, i.e. 10 Coulomb collisions per relax. time
 c  TF: distance until next coulomb collision
@@ -750,7 +757,7 @@ C  DELTA_T = TAUE*0.1*DELFAC
 C  DELTA_S = DELTA_T * VELPAR  ! = TF
 C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
 C     LATER: VELPAR --> VEL_GC
-      TF=TAUE*VELPAR*0.1*DELFAC
+      TF=TAUE01*VELPAR*0.1*DELFAC
       if (nldfst) tf=1.E-5_DP*vel
  
       IF (TF.LT.ZTST) THEN
@@ -993,7 +1000,6 @@ c  switch to parallel gc velocity
         VEL =VELPAR
         LCART=.FALSE.
       ENDIF
-      print*, ' FHa ISRFCL = ', ISRFCL
       IF (ISRFCL.EQ.1) THEN
 c  will fpkcol change the collision with additional surface?
 2214    CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,*104,*380)
@@ -1348,7 +1354,6 @@ cdr  try to tell external code: particle on surface, but it is an old particle, 
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
         IF (LDAMCEL(NCELL)) GOTO 9912
 C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
-        print*, ' FHa This one!'
         CALL EIRENE_FPKCOL(*104,*229,*9991,3)
 
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
@@ -1358,7 +1363,6 @@ C STORE NEW FULL VELOCITY
         CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
 C!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
 C!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
-        print*, ' FHa FP VELS 2 = ', VELS
 
         ICO = 0
         GOTO 1004
@@ -1448,9 +1452,7 @@ c
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
 C  DOES THE PARTICLE SPEED UNIT VECTOR POINT TOWARDS THE SURFACE ?
-          IF (COSIN.GT.0.) THEN !  FHa
-             print*, ' VELPER = ', VELPER
-             print*, ' VELPAR = ', VELPAR
+          IF (COSIN.GT.0.) THEN
              EXIT
           END IF
 C  NO, TRY ANOTHER GYRO PHASE
@@ -1628,11 +1630,10 @@ C  Version 11/2009
       XMUA=nMASSI(ION)
       XMUB=nMASSP(IPL)
       FACT=XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**0.5
-      FNUEQI_1 = FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
-C  FHa The new version - to be implemented and tested
+C  FHa:  new (corrected) version of energy relaxation
 C     FNUEQI_1 corresponds to \tilde \nu_\epsilon of the EIRENE manual,
 C     compare eq. (11.104), v11/2009
-C     FNUEQI_1 = 2*XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**1.5
+      FNUEQI_1 = 2*XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**1.5
       RETURN
       END FUNCTION FNUEQI_1
 
