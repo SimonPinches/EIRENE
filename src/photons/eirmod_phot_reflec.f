@@ -5,7 +5,7 @@
       use EIRMOD_comprt, only: iunout
       use EIRMOD_cpes, only: MY_PE
 #ifdef USE_MPI
-      use mpi
+      use mpi ! IGNORE
 #endif
       implicit none
 
