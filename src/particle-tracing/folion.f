@@ -757,7 +757,13 @@ C  DELTA_T = TAUE*0.1*DELFAC
 C  DELTA_S = DELTA_T * VELPAR  ! = TF
 C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
 C     LATER: VELPAR --> VEL_GC
-      TF=TAUE01*VELPAR*0.1*DELFAC
+
+C  FHa: to be outcommented
+      TF = TAUE01*VELPAR*0.1*DELFAC
+
+C  FHa: get new TF and data for the FP collision
+      CALL EIRENE_PREPARE_FPKCOL(TF)
+
       if (nldfst) tf=1.E-5_DP*vel
  
       IF (TF.LT.ZTST) THEN
@@ -1674,15 +1680,147 @@ C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
       END FUNCTION DPSI_CHAND
 
 
-      END
- 
-      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)                   
+      SUBROUTINE EIRENE_PREPARE_FPKCOL(TF)
+
+C     FHa: Subroutine to prepare data for the Fokker-Planck collision in the slightly
+C     extended model where the trace ion velocity changes in agreement with the
+C     change of the expectation values (next step after the minimal collision model
+C     where only the energy is relaxed)
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CINIT
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CFPLK
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CUPD
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CZT1
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CLGIN
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMXS
+      USE EIRMOD_CVARUSR
+
+      implicit none
+
+      integer :: IPL, IPLTI
+
+      real*8 :: alpha, ub, Chi, Lambda, dChi_dt
+      real*8 :: VelPrlBG
+      real*8 :: DPrl, DPerp
+      real*8 :: TFPrl, TFPerp, TFtemp, TF
+
+      CALL EIRENE_ALLOC_CVARUSR(1)
+
+      alpha = 0.02 ! factor for the ratio v/dv_dt, should be significantly smaller than 1
+      TF    = 1.0E+10
+
+c      DO IPL = 1, NPLSI ! loop over all background species
+      DO IPL = 1, 1 ! loop over all background species
+
+         IPLTI=MPLSTI(IPL)
+
+c  get the parallel part of the background velocity
+         VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
+     >               BYIN(NCELL)*VYIN(IPL,NCELL)+
+     >               BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
+
+         ub = sqrt(2*TIIN(IPLTI,NCELL)*ELCHA/(RMASSP(IPL)*AMUAKG))
+         Chi = sqrt((VELPER*1.0E-02)**2
+     >            + (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)**2)/ub
+         Lambda = NCHRGI(IION)**2*NCHRGP(IPL)**2*ELCHA**4*
+     >            DIIN(IPL,NCELL)*1.0E+06*COULOMBLOG/
+     >            (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
+
+         print*
+         print*, ' DIIN:  ', DIIN(IPL,NCELL)
+         print*, ' TIIN:  ', TIIN(IPLTI,NCELL)
+         print*, ' VDiff: ', (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
+         print*
+
+         CALL D_coeff(Chi,DPrl,DPerp)
+
+         DPrl  = Lambda/ub*DPrl
+         DPerp = Lambda/ub*DPerp
+
+         dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >                      (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
+         dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
+
+c  get the new TF, the distance until next coulomb collision
+c         TFPrl =1.0E+02*(1.0E-02*VELPAR)**2/ABS(dVelPrl_dt(IPL))*alpha
+c         TFPerp=1.0E+02*(1.0E-02*VELPER)**2/ABS(dVelPerp_dt(IPL))*alpha
+c         TFtemp= MAX(TFPrl,TFPerp)
+c         TF = MAX(TFPrl,TFPerp,0.1)
+c         IF (TFtemp.LT.TF) TF = TFtemp
+         dChi_dt = 1./(ub**2*Chi)*
+     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
+     >               VELPER*1.0E-02*            dVelPerp_dt(IPL))
+         TF = ABS(Chi*VELPAR/dChi_dt)*alpha
+         print*
+         print*, ' TF: ', TF
+         print*
+
+      END DO
+
+      END SUBROUTINE EIRENE_PREPARE_FPKCOL
+
+
+
+      subroutine D_coeff(X,D1,D2)
+
+*     ------------------------------------------------------------     *
+*     --Parallel diffusion coefficient for Maxwellian background -     *
+*     --From D. Reiser                                                 *
+*     ------------------------------------------------------------     *
+*     compare notes DR2015: D1 = ub/Lambda*D_prl, D2 = ub/Lambda*D_perp
+
+      IMPLICIT NONE
+      REAL(DP):: X,X2,X3,X4,P0,P1,SQPI
+      REAL(DP):: D1,D2
+      PARAMETER(SQPI=1.772453851) ! sqrt(pi)
+
+      if (X.ge.0.4) then
+         X2 = X*X
+         X3 = X*X2
+         P0 = Erf(X)
+         P1 = 2*exp(-X2)/SQPI
+         D1 = P0/X3-P1/X2
+         D2 = 0.5*P1/X2+P0/X-0.5*P0/X3
+      else
+         X2 = X*X
+         X4 = X2*X2
+         D1 = (4./3.-4./5.*X2+2./7.*X4)/SQPI
+         D2 = (4./3.-4./15.*X2+2./35.*X4)/SQPI
+      end if
+
+      return
+
+      end subroutine D_coeff
+
+      END SUBROUTINE EIRENE_FOLION
+
+
+
+
+
+
+
+
+
+
+      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
 C  IF (IND.EQ.0) RETURN WITH NEW B-FIELD
 C
 C  IF (IND.GE.1) ADDITIONALLY ALSO PROVIDE REDUCED (GC) VELOCITY VECTOR (SPEED UNIT VECTOR)
 C    BUT RETAIN MODULI: V_PARALLEL, V_PERP.
-C    NEW REDUCED SPEED VECTOR:  LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),  
+C    NEW REDUCED SPEED VECTOR:  LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),
 C    CHECKS DONE THAT VELPER AND VERPAR ARE PRESERVED, CHECKS REMOVED.
 
 C  IF (IND.GE.2) ADDITIONALLY ALSO PROVIDE NEW CARTESIAN VELOCITY
@@ -1703,7 +1841,7 @@ C
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
- 
+
       CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF,.TRUE.)
       BVEC = (/ BBX, BBY, BBZ /)
 
@@ -1722,7 +1860,7 @@ C  ONLY THE NEW DIRECTION (REDUCED SPEED UNIT VECTORS) ARE EVALUATED
       LCART=.FALSE.
 
       IF (IND.LT.2) RETURN
-                                            
+
 C  FIND NEW CARTESIAN VELX,VELY,VELZ (SAME VEL=VELS), LCART=T
 C  NEW GYRO PHASE
       GYRO=RANF_EIRENE()*PI2A
@@ -1735,3 +1873,7 @@ C  BACK TO CARTESIAN COORDIANTES
       LCART=.TRUE.
       RETURN
       END
+
+
+
+

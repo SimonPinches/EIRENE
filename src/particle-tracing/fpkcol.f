@@ -50,12 +50,13 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_COMXS
+      USE EIRMOD_CVARUSR
  
       IMPLICIT NONE
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
@@ -122,21 +123,35 @@ C  PARALLEL DISTANCE ZT (CM)
 C  ENERGY RELAXATION CONSTANT TAUE
 C
 C  FHa: new version of energy relaxation of minimal model (Oct. 2015)
-        E0NEW = E0OLD*EXP(-DUR/TAUE01)
-     >        + 1.5*TAUE01/TAUE02*(1.-EXP(-DUR/TAUE01))
+C        E0NEW = E0OLD*EXP(-DUR/TAUE01)
+C     >        + 1.5*TAUE01/TAUE02*(1.-EXP(-DUR/TAUE01))
 
-        VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
+C  FHa: UNDER CONSTRUCTION
+C  FHa: UNDER CONSTRUCTION
+C  FHa: UNDER CONSTRUCTION
+C  this is to be the extended collision model
+c  saving the full velocity in *S velocities
+
+
+c        DO IPL = 1, NPLSI ! loop over all background species
+        DO IPL = 1, 1 ! loop over all background species
+           VELPAR = ABS(SIGPAR*VELPAR + dVelPrl_dt(IPL)*1.0E+02*DUR)
+           VELPER = VELPER + dVelPerp_dt(IPL)*1.0E+02*DUR
+        END DO
+
+        E0NEW = 0.5*AMUAKG*RMASSI(IION)*1.0E-04*
+     >          (VELPAR**2+VELPER**2)/ELCHA
+        VNEW = RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
         EIPL(NCELLT)=EIPL(NCELLT)-WEIGHT*(E0NEW-E0OLD)
 C
-
         FAC=SQRT(E0NEW/E0OLD)
 C        FAC = 1.0
-        VELPAR=VELPAR*FAC
-        VELPER=VELPER*FAC
-        E0PAR=E0PAR*FAC*FAC
+C        VELPAR=VELPAR*FAC
+C        VELPER=VELPER*FAC
+        E0PAR=E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
 c  gets new B-field
