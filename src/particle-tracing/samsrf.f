@@ -104,6 +104,9 @@ C
 C
         ISOR=SORLIM(ISRFS,ISTRA)
         ISORFL=EIRENE_IDEZ(INT(SORIFL(ISRFS,ISTRA)),4,4)
+
+        INDSRF=INSOR(ISRFS,ISTRA)
+        IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
 C
         IF (SORLIM(ISRFS,ISTRA).GT.0.AND.INDIM(ISRFS,ISTRA).EQ.1.) THEN
 c  source is on radial (x-) grid surface x= const. r= const, etc...

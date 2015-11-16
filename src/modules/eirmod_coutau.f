@@ -25,17 +25,21 @@ csw 19feb2013: added XMCT array
      R PIPLI(:,:),
      R PPHELI(:),   PPHATI(:,:), PPHMLI(:,:), PPHIOI(:,:), PPHPHTI(:,:),
      R PPHPLI(:,:),
-     R EAELI(:),  EAATI(:),  EAMLI(:),  EAIOI(:),  EAPHTI(:), EAPLI(:),
-     R EMELI(:),  EMATI(:),  EMMLI(:),  EMIOI(:),  EMPHTI(:), EMPLI(:),
-     R EIELI(:),  EIATI(:),  EIMLI(:),  EIIOI(:),  EIPHTI(:), EIPLI(:),
-     R EPHELI(:), EPHATI(:), EPHMLI(:), EPHIOI(:), EPHPHTI(:),EPHPLI(:),
+     R EAELI(:),  EAATI(:),  EAMLI(:),  EAIOI(:),  EAPHTI(:), 
+     R EAPLI(:,:),
+     R EMELI(:),  EMATI(:),  EMMLI(:),  EMIOI(:),  EMPHTI(:), 
+     R EMPLI(:,:),
+     R EIELI(:),  EIATI(:),  EIMLI(:),  EIIOI(:),  EIPHTI(:), 
+     R EIPLI(:,:),
+     R EPHELI(:), EPHATI(:), EPHMLI(:), EPHIOI(:), EPHPHTI(:),
+     R EPHPLI(:,:),
      R ADDVI(:,:),
      R COLVI(:,:),  SNAPVI(:,:), COPVI(:,:),  BGKVI(:,:), ALGVI(:,:),
      R PGENAI(:,:), PGENMI(:,:), PGENII(:,:), PGENPHI(:,:),
      R EGENAI(:,:), EGENMI(:,:), EGENII(:,:), EGENPHI(:,:),
      R VGENAI(:,:), VGENMI(:,:), VGENII(:,:), VGENPHI(:,:),
      R PPATI(:,:),  PPMLI(:,:),  PPIOI(:,:),  PPPHTI(:,:), PPPLI(:,:),
-     R EPATI(:),    EPMLI(:),    EPIOI(:),    EPPHTI(:),   EPPLI(:),
+     R EPATI(:),    EPMLI(:),    EPIOI(:),    EPPHTI(:),   EPPLI(:,:),
      R VXDENAI(:,:), VXDENMI(:,:), VXDENII(:,:), VXDENPHI(:,:),
      R VYDENAI(:,:), VYDENMI(:,:), VYDENII(:,:), VYDENPHI(:,:),
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
@@ -144,25 +148,25 @@ csw 19feb2013: added XMCT array
       ALLOCATE (EAMLI(0:NSTRA))
       ALLOCATE (EAIOI(0:NSTRA))
       ALLOCATE (EAPHTI(0:NSTRA))
-      ALLOCATE (EAPLI(0:NSTRA))
+      ALLOCATE (EAPLI(0:NPLS,0:NSTRA))
       ALLOCATE (EMELI(0:NSTRA))
       ALLOCATE (EMATI(0:NSTRA))
       ALLOCATE (EMMLI(0:NSTRA))
       ALLOCATE (EMIOI(0:NSTRA))
       ALLOCATE (EMPHTI(0:NSTRA))
-      ALLOCATE (EMPLI(0:NSTRA))
+      ALLOCATE (EMPLI(0:NPLS,0:NSTRA))
       ALLOCATE (EIELI(0:NSTRA))
       ALLOCATE (EIATI(0:NSTRA))
       ALLOCATE (EIMLI(0:NSTRA))
       ALLOCATE (EIIOI(0:NSTRA))
       ALLOCATE (EIPHTI(0:NSTRA))
-      ALLOCATE (EIPLI(0:NSTRA))
+      ALLOCATE (EIPLI(0:NPLS,0:NSTRA))
       ALLOCATE (EPHELI(0:NSTRA))
       ALLOCATE (EPHATI(0:NSTRA))
       ALLOCATE (EPHMLI(0:NSTRA))
       ALLOCATE (EPHIOI(0:NSTRA))
       ALLOCATE (EPHPHTI(0:NSTRA))
-      ALLOCATE (EPHPLI(0:NSTRA))
+      ALLOCATE (EPHPLI(0:NPLS,0:NSTRA))
       ALLOCATE (ADDVI(0:NADV,0:NSTRA))
       ALLOCATE (COLVI(0:NCLV,0:NSTRA))
       ALLOCATE (SNAPVI(0:NSNV,0:NSTRA))
@@ -190,7 +194,7 @@ csw 19feb2013: added XMCT array
       ALLOCATE (EPMLI(0:NSTRA))
       ALLOCATE (EPIOI(0:NSTRA))
       ALLOCATE (EPPHTI(0:NSTRA))
-      ALLOCATE (EPPLI(0:NSTRA))
+      ALLOCATE (EPPLI(0:NPLS,0:NSTRA))
       ALLOCATE (VXDENAI(0:NATM,0:NSTRA))
       ALLOCATE (VXDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (VXDENII(0:NION,0:NSTRA))
@@ -618,25 +622,25 @@ csw 19mar2013
         EAMLI(ISTRA)   = 0._DP
         EAIOI(ISTRA)   = 0._DP
         EAPHTI(ISTRA)  = 0._DP
-        EAPLI(ISTRA)   = 0._DP
+        EAPLI(:,ISTRA)   = 0._DP
         EMELI(ISTRA)   = 0._DP
         EMATI(ISTRA)   = 0._DP
         EMMLI(ISTRA)   = 0._DP
         EMIOI(ISTRA)   = 0._DP
         EMPHTI(ISTRA)  = 0._DP
-        EMPLI(ISTRA)   = 0._DP
+        EMPLI(:,ISTRA)   = 0._DP
         EIELI(ISTRA)   = 0._DP
         EIATI(ISTRA)   = 0._DP
         EIMLI(ISTRA)   = 0._DP
         EIIOI(ISTRA)   = 0._DP
         EIPHTI(ISTRA)  = 0._DP
-        EIPLI(ISTRA)   = 0._DP
+        EIPLI(:,ISTRA)   = 0._DP
         EPHELI(ISTRA)  = 0._DP
         EPHATI(ISTRA)  = 0._DP
         EPHMLI(ISTRA)  = 0._DP
         EPHIOI(ISTRA)  = 0._DP
         EPHPHTI(ISTRA) = 0._DP
-        EPHPLI(ISTRA)  = 0._DP
+        EPHPLI(:,ISTRA)  = 0._DP
         ADDVI(:,ISTRA)   = 0._DP
         COLVI(:,ISTRA)   = 0._DP
         SNAPVI(:,ISTRA)  = 0._DP
@@ -664,7 +668,7 @@ csw 19mar2013
         EPMLI(ISTRA)  = 0._DP
         EPIOI(ISTRA)  = 0._DP
         EPPHTI(ISTRA) = 0._DP
-        EPPLI(ISTRA) = 0._DP
+        EPPLI(:,ISTRA) = 0._DP
         VXDENAI(:,ISTRA)  = 0._DP
         VXDENMI(:,ISTRA)  = 0._DP
         VXDENII(:,ISTRA)  = 0._DP
@@ -2595,7 +2599,7 @@ C     The following ENTRY is for reinitialization of EIRENE
       CASE (37)
         OUTAU = EAPHTI(ISTRA)
       CASE (38)
-        OUTAU = EAPLI(ISTRA)
+        OUTAU = EAPLI(ISP,ISTRA)
       CASE (39)
         OUTAU = EMELI(ISTRA)
       CASE (40)
@@ -2607,7 +2611,7 @@ C     The following ENTRY is for reinitialization of EIRENE
       CASE (43)
         OUTAU = EMPHTI(ISTRA)
       CASE (44)
-        OUTAU = EMPLI(ISTRA)
+        OUTAU = EMPLI(ISP,ISTRA)
       CASE (45)
         OUTAU = EIELI(ISTRA)
       CASE (46)
@@ -2619,7 +2623,7 @@ C     The following ENTRY is for reinitialization of EIRENE
       CASE (49)
         OUTAU = EIPHTI(ISTRA)
       CASE (50)
-        OUTAU = EIPLI(ISTRA)
+        OUTAU = EIPLI(ISP,ISTRA)
       CASE (51)
         OUTAU = EPHELI(ISTRA)
       CASE (52)
@@ -2631,7 +2635,7 @@ C     The following ENTRY is for reinitialization of EIRENE
       CASE (55)
         OUTAU = EPHPHTI(ISTRA)
       CASE (56)
-        OUTAU = EPHPLI(ISTRA)
+        OUTAU = EPHPLI(ISP,ISTRA)
       CASE (57)
         OUTAU = ADDVI(ISP,ISTRA)
       CASE (58)
@@ -2687,7 +2691,7 @@ C     The following ENTRY is for reinitialization of EIRENE
       CASE (83)
         OUTAU = EPPHTI(ISTRA)
       CASE (84)
-        OUTAU = EPPLI(ISTRA)
+        OUTAU = EPPLI(ISP,ISTRA)
       CASE (85)
         OUTAU = VXDENAI(ISP,ISTRA)
       CASE (86)

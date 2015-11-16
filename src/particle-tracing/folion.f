@@ -700,8 +700,12 @@ ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
-          IF (.NOT.LGVAC(NCELL,IPL))
-     .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+!PB          IF (.NOT.LGVAC(NCELL,IPL))
+!PB     .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+          IF (.NOT.LGVAC(NCELL,IPL)) THEN
+            FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+            FNUI=FNUI+FNUIAR(IPL)
+          END IF
         ENDDO
       ENDIF
 C TAUE: RELAXATION TIME

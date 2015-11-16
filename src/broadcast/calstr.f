@@ -158,9 +158,9 @@ csw
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	if (my_pe_gr==0) EPPHTI(istra) = helpc
 
-        call mpi_reduce(EPPLI(istra),helpc,1,
+        call mpi_reduce(EPPLI(0,istra),helpp,nplsi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-	if (my_pe_gr==0) EPPLI(istra) = helpc
+	if (my_pe_gr==0) EPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
 C
 C

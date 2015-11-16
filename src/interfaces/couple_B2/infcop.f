@@ -140,10 +140,10 @@ C
 !pb     .            EPLODA(NRAD), EPEODA(NRAD)
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            PPPL_COP(:,:), CPPV(:,:),
-     .            EPPL_COP(:), EPEL(:), CPV_CMP(:,:,:)
+     .            EPPL_COP(:,:), EPEL(:), CPV_CMP(:,:,:)
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            PPLODA(:,:), CPVODA(:,:),
-     .            EPLODA(:), EPEODA(:)
+     .            EPLODA(:,:), EPEODA(:)
 C
       REAL(DP) :: EFLX(NSTRA),
      R          DUMMY(0:NDXP,0:NDYP),
@@ -166,7 +166,8 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFNISY, SFEEWX, SFEINY, PM1, DRR, UU, PITB,
      .          FLX_EIR, SUMN_OLD, SNIRES, SMORES, SEERES, SEIRES,
-     .          fniprt, fltt, e0b2, dmaxiso, dminiso, CFAC !pb 22012013
+     .          fniprt, fltt, e0b2, dmaxiso, dminiso, CFAC, !pb 22012013
+     .          eamisum, eplsum
       INTEGER :: NRWL(NSTRA)
       INTEGER, SAVE :: J, IRC, JC, INC, IADD, IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
@@ -244,11 +245,11 @@ C
         ALLOCATE (CHMOM(NPLS,NRAD))
         ALLOCATE (PPPL_COP(NPLS,NRAD))
         ALLOCATE (CPPV(NCPV,NRAD))
-        ALLOCATE (EPPL_COP(NRAD)) 
+        ALLOCATE (EPPL_COP(NPLS,NRAD)) 
         ALLOCATE (EPEL(NRAD))
         ALLOCATE (PPLODA(NPLS,NRAD))
         ALLOCATE (CPVODA(NCPV,NRAD))
-        ALLOCATE (EPLODA(NRAD))
+        ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
 
@@ -915,7 +916,7 @@ C
 C  UNITS CONVERSION FACTORS
       T=1./ELCHA
       V=1.D2                             !pb 1.e2 -> 1.d2
-      VL=1.D6                            !pb 1.e-6 -> 1.d-6
+      VL=1.D6                            !pb 1.e6 -> 1.d6
       DO 2105 IPLS=1,NPLSI
         D(IPLS)=1.D-6*FCTE(IPLS)
         FL(IPLS)=ELCHA*FCTE(IPLS)
@@ -2038,11 +2039,12 @@ C
         END DO
 
         EAPL=0.D0
-        CPSIM => EAPLS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EAPL(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EAPLS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EAPL(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7310
@@ -2072,7 +2074,7 @@ C
             IN=CPMUL%ICM
             CHI=CPMUL%VALUEM*
      .          (SEINWA(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
-            EAPL(IN)=EAPL(IN)+CHI
+            EAPL(IPLS,IN)=EAPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           ENDIF
           CPMUL => CPMUL%NXTMUL
@@ -2105,11 +2107,12 @@ C
         END DO
 
         EIPL=0.D0
-        CPSIM => EIPLS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EIPL(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EIPLS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EIPL(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7330
@@ -2123,15 +2126,15 @@ C
      .          (SPLNWI(IN,IION,IPLS)-RTIS%SPLODI(IN,IION,IPLS))*ELCHA
             PIPL(IPLS,IN)=PIPL(IPLS,IN)+CHP
             CHPM(IPLS,IN)=CHPM(IPLS,IN)+CHP
+            CHI=CPMUL%VALUEM *
+     .          (SEINWI(IN,IION)-RTIS%SEIODI(IN,IION))*ELCHA
+            EIPL(IPLS,IN)=EIPL(IPLS,IN)+CHI
+            CHEIM(IN)=CHEIM(IN)+CHI
           END DO
           CHE=CPMUL%VALUEM *
      .        (SEENWI(IN,IION)-RTIS%SEEODI(IN,IION))*ELCHA
           EIEL(IN)=EIEL(IN)+CHE
           CHEEM(IN)=CHEEM(IN)+CHE
-          CHI=CPMUL%VALUEM *
-     .        (SEINWI(IN,IION)-RTIS%SEIODI(IN,IION))*ELCHA
-          EIPL(IN)=EIPL(IN)+CHI
-          CHEIM(IN)=CHEIM(IN)+CHI
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
@@ -2163,11 +2166,12 @@ C
         END DO
 
         EMPL=0.D0
-        CPSIM => EMPLS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EMPL(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EMPLS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EMPL(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7350
@@ -2211,11 +2215,12 @@ C
         ENDDO
 
         EPLODA=0.D0
-        CPSIM => EPPL_COPS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EPLODA(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EPPL_COPS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EPLODA(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         EPEODA=0.D0
@@ -2245,19 +2250,19 @@ C
               IF (LZDENA(IN,ISTRAI)) THEN
                 PAPL(1:NPLSI,IN) = 0._DP
                 MAPL(1:NPLSI,IN) = 0._DP
-                EAPL(IN) = 0._DP
+                EAPL(1:NPLSI,IN) = 0._DP
                 EAEL(IN) = 0._DP
               END IF
               IF (LZDENM(IN,ISTRAI)) THEN
                 PMPL(1:NPLSI,IN) = 0._DP
                 MMPL(1:NPLSI,IN) = 0._DP
-                EMPL(IN) = 0._DP
+                EMPL(1:NPLSI,IN) = 0._DP
                 EMEL(IN) = 0._DP
               END IF
               IF (LZDENI(IN,ISTRAI)) THEN
                 PIPL(1:NPLSI,IN) = 0._DP
                 MIPL(1:NPLSI,IN) = 0._DP
-                EIPL(IN) = 0._DP
+                EIPL(1:NPLSI,IN) = 0._DP
                 EIEL(IN) = 0._DP
               END IF
             END DO
@@ -2316,7 +2321,7 @@ C  EXCLUDE IPLS-VACUUM CELLS
                     CPPV(IPLS,INC)=CPPV(IPLS,INC)+PIADD
                     SUMM=SUMM+PIADD*VOL(IN)
                     EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
-                    EPPL_COP(INC)=EPPL_COP(INC)+EIADD
+                    EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                     SUMEI=SUMEI+EIADD*VOL(IN)
                     EPEL(INC)=EPEL(INC)+EEADD
                     SUMEE=SUMEE+EEADD*VOL(IN)
@@ -2352,12 +2357,12 @@ cdr
 !pb            ICPV=NPLSI+IPLS
 !pb            CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
 !pb     .           CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
+              CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
+     .             EPPL_COP(IPLS,1:NSBOX_TAL) - EPLODA(IPLS,1:NSBOX_TAL)
             END DO
 
             CHEEM(1:NSBOX_TAL) = CHEEM(1:NSBOX_TAL) +
      .             EPEL(1:NSBOX_TAL) - EPEODA (1:NSBOX_TAL)
-            CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
-     .             EPPL_COP(1:NSBOX_TAL) - EPLODA (1:NSBOX_TAL)
           END IF
 
 C
@@ -2384,17 +2389,18 @@ C
                   CPMUL%NXTMUL => CPPVS(ISTRAI)%PMUL
                   CPPVS(ISTRAI)%PMUL => CPMUL
                 ENDIF
+                IF (EPPL_COP(IPLS,IN) .NE. 0.D0) THEN
+!pb               ALLOCATE(CPMUL)
+                  CPMUL => EIRENE_NEW_MULARR()
+                  CPMUL%IART = IPLS
+                  CPMUL%ICM = IN
+                  CPMUL%VALUEM = EPPL_COP(IPLS,IN)
+                  CPMUL%NXTMUL => EPPL_COPS(ISTRAI)%PMUL
+                  EPPL_COPS(ISTRAI)%PMUL => CPMUL
+              ENDIF
               ENDDO
             ENDDO
             DO IN=1,NSBOX_TAL
-              IF (EPPL_COP(IN) .NE. 0.D0) THEN
-!pb                ALLOCATE(CPSIM)
-                CPSIM => EIRENE_NEW_SIMARR()
-                CPSIM%ICS = IN
-                CPSIM%VALUES = EPPL_COP(IN)
-                CPSIM%NXTSIM => EPPL_COPS(ISTRAI)%PSIM
-                EPPL_COPS(ISTRAI)%PSIM => CPSIM
-              ENDIF
               IF (EPEL(IN) .NE. 0.D0) THEN
 !pb                ALLOCATE(CPSIM)
                 CPSIM => EIRENE_NEW_SIMARR()
@@ -2582,9 +2588,7 @@ C
 
 C
         CHEES=0.
-        CHEIS=0.
         SEES=0.
-        SEIS=0.
         DO 7540 IX=1,NDXA
           IF (LLCUT(IX)) CYCLE
           DO 7545 IY=1,NDYA
@@ -2595,13 +2599,38 @@ C
             CHEES=CHEES+CHEEM(IN)*VOLTAL(IN)
             SEES=SEES+SEE(IX,IY,ISTRAI)
             SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)*ELCHA
-            SEI(IX,IY,ISTRAI)=(EAPL(IN)+EMPL(IN)+EIPL(IN)+EPPL_COP(IN))*
-     .                        VOLTAL(IN)*FLX_EIR
+7545      CONTINUE
+7540    CONTINUE
+C
+        CHEIS=0.
+        SEIS=0.
+        DO 7544 IFL=1,NFLA
+          DO  7543 IPLS=1,NPLSI
+            IF (IFLB(IPLS).NE.IFL) GOTO 7543
+            DO 7542 IX=1,NDXA
+              IF (LLCUT(IX)) CYCLE
+              DO 7541 IY=1,NDYA
+                INN=IY+(IX-1)*NR1ST
+                IN=NCLTAL(INN)
+                SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI) + 
+     .                           (EAPL(IPLS,IN)+EMPL(IPLS,IN)+
+     .                            EIPL(IPLS,IN)+EPPL_COP(IPLS,IN))*
+     .                            VOLTAL(IN)*FLX_EIR
+ 7541         CONTINUE
+ 7542       CONTINUE
+ 7543     CONTINUE
+ 7544   CONTINUE
+
+        DO IX = 1, NDXA
+          IF (LLCUT(IX)) CYCLE
+          DO IY=1,NDYA
+            INN=IY+(IX-1)*NR1ST
+            IN=NCLTAL(INN)
             CHEIS=CHEIS+CHEIM(IN)*VOLTAL(IN)
             SEIS=SEIS+SEI(IX,IY,ISTRAI)
             SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)*ELCHA
-7545      CONTINUE
-7540    CONTINUE
+          END DO
+        END DO
 
 !pb 22012013 copv
         DO IX=1,NDXA
@@ -2614,13 +2643,23 @@ C
      .             (cpv_cmp(icp3+1,in,istrai) + eps60)
             cpv_cmp(icp3+1,in,istrai)=(cpv_cmp(icp3+1,in,istrai)*cfac + 
      .              EPEL(IN)) * VOLTAL(IN)*ELCHA
-            cfac = (EAPL(IN)+EMPL(IN)+EIPL(IN)) /
-     .             (cpv_cmp(icp3+2,in,istrai) + eps60)
+            eamisum = 0._dp
+            eplsum = 0._dp
+            DO IFL=1,NFLA
+              DO IPLS=1,NPLSI
+                IF (IFLB(IPLS).EQ.IFL) THEN
+                  eamisum = eamisum + 
+     .                      EAPL(IPLS,IN)+EMPL(IPLS,IN)+EIPL(IPLS,IN)
+                  eplsum = eplsum + EPPL_COP(IPLS,IN)
+                END IF
+              END DO
+            END DO
+            cfac = EAMISUM / (cpv_cmp(icp3+2,in,istrai) + eps60)
             cpv_cmp(icp3+2,in,istrai)=(cpv_cmp(icp3+2,in,istrai)*cfac + 
-     .              EPPL_COP(IN)) * VOLTAL(IN)*ELCHA
+     .              EPLSUM) * VOLTAL(IN)*ELCHA
 !pb 30012013 sei internal
             cpv_cmp(icp3+3,in,istrai)=(cpv_cmp(icp3+3,in,istrai) + 
-     .              EPPL_COP(IN)) * VOLTAL(IN)*ELCHA
+     .              EPLSUM) * VOLTAL(IN)*ELCHA
             scpveii(istrai) = scpveii(istrai)+cpv_cmp(icp3+3,in,istrai)
           end do
         end do
@@ -2672,7 +2711,16 @@ C
               DO IY=1,NDYA
                 INN=IY+(IX-1)*NR1ST
                 IN=NCLTAL(INN)
-                SEIRES=(EAPL(IN)+EMPL(IN)+EIPL(IN))*VOLTAL(IN)*FLX_EIR
+                eamisum = 0._dp
+                DO IFL=1,NFLA
+                  DO IPLS=1,NPLSI
+                    IF (IFLB(IPLS).EQ.IFL) THEN
+                       eamisum = eamisum + 
+     .                      EAPL(IPLS,IN)+EMPL(IPLS,IN)+EIPL(IPLS,IN)
+                    END IF
+                  END DO
+                END DO
+                SEIRES=EAMISUM*VOLTAL(IN)*FLX_EIR
 !pb              RESSEI(ISTRAI)=RESSEI(ISTRAI)+
 !pb     .                       ABS(SIGMA_COP(2*NPLSI+2,IN)*
 !pb     .                       SEIRES/100.D0)

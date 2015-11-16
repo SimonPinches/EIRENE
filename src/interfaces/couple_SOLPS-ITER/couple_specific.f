@@ -2348,6 +2348,41 @@ csw
               PIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
+
+          IF (LEAPL) THEN 
+          IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPSIM)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
+            EAPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+          IF (LEMPL) THEN 
+          IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPSIM)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
+            EMPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+          IF (LEIPL) THEN 
+          IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPSIM)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
+            EIPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+
           IF(LMAPL) THEN
             IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
@@ -2426,36 +2461,7 @@ csw
             EIELS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-        IF(LEAPL) THEN
-          IF (EAPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-            CPSIM => EIRENE_NEW_SIMARR()
-            CPSIM%ICS = IN
-            CPSIM%VALUES = EAPL(IN)*FLXI
-            CPSIM%NXTSIM => EAPLS(ISTRAI)%PSIM
-            EAPLS(ISTRAI)%PSIM => CPSIM
-          ENDIF
-        ENDIF
-        IF(LEMPL) THEN
-          IF (EMPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-            CPSIM => EIRENE_NEW_SIMARR()
-            CPSIM%ICS = IN
-            CPSIM%VALUES = EMPL(IN)*FLXI
-            CPSIM%NXTSIM => EMPLS(ISTRAI)%PSIM
-            EMPLS(ISTRAI)%PSIM => CPSIM
-          ENDIF
-        ENDIF
-        IF(LEIPL) THEN
-          IF (EIPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-            CPSIM => EIRENE_NEW_SIMARR()
-            CPSIM%ICS = IN
-            CPSIM%VALUES = EIPL(IN)*FLXI
-            CPSIM%NXTSIM => EIPLS(ISTRAI)%PSIM
-            EIPLS(ISTRAI)%PSIM => CPSIM
-          ENDIF
-        ENDIF
+
       ENDDO
       
       DO IATM=1,NATMI
