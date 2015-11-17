@@ -32,6 +32,8 @@ c               also for proper printout from chctrc for trace ions.
 c   
 c  njump=3, for internal grid surface und timusr. reset time=0
 c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
+cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
+cdr           also: manual. to be done: remove static loop from folneut and folion.
 
 
 C  .......................................................................................
@@ -1563,7 +1565,7 @@ c  written for fnueqi without that factor.
       END FUNCTION FNUEQI
 
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
-C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
+C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
 
       FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_1,EA,XNI,TI
@@ -1580,6 +1582,7 @@ C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
       END FUNCTION FNUEQI_1
 
 C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
+C  INVOLVING THE CHANDRASEKHA FUNCTIONS
 
       FUNCTION FNUEQI_2(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_2,EA,XNI,TI
