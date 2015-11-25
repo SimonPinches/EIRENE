@@ -56,7 +56,7 @@ C
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
@@ -117,22 +117,9 @@ C
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
 C
       IF (DUR.GT.0.D0) THEN
-C
-C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
-C  PARALLEL DISTANCE ZT (CM)
-C  ENERGY RELAXATION CONSTANT TAUE
-C
-C  FHa: new version of energy relaxation of minimal model (Oct. 2015)
-C        E0NEW = E0OLD*EXP(-DUR/TAUE01)
-C     >        + 1.5*TAUE01/TAUE02*(1.-EXP(-DUR/TAUE01))
 
-C  FHa: UNDER CONSTRUCTION
-C  FHa: UNDER CONSTRUCTION
-C  FHa: UNDER CONSTRUCTION
-C  this is to be the extended collision model
-c  saving the full velocity in *S velocities
-
-
+c  second minimal collision model: change velocities according to
+c  the expectation values of the change
 c        DO IPL = 1, NPLSI ! loop over all background species
         DO IPL = 1, 1 ! loop over all background species
            VELPAR = ABS(SIGPAR*VELPAR + dVelPrl_dt(IPL)*1.0E+02*DUR)
@@ -152,6 +139,13 @@ C        FAC = 1.0
 C        VELPAR=VELPAR*FAC
 C        VELPER=VELPER*FAC
         E0PAR=E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
+
+c  FHa: write the trace ion data into temporary file
+        IPL = 1
+        IPLTI = MPLSTI(IPL)
+        write(4,"(10E20.9)") TIME, E0NEW, TIIN(IPLTI,NCELL),
+     >  DIIN(IPL,NCELL)
+
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
 c  gets new B-field

@@ -137,7 +137,8 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           NRCELL_OLD,
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
-     .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
+     .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0,
+     .           iosss
       LOGICAL :: LCNDEXP
 
 
@@ -151,6 +152,15 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
       LCART=.TRUE.
 
 100   LGPART=.TRUE.
+
+c  FHa: open the file for the temporary trace ion data
+      iosss = 0
+      open(4, file='trace_ion_trace', iostat=iosss)
+      IF (iosss.NE.0) THEN
+         write(*,*) 'Could NOT write file !'
+         STOP
+      END IF
+
 c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
       IF (.NOT.LCART) GOTO 9921
       IC_ION=IC_ION+1

@@ -669,6 +669,7 @@ C  FOLLOW NEUTRAL PARTICLE
 C  FOLLOW TEST ION
           ELSEIF (ITYP.EQ.3) THEN
             CALL EIRENE_FOLION
+            close(4)  ! FHa: close file with the trace ion data
           ENDIF
 C  NEXT GENERATION ?
           IF (LGPART) GOTO 102
