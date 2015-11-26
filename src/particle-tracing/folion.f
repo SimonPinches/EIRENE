@@ -716,62 +716,8 @@ C     LATER: VELPAR --> VEL_GC
           ISRFCL=2
         ENDIF
       ENDIF
-C
-C FNUI: collision frequency with background ions.
-      FNUI   = 1.D-30
-      FNUI01 = 1.D-30
-      FNUI02 = 1.D-30
-      IF (NRC.GE.0) THEN
-        DO IPL=1,NPLSI
-          IPLTI=MPLSTI(IPL)
-ctest     ti=200
-ctest     ni=1e14
-ctest     ea=0.1
-ctest     iion=1
-ctest     ipls=1
-ctest     nmassi(1)=16.
-ctest     nmassp(1)=1.
-ctest     a=fnueqi(1.d14,200.d0)
-ctest     a=a*(1.+1./16.)**0.5-a*1.5*200./0.1
-ctest     aa=fnueqi_1(0.1d0,1.d14,200.d0,1,1)
-ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
-ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
-ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
-ctest     stop
 
-C   FHa: Determination of new frequencies for corrected minimal collision model (Oct. 2015)
-          MASSREL = (1 + RMASSP(IPL)/RMASSI(IION))**(-0.5)
-          IF (.NOT.LGVAC(NCELL,IPL)) THEN
-          FNUI01 = FNUI01
-     >      + FNUEQI_1(0._DP,DIIN(IPL,NCELL),TIIN(IPLTI,NCELL),IION,IPL)
-     >      * MASSREL
-          FNUI02 = FNUI02
-     >      + FNUEQI_1(0._DP,DIIN(IPL,NCELL),TIIN(IPLTI,NCELL),IION,IPL)
-     >      * TIIN(IPLTI,NCELL)
-          END IF
-
-        ENDDO
-      ENDIF
-
-c  TAUE: relaxation time
-      TAUE01 = 1./FNUI01
-      TAUE02 = 1./FNUI02
-
-c  STEPSIZE = 0.1*VEL_PARALLEL*TAUE, i.e. 10 Coulomb collisions per relax. time
-c  TF: distance until next coulomb collision
-C  DELFAC: increase stepsize as E0 approaches 1.5*TI
-      TIFAC  = MAX(TVAC,TIIN(1,NCELL))
-      DELFAC = 1.5_DP*TIFAC/ABS(E0-1.5_DP*TIFAC+EPS60)
-
-C  DELTA_T = TAUE*0.1*DELFAC
-C  DELTA_S = DELTA_T * VELPAR  ! = TF
-C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
-C     LATER: VELPAR --> VEL_GC
-
-C  FHa: to be outcommented
-      TF = TAUE01*VELPAR*0.1*DELFAC
-
-C  FHa: get new TF and data for the FP collision
+C  get new TF and data for the FP collision carried out in fpkcol
       CALL EIRENE_PREPARE_FPKCOL(TF)
 
       if (nldfst) tf=1.E-5_DP*vel
@@ -1726,11 +1672,10 @@ C     where only the energy is relaxed)
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-      alpha = 0.1 ! factor for the ratio v/dv_dt, should be significantly smaller than 1
+      alpha = 0.02 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       TF    = 1.0E+10
 
-c      DO IPL = 1, NPLSI ! loop over all background species
-      DO IPL = 1, 1 ! loop over all background species
+      DO IPL = 1, NPLSI ! loop over all background species
 
          IPLTI=MPLSTI(IPL)
 
@@ -1746,11 +1691,10 @@ c  get the parallel part of the background velocity
      >            DIIN(IPL,NCELL)*1.0E+06*COULOMBLOG/
      >            (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
 
-         print*
-         print*, ' DIIN:  ', DIIN(IPL,NCELL)
-         print*, ' TIIN:  ', TIIN(IPLTI,NCELL)
-         print*, ' VDiff: ', (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
-         print*
+c         print*, ' DIIN:  ', DIIN(IPL,NCELL)
+c         print*, ' TIIN:  ', TIIN(IPLTI,NCELL)
+c         print*, ' VDiff: ', (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
+c         print*
 
          CALL D_coeff(Chi,DPrl,DPerp)
 
@@ -1763,11 +1707,7 @@ c  get the parallel part of the background velocity
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
 
 c  get the new TF, the distance until next coulomb collision
-c         TFPrl =1.0E+02*(1.0E-02*VELPAR)**2/ABS(dVelPrl_dt(IPL))*alpha
-c         TFPerp=1.0E+02*(1.0E-02*VELPER)**2/ABS(dVelPerp_dt(IPL))*alpha
-c         TFtemp= MAX(TFPrl,TFPerp)
-c         TF = MAX(TFPrl,TFPerp,0.1)
-c         IF (TFtemp.LT.TF) TF = TFtemp
+
 c         dChi_dt = 1./(ub**2*Chi)*
 c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
 c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
@@ -1777,12 +1717,15 @@ c         TF = ABS(Chi/dChi_dt)*alpha
          dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
      >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
 c  times VELPAR since TF is a distance
-         TF = VELPAR*ABS(vabs/dvabs_dt)*alpha  
-         print*
-         print*, ' TF: ', TF
-         print*
+         TFtemp = VELPAR*ABS(vabs/dvabs_dt)*alpha
+         IF (TFtemp .LT. TF) TF = TFtemp
+c         print*
+c         print*, ' TFtemp = ', TFtemp
+c         print*
 
       END DO
+
+c      print*, ' TF = ', TF
 
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
 

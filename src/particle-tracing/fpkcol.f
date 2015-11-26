@@ -120,8 +120,9 @@ C
 
 c  second minimal collision model: change velocities according to
 c  the expectation values of the change
-c        DO IPL = 1, NPLSI ! loop over all background species
-        DO IPL = 1, 1 ! loop over all background species
+c  SIGPAR is the sign of the parallel velocity with respect to the
+c  magnetic field
+        DO IPL = 1, NPLSI ! loop over all background species
            VELPAR = ABS(SIGPAR*VELPAR + dVelPrl_dt(IPL)*1.0E+02*DUR)
            VELPER = VELPER + dVelPerp_dt(IPL)*1.0E+02*DUR
         END DO
@@ -135,16 +136,13 @@ C  UPDATE ESTIMATORS EIIO,EIPL
         EIPL(NCELLT)=EIPL(NCELLT)-WEIGHT*(E0NEW-E0OLD)
 C
         FAC=SQRT(E0NEW/E0OLD)
-C        FAC = 1.0
-C        VELPAR=VELPAR*FAC
-C        VELPER=VELPER*FAC
         E0PAR=E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
 
 c  FHa: write the trace ion data into temporary file
-        IPL = 1
-        IPLTI = MPLSTI(IPL)
-        write(4,"(10E13.4)") TIME, E0NEW, TIIN(IPLTI,NCELL),
-     >  DIIN(IPL,NCELL), VELPAR, VELPER
+c        IPL = 1
+c        IPLTI = MPLSTI(IPL)
+c        write(4,"(10E13.4)") TIME, E0NEW, TIIN(IPLTI,NCELL),
+c     >  DIIN(IPL,NCELL), VELPAR, VELPER
 
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
