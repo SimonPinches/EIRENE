@@ -1722,11 +1722,11 @@ C     where only the energy is relaxed)
       real*8 :: alpha, ub, Chi, Lambda, dChi_dt
       real*8 :: VelPrlBG
       real*8 :: DPrl, DPerp
-      real*8 :: TFPrl, TFPerp, TFtemp, TF
+      real*8 :: TFPrl, TFPerp, TFtemp, TF, vabs, dvabs_dt
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-      alpha = 0.02 ! factor for the ratio v/dv_dt, should be significantly smaller than 1
+      alpha = 0.1 ! factor for the ratio v/dv_dt, should be significantly smaller than 1
       TF    = 1.0E+10
 
 c      DO IPL = 1, NPLSI ! loop over all background species
@@ -1768,10 +1768,16 @@ c         TFPerp=1.0E+02*(1.0E-02*VELPER)**2/ABS(dVelPerp_dt(IPL))*alpha
 c         TFtemp= MAX(TFPrl,TFPerp)
 c         TF = MAX(TFPrl,TFPerp,0.1)
 c         IF (TFtemp.LT.TF) TF = TFtemp
-         dChi_dt = 1./(ub**2*Chi)*
-     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
-     >               VELPER*1.0E-02*            dVelPerp_dt(IPL))
-         TF = ABS(Chi*VELPAR/dChi_dt)*alpha
+c         dChi_dt = 1./(ub**2*Chi)*
+c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
+c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
+c         TF = ABS(Chi/dChi_dt)*alpha
+
+         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
+         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
+     >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
+c  times VELPAR since TF is a distance
+         TF = VELPAR*ABS(vabs/dvabs_dt)*alpha  
          print*
          print*, ' TF: ', TF
          print*

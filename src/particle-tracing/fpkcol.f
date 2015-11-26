@@ -143,8 +143,8 @@ C        VELPER=VELPER*FAC
 c  FHa: write the trace ion data into temporary file
         IPL = 1
         IPLTI = MPLSTI(IPL)
-        write(4,"(10E20.9)") TIME, E0NEW, TIIN(IPLTI,NCELL),
-     >  DIIN(IPL,NCELL)
+        write(4,"(10E13.4)") TIME, E0NEW, TIIN(IPLTI,NCELL),
+     >  DIIN(IPL,NCELL), VELPAR, VELPER
 
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
