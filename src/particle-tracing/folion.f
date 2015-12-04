@@ -1672,10 +1672,11 @@ C     where only the energy is relaxed)
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-      alpha = 0.02 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      alpha = 0.1 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       TF    = 1.0E+10
 
-      DO IPL = 1, NPLSI ! loop over all background species
+c      DO IPL = 1, NPLSI ! loop over all background species
+      DO IPL = 1, 1 ! loop over all background species
 
          IPLTI=MPLSTI(IPL)
 
@@ -1708,17 +1709,17 @@ c         print*
 
 c  get the new TF, the distance until next coulomb collision
 
-c         dChi_dt = 1./(ub**2*Chi)*
-c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
-c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
-c         TF = ABS(Chi/dChi_dt)*alpha
-
-         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
-         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
-     >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
+         dChi_dt = 1./(ub**2*Chi)*
+     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
+     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
+         TF = VELPAR*ABS(Chi/dChi_dt)*alpha
+         TF = VELPAR*1.0E-006
+c         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
+c         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
+c     >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
 c  times VELPAR since TF is a distance
-         TFtemp = VELPAR*ABS(vabs/dvabs_dt)*alpha
-         IF (TFtemp .LT. TF) TF = TFtemp
+c         TFtemp = VELPAR*ABS(vabs/dvabs_dt)*alpha
+c         IF (TFtemp .LT. TF) TF = TFtemp
 c         print*
 c         print*, ' TFtemp = ', TFtemp
 c         print*

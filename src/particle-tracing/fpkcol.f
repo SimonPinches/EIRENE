@@ -55,7 +55,7 @@ C
       IMPLICIT NONE
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS
+     .            BVEC_1(3), VVEC(3), VELS, VelPrlBG
       INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C  SAVE INCIDENT SPECIES: IOLD
@@ -122,7 +122,8 @@ c  second minimal collision model: change velocities according to
 c  the expectation values of the change
 c  SIGPAR is the sign of the parallel velocity with respect to the
 c  magnetic field
-        DO IPL = 1, NPLSI ! loop over all background species
+c        DO IPL = 1, NPLSI ! loop over all background species
+        DO IPL = 1, 1     ! loop over all background species
            VELPAR = ABS(SIGPAR*VELPAR + dVelPrl_dt(IPL)*1.0E+02*DUR)
            VELPER = VELPER + dVelPerp_dt(IPL)*1.0E+02*DUR
         END DO
@@ -139,10 +140,14 @@ C
         E0PAR=E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
 
 c  FHa: write the trace ion data into temporary file
-c        IPL = 1
-c        IPLTI = MPLSTI(IPL)
-c        write(4,"(10E13.4)") TIME, E0NEW, TIIN(IPLTI,NCELL),
-c     >  DIIN(IPL,NCELL), VELPAR, VELPER
+        IPL = 1
+        VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
+     >              BYIN(NCELL)*VYIN(IPL,NCELL)+
+     >              BZIN(NCELL)*VZIN(IPL,NCELL))
+        IPLTI = MPLSTI(IPL)
+        write(4,"(10E13.4)") TIME, E0NEW, DIIN(IPL,NCELL),
+     >     TIIN(IPLTI,NCELL), VelPrlBG, SIGPAR*VELPAR, VELPER,
+     >     dVelPrl_dt(IPL)
 
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
