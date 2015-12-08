@@ -19,7 +19,9 @@ C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
 c  06.08.15 arguments added to vecusr
-c  24.08.15  comments and documention wrt. BGK collision treatmen
+c  24.08.15 comments and documention wrt. BGK collision treatment
+cdr dec.15: tracklength estimators for heavy test particle post collision energies 
+cdr         in PI processes added. For A, M, I incident test particles.
 
  
 C
@@ -580,10 +582,9 @@ C
 C
             ELSE
 C
-C SO NICHT    EAAT(IRD)     = EAAT(IRD)     +WTRSIG*E0
-C SO NICHT    EAML(IRD)     = EAML(IRD)     +WTRSIG*E0
-C SO NICHT    EAIO(IRD)     = EAIO(IRD)     +WTRSIG*E0
-C SO NICHT    EAPL(IRD)     = EAPL(IRD)     +WTRSIG*E0
+              IF (LEMAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
             ENDIF
           ENDIF
@@ -1198,11 +1199,10 @@ C
 C
             ELSE
 C
-C SO NICHT    EMAT(IRD)     = EMAT(IRD)     +WTRSIG*E0
-C SO NICHT    EMML(IRD)     = EMML(IRD)     +WTRSIG*E0
-C SO NICHT    EMIO(IRD)     = EMIO(IRD)     +WTRSIG*E0
-C SO NICHT    EMPL(IRD)     = EMPL(IRD)     +WTRSIG*E0
-            IF (LEMPL) EMPL(IRD)=EMPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
+              IF (LEMAT) EMAT(IRD)=EMAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEMPL) EMPL(IRD)=EMPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
             ENDIF
           ENDIF
 148     CONTINUE
@@ -1819,10 +1819,9 @@ C
 C
             ELSE
 C
-C SO NICHT    EIAT(IRD)     = EIAT(IRD)     +WTRSIG*E0
-C SO NICHT    EIML(IRD)     = EIML(IRD)     +WTRSIG*E0
-C SO NICHT    EIIO(IRD)     = EIIO(IRD)     +WTRSIG*E0
-C SO NICHT    EIPL(IRD)     = EIPL(IRD)     +WTRSIG*E0
+              IF (LEMAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEIPL) EIPL(IRD)=EIPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
             ENDIF
           ENDIF
