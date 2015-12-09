@@ -1,3 +1,7 @@
+cdr: nov. 2015  added first argument in parameter list: ICELL (other branch, not yet here)
+CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
+cdr               for next call to H_colrad, see e.g. fem routine df_xyz.f in geometry block
+c****************************************************************************************************
 C*
 C*     COLLISIONAL-RADIATIVE MODEL OF
 C*
@@ -6,6 +10,14 @@ C*
 C*
 C   ASSUME: SLOWLY EVOLVING SPECIES: H,H+
 C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
+C
+C   INPUT:
+C   ICELL     : CELL NUMBER, ONLY NEEDED IN CASE OF CALLS FROM INSIDE EIRENE TRANSPORT CODE.
+C   TEMP      : ELECTRON TEMPERATUR
+C   DENSEL    : ELECTRON DENSITY
+C   Q_EXT(N): ???   ->  H*(N)  external source, e.g. molecules, or photo-excitation
+C
+C
 C   OUTPUT:
 C   R0(..)    : TRAIN OF H* TRAVELING WITH H+
 C   R1(..)    : TRAIN OF H* TRAVELING WITH H
@@ -21,10 +33,11 @@ c   ALPHA(N): H+    ->  H*(N)  THREEBODY recombination from H+
 c                              (invers to S: elect. impact ionization)
 c   BETA(N) : H+    ->  H*(N)  radiative rec. from H+
 c   C(1,N)  : H(1)  ->  H*(N)  excitation from ground state
-C   Q_EXT(N): ???   ->  H*(N)  external source
+
 C
-c   reduced pop coeff r0,r1  are per electron. hence: times "densel"
-c   for pop0,pop1 - arrays of reduced population coefficients
+c   reduced pop coeff r0,r1  are per electron. 
+c   hence: taken times "densel"
+c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
       SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, POP0, POP1, POP2,
@@ -38,6 +51,7 @@ C***********************************************************************
 C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
       REAL(DP), INTENT(IN) :: Q_EXT(40)
+
       REAL(DP), INTENT(OUT) ::   ALPCR,    SCR,     SCR_EXT
       REAL(DP), INTENT(OUT) :: E_ALPCR,  E_SCR,   E_SCR_EXT
       REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T

@@ -684,13 +684,37 @@ C
             IXSET3=0
             IYSET3=0
             IF (LEVGEO.EQ.1) THEN
+
+              IF (NLPOL.AND.NLTOR.AND.NLTRZ.AND.LPRAD3(IBLD)) THEN
+c  set a y-z grid, by abuse of notation on xxp3d,yyp3d
+                IXTL3=NP2ND
+                DO I=1,IXTL3
+                  XXP3D(I)=PSURF(I)
+                END DO
+                IXSET3=1
+                IYTL3=NT3RD
+                DO I=1,IYTL3
+                  YYP3D(I)=ZSURF(I)
+                END DO
+                DO I=1,NP2ND
+	              DO J=1,NT3RD
+                    XPOL(I,J) = PSURF(I)
+                    YPOL(I,J) = ZSURF(J)
+                  END DO
+                END DO
+                IYSET3=1
+              END IF
+
               IF (NLRAD.AND..NOT.LPRAD3(IBLD)) THEN
+c  at this point: either lppol3 or lptor3 must be true
+c  set a x-y or a x-z grid, by abuse of notation on xxp3d,yyp3d
                 IXTL3=NR1ST
                 DO 218 I=1,IXTL3
 218               XXP3D(I)=RHOSRF(I)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
+c  at this point:  lppol3 must be true, i.e. we need x-z grid
                 IYTL3=NT3RD
                 DO 220 I=1,IYTL3
 220               YYP3D(I)=ZSURF(I)
@@ -703,6 +727,7 @@ C
                 IYSET3=1
               ENDIF
               IF (NLPOL.AND..NOT.LPPOL3(IBLD)) THEN
+c  at this point: lptor3 must be true, i.e. we need x-y grid
                 IYTL3=NP2ND
                 DO 221 I=1,IYTL3
 221               YYP3D(I)=PSURF(I)

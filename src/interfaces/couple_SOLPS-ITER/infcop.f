@@ -3360,9 +3360,9 @@ cdr
             DO IPLS=1,NPLSI
               CHPM(IPLS,1:NSBOX_TAL) = CHPM(IPLS,1:NSBOX_TAL) +
      .             PPPL_COP(IPLS,1:NSBOX_TAL) - PPLODA(IPLS,1:NSBOX_TAL)
-!pb            ICPV=NPLSI+IPLS
-!pb            CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
-!pb     .           CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
+!pb           ICPV=NPLSI+IPLS
+!pb           CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
+!pb     .          CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
               CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
      .             EPPL_COP(IPLS,1:NSBOX_TAL) - EPLODA(IPLS,1:NSBOX_TAL)
             END DO

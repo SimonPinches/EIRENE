@@ -5,7 +5,10 @@ C            and: return new velocity vector in full cartesian coord.
 C               fetch new BVEC at point of collision
 C  mai 10:   flag ind:  if ind=2, only FP collision, but no push to
 C                               new position.
-c  july 15:  set E0PAR,  (was missing). 
+c  july 15:  set E0PAR,  (was missing).
+cdr nov. 15:  multiple bulk ion species, new array fnuiar(ipl)
+cdr           to be done:  proper definition of eipl, and e0new, in cases
+cdr                        of multiple background ion species 
 C
       SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
 C
@@ -121,11 +124,15 @@ C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
 C  PARALLEL DISTANCE ZT (CM)
 C  ENERGY RELAXATION CONSTANT TAUE
 C
+cdr to be done: proper new energy, according to weighting by fnuiar(ipl) 
+cdr relaxation towards a weighted mean background energy
+cdr currently: arbitrary 1.5*Tiin(1,...)
         E0NEW=E0OLD*EXP(-DUR/TAUE)+1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
         VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
+cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
         WG = WEIGHT*(E0NEW-E0OLD)
         FNUI = SUM(FNUIAR(1:NPLSI))
         DO IPL = 1, NPLSI

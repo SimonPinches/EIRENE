@@ -285,7 +285,7 @@ C  TRANSFERRED KINETIC ENERGY: 6 EV
             EHVDS1(IREI,1:NSBOX)=6.
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
-            NELREI(IREI)=-5
+            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
             NREAHV(IREI)=-2
           ELSE
             EELDS1(IREI,1)=-10.5
@@ -342,13 +342,13 @@ C  TRANSFERRED KINETIC ENERGY: 10 EV
             EHVDS1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
-            NELREI(IREI) = -6
+            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
             NREAHV(IREI) = -3
           ELSE
             EELDS1(IREI,1)=-25.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
-            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
+            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6: 
             NREAHV(IREI) = -3
           END IF
           FACREI(IREI,1) = FACTKK
@@ -384,14 +384,16 @@ C
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELDS1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
-            NREAEI(IREI) = -7
+C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
+            NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
-            NELREI(IREI) = -7
+C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
+            NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
           ELSE  ! storage save mode
             EELDS1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
-            NREAEI(IREI) = -7
+            NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
-            NELREI(IREI) = -7    ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
+            NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7: 
 
           END IF
           FACREI(IREI,1) = 1._DP

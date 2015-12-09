@@ -2131,6 +2131,7 @@ C
             EIPL(IPLS,IN)=EIPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           END DO
+
           CHE=CPMUL%VALUEM *
      .        (SEENWI(IN,IION)-RTIS%SEEODI(IN,IION))*ELCHA
           EIEL(IN)=EIEL(IN)+CHE

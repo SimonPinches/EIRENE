@@ -1,6 +1,24 @@
+c  function femint.f :  (-->  fem_interpolate.f)
+c  interpolate a given function fecken, defined on cell vertices of cell, 
+c  using fem-shape functions.
+
+c   
+
+c  
+c  related routines:  fem_differentiate 
+c                     fem_local-coord
+c                     fem_cell-corner
+
       function eirene_femint (fecken, icell, x, y, z, lsame) 
      .         result(res)
-      
+c  input:
+c  lsame:   call with same coordinates as previous call, just another function 'fecken'  
+c           if lsame    : local coordinates are taken from previous call
+c           if not lsame: local coordinates are calculated here (call fem_local-coord)  
+c  output:
+c  res : function evaluated at x,y,z 
+
+ 
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_clogau
@@ -57,6 +75,10 @@
           call eirene_xyz_to_rst(icell, x1, y1, 0._dp, x2, y2, 0._dp,
      .                           x3, y3, 0._dp, x4, y4, 0._dp, 
      .                           x, y, z, r, s, t, u)
+c       elseif (lsame)
+c  same icell, x,y,z as in previous call.
+c  ir,ip, and local coordinates r,s are already set in previous call
+
         end if
 
         f1=fecken(INDPOINT(IR+1,IP))
@@ -84,6 +106,10 @@
           call eirene_xyz_to_rst(icell, x1, y1, 0._dp, x2, y2, 0._dp, 
      .                           x3, y3, 0._dp, x4, y4, 0._dp, 
      .                           x, y, z, r, s, t, u)
+c       elseif (lsame)
+c  same icell, x,y,z as in previous call.
+c  Local coordinates r,s,t  are already set in previous call
+
         end if
 
         f1=fecken(necke(1,icell)) 
@@ -112,6 +138,9 @@
           call eirene_xyz_to_rst(icell, x1, y1, z1, x2, y2, z2,  
      .                           x3, y3, z3, x4, y4, z4, 
      .                           x, y, z, r, s, t, u)
+c       elseif (lsame)
+c  same icell, x,y,z, as in previous call. 
+c  Local coordinates r,s,t,u  are already set in previous call
         end if
 
         f1=fecken(nteck(1,icell))

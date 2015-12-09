@@ -1,7 +1,24 @@
+cdr  Nov. 2015
+cdr  to be done ird1: not used,  to be removed ??
+cdr  internal energy:  make also ipls species dependent
+cdr  check for storage (copy) and return, if not enought storage
+cdr  upfcop should be identical in interface versions, and should
+cdr  be made a default eirene option for linear combination of tallies
+
       SUBROUTINE EIRENE_UPFCOP
 
-!  update sources portions on couple tally COPV after completion of 
-!  trajektory
+!  update tallies (currently: COPV) after completion of 
+!  each single trajectory. Use linear algebraic expressions of default tallies
+!  
+!  score per history --> automatically variances per history are available
+!                        distinct from aposteriori evaluation of linear combinations
+
+!  current version:
+!    1)   total particle source             (sni=papl+pmpl+pipl      , ICP+1  ,ICP2)  
+!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3) 
+!    3)   total ion energy source           (sei=eapl+empl+eipl      , ICP3+1 ,ICP4)
+!    4)   internal energy source            (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
+!    5)   total electr. energy source       (see=eael+emel+eiel, ICP5+1) 
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -53,7 +70,7 @@
          RETURN
       END IF
 
-!  particle source (sni)
+!  particle source (sni), ipls (=ipl) resolved, copv(icp+1:icp+nplsi)
       DO IPL = 1,NPLSI
         IF (LMETSP(NSPAN(14)+IPL-1) .OR.
      .      LMETSP(NSPAN(20)+IPL-1) .OR.
@@ -71,7 +88,7 @@
         END IF
       END DO
 
-!  momentum source (smo)
+!  parallel momentum source (smo), ipls (=ipl) resolved, copv(icp2+1:icp2+nplsi)
       DO IPL = 1,NPLSI
         IF (LMETSP(NSPAN(97)+IPL-1) .OR.
      .      LMETSP(NSPAN(98)+IPL-1) .OR.
@@ -101,6 +118,8 @@
         IF (LEAEL.OR.LEMEL.OR.LEIEL) LMETSP(NMTSP+ICP3+1)=.TRUE.
       END DO
 
+
+!  total ion energy source (sei), ipls (=ipl) resolved, copv(icp3+1:icp3+nplsi)
       DO IPL = 1,NPLSI
         IF ((LMETSP(NSPAN(38)+IPL-1) .OR.
      .      LMETSP(NSPAN(44)+IPL-1) .OR.

@@ -1,16 +1,24 @@
+cdr  Nov. 2015
+cdr  to be done ird1: not used,  to be removed ??
+cdr  internal energy:  make also ipls species dependent
+cdr  check for storage (copy) and return, if not enought storage
+cdr  upfcop should be identical in interface versions, and should
+cdr  be made a default eirene option for linear combination of tallies
+
       SUBROUTINE EIRENE_UPFCOP
 
 !  update tallies (currently: COPV) after completion of 
-!  trajectory. Use algebraic expressions of default tallies
+!  trajectory. Use linear algebraic expressions of default tallies
 !  
-!  score per history --> automatically variances per history
+!  score per history --> automatically variances per history are available
+!                        distinct from aposteriori evaluation of linear combinations
 
 !  current version:
-!    1)   total particle source             (sni=papl+pmpl+pipl)  
-!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl) 
-!    3)   total electr. energy source       (see=eael+emel+eiel)  
-!    4)   total ion energy source           (sei=eapl+empl+eipl) 
-!    5)   internal energy source            (sei_int=sei-u*smo+ek*sni)
+!    1)   total particle source             (sni=papl+pmpl+pipl      , ICP+1  ,ICP2)  
+!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3) 
+!    3)   total ion energy source           (sei=eapl+empl+eipl      , ICP3+1 ,ICP4)
+!    4)   internal energy source            (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
+!    5)   total electr. energy source       (see=eael+emel+eiel, ICP5+1) 
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -51,22 +59,24 @@
          IFIRST = 1
       END IF
 
-      ICP = NPLSI
-      ICP2 = 2*NPLSI
-      ICP3 = 3*NPLSI
+      ICP = NPLSI     ! ...+1:  summed ipls part. source, a+m+i+ph
+      ICP2 = 2*NPLSI  ! ...+1:  summed ipls parallel mom. source, a+m+i+ph
+      ICP3 = 3*NPLSI  ! ...+1:  summed ipls ion energy source, total, a+m+i+ph
+      ICP4 = 4*NPLSI  ! ...+1:  summed ipls ion energy source, internal, a+m+i+ph
+      ICP5 = 5*NPLSI  ! ...+1:  summed electr. energy sources, a+m+i+ph
       NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI
 
-      IF (NCPVI < ICP3+4) THEN
+      IF (NCPVI < ICP5+1) THEN
          IF (IFIRST == 0) THEN
-            WRITE (IUNOUT,*) 'COUPLE TALLY COPV TOO SMALL '
-            WRITE (IUNOUT,*) 'NCPVI NEEDS TO BE AT LEAST ',ICP3+4
+            WRITE (IUNOUT,*) 'UPFCOP: COUPLE TALLY COPV TOO SMALL '
+            WRITE (IUNOUT,*) 'NCPVI NEEDS TO BE AT LEAST ',ICP5+1
             WRITE (IUNOUT,*) 'COPV IS NOT UPDATED '
             IFIRST = 1
          END IF
          RETURN
       END IF
 
-!  particle source (sni)
+!  particle source (sni), ipls (=ipl) resolved, copv(icp+1:icp+nplsi)
       DO IPL = 1,NPLSI
         IF (LMETSP(NSPAN(14)+IPL-1) .OR.
      .      LMETSP(NSPAN(20)+IPL-1) .OR.
@@ -84,7 +94,7 @@
         END IF
       END DO
 
-!  momentum source (smo)
+!  parallel momentum source (smo), ipls (=ipl) resolved, copv(icp2+1:icp2+nplsi)
       DO IPL = 1,NPLSI
         IF (LMETSP(NSPAN(97)+IPL-1) .OR.
      .      LMETSP(NSPAN(98)+IPL-1) .OR.
@@ -103,79 +113,59 @@
         END IF
       END DO
 
+!  electron energy source (see),  no species index here, copv(icp4+1)
+ 
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
 
-!  electron energy source (see)
-        COPV(ICP3+1,IR) = 0._DP
-        IF (LEAEL) COPV(ICP3+1,IR)=COPV(ICP3+1,IR)+EAEL(IR)
-        IF (LEIEL) COPV(ICP3+1,IR)=COPV(ICP3+1,IR)+EIEL(IR)
-        IF (LEMEL) COPV(ICP3+1,IR)=COPV(ICP3+1,IR)+EMEL(IR)
-        IF (LEAEL.OR.LEMEL.OR.LEIEL) LMETSP(NMTSP+ICP3+1)=.TRUE.
+        COPV(ICP5+1,IR) = 0._DP
+        IF (LEAEL) COPV(ICP5+1,IR)=COPV(ICP5+1,IR)+EAEL(IR)
+        IF (LEIEL) COPV(ICP5+1,IR)=COPV(ICP5+1,IR)+EIEL(IR)
+        IF (LEMEL) COPV(ICP5+1,IR)=COPV(ICP5+1,IR)+EMEL(IR)
+        IF (LEAEL.OR.LEMEL.OR.LEIEL) LMETSP(NMTSP+ICP5+1)=.TRUE.
       END DO
 
+
+!  total ion energy source (sei), ipls (=ipl) resolved, copv(icp3+1:icp3+nplsi)
       DO IPL = 1,NPLSI
-        IF ((LMETSP(NSPAN(38)+IPL-1) .OR.
+        IF (LMETSP(NSPAN(38)+IPL-1) .OR.
      .      LMETSP(NSPAN(44)+IPL-1) .OR.
-     .      LMETSP(NSPAN(50)+IPL-1) ) .AND. (IFLB(IPL) > 0)) THEN
+     .      LMETSP(NSPAN(50)+IPL-1) ) THEN
 
           DO ICO = 1,NCLMT
             IR = ICLMT(ICO)
 
-!  ion energy source (sei)
-            COPV(ICP3+2,IR) = 0._DP
-            IF (LEAPL) COPV(ICP3+2,IR)=COPV(ICP3+2,IR)+EAPL(IPL,IR)
-            IF (LEIPL) COPV(ICP3+2,IR)=COPV(ICP3+2,IR)+EIPL(IPL,IR)
-            IF (LEMPL) COPV(ICP3+2,IR)=COPV(ICP3+2,IR)+EMPL(IPL,IR)
-            IF (LEAPL.OR.LEMPL.OR.LEIPL) LMETSP(NMTSP+ICP3+2)=.TRUE.
+
+            COPV(ICP3+IPL,IR) = 0._DP
+            IF (LEAPL) COPV(ICP3+IPL,IR)=COPV(ICP3+IPL,IR)+EAPL(IPL,IR)
+            IF (LEIPL) COPV(ICP3+IPL,IR)=COPV(ICP3+IPL,IR)+EIPL(IPL,IR)
+            IF (LEMPL) COPV(ICP3+IPL,IR)=COPV(ICP3+IPL,IR)+EMPL(IPL,IR)
+            IF (LEAPL.OR.LEMPL.OR.LEIPL) LMETSP(NMTSP+ICP3+IPL)=.TRUE.
 
           END DO
         END IF
       END DO
 
-!  copv(...+2,ir):  total energy source
-!  copv(...+3,ir):  internal ion energy source
-      
-      DO ICO = 1,NCLMT
-        IR = ICLMT(ICO)
-
-        COPV(ICP3+3,IR) = COPV(ICP3+2,IR)   
 ! SEI_TOTAL, now correct to find SEI_INTERNAL.....
-        
-        DO IPL = 1,NPLSI
-          COPV(ICP3+3,IR) = COPV(ICP3+3,IR)
+!  internal ion energy source, ipls (=ipl) resolved, copv(icp4+1:icp4+nplsi)
+      DO IPL = 1,NPLSI
+        IF (LMETSP(NSPAN(38)+IPL-1) .OR.
+     .      LMETSP(NSPAN(44)+IPL-1) .OR.
+     .      LMETSP(NSPAN(50)+IPL-1) ) THEN
+
+        DO ICO = 1,NCLMT
+          IR = ICLMT(ICO)
+
+          COPV(ICP4+IPL,IR) = 0._DP   
+          COPV(ICP4+IPL,IR) = COPV(ICP4+IPL,IR)
      .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
      .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
      .         + EKIN(IPL,IR) * COPV(ICP+IPL,IR)               ! EKIN*SNI
-          LMETSP(NMTSP+ICP3+3)=.TRUE. 
+          IF (LEAPL.OR.LEMPL.OR.LEIPL) LMETSP(NMTSP+ICP4+IPL)=.TRUE.
         END DO
 
       END DO
 
-!  Detlevs tests, control variates: try to score internal energy source 
-!                                   contribution with known zero mean. 
-!                                   then subtract variances
-
-c     if (laddv) then
-c
-c       DO ICO = 1,NCLMT
-c         IR = ICLMT(ICO)
-          
-c         COPV(ICP3+4,IR) = ADDV(NADVI,IR) ! SEI_TOTAL
-        
-c         DO IPL = 1,NPLSI
-
-!pb         EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
-c           EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                ! in eV
-c           COPV(ICP3+4,IR) = COPV(ICP3+4,IR)
-c    .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
-c    .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
-c    .         + EKIN * COPV(ICP+IPL,IR)                       ! EKIN*SNI
-c           LMETSP(NMTSP+ICP3+4)=.TRUE. 
-c         END DO
-
-c       END DO
-c     end if
 
       RETURN
 

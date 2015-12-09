@@ -2351,7 +2351,7 @@ csw
 
           IF (LEAPL) THEN 
           IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN
@@ -2362,7 +2362,7 @@ csw
           ENDIF
           IF (LEMPL) THEN 
           IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN
@@ -2373,7 +2373,7 @@ csw
           ENDIF
           IF (LEIPL) THEN 
           IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN

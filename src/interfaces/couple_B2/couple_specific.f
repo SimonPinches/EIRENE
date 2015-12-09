@@ -973,6 +973,8 @@ C  SAVE EIRENE TALLIES, SCALE PER UNIT FLUX (AMP), ON COMMON BRASCL
 C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS)
 C  ALL STRATA WHICH ARE NOT SPECIFIED BY INPUT BLOCK 14 (FROM
 C  PLASMA CODE DATA) ARE NOT RESCALED HERE
+
+c  added in Nov. 15: ipls resolved ion energy sources eapl,empl,eipl
 C
 
       USE EIRMOD_PRECISION
@@ -1005,9 +1007,10 @@ C
       CALL EIRENE_FREE_MULARR(ISTRAI)
 
       DO IPLS=1,NPLSI
+cdr  save volumetric sources for plasma species ipls: particle, momentum, ion energy
         DO IN=1,NSBOX_TAL
           IF (LPAPL) THEN 
-	  IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
+	      IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
@@ -1042,18 +1045,18 @@ C
 
           IF (LEAPL) THEN 
           IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN
             CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
             CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
-            EAPLS(ISTRAI)%PMUL => CPSIM
+            EAPLS(ISTRAI)%PMUL => CPMUL
           ENDIF
           ENDIF
           IF (LEMPL) THEN 
           IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN
@@ -1064,7 +1067,7 @@ C
           ENDIF
           IF (LEIPL) THEN 
           IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN

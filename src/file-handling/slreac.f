@@ -3,7 +3,7 @@
 c  changed in 2011:  new atomic/molecular data structure introduced, 
 c                       REACDAT(IR)% ...
 !  jan.14: started to comment, cleanup
-!  april 2015: further commenting cleanup
+!  april 2015: further commenting cleanup, nov. 15: continued
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion   
@@ -191,6 +191,7 @@ C
         LCONST=.TRUE.
 !  nothing to be done
       ELSEIF (INDEX(FILNAM,'H-COL').NE.0) THEN
+        LCONST=.FALSE.
 !  nothing to be done
       ELSE
 !  open data file, stream 29+ifoff. 
@@ -198,12 +199,14 @@ C
           IF (INDEX(FILNAM,DBHANDLE(IFILE)).NE.0) EXIT
         END DO
         IF (IFILE <= NDBNAMES) THEN
+C  proper filnam found
           LCONST=.FALSE.
           IF (INDEX(FILNAM,'ADAS') == 0) THEN
-! FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, ....: open data file
+! FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, PHOTON....: open data file
             OPEN (UNIT=29+ifoff,FILE=DBFNAME(IFILE))
+
+          ELSEIF (INDEX(FILNAM,'ADAS').NE.0) THEN
 ! FILNAM=ADAS: open data file
-          ELSE
 ! FIND NAME OF SPECIFIC ADAS-FILE TO BE READ,  DSN=abc.dat
 !           reconstruct 'DSN' from:  reac, elname
             DIR = ' '
@@ -236,8 +239,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' H-COL'
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*)
-     .      ' CONST FOR ENTERING REACTION COEFFICIENTS VIA '
+          WRITE (iunout,*) ' CONST FOR ENTERING REACTION DATA VIA '
           WRITE (iunout,*) ' EIRENE INPUT-FILE '
           CALL EIRENE_EXIT_OWN(1)
         END IF

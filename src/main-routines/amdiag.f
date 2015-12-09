@@ -1,6 +1,7 @@
 cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=24, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
+cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
@@ -12,14 +13,21 @@ c            are rates, density of impacting bulk ion included,
 c            so here we divide again by ne or ni.
 c
 c  modcol=2: rate coefficients depend on Eb = energy of impacting test particle
-c            tabcx3(...,1,nend),tabel3(...,1,nend),tabpi3(...,1,nend) 
+c            tabcx3(...,1:nend),tabel3(...,1:nend),tabpi3(...,1:nend) 
 c               are ln(rate)
 c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
+c            ADIN is evaluated with Eb = 3/2 T, T =T(ipls)
+c
+c  modcol=3: rate coefficients depend on Eb = energy of impacting test particle
+c            tabcx3(...,1:nend),tabel3(...,1:nend),tabpi3(...,1:nend) 
+c               are ln(rate)
+c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
+c            ADIN is evaluated with Eb = ????, T =T(ipls)
 c  
 c
-C
-C  RATE COEFFCIENTS TO ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
-C  TO CONVERT THESE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e-08
+C  
+C  ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
+C  TO CONVERT THE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e-08
 c
 c  done for naint=20,22,24,26 and modcol=1
 
@@ -83,7 +91,11 @@ c                            nidsi(iio) --> nieii(iio)
         mm = 0
         kk = 0
 
-c  currently:  only tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1
+c  currently:  only tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
+c              modcol=1: rates depend only on background parameters, not on test particle parameters
+c              modcol=2: rates depend also on test particle energy. use E_test=1.5 kT_background
+c  to be done:  (e.g. for Beams)
+c              modcol=3: use sigma(E_test) * sqrt(E_test), ignore thermal background parameters 
 c
         IF (NA.EQ.20.OR.NA.EQ.21) THEN       
 c  electron impact rate coefficient no. irei
@@ -528,7 +540,7 @@ c  not ready
           write (iunout,'(A72)') txtpls(IAIN,NTALN)
           write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
-          WRITE (iunout,*) 'process no. KK, MODCOL(...)   ', KK,MM
+          WRITE (iunout,*) 'process no. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
         else   !mm = 0,  reaction kk has not been assgined to any particle
           call eirene_leer(1)
@@ -537,7 +549,7 @@ c  not ready
           write (iunout,'(A72)') txtpls(IAIN,NTALN)
           write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
-          WRITE (iunout,*) 'process no. KK, MODCOL(...)   ', KK,MM
+          WRITE (iunout,*) 'process no. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
         endif 
 
@@ -547,7 +559,7 @@ c  not ready
       write (iunout,'(A72)') txtpls(IAIN,NTALN)
       write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
-      WRITE (iunout,*) 'process no. KK, MODCOL(...)   ', KK,MM
+      WRITE (iunout,*) 'process no. KK, MODCOL(.,2,.)   ', KK,MM
        
 
 190   CONTINUE

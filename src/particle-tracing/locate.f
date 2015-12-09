@@ -39,6 +39,7 @@ cdr           means: score (if sputtered particle species found), but do not fol
 cdr           to be done: epel volume tally (electron energy loss associated with vol.rec,
 cdr                       or with sheath, etc)
 cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
+cdr nov. 15:  species index eppl added.
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:

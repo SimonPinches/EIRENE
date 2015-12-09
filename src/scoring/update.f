@@ -19,7 +19,11 @@ C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
 c  06.08.15 arguments added to vecusr
-c  24.08.15  comments and doocumention wrt. BGK collision treatmen
+c  24.08.15 comments and documention wrt. BGK collision treatment
+cdr dec.15: tracklength estimators for heavy test particle post collision energies 
+cdr         in PI processes added. For A, M, I incident test particles.
+
+cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 
  
 C
@@ -501,6 +505,8 @@ C
                 DO IP=1,IPPLDS(IREI,0)
                   IPL=IPPLDS(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  must be fragmented into individual ipl contributions
                   EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 END DO
@@ -602,14 +608,15 @@ C
 C
             ELSE
 C
-C SO NICHT    EAAT(IRD)     = EAAT(IRD)     +WTRSIG*E0
-C SO NICHT    EAML(IRD)     = EAML(IRD)     +WTRSIG*E0
-C SO NICHT    EAIO(IRD)     = EAIO(IRD)     +WTRSIG*E0
-C SO NICHT    EAPL(IRD)     = EAPL(IRD)     +WTRSIG*E0
+              IF (LEMAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEAPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  must be fragmented into individual ipl contributions
                   EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 ENDDO
@@ -1146,6 +1153,8 @@ C
               IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEMPL) THEN
                 DO IP=1,IPPLDS(IREI,0)
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLDS(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EMPL(IPL,IRD)=EMPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
@@ -1249,17 +1258,18 @@ C
 C
             ELSE
 C
-C SO NICHT    EMAT(IRD)     = EMAT(IRD)     +WTRSIG*E0
-C SO NICHT    EMML(IRD)     = EMML(IRD)     +WTRSIG*E0
-C SO NICHT    EMIO(IRD)     = EMIO(IRD)     +WTRSIG*E0
-C SO NICHT    EMPL(IRD)     = EMPL(IRD)     +WTRSIG*E0
+              IF (LEMAT) EMAT(IRD)=EMAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEMPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
+cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EMPL(IPL,IRD)=EMPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
-                ENDDO
+                END DO
               END IF
             ENDIF
           ENDIF
@@ -1796,6 +1806,8 @@ C
               IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEIPL) THEN
                 DO IP=1,IPPLDS(IREI,0)
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLDS(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EIPL(IPL,IRD)=EIPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
@@ -1899,12 +1911,13 @@ C
 C
             ELSE
 C
-C SO NICHT    EIAT(IRD)     = EIAT(IRD)     +WTRSIG*E0
-C SO NICHT    EIML(IRD)     = EIML(IRD)     +WTRSIG*E0
-C SO NICHT    EIIO(IRD)     = EIIO(IRD)     +WTRSIG*E0
-C SO NICHT    EIPL(IRD)     = EIPL(IRD)     +WTRSIG*E0
+              IF (LEMAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEIPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
+cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EIPL(IPL,IRD)=EIPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)

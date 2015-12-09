@@ -1,4 +1,7 @@
 csw 19feb2013: added XMCT array
+c nov. 2015:  species index ipls added for energy-pl tallies:
+c             eapli,empli,eipli,ephpli,eppli
+ 
       MODULE EIRMOD_COUTAU
  
       USE EIRMOD_PRECISION

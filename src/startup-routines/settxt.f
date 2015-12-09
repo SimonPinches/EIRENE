@@ -1177,11 +1177,6 @@ C
       TXTSPC(1,55)='PHOTONS                 '
       TXTSPC(1,83)='PHOTONS                 '
 C
-!      TXTSPC(1,38)='BULK IONS               '
-!      TXTSPC(1,44)='BULK IONS               '
-!      TXTSPC(1,50)='BULK IONS               '
-!      TXTSPC(1,56)='BULK IONS               '
-!      TXTSPC(1,84)='BULK IONS               '
 C
 C
 C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES

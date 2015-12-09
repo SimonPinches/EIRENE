@@ -57,7 +57,7 @@ C
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits 
+cdr: set hard wired lower density for H.4 type fits: 1e8 cm**-3 
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -147,14 +147,16 @@ C
 80          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELDS1(IREI,1:NSBOX)=EELEC
+C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = ISTORE
             JEREAEI(IREI) = 1
+C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = ISTORE
           ELSE  ! storage save mode
             EELDS1(IREI,1)=EELEC
-            NREAEI(IREI) = ISTORE
+            NREAEI(IREI) = ISTORE  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION ISTORE = -4, -11
             JEREAEI(IREI) = 1
-            NELREI(IREI) = ISTORE
+            NELREI(IREI) = ISTORE  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION ISTORE = -4, -11
 
           END IF
           FACREI(IREI,1) = 1._DP
@@ -250,7 +252,7 @@ C  TARGET     MASS IS 1.
               PMASS=1.*PMASSA
               TMASS=1.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-1
+C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-1
               ISTORE_MDCL = -1
 C
 C  TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
@@ -278,7 +280,7 @@ C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
               TMASS=4.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-2
+C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-2
               ISTORE_MDCL = -2
 C
 C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
@@ -306,7 +308,7 @@ C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
               TMASS=4.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-3
+C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-3
               ISTORE_MDCL = -3
 C
 C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
