@@ -1982,7 +1982,6 @@ C
 
 
 C
-C
       SUBROUTINE EIRENE_MSHPROJ(X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,
      .                   NDXA,NR1ST,IY)
 
@@ -1996,7 +1995,6 @@ C
       REAL(DP) :: D12, D34, D13, D24, EPS60, PUPV, PVPV, DVX, DVY,
      .          DUX, DUY
       INTEGER :: IX, IN
-
       EPS60 = 1.E-60_DP
 C
 C
@@ -2042,7 +2040,6 @@ C
       END
 
 
-C
 C
       SUBROUTINE EIRENE_INDMAP(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG)
@@ -2244,7 +2241,7 @@ C=======================================================================
 C          S U B R O U T I N E   N E U T R
 C=======================================================================
       SUBROUTINE EIRENE_NEUTR(KARD,NDIMX,NDIMY,NDIMF,DUMMY,LDMX,LDMY,
-     .                 LDMF,LDNS,IS)
+     .                        LDMF,LDNS,IS)
 
       USE EIRMOD_PRECISION
       IMPLICIT NONE
@@ -2292,7 +2289,7 @@ csw
       USE EIRMOD_COMUSR
       USE EIRMOD_CGRID
       USE EIRMOD_CESTIM
-      
+
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTRAI
@@ -2312,10 +2309,10 @@ csw
 
       CALL EIRENE_FREE_SIMARR(ISTRAI)
       CALL EIRENE_FREE_MULARR(ISTRAI)
-      
+
       DO IPLS=1,NPLSI
         DO IN=1,NSBOX_TAL
-          IF(LPAPL) THEN
+          IF (LPAPL) THEN
             IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2326,7 +2323,7 @@ csw
               PAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LPMPL) THEN
+          IF (LPMPL) THEN
             IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2337,7 +2334,7 @@ csw
               PMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LPIPL) THEN
+          IF (LPIPL) THEN
             IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2359,7 +2356,7 @@ csw
               MAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LMMPL) THEN
+          IF (LMMPL) THEN
             IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2370,7 +2367,7 @@ csw
               MMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LMIPL) THEN
+          IF (LMIPL) THEN
             IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2381,7 +2378,7 @@ csw
               MIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LMPHPL) THEN
+          IF (LMPHPL) THEN
             IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2396,7 +2393,7 @@ csw
       ENDDO
 
       DO IN=1,NSBOX_TAL
-        IF(LEAEL) THEN
+    	IF (LEAEL) THEN
           IF (EAEL(IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -2406,7 +2403,7 @@ csw
             EAELS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-        IF(LEMEL) THEN
+        IF (LEMEL) THEN
           IF (EMEL(IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -2446,7 +2443,7 @@ csw
             EMPLS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-        IF(LEIPL) THEN
+        IF (LEIPL) THEN
           IF (EIPL(IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -2455,9 +2452,9 @@ csw
             CPSIM%NXTSIM => EIPLS(ISTRAI)%PSIM
             EIPLS(ISTRAI)%PSIM => CPSIM
           ENDIF
-        ENDIF
+	    ENDIF
       ENDDO
-      
+
       DO IATM=1,NATMI
         DO IN=1,NSBOX_TAL
           IF(LPDENA) THEN
@@ -2471,7 +2468,7 @@ csw
               PDENAS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LEDENA) THEN
+          IF (LEDENA) THEN
             IF (EDENA(IATM,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2481,13 +2478,13 @@ csw
               CPMUL%NXTMUL => EDENAS(ISTRAI)%PMUL
               EDENAS(ISTRAI)%PMUL => CPMUL
             ENDIF
-          ENDIF
+	      ENDIF
         ENDDO
       ENDDO
 
       DO IMOL=1,NMOLI
         DO IN=1,NSBOX_TAL
-          IF(LPDENM) THEN
+	      IF (LPDENM) THEN
             IF (PDENM(IMOL,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2503,7 +2500,7 @@ csw
 
       DO IION=1,NIONI
         DO IN=1,NSBOX_TAL
-          IF(LPDENI) THEN
+	      IF (LPDENI) THEN
             IF (PDENI(IION,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2519,7 +2516,7 @@ csw
 
       DO ICPV=1,NCPVI
         DO IN=1,NSBOX_TAL
-          IF(LCOPV) THEN
+	      IF (LCOPV) THEN
             IF (COPV(ICPV,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2534,7 +2531,7 @@ csw
       ENDDO
 
       RETURN
-      END 
+      END
 
 C
 C

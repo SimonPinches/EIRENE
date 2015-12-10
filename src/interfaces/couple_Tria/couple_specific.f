@@ -1184,7 +1184,7 @@ C
 
       DO IION=1,NIONI
         DO IN=1,NSBOX_TAL
-	  IF (LPDENM) THEN
+	  IF (LPDENI) THEN
           IF (PDENI(IION,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
