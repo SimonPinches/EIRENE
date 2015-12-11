@@ -250,7 +250,7 @@ C  T2:
 C
 C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, DEFAULT PROCESSES KK=-5,-6, -7
 C
-C  FIRST PROCESS, KK=-5
+C  FIRST PROCESS, KK=-5   H2 --> H + H
           ACCMAS=0.D0
           ACCINV=0.D0
           IDSC1=IDSC1+1
@@ -297,8 +297,9 @@ C  TRANSFERRED KINETIC ENERGY: 6 EV
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
 
-C  SECOND PROCESS (MAY BE SPLITTED INTO 2A AND 2B)
+C  SECOND PROCESS (MAY BE SPLITTED INTO 2A AND 2B)  H2 -->  H  + H+
           IF (IATM1.NE.IATM2) THEN
+c   e.g. DT -->  0.5 (D + T+)  + 0.5 (D+ + T)
             FACTKK=0.5
             ICOUNT=1
           ELSE
@@ -308,6 +309,7 @@ C  SECOND PROCESS (MAY BE SPLITTED INTO 2A AND 2B)
 C
           IA1=IATM1
           IP2=IPLS2
+c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate totals....
 73        ACCMAS=0.D0
           ACCINV=0.D0
           IDSC1=IDSC1+1
@@ -360,7 +362,7 @@ C  TRANSFERRED KINETIC ENERGY: 10 EV
             GOTO 73
           ENDIF
 C
-C  THIRD PROCESS
+C  THIRD PROCESS  H2 --> H2+
           IDSC1=IDSC1+1
           NREII=NREII+1
           IREI=NREII

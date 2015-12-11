@@ -5,7 +5,10 @@ C            and: return new velocity vector in full cartesian coord.
 C               fetch new BVEC at point of collision
 C  mai 10:   flag ind:  if ind=2, only FP collision, but no push to
 C                               new position.
-c  july 15:  set E0PAR,  (was missing). 
+c  july 15:  set E0PAR,  (was missing).
+cdr nov. 15:  multiple bulk ion species, new array fnuiar(ipl)
+cdr           to be done:  proper definition of eipl, and e0new, in cases
+cdr                        of multiple background ion species 
 C
       SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
 C

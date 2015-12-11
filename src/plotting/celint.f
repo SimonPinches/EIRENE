@@ -1,6 +1,6 @@
 C
 !pb  19.12.06:  initialise YWERT
-c    15.10.15:  add option levgeo01, lprad3
+c    15.10.15:  add option levgeo=1, lprad3
 C
       SUBROUTINE EIRENE_CELINT (AORIG,YWERT,LOGL,IBLD,ICURV,N1DIM,IERR)
 C

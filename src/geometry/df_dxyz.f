@@ -9,7 +9,7 @@ c  return partial derivates of function f, at internal point x,y,z,
 c         which is known to be located in grid cell icell
 
 c  input:  fecken: values of function f on cell vertices
-c          fecken must be defined, e.g. from an earlier call to 'cell-to-corner.f'
+c          fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
 c
 c  for speed-up, and overhead reduction:
 c  fill array 'visited' to indicate, which cells have been visitied in earlier calls

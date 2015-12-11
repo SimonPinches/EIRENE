@@ -21,6 +21,8 @@ cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing)
 cdr  oct.14:  further syncronization with xsectm,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
+cdr  oct.15:  default he ionisation kk=-1 --> kk=-11, 
+cdr           to avoid conflict with default cx reaction kk=-1
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -50,14 +52,14 @@ C
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
      .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP, IA, ISP, IP,
      .           IAPI, IRPI, IACX, IDSC, IPL, IAEI, IESTM, IRCX, IPLSTI,
-     .           ISTORE_MDCL, ITHRD, IFRTH
+     .           ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
 
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits 
+cdr: set hard wired lower density for H.4 type fits: 1e8 cm**-3 
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -132,7 +134,7 @@ c  hydrogenic atoms
             EELEC=-EIONH
           ELSEIF (NCHARA(IATM).EQ.2) THEN
 c  helium atoms
-            ISTORE=-1
+            ISTORE=-11
             EELEC=-EIONHE
           ENDIF
 
@@ -147,14 +149,16 @@ C
 80          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELDS1(IREI,1:NSBOX)=EELEC
+C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = ISTORE
             JEREAEI(IREI) = 1
+C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = ISTORE
           ELSE  ! storage save mode
             EELDS1(IREI,1)=EELEC
-            NREAEI(IREI) = ISTORE
+            NREAEI(IREI) = ISTORE  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION ISTORE = -4, -11
             JEREAEI(IREI) = 1
-            NELREI(IREI) = ISTORE
+            NELREI(IREI) = ISTORE  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION ISTORE = -4, -11
 
           END IF
           FACREI(IREI,1) = 1._DP
@@ -250,8 +254,8 @@ C  TARGET     MASS IS 1.
               PMASS=1.*PMASSA
               TMASS=1.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-1
-              ISTORE_MDCL = -1
+C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-1
+              ISTORE = -1
 C
 C  TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
 C
@@ -278,8 +282,8 @@ C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
               TMASS=4.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-2
-              ISTORE_MDCL = -2
+C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-2
+              ISTORE = -2
 C
 C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
 C
@@ -306,8 +310,8 @@ C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
               TMASS=4.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, K=-3
-              ISTORE_MDCL = -3
+C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-3
+              ISTORE = -3
 C
 C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
 C
@@ -327,7 +331,7 @@ C
             N2NDX(IRCX,1)=4
             N2NDX(IRCX,2)=IPL
             N2NDX(IRCX,3)=1
-            MODCOL(3,1,IRCX)=ISTORE_MDCL
+            MODCOL(3,1,IRCX)=ISTORE
  
             DEFCX(IRCX)=LOG(CVELI2*PMASS)
             EEFCX(IRCX)=LOG(CVELI2*TMASS)
@@ -345,9 +349,11 @@ C
               DO 150 J=1,NSBOX
                 EPLCX3(IRCX,J,1)=1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J)
 150           CONTINUE
-              NELRCX(IRCX) = -1
+              NELRCX(IRCX) = -1  
+              NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
             ELSE
               NELRCX(IRCX) = -1
+              NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
             END IF
 C
             MODCOL(3,2,IRCX)=3

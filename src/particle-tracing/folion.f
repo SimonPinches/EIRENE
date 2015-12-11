@@ -34,6 +34,8 @@ c  njump=3, for internal grid surface und timusr. reset time=0
 c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
 cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
 cdr           also: manual. to be done: remove static loop from folneut and folion.
+c  nov. 2015:  fnui collision frequency: retain individual frequencies, for
+c              all background species: fnuiar(ipls)
 
 
 C  .......................................................................................
@@ -1582,7 +1584,7 @@ C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
       END FUNCTION FNUEQI_1
 
 C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
-C  INVOLVING THE CHANDRASEKHA FUNCTIONS
+C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
 
       FUNCTION FNUEQI_2(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_2,EA,XNI,TI

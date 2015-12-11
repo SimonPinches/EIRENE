@@ -21,6 +21,7 @@ C
       USE EIRMOD_CTETRA
       USE EIRMOD_CGRPTL
       USE EIRMOD_CCONA
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT NONE
 
@@ -104,7 +105,9 @@ C
       WRITE(19+ifoff,'(1X,A5,8X,A4,50(9X,I3))') '-1111',
      .        'NPST',1,IRAPS,1,(1,I=1,IRAPS)
 C
-      if (levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz) then
+!pb      if (levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz) then
+      if (levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz
+     .    .and..not.lptorr) then
          ANZ=(nr1st-1)*(np2nd-1)*(nt3rd-1)
          i=0
          do ir=1,nr1st
@@ -162,6 +165,7 @@ C                  AS IT WAS THE CASE FOR WRITING (RPSCOL,RPSVEC)
 
         I=0
         IT=IPTORR
+cdr     write (iunout,*) ' in rpsout levego=1 and lptorr'
         DO 100 IR=1,NR1ST
            DO 110 IP=1,NP2ND
 
@@ -182,6 +186,8 @@ C  EXCLUDE DEAD CELLS ON FORT.18
      .                     (IR-1)*NP2ND+IP+1,
      .                     IR*NP2ND+IP+1,
      .                     IR*NP2ND+IP
+               ELSE
+cdr              write (iunout,*) ir,ip,it,ncell,nstgrd(ncell)
                ENDIF
              ENDIF
              IF (IP .NE. NP2ND) THEN

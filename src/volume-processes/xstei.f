@@ -40,10 +40,10 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
-      REAL(DP), INTENT(IN) :: RMASS, EHEAVY, CHRDF0, EELEC, FACTKK
+
+      REAL(DP), INTENT(IN) :: RMASS, EHEAVY, EELEC, FACTKK,CHRDF0
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
@@ -55,7 +55,7 @@ C
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF, DELE, ERATE
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
-     .           ION, ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
+     .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHCOL
@@ -81,6 +81,12 @@ C
 
       IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
 
+!  ACCMAS: accumulated mass of all secondaries (all types)
+!  ACCINV: accumulated invers mass of all secondaries (all types)
+
+!  ACCMSA: accumulated mass of ATOMIC secondaries (type ITYP=1)
+!  ACCINA: accumulated invers mass of ATOMIC secondaries (type ITYP=1)
+!  analogously for molecule, test ion and bulk secondaries
       IF (ITYP.EQ.1) THEN
         IAT=ISPE
         IAA=NSPH+IAT
@@ -393,7 +399,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
             NREAHV(IREI)=KREAD
           END IF
         ELSE
-          WRITE (iunout,*) 'INVALID OPTION IN XSTEI '
+          WRITE (iunout,*) 'INVALID OPTION IN XSTEI: MODC=EFLAG '
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
       ELSE
@@ -424,7 +430,8 @@ C
         IESTEI(IREI,2)=0
         CALL EIRENE_LEER(1)
       ENDIF
- 
+
+
  
  
       RETURN
@@ -452,10 +459,10 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
 520   CONTINUE
-      DO 530 ION=1,NIONI
-        IO=NSPAM+ION
+      DO 530 IIO=1,NIONI
+        IO=NSPAM+IIO
         PIODS(IREI,0)=PIODS(IREI,0)+
-     +                      PIODS(IREI,ION)
+     +                      PIODS(IREI,IIO)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
 530   CONTINUE
@@ -484,6 +491,7 @@ C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELEC. IMPACT REACTION NO. IREI= ',IREI
       CALL EIRENE_LEER(1)
+
       EI=1.D30
       EA=-1.D30
       imin=0
@@ -502,6 +510,7 @@ C
 875   CONTINUE
  
       WRITE (iunout,*) 'BACKGROUND SECONDARIES:'
+
       IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
         WRITE (iunout,*) 'ELECTRONS: PELEI, CONSTANT ENERGY: EEL'
         WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELDS(IREI),EI
@@ -540,6 +549,7 @@ C
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLDS(IREI,1),
      .                                 ' * E0 + ',EPLDS(IREI,2),
      .                                 ' * EHEAVY '
+C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0 
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
