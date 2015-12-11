@@ -1,7 +1,16 @@
       SUBROUTINE EIRENE_UPFCOP
 
-!  update sources portions on couple tally COPV after completion of 
-!  trajektory
+!  update tallies (currently: COPV) after completion of 
+!  trajectory. Use algebraic expressions of default tallies
+!  
+!  score per history --> automatically variances per history
+
+!  current version:
+!    1)   total particle source             (sni=papl+pmpl+pipl)  
+!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl) 
+!    3)   total electr. energy source       (see=eael+emel+eiel)  
+!    4)   total ion energy source           (sei=eapl+empl+eipl) 
+!    5)   internal energy source            (sei_int=sei-u*smo+ek*sni)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -20,17 +29,21 @@
       INTEGER :: ICP, ICP2, ICP3, ICO, IR, IPL, NMTSP, IS, IRD
       INTEGER, SAVE :: IFIRST=0, ird1
 
-      REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:)
-      REAL(DP) :: EKIN, wtt, zvoliw, seit, sni, smo, seii
+      REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:),EKIN(:,:)
+      REAL(DP) :: wtt, zvoliw, seit, sni, smo, seii
 
       IF (IFIRST == 0) THEN
          ALLOCATE (UAH(NPLS,NRTAL))
+         ALLOCATE (EKIN(NPLS,NRTAL))
          ird1 = 0
          DO IPL = 1, NPLSI
            IS = MPLSV(IPL)
            DO IR = 1, NRAD
              IRD = NCLTAL(IR)
-             IF (IRD > 0) UAH(IPL,IRD) = BVIN(IS,IR)
+             IF (IRD > 0) THEN
+               UAH(IPL,IRD) = BVIN(IS,IR)
+               EKIN(IPL,IRD)= cvrssp(IPL) * UAH(IPL,IR)**2       ! eV
+             ENDIF
              if ((ird1==0) .and. (ird==1)) ird1 = ir
            END DO
          END DO
@@ -108,52 +121,24 @@
 
       END DO
 
-
-!  internal ion energy source
+!  copv(...+2,ir) above was:  total energy source
+!  copv(...+3,ir) below is :  internal ion energy source
       
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
 
-        COPV(ICP3+3,IR) = COPV(ICP3+2,IR)   ! SEI_TOTAL
+        COPV(ICP3+3,IR) = COPV(ICP3+2,IR)   
+! SEI_TOTAL, now correct to find SEI_INTERNAL.....
         
         DO IPL = 1,NPLSI
-
-!pb          EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
-          EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                  ! in eV
           COPV(ICP3+3,IR) = COPV(ICP3+3,IR)
      .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
      .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
-     .         + EKIN * COPV(ICP+IPL,IR)                       ! EKIN*SNI
+     .         + EKIN(IPL,IR) * COPV(ICP+IPL,IR)               ! EKIN*SNI
           LMETSP(NMTSP+ICP3+3)=.TRUE. 
         END DO
 
       END DO
-
-!  Detlevs tests
-
-      if (.false.) then
-! taken out again
-      if (laddv) then
-
-        DO ICO = 1,NCLMT
-          IR = ICLMT(ICO)
-          
-          COPV(ICP3+4,IR) = ADDV(NADVI,IR) ! SEI_TOTAL
-        
-          DO IPL = 1,NPLSI
-
-!pb          EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
-            EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                ! in eV
-            COPV(ICP3+4,IR) = COPV(ICP3+4,IR)
-     .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
-     .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
-     .         + EKIN * COPV(ICP+IPL,IR)                       ! EKIN*SNI
-            LMETSP(NMTSP+ICP3+4)=.TRUE. 
-          END DO
-
-        END DO
-      end if
-      end if
 
       RETURN
 
@@ -161,6 +146,7 @@
 
       IFIRST = 0
       IF (ALLOCATED(UAH)) DEALLOCATE (UAH)
+      IF (ALLOCATED(EKIN)) DEALLOCATE (EKIN)
 
       RETURN
 

@@ -121,8 +121,8 @@
 
       END DO
 
-!  copv(...+2,ir):  total energy source
-!  copv(...+3,ir):  internal ion energy source
+!  copv(...+2,ir) above was:  total energy source
+!  copv(...+3,ir) below is :  internal ion energy source
       
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
@@ -139,31 +139,6 @@
         END DO
 
       END DO
-
-!  Detlevs tests, control variates: try to score internal energy source 
-!                                   contribution with known zero mean. 
-!                                   then subtract variances
-
-c     if (laddv) then
-c
-c       DO ICO = 1,NCLMT
-c         IR = ICLMT(ICO)
-          
-c         COPV(ICP3+4,IR) = ADDV(NADVI,IR) ! SEI_TOTAL
-        
-c         DO IPL = 1,NPLSI
-
-!pb         EKIN = 0.5_DP * RMASSP(IPL) * UAH(IPL,IR)**2
-c           EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                ! in eV
-c           COPV(ICP3+4,IR) = COPV(ICP3+4,IR)
-c    .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
-c    .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
-c    .         + EKIN * COPV(ICP+IPL,IR)                       ! EKIN*SNI
-c           LMETSP(NMTSP+ICP3+4)=.TRUE. 
-c         END DO
-
-c       END DO
-c     end if
 
       RETURN
 

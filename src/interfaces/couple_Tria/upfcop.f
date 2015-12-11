@@ -1,10 +1,16 @@
       SUBROUTINE EIRENE_UPFCOP
 
-!  update sources on couple tally COPV after completion of 
-!  trajectory.  case specific. here: coupling to B2 and/or B2.5
+!  update tallies (currently: COPV) after completion of 
+!  trajectory. Use algebraic expressions of default tallies
+!  
+!  score per history --> automatically variances per history
 
-c  more general: algebraic expressions of tallies, per history,
-c                from individual tally scores along past history
+!  current version:
+!    1)   total particle source             (sni=papl+pmpl+pipl)  
+!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl) 
+!    3)   total electr. energy source       (see=eael+emel+eiel)  
+!    4)   total ion energy source           (sei=eapl+empl+eipl) 
+!    5)   internal energy source            (sei_int=sei-u*smo+ek*sni)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -23,17 +29,21 @@ c                from individual tally scores along past history
       INTEGER :: ICP, ICP2, ICP3, ICO, IR, IPL, NMTSP, IS, IRD
       INTEGER, SAVE :: IFIRST=0, ird1
 
-      REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:)
-      REAL(DP) :: EKIN, wtt, zvoliw, seit, sni, smo, seii
+      REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:),EKIN(:,:)
+      REAL(DP) :: wtt, zvoliw, seit, sni, smo, seii
 
       IF (IFIRST == 0) THEN
          ALLOCATE (UAH(NPLS,NRTAL))
+         ALLOCATE (EKIN(NPLS,NRTAL))
          ird1 = 0
          DO IPL = 1, NPLSI
            IS = MPLSV(IPL)
            DO IR = 1, NRAD
              IRD = NCLTAL(IR)
-             IF (IRD > 0) UAH(IPL,IRD) = BVIN(IS,IR)
+             IF (IRD > 0) THEN
+               UAH(IPL,IRD) = BVIN(IS,IR)
+               EKIN(IPL,IRD)= cvrssp(IPL) * UAH(IPL,IR)**2       ! eV
+             ENDIF
              if ((ird1==0) .and. (ird==1)) ird1 = ir
            END DO
          END DO
@@ -45,10 +55,10 @@ c                from individual tally scores along past history
       ICP3 = 3*NPLSI
       NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI
 
-      IF (NCPVI < ICP3+3) THEN
+      IF (NCPVI < ICP3+4) THEN
          IF (IFIRST == 0) THEN
             WRITE (IUNOUT,*) 'COUPLE TALLY COPV TOO SMALL '
-            WRITE (IUNOUT,*) 'NCPVI NEEDS TO BE AT LEAST ',ICP3+3
+            WRITE (IUNOUT,*) 'NCPVI NEEDS TO BE AT LEAST ',ICP3+4
             WRITE (IUNOUT,*) 'COPV IS NOT UPDATED '
             IFIRST = 1
          END IF
@@ -111,21 +121,20 @@ c                from individual tally scores along past history
 
       END DO
 
-
-!  internal ion energy source
+!  copv(...+2,ir) above was:  total energy source
+!  copv(...+3,ir) below is :  internal ion energy source
       
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
 
-        COPV(ICP3+3,IR) = COPV(ICP3+2,IR)   ! SEI_TOTAL
+        COPV(ICP3+3,IR) = COPV(ICP3+2,IR)   
+! SEI_TOTAL, now correct to find SEI_INTERNAL.....
         
         DO IPL = 1,NPLSI
-
-          EKIN = cvrssp(IPL) * UAH(IPL,IR)**2                  ! in eV
           COPV(ICP3+3,IR) = COPV(ICP3+3,IR)
      .         - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
      .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
-     .         + EKIN * COPV(ICP+IPL,IR)                       ! EKIN*SNI
+     .         + EKIN(IPL,IR) * COPV(ICP+IPL,IR)               ! EKIN*SNI
           LMETSP(NMTSP+ICP3+3)=.TRUE. 
         END DO
 
@@ -136,7 +145,8 @@ c                from individual tally scores along past history
       ENTRY EIRENE_RESET_UPFCOP
 
       IFIRST = 0
-      DEALLOCATE (UAH)
+      IF (ALLOCATED(UAH)) DEALLOCATE (UAH)
+      IF (ALLOCATED(EKIN)) DEALLOCATE (EKIN)
 
       RETURN
 
