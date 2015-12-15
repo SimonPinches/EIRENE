@@ -22,6 +22,7 @@ c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
 cdr dec.15: tracklength estimators for heavy test particle post collision energies 
 cdr         in PI processes added. For A, M, I incident test particles.
+cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
  
 C
@@ -582,9 +583,9 @@ C
 C
             ELSE
 C
-              IF (LEMAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
-              IF (LEMML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
-              IF (LEMIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEAAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
             ENDIF
           ENDIF
@@ -1605,7 +1606,7 @@ C           END IF
             END IF
           ENDIF
 C
-          IF (LEA) THEN
+          IF (LEIO) THEN
             IF (IESTEL(IREL,3).NE.0) THEN
  
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -1809,7 +1810,7 @@ C
             IF (LEIEL) EIEL(IRD)=EIEL(IRD)+WTRSIG*ESIGPI(IRPI,5)
           ENDIF
  
-          IF (LEA) THEN
+          IF (LEIO) THEN
             IF (IESTPI(IRPI,3).NE.0) THEN
 C
 C  COLLISION ESTIMATOR
@@ -1819,9 +1820,9 @@ C
 C
             ELSE
 C
-              IF (LEMAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
-              IF (LEMML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
-              IF (LEMIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEIAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEIML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEIPL) EIPL(IRD)=EIPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
             ENDIF
           ENDIF
