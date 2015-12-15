@@ -130,10 +130,12 @@ C
           IF (NSTORDR < NRAD) NTE=1
           IF (NCHARA(IATM).EQ.1) THEN
 c  hydrogenic atoms
+c  default electron impact ionization process for H atoms: kk = -4 
             ISTORE=-4
             EELEC=-EIONH
           ELSEIF (NCHARA(IATM).EQ.2) THEN
 c  helium atoms
+c  default electron impact ionization process for He atoms: kk = -11 
             ISTORE=-11
             EELEC=-EIONHE
           ENDIF
