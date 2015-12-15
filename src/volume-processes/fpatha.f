@@ -12,10 +12,15 @@ C               added: jcou,ncou
 !pb  22.03.07:  PI reactions revised
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  syncronized with fpathm, fpathi
+
 cdr 31.10.14 :  speedup of final cut off evaluations
+
 cdr note:       sgnl_poly evaluations are just the 8th order polynom, plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here), there is no need to call  --> move to in-line 
 cdr 06.08.15 :  arguments added to vecusr
+
+cdr dec. 15:    missing: ftabel3 
+
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
 C
@@ -66,22 +71,28 @@ C
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
       REAL(DP) :: EPPI3(9), EPCX3(9), EPEL3(9)
-      REAL(DP) :: CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, TBCX, VEFF,
-     .          SIG,  TBEL,
+      REAL(DP) :: EIRENE_FPATHA,
+     .          EIRENE_CROSS, 
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
+     .          EIRENE_ENERGY_RATE_COEFF, 
+     .          CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, TBCX, VEFF,
+     .          SIG,  TBEL,
      .          ELTHDUM, CTCHDUM, SIGMAX,  EHEAVY,
-     .          DENEL, EIRENE_FPATHA, VX, VY, VZ, PVELQ0, ELAB,
+     .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
+     .          VRELQ, VREL, XC,YC,ZC,
+     .          CII, ELB,TII,TEST,
+     .          PLS, TBPI, EXPO,
+cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVDS1, EIRENE_FEHVPI3,
-     .          VRELQ, VREL, XC,YC,ZC,
-     ,          EIRENE_FEPLPI3, EIRENE_FEPLCX3, EIRENE_FEPLEL3, 
-     .          CII, EIRENE_CROSS, ELB,TII,TEST,
-     .          PLS, TBPI, EXPO,
-     .          RCMIN, RCMAX, EIRENE_ENERGY_RATE_COEFF, 
-     .          EIRENE_FTABCX3, EIRENE_FTABPI3, EIRENE_FTABEI1,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
+     .          EIRENE_FTABEI1,
+
+     .          RCMIN, RCMAX,
      .          ERATE
-      INTEGER :: IBGK, IAEL, IREL,  IAEI, IREI, IAPI,
-     .           IRPI,  IACX, IRCX, IROT,
+      INTEGER :: IBGK, IAEL, IREL, IAEI, IREI, IAPI,
+     .           IRPI, IACX, IRCX, IROT,
      .           II, IF8, JAN, J, I1, I2, KK, IPLSTI,
      .           IPL, IAT, IPLSV, IREAC
 C
@@ -153,6 +164,7 @@ C
         ESIGEI(IREI,1)=EATDS(IREI,0,1)*E0+EATDS(IREI,0,2)*EHEAVY
         ESIGEI(IREI,2)=EMLDS(IREI,0,1)*E0+EMLDS(IREI,0,2)*EHEAVY
         ESIGEI(IREI,3)=EIODS(IREI,0,1)*E0+EIODS(IREI,0,2)*EHEAVY
+
         ESIGEI(IREI,4)=EPLDS(IREI,  1)*E0+EPLDS(IREI,  2)*EHEAVY
 C
         SIGMAX=MAX(SIGMAX,SIGVEI(IREI))

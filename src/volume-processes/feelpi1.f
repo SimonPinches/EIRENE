@@ -6,8 +6,8 @@ c  0707: new, for PI processes, copied and adapted from feelei1.f
 
 
 CDR TO BE DONE:  when kk >0  then on the fly evaluation of rate coeff. is
-cdr              repeated here. This should be avoided, by returning the erngy weighted rate,
-cdr              rather than the nean electron energy itself.
+cdr              repeated here. This should be avoided, by returning the energy weighted rate,
+cdr              rather than the mean electron energy itself.
 
 
 

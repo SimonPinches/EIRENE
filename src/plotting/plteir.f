@@ -685,7 +685,7 @@ C
             IYSET3=0
             IF (LEVGEO.EQ.1) THEN
 
-              IF (LPRAD3(IBLD).AND.NLPOL.AND.NLTOR.AND.NLTRZ) THEN
+              IF (NLPOL.AND.NLTOR.AND.NLTRZ.AND.LPRAD3(IBLD)) THEN
 c  set a y-z grid, by abuse of notation on xxp3d,yyp3d
                 IXTL3=NP2ND
                 DO I=1,IXTL3

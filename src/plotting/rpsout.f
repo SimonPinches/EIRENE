@@ -1,6 +1,13 @@
 C  ifoff offset for output stream introduced
 C
       SUBROUTINE EIRENE_RPSOUT
+
+CDR  produce formatted output files for RAPS graphics system
+C
+C   options available so far:  documentation to be written
+C
+C   nov. 15: something added for levgeo=1, y-z plot at given x position
+CDR
 C
 C  ANZ: NUMBER OF CELLS
 C  WRITE (17,...) LABELED CO-ORDINATES OF VERTICES
@@ -105,7 +112,6 @@ C
       WRITE(19+ifoff,'(1X,A5,8X,A4,50(9X,I3))') '-1111',
      .        'NPST',1,IRAPS,1,(1,I=1,IRAPS)
 C
-!pb      if (levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz) then
       if (levgeo.eq.1.and.nlrad.and.nlpol.and.nltor.and.nltrz
      .    .and..not.lptorr) then
          ANZ=(nr1st-1)*(np2nd-1)*(nt3rd-1)
@@ -125,7 +131,7 @@ C
             enddo
          enddo
 
-!pb         WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',ANZ+NSTAB
+
          WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',-3334
          WRITE(18+ifoff,'(A8,I6,I9,I6)') 'HEXE8   ',1,ANZ,8
 
@@ -156,7 +162,6 @@ C
           ENDDO
         ENDDO
 C
-!pb        WRITE(18+ifoff,'(A3,2X,A14,45X,I8)') 'PSS','1BEISPIELDATEN',ANZ+NSTAB
         WRITE(18+ifoff,'(A3,I3,A60,I6)') 'PSS',1,'BEISPIELDATEN',-3334
         WRITE(18+ifoff,'(A8,I6,I9,I6)') 'QUAM4   ',1,ANZ,4
 

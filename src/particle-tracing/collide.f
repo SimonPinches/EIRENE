@@ -23,7 +23,8 @@ cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI a
 cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
 cdr Dec.15  :  bug fix pi reaction and cascading was wrong: 
 cdr            irei, rather than irpi, and p2nd 
-cdr            rather then p2np, were used also for PI reactions. now corrected
+cdr            rather than p2np, were used also for PI reactions. now corrected
+
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
 

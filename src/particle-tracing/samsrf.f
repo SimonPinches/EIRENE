@@ -18,8 +18,8 @@ C  oct. 14: some preliminary options for correlation sampling removed,
 C           back to development branch
 c  may  15: argument in first call to vecusr: ipls, rather then iplsv, now everywhere
 c  aug. 15: arguments in vecusr added: ncell, x0, y0, z0
-C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, IN CASE OF STEP FUNCTION OPTION
-CDR         now: default is ALWAYS set. indsrf is e.g. argument in call to fct. SHEATH(...)
+C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTION OPTION
+CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
 C
       SUBROUTINE EIRENE_SAMSRF
 C

@@ -124,6 +124,9 @@ C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
 C  PARALLEL DISTANCE ZT (CM)
 C  ENERGY RELAXATION CONSTANT TAUE
 C
+cdr to be done: proper new energy, according to weighting by fnuiar(ipl) 
+cdr relaxation towards a weighted mean background energy
+cdr currently: arbitrary 1.5*Tiin(1,...)
         E0NEW=E0OLD*EXP(-DUR/TAUE)+1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
         VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C

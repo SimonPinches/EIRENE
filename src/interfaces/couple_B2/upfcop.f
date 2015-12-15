@@ -1,9 +1,10 @@
       SUBROUTINE EIRENE_UPFCOP
 
 !  update tallies (currently: COPV) after completion of 
-!  trajectory. Use algebraic expressions of default tallies
+!  trajectory. Use linear algebraic expressions of default tallies
 !  
-!  score per history --> automatically variances per history
+!  score per history --> automatically variances per history are available
+!                        distinct from aposteriori evaluation of linear combinations
 
 !  current version:
 !    1)   total particle source             (sni=papl+pmpl+pipl)  
@@ -53,11 +54,13 @@
       ICP = NPLSI
       ICP2 = 2*NPLSI
       ICP3 = 3*NPLSI
+
+
       NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI
 
       IF (NCPVI < ICP3+4) THEN
          IF (IFIRST == 0) THEN
-            WRITE (IUNOUT,*) 'COUPLE TALLY COPV TOO SMALL '
+            WRITE (IUNOUT,*) 'UPFCOP: COUPLE TALLY COPV TOO SMALL '
             WRITE (IUNOUT,*) 'NCPVI NEEDS TO BE AT LEAST ',ICP3+4
             WRITE (IUNOUT,*) 'COPV IS NOT UPDATED '
             IFIRST = 1
@@ -65,7 +68,7 @@
          RETURN
       END IF
 
-!  particle source (sni)
+!  particle source (sni), ipls (=ipl) resolved, copv(icp+1:icp+nplsi)
       DO IPL = 1,NPLSI
         IF (LMETSP(NSPAN(14)+IPL-1) .OR.
      .      LMETSP(NSPAN(20)+IPL-1) .OR.
@@ -83,7 +86,7 @@
         END IF
       END DO
 
-!  momentum source (smo)
+!  parallel momentum source (smo), ipls (=ipl) resolved, copv(icp2+1:icp2+nplsi)
       DO IPL = 1,NPLSI
         IF (LMETSP(NSPAN(97)+IPL-1) .OR.
      .      LMETSP(NSPAN(98)+IPL-1) .OR.
@@ -102,10 +105,11 @@
         END IF
       END DO
 
+!  electron energy source (see),  no species index here, copv(icp3+1)
+ 
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
 
-!  electron energy source (see)
         COPV(ICP3+1,IR) = 0._DP
         IF (LEAEL) COPV(ICP3+1,IR)=COPV(ICP3+1,IR)+EAEL(IR)
         IF (LEIEL) COPV(ICP3+1,IR)=COPV(ICP3+1,IR)+EIEL(IR)
@@ -139,6 +143,7 @@
         END DO
 
       END DO
+
 
       RETURN
 

@@ -706,6 +706,10 @@ ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
           IF (.NOT.LGVAC(NCELL,IPL))
      .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+cdr       IF (.NOT.LGVAC(NCELL,IPL)) THEN
+cdr         FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+cdr         FNUI=FNUI+FNUIAR(IPL)
+cdr       END IF
         ENDDO
       ENDIF
 C TAUE: RELAXATION TIME

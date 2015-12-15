@@ -273,6 +273,7 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
       XPT1=0.
       XFL1=0.
       nsteff=0
+      xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         if (npts(istra) .gt. 0) then
 CVKMPI          XPT1=XPT1+NPTS(ISTRA)

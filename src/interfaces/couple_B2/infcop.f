@@ -915,7 +915,7 @@ C
 C  UNITS CONVERSION FACTORS
       T=1./ELCHA
       V=1.D2                             !pb 1.e2 -> 1.d2
-      VL=1.D6                            !pb 1.e-6 -> 1.d-6
+      VL=1.D6                            !pb 1.e6 -> 1.d6
       DO 2105 IPLS=1,NPLSI
         D(IPLS)=1.D-6*FCTE(IPLS)
         FL(IPLS)=ELCHA*FCTE(IPLS)
@@ -2190,7 +2190,7 @@ C
         ENDDO
 
 7350    CONTINUE
-
+C  CORRECTION FOR ELECTRON IMPACT DISSOCIATION OF MOLECULES FINISHED
 
         PPLODA=0.D0
         CPMUL => PPPL_COPS(ISTRAI)%PMUL
@@ -2226,11 +2226,14 @@ C
           CPSIM => CPSIM%NXTSIM
         END DO
 C
-C  CORRECTION FOR ELECTRON IMPACT DISSOCIATION OF TEST IONS FINISHED
+
 C
 C  SHORT LOOP CORRECTION FINISHED
 C
 7400    CONTINUE
+
+cdr  we are still in startum istra.  
+cdr  what is this next  'lzden' option doing ? Why here, after short loop corrections
 
         IF (LZDEN) THEN
           IF (IZDEN(ISTRAI) == 0) THEN
@@ -2243,18 +2246,21 @@ C
           ELSE
             DO IN=1,NSBOX_TAL
               IF (LZDENA(IN,ISTRAI)) THEN
+C  NO ATOMS IN THIS STRATUM
                 PAPL(1:NPLSI,IN) = 0._DP
                 MAPL(1:NPLSI,IN) = 0._DP
                 EAPL(IN) = 0._DP
                 EAEL(IN) = 0._DP
               END IF
               IF (LZDENM(IN,ISTRAI)) THEN
+C  NO MOLECULES IN THIS STRATUM
                 PMPL(1:NPLSI,IN) = 0._DP
                 MMPL(1:NPLSI,IN) = 0._DP
                 EMPL(IN) = 0._DP
                 EMEL(IN) = 0._DP
               END IF
               IF (LZDENI(IN,ISTRAI)) THEN
+C  NO TEST IONS IN THIS STRATUM
                 PIPL(1:NPLSI,IN) = 0._DP
                 MIPL(1:NPLSI,IN) = 0._DP
                 EIPL(IN) = 0._DP
@@ -2351,7 +2357,7 @@ cdr
      .             PPPL_COP(IPLS,1:NSBOX_TAL) - PPLODA(IPLS,1:NSBOX_TAL)
 !pb            ICPV=NPLSI+IPLS
 !pb            CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
-!pb     .           CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
+!pb  .               CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
             END DO
 
             CHEEM(1:NSBOX_TAL) = CHEEM(1:NSBOX_TAL) +
@@ -2434,14 +2440,18 @@ C
 
         cpv_cmp(:,:,istrai) = copv (:,:)
 
+cdr  fill bulk particle source rate sni(...ifl) from all contributing
+cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
         DO 7510 IFL=1,NFLA
           CHPS(IFL)=0.
           SNIS(IFL)=0.
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
+
           DO 7510 IPLS=1,NPLSI
             IF (IFLB(IPLS).NE.IFL) GOTO 7510
             IPLSV=MPLSV(IPLS)
+c  ipls contributes to plasma code species ifl
             DO 7520 IX=1,NDXA
               IF (LLCUT(IX)) CYCLE
               DO 7530 IY=1,NDYA
@@ -2456,26 +2466,34 @@ C
 7520        CONTINUE
 
 !pb 22012013 copv
+cdr  build alternative source rates, from corresponding copv tallies 
+cdr  scored in upfcop.
+cdr  tbd:  check storage on copv tallies, ncpv ?? 
             DO IX=1,NDXA
               IF (LLCUT(IX)) CYCLE
               DO IY=1,NDYA
                 INN=IY+(IX-1)*NR1ST
                 IN=NCLTAL(INN)
+cdr  scale the particle sources from copv(icp+ipls)
+cdr  then add pppl
                 cfac = (PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN)) /
      .                 (cpv_cmp(icp+ipls,in,istrai) + eps60)
                 cpv_cmp(icp+ipls,in,istrai)=
      .                  (cpv_cmp(icp+ipls,in,istrai)*cfac + 
      .                  PPPL_COP(IPLS,IN)) * VOLTAL(IN)*FLX_EIR
+cdr  is this now any different from sni set above?
+
+
 !pb 30012013 sei internal
 !pb                copv(icp3+3,in)=copv(icp3+3,in) + 
 !pb     .            0.5_dp*rmassp(ipls)*bvin(ipls,in)**2*PPPL_COP(IPLS,IN)
                 cpv_cmp(icp3+3,in,istrai)=
      .                  cpv_cmp(icp3+3,in,istrai) + 
      .                  cvrssp(ipls)*bvin(ipls,inn)**2*PPPL_COP(IPLS,IN)
-              end do
-            end do
-!pb            cpv_cmp(icp+ipls,:,istrai)=cpv_cmp(icp+ipls,:,istrai)*flxi 
-!pb
+              end do  ! iy
+            end do    ! ix
+
+
 
             IF (.NOT.LSHORT) THEN
 
@@ -2505,9 +2523,12 @@ C
                   END DO
                 END DO
               end if
+
             END IF
 
-!pb         DO 7539 IADD=NPLSI,3*NPLSI,NPLSI
+cdr   particle sources done.
+cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
+cdr   ipls contributes to plasma code species ifl
 
             DO 7536 IX=1,NDXA
               IF (LLCUT(IX)) CYCLE
@@ -2515,7 +2536,6 @@ C
                 INN=IY+(IX-1)*NR1ST
                 IN=NCLTAL(INN)
                 SIGNUM=SIGN(1._DP,BVIN(IPLSV,INN))
-!pb                SMOCL=(COPV(IADD+IPLS,INC)+CPPV(IADD+IPLS,INC))*
                 SMOCL=(MAPL(IPLS,IN)+MMPL(IPLS,IN)+MIPL(IPLS,IN)+
      .                CPPV(IPLS,IN))*VOLTAL(IN)*1.D-5*SIGNUM*FLX_EIR
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
@@ -2525,6 +2545,9 @@ C
 7536        CONTINUE
 
 !pb 22012013 copv
+cdr  build alternative source rates, from corresponding copv tallies 
+cdr  scored in upfcop.
+cdr  tbd:  check storage on copv tallies, ncpv ?? 
             DO IX=1,NDXA
               IF (LLCUT(IX)) CYCLE
               DO IY=1,NDYA
@@ -2614,6 +2637,8 @@ C
      .             (cpv_cmp(icp3+1,in,istrai) + eps60)
             cpv_cmp(icp3+1,in,istrai)=(cpv_cmp(icp3+1,in,istrai)*cfac + 
      .              EPEL(IN)) * VOLTAL(IN)*ELCHA
+cdr  this is now identical to see above ?
+
             cfac = (EAPL(IN)+EMPL(IN)+EIPL(IN)) /
      .             (cpv_cmp(icp3+2,in,istrai) + eps60)
             cpv_cmp(icp3+2,in,istrai)=(cpv_cmp(icp3+2,in,istrai)*cfac + 
@@ -2624,6 +2649,7 @@ C
             scpveii(istrai) = scpveii(istrai)+cpv_cmp(icp3+3,in,istrai)
           end do
         end do
+
 !pb        cpv_cmp(icp3+1,:,istrai) = cpv_cmp(icp3+1,:,istrai) * flxi 
 !pb        cpv_cmp(icp3+2,:,istrai) = cpv_cmp(icp3+2,:,istrai) * flxi 
 !pb        cpv_cmp(icp3+3,:,istrai) = cpv_cmp(icp3+3,:,istrai) / elcha 

@@ -914,6 +914,7 @@ C=======================================================================
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
+      DUMMY(0:N+1,0:M+1,NF)=0._DP
       DO    110  IF = 1,NDIMF
       DO    110  IY = 0,NDIMY+1
       DO    100  IX = 1,LIM,5
@@ -1000,6 +1001,7 @@ C
       CALL EIRENE_FREE_MULARR(ISTRAI)
 
       DO IPLS=1,NPLSI
+cdr  save volumetric sources for plasma species ipls: particle, momentum, ion energy
         DO IN=1,NSBOX_TAL
           IF (LPAPL) THEN
             IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
@@ -1103,37 +1105,38 @@ C
           ENDIF
         ENDIF
         IF (LEIEL) THEN 
-        IF (EIEL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-          CPSIM => EIRENE_NEW_SIMARR()
-          CPSIM%ICS = IN
-          CPSIM%VALUES = EIEL(IN)*FLXI
-          CPSIM%NXTSIM => EIELS(ISTRAI)%PSIM
-          EIELS(ISTRAI)%PSIM => CPSIM
+          IF (EIEL(IN) .NE. 0.D0) THEN
+!PB           ALLOCATE(CPSIM)
+            CPSIM => EIRENE_NEW_SIMARR()
+            CPSIM%ICS = IN
+            CPSIM%VALUES = EIEL(IN)*FLXI
+            CPSIM%NXTSIM => EIELS(ISTRAI)%PSIM
+            EIELS(ISTRAI)%PSIM => CPSIM
+          ENDIF
         ENDIF
-        ENDIF
+
         IF (LEAPL) THEN 
-        IF (EAPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-          CPSIM => EIRENE_NEW_SIMARR()
-          CPSIM%ICS = IN
-          CPSIM%VALUES = EAPL(IN)*FLXI
-          CPSIM%NXTSIM => EAPLS(ISTRAI)%PSIM
-          EAPLS(ISTRAI)%PSIM => CPSIM
-        ENDIF
+          IF (EAPL(IN) .NE. 0.D0) THEN
+!PB           ALLOCATE(CPSIM)
+            CPSIM => EIRENE_NEW_SIMARR()
+            CPSIM%ICS = IN
+            CPSIM%VALUES = EAPL(IN)*FLXI
+            CPSIM%NXTSIM => EAPLS(ISTRAI)%PSIM
+            EAPLS(ISTRAI)%PSIM => CPSIM
+          ENDIF
         ENDIF
         IF (LEMPL) THEN 
-        IF (EMPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-          CPSIM => EIRENE_NEW_SIMARR()
-          CPSIM%ICS = IN
-          CPSIM%VALUES = EMPL(IN)*FLXI
-          CPSIM%NXTSIM => EMPLS(ISTRAI)%PSIM
-          EMPLS(ISTRAI)%PSIM => CPSIM
-        ENDIF
+          IF (EMPL(IN) .NE. 0.D0) THEN
+!PB           ALLOCATE(CPSIM)
+            CPSIM => EIRENE_NEW_SIMARR()
+            CPSIM%ICS = IN
+            CPSIM%VALUES = EMPL(IN)*FLXI
+            CPSIM%NXTSIM => EMPLS(ISTRAI)%PSIM
+            EMPLS(ISTRAI)%PSIM => CPSIM
+          ENDIF
         ENDIF
         IF (LEIPL) THEN
-        IF (EIPL(IN) .NE. 0.D0) THEN
+          IF (EIPL(IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
@@ -1141,7 +1144,8 @@ C
             CPSIM%NXTSIM => EIPLS(ISTRAI)%PSIM
             EIPLS(ISTRAI)%PSIM => CPSIM
           ENDIF
-	    ENDIF
+        ENDIF
+
       ENDDO
 
       DO IATM=1,NATMI

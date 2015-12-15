@@ -37,8 +37,9 @@
       END TYPE MULARR
  
       TYPE(SIMARR), ALLOCATABLE, SAVE :: EAELS(:), EMELS(:), EIELS(:),
+     .                                   EPELS(:),
      .                                   EAPLS(:), EMPLS(:), EIPLS(:),
-     .                                   EPPL_COPS(:), EPELS(:)
+     .                                   EPPL_COPS(:)
       TYPE(MULARR), ALLOCATABLE, SAVE :: PAPLS(:), PMPLS(:), PIPLS(:),
      .                                   PDENAS(:),PDENMS(:),PDENIS(:),
      .                                   EDENAS(:),COPVS(:),

@@ -1,4 +1,3 @@
-csw 19feb2013: added XMCT array
       MODULE EIRMOD_COUTAU
  
       USE EIRMOD_PRECISION
@@ -110,28 +109,33 @@ csw 19feb2013: added XMCT array
       ALLOCATE (PDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (PDENII(0:NION,0:NSTRA))
       ALLOCATE (PDENPHI(0:NPHOT,0:NSTRA))
+
       ALLOCATE (EDENAI(0:NATM,0:NSTRA))
       ALLOCATE (EDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (EDENII(0:NION,0:NSTRA))
       ALLOCATE (EDENPHI(0:NPHOT,0:NSTRA))
+cdr  volumetric particles source tallies, from incident atoms, sources for e,a,m,i,ph,pl
       ALLOCATE (PAELI(0:NSTRA))
       ALLOCATE (PAATI(0:NATM,0:NSTRA))
       ALLOCATE (PAMLI(0:NMOL,0:NSTRA))
       ALLOCATE (PAIOI(0:NION,0:NSTRA))
       ALLOCATE (PAPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PAPLI(0:NPLS,0:NSTRA))
+cdr  volumetric particles source tallies, from incident molec., sources for e,a,m,i,ph,pl
       ALLOCATE (PMELI(0:NSTRA))
       ALLOCATE (PMATI(0:NATM,0:NSTRA))
       ALLOCATE (PMMLI(0:NMOL,0:NSTRA))
       ALLOCATE (PMIOI(0:NION,0:NSTRA))
       ALLOCATE (PMPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PMPLI(0:NPLS,0:NSTRA))
+cdr  volumetric particles source tallies, from incident test ions, sources for e,a,m,i,ph,pl
       ALLOCATE (PIELI(0:NSTRA))
       ALLOCATE (PIATI(0:NATM,0:NSTRA))
       ALLOCATE (PIMLI(0:NMOL,0:NSTRA))
       ALLOCATE (PIIOI(0:NION,0:NSTRA))
       ALLOCATE (PIPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PIPLI(0:NPLS,0:NSTRA))
+cdr  volumetric particles source tallies, from incident photons, sources for e,a,m,i,ph,pl
       ALLOCATE (PPHELI(0:NSTRA))
       ALLOCATE (PPHATI(0:NATM,0:NSTRA))
       ALLOCATE (PPHMLI(0:NMOL,0:NSTRA))
@@ -145,52 +149,66 @@ csw 19feb2013: added XMCT array
       ALLOCATE (EAIOI(0:NSTRA))
       ALLOCATE (EAPHTI(0:NSTRA))
       ALLOCATE (EAPLI(0:NSTRA))
+
       ALLOCATE (EMELI(0:NSTRA))
       ALLOCATE (EMATI(0:NSTRA))
       ALLOCATE (EMMLI(0:NSTRA))
       ALLOCATE (EMIOI(0:NSTRA))
       ALLOCATE (EMPHTI(0:NSTRA))
       ALLOCATE (EMPLI(0:NSTRA))
+
       ALLOCATE (EIELI(0:NSTRA))
       ALLOCATE (EIATI(0:NSTRA))
       ALLOCATE (EIMLI(0:NSTRA))
       ALLOCATE (EIIOI(0:NSTRA))
       ALLOCATE (EIPHTI(0:NSTRA))
       ALLOCATE (EIPLI(0:NSTRA))
+
       ALLOCATE (EPHELI(0:NSTRA))
       ALLOCATE (EPHATI(0:NSTRA))
       ALLOCATE (EPHMLI(0:NSTRA))
       ALLOCATE (EPHIOI(0:NSTRA))
       ALLOCATE (EPHPHTI(0:NSTRA))
       ALLOCATE (EPHPLI(0:NSTRA))
+
       ALLOCATE (ADDVI(0:NADV,0:NSTRA))
       ALLOCATE (COLVI(0:NCLV,0:NSTRA))
       ALLOCATE (SNAPVI(0:NSNV,0:NSTRA))
       ALLOCATE (COPVI(0:NCPV,0:NSTRA))
       ALLOCATE (BGKVI(0:NBGV,0:NSTRA))
       ALLOCATE (ALGVI(0:NALV,0:NSTRA))
+
       ALLOCATE (PGENAI(0:NATM,0:NSTRA))
       ALLOCATE (PGENMI(0:NMOL,0:NSTRA))
       ALLOCATE (PGENII(0:NION,0:NSTRA))
       ALLOCATE (PGENPHI(0:NPHOT,0:NSTRA))
+
       ALLOCATE (EGENAI(0:NATM,0:NSTRA))
       ALLOCATE (EGENMI(0:NMOL,0:NSTRA))
       ALLOCATE (EGENII(0:NION,0:NSTRA))
       ALLOCATE (EGENPHI(0:NPHOT,0:NSTRA))
+
       ALLOCATE (VGENAI(0:NATM,0:NSTRA))
       ALLOCATE (VGENMI(0:NMOL,0:NSTRA))
       ALLOCATE (VGENII(0:NION,0:NSTRA))
       ALLOCATE (VGENPHI(0:NPHOT,0:NSTRA))
+
+cdr  volumetric particles source tallies, from bulk ions, sources for e,a,m,i,ph,pl
+cdr             tally for electron source missing ??
       ALLOCATE (PPATI(0:NATM,0:NSTRA))
       ALLOCATE (PPMLI(0:NMOL,0:NSTRA))
       ALLOCATE (PPIOI(0:NION,0:NSTRA))
       ALLOCATE (PPPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PPPLI(0:NPLS,0:NSTRA))
+
+cdr  volumetric energy source tallies, from bulk ions, sources for e,a,m,i,ph,pl
+cdr             tally for electron source missing ??
       ALLOCATE (EPATI(0:NSTRA))
       ALLOCATE (EPMLI(0:NSTRA))
       ALLOCATE (EPIOI(0:NSTRA))
       ALLOCATE (EPPHTI(0:NSTRA))
       ALLOCATE (EPPLI(0:NSTRA))
+
       ALLOCATE (VXDENAI(0:NATM,0:NSTRA))
       ALLOCATE (VXDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (VXDENII(0:NION,0:NSTRA))
@@ -208,56 +226,71 @@ csw 19feb2013: added XMCT array
       ALLOCATE (MIPLI(0:NPLS,0:NSTRA))
       ALLOCATE (MPHPLI(0:NPLS,0:NSTRA))
  
+cdr surface averaged tallies
+cdr  note: distinct from volumetric sources, these are ordered here
+cdr  receiving species
+cdr  surface rates, for particle balance atoms
       ALLOCATE (POTATI(0:NATM,0:NSTRA))
       ALLOCATE (PRFAAI(0:NATM,0:NSTRA))
       ALLOCATE (PRFMAI(0:NATM,0:NSTRA))
       ALLOCATE (PRFIAI(0:NATM,0:NSTRA))
       ALLOCATE (PRFPHAI(0:NATM,0:NSTRA))
       ALLOCATE (PRFPAI(0:NATM,0:NSTRA))
+cdr  surface rates, for particle balance molecules
       ALLOCATE (POTMLI(0:NMOL,0:NSTRA))
       ALLOCATE (PRFAMI(0:NMOL,0:NSTRA))
       ALLOCATE (PRFMMI(0:NMOL,0:NSTRA))
       ALLOCATE (PRFIMI(0:NMOL,0:NSTRA))
       ALLOCATE (PRFPHMI(0:NMOL,0:NSTRA))
       ALLOCATE (PRFPMI(0:NMOL,0:NSTRA))
+cdr  surface rates, for particle balance test ions
       ALLOCATE (POTIOI(0:NION,0:NSTRA))
       ALLOCATE (PRFAII(0:NION,0:NSTRA))
       ALLOCATE (PRFMII(0:NION,0:NSTRA))
       ALLOCATE (PRFIII(0:NION,0:NSTRA))
       ALLOCATE (PRFPHII(0:NION,0:NSTRA))
       ALLOCATE (PRFPII(0:NION,0:NSTRA))
+cdr  surface rates, for particle balance photons
       ALLOCATE (POTPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PRFAPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PRFMPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PRFIPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PRFPHPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PRFPPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (POTPLI(0:NPLS,0:NSTRA))
+
+
       ALLOCATE (EOTATI(0:NATM,0:NSTRA))
       ALLOCATE (ERFAAI(0:NATM,0:NSTRA))
       ALLOCATE (ERFMAI(0:NATM,0:NSTRA))
       ALLOCATE (ERFIAI(0:NATM,0:NSTRA))
       ALLOCATE (ERFPHAI(0:NATM,0:NSTRA))
       ALLOCATE (ERFPAI(0:NATM,0:NSTRA))
+
       ALLOCATE (EOTMLI(0:NMOL,0:NSTRA))
       ALLOCATE (ERFAMI(0:NMOL,0:NSTRA))
       ALLOCATE (ERFMMI(0:NMOL,0:NSTRA))
       ALLOCATE (ERFIMI(0:NMOL,0:NSTRA))
       ALLOCATE (ERFPHMI(0:NMOL,0:NSTRA))
       ALLOCATE (ERFPMI(0:NMOL,0:NSTRA))
+
       ALLOCATE (EOTIOI(0:NION,0:NSTRA))
       ALLOCATE (ERFAII(0:NION,0:NSTRA))
       ALLOCATE (ERFMII(0:NION,0:NSTRA))
       ALLOCATE (ERFIII(0:NION,0:NSTRA))
       ALLOCATE (ERFPHII(0:NION,0:NSTRA))
       ALLOCATE (ERFPII(0:NION,0:NSTRA))
+
       ALLOCATE (EOTPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (ERFAPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (ERFMPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (ERFIPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (ERFPHPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (ERFPPHTI(0:NPHOT,0:NSTRA))
+
+cdr  surface incident fluxes of bulk ions (no fluxes emitted for bulk ions from surfaces)
+      ALLOCATE (POTPLI(0:NPLS,0:NSTRA))
       ALLOCATE (EOTPLI(0:NPLS,0:NSTRA))
+
       ALLOCATE (SPTAATI(0:NATM,0:NSTRA))
       ALLOCATE (SPTMATI(0:NATM,0:NSTRA))
       ALLOCATE (SPTIATI(0:NATM,0:NSTRA))
@@ -289,6 +322,7 @@ csw 19feb2013: added XMCT array
       ALLOCATE (SPTPHTTI(0:NSTRA))
       ALLOCATE (SPTPLTTI(0:NSTRA))
       ALLOCATE (SPTTTI(0:NSTRA))
+
       ALLOCATE (ADDSI(0:NADS,0:NSTRA))
       ALLOCATE (ALGSI(0:NALS,0:NSTRA))
       ALLOCATE (SPUMPI(0:NSPZ,0:NSTRA))
@@ -296,14 +330,19 @@ csw 19feb2013: added XMCT array
       ALLOCATE (WTOTA(0:NATM,0:NSTRA))
       ALLOCATE (WTOTM(0:NMOL,0:NSTRA))
       ALLOCATE (WTOTI(0:NION,0:NSTRA))
-      ALLOCATE (WTOTP(0:NPLS,0:NSTRA))
       ALLOCATE (WTOTPH(0:NPHOT,0:NSTRA))
+      ALLOCATE (WTOTP(0:NPLS,0:NSTRA))
+      
       ALLOCATE (WTOTE(0:NSTRA))
+
+
+cdr  etote still missing ??
       ALLOCATE (ETOTA(0:NSTRA))
       ALLOCATE (ETOTM(0:NSTRA))
       ALLOCATE (ETOTI(0:NSTRA))
-      ALLOCATE (ETOTP(0:NSTRA))
       ALLOCATE (ETOTPH(0:NSTRA))
+      ALLOCATE (ETOTP(0:NSTRA))
+      
       ALLOCATE (XMCP(0:NSTRA))
       ALLOCATE (XMCT(0:NSTRA))
       ALLOCATE (FLUXT(0:NSTRA))
@@ -579,64 +618,76 @@ csw 19mar2013
         IF (ISTRA >= 1) THEN
           IF (.NOT. LOGARR(ISTRA)) CYCLE
         END IF
- 
+
+cdr particle densities 
         PDENAI(:,ISTRA)  = 0._DP
         PDENMI(:,ISTRA)  = 0._DP
         PDENII(:,ISTRA)  = 0._DP
         PDENPHI(:,ISTRA) = 0._DP
+cdr  energy densities
         EDENAI(:,ISTRA)  = 0._DP
         EDENMI(:,ISTRA)  = 0._DP
         EDENII(:,ISTRA)  = 0._DP
         EDENPHI(:,ISTRA) = 0._DP
+
+cdr volumetric tallies for particle balance, sources from atoms for el, a,m,i,ph,pl 
         PAELI(ISTRA)   = 0._DP
         PAATI(:,ISTRA)   = 0._DP
         PAMLI(:,ISTRA)   = 0._DP
         PAIOI(:,ISTRA)   = 0._DP
         PAPHTI(:,ISTRA)  = 0._DP
         PAPLI(:,ISTRA)   = 0._DP
+
         PMELI(ISTRA)   = 0._DP
         PMATI(:,ISTRA)   = 0._DP
         PMMLI(:,ISTRA)   = 0._DP
         PMIOI(:,ISTRA)   = 0._DP
         PMPHTI(:,ISTRA)  = 0._DP
         PMPLI(:,ISTRA)   = 0._DP
+
         PIELI(ISTRA)   = 0._DP
         PIATI(:,ISTRA)   = 0._DP
         PIMLI(:,ISTRA)   = 0._DP
         PIIOI(:,ISTRA)   = 0._DP
         PIPHTI(:,ISTRA)  = 0._DP
         PIPLI(:,ISTRA)   = 0._DP
+cdr
         PPHELI(ISTRA)  = 0._DP
         PPHATI(:,ISTRA)  = 0._DP
         PPHMLI(:,ISTRA)  = 0._DP
         PPHIOI(:,ISTRA)  = 0._DP
         PPHPHTI(:,ISTRA) = 0._DP
         PPHPLI(:,ISTRA)  = 0._DP
- 
+
+cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,pl 
         EAELI(ISTRA)   = 0._DP
         EAATI(ISTRA)   = 0._DP
         EAMLI(ISTRA)   = 0._DP
         EAIOI(ISTRA)   = 0._DP
         EAPHTI(ISTRA)  = 0._DP
         EAPLI(ISTRA)   = 0._DP
+
         EMELI(ISTRA)   = 0._DP
         EMATI(ISTRA)   = 0._DP
         EMMLI(ISTRA)   = 0._DP
         EMIOI(ISTRA)   = 0._DP
         EMPHTI(ISTRA)  = 0._DP
         EMPLI(ISTRA)   = 0._DP
+
         EIELI(ISTRA)   = 0._DP
         EIATI(ISTRA)   = 0._DP
         EIMLI(ISTRA)   = 0._DP
         EIIOI(ISTRA)   = 0._DP
         EIPHTI(ISTRA)  = 0._DP
         EIPLI(ISTRA)   = 0._DP
+
         EPHELI(ISTRA)  = 0._DP
         EPHATI(ISTRA)  = 0._DP
         EPHMLI(ISTRA)  = 0._DP
         EPHIOI(ISTRA)  = 0._DP
         EPHPHTI(ISTRA) = 0._DP
         EPHPLI(ISTRA)  = 0._DP
+
         ADDVI(:,ISTRA)   = 0._DP
         COLVI(:,ISTRA)   = 0._DP
         SNAPVI(:,ISTRA)  = 0._DP
@@ -655,16 +706,21 @@ csw 19mar2013
         VGENMI(:,ISTRA)  = 0._DP
         VGENII(:,ISTRA)  = 0._DP
         VGENPHI(:,ISTRA) = 0._DP
+
+cdr  particle sources from pl, for electrons:  tally ppeli missing ??
         PPATI(:,ISTRA)  = 0._DP
         PPMLI(:,ISTRA)  = 0._DP
         PPIOI(:,ISTRA)  = 0._DP
         PPPHTI(:,ISTRA) = 0._DP
         PPPLI(:,ISTRA) = 0._DP
+
+cdr  energy sources from pl, for electrons:  tally epeli missing ??
         EPATI(ISTRA)  = 0._DP
         EPMLI(ISTRA)  = 0._DP
         EPIOI(ISTRA)  = 0._DP
         EPPHTI(ISTRA) = 0._DP
         EPPLI(ISTRA) = 0._DP
+
         VXDENAI(:,ISTRA)  = 0._DP
         VXDENMI(:,ISTRA)  = 0._DP
         VXDENII(:,ISTRA)  = 0._DP

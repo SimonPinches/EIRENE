@@ -66,6 +66,8 @@ C  UPDATE SNAPSHOT ESTIMATORS
       IF (NSNVI.GT.0) CALL EIRENE_UPNUSR
 C
 c-dpc
+CDR:  this must be generalized, towards a more general horizon
+CDR   rather then fixed horizon at 100 meters
       dist=sqrt(x0**2+y0**2)
       if(dist.gt.1e4) then
         write(*,*) 'timcol: ERROR!  dist = ',dist,

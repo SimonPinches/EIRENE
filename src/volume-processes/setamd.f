@@ -125,16 +125,18 @@ cdr
       IPATDS = 0
       IPMLDS = 0
       IPIODS = 0
+cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLDS = 0
       DO IREI=1,NRDS
         ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds (<= natm) 
-cdr                                                 atomic species which appear a secondaries, 
+cdr                                                 atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
         IF (ipatds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
              IPATDS(IREI,1:ipatds(IREI,0))=PACK( (/ (i,i=1,natm) /),
      .                                     PATDS(IREI,1:) > 0)
 cdr  IPATDS(IREI,...)=iatm means:  one or more secondaries of species iatm
-cdr  the arrays patds,,...p2nd, contain furthermore the information: 
+c
+cdr  the arrays patds,...,pplds, and p2nd, contain the further information: 
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
         ipmlds(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
@@ -158,6 +160,7 @@ cdr:  same as above, for PI processes
       IPATPI = 0
       IPMLPI = 0
       IPIOPI = 0
+cdr   IPPHPI = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
       IPPLPI = 0
       DO IRPI=1,NRPI
         ipatpi(IRPI,0)=COUNT(PATPI(IRPI,1:) > 0)
