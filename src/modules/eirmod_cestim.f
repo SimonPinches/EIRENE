@@ -1,7 +1,8 @@
 c   march 19, 2006:  corrected pointer for spttot in "associate_cestim"
 !   20.06.07:        deallocate ESTIML and SMESTL
 cdr 14.10.14:        naming of arrays in smestl adapted to those of other eirene std. dev. tallies
-cdr                  two further tallies introduced (gg, stv) for stand. dev. of sum over strata
+cdr                  two further tallies introduced (gg, stv) for stand. dev. 
+cdr                  of sum over strata
  
       MODULE EIRMOD_CESTIM
  
