@@ -57,8 +57,8 @@ C
       IMPLICIT NONE
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
@@ -132,7 +132,15 @@ cdr currently: arbitrary 1.5*Tiin(1,...)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
-        EIPL(NCELLT)=EIPL(NCELLT)-WEIGHT*(E0NEW-E0OLD)
+cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
+cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
+cdr  temprature(ipls), even different sign.
+cdr  
+        EWG = WEIGHT*(E0NEW-E0OLD)
+        FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
+        DO IPL = 1, NPLSI
+          EIPL(NCELLT)=EIPL(NCELLT)-EWG*FNUIAR(IPL)/FNUI
+        END DO
 C
 
         FAC=SQRT(E0NEW/E0OLD)
