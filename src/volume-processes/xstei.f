@@ -1,6 +1,5 @@
 !pb  28.06.06: bug fix for NSTORAM=0 and MODC=1
-!pb            FACREA=FACTKK instead of FACREA=log(FACTKK) as single
-!pb            polynomial fit is linear in it parameter
+!pb            FACREA=FACTKK instead of FACREA=log(FACTKK) 
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
@@ -15,6 +14,7 @@ cdr  Jan. 2014:
 !dr             currently: label H.4 2.1.5 or H.10 2.1.5 are not used in case LHCOL?
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
 !   02.02.15:   ONLY COMMENTS ADDED
+!dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLDS(..,0,..)
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -40,10 +40,10 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
-      REAL(DP), INTENT(IN) :: RMASS, EHEAVY, CHRDF0, EELEC, FACTKK
+
+      REAL(DP), INTENT(IN) :: RMASS, EHEAVY, EELEC, FACTKK,CHRDF0
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
@@ -55,7 +55,7 @@ C
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF, DELE, ERATE
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
-     .           ION, ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
+     .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHCOL
@@ -81,6 +81,12 @@ C
 
       IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
 
+!  ACCMAS: accumulated mass of all secondaries (all types)
+!  ACCINV: accumulated invers mass of all secondaries (all types)
+
+!  ACCMSA: accumulated mass of ATOMIC secondaries (type ITYP=1)
+!  ACCINA: accumulated invers mass of ATOMIC secondaries (type ITYP=1)
+!  analogously for molecule, test ion and bulk secondaries
       IF (ITYP.EQ.1) THEN
         IAT=ISPE
         IAA=NSPH+IAT
@@ -121,6 +127,8 @@ C
         ACCMSP=ACCMSP+INUM*RMASSP(IPP)
         ACCINV=ACCINV+INUM/RMASSP(IPP)
         ACCINP=ACCINP+INUM/RMASSP(IPP)
+        EPLDS(IREI,IPP,1)=RMASSP(IPP)
+        EPLDS(IREI,IPP,2)=1./RMASSP(IPP)
       ENDIF
 C
       IF (ISCND.NE.0.AND.ICOUNT.EQ.1) THEN
@@ -169,8 +177,12 @@ C
       ENDDO
       EIODS(IREI,0,1)=ACCMSI/ACCMAS
       EIODS(IREI,0,2)=ACCINI/ACCINV
-      EPLDS(IREI,1)=ACCMSP/ACCMAS
-      EPLDS(IREI,2)=ACCINP/ACCINV
+      DO IPP=1,NPLSI
+        EPLDS(IREI,IPP,1)=EPLDS(IREI,IPP,1)/ACCMAS
+        EPLDS(IREI,IPP,2)=EPLDS(IREI,IPP,2)/ACCINV
+      ENDDO
+      EPLDS(IREI,0,1)=ACCMSP/ACCMAS
+      EPLDS(IREI,0,2)=ACCINP/ACCINV
 C
       CHRDIF=CHRDF0
       DO 83 IIO=1,NIONI
@@ -191,15 +203,22 @@ C
 C
 C  2.A) RATE COEFFICIENT = CONST.
 C     TO BE WRITTEN
+
+
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
-C  2.B) RATE COEFFICIENT(TE)
+C  2.B) RATE COEFFICIENT(TE)  (LOW DENSITY (CORONA) RATE
         IF (NSTORDR >= NRAD) THEN
 C  RATE:  (1/S) =
 C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
+C .....................................
+C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  MISSING HERE, I.E. NOT READY FOR CORONA APPROXIMATION
+C   CORONA ERATE NOT WORKING !
+C .....................................
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,.TRUE.,0,ERATE)
             TABDS1(IREI,J)=COU*FACTKK
+C  IS TABDS1 A RATE COEFFICIENT OR ALREADY A RATE ?
             IF (IFTFLG(KK,2) < 100)
      .        TABDS1(IREI,J)=TABDS1(IREI,J)*DEIN(J)
           END DO
@@ -325,6 +344,9 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                         EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
                         EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
                       END DO
+                    ELSEIF (LHCOL) THEN
+C  NOTHING TO BE DONE HERE,
+C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABDS1
                     END IF
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
@@ -383,7 +405,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
             NREAHV(IREI)=KREAD
           END IF
         ELSE
-          WRITE (iunout,*) 'INVALID OPTION IN XSTEI '
+          WRITE (iunout,*) 'INVALID OPTION IN XSTEI: MODC=EFLAG '
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
       ELSE
@@ -414,7 +436,8 @@ C
         IESTEI(IREI,2)=0
         CALL EIRENE_LEER(1)
       ENDIF
- 
+
+
  
  
       RETURN
@@ -426,8 +449,9 @@ C
 C  SET TOTAL NUMBER OF SECONDARIES BY TYPE OF SECONDARY: P..DS(IREI,0)
 C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2ND(IREI)  INTO
-C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
- 
+C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
+
+C  ATOM SECONDARIES 
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
         PATDS(IREI,0)=PATDS(IREI,0)+
@@ -435,6 +459,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IA)=P2ND(IREI,IA-1)+
      +                      P2ND(IREI,IA)
 510   CONTINUE
+C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
         PMLDS(IREI,0)=PMLDS(IREI,0)+
@@ -442,13 +467,15 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
 520   CONTINUE
-      DO 530 ION=1,NIONI
-        IO=NSPAM+ION
+C  TEST ION SECONDARIES 
+      DO 530 IIO=1,NIONI
+        IO=NSPAM+IIO
         PIODS(IREI,0)=PIODS(IREI,0)+
-     +                      PIODS(IREI,ION)
+     +                      PIODS(IREI,IIO)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
 530   CONTINUE
+C  BULK SECONDARIES (NOT ON P2ND)
       DO 540 IPP=1,NPLSI
         PPLDS(IREI,0)=PPLDS(IREI,0)+
      +                      PPLDS(IREI,IPP)
@@ -458,7 +485,9 @@ C  TOTAL NUMBER OF SECONDARIES
       P2NDS(IREI)=PATDS(IREI,0)+PMLDS(IREI,0)+
      .            PIODS(IREI,0)
  
-C  NORMALIZE SECONDARY SPECIES DISTRIBUTION P2ND
+C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
+C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION FOR TEST PARTICLE SECONDARIES
+C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)
       DO 550 ISPZ=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
@@ -474,6 +503,7 @@ C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELEC. IMPACT REACTION NO. IREI= ',IREI
       CALL EIRENE_LEER(1)
+
       EI=1.D30
       EA=-1.D30
       imin=0
@@ -492,6 +522,7 @@ C
 875   CONTINUE
  
       WRITE (iunout,*) 'BACKGROUND SECONDARIES:'
+
       IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
         WRITE (iunout,*) 'ELECTRONS: PELEI, CONSTANT ENERGY: EEL'
         WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELDS(IREI),EI
@@ -523,13 +554,14 @@ C
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLDS(IREI,1),
-     .                                 ' * E0 + ',EPLDS(IREI,2)*EI
-        ELSE
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLDS(IREI,0,1),
+     .                                 ' * E0 + ',EPLDS(IREI,0,2)*EI
+        ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLDS(IREI,1),
-     .                                 ' * E0 + ',EPLDS(IREI,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLDS(IREI,0,1),
+     .                                 ' * E0 + ',EPLDS(IREI,0,2),
      .                                 ' * EHEAVY '
+C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0 
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
@@ -542,7 +574,7 @@ C
       IF (P2NDS(IREI).EQ.0.D0) THEN
         WRITE (iunout,*) 'NONE'
         CALL EIRENE_LEER(1)
-        RETURN
+        GOTO 880
       ENDIF
 C
       IF (PATDS(IREI,0).GT.0.D0) THEN
@@ -605,7 +637,8 @@ C
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
- 
+
+880   CONTINUE 
  
       CALL EIRENE_LEER(1)
       IF (IESTEI(IREI,1).NE.0)
@@ -617,8 +650,12 @@ C
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
-      WRITE (IUNOUT,*) 'MODCOL ',MODCOL(1,1,IREI),MODCOL(1,2,IREI),
-     .                           MODCOL(1,3,IREI),MODCOL(1,4,IREI)
+      WRITE (iunout,*) 'PROCESS NO. KK ',NREAEI(IREI)
+      WRITE (IUNOUT,*) 'MODCOL         ',
+     .                  MODCOL(1,1,IREI),MODCOL(1,2,IREI),
+     .                  MODCOL(1,3,IREI),MODCOL(1,4,IREI)
+      WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
+     .                  FACREI(IREI,1) 
       CALL EIRENE_LEER(1)
       RETURN
 C

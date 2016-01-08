@@ -1,3 +1,6 @@
+cdr  dec. 15:  added species index ipls for energy source rates for bulk ions:
+cdr            eapl,empl,eipl,ephpl,eppl
+
 C
       SUBROUTINE EIRENE_SUM_AVERAGE (ISTRA)
 C

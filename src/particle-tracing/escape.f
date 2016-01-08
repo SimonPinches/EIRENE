@@ -527,7 +527,7 @@ C
           colflag = .true.
         RETURN 2
 C
-C  OR: MIRROR
+C  OR: PERFECT SPECULAR REFLECTION
 C
         ELSEIF (ILIIN(MSURF).EQ.3) THEN
           COSI2=-2.*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)

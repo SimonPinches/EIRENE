@@ -5,8 +5,10 @@
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
 cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
+
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
+cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
       MODULE EIRMOD_PARMMOD
  
       USE EIRMOD_PRECISION

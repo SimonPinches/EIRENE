@@ -2,6 +2,7 @@ C  11.01.05:   text re. switching off generation limit corrected
 C              electron particle balance wtote instead of wtotp
 c  AUTUMN 2014:  Sputter tallies revised, also their printout
 c  11.04.15:  SPATOT RENAMED TO PMPTOT (pumped flux, rather than sputtered flux)
+c  dec.15:    species resolved bulk ion energy balance eapl,empl,...etc..
 C
       SUBROUTINE EIRENE_OUTEIR(INDOUT)
 

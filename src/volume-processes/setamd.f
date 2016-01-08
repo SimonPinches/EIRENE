@@ -117,8 +117,9 @@ csw
  
 c
 cdr  set some further assistant arrays, for ei and pi processes:
-cdr  accumulated information from A, M, I ,PH and P for particle processes 'ei' and 'pi'. 
-cdr  These arrays are stored in comxs and are used in update.f exclusively
+cdr  accumulated information from A, M, I ,P and PH for particle processes 'ei' and 'pi'. 
+cdr  These array are stored in comxs and are used for scoring
+cdr  tallies in update.f (tracklength) and collide.f (coll. estim) exclusively
 
 cdr 
       IPATDS = 0

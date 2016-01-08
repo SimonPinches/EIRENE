@@ -1,3 +1,6 @@
+cdr dec 15:  added species resolution wrt. energy volume taalies for bulk ions
+cdr          eapl, empl, eipl, ephpl, eppl
+
 C
       SUBROUTINE EIRENE_INTEGRATE_TALLIES (ISTRA)
 C

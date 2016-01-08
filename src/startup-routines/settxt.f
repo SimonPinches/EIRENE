@@ -2,6 +2,8 @@ c    2005 bug fix : text(ntalv-13) --> text(71)
 c    17.03.06: txttal and txttlw added for additional tallies
 cdr  29.09.14: TXTUNT corrected for generation limits, momentum sources
 c    oct.14  : input tally 22 (potential) connnected to text arrays
+cdr  dec. 15 : energy source tallies for bulk ions: additional species index ipls
+cdr            tallies 38,44,50,56 and 84
 
       SUBROUTINE EIRENE_SETTXT
 c  set default texts  (volume tallies: name, species, units), ditto: surface and input tallies 

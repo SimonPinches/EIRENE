@@ -23,9 +23,15 @@ cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI a
 cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
 cdr Dec.15  :  bug fix pi reaction and cascading was wrong: 
 cdr            irei, rather than irpi, and p2nd 
-cdr            rather then p2np, were used also for PI reactions. now corrected
+cdr            rather than p2np, were used also for PI reactions. now corrected
+
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
+cdr DEC. 15 :  bulk ion energy estimatros: species reolved.
+cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
+
+cdr            tbd:  check setting of iestm..flags for collision estimators. 
+cdr                  probably not correct (outdated).
 
 
 
@@ -215,6 +221,8 @@ cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS.
           IF (LEAPL) THEN
             DO IP=1,IPPLDS(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigei is the total for this species.
               IPL=IPPLDS(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)

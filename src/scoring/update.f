@@ -22,6 +22,7 @@ c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
 cdr dec.15: tracklength estimators for heavy test particle post collision energies 
 cdr         in PI processes added. For A, M, I incident test particles.
+cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
 cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 
@@ -312,7 +313,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LEAPL) THEN
-                  EAPL(IPL1,IRD) = EAPL(IPL1,IRD)+WTRSIG*ESIGCX(IRCX,1)
+                  EAPL(IPL1,IRD) = EAPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
                   LMETSP(NSPAMI+IPL1) = .TRUE.
                 END IF
               ENDIF
@@ -506,6 +507,8 @@ C
                   IPL=IPPLDS(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
 cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -608,14 +611,16 @@ C
 C
             ELSE
 C
-              IF (LEMAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
-              IF (LEMML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
-              IF (LEMIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEAAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEAPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
 cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -962,7 +967,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LEMPL) THEN
-                  EMPL(IPL1,IRD) = EMPL(IPL1,IRD)+WTRSIG*ESIGCX(IRCX,1)
+                  EMPL(IPL1,IRD) = EMPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
                   LMETSP(NSPAMI+IPL1)=.TRUE.
                 END IF
               ENDIF
@@ -983,7 +988,7 @@ C  SECOND SECONDARY: PREVIOUS MOLECULE IMOL
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
                 IF (LEMPL)  THEN
-                  EMPL(IPL2,IRD) = EMPL(IPL2,IRD) + WTRSIG*E0
+                  EMPL(IPL2,IRD) = EMPL(IPL2,IRD)+ WTRSIG*E0
                   LMETSP(NSPAMI+IPL2)=.TRUE.
                 END IF
               ENDIF
@@ -1154,6 +1159,8 @@ C
               IF (LEMPL) THEN
                 DO IP=1,IPPLDS(IREI,0)
 cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigei is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLDS(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
@@ -1264,6 +1271,8 @@ C
               IF (LEMPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
 cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
@@ -1614,7 +1623,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LEIPL) THEN
-                  EIPL(IPL1,IRD) = EIPL(IPL1,IRD)+WTRSIG*ESIGCX(IRCX,1)
+                  EIPL(IPL1,IRD) = EIPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
                   LMETSP(NSPAMI+IPL1)=.TRUE.
                 END IF
               ENDIF
@@ -1682,7 +1691,7 @@ C           END IF
             END IF
           ENDIF
 C
-          IF (LEA) THEN
+          IF (LEIO) THEN
             IF (IESTEL(IREL,3).NE.0) THEN
  
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -1807,6 +1816,8 @@ C
               IF (LEIPL) THEN
                 DO IP=1,IPPLDS(IREI,0)
 cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigei is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLDS(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
@@ -1901,7 +1912,7 @@ C
             IF (LEIEL) EIEL(IRD)=EIEL(IRD)+WTRSIG*ESIGPI(IRPI,5)
           ENDIF
  
-          IF (LEA) THEN
+          IF (LEIO) THEN
             IF (IESTPI(IRPI,3).NE.0) THEN
 C
 C  COLLISION ESTIMATOR
@@ -1911,12 +1922,14 @@ C
 C
             ELSE
 C
-              IF (LEMAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
-              IF (LEMML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
-              IF (LEMIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEIAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEIML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               IF (LEIPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
 cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.

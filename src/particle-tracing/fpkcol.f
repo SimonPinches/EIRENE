@@ -57,7 +57,7 @@ C
       IMPLICIT NONE
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS, FNUI, WG
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
       INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C  SAVE INCIDENT SPECIES: IOLD
@@ -133,19 +133,23 @@ C
 C  UPDATE ESTIMATORS EIIO,EIPL
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
 cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
-        WG = WEIGHT*(E0NEW-E0OLD)
-        FNUI = SUM(FNUIAR(1:NPLSI))
+cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
+cdr  temprature(ipls), even different sign.
+cdr  
+        EWG = WEIGHT*(E0NEW-E0OLD)
+        FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
         DO IPL = 1, NPLSI
-          EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-WG*FNUIAR(IPL)/FNUI
+          EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-EWG*FNUIAR(IPL)/FNUI
         END DO
 C
 
         FAC=SQRT(E0NEW/E0OLD)
         VELPAR=VELPAR*FAC
-        VELPER=VELPER*FAC 
-        E0PAR=E0PAR*FAC*FAC     
+        VELPER=VELPER*FAC
+        E0PAR=E0PAR*FAC*FAC
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
+c  gets new B-field
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 
 C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?

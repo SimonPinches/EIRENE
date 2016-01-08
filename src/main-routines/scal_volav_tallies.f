@@ -1,6 +1,8 @@
 !pb  31.07.09: scaling for snapshot tallies corrected
 !              only for stationary calculations snapshot tallies 
 !              need to be scaled by timestep DTIMV
+cdr  dec. 15 : species index added in volumetric energy tallies for bulk ions
+cdr            eapl,empl,eipl,ephpl,eppl (38, 44, 50, 56 and 84)
 
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)

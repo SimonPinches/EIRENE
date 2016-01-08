@@ -1,6 +1,10 @@
-cdr: nov. 2015  added first argument in parameter list: ICELL (other branch, not yet here)
+cdr: nov. 2015  added first argument in parameter list: ICELL
 CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
 cdr               for next call to H_colrad, see e.g. fem routine df_xyz.f in geometry block
+cdr               currently this new argument is not yet used.
+cdr  H_COLRAD is called from rate_coef.f and from energy_rate_coef.f, 
+cdr           to provide ionization, radiation and electron cooling rates, either in a given cell (tbd) or
+cdr           for given Te, ne.
 c****************************************************************************************************
 C*
 C*     COLLISIONAL-RADIATIVE MODEL OF
@@ -40,15 +44,17 @@ c   hence: taken times "densel"
 c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
-      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, POP0, POP1, POP2,
-     .                     ALPCR, SCR, SCR_EXT,
-     .                     E_ALPCR, E_SCR, E_SCR_EXT,
-     .                     E_ALPCR_T, E_SCR_T,E_SCR_EXT_T)
+      SUBROUTINE EIRENE_H_COLRAD (ICELL,TEMP, DENSEL, Q_EXT, 
+     .                            POP0, POP1, POP2,
+     .                            ALPCR, SCR, SCR_EXT,
+     .                            E_ALPCR, E_SCR, E_SCR_EXT,
+     .                            E_ALPCR_T, E_SCR_T,E_SCR_EXT_T)
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
  
 C--------- ATOMIC PARAMETER ------------------------------------------
+      INTEGER, INTENT(IN) :: ICELL
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
       REAL(DP), INTENT(IN) :: Q_EXT(40)
 

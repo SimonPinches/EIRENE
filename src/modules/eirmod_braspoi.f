@@ -1,3 +1,9 @@
+cdr  dec. 15:  added species index ipls for energy source arrays for bulk ions
+cdr            eapls, empls, eipls, eppls
+
+cdr            not concluded yet: e.g. eplpls,  photon tallies
+cdr            nomenclature: eppl_cops --> eppls  ???
+
       MODULE EIRMOD_BRASPOI
  
       USE EIRMOD_PRECISION
@@ -40,7 +46,7 @@
      .                                   EPELS(:)
       TYPE(MULARR), ALLOCATABLE, SAVE :: PAPLS(:), PMPLS(:), PIPLS(:),
      .                                   EAPLS(:), EMPLS(:), EIPLS(:),
-     .                                   EPPL_COPS(:), 
+     .                                   EPPL_COPS(:),
      .                                   PDENAS(:),PDENMS(:),PDENIS(:),
      .                                   EDENAS(:),COPVS(:),
      .                                   PPPL_COPS(:), CPPVS(:),

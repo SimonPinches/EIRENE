@@ -1,3 +1,6 @@
+cdr  Dec. 15: added allocatable public array fnuiar(npls): species dependent 
+cdr                                 collision frequency, for FP collisions
+
       MODULE EIRMOD_CFPLK
 C   parameters for fokker planck collision operator
       USE EIRMOD_PRECISION
@@ -10,8 +13,9 @@ C   parameters for fokker planck collision operator
       PUBLIC :: EIRENE_ALLOC_CFPLK, EIRENE_DEALLOC_CFPLK
  
       REAL(DP), PUBLIC, SAVE ::
-     R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR, TAUE,
-     R BVEC(3), BBX, BBY, BBZ
+     R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR,
+     R BVEC(3), BBX, BBY, BBZ,
+     R TAUE
       LOGICAL, public, save :: LCART,COLFLAG
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: FNUIAR(:)

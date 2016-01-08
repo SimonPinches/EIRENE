@@ -1,3 +1,5 @@
+cdr  dec. 15:  added species index ipls for energy source tallies for bulk ions
+cdr            eapl,empl,eipl,ephpl,eppl
 C
       SUBROUTINE EIRENE_SUMOSTRA (ISTRA)
 C
