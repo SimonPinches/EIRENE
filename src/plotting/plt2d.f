@@ -90,7 +90,7 @@ C
      .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR. 
 c  next symbols/text: only for printout, not on plot.
      .            'INT. GRID SURFACE(8)',
-     .            'DIFFUSION STEP(19)  '/
+     .            'DIFFUSION STEP(20)  '/
 C
 C  SYMBOL FOR PARTICLE TRACING ERROR, CURRENTLY NO. 18
       ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD WIRED FOR TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...

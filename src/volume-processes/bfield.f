@@ -33,7 +33,7 @@ cdr  tentatively assume: x,y,z are known here, i.e. call vecusr with L=true
          bf = 1.
 
       ELSE IF (LBSMO) THEN
-cdr  to be done:
+cdr    to be done:
 cdr    if not levgeo.eq.4  error exit
 cdr    use logical input flag L:  return COM value or local value
 

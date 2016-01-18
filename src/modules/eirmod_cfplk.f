@@ -13,8 +13,9 @@ C   parameters for fokker planck collision operator
       PUBLIC :: EIRENE_ALLOC_CFPLK, EIRENE_DEALLOC_CFPLK
  
       REAL(DP), PUBLIC, SAVE ::
-     R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR, TAUE,
-     R BVEC(3), BBX, BBY, BBZ
+     R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR,
+     R BVEC(3), BBX, BBY, BBZ,
+     R TAUE
       LOGICAL, public, save :: LCART,COLFLAG
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: FNUIAR(:)

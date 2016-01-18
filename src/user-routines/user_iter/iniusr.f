@@ -9,6 +9,9 @@ csw already read in into extrab25 module
       use eirmod_extrab25
       IMPLICIT NONE
       integer :: k,i,l,j
+
+      if (ini_iniusr == 0) return
+
       do k=1,bn_spcsrf 
         do i=bi_spcsrf(k),bj_spcsrf(k)
           l=bl_spcsrf(i)

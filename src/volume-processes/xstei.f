@@ -1,6 +1,5 @@
 !pb  28.06.06: bug fix for NSTORAM=0 and MODC=1
-!pb            FACREA=FACTKK instead of FACREA=log(FACTKK) as single
-!pb            polynomial fit is linear in it parameter
+!pb            FACREA=FACTKK instead of FACREA=log(FACTKK) 
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
@@ -15,6 +14,7 @@ cdr  Jan. 2014:
 !dr             currently: label H.4 2.1.5 or H.10 2.1.5 are not used in case LHCOL?
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
 !   02.02.15:   ONLY COMMENTS ADDED
+!dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -127,6 +127,8 @@ C
         ACCMSP=ACCMSP+INUM*RMASSP(IPP)
         ACCINV=ACCINV+INUM/RMASSP(IPP)
         ACCINP=ACCINP+INUM/RMASSP(IPP)
+        EPLEI(IREI,IPP,1)=RMASSP(IPP)
+        EPLEI(IREI,IPP,2)=1./RMASSP(IPP)
       ENDIF
 C
       IF (ISCND.NE.0.AND.ICOUNT.EQ.1) THEN
@@ -175,9 +177,12 @@ C
       ENDDO
       EIODS(IREI,0,1)=ACCMSI/ACCMAS
       EIODS(IREI,0,2)=ACCINI/ACCINV
-
-      EPLDS(IREI,1)=ACCMSP/ACCMAS
-      EPLDS(IREI,2)=ACCINP/ACCINV
+      DO IPP=1,NPLSI
+        EPLEI(IREI,IPP,1)=EPLEI(IREI,IPP,1)/ACCMAS
+        EPLEI(IREI,IPP,2)=EPLEI(IREI,IPP,2)/ACCINV
+      ENDDO
+      EPLEI(IREI,0,1)=ACCMSP/ACCMAS
+      EPLEI(IREI,0,2)=ACCINP/ACCINV
 C
       CHRDIF=CHRDF0
       DO 83 IIO=1,NIONI
@@ -444,8 +449,9 @@ C
 C  SET TOTAL NUMBER OF SECONDARIES BY TYPE OF SECONDARY: P..DS(IREI,0)
 C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2ND(IREI)  INTO
-C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
- 
+C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
+
+C  ATOM SECONDARIES 
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
         PATDS(IREI,0)=PATDS(IREI,0)+
@@ -453,6 +459,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IA)=P2ND(IREI,IA-1)+
      +                      P2ND(IREI,IA)
 510   CONTINUE
+C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
         PMLDS(IREI,0)=PMLDS(IREI,0)+
@@ -460,6 +467,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
 520   CONTINUE
+C  TEST ION SECONDARIES 
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
         PIODS(IREI,0)=PIODS(IREI,0)+
@@ -467,6 +475,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
 530   CONTINUE
+C  BULK SECONDARIES (NOT ON P2ND)
       DO 540 IPP=1,NPLSI
         PPLDS(IREI,0)=PPLDS(IREI,0)+
      +                      PPLDS(IREI,IPP)
@@ -476,7 +485,9 @@ C  TOTAL NUMBER OF SECONDARIES
       P2NDS(IREI)=PATDS(IREI,0)+PMLDS(IREI,0)+
      .            PIODS(IREI,0)
  
-C  NORMALIZE SECONDARY SPECIES DISTRIBUTION P2ND
+C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
+C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION FOR TEST PARTICLE SECONDARIES
+C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)
       DO 550 ISPZ=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
@@ -543,12 +554,12 @@ C
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLDS(IREI,1),
-     .                                 ' * E0 + ',EPLDS(IREI,2)*EI
-        ELSE
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLEI(IREI,0,1),
+     .                                 ' * E0 + ',EPLEI(IREI,0,2)*EI
+        ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLDS(IREI,1),
-     .                                 ' * E0 + ',EPLDS(IREI,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLEI(IREI,0,1),
+     .                                 ' * E0 + ',EPLEI(IREI,0,2),
      .                                 ' * EHEAVY '
 C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0 
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
@@ -563,7 +574,7 @@ C
       IF (P2NDS(IREI).EQ.0.D0) THEN
         WRITE (iunout,*) 'NONE'
         CALL EIRENE_LEER(1)
-        RETURN
+        GOTO 880
       ENDIF
 C
       IF (PATDS(IREI,0).GT.0.D0) THEN
@@ -626,7 +637,8 @@ C
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
- 
+
+880   CONTINUE 
  
       CALL EIRENE_LEER(1)
       IF (IESTEI(IREI,1).NE.0)
@@ -638,8 +650,12 @@ C
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
-      WRITE (IUNOUT,*) 'MODCOL ',MODCOL(1,1,IREI),MODCOL(1,2,IREI),
-     .                           MODCOL(1,3,IREI),MODCOL(1,4,IREI)
+      WRITE (iunout,*) 'PROCESS NO. KK ',NREAEI(IREI)
+      WRITE (IUNOUT,*) 'MODCOL         ',
+     .                  MODCOL(1,1,IREI),MODCOL(1,2,IREI),
+     .                  MODCOL(1,3,IREI),MODCOL(1,4,IREI)
+      WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
+     .                  FACREI(IREI,1) 
       CALL EIRENE_LEER(1)
       RETURN
 C

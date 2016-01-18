@@ -117,8 +117,12 @@ C
 C
               PELDS(IREI)=1.
               PPLDS(IREI,IPLS1)=1.
-              EPLDS(IREI,1)=1.D0
-              EPLDS(IREI,2)=0.D0
+
+              EPLEI(IREI,IPLS1,1)=1.D0
+              EPLEI(IREI,IPLS1,2)=0.D0
+              EPLEI(IREI,0,1)=1.D0
+              EPLEI(IREI,0,2)=0.D0
+
               GOTO 50
             ENDIF
 52        CONTINUE
@@ -128,14 +132,17 @@ C
 50        CONTINUE
           NTE=NSBOX
           IF (NSTORDR < NRAD) NTE=1
+          KK=0
           IF (NCHARA(IATM).EQ.1) THEN
 c  hydrogenic atoms
 c  default electron impact ionization process for H atoms: kk = -4 
+            KK=-4
             ISTORE=-4
             EELEC=-EIONH
           ELSEIF (NCHARA(IATM).EQ.2) THEN
 c  helium atoms
-c  default electron impact ionization process for He atoms: kk = -11 
+c  default electron impact ionization process for He atoms: kk = -11
+            KK=-11 
             ISTORE=-11
             EELEC=-EIONHE
           ENDIF

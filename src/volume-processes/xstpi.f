@@ -165,6 +165,8 @@ C  SECONDARY INDEX, FOURTH SECONDARY
           ACCMSP=ACCMSP+INUM1*RMASSP(IPP)
           ACCINV=ACCINV+INUM1/RMASSP(IPP)
           ACCINP=ACCINP+INUM1/RMASSP(IPP)
+          EPLPI(IRPI,IPP,1)=RMASSP(IPP)
+          EPLPI(IRPI,IPP,2)=1./RMASSP(IPP)
         END IF
       END DO
  
@@ -195,9 +197,12 @@ C
       ENDDO
       EIOPI(IRPI,0,1)=ACCMSI/ACCMAS
       EIOPI(IRPI,0,2)=ACCINI/ACCINV
- 
-      EPLPI(IRPI,1)=ACCMSP/ACCMAS
-      EPLPI(IRPI,2)=ACCINP/ACCINV
+      DO IPP=1,NPLSI
+        EPLPI(IRPI,IPP,1)=EPLPI(IRPI,IPP,1)/ACCMAS
+        EPLPI(IRPI,IPP,2)=EPLPI(IRPI,IPP,2)/ACCINV
+      ENDDO
+      EPLPI(IRPI,0,1)=ACCMSP/ACCMAS
+      EPLPI(IRPI,0,2)=ACCINP/ACCINV
 C
       CHRDIF=CHRDF0
 
@@ -643,13 +648,13 @@ C  SUBTRACT ONE, BECAUSE INCIDENT BULK IS LOST
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10.OR.EI.EQ.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,1),
-     .                                 ' * E0 + ',EPLPI(IRPI,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,0,1),
+     .                                 ' * E0 + ',EPLPI(IRPI,0,2)*EI
 C  PROBABLY INCORRECT: COM IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
         ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLPI(IRPI,1),
-     .                                 ' * E0 + ',EPLPI(IRPI,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLPI(IRPI,0,1),
+     .                                 ' * E0 + ',EPLPI(IRPI,0,2),
      .                                 ' * EHEAVY '
 C  PROBABLY INCORRECT: COM IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
@@ -664,7 +669,7 @@ C
       IF (P2NPI(IRPI).EQ.0.D0) THEN
         WRITE (iunout,*) 'NONE'
         CALL EIRENE_LEER(1)
-        RETURN
+        GOTO 880
       ENDIF
 C
       IF (PATPI(IRPI,0).GT.0.D0) THEN
@@ -727,8 +732,11 @@ C
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
- 
- 
+
+880   CONTINUE 
+
+      WRITE (IUNOUT,*) 'COLLISION MODEL: '
+
       CALL EIRENE_LEER(1)
       IF (IESTPI(IRPI,1).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
@@ -739,8 +747,11 @@ C
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
+      WRITE (iunout,*) 'PROCESS NO. KK ',NREAPI(IRPI)
       WRITE (IUNOUT,*) 'MODCOL ',MODCOL(4,1,IRPI),MODCOL(4,2,IRPI),
      .                           MODCOL(4,3,IRPI),MODCOL(4,4,IRPI)
+      WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
+     .                  FACRPI(IRPI,1) 
       CALL EIRENE_LEER(1)
       RETURN
 C

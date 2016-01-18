@@ -137,6 +137,8 @@ is exact: $\ln \langle\sigma v E_{elec}\rangle(T) = h_0 +h_1 \ln(T)$ with $h_0 =
 An independently computed H.8 fit using a table from the full H.2 rate fit is still retained in the present HYDHEL file here, (formerly at AMJUEL H.8),
 for backward compatibility
 
+\item{state notation for process 2.3.4b: final state notation wrong}
+now corrected (Sept. 15)
 
 \end{itemize}
 \section*{to be done}
@@ -155,12 +157,12 @@ the new 2.1.8 fits that only two coefficients may be needed. To be checked.
 for the closed form expressions for 2.1.8 and 2.3.13 these rates can be given also in closed form (and are coded in
 the EIRENE default model routines). It might be desirable to add them also as H.8 into the database. Same
 for 2.2.14 (diss. rec of H2+). This latter is already here in HYDHEL (update from July 2015), and EIRENE default was 0.88*Te times rate 2.2.14.
-So the H.8  2.2.14 is approximately, but not exactly, the previous EIRENE default.
+So the H.8  2.2.14 was approximately, but not exactly, the previous EIRENE default.
 Check: can the H.8 fit be derived from the H.2 fit exactly? If yes: then this should become default in EIRENE, rather then 0.88*Te.
-Done:  H.8 follows from H.2 directly if only b0 and b1 coefficients are non-zero, see: AMJUEL. change eirene default to that 2 parameter fit
-from AMJUEL for H.8  2.2.14
-\item{state notation for process 2.3.4b: final state wrong}
-to be corrected
+Done:  H.8 follows from H.2 directly, if only b0 and b1 coefficients are non-zero, see: AMJUEL.
+For 2.2.14: Change EIRENE default (H.2 and H.8) to that 2 parameter fit
+from AMJUEL for H.8
+
 \item{process 2.2.15 is linear in log log scale. Check coefficients, make H.8, set spurious coeffs. to zero}
 \end{itemize}
 \newpage
@@ -1322,7 +1324,7 @@ Reaction 2.3.4a $e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4b $e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11P)$}
+Reaction 2.3.4b $e + He(1s^12s^13S) \rightarrow e + He(1s^12p^11P)$}
 
 
 
@@ -1330,7 +1332,7 @@ Reaction 2.3.4b $e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11P)$}
 
 
 %      *      3           *      1
-%e + He (1s2s| S) T e + He (1s2s| P)
+%e + He (1s2s| S) T e + He (1s2p| P)
 
 
 
@@ -1842,7 +1844,7 @@ Reaction 2.3.10d $e + He(1s^12p^13P) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.12 $e + He(1snl^1{2S+1}L) \rightarrow e + He^+(nl)+e$}
+Reaction 2.3.12 $e + He(1s^1nl^1  \{2S+1\}L) \rightarrow e + He^+(nl)+e$}
 
 
 
@@ -1885,7 +1887,7 @@ Reaction 2.3.12 $e + He(1snl^1{2S+1}L) \rightarrow e + He^+(nl)+e$}
 
 \newpage
 \subsection{
-Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1snl^1{2S+1}L) + h\nu$}
+Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1s^1nl^1  \{2S+1\}L) + hv$}
 
        See text for analytic formulas.
 
@@ -2400,7 +2402,7 @@ Reaction 3.3.7b $   p + He(1s^12p^13P) \rightarrow H(2p) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 4.2.1 $H_2^+(1s\sigma_g;v) + H(1s) \rightarrow H_2^+(2p\sigma_u) + H(1s) \rightarrow H^+ + H + H(1s), (v=0\ldots 9)$}
+Reaction 4.2.1 $H_2^+(v) + H(1s) \rightarrow H_2^+(2p\sigma_u) + H(1s) \rightarrow H^+ + H + H(1s), (v=0\ldots 9)$}
 
 
 
@@ -3501,7 +3503,7 @@ Reaction 2.3.4a $  e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11S)$}
 
 \newpage
 \subsection{
-Reaction 2.3.4b $  e + He(1s^12s^13S) \rightarrow e + He(1s^12s^11P)$}
+Reaction 2.3.4b $  e + He(1s^12s^13S) \rightarrow e + He(1s^12p^11P)$}
 
 
 \begin{small}\begin{verbatim}
@@ -3687,7 +3689,7 @@ Reaction 2.3.10d $ e + He(1s^12p^13P) \rightarrow e + He^+(1s) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.12 $  e + He(1snl^1{2S+1}L) \rightarrow e + He^+(nl) + e$}
+Reaction 2.3.12 $  e + He(1s^1nl^1 \{2S+1\}L) \rightarrow e + He^+(nl) + e$}
 
 
 \begin{small}\begin{verbatim}
@@ -3699,7 +3701,7 @@ Reaction 2.3.12 $  e + He(1snl^1{2S+1}L) \rightarrow e + He^+(nl) + e$}
 
 \newpage
 \subsection{
-Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1snl^1{2S+1}L) + h\nu$}
+Reaction 2.3.13 $  e + He^+(1s) \rightarrow He(1s^1nl^1 \{2S+1\}L) + hv$}
 
        See text for analytic formulas.
 
@@ -3755,9 +3757,6 @@ and then verified by independent integration of cross section with proper low en
 \end{verbatim}\end{small}
 
 \newpage
-
-
-
 
 
 
@@ -4961,7 +4960,7 @@ Reaction 3.3.7b $  p + He(1s^12p^13P) \rightarrow H(2p) + He^+(1s)$}
 
 \newpage
 \subsection{
-Reaction 4.2.1 $H_2^+(1s\sigma_g;v) + H(1s) \rightarrow H_2^+(2p\sigma_u) + H(1s) \rightarrow H^+ + H + H(1s), (v=0\ldots 9)$}
+Reaction 4.2.1 $H_2^+(v) + H(1s) \rightarrow H_2^+(2p\sigma_u) + H(1s) \rightarrow H^+ + H + H(1s), (v=0\ldots 9)$}
 
 
 

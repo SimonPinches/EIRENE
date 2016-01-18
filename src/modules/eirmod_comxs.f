@@ -15,6 +15,7 @@
 !            database option
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
 cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -138,8 +139,8 @@ csw added OTHER (OT) reactions
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLDS(:,:),
-     R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:)
+     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLEI(:,:,:),
+     R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:,:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
@@ -521,12 +522,12 @@ c  secondaries, PI processes
         ALLOCATE (EATPI(NRPI,0:NATM,2))
         ALLOCATE (EMLPI(NRPI,0:NMOL,2))
         ALLOCATE (EIOPI(NRPI,0:NION,2))
-        ALLOCATE (EPLPI(NRPI,2))
+        ALLOCATE (EPLPI(NRPI,0:NPLS,2))
 
         ALLOCATE (EATDS(NRDS,0:NATM,2))
         ALLOCATE (EMLDS(NRDS,0:NMOL,2))
         ALLOCATE (EIODS(NRDS,0:NION,2))
-        ALLOCATE (EPLDS(NRDS,2))
+        ALLOCATE (EPLEI(NRDS,0:NPLS,2))
  
         ALLOCATE (MODCOL(7,0:4,MXCOLLS))
 
@@ -668,16 +669,18 @@ c
       DEALLOCATE (EMLPI)
       DEALLOCATE (EIOPI)
       DEALLOCATE (EPLPI)
+
       DEALLOCATE (EATDS)
       DEALLOCATE (EMLDS)
       DEALLOCATE (EIODS)
-      DEALLOCATE (EPLDS)
+      DEALLOCATE (EPLEI)
  
       DEALLOCATE (MODCOL)
       DEALLOCATE (IESTCX)
       DEALLOCATE (IESTEL)
       DEALLOCATE (IESTPI)
       DEALLOCATE (IESTEI)
+
       DEALLOCATE (NAEII)
       DEALLOCATE (NMDSI)
       DEALLOCATE (NIDSI)
@@ -1098,7 +1101,7 @@ c
         EATDS   = 0._DP
         EMLDS   = 0._DP
         EIODS   = 0._DP
-        EPLDS   = 0._DP
+        EPLEI   = 0._DP
  
         MODCOL  = 0
         IESTCX  = 0
@@ -1192,7 +1195,7 @@ c
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLDS
+     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
  
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1236,7 +1239,7 @@ c
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLDS
+     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
  
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1309,14 +1312,16 @@ c
       CALL FXDRDBL (IUN,EPLCX3,NRCX*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,EPLEL3,NREL*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,EPLOT3,NROT*NSTORDR*NSTORDT)
+
       CALL FXDRDBL (IUN,EATPI,NRPI*(NATM+1)*2)
       CALL FXDRDBL (IUN,EMLPI,NRPI*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIOPI,NRPI*(NION+1)*2)
-      CALL FXDRDBL (IUN,EPLPI,NRPI*2)
+      CALL FXDRDBL (IUN,EPLPI,NRPI*(NPLS+1)*2)
+
       CALL FXDRDBL (IUN,EATDS,NRDS*(NATM+1)*2)
       CALL FXDRDBL (IUN,EMLDS,NRDS*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIODS,NRDS*(NION+1)*2)
-      CALL FXDRDBL (IUN,EPLDS,NRDS*2)
+      CALL FXDRDBL (IUN,EPLEI,NRDS*(NPLS+1)*2)
  
 c
       CALL FXDRINT (IUN,MODCOL ,7*5*MXCOLLS)

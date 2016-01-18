@@ -1,7 +1,7 @@
-c  introduced march 2014. currenty largely identical to ftabpi3
-c  already accommodates H.4 option (two parameter fits vs TII,PLS)
+cdr  introduced march 2014. currenty largely identical to ftabpi3
+c    already accommodates H.4 option (two parameter fits vs TII,PLS)
 
-c  calls of ftabel3 in fpath..: not ready
+cdr  calls of ftabcx3 in fpath..: not ready, only for modcol=1 option
 
 
 
@@ -13,14 +13,13 @@ c         in cell no. K
 c  input via common: 
 c         bulk collision partner: IPLS
 c 
-c  ftabcx3 is currently not called. 
 
-c  soon (first stage):
+cdr(first stage):
 c  FTABCX3 is currently only called in case MODCOL(3,2,IRCX)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.
 c 
 c
-c  hard wired: cut off (density) parameter for fits: 1e8
+cdr  hard wired: cut off (density) parameter for fits: 1e8. TO BE CHECKED WITH XSTCX.F
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -44,6 +43,8 @@ c  hard wired: cut off (density) parameter for fits: 1e8
  
       IPLSTI=MPLSTI(IPLS)
       TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
+
+cdr  :  check these next lines are only for modcol=1 !
 
 c  erate: not needed (only intermediate for H-COL option. Remove ! 
 c  input parameters for rate_coeff: ln(Ti), ln(ne)

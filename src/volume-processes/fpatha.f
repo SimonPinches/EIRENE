@@ -19,7 +19,8 @@ cdr note:       sgnl_poly evaluations are just the 8th order polynom, plus rcmin
 cdr             unless rcmin,rcmax are set (as it is the case currently here), there is no need to call  --> move to in-line 
 cdr 06.08.15 :  arguments added to vecusr
 
-cdr dec. 15:    missing: ftabel3 
+cdr dec. 15:    missing: ftabel3
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
 
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
@@ -110,12 +111,15 @@ C
 C   LOCAL PLASMA PARAMETERS
 C
       DENEL=DEIN(K)
-      PVELQ0=VEL*VEL
- 
+      
       DO 2 IPLS=1,NPLSI
         ZTI(IPLS)=ZT1(IPLS,K)
 2       DENIO(IPLS)=DIIN(IPLS,K)
 C
+C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
+C            PVELQ(IPLS) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES 
+C
+      PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLSV
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
@@ -165,7 +169,7 @@ C
         ESIGEI(IREI,2)=EMLDS(IREI,0,1)*E0+EMLDS(IREI,0,2)*EHEAVY
         ESIGEI(IREI,3)=EIODS(IREI,0,1)*E0+EIODS(IREI,0,2)*EHEAVY
 
-        ESIGEI(IREI,4)=EPLDS(IREI,  1)*E0+EPLDS(IREI,  2)*EHEAVY
+        ESIGEI(IREI,4)=EPLEI(IREI,0,1)*E0+EPLEI(IREI,0,2)*EHEAVY
 C
         SIGMAX=MAX(SIGMAX,SIGVEI(IREI))
         SIGEIT=SIGEIT+SIGVEI(IREI)
@@ -244,7 +248,7 @@ C
         ESIGPI(IRPI,2)=EMLPI(IRPI,0,1)*E0+EMLPI(IRPI,0,2)*EHEAVY
         ESIGPI(IRPI,3)=EIOPI(IRPI,0,1)*E0+EIOPI(IRPI,0,2)*EHEAVY
 
-        ESIGPI(IRPI,4)=EPLPI(IRPI,  1)*E0+EPLPI(IRPI,  2)*EHEAVY
+        ESIGPI(IRPI,4)=EPLPI(IRPI,0,1)*E0+EPLPI(IRPI,0,2)*EHEAVY
 C
         SIGMAX=MAX(SIGMAX,SIGVPI(IRPI))
         SIGPIT=SIGPIT+SIGVPI(IRPI)
@@ -259,7 +263,7 @@ cdr     END IF
 cdr     CFLAG(4,1)=2
 c  cflag (4,...) sollte cflag4(irpi,...) werden.
 c  tentatively:
-        cflag(4,1)=1
+        CFLAG(4,1)=1
 c
 36    CONTINUE
 C
@@ -285,21 +289,11 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
             SIGVCX(IRCX)=TABCX3(IRCX,K,1)
           ELSE
             SIGVCX(IRCX)=EIRENE_FTABCX3(IRCX,K)
-CDR  SIGVCX(IRCX)=FTABCX3 : NOT READY.  test !!
-cdr         KK=NREACX(IRCX)
-cdr         TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-cdr         TBCX = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
-cdr  .             DIIN(IPLS,K)
-cdr         TEST=TBCX
-cdr         if (tEST.ne.sigvcx(ircx)) then
-cdr           write (iunout,*) 'fpatha: ircx,tEST,sigvcx ',
-cdr  .             ircx,tEST,sigvcx(ircx)
-cdr           CALL EIRENE_EXIT_OWN(1)
-cdr         ENDIF
           END IF
+
         ELSEIF (MODCOL(3,2,IRCX).EQ.2) THEN
 C  MODEL 2:
-C  BEAM - MAXWELLIAN RATE
+C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
 C     HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
@@ -323,6 +317,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
             ELSE
 ! CALCULATE RATE-COEFFICIENT
+CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               KK=NREACX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
@@ -436,6 +431,7 @@ C  MAXWELLIAN RATE, IGNORE ATOM VELOCITY
           IF (NSTORDR >= NRAD) THEN
             SIGVEL(IREL)=TABEL3(IREL,K,1)
           ELSE
+cdr  here should be call to ftabel3,  to be done
             KK=NREAEL(IREL)
             TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
             TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
