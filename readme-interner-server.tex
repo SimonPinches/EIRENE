@@ -1,0 +1,45 @@
+mache:   git remote -v update    liefert historie, und die hash id
+
+30.7.15:  bei mir: e522ec6,  und im repository: fff4888
+
+(letztere (zufaellig) identisch mit externem master hash, an diesem Tag. also bei 
+repositories waren identisch am 30.7.2015 
+
+synchronisieren mit: git pull origin master  (hier: den master branch, hier gibt es noch andere auf dem repository)
+
+ src/diagno/linint.f                                   |  6 +++---
+ src/geometry/time-routines/timea.f                    | 14 +++++++-------
+ src/geometry/time-routines/timep.f                    | 16 ++++++++--------
+ src/geometry/time-routines/timer.f                    | 31 +++++++++++++++++++++++--------
+ src/geometry/time-routines/timet.f                    |  4 ++--
+ src/geometry/trc-time-routines/timer.f                | 24 +++++++++++++++---------
+ src/interfaces/couple_SOLPS-ITER/infcop.f             | 40 ++++++++++++++++++++++------------------
+ src/interfaces/couple_Tria/infcop.f                   | 36 ++++++++++++++++++------------------
+ src/main-routines/amdiag.f                            |  7 +++++--
+ src/main-routines/mcarlo.f                            | 20 ++++++++++++--------
+ src/output/outpla.f                                   |  2 +-
+ src/particle-tracing/collide.f                        | 10 +++++-----
+ src/particle-tracing/escape.f                         | 10 +++++++---
+ src/particle-tracing/samsrf.f                         | 16 +++++++++++-----
+ src/particle-tracing/samvol.f                         |  2 +-
+ src/particle-tracing/stdcol.f                         | 59 ++++++++++++++++++++++++++++++++++++-----------------------
+ src/plot_dummy/chctrc.f                               | 87 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------
+ src/plotting/veclne.f                                 |  4 +++-
+ src/user-routines/user_default/vecusr.f               | 16 +++++++++++-----
+ src/user-routines/user_generalized_interface/vecusr.f | 16 +++++++++++-----
+ src/user-routines/user_iter/vecusr.f                  |  9 +++++++--
+ 21 files changed, 277 insertions(+), 152 deletions(-)
+ mode change 100644 => 100755 src/particle-tracing/stdcol.f
+
+
+jetzt versuche, den branch traceionfix auch zu holen, zum vergleich der diversen folion, escape etc aenderungen
+zwischen Michael und mir.
+
+git checkout -b traceionfix origin/traceionfix
+
+
+git checkout branchname  branch wechseln, hier jetzt z.b. master und traceionfix verfuegbar.
+
+................................................................
+
+8. Januar 2016:  eapl branch. vergleiche mit meinem eapl, syncronisieren, dann push.

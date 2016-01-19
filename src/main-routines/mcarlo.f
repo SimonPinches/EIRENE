@@ -29,6 +29,8 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 !dr 10.05.10: LOCAT0 might also turn off a stratum. Then: skip this is MCARLO, added after call to LOCAT0
 cdr 22.09.14: upfcop only to be called in coupled mode: nmode.gt.0
 cdr 22.09.14: cpu time output removed. To be collected and printout made conditional
+cdr dec. 15 : 'upfcop.f' now 'updlin.f', moved from couple specific part to main eirene code,
+cdr           under scoring/updlin.f.
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -273,6 +275,7 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
       XPT1=0.
       XFL1=0.
       nsteff=0
+      xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         if (npts(istra) .gt. 0) then
 CVKMPI          XPT1=XPT1+NPTS(ISTRA)
@@ -729,26 +732,26 @@ C
             ENDIF
           ENDIF
 
-!pb 16012013
-!pb  update couple tally after finishing trajectory
-          if (nmode.gt.0) call eirene_upfcop  !cdr  currently upfcop is hard wired for B2 coupling
-cdr       upfcop should be generalized for "tallies per trajectory" from "tallies per event"
-C
+cdr  dec. 15:
+cdr  update linear algebraic combinations of tallies after finishing trajectory
+cdr  this enables also statistical variances for those tallies, avoiding covariance estimators.
+          if (nmode.gt.0) call eirene_updlin  !cdr  
+
 C   MEAN SQUARE
           IF (NSIGI.GT.0) CALL EIRENE_STATS1
-     .  (NSBOX_TAL,NR1TAL,NP2TAL,
+     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
           IF (NSIGI_BGK.GT.0) CALL EIRENE_STATS1_BGK
-     .  (NSBOX_TAL,NR1TAL,NP2TAL,
+     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
           IF (NSIGI_COP.GT.0) CALL EIRENE_STATS1_COP
-     .  (NSBOX_TAL,NR1TAL,NP2TAL,
+     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
           IF (NSIGI_SPC.GT.0) CALL EIRENE_STATS1_SPC
-     .  (NSBOX_TAL,NR1TAL,NP2TAL,
+     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
 C
@@ -1302,8 +1305,8 @@ C
 C END SEQUENTIAL REGION
       ENDIF
 
-!pb 30012013
-      if (nmode.gt.0) call eirene_reset_upfcop  !cdr  see above. upfcop contains hard wired features for coupling
+cdr  dec. 15
+      if (nmode.gt.0) call eirene_reset_updlin  !cdr  see above.updlin contains linear combination of tallies
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 

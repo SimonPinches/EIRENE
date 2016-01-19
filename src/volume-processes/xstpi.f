@@ -48,9 +48,9 @@ C
 
       REAL(DP), INTENT(IN) :: RMASS, EBULK, EHEAVY, EELEC, FACTKK,CHRDF0
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
-      INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD,IFRTH,
+      INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
-      REAL(DP) :: CF(9),CFF(9)
+      REAL(DP) :: CF(9)
       REAL(DP) :: ADD,ADDL, RMTEST, RMBULK, FCTKKL, P2N, TMASS, 
      .            ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, EIRENE_RATE_COEFF, ACCMAS, XLFTMAS,
@@ -89,7 +89,7 @@ C ACCUMULATED MASS OF SECONDARIES: ACCMAS (AMU)
       ACCINM=0.D0
       ACCINI=0.D0
       ACCINP=0.D0
- 
+C
       DO ICOUNT=1,4
         IF (ICOUNT == 1) THEN
 C  SECONDARY INDEX, FIRST SECONDARY
@@ -103,13 +103,13 @@ C  SECONDARY INDEX, SECOND SECONDARY
           INUM1=EIRENE_IDEZ(ISCND,2,3)
           ISPZ1=EIRENE_IDEZ(ISCND,3,3)
         ELSE IF (ICOUNT == 3) THEN
-C  SECONDARY INDEX, SECOND SECONDARY
+C  SECONDARY INDEX, THIRD SECONDARY
           IF (ITHRD == 0) EXIT
           ITYP1=EIRENE_IDEZ(ITHRD,1,3)
           INUM1=EIRENE_IDEZ(ITHRD,2,3)
           ISPZ1=EIRENE_IDEZ(ITHRD,3,3)
         ELSE IF (ICOUNT == 4) THEN
-C  SECONDARY INDEX, SECOND SECONDARY
+C  SECONDARY INDEX, FOURTH SECONDARY
           IF (IFRTH == 0) EXIT
           ITYP1=EIRENE_IDEZ(IFRTH,1,3)
           INUM1=EIRENE_IDEZ(IFRTH,2,3)
@@ -165,6 +165,8 @@ C  SECONDARY INDEX, SECOND SECONDARY
           ACCMSP=ACCMSP+INUM1*RMASSP(IPP)
           ACCINV=ACCINV+INUM1/RMASSP(IPP)
           ACCINP=ACCINP+INUM1/RMASSP(IPP)
+          EPLPI(IRPI,IPP,1)=RMASSP(IPP)
+          EPLPI(IRPI,IPP,2)=1./RMASSP(IPP)
         END IF
       END DO
  
@@ -195,9 +197,12 @@ C
       ENDDO
       EIOPI(IRPI,0,1)=ACCMSI/ACCMAS
       EIOPI(IRPI,0,2)=ACCINI/ACCINV
- 
-      EPLPI(IRPI,1)=ACCMSP/ACCMAS
-      EPLPI(IRPI,2)=ACCINP/ACCINV
+      DO IPP=1,NPLSI
+        EPLPI(IRPI,IPP,1)=EPLPI(IRPI,IPP,1)/ACCMAS
+        EPLPI(IRPI,IPP,2)=EPLPI(IRPI,IPP,2)/ACCINV
+      ENDDO
+      EPLPI(IRPI,0,1)=ACCMSP/ACCMAS
+      EPLPI(IRPI,0,2)=ACCINP/ACCINV
 C
       CHRDIF=CHRDF0
 
@@ -402,8 +407,8 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CFF)
-                EPLPI3(IRPI,J,1:NEND) = CFF(1:NEND)
+                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CF)
+                EPLPI3(IRPI,J,1:NEND) = CF(1:NEND)
                 EPLPI3(IRPI,J,1) = EPLPI3(IRPI,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
@@ -464,7 +469,7 @@ C  4.3A)  RATE = CONST.*RATECOEFF.
 C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.WEIGHTED RATE(TE)
+C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.WEIGHTED RATE(TI)
         KREAD=EHEAVY
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.EQ.1) THEN
@@ -481,7 +486,7 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.WEIGHTED RATE(TE)
             NRHVPI(IRPI)=KREAD
           END IF
         ELSE
-          WRITE (iunout,*) 'INVALID OPTION IN XSTPI: MODC=EFLAG=3 '
+          WRITE (iunout,*) 'INVALID OPTION IN XSTPI: MODC=EFLAG '
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         FACRPI(IRPI,1)=FACTKK
@@ -503,6 +508,7 @@ C
         WRITE (iunout,*) 'IRPI = ',IRPI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTPI(IRPI,1)=0
+        CALL EIRENE_LEER(1)
       ENDIF
       IF (IESTPI(IRPI,2).NE.0) THEN
         CALL EIRENE_LEER(1)
@@ -511,7 +517,9 @@ C
         WRITE (iunout,*) 'IRPI = ',IRPI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTEI(IRPI,2)=0
+        CALL EIRENE_LEER(1)
       ENDIF
+
       IF (IESTPI(IRPI,3).NE.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -557,11 +565,11 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
      +                      PPLPI(IRPI,IPP)
 540   CONTINUE
 C
-C
+C  TOTAL NUMBER OF SECONDARIES
       P2NPI(IRPI)=PATPI(IRPI,0)+PMLPI(IRPI,0)+
      .            PIOPI(IRPI,0)
  
- 
+C  NORMALIZE SECONDARY SPECIES DISTRIBUTION P2NP
       P2N=P2NP(IRPI,NSPAMI)
       DO 550 ISPZ1=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
@@ -611,8 +619,8 @@ C  ARE SECONDARY ELECTRONS INVOLVED?
           WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',
      .                   PELPI(IRPI),EI,EA
         ENDIF
-cdr     write (iunout,*) ' imin = ', imin, ' imax = ',imax
       ENDIF
+c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
       EI=1.D30
       EA=-1.D30
@@ -640,13 +648,13 @@ C  SUBTRACT ONE, BECAUSE INCIDENT BULK IS LOST
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10.OR.EI.EQ.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,1),
-     .                                 ' * E0 + ',EPLPI(IRPI,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,0,1),
+     .                                 ' * E0 + ',EPLPI(IRPI,0,2)*EI
 C  PROBABLY INCORRECT: COM IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
         ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLPI(IRPI,1),
-     .                                 ' * E0 + ',EPLPI(IRPI,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLPI(IRPI,0,1),
+     .                                 ' * E0 + ',EPLPI(IRPI,0,2),
      .                                 ' * EHEAVY '
 C  PROBABLY INCORRECT: COM IS NOT EQ. E0 IN CASE OF PI, ONLY IN CASE OF EI
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
@@ -661,7 +669,7 @@ C
       IF (P2NPI(IRPI).EQ.0.D0) THEN
         WRITE (iunout,*) 'NONE'
         CALL EIRENE_LEER(1)
-        RETURN
+        GOTO 880
       ENDIF
 C
       IF (PATPI(IRPI,0).GT.0.D0) THEN
@@ -724,8 +732,11 @@ C
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
- 
- 
+
+880   CONTINUE 
+
+      WRITE (IUNOUT,*) 'COLLISION MODEL: '
+
       CALL EIRENE_LEER(1)
       IF (IESTPI(IRPI,1).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
@@ -734,8 +745,18 @@ C
       IF (IESTPI(IRPI,3).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
       CALL EIRENE_LEER(1)
- 
+
+      WRITE (IUNOUT,*) 'COLLISION MODEL: '
+      WRITE (iunout,*) 'PROCESS NO. KK ',NREAPI(IRPI)
+      WRITE (IUNOUT,*) 'MODCOL ',MODCOL(4,1,IRPI),MODCOL(4,2,IRPI),
+     .                           MODCOL(4,3,IRPI),MODCOL(4,4,IRPI)
+      WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
+     .                  FACRPI(IRPI,1) 
+      CALL EIRENE_LEER(1)
       RETURN
+C
+C
+C-----------------------------------------------------------------------
 C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '

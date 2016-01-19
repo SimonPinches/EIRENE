@@ -1,13 +1,15 @@
+cdr  oct. 2015:
+cdr  k=-1:  cx  H  + p  
+cdr  k=-11  ei  He + e   (was formerly also k=-1)
+
       subroutine EIRENE_setup_default_reactions
 c  fill reacdat(k)%... with default reaction data, k < 0.
-c  first set default rate coefficients k=-1,     ,-4,-5,...-10  (-2 and -3 are not used)
+c  first set default rate coefficients K= -4,-5,...-11  (-1, -2 and -3 are not used)
 c                                                  (extrapolation flags: 0)                     
 c  and
-c  then  set default cross sections    K=-1,-2,-3  (extrapolation flags: 5)
+c  then  set default cross sections    K= -1,-2,-3  (extrapolation flags: 5)
 c
-c  warning !!!!
-c  possible conflict:   K=-1 is used   for He electron impact ionisation rate coeff.
-c                             and also for H +H+ resonant CX cross section 
+
 
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -18,31 +20,11 @@ c                             and also for H +H+ resonant CX cross section
       integer :: ir
  
  
-!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS, HERE: K= -1,-4,-5,...-10  
-!                                              (K=-2,-3: currently not used)
+!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS, HERE: K= -4,-5,...-11  
+!                                              (K=-1,-2,-3: currently not used)
  
-C
-C K=-1:   E + HE --> 2E + HE+
-C  RATE COEFFICIENT, JANEV, 2.3.9
-      IR = -1
-      ALLOCATE(REACDAT(IR)%RTC)
-      ALLOCATE(REACDAT(IR)%RTC%POLY)
-      ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
-      NULLIFY (REACDAT(IR)%RTC%ADAS)
-      NULLIFY (REACDAT(IR)%RTC%LINE)
-      NULLIFY (REACDAT(IR)%RTC%HYD)
-      REACDAT(IR)%LRTC = .TRUE.
-      REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
-      REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
-     .  (/-4.409864886561d+01, 2.391596563469d+01,-1.075323019821d+01,
-     .     3.058038757198d+00,-5.685118909884d-01, 6.795391233790d-02,
-     .    -5.009056101857d-03, 2.067236157507d-04,-3.649161410833d-06/)
- 
+
+C K=-1:   FREE 
 C K=-2:   FREE
 C K=-3:   FREE
  
@@ -106,7 +88,6 @@ C  RATE COEFFICIENT, JANEV, 2.2.10
       REACDAT(IR)%RTC%POLY%FPARM = 0._DP
       REACDAT(IR)%RTC%POLY%IFEXMN = 0
       REACDAT(IR)%RTC%POLY%IFEXMX = 0
-!pb   REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.834597006782D+01,  1.426322356722D+01, -5.826468569506D+00,
@@ -209,7 +190,7 @@ cdr  the resulting mean electron energy loss is then exactly 3/2+b1=8.9643550043
 
 C K=-11:   E + HE --> 2E + HE+
 C  RATE COEFFICIENT, JANEV, 2.3.9
-      IR = -1
+      IR = -11
       ALLOCATE(REACDAT(IR)%RTC)
       ALLOCATE(REACDAT(IR)%RTC%POLY)
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
@@ -226,8 +207,7 @@ C  RATE COEFFICIENT, JANEV, 2.3.9
      .    -5.009056101857d-03, 2.067236157507d-04,-3.649161410833d-06/) 
 
 C
- 
- 
+
  
  
 !  SPECIFY DEFAULT MODEL FOR CROSS SECTION
@@ -251,17 +231,17 @@ C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
      .    9.205482406462D-03,  2.400266568315D-03, -1.927122311323D-03,
      .    3.654750340106D-04, -2.788866460622D-05,  7.422296363524D-07/)
       IFTFLG(IR,1) = 0
-      REACDAT(IR)%CRS%POLY%RCMN = -2.3025851D+00
+      REACDAT(IR)%CRS%POLY%RCMN = -2.3025851D+00   ! ELABMIN=0.1
       REACDAT(IR)%CRS%POLY%RCMX = HUGE(1._DP)
       REACDAT(IR)%CRS%POLY%FPARM(1) = -3.2945896D+01
-      REACDAT(IR)%CRS%POLY%FPARM(2) = -1.713112D-01
+      REACDAT(IR)%CRS%POLY%FPARM(2) = -1.7131120D-01
       REACDAT(IR)%CRS%POLY%FPARM(3) = 0._DP
 C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
       REACDAT(IR)%CRS%POLY%IFEXMN = 5
       REACDAT(IR)%CRS%POLY%IFEXMX = 5
  
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 3.1.8
+C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 5.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
       IR = -2
@@ -288,7 +268,7 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
       REACDAT(IR)%CRS%POLY%IFEXMX = 5
  
 C
-C  K=-3:  He + He++ --> He++ + He   CROSS SECTION, JANEV, 3.1.8
+C  K=-3:  He + He++ --> He++ + He   CROSS SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
       IR = -3

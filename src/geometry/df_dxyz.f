@@ -1,13 +1,21 @@
+cdr: nov 2013: comments added
+cdr: nov 2015:  further comments
+
       subroutine  eirene_df_dxyz (fecken, icell, x, y, z,
      .                           dfdx, dfdy, dfdz)
-cdr: nov 2013: comments added
 
 
-c  return partical derivates of function f, at point x,y,z, which is known to be in grid cell icell
+c  return partial derivates of function f, at internal point x,y,z, 
+c         which is known to be located in grid cell icell
+
 c  input:  fecken: values of function f on cell vertices
+c          fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
 c
 c  for speed-up, and overhead reduction:
 c  fill array 'visited' to indicate, which cells have been visitied in earlier calls
+c  currently: array 'visited' is only set for levgeo=4, 
+C  to be done for levgeo=5
+C  TO BE DONE: deallocate 'visited(icell)' at the end of a run.
 
 
 c  not done here: check if x,y,z really inside cell icell ?
@@ -21,6 +29,7 @@ c  to be done:    range test for local coordinates r,s,t,u
       use eirmod_cgeom
       use eirmod_clogau
       use eirmod_ccona
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       implicit none
 
@@ -36,11 +45,12 @@ c  to be done:    range test for local coordinates r,s,t,u
       real(dp) :: a(4,4), ad(4,4), am1(4,4), e(4,4), jt(2,2), jmt(2,2),
      .            dndr(4), dnds(4), j(2,2), jm1(2,2)
       integer :: itri, itet, ir, ip, it, ia, ib
+
+      logical, allocatable, save :: visited(:)
       real(dp), allocatable, save :: x32(:), x13(:), x21(:), 
      .                               y23(:), y31(:), y12(:), twoai(:)
       
       integer, save :: icount=0
-      logical, allocatable, save :: visited(:)
       
       real(dp) :: dummy
 
@@ -161,12 +171,14 @@ c  precompute some parameters in cell icell, unless done so on earlier call
           allocate (y23(0:nrad))
           allocate (y31(0:nrad))
           allocate (y12(0:nrad))
+
           allocate (twoai(0:nrad))
           allocate (visited(0:nrad))
           visited = .false.
         end if
 
         if (.not.visited(icell)) then
+c  pre-compute some variables per cell (which are independent of point x,y,z)
           x1=xtrian(necke(1,icell)) 
           x2=xtrian(necke(2,icell)) 
           x3=xtrian(necke(3,icell)) 
@@ -206,6 +218,8 @@ cdr     end if
 c  tetrahedons, 3d grid.
 
       else if (levgeo == 5) then
+
+c  setting of array 'visited(icell)':  to be done
 
         x1=xtetra(nteck(1,icell))
         x2=xtetra(nteck(2,icell))
@@ -261,9 +275,9 @@ c  tetrahedons, 3d grid.
      .         f3*am1(3,4) + f4*am1(4,4)
 
       else
-        write (6,*) ' levgeo = ',levgeo,' to be written in',
-     .              ' subroutine derivative '
-!pb         write (6,*) ' calculation abandonned '
+        write (iunout,*) ' levgeo = ',levgeo,' to be written in',
+     .              ' subroutine derivative: df_dxyz '
+!pb         write (iunout,*) ' calculation abandonned '
 !pb         call eirene_exit_own(1)
         dfdx = 0._dp
         dfdy = 0._dp

@@ -5,7 +5,10 @@ C            and: return new velocity vector in full cartesian coord.
 C               fetch new BVEC at point of collision
 C  mai 10:   flag ind:  if ind=2, only FP collision, but no push to
 C                               new position.
-c  july 15:  set E0PAR,  (was missing). 
+c  july 15:  set E0PAR,  (was missing).
+cdr nov. 15:  multiple bulk ion species, new array fnuiar(ipl)
+cdr           to be done:  proper definition of eipl, and e0new, in cases
+cdr                        of multiple background ion species 
 C
       SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
 C
@@ -54,8 +57,8 @@ C
       IMPLICIT NONE
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
       REAL(DP), EXTERNAL :: RANF_EIRENE
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
@@ -121,20 +124,32 @@ C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
 C  PARALLEL DISTANCE ZT (CM)
 C  ENERGY RELAXATION CONSTANT TAUE
 C
+cdr to be done: proper new energy, according to weighting by fnuiar(ipl) 
+cdr relaxation towards a weighted mean background energy
+cdr currently: arbitrary 1.5*Tiin(1,...)
         E0NEW=E0OLD*EXP(-DUR/TAUE)+1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
         VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
-        EIPL(NCELLT)=EIPL(NCELLT)-WEIGHT*(E0NEW-E0OLD)
+cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
+cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
+cdr  temprature(ipls), even different sign.
+cdr  
+        EWG = WEIGHT*(E0NEW-E0OLD)
+        FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
+        DO IPL = 1, NPLSI
+          EIPL(NCELLT)=EIPL(NCELLT)-EWG*FNUIAR(IPL)/FNUI
+        END DO
 C
 
         FAC=SQRT(E0NEW/E0OLD)
         VELPAR=VELPAR*FAC
-        VELPER=VELPER*FAC 
-        E0PAR=E0PAR*FAC*FAC     
+        VELPER=VELPER*FAC
+        E0PAR=E0PAR*FAC*FAC
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
+c  gets new B-field
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 
 C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?

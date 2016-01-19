@@ -18,6 +18,8 @@ C  oct. 14: some preliminary options for correlation sampling removed,
 C           back to development branch
 c  may  15: argument in first call to vecusr: ipls, rather then iplsv, now everywhere
 c  aug. 15: arguments in vecusr added: ncell, x0, y0, z0
+C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTION OPTION
+CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
 C
       SUBROUTINE EIRENE_SAMSRF
 C
@@ -104,6 +106,10 @@ C
 C
         ISOR=SORLIM(ISRFS,ISTRA)
         ISORFL=EIRENE_IDEZ(INT(SORIFL(ISRFS,ISTRA)),4,4)
+c
+c  number of surface for current surface source segment
+        INDSRF=INSOR(ISRFS,ISTRA)
+        IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
 C
         IF (SORLIM(ISRFS,ISTRA).GT.0.AND.INDIM(ISRFS,ISTRA).EQ.1.) THEN
 c  source is on radial (x-) grid surface x= const. r= const, etc...
@@ -188,7 +194,7 @@ C  AT SOME GIVEN TOROIDAL (Z) POSITION IT
 C  SCALE FLUX DENSITY WITH A TOROIDAL LENGTH, I.E.
 C  WITH: DELTA-Z = LENGTH IN TOROIDAL OR Z-DIRECTION: EITHER "ZDF" OR "2 PI R"
 
-!  INDSRF IS THE SURFACE NUMBER OF THIS SOURCE. 
+!  INDSRF IS THE SURFACE NUMBER OF THIS SURFACE SOURCE SEGMENT. 
 !         IT CAN BE EITHER AN ADDITIONAL SURFACE (1,...NLIM)
 !         OR A NON-DEFAULT STANDARD SURFACE (THEN  NLIM+1...NLIM+NSTS)
  

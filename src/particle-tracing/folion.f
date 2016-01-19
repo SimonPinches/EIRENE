@@ -32,6 +32,10 @@ c               also for proper printout from chctrc for trace ions.
 c   
 c  njump=3, for internal grid surface und timusr. reset time=0
 c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
+cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
+cdr           also: manual. to be done: remove static loop from folneut and folion.
+c  nov. 2015:  fnui collision frequency: retain individual frequencies, for
+c              all background species: fnuiar(ipls)
 
 
 C  .......................................................................................
@@ -121,9 +125,9 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD),
      .            BVEC_1(3), VVEC(3)
-      REAL(DP) :: GYRO, COSIN, XLI, YLI, ZLI, FNUI, DIST,
+      REAL(DP) :: GYRO, COSIN, XLI, YLI, ZLI, DIST,
      .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
-
+     .          FNUI, 
      .          VELXS, VELYS, VELZS, VELS,
      .          PUX, PUY, SG,
      .          VCOS, 
@@ -140,22 +144,18 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
       LOGICAL :: LCNDEXP
 
-C
-C  NO CONDITIONAL EXPECTATION ESTIMATORS FOR TEST IONS
-C
 
+c  no conditional expectation estimators for test ions
 
+c  all cell indices must be known at this point
+c  tentatively assume: a next generation particle will be born
 
-C
-C  ALL CELL INDICES MUST BE KNOWN AT THIS POINT
-C  TENTATIVELY ASSUME: A NEXT GENERATION PARTICLE WILL BE BORN
-C
-C  IC_NEUT, IC_ION: COUNTER FOR GENERATIONS WITHIN STATIC LOOP
+c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_ION=IC_NEUT
       LCART=.TRUE.
 
 100   LGPART=.TRUE.
-C  FULL CARTESIAN VELOCITY VECTOR VEL,VELX,VELY,VELZ AT THIS POINT
+c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
       IF (.NOT.LCART) GOTO 9921
       IC_ION=IC_ION+1
       XGENER=0.D0
@@ -176,10 +176,10 @@ C
       IF (NCELL.GT.NSBOX.OR.NCELL.LT.1) GOTO 991
 
 
-C  FIND DIRECTION PARALLEL AND PERPENDICULAR TO B-FIELD, AND VELOCITY COMPONENTS
-C  I.E. CONVERT CARTESIAN VELOCITY UNIT VECTOR VELX,VELY,VELX INTO
-C       PARALLEL AND PERPENDICULAR UNIT VELOCITY COMPONENTES  VELPAR
-C  FIND B-FIELD IN CELL NCELL
+c  find direction parallel and perpendicular to B-field, and velocity components
+c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
+c  parallel and perpendicular unit velocity componentes VELPAR
+c  find B-field in cell NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
 1003  CONTINUE
@@ -189,32 +189,37 @@ C  FIND B-FIELD IN CELL NCELL
       VELS=VEL
 
 C  SIGPAR: SIGN OF PARALLEL VELOCITY WITH RESPECT TO B
-      VCOS=VELX*BBX+VELY*BBY+VELZ*BBZ
+c  calculating the angle between full velocity and B-field
+c  BBX, BBY, BBZ are normalized!
+      VCOS = VELX*BBX + VELY*BBY + VELZ*BBZ
       IF (ABS(VCOS).LT.EPS30) GOTO 992
       SIGPAR=SIGN(1._DP,VCOS)
       VELPAR=ABS(VEL*VCOS)
       VELPER=SQRT(MAX(0._DP,VEL**2 - VELPAR**2))
-C  VELOCITY WITH RESPECT TO B-FIELD IS NOW DEFINED:
-C  VELPAR: PARALLEL VELOCITY, ABSOLUTE VALUE
-C  VELPER: PERPENDICULAR VELOCITY, ALWAYS NON-NEGATIVE
-C  SIGPAR: SIGN OF PARALLEL VELOCITY WITH RESPECT TO B
-C
+c  VELOCITY WITH RESPECT TO B-FIELD IS NOW DEFINED:
+c  VELPAR: full parallel velocity, absolute value
+c  VELPER: full perpendicular velocity, always non-negative
+c  SIGPAR: sign of parallel velocity with respect to B
+
 C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 
-C  APPROXIMATION A)
-C  USE B-FIELD LINE AS TRAJECTORY
+c  APPROXIMATION A)
+c  use B-field line as trajectory
+c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
+c  in Cartesian coordinates - absolute value is not correct!!!
       VLXPAR=SIGPAR*BBX
       VLYPAR=SIGPAR*BBY
       VLZPAR=SIGPAR*BBZ
-C  VL_PAR: PARALLEL UNIT SPEED VECTOR, VL_PAR=SIG*B
-C     VL_PAR=(/VLXPAR,VLYPAR,VLZPAR/)
-C
-C  SET ION ENERGY = PARALLEL ENERGY OF THE IONIZED TEST PARTICLE
+c  VL_PAR: parallel unit speed vector, VL_PAR = SIG*B
+c  VL_PAR = (/ VLXPAR, VLYPAR, VLZPAR /)
+
+c  set ion energy = parallel energy of the ionized test particle
+c  
       E0PAR=CVRSSI(IION)*VELPAR*VELPAR
 C
 1004  CONTINUE
-C
-C  FOLLOW MOTION OF TEST ION OR "STATIC APPROXIMATION"?
+
+c  follow motion of test ion or "static approximation"?
       IF (NFOLI(IION).EQ.-1.AND.IFPATH.EQ.1) GOTO 1001 ! go to static loop
 C
 C  the particle may be sitting exactly on a surface (nlsrf...=.true.).
@@ -231,13 +236,13 @@ c  using the reduced (guiding centre) velocity to find orientation
 C  relative to surface, and possibly correct side of surface, i.e. cell
 c  number
  
- 
+
       IF (NLSRFX) THEN
  
-C  PARTICLE IS EXACTLY ON ONE OF THE RADIAL GRID SURFACES (MRSURF)
-C  RADIAL CELL NO. NRCELL MAY BE WRONG
-C  CHECK ORIENTATION OF PARALLEL MOTION RELATIV TO RADIDAL COORDINATE
-C
+c  particle is exactly on one of the radial grid surfaces (MRSURF)
+c  radial cell no. NRCELL may be wrong
+c  check orientation of parallel motion relativ to radidal coordinate
+
         NRCELL_OLD=NRCELL
         IF (LEVGEO.EQ.1) THEN
           SG=SIGN(1._DP,VLXPAR)
@@ -309,7 +314,7 @@ C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.GT.0) THEN  !  SG IS GT EPS6
+          ELSEIF (SG.GT.0.0_DP) THEN  !  SG IS GT EPS6
             NTEST=NCHBAR(IPOLG,MRSURF)
             IF (NTEST.EQ.0) THEN
 C  NO NEIGHBOR. PUSH BACK INTO OLD CELL.
@@ -327,7 +332,7 @@ c  neighbor found. continue in neighbor cell.
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.LT.0) THEN ! SG IS LT.- EPS6
+          ELSEIF (SG.LT.0.0_DP) THEN ! SG IS LT.- EPS6
 C  CONTINUE FLIGHT IN ORIGINAL CELL.
 C  NOTHING TO BE DONE
           ENDIF
@@ -419,12 +424,14 @@ C  NLTRZ AND NLTRT OPTION
         ENDIF
 
       ENDIF
-C
-C  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
-C
-C  AT THIS POINT: V_PARALLEL, V_PERP KNOWN, 
-C                 GYROPHASE: TO BE SAMPLED, IF NEEDED
-C
+
+c***********************************************************************
+c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
+c***********************************************************************
+
+c  at this point: V_PARALLEL, V_PERP known, 
+c                 gyrophase: to be sampled, if needed
+
       GOTO 1002
 C
 1001  CONTINUE
@@ -587,11 +594,11 @@ C**********************************************************************
  
       IC_ION=0
       IC_NEUT=0
-C
-C  PARTICLE IN VOLUME OR ON SURFACE 
-C
-C  EACH TEST ION TRACK STARTS AT THIS POINT, IC_ION=0 HERE
-C
+
+c  particle in volume or on surface 
+
+c  each test ion track starts at this point, IC_ION=0 here
+
 101   CONTINUE
 C     IF (ITYP.EQ.3) THEN
         LOGION(IION,ISTRA)=.TRUE.
@@ -681,8 +688,11 @@ C     LATER: VELPAR --> VEL_GC
         ENDIF
       ENDIF
 C
-C FNUI: COLLISION FREQUENCY WITH BACKGROUND IONS.
-      FNUI=1.D-30
+C FNUI: collision frequency with background ions.
+
+      FNUI   = 1.D-30
+
+
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
@@ -700,8 +710,13 @@ ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
-          IF (.NOT.LGVAC(NCELL,IPL))
-     .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+!PB       IF (.NOT.LGVAC(NCELL,IPL))
+!PB  .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+          IF (.NOT.LGVAC(NCELL,IPL)) THEN
+            FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+            FNUI=FNUI+FNUIAR(IPL)
+          END IF
+
         ENDDO
       ENDIF
 C TAUE: RELAXATION TIME
@@ -709,8 +724,8 @@ C TAUE: RELAXATION TIME
 C STEPSIZE=0.1*VEL_PARALLEL*TAUE, I.E. 10 COULOMB COLLISIONS PER RELAX.TIME
 C TF: DISTANCE UNTIL NEXT COULOMB COLLISION
 C DELFAC: INCREASE STEPSIZE AS E0 APPROACHES 1.5 * TI
-      TIFAC=MAX(TVAC,TIIN(1,NCELL))
-      DELFAC=1.5_DP*TIFAC/ABS(E0-1.5_DP*TIFAC+EPS60)
+      TIFAC  = MAX(TVAC,TIIN(1,NCELL))
+      DELFAC =1.5_DP*TIFAC/ABS(E0-1.5_DP*TIFAC+EPS60)
 C  DELTA_T = TAUE*0.1*DELFAC
 C  DELTA_S = DELTA_T * VELPAR  ! = TF
 C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
@@ -741,6 +756,7 @@ C  THUS ZT,TS,ZTST,ZDT1,CLPD ETC. ARE PARALLEL DISTANCES
 C  I.E., LCART=F AT THIS POINT
 C
       IF (ITIME.EQ.1) THEN
+c  switch to gc velocity
         IF (LCART) THEN
           VELXS=VELX
           VELYS=VELY
@@ -761,19 +777,22 @@ C
           IF (TL.LT.TS.OR.TT.LT.TS.OR.TF.LT.TS) THEN
             MRSURF=0
             IPOLGN=0
-C  COLLISION WITH ADDITIONAL SURFACE
+
+c  collision with additional surface
             IF (TL.LE.TT.AND.TL.LE.TF) THEN
               ZDT1=TL-ZT
               TL=ZT+ZDT1
               ZTST=TL
               ISRFCL=1
-C  COLLISION WITH TIME SURFACE
+
+c  collision with time surface
             ELSEIF (TT.LT.TL.AND.TL.LE.TF) THEN
               ZDT1=TT-ZT
               TT=ZT+ZDT1
               ZTST=TT
               ISRFCL=2
-C  FOKKER PLANCK COLLISION
+
+c  Fokker Planck collision
             ELSEIF (TF.LT.TL.AND.TF.LE.TT) THEN
               ZDT1=TF-ZT
               TF=ZT+ZDT1
@@ -781,7 +800,8 @@ C  FOKKER PLANCK COLLISION
               ISRFCL=4
             ENDIF
           ELSE
-C  COLLISION WITH RADIAL SURFACE
+
+c  collision with radial surface
             ISRFCL=0
             ZDT1=TS-ZT
             ZTST=TS
@@ -808,6 +828,7 @@ C
 C
         IF (ZDT1.LE.0.D0) GOTO 990
 
+c  switch to full velocity but gc velocity is not saved
         IF (.NOT.LCART) THEN
           VELX=VELXS
           VELY=VELYS
@@ -818,16 +839,17 @@ C
  
       ENDIF
       IF (ZTST.GE.1.D30) GOTO 990
-C
-C  LOCAL MEAN FREE PATH
-C  USE PARALLEL VELOCITY, I.E., COMPUTE PARALLEL MFP
-C  BECAUSE CLPD IS THE PARALLEL DISTANCE IN EACH CELL (EXCLUD. GYRO)
-C  ETC.. E.G LAMBDA(PARALLEL)=VEL(PARALLEL)/SIGV.
-C  THE COLLISION FREQUENCY SIGV, HOWEVER, MUST BE COMPUTED USING THE
-C  FULL TEST ION VELOCITY VECTOR, BECAUSE IT MAY DEPEND UPON THE RELATIV
-C  INTERACTION ENERGY: TO BE WRITTEN
-C  FOR INTERACTIONS WITH ELECTRONS THIS IS USUALLY IRRELEVANT
-C
+
+
+c  local mean free path
+c  use parallel velocity, i.e., compute parallel mean free path
+c  because clpd is the parallel distance in each cell (exclud. gyro)
+c  etc. ... e.g LAMBDA(PARALLEL) = VEL(PARALLEL)/SIGV.
+c  the collision frequency SIGV, however, must be computed using the
+c  full test ion velocity vector, because it may depend upon the relativ
+c  interaction energy: to be written
+c  for interactions with electrons this is usually irrelevant
+
       IF (IFPATH.NE.1.OR.NRC.LT.0) THEN
         XSTORV(:)=0.D0
         DO 214 J=1,NCOU
@@ -841,6 +863,7 @@ C         VEL=VELS
           GOTO 213
 214     CONTINUE
       ELSE
+c switch to parallel gc velocity
         IF (LCART) THEN
           VELXS=VELX
           VELYS=VELY
@@ -937,6 +960,7 @@ C
 CDR: ALLE DISTANZEN IN ...COL routines sind parallele distanzen
 CDR: Daher auch wg. x = x + dist/vel  parallele geschwindigkeiten.
 
+c  switch to parallel gc velocity
       IF (LCART) THEN
         VELXS=VELX
         VELYS=VELY
@@ -961,6 +985,7 @@ c  will fpkcol change the collision with additional surface?
         CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
       ENDIF
 
+C changing back to guiding center velocities
       VELX=VELXS
       VELY=VELYS
       VELZ=VELZS
@@ -1405,11 +1430,13 @@ C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1
           IF (ICOUN.EQ.100) THEN
             WRITE (IUNOUT,*) 'PARTICLE KILLED AT SURFACE IN FOLION'
+            WRITE (IUNOUT,*) 'NO PROPER GYRO ANGLE FOUND'
             WRITE (IUNOUT,*) 'NPANU, MSURF ',NPANU, MSURF
             WRITE (IUNOUT,*) 'VELPER,VELPAR ',VELPER,VELPAR
             LGPART=.FALSE.
             WEIGHT=0.
-            RETURN
+            ZT=0.0
+            GOTO 9951
           ENDIF
  
         ENDDO
@@ -1487,6 +1514,7 @@ C
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       ZT=0.
       GOTO 9951
+
 9921  CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
@@ -1560,7 +1588,7 @@ c  written for fnueqi without that factor.
       END FUNCTION FNUEQI
 
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
-C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
+C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
 
       FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_1,EA,XNI,TI
@@ -1577,6 +1605,7 @@ C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
       END FUNCTION FNUEQI_1
 
 C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
+C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
 
       FUNCTION FNUEQI_2(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_2,EA,XNI,TI

@@ -14,7 +14,8 @@
 !            a complete printout of input data in case of HYDKIN default
 !            database option
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
-!  23.04.15: only text, comments....
+cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -133,13 +134,13 @@ csw added OTHER (OT) reactions
      R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELDS1(:,:),   EELRC1(:,:),   EELPI1(:,:),
+     R EELDS1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
      R EHVDS1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLDS(:,:),
-     R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:)
+     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLEI(:,:,:),
+     R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:,:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
@@ -329,45 +330,54 @@ C
         ALLOCATE (NRCM(NMOL))
         ALLOCATE (NRCI(NION))
         ALLOCATE (NRCPH(NPHOT))
+
         ALLOCATE (IREACA(NATM,NREAC))
         ALLOCATE (IREACM(NMOL,NREAC))
         ALLOCATE (IREACI(NION,NREAC))
         ALLOCATE (IREACP(NPLS,NREAC))
         ALLOCATE (IREACPH(NPHOT,NREAC))
+
         ALLOCATE (IBULKA(NATM,NREAC))
         ALLOCATE (IBULKM(NMOL,NREAC))
         ALLOCATE (IBULKI(NION,NREAC))
         ALLOCATE (IBULKP(NPLS,NREAC))
         ALLOCATE (IBULKPH(NPHOT,NREAC))
+
         ALLOCATE (ISCD1A(NATM,NREAC))
         ALLOCATE (ISCD1M(NMOL,NREAC))
         ALLOCATE (ISCD1I(NION,NREAC))
         ALLOCATE (ISCD1P(NPLS,NREAC))
         ALLOCATE (ISCD1PH(NPHOT,NREAC))
+
         ALLOCATE (ISCD2A(NATM,NREAC))
         ALLOCATE (ISCD2M(NMOL,NREAC))
         ALLOCATE (ISCD2I(NION,NREAC))
         ALLOCATE (ISCD2P(NPLS,NREAC))
         ALLOCATE (ISCD2PH(NPHOT,NREAC))
+
         ALLOCATE (ISCD3A(NATM,NREAC))
         ALLOCATE (ISCD3M(NMOL,NREAC))
         ALLOCATE (ISCD3I(NION,NREAC))
         ALLOCATE (ISCD3P(NPLS,NREAC))
         ALLOCATE (ISCD3PH(NPHOT,NREAC))
+
         ALLOCATE (ISCD4A(NATM,NREAC))
         ALLOCATE (ISCD4M(NMOL,NREAC))
         ALLOCATE (ISCD4I(NION,NREAC))
         ALLOCATE (ISCD4P(NPLS,NREAC))
         ALLOCATE (ISCD4PH(NPHOT,NREAC))
+
         ALLOCATE (ISCDEA(NATM,NREAC))
         ALLOCATE (ISCDEM(NMOL,NREAC))
         ALLOCATE (ISCDEI(NION,NREAC))
         ALLOCATE (ISCDEP(NPLS,NREAC))
         ALLOCATE (ISCDEPH(NPHOT,NREAC))
+
         ALLOCATE (IESTMA(NATM,NREAC))
         ALLOCATE (IESTMM(NMOL,NREAC))
         ALLOCATE (IESTMI(NION,NREAC))
         ALLOCATE (IESTMPH(NPHOT,NREAC))
+
         ALLOCATE (IBGKA (NATM,NREAC))
         ALLOCATE (IBGKM (NMOL,NREAC))
         ALLOCATE (IBGKI (NION,NREAC))
@@ -450,8 +460,8 @@ c
         VSIGCX => XSTOR(:,19)
         VSIGPI => XSTOR(:,20)
         VSIGEL => XSTOR(:,21)
-c       vsigei  : fehlt noch
-c       vsigot  : fehlt noch
+cdr     vsigei  : fehlt noch
+cdr     vsigot  : fehlt noch
  
  
         ALLOCATE (TABDS1(NRDS,NSTORDR))
@@ -462,51 +472,67 @@ c       vsigot  : fehlt noch
         ALLOCATE (FDLMPI(NRPI))
         ALLOCATE (FDLMCX(NRCX))
         ALLOCATE (FDLMEL(NREL))
+
+c  factors for scaling reaction rates to other target (ipls) masses
+c  (only for heavy particle impact reaction) 
         ALLOCATE (ADDPI(NRPI,NPLS))
         ALLOCATE (ADDCX(NRCX,NPLS))
         ALLOCATE (ADDEL(NREL,NPLS))
 
+c  factors for scaling reaction processes
         ALLOCATE (FACRRC(NREC,2)) 
         ALLOCATE (FACRPI(NRPI,2)) 
         ALLOCATE (FACREL(NREL,2)) 
         ALLOCATE (FACREI(NRDS,2))
         ALLOCATE (FACRCX(NRCX,2)) 
  
+c  secondaries, EI processes 
         ALLOCATE (PELDS(NRDS))
         ALLOCATE (PATDS(NRDS,0:NATM))
         ALLOCATE (PMLDS(NRDS,0:NMOL))
         ALLOCATE (PIODS(NRDS,0:NION))
         ALLOCATE (PPLDS(NRDS,0:NPLS))
+        ALLOCATE (P2ND(NRDS,0:NSPZ))
+        ALLOCATE (P2NDS(NRDS))
+c  secondaries, PI processes
         ALLOCATE (PELPI(NRPI))
         ALLOCATE (PATPI(NRPI,0:NATM))
         ALLOCATE (PMLPI(NRPI,0:NMOL))
         ALLOCATE (PIOPI(NRPI,0:NION))
-        ALLOCATE (PPLPI(NRPI,0:NPLS))
-        ALLOCATE (P2ND(NRDS,0:NSPZ))
-        ALLOCATE (P2NP(NRPI,0:NSPZ))
-        ALLOCATE (P2NDS(NRDS))
+        ALLOCATE (PPLPI(NRPI,0:NPLS))       
+        ALLOCATE (P2NP(NRPI,0:NSPZ))        
         ALLOCATE (P2NPI(NRPI))
  
         ALLOCATE (EELDS1(NRDS,NSTORDR))
         ALLOCATE (EHVDS1(NRDS,NSTORDR))
+
+
         ALLOCATE (EELRC1(NREC,NSTORDR))
+
         ALLOCATE (EELPI1(NRPI,NSTORDR))
         ALLOCATE (EHVPI3(NRPI,NSTORDR,NSTORDT))
         ALLOCATE (EPLPI3(NRPI,NSTORDR,NSTORDT))
+
         ALLOCATE (EPLCX3(NRCX,NSTORDR,NSTORDT))
         ALLOCATE (EPLEL3(NREL,NSTORDR,NSTORDT))
+ 
+
         ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT))
  
         ALLOCATE (EATPI(NRPI,0:NATM,2))
         ALLOCATE (EMLPI(NRPI,0:NMOL,2))
         ALLOCATE (EIOPI(NRPI,0:NION,2))
-        ALLOCATE (EPLPI(NRPI,2))
+        ALLOCATE (EPLPI(NRPI,0:NPLS,2))
+
         ALLOCATE (EATDS(NRDS,0:NATM,2))
         ALLOCATE (EMLDS(NRDS,0:NMOL,2))
         ALLOCATE (EIODS(NRDS,0:NION,2))
-        ALLOCATE (EPLDS(NRDS,2))
+        ALLOCATE (EPLEI(NRDS,0:NPLS,2))
  
         ALLOCATE (MODCOL(7,0:4,MXCOLLS))
+
+c   flags for collision or tracklength estimators, 
+c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (IESTCX(NRCX,3))
         ALLOCATE (IESTEL(NREL,3))
         ALLOCATE (IESTPI(NRPI,3))
@@ -522,6 +548,7 @@ c       vsigot  : fehlt noch
         ALLOCATE (NIOPRC_2(NREC))
         ALLOCATE (NPLPRC_2(NREC))
         ALLOCATE (NPHPRC_2(NREC))
+
         ALLOCATE (N1STX(NRCX,3))
         ALLOCATE (N2NDX(NRCX,3))
  
@@ -547,6 +574,9 @@ c       vsigot  : fehlt noch
         ALLOCATE (NREAOT(NROT))
         ALLOCATE (NREACT(NREAC))
         ALLOCATE (NRHVPI(NRPI))
+c  again: some arrays for species distribution of secondaries
+c         derived from P..DS and P..PI, above. 
+c         for speeding up scoring in update, collide 
         ALLOCATE (IPATDS(NRDS,0:NATM))
         ALLOCATE (IPMLDS(NRDS,0:NMOL))
         ALLOCATE (IPIODS(NRDS,0:NION))
@@ -555,6 +585,7 @@ c       vsigot  : fehlt noch
         ALLOCATE (IPMLPI(NRPI,0:NMOL))
         ALLOCATE (IPIOPI(NRPI,0:NION))
         ALLOCATE (IPPLPI(NRPI,0:NPLS))
+c
         ALLOCATE (LGACX(0:NATM,0:NRCX,0:1))
         ALLOCATE (LGMCX(0:NMOL,0:NRCX,0:1))
         ALLOCATE (LGICX(0:NION,0:NRCX,0:1))
@@ -638,16 +669,18 @@ c       vsigot  : fehlt noch
       DEALLOCATE (EMLPI)
       DEALLOCATE (EIOPI)
       DEALLOCATE (EPLPI)
+
       DEALLOCATE (EATDS)
       DEALLOCATE (EMLDS)
       DEALLOCATE (EIODS)
-      DEALLOCATE (EPLDS)
+      DEALLOCATE (EPLEI)
  
       DEALLOCATE (MODCOL)
       DEALLOCATE (IESTCX)
       DEALLOCATE (IESTEL)
       DEALLOCATE (IESTPI)
       DEALLOCATE (IESTEI)
+
       DEALLOCATE (NAEII)
       DEALLOCATE (NMDSI)
       DEALLOCATE (NIDSI)
@@ -1068,7 +1101,7 @@ c       vsigot  : fehlt noch
         EATDS   = 0._DP
         EMLDS   = 0._DP
         EIODS   = 0._DP
-        EPLDS   = 0._DP
+        EPLEI   = 0._DP
  
         MODCOL  = 0
         IESTCX  = 0
@@ -1162,7 +1195,7 @@ c       vsigot  : fehlt noch
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLDS
+     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
  
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1206,7 +1239,7 @@ c       vsigot  : fehlt noch
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLDS
+     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
  
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1279,14 +1312,16 @@ c
       CALL FXDRDBL (IUN,EPLCX3,NRCX*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,EPLEL3,NREL*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,EPLOT3,NROT*NSTORDR*NSTORDT)
+
       CALL FXDRDBL (IUN,EATPI,NRPI*(NATM+1)*2)
       CALL FXDRDBL (IUN,EMLPI,NRPI*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIOPI,NRPI*(NION+1)*2)
-      CALL FXDRDBL (IUN,EPLPI,NRPI*2)
+      CALL FXDRDBL (IUN,EPLPI,NRPI*(NPLS+1)*2)
+
       CALL FXDRDBL (IUN,EATDS,NRDS*(NATM+1)*2)
       CALL FXDRDBL (IUN,EMLDS,NRDS*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIODS,NRDS*(NION+1)*2)
-      CALL FXDRDBL (IUN,EPLDS,NRDS*2)
+      CALL FXDRDBL (IUN,EPLEI,NRDS*(NPLS+1)*2)
  
 c
       CALL FXDRINT (IUN,MODCOL ,7*5*MXCOLLS)

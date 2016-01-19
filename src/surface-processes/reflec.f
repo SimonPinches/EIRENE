@@ -19,7 +19,9 @@ C           with reduced energy scaling.
 C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
 C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
 C  Oct 14:  arguments of velocs changed. "weight" now in argument list
-C  MAR 15:  remove Thompson distribution for thermal atom model: TWALL=0 now leads to error exit
+C  MAR 15:  remove Thompson distribution for thermal atom model: 
+c           TWALL=0 now leads to error exit
+cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl. 
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -315,8 +317,8 @@ C
      .      'IMP. ENERGY (RED), REF. PROB, MEAN REFL. ENERGY'
           DO 19 J=0,12
             CALL
-     .  EIRENE_MASR3('                        ',ZRANGE(J),ZR(J),
-     .                                            E0AV(J))
+     .        EIRENE_MASR3('                        ',ZRANGE(J),ZR(J),  
+     .                                                E0AV(J))
 19        CONTINUE
           CALL EIRENE_LEER(2)
         ENDIF
@@ -411,8 +413,9 @@ C   COSINE OF ANGLE OF INCIDENCE
 C
 C   NO REFLECTION OF FAST ATOMS FOR INCIDENT ENERGY BELOW ERMIN
 C                               OR IF IGASF=0
+C   EINTG < 0 : ENFORCE ELASTIC REFLECTION: E_IN=E_OUT
 C
-      IF (E0.LE.ERMIN.OR.IGASF.EQ.0) THEN
+      IF (EINTG.GE.0..AND.(E0.LE.ERMIN.OR.IGASF.EQ.0)) THEN
 C
 C   THERMAL PARTICLE MODEL IS CALLED
 C
@@ -526,9 +529,9 @@ C
 101   INDE=INDEP-1
 C
       DO 103 I=2,INWM
-         INDWP=I
-         IF (COSIN.GE.WIAR(I)) GOTO 104
-103      CONTINUE
+        INDWP=I
+        IF (COSIN.GE.WIAR(I)) GOTO 104
+103   CONTINUE
       INDWP=INW
 104   INDW=INDWP-1
 C
@@ -609,7 +612,13 @@ C
 C
 C  POLAR ANGLE OF REFLECTION
 C
-      IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN
+      IF (AINTG.LT.0.) THEN
+C  SPECULAR REFLECTION
+        GOTO 400
+      ENDIF
+cdr  to be written: fixed momentum reflection in case aintg > 0.  
+      IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
+C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
         F1=1.
         F2=0.
         GOTO 400
@@ -747,6 +756,9 @@ C (ALMOST) NORMAL INCIDENCE, NO SPECULAR CONTRIBUTION POSSIBLE
       ENDIF
       RETURN
 C
+C *************************************************************
+C
+C
 C  MODIFIED BEHRISCH MATRIX MODEL STARTS HERE
 C
 200   CONTINUE
@@ -808,7 +820,11 @@ C
       IF (EINTG.GT.0.D0) THEN
         E0=E0*EINTG
 C     ELSEIF (EINTG.LT.0.D0) THEN
+C       E0=E0
+C  OR:  (? TO BE DONE ?)
+C
 C  E0 FROM MEAN ENERGY MODEL
+C
 C       E0=ESUM+(E0AV(IRM)+QUOTE(IRM)*ED)*EFAC
       ELSE
 C  E0 FROM STOCHASTIC BEHRISCH MATRIX MODEL
@@ -850,7 +866,7 @@ C
 C
 C  ANGULAR DISTRIBUTION
 C
-      IF (EXPI.LT.100.) THEN
+      IF (AINTG.GE.0. AND. EXPI.LT.100.) THEN
         IF (F1.GT.0.999999) THEN
 C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           IF (INIV4.LE.0) CALL EIRENE_FCOSIN
@@ -861,6 +877,7 @@ C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
         ELSE
 C  INCLUDE SPECULAR CONTRIBUTION (F2 > 0., F1 < 1.)
+C  TO BE CHECKED: DOES THIS PROCUDE SPECULAR REFLECTION IN CASE OF F2=1. AND F1=0. ? 
           ZTHET=PI2A*RANF_EIRENE( )
           ZSTHET=SIN(ZTHET)
           ZCTHET=COS(ZTHET)
@@ -876,10 +893,10 @@ C
           VZ= ZSPHI*ZSTHET*F1+ ZCPHI*F2
 C
           CALL EIRENE_ROTATE
-     .  (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ,COSIN)
+     .      (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ,COSIN)
         ENDIF
       ELSE
-C   PURELY SPECULAR REFLECTION :EXPI .GE. 100 .
+C   PURELY SPECULAR REFLECTION :EXPI .GE. 100 OR AINTG.LT.0.
 C   EXPI.GE.100 MEANS: INELASTIC+SPECULAR
         COSI2=-(COSIN+COSIN)
         VELX=VELX+COSI2*CRTX
