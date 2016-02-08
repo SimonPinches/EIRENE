@@ -1,3 +1,4 @@
+cdr jan 16: remove redundant iflg for short (SHRT) versions 
 C
 C  same as  WRPLAM.f, RPLAM.f, but for XDR format
 C
@@ -10,7 +11,7 @@ C
       LOGICAL TRCFLE
 C
       IF (NLSHRT13) THEN
-        CALL EIRENE_WRPLAM_XDR_SHRT (TRCFLE,IFLG)
+        CALL EIRENE_WRPLAM_XDR_SHRT (TRCFLE)
       ELSE 
         CALL EIRENE_WRPLAM_XDR_LONG (TRCFLE,IFLG)
       ENDIF
@@ -21,7 +22,7 @@ C
       ENTRY EIRENE_RPLAM_XDR(TRCFLE,IFLG)
 C
       IF (NLSHRT13) THEN
-        CALL EIRENE_RPLAM_XDR_SHRT (TRCFLE,IFLG)
+        CALL EIRENE_RPLAM_XDR_SHRT (TRCFLE)
       ELSE 
         CALL EIRENE_RPLAM_XDR_LONG (TRCFLE,IFLG)
       ENDIF

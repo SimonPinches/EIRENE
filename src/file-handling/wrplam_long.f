@@ -9,7 +9,9 @@ C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
 C  trcfle:  confirm writing on printout on unit IUNOUT
-C  IFLG  :
+C  IFLG    :  only for  RPLAM:  
+C        = 0   do not readm primary source data COMSOU
+C        else  do also read data from COMSOU
  
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
       USE EIRMOD_PRECISION
@@ -110,10 +112,12 @@ C  LUSR, LOGICAL
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMAMF,ICMAMF'
       READ (13+ifoff) RCZT1,RCZT2,ZT1,ZRG
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCZT1,RCZT2,ZT1,ZRG'
+
       IF (IFLG == 0) THEN
         READ (13+ifoff) RCMSOU,SREC,EIO,EEL,
      .            ICMSOU,INGRDA,INGRDE,NSTRAI,
      .            LCMSOU,NLSYMP,NLSYMT
+        IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMSOU,ICMSOU,LCMSOU,...'
       ELSE
         NRDUM = SIZE(RCMSOU) + SIZE(SREC) + SIZE(EIO) + SIZE(EEL)
         NIDUM = SIZE(ICMSOU) + SIZE(INGRDA) + SIZE(INGRDE) + 1
@@ -125,8 +129,10 @@ C  LUSR, LOGICAL
         DEALLOCATE (RDUM)
         DEALLOCATE (IDUM)
         DEALLOCATE (lDUM)
+        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13' 
       END IF
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMSOU,ICMSOU,LCMSOU'
+
+cdr:  this CSTEP reading should go into iflg=0 branch, as it belongs to primary source      
       IF (ALLOCATED(FLSTEP))
      .   READ (13+ifoff) FLSTEP,ELSTEP,FLTOT,ELTOT,VF,VE,
      .             QUOT,ADD,QUOTI,ADDIV,
@@ -135,6 +141,7 @@ C  LUSR, LOGICAL
      .             IRSTEP,IPSTEP,ITSTEP,IASTEP,IBSTEP,IGSTEP,
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
+
       CLOSE (UNIT=13+ifoff)
       RETURN
       END

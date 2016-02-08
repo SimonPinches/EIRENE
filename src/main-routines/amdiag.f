@@ -140,7 +140,7 @@ c  irei is a process for test ion iio, colliding with electron
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'ELECTRON IMPACT REACTION  IREI ='//CNO
+     .      ' ELECTRON IMPACT REACTION  IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified species on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = ' '
@@ -154,7 +154,7 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NREAEI(IREI)
           TXTPLS(IAIN,NTALN) = 
-     .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
+     .      ' ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
@@ -177,7 +177,7 @@ c  not ready
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NREAEI(IREI)
           TXTPLS(IAIN,NTALN) = 
-     .      'ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
+     .      ' ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = 'eV times A.U. (0.612 E-8 cm3/s)'
@@ -239,7 +239,7 @@ c  ircx is a process for test ion iio, colliding with bulk ipl
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'CHARGE EXCHANGE REACTION  IRCX ='//CNO
+     .      ' CHARGE EXCHANGE REACTION  IRCX ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
           TXTPUN(IAIN,NTALN) = ' '
@@ -253,7 +253,7 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IRCX
           WRITE (CN1,'(I4)') NREACX(IRCX)
           TXTPLS(IAIN,NTALN) = 
-     .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
+     .      ' CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
@@ -347,7 +347,7 @@ c  irel is a process for test ion iio, colliding with bulk ipl
 
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'ELASTIC REACTION  IREL ='//CNO
+     .      ' ELASTIC REACTION  IREL ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
           TXTPUN(IAIN,NTALN) = ' '         
@@ -361,7 +361,7 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IREL
           WRITE (CN1,'(I4)') NREAEL(IREL)
           TXTPLS(IAIN,NTALN) = 
-     .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
+     .      ' ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
@@ -453,7 +453,7 @@ c  irpi is a process for test ion iio, colliding with bulk ipl
           
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'HEAVY PARTICLE REACTION  IRPI ='//CNO
+     .      ' HEAVY PARTICLE REACTION  IRPI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
           TXTPUN(IAIN,NTALN) = ' '         
@@ -467,7 +467,7 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IRPI
           WRITE (CN1,'(I4)') NREAPI(IRPI)
           TXTPLS(IAIN,NTALN) = 
-     .      'BULK ION IMPACT REACTION RATE COEFFICIENT IRPI ='//CNO
+     .      ' BULK ION IMPACT REACTION RATE COEFFICIENT IRPI ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
@@ -540,7 +540,7 @@ c  not ready
           write (iunout,'(A72)') txtpls(IAIN,NTALN)
           write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
-          WRITE (iunout,*) 'process no. KK, MODCOL(.,2,.)   ', KK,MM
+          WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
         else   !mm = 0,  reaction kk has not been assgined to any particle
           call eirene_leer(1)
@@ -549,7 +549,7 @@ c  not ready
           write (iunout,'(A72)') txtpls(IAIN,NTALN)
           write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
-          WRITE (iunout,*) 'process no. KK, MODCOL(.,2,.)   ', KK,MM
+          WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
         endif 
 
@@ -559,7 +559,7 @@ c  not ready
       write (iunout,'(A72)') txtpls(IAIN,NTALN)
       write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
-      WRITE (iunout,*) 'process no. KK, MODCOL(.,2,.)   ', KK,MM
+      WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
        
 
 190   CONTINUE

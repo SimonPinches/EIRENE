@@ -1,16 +1,18 @@
 C  sept. 05:  5 tallies added to step functions.  see also: CSTEP.f
 C  nov.  05:  add eltot and ve to step function data.
 C
-C  same as  WRPLAM.f, RPLAM.f, but for XDR format
+C cdr jan 16:  remove redundant flag iflg
+c
+C     This routine reads/write plasma background, primary source and A&M data, fort.13 
+C     same as  WRPLAM.f, RPLAM.f, but for XDR format
 C
-      SUBROUTINE EIRENE_WRPLAM_XDR_SHRT(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_WRPLAM_XDR_SHRT(TRCFLE)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCOUPL
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
       LOGICAL, INTENT(IN) :: TRCFLE
       INTEGER :: IUN
 
@@ -34,7 +36,7 @@ C
 C
 C
 C
-      ENTRY EIRENE_RPLAM_XDR_SHRT(TRCFLE,IFLG)
+      ENTRY EIRENE_RPLAM_XDR_SHRT(TRCFLE)
 C
       CALL FXDROPN ('fort13','DECODE',iun)
 

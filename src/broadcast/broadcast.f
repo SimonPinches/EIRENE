@@ -11,7 +11,7 @@
 !  01.07.09:  broadcast of HFTR0-3 arrays removed. this is done in broadref.f
 !  01.03.11:  NSPEZV_DIM removed
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
-cdr  JAN  16:  additional species index for eplds-->eplei,eplpi
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
 
 cdr
@@ -330,7 +330,7 @@ c  PI post collision energetics
 c  CX post collision energetics
       CALL MPI_BCAST (EPLCX3,NRCX*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
-c  EL ost collision energetics 
+c  EL post collision energetics 
       CALL MPI_BCAST (EPLEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 
