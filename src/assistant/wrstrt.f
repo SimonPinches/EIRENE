@@ -1,7 +1,22 @@
 !pb  27.11.06: open and close statements for fort.10 moved here
 Cdr  15.10.14: variances of spectral tallies: names syncronized with other variance tallies,
 c              range of spectra corrected: 0 -- nspc+1, rather than 1 -- nspc
-C
+c    Jan.  16: remove redundant PSGM
+C.........................................................................................
+
+cdr  ENTRY WRSTRT:
+cdr  write MC estimated tallies, per stratum, onto fort.10 
+cdr    (volume averaged, surface averaged, spectra, and their standard deviations)
+
+cdr  ENTRY RSTRT: 
+cdr  read MC estimated tallies, per stratum, onto fort.10 
+cdr    (volume averaged, surface averaged, spectra, and their standard deviations)
+cdr     e.g. for printout, plotting etc.. of results from specified strata   
+
+cdr  on input:  IG     :  number of stratum ISTRA
+cdr             IG=0   :  sum over strata
+cdr             TRCFLE :  print diagnostics  
+ 
       SUBROUTINE EIRENE_WRSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
      .                  TALLYV,TALLYS,TALLYL,
      .                  ISDVI1,STAT1,ISDVI2,STAT2,
@@ -28,9 +43,9 @@ C
       INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
      .           IMAX31, IMAX32, IMAX41, IMAX42, NRECL, IRC, ISTRA,
      .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
-!      REAL(DP), DIMENSION(:), POINTER :: PSGM
+
 C
-C  WRITE DATA FOR SINGLE STRATA ON TEMP. FILE FT10
+C  WRITE DATA FOR SINGLE STRATA OR FROM SUM OVER STRATA ON TEMP. FILE FORT.10
 C
       NRECL=1500
       IMAX11=IESTM1/NRECL+1
@@ -278,7 +293,7 @@ C
      .            ICOPI,SIG_COP,JCOPI,SIGS_COP,
      .            ISPCI,TRCFLE)
 C
-C  READ DATA FOR SINGLE STRATA OR SUM OVER STRATA FROM TEMP. FILE 10
+C  READ DATA FOR SINGLE STRATA OR SUM OVER STRATA FROM TEMP. FILE FORT.10
 C
       NRECL=1500
       IMAX11=IESTM1/NRECL+1
@@ -295,6 +310,7 @@ C
       IMAXS=0
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
+C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
         IMAXS=IMAXS+(1+TALLYL(ISPC)%PSPC%NSPC+1)/NRECL+1
         IF (ISPCI.NE.0) THEN
           IMAXS=IMAXS+4*((1+TALLYL(ISPC)%PSPC%NSPC+1)/NRECL+1)

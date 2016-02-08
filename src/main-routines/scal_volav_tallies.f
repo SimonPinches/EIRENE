@@ -4,6 +4,12 @@
 
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
+cdr
+c  scaling of volume averaged tallies:  
+c  zvolin : source strength(amp)/vol(cell volume cm^-3)/elementary-charge(amp/(1/s)), 
+c           --> e.g. flight times(s) to densities (cm^-3)
+c  zvoliw : source strength(amp)/vol(cell volume cm^-3), 
+c           --> e.g. events per cell(1) to source rates (amp/cm^-3)
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -173,6 +179,7 @@ C
       END DO
 C
 C  BULK ION PARTICLE SPECIES LOOP FOR THE STRATUM ISTRA
+C  ONLY SOURCE RATES, NO DENSITIES
 C
       DO 227 IPLS=1,NPLSI
         IF (LOGPLS(IPLS,ISTR)) THEN
