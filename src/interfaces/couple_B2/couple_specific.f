@@ -1,4 +1,14 @@
+cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
+cdr:             check: is eirsrt universal, then: move even further up to "main routines".
+cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
+
+
 C
+C  ASSISTANT ROUTINES, SPECIFIC TO A PARTICULAR EDGE CODE INTERFACE
+C  DATA STRUCTURES (grid, plasma data, etc...)
+C
+C
+
 *//GEOMD//
 C=======================================================================
 C          S U B R O U T I N E   G E O M D
