@@ -1236,7 +1236,7 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
             else
               write (iunout,*) 
      .               'triangle inside original structured grid'          
-              call eirene_masj2('nr,np          ',
+              call eirene_masj2('nr,np           ',
      .                  iytri(itri),ixtri(itri))
             endif
 

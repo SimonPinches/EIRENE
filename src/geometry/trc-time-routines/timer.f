@@ -957,7 +957,8 @@ c  on internal grid surface:  ISTS=0
       ELSEIF (ISTS.GT.0.AND.
      .        ISTS.LE.NLIM+NSTSI) THEN
 C  on non-default surface (add. or. std.): ISTS=INMTI(IPOLGN,NRCELL)
-        IF (ILIIN(ISTS) == 0) THEN
+!pb        IF (ILIIN(ISTS) == 0) THEN
+        IF (ILIIN(ISTS) <= 0) THEN
           NINCX=NCHBAR(IPOLGN,NRCELL)-NRCELL
         ELSE
           NINCX=SIGN(1,INMTI(IPOLGN,NRCELL))
