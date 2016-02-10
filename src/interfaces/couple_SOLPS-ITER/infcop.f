@@ -254,9 +254,8 @@ C
 
       REAL(DP), ALLOCATABLE ::
      . TORL(:,:), ESHT(:,:), ORI(:,:)
-
-      REAL(DP) :: OUTHELP(NFL)
-
+     
+      real(dp),allocatable :: helpw(:)
 
       INTEGER, ALLOCATABLE :: IHELP(:)
 C
@@ -461,7 +460,6 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
-C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
       NCOPI=0
@@ -480,8 +478,8 @@ C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       LNLDRF=NLDRFT
       LTRCFL=TRCFLE
       NSTRI=NSTRAI
-      DO 60 ISTRA=1,NSTRAI
-        LNLVOL(ISTRA)=NLVOL(ISTRA)
+      DO 60 ISTR=1,NSTRAI
+        LNLVOL(ISTR)=NLVOL(ISTR)
 60    CONTINUE
       NMODEI=NMODE
       NFILNN=NFILEN
@@ -646,7 +644,9 @@ C  SAME FORMAT AS FORT.31, I.E., INDEX MAPPING MAY BE NECESSARY
         ALLOCATE (ALPHYB(0:NDXP,0:NDYP))
         ALLOCATE (XAISO(0:NDXP,0:NDYP))
         ALLOCATE (IAISO(0:NDXP,0:NDYP))
-        IAISO = 0
+
+C  DEFAULT: ALL CELLS ARE VALID
+        IAISO = 1
 
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHXB)
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHYB)
@@ -675,29 +675,40 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
 !  CARTHESIAN PLANE
+        write (iunout,*) 'testoutput from fort.29 in infcop'
+        write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
             IN=IY+(IX-1)*NR1ST
             ALE=ALPHXB(IX,IY)
             ALW=ALPHXB(IX-1,IY)
             IF (MAX(ALE,ALW)-MIN(ALE,ALW) > PIA) THEN
+              write (iunout,*) 'modulus 2PI used', ale,alw 
               AL=MIN(ALE,ALW)
               ALW=MAX(ALE,ALW)
               ALE=AL+PI2A
+              write (iunout,*) 'new values ale,alw ',ale,alw
             END IF
             ALN=ALPHYB(IX,IY)
             ALS=ALPHYB(IX,IY-1)
+! cell centered angle of B_pol (psi-contour line) against eirene x-coordinate
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
-! cell centered
+            write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
+     .                                          ale,alw,aln,als,alx
+! cell centered unit vector along poloidal direcion
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
+! cell centered unit vector along "radial" (grad psi) direcion,
+!                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
-! surface centered
+! surface centered: nothing to be done, the values on fort.29 are already surface centered
+!                   on east and north sides of a cell, respectively
             PUXE(IN)=COS(ALE)
             PUYE(IN)=SIN(ALE)
             PUXN(IN)=COS(ALN)
             PUYN(IN)=SIN(ALN)
+! again: radial (grad PSI) unit vector, strictly orthonormal to PU, by construction 
             PVXE(IN)=-SIN(ALE)
             PVYE(IN)=COS(ALE)
             PVXN(IN)=-SIN(ALN)
@@ -1647,6 +1658,7 @@ C
 C
 C  READ OTHER B2 ARRAYS INTO EIRENE, FOR PRINTOUT AND PLOTTING
 C
+c  density, species index as in B2 code, cell centered
       DO 2300 IAIN=1,NAINB
         IF (NAINT(IAIN).EQ.1.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
@@ -1657,6 +1669,7 @@ C
               ADINTF(IAIN,IN)=0.
             ENDIF
 2321      CONTINUE
+c  poloidal (projection) flow velocity, species index as in B2 code, north surface centered
         ELSEIF (NAINT(IAIN).EQ.2.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2322 IN=1,NTRII
@@ -1666,6 +1679,7 @@ C
               ADINTF(IAIN,IN)=0.
             ENDIF
 2322      CONTINUE
+c  radial drift velocity, species index as in B2 code, east surface centered
         ELSEIF (NAINT(IAIN).EQ.3.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2323 IN=1,NTRII
@@ -1675,6 +1689,7 @@ C
               ADINTF(IAIN,IN)=0.
             ENDIF
 2323      CONTINUE
+c  plasma pressure, cell centered, no species index
         ELSEIF (NAINT(IAIN).EQ.6) THEN
           DO 2326 IN=1,NTRII
             IF (IXTRI(IN).GT.0) THEN
@@ -1683,6 +1698,7 @@ C
               ADINTF(IAIN,IN)=0.
             ENDIF
 2326      CONTINUE
+c  parallel velocity, species index as in B2 code, north surface centered
         ELSEIF (NAINT(IAIN).EQ.7.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2327 IN=1,NTRII
@@ -1692,6 +1708,7 @@ C
               ADINTF(IAIN,IN)=0.
             ENDIF
 2327      CONTINUE
+c  pitch angle, no species index
         ELSEIF (NAINT(IAIN).EQ.8) THEN
           DO 2328 IN=1,NTRII
             IF (IXTRI(IN).GT.0) THEN
@@ -3319,9 +3336,9 @@ cdr
             DO IPLS=1,NPLSI
               CHPM(IPLS,1:NSBOX_TAL) = CHPM(IPLS,1:NSBOX_TAL) +
      .             PPPL_COP(IPLS,1:NSBOX_TAL) - PPLODA(IPLS,1:NSBOX_TAL)
-!pb            ICPV=NPLSI+IPLS
-!pb            CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
-!pb     .           CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
+!pb           ICPV=NPLSI+IPLS
+!pb           CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
+!pb     .          CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
             END DO
 
             CHEEM(1:NSBOX_TAL) = CHEEM(1:NSBOX_TAL) +
@@ -4338,16 +4355,20 @@ C
      .        RESSEE(0),RESSEI(0),SUM(RESSNI(0,1:NFLA)),
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
+
         WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
-!pb  copy RESSNI to OUTHELP to avoid warnings from Intel compiler
-!PB        CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
-        OUTHELP(1:NFLA) = RESSNI(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSNI    ',OUTHELP,NFLA,5)
+cdr  wrong format in call to masrr1
+cdr     CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
+        if (.not.allocated(helpw)) allocate (helpw(nfla))
+        helpw(1:nfla) = RESSNI(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5)
+       
         WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
-!pb  copy RESSMO to OUTHELP to avoid warnings from Intel compiler
-!PB        CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
-        OUTHELP(1:NFLA) = RESSMO(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSMO    ',OUTHELP,NFLA,5)
+cdr  wrong format in call to masrr1
+cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
+        helpw(1:nfla) = RESSMO(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
+        if (allocated(helpw)) deallocate (helpw)
       ENDIF
 C
 c sputtering
