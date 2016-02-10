@@ -206,7 +206,7 @@ C
      .           NCOPI, NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, IF, I34,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ, ISP, IPLSTI, IPLSV,
-     .           IPLV,l,
+     .           IPLV,l,ISTR,
      .           NAS,IPUNKT,NSSIR,NUMSI,NBAR,ISNR,ISC,IS,NASMOD,
      .           NRS,NADMOD,NBARSI,IP1,NP2NDQ,IS1,IR1,
      .           NEND,NINI,NSSIP,MTRI,
