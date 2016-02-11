@@ -181,6 +181,7 @@ C
         CALL EIRENE_ALLOC_COMXS(1)
         CALL EIRENE_ALLOC_CTRIG
         CALL EIRENE_ALLOC_COMNNL
+        CALL EIRENE_ALLOC_CFPLK
 
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for memory allocation ',time-timi

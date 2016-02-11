@@ -41,6 +41,7 @@
       USE EIRMOD_CSPEI
       USE EIRMOD_CSPEZ
       USE EIRMOD_CUPD
+      USE EIRMOD_CFPLK
       IMPLICIT NONE
  
       CALL EIRENE_ALLOC_CESTIM(1)
@@ -94,6 +95,7 @@
       CALL EIRENE_ALLOC_CSPEI
       CALL EIRENE_ALLOC_CSPEZ
       CALL EIRENE_ALLOC_CUPD
+      CALL EIRENE_ALLOC_CFPLK
  
 !  allocate and initialize storage for trajectories
       IF (.NOT.ALLOCATED(TRAJ)) THEN
