@@ -720,6 +720,7 @@ C     LATER: VELPAR --> VEL_GC
 C  get new TF and data for the FP collision carried out in fpkcol
       CALL EIRENE_PREPARE_FPKCOL(TF)
 
+C  FHa: What happens here???
       if (nldfst) tf=1.E-5_DP*vel
  
       IF (TF.LT.ZTST) THEN
@@ -1665,18 +1666,22 @@ C     where only the energy is relaxed)
 
       integer :: IPL, IPLTI
 
+      real*8 :: TF
       real*8 :: alpha, ub, Chi, Lambda, dChi_dt
       real*8 :: VelPrlBG
       real*8 :: DPrl, DPerp
-      real*8 :: TFPrl, TFPerp, TFtemp, TF, vabs, dvabs_dt
+      real*8 :: TFprl, TFperp
+      real*8 :: TFtemp(1:NPLSI)
+      real*8 :: dVelPrl_dt(1:NPLSI), dVelPerp_dt(1:NPLSI)
+      real*8 :: vabs, dvabs_dt
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
       alpha = 0.1 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       TF    = 1.0E+10
 
-c      DO IPL = 1, NPLSI ! loop over all background species
-      DO IPL = 1, 1 ! loop over all background species
+      DO IPL = 1, NPLSI ! loop over all background species
+c      DO IPL = 1, 1 ! loop over all background species
 
          IPLTI=MPLSTI(IPL)
 
@@ -1702,18 +1707,22 @@ c         print*
          DPrl  = Lambda/ub*DPrl
          DPerp = Lambda/ub*DPerp
 
+c  both dVelPrl_dt and dVelPerp_dt in SI units (meters)!!
          dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                      (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
          dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
 
 c  get the new TF, the distance until next coulomb collision
+         TFprl  = (VELPAR*1.0E-02)**2/dVelPrl_dt(IPL)*alpha
+         TFperp = (VELPER*1.0E-02)**2/dVelPerp_dt(IPL)*alpha
+         TFtemp(IPL) = MIN(TFprl,TFperp)
 
-         dChi_dt = 1./(ub**2*Chi)*
-     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
-     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
-         TF = VELPAR*ABS(Chi/dChi_dt)*alpha
-         TF = VELPAR*1.0E-006
+c         dChi_dt = 1./(ub**2*Chi)*
+c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
+c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
+c         TF = VELPAR*ABS(Chi/dChi_dt)*alpha
+c         TF = VELPAR*1.0E-006
 c         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
 c         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
 c     >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
@@ -1726,7 +1735,9 @@ c         print*
 
       END DO
 
-c      print*, ' TF = ', TF
+      TF = MINVAL(TFtemp)
+
+      print*, ' TF = ', TF
 
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
 
