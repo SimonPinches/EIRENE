@@ -24,7 +24,7 @@
 
       h  = (xf - xi) / fi / (m-1)
       y  = yi
-      xb(1) = x1
+      xb(1) = xi
       t(1) = yi
       
       do i=1, m

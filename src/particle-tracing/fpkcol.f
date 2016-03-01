@@ -135,6 +135,9 @@ C
         E0PAR=E0PAR*FAC*FAC     
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
+!pb VELS is not used in NEWFIELD with option 1
+!pb but for the sake of decent programming set VELS
+      VELS = VEL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 
 C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
@@ -144,6 +147,9 @@ C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
 C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
  
 C  NEW B-FIELD
+!pb VELS is not used in NEWFIELD with option 0
+!pb but for the sake of decent programming set VELS
+      VELS = VEL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
 C  NEW GYRO PHASE

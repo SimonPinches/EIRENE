@@ -7,8 +7,9 @@
  
       INCLUDE 'mpif.h'
       INTEGER, INTENT(IN):: N1, N2
-      REAL(DP), INTENT(IN OUT) :: ES(N1), M2M1(N1,N2), ETF(N1,N2),
+      REAL(DP), INTENT(IN OUT) :: ES(N1), M2M1(N1,N2), 
      .                            ETH(N1,N2), Q(N1,N2)
+      INTEGER, INTENT(IN OUT) ::  ETF(N1,N2)
       INTEGER :: IER
  
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
