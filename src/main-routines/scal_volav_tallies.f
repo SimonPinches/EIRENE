@@ -1,6 +1,8 @@
 !pb  31.07.09: scaling for snapshot tallies corrected
 !              only for stationary calculations snapshot tallies 
 !              need to be scaled by timestep DTIMV
+cdr  dec. 15 : species index added in volumetric energy tallies for bulk ions
+cdr            eapl,empl,eipl,ephpl,eppl (38, 44, 50, 56 and 84)
 
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
@@ -182,21 +184,33 @@ C
             IF (LPIPL)  PIPL(IPLS,J) =PIPL(IPLS,J) *ZVOLIW(J)
             IF (LPPHPL) PPHPL(IPLS,J)=PPHPL(IPLS,J)*ZVOLIW(J)
             IF (LPPPL)  PPPL(IPLS,J) =PPPL(IPLS,J) *ZVOLIW(J)
+
+            IF (LEAPL)  EAPL(IPLS,J) =EAPL(IPLS,J) *ZVOLIW(J)
+            IF (LEMPL)  EMPL(IPLS,J) =EMPL(IPLS,J) *ZVOLIW(J)
+            IF (LEIPL)  EIPL(IPLS,J) =EIPL(IPLS,J) *ZVOLIW(J)
+            IF (LEPHPL) EPHPL(IPLS,J)=EPHPL(IPLS,J)*ZVOLIW(J)
+            IF (LEPPL)  EPPL(IPLS,J) =EPPL(IPLS,J) *ZVOLIW(J)
+
             IF (LMAPL)  MAPL(IPLS,J) =MAPL(IPLS,J) *ZVOLIW(J)
             IF (LMMPL)  MMPL(IPLS,J) =MMPL(IPLS,J) *ZVOLIW(J)
             IF (LMIPL)  MIPL(IPLS,J) =MIPL(IPLS,J) *ZVOLIW(J)
             IF (LMPHPL) MPHPL(IPLS,J)=MPHPL(IPLS,J)*ZVOLIW(J)
 228       CONTINUE
-        SCLTAL(IPLS,14)=3
-        SCLTAL(IPLS,20)=3
-        SCLTAL(IPLS,26)=3
-        SCLTAL(IPLS,32)=3
-        SCLTAL(IPLS,32)=3
-        SCLTAL(IPLS,79)=3
-        SCLTAL(IPLS,97)=3
-        SCLTAL(IPLS,98)=3
-        SCLTAL(IPLS,99)=3
-        SCLTAL(IPLS,100)=3
+          SCLTAL(IPLS,14)=3
+          SCLTAL(IPLS,20)=3
+          SCLTAL(IPLS,26)=3
+          SCLTAL(IPLS,32)=3
+          SCLTAL(IPLS,32)=3
+          SCLTAL(IPLS,38)=3
+          SCLTAL(IPLS,44)=3
+          SCLTAL(IPLS,50)=3
+          SCLTAL(IPLS,56)=3
+          SCLTAL(IPLS,79)=3
+          SCLTAL(IPLS,84)=3
+          SCLTAL(IPLS,97)=3
+          SCLTAL(IPLS,98)=3
+          SCLTAL(IPLS,99)=3
+          SCLTAL(IPLS,100)=3
         ENDIF
 227   CONTINUE
 C
@@ -385,14 +399,13 @@ C  DON'T SCALE AT ALL
 265     CONTINUE
       END IF
 C
-C  OTHER TALLIES ESTIMATED FROM HISTORIES
+C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO SECOND (SPECIES) INDEX) 
 C
       DO 270 J=1,NSBOX_TAL
         IF (LPAEL)  PAEL(J) =PAEL(J) *ZVOLIW(J)
         IF (LEAEL)  EAEL(J) =EAEL(J) *ZVOLIW(J)
         IF (LEAAT)  EAAT(J) =EAAT(J) *ZVOLIW(J)
         IF (LEAML)  EAML(J) =EAML(J) *ZVOLIW(J)
-        IF (LEAPL)  EAPL(J) =EAPL(J) *ZVOLIW(J)
         IF (LEAIO)  EAIO(J) =EAIO(J) *ZVOLIW(J)
         IF (LEAPHT) EAPHT(J)=EAPHT(J)*ZVOLIW(J)
 C
@@ -402,7 +415,6 @@ C
         IF (LEMML)  EMML(J) =EMML(J) *ZVOLIW(J)
         IF (LEMIO)  EMIO(J) =EMIO(J) *ZVOLIW(J)
         IF (LEMPHT) EMPHT(J)=EMPHT(J)*ZVOLIW(J)
-        IF (LEMPL)  EMPL(J) =EMPL(J) *ZVOLIW(J)
 C
         IF (LPIEL)  PIEL(J) =PIEL(J) *ZVOLIW(J)
         IF (LEIEL)  EIEL(J) =EIEL(J) *ZVOLIW(J)
@@ -410,7 +422,6 @@ C
         IF (LEIML)  EIML(J) =EIML(J) *ZVOLIW(J)
         IF (LEIIO)  EIIO(J) =EIIO(J) *ZVOLIW(J)
         IF (LEIPHT) EIPHT(J)=EIPHT(J)*ZVOLIW(J)
-        IF (LEIPL)  EIPL(J) =EIPL(J) *ZVOLIW(J)
 C
         IF (LPPHEL)  PPHEL(J) =PPHEL(J) *ZVOLIW(J)
         IF (LEPHEL)  EPHEL(J) =EPHEL(J) *ZVOLIW(J)
@@ -418,13 +429,11 @@ C
         IF (LEPHML)  EPHML(J) =EPHML(J) *ZVOLIW(J)
         IF (LEPHIO)  EPHIO(J) =EPHIO(J) *ZVOLIW(J)
         IF (LEPHPHT) EPHPHT(J)=EPHPHT(J)*ZVOLIW(J)
-        IF (LEPHPL)  EPHPL(J) =EPHPL(J) *ZVOLIW(J)
  
         IF (LEPAT)  EPAT(J) =EPAT(J) *ZVOLIW(J)
         IF (LEPML)  EPML(J) =EPML(J) *ZVOLIW(J)
         IF (LEPIO)  EPIO(J) =EPIO(J) *ZVOLIW(J)
         IF (LEPPHT) EPPHT(J)=EPPHT(J)*ZVOLIW(J)
-        IF (LEPPL)  EPPL(J) =EPPL(J) *ZVOLIW(J)
 270   CONTINUE
       SCLTAL(1,9)=3
       SCLTAL(1,15)=3
@@ -435,30 +444,25 @@ C
       SCLTAL(1,35)=3
       SCLTAL(1,36)=3
       SCLTAL(1,37)=3
-      SCLTAL(1,38)=3
       SCLTAL(1,39)=3
       SCLTAL(1,40)=3
       SCLTAL(1,41)=3
       SCLTAL(1,42)=3
       SCLTAL(1,43)=3
-      SCLTAL(1,44)=3
       SCLTAL(1,45)=3
       SCLTAL(1,46)=3
       SCLTAL(1,47)=3
       SCLTAL(1,48)=3
       SCLTAL(1,49)=3
-      SCLTAL(1,50)=3
       SCLTAL(1,51)=3
       SCLTAL(1,52)=3
       SCLTAL(1,53)=3
       SCLTAL(1,54)=3
       SCLTAL(1,55)=3
-      SCLTAL(1,56)=3
       SCLTAL(1,80)=3
       SCLTAL(1,81)=3
       SCLTAL(1,82)=3
       SCLTAL(1,83)=3
-      SCLTAL(1,84)=3
  
  
 C   SCALE AND INTEGRATE SPECTRA

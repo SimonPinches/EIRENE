@@ -1503,7 +1503,8 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
 C  IFEXMN,IFEXMX,FPARM:
 C  ASYMPTOTICS FOR CROSS SECTIONS             (SECOND INDEX=1)
 C                        OR RATE COEFFICIENTS (SECOND INDEX=2),
-C  OVERWRITES ASYMPTOTICS IN DATA FILES, IF THERE ARE SUCH
+C  OVERWRITES ASYMPTOTICS READ FROM EXTERNAL DATA FILES FOR THIS RUN,
+C  IF THERE HAVE BEEN SUCH
         FP = 0._DP
         IF (INDEX(H123,'P.').eq.0) then
 C  either cross section or a (weighted?) rate coefficient
@@ -2199,6 +2200,8 @@ C
       READ (ZEILE,6665) NLTRIM
       IREAD=0
       IF (NLTRIM) THEN
+
+c  read TRIM reflection datasets A_on_B
         READ (IUNIN,'(A420)') ZEILE
         IREAD=1
         IF (INDEX(ZEILE,'PATH')+INDEX(ZEILE,'path').EQ.0) THEN
@@ -2253,15 +2256,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
         ENDIF
       ENDIF
 
-620   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE 
-
-      READ (ZEILE,6664) (DATD(IATM),IATM=1,NATMI_IN)
-      IREAD=0
-      READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
-      READ (IUNIN,6664) (DIOD(IION),IION=1,NIONI_IN)
-      READ (IUNIN,6664) (DPLD(IPLS),IPLS=1,NPLSI_IN)
-      IF (NPHOTI > 0)
-     .  READ (IUNIN,6664) (DPHD(IPHOT),IPHOT=1,NPHOTI_IN)
+620   CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
  
       IF (ASSOCIATED(REFFILES)) THEN
 c  trim files for NFR target projectile combinations are requested.
@@ -2285,8 +2280,23 @@ c  read this (single) file in subr. REFDAT
         REFFILES => REFFILES%NEXT
         DEALLOCATE(CURFILE)
       END DO
- 
+
+c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
+
+      IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE 
+      READ (ZEILE,6664) (DATD(IATM),IATM=1,NATMI_IN)
+      IREAD=0
+      READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
+      READ (IUNIN,6664) (DIOD(IION),IION=1,NIONI_IN)
+      READ (IUNIN,6664) (DPLD(IPLS),IPLS=1,NPLSI_IN)
+      IF (NPHOTI > 0)
+     .  READ (IUNIN,6664) (DPHD(IPHOT),IPHOT=1,NPHOTI_IN)
+
+c  next: read universal surface reflection model flags 
       READ (IUNIN,6664) ERMIN,ERCUT,RPROB0,RINTEG(1),EINTEG(1),AINTEG(1)
+
+c  read surface models identified by character string 'SURFMOD_...'
+
       DO
         IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:3) .EQ. '***') THEN
@@ -3072,8 +3082,11 @@ C
       CALL EIRENE_LEER(1)
       DO 1130 J=1,NSURPR
         READ (IUNIN,6666) NSRF,NTLS,NFLGS,NSPZS1,NSPZS2,NTLSF
+c  negative surface numbers may be used for non-default standard surfaces
         IF (NSRF.LT.0) NSRF=NLIM+IABS(NSRF)
+c  zero as surface number for time-horizon
         IF (NSRF.EQ.0.AND.NLIM+NSTSI.LT.NLIMPS) NSRF=NLIM+NSTSI+1
+
         IF (NSRF.LE.0.OR.NSRF.GT.NLIMPS) GOTO 991
         NPRSRF(J)=NSRF
         NPRTLS(J)=NTLS
@@ -3501,13 +3514,13 @@ C
         IF (NPTST.EQ.0) THEN
           NPTS(NSTRAI)=IPRNL
           IF (NLMOVIE) THEN
-            WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.GE.0'
+            WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.EQ.0'
             NLMOVIE=.FALSE.
           ENDIF
         ELSEIF (NPTST.GT.0) THEN
           NPTS(NSTRAI)=NPTST
           IF (NLMOVIE) THEN
-            WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.GE.0'
+            WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.GT.0'
             NLMOVIE=.FALSE.
           ENDIF
         ELSEIF (NPTST.LT.0.OR.NLMOVIE) THEN
@@ -3758,15 +3771,16 @@ C
       END IF
 
       DO 2000 J=0,NLIMPS
+c  non-default standard surfaces have a negative surface index on printout
+        JJ=J
+        IF (JJ.GT.NLIM) JJ=-(J-NLIM)
+
         IF (ILCOL(J).LT.0) IGFIL(J)=1
         ILCOL(J)=MAX0(1,IABS(ILCOL(J)))
 
-csw 10jan2012 
-        IF ((ILIIN(J).LE.0.OR.ILIIN(J).GE.3).AND.(ILSPT(J).NE.0)) THEN 
-          JJ=J
-          IF (JJ.GT.NLIMI) JJ=-(J-NLIMI)
+        IF ((ILIIN(J).LE.0.OR.ILIIN(J).GE.4).AND.(ILSPT(J).NE.0)) THEN        
           WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
-     .      ' IS TRANSPARENT BUT IS USED TO SPUTTER '          
+     .      ' IS TRANSPARENT OR PERIODIC BUT IS USED TO SPUTTER '          
         END IF
 
         ISPUT(1,J)=EIRENE_IDEZ(ILSPT(J),1,2)
@@ -3778,15 +3792,11 @@ csw 10jan2012
         IF (ILIIN(J).LE.0) TRANSP(:,2,J)=0.D0
 
         IF (ISPUT(1,J).NE.0.AND.ALL(RECYCS(:,J).EQ.0._DP)) THEN
-          JJ=J
-          IF (JJ.GT.NLIMI) JJ=-(J-NLIMI)
           WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
      .                     'HAS A PHYSICAL SPUTTER MODEL, BUT ',
      .                     'SPUTTER YIELD IS SCALED TO ZERO (RECYCS=0)'
         ENDIF
         IF (ISPUT(2,J).NE.0.AND.ALL(RECYCC(:,J).EQ.0._DP)) THEN
-          JJ=J
-          IF (JJ.GT.NLIMI) JJ=-(J-NLIMI)
           WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
      .                     'HAS A CHEMICAL SPUTTER MODEL, BUT ',
      .                     'SPUTTER YIELD IS SCALED TO ZERO (RECYCC=0)'

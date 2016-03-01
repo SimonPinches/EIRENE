@@ -5,8 +5,10 @@
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
 cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
+
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
+cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
       MODULE EIRMOD_PARMMOD
  
       USE EIRMOD_PRECISION
@@ -282,7 +284,7 @@ C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
         NVLTLP=6*NATMP+6*NMOLP+6*NIONP+6*NPHOTP+1*NADVP+1*NCLVP+
      P         1*NSNVP+1*NCPVP+1*NALVP+1*NBGVP+
      P         4*NPLSP+28+3*(NATMP+NMOLP+NIONP+NPHOTP)+
-     P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5+
+     P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
      P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP
 
 !pb arrays in module CSDVI_COP no longer needed

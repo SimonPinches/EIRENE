@@ -1,7 +1,9 @@
 c   march 19, 2006:  corrected pointer for spttot in "associate_cestim"
 !   20.06.07:        deallocate ESTIML and SMESTL
 cdr 14.10.14:        naming of arrays in smestl adapted to those of other eirene std. dev. tallies
-cdr                  two further tallies introduced (gg, stv) for stand. dev. of sum over strata
+cdr                  two further tallies introduced (gg, stv) for stand. dev. 
+cdr                  of sum over strata
+cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
  
       MODULE EIRMOD_CESTIM
  
@@ -40,17 +42,17 @@ C  NESTM1, REAL, VOLUME AVERAGED TALLIES
      R PIPL(:,:),
      R PPHEL(:),   PPHAT(:,:), PPHML(:,:), PPHIO(:,:), PPHPHT(:,:),
      R PPHPL(:,:),
-     R EAEL(:),  EAAT(:),  EAML(:),  EAIO(:),  EAPHT(:),  EAPL(:),
-     R EMEL(:),  EMAT(:),  EMML(:),  EMIO(:),  EMPHT(:),  EMPL(:),
-     R EIEL(:),  EIAT(:),  EIML(:),  EIIO(:),  EIPHT(:),  EIPL(:),
-     R EPHEL(:), EPHAT(:), EPHML(:), EPHIO(:), EPHPHT(:), EPHPL(:),
+     R EAEL(:),  EAAT(:),  EAML(:),  EAIO(:),  EAPHT(:),  EAPL(:,:),
+     R EMEL(:),  EMAT(:),  EMML(:),  EMIO(:),  EMPHT(:),  EMPL(:,:),
+     R EIEL(:),  EIAT(:),  EIML(:),  EIIO(:),  EIPHT(:),  EIPL(:,:),
+     R EPHEL(:), EPHAT(:), EPHML(:), EPHIO(:), EPHPHT(:), EPHPL(:,:),
      R ADDV(:,:),  COLV(:,:),  SNAPV(:,:),
      R COPV(:,:),  BGKV(:,:),  ALGV(:,:),
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
-     R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:),
+     R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),
      R VYDENA(:,:), VYDENM(:,:), VYDENI(:,:), VYDENPH(:,:),
      R VZDENA(:,:), VZDENM(:,:), VZDENI(:,:), VZDENPH(:,:),
@@ -510,9 +512,9 @@ C  VOLUME AVERAGED TALLIES
         EAPHT => CEMETERYV(0,:)
       END IF
       IF (LEAPL) THEN
-        EAPL => ESTIMV(NADDV(39),:)
+        EAPL => ESTIMV(NADDV(38)+1:NADDV(39),:)
       ELSE
-        EAPL => CEMETERYV(0,:)
+        EAPL => CEMETERYV(0:0,:)
       END IF
  
       IF (LEMEL) THEN
@@ -541,9 +543,9 @@ C  VOLUME AVERAGED TALLIES
         EMPHT => CEMETERYV(0,:)
       END IF
       IF (LEMPL) THEN
-        EMPL => ESTIMV(NADDV(45),:)
+        EMPL => ESTIMV(NADDV(44)+1:NADDV(45),:)
       ELSE
-        EMPL => CEMETERYV(0,:)
+        EMPL => CEMETERYV(0:0,:)
       END IF
  
       IF (LEIEL) THEN
@@ -572,9 +574,9 @@ C  VOLUME AVERAGED TALLIES
         EIPHT => CEMETERYV(0,:)
       END IF
       IF (LEIPL) THEN
-        EIPL => ESTIMV(NADDV(51),:)
+        EIPL => ESTIMV(NADDV(50)+1:NADDV(51),:)
       ELSE
-        EIPL => CEMETERYV(0,:)
+        EIPL => CEMETERYV(0:0,:)
       END IF
  
       IF (LEPHEL) THEN
@@ -603,9 +605,9 @@ C  VOLUME AVERAGED TALLIES
         EPHPHT => CEMETERYV(0,:)
       END IF
       IF (LEPHPL) THEN
-        EPHPL => ESTIMV(NADDV(57),:)
+        EPHPL => ESTIMV(NADDV(56)+1:NADDV(57),:)
       ELSE
-        EPHPL => CEMETERYV(0,:)
+        EPHPL => CEMETERYV(0:0,:)
       END IF
  
       IF (LADDV) THEN
@@ -747,9 +749,9 @@ C  VOLUME AVERAGED TALLIES
         EPPHT => CEMETERYV(0,:)
       END IF
       IF (LEPPL) THEN
-        EPPL => ESTIMV(NADDV(85) ,:)
+        EPPL => ESTIMV(NADDV(84)+1:NADDV(85),:)
       ELSE
-        EPPL => CEMETERYV(0,:)
+        EPPL => CEMETERYV(0:0,:)
       END IF
       IF (LVXDENA) THEN
         VXDENA => ESTIMV(NADDV(85)+1:NADDV(86),:)

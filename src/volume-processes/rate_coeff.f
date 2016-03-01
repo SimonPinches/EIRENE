@@ -1,11 +1,20 @@
 !pb  22.11.06: flag iprshft for shift of second parameter to rate_coeff introduced
 !pb  24.11.06: get extrapolation parameters for polynomial fit only
+
 !pb  07.12.06: double declaration of dsub removed
 !dr  19.02.14: COMMENTS
- 
+!dr  29.10.15: bug fix:  lexp option for ifit=5 was missing.
+!dr            no consequences for any earlier runs, except H-COL option with H.2 (corona) rates. 
+cdr  nov. 15:  indicators ip1, ip2 for extrapolation or interpolation added,
+cdr            in intp_tables and intp_adas
+cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2. 
+cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRAD
+
       function EIRENE_rate_coeff (ir, p1, p2, lexp, iprshft, erate)
      .                     result (rate)
-!  evaluate reaction rate coefficient (cm^3/s), and return this as "rate"
+
+!  evaluate reaction rate coefficient (cm^3/s),
+!  and return this as "rate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
 !  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
@@ -19,11 +28,13 @@
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
-!   p1:        first parameter (usually:  log temperature,...)
-!   p2:        second parameter  (if any, e.g.  log (density),...,log(test particle energy),...) 
+!   p1:        first parameter (usually:  log_e temperature,...)
+!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
 !   lexp:      return rate=rate coefficient in cm**3/sec
-!   not lexp:  return rate=ln(rate coefficient) with rate-coefficient in cm**3/sec
-!   iprshft:   >0: carry out shift in parameter p2, currently hard wired: 1e-8. (currently : only for ifit=2)
+!   not lexp:  return rate=log_e(rate coefficient) with rate-coefficient in cm**3/sec
+!   iprshft:   >0: carry out shift in parameter p2, 
+!              currently hard wired: 1e-8. 
+!             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
 !              remove erate in case of ifit=5 and generalize to more cr models.
@@ -42,19 +53,20 @@
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
       real(dp), intent(out) :: erate
-      real(dp) :: rate, eirene_sngl_poly, dum(9), rcmin, rcmax,
-     .            fp(6), q1, q2,
-     .            ALPCR, SCR, SCRRAD, E_ALPCR, E_SCR, E_SCRRAD,
-     .            E_ALPCR_T, E_SCR_T, E_SCRRAD_T
-      real(dp), save :: xlog10e= 4.34294482d-01,      !1./ln(10) = log10(e)
-     .                  xln10  = 2.30258509299_dp,    !ln(10) 
-     .                  dsub   =18.420680744_dp       !ln(1e8)
-      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), qcol2(:)
-      integer :: jfexmn, jfexmx
+      real(dp) :: rate, EIRENE_sngl_poly, dum(9), rcmin, rcmax,
+     .            fp(6), pp1, pp2,
+     .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
+     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
+      real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
+     .                  xln10   =  2.30258509299_dp,    !ln(10) 
+     .                  dsub    = 18.420680744_dp       !ln(1e8)
+
+      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
+      integer :: jfexmn, jfexmx,ic,ip1,ip2
             
  
       interface
-        function EIRENE_intp_adas (ad,p1,p2) result(res)
+        function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
@@ -62,11 +74,11 @@
           real(dp) :: res
         end function EIRENE_intp_adas
  
-        function EIRENE_intp_table (tb,p1,p2) result(res)
+        function EIRENE_intp_table (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
-          real(dp), intent(in) :: p1, p2
+          real(dp), intent(in) :: p1
           real(dp) :: res
         end function EIRENE_intp_table
       end interface
@@ -90,62 +102,88 @@ c  extrapolation data: currently only for polynomial fits
         jfexmn = reacdat(ir)%rtc%poly%ifexmn
         jfexmx = reacdat(ir)%rtc%poly%ifexmx
       end if
+c.............................................................
+
  
       if (mod(iftflg(ir,2),100) == 10) then
 
 !  SET A CONSTANT RATE 
         rate = reacdat(ir)%rtc%poly%dblpol(1,1)
+
+cdr   lexp missing
+
+c.............................................................
  
       elseif (reacdat(ir)%rtc%ifit == 1) then
 
-!  SINGLE POLYNOMIAL FIT 
-        rate = eirene_sngl_poly(reacdat(ir)%rtc%poly%dblpol(1:9,1),p1,
-     .                   rcmin, rcmax, fp, jfexmn, jfexmx)
-        if (lexp) rate = exp(max(-100._dp,rate))
+!  SINGLE POLYNOMIAL FIT VS. P1 (TEMPERATURE), FOR LN OF ENERGY WEIGHTED RATE
+ 
+        rate = eirene_sngl_poly(reacdat(ir)%rtc%poly%dblpol(1:9,1),
+     .                   p1, rcmin, rcmax, fp, jfexmn, jfexmx)
+
+C       if (.not. lexp)  rate=rate
+        if (lexp)        rate = exp(max(-100._dp,rate))
+
+c..............................................................
+
  
       else if (reacdat(ir)%rtc%ifit == 2) then
 
-! DOUPLE POLYNOMIAL FIT
+!  DOUBLE POLYNOMIAL FIT VS. P1 (TEMPERATURE) AND P2,  FOR LN OF RATE 
 
-c  rescale parameter p2  (currently only by 1e-8):  q2 
-        q2 = p2
-        if (iprshft > 0) q2 = q2 - dsub
+c  rescale parameter p2  (currently only by 1e-8):  pp2 
+        pp2 = p2
+        if (iprshft > 0) pp2 = pp2 - dsub
  
         call EIRENE_dbl_poly
-     .       (reacdat(ir)%rtc%poly%dblpol,p1,q2,rate,dum,1,9,
-     .                rcmin, rcmax, fp, jfexmn, jfexmx)
-        if (lexp) rate = exp(max(-100._dp,rate))
- 
+     .       (reacdat(ir)%rtc%poly%dblpol,p1,pp2,rate,dum,1,9,
+     .        rcmin, rcmax, fp, jfexmn, jfexmx)
+
+C       if (.not. lexp)  rate=rate
+        if (lexp)        rate = exp(max(-100._dp,rate))
+
+c.............................................................. 
+
       else if (reacdat(ir)%rtc%ifit == 3) then
- 
-! DOUBLE PARAMETER (N,T) TABLE OF LOG10(RATE COEFFICIENTS)  (E.G. ADAS ADF11 files)
 
-!  currently hard wired:  input parameters q1, q2 and table coefficients are log10
+! 2D TABULAR INPUT,  FOR LOG10 OF RATE,  cm^3/s
+! E.G.: ADAS FILES
 
-c  convert parameters p1 and p2 from ln to log10:  q1,q2 
-        q1 = xlog10e*p1
-        q2 = xlog10e*p2
+!  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
+
+c  convert parameters p1 and p2 from ln to log10:  pp1,pp2 
+        pp1 = xlog10e*p1
+        pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        rate = eirene_intp_adas(reacdat(ir)%rtc%adas,q1,q2)
+        rate = eirene_intp_adas(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
  
         if (lexp) then
           rate=10._dp**rate
-        else ! convert from log_10 to ln_e
-          rate = xln10*rate
+        else
+          rate = xln10*rate     !    convert from log10(erate) to ln(rate)
+
         end if
- 
+
+
+
+c..............................................................
+  
       else if (reacdat(ir)%rtc%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
-        q1 = exp(p1)
+        pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        rate = eirene_intp_table(reacdat(ir)%rtc%hyd,q1,p2)
+        rate = eirene_intp_table(reacdat(ir)%rtc%hyd,pp1,ip1)
 
 !  lexp option not connected here !
+
+c..............................................................
  
       else if (reacdat(ir)%rtc%ifit == 5) then
+
+! INTERNAL COLLISION RADIATIVE CODE
  
 ! H-colrad   RATE AND ENERGY LOSS RATE IN ONE SINGLE STEP
  
@@ -153,22 +191,26 @@ C  assume here: tabulated data are neither ln nor log10  (to be generalized)
           allocate(pop0(40))
           allocate(pop1(40))
           allocate(pop2(40))
-          allocate(qcol2(40))
+
+          allocate(q_ext(40))    !   photo excitation rate
         end if
  
-        QCOL2 = 0._DP
-c  convert parameters p1, p2 to exp(p1), exp(p2):  q1,q2
-        Q1 = EXP(P1)
-        Q2 = EXP(P2)
-        CALL EIRENE_H_COLRAD(Q1, Q2 ,QCOL2,POP0,POP1,POP2,
-     .                ALPCR,    SCR,    SCRRAD,
-     .                E_ALPCR,  E_SCR,  E_SCRRAD,
-     .                E_ALPCR_T,E_SCR_T,E_SCRRAD_T)
+        Q_EXT = 0._DP
+c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
+        PP1 = EXP(P1)
+        PP2 = EXP(P2)
+        CALL EIRENE_H_COLRAD(IC, PP1, PP2 ,Q_EXT,POP0,POP1,POP2,
+     .                ALPCR,    SCR,    SCR_EXT,
+     .                E_ALPCR,  E_SCR,  E_SCR_EXT,
+     .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
 
-!  lexp option not connected here !
- 
-        rate = log(scr)
-        erate = log(-e_scr)
+!  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
+        rate=scr 
+        if (.not.lexp) rate = log(scr)
+         
+
+        erate = -e_scr
+        if (.not.lexp) erate = log(-e_scr)
  
       end if
  

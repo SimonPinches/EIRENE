@@ -676,6 +676,7 @@ C
 
 
 C
+C
       SUBROUTINE EIRENE_MSHPROJ(X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,
      .                   NDXA,NR1ST,IY)
 
@@ -689,6 +690,7 @@ C
       REAL(DP) :: D12, D34, D13, D24, EPS60, PUPV, PVPV, DVX, DVY,
      .          DUX, DUY
       INTEGER :: IX, IN
+
       EPS60 = 1.E-60_DP
 C
 C
@@ -735,6 +737,7 @@ C
 
 
 C
+C
       SUBROUTINE EIRENE_INDMAP(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG)
 C
@@ -747,6 +750,7 @@ C     NCUTL= NUMBER OF CELLS IN IX DIRECTION PER CUT IN LINDA (AND
 C            THUS ALSO IN EIRENE) GEOMETRY
 
       USE EIRMOD_PRECISION
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: NPOINT(2,*)
@@ -806,12 +810,14 @@ C
       RETURN
 C
 990   CONTINUE
-      WRITE (6,*) 'ERROR IN SUBR. INDMAP: THIS SUBR. IS VALID ONLY'
-      WRITE (6,*) 'NCUTB>=0 BUT NCUTB = ',NCUTB
+      WRITE (iunout,*) 'ERROR IN SUBR. INDMAP: THIS SUBR. IS VALID ONLY'
+      WRITE (iunout,*) 'NCUTB>=0 BUT NCUTB = ',NCUTB
       CALL EIRENE_EXIT_OWN(1)
-991   WRITE (6,*) 'ERROR IN SUBR. INDMAP: INCONSISTENCY IN NUMBER OF '
-      WRITE (6,*) 'ZONES PER CUT FROM LINDA GEOMETRY DETECTED.  '
-      WRITE (6,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',IENDD-IINID+1
+991   WRITE (iunout,*) 
+     .  'ERROR IN SUBR. INDMAP: INCONSISTENCY IN NUMBER OF '
+      WRITE (iunout,*) 'ZONES PER CUT FROM LINDA GEOMETRY DETECTED.  '
+      WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
+     .                  IENDD-IINID+1
       CALL EIRENE_EXIT_OWN(1)
       END
 
@@ -824,6 +830,7 @@ C
 C     INDEX MAPPING: INVERS TO SUBR. INDMAP
 C
       USE EIRMOD_PRECISION
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: NPOINT(2,*)
@@ -882,12 +889,14 @@ C
       RETURN
 C
 990   CONTINUE
-      WRITE (6,*) 'ERROR IN SUBR. INDMPI: THIS SUBR. IS VALID ONLY'
-      WRITE (6,*) 'NCUTB>=0 BUT NCUTB = ',NCUTB
+      WRITE (iunout,*) 'ERROR IN SUBR. INDMPI: THIS SUBR. IS VALID ONLY'
+      WRITE (iunout,*) 'NCUTB>=0 BUT NCUTB = ',NCUTB
       CALL EIRENE_EXIT_OWN(1)
-991   WRITE (6,*) 'ERROR IN SUBR. INDMPI: INCONSISTENCY IN NUMBER OF'
-      WRITE (6,*) 'ZONES PER CUT FROM LINDA GEOMETRY DETECTED. '
-      WRITE (6,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',IENDD-IINID+1
+991   WRITE (iunout,*) 
+     .  'ERROR IN SUBR. INDMPI: INCONSISTENCY IN NUMBER OF'
+      WRITE (iunout,*) 'ZONES PER CUT FROM LINDA GEOMETRY DETECTED. '
+      WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
+     .                  IENDD-IINID+1
       CALL EIRENE_EXIT_OWN(1)
       END
 
@@ -918,6 +927,7 @@ C=======================================================================
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
+      DUMMY(0:N+1,0:M+1,NF)=0._DP
       DO    110  IF = 1,NDIMF
       DO    110  IY = 0,NDIMY+1
       DO    100  IX = 1,LIM,5
@@ -975,6 +985,8 @@ C  SAVE EIRENE TALLIES, SCALE PER UNIT FLUX (AMP), ON COMMON BRASCL
 C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS)
 C  ALL STRATA WHICH ARE NOT SPECIFIED BY INPUT BLOCK 14 (FROM
 C  PLASMA CODE DATA) ARE NOT RESCALED HERE
+
+c  added in Nov. 15: ipls resolved ion energy sources eapl,empl,eipl
 C
 
       USE EIRMOD_PRECISION
@@ -1007,9 +1019,10 @@ C
       CALL EIRENE_FREE_MULARR(ISTRAI)
 
       DO IPLS=1,NPLSI
+cdr  save volumetric sources for plasma species ipls: particle, momentum, ion energy
         DO IN=1,NSBOX_TAL
           IF (LPAPL) THEN 
-	  IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
+	      IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
@@ -1041,6 +1054,41 @@ C
             PIPLS(ISTRAI)%PMUL => CPMUL
           ENDIF
           ENDIF
+
+          IF (LEAPL) THEN 
+          IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPMUL)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
+            EAPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+          IF (LEMPL) THEN 
+          IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPMUL)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
+            EMPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+          IF (LEIPL) THEN 
+          IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPMUL)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
+            EIPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+
           IF (LMAPL) THEN 
           IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
@@ -1119,36 +1167,6 @@ C
           EIELS(ISTRAI)%PSIM => CPSIM
         ENDIF
         ENDIF
-        IF (LEAPL) THEN 
-        IF (EAPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-          CPSIM => EIRENE_NEW_SIMARR()
-          CPSIM%ICS = IN
-          CPSIM%VALUES = EAPL(IN)*FLXI
-          CPSIM%NXTSIM => EAPLS(ISTRAI)%PSIM
-          EAPLS(ISTRAI)%PSIM => CPSIM
-        ENDIF
-        ENDIF
-        IF (LEMPL) THEN 
-        IF (EMPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-          CPSIM => EIRENE_NEW_SIMARR()
-          CPSIM%ICS = IN
-          CPSIM%VALUES = EMPL(IN)*FLXI
-          CPSIM%NXTSIM => EMPLS(ISTRAI)%PSIM
-          EMPLS(ISTRAI)%PSIM => CPSIM
-        ENDIF
-        ENDIF
-        IF (LEIPL) THEN 
-        IF (EIPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-          CPSIM => EIRENE_NEW_SIMARR()
-          CPSIM%ICS = IN
-          CPSIM%VALUES = EIPL(IN)*FLXI
-          CPSIM%NXTSIM => EIPLS(ISTRAI)%PSIM
-          EIPLS(ISTRAI)%PSIM => CPSIM
-        ENDIF
-	ENDIF
       ENDDO
 
       DO IATM=1,NATMI
@@ -1196,7 +1214,7 @@ C
 
       DO IION=1,NIONI
         DO IN=1,NSBOX_TAL
-	  IF (LPDENM) THEN
+          IF(LPDENI) THEN
           IF (PDENI(IION,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()

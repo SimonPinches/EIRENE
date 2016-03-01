@@ -1,3 +1,9 @@
+cdr  dec. 15:  added species index ipls for energy source arrays for bulk ions
+cdr            eapls, empls, eipls, eppls
+
+cdr            not concluded yet: e.g. eplpls,  photon tallies
+cdr            nomenclature: eppl_cops --> eppls  ???
+
       MODULE EIRMOD_BRASPOI
  
       USE EIRMOD_PRECISION
@@ -37,9 +43,10 @@
       END TYPE MULARR
  
       TYPE(SIMARR), ALLOCATABLE, SAVE :: EAELS(:), EMELS(:), EIELS(:),
-     .                                   EAPLS(:), EMPLS(:), EIPLS(:),
-     .                                   EPPL_COPS(:), EPELS(:)
+     .                                   EPELS(:)
       TYPE(MULARR), ALLOCATABLE, SAVE :: PAPLS(:), PMPLS(:), PIPLS(:),
+     .                                   EAPLS(:), EMPLS(:), EIPLS(:),
+     .                                   EPPL_COPS(:),
      .                                   PDENAS(:),PDENMS(:),PDENIS(:),
      .                                   EDENAS(:),COPVS(:),
      .                                   PPPL_COPS(:), CPPVS(:),
@@ -88,13 +95,13 @@
       NULLIFY(PMPLS(ISTRAI)%PMUL)
       NULLIFY(PIPLS(ISTRAI)%PMUL)
  
+      NULLIFY(EAPLS(ISTRAI)%PMUL)
+      NULLIFY(EMPLS(ISTRAI)%PMUL)
+      NULLIFY(EIPLS(ISTRAI)%PMUL)
+      
       NULLIFY(EAELS(ISTRAI)%PSIM)
       NULLIFY(EMELS(ISTRAI)%PSIM)
       NULLIFY(EIELS(ISTRAI)%PSIM)
-      NULLIFY(EAPLS(ISTRAI)%PSIM)
-      NULLIFY(EMPLS(ISTRAI)%PSIM)
-      NULLIFY(EIPLS(ISTRAI)%PSIM)
-      NULLIFY(EPPL_COPS(ISTRAI)%PSIM)
       NULLIFY(EPELS(ISTRAI)%PSIM)
  
       NULLIFY(PDENAS(ISTRAI)%PMUL)
@@ -104,6 +111,7 @@
  
       NULLIFY(COPVS(ISTRAI)%PMUL)
       NULLIFY(PPPL_COPS(ISTRAI)%PMUL)
+      NULLIFY(EPPL_COPS(ISTRAI)%PMUL) 
       NULLIFY(CPPVS(ISTRAI)%PMUL)
  
       NULLIFY(MAPLS(ISTRAI)%PMUL)
@@ -225,52 +233,6 @@ C  FREE EIELS
         NULLIFY(EIELS(ISTRAI)%PSIM)
       END IF
  
-C  FREE EAPLS
-      P => EAPLS(ISTRAI)%PSIM
-      IF (ASSOCIATED(P)) THEN
-        DO WHILE (ASSOCIATED(P%NXTSIM))
-          P => P%NXTSIM
-        END DO
-        P%NXTSIM => COLLECT_SIMARR
-        COLLECT_SIMARR => EAPLS(ISTRAI)%PSIM
-        NULLIFY(EAPLS(ISTRAI)%PSIM)
-      END IF
- 
-C  FREE EMPLS
-      P => EMPLS(ISTRAI)%PSIM
-      IF (ASSOCIATED(P)) THEN
-        DO WHILE (ASSOCIATED(P%NXTSIM))
-          P => P%NXTSIM
-        END DO
-        P%NXTSIM => COLLECT_SIMARR
-        COLLECT_SIMARR => EMPLS(ISTRAI)%PSIM
-        NULLIFY(EMPLS(ISTRAI)%PSIM)
-      END IF
- 
- 
-C  FREE EIPLS
-      P => EIPLS(ISTRAI)%PSIM
-      IF (ASSOCIATED(P)) THEN
-        DO WHILE (ASSOCIATED(P%NXTSIM))
-          P => P%NXTSIM
-        END DO
-        P%NXTSIM => COLLECT_SIMARR
-        COLLECT_SIMARR => EIPLS(ISTRAI)%PSIM
-        NULLIFY(EIPLS(ISTRAI)%PSIM)
-      END IF
- 
-C  FREE EPPL_COPS
-      P => EPPL_COPS(ISTRAI)%PSIM
-      IF (ASSOCIATED(P)) THEN
-        DO WHILE (ASSOCIATED(P%NXTSIM))
-          P => P%NXTSIM
-        END DO
-        P%NXTSIM => COLLECT_SIMARR
-        COLLECT_SIMARR => EPPL_COPS(ISTRAI)%PSIM
-        NULLIFY(EPPL_COPS(ISTRAI)%PSIM)
-      END IF
- 
- 
 C  FREE EPELS
       P => EPELS(ISTRAI)%PSIM
       IF (ASSOCIATED(P)) THEN
@@ -324,6 +286,52 @@ C  FREE PIPLS
         COLLECT_MULARR => PIPLS(ISTRAI)%PMUL
         NULLIFY(PIPLS(ISTRAI)%PMUL)
       END IF
+ 
+C  FREE EAPLS
+      P => EAPLS(ISTRAI)%PMUL
+      IF (ASSOCIATED(P)) THEN
+        DO WHILE (ASSOCIATED(P%NXTMUL))
+          P => P%NXTMUL
+        END DO
+        P%NXTMUL => COLLECT_MULARR
+        COLLECT_MULARR => EAPLS(ISTRAI)%PMUL
+        NULLIFY(EAPLS(ISTRAI)%PMUL)
+      END IF
+ 
+C  FREE EMPLS
+      P => EMPLS(ISTRAI)%PMUL
+      IF (ASSOCIATED(P)) THEN
+        DO WHILE (ASSOCIATED(P%NXTMUL))
+          P => P%NXTMUL
+        END DO
+        P%NXTMUL => COLLECT_MULARR
+        COLLECT_MULARR => EMPLS(ISTRAI)%PMUL
+        NULLIFY(EMPLS(ISTRAI)%PMUL)
+      END IF
+ 
+ 
+C  FREE EIPLS
+      P => EIPLS(ISTRAI)%PMUL
+      IF (ASSOCIATED(P)) THEN
+        DO WHILE (ASSOCIATED(P%NXTMUL))
+          P => P%NXTMUL
+        END DO
+        P%NXTMUL => COLLECT_MULARR
+        COLLECT_MULARR => EIPLS(ISTRAI)%PMUL
+        NULLIFY(EIPLS(ISTRAI)%PMUL)
+      END IF
+ 
+C  FREE EPPL_COPS
+      P => EPPL_COPS(ISTRAI)%PMUL
+      IF (ASSOCIATED(P)) THEN
+        DO WHILE (ASSOCIATED(P%NXTMUL))
+          P => P%NXTMUL
+        END DO
+        P%NXTMUL => COLLECT_MULARR
+        COLLECT_MULARR => EPPL_COPS(ISTRAI)%PMUL
+        NULLIFY(EPPL_COPS(ISTRAI)%PMUL)
+      END IF
+ 
  
 C  FREE PDENAS
       P => PDENAS(ISTRAI)%PMUL

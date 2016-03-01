@@ -4,6 +4,8 @@ C  15.02.05 :    double printout: fatm2,....taken out. use only getscl4, not get
 C   6. 7.05 :    call ph_integrate for photon-background tallies taken out.
 C                no more additional photon background tallies active
 C  15.12.05 :    rescaling connected to spump surface tally
+cdr  dec. 15:    added species index ipls, for volumetric energy source tallies for bulk ions
+cdr              eapl,empl,eipl,ephpl
  
       SUBROUTINE EIRENE_SCALE_TALLIES (ISTRA)
 C
@@ -507,6 +509,10 @@ C
             IF (LPMPL) PMPL(IPLS,J)=PMPL(IPLS,J)*FMOL
             IF (LPIPL) PIPL(IPLS,J)=PIPL(IPLS,J)*FION
             IF (LPPHPL) PPHPL(IPLS,J)=PPHPL(IPLS,J)*FPHOT
+            IF (LEAPL) EAPL(IPLS,J)=EAPL(IPLS,J)*FATM
+            IF (LEMPL) EMPL(IPLS,J)=EMPL(IPLS,J)*FMOL
+            IF (LEIPL) EIPL(IPLS,J)=EIPL(IPLS,J)*FION
+            IF (LEPHPL) EPHPL(IPLS,J)=EPHPL(IPLS,J)*FPHOT
             IF (LMAPL) MAPL(IPLS,J)=MAPL(IPLS,J)*FATM
             IF (LMMPL) MMPL(IPLS,J)=MMPL(IPLS,J)*FMOL
             IF (LMIPL) MIPL(IPLS,J)=MIPL(IPLS,J)*FION
@@ -518,21 +524,15 @@ C
           PMPLI(IPLS,ISTRA)=PMPLI(IPLS,ISTRA)*FMOL
           PIPLI(IPLS,ISTRA)=PIPLI(IPLS,ISTRA)*FION
           PPHPLI(IPLS,ISTRA)=PPHPLI(IPLS,ISTRA)*FPHOT
+          EAPLI(IPLS,ISTRA)=EAPLI(IPLS,ISTRA)*FATM
+          EMPLI(IPLS,ISTRA)=EMPLI(IPLS,ISTRA)*FMOL
+          EIPLI(IPLS,ISTRA)=EIPLI(IPLS,ISTRA)*FION
+          EPHPLI(IPLS,ISTRA)=EPHPLI(IPLS,ISTRA)*FPHOT
           MAPLI(IPLS,ISTRA)=MAPLI(IPLS,ISTRA)*FATM
           MMPLI(IPLS,ISTRA)=MMPLI(IPLS,ISTRA)*FMOL
           MIPLI(IPLS,ISTRA)=MIPLI(IPLS,ISTRA)*FION
           MPHPLI(IPLS,ISTRA)=MPHPLI(IPLS,ISTRA)*FPHOT
         END DO
-        DO 449 J=1,NSBOX_TAL
-          IF (LEAPL) EAPL(J)=EAPL(J)*FATM
-          IF (LEMPL) EMPL(J)=EMPL(J)*FMOL
-          IF (LEIPL) EIPL(J)=EIPL(J)*FION
-          IF (LEPHPL) EPHPL(J)=EPHPL(J)*FPHOT
-449     CONTINUE
-        EAPLI(ISTRA)=EAPLI(ISTRA)*FATM
-        EMPLI(ISTRA)=EMPLI(ISTRA)*FMOL
-        EIPLI(ISTRA)=EIPLI(ISTRA)*FION
-        EPHPLI(ISTRA)=EPHPLI(ISTRA)*FPHOT
 C
 C  ELECTRON TALLIES
 C

@@ -1,8 +1,11 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
+cdr  nov. 15:  comments,  irds --> irei
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
 C  SET ATOMIC AND MOLECULAR DATA: DRIVER
+C
+CDR  CALLED IN INITIALIZATION PHASE OF RUN
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -16,7 +19,7 @@ C
  
       real(dp) :: tpb1, tpb2, second_own
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER :: I, IRPI, IRDS
+      INTEGER :: I, IRPI, IREI
  
 !pb      tpb1 = second_own()
  
@@ -112,37 +115,52 @@ csw
 !pb        write (6,*) ' cpu time for condense ',tpb2-tpb1
 !pb        tpb1 = tpb2
  
- 
+c
+cdr  set some further assistant arrays, for ei and pi processes:
+cdr  accumulated information from A, M, I ,P and PH for particle processes 'ei' and 'pi'. 
+cdr  These array are stored in comxs and are used for scoring
+cdr  tallies in update.f (tracklength) and collide.f (coll. estim) exclusively
+
+cdr 
       IPATDS = 0
       IPMLDS = 0
       IPIODS = 0
+cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLDS = 0
-      DO IRDS=1,NRDS
-        ipatds(IRDS,0)=COUNT(PATDS(IRDS,1:) > 0)
-        IF (ipatds(IRDS,0).GT.0) THEN          ! inserted by Derek Harting 26.03
-             IPATDS(IRDS,1:ipatds(IRDS,0))=PACK( (/ (i,i=1,natm) /),
-     .                                     PATDS(IRDS,1:) > 0)
+      DO IREI=1,NRDS
+        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds (<= natm) 
+cdr                                                 atomic species which appear as secondaries, 
+cdr                                                 with one or more per atomic species iatm 
+        IF (ipatds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
+             IPATDS(IREI,1:ipatds(IREI,0))=PACK( (/ (i,i=1,natm) /),
+     .                                     PATDS(IREI,1:) > 0)
+cdr  IPATDS(IREI,...)=iatm means:  one or more secondaries of species iatm
+c
+cdr  the arrays patds,...,pplds, and p2nd, contain the further information: 
+cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
-        ipmlds(IRDS,0)=COUNT(PMLDS(IRDS,1:) > 0)
-        IF (ipmlds(IRDS,0).GT.0) THEN          ! inserted by Derek Harting 26.03
-             IPMLDS(IRDS,1:ipmlds(IRDS,0))=PACK( (/ (i,i=1,nmol) /),
-     .                                     PMLDS(IRDS,1:) > 0)
+        ipmlds(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
+        IF (ipmlds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
+             IPMLDS(IREI,1:ipmlds(IREI,0))=PACK( (/ (i,i=1,nmol) /),
+     .                                     PMLDS(IREI,1:) > 0)
         END IF
-        ipiods(IRDS,0)=COUNT(PIODS(IRDS,1:) > 0)
-        IF (ipiods(IRDS,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
-             IPIODS(IRDS,1:ipiods(IRDS,0))=PACK( (/ (i,i=1,nion) /),
-     .                                     PIODS(IRDS,1:) > 0)
+        ipiods(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
+        IF (ipiods(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
+             IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
+     .                                     PIODS(IREI,1:) > 0)
         END IF
-        ipplds(IRDS,0)=COUNT(PPLDS(IRDS,1:) > 0)
-        IF (ipplds(IRDS,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
-             IPPLDS(IRDS,1:ipplds(IRDS,0))=PACK( (/ (i,i=1,npls) /),
-     .                                     PPLDS(IRDS,1:) > 0)
+        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)
+        IF (ipplds(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
+             IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
+     .                                     PPLDS(IREI,1:) > 0)
         END IF
       END DO
- 
+
+cdr:  same as above, for PI processes 
       IPATPI = 0
       IPMLPI = 0
       IPIOPI = 0
+cdr   IPPHPI = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
       IPPLPI = 0
       DO IRPI=1,NRPI
         ipatpi(IRPI,0)=COUNT(PATPI(IRPI,1:) > 0)

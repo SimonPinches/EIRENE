@@ -19,7 +19,12 @@ C           entries: atm, mol, ion voll syncronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
 c  06.08.15 arguments added to vecusr
-c  24.08.15  comments and doocumention wrt. BGK collision treatmen
+c  24.08.15 comments and documention wrt. BGK collision treatment
+cdr dec.15: tracklength estimators for heavy test particle post collision energies 
+cdr         in PI processes added. For A, M, I incident test particles.
+cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
+
+cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 
  
 C
@@ -285,7 +290,10 @@ C
 C
 C  PRE COLLISION RATES, BULK IONS
 C
-              IF (LEAPL) EAPL(IRD) = EAPL(IRD) - WTRSIG*ESIGCX(IRCX,1)
+              IF (LEAPL) THEN
+                EAPL(IPLS,IRD) = EAPL(IPLS,IRD) - WTRSIG*ESIGCX(IRCX,1)
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C
 C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C  FIRST SECONDARY: PREVIOUS BULK ION IPL
@@ -304,7 +312,10 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               ELSEIF (N1STX(IRCX,1).EQ.4) THEN
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
-                IF (LEAPL) EAPL(IRD) = EAPL(IRD) + WTRSIG*ESIGCX(IRCX,1)
+                IF (LEAPL) THEN
+                  EAPL(IPL1,IRD) = EAPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
+                  LMETSP(NSPAMI+IPL1) = .TRUE.
+                END IF
               ENDIF
 C  SECOND SECONDARY: PREVIOUS ATOM IATM
               IF (N2NDX(IRCX,1).EQ.1) THEN
@@ -322,7 +333,10 @@ C  SECOND SECONDARY: PREVIOUS ATOM IATM
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
-                IF (LEAPL) EAPL(IRD) = EAPL(IRD) + WTRSIG*E0
+                IF (LEAPL) THEN 
+                  EAPL(IPL2,IRD) = EAPL(IPL2,IRD) + WTRSIG*E0
+                  LMETSP(NSPAMI+IPL2) = .TRUE.
+                END IF
               ENDIF
             ENDIF
           ENDIF
@@ -383,10 +397,16 @@ C  AVERAGE ENERGY OF POST COLLISION ATOM IS THAT OF PRE COLLISION BULK
 C
 C  PRE COLLISION RATES, BULK IONS
 C
-              IF (LEAPL) EAPL(IRD)=EAPL(IRD)-WTRSIG*ESIGEL(IREL,1)
+              IF (LEAPL) THEN
+                EAPL(IPLS,IRD)=EAPL(IPLS,IRD)-WTRSIG*ESIGEL(IREL,1)
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C
 C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
-              IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*E0
+              IF (LEAPL)  THEN
+                EAPL(IPLS,IRD)=EAPL(IPLS,IRD)+WTRSIG*E0
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C  SECOND SECONDARY: = INCIDENT ATOM. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEAAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGEL(IREL,1)
             ENDIF
@@ -482,7 +502,18 @@ C
               IF (LEAAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGEI(IREI,1)
               IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGEI(IREI,3)
-              IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGEI(IREI,4)
+              IF (LEAPL) THEN
+                DO IP=1,IPPLDS(IREI,0)
+                  IPL=IPPLDS(IREI,IP)
+                  LOGPLS(IPL,ISTRA)=.TRUE.
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
+cdr  must be fragmented into individual ipl contributions
+                  EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
+                  LMETSP(NSPAMI+IPL)=.TRUE.
+                END DO
+              END IF 
 C
             ENDIF
           ENDIF
@@ -580,11 +611,21 @@ C
 C
             ELSE
 C
-C SO NICHT    EAAT(IRD)     = EAAT(IRD)     +WTRSIG*E0
-C SO NICHT    EAML(IRD)     = EAML(IRD)     +WTRSIG*E0
-C SO NICHT    EAIO(IRD)     = EAIO(IRD)     +WTRSIG*E0
-C SO NICHT    EAPL(IRD)     = EAPL(IRD)     +WTRSIG*E0
-              IF (LEAPL) EAPL(IRD)=EAPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
+              IF (LEAAT) EAAT(IRD)=EAAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEAPL) THEN
+                DO IP=1,IPPLPI(IRPI,0)
+                  IPL=IPPLPI(IRPI,IP)
+                  LOGPLS(IPL,ISTRA)=.TRUE.
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
+cdr  must be fragmented into individual ipl contributions
+                  EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
+                  LMETSP(NSPAMI+IPL)=.TRUE.
+                ENDDO
+              END IF
             ENDIF
           ENDIF
 58      CONTINUE
@@ -903,7 +944,10 @@ C
 C
 C  PRE COLLISION RATES, BULK IONS
 C
-              IF (LEMPL) EMPL(IRD) = EMPL(IRD) - WTRSIG*ESIGCX(IRCX,1)
+              IF (LEMPL) THEN
+                EMPL(IPLS,IRD) = EMPL(IPLS,IRD) - WTRSIG*ESIGCX(IRCX,1)
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C
 C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C  FIRST SECONDARY: PREVIOUS BULK ION IPL
@@ -922,7 +966,10 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               ELSEIF (N1STX(IRCX,1).EQ.4) THEN
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
-                IF (LEMPL) EMPL(IRD) = EMPL(IRD) + WTRSIG*ESIGCX(IRCX,1)
+                IF (LEMPL) THEN
+                  EMPL(IPL1,IRD) = EMPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
+                  LMETSP(NSPAMI+IPL1)=.TRUE.
+                END IF
               ENDIF
 C  SECOND SECONDARY: PREVIOUS MOLECULE IMOL
               IF (N2NDX(IRCX,1).EQ.1) THEN
@@ -940,7 +987,10 @@ C  SECOND SECONDARY: PREVIOUS MOLECULE IMOL
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
-                IF (LEMPL) EMPL(IRD) = EMPL(IRD) + WTRSIG*E0
+                IF (LEMPL)  THEN
+                  EMPL(IPL2,IRD) = EMPL(IPL2,IRD)+ WTRSIG*E0
+                  LMETSP(NSPAMI+IPL2)=.TRUE.
+                END IF
               ENDIF
             ENDIF
           ENDIF
@@ -1001,10 +1051,16 @@ C  AVERAGE ENERGY OF POST COLLISION ATOM IS THAT OF PRE COLLISION BULK
 C
 C  PRE COLLISION RATES, BULK IONS
 C
-              IF (LEMPL) EMPL(IRD)=EMPL(IRD)-WTRSIG*ESIGEL(IREL,1)
+              IF (LEMPL) THEN
+                EMPL(IPLS,IRD)=EMPL(IPLS,IRD)-WTRSIG*ESIGEL(IREL,1)
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C
 C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
-              IF (LEMPL) EMPL(IRD)=EMPL(IRD)+WTRSIG*E0
+              IF (LEMPL)  THEN
+                EMPL(IPLS,IRD)=EMPL(IPLS,IRD)+WTRSIG*E0
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C  SECOND SECONDARY: = INCIDENT MOLECULE. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGEL(IREL,1)
             ENDIF
@@ -1100,7 +1156,18 @@ C
               IF (LEMAT) EMAT(IRD)=EMAT(IRD)+WTRSIG*ESIGEI(IREI,1)
               IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGEI(IREI,3)
-              IF (LEMPL) EMPL(IRD)=EMPL(IRD)+WTRSIG*ESIGEI(IREI,4)
+              IF (LEMPL) THEN
+                DO IP=1,IPPLDS(IREI,0)
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigei is the total for this species.
+cdr  must be fragmented into individual ipl contributions
+                  IPL=IPPLDS(IREI,IP)
+                  LOGPLS(IPL,ISTRA)=.TRUE.
+                  EMPL(IPL,IRD)=EMPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
+                  LMETSP(NSPAMI+IPL)=.TRUE.
+                END DO
+              END IF
 C
             ENDIF
           ENDIF
@@ -1198,11 +1265,21 @@ C
 C
             ELSE
 C
-C SO NICHT    EMAT(IRD)     = EMAT(IRD)     +WTRSIG*E0
-C SO NICHT    EMML(IRD)     = EMML(IRD)     +WTRSIG*E0
-C SO NICHT    EMIO(IRD)     = EMIO(IRD)     +WTRSIG*E0
-C SO NICHT    EMPL(IRD)     = EMPL(IRD)     +WTRSIG*E0
-            IF (LEMPL) EMPL(IRD)=EMPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
+              IF (LEMAT) EMAT(IRD)=EMAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEMPL) THEN
+                DO IP=1,IPPLPI(IRPI,0)
+cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
+cdr  must be fragmented into individual ipl contributions
+                  IPL=IPPLPI(IRPI,IP)
+                  LOGPLS(IPL,ISTRA)=.TRUE.
+                  EMPL(IPL,IRD)=EMPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
+                  LMETSP(NSPAMI+IPL)=.TRUE.
+                END DO
+              END IF
             ENDIF
           ENDIF
 148     CONTINUE
@@ -1523,7 +1600,10 @@ C
 C
 C  PRE COLLISION RATES, BULK IONS
 C
-              IF (LEIPL) EIPL(IRD) = EIPL(IRD) - WTRSIG*ESIGCX(IRCX,1)
+              IF (LEIPL) THEN
+                EIPL(IPLS,IRD) = EIPL(IPLS,IRD) - WTRSIG*ESIGCX(IRCX,1)
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
 C
 C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C  FIRST SECONDARY: PREVIOUS BULK ION IPL
@@ -1542,7 +1622,10 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               ELSEIF (N1STX(IRCX,1).EQ.4) THEN
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
-                IF (LEIPL) EIPL(IRD) = EIPL(IRD) + WTRSIG*ESIGCX(IRCX,1)
+                IF (LEIPL) THEN
+                  EIPL(IPL1,IRD) = EIPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
+                  LMETSP(NSPAMI+IPL1)=.TRUE.
+                END IF
               ENDIF
 C  SECOND SECONDARY: PREVIOUS ATOM IATM
               IF (N2NDX(IRCX,1).EQ.1) THEN
@@ -1560,7 +1643,10 @@ C  SECOND SECONDARY: PREVIOUS ATOM IATM
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
-                IF (LEIPL) EIPL(IRD) = EIPL(IRD) + WTRSIG*E0
+                IF (LEIPL) THEN 
+                  EIPL(IPL2,IRD) = EIPL(IPL2,IRD) + WTRSIG*E0
+                  LMETSP(NSPAMI+IPL2)=.TRUE.
+                END IF
               ENDIF
             ENDIF
           ENDIF
@@ -1605,7 +1691,7 @@ C           END IF
             END IF
           ENDIF
 C
-          IF (LEA) THEN
+          IF (LEIO) THEN
             IF (IESTEL(IREL,3).NE.0) THEN
  
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -1621,10 +1707,16 @@ C  AVERAGE ENERGY OF POST COLLISION ATOM IS THAT OF PRE COLLISION BULK
 C
 C  PRE COLLISION RATES, BULK IONS
 C
-              IF (LEIPL) EIPL(IRD)=EIPL(IRD)-WTRSIG*ESIGEL(IREL,1)
+              IF (LEIPL) THEN
+                EIPL(IPLS,IRD)=EIPL(IPLS,IRD)-WTRSIG*ESIGEL(IREL,1)
+                LMETSP(NSPAM+IPLS)=.TRUE.
+              END IF
 C
 C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
-              IF (LEIPL) EIPL(IRD)=EIPL(IRD)+WTRSIG*E0
+              IF (LEIPL) THEN
+                EIPL(IPLS,IRD)=EIPL(IPLS,IRD)+WTRSIG*E0
+                LMETSP(NSPAM+IPLS)=.TRUE.
+              END IF
 C  SECOND SECONDARY: = INCIDENT ATOM. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGEL(IREL,1)
             ENDIF
@@ -1721,7 +1813,18 @@ C
               IF (LEIAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGEI(IREI,1)
               IF (LEIML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGEI(IREI,3)
-              IF (LEIPL) EIPL(IRD)=EIPL(IRD)+WTRSIG*ESIGEI(IREI,4)
+              IF (LEIPL) THEN
+                DO IP=1,IPPLDS(IREI,0)
+cdr  this is incorrect. esigei is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigei is the total for this species.
+cdr  must be fragmented into individual ipl contributions
+                  IPL=IPPLDS(IREI,IP)
+                  LOGPLS(IPL,ISTRA)=.TRUE.
+                  EIPL(IPL,IRD)=EIPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
+                  LMETSP(NSPAMI+IPL)=.TRUE.
+                END DO
+              END IF
 C
             ENDIF
           ENDIF
@@ -1809,7 +1912,7 @@ C
             IF (LEIEL) EIEL(IRD)=EIEL(IRD)+WTRSIG*ESIGPI(IRPI,5)
           ENDIF
  
-          IF (LEA) THEN
+          IF (LEIO) THEN
             IF (IESTPI(IRPI,3).NE.0) THEN
 C
 C  COLLISION ESTIMATOR
@@ -1819,11 +1922,21 @@ C
 C
             ELSE
 C
-C SO NICHT    EIAT(IRD)     = EIAT(IRD)     +WTRSIG*E0
-C SO NICHT    EIML(IRD)     = EIML(IRD)     +WTRSIG*E0
-C SO NICHT    EIIO(IRD)     = EIIO(IRD)     +WTRSIG*E0
-C SO NICHT    EIPL(IRD)     = EIPL(IRD)     +WTRSIG*E0
-              IF (LEIPL) EIPL(IRD)=EIPL(IRD)+WTRSIG*ESIGPI(IRPI,4)
+              IF (LEIAT) EIAT(IRD)=EIAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
+              IF (LEIML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGPI(IRPI,2)
+              IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
+              IF (LEIPL) THEN
+                DO IP=1,IPPLPI(IRPI,0)
+cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigpi is the total for this species.
+cdr  must be fragmented into individual ipl contributions
+                  IPL=IPPLPI(IRPI,IP)
+                  LOGPLS(IPL,ISTRA)=.TRUE.
+                  EIPL(IPL,IRD)=EIPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
+                  LMETSP(NSPAMI+IPL)=.TRUE.
+                END DO
+              END IF
             ENDIF
           ENDIF
 258     CONTINUE

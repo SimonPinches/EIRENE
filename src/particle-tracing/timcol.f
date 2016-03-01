@@ -66,6 +66,8 @@ C  UPDATE SNAPSHOT ESTIMATORS
       IF (NSNVI.GT.0) CALL EIRENE_UPNUSR
 C
 c-dpc
+CDR:  this must be generalized, towards a more general horizon
+CDR   rather then fixed horizon at 100 meters
       dist=sqrt(x0**2+y0**2)
       if(dist.gt.1e4) then
         write(*,*) 'timcol: ERROR!  dist = ',dist,
@@ -85,15 +87,16 @@ C  THIS IS THE LAST SCORE FOR THIS STRATUM TO BE STORED
 C
 C   CENSUS ARRAYS:
 C   SAVE LOCATION, WEIGHT AND OTHER PARAMETERS
+C   STOP SCORING ON CENSUS AFTER NPRNL SCORES
       if (iprnli <= nprnl) then
-         DO 100 J=1,NPARTT
-           RPART(J,IPRNLI)=RPSTT(J)
- 100     CONTINUE
-         DO 110 J=1,MPARTT
-           IPART(J,IPRNLI)=IPSTT(J)
- 110     CONTINUE
+        DO 100 J=1,NPARTT
+          RPART(J,IPRNLI)=RPSTT(J)
+100     CONTINUE
+        DO 110 J=1,MPARTT
+          IPART(J,IPRNLI)=IPSTT(J)
+110     CONTINUE
       else
-         iprnli = nprnl
+        iprnli = nprnl
       end if
 C
 112   continue

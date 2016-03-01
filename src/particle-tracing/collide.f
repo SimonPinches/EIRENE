@@ -18,7 +18,21 @@ cdr oct.21.14 evaluate v-parallel of incident particle only in case of need
 c             i.e.  momentum collision estimators, or generation limit
 c             otherwise: avoid calls to bfield.f
 c
-cdr  5.8.15: ARGUMENTS ADDED TO VECUSR
+cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
+cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
+cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
+cdr Dec.15  :  bug fix pi reaction and cascading was wrong: 
+cdr            irei, rather than irpi, and p2nd 
+cdr            rather than p2np, were used also for PI reactions. now corrected
+
+cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
+cdr         :  see also corresponding corrections/changes in update for tracklength estimators
+cdr DEC. 15 :  bulk ion energy estimatros: species reolved.
+cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
+
+cdr            tbd:  check setting of iestm..flags for collision estimators. 
+cdr                  probably not correct (outdated).
+
 
 
       SUBROUTINE EIRENE_COLLIDE
@@ -53,6 +67,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_COMSPL
       USE EIRMOD_CLOGAU
+      USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
  
       IMPLICIT NONE
@@ -67,9 +82,11 @@ C
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
      .           IBGK, IAD, IAEL, IREL, IP, IMEI, IMCX, IAPI, II, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J
+     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
       INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NRDS)
-      INTEGER, ALLOCATABLE, SAVE :: NAMIDS(:)
+
+C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS
+      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
  
  
 csw add n 2lines
@@ -196,8 +213,21 @@ C       WEIABS=WEIGHT*PPLDS(IREI,0)
 C
 C  COLLISION ESTIMATOR FOR EAAT, EAPL AND EAEL
         IF (IESTEI(IREI,3).NE.0) THEN
+C  score loss of incoming test particle energy
           IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)-WEIGHT*E0
-          IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)+WEIGHT*ESIGEI(IREI,4)
+
+cdr EAPL, EAEL       :  SCORE NET CHANGES.
+cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS. 
+          IF (LEAPL) THEN
+            DO IP=1,IPPLDS(IREI,0)
+cdr:  this is incorrect. esigei must be split into ipl secondaries
+cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  because then esigei is the total for this species.
+              IPL=IPPLDS(IREI,IP)
+              LOGPLS(IPL,ISTRA)=.TRUE.
+              EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
+            END DO
+          END IF
           IF (LEAEL) EAEL(NCELL)=EAEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
         ENDIF
 C
@@ -219,20 +249,20 @@ Cdr  PTOT=0,1,2,etc..., = integer number of next generation particles
 c.......................................................................
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
-          IF (.NOT.ALLOCATED(NAMIDS)) THEN
-            ALLOCATE(NAMIDS(NSPAMI))
+          IF (.NOT.ALLOCATED(NAMIEI)) THEN
+            ALLOCATE(NAMIEI(NSPAMI))
           END IF
-cdr  build one single distribution of secondary particle species, all typs
-          NAMIDS = 0
-          NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIDS(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+cdr  build one single distribution of secondary test particle species, all types
+          NAMIEI = 0
+          NAMIEI(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIDS(I)
+            DO J=1, NAMIEI(I)
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -247,7 +277,10 @@ C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
 C  NUMBER OF NODES AT THIS LEVEL
               NODES(NLEVEL)=2  !  CDR  ONE PARTICLE SCORE IN EACH LEVEL
 
-              IF (NLTRC) WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
+              IF (NLTRC) THEN 
+                WRITE (IUNOUT,*) 'SPLITTING IN COLATM, EI PROCESS '
+                WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
+              ENDIF
             END DO
           END DO
 
@@ -255,9 +288,9 @@ C  NUMBER OF NODES AT THIS LEVEL
           NLEVEL = NLEVEL - 1   !  
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
-CDR:   VELOEI FOR THIS CONTINUED PARTICLE HAS ALREADY BEEN SET
+CDR:   VELOEI FOR THIS CONTINUED PARTICLE HAS ALREADY BEEN CALLED
 
-        ELSE
+          ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -331,7 +364,10 @@ C  E.G. FOR CX RECOMBINATION
           RETURN
         ENDIF
 
-        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN
+        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  
+! JUST OPPOSITE TO EI CASE:
+CDR IN EI CASE: LAST SECONDARY WAS FOLLOWED, ALL OTHERS STORED ON SPLITTING ARRAY.
+CDR IN CX CASE: OPPOSITE.   TRY TO UNIFY !!
 
 C  STORE 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
@@ -385,6 +421,8 @@ C  FOLLOW 1ST SECONDARY
      .        'ANALOG CALCULATION ABANDONED FOR PART. NO. ',NPANU
             WRITE (iunout,*) 'CASCADE OVERFLOW: NEVEL: ',NLEVEL
           ENDIF
+
+C  FROM HERE: OLD GAME, NO SPLITTING
 
           WEIGHT=WEIGHT*SCNDP
           ZEP3=RANF_EIRENE( )*SCNDP
@@ -501,9 +539,16 @@ c  UPDATE collision estimator for CX energy exchange tallies
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)-E0O*WGHTO
               IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)+E0*WEIGHT
-              IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)-E0*WEIGHT
+              IF (LEAPL) THEN
+                EAPL(IPLS,NCELL)=EAPL(IPLS,NCELL)-E0*WEIGHT
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
               IF (N2NDX(IRCX,1).EQ.4) THEN
-                IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)+E0O*WGHTO
+                IPLSN=N2NDX(IRCX,2)
+                IF (LEAPL) THEN
+                  EAPL(IPLSN,NCELL)=EAPL(IPLSN,NCELL)+E0O*WGHTO
+                  LMETSP(NSPAMI+IPLSN)=.TRUE.
+                ENDIF
               ELSE
                 GOTO 999
               ENDIF
@@ -671,7 +716,10 @@ c  UPDATE collision estimator for EL energy exchange tallies
         IF (IESTEL(IREL,3).NE.0) THEN
           EDEL=E0O*WGHTO-E0*WEIGHT
           IF (LEAAT) EAAT(NCELL)      =EAAT(NCELL)-EDEL
-          IF (LEAPL) EAPL(NCELL)      =EAPL(NCELL)+EDEL
+          IF (LEAPL) THEN
+            EAPL(IPLS,NCELL) =EAPL(IPLS,NCELL)+EDEL
+            LMETSP(NSPAMI+IPLS)=.TRUE.
+          END IF
         ENDIF
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (FORMERLY: COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
@@ -702,7 +750,7 @@ C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
 C
       ELSE
 C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT+SIGELT
         DO 261 IAPI=1,NAPIIM(IATM)
 C   FIND INDEX OF THAT ION IMPACT COLLISION
@@ -726,9 +774,21 @@ C       WEIABS=WEIGHT*PPLPI(IRPI,0)
 C
 C  COLLISION ESTIMATOR FOR EAAT, EAPL AND EAEL
         IF (IESTPI(IRPI,3).NE.0) THEN
+C  score loss of incoming test particle energy
           IF (LEAAT) EAAT(NCELL)=EAAT(NCELL)-WEIGHT*E0
-!pb       IF (LEAPL) EAPL(NCELL)=EAPL(NCELL)+WEIGHT*ESIGPI(IRPI,4)
-!pb       IF (LEAEL) EAEL(NCELL)=EAEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
+
+cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
+cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
+          IF (LEAPL) THEN
+            DO IP=1,IPPLDS(IRPI,0)
+cdr:  this is incorrect. esigpi must be split into ipl secondaries
+              IPL=IPPLPI(IRPI,IP)
+              LOGPLS(IPL,ISTRA)=.TRUE.
+              EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGPI(IRPI,4)
+              LMETSP(NSPAMI+IPL)=.TRUE.
+            END DO
+          END IF
+          IF (LEAEL) EAEL(NCELL)=EAEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
         ENDIF
 C
 C  ABSORBTION (INTO BULK SPECIES) IS SUPPRESSED
@@ -748,20 +808,20 @@ C
 
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
-          IF (.NOT.ALLOCATED(NAMIDS)) THEN
-            ALLOCATE(NAMIDS(NSPAMI))
+          IF (.NOT.ALLOCATED(NAMIPI)) THEN
+            ALLOCATE(NAMIPI(NSPAMI))
           END IF
-          NAMIDS = 0
-          NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIDS(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIPI = 0
+          NAMIPI(NSPH+1:NSPA) = PATPI(IRPI,1:NATMI)
+          NAMIPI(NSPA+1:NSPAM) = PMLPI(IRPI,1:NMOLI)
+          NAMIPI(NSPAM+1:NSPAMI) = PIOPI(IRPI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIDS(I)
-              ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
+            DO J=1, NAMIPI(I)
+              ZEP = 0.5_DP * (P2NP(IRPI,I-1)+P2NP(IRPI,I))
               CALL EIRENE_VELOPI(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,
      .                           NOLD,VELQ,NFLAG,IRPI,RMAIO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -925,8 +985,20 @@ C
 C  PRE- COLLISION ESTIMATOR FOR EMML,
 C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
         IF (IESTEI(IREI,3).NE.0) THEN
+C  score loss of incoming test particle energy
           IF (LEMML) EMML(NCELL)=EMML(NCELL)-WEIGHT*E0
-          IF (LEMPL) EMPL(NCELL)=EMPL(NCELL)+WEIGHT*ESIGEI(IREI,4)
+
+cdr EMPL, EMEL       :  SCORE NET CHANGES HERE.
+cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER. 
+          IF (LEMPL) THEN
+            DO IP=1,IPPLDS(IREI,0)
+cdr:  this is incorrect. esigei must be split into ipl secondaries
+              IPL=IPPLDS(IREI,IP)
+              LOGPLS(IPL,ISTRA)=.TRUE.
+              EMPL(IPL,NCELL)=EMPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
+              LMETSP(NSPAMI+IPL)=.TRUE.
+            END DO
+         END IF
           IF (LEMEL) EMEL(NCELL)=EMEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
         ENDIF
 C
@@ -944,19 +1016,19 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
 C
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
-          IF (.NOT.ALLOCATED(NAMIDS)) THEN
-            ALLOCATE(NAMIDS(NSPAMI))
+          IF (.NOT.ALLOCATED(NAMIEI)) THEN
+            ALLOCATE(NAMIEI(NSPAMI))
           END IF
-          NAMIDS = 0
-          NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIDS(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI = 0
+          NAMIEI(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIDS(I)
+            DO J=1, NAMIEI(I)
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -1164,9 +1236,16 @@ C  IPLSN ION SPECIES AFTER CX
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEMML) EMML(NCELL)=EMML(NCELL)-E0O*WGHTO
               IF (LEMAT) EMAT(NCELL)=EMAT(NCELL)+E0*WEIGHT
-              IF (LEMPL) EMPL(NCELL)=EMPL(NCELL)-E0*WEIGHT
+              IF (LEMPL) THEN
+                EMPL(IPLS,NCELL)=EMPL(IPLS,NCELL)-E0*WEIGHT
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
               IF (N2NDX(IRCX,1).EQ.4) THEN
-                IF (LEMPL) EMPL(NCELL)=EMPL(NCELL)+E0O*WGHTO
+                IF (LEMPL) THEN
+                  IPLSN=N2NDX(IRCX,2)
+                  EMPL(IPLSN,NCELL)=EMPL(IPLSN,NCELL)+E0O*WGHTO
+                  LMETSP(NSPAMI+IPLSN)=.TRUE.
+                END IF
               ELSE
                 GOTO 999
               ENDIF
@@ -1355,7 +1434,10 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
         IF (IESTEL(IREL,3).NE.0) THEN
           EDEL=E0O*WGHTO-E0*WEIGHT
           IF (LEMML) EMML(NCELL)      =EMML(NCELL)-EDEL
-          IF (LEMPL) EMPL(NCELL)      =EMPL(NCELL)+EDEL
+          IF (LEMPL) THEN
+            EMPL(IPLS,NCELL) =EMPL(IPLS,NCELL)+EDEL
+            LMETSP(NSPAMI+IPLS)=.TRUE.
+          END IF
         ENDIF
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MMPL (COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
@@ -1386,7 +1468,7 @@ C  GENERAL ION IMPACT COLLISION: PI-PROCESSES.
 C
       ELSE
 C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT+SIGELT
         DO 461 IMPI=1,NMPIIM(IMOL)
 C   FIND INDEX OF THAT ION IMPACT COLLISION
@@ -1411,9 +1493,21 @@ C
 C  PRE- COLLISION ESTIMATOR FOR EMML,
 C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
         IF (IESTPI(IRPI,3).NE.0) THEN
+C  score loss of incoming test particle energy
           IF (LEMML) EMML(NCELL)=EMML(NCELL)-WEIGHT*E0
-!pb       IF (LEMPL) EMPL(NCELL)=EMPL(NCELL)+WEIGHT*ESIGPI(IRPI,4)
-!pb       IF (LEMEL) EMEL(NCELL)=EMEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
+
+cdr EMPL, EMEL       :  SCORE NET CHANGES HERE.
+cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER. 
+          IF (LEMPL) THEN
+            DO IP=1,IPPLPI(IRPI,0)
+cdr:  this is incorrect. esigpi must be split into ipl secondaries
+              IPL=IPPLPI(IRPI,IP)
+              LOGPLS(IPL,ISTRA)=.TRUE.
+              EMPL(IPL,NCELL)=EMPL(IPL,NCELL)+WEIGHT*ESIGPI(IRPI,4)
+              LMETSP(NSPAMI+IPL)=.TRUE.
+            END DO
+          END IF
+          IF (LEMEL) EMEL(NCELL)=EMEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
         ENDIF
 C
 C  ABSORBTION (INTO BULK SPECIES) IS SUPPRESSED
@@ -1434,20 +1528,20 @@ C
 
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
-          IF (.NOT.ALLOCATED(NAMIDS)) THEN
-            ALLOCATE(NAMIDS(NSPAMI))
+          IF (.NOT.ALLOCATED(NAMIPI)) THEN
+            ALLOCATE(NAMIPI(NSPAMI))
           END IF
-          NAMIDS = 0
-          NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIDS(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIPI = 0
+          NAMIPI(NSPH+1:NSPA) = PATPI(IRPI,1:NATMI)
+          NAMIPI(NSPA+1:NSPAM) = PMLPI(IRPI,1:NMOLI)
+          NAMIPI(NSPAM+1:NSPAMI) = PIOPI(IRPI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIDS(I)
-              ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
+            DO J=1, NAMIPI(I)
+              ZEP = 0.5_DP * (P2NP(IRPI,I-1)+P2NP(IRPI,I))
               CALL EIRENE_VELOPI(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,
      .                           NOLD,VELQ,NFLAG,IRPI,RMMIO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -1611,8 +1705,20 @@ C       WEIABS=WEIGHT*PPLDS(IREI,0)
 C
 C  COLLISION ESTIMATOR FOR EIIO, EIPL AND EIEL
         IF (IESTEI(IREI,3).NE.0) THEN
+C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
-          IF (LEIPL) EIPL(NCELL)=EIPL(NCELL)+WEIGHT*ESIGEI(IREI,4)
+
+cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
+cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
+          IF (LEIPL)  THEN
+            DO IP=1,IPPLDS(IREI,0)
+cdr:  this is incorrect. esigei must be split into ipl secondaries
+              IPL=IPPLDS(IREI,IP)
+              LOGPLS(IPL,ISTRA)=.TRUE.
+              EIPL(IPL,NCELL)=EIPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
+              LMETSP(NSPAMI+IPL)=.TRUE.
+            END DO
+          END IF
           IF (LEIEL) EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
         ENDIF
 C
@@ -1630,19 +1736,19 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
 C
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
-          IF (.NOT.ALLOCATED(NAMIDS)) THEN
-            ALLOCATE(NAMIDS(NSPAMI))
+          IF (.NOT.ALLOCATED(NAMIEI)) THEN
+            ALLOCATE(NAMIEI(NSPAMI))
           END IF
-          NAMIDS = 0
-          NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIDS(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI = 0
+          NAMIEI(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIDS(I)
+            DO J=1, NAMIEI(I)
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -1839,9 +1945,16 @@ C  IPLSN ION SPECIES AFTER CX
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-E0O*WGHTO
               IF (LEIAT) EIAT(NCELL)=EIAT(NCELL)+E0*WEIGHT
-              IF (LEIPL) EIPL(NCELL)=EIPL(NCELL)-E0*WEIGHT
+              IF (LEIPL) THEN
+                EIPL(IPLS,NCELL)=EIPL(IPLS,NCELL)-E0*WEIGHT
+                LMETSP(NSPAMI+IPLS)=.TRUE.
+              END IF
               IF (N2NDX(IRCX,1).EQ.4) THEN
-                IF (LEIPL) EIPL(NCELL)=EIPL(NCELL)+E0O*WGHTO
+                IF (LEIPL) THEN
+                  IPLSN=N2NDX(IRCX,2)
+                  EIPL(IPLSN,NCELL)=EIPL(IPLSN,NCELL)+E0O*WGHTO
+                  LMETSP(NSPAMI+IPLSN)=.TRUE.
+                END IF
               ELSE
                 GOTO 999
               ENDIF
@@ -1964,7 +2077,7 @@ C
 C
 C  GENERAL ION IMPACT COLLISION: PI-PROCESSES
 C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT
         DO 561 IIPI=1,NIPIIM(IION)
 C   FIND INDEX OF THAT ION IMPACT COLLISION
@@ -1986,12 +2099,24 @@ C       PTOTAL=PTOT+PPLPI(IRPI,0)
 C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLPI(IRPI,0)
 C
-C  PRE- COLLISION ESTIMATOR FOR EMML,
-C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
+C  PRE- COLLISION ESTIMATOR FOR EIIO,
+C  PRE- AND POST COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTPI(IRPI,3).NE.0) THEN
-          IF (LEIML) EIML(NCELL)=EIML(NCELL)-WEIGHT*E0
-!pb       IF (LEIPL) EIPL(NCELL)=EIPL(NCELL)+WEIGHT*ESIGPI(IRPI,4)
-!pb       IF (LEIEL) EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
+C  score loss of incoming test particle energy
+          IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
+
+cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
+cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
+          IF (LEIPL)  THEN
+            DO IP=1,IPPLPI(IRPI,0)
+cdr:  this is incorrect. esigpi must be split into ipl secondaries
+              IPL=IPPLPI(IRPI,IP)
+              LOGPLS(IPL,ISTRA)=.TRUE.
+              EIPL(IPL,NCELL)=EIPL(IPL,NCELL)+WEIGHT*ESIGPI(IRPI,4)
+              LMETSP(NSPAMI+IPL)=.TRUE.
+            END DO
+          END IF
+          IF (LEIEL) EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
         ENDIF
 C
 C  ABSORBTION (INTO BULK SPECIES) IS SUPPRESSED
@@ -2011,20 +2136,20 @@ C
 
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
-          IF (.NOT.ALLOCATED(NAMIDS)) THEN
-            ALLOCATE(NAMIDS(NSPAMI))
+          IF (.NOT.ALLOCATED(NAMIPI)) THEN
+            ALLOCATE(NAMIEI(NSPAMI))
           END IF
-          NAMIDS = 0
-          NAMIDS(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIDS(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIDS(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIPI = 0
+          NAMIPI(NSPH+1:NSPA) = PATPI(IRPI,1:NATMI)
+          NAMIPI(NSPA+1:NSPAM) = PMLPI(IRPI,1:NMOLI)
+          NAMIPI(NSPAM+1:NSPAMI) = PIOPI(IRPI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIDS(I)
-              ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
+            DO J=1, NAMIPI(I)
+              ZEP = 0.5_DP * (P2NP(IRPI,I-1)+P2NP(IRPI,I))
               CALL EIRENE_VELOPI(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,
      .                           NOLD,VELQ,NFLAG,IRPI,RMIIO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -2062,7 +2187,7 @@ C  NUMBER OF NODES AT THIS LEVEL
 
         XGENER=0.D0
 C
-C  UPDATE COLLISION ESTIMATORS CONTRIBUTION TO EAAT;EAML;EAIO
+C  UPDATE COLLISION ESTIMATORS CONTRIBUTION TO EIAT;EIML;EIIO
         IF (ITYP.EQ.1) THEN
           IF (IESTPI(IRPI,3).NE.0) THEN
             IF (LEIAT) EIAT(NCELL)=EIAT(NCELL)+WEIGHT*E0
@@ -2142,9 +2267,9 @@ C
         goto 999
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGOTT) THEN
 C
-C  PHOTON COLLISION (analog to cx in colatm)
+C  PHOTON (OT) COLLISION (analog to cx in colatm)
 C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,4)
 C
 C   FIND SPECIES INDEX OF BULK COLLISION PARTNER
         SIGSUM=SIGEIT+SIGCXT+SIGELT

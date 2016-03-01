@@ -2,6 +2,8 @@ c    2005 bug fix : text(ntalv-13) --> text(71)
 c    17.03.06: txttal and txttlw added for additional tallies
 cdr  29.09.14: TXTUNT corrected for generation limits, momentum sources
 c    oct.14  : input tally 22 (potential) connnected to text arrays
+cdr  dec. 15 : energy source tallies for bulk ions: additional species index ipls
+cdr            tallies 38,44,50,56 and 84
 
       SUBROUTINE EIRENE_SETTXT
 c  set default texts  (volume tallies: name, species, units), ditto: surface and input tallies 
@@ -659,25 +661,25 @@ C
       NFSTVI(35)=1
       NFSTVI(36)=1
       NFSTVI(37)=1
-      NFSTVI(38)=1
+      NFSTVI(38)=NPLSI
       NFSTVI(39)=1
       NFSTVI(40)=1
       NFSTVI(41)=1
       NFSTVI(42)=1
       NFSTVI(43)=1
-      NFSTVI(44)=1
+      NFSTVI(44)=NPLSI
       NFSTVI(45)=1
       NFSTVI(46)=1
       NFSTVI(47)=1
       NFSTVI(48)=1
       NFSTVI(49)=1
-      NFSTVI(50)=1
+      NFSTVI(50)=NPLSI
       NFSTVI(51)=1
       NFSTVI(52)=1
       NFSTVI(53)=1
       NFSTVI(54)=1
       NFSTVI(55)=1
-      NFSTVI(56)=1
+      NFSTVI(56)=NPLSI
 C
       NFSTVI(NTALA)=NADVI
       NFSTVI(NTALC)=NCLVI
@@ -707,7 +709,7 @@ C     NFSTVI(NTALB) IS DEFINED IN SUBR. XSECT...
       NFSTVI(81)=1
       NFSTVI(82)=1
       NFSTVI(83)=1
-      NFSTVI(84)=1
+      NFSTVI(84)=NPLSI
       NFSTVI(85)=NATMI
       NFSTVI(86)=NMOLI
       NFSTVI(87)=NIONI
@@ -889,25 +891,25 @@ C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
       NSPAN(35)=0
       NSPAN(36)=0
       NSPAN(37)=0
-      NSPAN(38)=0
+      NSPAN(38)=N4+1
       NSPAN(39)=0
       NSPAN(40)=0
       NSPAN(41)=0
       NSPAN(42)=0
       NSPAN(43)=0
-      NSPAN(44)=0
+      NSPAN(44)=N4+1
       NSPAN(45)=0
       NSPAN(46)=0
       NSPAN(47)=0
       NSPAN(48)=0
       NSPAN(49)=0
-      NSPAN(50)=0
+      NSPAN(50)=N4+1
       NSPAN(51)=0
       NSPAN(52)=0
       NSPAN(53)=0
       NSPAN(54)=0
       NSPAN(55)=0
-      NSPAN(56)=0
+      NSPAN(56)=N4+1
 C  ADDITIONAL TALLIES
       NSPAN(NTALA)=N5+1
       NSPAN(NTALC)=N7+1
@@ -937,7 +939,7 @@ C  GENERATION LIMIT TALLIES
       NSPAN(81)=0
       NSPAN(82)=0
       NSPAN(83)=0
-      NSPAN(84)=0
+      NSPAN(84)=N4+1
       NSPAN(85)=N1+1
       NSPAN(86)=N2+1
       NSPAN(87)=N3+1
@@ -992,25 +994,25 @@ C  GENERATION LIMIT TALLIES
       NSPEN(35)=0
       NSPEN(36)=0
       NSPEN(37)=0
-      NSPEN(38)=0
+      NSPEN(38)=N5
       NSPEN(39)=0
       NSPEN(40)=0
       NSPEN(41)=0
       NSPEN(42)=0
       NSPEN(43)=0
-      NSPEN(44)=0
+      NSPEN(44)=N5
       NSPEN(45)=0
       NSPEN(46)=0
       NSPEN(47)=0
       NSPEN(48)=0
       NSPEN(49)=0
-      NSPEN(50)=0
+      NSPEN(50)=N5
       NSPEN(51)=0
       NSPEN(52)=0
       NSPEN(53)=0
       NSPEN(54)=0
       NSPEN(55)=0
-      NSPEN(56)=0
+      NSPEN(56)=N5
 C  ADDITIONAL TALLIES
       NSPEN(NTALA)=N6
       NSPEN(NTALC)=N8
@@ -1040,7 +1042,7 @@ C  GENERATION LIMIT TALLIES
       NSPEN(81)=0
       NSPEN(82)=0
       NSPEN(83)=0
-      NSPEN(84)=0
+      NSPEN(84)=N5
       NSPEN(85)=N2
       NSPEN(86)=N3
       NSPEN(87)=N4
@@ -1132,7 +1134,12 @@ C
         TXTSPC(IPLS,20)=TEXTS(ISPZ)
         TXTSPC(IPLS,26)=TEXTS(ISPZ)
         TXTSPC(IPLS,32)=TEXTS(ISPZ)
+        TXTSPC(IPLS,38)=TEXTS(ISPZ)
+        TXTSPC(IPLS,44)=TEXTS(ISPZ)
+        TXTSPC(IPLS,50)=TEXTS(ISPZ)
+        TXTSPC(IPLS,56)=TEXTS(ISPZ)
         TXTSPC(IPLS,79)=TEXTS(ISPZ)
+        TXTSPC(IPLS,84)=TEXTS(ISPZ)
         TXTSPC(IPLS,97)=TEXTS(ISPZ)
         TXTSPC(IPLS,98)=TEXTS(ISPZ)
         TXTSPC(IPLS,99)=TEXTS(ISPZ)
@@ -1172,11 +1179,6 @@ C
       TXTSPC(1,55)='PHOTONS                 '
       TXTSPC(1,83)='PHOTONS                 '
 C
-      TXTSPC(1,38)='BULK IONS               '
-      TXTSPC(1,44)='BULK IONS               '
-      TXTSPC(1,50)='BULK IONS               '
-      TXTSPC(1,56)='BULK IONS               '
-      TXTSPC(1,84)='BULK IONS               '
 C
 C
 C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES

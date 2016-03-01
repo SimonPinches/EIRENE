@@ -2,7 +2,10 @@ cdr 150423   comments added. Noted that storage tests for volume and surface tal
 cdr          are removed  (now elsewhere?)
 cdr          to be done: nvoltl vs. ntalv  (nvoltl: number of living 1d tallies,
 cdr                      counting individual species indices as one 1D tally
-cdr          check:      nfirst(ital): which value for removed tallies?  storage ? used ?  
+cdr          check:      nfirst(ital): which value for removed tallies?  storage ? used ?
+
+cdr dec 15:  energy balance tallies for bulk ions: now have a species index (ipls): 
+cdr          tallies 38,44,50,56,84  
 
 
 C
@@ -239,25 +242,25 @@ C  ENERGY SOURCES
       NFIRST(35)=0
       NFIRST(36)=0
       NFIRST(37)=0
-      NFIRST(38)=0
+      NFIRST(38)=NPLS
       NFIRST(39)=0
       NFIRST(40)=0
       NFIRST(41)=0
       NFIRST(42)=0
       NFIRST(43)=0
-      NFIRST(44)=0
+      NFIRST(44)=NPLS
       NFIRST(45)=0
       NFIRST(46)=0
       NFIRST(47)=0
       NFIRST(48)=0
       NFIRST(49)=0
-      NFIRST(50)=0
+      NFIRST(50)=NPLS
       NFIRST(51)=0
       NFIRST(52)=0
       NFIRST(53)=0
       NFIRST(54)=0
       NFIRST(55)=0
-      NFIRST(56)=0
+      NFIRST(56)=NPLS
       NFIRST(NTALA)=NADV
       NFIRST(NTALC)=NCLV
       NFIRST(NTALT)=NSNV
@@ -288,7 +291,7 @@ C  PRIMARY SOURCE TALLIES, ENERGY
       NFIRST(81)=0
       NFIRST(82)=0
       NFIRST(83)=0
-      NFIRST(84)=0
+      NFIRST(84)=NPLS
 C  MOMENTRUM DENSITY, X DIRECTION
       NFIRST(85)=NATM
       NFIRST(86)=NMOL
