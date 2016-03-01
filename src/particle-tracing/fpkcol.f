@@ -58,10 +58,20 @@ C
       IMPLICIT NONE
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
-     .            VelPrlBG
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
+     .            VelPrlBG,
+     .            D_VELPAR(1:NPLSI),
+     .            D_VELPER(1:NPLSI),
+     .            D_E0NEW_tmp(1:NPLSI)
+
       INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI
       REAL(DP), EXTERNAL :: RANF_EIRENE
+
+      D_VELPAR = 0.0
+      D_VELPER = 0.0
+      D_E0NEW_tmp = 0.0
+
+
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
       E0OLD=E0
@@ -126,14 +136,19 @@ c  second minimal collision model: change velocities according to
 c  the expectation values of the change
 c  SIGPAR is the sign of the parallel velocity with respect to the
 c  magnetic field
-c        DO IPL = 1, NPLSI ! loop over all background species
-        DO IPL = 1, 1     ! loop over all background species
-           VELPAR = ABS(SIGPAR*VELPAR + dVelPrl_dt(IPL)*1.0E+02*DUR)
-           VELPER = VELPER + dVelPerp_dt(IPL)*1.0E+02*DUR
+        DO IPL = 1, NPLSI ! loop over all background species
+           D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in m/s
+           D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in m/s
+
+           D_E0NEW_tmp(IPL) = 0.5*AMUAKG*RMASSI(IION)*
+     >                      ((SIGPAR*VELPAR*1.0E-02 + D_VELPAR(IPL))**2
+     >                    + (VELPER*1.0E-02 + D_VELPER(IPL))**2)/ELCHA
+
         END DO
 
-        E0NEW = 0.5*AMUAKG*RMASSI(IION)*1.0E-04*
-     >          (VELPAR**2+VELPER**2)/ELCHA
+        E0NEW = 0.5*AMUAKG*RMASSI(IION)*
+     >          ((SIGPAR*VELPAR*1.0E-02 + SUM(D_VELPAR))**2
+     >        + (VELPER*1.0E-02 + SUM(D_VELPER))**2)/ELCHA
         VNEW = RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
@@ -142,10 +157,10 @@ cdr  for the time being: distribute bulk ion energy loss proportional to collisi
 cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
 cdr  temprature(ipls), even different sign.
 cdr  
-        EWG = WEIGHT*(E0NEW-E0OLD)
-        FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
         DO IPL = 1, NPLSI
-          EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-EWG*FNUIAR(IPL)/FNUI
+          EWG = WEIGHT*(E0NEW-E0OLD)
+          EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
+     >                     - EWG*D_E0NEW_tmp(IPL)/SUM(D_E0NEW_tmp)
         END DO
 C
         FAC=SQRT(E0NEW/E0OLD)

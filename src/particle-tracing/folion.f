@@ -1629,9 +1629,154 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
       END FUNCTION DPSI_CHAND
 
 
-      END
- 
-      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)                   
+      SUBROUTINE EIRENE_PREPARE_FPKCOL(TF)
+
+C     FHa: Subroutine to prepare data for the Fokker-Planck collision in the slightly
+C     extended model where the trace ion velocity changes in agreement with the
+C     change of the expectation values (next step after the minimal collision model
+C     where only the energy is relaxed)
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CINIT
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CFPLK
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CUPD
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CZT1
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CLGIN
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMXS
+      USE EIRMOD_CVARUSR
+
+      implicit none
+
+      integer :: IPL, IPLTI
+
+      real*8 :: TF
+      real*8 :: alpha, ub, Chi, Lambda, dChi_dt
+      real*8 :: VelPrlBG
+      real*8 :: DPrl, DPerp
+      real*8 :: TFprl, TFperp
+      real*8 :: TFtemp(1:NPLSI)
+      real*8 :: vabs, dvabs_dt
+
+      CALL EIRENE_ALLOC_CVARUSR(1)
+
+      alpha = 0.1 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      TF    = 1.0E+10
+
+      DO IPL = 1, NPLSI ! loop over all background species
+c      DO IPL = 1, 1 ! loop over all background species
+
+         IPLTI=MPLSTI(IPL)
+
+c  get the parallel part of the background velocity
+         VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
+     >               BYIN(NCELL)*VYIN(IPL,NCELL)+
+     >               BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
+
+         ub = sqrt(2*TIIN(IPLTI,NCELL)*ELCHA/(RMASSP(IPL)*AMUAKG))
+         Chi = sqrt((VELPER*1.0E-02)**2
+     >            + (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)**2)/ub
+         Lambda = NCHRGI(IION)**2*NCHRGP(IPL)**2*ELCHA**4*
+     >            DIIN(IPL,NCELL)*1.0E+06*COULOMBLOG/
+     >            (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
+
+c         print*, ' DIIN:  ', DIIN(IPL,NCELL)
+c         print*, ' TIIN:  ', TIIN(IPLTI,NCELL)
+c         print*, ' VDiff: ', (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
+c         print*
+
+         CALL D_coeff(Chi,DPrl,DPerp)
+
+         DPrl  = Lambda/ub*DPrl
+         DPerp = Lambda/ub*DPerp
+
+c  both dVelPrl_dt and dVelPerp_dt in SI units (meters)!!
+         dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >                      (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
+         dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
+
+c  get the new TF, the distance until next coulomb collision
+         TFprl  = (VELPAR*1.0E-02)**2/dVelPrl_dt(IPL)*alpha
+         TFperp = (VELPER*1.0E-02)**2/dVelPerp_dt(IPL)*alpha
+         TFtemp(IPL) = MIN(TFprl,TFperp)
+
+c         dChi_dt = 1./(ub**2*Chi)*
+c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
+c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
+c         TF = VELPAR*ABS(Chi/dChi_dt)*alpha
+c         TF = VELPAR*1.0E-006
+c         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
+c         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
+c     >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
+c  times VELPAR since TF is a distance
+c         TFtemp = VELPAR*ABS(vabs/dvabs_dt)*alpha
+c         IF (TFtemp .LT. TF) TF = TFtemp
+c         print*
+c         print*, ' TFtemp = ', TFtemp
+c         print*
+
+      END DO
+
+      TF = MINVAL(TFtemp)
+
+      print*, ' TF = ', TF
+
+      END SUBROUTINE EIRENE_PREPARE_FPKCOL
+
+
+
+      subroutine D_coeff(X,D1,D2)
+
+*     ------------------------------------------------------------     *
+*     --Parallel diffusion coefficient for Maxwellian background -     *
+*     --From D. Reiser                                                 *
+*     ------------------------------------------------------------     *
+*     compare notes DR2015: D1 = ub/Lambda*D_prl, D2 = ub/Lambda*D_perp
+
+      IMPLICIT NONE
+      REAL(DP):: X,X2,X3,X4,P0,P1,SQPI
+      REAL(DP):: D1,D2
+      PARAMETER(SQPI=1.772453851) ! sqrt(pi)
+
+      if (X.ge.0.4) then
+         X2 = X*X
+         X3 = X*X2
+         P0 = Erf(X)
+         P1 = 2*exp(-X2)/SQPI
+         D1 = P0/X3-P1/X2
+         D2 = 0.5*P1/X2+P0/X-0.5*P0/X3
+      else
+         X2 = X*X
+         X4 = X2*X2
+         D1 = (4./3.-4./5.*X2+2./7.*X4)/SQPI
+         D2 = (4./3.-4./15.*X2+2./35.*X4)/SQPI
+      end if
+
+      return
+
+      end subroutine D_coeff
+
+      END SUBROUTINE EIRENE_FOLION
+
+
+
+
+
+
+
+
+
+
+      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
 C  IF (IND.EQ.0) RETURN WITH NEW B-FIELD
 C
