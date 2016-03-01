@@ -7,17 +7,23 @@
 
       private
 
+      real*8, allocatable, public :: dVelPrl_dt(:), dVelPerp_dt(:)
+
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
+
 
 
       contains
 
-      subroutine eirene_alloc_cvarusr (ical)
+      subroutine eirene_alloc_cvarusr(ical)
 
       implicit none
       integer, intent(in) :: ical
 
       if (ical == 1) then
+
+         allocate(dVelPrl_dt(1:NPLS))
+         allocate(dVelPerp_dt(1:NPLS))
 
       else if (ical == 2) then
 
@@ -34,6 +40,9 @@
 
       implicit none
 
+         deallocate(dVelPrl_dt)
+         deallocate(dVelPerp_dt)
+
       return
       end subroutine eirene_dealloc_cvarusr
 
@@ -44,6 +53,9 @@
       integer, intent(in) :: ical
 
       if (ical == 1) then
+
+         dVelPrl_dt  = 0.0
+         dVelPerp_dt = 0.0
 
       else if (ical == 2) then
 

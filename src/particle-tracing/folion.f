@@ -1672,7 +1672,6 @@ C     where only the energy is relaxed)
       real*8 :: DPrl, DPerp
       real*8 :: TFprl, TFperp
       real*8 :: TFtemp(1:NPLSI)
-      real*8 :: dVelPrl_dt(1:NPLSI), dVelPerp_dt(1:NPLSI)
       real*8 :: vabs, dvabs_dt
 
       CALL EIRENE_ALLOC_CVARUSR(1)
