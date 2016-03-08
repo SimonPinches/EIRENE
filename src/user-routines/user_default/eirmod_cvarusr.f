@@ -8,6 +8,7 @@
       private
 
       real*8, allocatable, public :: dVelPrl_dt(:), dVelPerp_dt(:)
+      real*8, public :: veltotal
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
 
@@ -19,6 +20,8 @@
 
       implicit none
       integer, intent(in) :: ical
+
+      if (allocated(dVelPrl_dt)) return
 
       if (ical == 1) then
 

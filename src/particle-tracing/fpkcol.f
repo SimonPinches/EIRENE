@@ -62,15 +62,10 @@ C
      .            VelPrlBG,
      .            D_VELPAR(1:NPLSI),
      .            D_VELPER(1:NPLSI),
-     .            D_E0NEW_tmp(1:NPLSI)
+     .            D_E0NEW_tmp(1:NPLSI), dummy
 
       INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI
       REAL(DP), EXTERNAL :: RANF_EIRENE
-
-      D_VELPAR = 0.0
-      D_VELPER = 0.0
-      D_E0NEW_tmp = 0.0
-
 
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
@@ -136,23 +131,31 @@ c  second minimal collision model: change velocities according to
 c  the expectation values of the change
 c  SIGPAR is the sign of the parallel velocity with respect to the
 c  magnetic field
+
+        D_VELPAR    = 0.0
+        D_VELPER    = 0.0
+        D_E0NEW_tmp = 0.0
+
         DO IPL = 1, NPLSI ! loop over all background species
            D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in m/s
            D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in m/s
 
-           D_E0NEW_tmp(IPL) = 0.5*AMUAKG*RMASSI(IION)*
-     >                      ((SIGPAR*VELPAR*1.0E-02 + D_VELPAR(IPL))**2
-     >                    + (VELPER*1.0E-02 + D_VELPER(IPL))**2)/ELCHA
-
+           D_E0NEW_tmp(IPL)= 0.5*AMUAKG*RMASSI(IION)*
+     >                       ((SIGPAR*VELPAR*1.0E-02 + D_VELPAR(IPL))**2
+     >                     + (VELPER*1.0E-02 + D_VELPER(IPL))**2)/ELCHA
+     >                     - E0
         END DO
 
-        E0NEW = 0.5*AMUAKG*RMASSI(IION)*
-     >          ((SIGPAR*VELPAR*1.0E-02 + SUM(D_VELPAR))**2
-     >        + (VELPER*1.0E-02 + SUM(D_VELPER))**2)/ELCHA
+        VELPAR = ABS(SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02)
+        VELPER = VELPER + SUM(D_VELPER)*1.0E+02
+        veltotal = SQRT(VELPAR**2 + VELPER**2)
+
+        E0NEW = 0.5*AMUAKG*RMASSI(IION)*1.0E-04*
+     >          (VELPAR**2 + VELPER**2)/ELCHA
         VNEW = RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
-        EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
+        EIIO(NCELLT) = EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
 cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
 cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
 cdr  temprature(ipls), even different sign.
@@ -160,11 +163,12 @@ cdr
         DO IPL = 1, NPLSI
           EWG = WEIGHT*(E0NEW-E0OLD)
           EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
-     >                     - EWG*D_E0NEW_tmp(IPL)/SUM(D_E0NEW_tmp)
+     >                  - EWG*D_E0NEW_tmp(IPL)/(SUM(D_E0NEW_tmp)+EPS60)
+          dummy = EIPL(IPL,NCELLT)
         END DO
-C
-        FAC=SQRT(E0NEW/E0OLD)
-        E0PAR=E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
+
+        FAC    = SQRT(E0NEW/E0OLD)
+        E0PAR  = E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
 
 c  FHa: write the trace ion data into temporary file
 c        IPL = 1

@@ -114,6 +114,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
+      USE EIRMOD_CVARUSR
 
 
       IMPLICIT NONE
@@ -143,6 +144,8 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
      .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
       LOGICAL :: LCNDEXP
+
+      real*8 :: VelPrlBG
 
 c  no conditional expectation estimators for test ions
 
@@ -713,8 +716,8 @@ C     LATER: VELPAR --> VEL_GC
 C  get new TF and data for the FP collision carried out in fpkcol
       CALL EIRENE_PREPARE_FPKCOL(TF)
 
-C  FHa: What happens here???
-      if (nldfst) tf=1.E-5_DP*vel
+C  FHa: What happens here? - Detlev said it can be commented out (16-03-01)
+c      if (nldfst) tf=1.E-5_DP*vel
  
       IF (TF.LT.ZTST) THEN
         ZTST=TF
@@ -1636,23 +1639,22 @@ C     extended model where the trace ion velocity changes in agreement with the
 C     change of the expectation values (next step after the minimal collision model
 C     where only the energy is relaxed)
 
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CINIT
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CESTIM
-      USE EIRMOD_CCONA
-      USE EIRMOD_CFPLK
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CUPD
-      USE EIRMOD_CGRID
-      USE EIRMOD_CGEOM
-      USE EIRMOD_CZT1
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CLGIN
-      USE EIRMOD_COUTAU
-      USE EIRMOD_COMXS
-      USE EIRMOD_CVARUSR
+c      USE EIRMOD_PRECISION
+c      USE EIRMOD_PARMMOD
+c      USE EIRMOD_CINIT
+c      USE EIRMOD_COMUSR
+c      USE EIRMOD_CESTIM
+c      USE EIRMOD_CCONA
+c      USE EIRMOD_CFPLK
+c      USE EIRMOD_CLOGAU
+c      USE EIRMOD_CUPD
+c      USE EIRMOD_CGRID
+c      USE EIRMOD_CGEOM
+c      USE EIRMOD_CZT1
+c      USE EIRMOD_COMPRT
+c      USE EIRMOD_CLGIN
+c      USE EIRMOD_COUTAU
+c      USE EIRMOD_COMXS
 
       implicit none
 
@@ -1660,26 +1662,42 @@ C     where only the energy is relaxed)
 
       real*8 :: TF
       real*8 :: alpha, ub, Chi, Lambda, dChi_dt
-      real*8 :: VelPrlBG
       real*8 :: DPrl, DPerp
       real*8 :: TFprl, TFperp
       real*8 :: TFtemp(1:NPLSI)
       real*8 :: vabs, dvabs_dt
+      real*8 :: d01, d02, d03, d04, d05, d06
+      real*8 :: Bt(1:3), Vt(1:3)
+      real*8 :: vtot
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-      alpha = 0.1 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
-      TF    = 1.0E+10
+      alpha  = 0.01 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      TF     = 1.0E+10
+      TFtemp = 0.0
 
       DO IPL = 1, NPLSI ! loop over all background species
-c      DO IPL = 1, 1 ! loop over all background species
 
-         IPLTI=MPLSTI(IPL)
+         VelPrlBG = 0.0
 
-c  get the parallel part of the background velocity
-         VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
-     >               BYIN(NCELL)*VYIN(IPL,NCELL)+
-     >               BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
+         IPLTI = MPLSTI(IPL)
+
+c  get the parallel part of the background velocity, m/s
+         IF (INDPRO(5) == 8) THEN
+            CALL EIRENE_VECUSR(1, NCELL, X0, Y0, Z0, Bt(1), Bt(2), Bt(3)
+     >                         , IPL, .TRUE.)
+            CALL EIRENE_VECUSR(2, NCELL, X0, Y0, Z0, Vt(1), Vt(2), Vt(3)
+     >                         , IPL, .TRUE.)
+            CALL EIRENE_VECUSR(3, NCELL, X0, Y0, Z0, vtot, d01, d02,
+     >                         , IPL, .TRUE.)
+            VelPrlBG = vtot*dot_product(Bt,Vt)
+         ELSE
+            VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
+     >                  BYIN(NCELL)*VYIN(IPL,NCELL)+
+     >                  BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
+         END IF
+
+         VelPrlBG = 0.00
 
          ub = sqrt(2*TIIN(IPLTI,NCELL)*ELCHA/(RMASSP(IPL)*AMUAKG))
          Chi = sqrt((VELPER*1.0E-02)**2
@@ -1688,26 +1706,29 @@ c  get the parallel part of the background velocity
      >            DIIN(IPL,NCELL)*1.0E+06*COULOMBLOG/
      >            (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
 
-c         print*, ' DIIN:  ', DIIN(IPL,NCELL)
-c         print*, ' TIIN:  ', TIIN(IPLTI,NCELL)
-c         print*, ' VDiff: ', (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
-c         print*
+         d01 = DIIN(IPL,NCELL)
+         d02 = TIIN(IPLTI,NCELL)
+         d03 = SIGPAR*VELPAR - VelPrlBG*1.0E+02
+
 
          CALL D_coeff(Chi,DPrl,DPerp)
 
          DPrl  = Lambda/ub*DPrl
          DPerp = Lambda/ub*DPerp
 
-c  both dVelPrl_dt and dVelPerp_dt in SI units (meters)!!
+c  both dVelPrl_dt and dVelPerp_dt in m/s!
          dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                      (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
          dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
 
+         d04 = dVelPrl_dt(IPL)
+         d05 = dVelPerp_dt(IPL)
+
 c  get the new TF, the distance until next coulomb collision
-         TFprl  = (VELPAR*1.0E-02)**2/dVelPrl_dt(IPL)*alpha
-         TFperp = (VELPER*1.0E-02)**2/dVelPerp_dt(IPL)*alpha
-         TFtemp(IPL) = MIN(TFprl,TFperp)
+c         TFprl = ABS(VELPAR**2/(dVelPrl_dt(IPL)*1.0E+02+EPS60)*alpha)
+c         TFperp = VELPAR*VELPER/(dVelPerp_dt(IPL)*1.0E+02+EPS60)*alpha
+c         TFtemp(IPL) = TFprl
 
 c         dChi_dt = 1./(ub**2*Chi)*
 c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
@@ -1726,9 +1747,14 @@ c         print*
 
       END DO
 
-      TF = MINVAL(TFtemp)
+c the estimate for TF should be checked again
+c      DELFAC = ABS(VELPER/(SIGPAR*VELPAR - VelPrlBG*1.0E+02))
 
-      print*, ' TF = ', TF
+      d06 = SUM(dVelPrl_dt)*1.0E+02
+
+      TF = ABS((VELPAR**2+1.0E+02+EPS60)/
+     >    (SUM(dVelPrl_dt)*1.0E+02+EPS60)*alpha)
+c      TF = MINVAL(TFtemp)
 
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
 
