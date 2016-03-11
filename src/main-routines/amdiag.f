@@ -64,7 +64,7 @@ c                            nidsi(iio) --> nieii(iio)
 
       IMPLICIT NONE
 
-      REAL(DP) :: AU, ELB, EXPO, FP, RCMIN,RCMAX,
+      REAL(DP) :: AU, ELB, EXPO, FP(6), RCMIN,RCMAX,
      .            TBCX3(9),TBPI3(9),TBEL3(9),
      .            EIRENE_SNGL_POLY,
      .            RMASSS,EBFAC
