@@ -15,6 +15,7 @@ cdr  Jan 2016:  storage for second dimension only if nlpol=true
 cdr             to be tested: storage for nplg, if nlpol=false?
 cdr             storage for thrid dimension only if nltor=true
 cdr             to be tested:  storage for nltra, if nltor=false?
+cdr             to be done: check for comment lines *... syncronized with input.f?
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -1020,7 +1021,10 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         READ (IUNIN,*)
       END DO
 
-C  SEARCH START OF PLOTTING INPUT
+C  SKIP READING ALSO POSSIBLE LINES FOR DELIBERATE DE-ACTIVATION OR RE-ACTIVATION OF TALLIES
+c     to be written:  allow for comment lines here 
+
+C  SEARCH START OF PLOTTING INPUT:  NEXT LINE WITH F OR T
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
       DO WHILE (SCAN(ZEILE,'*FT') == 0)

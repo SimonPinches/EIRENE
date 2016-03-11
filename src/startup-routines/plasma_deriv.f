@@ -38,7 +38,7 @@ cdr:  edrift, vdion:  only for ipls=1 available?
 cdr:  warnings in case of missing edrift removed: have been too many (one per cell)
 cdr: jan 2016: automated resetting of nfilel to =3 or =9 removed.
 cdr:           (had caused problems with t-dep mode)
-cdr:           should be done more explicitely, by problem specific routines,
+cdr:           should be done more explicitly, by problem specific routines,
 cdr:           or mod_bgk, mod_timstep,.....
 cdr:           post processing Balmer lines, etc:  to be confirmed that this now
 cdr:           still works properly
