@@ -61,7 +61,6 @@ cdr
       INTEGER, ALLOCATABLE :: IHELP(:)
       CHARACTER, ALLOCATABLE :: CHELP(:)
  
- 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
  
       IF (MY_PE == 0) CALL EIRENE_COLLECT_PARM
@@ -1170,7 +1169,6 @@ csw
  
       CALL EIRENE_BROAD_USR
  
- 
       CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LMISTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
@@ -1179,7 +1177,7 @@ csw
       CALL MPI_BCAST (LEM,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LEIO,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LEPH,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
- 
+
       IF (MY_PE .NE. 0) THEN
         CALL EIRENE_ALLOC_CESTIM(2)
         CALL EIRENE_ASSOCIATE_CESTIM
@@ -1250,8 +1248,8 @@ csw
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%PSPC%NSPC
-!             write (0,*) ' smestl, my_pe, imerk, nsps ',
-!     .                     my_pe, imerk, nsps
+!pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
+!pb     .                     my_pe, imerk, nsps
 !pb             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
              IF (IMERK > 0) THEN
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
@@ -1266,9 +1264,10 @@ C  variances for sum over strata
                ALLOCATE(SMESTL(I)%PSPC%STV(0:NSPS+1))
                ALLOCATE(SMESTL(I)%PSPC%GG(0:NSPS+1))
              END IF
-             ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
+!pb  due to problem in optimized parallel version with Intel compiler 
+!pb             ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
+             ESTIML(I)%PSPC%SPC = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC
-!             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
            END IF
          END DO
       ELSE

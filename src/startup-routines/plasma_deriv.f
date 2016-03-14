@@ -1,6 +1,6 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13,or: fort.10)
+c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
@@ -36,6 +36,13 @@ cdr:  output tallies for new background: in case of multiple strata: how to get 
 cdr:  do we need fort.10 ?
 cdr:  edrift, vdion:  only for ipls=1 available?
 cdr:  warnings in case of missing edrift removed: have been too many (one per cell)
+cdr: jan 2016: automated resetting of nfilel to =3 or =9 removed.
+cdr:           (had caused problems with t-dep mode)
+cdr:           should be done more explicitely, by problem specific routines,
+cdr:           or mod_bgk, mod_timstep,.....
+cdr:           post processing Balmer lines, etc:  to be confirmed that this now
+cdr:           still works properly
+
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
 
@@ -45,17 +52,18 @@ c    nlmlv  (via cinit.f):  all bulk ions have own velocity, set new flow veloci
 c    icall               :
 
 c    icall=0
-c      called prior to Monte Carlo Loop (from subr. input)
+c      called PRIOR to Monte Carlo Loop (from subr. input)
 c      in this call all density models referring to output tallies
 c      are ignored (e.g. 'fort.10').
 c    icall=1
-c      called after Monte Carlo Loop and sum over strata
+c      called AFTER Monte Carlo Loop and sum over strata
 c        this allows to put output tallies from a run onto the
 c        background for a next iteration or post processing.
 c        In this call all density models referring to input tallies  are
 c        ignored, because they are aready done in a previous call
 
-c      write fort.13 after all density models are done.
+c  for appropriate values of nfilel:  = 1,3,4,6,8,9
+c      write fort.13 (CALL WRPLAM) after all density models are done.
 
 c   carry out specific "background models", 
 c   for bulk species IPLS
@@ -122,7 +130,7 @@ c   LGVAC(...,0)     : background vacuum flag
       JFEXMN = 0
       JFEXMX = 0
  
-cdr   tpb1 = EIRENE_second_own()
+cdr   
  
       IBS = 0
       DO IPLS=1,NPLSI
@@ -131,6 +139,7 @@ cdr   tpb1 = EIRENE_second_own()
 
         IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0) THEN
 
+cdr  read all plasma background data (all ipls), each time. Better: move outside IPLS loop.
           CALL EIRENE_ALLOC_BCKGRND
           ALLOCATE(DEINTF(NRAD))
           OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
@@ -139,6 +148,7 @@ cdr   tpb1 = EIRENE_second_own()
      .                        VXINTF,VYINTF,VZINTF
           IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
           CLOSE (UNIT=13+ifoff)
+
           IF (IO.EQ.0) THEN
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
 c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
@@ -277,14 +287,12 @@ c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
         END IF
       END DO
  
-cdr   tpb2 = EIRENE_second_own()
-cdr   write (6,*) ' cputime for fort.13, fort.10, boltzmann ',tpb2-tpb1
-cdr   tpb1 = tpb2
+c......................................................................
  
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
-C  SET ELECTRON-DENSITY FROM QUASI-NEUTRALITY, AND DRIFT ENERGY (EV)
+C  SET ELECTRON-DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,NPLS+1)
       TVACL=LOG(TVAC)
       DVACL=LOG(DVAC*1.E-8_DP)
       LGVAC=.TRUE.
@@ -307,9 +315,9 @@ C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
 cdr      tpb2 = EIRENE_second_own()
 cdr      write (6,*) ' cputime for log values ',tpb2-tpb1
 cdr      tpb1 = tpb2
- 
+c..................................................................... 
 C
-C   SPECIAL DENSITY MODELS:
+C   FURTHER SPECIAL DENSITY MODELS, AFTER ELECTRON DENSITY DEIN IS SET:
 C   SAHA  (NOT READY)
 C   CORONA
 C   COLRAD
@@ -763,22 +771,15 @@ C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
  
-cdr   tpb2 = EIRENE_second_own()
-cdr   write (6,*) ' cputime for edrift, b_perp, etc. ',tpb2-tpb1
-cdr   tpb1 = tpb2
- 
-      IF ((NFILEL >=1) .AND. (NFILEL <=5)) THEN
-         NFILEL=3
+      IF ((NFILEL >=1) .AND. (NFILEL <=4)) THEN
+cdr      NFILEL=3  probably wrong,  jan. 2016
          CALL EIRENE_WRPLAM(TRCFLE,0)
-!      ELSE
-      ELSE IF (NFILEL > 5) THEN
-         NFILEL=9
+      ELSE IF ((NFILEL >= 6) .AND. (NFILEL <=9)) THEN
+cdr      NFILEL=9  probably wrong, jan 16.  3 and 8 ?,   or 4 and 9 ?, but not 3 and 9
          CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
       END IF
  
-cdr   tpb2 = EIRENE_second_own()
-cdr   write (6,*) ' cputime for wrplam ',tpb2-tpb1
-cdr   tpb1 = tpb2
+
  
  
       RETURN
@@ -805,6 +806,7 @@ C FOR CALLS AFTER PARTICLE TRACING
 C  NOTHING TO BE DONE
         ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
           IESTR=ISTRA
+          IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLASMA_DERIV: ' 
           CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -820,6 +822,7 @@ C  NOTHING TO BE DONE
           ENDIF
         ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
           IESTR=ISTRA
+          IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLASMA_DERIV: '
           CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,

@@ -39,7 +39,7 @@ C
 c  geometry data not any longer via work array into eirene
 c                due to module structure
 c  eliminate cut cells from balances ( plus: rename lcut to llcut(..)... why?)
-c  new input: ncopib,ncopeb
+c  new input: ncopib, ncopeb
 C             fniprt 
 
 C   UPDATES:
@@ -97,6 +97,12 @@ C     DATA FROM BLOCKS 1 TO 13 AS WELL
 C
 C     THE ENTRIES "IF3COP, IF4COP" RETURN  RESULTS TO AN EXTERNAL CODE
 C
+!PB   17.11.05  NEMODS=-2  =>  NEMODS=8
+!PB             NEMODS=-3  =>  NEMODS=9
+!PB   14.07.11  OVERWRITE NEMODS SPECIFIED BY THE EIRENE INPUT BY
+!PB             SETTINGS CONSISTENT WITH SHEATH SETTINGS IN B2
+!PB             IF SHEATH PARAMETERS ARE GIVEN BY B2 NEMODS=9
+!PB             IF NO SHEATH PARAMETERS WERE TRANSFERRED BY B2 NEMODS=8
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_BRASPOI
@@ -239,7 +245,7 @@ C
 
       logical :: lhit(nrad)
 
-      real(dp), allocatable, save :: helpw(:)
+      real(dp), allocatable :: helpw(:)
 
 
       INTEGER, ALLOCATABLE :: IHELP(:)
@@ -634,7 +640,9 @@ C  SAME FORMAT AS FORT.31, I.E., INDEX MAPPING MAY BE NECESSARY
         ALLOCATE (ALPHYB(0:NDXP,0:NDYP))
         ALLOCATE (XAISO(0:NDXP,0:NDYP))
         ALLOCATE (IAISO(0:NDXP,0:NDYP))
-        IAISO = 0
+
+C  DEFAULT: ALL CELLS ARE VALID
+        IAISO = 1
 
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHXB)
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHYB)
@@ -663,20 +671,26 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE 
 !  CARTHESIAN PLANE
+        write (iunout,*) 'testoutput from fort.29 in infcop'
+        write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
             IN=IY+(IX-1)*NR1ST
             ALE=ALPHXB(IX,IY)
             ALW=ALPHXB(IX-1,IY)
             IF (MAX(ALE,ALW)-MIN(ALE,ALW) > PIA) THEN
+              write (iunout,*) 'modulus 2PI used', ale,alw 
               AL=MIN(ALE,ALW)
               ALW=MAX(ALE,ALW)
               ALE=AL+PI2A
+              write (iunout,*) 'new values ale,alw ',ale,alw
             END IF
             ALN=ALPHYB(IX,IY)
             ALS=ALPHYB(IX,IY-1)
 ! cell centered angle of B_pol (psi-contour line) against eirene x-coordinate
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
+            write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
+     .                                          ale,alw,aln,als,alx
 ! cell centered unit vector along poloidal direcion
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
@@ -684,11 +698,13 @@ C
 !                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
-! surface centered
+! surface centered: nothing to be done, the values on fort.29 are already surface centered
+!                   on east and north sides of a cell, respectively
             PUXE(IN)=COS(ALE)
             PUYE(IN)=SIN(ALE)
             PUXN(IN)=COS(ALN)
             PUYN(IN)=SIN(ALN)
+! again: radial (grad PSI) unit vector, strictly orthonormal to PU, by construction 
             PVXE(IN)=-SIN(ALE)
             PVYE(IN)=COS(ALE)
             PVXN(IN)=-SIN(ALN)
@@ -701,10 +717,10 @@ C
 C
       ELSE
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*)
-     .    ' NO FILE FORT.29 WITH MODIFIED GRID INFO. FOUND '
+        WRITE (iunout,*) 
+     .  ' NO FILE FORT.29 WITH MODIFIED GRID INFO. FOUND '
         WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
-     .                   'GRID IS USED '
+     .               'GRID IS USED '
         WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL '
         WRITE (iunout,*) ' NO INFO RE. ISOLATED CELLS FROM THIS FILE '
         CALL EIRENE_LEER(1)
@@ -1732,6 +1748,27 @@ cdr  magnetic field strength, Tesla
               ADINTF(IAIN,IN)=0.
             ENDIF
 2336      CONTINUE
+
+cdr:  free: NAINT(IAIN)=17
+
+cdr:  added in may 2015:  put cartesian unit vector along B_poloidal on ADIN
+
+        ELSEIF (NAINT(IAIN).EQ.18) THEN
+          DO 2338 IY=1,NDYA
+          DO 2338 IX=1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            ADINTF(IAIN,IN)=PUX(IN)
+2338      CONTINUE
+        ELSEIF (NAINT(IAIN).EQ.19) THEN
+          DO 2339 IY=1,NDYA
+          DO 2339 IX=1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            ADINTF(IAIN,IN)=PUY(IN)
+2339      CONTINUE
+
+cdr  free: NAINT=20 --29:  reserved for AMDIAG:  scaled atomic/molecular rate coefficients
+cdr                        evaluated on computational grid. See Manual.
+
         ENDIF
 2300  CONTINUE
 C
@@ -2222,6 +2259,9 @@ C  SET ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
 !pb     .                                  FL(IPLS)/DELX*
 !pb     .           (TIS*(delti_para+delti_perp)*ABS(Fniyb(ix,npbs,ifl))+
 !pb     .            TES*(delte_para+delte_perp)*ABS(Fniyb(ix,npbs,ifl)))
+! 15.09.2010
+!                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
+!     .                                  ABS(Feiyb(ix,npbs))/DELX
               ENDIF
             ENDIF
 C
@@ -2351,6 +2391,7 @@ C
         CALL EIRENE_FTCRI(ITARG,CITARG)
         TXTSOU(ITARG)= 'SURFACE RECYCLING SOURCE NO.'//CITARG
         NPTS(ITARG)=NPTC(ITARG,1)*MPTS_COMSOU
+        IF (NPTS(ITARG) < 0) NPTS(ITARG) = HUGE(1)
         NMINPTS(ITARG)=NPTCM(ITARG,1)*MPTS_COMSOU !VK MINIMUM NUMBER OF HYSTORIES FOR THE STRATUM
         NINITL(ITARG)=ITARG*1001
 !pb     NSPEZ(ITARG)=-1
@@ -2547,7 +2588,7 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='S'
           IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
-        WRITE (iunout,'(1X,I3,1P,9E11.3,A3)')
+        WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
@@ -2652,6 +2693,13 @@ C
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
+C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
+C
+        sni(:,:,:,istrai) = 0.d0
+        smo(:,:,:,istrai) = 0.d0
+        see(:,:,istrai) = 0.d0
+        sei(:,:,istrai) = 0.d0
+C
         IF (XMCP(ISTRAI).LE.1.) GOTO 10000
 C
         IF (LSHORT) GOTO 7000
@@ -2702,23 +2750,7 @@ C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
 C  IF THE SOURCE STRENGTH IS TO CHANGE DURING THE SHORT CYCLE (E.G.: VOL-REC)
           FLXEIR(ISTRAI)=1._DP
         ENDIF
-C
-C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
-C
-        DO 7100 IX=0,NDXA+1
-          DO 7150 IY=0,NDYA+1
-            SEE(IX,IY,ISTRAI)=0.
-            SEI(IX,IY,ISTRAI)=0.
-7150      CONTINUE
-7100    CONTINUE
-        DO 7210 IF=1,NFLA
-          DO 7220 IX=0,NDXA+1
-            DO 7230 IY=0,NDYA+1
-              SNI(IX,IY,IF,ISTRAI)=0.
-              SMO(IX,IY,IF,ISTRAI)=0.
-7230        CONTINUE
-7220      CONTINUE
-7210    CONTINUE
+
 C
         CHPM  = 0._DP
         CHMOM = 0._DP
@@ -3148,6 +3180,10 @@ C
         icp3=3*nplsi
         scpveii(istrai) = 0._dp
 
+        cpv_cmp(:,:,istrai) = copv (:,:)
+
+cdr  fill bulk particle source rate sni(...ifl) from all contributing
+cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
         DO 7510 IFL=1,NFLA
           CHPS(IFL)=0.
           SNIS(IFL)=0.
@@ -3653,6 +3689,9 @@ C
       WRITE (11,REC=IRC) LCCPL
       IF (TRCINT.OR.TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 C
+!pb  LSTP is dummy argument to entry IF3COP thus not available here
+!pb  LSTP3 is stored in IF3COP
+!pb      IF (LSHORT) LSTOP=LSTP
       IF (LSHORT) LSTOP=LSTP3
 C
       IF (.NOT.LSTOP) RETURN
@@ -4147,13 +4186,20 @@ C
      .        RESSEE(0),RESSEI(0),SUM(RESSNI(0,1:NFLA)),
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
-        ALLOCATE (HELPW(NFLA))
+
         WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
-        HELPW(1:NFLA) = RESSNI(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5)
+cdr  wrong format in call to masrr1
+cdr     CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
+        if (.not.allocated(helpw)) allocate (helpw(nfla))
+        helpw(1:nfla) = RESSNI(0,1:NFLA)
+        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5) 
+       
         WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
-        HELPW(1:NFLA) = RESSMO(0,1:NFLA)
+cdr  wrong format in call to masrr1
+cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
+        helpw(1:nfla) = RESSMO(0,1:NFLA)
         CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
+        if (allocated(helpw)) deallocate (helpw)
       ENDIF
 C
       CALL EIRENE_LEER (1)

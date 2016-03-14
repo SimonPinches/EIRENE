@@ -1,3 +1,5 @@
+cdr Jan 2016: clean up, comments. this is master version for all other versions of infcop.f
+
 C
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
 C                                                           B2.5,
@@ -13,7 +15,7 @@ c  geometry data not any longer via work array into eirene
 c                due to module structure
 c  eliminate cut cells from balances (lcut(..))
 c  new input: ncopib,ncopeb
-C             fniprt 
+
 
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -112,7 +114,6 @@ C
       IMPLICIT NONE
 C
 C  GEOMETRICAL DATA FROM GRIDADAP
-!pb      REAL(DP), ALLOCATABLE ::
       REAL(DP), ALLOCATABLE, SAVE ::
      R  ALPHXB(:,:), ALPHYB(:,:), XAISO(:,:)
 
@@ -121,7 +122,6 @@ C  GEOMETRICAL DATA FROM GRIDADAP
      R  PUXE(:), PUYE(:), PUXN(:), PUYN(:),
      R  PVXE(:), PVYE(:), PVXN(:), PVYN(:)
 
-!pb      INTEGER, ALLOCATABLE ::
       INTEGER, ALLOCATABLE, SAVE ::
      I  IAISO(:,:)
 C
@@ -129,8 +129,6 @@ C
       TYPE(CELLMUL), POINTER :: CPMUL
 C
       REAL(DP) :: SEES0(NSTRA), SEIS0(NSTRA)
-!pb      REAL(DP) :: CHPM(NPLS,NRAD), CHEEM(NRAD), CHEIM(NRAD),
-!pb     .            CHMOM(NPLS,NRAD)
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            CHPM(:,:), CHEEM(:), CHEIM(:), CHMOM(:,:)
       REAL(DP) :: DI(NPLS), VP(NPLS)
@@ -202,9 +200,8 @@ C
       REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ORI(:,:)
      
-      real(dp) :: helpw(npls)
+      real(dp),allocatable :: helpw(:)
 
-!pb      INTEGER, ALLOCATABLE :: IHELP(:)
       INTEGER, ALLOCATABLE, SAVE :: IHELP(:)
 C
       CHARACTER(10) :: CHR
@@ -857,7 +854,7 @@ C  FIRST THE ZONE CENTERED DATA
      .             NPOINT,NPLP)
       CALL EIRENE_INDMAP (PRB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,NCUTB,NCUTL,
      .             NPOINT,NPLP)
-C  NOW THE SURFACE CENTERED PARTICLE FLUXES
+C  NOW THE SURFACE CENTERED DATA
       CALL EIRENE_INDMAP (FNIXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FNIYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -1525,7 +1522,6 @@ C
 C
       NSRFSI(ITARG)=1
       INDIM(1,ITARG)=4
-!      IF (LINDIM) INDIM(1,ITARG)=5
       IF (INDSRC(ITARG).NE.6) THEN
         I34=EIRENE_IDEZ(INT(SORLIM(1,ITARG)),3,3)
         SORLIM(1,ITARG)=I34*100+04
@@ -1745,7 +1741,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
             VTEST=VTEST/(CS+EPS60)
             VR=SQRT(VPX**2+VPY**2)
             WRITE (iunout,*) 'IPLS,ITARG,IG,MACH ',IPLS,ITARG,IG,VTEST
-            WRITE (iunout,*) 'POL., TOR., RAD. ',PM1,VPZ,VR
+C           WRITE (iunout,*) 'POL., TOR., RAD. ',PM1,VPZ,VR
             CALL EIRENE_LEER(1)
           ENDIF
 C
@@ -1797,7 +1793,7 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='N'
           IF (ORI(ITARG,IG).GT.0) NSEW='S'
         ENDIF
-        WRITE (iunout,'(1X,I3,1P,9E11.3,A3)')
+        WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
@@ -1903,6 +1899,13 @@ C
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
+C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
+C
+        sni(:,:,:,istrai) = 0.d0
+        smo(:,:,:,istrai) = 0.d0
+        see(:,:,istrai) = 0.d0
+        sei(:,:,istrai) = 0.d0
+C
         IF (XMCP(ISTRAI).LE.1.) GOTO 10000
 C
         IF (LSHORT) GOTO 7000
@@ -1953,23 +1956,7 @@ C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
 C  IF THE SOURCE STRENGTH IS TO CHANGE DURING THE SHORT CYCLE (E.G.: VOL-REC)
           FLXEIR(ISTRAI)=1._DP
         ENDIF
-C
-C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
-C
-        DO 7100 IX=0,NDXA+1
-          DO 7150 IY=0,NDYA+1
-            SEE(IX,IY,ISTRAI)=0.
-            SEI(IX,IY,ISTRAI)=0.
-7150      CONTINUE
-7100    CONTINUE
-        DO 7210 IF=1,NFLA
-          DO 7220 IX=0,NDXA+1
-            DO 7230 IY=0,NDYA+1
-              SNI(IX,IY,IF,ISTRAI)=0.
-              SMO(IX,IY,IF,ISTRAI)=0.
-7230        CONTINUE
-7220      CONTINUE
-7210    CONTINUE
+
 C
         CHPM  = 0._DP
         CHMOM = 0._DP
@@ -2242,7 +2229,7 @@ C  SHORT LOOP CORRECTION FINISHED
 C
 7400    CONTINUE
 
-cdr  we are still in startum istra.  
+cdr  we are still in stratum istra.  
 cdr  what is this next  'lzden' option doing ? Why here, after short loop corrections
 
         IF (LZDEN) THEN
@@ -3337,16 +3324,20 @@ C
      .        RESSEE(0),RESSEI(0),SUM(RESSNI(0,1:NFLA)),
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
+
         WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
 cdr  wrong format in call to masrr1
 cdr     CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
+        if (.not.allocated(helpw)) allocate (helpw(nfla))
         helpw(1:nfla) = RESSNI(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5)        
+        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5) 
+       
         WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
 cdr  wrong format in call to masrr1
 cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
         helpw(1:nfla) = RESSMO(0,1:NFLA)
         CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
+        if (allocated(helpw)) deallocate (helpw)
       ENDIF
 C
       CALL EIRENE_LEER (1)

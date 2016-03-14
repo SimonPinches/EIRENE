@@ -1,3 +1,5 @@
+cdr Jan 2016: syncronize with couple_b2/infcop.f  retain only mpi related differences
+
 C
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
 C                                                           B2.5,
@@ -166,10 +168,10 @@ C
      .          UUBC, UPBC, RBC, UDBC, VL, V, T, BX, BY, BZ, BN,
 c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
-     .          FLX, ESUM, DR, VR, VTEST, EADD, SI,
+     .          FLX, ESUM, VR, VTEST, EADD, 
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI, CHP,
      .          CNDYNP, CHI, CHE, CS, THMAX, EESHT, EEMAX,
-     .          RP1, DELX, PNORM, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
+     .          RP1, DELX, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFNISY, SFEEWX, SFEINY, PM1, DRR, UU, PITB,
      .          FLX_EIR, SUMN_OLD, SNIRES, SMORES, SEERES, SEIRES,
@@ -209,7 +211,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ORI(:,:)
      
-      real(dp), ALLOCATABLE :: helpw(:)
+      real(dp),allocatable :: helpw(:)
 
 !pb      INTEGER, ALLOCATABLE :: IHELP(:)
       INTEGER, ALLOCATABLE, SAVE :: IHELP(:)
@@ -367,6 +369,11 @@ C  HERE: B2 VOLUME TALLIES
         NAIN = MAX(NAIN,NAINB)
         CALL EIRENE_ALLOC_CCOUPL(2)
         WRITE (iunout,*) '        NAINI = ',NAINB
+        IF (NAINB.GT.NAIN) THEN
+          CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
+          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
         IF (TRCINT.AND.NAINB.GT.0)
      .      WRITE (iunout,*) 'I,NAINS(IAIN),NAINT(IAIN)'
         DO 40 IAIN=1,NAINB
@@ -623,6 +630,8 @@ C  SAME FORMAT AS FORT.31, I.E., INDEX MAPPING MAY BE NECESSARY
         ALLOCATE (ALPHYB(0:NDXP,0:NDYP))
         ALLOCATE (XAISO(0:NDXP,0:NDYP))
         ALLOCATE (IAISO(0:NDXP,0:NDYP))
+
+C  DEFAULT: ALL CELLS ARE VALID
         IAISO = 1
 
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHXB)
@@ -652,20 +661,26 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE 
 !  CARTHESIAN PLANE
+        write (iunout,*) 'testoutput from fort.29 in infcop'
+        write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
             IN=IY+(IX-1)*NR1ST
             ALE=ALPHXB(IX,IY)
             ALW=ALPHXB(IX-1,IY)
             IF (MAX(ALE,ALW)-MIN(ALE,ALW) > PIA) THEN
+              write (iunout,*) 'modulus 2PI used', ale,alw 
               AL=MIN(ALE,ALW)
               ALW=MAX(ALE,ALW)
               ALE=AL+PI2A
+              write (iunout,*) 'new values ale,alw ',ale,alw
             END IF
             ALN=ALPHYB(IX,IY)
             ALS=ALPHYB(IX,IY-1)
 ! cell centered angle of B_pol (psi-contour line) against eirene x-coordinate
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
+            write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
+     .                                          ale,alw,aln,als,alx
 ! cell centered unit vector along poloidal direcion
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
@@ -1153,6 +1168,27 @@ cdr  magnetic field strength, Tesla
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=BFELDB(IX,IY)
 2336      CONTINUE
+
+cdr:  free: NAINT(IAIN)=17
+
+cdr:  added in may 2015:  put cartesian unit vector along B_poloidal on ADIN
+
+        ELSEIF (NAINT(IAIN).EQ.18) THEN
+          DO 2338 IY=1,NDYA
+          DO 2338 IX=1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            ADINTF(IAIN,IN)=PUX(IN)
+2338      CONTINUE
+        ELSEIF (NAINT(IAIN).EQ.19) THEN
+          DO 2339 IY=1,NDYA
+          DO 2339 IX=1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            ADINTF(IAIN,IN)=PUY(IN)
+2339      CONTINUE
+
+cdr  free: NAINT=20 --29:  reserved for AMDIAG:  scaled atomic/molecular rate coefficients
+cdr                        evaluated on computational grid. See Manual.
+
         ENDIF
 2300  CONTINUE
 C
@@ -1706,8 +1742,6 @@ C  I.E., POLOIDAL COMPONENT V-POL
      .           PLNY(NPES,IX)*VYSTEP(IPLSV,ITARG,IG))*OR
 C  VELOCITY COMPONENT PARALLEL TO POLOIDAL TARGET SURFACE
 C  I.E., RADIAL PLUS TOROIDAL COMPONENT, V-RAD + V-TOR
-!pb110810            VPX=VXSTEP(IPLSV,ITARG,IG)-PM1*PLNX(IY,NPES)*OR
-!pb110810            VPY=VYSTEP(IPLSV,ITARG,IG)-PM1*PLNY(IY,NPES)*OR
             VPX=VXSTEP(IPLSV,ITARG,IG)-PM1*PLNX(NPES,IX)*OR
             VPY=VYSTEP(IPLSV,ITARG,IG)-PM1*PLNY(NPES,IX)*OR
             VPZ=VZSTEP(IPLSV,ITARG,IG)-0.
@@ -1766,9 +1800,9 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
       WRITE (iunout,*) TXTSOU(ISTRA)
-      WRITE (iunout,*)
-     .' IG,  ARC,      P-FLUX,    E-FLUX,    TE,        TI,',
-     . '        SHEATH/TE,  CELL FACE'
+      WRITE (iunout,'(1X,A3,9A11,A3)')
+     .'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
+     . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
 
         IF (IGSTEP(ITARG,IG).GT.200000) THEN
@@ -2001,23 +2035,7 @@ C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
 C  IF THE SOURCE STRENGTH IS TO CHANGE DURING THE SHORT CYCLE (E.G.: VOL-REC)
           FLXEIR(ISTRAI)=1._DP
         ENDIF
-C
-C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
-C
-!out        DO 7100 IX=0,NDXA+1
-!out          DO 7150 IY=0,NDYA+1
-!out            SEE(IX,IY,ISTRAI)=0.
-!out            SEI(IX,IY,ISTRAI)=0.
-!out7150      CONTINUE
-!out7100    CONTINUE
-!out        DO 7210 IF=1,NFLA
-!out          DO 7220 IX=0,NDXA+1
-!out            DO 7230 IY=0,NDYA+1
-!out              SNI(IX,IY,IF,ISTRAI)=0.
-!out              SMO(IX,IY,IF,ISTRAI)=0.
-!out7230        CONTINUE
-!out7220      CONTINUE
-!out7210    CONTINUE
+
 C
         CHPM  = 0._DP
         CHMOM = 0._DP
@@ -2623,7 +2641,6 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
      .                  cveli2/amua*2._DP 
               end do
             end do
-!pb            cpv_cmp(icp2+ipls,:,istrai)=cpv_cmp(icp2+ipls,:,istrai)*flxi 
 !pb
 
             IF (.NOT.LSHORT) THEN
@@ -3386,12 +3403,14 @@ C
      .        RESSEE(0),RESSEI(0),SUM(RESSNI(0,1:NFLA)),
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
+
         WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
 cdr  wrong format in call to masrr1
 cdr     CALL EIRENE_MASRR1 (' RESSNI    ',RESSNI(0,1:NFLA),NFLA,5)
         if (.not.allocated(helpw)) allocate (helpw(nfla))
         helpw(1:nfla) = RESSNI(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5)        
+        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5) 
+       
         WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
 cdr  wrong format in call to masrr1
 cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
