@@ -568,9 +568,10 @@ c
 
         if (lgemin.and.jfexmn.eq.0) then
 c  at this point:  low end extrapolation parameter FP(1:3) have been read from atomic data file.
-c  read value of lower validity bound, e.g. ELABMIN,...
+c  read value of lower validity bound, e.g. ELABMIN,..., search for string '=' in next line of data file
+c        format of that file must be:  text=_E12.5
 c  and return as RCMIN
-          IND=INDEX(ZEILE,'=')
+          IND=INDEX(ZEILE,'= ')
           READ (ZEILE((IND+2):80),'(E12.5)') rcmin
           rcmin=log(rcmin)
           jfexmn=5
@@ -580,7 +581,7 @@ c  and return as RCMIN
 c  at this point:  high end extrapolation parameter FP(4:6) have been read from atomic data file.
 c  read value of upper validity bound, e.g. ELABMAX,...
 c  and return as RCMAX
-          IND=INDEX(ZEILE,'=')
+          IND=INDEX(ZEILE,'= ')
           READ (ZEILE((IND+2):80),'(E12.5)') rcmax
           rcmax=log(rcmax)
           jfexmx=5
@@ -590,6 +591,7 @@ C
 CDR  this part needs to be re-written and/or documented
 
 C  ANY OTHER ASYMPTOTICS INFO ON FILE?  SEARCH FOR Tmin, or Emin
+        IF (JFEXMN.EQ.0) THEN   !dr:  but only if not already explicitly set in data file
         IF ((INDEX(ZEILE,'Tmin').NE.0.and.I0P1==2).or.
      .      (INDEX(ZEILE,'Emin').NE.0.and.I0P1==1)) then
           IND=INDEX(ZEILE,'n')
@@ -603,6 +605,8 @@ C  extrapolation from subr. CDEF
 C   ??    if (I0PT.eq.2) jfexmn=-1
           READ (29+ifoff,'(A80)',END=990) ZEILE
         ENDIF
+        ENDIF
+
 12      CONTINUE
 C       ELSEIF (LCONST) THEN
 C  NOTHING TO BE DONE
