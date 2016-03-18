@@ -176,7 +176,8 @@ C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTIL
 C  target index 1-11: data read from file: SPUTER, fort.33
 C  target index 0   : data evaluated "on the fly"
       REAL(DP), SAVE :: ETH(28,0:11),Q(28,0:11),M2M1(28,0:11),ES(28)
-      INTEGER,  SAVE :: ETF(28,0:11)
+      REAL(DP), SAVE :: ETF(28,0:11)
+      INTEGER :: IETF(0:11)
 
       REAL(DP),      SAVE :: RTAMU(28),ZTAR(28)
       REAL(DP),      SAVE :: BT1,BT2,BT3,BT4
@@ -252,6 +253,11 @@ C
       ONESIXTH =1._DP/6._DP
       FIVESIXTH=5._DP/6._DP
 
+      M2M1 = 0._DP
+      ETF = 0._DP
+      ETH = 0._DP
+      Q = 0._DP
+
       IF (MY_PE == 0) THEN
         DO IFILE=1, NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),'SPUTER') /= 0) EXIT
@@ -276,9 +282,10 @@ C
           READ(33,*)
           READ(33,'(4X,E5.2)') ES(I28)
           READ(33,'(12X,11(E8.2,1X))') (M2M1(I28,I11),I11=1,11)
-          READ(33,'(12X,11(I8,  1X))') (ETF(I28,I11),I11=1,11)
+          READ(33,'(12X,11(I8,  1X))') (IETF(I11),I11=1,11)
           READ(33,'(12X,11(E8.2,1X))') (ETH(I28,I11),I11=1,11)
           READ(33,'(12X,11(E8.2,1X))') (Q(I28,I11),I11=1,11)
+          ETF(I28,1:11) = IETF(1:11)
         ENDDO
         CLOSE (UNIT=33)
       END IF
@@ -537,7 +544,7 @@ C   AS IT IS ALSO THE CASE FOR REST OF THE SPUTTER DATA IN THIS MODEL
           GZ1Z212=(Z123+Z223)**(0.5)
 C   EQ. 7
           XETF=30.74*(RM1+RM2)/RM2*Z1*Z2*GZ1Z212
-          ETF(ITA,0)=XETF  ! EFT IS INTEGER...
+          ETF(ITA,0)=XETF  
 C   EQ. 28
           ETH(ITA,0)=(BT1*FM2M1**BT2+BT3*FM2M1**BT4)*ES(ITA)
 C   EQ. 27
