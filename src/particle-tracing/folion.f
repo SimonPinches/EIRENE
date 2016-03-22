@@ -143,9 +143,9 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
      .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
-      LOGICAL :: LCNDEXP
+      LOGICAL :: LCNDEXP, booltmp
 
-      real*8 :: VelPrlBG
+      real*8 :: VelPrlBG, DItmp, TItmp
 
 c  no conditional expectation estimators for test ions
 
@@ -1666,21 +1666,46 @@ c      USE EIRMOD_COMXS
       real*8 :: TFprl, TFperp
       real*8 :: TFtemp(1:NPLSI)
       real*8 :: vabs, dvabs_dt
-      real*8 :: d01, d02, d03, d04, d05, d06
+      real*8 :: d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11
+      real*8 :: d12, d13
       real*8 :: Bt(1:3), Vt(1:3)
-      real*8 :: vtot
+      real*8 :: vtot, beta, DVelPrlNext, ChiPrl, ChiPerp
+      real*8 :: SumPrl, SumPerp01, SumPerp02
+      real*8 :: DVelPrl, dDprl_dVelPrl
+      real*8 :: dDprl_dChiPrl, dDprl_dChiPerp
+      real*8 :: dDperp_dChiPrl, dDperp_dChiPerp
+      real*8 :: TF01, TF02, TF03
+      real*8 :: vAveThBG, DVelMin
+      real*8 :: durtmp
+      real*8 :: DVelPrlNx, DVelPerpNx
+      real*8 :: gPrl_0, gPrl_1
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-      alpha  = 0.01 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      alpha  = 0.1 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       TF     = 1.0E+10
       TFtemp = 0.0
+      DVelPrlNext = 0.0
+      beta   = 1.0E-06
+      SumPrl = 0.0
+      SumPerp01 = 0.0
+      SumPerp02 = 0.0
+      vAveThBG  = 0.0
 
       DO IPL = 1, NPLSI ! loop over all background species
-
-         VelPrlBG = 0.0
+c      DO IPL = 1, 1
 
          IPLTI = MPLSTI(IPL)
+
+         booltmp = LGVAC(NCELL,IPL)
+
+         IF (LGVAC(NCELL,IPL)) THEN
+            DItmp = DVAC
+            TItmp = TVAC
+         ELSE
+            DItmp = DIIN(IPL,NCELL)
+            TItmp = TIIN(IPLTI,NCELL)
+         END IF
 
 c  get the parallel part of the background velocity, m/s
          IF (INDPRO(5) == 8) THEN
@@ -1697,19 +1722,19 @@ c  get the parallel part of the background velocity, m/s
      >                  BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
          END IF
 
-         VelPrlBG = 0.00
+         VelPrlBG = 100.0
 
-         ub = sqrt(2*TIIN(IPLTI,NCELL)*ELCHA/(RMASSP(IPL)*AMUAKG))
-         Chi = sqrt((VELPER*1.0E-02)**2
-     >            + (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)**2)/ub
+         ub = sqrt(2*TItmp*ELCHA/(RMASSP(IPL)*AMUAKG))
+         DVelPrl = SIGPAR*VELPAR*1.0E-02 - VelPrlBG
+         ChiPrl  = (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)/ub
+         ChiPerp = VELPER*1.0E-02/ub
+         Chi = sqrt((VELPER*1.0E-02)**2 + DVelPrl**2)/ub
          Lambda = NCHRGI(IION)**2*NCHRGP(IPL)**2*ELCHA**4*
-     >            DIIN(IPL,NCELL)*1.0E+06*COULOMBLOG/
+     >            DItmp*1.0E+06*COULOMBLOG/
      >            (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
 
-         d01 = DIIN(IPL,NCELL)
-         d02 = TIIN(IPLTI,NCELL)
-         d03 = SIGPAR*VELPAR - VelPrlBG*1.0E+02
-
+         d01 = DItmp
+         d02 = TItmp
 
          CALL D_coeff(Chi,DPrl,DPerp)
 
@@ -1718,22 +1743,125 @@ c  get the parallel part of the background velocity, m/s
 
 c  both dVelPrl_dt and dVelPerp_dt in m/s!
          dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >                      (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)
+     >                       DVelPrl
+
          dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
 
+         dDprl_dChiPrl   = DVelPrl/(ub*Chi**2)*
+     >      (4*Lambda/(ub*sqrt(PIA))*exp(-Chi**2) - 3*Dprl)
+
+         dDprl_dChiPerp  = ChiPerp/Chi**2*
+     >      (4*Lambda/(ub*sqrt(PIA))*exp(-Chi**2) - 3*Dprl)
+
+         dDperp_dChiPrl = ChiPrl/Chi*
+     >      ((3./(2.*Chi) - Chi)*Dprl - 2.*Lambda/(Chi*ub*sqrt(PIA))*
+     >      exp(-Chi**2))
+
+         dDperp_dChiPerp = ChiPerp/Chi*
+     >      ((3./(2.*Chi)-Chi)*Dprl - 2./Chi*Lambda/(ub*sqrt(PIA))*
+     >       exp(-Chi**2))
+
+         df_dChiPrl(IPL) = -1./ub*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >      (Dprl + DVelPrl/ub*dDprl_dChiPrl)
+
+         dg_dChiPrl(IPL) = -ChiPerp/ub*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >      dDprl_dChiPrl + 1./(2.*ub*ChiPerp)*dDperp_dChiPrl
+
+         dg_dChiPerp(IPL) = -1./ub*(1 + RMASSI(IION)/RMASSP(IPL))*
+     >      (Dprl + ChiPerp*dDprl_dChiPerp) +
+     >      1./(2*ub*ChiPerp)*dDperp_dChiPerp - Dperp/(2*ub*ChiPerp**2)
+
+         SumPrl    = SumPrl + df_dChiPrl(IPL)*dVelPrl_dt(IPL)/ub
+         SumPerp01 = SumPerp01 + dg_dChiPerp(IPL)*dVelPerp_dt(IPL)/ub
+         SumPerp02 = SumPerp02 + dg_dChiPrl(IPL)*dVelPrl_dt(IPL)/ub
+
+         nue(IPL) = abs(2*(RMASSI(IION)/RMASSP(IPL)*Dprl/ub**2 -
+     >              2*Lambda/(sqrt(PIA)*ub**3*Chi**2)*exp(-Chi**2)))
+
+         vAveThBG = vAveThBG + nue(IPL)*ub
+
          d04 = dVelPrl_dt(IPL)
          d05 = dVelPerp_dt(IPL)
+         d06 = dDprl_dVelPrl
+         d07 = df_dChiPrl(IPL)
+         d12 = dg_dChiPrl(IPL)
+         d13 = dg_dChiPerp(IPL)
+
+      END DO
+
+      vAveThBG = abs(vAveThBG/sum(nue))
+      DVelMin  = vAveThBG*1.0E-04
+
+      taue = 1./sum(nue)
+
+      d08 = SUM(dVelPrl_dt)
+      d09 = ABS(d08-old01)/old01
+      d10 = SUM(dVelPerp_dt)
+      d11 = ABS(d10-old02)/old02
+
+      TF01 = abs(alpha*VELPAR*sum(dVelPrl_dt)/SumPrl)
+      TF02 = abs(alpha*VELPAR*sum(dVelPerp_dt)/SumPerp01)
+      TF03 = abs(alpha*VELPAR*sum(dVelPerp_dt)/SumPerp02)
+
+c      TF = MIN(TF01,TF02,TF03)
+
+c      TF01 = abs(alpha*VELPAR**2/(sum(dVelPrl_dt)*1.0E+02))
+c      TF02 = abs(alpha*VELPAR*VELPER/(sum(dVelPerp_dt)*1.0E+02))
+
+      TF = MIN(TF01,TF02,TF03)
+
+      TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
+
+      DVelPrlNx  = abs(sum(dVelPrl_dt)*TF/VELPAR)
+      DVelPerpNx = abs(sum(dVelPerp_dt)*TF/VELPAR)
+
+      IF (DVelPrlNx.LT.DVelMin .AND. DVelPerpNx.GT.DVelMin) THEN
+         TF = TF02
+      ELSE IF (DVelPrlNx.GT.DVelMin .AND. DVelPerpNx.LT.DVelMin) THEN
+         TF = TF01
+      ELSE IF (DVelPrlNx.LT.DVelMin .AND. DVelPerpNx.LT.DVelMin) THEN
+         TF = (3./4.*3.141596/VOL(NCELL))**1./3.
+      END IF
+
+      gPrl_0 = sum(dVelPerp_dt)
+      gPrl_1 = gPrl_0 + TF/VELPAR*SumPerp02
+
+      IF (SIGN(1.0,gPrl_0) .NE. SIGN(1.0,gPrl_1)
+     >   .AND. DVelPrlNx .LT. DVelMin) THEN
+         TF = 0.5*-VELPAR*gPrl_0/SumPerp02
+      END IF
+
+c     TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
+
+c      DVelPrlNext = SIGPAR*VELPAR*1.0E-02 + sum(DVelPrl_dt)*TF/VELPAR
+c     >            - VelPrlBG
+
+c      IF (SIGN(1.0,DVelPrl).NE.SIGN(1.0,DVelPrlNext)) THEN
+c         TF = (VelPrlBG - SIGPAR*VELPAR*1.0E-02)*SIGPAR*VELPAR*1.0E-02/
+c     >        SUM(dVelPrl_dt)
+c         TF = ABS(TF)*1.0E+02
+c      END IF
+
+      old01 = d08
+      old02 = d10
+
+      durtmp = TF/VELPAR
+
+      END SUBROUTINE EIRENE_PREPARE_FPKCOL
+
+
 
 c  get the new TF, the distance until next coulomb collision
 c         TFprl = ABS(VELPAR**2/(dVelPrl_dt(IPL)*1.0E+02+EPS60)*alpha)
 c         TFperp = VELPAR*VELPER/(dVelPerp_dt(IPL)*1.0E+02+EPS60)*alpha
 c         TFtemp(IPL) = TFprl
 
-c         dChi_dt = 1./(ub**2*Chi)*
+c         dChi_dt(IPL) = 1./(ub**2*Chi)*
 c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
 c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
 c         TF = VELPAR*ABS(Chi/dChi_dt)*alpha
+
 c         TF = VELPAR*1.0E-006
 c         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
 c         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
@@ -1745,18 +1873,18 @@ c         print*
 c         print*, ' TFtemp = ', TFtemp
 c         print*
 
-      END DO
+c      IF (d07 .lT. 10) THEN
+c         TF = (3./4.*3.141596/VOL(NCELL))**1./3.
+c      ELSE
+c         TF = ABS((VELPAR**2+EPS60)/
+c     >       (SUM(dVelPrl_dt)*1.0E+02+EPS60)*alpha)
+c      END IF
 
-c the estimate for TF should be checked again
-c      DELFAC = ABS(VELPER/(SIGPAR*VELPAR - VelPrlBG*1.0E+02))
+c      TF = ABS((VELPAR+EPS60)*VELPER/
+c     >    (SUM(dVelPerp_dt)*1.0E+02+EPS60)*alpha)
 
-      d06 = SUM(dVelPrl_dt)*1.0E+02
+c      TF = ABS((VELPAR+EPS60)/(SUM(dChi_dt)+EPS60)*alpha)
 
-      TF = ABS((VELPAR**2+1.0E+02+EPS60)/
-     >    (SUM(dVelPrl_dt)*1.0E+02+EPS60)*alpha)
-c      TF = MINVAL(TFtemp)
-
-      END SUBROUTINE EIRENE_PREPARE_FPKCOL
 
 
 

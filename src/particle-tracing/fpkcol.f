@@ -146,7 +146,11 @@ c  magnetic field
      >                     - E0
         END DO
 
-        VELPAR = ABS(SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02)
+        dummy = SUM(D_VELPAR)
+
+        VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02
+        SIGPAR = SIGN(1.0,VELPAR)
+        VELPAR = ABS(VELPAR)
         VELPER = VELPER + SUM(D_VELPER)*1.0E+02
         veltotal = SQRT(VELPAR**2 + VELPER**2)
 
