@@ -173,7 +173,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.12 2.1.5e added. Former 2.1.5e (del-e) is now: 2.1.5de \\
   H.12 2.1.8e added. Former 2.1.8e (del-e) is now: 2.1.8de
  \item update  23.5/00 \\
-  H.12 2.2.5fl revised: labelling of n=2 triplet levels in Sawada's
+  H.12 2.2.5fl revised: labeling of n=2 triplet levels in Sawada's
   code corrected.
  \item update  06.8/00 \\
   H.2 2.26B0 and H.2 2.26B1 added (ionization rates for Iron).
@@ -310,9 +310,9 @@ I.e., these 9 H.2 coefficients can directly be obtained as subset of the 81 H.4 
 this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multiplied?
 \item  Further H.2 rate fits available for heavy particle reactions, e.g. 0.5,..., 3.1.6,....still to be implemented
 \item  Check Behringer (Strahl) database for Li ionisation and recomb...
-\item 2.2.14: H.2 fit made strictly linear on log-log scale, for H.1, H.2 H.8. Then use H.2 coefficients to
-derive, exactly, the corresponding H.1 and H.8 coefficients. Done for 2.2.14, and H.8.  To be done for H.1 for this
-process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.3.13,....
+\item 2.2.14: H.2 fit made strictly linear on log-log scale, for H.1, H.2 and H.8. Then use H.2 coefficients to
+derive, exactly, the corresponding H.1 and H.8 coefficients. Done for H.8, 2.2.14,  To be done for H.1 for this
+process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.3.13, 2.7.14....
 \end{itemize}
 
 \newpage
@@ -629,7 +629,7 @@ is:
 \Delta {\bf P}_0 = m_0 \cdot \left({\bf v}_0-{\bf v}'_0\right) = \mu (1-\cos(\theta)) \left({\bf v}_0-{\bf v}_p\right)
 \end{equation}
 with ${\bf v}_0', \mu, \theta$ being the post collision test particle velocity, the reduced mass and the scattering angle, respectively.
-The second equality follows from momentum conservation and then no internal energy is transferred during the collision (i.e., elastic, or resonant charge exchange).
+The second equality follows from momentum conservation and the additional assumption that no internal energy is transferred during the collision (i.e., elastic, or resonant charge exchange).
 
 \paragraph{Stationary Maxwellian background}
 
@@ -643,7 +643,7 @@ The rate coefficient of momentum transfer from a single test particle, with velo
 \end{eqnarray}
 where
 $\langle \cdots \rangle$ denotes averaging over the stationary Maxwellian distribution for ion velocities (plasma background) $f_{maxw}(v_p,T_p)$;\\
-${\bf e}_0 = {\bf v}_0/v_0$ the speed unit vector in the direction of the test particle flight. Due to symmetry of the background velocity distribution
+${\bf e}_0 = {\bf v}_0/v_0$ the speed unit vector in the direction of the test particle flight. Due to symmetry (isotropy) of the background velocity distribution
 and averaging over this distribution, momentum can be transferred to/from test particles (and hence also to/from bulk (plasma) particles) only in
 the direction of test particle flight.\\
 $\sigma(v_{rel})$ and $v_{rel}$ are the collision cross-section and the relative velocity of colliding particles $v_{rel}=|{\bf v}_0 - {\bf v}_p|$, respectively;\\
@@ -667,6 +667,7 @@ becomes a vector in the direction of ${\bf V}_0 = \int d^3v_0 {\bf v}_0f_0({\bf 
 and we see that this rate vanishes for isotropic distributions $f_0$, simply already because of ${\bf V_0} = 0$.
 \\
 \paragraph{drifting Maxwellian background}
+
 We now turn to momentum exchange rates between the test particle community, subscript $0$ and a background (plasma), subscript $p$.
 
 As discussed already for general Beam-Maxwellian rate coefficients, paragraph H.3, in a first step we transform to the rest frame of the plasma:
@@ -681,7 +682,8 @@ Momentum transfer from a single test particle to a drifting Maxwellian plasma ba
 The vector $\widetilde{{\bf V}}_0$ is the average (macroscopic) test particle flow velocity in the rest frame of the plasma;
 The rate of momentum transfer from the test particle community $``0"$ to the (drifting Maxwellian) background community $``p"$
 is a vector in this direction  $ \widetilde{{\bf V}}_0/\widetilde{V}_0$.\\
-From here on: to be re-written, below: old text....
+\textcolor[rgb]{1.00,0.00,0.00}{\textbf{From here on: to be re-written, below: old text from Vlad....}}
+
 Parallel momentum transfer rate (momentum {\em loss} for the background (plasma)):
 $$
 {\bf Sm}^i_{mu_\parallel}= {\bf b} \left(\widetilde{{\bf e}}_{mom}{\bf\cdot}{\bf b}\right) \left<\sigma\cdot v_r\cdot p\right>
@@ -706,8 +708,43 @@ This rescaling is used for elastic collisions according to~\cite{kn:OakRidge}, s
 The rate 0.3 (elastic $p+H_2$ collisions) from this set was successfully compared with the same sources, calculated by collisional estimator. The same test for the resonant CX rates 3.1.8  {\em was not yet successful}
 \subsubsection*{H.7: momentum weighted rates vs. temperature and density}
 \addcontentsline{toc}{subsubsection}{H.7: momentum weighted rates vs. temperature and density}
-\subsubsection*{H.8: energy weighted rates vs. temperature}
+\subsubsection*{\textbf{H.8: energy weighted rates vs. temperature}}
 \addcontentsline{toc}{subsubsection}{H.8: energy weighted rates vs. temperature}
+Under label H.8 energy weighted rate coefficients are stored, vs. temperature (eV) of the
+Maxwellian electron or heavy particle distributions. (e.g., unless otherwise stated, these rates are taken for test particles at rest: $E_0 \approx 0.0 eV$).
+The general relation between the energy weighted rate coefficients H.8 and the ``ordinary" rate coefficients H.2
+is (integration by parts):
+\begin{equation}
+H.8 [eV cm^3/s]= kT \times H.2 \times \left[3/2+\frac{d \ln(H.2)}{d \ln T}\right]
+\end{equation}
+with rate coefficient H.2 in $cm^3/s$.
+If the H.2 rate coefficients are fitted as:
+
+\begin{equation}
+\ln(H.2) = \sum_{i=0}^8  b_i \ln^i(T)
+\end{equation}
+
+then
+
+\begin{equation}
+\frac{d \ln(H.2)}{d \ln T}= \sum_{i=0}^7  b_{i+1} (i+1)  \ln^i(T) = b_1 + 2b_2 \ln(T) + 3b_3 \ln^2(T) + ....
+\end{equation}
+
+and hence, for the  H.8 coefficient, in the same fit format as for the H.2 coefficient:
+\begin{equation}
+\ln(H.8) = \ln(kT) +  \ln(H.2) + \ln(3/2 + b_1 + 2b_2 \ln(T) - ....)
+\end{equation}
+
+If a H.2 rate coefficient is linear on a log-log scale, as e.g. often the case for recombination processes, then
+$b_2 =b_3 =....=b_8 = 0$, and hence, for the fit coefficients of the corresponding H.8 rate coefficient:
+
+$h_0=b_0 + \ln [3/2 + b_1],  h_1=b_1+1,  h_2 = h_3 = ....=h_8 = 0$
+
+An explicit numerical example is detailed under H.8 2.2.14 (dissociative combination of $H_2^+(v)$ molecular ions).
+
+
+
+
 \subsubsection*{H.9: energy weighted rates vs. temperature and energy}
 \addcontentsline{toc}{subsubsection}{H.9: energy weighted rates vs. temperature and energy}
 \subsubsection*{H.10: energy weighted rates vs. temperature and density}
@@ -809,6 +846,8 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 \addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
 This next string is searched by EIRENE in subroutine SLREAC
 to initialize search for a particular set of fit coefficients.
+From here on, a character string \textbf{`H.n'} , $n$ an integer, must only appear in the section title, 
+but not in the text.
 
 \bigskip
 \begin{small}\begin{verbatim}
@@ -1036,6 +1075,7 @@ c^3\Pi_u)
    a0 -2.297914361380e+05    a1  5.303988579693e+05    a2 -5.316636672593e+05
    a3  3.022690779470e+05    a4 -1.066224144320e+05    a5  2.389841369114e+04
    a6 -3.324526406357e+03    a7  2.624761592546e+02    a8 -9.006246604428e+00
+       ETH 8.5
        Emin  1.08e+01   s(Emin)  1.00e-19   smax  2.92e-17   Error  5.62e-01
 \end{verbatim}\end{small}
 \newpage
@@ -1674,6 +1714,7 @@ ELABMAX=  2.00000E 02 eV
 \epsffile{Amjuel_PS/elast04.ps}
 \end{figure}
 \newpage
+
 \section{H.2 : Fits for $\langle\sigma v \rangle (T)$} \label{sect2}
 
 Some (single parameter) Maxwellian rate coefficients, obtained algebraically from corresponding
@@ -2020,9 +2061,10 @@ $ \langle\sigma v \rangle_{eff} = \langle\sigma v \rangle_{H_2(v=0)} + \sum_{v=1
 
 Vibrational distribution $pH_2(v,T_e)$ (vs. $T_e$) taken into
 account. Only coupling
-to $H_2$ ground state. No population of $H_2(v)$ from electronically
+to $H_2(v)$ electronic ground state. No population of $H_2(v)$ from electronically
 excited $H_2^*$, no radiative transitions between vibrational levels.
-Assume: incident $H_2$ particle with 0.1 eV (for the rate taken to be for $H_2$ at rest) and $T_i = T_e$,
+Assume: incident $H_2$ particle with 0.1 eV
+(for the rate taken to be for $H_2$ at rest) and $T_i = T_e$,
 hence: density independent vibrational distribution and effective
 rate, as well as neutral molecule energy independent rate.
 
@@ -2123,6 +2165,8 @@ Competing process at low T: see above: dissociative electron attachment, process
 \epsffile{Amjuel_PS/ionconv_2.eps}
 \end{figure}
 \newpage
+
+
 Next few reactions:  rate coefficients, vs. Te, for a number of $N_2, N_2^+$ corona dissociation and ionisation channels
 \subsection{
 Reaction 2.7.5  $e + N_2 \rightarrow e + N + N$ }
@@ -2198,7 +2242,7 @@ pre-dissociation via various channels).
 Reaction 2.7.14  $e + N_2^+ \rightarrow N + N$ }
 Dissociative recombination, cross section:
 \cite{kn:Petersen}
-$\Delta E_{el}$ from H.8 rate, exact. KER: 1.06 - 5.824 eV at zero electron impact energy,
+$\Delta E_{el}$ can be taken from electron energy weighted rate coefficient. KER: 1.06 - 5.824 eV at zero electron impact energy,
 depending on vibrational state of $N_2^+$ and electronic state of products. Suggestion: KER = 3.5 eV
 
 \begin{small}\begin{verbatim}
@@ -3704,9 +3748,7 @@ Reaction 3.2.3  $  p + H_2(v) \rightarrow H + H_2^+  $
 Reaction 3.3.1  $  p + He(1s^21S) \rightarrow H + He^+(1s)  $
 }
 
-Proton energy weighted charge exchange rate coefficient,
-protons with ground state Helium He, $E_{th} \approx 11.2$ eV.
-Corresponding rate coefficient is given in HYHEL with same sub-section number.
+
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
   T-Index:
@@ -3754,9 +3796,7 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.6a  $ p + He^*(1s^12s^11S) \rightarrow H^*(2s) + He^+(1s) $
 }
-Proton energy weighted charge exchange rate coefficient,
-protons with first meta-stable He*, $E_{th} \approx 0.57$ eV.
-Corresponding rate coefficient is given in HYHEL with same sub-section number.
+
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -3807,9 +3847,7 @@ This page is intentionally left blank
 Reaction 3.3.6b   $p + He^*(1s^12s^13S) \rightarrow H^*(2s) + He^+(1s) $
 }
 
-Proton energy weighted charge exchange rate coefficient,
-protons with second meta-stable He*, $E_{th} \approx 1.37$ eV.
-Corresponding corona rate coefficient is given in HYHEL with same sub-section number.
+
 \begin{small}\begin{verbatim}
 
          E-Index:     0                     1                     2
@@ -4318,10 +4356,10 @@ H2 multi-step model
 
  Data: K. Sawada/Fujimoto ,\cite{kn:Sawada}
 
-$  H(1), H_2, H_2^+, H^+ $ transported
+coupling to reservoir of $  H(1), H_2, H_2^+, H^+ $ (``transported" species)
 
 
-$H_2$ is in vibrational ground state, and the electronic levels
+$H_2$ is in vibrational ground state $v=0$, and the electronic levels
 in the molecules as discussed in \cite{kn:Sawada} are taken into
 account.
 
@@ -4385,7 +4423,7 @@ The $H_2(v)$ are in vibrational equilibrium
 (depends only upon $T_e$), and the electronic levels
 in the molecules as discussed in \cite{kn:Sawada} are taken into
 account. CX losses from vibr. distribution are computed assuming $T_e =
-T_i$, and an energy of $H_2$-Beam  = 0.1 eV.
+T_i$, $n_e = n_p$, and an energy of $H_2$-Beam  = 0.1 eV.
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
   T-Index:
@@ -6856,6 +6894,18 @@ $h1=b1+1, h0=b0+\ln(3/2+b1)$
    h6  0.000000000000e+00    h7  0.000000000000e+00    h8  0.000000000000e+00
 
 \end{verbatim}\end{small}
+\subsection{
+Reaction 2.7.14   $e + N_2^+ \rightarrow N + N^*(n) $
+}
+The energy weighting in this rate coefficient is done with the kinetic energy of
+impacting electron. The same procedure is applied as for $H_2^+$ dissociative recombination, see above in this section.
+
+\begin{small}\begin{verbatim}
+   h0 -1.650010000000e+01    h1  0.700000000000e+00    h2  0.000000000000e+00
+   h3  0.000000000000e+00    h4  0.000000000000e+00    h5  0.000000000000e+00
+   h6  0.000000000000e+00    h7  0.000000000000e+00    h8  0.000000000000e+00
+
+\end{verbatim}\end{small}
 \newpage
 This page is intentionally left blank
 \newpage
@@ -7181,7 +7231,8 @@ The energy weighted rate coefficient is a function of ion temperature $T_p$
 [eV]  and of the impacting neutral particle kinetic energy $E_0$ [eV]
 
 \begin{small}\begin{verbatim}
-        E-Index:     0                     1                     2
+
+       E-Index:     0                     1                     2
  T-Index:
         0   -1.777579549728D+01    1.009523650881D-01    4.654228527844D-02
         1    1.275231758810D+00   -9.644906009036D-02   -2.211669235384D-02
@@ -7278,7 +7329,9 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.1  $  p + He(1s^21S) \rightarrow  H + He^+(1s) $
 }
-
+Proton energy weighted charge exchange rate coefficient,
+protons with ground state Helium He, $E_{th} \approx 11.2$ eV.
+Corresponding un-weighted rate coefficient is given also here in an earlier section and in HYHEL with same sub-section number.
 
 
 \begin{small}\begin{verbatim}
@@ -7332,7 +7385,9 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.6a $   p + He^*(1s^12s^11S) \rightarrow H^*(2s) + He^+(1s) $
 }
-
+Proton energy weighted charge exchange rate coefficient,
+protons with first meta-stable He*, $E_{th} \approx 0.57$ eV.
+Corresponding (un-weighted) rate coefficient is given here in an earlier section and in HYHEL with same sub-section number.
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -7384,7 +7439,9 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.6b  $  p + He^*(1s^12s^13S) \rightarrow H^*(2s) + He^+(1s)$
 }
-
+Proton energy weighted charge exchange rate coefficient,
+protons with second meta-stable He*, $E_{th} \approx 1.37$ eV.
+Corresponding (un-weighted) rate coefficient is given here in an earlier section and in HYHEL with same sub-section number.
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -11067,7 +11124,7 @@ Reaction 2.2.14d $ H_2^+ + e \rightarrow ...+ H(5) , \   $ Ratio $H(5)/H_2^+  $
 }
 
  Multi-step hydrogenic population coefficients
- Data: T.Fujimoto
+ Data: K. Sawada, T.Fujimoto \cite{kn:Sawada}
 
  Ratio of population coefficients: p(5)/nH2+
 
