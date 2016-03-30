@@ -10,7 +10,10 @@
       real*8, allocatable, public :: dVelPrl_dt(:), dVelPerp_dt(:)
       real*8, allocatable, public :: df_dChiPrl(:), dg_dChiPrl(:)
       real*8, allocatable, public :: dg_dChiPerp(:), nue(:)
-      real*8, public :: veltotal, old01, old02, old03
+      real*8, public  :: veltotal, old01, old02, facTF, TFold
+      real*8, public  :: old03, old04
+      real*8, public  :: alphaPrl, alphaPerp, iprepare
+      integer, public :: npanuSave
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
 
@@ -36,6 +39,12 @@
          old01 = 1.0E-10
          old02 = 1.0E-10
          old03 = 1.0E-10
+         old04 = 1.0E-10
+         facTF = 1.
+         TFold = 100.
+         npanuSave = 0
+         iprepare = 0.0
+
 
       else if (ical == 2) then
 

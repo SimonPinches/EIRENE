@@ -1658,7 +1658,7 @@ c      USE EIRMOD_COMXS
 
       implicit none
 
-      integer :: IPL, IPLTI
+      integer :: IPL, IPLTI, iun
 
       real*8 :: TF
       real*8 :: alpha, ub, Chi, Lambda, dChi_dt
@@ -1667,22 +1667,32 @@ c      USE EIRMOD_COMXS
       real*8 :: TFtemp(1:NPLSI)
       real*8 :: vabs, dvabs_dt
       real*8 :: d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11
-      real*8 :: d12, d13
+      real*8 :: d12, d13, d14
       real*8 :: Bt(1:3), Vt(1:3)
       real*8 :: vtot, beta, DVelPrlNext, ChiPrl, ChiPerp
       real*8 :: SumPrl, SumPerp01, SumPerp02
       real*8 :: DVelPrl, dDprl_dVelPrl
       real*8 :: dDprl_dChiPrl, dDprl_dChiPerp
       real*8 :: dDperp_dChiPrl, dDperp_dChiPerp
-      real*8 :: TF01, TF02, TF03
+      real*8 :: TF01, TF02, TF03, TF04, TF05, TF06, TF07
       real*8 :: vAveThBG, DVelMin
-      real*8 :: durtmp
+      real*8 :: durtmp, alphaPrl0, alphaPerp0
       real*8 :: DVelPrlNx, DVelPerpNx
-      real*8 :: gPrl_0, gPrl_1
+      real*8 :: gPrl_0, gPrl_1, gPerp_1, dv_dt_min, g_1
+      real*8 :: d15, d16, d17, d18, d19
+
+      logical :: bool
+
+      character*200 :: filename
+      character*4 :: written_idx4
 
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-      alpha  = 0.1 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+2001  format(i4.4)
+
+      alpha     = 0.2 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      alphaPrl0  = 0.2
+      alphaPerp0 = 0.2
       TF     = 1.0E+10
       TFtemp = 0.0
       DVelPrlNext = 0.0
@@ -1691,9 +1701,28 @@ c      USE EIRMOD_COMXS
       SumPerp01 = 0.0
       SumPerp02 = 0.0
       vAveThBG  = 0.0
+      bool = .FALSE.
+      TF06 = (3./4.*3.141596/VOL(NCELL))**1./3.
+      TF07 = (3./4.*3.141596/VOL(NCELL))**1./3.
+      iun = 3
 
-      DO IPL = 1, NPLSI ! loop over all background species
-c      DO IPL = 1, 1
+      iprepare = iprepare + 1
+
+      IF (npanuSave .NE. NPANU) THEN
+         npanuSave = NPANU
+         alphaPrl  = alphaPrl0
+         alphaPerp = alphaPerp0
+         bool      = .TRUE.
+         ! write data into file
+         iprepare = 1
+         IF (NPANU .NE. 0) close(iun)
+         write(written_idx4,2001) NPANU
+         filename = 'particle_trace_fpkcol.'//written_idx4
+         open(iun,file=filename)
+      END IF
+
+!      DO IPL = 1, NPLSI ! loop over all background species
+      DO IPL = 1, 2
 
          IPLTI = MPLSTI(IPL)
 
@@ -1706,6 +1735,9 @@ c      DO IPL = 1, 1
             DItmp = DIIN(IPL,NCELL)
             TItmp = TIIN(IPLTI,NCELL)
          END IF
+
+         IF (DItmp.NE.DItmp) DItmp = DVAC
+         IF (TItmp.NE.TItmp) TItmp = TVAC
 
 c  get the parallel part of the background velocity, m/s
          IF (INDPRO(5) == 8) THEN
@@ -1722,7 +1754,8 @@ c  get the parallel part of the background velocity, m/s
      >                  BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
          END IF
 
-         VelPrlBG = 100.0
+         IF (IPL .EQ. 1) VelPrlBG = 100.0
+         IF (IPL .EQ. 2) VelPrlBG = 0.0
 
          ub = sqrt(2*TItmp*ELCHA/(RMASSP(IPL)*AMUAKG))
          DVelPrl = SIGPAR*VELPAR*1.0E-02 - VelPrlBG
@@ -1735,6 +1768,11 @@ c  get the parallel part of the background velocity, m/s
 
          d01 = DItmp
          d02 = TItmp
+         d15 = NCHRGP(IPL)
+         d16 = RMASSP(IPL)
+         d17 = NCHRGI(IION)
+         d18 = RMASSI(IION)
+         d19 = COULOMBLOG
 
          CALL D_coeff(Chi,DPrl,DPerp)
 
@@ -1748,7 +1786,7 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
          dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
 
-         dDprl_dChiPrl   = DVelPrl/(ub*Chi**2)*
+         dDprl_dChiPrl   = ChiPrl/(Chi**2)*
      >      (4*Lambda/(ub*sqrt(PIA))*exp(-Chi**2) - 3*Dprl)
 
          dDprl_dChiPerp  = ChiPerp/Chi**2*
@@ -1763,7 +1801,7 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
      >       exp(-Chi**2))
 
          df_dChiPrl(IPL) = -1./ub*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >      (Dprl + DVelPrl/ub*dDprl_dChiPrl)
+     >      (Dprl + ChiPrl*dDprl_dChiPrl)
 
          dg_dChiPrl(IPL) = -ChiPerp/ub*(1 + RMASSI(IION)/RMASSP(IPL))*
      >      dDprl_dChiPrl + 1./(2.*ub*ChiPerp)*dDperp_dChiPrl
@@ -1796,95 +1834,85 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       taue = 1./sum(nue)
 
       d08 = SUM(dVelPrl_dt)
-      d09 = ABS(d08-old01)/old01
+      d09 = ABS((d08-old01)/old01)
       d10 = SUM(dVelPerp_dt)
-      d11 = ABS(d10-old02)/old02
+      d11 = ABS((d10-old02)/old02)
 
-      TF01 = abs(alpha*VELPAR*sum(dVelPrl_dt)/SumPrl)
-      TF02 = abs(alpha*VELPAR*sum(dVelPerp_dt)/SumPerp01)
-      TF03 = abs(alpha*VELPAR*sum(dVelPerp_dt)/SumPerp02)
+      TF01 = abs(alphaPrl*VELPAR*sum(dVelPrl_dt)/SumPrl)
+      TF02 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp01)
+      TF03 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp02)
+      TF04 = abs(alpha*VELPAR**2/(sum(dVelPrl_dt)*1.0E+02))
+      TF05 = abs(alpha*VELPAR*VELPER/(sum(dVelPerp_dt)*1.0E+02))
 
-c      TF = MIN(TF01,TF02,TF03)
+!      TF02 = TF02 + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
+!      TF03 = TF03 + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
 
-c      TF01 = abs(alpha*VELPAR**2/(sum(dVelPrl_dt)*1.0E+02))
-c      TF02 = abs(alpha*VELPAR*VELPER/(sum(dVelPerp_dt)*1.0E+02))
+      TF = min(TF01,TF02,TF03,TF04,TF05)
 
-      TF = MIN(TF01,TF02,TF03)
+!      TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
 
-      TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
+      dv_dt_min = 1.0E-03*DVelMin/taue
 
-      DVelPrlNx  = abs(sum(dVelPrl_dt)*TF/VELPAR)
-      DVelPerpNx = abs(sum(dVelPerp_dt)*TF/VELPAR)
+      IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min) THEN
+         TF = min(TF02,TF03,TF05)
+      END IF
 
-      IF (DVelPrlNx.LT.DVelMin .AND. DVelPerpNx.GT.DVelMin) THEN
-         TF = TF02
-      ELSE IF (DVelPrlNx.GT.DVelMin .AND. DVelPerpNx.LT.DVelMin) THEN
-         TF = TF01
-      ELSE IF (DVelPrlNx.LT.DVelMin .AND. DVelPerpNx.LT.DVelMin) THEN
+      IF (abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
+         TF = min(TF01,TF04)
+      END IF
+
+      IF (TF .EQ. TF01 .AND. .NOT. bool) THEN
+         IF (d09 .LT. alphaPrl0) THEN
+            alphaPrl = alphaPrl*1.25
+         ELSE
+            alphaPrl = alphaPrl*0.5
+         END IF
+      ELSE
+         alphaPrl = max(alphaPrl*0.5,alphaPrl0)
+      END IF
+
+      IF ((TF .EQ. TF02 .OR. TF .EQ. TF03) .AND. .NOT. bool) THEN
+         IF (d11 .LT. alphaPerp0) THEN
+            alphaPerp = alphaPerp*1.25
+         ELSE
+            alphaPerp = alphaPerp*0.5
+         END IF
+      ELSE
+         alphaPerp = max(alphaPerp*0.5,alphaPerp0)
+      END IF
+
+      d14 = alphaPrl
+      d15 = alphaPerp
+
+!      IF (abs(sum(dVelPrl_dt)) .LT. dv_dt_min .AND.
+!     >    sign(1.0,sum(dVelPerp_dt)) .NE. sign(1.0,old02)) THEN
+!         TF = min(TFold/2.,TF)
+!      ELSE IF (abs(sum(dVelPrl_dt)) .LT. dv_dt_min .AND.
+!     >         sign(1.0,sum(dVelPerp_dt)) .EQ. sign(1.0,old02)) THEN
+!         TF = min(TFold,TF)
+!      END IF
+
+      IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min .AND.
+     >    abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
          TF = (3./4.*3.141596/VOL(NCELL))**1./3.
       END IF
 
-      gPrl_0 = sum(dVelPerp_dt)
-      gPrl_1 = gPrl_0 + TF/VELPAR*SumPerp02
-
-      IF (SIGN(1.0,gPrl_0) .NE. SIGN(1.0,gPrl_1)
-     >   .AND. DVelPrlNx .LT. DVelMin) THEN
-         TF = 0.5*-VELPAR*gPrl_0/SumPerp02
-      END IF
-
-c     TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
-
-c      DVelPrlNext = SIGPAR*VELPAR*1.0E-02 + sum(DVelPrl_dt)*TF/VELPAR
-c     >            - VelPrlBG
-
-c      IF (SIGN(1.0,DVelPrl).NE.SIGN(1.0,DVelPrlNext)) THEN
-c         TF = (VelPrlBG - SIGPAR*VELPAR*1.0E-02)*SIGPAR*VELPAR*1.0E-02/
-c     >        SUM(dVelPrl_dt)
-c         TF = ABS(TF)*1.0E+02
-c      END IF
-
       old01 = d08
       old02 = d10
+      d16 = abs((VELPAR-old03)/old03)
+      d17 = abs((VELPER-old04)/old04)
+      d18 = NCELL
+      TFold = TF
 
-      durtmp = TF/VELPAR
+1000  format(10000(1pe14.5E3))
 
+      write(iun,1000) iprepare, TF,
+     >   VELPAR, VELPER,
+     >   d08, d10, ! derivatives
+     >   d16, d17, ! relative change of velocities
+     >   d09, d11, ! relative change of derivatives
+     >   dv_dt_min, d18
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
-
-
-
-c  get the new TF, the distance until next coulomb collision
-c         TFprl = ABS(VELPAR**2/(dVelPrl_dt(IPL)*1.0E+02+EPS60)*alpha)
-c         TFperp = VELPAR*VELPER/(dVelPerp_dt(IPL)*1.0E+02+EPS60)*alpha
-c         TFtemp(IPL) = TFprl
-
-c         dChi_dt(IPL) = 1./(ub**2*Chi)*
-c     >             ((SIGPAR*VELPAR*1.0E-02 - VelPrlBG)*dVelPrl_dt(IPL) +
-c     >               VELPER*1.0E-02*dVelPerp_dt(IPL))
-c         TF = VELPAR*ABS(Chi/dChi_dt)*alpha
-
-c         TF = VELPAR*1.0E-006
-c         vabs     = sqrt((1.0E-02*VELPAR)**2 + (1.0E-02*VELPER)**2)
-c         dvabs_dt = 1./vabs*(1.0E-02*VELPER*dVelPerp_dt(IPL)
-c     >            +         (1.0E-02*VELPAR*dVelPrl_dt(IPL)))
-c  times VELPAR since TF is a distance
-c         TFtemp = VELPAR*ABS(vabs/dvabs_dt)*alpha
-c         IF (TFtemp .LT. TF) TF = TFtemp
-c         print*
-c         print*, ' TFtemp = ', TFtemp
-c         print*
-
-c      IF (d07 .lT. 10) THEN
-c         TF = (3./4.*3.141596/VOL(NCELL))**1./3.
-c      ELSE
-c         TF = ABS((VELPAR**2+EPS60)/
-c     >       (SUM(dVelPrl_dt)*1.0E+02+EPS60)*alpha)
-c      END IF
-
-c      TF = ABS((VELPAR+EPS60)*VELPER/
-c     >    (SUM(dVelPerp_dt)*1.0E+02+EPS60)*alpha)
-
-c      TF = ABS((VELPAR+EPS60)/(SUM(dChi_dt)+EPS60)*alpha)
-
 
 
 
@@ -1901,19 +1929,19 @@ c      TF = ABS((VELPAR+EPS60)/(SUM(dChi_dt)+EPS60)*alpha)
       REAL(DP):: D1,D2
       PARAMETER(SQPI=1.772453851) ! sqrt(pi)
 
-      if (X.ge.0.4) then
+!      if (X.ge.0.4) then
          X2 = X*X
          X3 = X*X2
          P0 = Erf(X)
          P1 = 2*exp(-X2)/SQPI
          D1 = P0/X3-P1/X2
          D2 = 0.5*P1/X2+P0/X-0.5*P0/X3
-      else
-         X2 = X*X
-         X4 = X2*X2
-         D1 = (4./3.-4./5.*X2+2./7.*X4)/SQPI
-         D2 = (4./3.-4./15.*X2+2./35.*X4)/SQPI
-      end if
+!      else
+!         X2 = X*X
+!         X4 = X2*X2
+!         D1 = (4./3.-4./5.*X2+2./7.*X4)/SQPI
+!         D2 = (4./3.-4./15.*X2+2./35.*X4)/SQPI
+!      end if
 
       return
 

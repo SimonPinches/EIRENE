@@ -148,6 +148,9 @@ c  magnetic field
 
         dummy = SUM(D_VELPAR)
 
+        old03 = VELPAR
+        old04 = VELPER
+
         VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02
         SIGPAR = SIGN(1.0,VELPAR)
         VELPAR = ABS(VELPAR)
