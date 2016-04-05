@@ -48,15 +48,22 @@ C   POLAR ANGLE: MODIFIED COSINE WITH CUT OFF COSM
         A=RANF_EIRENE( )
         ZCPHI=(1.-A*COSM)**COSP
       ELSE
-C   POLAR ANGLE: FROM GAUSSIAN WITH CUT OFF COSM
+C   POLAR ANGLE: FROM GAUSSIAN, St. dev.= COSP , with cut off COSM, done by rejection sampling
         ICOUNT=0
 410     IF (INIV2.EQ.0) CALL EIRENE_FGAUSS
-        ZPHI=COSP*FG1(INIV2)
         INIV2=INIV2-1
+cdr  this sampling from Gaussian is currently highly inefficient.
+cdr  a) due to rejection
+cdr  b) because a full triple of Gaussian random numbers is generated, but just the first 
+cdr     component is used
+ 
+        ZPHI=COSP*FG1(INIV2)
+        
         ICOUNT=ICOUNT+1
 C   CUT OFF ANGLE: COSM (RADIANS)
         IF (ICOUNT.GT.1000) THEN
-          WRITE (iunout,*) 'WARNING FROM REFANG: ICOUNT=1000 '
+          WRITE (iunout,*) 'WARNING FROM REFANG: IC=1000, CUT OFF AT ',
+     .                      COSM
           GOTO 420
         ENDIF
         IF (ABS(ZPHI).GT.COSM) GOTO 410

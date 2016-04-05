@@ -235,7 +235,7 @@ cdr             tally for electron source missing ??
  
 cdr surface averaged tallies
 cdr  note: distinct from volumetric sources, these are ordered here
-cdr  receiving species
+cdr  by receiving species
 cdr  surface rates, for particle balance atoms
       ALLOCATE (POTATI(0:NATM,0:NSTRA))
       ALLOCATE (PRFAAI(0:NATM,0:NSTRA))

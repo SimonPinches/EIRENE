@@ -1,7 +1,21 @@
+cdr  jan 16: started to cleanup, comment
+cdr          remove redundant parameter iflg
+c
+c
+c
 C
-C MODIFIED BY V. KOTOV
+C MODIFIED BY V. KOTOV  (when ??)
 C
-      SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
+
+cdr this is the SHORT version of WRPLAM.F 
+cdr It writes and reads (entry RPLAM_SHRT) background data onto/from fort.13
+cdr Distinct from WRPLAM_long here only the background tallies are written-read, 
+cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data, 
+cdr nor the primary source sampling information 
+
+
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -16,11 +30,11 @@ csw      USE EIRMOD_CCRM
 csw      USE IFWRITE !VK
 
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
+
       LOGICAL,INTENT(IN) :: TRCFLE
       INTEGER IO
 
-csw      IF(EIR_IFWRITE()) THEN
+
         OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
         REWIND 13+ifoff
         IF(.NOT.ASSOCIATED(NFLA)) THEN
@@ -35,26 +49,32 @@ csw      IF(EIR_IFWRITE()) THEN
      w           VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
      w           VZIN(NFLA+1:NPLSI,1:NRAD)
        END IF
-csw       CALL WRITE_TABEF(TRCFLE) !VK, WRITES TABEF, SEE CCRM
+
        CLOSE (UNIT=13+ifoff)
-csw      END IF
+
       RETURN
-C
-      ENTRY EIRENE_RPLAM_SHRT(TRCFLE,IFLG)
-       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
+C .......................................................................
+
+      ENTRY EIRENE_RPLAM_SHRT(TRCFLE)
+
+C ........................................................................
+
+
+      OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o      STATUS='OLD',IOSTAT=IO)
-       IF(IO.NE.0) THEN
-         WRITE(iunout,*) 'ERROR IN WRPLAM_SHRT: CAN NOT READ FORT.13'
-csw         stop
-         RETURN
-       END IF
+      IF(IO.NE.0) THEN
+        WRITE(iunout,*) 'ERROR IN WRPLAM_SHRT: CAN NOT READ FORT.13'
+        RETURN
+      END IF
+
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN 
-       WRITE(IUNOUT,*) 
+        WRITE(IUNOUT,*) 
      w       "ERROR IN WRPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
      w       "NO DATA WILL BE STORED IN FORT.13"
-       RETURN
+        RETURN
       END IF
+
        IF(NFLA.LT.NPLSI) THEN
 C FIRST TRY TO READ IN THE OLD "LONG" FORMAT
 csw 02jan2012 NO! will kill DIIN coming from B2.5 by memory transfer..
@@ -71,7 +91,7 @@ C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE
      R          VZIN(NFLA+1:NPLSI,1:NRAD)
           IF(IO.NE.0) GOTO 200
           IF (TRCFLE) WRITE (iunout,*)
-     w                'WRPLAMA: BGK BACKGROUND IS READ FROM FORT.13'
+     w                'WRPLAM: BGK BACKGROUND IS READ FROM FORT.13'
 csw        END IF !IF(IO.EQ.0) THEN
        END IF
 csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM

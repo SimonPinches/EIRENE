@@ -1,10 +1,14 @@
+cdr order of points 3 and 4 in quadranges got changed in 2015. IFEM documents
+
+
+
 c  function femint.f :  (-->  fem_interpolate.f)
 c  interpolate a given function fecken, defined on cell vertices of cell, 
 c  using fem-shape functions.
 
 c   
 
-c  
+c                     fem_interpolate  (this routine)
 c  related routines:  fem_differentiate 
 c                     fem_local-coord
 c                     fem_cell-corner
@@ -38,7 +42,7 @@ c  res : function evaluated at x,y,z
       real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4, 
      .            z1, z2, z3, z4, res
       real(dp), save :: r, s, t, u
-      integer :: ir, ip, it, ia, ib
+      integer, save :: ir, ip, it, ia, ib
 
       res = 0._dp
 
@@ -64,12 +68,12 @@ c  res : function evaluated at x,y,z
           else if ((levgeo == 2) .or. (levgeo == 3)) then
             x1=xpol(ir+1,ip)
             x2=xpol(ir,ip)
-            x3=xpol(ir,ip+1)
-            x4=xpol(ir+1,ip+1)
+            x3=xpol(ir+1,ip+1)
+            x4=xpol(ir,ip+1)
             y1=ypol(ir+1,ip)
             y2=ypol(ir,ip)
-            y3=ypol(ir,ip+1)
-            y4=ypol(ir+1,ip+1)
+            y3=ypol(ir+1,ip+1)
+            y4=ypol(ir,ip+1)
           end if
 
           call eirene_xyz_to_rst(icell, x1, y1, 0._dp, x2, y2, 0._dp,
@@ -83,8 +87,8 @@ c  ir,ip, and local coordinates r,s are already set in previous call
 
         f1=fecken(INDPOINT(IR+1,IP))
         f2=fecken(INDPOINT(IR,IP))
-        f3=fecken(INDPOINT(IR,IP+1))
-        f4=fecken(INDPOINT(IR+1,IP+1))
+        f3=fecken(INDPOINT(IR+1,IP+1))
+        f4=fecken(INDPOINT(IR,IP+1))
         
 
         res = f1 * 0.25_dp * (1._dp - r) * (1._dp - s)

@@ -11,6 +11,11 @@ C
 !               (same in find-param)
 !cd  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
 !cd             because nflr (common CREF) is later used in RDTRIM and REFDAT with a slightly other meaning.
+cdr  Jan 2016:  storage for second dimension only if nlpol=true
+cdr             to be tested: storage for nplg, if nlpol=false?
+cdr             storage for thrid dimension only if nltor=true
+cdr             to be tested:  storage for nltra, if nltor=false?
+cdr             to be done: check for comment lines *... syncronized with input.f?
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -30,12 +35,12 @@ C
      .           NSURPR, NVOLPR, NPRNLI, NCHORI,
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
-!pb     .           NP1, NP2, NRKNOT, NRPLG, NPPLG, IERROR, IUNIN,
-     .           NP1, NP2, NRKNOT, NRPLG, NPPLG, IERROR,
+!pb  .           NP1, NP2, NRKNOT, NRPLG, NPPLG, IERROR, IUNIN,
+     .           NP1, NP2, NRKNOT, NRPLG, NPPLG, 
      .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
      .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPI, NCOPII, NCOPIE, NREAC_ADD,
-     .           IPLS, NRC, NRE, NLINES, I2, LL, NB1, NB2, NB3, NS1,
+     .           IPLS, NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
      .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
@@ -52,7 +57,7 @@ C
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
-      character(420) :: ZEILE, FILE, FILE45
+      character(420) :: ZEILE, FILE45
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
       CHARACTER(4) :: CLAB
       CHARACTER(2) :: COR, CREP
@@ -411,7 +416,8 @@ C
       IF (INDGRD(2).LE.5) THEN
         READ (IUNIN,6664) YIA,YGA,YAA,YYA
       ENDIF
-      N2ND = MAX(N2ND,NP2ND)
+cdr  storage for 2nd coordinate grid only, if NLPOL=T
+      IF (NLPOL) N2ND = MAX(N2ND,NP2ND)
 C
 C  TOROIDAL MESH
 C
@@ -430,8 +436,11 @@ C
       ELSEIF (INDGRD(3).EQ.6) THEN
       ENDIF
       IF (NLTOR.AND.NLTRA) NTTRA=NT3RD
-      N3RD = MAX(N3RD,NT3RD)
-      NTOR = MAX(NTOR,NTTRA)
+cdr  storage for 3nd coordinate grid only, if NLTOR=T
+      IF (NLTOR) N3RD = MAX(N3RD,NT3RD)
+CDR STORAGE FOR TOROIDAL EFFECTS, EVEN IF
+CDR NO TOROIDAL RESOLUTION IS USED
+      NTOR = MAX(NTOR,NTTRA)  
 C
 C  MESH MULTIPLICATION
 C
@@ -1012,10 +1021,15 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         READ (IUNIN,*)
       END DO
 
-C  SEARCH START OF PLOTTING INPUT
+C  SKIP READING ALSO POSSIBLE LINES FOR DELIBERATE DE-ACTIVATION OR RE-ACTIVATION OF TALLIES
+c     to be written:  allow for comment lines here 
+
+C  SEARCH START OF PLOTTING INPUT:  NEXT LINE WITH F OR T
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
-      DO WHILE (SCAN(ZEILE,'*FT') == 0)
+!pb  LOOK FOR NEXT LINE OF LOGICAL INPUT VALUES DENOTING PLOTTING OPTIONS
+!pb      DO WHILE (SCAN(ZEILE,'*FT') == 0)
+      DO WHILE ((SCAN(ZEILE,'FT') == 0) .OR. (ZEILE(1:1) == '*'))
         READ (IUNIN,'(A72)') ZEILE
         CALL EIRENE_UPPERCASE(ZEILE)
       END DO
@@ -1137,11 +1151,18 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       ENDIF
       NPRNL = MAX(NPRNL,NPRNLI)
 
+cdr        NPRNL is only valid for writing census arrays onto fort.15
+cdr  tbd:  when reading fort 15 (census), the size is determined by the
+cdr        size of that file, (IPRNL) not by NPRNL
+
 C  SKIP READING REST OF THIS BLOCK
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:3) .NE. '***')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+
+
+
 C
 C  INPUT BLOCK 14 BEGIN
 C
@@ -1163,6 +1184,7 @@ C
       WRITE (IUNOUT,*) 'AUTOMATTED STORAGE SETTING (FIND_PARAM.F)'
       CALL EIRENE_LEER(1)	
 C
+cdr  grid size
       WRITE (iunout,*) 'N1ST =   ',N1ST
       WRITE (iunout,*) 'N2ND =   ',N2ND
       WRITE (iunout,*) 'N3RD =   ',N3RD
@@ -1177,12 +1199,12 @@ C
       WRITE (iunout,*) 'NTRI =   ',NTRI
       WRITE (iunout,*) 'NTETRA = ',NTETRA
       WRITE (iunout,*) 'NCOORD = ',NCOORD
-
+cdr  primary source
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NSTRA =  ',NSTRA
       WRITE (iunout,*) 'NSRFS =  ',NSRFS
       WRITE (iunout,*) 'NSTEP =  ',NSTEP
-
+cdr species
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NATM =   ',NATM
       WRITE (iunout,*) 'NMOL =   ',NMOL
@@ -1232,6 +1254,11 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,*) 'NSTORAM =     ',NSTORAM
       WRITE (iunout,*) 'NGSTAL =      ',NGSTAL
       WRITE (iunout,*) 'NRPES  =      ',NRPES
+C 
+      CALL EIRENE_LEER(1)
+      WRITE (IUNOUT,*) 'SETTING OF CENUS STORAGE FOR T-DEP. MODE'
+cdr  time dependent options: census array size
+      WRITE (iunout,*) 'NPRNL  =      ',NPRNL
 C
       CALL EIRENE_LEER(2)
 C

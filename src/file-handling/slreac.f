@@ -1,12 +1,15 @@
 !  03.08.06:  data structure for reaction data redefined
 !  25.04.07:  reading of rate coefficients from HYDKIN database added
-c  changed in 2011:  new atomic/molecular data structure introduced, 
+c  changed in 2011:  new atomic/molecular data structure introduced,
 c                       REACDAT(IR)% ...
-!  jan.14: started to comment, cleanup
-!  april 2015: further commenting cleanup, nov. 15: continued
+C
+c  at the end of this routine, for each reaction card, call: SET_REACTION_DATA.F
+cdr  jan.14: started to comment, cleanup
+cdr  april 2015: further commenting cleanup, nov. 15: continued
+cdr  jan 16: started to document options for asymptotics
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
-cdr:  subr. infcop.f, there to provide extra information regarding grid distortion   
+cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -16,12 +19,14 @@ c  open data stream 29 and read atomic data set no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
 c           may have been set (for entire eirene run),
 c           then stream is "29+ifoff".  default: ifoff=0)
+c  and at the end: call to SET_REACTION_DATA.F (in module COMXS) 
+c                  to fill REACDAT data structure
 c
 c
 C  input
 c    IR    : store data on eirene array CREAC(...,...,IR)
 
-c 
+c
 c
 c
 C    FILNAM: read a&m data from file filnam,
@@ -33,11 +38,11 @@ C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
 
 
-c    REAC  : in case FILNAM.ne.CONST: 
+c    REAC  : in case FILNAM.ne.CONST:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
-c    REAC  : in case FILNAM.eq.CONST: 
-c               reac IS MIS-USED AS  fit-flag: iftflg. 
+c    REAC  : in case FILNAM.eq.CONST:
+c               reac IS MIS-USED AS  fit-flag: iftflg.
 C               not NICE, VERY CONFUSING.
 C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
 
@@ -48,16 +53,25 @@ c  is iftflg not known in case of AMJUEL?
 C            in case FILNAM=ADAS:  the file name DSN = REAC_ELNAME.dat is opened (stream 29+ifoff)
 C                                  and then subroutine read_adas.f is called.
 c    CRC   : type of process, e.g. EI, CX, OT, etc.
+c
 c  parameters for extrapolation beyond specified range [RMN,RMX] of data (asymptotics),
-c  these asymptotics parameters are read from input file, block 4., subroutine input.f
+c  these asymptotics parameters may already have been read from input file, block 4., subroutine input.f
+c  or, if not, they will be searched for on the A&M data files read here.
 c
 c    RCMIN: LOG(RMN), RMN: lower boundary for indep. dependent variable (energy, temperature, density)
 c           Default: RMX = exp(-20.)
 c    RCMAX: LOG(RMX), RMX: upper boundary for indep. dependent variable (energy, temperature, density)
 c           Default: RMX = exp(20.)
 c    FP     Fitting coefficients for extrapolation (three for MIN and three for MAX
+c
 c    JFEXMN Flag for selecting extrapolation expression, left end (minimum)
+c           =0  :  no data yet, try to read extrapolation from atomic data file here
+c           else:  extrapolation is set explicitly in input file, block 4a
+c                  skip reading extrapolation data from data file, even if they are available
 c    JFEXMX Flag for selecting extrapolation expression, right end (maximum)
+c           =0  :  no data yet, try to read extrapolation from atomic data file here
+c           else:  extrapolation is set explicitly in input file, block 4a
+c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
 c    ELNAME:  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
@@ -68,9 +82,9 @@ C    ISW   <-- H123
 C    IO    derived from ISW, initial value of 2nd index in CREAC-array
 
 C  output
-c    ISWR  : eirene flag for type of process  (1,2,...7), coding EI,CX,EL,... 
+c    ISWR  : eirene flag for type of process  (1,2,...7), coding EI,CX,EL,...
 
-c    CREAC : (old version) eirene storage array for a&m data CREAC(9,-1:9,IR)  
+c    CREAC : (old version) eirene storage array for a&m data CREAC(9,-1:9,IR)
 c    REACDAT(IR)%.... (new version) eirene atomic data structure.
 
 c    MODCLF: see below: further information on input a&m data structure
@@ -146,9 +160,9 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CINIT
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       INTEGER,      INTENT(IN) :: IR, IZ1
       INTEGER,      INTENT(IN OUT) :: JFEXMN, JFEXMX
       CHARACTER(8), INTENT(IN) :: FILNAM
@@ -170,11 +184,14 @@ C
       CHARACTER(3) :: CCRC
       LOGICAL :: LCONST,LGEMIN,LGEMAX
 C
+!   set some defaults
       LGEMIN=.FALSE.
       LGEMAX=.FALSE.
       ISWR(IR)=0
       CONST=0.
       CHR='l0'
+      CHRL='ll0'
+      CHRR='lr0'
       I0=0
       CREACD = 0._DP
 C
@@ -194,7 +211,7 @@ C
         LCONST=.FALSE.
 !  nothing to be done
       ELSE
-!  open data file, stream 29+ifoff. 
+!  open data file, stream 29+ifoff.
         DO IFILE=1,NDBNAMES
           IF (INDEX(FILNAM,DBHANDLE(IFILE)).NE.0) EXIT
         END DO
@@ -250,13 +267,13 @@ C
       ELSE
         READ (H123(3:4),'(I2)') ISW
       ENDIF
- 
+
 C
       IF (INDEX(FILNAM,'PHOTON').NE.0) THEN
         CALL EIRENE_READ_PHOTDBK (IR,REAC,ISW)
         RETURN
       END IF
- 
+
       REACSTR=REPEAT(' ',11)
       IANF=VERIFY(REAC,' ')
       IF (IANF > 0) THEN
@@ -271,9 +288,9 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
           CALL EIRENE_EXIT_OWN (1)
         END IF
       END IF
- 
+
       REAC_NAME(IR) = REACSTR(2:)
- 
+
 C  H.0
       IF (ISW.EQ.0) THEN
         CHR='p0'
@@ -372,7 +389,7 @@ C  H.12
         IFLG=5
         IFTFLG(IR,IFLG)=0
       ENDIF
- 
+
       IF (INDEX(FILNAM,'H-COL').NE.0) THEN
         SELECT CASE (ISW)
         CASE (2:4)
@@ -411,13 +428,13 @@ C  H.12
         END SELECT
         RETURN
       END IF
- 
+
       IF (INDEX(FILNAM,'ADAS').NE.0) THEN
         CALL EIRENE_READ_ADAS (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_TABLE2.f
         RETURN
       END IF
- 
+
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
         CLOSE (UNIT=29+ifoff)
         CH123 = H123
@@ -433,7 +450,7 @@ C
         IF (IND /= 0) THEN
           READ (REACSTR(IND+2:),*) IFTFLG(IR,IFLG)
         END IF
- 
+
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
 C
 C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE 'iunin'
@@ -446,7 +463,7 @@ C  READ 9 FIT COEFFICIENTS FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) (CREACD(IC,1),IC=1,9)
           REACLINES(IRLINES)%NCONST = 9
           REACLINES(IRLINES)%CONST(1:9) = CREACD(1:9,1)
- 
+
         END IF
         CALL EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,
      .                         IUNOUT,.FALSE.)
@@ -463,10 +480,10 @@ C
 C  AT THIS POINT: FILNAM= AMJUEL, HYDHEL, H2VIBR, METHAN, i.e. single or double polynomial fits
 
 CC  now identify proper dataset within file FILNAM
- 
+
 100     READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
- 
+
 1       READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     !  infinite loop passible !
 C
@@ -477,9 +494,10 @@ C
 !dr   ENDIF
 C
 C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
+C
       IF (ISW.EQ.0.OR.ISW.EQ.1.OR.ISW.EQ.2.OR.ISW.EQ.5.OR.ISW.EQ.8.OR.
      .    ISW.EQ.11) THEN
-C       IF (.NOT.LCONST) THEN  ! this is redundant, LCONST = TRUE is completely done already, 
+C       IF (.NOT.LCONST) THEN  ! this is redundant, LCONST = TRUE is completely done already,
 c                                already returned to calling program
 3       READ (29+ifoff,'(A80)',END=990) ZEILE
         INDFF=INDEX(ZEILE,'fit-flag')
@@ -507,7 +525,7 @@ C  THREE LINES WITH THREE DATA PER LINE
 9         CONTINUE
         END IF
 C
-C  READ ASYMPTOTICS, IF AVAILABLE
+C  READ ASYMPTOTICS FROM DATA FILE, IF AVAILABLE
 C  I0P1=1 FOR CROSS SECTION
 C  I0P1=2 FOR (WEIGHTED) RATE COEFFICIENT
         I0P1=I0+1
@@ -517,6 +535,7 @@ c  CHRL is label of left (low E,T) extrapolation fit parameters, a0l, b0l,....
         IF (INDEX(ZEILE,CHRL).NE.0.AND.JFEXMN.EQ.0) THEN
 c  at this point: left extrapolation fit found in dataset fort.29, and
 c                 left extrapolation was not overruled explicitly in input file 'fort.iunin'.
+
 c  read three parameters FP(i), i=1,3 for 'left' extrapolation
           IND=0
           DO 5 I=1,3
@@ -529,6 +548,7 @@ c  read three parameters FP(i), i=1,3 for 'left' extrapolation
           LGEMIN=.true.
           READ (29+ifoff,'(A80)',END=990) ZEILE
         ENDIF
+
 c  same as above. for right (high E,T) extraploation fit
         IF (INDEX(ZEILE,CHRR).NE.0.AND.JFEXMX.EQ.0) THEN
 c  read three parameters FP(i), i=4,6 for 'right' extrapolation
@@ -544,22 +564,34 @@ c  read three parameters FP(i), i=4,6 for 'right' extrapolation
           READ (29+ifoff,'(A80)',END=990) ZEILE
         ENDIF
 c
+
+
         if (lgemin.and.jfexmn.eq.0) then
-          IND=INDEX(ZEILE,'=')
+c  at this point:  low end extrapolation parameter FP(1:3) have been read from atomic data file.
+c  read value of lower validity bound, e.g. ELABMIN,..., search for string '=' in next line of data file
+c        format of that file must be:  text=_E12.5
+c  and return as RCMIN
+          IND=INDEX(ZEILE,'= ')
           READ (ZEILE((IND+2):80),'(E12.5)') rcmin
           rcmin=log(rcmin)
           jfexmn=5
           READ (29+ifoff,'(A80)',END=990) ZEILE
         endif
         if (lgemax.and.jfexmx.eq.0) then
-          IND=INDEX(ZEILE,'=')
+c  at this point:  high end extrapolation parameter FP(4:6) have been read from atomic data file.
+c  read value of upper validity bound, e.g. ELABMAX,...
+c  and return as RCMAX
+          IND=INDEX(ZEILE,'= ')
           READ (ZEILE((IND+2):80),'(E12.5)') rcmax
           rcmax=log(rcmax)
           jfexmx=5
           READ (29+ifoff,'(A80)',END=990) ZEILE
         endif
 C
+CDR  this part needs to be re-written and/or documented
+
 C  ANY OTHER ASYMPTOTICS INFO ON FILE?  SEARCH FOR Tmin, or Emin
+        IF (JFEXMN.EQ.0) THEN   !dr:  but only if not already explicitly set in data file
         IF ((INDEX(ZEILE,'Tmin').NE.0.and.I0P1==2).or.
      .      (INDEX(ZEILE,'Emin').NE.0.and.I0P1==1)) then
           IND=INDEX(ZEILE,'n')
@@ -573,14 +605,17 @@ C  extrapolation from subr. CDEF
 C   ??    if (I0PT.eq.2) jfexmn=-1
           READ (29+ifoff,'(A80)',END=990) ZEILE
         ENDIF
+        ENDIF
+
 12      CONTINUE
 C       ELSEIF (LCONST) THEN
 C  NOTHING TO BE DONE
 C       ENDIF
 
-C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg:  
+C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg:
 C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
 C   9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
+C   AND POSSIBLY (SOME OF) THE EXTRAPOLATION PARAMETERS RCMIN,RCMAX, FP(1:6)
 C
 C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
@@ -601,19 +636,19 @@ C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
             EXIT
           ELSE
             DO 17 I=1,9
-C   READ BLOCK OF 9 LINES, THREE DATA EACH, UNFORMATTED 
+C   READ BLOCK OF 9 LINES, THREE DATA EACH, UNFORMATTED
               READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
 17          CONTINUE
           END IF
 11      CONTINUE
-C   AT THIS POINT WE HAVE STORED FOR REACTION ir:  
+C   AT THIS POINT WE HAVE STORED FOR REACTION ir:
 C   IFTFLG(IR)   (DEFAUT:   =0)
 C   81 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1...9)
 
 C   NO ASYMPTOTICS AVAILABLE YET FOR 2 PARAMETER FIT
 C
       ENDIF
- 
+
       CALL
      .  EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,
      .                       .TRUE.,RCMIN,RCMAX,FP,JFEXMN,JFEXMX)

@@ -73,7 +73,7 @@ C
 
       REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, ZARGX, ZARGY, ZARGZ,
      .          VXDR, VYDR, VZDR, VRELQ, E0MAX, TIMAX, SIGS, VRELS,
-     .          WRMEAN, TEST, VREL, WRAT, WO, ELAB, ELLAB, CXS,
+     .          WRMEAN, TEST, VREL, WRAT, WO, ELAB, ELB, CXS,
      .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
       REAL(DP), EXTERNAL :: RANF_EIRENE
  
@@ -227,6 +227,11 @@ C   PRESENT VERSION: REJECTION
         VREL=SQRT(VRELQ)
         ELAB=LOG(VRELQ)+DEFCX(IRCX)
         IREAC=MODCOL(3,1,IRCX)
+cdr     elb=exp(elab)
+cdr     if (elb.le.0.1) then
+cdr       write (6,*) 'elb velocx ',elab,elb
+cdr     endif
+
         CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
 C       IF (NLREJC) THEN    !  REJECTION IS NOW DEFAULT OPTION
@@ -240,9 +245,9 @@ c  reject
 c  rejection loop failed, too many attempts.
             write (iunout,*)
      .        'icount too large ( > 500) IN VELOCX. ACCEPT SAMPLE '
-            ELLAB=EXP(ELAB)
+            ELB=EXP(ELAB)
             write (iunout,*) 'npanu, ireac, ircx, ELAB(EV) ',
-     .                        npanu, ireac, ircx, ELLAB
+     .                        npanu, ireac, ircx, ELB
           else
 c  accept
             xcmean(ircx)=xcmean(ircx)+icount

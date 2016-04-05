@@ -11,7 +11,7 @@
 !  01.07.09:  broadcast of HFTR0-3 arrays removed. this is done in broadref.f
 !  01.03.11:  NSPEZV_DIM removed
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
-cdr  JAN  16:  additional species index for eplds,eplpi
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
 
 cdr
@@ -60,7 +60,6 @@ cdr
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
       CHARACTER, ALLOCATABLE :: CHELP(:)
- 
  
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
  
@@ -277,12 +276,15 @@ c     ------------------------------------------------------------     c
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TABEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (FDLMPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FDLMCX,NRCX,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FDLMEL,NREL,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (ADDPI,NRPI*NPLS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ADDCX,NRCX*NPLS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ADDEL,NREL*NPLS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (FACRRC,NREC*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACRPI,NRPI*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACREL,NREL*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -294,11 +296,13 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (PMLDS,NRDS*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PIODS,NRDS*NIONP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PPLDS,NRDS*NPLSP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (PELPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATPI,NRPI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLPI,NRPI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PIOPI,NRPI*NIONP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PPLPI,NRPI*NPLSP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (P2ND,NRDS*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (CHRTLS,72*NALS,MPI_CHARACTER,
@@ -307,28 +311,33 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (P2NP,NRPI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NDS,NRDS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-
+c  EI post collision energetics
       CALL MPI_BCAST (EELDS1,NRDS*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVDS1,NRDS*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
+c  RC post collision energetics
       CALL MPI_BCAST (EELRC1,NREC*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
+c  PI post collision energetics
       CALL MPI_BCAST (EELPI1,NRPI*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EPLPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
+c  CX post collision energetics
       CALL MPI_BCAST (EPLCX3,NRCX*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
+c  EL post collision energetics 
       CALL MPI_BCAST (EPLEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (EATDS,NRDS*NATMP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EMLDS,NRDS*NMOLP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EIODS,NRDS*NIONP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (EPLDS,NRDS*NPLSP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (EPLEI,NRDS*NPLSP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (EATPI,NRPI*NATMP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EMLPI,NRPI*NMOLP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EIOPI,NRPI*NIONP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -1160,7 +1169,6 @@ csw
  
       CALL EIRENE_BROAD_USR
  
- 
       CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LMISTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
@@ -1169,7 +1177,7 @@ csw
       CALL MPI_BCAST (LEM,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LEIO,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LEPH,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
- 
+
       IF (MY_PE .NE. 0) THEN
         CALL EIRENE_ALLOC_CESTIM(2)
         CALL EIRENE_ASSOCIATE_CESTIM
@@ -1240,8 +1248,8 @@ csw
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%PSPC%NSPC
-!             write (0,*) ' smestl, my_pe, imerk, nsps ',
-!     .                     my_pe, imerk, nsps
+!pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
+!pb     .                     my_pe, imerk, nsps
 !pb             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
              IF (IMERK > 0) THEN
                ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
@@ -1256,9 +1264,10 @@ C  variances for sum over strata
                ALLOCATE(SMESTL(I)%PSPC%STV(0:NSPS+1))
                ALLOCATE(SMESTL(I)%PSPC%GG(0:NSPS+1))
              END IF
-             ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
+!pb  due to problem in optimized parallel version with Intel compiler 
+!pb             ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
+             ESTIML(I)%PSPC%SPC = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC
-!             write (0,*) ' nach smestl, my_pe, i ',my_pe, i
            END IF
          END DO
       ELSE

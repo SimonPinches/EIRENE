@@ -1,12 +1,20 @@
+cdr
+c  at entry WRPLAM:    
 C  write plasma (background) data, source distribution and atomic data
-C  on unit 13.
+C  onto unit fort.13.
 C
+cdr
 c  at entry RPLAM:
 C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
 C  trcfle:  confirm writing on printout on unit IUNOUT
-C  IFLG  :
+
+C  iflg:  only for .._LONG version, and there only for RPLAM
+C  IFLG = 0  :  do NOT read COMSOU in call RPLAM_LONG
+c  IFLG > 0  :
+
+cdr  NLSHRT13  :  ???  VIA COMMON , MEANING ??  "long vs. short" version ??
  
       SUBROUTINE EIRENE_WRPLAM(TRCFLE,IFLG)
       USE EIRMOD_PRECISION
@@ -17,15 +25,19 @@ C  IFLG  :
       LOGICAL TRCFLE
 
       IF (NLSHRT13) THEN
-        CALL EIRENE_WRPLAM_SHRT (TRCFLE,IFLG)
+        CALL EIRENE_WRPLAM_SHRT (TRCFLE)
       ELSE 
         CALL EIRENE_WRPLAM_LONG (TRCFLE,IFLG)
       ENDIF
       RETURN
 C
+c.............................................
+
       ENTRY EIRENE_RPLAM(TRCFLE,IFLG)
+c.............................................
+
       IF (NLSHRT13) THEN
-        CALL EIRENE_RPLAM_SHRT (TRCFLE,IFLG)
+        CALL EIRENE_RPLAM_SHRT (TRCFLE)
       ELSE 
         CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG)
       ENDIF

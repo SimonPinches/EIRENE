@@ -173,7 +173,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.12 2.1.5e added. Former 2.1.5e (del-e) is now: 2.1.5de \\
   H.12 2.1.8e added. Former 2.1.8e (del-e) is now: 2.1.8de
  \item update  23.5/00 \\
-  H.12 2.2.5fl revised: labelling of n=2 triplet levels in Sawada's
+  H.12 2.2.5fl revised: labeling of n=2 triplet levels in Sawada's
   code corrected.
  \item update  06.8/00 \\
   H.2 2.26B0 and H.2 2.26B1 added (ionization rates for Iron).
@@ -199,7 +199,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   Helium population coefficients, for states no. 8 and 16
  \item update  23.01/02 \\
   H.0  Potentials for elastic collision processes included\\
-  fit-flag 1 (repulsive) and fit-flag 2 (Morse) introduced.
+  fit-flag 01 (repulsive) and fit-flag 02 (Morse) introduced.
  \item update  13.03/04 \\
   3.1.8L: Langevin approximation for cx , for testing of internal consistency\\
   H.1:  3.1.8L done  \\
@@ -237,7 +237,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   to be done: H.10 2.1.8 H.12 2.1.8de  (JH to be replaced by FU)
   \item update   17.08/07  H.0 0.100 to H.0 0.103: defaults for \\
   Fokker-Planck collisions between charged particles,\\
-  $ee, ei, ie$, and $ii$ collisions. Fit-Flag: 10
+  $ee, ei, ie$, and $ii$ collisions. Fit-Flag: 03
   \item update Nov. 07:  introduce subsections for H.1, to order
   reactions according to electron impact, proton impact, He+ impact, etc..
   \item update oct. 09:  fit H.3: 2.1.5, for electron impact
@@ -264,8 +264,8 @@ Available via E-mail from d.reiter@fz-juelich.de
   2.) revised H.8 and H.11 for Ar and C ionisation, (constant electron energy loss=ionisation potential,
   to derive electron cooling fits H.8 and H.11 from those for rate coefficients H.2\\
   3.) new H.2 rate coeff. added for N2 and N2+:        \\
-  H.2 2.7.5, 2.7.9, 2.7.10, 2.7.11, 2.7.12, 2.7.15
-  do be done: plots, and 2.7.14 (Dissociative recombination)\\
+  H.2 2.7.5, 2.7.9, 2.7.10, 2.7.11, 2.7.12, 2.7.15  (and 2.7.14 added Jan 2016)
+  \\
   checked: e+N ionisation. cross section Bell and Brooks are identical.
   Checked: rate coefficients H.2  2.7, 2.7B0 are identical too.
   (hence: rate coeffs. should also be identical to open ADAS).
@@ -288,12 +288,19 @@ Available via E-mail from d.reiter@fz-juelich.de
  Done for 0.1, 0.2 and 0.3 elastic reactions. The low Ebeam value was found by comparing H.3 rate fits
  with independent integration of H.1 cross sections at low E. Strictly: the H.3 fits should
  automatically
- become identical to the H.2 fits for low Ebeam, or eirene should automatically use these H.2 fits below a critical Ebeam.
+ become identical to the H.2 fits for low Ebeam, or EIRENE should automatically use these H.2 fits below a critical Ebeam.
+
  Similarly: H.4, such that H.2 is the correct corona limit at low densities. And also similarly: low T limit (for H.2, H.3 and H.4)
  should automatically turn into H.1 cross section(E) times sqrt(E)...., or at least:
- threshold $1/T^2\times \exp(-\Delta E/T)$ ??
-
-
+ threshold behaviour $1/T^2\times \exp(-\Delta E/T)$ ??
+\item Oct 15:  Further H.2 rates added for heavy particle collisions. These H.2 rates should be scalable to
+the corresponding Omega integrals for continuum descriptions consistent with the kinetic formulations based on H.3 rates.
+done: 0.4, 0.5, 0.6, 0.7, 0.8, both: T (total) and D (diffusion) rates.
+\item Oct 15:  started to add TEMIN, TEMAX, NEMIN, NEMAX parameters for extrapolation beyond fit range.
+Currently all H.4 rates should have NEMIN=1.e8, and be extrapolated with this values taken also for all
+lower electron densities (Corona limit). In this case $ln^i(\tilde{ne})=0.0,  \ i=1,2,\dots,8$, fit must reduce to H.2 format.
+I.e., these 9 H.2 coefficients can directly be obtained as subset of the 81 H.4 coefficients.
+\item Jan.16>  N2+ diss.rec added: rate: 2.7.14, linear on log-log scale, and hence corresponding H.1 and H.8 data follow analytically.
 \end{itemize}
 
 \subsection*{to be done:}
@@ -303,10 +310,9 @@ Available via E-mail from d.reiter@fz-juelich.de
 this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multiplied?
 \item  Further H.2 rate fits available for heavy particle reactions, e.g. 0.5,..., 3.1.6,....still to be implemented
 \item  Check Behringer (Strahl) database for Li ionisation and recomb...
-\item 2.2.14: fit made strictly linear on log-log scale, for H.1, H.2 H.8. Then use H.2 coefficients to
-derive, exactly, the corresponding H.1 and H.8 coefficients. Done for 2.2.14, and H.8.  $h1=b1+1, h0=b0+\ln(3/2+b1)$
-To be done for H.1 for this
-process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.3.13,....
+\item 2.2.14: H.2 fit made strictly linear on log-log scale, for H.1, H.2 and H.8. Then use H.2 coefficients to
+derive, exactly, the corresponding H.1 and H.8 coefficients. Done for H.8, 2.2.14,  To be done for H.1 for this
+process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.3.13, 2.7.14....
 \end{itemize}
 
 \newpage
@@ -379,7 +385,7 @@ $$\langle\sigma v\rangle = 5.17228e-09  \ cm^3/s.$$
 \addcontentsline{toc}{subsection}{SLREAC.f: Fortran module for reading Data from AMJUEL}
 Single parameter fits are identified by the character string
 \begin{small}\begin{verbatim}
-'p0' in case of H.0  (potential)
+'p0' in case of H.0  (interaction potential, or differential cross section)
 'a0' in case of H.1  (cross section)
 'b0' in case of H.2  (rate coefficient vs. T-target, E0=0.)
 'e0' in case of H.5  (momentum weighted rate coeff. vs. T-target, E0=0.)
@@ -539,11 +545,11 @@ the \textbf{``total scattering cross section"} where $\theta$ is the scattering 
 which, in an EIRENE application is internally derived classically from the interaction potentials specified under H.0, with proper cut-offs
 at small scattering angles.
 \begin{equation}
-\sigma^t(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} (1-\cos(\theta)) \sin(\theta)
+\sigma^d(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} (1-\cos(\theta)) \sin(\theta)
 \end{equation}
 the \textbf{``diffusion cross section"}, in which scattering events are weighted with their momentum transfer efficiency  $(1-\cos(\theta)$
 \begin{equation}
-\sigma^t(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} (1-\cos^2(\theta)) \sin(\theta)
+\sigma^v(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} (1-\cos^2(\theta)) \sin(\theta)
 \end{equation}
 the \textbf{``viscosity cross section"} arising in continuum descriptions of gas and plasma transport.
 \subsubsection*{H.2: rate coefficients vs. temperature (zero beam energy)}\label{sec1.3.2}
@@ -579,8 +585,10 @@ a finite velocity (energy $E_0$) of the  test particle (or beam) or a fluid drif
 
 Beam-Maxwellian rate coefficients with drifting Maxwellians $f_{maxw}(T_p,V_p)$ of the background particles $``p"$, with temperature $T_p$ of the
 Maxwellian and with $|{\bf V_p}|= V_p$ can be evaluated in the
-rest frame of the background $``p"$, i.e. with the beam energy parameter re-defined as $\widetilde{E}_0=m_0/2|{\bf V_0}-{\bf V_p}|^2$.
-
+rest frame of the background $``p"$, i.e. with the beam energy parameter re-defined as
+\begin{equation}\label{E0rest}
+\widetilde{E}_0=m_0/2|{\bf V_0}-{\bf V_p}|^2
+\end{equation}
 These rate coefficients are
 therefore fits with two independent parameters, and averaging is over an isotropic (stationary) Maxwellian:
 
@@ -592,8 +600,7 @@ Note that the role of the beam particle is now reversed as compared to that of c
 the energy parameter is now the energy of the mono-energetic (neutral) particle beam (with mass $m_0$), which is traveling in a host medium
 of (charged) particles $``p"$ with stationary Maxwellian distribution and temperature $T_p$.
 
-Beam-Maxwellian rate coefficients with drifting Maxwellians $f_{maxw}(T_p,V_p)$ of the background particles $``p"$ can be evaluated in the
-rest frame of the background $``p"$, i.e. with the beam energy parameter re-defined as $\widetilde{E}_0=m_0/2|V_0-V_p|^2$.
+
 
 
 \subsubsection*{H.4: rate coefficient vs. temperature and density}\label{sec1.3.4}
@@ -612,10 +619,18 @@ the numerical value then divided by $10^8$, or density given in $m^{-3}$ and the
 divided by $100^3 \times 10^8 = 10^{14}$.
 \subsubsection*{H.5: momentum weighted rates vs. temperature}
 \addcontentsline{toc}{subsubsection}{H.5: momentum weighted rates vs. temperature}
-currently not in use. Probably for electron-neutral friction vs. $T_e$
+currently not in use. Probably for electron-neutral friction vs. $T_e$, Omega integrals, etc..
 \subsubsection*{H.6: momentum weighted rates vs. temperature and energy}
 \addcontentsline{toc}{subsubsection}{H.6: momentum weighted rates vs. temperature and energy}
 This section  contains reaction rates for track-length estimators for momentum sources (EIRENE, options {\tt IESTM=2}).
+The momentum exchange in a collision of a test particle, subscript $0$ and another (e.g. plasma) particle, subscript $p$,
+is:
+\begin{equation}
+\Delta {\bf P}_0 = m_0 \cdot \left({\bf v}_0-{\bf v}'_0\right) = \mu (1-\cos(\theta)) \left({\bf v}_0-{\bf v}_p\right)
+\end{equation}
+with ${\bf v}_0', \mu, \theta$ being the post collision test particle velocity, the reduced mass and the scattering angle, respectively.
+The second equality follows from momentum conservation and the additional assumption that no internal energy is transferred during the collision (i.e., elastic, or resonant charge exchange).
+
 \paragraph{Stationary Maxwellian background}
 
 The rate coefficient of momentum transfer from a single test particle, with velocity ${\bf v_0}$ and energy $E_0$ to the thermal (stationary) plasma background (temperature $T_p$) is
@@ -623,12 +638,12 @@ The rate coefficient of momentum transfer from a single test particle, with velo
 {\bf sm}_0=\langle\sigma\cdot v_{rel}\cdot \Delta {\bf P}_0\rangle(E_0,T_p)&=&
 \langle\sigma\cdot v_{rel} \cdot \left({\bf v}_0-{\bf v}'_0\right)\cdot m_0\rangle(E_0,T_p)\\\nonumber
 &=&
-{\bf e}_0 \ \mu\sqrt{\frac{2T_p}{m_p}}\cdot\left[I^{(1,1)}(E_0,T_p)-
-          \frac{1}{2}\sqrt{\frac{m_0\cdot T_p}{m_p\cdot E_0}}I^{(1,0)}(E_0,T_p)\right]
+{\bf e}_0 \ \mu\sqrt{\frac{2T_p}{m_p}}\cdot\left[I^{(1)}_{1)}(E_0,T_p)-
+          \frac{1}{2}\sqrt{\frac{m_0\cdot T_p}{m_p\cdot E_0}}I^{(1)}_{0)}(E_0,T_p)\right]
 \end{eqnarray}
 where
 $\langle \cdots \rangle$ denotes averaging over the stationary Maxwellian distribution for ion velocities (plasma background) $f_{maxw}(v_p,T_p)$;\\
-${\bf e}_0 = {\bf v}_0/v_0$ the speed unit vector in the direction of the test particle flight. Due to symmetry of the background velocity distribution
+${\bf e}_0 = {\bf v}_0/v_0$ the speed unit vector in the direction of the test particle flight. Due to symmetry (isotropy) of the background velocity distribution
 and averaging over this distribution, momentum can be transferred to/from test particles (and hence also to/from bulk (plasma) particles) only in
 the direction of test particle flight.\\
 $\sigma(v_{rel})$ and $v_{rel}$ are the collision cross-section and the relative velocity of colliding particles $v_{rel}=|{\bf v}_0 - {\bf v}_p|$, respectively;\\
@@ -652,21 +667,23 @@ becomes a vector in the direction of ${\bf V}_0 = \int d^3v_0 {\bf v}_0f_0({\bf 
 and we see that this rate vanishes for isotropic distributions $f_0$, simply already because of ${\bf V_0} = 0$.
 \\
 \paragraph{drifting Maxwellian background}
+
 We now turn to momentum exchange rates between the test particle community, subscript $0$ and a background (plasma), subscript $p$.
 
-As discussed already for general Beam-Maxwellian rate coefficients, paragraph \ref{sec1.3.2}, in a first step we transform to the rest frame of the plasma:
+As discussed already for general Beam-Maxwellian rate coefficients, paragraph H.3, in a first step we transform to the rest frame of the plasma:
 \begin{equation}
 {\bf V}_p=\int d^3v_p {\bf v}_p f({\bf v}_p) ;  \quad   \widetilde{{\bf v}}_0= {\bf v}_0 - {\bf V}_p
 ; \quad \widetilde{E}_0=\frac{m_0}{2} \widetilde{v}_0^2
 ;  \quad   \widetilde{{\bf V}}_0= {\bf V}_0 - {\bf V}_p
 \end{equation}
-where $\widetilde{{\bf v}}_0$ the test particle velocity in the rest frame of the plasma and  $\widetilde{E}_0$ its the corresponding energy.
+where $\widetilde{{\bf v}}_0$ the test particle velocity in the rest frame of the plasma and  $\widetilde{E}_0$ its the corresponding energy, Eq. (\ref{E0rest}.
 Momentum transfer from a single test particle to a drifting Maxwellian plasma background is then in the direction $\widetilde{{\bf e}}_0=\widetilde{{\bf v}}_0/\widetilde{v_0}$
 
 The vector $\widetilde{{\bf V}}_0$ is the average (macroscopic) test particle flow velocity in the rest frame of the plasma;
 The rate of momentum transfer from the test particle community $``0"$ to the (drifting Maxwellian) background community $``p"$
 is a vector in this direction  $ \widetilde{{\bf V}}_0/\widetilde{V}_0$.\\
-From here on: to be re-written, below: old text....
+\textcolor[rgb]{1.00,0.00,0.00}{\textbf{From here on: to be re-written, below: old text from Vlad....}}
+
 Parallel momentum transfer rate (momentum {\em loss} for the background (plasma)):
 $$
 {\bf Sm}^i_{mu_\parallel}= {\bf b} \left(\widetilde{{\bf e}}_{mom}{\bf\cdot}{\bf b}\right) \left<\sigma\cdot v_r\cdot p\right>
@@ -691,8 +708,43 @@ This rescaling is used for elastic collisions according to~\cite{kn:OakRidge}, s
 The rate 0.3 (elastic $p+H_2$ collisions) from this set was successfully compared with the same sources, calculated by collisional estimator. The same test for the resonant CX rates 3.1.8  {\em was not yet successful}
 \subsubsection*{H.7: momentum weighted rates vs. temperature and density}
 \addcontentsline{toc}{subsubsection}{H.7: momentum weighted rates vs. temperature and density}
-\subsubsection*{H.8: energy weighted rates vs. temperature}
+\subsubsection*{\textbf{H.8: energy weighted rates vs. temperature}}
 \addcontentsline{toc}{subsubsection}{H.8: energy weighted rates vs. temperature}
+Under label H.8 energy weighted rate coefficients are stored, vs. temperature (eV) of the
+Maxwellian electron or heavy particle distributions. (e.g., unless otherwise stated, these rates are taken for test particles at rest: $E_0 \approx 0.0 eV$).
+The general relation between the energy weighted rate coefficients H.8 and the ``ordinary" rate coefficients H.2
+is (integration by parts):
+\begin{equation}
+H.8 [eV cm^3/s]= kT \times H.2 \times \left[3/2+\frac{d \ln(H.2)}{d \ln T}\right]
+\end{equation}
+with rate coefficient H.2 in $cm^3/s$.
+If the H.2 rate coefficients are fitted as:
+
+\begin{equation}
+\ln(H.2) = \sum_{i=0}^8  b_i \ln^i(T)
+\end{equation}
+
+then
+
+\begin{equation}
+\frac{d \ln(H.2)}{d \ln T}= \sum_{i=0}^7  b_{i+1} (i+1)  \ln^i(T) = b_1 + 2b_2 \ln(T) + 3b_3 \ln^2(T) + ....
+\end{equation}
+
+and hence, for the  H.8 coefficient, in the same fit format as for the H.2 coefficient:
+\begin{equation}
+\ln(H.8) = \ln(kT) +  \ln(H.2) + \ln(3/2 + b_1 + 2b_2 \ln(T) - ....)
+\end{equation}
+
+If a H.2 rate coefficient is linear on a log-log scale, as e.g. often the case for recombination processes, then
+$b_2 =b_3 =....=b_8 = 0$, and hence, for the fit coefficients of the corresponding H.8 rate coefficient:
+
+$h_0=b_0 + \ln [3/2 + b_1],  h_1=b_1+1,  h_2 = h_3 = ....=h_8 = 0$
+
+An explicit numerical example is detailed under H.8 2.2.14 (dissociative combination of $H_2^+(v)$ molecular ions).
+
+
+
+
 \subsubsection*{H.9: energy weighted rates vs. temperature and energy}
 \addcontentsline{toc}{subsubsection}{H.9: energy weighted rates vs. temperature and energy}
 \subsubsection*{H.10: energy weighted rates vs. temperature and density}
@@ -778,10 +830,25 @@ from a particular meta-stable state, but not to these individual processes.
 \addcontentsline{toc}{subsubsection}{H.11: other data, e.g. reduced population coefficients}
 \subsubsection*{H.12: other data, e.g. reduced population coefficients}
 \addcontentsline{toc}{subsubsection}{H.12: other data, e.g. reduced population coefficients}
+double parameter fit for any other data, e.g.
+to be used in special user supplied
+programs, (i.e. not generally understood by EIRENE, but can be used in problem
+specific ``..USR" routines of EIRENE, e.g. for post processing).
+The data fitted in H.12 are, therefore, typically not rate-coefficients,
+but often (not always) ratios between two rate coefficients.
+
+Exception: the reduced population coefficients for hydrogenic plasmas, i.e.
+2.1.5a,....2.1.5e, 2.2.5a, 2.2.5e, etc... are currently automatically read in
+EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta,...
+
+
 \subsection*{End of preface}
 \addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
 This next string is searched by EIRENE in subroutine SLREAC
 to initialize search for a particular set of fit coefficients.
+From here on, a character string \textbf{`H.n'} , n an integer, must only appear in the section title, 
+but not in the text. Likewise: identifiers p0, a0, b0, ....,h0, k0 are used in SLREAC and must not
+appear in the text elsewhere. 
 
 \bigskip
 \begin{small}\begin{verbatim}
@@ -803,7 +870,7 @@ programmed in EIRENE, elastics.f. It is the first repulsive $H_2^+$
 potential.
 
 \begin{small}\begin{verbatim}
-   fit-flag 1
+   fit-flag 01
    p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
    p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
    p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
@@ -819,7 +886,7 @@ potential, binary elastic}
 Morse potential, see \cite{kn:Bachmann}
 
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  2.000000000000D+00  p1  2.200000000000D+00  p2  0.850000000000D+00
    p3  1.455600000000D+00  p4  0.996990000000D+00  p5  1.995150000000D+00
    p6  0.000000000000D+00  p7 -1.500000000000D+00  p8  0.000000000000D+00
@@ -834,7 +901,7 @@ Reaction 0.3T    $p + H_2 \rightarrow p + H_2 $ potential, binary elastic
 
 Morse potential, see \cite{kn:Bachmann}
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  2.700000000000D+00  p1  3.000000000000D+00  p2  1.000000000000D+00
    p3  2.835500000000D+00  p4  2.180380000000D+00  p5  3.490687000000D+00
    p6  0.000000000000D+00  p7 -2.025000000000D+00  p8  0.000000000000D+00
@@ -849,7 +916,7 @@ Reaction 0.4T   $  He^+ + He \rightarrow He^+ + He $ potential, binary elastic
 
 Morse potential, see \cite{kn:Bachmann}
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  2.550000000000D+00  p1  2.350000000000D+00  p2  0.900000000000D+00
    p3  1.984200000000D+00  p4  1.399080000000D+00  p5  2.634500000000D+00
    p6  0.000000000000D+00  p7 -1.912500000000D+00  p8  0.000000000000D+00
@@ -863,7 +930,7 @@ Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ potential, binary elastic
 }
 
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  2.280000000000D+00  p1  2.680000000000D+00  p2  0.850000000000D+00
    p3  1.870900000000D+00  p4  1.387000000000D+00  p5  2.440200000000D+00
    p6  0.000000000000D+00  p7 -1.710000000000D+00  p8  0.000000000000D+00
@@ -876,7 +943,7 @@ Reaction 0.5T   $ p + Ne \rightarrow p + Ne $ potential, binary elastic
 Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ potential, binary elastic }
 
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  4.040000000000D+00  p1  2.500000000000D+00  p2  0.860000000000D+00
    p3  2.475600000000D+00  p4  1.789200000000D+00  p5  3.273700000000D+00
    p6  0.000000000000D+00  p7 -3.030000000000D+00  p8  0.000000000000D+00
@@ -889,7 +956,7 @@ Reaction 0.6T   $ p + Ar \rightarrow p + Ar $ potential, binary elastic }
 Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ potential, binary elastic }
 
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  4.450000000000D+00  p1  2.500000000000D+00  p2  0.800000000000D+00
    p3  2.777900000000D+00  p4  2.007700000000D+00  p5  3.740600000000D+00
    p6  0.000000000000D+00  p7 -3.337500000000D+00  p8  0.000000000000D+00
@@ -902,7 +969,7 @@ Reaction 0.7T   $ p + Kr \rightarrow p + Kr $ potential, binary elastic }
 Reaction 0.8T   $ p + Xe \rightarrow p + Xe $ potential, binary elastic }
 
 \begin{small}\begin{verbatim}
-   fit-flag 2
+   fit-flag 02
    p0  6.750000000000D+00  p1  3.800000000000D+00  p2  1.080000000000D+00
    p3  3.288200000000D+00  p4  2.688400000000D+00  p5  3.843600000000D+00
    p6  0.000000000000D+00  p7 -5.062500000000D+00  p8  0.000000000000D+00
@@ -921,7 +988,7 @@ currently: none
 
 
 \begin{small}\begin{verbatim}
-   fit-flag 10
+   fit-flag 03
    p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
    p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
    p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
@@ -937,7 +1004,7 @@ currently: none
 
 
 \begin{small}\begin{verbatim}
-   fit-flag 10
+   fit-flag 03
    p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
    p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
    p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
@@ -953,7 +1020,7 @@ operator, bulk-ions on test-electrons.
 currently: none
 
 \begin{small}\begin{verbatim}
-   fit-flag 10
+   fit-flag 03
    p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
    p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
    p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
@@ -968,7 +1035,7 @@ operator, bulk-ions on test-ions.
 currently: none
 
 \begin{small}\begin{verbatim}
-   fit-flag 10
+   fit-flag 03
    p0  0.000000000000D+00  p1  0.000000000000D+00  p2  0.000000000000D+00
    p3  0.000000000000D+00  p4  0.000000000000D+00  p5  0.000000000000D+00
    p6  0.000000000000D+00  p7  0.000000000000D+00  p8  0.000000000000D+00
@@ -1009,6 +1076,7 @@ c^3\Pi_u)
    a0 -2.297914361380e+05    a1  5.303988579693e+05    a2 -5.316636672593e+05
    a3  3.022690779470e+05    a4 -1.066224144320e+05    a5  2.389841369114e+04
    a6 -3.324526406357e+03    a7  2.624761592546e+02    a8 -9.006246604428e+00
+       ETH 8.5
        Emin  1.08e+01   s(Emin)  1.00e-19   smax  2.92e-17   Error  5.62e-01
 \end{verbatim}\end{small}
 \newpage
@@ -1036,7 +1104,7 @@ fit coefficients from the present database AMJUEL, and not from HYDHEL.
 
 
 
-
+\newpage
 
 \subsection{proton impact collisions}\label{sect1.1}
 \bigskip
@@ -1046,7 +1114,9 @@ cross sections as function of $E_{lab}$,
 
 $E_{lab} = (m_{lab}/2) \cdot v^2$
 
-$m_{lab}$ is the ion mass throughout
+$m_{lab}$ is the ion mass throughout.  ``T" stands for ``total" cross section (obtained  with cut off
+at impact parameter such that diffusion and viscosity cross sections remain accurate.
+``D" stands for ``diffusion" cross section, and ``V" for ``viscosity" cross section.
 
 \subsubsection{
 Reaction 0.1T $p + H(1s) \rightarrow p + H(1s) $ total cross
@@ -1592,7 +1662,7 @@ and $v_0 =e^2/\hbar$: unit velocity in atomic units)
 \newpage
 \subsection{He$^+$ impact processes}
 \subsubsection{
-Reaction 0.4T   $  He^+ + He \rightarrow He^+ + He $  total cross section
+Reaction 0.4T   $  He^+(1s) + He(1s^21S) \rightarrow He^+(1s) + He(1s^21S) $  total cross section
 }
 
 
@@ -1608,7 +1678,7 @@ ELABMAX=  6.46090E 01 eV
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 0.4D    $He^+ + He \rightarrow He^+ + He$   diff. cross section
+Reaction 0.4D    $He^+(1s) + He(1s^21S) \rightarrow He^+(1s) + He(1s^21S)$   diff. cross section
 }
 
 
@@ -1624,7 +1694,7 @@ ELABMAX=  2.00000E 02 eV
 
 
 \subsubsection{
-Reaction 0.4V   $  He^+ + He \rightarrow He^+ + He $  visc. cross section
+Reaction 0.4V   $  He^+(1s) + He(1s^21S) \rightarrow He^+(1s) + He(1s^21S) $  visc. cross section
 }
 
 
@@ -1645,6 +1715,7 @@ ELABMAX=  2.00000E 02 eV
 \epsffile{Amjuel_PS/elast04.ps}
 \end{figure}
 \newpage
+
 \section{H.2 : Fits for $\langle\sigma v \rangle (T)$} \label{sect2}
 
 Some (single parameter) Maxwellian rate coefficients, obtained algebraically from corresponding
@@ -1729,6 +1800,135 @@ verification by independent integration of cross section
    b3 -7.208816000000E-03  b4  1.464363000000E-02  b5  5.237593000000E-05
    b6 -9.787576000000E-04  b7  1.491343000000E-04  b8 -6.478446000000E-06
 \end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.4T  $He^+(1s) + He(1s^21S) \rightarrow He^+(1s) + He(1s^21S)$ total rate coef.
+}
+Maxwellian rate coefficient vs. $T_{He^+}$, with $He$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.2 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.938952000000E+01  b1  1.284344000000E-01  b2  2.749434000000E-02
+   b3  1.321028000000E-02  b4 -1.215805000000E-02  b5 -1.771858000000E-03
+   b6  1.250552000000E-03  b7 -1.586374000000E-04  b8  6.000872000000E-06
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 0.4D  $He^+(1s) + He(1s^21S) \rightarrow He^+(1s) + He(1s^21S)$ diff. rate coef.
+}
+Maxwellian rate coefficient vs. $T_{He^+}$, with $He$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.2 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -2.002066000000E+01  b1 -8.176109000000E-02  b2 -1.436536000000E-01
+   b3 -1.526248000000E-02  b4  1.239665000000E-02  b5  3.669366000000E-04
+   b6 -7.044353000000E-04  b7  9.121888000000E-05  b8 -3.350873000000E-06
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.5T  $p + Ne \rightarrow p + Ne$ total rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Ne$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.2 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.919918000000E+01  b1  2.302126000000E-01  b2 -6.513570000000E-03
+   b3 -2.016719000000E-02  b4 -1.221527000000E-02  b5  2.242603000000E-03
+   b6  9.298891000000E-04  b7 -2.398546000000E-04  b8  1.462516000000E-05
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 0.5D  $p + Ne \rightarrow p + Ne$ diff. rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Ne$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.1 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -2.002715000000E+01  b1 -2.621343000000E-01  b2 -1.469315000000E-01
+   b3  2.687596000000E-02  b4  1.266229000000E-02  b5 -2.448273000000E-03
+   b6 -6.258496000000E-04  b7  1.654175000000E-04  b8 -9.716880000000E-06
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.6T  $p + Ar \rightarrow p + Ar$ total rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Ar$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.05 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.840169000000E+01  b1  2.394376000000E-01  b2 -2.360132000000E-02
+   b3  6.595325000000E-03  b4 -8.347203000000E-03  b5 -1.735906000000E-03
+   b6  1.204285000000E-03  b7 -1.658480000000E-04  b8  6.963785000000E-06
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 0.6D  $p + Ar \rightarrow p + Ar$ diff. rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Ar$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.07 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.906021000000E+01  b1 -4.674038000000E-02  b2 -1.962414000000E-01
+   b3 -7.174255000000E-03  b4  2.020135000000E-02  b5 -8.507943000000E-04
+   b6 -1.210751000000E-03  b7  2.196434000000E-04  b8 -1.117489000000E-05
+\end{verbatim}\end{small}
+
+
+
+
+\subsection{
+Reaction 0.7T  $p + Kr \rightarrow p + Kr$ total rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Ar$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.05 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.803236000000E+01  b1  1.992221000000E-01  b2 -3.227483000000E-03
+   b3  1.395545000000E-02  b4 -1.344849000000E-02  b5 -1.615546000000E-03
+   b6  1.484410000000E-03  b7 -2.152296000000E-04  b8  9.514869000000E-06
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 0.7D  $p + Kr \rightarrow p + Kr$ diff. rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Kr$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.1 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.865129000000E+01  b1 -1.062916000000E-01  b2 -1.827846000000E-01
+   b3 -2.368024000000E-03  b4  1.711988000000E-02  b5 -6.251324000000E-04
+   b6 -1.097944000000E-03  b7  1.970191000000E-04  b8 -9.968727000000E-06
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 0.8T  $p + Xe \rightarrow p + Xe$ total rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Xe$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.2 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.850781000000E+01  b1  2.709525000000E-01  b2  4.983184000000E-03
+   b3 -5.736578000000E-03  b4  1.424879000000E-03  b5 -6.005354000000E-04
+   b6 -2.027911000000E-04  b7  8.186987000000E-05  b8 -6.300191000000E-06
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 0.8D  $p + Xe \rightarrow p + Xe$ diff. rate coef.
+}
+Maxwellian rate coefficient vs. $T_{p}$, with $Xe$ at rest, obtained by taking
+the corresponding Beam-Maxw. rate coefficient at Eb=0.1 eV and
+verification by independent integration of cross section
+\begin{small}\begin{verbatim}
+   b0 -1.903991000000E+01  b1  2.089862000000E-01  b2 -7.784350000000E-02
+   b3 -1.756400000000E-02  b4  5.522983000000E-03  b5  9.448506000000E-04
+   b6 -2.428668000000E-04  b7 -5.632953000000E-08  b8  1.296757000000E-06
+\end{verbatim}\end{small}
+
 
 
 \newpage
@@ -1862,9 +2062,10 @@ $ \langle\sigma v \rangle_{eff} = \langle\sigma v \rangle_{H_2(v=0)} + \sum_{v=1
 
 Vibrational distribution $pH_2(v,T_e)$ (vs. $T_e$) taken into
 account. Only coupling
-to $H_2$ ground state. No population of $H_2(v)$ from electronically
+to $H_2(v)$ electronic ground state. No population of $H_2(v)$ from electronically
 excited $H_2^*$, no radiative transitions between vibrational levels.
-Assume: incident $H_2$ particle with 0.1 eV (for the rate taken to be for $H_2$ at rest) and $T_i = T_e$,
+Assume: incident $H_2$ particle with 0.1 eV
+(for the rate taken to be for $H_2$ at rest) and $T_i = T_e$,
 hence: density independent vibrational distribution and effective
 rate, as well as neutral molecule energy independent rate.
 
@@ -1883,7 +2084,7 @@ repulsive triplett $^3b....$ state.
 
 
 \subsection{
-Reaction 3.1.8L   $p + H \rightarrow H + p  $
+Reaction 3.1.8L   $p + H(1s) \rightarrow H(1s) + p  $
 }
 Langevin rate coefficient, constant at 2e-8
 
@@ -1959,13 +2160,15 @@ Strictly this rate coefficient should be evaluated for stationary $H_2$  (energy
 correct mass scaling in the Maxwellian averages.
 \\
 Competing process at low T: see above: dissociative electron attachment, process 2-2-17
-%\newpage
+
 \begin{figure} \label{3.2.3o}
 \epsfxsize=16truecm
 \epsffile{Amjuel_PS/ionconv_2.eps}
 \end{figure}
 \newpage
 
+
+Next few reactions:  rate coefficients, vs. Te, for a number of $N_2, N_2^+$ corona dissociation and ionisation channels
 \subsection{
 Reaction 2.7.5  $e + N_2 \rightarrow e + N + N$ }
 Dissociation from ground state $N_2$, cross section from \cite{kn:Cosby},
@@ -1973,9 +2176,9 @@ $\Delta E_{el} = 9.7527 $ eV, KER: 0.95 eV  (spectra with two peaks, at 0.8 and 
 
 
 \begin{small}\begin{verbatim}
-   b0 -3.093625000000E+01  b1  1.094180000000E+01    b2 -2.878686000000E+00
-   b3 -2.524814000000E-01  b4  3.966283000000E-01    b5 -1.209670000000E-01
-   b6  1.849840000000E-02  b7 -1.461561000000E-03    b8  4.746380000000E-05
+   b0 -3.093625000000E+01    b1  1.094180000000E+01    b2 -2.878686000000E+00
+   b3 -2.524814000000E-01    b4  3.966283000000E-01    b5 -1.209670000000E-01
+   b6  1.849840000000E-02    b7 -1.461561000000E-03    b8  4.746380000000E-05
 \end{verbatim}\end{small}
 
 
@@ -1986,9 +2189,9 @@ Here: ionisation to $N_2^+$ \\
 $\Delta E_{el} = 15.581 $ eV KER=0.
 
 \begin{small}\begin{verbatim}
-   b0 -3.455402000000E+01  b1  1.633449000000E+01   b2 -7.4809520000000E+00
-   b3  2.334744000000E+00  b4 -5.161607000000E-01   b5  7.9023200000000E-02
-   b6 -7.919992000000E-03  b7  4.635395000000E-04   b8 -1.1917140000000E-05
+   b0 -3.455402000000E+01    b1  1.633449000000E+01    b2 -7.480952000000E+00
+   b3  2.334744000000E+00    b4 -5.161607000000E-01    b5  7.902320000000E-02
+   b6 -7.919992000000E-03    b7  4.635395000000E-04    b8 -1.191714000000E-05
 \end{verbatim}\end{small}
 
 \subsection{
@@ -1998,19 +2201,17 @@ Here: dissociative ionisation to $N + N^+$ \\
 $\Delta E_{el} = 24.34 $ eV, KER: 8 eV  (estimated, not clearly specified in paper)
 
 \begin{small}\begin{verbatim}
-   b0 -4.583945000000E+01  b1  2.487449000000E+01   b2 -1.1691680000000E+01
-   b3  4.066783000000E+00  b4 -1.070205000000E+00   b5  1.9857720000000E-01
-   b6 -2.383370000000E-02  b7  1.636738000000E-03   b8 -4.8491950000000E-05
+   b0 -4.583945000000E+01    b1  2.487449000000E+01    b2 -1.169168000000E+01
+   b3  4.066783000000E+00    b4 -1.070205000000E+00    b5  1.985772000000E-01
+   b6 -2.383370000000E-02    b7  1.636738000000E-03    b8 -4.849195000000E-05
 \end{verbatim}\end{small}
 
-\newpage
-this page is intentionally left blank
-\newpage
-Here:  $N_2^+ \rightarrow \dots$\\
-missing: dissociative recombination DR, $N_2^+ \rightarrow 2 N$
-instead here, additionally  $N_2^+ \rightarrow N_2^{2+}$
 
-
+\begin{figure} \label{n2rates}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/n2-rates.eps}
+\end{figure}
+\newpage
 
 \subsection{
 Reaction 2.7.11  $e + N_2^+ \rightarrow e + 2 N^+ +e$ }
@@ -2018,25 +2219,40 @@ Dissociative ionisation, cross section: \cite{kn:Bahati}
 $\Delta E_{el} = 31.2 $ eV, KER: max: 11.8 eV
 
 \begin{small}\begin{verbatim}
-   b0 -5.137074000000E+01  b1  3.135383000000E+01   b2 -1.560923000000E+01
-   b3  5.444979000000E+00  b4 -1.354319000000E+00   b5  2.264527000000E-01
-   b6 -2.359782000000E-02  b7  1.362664000000E-03   b8 -3.285464000000E-05
+   b0 -5.137074000000E+01    b1  3.135383000000E+01    b2 -1.560923000000E+01
+   b3  5.444979000000E+00    b4 -1.354319000000E+00    b5  2.264527000000E-01
+   b6 -2.359782000000E-02    b7  1.362664000000E-03    b8 -3.285464000000E-05
 \end{verbatim}\end{small}
 
 
 
 \subsection{
-Reaction 2.7.12  $e + N_2^+ \rightarrow e + N + N^+ +e$ }
+Reaction 2.7.12  $e + N_2^+ \rightarrow e + N + N^+ $ }
 Dissociative excitation, cross section:
 \cite{kn:Bahati}
 $\Delta E_{el} = 8.4 $ eV, KER: max. of 6.4 eV at 120 eV, KER nearly = 0 near threshold (i.e.
 pre-dissociation via various channels).
 
 \begin{small}\begin{verbatim}
-   b0 -2.695366000000E+01  b1  8.978136000000E+00   b2 -4.296075000000E+00
-   b3  1.392124000000E+00  b4 -3.247302000000E-01   b5  5.222337000000E-02
-   b6 -5.327033000000E-03  b7  3.023081000000E-04   b8 -7.105405000000E-06
+   b0 -2.695366000000E+01    b1  8.978136000000E+00    b2 -4.296075000000E+00
+   b3  1.392124000000E+00    b4 -3.247302000000E-01    b5  5.222337000000E-02
+   b6 -5.327033000000E-03    b7  3.023081000000E-04    b8 -7.105405000000E-06
 \end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.7.14  $e + N_2^+ \rightarrow N + N$ }
+Dissociative recombination, cross section:
+\cite{kn:Petersen}
+$\Delta E_{el}$ can be taken from electron energy weighted rate coefficient. KER: 1.06 - 5.824 eV at zero electron impact energy,
+depending on vibrational state of $N_2^+$ and electronic state of products. Suggestion: KER = 3.5 eV
+
+\begin{small}\begin{verbatim}
+   b0 -1.668240000000E+01    b1 -0.300000000000E+00    b2  0.000000000000E+00
+   b3  0.000000000000E+00    b4  0.000000000000E 00    b5  0.000000000000E 00
+   b6  0.000000000000E 00    b7  0.000000000000E 00    b8  0.000000000000E 00
+\end{verbatim}\end{small}
+
+
 
 \subsection{
 Reaction 2.7.15  $e + N_2^+ \rightarrow e + N_2^{++} +e$ }
@@ -2045,16 +2261,18 @@ Single ionisation of $N_2^+$, cross section: \cite{kn:Bahati}
 $\Delta E_{el} = 27.12 $ eV,  KER=0.
 
 \begin{small}\begin{verbatim}
-   b0 -4.675067000000E+01  b1  2.768681000000E+01   b2 -1.260874000000E+01
-   b3  3.402022000000E+00  b4 -5.302686000000E-01   b5  3.823736000000E-02
-   b6  6.310561000000E-04  b7 -2.798009000000E-04   b8  1.272992000000E-05
+   b0 -4.675067000000E+01    b1  2.768681000000E+01    b2 -1.260874000000E+01
+   b3  3.402022000000E+00    b4 -5.302686000000E-01    b5  3.823736000000E-02
+   b6  6.310561000000E-04    b7 -2.798009000000E-04    b8  1.272992000000E-05
 \end{verbatim}\end{small}
 
+\begin{figure} \label{n2+}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/n2+-rates.eps}
+\end{figure}
+\newpage
 
 
-\newpage
-this page is intentionally left blank
-\newpage
 
 
 \subsection{
@@ -2390,17 +2608,6 @@ Reaction 2.26B1   $e + Fe^+ \rightarrow e + Fe^{++} + e$
 \epsfxsize=16truecm
 \epsffile{Amjuel_PS/fei.ps}
 \end{figure}
-\newpage
-
-\subsection{
-Reaction 3.1 $W + e \rightarrow W^+ + 2e $ potential}
-
-\begin{small}\begin{verbatim} %tungsten coef. rate
-   b0 -23.79630000000D+00  b1  8.522300000000D+00  b2 -4.027100000000D+00
-   b3  1.339000000000D+00  b4 -0.339800000000D+00  b5  0.063800000000D+00
-   b6 -0.008200000000D+00  b7  0.000600000000D+00  b8  0.000000000000D+00
-\end{verbatim}\end{small} 
-
 \newpage
 
 \section{H.3 : Fits for $\langle\sigma v \rangle (E,T)$}\label{sect3}
@@ -3542,9 +3749,7 @@ Reaction 3.2.3  $  p + H_2(v) \rightarrow H + H_2^+  $
 Reaction 3.3.1  $  p + He(1s^21S) \rightarrow H + He^+(1s)  $
 }
 
-Proton energy weighted charge exchange rate coefficient,
-protons with ground state Helium He, $E_{th} \approx 11.2$ eV.
-Corresponding rate coefficient is given in HYHEL with same sub-section number.
+
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
   T-Index:
@@ -3592,9 +3797,7 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.6a  $ p + He^*(1s^12s^11S) \rightarrow H^*(2s) + He^+(1s) $
 }
-Proton energy weighted charge exchange rate coefficient,
-protons with first meta-stable He*, $E_{th} \approx 0.57$ eV.
-Corresponding rate coefficient is given in HYHEL with same sub-section number.
+
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -3645,9 +3848,7 @@ This page is intentionally left blank
 Reaction 3.3.6b   $p + He^*(1s^12s^13S) \rightarrow H^*(2s) + He^+(1s) $
 }
 
-Proton energy weighted charge exchange rate coefficient,
-protons with second meta-stable He*, $E_{th} \approx 1.37$ eV.
-Corresponding corona rate coefficient is given in HYHEL with same sub-section number.
+
 \begin{small}\begin{verbatim}
 
          E-Index:     0                     1                     2
@@ -3845,6 +4046,10 @@ Reaction 2.1.5 $H + e \rightarrow H^+ + 2e $ }
         6   -4.076028811764D-08    5.211320460225D-10    1.621365651477D-11
         7   -4.139200632294D-09    2.876466369230D-10   -6.673126112916D-12
         8    6.490132948929D-10   -2.901852297568D-11    5.128957534143D-13
+TEMIN =   0.10000D 00 EV
+TEMAX =   1.00000D 03 EV
+NEMIN =   1.00000D 08 1/CM3
+NEMAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   1.3872 %
   Mean rel. Error:   0.4632 %
@@ -4152,10 +4357,10 @@ H2 multi-step model
 
  Data: K. Sawada/Fujimoto ,\cite{kn:Sawada}
 
-$  H(1), H_2, H_2^+, H^+ $ transported
+coupling to reservoir of $  H(1), H_2, H_2^+, H^+ $ (``transported" species)
 
 
-$H_2$ is in vibrational ground state, and the electronic levels
+$H_2$ is in vibrational ground state $v=0$, and the electronic levels
 in the molecules as discussed in \cite{kn:Sawada} are taken into
 account.
 
@@ -4219,7 +4424,7 @@ The $H_2(v)$ are in vibrational equilibrium
 (depends only upon $T_e$), and the electronic levels
 in the molecules as discussed in \cite{kn:Sawada} are taken into
 account. CX losses from vibr. distribution are computed assuming $T_e =
-T_i$, and an energy of $H_2$-Beam  = 0.1 eV.
+T_i$, $n_e = n_p$, and an energy of $H_2$-Beam  = 0.1 eV.
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
   T-Index:
@@ -4256,6 +4461,10 @@ T_i$, and an energy of $H_2$-Beam  = 0.1 eV.
         6    9.191700327811D-09   -2.052366968228D-11   -3.567738654108D-12
         7    1.437490161488D-09   -6.172308568891D-11    1.104905484620D-12
         8   -1.113483084607D-10    3.859777100010D-12   -5.909099891913D-14
+TEMIN =   0.10000D 00 EV
+TEMAX =   1.00000D 03 EV
+NEMIN =   1.00000D 08 1/CM3
+NEMAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:  11.6439 %
   Mean rel. Error:   2.6169 %
@@ -5333,7 +5542,7 @@ Reaction 2.2C $e + He^+(1s) \rightarrow He^{++}  + e  + e $
 }
   Ionization Rates for singly charged helium ions
 
-  COLRAD (McWriter), hydrogen-like approximation
+  COLRAD (McWhirter), hydrogen-like approximation \cite{kn:McWhirter}
 
 $  \langle sigma*vrel \rangle(Te,ne) $(cm**3/s)
 
@@ -5651,11 +5860,11 @@ Reaction 2.3.2B1  $e + He^{++} \rightarrow He^+(1s) + hv$
 \end{figure}
 \newpage
 
-COLRAD (Hydrogen-like-ion) code:
+
 \subsection{
 Reaction 2.3.2C   $\  e + He^{++} \rightarrow  He^+(1s) + hv$
 }
-
+McWhirter's COLRAD (Hydrogen-like-ion) code: \cite{kn:McWhirter}
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
   T-Index:
@@ -6686,6 +6895,18 @@ i.e. low energy electrons are preferred in this reaction, over the average elect
    h6  0.000000000000e+00    h7  0.000000000000e+00    h8  0.000000000000e+00
 
 \end{verbatim}\end{small}
+\subsection{
+Reaction 2.7.14   $e + N_2^+ \rightarrow N + N^*(n) $
+}
+The energy weighting in this rate coefficient is done with the kinetic energy of
+impacting electron. The same procedure is applied as for $H_2^+$ dissociative recombination, see above in this section.
+
+\begin{small}\begin{verbatim}
+   h0 -1.650010000000e+01    h1  0.700000000000e+00    h2  0.000000000000e+00
+   h3  0.000000000000e+00    h4  0.000000000000e+00    h5  0.000000000000e+00
+   h6  0.000000000000e+00    h7  0.000000000000e+00    h8  0.000000000000e+00
+
+\end{verbatim}\end{small}
 \newpage
 This page is intentionally left blank
 \newpage
@@ -7011,7 +7232,8 @@ The energy weighted rate coefficient is a function of ion temperature $T_p$
 [eV]  and of the impacting neutral particle kinetic energy $E_0$ [eV]
 
 \begin{small}\begin{verbatim}
-        E-Index:     0                     1                     2
+
+       E-Index:     0                     1                     2
  T-Index:
         0   -1.777579549728D+01    1.009523650881D-01    4.654228527844D-02
         1    1.275231758810D+00   -9.644906009036D-02   -2.211669235384D-02
@@ -7108,7 +7330,9 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.1  $  p + He(1s^21S) \rightarrow  H + He^+(1s) $
 }
-
+Proton energy weighted charge exchange rate coefficient,
+protons with ground state Helium He, $E_{th} \approx 11.2$ eV.
+Corresponding un-weighted rate coefficient is given also here in an earlier section and in HYHEL with same sub-section number.
 
 
 \begin{small}\begin{verbatim}
@@ -7162,7 +7386,9 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.6a $   p + He^*(1s^12s^11S) \rightarrow H^*(2s) + He^+(1s) $
 }
-
+Proton energy weighted charge exchange rate coefficient,
+protons with first meta-stable He*, $E_{th} \approx 0.57$ eV.
+Corresponding (un-weighted) rate coefficient is given here in an earlier section and in HYHEL with same sub-section number.
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -7214,7 +7440,9 @@ This page is intentionally left blank
 \subsection{
 Reaction 3.3.6b  $  p + He^*(1s^12s^13S) \rightarrow H^*(2s) + He^+(1s)$
 }
-
+Proton energy weighted charge exchange rate coefficient,
+protons with second meta-stable He*, $E_{th} \approx 1.37$ eV.
+Corresponding (un-weighted) rate coefficient is given here in an earlier section and in HYHEL with same sub-section number.
 
 \begin{small}\begin{verbatim}
          E-Index:     0                     1                     2
@@ -8433,7 +8661,7 @@ Reaction 7.0b      $ e + H_2(0) \rightarrow H^- + H$, Ratio \ $H^-/H_2$ from DA
 \section{H.12: Other double polynomial fits}
 
 \subsection{
-Reaction 2.1.5   $H + e \leftrightarrow H^+$,  Ratio $H^+/H(1)$
+Reaction 2.1.5   $H + e \leftrightarrow H^+ +2e$,  Ratio $H^+/H(1)$
 }
 This ratio provides the collisional radiative equilibrium ion
 density, for a given ground state atom density.
@@ -10897,7 +11125,7 @@ Reaction 2.2.14d $ H_2^+ + e \rightarrow ...+ H(5) , \   $ Ratio $H(5)/H_2^+  $
 }
 
  Multi-step hydrogenic population coefficients
- Data: T.Fujimoto
+ Data: K. Sawada, T.Fujimoto \cite{kn:Sawada}
 
  Ratio of population coefficients: p(5)/nH2+
 
@@ -11835,6 +12063,7 @@ J. Phys. B: At. Mol. Opt. Phys. 34 (2001) 2963
 \bibitem{kn:Rapp1} D. Rapp and P. Englander-Golden, ``Total cross sections for ionization and attachment in gases by electron impact. I. Positive ionization", J. Chem. Phys 43 (1965) 1464
 \bibitem{kn:Rapp2} D. Rapp, P. Englander-Golden and D.D. Briglia, ``Cross sections for dissociative ionization of molecules by electron impact", J. Chem Phys. 42 (1965) 4081
 \bibitem{kn:Brook} E. Brook, M.F.A. Harrison and A.C.H. Smith, J. Phys. B: : At. Mol. Opt. Phys. 11 (1978) 3115
+\bibitem{kn:Petersen} J.R. Petersen, A. Le Padellec, H. Danared et al., J. Chem. Phys. 108 (5), (1998), p1978
 \bibitem{kn:Green} Greenland, T., Reiter, D.,
                    ``The Role of Molecular Hydrogen in Plasma
                     Recombination", Report, JUEL-3258 (1996), FZ-J\"ulich
@@ -11848,5 +12077,6 @@ Report JET-R (1989) 03, JET Joint Undertaking, Abingdon Oxon OX 14 3EA
 \bibitem{kn:Fujimoto} T.  Fujimoto, J. Quant. Spectrosc. Radiat. Transfer, 21 (1979) 439 and:
 M. Goto, J. Quant. Spectrosc. Radiat. Transfer, 76 (2003) 331
 \bibitem{kn:OakRidge} Kristic~P.~S., Schultz~D.~R., Physical Review A, 60 (1999), p2118
+\bibitem{kn:McWhirter} R.W.P. McWhirter, A.G. Hearn, Proc. Phys. Soc. 82 (1963), p641
  \end{thebibliography}
 \end{document}

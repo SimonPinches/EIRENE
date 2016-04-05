@@ -321,6 +321,7 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           IF (NSTORDR >= NRAD) THEN
             
             IF (MODC.EQ.1) THEN
+C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
@@ -329,11 +330,13 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
      .                          (KREAD,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
-            ELSEIF (MODC.EQ.2) THEN 
+            ELSEIF (MODC.EQ.2) THEN
+C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
+                tii = max(-2.3_dp,tii)
                 CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CFF)
                 EPLCX3(IRCX,J,1:NEND) = CFF(1:NEND)
                 EPLCX3(IRCX,J,1) = EPLCX3(IRCX,J,1)+DIINL(IPL,J)+ADDL

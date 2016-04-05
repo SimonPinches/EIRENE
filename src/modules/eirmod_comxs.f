@@ -13,9 +13,14 @@
 !  02.03.07: IMESS added in photon line reaction data in order to allow for
 !            a complete printout of input data in case of HYDKIN default
 !            database option
+!
+cdr sometime between 2004 and 2007 the atomic data structure was revised.
+cdr 
+cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
+!
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
 cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
-cdr  JAN  16:  additional species index for eplds,eplpi
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -29,6 +34,7 @@ cdr  JAN  16:  additional species index for eplds,eplpi
      .          EIRENE_READ_CMDTA,
      .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF, 
      .          EIRENE_CMDTA_XDR, EIRENE_CMAMF_XDR,
+cdr
      .          LINE_DATA, EIRENE_GET_REACTION, POLY_DATA,
      .          REACTION_DATA, EIRENE_SET_REACTION_DATA, ADAS_DATA,
      .          FIT_FORMS, EIRENE_IS_RTC_ADAS, EIRENE_IS_RTCEW_ADAS, 
@@ -99,7 +105,8 @@ cdr  JAN  16:  additional species index for eplds,eplpi
  
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        XSTOR(:,:), XSTORV(:)
- 
+
+cdr  local (on the flight) atomic-moleculer reaction data 
       REAL(DP), PUBLIC, POINTER, SAVE ::
 c  reaction rates, by reaction
      R SIGVCX(:),   SIGVPI(:),   SIGVEI(:),   SIGVEL(:),
@@ -127,10 +134,12 @@ csw added OTHER (OT) reactions
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R FACRRC(:,:), FACRPI(:,:), FACREL(:,:), FACREI(:,:), FACRCX(:,:) 
- 
+
+c  secondaries, species distribution, for EI and PI processes 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PELDS(:),  PATDS(:,:), PMLDS(:,:), PIODS(:,:), PPLDS(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
+c  ...and cummulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
@@ -139,7 +148,7 @@ csw added OTHER (OT) reactions
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLDS(:,:,:),
+     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLEI(:,:,:),
      R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:,:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -384,7 +393,8 @@ C
         ALLOCATE (IBGKPH(NPHOT,NREAC))
  
         ALLOCATE (REAC_NAME(NREAC))
- 
+cdr  -11 ... -1   : internal default atomic-molecular data
+cdr    1 ... NREAC: atomic/molecular data read from external data files, input block 4
         ALLOCATE (REACDAT(-11:NREAC))
         ALLOCATE (REACLINES(NREAC_LINES))
 
@@ -527,7 +537,7 @@ c  secondaries, PI processes
         ALLOCATE (EATDS(NRDS,0:NATM,2))
         ALLOCATE (EMLDS(NRDS,0:NMOL,2))
         ALLOCATE (EIODS(NRDS,0:NION,2))
-        ALLOCATE (EPLDS(NRDS,0:NPLS,2))
+        ALLOCATE (EPLEI(NRDS,0:NPLS,2))
  
         ALLOCATE (MODCOL(7,0:4,MXCOLLS))
 
@@ -669,16 +679,18 @@ c
       DEALLOCATE (EMLPI)
       DEALLOCATE (EIOPI)
       DEALLOCATE (EPLPI)
+
       DEALLOCATE (EATDS)
       DEALLOCATE (EMLDS)
       DEALLOCATE (EIODS)
-      DEALLOCATE (EPLDS)
+      DEALLOCATE (EPLEI)
  
       DEALLOCATE (MODCOL)
       DEALLOCATE (IESTCX)
       DEALLOCATE (IESTEL)
       DEALLOCATE (IESTPI)
       DEALLOCATE (IESTEI)
+
       DEALLOCATE (NAEII)
       DEALLOCATE (NMDSI)
       DEALLOCATE (NIDSI)
@@ -865,6 +877,9 @@ c
  
  
       SUBROUTINE EIRENE_INIT_CMDTA (ICAL)
+cdr  initialize (nullify) A&M data
+cdr  ical=1:  ??
+cdr  ical=2:  ??
  
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: IREAC, IL
@@ -1099,7 +1114,7 @@ c
         EATDS   = 0._DP
         EMLDS   = 0._DP
         EIODS   = 0._DP
-        EPLDS   = 0._DP
+        EPLEI   = 0._DP
  
         MODCOL  = 0
         IESTCX  = 0
@@ -1177,6 +1192,7 @@ c
  
  
       SUBROUTINE EIRENE_WRITE_CMDTA
+cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input block 1)
  
       WRITE (13+IFOFF)
      . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
@@ -1193,7 +1209,7 @@ c
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLDS
+     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
  
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1237,7 +1253,7 @@ c
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLDS
+     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
  
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1310,14 +1326,16 @@ c
       CALL FXDRDBL (IUN,EPLCX3,NRCX*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,EPLEL3,NREL*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,EPLOT3,NROT*NSTORDR*NSTORDT)
+
       CALL FXDRDBL (IUN,EATPI,NRPI*(NATM+1)*2)
       CALL FXDRDBL (IUN,EMLPI,NRPI*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIOPI,NRPI*(NION+1)*2)
       CALL FXDRDBL (IUN,EPLPI,NRPI*(NPLS+1)*2)
+
       CALL FXDRDBL (IUN,EATDS,NRDS*(NATM+1)*2)
       CALL FXDRDBL (IUN,EMLDS,NRDS*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIODS,NRDS*(NION+1)*2)
-      CALL FXDRDBL (IUN,EPLDS,NRDS*(NPLS+1)*2)
+      CALL FXDRDBL (IUN,EPLEI,NRDS*(NPLS+1)*2)
  
 c
       CALL FXDRINT (IUN,MODCOL ,7*5*MXCOLLS)

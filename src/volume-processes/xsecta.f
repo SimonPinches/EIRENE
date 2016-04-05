@@ -118,10 +118,10 @@ C
               PELDS(IREI)=1.
               PPLDS(IREI,IPLS1)=1.
 
-              EPLDS(IREI,IPLS1,1)=1.D0
-              EPLDS(IREI,IPLS1,2)=0.D0
-              EPLDS(IREI,0,1)=1.D0
-              EPLDS(IREI,0,2)=0.D0
+              EPLEI(IREI,IPLS1,1)=1.D0
+              EPLEI(IREI,IPLS1,2)=0.D0
+              EPLEI(IREI,0,1)=1.D0
+              EPLEI(IREI,0,2)=0.D0
 
               GOTO 50
             ENDIF

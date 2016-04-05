@@ -108,6 +108,10 @@
       !flux_save
       real*8, save, public, allocatable :: flux_save(:)
 
+!pb 27012016
+! flag indicating if subroutine iniusr is called from B2.5
+      integer, public, save :: ini_iniusr=0
+
       contains
 
       subroutine eirene_extrab25_alloc_mods(nnx,nny)
@@ -1234,6 +1238,10 @@ cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       bsps_spch(1:n_spcsrf) = sps_spch(1:n_spcsrf)
       bsps_mtrl(1:n_spcsrf) = sps_mtrl(1:n_spcsrf)
       bsps_id(1:n_spcsrf) = sps_id(1:n_spcsrf)
+
+!pb 27012016
+! flag indicating if subroutine iniusr is called from B2.5
+      ini_iniusr = 1
       end subroutine
 
       subroutine eirene_extrab25_cleanup
@@ -2219,7 +2227,17 @@ C=======================================================================
 
       INTEGER, INTENT(IN) :: KARD, NDIMX, NDIMY, NDIMF, N, M, NF
       REAL(DP), INTENT(INOUT) :: DUMMY(0:N+1,0:M+1,NF)
-      INTEGER :: ND1, LIM, IF, III, IX, IY
+      INTEGER :: ND1, LIM, IF, III, IX, IY, i1, i2, i3
+      character(50) :: form
+      character(200) :: zeile
+
+      form = repeat(' ',50)
+      read (kard,'(a200)',END=500) zeile
+      i1 = index(zeile,'.')
+      i2 = scan(zeile,'E,e')
+      i3 = index(zeile(i2+1:),' ')
+      write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
+      backspace kard
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
@@ -2227,12 +2245,11 @@ C=======================================================================
       DO    110  IF = 1,NDIMF
       DO    110  IY = 0,NDIMY+1
       DO    100  IX = 1,LIM,5
-100     READ(KARD,910,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+100     READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
         IF( (LIM+4).EQ.ND1 )     GOTO 110
-        READ(KARD,910,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+       READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
 110   CONTINUE
 500   RETURN
-910   FORMAT(5(E16.8))
 *//END PLASM//
       END
 
@@ -2244,7 +2261,7 @@ C=======================================================================
 C          S U B R O U T I N E   N E U T R
 C=======================================================================
       SUBROUTINE EIRENE_NEUTR(KARD,NDIMX,NDIMY,NDIMF,DUMMY,LDMX,LDMY,
-     .                 LDMF,LDNS,IS)
+     .                        LDMF,LDNS,IS)
 
       USE EIRMOD_PRECISION
       IMPLICIT NONE
@@ -2292,7 +2309,7 @@ csw
       USE EIRMOD_COMUSR
       USE EIRMOD_CGRID
       USE EIRMOD_CESTIM
-      
+
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTRAI
@@ -2312,10 +2329,11 @@ csw
 
       CALL EIRENE_FREE_SIMARR(ISTRAI)
       CALL EIRENE_FREE_MULARR(ISTRAI)
-      
+
       DO IPLS=1,NPLSI
+cdr  save volumetric sources for plasma species ipls: particle, momentum, ion energy
         DO IN=1,NSBOX_TAL
-          IF(LPAPL) THEN
+          IF (LPAPL) THEN
             IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2326,7 +2344,7 @@ csw
               PAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LPMPL) THEN
+          IF (LPMPL) THEN 
             IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2337,7 +2355,8 @@ csw
               PMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LPIPL) THEN
+
+          IF (LPIPL) THEN
             IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2394,7 +2413,7 @@ csw
               MAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LMMPL) THEN
+          IF (LMMPL) THEN
             IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2405,7 +2424,7 @@ csw
               MMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LMIPL) THEN
+          IF (LMIPL) THEN
             IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2416,7 +2435,7 @@ csw
               MIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LMPHPL) THEN
+          IF (LMPHPL) THEN
             IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2431,7 +2450,7 @@ csw
       ENDDO
 
       DO IN=1,NSBOX_TAL
-        IF(LEAEL) THEN
+    	IF (LEAEL) THEN
           IF (EAEL(IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -2441,7 +2460,7 @@ csw
             EAELS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-        IF(LEMEL) THEN
+        IF (LEMEL) THEN
           IF (EMEL(IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -2451,9 +2470,9 @@ csw
             EMELS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-        IF(LEIEL) THEN
+        IF (LEIEL) THEN 
           IF (EIEL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB           ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EIEL(IN)*FLXI
@@ -2463,7 +2482,7 @@ csw
         ENDIF
 
       ENDDO
-      
+
       DO IATM=1,NATMI
         DO IN=1,NSBOX_TAL
           IF(LPDENA) THEN
@@ -2477,7 +2496,7 @@ csw
               PDENAS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF(LEDENA) THEN
+          IF (LEDENA) THEN
             IF (EDENA(IATM,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2487,13 +2506,13 @@ csw
               CPMUL%NXTMUL => EDENAS(ISTRAI)%PMUL
               EDENAS(ISTRAI)%PMUL => CPMUL
             ENDIF
-          ENDIF
+	      ENDIF
         ENDDO
       ENDDO
 
       DO IMOL=1,NMOLI
         DO IN=1,NSBOX_TAL
-          IF(LPDENM) THEN
+	      IF (LPDENM) THEN
             IF (PDENM(IMOL,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2509,7 +2528,7 @@ csw
 
       DO IION=1,NIONI
         DO IN=1,NSBOX_TAL
-          IF(LPDENI) THEN
+	      IF (LPDENI) THEN
             IF (PDENI(IION,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2525,7 +2544,7 @@ csw
 
       DO ICPV=1,NCPVI
         DO IN=1,NSBOX_TAL
-          IF(LCOPV) THEN
+	      IF (LCOPV) THEN
             IF (COPV(ICPV,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -2540,735 +2559,10 @@ csw
       ENDDO
 
       RETURN
-      END 
-
-C
-C
-C
-C
-      SUBROUTINE EIRENE_EIRSRT(LSTOP_in,LTIME_in,DELTAT_in,FLUXES_in,
-     .                  B2BRM_in,B2RD_in,B2Q_in,B2VP_in,STEP_CPU_in)
-
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_BRASPOI
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CESTIM
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CINIT
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CGRID
-      USE EIRMOD_CSPEZ
-      USE EIRMOD_CZT1
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_CCOUPL
-      USE EIRMOD_CGEOM
-      USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMNNL
-      USE EIRMOD_COMSOU
-      USE EIRMOD_COUTAU
-      USE EIRMOD_COMXS
-      USE EIRMOD_CSPEI
-      USE EIRMOD_BRASCL
-csw mpi
-      use eirmod_eirbra
-csw
-csw 12apr2011
-      use eirmod_ctrig
-csw
-      use eirmod_extrab25
-
-      IMPLICIT NONE
-csw 28feb2011 mpi
-      include 'mpif.h'
-      REAL(DP), INTENT(IN) :: FLUXES_in(NSTRA)
-      REAL(DP), INTENT(IN) :: DELTAT_in, B2BRM_in, B2RD_in, B2Q_in,
-     .                        B2VP_in,STEP_CPU_in
-      LOGICAL, INTENT(IN) :: LSTOP_in, LTIME_in
-      integer :: rank_mpi,ierr_mpi,size_mpi
-      REAL(DP) :: FLUXES(NSTRA)
-      REAL(DP) :: DELTAT, B2BRM, B2RD, B2Q, B2VP,STEP_CPU
-      LOGICAL :: LSTOP, LTIME
-      logical :: ltrigger
-csw
-      REAL(DP) :: FLUXS(NSTRA)
-      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, FLXI, ESIG, 
-     .            EIRENE_RESET_SECOND, DUMMY,
-     .            EIRENE_SECOND_OWN, DTIMVO
-      INTEGER :: IN, IAEI, IRDS, IIDS, ICPV, IMDS, IFIRST, K, JC, NDXY,
-     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
-     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI
-      REAL(DP), ALLOCATABLE :: OUTAU(:)
-      INTEGER, ALLOCATABLE :: IHELP(:)
-      LOGICAL :: LSTP, LLST, LPLASM, NLSRON_SAVE(NSTRA)
-C
-      TYPE(CELLSIM), POINTER :: CPSIM
-      TYPE(CELLMUL), POINTER :: CPMUL
-      TYPE(RATE_STORE), POINTER :: RTIS
-C
-C
-      SAVE
-      DATA IFIRST/0/
-csw 28feb2011 mpi
-      call mpi_comm_rank(MPI_COMM_WORLD,rank_mpi,ierr_mpi)
-      call mpi_comm_size(MPI_COMM_WORLD,size_mpi,ierr_mpi)
-      if(rank_mpi == 0) then
-        lstop=lstop_in
-        ltime=ltime_in
-        deltat=deltat_in
-        fluxes(1:nstra) = fluxes_in(1:nstra)
-        b2brm=b2brm_in
-        b2rd=b2rd_in
-        b2q=b2q_in
-        b2vp=b2vp_in
-        step_cpu=step_cpu_in
-
-        ltrigger=.true.
-        call mpi_bcast(ltrigger,1,MPI_LOGICAL,
-     .                 0,MPI_COMM_WORLD,ierr_mpi)
-      endif    
-      call mpi_bcast(lstop,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ierr_mpi)
-      call mpi_bcast(ltime,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ierr_mpi)
-      call mpi_bcast(deltat,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
-     .               ierr_mpi)
-      call mpi_bcast(fluxes,nstra,MPI_DOUBLE_PRECISION, 
-     .               0,MPI_COMM_WORLD,ierr_mpi)
-      call mpi_bcast(b2brm,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
-     .               ierr_mpi)
-      call mpi_bcast(b2rd,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
-     .               ierr_mpi)
-      call mpi_bcast(b2q,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
-     .               ierr_mpi)
-      call mpi_bcast(b2vp,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
-     .               ierr_mpi)
-      call mpi_bcast(step_cpu,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
-     .               ierr_mpi)
-csw
-C
-      IF (LTIME) THEN
-csw mpi
-        stop 'NO MPI FOR LTIME=.true.'
-csw
-C
-        B2BREM=B2BRM
-        B2RAD=B2RD
-        B2QIE=B2Q
-        B2VDP=B2VP
-        DUMMY=EIRENE_RESET_SECOND()
-        IF(IFIRST.EQ.0) THEN
-C
-          CALL GRSTRT(35,8)
-C
-C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
-C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
-C  AS FINAL STRATUM
-C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
-C
-csw          CALL EIRENE_EIRENE(DELTAT,.FALSE.,.FALSE.,1,.TRUE.)
-csw --> MPI_INIT = .false.
-c          CALL EIRENE_EIRENE(DELTAT,.FALSE.,.FALSE.,1,.FALSE.)
-csw --> MPI_INIT=.false., NLPLAS=.TRUE.
-          CALL EIRENE_EIRENE(DELTAT,.TRUE.,.FALSE.,1,.FALSE.)
-C
-C  EIRENE RUN DONE. CENSUS ARRAY WRITTEN
-C  NOW ITIMV=ITIMV+1, NLPLAS=.TRUE.
-C
-          IF (.NOT.NLPLAS) THEN
-            WRITE (iunout,*) 'INCONSISTENT COUPLING '
-            WRITE (iunout,*) 'LTIME=TRUE, BUT NTIME = ', NTIME
-            CALL EIRENE_EXIT_OWN(1)
-          ENDIF
-          DO 3 ISTRAI=1,NSTRAI
-            FLUXS(ISTRAI)=FLUX(ISTRAI)
-3         CONTINUE
-          IFIRST=1
-        ELSE
-C
-C  NOW: NLPLAS=.TRUE., I.E., PLASMA DATA EXPECTED ON BRAEIR
-C  NOW: ITIMV=ITIMV+1
-C  BUT: COMMON BRAEIR REDONE IN EXTERNAL CODE.
-C  REACTIVATE INDEX MAPPING, EVEN WITHOUT READING INPUT BLOCK 14 AGAIN
-          NCUTB_SAVE=NCUTB
-C
-          DTIMVO=DTIMV
-          DTIMVN=DELTAT
-C
-C-----------------------------------------------------------------------
-C
-C  STRATA 1 TO NTARGI ARE SCALED IN PLASMA CODE  (RECYCLING STRATA)
-C
-C     RETURN TO PLASMA CODE THE PROFILES PER UNIT SOURCE STRENGTH
-C     IE. THE PROFILES ARE SCALED BY 1./FLUX(ISTRA) BEFORE RETURN
-C
-C  STRATA NTARGI+1 TO NSTRAI-1  ARE SCALED BY EIRENE
-C
-C     (EG. GAS PUFF, VOLUME RECOMBINATION, ETC.)
-C     THEY MAY BE RESCALED BY PLASMA CODE FACTORS: FLUXES(ISTRA)
-C     RETURN TO PLASMA CODE THE PROFILES SCALED WITH
-C     SOURCE STRENGTH: FLUX(ISTRA) (AMP)
-C
-C  STRATUM NSTRAI IS RESCALED WITH RATIO OF OLD TO NEW TIMESTEP
-C
-C     RETURN TO PLASMA CODE THE PROFILES WITH FLUX(ISTRA) (AMP)
-C
-          DO ISTRAI=NTARGI+1,NSTRAI-1
-            ISTRA = ISTRAI
-            IF (FLUXES(ISTRA).NE.0.) THEN
-              FLUX(ISTRA)=FLUXS(ISTRA)*FLUXES(ISTRA)*ELCHA
-            ELSE
-              FLUX(ISTRA)=FLUXS(ISTRA)
-            ENDIF
-          ENDDO
-C
-          IF (DTIMVN.NE.DTIMVO) THEN
-            FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
-C
-            WRITE (iunout,*) 'FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW '
-            CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
-            CALL EIRENE_LEER(1)
-          ENDIF
-C
-C-----------------------------------------------------------------------
-C
-          DTIMV=DTIMVN
-C
-C  RUN EIRENE ON TIMESTEP DTIMV
-C  THEN CALL INTERFACING ROUTINE AT ENTRY IF3COP (FROM EIRENE MAIN)
-C
-          IITER=1
-          IPRNLI=0
-          NLSRON=.TRUE.
-          CALL EIRENE_EIRENE_COUPLE (LSTOP,1)
-          IF (LSTOP) THEN
-            CALL GREND
-          ENDIF
-        ENDIF
-        CALL EIRENE_LEER(2)
-        WRITE(*,*) 'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
-        CALL EIRENE_LEER(2)
-C
-        RETURN
-C
-      ELSEIF (.NOT.LTIME) THEN
-
-!swpb for multiprocessor calculation
-        DUMMY=EIRENE_RESET_SECOND()
-C
-        IF (IFIRST.GE.1) GOTO 10000
-
-csw mpi
-        if(rank_mpi .eq. 0) then
-csw
-          CALL GRSTRT(35,8)
-C
-C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
-C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
-C  AS FINAL STRATUM
-C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
-C
-          B2BREM=B2BRM
-          B2RAD=B2RD
-          B2QIE=B2Q
-          B2VDP=B2VP
-          LPLASM=.FALSE.
-csw 9sep2011
-          LPLASM=.TRUE.
-csw
-          LLST=LSTOP
-          ITNR=1
-csw mpi
-        endif
-csw
- 10     CONTINUE
-
-csw 17feb2011
-c        if(itnr > 1 .and. rank_mpi==0) then
-c          DO ISTRAI=NTARGI+1,NSTRAI
-c            ISTRA = ISTRAI
-c            if(.not.nlvol(istra)) then
-c              IF (FLUXES(ISTRA).NE.0.d0 ) THEN
-c                FLUX(ISTRA)=FLUXES(ISTRA)*ELCHA
-c              ELSE
-c                FLUX(ISTRA)=1.
-c              ENDIF
-c            endif
-c          ENDDO
-c        endif
-csw 24oct2011
-        if(rank_mpi==0) then
-          DO ISTRAI=1,NSTRA
-            FLUX_save(ISTRAI)=FLUXES(ISTRAI)
-          ENDDO
-        endif
-
-csw
-csw        CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
-        CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.FALSE.)
-C
-C  IN THIS CALL TO EIRENE ALREADY IF3COP IS CALLED FOR EACH STRATUM
-C  THOSE WITH NLSRON = TRUE  HAVE BEEN RECOMPUTED BY EIRENE
-C  THOSE WITH NLSRON = FALSE HAVE BEEN SHORT-CYCLED
-C  AT IFIRST   =0: ALL NLSRON=TRUE
-C  AT IFIRST.GE.1: FIRST A SHORT CYCLE TEST IS DONE, AND NLSRON IS FOUND
-C
-csw mpi
-        if(rank_mpi .eq. 0) then
-csw
-        IF (.NOT.LLST) THEN
-
-        IF (IFIRST.GE.1) NLSRON = NLSRON_SAVE
-
-csw 12apr2011       NDXY=(NDXA-1)*NR1ST+NDYA
-        NDXY=NTRII
-C
-        CALL EIRENE_ALLOC_BRASCL
-
-! find new calculated stratum with smallest number
-        DO IST = 1, NSTRAI
-          IF (NLSRON(IST)) THEN
-            IFRSTR = IST
-            EXIT
-          END IF
-        END DO
-
-! determine index of rate storage which has been used in the last iteration 
-        IST_RATE = ITS(IFRSTR)
-
-! reduce counters of rate storages for all new calculated strata
-        DO IST = 1, NSTRAI
-          IF (NLSRON(IST)) THEN
-            ISTIN = ITS(IST)
-            ITS_COUNT(ISTIN) = ITS_COUNT(ISTIN) - 1
-          END IF
-        END DO
-
-! check how often storage IST_RATE is still used
-        ISTH = 0
-        IF (IST_RATE > 0) ISTH= ITS_COUNT(IST_RATE)
-        
-        IF (ISTH < 1) THEN
-! rate storage can be used again
-        ELSE
-! rate storage still in use, look for an empty slot
-          ISTNEW = MINLOC(ITS_COUNT,DIM=1)
-          IF (ITS_COUNT(ISTNEW) > 0) THEN
-            WRITE (IUNOUT,*) ' PROBLEM IN EIRSRT '
-            WRITE (IUNOUT,*) ' ITS_COUNT > 0 '
-            WRITE (IUNOUT,*) ' ITS_COUNT ',ITS_COUNT
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          IST_RATE = ISTNEW
-        END IF
-        
-        WHERE (NLSRON) 
-          ITS = IST_RATE
-        END WHERE
-
-        ITS_COUNT(IST_RATE) = COUNT(NLSRON)
-C
-        CALL EIRENE_ALLOC_RATE_ARRAY(IST_RATE)
-        CALL EIRENE_INIT_BRASCL1(IST_RATE)
-
-        RTIS => RTS(IST_RATE)%RTA
-C
-C  INITIAL: ATOMS, EI-PROCESSES
-C
-        DO 21 IATM=1,NATMI
-        DO 21 IPLS=1,NPLSI
-        DO 21 IAEI=1,NAEII(IATM)
-          IRDS=LGAEI(IATM,IAEI)
-          IF (PPLDS(IRDS,IPLS).EQ.0.) GOTO 21
-          DO 22 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SPLODA(IN,IATM,IPLS)=RTIS%SPLODA(IN,IATM,IPLS)+
-     .                        TABDS1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            ELSE
-              RTIS%SPLODA(IN,IATM,IPLS)=RTIS%SPLODA(IN,IATM,IPLS)+
-     .                        EIRENE_FTABEI1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            END IF
-22        CONTINUE
-21      CONTINUE
-        DO 23 IPLS=1,NPLSI
-          IPLSTI= MPLSTI(IPLS)
-          DO 24 IN=1,NDXY
-            RTIS%SEIODA(IN,IPLS)=DIIN(IPLS,IN)*
-     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
-24        CONTINUE
-23      CONTINUE
-C
-        DO 25 IATM=1,NATMI
-        DO 25 IAEI=1,NAEII(IATM)
-          IRDS=LGAEI(IATM,IAEI)
-          DO 25 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+EELDS1(IRDS,IN)*
-     .                                        TABDS1(IRDS,IN)
-            ELSE
-              RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
-     .                                        EIRENE_FEELEI1(IRDS,IN)*
-     .                                        EIRENE_FTABEI1(IRDS,IN)
-            END IF
-25      CONTINUE
-C
-C  INITIAL: TEST IONS, EI-PROCESSES
-C
-        DO 26 IION=1,NIONI
-        DO 26 IIDS=1,NIDSI(IION)
-          IRDS=LGIEI(IION,IIDS)
-          DO 26 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+EELDS1(IRDS,IN)*
-     .                                        TABDS1(IRDS,IN)
-            ELSE
-              RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+
-     .                                        EIRENE_FEELEI1(IRDS,IN)*
-     .                                        EIRENE_FTABEI1(IRDS,IN)
-            END IF
-26      CONTINUE
-C
-        DO 27 IION=1,NIONI
-        DO 27 IPLS=1,NPLSI
-        DO 27 IIDS=1,NIDSI(IION)
-          IRDS=LGIEI(IION,IIDS)
-          IF (PPLDS(IRDS,IPLS).EQ.0.) GOTO 27
-          DO 28 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SPLODI(IN,IION,IPLS)=RTIS%SPLODI(IN,IION,IPLS)+
-     .                             TABDS1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            ELSE
-              RTIS%SPLODI(IN,IION,IPLS)=RTIS%SPLODI(IN,IION,IPLS)+
-     .                         EIRENE_FTABEI1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            ENDIF
-28        CONTINUE
-27      CONTINUE
-C
-        DO 29 IION=1,NIONI
-        DO 29 IPLS=1,NPLSI
-        DO 29 IIDS=1,NIDSI(IION)
-          IRDS=LGIEI(IION,IIDS)
-          ESIG=EPLDS(IRDS,2)
-          DO 30 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
-     .                        TABDS1(IRDS,IN)*ESIG
-            ELSE
-              RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
-     .                        EIRENE_FTABEI1(IRDS,IN)*ESIG
-            END IF
-30        CONTINUE
-29      CONTINUE
-C
-C
-C  INITIAL: MOLECULES, EI-PROCESSES
-C
-        DO 35 IMOL=1,NMOLI
-        DO 35 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
-          DO 35 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+EELDS1(IRDS,IN)*
-     .                                        TABDS1(IRDS,IN)
-            ELSE
-              RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
-     .                                        EIRENE_FEELEI1(IRDS,IN)*
-     .                                        EIRENE_FTABEI1(IRDS,IN)
-            ENDIF
-35      CONTINUE
-C
-        DO 47 IMOL=1,NMOLI
-        DO 47 IPLS=1,NPLSI
-        DO 47 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
-          IF (PPLDS(IRDS,IPLS).EQ.0.) GOTO 47
-          DO 48 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SPLODM(IN,IMOL,IPLS)=RTIS%SPLODM(IN,IMOL,IPLS)+
-     .                             TABDS1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            ELSE
-              RTIS%SPLODM(IN,IMOL,IPLS)=RTIS%SPLODM(IN,IMOL,IPLS)+
-     .                         EIRENE_FTABEI1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            END IF
-48        CONTINUE
-47      CONTINUE
-C
-        DO 49 IMOL=1,NMOLI
-        DO 49 IPLS=1,NPLSI
-        DO 49 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
-          ESIG=EPLDS(IRDS,2)
-          DO 50 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              RTIS%SEIODM(IN,IMOL)=RTIS%SEIODM(IN,IMOL)+
-     .                        TABDS1(IRDS,IN)*ESIG
-            ELSE
-              RTIS%SEIODM(IN,IMOL)=RTIS%SEIODM(IN,IMOL)+
-     .                        EIRENE_FTABEI1(IRDS,IN)*ESIG
-            END IF
-50        CONTINUE
-49      CONTINUE
-
-        END IF
-C
-C
-        B2BREM=B2BRM
-        B2RAD=B2RD
-        B2QIE=B2Q
-        B2VDP=B2VP
-
-C
-csw mpi
-        endif
-csw
-        IFIRST=IFIRST+1
-
-        IF (LSTOP) THEN
-          CALL EIRENE_DEALLOC_COMUSR
-          CALL EIRENE_DEALLOC_CESTIM
-          CALL EIRENE_DEALLOC_BRASCL
-          CALL EIRENE_DEALLOC_BRASPOI
-
-          CALL GREND
-        END IF
-
-        RETURN
-C
-C  NOT THE FIRST CALL IN THIS CYCLE: CHECK: SHORT LOOP CORRECTION
-C                                           OR FULL EIRENE, FOR EACH
-C                                           STRATUM INDIVIDUALLY
-10000   CONTINUE
-C
-csw mpi
-        if(rank_mpi .eq. 0) then
-
-        CALL EIRENE_HEADNG ('NEXT EIRENE RUN STARTS HERE',27)
-csw
-
-csw 23dec2011
-csw        if(nfilel .le. 1) then
-        LSTP = LSTOP
-        NCUTB_SAVE=NCUTB
-        CALL EIRENE_ALLOC_BCKGRND
-
-        CALL EIRENE_INTER1
-C
-        CALL EIRENE_PLASMA
-C
-        CALL EIRENE_PLASMA_DERIV(0)
-C
-csw 09jan2012
-!pb        if(nfilel .le. 1) then
-        CALL EIRENE_SETAMD(2)
-C
-C  IN PLASMA_DERIV THE BACKGROUND PLASMA STATE HAS BEEN 
-C  WRITTEN TO FORT.13
-C  NFILEL HAS BEEN CHANGED TO NFILEL = 3 OR 9
-C  ==> PLASMA AND REACTION DATA ARE READ IN SUBR. INPUT
-C  NOW SAVE REACTION DATA AS WELL IN ORDER TO HAVE A 
-C  CONSISTENT PLASMA STATE ON FORT.13
-C  
-        IF ((NFILEL >=1) .AND. (NFILEL <=5)) THEN
-           NFILEL=3
-           CALL EIRENE_WRPLAM(TRCFLE,0)
-        ELSE IF (NFILEL > 5) THEN
-           NFILEL=9
-           CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
-        END IF
-!pb        endif
-csw 23dec2011 end
-
-csw force no short cycle
-csw        IF ( ANY(XMCP_OLD(1:NSTRAI) <= 2._DP)) THEN
-c        if(.true.) then
-c           IFIRST=0
-c           LPLASM=.TRUE.
-c           LSTP=LSTOP
-c           ITNR=ITNR+1
-c           GOTO 10
-c        END IF
-csw
-C
-        CALL EIRENE_ALLOC_BRASCL
-        CALL EIRENE_INIT_BRASCL2
-C
-C  NEW: ATOMS, EI PROCESSES
-C
-        DO 101 IATM=1,NATMI
-        DO 101 IPLS=1,NPLSI
-          DO 102 IAEI=1,NAEII(IATM)
-            IRDS=LGAEI(IATM,IAEI)
-            IF (PPLDS(IRDS,IPLS).EQ.0.) GOTO 101
-            DO 102 IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
-                SPLNWA(IN,IATM,IPLS)=SPLNWA(IN,IATM,IPLS)+
-     .                          TABDS1(IRDS,IN)*PPLDS(IRDS,IPLS)
-              ELSE
-                SPLNWA(IN,IATM,IPLS)=SPLNWA(IN,IATM,IPLS)+
-     .                          EIRENE_FTABEI1(IRDS,IN)*PPLDS(IRDS,IPLS)
-              END IF
-102       CONTINUE
-101     CONTINUE
-C
-        DO 103 IPLS=1,NPLSI
-          IPLSTI= MPLSTI(IPLS)
-          DO 104 IN=1,NDXY
-            SEINWA(IN,IPLS)=DIIN(IPLS,IN)*
-     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
-104       CONTINUE
-103     CONTINUE
-C
-        DO 105 IATM=1,NATMI
-          DO 105 IAEI=1,NAEII(IATM)
-            IRDS=LGAEI(IATM,IAEI)
-            DO 105 IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
-                SEENWA(IN,IATM)=SEENWA(IN,IATM)+EELDS1(IRDS,IN)*
-     .                                          TABDS1(IRDS,IN)
-              ELSE
-                SEENWA(IN,IATM)=SEENWA(IN,IATM)+EIRENE_FEELEI1(IRDS,IN)*
-     .                                          EIRENE_FTABEI1(IRDS,IN)
-              END IF
-105     CONTINUE
-C
-C  NEW: TEST IONS, EI PROCESSES
-C
-        DO 106 IION=1,NIONI
-          DO 106 IIDS=1,NIDSI(IION)
-            IRDS=LGIEI(IION,IIDS)
-            DO 106 IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
-                SEENWI(IN,IION)=SEENWI(IN,IION)+EELDS1(IRDS,IN)*
-     .                                          TABDS1(IRDS,IN)
-              ELSE
-                SEENWI(IN,IION)=SEENWI(IN,IION)+EIRENE_FEELEI1(IRDS,IN)*
-     .                                          EIRENE_FTABEI1(IRDS,IN)
-              END IF
-106     CONTINUE
-C
-        DO 107 IION=1,NIONI
-        DO 107 IPLS=1,NPLSI
-        DO 107 IIDS=1,NIDSI(IION)
-          IRDS=LGIEI(IION,IIDS)
-          IF (PPLDS(IRDS,IPLS).EQ.0.) GOTO 107
-          DO 108 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              SPLNWI(IN,IION,IPLS)=SPLNWI(IN,IION,IPLS)+
-     .                             TABDS1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            ELSE
-              SPLNWI(IN,IION,IPLS)=SPLNWI(IN,IION,IPLS)+
-     .                         EIRENE_FTABEI1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            END IF
-108       CONTINUE
-107     CONTINUE
-C
-        DO 109 IION=1,NIONI
-        DO 109 IPLS=1,NPLSI
-        DO 109 IIDS=1,NIDSI(IION)
-          IRDS=LGIEI(IION,IIDS)
-          ESIG=EPLDS(IRDS,2)
-          DO 110 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              SEINWI(IN,IION)=SEINWI(IN,IION)+TABDS1(IRDS,IN)*ESIG
-            ELSE
-              SEINWI(IN,IION)=SEINWI(IN,IION)+
-     .                        EIRENE_FTABEI1(IRDS,IN)*ESIG
-            END IF
-110       CONTINUE
-109     CONTINUE
-C
-C  NEW: MOLECULES, EI PROCESSES
-C
-        DO 115 IMOL=1,NMOLI
-        DO 115 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
-          DO 116 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              SEENWM(IN,IMOL)=SEENWM(IN,IMOL)+EELDS1(IRDS,IN)*
-     .                                        TABDS1(IRDS,IN)
-            ELSE
-              SEENWM(IN,IMOL)=SEENWM(IN,IMOL)+EIRENE_FEELEI1(IRDS,IN)*
-     .                                        EIRENE_FTABEI1(IRDS,IN)
-            END IF
-116       CONTINUE
-115     CONTINUE
-C
-        DO 117 IMOL=1,NMOLI
-        DO 117 IPLS=1,NPLSI
-        DO 117 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
-          IF (PPLDS(IRDS,IPLS).EQ.0.) GOTO 117
-          DO 118 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              SPLNWM(IN,IMOL,IPLS)=SPLNWM(IN,IMOL,IPLS)+
-     .                             TABDS1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            ELSE
-              SPLNWM(IN,IMOL,IPLS)=SPLNWM(IN,IMOL,IPLS)+
-     .                         EIRENE_FTABEI1(IRDS,IN)*PPLDS(IRDS,IPLS)
-            END IF
-118       CONTINUE
-117     CONTINUE
-C
-        DO 119 IMOL=1,NMOLI
-        DO 119 IPLS=1,NPLSI
-        DO 119 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
-          ESIG=EPLDS(IRDS,2)
-          DO 120 IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
-              SEINWM(IN,IMOL)=SEINWM(IN,IMOL)+TABDS1(IRDS,IN)*ESIG
-            ELSE
-              SEINWM(IN,IMOL)=SEINWM(IN,IMOL)+
-     .                        EIRENE_FTABEI1(IRDS,IN)*ESIG
-            END IF
-120       CONTINUE
-119     CONTINUE
-C
-        B2BREM=B2BRM
-        B2RAD=B2RD
-        B2QIE=B2Q
-        B2VDP=B2VP
-        CALL EIRENE_INTER3(LSTP,IFIRST,1,NSTRAI,0)
-
-        NLSRON_SAVE = NLSRON
-csw mpi
-        endif
-        call mpi_bcast(nlsron,nstrai,MPI_LOGICAL,
-     .                 0,MPI_COMM_WORLD,ierr_mpi)
-        call eirene_broadcast_eirbra
-csw
-        IF (LSTP.or.ANY(NLSRON(1:NSTRAI))) THEN
-           IFIRST=0
-           LPLASM=.TRUE.
-           LSTP=LSTOP
-           ITNR=ITNR+1
-           GOTO 10
-        END IF
-C
-        IFIRST=IFIRST+1
-
-        IF (LSTOP) THEN
-          CALL EIRENE_DEALLOC_COMUSR
-          CALL EIRENE_DEALLOC_CESTIM
-          CALL EIRENE_DEALLOC_BRASCL
-          CALL EIRENE_DEALLOC_BRASPOI
-
-          CALL GREND
-        END IF
-
-        RETURN
-C
-      ENDIF
-csw
-      return
-      entry eirene_eirsrt_broad
-      call mpi_bcast(nlsron,nstrai,MPI_LOGICAL,
-     .                 0,MPI_COMM_WORLD,ierr_mpi)
-      call eirene_broadcast_eirbra
-      return
-csw
       END
+
+C
+C
+C
+C
+
