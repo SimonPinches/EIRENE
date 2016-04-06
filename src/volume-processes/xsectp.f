@@ -142,7 +142,8 @@ C
                     ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
 C  rate = rate coeff: <sig v> times electr. density,  1/s per ion
 c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
-                    TABRC1(IRRC,J)=3.5487-14*ZX**1.5/(ZX+0.35)*DEIN(J)
+! 06042016 from ITER  TABRC1(IRRC,J)=3.5487-14*ZX**1.5/(ZX+0.35)*DEIN(J)
+                    TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
 c                   corsum=0._dp  !  old default: 1.5*Te
 C  correction due to energy dependence in rec. cross section

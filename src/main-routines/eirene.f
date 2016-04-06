@@ -186,7 +186,8 @@ C
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for memory allocation ',time-timi
  
-        IF (ITNR == 1) NLSRON = .TRUE.
+!ITER   IF (ITNR == 1) NLSRON = .TRUE.
+        IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
 C
 C   SET SOME CONSTANTS
 C

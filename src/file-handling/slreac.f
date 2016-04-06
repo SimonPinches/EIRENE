@@ -7,6 +7,7 @@ c  at the end of this routine, for each reaction card, call: SET_REACTION_DATA.F
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting cleanup, nov. 15: continued
 cdr  jan 16: started to document options for asymptotics
+!pb  apr 16: Fixes to read past misleading comments in slreac taken over from ITER
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
@@ -176,7 +177,8 @@ C
       INTEGER :: I, IND, J, K, IH, I0P1, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, INC, IANF, IFILE, IL
       CHARACTER(80) :: ZEILE
-      CHARACTER(2) :: CHR
+!ITER CHARACTER(2) :: CHR
+      CHARACTER(4) :: CHR
       CHARACTER(3) :: CHRL, CHRR
       CHARACTER(200) :: DSN, DIR
       CHARACTER(1) :: CUT
@@ -189,7 +191,8 @@ C
       LGEMAX=.FALSE.
       ISWR(IR)=0
       CONST=0.
-      CHR='l0'
+!ITER CHR='l0'
+      CHR=' l0 '
       CHRL='ll0'
       CHRR='lr0'
       I0=0
@@ -293,7 +296,8 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
 
 C  H.0
       IF (ISW.EQ.0) THEN
-        CHR='p0'
+!ITER   CHR='p0'
+        CHR=' p0 '
         CHRL='pl0'
         CHRR='pr0'
         I0=-1
@@ -303,7 +307,8 @@ C  DEFAULT POTENTIAL: GENERALISED MORSE
         IFTFLG(IR,IFLG)=2
 C  H.1
       ELSEIF (ISW.EQ.1) THEN
-        CHR='a0'
+!ITER   CHR='a0'
+        CHR=' a0 '
         CHRL='al0'
         CHRR='ar0'
         I0=0
@@ -313,7 +318,8 @@ C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)
         IFTFLG(IR,IFLG)=0
 C  H.2
       ELSEIF (ISW.EQ.2) THEN
-        CHR='b0'
+!ITER   CHR='b0'
+        CHR=' b0 '
         CHRL='bl0'
         CHRR='br0'
         I0=1
@@ -335,7 +341,8 @@ C  H.4
         IFTFLG(IR,IFLG)=0
 C  H.5
       ELSEIF (ISW.EQ.5) THEN
-        CHR='e0'
+!ITER   CHR='e0'
+        CHR=' e0 '
         CHRL='el0'
         CHRR='er0'
         I0=1
@@ -356,7 +363,8 @@ C  H.7
         IFTFLG(IR,IFLG)=0
 C  H.8
       ELSEIF (ISW.EQ.8) THEN
-        CHR='h0'
+!ITER   CHR='h0'
+        CHR=' h0 '
         CHRL='hl0'
         CHRR='hr0'
         I0=1
@@ -377,7 +385,8 @@ C  H.10
         IFTFLG(IR,IFLG)=0
 C  H.11
       ELSEIF (ISW.EQ.11) THEN
-        CHR='k0'
+!ITER   CHR='k0'
+        CHR=' k0 '
         CHRL='kl0'
         CHRR='kr0'
         I0=1
@@ -485,10 +494,14 @@ CC  now identify proper dataset within file FILNAM
         IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
 
 1       READ (29+ifoff,'(A80)',END=990) ZEILE
-        IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     !  infinite loop passible !
+!ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     !  infinite loop possible !
+        IF (INDEX(ZEILE,H123).EQ.0 .or.
+     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   
 C
 2       READ (29+ifoff,'(A80)',END=990) ZEILE
-        IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
+!ITER   IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
+        IF (INDEX(ZEILE,'H.').NE.0 .and.
+     .      INDEX(ZEILE,'section').NE.0) GOTO 990
         IF (INDEX(ZEILE,'Reaction ').EQ.0.or.
      .      INDEX(ZEILE,REACSTR(1:ireac)).EQ.0) GOTO 2  ! infinite loop possible  !
 !dr   ENDIF
@@ -510,7 +523,8 @@ c  read parameter for type of fitting expression from data file
         ENDIF
 C  read only one constant:  (FIT-FLAG = 10, 110, ....)
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
-          IND=INDEX(ZEILE,CHR(1:1))
+!ITER     IND=INDEX(ZEILE,CHR(1:1))
+          IND=INDEX(ZEILE,CHR(2:2))
           READ (ZEILE((IND+2):80),'(E20.12)') CREACD(1,1)
         ELSE
 C  READ 9 FIT COEFFICIENTS, SEPARATED BY 'CHR'  FIXED FORMAT E20.12
@@ -518,7 +532,8 @@ C  THREE LINES WITH THREE DATA PER LINE
           DO 9 J=0,2
             IND=0
             DO 4 I=1,3
-              IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+!ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+              IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
               READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
 4           CONTINUE
             READ (29+ifoff,'(A80)',END=990) ZEILE
@@ -539,9 +554,11 @@ c                 left extrapolation was not overruled explicitly in input file 
 c  read three parameters FP(i), i=1,3 for 'left' extrapolation
           IND=0
           DO 5 I=1,3
-            INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
+!ITER       INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
+            INC=INDEX(ZEILE((IND+1):80),CHR(2:2))
             IF (INC.GT.0) THEN
-              IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+!ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+              IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
               READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
             ENDIF
 5         CONTINUE
@@ -554,9 +571,11 @@ c  same as above. for right (high E,T) extraploation fit
 c  read three parameters FP(i), i=4,6 for 'right' extrapolation
           IND=0
           DO 7 I=4,6
-            INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
+!ITER       INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
+            INC=INDEX(ZEILE((IND+1):80),CHR(2:2))
             IF (INC.GT.0) THEN
-              IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+!ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
+              IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
               READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
             ENDIF
 7         CONTINUE
