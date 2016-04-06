@@ -32,10 +32,10 @@ cdr  start to use species resolved energy tallies.
 cdr  nov.15:  eapl,empl,aipl:  now species resolved
 cdr           --> eppl_cop, eploda get an additional species index ipls
 C
-cdr dec. 15: not ready.  started to comment, and to extend copv tallies
-for total and internal energy with species index.  Not ready...
+cdr  dec. 15: not ready.  started to comment, and to extend copv tallies
+cdr           for total and internal energy with species index.  Not ready...
 
-tbd:  check storage on copv, whenever used.
+cdr  tbd:  check storage on copv, whenever used.
 
 
 
