@@ -186,7 +186,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           EIRENE_ILLZ, IZ, ISTREAM, ITALI, IBEND,
      .           NO, IGO, IRPTA3, IRPTE2, IRPTE3, ITINI, IH, IDIMP,
      .           JDUMMY, IRPTA1, IRPTA2, IRPTE1, NLJ, I1, I2, I3,
-     .           NTIME0, IERROR, IREAD, I, ISTS, J, IST, IERR,
+     .           NTIME0, IERROR, IREAD, I, ISTS, J, IST,
      .           IPOS2, IPOS0, NM, K, JJ, IPOS1, NRGEN, INUM, NTLSF,
      .           L, INILGJ, INI, ICO, IS, NTLV, ID, IRE, NSC,
      .           IN, INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
@@ -1641,16 +1641,6 @@ C  DEFAULTS FOR ATOMIC SPECIES:
               REACDAT(IREACA(IATM,K))%NOSEC = NSC
             END IF
           END IF
-! CHECK SECONDARIES
-          CALL EIRENE_CHECK_SECONDARIES (ISCD1A(IATM,K),
-     .         ISCD2A(IATM,K), ISCD3A(IATM,K), ISCD4A(IATM,K), IERR)
-          IF (IERR > 0) THEN
-            IERROR = IERROR + 1
-            WRITE (IUNOUT,*) 'FOR ATOM ', TEXTS(ISPZ)
-            WRITE (IUNOUT,*) 'CHECK OF SECONDARIES FAILED FOR ',
-     .                       'REACTION ', IREACA(IATM,K)
-            WRITE (IUNOUT,*) 'PLEASE CHECK INPUT SPECIFICATIONS'
-          END IF
 422     CONTINUE
 421   CONTINUE
 C
@@ -1742,16 +1732,6 @@ C
               REACDAT(IREACM(IMOL,K))%NOSEC = NSC
             END IF
           END IF
-! CHECK SECONDARIES
-          CALL EIRENE_CHECK_SECONDARIES (ISCD1M(IMOL,K),
-     .         ISCD2M(IMOL,K), ISCD3M(IMOL,K), ISCD4M(IMOL,K), IERR)
-          IF (IERR > 0) THEN
-            IERROR = IERROR + 1
-            WRITE (IUNOUT,*) 'FOR MOLECULE ', TEXTS(ISPZ)
-            WRITE (IUNOUT,*) 'CHECK OF SECONDARIES FAILED FOR ',
-     .                       'REACTION ', IREACM(IMOL,K)
-            WRITE (IUNOUT,*) 'PLEASE CHECK INPUT SPECIFICATIONS'
-          END IF
 432     CONTINUE
 431   CONTINUE
 C
@@ -1832,16 +1812,6 @@ C
             ELSE
               REACDAT(IREACI(IION,K))%NOSEC = NSC
             END IF
-          END IF
-! CHECK SECONDARIES
-          CALL EIRENE_CHECK_SECONDARIES (ISCD1I(IION,K),
-     .         ISCD2I(IION,K), ISCD3I(IION,K), ISCD4I(IION,K), IERR)
-          IF (IERR > 0) THEN
-            IERROR = IERROR + 1
-            WRITE (IUNOUT,*) 'FOR TEST ION ', TEXTS(ISPZ)
-            WRITE (IUNOUT,*) 'CHECK OF SECONDARIES FAILED FOR ',
-     .                       'REACTION ', IREACI(IION,K)
-            WRITE (IUNOUT,*) 'PLEASE CHECK INPUT SPECIFICATIONS'
           END IF
 442     CONTINUE
 441   CONTINUE
@@ -1934,17 +1904,6 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
             ELSE
               REACDAT(IREACPH(IPHOT,K))%NOSEC = NSC
             END IF
-          END IF
-! CHECK SECONDARIES
-          CALL EIRENE_CHECK_SECONDARIES (ISCD1PH(IPHOT,K),
-     .         ISCD2PH(IPHOT,K), ISCD3PH(IPHOT,K), ISCD4PH(IPHOT,K), 
-     .         IERR)
-          IF (IERR > 0) THEN
-            IERROR = IERROR + 1
-            WRITE (IUNOUT,*) 'FOR PHOTON ', TEXTS(ISPZ)
-            WRITE (IUNOUT,*) 'CHECK OF SECONDARIES FAILED FOR ',
-     .                       'REACTION ', IREACPH(IPHOT,K)
-            WRITE (IUNOUT,*) 'PLEASE CHECK INPUT SPECIFICATIONS'
           END IF
 452     CONTINUE
 451   CONTINUE
@@ -2040,16 +1999,6 @@ cdr  deal with non-default number of secondaries, NSC > 2
               REACDAT(IREACP(IPLS,K))%NOSEC = NSC
             END IF
 cdr  NSC: number of secondaries. But here: 0,1,2 secondaries all have NSC=0 ??
-          END IF
-! CHECK SECONDARIES
-          CALL EIRENE_CHECK_SECONDARIES (ISCD1P(IPLS,K),
-     .         ISCD2P(IPLS,K), ISCD3P(IPLS,K), ISCD4P(IPLS,K), IERR)
-          IF (IERR > 0) THEN
-            IERROR = IERROR + 1
-            WRITE (IUNOUT,*) 'FOR BULK ION ', TEXTS(ISPZ)
-            WRITE (IUNOUT,*) 'CHECK OF SECONDARIES FAILED FOR ',
-     .                       'REACTION ', IREACP(IPLS,K)
-            WRITE (IUNOUT,*) 'PLEASE CHECK INPUT SPECIFICATIONS'
           END IF
 c
 512     CONTINUE

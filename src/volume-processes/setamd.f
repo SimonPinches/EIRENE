@@ -12,6 +12,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_COMSOU
       USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY : IUNOUT
       USE EIRMOD_CZT1
       USE EIRMOD_PHOTON
  
@@ -19,7 +20,7 @@ C
  
       real(dp) :: tpb1, tpb2, second_own
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER :: I, IRPI, IREI
+      INTEGER :: I, IRPI, IREI, IERROR
  
 !pb      tpb1 = second_own()
  
@@ -122,6 +123,8 @@ cdr  These array are stored in comxs and are used for scoring
 cdr  tallies in update.f (tracklength) and collide.f (coll. estim) exclusively
 
 cdr 
+      IERROR = 0
+
       IPATDS = 0
       IPMLDS = 0
       IPIODS = 0
@@ -149,11 +152,16 @@ cdr  "how many" of this secondary species iatm arise after process irei.
              IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
-        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)
+        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
         IF (ipplds(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
              IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
      .                                     PPLDS(IREI,1:) > 0)
         END IF
+        if (ipplds(IREI,0) > 1) then
+          IERROR = IERROR + 1
+          write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
+     .          'AS SECONDARY PARTICLE OF EI REACTION IREI = ',IREI
+        end if
       END DO
 
 cdr:  same as above, for PI processes 
@@ -183,12 +191,21 @@ cdr   IPPHPI = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN PI RE
           IPPLPI(IRPI,1:ipplpi(IRPI,0))=PACK( (/ (i,i=1,npls) /),
      .                                  PPLPI(IRPI,1:) > 0)
         endif
+        if (ipplpi(IRPI,0) > 1) then
+          IERROR = IERROR + 1
+          write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
+     .          'AS SECONDARY PARTICLE OF PI REACTION IRPI = ',IRPI
+        end if
       END DO
  
 !pb        tpb2 = second_own()
 !pb        write (6,*) ' cpu time for packs und counts ',tpb2-tpb1
 !pb        tpb1 = tpb2
  
- 
+      if (ierror > 0) then
+         write (iunout,*) 'CALCULATION ABANDONNED '
+         CALL EIRENE_EXIT_OWN(1)
+      end if
+
       RETURN
       END
