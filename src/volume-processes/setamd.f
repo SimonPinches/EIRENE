@@ -1,11 +1,15 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
+<<<<<<< HEAD
 cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk 
 cdr             secondaries.
 cdr             This is temporarily necessary, as a consequence of making the
 cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
 cdr             We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.  
+=======
+!pb  APR  16:  ipplds -> ipplei
+>>>>>>> variable IPPLDS renamed to IPPLEI
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -143,7 +147,7 @@ cdr
       IPMLDS = 0
       IPIODS = 0
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
-      IPPLDS = 0
+      IPPLEI = 0
       DO IREI=1,NRDS
         ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds(...,0) (<= natm) 
 cdr                                                 distinct atomic species which appear as secondaries, 
@@ -166,12 +170,12 @@ cdr  "how many" of this secondary species iatm arise after process irei.
              IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
-        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
-        IF (ipplds(IREI,0).GT.0) THEN         
-             IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
+        ipplei(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
+        IF (ipplei(IREI,0).GT.0) THEN
+             IPPLEI(IREI,1:ipplei(IREI,0))=PACK( (/ (i,i=1,npls) /),
      .                                     PPLDS(IREI,1:) > 0)
         END IF
-        if (ipplds(IREI,0) > 1) then
+        if (ipplei(IREI,0) > 1) then
           IERROR = IERROR + 1
           write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
      .          'AS SECONDARY PARTICLE OF EI REACTION IREI = ',IREI

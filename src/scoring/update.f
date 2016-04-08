@@ -27,6 +27,7 @@ cdr dec.15: further corrections, lea --> leio, and other logical flags for turni
 cdr nov. 15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
+!pb APR 16: ipplds -> ipplei
 
  
 C
@@ -472,8 +473,8 @@ C  POST COLLISION CONTRIBUTIONS
               END IF
             END DO
  
-            DO IP=1,IPPLDS(IREI,0)
-              IPL=IPPLDS(IREI,IP)
+            DO IP=1,IPPLEI(IREI,0)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPAPL) THEN
                 PAPL(IPL,IRD)=PAPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
@@ -505,8 +506,8 @@ C
               IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEAPL) THEN
-                DO IP=1,IPPLDS(IREI,0)
-                  IPL=IPPLDS(IREI,IP)
+                DO IP=1,IPPLEI(IREI,0)
+                  IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
@@ -1126,8 +1127,8 @@ C  POST COLLISION CONTRIBUTIONS
               END IF
             END DO
  
-            DO IP=1,IPPLDS(IREI,0)
-              IPL=IPPLDS(IREI,IP)
+            DO IP=1,IPPLEI(IREI,0)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPMPL) THEN
                 PMPL(IPL,IRD)=PMPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
@@ -1159,12 +1160,12 @@ C
               IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEMPL) THEN
-                DO IP=1,IPPLDS(IREI,0)
+                DO IP=1,IPPLEI(IREI,0)
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
 cdr  because then esigei is the total for this species.
 cdr  must be fragmented into individual ipl contributions
-                  IPL=IPPLDS(IREI,IP)
+                  IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EMPL(IPL,IRD)=EMPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1783,8 +1784,8 @@ C  POST COLLISION CONTRIBUTIONS
               END IF
             END DO
  
-            DO IP=1,IPPLDS(IREI,0)
-              IPL=IPPLDS(IREI,IP)
+            DO IP=1,IPPLEI(IREI,0)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPIPL) THEN
                 PIPL(IPL,IRD)=PIPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
@@ -1816,12 +1817,12 @@ C
               IF (LEIML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEIPL) THEN
-                DO IP=1,IPPLDS(IREI,0)
+                DO IP=1,IPPLEI(IREI,0)
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
 cdr  because then esigei is the total for this species.
 cdr  must be fragmented into individual ipl contributions
-                  IPL=IPPLDS(IREI,IP)
+                  IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EIPL(IPL,IRD)=EIPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.

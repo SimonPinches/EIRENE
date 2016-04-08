@@ -12,7 +12,7 @@
 !  01.03.11:  NSPEZV_DIM removed
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
-
+!pb  APR  16:  ipplds -> ipplei
 
 cdr
   
@@ -440,7 +440,7 @@ c  EL post collision energetics
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPIODS,NRDS*NIONP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPPLDS,NRDS*NPLSP,MPI_INTEGER,
+      CALL MPI_BCAST (IPPLEI,NRDS*NPLSP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPATPI,NRPI*NATMP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)

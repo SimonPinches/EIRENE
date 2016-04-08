@@ -32,6 +32,7 @@ cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
 cdr                  probably not correct (outdated).
+!pb  APR  16:  ipplds -> ipplei
 
 
 
@@ -219,11 +220,11 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS. 
           IF (LEAPL) THEN
-            DO IP=1,IPPLDS(IREI,0)
+            DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
 cdr  because then esigei is the total for this species.
-              IPL=IPPLDS(IREI,IP)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
             END DO
@@ -780,7 +781,7 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
           IF (LEAPL) THEN
-            DO IP=1,IPPLDS(IRPI,0)
+            DO IP=1,IPPLEI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -991,9 +992,9 @@ C  score loss of incoming test particle energy
 cdr EMPL, EMEL       :  SCORE NET CHANGES HERE.
 cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER. 
           IF (LEMPL) THEN
-            DO IP=1,IPPLDS(IREI,0)
+            DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-              IPL=IPPLDS(IREI,IP)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EMPL(IPL,NCELL)=EMPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1711,9 +1712,9 @@ C  score loss of incoming test particle energy
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
           IF (LEIPL)  THEN
-            DO IP=1,IPPLDS(IREI,0)
+            DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-              IPL=IPPLDS(IREI,IP)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EIPL(IPL,NCELL)=EIPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
