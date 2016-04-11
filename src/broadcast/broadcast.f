@@ -15,6 +15,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipplds -> ipplei
 !pb  APR  16:  ipatds -> ipatei
 !pb  APR  16:  ipmlds -> ipmlei
+!pb  APR  16:  ipiods -> ipioei
 
 cdr
   
@@ -440,7 +441,7 @@ c  EL post collision energetics
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPMLEI,NRDS*NMOLP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPIODS,NRDS*NIONP,MPI_INTEGER,
+      CALL MPI_BCAST (IPIOEI,NRDS*NIONP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPPLEI,NRDS*NPLSP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)

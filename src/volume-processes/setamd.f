@@ -17,7 +17,11 @@ cdr             would be activated.
 >>>>>>> variable IPATDS renamed to IPATEI
 =======
 !pb  APR  16:  ipmlds -> ipmlei
+<<<<<<< HEAD
 >>>>>>> variable IPMLDS renamed to IPMLEI
+=======
+!pb  APR  16:  ipiods -> ipioei
+>>>>>>> variable IPIODS renamed to IPIOEI
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -153,7 +157,7 @@ cdr
 
       IPATEI = 0
       IPMLEI = 0
-      IPIODS = 0
+      IPIOEI = 0
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLEI = 0
       DO IREI=1,NRDS
@@ -173,9 +177,9 @@ cdr  "how many" of this secondary species iatm arise after process irei.
              IPMLEI(IREI,1:ipmlei(IREI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                     PMLDS(IREI,1:) > 0)
         END IF
-        ipiods(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
-        IF (ipiods(IREI,0).GT.0) THEN         
-             IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
+        ipioei(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
+        IF (ipioei(IREI,0).GT.0) THEN
+             IPIOEI(IREI,1:ipioei(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
         ipplei(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
