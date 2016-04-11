@@ -20,8 +20,12 @@ cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing)
 cdr  oct.14:  further syncronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
+<<<<<<< HEAD
 cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
 cdr           (was missing, but accidentally correct)
+=======
+!pb  APR 16:  pplds -> pplei
+>>>>>>> variable PPLDS renamed to PPLEI
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -223,7 +227,7 @@ C
           IREI=NREII
           LGIEI(IION,IDSC1)=IREI
           PATDS(IREI,IA1)=PATDS(IREI,IA1)+1.
-          PPLDS(IREI,IP2)=PPLDS(IREI,IP2)+1.
+          PPLEI(IREI,IP2)=PPLEI(IREI,IP2)+1.
           ACCMAS=ACCMAS+RMASSA(IA1)
           ACCMAS=ACCMAS+RMASSP(IP2)
           ACCINV=ACCINV+1./RMASSA(IA1)
@@ -283,8 +287,8 @@ C  SECOND PROCESS  H2+  -->  H+  +  H+ + e :  DEFAULT PROCESS NO. KK=-9
           NREII=NREII+1
           IREI=NREII
           LGIEI(IION,IDSC1)=IREI
-          PPLDS(IREI,IPLS1)=PPLDS(IREI,IPLS1)+1.
-          PPLDS(IREI,IPLS2)=PPLDS(IREI,IPLS2)+1.
+          PPLEI(IREI,IPLS1)=PPLEI(IREI,IPLS1)+1.
+          PPLEI(IREI,IPLS2)=PPLEI(IREI,IPLS2)+1.
           ACCMAS=ACCMAS+RMASSP(IPLS1)
           ACCMAS=ACCMAS+RMASSP(IPLS2)
           ACCINV=ACCINV+1./RMASSP(IPLS1)

@@ -24,10 +24,10 @@ cdr dec.15: tracklength estimators for heavy test particle post collision energi
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
-cdr nov. 15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
+cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
-!pb APR 16: ipplds -> ipplei
+!pb APR 16: ipplds -> ipplei, pplds -> pplei
 !pb APR 16: ipatds -> ipatei
 !pb APR 16: ipmlds -> ipmlei
 !pb APR 16: ipiods -> ipioei
@@ -480,7 +480,7 @@ C  POST COLLISION CONTRIBUTIONS
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPAPL) THEN
-                PAPL(IPL,IRD)=PAPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
+                PAPL(IPL,IRD)=PAPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -730,9 +730,9 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 161
  
-            IF (PPLDS(IREI,0).GT.0) THEN
+            IF (PPLEI(IREI,0).GT.0) THEN
               DO 162 IPL=1,NPLSI
-                P=PPLDS(IREI,IPL)
+                P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL
@@ -1134,7 +1134,7 @@ C  POST COLLISION CONTRIBUTIONS
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPMPL) THEN
-                PMPL(IPL,IRD)=PMPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
+                PMPL(IPL,IRD)=PMPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -1384,9 +1384,9 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 610
  
-            IF (PPLDS(IREI,0).GT.0) THEN
+            IF (PPLEI(IREI,0).GT.0) THEN
               DO 620 IPL=1,NPLSI
-                P=PPLDS(IREI,IPL)
+                P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL
@@ -1791,7 +1791,7 @@ C  POST COLLISION CONTRIBUTIONS
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPIPL) THEN
-                PIPL(IPL,IRD)=PIPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
+                PIPL(IPL,IRD)=PIPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -2041,9 +2041,9 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 6100
 C
-            IF (PPLDS(IREI,0).GT.0) THEN
+            IF (PPLEI(IREI,0).GT.0) THEN
               DO 6200 IPL=1,NPLSI
-                P=PPLDS(IREI,IPL)
+                P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL

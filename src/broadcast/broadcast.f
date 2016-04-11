@@ -12,7 +12,7 @@
 !  01.03.11:  NSPEZV_DIM removed
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
-!pb  APR  16:  ipplds -> ipplei
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  ipatds -> ipatei
 !pb  APR  16:  ipmlds -> ipmlei
 !pb  APR  16:  ipiods -> ipioei
@@ -300,7 +300,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (PATDS,NRDS*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLDS,NRDS*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PIODS,NRDS*NIONP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (PPLDS,NRDS*NPLSP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (PPLEI,NRDS*NPLSP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (PELPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATPI,NRPI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)

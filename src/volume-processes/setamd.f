@@ -1,6 +1,7 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
 <<<<<<< HEAD
+<<<<<<< HEAD
 cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk 
 cdr             secondaries.
 cdr             This is temporarily necessary, as a consequence of making the
@@ -12,6 +13,9 @@ cdr             would be activated.
 <<<<<<< HEAD
 >>>>>>> variable IPPLDS renamed to IPPLEI
 =======
+=======
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+>>>>>>> variable PPLDS renamed to PPLEI
 !pb  APR  16:  ipatds -> ipatei
 <<<<<<< HEAD
 >>>>>>> variable IPATDS renamed to IPATEI
@@ -169,7 +173,7 @@ cdr                                                 with one or more per atomic 
      .                                     PATDS(IREI,1:) > 0)
 cdr  IPATEI(IREI,...)=iatm means:  one or more secondaries of species iatm
 c
-cdr  the arrays patds,...,pplds, and p2nd, contain the further information: 
+cdr  the arrays patds,...,pplei, and p2nd, contain the further information: 
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
         ipmlei(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
@@ -182,10 +186,10 @@ cdr  "how many" of this secondary species iatm arise after process irei.
              IPIOEI(IREI,1:ipioei(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
-        ipplei(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
+        ipplei(IREI,0)=COUNT(PPLEI(IREI,1:) > 0)       
         IF (ipplei(IREI,0).GT.0) THEN
              IPPLEI(IREI,1:ipplei(IREI,0))=PACK( (/ (i,i=1,npls) /),
-     .                                     PPLDS(IREI,1:) > 0)
+     .                                     PPLEI(IREI,1:) > 0)
         END IF
         if (ipplei(IREI,0) > 1) then
           IERROR = IERROR + 1

@@ -22,6 +22,7 @@ cdr  oct.14:  PLS made allocatable,
 cdr  oct.14:  further syncronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
+!pb  APR 16:  pplds -> pplei
 C
       SUBROUTINE EIRENE_XSECTM
 C
@@ -318,7 +319,7 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           IREI=NREII
           LGMEI(IMOL,IDSC1)=IREI
           PATDS(IREI,IA1)=PATDS(IREI,IA1)+1.
-          PPLDS(IREI,IP2)=PPLDS(IREI,IP2)+1.
+          PPLEI(IREI,IP2)=PPLEI(IREI,IP2)+1.
           ACCMAS=ACCMAS+RMASSA(IA1)
           ACCMAS=ACCMAS+RMASSP(IP2)
           ACCINV=ACCINV+1./RMASSA(IA1)
