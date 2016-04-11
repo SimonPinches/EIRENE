@@ -28,6 +28,7 @@ cdr nov. 15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 !pb APR 16: ipplds -> ipplei
+!pb APR 16: ipatds -> ipatei
 
  
 C
@@ -446,8 +447,8 @@ C
             IF (LPAEL) PAEL(IRD)=PAEL(IRD)+WTRSIG*PELDS(IREI)
 C
 C  POST COLLISION CONTRIBUTIONS
-            DO IA=1,IPATDS(IREI,0)
-              IAT=IPATDS(IREI,IA)
+            DO IA=1,IPATEI(IREI,0)
+              IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPAAT) THEN
                 PAAT(IAT,IRD)=PAAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
@@ -1100,8 +1101,8 @@ C
             IF (LPMEL) PMEL(IRD)=PMEL(IRD)+WTRSIG*PELDS(IREI)
 C
 C  POST COLLISION CONTRIBUTIONS
-            DO IA=1,IPATDS(IREI,0)
-              IAT=IPATDS(IREI,IA)
+            DO IA=1,IPATEI(IREI,0)
+              IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPMAT) THEN
                 PMAT(IAT,IRD)=PMAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
@@ -1757,8 +1758,8 @@ C
             IF (LPIEL) PIEL(IRD)=PIEL(IRD)+WTRSIG*PELDS(IREI)
 C
 C  POST COLLISION CONTRIBUTIONS
-            DO IA=1,IPATDS(IREI,0)
-              IAT=IPATDS(IREI,IA)
+            DO IA=1,IPATEI(IREI,0)
+              IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPIAT) THEN
                 PIAT(IAT,IRD)=PIAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG

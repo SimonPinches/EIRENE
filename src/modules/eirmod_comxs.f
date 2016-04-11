@@ -22,6 +22,7 @@ cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipplds -> ipplei
+!pb  APR  16:  ipatds -> ipatei
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -182,7 +183,7 @@ c  ...and cummulated distributions thereof, for species sampling
      I NELREI(:),JELREI(:),NREAHV(:),NELREL(:),
      I NELRRC(:),JELRRC(:),NELRPI(:),JELRPI(:),NELRCX(:),
      I NELROT(:),NREAOT(:),NREACT(:),NRHVPI(:),
-     I IPATDS(:,:),IPMLDS(:,:),
+     I IPATEI(:,:),IPMLDS(:,:),
      I IPIODS(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
      I IPIOPI(:,:),IPPLPI(:,:),
@@ -588,7 +589,7 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
 c  again: some arrays for species distribution of secondaries
 c         derived from P..DS and P..PI, above. 
 c         for speeding up scoring in update, collide 
-        ALLOCATE (IPATDS(NRDS,0:NATM))
+        ALLOCATE (IPATEI(NRDS,0:NATM))
         ALLOCATE (IPMLDS(NRDS,0:NMOL))
         ALLOCATE (IPIODS(NRDS,0:NION))
         ALLOCATE (IPPLEI(NRDS,0:NPLS))
@@ -764,7 +765,7 @@ c
       DEALLOCATE (NREAOT)
       DEALLOCATE (NREACT)
       DEALLOCATE (NRHVPI)
-      DEALLOCATE (IPATDS)
+      DEALLOCATE (IPATEI)
       DEALLOCATE (IPMLDS)
       DEALLOCATE (IPIODS)
       DEALLOCATE (IPPLEI)
@@ -1164,7 +1165,7 @@ cdr  ical=2:  ??
         NREAOT  = 0
         NREACT  = 0
         NRHVPI  = 0
-        IPATDS  = 0
+        IPATEI  = 0
         IPMLDS  = 0
         IPIODS  = 0
         IPPLEI  = 0
@@ -1229,7 +1230,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,JEREAEI,NREARC ,JEREARC,
      . NELREI ,JELREI ,NREAHV ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
      . NELRCX ,NELROT ,NREAOT ,NREACT ,NRHVPI ,
-     . IPATDS ,IPMLDS ,IPIODS ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
+     . IPATEI ,IPMLDS ,IPIODS ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
  
@@ -1273,7 +1274,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,JEREAEI,NREARC ,JEREARC,
      . NELREI ,JELREI ,NREAHV ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
      . NELRCX ,NELROT ,NREAOT ,NREACT ,NRHVPI ,
-     . IPATDS ,IPMLDS ,IPIODS ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
+     . IPATEI ,IPMLDS ,IPIODS ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
  
@@ -1427,7 +1428,7 @@ c
       CALL FXDRINT (IUN,NREAOT ,NROT)
       CALL FXDRINT (IUN,NREACT ,NREAC)
       CALL FXDRINT (IUN,NRHVPI ,NRPI)
-      CALL FXDRINT (IUN,IPATDS ,NRDS*(NATM+1))
+      CALL FXDRINT (IUN,IPATEI ,NRDS*(NATM+1))
       CALL FXDRINT (IUN,IPMLDS ,NRDS*(NMOL+1))
       CALL FXDRINT (IUN,IPIODS ,NRDS*(NION+1))
       CALL FXDRINT (IUN,IPPLEI ,NRDS*(NPLS+1))

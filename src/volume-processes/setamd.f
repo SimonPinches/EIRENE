@@ -9,7 +9,11 @@ cdr             We are not aware of any application of eirene, in which this new
 cdr             would be activated.  
 =======
 !pb  APR  16:  ipplds -> ipplei
+<<<<<<< HEAD
 >>>>>>> variable IPPLDS renamed to IPPLEI
+=======
+!pb  APR  16:  ipatds -> ipatei
+>>>>>>> variable IPATDS renamed to IPATEI
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -143,19 +147,19 @@ cdr                   enddo
 cdr 
       IERROR = 0
 
-      IPATDS = 0
+      IPATEI = 0
       IPMLDS = 0
       IPIODS = 0
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLEI = 0
       DO IREI=1,NRDS
-        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds(...,0) (<= natm) 
+        ipatei(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm) 
 cdr                                                 distinct atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
-        IF (ipatds(IREI,0).GT.0) THEN          
-             IPATDS(IREI,1:ipatds(IREI,0))=PACK( (/ (i,i=1,natm) /),
+        IF (ipatei(IREI,0).GT.0) THEN
+             IPATEI(IREI,1:ipatei(IREI,0))=PACK( (/ (i,i=1,natm) /),
      .                                     PATDS(IREI,1:) > 0)
-cdr  IPATDS(IREI,...)=iatm means:  one or more secondaries of species iatm
+cdr  IPATEI(IREI,...)=iatm means:  one or more secondaries of species iatm
 c
 cdr  the arrays patds,...,pplds, and p2nd, contain the further information: 
 cdr  "how many" of this secondary species iatm arise after process irei.
