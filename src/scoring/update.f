@@ -29,6 +29,7 @@ cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused
 cdr          so no effect on any result.  Few further comments corrected
 !pb APR 16: ipplds -> ipplei
 !pb APR 16: ipatds -> ipatei
+!pb APR 16: ipmlds -> ipmlei
 
  
 C
@@ -456,8 +457,8 @@ C  POST COLLISION CONTRIBUTIONS
               END IF
             END DO
  
-            DO IM=1,IPMLDS(IREI,0)
-              IML=IPMLDS(IREI,IM)
+            DO IM=1,IPMLEI(IREI,0)
+              IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPAML) THEN
                 PAML(IML,IRD)=PAML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
@@ -1110,8 +1111,8 @@ C  POST COLLISION CONTRIBUTIONS
               END IF
             END DO
  
-            DO IM=1,IPMLDS(IREI,0)
-              IML=IPMLDS(IREI,IM)
+            DO IM=1,IPMLEI(IREI,0)
+              IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPMML) THEN
                 PMML(IML,IRD)=PMML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
@@ -1767,8 +1768,8 @@ C  POST COLLISION CONTRIBUTIONS
               END IF
             END DO
  
-            DO IM=1,IPMLDS(IREI,0)
-              IML=IPMLDS(IREI,IM)
+            DO IM=1,IPMLEI(IREI,0)
+              IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPIML) THEN
                 PIML(IML,IRD)=PIML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
