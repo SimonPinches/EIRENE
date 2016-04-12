@@ -15,11 +15,15 @@ cdr             would be activated.
 =======
 =======
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+<<<<<<< HEAD
 >>>>>>> variable PPLDS renamed to PPLEI
 !pb  APR  16:  ipatds -> ipatei
 <<<<<<< HEAD
 >>>>>>> variable IPATDS renamed to IPATEI
 =======
+=======
+!pb  APR  16:  ipatds -> ipatei, patds -> patei
+>>>>>>> variable PATDS renamed to PATEI
 !pb  APR  16:  ipmlds -> ipmlei
 <<<<<<< HEAD
 >>>>>>> variable IPMLDS renamed to IPMLEI
@@ -165,15 +169,15 @@ cdr
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLEI = 0
       DO IREI=1,NRDS
-        ipatei(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm) 
-cdr                                                 distinct atomic species which appear as secondaries, 
+        ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0)  (<= natm)
+cdr                                                 atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
         IF (ipatei(IREI,0).GT.0) THEN
              IPATEI(IREI,1:ipatei(IREI,0))=PACK( (/ (i,i=1,natm) /),
-     .                                     PATDS(IREI,1:) > 0)
+     .                                     PATEI(IREI,1:) > 0)
 cdr  IPATEI(IREI,...)=iatm means:  one or more secondaries of species iatm
 c
-cdr  the arrays patds,...,pplei, and p2nd, contain the further information: 
+cdr  the arrays patei,...,pplei, and p2nd, contain the further information:
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
         ipmlei(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)

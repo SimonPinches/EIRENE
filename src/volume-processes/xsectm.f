@@ -23,6 +23,7 @@ cdr  oct.14:  further syncronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
 !pb  APR 16:  pplds -> pplei
+!pb  APR 16:  patds -> patei
 C
       SUBROUTINE EIRENE_XSECTM
 C
@@ -258,8 +259,8 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
           NREII=NREII+1
           IREI=NREII
           LGMEI(IMOL,IDSC1)=IREI
-          PATDS(IREI,IATM1)=PATDS(IREI,IATM1)+1.
-          PATDS(IREI,IATM2)=PATDS(IREI,IATM2)+1.
+          PATEI(IREI,IATM1)=PATEI(IREI,IATM1)+1.
+          PATEI(IREI,IATM2)=PATEI(IREI,IATM2)+1.
           ACCMAS=ACCMAS+RMASSA(IATM1)
           ACCMAS=ACCMAS+RMASSA(IATM2)
           ACCINV=ACCINV+1./RMASSA(IATM1)
@@ -318,7 +319,7 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           NREII=NREII+1
           IREI=NREII
           LGMEI(IMOL,IDSC1)=IREI
-          PATDS(IREI,IA1)=PATDS(IREI,IA1)+1.
+          PATEI(IREI,IA1)=PATEI(IREI,IA1)+1.
           PPLEI(IREI,IP2)=PPLEI(IREI,IP2)+1.
           ACCMAS=ACCMAS+RMASSA(IA1)
           ACCMAS=ACCMAS+RMASSP(IP2)

@@ -22,7 +22,7 @@ cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei
 !pb  APR  16:  ipmlds -> ipmlei
 !pb  APR  16:  ipiods -> ipioei
  
@@ -141,7 +141,7 @@ csw added OTHER (OT) reactions
 
 c  secondaries, species distribution, for EI and PI processes 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R PELDS(:),  PATDS(:,:), PMLDS(:,:), PIODS(:,:), PPLEI(:,:),
+     R PELDS(:),  PATEI(:,:), PMLDS(:,:), PIODS(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
 c  ...and cummulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
@@ -502,7 +502,7 @@ c  factors for scaling reaction processes
  
 c  secondaries, EI processes 
         ALLOCATE (PELDS(NRDS))
-        ALLOCATE (PATDS(NRDS,0:NATM))
+        ALLOCATE (PATEI(NRDS,0:NATM))
         ALLOCATE (PMLDS(NRDS,0:NMOL))
         ALLOCATE (PIODS(NRDS,0:NION))
         ALLOCATE (PPLEI(NRDS,0:NPLS))
@@ -655,7 +655,7 @@ c
       DEALLOCATE (FACRCX) 
  
       DEALLOCATE (PELDS)
-      DEALLOCATE (PATDS)
+      DEALLOCATE (PATEI)
       DEALLOCATE (PMLDS)
       DEALLOCATE (PIODS)
       DEALLOCATE (PPLEI)
@@ -1087,7 +1087,7 @@ cdr  ical=2:  ??
         FACRCX(:,2) = 0._DP
  
         PELDS   = 0._DP
-        PATDS   = 0._DP
+        PATEI   = 0._DP
         PMLDS   = 0._DP
         PIODS   = 0._DP
         PPLEI   = 0._DP
@@ -1204,7 +1204,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
-     . PELDS  ,PATDS  ,PMLDS  ,PIODS  ,PPLEI  ,
+     . PELDS  ,PATEI  ,PMLDS  ,PIODS  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
@@ -1248,7 +1248,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
-     . PELDS  ,PATDS  ,PMLDS  ,PIODS  ,PPLEI  ,
+     . PELDS  ,PATEI  ,PMLDS  ,PIODS  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
@@ -1307,7 +1307,7 @@ c
       CALL FXDRDBL (IUN,FACRCX,NRCX*2)
  
       CALL FXDRDBL (IUN,PELDS,NRDS)
-      CALL FXDRDBL (IUN,PATDS,NRDS*(NATM+1))
+      CALL FXDRDBL (IUN,PATEI,NRDS*(NATM+1))
       CALL FXDRDBL (IUN,PMLDS,NRDS*(NMOL+1))
       CALL FXDRDBL (IUN,PIODS,NRDS*(NION+1))
       CALL FXDRDBL (IUN,PPLEI,NRDS*(NPLS+1))
