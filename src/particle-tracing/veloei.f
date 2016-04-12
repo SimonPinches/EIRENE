@@ -2,6 +2,7 @@ C  27.6.05: test for photon secondaries added
 c  15.12.05:  irds --> irei,  comments
 cdr Nov. 15:  comments re zep_in added
 !pb APR  16:  eatds -> eatei
+!pb APR  16:  emlds -> emlei
 C
       SUBROUTINE EIRENE_VELOEI(K,IREI,VXO,VYO,VZO,VLO,ZEP_IN)
 C  AN ELECTRON IMPACT PROCESS NO. IREI HAS BEEN IDENTIFIED IN CALLING PROGRAM
@@ -96,7 +97,7 @@ C
 459     CONTINUE
         CVRSS=CVRSSM(IMOL)
         RSQDV=RSQDVM(IMOL)
-        EFRAC=EMLDS(IREI,IMOL,2)
+        EFRAC=EMLEI(IREI,IMOL,2)
 C
       ELSEIF (ZEP3.LE.P2ND(IREI,NSPAMI)) THEN
 C

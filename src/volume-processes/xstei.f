@@ -17,7 +17,7 @@ cdr  Jan. 2014:
 !dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
 !pb APR   16:   pplds -> pplei
 !pb APR   16:   patds -> patei, eatds -> eatei
-!pb APR   16:   pmlds -> pmlei
+!pb APR   16:   pmlds -> pmlei, emlds -> emlei
 !pb APR   16:   piods -> pioei
 !pb APR   16:   pelds -> pelei
 C
@@ -112,8 +112,8 @@ C
         ACCMSM=ACCMSM+INUM*RMASSM(IML)
         ACCINV=ACCINV+INUM/RMASSM(IML)
         ACCINM=ACCINM+INUM/RMASSM(IML)
-        EMLDS(IREI,IML,1)=RMASSM(IML)
-        EMLDS(IREI,IML,2)=1./RMASSM(IML)
+        EMLEI(IREI,IML,1)=RMASSM(IML)
+        EMLEI(IREI,IML,2)=1./RMASSM(IML)
       ELSEIF (ITYP.EQ.3) THEN
         IIO=ISPE
         III=NSPAM+IIO
@@ -171,11 +171,11 @@ C
       EATEI(IREI,0,1)=ACCMSA/ACCMAS
       EATEI(IREI,0,2)=ACCINA/ACCINV
       DO IML=1,NMOLI
-        EMLDS(IREI,IML,1)=EMLDS(IREI,IML,1)/ACCMAS
-        EMLDS(IREI,IML,2)=EMLDS(IREI,IML,2)/ACCINV
+        EMLEI(IREI,IML,1)=EMLEI(IREI,IML,1)/ACCMAS
+        EMLEI(IREI,IML,2)=EMLEI(IREI,IML,2)/ACCINV
       ENDDO
-      EMLDS(IREI,0,1)=ACCMSM/ACCMAS
-      EMLDS(IREI,0,2)=ACCINM/ACCINV
+      EMLEI(IREI,0,1)=ACCMSM/ACCMAS
+      EMLEI(IREI,0,2)=ACCINM/ACCINV
       DO IIO=1,NIONI
         EIODS(IREI,IIO,1)=EIODS(IREI,IIO,1)/ACCMAS
         EIODS(IREI,IIO,2)=EIODS(IREI,IIO,2)/ACCINV
@@ -611,12 +611,12 @@ C
 872     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EMLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLDS(IREI,0,1),
-     .                                 ' * E0 + ',EMLDS(IREI,0,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLEI(IREI,0,1),
+     .                                 ' * E0 + ',EMLEI(IREI,0,2)*EI
         ELSE
           WRITE (iunout,*) 'ENERGY: EMLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EMLDS(IREI,0,1),
-     .                                 ' * E0 + ',EMLDS(IREI,0,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EMLEI(IREI,0,1),
+     .                                 ' * E0 + ',EMLEI(IREI,0,2),
      .                                 ' * EHEAVY'
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA

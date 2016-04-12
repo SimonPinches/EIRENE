@@ -23,7 +23,7 @@ cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
 !pb  APR  16:  pelds -> pelei
  
@@ -153,7 +153,7 @@ c  ...and cummulated distributions thereof, for species sampling
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EATEI(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLEI(:,:,:),
+     R EATEI(:,:,:), EMLEI(:,:,:), EIODS(:,:,:), EPLEI(:,:,:),
      R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:,:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -540,7 +540,7 @@ c  secondaries, PI processes
         ALLOCATE (EPLPI(NRPI,0:NPLS,2))
 
         ALLOCATE (EATEI(NRDS,0:NATM,2))
-        ALLOCATE (EMLDS(NRDS,0:NMOL,2))
+        ALLOCATE (EMLEI(NRDS,0:NMOL,2))
         ALLOCATE (EIODS(NRDS,0:NION,2))
         ALLOCATE (EPLEI(NRDS,0:NPLS,2))
  
@@ -686,7 +686,7 @@ c
       DEALLOCATE (EPLPI)
 
       DEALLOCATE (EATEI)
-      DEALLOCATE (EMLDS)
+      DEALLOCATE (EMLEI)
       DEALLOCATE (EIODS)
       DEALLOCATE (EPLEI)
  
@@ -1117,7 +1117,7 @@ cdr  ical=2:  ??
         EIOPI   = 0._DP
         EPLPI   = 0._DP
         EATEI   = 0._DP
-        EMLDS   = 0._DP
+        EMLEI   = 0._DP
         EIODS   = 0._DP
         EPLEI   = 0._DP
  
@@ -1214,7 +1214,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATEI  ,EMLDS  ,EIODS  ,EPLEI
+     . EATEI  ,EMLEI  ,EIODS  ,EPLEI
  
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1258,7 +1258,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATEI  ,EMLDS  ,EIODS  ,EPLEI
+     . EATEI  ,EMLEI  ,EIODS  ,EPLEI
  
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1338,7 +1338,7 @@ c
       CALL FXDRDBL (IUN,EPLPI,NRPI*(NPLS+1)*2)
 
       CALL FXDRDBL (IUN,EATEI,NRDS*(NATM+1)*2)
-      CALL FXDRDBL (IUN,EMLDS,NRDS*(NMOL+1)*2)
+      CALL FXDRDBL (IUN,EMLEI,NRDS*(NMOL+1)*2)
       CALL FXDRDBL (IUN,EIODS,NRDS*(NION+1)*2)
       CALL FXDRDBL (IUN,EPLEI,NRDS*(NPLS+1)*2)
  

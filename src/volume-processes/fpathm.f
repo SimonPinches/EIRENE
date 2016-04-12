@@ -23,6 +23,7 @@ cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that co
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
 !pb APR  16:    eatds -> eatei
+!pb APR  16:    emlds -> emlei
 
 C
       FUNCTION EIRENE_FPATHM (K,CFLAG,JCOU,NCOU)
@@ -169,7 +170,7 @@ C
         ENDIF
 C
         ESIGEI(IREI,1)=EATEI(IREI,0,1)*E0+EATEI(IREI,0,2)*EHEAVY
-        ESIGEI(IREI,2)=EMLDS(IREI,0,1)*E0+EMLDS(IREI,0,2)*EHEAVY
+        ESIGEI(IREI,2)=EMLEI(IREI,0,1)*E0+EMLEI(IREI,0,2)*EHEAVY
         ESIGEI(IREI,3)=EIODS(IREI,0,1)*E0+EIODS(IREI,0,2)*EHEAVY
 
         ESIGEI(IREI,4)=EPLEI(IREI,0,1)*E0+EPLEI(IREI,0,2)*EHEAVY
