@@ -24,7 +24,7 @@ cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  patds -> patei, eatds -> eatei
-!pb  APR 16:  piods -> pioei
+!pb  APR 16:  piods -> pioei, eiods -> eioei
 !pb  APR 16:  pelds -> pelei
 C
       SUBROUTINE EIRENE_XSECTM
@@ -381,10 +381,10 @@ C  THIRD PROCESS  H2 --> H2+:  DEFAULT PROCESS NO. KK=-7
           ION=NSPAM+IION3
           PIOEI(IREI,IION3)=PIOEI(IREI,IION3)+1.
           P2ND(IREI,ION)=P2ND(IREI,ION)+1.
-          EIODS(IREI,IION3,1)=1.
-          EIODS(IREI,IION3,2)=0.
-          EIODS(IREI,0,1)=1.
-          EIODS(IREI,0,2)=0.
+          EIOEI(IREI,IION3,1)=1.
+          EIOEI(IREI,IION3,2)=0.
+          EIOEI(IREI,0,1)=1.
+          EIOEI(IREI,0,2)=0.
           PELEI(IREI)=1.0
 
           MODCOL(1,2,IREI)=1

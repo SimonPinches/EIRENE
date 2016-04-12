@@ -3,6 +3,7 @@ c  15.12.05:  irds --> irei,  comments
 cdr Nov. 15:  comments re zep_in added
 !pb APR  16:  eatds -> eatei
 !pb APR  16:  emlds -> emlei
+!pb APR  16:  eiods -> eioei
 C
       SUBROUTINE EIRENE_VELOEI(K,IREI,VXO,VYO,VZO,VLO,ZEP_IN)
 C  AN ELECTRON IMPACT PROCESS NO. IREI HAS BEEN IDENTIFIED IN CALLING PROGRAM
@@ -112,7 +113,7 @@ C
 469     CONTINUE
         CVRSS=CVRSSI(IION)
         RSQDV=RSQDVI(IION)
-        EFRAC=EIODS(IREI,IION,2)
+        EFRAC=EIOEI(IREI,IION,2)
 C
       ELSE
         WRITE (iunout,*) 'ERROR IN VELOEI '
