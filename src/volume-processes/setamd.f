@@ -23,11 +23,15 @@ cdr             would be activated.
 =======
 =======
 !pb  APR  16:  ipatds -> ipatei, patds -> patei
+<<<<<<< HEAD
 >>>>>>> variable PATDS renamed to PATEI
 !pb  APR  16:  ipmlds -> ipmlei
 <<<<<<< HEAD
 >>>>>>> variable IPMLDS renamed to IPMLEI
 =======
+=======
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
+>>>>>>> variable PMLDS renamed to PMLEI
 !pb  APR  16:  ipiods -> ipioei
 >>>>>>> variable IPIODS renamed to IPIOEI
 C
@@ -180,10 +184,10 @@ c
 cdr  the arrays patei,...,pplei, and p2nd, contain the further information:
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
-        ipmlei(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
+        ipmlei(IREI,0)=COUNT(PMLEI(IREI,1:) > 0)
         IF (ipmlei(IREI,0).GT.0) THEN
              IPMLEI(IREI,1:ipmlei(IREI,0))=PACK( (/ (i,i=1,nmol) /),
-     .                                     PMLDS(IREI,1:) > 0)
+     .                                     PMLEI(IREI,1:) > 0)
         END IF
         ipioei(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
         IF (ipioei(IREI,0).GT.0) THEN

@@ -34,6 +34,7 @@ cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  patds -> patei
+!pb  APR  16:  pmlds -> pmlei
 
 
 
@@ -257,7 +258,7 @@ c.......................................................................
 cdr  build one single distribution of secondary test particle species, all types
           NAMIEI = 0
           NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
@@ -1023,7 +1024,7 @@ C
           END IF
           NAMIEI = 0
           NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
@@ -1743,7 +1744,7 @@ C
           END IF
           NAMIEI = 0
           NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE

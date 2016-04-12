@@ -28,8 +28,8 @@ cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 !pb APR 16: ipplds -> ipplei, pplds -> pplei
-!pb APR 16: ipatds -> ipatei
-!pb APR 16: ipmlds -> ipmlei
+!pb APR 16: ipatds -> ipatei, patds -> patei
+!pb APR 16: ipmlds -> ipmlei, pmlds -> pmlei
 !pb APR 16: ipiods -> ipioei
 
  
@@ -453,7 +453,7 @@ C  POST COLLISION CONTRIBUTIONS
               IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPAAT) THEN
-                PAAT(IAT,IRD)=PAAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
+                PAAT(IAT,IRD)=PAAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
@@ -462,7 +462,7 @@ C  POST COLLISION CONTRIBUTIONS
               IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPAML) THEN
-                PAML(IML,IRD)=PAML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
+                PAML(IML,IRD)=PAML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
@@ -1107,7 +1107,7 @@ C  POST COLLISION CONTRIBUTIONS
               IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPMAT) THEN
-                PMAT(IAT,IRD)=PMAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
+                PMAT(IAT,IRD)=PMAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
@@ -1116,7 +1116,7 @@ C  POST COLLISION CONTRIBUTIONS
               IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPMML) THEN
-                PMML(IML,IRD)=PMML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
+                PMML(IML,IRD)=PMML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
@@ -1764,7 +1764,7 @@ C  POST COLLISION CONTRIBUTIONS
               IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPIAT) THEN
-                PIAT(IAT,IRD)=PIAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
+                PIAT(IAT,IRD)=PIAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
@@ -1773,7 +1773,7 @@ C  POST COLLISION CONTRIBUTIONS
               IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPIML) THEN
-                PIML(IML,IRD)=PIML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
+                PIML(IML,IRD)=PIML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO

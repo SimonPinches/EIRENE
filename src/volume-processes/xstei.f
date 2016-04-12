@@ -17,6 +17,7 @@ cdr  Jan. 2014:
 !dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
 !pb APR   16:   pplds -> pplei
 !pb APR   16:   patds -> patei
+!pb APR   16:   pmlds -> pmlei
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -103,7 +104,7 @@ C
       ELSEIF (ITYP.EQ.2) THEN
         IML=ISPE
         IMM=NSPA+IML
-        PMLDS(IREI,IML)=PMLDS(IREI,IML)+INUM
+        PMLEI(IREI,IML)=PMLEI(IREI,IML)+INUM
         P2ND(IREI,IMM)=P2ND(IREI,IMM)+INUM
         ACCMAS=ACCMAS+INUM*RMASSM(IML)
         ACCMSM=ACCMSM+INUM*RMASSM(IML)
@@ -464,8 +465,8 @@ C  ATOM SECONDARIES
 C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
-        PMLDS(IREI,0)=PMLDS(IREI,0)+
-     +                      PMLDS(IREI,IML)
+        PMLEI(IREI,0)=PMLEI(IREI,0)+
+     +                      PMLEI(IREI,IML)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
 520   CONTINUE
@@ -484,7 +485,7 @@ C  BULK SECONDARIES (NOT ON P2ND)
 540   CONTINUE
 C
 C  TOTAL NUMBER OF SECONDARIES
-      P2NDS(IREI)=PATEI(IREI,0)+PMLDS(IREI,0)+
+      P2NDS(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
      .            PIODS(IREI,0)
  
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
@@ -599,12 +600,12 @@ C
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
-      IF (PMLDS(IREI,0).GT.0.D0) THEN
+      IF (PMLEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'MOLECULES: PMLEI '
         DO 872 IML=1,NMOLI
           IM=NSPA+IML
-          IF (PMLDS(IREI,IML).NE.0.D0)
-     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLDS(IREI,IML)
+          IF (PMLEI(IREI,IML).NE.0.D0)
+     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLEI(IREI,IML)
 872     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EMLEI '
