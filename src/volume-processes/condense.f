@@ -1,3 +1,5 @@
+!pb APR 16: piods -> pioei
+
 C
 C
       SUBROUTINE EIRENE_CONDENSE
@@ -35,7 +37,7 @@ C  currently: only electron impact collisions
           IRDS=LGMEI(IMOL,IMDS)
           DO 220 IION=1,NIONI
             ISP=NSPAM+IION
-            IF (PIODS(IRDS,IION).GT.0) THEN
+            IF (PIOEI(IRDS,IION).GT.0) THEN
               IF (NFOLI(IION).LT.0) THEN
                 WRITE (iunout,*) 'TEST ION ',TEXTS(ISP),
      .                           ' CAN BE CONDENSED'

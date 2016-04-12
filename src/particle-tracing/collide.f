@@ -35,6 +35,7 @@ cdr                  probably not correct (outdated).
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  patds -> patei
 !pb  APR  16:  pmlds -> pmlei
+!pb  APR  16:  piods -> pioei
 
 
 
@@ -259,7 +260,7 @@ cdr  build one single distribution of secondary test particle species, all types
           NAMIEI = 0
           NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
           NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
@@ -1025,7 +1026,7 @@ C
           NAMIEI = 0
           NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
           NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
@@ -1745,7 +1746,7 @@ C
           NAMIEI = 0
           NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
           NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT

@@ -30,7 +30,7 @@ cdr          so no effect on any result.  Few further comments corrected
 !pb APR 16: ipplds -> ipplei, pplds -> pplei
 !pb APR 16: ipatds -> ipatei, patds -> patei
 !pb APR 16: ipmlds -> ipmlei, pmlds -> pmlei
-!pb APR 16: ipiods -> ipioei
+!pb APR 16: ipiods -> ipioei, piods -> pioei
 
  
 C
@@ -471,7 +471,7 @@ C  POST COLLISION CONTRIBUTIONS
               IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPAIO) THEN
-                PAIO(IIO,IRD)=PAIO(IIO,IRD)+PIODS(IREI,IIO)*WTRSIG
+                PAIO(IIO,IRD)=PAIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
@@ -1125,7 +1125,7 @@ C  POST COLLISION CONTRIBUTIONS
               IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPMIO) THEN
-                PMIO(IIO,IRD)=PMIO(IIO,IRD)+PIODS(IREI,IIO)*WTRSIG
+                PMIO(IIO,IRD)=PMIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
@@ -1782,7 +1782,7 @@ C  POST COLLISION CONTRIBUTIONS
               IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPIIO) THEN
-                PIIO(IIO,IRD)=PIIO(IIO,IRD)+PIODS(IREI,IIO)*WTRSIG
+                PIIO(IIO,IRD)=PIIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO

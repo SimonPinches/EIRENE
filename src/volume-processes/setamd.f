@@ -31,9 +31,13 @@ cdr             would be activated.
 =======
 =======
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
+<<<<<<< HEAD
 >>>>>>> variable PMLDS renamed to PMLEI
 !pb  APR  16:  ipiods -> ipioei
 >>>>>>> variable IPIODS renamed to IPIOEI
+=======
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei
+>>>>>>> variable PIODS renamed to PIOEI
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -189,10 +193,10 @@ cdr  "how many" of this secondary species iatm arise after process irei.
              IPMLEI(IREI,1:ipmlei(IREI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                     PMLEI(IREI,1:) > 0)
         END IF
-        ipioei(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
+        ipioei(IREI,0)=COUNT(PIOEI(IREI,1:) > 0)
         IF (ipioei(IREI,0).GT.0) THEN
              IPIOEI(IREI,1:ipioei(IREI,0))=PACK( (/ (i,i=1,nion) /),
-     .                                     PIODS(IREI,1:) > 0)
+     .                                     PIOEI(IREI,1:) > 0)
         END IF
         ipplei(IREI,0)=COUNT(PPLEI(IREI,1:) > 0)       
         IF (ipplei(IREI,0).GT.0) THEN
