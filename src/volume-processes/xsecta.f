@@ -24,6 +24,7 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of 
 cdr  oct.15:  default he ionisation kk=-1 --> kk=-11, 
 cdr           to avoid conflict with default cx reaction kk=-1
 !pb  APR 16:  pplds -> pplei
+!pb  APR 16:  pelds -> pelei
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -116,7 +117,7 @@ C
               IREI=NREII
               LGAEI(IATM,IDSC1)=IREI
 C
-              PELDS(IREI)=1.
+              PELEI(IREI)=1.
               PPLEI(IREI,IPLS1)=1.
 
               EPLEI(IREI,IPLS1,1)=1.D0

@@ -19,6 +19,7 @@ cdr  Jan. 2014:
 !pb APR   16:   patds -> patei
 !pb APR   16:   pmlds -> pmlei
 !pb APR   16:   piods -> pioei
+!pb APR   16:   pelds -> pelei
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -195,7 +196,7 @@ C
       DO 84 IPP=1,NPLSI
         CHRDIF=CHRDIF+PPLEI(IREI,IPP)*NCHRGP(IPP)
 84    CONTINUE
-      PELDS(IREI)=PELDS(IREI)+CHRDIF
+      PELEI(IREI)=PELEI(IREI)+CHRDIF
 C
 C
 C  1.) CROSS SECTION(TE) : NOT NEEDED
@@ -529,11 +530,11 @@ C
 
       IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
         WRITE (iunout,*) 'ELECTRONS: PELEI, CONSTANT ENERGY: EEL'
-        WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELDS(IREI),EI
+        WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELEI(IREI),EI
       ELSE
         WRITE (iunout,*)
      .    'ELECTRONS: PELEI, ENERGY RANGE: EEL_MIN,EEL_MAX'
-        WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELDS(IREI),EI,EA
+        WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELEI(IREI),EI,EA
       ENDIF
 c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C

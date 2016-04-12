@@ -25,6 +25,7 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of 
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  patds -> patei
 !pb  APR 16:  piods -> pioei
+!pb  APR 16:  pelds -> pelei
 C
       SUBROUTINE EIRENE_XSECTM
 C
@@ -274,7 +275,7 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
           EATDS(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
           EATDS(IREI,0,    1)=EATDS(IREI,IATM1,1)+EATDS(IREI,IATM2,1)
           EATDS(IREI,0,    2)=EATDS(IREI,IATM1,2)+EATDS(IREI,IATM2,2)
-          PELDS(IREI)=0.
+          PELEI(IREI)=0.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
 
@@ -338,7 +339,7 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           EPLEI(IREI,0,    1)=EPLEI(IREI,IP2,1)
           EPLEI(IREI,0,    2)=EPLEI(IREI,IP2,2)
 
-          PELDS(IREI)=1.0
+          PELEI(IREI)=1.0
 
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
@@ -384,7 +385,7 @@ C  THIRD PROCESS  H2 --> H2+:  DEFAULT PROCESS NO. KK=-7
           EIODS(IREI,IION3,2)=0.
           EIODS(IREI,0,1)=1.
           EIODS(IREI,0,2)=0.
-          PELDS(IREI)=1.0
+          PELEI(IREI)=1.0
 
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1

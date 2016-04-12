@@ -24,6 +24,7 @@ cdr  apr.16:  accmas and accinv set explicitly also for reaction -9
 cdr           (was missing, but accidentally correct)
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  patds -> patei
+!pb  APR 16:  pelds -> pelei
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -242,7 +243,7 @@ C
           EPLEI(IREI,0,    1)=RMASSP(IP2)/ACCMAS
           EPLEI(IREI,0,    2)=1./RMASSP(IP2)/ACCINV
 
-          PELDS(IREI)=0.
+          PELEI(IREI)=0.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
 
@@ -299,7 +300,7 @@ C  SECOND PROCESS  H2+  -->  H+  +  H+ + e :  DEFAULT PROCESS NO. KK=-9
           EPLEI(IREI,0,    1)=EPLEI(IREI,IPLS1,1)+EPLEI(IREI,IPLS2,1)  ! if ipls1=ipls2: eplei(0,1): total, correct
           EPLEI(IREI,0,    2)=EPLEI(IREI,IPLS1,2)+EPLEI(IREI,IPLS2,2)  ! if ipls1=ipls2: eplei(0,2): total, correct
 
-          PELDS(IREI)=1.
+          PELEI(IREI)=1.
 
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
@@ -352,7 +353,7 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10
           EATDS(IREI,0,    1)=EATDS(IREI,IATM1,1)+EATDS(IREI,IATM2,1)
           EATDS(IREI,0,    2)=EATDS(IREI,IATM1,2)+EATDS(IREI,IATM2,2)
 
-          PELDS(IREI)=-1.
+          PELEI(IREI)=-1.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
 C

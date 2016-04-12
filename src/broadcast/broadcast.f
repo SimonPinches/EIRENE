@@ -16,6 +16,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipatds -> ipatei, patds -> patei
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
+!pb  APR  16:  pelds -> pelei
 
 cdr
   
@@ -296,7 +297,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (FACREI,NRDS*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACRCX,NRCX*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      CALL MPI_BCAST (PELDS,NRDS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (PELEI,NRDS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATEI,NRDS*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLEI,NRDS*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PIOEI,NRDS*NIONP,MPI_REAL8,0,MPI_COMM_WORLD,ier)

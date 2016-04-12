@@ -25,6 +25,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipatds -> ipatei, patds -> patei
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
+!pb  APR  16:  pelds -> pelei
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -141,7 +142,7 @@ csw added OTHER (OT) reactions
 
 c  secondaries, species distribution, for EI and PI processes 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R PELDS(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
+     R PELEI(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
 c  ...and cummulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
@@ -501,7 +502,7 @@ c  factors for scaling reaction processes
         ALLOCATE (FACRCX(NRCX,2)) 
  
 c  secondaries, EI processes 
-        ALLOCATE (PELDS(NRDS))
+        ALLOCATE (PELEI(NRDS))
         ALLOCATE (PATEI(NRDS,0:NATM))
         ALLOCATE (PMLEI(NRDS,0:NMOL))
         ALLOCATE (PIOEI(NRDS,0:NION))
@@ -654,7 +655,7 @@ c
       DEALLOCATE (FACREI)
       DEALLOCATE (FACRCX) 
  
-      DEALLOCATE (PELDS)
+      DEALLOCATE (PELEI)
       DEALLOCATE (PATEI)
       DEALLOCATE (PMLEI)
       DEALLOCATE (PIOEI)
@@ -1086,7 +1087,7 @@ cdr  ical=2:  ??
         FACRCX(:,1) = 1._DP
         FACRCX(:,2) = 0._DP
  
-        PELDS   = 0._DP
+        PELEI   = 0._DP
         PATEI   = 0._DP
         PMLEI   = 0._DP
         PIOEI   = 0._DP
@@ -1204,7 +1205,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
-     . PELDS  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
+     . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
@@ -1248,7 +1249,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
-     . PELDS  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
+     . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
@@ -1306,7 +1307,7 @@ c
       CALL FXDRDBL (IUN,FACREI,NRDS*2)
       CALL FXDRDBL (IUN,FACRCX,NRCX*2)
  
-      CALL FXDRDBL (IUN,PELDS,NRDS)
+      CALL FXDRDBL (IUN,PELEI,NRDS)
       CALL FXDRDBL (IUN,PATEI,NRDS*(NATM+1))
       CALL FXDRDBL (IUN,PMLEI,NRDS*(NMOL+1))
       CALL FXDRDBL (IUN,PIOEI,NRDS*(NION+1))
