@@ -18,6 +18,7 @@ cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+!pb APR  16:    eatei -> eatei
 
 C
       FUNCTION EIRENE_FPATHI (K,CFLAG,JCOU,NCOU)
@@ -161,7 +162,7 @@ C
           EHEAVY        =EIRENE_FEHVDS1(IREI,K)
         ENDIF
 C
-        ESIGEI(IREI,1)=EATDS(IREI,0,1)*E0+EATDS(IREI,0,2)*EHEAVY
+        ESIGEI(IREI,1)=EATEI(IREI,0,1)*E0+EATEI(IREI,0,2)*EHEAVY
         ESIGEI(IREI,2)=EMLDS(IREI,0,1)*E0+EMLDS(IREI,0,2)*EHEAVY
         ESIGEI(IREI,3)=EIODS(IREI,0,1)*E0+EIODS(IREI,0,2)*EHEAVY
 

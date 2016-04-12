@@ -23,7 +23,7 @@ cdr  oct.14:  further syncronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
 !pb  APR 16:  pplds -> pplei
-!pb  APR 16:  patds -> patei
+!pb  APR 16:  patds -> patei, eatds -> eatei
 !pb  APR 16:  piods -> pioei
 !pb  APR 16:  pelds -> pelei
 C
@@ -269,12 +269,12 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
           ACCINV=ACCINV+1./RMASSA(IATM2)
           P2ND(IREI,NSPH+IATM1)=P2ND(IREI,NSPH+IATM1)+1.
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
-          EATDS(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATDS(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
-          EATDS(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
-          EATDS(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
-          EATDS(IREI,0,    1)=EATDS(IREI,IATM1,1)+EATDS(IREI,IATM2,1)
-          EATDS(IREI,0,    2)=EATDS(IREI,IATM1,2)+EATDS(IREI,IATM2,2)
+          EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
+          EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
+          EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
+          EATEI(IREI,0,    1)=EATEI(IREI,IATM1,1)+EATEI(IREI,IATM2,1)
+          EATEI(IREI,0,    2)=EATEI(IREI,IATM1,2)+EATEI(IREI,IATM2,2)
           PELEI(IREI)=0.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
@@ -329,10 +329,10 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           ACCINV=ACCINV+1./RMASSP(IP2)
           P2ND(IREI,NSPH+IA1)=P2ND(IREI,NSPH+IA1)+1.
 
-          EATDS(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
-          EATDS(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV        
-          EATDS(IREI,0,    1)=EATDS(IREI,IA1,1)
-          EATDS(IREI,0,    2)=EATDS(IREI,IA1,2)
+          EATEI(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
+          EATEI(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV        
+          EATEI(IREI,0,    1)=EATEI(IREI,IA1,1)
+          EATEI(IREI,0,    2)=EATEI(IREI,IA1,2)
 
           EPLEI(IREI,IP2,  1)=RMASSP(IP2)/ACCMAS
           EPLEI(IREI,IP2,  2)=1./RMASSP(IP2)/ACCINV

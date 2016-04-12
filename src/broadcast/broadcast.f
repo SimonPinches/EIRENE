@@ -13,7 +13,7 @@
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
 !pb  APR  16:  pelds -> pelei
@@ -339,7 +339,7 @@ c  EL post collision energetics
       CALL MPI_BCAST (EPLEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 
-      CALL MPI_BCAST (EATDS,NRDS*NATMP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (EATEI,NRDS*NATMP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EMLDS,NRDS*NMOLP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EIODS,NRDS*NIONP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EPLEI,NRDS*NPLSP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
