@@ -1,6 +1,12 @@
 !pb  181206  output is done by processor 0
 !pb  181206  setting up of census source is done by processor 0
 !pb  100107  call to reinitialisation routine
+cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
+cdr          currently turning off time stratum may not be detected 
+cdr          when setting dynamic allocatable storage parameters in "set_param.f"
+cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
+cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
+
  
  
       RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,

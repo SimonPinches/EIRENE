@@ -7,7 +7,9 @@ c  at the end of this routine, for each reaction card, call: SET_REACTION_DATA.F
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting cleanup, nov. 15: continued
 cdr  jan 16: started to document options for asymptotics
-!pb  apr 16: Fixes to read past misleading comments in slreac taken over from ITER
+!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR  data files, 
+cdr          such as character strings H.xxx
+cdr          taken over from ITER-IO branch
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
@@ -494,9 +496,9 @@ CC  now identify proper dataset within file FILNAM
         IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
 
 1       READ (29+ifoff,'(A80)',END=990) ZEILE
-!ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     !  infinite loop possible !
+!ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     
         IF (INDEX(ZEILE,H123).EQ.0 .or.
-     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   
+     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
 C
 2       READ (29+ifoff,'(A80)',END=990) ZEILE
 !ITER   IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
