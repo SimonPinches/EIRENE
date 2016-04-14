@@ -1679,8 +1679,8 @@ c      USE EIRMOD_COMXS
       real*8 :: durtmp, alphaPrl0, alphaPerp0
       real*8 :: DVelPrlNx, DVelPerpNx
       real*8 :: gPrl_0, gPrl_1, gPerp_1, dv_dt_min, g_1
-      real*8 :: d15, d16, d17, d18, d19, d21, d22
-      real*8 :: hPrl, hPerp, kPrl, kPerp
+      real*8 :: d15, d16, d17, d18, d19, d21, d22, d23
+      real*8 :: hPrl, hPerp, kPrl, kPerp, whichTF
 
       logical :: bool
 
@@ -1712,6 +1712,7 @@ c      USE EIRMOD_COMXS
       kPerp = 0.0
 
       iprepare = iprepare + 1
+      d23      = iprepare
 
       IF (npanuSave .NE. NPANU) THEN
          npanuSave = NPANU
@@ -1726,8 +1727,8 @@ c      USE EIRMOD_COMXS
          open(iun,file=filename)
       END IF
 
-!      DO IPL = 1, NPLSI ! loop over all background species
-      DO IPL = 1, 1
+      DO IPL = 1, NPLSI ! loop over all background species
+!      DO IPL = 1, 2
 
          IPLTI = MPLSTI(IPL)
 
@@ -1759,8 +1760,8 @@ c  get the parallel part of the background velocity, m/s
      >                  BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
          END IF
 
-         IF (IPL .EQ. 1) VelPrlBG = 100.0
-         IF (IPL .EQ. 2) VelPrlBG = 0.0
+!         IF (IPL .EQ. 1) VelPrlBG = 100.0
+!         IF (IPL .EQ. 2) VelPrlBG = 0.0
 
          ub = sqrt(2*TItmp*ELCHA/(RMASSP(IPL)*AMUAKG))
          DVelPrl = SIGPAR*VELPAR*1.0E-02 - VelPrlBG
@@ -1792,8 +1793,8 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
 
 ! hPrl is (dChiPrl/dt)/ChiPrl, analogously for hPerp
-         hPrl  = hPrl + dVelPrl_dt(IPL)/ub
-         hPerp = hPerp + dVelPerp_dt(IPL)/ub
+         hPrl  = hPrl + dVelPrl_dt(IPL)
+         hPerp = hPerp + dVelPerp_dt(IPL)
 
          TFChiPrl(IPL) = abs(alpha*ChiPrl*VELPAR*ub/dVelPrl_dt(IPL))
          d19 = TFChiPrl(IPL)
@@ -1854,25 +1855,16 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       d10 = SUM(dVelPerp_dt)
       d11 = ABS((d10-old02)/old02)
 
-      d21 = ABS(ChiPrl-old05)
-      d22 = ABS(ChiPerp-old06)
+      d21 = ABS(ChiPrl-old05)/old07
+      d22 = ABS(ChiPerp-old06)/old07
 
 ! these are the lengths according to the change of the derivatives of the velocities
       TF01 = abs(alphaPrl*VELPAR*sum(dVelPrl_dt)/SumPrl)
       TF02 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp01)
       TF03 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp02)
-! these are the lengths according to the change of the velocities
-!      TF04 = abs(alpha*VELPAR*max(VELPAR,DVelMin*1.0E+02)/
-!     >      (sum(dVelPrl_dt)*1.0E+02))
-!      TF05 = abs(alpha*VELPAR*max(VELPER,DVelMin*1.0E+02)/
-!     >      (sum(dVelPerp_dt)*1.0E+02))
-
-! new concept after discussion with Vlad
-      TF04 = abs(alpha*VELPAR/hPrl)
-      TF05 = abs(alpha*VELPAR/hPerp)
-
-! even newer concept
-!     TF04 = minval(TFChiPrl)
+! these are the lengths according to the change of the chis
+      TF04 = abs(alpha*vAveThBG*VELPAR/hPrl)
+      TF05 = abs(alpha*vAveThBG*VELPAR/hPerp)
 
 !      TF02 = TF02 + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
 !      TF03 = TF03 + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
@@ -1881,6 +1873,7 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
 
 !      TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
 
+! this is the minimal change of the velocities below which stationarity is assumed (to be checked!)
       dv_dt_min = 1.0E-03*DVelMin/taue
 
       IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min) THEN
@@ -1890,6 +1883,12 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       IF (abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
          TF = min(TF01,TF04)
       END IF
+
+      IF (TF.EQ.TF01) whichTF = 1
+      IF (TF.EQ.TF02) whichTF = 2
+      IF (TF.EQ.TF03) whichTF = 3
+      IF (TF.EQ.TF04) whichTF = 4
+      IF (TF.EQ.TF05) whichTF = 5
 
       IF (TF .EQ. TF01 .AND. .NOT. bool) THEN
          IF (d09 .LT. alphaPrl0) THEN
@@ -1914,26 +1913,22 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       d14 = alphaPrl
       d15 = alphaPerp
 
-!      IF (abs(sum(dVelPrl_dt)) .LT. dv_dt_min .AND.
-!     >    sign(1.0,sum(dVelPerp_dt)) .NE. sign(1.0,old02)) THEN
-!         TF = min(TFold/2.,TF)
-!      ELSE IF (abs(sum(dVelPrl_dt)) .LT. dv_dt_min .AND.
-!     >         sign(1.0,sum(dVelPerp_dt)) .EQ. sign(1.0,old02)) THEN
-!         TF = min(TFold,TF)
-!      END IF
-
       IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min .AND.
      >    abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
          TF = (3./4.*3.141596/VOL(NCELL))**1./3.
          TF = 1.0E-02*vAveThBG*VELPAR/abs(sum(dVelPerp_dt))
       END IF
 
-      old01 = d08
-      old02 = d10
-      old05 = ChiPrl
-      old06 = ChiPerp
       d16 = abs((VELPAR-old03)/old03)
       d17 = abs((VELPER-old04)/old04)
+
+      old01 = d08
+      old02 = d10
+      old03 = VELPAR
+      old04 = VELPER
+      old05 = ChiPrl
+      old06 = ChiPerp
+      old07 = vAveThBG
       d18 = NCELL
       TFold = TF
 
@@ -1941,12 +1936,13 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
 
       write(iun,1000) iprepare, TF,
      >   VELPAR, VELPER,
-     >   d08, d10, ! derivatives
-     >   d16, d17, ! relative change of velocities
-     >   d09, d11, ! relative change of derivatives
+     >   d08, d10, ! 5,  6 - derivatives
+     >   d16, d17, ! 7,  8 - relative change of velocities
+     >   d09, d11, ! 9, 10 - relative change of derivatives
      >   dv_dt_min, d18, ! 11, 12
-     >   d21, d22,  ! relative changes ChiPrl, ChiPerp
-     >   alphaPrl, alphaPerp
+     >   d21, d22, ! 13, 14 - relative changes ChiPrl, ChiPerp
+     >   alphaPrl, alphaPerp,
+     >   whichTF   ! 17
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
 
 

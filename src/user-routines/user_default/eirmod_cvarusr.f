@@ -12,7 +12,7 @@
       real*8, allocatable, public :: dg_dChiPerp(:), nue(:)
       real*8, allocatable, public :: TFChiPrl(:)
       real*8, public  :: veltotal, old01, old02, facTF, TFold
-      real*8, public  :: old03, old04, old05, old06
+      real*8, public  :: old03, old04, old05, old06, old07
       real*8, public  :: alphaPrl, alphaPerp, iprepare
       integer, public :: npanuSave
 
@@ -44,6 +44,7 @@
          old04 = 1.0E-10
          old05 = 1.0E-10
          old06 = 1.0E-10
+         old07 = 1.0E-10
          facTF = 1.
          TFold = 100.
          npanuSave = 0
