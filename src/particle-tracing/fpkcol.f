@@ -62,7 +62,7 @@ C
      .            VelPrlBG,
      .            D_VELPAR(1:NPLSI),
      .            D_VELPER(1:NPLSI),
-     .            D_E0NEW_tmp(1:NPLSI), dummy
+     .            D_E0NEW_tmp(1:NPLSI)
 
       INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -146,11 +146,6 @@ c  magnetic field
      >                     - E0
         END DO
 
-        dummy = SUM(D_VELPAR)
-
-        old03 = VELPAR
-        old04 = VELPER
-
         VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02
         SIGPAR = SIGN(1.0,VELPAR)
         VELPAR = ABS(VELPAR)
@@ -171,7 +166,6 @@ cdr
           EWG = WEIGHT*(E0NEW-E0OLD)
           EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
      >                  - EWG*D_E0NEW_tmp(IPL)/(SUM(D_E0NEW_tmp)+EPS60)
-          dummy = EIPL(IPL,NCELLT)
         END DO
 
         FAC    = SQRT(E0NEW/E0OLD)

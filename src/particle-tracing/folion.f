@@ -143,7 +143,7 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
      .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
-      LOGICAL :: LCNDEXP, booltmp
+      LOGICAL :: LCNDEXP
 
       real*8 :: VelPrlBG, DItmp, TItmp
 
@@ -1663,26 +1663,22 @@ c      USE EIRMOD_COMXS
       real*8 :: TF
       real*8 :: alpha, ub, Chi, Lambda, dChi_dt
       real*8 :: DPrl, DPerp
-      real*8 :: TFprl, TFperp
-      real*8 :: TFtemp(1:NPLSI)
-      real*8 :: vabs, dvabs_dt
-      real*8 :: d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11
-      real*8 :: d12, d13, d14
       real*8 :: Bt(1:3), Vt(1:3)
-      real*8 :: vtot, beta, DVelPrlNext, ChiPrl, ChiPerp
+      real*8 :: vtot, ChiPrl, ChiPerp
       real*8 :: SumPrl, SumPerp01, SumPerp02
       real*8 :: DVelPrl, dDprl_dVelPrl
       real*8 :: dDprl_dChiPrl, dDprl_dChiPerp
       real*8 :: dDperp_dChiPrl, dDperp_dChiPerp
-      real*8 :: TF01, TF02, TF03, TF04, TF05, TF06, TF07
+      real*8 :: TF01, TF02, TF03, TF04, TF05
       real*8 :: vAveThBG, DVelMin
-      real*8 :: durtmp, alphaPrl0, alphaPerp0
-      real*8 :: DVelPrlNx, DVelPerpNx
-      real*8 :: gPrl_0, gPrl_1, gPerp_1, dv_dt_min, g_1
-      real*8 :: d15, d16, d17, d18, d19, d21, d22, d23
-      real*8 :: hPrl, hPerp, kPrl, kPerp, whichTF
+      real*8 :: alphaPrl0, alphaPerp0
+      real*8 :: relChangePrl, relChangePerp
+      real*8 :: dv_dt_min
+      real*8 :: whichTF
+      real*8 :: d03
+      real*8 :: d16, d17, d18, d19, d21, d22, d23
 
-      logical :: bool
+      logical :: newParticle
 
       character*200 :: filename
       character*4 :: written_idx4
@@ -1691,49 +1687,34 @@ c      USE EIRMOD_COMXS
 
 2001  format(i4.4)
 
-      alpha     = 0.2 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      alpha      = 0.2 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       alphaPrl0  = 0.2
       alphaPerp0 = 0.2
       TF     = 1.0E+10
-      TFtemp = 0.0
-      DVelPrlNext = 0.0
-      beta   = 1.0E-06
       SumPrl = 0.0
       SumPerp01 = 0.0
       SumPerp02 = 0.0
       vAveThBG  = 0.0
-      bool = .FALSE.
-      TF06 = (3./4.*3.141596/VOL(NCELL))**1./3.
-      TF07 = (3./4.*3.141596/VOL(NCELL))**1./3.
+      newParticle = .FALSE.
       iun = 3
-      hPrl  = 0.0
-      hPerp = 0.0
-      kPrl  = 0.0
-      kPerp = 0.0
 
       iprepare = iprepare + 1
       d23      = iprepare
 
+! entered if new particle is created
       IF (npanuSave .NE. NPANU) THEN
          npanuSave = NPANU
          alphaPrl  = alphaPrl0
          alphaPerp = alphaPerp0
-         bool      = .TRUE.
-         ! write data into file
+         newParticle = .TRUE.
          iprepare = 1
-         IF (NPANU .NE. 0) close(iun)
-         write(written_idx4,2001) NPANU
-         filename = 'particle_trace_fpkcol.'//written_idx4
-         open(iun,file=filename)
       END IF
 
       DO IPL = 1, NPLSI ! loop over all background species
-!      DO IPL = 1, 2
 
          IPLTI = MPLSTI(IPL)
 
-         booltmp = LGVAC(NCELL,IPL)
-
+! check that density and temperatures are set properly
          IF (LGVAC(NCELL,IPL)) THEN
             DItmp = DVAC
             TItmp = TVAC
@@ -1741,7 +1722,7 @@ c      USE EIRMOD_COMXS
             DItmp = DIIN(IPL,NCELL)
             TItmp = TIIN(IPLTI,NCELL)
          END IF
-
+! check that DItmp and TItmp are not NaNs
          IF (DItmp.NE.DItmp) DItmp = DVAC
          IF (TItmp.NE.TItmp) TItmp = TVAC
 
@@ -1751,17 +1732,15 @@ c  get the parallel part of the background velocity, m/s
      >                         , IPL, .TRUE.)
             CALL EIRENE_VECUSR(2, NCELL, X0, Y0, Z0, Vt(1), Vt(2), Vt(3)
      >                         , IPL, .TRUE.)
-            CALL EIRENE_VECUSR(3, NCELL, X0, Y0, Z0, vtot, d01, d02,
-     >                         , IPL, .TRUE.)
+! can be deleted if check ok!
+!            CALL EIRENE_VECUSR(3, NCELL, X0, Y0, Z0, vtot, d01, d02,
+!     >                         , IPL, .TRUE.)
             VelPrlBG = vtot*dot_product(Bt,Vt)
          ELSE
             VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
      >                  BYIN(NCELL)*VYIN(IPL,NCELL)+
      >                  BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
          END IF
-
-!         IF (IPL .EQ. 1) VelPrlBG = 100.0
-!         IF (IPL .EQ. 2) VelPrlBG = 0.0
 
          ub = sqrt(2*TItmp*ELCHA/(RMASSP(IPL)*AMUAKG))
          DVelPrl = SIGPAR*VELPAR*1.0E-02 - VelPrlBG
@@ -1772,14 +1751,6 @@ c  get the parallel part of the background velocity, m/s
      >            DItmp*1.0E+06*COULOMBLOG/
      >            (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
 
-         d01 = DItmp
-         d02 = TItmp
-         d15 = NCHRGP(IPL)
-         d16 = RMASSP(IPL)
-         d17 = NCHRGI(IION)
-         d18 = RMASSI(IION)
-         d19 = COULOMBLOG
-
          CALL D_coeff(Chi,DPrl,DPerp)
 
          DPrl  = Lambda/ub*DPrl
@@ -1788,20 +1759,8 @@ c  get the parallel part of the background velocity, m/s
 c  both dVelPrl_dt and dVelPerp_dt in m/s!
          dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                       DVelPrl
-
          dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
      >                       VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
-
-! hPrl is (dChiPrl/dt)/ChiPrl, analogously for hPerp
-         hPrl  = hPrl + dVelPrl_dt(IPL)
-         hPerp = hPerp + dVelPerp_dt(IPL)
-
-         TFChiPrl(IPL) = abs(alpha*ChiPrl*VELPAR*ub/dVelPrl_dt(IPL))
-         d19 = TFChiPrl(IPL)
-
-! kPerp is dChiPrl/dt
-         kPerp = kPerp + dVelPerp_dt(IPL)/ub
-         kPrl  = kPrl + dVelPrl_dt(IPL)/ub
 
          dDprl_dChiPrl   = ChiPrl/(Chi**2)*
      >      (4*Lambda/(ub*sqrt(PIA))*exp(-Chi**2) - 3*Dprl)
@@ -1836,25 +1795,12 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
 
          vAveThBG = vAveThBG + nue(IPL)*ub
 
-         d04 = dVelPrl_dt(IPL)
-         d05 = dVelPerp_dt(IPL)
-         d06 = dDprl_dVelPrl
-         d07 = df_dChiPrl(IPL)
-         d12 = dg_dChiPrl(IPL)
-         d13 = dg_dChiPerp(IPL)
-
       END DO
 
       vAveThBG = abs(vAveThBG/sum(nue))
       DVelMin  = vAveThBG*1.0E-04
 
-      taue = 1./sum(nue)
-
-      d08 = SUM(dVelPrl_dt)
-      d09 = ABS((d08-old01)/old01)
-      d10 = SUM(dVelPerp_dt)
-      d11 = ABS((d10-old02)/old02)
-
+! this can be deleted when checks are ok
       d21 = ABS(ChiPrl-old05)/old07
       d22 = ABS(ChiPerp-old06)/old07
 
@@ -1863,35 +1809,35 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       TF02 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp01)
       TF03 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp02)
 ! these are the lengths according to the change of the chis
-      TF04 = abs(alpha*vAveThBG*VELPAR/hPrl)
-      TF05 = abs(alpha*vAveThBG*VELPAR/hPerp)
-
-!      TF02 = TF02 + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
-!      TF03 = TF03 + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
+      TF04 = abs(alpha*vAveThBG*VELPAR/sum(dVelPrl_dt))
+      TF05 = abs(alpha*vAveThBG*VELPAR/sum(dVelPerp_dt))
 
       TF = min(TF01,TF02,TF03,TF04,TF05)
 
-!      TF = TF + abs(DVelMin*VELPAR/sum(dVelPerp_dt))
-
 ! this is the minimal change of the velocities below which stationarity is assumed (to be checked!)
-      dv_dt_min = 1.0E-03*DVelMin/taue
+      dv_dt_min = 1.0E-03*DVelMin*sum(nue)
 
       IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min) THEN
          TF = min(TF02,TF03,TF05)
       END IF
-
       IF (abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
          TF = min(TF01,TF04)
       END IF
 
+! this can be deleted when checks are ok
       IF (TF.EQ.TF01) whichTF = 1
       IF (TF.EQ.TF02) whichTF = 2
       IF (TF.EQ.TF03) whichTF = 3
       IF (TF.EQ.TF04) whichTF = 4
       IF (TF.EQ.TF05) whichTF = 5
 
-      IF (TF .EQ. TF01 .AND. .NOT. bool) THEN
-         IF (d09 .LT. alphaPrl0) THEN
+! adjust the limit parameters for the change of the derivatives
+! (if the Taylor expansion does not yield good enough results)
+      relChangePrl  = ABS((sum(dVelPrl_dt)-rCPrlOld)/rCPrlOld)
+      relChangePerp = ABS((sum(dVelPerp_dt)-rCPerpOld)/rCPerpOld)
+
+      IF (TF .EQ. TF01 .AND. .NOT. newParticle) THEN
+         IF (relChangePrl .LT. alphaPrl0) THEN
             alphaPrl = alphaPrl*1.25
          ELSE
             alphaPrl = alphaPrl*0.5
@@ -1899,9 +1845,8 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       ELSE
          alphaPrl = max(alphaPrl*0.5,alphaPrl0)
       END IF
-
-      IF ((TF .EQ. TF02 .OR. TF .EQ. TF03) .AND. .NOT. bool) THEN
-         IF (d11 .LT. alphaPerp0) THEN
+      IF ((TF .EQ. TF02 .OR. TF .EQ. TF03) .AND. .NOT. newParticle) THEN
+         IF (relChangePerp .LT. alphaPerp0) THEN
             alphaPerp = alphaPerp*1.25
          ELSE
             alphaPerp = alphaPerp*0.5
@@ -1910,42 +1855,38 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
          alphaPerp = max(alphaPerp*0.5,alphaPerp0)
       END IF
 
-      d14 = alphaPrl
-      d15 = alphaPerp
-
+! if the absolute change is below the limit value set TF so that the v_perp
+! is changed by 1/100 of the thermal background velocity
       IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min .AND.
      >    abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
-         TF = (3./4.*3.141596/VOL(NCELL))**1./3.
          TF = 1.0E-02*vAveThBG*VELPAR/abs(sum(dVelPerp_dt))
       END IF
 
+! this can be deleted when checks are ok
       d16 = abs((VELPAR-old03)/old03)
       d17 = abs((VELPER-old04)/old04)
 
-      old01 = d08
-      old02 = d10
+      rCPrlOld  = sum(dVelPrl_dt)
+      rCPerpOld = sum(dVelPerp_dt)
       old03 = VELPAR
       old04 = VELPER
       old05 = ChiPrl
       old06 = ChiPerp
       old07 = vAveThBG
       d18 = NCELL
-      TFold = TF
 
+! this can be deleted when checks are ok
 1000  format(10000(1pe14.5E3))
-
       write(iun,1000) iprepare, TF,
      >   VELPAR, VELPER,
-     >   d08, d10, ! 5,  6 - derivatives
+     >   sum(dVelPrl_dt), sum(dVelPerp_dt), ! 5,  6 - derivatives
      >   d16, d17, ! 7,  8 - relative change of velocities
-     >   d09, d11, ! 9, 10 - relative change of derivatives
+     >   relChangePrl, relChangePerp, ! 9, 10 - relative change of derivatives
      >   dv_dt_min, d18, ! 11, 12
      >   d21, d22, ! 13, 14 - relative changes ChiPrl, ChiPerp
-     >   alphaPrl, alphaPerp,
+     >   alphaPrl, alphaPerp, ! 15, 16
      >   whichTF   ! 17
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
-
-
 
       subroutine D_coeff(X,D1,D2)
 
