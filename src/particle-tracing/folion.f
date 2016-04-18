@@ -1708,6 +1708,11 @@ c      USE EIRMOD_COMXS
          alphaPerp = alphaPerp0
          newParticle = .TRUE.
          iprepare = 1
+! write data into file
+!         IF (NPANU .NE. 0) close(iun)
+!         write(written_idx4,2001) NPANU
+!         filename = 'particle_trace_fpkcol.'//written_idx4
+!         open(iun,file=filename)
       END IF
 
       DO IPL = 1, NPLSI ! loop over all background species
@@ -1801,8 +1806,8 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       DVelMin  = vAveThBG*1.0E-04
 
 ! this can be deleted when checks are ok
-      d21 = ABS(ChiPrl-old05)/old07
-      d22 = ABS(ChiPerp-old06)/old07
+!      d21 = ABS(ChiPrl-old05)/old07
+!      d22 = ABS(ChiPerp-old06)/old07
 
 ! these are the lengths according to the change of the derivatives of the velocities
       TF01 = abs(alphaPrl*VELPAR*sum(dVelPrl_dt)/SumPrl)
@@ -1825,11 +1830,11 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       END IF
 
 ! this can be deleted when checks are ok
-      IF (TF.EQ.TF01) whichTF = 1
-      IF (TF.EQ.TF02) whichTF = 2
-      IF (TF.EQ.TF03) whichTF = 3
-      IF (TF.EQ.TF04) whichTF = 4
-      IF (TF.EQ.TF05) whichTF = 5
+!      IF (TF.EQ.TF01) whichTF = 1
+!      IF (TF.EQ.TF02) whichTF = 2
+!      IF (TF.EQ.TF03) whichTF = 3
+!      IF (TF.EQ.TF04) whichTF = 4
+!      IF (TF.EQ.TF05) whichTF = 5
 
 ! adjust the limit parameters for the change of the derivatives
 ! (if the Taylor expansion does not yield good enough results)
@@ -1863,29 +1868,31 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
       END IF
 
 ! this can be deleted when checks are ok
-      d16 = abs((VELPAR-old03)/old03)
-      d17 = abs((VELPER-old04)/old04)
+!      d16 = abs((VELPAR-old03)/old03)
+!      d17 = abs((VELPER-old04)/old04)
 
       rCPrlOld  = sum(dVelPrl_dt)
       rCPerpOld = sum(dVelPerp_dt)
-      old03 = VELPAR
-      old04 = VELPER
-      old05 = ChiPrl
-      old06 = ChiPerp
-      old07 = vAveThBG
-      d18 = NCELL
+
+!      old03 = VELPAR
+!      old04 = VELPER
+!      old05 = ChiPrl
+!      old06 = ChiPerp
+!      old07 = vAveThBG
+!      d18 = NCELL
 
 ! this can be deleted when checks are ok
-1000  format(10000(1pe14.5E3))
-      write(iun,1000) iprepare, TF,
-     >   VELPAR, VELPER,
-     >   sum(dVelPrl_dt), sum(dVelPerp_dt), ! 5,  6 - derivatives
-     >   d16, d17, ! 7,  8 - relative change of velocities
-     >   relChangePrl, relChangePerp, ! 9, 10 - relative change of derivatives
-     >   dv_dt_min, d18, ! 11, 12
-     >   d21, d22, ! 13, 14 - relative changes ChiPrl, ChiPerp
-     >   alphaPrl, alphaPerp, ! 15, 16
-     >   whichTF   ! 17
+!1000  format(10000(1pe14.5E3))
+!      write(iun,1000) iprepare, TF,
+!     >   VELPAR, VELPER,
+!     >   sum(dVelPrl_dt), sum(dVelPerp_dt), ! 5,  6 - derivatives
+!     >   d16, d17, ! 7,  8 - relative change of velocities
+!     >   relChangePrl, relChangePerp, ! 9, 10 - relative change of derivatives
+!     >   dv_dt_min, d18, ! 11, 12
+!     >   d21, d22, ! 13, 14 - relative changes ChiPrl, ChiPerp
+!     >   alphaPrl, alphaPerp, ! 15, 16
+!     >   whichTF   ! 17
+
       END SUBROUTINE EIRENE_PREPARE_FPKCOL
 
       subroutine D_coeff(X,D1,D2)
