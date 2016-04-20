@@ -127,7 +127,15 @@ cdr  set some further assistant arrays, for ei and pi processes:
 cdr  accumulated information from A, M, I ,P and PH for particle processes 'ei' and 'pi'. 
 cdr  These array are stored in comxs and are used for scoring
 cdr  tallies in update.f (tracklength) and collide.f (coll. estim) exclusively
-
+cdr  They are for indirect indexing, in loops over secondary species.
+cdr  e.g. rather than 
+cdr                   do iat=1,natmi
+cdr         now:      
+cdr                   do i   =1,ipatds(irei,0)   (<=natmi,  possibly much shorter loop) 
+cdr                      iat = ipatds(irei,i)    (now we know: iat is a secondary indeed)
+cdr                      inum= patds(irei,iat)   (there are inum secondaries of species iat)
+cdr                      ...
+cdr                   enddo
 cdr 
       IERROR = 0
 
@@ -137,10 +145,10 @@ cdr
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLDS = 0
       DO IREI=1,NRDS
-        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds (<= natm) 
-cdr                                                 atomic species which appear as secondaries, 
+        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds(...,0) (<= natm) 
+cdr                                                 distinct atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
-        IF (ipatds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
+        IF (ipatds(IREI,0).GT.0) THEN          
              IPATDS(IREI,1:ipatds(IREI,0))=PACK( (/ (i,i=1,natm) /),
      .                                     PATDS(IREI,1:) > 0)
 cdr  IPATDS(IREI,...)=iatm means:  one or more secondaries of species iatm
@@ -149,17 +157,17 @@ cdr  the arrays patds,...,pplds, and p2nd, contain the further information:
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
         ipmlds(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
-        IF (ipmlds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 
+        IF (ipmlds(IREI,0).GT.0) THEN          
              IPMLDS(IREI,1:ipmlds(IREI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                     PMLDS(IREI,1:) > 0)
         END IF
         ipiods(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
-        IF (ipiods(IREI,0).GT.0) THEN         ! inserted by Derek Harting 
+        IF (ipiods(IREI,0).GT.0) THEN         
              IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
         ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
-        IF (ipplds(IREI,0).GT.0) THEN         ! inserted by Derek Harting 
+        IF (ipplds(IREI,0).GT.0) THEN         
              IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
      .                                     PPLDS(IREI,1:) > 0)
         END IF
