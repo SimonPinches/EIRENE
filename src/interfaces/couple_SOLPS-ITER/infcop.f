@@ -29,7 +29,7 @@ cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell wise.
 
 
 cdr  start to use species resolved energy tallies.
-cdr  nov.15:  eapl,empl,aipl:  now species resolved
+cdr  nov.15:  eapl,empl,eipl:  now species resolved
 cdr           --> eppl_cop, eploda get an additional species index ipls
 C
 cdr  dec. 15: not ready.  started to comment, and to extend copv tallies

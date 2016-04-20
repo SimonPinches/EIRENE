@@ -1,5 +1,11 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
+cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk 
+cdr             secondaries.
+cdr             This is temporarily necessary, as a consequence of making the
+cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
+cdr             We are not aware of any application of eirene, in which this new error exit
+cdr             would be activated.  
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -143,17 +149,17 @@ cdr  the arrays patds,...,pplds, and p2nd, contain the further information:
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
         ipmlds(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
-        IF (ipmlds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
+        IF (ipmlds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 
              IPMLDS(IREI,1:ipmlds(IREI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                     PMLDS(IREI,1:) > 0)
         END IF
         ipiods(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
-        IF (ipiods(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
+        IF (ipiods(IREI,0).GT.0) THEN         ! inserted by Derek Harting 
              IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
         ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
-        IF (ipplds(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
+        IF (ipplds(IREI,0).GT.0) THEN         ! inserted by Derek Harting 
              IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
      .                                     PPLDS(IREI,1:) > 0)
         END IF
@@ -168,26 +174,26 @@ cdr:  same as above, for PI processes
       IPATPI = 0
       IPMLPI = 0
       IPIOPI = 0
-cdr   IPPHPI = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
+cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
       IPPLPI = 0
       DO IRPI=1,NRPI
         ipatpi(IRPI,0)=COUNT(PATPI(IRPI,1:) > 0)
-        IF (ipatpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipatpi(IRPI,0).GT.0) then         
           IPATPI(IRPI,1:ipatpi(IRPI,0))=PACK( (/ (i,i=1,natm) /),
      .                                  PATPI(IRPI,1:) > 0)
         endif
         ipmlpi(IRPI,0)=COUNT(PMLPI(IRPI,1:) > 0)
-        IF (ipmlpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipmlpi(IRPI,0).GT.0) then        
           IPMLPI(IRPI,1:ipmlpi(IRPI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                  PMLPI(IRPI,1:) > 0)
         endif
         ipiopi(IRPI,0)=COUNT(PIOPI(IRPI,1:) > 0)
-        IF (ipiopi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipiopi(IRPI,0).GT.0) then        
           IPIOPI(IRPI,1:ipiopi(IRPI,0))=PACK( (/ (i,i=1,nion) /),
      .                                  PIOPI(IRPI,1:) > 0)
         endif
         ipplpi(IRPI,0)=COUNT(PPLPI(IRPI,1:) > 0)
-        IF (ipplpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipplpi(IRPI,0).GT.0) then        
           IPPLPI(IRPI,1:ipplpi(IRPI,0))=PACK( (/ (i,i=1,npls) /),
      .                                  PPLPI(IRPI,1:) > 0)
         endif
@@ -203,6 +209,8 @@ cdr   IPPHPI = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN PI RE
 !pb        tpb1 = tpb2
  
       if (ierror > 0) then
+         write (iunout,*) 'only a temporary fail safe step'
+         write (iunout,*) 'contact eirene group at fzj, if this occurs'  
          write (iunout,*) 'CALCULATION ABANDONNED '
          CALL EIRENE_EXIT_OWN(1)
       end if

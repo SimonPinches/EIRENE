@@ -1,4 +1,8 @@
- 
+cdr  March 2016 parameters for sputer formula, second index: N2  --> 0:N2.
+cdr             N2 is the index for the target (wall) material
+cdr             i2=0 is storage for those sputer parameters 
+cdr             which are missing in the data tables and which are 
+cdr             evaluated "on the fly" instead (subr. sputer.f)  
  
       SUBROUTINE EIRENE_BROADSPUT(ES,M2M1,ETF,ETH,Q,N1,N2)
       USE EIRMOD_PRECISION
