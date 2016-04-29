@@ -195,7 +195,7 @@ C  FIND PRE-COLLISION ATOM INDEX IAT:
                   END IF
 	 	END DO
 	      END DO
-            END IF	
+            END IF
             ARGU=ZNI(IRCX)*SIGADD
             PSIG(IATM)=PSIG(IATM)+ARGU*ATTENU
             ARGST(IATM,JJJ)=ARGU*ZEXP3*SQRT(ZEXP2)/11.137

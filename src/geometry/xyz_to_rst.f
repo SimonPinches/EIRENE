@@ -91,21 +91,21 @@ c
 
         root1 =  b_xi*b_xi - 2._dp*j1(icell)*c_xi
         if ( root1 < 0 ) then
-	        write(*,*) '!---------------------------------!'
-		    write(*,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
-		    write(*,*) '!---------------------------------!'
-	        root1 = 0._DP
+           write(*,*) '!---------------------------------!'
+           write(*,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
+           write(*,*) '!---------------------------------!'
+           root1 = 0._DP
         endif
-	    root2 =  b_eta*b_eta + 2._dp*j2(icell)*c_eta
+        root2 =  b_eta*b_eta + 2._dp*j2(icell)*c_eta
         if ( root2 < 0 ) then
-        	write(*,*) '!---------------------------------!'
-		    write(*,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
-		    write(*,*) '!---------------------------------!'
-	        root2 = 0._DP
+           write(*,*) '!---------------------------------!'
+           write(*,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
+           write(*,*) '!---------------------------------!'
+           root2 = 0._DP
         endif
 		
     	dummy = (-sqrt(root1) - b_xi)
-	    if ( abs(dummy) > EPS30 ) then	
+        if ( abs(dummy) > EPS30 ) then
           xip = 2._dp*c_xi /
      .        (-sqrt(root1) - b_xi)
         else
@@ -116,7 +116,7 @@ c
         if ( abs(dummy) > EPS30 ) then
            etap = 2._dp*c_eta /dummy
     	else
-	      etap = 0._DP
+           etap = 0._DP
     	endif
 
         r = xip
