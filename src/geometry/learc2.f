@@ -1,3 +1,4 @@
+!    18.04.16:  default return value added in cleanup loop, J.Lore
 C
 C
       FUNCTION EIRENE_LEARC2(X,Y,NR,NP,TEXT)
@@ -63,6 +64,7 @@ csw 04aug08
           DEALLOCATE (D34)
         endif
         ifirst=0
+        EIRENE_LEARC2 = -1
         return
       endif
 csw

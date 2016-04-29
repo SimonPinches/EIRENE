@@ -30,6 +30,7 @@ c
 c 16.01.06:  bug fix: suma1, suma2, etc... initialized (=0)
 c            otherwise problems due to new options for deactivation of tallies
 C 07.12.06:  some comments introduced to clarify status with iliin=-3 option
+C 18.04.16:  reduced string length to match variable, J.Lore
 C
       SUBROUTINE EIRENE_OUTFLX(A,ISTRA)
  
@@ -3045,7 +3046,8 @@ C
       SUMMS=0.
       SUMS(:,ISTRA)=0._DP
       DO 302 IADS=1,NADSI
-        TEXTA(IADS)=TXTSPW(IADS,NTLSA)
+! TEXTA is only 8 characters long
+        TEXTA(IADS)=TXTSPW(IADS,NTLSA)(1:8)
         LGVARS(IADS,ISTRA)=.FALSE.
         IF (LADDS) SUMS(IADS,ISTRA)=ADDS(IADS,I)
         LOGADS(IADS,ISTRA)=LADDS .AND. (ADDS(IADS,I).NE.0.)
@@ -3090,7 +3092,8 @@ C
       SUMMS=0.
       SUML(:,ISTRA)=0._DP
       DO 402 IALS=1,NALSI
-        TEXTL(IALS)=TXTSPW(IALS,NTLSR)
+! TEXTL is only 8 characters long
+        TEXTL(IALS)=TXTSPW(IALS,NTLSR)(1:8)
         LGVARL(IALS,ISTRA)=.FALSE.
         IF (LALGS) SUML(IALS,ISTRA)=ALGS(IALS,I)
         LOGALS(IALS,ISTRA)=LALGS .AND. (ALGS(IALS,I).NE.0.)

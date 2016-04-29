@@ -834,7 +834,10 @@ c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
 c  photon absorption B12 coefficient, obtained from stim. em. B21 coefficient by detailed balancing
       IMPLICIT NONE
 c calculates B12 Einstein coefficient in units: cm**2
-      integer :: g1,g2,n1,n2
+! change G1, G2 to REAL, better precision, avoid integer division
+!      integer :: g1,g2,n1,n2
+      integer :: n1,n2
+      real(dp) :: g1,g2
  
       res=EIRENE_PH_B21()
  
@@ -1801,7 +1804,8 @@ c
          write(iunout,*) '   flag=',flag
          call EIRENE_exit_own(1)
       endif
-      cres=cmplx(u,v)
+! kind parameter added for better precision
+      cres=cmplx(u,v,dp)
       return
       end function EIRENE_ph_faddeeva2
  
@@ -1832,7 +1836,8 @@ c  next: part with imag. fadeeva function
       b   = PIQU*dvdw/hw
       cpi = dsqrt(dvdw/hw) / fwhm
  
-      z1  = cmplx(-a, -1._dp) * aa
+! kind parameter added for better precision
+      z1  = cmplx(-a, -1._dp,dp) * aa
 !pb      zz  = cdsqrt(b*z1) *(0._dp,1._dp)
       zz  = sqrt(b*z1) *(0._dp,1._dp)
       fad = EIRENE_ph_faddeeva2(dble(zz),aimag(zz),icell,0)
@@ -2703,7 +2708,8 @@ c.....
          ENDIF
       ENDIF
 *.....
-      cres = CMPLX(K,L)
+! kind parameter added for better precision
+      cres = CMPLX(K,L,dp)
       RETURN
       END FUNCTION EIRENE_PH_HUMLIK
 

@@ -220,7 +220,7 @@ c                           restricted to this processor iu
 
           write (iunout,*) 'number of particles to be resampled ',
      .                     'per processor '
-          write (iunout,'(10i6)') (icopro(ipe),ipe=0,nprs-1)
+          write (iunout,'(10i9)') (icopro(ipe),ipe=0,nprs-1)
 
 
 ! setup displacements for distribution of random numbers, for each processor IPE

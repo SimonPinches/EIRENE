@@ -173,7 +173,8 @@ C
             CASE (22)
               HELPP(1:NSBOX) = POT(1:NSBOX)
             CASE DEFAULT
-              WRITE (iunout,*) ' WRONG TALLY NUMBER (OUTPLA), ITAL = ',ITAL
+              WRITE (iunout,*)
+     .          ' WRONG TALLY NUMBER (OUTPLA), ITAL = ',ITAL
               WRITE (iunout,*) ' NO OUTPUT PERFORMED '
               CALL EIRENE_LEER(1)
               GOTO 100

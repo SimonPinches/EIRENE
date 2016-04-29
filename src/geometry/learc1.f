@@ -1,5 +1,8 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 !pb  01.07.10:  for LEVGEO==4 a search for the nearest triangle side was added 
+!    18.04.16:  default return value added in cleanup loop, J.Lore
+!               CUR --> CUR4 in deallocation loop, J.Lore
+!    28.04.16:  COMMENTS
  
       FUNCTION EIRENE_LEARC1 (X,Y,Z,IPO,IAN,IEN,LOGX,LOGY,NP,TEXT)
 C
@@ -110,6 +113,7 @@ csw 04aug08
           deallocate(heads)
         endif
         ifirst=0
+        EIRENE_LEARC1 = -1
         return
       endif
 csw
@@ -121,10 +125,15 @@ C
       IF (LEVGEO.EQ.4) THEN
 C
         IF (IFIRST.EQ.0) THEN
-!pbvk          ALLOCATE (OBSC(N1ST,1))
-          ALLOCATE (OBSC(NTRII,1))
           IFIRST = 1
+
+C  SET EQUIDISTANT X-Y GRID, WHICH COVERS THE TRIANGULAR GRID
+C  SET: HEADS, CUR
+         
+          
           ALLOCATE(HEADS(100,100))
+          ALLOCATE (OBSC(NTRII,1))
+
           DO I=1,100
             DO J=1,100
               NULLIFY(HEADS(I,J)%P)
@@ -143,6 +152,9 @@ C
           EPDX=DISTX*EPS5
           EPDY=DISTY*EPS5
           EPDXDY=EPDX*EPDY
+
+c  check grid, e.g. find obscure cells
+          
           DO I=1,NTRII
 C  CHECK CELLS FOR ORIENTATION, DISTORTION, CONVEX SHAPE, ETC...
               X1=XTRIAN(NECKE(1,I))
@@ -177,7 +189,11 @@ C  OPPOSITE GRID ORIENTATION: ORIENTATION IN TRIANGLE IS POSITIVE
                 WRITE (iunout,*) 'OPPOSITE ORIENTATION IN TRIANGLE '
               ENDIF
           ENDDO
-C
+
+C  FOR EACH TRIANGLE CELL (I) FIND THE RANGE IHEADX1,....IHEADY2
+C                              SUCH THAT THIS CELL (I) IS ENTIRELY
+C                              IN THAT SECTION OF THE REGULAR IX,IY GRID
+C 
           DO I=1,NTRII
             XTRMIN = MIN(XTRIAN(NECKE(1,I)),XTRIAN(NECKE(2,I)),
      .                   XTRIAN(NECKE(3,I)))
@@ -316,7 +332,7 @@ C
           ALLOCATE (D12I(N1ST,N2ND))
           ALLOCATE (D14(N1ST,N2ND))
           ALLOCATE (D14I(N1ST,N2ND))
-          ALLOCATE (OBSC(N1ST,N2ND))
+          
           DO 1 I=1,NR1ST
 !pb            DO 2 L=1,NP2NDM
             DO 2 L=1,NRPLG-1
@@ -335,12 +351,17 @@ C
 3         CONTINUE
 C
           ALLOCATE(HEADS4(100,100))
-C  SET EQUIDISTANT X-Y GRID, WHICH COVERS POLYGON GRID
+          ALLOCATE (OBSC(N1ST,N2ND))
+
+C  SET EQUIDISTANT X-Y GRID, WHICH COVERS POLYGON GRID,
+c  SET: HEADS4, CUR4
+
           DO IX=1,100
             DO IY=1,100
               NULLIFY(HEADS4(IX,IY)%P)
             ENDDO
           ENDDO
+
           XMIN=1.D60
           YMIN=1.D60
           XMAX=-1.D60
@@ -363,6 +384,7 @@ C  SET EQUIDISTANT X-Y GRID, WHICH COVERS POLYGON GRID
           EPDX=DISTX*EPS10
           EPDY=DISTY*EPS10
           EPDXDY=EPDX+EPDY
+
 C  FOR EACH POLYGON CELL (I,L) FIND THE RANGE IHEADX1,....IHEADY2
 C                              SUCH THAT THIS CELL (I,L) IS ENTIRELY
 C                              IN THAT SECTION OF THE REGULAR IX,IY GRID
@@ -847,22 +869,27 @@ C
         DEALLOCATE (D12I)
         DEALLOCATE (D14)
         DEALLOCATE (D14I)
-        DEALLOCATE (OBSC)
-        do i=1,100
-          do j=1,100
-            cur4 => heads4(i,j)%p
-            do
-              if(.not.associated(cur)) exit
-              helpp => cur4
-              cur4 => helpp%next
-              deallocate(helpp)
+
+        IF (ALLOCATED(OBSC)) DEALLOCATE (OBSC)
+        IF (ALLOCATED(HEADS4)) THEN 
+          do i=1,100
+            do j=1,100
+              cur4 => heads4(i,j)%p
+              do
+                if(.not.associated(cur4)) exit
+                helpp => cur4
+                cur4 => helpp%next
+                deallocate(helpp)
+              enddo
             enddo
           enddo
-        enddo
-        deallocate(heads4)
+          deallocate(heads4)
+        ENDIF
 
 
       elseif(levgeo.eq.4) then
+
+        IFIRST=0
         if(allocated(obsc)) deallocate(obsc)
         if(allocated(heads)) then
           do i=1,100
@@ -878,7 +905,7 @@ C
           enddo
           deallocate(heads)
         endif
-        ifirst=0
+        
         return
       endif
 
