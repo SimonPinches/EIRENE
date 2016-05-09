@@ -25,6 +25,7 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
 !pb APR  16:    eiods -> eioei
+!pb MAY  16:    tabds1 -> tabei1
 
 C
       FUNCTION EIRENE_FPATHM (K,CFLAG,JCOU,NCOU)

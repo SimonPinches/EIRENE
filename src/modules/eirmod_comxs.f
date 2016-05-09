@@ -26,6 +26,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
 !pb  APR  16:  pelds -> pelei
+!pb  MAY  16:  tabds1 -> tabei1
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -132,7 +133,7 @@ csw added OTHER (OT) reactions
      R SIGOTT
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R TABDS1(:,:),   TABRC1(:,:),
+     R TABEI1(:,:),   TABRC1(:,:),
      R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),
      R FDLMPI(:),     FDLMCX(:),     FDLMEL(:),
      R ADDPI(:,:),    ADDCX(:,:),    ADDEL(:,:)
@@ -479,7 +480,7 @@ cdr     vsigei  : fehlt noch
 cdr     vsigot  : fehlt noch
  
  
-        ALLOCATE (TABDS1(NRDS,NSTORDR))
+        ALLOCATE (TABEI1(NRDS,NSTORDR))
         ALLOCATE (TABRC1(NREC,NSTORDR))
         ALLOCATE (TABPI3(NRPI,NSTORDR,NSTORDT))
         ALLOCATE (TABCX3(NRCX,NSTORDR,NSTORDT))
@@ -637,7 +638,7 @@ c
       DEALLOCATE (XSTORV)
  
  
-      DEALLOCATE (TABDS1)
+      DEALLOCATE (TABEI1)
       DEALLOCATE (TABRC1)
       DEALLOCATE (TABPI3)
       DEALLOCATE (TABCX3)
@@ -1064,7 +1065,7 @@ cdr  ical=2:  ??
  
         XSTOR  = 0._DP
  
-        TABDS1  = 0._DP
+        TABEI1  = 0._DP
         TABRC1  = 0._DP
         TABPI3  = 0._DP
         TABCX3  = 0._DP
@@ -1200,7 +1201,7 @@ cdr  ical=2:  ??
 cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input block 1)
  
       WRITE (13+IFOFF)
-     . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
+     . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
@@ -1244,7 +1245,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
       SUBROUTINE EIRENE_READ_CMDTA
  
       READ (13+IFOFF)
-     . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
+     . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
@@ -1290,7 +1291,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
       INTEGER, INTENT(IN) :: IUN
       INTEGER :: IHELP(1)
 c
-      CALL FXDRDBL (IUN,TABDS1,NRDS*NSTORDR)
+      CALL FXDRDBL (IUN,TABEI1,NRDS*NSTORDR)
       CALL FXDRDBL (IUN,TABRC1,NREC*NSTORDR)
       CALL FXDRDBL (IUN,TABPI3,NRPI*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,TABCX3,NRCX*NSTORDR*NSTORDT)

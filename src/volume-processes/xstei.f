@@ -20,6 +20,7 @@ cdr  Jan. 2014:
 !pb APR   16:   pmlds -> pmlei, emlds -> emlei
 !pb APR   16:   piods -> pioei, eiods -> eioei
 !pb APR   16:   pelds -> pelei
+!pb MAY   16:   tabds1 -> tabei1
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -222,14 +223,14 @@ C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  MISSING HERE, I.E. NOT READY FOR COR
 C   CORONA ERATE NOT WORKING !
 C .....................................
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,.TRUE.,0,ERATE)
-            TABDS1(IREI,J)=COU*FACTKK
-C  IS TABDS1 A RATE COEFFICIENT OR ALREADY A RATE ?
+            TABEI1(IREI,J)=COU*FACTKK
+C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
             IF (IFTFLG(KK,2) < 100)
-     .        TABDS1(IREI,J)=TABDS1(IREI,J)*DEIN(J)
+     .        TABEI1(IREI,J)=TABEI1(IREI,J)*DEIN(J)
           END DO
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 1
-        ELSE ! NOT SUFFICIENT STORADE ON TABDS1
+        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 1
         ENDIF
@@ -258,12 +259,12 @@ C .......................................
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
             TB=MAX(-100._DP,TB)
-            TABDS1(IREI,J)=EXP(TB)
+            TABEI1(IREI,J)=EXP(TB)
 C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE in subr. rate_coeff only needed for this?
             IF (LHCOL) THEN
               EE = MAX(-100._DP,ERATE+FCTKKL+DEINL(J))
-              EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
+              EELDS1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
             END IF
 C .......................................
           END DO
@@ -326,7 +327,7 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                       EELDS1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,
      .                                TEINL(J),
      .                                0._DP,.TRUE.,0)*DEIN(J)*FACTKK/
-     .                                (TABDS1(IREI,J)+EPS60)
+     .                                (TABEI1(IREI,J)+EPS60)
 102                 CONTINUE
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=1
@@ -347,11 +348,11 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                         EE = EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
      .                                                PLS(J),.FALSE.,1)
                         EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-                        EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
+                        EELDS1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
                       END DO
                     ELSEIF (LHCOL) THEN
 C  NOTHING TO BE DONE HERE,
-C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABDS1
+C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
                     END IF
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
@@ -403,7 +404,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
             DO 202 J=1,NSBOX
               IF (LGVAC(J,NPLS+1)) CYCLE
               EHVDS1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
-     .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABDS1(IREI,J)+EPS60)
+     .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
 202         CONTINUE
             NREAHV(IREI)=KREAD
           ELSE

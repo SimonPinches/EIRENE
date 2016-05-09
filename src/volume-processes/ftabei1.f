@@ -7,7 +7,6 @@ cdr: to be done: remove erate from here (needed only for H-colrad option, move t
       FUNCTION EIRENE_FTABEI1 (IREI,K)
 C  this is the "on the fly" storage saving version to eliminate
 C  pre-computed array TABEI1(irei,k) from this run  
-C  (tabei1 is also still called tabds1, renaming for notational consistency to be done)
 c
 c  evaluate electron impact rate (1/s),  include density factor  
 c  for ei process no. IREI,

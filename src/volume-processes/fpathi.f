@@ -21,6 +21,7 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
 !pb APR  16:    eiods -> eioei
+!pb MAY  16:    tabds1 -> tabei1
 
 C
       FUNCTION EIRENE_FPATHI (K,CFLAG,JCOU,NCOU)
@@ -148,7 +149,7 @@ C
         IREI=LGIEI(IION,IIEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
-            SIGVEI(IREI)=TABDS1(IREI,K)
+            SIGVEI(IREI)=TABEI1(IREI,K)
           ELSE
             SIGVEI(IREI)=EIRENE_FTABEI1(IREI,K)
           END IF

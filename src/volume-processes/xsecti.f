@@ -25,6 +25,7 @@ cdr           (was missing, but accidentally correct)
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  patds -> patei,  eatds -> eatei
 !pb  APR 16:  pelds -> pelei
+!pb  MAY 16:  tabds1 -> tabds1
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -250,7 +251,7 @@ C
           IF (NSTORDR >= NRAD) THEN
             DO 73 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-8,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)*FACTKK
+              TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 73          CONTINUE
             EELDS1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
@@ -308,7 +309,7 @@ C
           IF (NSTORDR >= NRAD) THEN
             DO 71 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-9,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 71          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELDS1(IREI,1:NSBOX)=-15.5
@@ -360,7 +361,7 @@ C
           IF (NSTORDR >= NRAD) THEN
             DO 72 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-10,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES

@@ -26,6 +26,7 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of 
 !pb  APR 16:  patds -> patei, eatds -> eatei
 !pb  APR 16:  piods -> pioei, eiods -> eioei
 !pb  APR 16:  pelds -> pelei
+!pb  MAY 16:  tabds1 -> tabds1
 C
       SUBROUTINE EIRENE_XSECTM
 C
@@ -282,7 +283,7 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
           IF (NSTORDR >= NRAD) THEN
             DO 70 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-5,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 70          CONTINUE
             EELDS1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
@@ -347,7 +348,7 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           IF (NSTORDR >= NRAD) THEN
             DO 71 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-6,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)*FACTKK
+              TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 71          CONTINUE
             EELDS1(IREI,1:NSBOX)=-25.0
 C  TRANSFERRED KINETIC ENERGY: 10 EV
@@ -393,7 +394,7 @@ C
           IF (NSTORDR >= NRAD) THEN
             DO 72 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-7,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELDS1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV

@@ -25,6 +25,7 @@ cdr  oct.15:  default he ionisation kk=-1 --> kk=-11,
 cdr           to avoid conflict with default cx reaction kk=-1
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  pelds -> pelei
+!pb  MAY 16:  tabds1 -> tabei1
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -156,7 +157,7 @@ C
             DO 80 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(ISTORE,TEINL(J),0._DP,.TRUE.,
      .                                0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 80          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELDS1(IREI,1:NSBOX)=EELEC
