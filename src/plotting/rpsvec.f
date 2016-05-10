@@ -1,4 +1,5 @@
 C  april 2006:  levgeo=1 option and nlpol: added
+C  ??           array dimension ZUORD(..,30,2), rather than (...,20,2)
 C
       SUBROUTINE EIRENE_RPSVEC (AORIG,BORIG,IBLD,ICURV,
      .                   IXX,IYY,XX,YY,

@@ -1,5 +1,11 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
+cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk 
+cdr             secondaries.
+cdr             This is temporarily necessary, as a consequence of making the
+cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
+cdr             We are not aware of any application of eirene, in which this new error exit
+cdr             would be activated.  
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -12,6 +18,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_COMSOU
       USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY : IUNOUT
       USE EIRMOD_CZT1
       USE EIRMOD_PHOTON
  
@@ -19,7 +26,7 @@ C
  
       real(dp) :: tpb1, tpb2, second_own
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER :: I, IRPI, IREI
+      INTEGER :: I, IRPI, IREI, IERROR
  
 !pb      tpb1 = second_own()
  
@@ -120,18 +127,28 @@ cdr  set some further assistant arrays, for ei and pi processes:
 cdr  accumulated information from A, M, I ,P and PH for particle processes 'ei' and 'pi'. 
 cdr  These array are stored in comxs and are used for scoring
 cdr  tallies in update.f (tracklength) and collide.f (coll. estim) exclusively
-
+cdr  They are for indirect indexing, in loops over secondary species.
+cdr  e.g. rather than 
+cdr                   do iat=1,natmi
+cdr         now:      
+cdr                   do i   =1,ipatds(irei,0)   (<=natmi,  possibly much shorter loop) 
+cdr                      iat = ipatds(irei,i)    (now we know: iat is a secondary indeed)
+cdr                      inum= patds(irei,iat)   (there are inum secondaries of species iat)
+cdr                      ...
+cdr                   enddo
 cdr 
+      IERROR = 0
+
       IPATDS = 0
       IPMLDS = 0
       IPIODS = 0
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLDS = 0
       DO IREI=1,NRDS
-        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds (<= natm) 
-cdr                                                 atomic species which appear as secondaries, 
+        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds(...,0) (<= natm) 
+cdr                                                 distinct atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
-        IF (ipatds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
+        IF (ipatds(IREI,0).GT.0) THEN          
              IPATDS(IREI,1:ipatds(IREI,0))=PACK( (/ (i,i=1,natm) /),
      .                                     PATDS(IREI,1:) > 0)
 cdr  IPATDS(IREI,...)=iatm means:  one or more secondaries of species iatm
@@ -140,55 +157,71 @@ cdr  the arrays patds,...,pplds, and p2nd, contain the further information:
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
         ipmlds(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
-        IF (ipmlds(IREI,0).GT.0) THEN          ! inserted by Derek Harting 26.03
+        IF (ipmlds(IREI,0).GT.0) THEN          
              IPMLDS(IREI,1:ipmlds(IREI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                     PMLDS(IREI,1:) > 0)
         END IF
         ipiods(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
-        IF (ipiods(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
+        IF (ipiods(IREI,0).GT.0) THEN         
              IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIODS(IREI,1:) > 0)
         END IF
-        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)
-        IF (ipplds(IREI,0).GT.0) THEN         ! inserted by Derek Harting 26.03.
+        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
+        IF (ipplds(IREI,0).GT.0) THEN         
              IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
      .                                     PPLDS(IREI,1:) > 0)
         END IF
+        if (ipplds(IREI,0) > 1) then
+          IERROR = IERROR + 1
+          write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
+     .          'AS SECONDARY PARTICLE OF EI REACTION IREI = ',IREI
+        end if
       END DO
 
 cdr:  same as above, for PI processes 
       IPATPI = 0
       IPMLPI = 0
       IPIOPI = 0
-cdr   IPPHPI = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
+cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
       IPPLPI = 0
       DO IRPI=1,NRPI
         ipatpi(IRPI,0)=COUNT(PATPI(IRPI,1:) > 0)
-        IF (ipatpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipatpi(IRPI,0).GT.0) then         
           IPATPI(IRPI,1:ipatpi(IRPI,0))=PACK( (/ (i,i=1,natm) /),
      .                                  PATPI(IRPI,1:) > 0)
         endif
         ipmlpi(IRPI,0)=COUNT(PMLPI(IRPI,1:) > 0)
-        IF (ipmlpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipmlpi(IRPI,0).GT.0) then        
           IPMLPI(IRPI,1:ipmlpi(IRPI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                  PMLPI(IRPI,1:) > 0)
         endif
         ipiopi(IRPI,0)=COUNT(PIOPI(IRPI,1:) > 0)
-        IF (ipiopi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipiopi(IRPI,0).GT.0) then        
           IPIOPI(IRPI,1:ipiopi(IRPI,0))=PACK( (/ (i,i=1,nion) /),
      .                                  PIOPI(IRPI,1:) > 0)
         endif
         ipplpi(IRPI,0)=COUNT(PPLPI(IRPI,1:) > 0)
-        IF (ipplpi(IRPI,0).GT.0) then         ! inserted by Derek Harting 26.03.
+        IF (ipplpi(IRPI,0).GT.0) then        
           IPPLPI(IRPI,1:ipplpi(IRPI,0))=PACK( (/ (i,i=1,npls) /),
      .                                  PPLPI(IRPI,1:) > 0)
         endif
+        if (ipplpi(IRPI,0) > 1) then
+          IERROR = IERROR + 1
+          write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
+     .          'AS SECONDARY PARTICLE OF PI REACTION IRPI = ',IRPI
+        end if
       END DO
  
 !pb        tpb2 = second_own()
 !pb        write (6,*) ' cpu time for packs und counts ',tpb2-tpb1
 !pb        tpb1 = tpb2
  
- 
+      if (ierror > 0) then
+         write (iunout,*) 'only a temporary fail safe step'
+         write (iunout,*) 'contact eirene group at fzj, if this occurs'  
+         write (iunout,*) 'CALCULATION ABANDONNED '
+         CALL EIRENE_EXIT_OWN(1)
+      end if
+
       RETURN
       END

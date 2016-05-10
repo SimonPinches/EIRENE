@@ -5,9 +5,9 @@ cdr  nelrei, nreahv,
 cdr  01.01.16:  documented
 cdr             unified numbering of reactions: kk= nreaei(irei), rather than nreahv(irei) (not ready)
  
-      FUNCTION EIRENE_FEHVDS1 (IREI,K)
+      FUNCTION EIRENE_FEHVEI1 (IREI,K)
 C  this is the "on the fly" storage saving version to eliminate
-C  pre-computed array EHVDS1(irei,k) from with run
+C  pre-computed array EHVEI1(irei,k) from with run
 
 cdr  find heavy secondary particle energy for EI process no. IREI,  energy in eV
 c    locally in cell K, for process kk= nreahv(irei)
@@ -24,39 +24,39 @@ c
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IREI, K
-      REAL(DP) :: EIRENE_FEHVDS1, EHVDS, EIRENE_FTABEI1,
+      REAL(DP) :: EIRENE_FEHVEI1, EHVEI, EIRENE_FTABEI1,
      .            EIRENE_RATE_COEFF, ERATE, DE_10
       INTEGER :: II, KK
  
-      EIRENE_FEHVDS1=0.D0
+      EIRENE_FEHVEI1=0.D0
       KK=NREAHV(IREI)
       IF (KK < 0) THEN
         SELECT CASE (KK)
 c       CASE (-4)   ! DEFAULT PROCESS KK=-4:  H+ E --> H+ +E, no net energy transfer to H+
 c          EIRENE_FEHVEI1 =0.0   
         CASE (-1)
-            EIRENE_FEHVDS1=EHVDS1(IREI,1)
+            EIRENE_FEHVEI1=EHVDS1(IREI,1)
         CASE (-2)  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,  
-            EIRENE_FEHVDS1=6.  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,    
+            EIRENE_FEHVEI1=6.  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,    
         CASE (-3)
-            EIRENE_FEHVDS1=10.0
+            EIRENE_FEHVEI1=10.0
         CASE (-4)
-            EIRENE_FEHVDS1=8.6
+            EIRENE_FEHVEI1=8.6
         CASE (-5)
-            EIRENE_FEHVDS1=0.5
+            EIRENE_FEHVEI1=0.5 
         CASE (-6)  ! DEFAULT PROCESS KK=-10: H2+ E --> H + H, DISS. RECOMBINATION 
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
-            EIRENE_FEHVDS1=DE_10*TEIN(K)
+            EIRENE_FEHVEI1=DE_10*TEIN(K)
 c       CASE (-11)   ! DEFAULT PROCESS KK=-11:  He+ E --> He+ +E, no net energy transfer to He+!
-c           EIRENE_FEHVDS1=0.0
+c           EIRENE_FEHVEI1 =0.0 
         END SELECT
 
 c  non default models, data from external databases
       ELSE IF (KK > 0) THEN
-        EHVDS = EIRENE_RATE_COEFF(KK,TEINL(K),0._DP,.FALSE.,0,ERATE)
-        EHVDS=EXP(MAX(-100._DP,EHVDS+FACREI(IREI,2)))
-        EIRENE_FEHVDS1=EHVDS*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
+        EHVEI = EIRENE_RATE_COEFF(KK,TEINL(K),0._DP,.FALSE.,0,ERATE)
+        EHVEI=EXP(MAX(-100._DP,EHVEI+FACREI(IREI,2)))
+        EIRENE_FEHVEI1=EHVEI*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
       END IF
  
       RETURN

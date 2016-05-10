@@ -7,9 +7,12 @@ C  aug. 05:  corrected electron energy loss rate for default rec. rate
 ! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
 ! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
 cdr  oct.14:  pls made allocatable, plus minor syncronisation with other xsect... routines
-cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung. 
+cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung.
 CDR           bremsstrahlung: new function eirene_brems, replaces gaunt factor function
-cdr  June 15:  added: default He+ --> He(1S) + rad  model. same from of rate as for H+ default model.
+cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of rate as for H+ default model.
+cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
+cdr             should not have had any effect, on any run, so far, 
+cdr             since this reaction did not exist in EIRENE at all until June 15
 
 C
       SUBROUTINE EIRENE_XSECTP
@@ -28,13 +31,13 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: CF(9,0:9)
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
-     .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF, 
+     .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
      .            BREMS, Z, eirene_brems, ERATE
       INTEGER :: IIRC, IION3, IPLS3, IATM3, IMOL3, KK, NRC, IATM,
@@ -47,14 +50,14 @@ C
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits 
+cdr: set hard wired lower density for H.4 type fits
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
 10      CONTINUE
       END IF
- 
+
 C
 C   RECOMBINATION
 C
@@ -103,7 +106,7 @@ c  corsum approx +1.0 for Te --> infty
                   NREARC(IRRC) = 0
                   JEREARC(IRRC) = 0
                   NELRRC(IRRC) = -1
-                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"  
+                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
                   NREARC(IRRC) = 0
                   JEREARC(IRRC) = 0
                   NELRRC(IRRC) = -1
@@ -142,7 +145,7 @@ C
                     ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
 C  rate = rate coeff: <sig v> times electr. density,  1/s per ion
 c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
-                    TABRC1(IRRC,J)=3.5487-14*ZX**1.5/(ZX+0.35)*DEIN(J)
+                    TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
 c                   corsum=0._dp  !  old default: 1.5*Te
 C  correction due to energy dependence in rec. cross section
@@ -156,7 +159,7 @@ c  corsum approx +1.0 for Te --> infty
                   NREARC(IRRC) = 0
                   JEREARC(IRRC) = 0
                   NELRRC(IRRC) = -1
-                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"  
+                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
                   NREARC(IRRC) = 0
                   JEREARC(IRRC) = 0
                   NELRRC(IRRC) = -1
@@ -220,7 +223,7 @@ cdr  this next stuff should go into xstrc.f
                 NPHPRC(IRRC)=ISPZ
                 RMASS2=0.
               ENDIF
- 
+
               ITYP2=EIRENE_IDEZ(ISCD2P(IPLS,NRC),1,3)
               ISPZ2=EIRENE_IDEZ(ISCD2P(IPLS,NRC),3,3)
               IF ((ISCD2P(IPLS,NRC) /= 0) .AND.
@@ -277,7 +280,7 @@ C  2.D) RATE COEFFICIENT(TE,NE)
                     IF (IFTFLG(KK,2) < 100)
      .                TABRC1(IRRC,J)=TABRC1(IRRC,J)*DEIN(J)
                   END DO
- 
+
                   NREARC(IRRC) = KK
                   JEREARC(IRRC) = 2
                 ELSE
@@ -335,22 +338,22 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                   IF (NSTORDR >= NRAD) THEN
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!  
+C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
      .                               TEINL(J),
      .                               0._DP,.TRUE.,0)*DEIN(J)*FACTKK
 C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)
                       IF (LADAS) THEN
-                        IF (LGVAC(J,IPLS)) CYCLE 
+                        IF (LGVAC(J,IPLS)) CYCLE
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
                           BREMS =EIRENE_BREMS(TEIN(J),DEIN(J),Z)/ELCHA  !eV/s/ion
-                        END IF                   
+                        END IF
                         EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
                       ENDIF
-c  bremsstrahlung correction done. 
+c  bremsstrahlung correction done.
 
                     END DO
                     NELRRC(IRRC)=KREAD
@@ -369,7 +372,7 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
                   IF (NSTORDR >= NRAD) THEN
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
-                      IF (LGVAC(J,NPLS+1)) CYCLE 
+                      IF (LGVAC(J,NPLS+1)) CYCLE
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
      .                               TEINL(J),
      .                               PLS(J),.FALSE.,1)
@@ -384,10 +387,10 @@ c  (since eelrc1 is taken negative, add the bremsstrahlung)
                           BREMS = 0._DP
                         ELSE
                           BREMS =EIRENE_BREMS(TEIN(J),DEIN(J),Z)/ELCHA  !eV/s/ion
-                        END IF 
+                        END IF
                         EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
                       ENDIF
-c  bremsstrahlung correction done. 
+c  bremsstrahlung correction done.
 
                     END DO
                     NELRRC(IRRC)=KREAD
@@ -398,7 +401,7 @@ c  bremsstrahlung correction done.
                   END IF
                   MODCOL(6,4,IRRC)=1
                 ENDIF
- 
+
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
 C  SHIFT ELECTRON COOLING RATE BY DELE * TABRC
@@ -484,7 +487,7 @@ C             END IF
         ENDIF
 C
 1000  CONTINUE
- 
+
       DEALLOCATE (PLS)
 C
       RETURN

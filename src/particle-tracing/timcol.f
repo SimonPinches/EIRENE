@@ -6,14 +6,18 @@ C            THE CENSUS ARRAY
 !             IPART (NPRNL,1:MPARTT) --> IPART (1:MPARTT,NPRNL)
 !             RPARTC(NPRNL,1:NPARTT) --> RPARTC(1:NPARTT,NPRNL)
 !             IPARTC(NPRNL,1:MPARTT) --> IPARTC(1:MPARTT,NPRNL)
+cdr Jan 2016 : comments,  and: stop scoring census not only after total number
+cdr            of allowed census scores is reached, 
+cdr            but instead do so also for each stratum, and for the scores per stratum limit.
  
       SUBROUTINE EIRENE_TIMCOL (PR,*,*)
 C
-C  COLLISION WITH TIME SURFACE, FIND NEW CO-ORDINATES
+C  COLLISION WITH "TIME SURFACE", FIND NEW CO-ORDINATES
 C  UPDATE (TIME-) SURFACE TALLIES
 C  UPDATE USER SUPPLIED SNAPSHOT ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
-C  AND STOP HISTORY
+C  AND EITHER STOP HISTORY OR CONTINUE
+
 C  RETURN 1: CONTINUE FLIGHT
 C  RETURN 2: STOP FLIGHT
 C
@@ -67,7 +71,7 @@ C  UPDATE SNAPSHOT ESTIMATORS
 C
 c-dpc
 CDR:  this must be generalized, towards a more general horizon
-CDR   rather then fixed horizon at 100 meters
+CDR   rather than fixed horizon at 100 meters in x-y plane
       dist=sqrt(x0**2+y0**2)
       if(dist.gt.1e4) then
         write(*,*) 'timcol: ERROR!  dist = ',dist,
@@ -78,7 +82,10 @@ CDR   rather then fixed horizon at 100 meters
         goto 112
       endif
 c-dpc
+C  
+C  TOTAL NO. OF SCORES ON CENSUS
       IPRNLI=IPRNLI+1
+C  NO. OF SCORES ON CENSUS FOR PRESENT STRATUM ISTRA
       IPRNLS=IPRNLS+1
       IF (IPRNLS.GE.NPRNLS(ISTRA).AND..NOT.NLMOVIE) THEN
 C  THIS IS THE LAST SCORE FOR THIS STRATUM TO BE STORED
@@ -87,25 +94,34 @@ C  THIS IS THE LAST SCORE FOR THIS STRATUM TO BE STORED
 C
 C   CENSUS ARRAYS:
 C   SAVE LOCATION, WEIGHT AND OTHER PARAMETERS
-C   STOP SCORING ON CENSUS AFTER NPRNL SCORES
-      if (iprnli <= nprnl) then
+C   STOP SCORING ON CENSUS AFTER NPRNL SCORES TOTAL
+
+CDR STOP ALSO AFTER NPRNLS SCORES FOR STRATUM ISTRA ??
+      if (iprnli <= nprnl.and.iprnls <= nprnls(istra)) then
+cdr   if (iprnli <= nprnl) then
+
         DO 100 J=1,NPARTT
           RPART(J,IPRNLI)=RPSTT(J)
 100     CONTINUE
         DO 110 J=1,MPARTT
           IPART(J,IPRNLI)=IPSTT(J)
 110     CONTINUE
-      else
-        iprnli = nprnl
-      end if
+      end if 
+ 
+C  DON'T SCORE ON CENSUS ANY MORE FOR THIS STRATUM
+      if (iprnls > nprnls(istra)) iprnls = nprnls(istra)
+      if (iprnli > nprnl)         iprnli = nprnl
+
 C
 112   continue
+
 C  DECIDE: CONTINUE OR STOP TRAJECTORY
-      IF ((NTMSTP.GE.0.AND.ITMSTP.GE.NTMSTP).OR.LGLAST) THEN
+      IF (NTMSTP.GE.0.AND.ITMSTP.GE.NTMSTP) THEN
 C
 C  DO NOT CONTINUE THIS TRACK
 C  UPDATE PARTICLE EFFLUX  ONTO TIME-SURFACE MSURF=NLIM+NSTSI
 C  UPDATE ENERGY FLUX ONTO TIME-SURFACE MSURF=NLIM+NSTSI
+C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
         IF (ITYP.EQ.1) THEN
@@ -121,8 +137,9 @@ C
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         RETURN 2
+
       ELSE
-C  OTHERWISE: RESTORE WEIGHT = WEIGHT/PR, AND CONTINUE
+C  OTHERWISE: RESTORE WEIGHT = WEIGHT/PR, TIME, AND CONTINUE ANOTHER TIME STEP
         WEIGHT=WEIGHT/PR
         ITMSTP=ITMSTP+1
         TIME=TIME0

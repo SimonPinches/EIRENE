@@ -330,10 +330,10 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           EATDS(IREI,0,    1)=EATDS(IREI,IA1,1)
           EATDS(IREI,0,    2)=EATDS(IREI,IA1,2)
 
-          EPLDS(IREI,IP2,  1)=RMASSP(IP2)/ACCMAS
-          EPLDS(IREI,IP2,  2)=1./RMASSP(IP2)/ACCINV
-          EPLDS(IREI,0,    1)=EPLDS(IREI,IP2,1)
-          EPLDS(IREI,0,    2)=EPLDS(IREI,IP2,2)
+          EPLEI(IREI,IP2,  1)=RMASSP(IP2)/ACCMAS
+          EPLEI(IREI,IP2,  2)=1./RMASSP(IP2)/ACCINV
+          EPLEI(IREI,0,    1)=EPLEI(IREI,IP2,1)
+          EPLEI(IREI,0,    2)=EPLEI(IREI,IP2,2)
 
           PELDS(IREI)=1.0
 

@@ -4,7 +4,7 @@ C
 C 0710: provide value of cross section for reaction K
 C       K=0 means no cross section available for this reaction
 c       k=-1,-2,-3:  default (hard wired) CX cross sections
-c 0315: increase kk<=10 to kk<=-11 for He ei process, to full reserve k=-1 
+c 0315: increase kk>=-10 to kk>=-11 for He ei process, to fully reserve k=-1 
 c       for H+p CX as default process
 
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
@@ -18,7 +18,7 @@ C
 C  K<0 :  DEFAULT MODEL DEFINED IN SETUP_DEFAULT_REACTIONS, BUT NOW ALSO ON REACDAT
 C
 C  K=-1:  H + H+ --> H+ + H   CROSS SECTION, JANEV, 3.1.8
-C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
+C         LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
 C
 C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 5.3.1

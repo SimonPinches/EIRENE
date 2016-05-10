@@ -27,7 +27,7 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimatros: species reolved.
+cdr DEC. 15 :  bulk ion energy estimators: species reolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
@@ -86,7 +86,7 @@ C
       INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NRDS)
 
 C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS
-      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
+      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
  
  
 csw add n 2lines
@@ -436,9 +436,9 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
           NFLAG=CFLAG(3,1)
-          CALL
-     .    EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
-     .                  NFLAG,IRCX,DUMT,DUMV)
+          CALL EIRENE_VELOCX
+     .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
+     .          NFLAG,IRCX,DUMT,DUMV)
  
           SELECT CASE(ITYP)
 C
@@ -2137,7 +2137,7 @@ C
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
 
           IF (.NOT.ALLOCATED(NAMIPI)) THEN
-            ALLOCATE(NAMIEI(NSPAMI))
+            ALLOCATE(NAMIPI(NSPAMI))
           END IF
           NAMIPI = 0
           NAMIPI(NSPH+1:NSPA) = PATPI(IRPI,1:NATMI)

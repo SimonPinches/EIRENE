@@ -1,6 +1,12 @@
 !pb  181206  output is done by processor 0
 !pb  181206  setting up of census source is done by processor 0
 !pb  100107  call to reinitialisation routine
+cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
+cdr          currently turning off time stratum may not be detected 
+cdr          when setting dynamic allocatable storage parameters in "set_param.f"
+cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
+cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
+
  
  
       RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
@@ -79,6 +85,7 @@ C
       IF (MPI_INITIALIZE) CALL MPI_INIT(IER)
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
+
       NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
 
@@ -185,7 +192,8 @@ C
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for memory allocation ',time-timi
  
-        IF (ITNR == 1) NLSRON = .TRUE.
+!ITER   IF (ITNR == 1) NLSRON = .TRUE.
+        IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
 C
 C   SET SOME CONSTANTS
 C
@@ -345,8 +353,6 @@ C
       IF (MY_PE == 0) THEN
       DO 450 ISTRAI=1,NSTRAI
           ISTRA=ISTRAI
-!pb        if( ((mod(istra-1,nprs) .eq. my_pe).and.(nprs.le.nsteff)) .or.
-!pb     .     (nprs.gt.nsteff).and.(my_pe.eq.npesta(istra))) then
           IF (TRCSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.TRCSRC(0)))
      .        CALL EIRENE_OUTEIR(ISTRA)
           IF (PLTSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.PLTSRC(0)))
@@ -451,6 +457,8 @@ C  HENCE: RESET IITER TO 1
 
 CDR  WHAT IS THIS?  
       IF (PLIDL) THEN
+         CALL EIRENE_MASBOX
+     .          ('OUTPUT OPTION: IDL, PER STRATUM ')
         call eirene_outidlconf
         call eirene_outidlpla
         call eirene_outidltal

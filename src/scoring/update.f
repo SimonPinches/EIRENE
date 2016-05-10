@@ -24,7 +24,9 @@ cdr dec.15: tracklength estimators for heavy test particle post collision energi
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
-cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
+cdr nov. 15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
+cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
+cdr          so no effect on any result.  Few further comments corrected
 
  
 C
@@ -1659,14 +1661,14 @@ C
         IF (LGIEL(IION,0,0).EQ.0) GOTO 1160
 C  DEFAULT TRACKLENGTH ESTIMATOR
         DO 1161  IIEL=1,NIELI(IION)
-          IREL=LGIEL(IION,IAEL,0)
-          IPLS=LGIEL(IION,IAEL,1)
+          IREL=LGIEL(IION,IIEL,0)
+          IPLS=LGIEL(IION,IIEL,1)
 C  DO NOT UPDATE BGK SOURCE RATE TALLIES HERE
           IBGK=NPBGKP(IPLS,1)
-C  ELASTIC REACTION IAEL, BETWEEN SPECIES IATM/IPLS: 
+C  ELASTIC REACTION IIEL, BETWEEN SPECIES IION/IPLS: 
 C  IPLS IS A BGK VIRTUAL BACKGROUND SPECIES. 
-C  CONTRIBUTIONS TO PAAT, PAPL ARE IDENTICALLY ZERO 
-C  EAAT AND EAPL SHOULD NOT BE UPDATED HERE, BECAUSE THEY ARE SUMMED OVER SPECIES.
+C  CONTRIBUTIONS TO PIAT, PIPL ARE IDENTICALLY ZERO 
+C  EIAT AND EIPL SHOULD NOT BE UPDATED HERE, BECAUSE THEY ARE SUMMED OVER SPECIES.
           IF (IBGK.NE.0) GOTO 1161
 
           LOGPLS(IPLS,ISTRA)=.TRUE.

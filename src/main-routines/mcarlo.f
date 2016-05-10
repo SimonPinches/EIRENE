@@ -347,7 +347,6 @@ C
 10      ISUM=SUM(NPRNLS(1:NSTRAI))
         IF (ISUM.NE.NPRNLI) THEN
 C  ROUND OFF ERRORS
-          WRITE (iunout,*) 'ISUM,NPRNLI ',ISUM,NPRNLI
           NMX=0
           NPX=-1
           DO ISTRA=1,NSTRAI
@@ -360,6 +359,8 @@ C  ROUND OFF ERRORS
           NPRNLS(NMX)=NPRNLS(NMX)-IS
           GOTO 10
         ENDIF
+        WRITE (iunout,*) 'TOTAL CENSUS NPRNLI ',NPRNLI
+        CALL EIRENE_LEER(1)
         DO  ISTRA=1,NSTRAI
           CALL EIRENE_MASJ2 ('STRATUM, NUMBER ',ISTRA,NPRNLS(ISTRA))
         ENDDO
@@ -367,7 +368,7 @@ C  ROUND OFF ERRORS
 C
 C  ASSIGN PE'S TO STRATA
 C
-!pb      IF ((NSTEFF > 0) .AND. (NPRS.GT.nsteff)) THEN
+
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
         call EIRENE_broad_pedist(xtim)
@@ -459,11 +460,8 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
           ENDIF
           CALL EIRENE_LEER(2)
           XMCP(ISTRA)=0.
-csw 19feb2013
+c??
           XMCT(ISTRA)=0.
-csw
-!pb        if( ((nprs.le.nsteff).and.(mod(ISTRA-1,nprs).eq.my_pe)) .or.
-!pb     .      ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra)) ) then
           IPANU=0
 C
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
@@ -471,12 +469,17 @@ C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 C  find iseed, and iseedr from input flag NINITL(ISTRA)
         IF (NINITL(ISTRA).GT.0) THEN
           NINIST=NINITL(ISTRA)
-c  initialize random number generator with chosen input iseed
+c  initialize random number generator with chosen input seed NINIST
           dumran=ranset_eirene(ninist)
-C  seed for first call to random number of this stratum (probably: locate)
-          iseed=ranget_eirene(isee)
+C  some work now for correlation sampling
+C  get seed ISEED for first call to random number of this stratum 
+C             (used only for NLCRR in particle loop DO 100 ...below)
+          ISEED=ranget_eirene(isee)
+cdr   it turns out that this ISEED is identical to NINIST, so the previous call to ranget is not needed.        
 c  seed for first call to subr. reflec (only used for NLCRR)
           ISEEDR=ISEED*0.3D0
+
+c  remove remaining generated random number vectors from earlier strata
           INIV1=0
           INIV2=0
           INIV3=0
@@ -490,8 +493,12 @@ c  find iseed from truely random procedure from wall clock time (use date and ti
           NINIST=NINITL(ISTRA)
           dumran=ranset_eirene(ninist)
 c  initialize random number generator from wall clock time
+c  seed for first call to subr. reflec (only used for NLCRR)
           iseed=ranget_eirene(isee)
+cdr  see above:ISEED = NINIST,  the call to ranget was not needed here.
           ISEEDR=ISEED*0.3D0
+
+c  remove remaining generated random number vectors from earlier strata
           INIV1=0
           INIV2=0
           INIV3=0
@@ -500,6 +507,7 @@ c  initialize random number generator from wall clock time
 C       ELSEIF (NINITL(ISTRA).EQ.0) THEN
 C  DON'T INITIALIZE FOR THIS STRATUM, NOTHING TO BE DONE HERE
         ENDIF
+C  ISEED AND ISEEDR ARE SET NOW
 C
         FASCL(ISTRA)=1.
         FMSCL(ISTRA)=1.
@@ -554,7 +562,11 @@ CVKMPI        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
         TIMI=EIRENE_SECOND_OWN()            !VKMPI
         XTIM(ISTRA)=XTIM(ISTRA)+TIMI !VKMPI
 C
+cdr  LGLAST = T: LAST TRAJECTORY OF PRESENT STRATUM ISTRA 
         LGLAST=.FALSE.
+cdr  LGSTOP = T: same as lglast, but only due to npts or cpu-time criterion
+cdr  LGLAST      may also have been set during particle tracking, for other reasons.
+cdr              presently: e.g. if census array is full, set in TIMCOL
         LGSTOP=.FALSE.
 C
 C
@@ -563,12 +575,14 @@ csw 19feb2013
         call system_clock (itimstart, itimrate)
 csw
 
-csw 18oct2012 TEST
-csw        DO 100 IPTSI=1,NPTS(ISTRA)
+
+C  PARTICLE LOOP
+
         DO 100 IPTSI=1,NPTS(ISTRA)/max(1,npestr(istra))
-csw
+
+C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
 C
-C  RESET INDEX-ARRAY
+C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
           NCLMT = 0
           DO I=1,NCLMTS
             IN=ICLMT(I)
@@ -590,7 +604,8 @@ C  RESET INDEX-ARRAY
               ESTIML(ISPC)%PSPC%IMETSP = 0
             END DO
           END IF
-C
+C...........................................................................
+
           IF (LGLAST.AND.LGSTOP) THEN
             CALL EIRENE_LEER(1)
             WRITE (iunout,*)
@@ -627,12 +642,16 @@ cdr         CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
 
 C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
           SECND1=EIRENE_SECOND_OWN()
-          LGLAST = IPTSI.EQ.NPTS(ISTRA)
+C
+C  LAST HISTORY FOR PRESENT STRATUM ?
+          LGLAST = IPTSI.EQ.NPTS(ISTRA)   
           LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
      .                        IPTSI.GE.NMINPTS(ISTRA).AND.
      .                        .NOT.NLMOVIE)
+CDR       LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL 
+
           LGSTOP = LGLAST
-C  NEXT MONTE CARLO HISTORY
+
           IF (NLCRR) THEN
 C  INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
 C           Call RANSET_eirene(ISEED)
@@ -640,28 +659,37 @@ C           Call RANSET_eirene(ISEED)
             DUMRAN=RANF_EIRENE( )
             iseed=ranget_eirene(isee)
             ISEED=INTMAX-ISEED
+
             INIV1=0
             INIV2=0
             INIV3=0
             INIV4=0
           ELSE IF ((MY_PE == 0) .AND. (NPTSDEL(ISTRA).GT.0)) THEN
+c  simulate seeds of a multi-processor run, on a single processor
             IF (MOD(IPTSI-1,NPTSDEL(ISTRA)) == 0) THEN
               NINIST=NINITL(ISTRA)+IPTSI/NPTSDEL(ISTRA)*10000
               dumran=ranset_eirene(ninist)
               iseed=ranget_eirene(isee)
               ISEEDR=ISEED*0.3D0
+
               INIV1=0
               INIV2=0
               INIV3=0
               INIV4=0
             END IF
           ENDIF
+C...................................................................
+C  NEXT MONTE CARLO HISTORY
+c
+c   LAUNCH A NEW PARTICLE NOW
+c...................................................................
           XMCP(ISTRA)=XMCP(ISTRA)+1.
           NPANU=NPANU+1
           IPANU=IPANU+1
           ITRJ = NCHORI + MOD(IPANU,NTRJ) + 1
           NLEVEL=0
           CALL EIRENE_LOCAT1(IPANU)
+
 C  IS BIRTH PROCESS SURVIVED?
           IF (.NOT.LGPART) GOTO 110
 C
@@ -767,17 +795,17 @@ C
         WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
         WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
         WRITE (iunout,*) 'THIS STRATUM'
-CDR     CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+
 
 !pb 0312 2013        timend=mpi_wtime()
         call system_clock (itimend, itimrate)
         timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
         CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
      .                      ISTRA,IPANU,TIMUSED)
-CDR     write(iunout,'(a,2i8,e13.6)') 'TIMUSED: ',istra,ipanu,timused
+
 
         IF (NPRNLI.GT.0) THEN
-          WRITE (iunout,*) 'M.C. HISTORIES THAT SURVIVED TO CENSUS'
+          WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
           CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
         ENDIF
         IF (TRCLST) CALL EIRENE_OUTLST

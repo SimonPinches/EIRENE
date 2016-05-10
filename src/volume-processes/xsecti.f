@@ -20,6 +20,8 @@ cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing)
 cdr  oct.14:  further syncronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
+cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
+cdr           (was missing, but accidentally correct)
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -233,10 +235,10 @@ C
           EATDS(IREI,0,    1)=EATDS(IREI,IA1,1)
           EATDS(IREI,0,    2)=EATDS(IREI,IA1,2)
 
-          EPLDS(IREI,IP2,1)=RMASSP(IP2)/ACCMAS
-          EPLDS(IREI,IP2,2)=1./RMASSP(IP2)/ACCINV
-          EPLDS(IREI,0,    1)=RMASSP(IP2)/ACCMAS
-          EPLDS(IREI,0,    2)=1./RMASSP(IP2)/ACCINV
+          EPLEI(IREI,IP2,1)=RMASSP(IP2)/ACCMAS
+          EPLEI(IREI,IP2,2)=1./RMASSP(IP2)/ACCINV
+          EPLEI(IREI,0,    1)=RMASSP(IP2)/ACCMAS
+          EPLEI(IREI,0,    2)=1./RMASSP(IP2)/ACCINV
 
           PELDS(IREI)=0.
           MODCOL(1,2,IREI)=1
@@ -275,19 +277,25 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
 
 C  SECOND PROCESS  H2+  -->  H+  +  H+ + e :  DEFAULT PROCESS NO. KK=-9
           KK=-9
+          ACCMAS=0.D0
+          ACCINV=0.D0
           IDSC1=IDSC1+1
           NREII=NREII+1
           IREI=NREII
           LGIEI(IION,IDSC1)=IREI
           PPLDS(IREI,IPLS1)=PPLDS(IREI,IPLS1)+1.
           PPLDS(IREI,IPLS2)=PPLDS(IREI,IPLS2)+1.
+          ACCMAS=ACCMAS+RMASSP(IPLS1)
+          ACCMAS=ACCMAS+RMASSP(IPLS2)
+          ACCINV=ACCINV+1./RMASSP(IPLS1)
+          ACCINV=ACCINV+1./RMASSP(IPLS2)
 
-          EPLDS(IREI,IPLS1,1)=RMASSP(IPLS1)/ACCMAS
-          EPLDS(IREI,IPLS2,1)=RMASSP(IPLS2)/ACCMAS
-          EPLDS(IREI,IPLS1,2)=1./RMASSP(IPLS1)/ACCINV
-          EPLDS(IREI,IPLS2,2)=1./RMASSP(IPLS2)/ACCINV
-          EPLDS(IREI,0,    1)=EPLDS(IREI,IPLS1,1)+EPLDS(IREI,IPLS2,1)
-          EPLDS(IREI,0,    2)=EPLDS(IREI,IPLS1,2)+EPLDS(IREI,IPLS2,2)
+          EPLEI(IREI,IPLS1,1)=RMASSP(IPLS1)/ACCMAS
+          EPLEI(IREI,IPLS2,1)=RMASSP(IPLS2)/ACCMAS     ! if ipls1=ipls2: eplei(ipls,1): only 1/2
+          EPLEI(IREI,IPLS1,2)=1./RMASSP(IPLS1)/ACCINV
+          EPLEI(IREI,IPLS2,2)=1./RMASSP(IPLS2)/ACCINV  ! if ipls1=ipls2: eplei(ipls,2): only 1/2
+          EPLEI(IREI,0,    1)=EPLEI(IREI,IPLS1,1)+EPLEI(IREI,IPLS2,1)  ! if ipls1=ipls2: eplei(0,1): total, correct
+          EPLEI(IREI,0,    2)=EPLEI(IREI,IPLS1,2)+EPLEI(IREI,IPLS2,2)  ! if ipls1=ipls2: eplei(0,2): total, correct
 
           PELDS(IREI)=1.
 

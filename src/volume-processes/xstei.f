@@ -14,7 +14,7 @@ cdr  Jan. 2014:
 !dr             currently: label H.4 2.1.5 or H.10 2.1.5 are not used in case LHCOL?
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
 !   02.02.15:   ONLY COMMENTS ADDED
-!dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLDS(..,0,..)
+!dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -127,8 +127,8 @@ C
         ACCMSP=ACCMSP+INUM*RMASSP(IPP)
         ACCINV=ACCINV+INUM/RMASSP(IPP)
         ACCINP=ACCINP+INUM/RMASSP(IPP)
-        EPLDS(IREI,IPP,1)=RMASSP(IPP)
-        EPLDS(IREI,IPP,2)=1./RMASSP(IPP)
+        EPLEI(IREI,IPP,1)=RMASSP(IPP)
+        EPLEI(IREI,IPP,2)=1./RMASSP(IPP)
       ENDIF
 C
       IF (ISCND.NE.0.AND.ICOUNT.EQ.1) THEN
@@ -178,11 +178,11 @@ C
       EIODS(IREI,0,1)=ACCMSI/ACCMAS
       EIODS(IREI,0,2)=ACCINI/ACCINV
       DO IPP=1,NPLSI
-        EPLDS(IREI,IPP,1)=EPLDS(IREI,IPP,1)/ACCMAS
-        EPLDS(IREI,IPP,2)=EPLDS(IREI,IPP,2)/ACCINV
+        EPLEI(IREI,IPP,1)=EPLEI(IREI,IPP,1)/ACCMAS
+        EPLEI(IREI,IPP,2)=EPLEI(IREI,IPP,2)/ACCINV
       ENDDO
-      EPLDS(IREI,0,1)=ACCMSP/ACCMAS
-      EPLDS(IREI,0,2)=ACCINP/ACCINV
+      EPLEI(IREI,0,1)=ACCMSP/ACCMAS
+      EPLEI(IREI,0,2)=ACCINP/ACCINV
 C
       CHRDIF=CHRDF0
       DO 83 IIO=1,NIONI
@@ -554,12 +554,12 @@ C
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLDS(IREI,0,1),
-     .                                 ' * E0 + ',EPLDS(IREI,0,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLEI(IREI,0,1),
+     .                                 ' * E0 + ',EPLEI(IREI,0,2)*EI
         ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLDS(IREI,0,1),
-     .                                 ' * E0 + ',EPLDS(IREI,0,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLEI(IREI,0,1),
+     .                                 ' * E0 + ',EPLEI(IREI,0,2),
      .                                 ' * EHEAVY '
 C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0 
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
