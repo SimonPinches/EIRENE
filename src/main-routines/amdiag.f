@@ -180,7 +180,7 @@ c  not ready
      .      ' ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
-          TXTPUN(IAIN,NTALN) = 'eV times A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'eV x A.U. (0.612 E-8 cm3/s)'
           irei=ns
           if (mm.eq.1) then
             DO 1721 ICELL=1,NSBOX
