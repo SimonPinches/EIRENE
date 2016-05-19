@@ -31,6 +31,7 @@ cdr 22.09.14: upfcop only to be called in coupled mode: nmode.gt.0
 cdr 22.09.14: cpu time output removed. To be collected and printout made conditional
 cdr dec. 15 : 'upfcop.f' now 'updlin.f', moved from couple specific part to main eirene code,
 cdr           under scoring/updlin.f.
+cdr april 16: use: nstrai rather than nstra in do-loops. Bug fix from ITER-IO
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -303,7 +304,7 @@ CVKMPI      DO ISTRA=1,NSTRAI
 CVKMPI        XTIM(ISTRA)=XTIM(ISTRA-1)+DXTIM(ISTRA)
 CVKMPI      END DO
 
-      XTIM(0)=SUM(XTIM(1:NSTRA))
+      XTIM(0)=SUM(XTIM(1:NSTRAI))
 C
 
       TIMen=EIRENE_SECOND_OWN()
@@ -399,6 +400,7 @@ C
 csw 19mar2013 moved to here after call to pedist (xmct/xmcp)
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
 !pb      CALL EIRENE_INIT_COUTAU(NLSRON)
+
       LOGHELP(1:NSTRA) = NLSRON(1:NSTRA)
       CALL EIRENE_INIT_COUTAU(LOGHELP)
       FASCL(0)=1.
