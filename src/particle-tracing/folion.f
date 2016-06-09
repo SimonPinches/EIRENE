@@ -1737,10 +1737,7 @@ c  get the parallel part of the background velocity, m/s
      >                         , IPL, .TRUE.)
             CALL EIRENE_VECUSR(2, NCELL, X0, Y0, Z0, Vt(1), Vt(2), Vt(3)
      >                         , IPL, .TRUE.)
-! can be deleted if check ok!
-!            CALL EIRENE_VECUSR(3, NCELL, X0, Y0, Z0, vtot, d01, d02,
-!     >                         , IPL, .TRUE.)
-            VelPrlBG = vtot*dot_product(Bt,Vt)
+            VelPrlBG = dot_product(Bt,Vt)*1.0E-02
          ELSE
             VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
      >                  BYIN(NCELL)*VYIN(IPL,NCELL)+
