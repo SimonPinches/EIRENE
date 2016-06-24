@@ -1460,7 +1460,16 @@ c     on the "root" node, where this is already done via timea0 after input
       ELSE IF (RP%IFIT == 3) THEN
 ! ADAS DATA
         IF (MY_PE .NE. 0) THEN
-          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
+!pb          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
+!pb  NULLIFY NOT YET ALLOCATED POINTER ARRAYS
+          IF(.NOT. ASSOCIATED(RP%ADAS)) THEN
+             ALLOCATE (RP%ADAS) ! IYS
+             NULLIFY(RP%ADAS%DENS)
+             NULLIFY(RP%ADAS%TEMP)
+             NULLIFY(RP%ADAS%DDE)
+             NULLIFY(RP%ADAS%DTE)
+             NULLIFY(RP%ADAS%FIT)
+          END IF
         END IF
  
         CALL MPI_BCAST (RP%ADAS%NDENS,1,MPI_INTEGER,
