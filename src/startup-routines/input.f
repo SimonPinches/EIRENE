@@ -1,3 +1,4 @@
+!pb  June 16:   default for NPLSTI changed from 1 to NPLS
 !cd  jan   16:  reset census start time to time0, even for time0=0.
 !cd  jan   16:  remove unused: ILE,tpb1,...,ian,ien,iab,reac
 !cd  dec.  15:  jj-nlim, rather than jj-nlimi, for non.dev.std. surfaces
@@ -201,7 +202,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCLUDE, TRCDUMM
+      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCLUDE, TRCDUMM, LMULTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
@@ -306,6 +307,8 @@ C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
 
 C  SET DEFAULT VALUE FOR LHABER (FLAG NOT IN USE ANY MORE)
       LHABER = .FALSE.
+
+      LMULTI = .FALSE.
 C
       CALL EIRENE_LEER(2)
 C
@@ -1616,6 +1619,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
             WRITE (iunout,*) ' IESTMA = ',IESTMA(IATM,K)
             WRITE (iunout,*) ' IBGKA  = ',IBGKA(IATM,K)
           END IF
+          LMULTI = LMULTI .OR. (IBGKA(IATM,K) /= 0)
           READ (IUNIN,6664) EELECA(IATM,K),EBULKA(IATM,K),
      .                      ESCD1A(IATM,K),ESCD2A,
      .                      FREACA(IATM,K),FLDLMA(IATM,K)
@@ -1708,6 +1712,7 @@ C
             WRITE (iunout,*) ' IESTMM = ',IESTMM(IMOL,K)
             WRITE (iunout,*) ' IBGKM  = ',IBGKM(IMOL,K)
           END IF
+          LMULTI = LMULTI .OR. (IBGKM(IMOL,K) /= 0)
           READ (IUNIN,6664) EELECM(IMOL,K),EBULKM(IMOL,K),
      .                      ESCD1M(IMOL,K),ESCD2M,FREACM(IMOL,K)
           ESCD1M(IMOL,K) = ESCD1M(IMOL,K)+ESCD2M
@@ -1789,6 +1794,7 @@ C
             WRITE (iunout,*) ' IESTMI = ',IESTMI(IION,K)
             WRITE (iunout,*) ' IBGKI  = ',IBGKI(IION,K)
           END IF
+          LMULTI = LMULTI .OR. (IBGKI(IION,K) /= 0)
           READ (IUNIN,6664) EELECI(IION,K),EBULKI(IION,K),
      .                      ESCD1I(IION,K),ESCD2I,FREACI(IION,K)
           ESCD1I(IION,K) = ESCD1I(IION,K)+ESCD2I
@@ -1880,6 +1886,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
             WRITE (iunout,*) ' IESTMPH = ',IESTMPH(IPHOT,K)
             WRITE (iunout,*) ' IBGKPH  = ',IBGKPH(IPHOT,K)
           END IF
+          LMULTI = LMULTI .OR. (IBGKPH(IPHOT,K) /= 0)
           READ (IUNIN,6664) EELECPH(IPHOT,K),EBULKPH(IPHOT,K),
      .                      ESCD1PH(IPHOT,K),ESCD2PH,
      .                      FREACPH(IPHOT,K),FLDLMPH(IPHOT,K)
@@ -2112,14 +2119,32 @@ C       WRITE (iunout,*) ZEILE
 C  Te profile
       IF (INDPRO(1).LE.5.AND.NPLSI.GT.0)
      .  READ (IUNIN,6664) TE0,TE1,TE2,TE3,TE4,TE5
+
 C  Ti profile(s)
-      NPLSTI = 1
-      IF ((INDPRO(2) < 0) .OR. (INDPRO(2) > 9)) NPLSTI=NPLS
+!pb   NPLSTI = 1
+!pb   IF (LMULTI .OR. (INDPRO(2) < 0) .OR. (INDPRO(2) > 9)) NPLSTI=NPLS
+      NPLSTI = NPLS
+      IF (INDPRO(2) < 0) NPLSTI=1
+
+      IF (NPLSTI == 1) THEN
+        WRITE (IUNOUT,*) 'WARNING !'
+        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
+     .                   ' DUE TO INDPRO(2) < 0'
+        IF (LMULTI) THEN
+          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
+     .                     ' BECAUSE BGK REACTIONS PRESENT'
+          NPLSTI = NPLS
+        END IF
+        WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
+      END IF
+
       NLMLTI= (NPLSTI > 1)
       MPLSTI=1
       IF (NLMLTI) MPLSTI = (/ (I,I=1,NPLS) /)
+
       INDPRO(2)=IABS(INDPRO(2))
       IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
+
       IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
         IF (NLMLTI) THEN
           READ (IUNIN,6664) (TI0(I),TI1(I),TI2(I),TI3(I),TI4(I),TI5(I),
