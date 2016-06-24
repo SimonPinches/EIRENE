@@ -15,8 +15,10 @@ cdr  oct.14  :  syncronized with fpathm, fpathi
 
 cdr 31.10.14 :  speedup of final cut off evaluations
 
-cdr note:       sgnl_poly evaluations are just the 8th order polynom, plus rcmin,rcmax consideration.
-cdr             unless rcmin,rcmax are set (as it is the case currently here), there is no need to call  --> move to in-line 
+cdr note:       sgnl_poly evaluations are just the 8th order polynom, 
+cdr             plus rcmin,rcmax consideration.
+cdr             unless rcmin,rcmax are set (as it is the case currently here), 
+cdr             there is no need to call  --> move to in-line 
 cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
@@ -46,12 +48,14 @@ C           CFLAG(6,...): RC
 C
 C   FLAG FOR POST COLLISION DISTRIBUTION IN VELOCITY SPACE
 C  CFLAG(...,IRCL),  IRCL: IREI,IRCX,IRPI,IREL,IRRC
-C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
-C                                                   SPECIES ALLOWED)
-C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN CENTER OF MASS SYSTEM
+C      =0:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BACKGROUND 
+C                TO BE WRITTEN
+C      =1:   VI: SIGMA-V-WEIGHTED MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BACKGROUND
 C      =2:   VI: MAXWELL PLUS DRIFT
-C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN PLUS DRIFT
-C
+C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BACKGROUND
+
+C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
+C                TO BE WRITTEN
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -202,26 +206,39 @@ c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
           END IF
         ELSEIF (MODCOL(4,2,IRPI).EQ.2) THEN
-C  BEAM - MAXWELL
+C  MODEL 2:
+C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 C
-C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-          ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
-          IF (NSTORDR >= NRAD) THEN
-            TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
-            FP = 0._DP
-            RCMIN = -HUGE(1._DP)
-            RCMAX = HUGE(1._DP)
-            EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN
+C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+C           HENCE: USE BEAM-BEAM RATE INSTEAD.
+            VRELQ=PVELQ(IPLSV)
+            VREL=SQRT(VRELQ)
+            ELAB=LOG(VRELQ)+DEFPI(IRPI)
+            IREAC=MODCOL(4,1,IRPI)
+            CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),
+     .                       'FPATHA PI1')
+            SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
+C  MINIMUM PROJECTILE ENERGY: 0.1 EV
+            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+            IF (NSTORDR >= NRAD) THEN
+              TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
+              FP = 0._DP
+              RCMIN = -HUGE(1._DP)
+              RCMAX = HUGE(1._DP)
+              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
+            ELSE
 ! CALCULATE RATE-COEFFICIENT
             KK=NREAPI(IRPI)
             TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
             EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
+            ENDIF
           END IF
           SIGVPI(IRPI)=EXP(EXPO)
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
-C  BEAM - BEAM
+C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
           VREL=SQRT(VRELQ)
           ELAB=LOG(VRELQ)+DEFPI(IRPI)
@@ -295,7 +312,7 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
-C     HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
@@ -332,7 +349,7 @@ CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
             SIGVCX(IRCX)=EXP(EXPO)
           ENDIF
         ELSEIF (MODCOL(3,2,IRCX).EQ.3) THEN
-C  MODEL 3:
+C  MODEL 3:  (ALSO:  DEFAULT CX MODEL, ONLY CROSS SECTION IS USED, NO RATE COEFFICIENTS)
 C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           VEFFQ=ZTI(IPLS)+PVELQ(IPLSV)
           VEFF=SQRT(VEFFQ)
@@ -370,7 +387,8 @@ C  ION SAMPLING FROM MAXWELLIAN
               ESIGCX(IRCX,1)=EIRENE_FEPLCX3(IRCX,K)
             END IF
           END IF  ! this was for tracklength estimator only
-          CFLAG(3,1)=2
+          CFLAG(3,1)=2  ! this is for sampling in velocx. cflag should depend on ircx !!!!
+cdr       cflag(3,ircx)=2
         ELSEIF (MODCOL(3,4,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  MEAN ENERGY FROM CROSS SECTION WEIGHTED DRIFTING MAXWELLIAN
@@ -646,13 +664,13 @@ C
 992   CONTINUE
       WRITE (iunout,*)
      .  'ERROR IN FPATHA: INCONSISTENT CHARGE EXCHANGE DATA'
-      WRITE (iunout,*) 'IATM,IRCX,MODCOL(3,J=1,4,IRCX) '
+      WRITE (iunout,*) 'IATM,IRCX,(MODCOL(3,J,IRCX),J=1,4 '
       WRITE (iunout,*) IATM,IRCX,(MODCOL(3,J,IRCX),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
 995   CONTINUE
       WRITE (iunout,*)
      .  'ERROR IN FPATHA: INCONSISTENT ELASTIC COLL. DATA'
-      WRITE (iunout,*) 'IATM,IREL,MODCOL(5,J,IREL) '
+      WRITE (iunout,*) 'IATM,IREL,(MODCOL(5,J,IREL),J=1,4) '
       WRITE (iunout,*) IATM,IREL,(MODCOL(5,J,IREL),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
       END
