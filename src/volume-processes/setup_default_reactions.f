@@ -1,6 +1,7 @@
 cdr  oct. 2015:
 cdr  k=-1:  cx  H  + p  
 cdr  k=-11  ei  He + e   (was formerly also k=-1)
+!pb  june 2016: nullify unused pointers in default reaction k=-11
 
       subroutine EIRENE_setup_default_reactions
 c  fill reacdat(k)%... with default reaction data, k < 0.
@@ -194,6 +195,10 @@ C  RATE COEFFICIENT, JANEV, 2.3.9
       ALLOCATE(REACDAT(IR)%RTC)
       ALLOCATE(REACDAT(IR)%RTC%POLY)
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
+!pb nullify unused pointers
+      NULLIFY (REACDAT(IR)%RTC%ADAS)
+      NULLIFY (REACDAT(IR)%RTC%LINE)
+      NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
       REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
