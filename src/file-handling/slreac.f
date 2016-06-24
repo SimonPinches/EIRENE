@@ -10,6 +10,7 @@ cdr  jan 16: started to document options for asymptotics
 !pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR  data files, 
 cdr          such as character strings H.xxx
 cdr          taken over from ITER-IO branch
+!pb  may 16: bug fix to the extensions (resolving problem reading HYDHEL H.3)
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
@@ -178,15 +179,20 @@ C
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
       INTEGER :: I, IND, J, K, IH, I0P1, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, INC, IANF, IFILE, IL
-      CHARACTER(80) :: ZEILE
+      CHARACTER(80) :: ZEILE, LAST_TEX
 !ITER CHARACTER(2) :: CHR
       CHARACTER(4) :: CHR
       CHARACTER(3) :: CHRL, CHRR
       CHARACTER(200) :: DSN, DIR
-      CHARACTER(1) :: CUT
+      CHARACTER(1) :: CUT, BACK
       CHARACTER(4) :: CH123
       CHARACTER(3) :: CCRC
+      CHARACTER(8) :: SECTION
       LOGICAL :: LCONST,LGEMIN,LGEMAX
+C
+! defining backslash character
+      BACK="\\"
+      SECTION=BACK // 'section'
 C
 !   set some defaults
       LGEMIN=.FALSE.
@@ -495,10 +501,18 @@ CC  now identify proper dataset within file FILNAM
 100     READ (29+ifoff,'(A80)',END=990) ZEILE
         IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
 
+        LAST_TEX=REPEAT(' ',80)
 1       READ (29+ifoff,'(A80)',END=990) ZEILE
 !ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     
-        IF (INDEX(ZEILE,H123).EQ.0 .or.
-     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
+!PB        IF (INDEX(ZEILE,H123).EQ.0 .or.
+!PB     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
+        IF (INDEX(ZEILE,H123).EQ.0) THEN
+          IF (INDEX(ZEILE,BACK).NE.0) LAST_TEX=ZEILE 
+          GOTO 1
+        ELSE
+          IF ((INDEX(LAST_TEX,SECTION) .EQ. 0) .AND. 
+     .        (INDEX(ZEILE,SECTION) .EQ. 0)) GOTO 1
+        END IF
 C
 2       READ (29+ifoff,'(A80)',END=990) ZEILE
 !ITER   IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
