@@ -33,6 +33,7 @@ cdr dec. 15 : 'upfcop.f' now 'updlin.f', moved from couple specific part to main
 cdr           under scoring/updlin.f.
 !pb 18.01.16: for totally random particle trajectories avoid usage of same random numbers in consecutive calls to mcarlo
 cdr april 16: use: nstrai rather than nstra in do-loops. Bug fix from ITER-IO
+!pb may 16  : for NPRS<NSTRAI call to IF3COP moved out of strata loop
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -1083,15 +1084,15 @@ C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE 
 C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STATA THEN PROCESSES
 C
-      IF (NMODE.GT.0) THEN
-        IF (NPRS <= NSTEFF) THEN
-          IESTR=ISTRA
-          ISTRAA=ISTRA
-          ISTRAE=ISTRA
-          CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
-          NEW_ITER=1
-        ENDIF
-      ENDIF
+!pb      IF (NMODE.GT.0) THEN
+!pb        IF (NPRS <= NSTEFF) THEN
+!pb          IESTR=ISTRA
+!pb          ISTRAA=ISTRA
+!pb          ISTRAE=ISTRA
+!pb          CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
+!pb          NEW_ITER=1
+!pb        ENDIF
+!pb      ENDIF
 C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
@@ -1176,13 +1177,15 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THEN STRATA
       IF (NMODE.GT.0) THEN
-        IF (NPRS > NSTEFF) THEN
+!pb  NOW IF3COP CALLED HERE IN CASE OF LESS PROCESSORS THAN STRATA AS WELL
+!pb  USE OF fort.10 IS REQUIRED 	
+!pb        IF (NPRS > NSTEFF) THEN
           IESTR=ISTRA
           ISTRAA=1
           ISTRAE=NSTRAI
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
           NEW_ITER=1
-        ENDIF
+!pb        ENDIF
       ENDIF
 csw
       IF (NPRS > 1) THEN
