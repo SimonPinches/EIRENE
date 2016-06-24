@@ -31,6 +31,7 @@ cdr 22.09.14: upfcop only to be called in coupled mode: nmode.gt.0
 cdr 22.09.14: cpu time output removed. To be collected and printout made conditional
 cdr dec. 15 : 'upfcop.f' now 'updlin.f', moved from couple specific part to main eirene code,
 cdr           under scoring/updlin.f.
+!pb 18.01.16: for totally random particle trajectories avoid usage of same random numbers in consecutive calls to mcarlo
 cdr april 16: use: nstrai rather than nstra in do-loops. Bug fix from ITER-IO
 c
       SUBROUTINE EIRENE_MCARLO
@@ -94,6 +95,8 @@ C
      .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
      .           INODES, J, ISEE, IPTSI, I1, I2, I3, IA, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
+!pb 28012016
+      INTEGER, SAVE :: ICO_CALL=0
 csw
 !pb 03122013      real(dp) :: timstart,timend,timused
 !pb 03122013      real(dp), external :: mpi_wtime
@@ -242,6 +245,9 @@ CVKMPI      SECND=XTIM(0)
 
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
+!pb 28012016
+!   count number of times MCARLO has been called
+      ICO_CALL = ICO_CALL + 1
 
       timan=secnd
 C
@@ -491,6 +497,9 @@ c  find iseed from truely random procedure from wall clock time (use date and ti
         ELSEIF (NINITL(ISTRA).LT.0) THEN
           CALL DATE_AND_TIME(CDATE,CTIME)
           READ(CTIME(1:6),*) NINITL(ISTRA)
+!pb 28012016
+!  add number of calls to MCARLO in order to avoid same random seeds
+          NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
           WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
           NINIST=NINITL(ISTRA)
           dumran=ranset_eirene(ninist)
@@ -1343,7 +1352,7 @@ cdr  dec. 15
 C
       RETURN
 
-      ENTRY MCARLO2
+      ENTRY EIRENE_MCARLO2
 
       IF (ALLOCATED(DUMMY)) THEN
          DEALLOCATE (DUMMY,ZVOLIN,ZVOLIW,SCLTAL)
