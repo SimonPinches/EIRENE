@@ -155,7 +155,7 @@ C
         IREI=LGMEI(IMOL,IMEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
-            SIGVEI(IREI)=TABDS1(IREI,K)
+            SIGVEI(IREI)=TABEI1(IREI,K)
           ELSE
             SIGVEI(IREI)=EIRENE_FTABEI1(IREI,K)
           END IF
