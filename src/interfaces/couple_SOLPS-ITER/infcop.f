@@ -2879,7 +2879,7 @@ csw
 
 
 csw 08mar2013, make sure that all strata have written out onto fort.10, ie.
-csw            all cpu's have come to this point
+csw            all cpus have come to this point
       if(nprs > 1 .and. nprs < nstrai .and. .not.lshort) then
         call mpi_barrier(MPI_COMM_WORLD,ier)
       endif
@@ -2979,20 +2979,20 @@ csw 08mar2013 do this only for my_pe=0
 csw
           IF (ISTRAI.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
-        ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-          IESTR=ISTRAI
-          CALL EIRENE_RSTRT(ISTRAI,NSTRAI,NESTM1,NESTM2,NADSPC,
+          ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+            IESTR=ISTRAI
+            CALL EIRENE_RSTRT(ISTRAI,NSTRAI,NESTM1,NESTM2,NADSPC,
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
-        ELSE
-          WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
-          WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
-          CALL EIRENE_EXIT_OWN(1)
-        ENDIF
+          ELSE
+            WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
+            WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
         endif
 C
 C  DATA TRANSFER BACK FROM EIRENE TO EXTERNAL CODE
