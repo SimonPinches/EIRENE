@@ -6,8 +6,7 @@ cdr          currently turning off time stratum may not be detected
 cdr          when setting dynamic allocatable storage parameters in "set_param.f"
 cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
-
- 
+!pb  MAY 16  nrds -> nrei 
  
       RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
      .                                    MPI_INITIALIZE)
@@ -278,7 +277,7 @@ C
         WRITE (iunout,*) 'NRCXI,NRCX ',NRCXI,NRCX
         WRITE (iunout,*) 'NRELI,NREL ',NRELI,NREL
         WRITE (iunout,*) 'NRPII,NRPI ',NRPII,NRPI
-        WRITE (iunout,*) 'NREII,NREI ',NREII,NRDS
+        WRITE (iunout,*) 'NREII,NREI ',NREII,NREI
         WRITE (iunout,*) 'NRRCI,NREC ',NRRCI,NREC
         CALL EIRENE_LEER(1)
       ENDIF

@@ -37,7 +37,11 @@ cdr             would be activated.
 >>>>>>> variable IPIODS renamed to IPIOEI
 =======
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
+<<<<<<< HEAD
 >>>>>>> variable PIODS renamed to PIOEI
+=======
+!pb  MAY  16:  nrds   -> nrei
+>>>>>>> variable NRDS renamed to NREI
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -66,7 +70,7 @@ C
         NRCX=0
         NREL=0
         NRPI=0
-        NRDS=0
+        NREI=0
         NREC=0
         NBGV=0
         NROT=0
@@ -79,7 +83,7 @@ C
         NRCX=MAX(1,NRCX)
         NREL=MAX(1,NREL)
         NRPI=MAX(1,NRPI)
-        NRDS=MAX(1,NRDS)
+        NREI=MAX(1,NREI)
         NREC=MAX(1,NREC)
         NBGV=MAX(1,NBGV)
         NROT=MAX(1,NROT)
@@ -176,8 +180,8 @@ cdr
       IPIOEI = 0
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLEI = 0
-      DO IREI=1,NRDS
-        ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0)  (<= natm)
+      DO IREI=1,NREI
+        ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm)
 cdr                                                 atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
         IF (ipatei(IREI,0).GT.0) THEN

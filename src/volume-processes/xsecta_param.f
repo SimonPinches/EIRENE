@@ -1,5 +1,6 @@
 C  may 2006:  default helium resonant cx added
 C  april 07:  setting of NRPI adapted (ion impact collisions)
+C  MAY 16  :  nrds -> nrei
 C
       SUBROUTINE EIRENE_XSECTA_PARAM
  
@@ -31,7 +32,7 @@ C
             IF (NCHARP(IPLS).EQ.NCHARA(IATM).AND.
      .          NMASSP(IPLS).EQ.NMASSA(IATM).AND.
      .          NCHRGP(IPLS).EQ.1) THEN
-              NRDS=NRDS+1
+              NREI=NREI+1
               GOTO 50
             ENDIF
 52        CONTINUE
@@ -45,7 +46,7 @@ C
           DO 90 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
-            NRDS=NRDS+1
+            NREI=NREI+1
 90        CONTINUE
         ENDIF
 C

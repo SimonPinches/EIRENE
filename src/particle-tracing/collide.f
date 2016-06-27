@@ -9,7 +9,7 @@ C           still to be done: include other processes, and colphot
 C 2.2.06:  wghtO set at suppression of absorption, for collision estimators.
 C 2.2.06:  REMOVED: OT PROCESSES FOR ATOMS
 C          GENERATION LIMIT FOR POST COLLISION ATOMS FROM PHOTONS: REMOVED
-C 10.3.06: bug fix: LGEI_RED(NRDS) --> LGEI_RED(0:NRDS)
+C 10.3.06: bug fix: LGEI_RED(NREI) --> LGEI_RED(0:NREI)
 C          (some compilers had been unhappy with this)
 C 20.3.07: PI reactions revised
 
@@ -36,6 +36,7 @@ cdr                  probably not correct (outdated).
 !pb  APR  16:  patds -> patei
 !pb  APR  16:  pmlds -> pmlei
 !pb  APR  16:  piods -> pioei
+!pb  MAY  16:  nrds  -> nrei
 
 
 
@@ -87,7 +88,7 @@ C
       INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
      .           IBGK, IAD, IAEL, IREL, IP, IMEI, IMCX, IAPI, II, NFLAG,
      .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
-      INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NRDS)
+      INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NREI)
 
 C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS
       INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)

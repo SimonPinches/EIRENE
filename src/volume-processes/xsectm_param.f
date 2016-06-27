@@ -1,4 +1,5 @@
 C  april 07:  setting of NRPI  introduced (ion impact collisions)
+C  may 16  :  nrds -> nrei
 C
 C
       SUBROUTINE EIRENE_XSECTM_PARAM
@@ -175,7 +176,7 @@ C
 C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES
 C
 C  FIRST PROCESS
-          NRDS=NRDS+1
+          NREI=NREI+1
 C  SECOND PROCESS (MAY BE SPLITTED INTO 2A AND 2B)
           IF (IATM1.NE.IATM2) THEN
             ICOUNT=1
@@ -184,14 +185,14 @@ C  SECOND PROCESS (MAY BE SPLITTED INTO 2A AND 2B)
           ENDIF
 C
 73        CONTINUE
-          NRDS=NRDS+1
+          NREI=NREI+1
           IF (ICOUNT.EQ.1) THEN
             ICOUNT=2
             GOTO 73
           ENDIF
 C
 C  THIRD PROCESS
-          NRDS=NRDS+1
+          NREI=NREI+1
 C
 76        CONTINUE
 C
@@ -202,7 +203,7 @@ C
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
 C
-            NRDS=NRDS+1
+            NREI=NREI+1
 90        CONTINUE
         ENDIF
 C
