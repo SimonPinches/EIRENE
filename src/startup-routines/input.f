@@ -2126,7 +2126,7 @@ C  Ti profile(s)
       NPLSTI = NPLS
       IF (INDPRO(2) < 0) NPLSTI=1
 
-      IF (NPLSTI == 1) THEN
+      IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING !'
         WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
      .                   ' DUE TO INDPRO(2) < 0'
