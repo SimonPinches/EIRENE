@@ -8,6 +8,8 @@ cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
 !pb  MAY 16  nrds -> nrei 
  
+ 
+ 
       RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
      .                                    MPI_INITIALIZE)
 C

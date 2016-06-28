@@ -1,47 +1,16 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
-<<<<<<< HEAD
-<<<<<<< HEAD
 cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk 
 cdr             secondaries.
 cdr             This is temporarily necessary, as a consequence of making the
 cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
 cdr             We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.  
-=======
-!pb  APR  16:  ipplds -> ipplei
-<<<<<<< HEAD
->>>>>>> variable IPPLDS renamed to IPPLEI
-=======
-=======
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-<<<<<<< HEAD
->>>>>>> variable PPLDS renamed to PPLEI
-!pb  APR  16:  ipatds -> ipatei
-<<<<<<< HEAD
->>>>>>> variable IPATDS renamed to IPATEI
-=======
-=======
 !pb  APR  16:  ipatds -> ipatei, patds -> patei
-<<<<<<< HEAD
->>>>>>> variable PATDS renamed to PATEI
-!pb  APR  16:  ipmlds -> ipmlei
-<<<<<<< HEAD
->>>>>>> variable IPMLDS renamed to IPMLEI
-=======
-=======
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
-<<<<<<< HEAD
->>>>>>> variable PMLDS renamed to PMLEI
-!pb  APR  16:  ipiods -> ipioei
->>>>>>> variable IPIODS renamed to IPIOEI
-=======
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
-<<<<<<< HEAD
->>>>>>> variable PIODS renamed to PIOEI
-=======
 !pb  MAY  16:  nrds   -> nrei
->>>>>>> variable NRDS renamed to NREI
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -182,7 +151,7 @@ cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI RE
       IPPLEI = 0
       DO IREI=1,NREI
         ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm)
-cdr                                                 atomic species which appear as secondaries, 
+cdr                                                 distinct atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
         IF (ipatei(IREI,0).GT.0) THEN
              IPATEI(IREI,1:ipatei(IREI,0))=PACK( (/ (i,i=1,natm) /),
