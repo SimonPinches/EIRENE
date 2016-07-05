@@ -162,10 +162,12 @@ cdr  for the time being: distribute bulk ion energy loss proportional to collisi
 cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
 cdr  temprature(ipls), even different sign.
 cdr  
+        EWG = WEIGHT*(E0NEW-E0OLD)
         DO IPL = 1, NPLSI
-          EWG = WEIGHT*(E0NEW-E0OLD)
-          EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
-     >                  - EWG*D_E0NEW_tmp(IPL)/(SUM(D_E0NEW_tmp)+EPS60)
+          IF (D_E0NEW_tmp(IPL).NE.0.0) THEN
+            EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
+     >                   - EWG*D_E0NEW_tmp(IPL)/(SUM(D_E0NEW_tmp)+EPS60)
+          END IF
         END DO
 
         FAC    = SQRT(E0NEW/E0OLD)

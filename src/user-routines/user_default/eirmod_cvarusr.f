@@ -7,12 +7,12 @@
 
       private
 
-      real*8, allocatable, public :: dVelPrl_dt(:), dVelPerp_dt(:)
-      real*8, allocatable, public :: df_dChiPrl(:), dg_dChiPrl(:)
-      real*8, allocatable, public :: dg_dChiPerp(:), nue(:)
-      real*8, public  :: veltotal, rCPrlOld, rCPerpOld
-      real*8, public  :: old03, old04, old05, old06, old07
-      real*8, public  :: alphaPrl, alphaPerp, iprepare
+      real(dp), allocatable, public :: dVelPrl_dt(:), dVelPerp_dt(:)
+      real(dp), allocatable, public :: df_dChiPrl(:), dg_dChiPrl(:)
+      real(dp), allocatable, public :: dg_dChiPerp(:), nue(:)
+      real(dp), public  :: veltotal, rCPrlOld, rCPerpOld
+C     real(dp), public  :: old03, old04, old05, old06, old07
+      real(dp), public  :: alphaPrl, alphaPerp, iprepare
       integer, public :: npanuSave
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
@@ -26,26 +26,24 @@
       implicit none
       integer, intent(in) :: ical
 
-      if (allocated(dVelPrl_dt)) return
-
       if (ical == 1) then
-
-         allocate(dVelPrl_dt(1:NPLS))
-         allocate(dVelPerp_dt(1:NPLS))
-         allocate(df_dChiPrl(1:NPLS))
-         allocate(dg_dChiPrl(1:NPLS))
-         allocate(dg_dChiPerp(1:NPLS))
-         allocate(nue(1:NPLS))
-         rCPrlOld  = 1.0E-10
-         rCPerpOld = 1.0E-10
-         old03 = 1.0E-10
-         old04 = 1.0E-10
-         old05 = 1.0E-10
-         old06 = 1.0E-10
-         old07 = 1.0E-10
-         npanuSave = 0
-         iprepare = 0.0
-
+        if (.not.allocated(dVelPrl_dt)) then
+          allocate(dVelPrl_dt(1:NPLS))
+          allocate(dVelPerp_dt(1:NPLS))
+          allocate(df_dChiPrl(1:NPLS))
+          allocate(dg_dChiPrl(1:NPLS))
+          allocate(dg_dChiPerp(1:NPLS))
+          allocate(nue(1:NPLS))
+          rCPrlOld  = 1.0E-10
+          rCPerpOld = 1.0E-10
+C         old03 = 1.0E-10
+C         old04 = 1.0E-10
+C         old05 = 1.0E-10
+C         old06 = 1.0E-10
+C         old07 = 1.0E-10
+          npanuSave = 0
+          iprepare = 0.0
+        end if
       else if (ical == 2) then
 
       end if
@@ -84,7 +82,7 @@
          df_dChiPrl  = 0.0
          dg_dChiPrl  = 0.0
          dg_dChiPerp = 0.0
-         nue = 0.0
+         nue = 1.D-30
 
       else if (ical == 2) then
 
