@@ -1658,7 +1658,7 @@ c      USE EIRMOD_COMXS
 
       implicit none
 
-      integer :: IPL, IPLTI, iun
+      integer :: IPL, IPLTI, iun, IDSC
 
       real(DP) :: TF
       real(DP) :: alpha, ub, Chi, Lambda, dChi_dt
@@ -1683,6 +1683,9 @@ c      USE EIRMOD_COMXS
       character*200 :: filename
       character*4 :: written_idx4
 
+C To be FIXED
+C Reallocation needed if IION changes
+C May be done at a better location
       CALL EIRENE_ALLOC_CVARUSR(1)
 
 2001  format(i4.4)
@@ -1720,11 +1723,12 @@ c      USE EIRMOD_COMXS
 !         open(iun,file=filename)
       END IF
 
-      DO IPL = 1, NPLSI ! loop over all background species
+      DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
+        IPL = LGIEL(IION,IDSC,1)
         IPLTI = MPLSTI(IPL)
 
 ! check that density and temperatures are set properly
-        IF ((LGVAC(NCELL,IPL)).OR.(TIIN(IPLTI,NCELL).EQ.0)) THEN
+        IF ((LGVAC(NCELL,IPL)).OR.(TIIN(IPLTI,NCELL).LT.TVAC)) THEN
           CYCLE
         ELSE
           DItmp = DIIN(IPL,NCELL)

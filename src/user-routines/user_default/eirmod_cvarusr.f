@@ -1,7 +1,8 @@
       module eirmod_cvarusr
 
       USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMPRT, ONLY: IION
+      USE EIRMOD_COMXS, ONLY: NIELI
 
       IMPLICIT NONE
 
@@ -28,12 +29,12 @@ C     real(dp), public  :: old03, old04, old05, old06, old07
 
       if (ical == 1) then
         if (.not.allocated(dVelPrl_dt)) then
-          allocate(dVelPrl_dt(1:NPLS))
-          allocate(dVelPerp_dt(1:NPLS))
-          allocate(df_dChiPrl(1:NPLS))
-          allocate(dg_dChiPrl(1:NPLS))
-          allocate(dg_dChiPerp(1:NPLS))
-          allocate(nue(1:NPLS))
+          allocate(dVelPrl_dt(1:NIELI(IION)))
+          allocate(dVelPerp_dt(1:NIELI(IION)))
+          allocate(df_dChiPrl(1:NIELI(IION)))
+          allocate(dg_dChiPrl(1:NIELI(IION)))
+          allocate(dg_dChiPerp(1:NIELI(IION)))
+          allocate(nue(1:NIELI(IION)))
           rCPrlOld  = 1.0E-10
           rCPerpOld = 1.0E-10
 C         old03 = 1.0E-10

@@ -60,11 +60,11 @@ C
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
      .            VelPrlBG,
-     .            D_VELPAR(1:NPLSI),
-     .            D_VELPER(1:NPLSI),
-     .            D_E0NEW_tmp(1:NPLSI)
+     .            D_VELPAR(1:NIELI(IION)),
+     .            D_VELPER(1:NIELI(IION)),
+     .            D_E0NEW_tmp(1:NIELI(IION))
 
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI, IDSC
       REAL(DP), EXTERNAL :: RANF_EIRENE
 
 C  SAVE INCIDENT SPECIES: IOLD
@@ -136,14 +136,15 @@ c  magnetic field
         D_VELPER    = 0.0
         D_E0NEW_tmp = 0.0
 
-        DO IPL = 1, NPLSI ! loop over all background species
-           D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in m/s
-           D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in m/s
+        DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
+          IPL = LGIEL(IION,IDSC,1)
+          D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in m/s
+          D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in m/s
 
-           D_E0NEW_tmp(IPL)= 0.5*AMUAKG*RMASSI(IION)*
-     >                       ((SIGPAR*VELPAR*1.0E-02 + D_VELPAR(IPL))**2
-     >                     + (VELPER*1.0E-02 + D_VELPER(IPL))**2)/ELCHA
-     >                     - E0
+          D_E0NEW_tmp(IPL)= 0.5*AMUAKG*RMASSI(IION)*
+     >                      ((SIGPAR*VELPAR*1.0E-02 + D_VELPAR(IPL))**2
+     >                    + (VELPER*1.0E-02 + D_VELPER(IPL))**2)/ELCHA
+     >                    - E0
         END DO
 
         VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02
@@ -163,7 +164,8 @@ cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on
 cdr  temprature(ipls), even different sign.
 cdr  
         EWG = WEIGHT*(E0NEW-E0OLD)
-        DO IPL = 1, NPLSI
+        DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
+          IPL = LGIEL(IION,IDSC,1)
           IF (D_E0NEW_tmp(IPL).NE.0.0) THEN
             EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
      >                   - EWG*D_E0NEW_tmp(IPL)/(SUM(D_E0NEW_tmp)+EPS60)
