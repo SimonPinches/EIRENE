@@ -158,14 +158,6 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
 
 100   LGPART=.TRUE.
 
-c  FHa: open the file for the temporary trace ion data
-c      iosss = 0
-c      open(4, file='trace_ion_trace', iostat=iosss)
-c      IF (iosss.NE.0) THEN
-c         write(*,*) 'Could NOT write file !'
-c         STOP
-c      END IF
-
 c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
       IF (.NOT.LCART) GOTO 9921
       IC_ION=IC_ION+1
