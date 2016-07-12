@@ -1658,7 +1658,8 @@ c      USE EIRMOD_COMXS
 
       implicit none
 
-      integer :: IPL, IPLTI, iun, IDSC
+      integer :: IPL, IPLTI, IDSC
+C     integer :: iun
 
       real(DP) :: TF
       real(DP) :: alpha, ub, Chi, Lambda, dChi_dt
@@ -1674,21 +1675,24 @@ c      USE EIRMOD_COMXS
       real(DP) :: alphaPrl0, alphaPerp0
       real(DP) :: relChangePrl, relChangePerp
       real(DP) :: dv_dt_min
-      real(DP) :: whichTF
-      real(DP) :: d03
-      real(DP) :: d16, d17, d18, d19, d21, d22, d23
+C     real(DP) :: whichTF
+C     real(DP) :: d03
+C     real(DP) :: d16, d17, d18, d19, d21, d22, d23
+      real(DP) :: ExpChi2, FakVel_dt, FakDprl_dChi, FakDperp_dChi, 
+     >            Fakd_dChi
+      real(DP) :: EIRENE_VDION
 
       logical :: newParticle
 
-      character*200 :: filename
-      character*4 :: written_idx4
+C     character*200 :: filename
+C     character*4 :: written_idx4
 
 C To be FIXED
 C Reallocation needed if IION changes
 C May be done at a better location
       CALL EIRENE_ALLOC_CVARUSR(1)
 
-2001  format(i4.4)
+C2001  format(i4.4)
 
       alpha      = 0.2 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       alphaPrl0  = 0.2
@@ -1704,10 +1708,10 @@ C May be done at a better location
       SumPerp02 = 0.0
       vAveThBG  = 0.0
       newParticle = .FALSE.
-      iun = 3
+C     iun = 3
 
-      iprepare = iprepare + 1
-      d23      = iprepare
+C      iprepare = iprepare + 1
+C     d23      = iprepare
 
 ! entered if new particle is created
       IF (npanuSave .NE. NPANU) THEN
@@ -1715,7 +1719,7 @@ C May be done at a better location
         alphaPrl  = alphaPrl0
         alphaPerp = alphaPerp0
         newParticle = .TRUE.
-        iprepare = 1
+C        iprepare = 1
 ! write data into file
 !         IF (NPANU .NE. 0) close(iun)
 !         write(written_idx4,2001) NPANU
@@ -1734,31 +1738,28 @@ C May be done at a better location
           DItmp = DIIN(IPL,NCELL)
           TItmp = TIIN(IPLTI,NCELL)
         END IF
-! check that DItmp and TItmp are not NaNs
-        IF (DItmp.NE.DItmp) DItmp = DVAC
-        IF (TItmp.NE.TItmp) TItmp = TVAC
 
 c  get the parallel part of the background velocity, m/s
-        IF (INDPRO(5) == 8) THEN
-          CALL EIRENE_VECUSR(1, NCELL, X0, Y0, Z0, Bt(1), Bt(2), Bt(3)
-     >                       , IPL, .TRUE.)
-          CALL EIRENE_VECUSR(2, NCELL, X0, Y0, Z0, Vt(1), Vt(2), Vt(3)
-     >                       , IPL, .TRUE.)
-          VelPrlBG = dot_product(Bt,Vt)*1.0E-02
+        IF (INDPRO(4) == 8) THEN
+          IF(IPL.EQ.1) THEN
+            VelPrlBG=EIRENE_VDION(NCELL)*1.0E-02
+          ELSE
+            VelPrlBG=0.D0
+          END IF
         ELSE
           VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
      >                BYIN(NCELL)*VYIN(IPL,NCELL)+
      >                BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
         END IF
 
-        ub = sqrt(2*TItmp*ELCHA/(RMASSP(IPL)*AMUAKG))
+        ub = CVELAA*1.e-2*sqrt(TItmp/RMASSP(IPL))
         DVelPrl = SIGPAR*VELPAR*1.0E-02 - VelPrlBG
-        ChiPrl  = (SIGPAR*VELPAR*1.0E-02 - VelPrlBG)/ub
+        ChiPrl  = DVelPrl/ub
         ChiPerp = VELPER*1.0E-02/ub
-        Chi = sqrt((VELPER*1.0E-02)**2 + DVelPrl**2)/ub
-        Lambda = NCHRGI(IION)**2*NCHRGP(IPL)**2*ELCHA**4*
-     >           DItmp*1.0E+06*COULOMBLOG/
-     >           (4*PIA*(EPSILON0*RMASSP(IPL)*AMUAKG)**2)
+        Chi = sqrt(ChiPerp**2 + ChiPrl**2)
+        ExpChi2 = exp(-Chi**2)
+        Lambda = DItmp*NCHRGI(IION)**2*NCHRGP(IPL)**2/RMASSP(IPL)**2*
+     >           FAKLAM*1.E-6_DP
 
         CALL D_coeff(Chi,DPrl,DPerp)
 
@@ -1766,41 +1767,41 @@ c  get the parallel part of the background velocity, m/s
         DPerp = Lambda/ub*DPerp
 
 c  both dVelPrl_dt and dVelPerp_dt in m/s!
-        dVelPrl_dt(IPL)  = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >                      DVelPrl
-        dVelPerp_dt(IPL) = -DPrl/ub**2*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >                      VELPER*1.0E-02 + DPerp/(2.*VELPER*1.0E-02)
+        FakVel_dt = -DPrl/ub**2*(1.0_DP + RMASSI(IION)/RMASSP(IPL))
+        dVelPrl_dt(IPL)  = FakVel_dt*DVelPrl
+        dVelPerp_dt(IPL) = FakVel_dt*
+     >                     VELPER*1.0E-02 
+     >                     +DPerp/(2.0_DP*VELPER*1.0E-02)
 
-        dDprl_dChiPrl   = ChiPrl/(Chi**2)*
-     >      (4*Lambda/(ub*sqrt(PIA))*exp(-Chi**2) - 3*Dprl)
+        FakDprl_dChi = (4.0_DP*Lambda/(ub*PISQ)*ExpChi2 - 3.0_DP*Dprl)/
+     >                 Chi**2
+        dDprl_dChiPrl   = FakDprl_dChi*ChiPrl
+        dDprl_dChiPerp  = FakDprl_dChi*ChiPerp
 
-        dDprl_dChiPerp  = ChiPerp/Chi**2*
-     >      (4*Lambda/(ub*sqrt(PIA))*exp(-Chi**2) - 3*Dprl)
+        FakDperp_dChi = ((1.5_DP/Chi - Chi)*Dprl 
+     >                   -2.0_DP*Lambda/(Chi*ub*PISQ)*ExpChi2)/Chi
+        dDperp_dChiPrl = FakDperp_dChi*ChiPrl
+        dDperp_dChiPerp = FakDperp_dChi*ChiPerp
 
-        dDperp_dChiPrl = ChiPrl/Chi*
-     >      ((3./(2.*Chi) - Chi)*Dprl - 2.*Lambda/(Chi*ub*sqrt(PIA))*
-     >      exp(-Chi**2))
+        Fakd_dChi = -(1.0_DP + RMASSI(IION)/RMASSP(IPL))/ub
+        df_dChiPrl(IPL) = Fakd_dChi*
+     >                    (Dprl + ChiPrl*dDprl_dChiPrl)
 
-        dDperp_dChiPerp = ChiPerp/Chi*
-     >      ((3./(2.*Chi)-Chi)*Dprl - 2./Chi*Lambda/(ub*sqrt(PIA))*
-     >       exp(-Chi**2))
+        dg_dChiPrl(IPL) = Fakd_dChi*
+     >                    ChiPerp*dDprl_dChiPrl 
+     >                    +0.5_DP/(ub*ChiPerp)*dDperp_dChiPrl
 
-        df_dChiPrl(IPL) = -1./ub*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >      (Dprl + ChiPrl*dDprl_dChiPrl)
-
-        dg_dChiPrl(IPL) = -ChiPerp/ub*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >      dDprl_dChiPrl + 1./(2.*ub*ChiPerp)*dDperp_dChiPrl
-
-        dg_dChiPerp(IPL) = -1./ub*(1 + RMASSI(IION)/RMASSP(IPL))*
-     >      (Dprl + ChiPerp*dDprl_dChiPerp) +
-     >      1./(2*ub*ChiPerp)*dDperp_dChiPerp - Dperp/(2*ub*ChiPerp**2)
+        dg_dChiPerp(IPL) = Fakd_dChi*
+     >                     (Dprl + ChiPerp*dDprl_dChiPerp)
+     >                     +0.5_DP/(ub*ChiPerp)*dDperp_dChiPerp 
+     >                     -Dperp/(2.0_DP*ub*ChiPerp**2)
 
         SumPrl    = SumPrl + df_dChiPrl(IPL)*dVelPrl_dt(IPL)/ub
         SumPerp01 = SumPerp01 + dg_dChiPerp(IPL)*dVelPerp_dt(IPL)/ub
         SumPerp02 = SumPerp02 + dg_dChiPrl(IPL)*dVelPrl_dt(IPL)/ub
 
-        nue(IPL) = abs(2*(RMASSI(IION)/RMASSP(IPL)*Dprl/ub**2 -
-     >             2*Lambda/(sqrt(PIA)*ub**3*Chi**2)*exp(-Chi**2)))
+        nue(IPL) = abs(2.0_DP*(RMASSI(IION)/RMASSP(IPL)*Dprl/ub**2 
+     >                   -2.0_DP*Lambda/(PISQ*ub**3*Chi**2)*ExpChi2))
 
         vAveThBG = vAveThBG + nue(IPL)*ub
       END DO
@@ -1821,16 +1822,15 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
         TF04 = abs(alpha*vAveThBG*VELPAR/sum(dVelPrl_dt))
         TF05 = abs(alpha*vAveThBG*VELPAR/sum(dVelPerp_dt))
 
-        TF = min(TF01,TF02,TF03,TF04,TF05)
-
 ! this is the minimal change of the velocities below which stationarity is assumed (to be checked!)
         dv_dt_min = 1.0E-03*DVelMin*sum(nue)
 
-        IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min) THEN
-          TF = min(TF02,TF03,TF05)
-        END IF
         IF (abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
           TF = min(TF01,TF04)
+        ELSE IF (abs(sum(dVelPrl_dt)) .LT. dv_dt_min) THEN
+          TF = min(TF02,TF03,TF05)
+        ELSE
+          TF = min(TF01,TF02,TF03,TF04,TF05)
         END IF
 
 ! this can be deleted when checks are ok

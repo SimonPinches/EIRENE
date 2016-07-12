@@ -13,7 +13,8 @@
       real(dp), allocatable, public :: dg_dChiPerp(:), nue(:)
       real(dp), public  :: veltotal, rCPrlOld, rCPerpOld
 C     real(dp), public  :: old03, old04, old05, old06, old07
-      real(dp), public  :: alphaPrl, alphaPerp, iprepare
+      real(dp), public  :: alphaPrl, alphaPerp
+C     real(dp), public  :: iprepare
       integer, public :: npanuSave
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
@@ -43,7 +44,7 @@ C         old05 = 1.0E-10
 C         old06 = 1.0E-10
 C         old07 = 1.0E-10
           npanuSave = 0
-          iprepare = 0.0
+C         iprepare = 0.0
         end if
       else if (ical == 2) then
 

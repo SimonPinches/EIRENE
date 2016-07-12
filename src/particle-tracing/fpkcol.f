@@ -141,9 +141,9 @@ c  magnetic field
           D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in m/s
           D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in m/s
 
-          D_E0NEW_tmp(IPL)= 0.5*AMUAKG*RMASSI(IION)*
-     >                      ((SIGPAR*VELPAR*1.0E-02 + D_VELPAR(IPL))**2
-     >                    + (VELPER*1.0E-02 + D_VELPER(IPL))**2)/ELCHA
+          D_E0NEW_tmp(IPL)= CVELI2*RMASSI(IION)*
+     >                      ((SIGPAR*VELPAR + D_VELPAR(IPL)*1.0E2)**2
+     >                    + (VELPER + D_VELPER(IPL)*1.0E2)**2)
      >                    - E0
         END DO
 
@@ -153,17 +153,12 @@ c  magnetic field
         VELPER = VELPER + SUM(D_VELPER)*1.0E+02
         veltotal = SQRT(VELPAR**2 + VELPER**2)
 
-        E0NEW = 0.5*AMUAKG*RMASSI(IION)*1.0E-04*
-     >          (VELPAR**2 + VELPER**2)/ELCHA
+        E0NEW = CVELI2*RMASSI(IION)*veltotal**2
         VNEW = RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
-        EIIO(NCELLT) = EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
-cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
-cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
-cdr  temprature(ipls), even different sign.
-cdr  
         EWG = WEIGHT*(E0NEW-E0OLD)
+        EIIO(NCELLT) = EIIO(NCELLT)+EWG
         DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
           IPL = LGIEL(IION,IDSC,1)
           IF (D_E0NEW_tmp(IPL).NE.0.0) THEN
