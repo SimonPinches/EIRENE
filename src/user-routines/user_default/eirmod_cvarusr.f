@@ -29,6 +29,14 @@ C     real(dp), public  :: iprepare
       integer, intent(in) :: ical
 
       if (ical == 1) then
+C Reallocation needed if IION changes and NIELI(IION) different
+C May be done at a better location
+        if (allocated(dVelPrl_dt)) then
+          if (size(dVelPrl_dt) /= NIELI(IION)) then
+            call eirene_dealloc_cvarusr
+          end if
+        end if
+
         if (.not.allocated(dVelPrl_dt)) then
           allocate(dVelPrl_dt(1:NIELI(IION)))
           allocate(dVelPerp_dt(1:NIELI(IION)))
@@ -36,8 +44,8 @@ C     real(dp), public  :: iprepare
           allocate(dg_dChiPrl(1:NIELI(IION)))
           allocate(dg_dChiPerp(1:NIELI(IION)))
           allocate(nue(1:NIELI(IION)))
-          rCPrlOld  = 1.0E-10
-          rCPerpOld = 1.0E-10
+          rCPrlOld  = 1.0E-12
+          rCPerpOld = 1.0E-12
 C         old03 = 1.0E-10
 C         old04 = 1.0E-10
 C         old05 = 1.0E-10

@@ -1687,9 +1687,6 @@ C     real(DP) :: d16, d17, d18, d19, d21, d22, d23
 C     character*200 :: filename
 C     character*4 :: written_idx4
 
-C To be FIXED
-C Reallocation needed if IION changes
-C May be done at a better location
       CALL EIRENE_ALLOC_CVARUSR(1)
 
 C2001  format(i4.4)
@@ -1742,24 +1739,24 @@ C        iprepare = 1
 c  get the parallel part of the background velocity, m/s
         IF (INDPRO(4) == 8) THEN
           IF(IPL.EQ.1) THEN
-            VelPrlBG=EIRENE_VDION(NCELL)*1.0E-02
+            VelPrlBG=EIRENE_VDION(NCELL)
           ELSE
             VelPrlBG=0.D0
           END IF
         ELSE
           VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
      >                BYIN(NCELL)*VYIN(IPL,NCELL)+
-     >                BZIN(NCELL)*VZIN(IPL,NCELL))*1.0E-02
+     >                BZIN(NCELL)*VZIN(IPL,NCELL))
         END IF
 
-        ub = CVELAA*1.e-2*sqrt(TItmp/RMASSP(IPL))
-        DVelPrl = SIGPAR*VELPAR*1.0E-02 - VelPrlBG
+        ub = CVELAA*sqrt(TItmp/RMASSP(IPL))
+        DVelPrl = SIGPAR*VELPAR - VelPrlBG
         ChiPrl  = DVelPrl/ub
-        ChiPerp = VELPER*1.0E-02/ub
+        ChiPerp = VELPER/ub
         Chi = sqrt(ChiPerp**2 + ChiPrl**2)
         ExpChi2 = exp(-Chi**2)
         Lambda = DItmp*NCHRGI(IION)**2*NCHRGP(IPL)**2/RMASSP(IPL)**2*
-     >           FAKLAM*1.E-6_DP
+     >           FAKLAM
 
         CALL D_coeff(Chi,DPrl,DPerp)
 
@@ -1770,8 +1767,8 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
         FakVel_dt = -DPrl/ub**2*(1.0_DP + RMASSI(IION)/RMASSP(IPL))
         dVelPrl_dt(IPL)  = FakVel_dt*DVelPrl
         dVelPerp_dt(IPL) = FakVel_dt*
-     >                     VELPER*1.0E-02 
-     >                     +DPerp/(2.0_DP*VELPER*1.0E-02)
+     >                     VELPER 
+     >                     +DPerp/(2.0_DP*VELPER)
 
         FakDprl_dChi = (4.0_DP*Lambda/(ub*PISQ)*ExpChi2 - 3.0_DP*Dprl)/
      >                 Chi**2
@@ -1878,8 +1875,8 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
         rCPrlOld  = sum(dVelPrl_dt)
         rCPerpOld = sum(dVelPerp_dt)
 ! to avoid division by zero a few lines up
-        IF (ABS(rCPrlOld).LT.1D-10) rCPrlOld = 1D-10
-        IF (ABS(rCPerpOld).LT.1D-10) rCPerpOld = 1D-10
+        IF (ABS(rCPrlOld).LT.1D-12) rCPrlOld = 1D-12
+        IF (ABS(rCPerpOld).LT.1D-12) rCPerpOld = 1D-12
 
 !        old03 = VELPAR
 !        old04 = VELPER

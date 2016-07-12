@@ -138,19 +138,19 @@ c  magnetic field
 
         DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
           IPL = LGIEL(IION,IDSC,1)
-          D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in m/s
-          D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in m/s
+          D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in cm/s
+          D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in cm/s
 
           D_E0NEW_tmp(IPL)= CVELI2*RMASSI(IION)*
-     >                      ((SIGPAR*VELPAR + D_VELPAR(IPL)*1.0E2)**2
-     >                    + (VELPER + D_VELPER(IPL)*1.0E2)**2)
+     >                      ((SIGPAR*VELPAR + D_VELPAR(IPL))**2
+     >                    + (VELPER + D_VELPER(IPL))**2)
      >                    - E0
         END DO
 
-        VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)*1.0E+02
+        VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)
         SIGPAR = SIGN(1.0,VELPAR)
         VELPAR = ABS(VELPAR)
-        VELPER = VELPER + SUM(D_VELPER)*1.0E+02
+        VELPER = VELPER + SUM(D_VELPER)
         veltotal = SQRT(VELPAR**2 + VELPER**2)
 
         E0NEW = CVELI2*RMASSI(IION)*veltotal**2
