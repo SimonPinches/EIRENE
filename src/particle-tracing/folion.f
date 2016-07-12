@@ -1639,27 +1639,9 @@ C     extended model where the trace ion velocity changes in agreement with the
 C     change of the expectation values (next step after the minimal collision model
 C     where only the energy is relaxed)
 
-c      USE EIRMOD_PRECISION
-c      USE EIRMOD_PARMMOD
-c      USE EIRMOD_CINIT
-c      USE EIRMOD_COMUSR
-c      USE EIRMOD_CESTIM
-c      USE EIRMOD_CCONA
-c      USE EIRMOD_CFPLK
-c      USE EIRMOD_CLOGAU
-c      USE EIRMOD_CUPD
-c      USE EIRMOD_CGRID
-c      USE EIRMOD_CGEOM
-c      USE EIRMOD_CZT1
-c      USE EIRMOD_COMPRT
-c      USE EIRMOD_CLGIN
-c      USE EIRMOD_COUTAU
-c      USE EIRMOD_COMXS
-
       implicit none
 
       integer :: IPL, IPLTI, IDSC
-C     integer :: iun
 
       real(DP) :: TF
       real(DP) :: alpha, ub, Chi, Lambda, dChi_dt
@@ -1675,21 +1657,13 @@ C     integer :: iun
       real(DP) :: alphaPrl0, alphaPerp0
       real(DP) :: relChangePrl, relChangePerp
       real(DP) :: dv_dt_min
-C     real(DP) :: whichTF
-C     real(DP) :: d03
-C     real(DP) :: d16, d17, d18, d19, d21, d22, d23
       real(DP) :: ExpChi2, FakVel_dt, FakDprl_dChi, FakDperp_dChi, 
      >            Fakd_dChi
       real(DP) :: EIRENE_VDION
 
       logical :: newParticle
 
-C     character*200 :: filename
-C     character*4 :: written_idx4
-
       CALL EIRENE_ALLOC_CVARUSR(1)
-
-C2001  format(i4.4)
 
       alpha      = 0.2 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
       alphaPrl0  = 0.2
@@ -1705,10 +1679,6 @@ C2001  format(i4.4)
       SumPerp02 = 0.0
       vAveThBG  = 0.0
       newParticle = .FALSE.
-C     iun = 3
-
-C      iprepare = iprepare + 1
-C     d23      = iprepare
 
 ! entered if new particle is created
       IF (npanuSave .NE. NPANU) THEN
@@ -1716,12 +1686,6 @@ C     d23      = iprepare
         alphaPrl  = alphaPrl0
         alphaPerp = alphaPerp0
         newParticle = .TRUE.
-C        iprepare = 1
-! write data into file
-!         IF (NPANU .NE. 0) close(iun)
-!         write(written_idx4,2001) NPANU
-!         filename = 'particle_trace_fpkcol.'//written_idx4
-!         open(iun,file=filename)
       END IF
 
       DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
@@ -1736,7 +1700,7 @@ C        iprepare = 1
           TItmp = TIIN(IPLTI,NCELL)
         END IF
 
-c  get the parallel part of the background velocity, m/s
+c  get the parallel part of the background velocity, cm/s
         IF (INDPRO(4) == 8) THEN
           IF(IPL.EQ.1) THEN
             VelPrlBG=EIRENE_VDION(NCELL)
@@ -1763,7 +1727,7 @@ c  get the parallel part of the background velocity, m/s
         DPrl  = Lambda/ub*DPrl
         DPerp = Lambda/ub*DPerp
 
-c  both dVelPrl_dt and dVelPerp_dt in m/s!
+c  both dVelPrl_dt and dVelPerp_dt in cm/s!
         FakVel_dt = -DPrl/ub**2*(1.0_DP + RMASSI(IION)/RMASSP(IPL))
         dVelPrl_dt(IPL)  = FakVel_dt*DVelPrl
         dVelPerp_dt(IPL) = FakVel_dt*
@@ -1807,10 +1771,6 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
         vAveThBG = abs(vAveThBG/sum(nue))
         DVelMin  = vAveThBG*1.0E-04
 
-! this can be deleted when checks are ok
-!        d21 = ABS(ChiPrl-old05)/old07
-!        d22 = ABS(ChiPerp-old06)/old07
-
 ! these are the lengths according to the change of the derivatives of the velocities
         TF01 = abs(alphaPrl*VELPAR*sum(dVelPrl_dt)/SumPrl)
         TF02 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp01)
@@ -1829,13 +1789,6 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
         ELSE
           TF = min(TF01,TF02,TF03,TF04,TF05)
         END IF
-
-! this can be deleted when checks are ok
-!        IF (TF.EQ.TF01) whichTF = 1
-!        IF (TF.EQ.TF02) whichTF = 2
-!        IF (TF.EQ.TF03) whichTF = 3
-!        IF (TF.EQ.TF04) whichTF = 4
-!        IF (TF.EQ.TF05) whichTF = 5
 
 ! adjust the limit parameters for the change of the derivatives
 ! (if the Taylor expansion does not yield good enough results)
@@ -1868,35 +1821,11 @@ c  both dVelPrl_dt and dVelPerp_dt in m/s!
           TF = 1.0E-02*vAveThBG*VELPAR/abs(sum(dVelPerp_dt))
         END IF
 
-! this can be deleted when checks are ok
-!        d16 = abs((VELPAR-old03)/old03)
-!        d17 = abs((VELPER-old04)/old04)
-
         rCPrlOld  = sum(dVelPrl_dt)
         rCPerpOld = sum(dVelPerp_dt)
 ! to avoid division by zero a few lines up
         IF (ABS(rCPrlOld).LT.1D-12) rCPrlOld = 1D-12
         IF (ABS(rCPerpOld).LT.1D-12) rCPerpOld = 1D-12
-
-!        old03 = VELPAR
-!        old04 = VELPER
-!        old05 = ChiPrl
-!        old06 = ChiPerp
-!        old07 = vAveThBG
-!        d18 = NCELL
-
-! this can be deleted when checks are ok
-!1000  format(10000(1pe14.5E3))
-!        write(iun,1000) iprepare, TF,
-!     >    VELPAR, VELPER,
-!     >    sum(dVelPrl_dt), sum(dVelPerp_dt), ! 5,  6 - derivatives
-!     >    d16, d17, ! 7,  8 - relative change of velocities
-!     >    relChangePrl, relChangePerp, ! 9, 10 - relative change of derivatives
-!     >    dv_dt_min, d18, ! 11, 12
-!     >    d21, d22, ! 13, 14 - relative changes ChiPrl, ChiPerp
-!     >    alphaPrl, alphaPerp, ! 15, 16
-!     >    whichTF   ! 17
-
       ELSE
 C No collision
         TF = 1.D+30

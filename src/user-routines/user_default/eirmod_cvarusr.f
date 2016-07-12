@@ -12,9 +12,7 @@
       real(dp), allocatable, public :: df_dChiPrl(:), dg_dChiPrl(:)
       real(dp), allocatable, public :: dg_dChiPerp(:), nue(:)
       real(dp), public  :: veltotal, rCPrlOld, rCPerpOld
-C     real(dp), public  :: old03, old04, old05, old06, old07
       real(dp), public  :: alphaPrl, alphaPerp
-C     real(dp), public  :: iprepare
       integer, public :: npanuSave
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
@@ -46,13 +44,7 @@ C May be done at a better location
           allocate(nue(1:NIELI(IION)))
           rCPrlOld  = 1.0E-12
           rCPerpOld = 1.0E-12
-C         old03 = 1.0E-10
-C         old04 = 1.0E-10
-C         old05 = 1.0E-10
-C         old06 = 1.0E-10
-C         old07 = 1.0E-10
           npanuSave = 0
-C         iprepare = 0.0
         end if
       else if (ical == 2) then
 

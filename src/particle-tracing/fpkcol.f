@@ -59,7 +59,6 @@ C
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
-     .            VelPrlBG,
      .            D_VELPAR(1:NIELI(IION)),
      .            D_VELPER(1:NIELI(IION)),
      .            D_E0NEW_tmp(1:NIELI(IION))
@@ -169,16 +168,6 @@ C  UPDATE ESTIMATORS EIIO,EIPL
 
         FAC    = SQRT(E0NEW/E0OLD)
         E0PAR  = E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
-
-c  FHa: write the trace ion data into temporary file
-c        IPL = 1
-c        VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
-c     >              BYIN(NCELL)*VYIN(IPL,NCELL)+
-c     >              BZIN(NCELL)*VZIN(IPL,NCELL))
-c        IPLTI = MPLSTI(IPL)
-c        write(4,"(10E13.4)") TIME, E0NEW, DIIN(IPL,NCELL),
-c     >     TIIN(IPLTI,NCELL), VelPrlBG, SIGPAR*VELPAR, VELPER,
-c     >     dVelPrl_dt(IPL)
 
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
