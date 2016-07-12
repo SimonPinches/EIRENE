@@ -75,10 +75,8 @@ C
      .             VELX,VELY,VELZ,VEL,E0)
           ELSE
             CALL EIRENE_MASR6
-C     .           ('VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0             ',  C Original
-C     .             VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
-     .           ('VLXPAR,VLYPAR,VLZPAR,VELPAR,VELPER,E0             ',
-     .             VLXPAR,VLYPAR,VLZPAR,VELPAR,VELPER,E0)
+     .           ('VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0             ',
+     .             VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
           ENDIF
         ELSE
           CALL EIRENE_MASR5
