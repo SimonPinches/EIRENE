@@ -31,6 +31,9 @@ cdr 22.09.14: upfcop only to be called in coupled mode: nmode.gt.0
 cdr 22.09.14: cpu time output removed. To be collected and printout made conditional
 cdr dec. 15 : 'upfcop.f' now 'updlin.f', moved from couple specific part to main eirene code,
 cdr           under scoring/updlin.f.
+!pb 18.01.16: for totally random particle trajectories avoid usage of same random numbers in consecutive calls to mcarlo
+cdr april 16: use: nstrai rather than nstra in do-loops. Bug fix from ITER-IO
+!pb may 16  : for NPRS<NSTRAI call to IF3COP moved out of strata loop
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -93,6 +96,8 @@ C
      .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
      .           INODES, J, ISEE, IPTSI, I1, I2, I3, IA, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
+!pb 28012016
+      INTEGER, SAVE :: ICO_CALL=0
 csw
 !pb 03122013      real(dp) :: timstart,timend,timused
 !pb 03122013      real(dp), external :: mpi_wtime
@@ -241,6 +246,9 @@ CVKMPI      SECND=XTIM(0)
 
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
+!pb 28012016
+!   count number of times MCARLO has been called
+      ICO_CALL = ICO_CALL + 1
 
       timan=secnd
 C
@@ -303,7 +311,7 @@ CVKMPI      DO ISTRA=1,NSTRAI
 CVKMPI        XTIM(ISTRA)=XTIM(ISTRA-1)+DXTIM(ISTRA)
 CVKMPI      END DO
 
-      XTIM(0)=SUM(XTIM(1:NSTRA))
+      XTIM(0)=SUM(XTIM(1:NSTRAI))
 C
 
       TIMen=EIRENE_SECOND_OWN()
@@ -399,6 +407,7 @@ C
 csw 19mar2013 moved to here after call to pedist (xmct/xmcp)
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
 !pb      CALL EIRENE_INIT_COUTAU(NLSRON)
+
       LOGHELP(1:NSTRA) = NLSRON(1:NSTRA)
       CALL EIRENE_INIT_COUTAU(LOGHELP)
       FASCL(0)=1.
@@ -489,6 +498,9 @@ c  find iseed from truely random procedure from wall clock time (use date and ti
         ELSEIF (NINITL(ISTRA).LT.0) THEN
           CALL DATE_AND_TIME(CDATE,CTIME)
           READ(CTIME(1:6),*) NINITL(ISTRA)
+!pb 28012016
+!  add number of calls to MCARLO in order to avoid same random seeds
+          NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
           WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
           NINIST=NINITL(ISTRA)
           dumran=ranset_eirene(ninist)
@@ -1073,7 +1085,7 @@ csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE
 C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STATA THEN PROCESSES
 C
       IF (NMODE.GT.0) THEN
-        IF (NPRS <= NSTEFF) THEN
+        IF (NPRS == 1) THEN
           IESTR=ISTRA
           ISTRAA=ISTRA
           ISTRAE=ISTRA
@@ -1165,7 +1177,17 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THEN STRATA
       IF (NMODE.GT.0) THEN
-        IF (NPRS > NSTEFF) THEN
+!pb  NOW IF3COP CALLED HERE IN CASE OF LESS PROCESSORS THAN STRATA AS WELL
+!pb  USE OF fort.10 IS REQUIRED 	
+!pb        IF (NPRS > NSTEFF) THEN
+        IF (NPRS > 1) THEN
+          IF ((NPRS > NSTEFF) .AND. (NFILEN == 0)) THEN
+            WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
+     .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
+            WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
+     .                 'BE CALCULATED'
+            CALL EIRENE_EXIT_OWN(1)
+          END IF
           IESTR=ISTRA
           ISTRAA=1
           ISTRAE=NSTRAI
@@ -1341,7 +1363,7 @@ cdr  dec. 15
 C
       RETURN
 
-      ENTRY MCARLO2
+      ENTRY EIRENE_MCARLO2
 
       IF (ALLOCATED(DUMMY)) THEN
          DEALLOCATE (DUMMY,ZVOLIN,ZVOLIW,SCLTAL)

@@ -248,6 +248,8 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (INGRDE,NSRFS*NSTRA*3,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LCMSOU,LOMSOU,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
+c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (NLSYMP,NSTRAP,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NLSYMT,NSTRAP,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
  
@@ -475,8 +477,8 @@ c  EL post collision energetics
       CALL MPI_BCAST (LGIPI,NIONP*(NRPI+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
  
-!pb      CALL MPI_BCAST (CREAC,99*(NREAC+11),MPI_REAL8,
-!pb     .                0,MPI_COMM_WORLD,ier)
+!pb   CALL MPI_BCAST (CREAC,99*(NREAC+11),MPI_REAL8,
+!pb  .                0,MPI_COMM_WORLD,ier)
  
       DO IR=-11, NREAC
         CALL MPI_BCAST (REACDAT(IR)%LPOT,1,MPI_LOGICAL,
@@ -615,7 +617,7 @@ c  EL post collision energetics
       CALL MPI_BCAST (ESCD1P,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ESCD1PH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-!      write (0,*) ' marke 14 '
+
       CALL MPI_BCAST (ISWR,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MODCLF,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MASSP,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1458,7 +1460,16 @@ c     on the "root" node, where this is already done via timea0 after input
       ELSE IF (RP%IFIT == 3) THEN
 ! ADAS DATA
         IF (MY_PE .NE. 0) THEN
-          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
+!pb          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
+!pb  NULLIFY NOT YET ALLOCATED POINTER ARRAYS
+          IF(.NOT. ASSOCIATED(RP%ADAS)) THEN
+             ALLOCATE (RP%ADAS) ! IYS
+             NULLIFY(RP%ADAS%DENS)
+             NULLIFY(RP%ADAS%TEMP)
+             NULLIFY(RP%ADAS%DDE)
+             NULLIFY(RP%ADAS%DTE)
+             NULLIFY(RP%ADAS%FIT)
+          END IF
         END IF
  
         CALL MPI_BCAST (RP%ADAS%NDENS,1,MPI_INTEGER,

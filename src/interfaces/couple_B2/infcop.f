@@ -175,7 +175,8 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, IF, I34,
      .           NREC11, NEM, JPLS, ISR, ISTEP, IST_RATE, ISTR,
      .           IXI, IXE, NCOPIB, NCOPEB, IPLSTI, IPLSV, IPLV, ISP,
-     .           IR1, IR2, mshfrm, imf, icp, icp2, icp3, ixm1, istat_cop
+     .           IR1, IR2, mshfrm, imf, icp, icp2, icp3, ixm1, 
+     .           istat_cop, icp4, icp5
       INTEGER, ALLOCATABLE, SAVE :: IZDEN(:)
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1, 
