@@ -4,6 +4,7 @@ cdr Nov. 15:  comments re zep_in added
 !pb APR  16:  eatds -> eatei
 !pb APR  16:  emlds -> emlei
 !pb APR  16:  eiods -> eioei
+!pb JUL  16:  ehvds1 -> ehvei1
 C
       SUBROUTINE EIRENE_VELOEI(K,IREI,VXO,VYO,VZO,VLO,ZEP_IN)
 C  AN ELECTRON IMPACT PROCESS NO. IREI HAS BEEN IDENTIFIED IN CALLING PROGRAM
@@ -43,7 +44,7 @@ C
  
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO, ZEP_IN
       INTEGER, INTENT(IN) :: K, IREI
-      REAL(DP) :: EIRENE_FEHVDS1, VXDIS, VYDIS, VZDIS, EHEAVY, 
+      REAL(DP) :: EIRENE_FEHVEI1, VXDIS, VYDIS, VZDIS, EHEAVY, 
      .            VX, VY, VZ,
      .            VELQ, CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -122,9 +123,9 @@ C
       ENDIF
 C
       IF (NSTORDR >= NRAD) THEN
-        EHEAVY=EHVDS1(IREI,K)
+        EHEAVY=EHVEI1(IREI,K)
       ELSE
-        EHEAVY=EIRENE_FEHVDS1(IREI,K)
+        EHEAVY=EIRENE_FEHVEI1(IREI,K)
       END IF
 
 C  ENERGY IN CENTER OF MASS FRAME

@@ -21,6 +21,7 @@ cdr  Jan. 2014:
 !pb APR   16:   piods -> pioei, eiods -> eioei
 !pb APR   16:   pelds -> pelei, eelds -> eelei
 !pb MAY   16:   tabds1 -> tabei1
+!pb JUL   16:   ehvds1 -> ehvei1
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -54,7 +55,7 @@ C
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9,0:9)
-      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, EIRENE_FEHVDS1, EE, TB, 
+      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, EIRENE_FEHVEI1, EE, TB, 
      .          EIRENE_FEELEI1, EN,
      .          P2N, EA, EI, ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
@@ -384,12 +385,12 @@ C
 C  4.B1)  RATE = CONST.*RATECOEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
-            EHVDS1(IREI,J)=EHEAVY
+            EHVEI1(IREI,J)=EHEAVY
 201       CONTINUE
           NREAHV(IREI)=-1
         ELSE
           NREAHV(IREI)=-1
-          EHVDS1(IREI,1)=EHEAVY
+          EHVEI1(IREI,1)=EHEAVY
         END IF
 C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
@@ -403,7 +404,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
           IF (NSTORDR >= NRAD) THEN
             DO 202 J=1,NSBOX
               IF (LGVAC(J,NPLS+1)) CYCLE
-              EHVDS1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
+              EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
      .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
 202         CONTINUE
             NREAHV(IREI)=KREAD
@@ -544,9 +545,9 @@ C
       DO 876 IRAD=1,NSBOX
         IF (LGVAC(IRAD,NPLS+1)) GOTO 876
         IF (NSTORDR >= NRAD) THEN
-          EN=EHVDS1(IREI,IRAD)
+          EN=EHVEI1(IREI,IRAD)
         ELSE
-          EN=EIRENE_FEHVDS1(IREI,IRAD)
+          EN=EIRENE_FEHVEI1(IREI,IRAD)
         END IF
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)

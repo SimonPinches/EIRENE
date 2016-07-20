@@ -28,6 +28,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  pelds  -> pelei,  eelds -> eelei
 !pb  MAY  16:  tabds1 -> tabei1
 !pb  MAY  16:  nrds   -> nrei
+!pb  JUL  16:  ehvds1 -> ehvei1
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -151,7 +152,7 @@ c  ...and cummulated distributions thereof, for species sampling
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
-     R EHVDS1(:,:),   EHVPI3(:,:,:),
+     R EHVEI1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
@@ -521,7 +522,7 @@ c  secondaries, PI processes
         ALLOCATE (P2NPI(NRPI))
  
         ALLOCATE (EELEI1(NREI,NSTORDR))
-        ALLOCATE (EHVDS1(NREI,NSTORDR))
+        ALLOCATE (EHVEI1(NREI,NSTORDR))
 
 
         ALLOCATE (EELRC1(NREC,NSTORDR))
@@ -673,7 +674,7 @@ c
       DEALLOCATE (P2NPI)
  
       DEALLOCATE (EELEI1)
-      DEALLOCATE (EHVDS1)
+      DEALLOCATE (EHVEI1)
       DEALLOCATE (EELRC1)
       DEALLOCATE (EELPI1)
       DEALLOCATE (EHVPI3)
@@ -1105,7 +1106,7 @@ cdr  ical=2:  ??
         P2NPI   = 0._DP
  
         EELEI1  = 0._DP
-        EHVDS1  = 0._DP
+        EHVEI1  = 0._DP
         EELRC1  = 0._DP
         EELPI1  = 0._DP
         EHVPI3  = 0._DP
@@ -1212,7 +1213,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
      . EELEI1 ,EELRC1 ,EELPI1 ,
-     . EHVDS1 ,EHVPI3 ,
+     . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
@@ -1256,7 +1257,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
      . EELEI1 ,EELRC1 ,EELPI1 ,
-     . EHVDS1 ,EHVPI3 ,
+     . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
@@ -1325,7 +1326,7 @@ c
       CALL FXDRDBL (IUN,P2NPI,NRPI)
  
       CALL FXDRDBL (IUN,EELEI1,NREI*NSTORDR)
-      CALL FXDRDBL (IUN,EHVDS1,NREI*NSTORDR)
+      CALL FXDRDBL (IUN,EHVEI1,NREI*NSTORDR)
       CALL FXDRDBL (IUN,EELRC1,NREC*NSTORDR)
       CALL FXDRDBL (IUN,EELPI1,NRPI*NSTORDR)
       CALL FXDRDBL (IUN,EHVPI3,NRPI*NSTORDR*NSTORDT)

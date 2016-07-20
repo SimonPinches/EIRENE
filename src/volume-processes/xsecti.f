@@ -26,6 +26,7 @@ cdr           (was missing, but accidentally correct)
 !pb  APR 16:  patds -> patei,  eatds -> eatei
 !pb  APR 16:  pelds -> pelei,  eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabds1
+!pb  JUL 16:  ehvds1 -> ehvds1
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -255,7 +256,7 @@ C
 73          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
-            EHVDS1(IREI,1:NSBOX)=8.6
+            EHVEI1(IREI,1:NSBOX)=8.6
             NREAEI(IREI) = -8
             JEREAEI(IREI) = 1
             NELREI(IREI) = -8
@@ -264,7 +265,7 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
 !pb  in storage save mode EELEI1 has dimensions (NREI,1)
 !pb            EELEI1(IREI,1:NSBOX)=-10.5
             EELEI1(IREI,1)=-10.5
-            EHVDS1(IREI,1)=8.6
+            EHVEI1(IREI,1)=8.6
             NREAEI(IREI) = -8
             JEREAEI(IREI) = 1
             NELREI(IREI) = -8
@@ -314,14 +315,14 @@ C
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=-15.5
 C  TRANSFERRED KINETIC ENERGY: 0.5 EV
-            EHVDS1(IREI,1:NSBOX)=0.5
+            EHVEI1(IREI,1:NSBOX)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
             NREAHV(IREI) = -5
           ELSE  ! storage save mode
             EELEI1(IREI,1)=-15.5
-            EHVDS1(IREI,1)=0.5
+            EHVEI1(IREI,1)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
@@ -368,7 +369,7 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
             EELEI1(IREI,1:NSBOX)=-DE_10*TEIN(1:NSBOX)
 C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
-            EHVDS1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
+            EHVEI1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
             NREAEI(IREI) = -10
             JEREAEI(IREI) = 1
             NELREI(IREI) = -10

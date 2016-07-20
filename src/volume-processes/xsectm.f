@@ -27,7 +27,9 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of 
 !pb  APR 16:  piods -> pioei, eiods -> eioei
 !pb  APR 16:  pelds -> pelei, eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabds1
+!pb  JUL 16:  ehvds1 -> ehvds1
 C
+
       SUBROUTINE EIRENE_XSECTM
 C
 C       SET UP TABLES (E.G. OF REACTION RATES) FOR MOLECULAR SPECIES
@@ -287,7 +289,7 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
 70          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
-            EHVDS1(IREI,1:NSBOX)=6.
+            EHVEI1(IREI,1:NSBOX)=6.
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
@@ -352,7 +354,7 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
 71          CONTINUE
             EELEI1(IREI,1:NSBOX)=-25.0
 C  TRANSFERRED KINETIC ENERGY: 10 EV
-            EHVDS1(IREI,1:NSBOX)=10.0
+            EHVEI1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:

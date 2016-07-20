@@ -26,6 +26,7 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 !pb APR  16:    eiods -> eioei
 !pb APR  16:    eelds -> eelei
 !pb MAY  16:    tabds1 -> tabei1
+!pb JUL  16:    ehvds1 -> ehvei1
 
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
@@ -90,7 +91,7 @@ C
      .          PLS, TBPI, EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
-     .          EIRENE_FEHVDS1, EIRENE_FEHVPI3,
+     .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
      .          EIRENE_FTABEI1,
@@ -164,10 +165,10 @@ C
 C
         IF (NSTORDR >= NRAD) THEN
           ESIGEI(IREI,5)=EELEI1(IREI,K)
-          EHEAVY        =EHVDS1(IREI,K)
+          EHEAVY        =EHVEI1(IREI,K)
         ELSE
           ESIGEI(IREI,5)=EIRENE_FEELEI1(IREI,K)
-          EHEAVY        =EIRENE_FEHVDS1(IREI,K)
+          EHEAVY        =EIRENE_FEHVEI1(IREI,K)
         ENDIF
 C
         ESIGEI(IREI,1)=EATEI(IREI,0,1)*E0+EATEI(IREI,0,2)*EHEAVY
