@@ -16,7 +16,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds -> pelei
+!pb  APR  16:  pelds -> pelei, eelds -> eelei
 !pb  MAY  16:  tabds1 -> tabei1
 !pb  MAY  16:  nrds -> nrei
 
@@ -320,7 +320,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (P2NDS,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 c  EI post collision energetics
-      CALL MPI_BCAST (EELDS1,NREI*NSTORDR,MPI_REAL8,
+      CALL MPI_BCAST (EELEI1,NREI*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVDS1,NREI*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)

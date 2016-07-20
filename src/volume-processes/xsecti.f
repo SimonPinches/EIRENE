@@ -16,7 +16,7 @@ c          (was ok already for call to xstei)
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 cdr  oct.14:  pls made allocatable
-cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing) 
+cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
 cdr  oct.14:  further syncronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
@@ -24,7 +24,7 @@ cdr  apr.16:  accmas and accinv set explicitly also for reaction -9
 cdr           (was missing, but accidentally correct)
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  patds -> patei,  eatds -> eatei
-!pb  APR 16:  pelds -> pelei
+!pb  APR 16:  pelds -> pelei,  eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabds1
 C
       SUBROUTINE EIRENE_XSECTI
@@ -253,7 +253,7 @@ C
               COU = EIRENE_RATE_COEFF(-8,TEINL(J),0._DP,.TRUE.,0,ERATE)
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 73          CONTINUE
-            EELDS1(IREI,1:NSBOX)=-10.5
+            EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             EHVDS1(IREI,1:NSBOX)=8.6
             NREAEI(IREI) = -8
@@ -261,9 +261,9 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             NELREI(IREI) = -8
             NREAHV(IREI) = -4
           ELSE ! storage save mode
-!pb  in storage save mode EELDS1 has dimensions (NREI,1)
-!pb            EELDS1(IREI,1:NSBOX)=-10.5
-            EELDS1(IREI,1)=-10.5
+!pb  in storage save mode EELEI1 has dimensions (NREI,1)
+!pb            EELEI1(IREI,1:NSBOX)=-10.5
+            EELEI1(IREI,1)=-10.5
             EHVDS1(IREI,1)=8.6
             NREAEI(IREI) = -8
             JEREAEI(IREI) = 1
@@ -312,7 +312,7 @@ C
               TABEI1(IREI,J)=COU*DEIN(J)
 71          CONTINUE
 C  NO RADIATION LOSS INCLUDED
-            EELDS1(IREI,1:NSBOX)=-15.5
+            EELEI1(IREI,1:NSBOX)=-15.5
 C  TRANSFERRED KINETIC ENERGY: 0.5 EV
             EHVDS1(IREI,1:NSBOX)=0.5
             NREAEI(IREI) = -9
@@ -320,7 +320,7 @@ C  TRANSFERRED KINETIC ENERGY: 0.5 EV
             NELREI(IREI) = -9
             NREAHV(IREI) = -5
           ELSE  ! storage save mode
-            EELDS1(IREI,1)=-15.5
+            EELEI1(IREI,1)=-15.5
             EHVDS1(IREI,1)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
@@ -366,7 +366,7 @@ C
 C  NO RADIATION LOSS INCLUDED
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
-            EELDS1(IREI,1:NSBOX)=-DE_10*TEIN(1:NSBOX)
+            EELEI1(IREI,1:NSBOX)=-DE_10*TEIN(1:NSBOX)
 C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
             EHVDS1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
             NREAEI(IREI) = -10

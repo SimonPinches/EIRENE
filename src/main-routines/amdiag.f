@@ -2,6 +2,7 @@ cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=24, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
+!pb  apr       2016: eelds -> eelei
 !pb  may       2016: tabds1 -> tabei1
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
@@ -33,7 +34,7 @@ c
 c  done for naint=20,22,24,26 and modcol=1
 
 c  naint=20:   Tabei1(irei,....) electron impact collision rate, 1/s --> cm^3/s      ! done 
-c  naint=21:   eeldei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
+c  naint=21:   eelei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=22:   Tabcx3(ircx,..,1) charge exchange collision rate, 1/s --> cm^3/s      ! done 
 c  naint=23:   eplcx3(ircx,..,1) cx        energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
@@ -185,7 +186,7 @@ c  not ready
           irei=ns
           if (mm.eq.1) then
             DO 1721 ICELL=1,NSBOX
-              ADIN(IAIN,ICELL)=EELDS1(irei,ICELL)
+              ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)
 1721        CONTINUE
           else  !  mm= MODCOL(1,2,irei)=2, not ready
             goto 171

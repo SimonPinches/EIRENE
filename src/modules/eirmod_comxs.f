@@ -25,7 +25,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  peld s -> pelei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
 !pb  MAY  16:  tabds1 -> tabei1
 !pb  MAY  16:  nrds   -> nrei
  
@@ -150,7 +150,7 @@ c  ...and cummulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELDS1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
+     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
      R EHVDS1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
@@ -520,7 +520,7 @@ c  secondaries, PI processes
         ALLOCATE (P2NP(NRPI,0:NSPZ))        
         ALLOCATE (P2NPI(NRPI))
  
-        ALLOCATE (EELDS1(NREI,NSTORDR))
+        ALLOCATE (EELEI1(NREI,NSTORDR))
         ALLOCATE (EHVDS1(NREI,NSTORDR))
 
 
@@ -672,7 +672,7 @@ c
       DEALLOCATE (P2NDS)
       DEALLOCATE (P2NPI)
  
-      DEALLOCATE (EELDS1)
+      DEALLOCATE (EELEI1)
       DEALLOCATE (EHVDS1)
       DEALLOCATE (EELRC1)
       DEALLOCATE (EELPI1)
@@ -1104,7 +1104,7 @@ cdr  ical=2:  ??
         P2NDS   = 0._DP
         P2NPI   = 0._DP
  
-        EELDS1  = 0._DP
+        EELEI1  = 0._DP
         EHVDS1  = 0._DP
         EELRC1  = 0._DP
         EELPI1  = 0._DP
@@ -1211,7 +1211,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
-     . EELDS1 ,EELRC1 ,EELPI1 ,
+     . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVDS1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
@@ -1255,7 +1255,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
-     . EELDS1 ,EELRC1 ,EELPI1 ,
+     . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVDS1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
@@ -1324,7 +1324,7 @@ c
       CALL FXDRDBL (IUN,P2NDS,NREI)
       CALL FXDRDBL (IUN,P2NPI,NRPI)
  
-      CALL FXDRDBL (IUN,EELDS1,NREI*NSTORDR)
+      CALL FXDRDBL (IUN,EELEI1,NREI*NSTORDR)
       CALL FXDRDBL (IUN,EHVDS1,NREI*NSTORDR)
       CALL FXDRDBL (IUN,EELRC1,NREC*NSTORDR)
       CALL FXDRDBL (IUN,EELPI1,NRPI*NSTORDR)

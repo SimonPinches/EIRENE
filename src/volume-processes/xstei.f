@@ -19,7 +19,7 @@ cdr  Jan. 2014:
 !pb APR   16:   patds -> patei, eatds -> eatei
 !pb APR   16:   pmlds -> pmlei, emlds -> emlei
 !pb APR   16:   piods -> pioei, eiods -> eioei
-!pb APR   16:   pelds -> pelei
+!pb APR   16:   pelds -> pelei, eelds -> eelei
 !pb MAY   16:   tabds1 -> tabei1
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
@@ -264,7 +264,7 @@ C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE in subr. rate_coeff only needed for this?
             IF (LHCOL) THEN
               EE = MAX(-100._DP,ERATE+FCTKKL+DEINL(J))
-              EELDS1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
+              EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
             END IF
 C .......................................
           END DO
@@ -295,12 +295,12 @@ C
 C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               IF (NSTORDR >= NRAD) THEN
                 DO 101 J=1,NSBOX
-                  EELDS1(IREI,J)=EELEC
+                  EELEI1(IREI,J)=EELEC
 101             CONTINUE
                 NELREI(IREI)=-2
               ELSE
                 NELREI(IREI)=-2
-                EELDS1(IREI,1)=EELEC
+                EELEI1(IREI,1)=EELEC
               END IF
               MODCOL(1,4,IREI)=1
       ELSEIF (EFLAG.EQ.1) THEN
@@ -308,7 +308,7 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
               IF (NSTORDR >= NRAD) THEN
                 DO 103 J=1,NSBOX
                   IF (LGVAC(J,NPLS+1)) CYCLE
-                  EELDS1(IREI,J)=-1.5*TEIN(J)
+                  EELEI1(IREI,J)=-1.5*TEIN(J)
 103             CONTINUE
                 NELREI(IREI)=-3
               ELSE
@@ -324,7 +324,7 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                   IF (NSTORDR >=NRAD) THEN
                     DO 102 J=1,NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-                      EELDS1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,
+                      EELEI1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,
      .                                TEINL(J),
      .                                0._DP,.TRUE.,0)*DEIN(J)*FACTKK/
      .                                (TABEI1(IREI,J)+EPS60)
@@ -348,11 +348,11 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                         EE = EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
      .                                                PLS(J),.FALSE.,1)
                         EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-                        EELDS1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
+                        EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
                       END DO
                     ELSEIF (LHCOL) THEN
 C  NOTHING TO BE DONE HERE,
-C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
+C  ??? EELEI1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
                     END IF
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
@@ -368,7 +368,7 @@ C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN
                     DO J=1,NSBOX
-                      EELDS1(IREI,J)=EELDS1(IREI,J)+DELE
+                      EELEI1(IREI,J)=EELEI1(IREI,J)+DELE
                     END DO
                   END IF
                 ENDIF
@@ -517,7 +517,7 @@ C
       DO 875 IRAD=1,NSBOX
         IF (LGVAC(IRAD,NPLS+1)) GOTO 875
         IF (NSTORDR >= NRAD) THEN
-          EN=EELDS1(IREI,IRAD)
+          EN=EELEI1(IREI,IRAD)
         ELSE
           EN=EIRENE_FEELEI1(IREI,IRAD)
         END IF

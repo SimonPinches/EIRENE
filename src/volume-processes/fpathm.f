@@ -25,6 +25,7 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
 !pb APR  16:    eiods -> eioei
+!pb APR  16:    eelds -> eelei
 !pb MAY  16:    tabds1 -> tabei1
 
 C
@@ -164,7 +165,7 @@ C
         ENDIF
 C
         IF (NSTORDR >= NRAD) THEN
-          ESIGEI(IREI,5)=EELDS1(IREI,K)
+          ESIGEI(IREI,5)=EELEI1(IREI,K)
           EHEAVY        =EHVDS1(IREI,K)
         ELSE
           ESIGEI(IREI,5)=EIRENE_FEELEI1(IREI,K)

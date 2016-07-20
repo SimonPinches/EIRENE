@@ -17,14 +17,14 @@ C           also modified: cross.f, xsecta_param.f
 ! 23.02.14: call to xstpi: additional arguments: IAT, pls (for H.4 option)
 ! oct.2014: call to xstpi: additional argument: chrdf0
 cdr  oct.14:  comsou, clogau removed
-cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing) 
+cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
 cdr  oct.14:  further syncronization with xsectm,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  oct.15:  default he ionisation kk=-1 --> kk=-11, 
 cdr           to avoid conflict with default cx reaction kk=-1
 !pb  APR 16:  pplds -> pplei
-!pb  APR 16:  pelds -> pelei
+!pb  APR 16:  pelds -> pelei, eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabei1
 C
       SUBROUTINE EIRENE_XSECTA
@@ -160,14 +160,14 @@ C
               TABEI1(IREI,J)=COU*DEIN(J)
 80          CONTINUE
 C  NO RADIATION LOSS INCLUDED
-            EELDS1(IREI,1:NSBOX)=EELEC
+            EELEI1(IREI,1:NSBOX)=EELEC
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = ISTORE
             JEREAEI(IREI) = 1
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = ISTORE
           ELSE  ! storage save mode
-            EELDS1(IREI,1)=EELEC
+            EELEI1(IREI,1)=EELEC
             NREAEI(IREI) = ISTORE  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION ISTORE = -4, -11
             JEREAEI(IREI) = 1
             NELREI(IREI) = ISTORE  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION ISTORE = -4, -11

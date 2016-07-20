@@ -25,7 +25,7 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of 
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  patds -> patei, eatds -> eatei
 !pb  APR 16:  piods -> pioei, eiods -> eioei
-!pb  APR 16:  pelds -> pelei
+!pb  APR 16:  pelds -> pelei, eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabds1
 C
       SUBROUTINE EIRENE_XSECTM
@@ -285,7 +285,7 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
               COU = EIRENE_RATE_COEFF(-5,TEINL(J),0._DP,.TRUE.,0,ERATE)
               TABEI1(IREI,J)=COU*DEIN(J)
 70          CONTINUE
-            EELDS1(IREI,1:NSBOX)=-10.5
+            EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
             EHVDS1(IREI,1:NSBOX)=6.
             NREAEI(IREI)=-5
@@ -293,7 +293,7 @@ C  TRANSFERRED KINETIC ENERGY: 6 EV
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
             NREAHV(IREI)=-2
           ELSE
-            EELDS1(IREI,1)=-10.5
+            EELEI1(IREI,1)=-10.5
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
@@ -350,7 +350,7 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
               COU = EIRENE_RATE_COEFF(-6,TEINL(J),0._DP,.TRUE.,0,ERATE)
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 71          CONTINUE
-            EELDS1(IREI,1:NSBOX)=-25.0
+            EELEI1(IREI,1:NSBOX)=-25.0
 C  TRANSFERRED KINETIC ENERGY: 10 EV
             EHVDS1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
@@ -358,7 +358,7 @@ C  TRANSFERRED KINETIC ENERGY: 10 EV
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
             NREAHV(IREI) = -3
           ELSE
-            EELDS1(IREI,1)=-25.0
+            EELEI1(IREI,1)=-25.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6: 
@@ -397,14 +397,14 @@ C
               TABEI1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
-            EELDS1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
+            EELEI1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
           ELSE  ! storage save mode
-            EELDS1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
+            EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7: 
