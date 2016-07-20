@@ -1,3 +1,4 @@
+cdr  june  16:  comments, disable accidental use of HYDKIN interface, error exit 
 !cd  jan   16:  reset census start time to time0, even for time0=0.
 !cd  jan   16:  remove unused: ILE,tpb1,...,ian,ien,iab,reac
 !cd  dec.  15:  jj-nlim, rather than jj-nlimi, for non.dev.std. surfaces
@@ -2168,10 +2169,10 @@ c  vi profile(s)
      .                       I=1,NPLSI)
         END IF
       ENDIF
-c  pitch -profile
+c  pitch - or B-field profile
       IF (INDPRO(5).LE.5)
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
-c  cell volume -profile
+c  cell volume profile
       IF (INDPRO(12).LE.5) THEN
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
         IREAD=1
@@ -2201,10 +2202,10 @@ c  cell volume -profile
 C  TRY TO GENERATE INPUT FOR EIRENE CORRESPONDING TO A HYDKIN RUN.
 C  NOT READY
       IF (LHYDDEF) THEN
-c       WRITE (IUNOUT,*)
-c    .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
-c       CALL EIRENE_EXIT_OWN(1)
-        CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
+        WRITE (IUNOUT,*)
+     .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
+        CALL EIRENE_EXIT_OWN(1)
+cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       ENDIF
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699
