@@ -33,7 +33,7 @@ c
 c  done for naint=20,22,24,26 and modcol=1
 
 c  naint=20:   Tabei1(irei,....) electron impact collision rate, 1/s --> cm^3/s      ! done 
-c  naint=21:   eelds1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
+c  naint=21:   eeldei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=22:   Tabcx3(ircx,..,1) charge exchange collision rate, 1/s --> cm^3/s      ! done 
 c  naint=23:   eplcx3(ircx,..,1) cx        energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
