@@ -108,7 +108,6 @@ csw
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LOGHELP(NSTRA)
-      logical :: nlcrr_save
 C  OVERHEAD FOR POST PROCESSING (SECONDS)
       DATA N2/2/
 C
@@ -157,8 +156,6 @@ C  DETERMINE MAXIMAL INTEGER (DEPENDING ON MACHINE)
       IF (NLCRR) THEN
         INTMAX=HUGE(1)
       ENDIF
-      
-      NLCRR_SAVE = NLCRR
 C
 C  IRNDVC MUST BE EVEN AND NOT LARGER THEN 64 (COMMON CRAND)
 C  IRNDVC IS THE NUMBER OF RANDOM VECTORS PRODUCED IN ONE CALL TO
@@ -460,8 +457,6 @@ C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
 
-        IF (NLCNS(ISTRA) .AND. (ISTRA==NSTRAI)) NLCRR = .FALSE.
-          
         IF (.NOT.NLSRON(ISTRA)) CYCLE
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
 
@@ -1162,9 +1157,6 @@ C
         CALL EIRENE_LEER(2)
         endif  ! nprs > nsteff ...
       end if  ! nprs < nsteff ... or  nprs > nstef ...
-
-      NLCRR = NLCRR_SAVE
-
 1000  CONTINUE
 C
 C*** STRATA LOOP FINISHED *******************************************
