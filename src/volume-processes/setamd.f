@@ -6,6 +6,11 @@ cdr             This is temporarily necessary, as a consequence of making the
 cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
 cdr             We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.  
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei
+!pb  MAY  16:  nrds   -> nrei
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -34,7 +39,7 @@ C
         NRCX=0
         NREL=0
         NRPI=0
-        NRDS=0
+        NREI=0
         NREC=0
         NBGV=0
         NROT=0
@@ -47,7 +52,7 @@ C
         NRCX=MAX(1,NRCX)
         NREL=MAX(1,NREL)
         NRPI=MAX(1,NRPI)
-        NRDS=MAX(1,NRDS)
+        NREI=MAX(1,NREI)
         NREC=MAX(1,NREC)
         NBGV=MAX(1,NBGV)
         NROT=MAX(1,NROT)
@@ -139,39 +144,39 @@ cdr                   enddo
 cdr 
       IERROR = 0
 
-      IPATDS = 0
-      IPMLDS = 0
-      IPIODS = 0
+      IPATEI = 0
+      IPMLEI = 0
+      IPIOEI = 0
 cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
-      IPPLDS = 0
-      DO IREI=1,NRDS
-        ipatds(IREI,0)=COUNT(PATDS(IREI,1:) > 0)  ! amongst all natm species there are ipatds(...,0) (<= natm) 
+      IPPLEI = 0
+      DO IREI=1,NREI
+        ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm)
 cdr                                                 distinct atomic species which appear as secondaries, 
 cdr                                                 with one or more per atomic species iatm 
-        IF (ipatds(IREI,0).GT.0) THEN          
-             IPATDS(IREI,1:ipatds(IREI,0))=PACK( (/ (i,i=1,natm) /),
-     .                                     PATDS(IREI,1:) > 0)
-cdr  IPATDS(IREI,...)=iatm means:  one or more secondaries of species iatm
+        IF (ipatei(IREI,0).GT.0) THEN
+             IPATEI(IREI,1:ipatei(IREI,0))=PACK( (/ (i,i=1,natm) /),
+     .                                     PATEI(IREI,1:) > 0)
+cdr  IPATEI(IREI,...)=iatm means:  one or more secondaries of species iatm
 c
-cdr  the arrays patds,...,pplds, and p2nd, contain the further information: 
+cdr  the arrays patei,...,pplei, and p2nd, contain the further information:
 cdr  "how many" of this secondary species iatm arise after process irei.
         END IF
-        ipmlds(IREI,0)=COUNT(PMLDS(IREI,1:) > 0)
-        IF (ipmlds(IREI,0).GT.0) THEN          
-             IPMLDS(IREI,1:ipmlds(IREI,0))=PACK( (/ (i,i=1,nmol) /),
-     .                                     PMLDS(IREI,1:) > 0)
+        ipmlei(IREI,0)=COUNT(PMLEI(IREI,1:) > 0)
+        IF (ipmlei(IREI,0).GT.0) THEN
+             IPMLEI(IREI,1:ipmlei(IREI,0))=PACK( (/ (i,i=1,nmol) /),
+     .                                     PMLEI(IREI,1:) > 0)
         END IF
-        ipiods(IREI,0)=COUNT(PIODS(IREI,1:) > 0)
-        IF (ipiods(IREI,0).GT.0) THEN         
-             IPIODS(IREI,1:ipiods(IREI,0))=PACK( (/ (i,i=1,nion) /),
-     .                                     PIODS(IREI,1:) > 0)
+        ipioei(IREI,0)=COUNT(PIOEI(IREI,1:) > 0)
+        IF (ipioei(IREI,0).GT.0) THEN
+             IPIOEI(IREI,1:ipioei(IREI,0))=PACK( (/ (i,i=1,nion) /),
+     .                                     PIOEI(IREI,1:) > 0)
         END IF
-        ipplds(IREI,0)=COUNT(PPLDS(IREI,1:) > 0)       
-        IF (ipplds(IREI,0).GT.0) THEN         
-             IPPLDS(IREI,1:ipplds(IREI,0))=PACK( (/ (i,i=1,npls) /),
-     .                                     PPLDS(IREI,1:) > 0)
+        ipplei(IREI,0)=COUNT(PPLEI(IREI,1:) > 0)       
+        IF (ipplei(IREI,0).GT.0) THEN
+             IPPLEI(IREI,1:ipplei(IREI,0))=PACK( (/ (i,i=1,npls) /),
+     .                                     PPLEI(IREI,1:) > 0)
         END IF
-        if (ipplds(IREI,0) > 1) then
+        if (ipplei(IREI,0) > 1) then
           IERROR = IERROR + 1
           write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
      .          'AS SECONDARY PARTICLE OF EI REACTION IREI = ',IREI

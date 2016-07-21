@@ -9,6 +9,7 @@ cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
 cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
+!pb  May  16:  nrds -> nrei
       MODULE EIRMOD_PARMMOD
  
       USE EIRMOD_PRECISION
@@ -48,7 +49,7 @@ csw 13apr07
      I NSD,    NSDW,   NCV
  
       INTEGER, PUBLIC, SAVE ::
-     I NREAC,  NREC,   NRDS,   NRCX,   NREL,   NRPI,   NROT
+     I NREAC,  NREC,   NREI,   NRCX,   NREL,   NRPI,   NROT
  
       INTEGER, PUBLIC, SAVE ::
      I NHD1,   NHD2,   NHD3,   NHD4,   NHD5,   NHD6
@@ -266,7 +267,7 @@ C
         NBGV=NBGK*3
         NCPVP=NCPV+1
         NBGVP=NBGV+1
-        NCOLMC=NPLS+NRDS+NREC
+        NCOLMC=NPLS+NREI+NREC
         N1MX=NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV
 !PB        N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV)
         NSPZTOT=NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV
@@ -352,7 +353,7 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
  
       INT_PARM( 37) = NREAC
       INT_PARM( 38) = NREC
-      INT_PARM( 39) = NRDS
+      INT_PARM( 39) = NREI
       INT_PARM( 40) = NRCX
       INT_PARM( 41) = NREL
       INT_PARM( 42) = NRPI
@@ -530,7 +531,7 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
  
       NREAC       = INT_PARM( 37)
       NREC        = INT_PARM( 38)
-      NRDS        = INT_PARM( 39)
+      NREI        = INT_PARM( 39)
       NRCX        = INT_PARM( 40)
       NREL        = INT_PARM( 41)
       NRPI        = INT_PARM( 42)

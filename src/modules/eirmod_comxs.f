@@ -21,6 +21,14 @@ cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
 cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabei1
+!pb  MAY  16:  nrds   -> nrei
+!pb  JUL  16:  ehvds1 -> ehvei1
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -127,7 +135,7 @@ csw added OTHER (OT) reactions
      R SIGOTT
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R TABDS1(:,:),   TABRC1(:,:),
+     R TABEI1(:,:),   TABRC1(:,:),
      R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),
      R FDLMPI(:),     FDLMCX(:),     FDLMEL(:),
      R ADDPI(:,:),    ADDCX(:,:),    ADDEL(:,:)
@@ -137,18 +145,18 @@ csw added OTHER (OT) reactions
 
 c  secondaries, species distribution, for EI and PI processes 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R PELDS(:),  PATDS(:,:), PMLDS(:,:), PIODS(:,:), PPLDS(:,:),
+     R PELEI(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
 c  ...and cummulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELDS1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
-     R EHVDS1(:,:),   EHVPI3(:,:,:),
+     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
+     R EHVEI1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EATDS(:,:,:), EMLDS(:,:,:), EIODS(:,:,:), EPLEI(:,:,:),
+     R EATEI(:,:,:), EMLEI(:,:,:), EIOEI(:,:,:), EPLEI(:,:,:),
      R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:,:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -181,8 +189,8 @@ c  ...and cummulated distributions thereof, for species sampling
      I NELREI(:),JELREI(:),NREAHV(:),NELREL(:),
      I NELRRC(:),JELRRC(:),NELRPI(:),JELRPI(:),NELRCX(:),
      I NELROT(:),NREAOT(:),NREACT(:),NRHVPI(:),
-     I IPATDS(:,:),IPMLDS(:,:),
-     I IPIODS(:,:),IPPLDS(:,:),
+     I IPATEI(:,:),IPMLEI(:,:),
+     I IPIOEI(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
      I IPIOPI(:,:),IPPLPI(:,:),
      I LGACX(:,:,:),LGMCX(:,:,:),
@@ -411,37 +419,37 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
  
         IF (ALLOCATED(XSTOR)) RETURN
  
-        MXCOLLS = MAX(NRPI, NRDS, NRCX, NREL, NREC, NROT)
+        MXCOLLS = MAX(NRPI, NREI, NRCX, NREL, NREC, NROT)
  
-        NSTOR1 = NREL+NRCX+NRPI+NRDS
+        NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
-     .           2*(NREL+NRCX+NRPI)+5*NRDS+
+     .           2*(NREL+NRCX+NRPI)+5*NREI+
      .           NREL+NRCX+NRPI
 C
-        NTAB=NSTORDR*(NRDS+NREC)+
+        NTAB=NSTORDR*(NREI+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+NRPI)+
      P       (NPLS+1)*(NRPI+NRCX+NREL)+
-     P       2*(NREC+NRPI+NREL+NRDS+NRCX)
+     P       2*(NREC+NRPI+NREL+NREI+NRCX)
 C
-        NDAT=NSTORDR*(2*NRDS+NREC+NRPI+
+        NDAT=NSTORDR*(2*NREI+NREC+NRPI+
      P       NSTORDT*(NRCX+NREL+2*NRPI+NROT))+
-     P      (NRDS+NRPI)*
+     P      (NREI+NRPI)*
      P      (NATMP+NMOLP+NIONP+NPLSP+1)+
-     P      (NRPI+NRDS)*(NSPZP+1)+
+     P      (NRPI+NREI)*(NSPZP+1)+
      P       NRPI*2*(NATMP+NMOLP+NIONP+1)+
-     P       NRDS*2*(NATMP+NMOLP+NIONP+1)
+     P       NREI*2*(NATMP+NMOLP+NIONP+1)
 C
         NMDTA=NTAB+NDAT
 C
-        MMDTA=7*5*MXCOLLS+3*(NRCX+NREL+NRPI+NRDS)+6+
+        MMDTA=7*5*MXCOLLS+3*(NRCX+NREL+NRPI+NREI)+6+
      P        5*NREC+
      P        6*NRCX+
      P        10*NREC+
-     P        2*NRCX+4*NRPI+2*NREL+5*NRDS+4*NREC+NREAC+2*NROT+
-     P        (NRDS+NRPI)*
+     P        2*NRCX+4*NRPI+2*NREL+5*NREI+4*NREC+NREAC+2*NROT+
+     P        (NREI+NRPI)*
      P        (NATMP+NMOLP+NIONP+NPLSP)+
 C  LG... ARRAYS
-     P        (NATMP+NMOLP+NIONP      )*(NRDS+1)+
+     P        (NATMP+NMOLP+NIONP      )*(NREI+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRCX+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NREL+1)+
      P          (                  NPLSP)*(NREC+1)+
@@ -449,7 +457,7 @@ C  LG... ARRAYS
  
  
 csw added NROT (photon.f)
-        MSTOR1 = MAX(NRCX, NRPI, NRDS, NREL, NROT)
+        MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NROT)
 c
         MSTOR2 = 24
  
@@ -474,7 +482,7 @@ cdr     vsigei  : fehlt noch
 cdr     vsigot  : fehlt noch
  
  
-        ALLOCATE (TABDS1(NRDS,NSTORDR))
+        ALLOCATE (TABEI1(NREI,NSTORDR))
         ALLOCATE (TABRC1(NREC,NSTORDR))
         ALLOCATE (TABPI3(NRPI,NSTORDR,NSTORDT))
         ALLOCATE (TABCX3(NRCX,NSTORDR,NSTORDT))
@@ -493,17 +501,17 @@ c  factors for scaling reaction processes
         ALLOCATE (FACRRC(NREC,2)) 
         ALLOCATE (FACRPI(NRPI,2)) 
         ALLOCATE (FACREL(NREL,2)) 
-        ALLOCATE (FACREI(NRDS,2))
+        ALLOCATE (FACREI(NREI,2))
         ALLOCATE (FACRCX(NRCX,2)) 
  
 c  secondaries, EI processes 
-        ALLOCATE (PELDS(NRDS))
-        ALLOCATE (PATDS(NRDS,0:NATM))
-        ALLOCATE (PMLDS(NRDS,0:NMOL))
-        ALLOCATE (PIODS(NRDS,0:NION))
-        ALLOCATE (PPLDS(NRDS,0:NPLS))
-        ALLOCATE (P2ND(NRDS,0:NSPZ))
-        ALLOCATE (P2NDS(NRDS))
+        ALLOCATE (PELEI(NREI))
+        ALLOCATE (PATEI(NREI,0:NATM))
+        ALLOCATE (PMLEI(NREI,0:NMOL))
+        ALLOCATE (PIOEI(NREI,0:NION))
+        ALLOCATE (PPLEI(NREI,0:NPLS))
+        ALLOCATE (P2ND(NREI,0:NSPZ))
+        ALLOCATE (P2NDS(NREI))
 c  secondaries, PI processes
         ALLOCATE (PELPI(NRPI))
         ALLOCATE (PATPI(NRPI,0:NATM))
@@ -513,8 +521,8 @@ c  secondaries, PI processes
         ALLOCATE (P2NP(NRPI,0:NSPZ))        
         ALLOCATE (P2NPI(NRPI))
  
-        ALLOCATE (EELDS1(NRDS,NSTORDR))
-        ALLOCATE (EHVDS1(NRDS,NSTORDR))
+        ALLOCATE (EELEI1(NREI,NSTORDR))
+        ALLOCATE (EHVEI1(NREI,NSTORDR))
 
 
         ALLOCATE (EELRC1(NREC,NSTORDR))
@@ -534,10 +542,10 @@ c  secondaries, PI processes
         ALLOCATE (EIOPI(NRPI,0:NION,2))
         ALLOCATE (EPLPI(NRPI,0:NPLS,2))
 
-        ALLOCATE (EATDS(NRDS,0:NATM,2))
-        ALLOCATE (EMLDS(NRDS,0:NMOL,2))
-        ALLOCATE (EIODS(NRDS,0:NION,2))
-        ALLOCATE (EPLEI(NRDS,0:NPLS,2))
+        ALLOCATE (EATEI(NREI,0:NATM,2))
+        ALLOCATE (EMLEI(NREI,0:NMOL,2))
+        ALLOCATE (EIOEI(NREI,0:NION,2))
+        ALLOCATE (EPLEI(NREI,0:NPLS,2))
  
         ALLOCATE (MODCOL(7,0:4,MXCOLLS))
 
@@ -546,7 +554,7 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (IESTCX(NRCX,3))
         ALLOCATE (IESTEL(NREL,3))
         ALLOCATE (IESTPI(NRPI,3))
-        ALLOCATE (IESTEI(NRDS,3))
+        ALLOCATE (IESTEI(NREI,3))
  
         ALLOCATE (NATPRC(NREC))
         ALLOCATE (NMLPRC(NREC))
@@ -567,13 +575,13 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (NREACX(NRCX))
         ALLOCATE (NREAPI(NRPI))
         ALLOCATE (NREAEL(NREL))
-        ALLOCATE (NREAEI(NRDS))
-        ALLOCATE (JEREAEI(NRDS))
+        ALLOCATE (NREAEI(NREI))
+        ALLOCATE (JEREAEI(NREI))
         ALLOCATE (NREARC(NREC))
         ALLOCATE (JEREARC(NREC))
-        ALLOCATE (NELREI(NRDS))
-        ALLOCATE (JELREI(NRDS))
-        ALLOCATE (NREAHV(NRDS))
+        ALLOCATE (NELREI(NREI))
+        ALLOCATE (JELREI(NREI))
+        ALLOCATE (NREAHV(NREI))
         ALLOCATE (NELREL(NREL))
         ALLOCATE (NELRRC(NREC))
         ALLOCATE (JELRRC(NREC))
@@ -587,10 +595,10 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
 c  again: some arrays for species distribution of secondaries
 c         derived from P..DS and P..PI, above. 
 c         for speeding up scoring in update, collide 
-        ALLOCATE (IPATDS(NRDS,0:NATM))
-        ALLOCATE (IPMLDS(NRDS,0:NMOL))
-        ALLOCATE (IPIODS(NRDS,0:NION))
-        ALLOCATE (IPPLDS(NRDS,0:NPLS))
+        ALLOCATE (IPATEI(NREI,0:NATM))
+        ALLOCATE (IPMLEI(NREI,0:NMOL))
+        ALLOCATE (IPIOEI(NREI,0:NION))
+        ALLOCATE (IPPLEI(NREI,0:NPLS))
         ALLOCATE (IPATPI(NRPI,0:NATM))
         ALLOCATE (IPMLPI(NRPI,0:NMOL))
         ALLOCATE (IPIOPI(NRPI,0:NION))
@@ -599,9 +607,9 @@ c
         ALLOCATE (LGACX(0:NATM,0:NRCX,0:1))
         ALLOCATE (LGMCX(0:NMOL,0:NRCX,0:1))
         ALLOCATE (LGICX(0:NION,0:NRCX,0:1))
-        ALLOCATE (LGAEI(0:NATM,0:NRDS))
-        ALLOCATE (LGMEI(0:NMOL,0:NRDS))
-        ALLOCATE (LGIEI(0:NION,0:NRDS))
+        ALLOCATE (LGAEI(0:NATM,0:NREI))
+        ALLOCATE (LGMEI(0:NMOL,0:NREI))
+        ALLOCATE (LGIEI(0:NION,0:NREI))
         ALLOCATE (LGAEL(0:NATM,0:NREL,0:1))
         ALLOCATE (LGMEL(0:NMOL,0:NREL,0:1))
         ALLOCATE (LGIEL(0:NION,0:NREL,0:1))
@@ -632,7 +640,7 @@ c
       DEALLOCATE (XSTORV)
  
  
-      DEALLOCATE (TABDS1)
+      DEALLOCATE (TABEI1)
       DEALLOCATE (TABRC1)
       DEALLOCATE (TABPI3)
       DEALLOCATE (TABCX3)
@@ -650,11 +658,11 @@ c
       DEALLOCATE (FACREI)
       DEALLOCATE (FACRCX) 
  
-      DEALLOCATE (PELDS)
-      DEALLOCATE (PATDS)
-      DEALLOCATE (PMLDS)
-      DEALLOCATE (PIODS)
-      DEALLOCATE (PPLDS)
+      DEALLOCATE (PELEI)
+      DEALLOCATE (PATEI)
+      DEALLOCATE (PMLEI)
+      DEALLOCATE (PIOEI)
+      DEALLOCATE (PPLEI)
       DEALLOCATE (PELPI)
       DEALLOCATE (PATPI)
       DEALLOCATE (PMLPI)
@@ -665,8 +673,8 @@ c
       DEALLOCATE (P2NDS)
       DEALLOCATE (P2NPI)
  
-      DEALLOCATE (EELDS1)
-      DEALLOCATE (EHVDS1)
+      DEALLOCATE (EELEI1)
+      DEALLOCATE (EHVEI1)
       DEALLOCATE (EELRC1)
       DEALLOCATE (EELPI1)
       DEALLOCATE (EHVPI3)
@@ -680,9 +688,9 @@ c
       DEALLOCATE (EIOPI)
       DEALLOCATE (EPLPI)
 
-      DEALLOCATE (EATDS)
-      DEALLOCATE (EMLDS)
-      DEALLOCATE (EIODS)
+      DEALLOCATE (EATEI)
+      DEALLOCATE (EMLEI)
+      DEALLOCATE (EIOEI)
       DEALLOCATE (EPLEI)
  
       DEALLOCATE (MODCOL)
@@ -763,10 +771,10 @@ c
       DEALLOCATE (NREAOT)
       DEALLOCATE (NREACT)
       DEALLOCATE (NRHVPI)
-      DEALLOCATE (IPATDS)
-      DEALLOCATE (IPMLDS)
-      DEALLOCATE (IPIODS)
-      DEALLOCATE (IPPLDS)
+      DEALLOCATE (IPATEI)
+      DEALLOCATE (IPMLEI)
+      DEALLOCATE (IPIOEI)
+      DEALLOCATE (IPPLEI)
       DEALLOCATE (IPATPI)
       DEALLOCATE (IPMLPI)
       DEALLOCATE (IPIOPI)
@@ -1059,7 +1067,7 @@ cdr  ical=2:  ??
  
         XSTOR  = 0._DP
  
-        TABDS1  = 0._DP
+        TABEI1  = 0._DP
         TABRC1  = 0._DP
         TABPI3  = 0._DP
         TABCX3  = 0._DP
@@ -1082,11 +1090,11 @@ cdr  ical=2:  ??
         FACRCX(:,1) = 1._DP
         FACRCX(:,2) = 0._DP
  
-        PELDS   = 0._DP
-        PATDS   = 0._DP
-        PMLDS   = 0._DP
-        PIODS   = 0._DP
-        PPLDS   = 0._DP
+        PELEI   = 0._DP
+        PATEI   = 0._DP
+        PMLEI   = 0._DP
+        PIOEI   = 0._DP
+        PPLEI   = 0._DP
         PELPI   = 0._DP
         PATPI   = 0._DP
         PMLPI   = 0._DP
@@ -1097,8 +1105,8 @@ cdr  ical=2:  ??
         P2NDS   = 0._DP
         P2NPI   = 0._DP
  
-        EELDS1  = 0._DP
-        EHVDS1  = 0._DP
+        EELEI1  = 0._DP
+        EHVEI1  = 0._DP
         EELRC1  = 0._DP
         EELPI1  = 0._DP
         EHVPI3  = 0._DP
@@ -1111,9 +1119,9 @@ cdr  ical=2:  ??
         EMLPI   = 0._DP
         EIOPI   = 0._DP
         EPLPI   = 0._DP
-        EATDS   = 0._DP
-        EMLDS   = 0._DP
-        EIODS   = 0._DP
+        EATEI   = 0._DP
+        EMLEI   = 0._DP
+        EIOEI   = 0._DP
         EPLEI   = 0._DP
  
         MODCOL  = 0
@@ -1163,10 +1171,10 @@ cdr  ical=2:  ??
         NREAOT  = 0
         NREACT  = 0
         NRHVPI  = 0
-        IPATDS  = 0
-        IPMLDS  = 0
-        IPIODS  = 0
-        IPPLDS  = 0
+        IPATEI  = 0
+        IPMLEI  = 0
+        IPIOEI  = 0
+        IPPLEI  = 0
         IPATPI  = 0
         IPMLPI  = 0
         IPIOPI  = 0
@@ -1195,21 +1203,21 @@ cdr  ical=2:  ??
 cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input block 1)
  
       WRITE (13+IFOFF)
-     . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
+     . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
-     . PELDS  ,PATDS  ,PMLDS  ,PIODS  ,PPLDS  ,
+     . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
-     . EELDS1 ,EELRC1 ,EELPI1 ,
-     . EHVDS1 ,EHVPI3 ,
+     . EELEI1 ,EELRC1 ,EELPI1 ,
+     . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
+     . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
  
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1228,7 +1236,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,JEREAEI,NREARC ,JEREARC,
      . NELREI ,JELREI ,NREAHV ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
      . NELRCX ,NELROT ,NREAOT ,NREACT ,NRHVPI ,
-     . IPATDS ,IPMLDS ,IPIODS ,IPPLDS ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
+     . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
  
@@ -1239,21 +1247,21 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
       SUBROUTINE EIRENE_READ_CMDTA
  
       READ (13+IFOFF)
-     . TABDS1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
+     . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
  
-     . PELDS  ,PATDS  ,PMLDS  ,PIODS  ,PPLDS  ,
+     . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
  
-     . EELDS1 ,EELRC1 ,EELPI1 ,
-     . EHVDS1 ,EHVPI3 ,
+     . EELEI1 ,EELRC1 ,EELPI1 ,
+     . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
  
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
-     . EATDS  ,EMLDS  ,EIODS  ,EPLEI
+     . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
  
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
@@ -1272,7 +1280,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,JEREAEI,NREARC ,JEREARC,
      . NELREI ,JELREI ,NREAHV ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
      . NELRCX ,NELROT ,NREAOT ,NREACT ,NRHVPI ,
-     . IPATDS ,IPMLDS ,IPIODS ,IPPLDS ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
+     . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
  
@@ -1285,7 +1293,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
       INTEGER, INTENT(IN) :: IUN
       INTEGER :: IHELP(1)
 c
-      CALL FXDRDBL (IUN,TABDS1,NRDS*NSTORDR)
+      CALL FXDRDBL (IUN,TABEI1,NREI*NSTORDR)
       CALL FXDRDBL (IUN,TABRC1,NREC*NSTORDR)
       CALL FXDRDBL (IUN,TABPI3,NRPI*NSTORDR*NSTORDT)
       CALL FXDRDBL (IUN,TABCX3,NRCX*NSTORDR*NSTORDT)
@@ -1299,26 +1307,26 @@ c
       CALL FXDRDBL (IUN,FACRRC,NREC*2)
       CALL FXDRDBL (IUN,FACRPI,NRPI*2)
       CALL FXDRDBL (IUN,FACREL,NREL*2)
-      CALL FXDRDBL (IUN,FACREI,NRDS*2)
+      CALL FXDRDBL (IUN,FACREI,NREI*2)
       CALL FXDRDBL (IUN,FACRCX,NRCX*2)
  
-      CALL FXDRDBL (IUN,PELDS,NRDS)
-      CALL FXDRDBL (IUN,PATDS,NRDS*(NATM+1))
-      CALL FXDRDBL (IUN,PMLDS,NRDS*(NMOL+1))
-      CALL FXDRDBL (IUN,PIODS,NRDS*(NION+1))
-      CALL FXDRDBL (IUN,PPLDS,NRDS*(NPLS+1))
+      CALL FXDRDBL (IUN,PELEI,NREI)
+      CALL FXDRDBL (IUN,PATEI,NREI*(NATM+1))
+      CALL FXDRDBL (IUN,PMLEI,NREI*(NMOL+1))
+      CALL FXDRDBL (IUN,PIOEI,NREI*(NION+1))
+      CALL FXDRDBL (IUN,PPLEI,NREI*(NPLS+1))
       CALL FXDRDBL (IUN,PELPI,NRPI)
       CALL FXDRDBL (IUN,PATPI,NRPI*(NATM+1))
       CALL FXDRDBL (IUN,PMLPI,NRPI*(NMOL+1))
       CALL FXDRDBL (IUN,PIOPI,NRPI*(NION+1))
       CALL FXDRDBL (IUN,PPLPI,NRPI*(NPLS+1))
-      CALL FXDRDBL (IUN,P2ND,NRDS*(NSPZ+1))
+      CALL FXDRDBL (IUN,P2ND,NREI*(NSPZ+1))
       CALL FXDRDBL (IUN,P2NP,NRPI*(NSPZ+1))
-      CALL FXDRDBL (IUN,P2NDS,NRDS)
+      CALL FXDRDBL (IUN,P2NDS,NREI)
       CALL FXDRDBL (IUN,P2NPI,NRPI)
  
-      CALL FXDRDBL (IUN,EELDS1,NRDS*NSTORDR)
-      CALL FXDRDBL (IUN,EHVDS1,NRDS*NSTORDR)
+      CALL FXDRDBL (IUN,EELEI1,NREI*NSTORDR)
+      CALL FXDRDBL (IUN,EHVEI1,NREI*NSTORDR)
       CALL FXDRDBL (IUN,EELRC1,NREC*NSTORDR)
       CALL FXDRDBL (IUN,EELPI1,NRPI*NSTORDR)
       CALL FXDRDBL (IUN,EHVPI3,NRPI*NSTORDR*NSTORDT)
@@ -1332,17 +1340,17 @@ c
       CALL FXDRDBL (IUN,EIOPI,NRPI*(NION+1)*2)
       CALL FXDRDBL (IUN,EPLPI,NRPI*(NPLS+1)*2)
 
-      CALL FXDRDBL (IUN,EATDS,NRDS*(NATM+1)*2)
-      CALL FXDRDBL (IUN,EMLDS,NRDS*(NMOL+1)*2)
-      CALL FXDRDBL (IUN,EIODS,NRDS*(NION+1)*2)
-      CALL FXDRDBL (IUN,EPLEI,NRDS*(NPLS+1)*2)
+      CALL FXDRDBL (IUN,EATEI,NREI*(NATM+1)*2)
+      CALL FXDRDBL (IUN,EMLEI,NREI*(NMOL+1)*2)
+      CALL FXDRDBL (IUN,EIOEI,NREI*(NION+1)*2)
+      CALL FXDRDBL (IUN,EPLEI,NREI*(NPLS+1)*2)
  
 c
       CALL FXDRINT (IUN,MODCOL ,7*5*MXCOLLS)
       CALL FXDRINT (IUN,IESTCX ,3*NRCX)
       CALL FXDRINT (IUN,IESTEL ,3*NREL)
       CALL FXDRINT (IUN,IESTPI ,3*NRPI)
-      CALL FXDRINT (IUN,IESTEI ,3*NRDS)
+      CALL FXDRINT (IUN,IESTEI ,3*NREI)
       CALL FXDRINT (IUN,NAEII  ,NATM)
       CALL FXDRINT (IUN,NMDSI  ,NMOL)
       CALL FXDRINT (IUN,NIDSI  ,NION)
@@ -1409,13 +1417,13 @@ c
       CALL FXDRINT (IUN,NREACX ,NRCX)
       CALL FXDRINT (IUN,NREAPI ,NRPI)
       CALL FXDRINT (IUN,NREAEL ,NREL)
-      CALL FXDRINT (IUN,NREAEI ,NRDS)
-      CALL FXDRINT (IUN,JEREAEI,NRDS)
+      CALL FXDRINT (IUN,NREAEI ,NREI)
+      CALL FXDRINT (IUN,JEREAEI,NREI)
       CALL FXDRINT (IUN,NREARC ,NREC)
       CALL FXDRINT (IUN,JEREARC,NREC)
-      CALL FXDRINT (IUN,NELREI ,NRDS)
-      CALL FXDRINT (IUN,JELREI ,NRDS)
-      CALL FXDRINT (IUN,NREAHV ,NRDS)
+      CALL FXDRINT (IUN,NELREI ,NREI)
+      CALL FXDRINT (IUN,JELREI ,NREI)
+      CALL FXDRINT (IUN,NREAHV ,NREI)
       CALL FXDRINT (IUN,NELREL ,NREL)
       CALL FXDRINT (IUN,NELRRC ,NREC)
       CALL FXDRINT (IUN,JELRRC ,NREC)
@@ -1426,10 +1434,10 @@ c
       CALL FXDRINT (IUN,NREAOT ,NROT)
       CALL FXDRINT (IUN,NREACT ,NREAC)
       CALL FXDRINT (IUN,NRHVPI ,NRPI)
-      CALL FXDRINT (IUN,IPATDS ,NRDS*(NATM+1))
-      CALL FXDRINT (IUN,IPMLDS ,NRDS*(NMOL+1))
-      CALL FXDRINT (IUN,IPIODS ,NRDS*(NION+1))
-      CALL FXDRINT (IUN,IPPLDS ,NRDS*(NPLS+1))
+      CALL FXDRINT (IUN,IPATEI ,NREI*(NATM+1))
+      CALL FXDRINT (IUN,IPMLEI ,NREI*(NMOL+1))
+      CALL FXDRINT (IUN,IPIOEI ,NREI*(NION+1))
+      CALL FXDRINT (IUN,IPPLEI ,NREI*(NPLS+1))
       CALL FXDRINT (IUN,IPATPI ,NRPI*(NATM+1))
       CALL FXDRINT (IUN,IPMLPI ,NRPI*(NMOL+1))
       CALL FXDRINT (IUN,IPIOPI ,NRPI*(NION+1))
@@ -1438,9 +1446,9 @@ c
       CALL FXDRINT (IUN,LGACX  ,2*(NATM+1)*(NRCX+1))
       CALL FXDRINT (IUN,LGMCX  ,2*(NMOL+1)*(NRCX+1))
       CALL FXDRINT (IUN,LGICX  ,2*(NION+1)*(NRCX+1))
-      CALL FXDRINT (IUN,LGAEI  ,(NATM+1)*(NRDS+1))
-      CALL FXDRINT (IUN,LGMEI  ,(NMOL+1)*(NRDS+1))
-      CALL FXDRINT (IUN,LGIEI  ,(NION+1)*(NRDS+1))
+      CALL FXDRINT (IUN,LGAEI  ,(NATM+1)*(NREI+1))
+      CALL FXDRINT (IUN,LGMEI  ,(NMOL+1)*(NREI+1))
+      CALL FXDRINT (IUN,LGIEI  ,(NION+1)*(NREI+1))
       CALL FXDRINT (IUN,LGAEL  ,2*(NATM+1)*(NREL+1))
       CALL FXDRINT (IUN,LGMEL  ,2*(NMOL+1)*(NREL+1))
       CALL FXDRINT (IUN,LGIEL  ,2*(NION+1)*(NREL+1))

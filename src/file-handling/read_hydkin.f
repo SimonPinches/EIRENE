@@ -150,7 +150,7 @@ c  skip blank lines at top of file
         h123 = 'H.2 '
         MODCLF(IR)=MODCLF(IR)+100
         IFLG=2
-C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) FOR E0=0.
+C  DEFAULT RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
  
 ! find crc

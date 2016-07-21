@@ -2,13 +2,15 @@ cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=24, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
+!pb  apr       2016: eelds -> eelei
+!pb  may       2016: tabds1 -> tabei1
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
 C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS 
 c 
 c  modcol=1: rate coefficients only dependent on local background data, not on test particle parameters
-c            tabcx3(...,1),tabel3(...1),tabpi3(...1),tabds1(...) 
+c            tabcx3(...,1),tabel3(...1),tabpi3(...1),tabei1(...) 
 c            are rates, density of impacting bulk ion included, 
 c            so here we divide again by ne or ni.
 c
@@ -31,8 +33,8 @@ C  TO CONVERT THE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.61
 c
 c  done for naint=20,22,24,26 and modcol=1
 
-c  naint=20:   Tabds1(irei,....) electron impact collision rate, 1/s --> cm^3/s      ! done 
-c  naint=21:   eelds1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
+c  naint=20:   Tabei1(irei,....) electron impact collision rate, 1/s --> cm^3/s      ! done 
+c  naint=21:   eelei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=22:   Tabcx3(ircx,..,1) charge exchange collision rate, 1/s --> cm^3/s      ! done 
 c  naint=23:   eplcx3(ircx,..,1) cx        energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
@@ -161,7 +163,7 @@ c  no interacting particle species found
  
           if (mm.eq.1) then
             DO 1720 ICELL=1,NSBOX
-              ADIN(IAIN,ICELL)=TABDS1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
+              ADIN(IAIN,ICELL)=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
 1720        CONTINUE
 
             goto 180
@@ -184,7 +186,7 @@ c  not ready
           irei=ns
           if (mm.eq.1) then
             DO 1721 ICELL=1,NSBOX
-              ADIN(IAIN,ICELL)=EELDS1(irei,ICELL)
+              ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)
 1721        CONTINUE
           else  !  mm= MODCOL(1,2,irei)=2, not ready
             goto 171

@@ -1300,7 +1300,7 @@ c  spectra tallies: standard deviation for sum over strata, intermediate storage
              END IF
            END DO
            DEALLOCATE (ESTIML)
-           DEALLOCATE (SMESTL)
+           IF (NSMSTRA > 0) DEALLOCATE (SMESTL)
          ELSE
            IF (ALLOCATED(ESTIML)) DEALLOCATE (ESTIML)
            IF (ALLOCATED(SMESTL)) DEALLOCATE (SMESTL)

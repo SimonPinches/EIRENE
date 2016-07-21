@@ -9,9 +9,10 @@ CDR TO BE DONE:  when kk >0  then on the fly evaluation of rate coeff. is
 cdr              repeated here. This should be avoided, by returning the energy weighted rate,
 cdr              rather than the mean electron energy itself.
 
-cdr  ARRAY eelds1 defined twice in case of default models, here and in xsectm, xsecta, xsecti, xsecpt
-cdr  done: eelds1 set in xsect... routines.
- 
+cdr  ARRAY eelei1 defined twice in case of default models, here and in xsectm, xsecta, xsecti, xsecpt
+cdr  done: eelei1 set in xsect... routines.
+!pb  APR   16: eelds -> eelei 
+
       FUNCTION EIRENE_FEELEI1 (IREI,K)
 C  this is the "on the fly" storage saving version to eliminate
 C  pre-computed array EELEI1(irei,k) from with run
@@ -44,7 +45,7 @@ c   electron energy losses per collision from the default EI processes
         CASE (-1)
 c           EIRENE_FEELEI1=-EIONHE         ! DEFAULT PROCESS KK=-1: NOT IN USE  
         CASE (-2)
-c           EIRENE_FEELEI1=EELDS1(IREI,1)  ! DEFAULT PROCESS KK=-2: NOT IN USE
+c           EIRENE_FEELEI1=EELEI1(IREI,1)  ! DEFAULT PROCESS KK=-2: NOT IN USE
         CASE (-3)
 c           EIRENE_FEELEI1=-1.5*TEIN(K)    ! DEFAULT PROCESS KK=-3: NOT IN USE
         CASE (-4)
@@ -54,7 +55,7 @@ c           EIRENE_FEELEI1=-1.5*TEIN(K)    ! DEFAULT PROCESS KK=-3: NOT IN USE
         CASE (-6)
             EIRENE_FEELEI1=-25.0  ! DEFAULT PROCESS KK=-6:  H2+E --> H + H+  +2E 
         CASE (-7)
-            EIRENE_FEELEI1=EELDS1(IREI,1) ! DEFAULT PROCESS KK=-7: H2+E --> H2+  +2E
+            EIRENE_FEELEI1=EELEI1(IREI,1) ! DEFAULT PROCESS KK=-7: H2+E --> H2+  +2E
         CASE (-8)
             EIRENE_FEELEI1=-10.5
         CASE (-9)

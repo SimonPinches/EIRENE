@@ -17,6 +17,7 @@ cdr             storage for thrid dimension only if nltor=true
 cdr             to be tested:  storage for nltra, if nltor=false?
 cdr             to be done: check for comment lines *... syncronized with input.f?
 !pb  June 16:   default for NPLSTI changed from 1 to NPLS
+!pb  MAY  16:   nrds -> nrei
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -119,7 +120,7 @@ C  ATOMIC DATA
       NREAC_ADD=0
       NREAC_LINES=0
       NREC=1
-      NRDS=1
+      NREI=1
       NRCX=1
       NREL=1
       NRPI=1
@@ -1283,7 +1284,7 @@ cdr species
       WRITE (iunout,*) 'NREAC =  ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
 C     WRITE (iunout,*) 'NREC =   ',NREC
-C     WRITE (iunout,*) 'NRDS =   ',NRDS
+C     WRITE (iunout,*) 'NREI =   ',NREI
 C     WRITE (iunout,*) 'NRCX =   ',NRCX
 C     WRITE (iunout,*) 'NREL =   ',NREL
 C     WRITE (iunout,*) 'NRPI =   ',NRPI

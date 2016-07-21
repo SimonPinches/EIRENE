@@ -2138,11 +2138,12 @@ C  Ti profile(s)
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
-      NLMLTI= (NPLSTI > 1)
       MPLSTI=1
-      IF (NLMLTI) MPLSTI = (/ (I,I=1,NPLS) /)
+!pb      IF (NLMLTI) MPLSTI = (/ (I,I=1,NPLS) /)
+      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
 
       INDPRO(2)=IABS(INDPRO(2))
+      NLMLTI= INDPRO(2) > 9
       IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
 
       IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN

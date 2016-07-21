@@ -15,6 +15,13 @@ cdr  Jan. 2014:
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
 !   02.02.15:   ONLY COMMENTS ADDED
 !dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
+!pb APR   16:   pplds -> pplei
+!pb APR   16:   patds -> patei, eatds -> eatei
+!pb APR   16:   pmlds -> pmlei, emlds -> emlei
+!pb APR   16:   piods -> pioei, eiods -> eioei
+!pb APR   16:   pelds -> pelei, eelds -> eelei
+!pb MAY   16:   tabds1 -> tabei1
+!pb JUL   16:   ehvds1 -> ehvei1
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -48,7 +55,7 @@ C
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9,0:9)
-      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, EIRENE_FEHVDS1, EE, TB, 
+      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, EIRENE_FEHVEI1, EE, TB, 
      .          EIRENE_FEELEI1, EN,
      .          P2N, EA, EI, ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
@@ -90,39 +97,39 @@ C
       IF (ITYP.EQ.1) THEN
         IAT=ISPE
         IAA=NSPH+IAT
-        PATDS(IREI,IAT)=PATDS(IREI,IAT)+INUM
+        PATEI(IREI,IAT)=PATEI(IREI,IAT)+INUM
         P2ND(IREI,IAA)=P2ND(IREI,IAA)+INUM
         ACCMAS=ACCMAS+INUM*RMASSA(IAT)
         ACCMSA=ACCMSA+INUM*RMASSA(IAT)
         ACCINV=ACCINV+INUM/RMASSA(IAT)
         ACCINA=ACCINA+INUM/RMASSA(IAT)
-        EATDS(IREI,IAT,1)=RMASSA(IAT)
-        EATDS(IREI,IAT,2)=1./RMASSA(IAT)
+        EATEI(IREI,IAT,1)=RMASSA(IAT)
+        EATEI(IREI,IAT,2)=1./RMASSA(IAT)
       ELSEIF (ITYP.EQ.2) THEN
         IML=ISPE
         IMM=NSPA+IML
-        PMLDS(IREI,IML)=PMLDS(IREI,IML)+INUM
+        PMLEI(IREI,IML)=PMLEI(IREI,IML)+INUM
         P2ND(IREI,IMM)=P2ND(IREI,IMM)+INUM
         ACCMAS=ACCMAS+INUM*RMASSM(IML)
         ACCMSM=ACCMSM+INUM*RMASSM(IML)
         ACCINV=ACCINV+INUM/RMASSM(IML)
         ACCINM=ACCINM+INUM/RMASSM(IML)
-        EMLDS(IREI,IML,1)=RMASSM(IML)
-        EMLDS(IREI,IML,2)=1./RMASSM(IML)
+        EMLEI(IREI,IML,1)=RMASSM(IML)
+        EMLEI(IREI,IML,2)=1./RMASSM(IML)
       ELSEIF (ITYP.EQ.3) THEN
         IIO=ISPE
         III=NSPAM+IIO
-        PIODS(IREI,IIO)=PIODS(IREI,IIO)+INUM
+        PIOEI(IREI,IIO)=PIOEI(IREI,IIO)+INUM
         P2ND(IREI,III)=P2ND(IREI,III)+INUM
         ACCMAS=ACCMAS+INUM*RMASSI(IIO)
         ACCMSI=ACCMSI+INUM*RMASSI(IIO)
         ACCINV=ACCINV+INUM/RMASSI(IIO)
         ACCINI=ACCINI+INUM/RMASSI(IIO)
-        EIODS(IREI,IIO,1)=RMASSI(IIO)
-        EIODS(IREI,IIO,2)=1./RMASSI(IIO)
+        EIOEI(IREI,IIO,1)=RMASSI(IIO)
+        EIOEI(IREI,IIO,2)=1./RMASSI(IIO)
       ELSEIF (ITYP.EQ.4) THEN
         IPP=ISPE
-        PPLDS(IREI,IPP)=PPLDS(IREI,IPP)+INUM
+        PPLEI(IREI,IPP)=PPLEI(IREI,IPP)+INUM
         ACCMAS=ACCMAS+INUM*RMASSP(IPP)
         ACCMSP=ACCMSP+INUM*RMASSP(IPP)
         ACCINV=ACCINV+INUM/RMASSP(IPP)
@@ -160,23 +167,23 @@ C
         ENDIF
 C
       DO IAT=1,NATMI
-        EATDS(IREI,IAT,1)=EATDS(IREI,IAT,1)/ACCMAS
-        EATDS(IREI,IAT,2)=EATDS(IREI,IAT,2)/ACCINV
+        EATEI(IREI,IAT,1)=EATEI(IREI,IAT,1)/ACCMAS
+        EATEI(IREI,IAT,2)=EATEI(IREI,IAT,2)/ACCINV
       ENDDO
-      EATDS(IREI,0,1)=ACCMSA/ACCMAS
-      EATDS(IREI,0,2)=ACCINA/ACCINV
+      EATEI(IREI,0,1)=ACCMSA/ACCMAS
+      EATEI(IREI,0,2)=ACCINA/ACCINV
       DO IML=1,NMOLI
-        EMLDS(IREI,IML,1)=EMLDS(IREI,IML,1)/ACCMAS
-        EMLDS(IREI,IML,2)=EMLDS(IREI,IML,2)/ACCINV
+        EMLEI(IREI,IML,1)=EMLEI(IREI,IML,1)/ACCMAS
+        EMLEI(IREI,IML,2)=EMLEI(IREI,IML,2)/ACCINV
       ENDDO
-      EMLDS(IREI,0,1)=ACCMSM/ACCMAS
-      EMLDS(IREI,0,2)=ACCINM/ACCINV
+      EMLEI(IREI,0,1)=ACCMSM/ACCMAS
+      EMLEI(IREI,0,2)=ACCINM/ACCINV
       DO IIO=1,NIONI
-        EIODS(IREI,IIO,1)=EIODS(IREI,IIO,1)/ACCMAS
-        EIODS(IREI,IIO,2)=EIODS(IREI,IIO,2)/ACCINV
+        EIOEI(IREI,IIO,1)=EIOEI(IREI,IIO,1)/ACCMAS
+        EIOEI(IREI,IIO,2)=EIOEI(IREI,IIO,2)/ACCINV
       ENDDO
-      EIODS(IREI,0,1)=ACCMSI/ACCMAS
-      EIODS(IREI,0,2)=ACCINI/ACCINV
+      EIOEI(IREI,0,1)=ACCMSI/ACCMAS
+      EIOEI(IREI,0,2)=ACCINI/ACCINV
       DO IPP=1,NPLSI
         EPLEI(IREI,IPP,1)=EPLEI(IREI,IPP,1)/ACCMAS
         EPLEI(IREI,IPP,2)=EPLEI(IREI,IPP,2)/ACCINV
@@ -186,12 +193,12 @@ C
 C
       CHRDIF=CHRDF0
       DO 83 IIO=1,NIONI
-        CHRDIF=CHRDIF+PIODS(IREI,IIO)*NCHRGI(IIO)
+        CHRDIF=CHRDIF+PIOEI(IREI,IIO)*NCHRGI(IIO)
 83    CONTINUE
       DO 84 IPP=1,NPLSI
-        CHRDIF=CHRDIF+PPLDS(IREI,IPP)*NCHRGP(IPP)
+        CHRDIF=CHRDIF+PPLEI(IREI,IPP)*NCHRGP(IPP)
 84    CONTINUE
-      PELDS(IREI)=PELDS(IREI)+CHRDIF
+      PELEI(IREI)=PELEI(IREI)+CHRDIF
 C
 C
 C  1.) CROSS SECTION(TE) : NOT NEEDED
@@ -217,14 +224,14 @@ C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  MISSING HERE, I.E. NOT READY FOR COR
 C   CORONA ERATE NOT WORKING !
 C .....................................
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,.TRUE.,0,ERATE)
-            TABDS1(IREI,J)=COU*FACTKK
-C  IS TABDS1 A RATE COEFFICIENT OR ALREADY A RATE ?
+            TABEI1(IREI,J)=COU*FACTKK
+C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
             IF (IFTFLG(KK,2) < 100)
-     .        TABDS1(IREI,J)=TABDS1(IREI,J)*DEIN(J)
+     .        TABEI1(IREI,J)=TABEI1(IREI,J)*DEIN(J)
           END DO
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 1
-        ELSE ! NOT SUFFICIENT STORADE ON TABDS1
+        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 1
         ENDIF
@@ -253,12 +260,12 @@ C .......................................
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
             TB=MAX(-100._DP,TB)
-            TABDS1(IREI,J)=EXP(TB)
+            TABEI1(IREI,J)=EXP(TB)
 C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE in subr. rate_coeff only needed for this?
             IF (LHCOL) THEN
               EE = MAX(-100._DP,ERATE+FCTKKL+DEINL(J))
-              EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
+              EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
             END IF
 C .......................................
           END DO
@@ -289,12 +296,12 @@ C
 C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               IF (NSTORDR >= NRAD) THEN
                 DO 101 J=1,NSBOX
-                  EELDS1(IREI,J)=EELEC
+                  EELEI1(IREI,J)=EELEC
 101             CONTINUE
                 NELREI(IREI)=-2
               ELSE
                 NELREI(IREI)=-2
-                EELDS1(IREI,1)=EELEC
+                EELEI1(IREI,1)=EELEC
               END IF
               MODCOL(1,4,IREI)=1
       ELSEIF (EFLAG.EQ.1) THEN
@@ -302,7 +309,7 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
               IF (NSTORDR >= NRAD) THEN
                 DO 103 J=1,NSBOX
                   IF (LGVAC(J,NPLS+1)) CYCLE
-                  EELDS1(IREI,J)=-1.5*TEIN(J)
+                  EELEI1(IREI,J)=-1.5*TEIN(J)
 103             CONTINUE
                 NELREI(IREI)=-3
               ELSE
@@ -318,10 +325,10 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                   IF (NSTORDR >=NRAD) THEN
                     DO 102 J=1,NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-                      EELDS1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,
+                      EELEI1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,
      .                                TEINL(J),
      .                                0._DP,.TRUE.,0)*DEIN(J)*FACTKK/
-     .                                (TABDS1(IREI,J)+EPS60)
+     .                                (TABEI1(IREI,J)+EPS60)
 102                 CONTINUE
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=1
@@ -342,11 +349,11 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                         EE = EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
      .                                                PLS(J),.FALSE.,1)
                         EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-                        EELDS1(IREI,J)=-EXP(EE)/(TABDS1(IREI,J)+EPS60)
+                        EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
                       END DO
                     ELSEIF (LHCOL) THEN
 C  NOTHING TO BE DONE HERE,
-C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABDS1
+C  ??? EELEI1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
                     END IF
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
@@ -362,7 +369,7 @@ C  ??? EELDS1 ALREADY SET ABOVE, TOGETHER WITH TABDS1
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN
                     DO J=1,NSBOX
-                      EELDS1(IREI,J)=EELDS1(IREI,J)+DELE
+                      EELEI1(IREI,J)=EELEI1(IREI,J)+DELE
                     END DO
                   END IF
                 ENDIF
@@ -378,12 +385,12 @@ C
 C  4.B1)  RATE = CONST.*RATECOEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
-            EHVDS1(IREI,J)=EHEAVY
+            EHVEI1(IREI,J)=EHEAVY
 201       CONTINUE
           NREAHV(IREI)=-1
         ELSE
           NREAHV(IREI)=-1
-          EHVDS1(IREI,1)=EHEAVY
+          EHVEI1(IREI,1)=EHEAVY
         END IF
 C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
@@ -397,8 +404,8 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
           IF (NSTORDR >= NRAD) THEN
             DO 202 J=1,NSBOX
               IF (LGVAC(J,NPLS+1)) CYCLE
-              EHVDS1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
-     .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABDS1(IREI,J)+EPS60)
+              EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
+     .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
 202         CONTINUE
             NREAHV(IREI)=KREAD
           ELSE
@@ -454,36 +461,36 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
 C  ATOM SECONDARIES 
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
-        PATDS(IREI,0)=PATDS(IREI,0)+
-     +                      PATDS(IREI,IAT)
+        PATEI(IREI,0)=PATEI(IREI,0)+
+     +                      PATEI(IREI,IAT)
         P2ND(IREI,IA)=P2ND(IREI,IA-1)+
      +                      P2ND(IREI,IA)
 510   CONTINUE
 C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
-        PMLDS(IREI,0)=PMLDS(IREI,0)+
-     +                      PMLDS(IREI,IML)
+        PMLEI(IREI,0)=PMLEI(IREI,0)+
+     +                      PMLEI(IREI,IML)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
 520   CONTINUE
 C  TEST ION SECONDARIES 
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
-        PIODS(IREI,0)=PIODS(IREI,0)+
-     +                      PIODS(IREI,IIO)
+        PIOEI(IREI,0)=PIOEI(IREI,0)+
+     +                      PIOEI(IREI,IIO)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
 530   CONTINUE
 C  BULK SECONDARIES (NOT ON P2ND)
       DO 540 IPP=1,NPLSI
-        PPLDS(IREI,0)=PPLDS(IREI,0)+
-     +                      PPLDS(IREI,IPP)
+        PPLEI(IREI,0)=PPLEI(IREI,0)+
+     +                      PPLEI(IREI,IPP)
 540   CONTINUE
 C
 C  TOTAL NUMBER OF SECONDARIES
-      P2NDS(IREI)=PATDS(IREI,0)+PMLDS(IREI,0)+
-     .            PIODS(IREI,0)
+      P2NDS(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
+     .            PIOEI(IREI,0)
  
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
 C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION FOR TEST PARTICLE SECONDARIES
@@ -511,7 +518,7 @@ C
       DO 875 IRAD=1,NSBOX
         IF (LGVAC(IRAD,NPLS+1)) GOTO 875
         IF (NSTORDR >= NRAD) THEN
-          EN=EELDS1(IREI,IRAD)
+          EN=EELEI1(IREI,IRAD)
         ELSE
           EN=EIRENE_FEELEI1(IREI,IRAD)
         END IF
@@ -525,11 +532,11 @@ C
 
       IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
         WRITE (iunout,*) 'ELECTRONS: PELEI, CONSTANT ENERGY: EEL'
-        WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELDS(IREI),EI
+        WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELEI(IREI),EI
       ELSE
         WRITE (iunout,*)
      .    'ELECTRONS: PELEI, ENERGY RANGE: EEL_MIN,EEL_MAX'
-        WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELDS(IREI),EI,EA
+        WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',PELEI(IREI),EI,EA
       ENDIF
 c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
@@ -538,19 +545,19 @@ C
       DO 876 IRAD=1,NSBOX
         IF (LGVAC(IRAD,NPLS+1)) GOTO 876
         IF (NSTORDR >= NRAD) THEN
-          EN=EHVDS1(IREI,IRAD)
+          EN=EHVEI1(IREI,IRAD)
         ELSE
-          EN=EIRENE_FEHVDS1(IREI,IRAD)
+          EN=EIRENE_FEHVEI1(IREI,IRAD)
         END IF
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
 876   CONTINUE
-      IF (PPLDS(IREI,0).GT.0.D0) THEN
+      IF (PPLEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'BULK IONS: PPLEI '
         DO 874 IPP=1,NPLSI
           IP=NSPAMI+IPP
-          IF (PPLDS(IREI,IPP).NE.0.D0)
-     .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLDS(IREI,IPP)
+          IF (PPLEI(IREI,IPP).NE.0.D0)
+     .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLEI(IREI,IPP)
 874     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
@@ -577,61 +584,61 @@ C
         GOTO 880
       ENDIF
 C
-      IF (PATDS(IREI,0).GT.0.D0) THEN
+      IF (PATEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'ATOMS    : PATEI '
         DO 871 IAT=1,NATMI
           IA=NSPH+IAT
-          IF (PATDS(IREI,IAT).NE.0.D0)
-     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IA),PATDS(IREI,IAT)
+          IF (PATEI(IREI,IAT).NE.0.D0)
+     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IA),PATEI(IREI,IAT)
 871     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EATEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EATDS(IREI,0,1),
-     .                                 ' * E0 + ',EATDS(IREI,0,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EATEI(IREI,0,1),
+     .                                 ' * E0 + ',EATEI(IREI,0,2)*EI
         ELSE
           WRITE (iunout,*) 'ENERGY: EATEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EATDS(IREI,0,1),
-     .                                 ' * E0 + ',EATDS(IREI,0,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EATEI(IREI,0,1),
+     .                                 ' * E0 + ',EATEI(IREI,0,2),
      .                                 ' * EHEAVY'
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
-      IF (PMLDS(IREI,0).GT.0.D0) THEN
+      IF (PMLEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'MOLECULES: PMLEI '
         DO 872 IML=1,NMOLI
           IM=NSPA+IML
-          IF (PMLDS(IREI,IML).NE.0.D0)
-     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLDS(IREI,IML)
+          IF (PMLEI(IREI,IML).NE.0.D0)
+     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLEI(IREI,IML)
 872     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EMLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLDS(IREI,0,1),
-     .                                 ' * E0 + ',EMLDS(IREI,0,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLEI(IREI,0,1),
+     .                                 ' * E0 + ',EMLEI(IREI,0,2)*EI
         ELSE
           WRITE (iunout,*) 'ENERGY: EMLEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EMLDS(IREI,0,1),
-     .                                 ' * E0 + ',EMLDS(IREI,0,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EMLEI(IREI,0,1),
+     .                                 ' * E0 + ',EMLEI(IREI,0,2),
      .                                 ' * EHEAVY'
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
       ENDIF
-      IF (PIODS(IREI,0).GT.0.D0) THEN
+      IF (PIOEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'TEST IONS: PIOEI '
         DO 873 IIO=1,NIONI
           IO=NSPAM+IIO
-          IF (PIODS(IREI,IIO).NE.0.D0)
-     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IO),PIODS(IREI,IIO)
+          IF (PIOEI(IREI,IIO).NE.0.D0)
+     .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IO),PIOEI(IREI,IIO)
 873     CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EIOEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EIODS(IREI,0,1),
-     .                                 ' * E0 + ',EIODS(IREI,0,2)*EI
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EIOEI(IREI,0,1),
+     .                                 ' * E0 + ',EIOEI(IREI,0,2)*EI
         ELSE
           WRITE (iunout,*) 'ENERGY: EIOEI '
-          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EIODS(IREI,0,1),
-     .                                 ' * E0 + ',EIODS(IREI,0,2),
+          WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EIOEI(IREI,0,1),
+     .                                 ' * E0 + ',EIOEI(IREI,0,2),
      .                                 ' * EHEAVY'
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
