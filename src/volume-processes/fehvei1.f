@@ -35,7 +35,7 @@ c
 c       CASE (-4)   ! DEFAULT PROCESS KK=-4:  H+ E --> H+ +E, no net energy transfer to H+
 c          EIRENE_FEHVEI1 =0.0   
         CASE (-1)
-            EIRENE_FEHVEI1=EHVDS1(IREI,1)
+            EIRENE_FEHVEI1=EHVEI1(IREI,1)
         CASE (-2)  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,  
             EIRENE_FEHVEI1=6.  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,    
         CASE (-3)
