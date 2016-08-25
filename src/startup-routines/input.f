@@ -1,4 +1,5 @@
-cdr  june  16:  comments, disable accidental use of HYDKIN interface, error exit 
+cdr  june  16:  comments, disable accidental use of HYDKIN interface, 
+cdr             option lhyddef. error exit. Tests of that interface options started. 
 !cd  jan   16:  reset census start time to time0, even for time0=0.
 !cd  jan   16:  remove unused: ILE,tpb1,...,ian,ien,iab,reac
 !cd  dec.  15:  jj-nlim, rather than jj-nlimi, for non.dev.std. surfaces
@@ -1355,6 +1356,12 @@ C  special only in case of HYDKIN INTERFACE: find string "DEFAULT"
       LHYDDEF =.FALSE.
       IF (IEND > 0) THEN
         LHYDDEF =.TRUE.
+
+CDR  lhyddef is currently only supported in proprietary versions of eirene.
+        WRITE (IUNOUT,*)
+     .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
+        CALL EIRENE_EXIT_OWN(1)
+CDR
         CALL
      .  EIRENE_READ_TOKEN(ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,
      .                  .FALSE.)
@@ -1435,7 +1442,7 @@ C
 
 C  THE REST OF INPUT DATA FROM THIS REACTION CARD IS NOW ON 'CHR'
 C  FIRST READ CHR FROM "ZEILE", THEN
-C  READ FLAGS MP, MT, DPP, RMN AND RMX FROM CHR
+C  READ FLAGS MP, MT, DPP, RMN1, RMX1, AND RMN2, RMX2 FROM CHR
 
 !  READ MP
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
@@ -2205,7 +2212,8 @@ C  NOT READY
         WRITE (IUNOUT,*)
      .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
         CALL EIRENE_EXIT_OWN(1)
-cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
+
+        CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       ENDIF
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699

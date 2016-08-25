@@ -1,3 +1,6 @@
+cdr  FZJ proprietary version of an interface to hydkin online database.
+cdr   this is not ready to be used, nor documented 
+
       subroutine EIRENE_setup_hydkin_reactions(hydkin_default, cadapt)
  
       use EIRMOD_precision
