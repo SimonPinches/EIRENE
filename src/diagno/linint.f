@@ -21,7 +21,7 @@ C  UNTIL THE NEXT INTERSECTION WITH ANY NON-TRANSPARENT
 C  SURFACE (P2) IS FOUND.
 c
 c  ifirst=0:  first call for one particular LOS
-c  ifirst=1:  same LOS as previous LOC, but different energy parameter PEN
+c  ifirst=1:  same LOS as previous LOC, but different (energy, wavelength) parameter PEN
 c
 C
       USE EIRMOD_PRECISION
@@ -583,8 +583,8 @@ C
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           CALL EIRENE_SIGRAD(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-          CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,XD0,YD0,ZD0,
-     .                XD1,YD1,ZD1)
+          CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,      
+     .                XD0,YD0,ZD0,XD1,YD1,ZD1)
         ELSE
           CALL EIRENE_SIGTST(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ENDIF
@@ -742,9 +742,8 @@ C
           ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
             CALL EIRENE_SIGRAD (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-            CALL
-     .  EIRENE_SIGUSR(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,XD0,YD0,ZD0,
-     .                  XD1,YD1,ZD1)
+            CALL EIRENE_SIGUSR(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
+     .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
           ELSE
             CALL EIRENE_SIGTST(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ENDIF

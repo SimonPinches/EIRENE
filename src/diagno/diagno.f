@@ -1,4 +1,8 @@
-*DK DIAGNO
+cdr  Aug. 16:  re lLOS option: 
+cdr            the option described in the manual regarding
+cdr            use of emin1, emax1 to identify a particular spectroscopic
+cdr            line  (by upper and lower quantum number in H-atom)
+cdr            is apparently not available.  Lost from an earier version? to be checked.
 C
 C  CALLED IN POST PROCESSING PHASE:
 C  CALCULATE A NUMBER OF (ICHORI=1,NCHORI) LINE INTEGRALS ALONG LINES-OF-SIGHT

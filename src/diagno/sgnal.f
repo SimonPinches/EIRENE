@@ -1,5 +1,6 @@
 c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
+cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
@@ -59,6 +60,10 @@ C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
       IF (NCHTAL(ICHORI).EQ.2) NCHNI=1
+
+cdr:  aug. 2016
+cdr:  to be written: use emin1, emax1 to identify upper and lower state of a transition,
+cdr                  as already described in manual, but apparently not programmed.
 C
  
 C
@@ -340,10 +345,10 @@ C
       PMI=1.E30
       XMA=-1.E30
       XMI=1.E30
-      IF (NCHTAL(ICHORI).EQ.1) NSPI=NATMI
-      IF (NCHTAL(ICHORI).EQ.2) NSPI=10
-      IF (NCHTAL(ICHORI).EQ.3) NSPI=NPHOTI
-      IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ
+      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
+      IF (NCHTAL(ICHORI).EQ.2)  NSPI=10     ! up to 10 spectral line emissivities (transitions) in one single LOS evaluation
+      IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
+      IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
       IFIRST=0
       DO 231 JEN=1,NCHNI
