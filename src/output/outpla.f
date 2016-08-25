@@ -33,7 +33,7 @@ C
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: ICAL
-      REAL(DP), ALLOCATABLE :: HELPP(:),HELPW(:),HELPS(:)
+      REAL(DP), ALLOCATABLE :: HELPP(:),HELPW(:),HELPS(:),X1D(:)
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTAL
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL, 
@@ -92,7 +92,10 @@ C                 TALTYP=4: UNKNOWN        (?)
         ALLOCATE (HELPP(NRAD))
         ALLOCATE (HELPW(NRAD))
         ALLOCATE (HELPS(NRAD))
+        ALLOCATE (X1D(NRAD))
       END IF
+
+      X1D=0.D0
 C
 C  PRINT THOSE INPUT VOLUME AVERAGED TALLIES, WHICH HAVE BEEN SELECTED
 
@@ -297,14 +300,18 @@ C
             IF (ITALI.NE.NTALO) THEN
               CALL EIRENE_PRTTAL(TXTPLS(K,ITALI),TXTPSP(K,ITALI),
      .                    TXTPUN(K,ITALI),
-CC   .                    HELPP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
-     .                    HELPP,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+CC   .                    HELPP,X1D,
+CC   .                    NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
+     .                    HELPP,X1D,
+     .                    NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                    NFLAGV(IPRV),NTLVFL(IPRV))
             ELSEIF (ITALI.EQ.NTALO) THEN
               CALL EIRENE_PRTVOL(TXTPLS(K,ITALI),TXTPSP(K,ITALI),
      .                    TXTPUN(K,ITALI),
-CC   .                    HELPP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
-     .                    HELPP,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+CC   .                    HELPP,
+CC   .                    NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
+     .                    HELPP,
+     .                    NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                    NFLAGV(IPRV),NTLVFL(IPRV))
             ENDIF
             CALL EIRENE_LEER(2)
@@ -341,7 +348,8 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICAL ZERO
             CALL
      .        EIRENE_PRTTAL(TXTPLS(K,ITALI),TXTPSP(K,ITALI),
      .                      TXTPUN(K,ITALI),
-     .                      HELPP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,-1,0)
+     .                      HELPP,X1D,
+     .                      NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,-1,0)
             CALL
      .         EIRENE_MASAGE
      .              ('IDENTICAL ZERO, NOT PRINTED                  ')

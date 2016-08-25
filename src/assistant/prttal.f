@@ -1,8 +1,16 @@
+cdr  aug. 2016: added x coordinate, only for printing 1D profiles on file IFILE
+cdr             to be done: exclude levgeo .gt. 3 from this 1D output format.    
 C
-C
+C  INPUT:  T1,T2,T3:         TALLY TEXT, SPECIES AND UNITS, RESP.
+C          PROF:             TALLY DATA, ON 1d ARRAX PROF(1:NRAD)
+C          X:                X COORDINATE, ONLY FOR 1D STANDARD GRIDS
+C                            CURRENTLY: ZONE CENTERED
+C          NR,NP,NT,NB,NTT:  GRID STRUCTURE FOR 2D OR 3D CASES
+C          IFLAG:            SEE BELOW
+C          IFILE:            WRITE OUT TALLY "PROF" ONTO STREAM: FORT.IFILE
 C
       SUBROUTINE
-     .  EIRENE_PRTTAL(T1,T2,T3,PROF,NR,NP,NT,NB,NTT,IFLAG,IFILE)
+     .  EIRENE_PRTTAL(T1,T2,T3,PROF,X,NR,NP,NT,NB,NTT,IFLAG,IFILE)
 C
 C  PRINT VOLUME AVERAGED TALLIES
 C  IFLAG=-1:  ONLY HEADER IS PRINTED
@@ -19,12 +27,13 @@ C
       IMPLICIT NONE
  
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
-      REAL(DP), INTENT(IN) :: PROF(*)
+      REAL(DP), INTENT(IN) :: PROF(*),X(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE
       REAL(DP) :: H(6)
       INTEGER :: K(6)
       INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, JA, IA, IB, I,
-     .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR
+     .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
+     .           NTTS
       CHARACTER(1) :: TL(72)
  
       DATA TL/72*'='/
@@ -39,6 +48,10 @@ C
       WRITE (iunout,'(72A1)') TL
       WRITE (iunout,'(72A1)') TL
       CALL EIRENE_LEER(1)
+
+C..................................................................
+C  WRITE ONTO STREAM "IFILE"
+
       IF (IFILE.GT.0) THEN
         OPEN (UNIT=IFILE,position='APPEND')
         WRITE (IFILE,*) TL
@@ -49,13 +62,40 @@ C
         WRITE (IFILE,*) TL
         WRITE (IFILE,*) TL
         WRITE (IFILE,*) NR,NP,NT,NB,NTT
-        DO IRAD=1,NTT,5
-          WRITE (IFILE,*) (PROF(IR),IR=IRAD,MIN(IRAD+4,NTT))
-        ENDDO
+
+        IF (NP.GT.1.OR.NT.GT.1.OR.NB.GT.1) THEN
+C  THIS WAS A RUN WITH AN AT LEAST 2D GRID STRUCTURE
+          DO IRAD=1,NTT,5
+            WRITE (IFILE,*) (PROF(IR),IR=IRAD,MIN(IRAD+4,NTT))
+          ENDDO
+        ELSE
+C  THIS WAS A 1D RUN, AT LEAST THERE IS ONLY A 1D GRID STRUCTURE
+C  TO BE DONE: ALSO REQUIRED: LEVGEO.LE.3, OTHERWISE: TRIANGLES, TETRAHEDONS, HERE
+          NTTS=NR-1
+          DO IRAD=1,NTTS,1
+            WRITE (IFILE,5) IRAD,X(IRAD),PROF(IRAD)
+          ENDDO
+C   NR: AVERAGED VALUE
+          WRITE (IFILE,'(72A1)') TL
+          WRITE (IFILE,55) PROF(NR)
+          IF (NTT.GT.NR) THEN
+C  ADDITIONAL CELL REGION
+            WRITE (IFILE,'(72A1)') TL
+            WRITE (IFILE,56) 
+            DO IRAD=NR+1,NTT
+              WRITE (IFILE,57) IRAD-NR, PROF(IRAD)
+            ENDDO
+          ENDIF
+        ENDIF
+        WRITE (IFILE,'(72A1)') TL
         CLOSE (UNIT=IFILE)
       ENDIF
  
 11111 IF (IFLAG.LT.0) RETURN
+
+C...................................................................
+C  WRITING ONTO STREAM "IFILE" COMPLETED FOR THIS TALLY
+
 C  NCOL: NUMBER OF PRINTED DATA PER LINE, .LE.6
       NCOL=5
 C
@@ -321,6 +361,11 @@ C  ADDITIONAL CELLS
       IF (IJ.LE.NTT) GOTO 550
       CALL EIRENE_LEER(2)
 C
+5     FORMAT (1X,I4,2X,2(PE12.4,2X))
+55    FORMAT (1X,'AVERAGE VALUE ',PE12.4)
+56    FORMAT (1X,'ADDITIONAL CELLS ')
+57    FORMAT (1X,I4,2X,PE12.4)
+
 6     FORMAT (1X,6(I4,2X,1PE12.4,2X))
 7     FORMAT (1X,'Y- OR POLOIDAL SEGMENT NUMBER ',I4)
 77    FORMAT (1X,'Z- OR TOROIDAL SEGMENT NUMBER ',I4)

@@ -3,6 +3,8 @@ C              electron particle balance wtote instead of wtotp
 c  AUTUMN 2014:  Sputter tallies revised, also their printout
 c  11.04.15:  SPATOT RENAMED TO PMPTOT (pumped flux, rather than sputtered flux)
 c  dec.15:    species resolved bulk ion energy balance eapl,empl,...etc..
+cdr aug.16:   X1D(1:nrad): for 1d grids: spatial coordinate, for printout
+cdr           new argument in prttal  (same: outpla, calls to prttal)
 C
       SUBROUTINE EIRENE_OUTEIR(INDOUT)
 
@@ -30,9 +32,8 @@ C
       IMPLICIT NONE
 C
       INTEGER, INTENT(IN) :: INDOUT
-!pb      REAL(DP) :: VECTOR(NRAD)
-!pb      REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), allocatable :: VECTOR(:)
+      REAL(DP), allocatable :: X1D(:)
       REAL(DP), allocatable :: DUMMY(:)
       REAL(DP) :: TOTA(0:NATM),DIFA(0:NATM,0:NSTRA),
      .            DIFRA(0:NATM,0:NSTRA)
@@ -115,7 +116,16 @@ C  NOTHING TO BE DONE
       ENDIF
 C
       allocate (vector(nrad))
+      allocate (X1D(nrad))
       allocate (dummy(nrtal))
+
+C  SET A 1D GRID FOR PRINTOUT.  Currently only for truely 1D cases
+      X1D=0.D0
+      IF (LEVGEO.LE.3.AND.NP2ND.EQ.1.AND.NT3RD.EQ.1) THEN
+        DO I=1,NR1ST
+          X1D(I)=RHOZNE(I)
+        ENDDO
+      ENDIF
 C
       CALL EIRENE_PAGE
       IF (ISTRA.NE.0) THEN
@@ -168,7 +178,8 @@ C   CALL TO TALUSR: A POST PROCESSED USER SUPPLIED TALLY
           WRITE (iunout,*) 'USER SUPPLIED POST PROCESSED TALLY NO. ',
      .                ICOUNT
           CALL EIRENE_PRTTAL(TXTTL,TXTSP,TXTUN,
-     .                VECTOR,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
+     .                VECTOR,X1D,
+     .                NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
      .                NFLAGV(IPRV),NTLVFL(IPRV))
           CALL EIRENE_LEER(2)
           CALL EIRENE_MASAGE
@@ -202,7 +213,8 @@ C
 C
             CALL EIRENE_PRTTAL
      .                 (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
-     .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                  VECTOR,X1D,
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),NTLVFL(IPRV))
             CALL EIRENE_LEER(2)
             CALL EIRENE_MASAGE
@@ -229,7 +241,8 @@ C
             IF (IGH(N).EQ.0) TXTSP='TOTAL                   '
             CALL EIRENE_PRTTAL
      .           (TXTTAL(K,ITAL),TXTSP,'%                       ',
-     .            VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .            VECTOR,X1D,
+     .            NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .            NFLAGV(IPRV),NTLVFL(IPRV))
             CALL EIRENE_LEER(2)
             CALL EIRENE_MASAGE
@@ -269,7 +282,8 @@ C
               TXTSP=TXTSPC(K,ITAL)
               CALL EIRENE_PRTTAL
      .                   (TXTTAL(K,ITAL),TXTSP,'%                     ',
-     .                    VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                    VECTOR,X1D,
+     .                    NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                    NFLAGV(IPRV),NTLVFL(IPRV))
               CALL EIRENE_LEER(2)
               CALL EIRENE_MASAGE
@@ -304,13 +318,15 @@ C
             ISPZ=MAX(1,IGHC(1,N))
             CALL EIRENE_PRTTAL(TXTTAL(ISPZ,IIHC(1,N)),TXTSP,
      .                  TXTUNT(ISPZ,IIHC(1,N)),
-     .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                  VECTOR,X1D,
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                 -1,0)
             WRITE (iunout,*) 'AND ESTIMATOR: '
             ISPZ=MAX(1,IGHC(2,N))
             CALL EIRENE_PRTTAL(TXTTAL(ISPZ,IIHC(2,N)),TXTSP,
      .                  TXTUNT(ISPZ,IIHC(2,N)),
-     .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                  VECTOR,X1D,
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),0)
             CALL EIRENE_LEER(2)
             CALL EIRENE_MASAGE
@@ -330,7 +346,8 @@ C
             ISPZ=MAX(1,IGHC(1,N))
             CALL EIRENE_PRTTAL(TXTTAL(ISPZ,IIHC(1,N)),TXTSP,
      .                  TXTUNT(ISPZ,IIHC(1,N)),
-     .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                  VECTOR,X1D,
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),0)
             CALL EIRENE_LEER(2)
             CALL EIRENE_MASAGE
@@ -350,7 +367,8 @@ C
             ISPZ=MAX(1,IGHC(2,N))
             CALL EIRENE_PRTTAL(TXTTAL(ISPZ,IIHC(2,N)),TXTSP,
      .                  TXTUNT(ISPZ,IIHC(2,N)),
-     .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                  VECTOR,X1D,
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),0)
             CALL EIRENE_LEER(2)
             CALL EIRENE_MASAGE
@@ -362,7 +380,8 @@ C
 118         CONTINUE
             CALL EIRENE_PRTTAL
      .               (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
-     .                VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,-1,0)
+     .                VECTOR,X1D,
+     .                NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,-1,0)
             CALL EIRENE_MASAGE
      .         ('IDENTICAL ZERO, NOT PRINTED                  ')
             CALL EIRENE_LEER(2)
@@ -414,7 +433,8 @@ C
             TALAV=TALTOT/VOLTOT
             CALL EIRENE_PRTTAL
      .                 (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
-     .                  VECTOR,NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
+     .                  VECTOR,X1D,
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
      .                  NFLAGV(IPRV),NTLVFL(IPRV))
             CALL EIRENE_LEER(2)
             CALL EIRENE_MASAGE
@@ -426,7 +446,8 @@ C
 158         CONTINUE
             CALL EIRENE_PRTTAL
      .                 (TXTTAL(K,ITAL),TXTSPC(K,ITAL),TXTUNT(K,ITAL),
-     .                  VECTOR,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,-1,0)
+     .                  VECTOR,X1D,
+     .                  NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,-1,0)
             CALL EIRENE_MASAGE
      .         ('IDENTICAL ZERO, NOT PRINTED                  ')
             CALL EIRENE_LEER(2)
@@ -2919,6 +2940,7 @@ C
 1000  CONTINUE
 
       if (allocated(vector)) deallocate (vector)
+      if (allocated(X1D)) deallocate (X1D)
       if (allocated(dummy)) deallocate (dummy)
 
 6666  FORMAT (3X,1A8,8X,12(A4,2X,A8,3X))
