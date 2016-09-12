@@ -1,5 +1,5 @@
 cdr  FZJ proprietary version of an interface to hydkin online database.
-cdr   this is not ready to be used, nor documented 
+cdr  this is not ready to be used by 3rd parties, nor documented 
 
       subroutine EIRENE_setup_hydkin_reactions(hydkin_default, cadapt)
  

@@ -710,6 +710,7 @@ ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
+
 !PB       IF (.NOT.LGVAC(NCELL,IPL))
 !PB  .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
           IF (.NOT.LGVAC(NCELL,IPL)) THEN
@@ -1589,6 +1590,9 @@ c  written for fnueqi without that factor.
 
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
 C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
+C  note: for an intermediate period (1995 --2013) the mass factor
+c  (1+mb/ma) had an incorrect exponent -1/2, in the NRL formularies.
+c  2016: back to the correct formula (as in eighties) without that exponent
 
       FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_1,EA,XNI,TI

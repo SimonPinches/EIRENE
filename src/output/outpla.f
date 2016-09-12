@@ -4,6 +4,9 @@ C               ASSUME: FINE GRID   DEFINED BY STRUCTURE NR1ST, NP2ND, NT3RD, NS
 C                       GOARSE GRID DEFINED BY STRUCTURE NR1TAL,NP2TAL,NT3TAL,NSBOX_TAL
 C                       MAPPING PROVIDED BY I_COARSE=NCLTAL(I_FINE)
 C               TO BE DONE:  SWITCH BETWEEN OLD AND NEW OPTION. 
+cdr  Aug. 16: 1D grid set for printout on separate tally output streams in 1D cases
+
+
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
 C  This routine prints background tallies as requested in input block 11.
@@ -96,6 +99,11 @@ C                 TALTYP=4: UNKNOWN        (?)
       END IF
 
       X1D=0.D0
+      IF (LEVGEO.LE.3.AND.NP2ND.EQ.1.AND.NT3RD.EQ.1) THEN
+        DO I=1,NR1ST
+          X1D(I)=RHOZNE(I)
+        ENDDO
+      ENDIF
 C
 C  PRINT THOSE INPUT VOLUME AVERAGED TALLIES, WHICH HAVE BEEN SELECTED
 

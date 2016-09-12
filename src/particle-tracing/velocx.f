@@ -4,6 +4,7 @@
 !DR  250311: ensure ELMIN <= ELAB <= ELMAX disabled again: would lead
 !DR          to wrong cross sections, e.g. for beam penetration
 CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
+cdr  aug.16: some test output, re asymptotic, rejection sampling. commented out.
 C
       SUBROUTINE EIRENE_VELOCX(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                  IRCX,DUMT,DUMV)
@@ -227,10 +228,14 @@ C   PRESENT VERSION: REJECTION
         VREL=SQRT(VRELQ)
         ELAB=LOG(VRELQ)+DEFCX(IRCX)
         IREAC=MODCOL(3,1,IRCX)
-cdr     elb=exp(elab)
-cdr     if (elb.le.0.1) then
-cdr       write (6,*) 'elb velocx ',elab,elb
-cdr     endif
+
+cdr.........................................................  
+cdr  test output only
+c       elb=exp(elab)
+c       if (elb.le.0.1) then
+c         write (6,*) 'elb velocx ',elab,elb
+c       endif
+cdr.........................................................  
 
         CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
@@ -245,9 +250,12 @@ c  reject
 c  rejection loop failed, too many attempts.
             write (iunout,*)
      .        'icount too large ( > 500) IN VELOCX. ACCEPT SAMPLE '
-            ELB=EXP(ELAB)
-            write (iunout,*) 'npanu, ireac, ircx, ELAB(EV) ',
-     .                        npanu, ireac, ircx, ELB
+cdr............................................................   
+cdr  test output only
+cdr         ELB=EXP(ELAB)
+cdr         write (iunout,*) 'npanu, ireac, ircx, ELAB(EV),icell ',
+cdr  .                        npanu, ireac, ircx, ELB,  K
+cdr............................................................
           else
 c  accept
             xcmean(ircx)=xcmean(ircx)+icount

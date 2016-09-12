@@ -13,6 +13,15 @@
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
+cdr  unification of nameing conventions for electron impact collisions 
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
+!pb  APR  16:  pelds -> pelei, eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabei1
+!pb  MAY  16:  nrds -> nrei
+!pb  JUL  16:  ehvds1 -> ehvei1
 
 cdr
   
