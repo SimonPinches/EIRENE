@@ -2,7 +2,7 @@ c  25.11.05: option modcol(3,4...)=3 added
 c            (adopted from fpatha)
 c            cx rate option 4 added (adopted from fpatha)
 
-c  still missing: el (and bgk) and pi reactions
+c  still missing: el (and bgk) 
 C               added: jcou,ncou
 !pb  30.08.06:  data structure for reaction data redefined
 !pb  12.10.06:  modcol revised
@@ -18,6 +18,7 @@ cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr aug. 16:    bug fix re EXPO in PI branch
 
 C
       FUNCTION EIRENE_FPATHI (K,CFLAG,JCOU,NCOU)
@@ -229,8 +230,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
-          END IF
-          SIGVPI(IRPI)=EXP(EXPO)
+            SIGVPI(IRPI)=EXP(EXPO)
+          END IF        
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)

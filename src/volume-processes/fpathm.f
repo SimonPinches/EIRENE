@@ -22,6 +22,7 @@ cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that co
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr aug. 16:    bug fix re EXPO in PI branch
 
 C
       FUNCTION EIRENE_FPATHM (K,CFLAG,JCOU,NCOU)
@@ -235,8 +236,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .              + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
-          END IF
-          SIGVPI(IRPI)=EXP(EXPO)
+            SIGVPI(IRPI)=EXP(EXPO)
+          END IF        
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)

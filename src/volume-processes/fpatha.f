@@ -23,6 +23,10 @@ cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr aug. 16:    bug fix re EXPO in PI branch
+cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
+cdr             ei process: started to check for H.3, H.1 options for EI processes
+cdr                         according to v0/vth >> 1. criteria
 
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
@@ -85,7 +89,7 @@ C                TO BE WRITTEN
      .          ELTHDUM, CTCHDUM, SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          CII, ELB,TII,TEST,
+     .          CII, ELB,TII,V0_REL,VI_TH,TEE,VE_TH,
      .          PLS, TBPI, EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
@@ -97,7 +101,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          RCMIN, RCMAX,
      .          ERATE
       INTEGER :: IBGK, IAEL, IREL, IAEI, IREI, IAPI,
-     .           IRPI, IACX, IRCX, IROT,
+     .           IRPI, IACX, IRCX, 
      .           II, IF8, JAN, J, I1, I2, KK, IPLSTI,
      .           IPL, IAT, IPLSV, IREAC
 C
@@ -152,6 +156,30 @@ C
       DO 10 IAEI=1,NAEII(IATM)
         IREI=LGAEI(IATM,IAEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
+
+cdr  this part should be in modcol=2 option: to be written for ei processes
+
+! scale log collision energy to projectile energy for proper isotope, for rate coefficient, i.e. use neutral particle mass
+C set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
+C         ELB=MAX(-2.3_DP,LOG(PVELQ0)+ ???, TO CONVERT TO LOG ENERGY)
+          V0_REL=SQRT(PVELQ0)
+! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
+C         TEE=LOG(TEIN(K))
+c thermal velocity at Te
+          VE_TH=CVELAA*SQRT(TEIN(K)/PMASSE)
+C rather than elb>>tii, one should compare V0_REL and the thermal velocity, then: also ok. for ei processes 
+          IF (TEIN(K).LT.TVAC .OR. (V0_REL/VE_TH).GT.10.) THEN
+c         IF ((ELB-TII).GT.4.6) THEN
+C  HERE: T_E IS SO LOW, THAT ALL ENERGY IS IN TEST PARTICLE MOTION.
+c        use cross section times v0, rather than rate coefficient
+cdr         WRITE (IUNOUT,*) 'K,EI',K, V0_REL/VE_TH
+          ELSEIF ((V0_REL/VE_TH).GE.0.1.AND.(V0_REL/VE_TH).LE.10.) THEN
+c  USE H.3 RATE COEFFICIENT, needs tabei3, to be written.....  
+          ELSE  ! NORMAL CASE FOR EI COLLISIONS: V0 << VTH
+          ENDIF
+
+
+
           IF (NSTORDR >= NRAD) THEN
             SIGVEI(IREI)=TABDS1(IREI,K)
           ELSE
@@ -193,7 +221,7 @@ C
 C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(4,2,IRPI).EQ.1) THEN
-C  MAXWELL
+C  MAXWELL, AT FIXED BEAM ENERGY, MOSTLY E0=0.0
           IF (NSTORDR >= NRAD) THEN
             SIGVPI(IRPI)=TABPI3(IRPI,K,1)
           ELSE
@@ -206,22 +234,33 @@ c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
           END IF
         ELSEIF (MODCOL(4,2,IRPI).EQ.2) THEN
+
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
-C
-          IF (TIIN(IPLSTI,K).LT.TVAC) THEN
+
+! scale log collision energy to projectile energy for proper isotope, for rate coefficient, i.e. use neutral particle mass
+C set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
+          ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+          V0_REL=SQRT(PVELQ(IPLSV))
+! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
+          TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+c thermal velocity at Ti
+          VI_TH=CVELAA*SQRT(TIIN(IPLSTI,K)/RMASSP(IPLS))
+C rather than elb>>tii, one should compare V0_REL and the thermal velocity, then: also ok. for ei processes 
+          IF (TIIN(IPLSTI,K).LT.TVAC .OR. (V0_REL/VI_TH).GT.10.) THEN
+c         IF ((ELB-TII).GT.4.6) THEN
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+c           WRITE (IUNOUT,*) 'K,PI',K, exp(ELB-TII),V0_REL/VI_TH
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
-            ELAB=LOG(VRELQ)+DEFPI(IRPI)
+! scale collision energy to proper isotope, for cross section, i.e. use charged particle mass
+            ELAB=LOG(VRELQ)+DEFPI(IRPI)  
             IREAC=MODCOL(4,1,IRPI)
             CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),
      .                       'FPATHA PI1')
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
-C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
             IF (NSTORDR >= NRAD) THEN
               TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
               FP = 0._DP
@@ -231,12 +270,12 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELSE
 ! CALCULATE RATE-COEFFICIENT
               KK=NREAPI(IRPI)
-              TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
-     .              + DIINL(IPLS,K) + FACRPI(IRPI,2)
+     .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
-          END IF
-          SIGVPI(IRPI)=EXP(EXPO)
+            SIGVPI(IRPI)=EXP(EXPO)
+          END IF      
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
