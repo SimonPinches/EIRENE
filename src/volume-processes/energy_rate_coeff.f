@@ -141,7 +141,7 @@ c  rescale parameter p2  (currently only by 1e-8):  q2
         if (iprshft > 0) pp2 = pp2 - dsub
  
         call EIRENE_dbl_poly
-     .       (reacdat(ir)%rtcew%poly%dblpol,p1,pp2,erate,dum,1,9,
+     .       (reacdat(ir)%rtcew%poly%dblpol,p1,pp2,erate,dum,
      .        rcmin, rcmax, fp, jfexmn, jfexmx)
 
 C       if (.not. lexp)  erate=erate

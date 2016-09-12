@@ -159,52 +159,56 @@ C CROSS SECTION (E-LAB) AVAILABLE ?
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
         MODCOL(3,2,IRCX)=3
       ENDIF
-C
-C RATE COEFFICIENT
+
+C..................................................................
+C 2. RATE COEFFICIENT  (CM**3/S) * TARGET DENSITY (CM**-3)
+C..................................................................
+
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
-      IF (MODC.GE.1.AND.MODC.LE.2) THEN
-
-        MODCOL(3,2,IRCX)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
+      IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
-C   STORAGE SAVING MODE ?
-        IF (NSTORDR >= NRAD) THEN
-C   NO
+      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
           
-C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
-          IF (MODC.EQ.1) THEN
-            DO 245 J=1,NSBOX
-              IF (LGVAC(J,IPL)) CYCLE
+C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
+      IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
+C       NEND=1
+        IF (NSTORDR >= NRAD) THEN
+          DO 245 J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
               TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
-245         CONTINUE
-          ELSEIF (MODC.EQ.2) THEN
+245       CONTINUE          
+        ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+        ENDIF
+        MODCOL(3,2,IRCX)=1 
+ 
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
-            FCTKKL=LOG(FACTKK)
-            DO J=1,NSBOX
-              IF (LGVAC(J,IPL)) CYCLE
+C       NEND=9
+        IF (NSTORDR >= NRAD) THEN
+          FCTKKL=LOG(FACTKK)
+          DO J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               tii = max(-2.3_dp,tii)
-              CALL EIRENE_PREP_RTCS (KK,3,1,NEND,TII,CFF)
-              TABCX3(IRCX,J,1:NEND) = CFF(1:NEND)
+              CALL EIRENE_PREP_RTCS (KK,3,TII,CFF)
+              TABCX3(IRCX,J,1:9) = CFF(1:9)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
-            END DO
-          END IF
-        ELSE   ! ??
-C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
-        END IF
-      ELSEIF (MODC.EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
-C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
+          END DO
+        ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+        ENDIF
+        MODCOL(3,2,IRCX)=2
 
-        MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
+C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN 
-                
+        IF (NSTORDR >= NRAD) THEN                
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
@@ -221,7 +225,7 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'exit called '
           call eirene_exit_own(1) 
         ENDIF
-
+        MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
@@ -319,8 +323,10 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
           IF (NSTORDR >= NRAD) THEN
+C           NSTORDT=9 HERE
             
             IF (MODC.EQ.1) THEN
+C             NEND=1
 C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
@@ -331,22 +337,23 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
+C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 tii = max(-2.3_dp,tii)
-                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CFF)
-                EPLCX3(IRCX,J,1:NEND) = CFF(1:NEND)
+                CALL EIRENE_PREP_RTCS (KREAD,5,TII,CFF)
+                EPLCX3(IRCX,J,1:9) = CFF(1:9)
                 EPLCX3(IRCX,J,1) = EPLCX3(IRCX,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE
+          ELSE  ! STORAGE SAVING MODE	no predefined tallies eplcx3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
-              EPLCX3(IRCX,1,1)=ADD
+              EPLCX3(IRCX,1,1)=ADD   !  ????
             ELSEIF (MODC.EQ.2) THEN
               ADDL=LOG(FACTKK)-ADDTL
               FACRCX(IRCX,1) = EXP(ADDL)

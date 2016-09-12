@@ -1,6 +1,7 @@
 c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
+c            option NCLTAL=4 is unfinished. print warning and return 
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
@@ -110,17 +111,33 @@ C  NOTHING TO BE DONE
       END IF
  
  
-!  EVALUATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
+!  INTEGRATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
  
       IF ((NCHTAL(ICHORI) == 4) .AND. NLSTCHR(ICHORI)) THEN
  
         if (.not.associated(traj(ichori)%trj%cells)) then
-           write (iunout,*) ' HAUE !! '
+           write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
+           write (iunout,*) 'error in SGNAL, NCHTAL=4 '
+           write (iunout,*) 'no proper spectra found for NCHORI '
+           call EIRENE_MASJ1('NCHORI= ',NCHORI)
+           write (iunout,*) 'OPTION NOT READY, RETURN '
            return
         end if
+C
         first => traj(ichori)%trj%cells
         cur => first
- 
+C
+CDR : this next part is not generally valid, nor ready to use.
+cdr : an attempt had been made, apparently, to use velocity resolved 
+cdr : neutral distributions (the velocity component along the line of sight),
+cdr : then to turn that into a doppler broadened line shape of the Ba-alpha line
+
+        write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
+        write (iunout,*) 'error in proprietary section NCHTAL=4 '
+        write (iunout,*) 'OPTION NOT READY, RETURN '
+        return  
+
+C 
 C  RADIATIVE TRANSITION RATES (1/S)
 C  BALMER ALPHA
         FAC32=4.410E7
@@ -157,8 +174,8 @@ C  H(n=3)/H(n=1)
           TEF=LOG(TE)
  
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
-     .                  TEF, DEF, RATE, DUM, 1, 9,
-     .                  RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
+     .                         TEF, DEF, RATE, DUM, 
+     .                         RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
           rate = exp(rate)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
@@ -182,18 +199,21 @@ C  H(n=3)/H(n=1)
  
       END IF
 C
-C  PREPARE DIRECT (PRIMARY) EMISSIVITY FROM SOURCE, INTO LINE OF SIGHT
-C  (SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE IN SUBR. SIGCX, SIGRAD, SIGH
+C  PREPARE DIRECT (PRIMARY) EMISSION FROM SOURCE, INTO LINE OF SIGHT
+C  THE SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE 
+C  IN SUBR. SIGCX, SIGRAD, SIGHA, SIGUSR, ETC.
  
       NLVL=.FALSE.
       DO 10 ISTR=1,NSTRAI
 C  PRIMARY SOURCE CONTRIBUTION, REFER TO INPUT BLOCK 7
-C  HOWEVER, THIS STRATUM NEED NOT NECESSARILY HAVE TO ACTIVE
+C  (PRIMARY) VOLUME RECOMBINATION SOURCE:
+C  HOWEVER, THIS STRATUM MIGHT NOT NECESSARILY HAVE BEEN ACTIVE?
         NLVL(ISTR)=NLVOL(ISTR).AND.NLPLS(ISTR)
 10    CONTINUE
       NLVL(0)=ANY(NLVL(1:NSTRAI))
-C
+C.................................................................
       IF (NCHTAL(ICHORI).EQ.1) THEN
+C.................................................................
 C  FOR CX SIGNAL:  TO BE WRITTEN
 C     CALL ZEROA2(RECADD,NATM,NRAD)
 C     IF (NLVL) THEN
@@ -215,9 +235,10 @@ C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'
 C     ENDIF
- 
+C................................................................. 
 C  FOR RADIANCE OF LINE ISP=IPHOT, IN STRATUM ISTR
       ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
+C.................................................................
         MAXREC=SUM(NPRCI(1:NPLSI))
         ALLOCATE(RECADD(MAXREC,NRAD))
         ALLOCATE(INTADD(3,MAXREC))
@@ -317,7 +338,9 @@ c  nlvl is not true:
           DEALLOCATE(INTADD)
           return
         ENDIF
+C.................................................................
       ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
+C.................................................................
         write (iunout,*) 'sgnal, emis: ichord,istra ',
      .                            ichori,istra
         write (iunout,*) 'volumetric line emission '

@@ -86,14 +86,14 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
  
       if (.not.reacdat(ir)%lrtc) then
         write (iunout,*) ' no data for rate coefficient available',
-     .                    ' for reaction ',ir
+     .                   ' for reaction ',ir
         call EIRENE_exit_own(1)
       end if
  
       rate = 0._dp
       erate = 0._dp
 
-c  extrapolation data: currently only for polynomial fits 
+c  extrapolation data: currently only for 1D (single parameter) polynomial fits 
       if ((reacdat(ir)%rtc%ifit == 1) .or.
      .    (reacdat(ir)%rtc%ifit == 2)) then
         rcmin  = reacdat(ir)%rtc%poly%rcmn
@@ -131,12 +131,12 @@ c..............................................................
 
 !  DOUBLE POLYNOMIAL FIT VS. P1 (TEMPERATURE) AND P2,  FOR LN OF RATE 
 
-c  rescale parameter p2  (currently only by 1e-8):  pp2 
+c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
         pp2 = p2
         if (iprshft > 0) pp2 = pp2 - dsub
  
         call EIRENE_dbl_poly
-     .       (reacdat(ir)%rtc%poly%dblpol,p1,pp2,rate,dum,1,9,
+     .       (reacdat(ir)%rtc%poly%dblpol,p1,pp2,rate,dum,
      .        rcmin, rcmax, fp, jfexmn, jfexmx)
 
 C       if (.not. lexp)  rate=rate

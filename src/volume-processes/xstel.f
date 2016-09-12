@@ -7,6 +7,7 @@ cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
 cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
 cdr    oct.14: bug fix: use kread rather than kk in eplel3.
 cdr    oct.14: remove pls array, synconize with xstcx started
+cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly 
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
@@ -85,13 +86,14 @@ C RATE COEFFICIENT
 C  2.B)
         IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
-C   NO
+C   NO, NSTORDT=9 HERE
           
 C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
           IF (MODC.EQ.1) THEN
+C           NEND=1 HERE
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
@@ -100,19 +102,22 @@ C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
+C           NEND=9 HERE
             FCTKKL=LOG(FACTKK)
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               tii = max(-2.3_dp,tii)
-              CALL EIRENE_PREP_RTCS(KK,3,1,NEND,TII,CFF)
-              TABEL3(IREL,J,1:NEND) = CFF(1:NEND)
+              CALL EIRENE_PREP_RTCS(KK,3,TII,CFF)
+              TABEL3(IREL,J,1:9) = CFF(1:9)
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
           END IF
+
         ELSE   ! ??
-C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
+C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?  no predefined tabel3 tallies
         END IF
+
 CDR   ELSEIF (MODC.EQ.3) THEN
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
@@ -213,10 +218,14 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         IF (MODC.GE.1.AND.MODC.LE.2) THEN
           MODCOL(5,4,IREL)=MODC
           IF (MODC.EQ.1) NEND=1
-          IF (MODC.EQ.2) NEND=NSTORDT
+          IF (MODC.EQ.2) NEND=NSTORDT 
+C  STORAGE SAVING MODE ? 
           IF (NSTORDR >= NRAD) THEN
-            
+C  NO
+c           NSTORDT=9 HERE  
+      
             IF (MODC.EQ.1) THEN
+C             NEND=1 HERE
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
@@ -225,17 +234,18 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
+C             NEND=9 HERE         
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                CALL EIRENE_PREP_RTCS(KREAD,5,1,NEND,TII,CFF)
-                EPLEL3(IREL,J,1:NEND) = CFF(1:NEND)
+                CALL EIRENE_PREP_RTCS(KREAD,5,TII,CFF)
+                EPLEL3(IREL,J,1:9) = CFF(1:9)
                 EPLEL3(IREL,J,1) = EPLEL3(IREL,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE
+          ELSE  ! STORAGE SAVING MODE, no predefined eplel3 tallies
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLEL3(IREL,1,1)=ADD

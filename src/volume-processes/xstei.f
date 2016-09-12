@@ -15,6 +15,8 @@ cdr  Jan. 2014:
 !   23.02.14:   nomenclature changed IPL --> IPP to provide consistency with XSTPI.f
 !   02.02.15:   ONLY COMMENTS ADDED
 !dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
+cdr Aug.16  :   minor syncronisation with xstpi.f. Started to implement H.3 rate coeff. 
+cdr             for high E0, low Te cases. needs to add: TABDS3
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
      .                 IFRST,ISCND,ITHRD,IFRTH,
@@ -47,13 +49,16 @@ C
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
-      REAL(DP) :: CF(9,0:9)
-      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, EIRENE_FEHVDS1, EE, TB, 
+      REAL(DP) :: CF(9,0:9), CFF(9)
+      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, 
+     .          EIRENE_FEHVDS1, EE, TB, TEE, 
      .          EIRENE_FEELEI1, EN,
-     .          P2N, EA, EI, ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
+     .          P2N, EA, EI, 
+     .          ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
      .          EIRENE_RATE_COEFF,
-     .          EIRENE_ENERGY_RATE_COEFF, DELE, ERATE
+     .          EIRENE_ENERGY_RATE_COEFF,
+     .          DELE, ERATE
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
@@ -197,16 +202,18 @@ C
 C  1.) CROSS SECTION(TE) : NOT NEEDED
 C
 C
+C..................................................................
 C  2.) RATE COEFFICIENT (CM**3/S) * ELECTRON DENSITY (CM**-3)
+C..................................................................
 C
       LHCOL = .FALSE.
 C
 C  2.A) RATE COEFFICIENT = CONST.
 C     TO BE WRITTEN
 
-
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
-C  2.B) RATE COEFFICIENT(TE)  (LOW DENSITY (CORONA) RATE
+C  2.B) RATE COEFFICIENT(TE)  (FIXED, OR: LOW DENSITY (CORONA) RATE COEFF.
+C                              E0 FIXED (E.G. =0.0)
         IF (NSTORDR >= NRAD) THEN
 C  RATE:  (1/S) =
 C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
@@ -229,16 +236,30 @@ C  IS TABDS1 A RATE COEFFICIENT OR ALREADY A RATE ?
           JEREAEI(IREI) = 1
         ENDIF
         MODCOL(1,2,IREI)=1
-C     ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
+
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TE,EBEAM)
 C  TO BE WRITTEN
-C       MODCOL(1,2,IREI)=2
+        IF (NSTORDR >= NRAD) THEN
+          FCTKKL=LOG(FACTKK)
+          DO J=1,NSBOX
+            IF (LGVAC(J,NPLS+1)) CYCLE
+              TEE=TEINL(J)
+              TEE = max(-2.3_dp,TEE)
+              CALL EIRENE_PREP_RTCS (KK,3,TEE,CFF)
+C             TABDS3(IREI,J,1:9) = CFF(1:9)
+C             TABDS3(IREI,J,1)=TABDS3(IREI,J,1)+DEINL(J)+FCTKKL
+          END DO
+        ELSE ! NOT SUFFICIENT STORADE ON TABDS3 
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+        ENDIF
+        MODCOL(1,2,IREI)=2  
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
 C  2.D) RATE COEFFICIENT(TE,NE)
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
 C .....................................
-C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??
+C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  PREPARE ELECTR. ENERGY LOSS FROM INTERNAL CR CODE
           KREAD=EELEC
           IF ((REACDAT(KK)%RTC%IFIT == 5) .AND.
      .        (EIRENE_IDEZ(ISCDE,5,5) == 3)) THEN
@@ -486,7 +507,8 @@ C  TOTAL NUMBER OF SECONDARIES
      .            PIODS(IREI,0)
  
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
-C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION FOR TEST PARTICLE SECONDARIES
+C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION 
+C          FOR TEST PARTICLE SECONDARIES
 C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)
       DO 550 ISPZ=NSPH+1,NSPAMI
@@ -639,7 +661,9 @@ C
       ENDIF
 
 880   CONTINUE 
- 
+
+      WRITE (IUNOUT,*) 'COLLISION MODEL: '
+
       CALL EIRENE_LEER(1)
       IF (IESTEI(IREI,1).NE.0)
      .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
@@ -680,4 +704,6 @@ C
       WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'
       WRITE (iunout,*) IREI,KREAD
       CALL EIRENE_EXIT_OWN(1)
+      RETURN
+C
       END

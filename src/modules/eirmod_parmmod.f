@@ -139,12 +139,18 @@ csw 13apr07
  
  
       SUBROUTINE EIRENE_SET_PARMMOD(ICAL)
+C  ical=1:  called directly after "find_param.f", before input.f
+C  ical=2:
+C  ical=3:  called from inside "input.f"
  
       INTEGER, INTENT(IN) :: ICAL
  
 !PB   INCLUDE 'PARMUSR'
  
       IF (ICAL == 1) THEN
+C.......................................................................
+C  CALLED AFTER FIND_PARAM.F, AND BEFORE INPUT.F
+C.......................................................................
 C
 C  GEOMETRY
 C
@@ -152,7 +158,8 @@ C
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
  
-C  ELIMINATE SOME ARRAYS IN CASE OF LEVGEO=5 OPTION (GEOMETRY OUTSIDE EIRENE-COD
+C  ELIMINATE SOME ARRAYS IN CASE OF LEVGEO=10 OPTION 
+C                     (GEOMETRY ARRAYS OUTSIDE EIRENE-CODE
         NSWIT=1-NGEOM_USR
  
 C  IDENTIFY: WHICH GRIDS ARE THERE? N1F=0 OR N1F=1, IF N1ST=1, OR GT 1, RESP.
@@ -249,9 +256,9 @@ C  SURFACE REFLECTION DATA
         NHD4=5
         NHD5=5
  
-C  ATOMIC DATA STORAGE
+C  ATOMIC DATA STORAGE. CURRENTLY ONLY TWO OPTIONS
 C  NSTORAM=0     : --> NHSTOR=0 --> NSTORDT=1,      NSTORDR=1
-C  NSTORAM=1,...9: --> NHSTOR=1 --> NSTORDT=NSTORAM,NSTORDR=NRAD
+C  NSTORAM=9     : --> NHSTOR=1 --> NSTORDT=NSTORAM,NSTORDR=NRAD
         NHSTOR=1-1/(NSTORAM+1)
         NSTORDT=NHSTOR*NSTORAM+(1-NHSTOR)*1
         NSTORDR=NHSTOR*NRAD+   (1-NHSTOR)*1

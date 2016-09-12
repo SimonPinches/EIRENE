@@ -1,4 +1,28 @@
-      subroutine EIRENE_prep_rtcs (ir, iflg, ji, je, p1, cf)
+cdr: Aug. 2016  started commenting,documenting
+
+
+      subroutine EIRENE_prep_rtcs (ir, iflg, al, dum)
+c  called from: xstcx,xstel,xstpi
+c  prepare rate coefficients, originally given with double polynomial fit
+c  (two independent parameters p1, p2)
+c  1) find pointer to coefficients "rp" for reaction ir, from data structure reacdat(ir)
+c  2) then evaluate this fit (call to dbl.poly.f) with log(p1)=al, log(p2)=0.0
+c     and return the reduced (1D) fit coefficients DUM(1:9) for the 2nd parameter
+c     dependency, evaluated at the fixed first parameter p1 
+
+c  input:
+c  ir   :  process number on data structure reacdat
+c  iflg :  =3:  reaction rate coefficient                   (H.3, H.4)
+c  iflg :  =4:  momentum weighted reaction rate coefficient (H.6, H.7)
+c  iflg :  =5:  energy weighted reaction rate coefficient   (H.9, H.10)
+c  iflg :  =6:  ???  not in use ???
+c  al   :  log of 1'st parameter of double. polyn. fit, e.g. Te, Ti
+
+c  output:
+c  cf   :  fit parameters for p2 dependency, at fixed p1: al=log(p1)
+c          i.e. for the fit=sum_1^9 dum(i) log(p2)^(i-1)
+c          
+
  
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -7,10 +31,10 @@
  
       implicit none
  
-      integer, intent(in) :: ir, iflg, ji, je
-      real(dp), intent(in) :: p1
-      real(dp), intent(out) :: cf(9)
-      real(dp) :: dum
+      integer, intent(in) :: ir, iflg
+      real(dp), intent(in) :: al
+      real(dp), intent(out) :: dum(9)
+      real(dp) :: cou
       type(poly_data), pointer :: rp
  
       select case (iflg)
@@ -52,8 +76,10 @@
         write (iunout,*) ' 3 <= iflg <= 6 assumed '
         call EIRENE_exit_own(1)
       end select
- 
-      call EIRENE_dbl_poly (rp%dblpol,p1,0._dp,dum,cf,ji,je,
+
+c  find fit coefficients dum(1:9) for p2 dependence, at fixed log(p1)=al
+     
+      call EIRENE_dbl_poly (rp%dblpol,al,0._dp,cou,dum,
      .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
  
       return

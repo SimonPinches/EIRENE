@@ -14,6 +14,7 @@ cdr oct.14:  syncronize with xstcx started
 cdr march 15:  IN VERSION ..-new: nplrpl introduced: flag for bulk particle energy loss/gain
 cdr            (was nelrpl, but that is also the flag for electron energy loss/gain)
 CDR            eelec in parameterlist, before chrdf0
+cdr Aug.16  :  minor syncronisation with xstei.f, argument nend removed from prep_poly
 
 C
 C
@@ -55,7 +56,8 @@ C
      .            ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, EIRENE_RATE_COEFF, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
-     .            ACCINM, ACCMSP, ACCINV, EFLAG, EIRENE_FEHVPI3, 
+     .            ACCINM, ACCMSP, ACCINV, 
+     .            EFLAG, EIRENE_FEHVPI3, 
      .            EIRENE_FEELPI1,
      .            EIRENE_ENERGY_RATE_COEFF, 
      .            EI, EA, EN, ERATE, TB, TII
@@ -241,15 +243,17 @@ C RATE COEFFICIENT
 
         MODCOL(4,2,IRPI)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
+        IF (MODC.EQ.1) NEND=1       ! rate coeff for (E0 fixed, TI)
 C  2.C)
         IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN 
 C   NO
+C   NSTORDT=9
           
-C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
+C  2.B) RATE COEFFICIENT(TI, E0 fixed, =0)
           IF (MODC.EQ.1) THEN
+C           NEND=1
             DO 145 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
@@ -257,13 +261,14 @@ C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
               TABPI3(IRPI,J,1)=COU*DIIN(IPL,J)*FACTKK
 145         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
+C           NEND=9
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
             FCTKKL=LOG(FACTKK)
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              CALL EIRENE_PREP_RTCS (KK,3,1,NEND,TII,CF)
-              TABPI3(IRPI,J,1:NEND)=CF(1:NEND)
+              CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
+              TABPI3(IRPI,J,1:9)=CF(1:9)
               TABPI3(IRPI,J,1)=TABPI3(IRPI,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
           END IF
@@ -392,8 +397,9 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
           IF (NSTORDR >= NRAD) THEN
-            
+c           nstordt=9            
             IF (MODC.EQ.1) THEN
+c             nend=1
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
@@ -403,17 +409,18 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
+c             nend=9
               ADDL=LOG(FACTKK)-ADDTL
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CF)
-                EPLPI3(IRPI,J,1:NEND) = CF(1:NEND)
+                CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
+                EPLPI3(IRPI,J,1:9) = CF(1:9)
                 EPLPI3(IRPI,J,1) = EPLPI3(IRPI,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE
+          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplpi3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLPI3(IRPI,1,1)=ADD
@@ -537,8 +544,9 @@ C
 C  SET TOTAL NUMBER OF SECONDARIES BY TYPE OF SECONDARY: P..PI(IRPI,0)
 C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2NP(IRPI)  INTO
-C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
- 
+C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW))
+
+C  ATOM SECONDARIES 
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
         PATPI(IRPI,0)=PATPI(IRPI,0)+
@@ -546,6 +554,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2NP(IRPI,IA)=P2NP(IRPI,IA-1)+
      +                      P2NP(IRPI,IA)
 510   CONTINUE
+C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
         PMLPI(IRPI,0)=PMLPI(IRPI,0)+
@@ -553,6 +562,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2NP(IRPI,IM)=P2NP(IRPI,IM-1)+
      +                      P2NP(IRPI,IM)
 520   CONTINUE
+C  TEST ION SECONDARIES 
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
         PIOPI(IRPI,0)=PIOPI(IRPI,0)+
@@ -560,6 +570,7 @@ C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED)
         P2NP(IRPI,IO)=P2NP(IRPI,IO-1)+
      +                      P2NP(IRPI,IO)
 530   CONTINUE
+C  BULK SECONDARIES (NOT ON P2ND)
       DO 540 IPP=1,NPLSI
         PPLPI(IRPI,0)=PPLPI(IRPI,0)+
      +                      PPLPI(IRPI,IPP)
@@ -569,7 +580,10 @@ C  TOTAL NUMBER OF SECONDARIES
       P2NPI(IRPI)=PATPI(IRPI,0)+PMLPI(IRPI,0)+
      .            PIOPI(IRPI,0)
  
-C  NORMALIZE SECONDARY SPECIES DISTRIBUTION P2NP
+C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2NP
+C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION 
+C          FOR TEST PARTICLE SECONDARIES
+C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2NP(IRPI,NSPAMI)
       DO 550 ISPZ1=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
@@ -748,8 +762,9 @@ C
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
       WRITE (iunout,*) 'PROCESS NO. KK ',NREAPI(IRPI)
-      WRITE (IUNOUT,*) 'MODCOL ',MODCOL(4,1,IRPI),MODCOL(4,2,IRPI),
-     .                           MODCOL(4,3,IRPI),MODCOL(4,4,IRPI)
+      WRITE (IUNOUT,*) 'MODCOL         ',
+     .                  MODCOL(4,1,IRPI),MODCOL(4,2,IRPI),
+     .                  MODCOL(4,3,IRPI),MODCOL(4,4,IRPI)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACRPI(IRPI,1) 
       CALL EIRENE_LEER(1)
