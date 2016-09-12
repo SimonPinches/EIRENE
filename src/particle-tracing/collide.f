@@ -27,11 +27,12 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species reolved.
+cdr DEC. 15 :  bulk ion energy estimators: species resolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
 cdr                  probably not correct (outdated).
+cdr Aug 16:    bug fix: IPPLDS --> IPPLPI at one instance
 
 
 
@@ -86,7 +87,7 @@ C
       INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NRDS)
 
 C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS
-      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
+      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
  
  
 csw add n 2lines
@@ -221,7 +222,7 @@ cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS.
           IF (LEAPL) THEN
             DO IP=1,IPPLDS(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLDS(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -748,7 +749,7 @@ C
 C
 C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
 C
-      ELSE
+      ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT+SIGELT
@@ -780,7 +781,7 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
           IF (LEAPL) THEN
-            DO IP=1,IPPLDS(IRPI,0)
+            DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
