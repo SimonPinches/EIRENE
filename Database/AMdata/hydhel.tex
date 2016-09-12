@@ -13,8 +13,8 @@
 \usepackage{times}
 
 \usepackage[unicode=true,
-% hypertex, % use for activating links in DVI file
- dvipdfm, % use for bookmarks in final version
+% \usepackage[hypertex], % use for activating links in DVI file
+ dvipdfm, % use for bookmarks in final (pdf) version
  bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
  breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
  {hyperref}
@@ -97,7 +97,8 @@ Not yet corrected here in fits. (Can be done by a modification of coefficients $
 \item{Reaction 2.2.13}
 
 The cross section and rate coefficient plotted on page 61 of the 1987 version of the book are both by
-a factor 10 too large. The fitting coefficients for  cross section and rate coefficient appear to be correct, however.
+a factor 10 too large.
+The fitting coefficients for  cross section and rate coefficient appear to be correct, however.
 
 \item{Reaction 3.1.7}
 
@@ -116,11 +117,12 @@ into the \emph{nl} states of H. Added in Jan. 2014:  H.2 rate coefficient polyno
 $1s, 2s$ and $2p$ states, to allow
 automated processing with same format as for other cross sections and rate coefficients in this data-base
 
-\item{June 2015: Reaction 3.1.8}
+\item{June 2015: H.2 for Reaction 3.1.8}
 
 A single parameter fit: H.2  3.1.8 is added, vs. proton temperature only and for ``stationary" H(1s). It has been derived
 algebraically from the H.3 fit, evaluated at
 E=0.1 eV, and this procedure was verified by independent Maxwellian averaging of the asymptotically correct cross section fit H.1  3.1.8, (vs.T)
+The mass used on the temperature scale is the proton mass.
 
 \item{July 2015-I}
 
@@ -128,7 +130,7 @@ Some state notations, in particular for He excited states in section headers sli
 model construction (species and reaction type identification) for HYDKIN online tool. Notation also now consistent with
 AMJUEL He CR model data.
 
-\item{July 2015-II}
+\item{July 2015-II,  2.2.14}
 
 Reaction 2.2.14: In AMJUEL the reaction fits for H.1 and H.2 are reduced to be linear in log-log scale and hence $\ln \sigma(E) = a_0 + a_1 \ln(T)$ and $\ln \langle\sigma v\rangle(T) = b_0 + b_1 \ln(T)$, respectively,
 because higher non-
@@ -137,23 +139,52 @@ is exact: $\ln \langle\sigma v E_{elec}\rangle(T) = h_0 +h_1 \ln(T)$ with $h_0 =
 An independently computed H.8 fit using a table from the full H.2 rate fit is still retained in the present HYDHEL file here, (formerly at AMJUEL H.8),
 for backward compatibility
 
-\item{state notation for process 2.3.4b: final state notation wrong}
-now corrected (Sept. 15)
+\item{Sept. 2015: state notation for process 2.3.4b: final state notation was wrong.}
+Now corrected
 
+\item{Jan 16: asymptotically better cross sections for some processes.}
+Reaction H.1:  3.3.2,  3.3.6a,  3.3.6b, 6.2.1,  6.3.1  fitted to a wider energy range, asymptotically correct
+at high collision energies.
+The corresponding new cross sections are labeled: 3.3.2n, 3.3.6an 3.3.6bn, 6.2.1n and 6.3.1n
+
+\item{H.8  2.2.14 added here, consistent with H.2 2.2.14 dissociative. recomb.}
+A better representation is given in AMJUEL. from the linearity on a log-log scale exact consistency
+can be achieved, and is stored there, and is also the EIRENE default for process 2.2.14
+
+\item{Feb 16 added for various cross sections: ELABMAX and high energy end extrapolation:
+H.1:  3.1.1, 3.1.2, 3.1.6, 3.1.8, 3.1.9, 3.1.11b, 3.2.1b, 3.2.4a, 3.2.5, 3.2.6, 3.3.1, 3.3.6a, 3.3.6b,
+4.2.1, 4.3.1, 4.3.3,  4.4.1, 5.2.3, 6.1.6, and 7.2.2}
+
+\item{May 2016: H.2  3.2.3}
+added: H.2 for 3.2.3. same as earlier done (June 15) for 3.1.8: thermal rate coefficient, evaluated at Eb =0.1 eV $\approx 0.0$ eV
+Ebmin of H.3 fit for 3.2.3 is about 0.1 eV.
+
+\item{May 2016 H.2 2.2.10 and 2.2.12:}
+
+Process 2.2.12, starting from bound state H$_2^+$, is not contained in two step process 2.2.10, 
+which starts from H$_2$
+because in 2.2.10 the transition from H2 to H + H+ proceeds either via the repulsive part
+of the H2+ ground state,
+or by direct transition from H2 to the H2+*  B state, without intermediate bound H2+ state.
 \end{itemize}
 \section*{to be done}
 \addcontentsline{toc}{section}{to be done}
 \begin{itemize}
-\item {2.1.8  and 2.3.13 missing fits for H.2 rate coefs.}
+\item {2.1.8  and 2.3.13 missing fits for H.2 rate coeffs. (for stationary (E0=0.0) beam)}
+
+\item {H.2 rad rec coeff:}
+
 In original monograph only closed form analytic expressions are given for H+ and He+ rad rec. rate coefficients.
 (and nothing for the cross sections).
 2.1.8, 2.1.8a and 2.1.8b fits for H.2 rad rec rate coefficients had already been added earlier (see list of changes/errata in previous section).
 The same is needed still for
 2.3.13 (helium rad. rec), in particular since the closed form expression from the book is hard wired as default rate in EIRENE code for He+.
 
-Perhaps the closed form expression allow a direct (analytical) translation into polynomial fit? It seems to be the case indeed from
+Perhaps the closed form expression allows a direct (analytical) translation into polynomial fit? It seems to be the case indeed from
 the new 2.1.8 fits that only two coefficients may be needed. To be checked.
+
 \item {H.8 rates for recombination processes}
+
 for the closed form expressions for 2.1.8 and 2.3.13 these rates can be given also in closed form (and are coded in
 the EIRENE default model routines). It might be desirable to add them also as H.8 into the database. Same
 for 2.2.14 (diss. rec of H2+). This latter is already here in HYDHEL (update from July 2015), and EIRENE default was 0.88*Te times rate 2.2.14.
@@ -161,9 +192,19 @@ So the H.8  2.2.14 was approximately, but not exactly, the previous EIRENE defau
 Check: can the H.8 fit be derived from the H.2 fit exactly? If yes: then this should become default in EIRENE, rather then 0.88*Te.
 Done:  H.8 follows from H.2 directly, if only b0 and b1 coefficients are non-zero, see: AMJUEL.
 For 2.2.14: Change EIRENE default (H.2 and H.8) to that 2 parameter fit
-from AMJUEL for H.8
+from AMJUEL for H.8, done.
 
-\item{process 2.2.15 is linear in log log scale. Check coefficients, make H.8, set spurious coeffs. to zero}
+\item{process 2.2.15 is linear in log log scale. }
+
+Check coefficients, make H.8, set spurious coeffs. to zero
+\item{H.2  5.3.1 and 6.3.1 to be added, at Eb=0.1}
+
+m\_lab=4,  but m\_reduced=2 for these processes
+\item {Maxrate: sigma * v\_lab }
+
+started to implement the maximum of product sigma * v\_lab, for heavy particle process cross sections:
+Done for 7.2.2
+
 \end{itemize}
 \newpage
 
@@ -1992,6 +2033,8 @@ Reaction 3.1.1 $   p + H(1s) \rightarrow p + H(2p)$}
    a0  1.498711267601e+03    a1 -1.883748471843e+03    a2  9.798674598591e+02
    a3 -2.840533664327e+02    a4  5.025004769585e+01    a5 -5.555355513127e+00
    a6  3.748565821577e-01    a7 -1.412032135035e-02    a8  2.274926861613e-04
+  ar0 -1.196915681000E+02   ar1  1.572533096000E+01   ar2 -7.444839514000E-01
+ELABMAX=  1.20000E+05 eV
        Emin  5.01e+01   s(Emin)  1.00e-19   smax  3.09e-17   Error  2.54e-03
        Eth  10.2
        Mcross 1.0E+00
@@ -2008,6 +2051,8 @@ Reaction 3.1.2 $   p + H(1s) \rightarrow p + H(2s)$}
    a0  2.829875237564e+03    a1 -6.116917512897e+03    a2  3.922809899060e+03
    a3 -1.246183868116e+03    a4  2.285990672320e+02    a5 -2.546914306461e+01
    a6  1.706611319064e+00    a7 -6.339871351017e-02    a8  1.005024483671e-03
+  ar0 -8.703695946000E+01   ar1  9.315160999000E+00   ar2 -4.461712204000E-01
+ELABMAX=  8.00000E+04 eV
        Emin  6.00e+02   s(Emin)  1.00e-19   smax  9.15e-18   Error  1.95e-03
        Eth  10.2
        Mcross 1.0E+00
@@ -2039,6 +2084,10 @@ Reaction 3.1.6 $   p + H(1s) \rightarrow p + H^+ + e$}
    a0 -3.476414561951e+06    a1  2.961782930805e+06    a2 -1.100587541308e+06
    a3  2.329850579421e+05    a4 -3.073181275800e+04    a5  2.586508086362e+03
    a6 -1.356488358412e+02    a7  4.053120293214e+00    a8 -5.282803274226e-02
+  al0 -7.104410581000E+01   al1  5.699173611000E+00   al2 -2.002816430000E-01
+  ar0 -4.489505659000E+01   ar1  1.926156466000E+00   ar2 -1.091588336000E-01
+ELABMIN=  2.00000E+03 eV
+ELABMAX=  2.25000E+04 eV
        Emin  1.52e+03   s(Emin)  1.00e-19   smax  1.53e-16   Error  1.16e-02
        Eth   13.6
        Mcross 1.0E+00
@@ -2060,7 +2109,9 @@ Reaction 3.1.8 $   p + H(1s) \rightarrow H(1s) + p$}
    a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
    a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
   al0 -3.294589600000E+01   al1 -1.713112000000E-01   al2  0.000000000000e+00
+  ar0 -5.787734011000E+01   ar1  7.671416829000E+00   ar2 -5.208376804000E-01
 ELABMIN=  0.10000E 00 eV
+ELABMAX=  5.00000E+05 eV
        Emin  1.00e-01   s(Emin)  7.00e-15   smax  7.00e-15   Error  2.25e-03
        Eth  0.0
        Mcross 1.0E+00
@@ -2075,6 +2126,8 @@ Reaction 3.1.9 $   p + H(1s) \rightarrow H(2p) + p$}
    a0 -2.197571949935e+01    a1 -4.742502251260e+01    a2  3.628013140596e+01
    a3 -1.423003075866e+01    a4  3.273090240144e+00    a5 -4.557928912260e-01
    a6  3.773588347458e-02    a7 -1.707904867106e-03    a8  3.251203344615e-05
+  ar0 -5.861021344000E+01   ar1  5.229876071000E+00   ar2 -3.222657437000E-01
+ELABMAX=  6.50000E+04 eV
        Emin  1.90e+01   s(Emin)  1.00e-19   smax  2.97e-17   Error  3.29e-03
        Eth  10.2
        Mcross 1.0E+00
@@ -2135,6 +2188,8 @@ Reaction 3.1.11b $p + H(n=3) \rightarrow H(n=3) + p$}
    a0 -3.007479360386e+01    a1 -1.033159234538e-01    a2 -5.813424077828e-03
    a3  3.520834872493e-03    a4 -1.498488713106e-04    a5 -4.614034275366e-04
    a6  1.226477420816e-04    a7 -1.180475816996e-05    a8  3.892872672032e-07
+  ar0 -3.732339082000E+01   ar1  1.751199692000E+00   ar2 -1.246752946000E-01
+ELABMAX=  2.00000E+04 eV
        Emin  1.00e-01   s(Emin)  1.07e-13   smax  1.07e-13   Error  2.04e-04
        Eth  0.0
        Mcross 1.0E+00
@@ -2170,6 +2225,8 @@ Reaction 3.2.1b $   p + H_2(j=1) \rightarrow p + H_2(j')   (j' \geq 3)$}
    a0 -3.393406708822e+01    a1 -1.040291133860e-01    a2 -2.235808125213e-02
    a3 -3.320456299848e-02    a4 -2.081525199080e-02    a5  1.897906681845e-03
    a6  1.657385114123e-03    a7 -3.410682026726e-04    a8  1.868694684385e-05
+  ar0 -3.098471597000E+01   ar1 -1.645306432000E+00   ar2 -1.849934446000E-02
+ELABMAX=  1.00000E+02 eV
        Emin  1.00e-01   s(Emin)  2.19e-15   smax  2.19e-15   Error  4.08e-04
        Eth  0.05
        Emax 2.0E+03
@@ -2215,6 +2272,8 @@ Reaction 3.2.4a $   p + D_2 \rightarrow D^+ + HD (\mbox{or}~ H + D)$}
    a0 -3.514598267631e+01    a1 -1.638772651981e+00    a2 -3.145916075331e-01
    a3  2.614991388325e-01    a4  2.453621020680e-03    a5 -2.572795334322e-02
    a6  5.870493979209e-03    a7 -5.239437578054e-04    a8  1.696795511874e-05
+  ar0 -3.711342385000E+01   ar1 -4.917503936000E-01   ar2 -2.634191267000E-02
+ELABMAX=  5.00000E+03 eV
        Emin  1.00e-01   s(Emin)  2.47e-15   smax  2.47e-15   Error  3.74e-02
        Eth  0.04
        Mcross 1.0E+00
@@ -2243,6 +2302,8 @@ Reaction 3.2.5 $   p + H_2 \rightarrow p + H_2^+(v \leq 9) + e$}
    a0  1.681920096116e+01    a1 -8.751084517093e+01    a2  5.024534132103e+01
    a3 -1.560982391827e+01    a4  2.931478842554e+00    a5 -3.421137108600e-01
    a6  2.429148918124e-02    a7 -9.612735627840e-04    a8  1.625014598463e-05
+  ar0 -8.067212059000E+01   ar1  8.148943513000E+00   ar2 -3.720218589000E-01
+ELABMAX=  1.00000E+05 eV
        Emin  4.36e+01   s(Emin)  1.00e-19   smax  1.19e-16   Error  2.51e-04
        Eth  15.41
        Mcross 1.0E+00
@@ -2265,6 +2326,8 @@ Reaction 3.2.6 $   p + H_2^+(v) \rightarrow p + H(1s) + H^+$}
    a0 -5.100296089295e+01    a1 -7.618139241529e+00    a2  9.925169617893e+00
    a3 -4.105615029225e+00    a4  9.552023306824e-01    a5 -1.333440043499e-01
    a6  1.095282998853e-02    a7 -4.868705304669e-04    a8  9.034188174517e-06
+  ar0 -3.914276949000E+01   ar1  1.668753218000E+00   ar2 -1.266187689000E-01
+ELABMAX=  2.00000E+04 eV
        Emin  1.90e+01   s(Emin)  1.00e-19   smax  1.79e-15   Error  9.54e-04
        Eth  6.0
        Mcross 1.0E+00
@@ -2281,6 +2344,8 @@ Reaction 3.3.1 $   p + He \rightarrow  H + He^+(1s)$}
    a0 -4.883734637847e+01    a1 -7.864577316892e+00    a2  1.051518602966e+01
    a3 -4.731600895321e+00    a4  1.169830752883e+00    a5 -1.750344914778e-01
    a6  1.574934435872e-02    a7 -7.784849464356e-04    a8  1.611953487366e-05
+  ar0 -6.990672456000E+01   ar1  7.540193740000E+00   ar2 -4.130236463000E-01
+ELABMAX=  8.00000E+04 eV
        Emin  1.73e+01   s(Emin)  1.00e-19   smax  1.79e-16   Error  8.53e-04
        Eth  11.2
        Mcross 1.0E+00
@@ -2301,6 +2366,19 @@ Reaction 3.3.2 $    p + He \rightarrow p + He^+(1s) + e$}
        Emin 2.00e+02   s(Emin)  1.00e-19   smax  7.90e-17   Error 1.58e-04
        Eth  24.58
        Mcross 1.0E+00
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 3.3.2n $    p + He \rightarrow p + He^+(1s) + e$}
+revised version 2016,  better asymptotics
+
+\begin{small}\begin{verbatim}
+   a0  4.195044321889E+02    a1 -3.711223698781E+02    a2  1.209086460598E+02
+   a3 -2.057942831375E+01    a4  1.924450806836E+00    a5 -8.969801627503E-02
+   a6  8.987363020501E-04    a7  7.919962773841E-05    a8 -2.232174653859E-06
+       Eth  24.58
+
 \end{verbatim}\end{small}
 
 
@@ -2344,14 +2422,24 @@ Reaction 3.3.6a $   p + He(1s^12s^11S) \rightarrow H(2s) + He^+(1s)$}
    a0 -4.488921384477e+01    a1  4.960932531533e+00    a2 -3.262576803403e-01
    a3 -2.936130156727e-01    a4  9.830719566023e-02    a5 -1.436613419090e-02
    a6  1.109137228313e-03    a7 -4.365781757124e-05    a8  6.819428318304e-07
+  ar0 -1.490705981000E+02   ar1  2.580229694000E+01   ar2 -1.245093082000E+00
+ELABMAX=  1.00000E+08 eV
        Emin  1.26e+00   s(Emin)  1.00e-19   smax  2.13e-15   Error  6.71e-04
        Eth  0.57
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 
+\subsection{
+Reaction 3.3.6an $   p + He(1s^12s^11S) \rightarrow H(2s) + He^+(1s)$}
+revised version 2016, better asymptotics
 
-
+\begin{small}\begin{verbatim}
+   a0 -4.538332073827E+01    a1  7.170783239771E+00    a2 -3.297134523000E+00
+   a3  1.487270508093E+00    a4 -4.585715075309E-01    a5  8.239364319341E-02
+   a6 -8.248906041886E-03    a7  4.255246239358E-04    a8 -8.812571753203E-06
+       Eth  0.57
+\end{verbatim}\end{small}
 
 
 
@@ -2365,6 +2453,8 @@ Reaction 3.3.6b $   p + He(1s^12s^13S) \rightarrow H(2s) + He^+(1s)$}
    a0 -4.848650583528e+01    a1 -3.932691714215e+00    a2  7.523124596576e+00
    a3 -3.127572865354e+00    a4  6.776405973062e-01    a5 -8.713461726775e-02
    a6  6.707424051145e-03    a7 -2.863198766538e-04    a8  5.218187112892e-06
+  ar0 -3.785059671000E+01   ar1  9.686976447000E-01   ar2 -5.936675659000E-02
+ELABMAX=  1.00000E+05 eV
        Emin  6.06e+00   s(Emin)  1.00e-19   smax  1.85e-15   Error  7.93e-04
        Eth  1.369
        Mcross 1.0E+00
@@ -2372,7 +2462,19 @@ Reaction 3.3.6b $   p + He(1s^12s^13S) \rightarrow H(2s) + He^+(1s)$}
        Not valid for E < 5.
 \end{verbatim}\end{small}
 
+
+\subsection{
+Reaction 3.3.6bn $   p + He(1s^12s^13S) \rightarrow H(2s) + He^+(1s)$}
+revised version,  better asymptotics
+
+\begin{small}\begin{verbatim}
+   a0 -8.074074443551E+01    a1  5.555156807550E+01    a2 -3.738101128542E+01
+   a3  1.501104472390E+01    a4 -3.618982367308E+00    a5  5.256859236453E-01
+   a6 -4.485164096934E-02    a7  2.062076755012E-03    a8 -3.933113737905E-05
+Eth  1.369
+\end{verbatim}\end{small}
 \newpage
+
 \subsection{
 Reaction 3.3.7a $   p + He(1s^12p^11P) \rightarrow H(2p) + He^+(1s)$}
 
@@ -2424,6 +2526,8 @@ Reaction 4.2.1 $H_2^+(v) + H(1s) \rightarrow H_2^+(2p\sigma_u) + H(1s) \rightarr
    a0  1.885518121144e+04    a1 -1.730109845144e+04    a2  6.789143089426e+03
    a3 -1.495308617111e+03    a4  2.025858786888e+02    a5 -1.731165351422e+01
    a6  9.120053117120e-01    a7 -2.709481429950e-02    a8  3.476220959653e-04
+  ar0 -1.032118444000E+03   ar1  1.641681892000E+02   ar2 -6.789412670000E+00
+ELABMAX=  1.00000E+06 eV
        Emin  3.96e+02   s(Emin)  1.00e-19   smax  1.99e-16   Error  2.02e-03
        Eth  6.0
        Mcross 2.0E+00
@@ -2440,6 +2544,8 @@ Reaction 4.3.1 $   H_2^+ + H_2 \rightarrow H_2 + H_2^+$}
    a0 -3.427958758517e+01    a1 -7.121484125189e-02    a2  4.690466187943e-02
    a3 -8.033946660540e-03    a4 -2.265090924593e-03    a5 -2.102414848737e-04
    a6  1.948869487515e-04    a7 -2.208124950005e-05    a8  7.262446915488e-07
+  ar0 -7.463331048000E+01   ar1  8.629058909000E+00   ar2 -4.691006442000E-01
+ELABMAX=  1.00000E+05 eV
        Emin  1.00e-01   s(Emin)  2.10e-15   smax  2.10e-15   Error  3.91e-04
        Eth  0.
        Mcross 2.0E+00
@@ -2473,6 +2579,8 @@ Reaction 4.3.3 $   H_2^+ + H_2 \rightarrow H_3^+ + H$}
    a0 -3.422188283057e+01    a1 -7.733921420462e-01    a2 -4.625452844356e-01
    a3 -2.307540053739e-01    a4  3.188925541844e-02    a5  3.622033742962e-02
    a6 -5.093822617734e-03    a7 -2.420060478318e-03    a8  4.634259500837e-04
+  ar0 -3.242526389000E+01   ar1 -2.753789651000E+00   ar2 -9.217068775000E-02
+ELABMAX=  3.00000E+01 eV
        Emin  1.00e-01   s(Emin)  4.26e-15   smax  4.26e-15   Error  2.99e-04
        Eth  0.0
        Emax 4.0E+01
@@ -2489,6 +2597,8 @@ Reaction 4.4.1 $   H_2^+ + He \rightarrow H_2^+ + He^+(1s) + e$}
    a0 -1.279183240553e+02    a1  7.851907373534e+01    a2 -3.133748457688e+01
    a3  6.817786375262e+00    a4 -8.395843945734e-01    a5  5.456579807937e-02
    a6 -1.161799515932e-03    a7 -5.185457132932e-05    a8  2.416658401748e-06
+  ar0 -4.780235129000E+01   ar1  2.462576818000E+00   ar2 -1.322702144000E-01
+ELABMAX=  1.00000E+05 eV
        Emin  4.52e+01   s(Emin)  1.00e-19   smax  1.30e-16   Error  1.34e-04
        Eth  24.58
        Mcross 2.0E+00
@@ -2532,6 +2642,8 @@ Reaction 5.2.3 $   He^+(1s) + H_2 \rightarrow He(1s^21S) + H^+ + H$}
    a0 -4.311350879235e+01    a1  5.515944942674e-02    a2 -5.606069194725e-01
    a3  1.291230751283e-01    a4  1.533686418592e-01    a5 -6.125769782521e-02
    a6  8.886802346189e-03    a7 -5.806431060224e-04    a8  1.440125514216e-05
+  ar0 -5.560154242000E+01   ar1  5.037170638000E+00   ar2 -3.585460009000E-01
+ELABMAX=  2.00000E+04 eV
        Emin  2.33e-01   s(Emin)  1.00e-19   smax  1.33e-16   Error  2.66e-02
        Eth  0.0
        Mcross 4.0E+00
@@ -2630,6 +2742,8 @@ Reaction 6.1.6 $   He^{++} + H \rightarrow He^+(n=2) + H^+$}
    a0 -4.315145081040e+01    a1  1.153902751649e+00    a2 -1.770607674796e-03
    a3 -4.249237424243e-02    a4  2.552430939448e-02    a5 -6.612097121922e-03
    a6  8.587538946329e-04    a7 -5.501612272760e-05    a8  1.373936349802e-06
+  ar0 -4.052049207000E+01   ar1  1.753255540000E+00   ar2 -1.110727227000E-01
+ELABMAX=  1.00000E+05 eV
        Emin  6.00e-01   s(Emin)  1.00e-19   smax  1.36e-15   Error  2.92e-04
        Eth  0
        Mcross 4.0E+00
@@ -2671,10 +2785,16 @@ Reaction 6.2.1 $   He^{++} + H_2 \rightarrow He^{++} + H_2^+(v) + e$}
        Not valid for E < 30 eV.
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 6.2.1n $   He^{++} + H_2 \rightarrow He^{++} + H_2^+(v) + e$}
+revised version, better asymptotics
 
-
-
-
+\begin{small}\begin{verbatim}
+   a0 -1.348256538024E+02    a1  9.118284774788E+01    a2 -3.835314779831E+01
+   a3  8.719939323071E+00    a4 -1.142249374234E+00    a5  8.618810448200E-02
+   a6 -3.470340641765E-03    a7  5.759492568234E-05    a8 -9.734400000000E-24
+       Eth  15.4
+\end{verbatim}\end{small}
 
 
 \newpage
@@ -2704,6 +2824,19 @@ Reaction 6.3.2 $   He^{++} + He \rightarrow He^{++} + He^+(1s) + e$}
        Eth  24.588
        Mcross 4.0E+00
 \end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 6.3.2n $   He^{++} + He \rightarrow He^{++} + He^+(1s) + e$}
+revised version, better asymptotics
+
+\begin{small}\begin{verbatim}
+   a0 -1.055124995647E+04    a1  7.814313871085E+03    a2  -2.525546560126E+03
+   a3  4.623987021985E+02    a4 -5.238841605982E+01    a5   3.757793036669E+00
+   a6 -1.665366765547E-01    a7  4.167057779117E-03    a8  -4.505951553161E-05
+       Eth  24.588
+\end{verbatim}\end{small}
+
 
 \newpage
 \subsection{
@@ -2756,9 +2889,12 @@ Reaction 7.2.2 $   p + H^- \rightarrow H(n=2) + H(1s)$}
    a0 -3.498808881328e+01    a1  2.152450508307e-01    a2 -2.356286641829e-02
    a3  5.494715530438e-02    a4  5.379328883390e-03    a5 -6.055070213687e-03
    a6  9.991683287907e-04    a7 -6.636255640130e-05    a8  1.612283845094e-06
+  ar0 -2.918073629000e+01   ar1 -1.327281071000e-01   ar2 -4.679898982000e-02
+ELABMAX=  2.00000E+04 eV
        Emin  1.00e-01   s(Emin)  3.30e-16   smax  1.38e-14   Error  2.29e-03
        Eth  0.
        Mcross 1.0E+00
+       Maxrate (sigma * vlab) = 2.730823e-13 at Elab= 7.479523e+02
 \end{verbatim}\end{small}
 
 
@@ -3754,6 +3890,20 @@ and then verified by independent integration of cross section with proper low en
    b0 -1.850280000000E+01    b1  3.708409000000E-01    b2  7.949876000000E-03
    b3 -6.143769000000E-04    b4 -4.698969000000E-04    b5 -4.096807000000E-04
    b6  1.440382000000E-04    b7 -1.514243000000E-05    b8  5.122435000000E-07
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 3.2.3 $  p + H_2(v=0) \rightarrow H(1s) + H_2^+$}
+
+added by DR: single parameter Maxwellian rate coeff., vs. $T_p$, for neutral target at rest,
+obtained from corresponding fit for Beam-Maxwellian rate coeff. evaluated at $E_b =0.1$ eV
+and then verified by independent integration of cross section with proper low energy asymptotics.
+
+\begin{small}\begin{verbatim}
+   b0 -2.440996809955E+01    b1  2.552627389749E+00    b2 -2.608194219039E+00
+   b3  1.347571390219E+00    b4 -3.646182244708E-01    b5  5.938400660590E-02,
+   b6 -5.795480327782E-03    b7  3.075899232458E-04    b8 -6.769294455276E-06,
+
 \end{verbatim}\end{small}
 
 \newpage
