@@ -2132,6 +2132,7 @@ C       WRITE (iunout,*) ZEILE
 C  Te profile
       IF (INDPRO(1).LE.5.AND.NPLSI.GT.0)
      .  READ (IUNIN,6664) TE0,TE1,TE2,TE3,TE4,TE5
+
 C  Ti profile(s)
       NPLSTI = 1
       IF ((INDPRO(2) < 0) .OR. (INDPRO(2) > 9)) NPLSTI=NPLS
@@ -2157,6 +2158,7 @@ C  ONLY ONE COMMON ION TEMPERATURE FOR ALL SPECIES
 530       CONTINUE
         ENDIF
       ENDIF
+
 c  di profiles
       IF (INDPRO(3).LE.5)
      .  READ (IUNIN,6664) (DI0(I),DI1(I),DI2(I),DI3(I),DI4(I),DI5(I),
@@ -2174,9 +2176,9 @@ cdr              indpro > 10:  one common flow field
       IF (INDPRO(4) > 9) INDPRO(4) = MOD(INDPRO(4),10)
       NLMLV = (NPLSV > 1)
       IF (.not.NLMLV) THEN
-        MPLSV = 1
+        MPLSV = 1                    ! find all flow fields on ipls=1 storage
       ELSE
-        MPLSV = (/ (I,I=1,NPLS) /)
+        MPLSV = (/ (I,I=1,NPLS) /)   ! find each individual flow field on its ipls storage
       ENDIF
       IF (INDPRO(4).LE.5.AND.NPLSI.GT.0) THEN
         IF (.not. NLMLV) THEN
@@ -2192,9 +2194,11 @@ cdr              indpro > 10:  one common flow field
      .                       I=1,NPLSI)
         END IF
       ENDIF
+
 c  pitch - or B-field profile
       IF (INDPRO(5).LE.5)
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
+
 c  cell volume profile
       IF (INDPRO(12).LE.5) THEN
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
