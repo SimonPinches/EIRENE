@@ -1,4 +1,6 @@
-C
+cdr:   evalute algebraic expression of tallies, as specified in
+cdr:   input block 10c for volume tallies and in 10e for surface tallies
+cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 C
       SUBROUTINE EIRENE_ALGTAL
  
@@ -21,7 +23,7 @@ C
       REAL(DP) :: CONST(20)
       INTEGER :: IIND(20), IZIF(4,20)
       INTEGER :: I, ITL, IALV, NOP, IOP, K, ILIMPS,
-     .           IINDEX, II, J, IALS, IN, KK, NF
+     .           IINDEX, II, J, IALS, IN, KK, NF, IC
       LOGICAL :: LFREE1, LFREE2
       LOGICAL, ALLOCATABLE :: LLIMPS(:)
       LOGICAL :: LLMPS
@@ -55,7 +57,8 @@ C
 C
         DO 1 IOP=1,NOP
           IIND(IOP)=0
-C         WRITE (iunout,*) IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
+cdr test output from algtal:
+c         WRITE (iunout,*) 'IOP ',IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
 1       CONTINUE
         LFREE1=.TRUE.
         LFREE2=.TRUE.
@@ -70,11 +73,25 @@ C
 C
 C  1. OPERAND
 C
-C  TALLY HOLEN
-!pb          IF (IZIF(2,IOP)*IZIF(4,IOP) < 0.D0) GOTO 94
+C  FETCH TALLY
+!pb       IF (IZIF(2,IOP)*IZIF(4,IOP) < 0.D0) GOTO 94
           IF ((IZIF(2,IOP)*IZIF(4,IOP) < 0.D0) .AND.
      .        (NRAD /= NRTAL)) GOTO 94
-          IF (IZIF(2,IOP).GT.0) THEN
+
+C
+C  KONSTANTE WURDE EINGELESEN
+          IF (IZIF(1,IOP).LT.0) THEN
+cdr test output from algtal:
+!pb         write (iunout,*) 'IOP-CONST ',iop,const(iop)
+c           write (iunout,*) 'IOP-CONST ',izif(2,iop),const(izif(2,iop))
+            IC = IZIF(2,IOP)
+            DO 15 I=1,NSBOX_TAL
+!PB              VEC1(I)=CONST(IOP)
+              VEC1(I)=CONST(IC)
+15          CONTINUE
+
+          ELSEIF (IZIF(2,IOP).GT.0) THEN
+c  fetch an output tally from ESTIMV
             IF (.NOT.LIVTALV(IZIF(2,IOP))) GOTO 95
             IF (IZIF(2,IOP).GT.NTALV) GOTO 90
             IF (IZIF(1,IOP).GT.NFSTVI(IZIF(2,IOP))) GOTO 91
@@ -92,6 +109,7 @@ C  TALLY HOLEN
             END IF
 C
           ELSEIF (IZIF(2,IOP).LT.0) THEN
+c  fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(2,IOP))
             IF (ITL.GT.NTALI) GOTO 90
             IF (IZIF(1,IOP).GT.NFRSTP(ITL)) GOTO 91
@@ -99,9 +117,11 @@ C
             NF=NFRSTP(ITL)
             SELECT CASE (ITL)
             CASE (1)
+c  Te
               OP(1:NSBOX)  = TEIN(1:NSBOX)
               WEI(1:NSBOX) = DEIN(1:NSBOX)*VOL(1:NSBOX)
             CASE (2)
+c  Ti
               IF ( K == 0 ) THEN
                 OP = 0._DP
                 WEI = 0._DP
@@ -115,9 +135,11 @@ C
                 WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
               END IF
             CASE (3)
+c  ne
               OP(1:NSBOX) = DEIN(1:NSBOX)
               WEI(1:NSBOX) = VOL(1:NSBOX)
             CASE (4)
+c  ni
               IF ( K == 0 ) THEN
                 OP(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)
                 WEI(1:NSBOX) = VOL(1:NSBOX)
@@ -126,6 +148,7 @@ C
                 WEI(1:NSBOX) = VOL(1:NSBOX)
               END IF
             CASE (5)
+c  vxin
               IF ( K == 0 ) THEN
                 OP = 0._DP
                 WEI = 0._DP
@@ -139,6 +162,7 @@ C
                 WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
               END IF
             CASE (6)
+c  vyin
               IF ( K == 0 ) THEN
                 OP = 0._DP
                 WEI = 0._DP
@@ -152,6 +176,7 @@ C
                 WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
               END IF
             CASE (7)
+c  vzin
               IF ( K == 0 ) THEN
                 OP = 0._DP
                 WEI = 0._DP
@@ -165,18 +190,23 @@ C
                 WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
               END IF
             CASE (8)
+c  Bx
               OP(1:NSBOX) = BXIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (9)
+c  By
               OP(1:NSBOX) = BYIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (10)
+c  Bz
               OP(1:NSBOX) = BZIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (11)
+c  |B|
               OP(1:NSBOX) = BFIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (12)
+c  Adin
               IF ( K == 0 ) THEN
                 OP(1:NSBOX) = SUM(ADIN(1:NF,1:NSBOX),1)
                 WEI(1:NSBOX) = 1._DP
@@ -185,6 +215,7 @@ C
                 WEI(1:NSBOX) = 1._DP
               END IF
             CASE (13)
+c  Ed
               IF ( K == 0 ) THEN
                 OP(1:NSBOX) = SUM(EDRIFT(1:NF,1:NSBOX),1)
                 WEI(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)*VOL(1:NSBOX)
@@ -193,9 +224,11 @@ C
                 WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
               END IF
             CASE (14)
+c  Vol
               OP(1:NSBOX) = VOL(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (15)
+c  Wght
               IF ( K == 0 ) THEN
                 OP(1:NSBOX) = SUM(WGHT(1:NF,1:NSBOX),1)
                 WEI(1:NSBOX) = 1._DP
@@ -204,12 +237,14 @@ C
                 WEI(1:NSBOX) = 1._DP
               END IF
             CASE (16)
+c  ??
               OP(1:NSBOX) = BXPERP(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (17)
               OP(1:NSBOX) = BYPERP(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (18)
+
               OP(1:NSBOX) = EXIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (19)
@@ -221,6 +256,10 @@ C
             CASE (21)
               OP(1:NSBOX) = EFIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
+            CASE (22)
+c  electr. Potential
+              OP(1:NSBOX) = POT(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
             CASE DEFAULT
               WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
      .                           IALV
@@ -228,7 +267,8 @@ C
               CALL EIRENE_LEER(1)
               EXIT
             END SELECT
- 
+
+cdr  weighted sum over sub-cells: in=ncltal(i)
             SUMWEI = EPS60
             VEC1 = 0._DP
             DO I=1,NSBOX
@@ -237,12 +277,7 @@ C
               SUMWEI(IN) = SUMWEI(IN) + WEI(I)
             END DO
             VEC1(1:NSBOX_TAL) = VEC1(1:NSBOX_TAL)/SUMWEI(1:NSBOX_TAL)
-C
-C  KONSTANTE WURDE EINGELESEN
-          ELSEIF (IZIF(1,IOP).LT.0) THEN
-            DO 15 I=1,NSBOX_TAL
-              VEC1(I)=CONST(IOP)
-15          CONTINUE
+
 C
           ELSE
 C  ZWISCHENERGEBNIS HOLEN
@@ -265,8 +300,20 @@ C  ZWISCHENERGEBNIS HOLEN
 C
 C  2. OPERAND
 C
+C
+!pb  Konstante wurde eingelesen          
+          IF (IZIF(3,IOP).LT.0) THEN
+cdr test output from algtal:
+!pb         write (iunout,*) 'IOP-CONST ',iop,const(iop)
+            IC = IZIF(4,IOP)
+c           write (iunout,*) 'IOP-CONST ',ic,const(ic)
+            DO 35 I=1,NSBOX_TAL
+!pb           VEC2(I)=CONST(IOP)
+              VEC2(I)=CONST(IC)
+35          CONTINUE
+C
 C  TALLY HOLEN
-          IF (IZIF(4,IOP).GT.0) THEN
+          ELSEIF (IZIF(4,IOP).GT.0) THEN
             IF (IZIF(4,IOP).GT.NTALV) GOTO 90
             IF (.NOT.LIVTALV(IZIF(4,IOP))) GOTO 95
             IF (IZIF(3,IOP).GT.NFSTVI(IZIF(4,IOP))) GOTO 91
@@ -413,6 +460,9 @@ C
             CASE (21)
               OP(1:NSBOX) = EFIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
+            CASE (22)
+              OP(1:NSBOX) = POT(1:NSBOX)
+              WEI(1:NSBOX) = 1._DP
             CASE DEFAULT
               WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
      .                           IALV
@@ -420,7 +470,8 @@ C
               CALL EIRENE_LEER(1)
               EXIT
             END SELECT
- 
+
+cdr  weighted sum over sub-cells: in=ncltal(i) 
             SUMWEI = EPS60
             VEC2 = 0._DP
             DO I=1,NSBOX
@@ -429,12 +480,7 @@ C
               SUMWEI(IN) = SUMWEI(IN) + WEI(I)
             END DO
             VEC2(1:NSBOX_TAL) = VEC2(1:NSBOX_TAL)/SUMWEI(1:NSBOX_TAL)
-C
-          ELSEIF (IZIF(3,IOP).LT.0) THEN
-            DO 35 I=1,NSBOX_TAL
-              VEC2(I)=CONST(IOP)
-35          CONTINUE
-C
+
           ELSE
 C  ZWISCHENERGEBNIS HOLEN
             IF (IIND(IZIF(3,IOP)).EQ.1) THEN
@@ -485,7 +531,7 @@ C
             DO 81 I=1,NSBOX_TAL
               IF (VEC2(I).NE.0.D0) GOTO 82
 81          CONTINUE
-C  DIVISION BY ZERO TALLY. ALGEBR. TALLY IRRELEVANT. RETURN ZERO TALLY
+C  DIVISION BY IDENTICALLY ZERO TALLY. ALGEBR. TALLY CANNOT BE EVALUATED. RETURN ZERO TALLY
             DO 83 I=1,NSBOX_TAL
               RESULT(II,I)=0.
 83          CONTINUE
@@ -501,6 +547,8 @@ C  DIVISION BY ZERO TALLY. ALGEBR. TALLY IRRELEVANT. RETURN ZERO TALLY
             GOTO 93
           ENDIF
 C
+cdr  test output for specific cell "icell"
+c         write (iunout,*) 'iop, k=icell ',result(II,icell)
           GOTO 100
 C
 90        CONTINUE
@@ -644,8 +692,10 @@ C
 C
 C  KONSTANTE WURDE EINGELESEN
           ELSEIF (IZIF(1,IOP).LT.0) THEN
+            IC = IZIF(2,IOP)
             DO 315 I=1,NLIMPS
-              VEC1(I)=CONST(IOP)
+!PB           VEC1(I)=CONST(IOP)
+              VEC1(I)=CONST(IC)
 315          CONTINUE
 C
           ELSE
@@ -694,8 +744,10 @@ C
 C
 C  KONSTANTE WURDE EINGELESEN
           ELSEIF (IZIF(3,IOP).LT.0) THEN
+            IC = IZIF(4,IOP)
             DO 335 I=1,NLIMPS
-              VEC2(I)=CONST(IOP)
+!PB           VEC2(I)=CONST(IOP)
+              VEC2(I)=CONST(IC)
 335         CONTINUE
 C
           ELSE

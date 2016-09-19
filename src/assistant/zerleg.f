@@ -1,10 +1,11 @@
- 
+CDR  decompose (interpret) expression AUSDRU into 
+cdr  single algebraic operations on tallies. 
  
  
 C-----------------------------------------------------------------------
-      SUBROUTINE EIRENE_ZERLEG(AUSDRU, AKTLEN, IPART, PART, IARITH,
-     .  ARITH,
-     >                  TEIL, HILFE, ERROR)
+      SUBROUTINE EIRENE_ZERLEG(AUSDRU, AKTLEN, 
+     .                         IPART, PART, IARITH,
+     .                         ARITH, TEIL, HILFE, ERROR)
 C-----------------------------------------------------------------------
 C
 C     FUNKTION:
@@ -84,7 +85,7 @@ C
          OMEGA=AKTLEN
          POS=INDEX( AUSDRU(1:AKTLEN), ')' )
 C
-C        WHILE : SOLANGE NOCH KLAMMERN IN AUSDRU VORHANDEN
+C        WHILE : SOLANGE NOCH KLAMMERN IN VARIABLE "AUSDRU" VORHANDEN
 C
 22       IF (POS .GT. 0) THEN
 C
