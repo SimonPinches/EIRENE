@@ -64,7 +64,7 @@ C
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, 
      .                       ISCDE, IESTM, KK
-      REAL(DP) :: CF(9,0:9), CFF(9)
+      REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, ADDTL, CHRDIF,
      .            ADDT, TMASS, PMASS, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII
@@ -72,6 +72,7 @@ C
      .           J, NEND, MODC, NSECX4, I, IPL2, IIO2, IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
+      type(poly_data), pointer :: rp
 
       SAVE
 
@@ -195,8 +196,14 @@ C       NEND=9
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               tii = max(-2.3_dp,tii)
-              CALL EIRENE_PREP_RTCS (KK,3,TII,CFF)
-              TABCX3(IRCX,J,1:9) = CFF(1:9)
+c old
+c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
+c old
+              rp => reacdat(KK)%rtc%poly
+              call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
+     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
+
+              TABCX3(IRCX,J,1:9) = CF(1:9)             
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
           END DO
         ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
@@ -344,8 +351,15 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 tii = max(-2.3_dp,tii)
-                CALL EIRENE_PREP_RTCS (KREAD,5,TII,CFF)
-                EPLCX3(IRCX,J,1:9) = CFF(1:9)
+c old
+c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
+c old
+                rp => reacdat(KREAD)%rtcew%poly
+                call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
+     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
+
+
+                EPLCX3(IRCX,J,1:9) = CF(1:9)
                 EPLCX3(IRCX,J,1) = EPLCX3(IRCX,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
@@ -375,6 +389,7 @@ C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
 C
       ITYP1=N1STX(IRCX,1)
       ITYP2=N2NDX(IRCX,1)
+
       IF (IESTCX(IRCX,1).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -391,6 +406,7 @@ C
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTCX(IRCX,2)=0
       ENDIF
+
       IF (IESTCX(IRCX,3).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -449,6 +465,9 @@ C
 
 
       RETURN
+C
+C
+C-----------------------------------------------------------------------
 C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '

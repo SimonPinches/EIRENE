@@ -14,6 +14,10 @@ C
      .                 EBULK,ISCDE,IESTM,
      .                 KK,FACTKK)
 C
+C       SET UP TABLES (E.G. OF REACTION RATE ) FOR EL PROCESSES
+C
+C   MEANING OF INPUT VARIABLES: SEE XSTCX
+
 C  RETURNS:
 C    MODCOL(5,...)
 C    TABEL3(IREL,NCELL,...)  1/s per incident test particle
@@ -33,17 +37,18 @@ C
       USE EIRMOD_COMXS
 
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: EBULK, FACTKK
       INTEGER, INTENT(IN) :: IREL, ISP, IPL, 
      .                       ISCDE, IESTM, KK
-      REAL(DP) :: CF(9,0:9), CFF(9)
+      REAL(DP) :: CF(9)
       REAL(DP) :: FCTKKL, ADD, ADDL, ADDT, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TII
       INTEGER :: I, NSEEL4, NEND, J, KREAD, MODC,  IERR, IPLTI,
      .           IBGK,ISPECB,ISPZB,ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      type(poly_data), pointer :: rp
 
       SAVE
 
@@ -76,22 +81,25 @@ C CROSS SECTION (E-LAB) AVAILABLE ?
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
         MODCOL(5,2,IREL)=3
       ENDIF
-C
-C RATE COEFFICIENT
+
+C..................................................................
+C 2. RATE COEFFICIENT  (CM**3/S) * TARGET DENSITY (CM**-3)
+C..................................................................
+
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
 
         MODCOL(5,2,IREL)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
+      IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI) NEND=9 HERE
+      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
           
-C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
+C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
           IF (MODC.EQ.1) THEN
 C           NEND=1 HERE
             DO 245 J=1,NSBOX
@@ -108,15 +116,22 @@ C           NEND=9 HERE
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               tii = max(-2.3_dp,tii)
-              CALL EIRENE_PREP_RTCS(KK,3,TII,CFF)
-              TABEL3(IREL,J,1:9) = CFF(1:9)
+c old
+c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
+c old
+              rp => reacdat(KK)%rtc%poly
+              call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
+     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
+
+
+              TABEL3(IREL,J,1:9) = CF(1:9)
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
           END IF
+        ELSE ! NOT SUFFICIENT STORADE ON TABPI3 
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 
-        ELSE   ! ??
-C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?  no predefined tabel3 tallies
-        END IF
+        ENDIF
 
 CDR   ELSEIF (MODC.EQ.3) THEN
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
@@ -239,8 +254,16 @@ C             NEND=9 HERE
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                CALL EIRENE_PREP_RTCS(KREAD,5,TII,CFF)
-                EPLEL3(IREL,J,1:9) = CFF(1:9)
+                tii = max(-2.3_dp,tii)
+c old
+c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
+c old
+                rp => reacdat(KREAD)%rtcew%poly
+                call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
+     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
+
+
+                EPLEL3(IREL,J,1:9) = CF(1:9)
                 EPLEL3(IREL,J,1) = EPLEL3(IREL,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
