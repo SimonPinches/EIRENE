@@ -684,7 +684,8 @@ C
         CALL EIRENE_UPPERCASE(ULINE)
         INMDL=INDEX(ULINE,'FORT')+INDEX(ULINE,'SAHA')+
      .        INDEX(ULINE,'CORONA')+
-     .        INDEX(ULINE,'BOLTZMANN')+INDEX(ULINE,'COLRAD')+
+     .        INDEX(ULINE,'BOLTZMANN')+
+     .        INDEX(ULINE,'COLRAD')+
      .        INDEX(ULINE,'CONSTANT')
         IF (INMDL > 0) ICO = ICO + 1
         READ (ZEILE(33:35),'(I3)') NRC
@@ -692,7 +693,7 @@ C
           READ (IUNIN,*)
           READ (IUNIN,*)
         END DO
-!pb        IF (VERIFY(ZEILE(57:66),' ') > 0) THEN
+!pb  IF (VERIFY(ZEILE(57:66),' ') > 0) THEN
         IF (INMDL > 0) THEN
           NRE=0
           IF (VERIFY(ULINE(INMDL+11:),' ') > 0)
@@ -705,9 +706,14 @@ C
           END DO
         END IF
       END DO
+
+cdr  this next line is probably not needed.
+cdr  ico > 0 indicates: at least one bulk species has a special 
+cdr  background data model,  fort.., saha, corona, ...etc...
       IF (ICO > 0) NREAC=NREAC+1
  
       IF (LHYDDEF) THEN
+c  unfinished option, only for proprietary version of code.
         HYDKIN_DEFAULT=ADJUSTL(HYDKIN_DEFAULT)
         LL=LEN_TRIM(HYDKIN_DEFAULT)
         FILENAME=HYDKIN_DEFAULT(1:LL) // '.reactions'
@@ -780,7 +786,7 @@ C
         DEALLOCATE (HYDSPEC)
         DEALLOCATE (IEIGEN)
 
-      END IF
+      END IF  ! LHYDDEF  
 
       DEALLOCATE (BULK_NAME)
  
@@ -790,9 +796,12 @@ C
          READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
- 
+
+cdr to be done: syncronisation of options for Ti and Vi.
+cdr these next 2 lines for Ti(ipls) 
       NPLSTI = 1
       IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
+cdr these next 2 lines for Vi(ipls)  
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 

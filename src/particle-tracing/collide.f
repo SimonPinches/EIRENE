@@ -255,11 +255,12 @@ c.......................................................................
           END IF
 cdr  build one single distribution of secondary test particle species, all types
           NAMIEI = 0
-          NAMIEI(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
+          NAMIEI(1:NSPH)         = 0    !  PPHDS(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
+          NAMIEI(NSPH+1:NSPA)    = PATDS(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM)   = PMLDS(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
 
-!  RESET WEIGHT TO ORIGINAL VALUE
+!  RESET WEIGHT BACK TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
           DO I = NSPAMI, NSPH+1, -1

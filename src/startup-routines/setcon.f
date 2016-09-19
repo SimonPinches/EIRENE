@@ -61,13 +61,14 @@ C
       SQ2I=1._DP/SQ2
       DEGRAD=PIA/180._DP
       RADDEG=180._DP/PIA
+
 C  EIRENE UNITS CONVERSIONS
       AMUAKG=AMUA*1.D-3
 
 C  VELOCITY TO ENERGY (OR TEMPERATURE) CONVERSION:
 
 C  V_GAUSS=CVEL2A*SQRT(T(EV)/RMASS(AMU)),  CVEL2A=0.98227E6=9.8227E5
-C          TO BE USED AS STD. DEV. IN GAUSSIAN PER VELOCITY COMPONENT
+C          TO BE USED AS STD. DEV. IN GAUSSIAN PER VELOCITY COMPONENT (CM/S)
 C          N.B.: THIS IS SOMETIMES ALSO REFEREED TO AS THERMAL VELOCITY, IN 1D PROBLEMS
       CVEL2A=SQRT(1.D4*ELCHA/AMUAKG)
 
@@ -83,26 +84,29 @@ C  VELQ (CM/S)^2 = E0 /(CVELI2*RMASS(AMU)),  CVELI2=5.182275E-13
       EFCT23=EFACT*2._DP/3._DP
       HPLNK_BAR=HPLNK/PI2A
 C
-C  IONIZATION POTENTIAL OF NEUTRAL HYDOGEN ATOM
+C  IONIZATION POTENTIAL OF NEUTRAL HYDOGEN ATOM, EV
       EIONH=13.6_DP
-C  IONIZATION POTENTIAL OF NEUTRAL HYDROGEN MOLECULE
+C  IONIZATION POTENTIAL OF NEUTRAL HYDROGEN MOLECULE, EV
       EIONH2=15.4_DP
-C  IONIZATION POTENTIAL OF NEUTRAL HELIUM ATOM
+C  IONIZATION POTENTIAL OF NEUTRAL HELIUM ATOM, EV
       EIONHE=24.588_DP
- 
-CJS Dielectric constant
-      EPSILON0 = 8.8542E-12_DP ! F/m in SI units
-cJS Coulomb Logarithm (m)
+
+cdr: some constants for Coulomb collisions,  set by JS,2007,in SI units. 
+c   Dielectric constant, F/m  (FARAD/M) in SI units
+      EPSILON0 = 8.8542E-12_DP 
+c   Permeability of vacuum, H/m (HENRY/M) in SI units
+      MY0 = 4._DP*PIA*1.e-7_DP
+C   Coulomb Logarithm 
       COULOMBLOG = 13.5
-cJS Faktor for thermal velocity
+C   Faktor for thermal velocity, m/s  (cdr: to be eliminated, use cvel2a instead)
+cdr = cvel2a/100. 
       FAKVTH = sqrt(EV_TO_J/AMUAKG)
-cJS Faktor for Lambda (Fokker Planck Collisions)
+c Faktor for Lambda (Fokker Planck Collisions)
 !pb   FAKLAM = CoulombLog*ELCHA**4*1.E6_DP/   ! changed by JS in 11.07
       FAKLAM = CoulombLog*ELCHA**4*1.E12_DP/
      .           ( AMUAKG**2*4._DP*PIA*EPSILON0**2 )
-cJS   permeability of vacuum
-      MY0 = 4._DP*PIA*1.e-7_DP
-cJS Faktor for temperature relaxation time
+
+c Faktor for temperature relaxation time (s)
       FAKTAUT = CoulombLog*ELCHA**4*1.E6_DP/
      .   ( 3._DP*SQRT(2._DP)*PIA*SQRT(PIA)*EPSILON0**2*sqrt(AMUAKG) )
 C

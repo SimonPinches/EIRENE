@@ -20,6 +20,8 @@ C  NPLPRM, REAL. THE FIRST NPLPR1 DATA ARE SET IN SUBROUTINE PLASMA
      R        VXIN(:,:), VYIN(:,:),   VZIN(:,:),
      R        BXIN(:),   BYIN(:),     BZIN(:),   BFIN(:),
      R        ADIN(:,:), EDRIFT(:,:), VOL(:),    WGHT(:,:),
+cdr  bxperp, byperp are derived quantities, set from from Bx,By,Bz
+cdr  they should , more logically, come after BVIN below
      R        BXPERP(:), BYPERP(:),
      R        EXIN(:),   EYIN(:),     EZIN(:),   EFIN(:), 
      R        POT(:),
