@@ -31,7 +31,9 @@ cdr 22.09.14: upfcop only to be called in coupled mode: nmode.gt.0
 cdr 22.09.14: cpu time output removed. To be collected and printout made conditional
 cdr dec. 15 : 'upfcop.f' now 'updlin.f', moved from couple specific part to main eirene code,
 cdr           under scoring/updlin.f.
+!pb 18.01.16: for totally random particle trajectories avoid usage of same random numbers in consecutive calls to mcarlo
 cdr april 16: use: nstrai rather than nstra in do-loops. Bug fix from ITER-IO
+!pb may 16  : for NPRS<NSTRAI call to IF3COP moved out of strata loop
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -94,6 +96,8 @@ C
      .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
      .           INODES, J, ISEE, IPTSI, I1, I2, I3, IA, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
+!pb 28012016
+      INTEGER, SAVE :: ICO_CALL=0
 csw
 !pb 03122013      real(dp) :: timstart,timend,timused
 !pb 03122013      real(dp), external :: mpi_wtime
@@ -242,6 +246,9 @@ CVKMPI      SECND=XTIM(0)
 
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
+!pb 28012016
+!   count number of times MCARLO has been called
+      ICO_CALL = ICO_CALL + 1
 
       timan=secnd
 C
@@ -491,6 +498,9 @@ c  find iseed from truely random procedure from wall clock time (use date and ti
         ELSEIF (NINITL(ISTRA).LT.0) THEN
           CALL DATE_AND_TIME(CDATE,CTIME)
           READ(CTIME(1:6),*) NINITL(ISTRA)
+!pb 28012016
+!  add number of calls to MCARLO in order to avoid same random seeds
+          NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
           WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
           NINIST=NINITL(ISTRA)
           dumran=ranset_eirene(ninist)
@@ -1069,14 +1079,16 @@ C
      .                     ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
 950   CONTINUE
+
+      IESTR=ISTRA
 C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE 
 C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STATA THEN PROCESSES
 C
       IF (NMODE.GT.0) THEN
-        IF (NPRS <= NSTEFF) THEN
-          IESTR=ISTRA
+        IF (NPRS == 1) THEN
+!pb          IESTR=ISTRA
           ISTRAA=ISTRA
           ISTRAE=ISTRA
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
@@ -1088,7 +1100,7 @@ C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
 cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
 cpara  csw 08mar2013: hat sich jetzt erledigt..
-      IESTR=ISTRA
+!pb      IESTR=ISTRA
       IF (NFILEN.EQ.1) THEN
 csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
@@ -1167,8 +1179,21 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THEN STRATA
       IF (NMODE.GT.0) THEN
-        IF (NPRS > NSTEFF) THEN
-          IESTR=ISTRA
+!pb  NOW IF3COP CALLED HERE IN CASE OF LESS PROCESSORS THAN STRATA AS WELL
+!pb  USE OF fort.10 IS REQUIRED 	
+!pb        IF (NPRS > NSTEFF) THEN
+        IF (NPRS > 1) THEN
+          IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
+            WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
+     .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
+            WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
+     .                 'BE CALCULATED'
+            CALL EIRENE_EXIT_OWN(1)
+          END IF
+!pb ISTRA=NSTRAI FROM STRATA LOOP ABOVE
+!PB IESTR IS ALREADY SET IN STRATA LOOP
+!PB EACH PROCESSOR HAS SET ITS OWN STRATUM NO. 
+!pb          IESTR=ISTRA
           ISTRAA=1
           ISTRAE=NSTRAI
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)

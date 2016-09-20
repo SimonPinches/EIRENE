@@ -16,12 +16,19 @@ c          (was ok already for call to xstei)
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 cdr  oct.14:  pls made allocatable
-cdr  oct.14:  eelds1 set in storage save mode, for default models (was missing) 
+cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
 cdr  oct.14:  further syncronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
 cdr           (was missing, but accidentally correct)
+
+!pb  APR  16:  pplds  -> pplei
+!pb  APR  16:  patds  -> patei,  eatds -> eatei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabds1
+!pb  JUL  16:  ehvds1 -> ehvds1
+cdr  sept 16:  nidsi  -> nieii
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -222,45 +229,45 @@ C
           NREII=NREII+1
           IREI=NREII
           LGIEI(IION,IDSC1)=IREI
-          PATDS(IREI,IA1)=PATDS(IREI,IA1)+1.
-          PPLDS(IREI,IP2)=PPLDS(IREI,IP2)+1.
+          PATEI(IREI,IA1)=PATEI(IREI,IA1)+1.
+          PPLEI(IREI,IP2)=PPLEI(IREI,IP2)+1.
           ACCMAS=ACCMAS+RMASSA(IA1)
           ACCMAS=ACCMAS+RMASSP(IP2)
           ACCINV=ACCINV+1./RMASSA(IA1)
           ACCINV=ACCINV+1./RMASSP(IP2)
           P2ND(IREI,NSPH+IA1)=P2ND(IREI,NSPH+IA1)+1.
 
-          EATDS(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
-          EATDS(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV
-          EATDS(IREI,0,    1)=EATDS(IREI,IA1,1)
-          EATDS(IREI,0,    2)=EATDS(IREI,IA1,2)
+          EATEI(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
+          EATEI(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV
+          EATEI(IREI,0,    1)=EATEI(IREI,IA1,1)
+          EATEI(IREI,0,    2)=EATEI(IREI,IA1,2)
 
           EPLEI(IREI,IP2,1)=RMASSP(IP2)/ACCMAS
           EPLEI(IREI,IP2,2)=1./RMASSP(IP2)/ACCINV
           EPLEI(IREI,0,    1)=RMASSP(IP2)/ACCMAS
           EPLEI(IREI,0,    2)=1./RMASSP(IP2)/ACCINV
 
-          PELDS(IREI)=0.
+          PELEI(IREI)=0.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
 
           IF (NSTORDR >= NRAD) THEN
             DO 73 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-8,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)*FACTKK
+              TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 73          CONTINUE
-            EELDS1(IREI,1:NSBOX)=-10.5
+            EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
-            EHVDS1(IREI,1:NSBOX)=8.6
+            EHVEI1(IREI,1:NSBOX)=8.6
             NREAEI(IREI) = -8
             JEREAEI(IREI) = 1
             NELREI(IREI) = -8
             NREAHV(IREI) = -4
           ELSE ! storage save mode
-!pb  in storage save mode EELDS1 has dimensions (NREI,1)
-!pb            EELDS1(IREI,1:NSBOX)=-10.5
-            EELDS1(IREI,1)=-10.5
-            EHVDS1(IREI,1)=8.6
+!pb  in storage save mode EELEI1 has dimensions (NREI,1)
+!pb            EELEI1(IREI,1:NSBOX)=-10.5
+            EELEI1(IREI,1)=-10.5
+            EHVEI1(IREI,1)=8.6
             NREAEI(IREI) = -8
             JEREAEI(IREI) = 1
             NELREI(IREI) = -8
@@ -283,8 +290,8 @@ C  SECOND PROCESS  H2+  -->  H+  +  H+ + e :  DEFAULT PROCESS NO. KK=-9
           NREII=NREII+1
           IREI=NREII
           LGIEI(IION,IDSC1)=IREI
-          PPLDS(IREI,IPLS1)=PPLDS(IREI,IPLS1)+1.
-          PPLDS(IREI,IPLS2)=PPLDS(IREI,IPLS2)+1.
+          PPLEI(IREI,IPLS1)=PPLEI(IREI,IPLS1)+1.
+          PPLEI(IREI,IPLS2)=PPLEI(IREI,IPLS2)+1.
           ACCMAS=ACCMAS+RMASSP(IPLS1)
           ACCMAS=ACCMAS+RMASSP(IPLS2)
           ACCINV=ACCINV+1./RMASSP(IPLS1)
@@ -297,7 +304,7 @@ C  SECOND PROCESS  H2+  -->  H+  +  H+ + e :  DEFAULT PROCESS NO. KK=-9
           EPLEI(IREI,0,    1)=EPLEI(IREI,IPLS1,1)+EPLEI(IREI,IPLS2,1)  ! if ipls1=ipls2: eplei(0,1): total, correct
           EPLEI(IREI,0,    2)=EPLEI(IREI,IPLS1,2)+EPLEI(IREI,IPLS2,2)  ! if ipls1=ipls2: eplei(0,2): total, correct
 
-          PELDS(IREI)=1.
+          PELEI(IREI)=1.
 
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
@@ -305,19 +312,19 @@ C
           IF (NSTORDR >= NRAD) THEN
             DO 71 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-9,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 71          CONTINUE
 C  NO RADIATION LOSS INCLUDED
-            EELDS1(IREI,1:NSBOX)=-15.5
+            EELEI1(IREI,1:NSBOX)=-15.5
 C  TRANSFERRED KINETIC ENERGY: 0.5 EV
-            EHVDS1(IREI,1:NSBOX)=0.5
+            EHVEI1(IREI,1:NSBOX)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
             NREAHV(IREI) = -5
           ELSE  ! storage save mode
-            EELDS1(IREI,1)=-15.5
-            EHVDS1(IREI,1)=0.5
+            EELEI1(IREI,1)=-15.5
+            EHVEI1(IREI,1)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
@@ -334,8 +341,8 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10
           NREII=NREII+1
           IREI=NREII
           LGIEI(IION,IDSC1)=IREI
-          PATDS(IREI,IATM1)=PATDS(IREI,IATM1)+1.
-          PATDS(IREI,IATM2)=PATDS(IREI,IATM2)+1.
+          PATEI(IREI,IATM1)=PATEI(IREI,IATM1)+1.
+          PATEI(IREI,IATM2)=PATEI(IREI,IATM2)+1.
           ACCMAS=ACCMAS+RMASSA(IATM1)
           ACCMAS=ACCMAS+RMASSA(IATM2)
           ACCINV=ACCINV+1./RMASSA(IATM1)
@@ -343,28 +350,28 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10
           P2ND(IREI,NSPH+IATM1)=P2ND(IREI,NSPH+IATM1)+1.
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
 
-          EATDS(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATDS(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
-          EATDS(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
-          EATDS(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
-          EATDS(IREI,0,    1)=EATDS(IREI,IATM1,1)+EATDS(IREI,IATM2,1)
-          EATDS(IREI,0,    2)=EATDS(IREI,IATM1,2)+EATDS(IREI,IATM2,2)
+          EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
+          EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
+          EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
+          EATEI(IREI,0,    1)=EATEI(IREI,IATM1,1)+EATEI(IREI,IATM2,1)
+          EATEI(IREI,0,    2)=EATEI(IREI,IATM1,2)+EATEI(IREI,IATM2,2)
 
-          PELDS(IREI)=-1.
+          PELEI(IREI)=-1.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
 C
           IF (NSTORDR >= NRAD) THEN
             DO 72 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-10,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
-            EELDS1(IREI,1:NSBOX)=-DE_10*TEIN(1:NSBOX)
+            EELEI1(IREI,1:NSBOX)=-DE_10*TEIN(1:NSBOX)
 C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
-            EHVDS1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
+            EHVEI1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
             NREAEI(IREI) = -10
             JEREAEI(IREI) = 1
             NELREI(IREI) = -10
@@ -380,7 +387,7 @@ C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
 C
 76        CONTINUE
 C
-          NIDSI(IION)=IDSC1
+          NIEII(IION)=IDSC1
 C
 C
 C  NON DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
@@ -411,13 +418,13 @@ C
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
      .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
 90        CONTINUE
-          NIDSI(IION)=IDSC1
+          NIEII(IION)=IDSC1
         ENDIF
 C
-        NIDSIM(IION)=NIDSI(IION)-1
-        LGIEI(IION,0)=NIDSI(IION)
+        NIEIIM(IION)=NIEII(IION)-1
+        LGIEI(IION,0)=NIEII(IION)
 C
-        DO IIEI=1,NIDSI(IION)
+        DO IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           CALL EIRENE_XSTEI_1(IREI)
         ENDDO
@@ -658,7 +665,7 @@ C
             WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS'
             CALL EIRENE_LEER(1)
           ELSE
-            DO 870 IIDS=1,NIDSI(IION)
+            DO 870 IIDS=1,NIEII(IION)
               IREI=LGIEI(IION,IIDS)
               CALL EIRENE_XSTEI_2(IREI)
 870         CONTINUE

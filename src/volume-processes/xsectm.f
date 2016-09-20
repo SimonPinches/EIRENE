@@ -22,7 +22,16 @@ cdr  oct.14:  PLS made allocatable,
 cdr  oct.14:  further syncronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
+
+!pb  APR  16:  pplds  -> pplei
+!pb  APR  16:  patds  -> patei, eatds -> eatei
+!pb  APR  16:  piods  -> pioei, eiods -> eioei
+!pb  APR  16:  pelds  -> pelei, eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabds1
+!pb  JUL  16:  ehvds1 -> ehvds1
+cdr  Sept 16:  nmdsi  -> nmeii
 C
+
       SUBROUTINE EIRENE_XSECTM
 C
 C       SET UP TABLES (E.G. OF REACTION RATES) FOR MOLECULAR SPECIES
@@ -257,38 +266,38 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
           NREII=NREII+1
           IREI=NREII
           LGMEI(IMOL,IDSC1)=IREI
-          PATDS(IREI,IATM1)=PATDS(IREI,IATM1)+1.
-          PATDS(IREI,IATM2)=PATDS(IREI,IATM2)+1.
+          PATEI(IREI,IATM1)=PATEI(IREI,IATM1)+1.
+          PATEI(IREI,IATM2)=PATEI(IREI,IATM2)+1.
           ACCMAS=ACCMAS+RMASSA(IATM1)
           ACCMAS=ACCMAS+RMASSA(IATM2)
           ACCINV=ACCINV+1./RMASSA(IATM1)
           ACCINV=ACCINV+1./RMASSA(IATM2)
           P2ND(IREI,NSPH+IATM1)=P2ND(IREI,NSPH+IATM1)+1.
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
-          EATDS(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATDS(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
-          EATDS(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
-          EATDS(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
-          EATDS(IREI,0,    1)=EATDS(IREI,IATM1,1)+EATDS(IREI,IATM2,1)
-          EATDS(IREI,0,    2)=EATDS(IREI,IATM1,2)+EATDS(IREI,IATM2,2)
-          PELDS(IREI)=0.
+          EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
+          EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
+          EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
+          EATEI(IREI,0,    1)=EATEI(IREI,IATM1,1)+EATEI(IREI,IATM2,1)
+          EATEI(IREI,0,    2)=EATEI(IREI,IATM1,2)+EATEI(IREI,IATM2,2)
+          PELEI(IREI)=0.
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
 
           IF (NSTORDR >= NRAD) THEN
             DO 70 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-5,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 70          CONTINUE
-            EELDS1(IREI,1:NSBOX)=-10.5
+            EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
-            EHVDS1(IREI,1:NSBOX)=6.
+            EHVEI1(IREI,1:NSBOX)=6.
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
             NREAHV(IREI)=-2
           ELSE
-            EELDS1(IREI,1)=-10.5
+            EELEI1(IREI,1)=-10.5
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
@@ -317,25 +326,25 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           NREII=NREII+1
           IREI=NREII
           LGMEI(IMOL,IDSC1)=IREI
-          PATDS(IREI,IA1)=PATDS(IREI,IA1)+1.
-          PPLDS(IREI,IP2)=PPLDS(IREI,IP2)+1.
+          PATEI(IREI,IA1)=PATEI(IREI,IA1)+1.
+          PPLEI(IREI,IP2)=PPLEI(IREI,IP2)+1.
           ACCMAS=ACCMAS+RMASSA(IA1)
           ACCMAS=ACCMAS+RMASSP(IP2)
           ACCINV=ACCINV+1./RMASSA(IA1)
           ACCINV=ACCINV+1./RMASSP(IP2)
           P2ND(IREI,NSPH+IA1)=P2ND(IREI,NSPH+IA1)+1.
 
-          EATDS(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
-          EATDS(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV        
-          EATDS(IREI,0,    1)=EATDS(IREI,IA1,1)
-          EATDS(IREI,0,    2)=EATDS(IREI,IA1,2)
+          EATEI(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
+          EATEI(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV        
+          EATEI(IREI,0,    1)=EATEI(IREI,IA1,1)
+          EATEI(IREI,0,    2)=EATEI(IREI,IA1,2)
 
           EPLEI(IREI,IP2,  1)=RMASSP(IP2)/ACCMAS
           EPLEI(IREI,IP2,  2)=1./RMASSP(IP2)/ACCINV
           EPLEI(IREI,0,    1)=EPLEI(IREI,IP2,1)
           EPLEI(IREI,0,    2)=EPLEI(IREI,IP2,2)
 
-          PELDS(IREI)=1.0
+          PELEI(IREI)=1.0
 
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
@@ -343,17 +352,17 @@ c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate to
           IF (NSTORDR >= NRAD) THEN
             DO 71 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-6,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)*FACTKK
+              TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 71          CONTINUE
-            EELDS1(IREI,1:NSBOX)=-25.0
+            EELEI1(IREI,1:NSBOX)=-25.0
 C  TRANSFERRED KINETIC ENERGY: 10 EV
-            EHVDS1(IREI,1:NSBOX)=10.0
+            EHVEI1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
             NREAHV(IREI) = -3
           ELSE
-            EELDS1(IREI,1)=-25.0
+            EELEI1(IREI,1)=-25.0
             NREAEI(IREI) = -6
             JEREAEI(IREI) = 1
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6: 
@@ -375,13 +384,13 @@ C  THIRD PROCESS  H2 --> H2+:  DEFAULT PROCESS NO. KK=-7
           IREI=NREII
           LGMEI(IMOL,IDSC1)=IREI
           ION=NSPAM+IION3
-          PIODS(IREI,IION3)=PIODS(IREI,IION3)+1.
+          PIOEI(IREI,IION3)=PIOEI(IREI,IION3)+1.
           P2ND(IREI,ION)=P2ND(IREI,ION)+1.
-          EIODS(IREI,IION3,1)=1.
-          EIODS(IREI,IION3,2)=0.
-          EIODS(IREI,0,1)=1.
-          EIODS(IREI,0,2)=0.
-          PELDS(IREI)=1.0
+          EIOEI(IREI,IION3,1)=1.
+          EIOEI(IREI,IION3,2)=0.
+          EIOEI(IREI,0,1)=1.
+          EIOEI(IREI,0,2)=0.
+          PELEI(IREI)=1.0
 
           MODCOL(1,2,IREI)=1
           MODCOL(1,4,IREI)=1
@@ -389,17 +398,17 @@ C
           IF (NSTORDR >= NRAD) THEN
             DO 72 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-7,TEINL(J),0._DP,.TRUE.,0,ERATE)
-              TABDS1(IREI,J)=COU*DEIN(J)
+              TABEI1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
-            EELDS1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
+            EELEI1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
           ELSE  ! storage save mode
-            EELDS1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
+            EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7: 
@@ -410,7 +419,7 @@ C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
 C
 76        CONTINUE
 
-          NMDSI(IMOL)=IDSC1
+          NMEII(IMOL)=IDSC1
 C
 C  NON DEFAULT ELEC IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
@@ -440,13 +449,13 @@ C
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
      .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
 90        CONTINUE
-          NMDSI(IMOL)=IDSC1
+          NMEII(IMOL)=IDSC1
         ENDIF
 C
-        NMDSIM(IMOL)=NMDSI(IMOL)-1
-        LGMEI(IMOL,0)=NMDSI(IMOL)
+        NMEIIM(IMOL)=NMEII(IMOL)-1
+        LGMEI(IMOL,0)=NMEII(IMOL)
 C
-        DO IMEI=1,NMDSI(IMOL)
+        DO IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
           CALL EIRENE_XSTEI_1(IREI)
         ENDDO
@@ -687,7 +696,7 @@ C
             WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS '
             CALL EIRENE_LEER(1)
           ELSE
-            DO 870 IMEI=1,NMDSI(IMOL)
+            DO 870 IMEI=1,NMEII(IMOL)
               IREI=LGMEI(IMOL,IMEI)
               CALL EIRENE_XSTEI_2(IREI)
 870         CONTINUE

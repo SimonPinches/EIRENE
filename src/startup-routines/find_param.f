@@ -16,6 +16,8 @@ cdr             to be tested: storage for nplg, if nlpol=false?
 cdr             storage for thrid dimension only if nltor=true
 cdr             to be tested:  storage for nltra, if nltor=false?
 cdr             to be done: check for comment lines *... syncronized with input.f?
+!pb  June 16:   default for NPLSTI changed from 1 to NPLS
+!pb  MAY  16:   nrds -> nrei
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -28,7 +30,7 @@ C
  
       IMPLICIT NONE
  
-      INTEGER :: INDGRD(3), INDPRO(12)
+      INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
       INTEGER, ALLOCATABLE :: INDSRC(:), IEIGEN(:)
       INTEGER :: ISTRA, NSTRAI, NFR, ISOR, NSRFSI, NRADD,
      .           NREACI, NSTSI, NLIMI, NVOLPL, NSP, ICO,
@@ -56,6 +58,7 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
+      LOGICAL :: LMULTI
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
@@ -117,7 +120,7 @@ C  ATOMIC DATA
       NREAC_ADD=0
       NREAC_LINES=0
       NREC=1
-      NRDS=1
+      NREI=1
       NRCX=1
       NREL=1
       NRPI=1
@@ -577,6 +580,7 @@ C
 C
       ALLOCATE (PART_NAME(500))
       PART_NAME=REPEAT(' ',15)
+      LMULTI = .FALSE.
 C
       WRITE (iunout,*)
      .  '*4A.   NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
@@ -590,7 +594,15 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-          READ (IUNIN,*)
+!pb       READ (IUNIN,*)
+          READ (IUNIN,'(12I6)') IDUM(1:12)
+          IF (NUMSEC < 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(7) /= 0)
+          ELSEIF (NUMSEC == 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(8) /= 0)
+          ELSEIF (NUMSEC == 4) THEN
+            LMULTI = LMULTI .OR. (IDUM(9) /= 0)
+          END IF
           READ (IUNIN,*)
         END DO
       END DO
@@ -612,7 +624,15 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-          READ (IUNIN,*)
+!pb       READ (IUNIN,*)
+          READ (IUNIN,'(12I6)') IDUM(1:12)
+          IF (NUMSEC < 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(7) /= 0)
+          ELSEIF (NUMSEC == 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(8) /= 0)
+          ELSEIF (NUMSEC == 4) THEN
+            LMULTI = LMULTI .OR. (IDUM(9) /= 0)
+          END IF
           READ (IUNIN,*)
         END DO
       END DO
@@ -633,7 +653,15 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-          READ (IUNIN,*)
+!pb       READ (IUNIN,*)
+          READ (IUNIN,'(12I6)') IDUM(1:12)
+          IF (NUMSEC < 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(7) /= 0)
+          ELSEIF (NUMSEC == 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(8) /= 0)
+          ELSEIF (NUMSEC == 4) THEN
+            LMULTI = LMULTI .OR. (IDUM(9) /= 0)
+          END IF
           READ (IUNIN,*)
         END DO
       END DO
@@ -652,7 +680,15 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-          READ (IUNIN,*)
+!pb       READ (IUNIN,*)
+          READ (IUNIN,'(12I6)') IDUM(1:12)
+          IF (NUMSEC < 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(7) /= 0)
+          ELSEIF (NUMSEC == 3) THEN
+            LMULTI = LMULTI .OR. (IDUM(8) /= 0)
+          ELSEIF (NUMSEC == 4) THEN
+            LMULTI = LMULTI .OR. (IDUM(9) /= 0)
+          END IF
           READ (IUNIN,*)
         END DO
       END DO
@@ -796,12 +832,26 @@ c  unfinished option, only for proprietary version of code.
          READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
+ 
+!pb   NPLSTI = 1
+!pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
+      NPLSTI = NPLS
+      IF (INDPRO(2)<0) NPLSTI=1
 
-cdr to be done: syncronisation of options for Ti and Vi.
-cdr these next 2 lines for Ti(ipls) 
-      NPLSTI = 1
-      IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
-cdr these next 2 lines for Vi(ipls)  
+      IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
+        WRITE (IUNOUT,*) 'WARNING !'
+        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
+     .                   ' DUE TO INDPRO(2) < 0'
+        IF (LMULTI) THEN
+          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
+     .                     ' BECAUSE BGK REACTIONS PRESENT'
+          NPLSTI = NPLS
+        END IF
+        WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
+      END IF
+
+
+cdr these next 2 lines for Vi(ipls) 
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 
@@ -1245,7 +1295,7 @@ cdr species
       WRITE (iunout,*) 'NREAC =  ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
 C     WRITE (iunout,*) 'NREC =   ',NREC
-C     WRITE (iunout,*) 'NRDS =   ',NRDS
+C     WRITE (iunout,*) 'NREI =   ',NREI
 C     WRITE (iunout,*) 'NRCX =   ',NRCX
 C     WRITE (iunout,*) 'NREL =   ',NREL
 C     WRITE (iunout,*) 'NRPI =   ',NRPI

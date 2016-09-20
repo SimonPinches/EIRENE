@@ -9,7 +9,7 @@ C           still to be done: include other processes, and colphot
 C 2.2.06:  wghtO set at suppression of absorption, for collision estimators.
 C 2.2.06:  REMOVED: OT PROCESSES FOR ATOMS
 C          GENERATION LIMIT FOR POST COLLISION ATOMS FROM PHOTONS: REMOVED
-C 10.3.06: bug fix: LGEI_RED(NRDS) --> LGEI_RED(0:NRDS)
+C 10.3.06: bug fix: LGEI_RED(NREI) --> LGEI_RED(0:NREI)
 C          (some compilers had been unhappy with this)
 C 20.3.07: PI reactions revised
 
@@ -32,7 +32,17 @@ cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
 cdr                  probably not correct (outdated).
-cdr Aug 16:    bug fix: IPPLDS --> IPPLPI at one instance
+
+
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  patds -> patei
+!pb  APR  16:  pmlds -> pmlei
+!pb  APR  16:  piods -> pioei
+!pb  MAY  16:  nrds  -> nrei
+cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
+
+
+cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 
 
 
@@ -84,7 +94,7 @@ C
       INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
      .           IBGK, IAD, IAEL, IREL, IP, IMEI, IMCX, IAPI, II, NFLAG,
      .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
-      INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NRDS)
+      INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NREI)
 
 C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS
       INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
@@ -208,9 +218,9 @@ C  IS FOLLOWED.
 C  PTOT IS THE (INTEGER) NUMBER OF ANALOGUE NEXT GENERATION TEST PARTICLES
 C
         PTOT=P2NDS(IREI)
-C       PTOTAL=PTOT+PPLDS(IREI,0)
+C       PTOTAL=PTOT+PPLEI(IREI,0)
 C  ABSORBED WEIGHT: WEIABS
-C       WEIABS=WEIGHT*PPLDS(IREI,0)
+C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
 C  COLLISION ESTIMATOR FOR EAAT, EAPL AND EAEL
         IF (IESTEI(IREI,3).NE.0) THEN
@@ -220,11 +230,11 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS. 
           IF (LEAPL) THEN
-            DO IP=1,IPPLDS(IREI,0)
+            DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
-              IPL=IPPLDS(IREI,IP)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
             END DO
@@ -255,10 +265,11 @@ c.......................................................................
           END IF
 cdr  build one single distribution of secondary test particle species, all types
           NAMIEI = 0
-          NAMIEI(1:NSPH)         = 0    !  PPHDS(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
-          NAMIEI(NSPH+1:NSPA)    = PATDS(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM)   = PMLDS(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+
+          NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
+          NAMIEI(NSPH+1:NSPA)    = PATEI(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM)   = PMLEI(IREI,1:NMOLI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT BACK TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
@@ -782,6 +793,7 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
           IF (LEAPL) THEN
+
             DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
@@ -920,7 +932,7 @@ C                       TEST PARTICLE SECONDARIES
       SIG_TOT_O=SIGTOT
       NEII_RED=0
  
-      DO IMEI=1,NMDSI(IOLD)
+      DO IMEI=1,NMEII(IOLD)
         IREI=LGMEI(IOLD,IMEI)
         IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -980,9 +992,9 @@ C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
 C  IS FOLLOWED
 C
         PTOT=P2NDS(IREI)
-C       PTOTAL=PTOT+PPLDS(IREI,0)
+C       PTOTAL=PTOT+PPLEI(IREI,0)
 C  ABSORBED WEIGHT: WEIABS
-C       WEIABS=WEIGHT*PPLDS(IREI,0)
+C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
 C  PRE- COLLISION ESTIMATOR FOR EMML,
 C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
@@ -993,9 +1005,9 @@ C  score loss of incoming test particle energy
 cdr EMPL, EMEL       :  SCORE NET CHANGES HERE.
 cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER. 
           IF (LEMPL) THEN
-            DO IP=1,IPPLDS(IREI,0)
+            DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-              IPL=IPPLDS(IREI,IP)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EMPL(IPL,NCELL)=EMPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1022,9 +1034,9 @@ C
             ALLOCATE(NAMIEI(NSPAMI))
           END IF
           NAMIEI = 0
-          NAMIEI(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
@@ -1641,7 +1653,7 @@ C                       TEST PARTICLE SECONDARIES
       SIG_TOT_O=SIGTOT
       NEII_RED=0
  
-      DO IIEI=1,NIDSI(IOLD)
+      DO IIEI=1,NIEII(IOLD)
         IREI=LGIEI(IOLD,IIEI)
         IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -1701,9 +1713,9 @@ C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
 C  IS FOLLOWED
 C
         PTOT=P2NDS(IREI)
-C       PTOTAL=PTOT+PPLDS(IREI,0)
+C       PTOTAL=PTOT+PPLEI(IREI,0)
 C  ABSORBED WEIGHT: WEIABS
-C       WEIABS=WEIGHT*PPLDS(IREI,0)
+C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
 C  COLLISION ESTIMATOR FOR EIIO, EIPL AND EIEL
         IF (IESTEI(IREI,3).NE.0) THEN
@@ -1713,9 +1725,9 @@ C  score loss of incoming test particle energy
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
           IF (LEIPL)  THEN
-            DO IP=1,IPPLDS(IREI,0)
+            DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-              IPL=IPPLDS(IREI,IP)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               EIPL(IPL,NCELL)=EIPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1742,9 +1754,9 @@ C
             ALLOCATE(NAMIEI(NSPAMI))
           END IF
           NAMIEI = 0
-          NAMIEI(NSPH+1:NSPA) = PATDS(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLDS(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIODS(IREI,1:NIONI)
+          NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
+          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT

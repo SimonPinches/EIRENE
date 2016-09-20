@@ -18,6 +18,16 @@ cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+
+!pb APR  16:    eatds -> eatei
+!pb APR  16:    emlds -> emlei
+!pb APR  16:    eiods -> eioei
+!pb APR  16:    eelds -> eelei
+!pb MAY  16:    tabds1 -> tabei1
+!pb JUL  16:    ehvds1 -> ehvei1
+cdr sept 16:    nidsi  -> nieii
+
+
 cdr aug. 16:    bug fix re EXPO in PI branch
 
 C
@@ -84,7 +94,7 @@ C                TO BE WRITTEN
      .          ELTHDUM, CTCHDUM,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
-     .          EIRENE_FEHVDS1, EIRENE_FEHVPI3,
+     .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
      .          EIRENE_FTABEI1,
@@ -144,11 +154,11 @@ C  ELECTRON IMPACT COLLISION - RATE - COEFFICIENT
 C  NO MASS SCALING NEEDED FOR BULK ELECTRONS
 C
 20    IF (LGIEI(IION,0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
-      DO 10 IIEI=1,NIDSI(IION)
+      DO 10 IIEI=1,NIEII(IION)
         IREI=LGIEI(IION,IIEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
-            SIGVEI(IREI)=TABDS1(IREI,K)
+            SIGVEI(IREI)=TABEI1(IREI,K)
           ELSE
             SIGVEI(IREI)=EIRENE_FTABEI1(IREI,K)
           END IF
@@ -157,16 +167,16 @@ C
         ENDIF
 C
         IF (NSTORDR >= NRAD) THEN
-          ESIGEI(IREI,5)=EELDS1(IREI,K)
-          EHEAVY        =EHVDS1(IREI,K)
+          ESIGEI(IREI,5)=EELEI1(IREI,K)
+          EHEAVY        =EHVEI1(IREI,K)
         ELSE
           ESIGEI(IREI,5)=EIRENE_FEELEI1(IREI,K)
-          EHEAVY        =EIRENE_FEHVDS1(IREI,K)
+          EHEAVY        =EIRENE_FEHVEI1(IREI,K)
         ENDIF
 C
-        ESIGEI(IREI,1)=EATDS(IREI,0,1)*E0+EATDS(IREI,0,2)*EHEAVY
-        ESIGEI(IREI,2)=EMLDS(IREI,0,1)*E0+EMLDS(IREI,0,2)*EHEAVY
-        ESIGEI(IREI,3)=EIODS(IREI,0,1)*E0+EIODS(IREI,0,2)*EHEAVY
+        ESIGEI(IREI,1)=EATEI(IREI,0,1)*E0+EATEI(IREI,0,2)*EHEAVY
+        ESIGEI(IREI,2)=EMLEI(IREI,0,1)*E0+EMLEI(IREI,0,2)*EHEAVY
+        ESIGEI(IREI,3)=EIOEI(IREI,0,1)*E0+EIOEI(IREI,0,2)*EHEAVY
 
         ESIGEI(IREI,4)=EPLEI(IREI,0,1)*E0+EPLEI(IREI,0,2)*EHEAVY
 C
@@ -600,7 +610,7 @@ C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
 C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
 C
       IF (SIGEIT.GT.0._DP) THEN
-        DO IIEI=1,NIDSI(IION)
+        DO IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           IF (SIGVEI(IREI) .LE. SIGMAX*1.D-10) THEN
             SIGEIT=SIGEIT-SIGVEI(IREI)

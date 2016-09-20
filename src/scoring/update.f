@@ -24,9 +24,16 @@ cdr dec.15: tracklength estimators for heavy test particle post collision energi
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
-cdr nov. 15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
+cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
+
+!pb APR  16: ipplds -> ipplei, pplds -> pplei
+!pb APR  16: ipatds -> ipatei, patds -> patei
+!pb APR  16: ipmlds -> ipmlei, pmlds -> pmlei
+!pb APR  16: ipiods -> ipioei, piods -> pioei
+!pb APR  16: pelds -> pelei
+cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
 
  
 C
@@ -442,41 +449,41 @@ C  TRACKLENGTH ESTIMATOR FOR PARTICLE BALANCE
 C
 C  ELECTRONS: DO NOT SEPARATE PRE AND POST COLLISION. UPDATE NET RATES
 C
-            IF (LPAEL) PAEL(IRD)=PAEL(IRD)+WTRSIG*PELDS(IREI)
+            IF (LPAEL) PAEL(IRD)=PAEL(IRD)+WTRSIG*PELEI(IREI)
 C
 C  POST COLLISION CONTRIBUTIONS
-            DO IA=1,IPATDS(IREI,0)
-              IAT=IPATDS(IREI,IA)
+            DO IA=1,IPATEI(IREI,0)
+              IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPAAT) THEN
-                PAAT(IAT,IRD)=PAAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
+                PAAT(IAT,IRD)=PAAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
  
-            DO IM=1,IPMLDS(IREI,0)
-              IML=IPMLDS(IREI,IM)
+            DO IM=1,IPMLEI(IREI,0)
+              IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPAML) THEN
-                PAML(IML,IRD)=PAML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
+                PAML(IML,IRD)=PAML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
  
-            DO II=1,IPIODS(IREI,0)
-              IIO=IPIODS(IREI,II)
+            DO II=1,IPIOEI(IREI,0)
+              IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPAIO) THEN
-                PAIO(IIO,IRD)=PAIO(IIO,IRD)+PIODS(IREI,IIO)*WTRSIG
+                PAIO(IIO,IRD)=PAIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
  
-            DO IP=1,IPPLDS(IREI,0)
-              IPL=IPPLDS(IREI,IP)
+            DO IP=1,IPPLEI(IREI,0)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPAPL) THEN
-                PAPL(IPL,IRD)=PAPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
+                PAPL(IPL,IRD)=PAPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -505,8 +512,8 @@ C
               IF (LEAML) EAML(IRD)=EAML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEAIO) EAIO(IRD)=EAIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEAPL) THEN
-                DO IP=1,IPPLDS(IREI,0)
-                  IPL=IPPLDS(IREI,IP)
+                DO IP=1,IPPLEI(IREI,0)
+                  IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
@@ -726,9 +733,9 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 161
  
-            IF (PPLDS(IREI,0).GT.0) THEN
+            IF (PPLEI(IREI,0).GT.0) THEN
               DO 162 IPL=1,NPLSI
-                P=PPLDS(IREI,IPL)
+                P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL
@@ -1077,7 +1084,7 @@ C.............................................................
 C
         IF (LGMEI(IMOL,0).EQ.0) GOTO 100
 C
-        DO 90 IMEI=1,NMDSI(IMOL)
+        DO 90 IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 90
 C
@@ -1096,41 +1103,41 @@ C  TRACKLENGTH ESTIMATOR FOR PARTICLE BALANCE
 C
 C  ELECTRONS: DO NOT SEPARATE PRE AND POST COLLISION. UPDATE NET RATES
 C
-            IF (LPMEL) PMEL(IRD)=PMEL(IRD)+WTRSIG*PELDS(IREI)
+            IF (LPMEL) PMEL(IRD)=PMEL(IRD)+WTRSIG*PELEI(IREI)
 C
 C  POST COLLISION CONTRIBUTIONS
-            DO IA=1,IPATDS(IREI,0)
-              IAT=IPATDS(IREI,IA)
+            DO IA=1,IPATEI(IREI,0)
+              IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPMAT) THEN
-                PMAT(IAT,IRD)=PMAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
+                PMAT(IAT,IRD)=PMAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
  
-            DO IM=1,IPMLDS(IREI,0)
-              IML=IPMLDS(IREI,IM)
+            DO IM=1,IPMLEI(IREI,0)
+              IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPMML) THEN
-                PMML(IML,IRD)=PMML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
+                PMML(IML,IRD)=PMML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
  
-            DO II=1,IPIODS(IREI,0)
-              IIO=IPIODS(IREI,II)
+            DO II=1,IPIOEI(IREI,0)
+              IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPMIO) THEN
-                PMIO(IIO,IRD)=PMIO(IIO,IRD)+PIODS(IREI,IIO)*WTRSIG
+                PMIO(IIO,IRD)=PMIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
  
-            DO IP=1,IPPLDS(IREI,0)
-              IPL=IPPLDS(IREI,IP)
+            DO IP=1,IPPLEI(IREI,0)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPMPL) THEN
-                PMPL(IPL,IRD)=PMPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
+                PMPL(IPL,IRD)=PMPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -1159,12 +1166,12 @@ C
               IF (LEMML) EMML(IRD)=EMML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEMIO) EMIO(IRD)=EMIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEMPL) THEN
-                DO IP=1,IPPLDS(IREI,0)
+                DO IP=1,IPPLEI(IREI,0)
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
 cdr  because then esigei is the total for this species.
 cdr  must be fragmented into individual ipl contributions
-                  IPL=IPPLDS(IREI,IP)
+                  IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EMPL(IPL,IRD)=EMPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1374,15 +1381,15 @@ C  NEW BULK ION IPL
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
-          DO 610 IMEI=1,NMDSI(IMOL)
+          DO 610 IMEI=1,NMEII(IMOL)
             IREI=LGMEI(IMOL,IMEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 610
  
-            IF (PPLDS(IREI,0).GT.0) THEN
+            IF (PPLEI(IREI,0).GT.0) THEN
               DO 620 IPL=1,NPLSI
-                P=PPLDS(IREI,IPL)
+                P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL
@@ -1734,7 +1741,7 @@ C.............................................................
 C
         IF (LGIEI(IION,0).EQ.0) GOTO 130
 C
-        DO 120 IIEI=1,NIDSI(IION)
+        DO 120 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 120
 C
@@ -1753,41 +1760,41 @@ C  TRACKLENGTH ESTIMATOR FOR PARTICLE BALANCE
 C
 C  ELECTRONS: DO NOT SEPARATE PRE AND POST COLLISION. UPDATE NET RATES
 C
-            IF (LPIEL) PIEL(IRD)=PIEL(IRD)+WTRSIG*PELDS(IREI)
+            IF (LPIEL) PIEL(IRD)=PIEL(IRD)+WTRSIG*PELEI(IREI)
 C
 C  POST COLLISION CONTRIBUTIONS
-            DO IA=1,IPATDS(IREI,0)
-              IAT=IPATDS(IREI,IA)
+            DO IA=1,IPATEI(IREI,0)
+              IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPIAT) THEN
-                PIAT(IAT,IRD)=PIAT(IAT,IRD)+PATDS(IREI,IAT)*WTRSIG
+                PIAT(IAT,IRD)=PIAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
  
-            DO IM=1,IPMLDS(IREI,0)
-              IML=IPMLDS(IREI,IM)
+            DO IM=1,IPMLEI(IREI,0)
+              IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPIML) THEN
-                PIML(IML,IRD)=PIML(IML,IRD)+PMLDS(IREI,IML)*WTRSIG
+                PIML(IML,IRD)=PIML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
  
-            DO II=1,IPIODS(IREI,0)
-              IIO=IPIODS(IREI,II)
+            DO II=1,IPIOEI(IREI,0)
+              IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPIIO) THEN
-                PIIO(IIO,IRD)=PIIO(IIO,IRD)+PIODS(IREI,IIO)*WTRSIG
+                PIIO(IIO,IRD)=PIIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
  
-            DO IP=1,IPPLDS(IREI,0)
-              IPL=IPPLDS(IREI,IP)
+            DO IP=1,IPPLEI(IREI,0)
+              IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPIPL) THEN
-                PIPL(IPL,IRD)=PIPL(IPL,IRD)+PPLDS(IREI,IPL)*WTRSIG
+                PIPL(IPL,IRD)=PIPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -1816,12 +1823,12 @@ C
               IF (LEIML) EIML(IRD)=EIML(IRD)+WTRSIG*ESIGEI(IREI,2)
               IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               IF (LEIPL) THEN
-                DO IP=1,IPPLDS(IREI,0)
+                DO IP=1,IPPLEI(IREI,0)
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
 cdr  because then esigei is the total for this species.
 cdr  must be fragmented into individual ipl contributions
-                  IPL=IPPLDS(IREI,IP)
+                  IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
                   EIPL(IPL,IRD)=EIPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -2031,15 +2038,15 @@ C  NEW BULK ION IPL
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
-          DO 6100 IIEI=1,NIDSI(IION)
+          DO 6100 IIEI=1,NIEII(IION)
             IREI=LGIEI(IION,IIEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 6100
 C
-            IF (PPLDS(IREI,0).GT.0) THEN
+            IF (PPLEI(IREI,0).GT.0) THEN
               DO 6200 IPL=1,NPLSI
-                P=PPLDS(IREI,IPL)
+                P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL

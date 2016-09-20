@@ -1,3 +1,4 @@
+!pb  MAY 16 :  nrds -> nrei
 C
 C
       SUBROUTINE EIRENE_XSECTI_PARAM
@@ -143,15 +144,15 @@ C  FIRST PROCESS (MAY BE SPLITTED INTO 1A AND 1B)
           ENDIF
 C
 7000      CONTINUE
-          NRDS=NRDS+1
+          NREI=NREI+1
           IF (ICOUNT.EQ.1) THEN
             ICOUNT=2
             GOTO 7000
           ENDIF
 C  SECOND PROCESS
-          NRDS=NRDS+1
+          NREI=NREI+1
 C  THIRD PROCESS
-          NRDS=NRDS+1
+          NREI=NREI+1
 C
 76        CONTINUE
 C
@@ -162,7 +163,7 @@ C
             KK=IREACI(IION,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
 C
-            NRDS=NRDS+1
+            NREI=NREI+1
 90        CONTINUE
 C
         ENDIF

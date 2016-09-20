@@ -10,6 +10,7 @@ cdr  jan 16: started to document options for asymptotics
 !pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR  data files, 
 cdr          such as character strings H.xxx
 cdr          taken over from ITER-IO branch
+!pb  may 16: bug fix to the extensions (resolving problem reading HYDHEL H.3)
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
