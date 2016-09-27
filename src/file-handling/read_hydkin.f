@@ -1,15 +1,18 @@
 cdr   This routine is only for internal use at FJZ
 cdr   Purpose:  establish an interface to online A&M data repository and toolbox
 
+cdr   called from:  setup_hydkin_reactions
+
 cdr   feb 2014:  only started to add comments, then copied to read_table1_hydkin
 cdr              for generalization
 
 cdr   july 16:   more error exits, to avoid code crashes when reading 1D tabulated data
 cdr              currently this routine expects hard wired hydkin, CxHy format. 
-cdr   to be done: distuingish between readeing data, and automatted construction
+cdr   to be done: distuingish between reading data, and automatted construction
 cdr               of full blocks 4a,b,c,d,5 from a HYDKIN output
 
-      subroutine EIRENE_read_hydkin (ir,filename,h123,reac,crc,rmn,rmx,
+      subroutine EIRENE_read_hydkin (ir,filename,h123,reac,crc,
+     .                        r1mn,r1mx,
      .                        e_el,e_k,lffl)
 
 c  input:
@@ -32,7 +35,7 @@ c          lffl:  ??
       logical, intent(in) :: lffl
       character(4), intent(inout) :: h123
       character(3), intent(inout) :: crc
-      real(dp) , intent(out) :: rmn, rmx, e_el, e_k
+      real(dp) , intent(out) :: r1mn, r1mx, e_el, e_k
       character(132) :: zeile
       character(12) :: chr
       character(len=len(reac)+10) :: cpreac
@@ -72,8 +75,8 @@ c  skip blank lines at top of file
         read (28+ifoff,*) hp%temps(ie)
       end do
  
-      rmn = hp%temps(1)
-      rmx = hp%temps(hp%ntemps)
+      r1mn = hp%temps(1)
+      r1mx = hp%temps(hp%ntemps)
  
       e_el = 0._dp
       e_k = 0._dp
@@ -197,8 +200,21 @@ c  next: type of reaction:  EI, (=DS), CX, EL, RC, PI (=II)
       nullify (reacdat(ir)%rtc%adas)
       nullify (reacdat(ir)%rtc%line)
       nullify (reacdat(ir)%rtc%poly)
+
       reacdat(ir)%rtc%hyd => hp
       reacdat(ir)%rtc%ifit = 4
+      REACDAT(IR)%RTC%RC1MIN = hp%temps(1)
+      REACDAT(IR)%RTC%RC1MAX = hp%temps(hp%ntemps)
+      REACDAT(IR)%RTC%RC2MIN = 0._dp
+      REACDAT(IR)%RTC%RC2MAX = huge(1._dp)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
  
       if (lffl) then
         h123 = 'H.2 '

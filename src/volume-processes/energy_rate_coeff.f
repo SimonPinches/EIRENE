@@ -14,6 +14,7 @@ cdr            added: ifit=4 option (1d table interpolation)
 cdr            additional parameters in calls to 1d and 2d table interpolation
 cdr  26.11.15: additional parameter IC in call to H_colrad,
 cdr            for later use to identify "visited cells"
+cdr  sept. 16: started to add extrapolation options. not ready....
 
       function EIRENE_energy_rate_coeff (ir, p1, p2, lexp, iprshft)
      .                            result (erate)
@@ -60,8 +61,8 @@ cdr            for later use to identify "visited cells"
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
 
-      real(dp) :: erate, EIRENE_sngl_poly, dum(9), rcmin, rcmax,
-     .            fp(6), pp1, pp2,
+      real(dp) :: erate, EIRENE_sngl_poly, dum(9), rc1min, rc1max,
+     .            fp1(6), pp1, pp2, rc2min, rc2max, fp2(6),
      .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
      .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
@@ -69,7 +70,8 @@ cdr            for later use to identify "visited cells"
      .                  dsub    = 18.420680744_dp,      !ln(1e8)
      .                  xlnelch =-43.2777390821         !ln(elcha) 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
-      integer :: jfexmn, jfexmx,ic,ip1,ip2
+      integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
+      integer :: ic,ip1,ip2
 
  
       interface
@@ -98,15 +100,6 @@ cdr            for later use to identify "visited cells"
  
       erate = 0._dp
 
-c  extrapolation data: currently only for polynomial fits 
-      if ((reacdat(ir)%rtcew%ifit == 1) .or.
-     .    (reacdat(ir)%rtcew%ifit == 2)) then
-        rcmin  = reacdat(ir)%rtcew%poly%rcmn
-        rcmax  = reacdat(ir)%rtcew%poly%rcmx
-        fp     = reacdat(ir)%rtcew%poly%fparm
-        jfexmn = reacdat(ir)%rtcew%poly%ifexmn
-        jfexmx = reacdat(ir)%rtcew%poly%ifexmx
-      end if
 c.............................................................
 
  
@@ -123,8 +116,16 @@ c.............................................................
 
 !  SINGLE POLYNOMIAL FIT VS. P1 (TEMPERATURE), FOR LN OF ENERGY WEIGHTED RATE
  
+c  extrapolation data: for 1d polynomial fits 
+        rc1min  = reacdat(ir)%rtcew%rc1min
+        rc1max  = reacdat(ir)%rtcew%rc1max
+        fp1(1:3)= reacdat(ir)%rtcew%fp1l
+        fp1(4:6)= reacdat(ir)%rtcew%fp1r
+        jfex1mn = reacdat(ir)%rtcew%jfex1mn
+        jfex1mx = reacdat(ir)%rtcew%jfex1mx
+ 
         erate = EIRENE_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
-     .                           p1,rcmin, rcmax, fp, jfexmn, jfexmx)
+     .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx)
 
 C       if (.not. lexp)  erate=erate
         if (lexp) erate = exp(max(-100._dp,erate))
@@ -135,6 +136,19 @@ c..............................................................
       else if (reacdat(ir)%rtcew%ifit == 2) then
 
 !  DOUBLE POLYNOMIAL FIT VS. P1 (TEMPERATURE) AND P2,  FOR LN OF ENERGY WEIGHTED RATE 
+c  extrapolation data:  for 2d polynomial fits 
+        rc1min  = reacdat(ir)%rtcew%rc1min
+        rc1max  = reacdat(ir)%rtcew%rc1max
+        rc2min  = reacdat(ir)%rtcew%rc2min
+        rc2max  = reacdat(ir)%rtcew%rc2max
+        fp1(1:3)= reacdat(ir)%rtcew%fp1l
+        fp1(4:6)= reacdat(ir)%rtcew%fp1r
+        fp2(1:3)= reacdat(ir)%rtcew%fp2b
+        fp2(4:6)= reacdat(ir)%rtcew%fp2t
+        jfex1mn = reacdat(ir)%rtcew%jfex1mn
+        jfex1mx = reacdat(ir)%rtcew%jfex1mx
+        jfex2mn = reacdat(ir)%rtcew%jfex2mn
+        jfex2mx = reacdat(ir)%rtcew%jfex2mx
 
 c  rescale parameter p2  (currently only by 1e-8):  q2 
         pp2 = p2
@@ -142,7 +156,8 @@ c  rescale parameter p2  (currently only by 1e-8):  q2
  
         call EIRENE_dbl_poly
      .       (reacdat(ir)%rtcew%poly%dblpol,p1,pp2,erate,dum,
-     .        rcmin, rcmax, fp, jfexmn, jfexmx)
+     .        rc1min, rc1max, fp1, jfex1mn, jfex1mx,
+     .        rc2min, rc2max, fp2, jfex2mn, jfex2mx)
 
 C       if (.not. lexp)  erate=erate
         if (lexp)        erate = exp(max(-100._dp,erate))
@@ -153,6 +168,8 @@ c..............................................................
 
 ! 2D TABULAR INPUT,  FOR LOG10 OF ENERGY WEIGHTED RATE,  joule*cm^3/s
 ! E.G.: ADAS FILES
+c  extrapolation data: for 2d tabulated data
+cdr to be added here
 
 !  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
 
@@ -176,6 +193,9 @@ c..............................................................
       else if (reacdat(ir)%rtc%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
+c  extrapolation data: for 1d tabulated data 
+cdr to be added here
+
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
         pp1 = exp(p1)

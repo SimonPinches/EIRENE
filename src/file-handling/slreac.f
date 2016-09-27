@@ -19,10 +19,15 @@ cdr            started to clarify extrapolation options for polynom fits. Not re
 cdr            some comments corrected
 cdr   Aug. 16: reading Tmin, Emin from hydhel disabled. 
 cdr            May have corrupted extrapolation in some cases 
+c     Sept.16: two new internal subroutines, 
+c              a) to read validity range information,
+c              b) three parameters for each validity boundary, for extrapolation options 
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
-     .                   RCMIN, RCMAX, FP, JFEXMN, JFEXMX, ELNAME, IZ1)
+     .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX, 
+     .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX, 
+     .                          ELNAME, IZ1)
 c
 c  open data stream 29 and read atomic data set no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
@@ -176,35 +181,42 @@ C
       IMPLICIT NONE
 
       INTEGER,      INTENT(IN) :: IR, IZ1
-      INTEGER,      INTENT(IN OUT) :: JFEXMN, JFEXMX
+      INTEGER,      INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       CHARACTER(8), INTENT(IN) :: FILNAM
       CHARACTER(4), INTENT(IN) :: H123
       CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
       CHARACTER(3), INTENT(IN) :: CRC
-      REAL(DP), INTENT(IN OUT) :: RCMIN, RCMAX, FP(6)
+      REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                            RC2MIN, RC2MAX, FP2(6)
+      REAL(DP) :: RTMAX, ERTMAX, ETH
       CHARACTER(50) :: REACSTR
       REAL(DP) :: CONST, E_EL, E_K
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
-      INTEGER :: I, IND, J, K, IH, I0P1, I0, IC, IREAC, ISW, INDFF,
-     .           IFLG, INC, IANF, IFILE, IL
-      CHARACTER(80) :: ZEILE, LAST_TEX
+      REAL(DP) :: FP1L(3), FP1R(3), FP2B(3), FP2T(3)
+      REAL(DP) :: R1MN, R1MX, R2MN, R2MX
+      INTEGER :: I, IND, J, K, IH, I0, IC, IREAC, ISW, INDFF,
+     .           IFLG, INC, IANF, IFILE, IL, INDG
+      INTEGER :: IF1MN, IF1MX, IF2MN, IF2MX
+      CHARACTER(80) :: ZEILE, LAST_TEX, ULINE
 !ITER CHARACTER(2) :: CHR
-      CHARACTER(4) :: CHR
-      CHARACTER(3) :: CHRL, CHRR
+      CHARACTER(4) :: CHR, CETH, BEND
+      CHARACTER(3) :: CHRL, CHRR, CHRB, CHRT
       CHARACTER(200) :: DSN, DIR
       CHARACTER(1) :: CUT, BACK
       CHARACTER(4) :: CH123
       CHARACTER(3) :: CCRC
       CHARACTER(8) :: SECTION
-      LOGICAL :: LCONST,LGEMIN,LGEMAX
+      CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
+      LOGICAL :: LCONST,LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
+     .                  LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
       BACK="\\"
       SECTION=BACK // 'section'
+      BEND=BACK // 'end'
 C
 !   set some defaults
-      LGEMIN=.FALSE.
-      LGEMAX=.FALSE.
+
       ISWR(IR)=0
       CONST=0.
 !ITER CHR='l0'
@@ -213,7 +225,19 @@ C
       CHRR='lr0'
       I0=0
       CREACD = 0._DP
+
+c  some additional  (optional) reaction data:  threshold energy, 
+c                                              max ratecoeff sigma*v_rel, 
+c                                              at E_rel=ERTMAX  
+      CMR  = 'MAXRATE'
+      CEMR = 'ELAB'
+      CETH = 'ETH'
+      RTMAX = 0._DP
+      ERTMAX = -HUGE(1._DP)
+      ETH = 0._DP
 C
+c  type (class) of reaction process
+
       IF (INDEX(CRC,'EI').NE.0.OR.
      .    INDEX(CRC,'DS').NE.0) ISWR(IR)=1
       IF (INDEX(CRC,'CX').NE.0) ISWR(IR)=3
@@ -243,7 +267,7 @@ C  proper filnam found
 
           ELSEIF (INDEX(FILNAM,'ADAS').NE.0) THEN
 ! FILNAM=ADAS: open data file
-! FIND NAME OF SPECIFIC ADAS-FILE TO BE READ,  DSN=abc.dat
+! FIND NAME OF SPECIFIC TAB2D-FILE TO BE READ,  DSN=abc.dat
 !           reconstruct 'DSN' from:  reac, elname
             DIR = ' '
             IL = 0
@@ -271,7 +295,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' CHOOSE EITHER '
           WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR, PHOTON '
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' ADAS '
+          WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' H-COL'
           WRITE (iunout,*) ' OR '
@@ -317,106 +341,209 @@ C  H.0
         CHR=' p0 '
         CHRL='pl0'
         CHRR='pr0'
+        CHRB='pb0'
+        CHRT='pt0'
         I0=-1
         MODCLF(IR)=MODCLF(IR)+1
         IFLG=0
 C  DEFAULT POTENTIAL: GENERALISED MORSE
         IFTFLG(IR,IFLG)=2
+        C1L = 'XXMIN'
+        C1R = 'XXMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.1
       ELSEIF (ISW.EQ.1) THEN
 !ITER   CHR='a0'
         CHR=' a0 '
         CHRL='al0'
         CHRR='ar0'
+        CHRB='ab0'
+        CHRT='at0'
         I0=0
         MODCLF(IR)=MODCLF(IR)+10
         IFLG=1
 C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)
         IFTFLG(IR,IFLG)=0
+        C1L = 'ELABMIN'
+        C1R = 'ELABMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.2
       ELSEIF (ISW.EQ.2) THEN
 !ITER   CHR='b0'
         CHR=' b0 '
         CHRL='bl0'
         CHRR='br0'
+        CHRB='bb0'
+        CHRT='bt0'
         I0=1
         MODCLF(IR)=MODCLF(IR)+100
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) FOR E0=0.
         IFTFLG(IR,IFLG)=0
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.3
       ELSEIF (ISW.EQ.3) THEN
+        CHR=' c0 '
+        CHRL='cl0'
+        CHRR='cr0'
+        CHRB='cb0'
+        CHRT='ct0'
         MODCLF(IR)=MODCLF(IR)+200
         I0=1
         IFLG=2
         IFTFLG(IR,IFLG)=0
+        C1L = 'TIMIN'
+        C1R = 'TIMAX'
+        C2L = 'EBMIN'
+        C2R = 'EBMAX'
 C  H.4
       ELSEIF (ISW.EQ.4) THEN
+        CHR=' d0 '
+        CHRL='dl0'
+        CHRR='dr0'
+        CHRB='db0'
+        CHRT='dt0'
         MODCLF(IR)=MODCLF(IR)+300
         I0=1
         IFLG=2
         IFTFLG(IR,IFLG)=0
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'NEMIN'
+        C2R = 'NEMAX'
 C  H.5
       ELSEIF (ISW.EQ.5) THEN
 !ITER   CHR='e0'
         CHR=' e0 '
         CHRL='el0'
         CHRR='er0'
+        CHRB='eb0'
+        CHRT='et0'
         I0=1
         MODCLF(IR)=MODCLF(IR)+1000
         IFLG=3
         IFTFLG(IR,IFLG)=0
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.6
       ELSEIF (ISW.EQ.6) THEN
+        CHR=' f0 '
+        CHRL='fl0'
+        CHRR='fr0'
+        CHRB='fb0'
+        CHRT='ft0'
         MODCLF(IR)=MODCLF(IR)+2000
         I0=1
         IFLG=3
         IFTFLG(IR,IFLG)=0
+        C1L = 'TIMIN'
+        C1R = 'TIMAX'
+        C2L = 'EBMIN'
+        C2R = 'EBMAX'
 C  H.7
       ELSEIF (ISW.EQ.7) THEN
+        CHR=' g0 '
+        CHRL='gl0'
+        CHRR='gr0'
+        CHRB='gb0'
+        CHRT='gt0'
         MODCLF(IR)=MODCLF(IR)+3000
         I0=1
         IFLG=3
         IFTFLG(IR,IFLG)=0
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'NEMIN'
+        C2R = 'NEMAX'
 C  H.8
       ELSEIF (ISW.EQ.8) THEN
 !ITER   CHR='h0'
         CHR=' h0 '
         CHRL='hl0'
         CHRR='hr0'
+        CHRB='hb0'
+        CHRT='ht0'
         I0=1
         MODCLF(IR)=MODCLF(IR)+10000
         IFLG=4
         IFTFLG(IR,IFLG)=0
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.9
       ELSEIF (ISW.EQ.9) THEN
+        CHR=' i0 '
+        CHRL='il0'
+        CHRR='ir0'
+        CHRB='ib0'
+        CHRT='it0'
         MODCLF(IR)=MODCLF(IR)+20000
         I0=1
         IFLG=4
         IFTFLG(IR,IFLG)=0
+        C1L = 'TIMIN'
+        C1R = 'TIMAX'
+        C2L = 'EBMIN'
+        C2R = 'EBMAX'
 C  H.10
       ELSEIF (ISW.EQ.10) THEN
+        CHR=' j0 '
+        CHRL='jl0'
+        CHRR='jr0'
+        CHRB='jb0'
+        CHRT='jt0'
         MODCLF(IR)=MODCLF(IR)+30000
         I0=1
         IFLG=4
         IFTFLG(IR,IFLG)=0
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'NEMIN'
+        C2R = 'NEMAX'
 C  H.11
       ELSEIF (ISW.EQ.11) THEN
 !ITER   CHR='k0'
         CHR=' k0 '
         CHRL='kl0'
         CHRR='kr0'
+        CHRB='kb0'
+        CHRT='kt0'
         I0=1
         IFLG=5
         IFTFLG(IR,IFLG)=0
+        C1L = 'PMIN'
+        C1R = 'PMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.12
       ELSEIF (ISW.EQ.12) THEN
+        CHR=' l0 '
+        CHRL='ll0'
+        CHRR='lr0'
+        CHRB='lb0'
+        CHRT='lt0'
         I0=1
         IFLG=5
         IFTFLG(IR,IFLG)=0
+        C1L = 'P1MIN'
+        C1R = 'P1MAX'
+        C2L = 'P2MIN'
+        C2R = 'P2MAX'
       ENDIF
 
       IF (INDEX(FILNAM,'H-COL').NE.0) THEN
+        REACDAT(IR)%ETH = 0._DP
+        REACDAT(IR)%RTMAX = 0._DP
+        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+
         SELECT CASE (ISW)
         CASE (2:4)
           IF (REACDAT(IR)%LRTC) THEN
@@ -432,6 +559,20 @@ C  H.12
           NULLIFY(REACDAT(IR)%RTC%HYD)
           REACDAT(IR)%LRTC = .TRUE.
           REACDAT(IR)%RTC%IFIT = 5
+
+          REACDAT(IR)%RTC%RC1MIN = 0._DP
+          REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+          REACDAT(IR)%RTC%RC2MIN = 0._DP
+          REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+          REACDAT(IR)%RTC%FP1L = 0._DP
+          REACDAT(IR)%RTC%FP1R = 0._DP
+          REACDAT(IR)%RTC%FP2B = 0._DP
+          REACDAT(IR)%RTC%FP2T = 0._DP
+          REACDAT(IR)%RTC%JFEX1MN = 0
+          REACDAT(IR)%RTC%JFEX1MX = 0
+          REACDAT(IR)%RTC%JFEX2MN = 0
+          REACDAT(IR)%RTC%JFEX2MX = 0
+          
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
             WRITE (IUNOUT,*) ' MOMENTUM WEIGHTED RATE COEFFICIENT',
@@ -446,6 +587,20 @@ C  H.12
           NULLIFY(REACDAT(IR)%RTCMW%HYD)
           REACDAT(IR)%LRTCMW = .TRUE.
           REACDAT(IR)%RTCMW%IFIT = 5
+
+          REACDAT(IR)%RTCMW%RC1MIN = 0._DP
+          REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
+          REACDAT(IR)%RTCMW%RC2MIN = 0._DP
+          REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
+          REACDAT(IR)%RTCMW%FP1L = 0._DP
+          REACDAT(IR)%RTCMW%FP1R = 0._DP
+          REACDAT(IR)%RTCMW%FP2B = 0._DP
+          REACDAT(IR)%RTCMW%FP2T = 0._DP
+          REACDAT(IR)%RTCMW%JFEX1MN = 0
+          REACDAT(IR)%RTCMW%JFEX1MX = 0
+          REACDAT(IR)%RTCMW%JFEX2MN = 0
+          REACDAT(IR)%RTCMW%JFEX2MX = 0
+          
         CASE (8:10)
           IF (REACDAT(IR)%LRTCEW) THEN
             WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
@@ -460,6 +615,20 @@ C  H.12
           NULLIFY(REACDAT(IR)%RTCEW%HYD)
           REACDAT(IR)%LRTCEW = .TRUE.
           REACDAT(IR)%RTCEW%IFIT = 5
+
+          REACDAT(IR)%RTCEW%RC1MIN = 0._DP
+          REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
+          REACDAT(IR)%RTCEW%RC2MIN = 0._DP
+          REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
+          REACDAT(IR)%RTCEW%FP1L = 0._DP
+          REACDAT(IR)%RTCEW%FP1R = 0._DP
+          REACDAT(IR)%RTCEW%FP2B = 0._DP
+          REACDAT(IR)%RTCEW%FP2T = 0._DP
+          REACDAT(IR)%RTCEW%JFEX1MN = 0
+          REACDAT(IR)%RTCEW%JFEX1MX = 0
+          REACDAT(IR)%RTCEW%JFEX2MN = 0
+          REACDAT(IR)%RTCEW%JFEX2MX = 0
+          
         CASE DEFAULT
           WRITE (IUNOUT,*) ' WRONG DATA TYPE SPECIFIED '
           WRITE (IUNOUT,*) ' REACTION NO. ', IR
@@ -480,7 +649,7 @@ c  close unit=29+ifoff:   done in READ_TABLE2.f
         CH123 = H123
         CCRC = CRC
         CALL EIRENE_READ_HYDKIN
-     .      (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RCMIN,RCMAX,
+     .      (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RC1MIN,RC1MAX,
      .       E_EL,E_K,.FALSE.)
         RETURN
       END IF
@@ -551,8 +720,7 @@ C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
 C
       IF (ISW.EQ.0.OR.ISW.EQ.1.OR.ISW.EQ.2.OR.ISW.EQ.5.OR.ISW.EQ.8.OR.
      .    ISW.EQ.11) THEN
-C       IF (.NOT.LCONST) THEN  ! this is redundant, LCONST = TRUE is completely done already,
-c                                already returned to calling program
+
 3       READ (29+ifoff,'(A80)',END=990) ZEILE
         INDFF=INDEX(ZEILE,'fit-flag')
         IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
@@ -581,135 +749,23 @@ C  THREE LINES WITH THREE DATA PER LINE
 9         CONTINUE
         END IF
 C
-C  READ ASYMPTOTICS FOR 1D FITS/DATA, FROM DATA FILE, IF AVAILABLE
-C  I0P1=0 FOR POTENTIAL
-C  I0P1=1 FOR CROSS SECTION
-C  I0P1=2 FOR (WEIGHTED) RATE COEFFICIENT
-        I0P1=I0+1
 
-        IF (ISW.EQ.0) GOTO 12 ! NO ASYMPTOTICS FOR POTENTIALS
 
-c  next: deal with low (left) parameter asymptotics (unless already explicitly provided
-c        in block 4 of input file 
-        IF (JFEXMN.NE.0) GOTO 250
-
-c  CHRL is label of left (low E,T) extrapolation fit parameters, a0l, b0l,....
-        IF (INDEX(ZEILE,CHRL).NE.0) THEN
-c  at this point: left extrapolation fit found in dataset fort.29, and
-c                 left extrapolation was NOT overruled explicitly in input file 'fort.iunin'.
-
-c  read three parameters FP(i), i=1,3 for 'left' extrapolation
-          IND=0
-          DO 5 I=1,3
-!ITER       INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
-            INC=INDEX(ZEILE((IND+1):80),CHR(2:2))
-            IF (INC.GT.0) THEN
-!ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
-              IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
-              READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
-            ENDIF
-5         CONTINUE
-          LGEMIN=.true.
-          READ (29+ifoff,'(A80)',END=990) ZEILE
-        ENDIF
-
-250     CONTINUE
-
-c  next: deal with high (right) parameter asymptotics (unless already explicitly provided
-c        in block 4 of input file 
-        IF (JFEXMX.NE.0) GOTO 300
-
-c  same as above. for right (high E,T) extraploation fit
-        IF (INDEX(ZEILE,CHRR).NE.0) THEN
-c  read three parameters FP(i), i=4,6 for 'right' extrapolation
-          IND=0
-          DO 7 I=4,6
-!ITER       INC=INDEX(ZEILE((IND+1):80),CHR(1:1))
-            INC=INDEX(ZEILE((IND+1):80),CHR(2:2))
-            IF (INC.GT.0) THEN
-!ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
-              IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
-              READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
-            ENDIF
-7         CONTINUE
-          LGEMAX=.true.
-          READ (29+ifoff,'(A80)',END=990) ZEILE
-        ENDIF
-
-300     CONTINUE
-
-        if (lgemin) then
-c  at this point:  low end extrapolation parameter FP(1:3) have been read from atomic data file.
-c  read value of lower validity bound, e.g. ELABMIN=,..., search for string '=' in next line of data file
-c  format of that card must be:  text=_E12.5
-c  and return as RCMIN
-          IND=INDEX(ZEILE,'= ')
-          READ (ZEILE((IND+2):80),'(E12.5)') rcmin
-          rcmin=log(rcmin)
-          jfexmn=5 ! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
-          READ (29+ifoff,'(A80)',END=990) ZEILE
-        endif
-
-C
-C.......................................................................
-CDR  this part needs to be re-written and/or documented
-
-C  ANY OTHER ASYMPTOTICS INFO ON DATA FILE fort.29?  SEARCH FOR Tmin, or Emin
-cdr:  but, again,  only if not already explicitly set in input file
-        
-cdr  not ready, needs to be re-written 
-        IF ((INDEX(ZEILE,'Tmin').NE.0.and.I0P1==2).or.
-     .      (INDEX(ZEILE,'Emin').NE.0.and.I0P1==1)) then
-          IND=INDEX(ZEILE,'n')
-c         READ (ZEILE((IND+2):80),'(E9.2)') rcmin
-c         rcmin=log(rcmin)
-C  extrapolation from subr. CROSS
-cdr  
-C         if (isw.eq.1) jfexmn=1
-C  extrapolation from subr. rate_coeff, energy_rate_coeff  (and: momentum_rate_coeff)
-C  currently: don't do that
-C         if (isw.eq.2) jfexmn=-1
-C         if (isw.eq.5) jfexmn=-1
-C         if (isw.eq.8) jfexmn=-1
-C  extrapolation from subr. CDEF
-C   ??   
-          READ (29+ifoff,'(A80)',END=990) ZEILE
-        ENDIF
-
-C........................................................................
-cdr  LOW (LEFT) parameter asymptotics done.  
-
-c
-        if (lgemax) then
-c  at this point:  high end extrapolation parameter FP(4:6) have been read from atomic data file.
-c  read value of upper validity bound, e.g. ELABMAX=,...
-c  format of that card must be:  text=_E12.5
-c  and return as RCMAX
-          IND=INDEX(ZEILE,'= ')
-          READ (ZEILE((IND+2):80),'(E12.5)') rcmax
-          rcmax=log(rcmax)
-          jfexmx=5 ! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
-          READ (29+ifoff,'(A80)',END=990) ZEILE
-        endif
-
-cdr  HIGH (RIGHT) parameter asymptotics done. 
-
-400     CONTINUE
-
-12      CONTINUE
 C       ELSEIF (LCONST) THEN
 C  NOTHING TO BE DONE
 C       ENDIF
 
 C  SINGLE PARAMETER POLYNOMIAL FITS: DONE
 
-        GOTO 1000
-
 C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg:
 C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
 C   9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
 C   AND POSSIBLY (SOME OF) THE EXTRAPOLATION PARAMETERS RCMIN,RCMAX, FP(1:6)
 C
+
+
+        GOTO 1000
+
 C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
@@ -734,23 +790,183 @@ C   READ BLOCK OF 9 LINES, THREE DATA EACH, UNFORMATTED
 17          CONTINUE
           END IF
 11      CONTINUE
+        READ (29+ifoff,'(A80)',END=990) ZEILE
 C   AT THIS POINT WE HAVE STORED FOR REACTION ir:
 C   IFTFLG(IR)   (DEFAUT:   =0)
 C   81 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1...9)
 
-C   NO ASYMPTOTICS AVAILABLE YET FOR 2 PARAMETER FITS/DATA
-
 C 
-C  DOUBLE PARAMETER POLYNOMIAL FITS: DONE  
+C  DOUBLE PARAMETER POLYNOMIAL FITS: DONE 
+
         GOTO 1000
 C
       ENDIF
 
 1000  CONTINUE
 
+C  NEXT: READ ASYMPTOTICS INFORMATION FROM ATOMIC DATA FILE
+C        HYDHEL, AMJUEL, H2VIBR, METHANE.
+
+C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT, RIGHT, BOTTOM, TOP.
+C FOR 1D: ONLY "LEFT" AND "RIGHT" ARE USED, "BOTTOM" AND "TOP" ARE FILLED WITH DEFAULTS 
+
+      IF (ISW.EQ.0) GOTO 2000    ! NO ASYMPTOTICS FOR POTENTIALS
+
+      LGC1MIN=.FALSE.
+      LGC1MAX=.FALSE.
+      LGC2MIN=.FALSE.
+      LGC2MAX=.FALSE.
+      LGR1MIN=.FALSE.
+      LGR1MAX=.FALSE.
+      LGR2MIN=.FALSE.
+      LGR2MAX=.FALSE.
+      
+
+      IF1MN = 0
+      IF1MX = 0
+      IF2MN = 0
+      IF2MX = 0
+
+C  FURTHER PARAMETERS, NOT RELATED TO ASYMPTOTICS
+      RTMAX = 0._DP
+      ERTMAX = -HUGE(1._DP)
+
+!     BEND="\end" stops looking for asymptotics 
+      DO WHILE(INDEX(ZEILE,BEND) == 0)
+
+        ULINE = ZEILE
+        CALL EIRENE_UPPERCASE(ULINE)
+
+        IF (INDEX(ZEILE,CHRL) /= 0) THEN
+          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP1L)
+          LGC1MIN = .TRUE.
+        ENDIF
+        IF (INDEX(ZEILE,CHRR) /= 0) THEN
+          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP1R)
+          LGC1MAX = .TRUE.
+        END IF
+
+        IF (INDEX(ZEILE,CHRB) /= 0) THEN
+          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2B)
+          LGC2MIN = .TRUE.
+        END IF
+        IF (INDEX(ZEILE,CHRT) /= 0) THEN
+          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2T)
+          LGC2MAX = .TRUE.
+        END IF
+        
+        IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
+          CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
+          LGR1MIN = .TRUE.
+        END IF
+        IF (INDEX(ULINE,TRIM(C1R)) /= 0) THEN
+          CALL EIRENE_READ_RANGE (ULINE,C1R,'EXT-FLG',R1MX,IF1MX)
+          LGR1MAX = .TRUE.
+        END IF
+        IF (INDEX(ULINE,TRIM(C2L)) /= 0) THEN
+          CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
+          LGR2MIN = .TRUE.
+        END IF
+        IF (INDEX(ULINE,TRIM(C2R)) /= 0) THEN
+          CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
+          LGR2MAX = .TRUE.
+        END IF
+C
+C  ...AND FURTHER REACTION PARAMETERS, NOT RELATED TO ASYMPTOTICS
+C     ETH
+C     RTMAX
+C     ERTMAX
+C
+        IND = INDEX(ULINE,TRIM(CETH))
+        IF (IND /= 0) THEN
+          READ (ULINE(IND+3:80),*) ETH
+        END IF
+        IND = INDEX(ULINE,TRIM(CMR))
+        IF (IND /= 0) THEN
+          INDG = INDEX(ULINE,'=')
+          READ (ULINE(INDG+1:80),*) RTMAX
+          IND = INDEX(ULINE,TRIM(CEMR))
+          IF (IND /= 0) THEN
+            INDG = IND + INDEX(ULINE(IND:80),'=')
+            READ (ULINE(INDG+1:),*) ERTMAX
+          END IF
+
+        END IF
+
+        READ (29+ifoff,'(A80)',END=990) ZEILE
+      END DO
+
+      IF (JFEX1MN == 0) THEN
+        IF (LGR1MIN .AND. .NOT. LGC1MIN) THEN
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
+          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          CALL EIRENE_LEER(1)
+        END IF
+        IF (LGR1MIN) RC1MIN = LOG(R1MN)          
+        IF (LGC1MIN) FP1(1:3) = FP1L
+        JFEX1MN = IF1MN
+        IF (LGC1MIN .AND. LGR1MIN .AND. (JFEX1MN == 0))
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+     .          JFEX1MN = 5
+      END IF
+
+      IF (JFEX1MX == 0) THEN
+        IF (LGR1MAX .AND. .NOT. LGC1MAX) THEN
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
+          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          CALL EIRENE_LEER(1)
+        END IF
+        IF (LGR1MAX) RC1MAX = LOG(R1MX)          
+        IF (LGC1MAX) FP1(4:6) = FP1R
+        JFEX1MX = IF1MX
+        IF (LGC1MAX .AND. LGR1MAX .AND. (JFEX1MX == 0)) 
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+     .          JFEX1MX = 5
+      END IF
+
+      IF (JFEX2MN == 0) THEN
+        IF (LGR2MIN .AND. .NOT. LGC2MIN) THEN
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
+          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          CALL EIRENE_LEER(1)
+        END IF
+        IF (LGR2MIN) RC2MIN = LOG(R2MN)          
+        IF (LGC2MIN) FP2(1:3) = FP2B
+        JFEX2MN = IF2MN
+        IF (LGC2MIN .AND. LGR2MIN .AND. (JFEX2MN == 0)) JFEX2MN = 5
+      END IF
+
+      IF (JFEX2MX == 0) THEN
+        IF (LGR2MAX .AND. .NOT. LGC2MAX) THEN
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
+          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          CALL EIRENE_LEER(1)
+        END IF
+        IF (LGR2MAX) RC2MAX = LOG(R2MX)          
+        IF (LGC2MAX) FP2(4:6) = FP2T
+        JFEX2MX = IF2MX
+        IF (LGC2MAX .AND. LGR2MAX .AND. (JFEX2MX == 0)) JFEX2MX = 5
+      END IF
+C
+2000  CONTINUE
+
       CALL
      .  EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,
-     .                       .TRUE.,RCMIN,RCMAX,FP,JFEXMN,JFEXMX)
+     .                       .TRUE.,RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
+     .                              RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
+     .                              RTMAX,ERTMAX,ETH)
 C
       CLOSE (UNIT=29+ifoff)
 C
@@ -766,4 +982,61 @@ C
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
 6664  FORMAT (6E12.4)
+
+      CONTAINS
+
+      SUBROUTINE EIRENE_READ_COEFFS (ZEILE,CH,FP)
+
+c  read three parameters FP(i), i=1,3 for extrapolation
+      CHARACTER(80), INTENT(IN) :: ZEILE
+      CHARACTER(1), INTENT(IN) :: CH
+      REAL(DP), INTENT(OUT) :: FP(3)
+      INTEGER :: IND, INC
+
+      IND=0
+      DO I=1,3
+        INC=INDEX(ZEILE((IND+1):80),CH)
+        IF (INC.GT.0) THEN
+           IND=IND+INDEX(ZEILE((IND+1):80),CH)
+           READ (ZEILE((IND+3):80),'(E20.12)') FP(I)
+        ENDIF
+      END DO
+
+      END SUBROUTINE EIRENE_READ_COEFFS
+
+
+ 
+      SUBROUTINE EIRENE_READ_RANGE (ZEILE,KEY1,KEY2,RNG,IFX)
+
+c  reads validity range from atomic data file
+
+      CHARACTER(80), INTENT(IN) :: ZEILE
+      CHARACTER(7), INTENT(IN) :: KEY1, KEY2
+      REAL(DP), INTENT(OUT) :: RNG
+      INTEGER, INTENT(OUT) :: IFX
+      INTEGER :: IND1, IND2, INDE, INDP, INDX, INDA, INDG
+      CHARACTER(20) :: FORM
+      
+      IND1 = INDEX(ZEILE,TRIM(KEY1))
+      IND2 = INDEX(ZEILE,TRIM(KEY2))
+
+      RNG = 0._DP
+      IFX = 0
+      
+      IF (IND1 > 0) THEN
+        INDG = INDEX(ZEILE,'=')
+        INDE = INDG + VERIFY(ZEILE(INDG+1:),'+-0123456789DEed. ') - 1
+        INDP = SCAN(ZEILE(INDG+1:),'.')
+        INDX = SCAN(ZEILE(INDG+1:),'EDed')
+        INDA = SCAN(ZEILE(INDG+1:),'+-0123456789.')
+        FORM=REPEAT(' ',20)
+        WRITE (FORM,'(A2,I0,A1,I0,A1)') 
+     .         '(E',INDX+3-INDA+1,'.',INDX-INDP-1,')'
+        READ (ZEILE(INDG+INDA:INDE),FORM) RNG
+      END IF
+
+      IF (IND2 > 0) READ (ZEILE(IND2+7:),*) IFX
+
+      END SUBROUTINE EIRENE_READ_RANGE
+     
       END

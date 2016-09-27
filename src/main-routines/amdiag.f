@@ -4,7 +4,7 @@ cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
 
 cdr  aug.      2016: set e0 low energy cut off, as on fpath routines, for H.3 rates
-cdr                  also: lgvac(i,ipl) used.
+cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
 
 !pb  apr       2016: eelds -> eelei
 !pb  may       2016: tabds1 -> tabei1
@@ -97,7 +97,7 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
         mm = 0
         kk = 0
 
-c  currently:  only tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
+c  currently:  only tabei1, tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
 c              modcol=1: rates depend only on background parameters, not on test particle parameters
 c              modcol=2: rates depend also on test particle energy. use E_test=1.5 kT_background
 c  to be done:  (e.g. for Beams)
@@ -167,6 +167,7 @@ c  no interacting particle species found
  
           if (mm.eq.1) then
             DO 1720 ICELL=1,NSBOX
+              if (lgvac(icell,npls+1)) cycle  
               ADIN(IAIN,ICELL)=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
 1720        CONTINUE
 

@@ -2,11 +2,14 @@ cdr  oct. 2015:
 cdr  k=-1:  cx  H  + p  
 cdr  k=-11  ei  He + e   (was formerly also k=-1)
 !pb  june 2016: nullify unused pointers in default reaction k=-11
+cdr  sept. 16:  extend options for asmyptotics  (extrapolation of fits)
+cdr             currently this is by far overdone, all fits in here are single parametric
+cdr             but leave as is, for later extensions....
 
       subroutine EIRENE_setup_default_reactions
 c  fill reacdat(k)%... with default reaction data, k < 0.
 c  first set default rate coefficients K= -4,-5,...-11  (-1, -2 and -3 are not used)
-c                                                  (extrapolation flags: 0)                     
+c                                                   (extrapolation flags: 0)                     
 c  and
 c  then  set default cross sections    K= -1,-2,-3  (extrapolation flags: 5)
 c
@@ -40,11 +43,23 @@ C  RATE COEFFICIENT, JANEV, 2.1.5
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 13.6_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.271396786375D+01,  1.353655609057D+01, -5.739328757388D+00,
@@ -62,11 +77,23 @@ C  RATE COEFFICIENT, JANEV, 2.2.5, PREPRINT (CORRECT), NOT "BOOK"
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-2.787217511174D+01,  1.052252660075D+01, -4.973212347860D+00,
@@ -84,11 +111,23 @@ C  RATE COEFFICIENT, JANEV, 2.2.10
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.834597006782D+01,  1.426322356722D+01, -5.826468569506D+00,
@@ -106,11 +145,23 @@ C  RATE COEFFICIENT, JANEV, 2.2.9
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.568640293666D+01,  1.733468989961D+01, -7.767469363538D+00,
@@ -128,11 +179,23 @@ C  RATE COEFFICIENT, JANEV, 2.2.12
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-1.781416067709D+01,  2.277799785711D+00, -1.266868411626D+00,
@@ -150,11 +213,23 @@ C  RATE COEFFICIENT, JANEV, 2.2.11
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.746192301092D+01,  1.559355031108D+01, -6.693238367093D+00,
@@ -172,18 +247,31 @@ C  RATE COEFFICIENT, JANEV, 2.2.14
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
 cdr
 cdr   REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
 cdr  . (/-1.670435653561D+01, -6.035644995682D-01, -1.942745783445D-08,
 cdr  .   -2.005952284492D-07,  2.962996104431D-08,  2.134293274971D-08,
 cdr  .   -6.353973401838D-09,  6.152557460831D-10, -2.025361858319D-11/)
 cdr  reduce original fit to linear expression in log-log scale
-cdr  the resulting mean electron energy loss is then exactly 3/2+b1=8.964355004318D-01
+cdr  the resulting mean electron energy loss per event
+cdr  is then exactly Te*(3/2+b1)=Te*(8.964355004318D-01)
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-1.670435653561D+01, -6.035644995682D-01,  0.000000000000D+00,
      .    0.000000000000D+00,  0.000000000000D+00,  0.000000000000D+00,
@@ -195,17 +283,29 @@ C  RATE COEFFICIENT, JANEV, 2.3.9
       ALLOCATE(REACDAT(IR)%RTC)
       ALLOCATE(REACDAT(IR)%RTC%POLY)
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
-!pb nullify unused pointers
       NULLIFY (REACDAT(IR)%RTC%ADAS)
       NULLIFY (REACDAT(IR)%RTC%LINE)
       NULLIFY (REACDAT(IR)%RTC%HYD)
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-      REACDAT(IR)%RTC%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%RTC%POLY%FPARM = 0._DP
-      REACDAT(IR)%RTC%POLY%IFEXMN = 0
-      REACDAT(IR)%RTC%POLY%IFEXMX = 0
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%RTC%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%RTC%FP1L = 0._DP
+      REACDAT(IR)%RTC%FP1R = 0._DP
+      REACDAT(IR)%RTC%FP2B = 0._DP
+      REACDAT(IR)%RTC%FP2T = 0._DP
+      REACDAT(IR)%RTC%JFEX1MN = 0
+      REACDAT(IR)%RTC%JFEX1MX = 0
+      REACDAT(IR)%RTC%JFEX2MN = 0
+      REACDAT(IR)%RTC%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
+
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      .  (/-4.409864886561d+01, 2.391596563469d+01,-1.075323019821d+01,
      .     3.058038757198d+00,-5.685118909884d-01, 6.795391233790d-02,
@@ -236,14 +336,24 @@ C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
      .    9.205482406462D-03,  2.400266568315D-03, -1.927122311323D-03,
      .    3.654750340106D-04, -2.788866460622D-05,  7.422296363524D-07/)
       IFTFLG(IR,1) = 0
-      REACDAT(IR)%CRS%POLY%RCMN = -2.3025851D+00   ! ELABMIN=0.1
-      REACDAT(IR)%CRS%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%CRS%POLY%FPARM(1) = -3.2945896D+01
-      REACDAT(IR)%CRS%POLY%FPARM(2) = -1.7131120D-01
-      REACDAT(IR)%CRS%POLY%FPARM(3) = 0._DP
+c  asymptotic expression from data file HYDHEL, at low energy limit
+      REACDAT(IR)%CRS%RC1MIN = -2.3025851D+00   ! ELABMIN=0.1
+      REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%CRS%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%CRS%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%CRS%FP1L = (/ -3.2945896D+01, -1.7131120D-01, 0._DP /)
+      REACDAT(IR)%CRS%FP1R = 0._DP
+      REACDAT(IR)%CRS%FP2B = 0._DP
+      REACDAT(IR)%CRS%FP2T = 0._DP
 C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
-      REACDAT(IR)%CRS%POLY%IFEXMN = 5
-      REACDAT(IR)%CRS%POLY%IFEXMX = 5
+      REACDAT(IR)%CRS%JFEX1MN = 5
+      REACDAT(IR)%CRS%JFEX1MX = 0
+      REACDAT(IR)%CRS%JFEX2MN = 0
+      REACDAT(IR)%CRS%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
  
 C
 C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 5.3.1
@@ -263,14 +373,24 @@ C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
      .    -3.592504363592d-03,-1.745382918016d-04, 1.497204460315d-04,
      .    -2.152122621503d-05, 1.473684503283d-06,-4.401831552698d-08/)
       IFTFLG(IR,1) = 0
-      REACDAT(IR)%CRS%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%CRS%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%CRS%POLY%FPARM(1) = 0._DP
-      REACDAT(IR)%CRS%POLY%FPARM(2) = 0._DP
-      REACDAT(IR)%CRS%POLY%FPARM(3) = 0._DP
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%CRS%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%CRS%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%CRS%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%CRS%FP1L = 0._DP
+      REACDAT(IR)%CRS%FP1R = 0._DP
+      REACDAT(IR)%CRS%FP2B = 0._DP
+      REACDAT(IR)%CRS%FP2T = 0._DP
 C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
-      REACDAT(IR)%CRS%POLY%IFEXMN = 5
-      REACDAT(IR)%CRS%POLY%IFEXMX = 5
+      REACDAT(IR)%CRS%JFEX1MN = 5
+      REACDAT(IR)%CRS%JFEX1MX = 5
+      REACDAT(IR)%CRS%JFEX2MN = 0
+      REACDAT(IR)%CRS%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
  
 C
 C  K=-3:  He + He++ --> He++ + He   CROSS SECTION, JANEV, 6.3.1
@@ -290,15 +410,24 @@ C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
      .     2.392295193337d-03, 9.876388162277d-04,-2.282012750308d-04,
      .     3.598361283629d-06, 1.940270105613d-06,-1.105794797036d-07/)
       IFTFLG(IR,1) = 0
-      REACDAT(IR)%CRS%POLY%RCMN = -HUGE(1._DP)
-      REACDAT(IR)%CRS%POLY%RCMX = HUGE(1._DP)
-      REACDAT(IR)%CRS%POLY%FPARM(1) = 0._DP
-      REACDAT(IR)%CRS%POLY%FPARM(2) = 0._DP
-      REACDAT(IR)%CRS%POLY%FPARM(3) = 0._DP
+c  currently:  no asymptotics for this default reaction
+      REACDAT(IR)%CRS%RC1MIN = -HUGE(1._DP)
+      REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
+      REACDAT(IR)%CRS%RC2MIN = -HUGE(1._DP)
+      REACDAT(IR)%CRS%RC2MAX = HUGE(1._DP)
+      REACDAT(IR)%CRS%FP1L = 0._DP
+      REACDAT(IR)%CRS%FP1R = 0._DP
+      REACDAT(IR)%CRS%FP2B = 0._DP
+      REACDAT(IR)%CRS%FP2T = 0._DP
 C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
-      REACDAT(IR)%CRS%POLY%IFEXMN = 5
-      REACDAT(IR)%CRS%POLY%IFEXMX = 5
- 
+      REACDAT(IR)%CRS%JFEX1MN = 5
+      REACDAT(IR)%CRS%JFEX1MX = 5
+      REACDAT(IR)%CRS%JFEX2MN = 0
+      REACDAT(IR)%CRS%JFEX2MX = 0
+c
+      REACDAT(IR)%RTMAX = 0._DP
+      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 0._DP
  
  
       end subroutine EIRENE_setup_default_reactions

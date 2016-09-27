@@ -610,7 +610,6 @@ C  INCIDENT BULK PARTICLE INDEX
             NRPII=NRPII+1
             IF (NRPII.GT.NRPI) GOTO 998
             IRPI=NRPII
-            NREAPI(IRPI) = KK
             LGIPI(IION,IDSC,0)=IRPI
             LGIPI(IION,IDSC,1)=IPLS
 

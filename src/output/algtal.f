@@ -244,16 +244,19 @@ c  ??
               OP(1:NSBOX) = BYPERP(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (18)
-
+c  Ex
               OP(1:NSBOX) = EXIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (19)
+c  Ey
               OP(1:NSBOX) = EYIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (20)
+c  Ez
               OP(1:NSBOX) = EZIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (21)
+c  |E|
               OP(1:NSBOX) = EFIN(1:NSBOX)
               WEI(1:NSBOX) = 1._DP
             CASE (22)

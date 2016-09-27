@@ -53,8 +53,8 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
       real(dp), intent(out) :: erate
-      real(dp) :: rate, EIRENE_sngl_poly, dum(9), rcmin, rcmax,
-     .            fp(6), pp1, pp2,
+      real(dp) :: rate, EIRENE_sngl_poly, dum(9), rc1min, rc1max,
+     .            fp1(6), fp2(6), pp1, pp2, rc2min, rc2max,
      .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
      .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
@@ -62,8 +62,8 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
      .                  dsub    = 18.420680744_dp       !ln(1e8)
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
-      integer :: jfexmn, jfexmx,ic,ip1,ip2
-            
+      integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
+      integer :: ic,ip1,ip2            
  
       interface
         function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
@@ -93,15 +93,6 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
       rate = 0._dp
       erate = 0._dp
 
-c  extrapolation data: currently only for 1D (single parameter) polynomial fits 
-      if ((reacdat(ir)%rtc%ifit == 1) .or.
-     .    (reacdat(ir)%rtc%ifit == 2)) then
-        rcmin  = reacdat(ir)%rtc%poly%rcmn
-        rcmax  = reacdat(ir)%rtc%poly%rcmx
-        fp     = reacdat(ir)%rtc%poly%fparm
-        jfexmn = reacdat(ir)%rtc%poly%ifexmn
-        jfexmx = reacdat(ir)%rtc%poly%ifexmx
-      end if
 c.............................................................
 
  
@@ -118,8 +109,16 @@ c.............................................................
 
 !  SINGLE POLYNOMIAL FIT VS. P1 (TEMPERATURE), FOR LN OF ENERGY WEIGHTED RATE
  
+c  extrapolation data:  for 1d polynomial fits 
+        rc1min  = reacdat(ir)%rtc%rc1min
+        rc1max  = reacdat(ir)%rtc%rc1max
+        fp1(1:3)= reacdat(ir)%rtc%fp1l
+        fp1(4:6)= reacdat(ir)%rtc%fp1r
+        jfex1mn = reacdat(ir)%rtc%jfex1mn
+        jfex1mx = reacdat(ir)%rtc%jfex1mx
+ 
         rate = eirene_sngl_poly(reacdat(ir)%rtc%poly%dblpol(1:9,1),
-     .                   p1, rcmin, rcmax, fp, jfexmn, jfexmx)
+     .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx)
 
 C       if (.not. lexp)  rate=rate
         if (lexp)        rate = exp(max(-100._dp,rate))
@@ -131,13 +130,29 @@ c..............................................................
 
 !  DOUBLE POLYNOMIAL FIT VS. P1 (TEMPERATURE) AND P2,  FOR LN OF RATE 
 
+c  extrapolation data:  for 2d polynomial fits 
+        rc1min  = reacdat(ir)%rtc%rc1min
+        rc1max  = reacdat(ir)%rtc%rc1max
+        rc2min  = reacdat(ir)%rtc%rc2min
+        rc2max  = reacdat(ir)%rtc%rc2max
+        fp1(1:3)= reacdat(ir)%rtc%fp1l
+        fp1(4:6)= reacdat(ir)%rtc%fp1r
+        fp2(1:3)= reacdat(ir)%rtc%fp2b
+        fp2(4:6)= reacdat(ir)%rtc%fp2t
+        jfex1mn = reacdat(ir)%rtc%jfex1mn
+        jfex1mx = reacdat(ir)%rtc%jfex1mx
+        jfex2mn = reacdat(ir)%rtc%jfex2mn
+        jfex2mx = reacdat(ir)%rtc%jfex2mx
+ 
+
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
         pp2 = p2
         if (iprshft > 0) pp2 = pp2 - dsub
  
         call EIRENE_dbl_poly
      .       (reacdat(ir)%rtc%poly%dblpol,p1,pp2,rate,dum,
-     .        rcmin, rcmax, fp, jfexmn, jfexmx)
+     .        rc1min, rc1max, fp1, jfex1mn, jfex1mx,
+     .        rc2min, rc2max, fp2, jfex2mn, jfex2mx)
 
 C       if (.not. lexp)  rate=rate
         if (lexp)        rate = exp(max(-100._dp,rate))

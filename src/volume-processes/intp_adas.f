@@ -63,7 +63,7 @@ c  or outside the parameter range of this table.
       rx = (ad%temp(ite+1) - p1) * ad%dte(ite)
       ry = (ad%dens(ide+1) - p2) * ad%dde(ide)
 c  fill ff: intermediate 2 by 2 matrix of tabulated values at cell vertices
-      ff = ad%fit(ite:ite+1,ide:ide+1)
+      ff = ad%tab2d(ite:ite+1,ide:ide+1)
 
       call EIRENE_bilinear_int (ff, rx, ry, res)
  

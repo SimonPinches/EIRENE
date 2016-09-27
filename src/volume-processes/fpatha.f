@@ -24,10 +24,7 @@ cdr 06.08.15 :  arguments added to vecusr
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
 
-cdr aug. 16:    bug fix re EXPO in PI branch
-cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
-cdr             ei process: started to check for H.3, H.1 options for EI processes
-cdr                         according to v0/vth >> 1. criteria
+
 
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
@@ -36,6 +33,10 @@ cdr                         according to v0/vth >> 1. criteria
 !pb MAY  16:    tabds1 -> tabei1
 !pb JUL  16:    ehvds1 -> ehvei1
 
+cdr aug. 16:    bug fix re EXPO in PI branch
+cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
+cdr             ei process: started to check for H.3, H.1 options for EI processes
+cdr                         according to v0/vth >> 1. criteria
 
 C
       FUNCTION EIRENE_FPATHA (K,CFLAG,JCOU,NCOU)
@@ -165,9 +166,16 @@ C
       DO 10 IAEI=1,NAEII(IATM)
         IREI=LGAEI(IATM,IAEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
+          IF (NSTORDR >= NRAD) THEN
+            SIGVEI(IREI)=TABEI1(IREI,K)
+          ELSE
+            SIGVEI(IREI)=EIRENE_FTABEI1(IREI,K)
+          END IF
 
-cdr  this part should be in modcol=2 option: to be written for ei processes
+        ELSEIF (MODCOL(1,2,IREI).EQ.2) THEN 
 
+          WRITE (IUNOUT,*) 'UNFINISHED OPTION IN FPATHA, EXIT '
+          CALL EIRENE_EXIT_OWN(1)
 ! scale log collision energy to projectile energy for proper isotope, for rate coefficient, i.e. use neutral particle mass
 C set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
 C         ELB=MAX(-2.3_DP,LOG(PVELQ0)+ ???, TO CONVERT TO LOG ENERGY)
@@ -178,22 +186,21 @@ c thermal velocity at Te
           VE_TH=CVELAA*SQRT(TEIN(K)/PMASSE)
 C rather than elb>>tii, one should compare V0_REL and the thermal velocity, then: also ok. for ei processes 
           IF (TEIN(K).LT.TVAC .OR. (V0_REL/VE_TH).GT.10.) THEN
+
 c         IF ((ELB-TII).GT.4.6) THEN
 C  HERE: T_E IS SO LOW, THAT ALL ENERGY IS IN TEST PARTICLE MOTION.
 c        use cross section times v0, rather than rate coefficient
 cdr         WRITE (IUNOUT,*) 'K,EI',K, V0_REL/VE_TH
+
           ELSEIF ((V0_REL/VE_TH).GE.0.1.AND.(V0_REL/VE_TH).LE.10.) THEN
-c  USE H.3 RATE COEFFICIENT, needs tabei3, to be written.....  
+
+c  USE H.3 RATE COEFFICIENT, needs tabei3, to be written..... 
+
           ELSE  ! NORMAL CASE FOR EI COLLISIONS: V0 << VTH
+c  use original H.2 rate coefficient, for test particle at rest relative to electron speed
           ENDIF
+ 
 
-
-
-          IF (NSTORDR >= NRAD) THEN
-            SIGVEI(IREI)=TABEI1(IREI,K)
-          ELSE
-            SIGVEI(IREI)=EIRENE_FTABEI1(IREI,K)
-          END IF
         ELSE
           GOTO 990
         ENDIF
@@ -277,14 +284,15 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
             ELSE
-! CALCULATE RATE-COEFFICIENT
+! CALCULATE RATE-COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
 
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
             SIGVPI(IRPI)=EXP(EXPO)
-          END IF      
+          END IF
+      
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)

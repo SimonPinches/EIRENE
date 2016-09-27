@@ -1,4 +1,6 @@
 cdr: Aug. 2016  started commenting,documenting
+cdr: Sept.  16  this routine is not used any longer. calls to dbl_poly now are
+cdr             direct from xstcx, xstel and xstpi without this intermediate step
 
 
       subroutine EIRENE_prep_rtcs (ir, iflg, al, dum)
@@ -35,7 +37,9 @@ c
       real(dp), intent(in) :: al
       real(dp), intent(out) :: dum(9)
       real(dp) :: cou
+      real(dp) :: fp1(6),fp2(6)
       type(poly_data), pointer :: rp
+      type(fit_forms), pointer :: rt
  
       select case (iflg)
       case (3)
@@ -43,6 +47,7 @@ c
           WRITE (IUNOUT,*) ' NO DATA AVAILABLE FOR RATE COEFFICIENT',ir
           CALL EIRENE_EXIT_OWN(1)
         END IF
+        rt => reacdat(ir)%rtc
         rp => reacdat(ir)%rtc%poly
  
       case (4)
@@ -51,6 +56,7 @@ c
      .                     ' MOMENTUM-WEIGHTED RATE COEFFICIENT',ir
           CALL EIRENE_EXIT_OWN(1)
         END IF
+        rt => reacdat(ir)%rtcmw
         rp => reacdat(ir)%rtcmw%poly
  
       case (5)
@@ -59,6 +65,7 @@ c
      .                     ' ENERGY-WEIGHTED RATE COEFFICIENT',ir
           CALL EIRENE_EXIT_OWN(1)
         END IF
+        rt => reacdat(ir)%rtcew
         rp => reacdat(ir)%rtcew%poly
  
       case (6)
@@ -67,6 +74,7 @@ c
      .                     ' OTHER REACTION',ir
           CALL EIRENE_EXIT_OWN(1)
         END IF
+        rt => reacdat(ir)%oth
         rp => reacdat(ir)%oth%poly
  
       case default
@@ -76,11 +84,14 @@ c
         write (iunout,*) ' 3 <= iflg <= 6 assumed '
         call EIRENE_exit_own(1)
       end select
-
-c  find fit coefficients dum(1:9) for p2 dependence, at fixed log(p1)=al
-     
-      call EIRENE_dbl_poly (rp%dblpol,al,0._dp,cou,dum,
-     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
  
+      fp1(1:3) = rt%fp1l
+      fp1(4:6) = rt%fp1r
+      fp2(1:3) = rt%fp2b
+      fp2(4:6) = rt%fp2t
+      call EIRENE_dbl_poly (rp%dblpol,al,0._dp,cou,dum,
+     .     rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
+     .     rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+
       return
       end subroutine EIRENE_prep_rtcs

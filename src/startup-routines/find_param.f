@@ -559,15 +559,18 @@ C
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
       IF (IEND > 0) THEN
-        CALL EIRENE_READ_TOKEN
-     .       (ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,.FALSE.)
         LHYDDEF=.TRUE.
+cdr  here should come an error exit: unfinished option, proprietary version only...
+
+        CALL EIRENE_READ_TOKEN
+     .       (ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,.FALSE.)      
  
         IEND = IEND + 7 + ITOK
         CALL EIRENE_READ_TOKEN(ZEILE(IEND+1:),' ',CADAPT,ITOK,IER,
      .                  .FALSE.)
         READ (IUNIN,'(A72)') ZEILE
       END IF
+
       READ (ZEILE,*) NREACI
       NREAC = MAX(NREAC,NREACI)+NREAC_ADD
 C
@@ -594,7 +597,9 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-!pb       READ (IUNIN,*)
+cpb......................................
+cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULTI = LMULTI .OR. (IDUM(7) /= 0)
@@ -603,6 +608,7 @@ C
           ELSEIF (NUMSEC == 4) THEN
             LMULTI = LMULTI .OR. (IDUM(9) /= 0)
           END IF
+cpb.......................................
           READ (IUNIN,*)
         END DO
       END DO
@@ -624,7 +630,9 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-!pb       READ (IUNIN,*)
+cpb......................................
+cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULTI = LMULTI .OR. (IDUM(7) /= 0)
@@ -633,6 +641,7 @@ C
           ELSEIF (NUMSEC == 4) THEN
             LMULTI = LMULTI .OR. (IDUM(9) /= 0)
           END IF
+cpb.......................................
           READ (IUNIN,*)
         END DO
       END DO
@@ -653,7 +662,9 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-!pb       READ (IUNIN,*)
+cpb......................................
+cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULTI = LMULTI .OR. (IDUM(7) /= 0)
@@ -662,6 +673,7 @@ C
           ELSEIF (NUMSEC == 4) THEN
             LMULTI = LMULTI .OR. (IDUM(9) /= 0)
           END IF
+cpb.......................................
           READ (IUNIN,*)
         END DO
       END DO
@@ -680,7 +692,9 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-!pb       READ (IUNIN,*)
+cpb......................................
+cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULTI = LMULTI .OR. (IDUM(7) /= 0)
@@ -689,6 +703,7 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
           ELSEIF (NUMSEC == 4) THEN
             LMULTI = LMULTI .OR. (IDUM(9) /= 0)
           END IF
+cpb.......................................
           READ (IUNIN,*)
         END DO
       END DO
@@ -729,7 +744,7 @@ C
           READ (IUNIN,*)
           READ (IUNIN,*)
         END DO
-!pb  IF (VERIFY(ZEILE(57:66),' ') > 0) THEN
+!pb     IF (VERIFY(ZEILE(57:66),' ') > 0) THEN
         IF (INMDL > 0) THEN
           NRE=0
           IF (VERIFY(ULINE(INMDL+11:),' ') > 0)
@@ -747,9 +762,14 @@ cdr  this next line is probably not needed.
 cdr  ico > 0 indicates: at least one bulk species has a special 
 cdr  background data model,  fort.., saha, corona, ...etc...
       IF (ICO > 0) NREAC=NREAC+1
- 
+
+
+cdr ..................................................................
       IF (LHYDDEF) THEN
-c  unfinished option, only for proprietary version of code.
+
+c   unfinished option, only for proprietary version of code.
+cdr here should come an error exit: unfinished option, proprietary version only...
+
         HYDKIN_DEFAULT=ADJUSTL(HYDKIN_DEFAULT)
         LL=LEN_TRIM(HYDKIN_DEFAULT)
         FILENAME=HYDKIN_DEFAULT(1:LL) // '.reactions'
@@ -825,35 +845,50 @@ c  unfinished option, only for proprietary version of code.
       END IF  ! LHYDDEF  
 
       DEALLOCATE (BULK_NAME)
- 
+cdr .................................................................. 
  
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) == '*')
          READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
- 
+
+cdr to be done: syncronisation of options for Ti and Vi.
+cdr these next 2 lines for Ti(ipls)  
 !pb   NPLSTI = 1
 !pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
+
       NPLSTI = NPLS
       IF (INDPRO(2)<0) NPLSTI=1
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
-        WRITE (IUNOUT,*) 'WARNING !'
+        WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
         WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
-     .                   ' DUE TO INDPRO(2) < 0'
+     .                   'DUE TO INDPRO(2) < 0'
         IF (LMULTI) THEN
           WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
-     .                     ' BECAUSE BGK REACTIONS PRESENT'
+     .                     'BECAUSE BGK REACTIONS ARE PRESENT'
           NPLSTI = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
 
-cdr these next 2 lines for Vi(ipls) 
+cdr these next 2 lines for Vi(ipls)
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
+
+      IF ((NPLS > 1) .AND. (NPLSV == 1)) THEN
+        WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
+        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY',
+     .                   'DUE TO INDPRO(4) > 10'
+        IF (LMULTI) THEN
+          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
+     .                     'BECAUSE BGK REACTIONS ARE  PRESENT'
+          NPLSTI = NPLS
+        END IF
+        WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
+      END IF
 
 C  FIND START OF NEXT INPUT BLOCK: 6
  

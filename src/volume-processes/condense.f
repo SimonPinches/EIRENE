@@ -42,7 +42,7 @@ C  currently: only electron impact collisions on molecules
               IF (NFOLI(IION).LT.0) THEN
                 WRITE (iunout,*) 'TEST ION ',TEXTS(ISP),
      .                           'BORN FROM MOLECULE ', TEXTS(ISP0),
-     .                           ' CAN BE CONDENSED'
+     .                           'CAN BE CONDENSED'
               ENDIF
             ENDIF
 220       CONTINUE

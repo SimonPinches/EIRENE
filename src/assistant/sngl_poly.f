@@ -1,6 +1,6 @@
 cdr  Aug. 2016:  generalized (ifexmx<0 enabled), two new parameters in list for fct. extrap
 
-cdr  this function evaluate the standard single parameter 8th order polynomial
+cdr  this function evaluates the standard single parameter 8th order polynomial
 cdr  fits for cross section and rate coefficients, used in the 
 cdr  HYDHEL  (Janev, Langer et al, Springer, 1987)
 cdr  METHANE (Ehrhardt, Langer et al, PPPL report) 
@@ -8,8 +8,8 @@ cdr  databases. See references in online manual.
 cdr  the same fit format is also used most of the time in the eirene-home
 cdr  databases amjuel, h2vibr,
 
-      function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp, ifexmn,
-     .  ifexmx)
+      function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp, 
+     .                                   ifexmn, ifexmx)
      .                   result(cou)
 c  input:
 c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1)) 
@@ -32,12 +32,12 @@ c  ifexmx: flag for choice of right (high end) extrapolation expression
      .            EIRENE_extrap
       integer :: ii, if8, ifex
  
-      if ((ifexmn .ne. 0) .and. (al < rcmin)) then
+      if (al < rcmin) then
  
-C  PARM BELOW MINIMUM PARAMETER FOR FIT:
+C  PARM BELOW MINIMUM PARAMETER FOR POLYNOM FIT:
  
         FP = FPP
- 
+
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN
         IF (IFEXMN.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(SIGMA)
@@ -60,25 +60,36 @@ C
           IFEX=5
           ALMIN =RCMIN
           COUMIN=EXP(EXPO1)
-        ELSE   !IFEXMN IS .GT. 0
+
+        ELSEIF  (IFEXMN.GT.0) THEN
+C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN  
+C  IFEXMN IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmn
           
           coumin = cf(9)
           do ii = 8, 1, -1
             coumin = coumin * RCMIN + cf(ii)
           end do
           ifex = ifexmn
+C  determine parameter and fit value at left boundary. may be needed by fct. extrap
           ALMIN= RCMIN
           COUMIN=EXP(COUMIN)
+
+        ELSE
+
+C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED
+C  WHAT TO WE DO NOW ???
+          GOTO 100
+
         ENDIF
  
         COU=EIRENE_EXTRAP(AL,ALMIN,COUMIN,IFEX,FP(1),FP(2),FP(3))
         cou = log(cou)
+        return
  
-      elseif ((ifexmx .ne. 0) .and. (al > rcmax)) then
+      elseif (al > rcmax) then
  
 C  PARM IS ABOVE MAXIMUM VALID PARAMETER FOR FIT:
  
-
         FP = FPP
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX
         IF (IFEXMX.LT.0) THEN
@@ -102,31 +113,42 @@ C
           IFEX=5
           ALMAX =RCMAX
           COUMAX=EXP(EXPO1)
-        ELSE   !IFEXMX IS .GT. 0  
+
+        ELSEIF (IFEXMX.GT.0) THEN 
+C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN  
+C  IFEXMX IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmx   
           
           COUMAX = cf(9)
           do ii = 8, 1, -1
             coumax = coumax * RCMAX + cf(ii)
           end do
-          ifex = ifexmn
+          ifex = ifexmx
+C  determine parameter and fit value at right boundary. may be needed by fct. extrap
           ALMAX= RCMAX
           COUMAX=EXP(COUMAX)
+
+        ELSE
+
+C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED
+C  WHAT TO WE DO NOW ???
+          GOTO 100
+
         ENDIF
 
         COU=EIRENE_EXTRAP(AL,ALMAX,COUMAX,IFEX,FP(4),FP(5),FP(6))
         cou = log(cou)
+        return
  
-      else
+      ENDIF
  
 C  PARAMETER "AL" IS WITHIN VALID RANGE OF FIT:
  
-        cou = cf(9)
+100   cou = cf(9)
  
-        do ii = 8, 1, -1
-          cou = cou * al + cf(ii)
-        end do
+      do ii = 8, 1, -1
+        cou = cou * al + cf(ii)
+      end do
  
-      end if
- 
+
       return
       end function EIRENE_sngl_poly

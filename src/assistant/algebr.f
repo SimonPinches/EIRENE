@@ -1,4 +1,4 @@
-C
+Cdr  Sept. 16: Bug fix:  added option: two or more  constants next to each other
 C
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_ALGEBR (TERM,OPER,IZIF,CONST,NOP)

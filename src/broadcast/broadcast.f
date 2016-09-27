@@ -24,7 +24,11 @@ cdr  unification of naming conventions for electron impact collisions
 !pb  MAY  16:  nrds -> nrei
 !pb  JUL  16:  ehvds1 -> ehvei1
 !dr  sept 16:  nmdsi  -> nmeii
-!dr  spet 16:  nidsi  -> nieii
+!dr  sept 16:  nidsi  -> nieii
+
+cdr  sept 16:  ETH (collision threshold energy) added to reaction data
+cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel
+cdr            broadcast data for extrapolation from tables or fits, independent of IFIT 
 
 cdr
   
@@ -490,7 +494,10 @@ c  EL post collision energetics
  
 !pb   CALL MPI_BCAST (CREAC,99*(NREAC+11),MPI_REAL8,
 !pb  .                0,MPI_COMM_WORLD,ier)
- 
+
+cdr   old data structure CREAC has been replaced by more general data structure REACDAT
+
+
       DO IR=-11, NREAC
         CALL MPI_BCAST (REACDAT(IR)%LPOT,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
@@ -508,7 +515,18 @@ c  EL post collision energetics
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (REACDAT(IR)%NOSEC,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
- 
+
+c  reaction threshold, eV 
+        CALL MPI_BCAST (REACDAT(IR)%ETH,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+c  max of sigma * v  cm**3/s 
+        CALL MPI_BCAST (REACDAT(IR)%RTMAX,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+c  collision energy, at which rtmax is taken, eV 
+        CALL MPI_BCAST (REACDAT(IR)%ERTMAX,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+
+c  data for interaction potential 
         IF (REACDAT(IR)%LPOT) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
@@ -521,6 +539,7 @@ c  EL post collision energetics
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
         END IF
+c  data for cross sections, cm**2
         IF (REACDAT(IR)%LCRS) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
@@ -534,6 +553,7 @@ c  EL post collision energetics
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS)
         END IF
         IF (REACDAT(IR)%LRTC) THEN
+c  data for rate coefficients, cm**3/s
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
               ALLOCATE(REACDAT(IR)%RTC)
@@ -545,6 +565,7 @@ c  EL post collision energetics
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
         END IF
+c  data for momentum weighted rate coefficients  g cm/s cm**3/s
         IF (REACDAT(IR)%LRTCMW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
@@ -557,6 +578,7 @@ c  EL post collision energetics
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
         END IF
+c  data for energy weighted rate coefficients,  eV cm**3-s 
         IF (REACDAT(IR)%LRTCEW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
@@ -569,6 +591,7 @@ c  EL post collision energetics
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
         END IF
+c  other data, such as CR coefficients
         IF (REACDAT(IR)%LOTH) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
@@ -581,6 +604,7 @@ c  EL post collision energetics
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH)
         END IF
+c  data for photon line transport
         IF (REACDAT(IR)%LPHR) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%PHR)) THEN
@@ -1374,15 +1398,43 @@ c     on the "root" node, where this is already done via timea0 after input
       IMPLICIT NONE
       TYPE(FIT_FORMS), POINTER :: RP
       INTEGER :: IER, ND, ND2
- 
+
+C.....................................................................
+cdr broadcast A&M data, general for a process , independent of data structure RP%IFIT  
       CALL MPI_BCAST (RP%IFIT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
  
+      CALL MPI_BCAST (RP%JFEX1MN,1,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%JFEX1MX,1,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%JFEX2MN,1,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%JFEX2MX,1,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%RC1MIN,1,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%RC1MAX,1,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%RC2MIN,1,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%RC2MAX,1,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%FP1L,3,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%FP1R,3,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%FP2B,3,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RP%FP2T,3,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+
+C..................................................................... 
       IF (RP%IFIT < 0) THEN
- 
+C DATA FOR PHOTONIC LINE SHAPE AND LINE TRANSPORT 
         IF (MY_PE .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)  ! IYS
         ENDIF
-! DATA FOR PHOTONIC LINE
+
         CALL MPI_BCAST (RP%LINE%E0,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%LINE%E1,1,MPI_REAL8,
@@ -1425,9 +1477,11 @@ c     on the "root" node, where this is already done via timea0 after input
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%LINE%KENN,24,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)
- 
-      ELSE IF (RP%IFIT <= 2) THEN
-! DATA FOR POLYNOMIAL FIT
+
+ C.....................................................................
+      ELSE IF (1<= RP%IFIT.OR.RP%IFIT <= 2) THEN
+C  POLYNOMIAL FIT, either 1D  (RP%IFIT=1),
+C                  or     2D  (RP%IFIT=2)
         IF (MY_PE == 0) THEN
           ND = UBOUND(RP%POLY%DBLPOL,1)
           ND2 = UBOUND(RP%POLY%DBLPOL,2)
@@ -1455,21 +1509,12 @@ c     on the "root" node, where this is already done via timea0 after input
           END IF
         END IF
  
-        CALL MPI_BCAST (RP%POLY%IFEXMN,1,MPI_INTEGER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%POLY%IFEXMX,1,MPI_INTEGER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%POLY%RCMN,1,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%POLY%RCMX,1,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%POLY%FPARM,6,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%POLY%DBLPOL,ND*ND2,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
- 
+
+C..................................................................... 
       ELSE IF (RP%IFIT == 3) THEN
-! ADAS DATA
+! 2D TABLES, E.G. ADAS DATA
         IF (MY_PE .NE. 0) THEN
 !pb          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
 !pb  NULLIFY NOT YET ALLOCATED POINTER ARRAYS
@@ -1479,7 +1524,7 @@ c     on the "root" node, where this is already done via timea0 after input
              NULLIFY(RP%ADAS%TEMP)
              NULLIFY(RP%ADAS%DDE)
              NULLIFY(RP%ADAS%DTE)
-             NULLIFY(RP%ADAS%FIT)
+             NULLIFY(RP%ADAS%TAB2D)
           END IF
         END IF
  
@@ -1525,15 +1570,15 @@ c     on the "root" node, where this is already done via timea0 after input
           ELSE
             ALLOCATE (RP%ADAS%DTE(RP%ADAS%NTEMP))
           ENDIF
-          IF (ASSOCIATED(RP%ADAS%FIT)) THEN
-            IF ((RP%ADAS%NTEMP.ne.UBOUND(RP%ADAS%FIT,1)) .or.
-     #         (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%FIT,2))) THEN
-              DEALLOCATE (RP%ADAS%FIT)
-              NULLIFY (RP%ADAS%FIT)
-              ALLOCATE (RP%ADAS%FIT(RP%ADAS%NTEMP,RP%ADAS%NDENS))
+          IF (ASSOCIATED(RP%ADAS%TAB2D)) THEN
+            IF ((RP%ADAS%NTEMP.ne.UBOUND(RP%ADAS%TAB2D,1)) .or.
+     #         (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%TAB2D,2))) THEN
+              DEALLOCATE (RP%ADAS%TAB2D)
+              NULLIFY (RP%ADAS%TAB2D)
+              ALLOCATE (RP%ADAS%TAB2D(RP%ADAS%NTEMP,RP%ADAS%NDENS))
             END IF
           ELSE
-            ALLOCATE (RP%ADAS%FIT(RP%ADAS%NTEMP,RP%ADAS%NDENS))
+            ALLOCATE (RP%ADAS%TAB2D(RP%ADAS%NTEMP,RP%ADAS%NDENS))
           ENDIF
         END IF
  
@@ -1545,11 +1590,12 @@ c     on the "root" node, where this is already done via timea0 after input
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%ADAS%DTE,RP%ADAS%NTEMP,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%ADAS%FIT,RP%ADAS%NTEMP*RP%ADAS%NDENS,
+        CALL MPI_BCAST (RP%ADAS%TAB2D,RP%ADAS%NTEMP*RP%ADAS%NDENS,
      .                  MPI_REAL8,0,MPI_COMM_WORLD,ier)
- 
-      ELSE IF (RP%IFIT > 3) THEN
-! HYDKIN DATA
+
+C.....................................................................
+      ELSE IF (RP%IFIT == 4) THEN
+! 1D TABLES. E.G. HYDKIN DATA
         IF (MY_PE .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%HYD)) THEN
              ALLOCATE (RP%HYD)
@@ -1604,7 +1650,13 @@ c     on the "root" node, where this is already done via timea0 after input
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%HYD%RATIO,RP%HYD%NTEMPS,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-
+C.....................................................................      
+CDR   ELSE IF (RP%IFIT == 5 )
+cdr  internal CR Model, NO DATA TO BE BROADCASTED
+ 
+C.....................................................................
+      ELSE
+cdr     INVALID RP%IFIT   
       END IF
  
       RETURN

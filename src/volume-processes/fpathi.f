@@ -28,7 +28,8 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 cdr sept 16:    nidsi  -> nieii
 
 
-cdr aug. 16:    bug fix re EXPO in PI branch
+cdr aug. 16:    bug fix re EXPO in PI branch, 
+cdr             CORRECTION FOR PI REACTIONS IN CASE TI < TVAC
 
 C
       FUNCTION EIRENE_FPATHI (K,CFLAG,JCOU,NCOU)
@@ -234,7 +235,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
             ELSE
-! CALCULATE RATE-COEFFICIENT
+! CALCULATE RATE-COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
               TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)

@@ -16,9 +16,6 @@ cdr  Jan. 2014:
 !   02.02.15:   ONLY COMMENTS ADDED
 !dr Jan   16:   EPLDS: SPECIES INDEX ADDED. Old EPLDS is now EPLEI(..,0,..)
 
-cdr Aug.16  :   minor syncronisation with xstpi.f. Started to implement H.3 rate coeff. 
-cdr             for high E0, low Te cases. needs to add: TABDS3
-
 !pb APR   16:   pplds -> pplei
 !pb APR   16:   patds -> patei, eatds -> eatei
 !pb APR   16:   pmlds -> pmlei, emlds -> emlei
@@ -26,6 +23,12 @@ cdr             for high E0, low Te cases. needs to add: TABDS3
 !pb APR   16:   pelds -> pelei, eelds -> eelei
 !pb MAY   16:   tabds1 -> tabei1
 !pb JUL   16:   ehvds1 -> ehvei1
+
+
+cdr Aug.16  :   minor syncronisation with xstpi.f. 
+cdr Sept.16 :   Started to implement H.3 rate coeff. 
+cdr             for high E0, low Te cases. Needs to be added: TABEI3
+
 
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
@@ -59,8 +62,7 @@ C
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
-
-      REAL(DP) :: CF(9,0:9), CFF(9)
+      REAL(DP) :: CF(9)
       REAL(DP) :: EFLAG, CHRDIF, FCTKKL, 
      .          EIRENE_FEHVEI1, EE, TB, TEE, 
      .          EIRENE_FEELEI1, EN,
@@ -69,12 +71,14 @@ C
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF,
-     .          DELE, ERATE
+     .          DELE, ERATE,
+     .          FP1(6),FP2(6)
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
+      type(fit_forms), pointer :: rt
 
       LOGICAL :: LHCOL
  
@@ -217,7 +221,7 @@ C  1.) CROSS SECTION(TE) : NOT NEEDED
 C
 C
 C..................................................................
-C  2.) RATE COEFFICIENT (CM**3/S) * ELECTRON DENSITY (CM**-3)
+C  2.) RATE COEFFICIENT  (CM**3/S) * ELECTRON DENSITY (CM**-3)
 C..................................................................
 C
       LHCOL = .FALSE.
@@ -253,21 +257,36 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
 
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TE,EBEAM)
+C       NEND=9
 C  TO BE WRITTEN
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
+          rt => reacdat(kk)%rtc
+          fp1(1:3) = rt%fp1l
+          fp1(4:6) = rt%fp1r
+          fp2(1:3) = rt%fp2b
+          fp2(4:6) = rt%fp2t  
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
               TEE = max(-2.3_dp,TEE)
-              CALL EIRENE_PREP_RTCS (KK,3,TEE,CFF)
-C             TABDS3(IREI,J,1:9) = CFF(1:9)
-C             TABDS3(IREI,J,1)=TABDS3(IREI,J,1)+DEINL(J)+FCTKKL
+c old
+c old         CALL EIRENE_PREP_RTCS (KK,3,TEE,CF)
+c old
+              rp => reacdat(KK)%rtc%poly
+              call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
+     .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+
+C             TABEI3(IREI,J,1:9) = CF(1:9)
+C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
           END DO
-        ELSE ! NOT SUFFICIENT STORADE ON TABDS3 
+        ELSE ! NOT SUFFICIENT STORADE ON TABEI3 
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+
         ENDIF
-        MODCOL(1,2,IREI)=2  
+        MODCOL(1,2,IREI)=2
+
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
 C  2.D) RATE COEFFICIENT(TE,NE)
         IF (NSTORDR >= NRAD) THEN
@@ -300,10 +319,11 @@ C .......................................
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 9
         ELSE
+C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 9
         ENDIF
-        MODCOL(1,2,IREI)=1
+        MODCOL(1,2,IREI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
         IERR=1
         GOTO 996
@@ -460,7 +480,6 @@ C
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTEI(IREI,1)=0
-        CALL EIRENE_LEER(1)
       ENDIF
       IF (IESTEI(IREI,2).NE.0) THEN
         CALL EIRENE_LEER(1)
@@ -471,10 +490,6 @@ C
         IESTEI(IREI,2)=0
         CALL EIRENE_LEER(1)
       ENDIF
-
-
- 
- 
       RETURN
 C
 C-----------------------------------------------------------------------
@@ -694,6 +709,8 @@ C
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREI(IREI,1) 
       CALL EIRENE_LEER(1)
+
+
       RETURN
 C
 C

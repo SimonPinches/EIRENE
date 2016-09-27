@@ -16,7 +16,8 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
 C            remove plsti(nstordt), now: TII 
 c 25.03.15:  rename nelrcx  to nplrcx, in order to enable 
-c            consistency in notation with PI processes: not ready 
+c            consistency in notation with PI processes: not ready
+cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
@@ -43,7 +44,7 @@ c   PLS:   precomputed log of electron density
 C  RETURNS:
 C    MODCOL(3,...)
 C    TABCX3(IRCX,NCELL,...)  1/s per incident test particle
-C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle 
+C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle
 C    DEFCX(IRCX)
 C    EEFCX(IRCX)
 C    IESTCX(IRCX,...)
@@ -67,16 +68,18 @@ C
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, ADDTL, CHRDIF,
      .            ADDT, TMASS, PMASS, COU, EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII
+     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII,
+     .            FP1(6),FP2(6)
       INTEGER :: ITYP1, ITYP2, ISPZ1, IERR, ISPZ2, KREAD,
      .           J, NEND, MODC, NSECX4, I, IPL2, IIO2, IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
       type(poly_data), pointer :: rp
+      type(fit_forms), pointer :: rt
 
       SAVE
 
-      NREACX(IRCX) = KK   ! needed for storage saving mode
+      NREACX(IRCX) = KK  ! needed for storage saving mode
 C
 C  SET NON DEFAULT CHARGE EXCHANGE COLLISION PROCESS NO. IRCX
 C
@@ -192,6 +195,11 @@ C  2.C) RATE COEFFICIENT(TI,EBEAM)
 C       NEND=9
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
+          rt => reacdat(kk)%rtc
+          fp1(1:3) = rt%fp1l
+          fp1(4:6) = rt%fp1r
+          fp2(1:3) = rt%fp2b
+          fp2(4:6) = rt%fp2t  
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
@@ -201,13 +209,15 @@ c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
-     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
+     .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
 
-              TABCX3(IRCX,J,1:9) = CF(1:9)             
+              TABCX3(IRCX,J,1:9) = CF(1:9)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
           END DO
         ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+
         ENDIF
         MODCOL(3,2,IRCX)=2
 
@@ -288,7 +298,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           ELSE
             NELRCX(IRCX) = -3
           END IF
-        ELSE  ! EBULK GT.0
+        ELSE ! EBULK GT.0
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTCX: IRCX ', IRCX
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
@@ -329,9 +339,11 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           MODCOL(3,4,IRCX)=MODC
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
+C  STORAGE SAVING MODE ? 
           IF (NSTORDR >= NRAD) THEN
+C  NO
 C           NSTORDT=9 HERE
-            
+      
             IF (MODC.EQ.1) THEN
 C             NEND=1
 C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
@@ -347,6 +359,11 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
               ADDL=LOG(FACTKK)-ADDTL
+              rt => reacdat(kk)%rtcew
+              fp1(1:3) = rt%fp1l
+              fp1(4:6) = rt%fp1r
+              fp2(1:3) = rt%fp2b
+              fp2(4:6) = rt%fp2t    
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
@@ -356,7 +373,8 @@ c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
                 rp => reacdat(KREAD)%rtcew%poly
                 call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
-     .               rp%rcmn, rp%rcmx, rp%fparm, rp%ifexmn, rp%ifexmx)
+     .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
 
 
                 EPLCX3(IRCX,J,1:9) = CF(1:9)
@@ -364,7 +382,7 @@ c old
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE	no predefined tallies eplcx3
+          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplcx3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLCX3(IRCX,1,1)=ADD   !  ????
