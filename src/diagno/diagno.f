@@ -1,4 +1,4 @@
-cdr  Aug. 16:  re lLOS option: 
+cdr  Aug. 16:  re LOS option: 
 cdr            the option described in the manual regarding
 cdr            use of emin1, emax1 to identify a particular spectroscopic
 cdr            line  (by upper and lower quantum number in H-atom)

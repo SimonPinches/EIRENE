@@ -1478,8 +1478,8 @@ C DATA FOR PHOTONIC LINE SHAPE AND LINE TRANSPORT
         CALL MPI_BCAST (RP%LINE%KENN,24,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)
 
- C.....................................................................
-      ELSE IF (1<= RP%IFIT.OR.RP%IFIT <= 2) THEN
+C.....................................................................
+      ELSE IF (1<= RP%IFIT.AND.RP%IFIT <= 2) THEN
 C  POLYNOMIAL FIT, either 1D  (RP%IFIT=1),
 C                  or     2D  (RP%IFIT=2)
         IF (MY_PE == 0) THEN
