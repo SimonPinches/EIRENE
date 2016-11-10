@@ -1,6 +1,6 @@
 cdr  sept. 16:  extend options for extrapolations for A&M data beyond range
 cdr             of tables or validity range fit expressions.
-cdr             not finished
+
 !               rename RMN and RMX to R1MN, R1MX, add R2MN, R2MX for range
 !               of second variable in fit or data table 
 !               same with jfexmn,jfexmx  (parameters to select extrapolation scheme)
@@ -2205,11 +2205,11 @@ C  Ti profile(s)
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING !'
-        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
-     .                   ' DUE TO INDPRO(2) < 0'
+        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY ',
+     .                   'DUE TO INDPRO(2) < 0'
         IF (LMULTI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
-     .                     ' BECAUSE BGK REACTIONS PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN ',
+     .                     'BECAUSE BGK REACTIONS PRESENT'
           NPLSTI = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
@@ -2250,24 +2250,26 @@ cdr  default is: cm/s units for flow field(s)
       NLMACH=INDPRO(4).LT.0  ! Mach number units instead, rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
 
-cdr  default is: |indpro| < 10:  one individual flow field per background species
-cdr              |indpro| > 10:  one common flow field  
+cdr  default is: |indpro| < 10:  npls flow fields, one per background species
+cdr              |indpro| > 10:  only one common flow field  
       NPLSV = NPLS
       IF (INDPRO(4) > 9) NPLSV = 1
 
       IF (INDPRO(4) > 9) INDPRO(4) = MOD(INDPRO(4),10)
       NLMLV = (NPLSV > 1)
-      IF (.not.NLMLV) THEN
+      IF (.NOT.NLMLV) THEN
         MPLSV = 1                    ! find all flow fields on ipls=1 storage
       ELSE
         MPLSV = (/ (I,I=1,NPLS) /)   ! find each individual flow field on its ipls storage
       ENDIF
       IF (INDPRO(4).LE.5.AND.NPLSI.GT.0) THEN
-        IF (.not. NLMLV) THEN
+        IF (.NOT. NLMLV) THEN
+C  ONLY ONE COMMON FLOW VELOCITY FOR ALL NPLS SPECIES
           READ (IUNIN,6664) VX0(1),VX1(1),VX2(1),VX3(1),VX4(1),VX5(1)
           READ (IUNIN,6664) VY0(1),VY1(1),VY2(1),VY3(1),VY4(1),VY5(1)
           READ (IUNIN,6664) VZ0(1),VZ1(1),VZ2(1),VZ3(1),VZ4(1),VZ5(1)
         ELSE
+C  READ NPLSI SETS OF INPUT PARAMETERS, ONE FOR EACH SPECIES IPLS
           READ (IUNIN,6664) (VX0(I),VX1(I),VX2(I),VX3(I),VX4(I),VX5(I),
      .                       I=1,NPLSI)
           READ (IUNIN,6664) (VY0(I),VY1(I),VY2(I),VY3(I),VY4(I),VY5(I),

@@ -124,6 +124,7 @@ C  ATOMIC DATA
       NRCX=1
       NREL=1
       NRPI=1
+C
       NPTRGT=1
  
       NCHOR=0
@@ -178,19 +179,34 @@ C
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
-!pb   IUNIN=1+ifoff
+C    
+      IF (IUNIN.EQ.5.OR.IUNIN.EQ.8.OR.IUNIN.EQ.10.OR.
+     .    IUNIN.EQ.11.OR.IUNIN.EQ.12.OR.IUNIN.EQ.13.OR.
+     .    IUNIN.EQ.14.OR.IUNIN.EQ.15) THEN
+        WRITE (IUNOUT,*) 'INVALID INPUT STREAM IUNIN: ',IUNIN
+        WRITE (IUNOUT,*) 'ERROR EXIT FROM FIND_PARAM.F      '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF  
  
       REWIND IUNIN
 C
       CALL EIRENE_LEER(3)
+
+
+C  read and write header
+      READ (IUNIN,'(A72)') ZEILE
+      WRITE (IUNOUT,'(A72)') ZEILE
+      CALL EIRENE_LEER(1)
+
       WRITE (IUNOUT,*) 'PRINTOUT FROM EIRENE PRE-PROCESSING:'
       WRITE (IUNOUT,*) 'BROWSE INPUT FOR STORAGE NEEDS (FIND_PARAM.F)'
-      CALL EIRENE_LEER(1)
-C
-      READ (IUNIN,'(A72)') ZEILE
+      
+
+c  skip further comments in header 
       DO WHILE (ZEILE(1:1).EQ.'*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+
       READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                  NTIME0,NTIME
  
@@ -504,7 +520,7 @@ C  FIND START OF NEXT INPUT BLOCK: 3B
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
-C     READ DATA FOR ADDITIONAL SURFACES 350--399
+C  READ DATA FOR ADDITIONAL SURFACES 350--399
 C
       WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES           '
       READ (IUNIN,'(A72)') ZEILE
@@ -558,9 +574,14 @@ C
 402   CALL EIRENE_UPPERCASE(ZEILE)
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
+cdr ............................................
       IF (IEND > 0) THEN
         LHYDDEF=.TRUE.
-cdr  here should come an error exit: unfinished option, proprietary version only...
+cdr  here error exit: LHYDDEF: unfinished option, proprietary version only...
+        WRITE (IUNOUT,*) 'INVALID OPTION LHYDDEF IN INPUT BLOCK 4 '
+        WRITE (IUNOUT,*) 'USE LHYDDEF ONLY IN PROPRIETARY VERSIONS'
+        WRITE (IUNOUT,*) 'ERROR EXIT FROM FIND_PARAM.F      '
+        CALL EIRENE_EXIT_OWN(1)
 
         CALL EIRENE_READ_TOKEN
      .       (ZEILE(IEND+7:),' ',HYDKIN_DEFAULT,ITOK,IER,.FALSE.)      
@@ -570,7 +591,7 @@ cdr  here should come an error exit: unfinished option, proprietary version only
      .                  .FALSE.)
         READ (IUNIN,'(A72)') ZEILE
       END IF
-
+cdr ....................................
       READ (ZEILE,*) NREACI
       NREAC = MAX(NREAC,NREACI)+NREAC_ADD
 C
@@ -710,14 +731,14 @@ cpb.......................................
 C
 C  READ DATA FOR PLASMA-BACKGROUND , 500--599
 C
-      WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND            '
+500   WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND            '
 C
 C  READ BULK IONS SPECIES CARDS
 C
       WRITE (iunout,*) '*5A.   BULK ION SPECIES CARDS, NPLSI SPECIES '
  
       READ (IUNIN,'(A72)') ZEILE
- 500  DO WHILE (ZEILE(1:1) .EQ. '*')
+      DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ(ZEILE,6666) NPLSI
@@ -733,7 +754,8 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         ULINE = ZEILE
         CALL EIRENE_UPPERCASE(ULINE)
-        INMDL=INDEX(ULINE,'FORT')+INDEX(ULINE,'SAHA')+
+        INMDL=INDEX(ULINE,'FORT')+
+     .        INDEX(ULINE,'SAHA')+
      .        INDEX(ULINE,'CORONA')+
      .        INDEX(ULINE,'BOLTZMANN')+
      .        INDEX(ULINE,'COLRAD')+
@@ -848,6 +870,8 @@ cdr here should come an error exit: unfinished option, proprietary version only.
 cdr .................................................................. 
  
       READ (IUNIN,'(A72)') ZEILE
+      WRITE (IUNOUT,*) '*5B.   PLASMA BACKGROUND DATA '
+
       DO WHILE (ZEILE(1:1) == '*')
          READ (IUNIN,'(A72)') ZEILE
       END DO
@@ -859,6 +883,7 @@ cdr these next 2 lines for Ti(ipls)
 !pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
 
       NPLSTI = NPLS
+cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to syncronize with V
       IF (INDPRO(2)<0) NPLSTI=1
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
@@ -885,7 +910,7 @@ cdr these next 2 lines for Vi(ipls)
         IF (LMULTI) THEN
           WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
      .                     'BECAUSE BGK REACTIONS ARE  PRESENT'
-          NPLSTI = NPLS
+          NPLSV = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
       END IF
@@ -1353,7 +1378,7 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,*) 'NRPES  =      ',NRPES
 C 
       CALL EIRENE_LEER(1)
-      WRITE (IUNOUT,*) 'SETTING OF CENUS STORAGE FOR T-DEP. MODE'
+      WRITE (IUNOUT,*) 'SETTING OF CENSUS STORAGE FOR T-DEP. MODE'
 cdr  time dependent options: census array size
       WRITE (iunout,*) 'NPRNL  =      ',NPRNL
 C

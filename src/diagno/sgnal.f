@@ -1,7 +1,11 @@
 c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
+c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
 c            option NCLTAL=4 is unfinished. print warning and return 
+cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
+c            set default ncheni=1 for nchtal=2 alreay in calling routine,
+c            to avoid that chords are erroneously turned off there. 
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
@@ -9,9 +13,15 @@ C
 C  THIS SUBROUTINE CALCULATES LINE INTEGRATED SIGNALS, USING THE EIRENE
 C  VOLUME AVERAGED TALLIES AND THE PLASMA BACKGROUND DATA.
 C  THERE MAY BE A CONTRIBUTION DIRECTLY FROM A PRIMARY SOURCE,
-C  DUE TO DIRECT EMISSION FROM SOURCE INTO LINE OF SIGHT,
+C  DUE TO DIRECT EMISSION FROM THE SOURCE INTO THE LINE OF SIGHT,
 C  AS WELL AS A SECONDARY SOURCE (POST COLLISION) CONTRIBUTION, DUE TO
 C  SCATTERING INTO THE LINE OF SIGHT
+
+C  STEP 1)  FETCH THE APPROPRIATE STRATUM DATA (OR: SUM OVER STRATA) IISTR
+C  STEP 2)  PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
+C           (PROBABLY NOT READY)
+C  STEP 3)  INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
+C  STEP 4)  PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -37,7 +47,8 @@ C
  
       IMPLICIT NONE
 C
-      INTEGER, INTENT(IN) :: ICHORI, IISTR, ISP
+      INTEGER, INTENT(IN) :: ICHORI, ISP
+      INTEGER :: IISTR
       REAL(DP) :: C1(3),C2(3),PSIG(0:NSPZ+10),
      .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
      .          FP(6), DUM(9)
@@ -60,7 +71,8 @@ C
 C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
-      IF (NCHTAL(ICHORI).EQ.2) NCHNI=1
+
+cdr   IF (NCHTAL(ICHORI).EQ.2) NCHNI=1  : this is now done in calling routine diagno.f
 
 cdr:  aug. 2016
 cdr:  to be written: use emin1, emax1 to identify upper and lower state of a transition,
@@ -69,8 +81,19 @@ C
  
 C
       IF (NCHTAL(ICHORI) .NE. 3) THEN
+c  no volumetric tallies at all are needed in case NCHTAL=3
+c
+c  in single stratum runs no dump files for strata are needed.
+c  all tallies are still in active storage
+      IF (NSTRAI.EQ.1) THEN
+        IISTR=1
+        ISTRA=1
+        IESTR=1
+      ENDIF 
+  
       IF (ISTRA.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
+
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTRA
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
@@ -81,8 +104,6 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb          CALL EIRENE_SYMET(ESTIMV,NTALV,NRAD,NR1ST,NP2ND,NT3RD,
-!pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
         ENDIF
@@ -96,8 +117,6 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb          CALL EIRENE_SYMET(ESTIMV,NTALV,NRAD,NR1ST,NP2ND,NT3RD,
-!pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
         ENDIF
@@ -108,9 +127,15 @@ C  NOTHING TO BE DONE
      .    'ARE NOT AVAILABLE. LINE INTEGRATION ABANDONNED'
         RETURN
       ENDIF
+
       END IF
+
+C  STEP 1 DONE
+
  
- 
+cdr  intermediate part, 
+cdr  proprietary option only. nchtal=4 option is not ready. 
+cdr  complain and then return to calling program  
 !  INTEGRATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
  
       IF ((NCHTAL(ICHORI) == 4) .AND. NLSTCHR(ICHORI)) THEN
@@ -193,11 +218,13 @@ C  H(n=3)/H(n=1)
  
         write (iunout,*) ' chord ', ichori
         write (iunout,*) ' integral along chord calculated from '
-        write (iunout,*) ' spectra integrals in the cells '
+        write (iunout,*) ' spectra in the cells '
         write (iunout,*) ' integral ',chksum
         return
  
       END IF
+
+C  STEP 2
 C
 C  PREPARE DIRECT (PRIMARY) EMISSION FROM SOURCE, INTO LINE OF SIGHT
 C  THE SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE 
@@ -346,8 +373,11 @@ C.................................................................
         write (iunout,*) 'volumetric line emission '
         write (iunout,*) 'contribution no. isp ',isp
       ENDIF
+
+C   STEP 2 DONE
+
 C
-C     CALCULATE SIGNAL STRENGTHS
+C     CALCULATE SIGNAL STRENGTHS, LOOP OVER ENERGY/WAVELENGTH, IF ANY
 C
       IPVOT=IPIVOT(ICHORI)
       C1(1)=XPIVOT(ICHORI)
