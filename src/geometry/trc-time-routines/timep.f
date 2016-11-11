@@ -1,4 +1,5 @@
-C
+Cdr:  at some point in time: included LDAMCEL  (indicator for "damaged cells"
+cdr   set in initialization phase
 C
       SUBROUTINE EIRENE_TIMEP (ZRAD)
 C
@@ -266,7 +267,7 @@ C
           else
              itc = ncell
           end if
-!pb          IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
+!pb       IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
           IF (.not.ldamcel(itc).and.(ITEST.NE.0.AND.ILIIN(IN).NE.0))THEN
 C
 C  TRACK ENDS ON ONE OF THE NON DEFAULT POLOIDAL SURFACES
@@ -774,7 +775,8 @@ C
 3000    CONTINUE
         IF (J2.LE.0.OR.J2.GT.NP2ND) THEN
           WRITE (iunout,*) 'ERROR IN TIMEP ',J2,J1,VELY
-          CALL EIRENE_EXIT_OWN(1)
+          RETURN  ! changed to avoid job crash in long runs
+!         CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C  TIME FROM Y00 TO PSURF
         IF (MPSURF.EQ.J2) THEN

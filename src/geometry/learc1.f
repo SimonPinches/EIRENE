@@ -3,6 +3,8 @@
 !    18.04.16:  default return value added in cleanup loop, J.Lore
 !               CUR --> CUR4 in deallocation loop, J.Lore
 !    28.04.16:  COMMENTS
+!cdr 25.06.16:  remove some exit calls in levgeo=1 level to avoit code crashes in long
+!cdr            (mpi) runs
  
       FUNCTION EIRENE_LEARC1 (X,Y,Z,IPO,IAN,IEN,LOGX,LOGY,NP,TEXT)
 C
@@ -288,7 +290,7 @@ C  CELL I ALREADY TESTED BEFORE ?
           WRITE (iunout,*) 'NPANU,IM= ',NP,IM
         ELSEIF (INUM.GT.1) THEN
           CALL EIRENE_MASAGE
-     .  ('WARNING FROM LEARC1, INUM.GT.1               ')
+     .                ('WARNING FROM LEARC1, INUM.GT.1               ')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,INUM,IM= ',NP,INUM,IM
@@ -476,7 +478,7 @@ C  FOR PURPOSES OF LEARC1 THESE CELLS NEED NOT BE IDENTIFIED, HOWEVER.
           ENDDO
         ENDIF
 C
-C  END OF IFIRST SEGMENT FOR QUADRANGELS
+C  END OF IFIRST SEGMENT FOR QUADRANGELS (POLYGON GRID)
 C
         INUM=0
 C
@@ -765,7 +767,7 @@ C
 800     CONTINUE
         IF (INUM.EQ.0.AND.ERRMIN.GT.EPS10) THEN
           CALL EIRENE_MASAGE
-     .  ('X,Y OUT OF RANGE IN LEARC1                   ')
+     .               ('X,Y OUT OF RANGE IN LEARC1                   ')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'ERRMIN= ',ERRMIN
@@ -774,7 +776,7 @@ C
           CALL EIRENE_LEER(1)
         ELSEIF (INUM.GT.1.AND.ERRMIN.GT.EPS10) THEN
           CALL EIRENE_MASAGE
-     .  ('WARNING FROM LEARC1, INUM.GT.1               ')
+     .               ('WARNING FROM LEARC1, INUM.GT.1               ')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'ERRMIN= ',ERRMIN
@@ -808,11 +810,12 @@ C
         IF (ATQ.LE.RQ(I)+EPS12) GOTO 15
 C
         CALL EIRENE_MASAGE
-     .  ('X,Y OUT OF RANGE IN LEARC1                   ')
+     .             ('X,Y OUT OF RANGE IN LEARC1                   ')
         CALL EIRENE_MASR2('X,Y             ',X,Y)
         WRITE (iunout,*) ATQ,RQ(NR1ST)
         WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
-        CALL EIRENE_EXIT_OWN(1)
+        CALL EIRENE_LEER(1)
+CDR     CALL EIRENE_EXIT_OWN(1)
 C
 15      CONTINUE
         EIRENE_LEARC1=IM
@@ -835,10 +838,12 @@ C
         IF (X.LE.RSURF(I)+EPS12) GOTO 250
 C
         CALL EIRENE_MASAGE
-     .  ('X OUT OF RANGE IN LEARC1                   ')
+     .               ('X OUT OF RANGE IN LEARC1                   ')
         CALL EIRENE_MASR2('X,Y             ',X,Y)
+        WRITE (iunout,*) 'NPANU,IM ',NP,IM
         WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
-        CALL EIRENE_EXIT_OWN(1)
+        CALL EIRENE_LEER(1)
+CDR     CALL EIRENE_EXIT_OWN(1)
 C
 250     CONTINUE
         EIRENE_LEARC1=IM
