@@ -97,13 +97,16 @@ c       save how many surface we actually have (surfaces array is bigger ;) )
 
       CONTAINS
  
+
+      FUNCTION OCTREE_NewTree (X, Y, Z, LAYERS, MAXNSURF) result(tree)
+
 c     --- BUILD A NEW TREE ---
 c     x,y,z   : 2d-arrays with the lower left and upper right points
 c              of the convex hull of all surfaces we want in our tree
 c     layers  : number of layers the tree will have. 0 = lowest level (leafs)
 c     maxnsurf : maximum number of surfaces we will have in our tree
 c     RETURNS: pointer to the new tree
-      FUNCTION OCTREE_NewTree (X, Y, Z, LAYERS, MAXNSURF) result(tree)
+
         IMPLICIT NONE
         TYPE(octree), POINTER :: tree
         TYPE(ocNode), POINTER :: preroot
@@ -151,21 +154,15 @@ c       delete the preroot parent, we don't need this anymore
         DEALLOCATE(preroot)
       END FUNCTION OCTREE_NewTree
 
-cc     --- DELETE A TREE ---
-c      SUBROUTINE OCTREE_DestroyTree (tree)
-c        type (octree), pointer :: tree
-c        IF (ASSOCIATED(tree)) THEN
-cc           call OCTREE_DestroyNodes(tree%root)
-c           DEALLOCATE(tree)
-c        END IF
-c      END SUBROUTINE OCTREE_DestroyTree
+
+      FUNCTION OCTREE_NewNode(TREE, X, Y, Z, NUMBER,PARENT) RESULT(NODE)
 
 c     --- CREATE A NEW NODE (AS LEAF) ---
 c     x,y,z    : 2d-arrays with the lower left and upper right points
 c     number   : the index numbers in the 3 directions (bits are used)
 c     parent   : pointer to the parent node
 c     RETURNS: pointer to the new node
-      FUNCTION OCTREE_NewNode(TREE, X, Y, Z, NUMBER,PARENT) RESULT(NODE)
+
         IMPLICIT NONE
         REAL(DP), DIMENSION(2), INTENT(IN) :: X, Y, Z
         INTEGER, DIMENSION(3), INTENT(IN) :: NUMBER
@@ -230,9 +227,12 @@ c       and replace if shorter
         end if
       END FUNCTION OCTREE_NewNode
 
-c     --- CREATE CHILDREN OF A NODE ---
-c     parent : pointer to the parent node (whos childs we born ;) )
+
       SUBROUTINE OCTREE_CreateChildren(TREE, PARENT)
+
+c     --- CREATE CHILDREN OF A NODE ---
+c     parent : pointer to the parent node (whose children we create ;) )
+
         IMPLICIT NONE
         TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
         TYPE(ocTree), POINTER, INTENT(IN) :: TREE
@@ -304,6 +304,9 @@ c     node : pointer to the node to which we add the surface
         node%surfaces(node%nsurfaces) = num
       END SUBROUTINE OCTREE_AddSurface
 
+
+      SUBROUTINE OCTREE_CheckBlock(O, d, BLOCK, STATUS, IP, S)
+
 c     --- CHECK BLOCK INTERSECTION WITH LINE ---
 c     This subroutine checks if a line, given by the vector O and the direction
 c     in vector d is going through the block given by the pointer BLOCK
@@ -313,7 +316,7 @@ c     BLOCK  : pointer on the block we want to check
 c     RETURNS: status=>true/false if the line intersects with the block
 c              ip    =>array with the intersection point
 c              s     =>the parameter s of the line (s*direction vector)
-      SUBROUTINE OCTREE_CheckBlock(O, d, BLOCK, STATUS, IP, S)
+
         IMPLICIT NONE
         TYPE(ocNode), POINTER, INTENT(IN) :: BLOCK
         REAL(DP), DIMENSION(3), INTENT(IN) :: O, d
@@ -362,12 +365,16 @@ c           is our intersection within our block?
         STATUS = .FALSE.
       END SUBROUTINE OCTREE_CheckBlock
 
+
+
+      FUNCTION OCTREE_CheckVolume(point, block, incl) RESULT(yesno)
+
 c     --- CHECK POINT IN BLOCK-VOLUME ---
 c     with this we check if a given point is in the volume of the block
 c     point   : the point we want to check
 c     block   : pointer to the block which volume we check on
 c     RETURNS : true or false, depending on in or out of block
-      FUNCTION OCTREE_CheckVolume(point, block, incl) RESULT(yesno)
+
         IMPLICIT NONE
         TYPE(ocNode), POINTER, INTENT(IN) :: block
         REAL(DP), DIMENSION(3), INTENT(IN) :: point

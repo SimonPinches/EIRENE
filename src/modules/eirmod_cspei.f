@@ -66,7 +66,7 @@ C  storage for for sum over strata....
       ALLOCATE (SMESTV(NIDV,NRTAL))
       ALLOCATE (SMESTS(NIDS,NLMPGS))
 CDR   same for spectra, but:
-cdr   ALLOCATE (SEMSTL(NADSPC))   ! TO BE MOVED HERE FROM INPUT.F,  NOT POSSIBLE BECAUSE DIFFERENT DATA TYPE FOR SMESTL
+cdr   ALLOCATE (SMESTL(NADSPC))   ! TO BE MOVED HERE FROM INPUT.F,  NOT POSSIBLE BECAUSE DIFFERENT DATA TYPE FOR SMESTL
 
 
 cdr  these next arrays are intermediate storage array to perform variance per history calculations. 
@@ -83,6 +83,7 @@ cdr  these next arrays are intermediate storage array to perform variance per hi
       ALLOCATE (SDVIA(NSD,NRTAL))
       ALLOCATE (SDVIAW(NSDW,NLIMPS))
       ALLOCATE (SDVIAC(2,NCV,NRTAL))
+
 CDR  same again: intermediate storage for spectra, data type prevents this from having it here?
 CDR BEGIN:  TO BE MOVED HERE FROM INPUT.F, NOT POSSIBLE, BECAUSE DIFFERENT DATA TYPE FOR SSPEC
 c     ALLOCATE(SSPEC)

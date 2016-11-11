@@ -1,4 +1,6 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
+!cdr 22.06.16:  error exit in learc1 replaced by return (levgeo 1 and levgeo 2)
+!cdr            
 C
       SUBROUTINE EIRENE_CLLTST(*)
  
@@ -23,16 +25,16 @@ C
 C
 C  TEST FOR RADIAL CELL INDICES NRCELL, IPOLG
 C
-      IF (LEVGEO.LE.4) THEN
+      IF (LEVGEO.LE.4) THEN        !  slab, circ, polyg, triang.
 C
         NTEST0=EIRENE_LEARC1(X0,Y0,Z0,IPOLGT,1,NR1STM,.FALSE.,.FALSE.,
      .                NPANU,'CLLTST      ')
 C
-      ELSEIF (LEVGEO.EQ.5) THEN
+      ELSEIF (LEVGEO.EQ.5) THEN    !  tetrahedons
 C
         NTEST0=EIRENE_LEARCT(X0,Y0,Z0)
 C
-      ELSEIF (LEVGEO.EQ.10) THEN
+      ELSEIF (LEVGEO.EQ.10) THEN   !  user supplied geometry
 C
         NTEST0=EIRENE_LEAUSR(X0,Y0,Z0)
 C

@@ -160,7 +160,7 @@ C  assume here: tabulated data are log10  (to be generalized)
         if (lexp) then
           rate=10._dp**rate
         else
-          rate = xln10*rate     !    convert from log10(erate) to ln(rate)
+          rate = xln10*rate     !    convert from log10(rate) to ln(rate)
 
         end if
 
