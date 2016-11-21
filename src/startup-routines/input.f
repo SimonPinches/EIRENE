@@ -2194,9 +2194,15 @@ c  vi profile(s)
      .                       I=1,NPLSI)
         END IF
       ENDIF
+
 c  pitch -profile
+c                              !  default:                B-FIELD WITH BX=0
+      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B-FIELD WITH BY=0
+
+      INDPRO(5)=IABS(INDPRO(5))     
       IF (INDPRO(5).LE.5)
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
+
 c  cell volume -profile
       IF (INDPRO(12).LE.5) THEN
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
