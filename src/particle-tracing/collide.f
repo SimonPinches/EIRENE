@@ -235,7 +235,7 @@ cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS.
           IF (LEAPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -266,17 +266,24 @@ c.......................................................................
           IF (.NOT.ALLOCATED(NAMIEI)) THEN
             ALLOCATE(NAMIEI(NSPAMI))
           END IF
-cdr  build one single distribution of secondary test particle species, all types
+cdr  build one single distribution of secondary test particle species, all types, include photons
+cdr  this should not be done here, but instead only once, in preproc. phase !!
+cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cummulative p2nd ?
           NAMIEI = 0
-          NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
+
+          NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
+          NAMIEI(NSPH+1:NSPA)    = PATEI(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM)   = PMLEI(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
-!  RESET WEIGHT TO ORIGINAL VALUE
+!  RESET WEIGHT BACK TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
-          DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIEI(I)
+cdr  generate secondaries, one by one, call veloei, and store them on splitting arrays
+
+          DO I = NSPAMI, NSPH+1, -1  ! LOOP OVER ALL POTENTIAL SECONDARY SPECIES 'I'
+            DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
+C  FIND A RANDOM NUMBER TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -762,7 +769,7 @@ C
 C
 C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
 C
-      ELSE
+      ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT+SIGELT
@@ -794,7 +801,8 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
           IF (LEAPL) THEN
-            DO IP=1,IPPLEI(IRPI,0)
+
+            DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -2515,7 +2523,7 @@ C
       WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'
       WRITE (iunout,*) 'COLLISION ESTIMATOR WAS SELECTED  '
       WRITE (iunout,*)
-     .  'SET WMINV = INFTY, OR USE EIRMOD_TRACKLENGTH ESTIM. '
+     .  'SET WMINV = INFTY, OR USE TRACKLENGTH ESTIM. '
       CALL EIRENE_EXIT_OWN(1)
 C
 999   WRITE (iunout,*) 'ERROR IN COLLIDE '

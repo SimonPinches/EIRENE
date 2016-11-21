@@ -810,9 +810,8 @@ csw
         IF (LSTP.or.ANY(NLSRON(1:NSTRAI))) THEN
            IFIRST=0
            LPLASM=.TRUE.
-           LSTP=LSTOP
-      
-     ITNR=ITNR+1
+           LSTP=LSTOP    
+           ITNR=ITNR+1
            GOTO 10
         END IF
 C
