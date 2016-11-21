@@ -120,7 +120,7 @@ C
  
       REAL(DP) :: a,aa,aaa
 c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
-      REAL(DP) :: CFLAG(7,3), DUMT(3), DUMV(3)
+      REAL(DP) :: CFLAG(7,MSTOR0), DUMT(3), DUMV(3)
       REAL(DP) :: AX(2),v,vv,vx,vy,vz
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD),

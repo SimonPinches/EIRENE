@@ -151,7 +151,7 @@ C
       real(sp), allocatable :: eplot(:), y1plot(:), y2plot(:)
       real(sp) :: y1a,y1e,y2a,y2e,e00_plot
       real(DP) :: EMINSP,EMAXSP
-      real(dp) :: cflag(7,3)
+      real(dp) :: cflag(7,MSTOR0)
       REAL(DP), SAVE :: SNORM
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, ALLOCATABLE, SAVE :: IICSOR(:), ITISOR(:),

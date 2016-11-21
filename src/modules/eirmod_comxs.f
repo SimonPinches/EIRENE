@@ -1,3 +1,7 @@
+cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
+cdr
+cdr  MXCOLLS --> MSTOR0
+
       MODULE EIRMOD_COMXS
  
 !  jan-05: natprc_2,..... introduced
@@ -162,11 +166,11 @@ c  ...and cummulated distributions thereof, for species sampling
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
      I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:),
-     I NAEII(:),    NMDSI(:),    NIDSI(:),
+     I NAEII(:),    NMEII(:),    NIEII(:),
      I NACXI(:),    NMCXI(:),    NICXI(:),
      I NAELI(:),    NMELI(:),    NIELI(:),
      I NAPII(:),    NMPII(:),    NIPII(:),
-     I NAEIIM(:),   NMDSIM(:),   NIDSIM(:),
+     I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),
      I NACXIM(:),   NMCXIM(:),   NICXIM(:),
      I NAELIM(:),   NMELIM(:),   NIELIM(:),
      I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),
@@ -208,7 +212,7 @@ c  ...and cummulated distributions thereof, for species sampling
  
       INTEGER, PUBLIC, SAVE ::
      I NSTOR1, NSTOR,  NSTORV, NTAB, NDAT, NMDTA, MMDTA, NAMF, MAMF,
-     I MSTOR1, MSTOR2, MXCOLLS
+     I MSTOR0, MSTOR1, MSTOR2
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DELPOT(:),   FACREA(:,:),
@@ -243,6 +247,11 @@ c  ...and cummulated distributions thereof, for species sampling
  
  
       SUBROUTINE EIRENE_ALLOC_COMXS (ICAL)
+CDR
+C  AUTOMATTED ALLOCATION OF STORAGE FOR A&M DATA STRUCTURES AND ARRAYS. 
+C  CALLED FROM:  ALLOCATE_MODULES.F
+C  ICAL=1: ... 
+C  ICAL=2: ...
  
       INTEGER, INTENT(IN) :: ICAL
       INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
@@ -272,8 +281,8 @@ C
         ZMFPI   => XSTORV(8)
  
         ALLOCATE (NAEII(NATM))
-        ALLOCATE (NMDSI(NMOL))
-        ALLOCATE (NIDSI(NION))
+        ALLOCATE (NMEII(NMOL))
+        ALLOCATE (NIEII(NION))
         ALLOCATE (NACXI(NATM))
         ALLOCATE (NMCXI(NMOL))
         ALLOCATE (NICXI(NION))
@@ -285,8 +294,8 @@ C
         ALLOCATE (NIPII(NION))
         ALLOCATE (NPRCI(NPLS))
         ALLOCATE (NAEIIM(NATM))
-        ALLOCATE (NMDSIM(NMOL))
-        ALLOCATE (NIDSIM(NION))
+        ALLOCATE (NMEIIM(NMOL))
+        ALLOCATE (NIEIIM(NION))
         ALLOCATE (NACXIM(NATM))
         ALLOCATE (NMCXIM(NMOL))
         ALLOCATE (NICXIM(NION))
@@ -418,8 +427,12 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
       ELSE IF (ICAL == 2) THEN
  
         IF (ALLOCATED(XSTOR)) RETURN
- 
-        MXCOLLS = MAX(NRPI, NREI, NRCX, NREL, NREC, NROT)
+C  DIMENSION OF FULL REACTION SPECIFIC ARRAYS: CFLAG, MODCOL,.... 
+        MSTOR0 = MAX(NRPI, NREI, NRCX, NREL, NREC, NROT)
+C  FIRST DIMENSION OF XSTOR ARRAY
+        MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NROT)
+C  SECOND DIMENSION OF XSTOR ARRAY
+        MSTOR2 = 24
  
         NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
@@ -441,7 +454,7 @@ C
 C
         NMDTA=NTAB+NDAT
 C
-        MMDTA=7*5*MXCOLLS+3*(NRCX+NREL+NRPI+NREI)+6+
+        MMDTA=7*5*MSTOR0+3*(NRCX+NREL+NRPI+NREI)+6+
      P        5*NREC+
      P        6*NRCX+
      P        10*NREC+
@@ -449,17 +462,14 @@ C
      P        (NREI+NRPI)*
      P        (NATMP+NMOLP+NIONP+NPLSP)+
 C  LG... ARRAYS
-     P        (NATMP+NMOLP+NIONP      )*(NREI+1)+
+     P          (NATMP+NMOLP+NIONP      )*(NREI+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRCX+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NREL+1)+
      P          (                  NPLSP)*(NREC+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRPI+1)
  
  
-csw added NROT (photon.f)
-        MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NROT)
-c
-        MSTOR2 = 24
+
  
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
  
@@ -547,7 +557,7 @@ c  secondaries, PI processes
         ALLOCATE (EIOEI(NREI,0:NION,2))
         ALLOCATE (EPLEI(NREI,0:NPLS,2))
  
-        ALLOCATE (MODCOL(7,0:4,MXCOLLS))
+        ALLOCATE (MODCOL(7,0:4,MSTOR0))
 
 c   flags for collision or tracklength estimators, 
 c   for particle (1), momentum (2) and energy (3) source rates, resp.
@@ -700,8 +710,8 @@ c
       DEALLOCATE (IESTEI)
 
       DEALLOCATE (NAEII)
-      DEALLOCATE (NMDSI)
-      DEALLOCATE (NIDSI)
+      DEALLOCATE (NMEII)
+      DEALLOCATE (NIEII)
       DEALLOCATE (NACXI)
       DEALLOCATE (NMCXI)
       DEALLOCATE (NICXI)
@@ -713,8 +723,8 @@ c
       DEALLOCATE (NIPII)
       DEALLOCATE (NPRCI)
       DEALLOCATE (NAEIIM)
-      DEALLOCATE (NMDSIM)
-      DEALLOCATE (NIDSIM)
+      DEALLOCATE (NMEIIM)
+      DEALLOCATE (NIEIIM)
       DEALLOCATE (NACXIM)
       DEALLOCATE (NMCXIM)
       DEALLOCATE (NICXIM)
@@ -894,8 +904,8 @@ cdr  ical=2:  ??
  
       IF (ICAL == 1) THEN
         NAEII   = 0
-        NMDSI   = 0
-        NIDSI   = 0
+        NMEII   = 0
+        NIEII   = 0
         NACXI   = 0
         NMCXI   = 0
         NICXI   = 0
@@ -907,8 +917,8 @@ cdr  ical=2:  ??
         NIPII   = 0
         NPRCI   = 0
         NAEIIM  = 0
-        NMDSIM  = 0
-        NIDSIM  = 0
+        NMEIIM  = 0
+        NIEIIM  = 0
         NACXIM  = 0
         NMCXIM  = 0
         NICXIM  = 0
@@ -1221,9 +1231,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
  
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
-     . NAEII  ,NMDSI  ,NIDSI  ,NACXI  ,NMCXI  ,NICXI  ,
+     . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
      . NAELI  ,NMELI  ,NIELI  ,NAPII  ,NMPII  ,NIPII  ,NPRCI  ,
-     . NAEIIM ,NMDSIM ,NIDSIM ,NACXIM ,NMCXIM ,NICXIM ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NACXIM ,NMCXIM ,NICXIM ,
      . NAELIM ,NMELIM ,NIELIM ,NAPIIM ,NMPIIM ,NIPIIM ,NPRCIM ,
      . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
@@ -1265,9 +1275,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
  
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
-     . NAEII  ,NMDSI  ,NIDSI  ,NACXI  ,NMCXI  ,NICXI  ,
+     . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
      . NAELI  ,NMELI  ,NIELI  ,NAPII  ,NMPII  ,NIPII  ,NPRCI  ,
-     . NAEIIM ,NMDSIM ,NIDSIM ,NACXIM ,NMCXIM ,NICXIM ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NACXIM ,NMCXIM ,NICXIM ,
      . NAELIM ,NMELIM ,NIELIM ,NAPIIM ,NMPIIM ,NIPIIM ,NPRCIM ,
      . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
@@ -1346,14 +1356,14 @@ c
       CALL FXDRDBL (IUN,EPLEI,NREI*(NPLS+1)*2)
  
 c
-      CALL FXDRINT (IUN,MODCOL ,7*5*MXCOLLS)
+      CALL FXDRINT (IUN,MODCOL ,7*5*MSTOR0)
       CALL FXDRINT (IUN,IESTCX ,3*NRCX)
       CALL FXDRINT (IUN,IESTEL ,3*NREL)
       CALL FXDRINT (IUN,IESTPI ,3*NRPI)
       CALL FXDRINT (IUN,IESTEI ,3*NREI)
       CALL FXDRINT (IUN,NAEII  ,NATM)
-      CALL FXDRINT (IUN,NMDSI  ,NMOL)
-      CALL FXDRINT (IUN,NIDSI  ,NION)
+      CALL FXDRINT (IUN,NMEII  ,NMOL)
+      CALL FXDRINT (IUN,NIEII  ,NION)
       CALL FXDRINT (IUN,NACXI  ,NATM)
       CALL FXDRINT (IUN,NMCXI  ,NMOL)
       CALL FXDRINT (IUN,NICXI  ,NION)
@@ -1365,8 +1375,8 @@ c
       CALL FXDRINT (IUN,NIPII  ,NION)
       CALL FXDRINT (IUN,NPRCI  ,NPLS)
       CALL FXDRINT (IUN,NAEIIM ,NATM)
-      CALL FXDRINT (IUN,NMDSIM ,NMOL)
-      CALL FXDRINT (IUN,NIDSIM ,NION)
+      CALL FXDRINT (IUN,NMEIIM ,NMOL)
+      CALL FXDRINT (IUN,NIEIIM ,NION)
       CALL FXDRINT (IUN,NACXIM ,NATM)
       CALL FXDRINT (IUN,NMCXIM ,NMOL)
       CALL FXDRINT (IUN,NICXIM ,NION)

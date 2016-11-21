@@ -353,7 +353,7 @@
           !write(*,*) 'NREL,IREL        ',NREL,IREL
           !write(*,*) 'NRII,IRII        ',NRII,IRII
           !write(*,*) 'NELI,NAELI       ',NELI,naeli
-          !write(*,*) 'NDIS,NMDSI,NIDSI ',NDIS,nmdsi,nidsi
+          !write(*,*) 'NREI,NMEII,NIEII ',NREI,nmeii,nieii
           !write(*,*) 'NREC,NIRCI,NPRCI ',NREC,nirci,nprci
       end if
       iindex=0

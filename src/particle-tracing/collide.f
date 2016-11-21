@@ -27,16 +27,25 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species reolved.
+cdr DEC. 15 :  bulk ion energy estimators: species resolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
 cdr                  probably not correct (outdated).
+
+
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  patds -> patei
 !pb  APR  16:  pmlds -> pmlei
 !pb  APR  16:  piods -> pioei
 !pb  MAY  16:  nrds  -> nrei
+cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
+
+
+cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
+cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0) 
+cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
+cdr             then correction somehow lost in more recent EIRENE branches)
 
 
 
@@ -77,7 +86,7 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(IN) :: CFLAG(7,3), DIST
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       REAL(DP), INTENT(OUT) :: COLTYP
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
@@ -440,7 +449,7 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,1)
+          NFLAG=CFLAG(3,IRCX)
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .          NFLAG,IRCX,DUMT,DUMV)
@@ -697,7 +706,7 @@ C  NEW SPECIES INDEX AND ENERGY
 C       WEIGHT=WEIGHT*1.
 C  FOLLOW SECONDARY, NEW SPEED FROM SUBROUTINE VELOEL
 C       ITYP=1
-        NFLAG=CFLAG(5,1)
+        NFLAG=CFLAG(5,IREL)
         RMAIO=RMASSA(IOLD)
         CALL EIRENE_VELOEL(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .              NFLAG,IREL,RMAIO)
@@ -808,7 +817,7 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        NFLAG=CFLAG(4,1)
+        NFLAG=CFLAG(4,IRPI)
         RMAIO=RMASSA(IOLD)
 
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
@@ -916,14 +925,14 @@ C  INCIDENT SPECIES: IOLD
       END IF
 C
 C  ABSORBTION BIASSING: SUPPRESS IREI PROCESSES WITH ZERO
-C                       TEST PARTICLE SECONDARIES
+C                       TEST PARTICLE SECONDARIES: TO BE DONE, SEE ATOM PART.
  
       SIG_ELIM=0.
       SIG_TOT_N=SIGTOT
       SIG_TOT_O=SIGTOT
       NEII_RED=0
  
-      DO IMEI=1,NMDSI(IOLD)
+      DO IMEI=1,NMEII(IOLD)
         IREI=LGMEI(IOLD,IMEI)
         IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -1194,7 +1203,7 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,1)
+          NFLAG=CFLAG(3,IRCX)
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .          NFLAG,IRCX,DUMT,DUMV)
@@ -1416,7 +1425,7 @@ C  NEW SPECIES INDEX AND ENERGY
 C       WEIGHT=WEIGHT*1.
 C  FOLLOW SECONDARY, NEW SPEED FROM SUBROUTINE VELOEL
 C       ITYP=2
-        NFLAG=CFLAG(5,1)
+        NFLAG=CFLAG(5,IREL)
         RMMIO=RMASSM(IOLD)
         CALL EIRENE_VELOEL(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .              NFLAG,IREL,RMMIO)
@@ -1528,7 +1537,7 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
         ENDIF
 C
 C
-        NFLAG=CFLAG(4,1)
+        NFLAG=CFLAG(4,IRPI)
         RMMIO=RMASSM(IOLD)
 
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
@@ -1644,7 +1653,7 @@ C                       TEST PARTICLE SECONDARIES
       SIG_TOT_O=SIGTOT
       NEII_RED=0
  
-      DO IIEI=1,NIDSI(IOLD)
+      DO IIEI=1,NIEII(IOLD)
         IREI=LGIEI(IOLD,IIEI)
         IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -1904,7 +1913,7 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,1)
+          NFLAG=CFLAG(3,IRCX)
           CALL
      .    EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .                  NFLAG,IRCX,DUMT,DUMV)
@@ -2078,6 +2087,12 @@ C
           END SELECT
         ENDIF
 C
+cdr:  at this place to be done: elastic collisions of test ions
+cdr   in particular: fokker planck (velocity space diffusion) approximation
+cdr:  currently still somewhere in folion. To be moved here, 
+cdr   build on analogy with other elastic collisions
+
+C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGPIT) THEN
 C
 C  GENERAL ION IMPACT COLLISION: PI-PROCESSES
@@ -2136,7 +2151,7 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        NFLAG=CFLAG(4,1)
+        NFLAG=CFLAG(4,IRPI)
         RMIIO=RMASSI(IOLD)
 
         IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN

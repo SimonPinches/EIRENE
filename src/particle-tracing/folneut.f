@@ -62,7 +62,7 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP) :: CFLAG(7,3)
+      REAL(DP) :: CFLAG(7,MSTOR0)
       REAL(DP) :: AX(2)
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD)

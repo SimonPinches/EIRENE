@@ -4,6 +4,7 @@ cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
 !pb  apr       2016: eelds -> eelei
 !pb  may       2016: tabds1 -> tabei1
+cdr  Nov.      2016: final ds --> ei notational unifications
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
@@ -50,8 +51,7 @@ c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s
 c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 
-c  to be done:  nomenclature nmdsi(iml) --> nmeii(iml)
-c                            nidsi(iio) --> nieii(iio)
+c  
 
       SUBROUTINE EIRENE_AMDIAG
       USE EIRMOD_PRECISION
@@ -120,7 +120,7 @@ c  irei is a process for atom iat, colliding with electron
 
 c  next: try molecules
           LMLEI: do iml=1,nmoli
-          do imei=1,NMDSI(iml)
+          do imei=1,NMEII(iml)
             if (IREI.eq.LGMEI(IML,IMEI)) then
               ISP=NSPA+IML
               goto 170
@@ -131,7 +131,7 @@ c  irei is a process for molecule iml, colliding with electron
 
 c  next: try test ions
           LIOEI: do iio=1,nioni
-          do iiei=1,NIDSI(iio)
+          do iiei=1,NIEII(iio)
             if (IREI.eq.LGIEI(IIO,IIEI)) then
               ISP=NSPAM+IIO
               goto 170

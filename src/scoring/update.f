@@ -1082,7 +1082,7 @@ C.............................................................
 C
         IF (LGMEI(IMOL,0).EQ.0) GOTO 100
 C
-        DO 90 IMEI=1,NMDSI(IMOL)
+        DO 90 IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 90
 C
@@ -1379,7 +1379,7 @@ C  NEW BULK ION IPL
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
-          DO 610 IMEI=1,NMDSI(IMOL)
+          DO 610 IMEI=1,NMEII(IMOL)
             IREI=LGMEI(IMOL,IMEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -1739,7 +1739,7 @@ C.............................................................
 C
         IF (LGIEI(IION,0).EQ.0) GOTO 130
 C
-        DO 120 IIEI=1,NIDSI(IION)
+        DO 120 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 120
 C
@@ -2036,7 +2036,7 @@ C  NEW BULK ION IPL
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
-          DO 6100 IIEI=1,NIDSI(IION)
+          DO 6100 IIEI=1,NIEII(IION)
             IREI=LGIEI(IION,IIEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
