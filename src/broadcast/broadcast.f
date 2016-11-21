@@ -29,7 +29,8 @@ cdr  unification of naming conventions for electron impact collisions
 cdr  sept 16:  ETH (collision threshold energy) added to reaction data
 cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel
 cdr            broadcast data for extrapolation from tables or fits, independent of IFIT 
-
+cdr  Nov  16:  nmds --> nmei,  nids --> niei.
+cdr  Nov  16:  mxcolls --> mstor0
 cdr
   
       SUBROUTINE EIRENE_BROADCAST
@@ -360,7 +361,7 @@ c  EL post collision energetics
       CALL MPI_BCAST (EIOPI,NRPI*NIONP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EPLPI,NRPI*NPLSP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      CALL MPI_BCAST (MODCOL,35*MXCOLLS,MPI_INTEGER,
+      CALL MPI_BCAST (MODCOL,35*MSTOR0,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (IESTCX,3*NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1183,7 +1184,6 @@ csw
  
       CALL MPI_BCAST (NLIDENT,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
  
-!pb      IF ((NMODE .NE. 0) .AND. (MY_PE .NE. 0)) THEN
       IF (NMODE .NE. 0) THEN
          CALL EIRENE_ALLOC_CCOUPL(1)
          CALL EIRENE_ALLOC_CCOUPL(2)

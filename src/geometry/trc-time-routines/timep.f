@@ -1,7 +1,10 @@
+
 cdr  oct 16:  levgeo=1, error exit due to round off errors removed,
 cdr                     now: "save landing of lost particle".
 cdr           prevents random error exits in very long (parallel) runs.
 C
+Cdr:  at some point in time: included LDAMCEL  (indicator for "damaged cells"
+cdr   set in initialization phase
 C
       SUBROUTINE EIRENE_TIMEP (ZRAD)
 C
@@ -269,7 +272,8 @@ C
           else
              itc = ncell
           end if
-!pb                              IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
+
+!pb       IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
           IF (.not.ldamcel(itc).and.(ITEST.NE.0.AND.ILIIN(IN).NE.0))THEN
 C
 C  TRACK ENDS ON ONE OF THE NON DEFAULT POLOIDAL SURFACES

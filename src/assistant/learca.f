@@ -1,4 +1,4 @@
-C
+cdr  june 16: comments added
 C
 C*DK LEARCA
       FUNCTION EIRENE_LEARCA (X,R,N1,N,NS,TEXT)
@@ -7,6 +7,8 @@ C   THIS FUNCTION COMPUTES THE INDEX OF THE SMALLER MESHPOINT OF THE
 C   INTERVALL CONTAINING THE POINT X IN THE MESH R(NS,I),I=1,N
 C   N1 IS THE LEADING DIMENSION OF THE FIELD R, AS SPECIFIED IN THE
 C   CALLING PROGRAM AND NS IS A FIXED INDEX.
+
+C   return learca=1 or learca=N, if x out of bounds at left or right end, respectively
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -20,12 +22,18 @@ C
  
       NNN=1
       IF (X.LT.R(NS,1)-1.D-12) GOTO 20
+
+cdr  this loop should be replaced by a binary search
 13    DO 10 J=2,N
         I=J
         IF (X-R(NS,J).LE.0.0) GOTO 15
 10    CONTINUE
+
+
       NNN=N
       IF (X.GT.R(NS,N)+1.D-12) GOTO 20
+
+
 15    EIRENE_LEARCA=I-1
       RETURN
 C

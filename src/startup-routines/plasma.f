@@ -266,7 +266,7 @@ c  read tally from external data structure
 C
 C
 C  MAGNETIC FIELD UNIT VECTOR
-C  FOR IND=5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
+C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
 C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
       IF (IND /= 9) THEN
@@ -302,9 +302,17 @@ C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
      .                  NR1ST,NP2ND,NT3RD,NBMLT,NLRAD,NLPOL,NLTOR)
             IF (IR.GE.NR1ST) GOTO 1401
             IF ((NP2ND.GT.1).AND.(IP.GE.NP2ND)) GOTO 1401
-            BXIN(J)=0.0
-            BYIN(J)=HELP(IR)
+C
+            IF (.NOT.NLPITCH) THEN ! OLD DEFAULT: B-FIELD IS parallel TO Y,Z
+              BXIN(J)=0.0
+              BYIN(J)=HELP(IR)
+            ELSEIF (NLPITCH) THEN  ! NEW OPTION : B-FIELD IS parallel TO X,Z
+              BXIN(J)=HELP(IR)
+              BYIN(J)=0.0
+            ENDIF
+C
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
+C
             IF (IND.EQ.3) THEN 
               BFIN(J)=HELP2(IR)
             ELSE

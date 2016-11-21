@@ -25,7 +25,7 @@ cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
 cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
-cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
+cdr apr.16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 
 !pb APR  16: ipplds -> ipplei, pplds -> pplei

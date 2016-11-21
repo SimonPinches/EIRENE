@@ -1,7 +1,8 @@
 !pb APR   16:   pplds  -> pplei
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
-cdr sept  16:   nmdsi  -> nmeii,  nidsi -> nieii
+cdr Nov   16    finalizing notational syncronisation (..DS.. (legacy) --> ..EI..)
+
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
 
@@ -69,7 +70,7 @@ C
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, FLXI, ESIG, 
      .            EIRENE_RESET_SECOND, DUMMY,
      .          EIRENE_SECOND_OWN, DTIMVO
-      INTEGER :: IN, IAEI, IRDS, IIDS, ICPV, IMDS, IFIRST, K, JC, NDXY,
+      INTEGER :: IN, IAEI, IMEI, IIEI, IREI, ICPV, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           IFRSTR, ISTH, ISTNEW, ISTIN
       REAL(DP), ALLOCATABLE :: OUTAU(:)
@@ -359,8 +360,9 @@ C                                     SUM OVER ALL EI PROCESSES
 C
         DO 27 IION=1,NIONI
         DO 27 IPLS=1,NPLSI
-        DO 27 IIDS=1,NIEII(IION)
-          IREI=LGIEI(IION,IIDS)
+
+        DO 27 IIEI=1,NIEII(IION)
+          IREI=LGIEI(IION,IIEI)
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 27
           DO 28 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -376,8 +378,8 @@ C
 C  CURRENT RUN: ELECTRON COOLING RATE: TEST IONS, EI-PROCESSES, FROM IION,
 C                                      SUM OVER ALL EI PROCESSES
           DO 26 IION=1,NIONI
-          DO 26 IIDS=1,NIEII(IION)
-            IREI=LGIEI(IION,IIDS)
+          DO 26 IIEI=1,NIEII(IION)
+            IREI=LGIEI(IION,IIEI)
             DO 26 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
                 RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+
@@ -396,8 +398,8 @@ C                                         SUM OVER ALL IPLS
 C
         DO 29 IION=1,NIONI
         DO 29 IPLS=1,NPLSI
-        DO 29 IIDS=1,NIEII(IION)
-          IREI=LGIEI(IION,IIDS)
+        DO 29 IIEI=1,NIEII(IION)
+          IREI=LGIEI(IION,IIEI)
 !pb 09022016            ESIG=EPLDS(IREI,2)  this was incorrect, 
 cdr                     because it was already summed over ipls
           ESIG=EPLEI(IREI,IPLS,2)  ! only KER -part is corrected in short cycle
@@ -417,9 +419,9 @@ C  NEXT: MOLECULES, EI RATES: SPLODM, SEEODM, SEIODM
 C
         DO 47 IMOL=1,NMOLI
         DO 47 IPLS=1,NPLSI
-        DO 47 IMDS=1,NMEII(IMOL)
-            IREI=LGMEI(IMOL,IMDS)
-            IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 47
+        DO 47 IMEI=1,NMEII(IMOL)
+          IREI=LGMEI(IMOL,IMEI)
+          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 47
           DO 48 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SPLODM(IN,IMOL,IPLS)=RTIS%SPLODM(IN,IMOL,IPLS)+
@@ -436,8 +438,8 @@ C  CURRENT RUN: ELECTRON COOLING RATE: MOLECULES, EI-PROCESSES, FROM IMOL,
 C                                      SUM OVER ALL EI PROCESSES
 C
           DO 35 IMOL=1,NMOLI
-          DO 35 IMDS=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMDS)
+          DO 35 IMEI=1,NMEII(IMOL)
+            IREI=LGMEI(IMOL,IMEI)
             DO 35 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
                   RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
@@ -455,11 +457,11 @@ C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
         DO 49 IMOL=1,NMOLI
         DO 49 IPLS=1,NPLSI
-        DO 49 IMDS=1,NMEII(IMOL)
-            IREI=LGMEI(IMOL,IMDS)
+        DO 49 IMEI=1,NMEII(IMOL)
+          IREI=LGMEI(IMOL,IMEI)
 !pb 09022106         ESIG=EPLDS(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls 
-            ESIG=EPLEI(IREI,IPLS,2) ! only KER -part is corrected in short cycle
+          ESIG=EPLEI(IREI,IPLS,2) ! only KER -part is corrected in short cycle
           DO 50 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODM(IN,IMOL)=RTIS%SEIODM(IN,IMOL)+
@@ -551,8 +553,8 @@ C
 C
 C  NEXT: ATOMS, EI RATES: SPLNWA, SEENWA
 C               MISSING:  SEINWA
-cdr  correct energy exchange with bulk ions: e0* eplds(IREI,ipls,1)+ eplds(IREI,ipls,2)
-cdr  sum over ipls:                          e0* eplds(IREI,0,1)   + eplds(IREI,0,2)
+cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
+cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
 C
 C  NEXT RUN: PARTICLE RATE: ATOMS, EI-PROCESSES, FROM IATM TO IPLS,
@@ -594,8 +596,8 @@ C  NEW: TEST IONS, EI PROCESSES
 C
         DO 107 IION=1,NIONI
         DO 107 IPLS=1,NPLSI
-        DO 107 IIDS=1,NIEII(IION)
-          IREI=LGIEI(IION,IIDS)
+        DO 107 IIEI=1,NIEII(IION)
+          IREI=LGIEI(IION,IIEI)
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 107
           DO 108 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -610,8 +612,8 @@ C
 C
 C
         DO 106 IION=1,NIONI
-          DO 106 IIDS=1,NIEII(IION)
-            IREI=LGIEI(IION,IIDS)
+          DO 106 IIEI=1,NIEII(IION)
+            IREI=LGIEI(IION,IIEI)
             DO 106 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
                 SEENWI(IN,IION)=SEENWI(IN,IION)+EELEI1(IREI,IN)*
@@ -625,11 +627,11 @@ C
 
         DO 109 IION=1,NIONI
         DO 109 IPLS=1,NPLSI
-        DO 109 IIDS=1,NIEII(IION)
-          IREI=LGIEI(IION,IIDS)
+        DO 109 IIEI=1,NIEII(IION)
+          IREI=LGIEI(IION,IIEI)
 !pb 09022016          ESIG=EPLDS(IREI,2)
-cdr  correct energy exchange with bulk ions: e0* eplds(IREI,ipls,1)+ eplds(IREI,ipls,2)
-cdr  sum over ipls:                          e0* eplds(IREI,0,1)   + eplds(IREI,0,2)
+cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
+cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei	(IREI,0,2)
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
           ESIG=EPLEI(IREI,IPLS,2)
           DO 110 IN=1,NDXY
@@ -646,8 +648,8 @@ C  NEW: MOLECULES, EI PROCESSES
 C
         DO 117 IMOL=1,NMOLI
         DO 117 IPLS=1,NPLSI
-        DO 117 IMDS=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMDS)
+        DO 117 IMEI=1,NMEII(IMOL)
+          IREI=LGMEI(IMOL,IMEI)
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 117
           DO 118 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -662,8 +664,8 @@ C
 C
 C
         DO 115 IMOL=1,NMOLI
-        DO 115 IMDS=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMDS)
+        DO 115 IMEI=1,NMEII(IMOL)
+          IREI=LGMEI(IMOL,IMEI)
           DO 116 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               SEENWM(IN,IMOL)=SEENWM(IN,IMOL)+EELEI1(IREI,IN)*
@@ -677,8 +679,8 @@ C
 
         DO 119 IMOL=1,NMOLI
         DO 119 IPLS=1,NPLSI
-        DO 119 IMDS=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMDS)
+        DO 119 IMEI=1,NMEII(IMOL)
+          IREI=LGMEI(IMOL,IMEI)
 !pb 09022016         ESIG=EPLDS(IREI,2)
           ESIG=EPLEI(IREI,IPLS,2)
           DO 120 IN=1,NDXY

@@ -1,3 +1,7 @@
+cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
+cdr
+cdr  MXCOLLS --> MSTOR0
+
       MODULE EIRMOD_COMXS
  
 !  jan-05: natprc_2,..... introduced
@@ -224,7 +228,7 @@ c  ...and cummulated distributions thereof, for species sampling
  
       INTEGER, PUBLIC, SAVE ::
      I NSTOR1, NSTOR,  NSTORV, NTAB, NDAT, NMDTA, MMDTA, NAMF, MAMF,
-     I MSTOR1, MSTOR2, MXCOLLS
+     I MSTOR0, MSTOR1, MSTOR2
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DELPOT(:),   FACREA(:,:),
@@ -259,6 +263,11 @@ c  ...and cummulated distributions thereof, for species sampling
  
  
       SUBROUTINE EIRENE_ALLOC_COMXS (ICAL)
+CDR
+C  AUTOMATTED ALLOCATION OF STORAGE FOR A&M DATA STRUCTURES AND ARRAYS. 
+C  CALLED FROM:  ALLOCATE_MODULES.F
+C  ICAL=1: ... 
+C  ICAL=2: ...
  
       INTEGER, INTENT(IN) :: ICAL
       INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
@@ -434,8 +443,12 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
       ELSE IF (ICAL == 2) THEN
  
         IF (ALLOCATED(XSTOR)) RETURN
- 
-        MXCOLLS = MAX(NRPI, NREI, NRCX, NREL, NREC, NROT)
+C  DIMENSION OF FULL REACTION SPECIFIC ARRAYS: CFLAG, MODCOL,.... 
+        MSTOR0 = MAX(NRPI, NREI, NRCX, NREL, NREC, NROT)
+C  FIRST DIMENSION OF XSTOR ARRAY
+        MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NROT)
+C  SECOND DIMENSION OF XSTOR ARRAY
+        MSTOR2 = 24
  
         NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
@@ -457,7 +470,7 @@ C
 C
         NMDTA=NTAB+NDAT
 C
-        MMDTA=7*5*MXCOLLS+3*(NRCX+NREL+NRPI+NREI)+6+
+        MMDTA=7*5*MSTOR0+3*(NRCX+NREL+NRPI+NREI)+6+
      P        5*NREC+
      P        6*NRCX+
      P        10*NREC+
@@ -465,17 +478,14 @@ C
      P        (NREI+NRPI)*
      P        (NATMP+NMOLP+NIONP+NPLSP)+
 C  LG... ARRAYS
-     P        (NATMP+NMOLP+NIONP      )*(NREI+1)+
+     P          (NATMP+NMOLP+NIONP      )*(NREI+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRCX+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NREL+1)+
      P          (                  NPLSP)*(NREC+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRPI+1)
  
  
-csw added NROT (photon.f)
-        MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NROT)
-c
-        MSTOR2 = 24
+
  
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
  
@@ -563,7 +573,7 @@ c  secondaries, PI processes
         ALLOCATE (EIOEI(NREI,0:NION,2))
         ALLOCATE (EPLEI(NREI,0:NPLS,2))
  
-        ALLOCATE (MODCOL(7,0:4,MXCOLLS))
+        ALLOCATE (MODCOL(7,0:4,MSTOR0))
 
 c   flags for collision or tracklength estimators, 
 c   for particle (1), momentum (2) and energy (3) source rates, resp.
@@ -1367,7 +1377,7 @@ c
       CALL FXDRDBL (IUN,EPLEI,NREI*(NPLS+1)*2)
  
 c
-      CALL FXDRINT (IUN,MODCOL ,7*5*MXCOLLS)
+      CALL FXDRINT (IUN,MODCOL ,7*5*MSTOR0)
       CALL FXDRINT (IUN,IESTCX ,3*NRCX)
       CALL FXDRINT (IUN,IESTEL ,3*NREL)
       CALL FXDRINT (IUN,IESTPI ,3*NRPI)

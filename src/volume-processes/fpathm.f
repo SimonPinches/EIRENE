@@ -51,21 +51,24 @@ C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
 C           CFLAG(1,...): EI
+C           CFLAG(2,...): NOT IN USE, was DS process class in very old versions
 C           CFLAG(3,...): CX
 C           CFLAG(4,...): PI
 C           CFLAG(5,...): EL
 C           CFLAG(6,...): RC
+c           CFLAG(7,...): OT
 C
 C   FLAG FOR POST COLLISION DISTRIBUTION IN VELOCITY SPACE
-C  CFLAG(...,IRCL),  IRCL: IREI,IRCX,IRPI,IREL,IRRC
-C      =0:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BACKGROUND 
-C                TO BE WRITTEN
-C      =1:   VI: SIGMA-V-WEIGHTED MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BACKGROUND
-C      =2:   VI: MAXWELL PLUS DRIFT
-C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BACKGROUND
-
+C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IROT
+C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
+C                                                   SPECIES ALLOWED)
+C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
+C      =2:   VI: DRIFTING MAXWELLIAN
+C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
 C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
 C                TO BE WRITTEN
+C
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -79,7 +82,7 @@ C                TO BE WRITTEN
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(OUT) :: CFLAG(7,3)
+      REAL(DP), INTENT(OUT) :: CFLAG(7,MSTOR0)
       INTEGER, INTENT(IN) :: K,JCOU,NCOU
  
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
@@ -288,10 +291,8 @@ cdr       ESIGPI(IRPI,4)=EPLPI3(IRPI,K,1)
 cdr     ELSE
 cdr       ESIGPI(IRPI,4)=EIRENE_FEPLPI3(IRPI,K)
 cdr     END IF
-cdr     CFLAG(4,1)=2
-c  cflag (4,...) sollte cflag4(irpi,...) werden.
-c  tentatively:
-        CFLAG(4,1)=1
+
+        CFLAG(4,IRPI)=1
 c
 36    CONTINUE
 C
@@ -398,8 +399,7 @@ C  ION SAMPLING FROM MAXWELLIAN
               ESIGCX(IRCX,1)=EIRENE_FEPLCX3(IRCX,K)
             END IF
           END IF  ! this was for tracklength estimator only
-          CFLAG(3,1)=2  ! this is for sampling in velocx. cflag should depend on ircx !!!!
-cdr       cflag(3,ircx)=2
+          CFLAG(3,IRCX)=2
         ELSEIF (MODCOL(3,4,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  MEAN ENERGY FROM CROSS SECTION WEIGHTED DRIFTING MAXWELLIAN
@@ -430,7 +430,7 @@ cdr         endif
             ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
             ESIGCX(IRCX,1)=ESIGCX(IRCX,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
-          CFLAG(3,1)=3
+          CFLAG(3,IRCX)=3
         ELSEIF (MODCOL(3,4,IRCX).EQ.3) THEN
 C  MODEL 3:
 C  MEAN ENERGY FROM DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
@@ -443,7 +443,7 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
               ESIGCX(IRCX,1)=EIRENE_FEPLCX3(IRCX,K)
             END IF
           ENDIF  ! this was for tracklength estimator only
-          CFLAG(3,1)=1
+          CFLAG(3,IRCX)=1
         ELSE
           GOTO 992
         ENDIF
@@ -560,7 +560,7 @@ C  ION SAMPLING FROM MAXWELLIAN
           ELSE
             ESIGEL(IREL,1)=EIRENE_FEPLEL3(IREL,K)
           END IF
-          CFLAG(5,1)=2
+          CFLAG(5,IREL)=2
         ELSEIF (MODCOL(5,4,IREL).EQ.2) THEN
 C  MODEL 2:
 C  MEAN ENERGY FROM CROSS SECTION WEIGHTED DRIFTING MAXWELLIAN
@@ -587,7 +587,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
             ESIGEL(IREL,1)=ESIGEL(IREL,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
-          CFLAG(5,1)=3
+          CFLAG(5,IREL)=3
         ELSEIF (MODCOL(5,4,IREL).EQ.3) THEN
 C  MODEL 3:
 C  MEAN ENERGY FROM DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
@@ -598,7 +598,7 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
           ELSE
             ESIGEL(IREL,1)=EIRENE_FEPLEL3(IREL,K)
           END IF
-          CFLAG(5,1)=1
+          CFLAG(5,IREL)=1
         ELSE
           GOTO 995
         ENDIF

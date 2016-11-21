@@ -56,7 +56,7 @@ C
 
       INTEGER :: ICOUNT, IA1, IP2, IPLS, ITEST, IIO, IION, IDSC1,
      .           NRC, J, IPLS1, IPLS2, IATM, KK, IATM1, IATM2, ITYPB,
-     .           ISPZB, III, IDSC, IREL, IBGK_SP, IIDS, IERR, IMOL, 
+     .           ISPZB, III, IDSC, IREL, IBGK_SP, IERR, IMOL, 
      .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL, 
      .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -664,8 +664,8 @@ C
             WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS'
             CALL EIRENE_LEER(1)
           ELSE
-            DO 870 IIDS=1,NIEII(IION)
-              IREI=LGIEI(IION,IIDS)
+            DO 870 IIEI=1,NIEII(IION)
+              IREI=LGIEI(IION,IIEI)
               CALL EIRENE_XSTEI_2(IREI)
 870         CONTINUE
           ENDIF

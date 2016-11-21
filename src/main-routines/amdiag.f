@@ -8,7 +8,9 @@ cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
 
 !pb  apr       2016: eelds -> eelei
 !pb  may       2016: tabds1 -> tabei1
-cdr  sept        16: nmdsi  -> nmeii,  nidsi -> nieii 
+
+
+cdr  Nov.      2016: final ds --> ei notational unifications
 
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
