@@ -445,7 +445,6 @@ C  ION SAMPLING FROM MAXWELLIAN
             END IF
           END IF  ! this was for tracklength estimator only
           CFLAG(3,IRCX)=2
->>>>>>> generation-limit
         ELSEIF (MODCOL(3,4,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  MEAN ENERGY FROM CROSS SECTION WEIGHTED DRIFTING MAXWELLIAN

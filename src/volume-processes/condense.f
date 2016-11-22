@@ -23,11 +23,8 @@ C
  
       IMPLICIT NONE
  
-<<<<<<< HEAD
+
       INTEGER :: ISP, ISP0, IION, ICOL, IATM, IMOL, IREI, IMEI
-=======
-      INTEGER :: ISP, IION, ICOL, IATM, IMOL, IREI, IMEI
->>>>>>> generation-limit
  
       DO 10 IATM=1,NATMI
 C  NRCA=0 ?
@@ -40,9 +37,7 @@ C
 C  currently: only electron impact collisions on molecules
         DO 200 IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
-<<<<<<< HEAD
           ISP0=NSPA+IMOL
-=======
 C  electron impact process no. irei, on molecules imol
 c  search for secondaries, that are not followed:
 c  atom secondaries
@@ -52,7 +47,6 @@ C         DO   NMOLI
 c  photonic secondaries
 C         DO   NPHOTI
 C  test ion secondaries:  
->>>>>>> generation-limit
           DO 220 IION=1,NIONI
             ISP=NSPAM+IION
             IF (PIOEI(IREI,IION).GT.0) THEN
