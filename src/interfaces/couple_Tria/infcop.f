@@ -158,10 +158,16 @@ C
       REAL(DP) :: CHPM(NPLS,NRAD), CHEEM(NRAD), CHEIM(NRAD),
      .            CHMOM(NPLS,NRAD)
       REAL(DP) :: DI(NPLS), VP(NPLS)
-      REAL(DP) :: PPPL_COP(NPLS,NRAD), CPPV(NCPV,NRAD),
-     .            EPPL_COP(NRAD), EPEL(NRAD)
-      REAL(DP) :: PPLODA(NPLS,NRAD), CPVODA(NCPV,NRAD),
-     .            EPLODA(NRAD), EPEODA(NRAD)
+!pb      REAL(DP) :: PPPL_COP(NPLS,NRAD), CPPV(NCPV,NRAD),
+!pb     .            EPPL_COP(NRAD), EPEL(NRAD)
+!pb      REAL(DP) :: PPLODA(NPLS,NRAD), CPVODA(NCPV,NRAD),
+!pb     .            EPLODA(NRAD), EPEODA(NRAD)
+      REAL(DP), ALLOCATABLE, SAVE :: 
+     .            PPPL_COP(:,:), CPPV(:,:),
+     .            EPPL_COP(:,:), EPEL(:), CPV_CMP(:,:,:)
+      REAL(DP), ALLOCATABLE, SAVE :: 
+     .            PPLODA(:,:), CPVODA(:,:),
+     .            EPLODA(:,:), EPEODA(:)
 C
       REAL(DP) :: EFLX(NSTRA),
      R          DUMMY(0:NDXP,0:NDYP),
@@ -194,7 +200,7 @@ C
      .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
      .           NTGPRI, IPRT, IO29, NEND, NCOPI, NINI, NSSIP,
      .           LTARG, I, IPL, IERROR, IMODE, NPLP, INC,
-     .           NRED, J, IDUMMY,  ISTS, ITRI, 
+     .           NRED, J, IDUMMY,  ISTS, ITRI, ISTR,
      .           IR, IP, IT, IA, IB, 
      .           IN, IX, IY, NDX2, NEM, IIRC, NDXY,
      .           IFIRST, IF, ICPV, ISTRAI, NPES, MTRI, NPEC, NPBS,
@@ -283,6 +289,17 @@ C
       IERROR=0
 C
       IMODE=IABS(NMODE)
+C
+      IF (.NOT.ALLOCATED(PPPL_COP)) THEN
+        ALLOCATE (PPPL_COP(NPLS,NRAD))
+        ALLOCATE (CPPV(NCPV,NRAD))
+        ALLOCATE (EPPL_COP(NPLS,NRAD)) 
+        ALLOCATE (EPEL(NRAD))
+        ALLOCATE (PPLODA(NPLS,NRAD))
+        ALLOCATE (CPVODA(NCPV,NRAD))
+        ALLOCATE (EPLODA(NPLS,NRAD))
+        ALLOCATE (EPEODA(NRAD))
+      END IF
 !pb
       lchkqud = .false.
       mshfrm = 0
@@ -1215,6 +1232,14 @@ C                 SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCE
            NCLTAL(ITRI)=ico
         ENDIF
       ENDDO
+      NCLTAL(NTRII+1) = 0
+!  
+      if (nsbox > ntrii+1) then
+        do itri = ntrii+2, nsbox
+          ico = ico + 1
+          ncltal(itri) = ico
+        end do
+      end if
 
 C  ADDITIONAL CELLS: THOSE CELLS THAT ARE ADDED FROM OUTSIDE ORIGINAL GRID, PLUS THOSE FROM INPUT FILE (NRADD)
       NRADD_TAL = (ICO - NSURF_TAL) + NRADD
@@ -2831,11 +2856,12 @@ C
         END DO
 
         EAPL=0.D0
-        CPSIM => EAPLS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EAPL(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EAPLS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EAPL(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7310
@@ -2865,7 +2891,7 @@ C
             IN=CPMUL%ICM
             CHI=CPMUL%VALUEM*
      .          (SEINWA(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
-            EAPL(IN)=EAPL(IN)+CHI
+            EAPL(IPLS,IN)=EAPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           ENDIF
           CPMUL => CPMUL%NXTMUL
@@ -2898,11 +2924,12 @@ C
         END DO
 
         EIPL=0.D0
-        CPSIM => EIPLS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EIPL(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EIPLS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EIPL(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7330
@@ -2923,7 +2950,7 @@ C
           CHEEM(IN)=CHEEM(IN)+CHE
           CHI=CPMUL%VALUEM *
      .        (SEINWI(IN,IION)-RTIS%SEIODI(IN,IION))*ELCHA
-          EIPL(IN)=EIPL(IN)+CHI
+          EIPL(IPLS,IN)=EIPL(IPLS,IN)+CHI
           CHEIM(IN)=CHEIM(IN)+CHI
           CPMUL => CPMUL%NXTMUL
         ENDDO
@@ -2956,11 +2983,12 @@ C
         END DO
 
         EMPL=0.D0
-        CPSIM => EMPLS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EMPL(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EMPLS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EMPL(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7350
@@ -3004,11 +3032,12 @@ C  CORRECTION FOR ELECTRON IMPACT DISSOCIATION OF MOLECULES FINISHED
         ENDDO
 
         EPLODA=0.D0
-        CPSIM => EPPL_COPS(ISTRAI)%PSIM
-        DO WHILE (ASSOCIATED(CPSIM))
-          IN=CPSIM%ICS
-          EPLODA(IN)=CPSIM%VALUES
-          CPSIM => CPSIM%NXTSIM
+        CPMUL => EPPL_COPS(ISTRAI)%PMUL
+        DO WHILE (ASSOCIATED(CPMUL))
+          IPLS=CPMUL%IART
+          IN=CPMUL%ICM
+          EPLODA(IPLS,IN)=CPMUL%VALUEM
+          CPMUL => CPMUL%NXTMUL
         END DO
 
         EPEODA=0.D0
@@ -3064,7 +3093,7 @@ C
                 if (.not.lhit(inc)) then
                   PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                   CPPV(IPLS,INC)=CPPV(IPLS,INC)+PIADD
-                  EPPL_COP(INC)=EPPL_COP(INC)+EIADD
+                  EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                   EPEL(INC)=EPEL(INC)+EEADD
                   lhit(inc) = .true.
                 end if
@@ -3102,12 +3131,12 @@ cdr
 !pb            ICPV=NPLSI+IPLS
 !pb            CHMOM(IPLS,1:NSBOX_TAL) = CHMOM(IPLS,1:NSBOX_TAL) +
 !pb  .               CPPV(ICPV,1:NSBOX_TAL) - CPVODA(ICPV,1:NSBOX_TAL)
+              CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
+     .            EPPL_COP(IPLS,1:NSBOX_TAL) - EPLODA (IPLS,1:NSBOX_TAL)
             END DO
 
             CHEEM(1:NSBOX_TAL) = CHEEM(1:NSBOX_TAL) +
      .            EPEL(1:NSBOX_TAL) - EPEODA (1:NSBOX_TAL)
-            CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
-     .            EPPL_COP(1:NSBOX_TAL) - EPLODA (1:NSBOX_TAL)
           END IF
 
 C
@@ -3134,17 +3163,18 @@ C
                   CPMUL%NXTMUL => CPPVS(ISTRAI)%PMUL
                   CPPVS(ISTRAI)%PMUL => CPMUL
                 ENDIF
+                IF (EPPL_COP(IPLS,IN) .NE. 0.D0) THEN
+!pb                ALLOCATE(CPSIM)
+                  CPMUL%IART = IPLS
+                  CPMUL => EIRENE_NEW_MULARR()
+                  CPMUL%ICM = IN
+                  CPMUL%VALUEM = EPPL_COP(IPLS,IN)
+                  CPMUL%NXTMUL => EPPL_COPS(ISTRAI)%PMUL
+                  EPPL_COPS(ISTRAI)%PMUL => CPMUL
+                ENDIF
               ENDDO
             ENDDO
             DO IN=1,NSBOX_TAL
-              IF (EPPL_COP(IN) .NE. 0.D0) THEN
-!pb                ALLOCATE(CPSIM)
-                CPSIM => EIRENE_NEW_SIMARR()
-                CPSIM%ICS = IN
-                CPSIM%VALUES = EPPL_COP(IN)
-                CPSIM%NXTSIM => EPPL_COPS(ISTRAI)%PSIM
-                EPPL_COPS(ISTRAI)%PSIM => CPSIM
-              ENDIF
               IF (EPEL(IN) .NE. 0.D0) THEN
 !pb                ALLOCATE(CPSIM)
                 CPSIM => EIRENE_NEW_SIMARR()
@@ -3182,7 +3212,7 @@ C
         icp3=3*nplsi
         scpveii(istrai) = 0._dp
 
-        cpv_cmp(:,:,istrai) = copv (:,:)
+!pb 21112016 ??    cpv_cmp(:,:,istrai) = copv (:,:)
 
 cdr  fill bulk particle source rate sni(...ifl) from all contributing
 cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
@@ -3387,9 +3417,7 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
 
 C
         CHEES=0.
-        CHEIS=0.
         SEES=0.
-        SEIS=0.
         DO 7540 IX=1,NDXA
           DO 7545 IY=1,NDYA
 !pb 21012013 ncltal
@@ -3403,13 +3431,6 @@ C
      .           (EAEL(IN)+EMEL(IN)+EIEL(IN)+EPEL(IN))*VOLTAL(IN)*ELCHA
               CHEES=CHEES+CHEEM(IN)*VOLTAL(IN)
               SEES=SEES+(EAEL(IN)+EMEL(IN)+EIEL(IN)+EPEL(IN))*VOLTAL(IN)
-C
-              SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
-     .           (EAPL(IN)+EMPL(IN)+EIPL(IN)+EPPL_COP(IN))*
-     .           VOLTAL(IN)*ELCHA
-              CHEIS=CHEIS+CHEIM(IN)*VOLTAL(IN)
-              SEIS=SEIS+(EAPL(IN)+EMPL(IN)+EIPL(IN)+EPPL_COP(IN))*
-     .                  VOLTAL(IN)
 !pb 21012013 ncltal
 !              CURPOI=>CURPOI%NEXT
 !            ENDDO
@@ -3418,36 +3439,25 @@ C
 7540    CONTINUE
 
 !pb 22012013 copv
-            lhit = .false.
-            DO ITRI=1,NTRII
-              IY=IYTRI(ITRI)
-              IX=IXTRI(ITRI)
-              if ((ix<=0).or.(iy <= 0)) cycle
-              IN=IY+(IX-1)*NR1TAL
-              if (lhit(in)) cycle
+        lhit = .false.
+        DO ITRI=1,NTRII
+          IY=IYTRI(ITRI)
+          IX=IXTRI(ITRI)
+          if ((ix<=0).or.(iy <= 0)) cycle
+          IN=IY+(IX-1)*NR1TAL
+          if (lhit(in)) cycle
 !pb 22012013 copv
 cdr  electron energy source rate, now on copv icp3+1
-              cfac = (EAEL(IN)+EMEL(IN)+EIEL(IN)) /
-     .               (copv(icp3+1,in) + eps60)
-              copv(icp3+1,in)=(copv(icp3+1,in)*cfac + 
+          cfac = (EAEL(IN)+EMEL(IN)+EIEL(IN)) /
+     .         (copv(icp3+1,in) + eps60)
+          copv(icp3+1,in)=(copv(icp3+1,in)*cfac + 
      .             EPEL(IN)) * VOLTAL(IN)*ELCHA
 cdr  this is now identical to see above ?
 
-              cfac = (EAPL(IN)+EMPL(IN)+EIPL(IN)) /
-     .               (copv(icp3+2,in) + eps60)
-              copv(icp3+2,in)=(copv(icp3+2,in)*cfac + 
-     .                  EPPL_COP(IN)) * VOLTAL(IN)*ELCHA
-!pb 30012013 sei internal
-              copv(icp3+3,in)=(copv(icp3+3,in) + 
-     .                  EPPL_COP(IN)) * VOLTAL(IN)*ELCHA
-              lhit(in) = .true.
-              scpveii(istrai) = scpveii(istrai) + copv(icp3+3,in)
-            end do
+          lhit(in) = .true.
+        end do
 
-            copv(icp3+1,:) = copv(icp3+1,:) * flxi 
-            copv(icp3+2,:) = copv(icp3+2,:) * flxi 
-!pb test            copv(icp3+3,:) = copv(icp3+3,:) * flxi 
-            copv(icp3+3,:) = copv(icp3+3,:) / elcha 
+        copv(icp3+1,:) = copv(icp3+1,:) * flxi 
 !pb
 
         IF (.NOT.LSHORT) THEN
@@ -3455,7 +3465,7 @@ cdr  this is now identical to see above ?
 !pb replace sigma_cop 
           istat_cop = 0
           do i = 1, nsigvi
-            if ((iih(i) == ntalm).and.(igh(i) == 3*NPLSI+1)) then
+            if ((iih(i) == ntalm).and.(igh(i) == ICP3+1)) then
               istat_cop = i
               exit
             end if
@@ -3485,40 +3495,101 @@ cdr  this is now identical to see above ?
               END DO
             END DO
           end if
+        END IF
 
-!pb replace sigma_cop 
-          istat_cop = 0
-          do i = 1, nsigvi
-            if ((iih(i) == ntalm).and.(igh(i) == 3*NPLSI+2)) then
-              istat_cop = i
-              exit
-            end if
-          end do
-           
-          if (istat_cop > 0) then 
-            DO IX=1,NDXA
-              DO IY=1,NDYA
+C
+        CHEIS=0.
+        SEIS=0.
+        DO 7544 IFL=1,NFLA
+          DO  7543 IPLS=1,NPLSI
+            IF (IFLB(IPLS).NE.IFL) GOTO 7543
+            DO 7542 IX=1,NDXA
+              DO 7541 IY=1,NDYA
 !pb 21012013 ncltal
 !            CURPOI => HEADS(IY,IX)%P
 !            DO WHILE (ASSOCIATED(CURPOI))
 !              IT=CURPOI%TRIANGLE
 !              IN=NCLTAL(IT)
                 IN=IY+(IX-1)*NR1TAL
-                SEIRES=(EAPL(IN)+EMPL(IN)+EIPL(IN))*VOLTAL(IN)*FLX_EIR
+!pb                  
+                SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
+     .             (EAPL(IPLS,IN)+EMPL(IPLS,IN)+
+     .              EIPL(IPLS,IN)+EPPL_COP(IPLS,IN))*
+     .             VOLTAL(IN)*ELCHA
+                CHEIS=CHEIS+CHEIM(IN)*VOLTAL(IN)
+                SEIS=SEIS+(EAPL(IPLS,IN)+EMPL(IPLS,IN)+
+     .                     EIPL(IPLS,IN)+EPPL_COP(IPLS,IN))*
+     .                    VOLTAL(IN)
+!pb 21012013 ncltal
+!              CURPOI=>CURPOI%NEXT
+!            ENDDO
+!pb                  
+7541         CONTINUE
+7542       CONTINUE
+
+!pb 22012013 copv
+           lhit = .false.
+           DO ITRI=1,NTRII
+             IY=IYTRI(ITRI)
+             IX=IXTRI(ITRI)
+             if ((ix<=0).or.(iy <= 0)) cycle
+             IN=IY+(IX-1)*NR1TAL
+             if (lhit(in)) cycle
+
+             cfac = (EAPL(IPLS,IN)+EMPL(IPLS,IN)+EIPL(IPLS,IN)) /
+     .              (copv(icp3+2,in) + eps60)
+             copv(icp3+2,in)=(copv(icp3+2,in)*cfac + 
+     .                  EPPL_COP(IPLS,IN)) * VOLTAL(IN)*ELCHA
+!pb 30012013 sei internal
+             copv(icp3+3,in)=(copv(icp3+3,in) + 
+     .                  EPPL_COP(IPLS,IN)) * VOLTAL(IN)*ELCHA
+             lhit(in) = .true.
+             scpveii(istrai) = scpveii(istrai) + copv(icp3+3,in)
+           end do
+
+           copv(icp3+2,:) = copv(icp3+2,:) * flxi 
+!pb test            copv(icp3+3,:) = copv(icp3+3,:) * flxi 
+           copv(icp3+3,:) = copv(icp3+3,:) / elcha 
+!pb
+
+           IF (.NOT.LSHORT) THEN
+
+!pb replace sigma_cop 
+              istat_cop = 0
+              do i = 1, nsigvi
+                if ((iih(i) == ntalm).and.(igh(i) == ICP3+2)) then
+                  istat_cop = i
+                  exit
+                end if
+              end do
+           
+              if (istat_cop > 0) then 
+                DO IX=1,NDXA
+                  DO IY=1,NDYA
+!pb 21012013 ncltal
+!            CURPOI => HEADS(IY,IX)%P
+!            DO WHILE (ASSOCIATED(CURPOI))
+!              IT=CURPOI%TRIANGLE
+!              IN=NCLTAL(IT)
+                    IN=IY+(IX-1)*NR1TAL
+                    SEIRES=(EAPL(IPLS,IN)+EMPL(IPLS,IN)+
+     .                       EIPL(IPLS,IN))*VOLTAL(IN)*FLX_EIR
 !pb                RESSEI(ISTRAI)=RESSEI(ISTRAI)+
 !pb     .                       ABS(SIGMA_COP(2*NPLSI+2,IN)*
 !pb     .                       SEIRES/100.D0)
-                RESSEI(ISTRAI)=RESSEI(ISTRAI)+
+                    RESSEI(ISTRAI)=RESSEI(ISTRAI)+
      .                         ABS(SIGMA(ISTAT_COP,IN)*
      .                         SEIRES/100.D0)
 !pb 21012013 ncltal
 !              CURPOI=>CURPOI%NEXT
 !            END DO
 !pb                  
-              END DO
-            END DO
-          end if
-        END IF
+                  END DO
+                END DO
+              end if
+            END IF
+7543      CONTINUE
+7544    CONTINUE
 C
 C   NEXT:
 C   IF LSHORT: CRITERION TO STOP SHORT CYCLE,

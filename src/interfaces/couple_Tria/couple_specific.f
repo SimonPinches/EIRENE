@@ -331,15 +331,15 @@ C    READING OF POLYGON DATA
        IF (IX.LE.nxcut1(1)-1) THEN
         DO 12 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),XPOL(IY,IX)
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
 12      CONTINUE
@@ -347,15 +347,17 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.nxcut1(1)) THEN
         DO 14 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,*) XPOL(IY,nxcut2(2)),DUMMI(1),
+         READ (30,*,ERR=100,END=100) XPOL(IY,nxcut2(2)),DUMMI(1),
      .                  DUMMI(2),XPOL(IY,IX)
-         READ (30,*) YPOL(IY,nxcut2(2)),DUMMI(1),
+         READ (30,*,ERR=100,END=100) YPOL(IY,nxcut2(2)),DUMMI(1),
      .                  DUMMI(2),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
+          READ (30,*,ERR=100,END=100) 
+     .                  XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
      .                                XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*) YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
+          READ (30,*,ERR=100,END=100) 
+     .                  YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
      .                                YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
 14      CONTINUE
@@ -363,15 +365,15 @@ C    READING OF POLYGON DATA
        IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(2)-1)) THEN
         DO 16 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
 16      CONTINUE
@@ -379,15 +381,17 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.nxcut1(2)) THEN
         DO 18 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,*) XPOL(IY,nxcut2(1)+1),DUMMI(1),
+         READ (30,*,ERR=100,END=100) XPOL(IY,nxcut2(1)+1),DUMMI(1),
      .                  DUMMI(2),XPOL(IY,IX+1)
-         READ (30,*) YPOL(IY,nxcut2(1)+1),DUMMI(1),
+         READ (30,*,ERR=100,END=100) YPOL(IY,nxcut2(1)+1),DUMMI(1),
      .                  DUMMI(2),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
+          READ (30,*,ERR=100,END=100) 
+     .                  XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
      .                                XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*) YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
+          READ (30,*,ERR=100,END=100) 
+     .                  YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
      .                                YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
 18      CONTINUE
@@ -395,15 +399,15 @@ C    READING OF POLYGON DATA
        IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
         DO 22 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,*) DUMMI(1),DUMMI(2),DUMMI(3),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),DUMMI(3),
      .                   XPOL(IY,IX+2)
-          READ (30,*) DUMMI(1),DUMMI(2),DUMMI(3),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),DUMMI(3),
      .                   YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
 22      CONTINUE
@@ -411,15 +415,17 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.dimxh) THEN
         DO 24 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,*) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
+         READ (30,*,ERR=100,END=100) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
      .                  XPOL(IY,IX+2)
-         READ (30,*) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
+         READ (30,*,ERR=100,END=100) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
      .                  YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
+          READ (30,*,ERR=100,END=100) 
+     .                  XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
      .                                XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*) YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
+          READ (30,*,ERR=100,END=100) 
+     .                  YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
      .                                YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
 24      CONTINUE
@@ -689,6 +695,7 @@ C
       REAL(DP) :: D12, D34, D13, D24, EPS60, PUPV, PVPV, DVX, DVY,
      .          DUX, DUY
       INTEGER :: IX, IN
+
       EPS60 = 1.E-60_DP
 C
 C
@@ -734,6 +741,7 @@ C
       END
 
 
+C
 C
       SUBROUTINE EIRENE_INDMAP(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG)
@@ -1024,70 +1032,106 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             ENDIF
           ENDIF
           IF (LPMPL) THEN 
-          IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = PMPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => PMPLS(ISTRAI)%PMUL
+              PMPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
+          ENDIF
+
+          IF (LPIPL) THEN
+            IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
+!PB            ALLOCATE(CPMUL)
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = PIPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => PIPLS(ISTRAI)%PMUL
+              PIPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
+          ENDIF
+
+          IF (LEAPL) THEN 
+          IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN
-            CPMUL%VALUEM = PMPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => PMPLS(ISTRAI)%PMUL
-            PMPLS(ISTRAI)%PMUL => CPMUL
+            CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
+            EAPLS(ISTRAI)%PMUL => CPMUL
           ENDIF
           ENDIF
-          IF (LPIPL) THEN 
-          IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB            ALLOCATE(CPMUL)
+          IF (LEMPL) THEN 
+          IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
             CPMUL%IART = IPLS
             CPMUL%ICM = IN
-            CPMUL%VALUEM = PIPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => PIPLS(ISTRAI)%PMUL
-            PIPLS(ISTRAI)%PMUL => CPMUL
+            CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
+            EMPLS(ISTRAI)%PMUL => CPMUL
           ENDIF
           ENDIF
-          IF (LMAPL) THEN 
-          IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
+          IF (LEIPL) THEN 
+          IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
+!PB          ALLOCATE(CPMUL)
+            CPMUL => EIRENE_NEW_MULARR()
+            CPMUL%IART = IPLS
+            CPMUL%ICM = IN
+            CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
+            CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
+            EIPLS(ISTRAI)%PMUL => CPMUL
+          ENDIF
+          ENDIF
+
+          IF(LMAPL) THEN
+            IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb            ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = MAPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => MAPLS(ISTRAI)%PMUL
-            MAPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = MAPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => MAPLS(ISTRAI)%PMUL
+              MAPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
           IF (LMMPL) THEN
-          IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = MMPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => MMPLS(ISTRAI)%PMUL
-            MMPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = MMPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => MMPLS(ISTRAI)%PMUL
+              MMPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
           IF (LMIPL) THEN
-          IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = MIPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => MIPLS(ISTRAI)%PMUL
-            MIPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = MIPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => MIPLS(ISTRAI)%PMUL
+              MIPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
           IF (LMPHPL) THEN
-          IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = MPHPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => MPHPLS(ISTRAI)%PMUL
-            MPHPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = MPHPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => MPHPLS(ISTRAI)%PMUL
+              MPHPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
         ENDDO
       ENDDO
@@ -1124,52 +1168,20 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
         ENDIF
 
-        IF (LEAPL) THEN 
-          IF (EAPL(IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPSIM)
-            CPSIM => EIRENE_NEW_SIMARR()
-            CPSIM%ICS = IN
-            CPSIM%VALUES = EAPL(IN)*FLXI
-            CPSIM%NXTSIM => EAPLS(ISTRAI)%PSIM
-            EAPLS(ISTRAI)%PSIM => CPSIM
-          ENDIF
-        ENDIF
-        IF (LEMPL) THEN 
-          IF (EMPL(IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPSIM)
-            CPSIM => EIRENE_NEW_SIMARR()
-            CPSIM%ICS = IN
-            CPSIM%VALUES = EMPL(IN)*FLXI
-            CPSIM%NXTSIM => EMPLS(ISTRAI)%PSIM
-            EMPLS(ISTRAI)%PSIM => CPSIM
-          ENDIF
-        ENDIF
-
-        IF (LEIPL) THEN
-          IF (EIPL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
-            CPSIM => EIRENE_NEW_SIMARR()
-            CPSIM%ICS = IN
-            CPSIM%VALUES = EIPL(IN)*FLXI
-            CPSIM%NXTSIM => EIPLS(ISTRAI)%PSIM
-            EIPLS(ISTRAI)%PSIM => CPSIM
-          ENDIF
-        ENDIF
-
       ENDDO
 
       DO IATM=1,NATMI
         DO IN=1,NSBOX_TAL
-	  IF (LPDENA) THEN
-          IF (PDENA(IATM,IN) .NE. 0.D0) THEN
+          IF(LPDENA) THEN
+            IF (PDENA(IATM,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IATM
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = PDENA(IATM,IN)*FLXI
-            CPMUL%NXTMUL => PDENAS(ISTRAI)%PMUL
-            PDENAS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IATM
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = PDENA(IATM,IN)*FLXI
+              CPMUL%NXTMUL => PDENAS(ISTRAI)%PMUL
+              PDENAS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
           IF (LEDENA) THEN
             IF (EDENA(IATM,IN) .NE. 0.D0) THEN
