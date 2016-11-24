@@ -345,6 +345,7 @@ C
       IF (NSEPI4.EQ.0) THEN
 C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
+c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
             DO J=1,NSBOX
@@ -364,6 +365,8 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
             NELRPI(IRPI) = -2
             EPLPI3(IRPI,1,1)=EBULK
           END IF
+C       ELSE
+CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(4,4,IRPI)=3
       ELSEIF (NSEPI4.EQ.1) THEN
@@ -383,6 +386,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'MODIFIED TREATMENT OF BULK ION IMPACT '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
           WRITE (iunout,*) 'RATHER THEN WITH T = TIIN '
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOPI) '  
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -393,12 +397,15 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
             NELRPI(IRPI) = -2
             EPLPI3(IRPI,1,1)=EBULK
           END IF
+C       ELSE
+CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(4,4,IRPI)=1
 C     ELSEIF (NSEPI4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSEPI4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
@@ -439,7 +446,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
               ADDL=LOG(FACTKK)-ADDTL
-              rt => reacdat(kk)%rtcew
+              rt => reacdat(kread)%rtcew
               fp1(1:3) = rt%fp1l
               fp1(4:6) = rt%fp1r
               fp2(1:3) = rt%fp2b

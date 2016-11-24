@@ -254,14 +254,15 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
               DO 254 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,TII,
+                EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
+     .                          (KREAD,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
               ADDL=LOG(FACTKK)-ADDTL
-              rt => reacdat(kk)%rtcew
+              rt => reacdat(kread)%rtcew
               fp1(1:3) = rt%fp1l
               fp1(4:6) = rt%fp1r
               fp2(1:3) = rt%fp2b
