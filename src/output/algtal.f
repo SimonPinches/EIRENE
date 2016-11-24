@@ -233,6 +233,7 @@ C
             VEC1 = 0._DP
             DO I=1,NSBOX
               IN=NCLTAL(I)
+              IF (IN <= 0) CYCLE
               VEC1(IN) = VEC1(IN) + WEI(I)*OP(I)
               SUMWEI(IN) = SUMWEI(IN) + WEI(I)
             END DO
@@ -425,6 +426,7 @@ C
             VEC2 = 0._DP
             DO I=1,NSBOX
               IN=NCLTAL(I)
+              IF (IN <= 0) CYCLE
               VEC2(IN) = VEC2(IN) + WEI(I)*OP(I)
               SUMWEI(IN) = SUMWEI(IN) + WEI(I)
             END DO

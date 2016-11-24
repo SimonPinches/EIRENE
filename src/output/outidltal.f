@@ -120,7 +120,11 @@ C
             IF (NSBOX_TAL /= NSBOX) THEN
               DO I=1,NSBOX
                 IN = NCLTAL(I)
-                VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,IN)
+                IF (IN > 0) THEN
+                  VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,IN)
+                ELSE
+                  VECTOR(I,K)=0._DP
+                END IF
               END DO
             ELSE
               DO 110 I=1,NSBOX_TAL
