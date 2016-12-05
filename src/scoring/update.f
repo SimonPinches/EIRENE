@@ -82,6 +82,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_COMPRT
       USE EIRMOD_CSDVI
       USE EIRMOD_COMXS
+      USE EIRMOD_CZT1
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
@@ -95,8 +96,6 @@ C
      .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
-      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
-     .                               CNDYNP(:)
       INTEGER :: IRD,  I, IRDO, INUM,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, NPBGK,
@@ -140,19 +139,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNA)) THEN
-        ALLOCATE (CNDYNA(NATM))
-        DO IAT=1,NATMI
-          CNDYNA(IAT)=AMUA*RMASSA(IAT)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -801,19 +787,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNM)) THEN
-        ALLOCATE (CNDYNM(NMOL))
-        DO IML=1,NMOLI
-          CNDYNM(IML)=AMUA*RMASSM(IML)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -1456,19 +1429,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNI)) THEN
-        ALLOCATE (CNDYNI(NION))
-        DO IIO=1,NIONI
-          CNDYNI(IIO)=AMUA*RMASSI(IIO)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -2423,12 +2383,10 @@ C
 133    CONTINUE
 131    CONTINUE
       RETURN
+
 csw 21oct08
       entry EIRENE_update_reinit
-      if(allocated(cndyna)) deallocate(cndyna)
-      if(allocated(cndynm)) deallocate(cndynm)
-      if(allocated(cndyni)) deallocate(cndyni)
-      if(allocated(cndynp)) deallocate(cndynp)
+
       return
 csw
       END
