@@ -82,6 +82,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_COMPRT
       USE EIRMOD_CSDVI
       USE EIRMOD_COMXS
+      USE EIRMOD_CZT1
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
@@ -95,8 +96,6 @@ C
      .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
-      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
-     .                               CNDYNP(:)
       INTEGER :: IRD,  I, IRDO, INUM,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, NPBGK,
@@ -140,19 +139,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNA)) THEN
-        ALLOCATE (CNDYNA(NATM))
-        DO IAT=1,NATMI
-          CNDYNA(IAT)=AMUA*RMASSA(IAT)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -627,8 +613,8 @@ C
                 DO IP=1,IPPLPI(IRPI,0)
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
-cdr  this is incorrect. esigei is sum over ipl species.
-cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are all the same (ipl),
 cdr  because then esigpi is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
@@ -672,21 +658,26 @@ C
               VZ(IPL)=VZIN(IPLV,IRDO)
             END IF
           END DO
- 
+
+c  set parameters for parallel momentum of incident bulk particle
+c  val_parp   : parallel velocity component
+c  vsig_parb  : parallel momentum 
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
             vion=EIRENE_vdion(irdo)
-            VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*SIGN(1._DP,VION)
-            VAL_PARB(1:NPLSI)=VION
-          ELSE IF ((INDPRO(5) == 8) .OR. (INDPRO(4) == 8)) THEN
+            VAL_PARB(1:NPLSI) =VION
+            VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
+     .                          SIGN(1._DP,VION)
+            
+          ELSE IF ((INDPRO(4) == 8) .OR. (INDPRO(5) == 8)) THEN
 C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
             DO IPL=1,NPLSI
-              VAL_PARB(IPL)=(VX(IPL)*BX+VY(IPL)*BY+VZ(IPL)*BZ)
+              VAL_PARB(IPL) =(VX(IPL)*BX+VY(IPL)*BY+VZ(IPL)*BZ)
               VSIG_PARB(IPL)=CNDYNP(IPL)*VAL_PARB(IPL)*
      .                        SIGN(1._DP,VAL_PARB(IPL))
             END DO
           ELSE
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
-            VAL_PARB(1:NPLSI) = BVIN(MPLSV(1:NPLSI),IRDO)
+            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
           END IF
  
           V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
@@ -796,19 +787,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNM)) THEN
-        ALLOCATE (CNDYNM(NMOL))
-        DO IML=1,NMOLI
-          CNDYNM(IML)=AMUA*RMASSM(IML)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -1451,19 +1429,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNI)) THEN
-        ALLOCATE (CNDYNI(NION))
-        DO IIO=1,NIONI
-          CNDYNI(IIO)=AMUA*RMASSI(IIO)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -2418,12 +2383,10 @@ C
 133    CONTINUE
 131    CONTINUE
       RETURN
+
 csw 21oct08
       entry EIRENE_update_reinit
-      if(allocated(cndyna)) deallocate(cndyna)
-      if(allocated(cndynm)) deallocate(cndynm)
-      if(allocated(cndyni)) deallocate(cndyni)
-      if(allocated(cndynp)) deallocate(cndynp)
+
       return
 csw
       END

@@ -911,12 +911,19 @@ C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
       NSPAN(55)=0
       NSPAN(56)=N4+1
 C  ADDITIONAL TALLIES
+
+c  additional tracklength estimators
       NSPAN(NTALA)=N5+1
+c  additional collision estimators 
       NSPAN(NTALC)=N7+1
+c  additional snapshot estimators 
       NSPAN(NTALT)=N10+1
+c  additional couple tallies
       NSPAN(NTALM)=N8+1
       NSPAN(NTALB)=N9+1
+c  additional algebraic tallies
       NSPAN(NTALR)=N6+1
+
 C  GENERATION LIMIT TALLIES
       NSPAN(63)=N1+1
       NSPAN(64)=N2+1

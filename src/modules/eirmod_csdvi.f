@@ -109,8 +109,11 @@ C SPEED UP OF SUBROUTINE STATIS
       ELSE IF (ICAL == 2) THEN
  
         IF (ALLOCATED(LMETSP)) RETURN
- 
-!pb        ALLOCATE (LMETSP(N1MX+NSNV))
+
+c  arrays updated on the fly, to speed up statistical variance calculations in statis.f  
+c  lmetsp(is) : logical, indicator, whether for any particular trajectory a 
+c               volume averaged tally has been scored with species index "is"
+c  lmetspw(is): ditto, for surface averaged tallies 
         ALLOCATE (LMETSP(NSPZTOT+NSNV))
         ALLOCATE (LMETSPW(NSPZ+NADS+NALS+NSPZ))
  
