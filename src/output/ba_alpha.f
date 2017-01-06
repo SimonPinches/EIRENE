@@ -45,13 +45,14 @@ C
       USE EIRMOD_COUTAU
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
+      USE EIRMOD_CTEXT
  
       IMPLICIT NONE
 C
       INTEGER, INTENT(IN) :: IAD1, IAD2, IAD3, IAD4, IAD5, IAD6, 
      .                       IADS, IST
  
-      REAL(DP) :: DA(0:8,0:8) !  atomic hydrogenic density, H, D, T
+      REAL(DP) :: DA(0:8,0:8) ! atomic hydrogenic density, H, D, T
       REAL(DP) :: DB(0:8,0:8) ! atomic hydrogenic ion, H+, D+, T+ 
       REAL(DP) :: DM(0:8,0:8) ! diatomic hydrogenic molecule H2,D2,T2,HD,HT,DT
       REAL(DP) :: DI(0:8,0:8) ! diatomic hydr. mol. ion H2+, D2+,...,DT+
@@ -59,8 +60,8 @@ C
       REAL(DP) :: DN(0:8,0:8) ! negativ hydr. ion H-,D- T-
  
       REAL(DP) :: DUMMY(NRTAL)
-      REAL(DP) :: RHMH2(0:8), RH2PH2(0:8,0:8), FP(6)
-      REAL(DP) :: DAT, DNM, DIO, DIO3, DMO, DPL, 
+      REAL(DP) :: RHMH2(0:8), RH2PH2(0:8,0:8), FP1(6), FP2(6)
+      REAL(DP) :: DAT, DNM, DIO, DIO3, DMO, DPL,
      .          RATIO2, RATIO7, TEI, DEJ,
      .          SIGADD1, SIGADD2, SIGADD3, SIGADD4, SIGADD5, SIGADD6, 
      .          SIGADD,
@@ -71,9 +72,10 @@ C
      .          FAC43, FAC53, FAC63,
      .          POWALF, POWALF1, POWALF2, POWALF3, POWALF4,
      .          POWALF5, POWALF6, 
-     .          DE, TE, RCMIN, RCMAX
+     .          DE, TE, RC1MIN, RC1MAX, RC2MIN, RC2MAX
 
-      INTEGER :: IRC, IFIRST, NCELC, IERROR, IR, I, J, JFEXMN, JFEXMX
+      INTEGER :: IRC, IFIRST, NCELC, IERROR, IR, I, J, 
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123
@@ -138,17 +140,24 @@ C
         FILNAM='AMJUEL  '
         H123='H.12'
         CRC='OT '
-        FP = 0._DP
-        RCMIN = -HUGE(1._DP)
-        RCMAX =  HUGE(1._DP)
-        JFEXMN = 0
-        JFEXMX = 0
+        FP1 = 0._DP
+        FP2 = 0._DP
+        RC1MIN = -HUGE(1._DP)
+        RC1MAX =  HUGE(1._DP)
+        RC2MIN = -HUGE(1._DP)
+        RC2MAX =  HUGE(1._DP)
+        JFEX1MN = 0
+        JFEX1MX = 0
+        JFEX2MN = 0
+        JFEX2MX = 0
 C
 C  H(n=3)/H(n=1)
         REAC='2.1.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO J=1,9
           DO I=1,9
             DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
@@ -158,7 +167,9 @@ C  H(n=3)/H+
         REAC='2.1.8a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO J=1,9
           DO I=1,9
             DB(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
@@ -168,7 +179,9 @@ C  H(n=3)/H2(g)
         REAC='2.2.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO J=1,9
           DO I=1,9
             DM(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
@@ -178,7 +191,9 @@ C  H(n=3)/H2+(g)
         REAC='2.2.14a  '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO J=1,9
           DO I=1,9
             DI(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
@@ -188,7 +203,9 @@ C  H(n=3)/H3+
         REAC='2.2.15a  '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO J=1,9
           DO I=1,9
             DI3(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
@@ -198,7 +215,9 @@ C  H(n=3)/H-
         REAC='7.2a     '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO J=1,9
           DO I=1,9
             DN(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
@@ -226,7 +245,9 @@ C
         CRC='OT '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO I=1,9
           RHMH2(I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,1)
         ENDDO
@@ -255,7 +276,9 @@ C    IF H2(V=1,2,...) IS NOT IN QSS WITH H2(V=0), THEN RATIOS SHOULD NOT BE USED
 CDR
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
         DO I=1,9
           DO J=1,9
             RH2PH2(I-1,J-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,J)
@@ -613,6 +636,35 @@ C
      .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,IST),
      .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
       ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+C
+      TXTTAL(IAD1,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IAD1,NTALA) ='GROUNDSTATE             '
+      TXTUNT(IAD1,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTTAL(IAD2,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IAD2,NTALA) ='CONTINUUM               '
+      TXTUNT(IAD2,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTTAL(IAD3,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IAD3,NTALA) ='MOLECULES               '
+      TXTUNT(IAD3,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTTAL(IAD4,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IAD4,NTALA) ='DIAT.MOL.IONS       '
+      TXTUNT(IAD4,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTTAL(IAD5,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IAD5,NTALA) ='NEG.IONS                '
+      TXTUNT(IAD5,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTTAL(IAD6,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IAD6,NTALA) ='TRIAT.MOL.IONS      '
+      TXTUNT(IAD6,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTTAL(IADS,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTSPC(IADS,NTALA) ='SUM_OVER_ALL            '
+      TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
+
 C
       IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=IST
