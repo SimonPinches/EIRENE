@@ -234,7 +234,7 @@ C
      .           NCOPI, NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, IF, I34,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ, ISP, IPLSTI, IPLSV,
-     .           IPLV,l,ISTR,
+     .           IPLV,l,ISTR, JUN,
      .           NAS,IPUNKT,NSSIR,NUMSI,NBAR,ISNR,ISC,IS,NASMOD,
      .           NRS,NADMOD,NBARSI,IP1,NP2NDQ,IS1,IR1,
      .           NEND,NINI,NSSIP,MTRI,
@@ -819,6 +819,16 @@ C
       if (ntrfrm == 0) then
          READ(33,*) (XTRIAN(I),I=1,NRKNOT)
          READ(33,*) (YTRIAN(I),I=1,NRKNOT)
+         
+         if (plidl) then
+           open(newunit=jun,file='triang_new.npco_char',
+     .          access='SEQUENTIAL',form='FORMATTED')
+           write (jun,'(i9)') NRKNOT
+           DO I=1,NRKNOT
+             WRITE(jun,'(i9,2es24.16)') I,XTRIAN(I),YTRIAN(I)
+           ENDDO
+           close (unit=jun)
+         end if
       else
          DO I=1,NRKNOT
            READ(33,*) J,XTRIAN(I),YTRIAN(I)

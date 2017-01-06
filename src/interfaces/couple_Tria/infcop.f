@@ -186,7 +186,8 @@ C
      .          BN, BX, BY, BZ, TX, TY, VPRO, VTY, VT, TEST, XMUE, PX,
      .          PY, ALX, ALN, ALS, AL, ALE, ALW, UUBC, VTEST, VR, CS, 
      .          PERW, PARW, PARWI,PERWI, DRR, EADD, TE, CUR, 
-     .          VPZ, PM1, VPY, PN1, VPX, GAMMA, ESUM, CNDYNP,
+!pb     .          VPZ, PM1, VPY, PN1, VPX, GAMMA, ESUM, CNDYNP,
+     .          VPZ, PM1, VPY, PN1, VPX, GAMMA, ESUM, 
      .          CHI, CHP, CHE, SUMEI, SUMEE, SUMM, SUMN,  
      .          ETOT, FLXI, FLX, OR, DELY, XANF, YANF, UDBC,
      .          RBC, UPBC, VVBC, DELTI_PARA, DELX, PUYS, RRBS,
@@ -201,7 +202,7 @@ C
      .           NTGPRI, IPRT, IO29, NEND, NCOPI, NINI, NSSIP,
      .           LTARG, I, IPL, IERROR, IMODE, NPLP, INC,
      .           NRED, J, IDUMMY,  ISTS, ITRI, ISTR,
-     .           IR, IP, IT, IA, IB, 
+     .           IR, IP, IT, IA, IB, JUN,
      .           IN, IX, IY, NDX2, NEM, IIRC, NDXY,
      .           IFIRST, IF, ICPV, ISTRAI, NPES, MTRI, NPEC, NPBS,
      .           NPBC, IACT, IANF, IO, IIPLS, IEPLS, IG, ITARG, IGITT,
@@ -779,6 +780,16 @@ C
       IF (ITFRM == 0) THEN
         READ(33,*) (XTRIAN(I),I=1,NRKNOT)
         READ(33,*) (YTRIAN(I),I=1,NRKNOT)
+         
+         if (plidl) then
+           open(newunit=jun,file='triang_new.npco_char',
+     .          access='SEQUENTIAL',form='FORMATTED')
+           write (jun,'(i9)') NRKNOT
+           DO I=1,NRKNOT
+             WRITE(jun,'(i9,2es24.16)') I,XTRIAN(I),YTRIAN(I)
+           ENDDO
+           close (unit=jun)
+         end if
       ELSE
         DO I=1,NRKNOT
           READ(33,*) J,XTRIAN(I),YTRIAN(I)
@@ -3066,7 +3077,7 @@ C
 C
           RECTOT = 0._DP
           DO 7473 IPLS=1,NPLSI
-            CNDYNP=AMUA*RMASSP(IPLS)
+!pb            CNDYNP=AMUA*RMASSP(IPLS)
             IPLSTI = MPLSTI(IPLS)
             DO 7472 IIRC=1,NPRCI(IPLS)
               IRRC=LGPRC(IPLS,IIRC)
