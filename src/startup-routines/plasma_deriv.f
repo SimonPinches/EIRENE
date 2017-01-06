@@ -104,14 +104,16 @@ c   LGVAC(...,0)     : background vacuum flag
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI, 
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
      .            TEI, DEJ, TVACL, DVACL, BOLTZFAC, RCORONA, RCOLRAD,
-     .            TEIDEJ, EIRENE_RATE_COEFF, RCMIN, RCMAX, ERATE, BNORMI
+     .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX, 
+     .            RC2MIN, RC2MAX, ERATE, BNORMI
       REAL(DP) :: tpb1, tpb2, EIRENE_second_own
-      REAL(DP) :: COEF(0:8), COEF2D(0:8,0:8), FP(6)
+      REAL(DP) :: COEF(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
      .                         BASE_VELX(:), BASE_VELY(:),BASE_VELZ(:)
       INTEGER :: I, IR, IN, IP, IPM, J, IPLS, IOLD, ISW, IRE, I1,
-     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, JFEXMN, JFEXMX
+     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, 
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
  
       TYPE(EIRENE_SPECTRUM), POINTER :: SPEC
       LOGICAL :: FOUND
@@ -124,11 +126,16 @@ c   LGVAC(...,0)     : background vacuum flag
         end subroutine eirene_cell_to_corner
       end interface
  
-      FP = 0._DP
-      RCMIN = -HUGE(1._DP)
-      RCMAX =  HUGE(1._DP)
-      JFEXMN = 0
-      JFEXMX = 0
+      FP1 = 0._DP
+      FP2 = 0._DP
+      RC1MIN = -HUGE(1._DP)
+      RC1MAX =  HUGE(1._DP)
+      RC2MIN = -HUGE(1._DP)
+      RC2MAX =  HUGE(1._DP)
+      JFEX1MN = 0
+      JFEX1MX = 0
+      JFEX2MN = 0
+      JFEX2MX = 0
  
 cdr   
  
@@ -360,7 +367,8 @@ C
      .                 TDMPAR(IPLS)%TDM%H2(1),
      .                 TDMPAR(IPLS)%TDM%REACTION(1),
      .                 TDMPAR(IPLS)%TDM%CR(1),
-     .                 RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .                 RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .                 RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
           AM1=1._DP/TDMPAR(IPLS)%TDM%A_CORONA
 c  now COEF contains the excitation rate,
 c  and AMI is the radiative decay rate
@@ -428,7 +436,8 @@ C  ARE THERE MULTIPLE ION DRIFT VELOCITIES?
      .                   TDMPAR(IPLS)%TDM%H2(IRE),
      .                   TDMPAR(IPLS)%TDM%REACTION(IRE),
      .                   TDMPAR(IPLS)%TDM%CR(IRE),
-     .                   RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .                   RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .                   RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
             I1=INDEX(TDMPAR(IPLS)%TDM%H2(IRE),'.')
             READ (TDMPAR(IPLS)%TDM%H2(IRE)(I1+1:),*) ISW
             SELECT CASE (ISW)
