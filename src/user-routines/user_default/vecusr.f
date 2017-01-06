@@ -1,8 +1,8 @@
 
       SUBROUTINE EIRENE_VECUSR (I,IC,X,Y,Z,VEC_X,VEC_Y,VEC_Z,IPL,L)
 
-c  L=.true. : This call is at position x,y,z, in cell IC.
-c  L=.false.: This call is in cell ic. return value at center of gravity of this cell
+c  L=.true. : This call is at known position x,y,z, in cell IC.
+c  L=.false.: This call is in cell ic. Return value at center of gravity of this cell
 
 c  I=1:  return local B-field vector as vec_x,vec_y,vec_z
 c  I=2:  return local plasma drift velocity vector of eirene background species "ipls" 

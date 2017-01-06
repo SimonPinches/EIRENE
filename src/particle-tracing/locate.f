@@ -1223,7 +1223,7 @@ C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
 C
           IF (TIWD.LE.0.) TIWD=ABS(EMAX)
-          NFLAG=2
+          NFLAG=2   !  sample from (drifting) maxwellian, no cross section weighting 
           IDUM=1
           DUMT(1)=SQRT(TIWD/RMASSI(IION))*CVEL2A
           DUMT(2)=DUMT(1)

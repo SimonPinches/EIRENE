@@ -37,6 +37,7 @@ cdr                  probably not correct (outdated).
 !pb  APR  16:  pmlds -> pmlei
 !pb  APR  16:  piods -> pioei
 !pb  MAY  16:  nrds  -> nrei
+cdr  NOV 16 :  bug fix: ilpppi instead of ilppei for colatm, cascading
 
 
 
@@ -785,7 +786,7 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
           IF (LEAPL) THEN
-            DO IP=1,IPPLEI(IRPI,0)
+            DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.

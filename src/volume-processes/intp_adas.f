@@ -1,6 +1,6 @@
 !pb  070109  ff(2,2) introduced to avoid array temporaries
 
-cdr  oct.15  comments. parameters ip1,ip2 added, to indicate extrapolation
+cdr  oct.15  comments. Parameters ip1,ip2 added, to indicate extrapolation
 cdr          tbd: generalize to general 2d (2 indep., parameters) tabular data
 cdr               not just adas data. 
 

@@ -62,7 +62,7 @@ C
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: TTT, PHI0, X001, TO, AA, SUM, TU, XTO, EPSTST, XTU,
      .          F, FZ, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
-     .          Y0TEST, z01_cell, at2, phd, ph0d
+     .          Y0TEST, z01_cell
       INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
      .           NZSAVE, INCZ, J1, IRSAVE, EIRENE_LEARCA
       INTEGER, SAVE :: MTSAVE=-1
@@ -280,10 +280,7 @@ C     IF (NLSRFZ) THEN ....
 C
 1010  CONTINUE
 C  PHI0 IS THE PHI AT THE CENTER OF THE CURRENT TOROIDAL CELL
-      phd=phi/degrad
-      at2=ATAN2(Z01,X01)/degrad
       PHI0=PHI-ATAN2(Z01,X01)
-      ph0d=phi0/degrad
 C
       TTT=Z01/(X01*TANAL)
       IF (ABS(TTT).GT.1.+EPS10) THEN
@@ -337,9 +334,7 @@ C
 C  IN CASE ZRAD=1.D30, IS NEXT STATEMENT IS NONSENSE, BUT CORRECTED
 C                      FOR IN SUBR. STDCOL, WHICH MUST BE CALLED NEXT
 C                      FOR A POLOIDAL SURFACE (OTHERWISE: ERROR EXIT)
-      AT2=ATAN2(Z01,X01)/degrad
       PHI=PHI0+ATAN2(Z01,X01)
-      phd=PHI/DEGRAD
       BLPD(1)=ZRAD
 C     IF (NLTRC) WRITE (iunout,*) 'FINAL 1: X01,Z01,PHI ',
 C    .                                      X01,Z01,PHI/DEGRAD
