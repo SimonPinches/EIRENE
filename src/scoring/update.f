@@ -34,6 +34,7 @@ cdr          so no effect on any result.  Few further comments corrected
 !pb APR  16: ipiods -> ipioei, piods -> pioei
 !pb APR  16: pelds -> pelei
 cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
+cdr dec. 16: some more comments re sign convention for momentum sources 
 
  
 C
@@ -660,8 +661,8 @@ C
           END DO
 
 c  set parameters for parallel momentum of incident bulk particle
-c  val_parp   : parallel velocity component
-c  vsig_parb  : parallel momentum 
+c  val_parb   : parallel velocity component, incl. sign, relavive to B
+c  vsig_parb  : parallel momentum, modulus (always positive)  
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
             vion=EIRENE_vdion(irdo)
             VAL_PARB(1:NPLSI) =VION
@@ -679,9 +680,19 @@ C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
             VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
             VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
           END IF
- 
+c
+c  set parameters for parallel momentum of incident neutral particle
+c  v0_parb   : parallel velocity component, incl. sign, relavive to B
+c  parmom_0  : parallel momentum   
           V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-          PARMOM_0=V0_PARB*CNDYNA(IATM)
+          PARMOM_0=CNDYNA(IATM)*V0_PARB
+C                       *SIGN(1._DP,VAL_PARB(IPL))  !this sign factor is applied below
+C  WITH WITH FACTOR: NO MATTER HOW THE SIGN OF PARALLEL MOMENTUM IS DEFINED:
+C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND  
+C     |PARMOM_0| IS ADDED TO IPL MOMENTUM (SOURCE),  IF THE NEUTRAL V_PAR
+C                     HAS THE SAME SIGN AS THE IPL PLASMA ION V_PAR.
+c     |PARMOM_0| IS SUBTRACTED IF IT HAS OPPOSITE SIGN 
+        
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM ATOMS
 C
@@ -694,11 +705,11 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTCX(IRCX,2).NE.0) GOTO 156
 C
-C  PRESENTLY: PARALLEL COMPONENT OF VSIGCX(IRCX) NOT AVAILABLE
+C  PRESENTLY: PARALLEL COMPONENT OF VSIGCX(IRCX) IS NOT AVAILABLE
 C             FROM FUNCTION FPATHA
 C
             WTRSIG=WTR*SIGVCX(IRCX)
-C  PREVIOUS BULK ION IPLS, NOW LOST
+C  PREVIOUS BULK ION IPLS, NOW LOST.  REMOVE MODULUS OF PARALLEL MOMENTUM
             MAPL(IPLS,IRD)=MAPL(IPLS,IRD)-WTRSIG*VSIG_PARB(IPLS)
             LMETSP(NSPAMI+IPLS)=.TRUE.
 C  NEW BULK ION IPL
