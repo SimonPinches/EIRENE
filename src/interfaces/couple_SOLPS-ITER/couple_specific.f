@@ -2253,7 +2253,7 @@ C=======================================================================
       DO    100  IX = 1,LIM,5
 100     READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
         IF( (LIM+4).EQ.ND1 )     GOTO 110
-       READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+        READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
 110   CONTINUE
 500   RETURN
 *//END PLASM//
