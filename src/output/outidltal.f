@@ -1,4 +1,8 @@
 C
+c  written by P. Boerner, for FZJ proprietary IDL plotting tool.
+c  not intended for 3rd party use.
+c  last modified: jan 2017
+
       SUBROUTINE EIRENE_OUTIDLTAL
  
       USE EIRMOD_PRECISION

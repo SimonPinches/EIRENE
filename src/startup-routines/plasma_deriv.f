@@ -42,6 +42,7 @@ cdr:           should be done more explicitly, by problem specific routines,
 cdr:           or mod_bgk, mod_timstep,.....
 cdr:           post processing Balmer lines, etc:  to be confirmed that this now
 cdr:           still works properly
+cdr: jan 2017: generalized assymptotics options for A&M data structures included
 
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)

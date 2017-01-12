@@ -7,10 +7,22 @@ C
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
 !  10.06.08 new:  default BFIN=1 T, rather than 0 T
 !  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
-!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 . help2 was undefined --> zero b-field
+!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 . 
+!                       help2 was undefined --> zero b-field
+!
+cdr try to re-unify treatment of 1st dimension (species index) in parameters 
+cdr n,T,V for background (bulk) velocity distribution: not finished. 
 !  sept. 16 change variable names ipls --> iplsti, (for TI) 
 !                                 ipls --> iplsv,  (for VX,VY,VZ)
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
+!  nov. 16  nlpitch option added, for orientation of B-field in 1D runs
+
+cpb: add parameter ndim: special treatment of Ti fields sepcies index.
+cpb: reading tiin from profr:  set 1st dimension of tiin array.
+
+cdr: check under which conditions can nplsti be different from npls, and is that still needed?
+cdr: why is that not needed for V and n profiles?
+!
 !
       SUBROUTINE EIRENE_PLASMA
  
@@ -132,16 +144,20 @@ c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
      .                      TI5(IPLSTI),TVAC,NSURF)
         TIIN(IPLSTI,1:NSURF)=HELP(1:NSURF)
         GOTO 120
-120     CONTINUE
-        GOTO 1120
-!pb 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
- 116    NDIM = SIZE(TIIN,DIM=1)
-        CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
-        GOTO 1120
-!pb 117     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSBOX)
- 117    NDIM = SIZE(TIIN,DIM=1)
-        CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
-        GOTO 1120
+120   CONTINUE
+      GOTO 1120
+c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
+cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
+!pb Jan 17: 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
+116   NDIM = SIZE(TIIN,DIM=1)
+      CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
+      GOTO 1120
+c  INDPRO=7:  tally from PROFR, indx=1, all TIIN fields in one single call
+cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
+!pb Jan 17 117     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSBOX)
+117   NDIM = SIZE(TIIN,DIM=1)
+      CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
+      GOTO 1120
 1120  CONTINUE
  
  
@@ -177,12 +193,16 @@ c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IP
      .                    DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC,NSURF)
         DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
         GOTO 130
-130     CONTINUE
-        GOTO 1130
-126     CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
-        GOTO 1130
-127     CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
-        GOTO 1130
+130   CONTINUE
+      GOTO 1130
+c  INDPRO=6:
+cdr first dimension of arrays:  always NPLS
+126   CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
+      GOTO 1130
+c  INDPRO=7:
+cdr first dimension of arrays:  always NPLS
+127   CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
+      GOTO 1130
 1130  CONTINUE
  
  
@@ -257,11 +277,14 @@ C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
       ENDIF
       GOTO 1140
 
-c  read tally from external data structure 
+c  read tally from external data structure, all V.IN fields in one single call
+cdr first dimension of arrays:  always NPLSV 
 136   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSURF)
       GOTO 1140
+c  read tally from external data structure, all V.IN fields in one single call
+cdr first dimension of arrays:  always NPLSV
 137   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSBOX)
       CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSBOX)
       CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSBOX)
