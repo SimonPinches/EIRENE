@@ -3531,7 +3531,7 @@ cdr  electron energy source rate, now on copv icp3+1
               cfac = (EAEL(IN)+EMEL(IN)+EIEL(IN)) /
      .               (copv(icp3+1,in) + eps60)
               copv(icp3+1,in)=(copv(icp3+1,in)*cfac + 
-     .             EPEL(IN)) * VOLTAL(IN)*ELCHA
+     .             EPEL_COP(IN)) * VOLTAL(IN)*ELCHA
 cdr  this is now identical to see above ?
 
           lhit(in) = .true.
