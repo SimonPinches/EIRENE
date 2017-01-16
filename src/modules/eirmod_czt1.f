@@ -1,3 +1,5 @@
+cdr Dec. 16.  added cndyn arrays into RCZT1 (formerly in : update, etc....)
+
       MODULE EIRMOD_CZT1
  
       USE EIRMOD_PRECISION
@@ -12,14 +14,17 @@
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCZT1(:), RCZT2(:)
  
       REAL(DP), PUBLIC, POINTER, SAVE ::
-     R RSQDVI(:), CVRSSI(:), ALMASI(:),
-     R RSQDVP(:), CVRSSP(:), ALMASP(:),
-     R RSQDVA(:), CVRSSA(:), ALMASA(:),
-     R RSQDVM(:), CVRSSM(:), ALMASM(:),
+C  ZT1 ARRAY  RCZT1(NZT1)
+     R RSQDVI(:), CVRSSI(:), ALMASI(:), CNDYNI(:),
+     R RSQDVP(:), CVRSSP(:), ALMASP(:), CNDYNP(:),
+     R RSQDVA(:), CVRSSA(:), ALMASA(:), CNDYNA(:),
+     R RSQDVM(:), CVRSSM(:), ALMASM(:), CNDYNM(:),
+     R DENE,      DENI,
+C  ZT2 ARRAY  RCZT2(NZT2)
      R DEFCX(:),  EEFCX(:),
      R DEFEL(:),  EEFEL(:),
-     R DEFPI(:),  EEFPI(:),
-     R DENE,      DENI
+     R DEFPI(:),  EEFPI(:)
+
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R ZT1(:,:),  ZRG(:,:)
@@ -39,7 +44,7 @@
  
         IF (ALLOCATED(RCZT1)) RETURN
  
-        NZT1=2+NION*3+NPLS*3+NATM*3+NMOL*3
+        NZT1=4*(NION+NPLS+NATM+NMOL) + 2
  
         ALLOCATE (RCZT1(NZT1))
         ALLOCATE (ZT1(NPLS,NRAD))
@@ -52,23 +57,27 @@
         RSQDVI => RCZT1(1+IND+0*NION : IND+1*NION)
         CVRSSI => RCZT1(1+IND+1*NION : IND+2*NION)
         ALMASI => RCZT1(1+IND+2*NION : IND+3*NION)
+        CNDYNI => RCZT1(1+IND+3*NION : IND+4*NION)
  
-        IND = IND+3*NION
+        IND = IND+4*NION
         RSQDVP => RCZT1(1+IND+0*NPLS : IND+1*NPLS)
         CVRSSP => RCZT1(1+IND+1*NPLS : IND+2*NPLS)
         ALMASP => RCZT1(1+IND+2*NPLS : IND+3*NPLS)
+        CNDYNP => RCZT1(1+IND+3*NPLS : IND+4*NPLS)
  
-        IND = IND+3*NPLS
+        IND = IND+4*NPLS
         RSQDVA => RCZT1(1+IND+0*NATM : IND+1*NATM)
         CVRSSA => RCZT1(1+IND+1*NATM : IND+2*NATM)
         ALMASA => RCZT1(1+IND+2*NATM : IND+3*NATM)
+        CNDYNA => RCZT1(1+IND+3*NATM : IND+4*NATM)
  
-        IND = IND+3*NATM
+        IND = IND+4*NATM
         RSQDVM => RCZT1(1+IND+0*NMOL : IND+1*NMOL)
         CVRSSM => RCZT1(1+IND+1*NMOL : IND+2*NMOL)
         ALMASM => RCZT1(1+IND+2*NMOL : IND+3*NMOL)
+        CNDYNM => RCZT1(1+IND+3*NMOL : IND+4*NMOL)
  
-        IND = IND+3*NMOL
+        IND = IND+4*NMOL
         DENE   => RCZT1(1+IND)
         DENI   => RCZT1(2+IND)
  

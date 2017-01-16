@@ -1,8 +1,34 @@
 !pb  100107 ENTRY SIGHA_REINIT added
 CDR  parameter PEN introduced, to identify hydrogen line by central energy
-C
+Cdr Aug.16:  The idenitifcation of particular lines 
+cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 12)
+cdr          is not functional in this version, distinct from the manual description
+cdr          currently lines can only be identified by their central energy PEN (EMIN1)
 C
       SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
+CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
+cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
+cdr  line of side (ARGST)
+c    currently there are up to 6 contributions to each particular preprogrammed
+c    transition (depending on population coefficient data stored 
+c    in file AMJUEL, section H.11 and H.12 
+c  aug.16: available transitions in H-atom:
+c          ly-alpha  (2 - 1)
+c          ly-beta   (3 - 1)
+c          ba-alpha  (3 - 2)
+c          ba-beta   (4 - 2)
+c          ba-gamma  (5 - 2)
+c          ba-delta  (6 - 2)
+c    for each of these lines there are separate contributions from
+c    1) coupling to H
+c    2) coupling to H+
+c    3) coupling to H2
+c    4) coupling to H2+
+c    5) coupling to H-
+c    6) coupling to H3+
+c    0) total, sum over these 6 contributions
+c
+c
 C
 C  INPUT:
 C          INIT: FLAG FOR INITIALISATION (DO NOT CHANGE!)
@@ -10,10 +36,11 @@ C          NCELL (COMPRT): INDEX IN TALLY ARRAYS FOR CURRENT ZONE
 C          JJJ:    INDEX OF SEGMENT ALONG CHORD
 C          ZDS:    LENGTH OF SEGMENT NO. JJJ
 C          PEN:    CENTRAL ENERGY OF LINE (EV)
-C  OUTPUT: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
-C          THE H LINE FLUX PSIG(I),I=0,5 CONTRIBUTIONS
+C  OUTPUT: PSIG:  LINE INTEGRAL OF EMISSION,I=0,6 CONTRIBUTIONS
+C          ARGST: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
+C          THE H LINE FLUX PSIG(I),I=0,6 CONTRIBUTIONS
 C          FROM ATOMS, MOLECULES, TEST IONS, BULK IONS AND NEGATIV IONS
-C          THE INTEGRANT ARGST SUCH THAT INTEGR.(ARGST*DL) = PSIG
+C          THE INTEGRANT ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -42,7 +69,7 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
           DO 100 ICELL=1,NSBOX
             ARGST(ISP,ICELL)=0.
 100     CONTINUE
-C  INITIALISE H-LINE ARRAYS FOR CURRENT STRATUM ?
+C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD)) then
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '
@@ -110,7 +137,7 @@ C
 C
       RETURN
  
-C     Following lines for reinitialisation of eirene (DMH)
+C     Following lines added for reinitialisation of eirene (DMH)
  
       ENTRY EIRENE_SIGHA_REINIT
       ISTOLD = -1

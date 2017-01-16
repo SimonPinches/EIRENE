@@ -1,4 +1,4 @@
-C
+Cdr  Sept. 16: Bug fix:  added option: two or more  constants next to each other
 C
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_ALGEBR (TERM,OPER,IZIF,CONST,NOP)
@@ -86,11 +86,13 @@ chr
 C
 C     HILFSVARIABLEN :
 C
-         INTEGER :: MAXI, I
+         INTEGER :: MAXI, I, IC
 chr
 chr   string, der die neuen variablennamen enthaelt
       buchst='ABCDEFGHIJ'
 chr
+!pb count number of constant terms
+      ic = 0
 C
 C        LESE TERM UND WERTE AUS
 C
@@ -164,9 +166,10 @@ chr               als zwischenergebnis
                      feldind=index(buchst,part(i)(7:7))
                      IK=INDEX(ERSETZ(FELDIND),',')
                      IF (IK.EQ.0) THEN
+                       IC = IC + 1
                        IZIF(1,I)=-I
-                       IZIF(2,I)=0
-                       CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(I))
+                       IZIF(2,I)= IC
+                       CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(IC))
                      ELSE
                        IKM=IK-1
                        IKP=IK+1
@@ -189,9 +192,10 @@ chr               als zwischenergebnis
                        FELDIND=INDEX(BUCHST,PART(I)(10:10))
                        IK=INDEX(ERSETZ(FELDIND),',')
                        IF (IK.EQ.0) THEN
+                         IC = IC + 1
                          IZIF(3,I)=-I
-                         IZIF(4,I)=0
-                         CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(I))
+                         IZIF(4,I)=IC
+                         CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(IC))
                        ELSE
                          IKM=IK-1
                          IKP=IK+1
@@ -221,9 +225,10 @@ chr               als zwischenergebnis
                        FELDIND=INDEX(BUCHST,PART(I)(11:11))
                        IK=INDEX(ERSETZ(FELDIND),',')
                        IF (IK.EQ.0) THEN
+                         IC = IC + 1
                          IZIF(3,I)=-I
-                         IZIF(4,I)=0
-                         CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(I))
+                         IZIF(4,I)=IC
+                         CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(IC))
                        ELSE
                          IKM=IK-1
                          IKP=IK+1

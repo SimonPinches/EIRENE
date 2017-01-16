@@ -27,17 +27,34 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species reolved.
+cdr DEC. 15 :  bulk ion energy estimators: species resolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
 cdr                  probably not correct (outdated).
+
+
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  patds -> patei
 !pb  APR  16:  pmlds -> pmlei
 !pb  APR  16:  piods -> pioei
 !pb  MAY  16:  nrds  -> nrei
-cdr  NOV 16 :  bug fix: ilpppi instead of ilppei for colatm, cascading
+cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
+
+
+cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
+cdr Nov 16:
+cdr analog cascading NLCASCADE: started to document, 
+cdr        syncronize and re-activate option, not ready !!
+cdr tbd: 
+c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
+c   cascading with CX: define analogue PTOT
+c   cascading with PI: identical to EI ?? 
+
+cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0) 
+cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
+cdr             then correction somehow lost in more recent EIRENE branches)
+
 
 
 
@@ -78,7 +95,7 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(IN) :: CFLAG(7,3), DIST
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       REAL(DP), INTENT(OUT) :: COLTYP
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
@@ -91,8 +108,8 @@ C
      .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
       INTEGER :: NEIIM_RED,NEII_RED,LGEI_RED(0:NREI)
 
-C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS
-      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
+C  FOR ANALOG CASCADE AND SPLITTING AT COLLISIONS.  (should be set in initialization phase, not here)
+      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
  
  
 csw add n 2lines
@@ -227,7 +244,7 @@ cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS.
           IF (LEAPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -250,25 +267,33 @@ C  NO !
           RETURN
         ENDIF
 
-Cdr  PTOT=0,1,2,etc..., = integer number of next generation particles
+Cdr  PTOT=1,2,etc..., = integer number of next generation particles
 
 c.......................................................................
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN  !  EI PROCESS CASCADING  ATM
+cdr  ANALOGUE SAMPLING, I.E. SPLITTING, IN CASE OF MORE THAN ONE SECONDARY.
 
           IF (.NOT.ALLOCATED(NAMIEI)) THEN
             ALLOCATE(NAMIEI(NSPAMI))
           END IF
-cdr  build one single distribution of secondary test particle species, all types
+cdr  build one single distribution of secondary test particle species, all types, include photons
+cdr  this should not be done here, but instead only once, in preproc. phase !!
+cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cummulative p2nd ?
           NAMIEI = 0
-          NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
+
+          NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
+          NAMIEI(NSPH+1:NSPA)    = PATEI(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM)   = PMLEI(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
-!  RESET WEIGHT TO ORIGINAL VALUE
+!  RESET WEIGHT BACK TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
 
-          DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIEI(I)
+cdr  generate secondaries, one by one, call veloei, and store them on splitting arrays
+
+          DO I = NSPAMI, NSPH+1, -1  ! LOOP OVER ALL POTENTIAL SECONDARY SPECIES 'I'
+            DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
+C  FIND A RANDOM NUMBER TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -370,7 +395,7 @@ C  E.G. FOR CX RECOMBINATION
           RETURN
         ENDIF
 
-        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  
+        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  !  CX PROCESS CASCADING ATM
 ! JUST OPPOSITE TO EI CASE:
 CDR IN EI CASE: LAST SECONDARY WAS FOLLOWED, ALL OTHERS STORED ON SPLITTING ARRAY.
 CDR IN CX CASE: OPPOSITE.   TRY TO UNIFY !!
@@ -420,7 +445,7 @@ C  FOLLOW 1ST SECONDARY
           
           ZEP3 = 0.5*FRSTP
 
-        ELSE
+        ELSE ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -441,7 +466,7 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,1)
+          NFLAG=CFLAG(3,IRCX)
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .          NFLAG,IRCX,DUMT,DUMV)
@@ -449,11 +474,11 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           SELECT CASE(ITYP)
 C
           CASE(1)
-C  1ST SECONDARY IS ATOM
+C  1ST SECONDARY IS ATOM: IATM
             IATM=N1STX(IRCX,2)
             E0=CVRSSA(IATM)*VELQ
 C
-C  GENERATION LIMIT
+C  CX GENERATION LIMIT, ATOMS, IATM
             IF (NGENA(IATM).GT.0) THEN
               IF (IATM.EQ.IOLD) THEN
                 XGENER=XGENER+1.D0
@@ -462,15 +487,16 @@ C  GENERATION LIMIT
               ENDIF
               IF (XGENER.GE.NGENA(IATM)) THEN
 C  UPDATE GENERATION LIMIT TALLIES, THEN STOP TRAJECTORY
-C  USE POST COLLISION WEIGHT, VELOCITY AND ENERGY
+C  USE POST COLLISION WEIGHT, VELOCITY AND ENERGY (NOT: PRE COLLISION DATA)
 C  SHOULD MAKE NO DIFFERENCE ON AVERAGE, IF GENERATION LIMIT IS VALID.
-C  IF NOT, ONLY THIS GIVES CORRECT BALANCES.
-c               write (iunout,*) 'stopped at generation limit ',
+C  IF NOT, ONLY THIS FORM OF ABSORPTION ESTIMATOR GIVES CORRECT BALANCES.
+c               write (iunout,*) 'part. stopped at generation limit ',
 c    .                            npanu,xgener
                 IF (LPGENA) PGENA(IATM,NCELL)=PGENA(IATM,NCELL)-WEIGHT
                 IF (LEGENA)
      .            EGENA(IATM,NCELL)=EGENA(IATM,NCELL)-WEIGHT*E0
                 IF (LVGENA) THEN
+C  FIND POST COLLISION PARALLEL VELOCITY. LOCAL BFIELD: KNOWN ALREADY FORM INITIALISATION
                   V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                   V0_PARB=V0_PARB*AMUA*RMASSA(IATM)
                   VGENA(IATM,NCELL)=VGENA(IATM,NCELL)-WEIGHT*V0_PARB
@@ -694,20 +720,24 @@ C   FIND SPECIES INDEX OF BULK ION COLLISION PARTNER
  
         IPLSV=MPLSV(IPLS)
 C
-C  NEW SPECIES INDEX AND ENERGY
+C  NEW ENERGY
 C       WEIGHT=WEIGHT*1.
 C  FOLLOW SECONDARY, NEW SPEED FROM SUBROUTINE VELOEL
 C       ITYP=1
-        NFLAG=CFLAG(5,1)
+        NFLAG=CFLAG(5,IREL)
         RMAIO=RMASSA(IOLD)
         CALL EIRENE_VELOEL(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .              NFLAG,IREL,RMAIO)
 C
         IATM=IOLD
+C  NOT: WEIGHT=WGHTO, BECAUSE WEIGHT MAY HAVE CHANGED DUE TO NON-ANALOGUE SAMPLING IN VELOEL
         E0=CVRSSA(IATM)*VELQ
+
+
 C  DO NOT UPDATE BGK TALLIES HERE
         IBGK=NPBGKP(IPLS,1)
         IF (IBGK.NE.0) GOTO 300
+
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION
 C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
         IF (IESTEL(IREL,1).NE.0) THEN
@@ -754,7 +784,7 @@ C
 C
 C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
 C
-      ELSE
+      ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT+SIGELT
@@ -786,6 +816,7 @@ C  score loss of incoming test particle energy
 cdr EAPL, EAEL       :  SCORE NET CHANGES HERE.
 cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER. 
           IF (LEAPL) THEN
+
             DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
@@ -809,10 +840,12 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        NFLAG=CFLAG(4,1)
+        NFLAG=CFLAG(4,IRPI)
         RMAIO=RMASSA(IOLD)
 
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
+Cdr  PTOT=1,2,etc..., = integer number of next generation particles
+
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN ! PI PROCESS CASCADING ATM
 
           IF (.NOT.ALLOCATED(NAMIPI)) THEN
             ALLOCATE(NAMIPI(NSPAMI))
@@ -851,7 +884,7 @@ C  NUMBER OF NODES AT THIS LEVEL
           NLEVEL = NLEVEL - 1
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -917,14 +950,14 @@ C  INCIDENT SPECIES: IOLD
       END IF
 C
 C  ABSORBTION BIASSING: SUPPRESS IREI PROCESSES WITH ZERO
-C                       TEST PARTICLE SECONDARIES
+C                       TEST PARTICLE SECONDARIES: TO BE DONE, SEE ATOM PART.
  
       SIG_ELIM=0.
       SIG_TOT_N=SIGTOT
       SIG_TOT_O=SIGTOT
       NEII_RED=0
  
-      DO IMEI=1,NMDSI(IOLD)
+      DO IMEI=1,NMEII(IOLD)
         IREI=LGMEI(IOLD,IMEI)
         IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -932,7 +965,8 @@ C  SIG_TEST=0 WOULD VIOLATE RADON-NYKODYM CONDITION OF WEIGHTING
           SIG_TEST=SIG_TOT_N-SIGVEI(IREI)
           PTOT=P2NDS(IREI)
           IF (PTOT.EQ.0..AND.SIG_TEST.GT.0.) THEN
-C  ELIMINATE PROCESS IREI FROM ALL POSSIBLE PROCESSES
+C  IREI IS A PURELY ABSORBING PROCESS
+C  ELIMINATE PROCESS IREI FROM ALL NMEII POSSIBLE PROCESSES
 C  REDUCE WEIGHT ACCORDINGLY
             SIG_ELIM=SIG_ELIM+SIGVEI(IREI)
             SIG_TOT_N=SIG_TEST
@@ -1020,7 +1054,7 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN  ! EI PROCESS CASCADING MOL
 
           IF (.NOT.ALLOCATED(NAMIEI)) THEN
             ALLOCATE(NAMIEI(NSPAMI))
@@ -1058,7 +1092,7 @@ C  NUMBER OF NODES AT THIS LEVEL
           NLEVEL = NLEVEL - 1
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -1128,7 +1162,8 @@ C  E.G. FOR CX RECOMBINATION
           RETURN
         ENDIF
 
-        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN
+        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  ! CX PROCESS CASCADING MOL
+C  FOLLOW 1ST AND STORE 2ND SECONDARY
 
 C  STORE 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
@@ -1175,7 +1210,7 @@ C  FOLLOW 1ST SECONDARY
           
           ZEP3 = 0.5*FRSTP
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -1195,7 +1230,7 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,1)
+          NFLAG=CFLAG(3,IRCX)
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .          NFLAG,IRCX,DUMT,DUMV)
@@ -1417,7 +1452,7 @@ C  NEW SPECIES INDEX AND ENERGY
 C       WEIGHT=WEIGHT*1.
 C  FOLLOW SECONDARY, NEW SPEED FROM SUBROUTINE VELOEL
 C       ITYP=2
-        NFLAG=CFLAG(5,1)
+        NFLAG=CFLAG(5,IREL)
         RMMIO=RMASSM(IOLD)
         CALL EIRENE_VELOEL(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .              NFLAG,IREL,RMMIO)
@@ -1529,10 +1564,10 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
         ENDIF
 C
 C
-        NFLAG=CFLAG(4,1)
+        NFLAG=CFLAG(4,IRPI)
         RMMIO=RMASSM(IOLD)
 
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN  ! PI PROCESS CASCADING MOL
 
           IF (.NOT.ALLOCATED(NAMIPI)) THEN
             ALLOCATE(NAMIPI(NSPAMI))
@@ -1571,7 +1606,7 @@ C  NUMBER OF NODES AT THIS LEVEL
           NLEVEL = NLEVEL - 1
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -1645,7 +1680,7 @@ C                       TEST PARTICLE SECONDARIES
       SIG_TOT_O=SIGTOT
       NEII_RED=0
  
-      DO IIEI=1,NIDSI(IOLD)
+      DO IIEI=1,NIEII(IOLD)
         IREI=LGIEI(IOLD,IIEI)
         IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -1740,7 +1775,7 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN ! EI PROCESS CASCADING ION
 
           IF (.NOT.ALLOCATED(NAMIEI)) THEN
             ALLOCATE(NAMIEI(NSPAMI))
@@ -1778,7 +1813,7 @@ C  NUMBER OF NODES AT THIS LEVEL
           NLEVEL = NLEVEL - 1
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -1839,7 +1874,7 @@ C  ARE THERE SECONDARY TEST PARTICLES AT ALL?
           RETURN
         ENDIF
 
-        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN
+        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  !  CX PROCESS CASCADING ION
 
 C  STORE 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
@@ -1886,7 +1921,7 @@ C  FOLLOW 1ST SECONDARY
           
           ZEP3 = 0.5*FRSTP
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -1905,7 +1940,7 @@ C  I.E., NO RANDOM DECISION BETWEEN BULK AND TEST SECONDARIES
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,1)
+          NFLAG=CFLAG(3,IRCX)
           CALL
      .    EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .                  NFLAG,IRCX,DUMT,DUMV)
@@ -2079,6 +2114,12 @@ C
           END SELECT
         ENDIF
 C
+cdr:  at this place to be done: elastic collisions of test ions
+cdr   in particular: fokker planck (velocity space diffusion) approximation
+cdr:  currently still somewhere in folion. To be moved here, 
+cdr   build on analogy with other elastic collisions
+
+C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGPIT) THEN
 C
 C  GENERAL ION IMPACT COLLISION: PI-PROCESSES
@@ -2137,10 +2178,10 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        NFLAG=CFLAG(4,1)
+        NFLAG=CFLAG(4,IRPI)
         RMIIO=RMASSI(IOLD)
 
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN !  PI PROCESS CASCADING ION
 
           IF (.NOT.ALLOCATED(NAMIPI)) THEN
             ALLOCATE(NAMIPI(NSPAMI))
@@ -2179,7 +2220,7 @@ C  NUMBER OF NODES AT THIS LEVEL
           NLEVEL = NLEVEL - 1
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
-        ELSE
+        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*) 
@@ -2501,7 +2542,7 @@ C
       WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'
       WRITE (iunout,*) 'COLLISION ESTIMATOR WAS SELECTED  '
       WRITE (iunout,*)
-     .  'SET WMINV = INFTY, OR USE EIRMOD_TRACKLENGTH ESTIM. '
+     .  'SET WMINV = INFTY, OR USE TRACKLENGTH ESTIM. '
       CALL EIRENE_EXIT_OWN(1)
 C
 999   WRITE (iunout,*) 'ERROR IN COLLIDE '

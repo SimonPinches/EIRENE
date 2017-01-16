@@ -55,7 +55,7 @@ C
      .                               IFREC(:)
       REAL(DP) :: ZEP1, X1, Y1, X2, Y2, X3, Y3, RR, RRI, WINK,
      .            ZRM1, CNORM, EPR, ELR, RRD, RRN, ZZ, X01, Z1, Z2, Z3,
-     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CNDYNP, 
+     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CDYN, 
      .            VX, VY, VZ, VPARA, EELRC, 
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
@@ -183,7 +183,7 @@ C
         MOM=0.
 C
         DO 7 IPLS=1,NPLSI
-          CNDYNP=AMUA*RMASSP(IPLS)
+          CDYN=CNDYNP(IPLS)
           IF (LGPRC(IPLS,0).EQ.0) GOTO 7
           IF (.NOT.LPLSSR(IPLS)) GOTO 7
           IFPLS=IFREC(IPLS)
@@ -220,13 +220,13 @@ cdr  take center of gravity in cell, if needed.
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,J,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
                   VPARA=VX*BX+VY*BY+VZ*BZ
-                  MOMPARA=VPARA*CNDYNP*SIGN(1._DP,VPARA)
+                  MOMPARA=VPARA*CDYN*SIGN(1._DP,VPARA)
                 ELSE IF (INDPRO(5) == 8) THEN
                   VX = VXIN(IPLSV,J)
                   VY = VYIN(IPLSV,J)
                   VZ = VZIN(IPLSV,J)
                   VPARA=VX*BX+VY*BY+VZ*BZ
-                  MOMPARA=VPARA*CNDYNP*SIGN(1._DP,VPARA)
+                  MOMPARA=VPARA*CDYN*SIGN(1._DP,VPARA)
                 ELSE
                   MOMPARA=PARMOM(IPLS,J)
                 ENDIF

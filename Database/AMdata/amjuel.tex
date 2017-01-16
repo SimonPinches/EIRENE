@@ -1,5 +1,5 @@
+%\documentclass[12pt]{article}
 \documentclass[12pt,dvipdfm]{article}
-
 
 \usepackage{epsf}
 \oddsidemargin 0. true cm
@@ -33,17 +33,18 @@ Additional Atomic and Molecular Data for EIRENE
 \vspace*{3truecm}
 
 D. Reiter \\
-FZ, Forschungszentrum J\"ulich GmbH \\
+FZJ, Forschungszentrum J\"ulich GmbH \\
 52425 J\"ulich \\
 %Post-box 1917 \\
-FRG
-\vspace{5truecm}
+Germany
+\vspace{3truecm}
 
 Version: \today
-\vspace{3truecm}
+\vspace{1truecm}
 
 Available via E-mail from d.reiter@fz-juelich.de
 }
+\newpage
 \tableofcontents
 %ende titelpage
 \newpage
@@ -56,9 +57,9 @@ Available via E-mail from d.reiter@fz-juelich.de
    Bor ionization raten H.2, 2.5B0, 2.5B1 \\
                            Bor rec.   rates H.4, 2.3.5B0, 2.3.5B1 \\
  \item update  6.4/95 \\
-  elast. revised, aus elrep.dat \\
+  elast. data revised, from: elrep.dat \\
  \item update  25.4/95 \\
-  H.9, 3.1.8 verbessert   \\
+  H.9, 3.1.8 improved   \\
  \item update 12. 1/96 \\
    Arg ionization rates H.2, 2.18B0, 2.18B1   \\
    Arg rec.   rates H.4, 2.3.18B0, 2.3.18B1 \\
@@ -100,10 +101,10 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.3 0.1D  0.2D, 0.3D 0.4D \\
  \item update    8.9/97 \\
   H.1 3.1.8R (Riviere) revised (better extrapolation to low energy) \\
-  H.1 3.1.8S new (Schultz cx cross section) \\
+  H.1 3.1.8S new (Schultz total cx cross section) \\
   H.1 3.1.8M new (Schultz momentum transfer cross section) \\
-  H.1 3.1.8J new (Janev cx cross section *2 = mom trans. x-section)\\
-  H.1 3.1.8T new (Schultz cx cross section *2 = mom trans. x-section)\\
+  H.1 3.1.8D new (Janev total cx cross section *2 = mom trans. x-section)\\
+  H.1 3.1.8T new (Schultz total cx cross section *2 = mom trans. x-section)\\
   note: 3.1.8M $\approx$ 3.1.8T within line-thickness
  \item update   23.9/97 \\
   H.2 2.6B0 strahl carbon data ionization\\
@@ -203,8 +204,9 @@ Available via E-mail from d.reiter@fz-juelich.de
  \item update  13.03/04 \\
   3.1.8L: Langevin approximation for cx , for testing of internal consistency\\
   H.1:  3.1.8L done  \\
-  H.2:  3.1.8L done (in July 2015)
+  H.2:  3.1.8L done (in July 2015) \\
   H.3:  3.1.8L done   \\
+  H.8:  3.1.8L done (in Sept.2016   \\
   H.9:  3.1.8L done   \\
   H.3:  3.1.8o:  original fit from Janev's springer 1987 book\\
   (only for reference purpose. don't use!)
@@ -218,9 +220,11 @@ Available via E-mail from d.reiter@fz-juelich.de
  \item update  18.04/05 \\
   H.12 2.1.5 added: H$^+$ in Col-Rad. equil. with H$_{ground}$ atoms\\
   H.12 2.1.8 added: H$_{ground}$ in Col-Rad. equil. with H$^+$ ions\\
- \item update  14.02/06 Strahl (ADAS89) data completed for Iron \\
+ \item update  14.02/06 \\
+  Strahl (ADAS89) data completed for Iron \\
   H.8 2.26B0, 2.26B1, H.11 2.26B0
- \item update  14.07/06 H.4 7.2.3a 7.2.3b redone\\
+ \item update  14.07/06 \\
+ H.4 7.2.3a 7.2.3b redone\\
   Col rad $p + H- \rightarrow H+H$ and $\rightarrow H + p$, for $E_{H^-}=0.1$ eV\\
   MAR,MAD,MAI rates via H2+, for condensed H2+, renamed from 2.2.5r,d,i to 3.2.3r,d,i
  \item update  14.01/07 H.10, 2.1.8-t: for comparison with ADAS PRB \\
@@ -244,20 +248,26 @@ Available via E-mail from d.reiter@fz-juelich.de
   of H beam (Eb $>$ 700 eV, across cold edge (Te $<$ 1000 eV)
   \item update oct. 09:  fit H.3: 2.3.9, for electron impact
   of He beam across cold edge
-  \item update jan. 2010: some text added regarding ADAS CR rates
+  \item update jan. 2010: \\
+  some text added regarding ADAS CR rates
   ...A0, in H.4, H.10 and H.12
-  \item update Mar. 2011:  fit H.3: 3.2.3 corrected. Was completely off.
+  \item update Mar. 2011:  \\
+  fit H.3: 3.2.3 corrected. Was completely off.
   Figure was ok, i.e. bug in fit program. Newly fitted using odrpack95.
   \item remove blanks from parenthesis (e.g. H2(a bc) $\rightarrow$ H2(abc), for online plots under www.eirene.de)
-  \item update Dec. 08 2011:  O ionisation, O+ recombination: ADAS 96, H.4 and H.10 fits added 2.8A0 and 2.3.8A0, resp.
-  \item update Dec. 09 2011:  N ionisation, N+ recombination: ADAS 96, H.4 and H.10 fits added 2.7A0 and 2.3.7A0, resp.
-  \item update July 12:  H.2: 3.2.3o re-introduced, for backward compatibility, i.e. $E_{H_2}=0.37$ eV, (as around year 2000)
+  \item update Dec. 08 2011:  \\
+  O ionisation, O+ recombination: ADAS 96, H.4 and H.10 fits added 2.8A0 and 2.3.8A0, resp.
+  \item update Dec. 09 2011: \\
+   N ionisation, N+ recombination: ADAS 96, H.4 and H.10 fits added 2.7A0 and 2.3.7A0, resp.
+  \item update July 12:  \\
+  H.2: 3.2.3o re-introduced, for backward compatibility, i.e. $E_{H_2}=0.37$ eV, (as around year 2000)
   whereas now (since 2004) in  H.2: 3.2.3 this energy is 0.1 eV.
   \item update August 12: new figures for H4: 2.2.12 and 2.2.14 (the red
   HYDHEL curves had been missing. Both these fits have problems below 0.1 eV. to be done.\\
   reaction H.2 2.2.5 renamed to 2.2.5o (this is the old, incorrect fit from the 87 Springer book),
   not to be used anyway.
-  \item update Aug. 12: added H.12: 2.2.15a,..2.2.15e red. pop. coeff H(2)...,H(6) with respect to H3+,
+  \item update Aug. 12: \\
+  added H.12: 2.2.15a,..2.2.15e red. pop. coeff H(2)...,H(6) with respect to H3+,
   based on production of H*(n=2) via Janev, HYDHEL H.2: 2.2.15
   \item update Sept.13: N,N2,N2+ corona model. \\
   1.) added H.8 and H.11 for N+e ionisation, constant electron energy loss = ionisation potential\\
@@ -272,19 +282,25 @@ Available via E-mail from d.reiter@fz-juelich.de
   further checks:
   H.4 e + N vs. H.2 e + N?? Is the ADAS corona limit correct?, see plot for H.4 rate coeff.,
   label of red curve incorrect on this plot
-  \item Jan 14:  some reaction headers  edited, in H.12 (for automatic online processing)
-  \item Jan 15:  electron energy loss rates for H$_2$ added: H.10  2.2.H2c (total electron cooling)
+  \item Jan 14:\\
+  some reaction headers  edited, in H.12 (for automatic online processing)
+  \item Jan 15:\\
+  electron energy loss rates for H$_2$ added: H.10  2.2.H2c (total electron cooling)
   and H.10 2.2.H2r  (radiation energy loss rate only). Both in eV cm$^3$/s. Currently these two rates are
   related to processes 2.2.5 (DE) plus 2.2.9 (I), but not yet including dissociative ionization channels 2.2.10
-  \item April 15: HYDHEL cross section for 3.1.8 (cx) added here too (same as in hydhel.tex file)\\
+  \item April 15:\\
+  HYDHEL cross section for 3.1.8 (cx) added here too (same as in hydhel.tex file)\\
   This can be used for low and high E0 limit extrapolation.
   to be done: make H.2 rate to be used for low E0 limit extrapolation.
-  Some header text changed, e.g \emph{ratio} $\rightarrow$ \emph{Ratio} in H.12 headers
-  \item June 15:  state notations changed for H, H2, He, to remove further blanks from parenthesis, and
+  \item April 15:\\
+  Some header texts changed, e.g \emph{ratio} $\rightarrow$ \emph{Ratio} in H.12 headers
+  \item June 15:\\
+  state notations changed for H, H2, He, to remove further blanks from parenthesis, and
   now also to distinguish meta-stable-resolved effective rates from single
   meta-stable-QSS rates. The former have an additional ``;r" in their state notation.
   Also paragraph headers for Trubnikov potentials (H.0) changed.
- \item July 15:  started to add H.2 rates from fits of H.3 rates for Ebeam $\rightarrow 0$
+ \item July 15:\\
+ started to add H.2 rates from fits of H.3 rates for Ebeam $\rightarrow 0$
  Done for 0.1, 0.2 and 0.3 elastic reactions. The low Ebeam value was found by comparing H.3 rate fits
  with independent integration of H.1 cross sections at low E. Strictly: the H.3 fits should
  automatically
@@ -293,16 +309,24 @@ Available via E-mail from d.reiter@fz-juelich.de
  Similarly: H.4, such that H.2 is the correct corona limit at low densities. And also similarly: low T limit (for H.2, H.3 and H.4)
  should automatically turn into H.1 cross section(E) times sqrt(E)...., or at least:
  threshold behaviour $1/T^2\times \exp(-\Delta E/T)$ ??
-\item Oct 15:  Further H.2 rates added for heavy particle collisions. These H.2 rates should be scalable to
+\item Oct 15:\\
+Further H.2 rates added for heavy particle collisions. These H.2 rates should be scalable to
 the corresponding Omega integrals for continuum descriptions consistent with the kinetic formulations based on H.3 rates.
 done: 0.4, 0.5, 0.6, 0.7, 0.8, both: T (total) and D (diffusion) rates.
-\item Oct 15:  started to add TEMIN, TEMAX, NEMIN, NEMAX parameters for extrapolation beyond fit range.
+\item Oct 15:\\
+ started to add TEMIN, TEMAX, NEMIN, NEMAX parameters for extrapolation beyond fit range.
 Currently all H.4 rates should have NEMIN=1.e8, and be extrapolated with this values taken also for all
 lower electron densities (Corona limit). In this case $ln^i(\tilde{ne})=0.0,  \ i=1,2,\dots,8$, fit must reduce to H.2 format.
 I.e., these 9 H.2 coefficients can directly be obtained as subset of the 81 H.4 coefficients.
-\item Jan.16:  N2+ diss.rec added: rate: 2.7.14, linear on log-log scale, and hence corresponding H.1 and H.8 data follow analytically.
-\item May 16:  H.2 2.2.17s,  H.4 2.2.17r and H.4 2.2.17d: effective, H- condensed, DIS, MAR, MAD rate coefficients for H2, via H2-.
-\item June 16:  H.4 2.1.5 and H.10 2.1.5 CR electron impact ionisation: fit range extended from 1e3 to 2e4 eV, new fits and figures
+\item Jan.16: \\ 
+N2+ diss.rec added: rate: 2.7.14, linear on log-log scale, and hence corresponding H.1 and H.8 data follow analytically.
+\item May 16: \\ 
+H.2 2.2.17s,  H.4 2.2.17r and H.4 2.2.17d: effective, H- condensed, DIS, MAR, MAD rate coefficients for H2, via H2-.
+\item June 16: \\ 
+H.4 2.1.5 and H.10 2.1.5 CR electron impact ionisation: fit range extended from 1e3 to 2e4 eV, new fits and figures
+\item Jan. 17: \\
+H.11   4.0a added. Ratio of production rate constant for H3+ to destruction rate coefficient (vs.(Te)). From this ratio,
+by multiplying it with nH2+/ne, one finds the nH3+/nH2 ratio, when H2+ and H3+ are in equilibrium with H2.
 \end{itemize}
 
 \subsection*{to be done:}
@@ -314,7 +338,7 @@ this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multipl
 \item  Check Behringer (Strahl) database for Li ionisation and recomb...
 \item 2.2.14: H.2 fit made strictly linear on log-log scale, for H.1, H.2 and H.8. Then use H.2 coefficients to
 derive, exactly, the corresponding H.1 and H.8 coefficients. Done for H.8, 2.2.14,  To be done for H.1 for this
-process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.3.13, 2.7.14....
+process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.2.15, 2.3.13, 2.7.14....
 \end{itemize}
 
 \newpage
@@ -539,24 +563,53 @@ Cross sections for elastic collision processes (classical orbits) are given in t
 We distinguish between total, diffusion and viscosity cross sections, by capital letters T, D and V
 attached to a cross section label.
 
-These are defined as (written here as function of relative collision velocity $v_{rel}$:
+These are defined as (written here as function of relative collision velocity $v_{rel}$):
+
+A): the \textbf{``total scattering cross section"}
 \begin{equation}
 \sigma^t(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} \sin(\theta)
 \end{equation}
-the \textbf{``total scattering cross section"} where $\theta$ is the scattering angle in the center of mass frame and $d\sigma/d\theta$ is the differential scattering cross section,
+where $\theta$ is the scattering angle in the center of mass frame and $d\sigma/d\theta$ is the differential scattering cross section,
 which, in an EIRENE application is internally derived classically from the interaction potentials specified under H.0, with proper cut-offs
 at small scattering angles.
+
+B): the \textbf{``diffusion cross section"}
 \begin{equation}
 \sigma^d(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} (1-\cos(\theta)) \sin(\theta)
 \end{equation}
-the \textbf{``diffusion cross section"}, in which scattering events are weighted with their momentum transfer efficiency  $(1-\cos(\theta)$
+in which scattering events are weighted with their momentum transfer efficiency  $(1-\cos(\theta))$
+
+C) the \textbf{``viscosity cross section"}
 \begin{equation}
 \sigma^v(v_{rel}) = \int_0^{\pi} d\theta \frac{\partial\sigma(\theta,v_{rel})}{\partial\theta} (1-\cos^2(\theta)) \sin(\theta)
 \end{equation}
-the \textbf{``viscosity cross section"} arising in continuum descriptions of gas and plasma transport.
+arising in continuum descriptions of gas and plasma transport, e.g. the Chapman-Enskog expansion.
+
+\paragraph*{\textbf{Special cases, Langevin cross section}}
+
+In some special cases the cross section fits in polynomial form become exact, both for cross sections and
+for their associated (weighted) rate coefficients.
+This is the case for cross sections of the form
+\begin{equation}
+\sigma(v) = c_r v^r  \ [cm^2]
+\end{equation}
+with $c_r$ a positive constant and parameter $r>-4$. An important special case is $r=-1$, the Langevin cross section.
+The corresponding Maxwellian rate coefficient is
+\begin{equation}
+\langle\sigma(v) \cdot v  \rangle (T) = \sqrt{\frac {2T}{m}}^{(r+1)} c_r \frac{2}{\sqrt{\pi}}
+\Gamma(\frac{r}{2}+2) \ [cm^3/s]
+\end{equation}
+For the Langevin cross section, $r=-1$, this reduces simply to a constant rate coefficient:
+\begin{equation}
+\langle\sigma(v) \cdot v  \rangle (T_p) =  c_r  \ [cm^3/s]
+\end{equation}
+Cross sections in this present database are fitted vs. ``laboratory" collision energy $E$, rather than vs. collision velocity $v$, with $v=\mbox{cvela} \sqrt{E(eV)/m(amu)}$, the reference velocity
+in the EIRENE code is $\mbox{cvela} = 1.38912 e6 \ [cm/s]$ and $m$ is the mass of the charged particle, assuming the neutral particle to be at rest (not to be confused with the reduced mass $m_r$). A resulting linear fit (on log-log scale) for
+$\ln(\sigma(E)) = a_0 + a_1 \ln(E) $ then is:
+
 \subsubsection*{H.2: rate coefficients vs. temperature (zero beam energy)}\label{sec1.3.2}
 \addcontentsline{toc}{subsubsection}{H.2: rate coefficient vs. temperature (zero beam energy)}
-Fits for $\langle\sigma \cdot v  \rangle (T_p) \ [cm^3/s]$
+Fits for $\langle\sigma(v) \cdot v  \rangle (T_p) \ [cm^3/s]$
 
 Maxwellian rate coefficients are taken for neutral particle energy $E_0 = 0.0$ eV and for background (plasma) drift velocity ${\bf V}_p ={\bf 0}$
 vs. temperature $T_p$ (electron or ion temp., resp.) of the Maxwellian $f_{maxw}(v_p,T_p)$.
@@ -600,8 +653,7 @@ The fit expression is a double polynomial of order 8  in each of the independent
 $E_0$ and $T_p$. The fitted expression is $\ln\langle\sigma \cdot v_{rel}  \rangle (\ln{E_0},\ln{T_p})$.
 Note that the role of the beam particle is now reversed as compared to that of cross section data,
 the energy parameter is now the energy of the mono-energetic (neutral) particle beam (with mass $m_0$), which is traveling in a host medium
-of (charged) particles $``p"$ with stationary Maxwellian distribution and temperature $T_p$.
-
+of (charged) particles $``p"$, mass $m_p$, with stationary Maxwellian distribution and temperature $T_p$.
 
 
 
@@ -630,10 +682,11 @@ is:
 \begin{equation}
 \Delta {\bf P}_0 = m_0 \cdot \left({\bf v}_0-{\bf v}'_0\right) = \mu (1-\cos(\theta)) \left({\bf v}_0-{\bf v}_p\right)
 \end{equation}
-with ${\bf v}_0', \mu, \theta$ being the post collision test particle velocity, the reduced mass and the scattering angle, respectively.
+with ${\bf v}_0', \mu, \theta$ being the post collision test particle velocity, the reduced mass and the scattering angle in the center of mass frame, respectively.
 The second equality follows from momentum conservation
 and the additional assumption that no internal energy is transferred during
-the collision (i.e., elastic, or resonant charge exchange).
+the collision (i.e., elastic, or resonant ($v_0'=v_p , v_p'=v_0$) charge exchange). Also here:  $m_0 = m_0'$ and $m_p = m_p'$. Generalizations to un-symmetric
+resonant charge exchange are discussed below.
 
 \paragraph{Stationary Maxwellian background}
 
@@ -657,7 +710,7 @@ $m_p$ and $m_0$ is the mass of the plasma particle and the test particle, respec
 $\mu=(m_p\cdot m_0)/(m_p+m_0)$ is the reduced mass;\\
 ${\bf v}_0$ and ${\bf v}'_0$ is the velocity of the test particle before and after collision, respectively;\\
 $I^{(l,n)}(E_0,T_p)$ is the generalized Beam-Maxwellian collision integral introduced in \cite{kn:Reiter-Janev}.
-$l=0$ stands for using the total collision cross section $\sigma^0(v_{rel}) = \int d\theta \sin(\theta) \ d\sigma(v_{rel},\theta)/d\theta$, here $d\sigma/d\theta$ denotes the differential scattering cross section
+$l=0$ stands for using the total collision cross section $\sigma^t(v_{rel}) = \int d\theta \sin(\theta) \ d\sigma(v_{rel},\theta)/d\theta$, here $d\sigma/d\theta$ denotes the differential scattering cross section
 and $\theta$ is the scattering angle.
 The superscript $l=1,2...$ stands for momentum transfer, viscosity,
 ... cross sections, respectively,
@@ -681,12 +734,12 @@ As discussed already for general Beam-Maxwellian rate coefficients, paragraph H.
 ; \quad \widetilde{E}_0=\frac{m_0}{2} \widetilde{v}_0^2
 ;  \quad   \widetilde{{\bf V}}_0= {\bf V}_0 - {\bf V}_p
 \end{equation}
-where $\widetilde{{\bf v}}_0$ the test particle velocity in the rest frame of the plasma and  $\widetilde{E}_0$ its the corresponding energy, Eq. (\ref{E0rest}.
+where $\widetilde{{\bf v}}_0$ is the test particle velocity in the rest frame of the plasma and  $\widetilde{E}_0$ its the corresponding energy, Eq. (\ref{E0rest}).
 Momentum transfer from a single test particle to a drifting Maxwellian plasma background is then in the direction $\widetilde{{\bf e}}_0=\widetilde{{\bf v}}_0/\widetilde{v_0}$
 
 The vector $\widetilde{{\bf V}}_0$ is the average (macroscopic) test particle flow velocity in the rest frame of the plasma;
-The rate of momentum transfer from the test particle community $``0"$ to the (drifting Maxwellian) background community $``p"$
-is a vector in this direction  $ \widetilde{{\bf V}}_0/\widetilde{V}_0$.\\
+The total rate of momentum transfer from the entire test particle community $``0"$ to the (drifting Maxwellian) background community $``p"$
+is a vector in this direction  $\widetilde{{\bf E}}_0 = \widetilde{{\bf V}}_0/\widetilde{V}_0$.\\
 \textcolor[rgb]{1.00,0.00,0.00}{\textbf{From here on: to be re-written, below: old text from Vlad....}}
 
 Parallel momentum transfer rate (momentum {\em loss} for the background (plasma)):
@@ -835,18 +888,39 @@ from a particular meta-stable state, but not to these individual processes.
 \newpage
 \subsubsection*{H.11: other data, e.g. reduced population coefficients}
 \addcontentsline{toc}{subsubsection}{H.11: other data, e.g. reduced population coefficients}
+single parameter fit for any other data, e.g.
+to be used in special user supplied
+programs, i.e. not generally understood by EIRENE, but can be used in problem
+specific ``..USR" routines of EIRENE, e.g. for post processing.
+The data fitted in H.11 are, therefore, typically not rate-coefficients,
+but often (not always) ratios between two single parameter rate coefficients.
+This comprises data derived from CR models, such as reduced population coefficients, or
+QSS equilibrium density ratios.
+Typically the density ratios $A/B$ are distinguished by the formation process
+of species $B$, from species $A$:
+\begin{equation}\label{eq.20}
+n_A \langle \sigma v; A \rightarrow B\rangle(T)  = n_B \langle \sigma v; B_{loss}\rangle(T)    \rightarrow n_B/n_A = \frac{\langle \sigma v; A \rightarrow B\rangle(T)}{\langle \sigma v; B_{loss}\rangle(T)}
+\end{equation}
+Also reduced population coefficients are such density ratios, however the production of upper level $B$
+may result from various multi-step processes, all starting from  (``coupled to") $A$.
 \subsubsection*{H.12: other data, e.g. reduced population coefficients}
 \addcontentsline{toc}{subsubsection}{H.12: other data, e.g. reduced population coefficients}
 double parameter fit for any other data, e.g.
 to be used in special user supplied
-programs, (i.e. not generally understood by EIRENE, but can be used in problem
-specific ``..USR" routines of EIRENE, e.g. for post processing).
+programs, i.e. not generally understood by EIRENE, but can be used in problem
+specific ``..USR" routines of EIRENE, e.g. for post processing.
 The data fitted in H.12 are, therefore, typically not rate-coefficients,
-but often (not always) ratios between two rate coefficients.
+but often (not always) ratios between two rate coefficients, see (\ref{eq.20}).
+The double parameter fit data in the present paragraph result if at least one of the two
+involved rate coefficients have a density dependence in addition to the temperature dependence.
 
-Exception: the reduced population coefficients for hydrogenic plasmas, i.e.
+
+
+
+Exceptions exist, where a hard wired reading of data from this section is coded into EIRENE:
+these are the reduced population coefficients for hydrogenic plasmas, i.e.
 2.1.5a,....2.1.5e, 2.2.5a, 2.2.5e, etc... are currently automatically read in
-EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta,...
+EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ly$\_$alpha, Ba$\_$beta, Ba$\_$gamma, Ba$\_$gamma,..
 
 
 \subsection*{End of preface}
@@ -1254,8 +1328,6 @@ ELABMAX=  1.25000e 02 eV
 \subsubsection{
 Reaction 0.3T    $p + H_2 \rightarrow p + H_2 $  total cross section
 }
-
-
 \begin{small}\begin{verbatim}
    a0 -3.452141819446D+01  a1  1.092015526305D+01  a2 -2.732690257819D+01
    a3  3.466297654768D+01  a4 -2.524607958646D+01  a5  1.092376446349D+01
@@ -1270,8 +1342,6 @@ ELABMAX=  6.18164E 01 eV
 \subsubsection{
 Reaction 0.3D   $ p + H_2 \rightarrow p + H_2 $  diff. cross section
 }
-
-
 \begin{small}\begin{verbatim}
    a0 -3.318680874597D+01  a1 -3.580417289312D-01  a2 -2.274382376951D-01
    a3 -5.005702120342D-02  a4  2.369248748869D-02  a5  5.013459267775D-03
@@ -1286,8 +1356,6 @@ ELABMAX=  1.50000E 02 eV
 \subsubsection{
 Reaction 0.3V   $  p + H_2 \rightarrow p + H_2  $ visc. cross section
 }
-
-
 \begin{small}\begin{verbatim}
    a0 -3.362402037774D+01  a1 -2.337285826242D-01  a2 -5.404526201247D-02
    a3 -4.473235272373D-02  a4 -4.691524784882D-03  a5  3.121568334037D-03
@@ -1300,12 +1368,12 @@ ELABMAX=  1.50000E 02 eV
 \end{verbatim}\end{small}
 
 \begin{figure}[hb] \label{0.3a}
-\epsfxsize=12truecm
+\epsfxsize=10truecm
 \epsffile{Amjuel_PS/krstic.eps}
 \end{figure}
 Comparison of the classical cross sections given here with quantal calculations
 by Krstic et al., J. Phys. B, \textbf{32}, 2415 (1999), the latter converted from center of mass energy to (proton) laboratory energy.
-
+\clearpage
 \newpage
 
 \begin{figure} \label{0.3}
@@ -1585,8 +1653,8 @@ original Janev-Langer fit as in 1987 Springer book, i.e. without low energy corr
 \subsubsection{
 Reaction 3.1.8 $  p + H(1s) \rightarrow H(1s) + p  $
 }
-same as HYDHEL cross section. Improved from original Janev-Langer fit at low energies by asymptotic fit.
-
+same as HYDHEL cx total cross section.
+Improved from original Janev-Langer fit at low energies by asymptotic fit.
 
 \begin{small}\begin{verbatim}
    a0 -3.274123792568e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
@@ -1598,7 +1666,20 @@ ELABMIN=   0.10000E 00 eV
        Eth  0.0
        Mcross 1.0E+00
 \end{verbatim}\end{small}
+\subsubsection{
+Reaction 3.1.8D $  p + H(1s) \rightarrow H(1s) + p  $
+}
+Janev cross section for momentum exchange ( = cx total cross sections times 2), obtained by
+increasing absolute coefficients $a_0$ and $al_0$  by adding $\ln(2)$
 
+\begin{small}\begin{verbatim}
+   a0 -3.204809074000e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
+   a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
+   a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
+  al0 -3.155960160000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
+ELABMIN=   0.10000E 00 eV
+       Eth  0.0
+\end{verbatim}\end{small}
 \subsubsection{
 Reaction 3.1.8R $  p + H(1s) \rightarrow H(1s) + p  $
 }
@@ -1619,7 +1700,7 @@ Riviere cross section formula for charge exchange
 Reaction 3.1.8S $  p + H(1s) \rightarrow H(1s) + p  $
 }
 
-D.Schultz cross section for charge exchange
+D.Schultz total cross section for charge exchange
 fitted into ``Janev format"
 
 
@@ -1632,10 +1713,10 @@ ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
 \subsubsection{
-Reaction 3.1.8T $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8ST2 $  p + H(1s) \rightarrow H(1s) + p  $
 }
-D.Schultz cross section for charge exchange *2
-increase absolute coefficients by ln(2)
+D.Schultz total cross section for charge exchange *2
+increase absolute coefficients $a_0$ and $ar_0$ by adding ln(2)
 
 \begin{small}\begin{verbatim}
    a0 -3.226725330000D+01    a1 -9.877533792693D-02    a2  2.622855374688D-03
@@ -1647,10 +1728,10 @@ ELABMAX=  2.00000E 01 eV
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 3.1.8M $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8SM $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz cross section for momentum exchange (elastic plus cx)
-fitted into ``Janev format"
+fitted into ``Janev format". Should be close to total cx cross section times 2.
 
 \begin{small}\begin{verbatim}
    a0 -3.225844350904D+01    a1 -1.220948860470D-01    a2  7.214005848073D-03
@@ -1660,20 +1741,7 @@ fitted into ``Janev format"
 ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
-\subsubsection{
-Reaction 3.1.8JM $  p + H(1s) \rightarrow H(1s) + p  $
-}
-Janev cross section for momentum exchange ( = cx total cross sections times 2), obtained by
-increase absolute coefficient $a_0$ by factor $\ln(2)$
 
-\begin{small}\begin{verbatim}
-   a0 -3.204809074000e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
-   a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
-   a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
-  al0 -3.225274882000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
-ELABMIN=   0.10000E 00 eV
-       Eth  0.0
-\end{verbatim}\end{small}
 
 \begin{figure} \label{318RS}
 \epsfxsize=16truecm
@@ -1684,15 +1752,17 @@ ELABMIN=   0.10000E 00 eV
 Reaction 3.1.8L $  p + H(1s) \rightarrow H(1s) + p  $
 }
 For testing purposes:
-Langevin cross section: $\sigma(E)=A \times E^{-1/2}$ such that rate coefficient,
-$\langle\sigma \times v_{rel} \rangle= const = 2.0~ 10^{-8}$ cm$^3$/s\\
+Langevin cross section: $\sigma(v)=A0 \times v^{-1}$, or, for hydrogen mass: $\sigma(E)=A \times E^{-1/2}$
+such that the rate coefficient,
+$\langle\sigma \times v_{rel} \rangle= const = A0 = 2.0~ 10^{-8}$ cm$^3$/s\\
 (Note: $\pi a_0^2 v_0 = 1.923 10^{-8}$, the reference rate coefficient with $a_0$: Bohr radius
 and $v_0 =e^2/\hbar$: unit velocity in atomic units)
+Here: $A = A0/1.3891e 06$, when $v$ is in cm/s and $E$ in eV, a hydrogen energy.
 
 \begin{small}\begin{verbatim}
-   a0 -3.187162820000e 01    a1 -0.500000000000e-00    a2  0.000000000000e-00
-   a3  0.000000000000e 00    a4  0.000000000000e 00    a5  0.000000000000e 00
-   a6  0.000000000000e 00    a7  0.000000000000e 00    a8  0.000000000000e 00
+   a0 -3.187171457000e+01    a1 -0.500000000000e-00    a2  0.000000000000e-00
+   a3  0.000000000000e+00    a4  0.000000000000e+00    a5  0.000000000000e+00
+   a6  0.000000000000e+00    a7  0.000000000000e+00    a8  0.000000000000e+00
        Eth  0.0
 \end{verbatim}\end{small}
 
@@ -2005,8 +2075,8 @@ Reaction 2.1.5FJ  $e + H(1s) \rightarrow e + H^+ + e$
 
 \begin{small}\begin{verbatim}
    b0 -0.317385000000e+02  b1  0.114381800000e+02  b2 -0.383399800000e+01
-   b3  0.704669200000e 00  b4 -0.743148620000e-01  b5  0.415374900000e-02
-   b6 -0.948696700000e-04  b7  0.000000000000e-00  b8  0.000000000000e 00
+   b3  0.704669200000e+00  b4 -0.743148620000e-01  b5  0.415374900000e-02
+   b6 -0.948696700000e-04  b7  0.000000000000e-00  b8  0.000000000000e+00
 \end{verbatim}\end{small}
 
 \subsection{
@@ -2015,8 +2085,8 @@ Reaction 3.1.6FJ  $p + H(1s) \rightarrow H^+ + p + e $
 
 
 \begin{small}\begin{verbatim}
-   b0 -0.149086100000e+03  b1  0.759257500000e 02  b2 -0.220928100000e+02
-   b3  0.390970900000e+01  b4 -0.440216800000e 00  b5  0.320904700000e-01
+   b0 -0.149086100000e+03  b1  0.759257500000e+02  b2 -0.220928100000e+02
+   b3  0.390970900000e+01  b4 -0.440216800000e+00  b5  0.320904700000e-01
    b6 -0.149040900000e-02  b7  0.409415100000e-04  b8 -0.506977700000e-06
 \end{verbatim}\end{small}
 
@@ -2026,7 +2096,7 @@ Reaction 3.1.8FJ  $p + H(1s) \rightarrow H(1s) + p  $
 
 
 \begin{small}\begin{verbatim}
-   b0 -0.184175600000e+02  b1  0.528295000000e 00  b2 -0.220047700000e+00
+   b0 -0.184175600000e+02  b1  0.528295000000e+00  b2 -0.220047700000e+00
    b3  0.975019200000e-01  b4 -0.174918300000e-01  b5  0.495429800000e-03
    b6  0.217491000000e-03  b7 -0.253020600000e-04  b8  0.823075100000e-06
 \end{verbatim}\end{small}
@@ -2157,9 +2227,9 @@ Langevin rate coefficient, constant at 2e-8
 
 
 \begin{small}\begin{verbatim}
-  b0 -1.772753356000D+01  b1  0.000000000000D 00  b2  0.000000000000D 00
-  b3  0.000000000000D 00  b4  0.000000000000D 00  b5  0.000000000000D 00
-  b6  0.000000000000D 00  b7  0.000000000000D 00  b8  0.000000000000D 00
+  b0 -1.772753356000D+01  b1  0.000000000000D+00  b2  0.000000000000D+00
+  b3  0.000000000000D+00  b4  0.000000000000D+00  b5  0.000000000000D+00
+  b6  0.000000000000D+00  b7  0.000000000000D+00  b8  0.000000000000D+00
 \end{verbatim}\end{small}
 
 
@@ -2315,8 +2385,8 @@ depending on vibrational state of $N_2^+$ and electronic state of products. Sugg
 
 \begin{small}\begin{verbatim}
    b0 -1.668240000000E+01    b1 -0.300000000000E+00    b2  0.000000000000E+00
-   b3  0.000000000000E+00    b4  0.000000000000E 00    b5  0.000000000000E 00
-   b6  0.000000000000E 00    b7  0.000000000000E 00    b8  0.000000000000E 00
+   b3  0.000000000000E+00    b4  0.000000000000E+00    b5  0.000000000000E+00
+   b6  0.000000000000E+00    b7  0.000000000000E+00    b8  0.000000000000E+00
 \end{verbatim}\end{small}
 
 
@@ -2348,8 +2418,8 @@ and Jones rate coefficient for electron impact ionization of helium atoms \cite{
 
 \begin{small}\begin{verbatim}
    b0 -0.445091700000e+02    b1  0.244298800000e+02    b2 -0.102571400000e+02
-   b3  0.247093100000e+01    b4 -0.342636620000e 00    b5  0.250510000000e-01
-   b6 -0.743867500000e-03    b7  0.000000000000e-00    b8  0.000000000000e 00
+   b3  0.247093100000e+01    b4 -0.342636620000e+00    b5  0.250510000000e-01
+   b6 -0.743867500000e-03    b7  0.000000000000e-00    b8  0.000000000000e+00
 \end{verbatim}\end{small}
 \newpage
 this page is intentionally left blank
@@ -3713,39 +3783,39 @@ Reaction 3.1.8L $ p + H(1s) \rightarrow H(1s) + p   $
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
  T-Index:
-        0   -1.772753356000D+01    0.000000000000D 00    0.000000000000D 00
-        1    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        2    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        3    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        4    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        5    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        6    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        7    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        8    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
+        0   -1.772753356000D+01    0.000000000000D+00    0.000000000000D+00
+        1    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        2    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        3    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        4    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        5    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        6    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        7    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        8    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
 
         E-Index:     3                     4                     5
  T-Index:
-        0    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        1    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        2    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        3    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        4    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        5    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        6    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        7    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        8    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
+        0    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        1    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        2    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        3    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        4    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        5    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        6    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        7    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        8    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
 
         E-Index:     6                     7                     8
  T-Index:
-        0    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        1    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        2    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        3    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        4    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        5    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        6    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        7    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        8    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
+        0    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        1    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        2    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        3    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        4    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        5    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        6    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        7    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        8    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
 
  Max. rel. Error:   0.0000 %
  Mean rel. Error:   0.0000 %
@@ -7405,6 +7475,24 @@ Reaction 2.26B1 $e + Fe^+ \rightarrow e + Fe^{++} + e$ 2/06 update
 \newpage
 
 
+\subsection{
+Reaction 3.1.8L  $p + H(1s)  \rightarrow  H(1s) + p $
+}
+Langevin CX rate, for testing only.
+
+$E_p$ is the kinetic energy of the impacting ion in eV.
+The energy weighted rate for the Langevin approximation is
+3/2 kT * 2e-8
+
+\begin{small}\begin{verbatim}
+        E-Index:     0                     1                     2
+ T-Index:
+  h0 -1.732206846000D+01  h1  1.000000000000D+00  h2  0.000000000000D+00
+  h3  0.000000000000D+00  h4  0.000000000000D+00  h5  0.000000000000D+00
+  h6  0.000000000000D+00  h7  0.000000000000D+00  h8  0.000000000000D+00
+
+\end{verbatim}\end{small}
+
 \section{H.9 :Fits for $\langle\sigma \cdot v \cdot E_p \rangle (E_0,T_p) \ [cm^3/s
 \cdot eV]$}
 
@@ -7470,39 +7558,39 @@ The energy weighted rate for the Langevin approximation is
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
  T-Index:
-        0   -1.732206846000D+01    0.000000000000D 00    0.000000000000D 00
-        1    1.000000000000D+00    0.000000000000D 00    0.000000000000D 00
-        2    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        3    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        4    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        5    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        6    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        7    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        8    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
+        0   -1.732206846000D+01    0.000000000000D+00    0.000000000000D+00
+        1    1.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        2    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        3    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        4    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        5    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        6    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        7    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        8    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
 
         E-Index:     3                     4                     5
  T-Index:
-        0    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        1    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        2    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        3    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        4    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        5    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        6    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        7    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        8    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
+        0    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        1    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        2    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        3    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        4    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        5    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        6    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        7    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        8    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
 
         E-Index:     6                     7                     8
  T-Index:
-        0    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        1    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        2    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        3    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        4    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        5    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        6    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        7    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
-        8    0.000000000000D 00    0.000000000000D 00    0.000000000000D 00
+        0    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        1    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        2    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        3    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        4    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        5    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        6    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        7    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
+        8    0.000000000000D+00    0.000000000000D+00    0.000000000000D+00
 
  Max. rel. Error:   0.0000 %
  Mean rel. Error:   0.0000 %
@@ -7746,7 +7834,7 @@ Total: radiation plus potential energy cost. Data: Johnson, \cite{kn:Mahn}
 Reaction 2.1.5  $ e + H \rightarrow H^+ + 2e $
 }
 Electron energy loss weighted rate coefficient. Data: Sawada/Fujimoto, \cite{kn:Sawada}
-(redone May 2016: extend Te range of fit validity from 0.1 -- 1e3 to 0.1 -- 2e4 eV)
+(redone May 2016: extend Te range of fit validity from 0.1 -- 1e3 now to 0.1 -- 2e4 eV)
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -7788,7 +7876,6 @@ TEMIN =   0.10000D 00 EV
 TEMAX =   2.00000D 04 EV
 NEMIN =   1.00000D 08 1/CM3
 NEMAX =   1.00000D 16 1/CM3
-
   Max. rel. Error:   0.922E+00 %
   Mean rel. Error:   0.471E+00 %
 
@@ -8736,7 +8823,7 @@ Reaction 2.18B0  $   Ar + e \rightarrow Ar^*,  \ <de>(T_e) \ [eV] $
 
 
 \subsection{
-Reaction 2.0b     $ p + H_2(v=0) \rightarrow  H_2^+ + \cdots$, Ratio  \ $H_2^+/H_2$
+Reaction 2.0b     $ p + H_2(v=0) \rightarrow  H_2^+ + ... $, Ratio  \ $H_2^+/H_2$
 }
 \textbf{gain }of $H_2^+$:
 production by CX (ion conversion, proton impact) on cold (0.1 eV) $H_2(0)$, vibr. ground state only.
@@ -8762,7 +8849,7 @@ This contribution to the ratio is given in the next chapter under the ``double-p
 \end{verbatim}\end{small}
 
 \subsection{
-Reaction 2.0c   $p + H_2(v) \rightarrow H_2^+ + \cdots $, Ratio  \ $H_2^+/H_2$
+Reaction 2.0c   $p + H_2(v) \rightarrow H_2^+ + ... $, Ratio  \ $H_2^+/H_2$
 }
 \textbf{gain }of $H_2^+$: coll. model for vibr. excitation, Greenland, Reiter, \cite{kn:Green}),
 and then: $H_2^+$ production by CX (ion conversion, proton impact) on these $H_2(v)$.
@@ -8795,6 +8882,27 @@ B,C coupling to vibr. states is non-linear in density and would hence make this 
 \epsffile{Amjuel_PS/ratioH11_2ab.ps}
 \end{figure}
 
+\newpage
+\subsection{
+Reaction 4.0a   $ H_2 + H_2^+ \rightarrow H_3^+ + H$, Ratio \ $H_3^+/H_2$
+}
+
+
+
+ Ratio of densities: $n_{H_3^+}/n_{H_2}$ = Ratio of production rate constant
+ to destruction rate coefficient $\times n_{H_2^+}/n_e$. \\
+  Production of $H_3^+$ from $H_2(v)$:  rate constant obtained from HYDHEL rate coefficient
+  for $ H_2^+ + H_2(v) \rightarrow H_3^+ + H$
+  evaluated at $T_{H_2} = T_{H_2^+} = 0.1$ eV,  $ \approx 1.160947956 e-9$. \\
+  Destruction of $H_3^+$: diss. recombination (DR) from HYDHEL, 2.2.15, vs. $T_e$.
+  Used here: algebraic expression from original rate constant and fit of ln(DR rate coef.)
+  for this ln(Ratio).
+
+\begin{small}\begin{verbatim}
+   k0 -3.571300000000e+00    k1  4.050073042947e-01    k2 -1.018733477232e-08
+   k3  1.695586285687e-08    k4 -1.564311217508e-10    k5 -1.979725412288e-09
+   k6  4.395545994733e-10    k7 -3.584926377078e-11    k8  1.024189019465e-12
+\end{verbatim}\end{small}
 \newpage
 
 \subsection{
@@ -9231,7 +9339,7 @@ total density (ground plus all excited states) in CR equilibrium with ground sta
 \newpage
 
 \subsection{
-Reaction 2.1.5de  $ H + e \rightarrow H^+ + 2e, \   <de> \ [eV]$}
+Reaction 2.1.5de  $ H + e \rightarrow H^+ + 2e$, \   $<de> \ [eV]$}
 
 
 \begin{small}\begin{verbatim}
@@ -9283,7 +9391,7 @@ Reaction 2.1.5de  $ H + e \rightarrow H^+ + 2e, \   <de> \ [eV]$}
 \newpage
 
 \subsection{
-Reaction 2.1.5o  $ H + e \rightarrow H^+ + 2e, \   <de> \ [eV]$ Ly-opaque}
+Reaction 2.1.5o  $ H + e \rightarrow H^+ + 2e    $, \   $<de> \ [eV]$ Ly-opaque}
 
 Lyman opaque
 
@@ -9727,7 +9835,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
 
 
 \subsection{
-  Reaction 2.1.8de $H^+  + e \rightarrow H(1s) $,  $<de> + 13.6 \ [eV] $
+  Reaction 2.1.8de $H^+  + e \rightarrow H(1s) $, \  $<de> + 13.6 \ [eV] $
 }
 
   electron energy loss (radiative) due to one effective recombination.
@@ -10509,7 +10617,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
 \newpage
 
 \subsection{
-  Reaction 2.3.9a  $He(1s^21S) + e \rightarrow He^+(1s) + 2e   \  <de> \ [eV] $
+  Reaction 2.3.9a  $He(1s^21S) + e \rightarrow He^+(1s) + 2e $  \ $ <de> \ [eV] $
 }
 
   electron energy loss (radiative plus potential) due to one effective ionization.
@@ -10564,7 +10672,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
 
 
 \subsection{
-Reaction 2.3.13a $e + He^+(1s) \rightarrow   He(1s^21S)+ hv  \ <de>+24.58 \ [eV]$ }
+Reaction 2.3.13a $e + He^+(1s) \rightarrow   He(1s^21S)+ hv $ \ $<de>+24.58 \ [eV]$ }
 
 
   electron energy loss (radiative plus potential) due to one effective
@@ -10734,7 +10842,7 @@ Reaction 2.3.13a $e + He^+(1s) \rightarrow   He(1s^21S)+ hv  \ <de>+24.58 \ [eV]
 \newpage
 
 \subsection{
-Reaction 2.2.5a $ H_2 + e \rightarrow .....+ H(3), \   $ Ratio $H(3)/H_2 $
+Reaction 2.2.5a $ H_2 + e \rightarrow ...+ H(3) $, \    Ratio $H(3)/H_2 $
 }
  Multi-step hydrogenic population coefficients
  Data: K. Sawada, T.Fujimoto \cite{kn:Sawada}
@@ -10788,7 +10896,7 @@ Reaction 2.2.5a $ H_2 + e \rightarrow .....+ H(3), \   $ Ratio $H(3)/H_2 $
 \end{figure}
 \newpage
 \subsection{
-Reaction 2.2.5b  $H_2 + e \rightarrow .....+H(2)   , \  $ Ratio $H(2)/H_2 $
+Reaction 2.2.5b  $H_2 + e \rightarrow ...+ H(2) $  , \   Ratio $H(2)/H_2 $
 }
 
  Ratio of population coefficients: p(2)/nH2
@@ -10846,7 +10954,7 @@ Reaction 2.2.5b  $H_2 + e \rightarrow .....+H(2)   , \  $ Ratio $H(2)/H_2 $
 \newpage
 
 \subsection{
-Reaction 2.2.5c  $H_2 + e \rightarrow .....+H(4)   , \  $ Ratio $H(4)/H_2 $
+Reaction 2.2.5c  $H_2 + e \rightarrow ...+ H(4) $ , \   Ratio $H(4)/H_2 $
 }
 
  Ratio of population coefficients: p(4)/nH2
@@ -10903,7 +11011,7 @@ Reaction 2.2.5c  $H_2 + e \rightarrow .....+H(4)   , \  $ Ratio $H(4)/H_2 $
 \end{figure}
 \newpage
 \subsection{
-Reaction 2.2.5d  $H_2 + e \rightarrow .....+H(5)   , \  $ Ratio $H(5)/H_2 $
+Reaction 2.2.5d  $H_2 + e \rightarrow ...+ H(5)  $ , \  Ratio $H(5)/H_2 $
 }
 
  Ratio of population coefficients: p(5)/nH2
@@ -10963,7 +11071,7 @@ Reaction 2.2.5d  $H_2 + e \rightarrow .....+H(5)   , \  $ Ratio $H(5)/H_2 $
 
 \newpage
 \subsection{
-Reaction 2.2.5e  $H_2 + e \rightarrow .....+H(6)   , \  $ Ratio $H(6)/H_2 $
+Reaction 2.2.5e  $H_2 + e \rightarrow ...+ H(6) $  , \  Ratio $H(6)/H_2 $
 }
 
  Ratio of population coefficients: p(6)/nH2
@@ -11022,7 +11130,7 @@ Reaction 2.2.5e  $H_2 + e \rightarrow .....+H(6)   , \  $ Ratio $H(6)/H_2 $
 
 \newpage
 \subsection{
-Reaction 2.2.5fl $H_2 + e \rightarrow .....+H_2(N=3,Triplet)$}
+Reaction 2.2.5fl $H_2 + e \rightarrow ...+ H_2(N=3,Triplet)$}
 
 Ratio $H2(N=3, Triplet)/H_2/n_e*2/9*2E7 $
 
@@ -11080,7 +11188,7 @@ amongst all N=3 triplet states. 2E7: approx. Fulcher Aik coeff for $N=3: d \righ
 \newpage
 
 \subsection{
-Reaction 2.2.5fu $H_2 + e \rightarrow .....+H_2(N=3,Triplet)$}
+Reaction 2.2.5fu $H_2 + e \rightarrow ...+ H_2(N=3,Triplet)$}
 
 Ratio $H_2(N=3, Triplet)/H_2*2/9 $
 
@@ -11137,7 +11245,7 @@ upper Fulcher population coefficient. Triplet d-state, A$_{Fulch}$=2.53E7
 
 \newpage
 \subsection{
-Reaction 2.2.14a $ H_2^+ + e \rightarrow ...+ H(3) , \  $ Ratio $H(3)/H_2^+ $
+Reaction 2.2.14a $ H_2^+ + e \rightarrow ...+ H(3) $, \  Ratio $H(3)/H_2^+ $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11195,7 +11303,7 @@ Reaction 2.2.14a $ H_2^+ + e \rightarrow ...+ H(3) , \  $ Ratio $H(3)/H_2^+ $
 \newpage
 
 \subsection{
-Reaction 2.2.14b $ H_2^+ + e \rightarrow ...+ H(2) , \   $ Ratio $H(2)/H_2^+  $
+Reaction 2.2.14b $ H_2^+ + e \rightarrow ...+ H(2) $, \  Ratio $H(2)/H_2^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11253,7 +11361,7 @@ Reaction 2.2.14b $ H_2^+ + e \rightarrow ...+ H(2) , \   $ Ratio $H(2)/H_2^+  $
 \newpage
 
 \subsection{
-Reaction 2.2.14c $ H_2^+ + e \rightarrow ...+ H(4) , \   $ Ratio $H(4)/H_2^+  $
+Reaction 2.2.14c $ H_2^+ + e \rightarrow ...+ H(4) $, \   Ratio $H(4)/H_2^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11311,7 +11419,7 @@ Reaction 2.2.14c $ H_2^+ + e \rightarrow ...+ H(4) , \   $ Ratio $H(4)/H_2^+  $
 
 
 \subsection{
-Reaction 2.2.14d $ H_2^+ + e \rightarrow ...+ H(5) , \   $ Ratio $H(5)/H_2^+  $
+Reaction 2.2.14d $ H_2^+ + e \rightarrow ...+ H(5) $ , \   Ratio $H(5)/H_2^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11368,7 +11476,7 @@ Reaction 2.2.14d $ H_2^+ + e \rightarrow ...+ H(5) , \   $ Ratio $H(5)/H_2^+  $
 
 
 \subsection{
-Reaction 2.2.14e $ H_2^+ + e \rightarrow ...+ H(6) , \   $ Ratio $H(6)/H_2^+  $
+Reaction 2.2.14e $ H_2^+ + e \rightarrow ...+ H(6) $, \   Ratio $H(6)/H_2^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11425,7 +11533,7 @@ Reaction 2.2.14e $ H_2^+ + e \rightarrow ...+ H(6) , \   $ Ratio $H(6)/H_2^+  $
 \newpage
 
 \subsection{
-Reaction 2.2.15a $ H_3^+ + e \rightarrow ...+ H(3) , \   $ Ratio $H(3)/H_3^+  $
+Reaction 2.2.15a $ H_3^+ + e \rightarrow ...+ H(3) $, \   Ratio $H(3)/H_3^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11489,7 +11597,7 @@ Reaction 2.2.15a $ H_3^+ + e \rightarrow ...+ H(3) , \   $ Ratio $H(3)/H_3^+  $
 
 
 \subsection{
-Reaction 2.2.15b $ H_3^+ + e \rightarrow ...+ H(2) , \   $ Ratio $H(2)/H_3^+  $
+Reaction 2.2.15b $ H_3^+ + e \rightarrow ...+ H(2) $, \   Ratio $H(2)/H_3^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11550,7 +11658,7 @@ Reaction 2.2.15b $ H_3^+ + e \rightarrow ...+ H(2) , \   $ Ratio $H(2)/H_3^+  $
 
 
 \subsection{
-Reaction 2.2.15c $ H_3^+ + e \rightarrow ...+ H(4) , \   $ Ratio $H(4)/H_3^+  $
+Reaction 2.2.15c $ H_3^+ + e \rightarrow ...+ H(4) $, \   Ratio $H(4)/H_3^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11610,7 +11718,7 @@ Reaction 2.2.15c $ H_3^+ + e \rightarrow ...+ H(4) , \   $ Ratio $H(4)/H_3^+  $
 \newpage
 
 \subsection{
-Reaction 2.2.15d $ H_3^+ + e \rightarrow ...+ H(5) , \   $ Ratio $H(5)/H_3^+  $
+Reaction 2.2.15d $ H_3^+ + e \rightarrow ...+ H(5) $, \   Ratio $H(5)/H_3^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11670,7 +11778,7 @@ Reaction 2.2.15d $ H_3^+ + e \rightarrow ...+ H(5) , \   $ Ratio $H(5)/H_3^+  $
 \end{figure}
 \newpage
 \subsection{
-Reaction 2.2.15e $ H_3^+ + e \rightarrow ...+ H(6) , \   $ Ratio $H(6)/H_3^+  $
+Reaction 2.2.15e $ H_3^+ + e \rightarrow ...+ H(6) $, \   Ratio $H(6)/H_3^+  $
 }
 
  Multi-step hydrogenic population coefficients
@@ -11735,7 +11843,7 @@ Reaction 2.2.15e $ H_3^+ + e \rightarrow ...+ H(6) , \   $ Ratio $H(6)/H_3^+  $
 
 
 \subsection{
-Reaction 7.2a $ H^- + p \rightarrow ...+ H(3) , \   $ Ratio $H(3)/H^- $, cold $H^-$
+Reaction 7.2a $ H^- + p \rightarrow ...+ H(3) $, \   Ratio $H(3)/H^- $, cold $H^-$
 }
 Multi-step hydrogenic population coefficients
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and Janev et al, 1987, and P.T. Greenland
@@ -11795,7 +11903,7 @@ Production of initial $H(n=2), H(n=3)$ from $H^-$ via $ \langle Hydhel~ 7.2.2\ra
 
 
 \subsection{
-Reaction 7.2b $ H^- + p \rightarrow ...+ H(2) , \  $ Ratio $H(2)/H^- $, cold $H^-$
+Reaction 7.2b $ H^- + p \rightarrow ...+ H(2) $, \   Ratio $H(2)/H^- $, cold $H^-$
 }
  Multi-step hydrogenic population coefficients
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and R. Janev et al, 1987, and P.T. Greenland
@@ -11856,7 +11964,7 @@ Production of initial $H(n=2), H(n=3)$ from $H^-$ via $ \langle Hydhel~ 7.2.2\ra
 \newpage
 
 \subsection{
-Reaction 7.2c $ H^- + p \rightarrow ...+ H(4) , \  $ Ratio $H(4)/H^- $, cold $H^-$
+Reaction 7.2c $ H^- + p \rightarrow ...+ H(4) $, \   Ratio $H(4)/H^- $, cold $H^-$
 }
 
  Multi-step hydrogenic population coefficients
@@ -11918,7 +12026,7 @@ Production of initial $H(n=2), H(n=3)$ from $H^-$ via $ \langle Hydhel~ 7.2.2\ra
 \newpage
 
 \subsection{
-Reaction 7.2d $ H^- + p \rightarrow ...+ H(5) , \  $ Ratio $H(5)/H^- $, cold $H^-$
+Reaction 7.2d $ H^- + p \rightarrow ...+ H(5) $, \   Ratio $H(5)/H^- $, cold $H^-$
 }
  Multi-step hydrogenic population coefficients
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and R. Janev et al, 1987, and P.T. Greenland
@@ -11979,7 +12087,7 @@ Production of initial $H(n=2), H(n=3)$ from $H^-$ via $ \langle Hydhel~ 7.2.2\ra
 \newpage
 
 \subsection{
-Reaction 7.2e $ H^- + p \rightarrow ...+ H(6) , \  $ Ratio $H(6)/H^- $, cold $H^-$
+Reaction 7.2e $ H^- + p \rightarrow ...+ H(6) $, \   Ratio $H(6)/H^- $, cold $H^-$
 }
  Multi-step hydrogenic population coefficients
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and R. Janev et al, 1987, and P.T. Greenland
@@ -12042,7 +12150,7 @@ Production of initial $H(n=2), H(n=3)$ from $H^-$ via $ \langle Hydhel~ 7.2.2\ra
 \newpage
 
 \subsection{
-Reaction 2.0a  $e + H_2 \rightarrow H_2^+ + \cdots  $ , Ratio \ $H_2^+/H_2$
+Reaction 2.0a  $e + H_2 \rightarrow H_2^+ + ... $ , Ratio \ $H_2^+/H_2$
 }
 
  Multi-step hydrogenic density ratios
@@ -12104,7 +12212,7 @@ Reaction 2.0a  $e + H_2 \rightarrow H_2^+ + \cdots  $ , Ratio \ $H_2^+/H_2$
 
 \newpage
 \subsection{
-Reaction 2.0b $e + H_2(v=0) \rightarrow H_2^+ + \cdots , $ Ratio  \ $H_2^+/H_2$
+Reaction 2.0b $e + H_2(v=0) \rightarrow H_2^+ + ... $ , Ratio  \ $H_2^+/H_2$
 }
 
  Multi-step hydrogenic density ratios
@@ -12165,7 +12273,7 @@ this page is intentionally left blank
 \newpage
 
 \subsection{
-Reaction 2.0c   $e +  H_2(v) \rightarrow H_2^+ + \cdots ,\ $ Ratio \ $H_2^+/H_2$
+Reaction 2.0c   $e +  H_2(v) \rightarrow H_2^+ + ... $ , Ratio \ $H_2^+/H_2$
 }
  Multi-step hydrogenic density ratios
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and R. Janev et al, 1987, and P.T. Greenland

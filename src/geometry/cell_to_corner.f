@@ -112,7 +112,7 @@ c  2d grid of triangles
          fcorner(1:nrknot) = fcorner(1:nrknot)/volsum(1:nrknot)
          deallocate (volsum)
 
-c  3d grid of tetrahedons
+c  3d grid of tetrahedrons
       elseif (levgeo.eq.5) then
          
          allocate(volsum(ncoord))

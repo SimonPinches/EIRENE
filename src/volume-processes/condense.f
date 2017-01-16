@@ -1,4 +1,5 @@
-!pb APR 16: piods -> pioei
+!pb APR  16: piods -> pioei
+cdr Nov 16: nmdsi --> nmeii,  and comments
 
 C
 C
@@ -22,7 +23,8 @@ C
  
       IMPLICIT NONE
  
-      INTEGER :: ISP, IION, ICOL, IATM, IMOL, IRDS, IMDS
+
+      INTEGER :: ISP, ISP0, IION, ICOL, IATM, IMOL, IREI, IMEI
  
       DO 10 IATM=1,NATMI
 C  NRCA=0 ?
@@ -32,15 +34,26 @@ C  NRCA=0 ?
 C
 C
       DO 20 IMOL=1,NMOLI
-C  currently: only electron impact collisions
-        DO 200 IMDS=1,NMDSI(IMOL)
-          IRDS=LGMEI(IMOL,IMDS)
+C  currently: only electron impact collisions on molecules
+        DO 200 IMEI=1,NMEII(IMOL)
+          IREI=LGMEI(IMOL,IMEI)
+          ISP0=NSPA+IMOL
+C  electron impact process no. irei, on molecules imol
+c  search for secondaries, that are not followed:
+c  atom secondaries
+c         DO   NATMI 
+c  molecule secondaries
+C         DO   NMOLI
+c  photonic secondaries
+C         DO   NPHOTI
+C  test ion secondaries:  
           DO 220 IION=1,NIONI
             ISP=NSPAM+IION
-            IF (PIOEI(IRDS,IION).GT.0) THEN
+            IF (PIOEI(IREI,IION).GT.0) THEN
               IF (NFOLI(IION).LT.0) THEN
                 WRITE (iunout,*) 'TEST ION ',TEXTS(ISP),
-     .                           ' CAN BE CONDENSED'
+     .                           'BORN FROM MOLECULE ', TEXTS(ISP0),
+     .                           'CAN BE CONDENSED'
               ENDIF
             ENDIF
 220       CONTINUE

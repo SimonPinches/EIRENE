@@ -7,7 +7,22 @@ C
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
 !  10.06.08 new:  default BFIN=1 T, rather than 0 T
 !  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
-!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 . help2 was undefined --> zero b-field
+!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 . 
+!                       help2 was undefined --> zero b-field
+!
+cdr try to re-unify treatment of 1st dimension (species index) in parameters 
+cdr n,T,V for background (bulk) velocity distribution: not finished. 
+!  sept. 16 change variable names ipls --> iplsti, (for TI) 
+!                                 ipls --> iplsv,  (for VX,VY,VZ)
+!  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
+!  nov. 16  nlpitch option added, for orientation of B-field in 1D runs
+
+cpb: add parameter ndim: special treatment of Ti fields sepcies index.
+cpb: reading tiin from profr:  set 1st dimension of tiin array.
+
+cdr: check under which conditions can nplsti be different from npls, and is that still needed?
+cdr: why is that not needed for V and n profiles?
+!
 !
       SUBROUTINE EIRENE_PLASMA
  
@@ -78,6 +93,7 @@ C  ELECTRON TEMPERATURE
 103     CALL EIRENE_PROFS (TEIN,TE0,TE1,TE5,TVAC)
         GOTO 110
 104     CONTINUE
+c  INDPRO=4:  read tally from stream TEO
         ISTREAM=TE0
         ITALI=1
         CALL EIRENE_READTL(TXTPLS(1,ITALI),TXTPSP(1,ITALI),
@@ -85,6 +101,7 @@ C  ELECTRON TEMPERATURE
      .              TEIN,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
      .              3,ISTREAM)
         GOTO 110
+c  INDPRO=5:  tally from PROUSR, indx=0
 105     CALL EIRENE_PROUSR (TEIN,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
         GOTO 110
 106     CALL EIRENE_PROFR (TEIN,0,1,1,NSURF)
@@ -97,43 +114,50 @@ C  ELECTRON TEMPERATURE
  
 C  ION TEMPERATURE
       IND=INDPRO(2)
-      DO 120 IPLS=1,NPLSTI
+      DO 120 IPLSTI=1,NPLSTI
         GOTO (111,112,113,114,115,116,117,120,120),IND
-111     CALL EIRENE_PROFN (HELP,TI0(IPLS),TI1(IPLS),TI2(IPLS),
-     .                   TI3(IPLS),TI4(IPLS),TI5(IPLS),TVAC)
-        TIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+111     CALL EIRENE_PROFN (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
+     .                     TI3(IPLSTI),TI4(IPLSTI),TI5(IPLSTI),TVAC)
+        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         GOTO 120
-112     CALL EIRENE_PROFE (HELP,TI0(IPLS),TI1(IPLS),TI2(IPLS),
-     .                   TI4(IPLS),TI5(IPLS),TVAC)
-        TIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+112     CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
+     .                     TI4(IPLSTI),TI5(IPLSTI),TVAC)
+        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         GOTO 120
-113     CALL EIRENE_PROFS (HELP,TI0(IPLS),TI1(IPLS),TI5(IPLS),TVAC)
-        TIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+113     CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
+     .                     TI5(IPLSTI),TVAC)
+        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         GOTO 120
-c  INDPRO=4:  read from stream TIO(IPLS)
 114     CONTINUE
-        ISTREAM=TI0(IPLS)
+c  INDPRO=4:  read tally from stream TIO(IPLSTI)
+        ISTREAM=TI0(IPLSTI)
         ITALI=2
-        CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
-     .              TXTPUN(IPLS,ITALI),
+        CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
+     .              TXTPUN(IPLSTI,ITALI),
      .              HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
      .              3,ISTREAM)
-        TIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
+        TIIN(IPLSTI,1:NSBOX)=HELP(1:NSBOX)
         GOTO 120
-115     CALL EIRENE_PROUSR (HELP,1+0*NPLS,TI0(IPLS),TI1(IPLS),TI2(IPLS),
-     .                      TI3(IPLS),TI4(IPLS),TI5(IPLS),TVAC,NSURF)
-        TIIN(IPLS,1:NSURF)=HELP(1:NSURF)
+c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
+115     CALL EIRENE_PROUSR (HELP,1+0*NPLS,TI0(IPLSTI),TI1(IPLSTI),
+     .                      TI2(IPLSTI),TI3(IPLSTI),TI4(IPLSTI),
+     .                      TI5(IPLSTI),TVAC,NSURF)
+        TIIN(IPLSTI,1:NSURF)=HELP(1:NSURF)
         GOTO 120
-120     CONTINUE
-        GOTO 1120
-!pb 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
- 116    NDIM = SIZE(TIIN,DIM=1)
-        CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
-        GOTO 1120
-!pb 117     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSBOX)
- 117    NDIM = SIZE(TIIN,DIM=1)
-        CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
-        GOTO 1120
+120   CONTINUE
+      GOTO 1120
+c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
+cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
+!pb Jan 17: 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
+116   NDIM = SIZE(TIIN,DIM=1)
+      CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
+      GOTO 1120
+c  INDPRO=7:  tally from PROFR, indx=1, all TIIN fields in one single call
+cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
+!pb Jan 17 117     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSBOX)
+117   NDIM = SIZE(TIIN,DIM=1)
+      CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
+      GOTO 1120
 1120  CONTINUE
  
  
@@ -154,8 +178,8 @@ C  ION DENSITY
 123     CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)
         DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         GOTO 130
-c  INDPRO=4:  read from stream DIO(IPLS)
 124     CONTINUE
+c  INDPRO=4:  read tally from stream DIO(IPLS)
         ISTREAM=DI0(IPLS)
         ITALI=4
         CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
@@ -164,66 +188,80 @@ c  INDPRO=4:  read from stream DIO(IPLS)
      .              3,ISTREAM)
         DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
         GOTO 130
+c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IPLS
 125     CALL EIRENE_PROUSR (HELP,1+1*NPLS,DI0(IPLS),DI1(IPLS),DI2(IPLS),
      .                    DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC,NSURF)
         DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
         GOTO 130
-130     CONTINUE
-        GOTO 1130
-126     CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
-        GOTO 1130
-127     CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
-        GOTO 1130
+130   CONTINUE
+      GOTO 1130
+c  INDPRO=6:
+cdr first dimension of arrays:  always NPLS
+126   CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
+      GOTO 1130
+c  INDPRO=7:
+cdr first dimension of arrays:  always NPLS
+127   CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
+      GOTO 1130
 1130  CONTINUE
  
  
  
 C  DRIFT VELOCITY
       IND=INDPRO(4)
-      DO 140 IPLS=1,NPLSV
+      DO 140 IPLSV=1,NPLSV
         GOTO (131,132,133,134,135,136,137,140,140),IND
-131     CALL EIRENE_PROFN (HELP,VX0(IPLS),VX1(IPLS),VX2(IPLS),
-     .                   VX3(IPLS),VX4(IPLS),VX5(IPLS),VVAC)
-        VXIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFN (HELP,VY0(IPLS),VY1(IPLS),VY2(IPLS),
-     .                   VY3(IPLS),VY4(IPLS),VY5(IPLS),VVAC)
-        VYIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFN (HELP,VZ0(IPLS),VZ1(IPLS),VZ2(IPLS),
-     .                   VZ3(IPLS),VZ4(IPLS),VZ5(IPLS),VVAC)
-        VZIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+131     CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
+     .                   VX3(IPLSV),VX4(IPLSV),VX5(IPLSV),VVAC)
+        VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        CALL EIRENE_PROFN (HELP,VY0(IPLSV),VY1(IPLSV),VY2(IPLSV),
+     .                   VY3(IPLSV),VY4(IPLSV),VY5(IPLSV),VVAC)
+        VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        CALL EIRENE_PROFN (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ2(IPLSV),
+     .                   VZ3(IPLSV),VZ4(IPLSV),VZ5(IPLSV),VVAC)
+        VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
         GOTO 140
-132     CALL EIRENE_PROFE (HELP,VX0(IPLS),VX1(IPLS),VX2(IPLS),
-     .                   VX4(IPLS),VX5(IPLS),VVAC)
-        VXIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFE (HELP,VY0(IPLS),VY1(IPLS),VY2(IPLS),
-     .                   VY4(IPLS),VY5(IPLS),VVAC)
-        VYIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFE (HELP,VZ0(IPLS),VZ1(IPLS),VZ2(IPLS),
-     .                   VZ4(IPLS),VZ5(IPLS),VVAC)
-        VZIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+132     CALL EIRENE_PROFE (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
+     .                   VX4(IPLSV),VX5(IPLSV),VVAC)
+        VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        CALL EIRENE_PROFE (HELP,VY0(IPLSV),VY1(IPLSV),VY2(IPLSV),
+     .                   VY4(IPLSV),VY5(IPLSV),VVAC)
+        VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        CALL EIRENE_PROFE (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ2(IPLSV),
+     .                   VZ4(IPLSV),VZ5(IPLSV),VVAC)
+        VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
         GOTO 140
-133     CALL EIRENE_PROFS (HELP,VX0(IPLS),VX1(IPLS),VX5(IPLS),VVAC)
-        VXIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFS (HELP,VY0(IPLS),VY1(IPLS),VY5(IPLS),VVAC)
-        VYIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFS (HELP,VZ0(IPLS),VZ1(IPLS),VZ5(IPLS),VVAC)
-        VZIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+133     CALL EIRENE_PROFS (HELP,VX0(IPLSV),VX1(IPLSV),VX5(IPLSV),VVAC)
+        VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        CALL EIRENE_PROFS (HELP,VY0(IPLSV),VY1(IPLSV),VY5(IPLSV),VVAC)
+        VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        CALL EIRENE_PROFS (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ5(IPLSV),VVAC)
+        VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
         GOTO 140
-C  INDPRO=4 NOT IN USE
 134     CONTINUE
+C  INDPRO=4: read tallies from streams VXO(IPLSV), VY0(IPLSV),VZ0(IPLSV)
+c            NOT READY FOR FLOW FIELDS
         GOTO 140
-135     CALL EIRENE_PROUSR (HELP,1+2*NPLS,VX0(IPLS),VX1(IPLS),VX2(IPLS),
-     .                        VX3(IPLS),VX4(IPLS),VX5(IPLS),VVAC,NSURF)
-        VXIN(IPLS,1:NSURF)=HELP(1:NSURF)
-        CALL EIRENE_PROUSR (HELP,1+3*NPLS,VY0(IPLS),VY1(IPLS),VY2(IPLS),
-     .                        VY3(IPLS),VY4(IPLS),VY5(IPLS),VVAC,NSURF)
-        VYIN(IPLS,1:NSURF)=HELP(1:NSURF)
-        CALL EIRENE_PROUSR (HELP,1+4*NPLS,VZ0(IPLS),VZ1(IPLS),VZ2(IPLS),
-     .                        VZ3(IPLS),VZ4(IPLS),VZ5(IPLS),VVAC,NSURF)
-        VZIN(IPLS,1:NSURF)=HELP(1:NSURF)
+c  INDPRO=5:  tally from PROUSR, 
+c             VX: indx=1+2*NPLS, but NPLSV calls, one for each IPLSV
+c             VY: indx=1+3*NPLS, but NPLSV calls, one for each IPLSV
+c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
+135     CALL EIRENE_PROUSR (HELP,1+2*NPLS,VX0(IPLSV),VX1(IPLSV),
+     .                      VX2(IPLSV),VX3(IPLSV),
+     .                      VX4(IPLSV),VX5(IPLSV),VVAC,NSURF)
+        VXIN(IPLSV,1:NSURF)=HELP(1:NSURF)
+        CALL EIRENE_PROUSR (HELP,1+3*NPLS,VY0(IPLSV),VY1(IPLSV),
+     .                      VY2(IPLSV),VY3(IPLSV),
+     .                      VY4(IPLSV),VY5(IPLSV),VVAC,NSURF)
+        VYIN(IPLSV,1:NSURF)=HELP(1:NSURF)
+        CALL EIRENE_PROUSR (HELP,1+4*NPLS,VZ0(IPLSV),VZ1(IPLSV),
+     .                      VZ2(IPLSV),VZ3(IPLSV),
+     .                      VZ4(IPLSV),VZ5(IPLSV),VVAC,NSURF)
+        VZIN(IPLSV,1:NSURF)=HELP(1:NSURF)
         GOTO 140
 140   CONTINUE
 C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
+C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
       IF (NLMACH) THEN
         DO 1141 IPLS=1,NPLSI
           IPLSTI=MPLSTI(IPLS)
@@ -238,10 +276,15 @@ C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
 1141    CONTINUE
       ENDIF
       GOTO 1140
+
+c  read tally from external data structure, all V.IN fields in one single call
+cdr first dimension of arrays:  always NPLSV 
 136   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSURF)
       GOTO 1140
+c  read tally from external data structure, all V.IN fields in one single call
+cdr first dimension of arrays:  always NPLSV
 137   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSBOX)
       CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSBOX)
       CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSBOX)
@@ -250,7 +293,7 @@ C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
 C
 C
 C  MAGNETIC FIELD UNIT VECTOR
-C  FOR IND=5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
+C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
 C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
       IF (IND /= 9) THEN
@@ -259,20 +302,21 @@ C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
         BZIN=1.
         BFIN=1.
       END IF
+
       GOTO (141,142,143,144,145,146,147,150,150),IND
 C  HELP IS FIELD LINE PITCH ANGLE: B_POL/B_TOT
 
-C  INDPRO=1:
+C  INDPRO(5)=1:
 141     CALL EIRENE_PROFN (HELP,B0,B1,B2,B3,B4,B5,BVAC)
         GOTO 1400
-C  INDPRO=2:
+C  INDPRO(5)=2:
 142     CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
         GOTO 1400
-C  INDPRO=3:
+C  INDPRO(5)=3:
 143     CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
         CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008) set constant B profile, ONLY INDPRO(5)=3
         GOTO 1400
-C  INDPRO=4: read from stream B0:  NOT IN USE
+C  INDPRO(5)=4: read tally from stream B0:  NOT IN USE
 144     CONTINUE
         GOTO 150
 
@@ -285,9 +329,17 @@ C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
      .                  NR1ST,NP2ND,NT3RD,NBMLT,NLRAD,NLPOL,NLTOR)
             IF (IR.GE.NR1ST) GOTO 1401
             IF ((NP2ND.GT.1).AND.(IP.GE.NP2ND)) GOTO 1401
-            BXIN(J)=0.0
-            BYIN(J)=HELP(IR)
+C
+            IF (.NOT.NLPITCH) THEN ! OLD DEFAULT: B-FIELD IS parallel TO Y,Z
+              BXIN(J)=0.0
+              BYIN(J)=HELP(IR)
+            ELSEIF (NLPITCH) THEN  ! NEW OPTION : B-FIELD IS parallel TO X,Z
+              BXIN(J)=HELP(IR)
+              BYIN(J)=0.0
+            ENDIF
+C
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
+C
             IF (IND.EQ.3) THEN 
               BFIN(J)=HELP2(IR)
             ELSE
@@ -343,7 +395,7 @@ C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
           CALL EIRENE_LEER(1)
         ENDIF
         GOTO 150
-c  INDPRO=5:  call prousr
+c  INDPRO(5)=5:  call prousr
 145     CONTINUE
         CALL EIRENE_PROUSR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
@@ -354,15 +406,15 @@ c  INDPRO=5:  call prousr
         CALL EIRENE_PROUSR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
         GOTO 150
-c  INDPRO=6:  call profr (information comes from interfacing code)
-c             default (vacuum) parameters in additional cells
+c  INDPRO(5) =6:  call profr (information comes from interfacing code)
+c                 default (vacuum) parameters in additional cells
 146     CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         GOTO 150
-c  INDPRO=7:  call profr (information comes from interfacing code)
-c             include also additional cells
+c  INDPRO(5) =7:  call profr (information comes from interfacing code)
+c                 include also additional cells
 147     CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
@@ -393,15 +445,15 @@ C  ADDITIONAL INPUT TALLIES
       IND=INDPRO(6)
       DO 160 K=1,NAINI
         GOTO (151,151,151,151,155,156,157,160,160),IND
-C  DEFAULT: ZERO
+C  DEFAULT: ZERO, only options ind=5,6,7 are available 
+c          (transfer from problem specific codes or external data structures)
 151     CONTINUE
         DO 1151 J=1,NR1ST
           ADIN(K,J)=0.
 1151    CONTINUE
         GOTO 160
 155     CALL EIRENE_PROUSR (HELP,6+1*NPLS+NPLSTI+3*NPLSV,
-     .               BD,BD,BD,BD,BD,BD,0._DP,NSURF)
-!pb        CALL RESETP (ADIN,HELP,K,1,NAIN,NSURF)
+     .                      BD,BD,BD,BD,BD,BD,0._DP,NSURF)
         ADIN(K,1:NSURF)=HELP(1:NSURF)
         GOTO 160
 160   CONTINUE
@@ -415,7 +467,8 @@ C
 C  ELECTRIC FIELD
       IND=INDPRO(7)
       GOTO (170,170,170,170,175,176,177,170,170),IND
-C  DEFAULT: ZERO
+C  DEFAULT: ZERO, only options ind=5,6,7 
+c          (transfer from problem specific codes or external data structures)
       goto 170
 175     CALL EIRENE_PROUSR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)

@@ -1,4 +1,9 @@
 C  6.12.05  COMMENTS, NAMES MODIFIED
+Cdr  Jan 2017:  this routine is not in use since 2005,
+cdr             and it should not be activated within any eirene run any more.
+cdr             Its purpose was to sample a deflection angle in an elastic scattering
+cdr             event, from a given angle-differential cross section (tabulated).
+cdr             It also returned the integral (total) cross section.
 C
       SUBROUTINE EIRENE_SCATANG (EREL,RAN,ELTHETA,CTTHETA,SIGM)
 c     ***********************************************************
@@ -30,7 +35,7 @@ c     *                                                         *
 c     *(19.9.2000)                          Torsten Haberscheidt*
 c     *                                                         *
 c     *                                                         *
-c     *modifications: 24.3.03:                                  *
+c     *modifications dr: 24.3.03:                                  *
 c     *   remove "ct"-scattering angle evaluation               *
 c     *   remove "el"-scattering angle evaluation for ran.lt.0  *
 c     *           in this case: only SIGM =SIGM(EREL)           *
@@ -169,6 +174,7 @@ c  to be done: use equidist. grid on log scale (see ORNL elastic web page)
 c  elastic (both with and without charge transfer, IP-model)
  
       SIGM=SIGMA(M)
+C     SIGM=SIGM+GAMMA(M)   ! add charge exchange component.  out
  
       if (ran.lt.0._DP) return
  

@@ -12,13 +12,16 @@ c
 !pb   ??      use nrplg rather than np2nd for 1D radial polygons,
 !             to allow 1D levgeo=3 runs
 !dr 17.01.14  test-printout removed, some comments added
+cdr 19.07.16  arguments corrected in call to grid_1 for levgeo=1, 
+cdr           to allow also there an outer vacuum (void) zone.
+cdr           tested, ok.
  
       SUBROUTINE EIRENE_GRID (IND)
 
 C  SET STANDARD GRIDS AND RELATED DATA
 C    INPUT:   IND
 C    OUTPUT:  IN MODULES
-C    IND=1:  1ST GRID, X OR RADIAL COORDINATE, AS WELL AS TRIANGULAR (LEVGEO=4) AND TETRAHEDON (LEVGEO=5) GRIDS.
+C    IND=1:  1ST GRID, X OR RADIAL COORDINATE, AS WELL AS TRIANGULAR (LEVGEO=4) AND TETRAHEDRON (LEVGEO=5) GRIDS.
 C    IND=2:  2ND GRID, Y OR POLOIDAL COORDINATE
 C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
 
@@ -80,8 +83,13 @@ C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.1
 C
         IF (INDGRD(IND).LE.4) THEN
+          IF (RRA.GT.RAA) THEN
+            NLOCAL=NR1STM
+          ELSE
+            NLOCAL=NR1ST
+          ENDIF
 C** USE ONE OF THE EIRENE DEFAULT GRID OPTIONS
-          CALL EIRENE_GRID_1(RSURF,NR1ST,NRSEP,NRPLG,RIA,RGA,RAA,RRA,1)
+          CALL EIRENE_GRID_1(RSURF,NR1ST,NRSEP,NLOCAL,RIA,RGA,RAA,RRA,1)
         ELSEIF (INDGRD(IND).EQ.5) THEN
 C** TAKE RADIAL GRID DATA FROM USER SUPPLIED SUBROUTINE
 C         CALL PROUSR (RSURF,2+4*NPLS+3,0._DP,0._DP,0._DP,0._DP,

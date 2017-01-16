@@ -120,7 +120,7 @@ C
  
       REAL(DP) :: a,aa,aaa
 c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
-      REAL(DP) :: CFLAG(7,3), DUMT(3), DUMV(3)
+      REAL(DP) :: CFLAG(7,MSTOR0), DUMT(3), DUMV(3)
       REAL(DP) :: AX(2),v,vv,vx,vy,vz
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD),
@@ -710,6 +710,7 @@ ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
+
 !PB       IF (.NOT.LGVAC(NCELL,IPL))
 !PB  .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
           IF (.NOT.LGVAC(NCELL,IPL)) THEN
@@ -1111,7 +1112,7 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
           ENDIF
         END IF
 C
-C  ESCAPE AT GRID SURFACE BUILT FROM TETRAHEDON SIDES: MRSURF
+C  ESCAPE AT GRID SURFACE BUILT FROM TETRAHEDRON SIDES: MRSURF
       ELSEIF (LEVGEO.EQ.5) THEN
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -1589,6 +1590,9 @@ c  written for fnueqi without that factor.
 
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
 C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
+C  note: for an intermediate period (1995 --2013) the mass factor
+c  (1+mb/ma) had an incorrect exponent -1/2, in the NRL formularies.
+c  2016: back to the correct formula (as in eighties) without that exponent
 
       FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
       REAL(DP) ::  FNUEQI_1,EA,XNI,TI

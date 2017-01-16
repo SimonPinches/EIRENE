@@ -22,11 +22,13 @@ cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
 cdr           (was missing, but accidentally correct)
-!pb  APR 16:  pplds -> pplei
-!pb  APR 16:  patds -> patei,  eatds -> eatei
-!pb  APR 16:  pelds -> pelei,  eelds -> eelei
-!pb  MAY 16:  tabds1 -> tabds1
-!pb  JUL 16:  ehvds1 -> ehvds1
+
+!pb  APR  16:  pplds  -> pplei
+!pb  APR  16:  patds  -> patei,  eatds -> eatei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabds1
+!pb  JUL  16:  ehvds1 -> ehvds1
+cdr  sept 16:  nidsi  -> nieii
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -54,7 +56,7 @@ C
 
       INTEGER :: ICOUNT, IA1, IP2, IPLS, ITEST, IIO, IION, IDSC1,
      .           NRC, J, IPLS1, IPLS2, IATM, KK, IATM1, IATM2, ITYPB,
-     .           ISPZB, III, IDSC, IREL, IBGK_SP, IIDS, IERR, IMOL, 
+     .           ISPZB, III, IDSC, IREL, IBGK_SP, IERR, IMOL, 
      .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL, 
      .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -385,7 +387,7 @@ C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
 C
 76        CONTINUE
 C
-          NIDSI(IION)=IDSC1
+          NIEII(IION)=IDSC1
 C
 C
 C  NON DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
@@ -416,13 +418,13 @@ C
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
      .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
 90        CONTINUE
-          NIDSI(IION)=IDSC1
+          NIEII(IION)=IDSC1
         ENDIF
 C
-        NIDSIM(IION)=NIDSI(IION)-1
-        LGIEI(IION,0)=NIDSI(IION)
+        NIEIIM(IION)=NIEII(IION)-1
+        LGIEI(IION,0)=NIEII(IION)
 C
-        DO IIEI=1,NIDSI(IION)
+        DO IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           CALL EIRENE_XSTEI_1(IREI)
         ENDDO
@@ -608,7 +610,6 @@ C  INCIDENT BULK PARTICLE INDEX
             NRPII=NRPII+1
             IF (NRPII.GT.NRPI) GOTO 998
             IRPI=NRPII
-            NREAPI(IRPI) = KK
             LGIPI(IION,IDSC,0)=IRPI
             LGIPI(IION,IDSC,1)=IPLS
 
@@ -663,8 +664,8 @@ C
             WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS'
             CALL EIRENE_LEER(1)
           ELSE
-            DO 870 IIDS=1,NIDSI(IION)
-              IREI=LGIEI(IION,IIDS)
+            DO 870 IIEI=1,NIEII(IION)
+              IREI=LGIEI(IION,IIEI)
               CALL EIRENE_XSTEI_2(IREI)
 870         CONTINUE
           ENDIF

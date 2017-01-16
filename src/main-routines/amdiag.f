@@ -2,8 +2,16 @@ cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=24, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
+
+cdr  aug.      2016: set e0 low energy cut off, as on fpath routines, for H.3 rates
+cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
+
 !pb  apr       2016: eelds -> eelei
 !pb  may       2016: tabds1 -> tabei1
+
+
+cdr  Nov.      2016: final ds --> ei notational unifications
+
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
@@ -50,8 +58,6 @@ c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s
 c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 
-c  to be done:  nomenclature nmdsi(iml) --> nmeii(iml)
-c                            nidsi(iio) --> nieii(iio)
 
       SUBROUTINE EIRENE_AMDIAG
       USE EIRMOD_PRECISION
@@ -93,7 +99,7 @@ c                            nidsi(iio) --> nieii(iio)
         mm = 0
         kk = 0
 
-c  currently:  only tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
+c  currently:  only tabei1, tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
 c              modcol=1: rates depend only on background parameters, not on test particle parameters
 c              modcol=2: rates depend also on test particle energy. use E_test=1.5 kT_background
 c  to be done:  (e.g. for Beams)
@@ -104,7 +110,7 @@ c  electron impact rate coefficient no. irei
           irei=ns
           mm=modcol(1,2,irei)
           kk=NREAEI(irei)
-c find collision partners corresponding to process irei: IPL ANBD ISP
+c find collision partners corresponding to process irei: IPL AND ISP
           IPL=0  ! ELECTRONS
           
 c  first: try atoms
@@ -120,7 +126,7 @@ c  irei is a process for atom iat, colliding with electron
 
 c  next: try molecules
           LMLEI: do iml=1,nmoli
-          do imei=1,NMDSI(iml)
+          do imei=1,NMEII(iml)
             if (IREI.eq.LGMEI(IML,IMEI)) then
               ISP=NSPA+IML
               goto 170
@@ -131,7 +137,7 @@ c  irei is a process for molecule iml, colliding with electron
 
 c  next: try test ions
           LIOEI: do iio=1,nioni
-          do iiei=1,NIDSI(iio)
+          do iiei=1,NIEII(iio)
             if (IREI.eq.LGIEI(IIO,IIEI)) then
               ISP=NSPAM+IIO
               goto 170
@@ -142,7 +148,7 @@ c  irei is a process for test ion iio, colliding with electron
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      ' ELECTRON IMPACT REACTION  IREI ='//CNO
+     .      'ELECTRON IMPACT REACTION  IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified species on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = ' '
@@ -156,13 +162,14 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NREAEI(IREI)
           TXTPLS(IAIN,NTALN) = 
-     .      ' ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
+     .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
  
           if (mm.eq.1) then
             DO 1720 ICELL=1,NSBOX
+              if (lgvac(icell,npls+1)) cycle  
               ADIN(IAIN,ICELL)=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
 1720        CONTINUE
 
@@ -179,7 +186,7 @@ c  not ready
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NREAEI(IREI)
           TXTPLS(IAIN,NTALN) = 
-     .      ' ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
+     .      'ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
           TXTPUN(IAIN,NTALN) = 'eV x A.U. (0.612 E-8 cm3/s)'
@@ -241,7 +248,7 @@ c  ircx is a process for test ion iio, colliding with bulk ipl
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      ' CHARGE EXCHANGE REACTION  IRCX ='//CNO
+     .      'CHARGE EXCHANGE REACTION  IRCX ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
           TXTPUN(IAIN,NTALN) = ' '
@@ -255,13 +262,14 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IRCX
           WRITE (CN1,'(I4)') NREACX(IRCX)
           TXTPLS(IAIN,NTALN) = 
-     .      ' CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
+     .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
 
           if (mm.eq.1) then            
-            DO 1722 ICELL=1,NSBOX            
+            DO 1722 ICELL=1,NSBOX 
+              if (lgvac(icell,ipl)) cycle           
               ADIN(IAIN,ICELL)=
      .        TABCX3(IRCX,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1722        CONTINUE
@@ -277,8 +285,9 @@ c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
+              if (lgvac(icell,ipl)) cycle
 c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
-              ELB=log(1.5*TIIN(iplti,icell)*EBFAC)
+              ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
               ADIN(IAIN,ICELL)=
@@ -349,7 +358,7 @@ c  irel is a process for test ion iio, colliding with bulk ipl
 
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      ' ELASTIC REACTION  IREL ='//CNO
+     .      'ELASTIC REACTION  IREL ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
           TXTPUN(IAIN,NTALN) = ' '         
@@ -363,12 +372,13 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IREL
           WRITE (CN1,'(I4)') NREAEL(IREL)
           TXTPLS(IAIN,NTALN) = 
-     .      ' ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
+     .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
           if (mm.eq.1) then
-            DO 1724 ICELL=1,NSBOX            
+            DO 1724 ICELL=1,NSBOX
+              if (lgvac(icell,ipl)) cycle            
               ADIN(IAIN,ICELL)=
      .        TABEL3(IREL,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1724        CONTINUE
@@ -383,8 +393,9 @@ c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
+              if (lgvac(icell,ipl)) cycle
 c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
-              ELB=log(1.5*TIIN(iplti,icell)*EBFAC)
+              ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
               ADIN(IAIN,ICELL)=
@@ -455,7 +466,7 @@ c  irpi is a process for test ion iio, colliding with bulk ipl
           
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      ' HEAVY PARTICLE REACTION  IRPI ='//CNO
+     .      'HEAVY PARTICLE REACTION  IRPI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
           TXTPUN(IAIN,NTALN) = ' '         
@@ -469,13 +480,14 @@ c  no interacting particle species found
           WRITE (CNO,'(I4)') IRPI
           WRITE (CN1,'(I4)') NREAPI(IRPI)
           TXTPLS(IAIN,NTALN) = 
-     .      ' BULK ION IMPACT REACTION RATE COEFFICIENT IRPI ='//CNO
+     .      'BULK ION IMPACT REACTION RATE COEFFICIENT IRPI ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)     
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
 
           if (mm.eq.1) then   
-            DO 1726 ICELL=1,NSBOX            
+            DO 1726 ICELL=1,NSBOX
+              if (lgvac(icell,ipl)) cycle            
               ADIN(IAIN,ICELL)=
      .        TABPI3(NS,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1726        CONTINUE
@@ -491,8 +503,9 @@ c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE T_TEST = T-IPLS, and apply mass 
 c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
+              if (lgvac(icell,ipl)) cycle
 c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
-              ELB=log(1.5*TIIN(iplti,icell)*EBFAC)
+              ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
               ADIN(IAIN,ICELL)=

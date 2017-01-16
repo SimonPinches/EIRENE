@@ -16,7 +16,8 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
 C            remove plsti(nstordt), now: TII 
 c 25.03.15:  rename nelrcx  to nplrcx, in order to enable 
-c            consistency in notation with PI processes: not ready 
+c            consistency in notation with PI processes: not ready
+cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
@@ -43,7 +44,7 @@ c   PLS:   precomputed log of electron density
 C  RETURNS:
 C    MODCOL(3,...)
 C    TABCX3(IRCX,NCELL,...)  1/s per incident test particle
-C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle 
+C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle
 C    DEFCX(IRCX)
 C    EEFCX(IRCX)
 C    IESTCX(IRCX,...)
@@ -64,18 +65,21 @@ C
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, 
      .                       ISCDE, IESTM, KK
-      REAL(DP) :: CF(9,0:9), CFF(9)
+      REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, ADDTL, CHRDIF,
      .            ADDT, TMASS, PMASS, COU, EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII
+     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII,
+     .            FP1(6),FP2(6)
       INTEGER :: ITYP1, ITYP2, ISPZ1, IERR, ISPZ2, KREAD,
      .           J, NEND, MODC, NSECX4, I, IPL2, IIO2, IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
+      type(poly_data), pointer :: rp
+      type(fit_forms), pointer :: rt
 
       SAVE
 
-      NREACX(IRCX) = KK   ! needed for storage saving mode
+      NREACX(IRCX) = KK  ! needed for storage saving mode
 C
 C  SET NON DEFAULT CHARGE EXCHANGE COLLISION PROCESS NO. IRCX
 C
@@ -159,52 +163,69 @@ C CROSS SECTION (E-LAB) AVAILABLE ?
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
         MODCOL(3,2,IRCX)=3
       ENDIF
-C
-C RATE COEFFICIENT
+
+C..................................................................
+C 2. RATE COEFFICIENT  (CM**3/S) * TARGET DENSITY (CM**-3)
+C..................................................................
+
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
-      IF (MODC.GE.1.AND.MODC.LE.2) THEN
-
-        MODCOL(3,2,IRCX)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1   ! rate coeff for (E=0, TI)
+      IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
-C   STORAGE SAVING MODE ?
-        IF (NSTORDR >= NRAD) THEN
-C   NO
+      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
           
-C  2.B) RATE COEFFICIENT(TI, EBEAM=0)
-          IF (MODC.EQ.1) THEN
-            DO 245 J=1,NSBOX
-              IF (LGVAC(J,IPL)) CYCLE
+C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
+      IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
+C       NEND=1
+        IF (NSTORDR >= NRAD) THEN
+          DO 245 J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
               TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
-245         CONTINUE
-          ELSEIF (MODC.EQ.2) THEN
+245       CONTINUE          
+        ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+        ENDIF
+        MODCOL(3,2,IRCX)=1 
+ 
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
-            FCTKKL=LOG(FACTKK)
-            DO J=1,NSBOX
-              IF (LGVAC(J,IPL)) CYCLE
+C       NEND=9
+        IF (NSTORDR >= NRAD) THEN
+          FCTKKL=LOG(FACTKK)
+          rt => reacdat(kk)%rtc
+          fp1(1:3) = rt%fp1l
+          fp1(4:6) = rt%fp1r
+          fp2(1:3) = rt%fp2b
+          fp2(4:6) = rt%fp2t  
+          DO J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
               tii = max(-2.3_dp,tii)
-              CALL EIRENE_PREP_RTCS (KK,3,1,NEND,TII,CFF)
-              TABCX3(IRCX,J,1:NEND) = CFF(1:NEND)
-              TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
-            END DO
-          END IF
-        ELSE   ! ??
-C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
-        END IF
-      ELSEIF (MODC.EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
-C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
+c old
+c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
+c old
+              rp => reacdat(KK)%rtc%poly
+              call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
+     .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
 
-        MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+              TABCX3(IRCX,J,1:9) = CF(1:9)
+              TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
+          END DO
+        ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+
+        ENDIF
+        MODCOL(3,2,IRCX)=2
+
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
+C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN 
-                
+        IF (NSTORDR >= NRAD) THEN                
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
@@ -221,7 +242,7 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'exit called '
           call eirene_exit_own(1) 
         ENDIF
-
+        MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
@@ -286,7 +307,9 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           ELSE
             NELRCX(IRCX) = -3
           END IF
+
         ELSEIF (EBULK.GT.0.D0) THEN ! EBULK GT.0  ! EBULK GT.0
+
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTCX: IRCX ', IRCX
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
@@ -331,9 +354,13 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           MODCOL(3,4,IRCX)=MODC
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
+C  STORAGE SAVING MODE ? 
           IF (NSTORDR >= NRAD) THEN
-            
+C  NO
+C           NSTORDT=9 HERE
+      
             IF (MODC.EQ.1) THEN
+C             NEND=1
 C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
               ADD=FACTKK/ADDT
               DO 254 J=1,NSBOX
@@ -344,22 +371,36 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
+C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
               ADDL=LOG(FACTKK)-ADDTL
+              rt => reacdat(kread)%rtcew
+              fp1(1:3) = rt%fp1l
+              fp1(4:6) = rt%fp1r
+              fp2(1:3) = rt%fp2b
+              fp2(4:6) = rt%fp2t    
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 tii = max(-2.3_dp,tii)
-                CALL EIRENE_PREP_RTCS (KREAD,5,1,NEND,TII,CFF)
-                EPLCX3(IRCX,J,1:NEND) = CFF(1:NEND)
+c old
+c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
+c old
+                rp => reacdat(KREAD)%rtcew%poly
+                call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
+     .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+
+
+                EPLCX3(IRCX,J,1:9) = CF(1:9)
                 EPLCX3(IRCX,J,1) = EPLCX3(IRCX,J,1)+DIINL(IPL,J)+ADDL
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE
+          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplcx3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
-              EPLCX3(IRCX,1,1)=ADD
+              EPLCX3(IRCX,1,1)=ADD   !  ????
             ELSEIF (MODC.EQ.2) THEN
               ADDL=LOG(FACTKK)-ADDTL
               FACRCX(IRCX,1) = EXP(ADDL)
@@ -381,6 +422,7 @@ C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
 C
       ITYP1=N1STX(IRCX,1)
       ITYP2=N2NDX(IRCX,1)
+
       IF (IESTCX(IRCX,1).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -397,6 +439,7 @@ C
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTCX(IRCX,2)=0
       ENDIF
+
       IF (IESTCX(IRCX,3).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -455,6 +498,9 @@ C
 
 
       RETURN
+C
+C
+C-----------------------------------------------------------------------
 C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '

@@ -151,7 +151,7 @@ C
       real(sp), allocatable :: eplot(:), y1plot(:), y2plot(:)
       real(sp) :: y1a,y1e,y2a,y2e,e00_plot
       real(DP) :: EMINSP,EMAXSP
-      real(dp) :: cflag(7,3)
+      real(dp) :: cflag(7,MSTOR0)
       REAL(DP), SAVE :: SNORM
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, ALLOCATABLE, SAVE :: IICSOR(:), ITISOR(:),
@@ -342,7 +342,7 @@ C
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
           IMP=IPANU
         ELSE
-C   RANDOM SEARCH IN RPARTW ARRAY
+C   RANDOM SEARCH IN RPARTW ARRAY:  "bootstrapping"
           A=RANF_EIRENE()*RPARTW(IPRNL)
 C   BINARY SEARCH
           I1=0
@@ -359,7 +359,7 @@ C   BINARY SEARCH
 C  PARTICLE NO. IMP FROM CENSUS ARRAY IDENTIFIED
         ENDIF
 C
-C  LAUNCH PARTICLE NO. IMP FROM CENSUS ARRAY
+C  LAUNCH PARTICLE NO. "IMP" FROM CENSUS ARRAY
 C
         DO 11 J=1,NPARTT
           RPSTT(J)=RPARTC(J,IMP)

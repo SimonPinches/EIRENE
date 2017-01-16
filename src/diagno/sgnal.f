@@ -1,5 +1,11 @@
 c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
+c
+cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
+c            option NCLTAL=4 is unfinished. print warning and return 
+cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
+c            set default ncheni=1 for nchtal=2 alreay in calling routine,
+c            to avoid that chords are erroneously turned off there. 
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
@@ -7,9 +13,15 @@ C
 C  THIS SUBROUTINE CALCULATES LINE INTEGRATED SIGNALS, USING THE EIRENE
 C  VOLUME AVERAGED TALLIES AND THE PLASMA BACKGROUND DATA.
 C  THERE MAY BE A CONTRIBUTION DIRECTLY FROM A PRIMARY SOURCE,
-C  DUE TO DIRECT EMISSION FROM SOURCE INTO LINE OF SIGHT,
+C  DUE TO DIRECT EMISSION FROM THE SOURCE INTO THE LINE OF SIGHT,
 C  AS WELL AS A SECONDARY SOURCE (POST COLLISION) CONTRIBUTION, DUE TO
 C  SCATTERING INTO THE LINE OF SIGHT
+
+C  STEP 1)  FETCH THE APPROPRIATE STRATUM DATA (OR: SUM OVER STRATA) IISTR
+C  STEP 2)  PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
+C           (PROBABLY NOT READY)
+C  STEP 3)  INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
+C  STEP 4)  PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -35,7 +47,8 @@ C
  
       IMPLICIT NONE
 C
-      INTEGER, INTENT(IN) :: ICHORI, IISTR, ISP
+      INTEGER, INTENT(IN) :: ICHORI, ISP
+      INTEGER :: IISTR
       REAL(DP) :: C1(3),C2(3),PSIG(0:NSPZ+10),
      .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
      .          FP(6), DUM(9)
@@ -58,13 +71,29 @@ C
 C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
-      IF (NCHTAL(ICHORI).EQ.2) NCHNI=1
+
+cdr   IF (NCHTAL(ICHORI).EQ.2) NCHNI=1  : this is now done in calling routine diagno.f
+
+cdr:  aug. 2016
+cdr:  to be written: use emin1, emax1 to identify upper and lower state of a transition,
+cdr                  as already described in manual, but apparently not programmed.
 C
  
 C
       IF (NCHTAL(ICHORI) .NE. 3) THEN
+c  no volumetric tallies at all are needed in case NCHTAL=3
+c
+c  in single stratum runs no dump files for strata are needed.
+c  all tallies are still in active storage
+      IF (NSTRAI.EQ.1) THEN
+        IISTR=1
+        ISTRA=1
+        IESTR=1
+      ENDIF 
+  
       IF (ISTRA.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
+
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTRA
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
@@ -75,8 +104,6 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb          CALL EIRENE_SYMET(ESTIMV,NTALV,NRAD,NR1ST,NP2ND,NT3RD,
-!pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
         ENDIF
@@ -90,8 +117,6 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb          CALL EIRENE_SYMET(ESTIMV,NTALV,NRAD,NR1ST,NP2ND,NT3RD,
-!pb     .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
         ENDIF
@@ -102,20 +127,42 @@ C  NOTHING TO BE DONE
      .    'ARE NOT AVAILABLE. LINE INTEGRATION ABANDONNED'
         RETURN
       ENDIF
+
       END IF
+
+C  STEP 1 DONE
+
  
- 
-!  EVALUATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
+cdr  intermediate part, 
+cdr  proprietary option only. nchtal=4 option is not ready. 
+cdr  complain and then return to calling program  
+!  INTEGRATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
  
       IF ((NCHTAL(ICHORI) == 4) .AND. NLSTCHR(ICHORI)) THEN
  
         if (.not.associated(traj(ichori)%trj%cells)) then
-           write (iunout,*) ' HAUE !! '
+           write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
+           write (iunout,*) 'error in SGNAL, NCHTAL=4 '
+           write (iunout,*) 'no proper spectra found for NCHORI '
+           call EIRENE_MASJ1('NCHORI= ',NCHORI)
+           write (iunout,*) 'OPTION NOT READY, RETURN '
            return
         end if
+C
         first => traj(ichori)%trj%cells
         cur => first
- 
+C
+CDR : this next part is not generally valid, nor ready to use.
+cdr : an attempt had been made, apparently, to use velocity resolved 
+cdr : neutral distributions (the velocity component along the line of sight),
+cdr : then to turn that into a doppler broadened line shape of the Ba-alpha line
+
+        write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
+        write (iunout,*) 'error in proprietary section NCHTAL=4 '
+        write (iunout,*) 'OPTION NOT READY, RETURN '
+        return  
+
+C 
 C  RADIATIVE TRANSITION RATES (1/S)
 C  BALMER ALPHA
         FAC32=4.410E7
@@ -152,8 +199,8 @@ C  H(n=3)/H(n=1)
           TEF=LOG(TE)
  
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
-     .                  TEF, DEF, RATE, DUM, 1, 9,
-     .                  RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
+     .                         TEF, DEF, RATE, DUM, 
+     .                         RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
           rate = exp(rate)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
@@ -171,24 +218,29 @@ C  H(n=3)/H(n=1)
  
         write (iunout,*) ' chord ', ichori
         write (iunout,*) ' integral along chord calculated from '
-        write (iunout,*) ' spectra integrals in the cells '
+        write (iunout,*) ' spectra in the cells '
         write (iunout,*) ' integral ',chksum
         return
  
       END IF
+
+C  STEP 2
 C
-C  PREPARE DIRECT (PRIMARY) EMISSIVITY FROM SOURCE, INTO LINE OF SIGHT
-C  (SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE IN SUBR. SIGCX, SIGRAD, SIGH
+C  PREPARE DIRECT (PRIMARY) EMISSION FROM SOURCE, INTO LINE OF SIGHT
+C  THE SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE 
+C  IN SUBR. SIGCX, SIGRAD, SIGHA, SIGUSR, ETC.
  
       NLVL=.FALSE.
       DO 10 ISTR=1,NSTRAI
 C  PRIMARY SOURCE CONTRIBUTION, REFER TO INPUT BLOCK 7
-C  HOWEVER, THIS STRATUM NEED NOT NECESSARILY HAVE TO ACTIVE
+C  (PRIMARY) VOLUME RECOMBINATION SOURCE:
+C  HOWEVER, THIS STRATUM MIGHT NOT NECESSARILY HAVE BEEN ACTIVE?
         NLVL(ISTR)=NLVOL(ISTR).AND.NLPLS(ISTR)
 10    CONTINUE
       NLVL(0)=ANY(NLVL(1:NSTRAI))
-C
+C.................................................................
       IF (NCHTAL(ICHORI).EQ.1) THEN
+C.................................................................
 C  FOR CX SIGNAL:  TO BE WRITTEN
 C     CALL ZEROA2(RECADD,NATM,NRAD)
 C     IF (NLVL) THEN
@@ -210,9 +262,10 @@ C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'
 C     ENDIF
- 
+C................................................................. 
 C  FOR RADIANCE OF LINE ISP=IPHOT, IN STRATUM ISTR
       ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
+C.................................................................
         MAXREC=SUM(NPRCI(1:NPLSI))
         ALLOCATE(RECADD(MAXREC,NRAD))
         ALLOCATE(INTADD(3,MAXREC))
@@ -312,14 +365,19 @@ c  nlvl is not true:
           DEALLOCATE(INTADD)
           return
         ENDIF
+C.................................................................
       ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
+C.................................................................
         write (iunout,*) 'sgnal, emis: ichord,istra ',
      .                            ichori,istra
         write (iunout,*) 'volumetric line emission '
         write (iunout,*) 'contribution no. isp ',isp
       ENDIF
+
+C   STEP 2 DONE
+
 C
-C     CALCULATE SIGNAL STRENGTHS
+C     CALCULATE SIGNAL STRENGTHS, LOOP OVER ENERGY/WAVELENGTH, IF ANY
 C
       IPVOT=IPIVOT(ICHORI)
       C1(1)=XPIVOT(ICHORI)
@@ -340,10 +398,10 @@ C
       PMI=1.E30
       XMA=-1.E30
       XMI=1.E30
-      IF (NCHTAL(ICHORI).EQ.1) NSPI=NATMI
-      IF (NCHTAL(ICHORI).EQ.2) NSPI=10
-      IF (NCHTAL(ICHORI).EQ.3) NSPI=NPHOTI
-      IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ
+      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
+      IF (NCHTAL(ICHORI).EQ.2)  NSPI=10     ! up to 10 spectral line emissivities (transitions) in one single LOS evaluation
+      IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
+      IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
       IFIRST=0
       DO 231 JEN=1,NCHNI

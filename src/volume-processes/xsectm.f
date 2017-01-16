@@ -22,12 +22,14 @@ cdr  oct.14:  PLS made allocatable,
 cdr  oct.14:  further syncronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
-!pb  APR 16:  pplds -> pplei
-!pb  APR 16:  patds -> patei, eatds -> eatei
-!pb  APR 16:  piods -> pioei, eiods -> eioei
-!pb  APR 16:  pelds -> pelei, eelds -> eelei
-!pb  MAY 16:  tabds1 -> tabds1
-!pb  JUL 16:  ehvds1 -> ehvds1
+
+!pb  APR  16:  pplds  -> pplei
+!pb  APR  16:  patds  -> patei, eatds -> eatei
+!pb  APR  16:  piods  -> pioei, eiods -> eioei
+!pb  APR  16:  pelds  -> pelei, eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabds1
+!pb  JUL  16:  ehvds1 -> ehvds1
+cdr  Sept 16:  nmdsi  -> nmeii
 C
 
       SUBROUTINE EIRENE_XSECTM
@@ -417,7 +419,7 @@ C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
 C
 76        CONTINUE
 
-          NMDSI(IMOL)=IDSC1
+          NMEII(IMOL)=IDSC1
 C
 C  NON DEFAULT ELEC IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
@@ -447,13 +449,13 @@ C
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
      .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
 90        CONTINUE
-          NMDSI(IMOL)=IDSC1
+          NMEII(IMOL)=IDSC1
         ENDIF
 C
-        NMDSIM(IMOL)=NMDSI(IMOL)-1
-        LGMEI(IMOL,0)=NMDSI(IMOL)
+        NMEIIM(IMOL)=NMEII(IMOL)-1
+        LGMEI(IMOL,0)=NMEII(IMOL)
 C
-        DO IMEI=1,NMDSI(IMOL)
+        DO IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
           CALL EIRENE_XSTEI_1(IREI)
         ENDDO
@@ -639,7 +641,6 @@ C  INCIDENT BULK PARTICLE INDEX
             NRPII=NRPII+1
             IF (NRPII.GT.NRPI) GOTO 998
             IRPI=NRPII
-            NREAPI(IRPI) = KK
             LGMPI(IMOL,IDSC,0)=IRPI
             LGMPI(IMOL,IDSC,1)=IPLS
 
@@ -694,7 +695,7 @@ C
             WRITE (iunout,*) 'NO ELECTRON IMPACT COLLISIONS '
             CALL EIRENE_LEER(1)
           ELSE
-            DO 870 IMEI=1,NMDSI(IMOL)
+            DO 870 IMEI=1,NMEII(IMOL)
               IREI=LGMEI(IMOL,IMEI)
               CALL EIRENE_XSTEI_2(IREI)
 870         CONTINUE

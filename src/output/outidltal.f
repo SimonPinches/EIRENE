@@ -1,4 +1,8 @@
 C
+c  written by P. Boerner, for FZJ proprietary IDL plotting tool.
+c  not intended for 3rd party use.
+c  last modified: jan 2017
+
       SUBROUTINE EIRENE_OUTIDLTAL
  
       USE EIRMOD_PRECISION
@@ -40,6 +44,7 @@ C
 !      END IF   
 
       MXSPZ = MAXVAL(NFSTVI(1:NTALV))
+      MXSPZ = MAX(MXSPZ, NATM, NMOL, NION, NPHOT, NADV, NALV)
       ALLOCATE (VECTOR(NRAD,MXSPZ))
       ALLOCATE (TALTOT(MXSPZ))
       ALLOCATE (TALAV(MXSPZ))
@@ -114,6 +119,11 @@ C  PRINT VOLUME AVERAGED TALLIES
 C
           NFTI=1
           NFTE=NFSTVI(ITAL)
+          
+          IF (ITAL == NTALA) THEN
+            NFTE = SUM(VERIFY(TXTSPC(1:NADV,NTALA),' '))
+          END IF
+         
           DO 119 K=NFTI,NFTE
             CALL EIRENE_FETCH_OUTAU (OUTAUI,ITAL,K,ISTRA,IUNOUT)
 C
@@ -155,7 +165,8 @@ C
 
           WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
           WRITE (IOUT,'(A,I10)') 'NCELLS:   ',NSBOX
-          WRITE (IOUT,'(A,I10)') 'NSPECIES: ',NFSTVI(ITAL)
+!pb          WRITE (IOUT,'(A,I10)') 'NSPECIES: ',NFSTVI(ITAL)
+          WRITE (IOUT,'(A,I10)') 'NSPECIES: ',NFTE
           WRITE (IOUT,'(A)') 'SPECIES'
           WRITE (IOUT,FORMA) (TRIM(TXTSPC(K,ITAL)), K=NFTI, NFTE)
           WRITE (IOUT,'(A)') 'UNITS'

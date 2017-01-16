@@ -1,3 +1,10 @@
+cdr  FZJ proprietary version of an interface to HYDKIN online database.
+cdr  www.hydkin.de
+cdr  This code segment is not ready to be used by 3rd parties, nor documented
+
+cdr  sept 16:  rmn, rmx  -> r1mn,r1mx,r2mn,r2mx, to keep syncronized with code extensions
+cdr            re extrapolation options.
+
       subroutine EIRENE_setup_hydkin_reactions(hydkin_default, cadapt)
  
       use EIRMOD_precision
@@ -42,8 +49,9 @@
      .           ip, ipi, numsec, ispl, iscd4, ir, nre, j, nsc, ic,
      .           iori, ityp, iln
       integer :: massec(4), multsec(4), itypar(0:4)
-      real(dp) :: rmn, rmx, eelec, ebulk, escd1, escd2, freac, fldlm,
-     .            escd3, e_el, e_k
+      real(dp) :: eelec, ebulk, escd1, escd2, escd3, freac, fldlm,
+     .            e_el, e_k, 
+     .            r1mn, r1mx, r2mn, r2mx
       logical :: ladapt
       type(properties), allocatable :: species(:)
  
@@ -341,7 +349,7 @@
      .           species(isp)%name,' FOUND IN ', HYDKIN_DEFAULT
 !               write (iunout,*) ' NEW SPECIES ADDED '
 !               iion = nioni + 1
-               write (iunout,*) ' PLEASE CORRECT AND RETRY '
+               write (iunout,*) ' CORRECT AND RETRY '
                call EIRENE_exit_own(1)
              end if
           end if
@@ -461,7 +469,7 @@
         IF (INDEX(FILNAM,DBHANDLE(IFILE)).NE.0) EXIT
       END DO
  
-!pb      il = nreac_lines - n_reac
+!pb   il = nreac_lines - n_reac
       il = irlines
       reac_loop: do irc=1, n_reac
         ir = nreaci+irc
@@ -471,8 +479,10 @@
         reac = repeat(' ',50)
         ll = len_trim(adjustl(hline(1:52)))
         reac = adjustl(hline(1:52))
+
+cdr  r2mn,r2mx not ready here.
         call EIRENE_read_hydkin
-     .  (ir,dbfname(ifile),h123,reac,crc,rmn,rmx,
+     .  (ir,dbfname(ifile),h123,reac,crc,r1mn,r1mx,
      .                    e_el,e_k,.true.)
  
 !  set REACLINES for output of input block 4
@@ -485,13 +495,23 @@
         REACLINES(IL)%MP = 0
         REACLINES(IL)%MT = 0
         REACLINES(IL)%DPP = 0._dp
-        REACLINES(IL)%RMN = rmn
-        REACLINES(IL)%RMX = rmx
+        REACLINES(IL)%R1MN = r1mn
+        REACLINES(IL)%R1MX = r1mx
+
+cdr:  workaround, because r2mn, r2mx not ready here
+        REACLINES(IL)%R2MN = 0._dp
+        REACLINES(IL)%R2MX = 0._dp
+
         REACLINES(IL)%ELEMENT = ' '
         REACLINES(IL)%IZ = 0
-        REACLINES(IL)%JFEXMN = 0
-        REACLINES(IL)%JFEXMX = 0
-        REACLINES(IL)%FP = 0._DP
+
+cdr:  JFEX... and FP... not ready here
+        REACLINES(IL)%JFEX1MN = 0
+        REACLINES(IL)%JFEX1MX = 0
+        REACLINES(IL)%JFEX2MN = 0
+        REACLINES(IL)%JFEX2MX = 0
+        REACLINES(IL)%FP1 = 0._DP
+        REACLINES(IL)%FP2 = 0._DP
  
         irlines = il
  
@@ -812,12 +832,15 @@
       do il = 1, irlines
         ll = max(9,len_trim(REACLINES(IL)%REAC_STRING))
         ir = REACLINES(IL)%NO
-        write (27+ifoff,'(I3,1X,A6,1X,A4,A,1X,A3,2I3,3E12.4)')
+
+        write (27+ifoff,'(I3,1X,A6,1X,A4,A,1X,A3,2I3,5E12.4)')
      .    REACLINES(IL)%NO, REACLINES(IL)%FILE, REACLINES(IL)%H_SELECT,
      .    REACLINES(IL)%REAC_STRING(1:LL), REACLINES(IL)%REACTYP,
      .    REACLINES(IL)%MP, REACLINES(IL)%MT,
-     .    REACLINES(IL)%DPP, REACLINES(IL)%RMN,
-     .    REACLINES(IL)%RMX
+     .    REACLINES(IL)%DPP, REACLINES(IL)%R1MN,
+     .    REACLINES(IL)%R1MX, REACLINES(IL)%R2MN, REACLINES(IL)%R2MX
+cdr    tbd:  jfex, FP... parameters??  done below....
+
         if (verify(REACLINES(IL)%ELEMENT,' ') > 0)
      .    write (27+ifoff,'(4X,A2,1X,I3)')
      .      REACLINES(IL)%ELEMENT, REACLINES(IL)%IZ
@@ -837,12 +860,19 @@
      .           reacdat(ir)%phr%line%iplsc6(i)
           end do
         end if
-        if (REACLINES(IL)%RMN > 0._DP)
+
+        if (REACLINES(IL)%R1MN > 0._DP)
      .    write (27+ifoff,'(I6,6X,5E12.4)')
-     .      REACLINES(IL)%JFEXMN,REACLINES(IL)%FP(1:3)
-        if (REACLINES(IL)%RMX > 0._DP)
+     .      REACLINES(IL)%JFEX1MN,REACLINES(IL)%FP1(1:3)
+        if (REACLINES(IL)%R1MX > 0._DP)
      .    write (27+ifoff,'(I6,6X,5E12.4)')
-     .      REACLINES(IL)%JFEXMX,REACLINES(IL)%FP(4:6)
+     .      REACLINES(IL)%JFEX1MX,REACLINES(IL)%FP1(4:6)
+         if (REACLINES(IL)%R2MN > 0._DP)
+     .    write (27+ifoff,'(I6,6X,5E12.4)')
+     .      REACLINES(IL)%JFEX2MN,REACLINES(IL)%FP2(1:3)
+        if (REACLINES(IL)%R2MX > 0._DP)
+     .    write (27+ifoff,'(I6,6X,5E12.4)')
+     .      REACLINES(IL)%JFEX2MX,REACLINES(IL)%FP2(4:6)
       end do
  
       write (27+ifoff,'(a)') '* 4A. atom species cards '

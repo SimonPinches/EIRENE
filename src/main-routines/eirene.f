@@ -458,7 +458,7 @@ C  HENCE: RESET IITER TO 1
       ENDIF
 
 CDR  WHAT IS THIS?  
-      IF (PLIDL) THEN
+      IF (PLIDL.AND.(MY_PE == 0)) THEN
          CALL EIRENE_MASBOX
      .          ('OUTPUT OPTION: IDL, PER STRATUM ')
         call eirene_outidlconf

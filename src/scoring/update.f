@@ -27,11 +27,14 @@ cdr dec.15: further corrections, lea --> leio, and other logical flags for turni
 cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr.16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
-!pb APR 16: ipplds -> ipplei, pplds -> pplei
-!pb APR 16: ipatds -> ipatei, patds -> patei
-!pb APR 16: ipmlds -> ipmlei, pmlds -> pmlei
-!pb APR 16: ipiods -> ipioei, piods -> pioei
-!pb APR 16: pelds -> pelei
+
+!pb APR  16: ipplds -> ipplei, pplds -> pplei
+!pb APR  16: ipatds -> ipatei, patds -> patei
+!pb APR  16: ipmlds -> ipmlei, pmlds -> pmlei
+!pb APR  16: ipiods -> ipioei, piods -> pioei
+!pb APR  16: pelds -> pelei
+cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
+cdr dec. 16: some more comments re sign convention for momentum sources 
 
  
 C
@@ -80,6 +83,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_COMPRT
       USE EIRMOD_CSDVI
       USE EIRMOD_COMXS
+      USE EIRMOD_CZT1
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
@@ -93,8 +97,6 @@ C
      .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
-      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
-     .                               CNDYNP(:)
       INTEGER :: IRD,  I, IRDO, INUM,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, NPBGK,
@@ -138,19 +140,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNA)) THEN
-        ALLOCATE (CNDYNA(NATM))
-        DO IAT=1,NATMI
-          CNDYNA(IAT)=AMUA*RMASSA(IAT)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -625,8 +614,8 @@ C
                 DO IP=1,IPPLPI(IRPI,0)
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
-cdr  this is incorrect. esigei is sum over ipl species.
-cdr  it only happens to be correct if the post collision bulk species are the same (ipl),
+cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  it only happens to be correct if the post collision bulk species are all the same (ipl),
 cdr  because then esigpi is the total for this species.
 cdr  must be fragmented into individual ipl contributions
                   EAPL(IPL,IRD)=EAPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
@@ -670,25 +659,40 @@ C
               VZ(IPL)=VZIN(IPLV,IRDO)
             END IF
           END DO
- 
+
+c  set parameters for parallel momentum of incident bulk particle
+c  val_parb   : parallel velocity component, incl. sign, relavive to B
+c  vsig_parb  : parallel momentum, modulus (always positive)  
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
             vion=EIRENE_vdion(irdo)
-            VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*SIGN(1._DP,VION)
-            VAL_PARB(1:NPLSI)=VION
-          ELSE IF ((INDPRO(5) == 8) .OR. (INDPRO(4) == 8)) THEN
+            VAL_PARB(1:NPLSI) =VION
+            VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
+     .                          SIGN(1._DP,VION)
+            
+          ELSE IF ((INDPRO(4) == 8) .OR. (INDPRO(5) == 8)) THEN
 C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
             DO IPL=1,NPLSI
-              VAL_PARB(IPL)=(VX(IPL)*BX+VY(IPL)*BY+VZ(IPL)*BZ)
+              VAL_PARB(IPL) =(VX(IPL)*BX+VY(IPL)*BY+VZ(IPL)*BZ)
               VSIG_PARB(IPL)=CNDYNP(IPL)*VAL_PARB(IPL)*
      .                        SIGN(1._DP,VAL_PARB(IPL))
             END DO
           ELSE
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
-            VAL_PARB(1:NPLSI) = BVIN(MPLSV(1:NPLSI),IRDO)
+            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
           END IF
- 
+c
+c  set parameters for parallel momentum of incident neutral particle
+c  v0_parb   : parallel velocity component, incl. sign, relavive to B
+c  parmom_0  : parallel momentum   
           V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-          PARMOM_0=V0_PARB*CNDYNA(IATM)
+          PARMOM_0=CNDYNA(IATM)*V0_PARB
+C                       *SIGN(1._DP,VAL_PARB(IPL))  !this sign factor is applied below
+C  WITH WITH FACTOR: NO MATTER HOW THE SIGN OF PARALLEL MOMENTUM IS DEFINED:
+C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND  
+C     |PARMOM_0| IS ADDED TO IPL MOMENTUM (SOURCE),  IF THE NEUTRAL V_PAR
+C                     HAS THE SAME SIGN AS THE IPL PLASMA ION V_PAR.
+c     |PARMOM_0| IS SUBTRACTED IF IT HAS OPPOSITE SIGN 
+        
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM ATOMS
 C
@@ -701,11 +705,11 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTCX(IRCX,2).NE.0) GOTO 156
 C
-C  PRESENTLY: PARALLEL COMPONENT OF VSIGCX(IRCX) NOT AVAILABLE
+C  PRESENTLY: PARALLEL COMPONENT OF VSIGCX(IRCX) IS NOT AVAILABLE
 C             FROM FUNCTION FPATHA
 C
             WTRSIG=WTR*SIGVCX(IRCX)
-C  PREVIOUS BULK ION IPLS, NOW LOST
+C  PREVIOUS BULK ION IPLS, NOW LOST.  REMOVE MODULUS OF PARALLEL MOMENTUM
             MAPL(IPLS,IRD)=MAPL(IPLS,IRD)-WTRSIG*VSIG_PARB(IPLS)
             LMETSP(NSPAMI+IPLS)=.TRUE.
 C  NEW BULK ION IPL
@@ -794,19 +798,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNM)) THEN
-        ALLOCATE (CNDYNM(NMOL))
-        DO IML=1,NMOLI
-          CNDYNM(IML)=AMUA*RMASSM(IML)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -909,7 +900,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 LMETSP(NSPAMI+IPL1)=.TRUE.
               END IF
             ENDIF
-C  SECOND SECONDARY: PREVIOUS ATOM IATM
+C  SECOND SECONDARY: PREVIOUS MOLECULE IMOL
             IF (N2NDX(IRCX,1).EQ.1) THEN
               IAT2=N2NDX(IRCX,2)
               LOGATM(IAT2,ISTRA)=.TRUE.
@@ -1054,7 +1045,7 @@ C
 C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION)
 C     THIS APPROXIMATION CORRESPONDS TO VELOCITY INDEPENDENT COLLISION RATES, 
 C     SUCH AS E.G. THOSE USED FOR BGK APPROXIMATIONS TO NEUTRAL-NEUTRAL COLLISIONS
-C  AVERAGE ENERGY OF POST COLLISION ATOM IS THAT OF PRE COLLISION BULK
+C  AVERAGE ENERGY OF POST COLLISION MOLECULE IS THAT OF PRE COLLISION BULK
 C
 C  PRE COLLISION RATES, BULK IONS
 C
@@ -1063,7 +1054,7 @@ C
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
 C
-C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
+C  FIRST SECONDARY: = INCIDENT BULK ION. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEMPL)  THEN
                 EMPL(IPLS,IRD)=EMPL(IPLS,IRD)+WTRSIG*E0
                 LMETSP(NSPAMI+IPLS)=.TRUE.
@@ -1082,7 +1073,7 @@ C.............................................................
 C
         IF (LGMEI(IMOL,0).EQ.0) GOTO 100
 C
-        DO 90 IMEI=1,NMDSI(IMOL)
+        DO 90 IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 90
 C
@@ -1379,7 +1370,7 @@ C  NEW BULK ION IPL
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
-          DO 610 IMEI=1,NMDSI(IMOL)
+          DO 610 IMEI=1,NMEII(IMOL)
             IREI=LGMEI(IMOL,IMEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -1449,19 +1440,6 @@ C
  
       IF (IUPDTE == 2) RETURN
  
-      IF (.NOT.ALLOCATED(CNDYNI)) THEN
-        ALLOCATE (CNDYNI(NION))
-        DO IIO=1,NIONI
-          CNDYNI(IIO)=AMUA*RMASSI(IIO)
-        END DO
-      END IF
- 
-      IF (.NOT.ALLOCATED(CNDYNP)) THEN
-        ALLOCATE (CNDYNP(NPLS))
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=AMUA*RMASSP(IPL)
-        END DO
-      END IF
 C
       VELQ=VEL*VEL
 C
@@ -1565,7 +1543,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 LMETSP(NSPAMI+IPL1)=.TRUE.
               END IF
             ENDIF
-C  SECOND SECONDARY: PREVIOUS ATOM IATM
+C  SECOND SECONDARY: PREVIOUS TEST ION IION
             IF (N2NDX(IRCX,1).EQ.1) THEN
               IAT2=N2NDX(IRCX,2)
               LOGATM(IAT2,ISTRA)=.TRUE.
@@ -1634,7 +1612,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                   LMETSP(NSPAMI+IPL1)=.TRUE.
                 END IF
               ENDIF
-C  SECOND SECONDARY: PREVIOUS ATOM IATM
+C  SECOND SECONDARY: PREVIOUS TEST ION IION
               IF (N2NDX(IRCX,1).EQ.1) THEN
                 IAT2=N2NDX(IRCX,2)
                 LOGATM(IAT2,ISTRA)=.TRUE.
@@ -1710,7 +1688,7 @@ C
 C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION)
 C     THIS APPROXIMATION CORRESPONDS TO VELOCITY INDEPENDENT COLLISION RATES, 
 C     SUCH AS E.G. THOSE USED FOR BGK APPROXIMATIONS TO NEUTRAL-NEUTRAL COLLISIONS
-C  AVERAGE ENERGY OF POST COLLISION ATOM IS THAT OF PRE COLLISION BULK
+C  AVERAGE ENERGY OF POST COLLISION TEST ION IS THAT OF PRE COLLISION BULK
 C
 C  PRE COLLISION RATES, BULK IONS
 C
@@ -1719,12 +1697,12 @@ C
                 LMETSP(NSPAM+IPLS)=.TRUE.
               END IF
 C
-C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
+C  FIRST SECONDARY: = INCIDENT BULK ION. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEIPL) THEN
                 EIPL(IPLS,IRD)=EIPL(IPLS,IRD)+WTRSIG*E0
                 LMETSP(NSPAM+IPLS)=.TRUE.
               END IF
-C  SECOND SECONDARY: = INCIDENT ATOM. REMAINS SAME PARTICLE BY DEFAULT
+C  SECOND SECONDARY: = INCIDENT TEST ION. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEIIO) EIIO(IRD)=EIIO(IRD)+WTRSIG*ESIGEL(IREL,1)
             ENDIF
           ENDIF
@@ -1739,7 +1717,7 @@ C.............................................................
 C
         IF (LGIEI(IION,0).EQ.0) GOTO 130
 C
-        DO 120 IIEI=1,NIDSI(IION)
+        DO 120 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 120
 C
@@ -2036,7 +2014,7 @@ C  NEW BULK ION IPL
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
-          DO 6100 IIEI=1,NIDSI(IION)
+          DO 6100 IIEI=1,NIEII(IION)
             IREI=LGIEI(IION,IIEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -2093,6 +2071,9 @@ C
 C
 C
 C  ESTIMATORS FOR PHOTONS
+cdr: summer 2016
+cdr  this entire section has not been looked at (nor used) since long.
+cdr  before running photons again: check code carefully.
 C
       ENTRY EIRENE_UPDPHOT (XSTOR2,XSTORV2,IFLAG)
 C
@@ -2236,10 +2217,11 @@ C               INUM=PHV_N1STOTph(iphot,IROT,3)
                 IF (LPPHPL) THEN
                   PPHPL(IPL1,IRD)= PPHPL(IPL1,IRD)+WTRSIG*INUM
 csw added updf check (stim.em)
+cdr: not ready
 cdr  stim emission: am besten: 2 secondaries in group 1. hier jedoch:
 cdr  dazu PI-process vervollstandigen.
 cdr  test photon + ipls --> ipl2 (bulk particle)
-cdr  if this bulk is a photon (same as iphot), dann noch eins raus auf tally
+cdr  if this bulk is a photon (same as iphot), dann noch eins rauf auf tally
                   LMETSP(NSPAMI+IPL1)=.TRUE.
                 END IF
 csw added branch
@@ -2412,12 +2394,10 @@ C
 133    CONTINUE
 131    CONTINUE
       RETURN
+
 csw 21oct08
       entry EIRENE_update_reinit
-      if(allocated(cndyna)) deallocate(cndyna)
-      if(allocated(cndynm)) deallocate(cndynm)
-      if(allocated(cndyni)) deallocate(cndyni)
-      if(allocated(cndynp)) deallocate(cndynp)
+
       return
 csw
       END

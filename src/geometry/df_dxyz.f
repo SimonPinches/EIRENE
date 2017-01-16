@@ -215,7 +215,7 @@ cdr     end if
         visited(icell) = .true.
         visited(0) = .false.    ! reset cell 0 for cell outside mesh
 
-c  tetrahedons, 3d grid.
+c  tetrahedrons, 3d grid.
 
       else if (levgeo == 5) then
 

@@ -1,5 +1,7 @@
 ! 23.08.06: VPX, VPY, VRX, VRY changed to ALLOCATABLE, SAVE to speed up
 !           subroutine call (save time in storage allocation)
+cdr Jan 17: remove local allocatable cndyn.. arrays. These are now
+cdr         set in code initialisation phase
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -27,7 +29,7 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:),CNDYNP(:)
+
 CDR
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
 CDR
@@ -39,14 +41,6 @@ CDR
  
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
-        ALLOCATE (CNDYNA(NATM))
-        ALLOCATE (CNDYNP(NPLS))
-        DO IAT=1,NATMI
-          CNDYNA(IAT)=1.D3*AMUA*RMASSA(IAT)
-        END DO
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=1.D3*AMUA*RMASSP(IPL)
-        END DO
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL

@@ -24,6 +24,7 @@ c  ityp:  type of particle
       USE EIRMOD_CGEOM
       USE EIRMOD_CCONA
       USE EIRMOD_COMUSR
+      USE EIRMOD_CZT1
  
       IMPLICIT NONE
  
@@ -31,8 +32,6 @@ c  ityp:  type of particle
       REAL(DP), INTENT(IN) :: WT
       INTEGER :: ISPC, I, IS, IC, IRDO, IRD, IAT, IML, IIO, IPL
       REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN, EB
-      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:), CNDYNM(:), CNDYNI(:),
-     .                               CNDYNP(:)
       TYPE(EIRENE_SPECTRUM), POINTER :: P
 c  currently: surface based spectra only from particles incident onto surface (ind=1)
 c             no spectra of emitted particles (ind=2)
@@ -45,39 +44,15 @@ C  set "type" specific parameters
         CDYN = 1._DP
       CASE (1)
         IS = IATM
-        IF (.NOT.ALLOCATED(CNDYNA)) THEN
-          ALLOCATE (CNDYNA(NATM))
-          DO IAT=1,NATMI
-            CNDYNA(IAT)=AMUA*RMASSA(IAT)
-          END DO
-        END IF
         CDYN = CNDYNA(IATM)
       CASE (2)
         IS = IMOL
-        IF (.NOT.ALLOCATED(CNDYNM)) THEN
-          ALLOCATE (CNDYNM(NMOL))
-          DO IML=1,NMOLI
-            CNDYNM(IML)=AMUA*RMASSM(IML)
-          END DO
-        END IF
         CDYN = CNDYNM(IMOL)
       CASE (3)
         IS = IION
-        IF (.NOT.ALLOCATED(CNDYNI)) THEN
-          ALLOCATE (CNDYNI(NION))
-          DO IIO=1,NIONI
-            CNDYNI(IIO)=AMUA*RMASSI(IIO)
-          END DO
-        END IF
         CDYN = CNDYNI(IION)
       CASE (4)
         IS = IPLS
-        IF (.NOT.ALLOCATED(CNDYNP)) THEN
-          ALLOCATE (CNDYNP(NPLS))
-          DO IPL=1,NPLSI
-            CNDYNP(IPL)=AMUA*RMASSP(IPL)
-          END DO
-        END IF
         CDYN = CNDYNP(IPLS)
       END SELECT
  
@@ -181,12 +156,10 @@ cdr  meaning of isc = 1,2  ?? see subr. input, flag ISRFCLL
       END IF
  
       RETURN
+
 csw 21oct08
       entry EIRENE_calc_spectrum_reinit
-      if(allocated(cndyna)) deallocate(cndyna)
-      if(allocated(cndynm)) deallocate(cndynm)
-      if(allocated(cndyni)) deallocate(cndyni)
-      if(allocated(cndynp)) deallocate(cndynp)
+
       return
 csw
       END SUBROUTINE EIRENE_CALC_SPECTRUM

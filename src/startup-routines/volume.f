@@ -97,7 +97,7 @@ C
             VOL(IR)=AREA1(IR)*(SX+RMTOR)*TANAL/ALPHA*ZDF
           ELSE
             WRITE (iunout,*)
-     .        'INVALID OPTION IN SUBR. VOLUME, EXIT CALLEDEIRENE_'
+     .        'INVALID OPTION IN SUBR. VOLUME, EXIT CALLED'
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 110     CONTINUE
@@ -428,7 +428,7 @@ C
                   WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
                   CALL EIRENE_MASJ2('IR,IP           ',I,J)
                   WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
-     .                 'WILL BE KILLED '
+     .                             'WILL BE KILLED '
                 END IF
 !PB                VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2A
                 IF (NSTGRD(NCELL) == 0) THEN
@@ -454,7 +454,7 @@ C                 CALL EXIT_OWN(1)
                   WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
                   CALL EIRENE_MASJ2('IR,IP           ',I,J)
                   WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
-     .                 'WILL BE KILLED '
+     .                             'WILL BE KILLED '
                 END IF
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2AT
@@ -477,7 +477,7 @@ C                 CALL EXIT_OWN(1)
                   WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
                   CALL EIRENE_MASJ2('IR,IP           ',I,J)
                   WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
-     .                 'WILL BE KILLED '
+     .                             'WILL BE KILLED '
                 END IF
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*ZDF

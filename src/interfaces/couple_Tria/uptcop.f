@@ -1,4 +1,5 @@
-C
+C  Jan. 2017 remove cndyn arrays. these are now set in startup-routines
+c            once for the entire run.
 C
       SUBROUTINE EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
 C
@@ -31,8 +32,7 @@ C
      .           IRCX, IADD, ICOU, IACX, IRDD, IMCX, IMEI, IPLSTI,
      .           IPLSV, IPLV
       INTEGER, SAVE :: NMTSP
-      REAL(DP), ALLOCATABLE, SAVE ::
-     . CNDYNA(:), CNDYNM(:), CNDYNI(:)
+
 CDR
       REAL(DP), ALLOCATABLE, SAVE ::
      . VPX(:),    VPY(:),    VRX(:),    VRY(:)
@@ -41,19 +41,12 @@ CDR
       SAVE
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
-        ALLOCATE (CNDYNA(NATM))
-        ALLOCATE (CNDYNM(NMOL))
-        ALLOCATE (CNDYNI(NION))
+
         ALLOCATE (VPX(NRAD))
         ALLOCATE (VPY(NRAD))
         ALLOCATE (VRX(NRAD))
         ALLOCATE (VRY(NRAD))
-        DO 11 IAT=1,NATMI
-11        CNDYNA(IAT)=AMUA*RMASSA(IAT)
-        DO 12 IML=1,NMOLI
-12        CNDYNM(IML)=AMUA*RMASSM(IML)
-        DO 13 IIO=1,NIONI
-13        CNDYNI(IIO)=AMUA*RMASSI(IIO)
+
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
