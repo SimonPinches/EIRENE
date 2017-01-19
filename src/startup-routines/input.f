@@ -1649,7 +1649,7 @@ C
       DO 421 IATM=1,NATMI
         ISPZ=NSPH+IATM
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSA(IATM),NCHARA(IATM),
-     .                       NDUMM1,NDUMM2,
+     .                       NDUMM1,NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
      .                       NRCA(IATM),NFOLA(IATM),NGENA(IATM),
      .                       NHSTS(ISPZ)
@@ -1737,7 +1737,7 @@ C
       DO 431 IMOL=1,NMOLI
         ISPZ=NSPA+IMOL
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSM(IMOL),NCHARM(IMOL),
-     .                       NPRT(ISPZ),NDUMM,
+     .                       NPRT(ISPZ),NDUMM,   !NCHRGM=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
      .                       NRCM(IMOL),NFOLM(IMOL),NGENM(IMOL),
      .                       NHSTS(ISPZ)
@@ -2640,7 +2640,8 @@ C
       READ (IUNIN,6666) (INDSRC(IST),IST=1,NSTRAI)
       READ (IUNIN,6664) ALLOC, AMPTS
 
-C  AMPTS: (option added 2014) multiplier for max. allowed cpu time NTCPU, and for number of histories (see below)
+C  AMPTS: (option added 2014) common multiplier for max. allowed cpu time NTCPU, 
+C          and for number of histories NPTS (see below)
       IF(AMPTS.GT.0.0) THEN
         MPTS_COMSOU=AMPTS
         NTCPU=INT(REAL(NTCPU)*AMPTS)
@@ -4627,7 +4628,7 @@ C
 C
         CALL EIRENE_INTVOL (VOL,1,1,NSBOX,VOLTOT,
      .               NR1ST,NP2ND,NT3RD,NBMLT)
-        WRITE (iunout,*) ' VOLTOT     ',VOLTOT
+        WRITE (iunout,*) 'TOTAL VOLUME, SUM VOL(:)  ',VOLTOT
 C
 C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES
 Cc
@@ -4772,7 +4773,7 @@ cdr  goarser grid may have been set
       END DO
       CALL EIRENE_INTVOL (VOLTAL,1,1,NSBOX_TAL,VOLTOT_TAL,
      .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
-      WRITE (iunout,*) ' VOLTOT_TAL ',VOLTOT_TAL
+      WRITE (iunout,*) 'TOTAL VOLUME, SUM VOLTAL(:) ',VOLTOT_TAL
 
 
 C
