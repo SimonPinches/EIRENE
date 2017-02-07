@@ -1,0 +1,926 @@
+!pb  24.11.06: mistyped SGSM_BGK changed to SGMS_BGK
+
+c Nov.07 copied from old code halpha.f: fulcher band emission removed.
+c        (fulcher contribution still in old halpha.f)
+C
+C march 2015: comments included from earlier private version
+c             energy factor fact --> 'FACTE'
+c             to be done: full species consistency checks
+cdr nov.  2016: name, species and units of additional tallies added.
+c               slreac: A&M assymptocis (default) parameters added.
+c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
+c               some further comments added
+
+
+      SUBROUTINE EIRENE_EMIS_PROFILES (IST, ENER,
+     .           IAD1,IAD2,IAD3,IAD4,IAD5,IAD6,IADS)
+c
+C  SUBROUTINE FOR H-ALPHA EMISSIVITY. (BALMER SERIES)
+C  CALLED FROM EIRENE, SECTION DIAGNO, SUBR. SIGHA
+C  THE BA_ALPHA EMISSIVITY PROFILE (PHOTONS/S/CM**3) IS COMPUTED
+C  AND WRITTEN ONTO TALLIES ADDV(IAD1,...),... FOR STRATUM NO. IST
+C  IAD1: CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
+C  IAD2: CONTRIBUTION LINEAR IN H+  -ION       DENSITY
+C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
+C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
+C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
+C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
+C  IADS: SUM OVER ALL CONTRINUTIONS
+C
+C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
+C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
+C I.E. STORAGE CHECKS: NADV GE NADVI+7 ARE ALREADY DONE ELSEWHERE
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CADGEO
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CUPD
+      USE EIRMOD_COMSIG
+      USE EIRMOD_CGRID
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CSDVI
+      USE EIRMOD_CSDVI_BGK
+      USE EIRMOD_CSDVI_COP
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMSOU
+      USE EIRMOD_CLGIN
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMXS
+      USE EIRMOD_CSPEI
+      USE EIRMOD_CTEXT
+
+      IMPLICIT NONE
+C
+      INTEGER, INTENT(IN) :: IAD1, IAD2, IAD3, IAD4, IAD5, IAD6,
+     .                       IADS, IST
+      REAL(DP), INTENT(IN) :: ENER
+
+      REAL(DP) :: DA(0:8,0:8) ! atomic hydrogenic density, H, D, T
+      REAL(DP) :: DB(0:8,0:8) ! atomic hydrogenic ion, H+, D+, T+
+      REAL(DP) :: DM(0:8,0:8) ! diatomic hydrogenic molecule H2,D2,T2,HD,HT,DT
+      REAL(DP) :: DI2(0:8,0:8) ! diatomic hydr. mol. ion H2+, D2+,...,DT+
+      REAL(DP) :: DI3(0:8,0:8)! triatomic hydr. mol. ion H3+, ...,D2T+
+      REAL(DP) :: DN(0:8,0:8) ! negativ hydr. ion H-,D- T-
+      
+      REAL(DP), SAVE :: FAC(6,6)
+
+      REAL(DP) :: DUMMY(NRTAL)
+      REAL(DP) :: RHMH2(0:8), RH2PH2(0:8,0:8), RH3PH2(0:8),
+     .            FP1(6), FP2(6)
+      REAL(DP) :: DAT, DNM, DIO2, DIO3, DMO, DPL,
+     .          RATIO2, RATIO3, RATIO7, TEI, DEJ,
+     .          SIGADD1, SIGADD2, SIGADD3, SIGADD4, SIGADD5, SIGADD6,
+     .          SIGADD,
+     .          TEF, DEF, DDA, DPP, DDM, DDI2, DDI3, DDN,
+     .          RY,DEE00,FACTE,
+     .          POWALF , POWALF1, POWALF2, POWALF3, POWALF4,
+     .          POWALF5, POWALF6,
+     .          DE, TE, RC1MIN, RC1MAX, RC2MIN, RC2MAX
+
+      INTEGER, SAVE :: BA_ALPHA=1, BA_BETA=2, BA_GAMMA=3, BA_DELTA=4,
+     .                 LY_ALPHA=5, LY_BETA=6
+
+      INTEGER :: LINENO, L1, L2
+      INTEGER, SAVE :: LINENO_OLD = -1
+
+      INTEGER :: IRC, IFIRST, NCELC, IERROR, IR, I, J,
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+      REAL(DP), ALLOCATABLE :: OUTAU(:)
+      CHARACTER(8) :: FILNAM
+      CHARACTER(4) :: H123
+      CHARACTER(9) :: REAC
+      CHARACTER(3) :: CRC
+      CHARACTER(6) :: CISTRA
+      CHARACTER(8) :: LINE_NAME
+C
+      SAVE
+
+      CALL EIRENE_PREPARE_LINE
+
+      IF (MAX(IAD1,IAD2,IAD3,IAD4,IAD5,IAD6,IADS) > NADV) GOTO 999
+
+      ADDV(IAD1,1:NRTAL) = 0.D0
+      ADDV(IAD2,1:NRTAL) = 0.D0
+      ADDV(IAD3,1:NRTAL) = 0.D0
+      ADDV(IAD4,1:NRTAL) = 0.D0
+      ADDV(IAD5,1:NRTAL) = 0.D0
+      ADDV(IAD6,1:NRTAL) = 0.D0
+
+      ADDV(IADS,1:NRTAL) = 0.D0
+
+      IF (LINENO < 1) THEN
+        WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
+        RETURN
+      END IF
+
+
+C  ENERGY FACTOR FOR POWER LOSS (W)
+      RY=13.605
+!pb   DEE00=RY*(1./(2.*2.)-1./(3.*3.))
+      DEE00=RY*(1./REAL(L2*L2,KIND(1._DP))-1./REAL(L1*L1,KIND(1._DP)))
+      FACTE=DEE00*ELCHA
+
+C
+C  INITIALIZE ATOMIC DATA ARRAYS
+C
+      IF (IESTR.EQ.IST) THEN
+C  NOTHING TO BE DONE
+      ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+        IESTR=IST
+        CALL EIRENE_RSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .             ESTIMV,ESTIMS,ESTIML,
+     .             NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .             NSIGI_SPC,TRCFLE)
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
+        IESTR=IST
+        CALL EIRENE_RSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .             ESTIMV,ESTIMS,ESTIML,
+     .             NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .             NSIGI_SPC,TRCFLE)
+      ELSE
+        WRITE (IUNOUT,*) 'ERROR IN EMIS_PROFILES: ' // 
+     .                   'DATA FOR STRATUM ISTRA= ', IST
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. EMIS_PROFILES ABANDONNED'
+        RETURN
+      ENDIF
+C
+C  LOOP OVER 2D MESH
+C
+      POWALF=0.
+      POWALF1=0.
+      POWALF2=0.
+      POWALF3=0.
+      POWALF4=0.
+      POWALF5=0.
+      POWALF6=0.
+C
+      DO 1000 NCELL=1,NSBOX
+C
+C  LOCAL BACKGROUND DATA ARE IN CELL NCELL
+C  LOCAL TEST PARTICLE DATA ARE IN CELL NCELC
+C
+        NCELC=NCLTAL(NCELL)
+C
+        IF (NSTGRD(NCELL) > 0) CYCLE
+
+        IF (LGVAC(NCELL,NPLS+1)) THEN
+          TE=TVAC
+          DE=DVAC
+        ELSE
+          TE=TEIN(NCELL)
+          DE=DEIN(NCELL)
+        ENDIF
+C
+        SIGADD1=0.
+        SIGADD2=0.
+        SIGADD3=0.
+        SIGADD4=0.
+        SIGADD5=0.
+        SIGADD6=0.
+
+C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
+
+        IF (LGVAC(NCELL,NPLS+1)) GOTO 500
+        DEF=LOG(DE*1.D-8)
+        TEF=LOG(TE)
+        DAT=0.
+        DPL=0.
+        DMO=0.
+        DIO2=0.
+        DNM=0.
+        DIO3=0.
+        DO 150 J=0,8
+          DEJ=DEF**J
+          DO 150 I=0,8
+            TEI=TEF**I
+            DAT =DAT + DA(I,J)*TEI*DEJ
+            DPL =DPL + DB(I,J)*TEI*DEJ
+            DMO =DMO + DM(I,J)*TEI*DEJ
+            DIO2=DIO2+ DI2(I,J)*TEI*DEJ
+            DIO3=DIO3+ DI3(I,J)*TEI*DEJ
+            DNM =DNM + DN(I,J)*TEI*DEJ
+150     CONTINUE
+        DAT =EXP(DAT)
+        DPL =EXP(DPL)
+        DMO =EXP(DMO)
+        DIO2=EXP(DIO2)
+        DIO3=EXP(DIO3)
+        DNM =EXP(DNM)
+
+
+C  RATIO OF DENSITIES: H- TO H2, COLL. EQUIL. IN VIBRATION
+C  (ONLY TE-DEPENDENT)
+
+        RATIO7=0
+        DO 160 I=0,8
+          TEI=TEF**I
+          RATIO7=RATIO7+RHMH2(I)*TEI
+160     CONTINUE
+        RATIO7=EXP(RATIO7)
+
+C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATION
+
+
+        RATIO2=0
+        DO 170 J=0,8
+          DEJ=DEF**J
+          DO 170 I=0,8
+            TEI=TEF**I
+            RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
+170     CONTINUE
+        RATIO2=EXP(RATIO2)
+
+C  RATIO OF DENSITIES: H3+ TO H2, = [RATIO3  * NH2+/NE]
+C  (ONLY TE-DEPENDENT)
+
+
+        RATIO3=0
+        DO 180 I=0,8
+          TEI=TEF**I
+          RATIO3=RATIO3+RH3PH2(I)*TEI
+180     CONTINUE
+        RATIO3=EXP(RATIO3)
+
+
+C
+C  CHANNEL 1
+C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  LINEAR IN PDENA (IONIZATION)
+
+
+C  ATOMIC NEUTRAL HYDR.: NCHAR=NPRT=1,NCHRG=0
+
+        DO 200 IATM=1,NATMI
+          IF (NCHARA(IATM).NE.1) GOTO 200
+          DDA=DAT*PDENA(IATM,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD1=SIGADD1+DDA*FAC(L1,L2)
+200     CONTINUE
+
+c...............................................................................
+C  to be done: contributions from neutral atomic hydr. sitting in BULK
+C  e.g. due to bgk -iterations.  Careful: no double counting !
+C        DO 201 Ipls=1,Nplsi
+C          ISPZ=...
+C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
+C          DDA=DAT*DIIN(IPLS,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+C     SIGADD1=SIGADD1+DDA*FAC(L1,L2)
+C201     CONTINUE
+c...............................................................................
+C
+C  CHANNEL 2
+C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  LINEAR IN DIIN (RECOMBINATION)
+C
+C  ATOMIC HYDR. ION: NCHAR=NPRT=1,NCHRG=1
+C
+        DO 205 IPLS=1,NPLSI
+          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.1) GOTO 205
+          DPP=DPL*DIIN(IPLS,NCELL)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD2=SIGADD2+DPP*FAC(L1,L2)
+205     CONTINUE
+
+c...............................................................................
+C  to be done: contributions from atomic hydr. ions in TEST IONS
+C
+C  CHANNEL 3
+C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  DIATOMIC NEUTRAL HYDR. MOL: NCHAR=NPRT=2,NCHRG=0
+C  LINEAR IN PDENM: (DISSOCIATION OF H2)
+C
+        DO 210 IMOL=1,NMOLI
+          IF (NCHARM(IMOL).NE.2) GOTO 210
+          DDM=DMO*PDENM(IMOL,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD3=SIGADD3+DDM*FAC(L1,L2)
+210     CONTINUE
+
+c...............................................................................
+C  to be done: contributions from neutral diatomic hydr. molec. in BULK IONS
+c...............................................................................
+C
+C  CHANNEL 4
+C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  LINEAR IN PDENI: (DISSOCIATION OF H2+)
+C
+C  DIATOMIC NEUTRAL HYDR. MOL ION: NCHAR=NPRT=2,NCHRG=1
+C
+C       DO 215 IION=1,NIONI
+C         IF (NCHARI(IION).NE.2) GOTO 215
+C         DDI2=DIO2*PDENI(IION,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+C         SIGADD4=SIGADD4+DDI2*FAC32
+C215     CONTINUE
+
+C  to be done: contributions from  diatomic hydr. molec ion. in BULK IONS
+C
+C  REVISED: USE (PDENM * DENSITY RATIO H2+/H2) NOW, INSTEAD OF PDENI
+
+        DO 215 IMOL=1,NMOLI
+          IF (NCHARM(IMOL).NE.2) GOTO 215
+          DDI2=DIO2*PDENM(IMOL,NCELC)*RATIO2
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD4=SIGADD4+DDI2*FAC(L1,L2)
+215     CONTINUE
+C
+C  CHANNEL 5
+C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  LINEAR IN H- DENSITY (CHARGE EXCHANGE RECOMBINATION)
+
+C  NEGATIVE HYDR. ION: NCHAR=NPRT=1,NCHRG=-1
+
+C       DO 220 IION=1,NIONI
+C         ISPZ=
+C         IF (NCHARI(IION).NE.1.OR.NCHRGI(IION).NE.-1.OR.NPRT(ISPZ).NE.1) GOTO 220
+C         DDN=DNM*PDENI(IION,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+C         SIGADD5=SIGADD5+DDN*FAC32
+C220    CONTINUE
+
+C
+C  REVISED: USE (PDENM * DENSITY RATIO H-/H2) NOW, INSTEAD OF PDENI
+C
+        DO 220 IMOL=1,NMOLI
+          IF (NCHARM(IMOL).NE.2) GOTO 220
+          DDN=DNM*PDENM(IMOL,NCELC)*RATIO7
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD5=SIGADD5+DDN*FAC(L1,L2)
+220     CONTINUE
+C
+C  CHANNEL 6
+C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  LINEAR IN PDENI (DISSOCIATIVE RECOMBINATION OF H3+)
+C
+C  TRIATOMIC HYDR. ION: NCHAR=NPRT=3,NCHRG=1
+
+c  USE (PDENM * RATIO H3+/H2),INSTEAD OF PDENI
+C  AND RATIO H3+/H2 = RATIO3 * H2+/NE = RATIO3 * RATIO2 * NH2/NE
+
+        DO 230 IMOL=1,NMOLI
+          IF (NCHARM(NMOLI).NE.2) GOTO 230
+          DDI3=DIO3*PDENM(IMOL,NCELC)*RATIO3
+C  APPLY FURTHER FACTOR NH2+/NE = NH2*RATIO2/NE
+          DDI3=DDI3*PDENM(IMOL,NCELC)*RATIO2/DE
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD6=SIGADD6+DDI3*FAC(L1,L2)
+230     CONTINUE
+C
+500     CONTINUE
+C
+C
+        SIGADD=SIGADD1+SIGADD2+SIGADD3+SIGADD4+SIGADD5+SIGADD6
+C
+        ADDV(IAD1,NCELC)=ADDV(IAD1,NCELC)+SIGADD1*VOL(NCELL)
+        ADDV(IAD2,NCELC)=ADDV(IAD2,NCELC)+SIGADD2*VOL(NCELL)
+        ADDV(IAD3,NCELC)=ADDV(IAD3,NCELC)+SIGADD3*VOL(NCELL)
+        ADDV(IAD4,NCELC)=ADDV(IAD4,NCELC)+SIGADD4*VOL(NCELL)
+        ADDV(IAD5,NCELC)=ADDV(IAD5,NCELC)+SIGADD5*VOL(NCELL)
+        ADDV(IAD6,NCELC)=ADDV(IAD6,NCELC)+SIGADD6*VOL(NCELL)
+
+        ADDV(IADS,NCELC)=ADDV(IADS,NCELC)+SIGADD*VOL(NCELL)
+C
+
+        POWALF1=POWALF1+SIGADD1*FACTE*VOL(NCELL)
+        POWALF2=POWALF2+SIGADD2*FACTE*VOL(NCELL)
+        POWALF3=POWALF3+SIGADD3*FACTE*VOL(NCELL)
+        POWALF4=POWALF4+SIGADD4*FACTE*VOL(NCELL)
+        POWALF5=POWALF5+SIGADD5*FACTE*VOL(NCELL)
+        POWALF6=POWALF6+SIGADD6*FACTE*VOL(NCELL)
+C
+        POWALF =POWALF +SIGADD *FACTE*VOL(NCELL)
+C
+1000  CONTINUE
+
+      ADDV(IAD1,1:NSBOX_TAL)=ADDV(IAD1,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+      ADDV(IAD2,1:NSBOX_TAL)=ADDV(IAD2,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+      ADDV(IAD3,1:NSBOX_TAL)=ADDV(IAD3,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+      ADDV(IAD4,1:NSBOX_TAL)=ADDV(IAD4,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+      ADDV(IAD5,1:NSBOX_TAL)=ADDV(IAD5,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+      ADDV(IAD6,1:NSBOX_TAL)=ADDV(IAD6,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+
+      ADDV(IADS,1:NSBOX_TAL)=ADDV(IADS,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+
+      CALL EIRENE_LEER(2)
+      CALL EIRENE_FTCRI(IST,CISTRA)
+      IF (IST.GT.0) CALL EIRENE_MASBOX
+     .   ('SUBR. EMIS_PROFILES CALLED, FOR STRATUM NO. '//CISTRA)
+      IF (IST.EQ.0) CALL EIRENE_MASBOX
+     .   ('SUBR. EMIS_PROFILES CALLED, FOR SUM OVER STRATA')
+      CALL EIRENE_LEER(1)
+      WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
+      WRITE (iunout,*) ' TOTAL FLUX (AMP) AND POWER (WATT) BY ' //
+     .                 LINE_NAME // ':'
+     .                  ,POWALF/FACTE*ELCHA,POWALF
+      WRITE (iunout,*) ' COUPL. TO GROUNDSTATE                        :'
+     .                  ,POWALF1/FACTE*ELCHA,POWALF1
+      WRITE (iunout,*) ' COUPLING TO CONTINUUM                       :'
+     .                  ,POWALF2/FACTE*ELCHA,POWALF2
+      WRITE (iunout,*) ' COUPLING TO MOLECULES                       :'
+     .                  ,POWALF3/FACTE*ELCHA,POWALF3
+      WRITE (iunout,*) ' COUPLING TO DIATOMIC MOL.IONS               :'
+     .                  ,POWALF4/FACTE*ELCHA,POWALF4
+      WRITE (iunout,*) ' COUPLING TO NEG.IONS                        :'
+     .                  ,POWALF5/FACTE*ELCHA,POWALF5
+      WRITE (iunout,*) ' COUPLING TO TRIATOMIC MOL.IONS              :'
+     .                  ,POWALF6/FACTE*ELCHA,POWALF6
+      CALL EIRENE_LEER(2)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD1,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD1,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD1,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD2,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD2,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD2,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD3,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD3,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD3,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD4,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD4,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD4,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD5,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD5,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD5,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD6,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD6,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD6,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+C
+      TXTTAL(IAD1,NTALA) =REPEAT(' ',72)
+!      TXTTAL(IAD1,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IAD1,NTALA) =TRIM(LINE_NAME) // ', ' //
+     .                    TRIM(LINE_NAME) // ' SOURCE RATE '
+      TXTSPC(IAD1,NTALA) ='GROUNDSTATE             '
+      TXTUNT(IAD1,NTALA) ='PHOTONS/S/CM**3         '
+
+!      TXTTAL(IAD2,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IAD2,NTALA) =TXTTAL(IAD1,NTALA)
+      TXTSPC(IAD2,NTALA) ='CONTINUUM               '
+      TXTUNT(IAD2,NTALA) ='PHOTONS/S/CM**3         '
+
+!      TXTTAL(IAD3,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IAD3,NTALA) =TXTTAL(IAD1,NTALA)
+      TXTSPC(IAD3,NTALA) ='MOLECULES               '
+      TXTUNT(IAD3,NTALA) ='PHOTONS/S/CM**3         '
+
+!      TXTTAL(IAD4,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IAD4,NTALA) =TXTTAL(IAD1,NTALA)
+      TXTSPC(IAD4,NTALA) ='DIAT.MOL.IONS       '
+      TXTUNT(IAD4,NTALA) ='PHOTONS/S/CM**3         '
+
+!      TXTTAL(IAD5,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IAD5,NTALA) =TXTTAL(IAD1,NTALA)
+      TXTSPC(IAD5,NTALA) ='NEG.IONS                '
+      TXTUNT(IAD5,NTALA) ='PHOTONS/S/CM**3         '
+
+!      TXTTAL(IAD6,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IAD6,NTALA) =TXTTAL(IAD1,NTALA)
+      TXTSPC(IAD6,NTALA) ='TRIAT.MOL.IONS      '
+      TXTUNT(IAD6,NTALA) ='PHOTONS/S/CM**3         '
+
+!      TXTTAL(IADS,NTALA) ='BA_ALPHA, H ALPHA SOURCE RATE             '
+      TXTTAL(IADS,NTALA) =TXTTAL(IAD1,NTALA)
+      TXTSPC(IADS,NTALA) ='SUM_OVER_ALL            '
+      TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
+
+C
+C  WRITE ON STREAM 11 DATA FOR STRATUM NO. IST
+      IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+        IESTR=IST
+        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .              ESTIMV,ESTIMS,ESTIML,
+     .              NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .              NSIGI_SPC,TRCFLE)
+C
+        IRC=2
+        ALLOCATE (OUTAU(NOUTAU))
+        CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
+        WRITE (11+ifoff,REC=IRC) OUTAU
+        DEALLOCATE (OUTAU)
+        IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+
+C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
+        IESTR=IST
+        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .              ESTIMV,ESTIMS,ESTIML,
+     .              NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .              NSIGI_SPC,TRCFLE)
+C
+        IRC=2
+        ALLOCATE (OUTAU(NOUTAU))
+        CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
+        WRITE (11+ifoff,REC=IRC) OUTAU
+        DEALLOCATE (OUTAU)
+        IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+      ENDIF
+C
+      RETURN
+
+csw 19apr07
+      entry EIRENE_emis_profiles_reinit
+      ifirst=0
+      lineno_old = -1
+      return
+csw
+999   CONTINUE
+      WRITE (IUNOUT,*) 'ERROR IN SUBR. EMIS_PROFILES '
+      WRITE (IUNOUT,*) 'NO STORAGE AVAILBALE ON ADDITIONAL TALLY ADDV '
+      WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',
+     .             IAD1,IAD2,IAD3,IAD4,
+     .             IAD5,IAD6,IADS
+      WRITE (IUNOUT,*) 'CHECK INPUT BLOCK 10A '
+      CALL EIRENE_EXIT_OWN(1)
+
+
+      CONTAINS
+
+
+      SUBROUTINE EIRENE_PREPARE_LINE
+C
+      INTEGER, SAVE :: IFIRST = 0
+      CHARACTER(LEN(REAC)) :: REAC_A, REAC_B, REAC_M, REAC_I2,
+     .                         REAC_I3, REAC_N
+
+      IF (IFIRST == 0) THEN
+         FAC = 0._DP
+C  RADIATIVE TRANSITION RATES (1/S)
+C  BALMER ALPHA
+         FAC(3,2) = 4.410E7
+C  BALMER BETA
+         FAC(4,2) = 8.419E6
+C  BALMER GAMMA
+         FAC(5,2) = 2.530E6
+C  BALMER DELTA
+         FAC(6,2) = 9.732E5
+C
+C  LYMAN ALPHA
+         FAC(2,1) = 4.699E8
+C  LYMAN BETA
+         FAC(3,1) = 5.575E7
+C  LYMAN GAMMA
+         FAC(4,1) = 1.278E7
+C  LYMAN DELTA
+         FAC(5,1) = 4.125E6
+C  LYMAN EPSILON
+         FAC(6,1) = 1.644E6
+C
+C  PASCHEN ALPHA
+         FAC(4,3) = 8.986E6
+C  PASCHEN BETA
+         FAC(5,3) = 2.201E6
+C  PASCHEN GAMMA
+         FAC(6,3) = 7.783E5
+
+         IFIRST = 1
+      END IF
+
+C  DECIDE WHICH LINE IS TO BE USED
+      IF (ABS(ENER-12.089_DP)/12.089_DP <= EPS5) THEN
+
+        LINENO = LY_BETA
+        LINE_NAME = 'LY-BETA  '
+        
+        REAC_A='2.1.5a   '
+        REAC_B='2.1.8a   '
+        REAC_M='2.2.5a   '
+        REAC_I2='2.2.14a  '
+        REAC_I3='2.2.15a  '
+        REAC_N='7.2a     '
+
+        L1 = 3
+        L2 = 1
+
+      ELSEIF (ABS(ENER-10.2375_DP)/10.2375_DP <= EPS5) THEN
+
+        LINENO = LY_ALPHA
+        LINE_NAME = 'LY-ALPHA '
+
+        REAC_A='2.1.5b   '
+        REAC_B='2.1.8b   '
+        REAC_M='2.2.5b   '
+        REAC_I2='2.2.14b  '
+        REAC_I3='2.2.15b  '
+        REAC_N='7.2b     '
+
+        L1 = 2
+        L2 = 1
+
+      ELSEIF (ABS(ENER-3.0222_DP)/3.0222_DP <= EPS5) THEN
+
+        LINENO = BA_DELTA
+        LINE_NAME = 'BA-DELTA '
+
+        REAC_A='2.1.5e   '
+        REAC_B='2.1.8e   '
+        REAC_M='2.2.5e   '
+        REAC_I2='2.2.14e  '
+        REAC_I3='2.2.15e  '
+        REAC_N='7.2e     '
+
+        L1 = 6
+        L2 = 2
+
+      ELSEIF (ABS(ENER-2.8560_DP)/2.8560_DP <= EPS5) THEN
+
+        LINENO = BA_GAMMA
+        LINE_NAME = 'BA-GAMMA '
+
+        REAC_A='2.1.5d   '
+        REAC_B='2.1.8d   '
+        REAC_M='2.2.5d   '
+        REAC_I2='2.2.14d  '
+        REAC_I3='2.2.15d  '
+        REAC_N='7.2d     '
+
+        L1 = 5
+        L2 = 2
+
+      ELSEIF (ABS(ENER-2.5500_DP)/2.5500_DP <= EPS5) THEN
+
+        LINENO = BA_BETA
+        LINE_NAME = 'BA-BETA  '
+
+        REAC_A='2.1.5c   '
+        REAC_B='2.1.8c   '
+        REAC_M='2.2.5c   '
+        REAC_I2='2.2.14c  '
+        REAC_I3='2.2.15c  '
+        REAC_N='7.2c     '
+
+        L1 = 4
+        L2 = 2
+
+      ELSEIF (ABS(ENER-1.8889_DP)/1.8889_DP <= EPS5) THEN
+
+        LINENO = BA_ALPHA
+        LINE_NAME = 'BA-ALPHA '
+
+        REAC_A='2.1.5a   '
+        REAC_B='2.1.8a   '
+        REAC_M='2.2.5a   '
+        REAC_I2='2.2.14a  '
+        REAC_I3='2.2.15a  '
+        REAC_N='7.2a     '
+
+        L1 = 3
+        L2 = 2
+        
+      ELSE
+        WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR ENERGY=',ENER
+        LINENO = 0
+        RETURN
+      END IF
+      WRITE (IUNOUT,'(A)') LINE_NAME
+
+      IF (LINENO /= LINENO_OLD) THEN
+C
+C  READ REDUCED POPULATION COEFFICIENT FOR HYDR. ATOMS FROM FILE AMJUEL
+C  AND PUT THEM FROM REACDAT(NREACI+1,..,..) ONTO DA,DB,DM,DI2,DI3, AND DN ARRAY
+C
+        IERROR=0
+        IR=NREACI+1
+        IF (IR.GT.NREAC) THEN
+          WRITE (IUNOUT,*) 'FROM SUBROUTINE EIRENE_BA_ALPHA: '
+          CALL EIRENE_MASPRM('NREAC',5,NREAC,'IR',2,IR,IERROR)
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
+
+        FILNAM='AMJUEL  '
+        H123='H.12'
+        CRC='OT '
+
+c  default asymptotics
+        FP1 = 0._DP
+        FP2 = 0._DP
+        RC1MIN = -HUGE(1._DP)
+        RC1MAX =  HUGE(1._DP)
+        RC2MIN = -HUGE(1._DP)
+        RC2MAX =  HUGE(1._DP)
+        JFEX1MN = 0
+        JFEX1MX = 0
+        JFEX2MN = 0
+        JFEX2MX = 0
+C
+C  H(n=3)/H(n=1)
+        REAC=REAC_A
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO J=1,9
+          DO I=1,9
+            DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+          ENDDO
+        ENDDO
+C  H(n=3)/H+
+        REAC=REAC_B
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO J=1,9
+          DO I=1,9
+            DB(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+          ENDDO
+        ENDDO
+C  H(n=3)/H2(g)
+        REAC=REAC_M
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO J=1,9
+          DO I=1,9
+            DM(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+          ENDDO
+        ENDDO
+C  H(n=3)/H2+(g)
+        REAC=REAC_I2
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO J=1,9
+          DO I=1,9
+            DI2(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+          ENDDO
+        ENDDO
+C  H(n=3)/H3+
+        REAC=REAC_I3
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO J=1,9
+          DO I=1,9
+            DI3(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+          ENDDO
+        ENDDO
+C  H(n=3)/H-
+        REAC=REAC_N
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO J=1,9
+          DO I=1,9
+            DN(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+          ENDDO
+        ENDDO
+C
+C  NOW READ RATIO OF DENSITIES (= reduced population coefficients):
+
+C  IF THESE RATIOS ARE USED TO FIND MINORITY DENSITIES (E.G. H-, H2+, H3+), THEN THESE
+C  CORRESPOND ("are consistent") TO THE EIRENE H2 DENSITY TALLIES IF:
+
+
+C  either:
+C  THESE SPECIES ARE "NOT FOLLOWED" (NFOL=-1)
+C  PLUS IF THE PRODUCTION AND LOSS RATES ARE THE SAME AS THOSE USED TO PRODUCE THE
+C  RATIO FITS  (see: AMJUEL database)
+
+C  or:
+C  IF THESE SPECIES ARE NOT INCLUDED AT ALL, 
+C  BUT THE CORRESPONDING MULTISTEP RATES CONTAINING THEM
+C  AS CONDENSED INTERMEDIATE STATES ARE USED
+C  FOR THE TRANSPORTED SPECIES (H2) TO WHICH THESE "MINORITES" ARE COUPLED.
+C
+c.........................................................................
+C
+C  FIRST: H-/H2  (COUPLED TO H2(V)
+C  H.11 7.0a INCLUDES ELECTRON IMPACT DISS ATTACHMENT ON H2(V), ne=np, Te=Tp, E_H2=E_H-=0.1
+C  H.11 7.0b INCLUDES ELECTRON IMPACT DISS ATTACHMENT ON H2(V=0) ONLY
+C
+        FILNAM='AMJUEL  '
+        H123='H.11'
+        REAC='7.0a     '
+        CRC='OT '
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO I=1,9
+          RHMH2(I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,1)
+        ENDDO
+
+
+C  NEXT: H3+/H2  (COUPLED TO H2(V)
+C  H.11 4.0a vs Te, T_H2=T_H2+=0.1 IN H3+ PROD. RATE CONSTANT
+C               THE DISTINCTION BETWEEN H2 AND H2(V) IS MADE
+C               BY THE ADDITIONAL MULTIPLICATIVE FACTOR RATIO2=H2P/H2 
+C
+        FILNAM='AMJUEL  '
+        H123='H.11'
+        REAC='4.0a     '
+        CRC='OT '
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO I=1,9
+          RH3PH2(I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,1)
+        ENDDO
+
+
+
+
+C  NEXT : H2+/H2  (COUPLED TO H2(V))
+        FILNAM='AMJUEL  '
+        H123='H.12'
+        REAC='2.0c     '
+        CRC='OT '
+c  H2+ from ion conversion alone
+C  H.11 2.0c INCLUDES  ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
+C  H.11 2.0b INCLUDES  ION CONVERION (CX) ON H2(V=0) ONLY
+c  H2+  also from multi-step electron impact ionisation --> explicit ne dependence
+C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
+C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY
+C
+C
+CDR: IF CX ON H2(V=1,2...) IS NOT INCLUDED IN A SPECIFIC NEUTRAL TRANSPORT EQUATION
+CDR  (SEE INPUT BLOCK 4), THEN IT SHOULD NOT BE INCLUDED HERE EITHER.
+C       REAC='2.0b    '
+C    IF NEITHER CX on H2(V) nor on H2(V=0) are included, then
+C       REAC='2.0a    '
+C    IF H2(V=1,2,...) IS NOT IN QSS WITH H2(V=0), THEN RATIOS SHOULD NOT BE USED AT ALL,
+C                     OR AT LEAST, MANY SUCH RATIOS, ONE FOR EACH H2(V) METASTABLE STATE.
+CDR
+        REACDAT(NREACI+1)%LOTH = .FALSE.
+        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+        DO I=1,9
+          DO J=1,9
+            RH2PH2(I-1,J-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,J)
+          ENDDO
+        ENDDO
+      ENDIF
+C
+C  END OF INITIALIZATION
+C
+
+      END SUBROUTINE EIRENE_PREPARE_LINE 
+
+      END SUBROUTINE EIRENE_EMIS_PROFILES

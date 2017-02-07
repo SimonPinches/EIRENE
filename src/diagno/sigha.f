@@ -63,6 +63,7 @@ C
       REAL(DP), INTENT(IN OUT) :: PSIG(0:NSPZ+10), ARGST(0:NSPZ+10,NRAD)
       REAL(DP) :: PENOLD
       INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
+      REAL(DP) :: PENOLD
       DATA ISTOLD/-1/
       DATA ITROLD/-1/
       DATA PENOLD/-1._DP/
@@ -79,43 +80,48 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
 100     CONTINUE
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
-     .      (PEN .NE. PENOLD) ) then
-          if (PEN.EQ.12.089_DP) THEN
-            write (iunout,*) ' ly_beta '
-            CALL EIRENE_Ly_beta 
-     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .      (PEN .NE. PENOLD)) then
+!          if (PEN.EQ.12.089_DP) THEN
+!            write (iunout,*) ' ly_beta '
+!            CALL EIRENE_Ly_beta 
+!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+!          elseif (PEN.EQ.10.2375_DP) THEN
+!            write (iunout,*) ' ly_alpha '
+!            CALL EIRENE_Ly_alpha 
+!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+!          elseif (PEN.EQ.3.0222_DP) THEN
+!            write (iunout,*) ' ba_delta '
+!            CALL EIRENE_Ba_delta
+!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+!           elseif (PEN.EQ.2.8560_DP) THEN
+!            write (iunout,*) ' ba_gamma '
+!            CALL EIRENE_Ba_gamma
+!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+!          elseif (PEN.EQ.2.5500_DP) THEN
+!            write (iunout,*) ' ba_beta '
+!            CALL EIRENE_Ba_beta
+!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+!          elseif (PEN.EQ.1.8889_DP) THEN 
+!            write (iunout,*) ' ba_alpha '
+!            CALL EIRENE_Ba_alpha
+!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+!          else
+!            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
+!            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
+!            ADDV(NADVI+1:NADVI+7,:) = 0._DP
+!          endif
+
+          CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+     .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
      .                 NADVI+7)
-          elseif (PEN.EQ.10.2375_DP) THEN
-            write (iunout,*) ' ly_alpha '
-            CALL EIRENE_Ly_alpha 
-     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-     .                 NADVI+7)
-          elseif (PEN.EQ.3.0222_DP) THEN
-            write (iunout,*) ' ba_delta '
-            CALL EIRENE_Ba_delta
-     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-     .                 NADVI+7)
-           elseif (PEN.EQ.2.8560_DP) THEN
-            write (iunout,*) ' ba_gamma '
-            CALL EIRENE_Ba_gamma
-     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-     .                 NADVI+7)
-          elseif (PEN.EQ.2.5500_DP) THEN
-            write (iunout,*) ' ba_beta '
-            CALL EIRENE_Ba_beta
-     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-     .                 NADVI+7)
-          elseif (PEN.EQ.1.8889_DP) THEN 
-            write (iunout,*) ' ba_alpha '
-            CALL EIRENE_Ba_alpha
-     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-     .                 NADVI+7)
-          else
-            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
-            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
-            ADDV(NADVI+1:NADVI+7,:) = 0._DP
-          endif
         endif
+
         ISTOLD=ISTRA
         ITROLD=IITER
         PENOLD=PEN
