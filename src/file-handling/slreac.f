@@ -7,7 +7,8 @@ c    at the end of this routine, for each reaction card, call: SET_REACTION_DATA
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting, cleanup, nov. 15: continued
 cdr  jan 16: started to document options for asymptotics
-!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR  data files, 
+!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR 
+c            data files, 
 cdr          such as character strings H.xxx
 cdr          taken over from ITER-IO branch
 !pb  may 16: bug fix to the extensions (resolving problem reading HYDHEL H.3)

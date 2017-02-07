@@ -319,7 +319,9 @@ c   e.g. DT -->  0.5 (D + T+)  + 0.5 (D+ + T)
 C
           IA1=IATM1
           IP2=IPLS2
-c   in case iatm1 ne iatm2:  this next segement is executed twice. Accumulate totals....
+c   in case iatm1 ne iatm2:  this next segement is executed twice.
+c   Split reaction  kk=-6 into two ei processes irei and irei+1, with factkk=0.5 each. 
+c   Accumulate totals....
 73        ACCMAS=0.D0
           ACCINV=0.D0
           IDSC1=IDSC1+1

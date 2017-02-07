@@ -2645,6 +2645,8 @@ C          and for number of histories NPTS (see below)
       IF(AMPTS.GT.0.0) THEN
         MPTS_COMSOU=AMPTS
         NTCPU=INT(REAL(NTCPU)*AMPTS)
+        WRITE (iunout,*) ' NTCPU, NPTS ENHANCED BY FACTOR AMPTS= ',
+     .                     AMPTS
       ELSE
         MPTS_COMSOU=1.0
       END IF
@@ -2662,8 +2664,9 @@ C
 713     READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1) .EQ. '*') GOTO 713
-        READ (ZEILE,6665) NLAVRP(ISTRA),NLAVRT(I),NLSYMP(I),NLSYMT(I),
-     .                    NLRAY(ISTRA)
+        READ (ZEILE,6665) NLAVRP(I),NLAVRT(I),NLSYMP(I),NLSYMT(I)
+C    .                   ,NLRAY(I)
+                          NLRAY(I)=.FALSE.  ! CDR: UNFINISHED OPTION
         IREAD=0
         READ (IUNIN,6666) NPTS(ISTRA),NINITL(I),NEMODS(I),NAMODS(I),
      .                    NMINPTS(ISTRA), !VK MINIMUM NUMBER OF HISTORIES
@@ -4630,20 +4633,32 @@ C
      .               NR1ST,NP2ND,NT3RD,NBMLT)
         WRITE (iunout,*) 'TOTAL VOLUME, SUM VOL(:)  ',VOLTOT
 C
-C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES
-Cc
+C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES nlimii(j),nlimie(j), for each grid cell j 
+C  FROM INFORMATION ON IGJUM3
+C
+C  DEFAULT
         NLIMII=1
         NLIMIE=NLIMI
 C
         NSOPT=MIN(NOPTIM,NSBOX)
-        DO 8004 J=1,NSOPT
-          IF (NLIMPB >= NLIMPS) THEN
+        IF (NLIMPB >= NLIMPS) THEN
+
+          DO J=1,NSOPT        
             DO 8005 I=1,NLIMI
               LHELP(I) = IGJUM3(J,I)==0
 8005        CONTINUE
             IIN=EIRENE_ILLZ(NLIMI,LHELP,1)+1
             IEN=NLIMI-EIRENE_ILLZ(NLIMI,LHELP,-1)
-          ELSE
+            NLIMII(J)=IIN
+            NLIMIE(J)=IEN
+          ENDDO   ! NSOPT LOOP, GRID CELLS
+
+
+        ELSEIF (NLIMPB < NLIMPS) THEN
+C  now try the same thing but with bit arithmetic, in case of storage
+c  saving mode (igjum3-array stored in single bit integer format)
+
+          DO J=1,NSOPT
             IIN = 1
             IEN = NLIMI
 ! NO='1111....111'B ALL BITS SET TO 1
@@ -4680,12 +4695,12 @@ C
                 IEN = (I-1)*NBITS+ILA+1
                 IF (IB >= 0) EXIT
               END IF
-            END DO
-          END IF
+            END DO  ! 
+            NLIMII(J)=IIN
+            NLIMIE(J)=IEN
+          ENDDO   ! NSOPT LOOP, GRID CELLS
 
-          NLIMII(J)=IIN
-          NLIMIE(J)=IEN
-8004    CONTINUE
+        ENDIF
 C
 C  ALL GEOMETRICAL DATA (GRIDS, VOLUMES, SWITCHES) ARE DEFINED NOW
 C
@@ -4934,7 +4949,7 @@ C
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'COEFFICIENTS FOR ADDITIONAL SURFACES'
         WRITE (iunout,*)
-     .    'THIS IS AFTER GEOUSR, SETEQ AND SETFIT ARE CALLED'
+     .    'THIS IS AFTER IF0COP, GEOUSR, SETEQ AND SETFIT ARE CALLED'
         DO 7701 J=1,NLIMI
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) TXTSFL(J)

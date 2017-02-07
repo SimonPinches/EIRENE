@@ -101,11 +101,12 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.3 0.1D  0.2D, 0.3D 0.4D \\
  \item update    8.9/97 \\
   H.1 3.1.8R (Riviere) revised (better extrapolation to low energy) \\
-  H.1 3.1.8S new (Schultz total cx cross section) \\
-  H.1 3.1.8M new (Schultz momentum transfer cross section) \\
-  H.1 3.1.8D new (Janev total cx cross section *2 = mom trans. x-section)\\
-  H.1 3.1.8T new (Schultz total cx cross section *2 = mom trans. x-section)\\
-  note: 3.1.8M $\approx$ 3.1.8T within line-thickness
+  H.1 3.1.8ST new (Schultz total cx cross section) \\
+  H.1 3.1.8SM new (Schultz momentum transfer cross section) \\
+  H.1 3.1.8       (Janev total cx cross section)\\
+  H.1 3.1.8JM new (Janev total cx cross section *2 = mom trans. x-section)\\
+  H.1 3.1.8ST2 new (Schultz total cx cross section *2 = mom trans. x-section)\\
+  note: 3.1.8SM $\approx$ 2  * 3.1.8ST within line-thickness
  \item update   23.9/97 \\
   H.2 2.6B0 strahl carbon data ionization\\
   H.4 2.3.6B0 strahl carbon data recombination \\
@@ -1667,7 +1668,7 @@ ELABMIN=   0.10000E 00 eV
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 \subsubsection{
-Reaction 3.1.8D $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8JM $  p + H(1s) \rightarrow H(1s) + p  $
 }
 Janev cross section for momentum exchange ( = cx total cross sections times 2), obtained by
 increasing absolute coefficients $a_0$ and $al_0$  by adding $\ln(2)$
@@ -1697,9 +1698,8 @@ Riviere cross section formula for charge exchange
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 3.1.8S $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8ST $  p + H(1s) \rightarrow H(1s) + p  $
 }
-
 D.Schultz total cross section for charge exchange
 fitted into ``Janev format"
 
@@ -1712,6 +1712,7 @@ fitted into ``Janev format"
 ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
+
 \subsubsection{
 Reaction 3.1.8ST2 $  p + H(1s) \rightarrow H(1s) + p  $
 }
@@ -1731,7 +1732,7 @@ ELABMAX=  2.00000E 01 eV
 Reaction 3.1.8SM $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz cross section for momentum exchange (elastic plus cx)
-fitted into ``Janev format". Should be close to total cx cross section times 2.
+fitted into ``Janev format". Should be close to ST2, total cx cross section times 2.
 
 \begin{small}\begin{verbatim}
    a0 -3.225844350904D+01    a1 -1.220948860470D-01    a2  7.214005848073D-03
@@ -8887,7 +8888,7 @@ B,C coupling to vibr. states is non-linear in density and would hence make this 
 Reaction 4.0a   $ H_2 + H_2^+ \rightarrow H_3^+ + H$, Ratio \ $H_3^+/H_2$
 }
 
-
+Fit for ln(RATIO), defined such that $n_{H_3^+}/n_{H_2}$ = RATIO $\times n_{H_2^+}/n_e$
 
  Ratio of densities: $n_{H_3^+}/n_{H_2}$ = Ratio of production rate constant
  to destruction rate coefficient $\times n_{H_2^+}/n_e$. \\
@@ -8896,7 +8897,7 @@ Reaction 4.0a   $ H_2 + H_2^+ \rightarrow H_3^+ + H$, Ratio \ $H_3^+/H_2$
   evaluated at $T_{H_2} = T_{H_2^+} = 0.1$ eV,  $ \approx 1.160947956 e-9$. \\
   Destruction of $H_3^+$: diss. recombination (DR) from HYDHEL, 2.2.15, vs. $T_e$.
   Used here: algebraic expression from original rate constant and fit of ln(DR rate coef.)
-  for this ln(Ratio).
+  for this ln(RATIO).
 
 \begin{small}\begin{verbatim}
    k0 -3.571300000000e+00    k1  4.050073042947e-01    k2 -1.018733477232e-08

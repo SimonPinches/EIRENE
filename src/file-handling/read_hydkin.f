@@ -6,6 +6,8 @@ cdr   called from:  setup_hydkin_reactions
 cdr   feb 2014:  only started to add comments, then copied to read_table1_hydkin
 cdr              for generalization
 
+cdr   current implementation: started for rate coefficients (%RTC$) only.
+
 cdr   july 16:   more error exits, to avoid code crashes when reading 1D tabulated data
 cdr              currently this routine expects hard wired hydkin, CxHy format. 
 cdr   to be done: distuingish between reading data, and automatted construction

@@ -6,7 +6,7 @@ cdr  MXCOLLS --> MSTOR0
  
 !  jan-05: natprc_2,..... introduced
 !  07.12.05: bugfix: IFTFLG is now available for default reactions too
-!                    via dimensioning IFTFLG(-10:NREAC)
+!                    via dimensioning IFTFLG(-11:NREAC)
 !  30.08.06: data structure for reaction data redefined
 !  12.10.06: modcol revised
 !  19.12.06: test functions added which allow to test if a rate-coefficient
