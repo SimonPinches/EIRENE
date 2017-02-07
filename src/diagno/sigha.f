@@ -55,9 +55,11 @@ C
       INTEGER, INTENT(IN) :: INIT, JJJ
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:NSPZ+10), ARGST(0:NSPZ+10,NRAD)
+      REAL(DP) :: PENOLD
       INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
       DATA ISTOLD/-1/
       DATA ITROLD/-1/
+      DATA PENOLD/-1._DP/
 C
       SAVE
 C
@@ -70,7 +72,8 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
             ARGST(ISP,ICELL)=0.
 100     CONTINUE
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
-        IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD)) then
+        IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
+     .      (PEN .NE. PENOLD) ) then
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '
             CALL EIRENE_Ly_beta 
@@ -109,6 +112,7 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         endif
         ISTOLD=ISTRA
         ITROLD=IITER
+        PENOLD=PEN
         RETURN
       ENDIF
 C
