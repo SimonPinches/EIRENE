@@ -553,16 +553,16 @@ c  not ready
           call eirene_leer(1)
           WRITE (iunout,*) 'ERROR IN AMDIAG, OPTION NOT READY '
           write (iunout,'(A72)') txtpls(IAIN,NTALN)
-          write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
+          write (iunout,'(A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
         else   !mm = 0,  reaction kk has not been assgined to any particle
           call eirene_leer(1)
-          WRITE (iunout,*) 'ERROR IN AMDIAG,', 
+          WRITE (iunout,*) 'ERROR IN AMDIAG, ', 
      .                     'PROCESS KK NOT ASSIGNED TO ANY PARTICLE '
           write (iunout,'(A72)') txtpls(IAIN,NTALN)
-          write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
+          write (iunout,'(A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
@@ -572,7 +572,7 @@ c  not ready
       CALL eirene_leer(1)
       WRITE (iunout,*) 'AMDIAG: ADDITIONAL INPUT TALLY ADIN(IAIN) SET'
       write (iunout,'(A72)') txtpls(IAIN,NTALN)
-      write (iunout,'(A72)') TXTPSP(IAIN,NTALN)
+      write (iunout,'(A24)') TXTPSP(IAIN,NTALN)
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
       WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
        

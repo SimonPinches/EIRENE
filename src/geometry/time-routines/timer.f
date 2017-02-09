@@ -1,6 +1,6 @@
 cdr:  njump=3 option: continue new flight from previously found 
 cdr                   intersection with cell boundary. used from levgeo=10
-C icts introduced, lcut --> llcut
+C icts introduced, lcut --> llcut  (sometime after 2014)
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
@@ -668,12 +668,14 @@ C  INTERSECTION WITH RADIAL CELL BOUNDARY FOUND
 C..................................................................................
 C  NO INTERSECTION FOUND
           IF (NLSRFX.AND.NJUMP.EQ.0) THEN
-C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
-!            WRITE (iunout,*)
-!     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
+!           IF (NLTRC) 
+!     .       WRITE (iunout,*)
+!     .       ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
-            WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+!           IF (NLTRC) WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
             IF (.NOT.LNGB1) THEN
               ICELLR=IR-1
               IRCELL=IR-1
@@ -692,13 +694,16 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
             NJUMP=1
             NRCELL=IR
             GOTO 6001
+
           ELSEIF (NLSRFY.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
-            WRITE (iunout,*)
-     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+!           IF (NLTRC) 
+!    .        WRITE (iunout,*)
+!    .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
-            WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+!           IF (NLTRC) WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+
             IF (.NOT.LNGB4) THEN
               IP=NGHPLS(4,IR,MPSURF)
               LNGB4=.TRUE.

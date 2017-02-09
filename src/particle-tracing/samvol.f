@@ -14,9 +14,8 @@ cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2408.06: set output values for DIWL and SHWL
 cdr  2008.06: tiwl(*), ... instead of tiwl(npls),... to unify code.
 cdr  0604.06: check "istep out of range" moved to correct place
-c    0311.05
-c  iplsti moved after check of validity of ipls, to produce legal exit
-c         rather than code crash
+c    0311.05: iplsti moved after check of validity of ipls, to produce legal exit
+c             rather than code crash
 C  JET 2005, PATCH 1: NEW ARGUMENTS EFWL AND SHWL IN PARAMETER LIST
 c                     AT ENTRY SMVOL1 AND SMUSR1
 C
@@ -75,7 +74,7 @@ C    FREC(IPLS,IRRC,ICELL) FOR EACH VOLUME SOURCE DISTRIBUTION, FOR SAMPLING
 C    THE CELL INDEX ICELL OF THE VOLUME SOURCE PARTICLE.
 C
 C    A FEW GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING
-C    OF THE STARTING POINT IN EACH CELL ARE COMPUTED
+C    OF THE STARTING POINTS IN EACH CELL ARE PRE-COMPUTED
 C
 C    THE SOURCE STRENGTH FLUX(ISTRA) IS MODIFIED FOR THE
 C    STRATA WITH NLVOL(ISTRA)=.TRUE.
@@ -99,12 +98,14 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
+c  nspez out of range: 
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
             END IF
           END IF
         END DO
+
         MXREC=MAXVAL(NPRCI(1:NPLSI))
         MXPLS=COUNT(LPLSSR(1:NPLSI))
         ALLOCATE (FREC(0:MXPLS,0:MXREC,0:NRAD))
@@ -538,6 +539,9 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
       ENDIF
 C
       IF (LEVGEO.EQ.3) THEN
+c  split quadrangle into two triangles, 
+c  then 1st sample triangle according to its relative area, 
+c  then 2nd: sample uniform within this triangle
         IT=1
         DO 56 IR=1,NR1ST-1
         DO 56 IP=1,NP2ND-1
@@ -669,6 +673,7 @@ C
 C  FIND CELL NUMBER: NCELL
 C
       IF (INDIM(NVLM,ISTRA) .GE. 0) THEN
+cdr analog sampling, no weighting
 !PB  choose cell according to cell contribution to total source strength
         IC1=0
         IC2=ICMX(NVLM)
@@ -692,7 +697,10 @@ c
         NCELL=ISOURC(NVLM,ICELL)
       ELSE
  
-!pb  uniform distribution
+cdr non-analog sampling.  
+cdr Here use uniform distribution of cell indices and weighting
+cdr tbd: correlation sampling: use previous (reference) distribution and weighting
+cdr      rather than uniform sampling. 
         IC1=0
         IC2=ICMX(NVLM)
  

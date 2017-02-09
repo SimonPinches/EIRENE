@@ -1649,7 +1649,7 @@ C
       DO 421 IATM=1,NATMI
         ISPZ=NSPH+IATM
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSA(IATM),NCHARA(IATM),
-     .                       NDUMM1,NDUMM2,
+     .                       NDUMM1,NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
      .                       NRCA(IATM),NFOLA(IATM),NGENA(IATM),
      .                       NHSTS(ISPZ)
@@ -1737,7 +1737,7 @@ C
       DO 431 IMOL=1,NMOLI
         ISPZ=NSPA+IMOL
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSM(IMOL),NCHARM(IMOL),
-     .                       NPRT(ISPZ),NDUMM,
+     .                       NPRT(ISPZ),NDUMM,   !NCHRGM=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
      .                       NRCM(IMOL),NFOLM(IMOL),NGENM(IMOL),
      .                       NHSTS(ISPZ)
@@ -2640,10 +2640,13 @@ C
       READ (IUNIN,6666) (INDSRC(IST),IST=1,NSTRAI)
       READ (IUNIN,6664) ALLOC, AMPTS
 
-C  AMPTS: (option added 2014) multiplier for max. allowed cpu time NTCPU, and for number of histories (see below)
+C  AMPTS: (option added 2014) common multiplier for max. allowed cpu time NTCPU, 
+C          and for number of histories NPTS (see below)
       IF(AMPTS.GT.0.0) THEN
         MPTS_COMSOU=AMPTS
         NTCPU=INT(REAL(NTCPU)*AMPTS)
+        WRITE (iunout,*) ' NTCPU, NPTS ENHANCED BY FACTOR AMPTS= ',
+     .                     AMPTS
       ELSE
         MPTS_COMSOU=1.0
       END IF
@@ -2661,8 +2664,9 @@ C
 713     READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1) .EQ. '*') GOTO 713
-        READ (ZEILE,6665) NLAVRP(ISTRA),NLAVRT(I),NLSYMP(I),NLSYMT(I),
-     .                    NLRAY(ISTRA)
+        READ (ZEILE,6665) NLAVRP(I),NLAVRT(I),NLSYMP(I),NLSYMT(I)
+C    .                   ,NLRAY(I)
+                          NLRAY(I)=.FALSE.  ! CDR: UNFINISHED OPTION
         IREAD=0
         READ (IUNIN,6666) NPTS(ISTRA),NINITL(I),NEMODS(I),NAMODS(I),
      .                    NMINPTS(ISTRA), !VK MINIMUM NUMBER OF HISTORIES
@@ -4627,22 +4631,34 @@ C
 C
         CALL EIRENE_INTVOL (VOL,1,1,NSBOX,VOLTOT,
      .               NR1ST,NP2ND,NT3RD,NBMLT)
-        WRITE (iunout,*) ' VOLTOT     ',VOLTOT
+        WRITE (iunout,*) 'TOTAL VOLUME, SUM VOL(:)  ',VOLTOT
 C
-C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES
-Cc
+C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES nlimii(j),nlimie(j), for each grid cell j 
+C  FROM INFORMATION ON IGJUM3
+C
+C  DEFAULT
         NLIMII=1
         NLIMIE=NLIMI
 C
         NSOPT=MIN(NOPTIM,NSBOX)
-        DO 8004 J=1,NSOPT
-          IF (NLIMPB >= NLIMPS) THEN
+        IF (NLIMPB >= NLIMPS) THEN
+
+          DO J=1,NSOPT        
             DO 8005 I=1,NLIMI
               LHELP(I) = IGJUM3(J,I)==0
 8005        CONTINUE
             IIN=EIRENE_ILLZ(NLIMI,LHELP,1)+1
             IEN=NLIMI-EIRENE_ILLZ(NLIMI,LHELP,-1)
-          ELSE
+            NLIMII(J)=IIN
+            NLIMIE(J)=IEN
+          ENDDO   ! NSOPT LOOP, GRID CELLS
+
+
+        ELSEIF (NLIMPB < NLIMPS) THEN
+C  now try the same thing but with bit arithmetic, in case of storage
+c  saving mode (igjum3-array stored in single bit integer format)
+
+          DO J=1,NSOPT
             IIN = 1
             IEN = NLIMI
 ! NO='1111....111'B ALL BITS SET TO 1
@@ -4679,12 +4695,12 @@ C
                 IEN = (I-1)*NBITS+ILA+1
                 IF (IB >= 0) EXIT
               END IF
-            END DO
-          END IF
+            END DO  ! 
+            NLIMII(J)=IIN
+            NLIMIE(J)=IEN
+          ENDDO   ! NSOPT LOOP, GRID CELLS
 
-          NLIMII(J)=IIN
-          NLIMIE(J)=IEN
-8004    CONTINUE
+        ENDIF
 C
 C  ALL GEOMETRICAL DATA (GRIDS, VOLUMES, SWITCHES) ARE DEFINED NOW
 C
@@ -4772,7 +4788,7 @@ cdr  goarser grid may have been set
       END DO
       CALL EIRENE_INTVOL (VOLTAL,1,1,NSBOX_TAL,VOLTOT_TAL,
      .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
-      WRITE (iunout,*) ' VOLTOT_TAL ',VOLTOT_TAL
+      WRITE (iunout,*) 'TOTAL VOLUME, SUM VOLTAL(:) ',VOLTOT_TAL
 
 
 C
@@ -4933,7 +4949,7 @@ C
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'COEFFICIENTS FOR ADDITIONAL SURFACES'
         WRITE (iunout,*)
-     .    'THIS IS AFTER GEOUSR, SETEQ AND SETFIT ARE CALLED'
+     .    'THIS IS AFTER IF0COP, GEOUSR, SETEQ AND SETFIT ARE CALLED'
         DO 7701 J=1,NLIMI
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) TXTSFL(J)

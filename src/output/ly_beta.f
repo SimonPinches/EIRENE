@@ -489,9 +489,9 @@ C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
 C          DDA=DAT*DIIN(IPLS,NCELC)
-C  RADIATIVE TRANSITION PROB. LEVEL 4-->2 (1/SEC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
-C          SIGADD1=SIGADD1+DDA*FAC42
+C          SIGADD1=SIGADD1+DDA*FAC31
 C201     CONTINUE
 c...............................................................................
 C

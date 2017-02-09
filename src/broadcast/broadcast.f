@@ -31,7 +31,7 @@ cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_r
 cdr            broadcast data for extrapolation from tables or fits, independent of IFIT 
 cdr  Nov  16:  nmds --> nmei,  nids --> niei.
 cdr  Nov  16:  mxcolls --> mstor0
-cdr
+cdr  Jan  17:  only comments
   
       SUBROUTINE EIRENE_BROADCAST
       USE EIRMOD_PRECISION
@@ -500,20 +500,28 @@ cdr   old data structure CREAC has been replaced by more general data structure 
 
 
       DO IR=-11, NREAC
+c interaction potential, differential cross sections, etc.
         CALL MPI_BCAST (REACDAT(IR)%LPOT,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c total cross sections
         CALL MPI_BCAST (REACDAT(IR)%LCRS,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c reaction rate coefficients
         CALL MPI_BCAST (REACDAT(IR)%LRTC,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c momentum weighted rate coefficients
         CALL MPI_BCAST (REACDAT(IR)%LRTCMW,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c energy weighted rate coefficients
         CALL MPI_BCAST (REACDAT(IR)%LRTCEW,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c other data, such as population coefficients, CR-density ratios,....
         CALL MPI_BCAST (REACDAT(IR)%LOTH,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c ??
         CALL MPI_BCAST (REACDAT(IR)%LPHR,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
+c ??
         CALL MPI_BCAST (REACDAT(IR)%NOSEC,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
 

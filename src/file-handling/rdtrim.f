@@ -2,6 +2,9 @@ CDR  OCT.14 ADDED:  READ ESBPARM  (PROJECTILE SURFACE BINDING ENERGY) FROM TRIM 
 c                   CURRENTLY NOT IN USE.
 C                   CURRENTLY ALSO NOT YET READ (TO BE DONE): 
 c                             FIND END OF LINE AND READ DATA ONLY IF AVAILABLE.
+cdr  Jan 17      :  started: read inr (resolution on data file), rather than fixed inr=5
+c                   tbd:  read   dummy=inr from 1st file. 
+c                         (DUMMY was reserved for sputter data in TRIM format?)
 c
       SUBROUTINE EIRENE_RDTRIM
 C
@@ -18,12 +21,12 @@ C
       IMPLICIT NONE
  
       REAL(DP) :: PID180, DUMMY, ESBPARM  ! ESBPARM SHOULD BE ARRAY(IFILE)
-      INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I, IWWW, ITTT
+      INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I, IWWW, ITTT, INR2
 C
 C
       INE=12
       INW=7
-      INR=5
+      INR=5  !  this value should now come from data file itself.
 C
       IF (INE*INW*NFLR.GT.NH0 .OR.
      .    INE*INW*INR*NFLR.GT.NH1  .OR.
@@ -53,11 +56,16 @@ C  READ: WALL (TARGET) CHARGE AND MASS WC,WM
 C  READ: INCIDENT ENERGY, ANGLE
 C  READ: REFLECTION PROBABILITY HFTR0, ???, PROJECTILE SURFACE BINDING ENERGY PARAMETER
             IF (I1.EQ.1.AND.I2.EQ.1) THEN    
+cdr
+!  additional data DUMMY and ESBPARM only for the first of the 12*7=84 datasets
+!  SOME COMPILERS DON'T LIKE READING MORE DATA THAN THERE ARE IN A SINGLE LINE
+!  to be done: check length of input line, and decide then whether to read
+!  DUMMY and ESBPARM, or not.
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
      .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE) 
 C    .                    ,DUMMY, ESBPARM,  !2 NEW PARAMETERS, MAYBE ONLY IN FIRST OF THE 84 BLOCKS ??  IF AT ALL?
 
-            ELSE  ! SOME COMPILERS DON'T LIKE READING MORE DATA THAN THERE ARE IN A SINGLE LINE
+            ELSE  
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
      .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE) 
             ENDIF
@@ -93,11 +101,18 @@ C
       DO 13 I=1,INWM
 13      DWIAR(I)=1./(WIAR(I+1)-WIAR(I))
       INRM=INR-1
+cdr  old version: hard wired INR=5
       RAAR(1)=0.1
       RAAR(2)=0.3
       RAAR(3)=0.5
       RAAR(4)=0.7
       RAAR(5)=0.9
+cdr  new version (not ready, allow higher resolution "INR" in quantile data tables)
+      INR2=2*INR
+      do I=1,INR
+        raar(I)=float(1+2*(I-1))/float(inr2)
+      enddo
+
       DO 15 I=1,INRM
 15      DRAAR(I)=1./(RAAR(I+1)-RAAR(I))
 C

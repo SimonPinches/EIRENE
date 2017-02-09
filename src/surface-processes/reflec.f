@@ -9,7 +9,7 @@ C           scaling factors vs. ispz and msurf. This reduces overhead in
 C           subr reflec. Previously: freduc was re-calculated at each entry.
 C  jan2010  bug fix: dimension of arrays for behrisch matrix spline 12-->13
 C           This can be needed if ERCUT is between Zengy(1) and Zengy(2)
-C  jan2010  in case of reduced enery scaled database reflection model:
+C  jan2010  in case of reduced energy scaled database reflection model:
 C           use also scaled eminr and emaxr, in order to stay within
 C           correct limits after scaling E_ref back to real system
 C           Was a problem only in case of very large/small (compared to one)
