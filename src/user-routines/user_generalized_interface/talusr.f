@@ -4,6 +4,7 @@ c
      .              TXTTL,TXTSP,TXTUN,ILAST,*)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
+
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_CINIT
@@ -17,6 +18,7 @@ c
       integer, intent(in) :: icount
       integer, intent(out) :: ilast
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
+
       real(dp), allocatable, save :: algv_corner(:,:), dummy(:)
       character(len=*) :: txttl,txtsp,txtun
       CHARACTER(256) :: FILENAME
@@ -30,6 +32,11 @@ c
           real(dp), intent(out) :: fcorner(:)
         end subroutine eirene_cell_to_corner
       end interface
+
+      TXTTL=' '
+      TXTSP=' '
+      TXTUN=' '
+      
  
       ilast=1
 

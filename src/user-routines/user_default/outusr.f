@@ -1,4 +1,8 @@
-C
+C  CALLED FROM MAIN ROUTINE EIRENE TO PRODUCE FURTHER, 3RD PARTY
+C  PRODUCED (POST PROCESSED) VOLUME TALLIES FOR PRINTOUT AND GRAPHICAL OUTPUT
+
+C  in case of an underlying coarser grid, these additional tallies
+C  are set on this coarse grid.
 C
       SUBROUTINE EIRENE_OUTUSR
       USE EIRMOD_PRECISION
@@ -16,6 +20,8 @@ C
       integer :: iadv
 
       if (nadv <= nadvi+7) return
+
+      IF (.FALSE.) THEN
 
       ADDV(1,1:NSBOX_TAL) = ADDV(NADVI+1,1:NSBOX_TAL)
       ADDV(2,1:NSBOX_TAL) = ADDV(NADVI+2,1:NSBOX_TAL)
@@ -38,6 +44,8 @@ C
 
       call eirene_plteir(0)
       call eirene_rpsout
+
+      END IF
 
       RETURN
       END

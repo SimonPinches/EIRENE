@@ -24,7 +24,7 @@ C
 
 C  CALLED IN INITIALIZATION PHASE
 C  E.G. TO INITIALIZE SAMPLING ON SURFACE 
-      ENTRY EIRENE_sm0usr
+      ENTRY EIRENE_SM0USR
      .  (is1,is2,sorad1,sorad2,sorad3,sorad4,sorad5,sorad6)
       return
 

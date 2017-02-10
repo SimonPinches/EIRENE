@@ -11,6 +11,9 @@ c
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 
       character(len=*) :: txttl,txtsp,txtun
+      TXTTL=' '
+      TXTSP=' '
+      TXTUN=' '
       
  
       ILAST=0

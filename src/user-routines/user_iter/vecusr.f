@@ -1,8 +1,8 @@
 
-      SUBROUTINE EIRENE_VECUSR (I,IC,X,Y,Z,VEC_X,VEC_Y,VEC_Z,IPLS,L)
+      SUBROUTINE EIRENE_VECUSR (I,IC,X,Y,Z,VEC_X,VEC_Y,VEC_Z,IPL,L)
 
-c  l=.true. : This call is at position x,y,z, in cell IC.
-c  l=.false.: This call is in cell ic. return value at center of gravity of this cell
+c  L=.true. : This call is at known position x,y,z, in cell IC.
+c  L=.false.: This call is in cell ic. Return value at center of gravity of this cell
 
 c  I=1:  return local B-field vector as vec_x,vec_y,vec_z
 c  I=2:  return local plasma drift velocity vector of eirene background species "ipls" 
@@ -12,7 +12,7 @@ c        not to be confused with the mapped species index mplsv(ipls)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
             IMPLICIT NONE
-      INTEGER, INTENT(IN) :: I, IC,IPLS
+      INTEGER, INTENT(IN) :: I, IC,IPL
       LOGICAL             :: L
       REAL(DP), INTENT(IN) :: X,Y,Z
       REAL(DP), INTENT(OUT) :: VEC_X,VEC_Y,VEC_Z
@@ -23,4 +23,3 @@ c   return default vector: (0.,0.,1.)
       VEC_Z=1.0
       RETURN
       END
-
