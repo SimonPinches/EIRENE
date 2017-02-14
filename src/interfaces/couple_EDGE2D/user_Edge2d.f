@@ -2,7 +2,7 @@ C ===== buildscript: user_Edge2d
 C ===== SOURCE: broad_usr.f
 
 
-      SUBROUTINE EIR_BROAD_USR
+      SUBROUTINE EIRENE_BROAD_USR
       IMPLICIT NONE
       RETURN
       END
@@ -12,7 +12,7 @@ C
 C=======================================================================
 C          S U B R O U T I N E   G E O M D
 C=======================================================================
-      SUBROUTINE EIR_GEOMD(NDXA,NDYA,NPLP,NR1ST,
+      SUBROUTINE EIRENE_GEOMD(NDXA,NDYA,NPLP,NR1ST,
      .                 PUX,PUY,PVX,PVY)
 C
       USE EIRMOD_PRECISION
@@ -85,8 +85,9 @@ C
           X4(IX)=br(ix,iy,3)
           Y4(IX)=bz(ix,iy,3)
 1014    CONTINUE
-        CALL EIR_MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,NDXA,
-     .                NR1ST,IY)
+        CALL EIRENE_MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,
+     .       PUX,PUY,PVX,PVY,NDXA,
+     .       NR1ST,IY)
 1015  CONTINUE
 C
 C SEARCH FOR THE CUTS
@@ -151,7 +152,7 @@ C ===== SOURCE: geousr.f
 C
 C
 C
-      SUBROUTINE EIR_GEOUSR
+      SUBROUTINE EIRENE_GEOUSR
 C
 C   PREPARE DATA FOR LIMITER-SURFACES
 C
@@ -292,19 +293,19 @@ C     enddo
 C ===== SOURCE: iniusr.f
 
 
-      SUBROUTINE EIR_iniUSR
+      SUBROUTINE EIRENE_iniUSR
       IMPLICIT NONE
       RETURN
       END
 C ===== SOURCE: leausr.f
 
 
-      FUNCTION EIR_LEAUSR(A,B,C)
+      FUNCTION EIRENE_LEAUSR(A,B,C)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: A, B, C
-      INTEGER :: EIR_LEAUSR
-      EIR_LEAUSR=1
+      INTEGER :: EIRENE_LEAUSR
+      EIRENE_LEAUSR=1
       RETURN
       END
 C ===== SOURCE: locstr_usr.f
@@ -313,7 +314,7 @@ csw routine to find a specific string in unit fp
 csw mar2006
 csw s.wiesen@fz-juelich.de
 csw
-      subroutine EIR_locstr_usr(fp,sstr,ier)
+      subroutine EIRENE_locstr_usr(fp,sstr,ier)
       implicit none
       integer, intent(in) :: fp
       integer, intent(out) :: ier
@@ -337,13 +338,14 @@ csw
 C ===== SOURCE: modusr.f
 c
 c
-      subroutine EIR_modusr
+      subroutine EIRENE_modusr
       return
       end
 C ===== SOURCE: mshadj.f
 C
 C
-      SUBROUTINE EIR_MSHADJ (X1,Y1,X2,Y2,XPLG,YPLG,NPLP,NPOINT,M1,NDX,IR)
+      SUBROUTINE EIRENE_MSHADJ (X1,Y1,X2,Y2,XPLG,YPLG,
+     &     NPLP,NPOINT,M1,NDX,IR)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: X1(*),Y1(*),X2(*),Y2(*)
@@ -438,7 +440,7 @@ C|                           end of the eirene run, a new neutral|
 C|                           flux file with the current version  |
 C|                           number is generated.                |
 C+---------------------------------------------------------------+
-      subroutine eir_outusr
+      subroutine EIRENE_outusr
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_comusr
@@ -473,7 +475,7 @@ csw 25oct07
 csw
       logical :: lcxsigma
 
-      integer, external :: EIR_idez
+      integer, external :: EIRENE_idez
 
       logical, save :: ldebug
 
@@ -907,9 +909,9 @@ c           find corresponding triangle
                   if ((INSPAT(j,i).eq. is -(NLIM+NSTS))
      &                 .and.(INSPAT(j,i).ne.0) )then
                      if (lfound) then                        
-                        write(iunout,*)"* EIR_OUTUSR:"
+                        write(iunout,*)"* EIRENE_OUTUSR:"
                         write(iunout,*)"* Edge twice found"
-                        call EIR_exit_own(1)
+                        call EIRENE_exit_own(1)
                      endif
                      lfound=.true.
                      nr = i
@@ -977,7 +979,7 @@ C|                           eirene.chemFluxDep are not matching.|
 C|                           Just ignore the neutral flux from   |
 C|                           the previous run and continue.      |
 C+---------------------------------------------------------------+
-      SUBROUTINE EIR_PLAUSR
+      SUBROUTINE EIRENE_PLAUSR
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -990,10 +992,10 @@ C+---------------------------------------------------------------+
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
       IMPLICIT NONE
-      REAL(DP) :: FACTOR, EIR_STEP
+      REAL(DP) :: FACTOR, EIRENE_STEP
       INTEGER :: NLINES, ITRI, ISIDE, I, NBIN, ISTRA, ISRFS, ISOR, JJJ,
      .           ITEC1, ITEC2, ITEC3, ISTEP, INDSRF, IS1, IERROR, IPLS
-      INTEGER :: EIR_IDEZ
+      INTEGER :: EIRENE_IDEZ
       INTEGER, ALLOCATABLE :: KSTEP(:), INOSRC(:), IPLAN(:), IPLEN(:)
       REAL(DP) :: FLX, TE, TI, DE, MC, FE, FI, FSH, VP, FEL, DUM
       REAL(DP) :: DELR, FL, MCC, FFEL, CS, vx,vy,vz,di,usrval
@@ -1001,7 +1003,7 @@ C+---------------------------------------------------------------+
      .            errbx, errby, errbz, errbf, bxmax, bymax, bzmax, 
      .            bfmax, dfdx, dfdy, dfdz, xref2, yref2, bzref2, facbz2,
      .            xref3, yref3, bzref3, facbz3
-      integer :: nref, icell, eir_learc1, nplcll, ipolg, nref2, nref3
+      integer :: nref, icell, EIRENE_learc1, nplcll, ipolg, nref2, nref3
       CHARACTER(256) :: line,sstr,filename
       character(2) :: cstr2
       integer, allocatable :: indextmp(:),itritmp(:),isidetmp(:)
@@ -1019,7 +1021,7 @@ C+---------------------------------------------------------------+
 
       integer :: ntr, NLIM_tmp, NSTS_tmp, NGITT_tmp, NGSTAL_tmp, 
      &     NATM_tmp, IPLS_tmp, NTR_tmp, NLMPGS_tmp
-      REAL(DP),ALLOCATABLE,DIMENSION(:,:) :: hydIonFLX, eir_wall_area
+      REAL(DP),ALLOCATABLE,DIMENSION(:,:) :: hydIonFLX, EIRENE_wall_area
       REAL(DP),ALLOCATABLE,DIMENSION(:)   :: hydNeutFLX
       INTEGER, ALLOCATABLE,DIMENSION(:,:) :: hydNeutFLX_info
       logical :: lex,dbg_out
@@ -1043,24 +1045,24 @@ c                     converged neutral fluxes.
 
 
       interface
-        subroutine eir_cell_to_corner (f, fcorner)
+        subroutine EIRENE_cell_to_corner (f, fcorner)
           use eirmod_precision
           implicit none
           real(dp), intent(in) :: f(:)
           real(dp), intent(out) :: fcorner(:)
-        end subroutine eir_cell_to_corner
+        end subroutine EIRENE_cell_to_corner
 
-        subroutine eir_df_dxyz (fcorner, icell, x, y, z, 
+        subroutine EIRENE_df_dxyz (fcorner, icell, x, y, z, 
      .                      dfdx, dfdy, dfdz) 
           use eirmod_precision
           implicit none
           real(dp), intent(in) :: fcorner(:), x, y, z
           real(dp), intent(out) :: dfdx, dfdy, dfdz
           integer, intent(in) :: icell
-        end subroutine eir_df_dxyz 
+        end subroutine EIRENE_df_dxyz 
       end interface
 
-      CALL EIR_ALLOC_CSTEP
+      CALL EIRENE_ALLOC_CSTEP
       ALLOCATE (KSTEP(NSTEP))
       ALLOCATE (INOSRC(NSTEP))
       ALLOCATE (IPLAN(NSTEP))
@@ -1095,11 +1097,11 @@ c begin dmh added 21.06.2010
 c first get number of triangles from misc plasma data:
         write(sstr,'(a20)') 
      .          '*** MISC PLASMA DATA'
-        CALL EIR_locstr_usr(fp+ifoff,sstr,ier)
+        CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
         if(ier /=0) then
            write(*,*) 'PLAUSR: ',sstr,' not found'
            close(fp+ifoff)
-           call EIR_exit_own(1)
+           call EIRENE_exit_own(1)
         endif
         do j=1,2
            read(fp+ifoff,'(a)') line
@@ -1110,23 +1112,23 @@ c first get number of triangles from misc plasma data:
            write (*,*) 'PLAUSR:', sstr
            write (*,*) ' wrong number of triangles in plasma file'
            write (*,*) ' check for correct number in file ',filename
-           call EIR_exit_own(1)
+           call EIRENE_exit_own(1)
         endif
 c allocate temporary array to store plasma flux (hydrogen isotope)
         allocate(hydIonFLX(3,ntr))
         hydIonFLX(:,:) = 0.0
 c allocate temporary array to store wall area of elements
-        allocate(eir_wall_area(3,ntr))
-        eir_wall_area(:,:) = 0.0
+        allocate(EIRENE_wall_area(3,ntr))
+        EIRENE_wall_area(:,:) = 0.0
 c end dmh added 21.06.2010
 
 c firstly, read misc target data
       write(sstr,'(a20)') '*** MISC TARGET DATA'
-      CALL EIR_locstr_usr(fp+ifoff,sstr,ier)
+      CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
       if(ier /=0) then
          write(*,*) 'PLAUSR: ',sstr,' not found'
          close(fp+ifoff)
-         CALL EIR_exit_own(1)
+         CALL EIRENE_exit_own(1)
       endif
       do j=1,2
          read(fp+ifoff,'(a)') line
@@ -1141,7 +1143,7 @@ cswx
       if(nlines <= 0) then
          write(*,*) ' PLAUSR: error, nlines=',nlines
          close(fp+ifoff)
-         call EIR_exit_own(1)
+         call EIRENE_exit_own(1)
       endif
 
       allocate(indextmp(nlines))
@@ -1170,19 +1172,19 @@ c now read species dependent target data
 
 c     get step function index ISTEP
             ISOR=SORLIM(ISRFS,ISTRA)
-            ITEC1=EIR_IDEZ(ISOR,1,4)
-            ITEC2=EIR_IDEZ(ISOR,2,4)
-            ITEC3=EIR_IDEZ(ISOR,3,4)
+            ITEC1=EIRENE_IDEZ(ISOR,1,4)
+            ITEC2=EIRENE_IDEZ(ISOR,2,4)
+            ITEC3=EIRENE_IDEZ(ISOR,3,4)
             IF ((ITEC1 /= 4).AND.(ITEC2 /= 4).AND.(ITEC3 /= 4)) CYCLE
             ISTEP=SORIND(ISRFS,ISTRA)
             IF (ISTEP.EQ.0) THEN
                WRITE (*,*) 'ERROR IN PRIMARY SOURCE DATA '
                WRITE (*,*) 'STEPFUNCTION REQUESTED FOR SOURCE SURFACE '
                WRITE (*,*) 'NO. ',INSOR(ISRFS,ISTRA),' BUT SORIND.EQ.0.'
-               CALL EIR_EXIT_own(1)
+               CALL EIRENE_EXIT_own(1)
             ELSEIF (ISTEP.GT.NSTEP) THEN
-               CALL EIR_MASPRM('NSTEP',5,NSTEP,'ISTEP',5,ISTEP,IERROR)
-               CALL EIR_EXIT_own(1)
+               CALL EIRENE_MASPRM('NSTEP',5,NSTEP,'ISTEP',5,ISTEP,IERROR)
+               CALL EIRENE_EXIT_own(1)
             ENDIF
 
 c     get surface index INDSRF
@@ -1200,7 +1202,7 @@ c     get species index/indices IPLAN(ISTEP) --> IPLEN(ISTEP)
                ipls=nspez(istra)
             END IF
 c     fudge species index for atomic impurity flux (get it from NEMODS index K)
-            IPLS_tmp = EIR_IDEZ(NEMODS(ISTRA),4,4)
+            IPLS_tmp = EIRENE_IDEZ(NEMODS(ISTRA),4,4)
             IF (IPLS_tmp.gt.1) then 
                ipls=IPLS_tmp
             ENDIF
@@ -1209,11 +1211,11 @@ c     search target tag in .zplasma file
            write(cstr2,'(i2.2)') ipls
            write(sstr,'(a23)') 
      .          '*** ION #'//cstr2//' TARGET DATA'
-           CALL EIR_locstr_usr(fp+ifoff,sstr,ier)
+           CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
            if(ier /=0) then
               write(*,*) 'PROUSR: tag ',sstr,'not found'
               close(fp+ifoff)
-              call EIR_exit_own(1)
+              call EIRENE_exit_own(1)
            endif
            do j=1,2
               read(fp+ifoff,'(a)') line
@@ -1324,7 +1326,7 @@ c     enddo istra
       DO ISTEP = 1, NSTEP
          IF (KSTEP(ISTEP) > 0) THEN
             NBIN=KSTEP(ISTEP)+1
-            FL=EIR_STEP(IPLAN(ISTEP),IPLEN(ISTEP),NBIN,ISTEP)
+            FL=EIRENE_STEP(IPLAN(ISTEP),IPLEN(ISTEP),NBIN,ISTEP)
             FLUX(INOSRC(ISTEP))=FL
          END IF
       END DO
@@ -1353,16 +1355,16 @@ c     read neutral flux [A] to target and walls from last EIRENE run
 
 c        check if netral flux file is compatible with actual code version
          if (index(sstr,"* Neutral flux file version:").ne.1) then
-            WRITE(IUNOUT,*) "* EIR_PLAUSR: Warning"
+            WRITE(IUNOUT,*) "* EIRENE_PLAUSR: Warning"
             write(IUNOUT,*) "Found obsolete neutral flux file: ",
      &           trim(eirene_fstoreneutflux)
             write(IUNOUT,*) "Ignoring neutral flux from previous run"
-            WRITE(IUNOUT,*) "* EIR_PLAUSR: Warning end"
+            WRITE(IUNOUT,*) "* EIRENE_PLAUSR: Warning end"
             lex =.false.
          else
             read(line,'(a28,f14.6)') sstr,tmp
             if (tmp.ne.NeutralFluxFileVersion) then
-               WRITE(IUNOUT,*) "* EIR_PLAUSR: Warning"
+               WRITE(IUNOUT,*) "* EIRENE_PLAUSR: Warning"
                write(IUNOUT,'(a,a,a,f14.6)') 
      &              "Found obsolete neutral flux file: ",
      &              trim(eirene_fstoreneutflux),"; version:",tmp
@@ -1370,7 +1372,7 @@ c        check if netral flux file is compatible with actual code version
      &              "but actual neutral flux file should be version:",
      &              NeutralFluxFileVersion
                write(IUNOUT,*) "Ignoring neutral flux from previous run"
-               WRITE(IUNOUT,*) "* EIR_PLAUSR: Warning end"
+               WRITE(IUNOUT,*) "* EIRENE_PLAUSR: Warning end"
                lex =.false.
             else
 c              neutral flux file is compatible with actual code version, so read it
@@ -1380,7 +1382,7 @@ c              neutral flux file is compatible with actual code version, so read
                if ((NLMPGS_tmp-NLIM_tmp-NSTS_tmp.ne.NLMPGS-NLIM-NSTS)
      &              .or.(NSTS_tmp.ne.NSTS).or.(NTR_tmp.ne.NTR).or.
      &              (NGITT_tmp.ne.NGITT).or.(NGSTAL_tmp.ne.NGSTAL)) then
-                  WRITE(IUNOUT,*) "* EIR_PLAUSR: Warning"
+                  WRITE(IUNOUT,*) "* EIRENE_PLAUSR: Warning"
                   WRITE(IUNOUT,*) "Neutral flux file ",
      &                 trim(eirene_fstoreneutflux),
      &                 " does not fit to simulation!"
@@ -1397,7 +1399,7 @@ c              neutral flux file is compatible with actual code version, so read
      &                 "NLMPGS-NLIM-NSTS = ",NLMPGS-NLIM-NSTS
                   write(IUNOUT,*) 
      &                 "Ignoring neutral flux from previous run"
-                  WRITE(IUNOUT,*) "* EIR_PLAUSR: Warning end"
+                  WRITE(IUNOUT,*) "* EIRENE_PLAUSR: Warning end"
                   lex =.false.
                endif
 
@@ -1416,11 +1418,11 @@ c              neutral flux file is compatible with actual code version, so read
      &                    hydNeutFLX_info(i,1), hydNeutFLX_info(i,2),
      &                    hydNeutFLX_info(i,3)
                      if (i.ne.j) then
-                        WRITE(IUNOUT,*) "* EIR_PLAUSR:"
+                        WRITE(IUNOUT,*) "* EIRENE_PLAUSR:"
                         write(IUNOUT,*) "Error reading from file: ",
      &                       trim(eirene_fstoreneutflux)
                         write(IUNOUT,*) "i = ",i,";  in file j = ",j
-                        CALL EIR_EXIT_own(1)
+                        CALL EIRENE_EXIT_own(1)
                      endif
                   enddo         !i
                endif            !(lex)
@@ -1440,7 +1442,7 @@ c     calculate area of wall surface elements
      .           -XTRIAN(NECKE(IS1,ITRI)))**2+
      .           (YTRIAN(NECKE(ISIDE,ITRI))
      .           -YTRIAN(NECKE(IS1,ITRI)))**2)
-            eir_wall_area(iside,itri) = twopi*leng
+            EIRENE_wall_area(iside,itri) = twopi*leng
      &           *( XTRIAN(NECKE(ISIDE,ITRI)) 
      &           +  XTRIAN(NECKE(IS1,ITRI)) )/2.D0
          enddo                  ! iside
@@ -1475,9 +1477,9 @@ c     use hydrogen neutral flux [A] to wall
                         if ((INSPAT(iside,itri).eq. j -(NLIM+NSTS))
      &                       .and.(INSPAT(iside,itri).ne.0) )then
                            if (lex) then
-                              WRITE(IUNOUT,*) "* EIR_PLAUSR:"
+                              WRITE(IUNOUT,*) "* EIRENE_PLAUSR:"
                               write(IUNOUT,*) "* Edge twice found"
-                              CALL EIR_EXIT_own(1)
+                              CALL EIRENE_EXIT_own(1)
                            endif
                            lex=.true.
                            
@@ -1489,7 +1491,7 @@ c     use hydrogen neutral flux [A] to wall
                               FLXOUT(j) = FLXOUT(j)
      &                             + DABS(hydNeutFLX(i))
                            else
-                              WRITE(IUNOUT,*) "* EIR_PLAUSR:"
+                              WRITE(IUNOUT,*) "* EIRENE_PLAUSR:"
                               write(IUNOUT,*) 
      &                             "Neutral flux from previous run ",
      &                             "is not associated with the same ",
@@ -1503,16 +1505,16 @@ c     use hydrogen neutral flux [A] to wall
                               write(IUNOUT,*) "isurf_old = ",
      &                             hydNeutFLX_info(i,3),
      &                             "; isurf_new = ",itri
-                              CALL EIR_EXIT_own(1)
+                              CALL EIRENE_EXIT_own(1)
                            endif ! same triangle associated
                         endif   ! triangle found
                      enddo      ! iside
                   enddo         ! itri
                else
-                  WRITE(IUNOUT,*) "* EIR_PLAUSR:"
+                  WRITE(IUNOUT,*) "* EIRENE_PLAUSR:"
                   write(IUNOUT,*) 
      &                 "* No triangle associated with neutral flux"
-                  CALL EIR_EXIT_own(1)
+                  CALL EIRENE_EXIT_own(1)
                endif            ! hydNeutFLX_info(i).ne.0
             endif               ! hydNeutFLX(i).ne.0
          enddo                  ! i
@@ -1542,12 +1544,13 @@ c     Debug output of boundary
      &                 XTRIAN(NECKE(IS1,ITRI)),
      &                 YTRIAN(NECKE(ISIDE,ITRI)),
      &                 YTRIAN(NECKE(IS1,ITRI)), 
-     &                 FLXOUT(i)/(1.6022D-19*eir_wall_area(iside,itri)),
+     &                 FLXOUT(i)/
+     &                 (1.6022D-19*EIRENE_wall_area(iside,itri)),
      &                 hydNeutFLX(i)
-     &                 /(1.6022D-19*eir_wall_area(iside,itri)),
+     &                 /(1.6022D-19*EIRENE_wall_area(iside,itri)),
      &                 hydIonFLX(iside,itri)
-     &                 /(1.6022D-19*eir_wall_area(iside,itri)),
-     &                 eir_wall_area(iside,itri)
+     &                 /(1.6022D-19*EIRENE_wall_area(iside,itri)),
+     &                 EIRENE_wall_area(iside,itri)
                endif
             enddo
          enddo
@@ -1585,7 +1588,7 @@ c     FLXOUT is needed in #/(cm^2 s) (covert from A to #/(cm^2 s))
             if (INMTI(iside,itri).ne.0) then
                FLXOUT(NLIM+NSTS + INSPAT(iside,itri)) = 
      &              FLXOUT(NLIM+NSTS + INSPAT(iside,itri))
-     &              /(1.6022D-19*eir_wall_area(iside,itri))
+     &              /(1.6022D-19*EIRENE_wall_area(iside,itri))
             endif
          enddo                  ! iside
       enddo                     ! itri
@@ -1644,7 +1647,7 @@ c     cleanup
       deallocate(hydIonFLX)
       deallocate(hydNeutFLX)
       deallocate(hydNeutFLX_info)
-      deallocate(eir_wall_area)
+      deallocate(EIRENE_wall_area)
 
       close(fp+ifoff)
 
@@ -1669,28 +1672,28 @@ c     cleanup
       COPY=0._dp
 
       if (naini >= 8) then
-        call eir_prousr(copy,1+5*npls,0._dp,0._dp,0._dp,0._dp,0._dp,0._dp,
-     .              0._dp,nsbox)
+        call EIRENE_prousr(copy,1+5*npls,0._dp,0._dp,
+     .        0._dp,0._dp,0._dp,0._dp,0._dp,nsbox)
         adin(7,1:nsbox) = copy(1:nsbox)
 
-        call eir_prousr(copy,2+5*npls,0._dp,0._dp,0._dp,0._dp,0._dp,0._dp,
-     .              0._dp,nsbox)
+        call EIRENE_prousr(copy,2+5*npls,0._dp,0._dp,
+     .       0._dp,0._dp,0._dp,0._dp,0._dp,nsbox)
         adin(8,1:nsbox) = copy(1:nsbox)
       end if 
 
-      call eir_prousr(psi,5+5*npls,0._dp,0._dp,0._dp,0._dp,0._dp,0._dp,
-     .            0._dp,nsbox)
+      call EIRENE_prousr(psi,5+5*npls,0._dp,0._dp,0._dp,
+     .     0._dp,0._dp,0._dp,0._dp,nsbox)
 
       psi(1:nsbox) = psi(1:nsbox) * 1.e4_dp
 
       adin(1,1:nsbox) = psi(1:nsbox)
 
-      call eir_cell_to_corner (psi, psi_corner)
+      call EIRENE_cell_to_corner (psi, psi_corner)
 
       xref = 200._dp
       yref = 0._dp
-      NREF=eir_LEARC1(XREF,YREF,0._DP,IPOLG,1,NR1STM,.FALSE.,.FALSE.,1,
-     .                 'PLAUSR      ')
+      NREF=EIRENE_LEARC1(XREF,YREF,0._DP,IPOLG,1,NR1STM,
+     .     .FALSE.,.FALSE.,1,'PLAUSR      ')
       BZREF=BZIN(NREF)*BFIN(NREF)
       FACBZ=xcom(nref)*BZREF
 
@@ -1699,8 +1702,8 @@ c     cleanup
 
       xref2= 380._dp
       yref2 = 0._dp
-      NREF2=eir_LEARC1(XREF2,YREF2,0._DP,IPOLG,1,NR1STM,.FALSE.,.FALSE.,1,
-     .                 'PLAUSR      ')
+      NREF2=EIRENE_LEARC1(XREF2,YREF2,0._DP,IPOLG,1,NR1STM,
+     .     .FALSE.,.FALSE.,1,'PLAUSR      ')
       BZREF2=BZIN(NREF2)*BFIN(NREF2)
       FACBZ2=xcom(nref2)*BZREF2
 
@@ -1709,8 +1712,8 @@ c     cleanup
 
       xref3= 250._dp
       yref3 = 150._dp
-      NREF3=eir_LEARC1(XREF3,YREF3,0._DP,IPOLG,1,NR1STM,.FALSE.,.FALSE.,1,
-     .                 'PLAUSR      ')
+      NREF3=EIRENE_LEARC1(XREF3,YREF3,0._DP,IPOLG,1,NR1STM,
+     .     .FALSE.,.FALSE.,1,'PLAUSR      ')
       BZREF3=BZIN(NREF3)*BFIN(NREF3)
       FACBZ3=xcom(nref3)*BZREF3
 
@@ -1731,7 +1734,8 @@ c     cleanup
         x = xcom(icell)
         y = ycom(icell)
         rad = x
-        call eir_df_dxyz (psi_corner, icell, x, y, 0._dp, dfdx, dfdy, dfdz) 
+        call EIRENE_df_dxyz (psi_corner, icell, x, y, 
+     &       0._dp, dfdx, dfdy, dfdz) 
 
         bx = -dfdy / rad
         by =  dfdx / rad
@@ -1811,7 +1815,7 @@ c     cleanup
 C ===== SOURCE: pltusr.f
 C
 C
-      SUBROUTINE EIR_PLTUSR(PLABLE,J)
+      SUBROUTINE EIRENE_PLTUSR(PLABLE,J)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -1842,7 +1846,7 @@ C get plasma values for bulk species IPLS (module comprt, set by subr. plasma)
 c
 c reads casename.zplasma
 c
-      SUBROUTINE EIR_PROUSR (PRO,INDX,P0,P1,P2,P3,P4,P5,PROVAC,N)
+      SUBROUTINE EIRENE_PROUSR (PRO,INDX,P0,P1,P2,P3,P4,P5,PROVAC,N)
 C
 C
       USE EIRMOD_PRECISION
@@ -1892,11 +1896,11 @@ c read in plasma data from fort.31 ?
 c misc plasma data:
         write(sstr,'(a20)') 
      .          '*** MISC PLASMA DATA'
-        CALL EIR_locstr_usr(fp+ifoff,sstr,ier)
+        CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
         if(ier /=0) then
            write(*,*) 'PROUSR: ',sstr,' not found'
            close(fp+ifoff)
-           call EIR_exit_own(1)
+           call EIRENE_exit_own(1)
         endif
         do j=1,2
            read(fp+ifoff,'(a)') line
@@ -1907,7 +1911,7 @@ c misc plasma data:
            write (*,*) 'PROUSR:', sstr
            write (*,*) ' wrong number of triangles in plasma file'
            write (*,*) ' check for correct number in file ',filename
-           call EIR_exit_own(1)
+           call EIRENE_exit_own(1)
         endif
 
         do j=1,ntr
@@ -1940,11 +1944,11 @@ c loop over species:
            write(cstr2,'(i2.2)') i
            write(sstr,'(a23)') 
      .          '*** ION #'//cstr2//' PLASMA DATA'
-           CALL EIR_locstr_usr(fp+ifoff,sstr,ier)
+           CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
            if(ier /=0) then
               write(*,*) 'PROUSR: tag ',sstr,'not found'
               close(fp+ifoff)
-              call EIR_exit_own(1)
+              call EIRENE_exit_own(1)
            endif
 
            do j=1,3
@@ -1956,7 +1960,7 @@ c loop over species:
               write (*,*) 'PROUSR:', sstr
               write (*,*) ' wrong number of triangles in plasma file'
               write (*,*) ' check for correct number in file ',filename
-              call EIR_exit_own(1)
+              call EIRENE_exit_own(1)
            endif
 
            do j=1,ntr
@@ -2047,24 +2051,24 @@ c bf
 C ===== SOURCE: refusr.f
 
 
-      SUBROUTINE EIR_REFUSR
+      SUBROUTINE EIRENE_REFUSR
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: XMW,XCW,XMP,XCP,ZCOS,ZSIN,EXPI,RPROB,
      .                        E0TERM
       INTEGER, INTENT(IN) :: IGASF,IGAST
-      ENTRY EIR_RF0USR
-      ENTRY EIR_SPTUSR
-      ENTRY EIR_SP0USR
-      ENTRY EIR_SP1USR
-      ENTRY EIR_RF1USR (XMW,XCW,XMP,XCP,IGASF,IGAST,ZCOS,ZSIN,EXPI,
+      ENTRY EIRENE_RF0USR
+      ENTRY EIRENE_SPTUSR
+      ENTRY EIRENE_SP0USR
+      ENTRY EIRENE_SP1USR
+      ENTRY EIRENE_RF1USR (XMW,XCW,XMP,XCP,IGASF,IGAST,ZCOS,ZSIN,EXPI,
      .              RPROB,E0TERM,*,*,*,*)
       RETURN
       END
 C ===== SOURCE: retusr.f
 c
 c
-      subroutine EIR_retusr(sig)
+      subroutine EIRENE_retusr(sig)
       USE EIRMOD_PRECISION
       implicit none
       real(dp), intent(in) :: sig
@@ -2073,7 +2077,7 @@ c
 C ===== SOURCE: samusr.f
 C
 C
-      SUBROUTINE EIR_SAMUSR (NLSF,X0,Y0,Z0,
+      SUBROUTINE EIRENE_SAMUSR (NLSF,X0,Y0,Z0,
      .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
@@ -2091,13 +2095,14 @@ C
       INTEGER, INTENT(IN) :: NLSF,is1, is2
       INTEGER, INTENT(OUT) :: IRUSR, IPUSR, ITUSR, IAUSR, IBUSR
       REAL(DP) :: X, Y, T, B0, B1, B2, Z1, Z2
-      REAL(DP), EXTERNAL :: EIR_RANF_EIRENE
+      REAL(DP), EXTERNAL :: EIRENE_RANF_EIRENE
       INTEGER :: IER
 
-      entry EIR_sm0usr (is1,is2,sorad1,sorad2,sorad3,sorad4,sorad5,sorad6)
+      entry EIRENE_sm0usr (is1,is2,sorad1,sorad2,sorad3,
+     &     sorad4,sorad5,sorad6)
       return
 
-      entry EIR_SM1USR (NLSF,X0,Y0,Z0,
+      entry EIRENE_SM1USR (NLSF,X0,Y0,Z0,
      .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
@@ -2107,7 +2112,7 @@ C
 C ===== SOURCE: sigusr.f
 
 
-      SUBROUTINE EIR_SIGUSR(IFIRST,JJJ,ZDS,DUMMY1,PSIG,DUMMY2,ARGST,
+      SUBROUTINE EIRENE_SIGUSR(IFIRST,JJJ,ZDS,DUMMY1,PSIG,DUMMY2,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
 C
 C  INPUT:
@@ -2149,7 +2154,7 @@ C
 C ===== SOURCE: talusr.f
 c
 c
-      subroutine EIR_talusr (ICOUNT,VECTOR,TALTOT,TALAV,
+      subroutine EIRENE_talusr (ICOUNT,VECTOR,TALTOT,TALAV,
      .              TXTTL,TXTSP,TXTUN,ILAST,*)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -2168,7 +2173,7 @@ c
 C ===== SOURCE: timusr.f
 
 
-      SUBROUTINE EIR_TIMUSR(N,X,Y,Z,VX,VY,VZ,N1,N2,T,IC,IE,NP,NL)
+      SUBROUTINE EIRENE_TIMUSR(N,X,Y,Z,VX,VY,VZ,N1,N2,T,IC,IE,NP,NL)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       IMPLICIT NONE
@@ -2176,14 +2181,14 @@ C ===== SOURCE: timusr.f
       INTEGER, INTENT(IN) :: N, N1, N2, IC, IE, NP, IS, NRCELL
       LOGICAL :: NL
 
-      ENTRY EIR_NORUSR(is,x,y,z,cx,cy,cz,sc,VX,VY,VZ,NRCELL)
+      ENTRY EIRENE_NORUSR(is,x,y,z,cx,cy,cz,sc,VX,VY,VZ,NRCELL)
 
       RETURN
       END
 C ===== SOURCE: tmsusr.f
 
 
-      SUBROUTINE EIR_TMSUSR (T0)
+      SUBROUTINE EIRENE_TMSUSR (T0)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: T0
@@ -2192,7 +2197,7 @@ C ===== SOURCE: tmsusr.f
 C ===== SOURCE: upcusr.f
 C
 C
-      SUBROUTINE EIR_UPCUSR(WS,IND)
+      SUBROUTINE EIRENE_UPCUSR(WS,IND)
 C
 C  USER SUPPLIED COLLISION ESTIMATOR, VOLUME AVERAGED
 C
@@ -2317,7 +2322,7 @@ csw change ordering
 cswx
       RETURN
 
-      entry eir_upcusr_reinit
+      entry EIRENE_upcusr_reinit
       if(lfirst) then
         lfirst=.false.
 
@@ -2346,13 +2351,13 @@ cswx
 C ===== SOURCE: upnusr.f
 c
 c
-      subroutine EIR_upnusr
+      subroutine EIRENE_upnusr
       return
       end
 C ===== SOURCE: upsusr.f
 C
 C
-      SUBROUTINE EIR_UPSUSR(WT,IND)
+      SUBROUTINE EIRENE_UPSUSR(WT,IND)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -2365,7 +2370,7 @@ C
 C ===== SOURCE: uptusr.f
 C
 C
-      SUBROUTINE EIR_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
+      SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
 C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
 C
@@ -2505,7 +2510,7 @@ c         net sources due CX:
         enddo
       endif
       RETURN
-      entry eir_uptusr_reinit
+      entry EIRENE_uptusr_reinit
       if(ifirst .ne. 0) then
         ifirst=0
         if(allocated(cndyna)) deallocate(cndyna)
@@ -2523,18 +2528,18 @@ c         net sources due CX:
 C ===== SOURCE: vdion.f
 
 
-      FUNCTION EIR_VDION (I)
+      FUNCTION EIRENE_VDION (I)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I
-      REAL(DP) :: EIR_VDION
-      EIR_VDION=0.
+      REAL(DP) :: EIRENE_VDION
+      EIRENE_VDION=0.
       RETURN
       END
 C ===== SOURCE: vecusr.f
 
 
-      SUBROUTINE EIR_VECUSR (I,VX,VY,VZ,IPLS)
+      SUBROUTINE EIRENE_VECUSR (I,VX,VY,VZ,IPLS)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I, IPLS
@@ -2544,7 +2549,7 @@ C ===== SOURCE: vecusr.f
 C ===== SOURCE: volusr.f
 
 
-      SUBROUTINE EIR_VOLUSR(N,A)
+      SUBROUTINE EIRENE_VOLUSR(N,A)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: A(*)

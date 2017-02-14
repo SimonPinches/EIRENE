@@ -1,4 +1,4 @@
-      SUBROUTINE EIR_SHOW_GIT_INFO(LOUT)
+      SUBROUTINE EIRENE_SHOW_GIT_INFO(LOUT)
       implicit none
       integer, intent(in) :: LOUT
 
@@ -30,9 +30,9 @@ C
          WRITE (LOUT,*) "********************************************"
       endif
 
-      END SUBROUTINE EIR_SHOW_GIT_INFO
+      END SUBROUTINE EIRENE_SHOW_GIT_INFO
 C
-      SUBROUTINE EIR_SHOW_GIT_INFO_SHORT(LOUT)
+      SUBROUTINE EIRENE_SHOW_GIT_INFO_SHORT(LOUT)
 C***********************************************************************
 C   AUTHOR  :  Derek Harting (d.harting@fz-juelich.de)
 C
@@ -62,4 +62,4 @@ C
       ENDIF
       WRITE(LOUT,"(a,a)") " EIRENE SHA1-key       : ",CSTR
 
-      END  SUBROUTINE EIR_SHOW_GIT_INFO_SHORT
+      END  SUBROUTINE EIRENE_SHOW_GIT_INFO_SHORT
