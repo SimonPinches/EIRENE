@@ -37,6 +37,7 @@ C
       character(2) :: cstr2
       integer :: idum
       real(dp) :: rdum
+      INTEGER, SAVE :: IPLSTI, IPLSV
 csw
 c     reset?
       if(indx < 0) then
@@ -153,10 +154,18 @@ c
 c te         
          pro(1:n) = plas(1,1:n,0)
          indar(1) = indar(1)+1
-
+c     WARNING!: Assume te is always called before Ti an Vi
+         IPLSTI = 0
+         IPLSV  = 0
       elseif (indx == 1) then
 c ti
-         pro(1:n) = plas(2,1:n,ipls)
+         IPLSTI = IPLSTI+1
+         IF (IPLSTI .GT. NPLSI) THEN
+            write(IUNOUT,*) "PROUSR CALLED FOR TI WITH IPLSTI > NPLS"
+            write(IUNOUT,*) "IPLSTI = ",IPLSTI," NPLS=",NPLS
+            call EIRENE_exit_own(1)
+         ENDIF
+         pro(1:n) = plas(2,1:n,iplsti)
          indar(2) = indar(2)+1
 
       elseif (indx == 1+1*npls) then
@@ -166,30 +175,36 @@ c ni
 
       elseif (indx == 1+2*npls) then
 c vx
-         pro(1:n) = plas(4,1:n,ipls)
+         IPLSV = IPLSV+1
+         IF (IPLSV .GT. NPLSI) THEN
+            write(IUNOUT,*) "PROUSR CALLED FOR VX WITH IPLSV > NPLS"
+            write(IUNOUT,*) "IPLSV = ",IPLSV," NPLS=",NPLS
+            call EIRENE_exit_own(1)
+         ENDIF
+         pro(1:n) = plas(4,1:n,iplsv)
          indar(4) = indar(4) + 1
 
       elseif (indx == 1+3*npls) then
 c vy
-         pro(1:n) = plas(5,1:n,ipls)     
+         pro(1:n) = plas(5,1:n,iplsv)     
          indar(5) = indar(5) + 1
 
       elseif (indx == 1+4*npls) then
 c vz
-         pro(1:n) = plas(6,1:n,ipls)
+         pro(1:n) = plas(6,1:n,iplsv)
          indar(6) = indar(6) + 1
 
-      elseif (indx == 1+5*npls) then
+      elseif (indx == 1+1*npls+NPLSTI+3*NPLSV) then
 c bx
          pro(1:n) = plas(7,1:n,0)
          indar(7) = indar(7) + 1
 
-      elseif (indx == 2+5*npls) then
+      elseif (indx == 2+1*npls+NPLSTI+3*NPLSV) then
 c by
          pro(1:n) = plas(8,1:n,0)
          indar(8) = indar(8) + 1
 
-      elseif (indx == 3+5*npls) then
+      elseif (indx == 3+1*npls+NPLSTI+3*NPLSV) then
 c bz
          pro(1:n) = plas(9,1:n,0)
          indar(9) = indar(9) + 1
