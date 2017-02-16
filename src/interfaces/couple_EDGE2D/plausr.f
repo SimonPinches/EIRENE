@@ -369,7 +369,7 @@ C     IF NO ION KINETIC ENERGY FLUX IS SPECIFIED, DERIVE IT FROM  FI,MC,VP
                         ELSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = FEL/DELR
                      ENDIF
 csw
-                     usrstep(ipls,istep,kstep(istep)) = usrval
+c                     usrstep(ipls,istep,kstep(istep)) = usrval
 csw
 c                 enddo ipls,iplan
                   ENDDO
