@@ -30,7 +30,7 @@ C+---------------------------------------------------------------+
       REAL(DP), INTENT(INOUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                         XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:),CNDYNP(:)
+c      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:),CNDYNP(:)
 CDR
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
 CDR
@@ -61,14 +61,14 @@ csw
 
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
-        ALLOCATE (CNDYNA(NATM))
-        ALLOCATE (CNDYNP(NPLS))
-        DO IAT=1,NATMI
-          CNDYNA(IAT)=1.D3*AMUA*RMASSA(IAT)
-        END DO
-        DO IPL=1,NPLSI
-          CNDYNP(IPL)=1.D3*AMUA*RMASSP(IPL)
-        END DO
+c        ALLOCATE (CNDYNA(NATM))
+c        ALLOCATE (CNDYNP(NPLS))
+c        DO IAT=1,NATMI
+c          CNDYNA(IAT)=1.D3*AMUA*RMASSA(IAT)
+c        END DO
+c        DO IPL=1,NPLSI
+c          CNDYNP(IPL)=1.D3*AMUA*RMASSP(IPL)
+c        END DO
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
@@ -141,8 +141,8 @@ c         net sources due CX:
       entry EIRENE_uptusr_reinit
       if(ifirst .ne. 0) then
         ifirst=0
-        if(allocated(cndyna)) deallocate(cndyna)
-        if(allocated(cndynp)) deallocate(cndynp)
+c        if(allocated(cndyna)) deallocate(cndyna)
+c        if(allocated(cndynp)) deallocate(cndynp)
         if(allocated(vpx)) deallocate(vpx)
         if(allocated(vpy)) deallocate(vpy)
         if(allocated(vrx)) deallocate(vrx)
