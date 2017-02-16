@@ -204,11 +204,11 @@ c not used anymore... (changed background profiles in extra file?)
      .           tiin(ipls,ir),
      .           edrift(ipls,ir),
 
-c     .           eapl(ir),empl(ir),eipl(ir),ephpl(ir),
-     .           eapl(ir),empl(ir),eipl(ir),0.,
+c     .           eapl(ipls,ir),empl(ipls,ir),eipl(ipls,ir),ephpl(ir),
+     .           eapl(ipls,ir),empl(ipls,ir),eipl(ipls,ir),0.,
 c espl:
-c     .           eapl(ir)+empl(ir)+eipl(ir)+ephpl(ir),
-     .           eapl(ir)+empl(ir)+eipl(ir)+0.,
+c     .           eapl(ipls,ir)+empl(ipls,ir)+eipl(ipls,ir)+ephpl(ir),
+     .           eapl(ipls,ir)+empl(ipls,ir)+eipl(ipls,ir)+0.,
 
 c     .           eael(ir),emel(ir),eiel(ir),ephel(ir),
      .           eael(ir),emel(ir),eiel(ir),0.,
