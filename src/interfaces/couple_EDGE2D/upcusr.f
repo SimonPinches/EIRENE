@@ -41,6 +41,14 @@ c                     converged neutral fluxes.
       integer :: i,j
       real*8 :: cosrot, sinrot, my_velx, my_vely, my_velz
       
+c     added rotsav_torcol from old eirene version
+c     was added by sven wiesen to calculate diagnostic file eirene_fbirth
+c     was defined in COMPRT and set in particle-tracing.f
+c     current eirene version does not initialze rotsav_torcol, so the calculation
+c     here is not correct. Needs to be reinserted to particle tracing if diagnostic
+c     is used again
+      real(dp) :: ROTSAV_TORCOL
+      
       namelist /eirene_user/eirene_nbirth,eirene_njetto,
      .                      eirene_fbirth,eirene_ftransfer,
      .                      eirene_phi_offsets,
@@ -76,6 +84,10 @@ cdmh
           allocate(rdata(eirene_nbirth,9))
         endif
       endif
+
+      ROTSAV_TORCOL=0.d0
+c     skip calculation as it is not correct with ROTSAV_TORCOL=0.d0
+      return
 
       if(         eirene_nbirth .gt. 0
      .      .and. ind .eq. 1 
