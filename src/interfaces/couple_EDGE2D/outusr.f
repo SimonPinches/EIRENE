@@ -88,6 +88,15 @@ c                     converged neutral fluxes.
       logical :: eirene_use_elstepdat_bug
       logical  :: lfound
       real(dp) :: neutralFluxFileVersion
+c     replicate old sputtered flux arrays sptpl, sptat, sptml, sptio, sptpht
+c     for the moment these are filled with values from sptpltot, sptatot,sptmtot,sptitot,sptphtot
+c     in the future it is better to pass particle resolved sputtered fluxes
+c     from sptXY X=PH,I,A,M,P Y=PHT,IO,AT,ML,PL
+      real(dp),dimension(npls,nlimps)  :: sptpl
+      real(dp),dimension(natm,nlimps)  :: sptat
+      real(dp),dimension(nmol,nlimps)  :: sptml
+      real(dp),dimension(nion,nlimps)  :: sptio
+      real(dp),dimension(nphot,nlimps) :: sptpht
       namelist /eirene_user/eirene_nbirth,eirene_njetto,
      .                      eirene_fbirth,eirene_ftransfer,
      .                      eirene_phi_offsets,
@@ -108,6 +117,18 @@ cdmh
       read(9998,eirene_user)
       close(9998)
 csw
+
+C     fill replicated sputtered flux arrays
+      sptpl(:,:) = 0.d0
+      sptpl(1,1:nlimps) = sptpltot(1:nlimps)
+      sptat(:,:) = 0.d0
+      sptat(1,1:nlimps) = sptatot(1:nlimps)
+      sptml(:,:) = 0.d0
+      sptml(1,1:nlimps) = sptmtot(1:nlimps)
+      sptio(:,:) = 0.d0
+      sptio(1,1:nlimps) = sptitot(1:nlimps)
+      sptpht(:,:) = 0.d0
+      sptpht(1,1:nlimps) = sptphtot(1:nlimps)
 
 csw 25oct07
       allocate(sumpotpl(npls))
