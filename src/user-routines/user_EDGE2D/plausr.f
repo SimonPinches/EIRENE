@@ -737,16 +737,16 @@ c     cleanup
       COPY=0._dp
 
       if (naini >= 8) then
-        call EIRENE_prousr(copy,1+5*npls,0._dp,0._dp,
+        call EIRENE_prousr(copy,1+1*npls+NPLSTI+3*NPLSV,0._dp,0._dp,
      .        0._dp,0._dp,0._dp,0._dp,0._dp,nsbox)
         adin(7,1:nsbox) = copy(1:nsbox)
 
-        call EIRENE_prousr(copy,2+5*npls,0._dp,0._dp,
+        call EIRENE_prousr(copy,2+1*npls+NPLSTI+3*NPLSV,0._dp,0._dp,
      .       0._dp,0._dp,0._dp,0._dp,0._dp,nsbox)
         adin(8,1:nsbox) = copy(1:nsbox)
       end if 
 
-      call EIRENE_prousr(psi,5+5*npls,0._dp,0._dp,0._dp,
+      call EIRENE_prousr(psi,11+1*npls+NPLSTI+3*NPLSV,0._dp,0._dp,0._dp,
      .     0._dp,0._dp,0._dp,0._dp,nsbox)
 
       psi(1:nsbox) = psi(1:nsbox) * 1.e4_dp

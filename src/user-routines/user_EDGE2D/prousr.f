@@ -209,19 +209,26 @@ c bz
          pro(1:n) = plas(9,1:n,0)
          indar(9) = indar(9) + 1
 
-      elseif (indx == 4+5*npls) then
+      elseif (indx == 4+1*NPLS+NPLSTI+3*NPLSV) then
 c bf
          pro(1:n) = plas(10,1:n,0)
          indar(10) = indar(10) + 1
 
-      elseif (indx == 5+5*npls) then
+c      reserved for electric field:
+c      EXIN: indx=7+1*NPLS+NPLSTI+3*NPLSV
+c      EYIN: indx=8+1*NPLS+NPLSTI+3*NPLSV
+c      EZIN: indx=9+1*NPLS+NPLSTI+3*NPLSV
+c      EFIN: indx=10+1*NPLS+NPLSTI+3*NPLSV
+
+      elseif (indx == 11+1*NPLS+NPLSTI+3*NPLSV) then
 ! psi
          pro(1:n) = plas(6,1:n,0)
 
-      elseif (indx == 7+5*npls) then
-! zi
-         pro(1:n) = plas(11,1:n,ipls)
-
+c      ZI for charge boundling not yet implemented
+c      elseif (indx == 12+1*NPLS+NPLSTI+3*NPLSV) then
+c! zi
+c         pro(1:n) = plas(11,1:n,ipls)
+c
       else
          write (iunout,*) ' prousr: no data provided for index ',indx
          pro(1:n) = 0._dp
