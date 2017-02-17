@@ -104,7 +104,10 @@ c     .          te,ne,bx,by,bz,pot,psi
               plas(10,j,0) =  bnorm
            endif
         enddo
+        plas(7,ntr+1:nrad,0) = 0._dp
+        plas(8,ntr+1:nrad,0) = 0._dp
         plas(9,ntr+1:nrad,0) = 1._dp
+        plas(10,ntr+1:nrad,0) = 1._dp
 
 c loop over species:
         do i=1,npls
