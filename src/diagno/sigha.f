@@ -4,6 +4,12 @@ Cdr Aug.16:  The idenitifcation of particular lines
 cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 12)
 cdr          is not functional in this version, distinct from the manual description
 cdr          currently lines can only be identified by their central energy PEN (EMIN1)
+cdr          and input parameter EMAX1 is not used at all.
+cpb Feb 17:  refresh ADDV tallies (volumetric line emissivities) 
+c            not only for new stratum, but also when
+c            PEN parameter is different from that from previous call,
+c            i.e. a new line is requested for same stratum flag.
+c            
 C
       SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
