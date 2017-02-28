@@ -265,7 +265,7 @@ c                           restricted to this processor iu
           write (iunout,*) 'number of particles to be resampled ',
      .                     'per processor '
           do ipe=0,nprs-1
-            write (iunout,'(2i10)') (ipe, icopro(ipe))
+            write (iunout,'(2i10)') ipe, icopro(ipe)
           enddo
           write (iunout,'(A7,i10)') 'total  ', sum(icopro(0:nprs-1))
 

@@ -16,7 +16,7 @@ C
 C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
 C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
 C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
-C                  E=M/2 V_M^2 =3/2 KT
+C                  E=ESIGCX(IRCX,1)
 C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
 C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
 C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
@@ -138,7 +138,7 @@ C
 C    set parameters for random sampling in cell icell=K
 
 C
-      IF (K.GT.0) THEN  ! 
+      IF (K.GT.0) THEN  ! K is the grid cell number. Use local bulk medium parameters
         ZARGX=ZRG(IPLS,K)
         ZARGY=ZRG(IPLS,K)
         ZARGZ=ZRG(IPLS,K)

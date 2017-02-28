@@ -670,8 +670,8 @@ C  NO INTERSECTION FOUND
           IF (NLSRFX.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
             IF (NLTRC) 
-      .       WRITE (iunout,*)
-      .       ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+     .        WRITE (iunout,*)
+     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
 
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
