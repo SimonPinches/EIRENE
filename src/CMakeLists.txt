@@ -11,6 +11,8 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   add_definitions(-real-size 64 -fp-model source)
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   add_definitions(-fdefault-real-8 -fdefault-double-8 -fno-range-check)
+elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+  add_definitions(-r8)
 endif()
 
 # Finds all fortran files (*.f) in the source directory and extract the 
@@ -33,7 +35,7 @@ foreach(fortran_dir ${fortran_dirs})
   file(GLOB src_${fortran_dir} ${PROJECT_SOURCE_DIR}/${fortran_dir}/*.f)
 endforeach()
 
-# Remove program file to be able to at it seperately if required.
+# Remove program file to be able to add it seperately if required.
 list(GET src_main-routines 0 fortran_file)
 get_filename_component(fortran_dir ${fortran_file} PATH)
 list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.f)
