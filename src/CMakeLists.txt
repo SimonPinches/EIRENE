@@ -15,12 +15,19 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
   add_definitions(-r8)
 endif()
 
+# Add option to control whether trace output will be compiled
+option(TRACE "Build with trace output" OFF)
+if (TRACE)
+  message("-- Adding TRACE flag...")
+  add_definitions(-DTRACE)
+endif()
+
 # Finds all fortran files (*.f) in the source directory and extract the 
 # relative path. Relative path is stored in variable 'fortran_dirs'.
-message(STATUS "Detecting fortran files (*.f) in subdirectories of " 
+message(STATUS "Detecting fortran files (*.[fF]) in subdirectories of " 
                ${PROJECT_SOURCE_DIR})
 file(GLOB_RECURSE fortran_files RELATIVE ${PROJECT_SOURCE_DIR} 
-     ${PROJECT_SOURCE_DIR}/*.f)
+     ${PROJECT_SOURCE_DIR}/*.[fF])
 set(fortran_dirs "")
 foreach(fortran_file ${fortran_files})
   get_filename_component(fortran_dir ${fortran_file} PATH)
@@ -29,10 +36,10 @@ endforeach()
 list(REMOVE_DUPLICATES fortran_dirs)
 
 # Sets variables 'src_[relative path to subdirectory]' which contain a list of 
-# all fortran files (*.f) in this subdirectory.
+# all fortran files (*.[fF]) in this subdirectory.
 message(STATUS "Configuring variables src_[relative path to subdirectory]")
 foreach(fortran_dir ${fortran_dirs})
-  file(GLOB src_${fortran_dir} ${PROJECT_SOURCE_DIR}/${fortran_dir}/*.f)
+  file(GLOB src_${fortran_dir} ${PROJECT_SOURCE_DIR}/${fortran_dir}/*.[fF])
 endforeach()
 
 # Remove program file to be able to add it seperately if required.
@@ -67,7 +74,7 @@ endforeach()
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
                    ${src_file-handling} ${src_geometry} 
-                   ${src_geometry/trc-time-routines} 
+                   ${src_geometry/time-routines} 
                    ${src_grsoft-dummy_reduced} ${src_interfaces/couple_Dummy} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
