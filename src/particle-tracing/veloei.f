@@ -118,6 +118,7 @@ C
 C
       ELSE
         WRITE (iunout,*) 'ERROR IN VELOEI '
+        WRITE (IUNOUT,*) 'NPANU ',NPANU
         WRITE (iunout,*) 'IREI ',IREI,P2ND(IREI,NSPAMI)
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
