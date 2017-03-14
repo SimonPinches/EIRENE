@@ -1,4 +1,10 @@
-
+cdr called from find_param.f in initialization phase. Read block 14
+c   and set storage for allocatable arrays:
+c   NPTRGT:
+c   NAIN  :
+c   NKNOT :
+C   NTRI  :
+C   NCOP  :    
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
@@ -12,7 +18,7 @@
 
       INTEGER, INTENT(IN) :: IUNIN
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
-     .           NAINB, IAIN, NAOTB, IAOT, NRKNOT, 
+     .           NAINB, IAIN, NAOTB, IAOT, NRKNOT,
      .           NTRII, NCOPI
       INTEGER, ALLOCATABLE :: NTGPRT(:)
       CHARACTER(72) :: ZEILE
@@ -60,8 +66,8 @@ C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
 C
-C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
-C                                              AND IN SUBR. COLLIDE)
+C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP)
+C                                              
       NCOPI=4
       NCPVI=NCOPI*NPLS
       NCOP = NCOPI
