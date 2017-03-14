@@ -4,6 +4,7 @@ cdr 14.10.14:        naming of arrays in smestl adapted to those of other eirene
 cdr                  two further tallies introduced (gg, stv) for stand. dev. 
 cdr                  of sum over strata
 cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
+cdr mar 17:  comments added
  
       MODULE EIRMOD_CESTIM
  
@@ -107,15 +108,16 @@ C
      R SPTPPHT(:,:), 
      R SPTAPL(:,:), SPTMPL(:,:), SPTIPL(:,:), SPTPHPL(:,:), 
      R SPTPPL(:,:),
-! (incident type: atoms, but no emitted species indes, nur surface index
-! analog spttot, aber nach a,m,i,pl,ph incident type aufgeloest, im tally namen)     
+! next: incident type: atoms, molecs., test ions, photons, bulk ions, 
+! but no emitted species index, only surface index
+! analog to spttot, but: a,m,i,pl,ph, in tally name, incident type resolved     
      R sptatot(:), sptmtot(:), sptitot(:), sptphtot(:), sptpltot(:),  
      R SPTTOT(:),   
-
+C
      R ADDS(:,:),  ALGS(:,:),
      R SPUMP(:,:)
  
-C  FROM HERE: NO EQUIVALENCE
+C  FROM HERE: NO POINTERS ?
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NFIRST(:), NADDV(:),
      I IRESC1(:), IRESC2(:),
@@ -125,7 +127,8 @@ C  FROM HERE: NO EQUIVALENCE
      L LIVTALV(:), LIVTALS(:)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LMISTALV(:), LMISTALS(:)
- 
+c  logical, for each volume averaged tally.
+c  either active tally (if true) or de-activated tally, no storage (if false)  
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPDENA, LPDENM, LPDENI, LPDENPH,
      L LEDENA, LEDENM, LEDENI, LEDENPH,
@@ -171,7 +174,8 @@ C  FROM HERE: NO EQUIVALENCE
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
- 
+c  logical, for each surface averaged tally, particle flux.
+c  either active tally (if true) or de-activated tally, no storage (if false)   
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPOTAT,
      L LPRFAAT, LPRFMAT, LPRFIAT, LPRFPHAT,
@@ -210,6 +214,8 @@ C
 C
      L LMSPOTPL
 C
+c  logical, for each surface averaged tally, energy flux.
+c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LEOTAT,
      L LERFAAT, LERFMAT, LERFIAT, LERFPHAT, LERFPAT,
@@ -317,8 +323,9 @@ C
  
       SUBROUTINE EIRENE_ASSOCIATE_CESTIM
  
-C  VOLUME AVERAGED TALLIES
- 
+C  VOLUME AVERAGED TALLIES:  
+C     if tally is active in this run     : Pointer to allocatable array ESTIMV
+C     if tally is deactivated in this run: Pointer to CEMETERYV
  
       IF (LPDENA) THEN
         PDENA => ESTIMV(NADDV(1)+1:NADDV(2),:)
@@ -840,7 +847,9 @@ C  VOLUME AVERAGED TALLIES
  
 C  SURFACE AVERAGED TALLIES
  
- 
+C  SURFACE AVERAGED TALLIES:  
+C     if tally is active in this run     : Pointer to allocatable array ESTIMS
+C     if tally is deactivated in this run: Pointer to CEMETERYS 
       IF (LPOTAT) THEN
         POTAT => ESTIMS(1:NADDW(2),:)
       ELSE

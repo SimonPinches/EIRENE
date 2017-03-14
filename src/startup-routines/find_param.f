@@ -18,6 +18,7 @@ cdr             to be tested:  storage for nltra, if nltor=false?
 cdr             to be done: check for comment lines *... syncronized with input.f?
 !pb  June 16:   default for NPLSTI changed from 1 to NPLS
 !pb  MAY  16:   nrds -> nrei
+cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 14.
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -93,6 +94,7 @@ C  PRIMARY SOURCE
       NSRFS=1
       NSTEP=1
       NGITT=0
+      NPTRGT=1
 C  SPECIES AND TALLIES
       NATM=0
       NMOL=0
@@ -125,7 +127,7 @@ C  ATOMIC DATA
       NREL=1
       NRPI=1
 C
-      NPTRGT=1
+
  
       NCHOR=0
       NCHEN=0
@@ -1326,6 +1328,7 @@ cdr  primary source
       WRITE (iunout,*) 'NSTRA =  ',NSTRA
       WRITE (iunout,*) 'NSRFS =  ',NSRFS
       WRITE (iunout,*) 'NSTEP =  ',NSTEP
+      WRITE (iunout,*) 'NPTRGT=  ',NPTRGT
 cdr species
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NATM =   ',NATM

@@ -601,39 +601,58 @@ cdr   NTESTI=NTESTI*NSTRAP
       CALL EIRENE_ASSOCIATE_CESTIM
  
 C
-C  CHECK LENGTH OF ARRAYS, WHICH ARE EQUIVALENZED TO OTHER ARRAYS
+C  CHECK LENGTH OF ALLOCATABLE ARRAYS, WHICH ARE I/O IN DUMP FILES, 
+c  E.G. FORT.10,  FORT.11, ETC....
 C
 C
       IF (.FALSE.) THEN
+cdr  March 2017: checking of allocatable array sizes has been deactivated,
+cdr              at some point in time.
+cdr              Probable reason:  it did not work properly together with 
+cdr              compiler optimization. And in case of estimv, estims
+cdr              arrays: apparently some parts may have been moved to cemetery,
+cdr              so that the programed size checks would not work anyway.
+cdr  unresolved story.....          
+c.......................................................
+c  standard deviation volume averaged tallies
       RSAVE=SGMS(NSD)
       SGMS(NSD)=1.234567
+      write (iunout,*) nsd,nrtal
       IF (SDVI1(NSD,NRTAL+1).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NSDVI1?'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       SGMS(NSD)=RSAVE
 C
+c  standard deviation surface averaged tallies
       RSAVE=SGMWS(NSDW)
       SGMWS(NSDW)=1.234567
+      write (iunout,*) nsdw,nlimps
       IF (SDVI2(NSDW,NLIMPS+1).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NSDVI2?'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       SGMWS(NSDW)=RSAVE
 C
-      RSAVE=VGENPH(NPHOT,NRTAL)
-      VGENPH(NPHOT,NRTAL)=1.234567
+c  volume averaged output tallies.  Note: some volume tallies are removed from 
+c  the run  (put to cemeteryv), see eirmod_cestim.f
+      RSAVE=MPHPL(NPHOT,NRTAL)
+      MPHPL(NPHOT,NRTAL)=1.234567
+      write (iunout,*) nvoltl,nrtal
       IF (ESTIMV(NVOLTL,NRTAL).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NESTM1?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
-      VGENPH(NPHOT,NRTAL)=RSAVE
+      MPHPL(NPHOT,NRTAL)=RSAVE
 C
+c  surface averaged output tallies. Note: some surface tallies are removed from 
+c  the run  (put to cemeterys), see eirmod_cestim.f
       RSAVE=SPUMP(NSPZ,NLMPGS)
       SPUMP(NSPZ,NLMPGS)=1.234567
+      write (iunout,*) nsrftl,nlmpgs
       IF (ESTIMS(NSRFTL,NLMPGS).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NESTM2?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       SPUMP(NSPZ,NLMPGS)=RSAVE
 C
@@ -641,30 +660,34 @@ C  NOW ATOMIC DATA ARRAYS: COMXS
 C
       RSAVE=ZMFPI
       ZMFPI=1.234567
+      write (iunout,*) nstorv
       IF (XSTORV(NSTORV).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NSTOR?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       ZMFPI=RSAVE
 C
       RSAVE=VOLTOT
       VOLTOT=1.234567
+      write (iunout,*) ncgm1
       IF (RCGM1(NCGM1).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NCGM1?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       VOLTOT=RSAVE
 C
       RSAVE=ZDF
       ZDF=1.234567
+      write (iunout,*) ncgrd
       IF (RCGRID(NCGRD).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NCGRD?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       ZDF=RSAVE
 C
       ISAVE=NSBOX_TAL
       NSBOX_TAL=1234567
+      write (iunout,*) mcgrd
       IF (ICGRID(MCGRD).NE.1234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: MCGRD?'
         CALL EIRENE_EXIT_OWN(1)
@@ -673,11 +696,15 @@ C
 C
       ISAVE=NPPLG
       NPPLG=1234567
+      write (iunout,*) mcplyg
       IF (ICPLYG(MCPLYG).NE.1234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: MCPLYG?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       NPPLG=ISAVE
+
+c.....................................................................
+
       END IF
 C
       NFRSTP(1)=0

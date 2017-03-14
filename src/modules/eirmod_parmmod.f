@@ -10,7 +10,14 @@ cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
 cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
+c
       MODULE EIRMOD_PARMMOD
+c
+c handling of storage for dynamically allocated arrays
+c contains:
+c    set_parmmod(ical),  ical=1,2,3
+c    collect_parm
+c    distrib_parm
  
       USE EIRMOD_PRECISION
  
@@ -270,14 +277,14 @@ C  NSTORAM=9     : --> NHSTOR=1 --> NSTORDT=NSTORAM,NSTORDR=NRAD
 C
       ELSE IF (ICAL == 2) THEN
  
-!pb     NCPV=NCOP*NPLS
+c  set some derived storage parameters
         NBGV=NBGK*3
         NCPVP=NCPV+1
         NBGVP=NBGV+1
         NCOLMC=NPLS+NREI+NREC
-        N1MX=NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV
-!PB        N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV)
-        NSPZTOT=NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV
+        N1MX=    NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV
+!PB     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV)
+        NSPZTOT= NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV
 
 C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
 C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV

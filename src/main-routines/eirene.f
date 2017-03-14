@@ -3,7 +3,7 @@
 !pb  100107  call to reinitialisation routine
 cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
 cdr          currently turning off time stratum may not be detected 
-cdr          when setting dynamic allocatable storage parameters in "set_param.f"
+cdr          when setting dynamic allocatable storage parameters in "find_param.f"
 cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
 !pb  MAY 16  nrds -> nrei 
