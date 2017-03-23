@@ -2,7 +2,7 @@ c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
 c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
-c            option NCLTAL=4 is unfinished. print warning and return 
+c            option NCHTAL=4 is unfinished. print warning and return 
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
 c            set default ncheni=1 for nchtal=2 alreay in calling routine,
 c            to avoid that chords are erroneously turned off there. 
