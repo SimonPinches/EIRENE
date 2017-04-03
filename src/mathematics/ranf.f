@@ -11,13 +11,14 @@ C
 C RANDOM NUMBER GENERATOR FROM
 C  http://www.srcc.msu.su/num_anal/lib_na/cat/g/gsu1r.htm (in russian)
 
-cdr:  not accessible any more,  
+cdr:  web page is not accessible any more,  
 C
 C SOURCE:  Knuth, D.E. 1981, Seminumerical Algorithms, 2nd ed., vol. 2 of The Art
 C          of Computer Programming (Reading, MA: Addison-Wesley)
 C
-cdr:  I cannot find this random generator in that reference. more likely:  
+cdr:  I cannot find this random generator in that reference. More likely:  
 cdr:  quick and dirty home made?
+cdr:  Tbd: Why did it get into EIRENE ?
 
 C ISEED IS THE INTEGER FROM 1 TO  2147483646, AFTER FINISHING ITS VALUE IS
 C (2**31) * R (N) AND CAN BE USED FOR THE FUTURE CALLS
@@ -47,6 +48,14 @@ cdr  in very first call: set a fixed seed ISEED=9876543
             ise = -1
             dummy = ranset_eirene(ise)
             ifirst = 1
+
+            call eirene_leer(2)
+            call eirene_headng
+     .      ('ROTTEN RANDOM NUMBER GENERATOR ACTIVATED',40)
+            call eirene_headng
+     .      ('IS THAT INTENTIONAL? Check flag  NLOLDRAN in RANF.f',51)
+            call eirene_leer(2)
+
          end if
          
 !pb      Z=DFLOAT(ISEED)
