@@ -689,8 +689,8 @@ C  NO INTERSECTION FOUND
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
 #ifdef TRACE
             IF (NLTRC) 
-      .       WRITE (iunout,*)
-      .       ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+     .        WRITE (iunout,*)
+     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
 #endif
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
