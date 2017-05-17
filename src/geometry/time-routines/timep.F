@@ -74,7 +74,7 @@ C
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2, 
      .           NJC, EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
-      LOGICAL :: LCUTY(N2NDPLG), LCUTX(N1ST), lnincz
+      LOGICAL :: LCUTY(N2NDPLGS), LCUTX(N1STS), lnincz
       SAVE
 C
 #ifdef TRACE

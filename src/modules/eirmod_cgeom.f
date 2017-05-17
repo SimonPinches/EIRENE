@@ -9,6 +9,7 @@
  
       PUBLIC :: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM, 
      P          EIRENE_INIT_CGEOM,
+c
      P          CELL_ELEM, CELL_LIST
  
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
@@ -47,6 +48,9 @@
  
  
       SUBROUTINE EIRENE_ALLOC_CGEOM(ICAL)
+c  allocate storage for geometrical arrays.
+c  parameter NRAD: size of grid. NRADS: size of grid after possible elimination
+c                                       of storage, in module parmmod.f (FLAG: NGEOM_USR) 
  
       INTEGER, INTENT(IN) :: ICAL
  
@@ -54,18 +58,17 @@
          IF (ALLOCATED(RCGM1)) RETURN
  
          NCGM1 = NADD+NBMAX+7*NRAD+NRTAL+1
-         NCGM2 = 2*N1STS*N2NDPLG
- 
+         NCGM2 = 2*N1STS*N2NDPLGS
+c  real arrays 
          ALLOCATE (RCGM1(NCGM1))
-!     pb      ALLOCATE (RCGM2(2*N1STS,N2NDPLG))
-         ALLOCATE (RCGM2(N1STS,2*N2NDPLG))
- 
+         ALLOCATE (RCGM2(N1STS,2*N2NDPLGS))
+c  integer arrays 
          ALLOCATE (NPOINT(2,NPPART))
          ALLOCATE (NSTGRD(NRAD))
-         ALLOCATE (NGHPLS(4,N1STS,N2NDPLG))
-         ALLOCATE (NGHPOL(4,N1STS,N2NDPLG))
+         ALLOCATE (NGHPLS(4,N1STS,N2NDPLGS))
+         ALLOCATE (NGHPOL(4,N1STS,N2NDPLGS))
          ALLOCATE (NCLTAL(NRAD))
-         ALLOCATE (INDPOINT(N1STS,N2NDPLG))
+         ALLOCATE (INDPOINT(N1STS,N2NDPLGS))
          ALLOCATE (NOPNT(NRAD))
  
          ALLOCATE (COORCELL(NRAD))
@@ -73,8 +76,8 @@
          ALLOCATE (LDAMCEL(NRAD))
  
          WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' CGEOM(1) ',(NCGM1+2*N1STS*N2NDPLG)*8 +
-     .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLG)*4 + nrad*4
+     .        ' CGEOM(1) ',(NCGM1+2*N1STS*N2NDPLGS)*8 +
+     .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLGS)*4 + nrad*4
  
          VOLADD => RCGM1(1 : NADD)
          VOLTAL => RCGM1(1+NADD : NADD+NRTAL)
@@ -94,10 +97,9 @@
      .                     NADD+NRTAL+NBMAX+7*NRAD)
          VOLTOT => RCGM1(1+NADD+NRTAL+NBMAX+7*NRAD)
  
-!     pb      XPOL => RCGM2(1+0*N1STS:1*N1STS,:)
-!     pb      YPOL => RCGM2(1+1*N1STS:2*N1STS,:)
-         XPOL => RCGM2(:,1:N2NDPLG)
-         YPOL => RCGM2(:,1+N2NDPLG:2*N2NDPLG)
+
+         XPOL => RCGM2(:,1:N2NDPLGS)
+         YPOL => RCGM2(:,1+N2NDPLGS:2*N2NDPLGS)
  
       ELSE IF (ICAL == 2) THEN
  

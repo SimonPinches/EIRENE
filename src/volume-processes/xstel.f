@@ -7,7 +7,7 @@ cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
 cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
 cdr    oct.14: bug fix: use kread rather than kk in eplel3.
 cdr    oct.14: remove pls array, synconize with xstcx started
-cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly 
+cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 C
 C
@@ -40,7 +40,7 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: EBULK, FACTKK
-      INTEGER, INTENT(IN) :: IREL, ISP, IPL, 
+      INTEGER, INTENT(IN) :: IREL, ISP, IPL,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
@@ -119,11 +119,11 @@ C       NEND=9
           fp1(1:3) = rt%fp1l
           fp1(4:6) = rt%fp1r
           fp2(1:3) = rt%fp2b
-          fp2(4:6) = rt%fp2t  
+          fp2(4:6) = rt%fp2t
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii)
+              tii = max(-2.3_dp,tii) ! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -136,7 +136,7 @@ c old
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
           END IF
-        ELSE ! NOT SUFFICIENT STORADE ON TABEL3 
+        ELSE ! NOT SUFFICIENT STORADE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 
         ENDIF
@@ -241,11 +241,11 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         IF (MODC.GE.1.AND.MODC.LE.2) THEN
           MODCOL(5,4,IREL)=MODC
           IF (MODC.EQ.1) NEND=1
-          IF (MODC.EQ.2) NEND=NSTORDT 
-C  STORAGE SAVING MODE ? 
+          IF (MODC.EQ.2) NEND=NSTORDT
+C  STORAGE SAVING MODE ?
           IF (NSTORDR >= NRAD) THEN
 C  NO
-c           NSTORDT=9 HERE  
+c           NSTORDT=9 HERE
       
             IF (MODC.EQ.1) THEN
 C             NEND=1
@@ -260,13 +260,13 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
-C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
+C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               ADDL=LOG(FACTKK)-ADDTL
               rt => reacdat(kread)%rtcew
               fp1(1:3) = rt%fp1l
               fp1(4:6) = rt%fp1r
               fp2(1:3) = rt%fp2b
-              fp2(4:6) = rt%fp2t    
+              fp2(4:6) = rt%fp2t
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
@@ -285,7 +285,7 @@ c old
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplel3 
+          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplel3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLEL3(IREL,1,1)=ADD   !  ????
@@ -346,11 +346,11 @@ C
           ITYPB=EIRENE_IDEZ(ISPECB,1,3)
           ISPZB=EIRENE_IDEZ(ISPECB,3,3)
           IF (ITYPB.EQ.1)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH ATOM     ',ISPZB 
+     .      WRITE (iunout,*) 'CROSS COLLISION WITH ATOM     ',ISPZB
           IF (ITYPB.EQ.2)
      .      WRITE (iunout,*) 'CROSS COLLISION WITH MOLECULE ',ISPZB
           IF (ITYPB.EQ.3)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH TEST ION ',ISPZB  
+     .      WRITE (iunout,*) 'CROSS COLLISION WITH TEST ION ',ISPZB
         ENDIF
       ENDIF
 
@@ -369,7 +369,7 @@ C
       WRITE (IUNOUT,*) 'MODCOL ',MODCOL(5,1,IREL),MODCOL(5,2,IREL),
      .                           MODCOL(5,3,IREL),MODCOL(5,4,IREL)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                  FACREL(IREL,1) 
+     .                  FACREL(IREL,1)
       CALL EIRENE_LEER(1)
 
 

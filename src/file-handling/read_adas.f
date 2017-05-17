@@ -2,18 +2,20 @@
  
       subroutine EIRENE_read_adas (ir,reac,isw,iz1)
 
-cdr  purpose:  read a 2d table of A&M data, and put them into REACDAT data structure
+cdr  purpose:  read a 2d table TAB2D of A&M data, and put them into REACDAT data structure
 cdr            internal eirene reaction no. IR
-cdr            
+cdr
 cdr  input:
 c           ir:           internal reaction number on eirene structure REACDAT
 c           reac:
-c           isw:   =0     data for interaction potential                 (not in use)  
+c           isw:   =0     data for interaction potential                 (not in use)
 c                  =1     data for collision cross section               (not in use)
-c                  =2-4   data for reaction rate coefficient             (only = 4  in use) 
+c                  =2-4   data for reaction rate coefficient             (only = 4  in use)
 c                  =5-7   data for momentum weighted rate coefficient    (not in use)
 c                  =8-10  data for energy weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
+c           iz1:   ??
+c  to be done: units, log-lin, scaling, asymptotics
  
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -43,13 +45,13 @@ c     this file format is described in ...
       read (29+ifoff,*,iostat=io) nz, nde, nte, iza, ize
  
       if (io .ne. 0) then
-        write (iunout,*) ' ERROR READING FILE FROM ADAS DATABASE '
+        write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE '
         write (iunout,*) ' DIRECTORY IS ',reac
         call EIRENE_exit_own(1)
       end if
  
       if ((iz1 < iza) .or. (iz1 > ize)) then
-        write (iunout,*) ' ERROR READING FILE FROM ADAS DATABASE '
+        write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE '
         write (iunout,*) ' REQUESTED Z1 IS NOT AVAILABLE '
         write (iunout,*) ' Z1, ZA, ZE ',IZ1, IZA, IZE
         call EIRENE_exit_own(1)
@@ -309,11 +311,10 @@ c     this file format is described in ...
 
 1000  continue
       WRITE (IUNOUT,*) ' ERROR IN "READ_TAB2D" : '
-      WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPCIFIED FOR TAB2D OPTION '
+      WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPECIFIED FOR TAB2D OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR
       WRITE (IUNOUT,*) ' REACTION TYPE H.', ISW
       CALL EIRENE_EXIT_OWN(1)
  
       return
       end subroutine EIRENE_read_adas
- 

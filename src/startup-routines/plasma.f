@@ -7,12 +7,12 @@ C
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
 !  10.06.08 new:  default BFIN=1 T, rather than 0 T
 !  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
-!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 . 
+!  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 .
 !                       help2 was undefined --> zero b-field
 !
-cdr try to re-unify treatment of 1st dimension (species index) in parameters 
-cdr n,T,V for background (bulk) velocity distribution: not finished. 
-!  sept. 16 change variable names ipls --> iplsti, (for TI) 
+cdr try to re-unify treatment of 1st dimension (species index) in parameters
+cdr n,T,V for background (bulk) velocity distribution: not finished.
+!  sept. 16 change variable names ipls --> iplsti, (for TI)
 !                                 ipls --> iplsv,  (for VX,VY,VZ)
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
 !  nov. 16  nlpitch option added, for orientation of B-field in 1D runs
@@ -48,7 +48,7 @@ C
 C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(1) /= 9) TEIN = 0.D0
       IF (INDPRO(2) /= 9) TIIN = 0.D0
-      DEIN = 0.D0 ! DEIN IS ANYWAY SET IN PLASMA_DERIV
+                          DEIN = 0.D0 ! DERIVED TALLY DEIN IS SET IN PLASMA_DERIV
       IF (INDPRO(3) /= 9) DIIN = 0.D0
       IF (INDPRO(4) /= 9) VXIN = 0.D0
       IF (INDPRO(4) /= 9) VYIN = 0.D0
@@ -68,18 +68,19 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       HELP=0.
       HELP2=0.
 C
-C  SET EIRENE VACUUM MODEL DATA. I.E. IF ALL TEMPERATURES ARE
+C  SET EIRENE VACUUM BACKGROUND MODEL DATA. I.E. IF TEMPERATURES ARE
 C  LESS THAN TVAC OR THE BACKGROUND DENSITY IS LESS THAN DVAC,
 C  THEN THIS ZONE IS CONSIDERED TO BE AN "EIRENE VACUUM ZONE",
-C  PARTICLE MEAN FREE PATHES IN SUCH ZONES ARE
-C  EQUAL TO 1.D10 (CM) AND REACTION RATES ARE ZERO
-      TVAC=0.02_dp       !pb
+C  FOR A PARTICULAR BACKGROUND SPECIES:
+C  PARTICLE MEAN FREE PATHES IN SUCH ZONES           ARE SET EQUAL TO 1.D10 (CM)
+C  AND ALL REACTION RATES WRT: TO THIS BULK PARTICLE ARE SET EQUAL TO ZERO (1/S)
+      TVAC=0.02_dp
       DVAC=1.E2_dp
       VVAC=0._dp
-      BVAC=1._dp            !pb
+      BVAC=1._dp  ! dr:  B field must not be "vacuum". check use of BVAC
 C
 C     SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES
-C     ON MESH "RHOZNE(J)"
+C     ON 1D MESH "RHOZNE(J)", CELL CENTERED
 C
 C
 C
@@ -242,7 +243,7 @@ C  DRIFT VELOCITY
 C  INDPRO=4: read tallies from streams VXO(IPLSV), VY0(IPLSV),VZ0(IPLSV)
 c            NOT READY FOR FLOW FIELDS
         GOTO 140
-c  INDPRO=5:  tally from PROUSR, 
+c  INDPRO=5:  tally from PROUSR,
 c             VX: indx=1+2*NPLS, but NPLSV calls, one for each IPLSV
 c             VY: indx=1+3*NPLS, but NPLSV calls, one for each IPLSV
 c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
@@ -278,7 +279,7 @@ C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
       GOTO 1140
 
 c  read tally from external data structure, all V.IN fields in one single call
-cdr first dimension of arrays:  always NPLSV 
+cdr first dimension of arrays:  always NPLSV
 136   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSURF)
@@ -340,7 +341,7 @@ C
 C
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
 C
-            IF (IND.EQ.3) THEN 
+            IF (IND.EQ.3) THEN
               BFIN(J)=HELP2(IR)
             ELSE
               BFIN(J)=1.
@@ -361,7 +362,7 @@ C
             BXIN(J)=HELP(IR)*PUX/PN
             BYIN(J)=HELP(IR)*PUY/PN
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
-            IF (IND.EQ.3) THEN 
+            IF (IND.EQ.3) THEN
               BFIN(J)=HELP2(IR)
             ELSE
               BFIN(J)=1.
@@ -380,7 +381,7 @@ C
             BXIN(J)=HELP(IR)*PUX/PN
             BYIN(J)=HELP(IR)*PUY/PN
             BZIN(J)=SQRT(1.-HELP(IR)*HELP(IR))
-            IF (IND.EQ.3) THEN 
+            IF (IND.EQ.3) THEN
               BFIN(J)=HELP2(IR)
             ELSE
               BFIN(J)=1.
@@ -425,13 +426,13 @@ C
 C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
       DO 153 JJ=1,NSBOX
         IF (BXIN(JJ)**2+BYIN(JJ)**2+BZIN(JJ)**2.LE.EPS30) THEN
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .       'ZERO B-FIELD UNIT VECTOR IN STANDARD CELL JJ= ',JJ
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         B=SQRT(BXIN(JJ)**2+BYIN(JJ)**2+BZIN(JJ)**2)
         IF (ABS(B-1.D0).GT.EPS12) THEN
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .       'B-FIELD UNIT VECTOR IN STANDARD CELL JJ= ',JJ,B
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
@@ -445,7 +446,7 @@ C  ADDITIONAL INPUT TALLIES
       IND=INDPRO(6)
       DO 160 K=1,NAINI
         GOTO (151,151,151,151,155,156,157,160,160),IND
-C  DEFAULT: ZERO, only options ind=5,6,7 are available 
+C  DEFAULT: ZERO, only options ind=5,6,7 are available
 c          (transfer from problem specific codes or external data structures)
 151     CONTINUE
         DO 1151 J=1,NR1ST
@@ -467,7 +468,7 @@ C
 C  ELECTRIC FIELD
       IND=INDPRO(7)
       GOTO (170,170,170,170,175,176,177,170,170),IND
-C  DEFAULT: ZERO, only options ind=5,6,7 
+C  DEFAULT: ZERO, only options ind=5,6,7
 c          (transfer from problem specific codes or external data structures)
       goto 170
 175     CALL EIRENE_PROUSR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,

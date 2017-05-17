@@ -21,8 +21,9 @@ c         to enforce the 5 collision invariants by iteration.
 c
 c               A routine (MODBGK) carries out the iterations at the end of an
 c               iteration.
+
 c               The standard deviations for the "bgk-tallies" are
-c               computed in subroutine STATIS_BGK
+c               computed in subroutine STATIS_BGK   ??? why  ???
 C
 c
 c

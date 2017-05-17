@@ -7,41 +7,42 @@
  
       PRIVATE
  
-      PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR, 
+      PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
      P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS
  
       INTEGER, PUBLIC, SAVE ::
-     P NPLPR1, NPLPRM, NSFPRM, NPLPR2,
-     P NUSR,   MUSR,   LUSR
+     P NPLPR1, NPLPRM, NSFPRM, NPLPR2,  ! these seem to be internal, not public, except nplprm, used in setprm,
+c                                         for a storage test in setprm.f.
+     P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
  
       REAL(DP), ALLOCATABLE, PUBLIC, SAVE ::
-C  NPLPRM, REAL. THE FIRST NPLPR1 DATA ARE SET IN SUBROUTINE PLASMA
+C  NPLPRM, REAL.
+C  THE FIRST NPLPR1 DATA ARE SET IN SUBROUTINE PLASMA
      R        TEIN(:),   TIIN(:,:),   DEIN(:),   DIIN(:,:),
      R        VXIN(:,:), VYIN(:,:),   VZIN(:,:),
      R        BXIN(:),   BYIN(:),     BZIN(:),   BFIN(:),
-     R        ADIN(:,:), EDRIFT(:,:), VOL(:),    WGHT(:,:),
-cdr  bxperp, byperp are derived quantities, set from from Bx,By,Bz
-cdr  they should , more logically, come after BVIN below
-     R        BXPERP(:), BYPERP(:),
-     R        EXIN(:),   EYIN(:),     EZIN(:),   EFIN(:), 
+     R        ADIN(:,:), VOL(:),      WGHT(:,:),
+     R        EXIN(:),   EYIN(:),     EZIN(:),   EFIN(:),
      R        POT(:),
 C  NSFPRM
      R        FLXOUT(:), SAREA(:),
 C  NPLPR2, REAL
-     R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:), BVIN(:,:),
-     R        PARMOM(:,:),
+     R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
+     R        BVIN(:,:), PARMOM(:,:), EDRIFT(:,:),
+     R        BXPERP(:), BYPERP(:),
+
      R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSP(:),
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
      R        DION(:),   DATM(:),     DMOL(:),   DPLS(:),    DPHOT(:)
 
-C     PLASMA PROFILES ON CELL VERTICES   
+C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        CORNER_PROFILES(:,:)
 
-      REAL(DP), POINTER, PUBLIC, SAVE ::    
+      REAL(DP), POINTER, PUBLIC, SAVE ::
      .        TEINCORNER(:),   TIINCORNER(:,:), DEINCORNER(:),
-     .        DIINCORNER(:,:), 
-     .        VXINCORNER(:,:), VYINCORNER(:,:), VZINCORNER(:,:), 
+     .        DIINCORNER(:,:),
+     .        VXINCORNER(:,:), VYINCORNER(:,:), VZINCORNER(:,:),
      .        BXINCORNER(:),   BYINCORNER(:),   BZINCORNER(:),
      .        BFINCORNER(:),   BVINCORNER(:,:),
      .        EXCORNER(:),     EYCORNER(:),     EZCORNER(:),
@@ -120,17 +121,21 @@ C FROM HERE ON: NO EQUIVALENCE
       IF (ICAL == 1) THEN
  
         IF (ALLOCATED(TEIN)) RETURN
- 
-        NPLPR1=(13+1*NPLS+NPLSTI+3*NPLSV)*NRAD
-        NPLPRM=NPLPR1+(NAIN+1+1*NPLS+NSPZMC)*NRAD
-        NPLPR2=(2+3*NPLS+NPLSTI)*NRAD+
-     .          3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT
+c
+        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD  ! background data, set in plasma.f, 17 arrays
+        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD        !  adin, wght,...??? adin is allocated in call with ICAL == 2
+cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct dimension of bvin !
+        NPLPR2=(4+3*NPLS+NPLSTI+NPLSV)*NRAD+    ! additional background data, set in plasma_deriv.f, currently 9 arrays
+     .          3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT ! species (test particle and background) related data
         NUSR=NPLPRM+NPLPR2
+
         MUSR=4*NATM+4*NMOL+5*NION+3*NPLS+30+NSPZ+
      .       6*(1+NPHOTP)*(1+NATMP)*(1+NMOLP)*(1+NIONP)*(1+NPLSP)+NSPZ*6
      .       +2*NPLSI+NSPZ*NPLS
+
         LUSR=NRAD*(NPLS+2)+NRAD
-C
+
+C NPLPR1 + ... = NPLPRM
         ALLOCATE (TEIN(NRAD))
         ALLOCATE (TIIN(NPLSTI,NRAD))
         ALLOCATE (DEIN(NRAD))
@@ -142,22 +147,25 @@ C
         ALLOCATE (BYIN(NRAD))
         ALLOCATE (BZIN(NRAD))
         ALLOCATE (BFIN(NRAD))
+cdr     ALLOCATE (ADIN(NAIN,NRAD))  !  not yet. done later below, ical == 2 option
         ALLOCATE (VOL(NRAD))
-        ALLOCATE (WGHT(NSPZMC,NRAD))
-        ALLOCATE (BXPERP(NRAD))
-        ALLOCATE (BYPERP(NRAD))
+        ALLOCATE (WGHT(NSPZMC,NRAD))  ! check size of  nspzmc.  this "weight window" array is unused so far.
         ALLOCATE (EXIN(NRAD))
         ALLOCATE (EYIN(NRAD))
         ALLOCATE (EZIN(NRAD))
         ALLOCATE (EFIN(NRAD))
         ALLOCATE (POT(NRAD))
+c NPLPR2
         ALLOCATE (TEINL(NRAD))
         ALLOCATE (TIINL(NPLSTI,NRAD))
         ALLOCATE (BVIN(NPLSV,NRAD))
         ALLOCATE (PARMOM(NPLS,NRAD))
+        ALLOCATE (BXPERP(NRAD))
+        ALLOCATE (BYPERP(NRAD))
         ALLOCATE (EDRIFT(NPLS,NRAD))
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
+
         ALLOCATE (RMASSI(MAX(1,NION)))
         ALLOCATE (RMASSA(MAX(1,NATM)))
         ALLOCATE (RMASSM(MAX(1,NMOL)))
@@ -173,11 +181,13 @@ C
         ALLOCATE (DPLS(MAX(1,NPLS)))
         ALLOCATE (DPHOT(MAX(1,NPHOT)))
  
+c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
         ALLOCATE (TEDTEDX(NRTAL))
         ALLOCATE (TEDTEDY(NRTAL))
         ALLOCATE (TEDTEDZ(NRTAL))
  
         ALLOCATE (TEXTS(NSPZ))
+c  integer  species and background tally data
         ALLOCATE (NMASSA(MAX(1,NATM)))
         ALLOCATE (NCHARA(MAX(1,NATM)))
         ALLOCATE (NFOLA(MAX(1,NATM)))
@@ -199,6 +209,7 @@ C
         ALLOCATE (NPRT(MAX(1,NSPZ)))
         ALLOCATE (ISPEZ(-1:4,0:NPHOTP,0:NATMP,0:NMOLP,0:NIONP,0:NPLSP))
         ALLOCATE (ISPEZI(NSPZ,-1:4))
+
         ALLOCATE (MPLSTI(MAX(1,NPLS)))
         ALLOCATE (MPLSV(MAX(1,NPLS)))
         ALLOCATE (ISPZ_BACK(NSPZ,NPLS))
@@ -224,6 +235,7 @@ C
         ALLOCATE (NSPEN(NTALV))
         ALLOCATE (NSPANW(NTALS))
         ALLOCATE (NSPENW(NTALS))
+c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
         ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
@@ -232,12 +244,13 @@ C
      .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
  
       ELSE IF (ICAL == 2) THEN
- 
+c  first dimension of adin is now fixed.  reset nplprm
         IF (ALLOCATED(ADIN)) RETURN
  
-        NPLPR1=(13+1*NPLS+NPLSTI+3*NPLSV)*NRAD
-        NPLPRM=NPLPR1+(NAIN+1+1*NPLS+NSPZMC)*NRAD
+        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
+        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD
         ALLOCATE (ADIN(NAIN,NRAD))
+
         ALLOCATE (ICPVE(NCPV))
         ALLOCATE (ICPVS(NCPV))
         ALLOCATE (ICPVT(NCPV))
@@ -267,7 +280,7 @@ C
 
 
  
-      SUBROUTINE EIRENE_ALLOC_CORNERS(IUNOUT) 
+      SUBROUTINE EIRENE_ALLOC_CORNERS(IUNOUT)
 
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: N1DIM(12)
@@ -282,7 +295,7 @@ C
       IF (LTESMO) NTOT = NTOT + 1
       IF (LTISMO) NTOT = NTOT + NPLSTI
       IF (LDISMO) NTOT = NTOT + NPLS + 1
-      IF (LVSMO)  NTOT = NTOT + 4*NPLSV 
+      IF (LVSMO)  NTOT = NTOT + 4*NPLSV
       IF (LBSMO)  NTOT = NTOT + 4
       IF (LESMO)  NTOT = NTOT + 4
       IF (LPOTSMO)  NTOT = NTOT + 1
@@ -370,7 +383,7 @@ C
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-      CORNER_PROFILES = 0._DP        
+      CORNER_PROFILES = 0._DP
 
       END SUBROUTINE EIRENE_ALLOC_CORNERS
  
@@ -506,11 +519,11 @@ C
       IF (IFIRST == 0) THEN
         LSMOPRO = .FALSE.
 
-        LTESMO   => LSMOPRO(1) 
-        LTISMO   => LSMOPRO(2) 
+        LTESMO   => LSMOPRO(1)
+        LTISMO   => LSMOPRO(2)
         LDISMO   => LSMOPRO(3)
-        LVSMO    => LSMOPRO(4)  
-        LBSMO    => LSMOPRO(5) 
+        LVSMO    => LSMOPRO(4)
+        LBSMO    => LSMOPRO(5)
         LESMO    => LSMOPRO(6)
         LPOTSMO  => LSMOPRO(7)
 
@@ -617,8 +630,9 @@ C
         LSPCCLL = .FALSE.
  
       ELSE IF (ICAL == 2) THEN
- 
+c  at this call: first dimension of adin is known, as well as size of cop and bgk tallies
         ADIN   = 0._DP
+
         ICPVE  = 0
         ICPVS  = 0
         ICPVT  = 0

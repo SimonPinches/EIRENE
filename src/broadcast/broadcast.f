@@ -13,7 +13,7 @@
 cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spectrum tallies
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
-cdr  unification of naming conventions for electron impact collisions 
+cdr  unification of naming conventions for electron impact collisions
 
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
 !pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
@@ -28,7 +28,7 @@ cdr  unification of naming conventions for electron impact collisions
 
 cdr  sept 16:  ETH (collision threshold energy) added to reaction data
 cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel
-cdr            broadcast data for extrapolation from tables or fits, independent of IFIT 
+cdr            broadcast data for extrapolation from tables or fits, independent of IFIT
 cdr  Nov  16:  nmds --> nmei,  nids --> niei.
 cdr  Nov  16:  mxcolls --> mstor0
 cdr  Jan  17:  only comments
@@ -71,7 +71,7 @@ cdr  Jan  17:  only comments
       IMPLICIT NONE
  
       INCLUDE 'mpif.h'
-      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT, 
+      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
      .           imerk
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
@@ -97,8 +97,7 @@ c     ------------------------------------------------------------     c
         CALL EIRENE_ALLOC_COMUSR(0)
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL EIRENE_ALLOCATE_MODULES
-!pb	call eirene_allocate_timvars
-        IUNOUT = 7   ! reset to 0 in alloc_comprt
+        IUNOUT = 7
       Else
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       END IF
@@ -125,9 +124,9 @@ c     ------------------------------------------------------------     c
       CALL MPI_BCAST (AREAG,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPOINT,2*NPPART,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSTGRD,NRAD,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NGHPLS,4*N1STS*N2NDPLG,
+      CALL MPI_BCAST (NGHPLS,4*N1STS*N2NDPLGS,
      .                MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NGHPOL,4*N1STS*N2NDPLG,
+      CALL MPI_BCAST (NGHPOL,4*N1STS*N2NDPLGS,
      .                MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NCLTAL,NRAD,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NNODES,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -347,7 +346,7 @@ c  PI post collision energetics
 c  CX post collision energetics
       CALL MPI_BCAST (EPLCX3,NRCX*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
-c  EL post collision energetics 
+c  EL post collision energetics
       CALL MPI_BCAST (EPLEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 
@@ -525,17 +524,17 @@ c ??
         CALL MPI_BCAST (REACDAT(IR)%NOSEC,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
 
-c  reaction threshold, eV 
+c  reaction threshold, eV
         CALL MPI_BCAST (REACDAT(IR)%ETH,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-c  max of sigma * v  cm**3/s 
+c  max of sigma * v  cm**3/s
         CALL MPI_BCAST (REACDAT(IR)%RTMAX,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-c  collision energy, at which rtmax is taken, eV 
+c  collision energy, at which rtmax is taken, eV
         CALL MPI_BCAST (REACDAT(IR)%ERTMAX,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
-c  data for interaction potential 
+c  data for interaction potential
         IF (REACDAT(IR)%LPOT) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
@@ -587,7 +586,7 @@ c  data for momentum weighted rate coefficients  g cm/s cm**3/s
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
         END IF
-c  data for energy weighted rate coefficients,  eV cm**3-s 
+c  data for energy weighted rate coefficients,  eV cm**3-s
         IF (REACDAT(IR)%LRTCEW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
@@ -600,7 +599,7 @@ c  data for energy weighted rate coefficients,  eV cm**3-s
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
         END IF
-c  other data, such as CR coefficients
+c  other data, such as CR population coefficients
         IF (REACDAT(IR)%LOTH) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
@@ -908,35 +907,35 @@ csw 14apr2011
         CALL MPI_BCAST (NMT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         IF (NMT > 0) THEN
           IF (MY_PE /= 0) THEN
-            SURF_TRIAN(I)%NUMTR = NMT 
+            SURF_TRIAN(I)%NUMTR = NMT
             IF (ASSOCIATED(SURF_TRIAN(I)%ITRIAS)) THEN! IYS
-              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRIAS,1)) THEN ! IYS 
-                DEALLOCATE (SURF_TRIAN(I)%ITRIAS)  ! IYS 
-                NULLIFY (SURF_TRIAN(I)%ITRIAS)      ! IYS 
-                ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT)) ! IYS 
+              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRIAS,1)) THEN ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%ITRIAS)  ! IYS
+                NULLIFY (SURF_TRIAN(I)%ITRIAS)      ! IYS
+                ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT)) ! IYS
               ENDIF
-            ELSE  ! IYS 
+            ELSE  ! IYS
               ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))
             ENDIF
             IF (ASSOCIATED(SURF_TRIAN(I)%ITRISI)) THEN! IYS
-              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRISI,1)) THEN ! IYS 
-                DEALLOCATE (SURF_TRIAN(I)%ITRISI)  ! IYS 
-                NULLIFY (SURF_TRIAN(I)%ITRISI)      ! IYS 
-                ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT)) ! IYS 
+              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRISI,1)) THEN ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%ITRISI)  ! IYS
+                NULLIFY (SURF_TRIAN(I)%ITRISI)      ! IYS
+                ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT)) ! IYS
               ENDIF
-            ELSE  ! IYS 
+            ELSE  ! IYS
               ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))
             ENDIF
             IF (ASSOCIATED(SURF_TRIAN(I)%BGLT)) THEN! IYS
-              IF (NMT+1.ne.UBOUND(SURF_TRIAN(I)%BGLT,1)) THEN ! IYS 
-                DEALLOCATE (SURF_TRIAN(I)%BGLT)  ! IYS 
-                NULLIFY (SURF_TRIAN(I)%BGLT)      ! IYS 
-                ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1)) ! IYS 
+              IF (NMT+1.ne.UBOUND(SURF_TRIAN(I)%BGLT,1)) THEN ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%BGLT)  ! IYS
+                NULLIFY (SURF_TRIAN(I)%BGLT)      ! IYS
+                ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1)) ! IYS
               ENDIF
-            ELSE  ! IYS 
+            ELSE  ! IYS
               ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))
-            END IF 
-          END IF 
+            END IF
+          END IF
           CALL MPI_BCAST (SURF_TRIAN(I)%ITRIAS,NMT,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
           CALL MPI_BCAST (SURF_TRIAN(I)%ITRISI,NMT,
@@ -1016,7 +1015,7 @@ csw
             ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
 csw
           endif
-csw  
+csw
           TDMPAR(IPLS)%TDM%NRE = NREF
           TDMPAR(IPLS)%TDM%G_BOLTZ = RHELP(1)
           TDMPAR(IPLS)%TDM%DELTAE = RHELP(2)
@@ -1064,8 +1063,8 @@ csw
       CALL MPI_BCAST (EYIN,NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EZIN,NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EFIN,NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLXOUT,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (SAREA,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+
       CALL MPI_BCAST (TEINL,NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TIINL,NPLSTI*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EDRIFT,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -1073,6 +1072,10 @@ csw
       CALL MPI_BCAST (DIINL,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (BVIN,NPLSV*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PARMOM,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BCAST (FLXOUT,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (SAREA,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (RMASSI,NION,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RMASSA,NATM,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RMASSM,NMOL,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -1090,11 +1093,13 @@ csw
       CALL MPI_BCAST (DVAC,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (VVAC,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ALLOC,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (CORNER_PROFILES,SIZE(CORNER_PROFILES),
      .                MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TEDTEDX,NRTAL,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TEDTEDY,NRTAL,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TEDTEDZ,NRTAL,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      
       CALL MPI_BCAST (TEXTS,8*NSPZ,MPI_CHARACTER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSPA,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NATMI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1303,13 +1308,13 @@ csw
                ALLOCATE(ESTIML(I)%PSPC%STV(0:NSPS+1))
                ALLOCATE(ESTIML(I)%PSPC%GG(0:NSPS+1))
 C  variances for sum over strata
-               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1)) 
+               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1))
                ALLOCATE(SMESTL(I)%PSPC%SDV(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))             
+               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))
                ALLOCATE(SMESTL(I)%PSPC%STV(0:NSPS+1))
                ALLOCATE(SMESTL(I)%PSPC%GG(0:NSPS+1))
              END IF
-!pb  due to problem in optimized parallel version with Intel compiler 
+!pb  due to problem in optimized parallel version with Intel compiler
 !pb             ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
              ESTIML(I)%PSPC%SPC = 0._DP
              SMESTL(I)%PSPC = ESTIML(I)%PSPC
@@ -1397,7 +1402,7 @@ c     on the "root" node, where this is already done via timea0 after input
  
       CONTAINS
  
-!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM, 
+!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM,
 !++++++ where dynamical data structures are proceeded with care
 !++++++ IYS 27.02.2015
 
@@ -1408,7 +1413,7 @@ c     on the "root" node, where this is already done via timea0 after input
       INTEGER :: IER, ND, ND2
 
 C.....................................................................
-cdr broadcast A&M data, general for a process , independent of data structure RP%IFIT  
+cdr broadcast A&M data, general for a process , independent of data structure RP%IFIT
       CALL MPI_BCAST (RP%IFIT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
  
       CALL MPI_BCAST (RP%JFEX1MN,1,MPI_INTEGER,
@@ -1436,9 +1441,9 @@ cdr broadcast A&M data, general for a process , independent of data structure RP
       CALL MPI_BCAST (RP%FP2T,3,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 
-C..................................................................... 
+C.....................................................................
       IF (RP%IFIT < 0) THEN
-C DATA FOR PHOTONIC LINE SHAPE AND LINE TRANSPORT 
+C DATA FOR PHOTONIC LINE SHAPE AND LINE TRANSPORT
         IF (MY_PE .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)  ! IYS
         ENDIF
@@ -1520,7 +1525,7 @@ C                  or     2D  (RP%IFIT=2)
         CALL MPI_BCAST (RP%POLY%DBLPOL,ND*ND2,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
-C..................................................................... 
+C.....................................................................
       ELSE IF (RP%IFIT == 3) THEN
 ! 2D TABLES, E.G. ADAS DATA
         IF (MY_PE .NE. 0) THEN
@@ -1658,20 +1663,20 @@ C.....................................................................
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%HYD%RATIO,RP%HYD%NTEMPS,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-C.....................................................................      
+C.....................................................................
 CDR   ELSE IF (RP%IFIT == 5 )
 cdr  internal CR Model, NO DATA TO BE BROADCASTED
  
 C.....................................................................
       ELSE
-cdr     INVALID RP%IFIT   
+cdr     INVALID RP%IFIT
       END IF
  
       RETURN
       END SUBROUTINE EIRENE_BROAD_FIT_FORM
  
 !++++++ IYS 27.02.2015
-!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM, 
+!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM,
 !++++++ where dynamical data structures are proceeded with care
 
  

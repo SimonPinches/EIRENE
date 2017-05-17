@@ -29,7 +29,7 @@ c
 !pb            'MULTIPLY' creates a new bulkdensity by multiplying an
 !pb            existing plasma density with a factor specified in input block 5
 
-!pb  11.01.10: interpolation of plasma profiles to cell vertices added 
+!pb  11.01.10: interpolation of plasma profiles to cell vertices added
 
 cdr:  may 2015
 cdr:  output tallies for new background: in case of multiple strata: how to get sum over strata?
@@ -43,14 +43,18 @@ cdr:           or mod_bgk, mod_timstep,.....
 cdr:           post processing Balmer lines, etc:  to be confirmed that this now
 cdr:           still works properly
 cdr: jan 2017: generalized assymptotics options for A&M data structures included
+cdr:           cleanup. logical FOUND seems to be redundant
 
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
 
 c  input:
-c    nlmlti (via cinit.f):  all bulk ions have own temperature Ti, on Ti(iplsti), set new Ti for ipls
-c    nlmlv  (via cinit.f):  all bulk ions have own velocity, set new flow velocity for ipls   
-c    icall               :
+c    nlmlti (via cinit.f):  all bulk ions have own temperature Ti, on Ti(iplsti), 
+c                           set new Ti for ipls
+c    nlmlv  (via cinit.f):  all bulk ions have own velocity, Vx,Vy,Vz, on V*(iplsv) 
+c                           set new flow velocity for ipls
+
+c    icall:               :
 
 c    icall=0
 c      called PRIOR to Monte Carlo Loop (from subr. input)
@@ -66,7 +70,7 @@ c        ignored, because they are aready done in a previous call
 c  for appropriate values of nfilel:  = 1,3,4,6,8,9
 c      write fort.13 (CALL WRPLAM) after all density models are done.
 
-c   carry out specific "background models", 
+c   carry out specific "background models",
 c   for bulk species IPLS
 c      'fort.13':  take background data from fort.13, species: iold
 c      'fort.10':  take test particle data from fort.10, species: iold
@@ -76,7 +80,7 @@ c   DEIN             : electron density (from quasineutrality)
 c   DEINL            : log electron density (with cutoffs)
 c   TEINL            : log electron temperature (with cutoffs)
 c   LGVAC(...,NPLS+1): electron vacuum flag
-c   LGVAC(...,IPLS)  : bulk ion vacuum flag
+c   LGVAC(...,IPLS)  : bulk "ion" vacuum flag
 c   LGVAC(...,0)     : background vacuum flag
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -102,18 +106,19 @@ c   LGVAC(...,0)     : background vacuum flag
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: ICALL
-      REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI, 
+      REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI,
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
-     .            TEI, DEJ, TVACL, DVACL, BOLTZFAC, RCORONA, RCOLRAD,
-     .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX, 
+     .            TEI, DEJ, BOLTZFAC, RCORONA, RCOLRAD,
+     .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX,
      .            RC2MIN, RC2MAX, ERATE, BNORMI
       REAL(DP) :: tpb1, tpb2, EIRENE_second_own
-      REAL(DP) :: COEF(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
+      REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
      .                         BASE_VELX(:), BASE_VELY(:),BASE_VELZ(:)
-      INTEGER :: I, IR, IN, IP, IPM, J, IPLS, IOLD, ISW, IRE, I1,
-     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, 
+      INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
+     .           I, J, JEND,
+     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
  
       TYPE(EIRENE_SPECTRUM), POINTER :: SPEC
@@ -138,7 +143,7 @@ c   LGVAC(...,0)     : background vacuum flag
       JFEX2MN = 0
       JFEX2MX = 0
  
-cdr   
+cdr
  
       IBS = 0
       DO IPLS=1,NPLSI
@@ -174,7 +179,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
 
         ELSEIF (INDEX(CDENMODEL(IPLS),'FORT.10') > 0) THEN
 
-c   itold = ?? 
+c   itold = ??
 c   check: itold ge 0 and itold.le 3
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
@@ -300,9 +305,7 @@ c......................................................................
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
-C  SET ELECTRON-DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,NPLS+1)
-      TVACL=LOG(TVAC)
-      DVACL=LOG(DVAC*1.E-8_DP)
+C  SET ELECTRON-DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,0:NPLS+1)
       LGVAC=.TRUE.
       DO 5102 J=1,NSBOX
         DEIN(J)=0.
@@ -320,10 +323,8 @@ C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
         LGVAC(J,0)     =LGVAC(J,0).AND.LGVAC(J,NPLS+1)
 5102  CONTINUE
  
-cdr      tpb2 = EIRENE_second_own()
-cdr      write (6,*) ' cputime for log values ',tpb2-tpb1
-cdr      tpb1 = tpb2
-c..................................................................... 
+
+c.....................................................................
 C
 C   FURTHER SPECIAL DENSITY MODELS, AFTER ELECTRON DENSITY DEIN IS SET:
 C   SAHA  (NOT READY)
@@ -345,10 +346,10 @@ C
 !PB   TO BE WRITTEN
           WRITE (iunout,*) ' DENSITY PROFILE ACCORDING TO SAHA IS NOT ',
      .                'AVAILABLE '
-          WRITE (iunout,*) ' PLEASE CHOOSE DIFFERENT OPTION FOR ION ',
+          WRITE (iunout,*) ' CHOOSE DIFFERENT OPTION FOR ION ',
      .                'DENSITY ',IPLS
           CALL EIRENE_EXIT_OWN(1)
- 
+c...............................................................saha: done 
         CASE ('CORONA    ')
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
@@ -371,22 +372,24 @@ C
      .                 RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                 RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
           AM1=1._DP/TDMPAR(IPLS)%TDM%A_CORONA
-c  now COEF contains the excitation rate,
-c  and AMI is the radiative decay rate
-c  compute new density of species ipls from equilibrium between
-c  these two processes  for the "ground state" density BASE_DENSITY
+c  data for corona model found and stored on REACDAT(NREACI+1)
           FOUND = .TRUE.
+
           DO IR=1,NSURF
-            IF (LGVAC(IR,NPLS+1)) THEN
-              TEF=TVACL
-            ELSE
-              TEF=TEINL(IR)
-            END IF
+            RCORONA=0.0
+            IF (.NOT.LGVAC(IR,NPLS+1)) THEN
             RCORONA = EIRENE_RATE_COEFF(NREACI+1,TEF,0._DP,.TRUE.,
-     .                                  0,ERATE)
+     .                                    0,ERATE)
+            END IF
+c  now RCORONA contains the excitation rate coefficient (cm**3/s),
+c  and AMI is the inverse of the radiative decay rate (s)
+c  compute new density of species ipls from equilibrium between
+c  these two processes  for the given "ground state" density BASE_DENSITY
+
             DIIN(IPLS,IR)=BASE_DENSITY(IR)*RCORONA*DEIN(IR)*AM1
             DIIN(IPLS,IR)=MAX(DVAC,DIIN(IPLS,IR))
  
+cdr  what is this??  background spectrum ??
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
                 IF (FOUND) ALLOCATE (SPEC)
@@ -403,11 +406,8 @@ c  these two processes  for the "ground state" density BASE_DENSITY
  
           END DO
           IF (.NOT.FOUND) DEALLOCATE(SPEC)
- 
-cdr      tpb2 = EIRENE_second_own()
-cdr      write (6,*) ' cputime for corona ',ipls,tpb2-tpb1
-cdr      tpb1 = tpb2
- 
+c...............................................................corona: done
+
         CASE ('COLRAD    ')
           IF (.NOT.ALLOCATED(SUMNI)) THEN
             ALLOCATE (SUMNI(NRAD))
@@ -426,12 +426,15 @@ C  ARE THERE MULTIPLE ION DRIFT VELOCITIES?
             VYIN(IPLSV,:)=0._DP
             VZIN(IPLSV,:)=0._DP
           endif
+
           FOUND = .TRUE.
           DO IRE=1,TDMPAR(IPLS)%TDM%NRE
+c  sum up contributions coupled to one or more (NRE) base-densities
             IOLD=TDMPAR(IPLS)%TDM%ISP(IRE)
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
             CALL EIRENE_GET_BASE_DENSITY(IRE)
+
             REACDAT(NREACI+1)%LOTH = .FALSE.
             CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(IRE),
      .                   TDMPAR(IPLS)%TDM%H2(IRE),
@@ -441,17 +444,19 @@ C  ARE THERE MULTIPLE ION DRIFT VELOCITIES?
      .                   RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
             I1=INDEX(TDMPAR(IPLS)%TDM%H2(IRE),'.')
             READ (TDMPAR(IPLS)%TDM%H2(IRE)(I1+1:),*) ISW
+
             SELECT CASE (ISW)
-            CASE (11)  !  H.11 format, reduced population coefficient
+
+            CASE (11)  !  H.11 format, reduced population coefficient from AMJUEL
 c  only temperature dependence in reduced population coefficient
-              COEF(0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1)
+              COEF1D(0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1)
               DO IR=1,NSURF
                 IF (LGVAC(IR,NPLS+1)) CYCLE
                 TEF=TEINL(IR)
                 RCOLRAD=0._DP
                 DO I=0,8
                   TEI=TEF**I
-                  RCOLRAD=RCOLRAD+COEF(I)*TEI
+                  RCOLRAD=RCOLRAD+COEF1D(I)*TEI
                 END DO
                 RCOLRAD=EXP(RCOLRAD)
                 DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
@@ -493,7 +498,7 @@ c  only temperature dependence in reduced population coefficient
                         ELSE
                           WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
      .                       ' DENSITY MODEL COLRAD '
-                          WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBTING ',
+                          WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBUTING ',
      .                       ' TO THE SAME BACKGROUND SPECTRUM DO NOT',
      .                       ' MATCH '
                           WRITE (IUNOUT,*) ' IPLS, IRE ',IPLS, IRE
@@ -506,16 +511,22 @@ c  only temperature dependence in reduced population coefficient
  
               END DO
               IF (.NOT.FOUND) DEALLOCATE(SPEC)
-            CASE (12)!  H.12 format, reduced population coefficient
+
+            CASE (12)!  H.12 format, reduced population coefficient from AMJUEL
 c  temperature and density dependence in reduced population coefficient
+c  works only with AMJUEL formatted data, not any other population coefficient
               COEF2D(0:8,0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1:9)
               DO IR=1,NSURF
                 IF (LGVAC(IR,NPLS+1)) CYCLE
                 TEF=TEINL(IR)
                 DEF=LOG(DEIN(IR)*1.E-8_DP)
                 RCOLRAD=0._DP
+c  collapse CR 2-parameter fit to a single parameter fit (first block) for corona limit
+                JEND=8
+                IF (DEF.LE.0.0) JEND=0
+
                 DEJ=1._DP
-                DO J=0,8
+                DO J=0,JEND
                   TEIDEJ=DEJ
                   DO I=0,8
                     RCOLRAD=RCOLRAD+COEF2D(I,J)*TEIDEJ
@@ -524,6 +535,7 @@ c  temperature and density dependence in reduced population coefficient
                   DEJ=DEJ*DEF
                 END DO
                 RCOLRAD=EXP(RCOLRAD)
+
                 DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
                 if (nlmlti) then
                   TIIN(IPLSTI,IR)=TIIN(IPLSTI,IR)+
@@ -563,7 +575,7 @@ c  temperature and density dependence in reduced population coefficient
                         ELSE
                           WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
      .                       ' DENSITY MODEL COLRAD '
-                          WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBTING ',
+                          WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBUTING ',
      .                       ' TO THE SAME BACKGROUND SPECTRUM DO NOT',
      .                       ' MATCH '
                           WRITE (IUNOUT,*) ' IPLS, IRE ',IPLS, IRE
@@ -579,9 +591,10 @@ c  temperature and density dependence in reduced population coefficient
             CASE DEFAULT
               WRITE (iunout,*) ' H.',ISW,
      .             ' NOT FORESEEN IN COLRAD DENSITY MODEL '
-            END SELECT
+            END SELECT  !ISW
           END DO   ! IRE
- 
+
+c  scale merged contributions from all contributing densities 
           DIIN(IPLS,:)=MAX(DVAC,DIIN(IPLS,:))
           if (nlmlti) then
             TIIN(IPLSTI,:)=MAX(TVAC,TIIN(IPLSTI,:)/(SUMNI(:)+eps60))
@@ -591,15 +604,13 @@ c  temperature and density dependence in reduced population coefficient
             VYIN(IPLSV,:)=VYIN(IPLSV,:)/(SUMMNI(:)+eps60)
             VZIN(IPLSV,:)=VZIN(IPLSV,:)/(SUMMNI(:)+eps60)
           endif
+c .................................................................colrad done
  
         CASE DEFAULT
 !  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
  
-cdr   tpb2 = EIRENE_second_own()
-cdr   write (6,*) ' cputime for colrad ',ipls,tpb2-tpb1
-cdr   tpb1 = tpb2
- 
+
       END DO
       IF (ALLOCATED(SUMNI)) THEN
         DEALLOCATE (SUMNI)
@@ -610,10 +621,7 @@ cdr   tpb1 = tpb2
  
       NBACK_SPEC = IBS
  
-cdr   tpb2 = EIRENE_second_own()
-cdr   write (6,*) ' cputime for density models ',tpb2-tpb1
-cdr   tpb1 = tpb2
- 
+
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
 C
@@ -797,7 +805,7 @@ cdr      NFILEL=9  probably wrong, jan 16.  3 and 8 ?,   or 4 and 9 ?, but not 3
       CONTAINS
  
       SUBROUTINE EIRENE_GET_BASE_DENSITY(IRE)
-c  input: ire, number of reaction/density that contributes to the
+c  input: ire, number of density that contributes to the
 c              evaluation of the expression for the selected species
 c              ipls with special density/temperature option
       INTEGER, INTENT(IN) :: IRE
@@ -816,7 +824,7 @@ C FOR CALLS AFTER PARTICLE TRACING
 C  NOTHING TO BE DONE
         ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
           IESTR=ISTRA
-          IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLASMA_DERIV: ' 
+          IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLASMA_DERIV: '
           CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -825,8 +833,6 @@ C  NOTHING TO BE DONE
      .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb            CALL EIRENE_SYMET(ESTIMV,NTALV,NRTAL,NR1TAL,NP2TAL,NT3TAL,
-!pb     .                 ,NLSYMP(ISTRA),NLSYMT(ISTRA))
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
      .                 NLSYMP(ISTRA),NLSYMT(ISTRA))
           ENDIF
@@ -841,8 +847,6 @@ C  NOTHING TO BE DONE
      .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-!pb            CALL EIRENE_SYMET(ESTIMV,NTALV,NRTAL,NR1TAL,NP2TAL,NT3TAL,
-!pb     .                 NLSYMP(ISTRA),NLSYMT(ISTRA))
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
      .                 NLSYMP(ISTRA),NLSYMT(ISTRA))
           ENDIF

@@ -7,8 +7,8 @@ c    at the end of this routine, for each reaction card, call: SET_REACTION_DATA
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting, cleanup, nov. 15: continued
 cdr  jan 16: started to document options for asymptotics
-!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR 
-c            data files, 
+!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR
+c            data files,
 cdr          such as character strings H.xxx
 cdr          taken over from ITER-IO branch
 !pb  may 16: bug fix to the extensions (resolving problem reading HYDHEL H.3)
@@ -18,23 +18,23 @@ cdr:  subr. infcop.f, there to provide extra information regarding grid distorti
 cdr:  june 16:  added H.5 - H.7 options for H_COL case.
 cdr            started to clarify extrapolation options for polynom fits. Not ready
 cdr            some comments corrected
-cdr   Aug. 16: reading Tmin, Emin from hydhel disabled. 
-cdr            May have corrupted extrapolation in some cases 
-c     Sept.16: two new internal subroutines, 
+cdr   Aug. 16: reading Tmin, Emin from hydhel disabled.
+cdr            May have corrupted extrapolation in some cases
+c     Sept.16: two new internal subroutines,
 c              a) to read validity range information,
-c              b) three parameters for each validity boundary, for extrapolation options 
+c              b) three parameters for each validity boundary, for extrapolation options
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
-     .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX, 
-     .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX, 
+     .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .                          ELNAME, IZ1)
 c
 c  open data stream 29 and read atomic data set no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
 c           may have been set (for entire eirene run),
 c           then stream is "29+ifoff".  default: ifoff=0)
-c  and at the end: call to SET_REACTION_DATA.F (in module COMXS) 
+c  and at the end: call to SET_REACTION_DATA.F (in module COMXS)
 c                  to fill REACDAT data structure
 c
 c
@@ -61,7 +61,7 @@ c               reac IS MIS-USED AS  fit-flag: iftflg.
 C               not NICE, VERY CONFUSING.
 C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
 
-cdr what does that mean for H-COL? ADAS ?  what about "spectral database"?  
+cdr what does that mean for H-COL? ADAS ?  what about "spectral database"?
 cdr where described, where read ?
 cdr is iftflg not known in case of AMJUEL?
 
@@ -108,8 +108,8 @@ c            currently handeled in input.f. not nice! also missing still for: H.
 c
 C    IFTFLG=IFTFLG(IR,IFLG)
 C    IFLG  derived from ISW
-C          0 for potential, (ISW=0) 
-C          1 for cross section, (ISW=1) 
+C          0 for potential, (ISW=0)
+C          1 for cross section, (ISW=1)
 C          2 for rate-coeff, (ISW=2,3,4)
 C          3 for mom-weighted rate coeff. (ISW=5,6,7)
 C          4 for energy weighted rate coeff. (ISW=8,9,10)
@@ -227,9 +227,9 @@ C
       I0=0
       CREACD = 0._DP
 
-c  some additional  (optional) reaction data:  threshold energy, 
-c                                              max ratecoeff sigma*v_rel, 
-c                                              at E_rel=ERTMAX  
+c  some additional  (optional) reaction data:  threshold energy,
+c                                              max ratecoeff sigma*v_rel,
+c                                              at E_rel=ERTMAX
       CMR  = 'MAXRATE'
       CEMR = 'ELAB'
       CETH = 'ETH'
@@ -698,14 +698,14 @@ CC  now identify proper dataset within file FILNAM
 
         LAST_TEX=REPEAT(' ',80)
 1       READ (29+ifoff,'(A80)',END=990) ZEILE
-!ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1     
+!ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
 !PB        IF (INDEX(ZEILE,H123).EQ.0 .or.
 !PB     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
         IF (INDEX(ZEILE,H123).EQ.0) THEN
-          IF (INDEX(ZEILE,BACK).NE.0) LAST_TEX=ZEILE 
+          IF (INDEX(ZEILE,BACK).NE.0) LAST_TEX=ZEILE
           GOTO 1
         ELSE
-          IF ((INDEX(LAST_TEX,SECTION) .EQ. 0) .AND. 
+          IF ((INDEX(LAST_TEX,SECTION) .EQ. 0) .AND.
      .        (INDEX(ZEILE,SECTION) .EQ. 0)) GOTO 1
         END IF
 C
@@ -770,6 +770,7 @@ C
 C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
+C READ 3 BLOCKS "J" OF DATA. each block contains 9 LINES, 3 numbers per line, i.e. 3 sub blocks
         DO 11 J=0,2
 16        READ (29+ifoff,'(A80)',END=990) ZEILE
 C  SEARCH FOR STRING 'fit-flag'  or 'Index'
@@ -786,8 +787,11 @@ C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
             EXIT
           ELSE
             DO 17 I=1,9
-C   READ BLOCK OF 9 LINES, THREE DATA EACH, UNFORMATTED
-              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
+C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1,K+2
+              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3) 
+c    first  index I: I-th block, vertical, Temp. dependence
+c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
+c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
 17          CONTINUE
           END IF
 11      CONTINUE
@@ -796,8 +800,8 @@ C   AT THIS POINT WE HAVE STORED FOR REACTION ir:
 C   IFTFLG(IR)   (DEFAUT:   =0)
 C   81 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1...9)
 
-C 
-C  DOUBLE PARAMETER POLYNOMIAL FITS: DONE 
+C
+C  DOUBLE PARAMETER POLYNOMIAL FITS: DONE
 
         GOTO 1000
 C
@@ -809,7 +813,7 @@ C  NEXT: READ ASYMPTOTICS INFORMATION FROM ATOMIC DATA FILE
 C        HYDHEL, AMJUEL, H2VIBR, METHANE.
 
 C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT, RIGHT, BOTTOM, TOP.
-C FOR 1D: ONLY "LEFT" AND "RIGHT" ARE USED, "BOTTOM" AND "TOP" ARE FILLED WITH DEFAULTS 
+C FOR 1D: ONLY "LEFT" AND "RIGHT" ARE USED, "BOTTOM" AND "TOP" ARE FILLED WITH DEFAULTS
 
       IF (ISW.EQ.0) GOTO 2000    ! NO ASYMPTOTICS FOR POTENTIALS
 
@@ -832,7 +836,7 @@ C  FURTHER PARAMETERS, NOT RELATED TO ASYMPTOTICS
       RTMAX = 0._DP
       ERTMAX = -HUGE(1._DP)
 
-!     BEND="\end" stops looking for asymptotics 
+!     BEND="\end" stops looking for asymptotics
       DO WHILE(INDEX(ZEILE,BEND) == 0)
 
         ULINE = ZEILE
@@ -906,11 +910,11 @@ C
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         END IF
-        IF (LGR1MIN) RC1MIN = LOG(R1MN)          
+        IF (LGR1MIN) RC1MIN = LOG(R1MN)
         IF (LGC1MIN) FP1(1:3) = FP1L
         JFEX1MN = IF1MN
         IF (LGC1MIN .AND. LGR1MIN .AND. (JFEX1MN == 0))
-! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .          JFEX1MN = 5
       END IF
 
@@ -923,11 +927,11 @@ C
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         END IF
-        IF (LGR1MAX) RC1MAX = LOG(R1MX)          
+        IF (LGR1MAX) RC1MAX = LOG(R1MX)
         IF (LGC1MAX) FP1(4:6) = FP1R
         JFEX1MX = IF1MX
-        IF (LGC1MAX .AND. LGR1MAX .AND. (JFEX1MX == 0)) 
-! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+        IF (LGC1MAX .AND. LGR1MAX .AND. (JFEX1MX == 0))
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .          JFEX1MX = 5
       END IF
 
@@ -940,7 +944,7 @@ C
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         END IF
-        IF (LGR2MIN) RC2MIN = LOG(R2MN)          
+        IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2B
         JFEX2MN = IF2MN
         IF (LGC2MIN .AND. LGR2MIN .AND. (JFEX2MN == 0)) JFEX2MN = 5
@@ -955,7 +959,7 @@ C
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         END IF
-        IF (LGR2MAX) RC2MAX = LOG(R2MX)          
+        IF (LGR2MAX) RC2MAX = LOG(R2MX)
         IF (LGC2MAX) FP2(4:6) = FP2T
         JFEX2MX = IF2MX
         IF (LGC2MAX .AND. LGR2MAX .AND. (JFEX2MX == 0)) JFEX2MX = 5
@@ -1031,7 +1035,7 @@ c  reads validity range from atomic data file
         INDX = SCAN(ZEILE(INDG+1:),'EDed')
         INDA = SCAN(ZEILE(INDG+1:),'+-0123456789.')
         FORM=REPEAT(' ',20)
-        WRITE (FORM,'(A2,I0,A1,I0,A1)') 
+        WRITE (FORM,'(A2,I0,A1,I0,A1)')
      .         '(E',INDX+3-INDA+1,'.',INDX-INDP-1,')'
         READ (ZEILE(INDG+INDA:INDE),FORM) RNG
       END IF

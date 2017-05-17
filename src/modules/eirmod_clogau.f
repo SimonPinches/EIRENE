@@ -1,5 +1,6 @@
-!pb  30.11.06: ltstv added for testing purposes
 !    20.06.07: constant NLOGAU = number of logicals introduced
+cdr  April 2017:  NEXCS added to logicals (something from Vlad for photons?),
+cdr               nlogau=38
  
       MODULE EIRMOD_CLOGAU
  
@@ -11,7 +12,7 @@
  
       PUBLIC :: EIRENE_ALLOC_CLOGAU
  
-      INTEGER, PUBLIC, PARAMETER :: NLOGAU=37
+      INTEGER, PUBLIC, PARAMETER :: NLOGAU=38
  
       LOGICAL, PUBLIC, TARGET, SAVE :: LLOGAU(NLOGAU)
  
@@ -23,7 +24,8 @@
      L NLTOR,  NLTRZ,  NLTRA,  NLTRT,
      L NLMLT,  NLADD,
      L NLTRIM, LHABER, NLONE,   NLDFST, NLOLDRAN, 
-     L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH
+     L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
+     L NEXVS
  
       CONTAINS
  
@@ -69,6 +71,7 @@ C     NLFREE  => LLOGAU(31) ! NOT IN USE
       NLOCTREE => LLOGAU(35)
       NLSHRT13 => LLOGAU(36)
       NLWRMSH  => LLOGAU(37)
+      NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
  
       LLOGAU = .FALSE.
  

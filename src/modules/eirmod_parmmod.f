@@ -25,7 +25,7 @@ c    distrib_parm
  
       PRIVATE
  
-      PUBLIC :: EIRENE_SET_PARMMOD, EIRENE_COLLECT_PARM, 
+      PUBLIC :: EIRENE_SET_PARMMOD, EIRENE_COLLECT_PARM,
      P          EIRENE_DISTRIB_PARM,
      P          EIRENE_SPECTRUM, SPECT_ARRAY,
      P          ASSIGNMENT(=)
@@ -48,8 +48,8 @@ csw 13apr07
  
       INTEGER, PUBLIC, SAVE ::
      I NATM,   NMOL,   NION,   NPLS,   NPHOT,  NADV,   NADS,
-     I NCLV,   NSNV,   NALV,   NALS,   NAIN,   NCOP,   NBGK,  
-     I NPLSTI, NPLSV,  
+     I NCLV,   NSNV,   NALV,   NALS,   NAIN,   NCOP,   NBGK,
+     I NPLSTI, NPLSV,
      I NADSPC, NBACK_SPEC ,NADSPC_S, NADSPC_C, NADSPC_D,NADSPC_CD
  
       INTEGER, PUBLIC, SAVE ::
@@ -82,7 +82,7 @@ csw 13apr07
  
       INTEGER, PUBLIC, SAVE ::
      I NRAD,   NSWIT,   N1F,    N2F,    N3F,    NGITT,  NGITTP,
-     I NRADS,  N2NDPLG, N1STS,  N2NDS,  NTRIS,  NKNOTS, NRTALS
+     I NRADS,  N2NDPLGS, N1STS,  N2NDS,  NTRIS,  NKNOTS, NRTALS
  
       INTEGER, PUBLIC, SAVE ::
      I NGTSFT, NLIMPS, NLMPGS
@@ -166,25 +166,29 @@ C
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
  
-C  ELIMINATE SOME ARRAYS IN CASE OF LEVGEO=10 OPTION 
-C                     (GEOMETRY ARRAYS OUTSIDE EIRENE-CODE
+C  NSWIT: ELIMINATE SOME ARRAYS IN CASE OF LEVGEO=10 OPTION
+C                     (GEOMETRY ARRAYS OUTSIDE EIRENE-CODE)
+C  ngeom_usr=1:  use eirene grid tallies RSURF, PSURF,...  (default)
+c  ngeom_usr=0:  eirene grid tallies are eliminated, no storage, (e.g. in case of levgeo=10)
         NSWIT=1-NGEOM_USR
  
-C  IDENTIFY: WHICH GRIDS ARE THERE? N1F=0 OR N1F=1, IF N1ST=1, OR GT 1, RESP.
+C  IDENTIFY: WHICH GRIDS ARE THERE? N1F=0 OR N1F=1, IF N1ST=1, OR IF N1ST GT 1, RESP.
         N1F=1-1/N1ST
         N2F=1-1/N2ND
         N3F=1-1/N3RD
 C
+c  ngitt is the largest possible 2d dimension (grid on a coordinate surface or line)
         IF (NGITT <= 1) NGITT=N1ST*N2ND*N3F+N1ST*N3RD*N2F+N2ND*N3RD*N1F
         NGITTP=NGITT+1
 C
-        NRADS=NSWIT*NRAD+(1-NSWIT)*1
-        NRTALS=NSWIT*NRTAL+(1-NSWIT)*1
-        N2NDPLG=NSWIT*(N2ND*N2F+NPLG*(1-N2F))+(1-NSWIT)*1
-        N1STS=NSWIT*N1ST+(1-NSWIT)*1
-        N2NDS=NSWIT*N2ND+(1-NSWIT)*1
-        NTRIS=NSWIT*NTRI+(1-NSWIT)*1
-        NKNOTS=NSWIT*NKNOT+(1-NSWIT)*1
+C STORAGE FOR GRIDS. SWITCH OFF GRID STORAGE IN CASE OF LEVGEO=10 (external geometry package)
+        NRADS=NSWIT*    NRAD+                  (1-NSWIT)*1
+        NRTALS=NSWIT*   NRTAL+                 (1-NSWIT)*1
+        N2NDPLGS=NSWIT*(N2ND*N2F+NPLG*(1-N2F))+(1-NSWIT)*1
+        N1STS=NSWIT*    N1ST+                  (1-NSWIT)*1
+        N2NDS=NSWIT*    N2ND+                  (1-NSWIT)*1
+        NTRIS=NSWIT*    NTRI+                  (1-NSWIT)*1
+        NKNOTS=NSWIT*   NKNOT+                 (1-NSWIT)*1
 C
 C TALLIES
 C
@@ -230,19 +234,20 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
         NALSP=NALS+1
         NSNVP=NSNV+1
  
-        NTALI=22   ! total number of INPUT TALLIES:  
+        NTALI=22   ! total number of INPUT TALLIES:
 c                    INCREASED IN 2014 FROM 21 TO 22
         NTALN=12
         NTALO=14
         NTALV=100  ! total number of VOLUME AVERAGED TALLIES
 
 c  additional tallies
-        NTALA=57   ! NTALV-27, WITH NTALV=84
-        NTALC=58   ! NTALV-26, WITH NTALV=84
-        NTALT=59   ! NTALV-25, WITH NTALV=84
-        NTALM=60   ! NTALV-24, WITH NTALV=84
-        NTALB=61   ! NTALV-23, WITH NTALV=84
-        NTALR=62   ! NTALV-22, WITH NTALV=84
+        NTALA=57   
+        NTALC=58   
+        NTALT=59   
+        NTALM=60   
+        NTALB=61   
+        NTALR=62
+   
         NTALS=84   ! SURFACE AVERAGED TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)
         NTLSA=NTALS-2
         NTLSR=NTALS-1
@@ -265,8 +270,8 @@ C  SURFACE REFLECTION DATA
         NHD5=5
  
 C  ATOMIC DATA STORAGE. CURRENTLY ONLY TWO OPTIONS
-C  NSTORAM=0     : --> NHSTOR=0 --> NSTORDT=1,      NSTORDR=1
-C  NSTORAM=9     : --> NHSTOR=1 --> NSTORDT=NSTORAM,NSTORDR=NRAD
+C  NSTORAM=0     : --> NHSTOR=0 --> NSTORDT=1,       NSTORDR=1
+C  NSTORAM=9     : --> NHSTOR=1 --> NSTORDT=NSTORAM, NSTORDR=NRAD
         NHSTOR=1-1/(NSTORAM+1)
         NSTORDT=NHSTOR*NSTORAM+(1-NHSTOR)*1
         NSTORDR=NHSTOR*NRAD+   (1-NHSTOR)*1
@@ -359,7 +364,7 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
       INT_PARM( 30) = NALS
       INT_PARM( 31) = NAIN
       INT_PARM( 32) = NCOP
-      INT_PARM( 33) = nbgk
+      INT_PARM( 33) = NBGK
  
       INT_PARM( 34) = NSD
       INT_PARM( 35) = NSDW
@@ -406,14 +411,15 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
       INT_PARM( 68) = N3F
       INT_PARM( 69) = NGITT
       INT_PARM( 70) = NGITTP
+c
       INT_PARM( 71) = NRADS
-      INT_PARM( 72) = N2NDPLG
+      INT_PARM( 72) = N2NDPLGS
       INT_PARM( 73) = N1STS
       INT_PARM( 74) = N2NDS
       INT_PARM( 75) = NTRIS
       INT_PARM( 76) = NKNOTS
       INT_PARM( 77) = NRTALS
- 
+c
       INT_PARM( 78) = NGTSFT
       INT_PARM( 79) = NLIMPS
       INT_PARM( 80) = NLMPGS
@@ -584,8 +590,9 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
       N3F         = INT_PARM( 68)
       NGITT       = INT_PARM( 69)
       NGITTP      = INT_PARM( 70)
+c      
       NRADS       = INT_PARM( 71)
-      N2NDPLG     = INT_PARM( 72)
+      N2NDPLGS    = INT_PARM( 72)
       N1STS       = INT_PARM( 73)
       N2NDS       = INT_PARM( 74)
       NTRIS       = INT_PARM( 75)
@@ -687,7 +694,7 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
       SPECA%SPCMIN  = SPECB%SPCMIN
       SPECA%SPCMAX  = SPECB%SPCMAX
       SPECA%SPCDEL  = SPECB%SPCDEL
-      SPECA%SPCDELI = SPECB%SPCDELI     
+      SPECA%SPCDELI = SPECB%SPCDELI
       SPECA%ESP_MIN = SPECB%ESP_MIN
       SPECA%ESP_MAX = SPECB%ESP_MAX
       SPECA%ESP_00  = SPECB%ESP_00

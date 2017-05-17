@@ -1,4 +1,4 @@
-cdr:  njump=3 option: continue new flight from previously found 
+cdr:  njump=3 option: continue new flight from previously found
 cdr                   intersection with cell boundary. used from levgeo=10
 C icts introduced, lcut --> llcut  (sometime after 2014)
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
@@ -106,7 +106,7 @@ C
  
       REAL(DP), INTENT(OUT) :: PT
       REAL(DP) :: A(3,3), B(3), AB(3,3), PTS(4)
-      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, EIRENE_SARRUS, AX, AY, V, 
+      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, EIRENE_SARRUS, AX, AY, V,
      .          TIMTET,
      .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
      .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
@@ -116,7 +116,7 @@ C
      .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
       INTEGER :: IRICH(2,4), ITSIDE(3,4)
       INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
-     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF, 
+     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
@@ -125,7 +125,7 @@ C
 !pb      INTEGER, SAVE :: NSTS_CELL
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
       INTEGER :: NSTS_CELL,nrtest,ist
-      LOGICAL :: LLCUT(N2NDPLG), LCTS(4)
+      LOGICAL :: LLCUT(N2NDPLGS), LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
  
@@ -337,6 +337,8 @@ C
 301   CONTINUE
       PT=ZT1
       TIMINT(MRSURF)=ZT2
+
+c  ONE FURTHER VALID INTERSECTION FOUND: SAVE THIS FOR NEXT TIME:
       NIMINT = NIMINT+1
       IIMINT(NIMINT) = MRSURF
       GOTO 310
@@ -603,7 +605,7 @@ C  TO THE BOUNDARY OF THE ACTUELL CELL
 #endif
 
         ICTS=COUNT(LCTS)
-C  MORE THAN ONE TENTATIVE INTERECTIONS FOUND 
+C  MORE THAN ONE TENTATIVE INTERECTION FOUND
         IF (ICTS > 1) THEN
           WHERE (PTS < 0._DP)
             PTS = 1.E30_DP
@@ -688,7 +690,7 @@ C  NO INTERSECTION FOUND
           IF (NLSRFX.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
 #ifdef TRACE
-            IF (NLTRC) 
+            IF (NLTRC)
      .        WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
 #endif
@@ -719,7 +721,7 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
           ELSEIF (NLSRFY.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
 #ifdef TRACE
-            IF (NLTRC) 
+            IF (NLTRC)
      .        WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
 #endif
@@ -786,6 +788,7 @@ C
         ISTS=INMP1I(I,0,0)
 C  SURFACE I IS NOT A NON DEFAULT RADIAL STANDARD SURFACE
         IF (ISTS.EQ.0) GOTO 6100
+
         IF (TIMINT(I).EQ.0) THEN
           TIMINT(I)=1
           NIMINT = NIMINT+1
@@ -1450,8 +1453,8 @@ C
 
       
 C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
-      IF (NJUMP.EQ.3.or.njump.eq.0) then 
-        TIM=0.        
+      IF (NJUMP.EQ.3.or.njump.eq.0) then
+        TIM=0.
       endif
 
 #ifdef TRACE
@@ -1469,19 +1472,20 @@ c     if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
       IF (IERR.NE.0) GOTO 9999
       PT=TIM
       IF (NEWCEL.GT.0) THEN
-cdr  an intersection with the surface of cell nrcell has been found. 
+cdr  an intersection with the surface of cell nrcell has been found.
 cdr  but this is not one of the "radial" non-default standard surfaces defined in 3a.
         NINCX=NEWCEL-NRCELL
 cdr  make sure that mrsurf is not pointing to any of the defined non-default standard surfaces
-cdr  but why not just mrsurf=0 ???      
-cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, no matter if non-default (3a) or not. 
+cdr  but why not just mrsurf=0 ???
+cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, 
+c    no matter if non-default (3a) or not.
         MRSURF=NRMSRF
-c    
+c
       ELSEIF (NEWCEL.LT.0) THEN
 cdr  one of the non-default surfaces has been hit. set this surface index to mrsurf.
         NINCX=ICOS
         MRSURF=INUMP(-NEWCEL,1)
-cdr  
+cdr
       ELSEIF (NEWCEL.EQ.0) THEN
         WRITE (iunout,*) 'NEWCEL=0, EXIT FROM MESH '
         CALL EIRENE_EXIT_OWN(1)

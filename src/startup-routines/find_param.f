@@ -202,7 +202,7 @@ C  read and write header
 
       WRITE (IUNOUT,*) 'PRINTOUT FROM EIRENE PRE-PROCESSING:'
       WRITE (IUNOUT,*) 'BROWSE INPUT FOR STORAGE NEEDS (FIND_PARAM.F)'
-      
+      CALL EIRENE_LEER(1)
 
 c  skip further comments in header 
       DO WHILE (ZEILE(1:1).EQ.'*')

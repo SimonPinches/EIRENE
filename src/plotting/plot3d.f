@@ -38,14 +38,9 @@ C
       CHARACTER(72), INTENT(IN) :: HEAD, RUNID, TXHEAD
  
       REAL(DP) :: XMINN, XMAXN, DXXX, YMINN, YMAXN
-!pb      REAL(SP) :: FALT(N1ST,N2NDPLG),
-!pb     .          X(N1ST,N2NDPLG), Y(N1ST,N2NDPLG), Z2(N1ST,N2NDPLG)
-!pb      REAL(SP) :: EXT(3,3), VALU(3,2), DCM, YH
-!pb      REAL(SP) :: YHLF, XHLF, FMIN, FMAX, REMIN, REMAX,
-!pb     .          XMIN, XMAX, YMIN, YMAX
-!pb      REAL(SP), ALLOCATABLE :: AR(:)
-      REAL :: FALT(N1ST,N2NDPLG),
-     .        X(N1ST,N2NDPLG), Y(N1ST,N2NDPLG), Z2(N1ST,N2NDPLG)
+
+      REAL :: FALT(N1STS,N2NDPLGS),
+     .        X(N1STS,N2NDPLGS), Y(N1STS,N2NDPLGS), Z2(N1STS,N2NDPLGS)
       REAL :: EXT(3,3), VALU(3,2), DCM, YH
       REAL :: YHLF, XHLF, FMIN, FMAX, REMIN, REMAX,
      .        XMIN, XMAX, YMIN, YMAX
@@ -55,7 +50,7 @@ C
       CHARACTER(20) :: CHAXS(3)
 C
 C
-      LAR=46*N1ST*N2NDPLG
+      LAR=46*N1STS*N2NDPLGS
       ALLOCATE (AR(LAR))
       ier=1
       IF (LEVGEO.LE.3.AND.LEVGEO.GT.1.AND.LPTOR3(IBLD)) THEN
@@ -64,8 +59,8 @@ C
         IYM=NY-1
         IZ=IYM*NR1ST
 C
-        DO 1 I=1,N1ST
-          DO 1 J=1,N2NDPLG
+        DO 1 I=1,N1STS
+          DO 1 J=1,N2NDPLGS
             FALT(I,J)=-75.75E20
 1       CONTINUE
 C

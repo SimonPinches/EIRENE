@@ -1,3 +1,11 @@
+cdr:  April 17: syncronized with version from solps-iter: spelling errors in comments,
+cdr             use EIRMOD_PRECISION instead of real*8 
+cdr             (this may complicate stand alone use, outside eirene)
+cdr             call "exit_own" rather than "stop", further cleanup...
+cdr             remaining differences: 
+cdr                 use eirmod_ccrm (Vlad Kotov) in solps-iter
+cdr                 lima=34 or lima=40, lima undefined in solps-iter ?
+
 cdr: nov. 2015  added first argument in parameter list: ICELL
 CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
 cdr               for next call to H_colrad, see e.g. fem routine df_xyz.f in geometry block
@@ -29,12 +37,12 @@ C   R_EXT(..) : TRAIN OF H* TRAVELING WITH external source, e.g. radiation trap.
 C
 C
 c   C: elec. impact excitation processes
-c   F: elec. impact de-excitation processes  (invers to C, detailed balance)
+c   F: elec. impact de-excitation processes (inverse to C, detailed balance)
 c   A: spontaneous radiative decay
 c   S: ionization
 c
-c   ALPHA(N): H+    ->  H*(N)  THREEBODY recombination from H+
-c                              (invers to S: elect. impact ionization)
+c   ALPHA(N): H+    ->  H*(N)  three-body recombination from H+
+c                              (inverse to S: elect. impact ionization)
 c   BETA(N) : H+    ->  H*(N)  radiative rec. from H+
 c   C(1,N)  : H(1)  ->  H*(N)  excitation from ground state
 
@@ -48,7 +56,7 @@ C***********************************************************************
      .                            POP0, POP1, POP2,
      .                            ALPCR, SCR, SCR_EXT,
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
-     .                            E_ALPCR_T, E_SCR_T,E_SCR_EXT_T)
+     .                            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T)
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
@@ -146,7 +154,8 @@ C     E_AT are the energy levels. Ground state is E_AT(1)=0.
 C
 C     L.C.JOHNSON, ASTROPHYS. J. 174, 227 (1972).
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION F(40,40)
       DIMENSION A(40,40)
       DIMENSION E_AT(40)
@@ -187,7 +196,8 @@ C     SAHA-BOLTZMANN COEFFICIENT FOR ATOMIC HYDROGEN
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
  
       TE=TEMP*1.1605E4
@@ -211,7 +221,8 @@ C     RATE COEFFICIENT FOR ATOMIC HYDROGEN
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
       DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),UION(40)
  
@@ -267,7 +278,8 @@ C     EXCITATION RATE COEFFICIENT
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION U(40,40),OSC(40,40),C(40,40),F(40,40)
       DIMENSION S(40),ALPHA(40)
 C
@@ -354,8 +366,10 @@ C
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
-      DOUBLE PRECISION EIRENE_GINT
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
+
+      REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
  
       P=I
@@ -430,7 +444,8 @@ C
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      IMPLICIT REAL*8(A-H,O-Z)
+
+      IMPLICIT REAL(DP) (A-H,O-Z)
       P=I
       BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
       Q=J
@@ -458,7 +473,7 @@ C
  
       RETURN
  1000 WRITE(iunout,*) 'ERROR IN COFJO        ICON = ',ICON
-      STOP
+      CALL EIRENE_EXIT_OWN(1)
       END
  
 C***********************************************************************
@@ -472,7 +487,8 @@ C
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       UH=13.595
       P=I
       BN=1.4/P*LOG(P)-0.7/P-0.51/P**2+1.16/P**3-0.55/P**4
@@ -505,7 +521,8 @@ C     K.SAWADA, K.ERIGUCHI, T.FUJIMOTO
 C     J. APPL. PHYS. 73, 8122 (1993).
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION G(0:2,40)
  
       G(0,1)=1.1330
@@ -597,9 +614,10 @@ C     K.SAWADA, K.ERIGUCHI, T.FUJIMOTO
 C     J. APPL. PHYS. 73, 8122 (1993).
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION G(0:2,40)
-      DOUBLE PRECISION EIRENE_GINT
+      REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
  
       G(0,1)= 1.1330
@@ -660,7 +678,8 @@ C
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
  
       P=I
       UI=13.595/TEMP/P**2
@@ -671,14 +690,18 @@ C
       END
  
 cdr
-      double precision FUNCTION EIRENE_GINT(xX)
-      REAL*8 Xx
-      double precision X,GG(8)
+      FUNCTION EIRENE_GINT(xX)
+      USE EIRMOD_PRECISION
+      REAL(DP) EIRENE_GINT
+      REAL(DP) Xx
+      REAL(DP) X,GG(8)
 cdr
-      DATA GG/0.2677737343,8.6347608925,18.0590169730,8.5733287401,
-     *        3.9584960228,21.0996530827,25.6329561486,9.5733223454/
+      DATA GG/0.2677737343_DP, 8.6347608925_DP,
+     *       18.0590169730_DP, 8.5733287401_DP,
+     *        3.9584960228_DP,21.0996530827_DP,
+     *       25.6329561486_DP, 9.5733223454_DP/
 cdr
-      x=dble(xx)
+      x=xx
 cdr
       EIRENE_GINT=(GG(1)+GG(2)*X+GG(3)*X**2+GG(4)*X**3+X**4)/
      *            (GG(5)+GG(6)*X+GG(7)*X**2+GG(8)*X**3+X**4)
@@ -695,8 +718,9 @@ C
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      IMPLICIT REAL*8(A-H,O-Z)
-      REAL*8 EIRENE_GAUNT3,PP,XPP,A,B,EPSA,EPSR
+
+      IMPLICIT REAL(DP) (A-H,O-Z)
+      REAL(DP) EIRENE_GAUNT3,PP,XPP,A,B,EPSA,EPSR
       COMMON PP,XPP
       EXTERNAL EIRENE_GAUNT3
  
@@ -704,8 +728,8 @@ C
       PP=P
       XPP=XP
  
-      A=0.0
-      B=20.0
+      A=0.0_DP
+      B=20.0_DP
 cdr   EPSA=1.0D-5
       EPSA=1.0D-4
       EPSR=1.0D-5
@@ -721,13 +745,15 @@ C  10 FORMAT(1H ,1I3,2(2X,1PD10.3),2X,I4,2X,I5,/)
  
       RETURN
 C1000 WRITE(iunout,*) 'ERROR IN CLBETA       ICON = ',ICON
-C     STOP
+C     CALL EIRENE_EXIT_OWN(1)
       END
  
 C***********************************************************************
  
       FUNCTION EIRENE_GAUNT3(X)
-      REAL*8 PP,XPP,U,B,X,EIRENE_GAUNT3 
+      USE EIRMOD_PRECISION
+      IMPLICIT NONE
+      REAL(DP) PP,XPP,U,B,X,EIRENE_GAUNT3
       COMMON PP,XPP
       U=X/XPP
       B=PP
@@ -745,8 +771,9 @@ C
 C     SOLUTION OF RATE EQUATION FOR ATOMIC HYDROGEN
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
-      REAL*8      C(40,40),F(40,40),A(40,40),W(40,40)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
+      REAL(DP)  C(40,40),F(40,40),A(40,40),W(40,40)
      &         ,SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40)
      &         ,       Q_EXT(40),R_EXT(40)
      &         ,BLAX(40),VW(40),WA(40,40)
@@ -784,7 +811,7 @@ cdr bevoelkerung durch: stoesse von oben, spontan von oben
   201 CONTINUE
  
 cdr k loop finished
-cdr: jetzt: dito fuer k=lup, d.h. bevoelkerung von oben entfaellt
+cdr: jetzt: ditto fuer k=lup, d.h. bevoelkerung von oben entfaellt
       DO 211 L=2,LUP-1
  
   211 W(LUP,L)=C(L,LUP)*DENSEL
@@ -812,7 +839,7 @@ c  vorbereiten fuer recombination
         DO 501 I=LUP+1,LIM
   501     SUMAS=SUMAS+SAHA(I)*A(I,K)
 c
-c  matrixelemente: 1/s  (densel*rate-coeff. )
+c  matrixelemente: 1/s  (densel*rate coeff. )
 c  rechte seiten : cm**3/s, nicht: 1/s, also fuer elektronendichte=1
 c                                      (bzw: stosspartnerdichte =1)
 c  geht wg. linearitaet.
@@ -866,7 +893,8 @@ C     EFFECTIVE IONIZATION AND RECOMBINATION RATE COEFFICIENTS
 C     FOR ATOMIC HYDROGEN
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
 C
@@ -898,8 +926,8 @@ C
       END
  
 C***********************************************************************
-      SUBROUTINE
-     .  EIRENE_E_IONREC(C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
+      SUBROUTINE EIRENE_E_IONREC
+     &                   (C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
      &                    F,R_EXT,Q_EXT,E_AT,
      &                    ALPCR,      SCR,    SCR_EXT,
      &                    E_ALPCR,  E_SCR,  E_SCR_EXT,
@@ -909,7 +937,8 @@ C     EFFECTIVE ELECTRON ENERGY LOSS IONIZATION AND RECOMBINATION
 C     RATE COEFFICIENTS FOR ATOMIC HYDROGEN
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40),E_AT(40)
 C
@@ -928,7 +957,7 @@ C  FOR TESTING
       E_SCR_EXT_T=0.0
       E_ALPCR_T=0.0
 C
-C  EFFECTIV ELECTRON COOLING CORRESPONDING TO
+C  EFFECTIVE ELECTRON COOLING CORRESPONDING TO
 C  "ORDINARY" COUPLING TO GROUND STATE S(I)
 C
 C  PART I
@@ -960,19 +989,19 @@ C  i1--> i2. i1<i2,  R1(i1)=...
       ENDDO
 C  PART V
 C  i2--> i1.  i2>i1, R1(i2)=...
-C            (includes i1=1, i.e., invers to PART III)
+C            (includes i1=1, i.e., inverse to PART III)
       DO I1=1,LUP-1
         DO I2=I1+1,LUP
           DE=(E_AT(I2)-E_AT(I1))
           SUSCR  =r1(i2)*densel*F(I2,I1)*DE
           E_SCR=E_SCR+SUSCR
-C  separte treatment of radiation losses alone, only for testing
+C  separate treatment of radiation losses alone, only for testing
           SUSCR_T=r1(i2)*A(I2,I1)*(-1.)*DE
           E_SCR_T=E_SCR_T+SUSCR_T
         ENDDO
       ENDDO
  
-C  for test only.  evaluate second formular for E_SCR,
+C  for test only.  evaluate second formula for E_SCR,
 C                  using radiation loss E_SCR_T and effective rate SCR
       UH=13.595
       DE=(E_AT(1)-UH)
@@ -1016,19 +1045,19 @@ C  i1--> i2. i1<i2,  R_EXT(i1)=...
       ENDDO
 C  PART V
 C  i2--> i1.  i2>i1, R_EXT(i2)=...
-C            (includes i1=1, i.e., invers to PART III)
+C            (includes i1=1, i.e., inverse to PART III)
       DO I1=1,LUP-1
         DO I2=I1+1,LUP
           DE=(E_AT(I2)-E_AT(I1))
           SUSCR  =R_EXT(i2)*densel*F(I2,I1)*DE
           E_SCR_EXT=E_SCR_EXT+SUSCR
-C  separte treatment of radiation losses alone, only for testing
+C  separate treatment of radiation losses alone, only for testing
 C         SUSCR_T=R_EXT(i2)*A(I2,I1)*(-1.)*DE
 C         E_SCR_EXT_T=E_SCR_EXT_T+SUSCR_T
         ENDDO
       ENDDO
  
-C  for test only.  evaluate second formular for E_SCR_EXT,
+C  for test only.  evaluate second formula for E_SCR_EXT,
 C                  using radiation loss E_SCR_EXT_T and effective rate SCR_EXT
 C     UH=13.595
 C     DE=(E_AT(1)-UH)
@@ -1061,8 +1090,9 @@ C
 C
 C
 C
-      IMPLICIT REAL*8(A-H,O-Z)
-      REAL*8 OSC(40,40),CJ(40,40)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
+      REAL(DP) OSC(40,40),CJ(40,40)
       TE=TEMP*1.1605E4
 C
       DO 1 I=1,40
@@ -1116,12 +1146,13 @@ c
       subroutine EIRENE_LAX(A,N1,N,B,eps,ifl,is,vw,ip,icon)
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      double precision a(n1,n1),B(*),vw(*),d
+
+      real(dp) a(n1,n1),B(*),vw(*),d
       dimension ip(*)
       dimension iw(100),indx(100)
       if (n1.gt.100) then
         write (iunout,*) 'error in lax'
-      stop
+        call eirene_exit_own(1)
       endif
       call EIRENE_galpd(a,n1,n,b,iw,ier)
       if (ier.eq.1) then
@@ -1131,11 +1162,12 @@ c
       end
 c
       SUBROUTINE EIRENE_GALPD(A,NA,NG,B,IW,IER)
+      USE EIRMOD_PRECISION
 C
 C***********************************************************************
 C*   GAUSS-ALGORITHMUS ZUR LOESUNG LINEARER GLEICHUNGS-SYSTEME MIT     *
 C*   PIVOTIERUNG.                                                      *
-C*   GENAUIGKEIT:   DOUBLD-PRECISION                   (01.07.1991)    *
+C*   GENAUIGKEIT:   DOUBLE-PRECISION                   (01.07.1991)    *
 C***********************************************************************
 C    A(NA,NA): KOEFFIZIENTEN-MATRIX DES GLEICHUNGS-SYSTEMS
 C    NA      : DIMENSION VON A WIE IM AUFRUFENDEN PROGRAMM ANGEGEBEN
@@ -1146,9 +1178,9 @@ C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
 C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
 C***********************************************************************
 C
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION A(NA,NA),B(NG),IW(NG)
-      DATA ZERO /1.D-71/
+      DATA ZERO /1.E-71_DP/
       IER=0
 C
 C     ******************************************************************
@@ -1186,7 +1218,7 @@ C
          KS=0
          DO 3 M=I,NG
             DO 2 N=I,NG
-               AMN=DABS(A(M,N))
+               AMN=ABS(A(M,N))
                IF(AMN.GT.AP) THEN
                              AP=AMN
  
@@ -1232,16 +1264,16 @@ C        zu Null machen.
 C        ===============================================================
 C
          AP=A(I,I)
-         IF(DABS(AP).LT.ZERO) GOTO 15
+         IF(ABS(AP).LT.ZERO) GOTO 15
          AP=1/AP
          DO 8 M=1,NG
             IF(M.EQ.I) GOTO 8
-            IF(DABS(A(M,I)).GT.ZERO) THEN
-                                     Q=A(M,I)*AP
-                                     DO 7 N=I,NG
-    7                                   A(M,N)=A(M,N)-A(I,N)*Q
-                                     B(M)=B(M)-B(I)*Q
-                                     ENDIF
+            IF(ABS(A(M,I)).GT.ZERO) THEN
+                                    Q=A(M,I)*AP
+                                    DO 7 N=I,NG
+    7                                  A(M,N)=A(M,N)-A(I,N)*Q
+                                    B(M)=B(M)-B(I)*Q
+                                    ENDIF
     8       CONTINUE
    10    CONTINUE
 C
@@ -1272,28 +1304,30 @@ C
  
  
       subroutine EIRENE_expi(x,ei,icon)
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
 c  exponential integral
 c  -int exp(-x)/x, von -x nach unendlich     x<0,  identisch mit
 c  +int exp(x)/x,  von -unendl. bis x
 c
 c   PV +int exp(-x)/x von unendl bis -x     x>0 ,  identisch mit
 c   PV +int exp(x)/x von -unendl bis x
-      double precision EIRENE_mmdei,dei,xx
+      REAL(DP) EIRENE_mmdei,dei,xx
 cdr   if (x.gt.0) then
         xx=x
         dei=-EIRENE_mmdei(xx,ier)
         icon=ier
         ei=dei
 cdr   else
-cdr     write (*,*) 'argument in expi lt.0, call exit'
-cdr     stop
+cdr     write (iunout,*) 'argument in expi lt.0, call exit'
+cdr     call eirene_exit_own(1)
 cdr   endif
       return
       end
 c
       subroutine EIRENE_aqc8(a,b,f,epsa,epsr,nmin,nmax,S,err,n,icon)
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
 c  S=integral von a bis b, der function f(x) (external).
 c  epsa,epsr : absolute and relative errors, input
 c   nmin,nmax  min u max anzahl der functionsaufrufe
@@ -1304,7 +1338,7 @@ c S
 c err: estim absolut error
 c n  anzahl der functionsaufrufe
 c icon: error code
-      real*8 f
+      real(dp) f
       external f
       external EIRENE_midpnt
       call EIRENE_qromo(f,a,b,s,EIRENE_midpnt,epsa)
@@ -1314,15 +1348,17 @@ c icon: error code
  
  
 c
-      DOUBLE PRECISION FUNCTION EIRENE_MMDEI (S,IER)
+      FUNCTION EIRENE_MMDEI (S,IER)
+      USE EIRMOD_PRECISION
 C  exponential integral function
 c  imsl routine, dort: mmdei(ipot=2,s,ier), also:
 c  s muss gt.0, mmdei ist dann: integral (s bis unendlich) von
 c               exp(-t)/t dt
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      IMPLICIT REAL(DP) (A-H,O-Z)
+      REAL(DP) EIRENE_MMDEI
       X=S
       Y=ABS(X)
-      Z=0.25D+0*Y
+      Z=0.25D0+0*Y
       IF(Z-1.0D0)11,11,12
    11 VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-.11703642D-
      1 6)*Z+.585911692D-6)*Z-.2843937873D-5)*Z+.1284394756D-4)*Z-.547380
@@ -1356,10 +1392,11 @@ c     endif
       SUBROUTINE EIRENE_QROMO(FUNC,A,B,SS,CHOOSE,eps)
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+
+      IMPLICIT REAL(DP) (A-H,O-Z)
       PARAMETER (JMAX=14,JMAXP=JMAX+1,KM=4,K=KM+1)
       DIMENSION S(JMAXP),H(JMAXP)
-      REAL*8 FUNC
+      REAL(DP) FUNC
       external choose,func
       H(1)=1.0D0
       DO 11 J=1,JMAX
@@ -1379,7 +1416,8 @@ c     endif
       END
  
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       PARAMETER (NMAX=10)
       DIMENSION XA(N),YA(N),C(NMAX),D(NMAX)
       NS=1
@@ -1425,7 +1463,8 @@ ctk       IF(DEN.EQ.0.)PAUSE
       END
 C
       SUBROUTINE EIRENE_MIDPNT(FUNC,A,B,S,N)
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
       external func
       save
       IF (N.EQ.1) THEN

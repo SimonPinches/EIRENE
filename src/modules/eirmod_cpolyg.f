@@ -40,11 +40,11 @@ csw 14apr2011
  
       IF (ALLOCATED(RCPLYG)) RETURN
  
-      NCPLYG = N1STS*10*N2NDPLG
+      NCPLYG = N1STS*10*N2NDPLGS
       NCPLY2 = 4
       MCPLYG = 2
  
-      ALLOCATE (RCPLYG(10*N1STS,N2NDPLG))
+      ALLOCATE (RCPLYG(10*N1STS,N2NDPLGS))
       ALLOCATE (RCPLY2(NCPLY2))
       ALLOCATE (ICPLYG(MCPLYG))
  
@@ -72,9 +72,9 @@ C MCPLYG, INTEGER
       NRPLG => ICPLYG(1)
       NPPLG => ICPLYG(2)
 
-csw 14apr2011
-!pb 03122013 use N2NDPLG instead of NDXP (NDXP might be unknown in not B2 cases)
-      allocate(lcut(0:N2NDPLG)) 
+
+!pb 03122013 use N2NDPLGS instead of NDXP (NDXP might be unknown in some cases)
+      allocate(lcut(0:N2NDPLGS)) 
  
       CALL EIRENE_INIT_CPOLYG
  

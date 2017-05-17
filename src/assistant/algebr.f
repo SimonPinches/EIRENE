@@ -256,7 +256,7 @@ chr               als zwischenergebnis
 C
 C              AUSGABE DER FEHLERMELDUNG
 C
-               WRITE(iunout,'(2A)') '0FOLGENDE REGELVERLETZUNG ',
+               WRITE(iunout,'(2A)') ' FOLGENDE REGELVERLETZUNG ',
      >                        'WURDE ERKANNT:'
                CALL EIRENE_MECKER(ERROR)
                NOP=0

@@ -565,7 +565,7 @@ C
       TXTPLS(1,9)='MAGN. FIELD UNIT VECTOR, Y DIRECTION             '
       TXTPLS(1,10)='MAGN. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,11)='MAGN. FIELD STRENGTH                             '
-C     TXTPLS(1,12)='TO BE READ                                       '
+C     TXTPLS(1,12)='TO BE READ, ADIN TALLY                           ' 
       TXTPLS(1,13)='BULK ION KINETIC DRIFT ENERGY                    '
       TXTPLS(1,14)='ZONE VOLUMES                                     '
      
@@ -587,7 +587,7 @@ C
           ENDDO
         ENDIF
       ENDDO
-C
+C  
       TXTPUN(1,1)='EV                      '
       TXTPUN(1,2)='EV                      '
       TXTPUN(1,3)='CM**-3                  '
@@ -599,17 +599,17 @@ C
       TXTPUN(1,9)=' ---                    '
       TXTPUN(1,10)=' ---                    '
       TXTPUN(1,11)='TESLA                   '
-C     TXTPUN(1,12)='TO BE READ              '
-      TXTPUN(1,13)='EV                      '
-      TXTPUN(1,14)='CM**3                   '
-      TXTPUN(1,15)=' ---                    '
-      TXTPUN(1,16)=' ---                    '
-      TXTPUN(1,17)=' ---                    '
+C     TXTPUN(1,12)='TO BE READ, ADIN        '
+      TXTPUN(1,13)='EV                      '  ! EDRIFT  --> DERIVED QUANTITY
+      TXTPUN(1,14)='CM**3                   '  ! VOL
+      TXTPUN(1,15)=' ---                    '  ! WEIGHT WINDOW
+      TXTPUN(1,16)=' ---                    '  ! BX_PERP --> DERIVED QUANTITY 
+      TXTPUN(1,17)=' ---                    '  ! BY_PERP --> DERIVED QUANTITY
       TXTPUN(1,18)=' ---                    '
       TXTPUN(1,19)=' ---                    '
       TXTPUN(1,20)=' ---                    '
-      TXTPUN(1,21)='V/CM                    '
-      TXTPUN(1,22)='V                       '
+      TXTPUN(1,21)='V/CM                    '  ! EF
+      TXTPUN(1,22)='V                       '  ! POT
 C
       DO J=1,NTALI
         IF (J.NE.12) THEN

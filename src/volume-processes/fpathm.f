@@ -21,7 +21,7 @@ cdr 06.08.15 :  arguments added to vecusr
 cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
-cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
@@ -90,13 +90,13 @@ C
       REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
       REAL(DP) :: EPPI3(9), EPCX3(9), EPEL3(9)
       REAL(DP) :: EIRENE_FPATHM,
-     .          EIRENE_CROSS, 
+     .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
-     .          EIRENE_ENERGY_RATE_COEFF, 
-     .          VREL, VRELQ, TBEL, 
+     .          EIRENE_ENERGY_RATE_COEFF,
+     .          VREL, VRELQ, TBEL,
      .          EXPO, ELB, CEL,
      .          RMN, RLMS, ER, RMI, RMSI, SIG,
-     .          SIGMAX, VX, VY, VZ, EHEAVY, 
+     .          SIGMAX, VX, VY, VZ, EHEAVY,
      .          XC,YC,ZC,
      .          PVELQ0, DENEL, VEFF, VEFFQ, CXS, ELAB,
      .          TBCX, PLS, TII, CII,
@@ -105,14 +105,14 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
-     .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
 
      .          RCMIN, RCMAX,
      .          ERATE
       INTEGER :: IBGK, IMEL, IREL, IMEI, IREI, IMPI,
-     .           IRPI, IMCX, IRCX, 
-     .           II, IF8, JAN, J, IML, IPL, 
+     .           IRPI, IMCX, IRCX,
+     .           II, IF8, JAN, J, IML, IPL,
      .           IREAC, KK,  I1, I2, IPLSTI, IPLSV
 C
 C  SET DEFAULTS: NO REACTIONS
@@ -135,7 +135,7 @@ C
 2       DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLS) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES 
+C            PVELQ(IPLS) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES
 C
       PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLSV
@@ -250,7 +250,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
      .              + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
             SIGVPI(IRPI)=EXP(EXPO)
-          END IF        
+          END IF
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
@@ -323,7 +323,7 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
         ELSEIF (MODCOL(3,2,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
-          IF (TIIN(IPLSTI,K).LT.TVAC) THEN
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
@@ -351,7 +351,7 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
             ELSE
-! CALCULATE RATE-COEFFICIENT
+! CALCULATE RATE-COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               KK=NREACX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
@@ -480,7 +480,7 @@ cdr  here should be call to ftabel3,  to be done
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN
 C  BEAM - MAXWELL
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
-C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATECOEFF.
+C  TEMPERATURE TOO LOW, USE: BEAM-BEAM RATECOEFF.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
             ELAB=LOG(VRELQ)+DEFEL(IREL)
@@ -492,15 +492,16 @@ C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATECOEFF.
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
             IF (NSTORDR >= NRAD) THEN
-! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
-! PRECALCULATING TEMPERATURE DEPENDENCIES
+! DOUBLE POLYNOMIAL FIT IS REDUCED TO SINGLE POLYNOMIAL FIT BY
+! PRECALCULATING TEMPERATURE DEPENDENCIES ALREADY IN INITIALIZATION PHASE
               TBEL3(1:NSTORDT) = TABEL3(IREL,K,1:NSTORDT)
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
             ELSE
-! CALCULATE RATE-COEFFICIENT
+cdr  here should be call to ftabel3,  to be done
+! CALCULATE RATE-COEFFICIENT ON THE FLY
               KK=NREAEL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
@@ -514,21 +515,23 @@ C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           VEFF=SQRT(VEFFQ)
           ELAB=LOG(VEFFQ)+DEFEL(IREL)
           IREAC=MODCOL(5,1,IREL)
+
 C  FIND SIGMA FROM OAK RIDGE "ELASTIC" DATA TABLES
-          IF (LHABER) THEN
-            RMN=RMASSM(IMOL)
-            RMI=RMASSP(IPLS)
-            RMSI=1./(RMN+RMI)
-            RLMS=RMN*RMI*RMSI
-            ER=RLMS*VEFFQ*CVELI2
+CDR  OLD PROPRIETARY OPTION LHABER (Differential Cross Sections) disabled in 2017
+C          IF (LHABER) THEN
+C            RMN=RMASSM(IMOL)
+C            RMI=RMASSP(IPLS)
+C            RMSI=1./(RMN+RMI)
+C            RLMS=RMN*RMI*RMSI
+C            ER=RLMS*VEFFQ*CVELI2
 cdr  flag -1.0_DP: only sigma(ER), but no scattering angle evaluated
-            CALL EIRENE_SCATANG (ER,-1.0_DP,ELTHDUM,CTCHDUM,SIG)
-            CEL= SIG*AU_TO_CM2
-          ELSE
+C            CALL EIRENE_SCATANG (ER,-1.0_DP,ELTHDUM,CTCHDUM,SIG)
+C            CEL= SIG*AU_TO_CM2
+C          ELSE
 C  FIND SIGMA FROM AMJUEL DATA TABLES (BACHMANN ET AL.)
             CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
      .                       'FPATHM EL2')
-          END IF
+C          END IF
           SIGVEL(IREL)=CEL*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(5,2,IREL).EQ.4) THEN
 C  MODEL 4

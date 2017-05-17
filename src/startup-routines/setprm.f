@@ -38,7 +38,7 @@ C
  
       REAL(DP) :: RSAVE
       INTEGER :: ISAVE, NTESTP, J, ITAL, NLSTTL, NLSTTW
-cdr   INTEGER :: NTEST, NTESTI  ! storage tests for volume and surface tallies apparenty removed ?
+      INTEGER :: NPLPRM_TEST
       LOGICAL :: LEXTALV(NTALV), LEXTALS(NTALS),
      .           LEXGENA, LEXGENM, LEXGENI, LEXGENPH
 C
@@ -690,7 +690,7 @@ C
       write (iunout,*) mcgrd
       IF (ICGRID(MCGRD).NE.1234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: MCGRD?'
-        CALL EIRENE_EXIT_OWN(1)
+C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       NSBOX_TAL=ISAVE
 C
@@ -705,32 +705,40 @@ C       CALL EIRENE_EXIT_OWN(1)
 
 c.....................................................................
 
-      END IF
-C
+      END IF  ! FALSE   storage tests deactivated
+
+C  18 primary input tallies plus 4 derived background tallies unfortunately mixed in
+C  --> 22 rather than 18 background tallies
       NFRSTP(1)=0
       NFRSTP(2)=NPLSTI
-      NFRSTP(3)=0
-      NFRSTP(4)=NPLS
-      NFRSTP(5)=NPLSV
+      NFRSTP(3)=0       ! * DEIN,  DERIVED QUANTITY
+      NFRSTP(4)=NPLS    ! DIIN
+      NFRSTP(5)=NPLSV   
       NFRSTP(6)=NPLSV
       NFRSTP(7)=NPLSV
-      NFRSTP(8)=0
-      NFRSTP(9)=0
-      NFRSTP(10)=0
-      NFRSTP(11)=0
-      NFRSTP(12)=NAIN
-      NFRSTP(13)=NPLS
-      NFRSTP(14)=0
-      NFRSTP(15)=NSPZMC
-      NFRSTP(16)=0
-      NFRSTP(17)=0
-      NFRSTP(18)=0
-      NFRSTP(19)=0
-      NFRSTP(20)=0
-      NFRSTP(21)=0
-      NFRSTP(22)=0
+      NFRSTP(8)=0       ! BX
+      NFRSTP(9)=0       ! BY
+      NFRSTP(10)=0      ! BZ
+      NFRSTP(11)=0      ! BF
+      NFRSTP(12)=NAIN   ! ADIN
+      NFRSTP(13)=NPLS   ! * EDRIFT,  DERIVED QUANTITY
+      NFRSTP(14)=0      ! VOL
+      NFRSTP(15)=NSPZMC ! WEIGHT WINDOW  
+      NFRSTP(16)=0      ! * BX_PERP,  DERIVED QUANTITY
+      NFRSTP(17)=0      ! * BY_PERP,  DERIVED QUANTITY 
+      NFRSTP(18)=0      ! EX
+      NFRSTP(19)=0      ! EY 
+      NFRSTP(20)=0      ! EZ
+      NFRSTP(21)=0      ! EF
+      NFRSTP(22)=0      ! POT
 C
-C  NTALI=22?
+C  NTALI=22?  number of input tallies  (19 PRIMARY + 3 DERIVED)
+cdr there are many more derived input tallies. 
+cdr since primary and derived input tallies got mixed up anyway, 
+cdr to do: change ntali, add other derived input tallies, here, and in settxt.
+cdr be careful:
+cdr in some places in code the numbering  of input tallies is hard coded.
+cdr (algtal, plaout,....) 
 C
       DO 5 J=1,NTALI
         NFRSTP(J)=MAX0(1,NFRSTP(J))
@@ -739,14 +747,18 @@ C
       NADDP(1)=0
       DO 6 J=2,NTALI
 6       NADDP(J)=NADDP(J-1)+NFRSTP(J-1)
+
       NTESTP=NADDP(NTALI)+NFRSTP(NTALI)
       NTESTP=NTESTP*NRAD
-      IF (NTESTP.NE.NPLPRM) THEN
+
+cdr  correct for the derived tallies mixed into primary input tallies.  
+      NPLPRM_TEST=NPLPRM + (2+NPLS)*NRAD
+      IF (NTESTP.NE.NPLPRM_TEST) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NPLPRM'
-        WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM
+        WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM_TEST
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
- 
+c............................................................................. 
  
       IF (TRCTAL) THEN
         CALL EIRENE_LEER(2)

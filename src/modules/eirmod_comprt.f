@@ -1,14 +1,15 @@
 !pb  30.10.06:  XNUE removed
 cdr  sept. 2015: npartt=11, rather than 12 (xgener not stored on census)
+cdr  april 2017: some cleanup carried over from solps_iter branch
 
 c.........................................................................
-c 
+c
 c  comprt contains particle coordinates along track
 c  the full information for respart after splitting is contained in the
 c  npartc (real) and mpartc (integer) variables.
 c
 c  a reduced set for re-start from a census array (initital condition in time)
-c  is contained in the 
+c  is contained in the
 c  npartt (real) and mpartt (integer) variables.
 
 c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
@@ -23,7 +24,7 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
  
       PRIVATE
  
-      PUBLIC :: EIRENE_ALLOC_COMPRT, EIRENE_DEALLOC_COMPRT, 
+      PUBLIC :: EIRENE_ALLOC_COMPRT, EIRENE_DEALLOC_COMPRT,
      P          EIRENE_INIT_COMPRT, EVENT_TYPE
  
       TYPE :: EVENT_TYPE
@@ -46,7 +47,7 @@ C NPARTC=12
      R X0,     Y0,     Z0,
      R VEL,    VELX,   VELY,   VELZ,
      R E0,     WEIGHT, TIME,   PHI,  ! UP TO HERE: STORE ON CENSUS
-     R XGENER  ! UP TO HERE: STORE FULL PARTILCE INFORMATION
+     R XGENER  ! UP TO HERE: STORE FULL PARTICLE INFORMATION
 
 C  SOME FURTHER REAL VARIABLES USED ALONG PARTICLE TRAJECTORY
  
@@ -94,9 +95,13 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
      I IC_NEUT, IC_ION,
      I ITYP,   IATM,   IMOL,   IION,   IPLS,   IPHOT,
      I ICOL,   IPOLGN, NINCX,  NINCY,  NINCZ,  NINCA,  NJUMP,
-     I IUNIN,  IUNOUT, NIMINT, ITRJ,   IVTKOUT
+     I NIMINT, ITRJ,
+ 
+c  unrelated to particle trajectories:  IO streams
+     I IUNIN,  IUNOUT, IVTKOUT
 
-      DATA IUNIN / 1 /
+      DATA IUNIN / 1 /  ! must be known already during compile time.
+c                       ! better: move iunin, iunout, etc.. to parmmod ??
  
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
@@ -116,14 +121,14 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
       ALLOCATE (IPSTD(MPARTC+1))
  
       ALLOCATE (TIMINT(NRADS))
-      ALLOCATE (TIMPOL(N1STS,N2NDPLG))
+      ALLOCATE (TIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (NTIM(NRADS))
-      ALLOCATE (IIMPOL(N1STS,N2NDPLG))
+      ALLOCATE (IIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (IIMINT(NRADS))
  
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .      ' COMPRT ',(NPARTC+NRADS+N1STS*N2NDPLG)*8 +
-     .                 (MPARTC+1+NRADS+N1STS*N2NDPLG+NRADS)*4
+     .      ' COMPRT ',(NPARTC+NRADS+N1STS*N2NDPLGS)*8 +
+     .                 (MPARTC+1+NRADS+N1STS*N2NDPLGS+NRADS)*4
  
       RPSTT => RPST      !  full (1: npartc) particle information, real
  
@@ -140,11 +145,11 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
       PHI    => RPST(11)
 c  up to here: for census, npartt
       XGENER => RPST(12)
-c  up to here: for splitting, npartc 
+c  up to here: for splitting, npartc
  
       IPST  => IPSTD(2:MPARTC+1)  !  full (2: mpartc+1) particle information, integer
 
-      IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census 
+      IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census
  
       NPANU  => IPSTD( 1)
       IPOLG  => IPSTD( 2)
@@ -190,13 +195,13 @@ c  up to here: for splitting, mpartc
       SUBROUTINE EIRENE_INIT_COMPRT
  
       RPST   = 0._DP
-      IPSTD  = 0._DP
+      IPSTD  = 0
  
       TIMINT = 0._DP
       TIMPOL = 0._DP
-      NTIM   = 0.
-      IIMPOL = 0.
-      IIMINT = 0.
+      NTIM   = 0
+      IIMPOL = 0
+      IIMINT = 0
  
       TL     = 0._DP
       TT     = 0._DP
@@ -237,12 +242,10 @@ c  up to here: for splitting, mpartc
       NINCZ  = 0
       NINCA  = 0
       NJUMP  = 0
-!pb      IUNIN  = 0
-      IUNOUT = 6 + IFOFF
-      IF (NRPES > 1) IUNOUT = 7 + IFOFF
+
       NIMINT = 0
       ITRJ   = 0
-      IVTKOUT= 28
+
  
       LGPART = .FALSE.
       LGLAST = .FALSE.
@@ -264,6 +267,12 @@ c  up to here: for splitting, mpartc
  
       DE0_RAYL = 0._DP
       DE0_RAYR = 0._DP
+
+c  io files
+      IUNIN = 1
+      IUNOUT = 6 + IFOFF
+      IF (NRPES > 1) IUNOUT = 7 + IFOFF
+      IVTKOUT= 28
       
             
       RETURN

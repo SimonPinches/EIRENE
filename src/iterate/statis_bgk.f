@@ -1,6 +1,7 @@
-C
+C  this entire routine is probabaly redundant, as well as all bgkv_stat tallies
 C
       SUBROUTINE EIRENE_STATIS_BGK
+C  TALLY BGKV IS DEFAULT TALLY NUMBER ntalb =61. No special treatment re variance.
 C
 C  STANDARD DEVIATION FOR TALLIES NEEDED FOR BGK ITERATION
 C  CURRENTLY: BGKV ,  ON SIGMA_BGK(I,...), I=1,NBGVI

@@ -618,31 +618,37 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       END IF
  
       IF (LADDV) THEN
+c  ntala =57
         ADDV => ESTIMV(NADDV(NTALA)+1:NADDV(NTALA+1),:)
       ELSE
         ADDV => CEMETERYV(0:0,:)
       END IF
       IF (LCOLV) THEN
+c  ntalc =58
         COLV => ESTIMV(NADDV(NTALC)+1:NADDV(NTALC+1),:)
       ELSE
         COLV => CEMETERYV(0:0,:)
       END IF
       IF (LSNAPV) THEN
+c  ntalc =59
         SNAPV => ESTIMV(NADDV(NTALT)+1:NADDV(NTALT+1),:)
       ELSE
         SNAPV => CEMETERYV(0:0,:)
       END IF
       IF (LCOPV) THEN
+c  ntalm =60
         COPV => ESTIMV(NADDV(NTALM)+1:NADDV(NTALM+1),:)
       ELSE
         COPV => CEMETERYV(0:0,:)
       END IF
       IF (LBGKV) THEN
+c  ntalb =61
         BGKV => ESTIMV(NADDV(NTALB)+1:NADDV(NTALB+1),:)
       ELSE
         BGKV => CEMETERYV(0:0,:)
       END IF
       IF (LALGV) THEN
+c  ntalr =62
         ALGV => ESTIMV(NADDV(NTALR)+1:NADDV(NTALR+1),:)
       ELSE
         ALGV => CEMETERYV(0:0,:)

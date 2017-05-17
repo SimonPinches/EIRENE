@@ -1,0 +1,1481 @@
+C V. KOTOV, 07.01.2005  
+C
+C !!!!!!!!!!! ONE HAS TO TAKE INTO ACCOUNT NPLSTI, NPLSV HERE !!!!!!!!
+c
+C....................................................................
+cdr  April 2017:
+cdr    This modules works with a particular eirene version from 2005.
+cdr    try to syncronize with up to date EIRENE from svn and git repository
+cdr    remove double coding, use EIRENE default options/routines whenever possible
+c   needs also MODULES  EIRMOD_CAPRMC, EIRMOD_CCFLUX
+c
+c
+c
+c
+c
+c
+cdr
+C.......................................................................
+C
+C DATA AND SUBROUTINES FOR COLLISIONAL-RADIATIVE MODELS
+C
+C THE INPUT CARD LOOKS AS FOLLOWING (ACTUALLY PLACED AT THE END OF BLOCK 4)
+C
+C      READ(IUNIN,'(I6)') NCRM
+C       DO ICRM=1,NCRM
+C        READ(IUNIN,'(5I6)') IND1,NSCRM(ICRM),NIONREAC(ICRM),
+C     r                          NRCMBREAC(ICRM),TYPCRM(ICRM)
+C        DO IR=1,NSCRM(ICRM)
+C          READ(IUNIN,'(4I6)') IND2,SCRM(IR,ICRM),
+C     r                         NNCRM(IR,ICRM),PHCRM(IR,ICRM)
+C        END DO
+C       END DO
+C WHERE  (TEXTE VON DETLEV VERVOLLSTAENDIGT)
+C NCRM      : NUMBER OF COLLISIONAL-RADIATIVE MODELS (CRMs)
+C
+C IND1      : INDEX OF THE CRM (IRRELEVANT)
+C NSCRM     : NUMBER OF EXCITED STATES, DESCRIBED BY THE MODEL
+C NIONREAC  : INDEX OF REACTION FROM BLOCK 4 TO BE SET UP BY CRM AND TO BE USED AS IONISATION RATE
+C NRCMBREAC : INDEX OF REACTION FROM BLOCK 4 TO BE SET UP BY CRM AND TO BE USED AS RECOMBINATION RATE
+C TYPCRM    : TYPE OF CRM. NOW AVALAIBLE
+C             DEFAULT  : H_COLRAD, EFFECTIVE IONISATION RATE FOR HYDROGEN IS MODIFIED
+C                        BY PHOTO-EXCITATION
+C             TYPCRM=1 : H_COLRAD, BOTH EFFECTIVE IONISATION AND RECOMBINATION RATES ARE MODIFIED
+C                        BY POPULATION_ESCAPE FACTOR (LOCAL OPACITY)
+C             TYPCRM=2 : HE_COLRAD .... TO BE DONE SOON
+C             TYPCRM=10 : H_COLRAD WITH OPAQUE RATES (POP_ESC=0. FOR ALL LINES,
+C             TYPCRM=100 : AS OPTION 0 BUT WITH FLUX CORRECTION, NEW; EXPERIMENTAL
+C
+C IND2      : INDEX OF THE EXCITED STATE (IRRELEVANT)
+C SCRM      : INDEX OF BACKGROUND SPECIES (BLOCK 5), CORRESPONDING TO THE EXCITED
+C NNCRM     : PRINCIPAL QUANTUM NUMBER OF THE EXCITED STATE
+C PHCRM     : INDEX OF PHOTON FROM BLOCK 4D
+C THE FIRST LINE IN THE LIST OF EXCITED STATES ASSUMED TO BE FOR THE GROUND STATE
+C SET UP FROM THE CORRESPONDING ATOMIC SPECIES, WHICH IS SELECTED FROM BLOCK 4a.
+C FIRST ATOM FROM THE LIST WHICH HAS THE SAME MASS AND CHARGE AS THE BACKGROUND
+C BY SCRM(1,ICRM)
+C
+
+      MODULE CCRM
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMXS
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CCFLUX
+      USE EIRMOD_COMPRT !VKMPI
+
+      IMPLICIT NONE
+
+      PRIVATE
+
+      PUBLIC :: EIRENE_FIND_CRMS, EIRENE_READ_CRMS, EIRENE_MODPHOT,
+     p          EIRENE_WRITE_TABEF, EIRENE_READ_TABEF,
+     p          EIRENE_DEALLOC_CRM, EIRENE_XSECTEE_PARAM, EIRENE_XSECTEE
+
+C DATA FOR COLLISIONAL-RADIATIVE MODEL
+      INTEGER,SAVE :: NCRM !NUMBER OF MODELS
+
+      INTEGER,ALLOCATABLE,SAVE :: NSCRM(:),   !NUMBER OF SPECIES FOR EACH MODEL
+     i                            TYPCRM(:),  !INDEX OF THE MODEL TYPE
+     i                            SCRM(:,:),  !INDICES OF SPECIES FOR EACH MODEL
+     i                            NNCRM(:,:), !INDEX OF EXCITED STATE
+     i                            PHCRM(:,:), !INDEX OF PHOTON TO POPULATE THE E
+     i                            CRMBGK(:),  !INDEX OF CORRESPONDING BGK SPECIES
+     i                            IHS_D(:),   !REFERENCE ATOMIC INDICES
+     i                            IHS_P(:)    !REFERENCE ION INDICES
+
+      LOGICAL,ALLOCATABLE,SAVE :: IESWCRM(:), RESWCRM(:)
+      LOGICAL,SAVE :: R13(5)
+
+      INTEGER,ALLOCATABLE,SAVE :: NIONREAC(:),NIONREAC2(:),  !INDICES OF THE IONIZATION REACTIONS
+     i                            NRCMBREAC(:),NRCMBREAC2(:) !INDICES OF THE RECOMBINATION REACTIONS
+c IF ELREAC(:).LT.0 THEN THIS RATE IS NOT ACCOUNTED
+      REAL(DP),ALLOCATABLE,SAVE :: TABEF(:,:) !BUFFER TO STORE PPHPHT FOR THE NE
+
+
+      REAL(DP),ALLOCATABLE :: SUM_ALPCR(:), SUM_E_ALPCR(:),
+     r                        SUM_SCR(:),SUM_E_SCR(:),
+     r                        SUM_SCRRAD(:),SUM_E_SCRRAD(:)  !VARIABLES FOR DIAGNOSTICS
+
+      INTEGER,PUBLIC,PARAMETER :: LIMA=40 !NUMBER OF LEVELS FOR HYDROGEN
+      REAL(DP),PARAMETER :: TEMIN=0.05, DEMIN=1e8, DEMAX=1e24 !PARAMETERS FOR CU
+
+      DATA NCRM /0/
+      DATA R13 /5*.FALSE./
+
+      CONTAINS
+
+C************************ INITIALISATION ***********************
+
+C
+C FIND DATA FOR COL-RAD MODELS
+C
+      SUBROUTINE EIRENE_FIND_CRMS(IUNIN)
+       INTEGER,INTENT(IN) :: IUNIN
+       INTEGER :: ICRM,IR,IND
+
+       NCRM=0
+       READ(IUNIN,*) NCRM
+       IF(.NOT.ALLOCATED(NSCRM)) ALLOCATE(NSCRM(NCRM))
+       DO ICRM=1,NCRM
+        READ(IUNIN,*) IND,NSCRM(ICRM)
+        DO IR=1,NSCRM(ICRM)
+         READ(IUNIN,*)
+        END DO
+       END DO
+      END SUBROUTINE EIRENE_FIND_CRMS
+
+C
+C READ DATA FOR COL-RAD MODELS
+C
+      SUBROUTINE EIRENE_READ_CRMS(IUNIN,ZEILE)
+       INTEGER,INTENT(IN) :: IUNIN
+       CHARACTER(72),INTENT(OUT) :: ZEILE
+       INTEGER :: ICRM,IND,IR,MAXIR
+
+       READ (IUNIN,'(A72)') ZEILE
+       IF (ZEILE(1:3).EQ.'***') RETURN
+
+       IF(NCRM.LE.0) RETURN
+
+       WRITE (iunout,*) '*4E. DATA FOR COLLISIONAL-RADIATIVE MODELS'
+
+       IF(.NOT.ALLOCATED(NSCRM)) THEN
+        WRITE(iunout,*) "ERROR IN READ_CRMS: NSCRM IS NOT ALLOCATED"
+        CALL EIRENE_EXIT_OWN(1)
+       END IF
+C CALCULATE ARRAY DIMENSIONS AND ALLOCATE ARRAYS
+       READ(IUNIN,'(I6)') NCRM
+       MAXIR=1
+       DO ICRM=1,NCRM
+        IF(NSCRM(ICRM).GT.MAXIR) MAXIR=NSCRM(ICRM)
+       END DO
+       IF(.NOT.ALLOCATED(SCRM)) CALL EIRENE_INIT_CRM(MAXIR)
+C READ DATA FOR CRM
+       DO ICRM=1,NCRM
+        READ(IUNIN,'(5I6)') IND,NSCRM(ICRM),NIONREAC(ICRM),
+     r                          NRCMBREAC(ICRM),TYPCRM(ICRM)
+        IF(TRCMOD)
+     f    WRITE(iunout,*) " ICRM, NSCRM, NIONREAC, NRCMBREAC, TYPCRM",
+     w                 ICRM, NSCRM(ICRM),NIONREAC(ICRM),
+     w                 NRCMBREAC(ICRM),TYPCRM(ICRM)
+        DO IR=1,NSCRM(ICRM)
+          READ(IUNIN,'(4I6)') IND,SCRM(IR,ICRM),
+     r                        NNCRM(IR,ICRM),PHCRM(IR,ICRM)
+        END DO
+       END DO
+      END SUBROUTINE EIRENE_READ_CRMS
+
+C
+C MEMORY MANAGEMENT
+C
+      SUBROUTINE EIRENE_INIT_CRM(MAXIR)
+       INTEGER,INTENT(IN) :: MAXIR
+
+       IF(TRCMOD)
+     f   WRITE(iunout,*) "COLLISIONAL-RADIATIVE MODELS NCRM", NCRM
+        IF(.NOT.ALLOCATED(TYPCRM))
+     f     ALLOCATE(TYPCRM(NCRM),
+     a              NIONREAC(NCRM),NIONREAC2(NCRM),NRCMBREAC(NCRM),
+     a              NRCMBREAC2(NCRM),SCRM(MAXIR,NCRM),
+     a              NNCRM(MAXIR,NCRM),PHCRM(MAXIR,NCRM) ,
+     a              IHS_D(NCRM),IHS_P(NCRM),CRMBGK(NCRM),
+     a              IESWCRM(NCRM),RESWCRM(NCRM),
+     a              TABEF(NSTORDR,4*NCRM),
+     a              SUM_ALPCR(NCRM),SUM_E_ALPCR(NCRM),
+     a              SUM_SCR(NCRM),SUM_E_SCR(NCRM),
+     a              SUM_SCRRAD(NCRM),SUM_E_SCRRAD(NCRM))
+        TYPCRM=0
+        NIONREAC=0
+        NIONREAC2=0
+        NRCMBREAC=0
+        NRCMBREAC2=0
+        SCRM=0
+        NNCRM=0
+        PHCRM=0
+        IESWCRM=.FALSE.
+        RESWCRM=.FALSE.
+        TABEF=0._DP
+      END SUBROUTINE EIRENE_INIT_CRM
+
+      SUBROUTINE EIRENE_DEALLOC_CRM
+       IF(ALLOCATED(NSCRM)) DEALLOCATE(NSCRM)
+       IF(ALLOCATED(TYPCRM))
+     f   DEALLOCATE(TYPCRM,NIONREAC,NIONREAC2,NRCMBREAC,NRCMBREAC2,
+     a              SCRM,NNCRM,PHCRM,TABEF,IHS_D,IHS_P,CRMBGK,
+     a              IESWCRM,RESWCRM,SUM_ALPCR,SUM_E_ALPCR,
+     a              SUM_SCR,SUM_E_SCR,SUM_SCRRAD,SUM_E_SCRRAD)
+      END SUBROUTINE EIRENE_DEALLOC_CRM
+C MEMORY MANAGEMENT: END
+
+C
+C READING AND WRITING OF PPHPH (PHOTON ABSORPTION RATE) TO FORT.13
+C FORT.13 IS ASSUMED TO BE OPEN. IF A REACTION RATE CANNOT BE READ,
+C IT IS TAKEN FROM 'MODPHOT_FIRST'
+C
+      SUBROUTINE EIRENE_WRITE_TABEF(TRCFLE)
+
+      LOGICAL,INTENT(IN) :: TRCFLE
+      INTEGER :: IO,I
+C WRITING
+
+      IF(NCRM.LE.0) RETURN
+
+      WRITE (13,IOSTAT=IO) TABEF(1:NSTORDR,1:NCRM)
+      WRITE (13,IOSTAT=IO) TABEF(1:NSTORDR,NCRM+1:2*NCRM)
+      WRITE (13,IOSTAT=IO) TABEF(1:NSTORDR,2*NCRM+1:3*NCRM)
+      WRITE (13,IOSTAT=IO) TABEF(1:NSTORDR,3*NCRM+1:4*NCRM)
+
+      IF(IO.NE.0) THEN
+        WRITE (iunout,*) 'ERROR: CANNOT WRITE FORT.13'
+      ELSE
+        IF (TRCFLE) THEN
+         WRITE (iunout,*) 'WRITE 13: RCSTEP,ICSTEP'
+         WRITE (iunout,*) 'TABEF1',
+     w                     (SUM(TABEF(1:NSTORDR,I)),I=1,NCRM)
+         WRITE (iunout,*) 'TABEF2',
+     w                     (SUM(TABEF(1:NSTORDR,I+NCRM)),I=1,NCRM)
+         WRITE (iunout,*) 'TABEF3',
+     w                     (SUM(TABEF(1:NSTORDR,I+2*NCRM)),I=1,NCRM)
+         WRITE (iunout,*) 'TABEF4',
+     w                     (SUM(TABEF(1:NSTORDR,I+3*NCRM)),I=1,NCRM)
+        END IF
+      END IF
+
+      RETURN
+C READING
+      ENTRY EIRENE_READ_TABEF(TRCFLE)
+
+      IF(NCRM.LE.0) RETURN
+
+      R13=.FALSE.
+C IONISATION
+      READ (13,IOSTAT=IO) TABEF(1:NSTORDR,1:NCRM)
+      IF(IO.NE.0) THEN
+         TABEF(1:NSTORDR,1:NCRM)=0._DP
+         R13(1)=.TRUE.
+         WRITE (iunout,*) 'ERROR READING FORT 13. ',
+     w               'IOINIZ. RATE TO BE SET UP FROM CRM'
+      END IF
+C ELECTRON COOLING
+      READ (13,IOSTAT=IO) TABEF(1:NSTORDR,NCRM+1:2*NCRM)
+      IF(IO.NE.0) THEN
+         R13(2)=.TRUE.
+         TABEF(1:NSTORDR,NCRM+1:2*NCRM)=0._DP
+         WRITE (iunout,*) 'ERROR READING FORT 13. ',
+     w               'ELECTRON COOLING RATE HAS BEEN SET UP FROM CRM'
+      END IF
+C RECOMBINATION
+      READ (13,IOSTAT=IO) TABEF(1:NSTORDR,2*NCRM+1:3*NCRM)
+      IF(IO.NE.0) THEN
+         R13(3)=.TRUE.
+         TABEF(1:NSTORDR,2*NCRM+1:3*NCRM)=0._DP
+         WRITE (iunout,*) 'ERROR READING FORT 13. ',
+     w               'RECOMB. RATE HAS BEEN SET UP FROM CRM'
+      END IF
+C ELECTRON HEATING
+      READ (13,IOSTAT=IO) TABEF(1:NSTORDR,3*NCRM+1:4*NCRM)
+      IF(IO.NE.0) THEN
+         R13(4)=.TRUE.
+         TABEF(1:NSTORDR,3*NCRM+1:4*NCRM)=0._DP
+         WRITE (iunout,*)'ERROR READING FORT 13. ',
+     w              'ELECTRON HEATING RATE HAS BEEN SET UP FROM CRM'
+      END IF
+      R13(5)=R13(1).OR.R13(2).OR.R13(3).OR.R13(4)
+
+      IF (TRCFLE) THEN
+       WRITE (iunout,*) 'READ 13: RCSTEP,ICSTEP'
+       WRITE (iunout,*) 'TABEF1',(SUM(TABEF(1:NSTORDR,I)),I=1,NCRM)
+       WRITE (iunout,*) 'TABEF2',(SUM(TABEF(1:NSTORDR,I+NCRM)),I=1,NCRM)
+       WRITE (iunout,*) 'TABEF3',(SUM(TABEF(1:NSTORDR,I+2*NCRM)),I=1,NCR
+     .M)
+       WRITE (iunout,*) 'TABEF4',(SUM(TABEF(1:NSTORDR,I+3*NCRM)),I=1,NCR
+     .M)
+      END IF
+      END SUBROUTINE EIRENE_WRITE_TABEF
+C MEMORY MANAGEMENT: END
+
+C************************* END (INITIALISATION) ***********************
+
+C***************************** SUBROUTINES ****************************
+
+
+C
+C FINDS THE INDICES OF EFFECTIVE REACTIONS DEPENDING OF THE REACTION
+C TYPE (EI,CX,RC ETC.) IN THE CORRESPONDING ARRAYS (TABEI1, TABRC1, ETC)
+C AND PUTS THEM INTO "NSCRREAC2" FOR EACH CR-MODEL
+C
+      SUBROUTINE EIRENE_XSECTEE_PARAM
+
+      INTEGER :: IM,INRC,KK,KKI,
+     i           IATM,IMOL,IION,IPLS,
+     i           IREI,IRCX,IRPI,IREL,IRRC,
+     i           IP,IA,II,ICRM,IPH,IPN
+
+      LOGICAL :: FLUX_ON
+C
+C IONISATION
+C
+       IF(NCRM.GT.0) THEN
+         NIONREAC2=0
+         NRCMBREAC2=0
+       ELSE
+        RETURN
+       END IF
+       DO 100 IM=1,NCRM
+        KK=ABS(NIONREAC(IM))
+C SWITCHER FOR ENERGY SOURCES
+        IF(NIONREAC(IM).GT.0) THEN
+         IESWCRM(IM)=.TRUE.
+        ELSE
+         IESWCRM(IM)=.FALSE.
+        END IF
+        IREI=0
+        IRCX=0
+        IRPI=0
+        IREL=0
+C ATOMIC REACTIONS
+        DO 20 IATM=1,NATMI
+          DO 30 INRC=1,NRCA(IATM)
+            KKI=IREACA(IATM,INRC)
+            CALL SELECT1(ISWR(KKI))
+            IF(KK.EQ.KKI) CALL SELECT2(ISWR(KKI),NIONREAC2)
+ 30       CONTINUE
+ 20     CONTINUE
+C MOLECULAR REACTIONS
+        DO 21 IMOL=1,NMOLI
+          DO 31 INRC=1,NRCM(IMOL)
+            KKI=IREACM(IMOL,INRC)
+            CALL SELECT1(ISWR(KKI))
+            IF(KK.EQ.KKI) CALL SELECT2(ISWR(KKI),NIONREAC2)
+ 31       CONTINUE
+ 21     CONTINUE
+C TEST ION REACTIONS
+        DO 22 IION=1,NIONI
+          DO 32 INRC=1,NRCI(IION)
+            KKI=IREACI(IION,INRC)
+            CALL SELECT1(ISWR(KKI))
+            IF(KK.EQ.KKI) THEN
+              CALL SELECT2(ISWR(KKI),NIONREAC2)
+              EXIT
+            END IF
+ 32      CONTINUE
+ 22     CONTINUE
+        IF(NIONREAC2(IM).EQ.0)
+     f    WRITE(iunout,*) "WARNING FROM XSECTEE_PARAM:",
+     f               "IONISATION INDEX FOR MODEL ", IM,
+     f               "IS NOT FOUND, KK", KK
+        IF(TRCMOD)
+     f   WRITE(iunout,*) "XSECTEE_PARAM: ICRM,NIONREAC2", 
+     w                    IM, NIONREAC2(IM)
+100    CONTINUE
+
+C
+C RECOMBINATION
+C
+       DO 200 IM=1,NCRM
+        KK=ABS(NRCMBREAC(IM))
+C SWITCHER FOR ENERGY SOURCES
+        IF(NRCMBREAC(IM).GT.0) THEN
+          RESWCRM(IM)=.TRUE.
+        ELSE
+          RESWCRM(IM)=.FALSE.
+        END IF
+        IRRC=0
+C REACTIONS WITH BULK IONS: IONISATION
+        DO 120 IPLS=1,NPLSI
+          DO 130 INRC=1,NRCP(IPLS)
+            KKI=IREACP(IPLS,INRC)
+            IF(ISWR(KKI).EQ.6) IRRC=IRRC+1
+            IF(KK.EQ.KKI) THEN
+              NRCMBREAC2(IM)=IRRC
+              EXIT
+            END IF
+ 130      CONTINUE
+ 120    CONTINUE
+       IF(NRCMBREAC2(IM).EQ.0)
+     f    WRITE(iunout,*) "WARNING FROM XSECTEE_PARAM:",
+     f               "RECOMBINATION INDEX FOR MODEL ", IM,
+     f               "IS NOT FOUND, KK", KK
+       IF(TRCMOD)
+     f   WRITE(iunout,*) "XSECTEE_PARAM: ICRM, NRCMBREAC2",
+     f                                   IM, NRCMBREAC2(IM)
+200    CONTINUE
+
+C FINDS INDICES OF THE REFERENCE ATOM AND ION SPECIES
+       IF(NCRM.GT.0) THEN
+        IHS_D=0
+        IHS_P=0
+       END IF
+
+       FLUX_ON=.FALSE.
+
+       DO 2004 ICRM=1,NCRM
+          IF(NSCRM(ICRM).LE.0) GOTO 2004
+          IP=SCRM(1,ICRM)
+          IF(IP.GT.NPLSI.OR.IP.LT.1) THEN
+            WRITE(iunout,*)  "INDEXING ERROR IN XSECTEE_PARAM:"
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
+C LOOKS FOR AN ATOM WITH THE SAME CHARGE AND MASS (TAKES THE FIRST ONE)
+          IA=0
+          DO IATM=1,NATMI
+            IF(NMASSP(IP).EQ.NMASSA(IATM).AND.
+     f         NCHARP(IP).EQ.NCHARA(IATM)) THEN
+                 IA=IATM
+                 EXIT
+            END IF
+          END DO
+          IF(IA.EQ.0) THEN
+           IA=1
+           WRITE(iunout,*) "WARNING FROM XSECTEE_PARAM: ",
+     w                "CANNOT FIND REFERENCE ATOMIC SPECIES",
+     w                "FOR COL-RAD MODEL ", ICRM,
+     w                "DEFAULT VALUE (FIRST ATOMIC SPECIES) IS USED"
+          END IF
+C LOOKS FOR AN ION WITH THE SAME CHARGE AND MASS (TAKES THE FIRST ONE)
+          II=0
+          DO IPLS=1,NPLSI
+            IF(NMASSP(IP).EQ.NMASSP(IPLS).AND.
+     f         NCHARP(IP).EQ.NCHARP(IPLS)) THEN
+                 II=IPLS
+                 EXIT
+            END IF
+          END DO
+          IF(II.EQ.0) THEN
+            II=1
+            WRITE(iunout,*) "WARNING FROM XSECTEE_PARAM: ",
+     w                 "CANNOT FIND REFERENCE BULK ION SPECIES",
+     w                 "FOR COL-RAD MODEL ", ICRM,
+     w                 "DEFAULT VALUE (FIRST ION SPECIES) IS USED"
+          END IF
+C MARK THIS SPECIES AS A "BGK SPECIES" IF NECESSRAY
+          IHS_D(ICRM)=IA
+          IHS_P(ICRM)=II
+          IF (NPBGKA(IA).EQ.0) THEN
+            NBGK=NBGK+3
+            IF(TRCMOD)
+     f        WRITE(iunout,*) "MARK ATOM ", IA, "AS AN BGK SPECIES ",
+     w                   "TO RUN ESTIMATOR FOR THE DRIFT VELOCITY"
+          END IF
+C CONTINUATION OF THIS BLOCK IS AT THE END OF XSECTEE
+          CRMBGK(ICRM)=NPBGKA(IA)
+C CHECK INDICES
+          DO IP=2,NSCRM(ICRM)
+           IPH=PHCRM(IP,ICRM)
+           IPN=NNCRM(IP,ICRM)
+           IF(IPH.LT.0.OR.IPH.GT.NPHOTI) THEN
+            WRITE(iunout,*) 
+     .       "ERROR IN XSECTEE_PARAM: IPH IS OUT OF RANGE"
+            WRITE(iunout,*) "ICRM, IPH, NPHOTI", ICRM, IPH, NPHOTI
+           END IF
+           IF(IPN.LT.0.OR.IPN.GT.LIMA) THEN
+            WRITE(iunout,*) 
+     .       "ERROR IN XSECTEE_PARAM: IPN IS OUT OF RANGE"
+            WRITE(iunout,*) "ICRM, IPN, LIMA", ICRM, IPN, LIMA
+           END IF
+          END DO
+
+         IF(TYPCRM(ICRM).EQ.100) FLUX_ON=.TRUE.
+
+2004    CONTINUE
+
+      IF(.NOT.FLUX_ON) CALL SWCH_FLUX_OFF
+
+C OPEN A FILE FOR DIAGNOSTIC OUTPUT
+      IF(TRCMOD) THEN
+       OPEN(3,FILE='flux.trc',STATUS='REPLACE')
+       CLOSE(3)
+      END IF
+
+      CONTAINS
+
+       SUBROUTINE SELECT1(III)
+       INTEGER,INTENT(IN) :: III
+
+        SELECT CASE(III)
+         CASE(1)
+          IREI=IREI+1
+         CASE(3)
+          IRCX=IRCX+1
+         CASE(4)
+          IRPI=IRPI+1
+         CASE(5)
+          IREL=IREL+1
+         END SELECT
+       END SUBROUTINE SELECT1
+
+       SUBROUTINE SELECT2(III,REACC)
+       INTEGER,INTENT(IN) :: III
+       INTEGER,INTENT(OUT) :: REACC(NCRM)
+
+
+        SELECT CASE(III)
+         CASE(1)
+          REACC(IM)=IREI
+         CASE(3)
+          REACC(IM)=IRCX
+         CASE(4)
+          REACC(IM)=IRPI
+         CASE(5)
+          REACC(IM)=IREL
+         END SELECT
+       END SUBROUTINE SELECT2
+
+      END SUBROUTINE EIRENE_XSECTEE_PARAM
+
+
+C
+C INITIALISE EFFECTIVE REACTION RATES
+C
+      SUBROUTINE EIRENE_XSECTEE
+
+      INTEGER :: ICRM,IA,IB,II,RION,RRCM
+      REAL(DP),ALLOCATABLE :: SCRRAD(:,:),E_SCRRAD(:,:),
+     r                        ALPCRD(:,:),E_ALPCRD(:,:)
+
+      IF(NCRM.LT.1) RETURN
+C
+C INITIALISE RATES FROM CRM IF THEY HAVE NOT BEEN READ FROM FORT.13
+C
+       IF(R13(5)) THEN
+         WRITE(iunout,*) "XSECTEE: CALCULATE INITIAL RATES"
+         ALLOCATE(SCRRAD(NSTORDR,NCRM),E_SCRRAD(NSTORDR,NCRM),
+     a            ALPCRD(NSTORDR,NCRM),E_ALPCRD(NSTORDR,NCRM))
+         CALL MODPHOT_FIRST(SCRRAD,E_SCRRAD,ALPCRD,E_ALPCRD)
+         IF(R13(1))
+     f      TABEF(1:NSTORDR,1:NCRM)=SCRRAD(1:NSTORDR,1:NCRM)
+         IF(R13(2))
+     f      TABEF(1:NSTORDR,NCRM+1:2*NCRM)=E_SCRRAD(1:NSTORDR,1:NCRM)
+         IF(R13(3))
+     f      TABEF(1:NSTORDR,2*NCRM+1:3*NCRM)=ALPCRD(1:NSTORDR,1:NCRM)
+         IF(R13(4))
+     f      TABEF(1:NSTORDR,3*NCRM+1:4*NCRM)=E_ALPCRD(1:NSTORDR,1:NCRM)
+         IF(ALLOCATED(SCRRAD))
+     f      DEALLOCATE(SCRRAD,E_SCRRAD,ALPCRD,E_ALPCRD)
+         R13(5)=.FALSE.
+       END IF
+
+C
+C
+C
+       DO 1957 ICRM=1,NCRM
+
+        RION=NIONREAC2(ICRM)
+        RRCM=NRCMBREAC2(ICRM)
+
+        IF(TRCMOD) THEN
+         IB=SCRM(1,ICRM)
+         II=IHS_P(ICRM)
+         WRITE(iunout,*)
+         WRITE(iunout,*) "RATES BEFORE XSECTEE, ICRM", ICRM
+        END IF
+
+C IONISATION
+        IF(RION.LE.0.OR.RION.GT.NREI) THEN
+         WRITE(iunout,*) "WARNING FROM XSECTEE: CANNOT FIND REACTION",
+     w              " RION ", RION
+         WRITE(iunout,*) "THE CR-MODEL IS SKIPPED, ICRM ",ICRM
+         CYCLE
+        ELSE IF(ISWR(ABS(NIONREAC(ICRM))).NE.1) THEN
+         WRITE(iunout,*) "WARNING FROM XSECTEE: THE REACTION RION= ",RIO
+     .N,
+     w              " IS NOT IONISATION, ISWR(RION)",
+     w                ISWR(NIONREAC(ICRM))
+         WRITE(iunout,*) "THE CR-MODEL IS SKIPPED, ICRM ",ICRM
+         CYCLE
+        END IF
+
+        TABEI1(RION,1:NSBOX)=TABEF(1:NSBOX,ICRM)
+        IF(IESWCRM(ICRM)) EELEI1(RION,1:NSBOX)=TABEF(1:NSBOX,NCRM+ICRM)
+
+        IF(TRCMOD) THEN
+          WRITE(iunout,*) "  TABEI1(",RION,") [s-1]=",
+     w      SUM(TABEI1(RION,:)*VOL(:)*DIIN(IB,:))
+          WRITE(iunout,*) "  EELEI1(",RION,") [W] =",
+     w      SUM(EELEI1(RION,:)*VOL(:)*DIIN(IB,:)*TABEI1(RION,:))*EV_TO_J
+        END IF
+
+C RECOMBINATION
+        IF(RRCM.LE.0.OR.RRCM.GT.NREC) THEN
+         WRITE(iunout,*) "WARNING FROM XSECTEE: CANNOT FIND REACTION",
+     w              " RRCM ",RRCM
+         WRITE(iunout,*) "THE CR-MODEL IS SKIPPED, ICRM ",ICRM
+         CYCLE
+        ELSE IF(ISWR(ABS(NRCMBREAC(ICRM))).NE.6) THEN
+         WRITE(iunout,*) "WARNING FROM XSECTEE: THE REACTION",
+     w              " RRCM= ",RRCM,
+     w              " IS NOT RECOMBINATION, ISWR(RRCM)",
+     w               ISWR(NRCMBREAC(ICRM))
+         WRITE(iunout,*) "THE CR-MODEL IS SKIPPED, ICRM ",ICRM
+         CYCLE
+        END IF
+
+        IF(TRCMOD) THEN
+          WRITE(iunout,*) "  TABRC1(",RRCM,") [s-1]=",
+     w      SUM(TABRC1(RRCM,:)*VOL(:)*DIIN(II,:))
+          WRITE(iunout,*) "  EELRC1(",RRCM,")= [W]",
+     w      SUM(EELRC1(RRCM,:)*VOL(:)*DIIN(II,:))*EV_TO_J
+        END IF
+
+        TABRC1(RRCM,1:NSBOX)=TABEF(1:NSBOX,2*NCRM+ICRM)
+        IF(RESWCRM(ICRM))
+     f     EELRC1(RRCM,1:NSBOX)=TABEF(1:NSBOX,3*NCRM+ICRM)
+
+        IF(TRCMOD) THEN
+          WRITE(iunout,*) "RATES AFTER CCRM"
+          WRITE(iunout,*) "  TABEI1(",RION,") [s-1]=",
+     w      SUM(TABEI1(RION,:)*VOL(:)*DIIN(IB,:))
+          WRITE(iunout,*) "  EELEI1(",RION,") [W] =",
+     w      SUM(EELEI1(RION,:)*VOL(:)*DIIN(IB,:)*TABEI1(RION,:))*EV_TO_J
+          WRITE(iunout,*) "  TABRC1(",RRCM,") [s-1]=",
+     w      SUM(TABRC1(RRCM,:)*VOL(:)*DIIN(II,:))
+          WRITE(iunout,*) "  EELRC1(",RRCM,")= [W]",
+     w      SUM(EELRC1(RRCM,:)*VOL(:)*DIIN(II,:))*EV_TO_J
+        END IF
+
+C TURNS ON THE BGK TALLIES UPDATE FOR THE REFERENCE NEUTRAL SPECIE
+        IF(NSCRM(ICRM).LE.0) GOTO 1957
+        IA=IHS_D(ICRM)
+        IF (NPBGKA(IA).EQ.0) THEN
+          NRBGI=NRBGI+3
+          NPBGKA(IA)=NRBGI/3
+        END IF
+        CRMBGK(ICRM)=NPBGKA(IA)
+
+ 1957  CONTINUE
+
+      END SUBROUTINE EIRENE_XSECTEE
+
+
+C
+C CALCULATES REACTION RATES FOR THE FIRST STEP IF NECESSARY
+C
+      SUBROUTINE MODPHOT_FIRST(SCRRAD_D,E_SCRRAD_D,ALPCRD_D,E_ALPCRD_D)
+
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CSDVI
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CZT1
+      USE EIRMOD_CAPRMC
+      USE EIRMOD_CLOGAU
+
+      IMPLICIT NONE
+
+      REAL(DP),INTENT(OUT) ::  SCRRAD_D(NSTORDR,NCRM),
+     r                         E_SCRRAD_D(NSTORDR,NCRM),
+     r                         ALPCRD_D(NSTORDR,NCRM),
+     r                         E_ALPCRD_D(NSTORDR,NCRM)
+
+      INTEGER :: ICRM,ITRI
+      LOGICAL,ALLOCATABLE,SAVE :: LFIRST(:)
+      INTEGER :: II
+      REAL(DP) ::  Q2(LIMA), POP_ESC(LIMA),
+     r             ALPCR, SCR, SCRRAD, E_ALPCR, E_SCR, E_SCRRAD,
+     r             E_ALPCR_T, E_SCR_T, E_SCRRAD_T,
+     r             POP0(LIMA), POP1(LIMA), POP2(LIMA)
+      REAL(DP),PARAMETER :: TEMIN=0.05, DEMIN=1e8 !PARAMETERS FOR CUT-OFF
+
+      CALL EIRENE_LEER(3)
+      WRITE (iunout,*) 'MODPHOT_FIRST CALLED'
+      CALL EIRENE_LEER(3)
+
+C INITIALISATION OF DEFAULT MODEL IS IN "XSECTEE_PARAM" (MODULE CCRM)
+
+      IF(.NOT.ALLOCATED(LFIRST)) THEN
+        ALLOCATE(LFIRST(NCRM))
+        LFIRST=.TRUE.
+      END IF
+
+C CYCLE OVER  ALL DEFINED C-R MODELS
+
+      DO 1000 ICRM=1,NCRM
+
+        IF(NIONREAC2(ICRM).LE.0.AND.NRCMBREAC2(ICRM).LE.0) THEN
+         WRITE(iunout,*)
+     .    "NO IONISATION AND RECOMBINATION INDEX IS SPECIFIED"
+         WRITE(iunout,*)
+     .    "SKIP THE COLLISIONAL-RADIATIVE MODEL, ICRM", ICRM
+         GOTO 1000
+        END IF
+
+        IF(TYPCRM(ICRM).EQ.1) CALL HYDROGEN2_INIT(ICRM)
+        DO 1980 ITRI=1,NSBOX-2
+C  CALCULATION OF THE POPULATIONS FROM THE COLLISIONAL-RADIATIVE MODEL
+c  pop0: coupling to continuum
+c  pop1: coupling to ground state, electron impact
+c  pop2: coupling to ground state, photon trapping
+C  "GROUND STATE" SPECIE
+C ASSIGN PARAMETERS OF THE CORRESPONDING ATOMIC SPECIE
+         IF (TEIN(ITRI).GT.TEMIN.AND.DEIN(ITRI).GT.DEMIN) THEN
+            Q2=0._DP
+            POP_ESC=1._DP
+C DIFFERENT COLLISIONAL-RADIATIVE MODELS
+            SELECT CASE(TYPCRM(ICRM))
+            CASE(1)
+C  HYDROGEN MODEL WITH EFFECTIVE RECOMBINATION RATE
+             II=IHS_P(ICRM)
+             CALL HYDROGEN2(LFIRST,0._DP,TEIN(ITRI),DEIN(ITRI),ICRM,II,
+     .                      ITRI,Q2,POP_ESC,POP0,POP1,POP2,
+     .                      ALPCR,SCR,SCRRAD,E_ALPCR,E_SCR,E_SCRRAD)
+            CASE(2)
+C HELIUM MODEL
+              WRITE(iunout,*) "MODEL FOR HELIUM IS NOT YET READY!"
+              CALL EIRENE_EXIT_OWN(1)
+            CASE(10)
+              IF(LFIRST(ICRM))
+     f          WRITE(iunout,*) "HYDROGEN ATOM, OPAQUE RATES ",
+     w                     "[SAWADA, FUJIMOTO, 1995], ICRM", ICRM
+              Q2=0._DP
+              CALL EIRENE_H_COLRAD(ITRI, TEIN(ITRI), DEIN(ITRI), Q2,
+     .                             POP0, POP1, POP2, 
+     .                             ALPCR, SCR, SCRRAD, 
+     .                             E_ALPCR, E_SCR, E_SCRRAD,
+     .                             E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+            CASE DEFAULT
+C STANDARD HYDROGEN MODEL
+             IF(LFIRST(ICRM))
+     f          WRITE(iunout,*) "DEFAULT MODEL: HYDROGEN ATOM ",
+     w                     "[SAWADA, FUJIMOTO, 1995], ICRM", ICRM
+             CALL EIRENE_H_COLRAD(ITRI, TEIN(ITRI), DEIN(ITRI), Q2,
+     .                            POP0, POP1, POP2, 
+     .                            ALPCR, SCR, SCRRAD, 
+     .                            E_ALPCR, E_SCR, E_SCRRAD,
+     .                            E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+            END SELECT
+
+            SCRRAD=SCRRAD+SCR*DEIN(ITRI)                    !IONISATION RATE
+            SCRRAD_D(ITRI,ICRM)=SCRRAD
+            E_SCRRAD=E_SCRRAD+E_SCR*DEIN(ITRI)              !ELECTRON COOLING RATE
+            IF(ABS(SCRRAD).GT.EPS12.AND.IESWCRM(ICRM)) THEN
+              E_SCRRAD_D(ITRI,ICRM)=E_SCRRAD/SCRRAD
+            ELSE
+              E_SCRRAD_D(ITRI,ICRM)=0._DP
+            END IF
+            ALPCRD_D(ITRI,ICRM)= ALPCR*DEIN(ITRI)           !RECOMBINATION RATE
+            IF(RESWCRM(ICRM)) THEN
+              E_ALPCRD_D(ITRI,ICRM)=E_ALPCR*DEIN(ITRI)      !ELECTRON HEATING/COOLING RATE
+            ELSE
+              E_ALPCRD_D(ITRI,ICRM)=0._DP
+            END IF
+            LFIRST(ICRM)=.FALSE.
+         ELSE        !IF (TEIN(ITRI).GT.TEMIN.AND.DEIN(ITRI).GT.DEMIN)
+C DEFAULT VALUES
+           SCRRAD_D(ITRI,ICRM)=0._DP
+           E_SCRRAD_D(ITRI,ICRM)=0._DP
+           ALPCRD_D(ITRI,ICRM)=0._DP
+           E_ALPCRD_D(ITRI,ICRM)=0._DP
+         END IF
+1980    CONTINUE
+       IF(TYPCRM(ICRM).EQ.1) CALL HYDROGEN2_POST(ICRM)
+
+1000  CONTINUE
+
+      END SUBROUTINE MODPHOT_FIRST
+
+
+C
+C MODIFIES BACKGROUND AND STORES DATA NECESSARY FOR THE NEXT STEP
+C
+      SUBROUTINE EIRENE_MODPHOT
+
+
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CSDVI
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CZT1
+      USE EIRMOD_CAPRMC
+      USE EIRMOD_CLOGAU
+
+      IMPLICIT NONE
+
+      INTEGER :: ICRM,ITRI,IP,IPH,IPL,IPN
+      LOGICAL,ALLOCATABLE,SAVE :: LFIRST(:)
+      INTEGER :: IB,II,NNN
+      REAL(DP) ::  DOLD, Q2(LIMA), POP_ESC(LIMA),
+     r             ALPCR, SCR, SCRRAD, E_ALPCR, E_SCR, E_SCRRAD,
+     r             E_ALPCR_T, E_SCR_T, E_SCRRAD_T,
+     r             POP0(LIMA), POP1(LIMA), POP2(LIMA), 
+     r             ED,VX,VY,VZ
+      REAL(DP),PARAMETER :: TEMIN=0.05, DEMIN=1e8, DEMAX=1e24 !PARAMETERS FOR CU
+
+      REAL(DP) :: PLS(NSTORDR),TEPLS(NSTORDR)         !FOR SMOOTHING
+
+      INTEGER :: IA,IBGK
+
+      IF(NCRM.LT.1) RETURN
+
+      CALL EIRENE_LEER(3)
+      WRITE (iunout,*) 'MODPHOT CALLED AFTER ITERATION IITER= ',IITER
+      CALL EIRENE_LEER(3)
+
+C INITIALISATION OF DEFAULT MODEL IS IN "XSECTEE_PARAM" (MODULE CCRM)
+
+      IF(.NOT.ALLOCATED(LFIRST)) THEN
+        ALLOCATE(LFIRST(NCRM))
+        LFIRST=.TRUE.
+      END IF
+
+C SMOOTHING OF THE RECOMBINATION SOURCES
+      IF(NEXVS.AND.APRMC_OPTION.EQ.1) THEN
+       WRITE(iunout,*) "USING SMOOTHING OF NE AND TE"
+       CALL READ_PLASMA_CORRECTION(PLS,TEPLS,NSTORDR)
+       PLS(1:NSBOX)=MIN(PLS(1:NSBOX),DEMAX)
+      ELSE
+       PLS(1:NSBOX)=MIN(DEIN(1:NSBOX),DEMAX)
+       TEPLS(1:NSBOX)=TEIN(1:NSBOX)
+      END IF
+
+
+C CYCLE OVER THE ALL DEFINED C-R MODELS
+
+      SUM_ALPCR=0._DP
+      SUM_E_ALPCR=0._DP
+      SUM_SCR=0._DP
+      SUM_E_SCR=0._DP
+      SUM_SCRRAD=0._DP
+      SUM_E_SCRRAD=0._DP
+
+      DO 1000 ICRM=1,NCRM
+
+        IF(NIONREAC2(ICRM).LE.0.AND.NRCMBREAC2(ICRM).LE.0) THEN
+         WRITE(iunout,*) 
+     w         "NO IONISATION AND RECOMBINATION INDEX IS SPECIFIED"
+         WRITE(iunout,*) 
+     w         "SKIP THE COLLISIONAL-RADIATIVE MODEL, ICRM", ICRM
+         GOTO 1000
+        END IF
+
+        IB=SCRM(1,ICRM)
+        IA=IHS_D(ICRM)
+        II=IHS_P(ICRM)
+        IBGK=CRMBGK(ICRM)
+        NNN=NSCRM(ICRM)
+
+        IF(TRCMOD) WRITE (iunout,*) 'C-R MODEL: NCRM, IB, IA, II, IBGK',
+     w                                     NCRM, IB, IA, II, IBGK
+        IF(TYPCRM(ICRM).EQ.1) CALL HYDROGEN2_INIT(ICRM)
+
+C FLUX CORRECTION
+        IF(TYPCRM(ICRM).EQ.100) CALL FLUX_CORR(NNN,II,IB,ICRM,TEPLS,PLS)
+
+        DO 1980 ITRI=1,NSBOX-2
+C  CALCULATION OF THE POPULATIONS FROM THE COLLISIONAL-RADIATIVE MODEL
+c  pop0: coupling to continuum
+c  pop1: coupling to ground state, electron impact
+c  pop2: coupling to ground state, photon trapping
+C  "GROUND STATE" SPECIE
+         DOLD=DIIN(IB,ITRI)
+         DIIN(IB,ITRI)=PDENA(IA,ITRI)
+         IF(ABS(DIIN(IB,ITRI)).GT.EPS12.AND.NNN.GT.0) THEN
+C ASSIGN PARAMETERS OF THE CORRESPONDING ATOMIC SPECIES
+            IF(IBGK.GT.0) THEN
+             VX=BGKV((IBGK-1)*3+1,ITRI)/DIIN(IB,ITRI)
+             VY=BGKV((IBGK-1)*3+2,ITRI)/DIIN(IB,ITRI)
+             VZ=BGKV((IBGK-1)*3+3,ITRI)/DIIN(IB,ITRI)
+            ELSE
+             VX=0._DP
+             VY=0._DP
+             VZ=0._DP
+            END IF
+            ED=(VX**2+VY**2+VZ**2)*CVRSSA(IA)
+            TIIN(IB,ITRI)=0.6666667*(EDENA(IA,ITRI)/DIIN(IB,ITRI)-ED)
+            IF(TIIN(IB,ITRI).LT.EPS60) TIIN(IB,ITRI)=0._DP
+            VXIN(IB,ITRI)=VX
+            VYIN(IB,ITRI)=VY
+            VZIN(IB,ITRI)=VZ
+         ELSE
+            TIIN(IB,ITRI)=0._DP
+            VXIN(IB,ITRI)=0._DP
+            VYIN(IB,ITRI)=0._DP
+            VZIN(IB,ITRI)=0._DP
+         END IF
+         IF (TEPLS(ITRI).GT.TEMIN.AND.PLS(ITRI).GT.DEMIN) THEN
+            Q2=0._DP
+            POP_ESC=1._DP
+C PHOTON DENSITY OVER ATOMIC GROUND STATE DENSITY, FROM 2 BECAUSE 1 IS LYMAN B
+c  Q2:  rate for population of n from ground state, through photoexciation
+            IF(DOLD.GT.EPS12.AND.NNN.GT.0) THEN
+              DO IP=2,NNN
+                IPH=PHCRM(IP,ICRM)
+                IPN=NNCRM(IP,ICRM)
+                Q2(IPN)=-PPHPHT(IPH,ITRI)/DOLD/ELCHA
+              END DO
+            END IF
+C DIFFERENT COLLISIONAL-RADIATIVE MODELS
+            SELECT CASE(TYPCRM(ICRM))
+            CASE(1)
+C  HYDROGEN MODEL WITH EFFECTIVE RECOMBINATION RATE
+             CALL HYDROGEN2(LFIRST,DOLD,TEPLS(ITRI),PLS(ITRI),ICRM,II,
+     .                      ITRI,Q2,POP_ESC,POP0,POP1,POP2,
+     .                      ALPCR,SCR,SCRRAD,E_ALPCR,E_SCR,E_SCRRAD)
+            CASE(10)
+C  OPAQUE RATES
+             IF(LFIRST(ICRM))
+     f          WRITE(iunout,*) "HYDROGEN ATOM, OPAQUE RATES ",
+     w                     "[SAWADA, FUJIMOTO, 1995], ICRM", ICRM
+              Q2=0._DP
+              POP_ESC=0._DP
+              CALL EIRENE_H_COLRAD(ITRI, TEPLS(ITRI), PLS(ITRI), Q2,
+     .                             POP0, POP1, POP2, 
+     .                             ALPCR, SCR, SCRRAD, 
+     .                             E_ALPCR, E_SCR, E_SCRRAD,
+     .                             E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+            CASE(2)
+C HELIUM MODEL
+              WRITE(iunout,*) "MODEL FOR HELIUM IS NOT YET READY!"
+              CALL EIRENE_EXIT_OWN(1)
+            CASE(100)
+C STANDARD HYDROGEN MODEL WITH FLUX CORRECTION
+             IF(LFIRST(ICRM)) THEN
+                WRITE(iunout,*) "DEFAULT MODEL: HYDROGEN ATOM ",
+     w                     "[SAWADA, FUJIMOTO, 1995]",
+     w                     "WITH FLUX CORRECTION, ICRM", ICRM
+             END IF
+             CALL EIRENE_H_COLRAD(ITRI, TEPLS(ITRI), PLS(ITRI), Q2,
+     .                            POP0, POP1, POP2, 
+     .                            ALPCR, SCR, SCRRAD, 
+     .                            E_ALPCR, E_SCR, E_SCRRAD,
+     .                            E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+             CALL FLUX_CORR_UPDATE(NNN,ICRM,ITRI,II,POP0,POP1,POP2,DOLD)
+            CASE DEFAULT
+C STANDARD HYDROGEN MODEL
+             IF(LFIRST(ICRM))
+     f          WRITE(iunout,*) "DEFAULT MODEL: HYDROGEN ATOM ",
+     w                     "[SAWADA, FUJIMOTO, 1995], ICRM", ICRM
+             CALL EIRENE_H_COLRAD(ITRI, TEPLS(ITRI), PLS(ITRI), Q2,
+     .                            POP0, POP1, POP2, 
+     .                            ALPCR, SCR, SCRRAD, 
+     .                            E_ALPCR, E_SCR, E_SCRRAD,
+     .                            E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+            END SELECT
+C FOR DIAGNOSTICS
+            SUM_ALPCR(ICRM)=SUM_ALPCR(ICRM)+
+     +                ALPCR*DEIN(ITRI)*DIIN(II,ITRI)*VOL(ITRI)     !RECOMB. PART
+            SUM_E_ALPCR(ICRM)=SUM_E_ALPCR(ICRM)+                   !RECOMB ENERGY
+     +                E_ALPCR*DEIN(ITRI)*DIIN(II,ITRI)*
+     *                VOL(ITRI)*EV_TO_J                            !RECOMB ENERGY
+            SUM_SCR(ICRM)=SUM_SCR(ICRM)+
+     +              SCR*DEIN(ITRI)*DOLD*VOL(ITRI)                  !IONIS. PART
+            SUM_E_SCR(ICRM)=SUM_E_SCR(ICRM)+
+     +                E_SCR*DEIN(ITRI)*DOLD*
+     *                VOL(ITRI)*EV_TO_J                            !IONIS. ENERGY
+            SUM_SCRRAD(ICRM)=SUM_SCRRAD(ICRM)+
+     +                 SCRRAD*DOLD*VOL(ITRI)             !PHOTO-INDUCED IONIS. PART
+            SUM_E_SCRRAD(ICRM)=SUM_E_SCRRAD(ICRM)+
+     +                   E_SCRRAD*DOLD*VOL(ITRI)*EV_TO_J !PHOTO-INDUCED IONIS. ENERGY
+
+            IF(TRCMOD.AND.LFIRST(ICRM)) WRITE(iunout,*)
+     w              "MODIFING BACKGROUND, ICRM,NSCRM(ICRM)",
+     w               ICRM, NNN
+            DO IP=2,NNN
+              IPL=SCRM(IP,ICRM)
+              IF(TRCMOD.AND.LFIRST(ICRM))
+     f          WRITE(iunout,*) " IP, IPL", IP, IPL
+              DIIN(IPL,ITRI) =(POP1(IP)+
+     +                                  POP2(IP))*DIIN(IB,ITRI)
+              TIIN(IPL,ITRI)=TIIN(IB,ITRI)
+cxpb was in Vlad's version
+cxpb              IF(MODCOL(7,2,PHCRM(IP,ICRM),IB).EQ.2) THEN   !IF DOPPLER SHIFT IS
+cxpb Tentative replacement by
+              IF(MODCOL(7,2,NRCMBREAC2(ICRM)).EQ.2) THEN   !IF DOPPLER SHIFT IS
+                VXIN(IPL,ITRI)=VXIN(IB,ITRI)
+                VYIN(IPL,ITRI)=VYIN(IB,ITRI)
+                VZIN(IPL,ITRI)=VZIN(IB,ITRI)
+              ELSE
+                VXIN(IPL,ITRI)=0._DP
+                VYIN(IPL,ITRI)=0._DP
+                VZIN(IPL,ITRI)=0._DP
+              END IF
+            END DO
+            IF(NEXVS) THEN
+              SCRRAD=SCRRAD*DEIN(ITRI)/PLS(ITRI)      !IN CASE OF SMOOTHING
+              E_SCRRAD=E_SCRRAD*DEIN(ITRI)/PLS(ITRI)  !
+            END IF
+            SCRRAD=SCRRAD+SCR*DEIN(ITRI)
+            E_SCRRAD=E_SCRRAD+E_SCR*DEIN(ITRI)
+            ALPCR=ALPCR*DEIN(ITRI)
+            TABEF(ITRI,ICRM)=SCRRAD                         !IONISATION RATE
+            IF(ABS(SCRRAD).GT.EPS12.AND.IESWCRM(ICRM)) THEN
+              TABEF(ITRI,NCRM+ICRM)=E_SCRRAD/SCRRAD         !ELECTRON COOLING RA
+            ELSE
+              TABEF(ITRI,NCRM+ICRM)=0._DP
+            END IF
+            TABEF(ITRI,2*NCRM+ICRM)=ALPCR                   !RECOMBINATION RATE
+            IF(RESWCRM(ICRM)) THEN
+              TABEF(ITRI,3*NCRM+ICRM)=E_ALPCR*DEIN(ITRI)    !ELECTRON HEATING RA
+            ELSE
+              TABEF(ITRI,3*NCRM+ICRM)=0._DP
+            END IF
+            LFIRST(ICRM)=.FALSE.
+          ELSE        !IF (TEPLS(ITRI).GT.TEMIN.AND.PLS(ITRI).GT.DEMIN)
+C DEFAULT VALUES
+           TABEF(ITRI,ICRM)=0._DP
+           TABEF(ITRI,NCRM+ICRM)=0._DP
+           DO IP=2,NNN
+             IPL=SCRM(IP,ICRM)
+             DIIN(IPL,ITRI)= 0._DP
+             TIIN(IPL,ITRI)= TIIN(IB,ITRI)
+cxpb was in Vlad's version
+cxpb             IF( MODCOL(7,2,PHCRM(IP,ICRM),IB).EQ.2) THEN !IF DOPPLER SHIFT IS T
+cxpb Tentative replacement by
+             IF(MODCOL(7,2,NRCMBREAC2(ICRM)).EQ.2) THEN   !IF DOPPLER SHIFT IS
+               VXIN(IPL,ITRI)= VXIN(IB,ITRI)
+               VYIN(IPL,ITRI)= VYIN(IB,ITRI)
+               VZIN(IPL,ITRI)= VZIN(IB,ITRI)
+             ELSE
+               VXIN(IPL,ITRI)= 0._DP
+               VYIN(IPL,ITRI)= 0._DP
+               VZIN(IPL,ITRI)= 0._DP
+             END IF
+           END DO
+         END IF
+1980    CONTINUE
+
+       IF(TYPCRM(ICRM).EQ.1) CALL HYDROGEN2_POST(ICRM)
+       IF(TYPCRM(ICRM).EQ.100) CALL FLUX_CORR_POSTPROC(NNN,ICRM)
+
+1000  CONTINUE
+
+      CALL PRT_MODPHOT !DIAGNOSTIC PRINTOUT
+
+      IF(TRCINT) CALL EIRENE_XSECTEE
+
+      END SUBROUTINE EIRENE_MODPHOT
+
+
+C
+C  HYDROGEN MODEL WITH EFFECTIVE RECOMBINATION RATE
+C  ENTRYS:
+C  HYDROGEN2_INIT : INITIALISATION
+C  HYDROGEN2      : CALCULATION
+C  HYDROGEN2_POST : POST-PROCESSING
+C
+        SUBROUTINE HYDROGEN2(LFIRST,DOLD,TEPLS,PLS,ICRM,II,ITRI,
+     .                       Q2,POP_ESC,POP0,POP1,POP2,
+     .                       ALPCR,SCR,SCRRAD,E_ALPCR,E_SCR,E_SCRRAD)
+
+
+         USE EIRMOD_CCONA
+         USE EIRMOD_CSDVI
+         USE EIRMOD_CTRCEI
+         USE EIRMOD_CZT1
+         USE EIRMOD_CCOUPL
+         USE EIRMOD_COMSOU
+
+         IMPLICIT NONE
+
+         LOGICAL,INTENT(IN) :: LFIRST(NCRM)
+         REAL(DP),INTENT(IN) :: DOLD,TEPLS,PLS
+         REAL(DP),INTENT(INOUT) :: Q2(LIMA),POP_ESC(LIMA)
+         INTEGER,INTENT(IN) :: ICRM,II,ITRI
+
+         REAL(DP),INTENT(OUT) :: POP0(LIMA),POP1(LIMA), POP2(LIMA),
+     .                           ALPCR, SCR,SCRRAD, E_ALPCR, E_SCR,
+     .                           E_SCRRAD
+
+         REAL(DP):: ALPCR_S,SCR_S,
+     r              SCRRAD_S,E_ALPCR_S,E_SCR_S,E_SCRRAD_S,
+     r              E_ALPCR_T, E_SCR_T, E_SCRRAD_T,
+     r              EMITT, POP0_D(LIMA), POP1_D(LIMA), POP2_D(LIMA),
+     r              E_AT(LIMA), OSC(LIMA,LIMA),
+     r              POPESC, A21SAVE
+         REAL(DP),SAVE :: A(LIMA,LIMA),SCRRAD1,SCRRAD2,
+     r                    E_SCRRAD1,E_SCRRAD2,DEN1(LIMA),DEN2(LIMA)
+         INTEGER :: IP,IPN,NNN
+
+C
+C CALCULATION
+C
+         NNN=NSCRM(ICRM)
+
+          IF(LFIRST(ICRM))
+     f      WRITE(iunout,*) "THE MODEL: HYDROGEN ATOM ",
+     w                 "[SAWADA, FUJIMOTO, 1995] " ,
+     w                  "WITH EFFECTIVE RECOMBINATION, ICRM", ICRM
+C STANDARD MODEL TO GET POPULATIONS POP*
+            CALL EIRENE_H_COLRAD(ITRI, TEPLS, PLS, Q2,
+     .                           POP0, POP1, POP2,
+     .                           ALPCR_S, SCR_S, SCRRAD_S,
+     .                           E_ALPCR_S, E_SCR_S, E_SCRRAD_S,
+     .                           E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+            SCRRAD_S=SCRRAD_S*DEIN(ITRI)/PLS        !FOR SMOOTHING
+            E_SCRRAD_S= E_SCRRAD_S*DEIN(ITRI)/PLS   !
+C POPULATION ESCAPE FACTOR
+            POPESC=1.
+            DO IP=2, NNN
+               IPN=NNCRM(IP,ICRM)
+               IF(LFIRST(ICRM)) 
+     >           CALL EIRENE_EINSTN(OSC,A,E_AT,LIMA,A21SAVE,POPESC)
+               EMITT=A(IPN,1)*(POP0(IPN)*DIIN(II,ITRI)+
+     +                        (POP1(IPN)+POP2(IPN))*DOLD)
+               IF(EMITT.GT.EPS12) POP_ESC(IPN)=1._DP-Q2(IPN)*DOLD/EMITT
+               IF(POP_ESC(IPN).LT.0._DP) THEN
+C TO PREVENT NEGATIVE RECOMBINATION
+                POP_ESC(IPN)=0._DP
+                IF(DOLD.GT.EPS12) Q2(IPN)=Q2(IPN)-EMITT/DOLD
+               ELSE
+                Q2(IPN)=0._DP
+               END IF
+            END DO
+            CALL EIRENE_H_COLRAD(ITRI, TEPLS, PLS, Q2,
+     .                           POP0_D, POP1_D, POP2_D, 
+     .                           ALPCR, SCR, SCRRAD, 
+     .                           E_ALPCR, E_SCR, E_SCRRAD,
+     .                           E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+             SCRRAD=SCRRAD*DEIN(ITRI)/PLS        !FOR SMOOTHING
+             E_SCRRAD= E_SCRRAD*DEIN(ITRI)/PLS   !
+             IF(TRCMOD) THEN
+               DEN1(2:NNN)=DEN1(2:NNN)+( POP0(2:NNN)*DIIN(II,ITRI)+
+     +                    ( POP1(2:NNN)+POP2(2:NNN))*DOLD )*VOL(ITRI)
+               DEN2(2:NNN)=DEN2(2:NNN)+
+     +                  ( POP0_D(2:NNN)*DIIN(II,ITRI)+
+     +                    (POP1_D(2:NNN)+POP2_D(2:NNN))*DOLD )*VOL(ITRI)
+               SCRRAD_S=SCR_S*DEIN(ITRI)+SCRRAD_S
+               SCRRAD1=SCRRAD1+SCRRAD_S*DOLD*VOL(ITRI)
+               ALPCR_S=ALPCR_S*DEIN(ITRI)
+               SCRRAD2=SCRRAD2+((SCRRAD+SCR*DEIN(ITRI))*DOLD+
+     -               (ALPCR_S-ALPCR*DEIN(ITRI))*DIIN(II,ITRI))*VOL(ITRI)
+               E_SCRRAD1=E_SCRRAD1+((E_SCR_S*DEIN(ITRI)+E_SCRRAD_S)*DOLD
+     +                              +E_ALPCR_S*DEIN(ITRI)*DIIN(II,ITRI))
+     *                               *VOL(ITRI)*ELCHA
+               E_SCRRAD2=E_SCRRAD2+((E_SCR*DEIN(ITRI)+E_SCRRAD)*DOLD
+     +                              +E_ALPCR*DEIN(ITRI)*DIIN(II,ITRI))
+     *                               *VOL(ITRI)*ELCHA
+             END IF
+      RETURN
+C
+C INITIALISATION
+C
+      ENTRY  HYDROGEN2_INIT(ICRM)
+
+          IF(TRCMOD) THEN
+           DEN1(1:NSCRM(ICRM))=0._DP
+           DEN2(1:NSCRM(ICRM))=0._DP
+           SCRRAD1=0._DP
+           SCRRAD2=0._DP
+           E_SCRRAD1=0._DP
+           E_SCRRAD2=0._DP
+          END IF
+
+        RETURN
+C
+C POST-PROCESSING
+C
+      ENTRY  HYDROGEN2_POST(ICRM)
+
+         IF(TRCMOD) THEN
+           WRITE(iunout,*)
+           WRITE(iunout,*) "CROSS-CHECKING BETWEEN TWO MODELS:"
+           WRITE(iunout,*) "MODEL 1: ONLY IONISATION IS AFFECTED ",
+     w                "BY PHOTOEXCITATION"
+           WRITE(iunout,*) 
+     w                "MODEL 2: BOTH IONISATION AND RECOMBINATION ",
+     w                "ARE AFFECTED BY NON-UNITY ESCAPE FACTORS ",
+     w                "FOR RADIATIVE DECAY"
+           DO IP=2,NSCRM(ICRM)
+            IPN=NNCRM(IP,ICRM)
+            WRITE(iunout,*) "LEVEL ",IPN,"; MODEL1 : ", DEN1(IPN),
+     w                                   "; MODEL2 : ", DEN2(IPN)
+           END DO
+           WRITE(iunout,*)
+           WRITE(iunout,*) "TOTAL IONISATION SOURCES."
+           WRITE(iunout,*) "FOR MODEL 1: CALCULATED DIRECTLY"
+           WRITE(iunout,*) "FOR MODEL 2: RECALCULATED AS: ",
+     w                "(EXTRA)IONIS-(EXTRA)RECOMB*DIIN/DOLD"
+           WRITE(iunout,*) "MODEL 1: ",SCRRAD1,"; MODEL 2: ",SCRRAD2
+           WRITE(iunout,*)
+           WRITE(iunout,*) "TOTAL ELECTRON ENERGY SOURCES.",
+     w                "IONIS+RECOMB, BOTH CALCULATED DIRECTLY"
+            WRITE(iunout,*) "MODEL 1: ",E_SCRRAD1,
+     w                      "; MODEL 2: ",E_SCRRAD2
+           WRITE(iunout,*)
+         END IF
+
+        RETURN
+
+      END SUBROUTINE HYDROGEN2
+
+
+C
+C FLUX CORRECTION
+C
+      SUBROUTINE FLUX_CORR(NNN,II,IB,ICRM,TEPLS,PLS)
+
+      IMPLICIT NONE
+
+      INTEGER,INTENT(IN) :: NNN,II,IB,ICRM,IT
+      REAL(DP),INTENT(IN) :: P0(:),P1(:),P2(:),DOLD,
+     r                       PLS(:),TEPLS(:)
+      REAL(DP) :: N2E(NNN-1,NSBOX),N2P(NNN-1,NSBOX),
+     r            RR(NSBOX),RESID(NNN-1)
+      REAL(DP), SAVE :: A(LIMA,LIMA), E_AT(LIMA), OSC(LIMA,LIMA) !EINSTEIN COEFF
+      REAL(DP),PARAMETER :: EPS_RESC=0.01                        !PARAMETER OF A
+      INTEGER,PARAMETER :: ITERI_MAX=1000 !MAXIMUM ALLOWABLE NUMBER OF ITERATION
+      REAL(DP) :: RESSUM,RESMAX,RESMIN,A21SAVE,POPESC
+      REAL(DP),SAVE,ALLOCATABLE :: N2S(:,:)
+      LOGICAL :: RESC_CONT
+      INTEGER :: IP,IPN,IPH,ITERI,I
+      REAL(DP) ::  Q2(LIMA), POP_ESC(LIMA),
+     r             ALPCR, SCR, SCRRAD, E_ALPCR, E_SCR, E_SCRRAD,
+     r             E_ALPCR_T, E_SCR_T, E_SCRRAD_T,
+     r             POP0(LIMA), POP1(LIMA), POP2(LIMA)
+
+      WRITE(iunout,*) "STARTING FLUX CORRECTION, ICRM", ICRM
+      POPESC=1.
+      CALL EIRENE_EINSTN(OSC,A,E_AT,LIMA,A21SAVE,POPESC)
+C INITIAL RESIDUALS
+      IF(TRCMOD) THEN
+        DO IP=2,NNN
+          IPH=PHCRM(IP,ICRM)
+          CALL EIRENE_INIT_RESCALING(-FLUXCL_SUM(:,IPH),IPH)
+        END DO
+        WRITE(iunout,*)
+        WRITE(iunout,*) "CHECK UPDATE OF TALLIES"
+        WRITE(iunout,*) "IPH,RESSUM,RESMAX,RESMIN"
+        DO IP=2,NNN
+          IPH=PHCRM(IP,ICRM)
+          CALL EIRENE_FLUX_RESIDUALS(PPPHT(IPH,:),
+     .                        IPH,RESSUM,RESMAX,RESMIN)
+          WRITE(iunout,*) IPH,RESSUM,RESMAX,RESMIN
+        END DO
+      END IF
+C INITIAL POPULATION
+      DO I=1,NSBOX
+        IF(TEPLS(I).GT.TEMIN.AND.PLS(I).GT.DEMIN) THEN
+          POP_ESC=1._DP
+          IF(DIIN(IB,I).GT.EPS12.AND.NNN.GT.0) THEN
+            DO IP=2,NNN
+              IPH=PHCRM(IP,ICRM)
+              IPN=NNCRM(IP,ICRM)
+              Q2(IPN)=-PPHPHT(IPH,I)/DIIN(IB,I)/ELCHA
+            END DO
+          END IF
+          CALL EIRENE_H_COLRAD(I, TEPLS(I), PLS(I), Q2,
+     .                         POP0, POP1, POP2, 
+     .                         ALPCR, SCR, SCRRAD, 
+     .                         E_ALPCR, E_SCR, E_SCRRAD,
+     .                         E_ALPCR_T, E_SCR_T, E_SCRRAD_T)
+          DO IP=2,NNN
+            IPN=NNCRM(IP,ICRM)
+            N2E(IP-1,I)=DIIN(II,I)*POP0(IPN)+DIIN(IB,I)*POP1(IPN)
+            N2P(IP-1,I)=DIIN(IB,I)*POP2(IPN)
+          END DO
+        ELSE
+           N2E(:,I)=0._DP
+           N2P(:,I)=0._DP
+         END IF
+      END DO
+C INITIAL RESIDUALS 2
+      IF(TRCMOD) THEN
+        WRITE(iunout,*)
+        WRITE(iunout,*) "INITIAL RESIDUALS"
+        WRITE(iunout,*) "IPH,RESSUM,RESMAX,RESMIN"
+        DO IP=2,NNN
+          IPH=PHCRM(IP,ICRM)
+          RR(1:NSBOX)=-PPHPHT(IPH,1:NSBOX)*VOL(1:NSBOX)
+          CALL EIRENE_INIT_RESCALING(RR,IPH)
+          CALL EIRENE_FLUX_RESIDUALS(PPPHT(IPH,:),
+     .                        IPH,RESSUM,RESMAX,RESMIN)
+          WRITE(iunout,*) IPH,RESSUM,RESMAX,RESMIN
+        END DO
+      END IF
+C INITIALISATION
+      DO IP=2,NNN
+        IPN=NNCRM(IP,ICRM)
+        IPH=PHCRM(IP,ICRM)
+        RR(1:NSBOX)=-(PPHPHT(IPH,1:NSBOX)+
+     +                N2P(IP-1,1:NSBOX)*A(IPN,1)*ELCHA)
+     *                *VOL(1:NSBOX)
+        CALL EIRENE_INIT_RESCALING(RR,IPH)
+      END DO
+      ITERI=0
+C RESCALING
+2003  CONTINUE
+        DO IP=2,NNN
+          IPN=NNCRM(IP,ICRM)
+          IPH=PHCRM(IP,ICRM)
+c          RR(1:NSBOX)=(N2E(IP-1,1:NSBOX)+
+c     +                 N2P(IP-1,1:NSBOX)*ALPHAKK(IPH,1:NSBOX))*
+c     *                 A(IPN,1)*ELCHA
+c          RR(1:NSBOX)=RR(1:NSBOX)*VOL(1:NSBOX)
+C ATTENTION!!! THIS IS VALID ONLY FOR THE CASE OF ONE LINE!!!
+          RR(1:NSBOX)=N2E(IP-1,1:NSBOX)*A(IPN,1)*ELCHA*VOL(1:NSBOX)
+          CALL EIRENE_FLUX_RESCALING(RR,IPH,RESID(IP-1))
+        END DO
+        ITERI=ITERI+1
+        IF(TRCMOD) THEN
+          WRITE(iunout,*)
+          WRITE(iunout,*) "ITERATION", ITERI
+          DO IP=2,NNN
+            IPH=PHCRM(IP,ICRM)
+            IPN=NNCRM(IP,ICRM)
+            WRITE(iunout,*) "PHOTON,LEVEL",IPH,IPN
+            WRITE(iunout,*) "RESIDUAL, ACCURACY", RESID(IP-1),EPS_RESC
+          END DO
+        END IF
+        RESC_CONT=.FALSE.
+        DO IP=1,NNN-1
+         IF(RESID(IP).GT.EPS_RESC) THEN
+           RESC_CONT=.TRUE.
+           EXIT
+         ENDIF
+        END DO
+      IF(RESC_CONT.AND.ITERI.LT.ITERI_MAX) GOTO 2003
+      IF(ITERI.GE.ITERI_MAX)
+     f   WRITE(iunout,*) "WARNING: ITERATIONS WERE STOPPED",
+     w              "BECAUSE NUMBER OF ITERATIONS EXCEED THE LIMIT",
+     w              "ITERI,ITERI_MAX", ITERI,ITERI_MAX
+C CORRECTION OF ABSORPTION RATES
+      DO IP=2,NNN
+        IPH=PHCRM(IP,ICRM)
+        PPHPHT(IPH,1:NSBOX)=PPHPHT(IPH,1:NSBOX)*ALPHAKK(IPH,1:NSBOX)
+        CALL EIRENE_SCALE_FLUXES(IPH)
+      END DO
+      IF(TRCMOD.AND..NOT.ALLOCATED(N2S)) THEN
+        ALLOCATE(N2S(NNN-1,NSBOX))
+        N2S=0._DP
+      END IF
+      RETURN
+C
+C
+C
+      ENTRY FLUX_CORR_UPDATE(NNN,ICRM,IT,II,P0,P1,P2,DOLD)
+        IF(TRCMOD) THEN
+          DO IP=2,NNN
+            IPN=NNCRM(IP,ICRM)
+            N2S(IP-1,IT)=DOLD*(P1(IPN)+P2(IPN))+DIIN(II,IT)*P0(IPN)
+          END DO
+        END IF
+      RETURN
+C
+C
+C
+      ENTRY FLUX_CORR_POSTPROC(NNN,ICRM)
+C RESIDUALS BY THE END
+      IF(TRCMOD) THEN
+        WRITE(iunout,*)
+        WRITE(iunout,*) "RESIDUALS AFTER THE CORRECTION"
+        WRITE(iunout,*) "IPH,RESSUM,RESMAX,RESMIN"
+        DO IP=2,NNN
+          IPN=NNCRM(IP,ICRM)
+          IPH=PHCRM(IP,ICRM)
+          RR(1:NSBOX)=-PPHPHT(IPH,1:NSBOX)*VOL(1:NSBOX)
+          CALL EIRENE_INIT_RESCALING(RR,IPH)
+          RR(1:NSBOX)=N2S(IP-1,1:NSBOX)*A(IPN,1)*ELCHA
+          CALL EIRENE_FLUX_RESIDUALS(RR,IPH,RESSUM,RESMAX,RESMIN)
+          WRITE(iunout,*) IPH,RESSUM,RESMAX,RESMIN
+        END DO
+        DEALLOCATE(N2S)
+      END IF
+      RETURN
+      END SUBROUTINE FLUX_CORR
+
+
+C
+C DIAGNOSTIC PRINTOUT
+C
+      SUBROUTINE PRT_MODPHOT
+        USE EIRMOD_PHOTON
+
+        IMPLICIT NONE
+
+        INTEGER :: ICRM,IP,IPH,KK,NL,IPOT,NSBOX2
+        REAL(DP) :: RADEN,NIONEN,E0,
+     r              PHT_EMISS(NPHOT),PHT_ABSORB(NPHOT),NTOT(NPLS)
+        REAL(DP),PARAMETER :: Ry=13.6 !RYDBERG ENERGY
+        CHARACTER*128 :: FRM
+        LOGICAL,SAVE :: LFIRST
+        DATA LFIRST /.TRUE./
+
+C TOTAL PHOTON ABSPRPTION AND EMISSION RATES
+        NSBOX2=NSBOX-2
+        DO IPH=1,NPHOT
+         PHT_EMISS(IPH)=SUM(PPPHT(IPH,1:NSBOX2)*VOL(1:NSBOX2))/ELCHA
+         PHT_ABSORB(IPH)=-SUM(PPHPHT(IPH,1:NSBOX2)*VOL(1:NSBOX2))/ELCHA
+        END DO
+C TOTAL NUMBER OF PARTICLES
+        DO IP=1,NPLS
+         NTOT(IP)=SUM(DIIN(IP,1:NSBOX2)*VOL(1:NSBOX2))
+        END DO
+        IF(TRCMOD) THEN
+         WRITE(iunout,*)
+         WRITE(iunout,*) "PARTICLE AND ENERGY BALANCE FOR ",
+     w              "COLLISIONAL-RADIATIVE MODELS"
+         WRITE(iunout,*)
+         DO ICRM=1,NCRM
+          WRITE(iunout,*)
+          WRITE(iunout,*) "CRM NUMBER ",ICRM
+          WRITE(iunout,'(A,E16.8)')
+     w          "  RECOMBINATION PARTICLE SOURCE, S-1: ",SUM_ALPCR(ICRM)
+          WRITE(iunout,'(A,E16.8)')
+     w          "  RECOMBINATION ENERGY SOURCE, W: ",SUM_E_ALPCR(ICRM)
+          WRITE(iunout,'(A,E16.8)')
+     w          "  ELECTRON IONISATION PARTICLE SOURCE, S-1: ",
+     w           SUM_SCR(ICRM)
+          WRITE(iunout,'(A,E16.8)')
+     w          "  ELECTRON IONISATION ENERGY SOURCE, W: ",
+     w           SUM_E_SCR(ICRM)
+          WRITE(iunout,'(A,E16.8)')
+     w          "  PHOTON-INDUCED IONISATION PARTICLE SOURCE, S-1: ",
+     w           SUM_SCRRAD(ICRM)
+          WRITE(iunout,'(A,E16.8)')
+     w          "  PHOTON-INDUCED IONISATION ENERGY SOURCE, W: ",
+     w           SUM_E_SCRRAD(ICRM)
+C ENERGY BALANCE
+C RADIATED MINUS ABSORBED ENERGY
+          RADEN=0._DP
+          DO IP=2,NSCRM(ICRM)
+           IPH=PHCRM(IP,ICRM)
+           DO  ipot=1,phv_nphoti(IPH)
+            KK=phv_lgphot(IPH,ipot,3)
+            call EIRENE_get_reaction(KK)
+            E0=reaction%e0*ELCHA
+            WRITE(iunout,*) "IPH,E0",IPH,E0
+            RADEN=RADEN+(PHT_EMISS(IPH)-PHT_ABSORB(IPH))*E0
+           END DO
+          END DO
+C ENERGY LOST NOT FOR IONISATION
+          NIONEN=SUM_E_SCR(ICRM)+SUM_E_SCRRAD(ICRM)+SUM_E_ALPCR(ICRM)
+          NIONEN=-NIONEN-(SUM_SCR(ICRM)+SUM_SCRRAD(ICRM)-
+     -                    SUM_ALPCR(ICRM))*Ry*ELCHA
+          WRITE(iunout,*) "RADIATED POWER, W"
+          WRITE(iunout,'(A,E16.8)') "  PHOTON SIDE ",RADEN
+          WRITE(iunout,'(A,E16.8)') "  ELECTRON SIDE ",-NIONEN
+         END DO
+         WRITE(iunout,*)
+         WRITE(iunout,*) "PHOTON EMISSION AND ABSORPTION RATES, S-1"
+         DO IPH=1,NPHOT
+          WRITE(iunout,'(I3,2E16.8)') IPH, PHT_EMISS(IPH),
+     w                                     PHT_ABSORB(IPH)
+         END DO
+        END IF !IF(TRCMOD) THEN
+C TRACING
+        IF (LFIRST) THEN
+         OPEN(200,FILE='modphot.trc',STATUS='REPLACE')
+         LFIRST=.FALSE.
+         CLOSE(200)
+        END IF
+       OPEN(200,FILE='modphot.trc',STATUS='OLD',POSITION='APPEND')
+        NL=NCRM*6+NPHOT*2+NPLS
+        WRITE(FRM,1957) NL,char(9) !format string
+cc        WRITE(0,*) NL,FRM
+        WRITE(200,FRM)
+     w     SUM_ALPCR,SUM_E_ALPCR,
+     w     SUM_SCR,SUM_E_SCR,
+     w     SUM_SCRRAD,SUM_E_SCRRAD,
+     w     PHT_EMISS,PHT_ABSORB,NTOT
+       CLOSE(200)
+1957   FORMAT('((',i3,'(1h',a1,',e16.8)))')
+      END SUBROUTINE PRT_MODPHOT
+
+      END MODULE CCRM
+

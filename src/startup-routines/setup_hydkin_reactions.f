@@ -2,7 +2,7 @@ cdr  FZJ proprietary version of an interface to HYDKIN online database.
 cdr  www.hydkin.de
 cdr  This code segment is not ready to be used by 3rd parties, nor documented
 
-cdr  sept 16:  rmn, rmx  -> r1mn,r1mx,r2mn,r2mx, to keep syncronized with code extensions
+cdr  sept 16:  rmn, rmx  -> r1mn,r1mx,r2mn,r2mx, to stay syncronized with code extensions
 cdr            re extrapolation options.
 
       subroutine EIRENE_setup_hydkin_reactions(hydkin_default, cadapt)
@@ -54,9 +54,10 @@ cdr            re extrapolation options.
      .            r1mn, r1mx, r2mn, r2mx
       logical :: ladapt
       type(properties), allocatable :: species(:)
- 
-      TVAC=0.02
-      DVAC=1.D2
+cdr 
+cdr  May 2017: TVAC and DVAC should be set only once. Currently in plasma.f, Common COMUSR 
+cdr      TVAC=0.02
+cdr      DVAC=1.D2
  
       HYDKIN_DEFAULT=ADJUSTL(HYDKIN_DEFAULT)
       I2=INDEX(HYDKIN_DEFAULT,' ')
