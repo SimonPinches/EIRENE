@@ -2,11 +2,11 @@
 !pb  181206  setting up of census source is done by processor 0
 !pb  100107  call to reinitialisation routine
 cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
-cdr          currently turning off time stratum may not be detected 
+cdr          currently turning off time stratum may not be detected
 cdr          when setting dynamic allocatable storage parameters in "find_param.f"
 cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
-!pb  MAY 16  nrds -> nrei 
+!pb  MAY 16  nrds -> nrei
  
  
  
@@ -90,15 +90,16 @@ C
       NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
 
-      CALL USR_DEFAULTS
+      CALL DEFAULTS_USR
+
+cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
+      IUNIN = 1
       IUNIN = IUNIN + IFOFF
  
       IUNOUT = 6
       IF (NRPES > 1) IUNOUT = 7
-
-csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF, add rewind iunout
       IUNOUT = IUNOUT + IFOFF
-!pb   REWIND(IUNOUT)
+
 
 CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
 cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
@@ -127,9 +128,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
  
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT
-!pb 021213      IUNOUT = 6  ! has been reset to 0 in INIT_COMPRT
-csw 16apr07 FIXME IUNOUT --> IUNOUT+IFOFF
-!pb 021213      IUNOUT = IUNOUT + IFOFF
+
         inentry = 0
  
         NRAPS=60
@@ -359,10 +358,9 @@ C
      .        CALL EIRENE_OUTEIR(ISTRA)
           IF (PLTSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.PLTSRC(0)))
      .        CALL EIRENE_PLTEIR(ISTRA)
-!pb        END IF
 450   CONTINUE
 C
-!pb      IF (MY_PE == 0) THEN
+
  
       IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1))  THEN
         IF (TRCSRC(0)) CALL EIRENE_OUTEIR(0)
@@ -428,11 +426,9 @@ C  CALL DIAGNOSTIC MODULE (COMPUTE LINE INTEGRALS FROM EIRENE TALLIES)
 C
  
       IF (NCHORI.GT.0) CALL EIRENE_DIAGNO
-csw
-csw 18apr07 user defined output
-csw
+
+csw  user defined output
       CALL EIRENE_OUTUSR
-csw
  
       END IF   ! MY_PE == 0
 C
@@ -457,7 +453,7 @@ C  HENCE: RESET IITER TO 1
         ENDIF
       ENDIF
 
-CDR  WHAT IS THIS?  
+C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
       IF (PLIDL.AND.(MY_PE == 0)) THEN
          CALL EIRENE_MASBOX
      .          ('OUTPUT OPTION: IDL, PER STRATUM ')
@@ -519,12 +515,12 @@ c  nprs: total number of processors used in this run
 c  my_pe is the current processor
 c
 c  in case of multi-timesteps, t-dep coupling, (or internal iterations?),
-c  output is reduced by the next three lines. 
+c  output is reduced by the next three lines.
 c  this leads to confusing (missing) output then.
 c  probably these next three lines must go out?
 cdr april 2015
 
-!pb   IF (MY_PE > 0) THEN 
+!pb   IF (MY_PE > 0) THEN
       IF (NPRS > 1) THEN
          CLOSE (UNIT=IUNOUT)
       END IF

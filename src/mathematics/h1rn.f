@@ -1,4 +1,5 @@
-C
+C  random number generator RANMAR, F. James, CPC 60, (1990), 329-344
+C  period length: 2**144 
 *
       FUNCTION H1RN(DUMMY)
 *
@@ -19,34 +20,43 @@ C
 *#        OUTPUT IT.                                                   *
 *#                                                                     *
 *# CHANGED BY: G. GRINDHAMMER AT: 90/03/14                             *
-*# REASON :                                                            *
+*# REASON :                                                            *  
+*# CHANGED BACK TO ORIGINAL BY D REITER AT 17/04/05                    *
 *#**********************************************************************
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: DUMMY
       REAL(DP) :: H1RN
-      INTEGER :: ISEED1, ISEED2
-      CHARACTER(16) :: FLAG,CHECK
+cdr   INTEGER :: ISEED1, ISEED2
+      INTEGER :: ISEED
+      CHARACTER(16) :: CHECK
+
+cdr  next 5 lines: status of generator, initialized with previous call to h1rnin
+      CHARACTER(16) :: FLAG
       REAL(DP) :: U, C, CD, CM
       INTEGER :: I, J
       COMMON /RASET1/ U(97),C,CD,CM,I,J
       COMMON /RASET2/ FLAG
 *
-      LOGICAL FIRST
-      DATA FIRST /.TRUE./
+      LOGICAL, SAVE :: FIRST=.TRUE.
+
       DATA CHECK /'H1RN INITIALISED'/
 *
       IF (FIRST) THEN
          IF (FLAG .NE. CHECK) THEN
-cpb         WRITE(6,*) ' H1RN (RANMAR): INITIALIZED WITH DEFAULT SEED'
-            ISEED1      = 12345
-            ISEED2      = 98765
-            CALL H1RNIN(ISEED1,ISEED2)
-            FIRST = .FALSE.
-         ELSE
-            FIRST = .FALSE.
-         ENDIF
+cdr         WRITE(6,*) ' H1RN (RANMAR): INITIALIZED WITH DEFAULT SEED'
+cdr  changed back to single default seed also used in ranset 
+cdr         ISEED1      = 12345
+cdr         ISEED2      = 98765
+cdr         CALL H1RNIN(ISEED1,ISEED2)
+
+cdr this default seed produces the 4 Marsaglia-Zaman seeds. 
+cdr Loc.cit. F.James, CPC (1990), p340
+            iseed = 54217137 
+            CALL H1RNIN(ISEED)
+         ENDIF       
+         FIRST = .FALSE.        
       ENDIF
 *
   100 CONTINUE

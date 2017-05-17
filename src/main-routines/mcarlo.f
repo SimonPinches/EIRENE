@@ -85,16 +85,20 @@ C
      .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
      .          FLX, VAL, ZW, ZWW, VALUE, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
-     .          SECND2, OVER, SECND1, WTT, SECDEL, DUMRAN, timan, timen,
-     .          tim1, tim2
-      REAL(DP), EXTERNAL :: RANF_EIRENE, RANSET_EIRENE
+     .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
+     .          tim1, tim2,
+     .          rn1
+      REAL(DP), EXTERNAL :: RANF_EIRENE 
+      INTEGER, EXTERNAL :: RANSET_EIRENE
+      INTEGER, EXTERNAL :: RANGET_EIRENE
 
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
       INTEGER :: ITAL, ISDV, IALS, ISTRAA, ISTRAE, ICELL,
-     .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX, NINIST,
-     .           IPANU, ISEED, ISTR, NPTTOT, NREC11, IB, N2,
+     .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX,
+     .           NINIST,IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN, 
+     -           ISTR, NPTTOT, NREC11, IB, N2,
      .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
-     .           INODES, J, ISEE, IPTSI, I1, I2, I3, IA, IT, IMCP,
+     .           INODES, J, IPTSI, I1, I2, I3, IA, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0
@@ -102,9 +106,7 @@ csw
 !pb 03122013      real(dp) :: timstart,timend,timused
 !pb 03122013      real(dp), external :: mpi_wtime
       real(dp) :: timused
-      integer :: itimstart, itimend, itimrate
-csw
-      INTEGER, EXTERNAL :: RANGET_EIRENE
+      integer :: itimstart, itimend, itimrate   
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LOGHELP(NSTRA)
@@ -376,10 +378,13 @@ C  ROUND OFF ERRORS
 C
 C  ASSIGN PE'S TO STRATA
 C
-
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
         call EIRENE_broad_pedist(xtim)
+
+c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(istra).
+c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
+c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
         if (.not.nlident) then
           do istra=1,nstrai
             ninitl(istra)=ninitl(istra)+my_pe*10000
@@ -475,51 +480,48 @@ c??
 C
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 
-C  find iseed, and iseedr from input flag NINITL(ISTRA)
+C  find random number generator seed, from input flag NINITL(ISTRA)
         IF (NINITL(ISTRA).GT.0) THEN
           NINIST=NINITL(ISTRA)
 c  initialize random number generator with chosen input seed NINIST
-          dumran=ranset_eirene(ninist)
-C  some work now for correlation sampling
-C  get seed ISEED for first call to random number of this stratum 
-C             (used only for NLCRR in particle loop DO 100 ...below)
-          ISEED=ranget_eirene(isee)
-cdr   it turns out that this ISEED is identical to NINIST, so the previous call to ranget is not needed.        
-c  seed for first call to subr. reflec (only used for NLCRR)
-          ISEEDR=ISEED*0.3D0
+c  ranset checks, if this is a legal seed for a particular generator,
+c  and otherwise enforces that or stops the run.
+          iseed_istra=ranset_eirene(ninist)
 
-c  remove remaining generated random number vectors from earlier strata
-          INIV1=0
-          INIV2=0
-          INIV3=0
-          INIV4=0
-
-c  find iseed from truely random procedure from wall clock time (use date and time)
+c  find random number seed from truely random procedure from wall clock time (use date and time)
         ELSEIF (NINITL(ISTRA).LT.0) THEN
           CALL DATE_AND_TIME(CDATE,CTIME)
           READ(CTIME(1:6),*) NINITL(ISTRA)
 !pb 28012016
 !  add number of calls to MCARLO in order to avoid same random seeds
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
-          WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
           NINIST=NINITL(ISTRA)
-          dumran=ranset_eirene(ninist)
-c  initialize random number generator from wall clock time
-c  seed for first call to subr. reflec (only used for NLCRR)
-          iseed=ranget_eirene(isee)
-cdr  see above:ISEED = NINIST,  the call to ranget was not needed here.
-          ISEEDR=ISEED*0.3D0
+          iseed_istra=ranset_eirene(ninist)
 
-c  remove remaining generated random number vectors from earlier strata
-          INIV1=0
-          INIV2=0
-          INIV3=0
-          INIV4=0
-
-C       ELSEIF (NINITL(ISTRA).EQ.0) THEN
+        ELSEIF (NINITL(ISTRA).EQ.0) THEN
 C  DON'T INITIALIZE FOR THIS STRATUM, NOTHING TO BE DONE HERE
+C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO SEEDING.
+          iseed_istra=ranset_eirene(0)
+
         ENDIF
-C  ISEED AND ISEEDR ARE SET NOW
+
+        IF (TRCRNF) THEN
+          WRITE (iunout,*) 'INITIALIZE RANDOM NUMBERS FOR STRATUM ',
+     .                     'ISTRA= ',ISTRA             
+          WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
+          WRITE (iunout,*) 'ISEED_ISTRA (LEGAL SEED, AS USED) ',
+     .                      ISEED_ISTRA
+          CALL EIRENE_LEER(1)
+        ENDIF
+
+c  remove remaining old generated random number vectors from earlier strata
+        INIV1=0
+        INIV2=0
+        INIV3=0
+        INIV4=0
+
+
+C  ISEED_ISTRA IS SET NOW
 C
         FASCL(ISTRA)=1.
         FMSCL(ISTRA)=1.
@@ -588,7 +590,7 @@ csw 19feb2013
 csw
 
 
-C  PARTICLE LOOP
+C  PARTICLE LOOP WITHIN STRATUM ISTRA
 
         DO 100 IPTSI=1,NPTS(ISTRA)/max(1,npestr(istra))
 
@@ -664,26 +666,71 @@ CDR       LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL
 
           LGSTOP = LGLAST
 
+C.......................................................................
+C  CORRELATED SAMPLING: CREATE AS RANDOM NUMBER GENERATOR SEED FOR NEXT PARTICLE
+C  FROM THE SEED USED FOR THE CURRENT PARTICLE
           IF (NLCRR) THEN
-C  INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
-C           Call RANSET_eirene(ISEED)
-            dumran=ranset_eirene(iseed)
-            DUMRAN=RANF_EIRENE( )
-            iseed=ranget_eirene(isee)
-            ISEED=INTMAX-ISEED
+C
+C  RE-INITIALIZE RANDOM NUMBERS FOR PARTICLE IPTSI, TO GENERATE CORRELATION
+C 
+c  current seed within current stratum is iseed_istra        
+c  NLCRR: get new tentative seed, and save this for next particle.
+c  then re-initialize with original seed
+            iseed_iptsi=iseed_istra
+! we need this well defined status of random generator below in ranget.
+            idumran=ranset_eirene(iseed_iptsi)
+! save a derived new seed for next particle.      
+! after returning a new seed, the status of the random number generator is
+! in ranget.f arleady reset back to iseed_iptsi
+            iseed_istra=ranget_eirene(iseed_iptsi)
+! now we have the seed iseed_iptsi to start the histrory.     
+
+C  FOR TEST ONLY TRY FIRST RANDOM NUMBER
+            IF (TRCRNF) THEN
+              call eirene_leer(1)
+              write (iunout,*) 'new particle ',iptsi
+              RN1=RANF_EIRENE()  ! sacrifize one random number for testing random sequence
+              write (iunout,*), 'iseed,iseed_next,rn',
+     .                           iseed_iptsi, iseed_istra,RN1
+            ENDIF
+           
+c  derive one more seed, for reflec.f. cdr: unfinished....
+            ISEEDR=ISEED_ISTRA*0.3D0
 
             INIV1=0
             INIV2=0
             INIV3=0
             INIV4=0
-          ELSE IF ((MY_PE == 0) .AND. (NPTSDEL(ISTRA).GT.0)) THEN
-c  simulate seeds of a multi-processor run, on a single processor
+C......................................................................
+
+
+          ELSE IF (
+     .             (MY_PE == 0) .AND. 
+     .             (NPTSDEL(ISTRA).GT.0) .AND.
+     .             (NINITL(ISTRA).GT.0) .AND.
+     .             (.NOT.NLCRR)
+     .                                  )  THEN
+c  Proprietary option for internal testing of MPI parallelization only: 
+c  NPTSDEL(ISTRA)  (input block 7)
+
+c  IDENTICALLY MATCHING MULTIPROC. RUNS ON A SINGLE PROC: 
+c
+c  only in runs with no correlated sampling, and with NINITL(ISTRA) ge 0:
+c  simulate seeds of a multi-processor run, if run on a single processor.
+c  Set a new seed after nptsdel particles to exactly match the seeds used in
+c  a corresponding multi-processor run.
+ 
+c  The multiprocessor run must have been set up such that it completed
+c  exactly nptsdel(istra) trajectories on each of the iproc(istra) processors
+c  which ran on stratum istra.
+c  The corresponding single processor run must complete exactly 
+c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
+ 
             IF (MOD(IPTSI-1,NPTSDEL(ISTRA)) == 0) THEN
               NINIST=NINITL(ISTRA)+IPTSI/NPTSDEL(ISTRA)*10000
-              dumran=ranset_eirene(ninist)
-              iseed=ranget_eirene(isee)
-              ISEEDR=ISEED*0.3D0
-
+c  initialize random number generator with a "legal" seed, 
+              idumran=ranset_eirene(ninist)
+              
               INIV1=0
               INIV2=0
               INIV3=0
@@ -1202,7 +1249,7 @@ C   AND MORE PROCESSES THEN STRATA
       ENDIF
 csw
       IF (NPRS > 1) THEN
-        CALL EIRENE_COLLECT_USRDATA
+        CALL EIRENE_COLLECT_DATA_USR
       END IF
 
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN
