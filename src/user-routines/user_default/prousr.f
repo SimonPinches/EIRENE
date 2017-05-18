@@ -23,7 +23,7 @@ C
       REAL(DP), INTENT(OUT) :: PRO(*)
       INTEGER, INTENT(IN) :: INDX, N
 
-      PRO==0.0
+      PRO(1:N)=0.0
  
       RETURN
       END
