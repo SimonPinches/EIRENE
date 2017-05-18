@@ -47,8 +47,10 @@ C  NESTM1, REAL, VOLUME AVERAGED TALLIES
      R EMEL(:),  EMAT(:),  EMML(:),  EMIO(:),  EMPHT(:),  EMPL(:,:),
      R EIEL(:),  EIAT(:),  EIML(:),  EIIO(:),  EIPHT(:),  EIPL(:,:),
      R EPHEL(:), EPHAT(:), EPHML(:), EPHIO(:), EPHPHT(:), EPHPL(:,:),
+c  additional (non-default) tallies: range: 57 --62. special treatment re scaling
      R ADDV(:,:),  COLV(:,:),  SNAPV(:,:),
      R COPV(:,:),  BGKV(:,:),  ALGV(:,:),
+c  more recent tallies  63 --100
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
@@ -630,7 +632,7 @@ c  ntalc =58
         COLV => CEMETERYV(0:0,:)
       END IF
       IF (LSNAPV) THEN
-c  ntalc =59
+c  ntalt =59
         SNAPV => ESTIMV(NADDV(NTALT)+1:NADDV(NTALT+1),:)
       ELSE
         SNAPV => CEMETERYV(0:0,:)

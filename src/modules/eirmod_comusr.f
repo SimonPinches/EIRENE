@@ -1,3 +1,8 @@
+cdr  may 2017:  preparing for storage reduction by elimination of unnecessary input tallies:
+cdr             commenting, 
+cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local, 
+cdr             rather than public
+
       MODULE EIRMOD_COMUSR
  
       USE EIRMOD_PRECISION
@@ -10,14 +15,17 @@
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
      P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS
  
+      INTEGER, SAVE ::
+     P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
       INTEGER, PUBLIC, SAVE ::
-     P NPLPR1, NPLPRM, NSFPRM, NPLPR2,  ! these seem to be internal, not public, except nplprm, used in setprm,
-c                                         for a storage test in setprm.f.
+     P NPLPRM  ! nplprm, is also used in setprm, for a storage test.
+c 
+      INTEGER, SAVE ::               
      P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
  
       REAL(DP), ALLOCATABLE, PUBLIC, SAVE ::
 C  NPLPRM, REAL.
-C  THE FIRST NPLPR1 DATA ARE SET IN SUBROUTINE PLASMA
+C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
      R        TEIN(:),   TIIN(:,:),   DEIN(:),   DIIN(:,:),
      R        VXIN(:,:), VYIN(:,:),   VZIN(:,:),
      R        BXIN(:),   BYIN(:),     BZIN(:),   BFIN(:),
@@ -26,7 +34,10 @@ C  THE FIRST NPLPR1 DATA ARE SET IN SUBROUTINE PLASMA
      R        POT(:),
 C  NSFPRM
      R        FLXOUT(:), SAREA(:),
-C  NPLPR2, REAL
+C  NPLPR2, REAL.
+C  THIS SECOND SET OF DATA ARE DERIVED INPUT PROFILES, SET IN SUBROUTINE PLASMA_DERIV
+C  (STRICTLY ALSO DEIN (ELECTRON DENSITY) FROM THE NPLPR1 BLOCK ABOVE
+C   IS SUCH A DERIVED QUANTITY)  
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
      R        BVIN(:,:), PARMOM(:,:), EDRIFT(:,:),
      R        BXPERP(:), BYPERP(:),
@@ -147,7 +158,7 @@ C NPLPR1 + ... = NPLPRM
         ALLOCATE (BYIN(NRAD))
         ALLOCATE (BZIN(NRAD))
         ALLOCATE (BFIN(NRAD))
-cdr     ALLOCATE (ADIN(NAIN,NRAD))  !  not yet. done later below, ical == 2 option
+cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  not yet. done later below, ical == 2 option
         ALLOCATE (VOL(NRAD))
         ALLOCATE (WGHT(NSPZMC,NRAD))  ! check size of  nspzmc.  this "weight window" array is unused so far.
         ALLOCATE (EXIN(NRAD))
