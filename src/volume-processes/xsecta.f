@@ -26,6 +26,7 @@ cdr           to avoid conflict with default cx reaction kk=-1
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  pelds -> pelei, eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabei1
+cdr  May 17:  A few more consistency checks implemented.
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -380,7 +381,8 @@ C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 160 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
-            IF (ISWR(KK).NE.3) GOTO 160
+            IF (ISWR(KK).NE.3) CYCLE
+C  make sure that incident particle is a bulk particle 
             IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
               WRITE (IUNOUT,*) 
@@ -388,11 +390,14 @@ C  WRONG TYPE OF INCIDENT BULK SPECIES
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  CX PROCESS IDENTIFIED
+
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
-
+C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
+            IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
+            IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 993
             IDSC=IDSC+1
             NRCXI=NRCXI+1
             IRCX=NRCXI
@@ -446,14 +451,22 @@ C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 230 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
-            IF (ISWR(KK).NE.5) GOTO 230
+            IF (ISWR(KK).NE.5) CYCLE
+C  make sure that incident particle is a bulk particle 
+            IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR EL PROCESS, IATM,KK ',IATM,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+C  EL PROCESS IDENTIFIED
 C
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
 C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 991
-            IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
+            IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 993
             IDSC=IDSC+1
             NRELI=NRELI+1
             IREL=NRELI
@@ -530,12 +543,22 @@ C
           DO NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.4) CYCLE
+C  make sure that incident particle is a bulk particle 
+            IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR PI PROCESS, IATM,KK ',IATM,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+C  PI PROCESS IDENTIFIED
+
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
-            IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
-C  INCIDENT BULK PARTICLE INDEX
+            
+C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
-            IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
+            IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 992
+            IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 993
             IDSC=IDSC+1
             NRPII=NRPII+1
             IF (NRPII.GT.NRPI) GOTO 998
@@ -651,13 +674,17 @@ C
 C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
-      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ION IMPACT COLLISION'
-      CALL EIRENE_EXIT_OWN(1)
+      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX COLLISION '
+      CALL EIRENE_EXIT_OWN(1)     
 991   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
-      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ELASTIC COLLISION '
+      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ELASTIC COLLISION'
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
+      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ION IMPACT COLLISION '
+      CALL EIRENE_EXIT_OWN(1)
+993   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
