@@ -279,7 +279,7 @@
       phline%c4 = c4
  
       select case (isw)
-        case (1)    ! absorbtion
+        case (1)    ! absorption
            phline%ircart = 4
         case (2)    ! emission
            phline%ircart = 4

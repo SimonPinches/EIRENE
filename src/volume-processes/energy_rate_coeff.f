@@ -23,8 +23,8 @@ cdr  sept. 16: started to add extrapolation options. not ready....
 !  and return this as "erate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtcew%ifit'
-!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
-!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
+!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, AMJUEL H.8)
+!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.9, AMJUEL, H.10,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
@@ -167,9 +167,9 @@ c..............................................................
       else if (reacdat(ir)%rtcew%ifit == 3) then
 
 ! 2D TABULAR INPUT,  FOR LOG10 OF ENERGY WEIGHTED RATE,  joule*cm^3/s
-! E.G.: ADAS FILES
-c  extrapolation data: for 2d tabulated data
-cdr to be added here
+! E.G.: ADAS adf11 PLT and PRB FILES
+cdr  extrapolation data: for 2d tabulated data, option not ready
+cdr  to be added here
 
 !  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
 
@@ -193,8 +193,8 @@ c..............................................................
       else if (reacdat(ir)%rtc%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
-c  extrapolation data: for 1d tabulated data 
-cdr to be added here
+cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
+cdr  to be added here
 
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
