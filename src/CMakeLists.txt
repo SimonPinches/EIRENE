@@ -8,11 +8,13 @@ include_directories(${MPI_Fortran_INCLUDE_PATH})
 
 # Adds compiler flags to all build types.
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  add_definitions(-real-size 64 -fp-model source)
+  set(CMAKE_Fortran_FLAGS "-real-size 64 -fp-model source")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all -check all")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  add_definitions(-fdefault-real-8 -fdefault-double-8 -fno-range-check)
+  set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
-  add_definitions(-r8)
+  set(CMAKE_Fortran_FLAGS "-r8")
 endif()
 
 # Add option to control whether trace output will be compiled
