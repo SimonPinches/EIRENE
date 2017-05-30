@@ -203,15 +203,14 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
+cdr  safety cut off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(-2.3_dp,tii)
-c old
-c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
-c old
+c  evaluate 2 parametric fit, 
+c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII. 
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
      .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
-
               TABCX3(IRCX,J,1:9) = CF(1:9)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
           END DO

@@ -63,7 +63,9 @@ C
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits: 1e8 cm**-3 
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -192,6 +194,8 @@ C
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
 C
+C  EI PROCESS IDENTIFIED
+
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
