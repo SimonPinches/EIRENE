@@ -4,7 +4,7 @@ c   NPTRGT:
 c   NAIN  :
 c   NKNOT :
 C   NTRI  :
-C   NCOP  :    
+C   NCPV  :    
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
@@ -19,7 +19,7 @@ C   NCOP  :
       INTEGER, INTENT(IN) :: IUNIN
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
      .           NAINB, IAIN, NAOTB, IAOT, NRKNOT,
-     .           NTRII, NCOPI
+     .           NTRII
       INTEGER, ALLOCATABLE :: NTGPRT(:)
       CHARACTER(72) :: ZEILE
 
@@ -68,10 +68,8 @@ C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP)
 C                                              
-      NCOPI=4
-      NCPVI=NCOPI*NPLS
-      NCOP = NCOPI
-      NCPV = NCPVI
+      NCPVI=4*NPLS
+      NCPV = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NDX = NDXA

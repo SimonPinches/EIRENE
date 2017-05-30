@@ -143,7 +143,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
  
-       END IF  ! MY_PE == 0
+      END IF  ! MY_PE == 0
 
 C
 100   CONTINUE
@@ -193,7 +193,7 @@ C
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for memory allocation ',time-timi
  
-!ITER   IF (ITNR == 1) NLSRON = .TRUE.
+cdr make sure that nstrai is properly set in find_param.f
         IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
 C
 C   SET SOME CONSTANTS

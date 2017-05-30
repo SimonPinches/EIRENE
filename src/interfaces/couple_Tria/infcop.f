@@ -235,7 +235,7 @@ C
       INTEGER, SAVE :: NREC11, IRC, JC, K, IADD, NAS, IPUNKT, NSSIR, 
      .           NUMSI, NBAR, ISNR, ISC, IS, NASMOD, NRS, NADMOD, 
      .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
-     .           NTGPRI, IPRT, IO29, NEND, NCOPI, NINI, NSSIP,
+     .           NTGPRI, IPRT, IO29, NEND, NINI, NSSIP,
      .           LTARG, I, IPL, IERROR, IMODE, NPLP, INC,
      .           NRED, J, IDUMMY,  ISTS, ITRI, ISTR,
      .           IR, IP, IT, IA, IB, JUN,
@@ -494,16 +494,9 @@ C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
-      NCOPI=0
-
-!pb 16012013
-!      IF (NMODE.GT.0) NCOPI=4
-!      IF (NCOPEB.NE.0) NCOPI=MAX(0,NCOPEB)
-!      NCPVI=NCOPI*NPLSI
-!pb 30012013
-      NCOPI = 3*NPLSI + 3
-      NCPVI = NCOPI
-      NCOP = NCOPI
+CDR
+      NCPVI = 3*NPLSI + 3
+      NCPV = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       LNLPLG=NLPLG
@@ -3378,9 +3371,6 @@ cdr  add pppl contribution to internal energy sources rate
 !pb                  
                     SNIRES=(PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN))*
      .                      VOLTAL(IN)*FLX_EIR
-!pb                    RESSNI(ISTRAI,IFL)=RESSNI(ISTRAI,IFL)+
-!pb     .                                 ABS(SIGMA_COP(NCPVI+IPLS,IN)*
-!pb     .                                 SNIRES/100.D0)
                     RESSNI(ISTRAI,IFL)=RESSNI(ISTRAI,IFL)+
      .                                 ABS(SIGMA(ISTAT_COP,IN)*
      .                                 SNIRES/100.D0)

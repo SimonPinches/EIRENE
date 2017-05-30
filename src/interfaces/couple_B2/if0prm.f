@@ -3,8 +3,8 @@ c   and set storage for allocatable arrays:
 c   NPTRGT:
 c   NAIN  :
 c   NKNOT :
-C   NTRI  :
-C   NCOP  :    
+C   NTRII :
+C   NCPVI :  no. of special couple tallies    
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
@@ -19,7 +19,7 @@ C   NCOP  :
       INTEGER, INTENT(IN) :: IUNIN
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
      .           NAINB, IAIN, NAOTB, IAOT, NRKNOT,
-     .           NTRII, NCOPI
+     .           NTRII
       INTEGER, ALLOCATABLE :: NTGPRT(:)
       CHARACTER(72) :: ZEILE
 
@@ -68,10 +68,9 @@ C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP)
 C                                              
-      NCOPI=3*NPLS+4
-      NCPVI=NCOPI
-      NCOP = NCOPI
-      NCPV = NCPVI
+      NCPVI=3*NPLS+4
+      NCPV = MAX(NCPV,NCPVI)
+
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NDX = NDXA
