@@ -10,6 +10,9 @@ cdr nov.  2016: name, species and units of additional tallies added.
 c               slreac: A&M assymptocis (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
+cdr may 2017  : lower cuf off density for H.12 data: 1e8.
+c               for lower densities: AMJUEL Data collapse to
+c               Corona rates or Corona population coefficients.
 
 
       SUBROUTINE EIRENE_EMIS_PROFILES (IST, ENER,
@@ -89,7 +92,7 @@ C
       INTEGER :: LINENO, L1, L2
       INTEGER, SAVE :: LINENO_OLD = -1
 
-      INTEGER :: IRC, IFIRST, NCELC, IERROR, IR, I, J,
+      INTEGER :: IRC, IFIRST, NCELC, IERROR, IR, I, J, JEND,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       CHARACTER(8) :: FILNAM
@@ -100,6 +103,9 @@ C
       CHARACTER(8) :: LINE_NAME
 C
       SAVE
+C
+C  INITIALIZE ATOMIC DATA ARRAYS
+C
 
       CALL EIRENE_PREPARE_LINE
 
@@ -125,9 +131,8 @@ C  ENERGY FACTOR FOR POWER LOSS (W)
 !pb   DEE00=RY*(1./(2.*2.)-1./(3.*3.))
       DEE00=RY*(1./REAL(L2*L2,KIND(1._DP))-1./REAL(L1*L1,KIND(1._DP)))
       FACTE=DEE00*ELCHA
-
 C
-C  INITIALIZE ATOMIC DATA ARRAYS
+C  END OF INITIALIZATION
 C
       IF (IESTR.EQ.IST) THEN
 C  NOTHING TO BE DONE
@@ -156,7 +161,7 @@ C  NOTHING TO BE DONE
         RETURN
       ENDIF
 C
-C  LOOP OVER 2D MESH
+C  LOOP OVER COMPUTATIONAL MESH
 C
       POWALF=0.
       POWALF1=0.
@@ -169,19 +174,16 @@ C
       DO 1000 NCELL=1,NSBOX
 C
 C  LOCAL BACKGROUND DATA ARE IN CELL NCELL
-C  LOCAL TEST PARTICLE DATA ARE IN CELL NCELC
+C  LOCAL TEST PARTICLE DATA ARE IN (PERHAPS COARSER) SCORING CELL NCELC
+C  ACCUMULATE THE EMISSIVITIES ALSO ON THE "SCORING" GRID.
 C
         NCELC=NCLTAL(NCELL)
 C
         IF (NSTGRD(NCELL) > 0) CYCLE
+        IF (LGVAC(NCELL,NPLS+1)) CYCLE
 
-        IF (LGVAC(NCELL,NPLS+1)) THEN
-          TE=TVAC
-          DE=DVAC
-        ELSE
-          TE=TEIN(NCELL)
-          DE=DEIN(NCELL)
-        ENDIF
+        TE=TEIN(NCELL)
+        DE=DEIN(NCELL)
 C
         SIGADD1=0.
         SIGADD2=0.
@@ -192,8 +194,21 @@ C
 
 C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
 
-        IF (LGVAC(NCELL,NPLS+1)) GOTO 500
+CDR CONVERT TO DENSITY UNITS OF H.4, H.10, H.12 RATE COEFF. IN AMJUEL
+CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS
         DEF=LOG(DE*1.D-8)
+C   DEFAULT LOW DENSITY ASYMPTOTICS IN AMJUEL FORMAT:
+C   AT DEF <= 0.  (I.E. DE <= 1E8),
+C   COLLAPSE DATA TO DENSITY INDEPENDENT H.2, H.8, H.11 CORONA VALUES
+C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUPLE POLYNOMAL FIT.
+CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS ASYMPTOTICS
+        JEND=8
+        IF (DEF.LE.0.0) THEN 
+          JEND=0
+        ELSEIF (DEF.GT.1.0) THEN
+C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEF=DEF/(8.0*LOG(10.0)) 
+        ENDIF
+C
         TEF=LOG(TE)
         DAT=0.
         DPL=0.
@@ -201,8 +216,8 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
         DIO2=0.
         DNM=0.
         DIO3=0.
-        DO 150 J=0,8
-          DEJ=DEF**J
+        DO 150 J=0,JEND
+          DEJ=DEF**J    !  =1.0 FOR J=0
           DO 150 I=0,8
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
@@ -234,7 +249,7 @@ C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATIO
 
 
         RATIO2=0
-        DO 170 J=0,8
+        DO 170 J=0,JEND
           DEJ=DEF**J
           DO 170 I=0,8
             TEI=TEF**I
@@ -403,6 +418,7 @@ C
         ADDV(IADS,NCELC)=ADDV(IADS,NCELC)+SIGADD*VOL(NCELL)
 C
 
+cdr tbd: rausziehen hinter 1000, ist eh nur constanter faktor facte, only total power loss
         POWALF1=POWALF1+SIGADD1*FACTE*VOL(NCELL)
         POWALF2=POWALF2+SIGADD2*FACTE*VOL(NCELL)
         POWALF3=POWALF3+SIGADD3*FACTE*VOL(NCELL)
@@ -414,6 +430,7 @@ C
 C
 1000  CONTINUE
 
+cdr at this place we know: voltal(icoarse)=sum(vol(ifine))
       ADDV(IAD1,1:NSBOX_TAL)=ADDV(IAD1,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
       ADDV(IAD2,1:NSBOX_TAL)=ADDV(IAD2,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
       ADDV(IAD3,1:NSBOX_TAL)=ADDV(IAD3,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
