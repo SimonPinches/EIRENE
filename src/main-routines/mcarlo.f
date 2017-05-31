@@ -75,9 +75,7 @@ C
       CHARACTER(10) :: CDATE, CTIME
 
       REAL(DP), ALLOCATABLE :: OUTAU(:)
-!      REAL(DP) :: DUMMY(NRTAL)
-!      REAL(DP) :: ZVOLIN(NRTAL), ZVOLIW(NRTAL),
-!     .          XTIM(0:NSTRA), SCLTAL(N1MX,NTALV), DXTIM(0:NSTRA)
+
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
       REAL(DP) :: XTIM(0:NSTRA), DXTIM(0:NSTRA)
@@ -602,6 +600,8 @@ C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             IN=ICLMT(I)
             IMETCL(IN) = 0
           END DO
+c  LMETSP: array for 1st ("species") index of volume averaged tallies,
+c  which is scored along a trajectory
           LMETSP=.FALSE.
           NCLMTS = 0
 
@@ -609,6 +609,8 @@ C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             IN=IWLMT(I)
             IMETWL(IN) = 0
           END DO
+c  LMETSPW: array for 1st ("species") index of surface averaged tallies,
+c  which is scored along a trajectory
           LMETSPW=.FALSE.
           NWLMT = 0
           NWLMTS = 0
@@ -962,7 +964,7 @@ C
 C  SET SOME SCALING CONSTANTS
 C
       CALL EIRENE_SET_SCAL_CONST (ISTRA, WTT,ZWW, ZW, ZVOLNT, ZVOLWT,
-     .                     ZVOLIN, ZVOLIW, SCLTAL, N1MX)
+     .                            ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
 C   STATISTICS , IF REQUESTED
 C
@@ -1014,7 +1016,7 @@ C
 219   CONTINUE
 
       CALL EIRENE_SCAL_VOLAV_TALLIES (ISTRA, ZWW, ZW,
-     .                         ZVOLIN, ZVOLIW, SCLTAL, N1MX)
+     .                            ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
 C   REPLACE DEFAULT TALLIES BY USER SUPPLIED
 C   COLLISION ESTIMATED TALLIES
@@ -1123,7 +1125,7 @@ C
       IF (XMCP(ISTRA).LE.1.D0) GOTO 950
 C
       CALL EIRENE_SCALE_DEVIATION(ISTRA, ZWW, ZW, ZVOLNT, ZVOLWT,
-     .                     ZVOLIN, ZVOLIW, SCLTAL, N1MX)
+     .                            ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
 950   CONTINUE
 

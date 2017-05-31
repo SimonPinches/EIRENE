@@ -1,11 +1,12 @@
-cdr24.09.14 :    scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected 
+cdr    dec. 15:  added species index ipls, for volumetric energy source tallies for bulk ions
+cdr              eapl,empl,eipl,ephpl
+cdr   24.09.14:  scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected 
 c  spring 2014:  new sputter tallies introduced: emitted species resolved
 C  15.02.05 :    double printout: fatm2,....taken out. use only getscl4, not getscl
 C   6. 7.05 :    call ph_integrate for photon-background tallies taken out.
 C                no more additional photon background tallies active
 C  15.12.05 :    rescaling connected to spump surface tally
-cdr  dec. 15:    added species index ipls, for volumetric energy source tallies for bulk ions
-cdr              eapl,empl,eipl,ephpl
+
  
       SUBROUTINE EIRENE_SCALE_TALLIES (ISTRA)
 C

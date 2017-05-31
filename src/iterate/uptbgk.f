@@ -3,27 +3,31 @@ c
 c  code segment: bgk
 c
 c  only needed, if some test species are labeled as bgk-species
-c               with one or more non-linear self interactions
-c               this segment contains a routine which updates the tallies
+c               with one or more elastic non-linear self interactions
+c               to be treated by iteration.
+c               This segment contains a routine which updates the tallies
 c               required for iteration (UPTBGK).
 c
 C  CURRENTLY:  3 TALLIES ARE SCORED PER BGK COLLISION IBGK_SP, IBGK_SP=1,NRBGI/3
-c              on input: npbgk= npbgka(iatm), or npbgkm(imol), npbgki(iion) 
+c              on input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion) 
 c              ibgk=npbgk, and update three tallies for bgk collision no. ibgk_sp.
 c
-c  no not confuse: ibgk is the bgk reaction number, the bgk reactions form a subset of the elastic reactions
-c                  ibgk_sp is the counter for the number of test particle species which have at least one bgk collision.
-c                  For each test particle species ibgk_sp there are currently three so called additional "bgk tallies" scored
-c                  (by default: the transport flux vector components). 
-c  Note:  for velocity dependent bgk collision rates probably 5 tallies per bgk collision (ibgk)
+c  no not confuse: ibgk is the bgk-reaction number, the bgk-reactions form a 
+c                  subset of the elastic reactions.
+c                  ibgk_sp is the counter for the number of those test-particle species 
+c                  which have at least one bgk collision.
+c                  For each test-particle species ibgk_sp there are currently
+c                  three so called additional "bgk-tallies" scored
+c                  (by default: the transport flux vector components).
+ 
+c  Note:  for velocity dependent bgk collision rates probably 5 tallies per bgk-collision (ibgk)
 c         need to be scored, rather than the three per bgk species (ibgk_sp),
 c         to enforce the 5 collision invariants by iteration.
 c
-c               A routine (MODBGK) carries out the iterations at the end of an
-c               iteration.
+c  A routine (MODBGK) carries out the iterations at the end of an iteration.
 
-c               The standard deviations for the "bgk-tallies" are
-c               computed in subroutine STATIS_BGK   ??? why  ???
+c  The standard deviations for the "bgk-tallies" are
+c  computed in subroutine STATIS_BGK   ??? why  ???
 C
 c
 c
@@ -52,7 +56,7 @@ C
       INTEGER, INTENT(IN) :: NPBGK, IFLAG
       REAL(DP) :: DIST, WTRV, WTRVX, WTRVY, WTRVZ
       INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, IFIRST, NSBGK, IBGK_SP,
-     .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDD
+     .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDO
       CHARACTER(8) :: TXT
       DATA IFIRST/0/
       SAVE
@@ -118,7 +122,10 @@ C  BGK-SPECIES NO. IBGK_SP
           IBGRC(IUPD2)=ITP
           IBGRC(IUPD3)=ITP
         ENDDO
- 
+cdr: this species index increment should be set in inputf,
+cdr  like all the others
+cdr  sequence:  test species, bulk species, add tallies, alg. tallies, collest tallies,
+cdr             cop tallies, bgk tallies. 
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI+NCPVI
 C
 C  END OF IFIRST BLOCK
@@ -142,15 +149,19 @@ C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
         WTRVX=WTRV*VELX
         WTRVY=WTRV*VELY
         WTRVZ=WTRV*VELZ
-!pb 05.02.2013  BGKV is output tally thus only defined for (COARSE) NRTAL cells
-        IRDD=NRCELL+NUPC(I)*NR1P2+NBLCKA
-        IRD=NCLTAL(IRDD)
+! cdr: May 2017.
+! BGKV output tallies are now identical with the default 
+!      VXDEN..., VYDEN..., VZDEN... tallies. Compare UPDATE.f, identical code!
+!      
+        IRDO=NRCELL+NUPC(I)*NR1P2+NBLCKA
+        IRD=NCLTAL(IRDO)
         BGKV(IUPD1,IRD)=BGKV(IUPD1,IRD)+WTRVX
         BGKV(IUPD2,IRD)=BGKV(IUPD2,IRD)+WTRVY
         BGKV(IUPD3,IRD)=BGKV(IUPD3,IRD)+WTRVZ
 51    CONTINUE
  
       RETURN
+
 csw 19apr07
       entry EIRENE_uptbgk_reinit
       ifirst=0

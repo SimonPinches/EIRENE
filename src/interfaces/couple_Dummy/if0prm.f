@@ -6,7 +6,6 @@ C
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IUNIN
  
-      NCOP=1
-      NCPV=1
+      NCPV=0     
  
       END

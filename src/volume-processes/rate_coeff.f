@@ -17,7 +17,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !  and return this as "rate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
-!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
+!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, AMJUEL, H.2)
 !  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
@@ -32,7 +32,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
 !   lexp:      return rate=rate coefficient in cm**3/sec
 !   not lexp:  return rate=log_e(rate coefficient) with rate-coefficient in cm**3/sec
-!   iprshft:   >0: carry out shift in parameter p2, 
+!   iprshft:   >0: carry out shift in parameter p2 for fit expression evaluation, 
 !              currently hard wired: 1e-8. 
 !             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
@@ -40,6 +40,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !              remove erate in case of ifit=5 and generalize to more cr models.
 !              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
+
 !              remove ifirst and ifsub conditions and set the data once, and save. 
  
       use EIRMOD_precision
@@ -53,13 +54,15 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
       real(dp), intent(out) :: erate
-      real(dp) :: rate, EIRENE_sngl_poly, dum(9), rc1min, rc1max,
-     .            fp1(6), fp2(6), pp1, pp2, rc2min, rc2max,
+      real(dp) :: rate, EIRENE_sngl_poly, dum(9),
+     .            pp1, rc1min,  rc1max, fp1(6),
+     .            pp2, rc2min,  rc2max, fp2(6),
+     .                 rrc2min, rrc2max,
      .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
      .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
-     .                  dsub    = 18.420680744_dp       !ln(1e8)
+     .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
@@ -83,10 +86,9 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
         end function EIRENE_intp_table
       end interface
  
- 
       if (.not.reacdat(ir)%lrtc) then
-        write (iunout,*) ' no data for rate coefficient available',
-     .                   ' for reaction ',ir
+        write (iunout,*) ' no data for rate',
+     .                   ' coefficient available for reaction ',ir
         call EIRENE_exit_own(1)
       end if
  
@@ -107,7 +109,7 @@ c.............................................................
  
       elseif (reacdat(ir)%rtc%ifit == 1) then
 
-!  SINGLE POLYNOMIAL FIT VS. P1 (TEMPERATURE), FOR LN OF ENERGY WEIGHTED RATE
+!  SINGLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE), FOR LN(RATE)
  
 c  extrapolation data:  for 1d polynomial fits 
         rc1min  = reacdat(ir)%rtc%rc1min
@@ -128,13 +130,13 @@ c..............................................................
  
       else if (reacdat(ir)%rtc%ifit == 2) then
 
-!  DOUBLE POLYNOMIAL FIT VS. P1 (TEMPERATURE) AND P2,  FOR LN OF RATE 
+!  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(RATE)
 
 c  extrapolation data:  for 2d polynomial fits 
         rc1min  = reacdat(ir)%rtc%rc1min
         rc1max  = reacdat(ir)%rtc%rc1max
-        rc2min  = reacdat(ir)%rtc%rc2min
-        rc2max  = reacdat(ir)%rtc%rc2max
+        rc2min  = reacdat(ir)%rtc%rc2min  ! IF H.4 HERE 1E8, ALREADY SET IN CALLING PROGRAM
+        rc2max  = reacdat(ir)%rtc%rc2max  ! if H.4 HERE 1E16, NOT YET SET.
         fp1(1:3)= reacdat(ir)%rtc%fp1l
         fp1(4:6)= reacdat(ir)%rtc%fp1r
         fp2(1:3)= reacdat(ir)%rtc%fp2b
@@ -147,12 +149,17 @@ c  extrapolation data:  for 2d polynomial fits
 
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
         pp2 = p2
-        if (iprshft > 0) pp2 = pp2 - dsub
- 
+        if (iprshft > 0) then
+          pp2 = pp2 - dsub
+          rrc2min=rc2min - dsub
+          rrc2max=rc2max - dsub
+        endif
+cdr     write (6,*) 'particle rate '
+
         call EIRENE_dbl_poly
      .       (reacdat(ir)%rtc%poly%dblpol,p1,pp2,rate,dum,
-     .        rc1min, rc1max, fp1, jfex1mn, jfex1mx,
-     .        rc2min, rc2max, fp2, jfex2mn, jfex2mx)
+     .        rc1min,  rc1max,  fp1, jfex1mn, jfex1mx,
+     .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx)
 
 C       if (.not. lexp)  rate=rate
         if (lexp)        rate = exp(max(-100._dp,rate))
@@ -162,7 +169,9 @@ c..............................................................
       else if (reacdat(ir)%rtc%ifit == 3) then
 
 ! 2D TABULAR INPUT,  FOR LOG10 OF RATE,  cm^3/s
-! E.G.: ADAS FILES
+! E.G.: ADAS adf11 ACD and SCD FILES
+cdr  extrapolation data: for 2d tabulated data, option not ready
+cdr  to be added here
 
 !  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
 
@@ -178,7 +187,7 @@ C  assume here: tabulated data are log10  (to be generalized)
           rate = xln10*rate     !    convert from log10(rate) to ln(rate)
 
         end if
-
+cdr this unit conversion must be wrong in case lexp !!
 
 
 c..............................................................
@@ -186,6 +195,9 @@ c..............................................................
       else if (reacdat(ir)%rtc%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
+cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
+cdr  to be added here
+
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
         pp1 = exp(p1)
@@ -207,10 +219,11 @@ c..............................................................
           allocate(pop1(40))
           allocate(pop2(40))
 
-          allocate(q_ext(40))    !   photo excitation rate
+          allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
         end if
  
         Q_EXT = 0._DP
+
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
@@ -220,8 +233,9 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
      .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
-        rate=scr 
+        
         if (.not.lexp) rate = log(scr)
+        if (lexp)      rate = scr 
          
 
         erate = -e_scr
