@@ -32,7 +32,8 @@ c
       integer, intent(in) :: ise
       integer :: iseed,idumran
       common /cmem/ iseed
-      real(dp) :: ran, ranf_eirene, ranset_eirene
+      real(dp) :: ran, ranf_eirene
+      integer, external :: ranset_eirene
 
       IF (NLOLDRAN) THEN
 c  1st generator: H1RN  (RANMAR)
