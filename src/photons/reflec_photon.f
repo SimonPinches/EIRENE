@@ -44,8 +44,8 @@ C
      .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT, WFAC,
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, WABS
-      REAL(DP), EXTERNAL :: RANF_EIRENE, ranset_eirene
-      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ
+      REAL(DP), EXTERNAL :: RANF_EIRENE
+      INTEGER, EXTERNAL :: RANSET_EIRENE, RANGET_EIRENE, EIRENE_IDEZ
 C
 C---------------------------------------------------------------------
 C
