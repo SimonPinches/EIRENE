@@ -1615,8 +1615,9 @@ c  convert to frequency (Hz), and then to energy, eV
       IMPLICIT NONE
       integer, intent(in) :: icell
       real(dp), intent(out) :: fwhm,shift
-      real(dp) :: z,de,te,nn,nn2,nn3,nn4,eh,ec,sqeh,part1,part2,part3,
-     .            lc,ve,fac,w,inn,n1
+      real(dp) :: z,de,te,nn,nn3,nn4,sqeh,part1,part2,part3,
+     .            lc,ve,w,inn,n1
+c      real(dp) :: ec, eh, fac, nn2
       real(dp) :: rd,rw,hw0
  
 c to be written:
@@ -1820,8 +1821,8 @@ c
 !  dvdw is the parameter in the Exponential
       implicit none
       real(dp), intent(in) :: dx,fwhm,shift,dvdw
-      real(dp) :: a,b,ade,cpi,rlor,rvdw,ahw,aa,hw
-      complex(dp) :: z1,z2,zz,sz1,fad,z,zz1,zz2,fad1,fad2,sz2
+      real(dp) :: a,b,cpi,rvdw,aa,hw
+      complex(dp) :: z1,zz,sz1,fad,z
       integer, intent(in) :: icell
  
 c  this routine works with the hwhm, rather than with the fwhm
@@ -2190,11 +2191,10 @@ c   res:  random number sampled from zeemann-stark-profile
       real(dp),intent(inout)::E00
       real(dp)::omega_SF,omega_Z,gamma,gam,epsilon,
      .          omega_plus,omega_minus,
-     .          omega1,omega2,omega_D,omega_D_th
-      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,delta_omega,line_shape,
-     .          interval_omega,res,Ci(-1:8),x(-1:8)
-      real(dp)::r0,rr0,ssum,ssum1,del,ls_old,ls_new,
-     .          omega_old,slope,ph,q,det,
+     .          omega1,omega2,omega_D
+      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,
+     .          res,Ci(-1:8),x(-1:8)
+      real(dp)::r0,
      .          tha,thb,shift
       integer::i
  
@@ -2574,7 +2574,7 @@ c SAVE preserves values of C, S and T (static) arrays between procedure calls
      .     2.2795071,      3.0206370,         3.8897249 /
 
 c Local variables
-      INTEGER :: I, J              ! Loop variables
+      INTEGER :: J              ! Loop variables
       INTEGER :: RG1, RG2, RG3     ! y polynomial flags
       REAL(dp) :: ABX, XQ, YQ, YRRTPI ! |x|, x^2, y^2, y/SQRT(pi)
       REAL(dp) :: XLIM0, XLIM1, XLIM2, XLIM3, XLIM4 ! |x| on region boundaries
@@ -2725,7 +2725,6 @@ c  nnrot  == nrot !! because no more OT processes in XSECTA
  
       IMPLICIT NONE
       integer, intent(in) :: nnrot
-      integer :: iphot,nrc,kk
 c allocate
       if(nnrot > 0) then
          if (.not.allocated(PHV_LGPHOT))
@@ -2757,8 +2756,8 @@ c allocate
       SUBROUTINE EIRENE_PH_XSECTPH(ipht,nrc,idsc)
       IMPLICIT NONE
       integer, intent(in) :: ipht,nrc,idsc,ipl
-      integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,il,n0,n1,n2,
-     .    nh,nl,iid,ifnd,mode,updf, j, nseot4, ierr, ipl0ti
+      integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,
+     .    ifnd,mode,updf, j, nseot4, ierr, ipl0ti
       real(dp) :: factkk, ebulk
 
       kk=ireacph(ipht,nrc)
@@ -2948,21 +2947,6 @@ c    .                    'I2ND2= ',TEXTS2
 c     CALL LEER(1)
       RETURN
 C
-990   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph. EXIT CALLED  '
-      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR OT '
-      CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
-      WRITE (IUNOUT,*) 'MASS NUMBERS OF INTERACTING PARTICLES ',
-     .                 'INCONSISTENT'
-      CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
-      WRITE (IUNOUT,*) 'EBULK_ION .LE.0, BUT MONOENERGETIC ',
-     .                 'DISTRIBUTION?'
-      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
-      CALL EIRENE_EXIT_OWN(1)
 996   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
       WRITE (iunout,*) 'NO CROSS SECTION AVAILABLE FOR NON DEFAULT OT'
@@ -2994,9 +2978,9 @@ c
       real(dp) :: gtot, g1, g2, g3, g4, en0del, etedel, te, di,
      .            emax, xlor, zmfp_cut, zmfp_center, fac_cut, dilog,
      .            xintmax, xxl, xxr, elrj, errj, l0right, e00, lrj,
-     .            fwhm, shift, dvdw, xx, xlor_int, xintinf, l0,
+     .            fwhm, shift, dvdw, xx, xintinf, l0,
      .            eintmax, eintinf
-      integer :: istr, mxrec, mxpls, ite, iloc, iirc, irrc, kk,
+      integer :: istr, mxrec, ite, iloc, iirc, irrc, kk,
      .           ipl, icell, ire, ibulk, lr, in0, jloc,
      .           iccnt, mxrjprt, irj, ios
       integer :: nte, nn0, nloc
@@ -3089,6 +3073,7 @@ c
           call EIRENE_get_reaction(kk)
           if (reaction%iprofiletype/= 4) cycle
  
+! IPHOT may not be allocated here
           IPHOT=NPHPRC(IRRC)
           if (nplprc(irrc) > 0) ibulk=nplprc(irrc)
           if (nplprc_2(irrc) > 0) ibulk=nplprc_2(irrc)
@@ -3573,7 +3558,7 @@ c
       function EIRENE_sam_cutoff (ictoff,icell) result (res)
       integer, intent(in) :: ictoff,icell
       real(dp) :: xintsum, xi1, xi2, res, e00, xx, phi_xi1, fwhm,
-     .            shift, dvdw, l00, l0cut, l0, e_xi1, a, b, c, rd,
+     .            shift, dvdw, l00, l0cut, e_xi1, a, b, c, rd,
      .            phi_xx, fcut, e1, e2, es, sint, lright, l1, l2, ls,
      .            r, phlamcut, phidif
       real(dp), allocatable, save :: ali(:,:), bli(:,:), xintli(:,:),
@@ -3582,7 +3567,7 @@ c
      .                               lri(:,:), arnorm(:), phiri(:)
       logical, allocatable, save :: visitl(:), visitr(:)
       integer, save :: ictsave = -1
-      integer :: icount, nrjp, irj, i
+      integer :: icount, nrjp, irj
  
       nrjp = reaction%nrjprt
  

@@ -456,7 +456,7 @@ c     RETURNS : the point where the traversel lead us (is E R^3)
         TYPE(ocNode), POINTER, INTENT(IN) :: block
         REAL(DP), DIMENSION(3), INTENT(IN) :: point, dir
         REAL(DP), INTENT(IN) :: norm
-        REAL(DP), DIMENSION(3) :: travp, IP
+        REAL(DP), DIMENSION(3) :: travp
         INTEGER :: I, REST
         REAL(DP) :: DOTP, DISTANCE, S, S_MIN
 
