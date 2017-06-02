@@ -51,16 +51,16 @@ C
       INTEGER :: IISTR
       REAL(DP) :: C1(3),C2(3),PSIG(0:NSPZ+10),
      .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
-     .          FP(6), DUM(9)
+     .          FP(6), DUM(9), DUM3(6)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
      .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
      .            TEF, DEF, RCMIN, RCMAX, DE, TE, ZDS, RATE, CHKSUM
-     .           ,summt,addt, XMA
+     .           ,summt,addt, XMA, DUM1, DUM2
       REAL(DP) :: EIRENE_FTABRC1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
      .           ISK, JSK, IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR,
      .           KREC, IRRC, MAXREC, IFLAG, IPLOTS, ILTXT, ISPC,
-     .           ICELL, JFEXMN, JFEXMX
+     .           ICELL, JFEXMN, JFEXMX, DUM4, DUM5
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
       CHARACTER(48) :: TX(14)
       CHARACTER(8) :: FILNAM
@@ -175,12 +175,18 @@ C  BALMER ALPHA
         RCMAX =  HUGE(1._DP)
         JFEXMN = 0
         JFEXMX = 0
+        DUM1 = -HUGE(1._DP)
+        DUM2 =  HUGE(1._DP)
+        DUM3 = 0._DP
+        DUM4 = 0
+        DUM5 = 0
 C
 C  H(n=3)/H(n=1)
         REAC='2.1.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,
+     .              DUM1, DUM2, DUM3, DUM4, DUM5, '  ',0)
  
         chksum = 0._dp
         do
@@ -200,7 +206,8 @@ C  H(n=3)/H(n=1)
  
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
      .                         TEF, DEF, RATE, DUM, 
-     .                         RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
+     .                         RCMIN, RCMAX, FP, JFEXMN, JFEXMX,
+     .                         DUM1, DUM2, DUM3, DUM4, DUM5)
           rate = exp(rate)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
