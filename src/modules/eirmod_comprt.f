@@ -269,7 +269,7 @@ c  up to here: for splitting, mpartc
       DE0_RAYR = 0._DP
 
 c  io files
-      IUNIN = 1
+c     IUNIN = 1
       IUNOUT = 6 + IFOFF
       IF (NRPES > 1) IUNOUT = 7 + IFOFF
       IVTKOUT= 28

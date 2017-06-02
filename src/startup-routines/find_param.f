@@ -13,7 +13,7 @@ C
 !pb  02.03.07:  NUMSEC=4 introduced
 !pb  20.03.07:  include input block written by HYDKIN model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
-!dr  16.01.14:  default NOPTIM changed from 1 to NRAD, some printout rearranged
+!dr  16.01.14:  default NOPTIM changed from 1 to NRAD (automatically), some printout rearranged
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
 !cd  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
@@ -26,7 +26,7 @@ cdr             to be done: check for comment lines *... syncronized with input.
 !pb  June 16:   default for NPLSTI changed from 1 to NPLS
 !pb  MAY  16:   nrds -> nrei
 cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 14.
-CDR  mAY 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
+CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
 cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCOPI)
 C
       SUBROUTINE EIRENE_FIND_PARAM
@@ -148,13 +148,13 @@ C
 
 
 C  OPTIMIZATION OF GEOMETRICAL CALCULATIONS: STORAGE FOR IGJUM3(NCELL,NSURF)
-C  ALSO AFFECTS NLIMI(NCELL), NLIME(NCELL) OPTIMIZATION OF CALLS TO TIMEA.F
+C  ALSO AFFECTS ARRAYS NLIMI(NCELL), NLIME(NCELL) OPTIMIZATION OF CALLS TO TIMEA.F
 C  NOPTIM=1   IGJUM3 AND NLIMI, NLIME ARRAYS ARE REMOVED, NO OPTIMIZATION
-C  ELSE:  STORAGE PROVIDED, CH3 OPTIONS CAN BE USED,  IGJUM3(NOPTIM,NSURF), ETC.
+C  ELSE:  STORAGE IS PROVIDED, CH3 OPTIONS CAN BE USED,  IGJUM3(NOPTIM,NSURF), ETC.
       NOPTIM=1  ! DEFAULT WILL BE AUTOMATICALLY SET TO NRAD, BELOW, LDEFSTOR
 
 C  BIT ARITHMETIC FOR (LARGE) IGJUM.. ARRAYS: ONLY VALUES 0 OR 1 ARE ON THESE ARRAYS
-C  NOPTIM=1   USE REGULAR INTEGER ARITHMETIC (8 BIT PER INTEGER)
+C  NOPTM1=1   USE REGULAR INTEGER ARITHMETIC (8 BIT PER INTEGER)
 C  NOPTM1= ???   DO WHAT ??  DEFAULT  ?  LDEFSTOR ?
       NOPTM1=1
  
@@ -511,6 +511,8 @@ C
         READ (IUNIN,6666) NRADD
         NADD = MAX(NADD,NRADD)
       ENDIF
+
+      NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
  
 C  FIND START OF NEXT INPUT BLOCK: 3A
  
@@ -1261,7 +1263,7 @@ C  SKIP READING REST OF THIS BLOCK
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
-C  READ DATA FOR NONLINEAR MODE  1300--1399
+C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
       WRITE (iunout,*)
      .  '*** 13. DATA FOR ITERATIVE AND TIME DEP. OPTION '
@@ -1271,7 +1273,7 @@ C
       IF (NPRMUL > 1) NPRNLI = NPRNLI * NPRMUL
       NPRNL = MAX(NPRNL,NPRNLI)
 
-      if (NTIME.GE.1.OR.NPRNLI > 0.OR.NLERG) THEN
+      if ((NTIME.GE.1.AND.NPRNLI > 0).OR.NLERG) THEN
         NSTSI=NSTSI+1
         NSTRAI=NSTRAI+1
       ENDIF
@@ -1325,7 +1327,7 @@ C
       ELSE
         NAINI=0
         NCPVI=0
-        CALL EIRENE_IF0PRM(IUNIN)
+        CALL EIRENE_IF0PRM(IUNIN,IUNOUT)
       ENDIF
       NAIN = MAX(NAIN,NAINI)
       NCPV = MAX(NCPV,NCPVI)
@@ -1350,6 +1352,8 @@ cdr  grid size
       WRITE (iunout,*) 'NTRI =   ',NTRI
       WRITE (iunout,*) 'NTETRA = ',NTETRA
       WRITE (iunout,*) 'NCOORD = ',NCOORD
+      WRITE (iunout,*) ' '
+      WRITE (iunout,*) 'NRAD =   ',NRAD
 cdr  primary source
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NSTRA =  ',NSTRA

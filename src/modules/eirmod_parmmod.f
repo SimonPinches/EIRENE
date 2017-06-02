@@ -164,7 +164,7 @@ C.......................................................................
 C
 C  GEOMETRY
 C
-        NRAD=MAX(N1ST*N2ND*N3RD,NTRI,NTETRA)+NADD+1
+        NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
  
