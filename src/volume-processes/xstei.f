@@ -73,7 +73,7 @@ C
      .          EIRENE_ENERGY_RATE_COEFF,
      .          DELE, ERATE,
      .          FP1(6),FP2(6)
-      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
+      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
       INTEGER, EXTERNAL :: EIRENE_IDEZ

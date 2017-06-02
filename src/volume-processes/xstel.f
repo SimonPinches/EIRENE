@@ -45,9 +45,9 @@ C
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII,
+     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: I, NSEEL4, NEND, J, KREAD, MODC,  IERR, IPLTI,
+      INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
      .           IBGK,ISPECB,ISPZB,ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
