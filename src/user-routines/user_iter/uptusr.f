@@ -89,15 +89,15 @@ C
 CDR
 C  RADIAL GESCHWINDIGKEITSKOMPONENTE  (CM/SEC)
           VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
-          if(iatm.gt.nadv) goto 20
+          if(iatm.gt.nadvi) goto 20
           ADDV(IATM,IRD)=ADDV(IATM,IRD)+WTR*VR
-          if(ia1+iatm.gt.nadv) goto 20
+          if(ia1+iatm.gt.nadvi) goto 20
           ADDV(IA1+IATM,IRD)=ADDV(IA1+IATM,IRD)+WTR*VR*E0
 C  POLOIDALE GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
-          if(ia2+iatm.gt.nadv) goto 20
+          if(ia2+iatm.gt.nadvi) goto 20
           ADDV(IA2+IATM,IRD)=ADDV(IA2+IATM,IRD)+WTR*VP
-          if(ia3+iatm.gt.nadv) goto 20
+          if(ia3+iatm.gt.nadvi) goto 20
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 CDR
 20      CONTINUE
@@ -113,15 +113,15 @@ C
           IF (LGVAC(IRD,0)) GOTO 200
 C  RADIAL GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
-          if(natmi+imol.gt.nadv) goto 200
+          if(natmi+imol.gt.nadvi) goto 200
           ADDV(NATMI+IMOL,IRD)=ADDV(NATMI+IMOL,IRD)+WTR*VR
-          if(ia1+natmi+imol.gt.nadv) goto 200
+          if(ia1+natmi+imol.gt.nadvi) goto 200
           ADDV(IA1+NATMI+IMOL,IRD)=ADDV(IA1+NATMI+IMOL,IRD)+WTR*VR*E0
 C  POLOIDALE GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
-          if(ia2+natmi+imol.gt.nadv) goto 200
+          if(ia2+natmi+imol.gt.nadvi) goto 200
           ADDV(IA2+NATMI+IMOL,IRD)=ADDV(IA2+NATMI+IMOL,IRD)+WTR*VP
-          if(ia3+natmi+imol.gt.nadv) goto 200
+          if(ia3+natmi+imol.gt.nadvi) goto 200
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 C
 200     CONTINUE

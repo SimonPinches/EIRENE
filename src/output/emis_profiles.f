@@ -64,41 +64,32 @@ C
      .                       IADS, IST
       REAL(DP), INTENT(IN) :: ENER
 
-      REAL(DP) :: DA(0:8,0:8) ! atomic hydrogenic density, H, D, T
-      REAL(DP) :: DB(0:8,0:8) ! atomic hydrogenic ion, H+, D+, T+
-      REAL(DP) :: DM(0:8,0:8) ! diatomic hydrogenic molecule H2,D2,T2,HD,HT,DT
-      REAL(DP) :: DI2(0:8,0:8) ! diatomic hydr. mol. ion H2+, D2+,...,DT+
-      REAL(DP) :: DI3(0:8,0:8)! triatomic hydr. mol. ion H3+, ...,D2T+
-      REAL(DP) :: DN(0:8,0:8) ! negativ hydr. ion H-,D- T-
+      INTEGER, SAVE :: BA_ALPHA=1, BA_BETA=2, BA_GAMMA=3, BA_DELTA=4,
+     .                 LY_ALPHA=5, LY_BETA=6
+      INTEGER, SAVE :: LINES_DEF 
+
+      INTEGER :: NO_LINES_AVAIL
+
+      INTEGER, ALLOCATABLE, SAVE :: LINES(:)
+      LOGICAL, ALLOCATABLE, SAVE :: LREAD_LINE(:)
       
       REAL(DP), SAVE :: FAC(6,6)
 
       REAL(DP) :: DUMMY(NRTAL)
-      REAL(DP) :: RHMH2(0:8), RH2PH2(0:8,0:8), RH3PH2(0:8),
-     .            FP1(6), FP2(6)
       REAL(DP) :: DAT, DNM, DIO2, DIO3, DMO, DPL,
-     .          RATIO2, RATIO3, RATIO7, TEI, DEJ,
+     .          RATIO2, RATIO3, RATIO7,
      .          SIGADD1, SIGADD2, SIGADD3, SIGADD4, SIGADD5, SIGADD6,
      .          SIGADD,
      .          TEF, DEF, DDA, DPP, DDM, DDI2, DDI3, DDN,
      .          RY,DEE00,FACTE,
      .          POWALF , POWALF1, POWALF2, POWALF3, POWALF4,
      .          POWALF5, POWALF6,
-     .          DE, TE, RC1MIN, RC1MAX, RC2MIN, RC2MAX
-
-      INTEGER, SAVE :: BA_ALPHA=1, BA_BETA=2, BA_GAMMA=3, BA_DELTA=4,
-     .                 LY_ALPHA=5, LY_BETA=6
+     .          DE, TE, ERATE, EIRENE_OTHER_RATE_COEFF
 
       INTEGER :: LINENO, L1, L2
-      INTEGER, SAVE :: LINENO_OLD = -1
 
-      INTEGER :: IRC, IFIRST, NCELC, IERROR, IR, I, J, JEND,
-     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+      INTEGER :: IRC, NCELC, IERROR, IR, JR, I, J
       REAL(DP), ALLOCATABLE :: OUTAU(:)
-      CHARACTER(8) :: FILNAM
-      CHARACTER(4) :: H123
-      CHARACTER(9) :: REAC
-      CHARACTER(3) :: CRC
       CHARACTER(6) :: CISTRA
       CHARACTER(8) :: LINE_NAME
 C
@@ -170,6 +161,14 @@ C
       POWALF4=0.
       POWALF5=0.
       POWALF6=0.
+
+C  NREACI REACTIONS FROM BLOCK
+C  + 1 REACTION FOR DENSITY MODELS IN INPUT BLOCK 5
+C  + 3 RATIOS OF DENSITIES (= reduced population coefficients)
+C  + 6*(NO. OF REACTIONS) DEFINED EARLIER
+      IR=NREACI+1+3+(LINES(LINENO)-1)*6
+      JR=NREACI+1
+
 C
       DO 1000 NCELL=1,NSBOX
 C
@@ -196,77 +195,27 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
 
 CDR CONVERT TO DENSITY UNITS OF H.4, H.10, H.12 RATE COEFF. IN AMJUEL
 CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS
-        DEF=LOG(DE*1.D-8)
-C   DEFAULT LOW DENSITY ASYMPTOTICS IN AMJUEL FORMAT:
-C   AT DEF <= 0.  (I.E. DE <= 1E8),
-C   COLLAPSE DATA TO DENSITY INDEPENDENT H.2, H.8, H.11 CORONA VALUES
-C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUPLE POLYNOMAL FIT.
-CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS ASYMPTOTICS
-        JEND=8
-        IF (DEF.LE.0.0) THEN 
-          JEND=0
-        ELSEIF (DEF.GT.1.0) THEN
-C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEF=DEF/(8.0*LOG(10.0)) 
-        ENDIF
-C
-        TEF=LOG(TE)
-        DAT=0.
-        DPL=0.
-        DMO=0.
-        DIO2=0.
-        DNM=0.
-        DIO3=0.
-        DO 150 J=0,JEND
-          DEJ=DEF**J    !  =1.0 FOR J=0
-          DO 150 I=0,8
-            TEI=TEF**I
-            DAT =DAT + DA(I,J)*TEI*DEJ
-            DPL =DPL + DB(I,J)*TEI*DEJ
-            DMO =DMO + DM(I,J)*TEI*DEJ
-            DIO2=DIO2+ DI2(I,J)*TEI*DEJ
-            DIO3=DIO3+ DI3(I,J)*TEI*DEJ
-            DNM =DNM + DN(I,J)*TEI*DEJ
-150     CONTINUE
-        DAT =EXP(DAT)
-        DPL =EXP(DPL)
-        DMO =EXP(DMO)
-        DIO2=EXP(DIO2)
-        DIO3=EXP(DIO3)
-        DNM =EXP(DNM)
 
+        DAT  = EIRENE_OTHER_RATE_COEFF(IR+1,TEF,DEF,.TRUE.,0,ERATE)
+        DPL  = EIRENE_OTHER_RATE_COEFF(IR+2,TEF,DEF,.TRUE.,0,ERATE)
+        DMO  = EIRENE_OTHER_RATE_COEFF(IR+3,TEF,DEF,.TRUE.,0,ERATE)
+        DIO2 = EIRENE_OTHER_RATE_COEFF(IR+4,TEF,DEF,.TRUE.,0,ERATE)
+        DIO3 = EIRENE_OTHER_RATE_COEFF(IR+5,TEF,DEF,.TRUE.,0,ERATE)
+        DNM  = EIRENE_OTHER_RATE_COEFF(IR+6,TEF,DEF,.TRUE.,0,ERATE)
 
 C  RATIO OF DENSITIES: H- TO H2, COLL. EQUIL. IN VIBRATION
 C  (ONLY TE-DEPENDENT)
 
-        RATIO7=0
-        DO 160 I=0,8
-          TEI=TEF**I
-          RATIO7=RATIO7+RHMH2(I)*TEI
-160     CONTINUE
-        RATIO7=EXP(RATIO7)
+        RATIO7 = EIRENE_OTHER_RATE_COEFF(JR+1,TEF,DEF,.TRUE.,0,ERATE)
 
 C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATION
 
-
-        RATIO2=0
-        DO 170 J=0,JEND
-          DEJ=DEF**J
-          DO 170 I=0,8
-            TEI=TEF**I
-            RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
-170     CONTINUE
-        RATIO2=EXP(RATIO2)
+        RATIO2 = EIRENE_OTHER_RATE_COEFF(JR+3,TEF,DEF,.TRUE.,0,ERATE)
 
 C  RATIO OF DENSITIES: H3+ TO H2, = [RATIO3  * NH2+/NE]
 C  (ONLY TE-DEPENDENT)
 
-
-        RATIO3=0
-        DO 180 I=0,8
-          TEI=TEF**I
-          RATIO3=RATIO3+RH3PH2(I)*TEI
-180     CONTINUE
-        RATIO3=EXP(RATIO3)
+        RATIO3 = EIRENE_OTHER_RATE_COEFF(JR+2,TEF,DEF,.TRUE.,0,ERATE)
 
 
 C
@@ -587,8 +536,6 @@ C
 
 csw 19apr07
       entry EIRENE_emis_profiles_reinit
-      ifirst=0
-      lineno_old = -1
       return
 csw
 999   CONTINUE
@@ -607,6 +554,15 @@ csw
       SUBROUTINE EIRENE_PREPARE_LINE
 C
       INTEGER, SAVE :: IFIRST = 0
+
+      REAL(DP) :: FP1(6), FP2(6)
+      REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX
+      INTEGER :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX, IR
+
+      CHARACTER(8) :: FILNAM
+      CHARACTER(4) :: H123
+      CHARACTER(9) :: REAC
+      CHARACTER(3) :: CRC
       CHARACTER(LEN(REAC)) :: REAC_A, REAC_B, REAC_M, REAC_I2,
      .                         REAC_I3, REAC_N
 
@@ -640,6 +596,14 @@ C  PASCHEN BETA
 C  PASCHEN GAMMA
          FAC(6,3) = 7.783E5
 
+         NO_LINES_AVAIL = MAX (BA_ALPHA, BA_BETA, BA_GAMMA, BA_DELTA,
+     .                         LY_ALPHA, LY_BETA)
+         ALLOCATE (LINES(NO_LINES_AVAIL))
+         ALLOCATE (LREAD_LINE(NO_LINES_AVAIL))
+         LINES = 0
+         LREAD_LINE = .TRUE.
+         LINES_DEF = 0
+
          IFIRST = 1
       END IF
 
@@ -648,91 +612,133 @@ C  DECIDE WHICH LINE IS TO BE USED
 
         LINENO = LY_BETA
         LINE_NAME = 'LY-BETA  '
-        
-        REAC_A='2.1.5a   '
-        REAC_B='2.1.8a   '
-        REAC_M='2.2.5a   '
-        REAC_I2='2.2.14a  '
-        REAC_I3='2.2.15a  '
-        REAC_N='7.2a     '
 
         L1 = 3
         L2 = 1
+        
+        IF (LINES(LINENO) == 0) THEN
+
+          LINES_DEF = LINES_DEF + 1
+          LINES(LINENO) = LINES_DEF
+
+          REAC_A='2.1.5a   '
+          REAC_B='2.1.8a   '
+          REAC_M='2.2.5a   '
+          REAC_I2='2.2.14a  '
+          REAC_I3='2.2.15a  '
+          REAC_N='7.2a     '
+
+        END IF
 
       ELSEIF (ABS(ENER-10.2375_DP)/10.2375_DP <= EPS5) THEN
 
         LINENO = LY_ALPHA
         LINE_NAME = 'LY-ALPHA '
 
-        REAC_A='2.1.5b   '
-        REAC_B='2.1.8b   '
-        REAC_M='2.2.5b   '
-        REAC_I2='2.2.14b  '
-        REAC_I3='2.2.15b  '
-        REAC_N='7.2b     '
-
         L1 = 2
         L2 = 1
+        
+        IF (LINES(LINENO) == 0) THEN
+
+          LINES_DEF = LINES_DEF + 1
+          LINES(LINENO) = LINES_DEF
+
+          REAC_A='2.1.5b   '
+          REAC_B='2.1.8b   '
+          REAC_M='2.2.5b   '
+          REAC_I2='2.2.14b  '
+          REAC_I3='2.2.15b  '
+          REAC_N='7.2b     '
+
+        END IF
 
       ELSEIF (ABS(ENER-3.0222_DP)/3.0222_DP <= EPS5) THEN
 
         LINENO = BA_DELTA
         LINE_NAME = 'BA-DELTA '
 
-        REAC_A='2.1.5e   '
-        REAC_B='2.1.8e   '
-        REAC_M='2.2.5e   '
-        REAC_I2='2.2.14e  '
-        REAC_I3='2.2.15e  '
-        REAC_N='7.2e     '
-
         L1 = 6
         L2 = 2
+
+        IF (LINES(LINENO) == 0) THEN
+
+          LINES_DEF = LINES_DEF + 1
+          LINES(LINENO) = LINES_DEF
+
+          REAC_A='2.1.5e   '
+          REAC_B='2.1.8e   '
+          REAC_M='2.2.5e   '
+          REAC_I2='2.2.14e  '
+          REAC_I3='2.2.15e  '
+          REAC_N='7.2e     '
+
+        END IF
 
       ELSEIF (ABS(ENER-2.8560_DP)/2.8560_DP <= EPS5) THEN
 
         LINENO = BA_GAMMA
         LINE_NAME = 'BA-GAMMA '
 
-        REAC_A='2.1.5d   '
-        REAC_B='2.1.8d   '
-        REAC_M='2.2.5d   '
-        REAC_I2='2.2.14d  '
-        REAC_I3='2.2.15d  '
-        REAC_N='7.2d     '
-
         L1 = 5
         L2 = 2
+
+        IF (LINES(LINENO) == 0) THEN
+
+          LINES_DEF = LINES_DEF + 1
+          LINES(LINENO) = LINES_DEF
+
+          REAC_A='2.1.5d   '
+          REAC_B='2.1.8d   '
+          REAC_M='2.2.5d   '
+          REAC_I2='2.2.14d  '
+          REAC_I3='2.2.15d  '
+          REAC_N='7.2d     '
+          
+        END IF
 
       ELSEIF (ABS(ENER-2.5500_DP)/2.5500_DP <= EPS5) THEN
 
         LINENO = BA_BETA
         LINE_NAME = 'BA-BETA  '
 
-        REAC_A='2.1.5c   '
-        REAC_B='2.1.8c   '
-        REAC_M='2.2.5c   '
-        REAC_I2='2.2.14c  '
-        REAC_I3='2.2.15c  '
-        REAC_N='7.2c     '
-
         L1 = 4
         L2 = 2
+
+        IF (LINES(LINENO) == 0) THEN
+
+          LINES_DEF = LINES_DEF + 1
+          LINES(LINENO) = LINES_DEF
+
+          REAC_A='2.1.5c   '
+          REAC_B='2.1.8c   '
+          REAC_M='2.2.5c   '
+          REAC_I2='2.2.14c  '
+          REAC_I3='2.2.15c  '
+          REAC_N='7.2c     '
+          
+        END IF
 
       ELSEIF (ABS(ENER-1.8889_DP)/1.8889_DP <= EPS5) THEN
 
         LINENO = BA_ALPHA
         LINE_NAME = 'BA-ALPHA '
 
-        REAC_A='2.1.5a   '
-        REAC_B='2.1.8a   '
-        REAC_M='2.2.5a   '
-        REAC_I2='2.2.14a  '
-        REAC_I3='2.2.15a  '
-        REAC_N='7.2a     '
-
         L1 = 3
         L2 = 2
+
+        IF (LINES(LINENO) == 0) THEN
+
+          LINES_DEF = LINES_DEF + 1
+          LINES(LINENO) = LINES_DEF
+
+          REAC_A='2.1.5a   '
+          REAC_B='2.1.8a   '
+          REAC_M='2.2.5a   '
+          REAC_I2='2.2.14a  '
+          REAC_I3='2.2.15a  '
+          REAC_N='7.2a     '
+          
+        END IF
         
       ELSE
         WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR ENERGY=',ENER
@@ -741,15 +747,19 @@ C  DECIDE WHICH LINE IS TO BE USED
       END IF
       WRITE (IUNOUT,'(A)') LINE_NAME
 
-      IF (LINENO /= LINENO_OLD) THEN
+
+      IF (LREAD_LINE(LINENO)) THEN
 C
 C  READ REDUCED POPULATION COEFFICIENT FOR HYDR. ATOMS FROM FILE AMJUEL
-C  AND PUT THEM FROM REACDAT(NREACI+1,..,..) ONTO DA,DB,DM,DI2,DI3, AND DN ARRAY
 C
         IERROR=0
-        IR=NREACI+1
-        IF (IR.GT.NREAC) THEN
-          WRITE (IUNOUT,*) 'FROM SUBROUTINE EIRENE_BA_ALPHA: '
+C  NREACI REACTIONS FROM BLOCK
+C  + 1 REACTION FOR DENSITY MODELS IN INPUT BLOCK 5
+C  + 3 RATIOS OF DENSITIES (= reduced population coefficients)
+C  + 6*(NO. OF REACTIONS) DEFINED EARLIER
+        IR=NREACI+1+3+(LINES(LINENO)-1)*6
+        IF (IR+6.GT.NREAC) THEN
+          WRITE (IUNOUT,*) 'FROM SUBROUTINE EIRENE_EMIS_PROFILES: '
           CALL EIRENE_MASPRM('NREAC',5,NREAC,'IR',2,IR,IERROR)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
@@ -772,76 +782,42 @@ c  default asymptotics
 C
 C  H(n=3)/H(n=1)
         REAC=REAC_A
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(IR+1,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO J=1,9
-          DO I=1,9
-            DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
-          ENDDO
-        ENDDO
 C  H(n=3)/H+
         REAC=REAC_B
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(IR+2,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO J=1,9
-          DO I=1,9
-            DB(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
-          ENDDO
-        ENDDO
 C  H(n=3)/H2(g)
         REAC=REAC_M
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(IR+3,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO J=1,9
-          DO I=1,9
-            DM(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
-          ENDDO
-        ENDDO
 C  H(n=3)/H2+(g)
         REAC=REAC_I2
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(IR+4,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO J=1,9
-          DO I=1,9
-            DI2(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
-          ENDDO
-        ENDDO
 C  H(n=3)/H3+
         REAC=REAC_I3
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(IR+5,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO J=1,9
-          DO I=1,9
-            DI3(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
-          ENDDO
-        ENDDO
 C  H(n=3)/H-
         REAC=REAC_N
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(IR+6,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO J=1,9
-          DO I=1,9
-            DN(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
-          ENDDO
-        ENDDO
+
+        LREAD_LINE(LINENO) = .FALSE.
 C
 C  NOW READ RATIO OF DENSITIES (= reduced population coefficients):
 
@@ -861,51 +837,43 @@ C  AS CONDENSED INTERMEDIATE STATES ARE USED
 C  FOR THE TRANSPORTED SPECIES (H2) TO WHICH THESE "MINORITES" ARE COUPLED.
 C
 c.........................................................................
+
+        IF (LINES_DEF == 1) THEN
+
+          IR = NREACI + 1
 C
 C  FIRST: H-/H2  (COUPLED TO H2(V)
 C  H.11 7.0a INCLUDES ELECTRON IMPACT DISS ATTACHMENT ON H2(V), ne=np, Te=Tp, E_H2=E_H-=0.1
 C  H.11 7.0b INCLUDES ELECTRON IMPACT DISS ATTACHMENT ON H2(V=0) ONLY
 C
-        FILNAM='AMJUEL  '
-        H123='H.11'
-        REAC='7.0a     '
-        CRC='OT '
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+          FILNAM='AMJUEL  '
+          H123='H.11'
+          REAC='7.0a     '
+          CRC='OT '
+          CALL EIRENE_SLREAC(IR+1,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO I=1,9
-          RHMH2(I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,1)
-        ENDDO
-
 
 C  NEXT: H3+/H2  (COUPLED TO H2(V)
 C  H.11 4.0a vs Te, T_H2=T_H2+=0.1 IN H3+ PROD. RATE CONSTANT
 C               THE DISTINCTION BETWEEN H2 AND H2(V) IS MADE
 C               BY THE ADDITIONAL MULTIPLICATIVE FACTOR RATIO2=H2P/H2 
 C
-        FILNAM='AMJUEL  '
-        H123='H.11'
-        REAC='4.0a     '
-        CRC='OT '
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+          FILNAM='AMJUEL  '
+          H123='H.11'
+          REAC='4.0a     '
+          CRC='OT '
+          CALL EIRENE_SLREAC(IR+2,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO I=1,9
-          RH3PH2(I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,1)
-        ENDDO
-
-
-
 
 C  NEXT : H2+/H2  (COUPLED TO H2(V))
-        FILNAM='AMJUEL  '
-        H123='H.12'
-        REAC='2.0c     '
-        CRC='OT '
+          FILNAM='AMJUEL  '
+          H123='H.12'
+          REAC='2.0c     '
+          CRC='OT '
 c  H2+ from ion conversion alone
 C  H.11 2.0c INCLUDES  ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
 C  H.11 2.0b INCLUDES  ION CONVERION (CX) ON H2(V=0) ONLY
@@ -923,19 +891,11 @@ C       REAC='2.0a    '
 C    IF H2(V=1,2,...) IS NOT IN QSS WITH H2(V=0), THEN RATIOS SHOULD NOT BE USED AT ALL,
 C                     OR AT LEAST, MANY SUCH RATIOS, ONE FOR EACH H2(V) METASTABLE STATE.
 CDR
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+          CALL EIRENE_SLREAC(IR+3,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              '  ',0)
-        DO I=1,9
-          DO J=1,9
-            RH2PH2(I-1,J-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(I,J)
-          ENDDO
-        ENDDO
-
-        LINENO_OLD = LINENO
-
+        ENDIF
       ENDIF
 C
 C  END OF INITIALIZATION

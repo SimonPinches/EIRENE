@@ -173,6 +173,7 @@ C
       TYPE(REFFILE), POINTER :: REFFILES, CURFILE
 
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
+      TYPE(TCONTRIB) :: CNT
 C
       REAL(DP) :: AFF(3,3), AFFI(3,3), FP1(6), FP2(6)
       REAL(DP) :: RP1, SA, SI, THMAX, SM, SPP, DTIMVO, SAVE, VOLTOT_TAL,
@@ -211,7 +212,8 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
-     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX, NRC, IADV, 
+     .           NO_COMPO, NO_CONTRIB, ICNT, IDMDL, IND
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -1456,8 +1458,8 @@ C                     IS NOT USED IN CASE OF CONST - OPTION
             REAC2(1:9) = ZEILE(IEND+ITOK:IEND+ITOK+8)
 C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
             IEND = IEND+ITOK+2
-            CALL
-     .      EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
+            CALL EIRENE_READ_TOKEN
+     .           (ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
             IEND = IEND + ITOK
           END IF
         END IF
@@ -2015,6 +2017,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
+      IDMDL = 0
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2098,14 +2101,17 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
 c  default: only for bulk ions
                               TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
      .                        TDMPAR(IPLS)%TDM%ITP(1),
      .                        TDMPAR(IPLS)%TDM%ISTR(1)
           CASE ('CONSTANT  ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,6664) TDMPAR(IPLS)%TDM%TVAL,
      .                        TDMPAR(IPLS)%TDM%DVAL,
      .                        TDMPAR(IPLS)%TDM%VXVAL,
@@ -2121,8 +2127,10 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%VFACTOR
                  TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('SAHA      ')
+            IDMDL = IDMDL + 1
 !PB   TO BE WRITTEN
           CASE ('BOLTZMANN ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,'(3I6,6x,2E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2130,6 +2138,7 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%G_BOLTZ,
      .           TDMPAR(IPLS)%TDM%DELTAE
           CASE ('CORONA    ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2147,6 +2156,7 @@ c  default: only for bulk ions
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD    ')
+            IDMDL = IDMDL + 1
             DO I=1, TDMPAR(IPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             TDMPAR(IPLS)%TDM%ISP(I),
@@ -3430,14 +3440,127 @@ C
 1210  READ (IUNIN,'(A72)') ZEILE
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
+
+      ULINE=ZEILE
+      CALL EIRENE_UPPERCASE(ULINE)
+      NLEMIS = NCHOR > 0
+      IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
+        IADV = NADVI
+        NLEMIS = .TRUE.
+        READ (IUNIN,6666) NO_LINES, MOD_ADDV
+        IF (NO_LINES > 0) THEN
+          ALLOCATE (EMIS_LINES(NO_LINES))
+          EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+          EMIS_LINES%NO_COMPO = 0
+        END IF
+        DO I=1, NO_LINES
+          READ (IUNIN,'(A80)') ZEILE
+          DO WHILE (ZEILE(1:1) == '*')
+            READ (IUNIN,'(A80)') ZEILE
+          END DO
+          READ (ZEILE,'(A80)') EMIS_LINES(I)%LINE_NAME
+          READ (IUNIN,6666) NO_COMPO, 
+     .                      EMIS_LINES(I)%L1,
+     .                      EMIS_LINES(I)%L2
+          READ (IUNIN,6664) EMIS_LINES(I)%FAC, EMIS_LINES(I)%ENERGY
+          EMIS_LINES(I)%NO_COMPO = NO_COMPO
+          IADV = IADV + 1
+          IF (MOD_ADDV == 0) IADV = NADVI + 1 
+          EMIS_LINES(I)%IADV_TOTAL = IADV
+
+          IF (NO_COMPO > 0) THEN
+            ALLOCATE (EMIS_LINES(I)%COMPO(NO_COMPO))
+
+            DO J=1,NO_COMPO
+
+              READ (IUNIN,'(A72)') EMIS_LINES(I)%COMPO(J)%COMPO_NAME
+              READ (IUNIN,6666) NO_CONTRIB 
+              EMIS_LINES(I)%COMPO(J)%NO_CONTRIB = NO_CONTRIB
+              ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NO_CONTRIB))
+
+              IADV = IADV + 1
+              EMIS_LINES(I)%COMPO(J)%IADV = IADV
+              
+              DO ICNT = 1, NO_CONTRIB             
+                READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
+     .             CNT%ISP, CNT%ITP, CNT%IRATIO, 
+     .             CNT%FNAME, CNT%H2, CNT%REACTION, CNT%CR
+                IF (CNT%IRATIO > 0) THEN
+                  READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
+     .             CNT%FRATIO, CNT%RAT_H2, CNT%RAT_REACTION,
+     .             CNT%RAT_CR
+                ELSE 
+                  CNT%RAT_H2       = '' 
+                  CNT%RAT_REACTION = ''
+                  CNT%RAT_CR       = ''
+                END IF
+                CNT%IRC = 0
+                CNT%IRC_RAT = 0
+                EMIS_LINES(I)%COMPO(J)%CONTRIB(ICNT) = CNT
+              END DO
+         
+            END DO
+         END IF
+        END DO
+        READ (IUNIN,'(A72)') ZEILE
+      ENDIF
+
+! no definition of emissivity lines was read in
+! define default emissivity model for chords
+      IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
+     .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
+
+! read in reaction data for emissivity lines
+
+c  default asymptotics
+
+      FP1 = 0._DP
+      FP2 = 0._DP
+      RC1MIN = -HUGE(1._DP)
+      RC1MAX =  HUGE(1._DP)
+      RC2MIN = -HUGE(1._DP)
+      RC2MAX =  HUGE(1._DP)
+      JFEX1MN = 0
+      JFEX1MX = 0
+      JFEX2MN = 0
+      JFEX2MX = 0
+
+      nrc = nreaci + nreac_add
+      if (idmdl > 0) nrc = nrc + 1
+
+      do i=1, no_lines
+        do j = 1, emis_lines(i)%no_compo
+          do k= 1, emis_lines(i)%compo(j)%no_contrib
+            cnt = emis_lines(i)%compo(j)%contrib(k)
+            nrc = nrc + 1
+            CALL EIRENE_SLREAC(NRC,CNT%FNAME,CNT%H2,
+     .              CNT%REACTION,CNT%CR,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+            emis_lines(i)%compo(j)%contrib(k)%irc = nrc
+
+            if (cnt%iratio == 1) then
+              nrc = nrc + 1
+              CALL EIRENE_SLREAC(NRC,CNT%FRATIO,CNT%RAT_H2,
+     .              CNT%RAT_REACTION,CNT%RAT_CR,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              '  ',0)
+              emis_lines(i)%compo(j)%contrib(k)%irc_rat = nrc
+            end if           
+          end do
+        end do
+      end do
+
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
       NCHEN = NCHENI
       WRITE (iunout,'(1x,a,2i5)') 'NCHORI,NCHENI= ',NCHORI,NCHENI
       CALL EIRENE_LEER(1)
       IF (IABS(NCHENI).GT.NCHEN)
-     .    CALL
-     .  EIRENE_MASPRM('NCHEN',5,NCHEN,'IABS(NCHENI)',12,IABS(NCHENI),
+     .    CALL EIRENE_MASPRM
+     .         ('NCHEN',5,NCHEN,'IABS(NCHENI)',12,IABS(NCHENI),
      .                 IERROR)
       IF (NCHORI.LE.0) GOTO 1230
       CALL EIRENE_ALLOC_COMSIG
@@ -3446,7 +3569,17 @@ C
         READ (IUNIN,'(A72)') TXTSIG(ICHORI)
         READ (IUNIN,6666) NCHTAL(ICHORI),NSPSCL(ICHORI),NSPNEW(ICHORI),
      .                    ISTCHR
-        READ (IUNIN,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),
+        READ (IUNIN,'(A400)') ZEILE
+        IF (NCHTAL(ICHORI) == 2) THEN
+          ULINE = ZEILE
+          CALL EIRENE_UPPERCASE(ULINE)
+          IND = INDEX(ULINE,'USE_LINE')
+          IF (IND > 0) THEN
+            READ (ZEILE(IND+8:),'(A80)') CH_LINE_NAME(ICHORI)
+            READ (IUNIN,'(A400)') ZEILE
+          END IF
+        END IF
+        READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
      .                    NSPBLC(ICHORI),NSPADD(ICHORI)
         READ (IUNIN,6664) EMIN1(ICHORI),EMAX1(ICHORI),ESHIFT(ICHORI)

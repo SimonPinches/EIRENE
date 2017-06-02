@@ -12,7 +12,7 @@ cdr               nlogau=38
  
       PUBLIC :: EIRENE_ALLOC_CLOGAU
  
-      INTEGER, PUBLIC, PARAMETER :: NLOGAU=38
+      INTEGER, PUBLIC, PARAMETER :: NLOGAU=39
  
       LOGICAL, PUBLIC, TARGET, SAVE :: LLOGAU(NLOGAU)
  
@@ -25,7 +25,7 @@ cdr               nlogau=38
      L NLMLT,  NLADD,
      L NLTRIM, LHABER, NLONE,   NLDFST, NLOLDRAN, 
      L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
-     L NEXVS
+     L NEXVS,  NLEMIS
  
       CONTAINS
  
@@ -72,6 +72,7 @@ C     NLFREE  => LLOGAU(31) ! NOT IN USE
       NLSHRT13 => LLOGAU(36)
       NLWRMSH  => LLOGAU(37)
       NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
+      NLEMIS   => LLOGAU(39) 
  
       LLOGAU = .FALSE.
  

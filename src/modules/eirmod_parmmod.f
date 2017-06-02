@@ -64,7 +64,8 @@ csw 13apr07
      I NHD1,   NHD2,   NHD3,   NHD4,   NHD5,   NHD6
  
       INTEGER, PUBLIC, SAVE ::
-     I NCHOR,  NCHEN
+     I NCHOR,  NCHEN, NO_LINES
+
  
       INTEGER, PUBLIC, SAVE ::
      I NDX,    NDY,    NFL,    NDXP,   NDYP,   NPTRGT
@@ -517,6 +518,8 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM(145) = NADSPC_C
       INT_PARM(146) = NADSPC_D
       INT_PARM(147) = NADSPC_CD
+
+      INT_PARM(147) = NO_LINES
  
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
@@ -698,7 +701,8 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NADSPC_C    = INT_PARM(145)
       NADSPC_D    = INT_PARM(146)
       NADSPC_CD   = INT_PARM(147)
- 
+
+      NO_LINES    = INT_PARM(148)
       RETURN
       END SUBROUTINE EIRENE_DISTRIB_PARM
  
