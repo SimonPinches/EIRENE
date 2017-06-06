@@ -20,7 +20,7 @@ c           otherwise sometimes problems with non-closing polygons encountered.
       REAL(DP) :: partcont(maxpoin,2,2), maxlen
       REAL(DP) :: XPE, YPE, HELP, XT, YT, PHI1, X1, X2, Y1, Y2, PHI2
       REAL(DP) :: DISTQI,DISTQJ1,DISTQJ2
-      INTEGER  :: MAXCONT, ICONT, IPOIN, IWST, IWEN, IWL, IWP,
+      INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
      .            ICO, IPO, IN, IS, IS1, ITRI
       INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
