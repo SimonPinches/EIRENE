@@ -4,7 +4,8 @@ c
       USE EIRMOD_PRECISION
       implicit none
 !pb      real(dp) x05baf,start,reset_second,second_own,time
-      real(dp) ::  EIRENE_x05baf, EIRENE_reset_second, EIRENE_second_own
+!      real(dp) :: EIRENE_x05baf
+      real(dp) :: EIRENE_reset_second, EIRENE_second_own
       real(sp) :: start,time
       save start
       data start /0.0/

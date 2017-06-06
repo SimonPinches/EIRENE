@@ -27,11 +27,6 @@
       character(20) :: elementname
       character(1) :: cha
       character(2) :: kenn(12)
-      character(8) :: c6names(12)=(/'C6ARBORN','C6THEOR ','C6QS    ',
-     .                              'C6AR    ','C6ZN    ',
-     .                              'C6I     ','C6XE    ','C6DY    ',
-     .                              'C6HO    ','C6TM    ','C6HG    ',
-     .                              'C6TL    '/)
       character(2), save :: polari_elnam(120)
       type(line_data), pointer :: phline
  

@@ -58,11 +58,10 @@ C
      .           ,summt,addt, XMA
       REAL(DP) :: EIRENE_FTABRC1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
-     .           ISK, JSK, IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR,
-     .           KREC, IRRC, MAXREC, IFLAG, IPLOTS, ILTXT, ISPC,
+     .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR,
+     .           KREC, IRRC, MAXREC, IFLAG, ISPC,
      .           ICELL, JFEXMN, JFEXMX
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
-      CHARACTER(48) :: TX(14)
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123
       CHARACTER(9) :: REAC

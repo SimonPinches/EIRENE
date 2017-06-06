@@ -18,7 +18,7 @@ C
       REAL(DP), INTENT(INOUT) :: ESTIM(NTAL,NRAD)
       LOGICAL, INTENT(IN) :: LP,LT
       REAL(DP) :: SAV
-      INTEGER :: IR, IP, IT, IND, I1, INDEX1, INDEX2, J1, J2, ITAL,
+      INTEGER :: IR, IP, IT, J1, J2, ITAL,
      .           NSYM, NSYH
  
       IF (LP) THEN

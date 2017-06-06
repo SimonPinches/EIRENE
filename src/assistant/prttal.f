@@ -32,7 +32,7 @@ C
       REAL(DP) :: H(6)
       INTEGER :: K(6)
       INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, JA, IA, IB, I,
-     .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
+     .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, NCOL, IR,
      .           NTTS
       CHARACTER(1) :: TL(72)
  

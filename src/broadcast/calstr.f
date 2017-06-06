@@ -38,7 +38,7 @@ C     .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
 C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1) 
       real(dp) :: dummys(nlmpgs+1) 
       real(dp), allocatable :: dummyw(:), helpw(:)
-      integer :: igrp(0:nstra), icomgrp(0:nstra)
+      integer :: icomgrp(0:nstra)
       integer :: ier1, ier, ir, npean, npeen, i, mpicw, ispc, my_pe_gr,
      .           mxdim, ns, j
       logical, allocatable :: lhelp(:)
