@@ -252,7 +252,7 @@ C
       ELSEIF (INDEX(FILNAM,'H-COL').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
-      ELSE
+      ELSE   ! in all other cases: open data file, stream 29+ifoff
 !  open data file, stream 29+ifoff.
         DO IFILE=1,NDBNAMES
           IF (INDEX(FILNAM,DBHANDLE(IFILE)).NE.0) EXIT
@@ -292,13 +292,15 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*)
      .      ' NO VALID FILENAME IN REACTION CARD'
           WRITE (iunout,*) ' CHOOSE EITHER '
-          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR, PHOTON '
+          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR '
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' H-COL'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
+          WRITE (iunout,*) ' OR '
+          WRITE (iunout,*) ' PHOTON'
           WRITE (iunout,*) ' FOR ENTERING REACTION DATA VIA '
           WRITE (iunout,*) ' EIRENE INPUT-FILE '
           CALL EIRENE_EXIT_OWN(1)
@@ -547,101 +549,8 @@ C  H.12
       ENDIF
 
       IF (INDEX(FILNAM,'H-COL').NE.0) THEN
-        REACDAT(IR)%ETH = 0._DP
-        REACDAT(IR)%RTMAX = 0._DP
-        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-
-        SELECT CASE (ISW)
-        CASE (2:4)
-          IF (REACDAT(IR)%LRTC) THEN
-            WRITE (IUNOUT,*) ' RATE COEFFICIENT ALREADY SPECIFIED',
-     .                       ' FOR REACTION', IR
-            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          ALLOCATE (REACDAT(IR)%RTC)
-          NULLIFY(REACDAT(IR)%RTC%ADAS)
-          NULLIFY(REACDAT(IR)%RTC%LINE)
-          NULLIFY(REACDAT(IR)%RTC%POLY)
-          NULLIFY(REACDAT(IR)%RTC%HYD)
-          REACDAT(IR)%LRTC = .TRUE.
-          REACDAT(IR)%RTC%IFIT = 5
-
-          REACDAT(IR)%RTC%RC1MIN = 0._DP
-          REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTC%RC2MIN = 0._DP
-          REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTC%FP1L = 0._DP
-          REACDAT(IR)%RTC%FP1R = 0._DP
-          REACDAT(IR)%RTC%FP2B = 0._DP
-          REACDAT(IR)%RTC%FP2T = 0._DP
-          REACDAT(IR)%RTC%JFEX1MN = 0
-          REACDAT(IR)%RTC%JFEX1MX = 0
-          REACDAT(IR)%RTC%JFEX2MN = 0
-          REACDAT(IR)%RTC%JFEX2MX = 0
-          
-        CASE (5:7)
-          IF (REACDAT(IR)%LRTCMW) THEN
-            WRITE (IUNOUT,*) ' MOMENTUM WEIGHTED RATE COEFFICIENT',
-     .                       ' ALREADY SPECIFIED FOR REACTION', IR
-            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          ALLOCATE (REACDAT(IR)%RTCMW)
-          NULLIFY(REACDAT(IR)%RTCMW%ADAS)
-          NULLIFY(REACDAT(IR)%RTCMW%LINE)
-          NULLIFY(REACDAT(IR)%RTCMW%POLY)
-          NULLIFY(REACDAT(IR)%RTCMW%HYD)
-          REACDAT(IR)%LRTCMW = .TRUE.
-          REACDAT(IR)%RTCMW%IFIT = 5
-
-          REACDAT(IR)%RTCMW%RC1MIN = 0._DP
-          REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCMW%RC2MIN = 0._DP
-          REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCMW%FP1L = 0._DP
-          REACDAT(IR)%RTCMW%FP1R = 0._DP
-          REACDAT(IR)%RTCMW%FP2B = 0._DP
-          REACDAT(IR)%RTCMW%FP2T = 0._DP
-          REACDAT(IR)%RTCMW%JFEX1MN = 0
-          REACDAT(IR)%RTCMW%JFEX1MX = 0
-          REACDAT(IR)%RTCMW%JFEX2MN = 0
-          REACDAT(IR)%RTCMW%JFEX2MX = 0
-          
-        CASE (8:10)
-          IF (REACDAT(IR)%LRTCEW) THEN
-            WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
-     .                       ' ALREADY SPECIFIED FOR REACTION', IR
-            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          ALLOCATE (REACDAT(IR)%RTCEW)
-          NULLIFY(REACDAT(IR)%RTCEW%ADAS)
-          NULLIFY(REACDAT(IR)%RTCEW%LINE)
-          NULLIFY(REACDAT(IR)%RTCEW%POLY)
-          NULLIFY(REACDAT(IR)%RTCEW%HYD)
-          REACDAT(IR)%LRTCEW = .TRUE.
-          REACDAT(IR)%RTCEW%IFIT = 5
-
-          REACDAT(IR)%RTCEW%RC1MIN = 0._DP
-          REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCEW%RC2MIN = 0._DP
-          REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCEW%FP1L = 0._DP
-          REACDAT(IR)%RTCEW%FP1R = 0._DP
-          REACDAT(IR)%RTCEW%FP2B = 0._DP
-          REACDAT(IR)%RTCEW%FP2T = 0._DP
-          REACDAT(IR)%RTCEW%JFEX1MN = 0
-          REACDAT(IR)%RTCEW%JFEX1MX = 0
-          REACDAT(IR)%RTCEW%JFEX2MN = 0
-          REACDAT(IR)%RTCEW%JFEX2MX = 0
-          
-        CASE DEFAULT
-          WRITE (IUNOUT,*) ' WRONG DATA TYPE SPECIFIED '
-          WRITE (IUNOUT,*) ' REACTION NO. ', IR
-          WRITE (IUNOUT,*) ' DATA TYPE H.', ISW
-          CALL EIRENE_EXIT_OWN(1)
-        END SELECT
+        CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1)
+c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
 
@@ -652,6 +561,8 @@ c  close unit=29+ifoff:   done in READ_TABLE2.f
       END IF
 
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
+cdr  proprietary option at FZ Juelich. 
+cdr  Not ready, and not to be used by 3rd party 
         CLOSE (UNIT=29+ifoff)
         CH123 = H123
         CCRC = CRC

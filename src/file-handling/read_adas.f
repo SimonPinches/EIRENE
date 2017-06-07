@@ -14,7 +14,10 @@ c                  =2-4   data for reaction rate coefficient             (only =
 c                  =5-7   data for momentum weighted rate coefficient    (not in use)
 c                  =8-10  data for energy weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
-c           iz1:   ??
+c           iz1:   particular charge state to be found within data file, 
+c                  which containes charge states in the range  iza,....ize
+
+c 
 c  to be done: units, log-lin, scaling, asymptotics
  
       use EIRMOD_precision
@@ -56,7 +59,8 @@ c     this file format is described in ...
         write (iunout,*) ' Z1, ZA, ZE ',IZ1, IZA, IZE
         call EIRENE_exit_own(1)
       end if
- 
+
+c  storage for 2d table, a rate coefficient vs. Te, ne. 
       allocate (ap)
       allocate (ap%dens(nde))
       allocate (ap%temp(nte))
