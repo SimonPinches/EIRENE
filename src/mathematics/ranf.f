@@ -45,13 +45,12 @@ C
       integer :: iseed
       common /cmem/ iseed
       integer, save :: ifirst=0
-      integer :: ise
-      real(dp) :: ra, dummy, ranf_eirene, ranset_eirene,
+      real(dp) :: ra, dummy, ranf_eirene,
      &            ranf_eirene_reinit, h1rn
 
 cdr  parameters for SURAND  (IBM, 1968)
       INTEGER D2P32M
-      DOUBLE PRECISION Z,D2P31M,D2PN31,DMOD,DFLOAT
+      DOUBLE PRECISION Z,D2P31M,D2PN31,DMOD
       DATA  D2PN31/4.656612873077393D-10/,  !    = 1 / 2**31   = 1/m
      .      D2P31M/2147483647.D0/,          !    = 2**31-1 = m
      .      D2P32M/16807/                   !    = a = 7**5

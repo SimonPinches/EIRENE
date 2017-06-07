@@ -78,25 +78,27 @@ C
 
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
-      REAL(DP) :: XTIM(0:NSTRA), DXTIM(0:NSTRA)
-      REAL(DP) :: ST, FFF, DELT, XFL1,
-     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
+      REAL(DP) :: XTIM(0:NSTRA)
+C      REAL(DP) :: DXTIM(0:NSTRA)
+      REAL(DP) :: XFL1,
+     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, 
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
-     .          FLX, VAL, ZW, ZWW, VALUE, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
+     .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
      .          tim1, tim2,
      .          rn1
+C      REAL(DP) :: DELT
       REAL(DP), EXTERNAL :: RANF_EIRENE 
       INTEGER, EXTERNAL :: RANSET_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE
 
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
-      INTEGER :: ITAL, ISDV, IALS, ISTRAA, ISTRAE, ICELL,
-     .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX,
+      INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
+     .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST,IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN, 
      -           ISTR, NPTTOT, NREC11, IB, N2,
-     .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
-     .           INODES, J, IPTSI, I1, I2, I3, IA, IT, IMCP,
+     .           IC, IGFF, IADD, INDX, ICLV, IADV, 
+     .           INODES, J, IPTSI, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0

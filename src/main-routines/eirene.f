@@ -74,7 +74,7 @@ C
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
  
-      INTEGER :: NA, NS, IAIN, ICELL, IERROR, IER, ISTRAI
+      INTEGER :: IERROR, IER, ISTRAI
       REAL(DP) :: EIRENE_RESET_SECOND, EIRENE_SECOND_OWN, DUMMY, TIMI
       integer, save :: inentry=1, init_log=0
       logical :: nlplas_save

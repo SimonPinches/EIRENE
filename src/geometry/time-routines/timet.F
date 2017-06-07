@@ -61,7 +61,7 @@ C
  
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: TTT, PHI0, X001, TO, AA, SUM, TU, XTO, EPSTST, XTU,
-     .          F, FZ, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
+     .          F, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
      .          Y0TEST, z01_cell
       INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
      .           NZSAVE, INCZ, J1, IRSAVE, EIRENE_LEARCA

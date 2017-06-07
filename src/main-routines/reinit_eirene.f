@@ -7,8 +7,9 @@
  
       implicit none
  
-      REAL(DP) :: dummy, H1RN_REINIT,  ranf_eirene_reinit,
-     &     ranset_eirene_reinit, sheath_reinit
+      REAL(DP) :: dummy, ranf_eirene_reinit,
+     &     ranset_eirene_reinit
+C      REAL(DP) :: H1RN_REINIT
  
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
