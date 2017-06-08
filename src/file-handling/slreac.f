@@ -23,6 +23,7 @@ cdr            May have corrupted extrapolation in some cases
 c     Sept.16: two new internal subroutines,
 c              a) to read validity range information,
 c              b) three parameters for each validity boundary, for extrapolation options
+c    June  17: read_colrad (for old H-COL option) moved to separate routine.
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -56,7 +57,10 @@ c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
 c    REAC  : in case FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
-
+c    REAC  : in case FILNAM.eq.CONST:
+c               reac IS MIS-USED AS  fit-flag: iftflg.
+C               not NICE, VERY CONFUSING.
+C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
 
 cdr what does that mean for H-COL? ADAS ?  what about "spectral database"?
 cdr where described, where read ?
@@ -572,7 +576,7 @@ cdr  Not ready, and not to be used by 3rd party
         RETURN
       END IF
 C
-      IF (INDEX(FILNAM,'CONST').NE.0)THEN
+      IF (INDEX(FILNAM,'CONST').NE.0) THEN
         IND=INDEX(REACSTR,'FT')
         IF (IND /= 0) THEN
 c  read parameter for type of fitting expression from data file

@@ -29,6 +29,12 @@ C       SET UP TABLES (E.G. OF REACTION RATE ) FOR EL PROCESSES
 C
 C   MEANING OF INPUT VARIABLES: SEE XSTCX
 
+C   KK:      COMMON IDENTIFIER FOR PROCESS, USED FOR POTENTIAL, CROSS SECTION, RATES,
+C                                           STORAGE SAVING MODE ETC...
+C   FACTKK:  COMMON SCALING FACTOR FOR PROCESS KK
+C   NREAEL(IREL) = KK DURING MC RUN. THIS ESTABLISHES LINK BETWEEN IREL AND KK, MUST BE UNIQUE
+
+
 C  RETURNS:
 C    MODCOL(5,...)
 C    TABEL3(IREL,NCELL,...)  1/s per incident test particle
@@ -82,10 +88,24 @@ C
       ADDEL(IREL,IPL) = ADDTL
       
       IPLTI = MPLSTI(IPL)
-C
-C POTENTIAL
+
+C..................................................................
+C 0. INTERACTION POTENTIAL, DIFF. CROSS SECTION INFORMATION, ETC....
+C..................................................................
       IF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.1) THEN
-        MODCOL(5,0,IREL)=KK
+cdr  use total cross section and rate coefficients for transport.
+cdr  differential cross section or interaction potential for collision kinetics
+        MODCOL(5,0,IREL)=KK  !  fit parameters for interaction potential
+cdr                          !  this should become = iftflg(kk,0),
+cdr
+cdr                          !  set here: pot(1:9,irel)=reacdat(kk):.....
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN
+cdr  use diffusion cross section and diffusion rate coeff. for transport
+        modcol(5,0,irel)=0   !  isotropic scattering IN COM
+
+cdr  or
+cdr  use 0.5*(diffusion cross section) and 0.5*(diffusion rate coeff.) for transport 
+c       modcol(5,0,irel) =-1, scattering angle =PI IN COM (=exchange of identity in LAB)
       ENDIF
 C
 C...................................................................

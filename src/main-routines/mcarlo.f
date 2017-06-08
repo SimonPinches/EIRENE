@@ -86,7 +86,7 @@ C
      .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
      .          tim1, tim2,
      .          rn1
-      REAL(DP), EXTERNAL :: RANF_EIRENE 
+      REAL(DP), EXTERNAL ::  RANF_EIRENE 
       INTEGER, EXTERNAL :: RANSET_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE
 
