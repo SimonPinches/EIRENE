@@ -1909,7 +1909,7 @@ c  pitch angle, no species index
             ENDIF
 2334      CONTINUE
 c   cell volume as in b2 code, no species index (cell centered)
-        ELSEIF (NAINT(IAIN).EQ.15) THEN
+        ELSEIF (NAINT(IAIN).EQ.17) THEN
           DO 2335 IN=1,NTRII
             IF (IXTRI(IN).GT.0) THEN
               ADINTF(IAIN,IN)=VOLB(IXTRI(IN),IYTRI(IN))
@@ -1918,7 +1918,7 @@ c   cell volume as in b2 code, no species index (cell centered)
             ENDIF
 2335      CONTINUE
 cdr  magnetic field strength, Tesla
-        ELSEIF (NAINT(IAIN).EQ.16) THEN
+        ELSEIF (NAINT(IAIN).EQ.18) THEN
           DO 2336 IN=1,NTRII
             IF (IXTRI(IN).GT.0) THEN
               ADINTF(IAIN,IN)=BFELDB(IXTRI(IN),IYTRI(IN))
@@ -1927,17 +1927,15 @@ cdr  magnetic field strength, Tesla
             ENDIF
 2336      CONTINUE
 
-cdr:  free: NAINT(IAIN)=17
-
 cdr:  added in may 2015:  put cartesian unit vector along B_poloidal on ADIN
 
-        ELSEIF (NAINT(IAIN).EQ.18) THEN
+        ELSEIF (NAINT(IAIN).EQ.15) THEN
           DO 2338 IY=1,NDYA
           DO 2338 IX=1,NDXA
             IN=IY+(IX-1)*NR1ST
             ADINTF(IAIN,IN)=PUX(IN)
 2338      CONTINUE
-        ELSEIF (NAINT(IAIN).EQ.19) THEN
+        ELSEIF (NAINT(IAIN).EQ.16) THEN
           DO 2339 IY=1,NDYA
           DO 2339 IX=1,NDXA
             IN=IY+(IX-1)*NR1ST
@@ -2183,27 +2181,29 @@ C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
      .                          FNIXB(NPBS,IY,IFL))*FL(IPLS)/DELY*FRAC
 
 C  SET DEFAULT ION ENERGY FLUXES FROM B2-BOUNDARY CONDITIONS
-!                delti_para=3
-!                delte_para=0.5
-!                delti_perp=2
-!                delte_perp=0
+                delti_para=3
+                delte_para=0.5
+                delti_perp=2
+                delte_perp=0
 !  only one of the next two is different from 0
 !pb                delti_para=deltai_parxb(npbs,iy)
 !pb                delti_perp=deltai_radxb(npbs,iy)
 !  only one of the next two is different from 0
 !pb                delte_para=deltae_parxb(npbs,iy)
 !pb                delte_perp=deltae_radxb(npbs,iy)
-!pb                tis=TISTEP(IPLSTI,ITARG,IG)
-!pb                tes=TESTEP(ITARG,IG)
+
+                   tis=TISTEP(IPLSTI,ITARG,IG)
+                   tes=TESTEP(ITARG,IG)
 !pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
 !pb     .                                  FL(IPLS)/DELY*
 !pb     .            (TIS*delti_perp*ABS(Fnix_yb(npbs,iy,ifl))+
 !pb     .             TIS*delti_para*ABS(fnixb  (npbs,iy,ifl))+
 !pb     .             TES*delte_para*ABS(fnixb  (npbs,iy,ifl)))
-!pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
-!pb     .                                  FL(IPLS)/DELY*
-!pb     .            (TIS*(delti_para+delti_perp)*ABS(fnixb(npbs,iy,ifl))+
-!pb     .             TES*(delte_para+delte_perp)*ABS(fnixb(npbs,iy,ifl)))
+
+                   ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
+     .                                     FL(IPLS)/DELY*
+     .            (TIS*delti_para*ABS(fnixb(npbs,iy,ifl))+
+     .             TES*delte_para*ABS(fnixb(npbs,iy,ifl)))
               ENDIF
             ENDIF
 
@@ -2234,7 +2234,8 @@ C        DATA FOR POLOIDAL POLYGON NPES
             END IF                                             !VK
 3013      CONTINUE
 
-!  present model: 
+          IF (.FALSE.) THEN
+!  intermediate model for testing: 
 !  within a given cell all incident ions (of all species) have same
 !  energy E0B2 (delta function approximation) (NEMOD1=8 or NEMOD1=9)
 
@@ -2251,6 +2252,7 @@ C        DATA FOR POLOIDAL POLYGON NPES
      .                                  FLSTEP(IPLS,ITARG,IG)*E0B2
               END IF
             end do
+          END IF
           END IF
         ENDDO
 C
@@ -2422,28 +2424,30 @@ C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
      .                            FNIYB(IX,NPBS,IFL))*FL(IPLS)/DELX*FRAC
 
 C  SET DEFAULT ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
-!                delti_para=3
-!                delte_para=0.5
-!                delti_perp=2
-!                delte_perp=0
+                delti_para=3
+                delte_para=0.5
+                delti_perp=2
+                delte_perp=0
 !  only one of the next two is different from 0
 !pb                delti_para=deltai_paryb(ix,npbs)
 !pb                delti_perp=deltai_radyb(ix,npbs)
 !  only one of the next two is different from 0
 !pb                delte_para=deltae_paryb(ix,npbs)
 !pb                delte_perp=deltae_radyb(ix,npbs)
-!pb                tis=TISTEP(IPLSTI,ITARG,IG)
-!pb                tes=TESTEP(ITARG,IG)
+                tis=TISTEP(IPLSTI,ITARG,IG)
+                tes=TESTEP(ITARG,IG)
 !pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
 !pb     .                                  FL(IPLS)/DELX*
 !pb     .            (TIS*delti_perp*ABS(Fniyb  (ix,npbs,ifl))+
 !pb     .             TIS*delti_para*ABS(fniy_xb(ix,npbs,ifl))+
 !pb     .             TES*delte_para*ABS(fniy_xb(ix,npbs,ifl)))
 
-!pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
-!pb     .                                  FL(IPLS)/DELX*
-!pb     .           (TIS*(delti_para+delti_perp)*ABS(Fniyb(ix,npbs,ifl))+
-!pb     .            TES*(delte_para+delte_perp)*ABS(Fniyb(ix,npbs,ifl)))
+                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
+     .                                  FL(IPLS)/DELX*
+     .              TIS*delti_perp*ABS(Fniyb(ix,npbs,ifl))
+
+!pb  .             +TES*(delte_para+delte_perp)*ABS(Fniyb(ix,npbs,ifl)))
+
 !dr  try ion energy fluxes from B2 directly. But then velocs-sampling inconsistency
 !                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
 !     .                                  ABS(Feiyb(ix,npbs))/DELX
@@ -2489,7 +2493,8 @@ C        RADIAL POLYGON NPES DATA
             END IF                                             !VK
 3023      CONTINUE
 
-!  present model: 
+          IF (.FALSE.) THEN
+!  intermediate model for testing: 
 !  within a given cell all incident ions (of all species) have same
 !  energy E0B2 (delta function approximation) (NEMOD1=8 or NEMOD1=9)
 
@@ -2506,6 +2511,7 @@ C        RADIAL POLYGON NPES DATA
      .                                  FLSTEP(IPLS,ITARG,IG)*E0B2
               END IF
             end do
+          END IF
           END IF
         ENDDO
 3030    CONTINUE
@@ -2545,6 +2551,9 @@ C  SORLIM DEFAULT WAS 0.D0
         SORLIM(1,ITARG)=0240
       ENDIF
       SORIND(1,ITARG)=ITARG
+
+!  intermediate model for testing:
+      IF (.FALSE.) THEN
 !  SELECT THE PREPROGRAMMED SOURCE ENERGY CONDITIONAL DISTRIBUTION CONSISTENT 
 !  TO B2 SETTINGS
 C  USE ENERGY FLUXES SPECIFIED HERE, IE., SORENE, SORENI ARE REDUNDANT
@@ -2555,6 +2564,7 @@ C  USE ENERGY FLUXES SPECIFIED HERE, IE., SORENE, SORENI ARE REDUNDANT
 !  NO SHEATH IS CALCULATED
         NEMODS(ITARG)=8
       END IF
+      ENDIF
  
 C  IN CASE INDIM=4: INSOR,INDGRD,... ARE REDUNDANT
       NRSOR(1,ITARG)=-1

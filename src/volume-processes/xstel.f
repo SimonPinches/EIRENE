@@ -9,6 +9,16 @@ cdr    oct.14: bug fix: use kread rather than kk in eplel3.
 cdr    oct.14: remove pls array, synconize with xstcx started
 cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
+cdr   jan .17: modcol(5,0,irel):  flag for differential cross section model, rather than =kk.
+!              modcol(5,0,irel)=-1  : bgk (relaxation) collision, scattering angle =Pi in COM
+!              modcol(5,0,irel)=0   : isotropic in COM, assume: the cross section
+!                                     and rate coefficients are "diffusion" cross section,
+!                                     and rate coefficients, respectively.
+!              modcol(5,0,irel)=1   : interaction potential is given via fit parameters
+cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) directly.
+cdr                      Reaction identifyer KK is defined twice, within same routine veloel.
+cdr                      This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
+cdr                      and by providing the potential p(1:9,irel) here, rather than in veloel.                   
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
@@ -78,7 +88,10 @@ C POTENTIAL
         MODCOL(5,0,IREL)=KK
       ENDIF
 C
-C CROSS SECTION (E-LAB) AVAILABLE ?
+C...................................................................
+C 1. CROSS SECTION (E-LAB) (CM**2) , AVAILABLE ?
+C...................................................................
+
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
         MODCOL(5,1,IREL)=KK
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
@@ -95,9 +108,9 @@ C..................................................................
 
         MODCOL(5,2,IREL)=MODC
 C  2.B)
-      IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
+      IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
-      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI) NEND=9 HERE
+      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
@@ -341,6 +354,9 @@ C
 C
       IF (NPBGKP(IPL,1).NE.0) THEN
         WRITE (iunout,*) 'THIS IS ALSO BGK COLLISION NO. IBGK= ',IBGK
+        MODCOL(5,0,IREL)=-1
+        IF (NPBGKP(IPL,2).EQ.0)
+     .      WRITE (iunout,*) 'SELF COLLISION      ' 
         IF (NPBGKP(IPL,2).NE.0) THEN
           ISPECB=NPBGKP(IPL,2)
           ITYPB=EIRENE_IDEZ(ISPECB,1,3)
@@ -366,7 +382,8 @@ C
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
       WRITE (iunout,*) 'PROCESS NO. KK ',NREAEL(IREL)
-      WRITE (IUNOUT,*) 'MODCOL ',MODCOL(5,1,IREL),MODCOL(5,2,IREL),
+      WRITE (IUNOUT,*) 'MODCOL(0)   ',MODCOL(5,0,IREL)
+      WRITE (IUNOUT,*) 'MODCOL(1:4) ',MODCOL(5,1,IREL),MODCOL(5,2,IREL),
      .                           MODCOL(5,3,IREL),MODCOL(5,4,IREL)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)
