@@ -1,17 +1,18 @@
 cdr jan 2017 :  started to syncronize with prttal. should be largely identical
 c               added: 1d output onto stream ifile, also for VOL tally.
 c               more comments, better formats for large grids.
+cdr jun 2017 :  sync. with prttal. Also 1D printout on separate output streams.
 C 
 C  INPUT:  T1,T2,T3:         TALLY TEXT, SPECIES AND UNITS, RESP.
 C          PROF:             TALLY DATA, ON 1d ARRAX PROF(1:NRAD)
-C          X:                MISSING HERE
+C          X:                X-COORDINATE: ONLY FOR 1D STANDARD GRIDS
 C                            CURRENTLY: ZONE CENTERED
 C          NR,NP,NT,NB,NTT:  GRID STRUCTURE FOR 2D OR 3D CASES
 C          IFLAG:            SEE BELOW
 C          IFILE:            WRITE OUT TALLY "PROF" ONTO STREAM: FORT.IFILE
 C
       SUBROUTINE
-     .  EIRENE_PRTVOL(T1,T2,T3,PROF,NR,NP,NT,NB,NTT,IFLAG,IFILE)
+     .  EIRENE_PRTVOL(T1,T2,T3,PROF,X,NR,NP,NT,NB,NTT,IFLAG,IFILE)
 C
 C  SIMILAR TO PRTTAL, BUT FOR "TOTAL TALLIES" SUCH AS CELL VOLUMES
 C  IFLAG=-1:  ONLY HEADER IS PRINTED
@@ -28,7 +29,7 @@ C
       IMPLICIT NONE
  
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
-      REAL(DP), INTENT(IN) :: PROF(*)
+      REAL(DP), INTENT(IN) :: PROF(*),X(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE
       INTEGER, PARAMETER :: NSTREAM=15
       REAL(DP) :: H(6)
@@ -81,7 +82,7 @@ C  THIS WAS A 1D RUN, AT LEAST THERE IS ONLY A 1D GRID STRUCTURE
 C  TO BE DONE: ALSO REQUIRED: LEVGEO.LE.3, OTHERWISE: TRIANGLES, TETRAHEDRONS, HERE
           NTTS=NR-1
           DO IRAD=1,NTTS,1
-            WRITE (IFILE,5) IRAD,PROF(IRAD)
+            WRITE (IFILE,5) IRAD,X(IRAD),PROF(IRAD)
           ENDDO
 C   NR: AVERAGED VALUE
           WRITE (IFILE,'(72A1)') TL
@@ -152,7 +153,7 @@ C
             IF (IR.GE.NCOL) GOTO 112
 111       CONTINUE
 112       CONTINUE
-          CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
+          IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
           IR=0
           IF (IJ.LE.NRM) GOTO 110
 C  NEXT SEGMENT
@@ -191,7 +192,7 @@ C
             IF (IP.GE.NCOL) GOTO 223
 222       CONTINUE
 223       CONTINUE
-          CALL EIRENE_WRITE_TALLY (K,H,IP,IUNOUT)
+          IF (IP.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IP,IUNOUT)
 C         WRITE (iunout,64) (K(I),H(I),I=1,IP)
           IP=0
           IF (IJ.LE.NPM) GOTO 220
@@ -220,7 +221,7 @@ C
             IF (IR.GE.NCOL) GOTO 334
 333       CONTINUE
 334       CONTINUE
-          CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
+          IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
 C         WRITE (iunout,64) (K(I),H(I),I=1,IR)
           IR=0
           IF (IJ.LE.NRM) GOTO 330
@@ -249,7 +250,7 @@ C
             IF (IR.GE.NCOL) GOTO 445
 444       CONTINUE
 445       CONTINUE
-          CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
+          IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
 C         WRITE (iunout,64) (K(I),H(I),I=1,IR)
           IR=0
           IF (IJ.LE.NRM) GOTO 440
@@ -283,7 +284,7 @@ C
           IF (IR.GE.NCOL) GOTO 1112
 1111    CONTINUE
 1112    CONTINUE
-        CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
+        IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
 C       WRITE (iunout,64) (K(I),H(I),I=1,IR)
         IR=0
         IF (IJ.LE.NRM) GOTO 1110
@@ -309,7 +310,7 @@ C
           IF (IP.GE.NCOL) GOTO 1223
 1222    CONTINUE
 1223    CONTINUE
-        CALL EIRENE_WRITE_TALLY (K,H,IP,IUNOUT)
+        IF (IP.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IP,IUNOUT)
 C       WRITE (iunout,64) (K(I),H(I),I=1,IP)
         IP=0
         IF (IJ.LE.NPM) GOTO 1220
@@ -335,7 +336,7 @@ C
           IF (IT.GE.NCOL) GOTO 1334
 1333    CONTINUE
 1334    CONTINUE
-        CALL EIRENE_WRITE_TALLY (K,H,IT,IUNOUT)
+        IF (IT.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IT,IUNOUT)
 C       WRITE (iunout,64) (K(I),H(I),I=1,IT)
         IT=0
         IF (IJ.LE.NTM) GOTO 1330
@@ -370,7 +371,7 @@ C  ADDITIONAL CELLS
         IF (IA.GE.NCOL) GOTO 556
 555   CONTINUE
 556   CONTINUE
-      CALL EIRENE_WRITE_TALLY (K,H,IA,IUNOUT)
+      IF (IA.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IA,IUNOUT)
 C     WRITE (iunout,64) (K(IC),H(IC),IC=1,IA)
       IA=0
       IF (IJ.LE.NTT) GOTO 550

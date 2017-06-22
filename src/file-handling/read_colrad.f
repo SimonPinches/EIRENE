@@ -1,7 +1,10 @@
        subroutine EIRENE_read_colrad (ir,reac,isw,iz1)
 
 cdr  purpose:  prepare usage of A&M data from an internal, built-in, 
-cdr            collisional radiative code: H_colrad
+cdr            collisional radiative code: 
+cdr  1)  H_colrad, 
+cdr  2)  He_colrad,
+cdr  3)  H2-colrad....
 cdr            internal eirene reaction no. IR
 cdr
 cdr  input:
@@ -15,8 +18,8 @@ c                  =8-10  data for energy weighted rate coefficient      (only =
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
 c           iz1:   not in use 
 c                  
-cdr:  currently used only H.4, 2.1.5 and H.10, 2.1.5, ionisation
-cdr   to be done:         H.4. 2.1.8 and H.10, 2.1.8, recombination
+cdr:  currently used only H.4, 2.1.5 and H.10, 2.1.5, EI,  ionisation
+cdr   to be done:         H.4. 2.1.8 and H.10, 2.1.8, RC   recombination
 cdr                       and  H.11, H.12: selected population
 c 
 c  to be done: units, log-lin, scaling, asymptotics
@@ -39,7 +42,8 @@ c  to be done: units, log-lin, scaling, asymptotics
 
 cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10)  goto 1000
-cdr  tbd: also exit unless 2.1.5,  in particular: 2.1.8 (recombination) is missing.
+cdr  tbd: also exit unless 2.1.5,  in particular: 
+cdr       2.1.8 (recombination) is missing.
 cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef. 
       
 
@@ -133,18 +137,15 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
           REACDAT(IR)%RTCEW%JFEX2MX = 0
           
         CASE DEFAULT
-          WRITE (IUNOUT,*) ' READ_COLRAD: WRONG DATA TYPE SPECIFIED '
-          WRITE (IUNOUT,*) ' REACTION NO. ', IR
-          WRITE (IUNOUT,*) ' DATA TYPE H.', ISW
-          CALL EIRENE_EXIT_OWN(1)
+          GOTO 1000         
         END SELECT
         RETURN
 
 1000  continue
       WRITE (IUNOUT,*) ' ERROR IN "READ_COLRAD" : '
-      WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPECIFIED FOR TAB2D OPTION'
+      WRITE (IUNOUT,*) ' WRONG DATA TYPE FOR INTERNAL COLRAD OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR
-      WRITE (IUNOUT,*) ' REACTION TYPE H.', ISW
+      WRITE (IUNOUT,'(1X,A,I0)') ' DATA TYPE H.', ISW
       CALL EIRENE_EXIT_OWN(1)
       RETURN
 

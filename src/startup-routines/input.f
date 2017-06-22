@@ -332,9 +332,6 @@ C  READ TEXT DESCRIBING THE RUN, 100--199
 C
 100   CONTINUE
 C
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time vor einlesen ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
       CALL DATE_AND_TIME(CDATE,CTIME)
       READ(CDATE(1:4),*) I1
@@ -3723,9 +3720,6 @@ C
 C
       CALL EIRENE_PAGE
 
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time nach einlesen ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
 C
 6662  FORMAT (L1,1X,A24,1X,I1,1X,4(2I3,1X))
@@ -4387,10 +4381,6 @@ C  COUPLED RUN, READ BLOCK *** 14 IN INTERFACING ROUTINE INFCOP (ENTRY IF0COP)
 C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30), also set NAINI, NCOPII, NCOPIE there
         CALL EIRENE_IF0COP
       ENDIF
-
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time nach if0cop ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
 C
 C  INPUT BLOCK 14 DONE
@@ -5091,10 +5081,6 @@ C  COUNT DIRECTIONAL CELL-BASED SPECTRA
 
       IF (.NOT.ALLOCATED(BACK_SPEC) .AND. (NBACK_SPEC > 0))
      .   ALLOCATE(BACK_SPEC(NBACK_SPEC))
-
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time am ende von input ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
 C
       RETURN

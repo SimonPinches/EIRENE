@@ -411,7 +411,7 @@ C   SPECIAL TREATMENT FOR PRINTING CELL VOLUMES (INPUT TALLY ITALI=NTALO=14)
             ELSEIF (ITALI.EQ.NTALO) THEN
               CALL EIRENE_PRTVOL(TXTPLS(K,ITALI),TXTPSP(K,ITALI),
      .                    TXTPUN(K,ITALI),
-     .                    HELPP,
+     .                    HELPP,X1D,
      .                    NR1PR,NP2PR,NT3PR,NBMLT,NSBPR,
      .                    NFLGPR,NTLVFL(IPRV))
             ENDIF
