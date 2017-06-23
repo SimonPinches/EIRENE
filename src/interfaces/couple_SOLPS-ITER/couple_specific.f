@@ -360,7 +360,7 @@
       !c======================================================================
       !c*** fill arrays
       !c
-      write(*,*) 'NSTRAI,NESTIM,NSDVI',nstrai,nestim,nsdvi
+cdr   write(*,*) 'NSTRAI,NESTIM,NSDVI',nstrai,nestim,nsdvi
       nnstrai=nstrai
       !c
 

@@ -43,7 +43,9 @@ cdr  sept. 16: started to add extrapolation options. not ready....
 !                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              remove erate in case of ifit=5 and generalize to more cr models.
+!              erate in case of ifit=5 hard wired to E_scr. 
+!              What happens in case of recombination ?
+!              and generalize to more cr models.
 !              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 

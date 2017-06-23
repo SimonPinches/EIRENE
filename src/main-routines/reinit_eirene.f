@@ -8,21 +8,18 @@
       implicit none
  
       REAL(DP) :: dummy, H1RN_REINIT,  ranf_eirene_reinit,
-     &     sheath_reinit
-      INTEGER, EXTERNAL :: RANSET_EIRENE_REINIT
+     &            sheath_reinit
+      integer :: idummy
+      INTEGER, EXTERNAL :: ranset_eirene_reinit
  
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
       call EIRENE_SIGHA_REINIT
  
-!  OUT Of USE
-!      dummy = H1RN_REINIT
-!      call H1RNV_REINIT
- 
       dummy = ranf_eirene_reinit()
-      dummy = ranset_eirene_reinit()
+      idummy = ranset_eirene_reinit()
  
-!pb      call INIT_COUTAU_REINIT
+!pb   call INIT_COUTAU_REINIT
       call EIRENE_CRECH_REINIT
  
       call EIRENE_STCOOR_REINIT
@@ -36,7 +33,7 @@ C     reinitialization start
  
       call EIRENE_REFLEC_REINIT
  
-!pb      call UPTCOP_REINIT
+!pb   call UPTCOP_REINIT
  
       call EIRENE_STATIS_BGK_REINIT
 

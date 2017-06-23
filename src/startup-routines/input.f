@@ -1,3 +1,4 @@
+cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
 cdr             added: logical NEXVS   (default: F. Unclear meaning, so far...)
 c               added: logical TRCRNF  (trace-back for random seeds for correlated sampling)
@@ -211,7 +212,9 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
-     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
+     .           NB,NS,NA
+
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -329,9 +332,6 @@ C  READ TEXT DESCRIBING THE RUN, 100--199
 C
 100   CONTINUE
 C
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time vor einlesen ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
       CALL DATE_AND_TIME(CDATE,CTIME)
       READ(CDATE(1:4),*) I1
@@ -2644,10 +2644,11 @@ C
 
 C  AMPTS: (option added 2014) common multiplier for max. allowed cpu time NTCPU,
 C          and for number of histories NPTS (see below)
-      IF(AMPTS.GT.0.0) THEN
+      IF (AMPTS.EQ.0.0_DP) AMPTS=1.0_DP
+      IF(AMPTS.NE.1.0_DP) THEN
         MPTS_COMSOU=AMPTS
         NTCPU=INT(REAL(NTCPU)*AMPTS)
-        WRITE (iunout,*) ' NTCPU, NPTS ENHANCED BY FACTOR AMPTS= ',
+        WRITE (iunout,*) '       NTCPU, NPTS ENHANCED BY FACTOR AMPTS ',
      .                     AMPTS
       ELSE
         MPTS_COMSOU=1.0
@@ -3432,8 +3433,8 @@ C
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
-      NCHEN = NCHENI
-      WRITE (iunout,'(1x,a,2i5)') 'NCHORI,NCHENI= ',NCHORI,NCHENI
+      NCHEN = NCHENI      
+      WRITE (iunout,*) '        NCHORI,NCHENI= ',NCHORI,NCHENI
       CALL EIRENE_LEER(1)
       IF (IABS(NCHENI).GT.NCHEN)
      .    CALL
@@ -3464,7 +3465,7 @@ C  SKIP READING REST OF THIS BLOCK
       IF (ZEILE(1:3).NE.'***') GOTO 1230
       IREAD=1
 C
-C  READ DATA FOR NONLINEAR MODE  1300--1399
+C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
 1300  CONTINUE
 C
@@ -3719,9 +3720,6 @@ C
 C
       CALL EIRENE_PAGE
 
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time nach einlesen ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
 C
 6662  FORMAT (L1,1X,A24,1X,I1,1X,4(2I3,1X))
@@ -3833,13 +3831,20 @@ C
       IF (.NOT.NLADD) NRADD=0
       IF (.NOT.NLMLT) NBMLT=1
 
+C  DEFAULT:  NO COARSE GRAINING OR REFINING OF GRID
+C            THESE SETTINGS MAY BE ALTERED LATER, E.G. IN IF0COP.
       DO IN=1,NRAD
         NCLTAL(IN)=IN
       END DO
+      NSURF=NR1ST*NP2ND*NT3RD*NBMLT
+      NSBOX=NSURF+NRADD
+
       NR1TAL = NR1ST
       NP2TAL = NP2ND
       NT3TAL = NT3RD
       NRADD_TAL = NRADD
+      NSURF_TAL = NSURF      
+      NSBOX_TAL = NSBOX
 C
 C  SOURCE PARAMETERS AND (REFLECTING) BOUNDARY CONDITIONS,
 C  ON ADDITIONAL AND NON-DEFAULT STANDARD SURFACES
@@ -4377,10 +4382,6 @@ C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30), also set NAINI, NCO
         CALL EIRENE_IF0COP
       ENDIF
 
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time nach if0cop ',tpb2-tpb1
-!pb      tpb1 = tpb2
-
 C
 C  INPUT BLOCK 14 DONE
 C
@@ -4474,6 +4475,10 @@ C
       IF (.NOT.LBGKV) NSIGI_BGK=0
       IF (.NOT.LCOPV) NSIGI_COP=0
 
+      NSIGI_COP=0  !  TURN OFF STATIS_COP FOR COUPLING TALLIES
+CDR  HIDDEN LINK REMOVAL:
+CDR  NSIGI_COP, STATUS_COP AND ALL RELATED CODE IS REDUNDANT, SINCE COUPLING
+CDR  TALLIES ARE ALSO DEFAULT TALLIES
       IF ((NSIGI_COP > 0) .AND. (NCPVI >= 3*NPLSI+4))  THEN
         IIH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = NTALM
         IGH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = (/ (I,I=1,3*NPLSI+4) /)
@@ -4497,7 +4502,19 @@ C
       NSTRD=NR1ST*NP2ND*NT3RD
       NBLCKS=NBMLT*NP2ND*NT3RD
       NSBOX=NSURF+NRADD
+      NS=NSURF_TAL
+      NB=NSBOX_TAL
+      NA=NRADD_TAL
+      NSURF_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT
       NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD_TAL
+      IF (NS.NE.NSURF_TAL.OR.NB.NE.NSBOX_TAL.OR.
+     .    NA.NE.NRADD_TAL) THEN
+        WRITE (IUNOUT,*) 'INCONSISTENCY IN MULTI-GRID DATA ' 
+        WRITE (IUNOUT,*) 'NSBOX_TAL, NB ', NSBOX_TAL, NB
+        WRITE (IUNOUT,*) 'NSURF_TAL, NS ', NSURF_TAL, NS
+        WRITE (IUNOUT,*) 'NRADD_TAL, NA ', NRADD_TAL, NA
+      ENDIF
+
       IF (NSBOX.GT.NRAD) THEN
         CALL EIRENE_MASPRM('NRAD',4,NRAD,'NSBOX',5,NSBOX,IERROR)
         CALL EIRENE_EXIT_OWN(1)
@@ -4772,9 +4789,7 @@ C
 4000  CONTINUE
 C
 
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time vor plasma definition ',tpb2-tpb1
-!pb      tpb1 = tpb2
+
 
 !  NOTHING IS DONE IF ARRAYS FOR BACKGROUND ARE ALREADY ALLOCATED
       IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
@@ -4787,14 +4802,12 @@ C  OR FROM COMMON BRAEIR (NLPLAS)
         CALL EIRENE_IF1COP
       ENDIF
 
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time fuer if1cop ',tpb2-tpb1
-!pb      tpb1 = tpb2
 C
       IF (NSTEP > 0) CALL EIRENE_ALLOC_CSTEP
 C
-cdr  vol are cell volumes on the fine grid
-cdr  coarser grid may have been set
+cdr  VOL are cell volumes on the fine grid
+cdr  coarser grid FOR SCORING may have been set, find cell volumes
+cdr  VOLTAL on coarser grid
       VOLTAL = EPS60
       DO IN=1,NSBOX
         INC = NCLTAL(IN)
@@ -5007,6 +5020,7 @@ C
      .  EIRENE_MASBR2('IGJUM3 ',IGJUM3,0,NOPTIM,1,NSOPT,NLIMPS,NBITS)
         END IF
         CALL EIRENE_LEER(1)
+
         DO 7702 J=1,NSOPT
           CALL EIRENE_MASJ3
      .  ('J,NLIMII,NLIMIE          ',J,NLIMII(J),NLIMIE(J))
@@ -5067,10 +5081,6 @@ C  COUNT DIRECTIONAL CELL-BASED SPECTRA
 
       IF (.NOT.ALLOCATED(BACK_SPEC) .AND. (NBACK_SPEC > 0))
      .   ALLOCATE(BACK_SPEC(NBACK_SPEC))
-
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time am ende von input ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
 C
       RETURN

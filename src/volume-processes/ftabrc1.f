@@ -52,7 +52,7 @@ cdr  automatic cut off at density 1E8: collaps fit to Corona value.
         PLS=MAX(DEIMIN,DEINL(K))
 
 cdr  DSUB=1e8, recaling of density parameter, done in rate coeff.
-cdr  ony valid for AMJUEL fits.
+cdr  only valid for AMJUEL fits.
  
         TBRC = EIRENE_RATE_COEFF(KK,TEINL(K),PLS,.TRUE.,1,ERATE)*
      .         FACRRC(IRRC,1)

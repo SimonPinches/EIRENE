@@ -90,10 +90,10 @@ C
       NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
 
-      CALL DEFAULTS_USR
+      CALL EIRENE_DEFAULTS_USR
 
 cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
-      IUNIN = 1
+c     IUNIN = 1
       IUNIN = IUNIN + IFOFF
  
       IUNOUT = 6
