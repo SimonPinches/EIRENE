@@ -26,7 +26,7 @@ c  hard wired: density parameter in fit scaled by DSUB=1e-8, done in rate_coeff.
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: DEIMIN, DSUB, ZX, TBRC, PLS,
+      REAL(DP) :: DEIMIN, ZX, TBRC, PLS,
      .            EIRENE_FTABRC1,
      .            EIRENE_RATE_COEFF,
      .            ERATE

@@ -34,10 +34,6 @@ c  to be done: units, log-lin, scaling, asymptotics
       integer, intent(in) :: ir, isw, iz1
       character(len=*), intent(in) :: reac
 
-      integer :: nz, nde, nte, iza, ize, io, lc, ind, ian, ien,
-     .           ide, ite, iz
-      character(132) :: zeile
-
       close (29+ifoff)  ! nothing further to be read, currently
 
 cdr  error exit for unfinished options

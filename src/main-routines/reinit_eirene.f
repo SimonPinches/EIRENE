@@ -7,8 +7,7 @@
  
       implicit none
  
-      REAL(DP) :: dummy, ranf_eirene_reinit,
-     &            sheath_reinit
+      REAL(DP) :: dummy, ranf_eirene_reinit
 C      REAL(DP) :: H1RN_REINIT
       integer :: idummy
       INTEGER, EXTERNAL :: ranset_eirene_reinit

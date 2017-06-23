@@ -97,9 +97,9 @@ C
      .          EIRENE_CROSS, 
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF, 
-     .          CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, VEFF,
-     .          SIG,  TBEL,
-     .          ELTHDUM, CTCHDUM, SIGMAX,  EHEAVY,
+     .          CEL, CXS, VEFFQ, VEFF,
+     .          TBEL,
+     .          SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
      .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
@@ -113,7 +113,8 @@ cdr  functions for 'on the fly' evaluation of a&m data
 
      .          RCMIN, RCMAX,
      .          ERATE
-C      REAL(DP) :: EIRENE_FEPLPI3, PLS, TBPI, TEE 
+C      REAL(DP) :: EIRENE_FEPLPI3, PLS, TBPI, TEE, CTCHDUM, ELTHDUM, ER, 
+C     .            RLMS, RMI, RMN, RMSI, SIG
       INTEGER :: IBGK, IAEL, IREL, IAEI, IREI, IAPI,
      .           IRPI, IACX, IRCX, 
      .           J, KK, IPLSTI,

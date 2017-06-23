@@ -68,14 +68,16 @@ C
  
       REAL(DP) :: TEST, VRELX,
      .          VXI, VYI, VZI, VRELQ, VN, VREL,
-     .          RLMS, RAN, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
+     .          RLMS, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
      .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS, 
      .          SEPS, RS,
-     .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, DUMSIGMA, PH,
-     .          CTTETHA, BMAX, ELTHETA, ER, ELMIN, ELMAX, B,
+     .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH,
+     .          BMAX, ER, ELMIN, ELMAX, B,
      .          VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ, VXN, VYN, VZN,
-     .          VX, VY, VZ, ELTHDUM, CTCHDUM, SIGHABER, ELAB,
+     .          VX, VY, VZ, ELAB,
      .          VR, ZARG, CEL, EIRENE_CROSS, VRQ
+C      REAL(DP) :: CTCHDUM, CTTETHA, DUMSIGMA, ELTHDUM, ELTHETA, RAN, 
+C     .            SIGHABER
       REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP) :: P(9)
       INTEGER :: IFLAG, IRL, IREAC, JJ, J, ICOUNT, KK
