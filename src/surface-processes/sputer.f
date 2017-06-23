@@ -203,8 +203,9 @@ C  target index 0   : data evaluated "on the fly"
      .           MODPYS, IIO, IPL, ILIM, ISP, IAT, IP, ISTSI, ISURF,
      .           ITA, NT, IA, NA, IFILE,ICOUNT
       integer :: isam
-      real(dp) :: wg(5),pm(5),final,flxlim
-      real(dp) :: EIRENE_YHAASZ97M, EIRENE_YHAASZ97
+      real(dp) :: wg(5),pm(5),final
+C      real(dp) :: flxlim
+      real(dp) :: EIRENE_YHAASZ97M
 
 
 C  NPROJ: PROJECTILE IDENTIFIER

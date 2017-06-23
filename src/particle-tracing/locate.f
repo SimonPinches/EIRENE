@@ -140,17 +140,14 @@ C
      .          VXSPTC, VYSPTC, VZSPTC, A, ZV, SUM1, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
      .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL, 
-     .          TIWD, TEWD, DPH, E00, DE, HW, SHIFT, DVDW, FAC, 
-     .          dwde, prmax, raw, res
+     .          TIWD, TEWD, DPH, E00, 
+     .          res
       REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym, prmin, sig, zmfp, ean, een, ye,
-     .            EIRENE_fpathph, flxfc, zmfp_cut, zmfp_e0, zmfp_e00,
+     .            yr, ym, 
+     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
      .            fac_e0, fac_e00,
-     .            hwvdw_pb,pla,B_NU, EN, spcvl, spcmx,
-     .            xleft, xright, weights
-      real(sp), allocatable :: eplot(:), y1plot(:), y2plot(:)
-      real(sp) :: y1a,y1e,y2a,y2e,e00_plot
-      real(DP) :: EMINSP,EMAXSP
+     .            xleft, xright
+C      REAL(DP) :: B_NU, pla
       real(dp) :: cflag(7,MSTOR0)
       REAL(DP), SAVE :: SNORM
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -160,15 +157,14 @@ C
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
      .           I2, IM, J, I1, IMP, NPANUO, ILINE, ISURF, ITRSF,
      .           IPOINT, ISOUR, ISRFS, I, ISTEP,
-     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, IPLSTI,
+     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, 
      .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
-     .           IPLTI, IROT, IL, IGND, ICELL, KK, IR, ILOOP, ISPC, nen,
-     .           NLOOP, IE, ictoff, iloc, 
+     .           IPLTI, IROT, KK, 
      .           ITYP_OLD, IGASP_OLD,IGASC_OLD
+C      INTEGER :: ILOOP, IPLSTI, NLOOP
       INTEGER, SAVE :: NLIMSQ
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
-      integer, save :: ifrstpb=0
       integer :: ityp_b1,ityp_b2,ipls_b1,ipls_b2
       real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
 C

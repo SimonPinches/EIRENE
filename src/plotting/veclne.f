@@ -37,7 +37,6 @@ C
       REAL(DP) :: SCLFCX, SCLFCY, VMIN, VMAX, DX, DY, CM, FAK, BRFL,
      .          D, DIAMETER, XM, YM, VX, VY, VABS, XMIN, XMAX, YMIN,
      .          YMAX, PLFL
-      REAL(SP) XY(800)
       REAL(SP) YH
       INTEGER :: ITR, IRAD, I, IR, IPART, NP1, NP2, IP
       CHARACTER*17 CH

@@ -92,31 +92,32 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
-      REAL(DP) :: EPPI3(9), EPCX3(9), EPEL3(9)
+      REAL(DP) :: EPCX3(9), EPEL3(9)
       REAL(DP) :: EIRENE_FPATHA,
      .          EIRENE_CROSS, 
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF, 
-     .          CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, TBCX, VEFF,
+     .          CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, VEFF,
      .          SIG,  TBEL,
      .          ELTHDUM, CTCHDUM, SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          CII, ELB,TII,V0_REL,VI_TH,TEE,VE_TH,
-     .          PLS, TBPI, EXPO,
+     .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
+     .          EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
      .          EIRENE_FTABEI1,
 
      .          RCMIN, RCMAX,
      .          ERATE
+C      REAL(DP) :: EIRENE_FEPLPI3, PLS, TBPI, TEE 
       INTEGER :: IBGK, IAEL, IREL, IAEI, IREI, IAPI,
      .           IRPI, IACX, IRCX, 
-     .           II, IF8, JAN, J, I1, I2, KK, IPLSTI,
-     .           IPL, IAT, IPLSV, IREAC
+     .           J, KK, IPLSTI,
+     .           IPLSV, IREAC
 C
 C  SET DEFAULTS: NO REACTIONS
 C

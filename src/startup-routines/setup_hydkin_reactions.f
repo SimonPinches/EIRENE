@@ -39,19 +39,19 @@ cdr            re extrapolation options.
       CHARACTER(2) :: COR, CREP
       CHARACTER(10), PARAMETER :: DIGIT   = '0123456789'
       CHARACTER(6), PARAMETER  :: SPECIAL = '_^{}+-'
-      CHARACTER(16) :: NONLETTER = SPECIAL//DIGIT
       INTEGER, ALLOCATABLE :: IEIGEN(:), INRC(:), IRC_PART(:)
       integer :: i2, ll, n_reac, n_spec, n_atoms, n_mol, n_ions, ifile,
-     .           n_testions, n_bulkions, isp, ipos, iposm, mult, i,
-     .           iel, itok, ier, irc, il, ind, ispz, iatm, imol, ig,
+     .           isp, ipos, iposm, mult, i,
+     .           iel, irc, il, ind, ispz, iatm, imol, ig,
      .           iion, ipls, iphot, ndumm, ibulkno, nlparts, nrparts,
      .           ibulk, iscd1, iscd2, iscd3, iscde, iestm, ibgk, k,
      .           ip, ipi, numsec, ispl, iscd4, ir, nre, j, nsc, ic,
      .           iori, ityp, iln
+C      integer :: n_bulkions, n_testions
       integer :: massec(4), multsec(4), itypar(0:4)
       real(dp) :: eelec, ebulk, escd1, escd2, escd3, freac, fldlm,
      .            e_el, e_k, 
-     .            r1mn, r1mx, r2mn, r2mx
+     .            r1mn, r1mx
       logical :: ladapt
       type(properties), allocatable :: species(:)
 cdr 
@@ -1169,7 +1169,6 @@ cdr    tbd:  jfex, FP... parameters??  done below....
       CHARACTER(26), PARAMETER :: SLETTER = 'abcdefghijklmnopqrstuvwxyz'
       CHARACTER(10), PARAMETER :: DIGIT   = '0123456789'
       CHARACTER(6), PARAMETER  :: SPECIAL = '_^{}+-'
-      CHARACTER(16) :: NONLETTER = SPECIAL//DIGIT
       CHARACTER(12) :: CHR
       integer :: ianf, ipos, il, it, imult, il2, ll
  

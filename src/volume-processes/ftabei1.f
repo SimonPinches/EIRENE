@@ -26,10 +26,11 @@ c              for evaluation of rate coefficient. But then the 'true' density i
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IREI, K
-      REAL(DP) :: TBEIC(9), EIRENE_FTABEI1, DEIMIN, DSUB, PLS, TBEI,
+      REAL(DP) :: EIRENE_FTABEI1, DEIMIN, PLS, TBEI,
      .            EIRENE_RATE_COEFF
+C      REAL(DP) :: DSUB
       REAL(DP) :: ERATE
-      INTEGER :: J, I, II, KK
+      INTEGER :: KK
  
       TBEI=0.D0
       KK = NREAEI(IREI)

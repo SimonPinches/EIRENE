@@ -71,9 +71,10 @@ C
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRCX
 
       REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, ZARGX, ZARGY, ZARGZ,
-     .          VXDR, VYDR, VZDR, VRELQ, E0MAX, TIMAX, SIGS, VRELS,
-     .          WRMEAN, TEST, VREL, WRAT, WO, ELAB, ELB, CXS,
+     .          VXDR, VYDR, VZDR, VRELQ, 
+     .          TEST, VREL, ELAB, CXS,
      .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
+C      REAL(DP) :: ELB
       REAL(DP), EXTERNAL :: RANF_EIRENE
  
       INTEGER :: ICOUNT, J, JJ, IRL, IREAC

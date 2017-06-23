@@ -39,7 +39,6 @@ cdr  be made a default eirene option for linear combination of tallies
       INTEGER, SAVE :: IFIRST=0
 
       REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:),EKIN(:,:)
-      REAL(DP) :: wtt, zvoliw, seit, sni, smo, seii
 
       IF (IFIRST == 0) THEN
          ALLOCATE (UAH(NPLS,NRTAL))

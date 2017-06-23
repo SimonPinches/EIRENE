@@ -18,8 +18,8 @@ C
  
       REAL(DP), INTENT(IN) :: ER, B, P(*)
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP) :: RI, G1, SS, EX, EX2, RR, RLIM, REFF, EMRR, G2, V,
-     .          R, R2, B2, RLOW, RR1, G, RMI, EPS
+      REAL(DP) :: RI, G1, SS, EX, EX2, RR, REFF, EMRR, G2, V,
+     .          R, R2, B2, RLOW, G, RMI, EPS
       INTEGER :: IFI
  
       REAL(DP) :: AR(128), AFI(128)

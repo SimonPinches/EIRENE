@@ -22,9 +22,10 @@ c  hard wired: density parameter in fit reduced by DSUB=1e8, done in rate_coeff.
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: DEIMIN, DSUB, EIRENE_FTABRC1, ZX, TBRC, PLS,
+      REAL(DP) :: DEIMIN, EIRENE_FTABRC1, ZX, TBRC, PLS,
      .            EIRENE_RATE_COEFF, ERATE
-      INTEGER :: II, KK
+C      REAL(DP) :: DSUB
+      INTEGER :: KK
  
       TBRC=0.D0
       KK = NREARC(IRRC)

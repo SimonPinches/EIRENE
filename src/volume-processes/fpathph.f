@@ -34,7 +34,7 @@ C
       REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplot3, 
      .            vx, vy, vz, XC,YC,ZC,
      .            DENEL, PVELQ0, fac
-      integer :: il, kk, ipl, irot, ipot, j, iph, i1, i2
+      integer :: il, kk, irot, ipot, j
 C
 C  SET DEFAULTS: NO REACTIONS
 C

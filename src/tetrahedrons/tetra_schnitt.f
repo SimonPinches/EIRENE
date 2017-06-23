@@ -20,10 +20,10 @@
         real(dp), intent(in), dimension(4,3)     :: tetra
         integer, intent(out)                     :: spanz
         real(dp), intent(out), dimension(4,3)    :: spunkt
-        real(dp),dimension(3)                    :: punkt,SPP,teti,tetj
+        real(dp),dimension(3)                    :: SPP,teti,tetj
         real(dp),dimension(5,5)                  :: dmat
-        REAL(DP)                                 :: DST, DSTMIN
-        integer                                  :: i, j, k, l, ip
+        REAL(DP)                                 :: DSTMIN
+        integer                                  :: i, j, ip
         INTEGER,dimension(2)                     :: ipdst
         logical                                  :: exi_spunkt
  

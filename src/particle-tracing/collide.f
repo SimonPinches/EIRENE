@@ -112,7 +112,7 @@ C
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
-     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, II, NFLAG,
+     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
      .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
@@ -123,7 +123,7 @@ CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2
  
  
 csw add n 2lines
-      INTEGER :: iaot,irot,kk,updf,t1,t2
+      INTEGER :: iaot,irot,kk,updf,t1
       real(dp):: sump
 csw external
       real(dp), external :: ranf_eirene

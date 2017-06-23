@@ -62,9 +62,9 @@ C
       LOGICAL, INTENT(IN) :: LOGL
  
       REAL(DP) :: TEILA(4), TEILWERT(4), VOLSUM(NCOORD)
-      REAL(DP) :: IX, IY, JX, JY, KX, KY, LX, LY, MX, MY
-      REAL(DP) :: FLAECH, AX, AY, BX, BY, CX, CY, DX, DY, EX, EY, FX,
-     .            FY, GX, GY, HX, HY, GESA, AGES, DIST
+      REAL(DP) :: IY, JX, KY, LX, MY
+      REAL(DP) :: AX, AY, FX,
+     .            GY, HX, GESA, AGES, DIST
       REAL(DP) :: dxcom(nr1st-1), dycom(np2nd-1),
      .            dzcom(nt3rd-1), vorig(nr1st-1, np2nd-1, nt3rd-1),
      .            value(nr1st, np2nd, nt3rd),
@@ -72,11 +72,9 @@ C
      .            dist8, summedist
       REAL(DP), ALLOCATABLE, SAVE :: XSTGRD(:)
       INTEGER :: ZUORD(NKNOT,0:50)
-      INTEGER :: AGEF, EGEF
-      INTEGER :: AGLEICH(4), EGLEICH(4)
-      INTEGER :: JPART, JP, K, JTEST, IRG, I, J, IT, IR, IP, IPA, IPE,
-     .           IRA, IRE, IRD, IPART, IRMEGM, IRMAG, IREGM, IRAG,
-     .           IRMIP, IRIP, IRMIPM, IRIPM, IC, IN, IRM1, IPM1, ITM1,
+      INTEGER :: K, I, J, IT, IR, IP, 
+     .           IRD, IPART, 
+     .           IC, IN, IRM1, IPM1, ITM1,
      .           IN1, IN2, IN3, IN4, IN5, IN6, IN7, IN8, INTA
 C
  

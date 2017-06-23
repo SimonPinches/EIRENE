@@ -56,16 +56,17 @@ C
       REAL(DP) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, ELLZZ1, EP1ZZ1,
      .          WINK, XR, EIRENE_STEP0, DELR, CS, EIRENE_STEP, FL, DET,
      .          X0TEST, Y0TEST, S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
-     .          Z0TEST, RNF, ZH, EIRENE_STEP1, DELTA, ZM, XLAMDA, BABS,
+     .          Z0TEST, RNF, ZH, EIRENE_STEP1, DELTA, ZM, XLAMDA, 
      .          CTETHA, GAMMA, CUR, TESH,
      .          VX,VY,VZ,XC,YC,ZC
+C      REAL(DP) :: BABS
       INTEGER :: ISID, IDUM, EIRENE_LEARC1, NDUM, EIRENE_LEARC2, NT, 
      .           IEN, IAN,
      .           EIRENE_LEARCA, ITET, ISGRD1, IS2, IP, ISTEP, ISGRD2,
      .           IS1, ISGRD3, NSMX, K, NL3J, ISTR, ISR, NL2J, NL1J,
      .           IERROR, ISOR, ISRFS, ICOUNT, IPLG, I, ILTR, IAUSR,
      .           IBUSR, IRUSR, IPUSR, ITUSR, IK, J, JCALC, IINDEX,
-     .           KAN, KEN, ISRPB, ISRND, ITRI, IS, NBIN, INDSRF,
+     .           KAN, KEN, ITRI, IS, NBIN, INDSRF,
      .           IPLSTI, IPLSV, IT, IPL, NANZ, IPLSD(NPLS), ISORFL, INS,
      .           ISTEP_SPEZ, ICHWGHT, ISTS, JSPZ, ISTRAI
       REAL(DP):: FF, TORL(NSTEP,NGITT)

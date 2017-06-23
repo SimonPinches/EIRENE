@@ -100,7 +100,7 @@ C
       INTEGER :: IRD,  I, IRDO, INUM,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, NPBGK,
-     .           IBGK, I1, I2, IPLV
+     .           IBGK, IPLV
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
 C EL PROCESSES

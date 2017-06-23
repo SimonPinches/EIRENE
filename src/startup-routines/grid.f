@@ -50,7 +50,7 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
      .          GESFL, FRING, CONST, RRR, FL, FR, RL, RR, RRL, XD,
      .          PLEN, XDIFF, RORIG, XS3, PLABS2, PLABS3, XD1, YD,
      .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2, R, PIN,
-     .          POUT, EX1, SDSD, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
+     .          POUT, EX1, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
      .          DP1, DS1, DS2
       REAL(DP), EXTERNAL :: EIRENE_ARTRI3
       INTEGER :: ITSIDE(3,4)

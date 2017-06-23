@@ -60,8 +60,8 @@ C
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IREL
  
-      REAL(DP) :: WRMEAN, WRAT, TEST, WO, TIMAX, SIGS, VRELX, VRELS,
-     .          E0MAX, ELABS, VXI, VYI, VZI, VRELQ, VN, VREL,
+      REAL(DP) :: TEST, VRELX,
+     .          VXI, VYI, VZI, VRELQ, VN, VREL,
      .          RLMS, RAN, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
      .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS, 
      .          SEPS, RS,

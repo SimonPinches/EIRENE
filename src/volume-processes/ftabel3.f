@@ -31,9 +31,9 @@ c  hard wired: cut off (density) parameter for fits: 1e8
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IREL, K
-      REAL(DP) :: TBPIC(9), EIRENE_FTABEL3, DEIMIN, TII, PLS, TBEL, 
+      REAL(DP) :: EIRENE_FTABEL3, DEIMIN, TII, PLS, TBEL, 
      .            EIRENE_RATE_COEFF, ERATE
-      INTEGER :: J, I, II, KK, IPLSTI
+      INTEGER :: KK, IPLSTI
  
       TBEL=0.D0
       KK = NREAEL(IREL)
