@@ -116,13 +116,6 @@ csw external
 c I/O & MISC-ROUTINES
       SUBROUTINE EIRENE_PH_INIT(ICAL)
  
-      real(DP) :: x,dx
-      integer :: ios,i,ia,ip,j,ih,il,jh,jl,nr,ierr,jj,ipl,iat,iplh,
-     .           iflag,ipll,pil,ignd,iion,nh,nl,iplh_pb, ipll_pb
-      real(dp),allocatable,dimension(:,:) :: dummytgt
-      integer, allocatable :: idummy(:)
-      character(72) :: cline
-
       integer, intent(in) :: ical
 
       select case(ical)
@@ -189,13 +182,15 @@ c
       IMPLICIT NONE
       integer, intent(in) :: kkin,isp,ity,icell,iipl
       real(dp), intent(out) :: fac,res
-      integer :: iid,ii,nrc,n1,n2,n,i,iflag,iwarn,ivs,kk,n4,pil,
-     .           iil,ignd,iptype,ipl2
-      real(dp):: gam,e1,e2,e00,l00,l0,
-     .           v,dv,val,w,valm,dnd,xx,yy,pnue,pnue0,
-     .           fwhm,shift,dvdw,g1,g2,d1,d2,cvel,drft
+      integer :: iid,kk,
+     .           iptype
+      real(dp):: gam,e00,
+     .           v,dnd,xx,yy,pnue,pnue0,
+     .           fwhm,shift,dvdw,drft
+c      real(dp) :: d1, d2, e1, e2, g1, g2, ipl2, l0, l00, omega_max, 
+c     .            omega_min
       real(dp):: ctheta2,dbz,bf
-      real(dp):: t_e,t_p,t_g,omega_min,omega_max
+      real(dp):: t_e,t_p,t_g
 
 c  reaction data for process kkin are now loaded into "reaction"
 c  includes also reaction%b12.
@@ -545,11 +540,12 @@ c     real(dp),intent(inout)::omega_min,omega_max
 c     integer,intent(inout)::npt
       real(dp)::omega_SF,omega_Z,gamma,gam,epsilon,
      .          omega_plus,omega_minus,
-     .          omega1,omega2,omega_D,omega_D_th
-      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,delta_omega,line_shape,
-     .          interval_omega,res,
+     .          omega1,omega2,omega_D
+      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,line_shape,
+     .          res,
      .          e00,e0
-      integer::i
+c      real(dp) :: delta_omega, interval_omega, omega_D_th
+c      integer::i
  
  
       omega_SF=alpha*alpha*EI/24.
@@ -675,9 +671,9 @@ c     real(dp),intent(inout)::omega_min,omega_max
 c     integer,intent(inout)::npt
       real(dp)::omega_SF,omega_Z,gamma,gam,epsilon,
      .          omega_plus,omega_minus,
-     .          omega1,omega2,omega_D,omega_D_th
-      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,delta_omega,line_shape,
-     .          interval_omega,res,
+     .          omega1,omega2
+      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,line_shape,
+     .          res,
      .          v,xx,yy,val,ssum,ssum1,e00,e0,x(-1:8),ci(-1:8)
       integer::i
  
@@ -836,7 +832,6 @@ c  photon absorption B12 coefficient, obtained from stim. em. B21 coefficient by
 c calculates B12 Einstein coefficient in units: cm**2
 ! change G1, G2 to REAL, better precision, avoid integer division
 !      integer :: g1,g2,n1,n2
-      integer :: n1,n2
       real(dp) :: g1,g2
  
       res=EIRENE_PH_B21()
@@ -854,7 +849,7 @@ c stim. photon emission B21 coefficient, obtained from A21, by detailed balancin
       IMPLICIT NONE
 c calculates B21 Einstein coefficient in units: cm**2
 
-      real(DP) :: e00,pnue0
+      real(DP) :: e00
 
       e00=reaction%e0
 
@@ -912,9 +907,10 @@ cdr
       integer, intent(in) :: icell,kk,ipl2
       real(dp), intent(in) :: vn
       logical, intent(out) :: nldoppl
-      real(dp) :: e00,dnd,drft,gam,fwhm,shift,dvdw,l0,l00,de,dl
+      real(dp) :: e00,dnd,drft,gam,fwhm,shift,dvdw,de
+c      real(dp) :: dl, l0, l00
       real(dp) :: ctheta2,dbz,zep1,v,T_e,T_p,T_g
-      integer :: pil,iil,dum,ictoff
+      integer :: ictoff
  
 !  idreac: kk from last call to get_reaction
       if (idreac /= kk) call EIRENE_get_reaction(kk)
@@ -1103,12 +1099,12 @@ c        2: stim.em
       IMPLICIT NONE
       integer, intent(in) :: icell,kk,iflg,iold,il,itypold,itypnew
       real(dp),intent(in) :: vxo,vyo,vzo,vlo,e0o
-      integer :: n1,n2,nrc,ipln,itypn,imax,ii,iwarn,n,ir,ivs,
-     .    ityp0,ityp1,ityp2,ipl0,ipl1,ipl2,iflag,pil,iipl,iil,ignd,
+      integer :: nrc,ipln,itypn,ir,
+     .    ityp0,ityp1,ityp2,ipl0,ipl1,ipl2,
      .    ipl0v
       real(dp) :: vx,vy,vz,vxn,vyn,vzn,cvrss1,velq,e1,e2,e00,l00,gam,
-     .    smax,swma,swmi,zep1,zep2,zzep1,cangl,val,een,dl,
-     .    fwhm,shift,dvdw,ee,cvel,zs,zc,vxoo,vyoo,vzoo,vloo,l0,e00s,
+     .    zep1,cangl,een,dl,
+     .    fwhm,shift,dvdw,ee,cvel,l0,e00s,
      .    velx_b, vely_b, velz_b, velparm, vel_b
  
       if (idreac /= kk) call EIRENE_get_reaction(kk)
@@ -1462,8 +1458,8 @@ C  NORMAL-ZEEMANN
       integer, intent(in) :: icell
       logical, intent(in) :: lscale
       real(dp),intent(out) :: fwhm,shift,dvdw
-      integer :: pil,ipl,n1,n2, ip, iplti
-      real(dp) :: nipl,ne,e00,e00s,dlst,dlqs,dlvw,te,tipl,dlres,l00,mipl
+      integer :: ipl, ip, iplti
+      real(dp) :: nipl,ne,e00,dlst,dlqs,dlvw,te,tipl,dlres,l00,mipl
       real(dp) :: cvel2a_m
       real(dp) :: dlvws, dlqss
       fwhm=0.
@@ -1615,9 +1611,10 @@ c  convert to frequency (Hz), and then to energy, eV
       IMPLICIT NONE
       integer, intent(in) :: icell
       real(dp), intent(out) :: fwhm,shift
-      real(dp) :: z,de,te,nn,nn3,nn4,sqeh,part1,part2,part3,
-     .            lc,ve,w,inn,n1
-c      real(dp) :: ec, eh, fac, nn2
+      real(dp) :: de,te,nn,
+     .            lc,ve,inn,n1
+c      real(dp) :: ec, eh, fac, nn2, nn3, nn4, part1, part2, part3, sqeh,
+c     .            w, z
       real(dp) :: rd,rw,hw0
  
 c to be written:
@@ -1930,7 +1927,7 @@ c     f2=v2*sqrt(-(ar+ar)/s)*sig
       implicit none
       real(dp), intent(in) :: ctheta2,dbz,gam,dnd,drft,e00
       integer, intent(in) :: iprof
-      real(dp) :: str,dsum,e00d,del,r0,ssum,res
+      real(dp) :: dsum,e00d,del,r0,ssum,res
       real(dp) :: strength(-1:1)
       integer :: ipol
       res = 0._dp
