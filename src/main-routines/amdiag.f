@@ -148,9 +148,9 @@ c  irei is a process for test ion iio, colliding with electron
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'ELECTRON IMPACT REACTION  IREI ='//CNO
+     .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified species on ELECTRONS'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '
           goto 171       
         ENDIF
@@ -248,9 +248,9 @@ c  ircx is a process for test ion iio, colliding with bulk ipl
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'CHARGE EXCHANGE REACTION  IRCX ='//CNO
+     .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '
           goto 171                
 172       CONTINUE      
@@ -358,9 +358,9 @@ c  irel is a process for test ion iio, colliding with bulk ipl
 
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'ELASTIC REACTION  IREL ='//CNO
+     .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '         
           GOTO 171
 174       CONTINUE
@@ -466,9 +466,9 @@ c  irpi is a process for test ion iio, colliding with bulk ipl
           
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'HEAVY PARTICLE REACTION  IRPI ='//CNO
+     .      'HEAVY PARTICLE REACTION RATE COEFFICIENT IRPI ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '         
           GOTO 171
 176       CONTINUE

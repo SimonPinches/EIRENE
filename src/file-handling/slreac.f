@@ -23,6 +23,7 @@ cdr            May have corrupted extrapolation in some cases
 c     Sept.16: two new internal subroutines,
 c              a) to read validity range information,
 c              b) three parameters for each validity boundary, for extrapolation options
+c    June  17: read_colrad (for old H-COL option) moved to separate routine.
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -53,7 +54,7 @@ C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
 
 
-c    REAC  : in case FILNAM.ne.CONST:
+c    REAC  : in case FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
 c    REAC  : in case FILNAM.eq.CONST:
@@ -63,11 +64,11 @@ C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM=
 
 cdr what does that mean for H-COL? ADAS ?  what about "spectral database"?
 cdr where described, where read ?
-cdr is iftflg not known in case of AMJUEL?
 
 C            in case FILNAM=ADAS:  the file name DSN = REAC_ELNAME.dat is opened (stream 29+ifoff)
 C                                  and then subroutine read_adas.f is called.
-c    CRC   : type of process, e.g. EI, CX, OT, etc.
+
+c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, OT, etc.
 c
 c  parameters for extrapolation beyond specified range [RMN,RMX] of data (asymptotics),
 c  these asymptotics parameters may already have been read from input file, block 4., subroutine input.f
@@ -106,16 +107,17 @@ c    MODCLF: see below: further information on input a&m data structure
 c    DELPOT: ionisation potential (for H.10 data),
 c            currently handeled in input.f. not nice! also missing still for: H.8, H.9
 c
-C    IFTFLG=IFTFLG(IR,IFLG)
-C    IFLG  derived from ISW
+C    IFTFLG=IFTFLG(IR,IFLG): flag for type of fitting expression  
+C    IFLG  internally derived from ISW
 C          0 for potential, (ISW=0)
 C          1 for cross section, (ISW=1)
 C          2 for rate-coeff, (ISW=2,3,4)
 C          3 for mom-weighted rate coeff. (ISW=5,6,7)
 C          4 for energy weighted rate coeff. (ISW=8,9,10)
+C          5 for other quantities, population densities, etc.. (ISW=11,12)
 c    IFTFLG: eirene flag for type of fitting expression ("fit-flag=...")
 c
-cdr  is iftflg only kown for option filname=const ?????
+cdr  is iftflg only known for option filname=const ?????
 c
 c
 C            DEFAULTS: =2 IFLG=0
@@ -254,7 +256,7 @@ C
       ELSEIF (INDEX(FILNAM,'H-COL').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
-      ELSE
+      ELSE   ! in all other cases: open data file, stream 29+ifoff
 !  open data file, stream 29+ifoff.
         DO IFILE=1,NDBNAMES
           IF (INDEX(FILNAM,DBHANDLE(IFILE)).NE.0) EXIT
@@ -294,13 +296,15 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*)
      .      ' NO VALID FILENAME IN REACTION CARD'
           WRITE (iunout,*) ' CHOOSE EITHER '
-          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR, PHOTON '
+          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, H2VIBR '
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' H-COL'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
+          WRITE (iunout,*) ' OR '
+          WRITE (iunout,*) ' PHOTON'
           WRITE (iunout,*) ' FOR ENTERING REACTION DATA VIA '
           WRITE (iunout,*) ' EIRENE INPUT-FILE '
           CALL EIRENE_EXIT_OWN(1)
@@ -364,7 +368,7 @@ C  H.1
         I0=0
         MODCLF(IR)=MODCLF(IR)+10
         IFLG=1
-C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)
+C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)  VS LN(E)
         IFTFLG(IR,IFLG)=0
         C1L = 'ELABMIN'
         C1R = 'ELABMAX'
@@ -381,7 +385,7 @@ C  H.2
         I0=1
         MODCLF(IR)=MODCLF(IR)+100
         IFLG=2
-C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) FOR E0=0.
+C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) VS LN(T), FOR E0=0.
         IFTFLG(IR,IFLG)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
@@ -397,6 +401,7 @@ C  H.3
         MODCLF(IR)=MODCLF(IR)+200
         I0=1
         IFLG=2
+C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(E0)
         IFTFLG(IR,IFLG)=0
         C1L = 'TIMIN'
         C1R = 'TIMAX'
@@ -412,6 +417,7 @@ C  H.4
         MODCLF(IR)=MODCLF(IR)+300
         I0=1
         IFLG=2
+C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(NE)
         IFTFLG(IR,IFLG)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
@@ -428,6 +434,7 @@ C  H.5
         I0=1
         MODCLF(IR)=MODCLF(IR)+1000
         IFLG=3
+C  MOMENTUM WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
@@ -443,6 +450,7 @@ C  H.6
         MODCLF(IR)=MODCLF(IR)+2000
         I0=1
         IFLG=3
+C  MOMENTUM WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
         C1L = 'TIMIN'
         C1R = 'TIMAX'
@@ -458,6 +466,7 @@ C  H.7
         MODCLF(IR)=MODCLF(IR)+3000
         I0=1
         IFLG=3
+C  MOMENTUM WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
@@ -474,6 +483,7 @@ C  H.8
         I0=1
         MODCLF(IR)=MODCLF(IR)+10000
         IFLG=4
+C  ENERGY WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
@@ -489,6 +499,7 @@ C  H.9
         MODCLF(IR)=MODCLF(IR)+20000
         I0=1
         IFLG=4
+C  ENERGY WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
         C1L = 'TIMIN'
         C1R = 'TIMAX'
@@ -504,6 +515,7 @@ C  H.10
         MODCLF(IR)=MODCLF(IR)+30000
         I0=1
         IFLG=4
+C  ENERGY WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,IFLG)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
@@ -541,101 +553,8 @@ C  H.12
       ENDIF
 
       IF (INDEX(FILNAM,'H-COL').NE.0) THEN
-        REACDAT(IR)%ETH = 0._DP
-        REACDAT(IR)%RTMAX = 0._DP
-        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-
-        SELECT CASE (ISW)
-        CASE (2:4)
-          IF (REACDAT(IR)%LRTC) THEN
-            WRITE (IUNOUT,*) ' RATE COEFFICIENT ALREADY SPECIFIED',
-     .                       ' FOR REACTION', IR
-            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          ALLOCATE (REACDAT(IR)%RTC)
-          NULLIFY(REACDAT(IR)%RTC%ADAS)
-          NULLIFY(REACDAT(IR)%RTC%LINE)
-          NULLIFY(REACDAT(IR)%RTC%POLY)
-          NULLIFY(REACDAT(IR)%RTC%HYD)
-          REACDAT(IR)%LRTC = .TRUE.
-          REACDAT(IR)%RTC%IFIT = 5
-
-          REACDAT(IR)%RTC%RC1MIN = 0._DP
-          REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTC%RC2MIN = 0._DP
-          REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTC%FP1L = 0._DP
-          REACDAT(IR)%RTC%FP1R = 0._DP
-          REACDAT(IR)%RTC%FP2B = 0._DP
-          REACDAT(IR)%RTC%FP2T = 0._DP
-          REACDAT(IR)%RTC%JFEX1MN = 0
-          REACDAT(IR)%RTC%JFEX1MX = 0
-          REACDAT(IR)%RTC%JFEX2MN = 0
-          REACDAT(IR)%RTC%JFEX2MX = 0
-          
-        CASE (5:7)
-          IF (REACDAT(IR)%LRTCMW) THEN
-            WRITE (IUNOUT,*) ' MOMENTUM WEIGHTED RATE COEFFICIENT',
-     .                       ' ALREADY SPECIFIED FOR REACTION', IR
-            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          ALLOCATE (REACDAT(IR)%RTCMW)
-          NULLIFY(REACDAT(IR)%RTCMW%ADAS)
-          NULLIFY(REACDAT(IR)%RTCMW%LINE)
-          NULLIFY(REACDAT(IR)%RTCMW%POLY)
-          NULLIFY(REACDAT(IR)%RTCMW%HYD)
-          REACDAT(IR)%LRTCMW = .TRUE.
-          REACDAT(IR)%RTCMW%IFIT = 5
-
-          REACDAT(IR)%RTCMW%RC1MIN = 0._DP
-          REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCMW%RC2MIN = 0._DP
-          REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCMW%FP1L = 0._DP
-          REACDAT(IR)%RTCMW%FP1R = 0._DP
-          REACDAT(IR)%RTCMW%FP2B = 0._DP
-          REACDAT(IR)%RTCMW%FP2T = 0._DP
-          REACDAT(IR)%RTCMW%JFEX1MN = 0
-          REACDAT(IR)%RTCMW%JFEX1MX = 0
-          REACDAT(IR)%RTCMW%JFEX2MN = 0
-          REACDAT(IR)%RTCMW%JFEX2MX = 0
-          
-        CASE (8:10)
-          IF (REACDAT(IR)%LRTCEW) THEN
-            WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
-     .                       ' ALREADY SPECIFIED FOR REACTION', IR
-            WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
-          ALLOCATE (REACDAT(IR)%RTCEW)
-          NULLIFY(REACDAT(IR)%RTCEW%ADAS)
-          NULLIFY(REACDAT(IR)%RTCEW%LINE)
-          NULLIFY(REACDAT(IR)%RTCEW%POLY)
-          NULLIFY(REACDAT(IR)%RTCEW%HYD)
-          REACDAT(IR)%LRTCEW = .TRUE.
-          REACDAT(IR)%RTCEW%IFIT = 5
-
-          REACDAT(IR)%RTCEW%RC1MIN = 0._DP
-          REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCEW%RC2MIN = 0._DP
-          REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCEW%FP1L = 0._DP
-          REACDAT(IR)%RTCEW%FP1R = 0._DP
-          REACDAT(IR)%RTCEW%FP2B = 0._DP
-          REACDAT(IR)%RTCEW%FP2T = 0._DP
-          REACDAT(IR)%RTCEW%JFEX1MN = 0
-          REACDAT(IR)%RTCEW%JFEX1MX = 0
-          REACDAT(IR)%RTCEW%JFEX2MN = 0
-          REACDAT(IR)%RTCEW%JFEX2MX = 0
-          
-        CASE DEFAULT
-          WRITE (IUNOUT,*) ' WRONG DATA TYPE SPECIFIED '
-          WRITE (IUNOUT,*) ' REACTION NO. ', IR
-          WRITE (IUNOUT,*) ' DATA TYPE H.', ISW
-          CALL EIRENE_EXIT_OWN(1)
-        END SELECT
+        CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1)
+c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
 
@@ -646,6 +565,8 @@ c  close unit=29+ifoff:   done in READ_TABLE2.f
       END IF
 
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
+cdr  proprietary option at FZ Juelich. 
+cdr  Not ready, and not to be used by 3rd party 
         CLOSE (UNIT=29+ifoff)
         CH123 = H123
         CCRC = CRC
@@ -655,14 +576,16 @@ c  close unit=29+ifoff:   done in READ_TABLE2.f
         RETURN
       END IF
 C
-      IF (LCONST) THEN
+      IF (INDEX(FILNAM,'CONST').NE.0) THEN
         IND=INDEX(REACSTR,'FT')
         IF (IND /= 0) THEN
+c  read parameter for type of fitting expression from data file
           READ (REACSTR(IND+2:),*) IFTFLG(IR,IFLG)
         END IF
 
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
 C
+C  SET A REACTION CONSTANT
 C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) CREACD(1,1)
           REACLINES(IRLINES)%NCONST = 1
@@ -676,7 +599,7 @@ C  READ 9 FIT COEFFICIENTS FROM INPUT FILE 'iunin'
 
         END IF
         CALL EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,
-     .                         IUNOUT,.FALSE.)
+     .                                IUNOUT,.FALSE.)
         RETURN
       ENDIF
 C
@@ -686,36 +609,34 @@ C  already ruled out here (done at this point):
 C  FILNAM= "H-COL", "CONST", "ADAS", "HYDRTC", "PHOTON"
 C  in these cases: already returned to calling program
 C
-!dr   ELSEIF (.NOT.LCONST) THEN
-
 C......................................................................
 C  AT THIS POINT: FILNAM= AMJUEL, HYDHEL, H2VIBR, METHAN, i.e. single or double polynomial fits
 
 CC  now identify proper dataset within file FILNAM
 
-100     READ (29+ifoff,'(A80)',END=990) ZEILE
-        IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
+100   READ (29+ifoff,'(A80)',END=990) ZEILE
+      IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
 
-        LAST_TEX=REPEAT(' ',80)
-1       READ (29+ifoff,'(A80)',END=990) ZEILE
-!ITER   IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
-!PB        IF (INDEX(ZEILE,H123).EQ.0 .or.
-!PB     .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
-        IF (INDEX(ZEILE,H123).EQ.0) THEN
-          IF (INDEX(ZEILE,BACK).NE.0) LAST_TEX=ZEILE
-          GOTO 1
-        ELSE
-          IF ((INDEX(LAST_TEX,SECTION) .EQ. 0) .AND.
-     .        (INDEX(ZEILE,SECTION) .EQ. 0)) GOTO 1
-        END IF
+      LAST_TEX=REPEAT(' ',80)
+1     READ (29+ifoff,'(A80)',END=990) ZEILE
+!ITER IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
+!PB      IF (INDEX(ZEILE,H123).EQ.0 .or.
+!PB  .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
+      IF (INDEX(ZEILE,H123).EQ.0) THEN
+        IF (INDEX(ZEILE,BACK).NE.0) LAST_TEX=ZEILE
+        GOTO 1
+      ELSE
+        IF ((INDEX(LAST_TEX,SECTION) .EQ. 0) .AND.
+     .      (INDEX(ZEILE,SECTION) .EQ. 0)) GOTO 1
+      END IF
 C
-2       READ (29+ifoff,'(A80)',END=990) ZEILE
-!ITER   IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
-        IF (INDEX(ZEILE,'H.').NE.0 .and.
-     .      INDEX(ZEILE,'section').NE.0) GOTO 990
-        IF (INDEX(ZEILE,'Reaction ').EQ.0.or.
-     .      INDEX(ZEILE,REACSTR(1:ireac)).EQ.0) GOTO 2  ! infinite loop possible  !
-!dr   ENDIF
+2     READ (29+ifoff,'(A80)',END=990) ZEILE
+!ITER IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
+      IF (INDEX(ZEILE,'H.').NE.0 .and.
+     .    INDEX(ZEILE,'section').NE.0) GOTO 990
+      IF (INDEX(ZEILE,'Reaction ').EQ.0.or.
+     .    INDEX(ZEILE,REACSTR(1:ireac)).EQ.0) GOTO 2  ! infinite loop possible  !
+
 C
 C  SINGLE PARAM. FIT, ISW=0,1,2,5,8,11
 C
@@ -751,14 +672,9 @@ C  THREE LINES WITH THREE DATA PER LINE
         END IF
 C
 
-
-C       ELSEIF (LCONST) THEN
-C  NOTHING TO BE DONE
-C       ENDIF
-
 C  SINGLE PARAMETER POLYNOMIAL FITS: DONE
 
-C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg:
+C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg: 0,...,5
 C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
 C   9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
 C   AND POSSIBLY (SOME OF) THE EXTRAPOLATION PARAMETERS RCMIN,RCMAX, FP(1:6)
@@ -777,6 +693,7 @@ C  SEARCH FOR STRING 'fit-flag'  or 'Index'
           INDFF=INDEX(ZEILE,'fit-flag')
           IF (INDEX(ZEILE,'Index')+INDFF.EQ.0) GOTO 16
           IF (INDFF > 0) THEN
+c  read parameter for type of fitting expression from data file
             READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
             GOTO 16
           ENDIF
@@ -796,8 +713,8 @@ c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. 
           END IF
 11      CONTINUE
         READ (29+ifoff,'(A80)',END=990) ZEILE
-C   AT THIS POINT WE HAVE STORED FOR REACTION ir:
-C   IFTFLG(IR)   (DEFAUT:   =0)
+C   AT THIS POINT WE HAVE STORED FOR REACTION ir: , DATA TYPE iflg: 0,...,5
+C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
 C   81 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1...9)
 
 C

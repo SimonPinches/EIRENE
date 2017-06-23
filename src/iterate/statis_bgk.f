@@ -1,4 +1,11 @@
+CDR May 2017
 C  this entire routine is probabaly redundant, as well as all bgkv_stat tallies
+c   ALL TALLIES bgkv (ntalb=61), pdena, edena,pdenm,edenm are now also default tallies,
+c               and their variances are available by default variance routines.
+c   bgkv tallies: currently coincide with vxden*,vyden*,vzden* momentum densities. 
+c   But we may need special BGKV tallies in case of velolcity dep rates, or
+c   ES-BGK extensions. Even then: special variances may not be needed, because
+c   BGKV is a regular tally and variances are computed by default eirene variance routines. 
 C
       SUBROUTINE EIRENE_STATIS_BGK
 C  TALLY BGKV IS DEFAULT TALLY NUMBER ntalb =61. No special treatment re variance.
@@ -89,7 +96,7 @@ C
         END DO
       END DO
 C
-C  STATISTICS FOR BGKV
+C  STATISTICS FOR BGKV  (currently == VXDEN*, VYDEN*, VZDEN*)
 C
       DO IBGV=1,NBGVI
         IF (LMETSP(NSPAN(NTALB)+IBGV-1)) THEN

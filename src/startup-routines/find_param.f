@@ -1,3 +1,10 @@
+Cdr  Purpose: find storage parameters NPARM for a number of allocatable
+c             arrays. 
+c             Set default for NPARM             (for example NATM=0, no atomic species in this run)
+c             Read input file, to find NPARMI,  (for example NATMI)
+c             Then set NPARM=MAX(NPARM,NPARMI)  (for example NATM=MAX(NATM,NATMI))
+c
+c    Later these parameters may be modified, but NPARM >= NPARMI always. 
 C
 !pb  11.12.06:  allow letters 'f' or 't' in case name of fem or tetrahedron
 !pb             calculation
@@ -6,19 +13,21 @@ C
 !pb  02.03.07:  NUMSEC=4 introduced
 !pb  20.03.07:  include input block written by HYDKIN model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
-!dr  16.01.14:  default NOPTIM changed from 1 to NRAD, some printout rearranged
+!dr  16.01.14:  default NOPTIM changed from 1 to NRAD (automatically), some printout rearranged
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
 !cd  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
 !cd             because nflr (common CREF) is later used in RDTRIM and REFDAT with a slightly other meaning.
 cdr  Jan 2016:  storage for second dimension only if nlpol=true
 cdr             to be tested: storage for nplg, if nlpol=false?
-cdr             storage for thrid dimension only if nltor=true
+cdr             storage for third dimension only if nltor=true
 cdr             to be tested:  storage for nltra, if nltor=false?
 cdr             to be done: check for comment lines *... syncronized with input.f?
 !pb  June 16:   default for NPLSTI changed from 1 to NPLS
 !pb  MAY  16:   nrds -> nrei
 cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 14.
+CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
+cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCOPI)
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -27,13 +36,14 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
+      USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
  
       IMPLICIT NONE
  
       INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
       INTEGER, ALLOCATABLE :: INDSRC(:), IEIGEN(:)
-      INTEGER :: ISTRA, NSTRAI, NFR, ISOR, NSRFSI, NRADD,
+      INTEGER :: NFR, ISOR, NSRFSI, NRADD,
      .           NREACI, NSTSI, NLIMI, NVOLPL, NSP, ICO,
      .           NSURPR, NVOLPR, NPRNLI, NCHORI,
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
@@ -42,16 +52,17 @@ C
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG, 
      .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
      .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
-     .           NSIGCI, IREAD, NCOPI, NCOPII, NCOPIE, NREAC_ADD,
-     .           IPLS, NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
+     .           NSIGCI, IREAD, NCOPII, NCOPIE, NREAC_ADD,
+     .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
      .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
-     .           IATM, IMOL, IION, IPHOT, NUMSEC, ISPZ, IC, NINITL_READ
+     .           IATM, IMOL, IION, IPHOT, IPLS, ISTRA, ISPZ,
+     .           NUMSEC, IC, NINITL_READ
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
-     .           NLONE, NLMOVIE, LINCLUDE, NLCASCAD, NLDFST,
+     .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
       LOGICAL :: NLSLB, NLCRC,  NLELL, NLTRI,  NLPLG, NLFEM, NLTET,
      .           NLGEN
@@ -70,7 +81,7 @@ C
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
 C
-C  SET DEFAULT VALUES FOR PARAMETERS
+C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
 C  GEOMETRY
       N1ST=1
@@ -108,8 +119,8 @@ C  SPECIES AND TALLIES
       NALV=0
       NALS=0
       NAIN=1
-      NCOP=0
-      nbgk=0
+      NCPV=0
+      NBGK=0
       NADSPC=0
       NPLSTI=1
       NPLSV=1
@@ -137,13 +148,13 @@ C
 
 
 C  OPTIMIZATION OF GEOMETRICAL CALCULATIONS: STORAGE FOR IGJUM3(NCELL,NSURF)
-C  ALSO AFFECTS NLIMI(NCELL), NLIME(NCELL) OPTIMIZATION OF CALLS TO TIMEA.F
+C  ALSO AFFECTS ARRAYS NLIMI(NCELL), NLIME(NCELL) OPTIMIZATION OF CALLS TO TIMEA.F
 C  NOPTIM=1   IGJUM3 AND NLIMI, NLIME ARRAYS ARE REMOVED, NO OPTIMIZATION
-C  ELSE:  STORAGE PROVIDED, CH3 OPTIONS CAN BE USED,  IGJUM3(NOPTIM,NSURF), ETC.
+C  ELSE:  STORAGE IS PROVIDED, CH3 OPTIONS CAN BE USED,  IGJUM3(NOPTIM,NSURF), ETC.
       NOPTIM=1  ! DEFAULT WILL BE AUTOMATICALLY SET TO NRAD, BELOW, LDEFSTOR
 
 C  BIT ARITHMETIC FOR (LARGE) IGJUM.. ARRAYS: ONLY VALUES 0 OR 1 ARE ON THESE ARRAYS
-C  NOPTIM=1   USE REGULAR INTEGER ARITHMETIC (8 BIT PER INTEGER)
+C  NOPTM1=1   USE REGULAR INTEGER ARITHMETIC (8 BIT PER INTEGER)
 C  NOPTM1= ???   DO WHAT ??  DEFAULT  ?  LDEFSTOR ?
       NOPTM1=1
  
@@ -174,6 +185,14 @@ C  NGSTAL = 1  ==> SPATIALLY RESOLVED SURFACE TALLIES ARE COMPUTED
  
 C  NUMBER OF BACKGROUND SPECTRA
       NBACK_SPEC=0
+
+
+c  NEXT:  READ INPUT FILE AND IDENTIY THE REAL STORAGE NEEDS.
+c   e.g. NPARMI, then set the storage (for allocatable arrays): NPARM = MAX(NPARM,NPARMI) 
+c   in most cases then: NPARM=NPARMI
+
+
+
 C
 C  INITIALIZE SOME DATA AND SET DEFAULTS
 C
@@ -492,6 +511,8 @@ C
         READ (IUNIN,6666) NRADD
         NADD = MAX(NADD,NRADD)
       ENDIF
+
+      NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
  
 C  FIND START OF NEXT INPUT BLOCK: 3A
  
@@ -512,7 +533,6 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ(ZEILE,6666) NSTSI
-      IF (NTIME.GE.1) NSTSI = NSTSI + 1
       NSTS = MAX(NSTS,NSTSI)
  
 C  FIND START OF NEXT INPUT BLOCK: 3B
@@ -551,12 +571,12 @@ C
       IREAD=1
       CALL EIRENE_UPPERCASE(ULINE)
       I1 = INDEX(ULINE,'INCLUDE')
-      LINCLUDE = .FALSE.
+      LINCL45 = .FALSE.
       IF (I1 > 0) THEN
 c   read block 4 and block 5 from external include file, stream fort.2
         IREAD = 0
         CALL EIRENE_READ_TOKEN(ZEILE(I1+7:),' ',FILE45,ITOK,IER,.FALSE.)
-        LINCLUDE = .TRUE.
+        LINCL45 = .TRUE.
         IUNIN_SAVE = IUNIN
         IUNIN = 2+ifoff
         OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
@@ -919,10 +939,10 @@ cdr these next 2 lines for Vi(ipls)
 
 C  FIND START OF NEXT INPUT BLOCK: 6
  
-      IF (LINCLUDE) THEN
+      IF (LINCL45) THEN
         CLOSE (IUNIN)
         IUNIN = IUNIN_SAVE
-        LINCLUDE =.FALSE.
+        LINCL45 =.FALSE.
       END IF
  
       DO
@@ -957,6 +977,7 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
       IF (NFR > 0) THEN
         NHD6 = NFR
       ELSE
+cdr  should be NHD6=12
         NHD6 = 8
       END IF
  
@@ -976,8 +997,11 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) NSTRAI
- 
-      NSTEP = 1
+      NSTRA = MAX(NSTRA,NSTRAI)
+
+CDR  TRY TO SET NSTEP, THE NUMBER OF STEP FUNCTIONS FOR SOURCE SAMPLING
+cdr  set nstep = smallest stratum number, which receives primary source data from external code.
+cdr  this must be highly case specfic. To be reconsidered !!
       ALLOCATE (INDSRC(NSTRAI))
       READ (IUNIN,6666) (INDSRC(J),J=1,NSTRAI)
       IF (ANY(INDSRC == 6)) THEN
@@ -988,6 +1012,7 @@ C
           END IF
         END DO
       END IF
+
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
         IF (INDSRC(ISTRA) == 6) CYCLE
@@ -1018,8 +1043,7 @@ C
 C
       END DO
       DEALLOCATE (INDSRC)
-      IF (NTIME.GE.1) NSTRAI = NSTRAI + 1
-      NSTRA = MAX(NSTRA,NSTRAI)
+      
  
       READ (IUNIN,'(A72)') ZEILE
 C
@@ -1046,8 +1070,6 @@ C  DATA FOR STANDARD DEVIATION
       WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION '
       READ (IUNIN,6666) NSIGVI,NSIGSI,NSIGCI,NSIGI_BGK,NSIGI_COP
       NSD = MAX(NSD,NSIGVI)
-!pb allow for standard deviations of coupling tallies
-      IF (NSIGI_COP > 0) NSD = NSD + 3*NPLS+4
       NSDW = MAX(NSDW,NSIGSI)
       NCV = MAX(NCV,NSIGCI)
  
@@ -1241,14 +1263,25 @@ C  SKIP READING REST OF THIS BLOCK
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
-C  READ DATA FOR NONLINEAR MODE  1300--1399
+C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
       WRITE (iunout,*)
      .  '*** 13. DATA FOR ITERATIVE AND TIME DEP. OPTION '
+
 C
       READ (IUNIN,6666) NPRNLI, NINITL_READ, NPRMUL
       IF (NPRMUL > 1) NPRNLI = NPRNLI * NPRMUL
+      NPRNL = MAX(NPRNL,NPRNLI)
 
+      if ((NTIME.GE.1.AND.NPRNLI > 0).OR.NLERG) THEN
+        NSTSI=NSTSI+1
+        NSTRAI=NSTRAI+1
+      ENDIF
+      NSTS = MAX(NSTS,NSTSI)
+      NSTRA = MAX(NSTRA,NSTRAI)
+
+C   SNAPSHOT TALLIES AND CENSUS ARRAY
+      NSNVI=0 
       IF (NPRNLI > 0) THEN
         READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1).NE.'*') THEN
@@ -1257,23 +1290,18 @@ C   READ DATA FOR SNAPSHOT TALLIES
           READ (IUNIN,*)
           WRITE (iunout,*) '*** 13A. DATA FOR SNAPSHOT TALLIES'
           READ (IUNIN,6666) NSNVI
-          NSNV = MAX(NSNV,NSNVI)
-!   FOR NTIME > 0 NSTS WAS INCREASED IN BLOCK 3
-!PB          IF (NTIME >= 1) NSTS=NSTS+1
-          IF (NTIME <= 0) NSTS=NSTS+1  
         END IF
       END IF
+      NSNV = MAX(NSNV,NSNVI)
 
       IF (NLERG.AND.NPRNLI.LE.0) THEN
 C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
-        NPRNLI=100
-        IF (NTIME <= 0) THEN
-          NSTS=NSTS+1
-          NSTRA=NSTRA+1
-        END IF
+        IF (NTIME.EQ.0) NTIME=1
+        NPRNLI=100      
       ENDIF
       NPRNL = MAX(NPRNL,NPRNLI)
+      
 
 cdr        NPRNL is only valid for writing census arrays onto fort.15
 cdr  tbd:  when reading fort 15 (census), the size is determined by the
@@ -1295,13 +1323,14 @@ C
       WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP" '
       IF (NMODE.EQ.0) THEN
         READ (IUNIN,6666) NAINI,NCOPII,NCOPIE
-        NCOPI=NCOPIE
-        NAIN = MAX(NAIN,NAINI)
-        NCOP = MAX(NCOP,NCOPI)
-        NCPV = NCOP
+        NCPVI=NCOPIE
       ELSE
-        CALL EIRENE_IF0PRM(IUNIN)
+        NAINI=0
+        NCPVI=0
+        CALL EIRENE_IF0PRM(IUNIN,IUNOUT)
       ENDIF
+      NAIN = MAX(NAIN,NAINI)
+      NCPV = MAX(NCPV,NCPVI)
  
       REWIND IUNIN
       CALL EIRENE_LEER(1)
@@ -1323,6 +1352,8 @@ cdr  grid size
       WRITE (iunout,*) 'NTRI =   ',NTRI
       WRITE (iunout,*) 'NTETRA = ',NTETRA
       WRITE (iunout,*) 'NCOORD = ',NCOORD
+      WRITE (iunout,*) ' '
+      WRITE (iunout,*) 'NRAD =   ',NRAD
 cdr  primary source
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'NSTRA =  ',NSTRA
@@ -1347,7 +1378,7 @@ cdr species
       WRITE (iunout,*) 'NALS =   ',NALS
 
       WRITE (iunout,*) 'NAIN =   ',NAIN
-      WRITE (iunout,*) 'NCOP =   ',NCOP
+      WRITE (iunout,*) 'NCPV =   ',NCPV
       WRITE (iunout,*) 'NBGK =   ',NBGK
       WRITE (iunout,*) 'NSD =    ',NSD
       WRITE (iunout,*) 'NSDW =   ',NSDW

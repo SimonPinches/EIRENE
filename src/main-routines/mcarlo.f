@@ -602,6 +602,8 @@ C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             IN=ICLMT(I)
             IMETCL(IN) = 0
           END DO
+c  LMETSP: array for 1st ("species") index of volume averaged tallies,
+c  which is scored along a trajectory
           LMETSP=.FALSE.
           NCLMTS = 0
 
@@ -609,6 +611,8 @@ C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             IN=IWLMT(I)
             IMETWL(IN) = 0
           END DO
+c  LMETSPW: array for 1st ("species") index of surface averaged tallies,
+c  which is scored along a trajectory
           LMETSPW=.FALSE.
           NWLMT = 0
           NWLMTS = 0

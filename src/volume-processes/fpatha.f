@@ -560,21 +560,24 @@ C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           VEFF=SQRT(VEFFQ)
           ELAB=LOG(VEFFQ)+DEFEL(IREL)
           IREAC=MODCOL(5,1,IREL)
+
+cdr  disable proprietary option lhaber
 C  FIND SIGMA FROM OAK RIDGE "ELASTIC" DATA TABLES
-          IF (LHABER) THEN
-            RMN=RMASSA(IATM)
-            RMI=RMASSP(IPLS)
-            RMSI=1./(RMN+RMI)
-            RLMS=RMN*RMI*RMSI
-            ER=RLMS*VEFFQ*CVELI2
+c         IF (LHABER) THEN
+c           RMN=RMASSA(IATM)
+c           RMI=RMASSP(IPLS)
+c           RMSI=1./(RMN+RMI)
+c           RLMS=RMN*RMI*RMSI
+c           ER=RLMS*VEFFQ*CVELI2
 cdr  flag -1.0_DP: only sigma(ER), but no scattering angle evaluated
-            CALL EIRENE_SCATANG (ER,-1.0_DP,ELTHDUM,CTCHDUM,SIG)
-            CEL= SIG*AU_TO_CM2
-          ELSE
+c           CALL EIRENE_SCATANG (ER,-1.0_DP,ELTHDUM,CTCHDUM,SIG)
+c           CEL= SIG*AU_TO_CM2
+c         ELSE
+
 C  FIND SIGMA FROM AMJUEL DATA TABLES (BACHMANN ET AL.)
             CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
      .                       'FPATHA EL2')
-          END IF
+c         END IF
           SIGVEL(IREL)=CEL*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(5,2,IREL).EQ.4) THEN
 C  MODEL 4

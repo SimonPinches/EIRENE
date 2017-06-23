@@ -33,7 +33,7 @@
       IF (REACDAT(IR)%LPHR) THEN
           WRITE (IUNOUT,*) ' PARAMETER FOR PHOTONIC REACTION ALREADY',
      .                     ' SPECIFIED FOR REACTION', IR
-          WRITE (IUNOUT,*) ' PLEASE CHECK SPECIFICATION OF REACTIONS'
+          WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
  
@@ -274,7 +274,7 @@
       phline%c4 = c4
  
       select case (isw)
-        case (1)    ! absorbtion
+        case (1)    ! absorption
            phline%ircart = 4
         case (2)    ! emission
            phline%ircart = 4

@@ -17,7 +17,7 @@ cdr n,T,V for background (bulk) velocity distribution: not finished.
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
 !  nov. 16  nlpitch option added, for orientation of B-field in 1D runs
 
-cpb: add parameter ndim: special treatment of Ti fields sepcies index.
+cpb: add parameter ndim: special treatment of Ti fields species index.
 cpb: reading tiin from profr:  set 1st dimension of tiin array.
 
 cdr: check under which conditions can nplsti be different from npls, and is that still needed?
@@ -25,6 +25,17 @@ cdr: why is that not needed for V and n profiles?
 !
 !
       SUBROUTINE EIRENE_PLASMA
+C  SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES, B AND E FIELDS, 
+C  ON: 
+C  INDPRO=1,2,3    1D MESH "RHOZNE(J)", 1,NR1STM, CELL CENTERED
+C                  B-FIELD (INDPRO(5)) SET ON 1:NSURF 
+C  INDPRO=4        READ FROM EXTERNAL FILE ISTREAM, EVERYWHERE, 1,NSBOX, 
+C  INDPRO=5        PROUSR: ONLY IN STANDARD GRID, 1:NSURF
+C  INDPRO=6        PROFR : ONLY IN STANDARD GRID, 1:NSURF
+C  INDPRO=7        PROFR : EVERYWHERE, 1,NSBOX
+C  INDPRO=8        ??
+C  INDPRO=9        INPOUT TALLIES ARE ALREADY SET ELSEWHERE, 1:NSURF ??
+C
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -79,10 +90,7 @@ C  AND ALL REACTION RATES WRT: TO THIS BULK PARTICLE ARE SET EQUAL TO ZERO (1/S)
       VVAC=0._dp
       BVAC=1._dp  ! dr:  B field must not be "vacuum". check use of BVAC
 C
-C     SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES
-C     ON 1D MESH "RHOZNE(J)", CELL CENTERED
-C
-C
+
 C
 C  ELECTRON TEMPERATURE
       IND=INDPRO(1)
@@ -105,8 +113,11 @@ c  INDPRO=4:  read tally from stream TEO
 c  INDPRO=5:  tally from PROUSR, indx=0
 105     CALL EIRENE_PROUSR (TEIN,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
         GOTO 110
+
+c  INDPRO=6:  tally from PROFR,  1:NSURF
 106     CALL EIRENE_PROFR (TEIN,0,1,1,NSURF)
         GOTO 110
+c  INDPRO=7:  tally from PROFR,  1:NSBOX=NSURF+NRADD
 107     CALL EIRENE_PROFR (TEIN,0,1,1,NSBOX)
         GOTO 110
 110   CONTINUE
@@ -116,6 +127,7 @@ c  INDPRO=5:  tally from PROUSR, indx=0
 C  ION TEMPERATURE
       IND=INDPRO(2)
       DO 120 IPLSTI=1,NPLSTI
+cdr one profile iplsti set at a time
         GOTO (111,112,113,114,115,116,117,120,120),IND
 111     CALL EIRENE_PROFN (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
      .                     TI3(IPLSTI),TI4(IPLSTI),TI5(IPLSTI),TVAC)
@@ -147,6 +159,9 @@ c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
         GOTO 120
 120   CONTINUE
       GOTO 1120
+
+cdr all nplsti profiles set in a single call
+
 c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
 cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
 !pb Jan 17: 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
@@ -168,6 +183,7 @@ C  ION DENSITY
       DO 130 IPLS=1,NPLSI
         IF (LEN_TRIM(CDENMODEL(IPLS)) > 0) CYCLE
         GOTO (121,122,123,124,125,126,127,130,130),IND
+cdr one profile ipls set at a time
 121     CALL EIRENE_PROFN (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
      .                   DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC)
         DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
@@ -196,6 +212,9 @@ c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IP
         GOTO 130
 130   CONTINUE
       GOTO 1130
+
+cdr all nplsi profiles set in a single call
+
 c  INDPRO=6:
 cdr first dimension of arrays:  always NPLS
 126   CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
@@ -212,6 +231,7 @@ C  DRIFT VELOCITY
       IND=INDPRO(4)
       DO 140 IPLSV=1,NPLSV
         GOTO (131,132,133,134,135,136,137,140,140),IND
+cdr one vector component profile (vx,vy,vz) iplsv set at a time
 131     CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
      .                   VX3(IPLSV),VX4(IPLSV),VX5(IPLSV),VVAC)
         VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
@@ -261,6 +281,7 @@ c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
         VZIN(IPLSV,1:NSURF)=HELP(1:NSURF)
         GOTO 140
 140   CONTINUE
+
 C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
 C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
       IF (NLMACH) THEN
@@ -278,12 +299,16 @@ C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
       ENDIF
       GOTO 1140
 
+
+cdr all nplsv vector component profiles set in a single call
+
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
 136   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSURF)
       CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSURF)
       GOTO 1140
+
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
 137   CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSBOX)
@@ -323,7 +348,7 @@ C  INDPRO(5)=4: read tally from stream B0:  NOT IN USE
 
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
 1400    CONTINUE
-C  AT THIS POINT: IND= 1,2, ODER 3. HELP2 IS KNOWN ONLY IN CASE IND=3
+C  AT THIS POINT: INDPRO= 1,2, OR =3. HELP2 IS KNOWN ONLY IN CASE INDPRO=3
         IF (LEVGEO.EQ.1) THEN
           DO 1401 J=1,NSURF
             CALL EIRENE_NCELLN(J,IR,IP,IT,IA,IB,
@@ -492,9 +517,14 @@ c          (transfer from problem specific codes or external data structures)
         GOTO 170
 170   CONTINUE
 C
-C
+CDR
 C   SET VACUUM DATA IN ADDITIONAL REGIONS OUTSIDE THE
-C   THE STANDARD MESH
+C   THE STANDARD MESH. 
+C   EXCLUDE: INDPRO=4: ADDITIONAL CELL REGION FROM FILE ISTREAM
+C   EXCLUDE: INDPRO=7: ADDITIONAL CELL REGION DATA FROM EXTERNAL CODE (PROFR) 
+C   EXCLUDE: INDPRO=8: ??
+
+cdr tbd: indpro=4:  are data set on 1:nsurf, or on 1:nsbox=nsurf+nradd ?  
 C
       IF (INDPRO(1).LE.6 .OR. INDPRO(1).EQ.9) THEN
         DO J=NSURF+1,NSURF+NRADD

@@ -569,9 +569,10 @@ c
 
         CALL EIRENE_LEER(2)
 
+
+      ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
 c               i.e. OCTREE optimization in in-active
-      ELSE  !   NOT NLOCTREE
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J
@@ -780,10 +781,11 @@ c................................................................
      
 c     defining the internal subroutine for the octree build
       CONTAINS
-        SUBROUTINE EIRENE_TIMEA0_BUILDOC()
+
+      SUBROUTINE EIRENE_TIMEA0_BUILDOC()
 cdr  this routine is only called if NLOCTREE
 c
-c    It returns NOTOCSURFS(1:NURFNOT), a list of additional surfaces not
+c    It returns NOTOCSURFS(1:NSURFNOT), a list of additional surfaces not
 c       covered by the octree-procedure
 c
 c    unit number for the tracing debug ouput
@@ -796,7 +798,7 @@ C   as the code above is pretty much with gotos, simply put
 C   the octree stuff in here...
 c
 c   build octree
-            tree => EIRENE_TIMEA_BuildOctree()
+      tree => EIRENE_TIMEA_BuildOctree()
       
 c   count the surfaces that won't be in octree to get the
 c   right dimension for the array NOTOCSURFS 
@@ -811,7 +813,7 @@ c  that are no tri/quad/quintangles
       
 c   allocate enough space for lookup table which we will use for 
 c   surfaces that we don't have in the octree (like 2nd order surfaces, etc.)
-      ALLOCATE(NOTOCSURFS(NSURFNOT))
+      if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NSURFNOT))
 cdr
       NSURFNOT = 0
 c   add the second order surfaces, etc into this

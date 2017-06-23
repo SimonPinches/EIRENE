@@ -10,6 +10,8 @@ cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
 cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
+cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
+cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI 
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -48,7 +50,7 @@ csw 13apr07
  
       INTEGER, PUBLIC, SAVE ::
      I NATM,   NMOL,   NION,   NPLS,   NPHOT,  NADV,   NADS,
-     I NCLV,   NSNV,   NALV,   NALS,   NAIN,   NCOP,   NBGK,
+     I NCLV,   NSNV,   NALV,   NALS,   NAIN,   NCPV,   NBGK,
      I NPLSTI, NPLSV,
      I NADSPC, NBACK_SPEC ,NADSPC_S, NADSPC_C, NADSPC_D,NADSPC_CD
  
@@ -88,7 +90,7 @@ csw 13apr07
      I NGTSFT, NLIMPS, NLMPGS
  
       INTEGER, PUBLIC, SAVE ::
-     I NCPV,   NBGV,   NBMAX,   NPTAL,  NCPV_STAT, NSCOP
+     I NBGV,   NBMAX,   NPTAL,  NCPV_STAT, NSCOP
  
       INTEGER, PUBLIC, SAVE ::
      I NSTRAP
@@ -162,7 +164,7 @@ C.......................................................................
 C
 C  GEOMETRY
 C
-        NRAD=MAX(N1ST*N2ND*N3RD,NTRI,NTETRA)+NADD+1
+        NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
  
@@ -317,7 +319,7 @@ C
      P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP
 
 !pb arrays in module CSDVI_COP no longer needed
-!pb        NCPV_STAT=(NCPV+NPLS+2)*NSWIT+1
+!pb     NCPV_STAT=(NCPV+NPLS+2)*NSWIT+1
         NCPV_STAT=1
         NSCOP=NCPV_STAT*NRTALS
  
@@ -358,7 +360,8 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
       INT_PARM( 17) = NSTRA
       INT_PARM( 18) = NSRFS
       INT_PARM( 19) = NSTEP
- 
+
+c  leading dimensions of output tally arrays 
       INT_PARM( 20) = NATM
       INT_PARM( 21) = NMOL
       INT_PARM( 22) = NION
@@ -371,27 +374,28 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
       INT_PARM( 29) = NALV
       INT_PARM( 30) = NALS
       INT_PARM( 31) = NAIN
-      INT_PARM( 32) = NCOP
-      INT_PARM( 33) = NBGK
- 
+      INT_PARM( 32) = NCPV
+      INT_PARM( 33) = NBGK  !dr  tbd: more logical: put NBGV here, eliminate NBGK 
+
+c  variances, covariances 
       INT_PARM( 34) = NSD
       INT_PARM( 35) = NSDW
       INT_PARM( 36) = NCV
- 
+c  collision processes 
       INT_PARM( 37) = NREAC
       INT_PARM( 38) = NREC
       INT_PARM( 39) = NREI
       INT_PARM( 40) = NRCX
       INT_PARM( 41) = NREL
       INT_PARM( 42) = NRPI
- 
+c  surface reflection model
       INT_PARM( 43) = NHD1
       INT_PARM( 44) = NHD2
       INT_PARM( 45) = NHD3
       INT_PARM( 46) = NHD4
       INT_PARM( 47) = NHD5
       INT_PARM( 48) = NHD6
- 
+c  lines of sight integrals (post-procesing 
       INT_PARM( 49) = NCHOR
       INT_PARM( 50) = NCHEN
  
@@ -404,12 +408,13 @@ C  SPATIALLY RESOLVED SURFACE TALLIES?
  
       INT_PARM( 57) = NPRNL
  
- 
+c  storage reduction parameters 
       INT_PARM( 58) = NGEOM_USR
       INT_PARM( 59) = NCOUP_INPUT
       INT_PARM( 60) = NSMSTRA
       INT_PARM( 61) = NSTORAM
       INT_PARM( 62) = NGSTAL
+
       INT_PARM( 63) = NRPES
  
       INT_PARM( 64) = NRAD
@@ -433,8 +438,8 @@ c
       INT_PARM( 79) = NLIMPS
       INT_PARM( 80) = NLMPGS
  
-      INT_PARM( 81) = NCPV
-      INT_PARM( 82) = NBGV
+C     INT_PARM( 81) =        !dr free, not in use.
+      INT_PARM( 82) = NBGV   !dr either nbgk or nbgv should be made redundant
       INT_PARM( 83) = NBMAX
       INT_PARM( 84) = NPTAL
       INT_PARM( 85) = NCPV_STAT
@@ -455,6 +460,7 @@ c
       INT_PARM( 98) = NSNVP
       INT_PARM( 99) = NCPVP
       INT_PARM(100) = NBGVP
+
       INT_PARM(101) = NTALI
       INT_PARM(102) = NTALN
       INT_PARM(103) = NTALO
@@ -551,7 +557,7 @@ c
       NALV        = INT_PARM( 29)
       NALS        = INT_PARM( 30)
       NAIN        = INT_PARM( 31)
-      NCOP        = INT_PARM( 32)
+      NCPV        = INT_PARM( 32)
       NBGK        = INT_PARM( 33)
  
       NSD         = INT_PARM( 34)
@@ -612,7 +618,7 @@ c
       NLIMPS      = INT_PARM( 79)
       NLMPGS      = INT_PARM( 80)
  
-      NCPV        = INT_PARM( 81)
+C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)
@@ -634,6 +640,7 @@ c
       NSNVP       = INT_PARM( 98)
       NCPVP       = INT_PARM( 99)
       NBGVP       = INT_PARM(100)
+
       NTALI       = INT_PARM(101)
       NTALN       = INT_PARM(102)
       NTALO       = INT_PARM(103)
@@ -647,6 +654,7 @@ c
       NTALS       = INT_PARM(111)
       NTLSA       = INT_PARM(112)
       NTLSR       = INT_PARM(113)
+
       NTALW       = INT_PARM(114)
       N1MX        = INT_PARM(115)
       N2MX        = INT_PARM(116)

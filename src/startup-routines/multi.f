@@ -1,7 +1,11 @@
-C
-C  may 05:  "no multip on averaging cells" corrected for 3D grids
+CDR   June 17:  comments, and fix re option indpro=4 (unused so far)
+C     May  05:  "no multip on averaging cells" corrected for 3D grids
 C
       SUBROUTINE EIRENE_MULTI
+cdr  entry multig:  copy grid data NBMLT times
+cdr  entry multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
+cdr                 indpro>=4: copy    profiles            *NBMLT times
+cdr                 indpro =4: check this option: tbd.  
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -34,34 +38,36 @@ C  PLASMA DATA
 C
       ENTRY EIRENE_MULTIP
 C
-C  INDPRO.LE.4: ONLY RADIAL PLASMA PROFILES GIVEN
+C  INDPRO.LT.4: ONLY RADIAL PLASMA PROFILES ARE GIVEN
 C  RADIAL PLASMA PROFILES, KNOWN IN ZONES 1 TO NR1ST
 C  NBLCKS=NP2ND*NT3RD*NBMLT
+C  COPY THESE 1D (RADIAL) PROFILES, NBLCKS TIMES
+c  EXCEPTION: B-FIELD DATA, INDPRO(5). SEE BELOW
 C
       DO 210 J=2,NBLCKS
-C  RADIAL BLOCK NO J
+C  RADIAL "BLOCK" NO J
 C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         IF (NP2ND.GT.1.AND.MOD(J,NP2ND).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.LE.1.AND.MOD(J,NT3RD).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.GT.1.AND.J.GT.NP2ND*(NT3RD-1)) GOTO 210
-        IF (INDPRO(1).LE.4) THEN
+        IF (INDPRO(1).LT.4) THEN
           DO 201 I=1,NR1ST
             TEIN(I+(J-1)*NR1ST)=TEIN(I)
 201       CONTINUE
         ENDIF
-        IF (INDPRO(2).LE.4) THEN
+        IF (INDPRO(2).LT.4) THEN
           DO 202 K=1,NPLSTI
             DO 202 I=1,NR1ST
               TIIN(K,I+(J-1)*NR1ST)=TIIN(K,I)
 202       CONTINUE
         ENDIF
-        IF (INDPRO(3).LE.4) THEN
+        IF (INDPRO(3).LT.4) THEN
           DO 204 K=1,NPLSI
             DO 204 I=1,NR1ST
               DIIN(K,I+(J-1)*NR1ST)=DIIN(K,I)
 204       CONTINUE
         ENDIF
-        IF (INDPRO(4).LE.4) THEN
+        IF (INDPRO(4).LT.4) THEN
           DO 205 K=1,NPLSV
             DO 205 I=1,NR1ST
               VXIN(K,I+(J-1)*NR1ST)=VXIN(K,I)
@@ -69,7 +75,10 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
               VZIN(K,I+(J-1)*NR1ST)=VZIN(K,I)
 205       CONTINUE
         ENDIF
-        IF (INDPRO(6).LE.4) THEN
+        IF (INDPRO(5).LT.4) THEN
+C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
+        ENDIF
+        IF (INDPRO(6).LT.4) THEN
           DO 207 K=1,NAINI
           DO 207 I=1,NR1ST
             ADIN(K,I+(J-1)*NR1ST)=ADIN(K,I)
@@ -112,7 +121,7 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
             BFIN(I+(J-1)*NSTRD)=BFIN(I)
 306       CONTINUE
         ENDIF
-        IF (INDPRO(6).LE.4) THEN
+        IF (INDPRO(6).GT.4) THEN
           DO 307 K=1,NAINI
           DO 307 I=1,NSTRD
             ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)

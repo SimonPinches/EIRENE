@@ -6,7 +6,7 @@ cdr  MXCOLLS --> MSTOR0
  
 !  jan-05: natprc_2,..... introduced
 !  07.12.05: bugfix: IFTFLG is now available for default reactions too
-!                    via dimensioning IFTFLG(-11:NREAC)
+!                    via dimensioning IFTFLG(-11:NREAC,0:5)
 !  30.08.06: data structure for reaction data redefined
 !  12.10.06: modcol revised
 !  19.12.06: test functions added which allow to test if a rate-coefficient
@@ -2108,13 +2108,13 @@ cdr  IFIT out of range
  
  
       SUBROUTINE EIRENE_SET_REACTION_DATA
-     .           (IR,ISW,IFTFLG,RDATA,IUNOUT,LTEST,
+     .           (IR,ISW,IFTFL,RDATA,IUNOUT,LTEST,
      .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .            RTMAX, ERTMAX, ETH)
  
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IR, ISW, IFTFLG, IUNOUT
+      INTEGER, INTENT(IN) :: IR, ISW, IFTFL, IUNOUT
       INTEGER, OPTIONAL, INTENT(IN) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN) :: RDATA(9,*)
       REAL(DP), OPTIONAL, INTENT(IN) :: RC1MIN, RC1MAX, FP1(6),
@@ -2128,7 +2128,7 @@ cdr  IFIT out of range
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)
  
       NDIM = 9
-      IF (MOD(IFTFLG,100) == 10) NDIM = 1
+      IF (MOD(IFTFL,100) == 10) NDIM = 1
  
       NDIM2 = 1
       IF (COUNT(ISW2D == ISW) > 0) NDIM2=9
@@ -2557,6 +2557,7 @@ c
       IF (ASSOCIATED(RP%POLY)) THEN
          DEALLOCATE (RP%POLY%DBLPOL)
          DEALLOCATE (RP%POLY)
+         NULLIFY(RP%POLY)
       END IF
 
       IF (ASSOCIATED(RP%ADAS)) THEN
@@ -2566,10 +2567,12 @@ c
          DEALLOCATE (RP%ADAS%DDE)
          DEALLOCATE (RP%ADAS%DTE)
          DEALLOCATE (RP%ADAS)
+         NULLIFY(RP%ADAS)
       END IF
 
       IF (ASSOCIATED(RP%LINE)) THEN
          DEALLOCATE (RP%LINE)
+         NULLIFY(RP%LINE)
       END IF
 
       IF (ASSOCIATED(RP%HYD)) THEN
@@ -2577,6 +2580,7 @@ c
          DEALLOCATE (RP%HYD%RATES)
          DEALLOCATE (RP%HYD%RATIO)
          DEALLOCATE (RP%HYD)
+         NULLIFY(RP%HYD)
       END IF
 
       END SUBROUTINE EIRENE_FREE_FIT_FORM

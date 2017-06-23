@@ -28,6 +28,8 @@ cdr  Jan. 2014:
 cdr Aug.16  :   minor syncronisation with xstpi.f. 
 cdr Sept.16 :   Started to implement H.3 rate coeff. 
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
+cdr May 17  :   safety cut off for TEE at 0.1 eV, added in more cases
+cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 
 
 C
@@ -241,7 +243,10 @@ C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  MISSING HERE, I.E. NOT READY FOR CORONA APPROXIMATION
 C   CORONA ERATE NOT WORKING !
 C .....................................
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,.TRUE.,0,ERATE)
+            TEE=TEINL(J)
+cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
+            TEE = max(-2.3_dp,TEE)
+            COU = EIRENE_RATE_COEFF(KK,TEE,0._DP,.TRUE.,0,ERATE)
             TABEI1(IREI,J)=COU*FACTKK
 C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
             IF (IFTFLG(KK,2) < 100)
@@ -259,6 +264,8 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
 C  2.C) RATE COEFFICIENT(TE,EBEAM)
 C       NEND=9
 C  TO BE WRITTEN
+        goto 996
+
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
           rt => reacdat(kk)%rtc
@@ -269,15 +276,15 @@ C  TO BE WRITTEN
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
+cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
               TEE = max(-2.3_dp,TEE)
-c old
-c old         CALL EIRENE_PREP_RTCS (KK,3,TEE,CF)
-c old
+c  evaluate 2 parametric fit, 
+c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
      .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
-
+cdr  not ready, tabei1 --> tabei3 to be done.
 C             TABEI3(IREI,J,1:9) = CF(1:9)
 C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
           END DO
@@ -293,9 +300,10 @@ C  2.D) RATE COEFFICIENT(TE,NE)
           FCTKKL=LOG(FACTKK)
 C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  PREPARE ELECTR. ENERGY LOSS FROM INTERNAL CR CODE
-          KREAD=EELEC
+          
           IF ((REACDAT(KK)%RTC%IFIT == 5) .AND.
      .        (EIRENE_IDEZ(ISCDE,5,5) == 3)) THEN
+            KREAD=EELEC
             IF (REACDAT(KREAD)%LRTCEW) THEN
               IF (REACDAT(KREAD)%RTCEW%IFIT == 5) LHCOL=.TRUE.
             END IF
@@ -303,7 +311,11 @@ C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  PREPARE ELECTR. ENERGY LOSS FROM INT
 C .......................................
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            TEE=TEINL(J)
+cdr  safety cut off at Te= 0.1 eV. (TVAC=0.02)
+            TEE = max(-2.3_dp,TEE)
+cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
+            COU = EIRENE_RATE_COEFF(KK,TEE,PLS(J),.FALSE.,1,ERATE)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
             TB=MAX(-100._DP,TB)

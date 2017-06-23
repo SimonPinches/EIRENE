@@ -16,7 +16,8 @@ C
 C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
 C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
 C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
-C                  E=ESIGCX(IRCX,1)
+C                  E=M/2 V_M^2 =3/2 KT
+C                  to be generalized to E=ESIGCX(IRCX,1)
 C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
 C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
 C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
@@ -140,9 +141,11 @@ C    set parameters for random sampling in cell icell=K
 
 C
       IF (K.GT.0) THEN  ! K is the grid cell number. Use local bulk medium parameters
+c  scaled 1d temperatures, per degree of fredom
         ZARGX=ZRG(IPLS,K)
         ZARGY=ZRG(IPLS,K)
         ZARGZ=ZRG(IPLS,K)
+c  drift velocity, cm/s
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
@@ -157,7 +160,7 @@ C
           VYDR=0.D0
           VZDR=0.D0
         ENDIF
-      ELSE  !  K=0, USE ARGUMENTS DUMT AND DUMV AS PARAMETERS FOR MAXWELLIAN
+      ELSE  !  K=0, USE ARGUMENTS DUMT AND DUMV AS PARAMETERS FOR DRIFTING MAXWELLIAN
         IF (NFLAG.NE.2) GOTO 999
         ZARGX=DUMT(1)
         ZARGY=DUMT(2)
