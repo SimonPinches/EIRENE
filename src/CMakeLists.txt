@@ -49,39 +49,14 @@ list(GET src_main-routines 0 fortran_file)
 get_filename_component(fortran_dir ${fortran_file} PATH)
 list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.f)
 
-# Finds non-dummy plotting subroutines that are replaced by dummy subroutines 
-# and creates a reduced list of source files for plotting.
-set(src_plot_dummy_names "")
-foreach(fortran_file ${src_plot_dummy})
-  get_filename_component(fortran_file_name ${fortran_file} NAME)
-  list(APPEND src_plot_dummy_names ${fortran_file_name})
-endforeach()
-set(src_plotting_reduced "")
-foreach(fortran_file ${src_plotting})
-  get_filename_component(fortran_file_name ${fortran_file} NAME)
-  list(FIND src_plot_dummy_names ${fortran_file_name} file_found)
-  if(${file_found} EQUAL -1)
-    list(APPEND src_plotting_reduced ${fortran_file})
-  endif()
-endforeach()
-set(src_grsoft-dummy_reduced "")
-foreach(fortran_file ${src_grsoft-dummy})
-  get_filename_component(fortran_file_name ${fortran_file} NAME)
-  list(FIND src_plot_dummy_names ${fortran_file_name} file_found)
-  if(${file_found} EQUAL -1)
-    list(APPEND src_grsoft-dummy_reduced ${fortran_file})
-  endif()
-endforeach()
-
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
                    ${src_file-handling} ${src_geometry} 
-                   ${src_geometry/time-routines} 
-                   ${src_grsoft-dummy_reduced} ${src_interfaces/couple_Dummy} 
+                   ${src_geometry/time-routines} ${src_interfaces/couple_Dummy} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
-                   ${src_photons} ${src_plot_dummy} ${src_plotting_reduced} 
-                   ${src_sampling} ${src_scoring} ${src_startup-routines} 
+                   ${src_photons} ${src_plot_dummy} ${src_sampling} 
+                   ${src_scoring} ${src_startup-routines} 
                    ${src_surface-processes} ${src_tetrahedrons} 
                    ${src_user-routines/user_default} ${src_volume-processes} 
                    ${src_xdr-dummy})
