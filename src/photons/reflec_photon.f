@@ -46,7 +46,7 @@ C
      .            RPROB, WABS
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ,
-     .                     ranset_eirene
+     .                     RANSET_EIRENE
 C
 C---------------------------------------------------------------------
 C
