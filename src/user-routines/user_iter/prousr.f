@@ -22,6 +22,8 @@ C
       REAL(DP), INTENT(IN) :: P0, P1, P2, P3, P4, P5, PROVAC
       REAL(DP), INTENT(OUT) :: PRO(*)
       INTEGER, INTENT(IN) :: INDX, N
+
+      PRO(1:N)=0.0
  
       RETURN
       END
