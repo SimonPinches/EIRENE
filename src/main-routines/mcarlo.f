@@ -284,7 +284,10 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
 7     CONTINUE
       XPT1=0.
       XFL1=0.
-      nsteff=0
+ 
+c NSTEFF: number of strata active in this run, i.e. not counting
+c         de-activated strata with NPTS(ISTRA)=0.
+      nsteff=0 
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         if (npts(istra) .gt. 0) then
@@ -886,13 +889,14 @@ C
 C**** PARTICLE TRACING FOR THIS STRATUM FINISHED **********************
 C
 c
-c     collect data for one stratum from all pe's performing calculations
-c     for this stratum
+c    collect data for one stratum ISTRA from all pe's performing calculations
+c    for this stratum
 c
-!pb       if ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra))
-!csw        if (count(procforstra(istra,0:nprs-1)) > 1)
-       if (nprs.gt.nsteff)
-     .  call EIRENE_calstr
+cdr  more processors than active strata.
+cdr  june 17: ?? what if nprs < nsteff, and still one stratum
+cdr              has more than one processor assigned ??
+cdr              Is it excluded that one pe deals with more than one stratum?  
+       if (nprs.gt.nsteff) call EIRENE_calstr
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C

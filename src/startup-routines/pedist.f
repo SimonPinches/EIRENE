@@ -1,3 +1,14 @@
+cdr: This routine strictly should be a third party routine,
+cdr  because allocation of cpu time to strata may be done according
+cdr  different criteria. (load balancing, variance minimization via stratification....)
+cdr  The present version of PEDIST is aiming at "proportional allocation",
+cdr  See EIRENE manual, "stratified source sampling". 
+
+cdr  currently it is ruled out that one processor deals
+cdr  with more than one stratum, except in the serial case (one one processor)
+cdr  To generalize this, some coding in MCARLO.f and perhaps elsewhere 
+cdr  may need to be adjusted...
+
 !pb  18.12.06: COMPUTATION TIME PER PROCESSOR IS SET TO THE MAXIMUM TIME
 !pb            THAT IS AVAILABLE
 C
@@ -12,9 +23,11 @@ C   COMPUTATION TIME.
 
 C   IF THERE ARE LESS PROCESSORS THAN STRATA:
 C   CASE A: ONLY ONE PROCESSOR:  ALL STRATA TO THIS SINGLE PROCESSOR
-C   CASE B: SEVERAL PROCESSORS:  ASIGN A PROCESSOR TO EACH STRATA. SOME PROCESSORS
+C   CASE B: SEVERAL PROCESSORS:  ASIGN A PROCESSOR TO EACH STRATUM. SOME PROCESSORS
 C                                MAY RECEIVE MORE THAN ONE STRATUM.
-C                                DO NOT SPLIT STRATA ONTO D
+C                                DO NOT ASSIGN SEVERAL PROCESSORS TO ONE STRATUM
+cdr June 17: the last criterion may  be too restricitve 
+cdr          and perhaps not be needed either
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -45,7 +58,7 @@ csw 18mar2013
 
       ELSE IF (NPRS <= COUNT(NLSRON(1:NSTRAI))) THEN
 
-! LESS PROCESSORS THAN STRATA
+! FEWER PROCESSORS THAN STRATA
 ! ROUND ROBIN DISTRIBUTION OF PROCESSORS
 ! EACH PROCESSOR CAN CALCULATE SEVERAL STRATA
 ! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
@@ -167,7 +180,7 @@ csw 14jul2011
         enddo
 csw
  
-! if there are still free processors left distribute them to all
+! if there are still free processors left, distribute them to all
 ! strata with more than tmean cpu time assigned to them using a
 ! daisy chain mechanism
         ISTRA=0
@@ -190,7 +203,7 @@ csw 14jul2011
         endif
 csw
  
-! assign each processor the number of the stratum it shall work on
+! assign each processor the numbers ISTRA of the strata it shall work on
         IPE=0
         DO ISTRA=1,NSTRAI
           DO K=1,NPESTR(ISTRA)
