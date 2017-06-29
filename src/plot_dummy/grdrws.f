@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
-      SUBROUTINE GRDRWS(X,Y,ISYM)
+      SUBROUTINE GRDRWS(X,Y,NR)
       RETURN
       END

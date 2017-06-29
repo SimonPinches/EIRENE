@@ -19,7 +19,7 @@ cdr             option lhyddef. error exit. Tests of that interface options star
 !    april 15:  esptcr, esptsr: sputtered particle energy flags introduced
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
-!cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
+!cd  22.09.14:  1D case, levgeo=2:  do not call eirene_grid(2)
 !cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
 !               some minor changes at transition from end of block ***3 and re-entry to block ***6
 !pb  01.01.14:  options AMPTS, multiplier for ntcpu.... added (input block 7)
