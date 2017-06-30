@@ -16,8 +16,7 @@ C
 !dr  16.01.14:  default NOPTIM changed from 1 to NRAD (automatically), some printout rearranged
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
-!cd  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
-!cd             because nflr (common CREF) is later used in RDTRIM and REFDAT with a slightly other meaning.
+!cd  2.2.15:    nfr (number of TRIM A_on_B files), now same name as in input.f           
 cdr  Jan 2016:  storage for second dimension only if nlpol=true
 cdr             to be tested: storage for nplg, if nlpol=false?
 cdr             storage for third dimension only if nltor=true
@@ -974,11 +973,11 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
         ENDIF
       ENDIF
 
+C  NHD6 FOR STORAGE ON ALLOCATABLE ARRAYS: number of TRIM target-projectile combinations
       IF (NFR > 0) THEN
         NHD6 = NFR
       ELSE
-cdr  should be NHD6=12
-        NHD6 = 8
+        NHD6 = 12
       END IF
  
 C  FIND START OF NEXT INPUT BLOCK: 7

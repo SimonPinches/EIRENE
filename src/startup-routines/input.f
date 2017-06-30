@@ -206,7 +206,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IN, INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
      .           IPRCSF, IR, MT, MP, NDUMM, NUMSEC, NDUMM1, NDUMM2,
      .           NRTAL1, NCOPII, NCOPIE, NFR, NREAC_ADD, IPLN,
-     .           NDUMM3, NDUMM4, NRE,
+     .           NDUMM3, NDUMM4, NRE, IFLR,
      .           ISPSRF, ISPTYP, NSPS, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
@@ -1050,7 +1050,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         IF (ABS(ILCOL(NLJ)).EQ.7) THEN
           WRITE (iunout,*) 'COLOUR FLAG ILCOL CHANGED FOR SURFACE NO. ',
      .                      NLJ
-          WRITE (iunout,*) 'COLOUR NO. 7 IS RESERVED FOR "NON-ANALOG'
+          WRITE (iunout,*) 'COLOUR NO. 7 IS RESERVED FOR "NON-ANALOGUE'
           WRITE (iunout,*)
      .      'SURFACES" (SPLITTING, R.R., WEIGHT WINDOWS,..)'
           ILCOL(NLJ)=ILCOL(NLJ)-2
@@ -2348,9 +2348,11 @@ c  read TRIM reflection datasets A_on_B
         IF (INDEX(ZEILE,'PATH')+INDEX(ZEILE,'path').EQ.0) THEN
 C  NO PATH SPECIFIED FOR REFLECTION DATA BASE
           WRITE (iunout,*)
-     .      ' NO PATH SPECIFIED FOR REFLECTION DATA BASE '
+     .      ' NO PATH SPECIFIED FOR TRIM REFLECTION DATA BASE '
           WRITE (iunout,*) ' OLD TRIM DATABASE VERSION USED '
-          LTRMOL=.TRUE.
+          LTRIM_OLD=.TRUE.
+C  TAKE OLD "TRIM.DAT" FILE WITH NHD6=12 TARGET-PROJECTILE COMBINATIONS
+C           "TRIM.DAT" IS EXPECTED ON INPUT STREAM IUN=(21+IFOFF) (SUBR. REFDAT.F)
 C  SKIP LINES CONTAINING SPECIFICATIONS FOR DATA BASES AND
 C  CONTINUE READING with DATD
 615       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
@@ -2363,7 +2365,7 @@ C  NEXT VALID INPUT CARD FOUND
           ENDIF
         ELSE
 C  PATH SPECIFICATION FOR DATA BASE FOUND
-          LTRMOL=.FALSE.
+          LTRIM_OLD=.FALSE.
           READ (ZEILE(7:),'(A400)') PATH
           PATH=ADJUSTL(PATH)
           I2=INDEX(PATH,' ')
@@ -2401,27 +2403,29 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
  
       IF (ASSOCIATED(REFFILES)) THEN
 c  trim files for NFR target projectile combinations are requested.
-c  read them in subr. RDTRIM
+c  read them one by one in subr. RDTRIM
         NHD6 = NFR
       ELSE
 c  old default: all TRIM data in one single file.
-c  read this (single) file in subr. REFDAT
-cdr this NHD6 should be 12
-        NHD6 = 8
+c  read this (single) file "TRIM.DAT" in subr. REFDAT
+        NHD6 = 12
       END IF
+
       NH0=NHD1*NHD2*NHD6
       NH1=NH0*NHD3
       NH2=NH1*NHD4
       NH3=NH2*NHD5
       CALL EIRENE_ALLOC_CREF
-      NFLR = 0
+
+      IFLR = 0
       DO WHILE (ASSOCIATED(REFFILES))
-        NFLR = NFLR + 1
-        REFFIL(NFLR) = REFFILES%RFILE
+        IFLR = IFLR + 1
+        REFFIL(IFLR) = REFFILES%RFILE
         CURFILE => REFFILES
         REFFILES => REFFILES%NEXT
         DEALLOCATE(CURFILE)
       END DO
+cdr AT THIS POINT: IFLR=NFR OR IFLR=0 ??
 
 c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
 
@@ -5051,7 +5055,7 @@ C
 
       NBACK_SPEC = 0
 
-c  number of spectra from Monte-Carlo trajectories
+c  number of spectra directly estimated from Monte-Carlo trajectories
 
       NADSPC_S = 0   !  surface-based
       NADSPC_C = 0   !  cell-based
