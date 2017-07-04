@@ -1189,7 +1189,12 @@ C
 C
 C
 C  INITIALISE SPECIES ARRAYS FOR SURFACE TALLIES
-
+c  n1 -- n5: same as for volume tallies
+c     N1=NPHOTI
+c     N2=N1+NATMI
+c     N3=N2+NMOLI
+c     N4=N3+NIONI
+c     N5=N4+NPLSI
       N6=N5+NADSI
       N7=N6+NALSI
       N8=N7+NSPZ

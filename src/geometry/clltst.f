@@ -30,7 +30,7 @@ C
         NTEST0=EIRENE_LEARC1(X0,Y0,Z0,IPOLGT,1,NR1STM,.FALSE.,.FALSE.,
      .                NPANU,'CLLTST      ')
 C
-      ELSEIF (LEVGEO.EQ.5) THEN    !  tetrahedons
+      ELSEIF (LEVGEO.EQ.5) THEN    !  tetrahedra
 C
         NTEST0=EIRENE_LEARCT(X0,Y0,Z0)
 C

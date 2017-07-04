@@ -1,4 +1,6 @@
-      MODULE EIRMOD_CSDVI
+cdr july 17:  nsnv already contained in nspztot, due to previous fix.
+ 
+     MODULE EIRMOD_CSDVI
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -114,7 +116,7 @@ c  arrays updated on the fly, to speed up statistical variance calculations in s
 c  lmetsp(is) : logical, indicator, whether for any particular trajectory a 
 c               volume averaged tally has been scored with species index "is"
 c  lmetspw(is): ditto, for surface averaged tallies 
-        ALLOCATE (LMETSP(NSPZTOT+NSNV))
+        ALLOCATE (LMETSP(NSPZTOT))
         ALLOCATE (LMETSPW(NSPZ+NADS+NALS+NSPZ))
  
       END IF

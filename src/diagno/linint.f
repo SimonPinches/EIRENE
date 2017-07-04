@@ -884,7 +884,7 @@ C
         IF (PPMA.GT.0._DP) THEN
           IPLOTS = IPLOTS + 1
           write (iunout,*) 'iplots,jen,nchni,ppma ',
-     .     iplots,jen,nchni,ppma
+     .                      iplots,jen,nchni,ppma
           YPLOT(1:JJJ,IPLOTS) = AA(1:JJJ)
           YMN2(IPLOTS) = MINVAL(AA(1:JJJ))
           YMX2(IPLOTS) = MAXVAL(AA(1:JJJ))

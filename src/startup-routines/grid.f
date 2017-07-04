@@ -398,10 +398,11 @@ C
 C  SET DERIVED GRID DATA FOR LEVGEO = 4 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
-!pb initialize list of triangles per gridpoint
-         
+
+cdr  ncorner: number of cell vertices in case levgeo=4, for FEM interpolation         
         NCORNER = NKNOT
 
+!pb initialize list of triangles per gridpoint
         ALLOCATE (COORTRI(NKNOT))
         DO I=1,NKNOT
           NULLIFY(COORTRI(I)%PTRI)
@@ -645,7 +646,7 @@ C
 C  SET DERIVED GRID DATA FOR LEVGEO = 5 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
-         
+cdr  ncorner: number of cell vertices in case levgeo=5, for FEM interpolation          
         NCORNER = NCOORD
  
         DO ITET=1,NTET
