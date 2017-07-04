@@ -165,7 +165,9 @@ C
 C
 C
       PLBOX=LSAVE
-      CALL EIRENE_GRNXTB(1,'PLT3D.F')
+      CALL EIRENE_PLNXTB(1,'PLT3D.F')
+
+cdr  use FZJ proprietary GR plot software
       CALL GRSCLC(REAL(XNULL,KIND(1.E0)),REAL(YNULL,KIND(1.E0)),
      .            REAL(XN+XNULL,KIND(1.E0)),
      .            REAL(YN+YNULL,KIND(1.E0)))

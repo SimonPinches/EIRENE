@@ -1,5 +1,5 @@
 c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_GRNXTB(K,CALLER)
+      SUBROUTINE EIRENE_PLNXTB(K,CALLER)
       INTEGER,  INTENT(IN) :: K
       CHARACTER(LEN=*), INTENT(IN) :: CALLER
       RETURN

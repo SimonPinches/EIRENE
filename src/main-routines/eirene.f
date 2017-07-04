@@ -7,6 +7,8 @@ cdr          when setting dynamic allocatable storage parameters in "find_param.
 cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
 !pb  MAY 16  nrds -> nrei
+cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb... 
+cdr           (to remove redundant dummy gr routines)
  
  
  
@@ -206,7 +208,7 @@ C  each internal iteration or time-step starts here
 101   CONTINUE
 C  IITER=... , ITIME=...
 c  re-initialize some "ifirst"-blocks
-      CALL EIRENE_GRNXTB(3,'EIRENE.F')
+      CALL EIRENE_PLNXTB(3,'EIRENE.F')
  
       IF (MY_PE == 0) THEN
  
@@ -330,9 +332,9 @@ C
 200   CONTINUE
       IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
  
-      TIMI=EIRENE_SECOND_OWN()
+C     TIMI=EIRENE_SECOND_OWN()
       CALL EIRENE_PLT2D
-      TIME=EIRENE_SECOND_OWN()
+C     TIME=EIRENE_SECOND_OWN()
 C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION

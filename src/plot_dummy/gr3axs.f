@@ -1,8 +1,0 @@
-c------------------------------------------------------------------------
-      subroutine gr3axs(ar,ier,ext,valu,chaxs,ll,i1,i2)
-      integer, intent(in) :: ier, i1, i2
-      real :: ar(*), valu(3,2), ext(3,3)
-      character(20) :: chaxs(3)
-      logical ll
-      return
-      end

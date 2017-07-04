@@ -77,7 +77,9 @@ C
 C  NEW FRAME
         IPEN1=0
         IPEN2=0
-        CALL EIRENE_GRNXTB(1,'PLTTLY.F')
+        CALL EIRENE_PLNXTB(1,'PLTTLY.F')
+
+cdr  use FZJ proprietary GR plot software
         CALL GRSCLC (0.,0.,39.5,28.7)
         CALL GRSCLV (0.,0.,39.5,28.7)
         IT=LEN(TXTRUN)
