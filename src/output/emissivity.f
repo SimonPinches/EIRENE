@@ -1,4 +1,4 @@
-      subroutine eirene_emissivity(ist)
+      subroutine eirene_emissivity(ist, lstart, lend)
 
       use eirmod_precision
       use eirmod_parmmod
@@ -20,7 +20,7 @@
 
       implicit none
 
-      integer, intent(in) :: ist
+      integer, intent(in) :: ist, lstart, lend
       integer :: l1, l2, i, j, k, iads, iadv, isp, itp, iratio, irc,
      .           irc_rat, ncelc
       real(dp) :: density, sigadd, add, ratio, powalf, powalfs, fac,
@@ -40,7 +40,7 @@
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
 
-      do i = 1, no_lines
+      do i = lstart, lend
         WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
      .                 EMIS_LINES(I)%LINE_NAME // ':'
 
@@ -48,6 +48,8 @@
         l2 = emis_lines(i)%l2
         fac = emis_lines(i)%fac
         iads = emis_lines(i)%iadv_total
+
+        addv(iads,:) = 0._dp
 
 C  ENERGY FACTOR FOR POWER LOSS (W)
         RY=13.605
@@ -59,6 +61,7 @@ C  ENERGY FACTOR FOR POWER LOSS (W)
         powalfs = 0._dp
         do j = 1, emis_lines(i)%no_compo
           iadv = emis_lines(i)%compo(j)%iadv
+          addv(iadv,:) = 0._dp
           sigadd = 0._dp
           powalf = 0._dp
             
@@ -122,7 +125,7 @@ C
                 add = add*ratio
               end if
 
-              sigadd = sigadd + add * fac * vol(ncell)
+              sigadd = add * fac * vol(ncell)
               addv(iadv,ncelc) = addv(iadv,ncelc) + sigadd
               addv(iads,ncelc) = addv(iads,ncelc) + sigadd
 
@@ -137,7 +140,7 @@ C
           powalf = powalf * facte
           powalfs = powalfs + powalf
 
-          WRITE (iunout,'(A,2ES16.7)') ' COUPL. TO ' // 
+          WRITE (iunout,'(A50,2ES16.7)') ' COUPL. TO ' // 
      .                     TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
      .                    ,POWALF/FACTE*ELCHA,POWALF
 
@@ -155,10 +158,10 @@ C
 
         end do ! j components of line i
 
-        addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) * fac 
+        addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) 
      .                           / voltal(1:nsbox_tal)
 
-        WRITE (iunout,'(A,2ES16.7)') 
+        WRITE (iunout,'(A50,2ES16.7)') 
      ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
      .                  ,POWALFS/FACTE*ELCHA,POWALFS
         CALL EIRENE_LEER(2)

@@ -11,7 +11,7 @@ c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
 c            
 C
-      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
+      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST,ICHORI)
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST)
@@ -55,13 +55,16 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_COMPRT
       USE EIRMOD_COMUSR
+      USE EIRMOD_COMSIG
  
       IMPLICIT NONE
  
-      INTEGER, INTENT(IN) :: INIT, JJJ
+      INTEGER, INTENT(IN) :: INIT, JJJ, ICHORI
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:NSPZ+10), ARGST(0:NSPZ+10,NRAD)
       REAL(DP) :: PENOLD
+      INTEGER, SAVE :: LNO
+      INTEGER :: J, IADV
       INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
       DATA ISTOLD/-1/
       DATA ITROLD/-1/
@@ -116,9 +119,11 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
 !            ADDV(NADVI+1:NADVI+7,:) = 0._DP
 !          endif
 
-          CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
-     .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-     .                 NADVI+7)
+!          CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+!     .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!     .                 NADVI+7)
+
+           CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
         endif
 
         ISTOLD=ISTRA
@@ -129,26 +134,42 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
 C
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2
 C
-      IF (NSPZ+2.LT.6) THEN
-        WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
-        CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+!      IF (NSPZ+2.LT.6) THEN
+!        WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
+!        CALL EIRENE_EXIT_OWN(1)
+!      ENDIF
 C
       ncelc=ncltal(ncell)
-      PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)
-      PSIG(2)=PSIG(2)+ZDS*ADDV(NADVI+2,NCELC)
-      PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
-      PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
-      PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
-      PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
-      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
-      ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
-      ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
-      ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
-      ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
-      ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
-      ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
-      ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
+!      PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)
+!      PSIG(2)=PSIG(2)+ZDS*ADDV(NADVI+2,NCELC)
+!      PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
+!      PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
+!      PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
+!      PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
+!      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
+!      ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
+!      ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
+!      ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
+!      ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
+!      ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
+!      ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
+!      ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
+
+      IF (LNO == 0) THEN
+! NO MATCHING EMISSION LINE FOUND 
+        PSIG(0) = 0._DP
+        ARGST(0,JJJ) = 0._DP
+      ELSE
+! USE DATA PROVIDED FOR EMISSION LINE LNO
+        DO J = 1, EMIS_LINES(LNO)%NO_COMPO
+          IADV = EMIS_LINES(LNO)%COMPO(J)%IADV
+          PSIG(J) = PSIG(J) + ZDS*ADDV(IADV,NCELC)
+          ARGST(J,JJJ) = ADDV(IADV,NCELC)
+        END DO
+        IADV = EMIS_LINES(LNO)%IADV_TOTAL
+        PSIG(0) = PSIG(0) + ZDS*ADDV(IADV,NCELC)
+        ARGST(0,JJJ) = ADDV(IADV,NCELC)
+      END IF
 C
       RETURN
  
@@ -157,5 +178,6 @@ C     Following lines added for reinitialisation of eirene (DMH)
       ENTRY EIRENE_SIGHA_REINIT
       ISTOLD = -1
       ITROLD = -1
+      PENOLD = -1._DP
       RETURN
       END

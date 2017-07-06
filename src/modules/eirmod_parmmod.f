@@ -519,7 +519,7 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM(146) = NADSPC_D
       INT_PARM(147) = NADSPC_CD
 
-      INT_PARM(147) = NO_LINES
+      INT_PARM(148) = NO_LINES
  
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
