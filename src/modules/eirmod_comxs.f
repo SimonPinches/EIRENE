@@ -2121,7 +2121,8 @@ cdr  IFIT out of range
      .                                  RC2MIN, RC2MAX, FP2(6),
      .                                  RTMAX, ERTMAX, ETH
       LOGICAL, INTENT(IN) :: LTEST
-      INTEGER :: NDIM, NDIM2, I, J, IFIT
+      INTEGER :: NDIM, NDIM2, IFIT
+!      INTEGER :: J
       REAL(DP) :: CTEST
       TYPE(POLY_DATA), POINTER :: REA
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)
@@ -2556,6 +2557,7 @@ c
       IF (ASSOCIATED(RP%POLY)) THEN
          DEALLOCATE (RP%POLY%DBLPOL)
          DEALLOCATE (RP%POLY)
+         NULLIFY(RP%POLY)
       END IF
 
       IF (ASSOCIATED(RP%ADAS)) THEN
@@ -2565,10 +2567,12 @@ c
          DEALLOCATE (RP%ADAS%DDE)
          DEALLOCATE (RP%ADAS%DTE)
          DEALLOCATE (RP%ADAS)
+         NULLIFY(RP%ADAS)
       END IF
 
       IF (ASSOCIATED(RP%LINE)) THEN
          DEALLOCATE (RP%LINE)
+         NULLIFY(RP%LINE)
       END IF
 
       IF (ASSOCIATED(RP%HYD)) THEN
@@ -2576,6 +2580,7 @@ c
          DEALLOCATE (RP%HYD%RATES)
          DEALLOCATE (RP%HYD%RATIO)
          DEALLOCATE (RP%HYD)
+         NULLIFY(RP%HYD)
       END IF
 
       END SUBROUTINE EIRENE_FREE_FIT_FORM

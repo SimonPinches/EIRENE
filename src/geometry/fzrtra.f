@@ -14,7 +14,7 @@ C
       REAL(DP), INTENT(INOUT) :: X, Z
       REAL(DP), INTENT(INOUT) :: PH
       INTEGER, INTENT(OUT) :: NNEW
-      REAL(DP) :: Z1, X01,XX
+      REAL(DP) :: Z1, X01
       INTEGER :: EIRENE_LEARCA
 C
 C

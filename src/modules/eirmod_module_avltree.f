@@ -598,7 +598,7 @@
  
       RECURSIVE SUBROUTINE EIRENE_Traverse(node,iunout)
  
-      type (TAVLNode), pointer :: node, retnode
+      type (TAVLNode), pointer :: node
       integer, intent(in) :: iunout
  
       IF (ASSOCIATED(node)) THEN
@@ -630,7 +630,6 @@
       integer function EIRENE_cmp (x1, y1, z1, x2, y2, z2, dist)
  
       real(dp), intent(in) :: x1, y1, z1, x2, y2, z2, dist
-      real(dp) :: dx, dy, dz
  
 !pb 5.1.10      IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < EPS10) THEN
       IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < 1.D-8) THEN

@@ -1,4 +1,5 @@
       MODULE EIRMOD_CREF
+cdr  june 17: remove parameter NFLR. Redundant. Was same as NHD6
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -28,11 +29,22 @@
      .                                 HFTR3(:,:,:,:,:,:)
  
       INTEGER, PUBLIC, POINTER, SAVE ::
-     I INE, INEM, INW, INWM, INR, INRM, NFLR
+     I INE, INEM, INW, INWM, INR, INRM
  
       INTEGER, PUBLIC, SAVE :: NCREF, MCREF
  
-      LOGICAL, PUBLIC, SAVE :: LTRMOL
+      LOGICAL, PUBLIC, SAVE :: LTRIM_OLD    !  flag:
+c                              true: 
+c                                 use old trim reflection data file,
+c                                 nhd6=12 projectile-target combinations in
+c                                 one single data file TRIM.DAT
+c                                 NHD6=12: hard wired in: FIND_PARAM.f 
+c                              false: 
+c                                 read NFR different trim data files A_on_B
+c                                 path and names "A_on_B" as specified in input.f
+c                                 set NHD6=NFR
+c                                 NHD6: dimensioning in allocatable arrays
+c                                             
  
       CHARACTER(500), PUBLIC, ALLOCATABLE, SAVE :: REFFIL(:)
  
@@ -44,22 +56,25 @@
  
       IF (ALLOCATED(RCREF)) RETURN
  
+C  storage for TRIM database reflection model 
       NCREF = 3+12+11+7+6+5+4+5*NHD6+NHD5
-      MCREF  = 7
+      MCREF  = 6
  
       ALLOCATE (RCREF(NCREF))
       ALLOCATE (ICREF(MCREF))
       ALLOCATE (REFFIL(NHD6))
  
-      ALLOCATE (RINTEG(0:NLIMPS))
-      ALLOCATE (EINTEG(0:NLIMPS))
-      ALLOCATE (AINTEG(0:NLIMPS))
-
       ALLOCATE (HFTR0(NHD1,NHD2,NHD6))
       ALLOCATE (HFTR1(NHD1,NHD2,NHD3,NHD6))
       ALLOCATE (HFTR2(NHD1,NHD2,NHD3,NHD4,NHD6))
       ALLOCATE (HFTR3(NHD1,NHD2,NHD3,NHD4,NHD5,NHD6))
  
+C  storage for semianalytic reflection model ("Behrisch-Matrix") 
+      ALLOCATE (RINTEG(0:NLIMPS))
+      ALLOCATE (EINTEG(0:NLIMPS))
+      ALLOCATE (AINTEG(0:NLIMPS))
+
+      
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*500 + 
      .                (NHD1*NHD2*NHD6*(1+NHD3*(1+NHD4*(1+NHD5))))*8
@@ -67,12 +82,14 @@
       RPROB0    => RCREF(1)
       ERMIN     => RCREF(2)
       ERCUT     => RCREF(3)
+
       ENAR      => RCREF(4:15)
       DENAR     => RCREF(16:26)
       WIAR      => RCREF(27:33)
       DWIAR     => RCREF(34:39)
       RAAR      => RCREF(40:44)
       DRAAR     => RCREF(45:48)
+
       TM        => RCREF(49+0*NHD6 : 48+1*NHD6)
       TC        => RCREF(49+1*NHD6 : 48+2*NHD6)
       WM        => RCREF(49+2*NHD6 : 48+3*NHD6)
@@ -86,7 +103,7 @@
       INWM => ICREF(4)
       INR  => ICREF(5)
       INRM => ICREF(6)
-      NFLR => ICREF(7)
+
  
       CALL EIRENE_INIT_CREF
  

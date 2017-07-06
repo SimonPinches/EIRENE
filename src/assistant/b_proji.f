@@ -18,7 +18,7 @@ C
       REAL(DP), INTENT(IN) :: B(3), V_PARALLEL, V_PERP, PHI
       REAL(DP), INTENT(INOUT) :: EB(3),V(3)
       REAL(DP) :: V_P(3), E1(3), E2(3), E3(3)
-      REAL(DP) :: VQ, BNI, VNI, B12I, B12
+      REAL(DP) :: BNI, VNI, B12I, B12
  
       BNI=1./SQRT(SUM(B*B)+1.D-30)
       EB=B*BNI

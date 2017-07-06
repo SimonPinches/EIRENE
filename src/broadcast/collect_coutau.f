@@ -19,7 +19,7 @@
 
       include 'mpif.h'
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
-      integer :: ier, icolor, istr, icomgrp, ier1, isdv, i, my_pe_gr,
+      integer :: ier, icolor, istr, icomgrp, ier1, i, my_pe_gr,
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 

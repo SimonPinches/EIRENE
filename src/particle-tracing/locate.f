@@ -140,17 +140,14 @@ C
      .          VXSPTC, VYSPTC, VZSPTC, A, ZV, SUM1, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
      .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL, 
-     .          TIWD, TEWD, DPH, E00, DE, HW, SHIFT, DVDW, FAC, 
-     .          dwde, prmax, raw, res
+     .          TIWD, TEWD, DPH, E00, 
+     .          res
       REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym, prmin, sig, zmfp, ean, een, ye,
-     .            EIRENE_fpathph, flxfc, zmfp_cut, zmfp_e0, zmfp_e00,
+     .            yr, ym, 
+     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
      .            fac_e0, fac_e00,
-     .            hwvdw_pb,pla,B_NU, EN, spcvl, spcmx,
-     .            xleft, xright, weights
-      real(sp), allocatable :: eplot(:), y1plot(:), y2plot(:)
-      real(sp) :: y1a,y1e,y2a,y2e,e00_plot
-      real(DP) :: EMINSP,EMAXSP
+     .            xleft, xright
+C      REAL(DP) :: B_NU, pla
       real(dp) :: cflag(7,MSTOR0)
       REAL(DP), SAVE :: SNORM
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -160,15 +157,14 @@ C
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
      .           I2, IM, J, I1, IMP, NPANUO, ILINE, ISURF, ITRSF,
      .           IPOINT, ISOUR, ISRFS, I, ISTEP,
-     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, IPLSTI,
+     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, 
      .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
-     .           IPLTI, IROT, IL, IGND, ICELL, KK, IR, ILOOP, ISPC, nen,
-     .           NLOOP, IE, ictoff, iloc, 
+     .           IPLTI, IROT, KK, 
      .           ITYP_OLD, IGASP_OLD,IGASC_OLD
+C      INTEGER :: ILOOP, IPLSTI, NLOOP
       INTEGER, SAVE :: NLIMSQ
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
-      integer, save :: ifrstpb=0
       integer :: ityp_b1,ityp_b2,ipls_b1,ipls_b2
       real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
 C
@@ -388,7 +384,7 @@ C  DETERMINE THE REMAINING PARTICLE PARAMETERS
 C
 C  IGNORE THE WEIGHT RPARTC(9,IMP) OF THE SAMPLED PARTICLE,
 C  BECAUSE THIS WEIGHT HAS ALREADY BEEN TAKEN INTO ACCOUNT 
-C  IN THE SAMPLING DISTRIBUTION
+C  IN THE SAMPLING (BOOTSTRAPPING) DISTRIBUTION
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
 C  ONE BY ONE RE-LAUNCH FROM CENSUS
           WEIGHT=RPARTC(J,IMP)
@@ -636,7 +632,11 @@ C    PLUS: WEISPZ FOR SOURCE SPECIES SAMPLING
 C          WEISPZ IS THE ANALOG SAMPLING DISTRIBUTION
 C          DPLS,DATM,DMOL,DION ARE THE NONANALOG SAMPLING DISTRIBUTIONS
 C
-C    PLUS: CRTX,CRTY,CRTZ,SCOS
+C    PLUS: DEFAULT CRTX,CRTY,CRTZ,SCOS (REFERENCE DIRECTION "C" FOR VELOCITY SPACE SAMPLING)
+C          POINT SOURCE   : READ VIA SORAD4,5,6, VIA SAMPNT
+C          LINE SOURCE    : TBD
+C          SURFACE SOURCE : LOCAL OUTER SURFACE NORMAL AT X0,Y0,Z0
+C          VOLUME SOURCE  : READ VIA SORAD4,5,6, VIA SAMVOL
 C
 C .........................................................................
 C
@@ -872,6 +872,8 @@ C  MAKE SURE NOT TO WASTE TIME IN PARTICLES WITH ZERO WEIGHT
 C
       LGPART=WEIGHT.GT.0.D0
       IF (.NOT.LGPART) RETURN
+C  
+C  FIND VELOCITY SPACE COORGINATES, GIVEN: POSITION, SPECIES 
 C
 C  PARAMETERS FOR VELOCITY SAMPLING DISTRIBUTION:
 C  TEWD,TIWD,VXWD,VYWD,VZDW
@@ -983,7 +985,8 @@ C
 C  COSINE LIKE OR GAUSSIAN ANGLE DISTRIBUTION
 C
 C  IN CASE (CRTX,CRTY,CRTZ) NE (0.,0.,0.)
-C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
+C  USE REFLECTION MODEL ANGULAR DISTRIBUTION:
+c  SEND A VIRTUAL PARTICLE ONTO VIRTUAL SURFACE, AND REFLECT THEN 
           VELX=CRTX
           VELY=CRTY
           VELZ=CRTZ
@@ -1072,7 +1075,7 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
      .                SORCTY(ISTRA),SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
 C         VEL_MEAN=VEL
 C         E0_MEAN=E0
-!pb     ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND..NOT.NLVOL(ISTRA)) THEN
+
         ELSEIF (EMAX.LE.0..AND..NOT.NLVOL(ISTRA)) THEN
 C
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX

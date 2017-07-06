@@ -51,22 +51,24 @@ C
       INTEGER :: IISTR
       REAL(DP) :: C1(3),C2(3),PSIG(0:NSPZ+10),
      .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
-     .          FP(6), DUM(9)
+     .          FP1(6), FP2(6), DUM(9)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
      .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
-     .            TEF, DEF, RCMIN, RCMAX, DE, TE, ZDS, RATE, CHKSUM
-     .           ,summt,addt, XMA
+     .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM
+     .           ,summt,addt, XMA, 
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX 
       REAL(DP) :: EIRENE_FTABRC1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
-     .           ISK, JSK, IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR,
-     .           KREC, IRRC, MAXREC, IFLAG, IPLOTS, ILTXT, ISPC,
-     .           ICELL, JFEXMN, JFEXMX
+     .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
+     .           KREC, IRRC, MAXREC, IFLAG, ISPC,
+     .           ICELL, 
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
-      CHARACTER(48) :: TX(14)
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123
       CHARACTER(9) :: REAC
       CHARACTER(3) :: CRC
+      CHARACTER(2) :: ELNAME
       TYPE(CELL_INFO), POINTER :: FIRST, CUR
 C
       ISTRA=IISTR
@@ -170,17 +172,29 @@ C  BALMER ALPHA
         FILNAM='AMJUEL  '
         H123='H.12'
         CRC='OT '
-        FP = 0._DP
-        RCMIN = -HUGE(1._DP)
-        RCMAX =  HUGE(1._DP)
-        JFEXMN = 0
-        JFEXMX = 0
+        FP1 = 0._DP
+        RC1MIN = -HUGE(1._DP)
+        RC1MAX =  HUGE(1._DP)
+        JFEX1MN = 0
+        JFEX1MX = 0
+        FP2 = 0._DP
+        RC2MIN = -HUGE(1._DP)
+        RC2MAX =  HUGE(1._DP)
+        JFEX2MN = 0
+        JFEX2MX = 0
+C        
+        ELNAME = 'H     '
+        IZ=0
+
+
 C
 C  H(n=3)/H(n=1)
         REAC='2.1.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              ELNAME,IZ)
  
         chksum = 0._dp
         do
@@ -200,7 +214,9 @@ C  H(n=3)/H(n=1)
  
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
      .                         TEF, DEF, RATE, DUM, 
-     .                         RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
+     .                         RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .                         RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX)
+
           rate = exp(rate)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +

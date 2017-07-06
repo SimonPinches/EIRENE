@@ -12,7 +12,6 @@ C
  
       REAL(DP), INTENT(IN) :: X,Y,Z,DIST
       INTEGER, INTENT(OUT) :: IC
-      INTEGER I, ICOOR
       type(TAVLTree), pointer :: baum
       logical :: inserted
  

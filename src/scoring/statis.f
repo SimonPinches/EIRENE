@@ -27,7 +27,7 @@ C
      .                              IADDC(:,:), IGFFC(:,:),
      .                              IND(:,:),   IIND(:),    INDSS(:,:)
       REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DA1, DD11, D2, DD12,
-     .          ZFLUXQ, DS, ZNM, SD2S, SD2, SG2, SG, DA, D, DD, DA2,
+     .          ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD, DA2,
      .          D2S11, D2S22, D2S12, SG12, SG1, DSA1, DSA2,
      .          SAV, SD1S, SD1, XNM
       INTEGER :: ISCO2, NR1, NP2, NT3, INP, IGF, IC,

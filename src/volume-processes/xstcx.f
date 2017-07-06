@@ -18,6 +18,9 @@ C            remove plsti(nstordt), now: TII
 c 25.03.15:  rename nelrcx  to nplrcx, in order to enable 
 c            consistency in notation with PI processes: not ready
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
+cdr   jan 17 : added nuclear charge number conservation test,
+cdr            such that first secondary always corresponds to incident bulk particle,
+cdr            just with charge state changed by an increment one (+1 or -1).
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
@@ -25,7 +28,8 @@ C
      .                        EBULK, CHRDF0,ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 
-c  set NON DEFAUKT cx collision cross sections and rates  ISP + IPL{n+} -->  ISP+ + IPL{(n-1)+}
+c  set NON DEFAULT cx collision cross sections and rates  
+c  IPL{n+} + ISP -->  IPL1{(n-1)+} + ISP2+
 c  defaults for CX type processes:  exchange of identity
 
 c  carry out some consistency checks
@@ -66,12 +70,14 @@ C
       INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, 
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, ADDTL, CHRDIF,
-     .            ADDT, TMASS, PMASS, COU, EIRENE_RATE_COEFF,
+      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, CHRDIF,
+     .            ADDT, ADDTL, TMASS, PMASS, COU, 
+     .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: ITYP1, ITYP2, ISPZ1, IERR, ISPZ2, KREAD,
-     .           J, NEND, MODC, NSECX4, I, IPL2, IIO2, IPLTI
+      INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2, KREAD,
+     .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
+     .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
       type(poly_data), pointer :: rp
@@ -86,37 +92,47 @@ C
       IF (IPL.LE.0.OR.IPL.GT.NPLSI) GOTO 990
       IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
       RMBULK=RMASSP(IPL)
+      NCBULK=NCHARP(IPL)
+      NCGBLK=NCHRGP(IPL)
       RMTEST=RMASS
       IPLTI=MPLSTI(IPL)
 C
-C  1ST SECONDARY INDEX
-      N1STX(IRCX,1)=EIRENE_IDEZ(ISCD1,1,3)
-      N1STX(IRCX,2)=EIRENE_IDEZ(ISCD1,3,3)
+C  1ST SECONDARY INDEX, PREVIOUS BULK MASS
+      N1STX(IRCX,1)=EIRENE_IDEZ(ISCD1,1,3)    !TYPE
+      N1STX(IRCX,2)=EIRENE_IDEZ(ISCD1,3,3)    !SPECIES WITHIN TYPE CLASS
       N1STX(IRCX,3)=0
-      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1
+      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: 1 "FIRST" TEST SECONDARY, IF ANY
 
       IF ((N1STX(IRCX,2) < 1) .OR. 
      .    (N1STX(IRCX,2) > MAXSPC(N1STX(IRCX,1)))) GOTO 994
-C
+C   CHECK MASS AND NUCLEAR CHARGE NUMBER CONSERVATION, FIRST SECONDARY, PREV. BULK
       IF (N1STX(IRCX,1).EQ.1) THEN
         IF (RMBULK.NE.RMASSA(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARA(N1STX(IRCX,2))) GOTO 992 
+        IF (ABS(NCGBLK-0).ne.1) GOTO 992  
       ELSEIF (N1STX(IRCX,1).EQ.2) THEN
         IF (RMBULK.NE.RMASSM(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARM(N1STX(IRCX,2))) GOTO 992
+        IF (ABS(NCGBLK-0).ne.1) GOTO 992
       ELSEIF (N1STX(IRCX,1).EQ.3) THEN
         IF (RMBULK.NE.RMASSI(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARI(N1STX(IRCX,2))) GOTO 992
+        IF (ABS(NCGBLK-NCHRGI(N1STX(IRCX,2))).ne.1) GOTO 992
       ELSEIF (N1STX(IRCX,1).EQ.4) THEN
         IF (RMBULK.NE.RMASSP(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARP(N1STX(IRCX,2))) GOTO 992
+        IF (ABS(NCGBLK-NCHRGP(N1STX(IRCX,2))).ne.1) GOTO 992
       ENDIF
 C
-C  2ND SECONDARY INDEX
-      N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3)
-      N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3)
-      N2NDX(IRCX,3)=N1STX(IRCX,3)
-      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1
+C  2ND SECONDARY INDEX, PREVIOUS TEST PARTICLE MASS
+      N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3)    !TYPE
+      N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3)    !SPECIES WITHIN TYPE CLASS
+      N2NDX(IRCX,3)=N1STX(IRCX,3)             !CUMMULATED NO. OF SECONDARIES
+      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT: 1 "SECOND" TEST SECONDARY, IF ANY
 C
       IF ((N2NDX(IRCX,2) < 1) .OR. 
      .    (N2NDX(IRCX,2) > MAXSPC(N2NDX(IRCX,1)))) GOTO 994
-C
+C   CHECK MASS CONSERVATION, SECOND SECONDARY
       IF (N2NDX(IRCX,1).EQ.1) THEN
         IF (RMTEST.NE.RMASSA(N2NDX(IRCX,2))) GOTO 992
       ELSEIF (N2NDX(IRCX,1).EQ.2) THEN
@@ -126,7 +142,8 @@ C
       ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
         IF (RMTEST.NE.RMASSP(N2NDX(IRCX,2))) GOTO 992
       ENDIF
-C
+
+C  CHECK CHARGE CONSERVATION
       CHRDIF=CHRDF0-NCHRGP(IPL)
       IF (N1STX(IRCX,1).EQ.3) THEN
         IIO2=N1STX(IRCX,2)
@@ -514,8 +531,10 @@ C
 992   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*)
-     .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
+     .  'INTERACTING PARTICLES INCONSISTENT (MASS OR CHARGE)'
       WRITE (iunout,*) 'KK ',KK
+      WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
+     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
 993   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '

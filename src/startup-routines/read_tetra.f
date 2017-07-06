@@ -14,8 +14,8 @@
  
       CHARACTER*(*), INTENT(IN) :: CASENAME
       CHARACTER(100) :: FILENAME, ZEILE
-      INTEGER :: LL, I, IND, IT, IS, IS1, IER, NRK, ISTS,
-     .           ISTMIN, ISTMAX, IC, J, JS, JT, IP1, i1, i2, i3, i4
+      INTEGER :: LL, I, IND, IT, IS, IER, NRK, 
+     .           IC, J, JS, JT, IP1, i1, i2, i3, i4
       INTEGER :: ITSIDE(3,4), IP(3), JP(3)
       TYPE(TET_ELEM), POINTER :: CUR
 C

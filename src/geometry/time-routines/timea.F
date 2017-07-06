@@ -68,25 +68,23 @@ c     using special octree stuff, to speed up additional surface handling
       END INTERFACE
 C
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
-      REAL(DP) :: TADD, TMIN, XXR, V, VSAVE, A1, A2, PPP, ROT, VX, VY,
-     .          VZ, VXS, VYS, VZS,VVS, TS, T, X, Y, Z, A3, VXJ, VYJ,
-     .          VZJ, XLS2, XLS3, XMS3, XMS2, XX, YY, ZZ, XR, YR, ZR,
-     .          XN, YN, ZN, TMA, TMI, WR, TST, XMS1, XLS1, TMX, TUP,
+      REAL(DP) :: TMIN, 
+     .          XX, YY, ZZ, XR, YR, ZR,
      .          DZ3, TL, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX, SG,
      .          VV, VXX, VYY, VZZ, TMT, B, XK5, V445, XN5, V335, XK4,
-     .          V334, V3V45, XN4, YS, ZS, AT, XNORM, V224, CG1, CG2,
-     .          CG3, AR1, C, D, E, F, G, XK3, HELP, V2V34, XN3, V223
-     .          AR3, AR2, V113, V1V23, V223, AR3, DY2, X_S, Y_S, Z_S,
+     .          V334, V3V45, XN4, AT, XNORM, V224, CG1, CG2,
+     .          CG3, AR1, C, D, E, F, G, XK3, HELP, V2V34, XN3,
+     .          AR2, V113, V1V23, V223, AR3, DY2, X_S, Y_S, Z_S,
      .          SG_S
+C      REAL(DP) :: XLS1, XLS2, XLS3, XMS1, XMS2, XMS3
 
-      INTEGER :: NLLLI, NTNEW, NNR, ICOUNT, IPLGN, ITRII,
-     .           ISTS, I1000, K, J, I, IPERID, NTCELL, NCELL, MSURF,
+      INTEGER :: IPLGN, ITRII,
+     .           ISTS, I1000, J, I, IPERID, NTCELL, NCELL, MSURF,
      .           NLI, NLE, MASURF, ISPZ, NNTCL, IAB, JUM, MASURF_S,
      .           TRCNUM
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL, INTENT(OUT) :: LCNDEXP
-      LOGICAL :: LGJ, NLTRC, EIRENE_BITGET, LTSTCXP, LCNDEXP_S
-      LOGICAL :: LMTSRF(NLIMPS)
+      LOGICAL :: NLTRC, LCNDEXP_S
 
 c     the octree
       TYPE(octree), POINTER :: TREE
@@ -99,7 +97,6 @@ c     some vars for checking on intersection/where we are
       LOGICAL :: status
       REAL(DP), DIMENSION(3) :: ip, start, direction
       REAL(DP) :: runlength, norm
-      INTEGER :: surf, lastsurf
 
       SAVE
 C
@@ -572,9 +569,10 @@ c
 
         CALL EIRENE_LEER(2)
 
+
+      ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
 c               i.e. OCTREE optimization in in-active
-      ELSE  !   NOT NLOCTREE
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J
@@ -783,10 +781,11 @@ c................................................................
      
 c     defining the internal subroutine for the octree build
       CONTAINS
-        SUBROUTINE EIRENE_TIMEA0_BUILDOC()
+
+      SUBROUTINE EIRENE_TIMEA0_BUILDOC()
 cdr  this routine is only called if NLOCTREE
 c
-c    It returns NOTOCSURFS(1:NURFNOT), a list of additional surfaces not
+c    It returns NOTOCSURFS(1:NSURFNOT), a list of additional surfaces not
 c       covered by the octree-procedure
 c
 c    unit number for the tracing debug ouput
@@ -799,7 +798,7 @@ C   as the code above is pretty much with gotos, simply put
 C   the octree stuff in here...
 c
 c   build octree
-            tree => EIRENE_TIMEA_BuildOctree()
+      tree => EIRENE_TIMEA_BuildOctree()
       
 c   count the surfaces that won't be in octree to get the
 c   right dimension for the array NOTOCSURFS 
@@ -814,7 +813,7 @@ c  that are no tri/quad/quintangles
       
 c   allocate enough space for lookup table which we will use for 
 c   surfaces that we don't have in the octree (like 2nd order surfaces, etc.)
-      ALLOCATE(NOTOCSURFS(NSURFNOT))
+      if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NSURFNOT))
 cdr
       NSURFNOT = 0
 c   add the second order surfaces, etc into this

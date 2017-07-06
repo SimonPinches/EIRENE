@@ -6,7 +6,7 @@ cdr          check:      nfirst(ital): which value for removed tallies?  storage
 
 cdr dec 15:  energy balance tallies for bulk ions: now have a species index (ipls): 
 cdr          tallies 38,44,50,56,84  
-
+cdr june 17: comments
 
 C
 C  *************************
@@ -711,7 +711,7 @@ C  18 primary input tallies plus 4 derived background tallies unfortunately mixe
 C  --> 22 rather than 18 background tallies
       NFRSTP(1)=0
       NFRSTP(2)=NPLSTI
-      NFRSTP(3)=0       ! * DEIN,  DERIVED QUANTITY
+      NFRSTP(3)=0       ! # DEIN,  DERIVED QUANTITY
       NFRSTP(4)=NPLS    ! DIIN
       NFRSTP(5)=NPLSV   
       NFRSTP(6)=NPLSV
@@ -721,11 +721,11 @@ C  --> 22 rather than 18 background tallies
       NFRSTP(10)=0      ! BZ
       NFRSTP(11)=0      ! BF
       NFRSTP(12)=NAIN   ! ADIN
-      NFRSTP(13)=NPLS   ! * EDRIFT,  DERIVED QUANTITY
+      NFRSTP(13)=NPLS   ! # EDRIFT,  DERIVED QUANTITY
       NFRSTP(14)=0      ! VOL
-      NFRSTP(15)=NSPZMC ! WEIGHT WINDOW  
-      NFRSTP(16)=0      ! * BX_PERP,  DERIVED QUANTITY
-      NFRSTP(17)=0      ! * BY_PERP,  DERIVED QUANTITY 
+      NFRSTP(15)=NSPZMC ! WEIGHT WINDOW, UNUSED  
+      NFRSTP(16)=0      ! # BX_PERP,  DERIVED QUANTITY
+      NFRSTP(17)=0      ! # BY_PERP,  DERIVED QUANTITY 
       NFRSTP(18)=0      ! EX
       NFRSTP(19)=0      ! EY 
       NFRSTP(20)=0      ! EZ

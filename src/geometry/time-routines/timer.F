@@ -119,13 +119,16 @@ C
       INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-     .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
+     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
      .           ISTS_CELL, ISD, nclpb, icts
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
+#ifdef TRACE
+      INTEGER :: ICOUP
+#endif
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
-      INTEGER :: NSTS_CELL,nrtest,ist
+      INTEGER :: NSTS_CELL
       LOGICAL :: LLCUT(N2NDPLGS), LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET

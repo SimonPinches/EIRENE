@@ -1,7 +1,10 @@
 C  june 05:  new option: K=3 (wg. iteravitve mode)
 C  june 05:  name: calling routine
 C
-      SUBROUTINE EIRENE_GRNXTB(K,name)
+      SUBROUTINE EIRENE_PLNXTB(K,name)
+c  prepare a next frame (a new picture) for eirene plotting options
+
+c  PLNXTB is called from eirene routine "NAME.f"
 C
 C  K=1 CALL VOR EINEM BILD AUS EIGENER GRSOFTWARE
 C  K=2 CALL VOR EINEM BILD MIT GRBLD  (KURVEF,....)
@@ -16,7 +19,7 @@ C
       CHARACTER(LEN=*), INTENT(IN) :: NAME
       INTEGER, SAVE :: IFRST1=0, IFRST2=0
  
-      WRITE (iunout,*) 'GRNXTB CALLED FROM ',NAME
+      WRITE (iunout,*) 'PLNXTB CALLED FROM ',NAME
       WRITE (iunout,*) 'K,IFRST1,IFRST2 ',K,IFRST1,IFRST2
  
       GOTO (1,2,3),K

@@ -74,6 +74,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
+          integer, intent(out) :: ip1,ip2
           real(dp) :: res
         end function EIRENE_intp_adas
  
@@ -82,6 +83,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
+          integer, intent(out) :: ip1
           real(dp) :: res
         end function EIRENE_intp_table
       end interface

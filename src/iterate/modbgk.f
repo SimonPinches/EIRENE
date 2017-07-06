@@ -66,7 +66,7 @@ C
      .           ISCDE, IAIN, IPLS1, NRWK1, I, ISP, IPLS2, IATM2, IIEL,
      .           IAEL, IMEL, IUP12, IUP22, IION2, IBGK2, IMOL2, IUP2,
      .           IUP3, IUP1, IBGK1, IP, NRC, IRAD, IR, IT, IREL,
-     .           II, KK, NXM, NYM, NZM, IUP32, IPLSTI, IPLSTI1, IPLSTI2,
+     .           KK, NXM, NYM, NZM, IUP32, IPLSTI, IPLSTI1, IPLSTI2,
      .           IPLSV, IRD, IBGV !pb
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LMARK(NPLS)

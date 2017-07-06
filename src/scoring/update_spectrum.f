@@ -30,7 +30,7 @@ c  ityp:  type of particle
  
       INTEGER, INTENT(IN) :: IND, ISC
       REAL(DP), INTENT(IN) :: WT
-      INTEGER :: ISPC, I, IS, IC, IRDO, IRD, IAT, IML, IIO, IPL
+      INTEGER :: ISPC, I, IS, IC, IRDO, IRD
       REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN, EB
 
       TYPE(EIRENE_SPECTRUM), POINTER :: P

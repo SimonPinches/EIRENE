@@ -6,7 +6,7 @@
       INTEGER, INTENT(IN) :: N, LDA, LDEVEC
       REAL(DP), INTENT(IN) :: A(LDA,N)
       REAL(DP), INTENT(OUT) :: EVAL(N), EVEC(LDEVEC,N)
-      INTEGER :: IERR, J, I, IAA
+      INTEGER :: IERR, I
       REAL(DP), ALLOCATABLE :: EVEC1(:,:),EVAL1(:),
      .                         FV1(:),FV2(:)
  

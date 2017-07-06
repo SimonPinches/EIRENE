@@ -160,7 +160,7 @@
  
       implicit none
       integer :: itet, j, nxt_side, akt_tet, akt_edge, isi, ik
-      integer :: ic, i, nump1, nump2, noedge, jc, no_side, nxt_tet
+      integer :: ic, nump1, nump2, noedge, jc, no_side, nxt_tet
  
       integer :: kpunkte(2,6) = reshape (
      .           (/ 1,2,  1,3,  1,4,  2,3,  2,4,  3,4 /), (/ 2, 6 /) )
@@ -299,7 +299,7 @@
       subroutine EIRENE_berechne_koordinaten
  
       implicit none
-      real(dp) :: a(3), b(3), c(3), p(3), orig(3)
+      real(dp) :: a(3), b(3), c(3), orig(3)
       real(dp) :: am(2,2), amm1(2,2), rhs(2), x(3)
       real(dp) :: spat, bnorm, cnorm, detam
       integer :: i, ik, k1, k2

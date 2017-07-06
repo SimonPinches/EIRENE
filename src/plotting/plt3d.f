@@ -165,7 +165,9 @@ C
 C
 C
       PLBOX=LSAVE
-      CALL EIRENE_GRNXTB(1,'PLT3D.F')
+      CALL EIRENE_PLNXTB(1,'PLT3D.F')
+
+cdr  use FZJ proprietary GR plot software
       CALL GRSCLC(REAL(XNULL,KIND(1.E0)),REAL(YNULL,KIND(1.E0)),
      .            REAL(XN+XNULL,KIND(1.E0)),
      .            REAL(YN+YNULL,KIND(1.E0)))
@@ -372,7 +374,7 @@ C**RLB >= 3 ? EIN EBENENSTUECK, DURCH POLYGON BEGRENZT
 C
           ELSEIF (RLB(J).GT.2.) THEN
 C
-            CALL EIRENE_PRLLO(P1(1,J),P2(1,J),P3(1,J),P4(1,J),P5(1,J),
+            CALL EIRENE_PRLLO(P1(:,J),P2(:,J),P3(:,J),P4(:,J),P5(:,J),
      .                 ILCOL(J),IGFIL(J).NE.0)
 C
 C**RLB < 0 ? ERST EINIGE OPTIONEN VORHANDEN, REST: CALL PLTUSR

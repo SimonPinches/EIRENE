@@ -12,11 +12,11 @@ c                   anymore.
       IMPLICIT NONE
 C
       LOGICAL, INTENT(IN) :: TRCSUR
-      REAL(DP) :: XS(8), YS(8), D, DST(8,2), XA(14), XB(14)
-      REAL(DP) :: XT, SRAD, RAD, YMIN, YMAX, B, AH, YT,
+      REAL(DP) :: XS(8), YS(8), D, DST(8,2)
+      REAL(DP) :: XT, SRAD, RAD, B, AH, YT,
      .          DX1, DY2, DZ3, XNORM, AT, A3, A4, A2, XR, XL, A5,
-     .          A1, A0, YR, YL, B0, B1, B2, B3, B4, XMAX, XMIN, XP1,
-     .          XP2, XP3, XP4, YP1, YP2, YP3, YP4, B5
+     .          A1, A0, YR, YL, XP1,
+     .          XP2, XP3, XP4, YP1, YP2, YP3, YP4
       INTEGER :: IEQ(2), ILFT, ILFTS
       INTEGER :: IMIN1, IMIN2, K, IS, JUM, IPNT1, IPNT2, I, IE, J
       LOGICAL :: LINFX,LINFY,LINFZ, TWOPOINT

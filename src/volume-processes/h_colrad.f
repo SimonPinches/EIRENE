@@ -1147,9 +1147,9 @@ c
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      real(dp) a(n1,n1),B(*),vw(*),d
+      real(dp) a(n1,n1),B(*),vw(*)
       dimension ip(*)
-      dimension iw(100),indx(100)
+      dimension iw(100)
       if (n1.gt.100) then
         write (iunout,*) 'error in lax'
         call eirene_exit_own(1)

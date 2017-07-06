@@ -43,7 +43,9 @@ cdr  sept. 16: started to add extrapolation options. not ready....
 !                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              remove erate in case of ifit=5 and generalize to more cr models.
+!              erate in case of ifit=5 hard wired to E_scr. 
+!              What happens in case of recombination ?
+!              and generalize to more cr models.
 !              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
@@ -81,6 +83,7 @@ cdr  sept. 16: started to add extrapolation options. not ready....
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
+          integer, intent(out) :: ip1,ip2
           real(dp) :: res
         end function EIRENE_intp_adas
 
@@ -89,6 +92,7 @@ cdr  sept. 16: started to add extrapolation options. not ready....
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
+          integer, intent(out) :: ip1
           real(dp) :: res
         end function EIRENE_intp_table
       end interface

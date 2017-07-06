@@ -30,9 +30,9 @@ cdr  hard wired: cut off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRCX, K
-      REAL(DP) :: TBPIC(9), EIRENE_FTABCX3, DEIMIN, TII, PLS, TBCX, 
+      REAL(DP) :: EIRENE_FTABCX3, DEIMIN, TII, PLS, TBCX, 
      .            EIRENE_RATE_COEFF, ERATE
-      INTEGER :: J, I, II, KK, IPLSTI
+      INTEGER :: KK, IPLSTI
  
       TBCX=0.D0
       KK = NREACX(IRCX)

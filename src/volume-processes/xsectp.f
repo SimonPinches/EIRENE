@@ -34,14 +34,13 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP) :: CF(9,0:9)
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
      .            BREMS, Z, eirene_brems, ERATE
       INTEGER :: IIRC, IION3, IPLS3, IATM3, IMOL3, KK, NRC, IATM,
-     .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, I, MODC, IATM1,
+     .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, MODC, IATM1,
      .           ITYP, ISPZ, ITYP2, ISPZ2, IPHOT3
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LEXP, LADAS

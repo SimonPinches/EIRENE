@@ -1,11 +1,26 @@
 c  nov 03:  use relative distances to find neighbor segment,
 c           otherwise sometimes problems with non-closing polygons encountered.
+cdr june 17:  separate WRMESH (WRITING) and PLMESH (PLOTTING).
+
       SUBROUTINE EIRENE_WRMESH
+c  create close polygonal contours, from the eirene standard and additional surfaces
+c  use ILPLG(isurf) flag, from input blocks 3A LEVGEO=3 OR LEVGEO=4,
+C                         or certain additional surfaces, input block 3B,
+c                         0<RLB<2.
+c  This set of closed contours, together with their orientation, can be used
+c  in 2D grid generators to produce multiply connected triangular grids.
+c  The orientation indicates whether the inner or outer part of a closed contour
+c  is a valid computational volume for triangular grid generation (not needed for plotting)
+
+
+c  EIRENE_WRMESH: Write closed contours onto output stream 78+ifoff.
+c  EIRENE_PLMESH: plots these contours, using GR plot software.
+
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CPLOT
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
       USE EIRMOD_CLGIN
@@ -14,31 +29,20 @@ c           otherwise sometimes problems with non-closing polygons encountered.
       USE EIRMOD_CGRID
       USE EIRMOD_CTRCEI
       IMPLICIT NONE
- 
- 
+
+
       INTEGER, PARAMETER :: MAXPOIN=2000
       REAL(DP) :: partcont(maxpoin,2,2), maxlen
       REAL(DP) :: XPE, YPE, HELP, XT, YT, PHI1, X1, X2, Y1, Y2, PHI2
-      REAL(DP) :: DISTQI,DISTQJ1,DISTQJ2
-      INTEGER  :: MAXCONT, ICONT, IPOIN, IWST, IWEN, IWL, IWP,
+      REAL(DP) :: DISTQI,DISTQJ1,DISTQJ2,YMN
+      INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
      .            ICO, IPO, IN, IS, IS1, ITRI
       INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
-      REAL(SP) :: xmin,xmax,ymin,ymax,deltax,deltay,delta,xcm,ycm
-      REAL(SP) :: XP,YP
       LOGICAL  :: LCLOSED
- 
-C INITIALISIERUNG DER PLOTDATEN
-      xmin = CH2X0-CH2MX
-      ymin = CH2Y0-CH2MY
-      xmax = CH2X0+CH2MX
-      ymax = CH2Y0+CH2MY
-      deltax = abs(xmax-xmin)
-      deltay = abs(ymax-ymin)
-      delta = max(deltax,deltay)
-      xcm = 24. * deltax/delta
-      ycm = 24. * deltay/delta
- 
+
+
+
 C ANZAHL DER KONTOUREN BESTIMMEN
 C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
@@ -52,32 +56,31 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
       DO I=NLIM+1,NLIM+NSTSI
         NCONT = MAX(NCONT,ABS(ILPLG(I)))
       ENDDO
- 
+
       IF (TRCSUR) THEN
         WRITE (iunout,*) 'NUMBER OF CONTOURS FOR FEM MESH: ',NCONT
         CALL EIRENE_LEER(1)
       END IF
 
       if (ncont == 0) return
- 
-      ALLOCATE (NCONPOINT(NCONT))
-      ALLOCATE (XCONTOUR(MAXPOIN,NCONT))
-      ALLOCATE (YCONTOUR(MAXPOIN,NCONT))
+
+      IF (.NOT.ALLOCATED(NCONPOINT)) THEN
+        ALLOCATE (NCONPOINT(NCONT))
+        ALLOCATE (XCONTOUR(MAXPOIN,NCONT))
+        ALLOCATE (YCONTOUR(MAXPOIN,NCONT))
+      ENDIF
       NCONPOINT = 0
       ICO = 0
- 
-      call grnxtf
-      call grsclc(3.,3.,3.+real(xcm,kind(1.e0)),3.+real(ycm,kind(1.e0)))
-      call grsclv(real(xmin,kind(1.e0)),real(ymin,kind(1.e0)),
-     .            real(xmax,kind(1.e0)),real(ymax,kind(1.e0)))
- 
+
       DO ICONT = 1,NCONT
         IPOIN = 0
         MAXLEN = 0.
         irip=0
-C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
+C AKTUELLE CONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
 C AKTUELLEN CONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
+
+c  ADDITIONAL SURFACES
         DO I=1,NLIMI
           IF (ABS(ILPLG(I)) .EQ. ICONT) THEN
             IUHR=ILPLG(I)
@@ -115,17 +118,17 @@ C               Y,Z-KOORDINATEN
             ELSE
 C  ERROR
               WRITE(iunout,*) 'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),
-     >                    ILPLG(I),I
+     >                         ILPLG(I),I
             ENDIF
           ENDIF
         ENDDO
- 
+
         IF (LEVGEO == 3) THEN
         DO I=1,NSTSI
           IF (ABS(ILPLG(NLIM+I)) .EQ. ICONT) THEN
             IUHR=ILPLG(NLIM+I)
             IF (INUMP(I,2) .NE. 0) THEN
-C             POLOIDAL
+C  POLOIDAL SURFACES
               DO J=IRPTA(I,1),IRPTE(I,1)-1
                 IF ((XPOL(J,INUMP(I,2)) .NE. XPOL(J+1,INUMP(I,2))) .OR.
      >              (YPOL(J,INUMP(I,2)) .NE. YPOL(J+1,INUMP(I,2)))) THEN
@@ -134,16 +137,16 @@ C             POLOIDAL
                   PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
                   PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
                   PARTCONT(IPOIN,2,2) = YPOL(J+1,INUMP(I,2))
-                idiag(ipoin)=-i
-                irip(ipoin,1)=j
-                irip(ipoin,2)=INUMP(I,2)
-              maxlen = maxlen +
+                  idiag(ipoin)=-i
+                  irip(ipoin,1)=j
+                  irip(ipoin,2)=INUMP(I,2)
+                  maxlen = maxlen +
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
                 ENDIF
               ENDDO
             ELSEIF (INUMP(I,1) .NE. 0) THEN
-C             RADIAL
+C  RADIAL SURFACES
               DO J=IRPTA(I,2),IRPTE(I,2)-1
                 IF ((XPOL(INUMP(I,1),J) .NE. XPOL(INUMP(I,1),J+1)) .OR.
      >              (YPOL(INUMP(I,1),J) .NE. YPOL(INUMP(I,1),J+1))) THEN
@@ -167,7 +170,9 @@ C  ERROR
             ENDIF
           ENDIF
         ENDDO
+
         ELSEIF (LEVGEO == 4) THEN
+C  TRIANGLE SIDES
           DO ITRI = 1, NTRII
             DO IS = 1, 3
               IN=INMTI(IS,ITRI)
@@ -187,19 +192,19 @@ C  ERROR
                   maxlen = maxlen +
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
- 
+
                 END IF
               END IF
             END DO
           END DO
         END IF
- 
+
         IF (IPOIN.LE.0) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'
           GOTO 1000
         ENDIF
- 
-        call grnwpn(icont)
+
+
 C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
         DO I=1,IPOIN-1
           XPE = PARTCONT(I,2,1)
@@ -212,8 +217,6 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      .              (YPE-PARTCONT(J,1,2))**2
             DISTQJ2=(XPE-PARTCONT(J,2,1))**2+
      .              (YPE-PARTCONT(J,2,2))**2
-CDR         IF ((XPE .EQ. PARTCONT(J,1,1)) .AND.
-CDR  >          (YPE .EQ. PARTCONT(J,1,2))) THEN
             IF (DISTQJ1/DISTQI.LE.1.D-10) THEN
               IFOUND=1
               HELP = PARTCONT(I+1,1,1)
@@ -222,18 +225,18 @@ CDR  >          (YPE .EQ. PARTCONT(J,1,2))) THEN
               HELP = PARTCONT(I+1,1,2)
               PARTCONT(I+1,1,2) = PARTCONT(J,1,2)
               PARTCONT(J,1,2) = HELP
- 
+
               HELP = PARTCONT(I+1,2,1)
               PARTCONT(I+1,2,1) = PARTCONT(J,2,1)
               PARTCONT(J,2,1) = HELP
               HELP = PARTCONT(I+1,2,2)
               PARTCONT(I+1,2,2) = PARTCONT(J,2,2)
               PARTCONT(J,2,2) = HELP
- 
+
               ih=idiag(i+1)
               idiag(i+1)=idiag(j)
               idiag(j)=ih
- 
+
               ih=irip(i+1,1)
               irip(i+1,1)=irip(j,1)
               irip(j,1)=ih
@@ -241,8 +244,7 @@ CDR  >          (YPE .EQ. PARTCONT(J,1,2))) THEN
               irip(i+1,2)=irip(j,2)
               irip(j,2)=ih
             ELSEIF (DISTQJ2/DISTQI.LE.1.D-10) THEN
-CDR         ELSEIF ((XPE .EQ. PARTCONT(J,2,1)) .AND.
-CDR  >              (YPE .EQ. PARTCONT(J,2,2))) THEN
+
               IFOUND=1
               HELP = PARTCONT(J,1,1)
               PARTCONT(J,1,1) = PARTCONT(J,2,1)
@@ -250,25 +252,25 @@ CDR  >              (YPE .EQ. PARTCONT(J,2,2))) THEN
               HELP = PARTCONT(J,1,2)
               PARTCONT(J,1,2) = PARTCONT(J,2,2)
               PARTCONT(J,2,2) = HELP
- 
+
               HELP = PARTCONT(I+1,1,1)
               PARTCONT(I+1,1,1) = PARTCONT(J,1,1)
               PARTCONT(J,1,1) = HELP
               HELP = PARTCONT(I+1,1,2)
               PARTCONT(I+1,1,2) = PARTCONT(J,1,2)
               PARTCONT(J,1,2) = HELP
- 
+
               HELP = PARTCONT(I+1,2,1)
               PARTCONT(I+1,2,1) = PARTCONT(J,2,1)
               PARTCONT(J,2,1) = HELP
               HELP = PARTCONT(I+1,2,2)
               PARTCONT(I+1,2,2) = PARTCONT(J,2,2)
               PARTCONT(J,2,2) = HELP
- 
+
               ih=idiag(i+1)
               idiag(i+1)=idiag(j)
               idiag(j)=ih
- 
+
               ih=irip(i+1,1)
               irip(i+1,1)=irip(j,1)
               irip(j,1)=ih
@@ -290,6 +292,7 @@ CDR  >              (YPE .EQ. PARTCONT(J,2,2))) THEN
      >                    partcont(iP,2,1),partcont(iP,2,2)
           ENDIF
         ENDDO
+
         IF ((PARTCONT(1,1,1) .NE. PARTCONT(IPOIN,2,1)) .OR.
      >      (PARTCONT(1,1,2) .NE. PARTCONT(IPOIN,2,2))) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' IS NOT CLOSED'
@@ -298,53 +301,38 @@ CDR  >              (YPE .EQ. PARTCONT(J,2,2))) THEN
           WRITE(iunout,*) 'CLOSED CONTOUR ',ICONT
           LCLOSED = .TRUE.
         ENDIF
+
         IF (TRCSUR) THEN
           do i=1,ipoin
             write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
      >                   partcont(i,1,1),partcont(i,1,2),
      >                   partcont(i,2,1),partcont(i,2,2)
           enddo
-        END IF
-        XP = PARTCONT(1,1,1)
-        YP = PARTCONT(1,1,2)
-        call grjmp(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
-        DO I=2,IPOIN
-          XP = PARTCONT(I,1,1)
-          YP = PARTCONT(I,1,2)
-          call grdrw(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
-        ENDDO
-        IF (LCLOSED) THEN
-          XP = PARTCONT(1,1,1)
-          YP = PARTCONT(1,1,2)
-          call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
-        ELSE 
-          XP = PARTCONT(IPOIN,2,1)
-          YP = PARTCONT(IPOIN,2,2)
-          call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
-        END IF
- 
+        END IF  !  contour no. icont  done.
+
 C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
 C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
-        IMN=0
+
         IF (ICONT .EQ. 1) THEN
           maxlen = maxlen / REAL(IPOIN,KIND(1.D0))
           WRITE(78+ifoff,*) maxlen
           WRITE(78+ifoff,*)
         endif
- 
+
 C BESTIMMUNG DES UHRZEIGERSINNS DER KONTOUR
 C KONTOUR MUSS FUER DIE TRIANGULIERUNG FOLGENDERMASSEN AUSGEGEBEN
 C WERDEN:
 C  - IM UHRZEIGERSINN FUER INNERE BEGRENZUNGEN DES GEBIETES (POSITIV)
 C  - GEGEN UHRZEIGERSINN FUER AEUSSERE BEGRENZUNGEN DES GEBIETES (NEGATIV)
-        YMIN=PARTCONT(1,1,2)
+        IMN=0
+        YMN=PARTCONT(1,1,2)
         DO I=1,IPOIN
-          IF (PARTCONT(I,2,2) .LT. YMIN) THEN
-            YMIN = PARTCONT(I,2,2)
+          IF (PARTCONT(I,2,2) .LT. YMN) THEN
+            YMN = PARTCONT(I,2,2)
             IMN=I
           ENDIF
         ENDDO
- 
+
         IF (IPOIN > 1) THEN
           IF (IMN .EQ. 0) THEN
             XT = PARTCONT(1,1,1)
@@ -367,20 +355,20 @@ C  PUNKT, DER IM UMLAUF DER NAECHSTE IST
             X2 = PARTCONT(IMN+1,2,1)
             Y2 = PARTCONT(IMN+1,2,2)
           ENDIF
- 
+
 C  BESTIMME POLARWINKEL VON (X1,Y1) UND (X2,Y2) MIT (XT,YT) ALS URSPRUNG
           PHI1 = ATAN2 (Y1-YT,X1-XT)
           PHI2 = ATAN2 (Y2-YT,X2-XT)
- 
+
           IF (PHI2 .GT. PHI1) THEN
 C  ABSPEICHERUNG ERFOLGTE IM UHRZEIGERSINN
             ISTORE = 1
           ELSE
             ISTORE = -1
           ENDIF
-        
-        ELSE 
-           
+
+        ELSE
+
           ISTORE = 1
 
         ENDIF
@@ -399,7 +387,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
           IWP=2
           IWL=1
         ENDIF
- 
+
         WRITE(78+ifoff,*) IPOIN+1
         IF (IUHR > 0) THEN
           ICO=ICO+1
@@ -416,20 +404,29 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
           END IF
         ENDDO
         WRITE(78+ifoff,'(1P,2(2X,E21.14))') PARTCONT(IWEN,IWL,1),
-     >                               PARTCONT(IWEN,IWL,2)
+     >                                      PARTCONT(IWEN,IWL,2)
         IF (IUHR > 0) THEN
           IPO=IPO+1
           XCONTOUR(IPO,ICO) = PARTCONT(IWEN,IWL,1)
           YCONTOUR(IPO,ICO) = PARTCONT(IWEN,IWL,2)
         END IF
+
 1000    CONTINUE
-      ENDDO
+      ENDDO    ! END OF DO ICONT.... LOOP
       NCONTOUR=ICO
-C  END OF NCONT LOOP
+
+
       call EIRENE_leer(1)
       write (iunout,*)
      .  'input file fort.78 for FEM mesh generator written '
       call EIRENE_leer(2)
-      call grnwpn(1)
-      call grnxtf
+
+cdr
+      if (allocated(nconpoint)) then
+        DEALLOCATE (NCONPOINT)
+        DEALLOCATE (XCONTOUR)
+        DEALLOCATE (YCONTOUR)
+      endif
+
+      return
       END

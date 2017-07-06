@@ -1,18 +1,31 @@
 !pb 300806  reduce commands for WTOTE and EELFI added
 !           reduction of spectrum data corrected
 !pb 181206  group management changed
-!pb 110707  calls to mpi_reduce corrected 
+!pb 110707  calls to mpi_reduce corrected
 !pb 060309  mpi_real8 --> mpi_double_precision
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
-!pb 090309  loops reorganized          
-!pb 270309  typos corrected             
+!pb 090309  loops reorganized
+!pb 270309  typos corrected
 !sw 091112  added support for csdvi_cop and csdvi_bgk
 
-cdr Nov. 15:  comments needed. copv tallies: variances for coupling ?? 
+cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 
       SUBROUTINE EIRENE_CALSTR
+cdr
+c
+c  called from MCARLO.f, from within strata loop, at the end of each stratum,
+c  if there are more processors than active strata.
+c  Unclear: if more stata then processors: is it then excluded that still
+c           there may be strata with more than one processor dealing with them?
+c          
+c  Purpose:
+c   collect data from processors belonging to one particular stratum istra (comprt)
+c   put merged data for output tallies for stratum istra then on:  my_pe_gr=0
+c
+c
+cdr
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -35,10 +48,10 @@ C
 C     .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
      .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc
-C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1) 
-      real(dp) :: dummys(nlmpgs+1) 
+C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1)
+      real(dp) :: dummys(nlmpgs+1)
       real(dp), allocatable :: dummyw(:), helpw(:)
-      integer :: igrp(0:nstra), icomgrp(0:nstra)
+      integer :: icomgrp(0:nstra)
       integer :: ier1, ier, ir, npean, npeen, i, mpicw, ispc, my_pe_gr,
      .           mxdim, ns, j
       logical, allocatable :: lhelp(:)
@@ -50,18 +63,16 @@ C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1)
       call mpi_comm_group (mpi_comm_world,mpicw,ier)
       call mpi_comm_split (mpi_comm_world,istra,my_pe-npesta(istra),
      .                     icomgrp(istra),ier)
-c
-c   collect data from pe's belonging to one particular stratum istra
-c
 
-      if(      count( procforstra(istra,0:nprs-1) ) >1 
+
+      if(      count( procforstra(istra,0:nprs-1) ) >1
      .   .and.        procforstra(istra,my_pe)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
 
         call mpi_barrier(icomgrp(istra),ier)
         my_pe_gr = my_pe-npesta(istra)
-        
+
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
      .              nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
 
@@ -126,7 +137,7 @@ csw
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) EELFI(0:nioni,istra) = helpi(0:nioni)
 
-c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl 
+c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
         call mpi_reduce(PPATI(0,istra),helpa,natmi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) PPATI(0:natmi,istra) = helpa(0:natmi)
@@ -149,7 +160,7 @@ c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) PPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
-c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl 
+c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
         call mpi_reduce(EPATI(istra),helpc,1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) EPATI(istra) = helpc
@@ -189,7 +200,7 @@ c  all surface averaged tallies: estims
 	      if (my_pe_gr==0) estims(ir,1:nlmpgs) = helps(1:nlmpgs)
         end do
 
-c   energy resolved ("spectra") tallies  
+c   energy resolved ("spectra") tallies
         do ispc=1,nadspc
           ns = estiml(ispc)%pspc%nspc
           allocate (helpest(ns+2))
@@ -198,20 +209,20 @@ c   energy resolved ("spectra") tallies
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
           if (my_pe_gr==0) estiml(ispc)%pspc%spc(0:ns+1)=helpest(1:ns+2)
 
-c  standard deviation of energy resolved "spectra"          
+c  standard deviation of energy resolved "spectra"
           if (nsigi_spc > 0) then
             call mpi_reduce(estiml(ispc)%pspc%sdv,helpest,
      .                      estiml(ispc)%pspc%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-            if (my_pe_gr==0) 
+            if (my_pe_gr==0)
      .      estiml(ispc)%pspc%sdv(0:ns+1) = helpest(1:ns+2)
-           
+
             call mpi_reduce(estiml(ispc)%pspc%sgm,helpest,
      .                      estiml(ispc)%pspc%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-            if (my_pe_gr==0) 
+            if (my_pe_gr==0)
      .        estiml(ispc)%pspc%sgm(0:ns+1) = helpest(1:ns+2)
-          
+
             call mpi_reduce(estiml(ispc)%pspc%sgms,helpest,1,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0) estiml(ispc)%pspc%sgms = helpest(1)
@@ -228,8 +239,8 @@ C  standard deviation of volume averaged tallies
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	        if (my_pe_gr==0) sdvi1(ir,1:nrtal+1) = helpv(1:nrtal+1)
           end do
-        end if 
-    
+        end if
+
 C  standard deviation of surface averaged tallies
 	    if (nsdw > 0) then
           do ir=1,nsdw
@@ -398,6 +409,8 @@ csw
 	    deallocate(lhelp)
 
         call mpi_barrier(icomgrp(istra),ier)
+cdr: probably redundant?  found nowhere a non-empty version of calstr_usr
+cdr  if yes: remove calstr_usr from all user-directories.
         call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
 
       endif

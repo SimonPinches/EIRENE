@@ -78,25 +78,27 @@ C
 
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
-      REAL(DP) :: XTIM(0:NSTRA), DXTIM(0:NSTRA)
-      REAL(DP) :: ST, FFF, DELT, XFL1,
-     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
+      REAL(DP) :: XTIM(0:NSTRA)
+C      REAL(DP) :: DXTIM(0:NSTRA)
+      REAL(DP) :: XFL1,
+     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, 
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
-     .          FLX, VAL, ZW, ZWW, VALUE, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
+     .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
      .          tim1, tim2,
      .          rn1
+C      REAL(DP) :: DELT
       REAL(DP), EXTERNAL :: RANF_EIRENE 
       INTEGER, EXTERNAL :: RANSET_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE
 
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
-      INTEGER :: ITAL, ISDV, IALS, ISTRAA, ISTRAE, ICELL,
-     .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX,
+      INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
+     .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST,IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN, 
      -           ISTR, NPTTOT, NREC11, IB, N2,
-     .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
-     .           INODES, J, IPTSI, I1, I2, I3, IA, IT, IMCP,
+     .           IC, IGFF, IADD, INDX, ICLV, IADV, 
+     .           INODES, J, IPTSI, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0
@@ -282,7 +284,10 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
 7     CONTINUE
       XPT1=0.
       XFL1=0.
-      nsteff=0
+ 
+c NSTEFF: number of strata active in this run, i.e. not counting
+c         de-activated strata with NPTS(ISTRA)=0.
+      nsteff=0 
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         if (npts(istra) .gt. 0) then
@@ -884,13 +889,14 @@ C
 C**** PARTICLE TRACING FOR THIS STRATUM FINISHED **********************
 C
 c
-c     collect data for one stratum from all pe's performing calculations
-c     for this stratum
+c    collect data for one stratum ISTRA from all pe's performing calculations
+c    for this stratum
 c
-!pb       if ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra))
-!csw        if (count(procforstra(istra,0:nprs-1)) > 1)
-       if (nprs.gt.nsteff)
-     .  call EIRENE_calstr
+cdr  more processors than active strata.
+cdr  june 17: ?? what if nprs < nsteff, and still one stratum
+cdr              has more than one processor assigned ??
+cdr              Is it excluded that one pe deals with more than one stratum?  
+       if (nprs.gt.nsteff) call EIRENE_calstr
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
