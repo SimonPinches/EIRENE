@@ -1,5 +1,6 @@
 cdr  this routine is identical to the entry chctrc(...) inside eirene routine plt2d.
-cdr  it is kept as separate routine here, in case no further eirene default plotting routines are used. 
+cdr  it is kept as separate routine here, in case no further eirene default plotting routines are used,
+cdr  to still be able to provide printed trajectory output. 
 
 c------------------------------------------------------------------------
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
@@ -23,7 +24,7 @@ C
  
       REAL(DP), INTENT(IN) :: XPLO, YPLO, ZPLO
       INTEGER, INTENT(IN) :: IFLAG, ISYM
-      INTEGER :: IGENCS, IGENCV, NLLI, ISTR, I
+      INTEGER :: ISTR, I
       LOGICAL :: LWR
       CHARACTER(20) :: TXTHST(NTXHST)
  

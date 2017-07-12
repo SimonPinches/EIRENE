@@ -92,31 +92,33 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
-      REAL(DP) :: EPPI3(9), EPCX3(9), EPEL3(9)
+      REAL(DP) :: EPCX3(9), EPEL3(9)
       REAL(DP) :: EIRENE_FPATHA,
      .          EIRENE_CROSS, 
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF, 
-     .          CEL, RMN, RLMS, ER, RMI, RMSI, CXS, VEFFQ, TBCX, VEFF,
-     .          SIG,  TBEL,
-     .          ELTHDUM, CTCHDUM, SIGMAX,  EHEAVY,
+     .          CEL, CXS, VEFFQ, VEFF,
+     .          TBEL,
+     .          SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          CII, ELB,TII,V0_REL,VI_TH,TEE,VE_TH,
-     .          PLS, TBPI, EXPO,
+     .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
+     .          EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
      .          EIRENE_FTABEI1,
 
      .          RCMIN, RCMAX,
      .          ERATE
+C      REAL(DP) :: EIRENE_FEPLPI3, PLS, TBPI, TEE, CTCHDUM, ELTHDUM, ER, 
+C     .            RLMS, RMI, RMN, RMSI, SIG
       INTEGER :: IBGK, IAEL, IREL, IAEI, IREI, IAPI,
      .           IRPI, IACX, IRCX, 
-     .           II, IF8, JAN, J, I1, I2, KK, IPLSTI,
-     .           IPL, IAT, IPLSV, IREAC
+     .           J, KK, IPLSTI,
+     .           IPLSV, IREAC
 C
 C  SET DEFAULTS: NO REACTIONS
 C
@@ -559,21 +561,24 @@ C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           VEFF=SQRT(VEFFQ)
           ELAB=LOG(VEFFQ)+DEFEL(IREL)
           IREAC=MODCOL(5,1,IREL)
+
+cdr  disable proprietary option lhaber
 C  FIND SIGMA FROM OAK RIDGE "ELASTIC" DATA TABLES
-          IF (LHABER) THEN
-            RMN=RMASSA(IATM)
-            RMI=RMASSP(IPLS)
-            RMSI=1./(RMN+RMI)
-            RLMS=RMN*RMI*RMSI
-            ER=RLMS*VEFFQ*CVELI2
+c         IF (LHABER) THEN
+c           RMN=RMASSA(IATM)
+c           RMI=RMASSP(IPLS)
+c           RMSI=1./(RMN+RMI)
+c           RLMS=RMN*RMI*RMSI
+c           ER=RLMS*VEFFQ*CVELI2
 cdr  flag -1.0_DP: only sigma(ER), but no scattering angle evaluated
-            CALL EIRENE_SCATANG (ER,-1.0_DP,ELTHDUM,CTCHDUM,SIG)
-            CEL= SIG*AU_TO_CM2
-          ELSE
+c           CALL EIRENE_SCATANG (ER,-1.0_DP,ELTHDUM,CTCHDUM,SIG)
+c           CEL= SIG*AU_TO_CM2
+c         ELSE
+
 C  FIND SIGMA FROM AMJUEL DATA TABLES (BACHMANN ET AL.)
             CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
      .                       'FPATHA EL2')
-          END IF
+c         END IF
           SIGVEL(IREL)=CEL*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(5,2,IREL).EQ.4) THEN
 C  MODEL 4

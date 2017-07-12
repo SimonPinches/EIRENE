@@ -11,7 +11,8 @@ cdr  spcint --> spcs
 cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
-cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI 
+cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
+cdr  July 17: remove NTALW  (was same as NTALS) 
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -104,7 +105,7 @@ csw 13apr07
      I NTALI,  NTALN,  NTALO,  NTALV,
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
-     I NTALS,  NTLSA,  NTLSR,  NTALW,
+     I NTALS,  NTLSA,  NTLSR, 
      I N1MX,   N2MX,   NSPZ,   NSPZP, NSPZMC, NCOLMC, NSPZTOT
  
       INTEGER, PUBLIC, SAVE ::
@@ -165,7 +166,7 @@ C.......................................................................
 C
 C  GEOMETRY
 C
-        NRAD=MAX(N1ST*N2ND*N3RD,NTRI,NTETRA)+NADD+1
+        NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
  
@@ -205,7 +206,7 @@ C
 C  PRIMARY SOURCE
         NSTRAP=NSTRA+1
  
-C  SPECIES AND TALLIES  NTALV: TOTAL NUMBER OF VOLUME TALLIES
+C  SPECIES AND TALLIES  NTALV: TOTAL NUMBER OF VOLUME OUTPUT TALLIES
 C                           NTALA: INDEX OF THE ADDITIONAL TRACKLENGTH
 C                                  ESTIMATED TALLY
 C                           NTALC: INDEX OF THE ADDITIONAL COLLISION
@@ -216,15 +217,17 @@ C                           NTALM: INDEX OF THE TALLIES FOR COUPLING,
 C                                  (E.G. MOMENTUM SOURCES)
 C                           NTALB: INDEX OF THE BGK TALLY
 C                           NTALR: INDEX OF THE ALGEBRAIC TALLY
-C                       NTALS: TOTAL NUMBER OF SURFACE TALLIES
+
+C                       NTALS: TOTAL NUMBER OF SURFACE OUTPUT TALLIES
 C                           NTLSA: INDEX OF THE ADDITIONAL TALLY
 C                                  (TRACKLENGTH AND COLLISION ESTIMATORS
 C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
+
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
 C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
-C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
+
         NIONP=NION+1
         NATMP=NATM+1
         NMOLP=NMOL+1
@@ -237,12 +240,13 @@ C                       NTALW: TOTAL NUMBER OF SURFACE TALLIES
         NALSP=NALS+1
         NSNVP=NSNV+1
  
-        NTALI=22   ! total number of INPUT TALLIES:
+        NTALI=22   ! total number of VOLUME INPUT TALLIES:
 c                    INCREASED IN 2014 FROM 21 TO 22
+c  additional volume averaged input tallies
         NTALN=12
         NTALO=14
-        NTALV=100  ! total number of VOLUME AVERAGED TALLIES
 
+        NTALV=100  ! total number of VOLUME AVERAGED OUTPUT TALLIES
 c  additional volume averaged output tallies
         NTALA=57   
         NTALC=58   
@@ -251,10 +255,13 @@ c  additional volume averaged output tallies
         NTALB=61   
         NTALR=62
 
-! SURFACE AVERAGED TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)   
-        NTALS=84   
+! SURFACE AVERAGED OUTPUT TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)   
+        NTALS=84
+c  additional surface averaged output tallies   
         NTLSA=NTALS-2
         NTLSR=NTALS-1
+
+C  MAX SPECIES INDEX IN SURFACE AVERAGED OUTPUT TALLIES
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
 
         NSPZ=NPHOT+NATM+NMOL+NION+NPLS
@@ -293,25 +300,19 @@ c  set some derived storage parameters
         NBGVP=NBGV+1
         NCOLMC=NPLS+NREI+NREC
 
-C  storage parameter for species text for tallies, and scltal in mcarlo.f
+C  storage parameter for species text for output tallies, and scltal in mcarlo.f
+
         N1MX=    NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
      .           NSNV
 !PB     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV+
 !    .           NSNV)
-
+cdr  same as n1mx.  Check: why not n1mx=max(....)
         NSPZTOT= NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
      .           NSNV
 
-C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
+C  TOTAL NUMBER OF VOLUME AVERAGED OUTPUT TALLIES
 C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
-!pb        NVOLTL=6*NATM+6*NMOL+6*NION+6*NPHOT+1*NADV+1*NCLV+
-!pb     P         1*NSNV+1*NCPV+1*NALV+1*NBGV+
-!pb     P         4*NPLS+3*(NATM+NMOL+NION+NPHOT)+
-!pb     P         NATM+NMOL+NION+NPHOT
-!pb        IF (NATM > 0) NVOLTL = NVOLTL + 8
-!pb        IF (NMOL > 0) NVOLTL = NVOLTL + 8
-!pb        IF (NION > 0) NVOLTL = NVOLTL + 8
-!pb        IF (NPHOT > 0) NVOLTL = NVOLTL + 8
+
         NVLTLP=6*NATMP+6*NMOLP+6*NIONP+6*NPHOTP+1*NADVP+1*NCLVP+
      P         1*NSNVP+1*NCPVP+1*NALVP+1*NBGVP+
      P         4*NPLSP+28+3*(NATMP+NMOLP+NIONP+NPHOTP)+
@@ -374,7 +375,7 @@ c  leading dimensions of output tally arrays
       INT_PARM( 28) = NSNV
       INT_PARM( 29) = NALV
       INT_PARM( 30) = NALS
-      INT_PARM( 31) = NAIN
+      INT_PARM( 31) = NAIN  !  this is an input tally!
       INT_PARM( 32) = NCPV
       INT_PARM( 33) = NBGK  !dr  tbd: more logical: put NBGV here, eliminate NBGK 
 
@@ -475,7 +476,7 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM(111) = NTALS
       INT_PARM(112) = NTLSA
       INT_PARM(113) = NTLSR
-      INT_PARM(114) = NTALW
+c     INT_PARM(114) =  ...    OUT, WAS SAME AS NTALS
       INT_PARM(115) = N1MX
       INT_PARM(116) = N2MX
       INT_PARM(117) = NSPZ
@@ -547,7 +548,8 @@ C     INT_PARM( 81) =        !dr free, not in use.
       NSTRA       = INT_PARM( 17)
       NSRFS       = INT_PARM( 18)
       NSTEP       = INT_PARM( 19)
- 
+
+c  species indices (1st dimenion) of output tallies 
       NATM        = INT_PARM( 20)
       NMOL        = INT_PARM( 21)
       NION        = INT_PARM( 22)
@@ -559,7 +561,7 @@ C     INT_PARM( 81) =        !dr free, not in use.
       NSNV        = INT_PARM( 28)
       NALV        = INT_PARM( 29)
       NALS        = INT_PARM( 30)
-      NAIN        = INT_PARM( 31)
+      NAIN        = INT_PARM( 31)   !input tally !
       NCPV        = INT_PARM( 32)
       NBGK        = INT_PARM( 33)
  
@@ -658,7 +660,7 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NTLSA       = INT_PARM(112)
       NTLSR       = INT_PARM(113)
 
-      NTALW       = INT_PARM(114)
+c     ...         = INT_PARM(114)  !dr out, was same as ntals
       N1MX        = INT_PARM(115)
       N2MX        = INT_PARM(116)
       NSPZ        = INT_PARM(117)

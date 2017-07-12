@@ -19,11 +19,11 @@ cdr           reaction scaling factor factkk removed from bremsstrahlung
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: ELRC1(9), PLS, DELE, EE, EIRENE_FEELRC1,
+      REAL(DP) :: PLS, DELE, EE, EIRENE_FEELRC1,
      .            EIRENE_FTABRC1, 
      .            DEIMIN, ELRC, EIRENE_ENERGY_RATE_COEFF, BREMS, Z,
      .            eirene_brems
-      INTEGER :: J, I, KK, II
+      INTEGER :: KK
       LOGICAL :: LADAS
  
       EIRENE_FEELRC1=0.D0

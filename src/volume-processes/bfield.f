@@ -23,7 +23,6 @@ c  LBSMO (?)  :  apparently: only in case of levgeo=4, interpolation in triangle
       real(dp), intent(in) :: x, y, z
       real(dp), intent(out) :: bx, by, bz, bf
       real(dp) :: eirene_femint, bni
-      integer :: eirene_idez
 
       IF (INDPRO(5) == 8) THEN
 

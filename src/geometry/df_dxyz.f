@@ -42,15 +42,15 @@ c  to be done:    range test for local coordinates r,s,t,u
      .            z1, z2, z3, z4, det, eirene_deter4x4, 
      .            deti, r, s, t, u, dxdr, dxds, dydr, dyds,  
      .            drdx, dsdx, drdy, dsdy
-      real(dp) :: a(4,4), ad(4,4), am1(4,4), e(4,4), jt(2,2), jmt(2,2),
+      real(dp) :: a(4,4), ad(4,4), am1(4,4), 
      .            dndr(4), dnds(4), j(2,2), jm1(2,2)
-      integer :: itri, itet, ir, ip, it, ia, ib
+      integer :: ir, ip, it, ia, ib
 
       logical, allocatable, save :: visited(:)
       real(dp), allocatable, save :: x32(:), x13(:), x21(:), 
      .                               y23(:), y31(:), y12(:), twoai(:)
       
-      integer, save :: icount=0
+c      integer, save :: icount=0
       
       real(dp) :: dummy
 

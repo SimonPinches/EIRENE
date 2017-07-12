@@ -50,7 +50,7 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
      .          GESFL, FRING, CONST, RRR, FL, FR, RL, RR, RRL, XD,
      .          PLEN, XDIFF, RORIG, XS3, PLABS2, PLABS3, XD1, YD,
      .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2, R, PIN,
-     .          POUT, EX1, SDSD, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
+     .          POUT, EX1, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
      .          DP1, DS1, DS2
       REAL(DP), EXTERNAL :: EIRENE_ARTRI3
       INTEGER :: ITSIDE(3,4)
@@ -398,10 +398,11 @@ C
 C  SET DERIVED GRID DATA FOR LEVGEO = 4 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
-!pb initialize list of triangles per gridpoint
-         
+
+cdr  ncorner: number of cell vertices in case levgeo=4, for FEM interpolation         
         NCORNER = NKNOT
 
+!pb initialize list of triangles per gridpoint
         ALLOCATE (COORTRI(NKNOT))
         DO I=1,NKNOT
           NULLIFY(COORTRI(I)%PTRI)
@@ -645,7 +646,7 @@ C
 C  SET DERIVED GRID DATA FOR LEVGEO = 5 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
-         
+cdr  ncorner: number of cell vertices in case levgeo=5, for FEM interpolation          
         NCORNER = NCOORD
  
         DO ITET=1,NTET
@@ -1309,7 +1310,7 @@ C  1ST AND 2ND GRID DEFINED
 C  SET SURFACE AREA OF NON DEFAULT STANDARD SURFACES
 C
 C  RADIAL (1ST GRID) SURFACES. OVERWRITE EARLIER VALUES FROM
-C  CALL GRID(1)
+C  CALL EIRENE_GRID(1)
 C
       IF (LEVGEO.EQ.1) THEN
         DO 280 ISTS=1,NSTSI
@@ -1443,7 +1444,7 @@ C
 310       ZZONE(J)=(ZSURF(J)+ZSURF(J+1))/2.
 C
 C     ELSEIF (NLTRA) THEN
-C   GRID FOR TOROIDAL APPROXIMATION OF CYLINDER: ALREADY DONE IN CALL GRID(1)
+C   GRID FOR TOROIDAL APPROXIMATION OF CYLINDER: ALREADY DONE IN CALL EIRENE_GRID(1)
 C   THERE: ZSURF, ZZONE HAVE BEEN DEFINED IN RADIANS
 C
       ENDIF

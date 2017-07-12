@@ -27,12 +27,9 @@ C
       REAL(DP), INTENT(IN) :: X, Y
       INTEGER, INTENT(IN) :: NSPZ1, ISTEP, NSPZI, NSPZE, NS
       INTEGER, INTENT(OUT) :: IINDEX
-!pb      REAL(DP) :: SP0(NSPZ,NGITT),SP1(NSPZ,NGITT),SP2(NSPZ,NGITT),
-!pb     .            SP3(NSPZ,NGITT),SP4(NSPZ,NGITT),SP5(NSPZ,NGITT)
       REAL(DP), ALLOCATABLE :: 
      .            SP0(:,:),SP1(:,:),SP2(:,:),
      .            SP3(:,:),SP4(:,:),SP5(:,:)
-!pb      INTEGER :: IP0(NGITT),IP1(NGITT),IP2(NGITT),IP3(NGITT),IP4(NGITT)
       INTEGER, ALLOCATABLE :: IP0(:),IP1(:),IP2(:),IP3(:),IP4(:)
       REAL(DP) ::  DELR, XX, EIRENE_STEP, EIRENE_STEP0, EIRENE_STEP1
       INTEGER :: NS1, ISPZ1, ISPZ, EIRENE_LEARCA, I, IS, JJ, JJM, NSM,  
@@ -55,7 +52,8 @@ CDR                SUCH THAT RRSTEP IS MONOTONICALLY INCREASING
 
       IF (NLINV) THEN
 
-!pb  necessary for large geometries on supercomputer
+cdr  temporarily allocate intermediate work-arrays, 
+c    for preparing step-function no. ISTEP
 
         allocate (sp0(nspz,ngitt))
         allocate (sp1(nspz,ngitt))
@@ -149,6 +147,7 @@ C
           IBSTEP(ISTEP,J)=IP4(NSM-J+1)
 7       CONTINUE
 
+cdr  de-allocate temporary work-arrays
         deallocate (sp0)
         deallocate (sp1)
         deallocate (sp2)

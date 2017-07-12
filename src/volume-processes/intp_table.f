@@ -15,7 +15,7 @@ cdr
       type(hydkin_data), pointer :: tb
       real(dp), intent(in) :: p1
       integer, intent(out) :: ip1
-      real(dp) :: res, rx
+      real(dp) :: res
       integer :: ite
  
       if (p1 <= tb%temps(1)) then

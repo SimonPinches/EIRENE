@@ -88,32 +88,32 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
-      REAL(DP) :: EPPI3(9), EPCX3(9), EPEL3(9)
+      REAL(DP) :: EPCX3(9), EPEL3(9)
       REAL(DP) :: EIRENE_FPATHM,
      .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF,
      .          VREL, VRELQ, TBEL,
      .          EXPO, ELB, CEL,
-     .          RMN, RLMS, ER, RMI, RMSI, SIG,
      .          SIGMAX, VX, VY, VZ, EHEAVY,
      .          XC,YC,ZC,
      .          PVELQ0, DENEL, VEFF, VEFFQ, CXS, ELAB,
-     .          TBCX, PLS, TII, CII,
-     .          ELTHDUM, CTCHDUM,
+     .          TII, CII,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
 
      .          RCMIN, RCMAX,
      .          ERATE
+C      REAL(DP) :: CTCHDUM, EIRENE_FEPLPI3, ELTHDUM, ER, PLS, RLMS, RMI,
+C     .            RMN, RMSI, SIG
       INTEGER :: IBGK, IMEL, IREL, IMEI, IREI, IMPI,
      .           IRPI, IMCX, IRCX,
-     .           II, IF8, JAN, J, IML, IPL,
-     .           IREAC, KK,  I1, I2, IPLSTI, IPLSV
+     .           J, 
+     .           IREAC, KK,  IPLSTI, IPLSV
 C
 C  SET DEFAULTS: NO REACTIONS
 C
@@ -480,7 +480,7 @@ cdr  here should be call to ftabel3,  to be done
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN
 C  BEAM - MAXWELL
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
-C  TEMPERATURE TOO LOW, USE: BEAM-BEAM RATECOEFF.
+C  TEMPERATURE TOO LOW, USE: BEAM_MOLEC - BEAM_DRIFT-BULK RATECOEFF.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
             ELAB=LOG(VRELQ)+DEFEL(IREL)

@@ -29,7 +29,7 @@ C
  
       IMPLICIT NONE
  
-      real(dp) :: tpb1, tpb2, second_own
+!      real(dp) :: tpb1, tpb2, second_own
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: I, IRPI, IREI, IERROR
  

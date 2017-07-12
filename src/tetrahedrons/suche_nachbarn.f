@@ -8,9 +8,11 @@
  
       IMPLICIT NONE
  
-      TYPE(TET_ELEM), POINTER :: CUR, CUR2
-      INTEGER :: ITET,IS,JTET,JS,MINIS,MAXIS,MITIS,MINJS,MAXJS,MITJS,
-     .           IP1,IP2,IP3,JP1,JP2,JP3, IC, i, j
+      TYPE(TET_ELEM), POINTER :: CUR
+C      TYPE(TET_ELEM), POINTER :: CUR2
+      INTEGER :: ITET,IS,JTET,JS,
+     .           IP1, i, j
+C      INTEGER :: IC
       INTEGER :: JP(3),ip(3)
       INTEGER :: ITSIDE(3,4)
       DATA ITSIDE /1,2,3,

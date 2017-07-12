@@ -19,7 +19,7 @@ C
       REAL(DP), INTENT(OUT) :: DFI
       INTEGER, INTENT(IN) :: IFLAG
  
-      REAL(DP) :: DSS, U, DU, SS, RI, RIQ, G1, REFF, RLIM, RR1, RR,
+      REAL(DP) :: DSS, U, DU, SS, RI, RIQ, G1, REFF, RR,
      .            EMRR, G2, EX2, B2, V, DV, EX, RLOW, R2, R3, 
      .            EIRENE_FI, G, RMI, EPS
  

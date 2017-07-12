@@ -75,7 +75,6 @@ C
      .                       NCUTL, NPPLG, NSTR, ISTR
       REAL(DP), INTENT(INOUT) :: FIELD(0:NDX+1,0:NDY+1,NFL,NSTR),
      .                         DUMMY(0:NDX+1,0:NDY+1)
-      INTEGER :: IX, IY, IF, IENDD, IPART, INB, IINID, IINIV, IENDV
 
       RETURN
 C

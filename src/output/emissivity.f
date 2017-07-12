@@ -21,11 +21,11 @@
       implicit none
 
       integer, intent(in) :: ist, lstart, lend
-      integer :: l1, l2, i, j, k, iads, iadv, isp, itp, iratio, irc,
-     .           irc_rat, ncelc
-      real(dp) :: density, sigadd, add, ratio, powalf, powalfs, fac,
-     .            ry, dee00, facte, DE, TE, TEF, DEF, rate, erate,
-     .            EIRENE_OTHER_RATE_COEFF
+      integer :: i, j, k, iads, iadv, isp(3), itp(3), iratio, irc,
+     .           irc_rat(2), ncelc, ndens, idens
+      real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
+     .            einstein, trans_en, DE, TE, TEF, DEF, rate, erate,
+     .            EIRENE_OTHER_RATE_COEFF, ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
@@ -43,20 +43,17 @@
       do i = lstart, lend
         WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
      .                 EMIS_LINES(I)%LINE_NAME // ':'
+        write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
+     .                               emis_lines(i)%einstein
+        write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
+     .                               emis_lines(i)%trans_en
 
-        l1 = emis_lines(i)%l1
-        l2 = emis_lines(i)%l2
-        fac = emis_lines(i)%fac
+        einstein = emis_lines(i)%einstein
+C  ENERGY FACTOR FOR POWER LOSS (W)
+        trans_en = emis_lines(i)%trans_en * elcha
         iads = emis_lines(i)%iadv_total
-
         addv(iads,:) = 0._dp
 
-C  ENERGY FACTOR FOR POWER LOSS (W)
-        RY=13.605
-!pb     DEE00=RY*(1./(2.*2.)-1./(3.*3.))
-        DEE00=RY*(1./REAL(L2*L2,KIND(1._DP))
-     .        -1./REAL(L1*L1,KIND(1._DP)))
-        FACTE=DEE00*ELCHA
 
         powalfs = 0._dp
         do j = 1, emis_lines(i)%no_compo
@@ -72,6 +69,7 @@ C  ENERGY FACTOR FOR POWER LOSS (W)
             irc = emis_lines(i)%compo(j)%contrib(k)%irc
             irc_rat = emis_lines(i)%compo(j)%contrib(k)%irc_rat
 
+            ndens = count(itp >= 0)
             lwrite = .true.
 
             DO NCELL=1,NSBOX
@@ -91,41 +89,51 @@ C
               DEF=LOG(DE*1.D-8)
               TEF=LOG(TE)
 
-              select case (itp)
-                case (0)
-                  density = pdenph(isp,ncelc)
-                case (1)
-                  density = pdena(isp,ncelc)
-                case (2)
-                  density = pdenm(isp,ncelc)
-                case (3)
-                  density = pdeni(isp,ncelc)
-                case (4)
-                  density = diin(isp,ncell)
-                case default
-                  density = 0._dp
-                  if (lwrite) then
-                    write (iunout,*) ' ERROR IN EMISSIVITY' 
-                    write (iunout,*) 
-     .                ' WRONG PARTICLE TYPE SPECIFIED FOR'
-                    write (iunout,*) ' line ',i,emis_lines(i)%line_name
-                    write (iunout,*) ' component ',j,
-     .                 emis_lines(i)%compo(j)%compo_name
-                    write (iunout,*) ' contribution ',k
-                    lwrite = .false.
-                  end if
-              end select
+              do idens = 1, ndens
+                select case (itp(idens))
+                  case (0)
+                    density(idens) = pdenph(isp(idens),ncelc)
+                  case (1)
+                    density(idens) = pdena(isp(idens),ncelc)
+                  case (2)
+                    density(idens) = pdenm(isp(idens),ncelc)
+                  case (3)
+                    density(idens) = pdeni(isp(idens),ncelc)
+                  case (4)
+                    density(idens) = diin(isp(idens),ncell)
+                  case (5)
+                    density(idens) = dein(ncell)
+                  case default
+                    density(idens) = 0._dp
+                    if (lwrite) then
+                      write (iunout,*) ' ERROR IN EMISSIVITY' 
+                      write (iunout,*) 
+     .                  ' WRONG PARTICLE TYPE SPECIFIED FOR'
+                      write (iunout,*) ' line ',i,
+     .                   emis_lines(i)%line_name
+                      write (iunout,*) ' component ',j,
+     .                   emis_lines(i)%compo(j)%compo_name
+                      write (iunout,*) ' contribution ',k
+                      lwrite = .false.
+                    end if
+                end select
+              end do
              
               rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,0,ERATE)
-              add = rate*density
+              add = rate*density(1)
 
               if (iratio > 0) then 
-                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT,TEF,DEF,
+                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),TEF,DEF,
      .                                           .TRUE.,0,ERATE)
                 add = add*ratio
+                if (iratio == 2) then
+                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),TEF,DEF,
+     .                                           .TRUE.,0,ERATE)
+                  add = add * density(2) / density(3) *ratio2
+                end if
               end if
 
-              sigadd = add * fac * vol(ncell)
+              sigadd = add * einstein * vol(ncell)
               addv(iadv,ncelc) = addv(iadv,ncelc) + sigadd
               addv(iads,ncelc) = addv(iads,ncelc) + sigadd
 
@@ -137,12 +145,12 @@ C
           addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal) 
      .                             / voltal(1:nsbox_tal)
 
-          powalf = powalf * facte
+          powalf = powalf * trans_en
           powalfs = powalfs + powalf
 
           WRITE (iunout,'(A50,2ES16.7)') ' COUPL. TO ' // 
      .                     TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
-     .                    ,POWALF/FACTE*ELCHA,POWALF
+     .                    ,POWALF/TRANS_EN*ELCHA,POWALF
 
           DUMMY(1:NSBOX_TAL) = ADDV(IADV,1:NSBOX_TAL)
           CALL EIRENE_INTTAL
@@ -163,7 +171,7 @@ C
 
         WRITE (iunout,'(A50,2ES16.7)') 
      ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
-     .                  ,POWALFS/FACTE*ELCHA,POWALFS
+     .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
         CALL EIRENE_LEER(2)
 
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)

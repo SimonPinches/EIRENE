@@ -23,7 +23,7 @@ C
       INTEGER, PARAMETER :: NSTREAM=15
       REAL(DP) :: H(6)
       INTEGER :: K(6), ISTREAM(NSTREAM)
-      INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, JA, IA, IB, I,
+      INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, IB, I,
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
      .           IRM, IPM, ITM
       CHARACTER(1) :: TL(72)

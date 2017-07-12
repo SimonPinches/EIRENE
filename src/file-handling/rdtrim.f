@@ -2,15 +2,22 @@ CDR  OCT.14 ADDED:  READ ESBPARM  (PROJECTILE SURFACE BINDING ENERGY) FROM TRIM 
 c                   CURRENTLY NOT IN USE.
 C                   CURRENTLY ALSO NOT YET READ (TO BE DONE): 
 c                             FIND END OF LINE AND READ DATA ONLY IF AVAILABLE.
-cdr  Jan 17      :  started: read inr (resolution on data file), rather than fixed inr=5
-c                   tbd:  read   dummy=inr from 1st file. 
+cdr  Jan 17      :  started: read INR (resolution on data file), rather than fixed INR=5
+c                   tbd:  read   dummy=inr from 1st of the 84 files. 
+C
+C                         DEFAULT              : DUMMY=5
+C                         SOME FILES READY WITH: DUMMY=10      
 c                         (DUMMY was reserved for sputter data in TRIM format?)
+cdr  june 17:  remove variable NFLR, was same as NHD6
 c
       SUBROUTINE EIRENE_RDTRIM
 C
-C  THIS SUBROUTINE READS SELECTIVELY INDIVIDUAL
+C  THIS SUBROUTINE READS, AS EXPLICITLY SELECTED, SINGLE
 C  REFLECTION DATA FILES "A_ON_B" PRODUCED E.G. BY MONTE CARLO BCA CODES
-C  THERE ARE NFLR SUCH FILES IN THIS RUN
+C  THERE ARE NHD6 SUCH FILES IN THIS RUN
+C  INPUT 
+C     STREAM: IUN=20+IFOFF
+C     NHD6  : FROM PARMMOD
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -20,25 +27,28 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP) :: PID180, DUMMY, ESBPARM  ! ESBPARM SHOULD BE ARRAY(IFILE)
-      INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I, IWWW, ITTT, INR2
+      REAL(DP) :: PID180
+C     REAL(DP) :: DUMMY, ESBPARM  ! ESBPARM SHOULD BE ARRAY(IFILE)
+      INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I, 
+     .           IWWW, ITTT, INR2, IFLR
 C
 C
+      IFLR=NHD6
       INE=12
       INW=7
-      INR=5  !  this value should now come from data file itself.
+      INR=5  !  this value should now come from data file itself, variable :dummy.
 C
-      IF (INE*INW*NFLR.GT.NH0 .OR.
-     .    INE*INW*INR*NFLR.GT.NH1  .OR.
-     .    INE*INW*INR*INR*NFLR.GT.NH2  .OR.
-     .    INE*INW*INR*INR*INR*NFLR.GT.NH3) THEN
+      IF (INE*INW*IFLR.GT.NH0 .OR.
+     .    INE*INW*INR*IFLR.GT.NH1  .OR.
+     .    INE*INW*INR*INR*IFLR.GT.NH2  .OR.
+     .    INE*INW*INR*INR*INR*IFLR.GT.NH3) THEN
         WRITE (iunout,*)
      .    'ERROR IN PARAMETER STATEMENT FOR REFLECTION DATA'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-      DO 7 IFILE=1,NFLR
-!pb        IUN=20
+      DO 7 IFILE=1,IFLR
+
         IUN=20+ifoff
         OPEN (UNIT=IUN,FILE=REFFIL(IFILE),ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
@@ -53,7 +63,7 @@ C
             READ (IUN,*)  !comment on file per incident angle and energy
 C  READ: PROJECTILE CHARGE AND MASS TC,TM
 C  READ: WALL (TARGET) CHARGE AND MASS WC,WM
-C  READ: INCIDENT ENERGY, ANGLE
+C  READ: INCIDENT ENERGY, ANGLE ENAR,WIAR
 C  READ: REFLECTION PROBABILITY HFTR0, ???, PROJECTILE SURFACE BINDING ENERGY PARAMETER
             IF (I1.EQ.1.AND.I2.EQ.1) THEN    
 cdr
@@ -63,7 +73,8 @@ cdr
 !  DUMMY and ESBPARM, or not.
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
      .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE) 
-C    .                    ,DUMMY, ESBPARM,  !2 NEW PARAMETERS, MAYBE ONLY IN FIRST OF THE 84 BLOCKS ??  IF AT ALL?
+!2 NEW PARAMETERS, MAYBE ONLY IN FIRST OF THE 84 BLOCKS i1=i2=1??  IF AT ALL?
+C    .                    ,DUMMY, ESBPARM(IFILE)) 
 
             ELSE  
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
@@ -108,6 +119,7 @@ cdr  old version: hard wired INR=5
       RAAR(4)=0.7
       RAAR(5)=0.9
 cdr  new version (not ready, allow higher resolution "INR" in quantile data tables)
+cdr  for INR=5: should produce the same RAAR as above. 
       INR2=2*INR
       do I=1,INR
         raar(I)=float(1+2*(I-1))/float(inr2)

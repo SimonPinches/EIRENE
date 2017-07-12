@@ -302,6 +302,7 @@ c  first dimension of adin is now fixed.  reset nplprm
 
       N1DIM = 0
       NTOT = 0
+cdr  are there any FEM interpolated background tallies in this run?
 
       IF (LTESMO) NTOT = NTOT + 1
       IF (LTISMO) NTOT = NTOT + NPLSTI
@@ -312,6 +313,8 @@ c  first dimension of adin is now fixed.  reset nplprm
       IF (LPOTSMO)  NTOT = NTOT + 1
       
       IF (NTOT > 0) THEN
+cdr  allocate storage for background tallies on vcell vertices
+cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ALLOCATE (CORNER_PROFILES(NCORNER,NTOT))
       ELSE
         ALLOCATE (CORNER_PROFILES(1,1))

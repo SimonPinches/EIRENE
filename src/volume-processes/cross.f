@@ -43,11 +43,11 @@ C
       INTEGER, INTENT(IN) :: K, IR
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
       REAL(DP) :: B(8), FP(6)
-      REAL(DP) :: S01, S02, DS12, EXPO1, EXPO2, EIRENE_CROSS,
+      REAL(DP) :: EIRENE_CROSS,
      .            ALMIN,ALMAX,COUMIN,COUMAX,
-     .            CCXM1, CCXM2, EXPO, EIRENE_EXTRAP, E, XI, 
+     .            EXPO, EIRENE_EXTRAP, E, XI, 
      .            EIRENE_SNGL_POLY
-      INTEGER :: IF8, II, I
+      INTEGER :: I
       type(poly_data), pointer :: rpp
       type(fit_forms), pointer :: rpc
  

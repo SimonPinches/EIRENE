@@ -35,7 +35,6 @@ C
       REAL(DP), INTENT(OUT) :: X0, Y0, Z0, CX, CY, CZ, R
       REAL(DP), INTENT(IN) :: LAMBDA(3), EV(3,3), EPS,
      >                      M(3), NUE
-      REAL(DP) :: NORM, P(3)
 C
       INTEGER, INTENT(OUT) :: INDE
 C

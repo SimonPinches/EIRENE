@@ -37,15 +37,16 @@ C
       INTEGER, INTENT(IN) :: NPRIN
       INTEGER, INTENT(INOUT) :: IGASF, IGAST
       INTEGER, SAVE :: IFIRST=0, NPANOLD=0
-      INTEGER :: ILIM, ISP, ICOUNT, ISTS, MODREF, ISPZO,
-     .           IMAT, IREFL, MSS
+      INTEGER :: MODREF, ISPZO,
+     .           IMAT, IREFL, MSS, IDUMMY
       REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND, PRFCF, PRFCT,
      .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT, WFAC,
+     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT, 
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, WABS
-      REAL(DP), EXTERNAL :: RANF_EIRENE, ranset_eirene
-      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ
+      REAL(DP), EXTERNAL :: RANF_EIRENE
+      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ,
+     .                     RANSET_EIRENE
 C
 C---------------------------------------------------------------------
 C
@@ -78,7 +79,7 @@ C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
 C  re-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
 
-        dummy=ranset_eirene(iseedr)
+        idummy=ranset_eirene(iseedr)
         DUMMY=RANF_EIRENE( )
         ISEEDR=ranget_eirene(iseedr)
         ISEEDR=INTMAX-ISEEDR

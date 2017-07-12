@@ -53,8 +53,10 @@ c     --Parameter--
       REAL(DP), INTENT(IN)  :: EREL,RAN
       REAL(DP), INTENT(OUT) :: SIGM
  
-      integer i,j,k,l,m,n,dat,IFIRST,IUN
-      REAL(DP) :: z,w
+      integer i,j,k,m,n,dat,IFIRST,IUN
+c      integer l
+      REAL(DP) :: z
+C      REAL(DP) :: w
       REAL(DP) :: energy(31)
 c     REAL(DP) :: theta(768,31),el(770),ct(770),dtheta(770)
       REAL(DP) :: theta(768,31),el(770),dtheta(770)

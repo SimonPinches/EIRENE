@@ -1,18 +1,23 @@
-C  TO BE DONE: ADD PARAMETER ESBPARM, AS IN EIRENE_RDTRIM
+C  TO BE DONE: ADD PARAMETERS DUMMY AND ESBPARM, AS IN EIRENE_RDTRIM
 C
-C  read (try to read) NFLR = NHD6  target projectile combinations.
+C  read (try to read) IFLR = NHD6  (=12) pre-defined target projectile combinations.
 C
 C
       SUBROUTINE EIRENE_REFDAT(TMM,TCC,WMM,WCC)
+
+c  input:  nhd6=12
+c          iun =21+ifoff  (input stream for TRIM.dat)
+
 C  This is the old (and default) model for reading TRIM conditional quantile tables, for reflection.
 
-c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files A_on_B 
+c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B 
 c  as selected in input block 6.
 C
 C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE CARLO CODES,
 C  DATA ARE STORED IN CONDITIONAL QUANTILE FORMAT (E.G. TRIM)
 C
-C  distinct from rdtrim.f this routines reads one single file containing many (but less-equal than 12)
+C  distinct from rdtrim.f this routines reads one single file containing many 
+C  (in this present version: NHD6=12) 
 C  fixed target-projectile combinations, hard wired in the following order
 C
 C    IFILE=1  H ON FE
@@ -23,6 +28,8 @@ C    IFILE=5  HE ON FE
 C    IFILE=6  HE ON C
 C    IFILE=7  T ON FE
 C    IFILE=8  T ON C
+C  W targets added at some later stage to the trim.dat file.
+C  nhd6 increased from 8 to 12
 C    IFILE=9  D ON W
 C    IFILE=10 HE ON W
 C    IFILE=11 H ON W
@@ -43,18 +50,17 @@ C
       REAL(DP) :: TML(12), TCL(12), WML(12), WCL(12),
      .          FELD(1092)
       REAL(DP) :: PID180
-      INTEGER :: I1, I2, I3, I4, I5, NRECL, IUN, IFILE, I, J
+      INTEGER :: I1, I2, I3, I4, I5, NRECL, IUN, IFILE, I, J, IFLR
 C
-      NFLR=NHD6
+      IFLR=NHD6
       IF (NHD6.GT.12) THEN
         WRITE (iunout,*) 'STORAGE ERROR. NHD6 MUST BE LESS OR EQUAL 12 '
         WRITE (iunout,*) 'NHD6= ',NHD6
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-C
+C  HARD WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files. 
       NRECL=1092
-      INE=12
-      INEM=INE-1
+
       TML(1)=1._DP
       TCL(1)=1._DP
       WML(1)=56._DP
@@ -103,12 +109,19 @@ C
       TCL(12)=1._DP
       WML(12)=184._DP
       WCL(12)=74._DP
+
       DO 10 J=1,NHD6
         TMM(J)=TML(J)
         TCC(J)=TCL(J)
         WMM(J)=WML(J)
         WCC(J)=WCL(J)
 10    CONTINUE
+
+c  INE=12 incident energies 
+c  (not to be confused with the nhd6=12 projectile -target cases)
+      INE=12
+      INEM=INE-1
+
       ENAR(1)=1._DP
       ENAR(2)=2._DP
       ENAR(3)=5._DP
@@ -123,6 +136,7 @@ C
       ENAR(12)=5000._DP
       DO 11 I=1,INEM
 11      DENAR(I)=1./(ENAR(I+1)-ENAR(I))
+
       INW=7
       INWM=INW-1
       PID180=ATAN(1._DP)/45._DP
@@ -146,10 +160,10 @@ C
       DO 15 I=1,INRM
 15      DRAAR(I)=1./(RAAR(I+1)-RAAR(I))
 C
-      IF (INE*INW*NFLR.GT.NH0 .OR.
-     .    INE*INW*INR*NFLR.GT.NH1  .OR.
-     .    INE*INW*INR*INR*NFLR.GT.NH2  .OR.
-     .    INE*INW*INR*INR*INR*NFLR.GT.NH3) THEN
+      IF (INE*INW*IFLR.GT.NH0 .OR.
+     .    INE*INW*INR*IFLR.GT.NH1  .OR.
+     .    INE*INW*INR*INR*IFLR.GT.NH2  .OR.
+     .    INE*INW*INR*INR*INR*IFLR.GT.NH3) THEN
         WRITE (iunout,*)
      .    'ERROR IN PARAMETER STATEMENT FOR REFLECTION DATA'
         CALL EIRENE_EXIT_OWN(1)
@@ -169,27 +183,33 @@ C
       OPEN (UNIT=IUN,FILE=DBFNAME(IFILE))
       REWIND IUN
 C
-660   FORMAT (1X,1P,10E12.4)
-661   FORMAT (4E20.12)
-      DO 1 IFILE=1,NFLR
+
+C  IFLR=12, HARD WIRED
+      DO 1 IFILE=1,IFLR
         DO 2 I1=1,INE
           I=0
+!read nrecl=1092 data blocks, one for each of the INE=12 incident energies
+!  7 + 7*5 + 7*5*5 + 7*5*5+5 = 1092
           READ (IUN,661) (FELD(J),J=1,NRECL)
+c  7: reflection coefficients for each of the 7 incident angles
           DO 3 I2=1,INW
             I=I+1
             HFTR0(I1,I2,IFILE)=FELD(I)
 3         CONTINUE
+c  7*5: energy quantiles
           DO 4 I2=1,INW
             DO 4 I3=1,INR
               I=I+1
               HFTR1(I1,I2,I3,IFILE)=FELD(I)
 4         CONTINUE
+c  7*5*5:  polar angle quantiles
           DO 5 I2=1,INW
             DO 5 I3=1,INR
               DO 5 I4=1,INR
                 I=I+1
                 HFTR2(I1,I2,I3,I4,IFILE)=FELD(I)
 5         CONTINUE
+c  7*5*5*5:  azimuthal angle quantiles
           DO 6 I2=1,INW
             DO 6 I3=1,INR
               DO 6 I4=1,INR
@@ -200,5 +220,9 @@ C
 2       CONTINUE
 1     CONTINUE
 C
+
+661   FORMAT (4E20.12)
+
+
       RETURN
       END

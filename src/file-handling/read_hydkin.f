@@ -39,9 +39,8 @@ c          lffl:  ??
       character(3), intent(inout) :: crc
       real(dp) , intent(out) :: r1mn, r1mx, e_el, e_k
       character(132) :: zeile
-      character(12) :: chr
       character(len=len(reac)+10) :: cpreac
-      integer :: ianf, iend, ier, ll, io, ie, iflg
+      integer :: ianf, iend, ll, io, ie, iflg
 
       type(hydkin_data), pointer :: hp
  

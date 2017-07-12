@@ -62,9 +62,9 @@ C
      .            EIRENE_ENERGY_RATE_COEFF, 
      .            EI, EA, EN, ERATE, TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEPI4, NSEPI5, IAPI, I, NEND, J, IO, IA, 
+      INTEGER :: NSEPI4, NSEPI5, NEND, J, IO, IA, 
      .           ITYP1, ISPZ1, INUM1,
-     .           IML, IM, MODC, NRC, IIO, IPLTI, IP, IAT, II, IS,
+     .           IML, IM, MODC, IIO, IPLTI, IP, IAT,
      .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR, IMIN, IMAX, 
      .           IRAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ

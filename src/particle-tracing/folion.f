@@ -118,14 +118,13 @@ C
 
       IMPLICIT NONE
  
-      REAL(DP) :: a,aa,aaa
+C      REAL(DP) :: a,aa,aaa
 c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
-      REAL(DP) :: CFLAG(7,MSTOR0), DUMT(3), DUMV(3)
-      REAL(DP) :: AX(2),v,vv,vx,vy,vz
+      REAL(DP) :: CFLAG(7,MSTOR0)
+      REAL(DP) :: AX(2)
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
-     .            XSTORV2(NSTORV,N2ND+N3RD),
-     .            BVEC_1(3), VVEC(3)
-      REAL(DP) :: GYRO, COSIN, XLI, YLI, ZLI, DIST,
+     .            XSTORV2(NSTORV,N2ND+N3RD)
+      REAL(DP) :: COSIN, XLI, YLI, ZLI, DIST,
      .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
      .          FNUI, 
      .          VELXS, VELYS, VELZS, VELS,
@@ -133,9 +132,9 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          VCOS, 
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
      .          ZMFP, PN, SH, EIRENE_FPATHI, ZTC,
-     .          XNI, TI,
      .          DELFAC,TIFAC,
      .          SCOS_NEW, XOLD, YOLD
+C      REAL(DP) :: TI
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISTS, EIRENE_LEARC2, NCOUS, ICOU, J, JJ, IPL, 
      .           NRCELL_OLD,

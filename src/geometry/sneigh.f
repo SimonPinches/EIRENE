@@ -1,10 +1,14 @@
-C
+Cdr  june 17: comments
 C
       SUBROUTINE EIRENE_SNEIGH
 C
+C  SET NCORNER, THE NUMBER OF CELL VERTICES, IN CASE 2D GRIDS LEVGEO=1,2,3
+C               (for smooth background tally interpolation, FEM options)
+C      FOR LEVGEO=4,5 NCORNER IS SET  DIRECTLY IN SUBR. GRID.f.
+C
 C  DETERMINE THE INDICES OF THE FOUR NEIGHBORING CELLS OF
 C  AN EIRENE CELL    : NGHPOL
-C  AN EIRENE SURFCASE: NGHPLS
+C  AN EIRENE SURFASE : NGHPLS
 C  SIDE NUMBERING:
 C
 C       (IR+1,IP+1)          (IR,IP+1)
@@ -43,10 +47,15 @@ C
             INDPOINT(IR,IP) = IC
           ENDDO
         ENDDO
-      
+
+c  ncorner: number of cell vertices in case of 2d cartesian grid: levgeo=1      
         NCORNER = IC
+
+C.........................................................................
+
       
       ELSE IF ((LEVGEO == 2) .OR. (LEVGEO == 3)) THEN
+cdr  warning: here we use polygon grid structure also in case of LEVGEO=2
  
         DO IR=1,NR1ST
           DO IP=1,NP2ND
@@ -255,7 +264,8 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
           ENDDO
         ENDDO
         end if ! if (.true.)
-      
+
+c  ncorner: number of cell vertices in case of polygon grids: levgeo=2,3      
         NCORNER = NNODES
 
         call EIRENE_DestroyTree(baum)

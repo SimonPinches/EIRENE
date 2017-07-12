@@ -99,11 +99,10 @@ C
       INTEGER, INTENT(IN) :: NMACH
       INTEGER, INTENT(OUT) :: INDE
       REAL(DP) :: A( 3,3 ), LAMBDA( 3 ), EV( 3,3 ), EPS, C, B(3),
-     >          M(3),NUE,NORM,P(3),AMERK(3,3),RES(3),WRK(6)
-     >          ,Q(5,5),DD(3),QEV(5,5)
-      REAL(DP) :: AM4(4,4), LAMORI(3), A0
+     >          M(3),NUE,NORM,P(3),RES(3)
+      REAL(DP) :: AM4(4,4), LAMORI(3)
 C
-      INTEGER :: INULL, DIM, KBASIS, IW(3), I, J, ICOUNT
+      INTEGER :: INULL, DIM, KBASIS, I, J, ICOUNT
       LOGICAL :: NOPOS
 C
 C     DATA              EPS  / 5.D-10 /

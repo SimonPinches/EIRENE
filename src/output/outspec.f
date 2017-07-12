@@ -2,10 +2,11 @@ cdr  25.08.15:  formated spectrum printout improved
 cdr  26.09.14:  commments, units added
 cdr  oct.2014:  parameter istr (stratum number) in argument list
 
-!pb  25.10.06:  format specifications corrected
+
 !pb  17.05.10:  write spectrum if the integral is nonzero
 !               this change is necessary because spectra for bulk ions are sampled 
 !               using negative weights
+!pb  25.10.06:  format specifications corrected
  
       SUBROUTINE EIRENE_OUTSPEC(ISTR)
  

@@ -33,8 +33,8 @@ c
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, weight, peflux, 
      .            totflux, sumrpw, sclfac, add, totrpw,
-     .            addph, adda, addm, addi,
-     .            pefluxp(0:nprs-1),sumrpwp(0,nprs-1)
+     .            addph, adda, addm, addi
+C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
       real(dp), external :: ranf_eirene
       integer, allocatable :: iranpro(:), ibuf(:,:)
       integer :: ier, i, istr, ncoreal, itotal, il, im, iu, ipe,

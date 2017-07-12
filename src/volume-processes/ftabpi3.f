@@ -31,9 +31,9 @@ c  hard wired: cut off (density) parameter for fits: 1e8
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRPI, K
-      REAL(DP) :: TBPIC(9), EIRENE_FTABPI3, DEIMIN, TII, PLS, TBPI, 
+      REAL(DP) :: EIRENE_FTABPI3, DEIMIN, TII, PLS, TBPI, 
      .            EIRENE_RATE_COEFF, ERATE
-      INTEGER :: J, I, II, KK, IPLSTI
+      INTEGER :: KK, IPLSTI
  
       TBPI=0.D0
       KK = NREAPI(IRPI)
