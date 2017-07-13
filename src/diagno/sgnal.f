@@ -6,6 +6,7 @@ c            option NCHTAL=4 is unfinished. print warning and return
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
 c            set default ncheni=1 for nchtal=2 alreay in calling routine,
 c            to avoid that chords are erroneously turned off there. 
+cpb jul.17:  request from aug.16: psig and ARGST depends on NCHTAL done
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
@@ -49,7 +50,8 @@ C
 C
       INTEGER, INTENT(IN) :: ICHORI, ISP
       INTEGER :: IISTR
-      REAL(DP) :: C1(3),C2(3),PSIG(0:NSPZ+10),
+      REAL(DP), ALLOCATABLE, SAVE :: PSIG(:)
+      REAL(DP) :: C1(3),C2(3),
      .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
      .          FP1(6), FP2(6), DUM(9)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
@@ -63,6 +65,7 @@ C
      .           KREC, IRRC, MAXREC, IFLAG, ISPC,
      .           ICELL, 
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+      INTEGER, SAVE :: MX_COMPO, ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123
@@ -70,6 +73,20 @@ C
       CHARACTER(3) :: CRC
       CHARACTER(2) :: ELNAME
       TYPE(CELL_INFO), POINTER :: FIRST, CUR
+
+      INTERFACE
+        SUBROUTINE EIRENE_LININT
+     .           (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,PEN,
+     .            PSIG,TIMAX,ISP,NSPI,JEN,NCHNI)
+        USE EIRMOD_PRECISION
+        USE EIRMOD_PARMMOD
+        INTEGER, INTENT(IN) :: IFIRST,ICHORI, ICHRD,IPVOT,NBC2,NAC2,ISP,
+     .                         NSPI, JEN, NCHNI
+        REAL(DP), INTENT(IN) :: C1(3),C2(3),PEN
+        REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+        REAL(DP), INTENT(IN OUT) :: TIMAX
+        END SUBROUTINE EIRENE_LININT
+      END INTERFACE
 C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
@@ -414,8 +431,26 @@ C
       PMI=1.E30
       XMA=-1.E30
       XMI=1.E30
+
+      IF (.NOT.ALLOCATED(PSIG)) THEN
+        ND = 0
+        IF (ANY(NCHTAL == 1)) ND = MAX(ND, NATMI)
+        IF (ANY(NCHTAL == 2)) THEN
+          MX_COMPO = 0
+          IF (ALLOCATED(EMIS_LINES)) THEN
+            DO I=1, NO_LINES
+              MX_COMPO = MAX(MX_COMPO, EMIS_LINES(I)%NO_COMPO)
+            END DO
+          END IF
+          ND = MAX(ND, MX_COMPO)
+        END IF
+        IF (ANY(NCHTAL == 3)) ND = MAX(ND, NPHOTI)
+        IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
+        ALLOCATE (PSIG(0:ND))
+      END IF
+
       IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
-      IF (NCHTAL(ICHORI).EQ.2)  NSPI=10     ! up to 10 spectral line emissivities (transitions) in one single LOS evaluation
+      IF (NCHTAL(ICHORI).EQ.2)  NSPI=MX_COMPO ! use maximum number of components to spectral line emissivities (transitions) in one single LOS evaluation
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
       IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
