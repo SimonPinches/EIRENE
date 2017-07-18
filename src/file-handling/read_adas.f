@@ -35,7 +35,7 @@ c  to be done: units, log-lin, scaling, asymptotics
       type(adas_data), pointer :: ap
 
 cdr  error exit for unfinished options
-      if (isw.ne.4 .and. isw.ne.10)  goto 1000
+      if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
 
 
 

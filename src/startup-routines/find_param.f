@@ -82,6 +82,7 @@ C
      .                              PART_NAME(:)
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
+      CHARACTER(8) :: FNAME, FRATIO
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
@@ -1275,14 +1276,17 @@ C
             READ (IUNIN,*) NO_CONTRIB           
             LINES = LINES + NO_CONTRIB
             DO K = 1, NO_CONTRIB
-              READ (IUNIN,'(3I6)') ISP, ITP, IRATIO 
+              READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
+              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
               IF (IRATIO > 0) THEN
                 LINES = LINES + 1
-                READ (IUNIN,*)
+                READ (IUNIN,'(18X,1X,A6)') FRATIO
+                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
                 IF (IRATIO == 2) THEN
                   LINES = LINES + 1
                   READ (IUNIN,*)
-                  READ (IUNIN,*)
+                  READ (IUNIN,'(18X,1X,A6)') FRATIO
+                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
                 END IF  
               END IF
             END DO

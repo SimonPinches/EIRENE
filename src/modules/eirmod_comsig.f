@@ -45,9 +45,11 @@
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
  
       TYPE TCONTRIB
-        INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2)
+        INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2), 
+     .             IZ, IZ_RAT(2)
         CHARACTER(8) :: FNAME, FRATIO(2)
         CHARACTER(4) :: H2, RAT_H2(2)
+        CHARACTER(2) :: ELEMENT, RAT_ELEMENT(2)
         CHARACTER(9) :: REACTION, RAT_REACTION(2)
         CHARACTER(3) :: CR, RAT_CR(2)      
       END TYPE TCONTRIB
@@ -186,6 +188,8 @@ C
       CONA%IRATIO       = CONB%IRATIO
       CONA%IRC          = CONB%IRC
       CONA%IRC_RAT      = CONB%IRC_RAT 
+      CONA%IZ           = CONB%IZ 
+      CONA%IZ_RAT       = CONB%IZ_RAT 
       CONA%FNAME        = CONB%FNAME
       CONA%FRATIO       = CONB%FRATIO
       CONA%H2           = CONB%H2
@@ -194,6 +198,8 @@ C
       CONA%RAT_REACTION = CONB%RAT_REACTION
       CONA%CR           = CONB%CR 
       CONA%RAT_CR       = CONB%RAT_CR    
+      CONA%ELEMENT      = CONB%ELEMENT
+      CONA%RAT_ELEMENT  = CONB%RAT_ELEMENT
       
       RETURN
       END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB

@@ -16,6 +16,12 @@
       no_compo = 6  
       MOD_ADDV = 0
 
+! NOT USED IN DEFAULT MODEL
+      CNT%IZ = 0
+      CNT%IZ_RAT = 0
+      CNT%ELEMENT = '  '
+      CNT%RAT_ELEMENT = '  '
+
       ALLOCATE (EMIS_LINES(NO_LINES))
       EMIS_LINES%LINE_NAME = REPEAT(' ',80)
       EMIS_LINES%NO_COMPO = 0

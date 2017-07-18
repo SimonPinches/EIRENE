@@ -3492,21 +3492,47 @@ C
                 READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO, 
      .             CNT%FNAME, CNT%H2, CNT%REACTION, CNT%CR
+                IF (INDEX(CNT%FNAME,'ADAS') .NE. 0) THEN
+                  READ (IUNIN,'(4X,A2,1X,I3)') CNT%ELEMENT,CNT%IZ
+                  CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                ELSE
+                  CNT%ELEMENT = '  '
+                  CNT%IZ = 0
+                END IF
                 IF (CNT%IRATIO > 0) THEN
                   READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
      .             CNT%FRATIO(1), CNT%RAT_H2(1), CNT%RAT_REACTION(1),
      .             CNT%RAT_CR(1)
+                  IF (INDEX(CNT%FRATIO(1),'ADAS') .NE. 0) THEN
+                    READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
+     .                                           CNT%IZ_RAT(1)
+                    CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                  ELSE
+                    CNT%RAT_ELEMENT(1) = '  '
+                    CNT%IZ_RAT(1) = 0
+                  END IF
                   IF (CNT%IRATIO == 2) THEN
                     READ (IUNIN,6666) CNT%ISP(2),CNT%ITP(2),
      .                                CNT%ISP(3),CNT%ITP(3)
                     READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
      .               CNT%FRATIO(2), CNT%RAT_H2(2), CNT%RAT_REACTION(2),
      .               CNT%RAT_CR(2)
+                    IF (INDEX(CNT%FRATIO(2),'ADAS') .NE. 0) THEN
+                      READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
+     .                                             CNT%IZ_RAT(2)
+                      CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                    ELSE
+                      CNT%RAT_ELEMENT(2) = '  '
+                      CNT%IZ_RAT(2) = 0
+                    END IF
                   END IF
                 ELSE 
+                  CNT%FRATIO       = '' 
                   CNT%RAT_H2       = '' 
                   CNT%RAT_REACTION = ''
                   CNT%RAT_CR       = ''
+                  CNT%RAT_ELEMENT  = ''
+                  CNT%IZ_RAT       = 0
                 END IF
                 CNT%IRC = 0
                 CNT%IRC_RAT = 0
@@ -3551,7 +3577,7 @@ c  default asymptotics
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              '  ',0)
+     .              CNT%ELEMENT,CNT%IZ)
             emis_lines(i)%compo(j)%contrib(k)%irc = nrc
 
             if (cnt%iratio > 0) then
@@ -3561,7 +3587,7 @@ c  default asymptotics
      .              CNT%RAT_REACTION(IR),CNT%RAT_CR(IR),
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              '  ',0)
+     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR))
                 emis_lines(i)%compo(j)%contrib(k)%irc_rat(ir) = nrc
               end do
             end if           
