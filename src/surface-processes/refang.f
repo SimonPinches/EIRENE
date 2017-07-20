@@ -53,14 +53,14 @@ C   POLAR ANGLE: MODIFIED COSINE WITH CUT OFF COSM
 C   POLAR ANGLE: FROM GAUSSIAN, St. dev.= COSP , with cut off COSM, done by rejection sampling
         ICOUNT=0
 410     IF (INIV2.EQ.0) CALL EIRENE_FGAUSS
-        INIV2=INIV2-1
+
 cdr  this sampling from Gaussian is currently highly inefficient.
 cdr  a) due to rejection
 cdr  b) because a full triple of Gaussian random numbers is generated, but just the first 
 cdr     component is used
- 
+
         ZPHI=COSP*FG1(INIV2)
-        
+        INIV2=INIV2-1        
         ICOUNT=ICOUNT+1
 C   CUT OFF ANGLE: COSM (RADIANS)
         IF (ICOUNT.GT.1000) THEN
