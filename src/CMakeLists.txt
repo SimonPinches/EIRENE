@@ -8,7 +8,7 @@ include_directories(${MPI_Fortran_INCLUDE_PATH})
 
 # Adds compiler flags to all build types.
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS "-real-size 64 -fp-model source")
+  set(CMAKE_Fortran_FLAGS "-fp-model source")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all -check all")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
@@ -17,59 +17,59 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
   set(CMAKE_Fortran_FLAGS "-r8")
 endif()
 
-<<<<<<< HEAD
-=======
 # Libraries used for plotting
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+message(STATUS    " --  Setting libraries for internal plotting:  --  --")
 if(LibGKS)
   get_filename_component(LibGKS ${LibGKS} ABSOLUTE)
 else()
   message(STATUS  "Path to LibGKS unset")
-  message(STATUS  "You may want to try -DLibGKS=/usr/group/libs/intel/gligks/libgks.a")
+  message(STATUS  "You may want to try -DLibGKS=$PATH_TO_GKS_LIB/libgks.a")
 endif()
 
 if(LibGRS)
   get_filename_component(LibGRS ${LibGRS} ABSOLUTE)
 else()
   message(STATUS  "Path to LibGRS unset")
-  message(STATUS  "You may want to try -DLibGRS=/usr/group/libs/intel/grsoft/libgr.a")
+  message(STATUS  "You may want to try -DLibGRS=$PATH_TO_GRSOFT_LIB/libgr.a")
 endif()
 
 if(LibX11)
   get_filename_component(LibX11 ${LibX11} ABSOLUTE)
 else()
   message(STATUS  "Path to LibX11 unset")
-  message(STATUS  "You may want to try -DLibX11=/usr/lib64/libX11.so")
+  message(STATUS  "You may want to try -DLibX11=$PATH_TO_X11_LIB/libX11.so")
 endif()
 
 if(Libz)
   get_filename_component(Libz ${Libz} ABSOLUTE)
 else()
   message(STATUS  "Path to Libz unset")
-  message(STATUS  "You may want to try -DLibz=/usr/lib64/libz.so")
+  message(STATUS  "You may want to try -DLibz=$PATH_TO_z_LIB/libz.so")
 endif()
 
 if(LibXt)
   get_filename_component(LibXt ${LibXt} ABSOLUTE)
 else()
   message(STATUS  "Path to LibXt unset")
-  message(STATUS  "You may want to try -DLibXt=/usr/lib64/libXt.so")
+  message(STATUS  "You may want to try -DLibXt=$PATH_TO_Xt_LIB/libXt.so")
 endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
   message(STATUS "Found the following libraries used for plotting:"
-		  ${LibGKS}" ; "${LibGRS}" ; "${LibX11}" ; "${LibXt}" ; "${Libz})
-  message(STATUS "For running, please export the following 2 statements into your console:")
-  message(STATUS "export GLI_HOME=/usr/group/libs/intel/gligks")
+		  ${LibGKS}" ; "${LibGRS}" ; "${LibX11}" ; "${LibXt}" ; "
+		  ${Libz})
+  message(STATUS "For running, please export the following 2 statements "
+		 "into your console:")
+  message(STATUS "export GLI_HOME=$PATH_TO_GKS_LIB")
   message(STATUS "export GRSOFT_DEVICE=62")
+  message(STATUS " --  Plotting will be enabled.")
 else()
-  message(STATUS "At least one of the above libraries is not properly linked. "
-		 "Plotting will be disabled.")
+  message(STATUS " --  Plotting will be disabled.")
 endif()
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
->>>>>>> Altered CMakeLists, now usable for plotting
 # Add option to control whether trace output will be compiled
 option(TRACE "Build with trace output" OFF)
 if (TRACE)
@@ -102,13 +102,21 @@ list(GET src_main-routines 0 fortran_file)
 get_filename_component(fortran_dir ${fortran_file} PATH)
 list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.f)
 
+# Decide whether to use plotting or plot_dummy
+set(plotpath "")
+if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
+  list(APPEND plotpath ${src_plotting})
+else()
+  list(APPEND plotpath ${src_plot_dummy})
+endif()
+
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
                    ${src_file-handling} ${src_geometry} 
                    ${src_geometry/time-routines} ${src_interfaces/couple_Dummy} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
-                   ${src_photons} ${src_plot_dummy} ${src_sampling} 
+                   ${src_photons} ${plotpath} ${src_sampling} 
                    ${src_scoring} ${src_startup-routines} 
                    ${src_surface-processes} ${src_tetrahedrons} 
                    ${src_user-routines/user_default} ${src_volume-processes} 
@@ -116,7 +124,8 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
-target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${LibGKS} 
+					${LibGRS} ${LibX11} ${Libz} ${LibXt})
 
 # Sets output directory of the library and executbales.
 set_target_properties(EIRENE PROPERTIES
