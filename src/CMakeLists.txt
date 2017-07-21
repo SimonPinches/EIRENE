@@ -66,7 +66,7 @@ else()
   message(STATUS "At least one of the above libraries is not properly linked. "
 		 "Plotting will be disabled.")
 endif()
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 >>>>>>> Altered CMakeLists, now usable for plotting
