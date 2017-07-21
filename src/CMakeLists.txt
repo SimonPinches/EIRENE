@@ -17,6 +17,59 @@ elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
   set(CMAKE_Fortran_FLAGS "-r8")
 endif()
 
+<<<<<<< HEAD
+=======
+# Libraries used for plotting
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+if(LibGKS)
+  get_filename_component(LibGKS ${LibGKS} ABSOLUTE)
+else()
+  message(STATUS  "Path to LibGKS unset")
+  message(STATUS  "You may want to try -DLibGKS=/usr/group/libs/intel/gligks/libgks.a")
+endif()
+
+if(LibGRS)
+  get_filename_component(LibGRS ${LibGRS} ABSOLUTE)
+else()
+  message(STATUS  "Path to LibGRS unset")
+  message(STATUS  "You may want to try -DLibGRS=/usr/group/libs/intel/grsoft/libgr.a")
+endif()
+
+if(LibX11)
+  get_filename_component(LibX11 ${LibX11} ABSOLUTE)
+else()
+  message(STATUS  "Path to LibX11 unset")
+  message(STATUS  "You may want to try -DLibX11=/usr/lib64/libX11.so")
+endif()
+
+if(Libz)
+  get_filename_component(Libz ${Libz} ABSOLUTE)
+else()
+  message(STATUS  "Path to Libz unset")
+  message(STATUS  "You may want to try -DLibz=/usr/lib64/libz.so")
+endif()
+
+if(LibXt)
+  get_filename_component(LibXt ${LibXt} ABSOLUTE)
+else()
+  message(STATUS  "Path to LibXt unset")
+  message(STATUS  "You may want to try -DLibXt=/usr/lib64/libXt.so")
+endif()
+
+if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
+  message(STATUS "Found the following libraries used for plotting:"
+		  ${LibGKS}" ; "${LibGRS}" ; "${LibX11}" ; "${LibXt}" ; "${Libz})
+  message(STATUS "For running, please export the following 2 statements into your console:")
+  message(STATUS "export GLI_HOME=/usr/group/libs/intel/gligks")
+  message(STATUS "export GRSOFT_DEVICE=62")
+else()
+  message(STATUS "At least one of the above libraries is not properly linked. "
+		 "Plotting will be disabled.")
+endif()
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+>>>>>>> Altered CMakeLists, now usable for plotting
 # Add option to control whether trace output will be compiled
 option(TRACE "Build with trace output" OFF)
 if (TRACE)
