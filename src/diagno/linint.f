@@ -1,7 +1,8 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-!cp  July 17 :  made  ARGST allocatable, conditional on PLSPEC and TRCSIG
+!cp  July 17 :  made  ARGST allocatable, conditional on  TRCSIG
+cdr             plspec only, if trcsig. to be done in input.f
 CDR             ditto: AA, XNTG, VPLOT
-CDR  DE-ALLOCATE ??  WHERE ??
+CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
 C
 C
 C*DK LININT
@@ -25,6 +26,7 @@ C  SURFACE (P2) IS FOUND.
 c
 c  ifirst=0:  first call for one particular LOS
 c  ifirst=1:  same LOS as previous LOC, but different (energy, wavelength) parameter PEN
+c  ifirst<0:  irgend was mit short storing ??
 c
 C
       USE EIRMOD_PRECISION
@@ -70,14 +72,16 @@ C
      .           IPERID_1,
      .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, ND
       TYPE(CELL_INFO), POINTER :: NEW_CELL
-C   ARRAYS FOR PLOTTING
+C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
       REAL(DP), ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)
+
       REAL(DP), ALLOCATABLE :: YPLOT(:,:),
      .                         YMN2(:), YMX2(:),
      .                         YMNLG2(:), YMXLG2(:)
       INTEGER, ALLOCATABLE :: IR1(:), IR2(:), IRS(:)
       LOGICAL, ALLOCATABLE :: LPLOT2(:), LSDVI(:)
-      LOGICAL :: TRCSAV, LCNDEXP, L_SAME
+
+      LOGICAL :: TRCSAV, LCNDEXP, L_SAME, LARGST
       CHARACTER(72) :: TXHEAD, TXTALL(NCHENI)
       CHARACTER(24) :: TXUNIT(NCHENI), TXSPEC(NCHENI)
  
@@ -121,13 +125,15 @@ C   ARRAYS FOR PLOTTING
       SCOS=1.
       IPOLG=1
 C
-C  COMPUTE LINE INTEGRATED SIGNAL
+C  COMPUTE LINE INTEGRATED SIGNAL FOR A GIVEN LOS
 C
       IF (IFIRST.GT.0) GOTO 100
       
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
-        IF (PLSPEC.AND.TRCSIG) THEN
+        IF (TRCSIG) THEN
+cdr  TRCSIG: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
+cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -140,8 +146,12 @@ C
           ALLOCATE (XNTG(1))
         END IF
       END IF
+      LARGST = SIZE(ARGST,2) >= NSBOX
 
-      IF (PLSPEC) THEN
+c.......................................................................
+cdr  some plot stuff, still to be moved to separate routine
+cdr  into folder: plotting, plot_dummy...
+      IF (PLSPEC.AND.TRCSIG) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
           NCH = 1
           IF (ANY(NCHTAL(1:NCHORI) == 1)) NCH=IABS(NCHENI)
@@ -196,6 +206,9 @@ C  ZEICHNE NETZLINIEN EIN
 C  MACHE GRADE GRENZEN, X-ACHSE (Y ACHSE, NUR WENN TALZMI=TALZMA=666.)
         FITX=.TRUE.
       END IF
+
+cdr  preparatory plot stuff done
+c..................................................................
 C
 C  FIND STARTING POINT FOR LINE INTEGRATION:
 C
@@ -758,11 +771,11 @@ C
 C
  
       IF (IFIRST < 0) THEN
+CDR WAS PASSIERT HIER ???
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
           NCELC=NCLTAL(NCELL)
-C         WRITE (IUNOUT,*) NCELL, NCELC
           ALLOCATE(NEW_CELL)
           NEW_CELL%NO_CELL = NCELL
           NEW_CELL%FLIGHT = CLPD(J)
@@ -782,11 +795,14 @@ C         WRITE (IUNOUT,*) NCELL, NCELC
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
+        TRACKS=TRACKS+ZDS
+cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
-        XNTG(JJJ)=TRACKS+ZDS*0.5
-        TRACKS=TRACKS+ZDS
-C
+
+        IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
+        
+C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
           IF (NCHTAL(ICHORI).EQ.1) THEN
             CALL EIRENE_SIGCX (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
@@ -909,12 +925,13 @@ C    .              XD1,YD1,ZD1)
 C       CALL SIGTST(2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
       ENDIF
 C
+C  FINAL SEGMENT ALONG LINE-OF-SIGHT
       JJJ=JJJ+1
-      XNTG(JJJ)=TRACKS
+      IF (LARGST) XNTG(JJJ)=TRACKS
 C
 C  PLOT INDIVIDUAL CONTRIBUTIONS ALONG LINE OF SIGHT.
 C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
-C  PLOTTED INTO GEOMETRY PLOT.
+C  PLOTTED INTO GEOMETRY PLOT VIA CHCTRC CALLS.
 C
       IF (PLSPEC.AND.TRCSIG) THEN
         IF (PLHST) THEN
@@ -1038,4 +1055,26 @@ C
      .  ('AA AND VPLOT. EXIT CALLED                      ')
       CALL EIRENE_EXIT_OWN(1)
       RETURN
+
+      ENTRY EIRENE_LININT2
+
+      IF (ALLOCATED(ARGST)) THEN
+c  these arrays have been allocated for TRCSIG option.
+        DEALLOCATE (ARGST)
+        DEALLOCATE (AA)
+        DEALLOCATE (VPLOT)
+        DEALLOCATE (XNTG)
+      END IF
+ 
+      RETURN
       END
+
+
+      SUBROUTINE EIRENE_LININT_REINIT
+c  clarify role of ifirst<0 first.
+      RETURN
+      END
+
+
+       
+
