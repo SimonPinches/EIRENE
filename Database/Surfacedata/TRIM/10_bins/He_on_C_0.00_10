@@ -1,10 +1,10 @@
-He_on_C   
+He_on_C_0.00  also includes: pdf boundaries emin,emax, angmin, angmax....       
+ 
+*  projectile surface binding energy parameter: 0.00 eV     
+*  parameter esbparm only added in first of the 84 blocks
  
  
- 
- 
- 
-    2.   4.00    6.  12.01  1.00E+00  0.00E+00  1.99E-01  2.51E-02    10   0.00
+    2.   4.00    6.  12.01  1.00E+00  0.00E+00  1.99E-01  2.51E-02   0.00E+00   10   0.00
 
   5.53520E-02  6.66540E-02  7.90500E-02  9.24590E-02  1.07230E-01  1.23430E-01  1.41840E-01  1.63610E-01  1.91700E-01  2.35870E-01       5.00000E-02  3.24390E-01
 
