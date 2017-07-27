@@ -37,8 +37,8 @@ C
  
       INTEGER, INTENT(IN) :: IFIRST, JJJ
       REAL(DP), INTENT(IN) :: ZDS, PEN
-      REAL(DP), INTENT(IN OUT) :: PSIG(0:NSPZ+10), TIMAX
-      REAL(DP), INTENT(IN OUT) :: ARGST(0:NSPZ+10,NRAD)
+      REAL(DP), INTENT(IN OUT) :: PSIG(0:), TIMAX
+      REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
       REAL(DP), ALLOCATABLE, SAVE :: ZARG2(:), ZARG3(:)
       REAL(DP) :: ZLAMB(0:NPHOT),EM_RATE(0:NPHOT),
      .            CFLAG(7,MSTOR0)
@@ -47,9 +47,12 @@ C
      .          ZMAX, VXS, VYS, VZS, EIRENE_FPATHPH, 
      .          FAC, RES
       INTEGER :: NCELC, ICELL, IIPL, KK,ICOUNT,IPHT,ISAVE
+      LOGICAL :: LARGST
 c
 c
       DATA ZMAX/40./
+
+      LARGST = SIZE(ARGST,2) >= NSBOX
  
       IF (IFIRST.EQ.0) THEN
         ALLOCATE (ZARG2(0:NPHOT))
@@ -58,9 +61,11 @@ c
           ZARG2(IPHT)=0.
           ZARG3(IPHT)=0.
           PSIG(IPHT)=0.
-          DO 101 ICELL=1,NSBOX
-            ARGST(IPHT,ICELL)=0.
-101       CONTINUE
+          IF (LARGST) THEN
+            DO 101 ICELL=1,NSBOX
+              ARGST(IPHT,ICELL)=0.
+101         CONTINUE
+          END IF
 100     CONTINUE
       ELSEIF (IFIRST.EQ.1) THEN
 C
@@ -146,7 +151,7 @@ C  CONTRIBUTION 3: TO BE WRITTEN
 C         SIGADD= .............
           ARGU=SIGADD
           PSIG(IPHT)=PSIG(IPHT)+ARGU*ATTENU
-          ARGST(IPHT,JJJ)=ARGU*ZEXP3*SQRT(ZEXP2)/4./PIA
+          IF (LARGST) ARGST(IPHT,JJJ)=ARGU*ZEXP3*SQRT(ZEXP2)/4./PIA
 400     CONTINUE
 C
       ELSEIF (IFIRST.EQ.2) THEN

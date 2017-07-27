@@ -14,7 +14,10 @@ C  iflg:  only for .._LONG version, and there only for RPLAM
 C  IFLG = 0  :  do NOT read COMSOU in call RPLAM_LONG
 c  IFLG > 0  :
 
-cdr  NLSHRT13  :  ???  VIA COMMON , MEANING ??  "long vs. short" version ??
+cdr  NLSHRT13  :  VIA COMMON CLOGAU. MEANING: write "long vs. short" version of fort.13
+C                 DEFAULT: FALSE, 
+cdr  EXCEPT:
+cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13. 
  
       SUBROUTINE EIRENE_WRPLAM(TRCFLE,IFLG)
       USE EIRMOD_PRECISION
