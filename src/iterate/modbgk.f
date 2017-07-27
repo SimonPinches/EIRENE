@@ -135,6 +135,7 @@ cdr  assume: constant "extensive" fine grid values IN ALL IRAD within one coarse
       DO IBGV = 1, NBGVI 
         DO IRAD=1,NRAD
           IRD = NCLTAL(IRAD)
+          IF (IRD == 0) CYCLE
           GBGKV(IBGV,IRAD)=BGKV(IBGV,IRD)
         END DO
       END DO
@@ -177,6 +178,7 @@ C  TRY ATOMS
 !pb 05.02.2013  take care of coarse scoring cells
 c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
               IRD = NCLTAL(IRAD)
+              IF (IRD == 0) CYCLE
               PDEN(IRAD)=PDENA(IATM,IRD)
               EDEN(IRAD)=EDENA(IATM,IRD)
             ENDDO
@@ -210,6 +212,7 @@ C  TRY MOLECULES
 !pb 05.02.2013  take care of coarse scoring cells
 c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
               IRD = NCLTAL(IRAD)
+              IF (IRD == 0) CYCLE
               PDEN(IRAD)=PDENM(IMOL,IRD)
               EDEN(IRAD)=EDENM(IMOL,IRD)
             ENDDO
@@ -243,6 +246,7 @@ C  TRY TEST IONS
 !pb 05.02.2013  take care of coarse scoring cells
 c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
               IRD = NCLTAL(IRAD)
+              IF (IRD == 0) CYCLE
               PDEN(IRAD)=PDENI(IION,IRD)
               EDEN(IRAD)=EDENI(IION,IRD)
             ENDDO
@@ -296,6 +300,7 @@ C
             DO IRAD=1,NRAD
 !pb 05.02.2013  take care of scoring cells
               IRD = NCLTAL(IRAD)
+              IF (IRD == 0) CYCLE
               PDEN2(IRAD)=PDENA(IATM2,IRD)
               EDEN2(IRAD)=EDENA(IATM2,IRD)
             ENDDO
@@ -307,6 +312,7 @@ C
             DO IRAD=1,NRAD
 !pb 05.02.2013  take care of scoring cells
               IRD = NCLTAL(IRAD)
+              IF (IRD == 0) CYCLE
               PDEN2(IRAD)=PDENM(IMOL2,IRD)
               EDEN2(IRAD)=EDENM(IMOL2,IRD)
             ENDDO
@@ -318,6 +324,7 @@ C
             DO IRAD=1,NRAD
 !pb 05.02.2013  take care of scoring cells
               IRD = NCLTAL(IRAD)
+              IF (IRD == 0) CYCLE
               PDEN2(IRAD)=PDENI(IION2,IRD)
               EDEN2(IRAD)=EDENI(IION2,IRD)
             ENDDO
