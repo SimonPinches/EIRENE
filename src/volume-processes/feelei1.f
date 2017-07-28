@@ -14,8 +14,8 @@ cdr  done: eelei1 set in xsect... routines.
 !pb  APR   16: eelds -> eelei 
 
       FUNCTION EIRENE_FEELEI1 (IREI,K)
-C  this is the "on the fly" storage saving version to eliminate
-C  pre-computed array EELEI1(irei,k) from with run
+C  this is the "on the fly", storage saving, version to eliminate
+C  pre-computed array EELEI1(irei,k) from this run
 
 cdr  find electron energy loss for EI process no. IREI,  energy in eV
 c    locally in cell K, for process kk= nelrei(irei) 
