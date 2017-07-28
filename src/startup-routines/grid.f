@@ -1,6 +1,6 @@
 C
 c sept 2014 : some indexing unified, comments added.
-c             ngitt (storage for spatial resolution on single surface) now evaluated in calling program input.f 
+c             ngitt (storage for spatial resolution on single surface) now evaluated in calling program input.f
 c
 !pb  3.12.06: allow INDGRD /= 6 for NLTET option
 !pb  3.12.06: specify NGITT in case of NLTET
@@ -8,14 +8,17 @@ c
 !pb 22.03.07: LEVGEO=6 --> LEVGEO=10
 !pb 28.06.10: consistency check for LEVGEO=3 or LEVGEO=4 introduced
 !             stop run if cell side is transparent but no neighbor cell
-!             is defined 
+!             is defined
 !pb   ??      use nrplg rather than np2nd for 1D radial polygons,
 !             to allow 1D levgeo=3 runs
 !dr 17.01.14  test-printout removed, some comments added
-cdr 19.07.16  arguments corrected in call to grid_1 for levgeo=1, 
+cdr 19.07.16  arguments corrected in call to grid_1 for levgeo=1,
 cdr           to allow also there an outer vacuum (void) zone.
 cdr           tested, ok.
- 
+cdr july 17:  initialize NCORNER also in case LEVGEO=10.
+cdr           For several other LEVGEO options NCORNER is set here,
+cdr           for some other is routine sneigh.f (geometry module) 
+
       SUBROUTINE EIRENE_GRID (IND)
 
 C  SET STANDARD GRIDS AND RELATED DATA
@@ -399,7 +402,7 @@ C  SET DERIVED GRID DATA FOR LEVGEO = 4 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
 
-cdr  ncorner: number of cell vertices in case levgeo=4, for FEM interpolation         
+cdr  ncorner: number of cell vertices in case levgeo=4, for FEM interpolation
         NCORNER = NKNOT
 
 !pb initialize list of triangles per gridpoint
@@ -486,7 +489,7 @@ C
 C  INDEX J:            EIRENE SURFACE  (NON DEFAULT, OR ADDITIONAL)
 C  INDEX IT, OR ITRI:  TRIANGLE
 C  INDEX IS:           TRIANGLE SIDE
- 
+
         DO J = 1, NLIMPS
           NSRFTR = COUNT(INMTI(1:3,1:NTRII) .EQ. J)
           IF (NSRFTR > 0) THEN
@@ -496,7 +499,7 @@ C  INDEX IS:           TRIANGLE SIDE
             SURF_TRIAN(J)%BGLT(1) = 0._DP
           END IF
         END DO
- 
+
         LERROR = .FALSE.
         DO IT=1,NTRII
           DO IS = 1, 3
@@ -536,9 +539,9 @@ C  INDEX IS:           TRIANGLE SIDE
               IS = SURF_TRIAN(J)%ITRISI(I)
               IS1 = IS + 1
               IF (IS1 > 3) IS1 = 1
-              DS1 = SQRT((P1(1,J)-XTRIAN(NECKE(IS,IT)))**2 + 
+              DS1 = SQRT((P1(1,J)-XTRIAN(NECKE(IS,IT)))**2 +
      .                   (P1(2,J)-YTRIAN(NECKE(IS,IT)))**2)
-              DS2 = SQRT((P1(1,J)-XTRIAN(NECKE(IS1,IT)))**2 + 
+              DS2 = SQRT((P1(1,J)-XTRIAN(NECKE(IS1,IT)))**2 +
      .                   (P1(2,J)-YTRIAN(NECKE(IS1,IT)))**2)
               IF (DS1 < DP1) THEN
                 DP1 = DS1
@@ -550,17 +553,17 @@ C  INDEX IS:           TRIANGLE SIDE
                 IM = I
                 IMP = NECKE(IS,IT)
               END IF
-            END DO 
+            END DO
             IF ((DP1/SURF_TRIAN(J)%BGLT(NT+1) > 1.D-2)
      .          .OR. (IM*IMP == 0)) THEN
                WRITE (IUNOUT,*) ' PROBLEM FINDING STARTING POINT',
      .                          ' FOR SORTING OF TRIANGLES '
-               WRITE (IUNOUT,*) 
+               WRITE (IUNOUT,*)
      .            ' SORTING ABANDONNED FOR SURFACE NUMBER ',I
                CYCLE
             END IF
 
-! SET FIRST TRIANGLE ALONG SURFACE 
+! SET FIRST TRIANGLE ALONG SURFACE
             IF (IM /= 1) THEN
               IT = SURF_TRIAN(J)%ITRIAS(1)
               IS = SURF_TRIAN(J)%ITRISI(1)
@@ -576,7 +579,7 @@ C  INDEX IS:           TRIANGLE SIDE
             END IF
 
 ! SORT THE TRIANGLES
-            DO I = 2, NT-1            
+            DO I = 2, NT-1
               DO K = I, NT
                 IT = SURF_TRIAN(J)%ITRIAS(K)
                 IS = SURF_TRIAN(J)%ITRISI(K)
@@ -600,7 +603,7 @@ C  INDEX IS:           TRIANGLE SIDE
                    SURF_TRIAN(J)%ITRIAS(I) = SURF_TRIAN(J)%ITRIAS(K)
                    SURF_TRIAN(J)%ITRISI(I) = SURF_TRIAN(J)%ITRISI(K)
                    SURF_TRIAN(J)%ITRIAS(K) = IT
-                   SURF_TRIAN(J)%ITRISI(K) = IS   
+                   SURF_TRIAN(J)%ITRISI(K) = IS
                 END IF
                 IT = SURF_TRIAN(J)%ITRIAS(I)
                 IS = SURF_TRIAN(J)%ITRISI(I)
@@ -622,7 +625,7 @@ C
 163       CONTINUE
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) ' NGITT SET TO ',NGITT
- 
+
           DO J=1, NLIMPS
             WRITE (IUNOUT,*)
             WRITE (IUNOUT,*) ' SURFACE NO. ',J
@@ -646,9 +649,9 @@ C
 C  SET DERIVED GRID DATA FOR LEVGEO = 5 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
-cdr  ncorner: number of cell vertices in case levgeo=5, for FEM interpolation          
+cdr  ncorner: number of cell vertices in case levgeo=5, for FEM interpolation
         NCORNER = NCOORD
- 
+
         DO ITET=1,NTET
           IC1 = NTECK(1,ITET)
           IC2 = NTECK(2,ITET)
@@ -845,6 +848,7 @@ C
       ELSEIF (LEVGEO.EQ.10) THEN
 C
 C  GENERAL GEOMETRY OPTION: NOTHING TO DONE HERE
+        NCORNER=0
 C
       ENDIF
 C
@@ -1060,7 +1064,7 @@ cdr       write (iunout,*) ' area for surface ',ists
               XX1=XX1+RMTOR
               XX2=XX2+RMTOR
               COM=0.5*(XX1+XX2)
-cdr           write (iunout,'(3i6,2es12.4)') 
+cdr           write (iunout,'(3i6,2es12.4)')
 cdr  .            i, ixtri(i), iytri(i), dsd, com
 
               DSD=DSD*COM*TANAL/ALPHA*PI2A
@@ -1341,7 +1345,7 @@ cdr         write (iunout,*) ' area for surface ',nlj
               DO 291 IP=IRPTA(ISTS,2),IRPTE(ISTS,2)-1
                 XS=((XPOL(IR,IP+1)+XPOL(IR,IP))*0.5)+RMTOR
                 SAREA(NLJ)=SAREA(NLJ)+(BGL(IR,IP+1)-BGL(IR,IP))*XS
-cdr             write (iunout,'(2i6,2es12.4)') 
+cdr             write (iunout,'(2i6,2es12.4)')
 cdr  .             ir, ip, BGL(IR,IP+1)-BGL(IR,IP), xs
 291           CONTINUE
               SAREA(NLJ)=SAREA(NLJ)*TANAL/ALPHA*PI2A

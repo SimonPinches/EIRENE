@@ -11,13 +11,14 @@
 cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
+cdr july 17:  comments re. call to user routine: calstr_usr.
 
       SUBROUTINE EIRENE_CALSTR
 cdr
 c
 c  called from MCARLO.f, from within strata loop, at the end of each stratum,
 c  if there are more processors than active strata.
-c  Unclear: if more stata then processors: is it then excluded that still
+c  Unclear: if more strata than processors: is it then excluded that still
 c           there may be strata with more than one processor dealing with them?
 c          
 c  Purpose:
@@ -382,6 +383,7 @@ csw
 
         deallocate(help)
 	    mxdim = max (nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
+
         allocate (lhelp(mxdim))
 
         call mpi_reduce(LOGMOL(0,ISTRA),lhelpm,NMOLI+1,
@@ -406,11 +408,13 @@ csw
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) LOGPLS(0:nplsi,ISTRA) = lhelpp(0:nplsi)
 	
-	    deallocate(lhelp)
+        deallocate(lhelp)
+c
+c  collect user or case specific information from all Pes that worked on
+c  stratum no. ISTRA.  Depends on ...usr.f  or ...cop.f routines.
+c  Strictly there should also be an analogue  call to eirene_calstr_cop.f 
 
         call mpi_barrier(icomgrp(istra),ier)
-cdr: probably redundant?  found nowhere a non-empty version of calstr_usr
-cdr  if yes: remove calstr_usr from all user-directories.
         call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
 
       endif

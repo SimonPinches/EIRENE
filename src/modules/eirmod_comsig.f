@@ -36,7 +36,7 @@
       INTEGER, PUBLIC :: NCTSIG
  
       INTEGER, PUBLIC, SAVE ::
-     I         NCHORI,    NCHORD,    NCHENI
+     I         NCHORI,   NCHENI
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
  
