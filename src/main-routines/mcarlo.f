@@ -493,17 +493,18 @@ c  and otherwise enforces that or stops the run.
 
 c  find random number seed from truely random procedure from wall clock time (use date and time)
         ELSEIF (NINITL(ISTRA).LT.0) THEN
-          CALL DATE_AND_TIME(CDATE,CTIME)
+          CALL DATE_AND_TIME(CDATE,CTIME)  ! a number between 0 and 23:59:59 --> 5.094.060
           READ(CTIME(1:6),*) NINITL(ISTRA)
 !pb 28012016
-!  add number of calls to MCARLO in order to avoid same random seeds
+!  add number of calls to MCARLO in order to avoid same random seeds in very short
+!  cycles with an external code
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
           NINIST=NINITL(ISTRA)
           iseed_istra=ranset_eirene(ninist)
 
         ELSEIF (NINITL(ISTRA).EQ.0) THEN
-C  DON'T INITIALIZE FOR THIS STRATUM, NOTHING TO BE DONE HERE
-C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO SEEDING.
+C  DON'T RE-INITIALIZE RANDOM GENERATOR FOR THIS STRATUM, NOTHING TO BE DONE HERE
+C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO FURTHER SEEDING.
           iseed_istra=ranset_eirene(0)
 
         ENDIF
@@ -674,7 +675,7 @@ CDR       LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL
           LGSTOP = LGLAST
 
 C.......................................................................
-C  CORRELATED SAMPLING: CREATE AS RANDOM NUMBER GENERATOR SEED FOR NEXT PARTICLE
+C  CORRELATED SAMPLING: CREATE A RANDOM NUMBER GENERATOR SEED FOR NEXT PARTICLE
 C  FROM THE SEED USED FOR THE CURRENT PARTICLE
           IF (NLCRR) THEN
 C
@@ -692,7 +693,7 @@ c  then re-initialize with original seed
             iseed_istra=ranget_eirene(iseed_iptsi)
 ! now we have the seed iseed_iptsi to start the histrory.     
 
-C  FOR TEST ONLY TRY FIRST RANDOM NUMBER
+C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
             IF (TRCRNF) THEN
               call eirene_leer(1)
               write (iunout,*) 'new particle ',iptsi
@@ -729,7 +730,7 @@ c  a corresponding multi-processor run.
  
 c  The multiprocessor run must have been set up such that it completed
 c  exactly nptsdel(istra) trajectories on each of the iproc(istra) processors
-c  which ran on stratum istra.
+c  which ran on stratum ISTRA.
 c  The corresponding single processor run must complete exactly 
 c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
  
