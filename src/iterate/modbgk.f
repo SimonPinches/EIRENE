@@ -375,7 +375,7 @@ cdr  Those IRD should not appear here  (hopefully)
 !pb 05.02.2013  take care of scoring cells
 cdr  This is not obvious for additional cells for averaging, e.g. IR=NR1ST, etc..
 cdr  Those IRD should not appear here  (hopefully)
-C              IRD = NCLTAL(I_fine)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
               PDEN2(I_fine)=PDENI(IION2,IRD)
               EDEN2(I_fine)=EDENI(IION2,IRD)

@@ -1,10 +1,10 @@
-D_on_Al   
+D_on_Al_1.00   also includes: pdf boundaries emin,emax, angmin, angmax....       
+ 
+*  projectile surface binding energy parameter: 1.00 eV     
+*  parameter esbparm only added in first of the 84 blocks   
  
  
- 
- 
- 
-    1.   2.01   13.  26.98  1.00E+00  0.00E+00  2.09E-01  7.59E-02    10   0.00
+    1.   2.01   13.  26.98  1.00E+00  0.00E+00  2.09E-01  7.59E-02  1.00E+00    10   0.00
 
   1.19910E-01  2.06990E-01  2.72690E-01  3.28120E-01  3.67440E-01  3.94150E-01  4.23020E-01  4.56300E-01  4.97480E-01  5.61660E-01       2.58380E-04  7.11560E-01
 
