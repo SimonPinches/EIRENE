@@ -539,11 +539,13 @@ c  data for interaction potential
         IF (REACDAT(IR)%LPOT) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
-              ALLOCATE(REACDAT(IR)%POT)
-              NULLIFY (REACDAT(IR)%POT%POLY)
-              NULLIFY (REACDAT(IR)%POT%ADAS)
-              NULLIFY (REACDAT(IR)%POT%LINE)
-              NULLIFY (REACDAT(IR)%POT%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%POT)
+!              NULLIFY (REACDAT(IR)%POT%POLY)
+!              NULLIFY (REACDAT(IR)%POT%ADAS)
+!              NULLIFY (REACDAT(IR)%POT%LINE)
+!              NULLIFY (REACDAT(IR)%POT%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
@@ -552,11 +554,13 @@ c  data for cross sections, cm**2
         IF (REACDAT(IR)%LCRS) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
-              ALLOCATE(REACDAT(IR)%CRS)
-              NULLIFY (REACDAT(IR)%CRS%POLY)
-              NULLIFY (REACDAT(IR)%CRS%ADAS)
-              NULLIFY (REACDAT(IR)%CRS%LINE)
-              NULLIFY (REACDAT(IR)%CRS%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%CRS)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%CRS)
+!              NULLIFY (REACDAT(IR)%CRS%POLY)
+!              NULLIFY (REACDAT(IR)%CRS%ADAS)
+!              NULLIFY (REACDAT(IR)%CRS%LINE)
+!              NULLIFY (REACDAT(IR)%CRS%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS)
@@ -565,11 +569,13 @@ c  data for cross sections, cm**2
 c  data for rate coefficients, cm**3/s
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
-              ALLOCATE(REACDAT(IR)%RTC)
-              NULLIFY (REACDAT(IR)%RTC%POLY)
-              NULLIFY (REACDAT(IR)%RTC%ADAS)
-              NULLIFY (REACDAT(IR)%RTC%LINE)
-              NULLIFY (REACDAT(IR)%RTC%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%RTC)
+!              NULLIFY (REACDAT(IR)%RTC%POLY)
+!              NULLIFY (REACDAT(IR)%RTC%ADAS)
+!              NULLIFY (REACDAT(IR)%RTC%LINE)
+!              NULLIFY (REACDAT(IR)%RTC%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
@@ -578,11 +584,13 @@ c  data for momentum weighted rate coefficients  g cm/s cm**3/s
         IF (REACDAT(IR)%LRTCMW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
-              ALLOCATE(REACDAT(IR)%RTCMW)
-              NULLIFY (REACDAT(IR)%RTCMW%POLY)
-              NULLIFY (REACDAT(IR)%RTCMW%ADAS)
-              NULLIFY (REACDAT(IR)%RTCMW%LINE)
-              NULLIFY (REACDAT(IR)%RTCMW%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%RTCMW)
+!              NULLIFY (REACDAT(IR)%RTCMW%POLY)
+!              NULLIFY (REACDAT(IR)%RTCMW%ADAS)
+!              NULLIFY (REACDAT(IR)%RTCMW%LINE)
+!              NULLIFY (REACDAT(IR)%RTCMW%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
@@ -591,11 +599,13 @@ c  data for energy weighted rate coefficients,  eV cm**3-s
         IF (REACDAT(IR)%LRTCEW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
-              ALLOCATE(REACDAT(IR)%RTCEW)
-              NULLIFY (REACDAT(IR)%RTCEW%POLY)
-              NULLIFY (REACDAT(IR)%RTCEW%ADAS)
-              NULLIFY (REACDAT(IR)%RTCEW%LINE)
-              NULLIFY (REACDAT(IR)%RTCEW%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%RTCEW)
+!              NULLIFY (REACDAT(IR)%RTCEW%POLY)
+!              NULLIFY (REACDAT(IR)%RTCEW%ADAS)
+!              NULLIFY (REACDAT(IR)%RTCEW%LINE)
+!              NULLIFY (REACDAT(IR)%RTCEW%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
@@ -604,11 +614,13 @@ c  other data, such as CR population coefficients
         IF (REACDAT(IR)%LOTH) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
-              ALLOCATE(REACDAT(IR)%OTH)
-              NULLIFY (REACDAT(IR)%OTH%POLY)
-              NULLIFY (REACDAT(IR)%OTH%ADAS)
-              NULLIFY (REACDAT(IR)%OTH%LINE)
-              NULLIFY (REACDAT(IR)%OTH%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%OTH)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%OTH)
+!              NULLIFY (REACDAT(IR)%OTH%POLY)
+!              NULLIFY (REACDAT(IR)%OTH%ADAS)
+!              NULLIFY (REACDAT(IR)%OTH%LINE)
+!              NULLIFY (REACDAT(IR)%OTH%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH)
@@ -617,11 +629,13 @@ c  data for photon line transport
         IF (REACDAT(IR)%LPHR) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%PHR)) THEN
-             ALLOCATE(REACDAT(IR)%PHR)
-              NULLIFY (REACDAT(IR)%PHR%POLY)
-              NULLIFY (REACDAT(IR)%PHR%ADAS)
-              NULLIFY (REACDAT(IR)%PHR%LINE)
-              NULLIFY (REACDAT(IR)%PHR%HYD)
+              CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%PHR)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!              ALLOCATE(REACDAT(IR)%PHR)
+!              NULLIFY (REACDAT(IR)%PHR%POLY)
+!              NULLIFY (REACDAT(IR)%PHR%ADAS)
+!              NULLIFY (REACDAT(IR)%PHR%LINE)
+!              NULLIFY (REACDAT(IR)%PHR%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR)

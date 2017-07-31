@@ -43,9 +43,10 @@ cdr       2.1.8 (recombination) is missing.
 cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef. 
       
 
-        REACDAT(IR)%ETH = 0._DP
-        REACDAT(IR)%RTMAX = 0._DP
-        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!        REACDAT(IR)%ETH = 0._DP
+!        REACDAT(IR)%RTMAX = 0._DP
+!        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
 
         SELECT CASE (ISW)
         CASE (2:4)
@@ -55,26 +56,31 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
             WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)
           END IF
-          ALLOCATE (REACDAT(IR)%RTC)
-          NULLIFY(REACDAT(IR)%RTC%ADAS)
-          NULLIFY(REACDAT(IR)%RTC%LINE)
-          NULLIFY(REACDAT(IR)%RTC%POLY)
-          NULLIFY(REACDAT(IR)%RTC%HYD)
+
+          CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!          ALLOCATE (REACDAT(IR)%RTC)
+!          NULLIFY(REACDAT(IR)%RTC%ADAS)
+!          NULLIFY(REACDAT(IR)%RTC%LINE)
+!          NULLIFY(REACDAT(IR)%RTC%POLY)
+!          NULLIFY(REACDAT(IR)%RTC%HYD)
+
           REACDAT(IR)%LRTC = .TRUE.
           REACDAT(IR)%RTC%IFIT = 5
 
-          REACDAT(IR)%RTC%RC1MIN = 0._DP
-          REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTC%RC2MIN = 0._DP
-          REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTC%FP1L = 0._DP
-          REACDAT(IR)%RTC%FP1R = 0._DP
-          REACDAT(IR)%RTC%FP2B = 0._DP
-          REACDAT(IR)%RTC%FP2T = 0._DP
-          REACDAT(IR)%RTC%JFEX1MN = 0
-          REACDAT(IR)%RTC%JFEX1MX = 0
-          REACDAT(IR)%RTC%JFEX2MN = 0
-          REACDAT(IR)%RTC%JFEX2MX = 0
+!  ALREADY INITIALIZED IN EIRENE_ALLOC_FIT_FORM
+!          REACDAT(IR)%RTC%RC1MIN = 0._DP
+!          REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
+!          REACDAT(IR)%RTC%RC2MIN = 0._DP
+!          REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
+!          REACDAT(IR)%RTC%FP1L = 0._DP
+!          REACDAT(IR)%RTC%FP1R = 0._DP
+!          REACDAT(IR)%RTC%FP2B = 0._DP
+!          REACDAT(IR)%RTC%FP2T = 0._DP
+!          REACDAT(IR)%RTC%JFEX1MN = 0
+!          REACDAT(IR)%RTC%JFEX1MX = 0
+!          REACDAT(IR)%RTC%JFEX2MN = 0
+!          REACDAT(IR)%RTC%JFEX2MX = 0
           
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
@@ -83,26 +89,31 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
             WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)
           END IF
-          ALLOCATE (REACDAT(IR)%RTCMW)
-          NULLIFY(REACDAT(IR)%RTCMW%ADAS)
-          NULLIFY(REACDAT(IR)%RTCMW%LINE)
-          NULLIFY(REACDAT(IR)%RTCMW%POLY)
-          NULLIFY(REACDAT(IR)%RTCMW%HYD)
+
+          CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!          ALLOCATE (REACDAT(IR)%RTCMW)
+!          NULLIFY(REACDAT(IR)%RTCMW%ADAS)
+!          NULLIFY(REACDAT(IR)%RTCMW%LINE)
+!          NULLIFY(REACDAT(IR)%RTCMW%POLY)
+!          NULLIFY(REACDAT(IR)%RTCMW%HYD)
+
           REACDAT(IR)%LRTCMW = .TRUE.
           REACDAT(IR)%RTCMW%IFIT = 5
 
-          REACDAT(IR)%RTCMW%RC1MIN = 0._DP
-          REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCMW%RC2MIN = 0._DP
-          REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCMW%FP1L = 0._DP
-          REACDAT(IR)%RTCMW%FP1R = 0._DP
-          REACDAT(IR)%RTCMW%FP2B = 0._DP
-          REACDAT(IR)%RTCMW%FP2T = 0._DP
-          REACDAT(IR)%RTCMW%JFEX1MN = 0
-          REACDAT(IR)%RTCMW%JFEX1MX = 0
-          REACDAT(IR)%RTCMW%JFEX2MN = 0
-          REACDAT(IR)%RTCMW%JFEX2MX = 0
+!  ALREADY INITIALIZED IN EIRENE_ALLOC_FIT_FORM
+!          REACDAT(IR)%RTCMW%RC1MIN = 0._DP
+!          REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
+!          REACDAT(IR)%RTCMW%RC2MIN = 0._DP
+!          REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
+!          REACDAT(IR)%RTCMW%FP1L = 0._DP
+!          REACDAT(IR)%RTCMW%FP1R = 0._DP
+!          REACDAT(IR)%RTCMW%FP2B = 0._DP
+!          REACDAT(IR)%RTCMW%FP2T = 0._DP
+!          REACDAT(IR)%RTCMW%JFEX1MN = 0
+!          REACDAT(IR)%RTCMW%JFEX1MX = 0
+!          REACDAT(IR)%RTCMW%JFEX2MN = 0
+!          REACDAT(IR)%RTCMW%JFEX2MX = 0
           
         CASE (8:10)
           IF (REACDAT(IR)%LRTCEW) THEN
@@ -111,26 +122,31 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
             WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)
           END IF
-          ALLOCATE (REACDAT(IR)%RTCEW)
-          NULLIFY(REACDAT(IR)%RTCEW%ADAS)
-          NULLIFY(REACDAT(IR)%RTCEW%LINE)
-          NULLIFY(REACDAT(IR)%RTCEW%POLY)
-          NULLIFY(REACDAT(IR)%RTCEW%HYD)
+
+          CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
+!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
+!          ALLOCATE (REACDAT(IR)%RTCEW)
+!          NULLIFY(REACDAT(IR)%RTCEW%ADAS)
+!          NULLIFY(REACDAT(IR)%RTCEW%LINE)
+!          NULLIFY(REACDAT(IR)%RTCEW%POLY)
+!          NULLIFY(REACDAT(IR)%RTCEW%HYD)
+
           REACDAT(IR)%LRTCEW = .TRUE.
           REACDAT(IR)%RTCEW%IFIT = 5
 
-          REACDAT(IR)%RTCEW%RC1MIN = 0._DP
-          REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCEW%RC2MIN = 0._DP
-          REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
-          REACDAT(IR)%RTCEW%FP1L = 0._DP
-          REACDAT(IR)%RTCEW%FP1R = 0._DP
-          REACDAT(IR)%RTCEW%FP2B = 0._DP
-          REACDAT(IR)%RTCEW%FP2T = 0._DP
-          REACDAT(IR)%RTCEW%JFEX1MN = 0
-          REACDAT(IR)%RTCEW%JFEX1MX = 0
-          REACDAT(IR)%RTCEW%JFEX2MN = 0
-          REACDAT(IR)%RTCEW%JFEX2MX = 0
+!  ALREADY INITIALIZED IN EIRENE_ALLOC_FIT_FORM
+!          REACDAT(IR)%RTCEW%RC1MIN = 0._DP
+!          REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
+!          REACDAT(IR)%RTCEW%RC2MIN = 0._DP
+!          REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
+!          REACDAT(IR)%RTCEW%FP1L = 0._DP
+!          REACDAT(IR)%RTCEW%FP1R = 0._DP
+!          REACDAT(IR)%RTCEW%FP2B = 0._DP
+!          REACDAT(IR)%RTCEW%FP2T = 0._DP
+!          REACDAT(IR)%RTCEW%JFEX1MN = 0
+!          REACDAT(IR)%RTCEW%JFEX1MX = 0
+!          REACDAT(IR)%RTCEW%JFEX2MN = 0
+!          REACDAT(IR)%RTCEW%JFEX2MX = 0
           
         CASE DEFAULT
           GOTO 1000         
