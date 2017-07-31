@@ -6,6 +6,7 @@
 !  evaluate for other reactions and return this as "rate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
+!  Only ifit=2 and ifit=3 tested so far. Caution!
 !  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
 !  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
@@ -23,7 +24,8 @@
 !   not lexp:  return rate=log_e(rate coefficient) with rate-coefficient in cm**3/sec
 !   iprshft:   >0: carry out shift in parameter p2, 
 !              currently hard wired: 1e-8. 
-!             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
+!              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.
+!              emissivity.f relies on the current use of iprshft in the tested cases!
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
 !              remove erate in case of ifit=5 and generalize to more cr models.
