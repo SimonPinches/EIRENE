@@ -28,8 +28,7 @@ c  hard wired: density parameter in fit scaled by DSUB=1e-8, done in rate_coeff.
       INTEGER, INTENT(IN) :: IRRC, K
       REAL(DP) :: DEIMIN, ZX, TBRC, PLS,
      .            EIRENE_FTABRC1,
-     .            EIRENE_RATE_COEFF,
-     .            ERATE
+     .            EIRENE_RATE_COEFF
 C      REAL(DP) :: DSUB
       INTEGER :: KK
  
@@ -55,7 +54,7 @@ cdr  automatic cut off at density 1E8: collaps fit to Corona value.
 cdr  DSUB=1e8, recaling of density parameter, done in rate coeff.
 cdr  only valid for AMJUEL fits.
  
-        TBRC = EIRENE_RATE_COEFF(KK,TEINL(K),PLS,.TRUE.,1,ERATE)*
+        TBRC = EIRENE_RATE_COEFF(KK,K,TEINL(K),PLS,.TRUE.,1)*
      .         FACRRC(IRRC,1)
         IF (IFTFLG(KK,2) < 100) TBRC=TBRC*DEIN(K)
  

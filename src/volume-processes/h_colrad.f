@@ -1,3 +1,5 @@
+CPB   AUGUST 17: PRELIMINARY SET E_ALPCR TO 1.5*TEMP*ALPCR
+c
 cdr:  April 17: syncronized with version from solps-iter: spelling errors in comments,
 cdr             use EIRMOD_PRECISION instead of real*8 
 cdr             (this may complicate stand alone use, outside eirene)
@@ -24,7 +26,6 @@ C   ASSUME: SLOWLY EVOLVING SPECIES: H,H+
 C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
-C   ICELL     : CELL NUMBER, ONLY NEEDED IN CASE OF CALLS FROM INSIDE EIRENE TRANSPORT CODE.
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
 C   Q_EXT(N): ???   ->  H*(N)  external source, e.g. molecules, or photo-excitation
@@ -52,7 +53,7 @@ c   hence: taken times "densel"
 c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
-      SUBROUTINE EIRENE_H_COLRAD (ICELL,TEMP, DENSEL, Q_EXT, 
+      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, 
      .                            POP0, POP1, POP2,
      .                            ALPCR, SCR, SCR_EXT,
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
@@ -62,7 +63,6 @@ C***********************************************************************
       IMPLICIT NONE
  
 C--------- ATOMIC PARAMETER ------------------------------------------
-      INTEGER, INTENT(IN) :: ICELL
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
       REAL(DP), INTENT(IN) :: Q_EXT(40)
 
@@ -140,6 +140,12 @@ C  EFFECTIVE ELECTRON COOLING RATES
      &              E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
 C
  
+
+CPB  !!!!!!!!!!! PRELIMINARY  !!!!!!!!!!!!!!!
+
+      E_ALPCR = -1.5_DP * TEMP * ALPCR
+
+CPB  !!!!!!!!!!! PRELIMINARY  !!!!!!!!!!!!!!!
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
       RETURN
@@ -1358,7 +1364,8 @@ c               exp(-t)/t dt
       REAL(DP) EIRENE_MMDEI
       X=S
       Y=ABS(X)
-      Z=0.25D0+0*Y
+!pb      Z=0.25D0+0*Y
+      Z=0.25D+0*Y
       IF(Z-1.0D0)11,11,12
    11 VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-.11703642D-
      1 6)*Z+.585911692D-6)*Z-.2843937873D-5)*Z+.1284394756D-4)*Z-.547380

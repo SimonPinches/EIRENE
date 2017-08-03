@@ -60,7 +60,7 @@ C
      .            EFLAG, EIRENE_FEHVPI3, 
      .            EIRENE_FEELPI1,
      .            EIRENE_ENERGY_RATE_COEFF, 
-     .            EI, EA, EN, ERATE, TB, TII,
+     .            EI, EA, EN, TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEPI4, NSEPI5, NEND, J, IO, IA, 
      .           ITYP1, ISPZ1, INUM1,
@@ -265,7 +265,7 @@ C           NEND=1
             DO 145 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABPI3(IRPI,J,1)=COU*DIIN(IPL,J)*FACTKK
 145         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
@@ -308,7 +308,7 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
                 
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -439,7 +439,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 EPLPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF
-     .                          (KREAD,TII,
+     .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
@@ -533,7 +533,7 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.WEIGHTED RATE(TI)
             DO 202 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                EHVPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,
+                EHVPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
      .                           TII,0._DP,.TRUE.,0)*
      .          DIIN(IPL,J)*FACTKK/(TABPI3(IRPI,J,1)+EPS60)
 202         CONTINUE

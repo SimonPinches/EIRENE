@@ -110,7 +110,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
      .            TEI, DEJ, BOLTZFAC, RCORONA, RCOLRAD,
      .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX,
-     .            RC2MIN, RC2MAX, ERATE
+     .            RC2MIN, RC2MAX
       REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:)
@@ -376,8 +376,7 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
           DO IR=1,NSURF
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-            RCORONA = EIRENE_RATE_COEFF(NREACI+1,TEF,0._DP,.TRUE.,
-     .                                    0,ERATE)
+            RCORONA = EIRENE_RATE_COEFF(NREACI+1,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s)

@@ -43,14 +43,14 @@ cdr           reaction scaling factor factkk removed from bremsstrahlung
       ELSE IF (KK > 0) THEN
  
         IF (JELRRC(IRRC) == 1) THEN
-          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),0._DP,.FALSE.,0)
+          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.FALSE.,0)
           ELRC=ELRC+FACRRC(IRRC,2)
           ELRC=EXP(MAX(-100._DP,ELRC))
           EIRENE_FEELRC1=-ELRC*DEIN(K)
         ELSE
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
-          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
+          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.FALSE.,1)
           EE=MAX(-100._DP,ELRC+DEINL(K)+FACRRC(IRRC,2))
           EIRENE_FEELRC1=-EXP(EE)
         END IF

@@ -73,7 +73,7 @@ C
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, CHRDIF,
      .            ADDT, ADDTL, TMASS, PMASS, COU, 
      .            EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII,
+     .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2, KREAD,
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
@@ -199,7 +199,7 @@ C       NEND=1
           DO 245 J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
 245       CONTINUE          
         ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
@@ -244,7 +244,7 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
         IF (NSTORDR >= NRAD) THEN                
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -383,7 +383,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 EPLCX3(IRCX,J,1)=EIRENE_ENERGY_RATE_COEFF
-     .                          (KREAD,TII,
+     .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN

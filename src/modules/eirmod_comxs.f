@@ -91,7 +91,7 @@ cdr  The extrapolation options are now made available generally, for all typs of
       END TYPE HYDKIN_DATA
 
       TYPE COLRAD_DATA
-        INTEGER :: IFLAV
+        INTEGER :: IFLAV, IVARST
       END TYPE COLRAD_DATA
  
       TYPE FIT_FORMS
@@ -260,9 +260,11 @@ c  ...and cummulated distributions thereof, for species sampling
      I IBGKA (:,:), IBGKM (:,:), IBGKI (:,:), IBGKPH (:,:)
  
       INTEGER, PUBLIC, SAVE ::
-     I NREACI
+     I NREACI, NHCOL_STORE
 
       INTEGER, PUBLIC, SAVE :: MAXSPC(0:4)
+      
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: M_HCOL(:)
  
       CHARACTER(50), PUBLIC, ALLOCATABLE, SAVE :: REAC_NAME(:)
  
@@ -438,10 +440,12 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
         ALLOCATE (REACDAT(-11:NREAC))
         ALLOCATE (REACLINES(NREAC_LINES))
 
+        ALLOCATE (M_HCOL(NREAC))
+
         MEM = (NSTORV+NAMF)*8_IL + (MAMF+
      .                      9_IL*(NATM+NMOL+NION)+4_IL*NPLS+
      .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
-     .                      NREAC*LEN(REAC_NAME(1))
+     .                      NREAC*LEN(REAC_NAME(1)) + NREAC*4_IL
  
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
@@ -912,6 +916,8 @@ c
 !pb      DEALLOCATE (REACDAT)
       CALL EIRENE_FREE_REACDAT
       DEALLOCATE (REACLINES)
+
+      DEALLOCATE (M_HCOL)
  
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMXS
@@ -1103,6 +1109,9 @@ cdr  ical=2:  ??
         END DO
  
         IRLINES = 0
+
+        NHCOL_STORE = 0
+        M_HCOL = 0
  
       ELSE IF (ICAL == 2) THEN
  

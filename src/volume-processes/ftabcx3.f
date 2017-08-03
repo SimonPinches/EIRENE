@@ -31,7 +31,7 @@ cdr  hard wired: cut off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
  
       INTEGER, INTENT(IN) :: IRCX, K
       REAL(DP) :: EIRENE_FTABCX3, DEIMIN, TII, PLS, TBCX, 
-     .            EIRENE_RATE_COEFF, ERATE
+     .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
  
       TBCX=0.D0
@@ -49,7 +49,7 @@ cdr  :  check these next lines are only for modcol=1 !
 c  erate: not needed (only intermediate for H-COL option. Remove ! 
 c  input parameters for rate_coeff: ln(Ti), ln(ne)
 c 
-      TBCX = EIRENE_RATE_COEFF(KK,TII,PLS,.TRUE.,0,ERATE)*
+      TBCX = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,0)*
      .       FACRCX(IRCX,1)
       IF (IFTFLG(KK,2) < 100) TBCX = TBCX*DIIN(IPLS,K)
  

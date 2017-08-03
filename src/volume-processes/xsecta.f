@@ -48,7 +48,7 @@ C
  
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, CHRDF0, EELEC, RMASS, DEIMIN, EHEAVY,
-     .            EBULK, COU, EIRENE_RATE_COEFF, ERATE,
+     .            EBULK, COU, EIRENE_RATE_COEFF, 
      .            TMASS, PMASS   ! FOR DEFAULT CX MODEL 
 
       INTEGER :: NTE, ISTORE, ISCND, ISCDE, IFRST,
@@ -156,8 +156,7 @@ c  default electron impact ionization process for He atoms: kk = -11
 C
           IF (NSTORDR >= NRAD) THEN
             DO 80 J=1,NSBOX
-              COU = EIRENE_RATE_COEFF(ISTORE,TEINL(J),0._DP,.TRUE.,
-     .                                0,ERATE)
+              COU = EIRENE_RATE_COEFF(ISTORE,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
 80          CONTINUE
 C  NO RADIATION LOSS INCLUDED

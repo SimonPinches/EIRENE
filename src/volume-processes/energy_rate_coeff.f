@@ -16,7 +16,7 @@ cdr  26.11.15: additional parameter IC in call to H_colrad,
 cdr            for later use to identify "visited cells"
 cdr  sept. 16: started to add extrapolation options. not ready....
 
-      function EIRENE_energy_rate_coeff (ir, p1, p2, lexp, iprshft)
+      function EIRENE_energy_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
      .                            result (erate)
 
 !  evaluate energy weighted rate coefficient, eV/s per incident particle,
@@ -59,23 +59,20 @@ cdr  sept. 16: started to add extrapolation options. not ready....
  
       implicit none
  
-      integer, intent(in) :: ir, iprshft
+      integer, intent(in) :: ir, ic, iprshft
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
 
       real(dp) :: erate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max,
-     .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
-     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
+     .                 rrc2min, rrc2max, e_scr
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
      .                  dsub    = 18.420680744_dp,      !ln(1e8), hard wired. But should come from database
      .                  xlnelch =-43.2777390821         !ln(elcha) 
-      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ic,ip1,ip2
+      integer :: ip1, ip2, iflavor, ivar 
 
       interface
         function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
@@ -202,7 +199,7 @@ cdr this unit conversion must be wrong in case lexp !!
 
 c..............................................................
   
-      else if (reacdat(ir)%rtc%ifit == 4) then
+      else if (reacdat(ir)%rtcew%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
@@ -222,28 +219,21 @@ c..............................................................
  
 ! INTERNAL COLLISION RADIATIVE CODE
  
-        if (.not.allocated(pop0)) then
-          allocate(pop0(40))
-          allocate(pop1(40))
-          allocate(pop2(40))
-
-          allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
-        end if
- 
-        Q_EXT = 0._DP
-
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        CALL EIRENE_H_COLRAD(IC,PP1, PP2 ,Q_EXT,POP0,POP1,POP2,
-     .                ALPCR,    SCR,    SCR_EXT,
-     .                E_ALPCR,  E_SCR,  E_SCR_EXT,
-     .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
+        
+        iflavor = reacdat(ir)%rtcew%crm%iflav
+        ivar = reacdat(ir)%rtcew%crm%ivarst
+
+        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, E_SCR)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
  
+!pb e_scr > 0  ! corrected Aug. 2nd 2017
+!pb        IF (.NOT.LEXP) erate = log(-e_scr)
         IF (.NOT.LEXP) erate = log(-e_scr)
-        IF (LEXP)      erate = -E_SCR
+        IF (LEXP)      erate = -e_scr
  
       end if
  

@@ -58,7 +58,7 @@ C
      .          FACT2, RMAS2, A, FACT1, RMAS1, RESE, RESM, TBEL, DOLD,
      .          DEL, PLS, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
      .          RM1, RM2, TCSUM, !VK
-     .          EIRENE_RATE_COEFF, ERATE
+     .          EIRENE_RATE_COEFF
       INTEGER :: ITYP1(NPLS), ITYP2(NPLS), ISPZ1(NPLS), ISPZ2(NPLS),
      .           IREL1(NPLS), INRC1(NPLS),CROSSINDEX(NPLS),NCROSS,
      .           ICROSS1,ICROSS2,ICROSS     
@@ -382,7 +382,7 @@ C
 cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
                 PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-                TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+                TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 81            CONTINUE
@@ -442,7 +442,7 @@ C
 cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
             PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+            TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 91        CONTINUE
@@ -525,7 +525,7 @@ C
 cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
                 PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-                TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+                TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 181           CONTINUE
@@ -592,7 +592,7 @@ C
 cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
             PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+            TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 191       CONTINUE
