@@ -83,6 +83,7 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CESTIM , ONLY: LEA
+      USE EIRMOD_CTRCEI , ONLY: TRCAMD
  
       IMPLICIT NONE
  
@@ -286,7 +287,8 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
@@ -395,7 +397,8 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
@@ -465,7 +468,8 @@ cdr         endif
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELRCX(IRCX)
@@ -544,7 +548,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT
               KK=NREAEL(IREL)
@@ -625,7 +630,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELREL(IREL)

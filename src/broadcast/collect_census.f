@@ -189,8 +189,8 @@ c  cummulated number of scores, and atomic flux, summed from all PEs.
 
         itotal = nprnl
 
-        allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
-!pb        allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1 !pb nein!
+cdr     allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
+        allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1
 
         if (my_pe == 0) then
           rpselect(-1) = 0._dp

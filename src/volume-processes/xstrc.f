@@ -5,8 +5,8 @@ cdr  currently this routine is not called
  
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr
-cdr  to replace ph_xsectp, as called from XSECTP.F,
-cdr  prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
+cdr  to replace ph_xsectp, as called from XSECTP.F.
+cdr  Prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
 cdr  e.g.                                    H+    +  e   --> H    (+ rad.)
 cdr  e.g.                                    H(n=2)       --> Ly-alpha (+H(n=1))
 cdr

@@ -46,6 +46,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
+      use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
  
       implicit none
@@ -117,7 +118,8 @@ c  extrapolation data:  for 1d polynomial fits
         jfex1mx = reacdat(ir)%rtc%jfex1mx
  
         rate = eirene_sngl_poly(reacdat(ir)%rtc%poly%dblpol(1:9,1),
-     .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx)
+     .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
+     .                   trcamd)
 
 C       if (.not. lexp)  rate=rate
         if (lexp)        rate = exp(max(-100._dp,rate))
@@ -156,7 +158,8 @@ cdr     write (6,*) 'particle rate '
         call EIRENE_dbl_poly
      .       (reacdat(ir)%rtc%poly%dblpol,p1,pp2,rate,dum,
      .        rc1min,  rc1max,  fp1, jfex1mn, jfex1mx,
-     .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx)
+     .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx,
+     .        trcamd)
 
 C       if (.not. lexp)  rate=rate
         if (lexp)        rate = exp(max(-100._dp,rate))
