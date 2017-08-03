@@ -86,7 +86,7 @@ C
               TE=TEIN(NCELL)
               DE=DEIN(NCELL)
               
-!pb              DEF=LOG(DE*1.D-8)
+!WZ           DEF=LOG(DE*1.D-8)
               DEF=LOG(DE)
               TEF=LOG(TE)
 
@@ -121,6 +121,8 @@ C
               end do
              
 !              rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,0,ERATE)
+!WZ:          iprshft = 1 relies on the current other_rate_coeff.f version,
+!WZ:          where this flag is only applied to 2D fits!
               rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,1,ERATE)
               add = rate*density(1)
 
