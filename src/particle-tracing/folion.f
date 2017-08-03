@@ -1407,24 +1407,29 @@ C
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
 C  ???
-        IF (LDAMCEL(NCELL)) GOTO 9912
-!pb for the time being
-cdr:  try to distuingish: transparent or not. use arrays "transp(ispz...) dafuer
+        IF (LDAMCEL(NCELL)) GOTO 9912  ! damaged cell, stop particle
+
+cdr:  try to distuingish: transparent or not. Use arrays "transp(ispz...) 
 cdr:  indf=1: transparent, indf=2: non-transparent
+
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 cdr  for solid surface: produce a full cartesian velocity vector, lcart=.true.  
         indf=2
 cdr  for transparent surface: stick to reduced (GC) velocity, lcart=false
-cdr:  here: if any of "transp" flags ne. zero ???
+cdr: check here: are any of "transp" flags ne. zero ???
         if (abs(transp(ispz,1,msurf))+abs(transp(ispz,2,msurf)) > 0)
+cdr  what about other transparency options: iliin < 0 here ?
+cdr  perhaps for those code segment 380 ...ff and call to escape is not reached?
      .     indf = 1
 c
+c  add gyro velocity (with random phase) to GC velocity:
         ICOUN=0
         DO
 !pb       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-C  DOES THE PARTICLE SPEED UNIT VECTOR POINT TOWARDS THE SURFACE ?
+C  DOES THE PARTICLE SPEED UNIT VECTOR NOw POINT TOWARDS THE SURFACE ?
+          IF (.NOT.LGPART) EXIT  ! DON'T CARE ABOUT GYRO MOTION, ABSORBED PARTICLE ANYWAY
           IF (COSIN.GT.0.) EXIT
 C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1

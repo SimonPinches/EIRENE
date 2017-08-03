@@ -7,6 +7,8 @@
 !pb  18.04.08: typo corrected: NLSRFZ => NLSRFY in ELSEIF (IDIMM==3) block
 !pb  25.07.07: periodicity in y-direction for LEVGEO=3 introduced
 !pb  07.07.09: setting of NLSRFA added
+cdr  29.07.17: added lgpart=false on absorbing surfaces (otherwise problems
+cdr            with trace ions onto absorbing surfaces. corresponding fix in folion. 
 C
       SUBROUTINE EIRENE_STDCOL (ISTS,IDIMM,SG,*,*)
 C
@@ -129,8 +131,15 @@ C
       ENDIF
 C
       IWEI=ILSIDE(MSURF)*ICOS
-!pb      IF (IWEI.LT.0) GOTO 300
-      IF (ILIIN(MSURF).EQ.2) GOTO 400
+!pb   IF (IWEI.LT.0) GOTO 300  
+
+cdr 
+cdr: july 17: by removing this statement from here
+cdr           the ilside options for geometry debugging are partially disabled
+cdr           at least for absorbing surfaces, for which now code segment 300...ff is
+cdr           bypassed.  
+
+      IF (ILIIN(MSURF).EQ.2) GOTO 400  ! ABSORPTION
 C
 C  OPERATE A SWITCH
 C
@@ -702,10 +711,11 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
       ENDIF
 C
 C  ABSORBING SURFACE
-C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0)
+C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0 HERE), AND STOP THEN.
 C
 400   CONTINUE
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+      LGPART=.FALSE.
       RETURN 2
 C
 500   CONTINUE
