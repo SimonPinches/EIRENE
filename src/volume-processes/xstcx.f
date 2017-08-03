@@ -62,6 +62,7 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CZT1
       USE EIRMOD_COMXS
+      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
 
@@ -227,7 +228,8 @@ c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd) 
               TABCX3(IRCX,J,1:9) = CF(1:9)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
           END DO
@@ -405,7 +407,8 @@ c old
                 rp => reacdat(KREAD)%rtcew%poly
                 call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd)
 
 
                 EPLCX3(IRCX,J,1:9) = CF(1:9)

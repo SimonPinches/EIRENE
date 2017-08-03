@@ -14,11 +14,12 @@ cdr   jan .17: modcol(5,0,irel):  flag for differential cross section model, rat
 !              modcol(5,0,irel)=0   : isotropic in COM, assume: the cross section
 !                                     and rate coefficients are "diffusion" cross section,
 !                                     and rate coefficients, respectively.
-!              modcol(5,0,irel)=1   : interaction potential is given via fit parameters
+!              modcol(5,0,irel)=1,2,...: interaction potential is given via fit parameters
 cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) directly.
-cdr                      Reaction identifyer KK is defined twice, within same routine veloel.
-cdr                      This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
-cdr                      and by providing the potential p(1:9,irel) here, rather than in veloel.                   
+
+cdr     Reaction identifyer KK is defined twice, within same routine veloel.
+cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
+cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.                   
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
@@ -52,6 +53,7 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CZT1
       USE EIRMOD_COMXS
+      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
 
@@ -64,7 +66,7 @@ C
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
-     .           IBGK,ISPECB,ISPZB,ITYPB
+     .           IBGK,ISPZB,ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
@@ -163,7 +165,8 @@ c old
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd)
 
               TABEL3(IREL,J,1:9) = CF(1:9)
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
@@ -310,8 +313,8 @@ c old
                 rp => reacdat(KREAD)%rtcew%poly
                 call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
-
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd)
 
                 EPLEL3(IREL,J,1:9) = CF(1:9)
                 EPLEL3(IREL,J,1) = EPLEL3(IREL,J,1)+DIINL(IPL,J)+ADDL
@@ -373,14 +376,14 @@ C
       WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL)
 C
       IF (NPBGKP(IPL,1).NE.0) THEN
+        IBGK=NPBGKP(IPL,1)
         WRITE (iunout,*) 'THIS IS ALSO BGK COLLISION NO. IBGK= ',IBGK
         MODCOL(5,0,IREL)=-1
         IF (NPBGKP(IPL,2).EQ.0)
      .      WRITE (iunout,*) 'SELF COLLISION      ' 
         IF (NPBGKP(IPL,2).NE.0) THEN
-          ISPECB=NPBGKP(IPL,2)
-          ITYPB=EIRENE_IDEZ(ISPECB,1,3)
-          ISPZB=EIRENE_IDEZ(ISPECB,3,3)
+          ITYPB=EIRENE_IDEZ(NPBGKP(IPL,2),1,3)
+          ISPZB=EIRENE_IDEZ(NPBGKP(IPL,2),3,3)
           IF (ITYPB.EQ.1)
      .      WRITE (iunout,*) 'CROSS COLLISION WITH ATOM     ',ISPZB
           IF (ITYPB.EQ.2)

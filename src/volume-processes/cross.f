@@ -36,6 +36,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CTRCEI, ONLY: TRCAMD
  
       IMPLICIT NONE
  
@@ -77,7 +78,8 @@ C  FILL CROSS SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           FP(4:6) = RPC%FP1R
           EXPO = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
      .                            RPC%RC1MIN,RPC%RC1MAX,FP,
-     .                            RPC%JFEX1MN,RPC%JFEX1MX)
+     .                            RPC%JFEX1MN,RPC%JFEX1MX,
+     .                            TRCAMD)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
  
           EIRENE_CROSS = EIRENE_CROSS*FACT

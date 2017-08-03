@@ -33,6 +33,7 @@ cdr  Nov  16:  nmds --> nmei,  nids --> niei.
 cdr  Nov  16:  mxcolls --> mstor0
 cdr  Jan  17:  only comments
 cdr  July 17:  bug fix: dimensioning of LCUT(0:N2NDPLGS) corrected
+cdr            remove NCHORD (is: NCHOR)
 
       SUBROUTINE EIRENE_BROADCAST
       USE EIRMOD_PRECISION
@@ -246,8 +247,7 @@ c     ------------------------------------------------------------     c
         CALL MPI_BCAST (ENERGY,NCHEN,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ICMSIG,MCMSIG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       END IF
-      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NCHORD,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (RCMSOU,NOMSOU,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -838,7 +838,7 @@ cdr dimensioning of LCUT array corrected:
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TXTSOU,72*NSTRA,MPI_CHARACTER,
      .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (TXTSIG,72*NCHORD,MPI_CHARACTER,
+      CALL MPI_BCAST (TXTSIG,72*NCHOR,MPI_CHARACTER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TXTTLW,72*N2MX*NTALS,MPI_CHARACTER,
      .                0,MPI_COMM_WORLD,ier)

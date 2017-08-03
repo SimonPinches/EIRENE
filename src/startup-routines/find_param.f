@@ -30,6 +30,7 @@ cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCO
 cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures,
 cdr                              multiple ion velocities in case of BGK non-lin. colisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
+c               move nrad=... after call to if0prm, because of emc3 coupling
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -524,8 +525,6 @@ C
         READ (IUNIN,6666) NRADD
         NADD = MAX(NADD,NRADD)
       ENDIF
-
-      NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
 
 C  FIND START OF NEXT INPUT BLOCK: 3A
 
@@ -1353,12 +1352,14 @@ C
         NCPVI=0
         CALL EIRENE_IF0PRM(IUNIN,IUNOUT)
       ENDIF
+
+cdr  some parameters may have gotten changed in IF0PRM,  case specific
       NAIN = MAX(NAIN,NAINI)
       NCPV = MAX(NCPV,NCPVI)
 
-C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
-      IF (NSTRAI == 1) NSMSTRA = 0
- 
+cdr  due to these changes there, also some derived storage parmeters may have changed....
+      NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
+
       REWIND IUNIN
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'AUTOMATTED STORAGE SETTING (FIND_PARAM.F)'

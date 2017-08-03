@@ -55,6 +55,7 @@ cdr  sept. 16: started to add extrapolation options. not ready....
       use EIRMOD_parmmod
       use EIRMOD_comxs
       use EIRMOD_ccona
+      use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
  
       implicit none
@@ -130,7 +131,8 @@ c  extrapolation data: for 1d polynomial fits
         jfex1mx = reacdat(ir)%rtcew%jfex1mx
  
         erate = eirene_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
-     .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx)
+     .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                           trcamd)
 
 C       if (.not. lexp)  erate=erate
         if (lexp)        erate = exp(max(-100._dp,erate))
@@ -169,7 +171,8 @@ cdr     write (6,*) 'energy rate '
         call EIRENE_dbl_poly
      .       (reacdat(ir)%rtcew%poly%dblpol,p1,pp2,erate,dum,
      .        rc1min,  rc1max,  fp1, jfex1mn, jfex1mx,
-     .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx)
+     .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx,
+     .        trcamd)
 
 C       if (.not. lexp)  erate=erate
         if (lexp)        erate = exp(max(-100._dp,erate))

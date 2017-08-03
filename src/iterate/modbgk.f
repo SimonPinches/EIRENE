@@ -1,24 +1,38 @@
-c   modbgk  eirene_git, sept.2014
+c   modbgk  FZJ-MASTER, eirene_git, sept. 2014
 
 C       ??     INDIRECT SPECIES INDEXING IPLSV, IPLSTI INCLUDED, FOR TIIN and VXIN,VYIN,VZIN  
-CDR            This is risky, because bgk collisions may then overwrite temperatures/velocities for non-bgk background
+CDR            This is risky, because bgk collisions
+cdr            may then overwrite temperatures/velocities for non-bgk background
 CDR            depending on setting of MPLSTI(ipls) and MPLSV(ipls) arrays.
 cdr            in case of bgk: always multiple temperatures and multiple flow velocities.
+ 
+cdr  tbd:  implement corresponding check.
+
 c         
 c  to be done: cross temperature correction (Kotov)  (already done in solps-iter part)
-C              HERE: ALLOCATION, DEALLOCATION: DONE
+C              HERE: ALLOCATION, DEALLOCATION: DONE, but not used
 c
 !pb  24.11.06: flag for shifting of first parameter of rate-coeff introduced
 !pb  24.11.06: BZIN initialized with 1
-
+C
 !pb  05.04.11: BFIN initialized with 1
 !pb  18.02.13: take index transformation via NCLTAL into account
-cdr
-C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER GRID CELL NCELL,
+
+
+cdr 29.08.15 :  CROSSTEMP WAS INTRODUCED BY VK SO THAT different
+c               EFFECTIVE COLLISION RATE IS EVALUATED 
+c               WITH THIS EEFECTIVE TEMPERATURE
+c               this appears to be another option for the 5th (free) 
+c               bgk model parameter, to match certain transport coefficients.
+c               (the other 4 are fixed by conservation laws.
+c
+cdr  june 2017: revisited:
+c  multigrid option (NCLTAL):
+c  if not NCLTAL (I) = I everywhere, then we have two grids, grid structures 
+C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER (SCORING) GRID CELL NCELL,
 C                   NCELL=NCLTAL(I-FINE)
 C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
-cdr  29.08.15:  CROSSTEMP WAS INTRODUCED BY VK SO THAT NEW EFFECTIVE COLLISION RATE IS EVALUATED 
-c               WITH THIS EEFECTIVE TEMPERATUR
+c               
 C
       SUBROUTINE EIRENE_MODBGK
 
@@ -49,25 +63,31 @@ C
      .                       PDEN2(:), EDEN2(:), ENERGY(:,:),
      .                       CROSSTEMP(:,:)
 !pb 05.02.2013
-      REAL(DP), ALLOCATABLE :: GBGKV(:,:)
+      REAL(DP), ALLOCATABLE :: GBGKV(:,:)  ! TALLIES SCORED FOR BGK RELAXATION
+
+CDR THESE TALLIES bgkv ARE SCORED IN (COARSER) SCORING GRID.
+C   ITERATION IS ON TALLIES DEFINED ON FINER GRID.
+C   IF ONLY ONE GRID IS USED: NCLTAL(ICELL)=ICELL ALWAYS, AND
+C   GBGKV == BGKV EVERYWHERE               
 
       REAL(DP) :: RATM(3)
       REAL(DP) :: VXIN1, VXIN2, VYIN1, VYIN2, VZIN1, VZIN2, VYMIX, T1,
      .          T2, ED1, ED2, VXMIX, VZMIX, DELX, DELY, DELZ, VX, VY,
      .          VZ, EOLD, ED, RM, FACTKK, TMIX, EBULK, TS1, DS1,
-     .          FACT2, RMAS2, A, FACT1, RMAS1, RESE, RESM, TBEL, DOLD,
+     .          FACT2, RMAS2, A_ROBIN, FACT1, RMAS1, 
+     .          RESE, RESM, TBEL, DOLD,
      .          DEL, PLS, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
      .          RM1, RM2, TCSUM, !VK
      .          EIRENE_RATE_COEFF, ERATE
       INTEGER :: ITYP1(NPLS), ITYP2(NPLS), ISPZ1(NPLS), ISPZ2(NPLS),
      .           IREL1(NPLS), INRC1(NPLS),CROSSINDEX(NPLS),NCROSS,
      .           ICROSS1,ICROSS2,ICROSS     
-      INTEGER :: J, IESTM,
+      INTEGER :: J, IESTM, IBGV, 
      .           ISCDE, IAIN, IPLS1, NRWK1, I, ISP, IPLS2, IATM2, IIEL,
      .           IAEL, IMEL, IUP12, IUP22, IION2, IBGK2, IMOL2, IUP2,
-     .           IUP3, IUP1, IBGK1, IP, NRC, IRAD, IR, IT, IREL,
+     .           IUP3, IUP1, IBGK1, IP, NRC,  IR, IT, IREL,
      .           KK, NXM, NYM, NZM, IUP32, IPLSTI, IPLSTI1, IPLSTI2,
-     .           IPLSV, IRD, IBGV !pb
+     .           IPLSV, IRD, I_FINE, IRAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LMARK(NPLS)
       LOGICAL :: TRCSAV
@@ -77,12 +97,16 @@ C
       WRITE (iunout,*) 'MODBGK CALLED AFTER ITERATION IITER= ',IITER
       CALL EIRENE_LEER(3)
 C
-      A=1.D0/REAL(IITER,KIND(1.D0))
+cdr  FOR STOCH. APPROX. UNDERRELAXTION.  NOT IN USE
+      A_ROBIN=1.D0/REAL(IITER,KIND(1.D0))
 
+c  iterate on tallies from "sum over strata".
       ISTRA=0
       IF (NSTRAI.EQ.1.AND.IESTR.EQ.1) ISTRA=1
+c
+c read output tally data, sum over strata
       IF (ISTRA.EQ.IESTR) THEN
-C  NOTHING TO BE DONE
+C  NOTHING TO BE DONE, DATA ARE ALREADY FOR "SUM OVER STRATA"
       ELSEIF (NFILEN.NE.0) THEN
         IESTR=0
         CALL EIRENE_RSTRT(0,NSTRAI,NESTM1,NESTM2,NADSPC,
@@ -99,9 +123,21 @@ C  NOTHING TO BE DONE
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-      if (nbmlt.gt.1) then
-        write (iunout,*) 'option not ready in modbgk '
+      if (NBMLT.gt.1) then
+        write (iunout,*) 'NBMLT-option not ready in MODBGK '
         call EIRENE_exit_own(1)
+      endif
+      if (any(MPLSTI(1:npls) /= (/(i,i=1,npls)/))) then
+        write (iunout,*) 'MPLSTI-option not ready in MODBGK '
+        call EIRENE_exit_own(1)
+      endif
+      if (any(MPLSV(1:npls) /=  (/(i,i=1,npls)/))) then
+        write (iunout,*) 'MPLSV-option not ready in MODBGK '
+        call EIRENE_exit_own(1)
+      endif
+      if (any(NCLTAL(1:nrad) /=  (/(i,i=1,nrad)/))) then
+        write (iunout,*) 'NCLTAL-option perhaps ready in MODBGK '
+c       call EIRENE_exit_own(1)
       endif
 C
       NBLCKA=0
@@ -124,25 +160,27 @@ C    "CROSS-COLLISION TEMPERATURE" CORRECTION
       ICROSS=0 !VK COUNTER
 CVK END
 
-!pb 05.02.2013  take care of scoring cells
-
-cdr  set bgk volume averaged tallies BGKV, which had been scored on goarse grid, 
-CDR  now also on fine grid
-cdr  assume: constant "extensive" fine grid values IN ALL IRAD within one coarse grid cell IRD
+cdr  set bgk volume averaged tallies BGKV, which MAY HAVE been scored on goarser grid only, 
+CDR  now also on fine grid, because input tallies may be needed on finer grid.
+cdr  Assume: constant "extensive" fine grid values IN ALL I_fine cells
+cdr  within one coarse grid cell IRD
 
       ALLOCATE (GBGKV(NBGV,NRAD))
       GBGKV = 0._DP
       DO IBGV = 1, NBGVI 
-        DO IRAD=1,NRAD
-          IRD = NCLTAL(IRAD)
+        DO I_fine=1,NRAD  ! fine grid cell loop
+          IRD = NCLTAL(I_fine) ! coarse scoring cell IRD contains cell I_fine
           IF (IRD == 0) CYCLE
-          GBGKV(IBGV,IRAD)=BGKV(IBGV,IRD)
+C  ird=0: additional cells for averaging over all fine grid cells.
+c         no value assigned.
+          GBGKV(IBGV,I_fine)=BGKV(IBGV,IRD)
+c  COARSER INPUT CELL VALUES ARE TURNED INTO FINER INPUT CELL VALUES
+C  IN USER SPECIFIC PARTS.
+C  FINE GRID INPUT CELLS ARE AVERAGED BACK TO COARSER CELLS VALUES,
+c  DEPENDING ON... (EXTENSIVE, INTENSIVE QUANTITIES) SEE OUTPLA.
         END DO
       END DO
 
-      NXM=MAX(1,NR1STM)
-      NYM=MAX(1,NP2NDM)
-      NZM=MAX(1,NT3RDM)
 c
 C  LOOP OVER THOSE BACKGROUND ION SPECIES, WHICH ARE ARTIFICIAL
 C  SPECIES FOR (NON-LINEAR) ITERATIONS
@@ -174,13 +212,15 @@ C  TRY ATOMS
             ISPZ1(IPLS)=IATM
             FACT1=CVRSSA(IATM)
             RMAS1=RMASSA(IATM)
-            DO IRAD=1,NRAD
+            DO I_fine=1,NRAD
 !pb 05.02.2013  take care of coarse scoring cells
-c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
-              IRD = NCLTAL(IRAD)
+c    fine cell i_fine belongs to coarser cell ird. Scoring was done on coarse cell ird only
+cdr  This is not obvious for additional cells for averaging, e.g. IR=NR1ST, etc..
+cdr  Those IRD should not appear here  (hopefully)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
-              PDEN(IRAD)=PDENA(IATM,IRD)
-              EDEN(IRAD)=EDENA(IATM,IRD)
+              PDEN(I_fine)=PDENA(IATM,IRD)
+              EDEN(I_fine)=EDENA(IATM,IRD)
             ENDDO
 C  FIND INDEX  NRC
             DO NRC=1,NRCA(IATM)
@@ -208,13 +248,15 @@ C  TRY MOLECULES
             ISPZ1(IPLS)=IMOL
             FACT1=CVRSSM(IMOL)
             RMAS1=RMASSM(IMOL)
-            DO IRAD=1,NRAD
+            DO I_fine=1,NRAD
 !pb 05.02.2013  take care of coarse scoring cells
-c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
-              IRD = NCLTAL(IRAD)
+c     fine cell i_fine belongs to coarse cell ird. scoring was done on coarse cell ird
+cdr  This is not obvious for additional cells for averaging, e.g. IR=NR1ST, etc..
+cdr  Those IRD should not appear here  (hopefully)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
-              PDEN(IRAD)=PDENM(IMOL,IRD)
-              EDEN(IRAD)=EDENM(IMOL,IRD)
+              PDEN(I_fine)=PDENM(IMOL,IRD)
+              EDEN(I_fine)=EDENM(IMOL,IRD)
             ENDDO
 C  FIND INDEX  NRC
             DO NRC=1,NRCM(IMOL)
@@ -242,13 +284,15 @@ C  TRY TEST IONS
             ISPZ1(IPLS)=IION
             FACT1=CVRSSI(IION)
             RMAS1=RMASSI(IION)
-            DO IRAD=1,NRAD
+            DO I_fine=1,NRAD
 !pb 05.02.2013  take care of coarse scoring cells
-c     fine cell irad belongs to coarse cell ird. scoring was done on coarse cell ird
-              IRD = NCLTAL(IRAD)
+c    fine cell i_fine belongs to coarse cell ird. scoring was done on coarse cell ird
+cdr  This is not obvious for additional cells for averaging, e.g. IR=NR1ST, etc..
+cdr  Those IRD should not appear here  (hopefully)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
-              PDEN(IRAD)=PDENI(IION,IRD)
-              EDEN(IRAD)=EDENI(IION,IRD)
+              PDEN(I_fine)=PDENI(IION,IRD)
+              EDEN(I_fine)=EDENI(IION,IRD)
             ENDDO
 C  FIND INDEX NRC
             DO NRC=1,NRCI(IION)
@@ -270,7 +314,8 @@ C  FIND INDEX IREL
         ENDDO
         GOTO 995
 
-C  AT THIS POINT: COLLISION PARTNER AMONST TEST PARTICLES HAS BEEN IDENTIFIED (ITYP1, IATM1, IMOL1, IION1)
+C  AT THIS POINT: COLLISION PARTNER AMONST TEST PARTICLES HAS BEEN IDENTIFIED 
+C  (ITYP1, IATM1, IMOL1, IION1)
 C  AS WELL AS THE NUMBER OF COLLISION PROCESS IREL1
 C  DENSITY AND ENERGY DENSITY TALLIES OF COLLISION PARTNER "PDEN,EDEN"
 C  HAVE NOW BEEN SET ON FINE GRID
@@ -288,7 +333,8 @@ C
 C  CROSS COLLISION, FIND SECOND COLLISION PARTNER
 C  THIS IS NOT THE INGOING COLLIDING TESTPARTICLE, WHICH WE HAVE ALREADY IDENTIFIED,
 C  (AND WHICH, E.G., DETERMINES MASS AND DENSITY OF ARTIFICIAL BACKGROUND PARTICLE IPLS)
-C  BUT, INSTEAD, IT IS THE TEST PARTICLE WHICH PLAYS THE ROLE OF THE "SECOND" PARTICLE, AMONGST THE TEST PARTICLES
+C  BUT, INSTEAD, IT IS THE TEST PARTICLE WHICH PLAYS THE ROLE 
+c  OF THE "SECOND" PARTICLE, AMONGST THE TEST PARTICLES
 C
           ITYP2(IPLS)=EIRENE_IDEZ(NPBGKP(IPLS,2),1,3)
           ISPZ2(IPLS)=EIRENE_IDEZ(NPBGKP(IPLS,2),3,3)
@@ -297,36 +343,42 @@ C
             IATM2=ISPZ2(IPLS)
             FACT2=CVRSSA(IATM2)
             RMAS2=RMASSA(IATM2)
-            DO IRAD=1,NRAD
+            DO I_fine=1,NRAD
 !pb 05.02.2013  take care of scoring cells
-              IRD = NCLTAL(IRAD)
+cdr  This is not obvious for additional cells for averaging, e.q. IR=NR1ST, etc..
+cdr  Those IRD should not appear here  (hopefully)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
-              PDEN2(IRAD)=PDENA(IATM2,IRD)
-              EDEN2(IRAD)=EDENA(IATM2,IRD)
+              PDEN2(I_fine)=PDENA(IATM2,IRD)
+              EDEN2(I_fine)=EDENA(IATM2,IRD)
             ENDDO
             IBGK2=NPBGKA(IATM2)
           ELSEIF (ITYP2(IPLS).EQ.2) THEN
             IMOL2=ISPZ2(IPLS)
             FACT2=CVRSSM(IMOL2)
             RMAS2=RMASSM(IMOL2)
-            DO IRAD=1,NRAD
+            DO I_fine=1,NRAD
 !pb 05.02.2013  take care of scoring cells
-              IRD = NCLTAL(IRAD)
+cdr  This is not obvious for additional cells for averaging, e.g. IRD=NR1ST, etc..
+cdr  Those IRD should not appear here  (hopefully)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
-              PDEN2(IRAD)=PDENM(IMOL2,IRD)
-              EDEN2(IRAD)=EDENM(IMOL2,IRD)
+              PDEN2(I_fine)=PDENM(IMOL2,IRD)
+              EDEN2(I_fine)=EDENM(IMOL2,IRD)
             ENDDO
             IBGK2=NPBGKM(IMOL2)
           ELSEIF (ITYP2(IPLS).EQ.3) THEN
             IION2=ISPZ2(IPLS)
             FACT2=CVRSSI(IION2)
             RMAS2=RMASSI(IION2)
-            DO IRAD=1,NRAD
+            DO I_fine=1,NRAD
 !pb 05.02.2013  take care of scoring cells
-              IRD = NCLTAL(IRAD)
+cdr  This is not obvious for additional cells for averaging, e.g. IR=NR1ST, etc..
+cdr  Those IRD should not appear here  (hopefully)
+              IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
-              PDEN2(IRAD)=PDENI(IION2,IRD)
-              EDEN2(IRAD)=EDENI(IION2,IRD)
+              PDEN2(I_fine)=PDENI(IION2,IRD)
+              EDEN2(I_fine)=EDENI(IION2,IRD)
             ENDDO
             IBGK2=NPBGKI(IION2)
           ENDIF
@@ -335,6 +387,11 @@ C
           IUP32=(IBGK2-1)*3+3
 C
         ENDIF
+c
+cdr:  Parameters of virtual background species are set, 
+cdr   their densities, energy densities.
+cdr   are on 1D arrays: pden,eden, pden2, eden2.
+cdr   momentum densities are still on 2d array GBGKV(ibgk, icell).
 C
         IF (RMASSP(IPLS).NE.RMAS1) THEN
           RM=RMAS1
@@ -360,19 +417,24 @@ C
         IF (ITYP2(IPLS).EQ.-1) THEN
 C
         IF (TRCMOD) THEN
-          WRITE (iunout,*) 'MODBGK: SELF COLLISION, IPLS',IPLS
+          WRITE (iunout,*) 'MODBGK: SELF COLLISION WITH, IPLS',IPLS
           WRITE (iunout,*) 'ITYP,ISPZ,IBGK_SP,IREL ',ITYP1(IPLS),
      .                                ISPZ1(IPLS),IBGK1,IREL1(IPLS)
         ENDIF 
 C
-100     CONTINUE
+
 
 C  this cell loop is referring to the underlying 'fine' grid, not the coarse grid
 C                              on which the eirene tallies had been updated.
+
+        NXM=MAX(1,NR1STM)
+        NYM=MAX(1,NP2NDM)
+        NZM=MAX(1,NT3RDM)
+
         DO 80 IR=1,NXM
           DO 80 IP=1,NYM
             DO 80 IT=1,NZM
-              IRAD=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
+              IRAD=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA  !irad=i_fine
 C
               TBEL=0.
               IF (LGVAC(IRAD,IPLS)) GOTO 81
@@ -389,34 +451,46 @@ cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next t
 C DELTA_N
               DOLD=DIIN(IPLS,IRAD)
               DEL=DOLD-PDEN(IRAD)
+
+c  rate of particle exchange: 1/s, per cell I_fine
               RATN=RATN+TBEL*DEL*VOL(IRAD)
-              IF (TRCMOD) THEN
-                WRITE (iunout,*) 'IR,T,TBEL,RATN ',
-     .                            IRAD,TIIN(IPLSTI,IRAD),
-     .                               TBEL,TBEL*DEL*VOL(IRAD)*ELCHA
-                CALL EIRENE_MASR3('DOLD,DNEW,DEL           ',
-     .                      DOLD,PDEN(IRAD),DEL)
-              ENDIF
+c  L1 norm of particle residual 
               RESN=RESN+TBEL*ABS(DEL)*VOL(IRAD)
+
+c             IF (TRCMOD) THEN
+c               WRITE (iunout,*) 'IR,T,TBEL,RATN ',
+c    .                            IRAD,TIIN(IPLSTI,IRAD),
+c    .                               TBEL,TBEL*DEL*VOL(IRAD)*ELCHA
+c               CALL EIRENE_MASR3('DOLD,DNEW,DEL           ',
+c    .                      DOLD,PDEN(IRAD),DEL)
+c             ENDIF
+
 C DELTA_E
 c             EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 c    .             DIIN(IPLS,IRAD)
               EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
      .             PDEN(IRAD)
               DEL=EOLD-EDEN(IRAD)
+
+c  rate of energy exchange: (eV)/s, per cell I_fine
               RATE=RATE+TBEL*DEL*VOL(IRAD)
+c  L1 norm of energy residual 
               RESE=RESE+TBEL*ABS(DEL)*VOL(IRAD)
 C DELTA_V
-              DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-              DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-              DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+CDR  next lines: gbgkv (=bgkv) is redundant, because momentum density vector
+cdr              components have become default volume averaged output tallies
+              DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+              DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+              DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+
+c  cdr  rate of momentum exchange: (g*cm/s)/s, per cell I_fine
               RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
               RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
               RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C NEW V
-              VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60) !pb
-              VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60) !pb
-              VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60) !pb
+              VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60)
+              VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60)
+              VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60)
               VXIN(IPLSV,IRAD)=VX
               VYIN(IPLSV,IRAD)=VY
               VZIN(IPLSV,IRAD)=VZ
@@ -425,6 +499,11 @@ C NEW T
               TIIN(IPLSTI,IRAD)=(EDEN(IRAD)/(PDEN(IRAD)+EPS60)-ED)/1.5
 C NEW N
               DIIN(IPLS,IRAD)=PDEN(IRAD)
+
+C  For  normalization of global residuals: 
+c  RRN: total particle [1]
+c  RRM: total momentum content
+c  RRE: total energy content (eV)
               RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C             RRM=?
               RRE=RRE+EDEN(IRAD)*VOL(IRAD)
@@ -449,33 +528,41 @@ cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three
 C DELTA_N
           DOLD=DIIN(IPLS,IRAD)
           DEL=DOLD-PDEN(IRAD)
+c  rate of particle exchange: 1/s, per cell I_fine
           RATN=RATN+TBEL*DEL*VOL(IRAD)
-          IF (TRCMOD) THEN
-            WRITE (iunout,*) 'IR,T,TBEL,RATN ',IRAD,TIIN(IPLSTI,IRAD),
-     .                           TBEL,TBEL*DEL*VOL(IRAD)*ELCHA
-            CALL EIRENE_MASR3('DOLD,DNEW,DEL           ',
-     .                  DOLD,PDEN(IRAD),DEL)
-          ENDIF
+c  L1 norm of particle residual 
           RESN=RESN+TBEL*ABS(DEL)*VOL(IRAD)
+
+c         IF (TRCMOD) THEN
+c           WRITE (iunout,*) 'IR,T,TBEL,RATN ',IRAD,TIIN(IPLSTI,IRAD),
+c    .                           TBEL,TBEL*DEL*VOL(IRAD)*ELCHA
+c           CALL EIRENE_MASR3('DOLD,DNEW,DEL           ',
+c    .                  DOLD,PDEN(IRAD),DEL)
+c         ENDIF
+
 C DELTA_E
 c         EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 c    .          DIIN(IPLS,IRAD)
           EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
      .          PDEN(IRAD)
           DEL=EOLD-EDEN(IRAD)
+c  cdr  rate of energy exchange: (eV)/s, per cell I_fine
           RATE=RATE+TBEL*DEL*VOL(IRAD)
+c  L1 norm of energy residual
           RESE=RESE+TBEL*ABS(DEL)*VOL(IRAD)
 C DELTA_V
-          DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-          DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-          DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+          DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+          DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+          DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+
+c  cdr  rate of momentum exchange: (g*cm/s)/s, per cell I_fine
           RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
           RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
           RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C NEW V
-          VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60) !pb
-          VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60) !pb
-          VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60) !pb
+          VX=GBGKV(IUP1,IRAD)/(PDEN(IRAD)+EPS60)
+          VY=GBGKV(IUP2,IRAD)/(PDEN(IRAD)+EPS60)
+          VZ=GBGKV(IUP3,IRAD)/(PDEN(IRAD)+EPS60)
           VXIN(IPLSV,IRAD)=VX
           VYIN(IPLSV,IRAD)=VY
           VZIN(IPLSV,IRAD)=VZ
@@ -497,12 +584,14 @@ C   NEXT, IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A CROSS COLLISION BETW
 C        SPECIES OF TEST PARTICLES
         ELSE
 C
-          WRITE (iunout,*) 'MODBGK: CROSS COLLISION, IPLS ',IPLS
-          WRITE (iunout,*) 'ITYP1,ISPZ1,IBGK1,IREL1 ',
-     .                      ITYP1(IPLS),ISPZ1(IPLS),
-     .                      IBGK1,IREL1(IPLS)
-          WRITE (iunout,*) 'ITYP2,ISPZ2,IBGK2       ',
-     .                      ITYP2(IPLS),ISPZ2(IPLS),IBGK2
+          IF (TRCMOD) THEN
+            WRITE (iunout,*) 'MODBGK: CROSS COLLISION, IPLS ',IPLS
+            WRITE (iunout,*) 'ITYP1,ISPZ1,IBGK1,IREL1 ',
+     .                        ITYP1(IPLS),ISPZ1(IPLS),
+     .                        IBGK1,IREL1(IPLS)
+            WRITE (iunout,*) 'ITYP2,ISPZ2,IBGK2       ',
+     .                        ITYP2(IPLS),ISPZ2(IPLS),IBGK2
+          ENDIF
 
 CVK FOR "CROSS-COLLISION TEMPERATURE"
           ICROSS=ICROSS+1
@@ -536,21 +625,21 @@ c    .              DIIN(IPLS,IRAD)
               DOLD=DIIN(IPLS,IRAD)
               DEL=EOLD-EDEN(IRAD)
               RATE=RATE+TBEL*DEL*VOL(IRAD)
-              DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-              DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-              DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+              DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+              DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+              DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
               RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
               RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
               RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C
-              VXIN1=GBGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
-              VXIN2=GBGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60) !pb
+              VXIN1=GBGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60)
+              VXIN2=GBGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60)
               VXMIX=(RMAS1*VXIN1+RMAS2*VXIN2)/(RMAS1+RMAS2)
-              VYIN1=GBGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
-              VYIN2=GBGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60) !pb
+              VYIN1=GBGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60)
+              VYIN2=GBGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60)
               VYMIX=(RMAS1*VYIN1+RMAS2*VYIN2)/(RMAS1+RMAS2)
-              VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
-              VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60) !pb
+              VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60)
+              VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60)
               VZMIX=(RMAS1*VZIN1+RMAS2*VZIN2)/(RMAS1+RMAS2)
 C  SET NEW VELOCITY OF ARTIFICIAL BACKGROUND SPECIES              
               VXIN(IPLSV,IRAD)=VXMIX
@@ -603,21 +692,21 @@ C    .          DIIN(IPLS,IRAD)
           DOLD=DIIN(IPLS,IRAD)
           DEL=EOLD-EDEN(IRAD)
           RATE=RATE+TBEL*DEL*VOL(IRAD)
-          DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-          DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
-          DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD) !pb
+          DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+          DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
+          DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
           RATM(1)=RATM(1)+TBEL*DELX*VOL(IRAD)
           RATM(2)=RATM(2)+TBEL*DELY*VOL(IRAD)
           RATM(3)=RATM(3)+TBEL*DELZ*VOL(IRAD)
 C
-          VXIN1=GBGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
-          VXIN2=GBGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60) !pb
+          VXIN1=GBGKV(IUP1 ,IRAD)/(PDEN (IRAD)+EPS60)
+          VXIN2=GBGKV(IUP12,IRAD)/(PDEN2(IRAD)+EPS60)
           VXMIX=(RMAS1*VXIN1+RMAS2*VXIN2)/(RMAS1+RMAS2)
-          VYIN1=GBGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
-          VYIN2=GBGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60) !pb
+          VYIN1=GBGKV(IUP2 ,IRAD)/(PDEN (IRAD)+EPS60)
+          VYIN2=GBGKV(IUP22,IRAD)/(PDEN2(IRAD)+EPS60)
           VYMIX=(RMAS1*VYIN1+RMAS2*VYIN2)/(RMAS1+RMAS2)
-          VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60) !pb
-          VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60) !pb
+          VZIN1=GBGKV(IUP3 ,IRAD)/(PDEN (IRAD)+EPS60)
+          VZIN2=GBGKV(IUP32,IRAD)/(PDEN2(IRAD)+EPS60)
           VZMIX=(RMAS1*VZIN1+RMAS2*VZIN2)/(RMAS1+RMAS2)
  
 C  SET NEW VELOCITY OF ARTIFICIAL BACKGROUND SPECIES    
@@ -682,6 +771,7 @@ C  WRITE PLASMA DATA ONTO PLASMA_BCKGRND FOR CALL TO SUBR. PLASMA BELOW
 C  TI,NI AND (VX,VY,VZ) FOR IPLS=1,NPLSI
 C  PLAY SAVE: WRITE WHOLE PLASMA_BCKGRND ARRAY.
 C
+
       DO 500 I=1,6
         INDPRO(I)=7
 500   CONTINUE
@@ -833,7 +923,7 @@ CVK PLASMA_BACKGROUND CORRECTION
             DIINTF(IPLS1,IRAD)=DIIN(IPLS1,IRAD)
             DIINTF(IPLS2,IRAD)=DIIN(IPLS2,IRAD)
 CSW 02jan2012 CHECK FOLLOWING TWO LINES !!!! ipls1/ipls2 mixed up?
-            TIINTF(IPLSTI1,IRAD)=TIIN(IPLSTI2,IRAD) ! VK HAS BEEN CHANGED IPLS1->IPL
+            TIINTF(IPLSTI1,IRAD)=TIIN(IPLSTI2,IRAD) ! HAS BEEN CHANGED IPLS1->IPLS2
             TIINTF(IPLSTI2,IRAD)=TIIN(IPLSTI1,IRAD) !
 CVK END
 C

@@ -3,7 +3,6 @@
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
-!pb  22.11.06: DELPOT introduced
 !dr  30.01.07: if lgvac(..,npls+1)  cycle (do not evaluate rates in vacuum)
 !pb  20.04.07: allow for third and fourth secondary
 
@@ -57,6 +56,7 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
       USE EIRMOD_COMXS
+      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
 
@@ -283,7 +283,8 @@ c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd)
 cdr  not ready, tabei1 --> tabei3 to be done.
 C             TABEI3(IREI,J,1:9) = CF(1:9)
 C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
@@ -425,6 +426,8 @@ C  ??? EELEI1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
                 ENDIF
                 FACREI(IREI,1)=FACTKK
                 FACREI(IREI,2)=LOG(FACTKK)
+C  SHIFT ELECTRON COOLING RATE BY DELE * TABEI
+c  DELE= -IONISATION POTENTIAL TURNS EELEI INTO A RADIATION LOSS COMPONENT ONLY
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN
