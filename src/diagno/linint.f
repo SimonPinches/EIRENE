@@ -916,7 +916,7 @@ C
           PLHST=.FALSE.
         ENDIF
 !pb        IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
-        IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,2)) THEN
+        IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
           AA(1:JJJ) = ARGST(ISP,1:JJJ)
         ELSEIF (ISP.EQ.0) THEN
 !pb          AA(1:JJJ) = SUM(ARGST(1:NSPI,1:JJJ),1)

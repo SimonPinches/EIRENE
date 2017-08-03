@@ -86,7 +86,8 @@ C
               TE=TEIN(NCELL)
               DE=DEIN(NCELL)
               
-              DEF=LOG(DE*1.D-8)
+!pb              DEF=LOG(DE*1.D-8)
+              DEF=LOG(DE)
               TEF=LOG(TE)
 
               do idens = 1, ndens
@@ -119,16 +120,21 @@ C
                 end select
               end do
              
-              rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,0,ERATE)
+!              rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,0,ERATE)
+              rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,1,ERATE)
               add = rate*density(1)
 
               if (iratio > 0) then 
+!                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),TEF,DEF,
+!     .                                           .TRUE.,0,ERATE)
                 ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),TEF,DEF,
-     .                                           .TRUE.,0,ERATE)
+     .                                           .TRUE.,1,ERATE)
                 add = add*ratio
                 if (iratio == 2) then
+!                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),TEF,DEF,
+!     .                                           .TRUE.,0,ERATE)
                   ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),TEF,DEF,
-     .                                           .TRUE.,0,ERATE)
+     .                                           .TRUE.,1,ERATE)
                   add = add * density(2) / density(3) *ratio2
                 end if
               end if
