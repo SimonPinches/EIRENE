@@ -301,9 +301,9 @@ c  set some derived storage parameters
 C  storage parameter for species text for output tallies, and scltal in mcarlo.f
 
         N1MX=    NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
-     .           NSNV
-!PB     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV+
-!    .           NSNV)
+     .           NSNV+NAIN
+!pb     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV+
+!    .           NSNV,NAIN)
 cdr  same as n1mx.  Check: why not n1mx=max(....)
         NSPZTOT= NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
      .           NSNV
