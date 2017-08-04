@@ -1,5 +1,6 @@
       subroutine EIRENE_collect_census
 
+cpb July  17: bug fix, rpselect allocation from -1 , not from 0
 cdr sept. 15: bug fix:   after re-sampling (with replacement) from census, the weight of
 cdr                      sampled census particles is set to 1.0, rather than keeping the old weight.
 cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
@@ -189,24 +190,27 @@ c  cummulated number of scores, and atomic flux, summed from all PEs.
 
         itotal = nprnl
 
-cdr     allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
-        allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1
+        allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
+!pb     allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1 !pb nein!
 
         if (my_pe == 0) then
           rpselect(-1) = 0._dp
-          rpselect(0) = RPARTW(iprnli)  !cdr  start with my_pe=0, flux to census (in amp, not atomic flux!)
+!cdr  start with my_pe=0, flux to census (in amp, not atomic flux!)
+          rpselect(0) = RPARTW(iprnli)  
         end if
 
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 ! fetch the total flux from all the individual processors
+! damit wird obiges rpselect(0) nochmal ueberschrieben
         call mpi_gather(rpartw(iprnli),1,MPI_REAL8,
-     .                  rpselect(0:nprs-1),1,MPI_REAL8,0,   ! damit obiges rpselect(0) nochmal ueberschrieben
+     .                  rpselect(0:nprs-1),1,MPI_REAL8,0,   
      .                  MPI_COMM_WORLD,ier)
 
         if (my_pe == 0) then
-! build accumulated flux distribution for the processores on my_pe=0
+! build accumulated flux distribution for all processores on my_pe=0
+cdr rpselect(0) war schon gesetzt.
           do ipe=1, nprs-1
-            rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)   !cdr rpselect(0) war schon gesetzt.
+            rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
           end do
 
           write (iunout,*) 'total cummulated flux on census (AMP) ' 
