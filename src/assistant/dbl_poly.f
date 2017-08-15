@@ -4,6 +4,7 @@ cdr: sept.16: prepare extrapolation options for double poly. fits.
 cdr:          to be written: 2nd parameter out of range   (2 options)
 cdr:          to be written: both parameters out of range (4 options)
 cdr: may 17 : speedup possible, if only dum(..) but not cou is needed. Tbd.
+cdr: july 17: trc:  print warning in case of extrapolation 
 
 c  called from: rate_coeff.f
 c               energy_rate_coeff.f
@@ -11,7 +12,8 @@ c               sgnal.f
 
       subroutine EIRENE_dbl_poly (cf, al1, al2, cou, dum, 
      .                      rc1min, rc1max, fp1, ifex1mn, ifex1mx,
-     .                      rc2min, rc2max, fp2, ifex2mn, ifex2mx)
+     .                      rc2min, rc2max, fp2, ifex2mn, ifex2mx,
+     .                      trc)
 
 c  used for evaluating double polynomial fit. 
 c  return        COU=fit2(AL1,AL2)
@@ -38,6 +40,8 @@ c  rc2max : top    boundary of valid range for second parameter al2
 c  fp2    : parameters for extrapolation from valid range
 c  ifex2mn: flag for choice of bottom (low end) extrapolation expression
 c  ifex2mx: flag for choice of top (high end) extrapolation expression
+
+c  trc    : print warnings in case of extrapolation beyond specified range
   
 c  output:
 c  cou   : log of value of fit(al1,al2)
@@ -46,6 +50,7 @@ c          dum provides 1D fit coefficients for 2nd parameter dependency (e.g. n
 c          for reduced 1D fit evaluation "on the fly", at fixed parameter AL1.     
    
       use EIRMOD_precision
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
  
       implicit none
  
@@ -59,6 +64,7 @@ c          for reduced 1D fit evaluation "on the fly", at fixed parameter AL1.
      .            al1min,al1max,cou1min,cou1max, 
      .            eirene_extrap
       integer :: kk, jj, j, i, ii, ifex
+      logical :: trc
  
       dum = 0._dp
       p1=al1 
@@ -99,7 +105,7 @@ C  IFEX1MN IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
 C  FIT OUT OF VALID RANGE, AL1 < RC1MIN
 C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
           p1=rc1min
-          write (6,*) 'extrap option 1 dbl_pol',al1,rc1min
+          if (trc) write (iunout,*) 'extrap option 1 dbl_pol',al1,rc1min
           GOTO 100
         ENDIF
 
@@ -144,7 +150,7 @@ C  IFEX1MX IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
 C  FIT OUT OF VALID RANGE, AL1 > RC1MAX
 C  DEFAULT: TAKE THE FIT AT AL1=RC1MAX
           p1=rc1max
-          write (6,*) 'extrap option 2 dbl_pol',al1,rc1max
+          if (trc) write (iunout,*) 'extrap option 2 dbl_pol',al1,rc1max
           GOTO 100
         ENDIF
 
@@ -157,14 +163,14 @@ C       DUM(1:9)= ???
 
 cdr   to be written
         p2=rc2min
-        write (6,*) 'extrap option  3 dbl_pol ',al2,rc2min
+        if (trc) write (iunout,*) 'extrap option  3 dbl_pol ',al2,rc2min
         goto 100
 
       elseif (al2 > rc2max) then
 
 cdr   to be written
         p2=rc2max
-        write (6,*) 'extrap option 4 dbl_pol',al2,rc2max
+        if (trc) write (iunout,*) 'extrap option 4 dbl_pol',al2,rc2max
         goto 100        
 
       else

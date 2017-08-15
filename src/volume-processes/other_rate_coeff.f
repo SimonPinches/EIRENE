@@ -1,9 +1,10 @@
 !pb  01.06.2017  copied from rate_coeff.f
 
-      function EIRENE_other_rate_coeff(ir, p1, p2, lexp, iprshft, erate)
+      function EIRENE_other_rate_coeff(ir, ic, p1, p2, lexp, iprshft)
      .                     result (rate)
 
-!  evaluate for other reactions and return this as "rate"
+!  evaluate rate coefficient for other reactions 
+!  and return this as "rate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
 !  Only ifit=2 and ifit=3 tested so far. Caution!
@@ -40,21 +41,18 @@
  
       implicit none
  
-      integer, intent(in) :: ir, iprshft
+      integer, intent(in) :: ir, iprshft, ic
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
-      real(dp), intent(out) :: erate
       real(dp) :: rate, EIRENE_sngl_poly, dum(9), rc1min, rc1max,
      .            fp1(6), fp2(6), pp1, pp2, rc2min, rc2max,
-     .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
-     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
+     .            rrc2min, rrc2max, SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
      .                  dsub    = 18.420680744_dp       !ln(1e8)
 
-      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ic,ip1,ip2            
+      integer :: ip1, ip2, iflavor, ivar           
  
       interface
         function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
@@ -62,6 +60,7 @@
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
+          integer, intent(out) :: ip1,ip2
           real(dp) :: res
         end function EIRENE_intp_adas
  
@@ -70,6 +69,7 @@
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
+          integer, intent(out) :: ip1
           real(dp) :: res
         end function EIRENE_intp_table
       end interface
@@ -82,7 +82,6 @@
       end if
  
       rate = 0._dp
-      erate = 0._dp
 
 c.............................................................
 
@@ -138,7 +137,12 @@ c  extrapolation data:  for 2d polynomial fits
 
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
         pp2 = p2
-        if (iprshft > 0) pp2 = pp2 - dsub
+        if (iprshft > 0) then
+          pp2 = pp2 - dsub
+          rrc2min=rc2min - dsub
+          rrc2max=rc2max - dsub
+        endif
+cdr     write (6,*) 'particle rate '
  
         call EIRENE_dbl_poly
      .       (reacdat(ir)%oth%poly%dblpol,p1,pp2,rate,dum,
@@ -153,7 +157,9 @@ c..............................................................
       else if (reacdat(ir)%oth%ifit == 3) then
 
 ! 2D TABULAR INPUT,  FOR LOG10 OF RATE,  cm^3/s
-! E.G.: ADAS FILES
+! E.G.: ADAS adf11 ACD and SCD FILES
+cdr  extrapolation data: for 2d tabulated data, option not ready
+cdr  to be added here
 
 !  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
 
@@ -170,6 +176,7 @@ C  assume here: tabulated data are log10  (to be generalized)
 
         end if
 
+cdr this unit conversion must be wrong in case lexp !!
 
 
 c..............................................................
@@ -177,6 +184,8 @@ c..............................................................
       else if (reacdat(ir)%oth%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
+cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
+cdr  to be added here
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
         pp1 = exp(p1)
@@ -191,33 +200,19 @@ c..............................................................
 
 ! INTERNAL COLLISION RADIATIVE CODE
  
-! H-colrad   RATE AND ENERGY LOSS RATE IN ONE SINGLE STEP
- 
-        if (.not.allocated(pop0)) then
-          allocate(pop0(40))
-          allocate(pop1(40))
-          allocate(pop2(40))
-
-          allocate(q_ext(40))    !   photo excitation rate
-        end if
- 
-        Q_EXT = 0._DP
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        CALL EIRENE_H_COLRAD(IC, PP1, PP2 ,Q_EXT,POP0,POP1,POP2,
-     .                ALPCR,    SCR,    SCR_EXT,
-     .                E_ALPCR,  E_SCR,  E_SCR_EXT,
-     .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
+        iflavor = reacdat(ir)%oth%crm%iflav
+        ivar = reacdat(ir)%oth%crm%ivarst
+
+        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, SCR)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
+
         rate=scr 
         if (.not.lexp) rate = log(scr)
          
-
-        erate = -e_scr
-        if (.not.lexp) erate = log(-e_scr)
- 
       end if
  
       return

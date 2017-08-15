@@ -49,7 +49,7 @@ C
       LOGICAL :: LARGST
 C
       DATA ZMAX/40./
-
+ 
       LARGST = SIZE(ARGST,2) >= NSBOX
 
       IF (IFIRST.EQ.0) THEN

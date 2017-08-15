@@ -57,10 +57,9 @@ cdr  this sampling from Gaussian is currently highly inefficient.
 cdr  a) due to rejection
 cdr  b) because a full triple of Gaussian random numbers is generated, but just the first 
 cdr     component is used
- 
+
         ZPHI=COSP*FG1(INIV2)
         INIV2=INIV2-1
-        
         ICOUNT=ICOUNT+1
 C   CUT OFF ANGLE: COSM (RADIANS)
         IF (ICOUNT.GT.1000) THEN

@@ -134,7 +134,7 @@ cdr one profile iplsti set at a time
         TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         GOTO 120
 112     CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
-     .                     TI4(IPLSTI),TI5(IPLSTI),TVAC)
+     .                                 TI4(IPLSTI),TI5(IPLSTI),TVAC)
         TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         GOTO 120
 113     CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
@@ -189,7 +189,7 @@ cdr one profile ipls set at a time
         DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         GOTO 130
 122     CALL EIRENE_PROFE (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                   DI4(IPLS),DI5(IPLS),DVAC)
+     .                             DI4(IPLS),DI5(IPLS),DVAC)
         DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         GOTO 130
 123     CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)
@@ -462,7 +462,7 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         IF (ABS(BFIN(JJ)).LT.EPS12) THEN
-          WRITE (iunout,*) 'MAGNETIC FIELD STRENGHT ZERO JJ= ',JJ
+          WRITE (iunout,*) 'MAGNETIC FIELD STRENGTH = ZERO, JJ= ',JJ
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 153   CONTINUE

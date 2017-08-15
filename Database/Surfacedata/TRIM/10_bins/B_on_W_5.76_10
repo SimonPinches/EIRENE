@@ -1,10 +1,10 @@
-B_on_W    
+B_on_W_5.76  also includes: pdf boundaries emin,emax, angmin, angmax....    
+ 
+*  projectile surface binding energy parameter: 5.76 eV     
+*  parameter esbparm only added in first of the 84 blocks 
  
  
- 
- 
- 
-    5.  10.81   74. 183.84  1.00E+00  0.00E+00  0.00E+00  0.00E+00    10   0.00
+    5.  10.81   74. 183.84  1.00E+00  0.00E+00  0.00E+00  0.00E+00   5.76E+00   10   0.00
 
   0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00       0.00000E+00  0.00000E+00
 

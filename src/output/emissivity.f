@@ -24,7 +24,7 @@
       integer :: i, j, k, iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
-     .            einstein, trans_en, DE, TE, TEF, DEF, rate, erate,
+     .            einstein, trans_en, DE, TE, TEF, DEF, rate, 
      .            EIRENE_OTHER_RATE_COEFF, ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
@@ -120,23 +120,23 @@ C
                 end select
               end do
              
-!              rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,0,ERATE)
+!              rate = EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,0)
 !WZ:          iprshft = 1 relies on the current other_rate_coeff.f version,
 !WZ:          where this flag is only applied to 2D fits!
-              rate = EIRENE_OTHER_RATE_COEFF(IRC,TEF,DEF,.TRUE.,1,ERATE)
+              rate = EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
               add = rate*density(1)
 
               if (iratio > 0) then 
-!                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),TEF,DEF,
-!     .                                           .TRUE.,0,ERATE)
-                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),TEF,DEF,
-     .                                           .TRUE.,1,ERATE)
+!                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,TEF,DEF,
+!     .                                           .TRUE.,0)
+                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
+     .                                          TEF,DEF,.TRUE.,1)
                 add = add*ratio
                 if (iratio == 2) then
-!                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),TEF,DEF,
-!     .                                           .TRUE.,0,ERATE)
-                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),TEF,DEF,
-     .                                           .TRUE.,1,ERATE)
+!                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,TEF,DEF,
+!     .                                           .TRUE.,0)
+                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,
+     .                                             TEF,DEF,.TRUE.,1)
                   add = add * density(2) / density(3) *ratio2
                 end if
               end if

@@ -14,8 +14,8 @@ cdr  done: eelei1 set in xsect... routines.
 !pb  APR   16: eelds -> eelei 
 
       FUNCTION EIRENE_FEELEI1 (IREI,K)
-C  this is the "on the fly" storage saving version to eliminate
-C  pre-computed array EELEI1(irei,k) from with run
+C  this is the "on the fly", storage saving, version to eliminate
+C  pre-computed array EELEI1(irei,k) from this run
 
 cdr  find electron energy loss for EI process no. IREI,  energy in eV
 c    locally in cell K, for process kk= nelrei(irei) 
@@ -71,13 +71,13 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
 c  non default models, data from external databases
       ELSE IF (KK > 0) THEN
         IF (JELREI(IREI) == 1) THEN  !  Te dependence
-          ELEI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),0._DP,.TRUE.,0)
+          ELEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)
           EIRENE_FEELEI1=-ELEI*DEIN(K)*FACREI(IREI,1)/
      .                   (EIRENE_FTABEI1(IREI,K)+EPS60)
         ELSEIF(JELREI(IREI) == 9) THEN    !  Te, ne dependence. 
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
-          ELEI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
+          ELEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.FALSE.,1)
           EE=MAX(-100._DP,ELEI+FACREI(IREI,2))
           EIRENE_FEELEI1=-EXP(EE)*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
         ELSE

@@ -3,6 +3,14 @@ C
 C
 C
       SUBROUTINE EIRENE_PROFE(PRO,PRO0,RIN0,A1,E,SEP,PROVAC)
+c
+c  input profile parameters, see subr. input,  p0,...p5
+c  p0: pro0
+c  p1: rin0
+c  p2: A1
+c  p3: not used
+c  p4: E
+c  p5: SEP
 C
 C  EXPONENTIAL PROFILE, PLUS CONTINUATION EXPONENTIAL DECAY BEYOND "SEP"
 C  

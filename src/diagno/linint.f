@@ -1,4 +1,8 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
+!cp  July 17 :  made  ARGST allocatable, conditional on  TRCSIG
+cdr             plspec only, if trcsig. to be done in input.f
+CDR             ditto: AA, XNTG, VPLOT
+CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
 C
 C
 C*DK LININT
@@ -22,6 +26,7 @@ C  SURFACE (P2) IS FOUND.
 c
 c  ifirst=0:  first call for one particular LOS
 c  ifirst=1:  same LOS as previous LOC, but different (energy, wavelength) parameter PEN
+c  ifirst<0:  irgend was mit short storing ??
 c
 C
       USE EIRMOD_PRECISION
@@ -67,14 +72,16 @@ C
      .           IPERID_1,
      .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, MX_COMPO, ND
       TYPE(CELL_INFO), POINTER :: NEW_CELL
-C   ARRAYS FOR PLOTTING
-      REAL(DP) :: AA(NRAD),XNTG(NRAD),VPLOT(NRAD,1)
+C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
+      REAL(DP), ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)
+
       REAL(DP), ALLOCATABLE :: YPLOT(:,:),
      .                         YMN2(:), YMX2(:),
      .                         YMNLG2(:), YMXLG2(:)
       INTEGER, ALLOCATABLE :: IR1(:), IR2(:), IRS(:)
       LOGICAL, ALLOCATABLE :: LPLOT2(:), LSDVI(:)
-      LOGICAL :: TRCSAV, LCNDEXP, L_SAME
+
+      LOGICAL :: TRCSAV, LCNDEXP, L_SAME, LARGST
       CHARACTER(72) :: TXHEAD, TXTALL(NCHENI)
       CHARACTER(24) :: TXUNIT(NCHENI), TXSPEC(NCHENI)
 
@@ -118,21 +125,33 @@ C   ARRAYS FOR PLOTTING
       SCOS=1.
       IPOLG=1
 C
-C  COMPUTE LINE INTEGRATED SIGNAL
+C  COMPUTE LINE INTEGRATED SIGNAL FOR A GIVEN LOS
 C
       IF (IFIRST.GT.0) GOTO 100
       
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
-        IF (PLSPEC.AND.TRCSIG) THEN
+        IF (TRCSIG) THEN
+cdr  TRCSIG: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
+cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
+          ALLOCATE (AA(NRAD))
+          ALLOCATE (VPLOT(NRAD,1))
+          ALLOCATE (XNTG(NRAD))
         ELSE
           ALLOCATE (ARGST(0:1,1))
+          ALLOCATE (AA(1))
+          ALLOCATE (VPLOT(1,1))
+          ALLOCATE (XNTG(1))
         END IF
       END IF
+      LARGST = SIZE(ARGST,2) >= NSBOX
 
-      IF (PLSPEC) THEN
+c.......................................................................
+cdr  some plot stuff, still to be moved to separate routine
+cdr  into folder: plotting, plot_dummy...
+      IF (PLSPEC.AND.TRCSIG) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
           NCH = 1
           IF (ANY(NCHTAL(1:NCHORI) == 1)) NCH=IABS(NCHENI)
@@ -187,6 +206,9 @@ C  ZEICHNE NETZLINIEN EIN
 C  MACHE GRADE GRENZEN, X-ACHSE (Y ACHSE, NUR WENN TALZMI=TALZMA=666.)
         FITX=.TRUE.
       END IF
+
+cdr  preparatory plot stuff done
+c..................................................................
 C
 C  FIND STARTING POINT FOR LINE INTEGRATION:
 C
@@ -212,7 +234,7 @@ C
           PHI22=C2(3)*PIA/180.D0
           IF (PHI22.LT.ZSURF(1).OR.PHI22.GT.ZSURF(NTTRA)) THEN
             CALL EIRENE_MASAGE
-     .  ('ERROR IN LININT, WRONG INPUT FOR CHORDS ')
+     .           ('ERROR IN LININT, WRONG INPUT FOR CHORDS ')
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 C  FIND TOROIDAL BLOCK NUMBER OF P2
@@ -231,7 +253,7 @@ C  PIVOT POINT C1:
           PHI11=C1(3)*PIA/180.D0
           IF (PHI11.LT.ZSURF(1).OR.PHI11.GT.ZSURF(NTTRA)) THEN
             CALL EIRENE_MASAGE
-     .  ('ERROR IN LININT, WRONG INPUT FOR CHORDS ')
+     .          ('ERROR IN LININT, WRONG INPUT FOR CHORDS ')
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 C  FIND TOROIDAL BLOCK NUMBER OF P1
@@ -754,11 +776,11 @@ C
 C
  
       IF (IFIRST < 0) THEN
+CDR WAS PASSIERT HIER ???
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
           NCELC=NCLTAL(NCELL)
-C         WRITE (IUNOUT,*) NCELL, NCELC
           ALLOCATE(NEW_CELL)
           NEW_CELL%NO_CELL = NCELL
           NEW_CELL%FLIGHT = CLPD(J)
@@ -778,11 +800,14 @@ C         WRITE (IUNOUT,*) NCELL, NCELC
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
+        TRACKS=TRACKS+ZDS
+cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
-        XNTG(JJJ)=TRACKS+ZDS*0.5
-        TRACKS=TRACKS+ZDS
-C
+
+        IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
+        
+C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
           IF (NCHTAL(ICHORI).EQ.1) THEN
             CALL EIRENE_SIGCX (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
@@ -910,12 +935,13 @@ C    .              XD1,YD1,ZD1)
 C       CALL SIGTST(2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
       ENDIF
 C
+C  FINAL SEGMENT ALONG LINE-OF-SIGHT
       JJJ=JJJ+1
-      XNTG(JJJ)=TRACKS
+      IF (LARGST) XNTG(JJJ)=TRACKS
 C
 C  PLOT INDIVIDUAL CONTRIBUTIONS ALONG LINE OF SIGHT.
 C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
-C  PLOTTED INTO GEOMETRY PLOT.
+C  PLOTTED INTO GEOMETRY PLOT VIA CHCTRC CALLS.
 C
       IF (PLSPEC.AND.TRCSIG) THEN
         IF (PLHST) THEN
@@ -925,11 +951,11 @@ C
           WRITE (IUNOUT,*) 'LINE OF SIGHT                              '
           PLHST=.FALSE.
         ENDIF
-!pb        IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
+!pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
         IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
           AA(1:JJJ) = ARGST(ISP,1:JJJ)
         ELSEIF (ISP.EQ.0) THEN
-!pb          AA(1:JJJ) = SUM(ARGST(1:NSPI,1:JJJ),1)
+!pb       AA(1:JJJ) = SUM(ARGST(1:NSPI,1:JJJ),1)
           AA(1:JJJ) = SUM(ARGST(1:,1:JJJ),1)
         ELSE
           WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
@@ -1036,7 +1062,29 @@ C
       CALL EIRENE_MASAGE
      .  ('INTEGRATION. INCREASE ARRAYS XNTG,ARGST,       ')
       CALL EIRENE_MASAGE
-     .  ('AA AND ZWORK. EXIT CALLED                      ')
+     .  ('AA AND VPLOT. EXIT CALLED                      ')
       CALL EIRENE_EXIT_OWN(1)
       RETURN
+
+      ENTRY EIRENE_LININT2
+
+      IF (ALLOCATED(ARGST)) THEN
+c  these arrays have been allocated for TRCSIG option.
+        DEALLOCATE (ARGST)
+        DEALLOCATE (AA)
+        DEALLOCATE (VPLOT)
+        DEALLOCATE (XNTG)
+      END IF
+ 
+      RETURN
       END
+
+
+      SUBROUTINE EIRENE_LININT_REINIT
+c  clarify role of ifirst<0 first.
+      RETURN
+      END
+
+
+       
+

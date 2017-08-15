@@ -13,8 +13,8 @@ cdr              rather than the mean electron energy itself.
 
 
       FUNCTION EIRENE_FEELPI1 (IRPI,K)
-C  this is the "on the fly" storage saving version to eliminate
-C  pre-computed array EELPI1(irpi,k) from with run
+C  this is the "on the fly", storage saving, version to eliminate
+C  pre-computed array EELPI1(irpi,k) from this run
 
 cdr  find electron energy loss for PI process no. IRPI,  energy in eV
 c    locally in cell K, for process kk= nelrpi(irpi) 
@@ -49,13 +49,13 @@ c   electron energy losses per collision from the default PI processes
 c  non default models, data from external databases
       ELSE IF (KK > 0) THEN
         IF (JELRPI(IRPI) == 1) THEN  !  Te dependence
-          ELPI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),0._DP,.TRUE.,0)
+          ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)
           EIRENE_FEELPI1=-ELPI*DEIN(K)*FACRPI(IRPI,1)/
      .                   (EIRENE_FTABPI3(IRPI,K)+EPS60)
         ELSEIF(JELRPI(IRPI) == 9) THEN   !  Te, ne dependence. 
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
-          ELPI = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
+          ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.FALSE.,1)
           EE=MAX(-100._DP,ELPI+FACRPI(IRPI,2)+DEINL(K))
           EIRENE_FEELPI1=-EXP(EE)/(EIRENE_FTABPI3(IRPI,K)+EPS60)
         ELSE

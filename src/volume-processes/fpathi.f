@@ -76,6 +76,7 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CESTIM , ONLY: LEIO
+      USE EIRMOD_CTRCEI , ONLY: TRCAMD
  
       IMPLICIT NONE
  
@@ -102,8 +103,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
      .          EIRENE_FTABEI1,
 
-     .          RCMIN, RCMAX,
-     .          ERATE
+     .          RCMIN, RCMAX
 C      REAL(DP) :: EIRENE_FEPLPI3, PLS, CTCHDUM, ELTHDUM, ER, RLMS, RMI, 
 C     .            RMN, RMSI, SIG
       INTEGER :: IBGK, IIEL, IREL, IIEI, IREI, IIPI,
@@ -210,7 +210,7 @@ C  MAXWELL
 CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
 !pb         KK=NREAPI(IRPI)
 !pb         PLS=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-!pb         TBPI = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)*DIIN(IPLS,K)
+!pb         TBPI = EIRENE_RATE_COEFF(KK,K,PLS,0._DP,.TRUE.,0)*DIIN(IPLS,K)
 !pb         SIGVPI(IRPI)=TBPI
 c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
@@ -237,12 +237,13 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
               TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
             SIGVPI(IRPI)=EXP(EXPO)
@@ -345,13 +346,14 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               KK=NREACX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             SIGVCX(IRCX)=EXP(EXPO)
@@ -416,12 +418,13 @@ cdr         endif
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELRCX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
@@ -470,7 +473,7 @@ C  MAXWELLIAN RATE, IGNORE TEST ION VELOCITY
 cdr  here should be call to ftabel3,  to be done
             KK=NREAEL(IREL)
             TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
+            TBEL = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.TRUE.,0)*
      .             DIIN(IPLS,K)
             SIGVEL(IREL)=TBEL
           END IF
@@ -495,12 +498,13 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT
               KK=NREAEL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             SIGVEL(IREL)=EXP(EXPO)
@@ -576,12 +580,13 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
-              EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELREL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)

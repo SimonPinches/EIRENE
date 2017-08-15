@@ -4,9 +4,11 @@ c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
 c            option NCHTAL=4 is unfinished. print warning and return 
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
-c            set default ncheni=1 for nchtal=2 alreay in calling routine,
+c            set default ncheni=1 for nchtal=2 already in calling routine,
 c            to avoid that chords are erroneously turned off there. 
 cpb jul.17:  request from aug.16: psig and ARGST depends on NCHTAL done
+cdr       :  commit PART 1: allocatable storage: ARGST, VPLOT, AA, XNTG
+cdr       :  PART 2: automatic detection of 1st dimension ND: tb commited later            
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
@@ -232,7 +234,8 @@ C  H(n=3)/H(n=1)
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
      .                         TEF, DEF, RATE, DUM, 
      .                         RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .                         RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX)
+     .                         RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .                         TRCAMD)
 
           rate = exp(rate)
  
@@ -255,7 +258,7 @@ C  H(n=3)/H(n=1)
         write (iunout,*) ' integral ',chksum
         return
  
-      END IF
+      END IF  !  END OF UNFINISHED NCHTAL=4 OPTION
 
 C  STEP 2
 C

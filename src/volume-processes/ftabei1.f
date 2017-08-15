@@ -29,7 +29,6 @@ c              for evaluation of rate coefficient. But then the 'true' density i
       REAL(DP) :: EIRENE_FTABEI1, DEIMIN, PLS, TBEI,
      .            EIRENE_RATE_COEFF
 C      REAL(DP) :: DSUB
-      REAL(DP) :: ERATE
       INTEGER :: KK
  
       TBEI=0.D0
@@ -45,7 +44,7 @@ c                                only for double polynomial fit
 !pb   PLS=MAX(DEIMIN,DEINL(K))-DSUB
 
  
-      TBEI = EIRENE_RATE_COEFF(KK,TEINL(K),PLS,.TRUE.,1,ERATE)*
+      TBEI = EIRENE_RATE_COEFF(KK,K,TEINL(K),PLS,.TRUE.,1)*
      .       FACREI(IREI,1)
       IF (IFTFLG(KK,2) < 100) TBEI=TBEI*DEIN(K)
  

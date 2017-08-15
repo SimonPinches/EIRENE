@@ -7,11 +7,11 @@ cdr          when setting dynamic allocatable storage parameters in "find_param.
 cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
 !pb  MAY 16  nrds -> nrei
-cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb... 
+cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb...
 cdr           (to remove redundant dummy gr routines)
- 
- 
- 
+
+
+
       RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
      .                                    MPI_INITIALIZE)
 C
@@ -67,15 +67,15 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_CLAST
       use EIRMOD_cfplk
- 
+
       IMPLICIT NONE
- 
+
       INCLUDE 'mpif.h'
- 
+
       REAL(DP), INTENT(IN) :: DT
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
- 
+
       INTEGER :: IERROR, IER, ISTRAI
       REAL(DP) :: EIRENE_RESET_SECOND, EIRENE_SECOND_OWN, DUMMY, TIMI
       integer, save :: inentry=1, init_log=0
@@ -97,7 +97,7 @@ C
 cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
 c     IUNIN = 1
       IUNIN = IUNIN + IFOFF
- 
+
       IUNOUT = 6
       IF (NRPES > 1) IUNOUT = 7
       IUNOUT = IUNOUT + IFOFF
@@ -111,40 +111,42 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
       END IF
- 
+
       IF (MY_PE == 0) THEN
- 
+
         IF (ITNR == 1) THEN
           CALL EIRENE_FIND_PARAM
           CALL EIRENE_SET_PARMMOD(1)
         ELSE
           DUMMY=EIRENE_RESET_SECOND()
         END IF
- 
+
         write (iunout,*) ' Number of PEs ',nprs
         if (nprs .gt. nrpes) then
           write (iunout,*) ' Number of PE too large '
           write (iunout,*) ' increase parameter NRPES = ',nrpes
           call EIRENE_exit_own(1)
         endif
- 
+
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT
-
+cdr
+c  indicate: first entry to eirene has now been done. 
+c  calls to find_param, set_parmod(1),... have already been done above
         inentry = 0
- 
+
         NRAPS=60
         IRAPS=0
         IITER=ITNR
         ITIMV=1
         IPRNLI=0
-        
+
         DTIMVN=DT
         NLPLAS=NLMODE
 
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
- 
+
       END IF  ! MY_PE == 0
 
 C
@@ -153,12 +155,14 @@ C
 C  READ FORMATTED INPUT FILE OR RESTART FOR NEXT ITERATION
 C
       ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
- 
+
       IF (MY_PE == 0) THEN
 
         TIMI=EIRENE_SECOND_OWN()
 C
         IF (INENTRY == 1) THEN
+cdr  first entry to eirene is via call eirene_couple, not via call eirene
+cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_save,.... ??
           nlplas_save = nlplas
           CALL EIRENE_SET_PARMMOD(1)
           if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
@@ -194,41 +198,42 @@ C
 
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for memory allocation ',time-timi
- 
+
 cdr make sure that nstrai is properly set in find_param.f
         IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
 C
 C   SET SOME CONSTANTS
 C
         CALL EIRENE_SETCON
- 
+
       END IF  ! MY_PE == 0
 C
-C  each internal iteration or time-step starts here
+C  each internal iteration or internal time-step (fixed plasma) starts here
 101   CONTINUE
 C  IITER=... , ITIME=...
+
 c  re-initialize some "ifirst"-blocks
       CALL EIRENE_PLNXTB(3,'EIRENE.F')
- 
+
       IF (MY_PE == 0) THEN
- 
+
       TIMI=EIRENE_SECOND_OWN()
 C
       CALL EIRENE_INPUT
- 
+
       CALL EIRENE_ALLOC_COUTAU
 C
 C  CHECK PARAMETER STATEMENTS, STORAGE REQUIREMENTS
 C
       CALL EIRENE_SETPRM
- 
+
       CALL EIRENE_ALLOC_CSTEP
       CALL EIRENE_ALLOC_CSPEI
       CALL EIRENE_ALLOC_CSDVI(2)
       CALL EIRENE_ALLOC_CSDVI_BGK
       CALL EIRENE_ALLOC_CSDVI_COP
       CALL EIRENE_ALLOC_CLAST
- 
+
       CALL EIRENE_STTXT1
 C
       TIME=EIRENE_SECOND_OWN()
@@ -331,7 +336,7 @@ C               2.         PLOT GEOMETRY
 C
 200   CONTINUE
       IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
- 
+
 C     TIMI=EIRENE_SECOND_OWN()
       CALL EIRENE_PLT2D
 C     TIME=EIRENE_SECOND_OWN()
@@ -340,11 +345,11 @@ C
 C               3.         MONTE CARLO CALCULATION
 C
 300   CONTINUE
- 
+
       END IF   ! MY_PE == 0
- 
+
       if (nprs > 1) CALL EIRENE_BROADCAST
- 
+
       CALL EIRENE_MCARLO
 C
 C               4.         OUTPUT , INTERFACE  AND PLOTTING
@@ -363,7 +368,7 @@ C
 450   CONTINUE
 C
 
- 
+
       IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1))  THEN
         IF (TRCSRC(0)) CALL EIRENE_OUTEIR(0)
         IF (PLTSRC(0)) CALL EIRENE_PLTEIR(0)
@@ -392,8 +397,8 @@ c   fuer parallele version noch nicht richtig
 c   noch mal ganz scharf nachdenken !!!!!!!!
         CALL EIRENE_WRREC
       ENDIF
- 
- 
+
+
 C  POST PROCESSING FOR BACKGROUND TALLIES, E.G. FOR DIAGNO, ITERATION, ETC.
       CALL EIRENE_PLASMA_DERIV(1)
 C  PRINT THOSE BACKGROUND TALLIES WHICH HAVE BEEN MODIFIED
@@ -416,6 +421,7 @@ C
         END IF
         IITER=IITER+1
         IF (IITER.LE.NITER) THEN
+cdr  prepare next internal iteration
           DUMMY=EIRENE_RESET_SECOND()
           IPRNLI=0
           GOTO 101
@@ -426,12 +432,12 @@ C
 C
 C  CALL DIAGNOSTIC MODULE (COMPUTE LINE INTEGRALS FROM EIRENE TALLIES)
 C
- 
+
       IF (NCHORI.GT.0) CALL EIRENE_DIAGNO
 
 csw  user defined output
       CALL EIRENE_OUTUSR
- 
+
       END IF   ! MY_PE == 0
 C
 C  SUBROUTINE STOSS IS A SUBROUTINE, IN WHICH BINARY COLLISION
@@ -465,10 +471,9 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
       END IF
 
       call EIRENE_REINITIALIZATION_OF_EIRENE
- 
+
       IF (NLLAST) THEN
          CALL EIRENE_DEALLOC_COMUSR
-!pb      CALL EIRENE_DEALLOC_CREFMOD
          CALL EIRENE_DEALLOC_CREF
          CALL EIRENE_DEALLOC_CESTIM
          CALL EIRENE_DEALLOC_CADGEO
@@ -506,10 +511,12 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
          CALL EIRENE_LOCAT2            ! DEALLOCATE LOCAL ARRAYS IN LOCATE
          CALL EIRENE_SAMSF2            ! DEALLOCATE LOCAL ARRAYS IN SAMSRF
          CALL EIRENE_STATS3            ! DEALLOCATE LOCAL ARRAYS IN STATIS
+         CALL EIRENE_LININT2           ! cdr, july 17, added:  argst de-allocation
+         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM
 C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF
- 
+
 
 
 cdr april 2015
@@ -526,11 +533,11 @@ cdr april 2015
       IF (NPRS > 1) THEN
          CLOSE (UNIT=IUNOUT)
       END IF
- 
+
       RETURN
- 
+
 C     the following entry is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_EIRENE_REINIT
       inentry = 1
       return

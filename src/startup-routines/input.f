@@ -258,11 +258,17 @@ C  13,14, AND 15 AND IUNIN
 !pb IUNOUT has already been set in subroutine EIRENE
 !pb      IUNOUT=6+ifoff
 C
-      IF (IITER.GT.1) GOTO 4000
+      IF (IITER.GT.1) THEN
+        CALL EIRENE_MASBOX
+     .   ('NEXT ITERATION STARTS, SKIP READING INPUT FILE ')
+        CALL EIRENE_MASJ1('IITER   ',IITER)
+        GOTO 4000
+      ENDIF
 
       IF (ITIMV.GT.1) THEN
         CALL EIRENE_MASBOX
      .   ('NEXT TIME-CYCLE STARTS, SKIP READING INPUT FILE ')
+        CALL EIRENE_MASJ1('ITIMV   ',ITIMV)
         GOTO 4000
       ENDIF
 C
@@ -302,9 +308,9 @@ C
       NSNVI=0
       NTMSTP=1
 
-C  BY DEFAULT SWITCH OFF MOMENTUM DENSITY TALLIES
-C  FOR USE OF THOSE TALLIES THEY NEED TO BE
-C  SWITCHED ON IN BLOCK 11 EXPLICITLY
+C  AS DEFAULT: SWITCH OFF MOMENTUM DENSITY TALLIES.
+C  FOR ACTIVATING THOSE TALLIES THEY NEED TO BE EXPLICITLY
+C  SWITCHED ON IN BLOCK 11 
 
 C  LV?DEN.. IS AN ALIAS FOR AN ENTRY IN ARRAY LMISTALV
 C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
@@ -449,19 +455,19 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE
      .  ('*** 1. DATA FOR OPERATING MODE                   ')
       CALL EIRENE_LEER(1)
-      IF (NMACH.EQ.1) THEN
-        CALL EIRENE_MASAGE
-     .  ('       EIRENE RUN ON CRAY                      ')
-      ELSEIF (NMACH.EQ.2) THEN
-        CALL EIRENE_MASAGE
-     .  ('       EIRENE RUN ON IBM                       ')
-      ELSEIF (NMACH.EQ.3) THEN
-        CALL EIRENE_MASAGE
-     .  ('       EIRENE RUN ON FACOM                     ')
-      ELSEIF (NMACH.EQ.4) THEN
-        CALL EIRENE_MASAGE
-     .  ('       EIRENE RUN ON VAX                       ')
-      ENDIF
+c     IF (NMACH.EQ.1) THEN
+c       CALL EIRENE_MASAGE
+c    .  ('       EIRENE RUN ON CRAY                      ')
+c     ELSEIF (NMACH.EQ.2) THEN
+c       CALL EIRENE_MASAGE
+c    .  ('       EIRENE RUN ON IBM                       ')
+c     ELSEIF (NMACH.EQ.3) THEN
+c       CALL EIRENE_MASAGE
+c    .  ('       EIRENE RUN ON FACOM                     ')
+c     ELSEIF (NMACH.EQ.4) THEN
+c       CALL EIRENE_MASAGE
+c    .  ('       EIRENE RUN ON VAX                       ')
+c     ENDIF
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE
@@ -626,19 +632,25 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
       ENDIF
       IF (NFILEK.NE.0) CALL EIRENE_LEER(1)
 
-      IF (NFILEJ.EQ.1) THEN
+      IF (NFILEJ.EQ.1.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT '
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.2) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
         WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP'
         WRITE (iunout,*) '       FROM FILE FT15'
-      ELSEIF (NFILEJ.EQ.3) THEN
+      ELSEIF (NFILEJ.EQ.3.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
         WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
         WRITE (iunout,*) '       FROM  FILE FT15 '
         WRITE (iunout,*) '       EIRENE SAVES NEW SNAPSHOT POPULATION'
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
+      ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
+        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
+        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
+        WRITE (iunout,*) '       FROM  FILE FT15 '
+        WRITE (iunout,*) '       NO FURTHER SNAPSHOP PRODUCED'
+        WRITE (iunout,*) '       DUE TO NTIME=0'
       ENDIF
       IF (NFILEJ.NE.0) CALL EIRENE_LEER(1)
 
@@ -1576,16 +1588,16 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
         DELPOT(IR)=DPP
 
 C  ASYMPTOTICS FOR CROSS-SECTIONS OR (WEIGHTED) RATE COEFFICIENTS
- 
+
 C  OVERWRITES ASYMPTOTICS READ FROM EXTERNAL DATA FILES FOR THIS RUN,
 C  IF THERE HAVE BEEN SUCH
         FP1 = 0._DP
         FP2 = 0._DP
         IF (INDEX(H123,'P.').eq.0) then
-          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV 
-          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV  
+          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV
+          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV
 cdr
-          RC2MIN = -20.  ! lower ln(E0), ln(N) default limit; E0 in eV, N in cm**-3 
+          RC2MIN = -20.  ! lower ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
           RC2MAX =  100. ! upper ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
           JFEX1MN = 0
           JFEX1MX = 0
@@ -2227,7 +2239,7 @@ C  Ti profile(s)
       END IF
 
       MPLSTI=1
-!pb      IF (NLMLTI) MPLSTI = (/ (I,I=1,NPLS) /)
+!pb   IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
       IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
 
       INDPRO(2)=IABS(INDPRO(2))
@@ -2410,7 +2422,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
       ENDIF
 
 620   CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
- 
+
       IF (ASSOCIATED(REFFILES)) THEN
 c  trim files for NFR target projectile combinations are requested.
 c  read them one by one in subr. RDTRIM
@@ -2691,11 +2703,11 @@ c.............................................
 c  further proprietary input flags. Not ready for external use.
 c  NMINPTS:   ENFORCE MINIMUM NUMBER OF HISTORIES FOR STRATUM.
 cdr           currently set in various places, but not used anywhere.
-     .                    NMINPTS(ISTRA), 
+     .                    NMINPTS(ISTRA),
 c  NPTSDEL: =0   (VALUES NPTSDEL .GT.0 ONLY FOR INTERNAL TESTTING PROCEDURES
 C                 OF MPI parallelization. Requires 2 runs with special input settings
 cdr See comments in MCARLO.F
-     .                    NPTSDEL(ISTRA)      
+     .                    NPTSDEL(ISTRA)
 C    .                   ,NRAYEN(ISTRA)   !CDR  NOT IN USE
 c...................................................................
 
@@ -3220,7 +3232,7 @@ c  search for input block 11a
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
-CVK TRACING FOR DEBUGGING:  not in use in present eirene
+CVK TRACING FOR DEBUGGING, V.KOTOV:  not in use in present eirene version
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
      .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
@@ -3597,7 +3609,7 @@ c  default asymptotics
 
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
-      NCHEN = NCHENI      
+      NCHEN = NCHENI
       WRITE (iunout,*) '        NCHORI,NCHENI= ',NCHORI,NCHENI
       CALL EIRENE_LEER(1)
       IF (IABS(NCHENI).GT.NCHEN)
@@ -4017,7 +4029,7 @@ C            THESE SETTINGS MAY BE ALTERED LATER, E.G. IN IF0COP.
       NP2TAL = NP2ND
       NT3TAL = NT3RD
       NRADD_TAL = NRADD
-      NSURF_TAL = NSURF      
+      NSURF_TAL = NSURF
       NSBOX_TAL = NSBOX
 C
 C  SOURCE PARAMETERS AND (REFLECTING) BOUNDARY CONDITIONS,
@@ -4513,9 +4525,6 @@ C
 C  READ DATA IN INTERFACING SUBROUTINE INFCOP  1400 -- 1499
 C
 
-!pb      TPB2=EIRENE_SECOND_OWN()
-!pb      write (iunout,*) ' cpu-time vor block 14 ',tpb2-tpb1
-!pb      tpb1 = tpb2
 
 ! CALL TO ALLOC_BCKGRND MOVED HERE TO ALLOW SPECIFICATION OF VOL
 ! IN IF0COP
@@ -4683,7 +4692,7 @@ C
       NSBOX_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT+NRADD_TAL
       IF (NS.NE.NSURF_TAL.OR.NB.NE.NSBOX_TAL.OR.
      .    NA.NE.NRADD_TAL) THEN
-        WRITE (IUNOUT,*) 'INCONSISTENCY IN MULTI-GRID DATA ' 
+        WRITE (IUNOUT,*) 'INCONSISTENCY IN MULTI-GRID DATA '
         WRITE (IUNOUT,*) 'NSBOX_TAL, NB ', NSBOX_TAL, NB
         WRITE (IUNOUT,*) 'NSURF_TAL, NS ', NSURF_TAL, NS
         WRITE (IUNOUT,*) 'NRADD_TAL, NA ', NRADD_TAL, NA
@@ -4709,6 +4718,7 @@ C
       CALL EIRENE_SET_PARMMOD(3)
       CALL EIRENE_ALLOC_CGEOM(2)
       CALL EIRENE_ALLOC_COMUSR(3)
+
       SAREA(1:NLIMPS) = SAREA_SAVE(1:NLIMPS)
       DEALLOCATE (SAREA_SAVE)
 
@@ -4825,7 +4835,7 @@ C   OF SOME OTHER, TO AVOID ROUND-OFF ERRORS
 C
         CALL EIRENE_SETEQ
 C
-C   WRITE A LIST OF CLOSED POLYGONIAL LINES, DETERMINED 
+C   WRITE A LIST OF CLOSED POLYGONIAL LINES, DETERMINED
 C   FROM EIRENE ADDITIONAL AND NON DEFAULT STANDARD SURFACES
 C  (WITH THEIR ORIENTATION)
 C   ONTO STREAM 78+IFOFF
@@ -4834,7 +4844,7 @@ C   PRODUCE GRIDS OF UNSTRUCTURED TRIANGLES INSIDE THESE CLOSED
 C   POLYGONS, (EXCLUDING THOSE AREAS WHICH ARE DESCRIBED BY
 C   CLOSED POLYGONS WITH NEGATIVE ORIENTATION
 C
-        IF (NLWRMSH) THEN 
+        IF (NLWRMSH) THEN
           CALL EIRENE_WRMESH
           CALL EIRENE_PLMESH
         ENDIF
@@ -4973,11 +4983,13 @@ C
 
 !  NOTHING IS DONE IF ARRAYS FOR BACKGROUND ARE ALREADY ALLOCATED
       IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
-!pb      IF (NMODE.NE.0.AND.IITER.LE.1) THEN
+
+!pb   IF  (NMODE.NE.0.AND.IITER.LE.1) THEN
       IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
      .    (ABS(NMODE).EQ.2)) THEN
-C  READ PLASMA BACKGROUND FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
-C  OR FROM COMMON BRAEIR (NLPLAS)
+C  READ PLASMA BACKGROUND
+c  EITHER  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
+C  OR      FROM COMMON BRAEIR (NLPLAS)
         IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
         CALL EIRENE_IF1COP
       ENDIF
@@ -5000,7 +5012,7 @@ cdr  VOLTAL on coarser grid
 
 C
 cpb add nlshrt13
-      IF ((NFILEL.LE.1).OR.(NFILEL == 6) .OR. NLSHRT13) THEN
+      IF ((NFILEL.LE.1) .OR. (NFILEL == 6) .OR. NLSHRT13) THEN
 C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS
 C
