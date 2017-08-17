@@ -142,7 +142,7 @@ cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct d
 
         MUSR=4*NATM+4*NMOL+5*NION+3*NPLS+30+NSPZ+
      .       6*(1+NPHOTP)*(1+NATMP)*(1+NMOLP)*(1+NIONP)*(1+NPLSP)+NSPZ*6
-     .       +2*NPLSI+NSPZ*NPLS
+     .       +2*NPLS+NSPZ*NPLS
 
         LUSR=NRAD*(NPLS+2)+NRAD
 
