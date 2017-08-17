@@ -208,9 +208,10 @@ c   in most cases then: NPARM=NPARMI
 
 
 C
-C  INITIALIZE SOME DATA AND SET DEFAULTS
+C  INITIALIZE SOME FURTHER DATA AND SET DEFAULTS
 C
-
+      NPLSI=0
+      NMODE=0
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
@@ -1359,6 +1360,9 @@ cdr  some parameters may have gotten changed in IF0PRM,  case specific
 
 cdr  due to these changes there, also some derived storage parmeters may have changed....
       NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
+
+C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
+C     IF (NSTRAI == 1) NSMSTRA = 0
 
       REWIND IUNIN
       CALL EIRENE_LEER(1)
