@@ -103,6 +103,7 @@ c     ------------------------------------------------------------     c
         IUNOUT = 7
       Else
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       END IF
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
