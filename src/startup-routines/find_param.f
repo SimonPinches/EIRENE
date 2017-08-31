@@ -61,7 +61,7 @@ C
      .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
      .           IATM, IMOL, IION, IPHOT, IPLS, ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, NADV_ADD, MOD_ADDV, NO_COMPO, 
+     .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
      .           NO_CONTRIB, ISP, ITP, IRATIO
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
