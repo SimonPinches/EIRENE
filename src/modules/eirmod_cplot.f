@@ -1,4 +1,7 @@
 cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
+cdr  aug. 17:  PLARGL introduced. Separate options for 
+cdr            spectrally resolved plot (plspec)
+cdr            and for line of side spatially resolved plot (plargl) 
       MODULE EIRMOD_CPLOT
  
       USE EIRMOD_PRECISION
@@ -45,7 +48,8 @@ cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
       LOGICAL, PUBLIC, SAVE ::
      L NLPL2D, NLPL3D,
      L PL1ST,  PL2ND,  PL3RD,  PLADD,   PLHST,   PLCUT(3),
-     L PLCHOR, PLSPEC, PLSTOR, PLNUMV,  PLNUMS,  PLARR,
+     L PLCHOR, PLSPEC, PLARGL, 
+     L PLSTOR, PLNUMV,  PLNUMS,  PLARR,
      L LPRADR, LPPOLR, LPTORR, LRAPS3D, LR3DCON, LRPSCUT,
      L PLIDL,  PLVTK
  
@@ -203,6 +207,7 @@ cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
       PLCUT   = .FALSE.
       PLCHOR  = .FALSE.
       PLSPEC  = .FALSE.
+      PLARGL  = .FALSE.
       PLSTOR  = .FALSE.
       PLNUMV  = .FALSE.
       PLNUMS  = .FALSE.

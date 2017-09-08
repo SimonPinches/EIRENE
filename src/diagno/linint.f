@@ -1,7 +1,12 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-!cp  July 17 :  made  ARGST allocatable, conditional on  TRCSIG
-cdr             plspec only, if trcsig. to be done in input.f
-CDR             ditto: AA, XNTG, VPLOT
+cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
+cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
+c
+c    July 17 :  distinguish flags for output with spectral resolution from
+c               output with spatial resolution along LOS.
+c               Made  ARGST allocatable, conditional on  PRARGL,PLARGL
+cdr             plargl only, if prargl. To be done in input.f
+CDR             ditto: made allocatable AA, XNTG, VPLOT
 CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
 C
 C
@@ -131,9 +136,9 @@ C
       
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
-        IF (TRCSIG) THEN
-cdr  TRCSIG: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
-cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
+        IF (PRARGL) THEN
+cdr  PRARGL: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
+cdr  tbd:  turn off PLARGL in input.f (+warning), unless also PRARGL=.T.
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -149,9 +154,11 @@ cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
       LARGST = SIZE(ARGST,2) >= NSBOX
 
 c.......................................................................
-cdr  some plot stuff, still to be moved to separate routine
-cdr  into folder: plotting, plot_dummy...
-      IF (PLSPEC.AND.TRCSIG) THEN
+cdr  some plot stuff for spatially resolved LOS, 
+cdr  ...still to be moved to separate routine
+cdr  into folders: plotting, plot_dummy... 
+CDR  (note: PLARGL was turned off unless PRARGL)
+      IF (PLARGL) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
           NCH = 1
           IF (ANY(NCHTAL(1:NCHORI) == 1)) NCH=IABS(NCHENI)
@@ -929,11 +936,11 @@ C  FINAL SEGMENT ALONG LINE-OF-SIGHT
       JJJ=JJJ+1
       IF (LARGST) XNTG(JJJ)=TRACKS
 C
-C  PLOT INDIVIDUAL CONTRIBUTIONS ALONG LINE OF SIGHT.
+C  PLOT SPATIALLY RESOLVED CONTRIBUTIONS ALONG LINE OF SIGHT.
 C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
-C  PLOTTED INTO GEOMETRY PLOT VIA CHCTRC CALLS.
+C  PLOTTED INTO GEOMETRY PLOT (PLT2D, PLT3D) VIA CHCTRC CALLS.
 C
-      IF (PLSPEC.AND.TRCSIG) THEN
+      IF (PLARGL) THEN
         IF (PLHST) THEN
           WRITE (IUNOUT,*) 'FROM LININT: '
           WRITE (IUNOUT,*) 'PLOTTING OF FURTHER LINE OF SIGHTS DISABLED'
@@ -1013,7 +1020,7 @@ C  INITALIZE NEW PICTURE FOR NEW CHORD
         END IF
       END IF
 C
-      IF (TRCSIG) THEN
+      IF (PRSPEC) THEN
         IF (NCHTAL(ICHORI).EQ.1) THEN
           WRITE (iunout,*) 'ENERGY (EV): ',PEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), FOR IATM= ',ISP
@@ -1059,7 +1066,7 @@ C
       ENTRY EIRENE_LININT2
 
       IF (ALLOCATED(ARGST)) THEN
-c  these arrays have been allocated for TRCSIG option.
+c  these arrays have been allocated for PRSPEC option.
         DEALLOCATE (ARGST)
         DEALLOCATE (AA)
         DEALLOCATE (VPLOT)

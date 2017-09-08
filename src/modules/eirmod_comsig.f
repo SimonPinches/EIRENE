@@ -1,3 +1,7 @@
+cdr  aug. 17: added prspec, prargl; 
+cdr           separate printout for energy (spectrally) resolved
+cdr           from spatially (along LOS) resolved data.
+cdr           Was so far all mixed with TRCSIG (for debugging printout)
       MODULE EIRMOD_COMSIG
  
       USE EIRMOD_PRECISION
@@ -37,6 +41,8 @@
  
       INTEGER, PUBLIC, SAVE ::
      I         NCHORI,   NCHENI
+      LOGICAL, PUBLIC, SAVE :: 
+     L         PRSPEC,   PRARGL
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
  
