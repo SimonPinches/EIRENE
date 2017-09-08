@@ -1,3 +1,4 @@
+cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
 Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum? 
@@ -71,10 +72,11 @@ C
      .          X0ERR, Y0ERR, Z0ERR, VELC, E0C, VELYC, VELZC, SG,
      .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, T, ZTS,
      .          ZMFP, ZEP1, ZLOG, ZTST, ZINT1, ZINT2, Z0S, TIMES,
-     .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE, EIRENE_FPATHM, 
-     .          EIRENE_FPATHA, EX, EXPM, EIRENE_FPATHPH, WMINC_LOCAL,
+     .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE, 
+     .          EX, EXPM, FF, WMINC_LOCAL,
+     .          EIRENE_FPATHA, EIRENE_FPATHM, EIRENE_FPATHPH, 
      .          SCOS_NEW
-      REAL(DP), EXTERNAL :: RANF_EIRENE
+      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
       INTEGER :: NBLCKC, NCELLC, NRCLLC, NACLLC, ITIMEC, IPERIDC,
      .           IFPTHC, IUPDTC, NPCLLC, NTCLLC, NTSAVE, NPSAVE,
      .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS, 
@@ -524,16 +526,25 @@ C  COLLISION IN SECTION JJ
             ENDIF
             AX(1)=AX(2)
             EX=CLPD(J)*ZMFPI
-            IF (EX.LE.1.D-10) THEN
-              EXPM=1.
-C             AX(1)=AX(1)
-            ELSEIF (EX.GT.1.D2) THEN
-              EXPM=0.D0
-              AX(1)=AX(1)/EX
-            ELSE
-              EXPM=EXP(-EX)
-              AX(1)=AX(1)*(1.-EXPM)/EX
-            ENDIF
+c
+c  cond exp. est.
+c  find new Ax(1)= Ax(1)* (1-exp(-ex))/ex)
+c           ax(1)=ax(1) * funexp(-ex)
+c   with    function funexp(x)=(exp(x)-1)/x
+            FF=eirene_funexp(ex,expm)
+            ax(1)=ax(1)*ff
+
+c           IF (EX.LE.1.D-10) THEN
+c             EXPM=1.
+Cc            AX(1)=AX(1)
+c           ELSEIF (EX.GT.1.D2) THEN
+c             EXPM=0.D0
+c             AX(1)=AX(1)/EX
+c           ELSE
+c             EXPM=EXP(-EX)
+c             AX(1)=AX(1)*(1.-EXPM)/EX
+c           ENDIF
+c 
             ZTS=ZTS+CLPD(J)
             IF (NLPOL) NPCELC=NCOUNP(J)
             IF (NLTOR) NTCELC=NCOUNT(J)
