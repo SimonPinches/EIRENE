@@ -317,10 +317,19 @@ C  SPECTRA
      .                 TEXTS(IADTYP(ESTIML(ISPC)%PSPC%IPRTYP)+
      .                       ESTIML(ISPC)%PSPC%IPRSP)
               END IF
+              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
+     .               10._DP**ESTIML(ISPC)%PSPC%SPCMIN
+                WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
+     .               10._DP**ESTIML(ISPC)%PSPC%SPCMAX
+                WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
+              ELSE
               WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
      .               ESTIML(ISPC)%PSPC%SPCMIN
               WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
      .               ESTIML(ISPC)%PSPC%SPCMAX
+                WRITE (IOUT,'(A)') ' LINEAR SPACING'
+              END IF
               WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
      .               ESTIML(ISPC)%PSPC%NSPC
               WRITE (IOUT,*)
@@ -329,16 +338,27 @@ C  SPECTRA
                   DO IE=1, ESTIML(ISPC)%PSPC%NSPC
                     EN = ESTIML(ISPC)%PSPC%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-                    WRITE (IOUT,'(I6,2ES12.4)') IE,EN,
+                    IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                      WRITE (IOUT,'(I6,2ES12.4)') IE,10._DP**EN,
      .                 ESTIML(ISPC)%PSPC%SPC(IE)
+                    ELSE
+                      WRITE (IOUT,'(I6,2ES12.4)') IE,EN,
+     .                 ESTIML(ISPC)%PSPC%SPC(IE)
+                    END IF
                   END DO
                 ELSE
                   DO IE=1, ESTIML(ISPC)%PSPC%NSPC
                     EN = ESTIML(ISPC)%PSPC%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-                    WRITE (IOUT,'(I6,3ES12.4)') IE,EN,
+                    IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                      WRITE (IOUT,'(I6,3ES12.4)') IE,10._DP**EN,
      .                   ESTIML(ISPC)%PSPC%SPC(IE),
      .                   ESTIML(ISPC)%PSPC%SDV(IE)
+                    ELSE
+                      WRITE (IOUT,'(I6,3ES12.4)') IE,EN,
+     .                   ESTIML(ISPC)%PSPC%SPC(IE),
+     .                   ESTIML(ISPC)%PSPC%SDV(IE)
+                    END IF
                   END DO
                 END IF
               ELSE
@@ -819,7 +839,7 @@ C  SURFACE AVERAGED TALLY NO. 50
           ENDIF
           CALL EIRENE_LEER (1)
           WRITE (iunout,*) 'TOTAL NET "ATOMIC" FLUXES, AMPERE AND WATT'
-          IF (SUMMTP.GT.0.D0)
+          IF (SUMMTP.GT.0._DP)
      .    WRITE (iunout,*) '(EXCLUDING BULK IONS (RECYCLING SOURCE) '
           CALL EIRENE_MASR1 ('NET PFLX',SUMMT)
           CALL EIRENE_MASR1 ('NET EFLX',SUMME)
@@ -829,7 +849,7 @@ C  SURFACE AVERAGED TALLY NO. 50
 C
 C  INDEPENDENT OF VALUE AND SIGN OF ILIIN:
 C
-        IF (SUMMTP.GT.0.D0) THEN
+        IF (SUMMTP.GT.0._DP) THEN
           CALL EIRENE_LEER (1)
           WRITE (iunout,*)
      .      'TOTAL INCIDENT RECYCLING SOURCE "ATOMIC" FLUXES'
@@ -845,12 +865,12 @@ C  ******************************************
 C
 C   FIRST: FROM INCIDENT ATOMS
 C
-      SUMMTA=0.
-      SUMMEA=0.
-      SUMA=0.
-      SUMM=0.
-      SUMI=0.
-      SUMPH=0.
+      SUMMTA=0._DP
+      SUMMEA=0._DP
+      SUMA=0._DP
+      SUMM=0._DP
+      SUMI=0._DP
+      SUMPH=0._DP
 C
 C   SURFACE AVERAGED TALLY NO.2 AND NO.27
 C
@@ -975,7 +995,7 @@ C
 C
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT ATOMS '
         CALL EIRENE_LEER(1)
@@ -1214,7 +1234,7 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT MOLECULES '
         CALL EIRENE_LEER(1)
@@ -1453,7 +1473,7 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT TEST IONS '
         CALL EIRENE_LEER(1)
@@ -1692,7 +1712,7 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT PHOTONS   '
         CALL EIRENE_LEER(1)
@@ -1931,7 +1951,7 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0) THEN
+      IF (TTTT.EQ.0._DP) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO FLUXES RE-EMITTED FROM INCIDENT BULK IONS '
         CALL EIRENE_LEER(1)
@@ -2019,13 +2039,13 @@ C
       ENDIF
 C
       IF (ABS(SUMMTA)+ABS(SUMMTM)+ABS(SUMMTI)+
-     .    ABS(SUMMTPH).NE.0.D0) THEN
+     .    ABS(SUMMTPH).NE.0._DP) THEN
         CALL EIRENE_LEER (1)
 C
         IF (ILIIN(I).GT.0) THEN
           WRITE (iunout,*)
      .      'TOTAL REEMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
-          IF (SUMMTP.GT.0.D0) WRITE (iunout,*)
+          IF (SUMMTP.GT.0._DP) WRITE (iunout,*)
      .      '(EXCLUDING CONTRIB. FROM INCIDENT BULK IONS)'
           CALL EIRENE_MASR1 ('TOT.PFLX',SUMMTA+SUMMTM+SUMMTI+SUMMTPH)
           CALL EIRENE_MASR1 ('TOT.EFLX',SUMMEA+SUMMEM+SUMMEI+SUMMEPH)
@@ -2034,7 +2054,7 @@ C
         ELSEIF (ILIIN(I).LT.0.AND.ILIIN(I).NE.-3) THEN
           WRITE (iunout,*)
      .      'TOTAL NEGATIVE "ATOMIC" FLUXES, AMPERE AND WATT'
-          IF (SUMMTP.GT.0.D0) WRITE (iunout,*)
+          IF (SUMMTP.GT.0._DP) WRITE (iunout,*)
      .      '(EXCLUDING CONTRIB. FROM INCIDENT BULK IONS)'
           CALL EIRENE_MASR1 ('TOT.PFLX',SUMMTA+SUMMTM+SUMMTI+SUMMTPH)
           CALL EIRENE_MASR1 ('TOT.EFLX',SUMMEA+SUMMEM+SUMMEI+SUMMEPH)
@@ -2165,7 +2185,7 @@ C
       TTSPTP  = TTSPTP + SUMMP
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT ATOMS')
@@ -2354,7 +2374,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!     IF (TTTT.EQ.0.D0) THEN
+!     IF (TTTT.EQ.0._DP) THEN
 !       CALL EIRENE_LEER(1)
 !       CALL EIRENE_MASAGE
 !    .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT MOLECULES')
@@ -2545,7 +2565,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT TEST IONS')
@@ -2736,7 +2756,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT PHOTONS')
@@ -2927,7 +2947,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT BULK IONS')
@@ -3062,7 +3082,7 @@ C
 322     CONTINUE
 321   CONTINUE
 C
-      IF (SUMMS.EQ.0.D0) THEN
+      IF (SUMMS.EQ.0._DP) THEN
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASAGE
      .  ('NO ADDITIONAL SURFACE TALLIES AT THIS SURFACE ')
@@ -3108,7 +3128,7 @@ C
 422     CONTINUE
 421   CONTINUE
 C
-      IF (SUMMS.EQ.0.D0) THEN
+      IF (SUMMS.EQ.0._DP) THEN
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASAGE
      .  ('NO ALGEBRAIC SURFACE TALLIES AT THIS SURFACE ')

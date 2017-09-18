@@ -1,5 +1,7 @@
 C  10.6.05:  L_SAME:  USE SAME FRAME AS IN PREVIOUS CALL
 C  8.8.06 :  GRPP taken out
+Cdr sept.17:  plot options logx are not available. 
+C             But would be good for spectra, at least
 C
       SUBROUTINE EIRENE_PLTTLY
      .  (X,Y,VBAR,YMN,YMX,IR1,IR2,IRS,NKURV,TXTTAL,
@@ -7,7 +9,7 @@ C
      .                   LBAR,XMI,XMA,YMNLG,YMXLG,LPLOT,LHIST,IERR,
      .                   N1BAR,N1DIM,L_SAME)
 CDR
-c  make a x-y plot, with or without error bars (VBAR), up to ncurv curvres into single picture  
+c  make a x-y plot, with or without error bars (VBAR), up to ncurv curves into single picture
 
 C    input
 c
@@ -166,7 +168,7 @@ C
         IF (IERR.GT.0) RETURN
       ENDIF
 C
-C  PREPARE ARRAYS FOR PLOTTING ON LOG. SCALE
+C  PREPARE ARRAYS FOR PLOTTING ON LOG. Y SCALE
 C
       IF (LOGY) THEN
         YMINY=MAX(10.D0**MINLY,10.D0**(MAXLY-12))

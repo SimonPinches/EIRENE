@@ -1,16 +1,18 @@
 !pb  24.04.07:  allow for logarithmic equidistant energy bins
 cdr  29.09.14:  only comments 
 cdr             meaning of isc=1, 2,... unclear. All current calls are with either isc=0 or isc=1
+cdr  This routine is fully redundant. Replaced by: UPDATE_SPECTRUM.f
+cdr  tbd:  change calls from folneut.f and folion.f
  
       SUBROUTINE EIRENE_CALC_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface or volume/line averaged energy spectra
-c  wt:  particle weight
+c  wt:  particle weight, (or wt=wpr, conditional particle weight) 
 
-c  isc:    =0: surface averaged spectra, 
+c  isc:    =0: update surface averaged spectra, 
 c       ind:  =1: particle incident on surface
 c       ind:  =2: particle re-emitted from surface
 
-c  isc:  =1,2: else (cell based spectra)
+c  isc:  =1,2: else (update cell based spectra)
 c       ind:  not in use  (often: ind = iflag in calling programs, 
 c                          iflag is a flag used for special (non-standard) options for volume averged tally estimators)
 c  ityp:  type of particle
@@ -32,12 +34,15 @@ c  ityp:  type of particle
       REAL(DP), INTENT(IN) :: WT
       INTEGER :: ISPC, I, IS, IC, IRDO, IRD
       REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN, EB
+
       TYPE(EIRENE_SPECTRUM), POINTER :: P
+
 c  currently: surface based spectra only from particles incident onto surface (ind=1)
-c             no spectra of emitted particles (ind=2)
+c             no spectra of emitted particles (ind=2) yet
+
       IF ((ISC == 0) .AND. (IND .NE. 1)) RETURN
 
-C  set "type" specific parameters
+C  set "type" specific parameters:  IS, CDYN
       SELECT CASE (ITYP)
       CASE (0)
         IS = IPHOT
@@ -67,11 +72,11 @@ C  set "type" specific parameters
  
             SELECT CASE(ESTIML(ISPC)%PSPC%ISPCTYP)
             CASE (1)
-              ADD = WT
+              ADD = WT    ! bin particle flux
             CASE (2)
-              ADD = WT*E0
+              ADD = WT*E0 ! bin energy weighted flux
             CASE DEFAULT
-              ADD = 0._DP
+              ADD = 0._DP ! no scoring
             END SELECT
  
             EB = E0
@@ -95,7 +100,8 @@ C  set "type" specific parameters
  
       ELSE     ! CELL based spectra
 
-cdr  meaning of isc = 1,2  ?? see subr. input, flag ISRFCLL
+cdr  meaning of isc = 1,2  see subr. input, flag ISRFCLL
+cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling program ??
  
         WV=WEIGHT/VEL
         DO IC=1,NCOU
@@ -108,8 +114,8 @@ cdr  meaning of isc = 1,2  ?? see subr. input, flag ISRFCLL
           DO ISPC=1,NADSPC
             P => ESTIML(ISPC)%PSPC
             IF ((P%ISRFCLL > 0) .AND.
-     .          (((P%ISRFCLL == 1).AND.(P%ISPCSRF == IRD)) .OR.      ! scoring cell
-     .           ((P%ISRFCLL == 2).AND.(P%ISPCSRF == IRDO))) .AND.   ! geometry cell
+     .          (((P%ISRFCLL == 1).AND.(P%ISPCSRF == IRD)) .OR.      ! scoring cell, coarse grid
+     .           ((P%ISRFCLL == 2).AND.(P%ISPCSRF == IRDO))) .AND.   ! geometry cell, fine grid
      .          (P%IPRTYP == ITYP) .AND.
      .          ((P%IPRSP == IS) .OR. (P%IPRSP == 0))) THEN
  

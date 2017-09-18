@@ -399,7 +399,7 @@ c  surface reflection model
       INT_PARM( 46) = NHD4
       INT_PARM( 47) = NHD5
       INT_PARM( 48) = NHD6
-c  lines of sight integrals (post-procesing
+c  lines of sight integrals (post-processing)
       INT_PARM( 49) = NCHOR
       INT_PARM( 50) = NCHEN
 
@@ -562,7 +562,7 @@ c  species indices (1st dimenion) of output tallies
       NSNV        = INT_PARM( 28)
       NALV        = INT_PARM( 29)
       NALS        = INT_PARM( 30)
-      NAIN        = INT_PARM( 31)   !input tally !
+      NAIN        = INT_PARM( 31)   ! actually: an input tally !
       NCPV        = INT_PARM( 32)
       NBGK        = INT_PARM( 33)
 
