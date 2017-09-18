@@ -698,7 +698,7 @@ C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               call eirene_leer(1)
               write (iunout,*) 'new particle ',iptsi
               RN1=RANF_EIRENE()  ! sacrifize one random number for testing random sequence
-              write (iunout,*), 'iseed,iseed_next,rn',
+              write (iunout,*) 'iseed,iseed_next,rn',
      .                           iseed_iptsi, iseed_istra,RN1
             ENDIF
            
@@ -1156,7 +1156,9 @@ C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
 cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
 cpara  csw 08mar2013: hat sich jetzt erledigt..
-!pb      IESTR=ISTRA
+
+!pb   IESTR=ISTRA
+
       IF (NFILEN.EQ.1) THEN
 csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
