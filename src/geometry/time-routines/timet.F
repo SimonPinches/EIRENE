@@ -93,10 +93,17 @@ C
 #ifdef TRACE
       IF (NLTRC) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'TIMET: ZRAD,NRCELL,NTCELL,MTSURF '
-        WRITE (iunout,*) '      ',ZRAD,NRCELL,NTCELL,MTSURF
-        WRITE (iunout,*) 'INITIAL: X0,X01,Z01,PHI ',
-     .                             X0,X01,Z01,PHI/DEGRAD
+        IF (NRCELL.GT.0) THEN
+          WRITE (iunout,*) 'TIMET FROM INSIDE, NPANU ', NPANU
+          WRITE (iunout,*) 'ZRAD,NRCELL,NTCELL,MTSURF '
+          WRITE (iunout,*)  ZRAD,NRCELL,NTCELL,MTSURF
+          WRITE (iunout,*) 'INITIAL: X01,Z01,PHI ',
+     .                               X01,Z01,PHI/DEGRAD
+        ELSE
+          WRITE (iunout,*) 'TIMET FROM OUTSIDE, NPANU ', NPANU
+          WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
+          WRITE (iunout,*)  MRSURF,MTSURF,ZRAD
+        ENDIF
       ENDIF
 #endif
 C
@@ -123,7 +130,7 @@ C
         BB=VELZ+EPS60
         NZSAVE=1
         IF (VELZ.LT.0.D0) NZSAVE=-1
-        DO 2903 ISTS=1,NSTSI
+        DO 120 ISTS=1,NSTSI
           MTTEST=INUMP(ISTS,3)
           IF (MTTEST.NE.0) THEN
 C  TEST TOROIDAL SURFACE NO. MTTEST FOR REENTRY
@@ -157,7 +164,8 @@ C  IS THIS RE-ENTRY INSIDE THE STANDARD GRID REGION?
               ENDIF
             ENDIF
           ENDIF
-2903    CONTINUE
+120     CONTINUE  ! end of loop over tor. non-def std surfaces 
+
         IF (NCOUT.GT.0.AND.MTSAVE.NE.MTSURF) THEN
 C  REENTRY FOUND, REDUCE ZRAD TO F
 C  NCOUT=1 AT THIS POINT
@@ -224,7 +232,6 @@ C
 C  NOW: PARTICLE INSIDE STANDARD MESH, RADIAL CELL NRCELL
 c  still: nltrz
 C
-2900  CONTINUE
       Z001=Z01+VELZ*ZRAD
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 
@@ -250,8 +257,8 @@ C  J2: NEXT SURFACE INDEX
 C
       NLSRFZ=.FALSE.
 C
-10    CONTINUE
-      IF (J2.LE.0.OR.J2.GT.NT3RD) GOTO 990
+110   CONTINUE
+      IF (J2.LE.0.OR.J2.GT.NT3RD) GOTO 9990
 C  TIME FROM Z01 TO ZSURF
       DZ=(ZSURF(J2)-Z01)
 !pb reduce zrad if the trajectory comes too close
@@ -296,12 +303,16 @@ C  NEXT CELL
         J1=J1+NINCZ
         J2=J1+INCZ
         NCOUT=NCOUT+1
-        GOTO 10
+        GOTO 110
       ENDIF
 C
 C  LAST CELL
 C
-100   CONTINUE
+
+#ifdef TRACE
+        IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
+#endif
+
       NTCELL=J1
       MTSURF=0
       NINCZ=0
@@ -312,21 +323,17 @@ C
 C
       GOTO 5000
 C
-990   CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMET, Z SURFACE INDEX OUT OF RANGE  '
-      WRITE (iunout,*) 'NPANU,Z0,Z01,ZRAD,VELZ,NTCELL '
-      WRITE (iunout,*)  NPANU,Z0,Z01,ZRAD,VELZ,NTCELL
-      WEIGHT=0.
-      ZRAD=-1.
-      GOTO 5000
-C
-C  CYLINDER APPROXIMATION FINISHED
+C  BLOCK 1: done ::::::::::::::::::::::::::::::::::::::
 C
 1000  CONTINUE
 C
+C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
       IF (.NOT.NLTRA) GOTO 5000
 C
-C  DISCRETE TOROIDAL APPROXIMATION, ONLY ONE STEP AT A TIME
+C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION, 
+C            also: default toroidal periodicity model.
+C            ONLY ONE STEP AT A TIME
 C
       NERR=0
       NCOUT=1
@@ -548,12 +555,13 @@ C
         IF (CLPD(J).LE.0..OR.KUPC(J).LE.0.OR.
      .      (KUPC(J).GE.NT3RD.AND.NLTOR)) THEN
           WRITE (iunout,*) 'ERROR DETECTED IN TIMET '
-          WRITE (iunout,*) 'NPANU,J,BLPD,KUPC ',NPANU,J,BLPD(J),KUPC(J)
+          WRITE (iunout,*) 'NPANU,J,BLPD,KUPC ',
+     .                      NPANU,J,BLPD(J),KUPC(J)
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
-          WRITE (iunout,*) 'TIMET: J,BLPD,NUPC,NCOUNT ',
-     .                        J,BLPD(J),NUPC(J),NCOUNT(J)
+          WRITE (iunout,*) 'TIMET: J,BLPD(J),NUPC(J),NCOUNT(J) ',
+     .                             J,BLPD(J),NUPC(J),NCOUNT(J)
         ENDIF
 #endif
 5100  CONTINUE
@@ -571,6 +579,7 @@ C
       SUM=0.
       DO 5110 ICOU=1,NCOU
         SUM=SUM+CLPD(ICOU)
+
 C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
 C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
 5110  CONTINUE
@@ -580,10 +589,21 @@ C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
         WRITE (iunout,*) 'TRY TO KILL PARTICLE ASAP '
         SUM=-1.0D0
       ENDIF
-      ZRAD=SUM
 C
+      ZRAD=SUM
       RETURN
 C
+9990  CONTINUE
+      WRITE (iunout,*) 'ERROR IN TIMET, Z SURFACE INDEX OUT OF RANGE  '
+      WRITE (iunout,*) 'NPANU,Z0,Z01,ZRAD,VELZ,NTCELL '
+      WRITE (iunout,*)  NPANU,Z0,Z01,ZRAD,VELZ,NTCELL
+      WEIGHT=0.
+      ZRAD=-1.
+      RETURN
+9991  CONTINUE
+      WRITE (iunout,*)
+     .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMET'
+      CALL EIRENE_EXIT_OWN(1)
 9998  CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN TIMET. RETURN ZRAD=1.D30'
       WRITE (iunout,*) 'NPANU,AA,BB ',NPANU,AA,BB

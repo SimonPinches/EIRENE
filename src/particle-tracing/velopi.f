@@ -1,11 +1,17 @@
 CDR  2014  : PROGRAMMING AND NOTATION SYNCRONIZED WITH VELOCX.F
 CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
+cdr  sept.17:sync with veloel,velocx. Prepare bgk relaxation. perhaps ready: nflag=2
 C
       SUBROUTINE EIRENE_VELOPI(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                  IRPI,RMASS,ZEP_IN)
 C
-C  FETCH A NEW SPECIES INDEX AND A
-C          NEW VELOCITY OF TEST PARTICLE AFTER BULK PARTICLE COLLISION (PI)
+C  THIS SUBROUTINE CARRIES OUT A HEAVY PARTICLE COLLISION OF A TEST PARTICLE
+C  WITH A BULK PARTICLE.
+C  IT RETURNS THE POST COLLISION VELOCITY VECTOR.
+C
+C
+C  FETCH A NEW SPECIES INDEX AND
+C        A NEW VELOCITY OF TEST PARTICLE AFTER BULK PARTICLE COLLISION (PI)
 C  AT THIS POINT: ONE NEXT GENERATION TEST PARTICLE WILL BE BORN
 C                 I.E. WEIGHT ADJUSTMENT ALREADY DONE IN CALLING PROGRAM
 C
@@ -83,13 +89,13 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
         do j=1,1000
 c  elab:  here ln(E), with E from 0.1 to 1e5 eV
           elab=elmin+(j-1)/999.*(elmax-elmin)
-          IF (LHABER) THEN
-            write (iunout,*) 'error in velopi: no diff. PI Cr. Section '
+C         IF (LHABER) THEN
+C           write (iunout,*) 'error in velopi: no diff. PI Cr. Section '
 C           CALL SCATANG (ELAB,-1._DP,ELTHDUM,CTCHDUM,SIGHABER)
 C           CPI= SIGHABER*AU_TO_CM2
-          ELSE
+C         ELSE
             CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 1')
-          END IF
+C         END IF
           vrq=exp(elab-defpi(IRPI))
           vr=sqrt(vrq)
           if (cpi*vr.gt.SGPVMX(IRPI)) then
@@ -97,6 +103,7 @@ C           CPI= SIGHABER*AU_TO_CM2
             SGPVMX(IRPI)=cpi*vr
           endif
         enddo
+
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'FIRST CALL TO VELOPI FOR IRPI= ',IRPI
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
@@ -117,7 +124,7 @@ C
 C  INITIALIZE COUNTER FOR REJECTION SAMPLING OF INCIDENT BULK PARTICLE
 C
       ICOUNT=1
-
+C
 C  NEXT: STEP 1
 C
 C    set parameters for random sampling in cell icell=K
@@ -127,6 +134,7 @@ C
       ZARGX=ZRG(IPLS,K)
       ZARGY=ZRG(IPLS,K)
       ZARGZ=ZRG(IPLS,K)
+c  drift velocity, cm/s
       IF (NLDRFT) THEN
         IF (INDPRO(4) == 8) THEN
           CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
@@ -160,7 +168,7 @@ C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN
       INIV2=INIV2-1
 C
       IF (NFLAG.EQ.1) THEN
-C  DRIFTING, MONOENERGETIC ISOTROPIC DISTRIBUTION
+C  DRIFTING, MONO-ENERGETIC ISOTROPIC DISTRIBUTION
 C  ZT1 CORRESPONDS TO MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VEL=SQRT(ZT1(IPLS,K))
         VN=VEL/SQRT(VXN*VXN+VYN*VYN+VZN*VZN)
@@ -220,9 +228,12 @@ C  REJECT
 c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
      .        'ICOUNT TOO LARGE ( > 500) IN VELOPI. ACCEPT SAMPLE '
-            ELLAB=EXP(ELAB)
-            WRITE (iunout,*) 'NPANU, IREAC, IRPI, ELAB(EV) ',
-     .                        NPANU, IREAC, IRPI, ELLAB
+cdr............................................................   
+cdr  test output only
+cdr         ELLAB=EXP(ELAB)
+cdr         WRITE (iunout,*) 'NPANU, IREAC, IRPI, ELAB(EV),icell ',
+cdr  .                        NPANU, IREAC, IRPI, ELLAB,  K
+cdr............................................................
           ELSE
 C  ACCEPT
             XPMEAN(IRPI)=XPMEAN(IRPI)+ICOUNT
@@ -358,7 +369,6 @@ C
       RETURN
 
 C  the following ENTRY is for reinitialization of EIRENE
- 
       ENTRY EIRENE_VELOPI_REINIT
       IFIRST = 0
       return

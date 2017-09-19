@@ -11,7 +11,7 @@ C
 !PB 30.01.08: optimization of calculation of intersection with additional surfaces
 !             corrected
 !PB 22.03.07: LEVGEO=6 --> LEVGEO=10
-!PB 12.01.06: calls to calc_spectrum introduced for cell based spectra
+!PB 12.01.06: calls to update_spectrum introduced for cell based spectra
 !PB 02.03.06: Store trajectory from birth place to first collision with the
 !             wall. It is assumed that conditional epectation estimator is
 !             switched on.
@@ -95,10 +95,12 @@ C  XGENER:  COUNTER FOR GENERATION LIMIT
 
 100   LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
+
       NLPR=.FALSE.
       AX(1)=1.
       AX(2)=1.
       WMINC_LOCAL=WMINC
+
       IF (ITYP.EQ.0) THEN
         IF (IPHOT.LE.0.OR.IPHOT.GT.NPHOTI) GOTO 998
       ELSEIF (ITYP.EQ.1) THEN
@@ -202,7 +204,7 @@ C
             CALL EIRENE_UPDMOL (XSTOR2,XSTORV2,IFLAG)
           ENDIF
           IF (NADSPC_CD >= 1) 
-     .      CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
+     .      CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
         ENDIF
         ZTC=0.
 C  CARRY OUT INELASTIC COLLISION EVENT, DIRECTLY AT PLACE OF BIRTH
@@ -319,14 +321,17 @@ C
       ZLOG=-LOG(ZEP1)
       ZINT1=0.0
       ZINT2=ZINT1
+
+C  COORDINATES FOR SUB-STEPS IN 2ND AND/OR 3RD GRID, (ONLY IF NEEDED: NL2ND; NL3RD, NLTRA)
       IF (NLTRA) X01=X0+RMTOR
       X00=X0
       Y00=Y0
       Z00=Z0
       Z01=Z0
 C
-C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS THROUGH TRANSPARENT
-C                            SURFACES FROM THIS POINT
+C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS ACROSS TRANSPARENT
+C                            SURFACES FROM THIS POINT: NEW POSITION; OLD VELOCITY
+C                            REFRESH MFP SAMPLING
 104   CONTINUE
       NJUMP=0
       DO I=1,NIMINT
@@ -354,6 +359,7 @@ C
       IF (LDAMCEL(NCELL)) GOTO 9912
 C
 C TL: DISTANCE TO NEXT ADDITIONAL SURFACE
+c   nli,nle: index range of additional surfaces, visible from cell no. ncell
       IF (NCELL.GT.0.AND.NCELL.LE.NOPTIM) THEN
         NLI=NLIMII(NCELL)
         NLE=NLIMIE(NCELL)
@@ -365,12 +371,16 @@ C  NEGATIVE CELL INDEX. STOP THIS PARTICLE
         GOTO 990
       ENDIF
       IF (NLI.LE.NLE) THEN
+c  check all additional surfaces in index range nli, nle
         CALL EIRENE_TIMEA1
      .  (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,X0,Y0,Z0,TIME,
      .               VELX,VELY,VELZ,VEL,
      .               MASURF,XLI,YLI,ZLI,SG,TL,NLTRC,LCNDEXP)
+c  activate conditional expectation estimator,
+c  if history points towards one of selected add. surfaces
 !pb     NLPR=NLPRCS(MASURF).OR.NLPR
         NLPR=LCNDEXP.OR.NLPR
+c
         ZDT1=TL
         ZTST=TL
         CLPD(1)=ZDT1
@@ -393,7 +403,7 @@ C
 210   CONTINUE
 C
 C  TS:   DISTANCE TO NEXT SURFACE OF STANDARD MESH
-C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
+C  ZDT1: DISTANCE TRAVELLED IN CURRENT CELL
 C  ZT: DISTANCE ALREADY TRAVELLED IN PREVIOUS PARTS OF THIS TRACK
 C
       IF (ITIME.EQ.1) THEN
@@ -406,13 +416,13 @@ C
           IF (TL.LT.TS.OR.TT.LT.TS) THEN
             MRSURF=0
             IPOLGN=0
-C  COLLISION WITH ADDITIONAL SURFACE
+C  CHECK FOR INTERSECTION WITH ADDITIONAL SURFACE
             IF (TL.LE.TT) THEN
               ZDT1=TL-ZT
               TL=ZT+ZDT1
               ZTST=TL
               ISRFCL=1
-C  COLLISION WITH TIME SURFACE
+C  INTERSECTION WITH TIME SURFACE. TIME LIMIT REACHED ?
             ELSEIF (TT.LT.TL) THEN
               ZDT1=TT-ZT
               TT=ZT+ZDT1
@@ -420,7 +430,7 @@ C  COLLISION WITH TIME SURFACE
               ISRFCL=2
             ENDIF
           ELSE
-C  COLLISION WITH RADIAL SURFACE
+C  INTERSECTION A  WITH 1-ST (RADIAL) GRID SURFACE
             ISRFCL=0
             ZDT1=TS-ZT
             ZTST=TS
@@ -432,13 +442,20 @@ C
         CLPD(1)=ZDT1
         NCOUNT(1)=1
         NCOUNP(1)=1
-C
+
+C  CHECK SUB-GRIDS.  FOR OPTIONAL Y,Z RESOLUTION, ON 1D BACKGROUND MEDIUM
+c  (can be switched off: nlpol, nltor, nltra)
+C  sub-cells have the same background parameters as the parent (x-or-radial) cell,
+C  i.e. same collision rates, same mean free path.
+
+C  3RD Z (OR TOROIDAL) SUB-GRID, ALSO:  TOROIDAL PERIODICITY SURFACES
+C  SUBDIVIDE GIVEN TRACK INTO Z (OR TOROIDAL) SMALLER SEGMENTS
         IF (NLTOR.OR.NLTRA) THEN
           CALL EIRENE_TIMET (ZDT1)
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
-C
+CC  2ND (OR POLOIDAL) SUB-GRID
         IF (NLPOL) THEN
           CALL EIRENE_TIMEP(ZDT1)
           TS=ZT+ZDT1
@@ -497,7 +514,12 @@ C  USE VACUUM VALUES FOR REACTION RATES, MFP, ETC..
           IF (ITYP.EQ.0) ZMFP=EIRENE_FPATHPH(NCELL,CFLAG,J,NCOU)
           IF (ITYP.EQ.1) ZMFP=EIRENE_FPATHA (NCELL,CFLAG,J,NCOU)
           IF (ITYP.EQ.2) ZMFP=EIRENE_FPATHM (NCELL,CFLAG,J,NCOU)
+
+c  so far for photons only: local (WMINL) criterion for cond. exp.est.
+c  if mfp smaller than geometrical step size times WMINL, turn off
+c  cond. exp. est.
           IF ((ITYP.EQ.0).AND.(ZMFP < WMINL*CLPD(J))) WMINC_LOCAL=1._DP
+
           IF (NCOU.GT.1) THEN
             XSTOR2(:,:,J) = XSTOR(:,:)
             XSTORV2(:,J) = XSTORV(:)
@@ -506,7 +528,7 @@ C  UPDATE INTEGRAL
           ZINT1=ZINT1+CLPD(J)*ZMFPI
           IF (.NOT.NLPR) THEN
             IF (ZINT1.GE.ZLOG) THEN
-C  COLLISION IN SECTION JJ
+C  COLLISION IN SECTION J OF CURRENT TRACK
               IF (NLPOL) NPCELL=NCOUNP(J)
               IF (NLTOR) NTCELL=NCOUNT(J)
               GO TO 213
@@ -527,13 +549,14 @@ C  COLLISION IN SECTION JJ
             AX(1)=AX(2)
             EX=CLPD(J)*ZMFPI
 c
-c  cond exp. est.
-c  find new Ax(1)= Ax(1)* (1-exp(-ex))/ex)
-c           ax(1)=ax(1) * funexp(-ex)
-c   with    function funexp(x)=(exp(x)-1)/x
-            FF=eirene_funexp(ex,expm)
-            ax(1)=ax(1)*ff
+c  conditional expexctation estimator
+c  find new AX(1)= AX(1) * (1-exp(-ex))/ex)
+c           AX(1)= AX(1) * funexp(ex)
+c  funexp(x), with 0 <= x <= infty
+            FF=EIRENE_FUNEXP(EX,EXPM)
+            AX(1)=AX(1)*FF
 
+cdr old: inline-version
 c           IF (EX.LE.1.D-10) THEN
 c             EXPM=1.
 Cc            AX(1)=AX(1)
@@ -544,6 +567,7 @@ c           ELSE
 c             EXPM=EXP(-EX)
 c             AX(1)=AX(1)*(1.-EXPM)/EX
 c           ENDIF
+c  done: AX(1) is adapted, and EXPM is set.
 c 
             ZTS=ZTS+CLPD(J)
             IF (NLPOL) NPCELC=NCOUNP(J)
@@ -554,12 +578,12 @@ C  COND. EXP.EST: STOP BECAUSE OF WMINC-CRITERION
             IF (.NOT.NLTRJ.AND.(AX(2).LE.WMINC_LOCAL)) THEN
 C    RESTORE POINT OF COLLISION ?
               IF (JCOL.NE.0) GOTO 213
-C    NO COLLISION YET; CONTINUE LOOP 212
+C  JCOL=0: NO COLLISION YET; CONTINUE LOOP 212
               AX(1)=1.
               AX(2)=1.
             ENDIF
           ENDIF
-212     CONTINUE   ! NCOU LOOP DONE
+212     CONTINUE   ! NCOU LOOP OVER SUB-STEPS ICOU IN BIG RADIAL STEP: DONE
 C
 213     CONTINUE   ! EXIT FROM NCOU LOOP DUE TO COLLISION AT ICOU=JJ
         NCOU=JJ
@@ -578,7 +602,7 @@ C  STOP TRACK BECAUSE OF WMINC-CRITERION?
             IF (ITYP.EQ.2) CALL EIRENE_UPDMOL (XSTOR2,XSTORV2,IFLAG)
             IF (ITYP.EQ.0) CALL EIRENE_UPDPHOT(XSTOR2,XSTORV2,IFLAG)
             IF (NADSPC_CD >= 1) 
-     .        CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
+     .        CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
           ENDIF
           ZT=ZTS
           GOTO 216
@@ -600,7 +624,7 @@ cdr     IFLAG= ???
         IF (ITYP.EQ.1) CALL EIRENE_UPDATM (XSTOR2,XSTORV2,IFLAG)
         IF (ITYP.EQ.2) CALL EIRENE_UPDMOL (XSTOR2,XSTORV2,IFLAG)
         IF (ITYP.EQ.0) CALL EIRENE_UPDPHOT(XSTOR2,XSTORV2,IFLAG)
-        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
       ENDIF
 C
 C  STOP TRACK ?
@@ -735,6 +759,7 @@ C
 C  SWITCH OFF CONDITIONAL EXP. ESTIMATOR ?
       IF (NLPR.AND..NOT.NLTRJ.AND.(AX(2).LT.WMINC_LOCAL)) THEN
         IF (NLTRC) THEN
+C  TEMPORARILY 
           X0S=X0+VELX*ZT
           Y0S=Y0+VELY*ZT
           Z0S=Z0+VELZ*ZT
@@ -745,13 +770,16 @@ C  SWITCH OFF CONDITIONAL EXP. ESTIMATOR ?
           PHI=PHIS
           TSAVE=TIME
           TIME=TIMES
-          CALL EIRENE_CHCTRC(X0S,Y0S,Z0S,16,8)
+          CALL EIRENE_CHCTRC(X0S,Y0S,Z0S,16,19)
           PHI=PSAVE
           TIME=TSAVE
         ENDIF
         IF (ICOL.EQ.1) GOTO 512
-C  NO COLLISION YET; RESTART AGAIN WITH COND. EXP. ESTIMATOR
-C                    IN NEW CELL
+C  ICOL=0: NO COLLISION YET; RESTART AGAIN WITH FRESH COND. EXP. ESTIMATOR
+C                            IN NEXT CELL
+c       IF (NLTRC) 
+c    .     write (iunout,*) 'continue without restart, npanu ',
+c    .                       npanu,ICOL
         AX(1)=1.
         AX(2)=1.
         JCOL=0
@@ -760,7 +788,7 @@ C  EITHER: GOTO 101, NEW RANDOM NUMBER, ZINT1=0, X=XS
 C  OR    : GOTO 210, CONTINUE TRACK,
 C  THIS IS THE SAME, BECAUSE OF EXPONENTIAL DISTRIBUTION OF PATH LENGTHS
       IF (NCELL.LE.NOPTIM) THEN
-C  FROM NEW CELL NCLLN MORE ADDITIONAL SURFACES CAN BE SEEN BY THE PARTICLES
+C  FROM NEW CELL NCLLN MORE ADDITIONAL SURFACES MIGHT BE VISIBLE BY THE PARTICLES
         NCLLN=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
         IF (NCLLN <= NOPTIM) THEN
           IF ((NLIMII(NCLLN) < NLIMII(NCELL)) .OR.
@@ -780,7 +808,7 @@ C
         IF (ITYP.EQ.1) CALL EIRENE_UPDATM (XSTOR2,XSTORV2,IFLAG)
         IF (ITYP.EQ.2) CALL EIRENE_UPDMOL (XSTOR2,XSTORV2,IFLAG)
         IF (ITYP.EQ.0) CALL EIRENE_UPDPHOT(XSTOR2,XSTORV2,IFLAG)
-        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
       ENDIF
       X0=X0+VELX*ZTC
       Y0=Y0+VELY*ZTC
@@ -951,7 +979,7 @@ C
         IF (ITYP.EQ.1) CALL EIRENE_UPDATM (XSTOR2,XSTORV2,IFLAG)
         IF (ITYP.EQ.2) CALL EIRENE_UPDMOL (XSTOR2,XSTORV2,IFLAG)
         IF (ITYP.EQ.0) CALL EIRENE_UPDPHOT(XSTOR2,XSTORV2,IFLAG)
-        IF (NADSPC_CD >= 1) CALL EIRENE_CALC_SPECTRUM (WEIGHT,IFLAG,1)
+        IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
       ENDIF
       GOTO 216
 C

@@ -22,7 +22,16 @@ C  THIS SUBROUTINE CARRIES OUT AN ELASTIC COLLISION OF A TEST PARTICLE
 C  WITH A BULK PARTICLE.
 C  IT RETURNS THE POST COLLISION VELOCITY VECTOR.
 C
-C  NFLAG: AS IN SUBR. VELOCX
+C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
+C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
+C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
+C                  E=M/2 V_M^2 =3/2 KT
+C                  to be generalized to E=ESIGCX(IRCX,1)
+C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
+C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
+C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
+C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
+C                  OR ALTERNATIVELY: REJECTION
 C
 C  1ST STEP: FIND COLLISION PARTNER FROM BULK ION SPECIES "IPLS":
 C            (VXN,VYN,VZN)
@@ -34,6 +43,7 @@ C  4TH STEP: FIND NEW VELOCITY VECTOR
 C
 C
 C  K   : CELL INDEX
+
 C  VXO : X COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VYO : Y COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VZO : Z COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
@@ -73,7 +83,8 @@ C
      .          SEPS, RS,
      .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH,
      .          BMAX, ER, ELMIN, ELMAX, B,
-     .          VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ, VXN, VYN, VZN,
+     .          VXDR, VYDR, VZDR, 
+     .          ZARGX, ZARGY, ZARGZ, VXN, VYN, VZN,
      .          VX, VY, VZ, ELAB,
      .          VR, ZARG, CEL, EIRENE_CROSS, VRQ
 C      REAL(DP) :: CTCHDUM, CTTETHA, DUMSIGMA, ELTHDUM, ELTHETA, RAN, 
@@ -122,6 +133,7 @@ C
         SGEVMX(IREL)=-1.D60
         JJ=1
         do j=1,1000
+c  elab:  here ln(E), with E from 0.01 to 1e3 eV
           elab=elmin+(j-1)/999.*(elmax-elmin)
 c         IF (LHABER) THEN
 cdr  proprietary option disabled.
@@ -168,6 +180,7 @@ C
       ZARGX=ZRG(IPLS,K)
       ZARGY=ZRG(IPLS,K)
       ZARGZ=ZRG(IPLS,K)
+c  drift velocity, cm/s
       IF (NLDRFT) THEN
         IF (INDPRO(4) == 8) THEN
           CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
@@ -183,7 +196,7 @@ C
         VZDR=0.D0
       ENDIF
 C
-C  SET VELOCITY VECTOR (CM/S) OF INCIDENT TEST PARTICLE
+C  SAVE VELOCITY VECTOR (CM/S) OF INCIDENT TEST PARTICLE
       VX=VXO*VLO
       VY=VYO*VLO
       VZ=VZO*VLO
@@ -223,7 +236,7 @@ C
         VYI=VYN
         VZI=VZN
 C
-      ELSE  !   NFLAG.EQ.3
+      ELSE  !   NFLAG.NE.2, ALL OTHER OPTIONS
 C
 C   ALL OTHER DISTRIBUTIONS
 C
@@ -250,7 +263,7 @@ c         RAN=RANF_EIRENE()
 c         CALL EIRENE_SCATANG (ER,RAN,ELTHDUM,CTCHDUM,SIGHABER)
 c         CEL= SIGHABER*AU_TO_CM2
 c      END IF
-Cdr
+cdr
 c.....................................................................
 
 C
@@ -264,7 +277,7 @@ C  REJECT
             IF (ICOUNT.LT.500) GOTO 123  ! fetch a new bulk ion velocity
 c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
-     .        'ICOUNT TOO LARGE IN VELOEL. ACCEPT SAMPLE '
+     .        'ICOUNT TOO LARGE ( > 500) IN VELOEL. ACCEPT SAMPLE '
             WRITE (iunout,*) 'NPANU, IREAC, IREL, ELAB ',
      .                   NPANU, IREAC, IREL, ELAB
           ELSE
@@ -283,6 +296,8 @@ C
         VXI=VXN
         VYI=VYN
         VZI=VZN
+
+C
       ENDIF
 C
 C  STEP 1 FINISHED, INCIDENT BULK "ION'S" (IPLS) VELOCITY IS SET: VXI,VYI,VZI
@@ -290,7 +305,8 @@ C
 200   CONTINUE
 C
 C  FIND TYPE OF COLLISION: IFLAG  
-C    IFLAG=-1       :  NOTHING TO BE DONE, POST COLLISION VELOCITY IS ALREADY SAMPLED FROM MAXWELLIAN
+C    IFLAG=-1       :  NOTHING TO BE DONE, POST COLLISION VELOCITY IS ALREADY SAMPLED 
+C                      FROM MAXWELLIAN
 C                      E.G. (relaxation)-BGK APPROXIMATION.
 C    IFLAG=0        :  ISOTROPIC, IN CENTER OF MASS
 C    IFLAG=IFTFLG>0 :  FIT-FORM OF ITERACTION POTENTIAL (ELASTIC COLLISION IREL)
@@ -315,7 +331,7 @@ C  INTERACTION POTENTIAL IS GIVEN, get fit coefficients of interaction potential
         KK=MODCOL(5,0,IREL)
         IFLAG=IFTFLG(KK,0)   !cdr  is iftflg correctly set for repulsive potential?
 cdr                                check slreac. There default is set to iftflg=2 (Morse)
-CDR REACDAT should not be used during trajectory generation, see comments on xstel.f
+CDR REACDAT should not be used during trajectory generation, see comments in xstel.f
 c   to be done.
         P(1:9)=REACDAT(KK)%POT%POLY%DBLPOL(1:9,1)
       ENDIF
@@ -342,7 +358,9 @@ c
         VREL=SQRT(VRELQ)
         VRYZ=SQRT(VRQYZ+EPS60)
 C  IMPACT PARAMETER --> SCATTERING ANGLE --> NEW VELOCITY
-C       IF (.NOT.LHABER) THEN
+C       IF (LHABER) THEN
+C  USE DIFFERENTIAL CROSS SECTIONS INSTEAD.  OUT
+C       ENDIF
 C  CENTER OF MASS VELOCITY
         VSX=(RMI*VXI+RMN*VX)*RMSI
         VSY=(RMI*VYI+RMN*VY)*RMSI

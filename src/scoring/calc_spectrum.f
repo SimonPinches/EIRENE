@@ -7,12 +7,17 @@ cdr  tbd:  change calls from folneut.f and folion.f
       SUBROUTINE EIRENE_CALC_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface or volume/line averaged energy spectra
 c  wt:  particle weight, (or wt=wpr, conditional particle weight) 
+c  
+c  cell crossing   : (conditional) tracklength estimator for cell based spectra
+c  surface crossing: here tracklength estim. collapses to a collision estim. 
 
 c  isc:    =0: update surface averaged spectra, 
 c       ind:  =1: particle incident on surface
 c       ind:  =2: particle re-emitted from surface
 
 c  isc:  =1,2: else (update cell based spectra)
+c       isc =1:  score in coarse (scoring) grid
+c       isc =2:  score in fine (geometry)  grid
 c       ind:  not in use  (often: ind = iflag in calling programs, 
 c                          iflag is a flag used for special (non-standard) options for volume averged tally estimators)
 c  ityp:  type of particle
