@@ -1,4 +1,7 @@
 cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
+cdr           PR = prob to reach the next cell boundary.
+cdr           In case of geometrical multi-steps within one macro step
+cdr           (NCOU.GT.1) use PR rather then AX(2)=1, when leaving the NCOU loop
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
 Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum? 
@@ -96,9 +99,11 @@ C  XGENER:  COUNTER FOR GENERATION LIMIT
 100   LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
 
+C  INITIALIZE COND. EXP. ESTIMATOR
       NLPR=.FALSE.
       AX(1)=1.
       AX(2)=1.
+      PR=AX(2)
       WMINC_LOCAL=WMINC
 
       IF (ITYP.EQ.0) THEN
@@ -484,7 +489,7 @@ C
       IFLAG=3
  
       IF (NLTRJ) THEN
-C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATION SAMPLING
+C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATED SAMPLING
         TRAJ(ITRJ)%TRJ%NCOU_CELL = TRAJ(ITRJ)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
@@ -494,6 +499,7 @@ C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATION SAMPLING
           CALL EIRENE_CELL_INSERT(ITRJ,NEW_CELL)
         END DO
       END IF
+
       IF (IFPATH.NE.1.OR.NRC.LT.0) THEN
 C  USE VACUUM VALUES FOR REACTION RATES, MFP, ETC..
         XSTORV(:) =0.D0
@@ -524,6 +530,7 @@ c  cond. exp. est.
             XSTOR2(:,:,J) = XSTOR(:,:)
             XSTORV2(:,J) = XSTORV(:)
           ENDIF
+
 C  UPDATE INTEGRAL
           ZINT1=ZINT1+CLPD(J)*ZMFPI
           IF (.NOT.NLPR) THEN
@@ -537,19 +544,23 @@ C  COLLISION IN SECTION J OF CURRENT TRACK
             ZT=ZT+CLPD(J)
           ELSEIF (NLPR) THEN
             IF (JCOL.EQ.0) THEN
+C   NO COLLISION YET ON THIS SEGMENT
               IF (ZINT1.GE.ZLOG) THEN
-                JCOL=JJ
+C   NOW FIRST COLLISION FOUND; IN SUB-SECTION NO. J
+                JCOL=J
                 IF (NLPOL) NPCOLC=NCOUNP(J)
                 IF (NLTOR) NTCOLC=NCOUNT(J)
               ELSE
+c   STILL UNCOLLIDED FLUX
                 ZINT2=ZINT1
                 ZT=ZT+CLPD(J)
               ENDIF
             ENDIF
+c
+c  conditional expexctation estimator for flight segment J
             AX(1)=AX(2)
             EX=CLPD(J)*ZMFPI
 c
-c  conditional expexctation estimator
 c  find new AX(1)= AX(1) * (1-exp(-ex))/ex)
 c           AX(1)= AX(1) * funexp(ex)
 c  funexp(x), with 0 <= x <= infty
@@ -573,19 +584,24 @@ c
             IF (NLPOL) NPCELC=NCOUNP(J)
             IF (NLTOR) NTCELC=NCOUNT(J)
             CLPD(J)=CLPD(J)*AX(1)
+C  PROB. FOR REACHING NEXT CELL BOUNDAY
             AX(2)=AX(2)*EXPM
+            PR=AX(2)
 C  COND. EXP.EST: STOP BECAUSE OF WMINC-CRITERION
             IF (.NOT.NLTRJ.AND.(AX(2).LE.WMINC_LOCAL)) THEN
 C    RESTORE POINT OF COLLISION ?
               IF (JCOL.NE.0) GOTO 213
 C  JCOL=0: NO COLLISION YET; CONTINUE LOOP 212
+C          REFRESH COND. EXP. EST. FOR NEXT SECTION JJ=J+1.
+C          but what if this was the last section of this flight, J=NCOU
+C          we might then need old PR for surface tallies.
               AX(1)=1.
               AX(2)=1.
             ENDIF
           ENDIF
 212     CONTINUE   ! NCOU LOOP OVER SUB-STEPS ICOU IN BIG RADIAL STEP: DONE
 C
-213     CONTINUE   ! EXIT FROM NCOU LOOP DUE TO COLLISION AT ICOU=JJ
+213     CONTINUE   ! EXIT FROM NCOU LOOP DUE TO COLLISION AT JCOL=JJ
         NCOU=JJ
       ENDIF
 C
@@ -594,7 +610,7 @@ C
       IF (NLPR) THEN
 C  CHECK FOR 1.ST COLLISION ALONG TRACK
         IF (ICOL.EQ.0.AND.ZINT1.GE.ZLOG) GOTO 505
-C  STOP TRACK BECAUSE OF WMINC-CRITERION?
+C  STOP CONDITIONAL TRACK AT EARLIER SECTION,  BECAUSE JCOL AND WMINC-CRITERION?
         IF (NCOU.LT.NCOUS) THEN
           IFLAG=2
           IF (IUPDTE.GE.1) THEN
@@ -630,7 +646,7 @@ C
 C  STOP TRACK ?
 C
       IF (ISRFCL.EQ.1) CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,*104,*380)
-      IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (AX(2),         *104,*800)
+      IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (PR,            *104,*800)
       IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
 C
 C  NO, CONTINUE TRACK
@@ -756,7 +772,8 @@ C  SPLITTING AND RR NOT READY FOR LEVGEO.GE.4
 C
 216   CONTINUE
 C
-C  SWITCH OFF CONDITIONAL EXP. ESTIMATOR ?
+C  SWITCH OFF CONDITIONAL EXP. ESTIMATOR
+C  AT AN INTERNAL SURFACE ?
       IF (NLPR.AND..NOT.NLTRJ.AND.(AX(2).LT.WMINC_LOCAL)) THEN
         IF (NLTRC) THEN
 C  TEMPORARILY 
@@ -884,7 +901,7 @@ C
 380   CONTINUE
 C
 C
-      PR=AX(2)
+c     PR= cond. exp probability to reach this surface. PR=1. by default
       IF (ILIIN(MSURF).LE.-2) PR=PR*SG
 C
 C  UPDATE EFFLUXES ONTO SURFACE AND REFLECT PARTICLE
@@ -910,6 +927,8 @@ C
 C
 C
 C   SAVE PRE COLLISION DATA OF FIRST COLLISION ALONG CONDITIONAL TRACK
+C   AT THIS POINT:  JCOL= NO. OF TRACK SEGMENT IN RANGE J= 1:NCOU,
+C   IN WHICH 1ST COLLISION FOUND.
 505   CONTINUE
       IF (NCOU.GT.1) THEN
         ZMFP=1./XSTORV2(NSTORV,JCOL)
@@ -917,6 +936,7 @@ C   SAVE PRE COLLISION DATA OF FIRST COLLISION ALONG CONDITIONAL TRACK
 C  IN CASE NCOU.EQ.1: XSTORV HAS NOT BEEN STORED ONTO XSTORV2
         ZMFP=1./XSTORV(NSTORV)
       ENDIF
+      
       NPCLLC=1
       NTCLLC=1
       IF (NLPOL) NPCLLC=NPCOLC

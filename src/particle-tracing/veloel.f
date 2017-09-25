@@ -16,7 +16,7 @@ cdr  Feb. 17: disabled proprietary option LHABER  (sampling scattering angle fro
 c             (this option was unfinished and not further developed for more than 10 years.)
 C 
       SUBROUTINE EIRENE_VELOEL(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
-     .                  IREL,RMASS)
+     .                         IREL,RMASS)
 C
 C  THIS SUBROUTINE CARRIES OUT AN ELASTIC COLLISION OF A TEST PARTICLE
 C  WITH A BULK PARTICLE.
@@ -279,7 +279,7 @@ c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
      .        'ICOUNT TOO LARGE ( > 500) IN VELOEL. ACCEPT SAMPLE '
             WRITE (iunout,*) 'NPANU, IREAC, IREL, ELAB ',
-     .                   NPANU, IREAC, IREL, ELAB
+     .                        NPANU, IREAC, IREL, ELAB
           ELSE
 C  ACCEPT
             XEMEAN(IREL)=XEMEAN(IREL)+ICOUNT
@@ -288,7 +288,7 @@ C  ACCEPT
 C       ELSEIF (NLWEIGHT) THEN
  
         ELSE
-C  FOR SOME REASON SGCVMX COULD NOT BE FOUND.
+C  FOR SOME REASON SGEVMX COULD NOT BE FOUND.
 C  SO USE WEIGHTING RATHER THAN REJECTION
           WEIGHT=WEIGHT*CEL*VREL*DIIN(IPLS,K)/SIGVEL(IREL)
         ENDIF
