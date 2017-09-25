@@ -106,11 +106,11 @@ Available via E-mail from d.reiter@fz-juelich.de
  \item update    8.9/97 \\
   H.1 3.1.8R (Riviere) revised (better extrapolation to low energy) \\
   H.1 3.1.8ST new (Schultz total cx cross section) \\
-  H.1 3.1.8SM new (Schultz momentum transfer cross section) \\
-  H.1 3.1.8       (Janev total cx cross section)\\
-  H.1 3.1.8JM new (Janev total cx cross section *2 = mom trans. x-section)\\
+  H.1 3.1.8SD new (Schultz momentum transfer cross section) \\
+  H.1 3.1.8       (Janev total cx cross section (also: 3.1.8J)\\
+  H.1 3.1.8J2 new (Janev total cx cross section *2 = mom trans. x-section)\\
   H.1 3.1.8ST2 new (Schultz total cx cross section *2 = mom trans. x-section)\\
-  note: 3.1.8SM $\approx$ 2  * 3.1.8ST within line-thickness
+  note: 3.1.8SD $\approx$ 2  * 3.1.8ST within line-thickness
  \item update   23.9/97 \\
   H.2 2.6B0 strahl carbon data ionization\\
   H.4 2.3.6B0 strahl carbon data recombination \\
@@ -213,7 +213,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.3:  3.1.8L done   \\
   H.8:  3.1.8L done (in Sept.2016   \\
   H.9:  3.1.8L done   \\
-  H.3:  3.1.8o:  original fit from Janev's springer 1987 book\\
+  H.3:  3.1.8org:  original fit from Janev's springer 1987 book\\
   (only for reference purpose. don't use!)
  \item update  11.05/04 \\
   H.11  2.0a, 2.0b  redone, correct $E_{H2}=0.1$ eV\\
@@ -335,6 +335,9 @@ by multiplying it with nH2+/ne, one finds the nH3+/nH2 ratio, when H2+ and H3+ a
 \item Jun. 17: \\
 H.4 2.1.8, H.10  2.1.8 and H.12  2.1.8de redone, fit range extended from 0.1 --1e3, to 0.1..2e4, to avoid spurious recombination
 rates in hot core plasmas.
+\item Aug. 17: \\
+H.1  3.1.8 and 3.1.8J2 left asympt. (al0) corrected. Slope was correct, but a small jump at E=0.1 eV.
+H.1  3.1.8ST  and 3.1.8ST2  left asympt. added. Was missing.
 \end{itemize}
 
 \subsection{to be done:}
@@ -347,6 +350,9 @@ this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multipl
 \item 2.2.14: H.2 fit made strictly linear on log-log scale, for H.1, H.2 and H.8. Then use H.2 coefficients to
 derive, exactly, the corresponding H.1 and H.8 coefficients. Done for H.8, 2.2.14,  To be done for H.1 for this
 process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.2.15, 2.3.13, 2.7.14....
+\item  Aug. 17:   3.1.8  H.2, H.3 and H.9 rate coefs. must be redone, due to Aug. 17 correction of left asmpt. in cross section.
+Will perhaps further improve the tracklength estim. energy balance. 
+So far we have no 3.1.8S rate coeff. of any kind
 \end{itemize}
 
 \newpage
@@ -816,7 +822,7 @@ This rescaling is used for elastic collisions according to~\cite{kn:OakRidge}, s
 The rate 0.3 (elastic $p+H_2$ collisions) from this set was successfully compared with the same sources, calculated by collisional estimator. The same test for the resonant CX rates 3.1.8  {\em was not yet successful}
 \subsubsection{H.7: momentum weighted rates vs. temperature and density}\label{sec1.3.7}
 %\addcontentsline{toc}{subsubsection}{H.7: momentum weighted rates vs. temperature and density}
-\subsubsection{\textbf{H.8: energy weighted rates vs. temperature}}\label{sec1.3.8}
+\subsubsection{H.8: energy weighted rates vs. temperature}\label{sec1.3.8}
 %\addcontentsline{toc}{subsubsection}{H.8: energy weighted rates vs. temperature}
 Under label H.8 energy weighted rate coefficients are stored, vs. temperature (eV) of the
 Maxwellian electron or heavy particle distributions.
@@ -1695,7 +1701,7 @@ This page is intentionally left blank
 \newpage
 
 \subsubsection{
-Reaction 3.1.8o $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8org $  p + H(1s) \rightarrow H(1s) + p  $
 }
 original Janev-Langer fit as in 1987 Springer book, i.e. without low energy correction.
 
@@ -1713,20 +1719,21 @@ original Janev-Langer fit as in 1987 Springer book, i.e. without low energy corr
 Reaction 3.1.8 $  p + H(1s) \rightarrow H(1s) + p  $
 }
 same as HYDHEL cx total cross section.
-Improved from original Janev-Langer fit at low energies by asymptotic fit.
+Improved from original Janev-Langer fit at low energies by asymptotic fit.:  al0 + al1* ln(E)
+al0 changed in Aug.17.
 
 \begin{small}\begin{verbatim}
    a0 -3.274123792568e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
    a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
    a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
-  al0 -3.225274882000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
+  al0 -3.294589355000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
 ELABMIN=   0.10000E 00 eV
        Emin  1.00e-01   s(Emin)  7.00e-15   smax  7.00e-15   Error  2.25e-03
        Eth  0.0
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 \subsubsection{
-Reaction 3.1.8JM $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8J2 $  p + H(1s) \rightarrow H(1s) + p  $
 }
 Janev cross section for momentum exchange ( = cx total cross sections times 2), obtained by
 increasing absolute coefficients $a_0$ and $al_0$  by adding $\ln(2)$
@@ -1735,7 +1742,7 @@ increasing absolute coefficients $a_0$ and $al_0$  by adding $\ln(2)$
    a0 -3.204809074000e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
    a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
    a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
-  al0 -3.155960160000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
+  al0 -3.225274637000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
 ELABMIN=   0.10000E 00 eV
        Eth  0.0
 \end{verbatim}\end{small}
@@ -1759,14 +1766,16 @@ Riviere cross section formula for charge exchange
 Reaction 3.1.8ST $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz total cross section for charge exchange
-fitted into ``Janev format"
+fitted into ``Janev format", left asympt. added. 
 
 
 \begin{small}\begin{verbatim}
    a0 -3.296040048723D+01    a1 -9.877533792693D-02    a2  2.622855374688D-03
    a3 -3.210858385884D-03    a4 -2.175078820057D-04    a5  2.394562232339D-05
    a6  1.665865000000D-05    a7  0.000000000000D+00    a8  0.000000000000D+00
+  al0 -3.307949733000D+01   al1 -1.713112000000D-01   al2  0.000000000000e+00
   ar0 -3.291743242047D+01   ar1 -1.358551000000D-01   ar2  0.000000000000D+00
+ELABMIN=  0.10000E 00 eV
 ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
@@ -1781,15 +1790,16 @@ increase absolute coefficients $a_0$ and $ar_0$ by adding ln(2)
    a0 -3.226725330000D+01    a1 -9.877533792693D-02    a2  2.622855374688D-03
    a3 -3.210858385884D-03    a4 -2.175078820057D-04    a5  2.394562232339D-05
    a6  1.665865000000D-05    a7  0.000000000000D+00    a8  0.000000000000D+00
+  al0 -3.238635015000D+01   al1 -1.713112000000D-01   al2  0.000000000000e+00
   ar0 -3.222428522000D+01   ar1 -1.358551000000D-01   ar2  0.000000000000D+00
 ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 3.1.8SM $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8SD $  p + H(1s) \rightarrow H(1s) + p  $
 }
-D.Schultz cross section for momentum exchange (elastic plus cx)
+D.Schultz ``diffusion" cross section for momentum exchange (elastic plus cx)
 fitted into ``Janev format". Should be close to ST2, total cx cross section times 2.
 
 \begin{small}\begin{verbatim}
@@ -2141,7 +2151,9 @@ Reaction 2.1.5FJ  $e + H(1s) \rightarrow e + H^+ + e$
 \subsection{
 Reaction 3.1.6FJ  $p + H(1s) \rightarrow p + p + e $
 }
-This fit seems to be completely corrupted. Probably misprints in original FJ report.
+This fit seems to be completely corrupted. Probably misprints in original F.J. CLM-R-137 report.
+Checked also with old AURORA code (PPPL, ca. 1979) implementation. Identical fit used there.
+Recommendation: Use cross section and HYDKIN online integration to rate coefficients.
 
 \begin{small}\begin{verbatim}
    b0 -0.149086100000e+03  b1  0.759257500000e+02  b2 -0.220928100000e+02
@@ -2166,7 +2178,7 @@ This page is intentionally left blank
 
 
 \subsection{
-Reaction 2.2.5o
+Reaction 2.2.5org
 $e + H_2(X_g\!^+ S ) \rightarrow . . .\rightarrow e + H(1s) + H(1s)$}
 
 
@@ -3781,7 +3793,7 @@ This page is intentionally left blank
 \newpage
 
 \subsection{
-Reaction 3.1.8o $ p + H(1s) \rightarrow H(1s) + p   $
+Reaction 3.1.8org $ p + H(1s) \rightarrow H(1s) + p   $
 }
 original fit from Janev's springer book 1987
 in HYDHEL.tex. Now there is the improved fit (see above), leading to better
@@ -4426,7 +4438,7 @@ NEMAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8FU}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydr1FU.ps}
+\epsffile{Amjuel_PS/H4-2.1.8.eps}
 \end{figure}
 \newpage
 
@@ -8014,6 +8026,7 @@ Ditto, all Lyman lines (and continuum) opaque
    potential energy loss 13.6*(eff-rec.rate) still needs to be
    subtracted (may render the loss negative, i.e., turn it into a gain)
    Hence: the quantitity given here happens to be the radiation loss.
+   June17: Fit range extended from 0.1--1e3 to 0.1--2e4
 
 \begin{small}\begin{verbatim}
 
@@ -8060,7 +8073,7 @@ Ditto, all Lyman lines (and continuum) opaque
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8r}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydlr1_tr.ps}
+\epsffile{Amjuel_PS/H10-2.1.8.eps}
 \end{figure}
 \newpage
 
@@ -9903,6 +9916,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
   electron energy loss (radiative) due to one effective recombination.
   13.6 eV (ionization potential) has to be
   subtracted, which may render the total electron loss negative, i.e., make it a gain.
+  June17: Fit range extended from 0.1--1e3 to 0.1--2e4
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -9947,7 +9961,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8lr2}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydlr2_tr.ps}
+\epsffile{Amjuel_PS/H12-2.1.8.eps}
 \end{figure}
 \newpage
 
@@ -11849,7 +11863,7 @@ Reaction 2.2.15e $ H_3^+ + e \rightarrow ...+ H(6) $, \   Ratio $H(6)/H_3^+  $
  Production of initial $H(n=2)$ from $H_3^+$ via $1/3.5 \times \langle Hydhel~ 2.2.15\rangle$,
  then CR redistribution in H
 
- Ratio of population coefficients: p(n6)/nH3+
+ Ratio of population coefficients: p(6)/nH3+
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
