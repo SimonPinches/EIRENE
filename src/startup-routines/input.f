@@ -2178,11 +2178,11 @@ cdr                 so far only for "DENSITYMODELS":
           ALLOCATE (TDMPAR(JPLS)%TDM%CR(TDMPAR(JPLS)%TDM%NRE))
 
           SELECT CASE (CDENMODEL(JPLS))
-          CASE ('FORT.13   ')
+          CASE ('FORT.13   ','FTN13     ')
             READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1)
 c  default: only for bulk ions
                               TDMPAR(JPLS)%TDM%ITP(1)=4
-          CASE ('FORT.10   ')
+          CASE ('FORT.10   ','FTN10     ')
             READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1),
      .                        TDMPAR(JPLS)%TDM%ITP(1),
      .                        TDMPAR(JPLS)%TDM%ISTR(1)

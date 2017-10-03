@@ -129,7 +129,11 @@ C  LUSR, LOGICAL
         DEALLOCATE (RDUM)
         DEALLOCATE (IDUM)
         DEALLOCATE (lDUM)
+#ifndef HPUX
         IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13'
+#else
+        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FTN13'
+#endif
       END IF
 
 cdr:  this CSTEP reading should go into iflg=0 branch, as it belongs to primary source

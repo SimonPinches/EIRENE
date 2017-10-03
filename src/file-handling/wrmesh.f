@@ -487,8 +487,13 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
 
 
       call EIRENE_leer(1)
+#ifndef HPUX
       write (iunout,*)
      .  'input file fort.78 for FEM mesh generator written'
+#else
+      write (iunout,*)
+     .  'input file ftn78 for FEM mesh generator written '
+#endif
       call EIRENE_leer(2)
 
 cdr

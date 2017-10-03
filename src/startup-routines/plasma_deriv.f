@@ -165,7 +165,8 @@ cdr
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
 
-        IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0) THEN
+        IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0 .OR.
+     .      INDEX(CDENMODEL(IPLS),'FTN13') > 0) THEN
 
 cdr  read all plasma background data (all ipls), each time. Better: move outside IPLS loop.
           CALL EIRENE_ALLOC_BCKGRND
@@ -192,7 +193,8 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
           ENDIF
           DEALLOCATE(DEINTF)
 
-        ELSEIF (INDEX(CDENMODEL(IPLS),'FORT.10') > 0) THEN
+        ELSEIF (INDEX(CDENMODEL(IPLS),'FORT.10') > 0 .OR.
+     .          INDEX(CDENMODEL(IPLS),'FTN10') > 0) THEN
 
 c   itold = ??
 c   check: itold ge 0 and itold.le 3

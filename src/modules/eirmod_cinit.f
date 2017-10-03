@@ -260,11 +260,17 @@ C
       DBFNAME(6) = 'PHOTON'
       DBFNAME(7) = 'PHTNEW'
       DBFNAME(8) = 'SPUTER'
+#ifndef HPUX
       DBFNAME(9)(1:5) = 'fort.'
+      I = 5
+#else
+      DBFNAME(9)(1:3) = 'ftn'
+      I = 3
+#endif
       if (21+ifoff >= 100) then
-        write (DBFNAME(9)(6:8),'(I3)') 21+ifoff
+        write (DBFNAME(9)(I+1:I+3),'(I3)') 21+ifoff
       else
-        write (DBFNAME(9)(6:7),'(I2)') 21+ifoff
+        write (DBFNAME(9)(I+1:I+2),'(I2)') 21+ifoff
       endif
       DBFNAME(10) = 'POLARI'
       DBFNAME(11) = 'graphite_ext.dat'
