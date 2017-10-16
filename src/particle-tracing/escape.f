@@ -1,3 +1,4 @@
+cdr sept.17   :  no ion sheath orbit correction at mirror surfaces (=symmetry BC)
 cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
 c                return 3, if icol=1, even for purely absorbing surfaces. 
 c                plus some minor clean-up, commenting.
@@ -43,7 +44,7 @@ C  INPUT:
 C        PR: Probability to reach surface, times: sign relative to surf. normal
 C            i.e.: WPR=WEIGHT*PR is positive or negative incident flux of test
 C                  particle, sign depends upon surface orientation.
-C        SG: sign relative to surf. normal
+C        SG: sign relative to surf. normal. SG=1.0 OR SG=-1.0
 C        LGPART=.TRUE.  UPDATE TALLIES FOR INCIDENT PARTICLES,
 C                       THEN CALL SURFACE MODEL (SPUTER, REFLEC,...)
 C                       THEN UPDATE TALLIES FOR EMITTED PARTICLES
@@ -205,9 +206,12 @@ C  INCIDENT MOLECULES
 C  SPECIAL CASE: INCIDENT TEST IONS. SHEATH ACCELERATION.
 !pb ispz calculated for check of semitransparency
 cdr:  sheath ion orbit part: make separate routine. tbd: E.g. Lindner-formula.
+cdr:  mirror: no sheath acceleration
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
-        IF ((ILIIN(MSURF).GT.0) .AND.
-     .    (abs(transp(ispz,1,msurf))+abs(transp(ispz,2,msurf))==0)) then
+        IF (
+     .      (ILIIN(MSURF).GT.0)                                    .AND.
+     .    (abs(transp(ispz,1,msurf))+abs(transp(ispz,2,msurf))==0) .AND.
+     .      (ILIIN(MSURF).LT.3)                  ) then
 C  SURFACE MSURF IS NOT MADE (PARTIALLY) TRANSPARENT FOR TEST ION SPECIES IION (ISPZ)
           ESHET=0.D0
 C  ACCOUNT FOR ELECTROSTATIC SHEATH AT SURFACE FOR TEST IONS
@@ -539,8 +543,8 @@ C
         IF (LTRANS) THEN
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
-          colflag = .true.
-        RETURN 2
+          COLFLAG = .TRUE.
+          RETURN 2
 C
 C  OR: PERFECT SPECULAR REFLECTION
 C

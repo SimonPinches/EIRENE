@@ -30,8 +30,9 @@ C  UNTIL THE NEXT INTERSECTION WITH ANY NON-TRANSPARENT
 C  SURFACE (P2) IS FOUND.
 c
 c  ifirst=0:  first call for one particular LOS
-c  ifirst=1:  same LOS as previous LOC, but different (energy, wavelength) parameter PEN
-c  ifirst<0:  irgend was mit short storing ??
+c  ifirst=1:  same LOS as previous LOS, but different (energy, wavelength) parameter PEN
+cdr
+c  ifirst<0:  unclear  ?? something related to nltrj, storing trajectories/chords ??
 c
 C
       USE EIRMOD_PRECISION
@@ -802,12 +803,14 @@ CDR WAS PASSIERT HIER ???
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
-        TRACKS=TRACKS+ZDS
+        
 cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
 
         IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
+
+        TRACKS=TRACKS+ZDS
         
 C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
@@ -940,14 +943,7 @@ C  PLOT SPATIALLY RESOLVED CONTRIBUTIONS ALONG LINE OF SIGHT.
 C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
 C  PLOTTED INTO GEOMETRY PLOT (PLT2D, PLT3D) VIA CHCTRC CALLS.
 C
-      IF (PLARGL) THEN
-        IF (PLHST) THEN
-          WRITE (IUNOUT,*) 'FROM LININT: '
-          WRITE (IUNOUT,*) 'PLOTTING OF FURTHER LINE OF SIGHTS DISABLED'
-          WRITE (IUNOUT,*) 'BECAUSE NEW FRAME FOR CONTRIBUTIONS ALONG  '
-          WRITE (IUNOUT,*) 'LINE OF SIGHT                              '
-          PLHST=.FALSE.
-        ENDIF
+      IF (PLARGL.OR.PRARGL) THEN
 !pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
         IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
           AA(1:JJJ) = ARGST(ISP,1:JJJ)
@@ -958,6 +954,17 @@ C
           WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
+      ENDIF
+
+      IF (PLARGL) THEN
+        IF (PLHST) THEN
+          WRITE (IUNOUT,*) 'FROM LININT: '
+          WRITE (IUNOUT,*) 'PLOTTING OF FURTHER LINE OF SIGHTS DISABLED'
+          WRITE (IUNOUT,*) 'BECAUSE NEW FRAME FOR CONTRIBUTIONS ALONG  '
+          WRITE (IUNOUT,*) 'LINE OF SIGHT                              '
+          PLHST=.FALSE.
+        ENDIF
+
         PPMA = MAXVAL(AA(1:JJJ))
         IF (NCHTAL(ICHORI).EQ.1) AA(1:JJJ) = MAX(1._DP,AA(1:JJJ))
         IF (PPMA.GT.0._DP) THEN
@@ -1020,7 +1027,7 @@ C  INITALIZE NEW PICTURE FOR NEW CHORD
         END IF
       END IF
 C
-      IF (PRSPEC) THEN
+      IF (PRARGL) THEN
         IF (NCHTAL(ICHORI).EQ.1) THEN
           WRITE (iunout,*) 'ENERGY (EV): ',PEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), FOR IATM= ',ISP

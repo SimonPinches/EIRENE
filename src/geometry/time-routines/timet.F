@@ -1,5 +1,6 @@
 !  18.06.09  correction added for NLTRA 
 !            if particle accidently on toroidal surface
+cdr oct 17: apparently not properly functional, e.g. for chord (diagno) points
 cdr
 C
 cdr  sept 17: sync with timep
