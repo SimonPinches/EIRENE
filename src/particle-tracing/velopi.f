@@ -85,13 +85,7 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
         do j=1,1000
 c  elab:  here ln(E), with E from 0.1 to 1e5 eV
           elab=elmin+(j-1)/999.*(elmax-elmin)
-c         IF (LHABER) THEN
-C           write (iunout,*) 'error in velopi: no diff. PI Cr. Section '
-C           CALL SCATANG (ELAB,-1._DP,ELTHDUM,CTCHDUM,SIGHABER)
-C           CPI= SIGHABER*AU_TO_CM2
-C         ELSE
-            CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 1')
-cdr        END IF
+          CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 1')
           vrq=exp(elab-defpi(IRPI))
           vr=sqrt(vrq)
           if (cpi*vr.gt.SGPVMX(IRPI)) then
@@ -202,18 +196,6 @@ C
 c.............................................................
 CH FOR SCATTERING ANGLE FROM DIFFERENTIAL CROSS SECTION:
 C
-cdr  this proprietary option is disabled, for the time being.
-c       IF (LHABER) THEN
-C         RMN=RMASS
-C         RMI=RMASSP(IPLS)
-C         RMSI=1./(RMN+RMI)
-C         RLMS=RMN*RMI*RMSI
-C         ER=RLMS*VRELQ*CVELI2
-C         RAN=RANF_EIRENE()
-C         CALL EIRENE_SCATANG (ER,RAN,ELTHDUM,CTCHDUM,SIGHABER)
-C         CPI= SIGHABER*AU_TO_CM2
-c       END IF
-cdr
 c.....................................................................
 
 C

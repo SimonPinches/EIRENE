@@ -12,8 +12,6 @@ cdr           Or, e.g. elastic component in H + p
 cdr  Jan. 17: Added option: isotropic in COM frame, iflag=0, when modcol(5,0,..)=0
 cdr                         exchange of identity in lab system when modcol(5,0,..)=-1
 cdr                         (this was default for bgk collisions so far, with iflag=0)
-cdr  Feb. 17: disabled proprietary option LHABER  (sampling scattering angle from diff. cross secion)
-c             (this option was unfinished and not further developed for more than 10 years.)
 C 
       SUBROUTINE EIRENE_VELOEL(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                         IREL,RMASS)
@@ -135,16 +133,10 @@ C
         do j=1,1000
 c  elab:  here ln(E), with E from 0.01 to 1e3 eV
           elab=elmin+(j-1)/999.*(elmax-elmin)
-c         IF (LHABER) THEN
-cdr  proprietary option disabled.
-C    integrate angle-differential cross section at ELAB
-c           CALL EIRENE_SCATANG (ELAB,-1._DP,ELTHDUM,CTCHDUM,SIGHABER)
-c           CEL= SIGHABER*AU_TO_CM2
-c         ELSE
-c  find cross section at ENERGY ELAB from a fit or table. 
-            CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'VELOEL 1')
-cdr       END IF
 
+c  find cross section at ENERGY ELAB from a fit or table. 
+          CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'VELOEL 1')
+c
           vrq=exp(elab-defel(IREL))
           vr=sqrt(vrq)
           if (cel*vr.gt.SGEVMX(IREL)) then
@@ -250,22 +242,6 @@ C   PRESENT VERSION: REJECTION
         CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'VELOEL 2')
 C
 c.............................................................
-CH FOR SCATTERING ANGLE FROM DIFFERENTIAL CROSS SECTION:
-C
-cdr  this proprietary option is disabled, for the time being.
-c       IF (LHABER) THEN
-c         RMN=RMASS
-c         RMI=RMASSP(IPLS)
-c         RMSI=1./(RMN+RMI)
-c         RLMS=RMN*RMI*RMSI
-c         ER=RLMS*VRELQ*CVELI2
-c         RAN=RANF_EIRENE()
-c         CALL EIRENE_SCATANG (ER,RAN,ELTHDUM,CTCHDUM,SIGHABER)
-c         CEL= SIGHABER*AU_TO_CM2
-c      END IF
-cdr
-c.....................................................................
-
 C
 C       IF (NLREJC) THEN   !  REJECTION IS NOW DEFAULT OPTION
 C
@@ -358,9 +334,6 @@ c
         VREL=SQRT(VRELQ)
         VRYZ=SQRT(VRQYZ+EPS60)
 C  IMPACT PARAMETER --> SCATTERING ANGLE --> NEW VELOCITY
-C       IF (LHABER) THEN
-C  USE DIFFERENTIAL CROSS SECTIONS INSTEAD.  OUT
-C       ENDIF
 C  CENTER OF MASS VELOCITY
         VSX=(RMI*VXI+RMN*VX)*RMSI
         VSY=(RMI*VYI+RMN*VY)*RMSI
@@ -385,11 +358,6 @@ C  NEXT: STEP 3 ,  FIND IMPACT PARAMETER B (--> SCATTERING ANGLE --> NEW VELOCIT
 
           BMAX=SQRT(CEL*PIAI)/0.52917E-8
           B= SQRT(RANF_EIRENE( ))*BMAX
-
-C  DIRECT SAMPLING FROM DIFFERENTIAL CROSS SECTION:  out
-C       ELSEIF (LHABER) THEN
-C  NOTHING TO BE DONE HERE
-
         END IF
 
       ENDIF
@@ -417,16 +385,6 @@ C   ISOTROPIC SCATTERING ANGLE PH IN CENTER OF MASS FRAME
         SPH=DSQRT(1.0-CPH*CPH)      ! [ 0 1]
 C
       ELSEIF (IFLAG.GT.0) THEN
-C
-C  THIS PART: FIND DEFLECTION ANGLE
-C             BINARY COLLISION KINETICS  OR
-C             SAMPLING FROM DIFFERENTIAL CROSS SECTION (IF LHABER)
-C
-C       IF (LHABER) THEN
-C         RAN=RANF_EIRENE()
-C         CALL EIRENE_SCATANG (ER,RAN,ELTHETA,CTTETHA,DUMSIGMA)
-C         PH=ELTHETA
-C       ELSE
 C
 C  COLLISION PARAMETERS IFLAG, ER AND B ARE DEFINED NOW.
 C
