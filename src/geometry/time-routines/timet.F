@@ -272,7 +272,7 @@ C  TIME FROM Z01 TO ZSURF
       BB=VELZ+EPS60
       F=DZ/BB
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'J2,F,DY ',J2,F,DY
+        IF (NLTRC) WRITE (iunout,*) 'J2,F,DZ ',J2,F,DZ
 #endif
       IF (F.LE.ZRAD) THEN
         KUPC(NCOUT)=J1
