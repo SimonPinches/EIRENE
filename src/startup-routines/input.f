@@ -20,7 +20,7 @@ cdr             option lhyddef. error exit. Tests of that interface options star
 !    april 15:  esptcr, esptsr: sputtered particle energy flags introduced
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find-param)
-!cd  22.09.14:  1D case, levgeo=2:  do not call eirene_grid(2)
+!cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
 !cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
 !               some minor changes at transition from end of block ***3 and re-entry to block ***6
 !pb  01.01.14:  options AMPTS, multiplier for ntcpu.... added (input block 7)
@@ -208,7 +208,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IPRCSF, IR, MT, MP, NDUMM, NUMSEC, NDUMM1, NDUMM2,
      .           NRTAL1, NCOPII, NCOPIE, NFR, NREAC_ADD, IPLN,
      .           NDUMM3, NDUMM4, NRE, IFLR,
-     .           ISPSRF, ISPTYP, NSPS, IPTYP, IPSPZ,
+     .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
@@ -326,8 +326,6 @@ C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
       LVZDENI  = .TRUE.
       LVZDENPH = .TRUE.
 
-C  SET DEFAULT VALUE FOR LHABER (FLAG NOT IN USE ANY MORE)
-      LHABER = .FALSE.
 
       LMULTI = .FALSE.
 C
@@ -1605,22 +1603,22 @@ cdr
           IF (R1MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MN,(FP1(I),I=1,3)
             RC1MIN=LOG(R1MN)
-            WRITE (IUNOUT,*) 'NON DEF R1MN SET FOR REATION IR=',IR,R1MN
+            WRITE (IUNOUT,*) 'NON DEF. R1MN FOR REACTION IR=',IR,R1MN
           ENDIF
           IF (R1MX.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MX,(FP1(I),I=4,6)
             RC1MAX=LOG(R1MX)
-            WRITE (IUNOUT,*) 'NON DEF R1MX SET FOR REATION IR=',IR,R1MX
+            WRITE (IUNOUT,*) 'NON DEF. R1MX FOR REACTION IR=',IR,R1MX
           ENDIF
           IF (R2MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX2MN,(FP2(I),I=1,3)
             RC2MIN=LOG(R2MN)
-            WRITE (IUNOUT,*) 'NON DEF R2MN SET FOR REATION IR=',IR,R2MN
+            WRITE (IUNOUT,*) 'NON DEF. R2MN FOR REACTION IR=',IR,R2MN
           ENDIF
           IF (R2MX.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX2MX,(FP2(I),I=4,6)
             RC2MAX=LOG(R2MX)
-            WRITE (IUNOUT,*) 'NON DEF R2MX SET FOR REATION IR=',IR,R2MX
+            WRITE (IUNOUT,*) 'NON DEF. R2MX FOR REACTION IR=',IR,R2MX
           ENDIF
 
 cdr  reaclines only needed for hydkin interface?
@@ -2415,7 +2413,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
 620   CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
 
       IF (ASSOCIATED(REFFILES)) THEN
-c  trim files for NFR target projectile combinations are requested.
+c  TRIM files for NFR target projectile combinations are requested.
 c  read them one by one in subr. RDTRIM
         NHD6 = NFR
       ELSE
@@ -2862,12 +2860,14 @@ C
       IF (ZEILE(1:1) .EQ. '*') GOTO 910
 C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
       NLOGIN = MAX(1,NATMI_IN + NMOLI_IN + NIONI_IN + NPHOTI_IN)
+C  read 60 or more logical flags
       ALLOCATE (LOGRDH(NLOGIN))
       LOGRDH = .FALSE.
       DO J=1, NLOGIN, 60
         READ (ZEILE,6665) LOGRDH(J:MIN(J+59,NLOGIN))
         READ (IUNIN,'(A72)') ZEILE
       END DO
+c
       IF (NATMI_IN > 0) NLPRCA(1:NATMI_IN) = LOGRDH(1:NATMI_IN)
       IF (NMOLI_IN > 0)
      .    NLPRCM(1:NMOLI_IN) = LOGRDH(NATMI_IN+1 : NATMI_IN+NMOLI_IN)
@@ -2881,6 +2881,7 @@ C  DEFAULT: ???
       READ (ZEILE,6666) NPRCSF
 
       NPRCSF=MIN0(NLIMPS,NPRCSF)
+c  read 12 or more integer flags
       IPRCSF=1
 911   CONTINUE
       IF (IPRCSF.LE.NPRCSF) THEN
@@ -2892,6 +2893,7 @@ C  DEFAULT: ???
         IPRCSF=IPRCSF+12
         GOTO 911
       ENDIF
+
 C  DATA FOR SPLITTING AND RUSSIAN ROULETTE
       READ (IUNIN,6666) MAXLEV,MAXRAD,MAXPOL,MAXTOR,MAXADD
       MXL=15
@@ -3031,8 +3033,8 @@ C
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:3) == '** ') THEN
-        CALL
-     .  EIRENE_MASAGE('*** 10F. DATA FOR SPECTRA                   ')
+        CALL EIRENE_MASAGE
+     .             ('*** 10F. DATA FOR SPECTRA                   ')
         IF (NADSPC > 0) THEN
           ALLOCATE(ESTIML(NADSPC))
           IF (NSMSTRA > 0) ALLOCATE(SMESTL(NADSPC))
@@ -3040,6 +3042,7 @@ C
           ALLOCATE(ESTIML(1))
           NULLIFY (ESTIML(1)%PSPC)
         END IF
+C
         DO J=1,NADSPC
           DO
             READ (IUNIN,'(A72)') ZEILE
@@ -3154,13 +3157,31 @@ C    .      ... WRONG INPUT !
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
           ESPEC%ISPCTYP = ISPTYP
-          ESPEC%NSPC = NSPS
-          ESPEC%IMETSP = 0
+          ESPEC%NSPC = ABS(NSPS)
           ESPEC%ISRFCLL = ISRFCLL
           ESPEC%IDIREC = IDIREC
-          ESPEC%LOG = .FALSE.
-          ESPEC%SPCMIN=SPCMN
-          ESPEC%SPCMAX=SPCMX
+cdr
+cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
+cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
+
+cdr   X.B. correction Sept 17, from SOLPS-ITER branch, 
+          IF (NSPS > 0) THEN
+            NSPSA=NSPS
+            ESPEC%LOG = .FALSE.
+            ESPEC%SPCMIN=SPCMN
+            ESPEC%SPCMAX=SPCMX
+            ESPEC%SPCDEL=(SPCMX-SPCMN)/REAL(NSPSA,DP)
+          ELSEIF (NSPS < 0) THEN
+            NSPSA=-NSPS
+            ESPEC%LOG = .TRUE.
+            ESPEC%SPCMIN = log10(SPCMN)
+            ESPEC%SPCMAX = log10(SPCMX)
+            ESPEC%SPCDEL = log10(SPCMX/SPCMN)/REAL(NSPSA,DP)
+          ELSE
+            WRITE (iunout,*) ' SPECTRUM TALLY NUMBER = ',J
+            WRITE (iunout,*) ' ZERO NO. OF SPECTRAL BINS "NSPS". EXIT '
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
           ESPEC%ESP_00=SPC_SHIFT
           ESPEC%SPC_XPLT=SPCPLT_X
           ESPEC%SPC_YPLT=SPCPLT_Y
@@ -3168,29 +3189,32 @@ C    .      ... WRONG INPUT !
           ESPEC%SPCVX=SPCVX
           ESPEC%SPCVY=SPCVY
           ESPEC%SPCVZ=SPCVZ
+C  MIN AND MAX ENERGY SCORE (EV) ON THIS TALLY
           ESPEC%ESP_MIN=1.E30
           ESPEC%ESP_MAX=-1.E30
-          ESPEC%SPCDEL=(SPCMX-SPCMN)/REAL(NSPS,DP)
-          ESPEC%SPCDELI=1._DP/ESPEC%SPCDEL
-          ALLOCATE(ESPEC%SPC(0:NSPS+1))
-c  standard deviation of spectra tallies
+
+          ESPEC%SPCDELI=1._DP/(ESPEC%SPCDEL+EPS60)
+          ALLOCATE(ESPEC%SPC(0:NSPSA+1))
+c  standard deviation of spectrally resolved tallies
 !         IF (NSIGI_SPC > 0) THEN
-            ALLOCATE(ESPEC%SDV(0:NSPS+1))
-            ALLOCATE(ESPEC%SGM(0:NSPS+1))
-            ALLOCATE(ESPEC%STV(0:NSPS+1))
-            ALLOCATE(ESPEC%GG(0:NSPS+1))
+            ALLOCATE(ESPEC%SDV(0:NSPSA+1))
+            ALLOCATE(ESPEC%SGM(0:NSPSA+1))
+            ALLOCATE(ESPEC%STV(0:NSPSA+1))
+            ALLOCATE(ESPEC%GG(0:NSPSA+1))
 !         endif
-          ESPEC%SPC(0:NSPS+1) = 0._DP
+          ESPEC%SPC(0:NSPSA+1) = 0._DP
+          ESPEC%IMETSP = 0
 
           IF (NSMSTRA > 0) THEN
+c  sum over strata
             ALLOCATE(SSPEC)
-            ALLOCATE(SSPEC%SPC(0:NSPS+1))
+            ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
 !           IF (NSIGI_SPC > 0) THEN
-              ALLOCATE(SSPEC%SDV(0:NSPS+1))
-              ALLOCATE(SSPEC%SGM(0:NSPS+1))
-              ALLOCATE(SSPEC%STV(0:NSPS+1))
-              ALLOCATE(SSPEC%GG(0:NSPS+1))
+              ALLOCATE(SSPEC%SDV(0:NSPSA+1))
+              ALLOCATE(SSPEC%SGM(0:NSPSA+1))
+              ALLOCATE(SSPEC%STV(0:NSPSA+1))
+              ALLOCATE(SSPEC%GG(0:NSPSA+1))
 !           END IF
             SSPEC = ESPEC
             SMESTL(J)%PSPC => SSPEC
@@ -3200,6 +3224,8 @@ C
         END DO
         IREAD=0
       ELSE
+Cdr  No block 10F found, i.e. no spectrally resolved tallies at all.
+cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
         IF (.NOT.ALLOCATED(ESTIML)) THEN
           ALLOCATE(ESTIML(1))
           NULLIFY (ESTIML(1)%PSPC)
@@ -3223,7 +3249,7 @@ c  search for input block 11a
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
-CVK TRACING FOR DEBUGGING, V.KOTOV:  not in use in present eirene version
+CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
      .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
@@ -3474,7 +3500,7 @@ C
      .                     XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI)
         NLSTCHR(ICHORI) = ISTCHR > 0  ! automatically add directional cell-based spectra, along line of sight
 1220  CONTINUE
-      READ (IUNIN,6665) PLCHOR,PLSPEC
+      READ (IUNIN,6665) PLCHOR,PLSPEC,PRSPEC,PLARGL,PRARGL
 1230  CONTINUE
 C  SKIP READING REST OF THIS BLOCK
       READ (IUNIN,'(A72)') ZEILE
@@ -4491,7 +4517,7 @@ C
 
       NSIGI_COP=0  !  TURN OFF STATIS_COP FOR COUPLING TALLIES
 CDR  HIDDEN LINK REMOVAL:
-CDR  NSIGI_COP, STATUS_COP AND ALL RELATED CODE IS REDUNDANT, SINCE COUPLING
+CDR  NSIGI_COP, STATIS_COP AND ALL RELATED CODE IS REDUNDANT, SINCE COUPLING
 CDR  TALLIES ARE ALSO DEFAULT TALLIES
       IF ((NSIGI_COP > 0) .AND. (NCPVI >= 3*NPLSI+4))  THEN
         IIH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = NTALM
@@ -4819,8 +4845,8 @@ C
       IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
      .    (ABS(NMODE).EQ.2)) THEN
 C  READ PLASMA BACKGROUND
-c  EITHER  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
-C  OR      FROM COMMON BRAEIR (NLPLAS)
+c  EITHER:  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
+C  OR    :  FROM COMMON BRAEIR (NLPLAS)
         IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
         CALL EIRENE_IF1COP
       ENDIF
@@ -4897,7 +4923,7 @@ C
           ENDDO
         ENDIF
 C
-C   MODIFY SOME PLASMA DATA, USER-SUPPLIED ROUTINE
+C  MODIFY SOME PLASMA DATA, USER-SUPPLIED ROUTINE
 C
         CALL EIRENE_PLAUSR
 

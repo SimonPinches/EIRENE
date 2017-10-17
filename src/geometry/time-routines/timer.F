@@ -164,7 +164,7 @@ C
       IRCELL=NRCELL
       PT=1.D30
       IF ((LEVGEO <= 4) .AND. (ABS(VELZ).EQ.1.D0)) THEN
-c  zero velocity in x-y plane, i.e. flight in z-direction
+c  zero velocity in x-y plane, i.e. flight purely in z-direction
         IPOLGN=IPOLG
         NCOUP=1
         ALPD(NCOUP)=PT
@@ -179,10 +179,14 @@ C-------------------------------------------------------------------
 C
 C****SLAB-MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
-      IF (ABS(VELY).EQ.1.D0) THEN  
-!dr  RULE OUT VELX=0.0, IN WHICH CASE THERE IS NO INTERSECTION WITH X-GRID
-!dr  SAME TEST ALSO FOR Z DIRECTION IS ALREADY DONE ABOVE
+      IF (ABS(VELX)<= EPS30) THEN 
+c  zero velocity in x direction, i.e. flight purely in y-z-direction 
         IPOLGN=IPOLG
+        NCOUP=1
+        ALPD(NCOUP)=PT
+        LUPC(NCOUP)=0
+        MUPC(NCOUP)=0
+        JUPC(NCOUP)=IPOLGN
         RETURN
       ENDIF
 C

@@ -2,17 +2,30 @@ cdr  oct 16:  levgeo=1, error exit due to round off errors removed,
 cdr                     now: "save landing of lost particle".
 cdr           prevents random error exits in very long (parallel) runs.
 C
-Cdr:  at some point in time: included LDAMCEL  (indicator for "damaged cells"
-cdr   set in initialization phase
+Cdr:  at some point in time: included LDAMCEL  
+cdr   (indicator for "damaged cells" in 2D (x-y) plane.
+cdr   LDAMCEL is set in initialization phase
+
+cdr  sept 17: sync with timet
 C
       SUBROUTINE EIRENE_TIMEP (ZRAD)
 C
-C   CALCULATE TIME SEGMENTS IN Y- OR POLOIDAL MESH
+C   CALCULATE TIME SEGMENTS FOR 2D-OR 3D PROFILES,
+C     X-RADIALLY AND Y-POLOIDALLY RESOLVED
+C
+C   BLOCK 1 : LEVGEO.EQ.1
+C   BLOCK 3 : LEVGEO.EQ.3
+C   BLOCK 2a: LEVGEO.EQ.2  and NLCRC
+C   BLOCK 2b: LEVGEO.EQ.2  and :NOT.NLCRC  (use poloidal polygons)
+
 C
 C   INPUT:
 C
 C       X00,Y00,Z00: STARTING POINT FOR THIS TRACK
-C       ZRAD   =
+C     ZRAD  = DISTANCE (CM) 
+C                TO NEXT RADIAL SURFACE OF 1D STANDARD MESH
+C             OR TO NEXT ADDITIONAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
+C             OR TO NEXT TOROIDAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
 C       NRCELL = RADIAL CELL NUMBER, IN WHICH THIS TRACK OF LENGTH ZRAD
 C                                    IS PERFORMED
 C              = 0, IF TRACK OUTSIDE RADIAL MESH
@@ -24,6 +37,7 @@ C       NTCELL =
 C       ITCELL =
 C       NPCELL = POLOIDAL CELL INDEX OF POINT X00,Y00,Z00
 C                AT WHICH THIS TRACK OF LENGTH ZRAD STARTS
+
 C  WARNING: IF NLSRFY, NPCELL MAY BE WRONG
 C       IPCELL =
 C
@@ -71,8 +85,9 @@ C
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1, 
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           EIRENE_LEARCA, I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, EIRENE_LEARC2, 
-     .           NJC, EIRENE_LEARC1, IST, ITEST, JSH, NN ,IN, itc
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+     .           EIRENE_LEARC2, EIRENE_LEARC1, 
+     .           NJC, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
       LOGICAL :: LCUTY(N2NDPLGS), LCUTX(N1STS), lnincz
       SAVE
@@ -82,12 +97,12 @@ C
         CALL EIRENE_LEER(1)
         IF (NRCELL.GT.0) THEN
           WRITE (iunout,*) 'TIMEP FROM INSIDE, NPANU ', NPANU
-          WRITE (iunout,*) 'ZRAD,NRCELL,NPCELL '
-          WRITE (iunout,*)  ZRAD,NRCELL,NPCELL
+          WRITE (iunout,*) 'ZRAD,NRCELL,NPCELL,MPSURF,NTCELL,MTSURF '
+          WRITE (iunout,*)  ZRAD,NRCELL,NPCELL,MPSURF,NTCELL,MTSURF
         ELSE
           WRITE (iunout,*) 'TIMEP FROM OUTSIDE, NPANU ', NPANU
-          WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
-          WRITE (iunout,*)  MRSURF,MTSURF,ZRAD
+          WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,ZRAD '
+          WRITE (iunout,*)  MRSURF,MPSURF,MTSURF,ZRAD
         ENDIF
       ENDIF
 #endif
@@ -100,13 +115,15 @@ C
       ncpen=0
 C
       IF (NLTOR) THEN
+C  zrad,ntcell, ... may have been modified in TIMET.F
 C       NCOUT=NCOUT
         ZRAD=BLPD(1)
         NTCELL=NCOUNT(1)
         IF (NCOUT.GT.1) IPOLGN=0
 #ifdef TRACE
         IF (NLTRC)
-     .    WRITE (iunout,*) 'WG. NLTOR: ZRAD,NTCELL ',ZRAD,NTCELL
+     .    WRITE (iunout,*) 'because NLTOR/NLTRA: ZRAD,NTCELL ',
+     .                                           ZRAD,NTCELL
 #endif
       ELSE
         NCOUT=1
@@ -116,7 +133,8 @@ C       NTCELL=1
 C
 10000 CONTINUE
 C
-CDR NOV.99: ADDED BECAUSE OF FOLION OPTION, WITH DEFAULT B-FIELD (IN Z DIRECTION
+CDR NOV.99: ADDED BECAUSE OF FOLION OPTION, 
+C           WITH DEFAULT B-FIELD (IN Z DIRECTION)
 C
       IF (ABS(VELZ).EQ.1.D0) THEN
         NCOUP=1
@@ -429,6 +447,7 @@ C
       ELSEIF (LEVGEO.EQ.2) THEN
         IF (NLCRC) THEN
 C
+C  BLOCK 2A: POLOIDAL SURFACES ARE PLANE SURFACES, AT CONST. ANGLE THETA
 C
 C  DISTANCE TO NEXT X- OR RADIAL SURFACE KNOWN?
 C
@@ -500,9 +519,9 @@ C
           NINCY=0
           GOTO 5000
 C
-        ELSE
+      ELSEIF (LEVGEO.EQ.2.AND..NOT.NLCRC) THEN
 C
-C  NEW PART: NOT NLCRC
+C  BLOCK 2B. LEVGEO=2 BUT NOT NLCRC, POLOIDAL SURFACES ARE NOT PLANE SURFACES
 C  PARTICLE INSIDE STANDARD MESH
 C
           NCOUP=0
@@ -897,20 +916,28 @@ C
 C
       ENDIF
 C
+C
 5000  CONTINUE
+#ifdef TRACE
+      IF (NLTRC) WRITE (iunout,*) 'NCOUP= ',NCOUP
+#endif
       DO 5100 J=1,NCOUP
         CLPD(IADD+J)=ALPD(J)
         NUPC(IADD+J)=(JUPC(J)-1)+(NTCELL-1)*NP2T3
         NCOUNP(IADD+J)=JUPC(J)
         NCOUNS(IADD+J)=NTCELL
-        IF (ALPD(J).LE.0..OR.JUPC(J).LE.0.OR.JUPC(J).GE.NP2ND) THEN
+        IF (ALPD(J).LE.0..OR.JUPC(J).LE.0.OR.
+     .      JUPC(J).GE.NP2ND) THEN
           WRITE (iunout,*) 'ERROR DETECTED IN TIMEP '
-          WRITE (iunout,*) 'J,IADD+J,ALPD,JUPC ',
-     .                      J,IADD+J,ALPD(J),JUPC(J)
+          WRITE (iunout,*) 'NPANU,J,IADD+J,ALPD,JUPC ',
+     .                      NPANU,J,IADD+J,ALPD(J),JUPC(J)
         ENDIF
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'TIMEP ',
-     .      J+IADD,CLPD(J+IADD),NUPC(J+IADD),NCOUNP(J+IADD)
+        IF (NLTRC) THEN 
+          JJ=J+IADD
+          WRITE (iunout,*) 'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
+     .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
+        ENDIF
 #endif
 5100  CONTINUE
 C
@@ -959,8 +986,12 @@ C
       ZRAD=SUM
       RETURN
 C
-991   CONTINUE
+9990  CONTINUE
+      WRITE (iunout,*) 'ERROR IN TIMEP ',J2,J1,VELY
+      RETURN  ! changed to avoid job crash in long runs
+!     CALL EIRENE_EXIT_OWN(1)
+9991   CONTINUE
       WRITE (iunout,*)
-     .  'REENTRANCE FROM VACUUM REGION AND LEVGEO=1 IN TIMEP'
+     .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'
       CALL EIRENE_EXIT_OWN(1)
       END

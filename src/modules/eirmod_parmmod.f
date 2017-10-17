@@ -12,7 +12,7 @@ cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
 cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
-cdr  July 17: remove NTALW  (was same as NTALS)
+cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -298,13 +298,17 @@ c  set some derived storage parameters
         NBGVP=NBGV+1
         NCOLMC=NPLS+NREI+NREC
 
-C  storage parameter for species text for output tallies, and scltal in mcarlo.f
+C  N1MX: storage parameter for species text for output tallies, and scltal in mcarlo.f
 
         N1MX=    NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
      .           NSNV+NAIN
-!pb     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV+
+
+!pb     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV,
 !    .           NSNV,NAIN)
 cdr  same as n1mx.  Check: why not n1mx=max(....)
+
+C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, for standard deviation estimators
+
         NSPZTOT= NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
      .           NSNV
 
@@ -395,7 +399,7 @@ c  surface reflection model
       INT_PARM( 46) = NHD4
       INT_PARM( 47) = NHD5
       INT_PARM( 48) = NHD6
-c  lines of sight integrals (post-procesing
+c  lines of sight integrals (post-processing)
       INT_PARM( 49) = NCHOR
       INT_PARM( 50) = NCHEN
 
@@ -558,7 +562,7 @@ c  species indices (1st dimenion) of output tallies
       NSNV        = INT_PARM( 28)
       NALV        = INT_PARM( 29)
       NALS        = INT_PARM( 30)
-      NAIN        = INT_PARM( 31)   !input tally !
+      NAIN        = INT_PARM( 31)   ! actually: an input tally !
       NCPV        = INT_PARM( 32)
       NBGK        = INT_PARM( 33)
 

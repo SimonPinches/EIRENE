@@ -1,9 +1,9 @@
 cdr  june 16: comments added
-cdr  NS=N1=1 always, except: call from STEP.f
+cdr  in learca1: same code, but there NS=N1=1 always
 cdr  to be done: binary search
 C
-C*DK LEARCA
-      FUNCTION EIRENE_LEARCA (X,R,N1,N,NS,TEXT)
+C*DK LEARCA2
+      FUNCTION EIRENE_LEARCA2 (X,R,N1,N,NS,TEXT)
 C
 C   THIS FUNCTION COMPUTES THE INDEX OF THE SMALLER MESHPOINT OF THE
 C   INTERVAL CONTAINING THE POINT X IN THE 2ND COORDINATE OF A 2D MESH R(NS,I),I=1,N
@@ -16,13 +16,13 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       CHARACTER(*), INTENT(IN) :: TEXT
       INTEGER, INTENT(IN) :: N1, N, NS
       REAL(DP), INTENT(IN) :: R(N1,*)
       REAL(DP), INTENT(IN) :: X
-      INTEGER :: NNN, I, J, EIRENE_LEARCA
- 
+      INTEGER :: NNN, I, J, EIRENE_LEARCA2
+
       NNN=1
       IF (X.LT.R(NS,1)-1.D-12) GOTO 20
 
@@ -37,13 +37,13 @@ cdr  this loop should be replaced with a binary search
       IF (X.GT.R(NS,N)+1.D-12) GOTO 20
 
 
-15    EIRENE_LEARCA=I-1
+15    EIRENE_LEARCA2=I-1
       RETURN
 C
-20    WRITE (iunout,*) 'X OUT OF RANGE IN LEARCA'
+20    WRITE (iunout,*) 'X OUT OF RANGE IN LEARCA2'
       WRITE (iunout,*)  X,NNN,R(NS,NNN)
-      WRITE (iunout,*) 'LEARCA= ',NNN,' RETURNED TO SUBR. ',TEXT
-      EIRENE_LEARCA=NNN
+      WRITE (iunout,*) 'LEARCA2= ',NNN,' RETURNED TO SUBR. ',TEXT
+      EIRENE_LEARCA2=NNN
 C
       RETURN
       END

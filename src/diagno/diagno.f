@@ -18,6 +18,16 @@ C  AFTER ALL LINES OF SIGHT ARE DONE, THE OUTPUT ROUTINE OUTSIG IS CALLED
 C  FOR PRINTING AND PLOTTING.
 C
       SUBROUTINE EIRENE_DIAGNO
+cdr main program for side on (line of sight) diagnostics, in post processing phase
+
+c  step 1:  prepare arrays for energy (or spectral) resolution (binning) 
+c  step 2:  call sgnal, to carry out line of sight integration, all bins.
+c  step 3:  call outsig, to print (if prspec) and plot (if plspec) 
+c           energy/spectrally resolved "side-on" data, line integrated.
+
+c  nb    :  during step 2, also spatially resolved (along the line of sight)
+c           information can be extracted. This is controlled by the flags
+c           plargl, prargl
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

@@ -1,7 +1,12 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-!cp  July 17 :  made  ARGST allocatable, conditional on  TRCSIG
-cdr             plspec only, if trcsig. to be done in input.f
-CDR             ditto: AA, XNTG, VPLOT
+cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
+cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
+c
+c    July 17 :  distinguish flags for output with spectral resolution from
+c               output with spatial resolution along LOS.
+c               Made  ARGST allocatable, conditional on  PRARGL,PLARGL
+cdr             plargl only, if prargl. To be done in input.f
+CDR             ditto: made allocatable AA, XNTG, VPLOT
 CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
 C
 C
@@ -25,8 +30,9 @@ C  UNTIL THE NEXT INTERSECTION WITH ANY NON-TRANSPARENT
 C  SURFACE (P2) IS FOUND.
 c
 c  ifirst=0:  first call for one particular LOS
-c  ifirst=1:  same LOS as previous LOC, but different (energy, wavelength) parameter PEN
-c  ifirst<0:  irgend was mit short storing ??
+c  ifirst=1:  same LOS as previous LOS, but different (energy, wavelength) parameter PEN
+cdr
+c  ifirst<0:  unclear  ?? something related to nltrj, storing trajectories/chords ??
 c
 C
       USE EIRMOD_PRECISION
@@ -131,9 +137,9 @@ C
       
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
-        IF (TRCSIG) THEN
-cdr  TRCSIG: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
-cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
+        IF (PRARGL) THEN
+cdr  PRARGL: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
+cdr  tbd:  turn off PLARGL in input.f (+warning), unless also PRARGL=.T.
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -149,9 +155,11 @@ cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
       LARGST = SIZE(ARGST,2) >= NSBOX
 
 c.......................................................................
-cdr  some plot stuff, still to be moved to separate routine
-cdr  into folder: plotting, plot_dummy...
-      IF (PLSPEC.AND.TRCSIG) THEN
+cdr  some plot stuff for spatially resolved LOS, 
+cdr  ...still to be moved to separate routine
+cdr  into folders: plotting, plot_dummy... 
+CDR  (note: PLARGL was turned off unless PRARGL)
+      IF (PLARGL) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
           NCH = 1
           IF (ANY(NCHTAL(1:NCHORI) == 1)) NCH=IABS(NCHENI)
@@ -795,6 +803,7 @@ CDR WAS PASSIERT HIER ???
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
+        
 cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
@@ -928,9 +937,13 @@ C       CALL SIGTST(2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
 C
 C  FINAL SEGMENT ALONG LINE-OF-SIGHT
       JJJ=JJJ+1
-!pb      IF (LARGST) XNTG(JJJ)=TRACKS
-      IF (LARGST) THEN
-        XNTG(JJJ)=TRACKS
+      IF (LARGST) XNTG(JJJ)=TRACKS
+C
+C  PLOT SPATIALLY RESOLVED CONTRIBUTIONS ALONG LINE OF SIGHT.
+C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
+C  PLOTTED INTO GEOMETRY PLOT (PLT2D, PLT3D) VIA CHCTRC CALLS.
+C
+      IF (PLARGL.OR.PRARGL) THEN
 !pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
         IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
           AA(1:JJJ) = ARGST(ISP,1:JJJ)
@@ -941,13 +954,9 @@ C  FINAL SEGMENT ALONG LINE-OF-SIGHT
           WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
-      END IF
-C
-C  PLOT INDIVIDUAL CONTRIBUTIONS ALONG LINE OF SIGHT.
-C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
-C  PLOTTED INTO GEOMETRY PLOT VIA CHCTRC CALLS.
-C
-      IF (PLSPEC.AND.TRCSIG) THEN
+      ENDIF
+
+      IF (PLARGL) THEN
         IF (PLHST) THEN
           WRITE (IUNOUT,*) 'FROM LININT: '
           WRITE (IUNOUT,*) 'PLOTTING OF FURTHER LINE OF SIGHTS DISABLED'
@@ -955,16 +964,7 @@ C
           WRITE (IUNOUT,*) 'LINE OF SIGHT                              '
           PLHST=.FALSE.
         ENDIF
-!pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
-!        IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
-!          AA(1:JJJ) = ARGST(ISP,1:JJJ)
-!        ELSEIF (ISP.EQ.0) THEN
-!pb       AA(1:JJJ) = SUM(ARGST(1:NSPI,1:JJJ),1)
-!          AA(1:JJJ) = SUM(ARGST(1:,1:JJJ),1)
-!        ELSE
-!          WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
-!          CALL EIRENE_EXIT_OWN(1)
-!        ENDIF
+
         PPMA = MAXVAL(AA(1:JJJ))
         IF (NCHTAL(ICHORI).EQ.1) AA(1:JJJ) = MAX(1._DP,AA(1:JJJ))
         IF (PPMA.GT.0._DP) THEN
@@ -1027,7 +1027,7 @@ C  INITALIZE NEW PICTURE FOR NEW CHORD
         END IF
       END IF
 C
-      IF (TRCSIG) THEN
+      IF (PRARGL) THEN
         IF (NCHTAL(ICHORI).EQ.1) THEN
           WRITE (iunout,*) 'ENERGY (EV): ',PEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), FOR IATM= ',ISP
@@ -1073,7 +1073,7 @@ C
       ENTRY EIRENE_LININT2
 
       IF (ALLOCATED(ARGST)) THEN
-c  these arrays have been allocated for TRCSIG option.
+c  these arrays have been allocated for PRSPEC option.
         DEALLOCATE (ARGST)
         DEALLOCATE (AA)
         DEALLOCATE (VPLOT)

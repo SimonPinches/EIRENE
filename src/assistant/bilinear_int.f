@@ -7,8 +7,10 @@ C     Bilinear interpolation of data
 C INPUTS
 C     REAL*8, DIMENSION(2,2):: D  ! data to interpolate
 C     REAL*8    :: RX, RY ! relative position at which interpolations should be done
+C                  RX, RY:  IN [0,1] : BILINEAR INTERPOLATION.
+C                           OTHERWISE: BILINEAR EXTRAPOLATION
 C OUTPUT
-C     REAL*8    :: Z  ! interpolated data
+C     REAL*8    :: Z  ! interpolated value
 C     ******
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       SUBROUTINE EIRENE_BILINEAR_INT (D, RX, RY, Z)

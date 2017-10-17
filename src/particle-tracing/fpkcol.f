@@ -144,6 +144,7 @@ cdr
 C
 
         FAC=SQRT(E0NEW/E0OLD)
+C in this particlar case: retain old pitch: velpar/velper. No pitch angle scattering so far.
         VELPAR=VELPAR*FAC
         VELPER=VELPER*FAC
         E0PAR=E0PAR*FAC*FAC
@@ -177,6 +178,7 @@ C  BACK TO CARTESIAN COORDIANTES
       VELY = VVEC(2)
       VELZ = VVEC(3)
       LCART=.TRUE.
+c strictly: e0new, vnew should be modified, due to new gyro phase. 
 
 300   CONTINUE
 
