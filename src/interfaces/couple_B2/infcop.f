@@ -159,7 +159,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
      .          FLX, ESUM, VR, VTEST, EADD, 
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI, CHP,
-     .          CNDYNP, CHI, CHE, CS, THMAX, EESHT, EEMAX,
+     .          CHI, CHE, CS, THMAX, EESHT, EEMAX,
      .          RP1, DELX, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFNISY, SFEEWX, SFEINY, PM1, DRR, UU, PITB,
@@ -2285,7 +2285,6 @@ C
             JPLS = NSPEZ(ISTRAI)
             IF ((JPLS > 0) .AND. (JPLS <= NPLSI) .AND.
      .          (IPLS /= JPLS)) CYCLE
-            CNDYNP=AMUA*RMASSP(IPLS)
             IPLSTI = MPLSTI(IPLS)
             DO ISR=1, NSRFSI(ISTRAI)
               ISTEP = SORIND(ISR,ISTRAI) 
@@ -2691,7 +2690,7 @@ cdr  this is now identical to sei above ?
 !pb 30012013 sei internal
             cpv_cmp(icp4+ipls,in,istrai)=(cpv_cmp(icp4+ipls,in,istrai) + 
      .              EPLSUM) * VOLTAL(IN)*ELCHA
-            scpveii(istrai) = scpveii(istrai)+cpv_cmp(icp4+ipls,in,istrai)
+            scpveii(istrai)=scpveii(istrai)+cpv_cmp(icp4+ipls,in,istrai)
           end do
         end do
 
