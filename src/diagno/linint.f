@@ -795,12 +795,13 @@ CDR WAS PASSIERT HIER ???
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
-        TRACKS=TRACKS+ZDS
 cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
 
         IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
+
+        TRACKS=TRACKS+ZDS
         
 C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
@@ -927,7 +928,20 @@ C       CALL SIGTST(2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
 C
 C  FINAL SEGMENT ALONG LINE-OF-SIGHT
       JJJ=JJJ+1
-      IF (LARGST) XNTG(JJJ)=TRACKS
+!pb      IF (LARGST) XNTG(JJJ)=TRACKS
+      IF (LARGST) THEN
+        XNTG(JJJ)=TRACKS
+!pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
+        IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
+          AA(1:JJJ) = ARGST(ISP,1:JJJ)
+        ELSEIF (ISP.EQ.0) THEN
+!pb       AA(1:JJJ) = SUM(ARGST(1:NSPI,1:JJJ),1)
+          AA(1:JJJ) = SUM(ARGST(1:,1:JJJ),1)
+        ELSE
+          WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
+      END IF
 C
 C  PLOT INDIVIDUAL CONTRIBUTIONS ALONG LINE OF SIGHT.
 C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
@@ -942,15 +956,15 @@ C
           PLHST=.FALSE.
         ENDIF
 !pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
-        IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
-          AA(1:JJJ) = ARGST(ISP,1:JJJ)
-        ELSEIF (ISP.EQ.0) THEN
+!        IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
+!          AA(1:JJJ) = ARGST(ISP,1:JJJ)
+!        ELSEIF (ISP.EQ.0) THEN
 !pb       AA(1:JJJ) = SUM(ARGST(1:NSPI,1:JJJ),1)
-          AA(1:JJJ) = SUM(ARGST(1:,1:JJJ),1)
-        ELSE
-          WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
-          CALL EIRENE_EXIT_OWN(1)
-        ENDIF
+!          AA(1:JJJ) = SUM(ARGST(1:,1:JJJ),1)
+!        ELSE
+!          WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
+!          CALL EIRENE_EXIT_OWN(1)
+!        ENDIF
         PPMA = MAXVAL(AA(1:JJJ))
         IF (NCHTAL(ICHORI).EQ.1) AA(1:JJJ) = MAX(1._DP,AA(1:JJJ))
         IF (PPMA.GT.0._DP) THEN
