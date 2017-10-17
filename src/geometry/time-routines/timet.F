@@ -430,6 +430,11 @@ C
       AA=Z01+X01*TANAL
       BB=-TANAL*VELX-VELZ+EPS60
       F=AA/BB
+!      if (abs(aa*bb) <= eps30) then
+!        f = 0._dp
+!      else
+!        F=AA/BB
+!      end if
       IF (F.LE.0.) THEN
 C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         IF (ABS(AA).LE.EPS10.AND.NERR.LE.1) THEN
