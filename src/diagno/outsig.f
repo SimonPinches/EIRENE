@@ -89,9 +89,9 @@ C
      .      'CX-DETECTOR SIGNALS, MAXW. NEUTRL. DISTR.'
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
           CALL
-     .  EIRENE_HEADNG('H ALPHA-DETECTOR SIGNAL: #/S/CM2/STERAD  ',41)
-          TXHEAD(1:41) =
-     .      'H ALPHA-DETECTOR SIGNALS: #/S/CM2/STERAD '
+     .  EIRENE_HEADNG('H emission SIGNAL: #/S/CM2/STERAD  ',35)
+          TXHEAD(1:35) =
+     .      'H emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           CALL
      .  EIRENE_HEADNG('SIDE ON SPECTRAL RADIANCE: #/S/CM2/NM/STERAD',44)
@@ -102,6 +102,11 @@ C
      .  EIRENE_HEADNG('DETECTOR SIGNALS VIA SPECTRA ALONG LOS',38)
           TXHEAD(1:44) =
      .      'DETECTOR SIGNALS VIA SPECTRA ALONG LOS'
+        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+          CALL
+     .  EIRENE_HEADNG('He emission SIGNAL: #/S/CM2/STERAD  ',33)
+          TXHEAD(1:33) =
+     .      'He emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           CALL
      .  EIRENE_HEADNG('USER DEFINED LINE INTEGRAL (SUBR. SIGUSR)',41)
@@ -235,9 +240,18 @@ C..............................................
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
 C
           DUMTIL=FUFFER(ICHORI,1)
-          CALL EIRENE_MASR1('H ALPHA ',DUMTIL)
+          CALL EIRENE_MASR1('H emiss ',DUMTIL)
           CALL EIRENE_LEER(2)
  
+C..............................................
+C  PHOTONS, LINE INTENSITY.  200-- 299
+C..............................................
+        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+C
+          DUMTIL=FUFFER(ICHORI,1)
+          CALL EIRENE_MASR1('He emiss',DUMTIL)
+          CALL EIRENE_LEER(2)
+
 C...............................................
 C  PHOTONS, SPECTRALLY RESOLVED SIDE ON SPECTRA.  300-- 399
 C...............................................

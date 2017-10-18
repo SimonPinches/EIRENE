@@ -8,10 +8,14 @@ c            set default ncheni=1 for nchtal=2 already in calling routine,
 c            to avoid that chords are erroneously turned off there. 
 cpb jul.17:  request from aug.16: psig and ARGST depends on NCHTAL done
 cdr       :  commit PART 1: allocatable storage: ARGST, VPLOT, AA, XNTG
-cdr       :  PART 2: automatic detection of 1st dimension ND: tb commited later            
+cdr       :  PART 2: automatic detection of 1st dimension ND: tb commited later 
+cdr Oct 17  :
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
+cdr                    analogous to H emission lines,             NCHTAL=2 
+cdr       : added ITP (type of relevant component)           
 C
 C
-      SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
+      SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
 C
 C  THIS SUBROUTINE CALCULATES LINE INTEGRATED SIGNALS, USING THE EIRENE
 C  VOLUME AVERAGED TALLIES AND THE PLASMA BACKGROUND DATA.
@@ -50,7 +54,7 @@ C
  
       IMPLICIT NONE
 C
-      INTEGER, INTENT(IN) :: ICHORI, ISP
+      INTEGER, INTENT(IN) :: ICHORI, ISP, ITP
       INTEGER :: IISTR
       REAL(DP), ALLOCATABLE, SAVE :: PSIG(:)
       REAL(DP) :: C1(3),C2(3),
@@ -93,7 +97,8 @@ C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
 
-cdr   IF (NCHTAL(ICHORI).EQ.2) NCHNI=1  : this is now done in calling routine diagno.f
+cdr   IF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) NCHNI=1  
+cdr   this is now already done in calling routine diagno.f
 
 cdr:  aug. 2016
 cdr:  to be written: use emin1, emax1 to identify upper and lower state of a transition,
@@ -402,7 +407,7 @@ c  nlvl is not true:
           return
         ENDIF
 C.................................................................
-      ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
+      ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
 C.................................................................
         write (iunout,*) 'sgnal, emis: ichord,istra ',
      .                            ichori,istra
@@ -447,6 +452,7 @@ C
       IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
       IF (NCHTAL(ICHORI).EQ.2)  NSPI=10     ! up to 10 spectral line emissivities (transitions) in one single LOS evaluation
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
+      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10  
       IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
       IFIRST=0
@@ -481,8 +487,8 @@ C  THE NUMERICAL FACTOR 1./11.137 ARISES FROM A TRANSFORMATION
 C  OF A MAXWELLIAN VELOCITY DISTRIBUTION TO A MAXW. ENERGY DISTR.
 C  1./11.137=0.5*(1./PI)**1.5, IN SIGCX
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)/11.137
-        ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
-C  LINE INTEGRAL: PHOTONS/SEC/CM**2/STERAD (EMISSIVITY), JEN=1
+        ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
+C  LINE INTEGRAL: PHOTONS/SEC/CM**2/STERAD (EMISSIVITY), JEN=1 HERE.
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)/(4.*PIA)
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2/EV/STERAD (SPECTRAL RADIANCE)

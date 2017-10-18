@@ -1,4 +1,7 @@
-!pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
+cdr Oct 17  :
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
+cdr                    analogous to H emission lines,             NCHTAL=2 
+cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS 
 cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
 cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
 c
@@ -8,6 +11,7 @@ c               Made  ARGST allocatable, conditional on  PRARGL,PLARGL
 cdr             plargl only, if prargl. To be done in input.f
 CDR             ditto: made allocatable AA, XNTG, VPLOT
 CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
+!pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C
 C
 C*DK LININT
@@ -137,9 +141,9 @@ C
       
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
-        IF (PRARGL) THEN
-cdr  PRARGL: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
-cdr  tbd:  turn off PLARGL in input.f (+warning), unless also PRARGL=.T.
+        IF (PRARGL.OR.PLARGL) THEN
+cdr  PRARGL/PLARGL: ENABLE STORING, PRINTING AND/OR PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
+cdr  
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -158,7 +162,7 @@ c.......................................................................
 cdr  some plot stuff for spatially resolved LOS, 
 cdr  ...still to be moved to separate routine
 cdr  into folders: plotting, plot_dummy... 
-CDR  (note: PLARGL was turned off unless PRARGL)
+
       IF (PLARGL) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
           NCH = 1
@@ -225,7 +229,7 @@ C  NEAREST NON-TRANSPARENT STANDARD MESH SURFACE OR NON-TRANSPARENT
 C  ADDITIONAL SURFACE,
 C  STARTING FROM C2, SEARCHING IN THE DIRECTION C1-C2
 C
-      IF (NLTRA) THEN
+      IF (NLTRA) THEN   ! NLTRA=.TRUE. => discrete toroidal approximation is used.
 C  IF ICHRD=0:
 C  C2(1) R COORDINATES IN THE TORUS SYSTEM (INCL. R0A!)
 C  C2(2) Z COORDINATES (REFERRED TO AS Y-COORDIANTE IN EIRENE)
@@ -251,7 +255,7 @@ C  FIND LOCAL CO-ORDINATES IN IPERID_2 FOR C2: X0,Z0
           CALL EIRENE_FZRTRI(X0,Z0,IPERID_2,X22,PHI22,IPERID_2)
           Y0=C2(2)
         ELSE
-          WRITE (iunout,*) 'ERROR IN LININT, 1'
+          WRITE (iunout,*) 'ERROR IN LININT, nltra'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
@@ -275,11 +279,11 @@ C  DIRECTION COSINUS OF CHORD, IN IPERID_2
           VELY=Y0-YPIV
           VELZ=Z0-ZPIV
         ELSE
-          WRITE (iunout,*) 'ERROR IN LININT, 2'
+          WRITE (iunout,*) 'ERROR IN LININT, nltrz'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-      ELSEIF (NLTRZ) THEN
+      ELSEIF (NLTRZ) THEN   !Default: NLTRZ = TRUE (cylindrical). z-coordinate is straight (cm)
 C
 C  C1(1) AND C2(1) X COORDINATES (CM)
 C  C1(2) AND C2(2) Y COORDINATES (CM)
@@ -291,14 +295,14 @@ C  C1(3) AND C2(3) Z COORDINATES (CM)
         VELY=C2(2)-C1(2)
         VELZ=C2(3)-C1(3)
 C
-      ELSEIF (NLTRT) THEN
+      ELSEIF (NLTRT) THEN   ! NLTRT=.TRUE. => torus co-ordinates R,PHI,THETA. Option not ready.
 C
 C  C1(1) AND C2(1) R COORDINATES IN CYLINDRICAL CO-ORDINATES
 C  C1(2) AND C2(2) Z COORDINATES IN CYLINDRICAL CO-ORDINATES
 C  C1(3) AND C2(3) ARE TOROIDAL ANGLES IN DEGREES
 C
 C  TO BE WRITTEN
-        WRITE (iunout,*) 'ERROR IN LININT, 3'
+        WRITE (iunout,*) 'ERROR IN LININT, nltrt'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
@@ -570,6 +574,11 @@ C
 C
 38    CONTINUE
       IF (ILIIN(MSURF).LE.0) GOTO 14
+C     PERIODICITY (inspired by escape.f):
+      IF (ILIIN(MSURF).GE.4) THEN
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+        GOTO 14
+      ENDIF
 C
 C  STARTING POINT FOR INTEGRATION FOUND:  SURFACE MSURF
 C
@@ -656,6 +665,8 @@ C
           CALL EIRENE_SIGHA (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           CALL EIRENE_SIGRAD(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+            CALL EIRENE_SIGHE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,      
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
@@ -820,6 +831,8 @@ C  contribution to line-of-sight integral, segment no. jjj
             CALL EIRENE_SIGHA (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
             CALL EIRENE_SIGRAD (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+          ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+            CALL EIRENE_SIGHE (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
             CALL EIRENE_SIGUSR(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
@@ -901,6 +914,11 @@ C   CELL LOOP FINISHED
 C
 380   CONTINUE
       IF (ILIIN(MSURF).LE.0) GOTO 104
+C     PERIODICITY (inspired by escape.f):
+      IF (ILIIN(MSURF).GE.4) THEN
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+        GOTO 104
+      ENDIF
 C
       IF (TRCSIG.AND.IFIRST.EQ.0) THEN
         TRCSAV=TRCHST

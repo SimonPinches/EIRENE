@@ -126,6 +126,7 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
 C
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2
 C
+!WZ:  This error message might be obsolete.
       IF (NSPZ+2.LT.6) THEN
         WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
         CALL EIRENE_EXIT_OWN(1)
