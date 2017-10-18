@@ -66,7 +66,8 @@ C
      .          DE, TE, RC1MIN,RC2MIN, RC1MAX, RC2MAX
 
       INTEGER :: IRC, NCELC, IERROR, IR, I, J, JEND,
-     >           JFEX1MN, JFEX2MN, JFEX1MX, JFEX2MX
+     >           JFEX1MN, JFEX2MN, JFEX1MX, JFEX2MX,
+     >           IFIRST
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123
