@@ -12,6 +12,7 @@ c            i.e. a new line is requested for same stratum flag.
 c            
 C
       SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
+
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST).
@@ -78,6 +79,7 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
       IF (INIT.EQ.0) THEN
         PSIG=0.
         IF (LARGST) ARGST=0.
+
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
@@ -160,4 +162,5 @@ C     Following lines added for reinitialisation of eirene (DMH)
       ITROLD = -1
       PENOLD = -1._DP
       RETURN
+
       END
