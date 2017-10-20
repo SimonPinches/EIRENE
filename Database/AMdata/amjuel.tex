@@ -1,11 +1,13 @@
 %\documentclass[12pt]{article}
-\documentclass[12pt,dvipdfm]{article}
+\documentclass[12pt,dvipdfmx]{article}
 
 \usepackage{epsf}
 \oddsidemargin 0. true cm
 \topmargin -2.5 true cm
 \textheight 24 true cm
 \textwidth 16 true cm
+
+
 \usepackage{color}
 \pagecolor{white}
 \setcounter{secnumdepth}{3}
@@ -14,7 +16,7 @@
 
 \usepackage[unicode=true,
 % hypertex, % use for activating links in DVI file
- dvipdfm, % use for bookmarks in final version
+ dvipdfmx, % use for bookmarks in final version
  bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
  breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
  {hyperref}
@@ -107,7 +109,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.1 3.1.8R (Riviere) revised (better extrapolation to low energy) \\
   H.1 3.1.8ST new (Schultz total cx cross section) \\
   H.1 3.1.8SD new (Schultz momentum transfer cross section) \\
-  H.1 3.1.8       (Janev total cx cross section (also: 3.1.8J)\\
+  H.1 3.1.8       (Janev total cx cross section, also: 3.1.8J)\\
   H.1 3.1.8J2 new (Janev total cx cross section *2 = mom trans. x-section)\\
   H.1 3.1.8ST2 new (Schultz total cx cross section *2 = mom trans. x-section)\\
   note: 3.1.8SD $\approx$ 2  * 3.1.8ST within line-thickness
@@ -351,8 +353,8 @@ this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multipl
 derive, exactly, the corresponding H.1 and H.8 coefficients. Done for H.8, 2.2.14,  To be done for H.1 for this
 process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.2.15, 2.3.13, 2.7.14....
 \item  Aug. 17:   3.1.8  H.2, H.3 and H.9 rate coefs. must be redone, due to Aug. 17 correction of left asmpt. in cross section.
-Will perhaps further improve the tracklength estim. energy balance. 
-So far we have no 3.1.8S rate coeff. of any kind
+Will perhaps further improve the tracklength estim. energy balance.
+So far we have no 3.1.8S (Schultz) rate coeff. of any kind
 \end{itemize}
 
 \newpage
@@ -416,7 +418,7 @@ six digits need to be kept for these to be nearly perfect fits (see Sect. 8.2) a
 been truncated at six digits.\\
 
 \begin{eqnarray*}
-\ln \langle\sigma v\rangle & = & (3.27139e+01) + 1.35365e+01 (2.30259)\\
+\ln \langle\sigma v\rangle & = & -3.27139e+01 \quad\quad\quad\quad \ \ + 1.35365e+01 (2.30259)\\
 & & -5.73932e+00 (2.30259)^2 + 1.56315e+00 (2.30259)^3\\
 & & -2.87705e-01 (2.30259)^4 + 3.48255e-02 (2.30259)^5\\
 & & -2.63197e-03 (2.30259)^6 + 1.11954e-04 (2.30259)^7\\
@@ -1766,7 +1768,7 @@ Riviere cross section formula for charge exchange
 Reaction 3.1.8ST $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz total cross section for charge exchange
-fitted into ``Janev format", left asympt. added. 
+fitted into ``Janev format", left asmpt. added.
 
 
 \begin{small}\begin{verbatim}
@@ -2822,7 +2824,8 @@ Reaction 2.26B1   $e + Fe^+ \rightarrow e + Fe^{++} + e$
 
 
 \subsection{
-Reaction 0.1T  $p + H(1s) \rightarrow  p + H(1s)$, elastic,
+Reaction 0.1T  $p + H(1s) \rightarrow  p + H(1s)$
+, elastic,
 $\  I_{0,0}$
 }
 
