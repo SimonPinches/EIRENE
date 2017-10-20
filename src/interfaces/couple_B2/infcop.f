@@ -2690,7 +2690,7 @@ cdr  this is now identical to sei above ?
 !pb 30012013 sei internal
             cpv_cmp(icp4+ipls,in,istrai)=(cpv_cmp(icp4+ipls,in,istrai) + 
      .              EPLSUM) * VOLTAL(IN)*ELCHA
-            scpveii(istrai) = scpveii(istrai)+cpv_cmp(icp4+ipls,in,istrai)
+            scpveii(istrai)=scpveii(istrai)+cpv_cmp(icp4+ipls,in,istrai)
           end do
         end do
 

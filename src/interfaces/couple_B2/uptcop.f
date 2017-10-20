@@ -1,5 +1,4 @@
-C  Jan. 2017 remove cndyn arrays. these are now set in startup-routines
-c            once for the entire run.
+C
 C
       SUBROUTINE EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
 C
@@ -112,6 +111,7 @@ C
 52          CONTINUE
           END IF
 51        CONTINUE
+C
 20      CONTINUE
 C
 C  MOLECULES
