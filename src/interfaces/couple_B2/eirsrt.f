@@ -369,7 +369,7 @@ C
           DO 27 IPLS=1,NPLSI
           DO 27 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
-t
+
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 27
             DO 28 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN

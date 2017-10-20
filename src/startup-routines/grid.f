@@ -506,9 +506,13 @@ C  INDEX IS:           TRIANGLE SIDE
             J = INMTI(IS,IT)
             IF ( J .NE. 0) THEN
               IF ((NCHBAR(IS,IT) == 0) .AND. (ILIIN(J) <= 0)) THEN
+                IF ((ILIIN(J) < 0) .AND. (ILSWCH(J) < 1000)) THEN
+c  transparent surfaces, that switch into additional cells, are legal.
+c  all other transparent cell faces must either have a neighbor, or a surface boundary condition.
                 WRITE (iunout,*) 'SIDE',IS,' OF TRIANGLE ',IT,
      .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
                 LERROR = .TRUE.
+                END IF
               END IF
               SURF_TRIAN(J)%NUMTR = SURF_TRIAN(J)%NUMTR + 1
               SURF_TRIAN(J)%ITRIAS(SURF_TRIAN(J)%NUMTR) = IT

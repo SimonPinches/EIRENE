@@ -1,4 +1,5 @@
-C
+C  Jan. 2017 remove cndyn arrays. these are now set in startup-routines
+c            once for the entire run.
 C
       SUBROUTINE EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
 C
@@ -31,29 +32,21 @@ C
      .           IRCX, IADD, ICOU, IACX, IRDD, IMCX, IMEI, IPLSTI,
      .           IPLSV, IPLV
       INTEGER, SAVE :: NMTSP
-      REAL(DP), ALLOCATABLE, SAVE ::
-     . CNDYNA(:), CNDYNM(:), CNDYNI(:)
+
 CDR
-!pb      REAL(DP), ALLOCATABLE, SAVE ::
-!pb     . VPX(:),    VPY(:),    VRX(:),    VRY(:)
+      REAL(DP), ALLOCATABLE, SAVE ::
+     . VPX(:),    VPY(:),    VRX(:),    VRY(:)
 CDR
       DATA IFIRST/0/
       SAVE
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
-        ALLOCATE (CNDYNA(NATM))
-        ALLOCATE (CNDYNM(NMOL))
-        ALLOCATE (CNDYNI(NION))
-!pb        ALLOCATE (VPX(NRAD))
-!pb        ALLOCATE (VPY(NRAD))
-!pb        ALLOCATE (VRX(NRAD))
-!pb        ALLOCATE (VRY(NRAD))
-        DO 11 IAT=1,NATMI
-11        CNDYNA(IAT)=AMUA*RMASSA(IAT)
-        DO 12 IML=1,NMOLI
-12        CNDYNM(IML)=AMUA*RMASSM(IML)
-        DO 13 IIO=1,NIONI
-13        CNDYNI(IIO)=AMUA*RMASSI(IIO)
+
+        ALLOCATE (VPX(NRAD))
+        ALLOCATE (VPY(NRAD))
+        ALLOCATE (VRX(NRAD))
+        ALLOCATE (VRY(NRAD))
+
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
@@ -61,20 +54,20 @@ CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
 C
 CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
 C
-!pb        DO 1 I=1,NRAD
-!pb          VPX(I)=0.
-!pb          VPY(I)=0.
-!pb          VRX(I)=0.
-!pb          VRY(I)=0.
-!pb1       CONTINUE
-!pb        DO 2 IR=1,NR1STM
-!pb          DO 2 IP=1,NP2NDM
-!pb            IRD=IR+(IP-1)*NR1P2
-!pb            VPX(IRD)=PLNX(IR,IP)
-!pb            VPY(IRD)=PLNY(IR,IP)
-!pb            VRX(IRD)=PPLNX(IR,IP)
-!pb            VRY(IRD)=PPLNY(IR,IP)
-!pb2       CONTINUE
+        DO 1 I=1,NRAD
+          VPX(I)=0.
+          VPY(I)=0.
+          VRX(I)=0.
+          VRY(I)=0.
+1       CONTINUE
+        DO 2 IR=1,NR1STM
+          DO 2 IP=1,NP2NDM
+            IRD=IR+(IP-1)*NR1P2
+            VPX(IRD)=PLNX(IR,IP)
+            VPY(IRD)=PLNY(IR,IP)
+            VRX(IRD)=PPLNX(IR,IP)
+            VRY(IRD)=PPLNY(IR,IP)
+2       CONTINUE
 C
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI
 C
@@ -119,7 +112,6 @@ C
 52          CONTINUE
           END IF
 51        CONTINUE
-C
 20      CONTINUE
 C
 C  MOLECULES
