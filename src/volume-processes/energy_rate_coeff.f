@@ -205,7 +205,7 @@ cdr this unit conversion must be wrong in case lexp !!
 
 c..............................................................
   
-      else if (reacdat(ir)%rtc%ifit == 4) then
+      else if (reacdat(ir)%rtcew%ifit == 4) then
  
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
