@@ -194,9 +194,6 @@ C   PRESENT VERSION: REJECTION
         CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 2')
 C
 c.............................................................
-CH FOR SCATTERING ANGLE FROM DIFFERENTIAL CROSS SECTION:
-C
-c.....................................................................
 
 C
 C       IF (NLREJC) THEN    !  REJECTION IS NOW DEFAULT OPTION

@@ -550,7 +550,7 @@ c     INT_PARM(114) =  ...    OUT, WAS SAME AS NTALS
       NSRFS       = INT_PARM( 18)
       NSTEP       = INT_PARM( 19)
 
-c  species indices (1st dimenion) of output tallies
+c  species indices (1st dimension) of output tallies
       NATM        = INT_PARM( 20)
       NMOL        = INT_PARM( 21)
       NION        = INT_PARM( 22)
