@@ -1,18 +1,29 @@
-%CSW switch to latex2e, needed for \usepackage command
-%\documentstyle[12pt,epsf]{article}
-\documentclass[12pt]{article}
-\usepackage{epsf}
+%\documentclass[12pt]{article}
+\documentclass[12pt,dvipdfmx]{article}
 
+\usepackage{epsf}
 \oddsidemargin 0. true cm
-\topmargin -1 true cm
+\topmargin -2.5 true cm
 \textheight 24 true cm
 \textwidth 16 true cm
-%CSW latex2html related commands, have no effect on
-%CSW layout, style etc...
+
+
 \usepackage{color}
 \pagecolor{white}
+\setcounter{secnumdepth}{3}
 \usepackage{times}
-%CSW that's it...
+
+
+\usepackage[unicode=true,
+% hypertex, % use for activating links in DVI file
+ dvipdfmx, % use for bookmarks in final (pdf) version
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{pdftitle={AMJUEL Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
+ \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
+
+
 \begin{document}
 \parindent 0pt
 %titelpage
@@ -24,22 +35,149 @@ Additional Atomic and Molecular Data for EIRENE
 \vspace*{3truecm}
 
 D.Reiter \\
-FZ, Forschungszentrum J\"ulich GmbH \\
+FZJ, Forschungszentrum J\"ulich GmbH \\
 52425 J\"ulich \\
 %Post-box 1917 \\
-FRG
-\vspace{5truecm}
-
-Version: \today
+Germany
 \vspace{3truecm}
 
-Available via E-mail from d.reiter@fz-juelich.de
+Version: \today
+\vspace{1truecm}
+
+Available via E-mail from d.reiter@fz-juelich.de, or as part of the
+EIRENE code git-repository hosted at FZ J\"ulich
 }
+\pagenumbering{Roman}
+\newpage
+\renewcommand\thesection{\Roman{section}}
 \tableofcontents
 %ende titelpage
 \newpage
+\section{Introduction}\label{sec-intro}
+%\addcontentsline{toc}{section}{Introduction}
 
-\section{Record:}
+Additional atomic data fits, read by EIRENE
+
+Data for breakup of Hydrocarbons, taken from \cite{kn:Ehrhardt}, i.e.: so called ``Ehrhard-Langer database'', 1987.
+
+Format as in HYDHEL \cite{kn:Janev} or AMJUEL,
+both are available on same web side as this file:
+\begin{verbatim}
+www.eirene.de/html/a_m_data/html
+\end{verbatim}
+\subsection{Calculation of Reaction Rate Coefficients}
+(taken from \cite{kn:Janev}):
+
+The Maxwellian-averaged reaction rate coefficients for a particle of mass m and fixed energy
+$E = mV^2/2$
+incident on a Maxwellian distribution of particles of mass M
+and temperature $T = Mu^2/2$ (hence: $u = \sqrt{2T/M}$, the thermal velocity) for the
+heavy-particle reactions is\\
+
+      $$\langle\sigma v\rangle(E,T) = \frac {1}{\pi^{1/2}uV} {\int_{v_{th}}^\infty}  v_r^2dv_r\sigma(E_r) \{\exp[-(v_r-V)^2/u^2]
+-\exp[-(v_r+V) ^2/u^2]\},$$\\
+
+and for the electron reactions (taking $M= m_r \approx m_e, T \approx T_e, E=V=0)$,  with $m_e, T_e$ being the electron mass and electron temperature,
+respectively\\
+
+      $$\langle\sigma v\rangle(T) = \frac {4}{\pi^{1/2}u^3} {\int_{v_{th}}^\infty} v_r^3dv_r\sigma(E_r) \exp(-v_r^2/u^2), $$\\
+
+where $v_r = |\vec{V}-\vec{v}|$ is the relative (collision) velocity related to $E_r$ by
+$E_r = m_r v_r^2/2, m_r = mM/(m+M)$ being
+the reduced mass of colliding particles, and $v_{th}$ is the value of $v_r$ at
+threshold, $E_r = E_{th}$. 
+Note that for electron collisions our approximations result from $v_r\approx v_e$.
+
+We used a
+number of mathematical techniques to assure the reaction rate integrals were computed accurately for the
+nearly five orders of magnitude variation in $E$ and $T$.
+
+For the calculation of reaction rate coefficients, it is necessary
+to know the cross section from threshold to very large values of
+the energy. However, the digitized data necessarily represent the
+cross section for a finite energy range and for a finite number of
+points (less than 100). Our solution to this problem is: (1) to
+calculate values of a within the digitized range by  linear
+interpolation of $\ln \sigma$ in $\ln E$; and (2) to extrapolate
+$\sigma$ outside the digitized range by a method depending on the
+type of reaction as discussed in \cite{kn:Janev}.
+
+
+\subsection{Numerical Fits to $\sigma$ and $\langle\sigma v\rangle$}
+(taken from \cite{kn:Janev}):
+
+We derived numerical fits for $\sigma$ and $\langle\sigma v\rangle$ so that these processes can be evaluated easily in
+numerical codes and in other instances that demand simple and/or repeated evaluations. Since $\sigma$ and $\langle\sigma v\rangle$
+vary over many orders of magnitude, we made polynomial fits for $\ln \sigma$ in terms of $\ln E$ and for $\ln \langle\sigma v\rangle$
+in terms of $\ln T$:\\
+\begin{equation}\label{1}
+      \ln \sigma = \sum_{n=0}^N a_n (\ln E)^n
+\end{equation}
+\begin{equation}\label{2}
+     \ln \langle\sigma v\rangle = \sum_{n=0}^N b_n (\ln T)^n,
+\end{equation}
+
+For the electron reactions, $\langle\sigma v\rangle$ is essentially independent of E within the range of energies considered
+here. A more useful fit for the heavy-particle reactions is a double polynomial fit in both $E$ and $T$:\\
+\begin{equation}\label{3}
+      \ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \alpha_{mn}(\ln E)^n(\ln T)^m.
+\end{equation}
+Such a fit requires a large number of coefficients in order to be accurate, but can be used for arbitrary
+$E$ and $T$. We tabulate the coefficients for a 9 x 9 double fit of this form.
+
+An error is given in \cite{kn:Janev} for each fit as an indication of the quality of the fit. The error is defined as
+
+      $\frac{1}{N} \sum_{i=1}^N (\ln x_i - \ln x_{fit,i})^2,$
+
+where N is the number of points fit, and $x$ is $\sigma$  or $\langle\sigma v\rangle$. An error of $10^{-4}$ is a good fit;
+that is, the fit is very close to the actual values, most likely well within the error in the data.
+
+
+\subsection{various notes regarding this particular data-set:}
+\begin{itemize}
+\item
+In PPPL report \cite{kn:Ehrhardt} also the Born-type fitting is
+promised, but, apparently, never given. So do not use the  aBorn,
+nBorn coefficients here.
+\item
+For some processes the original polynomial fit, eq. (\ref{1}) 
+(labeled \textbf{fit-flag=0}) for cross sections is very poor. See
+\cite{kn:Dose}.
+In one instant (H.1: reaction 2.1, cross section fit) we have scanned and 
+digitalized the cross section data from
+\cite{kn:Ehrhardt} and redone the fit (same fitting expression).
+These are then referred to as H.1 ...label...\mbox{\_new}, the original fit
+coefficients for these processes are H.1 ...label... 
+This example indicates that the fitting procedure,
+rather than the fit-expression itself, was probably the origin of the poor quality of fits.
+\item
+For some processes new cross section fits, from the 2002 ``Janev-Reiter database"  
+\cite{kn:JR-2002} have been included.
+These reactions are labeled by additional letters ``jr",  e.g. H.1  2.1jr, 
+or by the single additional letter ``t" (for ``total cross section").
+
+The fitting expression for those is different from the 8th order polynomial fit 
+in the original PPPL database from 1987.
+The flag: \textbf{fit-flag=3} is used for these.
+
+
+fit-flag=3 is the cross section fit expression given in the 2002 Janev-Reiter database \cite{kn:JR-2002} for so called I-DI (ionisation-dissociative ionisation) processes:
+\begin{equation}\label{4}
+\sigma(E)=\frac{10^{-13}}{E E_{th}}\left[A_1 \ln(E/E_{th}) + \sum_{i=2}^N A_i(1-E_{th}/E)^i \right]
+\end{equation}
+which, at least, has proper asymptotic behaviour (assuming that always also dipole allowed channels contribute to the cross section).
+Parameter $A_0 = E_{th}$ is the ionisation (appearance) potential, i.e. the threshold energy of the process. Typically: N=6
+
+We have then stopped adding newer cross section to the present database, because
+the full cross section database for hydrocarbon fragmentation, up until propane,
+is now given on the web page: www.hydkin.de.  This present database now only serves for backward compatibility of code runs.
+
+
+\end{itemize}
+
+\newpage
+\section*{Record:}
+\addcontentsline{toc}{section}{Record}
 \begin{itemize}
 \item update  2.3.01 \\
    rate coeff. H.2, H.3 from \cite{kn:Ehrhardt} \\
@@ -57,33 +195,28 @@ Available via E-mail from d.reiter@fz-juelich.de
    all plots done \\
    to be done: check extrapolation of sigma H.1  3.2 \\
    to be done: check masses, reduced masses, etc. (as in HYDHEL?)
-\end{itemize}
+ \item update summer 2005\\
+Parameter fit-flag introduced. Default: fit-flag=0
 
-\newpage
-Additional atomic data fits, read by EIRENE
+fit-flag=0 is the original
+polynomial fit expression as in \cite{kn:Ehrhardt}, or \cite{kn:Janev}, Eqs. (\ref{1},\ref{2})
 
-Data for breakup of Hydrocarbons, taken from
-\cite{kn:Ehrhardt}
-
-Format as in HYDHEL \cite{kn:Janev}
-or AMJUEL.
-
-Note: 
-\begin{itemize}
-\item
-In PPPL report \cite{kn:Ehrhardt} also the Born-type fitting
-is promised, but, apparently, never given.
-So do not use the  aBorn, nBorn coefficients here.
-\item
-For some processes the original fit for cross sections is very poor.
-We have scanned and digitalised the cross section data from \cite{kn:Ehrhardt}
-and redone the fit (same fitting expression). These are then referred to
-as H.1 ...\mbox{\_new}, the orginal fit coefficients for these processes are 
-H.1 ...\mbox{\_org}
 \end{itemize}
 
 \newpage
 
+
+\subsection{End of preface}
+%\addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
+This next string is searched by EIRENE in subroutine SLREAC
+to initialize search for a particular set of fit coefficients.
+From here on, a character string \textbf{`H.n'} , n an integer, must only appear in the
+section title,
+but not in the text. Likewise: identifiers p0, a0, b0, ....,h0, k0 are used
+in SLREAC and must not
+appear in the text elsewhere, from here on.
+
+\bigskip
 \begin{small}\begin{verbatim}
 ...........................................
 .                                         .
@@ -92,11 +225,18 @@ H.1 ...\mbox{\_org}
 ...........................................
 \end{verbatim}\end{small}
 \newpage
- 
-\section{H.1 :}
- 
-\subsection{
-Reaction 2.1\mbox{\_org} $e + CH_4 \rightarrow CH_4^+ + 2e$
+% to make sure that bookmarks stay correct in pdf:
+% due to roman and arabic section numbering otherwise section1 would be there twice.
+% and pdf viewer gets confused.
+\renewcommand{\theHsection}{arabicsection.\thesection}
+\renewcommand\thesection{\arabic{section}}
+%\renewcommand{\thesection}{\arabic{section}}
+%\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+%\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\arabic{subsubsection}}
+\pagenumbering{arabic}
+\setcounter{section}{0}
+\section{H.1 :  Fits for cross sections}
+\subsection{ Reaction 2.1  $e + CH_4 \rightarrow CH_4^+ + 2e$
 }
  
 \begin{small}\begin{verbatim}
@@ -107,10 +247,11 @@ Reaction 2.1\mbox{\_org} $e + CH_4 \rightarrow CH_4^+ + 2e$
        Emin  1.43e+01    s(Emin)  1.00e-19   smax  1.80e-16   Error  2.39e-01
 \end{verbatim}\end{small}
 
-\subsection{
-Reaction 2.1\mbox{\_new} $e + CH_4 \rightarrow CH_4^+ + 2e$
-}
-Fit redone on digitalised data from report
+\subsubsection{ Reaction 2.1\mbox{\_new} $e + CH_4 \rightarrow CH_4^+
++ 2e$ }
+
+Fit redone on digitalized data from
+report
 \begin{small}\begin{verbatim}
    fit-flag 0
    a0 -1.160875903259D+03  a1  1.728794433758D+03  a2 -1.147825393593D+03
@@ -126,14 +267,15 @@ Fit redone on digitalised data from report
 \subsubsection{
 Reaction 2.1jr  $e + CH_4 \rightarrow CH_4^+ + 2e $
 }
+
+From Janev-Reiter 2002 database, fit-flag=3
  
 \begin{small}\begin{verbatim} 
    fit-flag 3
    a0  1.2630E+01           a1  1.3541E+00           a2 -1.4665E+00 
    a3  1.6787E-01           a4  6.1801E+00           a5 -1.5638E+01 
    a6  1.0767E+01           a7  0.0000E+00           a8  0.0000E+00
-  al0 -1.0000E 02
-ELABMIN=  1.43000E+01
+
 \end{verbatim}\end{small}
 
  
@@ -141,6 +283,7 @@ ELABMIN=  1.43000E+01
 Reaction 2.1t  $e + CH_{4} \rightarrow$ total ionization 
 }
  
+From Janev-Reiter 2002 database, fit-flag=3
 \begin{small}\begin{verbatim} 
    fit-flag 3
    a0  1.2630E+01           a1  2.3449E+00           a2 -2.6163E+00 
@@ -162,7 +305,7 @@ Reaction 2.2  $e + CH_3 \rightarrow CH_3^+ + 2e$
 
  
 \subsubsection{
-Reaction 2.2j  $e + CH_{3} \rightarrow CH_{3}^{+} +2e $
+Reaction 2.2jr  $e + CH_{3} \rightarrow CH_{3}^{+} +2e $
 }
  
 \begin{small}\begin{verbatim} 
@@ -204,7 +347,7 @@ Reaction 2.3      $e + CH_2 \rightarrow  CH_2^+ + 2e$
  
  
 \subsubsection{
-Reaction 2.3j      $e + CH_{2} \rightarrow CH_{2}^{+} + 2e $
+Reaction 2.3jr      $e + CH_{2} \rightarrow CH_{2}^{+} + 2e $
 }
  
 \begin{small}\begin{verbatim} 
@@ -280,9 +423,10 @@ Reaction 2.5       $e + CH_4 \rightarrow  CH_3^+ + H + 2e$
        Emin  1.65e+01    s(Emin)  1.00e-19   smax  1.36e-16   Error  2.41e-01
 \end{verbatim}\end{small}
 
+\newpage
 
 \subsubsection{
-Reaction 2.5.1     $e + CH_{4} \rightarrow CH_{3}^{+} + H + 2e$
+Reaction 2.5.1jr     $e + CH_{4} \rightarrow CH_{3}^{+} + H + 2e$
 }
  
 \begin{small}\begin{verbatim} 
@@ -294,7 +438,7 @@ Reaction 2.5.1     $e + CH_{4} \rightarrow CH_{3}^{+} + H + 2e$
 
 
 \subsubsection{
-Reaction 2.5.2     $e + CH_{4} \rightarrow CH_{2}^{+} + H_{2} + 2e$
+Reaction 2.5.2jr     $e + CH_{4} \rightarrow CH_{2}^{+} + H_{2} + 2e$
 }
  
 \begin{small}\begin{verbatim} 
@@ -306,7 +450,7 @@ Reaction 2.5.2     $e + CH_{4} \rightarrow CH_{2}^{+} + H_{2} + 2e$
 
 
 \subsubsection{
-Reaction 2.5.3     $e + CH_{4} \rightarrow CH^{+} + H_{2} + H + 2e$
+Reaction 2.5.3jr     $e + CH_{4} \rightarrow CH^{+} + H_{2} + H + 2e$
 }
  
 \begin{small}\begin{verbatim} 
@@ -318,7 +462,7 @@ Reaction 2.5.3     $e + CH_{4} \rightarrow CH^{+} + H_{2} + H + 2e$
 
 
 \subsubsection{
-Reaction 2.5.4     $e + CH_{4} \rightarrow C^{+} + 2H_{2} + 2e $
+Reaction 2.5.4jr     $e + CH_{4} \rightarrow C^{+} + 2H_{2} + 2e $
 }
  
 \begin{small}\begin{verbatim} 
@@ -330,7 +474,7 @@ Reaction 2.5.4     $e + CH_{4} \rightarrow C^{+} + 2H_{2} + 2e $
 
 
 \subsubsection{
-Reaction 2.5.5     $e + CH_{4} \rightarrow CH_{2} + H_{2}^{+} + 2e$
+Reaction 2.5.5jr     $e + CH_{4} \rightarrow CH_{2} + H_{2}^{+} + 2e$
 }
  
 \begin{small}\begin{verbatim} 
@@ -342,7 +486,7 @@ Reaction 2.5.5     $e + CH_{4} \rightarrow CH_{2} + H_{2}^{+} + 2e$
 
 
 \subsubsection{
-Reaction 2.5.6     $e + CH_{4} \rightarrow CH_{3} + H^{+} + 2e $
+Reaction 2.5.6jr     $e + CH_{4} \rightarrow CH_{3} + H^{+} + 2e $
 }
  
 \begin{small}\begin{verbatim} 
@@ -359,17 +503,17 @@ Reaction 2.5.6     $e + CH_{4} \rightarrow CH_{3} + H^{+} + 2e $
 \end{figure}
 \newpage
 
-\subsubsection{
+\subsection{
 Reaction 2.6    
-$e + CH_{4} \rightarrow CH_{2}^+ + 2 H + 2e $
+$e + CH_{4} \rightarrow CH_{2}^+ + 2 H + 2e: small, out $
 }
-regarded as small, less than 7% of total ionisation of $CH_4$
+regarded as small, less than 7\% of total ionization of $CH_4$
 
-\subsubsection{
+\subsection{
 Reaction 2.7       
-$e + CH_{4} \rightarrow CH^+ + 3 H + 2e $
+$e + CH_{4} \rightarrow CH^+ + 3 H + 2e:  small, out $
 }
-regarded as small, less than 2% of total ionisation of $CH_4$
+regarded as small, less than 2\% of total ionization of $CH_4$
 
 \subsection{
 Reaction 2.8      $e + CH_3 \rightarrow  CH_2^+ + H + 2e$
@@ -384,7 +528,7 @@ Reaction 2.8      $e + CH_3 \rightarrow  CH_2^+ + H + 2e$
 
 
 \subsubsection{
-Reaction 2.8.1    $e + CH_{3} \rightarrow CH_{2}^{+} + H +2e $
+Reaction 2.8.1jr    $e + CH_{3} \rightarrow CH_{2}^{+} + H +2e $
 }
  
 \begin{small}\begin{verbatim}
@@ -398,7 +542,7 @@ Reaction 2.8.1    $e + CH_{3} \rightarrow CH_{2}^{+} + H +2e $
 
 
 \subsubsection{
-Reaction 2.8.2    $e + CH_{3} \rightarrow CH^{+} + H_{2} +2e$
+Reaction 2.8.2jr    $e + CH_{3} \rightarrow CH^{+} + H_{2} +2e$
 }
  
 \begin{small}\begin{verbatim}
@@ -410,7 +554,7 @@ Reaction 2.8.2    $e + CH_{3} \rightarrow CH^{+} + H_{2} +2e$
 
 
 \subsubsection{
-Reaction 2.8.3    $e + CH_{3} \rightarrow CH_{2} + H^{+} +2e $
+Reaction 2.8.3jr    $e + CH_{3} \rightarrow CH_{2} + H^{+} +2e $
 }
  
 \begin{small}\begin{verbatim}
@@ -422,7 +566,7 @@ Reaction 2.8.3    $e + CH_{3} \rightarrow CH_{2} + H^{+} +2e $
 
 
 \subsubsection{
-Reaction 2.8.4    $e + CH_3 \rightarrow C^{+} + H_2 + H +2e$
+Reaction 2.8.4jr    $e + CH_3 \rightarrow C^{+} + H_2 + H +2e$
 }
  
 \begin{small}\begin{verbatim}
@@ -434,7 +578,7 @@ Reaction 2.8.4    $e + CH_3 \rightarrow C^{+} + H_2 + H +2e$
 
 
 \subsubsection{
-Reaction 2.8.5    $e + CH_{3} \rightarrow CH + H_{2}^{+} +2e $
+Reaction 2.8.5jr    $e + CH_{3} \rightarrow CH + H_{2}^{+} +2e $
 }
  
 \begin{small}\begin{verbatim}
@@ -457,7 +601,7 @@ Reaction 2.9     $e + CH_2 \rightarrow  CH^+ + H + 2e$
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 2.9.1   $e + CH_{2} \rightarrow CH^{+} + H + 2e$ 
+Reaction 2.9.1jr   $e + CH_{2} \rightarrow CH^{+} + H + 2e$
 }
 
 \begin{small}\begin{verbatim} 
@@ -468,7 +612,7 @@ Reaction 2.9.1   $e + CH_{2} \rightarrow CH^{+} + H + 2e$
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 2.9.2   $e + CH_{2} \rightarrow C^{+} + H_{2} + 2e$
+Reaction 2.9.2jr   $e + CH_{2} \rightarrow C^{+} + H_{2} + 2e$
 }
 
 \begin{small}\begin{verbatim} 
@@ -479,7 +623,7 @@ Reaction 2.9.2   $e + CH_{2} \rightarrow C^{+} + H_{2} + 2e$
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 2.9.3   $e + CH_{2} \rightarrow CH + H^{+} + 2e $
+Reaction 2.9.3jr   $e + CH_{2} \rightarrow CH + H^{+} + 2e $
 }
 
 \begin{small}\begin{verbatim} 
@@ -490,7 +634,7 @@ Reaction 2.9.3   $e + CH_{2} \rightarrow CH + H^{+} + 2e $
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 2.9.4   $e + CH_{2} \rightarrow C + H_{2}^{+} + 2e$
+Reaction 2.9.4jr   $e + CH_{2} \rightarrow C + H_{2}^{+} + 2e$
 }
 
 \begin{small}\begin{verbatim} 
@@ -521,7 +665,7 @@ Reaction 2.10.1   $e + CH \rightarrow C^+ + H + 2e$
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 2.10.1j  $e + CH \rightarrow C^{+} H + 2e$
+Reaction 2.10.1jr    $e + CH \rightarrow C^{+} H + 2e$
 }
 
 \begin{small}\begin{verbatim} 
@@ -544,7 +688,7 @@ Reaction 2.10.2   $e + CH \rightarrow C + H^+ + 2e$
 
 
 \subsubsection{
-Reaction 2.10.2j  $e + CH \rightarrow C + H^{+} + 2e$
+Reaction 2.10.2jr  $e + CH \rightarrow C + H^{+} + 2e$
 }
 
 \begin{small}\begin{verbatim} 
@@ -901,7 +1045,7 @@ Reaction 2.23     $e + C \rightarrow C^+ + 2e$
 
  
 \subsubsection{
-Reaction 2.23j    $e + C \rightarrow$ ionization
+Reaction 2.23jr    $e + C \rightarrow$ ionization
 }
 
 \begin{small}\begin{verbatim}
@@ -1085,7 +1229,12 @@ Reaction 2.5       $e + CH_4 \rightarrow CH_3^+ + H + 2e$
 \epsffile{Methane_PS/met.2_2.5_2.6_2.7.eps}
 \end{figure}
 \newpage
- 
+\subsection{
+Reaction 2.6       $e + CH_4 \rightarrow CH_2^+ + 2H + 2e: small, out$
+}
+\subsection{
+Reaction 2.7       $e + CH_4 \rightarrow CH^+ + 3H + 2e: small, out$
+}
 \subsection{ 
 Reaction 2.8      $e + CH_3 \rightarrow CH_2^+ + H + 2e$
 }
@@ -1690,7 +1839,10 @@ Reaction 3.2      $p + C \rightarrow C^+ + H$
 \bibitem{kn:Ehrhardt}  A.B.Ehrhardt, W.D.Langer, report: PPPL 2477
                        (1987)
 \bibitem{kn:Janev} R.K. Janev et al.  Springer Series on Atoms+Plasmas,
-                   Vol 4, 1987
+                   Vol 4, (1987)
+\bibitem{kn:Dose}  V. Dose, P. Pecher and R. Preuss: J. Phys. Chem. Ref. Data, \textbf{29}, No. 5, (2000) 1157
+
+\bibitem{kn:JR-2002} R. Janev, D. Reiter, Phys. of Plasmas, \textbf{9}, (2002) 4071
 \end{thebibliography}
  
 \end{document}
