@@ -243,9 +243,6 @@ C
           CALL EIRENE_MASR1('H emiss ',DUMTIL)
           CALL EIRENE_LEER(2)
  
-C..............................................
-C  PHOTONS, LINE INTENSITY.  200-- 299
-C..............................................
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
 C
           DUMTIL=FUFFER(ICHORI,1)
