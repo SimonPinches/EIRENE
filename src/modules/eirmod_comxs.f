@@ -181,17 +181,26 @@ c  ...and cummulated distributions thereof, for species sampling
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
-     I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:),
+     I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:)
+ 
+      INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I NAEII(:),    NMEII(:),    NIEII(:),
      I NACXI(:),    NMCXI(:),    NICXI(:),
      I NAELI(:),    NMELI(:),    NIELI(:),
      I NAPII(:),    NMPII(:),    NIPII(:),
+     I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKP(:,:)
+
+!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+      INTEGER, PUBLIC, POINTER, SAVE ::
+     I NXEII, NXCXI, NXELI, NXPII,
+     I NPBGKX
+ 
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),
      I NACXIM(:),   NMCXIM(:),   NICXIM(:),
      I NAELIM(:),   NMELIM(:),   NIELIM(:),
      I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),
-     I NPRCI(:),    NPRCIM(:),
-     I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKP(:,:)
+     I NPRCI(:),    NPRCIM(:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NATPRC(:),  NMLPRC(:), NIOPRC(:), NPLPRC(:), NPHPRC(:),
@@ -212,7 +221,9 @@ c  ...and cummulated distributions thereof, for species sampling
      I IPATEI(:,:),IPMLEI(:,:),
      I IPIOEI(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
-     I IPIOPI(:,:),IPPLPI(:,:),
+     I IPIOPI(:,:),IPPLPI(:,:)
+ 
+      INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I LGACX(:,:,:),LGMCX(:,:,:),
      I LGICX(:,:,:),
      I LGAEI(:,:),    LGMEI(:,:),
@@ -222,6 +233,10 @@ c  ...and cummulated distributions thereof, for species sampling
      I LGPRC(:,:),
      I LGAPI(:,:,:),LGMPI(:,:,:),
      I LGIPI(:,:,:)
+
+!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+      INTEGER, PUBLIC, POINTER, SAVE ::
+     I LGXCX(:,:,:), LGXEI(:,:), LGXEL(:,:,:), LGXPI(:,:,:)
  
       INTEGER, PUBLIC, SAVE ::
      I NRPII, NREII, NRCXI, NRELI, NRRCI, NRBGI
@@ -2122,7 +2137,6 @@ cdr  IFIT out of range
      .                                  RTMAX, ERTMAX, ETH
       LOGICAL, INTENT(IN) :: LTEST
       INTEGER :: NDIM, NDIM2, IFIT
-!      INTEGER :: J
       REAL(DP) :: CTEST
       TYPE(POLY_DATA), POINTER :: REA
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)

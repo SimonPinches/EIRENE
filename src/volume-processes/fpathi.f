@@ -1,5 +1,5 @@
 c  25.11.05: option modcol(3,4...)=3 added
-c            (adopted from fpatha)
+c            (first implemented in fpatha)
 c            cx rate option 4 added (adopted from fpatha)
 
 c  still missing: el (and bgk) 
@@ -11,13 +11,16 @@ C               added: jcou,ncou
 !pb             BGK iteration
 !pb  22.03.07:  PI reactions revised
 !dr   5.09.07:  EL reactions started (leads to Fokker Planck collision terms?)
-cdr  oct.14  :  ftabcx3 added. Full tests to be done
+cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  syncronized with fpatha, fpathm
+
 cdr  oct.14  :  bug fix:  cx energy loss tally
 cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+
+
 
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
@@ -28,14 +31,15 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 cdr sept 16:    nidsi  -> nieii
 
 
-cdr aug. 16:    bug fix re EXPO in PI branch, 
+cdr aug. 16:    bug fix re EXPO in PI branch
 cdr             CORRECTION FOR PI REACTIONS IN CASE TI < TVAC
+cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 
 C
       FUNCTION EIRENE_FPATHI (K,CFLAG,JCOU,NCOU)
 C
 C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR CHARGED
-C   "BEAM TEST IONS" , SPECIES IION, OF VELOCITY VEL IN DRIFTING MAXWELLIAN PLASMA-BACKGROUND
+C   "BEAM TEST IONS" , SPECIES IION, OF VELOCITY VEL IN DRIFTING MAXWELLIAN BACKGROUND MEDIUM
 C   IN CELL K
 
 C
@@ -65,7 +69,6 @@ C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
 C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
 C                TO BE WRITTEN
 C
-
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -85,8 +88,8 @@ C
  
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
-      REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
-      REAL(DP) :: EPCX3(9), EPEL3(9)
+      REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
+      REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATHI,
      .          EIRENE_CROSS, 
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
@@ -99,18 +102,18 @@ C
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
      .          EIRENE_FTABEI1,
 
      .          RCMIN, RCMAX,
      .          ERATE
-C      REAL(DP) :: EIRENE_FEPLPI3, PLS, CTCHDUM, ELTHDUM, ER, RLMS, RMI, 
-C     .            RMN, RMSI, SIG
-      INTEGER :: IBGK, IIEL, IREL, IIEI, IREI, IIPI,
-     .           IRPI, IICX, IRCX, 
-     .           J, KK, 
-     .           IPLSTI, IPLSV, IREAC
+C      REAL(DP) :: EIRENE_FEPLPI3, CTCHDUM, ELTHDUM, ER, 
+C     .            RLMS, RMI, RMN, RMSI, SIG
+      INTEGER :: IBGK, IIEL, IREL, IIEI, IREI, IIPI, IRPI,
+     .                 IICX, IRCX,
+     .           J, KK,  IPLSTI, 
+     .          IPLSV, IREAC
 C
 C  SET DEFAULTS: NO REACTIONS
 C
@@ -204,35 +207,39 @@ C
 C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(4,2,IRPI).EQ.1) THEN
-C  MAXWELL
+C  MAXWELL, AT FIXED BEAM ENERGY, MOSTLY E0=0.0
           IF (NSTORDR >= NRAD) THEN
             SIGVPI(IRPI)=TABPI3(IRPI,K,1)
           ELSE
 CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
 !pb         KK=NREAPI(IRPI)
-!pb         PLS=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-!pb         TBPI = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)*DIIN(IPLS,K)
+!pb         TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+!pb         TBPI = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*DIIN(IPLS,K)
 !pb         SIGVPI(IRPI)=TBPI
 c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
           END IF
         ELSEIF (MODCOL(4,2,IRPI).EQ.2) THEN
+
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
-C
+
+C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
+          ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
+          TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
-C           HENCE: USE BEAM-BEAM RATE INSTEAD.
+C           HENCE: USE BEAM-BEAM RATE INSTEAD OF MAXWELLIAN.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
+! scale collision energy to proper isotope, for cross section, i.e. use charged particle mass
             ELAB=LOG(VRELQ)+DEFPI(IRPI)
             IREAC=MODCOL(4,1,IRPI)
             CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),
      .                       'FPATHI PI1')
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
-C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
             IF (NSTORDR >= NRAD) THEN
               TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
               FP = 0._DP
@@ -243,12 +250,12 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
-              TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
             SIGVPI(IRPI)=EXP(EXPO)
           END IF        
+      
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
@@ -289,7 +296,9 @@ cdr       ESIGPI(IRPI,4)=EPLPI3(IRPI,K,1)
 cdr     ELSE
 cdr       ESIGPI(IRPI,4)=EIRENE_FEPLPI3(IRPI,K)
 cdr     END IF
-
+cdr     CFLAG(4,1)=2
+c  cflag (4,...) should become cflag4(irpi,...).
+c  tentatively:
         CFLAG(4,IRPI)=1
 c
 36    CONTINUE
@@ -321,7 +330,7 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
         ELSEIF (MODCOL(3,2,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
-          IF (TIIN(IPLSTI,K).LT.TVAC) THEN
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
@@ -350,7 +359,7 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                TRCAMD)
             ELSE
-! CALCULATE RATE-COEFFICIENT
+! CALCULATE RATE-COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               KK=NREACX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
@@ -399,7 +408,6 @@ C  ION SAMPLING FROM MAXWELLIAN
             END IF
           END IF  ! this was for tracklength estimator only
           CFLAG(3,IRCX)=2
-
         ELSEIF (MODCOL(3,4,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  MEAN ENERGY FROM CROSS SECTION WEIGHTED DRIFTING MAXWELLIAN
@@ -481,7 +489,7 @@ cdr  here should be call to ftabel3,  to be done
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN
 C  BEAM - MAXWELL
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
-C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATECOEFF.
+C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT-BULK RATECOEFF.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
             ELAB=LOG(VRELQ)+DEFEL(IREL)
@@ -493,8 +501,8 @@ C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATECOEFF.
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
             IF (NSTORDR >= NRAD) THEN
-! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
-! PRECALCULATING TEMPERATURE DEPENDENCIES
+! DOUBLE POLYNOMIAL FIT IS REDUCED TO SINGLE POLYNOMIAL FIT BY
+! PRECALCULATING TEMPERATURE DEPENDENCIES ALREADY IN INITIALIZATION PHASE
               TBEL3(1:NSTORDT) = TABEL3(IREL,K,1:NSTORDT)
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
@@ -502,7 +510,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                TRCAMD)
             ELSE
-! CALCULATE RATE-COEFFICIENT
+cdr  here should be call to ftabel3,  to be done
+! CALCULATE RATE-COEFFICIENT ON THE FLY
               KK=NREAEL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
@@ -602,7 +611,7 @@ C
 100   CONTINUE
 
 C
-C  CUT OF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
 C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
 C
@@ -655,24 +664,24 @@ C
       RETURN
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN FPATHI: INCONSISTENT ELEC. IMP. DATA'
-      WRITE (iunout,*) 'IION,IREI,MODCOL(1,J=1,4,IREI) '
+      WRITE (iunout,*) 'IION,IREI,MODCOL(1,J,IREI),J=1,4 '
       WRITE (iunout,*) IION,IREI,(MODCOL(1,J,IREI),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
 991   CONTINUE
       WRITE (iunout,*) 'ERROR IN FPATHI: INCONSISTENT ION IMP. DATA'
-      WRITE (iunout,*) 'IION,IRPI,MODCOL(4,J,IRPI) '
+      WRITE (iunout,*) 'IION,IRPI,MODCOL(4,J,IRPI),J=1,4 '
       WRITE (iunout,*) IION,IRPI,(MODCOL(4,J,IRPI),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
       WRITE (iunout,*)
      .  'ERROR IN FPATHI: INCONSISTENT CHARGE EXCHANGE DATA'
-      WRITE (iunout,*) 'IION,IRCX,MODCOL(3,J=1,4,IRCX) '
+      WRITE (iunout,*) 'IION,IRCX,MODCOL(3,J,IRCX),J=1,4 '
       WRITE (iunout,*) IION,IRCX,(MODCOL(3,J,IRCX),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
 995   CONTINUE
       WRITE (iunout,*)
      .  'ERROR IN FPATHI: INCONSISTENT ELASTIC COLL. DATA'
-      WRITE (iunout,*) 'IION,IREL,MODCOL(5,J,IREL) '
+      WRITE (iunout,*) 'IION,IREL,MODCOL(5,J,IREL),J=1,4 '
       WRITE (iunout,*) IION,IREL,(MODCOL(5,J,IREL),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
       END

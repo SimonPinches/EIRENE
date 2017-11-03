@@ -41,10 +41,16 @@ C   IS SUCH A DERIVED QUANTITY)
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
      R        BVIN(:,:), PARMOM(:,:), EDRIFT(:,:),
      R        BXPERP(:), BYPERP(:),
-
-     R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSP(:),
+C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
      R        DION(:),   DATM(:),     DMOL(:),   DPLS(:),    DPHOT(:)
+ 
+!  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES
+      REAL(DP), TARGET, ALLOCATABLE, PUBLIC, SAVE ::
+     R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSP(:)
+
+!     POINTER FOR UNIFIED SUBROUTINES
+      REAL(DP), POINTER, PUBLIC, SAVE :: RMASSX
 
 C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::

@@ -59,10 +59,13 @@ C
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
      .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
-     .           IATM, IMOL, IION, IPHOT, IPLS, ISTRA, ISPZ,
-     .           NUMSEC, IC, NINITL_READ
+     .           IATM, IMOL, IION, IPHOT, IPLS,
+     .           ISTRA, ISPZ,
+     .           NUMSEC, IC, NINITL_READ,
+     .           LINES, NCHTAL
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA
+     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
+      REAL(DP), ALLOCATABLE :: ENERGY(:,:)
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
@@ -72,7 +75,7 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
+      LOGICAL :: LMULTI, LMULVI, LEMISS   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
@@ -1267,12 +1270,47 @@ C
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, AND ON CREAC FOR ONE MORE SET OF A&M FIT COEFFS.
-C  FROM AMJUEL,
-C  FOR REDUCED POPUL. COEFF. IN SIGHA LINE OF SIGHT INTEGRATION
+C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
+C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
-        NREAC=NREAC+1
+!pb     NREAC=NREAC+1
         NADV=NADV+10
+ 
+C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
+        ALLOCATE (ENERGY(2,NCHORI))
+        ENERGY = 0._DP
+        LINES = 0
+
+        DO J = 1, NCHORI
+          READ (IUNIN,*)
+          READ (IUNIN,'(12I6)') NCHTAL
+          READ (IUNIN,*)
+          READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
+          READ (IUNIN,*)
+          READ (IUNIN,*)
+          IF (NCHTAL == 2) THEN
+            LEMISS = .FALSE.
+            DO I = 1, LINES
+              D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
+              D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
+              IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
+                LEMISS = .TRUE.
+                EXIT
+              END IF
+            END DO
+            IF (.NOT.LEMISS) THEN
+              LINES = LINES + 1
+              ENERGY(1,LINES) = EMIN1
+              ENERGY(2,LINES) = EMAX1
+            END IF
+          END IF
+        END DO
+
+C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
+C  OF EMISSION PROFILES
+        NREAC = NREAC + LINES*6 + 3
+
+        DEALLOCATE (ENERGY)
       END IF
 
 C  SKIP READING REST OF THIS BLOCK

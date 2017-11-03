@@ -40,6 +40,8 @@ cdr           to be done: epel volume tally (electron energy loss associated wit
 cdr                       or with sheath, etc)
 cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
 cdr nov. 15:  species index eppl added.
+cdr oct 17 :  code unification/reduction: set species pointer, near 5000
+cdr           Could be done earlier, and also simplify code here in locate already
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:
@@ -2166,7 +2168,12 @@ C
       ENDIF
 C
 5000  CONTINUE
- 
+
+!  PARTICLE TYPE AND SPECIES HAVE CHANGED
+!  PREPARE POINTER FOR UNIFIED SUBROUTINES
+      IF (LGPART) CALL EIRENE_SWITCH_PARTINFO
+
+C  RECORD EVENT
       LAST_EVENT%IFLAG = 1
       LAST_EVENT%NCELL = NCELLT
       LAST_EVENT%ITYP = ITYP

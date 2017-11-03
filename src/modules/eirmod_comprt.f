@@ -103,6 +103,10 @@ c  unrelated to particle trajectories:  IO streams
       DATA IUNIN / 1 /  ! must be known already during compile time.
 c                       ! better: move iunin, iunout, etc.. to parmmod ??
  
+!     VARIABLES FOR UNIFIED SUBROUTINES
+      INTEGER, PUBLIC, SAVE ::
+     I IXSPZ, NMETOFF
+
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
