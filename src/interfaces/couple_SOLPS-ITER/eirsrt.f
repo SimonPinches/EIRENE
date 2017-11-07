@@ -7,15 +7,29 @@ cdr Nov   16    finalizing notational syncronisation (..DS.. (legacy) --> ..EI..
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
 
 C  This routine is called from CFD PLASMA CODE and provides the entry point into EIRENE.
+
+C................................................................................................
+cc  ltime = .true.: 
 C
 C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN: 
+C     
+C    IFIRST=0  (A RESTART)
 
-C      CALL EIRENE_EIRENE(..)     (main-routines)
+C      CALL EIRENE_EIRENE(..)     (main-routines), call input,....., 
+C                                                  set IITER=ITNR
 C
-C   LATER CALLS:
+C   LATER CALLS  (IFIRST.GT.1) (INSIDE A B2 CYCLING):
 C
-C      CALL EIRENE_COUPLE  (entry to EIRENE  main-routines, bypassing some  initialization stuff)
-c
+C      CALL EIRENE_COUPLE  (entry to EIRENE  main-routines, bypassing some  
+C                           initialization stuff. Currently only in case LTIME=T)
+
+C.................................................................................................
+
+
+cc   ltime = .false.:   ONLY CALLING: EIRENE_EIRENE(..)     (main-routines), call input,....., 
+C                                                           set IITER=ITNR
+C                       BOTH FOR IFIRST=0 (RESTART) AND IFIRST.GE.1 (INSIDE A B2 CYCLING)
+CDR
 
 C
       SUBROUTINE EIRENE_EIRSRT(LSTOP_in,LTIME_in,DELTAT_in,FLUXES_in,
@@ -74,6 +88,7 @@ c
      .                        B2VP_in,STEP_CPU_in
       LOGICAL, INTENT(IN) :: LSTOP_in, LTIME_in
       integer :: rank_mpi,ierr_mpi,size_mpi
+C
       REAL(DP) :: FLUXES(NSTRA)
       REAL(DP) :: DELTAT, B2BRM, B2RD, B2Q, B2VP,STEP_CPU
       LOGICAL :: LSTOP, LTIME
@@ -143,6 +158,7 @@ C
         B2QIE=B2Q
         B2VDP=B2VP
         DUMMY=EIRENE_RESET_SECOND()
+
         IF(IFIRST.EQ.0) THEN
 C
           CALL EIRENE_PLSTRT
@@ -152,12 +168,15 @@ C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
+
+          LLST=.FALSE.
+          ITNR=1
 C
-csw          CALL EIRENE_EIRENE(DELTAT,.FALSE.,.FALSE.,1,.TRUE.)
-csw --> MPI_INIT = .false.
+
 c          CALL EIRENE_EIRENE(DELTAT,.FALSE.,.FALSE.,1,.FALSE.)
 csw --> MPI_INIT=.false., NLPLAS=.TRUE.
-          CALL EIRENE_EIRENE(DELTAT,.TRUE.,.FALSE.,1,.FALSE.)
+
+          CALL EIRENE_EIRENE(DELTAT,.TRUE.,LLST,ITNR,.FALSE.)
 C
 C  EIRENE RUN DONE. CENSUS ARRAY WRITTEN
 C  NOW ITIMV=ITIMV+1, NLPLAS=.TRUE.
@@ -229,7 +248,8 @@ C
           IITER=1
           IPRNLI=0
           NLSRON=.TRUE.
-          CALL EIRENE_EIRENE_COUPLE (LSTOP,1)
+          ITNR=1
+          CALL EIRENE_EIRENE_COUPLE (LSTOP,ITNR)
           IF (LSTOP) THEN
             CALL EIRENE_PLEND
           ENDIF
@@ -238,7 +258,8 @@ C
         WRITE(*,*) 'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
         CALL EIRENE_LEER(2)
 C
-        RETURN
+        RETURN   ! time dep. option done
+c.....................................................................
 C
 C  MAIN ENTRY POINT FROM B2 INTO EIRENE, IN CASE OF TIME-INDEPENDENT RUNS  
 C
@@ -279,7 +300,8 @@ csw
 csw mpi
         endif
 csw
- 10     CONTINUE
+
+10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
 csw 17feb2011
 c        if(itnr > 1 .and. rank_mpi==0) then
@@ -294,6 +316,7 @@ c            endif
 c          ENDDO
 c        endif
 csw 24oct2011
+
         if(rank_mpi==0) then
           DO ISTRA=1,NSTRA
             FLUX_save(ISTRA)=FLUXES(ISTRA)
@@ -302,6 +325,7 @@ csw 24oct2011
 
 
 !pb     CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
+
         CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.FALSE.)
 C
 C  IN THIS CALL TO EIRENE ALREADY IF3COP IS CALLED FOR EACH STRATUM
@@ -375,7 +399,8 @@ cdr
 cdr  now start to store rates from present cycle, for future short cycle corrections
 cdr
 cdr  to be done
-cdr  all these "short cycle data" should only be computed if short cycle is turned on at all
+cdr  all these "short cycle data" should only be computed 
+cdr  if "short cycle" option is turned on at all
 
 C
 C  CURRENT RUN: ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR ALL IPLS 
@@ -446,6 +471,7 @@ C
         DO 27 IPLS=1,NPLSI
         DO 27 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
+c
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 27
           DO 28 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -584,7 +610,10 @@ C
 C  NOT THE FIRST CALL IN THIS CYCLE: CHECK: SHORT LOOP CORRECTION
 C                                           OR FULL EIRENE, FOR EACH
 C                                           STRATUM INDIVIDUALLY
-10000   CONTINUE ! IFIRST.GE 1
+C
+CDR     ELSEIF (IFIRST.GE.1) THEN
+
+10000   CONTINUE ! IFIRST.GE 1 BRANCH
 C
         if(rank_mpi .eq. 0) then
 
@@ -697,6 +726,7 @@ C
 C  NEW: TEST IONS, EI PROCESSES
 C
         DO 107 IION=1,NIONI
+        DO 107 IPLS=1,NPLSI
         DO 107 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 107
@@ -828,6 +858,8 @@ C
         END IF
 
         RETURN
+
+CDR     ENDIF   !(IFIRST=1, IFIRST.GE.1 BRANCHING)  
 C
       ENDIF  !(LTIME)
 

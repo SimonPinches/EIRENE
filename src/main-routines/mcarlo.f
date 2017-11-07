@@ -390,7 +390,8 @@ c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
         if (.not.nlident) then
           do istra=1,nstrai
-            ninitl(istra)=ninitl(istra)+my_pe*10000
+            if (ninitl(istra) > 0) 
+     .        ninitl(istra)=ninitl(istra)+my_pe*10000
           enddo
         ELSE
           CALL EIRENE_LEER(1)
@@ -499,6 +500,7 @@ c  find random number seed from truely random procedure from wall clock time (us
 !  add number of calls to MCARLO in order to avoid same random seeds in very short
 !  cycles with an external code
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
+          IF (.NOT.NLIDENT) ninitl(istra)=ninitl(istra)+my_pe*10000
           NINIST=NINITL(ISTRA)
           iseed_istra=ranset_eirene(ninist)
 

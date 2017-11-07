@@ -204,8 +204,8 @@ C  CHECK VALID RANGE ON MRSURF
             IF (NLTRC)
      .        WRITE (iunout,*) 'CHECK VALID RANGE: Z0TEST ',Z0TEST
 #endif
-            IF (Z0TEST.GE.ZSURF(1).AND.Z0TEST.LE.ZSURF(NT3RD)) THEN
-              ITCELL=EIRENE_LEARCA(Z0TEST,ZSURF,1,NT3RD,1,
+              IF (Z0TEST.GE.ZSURF(1).AND.Z0TEST.LE.ZSURF(NT3RD)) THEN
+                ITCELL=EIRENE_LEARCA(Z0TEST,ZSURF,1,NT3RD,1,
      .               'TIMET 2     ')
             ELSE
               MRSURF=0
@@ -226,7 +226,7 @@ C  CHECK VALID RANGE ON MRSURF
           GOTO 5000
         ENDIF
 C
-        ENDIF  !  part "reentry from outside grid" done
+      ENDIF  !  part "reentry from outside grid" done
 
 C
 C  NOW: PARTICLE INSIDE STANDARD MESH, RADIAL CELL NRCELL
@@ -259,6 +259,17 @@ C
 C
 110   CONTINUE
       IF (J2.LE.0.OR.J2.GT.NT3RD) GOTO 9990
+
+
+C OLD SURFACE = NEW SURFACE ?
+C POSSIBLE CONFLICT IF TRACK STARTED EXACTLY ON SURFACE
+C TRY NEXT SURFACE
+        IF (MTSURF.EQ.J2) THEN
+          J1=J1+NINCZ
+          J2=J1+INCZ
+          GOTO 110
+        ENDIF
+
 C  TIME FROM Z01 TO ZSURF
       DZ=(ZSURF(J2)-Z01)
 !pb reduce zrad if the trajectory comes too close
@@ -323,13 +334,13 @@ C
 C
       GOTO 5000
 C
-C  BLOCK 1: done ::::::::::::::::::::::::::::::::::::::
+C  BLOCK 1 (NLTRZ)  done ::::::::::::::::::::::::::::::::::::::
 C
 1000  CONTINUE
 C
 C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
-      IF (.NOT.NLTRA) GOTO 5000
+      IF (.NOT.NLTRA) GOTO 2000
 C
 C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION, 
 C            also: default toroidal periodicity model.
@@ -546,6 +557,7 @@ C
      .                    ZRAD,ISTS,ISRFCL,IPERID
       ENDIF
 #endif
+2000  CONTINUE      
 C
       GOTO 5000
 C

@@ -250,7 +250,8 @@ C
      .          DELTE_PARA, DELTE_PERP, DELTI_PERP, DELTI_PARA, 
      .          TX, TY, VPRO, VTY, VT, TEST, XMUE, PX,
      .          PY, 
-     .          ALX, ALE, ALW, ALS, ALN, AL, UUBC, VTEST, VR, CS, 
+     .          ALX, ALE, ALW, ALS, ALN, AL, UUBC, VTEST, VTEST2, 
+     .          VR, CS, 
      .          PERW, PARW, PARWI,PERWI, DRR, EADD, TE, CUR, 
      .          VPZ, PM1, VPY, PN1, VPX, GAMMA, ESUM, 
      .          CHI, CHP, CHE, SUMEI, SUMEE, SUMM, SUMN,  
@@ -264,11 +265,11 @@ C
      .          DXPOL,DYPOL,PAR,
      .          fniprt, fltt, e0b2, frac, celdel, dd, cfac
 
-      INTEGER, SAVE :: J, IRC, JC, K, IADD, NAS, IPUNKT, NSSIR, 
+      INTEGER, SAVE :: J, IRC, JC, INC, K, IADD, NAS, IPUNKT, NSSIR, 
      .           NUMSI, NBAR, ISNR, ISC, IS, NASMOD, NRS, NADMOD, 
      .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
      .           NTGPRI, IPRT, IO29, NEND, NINI, NSSIP,
-     .           LTARG, I, IPL, IERROR, IMODE, NPLP, INC,
+     .           LTARG, I, IPL, IERROR, IMODE, NPLP, 
      .           NRED, IDUMMY,  ISTS, ITRI, ISTR,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ, 
      .           IR, IP, IT, IA, IB, JUN,
@@ -1709,7 +1710,7 @@ c
 c
       IREAD=0
       DO 2200 IPLS=1,NPLSI
-        IF (IFLB(IPLS).GT.0) THEN
+        IF (IFLB(IPLS).GT.0) THEN  ! DEAL WITH B2 ION SPECIES ONLY, EXCLUDE VIRTUAL EIRENE BACKGROUND
           IPLSV=MPLSV(IPLS)
           DO 2201 IFL=1,NFLA
             IF (IFLB(IPLS).NE.IFL) GOTO 2201
@@ -2734,6 +2735,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
           VTEST=SQRT(PM1**2+VPZ**2)
           VTEST=VTEST/(CS+EPS60)
           VR=SQRT(VPX**2+VPY**2)
+          VTEST2=VPZ/(CS+EPS60)
           IF (TRCINT) THEN
             WRITE (iunout,*) 'IG,MACH ',IG,VTEST
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR

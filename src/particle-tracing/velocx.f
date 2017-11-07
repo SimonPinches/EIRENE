@@ -216,6 +216,9 @@ C   EXCHANGE OF IDENTITY (RELAXATION). NOTHING MORE TO BE DONE
         VELX=VXN*VN
         VELY=VYN*VN
         VELZ=VZN*VN
+
+
+C   NOTHING MORE TO BE DONE
 C
         RETURN
 C
@@ -260,9 +263,9 @@ c  rejection loop failed, too many attempts.
      .        'ICOUNT TOO LARGE ( > 500) IN VELOCX. ACCEPT SAMPLE '
 cdr............................................................   
 cdr  test output only
-cdr         ELLAB=EXP(ELAB)
-cdr         WRITE (iunout,*) 'NPANU, IREAC, IRCX, ELAB(EV),icell ',
-cdr  .                        NPANU, IREAC, IRCX, ELLAB,  K
+cdr         ELB=EXP(ELAB)
+cdr         write (iunout,*) 'npanu, ireac, ircx, ELAB(EV),icell ',
+cdr  .                        npanu, ireac, ircx, ELB,  K
 cdr............................................................
           ELSE
 C  ACCEPT
