@@ -12,7 +12,7 @@ cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
 
 cdr  Nov.      2016: final ds --> ei notational unifications
 CDR  July      2017: RC reactions connected. trcamd in parameter list
-c                    for function eirene_sngl_pol  
+c                    for function eirene_sngl_poly  
 
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014

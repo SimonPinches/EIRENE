@@ -1,6 +1,6 @@
       SUBROUTINE EIRENE_READ_TETRA (CASENAME)
  
-!pb 05.12.06: structur coortet is build up from tetrahedra
+!pb 05.12.06: structure COORTET is build up from tetrahedra
 !pb 07.12.06: set itethand to default value 1
  
       USE EIRMOD_PRECISION

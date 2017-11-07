@@ -107,7 +107,7 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         CALL EIRENE_ALLOCATE_MODULES
-        IUNOUT = 7
+        IUNOUT = 7   ! reset to 0 in alloc_comprt  ??
       Else
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -502,8 +502,6 @@ c  EL post collision energetics
       CALL MPI_BCAST (LGIPI,NIONP*(NRPI+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
 
-!pb   CALL MPI_BCAST (CREAC,99*(NREAC+11),MPI_REAL8,
-!pb  .                0,MPI_COMM_WORLD,ier)
 
 cdr   old data structure CREAC has been replaced by more general data structure REACDAT
 
