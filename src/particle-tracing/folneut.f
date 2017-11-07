@@ -1,9 +1,13 @@
 cdr Nov. 17   unification of update, fpath.  
 cdr           tbd: photon routines, static loop, logatm,mol.ion in static loop.
+cdr Oct. 17   minor sync with folion
+cdr           started: implementation of QSS branch: folstat_neut.f  not ready
+
 cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
 cdr           PR = prob to reach the next cell boundary.
 cdr           In case of geometrical multi-steps within one macro step
 cdr           (NCOU.GT.1) use PR rather then AX(2)=1, when leaving the NCOU loop
+c
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
 Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum? 
@@ -17,9 +21,12 @@ C
 !             corrected
 !PB 22.03.07: LEVGEO=6 --> LEVGEO=10
 !PB 12.01.06: calls to update_spectrum introduced for cell based spectra
+!dr 2016:     now conditional on NADSPC_CD >= 1
 !PB 02.03.06: Store trajectory from birth place to first collision with the
 !             wall. It is assumed that conditional epectation estimator is
 !             switched on.
+!dr 2017:     conditional on ...  NLTRJ ?
+
 !PB 18.04.06: xstorv=0 in "vacuum region" added
 !PB 26.09.06: sg corrected for levgeo=4 and levgeo=5
  
@@ -29,18 +36,40 @@ C
       SUBROUTINE EIRENE_FOLNEUT
 C
 C     NEUTRAL PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
-C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, IS FOLLOWED
+C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
+C     IS FOLLOWED.
+C     (MODULE: COMPRT.F)
+c
+c
+c
+c
+c
+c
+c
 C
 C  ON INPUT
 C     ITYP=0 OR ITYP=1 OR ITYP=2
+C     IC_ION = 0  NEW NEUTRAL PARTICLE, OR CONTINUATION FROM TEST ION
+C     IC_ION > 0  CONTINUATION FROM TEST ION WHICH WAS IN STATIC LOOP
+C     IC_ION < 0  CONTINUATION FROM TEST PARTICLE IN DIFFUSION MODE
 C
 C  ON OUTPUT:
 C
 C     LGPART=TRUE
-C     ITYP=3            A NEXT GENERATION TEST ION IS BORN
-C                          IION= SPECIES INDEX OF NEXT GENERATION ION
+C           ITYP=3      A NEXT GENERATION TEST ION IION IS GENERATED
+
 C     LGPART=FALSE
-C     ITYP=4  NO NEXT GENERATION TEST PARTICLE
+C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
+C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
+c
+c  at 100 :   start a new neutral particle, velocity is given as full cartesian vector, lcart=true 
+c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
+C  at 1001:   particle enters static loop
+C  at 1002:   particle leaves static loop
+c  at 101 :   full new trajectory starts here.
+c  at 104 :   an earlier track continues here. 
+c             initial position of track and cummulated integral for mfp sampling is not refreshed. 
+c             meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -90,10 +119,12 @@ C
      .           NCLLN
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
-C
-C  TENTATIVELY ASSUME: A NEXT GENERATION PARTICLE WILL BE BORN
-C
-C  IC_NEUT, IC_ION: COUNTER FOR GENERATIONS WITHIN STATIC LOOP
+
+
+c  all cell indices must be known at this point
+c  tentatively assume: a next generation particle will be born
+
+c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_NEUT=IC_ION
 C  XGENER:  COUNTER FOR GENERATION LIMIT
       XGENER=0.D0
@@ -108,6 +139,7 @@ C  INITIALIZE COND. EXP. ESTIMATOR
       PR=AX(2)
       WMINC_LOCAL=WMINC
 
+C  CHECK FOR VALID SPECIES INDEX
       IF (ITYP.EQ.0) THEN
         IF (IPHOT.LE.0.OR.IPHOT.GT.NPHOTI) GOTO 998
       ELSEIF (ITYP.EQ.1) THEN
@@ -154,7 +186,7 @@ C  PARTICLE ON SURFACE ?
         IF (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA) THEN
 C  EMITTED  ?  CALL COLLIDE, AFTER UPDATE
           IF (IC_NEUT.EQ.1) THEN
-C  FIRST ENTRY INTO "STATIC LOOP", ALWAYS: EMITTED FROM FROM SURFACE
+C  FIRST ENTRY INTO "STATIC LOOP", ALWAYS: EMITTED FROM SURFACE
 C    (CRTXG,....,...): NORMAL RELATIVE TO DEFAULT SETTINGS
 C                      NEEDED LATER IF PARTICLE LEAVES STATIC LOOP
 C                      VIA STDCOL OR ADDCOL
@@ -169,6 +201,7 @@ C  CALL ESCAPE OR CALL COLLIDE, AFTER UPDATE
           ELSE
             SCOS_NEW = SIGN(1.D0,VELX*CRTXG+VELY*CRTYG+VELZ*CRTZG)
           ENDIF
+
         ELSE
 C  PARTICLE NOT ON SURFACE
           SCOS_SAVE = SCOS
@@ -192,14 +225,13 @@ C  DECIDE TO FOLLOW OR NOT TO FOLLOW THIS TRACK ON BASIS OF MFP
 C
 C  TO BE WRITTEN
 C
-        CLPD(1)=ZMFP
-        IF (IUPDTE.EQ.1) THEN
-          IFLAG=4
-          CALL EIRENE_UPDATE(XSTOR2,XSTORV2,IFLAG)
-          IF (NADSPC_CD >= 1) 
-     .      CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
-        ENDIF
-        ZTC=0.
+      CLPD(1)=ZMFP
+      IF (IUPDTE.EQ.1) THEN
+        IFLAG=4
+        CALL EIRENE_UPDATE(XSTOR2,XSTORV2,IFLAG)
+        IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
+      ENDIF
+      ZTC=0.
 C  CARRY OUT INELASTIC COLLISION EVENT, DIRECTLY AT PLACE OF BIRTH
         IF (SCOS_SAVE.EQ.SCOS_NEW) THEN
           GOTO 230
@@ -215,12 +247,15 @@ C  AT THIS POINT: PARTICLE INCIDENT ON SURFACE, IC_NEUT GT 1 NECESSARILY
 C
 C
 1002  CONTINUE
-C  NO STATIC APPROXIMATION, FOLLOW MOTION
+
+C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION, 
+C                 BUT NOW IT RETURNS TO FULL MOTION
 C
       IF (IC_NEUT.GT.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY LEAVES STATIC LOOP, ITYP=',ITYP
 
-
+C  IN CASE THAT THE PARTICLE WAS IN STATIC LOOP AND ON A SURFACE,
+C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
       IF (IC_NEUT.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
 
@@ -424,9 +459,9 @@ C  INTERSECTION WITH TIME SURFACE. TIME LIMIT REACHED ?
             ENDIF
           ELSE
 C  INTERSECTION A  WITH 1-ST (RADIAL) GRID SURFACE
-            ISRFCL=0
             ZDT1=TS-ZT
             ZTST=TS
+            ISRFCL=0
           ENDIF
         ENDIF
 C
@@ -448,7 +483,7 @@ C  SUBDIVIDE GIVEN TRACK INTO Z (OR TOROIDAL) SMALLER SEGMENTS
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
-CC  2ND (OR POLOIDAL) SUB-GRID
+C  2ND (OR POLOIDAL) SUB-GRID
         IF (NLPOL) THEN
           CALL EIRENE_TIMEP(ZDT1)
           TS=ZT+ZDT1
@@ -464,6 +499,7 @@ C
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
+ 
       ENDIF
 C
       IF (ZTST.GE.1.D30) GOTO 990
@@ -615,6 +651,8 @@ C
 215   CONTINUE
 C
       ZINT2=ZINT1
+
+C  SET NEW ACCUMULATED FLIGHT LENGTH, TENTATIVE
       ZT=ZTST
 C
 C  UPDATE CONTRIBUTION TO VOLUME AVERAGED ESTIMATORS
@@ -636,7 +674,7 @@ C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
 C
       IF (LEVGEO.LE.3) THEN
-C
+C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
@@ -646,6 +684,7 @@ C
      .  (ISTS,1,SG,*104,*380)
         ENDIF
 
+C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
         ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
         IF (NLPOL.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCY)
@@ -655,6 +694,7 @@ C
      .  (ISTS,2,SG,*104,*380)
         ENDIF
 
+C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
         ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
         IF (NLTOR.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCZ)
@@ -664,6 +704,7 @@ C
      .  (ISTS,3,SG,*104,*380)
         ENDIF
 C
+C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
       ELSEIF (LEVGEO.EQ.4) THEN
         ISTS=ABS(INMTI(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -679,6 +720,7 @@ C
           GOTO 380                                              !VK
         ENDIF
 
+C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MTSURF
         IF (MTSURF > 0) THEN
           ISTS=INMTI3(IRCELL,MTSURF)
           IF (NLTOR.AND.ISTS.NE.0) THEN
@@ -690,6 +732,7 @@ C
           ENDIF
         END IF
 C
+C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
       ELSEIF (LEVGEO.EQ.5) THEN
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -703,7 +746,8 @@ C         MSURFG= ??
           IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
      .  (ISTS,1,SG,*104,*380)
         ENDIF
-C
+
+C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
       ELSEIF (LEVGEO.EQ.10) THEN
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -713,6 +757,7 @@ C
      .  (ISTS,1,SG,*104,*380)
         ENDIF
       ENDIF
+C
 C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM) GOTO 990
@@ -799,6 +844,7 @@ C
 C  POINT OF COLLISION  220 -- 240
 C
 220   CONTINUE
+C
       DIST=CLPD(NCOU)
       CLPD(NCOU)=(ZLOG-ZINT2)*ZMFP
       ZTC=ZT+CLPD(NCOU)
@@ -807,6 +853,10 @@ C
         CALL EIRENE_UPDATE(XSTOR2,XSTORV2,IFLAG)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
       ENDIF
+
+C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
+
+
       X0=X0+VELX*ZTC
       Y0=Y0+VELY*ZTC
       Z0=Z0+VELZ*ZTC
@@ -839,6 +889,7 @@ C
         WS=WEIGHT/SIGTOT
         CALL EIRENE_UPCUSR(WS,1)
       ENDIF
+C
 C
 C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
 C  KILL PARTICLE, IF TOO LARGE ROUND OFF ERRORS DURING

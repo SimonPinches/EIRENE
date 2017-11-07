@@ -8,7 +8,7 @@ c            set default ncheni=1 for nchtal=2 already in calling routine,
 c            to avoid that chords are erroneously turned off there. 
 cpb jul.17:  request from aug.16: psig and ARGST depends on NCHTAL done
 cdr       :  commit PART 1: allocatable storage: ARGST, VPLOT, AA, XNTG
-cdr       :  PART 2: automatic detection of 1st dimension ND: tb commited later 
+cdr       :  PART 2: automatic detection of 1st dimension ND: tb committed later 
 cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
 cdr                    analogous to H emission lines,             NCHTAL=2 

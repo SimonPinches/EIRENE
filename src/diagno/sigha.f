@@ -83,6 +83,11 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
+c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
+c         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+c    .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+c    .                 NADVI+7)
+
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '
             CALL EIRENE_Ly_beta 

@@ -84,9 +84,9 @@ C
      .          TWIN1, XT, Y000, TSS, X0T, Y0T
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1, 
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-     .           EIRENE_LEARCA, I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
+     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
-     .           EIRENE_LEARC2, EIRENE_LEARC1, 
+     .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1, 
      .           NJC, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
       LOGICAL :: LCUTY(N2NDPLGS), LCUTX(N1STS), lnincz
@@ -915,7 +915,9 @@ C
         GOTO 5000
 C
       ENDIF
-C
+
+C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
+C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
 5000  CONTINUE
 #ifdef TRACE

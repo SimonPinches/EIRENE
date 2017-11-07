@@ -1,3 +1,22 @@
+cdr Oct. 17   minor sync with folneut
+cdr           started: implementation of QSS branch: folstat_ion.f  not ready
+
+cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
+cdr           also: manual. to be done: remove static loop from folneut and folion.
+c  nov. 2015:  fnui collision frequency: retain individual frequencies, for
+c              all background species: fnuiar(ipls)
+c  April 2015:  call to escape at periodicidy surfaces:  with reduced velocity, lcart=f
+c               no gyro phase sampling then.
+c               also for proper printout from chctrc for trace ions.
+
+c  njump=3, for internal grid surface und timusr. reset time=0
+c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
+C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
+!DR  eps12 --> eps6 for testing cosine of angle of incidence.
+!DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
+c
+c....
+c
 C  MAY05: CALL UPDATE FROM STATIC LOOP WITH IFLAG=4 (RATHER =1)
 C         WG. COLL EST. ON 1ST FLIGHT AFTER BIRTH.
 C  Sept 05: also vel=velpar before call  to ...col  routines.
@@ -16,8 +35,11 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !                              in this case the reduced "guiding centre" velocity vector
 !                              is stored in: velxgs, velygs, velzgs, velgs, velg(3)
 !              LCART=FALSE:
-!                              velx,vely,velx,vel: "guiding centre velocities"
+!                              velx,vely,velx,vel: reduced "guiding centre velocities"
 !                              i.e. excluding the gyromotion.
+!                              velperp and vrelpar are parameters to solve 
+!                              (e.g. numerically) for 
+!                              guiding center equation.
 !                              in this latter case the last "true" velocity vector
 !                              is stored in: velxts, velyts, velzts, velts, velt(3)
 !  TRUE (full) VELOCITIES ARE NEEDED IN FPATHI ROUTINES, AS WELL AS AT SOLID BOUNDARIES.
@@ -25,17 +47,11 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !  PUSH PARTICLES
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
-C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
-c  April 2015:  call to escape at periodicidy surfaces:  with reduced velocity, lcart=f
-c               no gyro phase sampling then.
-c               also for proper printout from chctrc for trace ions.
-c   
-c  njump=3, for internal grid surface und timusr. reset time=0
-c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
-cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
-cdr           also: manual. to be done: remove static loop from folneut and folion.
-c  nov. 2015:  fnui collision frequency: retain individual frequencies, for
-c              all background species: fnuiar(ipls)
+
+
+
+
+
 
 
 C  .......................................................................................
@@ -53,13 +69,13 @@ C                              A) LANGER MODEL NF, ANALYTICAL
 C                              B) TRUBNIKOV REFINED, SEMI-ANALYTICAL
 C                              C) BINARY: TAKIZUKA  (BENJAMIN)
 C                              D) HYBRID: PARTICLE-FLUID-FOKKER PLANCK (JOSEF)
-
+C  .......................................................................................
 
 
 C
       SUBROUTINE EIRENE_FOLION
 C
-C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0 IN CELL NRCELL, IPOLG,
+C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
 C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
 C     IS FOLLOWED.
 C     (MODULE: COMPRT.F)
@@ -73,12 +89,17 @@ c
 C
 C  ON INPUT:
 C     ITYP=3
+C     IC_NEUT = 0  NEW NEUTRAL PARTICLE, OR CONTINUATION FROM TEST ION
+C     IC_NEUT > 0  CONTINUATION FROM TEST ION WHICH WAS IN STATIC LOOP
+C     IC_NEUT < 0  CONTINUATION FROM TEST PARTICLE IN DIFFUSION MODE
 C  ON OUTPUT:
 C
+C     LGPART=TRUE
 C           ITYP=0  NEXT GENERATION PHOTON IPHOT IS GENERATED
 C           ITYP=1  NEXT GENERATION ATOM IATM IS GENERATED
 C           ITYP=2  NEXT GENERATION MOLECULE IMOL IS GENERATED
-C           ITYP=4  NO NEXT GENERATION PARTICLE IS GENERATED
+C     LGPART=FALSE
+C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
 c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true 
@@ -103,9 +124,9 @@ C
       USE EIRMOD_CUPD
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
       USE EIRMOD_CZT1
-      USE EIRMOD_CGEOM
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
@@ -114,7 +135,6 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
-
 
       IMPLICIT NONE
  
@@ -155,10 +175,16 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
 
 100   LGPART=.TRUE.
 c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
+c  either a new particle, or back to here from collide, escape, fpkcol,
+c  with a new full (cartesian) velocity vector.
+c
       IF (.NOT.LCART) GOTO 9921
+
       IC_ION=IC_ION+1
       XGENER=0.D0
       ico=0
+
+C  CHECK FOR VALID SPECIES INDEX
       IF (ITYP.EQ.3.AND.(IION.LE.0.OR.IION.GT.NIONI)) GOTO 998
 C
 C  THE  CELL NUMBER NRCELL, IPOLG, IPERID, NPCELL, NTCELL, NACELL, NBLOCK
@@ -243,6 +269,7 @@ c  radial cell no. NRCELL may be wrong
 c  check orientation of parallel motion relativ to radidal coordinate
 
         NRCELL_OLD=NRCELL
+
         IF (LEVGEO.EQ.1) THEN
           SG=SIGN(1._DP,VLXPAR)
           IF (SG.LT.0) THEN
@@ -455,7 +482,7 @@ C             IN THE STATIC LOOP.
 C             PERHAPS NEEDS TO BE REVISED TO FULL VELOCITIES?
 C  EMITTED  ?  CALL COLLIDE, AFTER UPDATE
         IF (IC_ION.EQ.1) THEN
-C  FIRST ENTRY INTO "STATIC LOOP", ALWAYS: EMITTED FROM FROM SURFACE
+C  FIRST ENTRY INTO "STATIC LOOP", ALWAYS: EMITTED FROM SURFACE
 C    (CRTXG,....,...): NORMAL RELATIVE TO DEFAULT SETTINGS
 C                      NEEDED LATER IF PARTICLE LEAVES STATIC LOOP
 C                      VIA STDCOL OR ADDCOL
@@ -465,7 +492,8 @@ C                      VIA STDCOL OR ADDCOL
           SCOS = SIGN(1.D0,VLXPAR*CRTXG+VLYPAR*CRTYG+VLZPAR*CRTZG)
           SCOS_SAVE = SCOS
           SCOS_NEW  = SCOS
-C  INCIDENT DURING STATIC LOOP?  CALL ESCAPE, AFTER UPDATE
+C  INCIDENT DURING STATIC LOOP?
+C  CALL ESCAPE, AFTER UPDATE
         ELSE
           SCOS_NEW = SIGN(1.D0,VLXPAR*CRTXG+VLYPAR*CRTYG+VLZPAR*CRTZG)
         ENDIF
@@ -483,10 +511,7 @@ C
         NUPC(1)=(NCELL-NRCELL-NBLCKA)/NR1P2
       END IF
 
-C     IF (ITYP.EQ.3) THEN
-        LOGION(IION,ISTRA)=.TRUE.
-        ZMFP=EIRENE_FPATH(NCELL,CFLAG,1,1)
-C     ENDIF
+      ZMFP=EIRENE_FPATH(NCELL,CFLAG,1,1)
 C  XSTOR IN STATIC LOOP:  NOT NEEDED, BECAUSE NCOU=1
 C     XSTOR2(:,:,1)=XSTOR(:,:)
 C     XSTORV2(:,1) =XSTORV(:)
@@ -523,11 +548,13 @@ C
       IF (IC_ION.GT.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY LEAVES STATIC LOOP, ITYP=',ITYP
 
-C  IN CASE THAT THE PARTICLE WAS IN STATTIC LOOP AND ON A SURFACE,
+C  IN CASE THAT THE PARTICLE WAS IN STATIC LOOP AND ON A SURFACE,
 C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
       IF (IC_ION.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
-C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" ?
+
+C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" 
+C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
         IC_ION=0
         IC_NEUT=0
         SCOS_NEW = SIGN(1.D0,VLXPAR*CRTXG+VLYPAR*CRTYG+VLZPAR*CRTZG)
@@ -593,10 +620,10 @@ C**********************************************************************
  
       IC_ION=0
       IC_NEUT=0
-
-c  particle in volume or on surface 
-
-c  each test ion track starts at this point, IC_ION=0 here
+C
+C  PARTICLE IN VOLUME OR ON SURFACE BUT NOT FROM "STATIC LOOP"
+C
+C  EACH TEST ION TRACK STARTS AT THIS POINT, IC_ION=0 HERE
 
 101   CONTINUE
 C     IF (ITYP.EQ.3) THEN
@@ -618,13 +645,17 @@ C
       ZINT2=ZINT1
       AX(1)=1.
       AX(2)=1.
+
+C  COORDINATES FOR SUB-STEPS IN 2ND AND/OR 3RD GRID, (ONLY IF NEEDED: NL2ND; NL3RD, NLTRA)
       IF (NLTRA) X01=X0+RMTOR
       X00=X0
       Y00=Y0
       Z00=Z0
       Z01=Z0
-C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS THROUGH TRANSPARENT
-C                            SURFACES FROM THIS POINT
+C
+C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS ACROSS TRANSPARENT
+C                            SURFACES FROM THIS POINT: NEW POSITION; OLD VELOCITY
+C                            REFRESH MFP SAMPLING
 104   CONTINUE
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
       IF (LDAMCEL(NCELL)) GOTO 9912
@@ -655,19 +686,25 @@ C
       ISRFCL=-1
 C
 C TL: DISTANCE TO NEXT ADDITIONAL SURFACE
-      IF (NCELL.LE.NOPTIM) THEN
+c   nli,nle: index range of additional surfaces, visible from cell no. ncell
+      IF (NCELL.GT.0.AND.NCELL.LE.NOPTIM) THEN
         NLI=NLIMII(NCELL)
         NLE=NLIMIE(NCELL)
-      ELSE
+      ELSEIF (NCELL.GT.0) THEN
         NLI=1
         NLE=NLIMI
+      ELSE
+C  NEGATIVE CELL INDEX. STOP THIS PARTICLE
+        GOTO 990
       ENDIF
       IF (NLI.LE.NLE) THEN
+c  check all additional surfaces in index range nli, nle
         CALL EIRENE_TIMEA1
      .  (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,X0,Y0,Z0,TIME,
      .               VLXPAR,VLYPAR,VLZPAR,VELPAR,
      .               MASURF,XLI,YLI,ZLI,SG,TL,NLTRC,LCNDEXP)
 C       NLPR= :NOT AVAILABLE FOR TEST IONS
+c
         ZTST=TL
         ZDT1=TL
         CLPD(1)=ZDT1
@@ -777,22 +814,19 @@ C
           IF (TL.LT.TS.OR.TT.LT.TS.OR.TF.LT.TS) THEN
             MRSURF=0
             IPOLGN=0
-
-c  collision with additional surface
+C  CHECK FOR INTERSECTION WITH ADDITIONAL SURFACE
             IF (TL.LE.TT.AND.TL.LE.TF) THEN
               ZDT1=TL-ZT
               TL=ZT+ZDT1
               ZTST=TL
               ISRFCL=1
-
-c  collision with time surface
+C  INTERSECTION WITH TIME SURFACE. TIME LIMIT REACHED ?
             ELSEIF (TT.LT.TL.AND.TL.LE.TF) THEN
               ZDT1=TT-ZT
               TT=ZT+ZDT1
               ZTST=TT
               ISRFCL=2
-
-c  Fokker Planck collision
+c  Fokker Planck collision, DIFFUSIVE STEP
             ELSEIF (TF.LT.TL.AND.TF.LE.TT) THEN
               ZDT1=TF-ZT
               TF=ZT+ZDT1
@@ -800,11 +834,10 @@ c  Fokker Planck collision
               ISRFCL=4
             ENDIF
           ELSE
-
-c  collision with radial surface
-            ISRFCL=0
+C  INTERSECTION A  WITH 1-ST (RADIAL) GRID SURFACE
             ZDT1=TS-ZT
             ZTST=TS
+            ISRFCL=0
           ENDIF
         ENDIF
 C
@@ -819,7 +852,7 @@ C
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
-C
+C  2ND (OR POLOIDAL) SUB-GRID
         IF (NLPOL) THEN
           CALL EIRENE_TIMEP(ZDT1)
           TS=ZT+ZDT1
@@ -838,10 +871,11 @@ c  switch to full velocity but gc velocity is not saved
         ENDIF
  
       ENDIF
+C
       IF (ZTST.GE.1.D30) GOTO 990
-
-
-c  local mean free path
+C
+C  LOCAL MEAN FREE PATH
+C
 c  use parallel velocity, i.e., compute parallel mean free path
 c  because clpd is the parallel distance in each cell (exclud. gyro)
 c  etc. ... e.g LAMBDA(PARALLEL) = VEL(PARALLEL)/SIGV.
@@ -884,10 +918,12 @@ c switch to parallel gc velocity
             XSTOR2(:,:,J)=XSTOR(:,:)
             XSTORV2(:,J)=XSTORV(:)
           ENDIF
+
 C  UPDATE INTEGRAL
           ZINT1=ZINT1+CLPD(J)*ZMFPI
 C         IF (.NOT.NLPR) THEN
 CCC         IF (ZINT1.GE.ZLOG) THEN
+C  COLLISION IN SECTION J OF CURRENT TRACK
               IF (NLPOL) NPCELL=NCOUNP(J)
               IF (NLTOR) NTCELL=NCOUNT(J)
 
@@ -985,7 +1021,7 @@ c  will fpkcol change the collision with additional surface?
         CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
       ENDIF
 
-C changing back to guiding center velocities
+C changing back to full cartesian velocities
       VELX=VELXS
       VELY=VELYS
       VELZ=VELZS
@@ -997,14 +1033,8 @@ C
 216   CONTINUE
 C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
-C
-      IF (LEVGEO.LE.3) THEN
-C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
-        ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
-        IF (NLRAD.AND.ISTS.NE.0) THEN
-          SG=ISIGN(1,NINCX)
-          NLSRFX=.TRUE.
-          MSURFG=NPCELL+(NTCELL-1)*NP2T3
+
+c  DO THIS WITH REDUCED VELOCITY:
           IF (LCART) THEN
             VELXS=VELX
             VELYS=VELY
@@ -1016,6 +1046,14 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
             VEL =VELPAR
             LCART=.FALSE.
           ENDIF
+C
+      IF (LEVGEO.LE.3) THEN
+C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
+        ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
+        IF (NLRAD.AND.ISTS.NE.0) THEN
+          SG=ISIGN(1,NINCX)
+          NLSRFX=.TRUE.
+          MSURFG=NPCELL+(NTCELL-1)*NP2T3
           IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                             (ISTS,1,SG,*104,*380)
         ENDIF
@@ -1026,17 +1064,6 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           SG=ISIGN(1,NINCY)
           NLSRFY=.TRUE.
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
-          IF (LCART) THEN
-            VELXS=VELX
-            VELYS=VELY
-            VELZS=VELZ
-            VELS =VEL
-            VELX=VLXPAR
-            VELY=VLYPAR
-            VELZ=VLZPAR
-            VEL =VELPAR
-            LCART=.FALSE.
-          ENDIF
           IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                             (ISTS,2,SG,*104,*380)
         ENDIF
@@ -1047,17 +1074,6 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           SG=ISIGN(1,NINCZ)
           NLSRFZ=.TRUE.
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          IF (LCART) THEN
-            VELXS=VELX
-            VELYS=VELY
-            VELZS=VELZ
-            VELS =VEL
-            VELX=VLXPAR
-            VELY=VLYPAR
-            VELZ=VLZPAR
-            VEL =VELPAR
-            LCART=.FALSE.
-          ENDIF
           IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                             (ISTS,3,SG,*104,*380)
         ENDIF
@@ -1069,17 +1085,6 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
           IF (NLRAD.AND.ISTS.NE.0) THEN
             NLSRFX=.TRUE.
             MSURFG=INSPAT(IPOLGN,MRSURF)
-            IF (LCART) THEN
-              VELXS=VELX
-              VELYS=VELY
-              VELZS=VELZ
-              VELS =VEL
-             VELX=VLXPAR
-              VELY=VLYPAR
-              VELZ=VLZPAR
-              VEL =VELPAR
-              LCART=.FALSE.
-            ENDIF
             SG=SIGN(1._DP,VELX*PTRIX(IPOLGN,MRSURF)+
      .                    VELY*PTRIY(IPOLGN,MRSURF))
             IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
@@ -1088,48 +1093,28 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
         END IF
 
 C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MTSURF
-
         IF (MTSURF > 0) THEN
           ISTS=INMTI3(IRCELL,MTSURF)
           IF (NLTOR.AND.ISTS.NE.0) THEN
             SG=ISIGN(1,NINCZ)
             NLSRFZ=.TRUE.
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-            IF (LCART) THEN
-              VELXS=VELX
-              VELYS=VELY
-              VELZS=VELZ
-              VELS =VEL
-              VELX=VLXPAR
-              VELY=VLYPAR
-              VELZ=VLZPAR
-              VEL =VELPAR
-              LCART=.FALSE.
-            ENDIF
             IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                        (ISTS,3,SG,*104,*380)
           ENDIF
         END IF
 C
-C  ESCAPE AT GRID SURFACE BUILT FROM TETRAHEDRON SIDES: MRSURF
+C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
       ELSEIF (LEVGEO.EQ.5) THEN
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
-          NLSRFX=.TRUE.
-          IF (LCART) THEN
-            VELXS=VELX
-            VELYS=VELY
-            VELZS=VELZ
-            VELS =VEL
-            VELX=VLXPAR
-            VELY=VLYPAR
-            VELZ=VLZPAR
-            VEL =VELPAR
-            LCART=.FALSE.
-          ENDIF
+!pb          SG=ISIGN(1,NINCX)
+!pb          IF (NRCELL == 0) SG = -1.D0
           SG=SIGN(1._DP,VELX*PTETX(IPOLGN,MRSURF)+
      .                  VELY*PTETY(IPOLGN,MRSURF)+
      .                  VELZ*PTETZ(IPOLGN,MRSURF))
+          NLSRFX=.TRUE.
+C         MSURFG= ??
           IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
@@ -1140,17 +1125,6 @@ C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          IF (LCART) THEN
-            VELXS=VELX
-            VELYS=VELY
-            VELZS=VELZ
-            VELS =VEL
-            VELX=VLXPAR
-            VELY=VLYPAR
-            VELZ=VLZPAR
-            VEL =VELPAR
-            LCART=.FALSE.
-          ENDIF
           IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
@@ -1195,7 +1169,7 @@ C  POINT OF COLLISION OR SURFACE EVENT. (I.E. LCART=F)
 CCC
 CCC   GOTO 210
 C
-C  POINT OF COLLISION  220---240
+C  POINT OF COLLISION  220 -- 240
 C
 220   CONTINUE
 C
@@ -1360,6 +1334,7 @@ C
       IF (NLTEST) CALL EIRENE_CLLTST(*997)
 C
 C  SAMPLE FROM COLLISION KERNEL FOR TEST IONS
+C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONIZATION
 C  FIND NEW WEIGHT, SPECIES INDEX, VELOCITY AND RETURN
 C
       CALL EIRENE_COLION(CFLAG,COLTYP,DIST)
@@ -1384,8 +1359,10 @@ C
 C  SIMULATION OF COLLISION EVENT FINISHED
 C
 C
-C
-C   INCIDENT ONTO SURFACE
+C  ..............................................................
+C  .
+C  .  INCIDENT ONTO SURFACE
+C  ..............................................................
 C
 380   CONTINUE
 C
@@ -1434,6 +1411,7 @@ c  add gyro velocity (with random phase) to GC velocity:
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
 C  DOES THE PARTICLE SPEED UNIT VECTOR NOw POINT TOWARDS THE SURFACE ?
           IF (.NOT.LGPART) EXIT  ! DON'T CARE ABOUT GYRO MOTION, ABSORBED PARTICLE ANYWAY
+          IF (ILIIN(MSURF) < 0) EXIT ! DON'T CARE ABOUT GYRO MOTION, TRANSPARENT SURFACE
           IF (COSIN.GT.0.) EXIT
 C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1
@@ -1463,7 +1441,7 @@ C
       CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
       RETURN
 C
-C   100: START NEW ION TRACK
+C   100: START NEW ION TRACK AFTER SURFACE EVENT
 C   104: CONTINUE THIS TRACK, TRANSPARENT SURFACE IS CROSSED
 C
 C
@@ -1505,6 +1483,7 @@ C
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
       GOTO 995
+C
 9912  CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
@@ -1514,6 +1493,7 @@ C
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
       GOTO 995
+C
 992   CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
@@ -1566,11 +1546,13 @@ C
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       GOTO 999
+C
 998   WRITE (iunout,*) 'ERROR IN FOLION, SPECIES INDEX OUT OF RANGE '
       WRITE (iunout,*) ' NPANU,IION ',NPANU,IION
       GOTO 999
 C
-999   PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+999   CONTINUE
+      PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       WEIGHT=0.
@@ -1579,16 +1561,16 @@ C
 
       CONTAINS
 C  ION-ION ENERGY LOSS FREQUENCY (LANGER APPROXIMATION) (1/SEC)
-C  NUCL.FUS. 22, NO. 6, (1986) P754, FOR CH4+ (ma=16) ON H+ (mb=1)
+C  NUCL.FUS. 22, NO. 6, (1986) P754, FOR CH4+ (mA=16) ON H+ (mB=1)
       FUNCTION FNUEQI(XNI,TI)
       REAL(DP) ::  FNUEQI,XNI,TI
 c     FNUEQI=8.8E-8*XNI*TI**(-1.5)
-c  this is not exactly the relaxation time, but instead a time
-c  which appears in the analytical (BGK-like) solution EA(t)
+c  This is not exactly the relaxation time, but instead a time
+c  which appears in the analytical (BGK-like) solution EA(t).
 c  to obtain an effective  nu(Ti) that can be compared with a
 c  "relaxation time"
 c  in the dgl dEA/dt=-nu(Ti,EA,...) times EA
-c  in the present limit: this must be multiplied by a factor(EA,Ti)
+c  In the present limit: this must be multiplied by a factor(EA,Ti)
       FNUEQI=8.5E-8*XNI*TI**(-1.5)  
 c  in calling program: FNUEQI = FNUEQI*(1.+mB/mA)**0.5-1.5*Ti/EA
 c  but this is already implicitly contained in the analytic BGK solution
