@@ -1,12 +1,14 @@
 CPB   AUGUST 17: PRELIMINARY SET E_ALPCR TO 1.5*TEMP*ALPCR
-c
+cdr   July  17: bug fix in function mmdei (exp. integr.)
+cdr             A typo during syncronisation with solps-iter. 
+cdr             correct: z=0.25 *y, rather then z=0.25+0*y
 cdr:  April 17: syncronized with version from solps-iter: spelling errors in comments,
 cdr             use EIRMOD_PRECISION instead of real*8 
 cdr             (this may complicate stand alone use, outside eirene)
 cdr             call "exit_own" rather than "stop", further cleanup...
 cdr             remaining differences: 
-cdr                 use eirmod_ccrm (Vlad Kotov) in solps-iter
-cdr                 lima=34 or lima=40, lima undefined in solps-iter ?
+cdr                 use eirmod_ccrm (Vlad Kotov) in solps-iter (commented out)
+cdr             lima=34 or lima=40, lima undefined in solps-iter ?
 
 cdr: nov. 2015  added first argument in parameter list: ICELL
 CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
@@ -26,6 +28,9 @@ C   ASSUME: SLOWLY EVOLVING SPECIES: H,H+
 C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
+C   ICELL     : CELL NUMBER, ONLY NEEDED IN CASE OF CALLS FROM INSIDE EIRENE TRANSPORT CODE.
+C               REMOVED, WAS INTENDED FOR OPTIMIZATION 
+C               OPTIMIZATION IS TAKEN CARE OF IN CALLING SUBROUTINES
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
 C   Q_EXT(N): ???   ->  H*(N)  external source, e.g. molecules, or photo-excitation
@@ -59,6 +64,7 @@ C***********************************************************************
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
      .                            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T)
       USE EIRMOD_PRECISION
+C     USE EIRMOD_CCRM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
  
@@ -101,7 +107,7 @@ c
         IFRST = 1
       END IF
  
-      E_ALPCR_T = 0._DP
+      E_ALPCR_T = 0.0_DP
 c
 c
 C ATOM
@@ -113,8 +119,10 @@ C***********************************************************************
 C
 C ATOMIC HYDROGEN
 C
-      CALL EIRENE_POPCOF(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,R0,R1,
-     &            R_EXT,Q_EXT)
+!pb   CALL EIRENE_POPCOF(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,
+!pb  &             R0,R1,R_EXT,Q_EXT)
+      CALL EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,
+     &             R0,R1,R_EXT,Q_EXT)
  
 C TRAINS OF ELECTRONICALLY EXCITED H
       DO IP=2,LIMA
@@ -165,13 +173,13 @@ C
       DIMENSION F(40,40)
       DIMENSION A(40,40)
       DIMENSION E_AT(40)
- 
+
       UH=13.595
       DO 100 I=1,LIM
         P=I
         E_AT(I)=UH*(1.0-1.0/P**2)
 100   CONTINUE
- 
+
       DO 101 I=1,LIM-1
       DO 102 J=I+1,LIM
       AI=I
@@ -194,7 +202,7 @@ cdr  nur a(2-->1) rausnehmen
       A(2,1)=A(2,1)*pop_esc
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_CLSAHA(TEMP,SAHA)
 C
@@ -205,9 +213,9 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
- 
+
       TE=TEMP*1.1605E4
- 
+
       DO 101 I=1,40
       P=I
       UION=13.595/TEMP/P**2
@@ -217,9 +225,10 @@ c     else
         SAHA(I)=P**2*EXP(UION)/2.414D15/SQRT(TE**3)
 c     endif
   101 CONTINUE
+
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_RATCOF(TEMP,OSC,SAHA,C,F,S,ALPHA,BETA)
 C
@@ -231,7 +240,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
       DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),UION(40)
- 
+
 C     INITIALIZATION
       DO 1 I=1,40
       S(I)=0.0
@@ -243,23 +252,23 @@ C     INITIALIZATION
       F(I,J)=0.0
       U(I,J)=0.0
     1 CONTINUE
- 
+
       TE=TEMP*1.1605E4
       UH=13.595
- 
+
       DO 101 I=1,40
       P=I
   101 UION(I)=13.595/TEMP/P**2
       DO 102 I=1,40
       DO 102 J=1,40
   102 U(I,J)=UION(I)-UION(J)
- 
+
       IF(TE.GT.5.0E3) THEN
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
- 
+
         DO 105 I=1,40
   105     ALPHA(I)=S(I)*SAHA(I)
- 
+
       ELSE
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
         S(1)=ALPHA(1)/SAHA(1)
@@ -273,10 +282,10 @@ c
       CALL EIRENE_CLBETA(XP,P,XS)
   602 BETA(I)=5.197D-14*(UH/TEMP)**.5/P*XS
 c
- 
+
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
 C
@@ -306,7 +315,7 @@ C*********  1 -> J
       CALL EIRENE_COF1N(U(I,J),OSC(I,J),TE,F1,I,J)
       F(J,1)=F1
   100 C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
- 
+
 C*********  2-10 -> J
       DO 110 I=2,10
       P=I
@@ -314,14 +323,14 @@ C*********  2-10 -> J
       Q=J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       CALL EIRENE_COFJO(U(I,J),OSC(I,J),TE,CJ,I,J)
- 
+
       GG=((P-2.)/8.)**0.25
       C(I,J)=(1.-GG)*CJ+GG*CV
 110   F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
- 
- 
+
+
 C*********  I(>11) -> J
- 
+
       DO 120 I=11,39
       P=I
       DO 120 J=I+1,40
@@ -329,14 +338,14 @@ C*********  I(>11) -> J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       C(I,J)=CV
   120 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
- 
+
 C*********  S  1 ->  ionization
       I=1
- 
+
       IF(TE.GT.5.0E3) THEN
       CALL EIRENE_COFJS(TE,S1,I)
       S(1)=S1
- 
+
       ELSE      !  Te  <= 5000
       CALL EIRENE_COFJS2(TE,AL,I)
       ALPHA(1)=AL
@@ -345,13 +354,13 @@ C
 C*********  S  2-10 ->
       DO 210 I=2,10
       P=I
- 
+
       CALL EIRENE_COFJS(TE,SJ,I)
       CALL EIRENE_COFVS(TEMP,SV,I)
- 
+
       GGG=((P-2.)/8.)**0.25
   210 S(I)=(1.-GGG)*SJ+GGG*SV
- 
+
 C*********  S  I(>11) ->
       DO 220 I=11,40
       CALL EIRENE_COFVS(TEMP,SV,I)
@@ -411,7 +420,7 @@ C
       B=B-A*LOG(C1)
       Y1=-Y
       Z1=-Z
- 
+
       IF(Y.GT.50.0) THEN
       E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
       E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
@@ -421,22 +430,22 @@ C
       E2=E2Y/Y+RX*E2Z/Z
       F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
       ELSE
- 
+
       CALL EIRENE_EXPI(Y1,E1Y,ICON)
       CALL EIRENE_EXPI(Z1,E1Z,ICON)
- 
+
       E1Y=-E1Y
       E1Z=-E1Z
       E2Y=EXP(-Y)-Y*E1Y
       E2Z=EXP(-Z)-Z*E1Z
       E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
       E2=E2Y/Y+RX*E2Z/Z
- 
+
       F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
       END IF
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFJO(U,OSC,TE,C,I,J)
 C
@@ -474,14 +483,14 @@ C
       E2Z=EXP(-Z)-Z*E1Z
       E1=(1/Y+0.5)*E1Y-(1/Z+0.5)*E1Z
       E2=E2Y/Y-E2Z/Z
- 
+
       C=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)
- 
+
       RETURN
  1000 WRITE(iunout,*) 'ERROR IN COFJO        ICON = ',ICON
       CALL EIRENE_EXIT_OWN(1)
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFVR(U,OSC,TEMP,C,I,J)
 C
@@ -510,12 +519,12 @@ C
       GAMMA=UH*LOG(G1)*G2/G3
       C1=1.6D-7*TEMP**0.5/(TEMP+GAMMA)*EXP(-U)
       C2=0.3*TEMP/UH+DELTA
- 
+
       C=C1*(A*LOG(C2)+B)
- 
+
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFJS(TE,S,I)
 C
@@ -530,7 +539,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION G(0:2,40)
- 
+
       G(0,1)=1.1330
       G(1,1)=-0.4059
       G(2,1)=0.07014
@@ -541,11 +550,11 @@ C
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
   350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
- 
+
       IF (I.EQ.1) THEN
- 
+
       P=1.0
- 
+
       Y=1.57770E5/TE
       R=0.45
       Z=R+Y
@@ -554,7 +563,7 @@ C
       DO 223 K=0,2
   223 A=A+G(K,1)/(K+3)
       A=A*1.9603*P
- 
+
       B=0.66667*P**2*(5-0.603)
       C1=2*P**2
       B=B-A*LOG(C1)
@@ -562,7 +571,7 @@ C
       Z1=-Z
       CALL EIRENE_EXPI(Y1,E1Y,ICON)
       CALL EIRENE_EXPI(Z1,E1Z,ICON)
- 
+
       E1Y=-E1Y
       E1Z=-E1Z
       E2Y=EXP(-Y)-Y*E1Y
@@ -573,9 +582,9 @@ C
       EGY=E0Y-2*E1Y+E2Y
       EGZ=E0Z-2*E1Z+E2Z
       E2=EGY+RX*EGZ
- 
+
       S=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)
- 
+
       ELSE
       P=I
       BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
@@ -884,6 +893,128 @@ coupling to Q_EXT
           END IF
  3010   CONTINUE
  3001 CONTINUE
+
+
+      RETURN
+      END
+C***********************************************************************
+      SUBROUTINE
+     .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,R0,R1,
+     &      R_EXT,Q_EXT)
+C
+C     SOLUTION OF RATE EQUATION FOR ATOMIC HYDROGEN
+C
+C     COPY OF EIRENE_POPCOF FOR USE OF MULTIPLE RIGHT HAND SIDES
+C
+      USE EIRMOD_PRECISION
+      IMPLICIT REAL(DP) (A-H,O-Z)
+      REAL(DP)  C(40,40),F(40,40),A(40,40),W(40,40)
+     &         ,SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40)
+     &         ,       Q_EXT(40),R_EXT(40)
+     &         ,VW(40),WA(40,40)
+      REAL(DP) :: BLAX(3,40)
+      dimension ip(40)
+ 
+      DO 201 K=2,LUP-1
+ 
+        DO 202 L=2,K
+cdr stoss bevoelkerung von k von unten
+  202     W(K,L)=C(L,K)*DENSEL
+ 
+cc diagonale
+cc entvoelkerung durch stoesse nach unten
+        SUMF=0.
+        DO 301 I=1,K-1
+  301     SUMF=SUMF+F(K,I)
+cc entvoelkerung durch stoesse nach oben
+        SUMC=0.
+        DO 302 I=K+1,LIM
+  302     SUMC=SUMC+C(K,I)
+cc  spontan nach unten
+        SUMA=0.
+        DO 303 I=1,K-1
+  303     SUMA=SUMA+A(K,I)
+cdr entvoelkerung von k: stoesse nach unten, nach oben, ionis, spontan
+cdr                      nach unten
+        W(K,K)=-(DENSEL*(SUMF+SUMC+S(K))+SUMA)
+ 
+cc diagonale fertig
+ 
+        DO 203 L=K+1,LUP
+cdr bevoelkerung durch: stoesse von oben, spontan von oben
+  203     W(K,L)=DENSEL*F(L,K)+A(L,K)
+ 
+  201 CONTINUE
+ 
+cdr k loop finished
+cdr: jetzt: ditto fuer k=lup, d.h. bevoelkerung von oben entfaellt
+      DO 211 L=2,LUP-1
+ 
+  211 W(LUP,L)=C(L,LUP)*DENSEL
+ 
+      SUMF=0.
+      DO 311 I=1,LUP-1
+  311 SUMF=SUMF+F(LUP,I)
+      SUMC=0.0
+      DO 313 I=LUP+1,LIM
+  313 SUMC=SUMC+C(LUP,I)
+      SUMA=0.
+      DO 312 I=1,LUP-1
+  312 SUMA=SUMA+A(LUP,I)
+ 
+      W(LUP,LUP)=-(DENSEL*(SUMF+SUMC+S(LUP))+SUMA)
+ 
+C  RECHTE SEITEN:
+ 
+c  vorbereiten fuer recombination
+      DO 550 K=2,LUP
+        SUMF=0.0
+        DO 500 I=LUP+1,LIM
+  500     SUMF=SUMF+F(I,K)*SAHA(I)
+        SUMAS=0.0
+        DO 501 I=LUP+1,LIM
+  501     SUMAS=SUMAS+SAHA(I)*A(I,K)
+c
+c  matrixelemente: 1/s  (densel*rate coeff. )
+c  rechte seiten : cm**3/s, nicht: 1/s, also fuer elektronendichte=1
+c                                      (bzw: stosspartnerdichte =1)
+c  geht wg. linearitaet.
+c  recombination e + H+ --> H*
+        W(K,LUP+1)=-(DENSEL*SUMF+SUMAS+(DENSEL*ALPHA(K)+BETA(K)))
+c  ionisation e + H --> H*
+        W(K,LUP+2)=-C(1,K)
+c  external source: Q_EXT
+        W(K,LUP+3)=-Q_EXT(K)
+  550 CONTINUE
+ 
+cdr w besetzt fuer w(i,j) i=2,lup,j=2,lup+3
+cdr geht gut, solange lup<38
+cdr reduziere w indices um 1: auf wa: i=1,lup-1,j=1,(lup-1)+3
+      DO 402 I=1,LUP-1
+      DO 402 J=1,LUP-1+3
+  402   WA(I,J)=W(I+1,J+1)
+        
+!      DO 3001 II=LUP,LUP+2
+      DO 3000 J=1,LUP-1
+        BLAX(1:3,J)=WA(J,LUP:LUP+2)
+ 3000 CONTINUE
+ 
+        CALL EIRENE_LAX_M(WA,40,LUP-1,  BLAX,3,0.0,1,IS,VW,IP,ICON)
+c
+ 
+        DO 3010 J=1,LUP-1
+!          IF(II.EQ.LUP) THEN
+coupling to H+
+            R0(J+1)=BLAX(1,J)
+!          ELSE IF(II.EQ.LUP+1) THEN
+coupling to H-groundstate
+            R1(J+1)=BLAX(2,J)
+!          ELSE IF(II.EQ.LUP+2) THEN
+coupling to Q_EXT
+            R_EXT(J+1)=BLAX(3,J)
+!          END IF
+ 3010   CONTINUE
+! 3001 CONTINUE
  
  
       RETURN
@@ -914,23 +1045,23 @@ C
       DO 5001 I=2,LUP
         SUSCR=C(1,I)-R1(I)*(F(I,1)*DENSEL+A(I,1))
  5001 SCR=SCR+SUSCR
- 
+
       SCR_EXT=0.00
       DO 5002 I=2,LUP
         SUSRAD=Q_EXT(I)-R_EXT(I)*(F(I,1)*DENSEL+A(I,1))
  5002 SCR_EXT=SCR_EXT+SUSRAD
- 
+
       ALPCR1=DENSEL*ALPHA(1)+BETA(1)
- 
+
       ALPCR2=0.0
       DO 5003 I=2,LIM
- 
+
  5003 ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
- 
+
       ALPCR=ALPCR1+ALPCR2
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_E_IONREC
      &                   (C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
@@ -1167,6 +1298,27 @@ c
       return
       end
 c
+      subroutine EIRENE_LAX_M(A,N1,N,B,nb,eps,ifl,is,vw,ip,icon)
+C
+C     COPY OF EIRENE_LAX FOR USE OF MULTIPLE RIGHT HAND SIDES
+C
+      USE EIRMOD_PRECISION
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+
+      real(dp) a(n1,n1),B(nb,*),vw(*)
+      dimension ip(*)
+      dimension iw(100)
+      if (n1.gt.100) then
+        write (iunout,*) 'error in lax'
+        call eirene_exit_own(1)
+      endif
+      call EIRENE_galpd_m(a,n1,n,b,nb,iw,ier)
+      if (ier.eq.1) then
+        write (iunout,*) 'error in lax, matrix ist singulaer'
+      endif
+      return
+      end
+c
       SUBROUTINE EIRENE_GALPD(A,NA,NG,B,IW,IER)
       USE EIRMOD_PRECISION
 C
@@ -1307,6 +1459,157 @@ C
    15 IER=1
       RETURN
       END
+c
+      SUBROUTINE EIRENE_GALPD_M(A,NA,NG,B,NB,IW,IER)
+C
+C     COPY OF EIRENE_GALPD FOR USE OF MULTIPLE RIGHT HAND SIDES
+C
+      USE EIRMOD_PRECISION
+C
+C***********************************************************************
+C*   GAUSS-ALGORITHMUS ZUR LOESUNG LINEARER GLEICHUNGS-SYSTEME MIT     *
+C*   PIVOTIERUNG.                                                      *
+C*   GENAUIGKEIT:   DOUBLE-PRECISION                   (01.07.1991)    *
+C***********************************************************************
+C    A(NA,NA): KOEFFIZIENTEN-MATRIX DES GLEICHUNGS-SYSTEMS
+C    NA      : DIMENSION VON A WIE IM AUFRUFENDEN PROGRAMM ANGEGEBEN
+C    NG      : ANZAHL DER UNBEKANNTEN   (NG <= NA)
+C    B(NB,NG)   : ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
+C    NB      : ANZAHL DER RECHTEN SEITEN (NB >= 1)
+C    IW(NG)  : INTEGER-HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
+C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
+C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
+C***********************************************************************
+C
+      IMPLICIT REAL(DP) (A-H,O-Z)
+      DIMENSION A(NA,NA),B(NB,NG),IW(NG)
+      DIMENSION HB(NB), R(NB,NG)
+      DATA ZERO /1.E-71_DP/
+      IER=0
+C
+C     ******************************************************************
+C     DER FALL:   NG = 2
+C     ******************************************************************
+C
+      IF(NG.EQ.2) THEN
+                  DO IB = 1, NB
+                    H=A(1,1)*A(2,2)-A(2,1)*A(1,2)
+                    AI=B(IB,1)*A(2,2)-B(IB,2)*A(1,2)
+                    AK=A(1,1)*B(IB,2)-A(2,1)*B(IB,1)
+                    B(IB,1)=AI/H
+                    B(IB,2)=AK/H
+                  END DO
+                  RETURN
+                  ENDIF
+C
+C     ******************************************************************
+C     NUMMERN DER UNBEKANNTEN AUF IW ABSPEICHERN.
+C     ******************************************************************
+C
+      DO 1 K=1,NG
+    1    IW(K)=K
+C
+C     ******************************************************************
+C     DIE A-MATRIX AUF DREIECKS-FORM BRINGEN.
+C     ******************************************************************
+C
+      DO 10 I=1,NG
+C
+C        ===============================================================
+C        Pivot-Element suchen  (  Zeile IZ,  Spalte KS )
+C        ===============================================================
+C
+         AP=0
+         IZ=0
+         KS=0
+         DO 3 M=I,NG
+            DO 2 N=I,NG
+               AMN=ABS(A(M,N))
+               IF(AMN.GT.AP) THEN
+                             AP=AMN
+ 
+                             IZ=M
+ 
+                             KS=N
+ 
+                             ENDIF
+    2          CONTINUE
+    3      CONTINUE
+C
+C        ============================
+C        Zeilen umordnen, wenn IZ > I
+C        ============================
+C
+         IF(IZ.GT.I) THEN
+                     DO 4 N=I,NG
+                        H=A(I,N)
+                        A(I,N)=A(IZ,N)
+    4                   A(IZ,N)=H
+                     HB=B(1:NB,I)
+                     B(1:NB,I)=B(1:NB,IZ)
+                     B(1:NB,IZ)=HB(1:NB)
+                     ENDIF
+C
+C        ===============================================
+C        Spalten umordnen und Unbekannte neu numerieren
+C        ===============================================
+C
+         IF(KS.GT.I) THEN
+                     IH=IW(I)
+                     IW(I)=IW(KS)
+                     IW(KS)=IH
+                     DO 5 M=1,NG
+                        AK=A(M,KS)
+                        A(M,KS)=A(M,I)
+    5                   A(M,I)=AK
+                     ENDIF
+C
+C        ===============================================================
+C        Total-Pivotierung. Spalte i,  Zeile 1 ... i-1, i+1 ... NG
+C        zu Null machen.
+C        ===============================================================
+C
+         AP=A(I,I)
+         IF(ABS(AP).LT.ZERO) GOTO 15
+         AP=1/AP
+         DO 8 M=1,NG
+            IF(M.EQ.I) GOTO 8
+            IF(ABS(A(M,I)).GT.ZERO) THEN
+                                    Q=A(M,I)*AP
+                                    DO 7 N=I,NG
+    7                                  A(M,N)=A(M,N)-A(I,N)*Q
+                                    B(1:NB,M)=B(1:NB,M)-B(1:NB,I)*Q
+                                    ENDIF
+    8       CONTINUE
+   10    CONTINUE
+C
+C     ******************************************************************
+C     WENN A(N,N) ^= 0, KOENNEN DIE UNBEKANNTEN BERECHNET WERDEN.
+C     -:  SIE WERDEN ZUNAECHST AUF A(N,I), I=1,...,N GESETZT.
+C     -:  DANN DIE BERECHNETEN UNBEKANNTEN IN DER RICHTIGEN ANORDNUNG
+C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
+C     ******************************************************************
+C
+!      DO 12 M=1,NG
+!   12    A(M,M)=B(M)/A(M,M)
+      DO 12 M=1,NG
+   12    R(1:NB,M)=B(1:NB,M)/A(M,M)
+      DO 14 M=1,NG
+         II=IW(M)
+!   14    B(II)=A(M,M)
+   14    B(1:NB,II)=R(1:NB,M)
+C
+       RETURN
+ 
+C     ******************************************************************
+C     MATRIX IST SINGULAER.
+C       -: IER = 1 SETZTEN
+C       -: RETURN
+C     ******************************************************************
+C
+   15 IER=1
+      RETURN
+      END
  
  
       subroutine EIRENE_expi(x,ei,icon)
@@ -1364,8 +1667,7 @@ c               exp(-t)/t dt
       REAL(DP) EIRENE_MMDEI
       X=S
       Y=ABS(X)
-!pb      Z=0.25D0+0*Y
-      Z=0.25D+0*Y
+      Z=0.25_DP*Y
       IF(Z-1.0D0)11,11,12
    11 VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-.11703642D-
      1 6)*Z+.585911692D-6)*Z-.2843937873D-5)*Z+.1284394756D-4)*Z-.547380

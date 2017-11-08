@@ -60,9 +60,9 @@
             select case(m_hcol(i))
             case (1)                      ! H.4  2.1.5
               h_stor(i,icell) = scr
-            case (2)             ! H.10 2.1.5
+            case (2)                      ! H.10 2.1.5
               h_stor(i,icell) = e_scr
-            case (3)             ! H.4  2.1.8
+            case (3)                      ! H.4  2.1.8
               h_stor(i,icell) = alpcr
             case (4)                      ! H.10 2.1.8
               h_stor(i,icell) = e_alpcr
