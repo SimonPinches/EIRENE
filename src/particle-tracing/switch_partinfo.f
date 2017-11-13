@@ -298,7 +298,7 @@ C  save stratum, old typ, species
        RMASSX => RMASSI(IION)
        CNDYNX => CNDYNI(IION)
 
-       LOGPHOT(IION,ISTRA)=.TRUE.
+       LOGION(IION,ISTRA)=.TRUE.
        LOGXSPZ => LOGION(IION,ISTRA)
 
       case(4)
