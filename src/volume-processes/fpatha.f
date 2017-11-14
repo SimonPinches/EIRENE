@@ -50,7 +50,8 @@ C   INPUT:
 C   IATM      :  ATOM SPECIES INDEX (INPUT VIA COMMON)
 C   K         :  CURRENT GRID CELL
 C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
-C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
+C                COORDINATES WITH DIFFERENT CELL NUMBER K. 
+C                THIS CURRENT CALL IS CALL NO. JCOU.
  
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
@@ -113,7 +114,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
 
      .          RCMIN, RCMAX,
      .          ERATE
-C      REAL(DP) :: EIRENE_FEPLPI3, TBPI, TEE, CTCHDUM, ELTHDUM, ER, 
+C      REAL(DP) :: EIRENE_FEPLPI3, TBPI, TEE, ER, 
 C     .            RLMS, RMI, RMN, RMSI, SIG
       INTEGER :: IBGK, IAEL, IREL, IAEI, IREI, IAPI, IRPI,
      .                 IACX, IRCX,
@@ -189,10 +190,9 @@ C         ELB=MAX(-2.3_DP,LOG(PVELQ0)+ ???, TO CONVERT TO LOG ENERGY)
 C         TEE=LOG(TEIN(K))
 c thermal velocity at Te
           VE_TH=CVELAA*SQRT(TEIN(K)/PMASSE)
-C rather than elb>>tii, one should compare V0_REL and the thermal velocity, then: also ok. for ei processes 
+C for asymptotics, one should compare V0_REL and the thermal velocity, then: also ok. for ei processes 
           IF (TEIN(K).LT.TVAC .OR. (V0_REL/VE_TH).GT.10.) THEN
 
-c         IF ((ELB-TII).GT.4.6) THEN
 C  HERE: T_E IS SO LOW, THAT ALL ENERGY IS IN TEST PARTICLE MOTION.
 c        use cross section times v0, rather than rate coefficient
 cdr         WRITE (IUNOUT,*) 'K,EI',K, V0_REL/VE_TH
@@ -201,8 +201,9 @@ cdr         WRITE (IUNOUT,*) 'K,EI',K, V0_REL/VE_TH
 
 c  USE H.3 RATE COEFFICIENT, needs tabei3, to be written..... 
 
-          ELSE  ! NORMAL CASE FOR EI COLLISIONS: V0 << VTH
+          ELSE  ! NORMAL CASE FOR EI COLLISIONS: V0_rel << VTH
 c  use original H.2 rate coefficient, for test particle at rest relative to electron speed
+c         else    vrel >> vth: use sigma * vrel.
           ENDIF
  
 
@@ -268,12 +269,12 @@ C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
           TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
 c thermal velocity at Ti
           VI_TH=CVELAA*SQRT(TIIN(IPLSTI,K)/RMASSP(IPLS))
-C rather than elb>>tii, one should compare V0_REL and the thermal velocity, 
-c then: also ok. for ei processes 
+C For asymptotics in beam-maxw. rate: one should compare V0_REL and the thermal velocity, 
+c then: also ok. for ei,cx,el processes
+c try: factor 10. to be verified more generally. in hydkin we use: eb/T > 1e4  
           IF (TIIN(IPLSTI,K).LT.TVAC .OR. (V0_REL/VI_TH).GT.10.) THEN
-c         IF ((ELB-TII).GT.4.6) THEN
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
-c           WRITE (IUNOUT,*) 'K,PI',K, exp(ELB-TII),V0_REL/VI_TH
+c           WRITE (IUNOUT,*) 'K,PI ',K, exp(ELB-TII),V0_REL/VI_TH
 C           HENCE: USE BEAM-BEAM RATE INSTEAD OF MAXWELLIAN.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)

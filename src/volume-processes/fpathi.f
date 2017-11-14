@@ -108,7 +108,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
 
      .          RCMIN, RCMAX,
      .          ERATE
-C      REAL(DP) :: EIRENE_FEPLPI3, CTCHDUM, ELTHDUM, ER, 
+C      REAL(DP) :: EIRENE_FEPLPI3,  ER, 
 C     .            RLMS, RMI, RMN, RMSI, SIG
       INTEGER :: IBGK, IIEL, IREL, IIEI, IREI, IIPI, IRPI,
      .                 IICX, IRCX,
