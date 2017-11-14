@@ -20,7 +20,7 @@
  bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
  breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
  {hyperref}
-\hypersetup{pdftitle={AMJUEL Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
+\hypersetup{pdftitle={METHANE Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
  \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
 
 
@@ -56,12 +56,14 @@ EIRENE code git-repository hosted at FZ J\"ulich
 \section{Introduction}\label{sec-intro}
 %\addcontentsline{toc}{section}{Introduction}
 
-Additional atomic data fits, read by EIRENE
+Additional atomic data fits, read by EIRENE:
 
 Data for breakup of Hydrocarbons, taken from \cite{kn:Ehrhardt}, i.e.: so called ``Ehrhard-Langer database'', 1987.
+This database has been superseeded by the later ``Janev-Reiter'' cross section database \cite{kn:JR-2002}, but is kept here 
+for backward compatibility.
 
 Format as in HYDHEL \cite{kn:Janev} or AMJUEL,
-both are available on same web side as this file:
+both are available on same web side, as is this present file:
 \begin{verbatim}
 www.eirene.de/html/a_m_data/html
 \end{verbatim}
@@ -151,7 +153,7 @@ coefficients for these processes are H.1 ...label...
 This example indicates that the fitting procedure,
 rather than the fit-expression itself, was probably the origin of the poor quality of fits.
 \item
-For some processes new cross section fits, from the 2002 ``Janev-Reiter database"  
+For some processes newer cross section fits, from the 2002 ``Janev-Reiter database"
 \cite{kn:JR-2002} have been included.
 These reactions are labeled by additional letters ``jr",  e.g. H.1  2.1jr, 
 or by the single additional letter ``t" (for ``total cross section").
@@ -189,7 +191,7 @@ is now given on the web page: www.hydkin.de.  This present database now only ser
  \item update 11.5.01 \\
    cross sections H.1 from \cite{kn:Ehrhardt} \\
    plots until 2.19.2 done, \\
-   H.2 plots checked (texts)  until 2.19.2
+   H.2 plots checked (labels, text)  until 2.19.2
  \item update 16.5.01 \\
    cross sections H.1 from \cite{kn:Ehrhardt} \\
    all plots done \\
