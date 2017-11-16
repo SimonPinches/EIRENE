@@ -1,3 +1,4 @@
+cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 cdr
 cdr  MXCOLLS --> MSTOR0
@@ -168,7 +169,7 @@ c  secondaries, species distribution, for EI and PI processes
      R PELEI(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
 c  ...and cummulated distributions thereof, for species sampling
-     R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
+     R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
@@ -552,7 +553,7 @@ c  secondaries, EI processes
         ALLOCATE (PIOEI(NREI,0:NION))
         ALLOCATE (PPLEI(NREI,0:NPLS))
         ALLOCATE (P2ND(NREI,0:NSPZ))
-        ALLOCATE (P2NDS(NREI))
+        ALLOCATE (P2NEI(NREI))
 c  secondaries, PI processes
         ALLOCATE (PELPI(NRPI))
         ALLOCATE (PATPI(NRPI,0:NATM))
@@ -711,7 +712,7 @@ c
       DEALLOCATE (PPLPI)
       DEALLOCATE (P2ND)
       DEALLOCATE (P2NP)
-      DEALLOCATE (P2NDS)
+      DEALLOCATE (P2NEI)
       DEALLOCATE (P2NPI)
  
       DEALLOCATE (EELEI1)
@@ -1148,7 +1149,7 @@ cdr  ical=2:  ??
         PPLPI   = 0._DP
         P2ND    = 0._DP
         P2NP    = 0._DP
-        P2NDS   = 0._DP
+        P2NEI   = 0._DP
         P2NPI   = 0._DP
  
         EELEI1  = 0._DP
@@ -1256,7 +1257,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
  
      . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
-     . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
+     . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
  
      . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVEI1 ,EHVPI3 ,
@@ -1300,7 +1301,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
  
      . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
-     . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
+     . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
  
      . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVEI1 ,EHVPI3 ,
@@ -1368,7 +1369,7 @@ c
       CALL FXDRDBL (IUN,PPLPI,NRPI*(NPLS+1))
       CALL FXDRDBL (IUN,P2ND,NREI*(NSPZ+1))
       CALL FXDRDBL (IUN,P2NP,NRPI*(NSPZ+1))
-      CALL FXDRDBL (IUN,P2NDS,NREI)
+      CALL FXDRDBL (IUN,P2NEI,NREI)
       CALL FXDRDBL (IUN,P2NPI,NRPI)
  
       CALL FXDRDBL (IUN,EELEI1,NREI*NSTORDR)

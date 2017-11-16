@@ -64,6 +64,9 @@ C               Done for COLATM and EI processes.
 C               wminv activated in colmol for ei processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
+cdr Nov. 17: remove call to subr.store  (flag NLSTOR: out)
+cdr          comments for further unification of colatm,colmol,colion routines
+cdr          P2NDS --> P2NEI
 
 
 
@@ -120,7 +123,8 @@ C
 
 Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
 Cdr (should be set in initialization phase, not here)
-CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
+CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real 
+CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
  
  
@@ -183,7 +187,7 @@ C  WHILE BEING IN THIS LOOP WEIGHT MAY BE REPEATEDLY REDUCED, FOR EARLIER (LOWER
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
 C  SIG_TEST=0 WOULD VIOLATE RADON-NYKODYM CONDITION OF WEIGHTING
             SIG_TEST=SIG_TOT_N-SIGVEI(IREI)
-            PTOT=P2NDS(IREI)
+            PTOT=P2NEI(IREI)
             IF (PTOT.EQ.0..AND.SIG_TEST.GT.0.) THEN
 C  IREI IS A PURELY ABSORBING PROCESS
 C  ELIMINATE THIS PROCESS IREI FROM ALL NAEII POSSIBLE EI PROCESSES
@@ -210,6 +214,7 @@ C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOG GAME
       ENDIF  ! SUPPRESSION OF ABSORPTION AT EI PROCESSES: DONE.
 
 C  WEIGHT MAY HAVE BEEN REDUCED NOW, AND ALSO THE NUMBER OF ACTIVE EI PROCESSES.
+C  similar weight reduction (wminv-criterion) also to be done for PI and CX
 C  
 C
 C  FIRST DECIDE: ELECTRON IMPACT (COLLISION TYPE: EI) OR OTHER PROCESS
@@ -225,7 +230,6 @@ C
 C  ELECTRON IMPACT COLLISION:
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,2)
-        IF (NLSTOR) CALL EIRENE_STORE(2)
 C
 C  FIND TYP OF ELECTR. IMPACT COLLISION PROCESS: IREI
         DO 240 IAEI=1,NEII_RED-1
@@ -241,12 +245,12 @@ C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
 C  IS FOLLOWED. 
 C  PTOT IS THE (INTEGER) NUMBER OF ANALOGUE NEXT GENERATION TEST PARTICLES
 C
-        PTOT=P2NDS(IREI)
+        PTOT=P2NEI(IREI)
 C       PTOTAL=PTOT+PPLEI(IREI,0)
 C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
-C  PRE-COLLISION ESTIMATOR FOR EAAT, 
+C  PRE-COLLISION ESTIMATOR FOR EAAT,
 C  PRE- AND POST COLLISION ESTIMATOR FOR EAPL AND EAEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
@@ -285,7 +289,7 @@ C  NO !
           RETURN
         ENDIF
 
-Cdr  PTOT=0,1,2,etc..., = integer number of next generation particles
+Cdr  PTOT=0,1,2,etc..., = integer, number of next generation test particles
 
 CC.......................................................................
         IF (.NOT.NLCASCAD) GOTO 251  !  EI PROCESS CASCADING  ATM
@@ -317,10 +321,20 @@ cdr  generate secondaries, one by one, call veloei, and store them on splitting 
           DO I = NSPAMI, NSPH+1, -1  ! LOOP OVER ALL POTENTIAL SECONDARY SPECIES 'I'
             DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
 C  FIND A "RANDOM NUMBER" TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
+cdr
+cdr die drei zeilen hier vor: ggfls. sehr lange do loop, meist aber nur 1 oder hoechstens 2 treffer 
+cdr (1 oder 2 test folgeteilchen). grund in der der naechsten zeile soll ggfls 2 mal das gleiche
+cdr teilchen durch zep ausgewaehlt werden.
+cdr
+cdr alternative: p2nei folgeteilchen gibt es. anstatt zep zu setzen: nur loop ueber diese, deren
+cdr ispz dann fest mitgeben, und in veloel nicht auswürfeln
+
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
+
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
+C.....................................................................
 C  SPLITTING: EACH SECONDARY IS A NEW SPLITTING LEVEL.
 C
               NLEVEL=NLEVEL+1
@@ -356,7 +370,7 @@ CDR:   VELOEI FOR THIS CONTINUED PARTICLE HAS ALREADY BEEN CALLED
         ENDIF  !  DONE WITH NLCASCAD OPTION
    
 CC................................................................................
-CDR:  (NORMAL) NON-ANALOG GAME AT EI PROCESSES
+CDR:  (NORMAL) NON-CASCADING GAME AT EI PROCESSES
 
 251     CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,-1._DP)
 
@@ -509,6 +523,7 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           SELECT CASE(ITYP)
 C
           CASE(1)
+
 C  1ST SECONDARY IS ATOM: IATM
             IATM=N1STX(IRCX,2)
             E0=CVRSSA(IATM)*VELQ
@@ -582,8 +597,10 @@ C  IATMN: ATOM SPECIES AFTER CX
               IATMN=IATM
               IF (LPAAT) THEN
                 PAAT(IOLD,NCELL) =PAAT(IOLD,NCELL)-WGHTO
-                PAAT(IATMN,NCELL)=PAAT(IATMN,NCELL)+WEIGHT
                 LMETSP(NSPH+IOLD)=.TRUE.
+              END IF
+              IF (LPAAT) THEN
+                PAAT(IATMN,NCELL)=PAAT(IATMN,NCELL)+WEIGHT
                 LMETSP(NSPH+IATMN)=.TRUE.
               END IF
               IF (LPAPL) THEN
@@ -624,7 +641,7 @@ c  UPDATE collision estimator for CX energy exchange tallies
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (FORMERLY: COPV)
             IF (IESTCX(IRCX,2).NE.0) THEN
               IF (LMAPL) THEN
-C  SET THE POST-COLLISION NEUTRAL PARALLEL VELOCITY = OLD PRE-COLLISION BULK (ION) VELOCITY
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BULK (ION) VELOCITY
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSA(IATM)
                 IF (INDPRO(4) == 8) THEN
@@ -743,7 +760,7 @@ C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT) THEN
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
-C   FIND SPECIES INDEX OF BULK (ION) COLLISION PARTNER
+C   FIND IREL, AND SPECIES INDEX IPLS OF BULK (ION) COLLISION PARTNER
         SIGSUM=SIGEIT+SIGCXT
         DO 281 IAEL=1,NAELIM(IATM)
           IREL=LGAEL(IATM,IAEL,0)
@@ -797,7 +814,7 @@ c  UPDATE collision estimator for EL energy exchange tallies
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MAPL (FORMERLY: COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
           IF (LMAPL) THEN
-C  SET THE POST-COLLISION NEUTRAL PARALLEL VELOCITY 
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY 
             V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
             V0_PARB=V0_PARB*AMUA*RMASSA(IATM)
 C
@@ -823,6 +840,7 @@ C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
 C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
+
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
         SIGSUM=SIGEIT+SIGCXT+SIGELT
         DO 261 IAPI=1,NAPIIM(IATM)

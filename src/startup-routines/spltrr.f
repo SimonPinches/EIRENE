@@ -2,6 +2,7 @@ C    AUG. 05: NCELL UPDATED FOR SPLITTING AND THEN RESET
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
+cdr Nov. 17 : remove call to STORE.F
 C
       SUBROUTINE EIRENE_SPLTRR(IDIM,MS,NINC,*,*)
 C
@@ -90,7 +91,6 @@ C
       MSURF=0
 C
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,9)
-      IF (NLSTOR) CALL EIRENE_STORE(200)
 C
 C
       NLEVEL=NLEVEL+1
@@ -148,7 +148,6 @@ C
         ZM=Z0+VELZ*ZT
         CALL EIRENE_CHCTRC(XM,YM,ZM,16,10)
       ENDIF
-      IF (NLSTOR) CALL EIRENE_STORE(0)
       LGPART=.FALSE.
       RETURN 2
       END

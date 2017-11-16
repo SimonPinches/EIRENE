@@ -1,6 +1,7 @@
 !pb  30.10.06:  XNUE removed
 cdr  sept. 2015: npartt=11, rather than 12 (xgener not stored on census)
 cdr  april 2017: some cleanup carried over from solps_iter branch
+cdr  nov.17    : dead flag: nlstor, (and call store...) now removed
 
 c.........................................................................
 c
@@ -110,7 +111,7 @@ c                       ! better: move iunin, iunout, etc.. to parmmod ??
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
-     L NLTRC,  NLSTOR, NLTRJ
+     L NLTRC,  NLTRJ
  
 
  
@@ -259,7 +260,6 @@ c  up to here: for splitting, mpartc
       NLSRFZ = .FALSE.
       NLSRFA = .FALSE.
       NLTRC  = .FALSE.
-      NLSTOR = .FALSE.
       NLTRJ  = .FALSE.
  
       LAST_EVENT%IFLAG  = 0

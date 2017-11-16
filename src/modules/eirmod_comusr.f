@@ -319,7 +319,7 @@ cdr  are there any FEM interpolated background tallies in this run?
       IF (LPOTSMO)  NTOT = NTOT + 1
       
       IF (NTOT > 0) THEN
-cdr  allocate storage for background tallies on vcell vertices
+cdr  allocate storage for background tallies on cell vertices
 cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ALLOCATE (CORNER_PROFILES(NCORNER,NTOT))
       ELSE

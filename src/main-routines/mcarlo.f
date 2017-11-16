@@ -701,7 +701,7 @@ C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               write (iunout,*) 'new particle ',iptsi
               RN1=RANF_EIRENE()  ! sacrifize one random number for testing random sequence
               write (iunout,*) 'iseed,iseed_next,rn',
-     .                           iseed_iptsi, iseed_istra,RN1
+     .                          iseed_iptsi, iseed_istra,RN1
             ENDIF
            
 c  derive one more seed, for reflec.f. cdr: unfinished....
@@ -806,7 +806,6 @@ C  RESTORE VARIABLES AND START NEW TRACK
             NLSRFZ=MTSURF.GT.0
             NLSRFA=MASURF.GT.0
             IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,12)
-            IF (NLSTOR) CALL EIRENE_STORE(200)
 
 !  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES FPATH, UPDATE, ETC.

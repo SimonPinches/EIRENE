@@ -63,7 +63,7 @@ C
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits 
+cdr: set hard wired lower density for H.4 type fits
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -77,7 +77,7 @@ C  SET TEST IONIC SPECIES ATOMIC AND MOLECULAR DATA;
 C
 C  STORE "DEFAULT DISSOCIATION MODEL" DATA
 C  IN EACH CELL.
-C  FOR HYDROGENIC MOLECULE IONS ONLY 
+C  FOR HYDROGENIC MOLECULE IONS ONLY
 C  FOR ALL OTHER SPECIES: INFINITE MFP, I.E. NO DEFAULT COLLISIONS
 C
 C
@@ -207,7 +207,7 @@ C  T2+:
           ITEST=IATM1*IATM2*IPLS1*IPLS2
           IF (ITEST.EQ.0) GOTO 76
 C
-C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES
+C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, LABELED -8, -9 AND -10.
 C
 C  FIRST PROCESS (MAY BE SPLIT INTO 1A AND 1B)  H2+  -->  H + H+ :  DEFAULT PROCESS NO. KK=-8
           KK=-8 
@@ -271,6 +271,7 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             NELREI(IREI) = -8
             NREAHV(IREI) = -4
           END IF
+
           FACREI(IREI,1) = FACTKK
           FACREI(IREI,2) = LOG(FACTKK)
           IF (ICOUNT.EQ.1) THEN
@@ -280,7 +281,8 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             GOTO 7000
           ENDIF
 
-C  SECOND PROCESS  H2+  -->  H+  +  H+ + e :  DEFAULT PROCESS NO. KK=-9
+C  SECOND PROCESS,  H2+ --> H+ +  H+ + e :  DEFAULT PROCESS NO. KK=-9
+cdr   KER = 0.5, ETH = -15.5  or KER=2 times 0.5 ??
           KK=-9
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -331,7 +333,7 @@ C  TRANSFERRED KINETIC ENERGY: 0.5 EV
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
 
-C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10
+C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
           KK=-10
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -375,6 +377,9 @@ C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
             NELREI(IREI) = -10
             NREAHV(IREI) = -6
           ELSE ! storage save mode
+cdr 
+cdr here: eelds1 und ehvds1 set in felee1 ?  there 0.88 times tein, i.e. not constant.
+cdr
             NREAEI(IREI) = -10
             JEREAEI(IREI) = 1
             NELREI(IREI) = -10
@@ -451,8 +456,8 @@ C
             IF (ISWR(KK).NE.3) GOTO 130
             IF (EIRENE_IDEZ(IBULKI(IION,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*) 
-     .        'INPUT ERROR FOR CX PROCESS, IION,KK ',IION,KK 
+              WRITE (IUNOUT,*)
+     .        'INPUT ERROR FOR CX PROCESS, IION,KK ',IION,KK
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  CX PROCESS IDENTIFIED

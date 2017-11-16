@@ -46,7 +46,6 @@ csw 18apr07
       call EIRENE_LININT_REINIT  !cdr, july 17, added
 
       call EIRENE_UPTBGK_REINIT
-      call EIRENE_STORE_REINIT
 !out  call EIRENE_MKCENS_REINIT
       call EIRENE_update_reinit
       call EIRENE_update_spectrum_reinit

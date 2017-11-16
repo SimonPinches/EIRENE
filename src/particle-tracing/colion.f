@@ -64,6 +64,9 @@ C               Done for COLATM and EI processes.
 C               wminv activated in colmol for ei processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
+cdr Nov. 17: remove call to subr.store  (flag NLSTOR: out)
+cdr          comments for further unification of colatm,colmol,colion routines
+cdr          P2NDS --> P2NEI
 
 
 
@@ -113,14 +116,16 @@ C
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
+      INTEGER :: IICX, IIEI, IIPI, IIEL,
+     .           IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
      .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
+     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
 Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
 Cdr (should be set in initialization phase, not here)
-CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
+CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real 
+CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
  
  
@@ -176,14 +181,14 @@ C  WEIGHT ALREADY TOO SMALL, NO SUPPRESION OF ABSORPTION
 C  TRY TO SUPPRESS ABSORPTION. IDENTIFY POSSIBLE EI PROCESSES
 C                              WITH ZERO TEST PARTICLE SECONDARIES
  
-      DO IIEI=1,NIEII(IOLD)
-        IREI=LGIEI(IOLD,IIEI)
-C  WHILE BEING IN THIS LOOP WEIGHT MAY BE REPEATEDLY REDUCED, FOR EARLIER (LOWER) IMEI
-        IF (WEIGHT.GT.WMINV) THEN
+        DO IIEI=1,NIEII(IOLD)
+          IREI=LGIEI(IOLD,IIEI)
+C  WHILE BEING IN THIS LOOP WEIGHT MAY BE REPEATEDLY REDUCED, FOR EARLIER (LOWER) IIEI
+          IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
 C  SIG_TEST=0 WOULD VIOLATE RADON-NYKODYM CONDITION OF WEIGHTING
           SIG_TEST=SIG_TOT_N-SIGVEI(IREI)
-          PTOT=P2NDS(IREI)
+            PTOT=P2NEI(IREI)
           IF (PTOT.EQ.0..AND.SIG_TEST.GT.0.) THEN
 C  IREI IS A PURELY ABSORBING PROCESS
 C  ELIMINATE THIS PROCESS IREI FROM ALL NIEII POSSIBLE EI PROCESSES
@@ -210,6 +215,7 @@ C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOG GAME
       ENDIF  ! SUPPRESSION OF ABSORPTION AT EI PROCESSES: DONE.
 
 C  WEIGHT MAY HAVE BEEN REDUCED NOW, AND ALSO THE NUMBER OF ACTIVE EI PROCESSES.
+C  similar weight reduction (wminv-criterion) also to be done for PI and CX
 C  
 C
 C  FIRST DECIDE: ELECTRON IMPACT (COLLISION TYPE: EI) OR OTHER PROCESS
@@ -225,7 +231,6 @@ C
 C  ELECTRON IMPACT COLLISION:
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,2)
-        IF (NLSTOR) CALL EIRENE_STORE(2)
 C
 C  FIND TYP OF ELECTR. IMPACT COLLISION PROCESS: IREI
         DO 440 IIEI=1,NEII_RED-1
@@ -241,19 +246,20 @@ C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
 C  IS FOLLOWED.
 C  PTOT IS THE (INTEGER) NUMBER OF ANALOGUE NEXT GENERATION TEST PARTICLES
 C
-        PTOT=P2NDS(IREI)
+        PTOT=P2NEI(IREI)
 C       PTOTAL=PTOT+PPLEI(IREI,0)
 C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
-C  COLLISION ESTIMATOR FOR EIIO, EIPL AND EIEL
+C  PRE-COLLISION ESTIMATOR FOR EIIO, 
+C  PRE- AND POST COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
 
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
-          IF (LEIPL)  THEN
+          IF (LEIPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
@@ -283,9 +289,18 @@ C  NO !
           NCELL = NCLLO
           RETURN
         ENDIF
-C
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN ! EI PROCESS CASCADING ION
 
+Cdr  PTOT=0,1,2,etc..., = integer, number of next generation test particles
+
+CC.......................................................................
+        IF (.NOT.NLCASCAD) GOTO 451  !  EI PROCESS CASCADING ION
+cdr
+c    splitting of post collision particles, i.e. create a true cascade
+
+cdr  ANALOGUE SAMPLING, I.E. SPLITTING, IN CASE OF MORE THAN ONE SECONDARY.
+        IF (NLEVEL+PTOT <= MAXLEVEL) THEN   ! there is still storage for splitting
+
+cdr
           IF (.NOT.ALLOCATED(NAMIEI)) THEN
             ALLOCATE(NAMIEI(NSPAMI))
           END IF
@@ -304,13 +319,23 @@ cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cum
 
 cdr  generate secondaries, one by one, call veloei, and store them on splitting arrays
 
-          DO I = NSPAMI, NSPH+1, -1
-            DO J=1, NAMIEI(I)
+          DO I = NSPAMI, NSPH+1, -1  ! LOOP OVER ALL POTENTIAL SECONDARY SPECIES 'I'
+            DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
 C  FIND A "RANDOM NUMBER" TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
+cdr
+cdr die drei zeilen hier vor: ggfls. sehr lange do loop, meist aber nur 1 oder hoechstens 2 treffer 
+cdr (1 oder 2 test folgeteilchen). grund in der der naechsten zeile soll ggfls 2 mal das gleiche
+cdr teilchen durch zep ausgewaehlt werden.
+cdr
+cdr alternative: p2nei folgeteilchen gibt es. anstatt zep zu setzen: nur loop ueber diese, deren
+cdr ispz dann fest mitgeben, und in veloel nicht auswürfeln
+
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
+
               CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,ZEP)
               ISPZ = ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
+C.....................................................................
 C  SPLITTING: EACH SECONDARY IS A NEW SPLITTING LEVEL.
 C
               NLEVEL=NLEVEL+1
@@ -320,28 +345,41 @@ C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
 C  NUMBER OF NODES AT THIS LEVEL
               NODES(NLEVEL)=2  !  ONE PARTICLE SCORE IN EACH LEVEL
               
-              IF (NLTRC) WRITE (IUNOUT,*) ' STORE ', TEXTS(ISPZ)
-
+              IF (NLTRC) THEN 
+                WRITE (IUNOUT,*) 'SPLITTING IN COLION, EI PROCESS '
+                WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
+              ENDIF
             END DO
-          END DO
+          END DO  ! LOOP OVER ALL POTENTIAL SECONDARIES DONE
+C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST COLLISION PARAMETERS
+C  ON SPLITTING ARRAYS.
 
-!  REMOVE LAST PARTICLE FROM STORAGE AS ITS TRAJECTORY IS CONTINUED
+!  REMOVE LAST PARTICLE FROM STORAGE AS ITS TRAJECTORY WILL BE CONTINUED NOW
           NLEVEL = NLEVEL - 1
           IF (NLTRC) WRITE(IUNOUT,*) 'REMOVE FROM STORAGE ', TEXTS(ISPZ)
 
+CDR:   VELOEI FOR THIS CONTINUED PARTICLE HAS ALREADY BEEN CALLED
+          GOTO 450
+
         ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
-          IF (NLCASCAD) THEN
-            WRITE (iunout,*) 
+          WRITE (iunout,*) 
      .      'ANALOGUE CALCULATION ABANDONED FOR PART. NO. ',NPANU
-            WRITE (iunout,*) 'CASCADE OVERFLOW: NEVEL: ',NLEVEL
-          ENDIF
+          WRITE (iunout,*) 'CASCADE OVERFLOW: NEVEL: ',NLEVEL
 
-          CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,-1._DP)
+          GOTO 451
+        ENDIF  !  DONE WITH NLCASCAD OPTION
 
-        END IF
+CC................................................................................
+CDR:  (NORMAL) NON-CASCADING GAME AT EI PROCESSES
+
+451     CALL EIRENE_VELOEI(NCLLO,IREI,VELXO,VELYO,VELZO,VELO,-1._DP)
+
+450     CONTINUE
+        XGENER=0.D0
 C
-C  UPDATE COLLISION ESTIMATORS CONTRIBUTION TO EIAT;EIML;EIIO
+C  UPDATE POST-COLLISION ESTIMATORS CONTRIBUTION TO EIAT;EIML;EIIO
+C         ACCOUNT FOR POST-COLLISION CONTRIBUTIONS
         IF (ITYP.EQ.1) THEN
           IF (IESTEI(IREI,3).NE.0) THEN
             IF (LEIAT) EIAT(NCELL)=EIAT(NCELL)+WEIGHT*E0
@@ -382,15 +420,30 @@ C
 C  ARE THERE SECONDARY TEST PARTICLES AT ALL?
         FRSTP=N1STX(IRCX,3)
         SCNDP=N2NDX(IRCX,3)
+ 
+        IPLSV=MPLSV(IPLS)
+C
+C  ARE THERE SECONDARY TEST PARTICLES AT ALL?
+
         IF (SCNDP.LE.EPS30) THEN
+C  POST-COLLISION ESTIMATOR FOR PAPL,EAPL,MAPL: TO BE WRITTEN
+C  E.G. FOR CX RECOMBINATION
           LGPART=.FALSE.
+          IF (IESTCX(IRCX,1).NE.0) GOTO 999
+          IF (IESTCX(IRCX,2).NE.0) GOTO 999
+          IF (IESTCX(IRCX,3).NE.0) GOTO 999
           ITYP=4
           COLTYP=2
           NCELL = NCLLO
           RETURN
         ENDIF
 
-        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  !  CX PROCESS CASCADING ION
+        IF (NLCASCAD .AND. NLEVEL < MAXLEVEL) THEN  ! CX PROCESS CASCADING ION
+! JUST OPPOSITE TO EI CASE:
+CDR IN EI CASE: LAST TEST SECONDARY WAS FOLLOWED, ALL OTHERS STORED ON SPLITTING ARRAY.
+CDR IN CX CASE: OPPOSITE.   TRY TO UNIFY !!
+C NORMALLY THERE IS ONLY ONE SECONDARY, AND WE FOLLOW (THIS ONLY) TEST SECONDAY
+C HERE FIRST AND LAST HAVE A SPECIAL MEANING (EXCHANGE OF IDENTITY, VELOCITIES, ETC..)
 
 
 C  STORE 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE,
@@ -464,20 +517,22 @@ C  NEW SPECIES TYPE, INDEX AND ENERGY
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
           NFLAG=CFLAG(3,IRCX)
-          CALL
-     .    EIRENE_VELOCX(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
+          CALL EIRENE_VELOCX
+     .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .                  NFLAG,IRCX,DUMT,DUMV)
  
           SELECT CASE (ITYP)
 C
           CASE(1)
-C  1ST SECONDARY IS ATOM
+
+C  1ST SECONDARY IS ATOM: IATM
             IATM=N1STX(IRCX,2)
             E0=CVRSSA(IATM)*VELQ
             XGENER=0.D0
 C
 C  NEXT LINES: COLLISION ESTIMATOR FOR CHARGE-EXCHANGE NO. IRCX
 C  CONSERVE CHARGE IN EACH COLLISION, NOT ONLY ON AVERAGE
+C
             IF (IESTCX(IRCX,1).NE.0) THEN
 C  IATMN: ATOM SPECIES AFTER CX
               IATMN=IATM
@@ -527,9 +582,9 @@ c  UPDATE collision estimator for CX energy exchange tallies
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MIPL (FORMERLY: COPV)
             IF (IESTCX(IRCX,2).NE.0) THEN
               IF (LMIPL) THEN
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BULK (ION) VELOCITY
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSI(IION)
-                IPLSV=MPLSV(IPLS)
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                               .TRUE.)
@@ -587,8 +642,8 @@ C
             RETURN
 
           CASE DEFAULT
-            WRITE (iunout,*) ' ITYP ',ITYP,' AS 1ST SECONDARY IS NOT ',
-     .                  ' FORESEEN IN COLLIDE '
+            WRITE (iunout,*) ' ITYP = ',ITYP,' AS FIRST SECONDARY IS',
+     .                  ' NOT FORESEEN IN COLLIDE '
           END SELECT
 
         ELSE
@@ -600,33 +655,33 @@ C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
 C
           CASE (1)
             IATM=N2NDX(IRCX,2)
-            E0=CVRSSA(IATM)*VELO*VELO
             XGENER=0.D0
 C
+            E0=CVRSSA(IATM)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
             IF (IESTCX(IRCX,2).NE.0) GOTO 999
             IF (IESTCX(IRCX,3).NE.0) GOTO 999
             COLTYP=2
             NCELL = NCLLO
             RETURN
-
+C
           CASE (2)
             IMOL=N2NDX(IRCX,2)
-            E0=CVRSSM(IMOL)*VELO*VELO
             XGENER=0.D0
 C
+            E0=CVRSSM(IMOL)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
             IF (IESTCX(IRCX,2).NE.0) GOTO 999
             IF (IESTCX(IRCX,3).NE.0) GOTO 999
             COLTYP=2
             NCELL = NCLLO
             RETURN
-
+C
           CASE (3)
             IION=N2NDX(IRCX,2)
-            E0=CVRSSI(IION)*VELO*VELO
             XGENER=0.D0
-
+C
+            E0=CVRSSI(IION)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
             IF (IESTCX(IRCX,2).NE.0) GOTO 999
             IF (IESTCX(IRCX,3).NE.0) GOTO 999
@@ -635,24 +690,105 @@ C
             RETURN
 
           CASE DEFAULT
-            WRITE (iunout,*) ' ITYP ',ITYP,' AS 2ND SECONDARY IS NOT ',
-     .                  ' FORESEEN IN COLLIDE '
+            WRITE (iunout,*) ' ITYP = ',ITYP,' AS SECOND SECONDARY IS',
+     .                  ' NOT FORESEEN IN COLLIDE '
           END SELECT
 
         ENDIF
 C
+C  ELASTIC COLLISION
+C
+      ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT) THEN
+C
 cdr:  at this place to be done: elastic collisions of test ions
-cdr   in particular: fokker planck (velocity space diffusion) approximation
+cdr   in particular: fokker planck (velocity space diffusion--> TAU approximation?)
 cdr:  currently still somewhere in folion. To be moved here, 
 cdr   build on analogy with other elastic collisions
-
 C
-      ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGPIT) THEN
-C
-C  GENERAL ION IMPACT COLLISION: PI-PROCESSES
-C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+C   FIND IREL, AND SPECIES INDEX IPLS OF BULK (ION) COLLISION PARTNER
         SIGSUM=SIGEIT+SIGCXT
+        DO 281 IIEL=1,NIELIM(IION)
+          IREL=LGIEL(IION,IIEL,0)
+          IPLS=LGIEL(IION,IIEL,1)
+          SIGSUM=SIGSUM+SIGVEL(IREL)
+          IF (ZEP1.LT.SIGSUM) GOTO 282
+281     CONTINUE
+        IREL=LGIEL(IION,NIELI(IION),0)
+        IPLS=LGIEL(IION,NIELI(IION),1)
+282     CONTINUE
+
+        IPLSV=MPLSV(IPLS)
+C
+C  NEW SPECIES INDEX AND ENERGY
+C       WEIGHT=WEIGHT*1.
+C  FOLLOW SECONDARY, NEW SPEED FROM SUBROUTINE VELOEL
+C       ITYP=1
+        NFLAG=CFLAG(5,IREL)
+        RMAIO=RMASSI(IOLD)
+        CALL EIRENE_VELOEL(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
+     .              NFLAG,IREL,RMAIO)
+C
+        IION=IOLD
+C  NOT: WEIGHT=WGHTO, BECAUSE WEIGHT MAY HAVE CHANGED DUE TO NON-ANALOGUE SAMPLING IN VELOEL
+        E0=CVRSSI(IION)*VELQ
+
+
+C  DO NOT UPDATE BGK TALLIES HERE
+        IBGK=NPBGKP(IPLS,1)
+        IF (IBGK.NE.0) GOTO 300
+
+C  UPDATE COLLISION ESTIMATOR CONTRIBUTION
+C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
+        IF (IESTEL(IREL,1).NE.0) THEN
+          IF (LPIIO) THEN
+            PIIO(IOLD,NCELL) =PIIO(IOLD,NCELL)-WGHTO
+            PIIO(IION,NCELL) =PIIO(IION,NCELL)+WEIGHT
+            LMETSP(NSPAMI+IOLD)=.TRUE.
+            LMETSP(NSPAMI+IION)=.TRUE.
+          END IF
+        ENDIF
+c  UPDATE collision estimator for EL energy exchange tallies
+        IF (IESTEL(IREL,3).NE.0) THEN
+          EDEL=E0O*WGHTO-E0*WEIGHT
+          IF (LEIIO) EIIO(NCELL)      =EIIO(NCELL)-EDEL
+          IF (LEIPL) THEN
+            EIPL(IPLS,NCELL) =EIPL(IPLS,NCELL)+EDEL
+            LMETSP(NSPAMI+IPLS)=.TRUE.
+          END IF
+        ENDIF
+C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MIPL (FORMERLY: COPV)
+        IF (IESTEL(IREL,2).NE.0) THEN
+          IF (LMIPL) THEN
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY 
+            V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
+            V0_PARB=V0_PARB*AMUA*RMASSI(IION)
+C
+            VDEL=V0_PARBO*WGHTO-V0_PARB*WEIGHT
+            IF (INDPRO(4) == 8) THEN
+              CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+     .                           .TRUE.)
+              VPLASP=VX*BX+VY*BY+VZ*BZ
+            ELSE
+              VPLASP=BVIN(IPLSV,NCLLO)
+            ENDIF
+            SIG=SIGN(1._DP,VPLASP)
+            MIPL(IPLS,NCELL)=MIPL(IPLS,NCELL)+VDEL*SIG
+            LMETSP(NSPAMI+IPLS)=.TRUE.
+          END IF
+        ENDIF
+300     CONTINUE
+        COLTYP=1
+        NCELL = NCLLO
+        RETURN
+C
+C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
+C
+      ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
+C
+
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
+        SIGSUM=SIGEIT+SIGCXT+SIGELT
         DO 561 IIPI=1,NIPIIM(IION)
 C   FIND INDEX OF THAT ION IMPACT COLLISION
           IRPI=LGIPI(IION,IIPI,0)
@@ -674,14 +810,14 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLPI(IRPI,0)
 C
 C  PRE- COLLISION ESTIMATOR FOR EIIO,
-C  PRE- AND POST-COLLISION ESTIMATOR FOR EIPL AND EIEL
+C  PRE- AND POST COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTPI(IRPI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
 
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
-          IF (LEIPL)  THEN
+          IF (LEIPL) THEN
             DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
@@ -708,7 +844,9 @@ C
         NFLAG=CFLAG(4,IRPI)
         RMIIO=RMASSI(IOLD)
 
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN !  PI PROCESS CASCADING ION
+Cdr  PTOT=0,1,2,etc..., = integer,  number of next generation particles
+
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEVEL)) THEN  ! PI PROCESS CASCADING ION
 
           IF (.NOT.ALLOCATED(NAMIPI)) THEN
             ALLOCATE(NAMIPI(NSPAMI))
