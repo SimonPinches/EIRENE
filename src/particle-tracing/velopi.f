@@ -50,7 +50,7 @@ C
 
       REAL(DP) :: EIRENE_FEHVPI3, VXISO, VYISO, VZISO, EHEAVY, 
      .            VX, VY, VZ,
-     .            CVRSS, RSQDV, EDISS, ZEP3, VELDS, VREL,VRELQ,
+     .            CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS, VREL,VRELQ,
      .            VXI, VYI, VZI,
      .            VXN, VYN, VZN, VN,
      .            VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ, ZARG,
@@ -241,6 +241,7 @@ C  STEP 2:
 C
  
 C  DETERMINE NEXT GENERATION TEST PARTICLE, BY SAMPLING FROM P2NP
+C  AND FIND EFRAC: FRACTION OF KER (=EDISS) ASSIGNED TO THE SAMPLED SECONDARY
  
       IF ((ZEP_IN > 0._DP) .AND. (ZEP_IN <= 1._DP)) THEN
         ZEP3 = ZEP_IN
@@ -269,7 +270,7 @@ C
 449     CONTINUE
         CVRSS=CVRSSA(IATM)
         RSQDV=RSQDVA(IATM)
-        EDISS=EATPI(IRPI,IATM,2)
+        EFRAC=EATPI(IRPI,IATM,2)
 C
       ELSEIF (ZEP3.LE.P2NP(IRPI,NSPAM)) THEN
 C
@@ -284,7 +285,7 @@ C
 459     CONTINUE
         CVRSS=CVRSSM(IMOL)
         RSQDV=RSQDVM(IMOL)
-        EDISS=EMLPI(IRPI,IMOL,2)
+        EFRAC=EMLPI(IRPI,IMOL,2)
 C
       ELSEIF (ZEP3.LE.P2NP(IRPI,NSPAMI)) THEN
 C
@@ -299,7 +300,7 @@ C
 469     CONTINUE
         CVRSS=CVRSSI(IION)
         RSQDV=RSQDVI(IION)
-        EDISS=EIOPI(IRPI,IION,2)
+        EFRAC=EIOPI(IRPI,IION,2)
 C
       ELSE
         WRITE (iunout,*) 'ERROR IN VELOPI '
@@ -307,15 +308,19 @@ C
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
+C  KINETIC ENERGY RELEASED (KER) IN THIS PROCESS IRPI  eV.
       IF (NSTORDR >= NRAD) THEN
         EHEAVY=EHVPI3(IRPI,K,1)
       ELSE
         EHEAVY=EIRENE_FEHVPI3(IRPI,K)
       END IF
-      EDISS=EDISS*EHEAVY
+
+      EDISS=EFRAC*EHEAVY
 C
 C  FIND SPEED VECTOR FROM ISOTROPIC DISTRIBUTION IN CENTER OF MASS
 C  SYSTEM
+c  this is to be done. currently: no pi secondaries, and if so, then
+c  ediss is added to incident test particle velocity, rather COM. compare to el, and ei
 C
  
       IF (EDISS.GT.0.D0) THEN

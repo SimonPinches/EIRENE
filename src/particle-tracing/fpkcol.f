@@ -95,6 +95,7 @@ C     write (6,*) 'fpkcol push, zt used', zt
       MSURF=0
       IF (NLTRA) PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
       
+      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
 
 C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
 C  KILL PARTICLE, IF TOO LARGE ROUND OFF ERRORS DURING
@@ -116,7 +117,6 @@ C
         CALL EIRENE_UPCUSR(WS,1)
       ENDIF
 C
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
 C
       IF (DUR.GT.0.D0) THEN
 C
@@ -153,7 +153,6 @@ C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
 c  gets new B-field
 
 !pb VELS is not used in NEWFIELD with option 1
-!pb but for the sake of decent programming set VELS
       VELS = VEL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 
@@ -164,8 +163,8 @@ C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
 C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
  
 C  NEW B-FIELD
+
 !pb VELS is not used in NEWFIELD with option 0
-!pb but for the sake of decent programming set VELS
       VELS = VEL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 

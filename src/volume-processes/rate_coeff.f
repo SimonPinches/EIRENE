@@ -22,12 +22,13 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also energy rates, erate  for this particular option. 
+!            (currently here also energy rates, erate  for this particular option.
 !            More logical if the latter are moved
 !            to routine "eirene_energy-rate-coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!              negative values of ir (-1 to -11):  default internal eirene A&M models
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
 !   lexp:      return rate=rate coefficient in cm**3/sec
@@ -41,7 +42,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
-!              remove ifirst and ifsub conditions and set the data once, and save. 
+!              remove ifirst and ifsub conditions and set the data once, and save.
  
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -103,7 +104,7 @@ c.............................................................
  
       if (mod(iftflg(ir,2),100) == 10) then
 
-!  SET A CONSTANT RATE 
+!  SET A CONSTANT RATE
         rate = reacdat(ir)%rtc%poly%dblpol(1,1)
 
 cdr   lexp missing

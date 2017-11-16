@@ -5,9 +5,16 @@ cdr  k=-11  ei  He + e   (was formerly also k=-1)
 cdr  sept. 16:  extend options for asmyptotics  (extrapolation of fits)
 cdr             currently this is by far overdone, all fits in here are single parametric
 cdr             but leave as is, for later extensions....
+cdr  nov.17  : exclusively iftflg(K,2)=0 for rate coefficients
+c                      and iftflg(K,1)=0 for cross sections
+c              asymt. corrections missing for He CX cross sections. 
 
       subroutine EIRENE_setup_default_reactions
-c  fill reacdat(k)%... with default reaction data, k < 0.
+C
+C  for the trivial minimal set of hard wired reaction processes,
+C  selected by ...=0 flag in input block 4 for each species.
+C
+c  fill reacdat(k)%... with default reaction data, K < 0.
 c  first set default rate coefficients K= -4,-5,...-11  (-1, -2 and -3 are not used)
 c                                                   (extrapolation flags: 0)                     
 c  and
