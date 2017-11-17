@@ -27,6 +27,12 @@ C       SET UP TABLES (E.G. OF REACTION RATE ) FOR PI PROCESSES
 C
 C   MEANING OF INPUT VARIABLES: SEE XSTCX
 
+C   KK:      COMMON IDENTIFIER FOR PROCESS, USED FOR CROSS SECTION, RATES,
+C                                           STORAGE SAVING MODE ETC...
+C   FACTKK:  COMMON SCALING FACTOR FOR PROCESS KK
+C   NREAPI(IRPI) = KK DURING MC RUN. THIS ESTABLISHES LINK BETWEEN IRPI AND KK, MUST BE UNIQUE
+
+
 C  RETURNS:
 C    MODCOL(4,...)
 C    TABPI3(IRPI,NCELL,...)  1/s per incident test particle
@@ -264,13 +270,12 @@ C..................................................................
 
         MODCOL(4,2,IRPI)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
+        IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI) NEND=9 HERE
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN 
-C   NO
-C   NSTORDT=9
+C   NO, NSTORDT=9 HERE
           
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
           IF (MODC.EQ.1) THEN
@@ -294,7 +299,7 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii)
+              tii = max(-2.3_dp,tii) ! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -825,7 +830,7 @@ C
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
       WRITE (iunout,*) 'PROCESS NO. KK ',NREAPI(IRPI)
-      WRITE (IUNOUT,*) 'MODCOL         ',
+      WRITE (IUNOUT,*) 'MODCOL(1:4) ',
      .                  MODCOL(4,1,IRPI),MODCOL(4,2,IRPI),
      .                  MODCOL(4,3,IRPI),MODCOL(4,4,IRPI)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',

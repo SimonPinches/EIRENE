@@ -19,12 +19,13 @@ cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) direct
 
 cdr     Reaction identifyer KK is defined twice, within same routine veloel.
 cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
-cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.                   
+cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.  
+cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)                 
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
      .                 EBULK,ISCDE,IESTM,
-     .                 KK,FACTKK)
+     .                 KK,FACTKK,PLS)
 C
 C       SET UP TABLES (E.G. OF REACTION RATE ) FOR EL PROCESSES
 C
@@ -58,12 +59,14 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: EBULK, FACTKK
+      REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IREL, ISP, IPL,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, ERATE, TII,
+     .            EIRENE_ENERGY_RATE_COEFF, 
+     .            ERATE, TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
      .           IBGK,ISPZB,ITYPB
@@ -130,7 +133,7 @@ C..................................................................
 
         MODCOL(5,2,IREL)=MODC
 C  2.B)
-      IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
+        IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
       IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
@@ -138,8 +141,8 @@ C   STORAGE SAVING MODE ?
 C   NO, NSTORDT=9 HERE
           
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
-      IF (MODC.EQ.1) THEN
-C       NEND=1
+          IF (MODC.EQ.1) THEN
+C           NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
@@ -147,6 +150,7 @@ C       NEND=1
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
+C           NEND=9
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
 C       NEND=9
           FCTKKL=LOG(FACTKK)
@@ -171,16 +175,35 @@ c old
               TABEL3(IREL,J,1:9) = CF(1:9)
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
             END DO
-          END IF
+          END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+          GOTO 995
 
         ENDIF
-
-CDR   ELSEIF (MODC.EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
-CDR  MODEL NOT IMPLEMENTED FOR ELASTIC COLLISIONS, BUT SEE: XSTCX, XSTPI,....
+
+        MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+        FCTKKL=LOG(FACTKK)
+        IF (NSTORDR >= NRAD) THEN 
+                
+          DO J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
+            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            TB = COU + FCTKKL
+            IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
+            TB=MAX(-100._DP,TB)
+            TABEL3(IREL,J,1)=EXP(TB)
+          END DO
+C         JEREAEL(IREL) = 9
+        ELSE  ! ??
+C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
+          write (iunout,*) 'storage save mode not available yet for PI'
+          write (iunout,*) 'in case modc=3  (n,T-dependence).'
+          GOTO 995 
+        ENDIF
 
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
@@ -204,6 +227,7 @@ C
       IF (NSEEL4.EQ.0) THEN
 C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
+c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
             DO J=1,NSBOX
@@ -223,10 +247,12 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
             NELREL(IREL) = -1
             EPLEL3(IREL,1,1)=EBULK
           END IF
+C       ELSE
+CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(5,4,IREL)=3
       ELSEIF (NSEEL4.EQ.1) THEN
-C  4.B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
+C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -242,6 +268,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
           WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '  
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -252,12 +279,15 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
             NELREL(IREL) = -2
             EPLEL3(IREL,1,1)=EBULK
           END IF
+C       ELSE
+CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(5,4,IREL)=1
 C     ELSEIF (NSEEL4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
+C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
@@ -281,7 +311,7 @@ C  ION ENERGY-AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
 C  STORAGE SAVING MODE ?
           IF (NSTORDR >= NRAD) THEN
 C  NO
-c           NSTORDT=9 HERE
+C           NSTORDT=9 HERE
       
             IF (MODC.EQ.1) THEN
 C             NEND=1
@@ -339,13 +369,18 @@ c old
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
+C  4.2. BULK ELECTRON ENERGY LOSS RATE  ! NOT APPLICABLE
+C
+C
+C  4.3. HEAVY PARTICLE ENERGY GAIN RATE
+C
+C
 C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
       IESTEL(IREL,1)=EIRENE_IDEZ(IESTM,1,3)
       IESTEL(IREL,2)=EIRENE_IDEZ(IESTM,2,3)
       IF (IESTEL(IREL,3).EQ.0) IESTEL(IREL,3)=EIRENE_IDEZ(IESTM,3,3)
 C
-C
-C
+
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -374,6 +409,7 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'ELASTIC COLLISION WITH BULK IONS IPLS:'
       WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL)
+      CALL EIRENE_LEER(1)
 C
       IF (NPBGKP(IPL,1).NE.0) THEN
         IBGK=NPBGKP(IPL,1)
@@ -406,8 +442,9 @@ C
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
       WRITE (iunout,*) 'PROCESS NO. KK ',NREAEL(IREL)
       WRITE (IUNOUT,*) 'MODCOL(0)   ',MODCOL(5,0,IREL)
-      WRITE (IUNOUT,*) 'MODCOL(1:4) ',MODCOL(5,1,IREL),MODCOL(5,2,IREL),
-     .                           MODCOL(5,3,IREL),MODCOL(5,4,IREL)
+      WRITE (IUNOUT,*) 'MODCOL(1:4) ',
+     .                  MODCOL(5,1,IREL),MODCOL(5,2,IREL),
+     .                  MODCOL(5,3,IREL),MODCOL(5,4,IREL)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)
       CALL EIRENE_LEER(1)
@@ -418,5 +455,11 @@ C
 993   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEL, SPECIES ISP: '
       WRITE (iunout,*) ISP,IREL
+      CALL EIRENE_EXIT_OWN(1)
+995   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEL: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'STORAGE SAVING MODE NOT READY; KK, IREL'
+      WRITE (iunout,*) 'KK, IREL ',KK,IREL
       CALL EIRENE_EXIT_OWN(1)
       END

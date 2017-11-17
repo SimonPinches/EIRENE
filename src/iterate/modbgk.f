@@ -32,6 +32,8 @@ c  if not NCLTAL (I) = I everywhere, then we have two grids, grid structures
 C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER (SCORING) GRID CELL NCELL,
 C                   NCELL=NCLTAL(I-FINE)
 C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
+cdr  nov. 17:  PLS added to call xstel. (strictly not needed here, 
+cdr                but for other EL rates enhanced by CR effects)
 c               
 C
       SUBROUTINE EIRENE_MODBGK
@@ -64,6 +66,8 @@ C
      .                       CROSSTEMP(:,:)
 !pb 05.02.2013
       REAL(DP), ALLOCATABLE :: GBGKV(:,:)  ! TALLIES SCORED FOR BGK RELAXATION
+cdr:  Nov. 17:for sync between xstel, xstpi, etc...
+      REAL(DP), ALLOCATABLE :: PLS(:)
 
 CDR THESE TALLIES bgkv ARE SCORED IN (COARSER) SCORING GRID.
 C   ITERATION IS ON TALLIES DEFINED ON FINER GRID.
@@ -75,8 +79,8 @@ C   GBGKV == BGKV EVERYWHERE
      .          T2, ED1, ED2, VXMIX, VZMIX, DELX, DELY, DELZ, VX, VY,
      .          VZ, EOLD, ED, RM, FACTKK, TMIX, EBULK, TS1, DS1,
      .          FACT2, RMAS2, A_ROBIN, FACT1, RMAS1, 
-     .          RESE, RESM, TBEL, DOLD,
-     .          DEL, PLS, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
+     .          RESE, RESM, TBEL, DOLD, DEIMIN,
+     .          DEL, TII, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
      .          RM1, RM2, TCSUM, !VK
      .          EIRENE_RATE_COEFF, ERATE
       INTEGER :: ITYP1(NPLS), ITYP2(NPLS), ISPZ1(NPLS), ISPZ2(NPLS),
@@ -146,6 +150,19 @@ C
       ALLOCATE (PDEN2(NRAD))
       ALLOCATE (EDEN2(NRAD))
       ALLOCATE (ENERGY(NPLS,NRAD))
+
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
+cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the Corona limit values.
+      ALLOCATE (PLS(NSTORDR))
+      DEIMIN=LOG(1.D8)
+      IF (NSTORDR >= NRAD) THEN
+        DO J=1,NSBOX
+          PLS(J)=MAX(DEIMIN,DEINL(J))
+        ENDDO
+      END IF
 
 CVK  CALCULATES NUMBER OF CROSS COLLISION PROCESSES 'ncross' AND ALLOCATES MEMORY FOR
 C    "CROSS-COLLISION TEMPERATURE" CORRECTION
@@ -443,8 +460,8 @@ C
               ELSE
 cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
-                PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-                TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+                TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+                TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 81            CONTINUE
@@ -944,7 +961,7 @@ C
           IF(TRCAMD)
      f     WRITE(iunout,*) "MODBGK: AVERAGE CROSS COLLISION TEMPERATURE"
      .                     ," IPLSTI1, IPLSTI2",
-     .                        IPLSTI1,IPLSTI2,TCSUM/SUM(VOL)      !VK
+     .                        IPLSTI1, IPLSTI2,TCSUM/SUM(VOL)      !VK
 
 800       CONTINUE
         ENDIF
@@ -988,7 +1005,8 @@ C
           ENDIF
           IF (FACTKK.EQ.0.D0) FACTKK=1.D0
 C  BGK COLLISION, RESET TABEL3, EPLEL3
-          CALL EIRENE_XSTEL(IREL,ISP,IPLS,EBULK,ISCDE,IESTM,KK,FACTKK)
+          CALL EIRENE_XSTEL(IREL,ISP,IPLS,EBULK,ISCDE,IESTM,
+     .                      KK,FACTKK,PLS)
           IF (NPBGKP(IPLS,2).NE.0) THEN
 C  CROSS COLLISION, RESET EPLEL3 FOR TRACKLENGTH ESTIMATOR
             IF (NSTORDR >= NRAD) THEN
