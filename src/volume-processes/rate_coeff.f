@@ -6,7 +6,7 @@
 !dr  29.10.15: bug fix:  lexp option for ifit=5 was missing.
 !dr            no consequences for any earlier runs, except H-COL option with H.2 (corona) rates. 
 cdr  nov. 15:  indicators ip1, ip2 for extrapolation or interpolation added,
-cdr            in intp_tables and intp_adas
+cdr            in intp_tab1d and intp_tab2d
 cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2. 
 cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRAD
 
@@ -71,23 +71,23 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
       integer :: ic,ip1,ip2            
  
       interface
-        function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
+        function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
           integer, intent(out) :: ip1,ip2
           real(dp) :: res
-        end function EIRENE_intp_adas
+        end function EIRENE_intp_tab2d
  
-        function EIRENE_intp_table (tb,p1,ip1) result(res)
+        function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
-        end function EIRENE_intp_table
+        end function EIRENE_intp_tab1d
       end interface
  
       if (.not.reacdat(ir)%lrtc) then
@@ -185,7 +185,7 @@ c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        rate = eirene_intp_adas(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
+        rate = eirene_intp_tab2d(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
  
         if (lexp) then
           rate=10._dp**rate
@@ -208,7 +208,7 @@ cdr  to be added here
  
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        rate = eirene_intp_table(reacdat(ir)%rtc%hyd,pp1,ip1)
+        rate = eirene_intp_tab1d(reacdat(ir)%rtc%hyd,pp1,ip1)
 
 !  lexp option not connected here !
 

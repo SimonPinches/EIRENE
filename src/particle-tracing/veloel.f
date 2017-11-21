@@ -89,7 +89,7 @@ C      REAL(DP) :: CTCHDUM, CTTETHA, DUMSIGMA, ELTHDUM, ELTHETA, RAN,
 C     .            SIGHABER
       REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP) :: P(9)
-      INTEGER :: IFLAG, IRL, IREAC, JJ, J, ICOUNT, KK
+      INTEGER :: IFLAG, IRL, IREAC, JJ, J, ICOUNT
       INTEGER :: IFIRST = 0
 !  PARAMETERS FOR INTERACTION POTENTIALS ARE NOW READ FROM FILE AMJUEL,
 !  NOT HARD WIRED IN THIS ROUTINE OR (EVEN OLDER VERSIONS)
@@ -304,12 +304,12 @@ C  SOME STUFF HERE FOR COM ISOTROPIC COLLISIONS.....
  
       ELSEIF (MODCOL(5,0,IREL).GT.0) THEN
 C  INTERACTION POTENTIAL IS GIVEN, get fit coefficients of interaction potential
-        KK=MODCOL(5,0,IREL)
-        IFLAG=IFTFLG(KK,0)   !cdr  is iftflg correctly set for repulsive potential?
+        IREAC=MODCOL(5,0,IREL)
+        IFLAG=IFTFLG(IREAC,0)   !cdr  is iftflg correctly set for repulsive potential?
 cdr                                check slreac. There default is set to iftflg=2 (Morse)
 CDR REACDAT should not be used during trajectory generation, see comments in xstel.f
 c   to be done.
-        P(1:9)=REACDAT(KK)%POT%POLY%DBLPOL(1:9,1)
+        P(1:9)=REACDAT(IREAC)%POT%POLY%DBLPOL(1:9,1)
       ENDIF
 C
 
@@ -368,8 +368,8 @@ C  NEXT: STEP 4
 C
       IF (IFLAG.EQ.-1) THEN
 C
-C  THIS PART: ONLY RELAXATION TO BULK MAXWELLIAN, I.E., POST COLLISION
-C             TEST PARTICLE IS SAMPLED FROM (WEIGHTED) BULK POPULATION (E.G.: BGK-COLLISION)
+C  THIS PART: ONLY (BGK-TYPE) RELAXATION TO A MAXWELLIAN, I.E., POST COLLISION
+C             TEST PARTICLE IS SAMPLED FROM (WEIGHTED) BULK POPULATION (E.G.: EL. BGK-COLLISION)
 C
         VELQ=VXI*VXI+VYI*VYI+VZI*VZI
         VEL=SQRT(VELQ)

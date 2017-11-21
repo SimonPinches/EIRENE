@@ -634,12 +634,11 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.2) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP'
-        WRITE (iunout,*) '       FROM FILE FT15'
+        WRITE (iunout,*) '       STRATUM NSTRAI+1 FROM FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
-        WRITE (iunout,*) '       FROM  FILE FT15 '
+        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP'
+        WRITE (iunout,*) '       FROM FILE FT15'
         WRITE (iunout,*) '       EIRENE SAVES NEW SNAPSHOT POPULATION'
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
@@ -1584,41 +1583,48 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
         MASST(IR)=MT
         DELPOT(IR)=DPP
 
-C  ASYMPTOTICS FOR CROSS-SECTIONS OR (WEIGHTED) RATE COEFFICIENTS
+C  ASYMPTOTICS FOR CROSS-SECTIONS OR (WEIGHTED) RATE COEFFICIENTS FOR REACTION IR
 
 C  OVERWRITES ASYMPTOTICS READ FROM EXTERNAL DATA FILES FOR THIS RUN,
-C  IF THERE HAVE BEEN SUCH
+C  (IF THERE HAVE BEEN SUCH)
+
+C  CURRENT DEFAULT ASYMPTOTICS:  SET SUCH THAT "NO ASYMPTOTICS" IS USED
         FP1 = 0._DP
         FP2 = 0._DP
         IF (INDEX(H123,'P.').eq.0) then
-          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV
-          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV
-cdr
+c  single parametric data, or for first parameter in 2-parameteric data
+          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV  (2E-9 EV)
+          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV  (5E8  EV)
+c  2nd parameter in 2 parametric data
           RC2MIN = -20.  ! lower ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
           RC2MAX =  100. ! upper ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
           JFEX1MN = 0
           JFEX1MX = 0
           JFEX2MN = 0
           JFEX2MX = 0
+
+C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED EXPLICITLY IN input block 4?
+C  IF YES: OVERWRITE DEFAULTS, AND/OR DATA FROM EXTERNAL FILE
+C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE 
           IF (R1MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MN,(FP1(I),I=1,3)
             RC1MIN=LOG(R1MN)
-            WRITE (IUNOUT,*) 'NON DEF. R1MN FOR REACTION IR=',IR,R1MN
+            WRITE (IUNOUT,*) 'NON-DEF. R1MN FOR REACTION IR=',IR,R1MN
           ENDIF
           IF (R1MX.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MX,(FP1(I),I=4,6)
             RC1MAX=LOG(R1MX)
-            WRITE (IUNOUT,*) 'NON DEF. R1MX FOR REACTION IR=',IR,R1MX
+            WRITE (IUNOUT,*) 'NON-DEF. R1MX FOR REACTION IR=',IR,R1MX
           ENDIF
           IF (R2MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX2MN,(FP2(I),I=1,3)
             RC2MIN=LOG(R2MN)
-            WRITE (IUNOUT,*) 'NON DEF. R2MN FOR REACTION IR=',IR,R2MN
+            WRITE (IUNOUT,*) 'NON-DEF. R2MN FOR REACTION IR=',IR,R2MN
           ENDIF
           IF (R2MX.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX2MX,(FP2(I),I=4,6)
             RC2MAX=LOG(R2MX)
-            WRITE (IUNOUT,*) 'NON DEF. R2MX FOR REACTION IR=',IR,R2MX
+            WRITE (IUNOUT,*) 'NON-DEF. R2MX FOR REACTION IR=',IR,R2MX
           ENDIF
 
 cdr  reaclines only needed for hydkin interface?
@@ -1628,7 +1634,9 @@ cdr  reaclines only needed for hydkin interface?
           REACLINES(IL)%JFEX2MX = JFEX2MX
           REACLINES(IL)%FP1 = FP1
           REACLINES(IL)%FP2 = FP2
-        else  ! identifier "P" found in H123. Data for photon processes! No assymptotics available
+        else 
+! identifier "P" found in H123. Data for photon processes! No assymptotics available
+! set defaults
           RC1MIN=-20.
           RC1MAX= 20.
           RC2MIN=-20.
@@ -1638,6 +1646,8 @@ cdr  reaclines only needed for hydkin interface?
           JFEX2MN=0
           JFEX2MX=0
         endif
+
+C  ASYMPTOTICS: DONE
 C
 C REAC2 HAS TWO DIFFERENT MEANINGS:
 C       FILNAM=CONST:   REAC2 = FTFLAG
@@ -2437,6 +2447,7 @@ c  read this (single) file "TRIM.DAT" in subr. REFDAT
         DEALLOCATE(CURFILE)
       END DO
 cdr AT THIS POINT: IFLR=NFR OR IFLR=0 ??
+      IF (IFLR.NE.NFR.AND.IFLR.NE.0) GOTO 993
 
 c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
 
@@ -4518,7 +4529,7 @@ C
       NSIGI_COP=0  !  TURN OFF STATIS_COP FOR COUPLING TALLIES
 CDR  HIDDEN LINK REMOVAL:
 CDR  NSIGI_COP, STATIS_COP AND ALL RELATED CODE IS REDUNDANT, SINCE COUPLING
-CDR  TALLIES ARE ALSO DEFAULT TALLIES
+CDR  TALLIES ARE ALSO DEFAULT TALLIES, and hence standard deviations are available for them
       IF ((NSIGI_COP > 0) .AND. (NCPVI >= 3*NPLSI+4))  THEN
         IIH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = NTALM
         IGH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = (/ (I,I=1,3*NPLSI+4) /)
@@ -5148,6 +5159,10 @@ C
       WRITE (iunout,*)
      .  'FINITE ELEMENT OPTION USED, BUT GRID INDICATOR '
       WRITE (iunout,*) 'LESS THAN 6. '
+      CALL EIRENE_EXIT_OWN(1)
+993   CONTINUE
+      WRITE (iunout,*)
+     .  'INCONSISTENCY WRT. SURFACE REFLECTION DATABASE, BLOCK 6 '
       CALL EIRENE_EXIT_OWN(1)
 994   CONTINUE
       WRITE (iunout,*) 'ERROR IN INPUT: NRPLG.NE.NP2ND, BUT NLPOL=TRUE'

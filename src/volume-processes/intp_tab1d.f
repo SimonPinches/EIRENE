@@ -1,9 +1,10 @@
-      function EIRENE_intp_table(tb,p1,ip1) result(res)
+      function EIRENE_intp_tab1d(tb,p1,ip1) result(res)
 
 cdr  (linear) interpolate in 1d table tb at argument p1.
+cdr  binary search in table. linear extrapolation outside range of table
 
 cdr  Nov. 15: argument p2 removed, added: ip1:  indicator for extrapolation or interpolation
-cdr           ip1: as in intp_adas (2d tables)
+cdr           ip1: as in intp_tab2d (2d tables)
 cdr      tbd:  generalize to general 1d tables, not just hydkin_data
 cdr            
  
@@ -32,4 +33,4 @@ cdr
       res = tb%rates(ite) + (p1-tb%temps(ite))*tb%ratio(ite)
  
       return
-      end function EIRENE_intp_table
+      end function EIRENE_intp_tab1d

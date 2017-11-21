@@ -4,7 +4,7 @@ cdr  oct.15  comments. Parameters ip1,ip2 added, to indicate extrapolation
 cdr          tbd: generalize to general 2d (2 indep., parameters) tabular data
 cdr               not just adas data. 
 
-      function EIRENE_intp_adas(ad,p1,p2,ip1,ip2) result(res)
+      function EIRENE_intp_tab2d(ad,p1,p2,ip1,ip2) result(res)
 c  bilinear interpolation in 2-parameter table ad
 c  linear extrapolation at all 4 parameter boundaries
 
@@ -68,4 +68,4 @@ c  fill ff: intermediate 2 by 2 matrix of tabulated values at cell vertices
       call EIRENE_bilinear_int (ff, rx, ry, res)
  
       return
-      end function EIRENE_intp_adas
+      end function EIRENE_intp_tab2d

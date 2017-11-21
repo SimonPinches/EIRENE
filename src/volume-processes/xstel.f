@@ -135,7 +135,7 @@ C..................................................................
 C  2.B)
         IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
-      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE

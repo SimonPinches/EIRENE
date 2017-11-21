@@ -1,13 +1,13 @@
 !pb  21.11.06: index error corrected in defintion of ap%dte
  
-      subroutine EIRENE_read_adas (ir,reac,isw,iz1)
+      subroutine EIRENE_read_tab2d (ir,reac,isw,iz1)
 
 cdr  purpose:  read a 2d table TAB2D of A&M data, and put them into REACDAT data structure
 cdr            internal eirene reaction no. IR
 cdr
 cdr  input:
 c           ir:           internal reaction number on eirene structure REACDAT
-c           reac:
+c           reac:         
 c           isw:   =0     data for interaction potential                 (not in use)
 c                  =1     data for collision cross section               (not in use)
 c                  =2-4   data for reaction rate coefficient             (only = 4  in use)
@@ -321,4 +321,4 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
       CALL EIRENE_EXIT_OWN(1)
  
       return
-      end subroutine EIRENE_read_adas
+      end subroutine EIRENE_read_tab2d

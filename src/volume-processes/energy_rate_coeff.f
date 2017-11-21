@@ -7,6 +7,7 @@ c              re-use erate from previous call to rate_coeff
 
 cdr  19.02.14: COMMENTS
 cdr sept.15:  lexp not fully written, in case of adas 2d tables
+cdr           also unit conversion incorrect in that case. --> tbd
 cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 cdr  16.11.15: bug fix: error in arguments in call to H_colrad
@@ -79,23 +80,23 @@ cdr  sept. 16: started to add extrapolation options. not ready....
       integer :: ic,ip1,ip2
 
       interface
-        function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
+        function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
           integer, intent(out) :: ip1,ip2
           real(dp) :: res
-        end function EIRENE_intp_adas
+        end function EIRENE_intp_tab2d
 
-        function EIRENE_intp_table (tb,p1,ip1) result(res)
+        function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
-        end function EIRENE_intp_table
+        end function EIRENE_intp_tab1d
       end interface
  
       if (.not.reacdat(ir)%lrtcew) then
@@ -192,7 +193,7 @@ c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        erate = eirene_intp_adas(reacdat(ir)%rtcew%adas,pp1,pp2,ip1,ip2)
+        erate=eirene_intp_tab2d(reacdat(ir)%rtcew%adas,pp1,pp2,ip1,ip2)
  
         if (lexp) then
           erate=10._dp**erate
@@ -215,7 +216,7 @@ cdr  to be added here
  
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        erate = eirene_intp_table(reacdat(ir)%rtcew%hyd,pp1,ip1)
+        erate = eirene_intp_tab1d(reacdat(ir)%rtcew%hyd,pp1,ip1)
 
 !  lexp option not connected here !
 
