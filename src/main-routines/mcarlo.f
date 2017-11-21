@@ -935,7 +935,6 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-csw      if ((nsteff.ge.nprs).or.(npesta(istra).eq.my_pe)) then
       if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
 
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
@@ -1160,14 +1159,12 @@ C
 C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
-cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
-cpara  csw 08mar2013: hat sich jetzt erledigt..
-
 !pb   IESTR=ISTRA
 
       IF (NFILEN.EQ.1) THEN
 csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
+cdr npesta is the master processor for stratum no ISTRA
         if(nprs==1.or.(nprs > 1 .and. npesta(istra)==my_pe)
      .            .or.(nprs > 1 .and. nprs < nstrai) ) then
         CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,

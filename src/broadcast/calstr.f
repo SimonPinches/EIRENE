@@ -18,6 +18,7 @@ cdr
 c
 c  called from MCARLO.f, from within strata loop, at the end of each stratum,
 c  if there are more processors than active strata.
+c
 c  Unclear: if more strata than processors: is it then excluded that still
 c           there may be strata with more than one processor dealing with them?
 c          
@@ -27,6 +28,13 @@ c   put merged data for output tallies for stratum istra then on:  my_pe_gr=0
 c
 c
 cdr
+c   input:
+c       istra  (stratum number, from common)
+c       npesta(istra)  : number of master processor for stratum istra
+c       npestr(istra)  : total no. of processors working on stratum istra
+c
+c   results:
+c       npean, npeen:   the processors in the range npean,...,npeen work on stratum istra
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -58,9 +66,11 @@ C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1)
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm),lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
-
+c
+c  range of processors working on stratum ISTRA
       npean = npesta(istra)
       npeen = npesta(istra)+npestr(istra)-1
+c
       call mpi_comm_group (mpi_comm_world,mpicw,ier)
       call mpi_comm_split (mpi_comm_world,istra,my_pe-npesta(istra),
      .                     icomgrp(istra),ier)
@@ -72,6 +82,9 @@ CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
 
         call mpi_barrier(icomgrp(istra),ier)
+c
+c  my_pe_gr=0 indicates: my_pe is the master processor for istra
+c   
         my_pe_gr = my_pe-npesta(istra)
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
