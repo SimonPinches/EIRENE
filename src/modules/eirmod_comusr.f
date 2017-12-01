@@ -155,7 +155,7 @@ cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct d
 C NPLPR1 + ... = NPLPRM
         ALLOCATE (TEIN(NRAD))
         ALLOCATE (TIIN(NPLSTI,NRAD))
-        ALLOCATE (DEIN(NRAD))
+        ALLOCATE (DEIN(NRAD))   !  ital=-3,  derived tally
         ALLOCATE (DIIN(NPLS,NRAD))
         ALLOCATE (VXIN(NPLSV,NRAD))
         ALLOCATE (VYIN(NPLSV,NRAD))
@@ -165,21 +165,21 @@ C NPLPR1 + ... = NPLPRM
         ALLOCATE (BZIN(NRAD))
         ALLOCATE (BFIN(NRAD))
 cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  not yet. done later below, ical == 2 option
-        ALLOCATE (VOL(NRAD))
+        ALLOCATE (VOL(NRAD))   !  ital=-14
         ALLOCATE (WGHT(NSPZMC,NRAD))  ! check size of  nspzmc.  this "weight window" array is unused so far.
         ALLOCATE (EXIN(NRAD))
         ALLOCATE (EYIN(NRAD))
         ALLOCATE (EZIN(NRAD))
         ALLOCATE (EFIN(NRAD))
-        ALLOCATE (POT(NRAD))
+        ALLOCATE (POT(NRAD))      !  ital=-22
 c NPLPR2
         ALLOCATE (TEINL(NRAD))
         ALLOCATE (TIINL(NPLSTI,NRAD))
-        ALLOCATE (BVIN(NPLSV,NRAD))
-        ALLOCATE (PARMOM(NPLS,NRAD))
-        ALLOCATE (BXPERP(NRAD))
-        ALLOCATE (BYPERP(NRAD))
-        ALLOCATE (EDRIFT(NPLS,NRAD))
+        ALLOCATE (BVIN(NPLSV,NRAD))   ! ital=nn   
+        ALLOCATE (PARMOM(NPLS,NRAD))  ! ital=nn 
+        ALLOCATE (BXPERP(NRAD))       ! ital=-16
+        ALLOCATE (BYPERP(NRAD))       ! ital=-17
+        ALLOCATE (EDRIFT(NPLS,NRAD))  !  ital=-13
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
 
@@ -199,9 +199,9 @@ c NPLPR2
         ALLOCATE (DPHOT(MAX(1,NPHOT)))
  
 c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
-        ALLOCATE (TEDTEDX(NRTAL))
-        ALLOCATE (TEDTEDY(NRTAL))
-        ALLOCATE (TEDTEDZ(NRTAL))
+        ALLOCATE (TEDTEDX(NRTAL))  ! ital=nn
+        ALLOCATE (TEDTEDY(NRTAL))  ! ital=nn
+        ALLOCATE (TEDTEDZ(NRTAL))  ! ital=nn
  
         ALLOCATE (TEXTS(NSPZ))
 c  integer  species and background tally data
@@ -434,8 +434,7 @@ C
       DEALLOCATE (EZIN)
       DEALLOCATE (EFIN)
       DEALLOCATE (POT)
-      DEALLOCATE (FLXOUT)
-      DEALLOCATE (SAREA)
+c
       DEALLOCATE (TEINL)
       DEALLOCATE (TIINL)
       DEALLOCATE (BVIN)
@@ -443,6 +442,10 @@ C
       DEALLOCATE (EDRIFT)
       DEALLOCATE (DEINL)
       DEALLOCATE (DIINL)
+
+      DEALLOCATE (FLXOUT)
+      DEALLOCATE (SAREA)
+
       DEALLOCATE (RMASSI)
       DEALLOCATE (RMASSA)
       DEALLOCATE (RMASSM)

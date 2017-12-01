@@ -32,7 +32,7 @@ c  if not NCLTAL (I) = I everywhere, then we have two grids, grid structures
 C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER (SCORING) GRID CELL NCELL,
 C                   NCELL=NCLTAL(I-FINE)
 C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
-cdr  nov. 17:  PLS added to call xstel. (strictly not needed here, 
+cdr  nov. 17:  PLS added to call xstel. (strictly not needed here until now, 
 cdr                but for other EL rates enhanced by CR effects)
 c               
 C
@@ -537,8 +537,8 @@ C
           ELSE
 cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
-            PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+            TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 91        CONTINUE
@@ -630,8 +630,8 @@ C
               ELSE
 cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
-                PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-                TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+                TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+                TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 181           CONTINUE
@@ -697,8 +697,8 @@ C
           ELSE
 cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
-            PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,PLS,0._DP,.TRUE.,0,ERATE)
+            TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 191       CONTINUE
