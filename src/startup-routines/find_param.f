@@ -1052,6 +1052,7 @@ cdr  this must be highly case specfic. To be reconsidered !!
           READ (IUNIN,6664) DUMM1, SORLIM, SORIND
           ISOR = INT(SORLIM)
           DO WHILE (ISOR > 0)
+cdr  here NSTEP is set to the largest step function number specified on SORIND
             ID = MOD(ISOR,10)
             IF ((ID == 4).OR.(ID==5)) NSTEP = MAX(NSTEP,INT(SORIND))
             ISOR = ISOR / 10

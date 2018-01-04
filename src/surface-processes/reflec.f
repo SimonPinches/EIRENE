@@ -22,6 +22,7 @@ C  Oct 14:  arguments of velocs changed. "weight" now in argument list
 C  MAR 15:  remove Thompson distribution for thermal atom model:
 c           TWALL=0 now leads to error exit
 cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
+cdr Nov.17: lmetspw arguments corrected
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -986,7 +987,7 @@ C  SUPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF ((MSURF.GT.0) .AND. LSPUMP) THEN
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-            LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+            LMETSPW(ISPZO) = .TRUE.
           ENDIF
         ENDIF
         WEIGHT=WEIGHT*WMOLEC
@@ -1071,7 +1072,7 @@ C  SUPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF ((MSURF.GT.0) .AND. LSPUMP) THEN
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-            LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+            LMETSPW(ISPZO) = .TRUE.
           ENDIF
         ENDIF
         WEIGHT=WEIGHT*WATOM
@@ -1109,7 +1110,7 @@ C
 700   CONTINUE
       IF ((MSURF.GT.0) .AND. LSPUMP) THEN
         SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
-        LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+        LMETSPW(ISPZO) = .TRUE.
       ENDIF
       LGPART=.FALSE.
       WEIGHT=0.

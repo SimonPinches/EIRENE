@@ -13,6 +13,9 @@ cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
 cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
 cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
+cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
+cdr           fully corresponds to vol tally parameter nspztot, 
+cdr           but is for surface tally pointers
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -104,7 +107,7 @@ csw 13apr07
      I NTALI,  NTALN,  NTALO,  NTALV,
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
-     I NTALS,  NTLSA,  NTLSR,
+     I NTALS,  NTLSA,  NTLSR,  NSPZTOTW,
      I N1MX,   N2MX,   NSPZ,   NSPZP, NSPZMC, NCOLMC, NSPZTOT
 
       INTEGER, PUBLIC, SAVE ::
@@ -262,9 +265,9 @@ c  additional surface averaged output tallies
 C  MAX SPECIES INDEX IN SURFACE AVERAGED OUTPUT TALLIES
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
 
-        NSPZ=NPHOT+NATM+NMOL+NION+NPLS
+        NSPZ=NPHOT+NATM+NMOL+NION+NPLS  ! TOTAL NUMBER OF MC SPECIES PLUS BULK
         NSPZP=NSPZ+1
-        NSPZMC=NPHOT+NATM+NMOL+NION
+        NSPZMC=NPHOT+NATM+NMOL+NION     ! TOTAL NUMBER OF MC SPECIES
 
 
 C  TOTAL NUMBER OF SURFACE AVERAGED TALLIES
@@ -300,17 +303,17 @@ c  set some derived storage parameters
 
 C  N1MX: storage parameter for species text for output tallies, and scltal in mcarlo.f
 
-        N1MX=    NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
-     .           NSNV+NAIN
+        N1MX=    NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV+NAIN
 
 !pb     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV,
 !    .           NSNV,NAIN)
-cdr  same as n1mx.  Check: why not n1mx=max(....)
+cdr  same MEANING as n1mx?.  Check: why not n1mx=max(....)
 
 C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, for standard deviation estimators
+        NSPZTOT = NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV
 
-        NSPZTOT= NPHOT+NATM+NMOL+NION+NPLS+NADV+NALV+NCLV+NCPV+NBGV+
-     .           NSNV
+C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, for standard deviation estimators
+        NSPZTOTW= NSPZ+NADS+NALS
 
 C  TOTAL NUMBER OF VOLUME AVERAGED OUTPUT TALLIES
 C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
@@ -476,10 +479,13 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM(108) = NTALM
       INT_PARM(109) = NTALB
       INT_PARM(110) = NTALR
+
       INT_PARM(111) = NTALS
       INT_PARM(112) = NTLSA
       INT_PARM(113) = NTLSR
-c     INT_PARM(114) =  ...    OUT, WAS SAME AS NTALS
+C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
+      INT_PARM(114) = NSPZTOTW
+
       INT_PARM(115) = N1MX
       INT_PARM(116) = N2MX
       INT_PARM(117) = NSPZ
@@ -487,6 +493,7 @@ c     INT_PARM(114) =  ...    OUT, WAS SAME AS NTALS
       INT_PARM(119) = NSPZMC
       INT_PARM(120) = NCOLMC
       INT_PARM(121) = NSPZTOT
+
 
       INT_PARM(122) = NVOLTL
       INT_PARM(123) = NVLTLP
@@ -657,11 +664,14 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NTALM       = INT_PARM(108)
       NTALB       = INT_PARM(109)
       NTALR       = INT_PARM(110)
+C
       NTALS       = INT_PARM(111)
       NTLSA       = INT_PARM(112)
       NTLSR       = INT_PARM(113)
+c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
+      NSPZTOTW    = INT_PARM(114)
 
-c     ...         = INT_PARM(114)  !dr out, was same as ntals
+
       N1MX        = INT_PARM(115)
       N2MX        = INT_PARM(116)
       NSPZ        = INT_PARM(117)

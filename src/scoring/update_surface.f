@@ -9,8 +9,8 @@ c  iout:  species index for emitted particle
       SUBROUTINE EIRENE_UPDATE_SURFACE (ITOLD)
 
 c     CURRENTLY:  
-C       PARTICLE FLUXES (WEIGHT)
-C       ENERGY FLUXES   (E0*WEIGHT)
+C       PARTICLE FLUXES (WEIGHT),  score PRF...
+C       ENERGY FLUXES   (E0*WEIGHT),  score ERF...
 
 c  input:
 c  itold:  type of incident particle
@@ -20,6 +20,9 @@ c  msurf:  surface index
 c  msurfg:  sub-segement of surface MSURF, for spatial resolution on surface
 c  E0:     energy (eV) of re-emitted particle
 c  WEIGHT: stat. weight of re-emitted particle
+
+c  output:
+c  lmetspw(ispz):  species ispz is emitted, emitted flux tally is scored.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -34,10 +37,12 @@ c  WEIGHT: stat. weight of re-emitted particle
       INTEGER, INTENT(IN) :: ITOLD
  
       IF (MSURF .LE. 0) RETURN
+
 c  a photon is re-emitted. currently only foreseen for incident photons 
       IF (ITYP.EQ.0) THEN
         LOGPHOT(IPHOT,ISTRA)=.TRUE.
         IF (ITOLD.EQ.0) THEN
+c... from an incident photon
           IF (LPRFPHPHT)
      .      PRFPHPHT(IPHOT,MSURF)=PRFPHPHT(IPHOT,MSURF)+WEIGHT
           IF (LERFPHPHT)
@@ -51,10 +56,12 @@ c  a photon is re-emitted. currently only foreseen for incident photons
           ENDIF
           IF (LPRFPHPHT .OR. LERFPHPHT) LMETSPW(IPHOT) = .TRUE.
         ENDIF
-c  an atom is re-emitted
+
+c  an atom is re-emitted...
       ELSEIF (ITYP.EQ.1) THEN
         LOGATM(IATM,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN
+c... from an incident atom
           IF (LPRFAAT) PRFAAT(IATM,MSURF)=PRFAAT(IATM,MSURF)+WEIGHT
           IF (LERFAAT)
      .      ERFAAT(IATM,MSURF)=ERFAAT(IATM,MSURF)+E0*WEIGHT
@@ -66,6 +73,7 @@ c  an atom is re-emitted
           ENDIF
           IF (LPRFAAT .OR. LERFAAT) LMETSPW(NSPH+IATM) = .TRUE.
         ELSEIF (ITOLD.EQ.2) THEN
+c... from an incident molecule
           IF (LPRFMAT) PRFMAT(IATM,MSURF)=PRFMAT(IATM,MSURF)+WEIGHT
           IF (LERFMAT)
      .      ERFMAT(IATM,MSURF)=ERFMAT(IATM,MSURF)+E0*WEIGHT
@@ -77,6 +85,7 @@ c  an atom is re-emitted
           ENDIF
           IF (LPRFMAT .OR. LERFMAT) LMETSPW(NSPH+IATM) = .TRUE.
         ELSEIF (ITOLD.EQ.3) THEN
+c... from an incident test ion
           IF (LPRFIAT) PRFIAT(IATM,MSURF)=PRFIAT(IATM,MSURF)+WEIGHT
           IF (LERFIAT)
      .      ERFIAT(IATM,MSURF)=ERFIAT(IATM,MSURF)+E0*WEIGHT
@@ -88,6 +97,7 @@ c  an atom is re-emitted
           ENDIF
           IF (LPRFIAT .OR. LERFIAT) LMETSPW(NSPH+IATM) = .TRUE.
         ELSEIF (ITOLD.EQ.4) THEN
+c... from an incident test ion
           IF (LPRFPAT)
      .      PRFPAT(IATM,MSURF)=PRFPAT(IATM,MSURF)+WEIGHT
           IF (LERFPAT)
@@ -100,6 +110,7 @@ c  an atom is re-emitted
           ENDIF
           IF (LPRFPAT .OR. LERFPAT) LMETSPW(NSPH+IATM) = .TRUE.
         ENDIF
+
 c  a molecule is re-emitted
       ELSEIF (ITYP.EQ.2) THEN
         LOGMOL(IMOL,ISTRA)=.TRUE.
@@ -149,6 +160,7 @@ c  a molecule is re-emitted
           ENDIF
           IF (LPRFPML .OR. LERFPML) LMETSPW(NSPA+IMOL) = .TRUE.
         ENDIF
+
 c  a test-ion is reemitted
       ELSEIF (ITYP.EQ.3) THEN
         LOGION(IION,ISTRA)=.TRUE.

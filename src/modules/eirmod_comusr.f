@@ -164,7 +164,7 @@ C NPLPR1 + ... = NPLPRM
         ALLOCATE (BYIN(NRAD))
         ALLOCATE (BZIN(NRAD))
         ALLOCATE (BFIN(NRAD))
-cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  not yet. done later below, ical == 2 option
+cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  ital=-12. Not yet. done later below, ical == 2 option
         ALLOCATE (VOL(NRAD))   !  ital=-14
         ALLOCATE (WGHT(NSPZMC,NRAD))  ! check size of  nspzmc.  this "weight window" array is unused so far.
         ALLOCATE (EXIN(NRAD))
@@ -261,13 +261,14 @@ c  logicals
      .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
  
       ELSE IF (ICAL == 2) THEN
-c  first dimension of adin is now fixed.  reset nplprm
+c  NAIN: first dimension of adin is now fixed.  correct nplprm with nain*nrad
         IF (ALLOCATED(ADIN)) RETURN
  
         NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
         NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD
         ALLOCATE (ADIN(NAIN,NRAD))
 
+c  NCPV, NBGV are now set
         ALLOCATE (ICPVE(NCPV))
         ALLOCATE (ICPVS(NCPV))
         ALLOCATE (ICPVT(NCPV))
@@ -566,8 +567,8 @@ c
         BYIN   = 0._DP
         BZIN   = 0._DP
         BFIN   = 0._DP
-        VOL    = 0._DP
-        WGHT   = 1._DP
+        VOL    = 0._DP       ! ital=-14
+        WGHT   = 1._DP     
         BXPERP = 0._DP
         BYPERP = 0._DP
         EXIN   = 0._DP
@@ -654,7 +655,7 @@ c
  
       ELSE IF (ICAL == 2) THEN
 c  at this call: first dimension of adin is known, as well as size of cop and bgk tallies
-        ADIN   = 0._DP
+        ADIN   = 0._DP      ! ital=-12
 
         ICPVE  = 0
         ICPVS  = 0

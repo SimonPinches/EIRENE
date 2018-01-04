@@ -168,7 +168,7 @@ c  secondaries, species distribution, for EI and PI processes
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PELEI(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
-c  ...and cummulated distributions thereof, for species sampling
+c  ...and cumulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::

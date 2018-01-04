@@ -1,3 +1,4 @@
+cdr nov. 17   :  lmetspw arguments corrected
 cdr sept.17   :  no ion sheath orbit correction at mirror surfaces (=symmetry BC)
 cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
 c                return 3, if icol=1, even for purely absorbing surfaces. 
@@ -367,7 +368,7 @@ C  ADDITIONAL OUTGOING SURFACE FLUX TALLIES
 C
 C  STOP TRAJECTORY, WITHOUT SPUTTERING, FOR SOME REASON IN SUBROUTINE ADDCOL OR STDCOL
 C
-      IF (.NOT.LGPART.AND.ICOL.EQ.0) RETURN
+      IF (.NOT.LGPART.AND.WPR.LE.0.0.AND.ICOL.EQ.0) RETURN
 
 C  PURELY ABSORBING SURFACE. ALSO: NO SPUTTERING HERE
       IF (ILIIN(MSURF).EQ.2) GOTO 50
@@ -479,12 +480,12 @@ C  NOTHING ELSE TO BE DONE, RETURN
 C
       IF (ILIIN(MSURF).EQ.2.AND..NOT.LTRANS) THEN
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WPR
-        IF (LSPUMP) LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZ) = .TRUE.  ! to be checked
+        IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
 
         NLTRJ = .FALSE.
         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
-        IF (ICOL.EQ.1) RETURN 3 ! conditional expectation estimator. continue.
+        IF (ICOL.EQ.1) RETURN 3 ! conditional expectation estimator. Continue.
 C
         WEIGHT=0.D0
         LGPART=.FALSE.
@@ -695,7 +696,7 @@ C  NO SUPPRESSION OF ABSORPTION
           IF (ZVZ.LT.RECYCT(ISPZ,MSURF)) GOTO 610
 C  ABSORB THIS PARTICLE
           IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
-          IF (LSPUMP) LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZ) = .TRUE.  ! to be checked
+          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
           LGPART=.FALSE.
           RETURN
         ENDIF
@@ -717,7 +718,7 @@ C       ITYP=2
         ELSEIF (IMOL.EQ.0) THEN
 C  NO THERMAL EMISSION, ABSORB INSTEAD
           IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
-          IF (LSPUMP) LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZ) = .TRUE.  ! to be checked
+          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
           LGPART=.FALSE.
           RETURN
         ELSEIF (IMOL.LT.0) THEN
