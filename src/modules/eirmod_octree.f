@@ -64,8 +64,8 @@ c       by what factor do we divide the length to add to the "ray"?
         REAL(DP) :: factor
 c       bounds are the B1 and B2 point of the convex hull with a
 c       small amount more to have a slightly larger volume. we
-c       divide by this length, so we don't have problems with floating
-c       point arithmetics anymore
+c       divide by this length, so we do not have problems with floating
+c       point arithmetic anymore
         REAL(DP), DIMENSION(3,2) :: bounds
       END TYPE octree
 
@@ -149,7 +149,7 @@ c       root node will have layer LAYERS-1, all leafs have level 0
 
 c       build a new root
         tree%root => OCTREE_NewNode(tree, XX,YY,ZZ, rootnumber, preroot)
-c       delete the preroot parent, we don't need this anymore
+c       delete the preroot parent, we do not need this anymore
         tree%root%parent => NULL()
         DEALLOCATE(preroot)
       END FUNCTION OCTREE_NewTree
@@ -344,7 +344,7 @@ c       => only inspect these layers!
 c         dot product of side norm vec and d
           DOTP = dot_product(d,NORMAL(:,I))
           IF (DOTP > EPS12) THEN
-c           now check on the intersection point. we dont need cramer here,
+c           now check on the intersection point. we do not need cramer here,
 c           as we have the hesse normal form of the plane:
 c           s = -(plane distance + <normal vec , aufpunkt>)/<normal vec, direction>
 c           ==> we need to calc the distance of the plane from (0,0,0) first:
@@ -482,7 +482,7 @@ c       => only inspect these layers!
 c         dot product of side norm vec and direction dir
           DOTP = dot_product(dir,NORMAL(:,I))
           IF (DOTP > EPS12) THEN
-c           now check on the intersection point. we dont need cramer here,
+c           now check on the intersection point. we do not need cramer here,
 c           as we have the hesse normal form of the plane:
 c           s = -(plane distance + <normal vec , aufpunkt>)/<normal vec, direction>
 c           ==> we need to calc the distance of the plane from (0,0,0) first:

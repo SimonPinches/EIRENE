@@ -146,7 +146,7 @@ c  momentum exchange rates, by reaction
 c  totals
      R SIGCXT,      SIGPIT,      SIGEIT,      SIGELT,      SIGTOT,
      R SIGBGK,
-c  invers mean free path
+c  inverse mean free path
      R ZMFPI
  
       REAL(DP), PUBLIC, SAVE :: ZMFPTHI, TDGTEMX

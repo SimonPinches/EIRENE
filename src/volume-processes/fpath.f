@@ -40,6 +40,8 @@ cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 
 cdr nov. 17:    unified version of fpatha, fpathm and fpathi, 
 cdr             manually adapted from original branch "code-combine", aug. 16, (p.b.)
+cdr dec  17:    bug fix: pvelq(iplsv), rather than pvelq(ipls) 
+cdr             probably no effect so far, because iplsv = ipls ?always?
 cdr             
 
 C
@@ -151,10 +153,11 @@ C
 2       DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLS) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES 
+C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES 
 C
       PVELQ0=VEL*VEL
-      DO 3 IPLS=1,NPLSV
+      DO 3 IPLS=1,NPLS
+        IPLSV=MPLSV(IPLS)
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             XC=0.
@@ -162,15 +165,15 @@ C
             ZC=0.
             CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
-            VX=VXIN(IPLS,K)
-            VY=VYIN(IPLS,K)
-            VZ=VZIN(IPLS,K)
+            VX=VXIN(IPLSV,K)
+            VY=VYIN(IPLSV,K)
+            VZ=VZIN(IPLSV,K)
           END IF
-          PVELQ(IPLS)=(VELX*VEL-VX)**2+
-     .                (VELY*VEL-VY)**2+
-     .                (VELZ*VEL-VZ)**2
+          PVELQ(IPLSV)=(VELX*VEL-VX)**2+
+     .                 (VELY*VEL-VY)**2+
+     .                 (VELZ*VEL-VZ)**2
         ELSE
-          PVELQ(IPLS)=PVELQ0
+          PVELQ(IPLSV)=PVELQ0
         ENDIF
 3     CONTINUE
 C

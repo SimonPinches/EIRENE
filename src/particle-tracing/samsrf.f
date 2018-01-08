@@ -21,6 +21,7 @@ c  aug. 15: arguments in vecusr added: ncell, x0, y0, z0
 C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTION OPTION
 CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
 cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic prinout
+cdr dec.17: cleanup, comments 
 C
       SUBROUTINE EIRENE_SAMSRF
 C
@@ -54,11 +55,13 @@ C
       INTEGER, INTENT(IN) :: NLSF
       REAL(DP) :: ZZ(3)
       REAL(DP) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, ELLZZ1, EP1ZZ1,
-     .          WINK, XR, EIRENE_STEP0, DELR, CS, EIRENE_STEP, FL, DET,
-     .          X0TEST, Y0TEST, S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
-     .          Z0TEST, RNF, ZH, EIRENE_STEP1, DELTA, ZM, XLAMDA, 
-     .          CTETHA, GAMMA, CUR, TESH,
-     .          VX,VY,VZ,XC,YC,ZC
+     .          WINK, XR,  DELR, CS,  FL, DET,
+     .          X0TEST, Y0TEST, Z0TEST, 
+     .          S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
+     .          RNF, ZH,  DELTA, ZM, XLAMDA, 
+     .          CTETHA, GAMMA, CUR, TESH, RANDIF,
+     .          VX,VY,VZ,XC,YC,ZC,
+     .          EIRENE_STEP0,EIRENE_STEP1,EIRENE_STEP
 C      REAL(DP) :: BABS
       INTEGER :: ISID, IDUM, EIRENE_LEARC1, NDUM, EIRENE_LEARC2, NT, 
      .           IEN, IAN,
@@ -106,18 +109,34 @@ C  LOOP OVER SOURCE SURFACES: ISRFS
 C
       DO 1 ISRFS=1,NSRFSI(ISTRAI)
 C
+c  sampling distribution, for all three coordinates (and time):
+c                         4 digits: TZYX
         ISOR=SORLIM(ISRFS,ISTRAI)
+c  initial birth point flags (ifpath,....) for particle tracing
         ISORFL=EIRENE_IDEZ(INT(SORIFL(ISRFS,ISTRAI)),4,4)
-c
 c  number of surface for current surface source segment
         INDSRF=INSOR(ISRFS,ISTRAI)
         IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
+
+C  HAS THIS SURFACE SOURCE A PRE-PROGRAMMED DISTRIBUTION
 C
-        IF (SORLIM(ISRFS,ISTRAI).GT.0.AND.
-     &       INDIM(ISRFS,ISTRAI).EQ.1.) THEN
+        IF (ISOR.LE.0) THEN
+C  NO. USER DEFINED SOURCE SAMPLING. NOW INITIALIZE USER-SUPPLIED SOURCE SAMPLING
+          ISR=ISRFS
+          ISTR=ISTRAI
+          CALL EIRENE_SM0USR(ISR,ISTR,
+     .                SORAD1(ISR,ISTR),SORAD2(ISR,ISTR),
+     .                SORAD3(ISR,ISTR),SORAD4(ISR,ISTR),
+     .                SORAD5(ISR,ISTR),SORAD6(ISR,ISTR))
+          GOTO 1
+        ENDIF
+C
+        IF (INDIM(ISRFS,ISTRAI).EQ.1.) THEN
+
 c  source is on radial (x-) grid surface x= const. r= const, etc...
 c  the poloidal range of source region should be on ingrd..(...,2),
 c  not on ingrd..(...,1)
+c  sample 2nd and 3rd coordinate, evalute 1st coordinate
           IF (INGRDA(ISRFS,ISTRAI,1).NE.INGRDE(ISRFS,ISTRAI,1)) THEN
             WRITE (iunout,*) 'WARNING FROM SAMSF0, ISTRAI= ',ISTRAI
             WRITE (iunout,*) 'NEW INPUT FOR INGRDA,INGRDE....'
@@ -128,28 +147,20 @@ c  not on ingrd..(...,1)
             INGRDE(ISRFS,ISTRAI,1)=INSOR(ISRFS,ISTRAI)
           ENDIF
         ENDIF
-C  HAS THIS SURFACE SOURCE A PREPROGRAMMED DISTRIBUTION
-C
-        IF (ISOR.LE.0) THEN
-C  NOW INITIALIZE USER-SUPPLIED SOURCE SAMPLING
-          ISR=ISRFS
-          ISTR=ISTRAI
-          CALL EIRENE_SM0USR(ISR,ISTR,
-     .                SORAD1(ISR,ISTR),SORAD2(ISR,ISTR),
-     .                SORAD3(ISR,ISTR),SORAD4(ISR,ISTR),
-     .                SORAD5(ISR,ISTR),SORAD6(ISR,ISTR))
-          GOTO 1
-        ENDIF
-C  YES
+
+C  set sampling distributions for 2 of the three coordinates x,y,z
+c  2 coordinates are sampled, 
+c  the third coordinate is evaluated from surface equation 
         NL1J=ISRFS
         NL2J=NL1J+NSRFS
         NL3J=NL2J+NSRFS
-c  FLAG FOR SPATIAL SAMPLING IS CODED ON INDTEC (ORIGINALLY: INPUT FLAG SORLIM)
+c  FLAG FOR SPATIAL SAMPLING IS CODED ON INDTEC 
+c  (ORIGINALLY: THIS WAS INPUT FLAG SORLIM --> ISOR)
         INDTEC(NL1J,ISTRAI)=EIRENE_IDEZ(ISOR,1,4)
         INDTEC(NL2J,ISTRAI)=EIRENE_IDEZ(ISOR,2,4)
         INDTEC(NL3J,ISTRAI)=EIRENE_IDEZ(ISOR,3,4)
 C
-C  IS A STEP FUNCTION REQUESTED?
+C  IS A STEP FUNCTION REQUESTED? (indtec=4 for one of the coordinates?)
 C
         ISTEP=0
         ISTEP_SPEZ=0
@@ -444,11 +455,10 @@ C  IDENTIFY THOSE BULK SPECIES WITH NON-ZERO FLUX
               FF=FLSTEP(IPLS,ISTEP,K)*DELR
               FLX(IPLS)=FLX(IPLS)+FF
               EKFLX(IPLS)=EKFLX(IPLS)+ELSTEP(IPLS,ISTEP,K)*DELR
-!pb 08.01.14
+c  sheath factor given on step function shstep along target?
               IF (SHSTEP(ISTEP,K) > 0) THEN
                 ESHFLX(IPLS)=ESHFLX(IPLS)+
      .               FF*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*NCHRGP(IPLS)
-!pb 08.01.14
               ELSE
 c  employ default eirene sheath model. 
 c    to be done. plasma flow velocity v..step should first be projected
@@ -456,6 +466,7 @@ c    towards surface normal.
                 GAMMA=0.
                 CUR=0.
                 TESH=TESTEP(ISTEP,K)
+CDR  THIS NEXT LOOP CAN GO OUT: IT IS NEEDED ONLY ONCE, NOT FOR EACH IPLS.
                 DO IP=1,NPLSI
                   IPLSV = MPLSV(IPLS)
                   VPSH(IP)=SQRT(VXSTEP(IPLSV,ISTEP,K)**2
@@ -463,12 +474,12 @@ c    towards surface normal.
      .                         +VZSTEP(IPLSV,ISTEP,K)**2)
                   DISH(IP) = DISTEP(IP,ISTEP,K)
                 END DO
+CDR
                 ESHFLX(IPLS)=ESHFLX(IPLS)+
      .             FF*NCHRGP(IPLS)*EIRENE_SHEATH(TESH,DISH,VPSH,
      .                              NCHRGP,GAMMA,CUR,NPLSI,INDSRF)
               END IF
-!pb
-            ENDDO
+            ENDDO  ! IPLS
           ENDDO
           NANZ=COUNT(FLX(:).GT.0.D0)
           IPLSD(1:NANZ)=PACK((/(IPL,IPL=1,NPLSI)/),FLX(1:NPLSI).GT.0.D0)
@@ -477,7 +488,7 @@ C
           WRITE (IUNOUT,*) 'FLUXES IN AMP/CM**2 '
           WRITE (iunout,'(1X,A4,A12,5(2X,A7,I2,A1))')
      .    '   K','  RRSTEP    ',('FLSTEP(',IPLSD(IPL),')',
-     .    IPL=1,NANZ)
+     .                            IPL=1,NANZ)
           DO 4 K=1,NSMX-1
             WRITE (iunout,'(1X,I4,1P,6E12.4/(5x,1P,6E12.4))')
      .               K,RRSTEP(ISTEP,K),
@@ -489,10 +500,12 @@ C
  
           WRITE (iunout,*) 'FLUXES: PART., KINET., SHEATH; INTEGRATED:'
           DO 5 IPL=1,NANZ
-            CALL EIRENE_MASJ1R('IP,FLUX      [A]',IPL,FLX(IPLSD(IPL)))
-            CALL EIRENE_MASJ1R('IP,EKIN-FLUX [W]',IPL,EKFLX(IPLSD(IPL)))
-            CALL
-     .      EIRENE_MASJ1R('IP,ESH-FLUX  [W]',IPL,ESHFLX(IPLSD(IPL)))
+            CALL EIRENE_MASJ1R('IP,FLUX      [A]',
+     .                          IPLSD(IPL),FLX(IPLSD(IPL)))
+            CALL EIRENE_MASJ1R('IP,EKIN-FLUX [W]',
+     .                          IPLSD(IPL),EKFLX(IPLSD(IPL)))
+            CALL EIRENE_MASJ1R('IP,ESH-FLUX  [W]',
+     .                          IPLSD(IPL),ESHFLX(IPLSD(IPL)))
 5         CONTINUE
           CALL EIRENE_LEER(2)
         ENDIF
@@ -670,11 +683,13 @@ C
               WRITE (IUNOUT,*) 'SUB-RANGE FOR UNIFORM RANDOM NUMBERS '
               CALL EIRENE_MASR2('XI,XE           ',
      .                       XI(1,ISRFS,ISTRAI),XE(1,ISRFS,ISTRAI))
-              DO IPL=1,NANZ
-                WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',IPL,
-     .                (XE(1,ISRFS,ISTRAI)-XI(1,ISRFS,ISTRAI))*
-     .                 FLX(IPLSD(IPL))
-              END DO
+              RANDIF=XE(1,ISRFS,ISTRAI)-XI(1,ISRFS,ISTRAI)
+              IF (ABS(RANDIF-1.0).GE.EPS5) THEN
+                DO IPL=1,NANZ
+                  WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',
+     .                   IPLSD(IPL),RANDIF*FLX(IPLSD(IPL))
+                END DO
+              ENDIF
             END IF
           ELSEIF (INDTEC(NL2J,ISTRAI).EQ.4) THEN
             XI(2,ISRFS,ISTRAI)=
@@ -832,6 +847,8 @@ C Z0 IS IRRELEVANT HERE, AND IS DETERMINED LATER FROM PHI
           PHI=ZZ(3)*DEGRAD
 C Z0 IS IRRELEVANT HERE, AND IS DETERMINED LATER FROM PHI
         ENDIF
+
+c  
         IF (SORLIM(NLSF,ISTRA).LT.0.D0) GOTO 2000
 C
         IF (JCALC.EQ.1) THEN
@@ -1207,7 +1224,7 @@ C  TO BE WRITTEN
 C
       ELSEIF (INDIM(NLSF,ISTRA).EQ.4) THEN
 C  LEVGEO=3,4:
-C     BIRTH POINT ON STANDARD RADIAL OR POLOIDAL SURFACE
+C     BIRTH POINT ON MIX OF STANDARD RADIAL AND POLOIDAL SURFACES
 C     ARC-LENGTH CO-ORDINATE IS SAMPLED FROM STEP FUNCTION
 C  LEVGEO=5:
 C     TRIANGULAR SURFACE SEGMENT IS SAMPLED FROM STEP FUNCTION
