@@ -97,7 +97,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
-c  nspez out of range: 
+c  nspez out of range: Set volumetric sources for ALL species 
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
@@ -372,6 +372,7 @@ C
           IPLSTI = MPLSTI(IPLS)
           SUMM=0.D0
           EISUMM=0.D0
+C  VOLUMETRIC SUB-STRATA  BETTER NAME: IVOLSI RATHER THAN ISRFSI
           DO 53 ISRFSI=1,NSRFSI(ISTRA)
             ISR=ISRFSI
             SUM=0.D0

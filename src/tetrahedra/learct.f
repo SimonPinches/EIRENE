@@ -205,7 +205,7 @@ C  CELL I ALREADY TESTED BEFORE ?
       END DO
  
       WRITE (iunout,*) ' POINT ',X,Y,Z
-      WRITE (iunout,*) ' OUTSIDE OF ALL TETRAHEDRONS '
+      WRITE (iunout,*) ' OUTSIDE OF ALL TETRAHEDRA '
       EIRENE_LEARCT=0
       RETURN
       END

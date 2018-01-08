@@ -42,7 +42,7 @@
      .    1._dp,  1._dp,  1._dp /), (/ 3, 27 /))
  
       IF (NTET+48 > NTETRA) THEN
-        WRITE (iunout,*) ' ALLOWED NUMBER OF TETRAHEDRONS EXCEEDED '
+        WRITE (iunout,*) ' ALLOWED NUMBER OF TETRAHEDRA EXCEEDED '
         WRITE (iunout,*) ' INCREASE NTETRA '
         CALL EIRENE_EXIT_OWN(1)
       END IF

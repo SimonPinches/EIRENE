@@ -81,14 +81,14 @@ C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
           ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
           ADDI=ADDI+ADD
         ENDIF
-! cummulativ distribution of weight of particle no I, for sampling. not atomic flux
+! cumulativ distribution of weight of particle no I, for sampling. not atomic flux
         RPARTW(I)=RPARTW(I-1)+WEIGHT*FLXFAC(ISTR)
-! total flux von census, atomic flux (AMP)
+! total flux on census, atomic flux (AMP)
         PEFLUX   = PEFLUX + ADD
       END DO
 
 c  peflux is the total, fully scaled census "atomic" flux accumulated on my_pe
-c  rpartw(i) is the cummulative, scaled, flux distribution on census accumulated on my_pe
+c  rpartw(i) is the cumulative, scaled, flux distribution on census accumulated on my_pe
       call eirene_leer(1)
       write (iunout,*) 'COLLECT CENSUS, from my_pe      ',my_pe
       write (iunout,*) 'scores on census: iprnli    ',iprnli
@@ -110,7 +110,7 @@ c     pefluxp(my_pe)=peflux
       call mpi_allreduce(peflux,totflux,1,MPI_REAL8,
      .                   MPI_SUM,MPI_COMM_WORLD,ier)
 c
-c  cummulated number of scores, and atomic flux, summed from all PEs.
+c  cumulated number of scores, and atomic flux, summed from all PEs.
       if (my_pe.eq.0) THEN
         write (iunout,*) ' itotal, totflux', itotal, totflux
       ENDIF
@@ -213,7 +213,7 @@ cdr rpselect(0) war schon gesetzt.
             rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
           end do
 
-          write (iunout,*) 'total cummulated flux on census (AMP) ' 
+          write (iunout,*) 'total cumulated flux on census (AMP) ' 
           write (iunout,*) 'rpselect '
           write (iunout,'(i6,es12.4)') (ipe,rpselect(ipe),ipe=0,nprs-1)
 

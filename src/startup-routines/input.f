@@ -4175,8 +4175,8 @@ C
 C
 C  SPECIES INDEX DISTRIBUTION OF PRIMARY SOURCE PARTICLES
 C  OR FOR THERMAL PARTICLE REFLECTION MODEL
-C  datm is the cummulative of datd,
-C  dmol is the cummulative of dmld,
+C  datm is the cumulative of datd,
+C  dmol is the cumulative of dmld,
 C  and so on
 C
       NATMIM=NATMI-1

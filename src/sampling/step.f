@@ -185,7 +185,7 @@ C
 10    CONTINUE
 
 C
-C   set cummulative distribution VL (particles) and EL (energy),
+C   set cumulative distribution VL (particles) and EL (energy),
 C                   for all species: ispz and for sum over species: ispz=0
 C
       DO 20 ISPZ=0,NSPZ
@@ -209,7 +209,7 @@ C  INVERT COMPLETE STEPFUNCTION ISTEP (ONLY ONCE)
      .                     ELSTEP(ISPZ,ISTEP,J-1)
 21      CONTINUE
 20    CONTINUE
-C  CUMMULATIVE STEPFUNCTION "VF" NO. ISTEP IS DEFINED NOW
+C  CUMULATIVE STEPFUNCTION "VF" NO. ISTEP IS DEFINED NOW
 C  RETURN TOTAL FLUX, SUM OVER SPECIES
 
       EIRENE_STEP=VF(0,ISTEP,NS)

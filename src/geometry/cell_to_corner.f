@@ -6,7 +6,7 @@ c              tbd: Compare with routine plotting/celint.f, remove dublicated co
 
       subroutine eirene_cell_to_corner (f, fcorner) 
 c  interpolate cell averaged tallies onto cell vertices     
-c  FOR EACH CELL VERTIX USE INVERS DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
+c  FOR EACH CELL VERTIX USE INVERSE DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
 c  FOR WEIGHTING
       use eirmod_precision
       use eirmod_parmmod
@@ -146,7 +146,7 @@ c  2d grid of triangles
          fcorner(1:nrknot) = fcorner(1:nrknot)/volsum(1:nrknot)
          deallocate (volsum)
 
-c  3d grid of tetrahedrons
+c  3d grid of tetrahedra
       elseif (levgeo.eq.5) then
          
          allocate(volsum(ncoord))

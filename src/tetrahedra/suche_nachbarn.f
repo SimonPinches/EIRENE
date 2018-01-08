@@ -20,7 +20,7 @@ C      INTEGER :: IC
      .             2,4,3,
      .             3,4,1/
  
-      DO ITET=1,NTET      ! FOR ALL TETRAHEDRONS
+      DO ITET=1,NTET      ! FOR ALL TETRAHEDRA
         DO IS=1,4         ! AND FOR ALL SIDES OF EACH TETRAHEDRON
           IF (NTBAR(IS,ITET) == 0) THEN   ! IF IT HAS NO NEIGHBOR JET
             IP(1)=NTECK(ITSIDE(1,IS),ITET)
