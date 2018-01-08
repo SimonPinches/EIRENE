@@ -106,10 +106,10 @@ C
       IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
 
 !  ACCMAS: accumulated mass of all secondaries (all types)
-!  ACCINV: accumulated invers mass of all secondaries (all types)
+!  ACCINV: accumulated inverse mass of all secondaries (all types)
 
 !  ACCMSA: accumulated mass of ATOMIC secondaries (type ITYP=1)
-!  ACCINA: accumulated invers mass of ATOMIC secondaries (type ITYP=1)
+!  ACCINA: accumulated inverse mass of ATOMIC secondaries (type ITYP=1)
 !  analogously for molecule, test ion and bulk secondaries
       IF (ITYP.EQ.1) THEN
         IAT=ISPE
@@ -514,7 +514,7 @@ C
 C  SET TOTAL NUMBER OF SECONDARIES BY TYPE OF SECONDARY: P..DS(IREI,0)
 C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2ND(IREI)  INTO
-C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
+C  CUMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
 
 C  ATOM SECONDARIES 
       DO 510 IAT=1,NATMI
@@ -551,7 +551,7 @@ C  TOTAL NUMBER OF SECONDARIES
      .            PIOEI(IREI,0)
  
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
-C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION 
+C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION 
 C          FOR TEST PARTICLE SECONDARIES
 C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)

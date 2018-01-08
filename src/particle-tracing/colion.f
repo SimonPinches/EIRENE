@@ -306,7 +306,7 @@ cdr
           END IF
 cdr  build one single distribution of secondary test particle species, all types, include photons
 cdr  this should not be done here, but instead only once, in preproc. phase !!
-cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cummulative p2nd(IREI) ?
+cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cumulative p2nd(IREI) ?
           NAMIEI = 0
 
           NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F

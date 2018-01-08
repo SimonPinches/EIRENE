@@ -108,7 +108,7 @@ C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.
 c  at 104 :   an earlier track continues here. 
-c             initial position of track and cummulated integral for mfp sampling is not refreshed. 
+c             initial position of track and cumulated integral for mfp sampling is not refreshed. 
 c             meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION

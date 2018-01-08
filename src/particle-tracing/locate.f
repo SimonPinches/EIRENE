@@ -18,7 +18,8 @@ c             directly to be included in line shape sampling
 !pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
 !pb           spatial resolution of sptpl and spttot added
 !pb  8.11.06: set timestep index for time dependent mode
-!pb  8.11.06: as SORLIM can be negative ISOR=ABS(SORLIM)
+cdr         : as SORLIM can be negative, to call SAMUSR for spatial coordinates. 
+cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS(SORLIM)
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
@@ -616,7 +617,7 @@ C
       ELSEIF (LGTIME) THEN
         ISOR=ABS(SORLIM(ISECT,ISTRA))
         INDTEC=EIRENE_IDEZ(ISOR,4,4)
-        IF (INDTEC.EQ.0) INDTEC=2
+        IF (INDTEC.EQ.0) INDTEC=2  !  default: sample uniformly in time interval
         IF (INDTEC.LE.1) TIME=TIME0
         IF (INDTEC.EQ.2) TIME=TIME0+RANF_EIRENE()*DTIMV
       ENDIF
