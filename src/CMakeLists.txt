@@ -8,7 +8,7 @@ include_directories(${MPI_Fortran_INCLUDE_PATH})
 
 # Adds compiler flags to all build types.
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS "-real-size 64 -fp-model source")
+  set(CMAKE_Fortran_FLAGS "-fp-model source")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
