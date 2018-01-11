@@ -8,8 +8,8 @@ include_directories(${MPI_Fortran_INCLUDE_PATH})
 
 # Adds compiler flags to all build types.
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS "-fp-model source")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -check all")
+  set(CMAKE_Fortran_FLAGS "-real-size 64 -fp-model source")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
@@ -144,7 +144,7 @@ endif()
 
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
-                   ${src_file-handling} ${src_geometry} ummy
+                   ${src_file-handling} ${src_geometry} 
                    ${src_geometry/time-routines} ${couplepath} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
