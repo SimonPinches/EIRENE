@@ -9,7 +9,7 @@ include_directories(${MPI_Fortran_INCLUDE_PATH})
 # Adds compiler flags to all build types.
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "-fp-model source")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all -check all")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -check all")
 elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
@@ -56,9 +56,13 @@ else()
 endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
-  message(STATUS "Found the following libraries used for plotting:"
-		  ${LibGKS}" ; "${LibGRS}" ; "${LibX11}" ; "${LibXt}" ; "
-		  ${Libz})
+  message(STATUS "Found the following libraries used for plotting:")
+  message(STATUS "  Lib GKS: " ${LibGKS})
+  message(STATUS "  Lib GRS: " ${LibGRS})
+  message(STATUS "  Lib X11: " ${LibX11})
+  message(STATUS "  Lib Xt:  " ${LibXt})
+  message(STATUS "  Lib z:   " ${Libz})
+  
   message(STATUS "For running, please export the following 2 statements "
 		 "into your console:")
   message(STATUS "export GLI_HOME=$PATH_TO_GKS_LIB")
@@ -67,6 +71,19 @@ if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
 else()
   message(STATUS " --  Plotting will be disabled.")
 endif()
+
+message(STATUS   " --  Setting interface and user routines:       ")
+message(STATUS   "       if flag -Dinterface is unspecified, dummies will")
+message(STATUS   "       be set. Try -Dinterface=ITER for ITER options.  ")
+
+if(interface)
+  get_filename_component(interface ${interface} NAME)
+  message(STATUS " --  interface and user routines set to " ${interface})
+else()
+  message(STATUS " --  Flag -Dinterface unset; will use dummy routines")
+endif()
+
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -110,22 +127,37 @@ else()
   list(APPEND plotpath ${src_plot_dummy})
 endif()
 
+# Decide whether to use ITER interface or dummy placeholders
+# (easily expandable for further interfaces)
+set(couplepath "")
+if( interface )
+  list(APPEND couplepath ${src_interfaces/couple_SOLPS-ITER})
+else()
+  list(APPEND couplepath ${src_interfaces/couple_Dummy})
+endif()
+set(userpath "")
+if( interface )
+  list(APPEND userpath ${src_user-routines/user_iter})
+else()
+  list(APPEND userpath ${src_user-routines/user_default})
+endif()
+
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
-                   ${src_file-handling} ${src_geometry} 
-                   ${src_geometry/time-routines} ${src_interfaces/couple_Dummy} 
+                   ${src_file-handling} ${src_geometry} ummy
+                   ${src_geometry/time-routines} ${couplepath} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
                    ${src_photons} ${plotpath} ${src_sampling} 
                    ${src_scoring} ${src_startup-routines} 
-                   ${src_surface-processes} ${src_tetrahedrons} 
-                   ${src_user-routines/user_default} ${src_volume-processes} 
+                   ${src_surface-processes} ${src_tetrahedra} 
+                   ${userpath} ${src_volume-processes} 
                    ${src_xdr-dummy})
 
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
-target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${LibGKS} 
-					${LibGRS} ${LibX11} ${Libz} ${LibXt})
+target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${LibGRS} 
+					${LibGKS} ${LibX11} ${Libz} ${LibXt})
 
 # Sets output directory of the library and executbales.
 set_target_properties(EIRENE PROPERTIES
