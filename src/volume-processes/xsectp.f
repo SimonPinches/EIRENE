@@ -1,4 +1,4 @@
-C  aug. 05:  corrected electron energy loss rate for default rec. rate
+C  aug. 05: corrected electron energy loss rate for default rec. rate
 ! 30.08.06: data structure for reaction data redefined
 ! 12.10.06: modcol revised
 ! 22.11.06: flag for shift of first parameter to rate_coeff introduced
@@ -34,14 +34,13 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP) :: CF(9,0:9)
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
      .            BREMS, Z, eirene_brems, ERATE
       INTEGER :: IIRC, IION3, IPLS3, IATM3, IMOL3, KK, NRC, IATM,
-     .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, I, MODC, IATM1,
+     .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, MODC, IATM1,
      .           ITYP, ISPZ, ITYP2, ISPZ2, IPHOT3
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LEXP, LADAS
@@ -49,8 +48,9 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-
-cdr: set hard wired lower density for H.4 type fits
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -179,6 +179,7 @@ C
           ENDIF
 C
 C  NON DEFAULT MODEL:  240--
+
 C
         ELSEIF (NRCP(IPLS).GT.0) THEN
           DO 82 NRC=1,NRCP(IPLS)
@@ -201,7 +202,10 @@ C  RECOMBINATION MODEL FOR BULK IONS
               IF (NRRCI.GT.NREC) GOTO 992
               IRRC=NRRCI
               LGPRC(IPLS,IDSC)=IRRC
-
+cdr  for notational consistency: here should come a call to routine xstrc,
+cdr  for rc type processes
+cdr  as already in case of xsecta, xsectm, xsecti, etc.. 
+cdr  there for the corresponding ei,el,cx and pi processes
 cdr  this next stuff should go into xstrc.f
               ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
               ISPZ=EIRENE_IDEZ(ISCD1P(IPLS,NRC),3,3)
@@ -250,7 +254,10 @@ C  2.B) RATE COEFFICIENT(TE)
                 IF (NSTORDR >= NRAD) THEN
                   LEXP = .NOT. (MOD(IFTFLG(KK,2),100) == 10)
                   DO J=1,NSBOX
-!pb                    IF (LGVAC(J,IPLS)) CYCLE
+!pb                 IF (LGVAC(J,IPLS)) CYCLE
+cdr  a density independent rate can exist also in a vacuum cell.
+cdr  e.g. spontanuous emission of a line, also treated as "recombination" event
+cdr       by analogy.
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
                     COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,
      .                    LEXP,0,ERATE)
@@ -261,7 +268,7 @@ C  2.B) RATE COEFFICIENT(TE)
                   NREARC(IRRC) = KK
                   JEREARC(IRRC) = 1
                 ELSE
-C  DON'T STORE DATA, BUT COMPUTE THEM THEN NEEDED
+C  DON'T STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                   JEREARC(IRRC) = 1
                 END IF
@@ -272,7 +279,7 @@ C  2.C) RATE COEFFICIENT(TE,EBEAM): IRRELEVANT
 C  2.D) RATE COEFFICIENT(TE,NE)
                 IF (NSTORDR >= NRAD) THEN
                   DO J=1,NSBOX
-!pb                    IF (LGVAC(J,IPLS)) CYCLE
+!pb                 IF (LGVAC(J,IPLS)) CYCLE
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
                     COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),
      .                   .TRUE.,1,ERATE)
@@ -405,6 +412,8 @@ c  bremsstrahlung correction done.
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
 C  SHIFT ELECTRON COOLING RATE BY DELE * TABRC
+c  DELE= IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT 
+C        INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN

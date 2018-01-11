@@ -7,21 +7,19 @@
  
       implicit none
  
-      REAL(DP) :: dummy, H1RN_REINIT,  ranf_eirene_reinit,
-     &     ranset_eirene_reinit, sheath_reinit
+      REAL(DP) :: dummy, ranf_eirene_reinit
+C      REAL(DP) :: H1RN_REINIT
+      integer :: idummy
+      INTEGER, EXTERNAL :: ranset_eirene_reinit
  
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
       call EIRENE_SIGHA_REINIT
  
-!  OUT Of USE
-!      dummy = H1RN_REINIT
-!      call H1RNV_REINIT
- 
       dummy = ranf_eirene_reinit()
-      dummy = ranset_eirene_reinit()
+      idummy = ranset_eirene_reinit()
  
-!pb      call INIT_COUTAU_REINIT
+!pb   call INIT_COUTAU_REINIT
       call EIRENE_CRECH_REINIT
  
       call EIRENE_STCOOR_REINIT
@@ -35,18 +33,20 @@ C     reinitialization start
  
       call EIRENE_REFLEC_REINIT
  
-!pb      call UPTCOP_REINIT
+!pb   call UPTCOP_REINIT
  
       call EIRENE_STATIS_BGK_REINIT
 
 csw 18apr07
       call EIRENE_SPUTER_REINIT
+
       call EIRENE_BA_ALPHA_REINIT
-!pb      call EIRENE_BA_GAMMA_REINIT
-!pb      call EIRENE_LY_BETA_REINIT
+!pb   call EIRENE_BA_GAMMA_REINIT
+!pb   call EIRENE_LY_BETA_REINIT
+      call EIRENE_LININT_REINIT  !cdr, july 17, added
+
       call EIRENE_UPTBGK_REINIT
-      call EIRENE_STORE_REINIT
-!out      call EIRENE_MKCENS_REINIT
+!out  call EIRENE_MKCENS_REINIT
       call EIRENE_update_reinit
       call EIRENE_update_spectrum_reinit
 csw

@@ -1,10 +1,10 @@
-C_on_Mo   
+C_on_Mo_7.37  also includes: pdf boundaries emin,emax, angmin, angmax....       
+ 
+*  projectile surface binding energy parameter: 7.37 eV     
+*  parameter esbparm only added in first of the 84 blocks  
  
  
- 
- 
- 
-    6.  12.01   42.  95.94  1.00E+00  0.00E+00  0.00E+00  0.00E+00    10   0.00
+    6.  12.01   42.  95.94  1.00E+00  0.00E+00  0.00E+00  0.00E+00  7.37E+00    10   0.00
 
   0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00       0.00000E+00  0.00000E+00
 

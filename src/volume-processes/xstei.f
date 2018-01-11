@@ -3,7 +3,6 @@
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
-!pb  22.11.06: DELPOT introduced
 !dr  30.01.07: if lgvac(..,npls+1)  cycle (do not evaluate rates in vacuum)
 !pb  20.04.07: allow for third and fourth secondary
 
@@ -28,6 +27,8 @@ cdr  Jan. 2014:
 cdr Aug.16  :   minor syncronisation with xstpi.f. 
 cdr Sept.16 :   Started to implement H.3 rate coeff. 
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
+cdr May 17  :   safety cut off for TEE at 0.1 eV, added in more cases
+cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 
 
 C
@@ -55,6 +56,7 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
       USE EIRMOD_COMXS
+      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
 
@@ -73,7 +75,7 @@ C
      .          EIRENE_ENERGY_RATE_COEFF,
      .          DELE, ERATE,
      .          FP1(6),FP2(6)
-      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, I, IP, IRAD, IO,
+      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML, IMIN, IMAX
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -104,10 +106,10 @@ C
       IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
 
 !  ACCMAS: accumulated mass of all secondaries (all types)
-!  ACCINV: accumulated invers mass of all secondaries (all types)
+!  ACCINV: accumulated inverse mass of all secondaries (all types)
 
 !  ACCMSA: accumulated mass of ATOMIC secondaries (type ITYP=1)
-!  ACCINA: accumulated invers mass of ATOMIC secondaries (type ITYP=1)
+!  ACCINA: accumulated inverse mass of ATOMIC secondaries (type ITYP=1)
 !  analogously for molecule, test ion and bulk secondaries
       IF (ITYP.EQ.1) THEN
         IAT=ISPE
@@ -241,7 +243,10 @@ C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  MISSING HERE, I.E. NOT READY FOR CORONA APPROXIMATION
 C   CORONA ERATE NOT WORKING !
 C .....................................
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,.TRUE.,0,ERATE)
+            TEE=TEINL(J)
+cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
+            TEE = max(-2.3_dp,TEE)
+            COU = EIRENE_RATE_COEFF(KK,TEE,0._DP,.TRUE.,0,ERATE)
             TABEI1(IREI,J)=COU*FACTKK
 C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
             IF (IFTFLG(KK,2) < 100)
@@ -259,6 +264,8 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
 C  2.C) RATE COEFFICIENT(TE,EBEAM)
 C       NEND=9
 C  TO BE WRITTEN
+        goto 996
+
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
           rt => reacdat(kk)%rtc
@@ -269,15 +276,16 @@ C  TO BE WRITTEN
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
+cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
               TEE = max(-2.3_dp,TEE)
-c old
-c old         CALL EIRENE_PREP_RTCS (KK,3,TEE,CF)
-c old
+c  evaluate 2 parametric fit, 
+c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
-
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd)
+cdr  not ready, tabei1 --> tabei3 to be done.
 C             TABEI3(IREI,J,1:9) = CF(1:9)
 C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
           END DO
@@ -293,9 +301,10 @@ C  2.D) RATE COEFFICIENT(TE,NE)
           FCTKKL=LOG(FACTKK)
 C .....................................
 C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  PREPARE ELECTR. ENERGY LOSS FROM INTERNAL CR CODE
-          KREAD=EELEC
+          
           IF ((REACDAT(KK)%RTC%IFIT == 5) .AND.
      .        (EIRENE_IDEZ(ISCDE,5,5) == 3)) THEN
+            KREAD=EELEC
             IF (REACDAT(KREAD)%LRTCEW) THEN
               IF (REACDAT(KREAD)%RTCEW%IFIT == 5) LHCOL=.TRUE.
             END IF
@@ -303,7 +312,11 @@ C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  PREPARE ELECTR. ENERGY LOSS FROM INT
 C .......................................
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            TEE=TEINL(J)
+cdr  safety cut off at Te= 0.1 eV. (TVAC=0.02)
+            TEE = max(-2.3_dp,TEE)
+cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
+            COU = EIRENE_RATE_COEFF(KK,TEE,PLS(J),.FALSE.,1,ERATE)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
             TB=MAX(-100._DP,TB)
@@ -413,6 +426,8 @@ C  ??? EELEI1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
                 ENDIF
                 FACREI(IREI,1)=FACTKK
                 FACREI(IREI,2)=LOG(FACTKK)
+C  SHIFT ELECTRON COOLING RATE BY DELE * TABEI
+c  DELE= -IONISATION POTENTIAL TURNS EELEI INTO A RADIATION LOSS COMPONENT ONLY
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN
@@ -499,7 +514,7 @@ C
 C  SET TOTAL NUMBER OF SECONDARIES BY TYPE OF SECONDARY: P..DS(IREI,0)
 C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2ND(IREI)  INTO
-C  CUMMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
+C  CUMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
 
 C  ATOM SECONDARIES 
       DO 510 IAT=1,NATMI
@@ -532,11 +547,11 @@ C  BULK SECONDARIES (NOT ON P2ND)
 540   CONTINUE
 C
 C  TOTAL NUMBER OF SECONDARIES
-      P2NDS(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
+      P2NEI(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
      .            PIOEI(IREI,0)
  
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
-C          SUCH THAT IT BECOMES A CUMMULATIVE SAMPLING DISTRIBUTION 
+C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION 
 C          FOR TEST PARTICLE SECONDARIES
 C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)
@@ -622,7 +637,7 @@ C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0
       CALL EIRENE_LEER(1)
 C
       WRITE (iunout,*) 'TEST PARTICLE SECONDARIES:'
-      IF (P2NDS(IREI).EQ.0.D0) THEN
+      IF (P2NEI(IREI).EQ.0.D0) THEN
         WRITE (iunout,*) 'NONE'
         CALL EIRENE_LEER(1)
         GOTO 880

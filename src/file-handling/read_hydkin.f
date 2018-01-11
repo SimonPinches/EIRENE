@@ -9,7 +9,7 @@ cdr              for generalization
 cdr   current implementation: started for rate coefficients (%RTC$) only.
 
 cdr   july 16:   more error exits, to avoid code crashes when reading 1D tabulated data
-cdr              currently this routine expects hard wired hydkin, CxHy format. 
+cdr              currently this routine expects hard wired HYDKIN, CxHy format. 
 cdr   to be done: distuingish between reading data, and automatted construction
 cdr               of full blocks 4a,b,c,d,5 from a HYDKIN output
 
@@ -39,9 +39,8 @@ c          lffl:  ??
       character(3), intent(inout) :: crc
       real(dp) , intent(out) :: r1mn, r1mx, e_el, e_k
       character(132) :: zeile
-      character(12) :: chr
       character(len=len(reac)+10) :: cpreac
-      integer :: ianf, iend, ier, ll, io, ie, iflg
+      integer :: ianf, iend, ll, io, ie, iflg
 
       type(hydkin_data), pointer :: hp
  

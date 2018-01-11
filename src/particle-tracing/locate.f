@@ -18,7 +18,8 @@ c             directly to be included in line shape sampling
 !pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
 !pb           spatial resolution of sptpl and spttot added
 !pb  8.11.06: set timestep index for time dependent mode
-!pb  8.11.06: as SORLIM can be negative ISOR=ABS(SORLIM)
+cdr         : as SORLIM can be negative, to call SAMUSR for spatial coordinates. 
+cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS(SORLIM)
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
@@ -40,6 +41,9 @@ cdr           to be done: epel volume tally (electron energy loss associated wit
 cdr                       or with sheath, etc)
 cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
 cdr nov. 15:  species index eppl added.
+cdr oct 17 :  code unification/reduction: set species pointer, near 5000
+cdr           Could be done earlier, and also simplify code here in locate already
+cdr nov.17 :  remove dead option: nlstor
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:
@@ -140,17 +144,14 @@ C
      .          VXSPTC, VYSPTC, VZSPTC, A, ZV, SUM1, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
      .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL, 
-     .          TIWD, TEWD, DPH, E00, DE, HW, SHIFT, DVDW, FAC, 
-     .          dwde, prmax, raw, res
+     .          TIWD, TEWD, DPH, E00, 
+     .          res
       REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym, prmin, sig, zmfp, ean, een, ye,
-     .            EIRENE_fpathph, flxfc, zmfp_cut, zmfp_e0, zmfp_e00,
+     .            yr, ym, 
+     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
      .            fac_e0, fac_e00,
-     .            hwvdw_pb,pla,B_NU, EN, spcvl, spcmx,
-     .            xleft, xright, weights
-      real(sp), allocatable :: eplot(:), y1plot(:), y2plot(:)
-      real(sp) :: y1a,y1e,y2a,y2e,e00_plot
-      real(DP) :: EMINSP,EMAXSP
+     .            xleft, xright
+C      REAL(DP) :: B_NU, pla
       real(dp) :: cflag(7,MSTOR0)
       REAL(DP), SAVE :: SNORM
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -160,15 +161,14 @@ C
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
      .           I2, IM, J, I1, IMP, NPANUO, ILINE, ISURF, ITRSF,
      .           IPOINT, ISOUR, ISRFS, I, ISTEP,
-     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, IPLSTI,
+     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, 
      .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
-     .           IPLTI, IROT, IL, IGND, ICELL, KK, IR, ILOOP, ISPC, nen,
-     .           NLOOP, IE, ictoff, iloc, 
+     .           IPLTI, IROT, KK, 
      .           ITYP_OLD, IGASP_OLD,IGASC_OLD
+C      INTEGER :: ILOOP, IPLSTI, NLOOP
       INTEGER, SAVE :: NLIMSQ
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
-      integer, save :: ifrstpb=0
       integer :: ityp_b1,ityp_b2,ipls_b1,ipls_b2
       real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
 C
@@ -337,7 +337,6 @@ C   SOURCE DUE TO TIME DEP. MODE, READ PARTICLES FROM CENSUS: RPARTC,IPARTC
 C   LABELS  11---20
 C   AT PRESENT: ONLY ONE SUBSTRATUM
         ISECT=1
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
 C
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
           IMP=IPANU
@@ -388,7 +387,7 @@ C  DETERMINE THE REMAINING PARTICLE PARAMETERS
 C
 C  IGNORE THE WEIGHT RPARTC(9,IMP) OF THE SAMPLED PARTICLE,
 C  BECAUSE THIS WEIGHT HAS ALREADY BEEN TAKEN INTO ACCOUNT 
-C  IN THE SAMPLING DISTRIBUTION
+C  IN THE SAMPLING (BOOTSTRAPPING) DISTRIBUTION
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
 C  ONE BY ONE RE-LAUNCH FROM CENSUS
           WEIGHT=RPARTC(J,IMP)
@@ -421,7 +420,6 @@ C
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
         GOTO 5000
 C
@@ -439,7 +437,6 @@ C   FIRSTLY FIND POINT NUMBER IPOINT
 22        CONTINUE
         ENDIF
         ISECT=IPOINT
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
 C
 C   NEXT FIND CO-ORDINATES AND CELL INDICES,
 C   LOCAL BACKGROUND TEMPERATURES TIWL AND TEWL, AND
@@ -486,7 +483,6 @@ C   FIRST FIND SOURCE-SURFACE NUMBER ISURF
 52        CONTINUE
         ENDIF
         ISECT=ISURF
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
 C
 C   NEXT FIND POSITION ON THIS SOURCE SURFACE, AS WELL AS
 C   CELL INDICES, LOCAL TEMPERATURES TIWL AND TEWL, AND
@@ -603,7 +599,6 @@ C  SUBSTRATA OF VOLUME SOURCE: IVOLM
         CALL EIRENE_SAMVL1(IVOLM,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
         IF (.NOT.LGPART) RETURN
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
         MSURF=0
       ENDIF
 C
@@ -622,7 +617,7 @@ C
       ELSEIF (LGTIME) THEN
         ISOR=ABS(SORLIM(ISECT,ISTRA))
         INDTEC=EIRENE_IDEZ(ISOR,4,4)
-        IF (INDTEC.EQ.0) INDTEC=2
+        IF (INDTEC.EQ.0) INDTEC=2  !  default: sample uniformly in time interval
         IF (INDTEC.LE.1) TIME=TIME0
         IF (INDTEC.EQ.2) TIME=TIME0+RANF_EIRENE()*DTIMV
       ENDIF
@@ -636,7 +631,11 @@ C    PLUS: WEISPZ FOR SOURCE SPECIES SAMPLING
 C          WEISPZ IS THE ANALOG SAMPLING DISTRIBUTION
 C          DPLS,DATM,DMOL,DION ARE THE NONANALOG SAMPLING DISTRIBUTIONS
 C
-C    PLUS: CRTX,CRTY,CRTZ,SCOS
+C    PLUS: DEFAULT CRTX,CRTY,CRTZ,SCOS (REFERENCE DIRECTION "C" FOR VELOCITY SPACE SAMPLING)
+C          POINT SOURCE   : READ VIA SORAD4,5,6, VIA SAMPNT
+C          LINE SOURCE    : TBD
+C          SURFACE SOURCE : LOCAL OUTER SURFACE NORMAL AT X0,Y0,Z0
+C          VOLUME SOURCE  : READ VIA SORAD4,5,6, VIA SAMVOL
 C
 C .........................................................................
 C
@@ -872,6 +871,8 @@ C  MAKE SURE NOT TO WASTE TIME IN PARTICLES WITH ZERO WEIGHT
 C
       LGPART=WEIGHT.GT.0.D0
       IF (.NOT.LGPART) RETURN
+C  
+C  FIND VELOCITY SPACE COORGINATES, GIVEN: POSITION, SPECIES 
 C
 C  PARAMETERS FOR VELOCITY SAMPLING DISTRIBUTION:
 C  TEWD,TIWD,VXWD,VYWD,VZDW
@@ -983,7 +984,8 @@ C
 C  COSINE LIKE OR GAUSSIAN ANGLE DISTRIBUTION
 C
 C  IN CASE (CRTX,CRTY,CRTZ) NE (0.,0.,0.)
-C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
+C  USE REFLECTION MODEL ANGULAR DISTRIBUTION:
+c  SEND A VIRTUAL PARTICLE ONTO VIRTUAL SURFACE, AND REFLECT THEN 
           VELX=CRTX
           VELY=CRTY
           VELZ=CRTZ
@@ -1041,7 +1043,6 @@ C
         IF (NADSPC.GE.1.AND.NLSRF(ISTRA)) 
      .    CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
 C  PURELY MOLECULAR SOURCE?  300 --- 399
 C
@@ -1072,7 +1073,7 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
      .                SORCTY(ISTRA),SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
 C         VEL_MEAN=VEL
 C         E0_MEAN=E0
-!pb     ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND..NOT.NLVOL(ISTRA)) THEN
+
         ELSEIF (EMAX.LE.0..AND..NOT.NLVOL(ISTRA)) THEN
 C
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX
@@ -1123,7 +1124,6 @@ C
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
 C  PURELY TEST IONIC SOURCE?  400 --- 499
 C
@@ -1243,7 +1243,6 @@ C
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
 C  PURELY BULK IONIC SOURCE?   500  ---  599
 C
@@ -1404,7 +1403,6 @@ C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(-WEIGHT,1,0)
 C
           IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-          IF (NLSTOR) CALL EIRENE_STORE(2)
 C
 C  REFLECT THIS ION AS TEST PARTICLE FROM SURFACE NO. MSURF
 C
@@ -1689,7 +1687,6 @@ C
 C  SURFACE TALLIES (VOLUME TALLIES PPAT,PPML,....WILL BE DONE BELOW,
 C                   ONCE FOR NLPNT,NLLNE,NLSRF,NLVOL)
 C
-          IF (NLSTOR) CALL EIRENE_STORE(1)
 C
           CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)         
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
@@ -1724,7 +1721,6 @@ c         DUMV(3)=0._DP
           IF (LEPPL) EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
 C         IF (LEPEL) EPEL(NCELLT)=EPEL(NCELLT)- ???  ELECTRON ENERGY LOSS/GAIN ASSOCIATED WITH PROCESS IRRC
           IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-          IF (NLSTOR) CALL EIRENE_STORE(2)
 C
 C  BULK SPECIES DONE
 C  NEXT: IDENTIFY RESULTING TEST PARTICLE SPECIES
@@ -2107,7 +2103,6 @@ c  parts for plotting emission spectrum removed from here --> development branch
      .             ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           ENDIF
 C
-          IF (NLSTOR) CALL EIRENE_STORE(1)
 C
         ELSEIF (NLLNE(ISTRA)) THEN
           WRITE (iunout,*)
@@ -2163,7 +2158,12 @@ C
       ENDIF
 C
 5000  CONTINUE
- 
+
+!  PARTICLE TYPE AND SPECIES HAVE CHANGED
+!  PREPARE POINTER FOR UNIFIED SUBROUTINES
+      IF (LGPART) CALL EIRENE_SWITCH_PARTINFO
+
+C  RECORD EVENT
       LAST_EVENT%IFLAG = 1
       LAST_EVENT%NCELL = NCELLT
       LAST_EVENT%ITYP = ITYP
@@ -2312,7 +2312,6 @@ C
       WRITE (iunout,*)
      .  'TEST PARTICLE LAUNCHED WITH INVALID CELL INDICES'
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
-      IF (NLSTOR) CALL EIRENE_STORE(100)
       WEIGHT=0.
       LGPART=.FALSE.
       RETURN

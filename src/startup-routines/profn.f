@@ -1,11 +1,18 @@
 C sept.05:  activate this radial profile type also for levgeo=3
 C           input radius SEP is relative to flux suface labelling grid RHOSRF
-C           rra gt. raa indicates: one more vaccum cell in radial direction.
+C           rra gt. raa indicates: one more vacuum cell in radial direction.
+cdr jun 17: comments
  
 C
       SUBROUTINE EIRENE_PROFN(PRO,PRO0,PROS,P,Q,E,SEP,PROVAC)
+c  p1: pro0:  value at x=rsurf(1)
+c  p2: proS:  value at x=sep
+c  p3: profile parameter p, for rsurf(1) <= x <= sep
+c  p4: profile parameter q, for rsurf(1) <= x <= sep
+c  p5: E:     exponential decay length for  sep <= x
+c  p6: sep:   x-position of sep:  
 C
-C  PARABOLIC PROFILE, PLUS EXPONENTIAL DECAY BEYOND RHOSEP
+C  PARABOLIC PROFILE, PLUS EXPONENTIAL DECAY BEYOND RHOSEP (SEP)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

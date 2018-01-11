@@ -1,4 +1,5 @@
-C
+CDR  aug. 17:  printout of spectra: conditional on prspec
+c              plot of spectra vs. energy /wavelength: conditional on plspec
 C
 C*DK OUTSIG
       SUBROUTINE EIRENE_OUTSIG(ENSAVE,L_CHOR)
@@ -26,7 +27,7 @@ C*DK OUTSIG
      .            DEL_HELP(NCHEN), VSPEC(NCHEN)
       REAL(DP) :: YMN2(1), YMX2(1), YMNLG2(1), YMXLG2(1), XMI, XMA
       REAL(DP) :: TIMA, DUMTIL, AH, TIMI, DEL1, DEL2, SUM,WLSHFT
-      INTEGER :: ICURV, ICHORI, I, NCHNI, ISK, JSK, IERR
+      INTEGER :: ICURV, ICHORI, I, NCHNI, IERR
       INTEGER :: IR1(1), IR2(1), IRS(1)
       LOGICAL :: LPLOT2(1), LSDVI(1), L_SAME
       CHARACTER(8) :: TSAFE, TEXTSS
@@ -38,6 +39,10 @@ C
       NCHNI=IABS(NCHENI)
       TSAFE=TEXTS(1)
       ICURV=0
+
+      IF (.NOT.PLSPEC) GOTO 1
+
+CDR  PREPARE SOME STUFF FOR PROPRIETARY GR-GRPAHICS SOFTWARE.
 C
 C  NULLPUNKT AUF DEM PAPIER
  
@@ -66,6 +71,8 @@ C  MACHE GRADE GRENZEN, X-ACHSE (Y ACHSE, NUR WENN TALZMI=TALZMA=666.)
       FITX=.TRUE.
 C  NEW FRAME FOR EACH PICTURE IN PLTTLY
       L_SAME=.FALSE.
+
+1     CONTINUE
  
       DO 100  ICHORI=1,NCHORI
         IF (.NOT.L_CHOR(ICHORI)) GOTO 100
@@ -76,33 +83,38 @@ C
         CALL EIRENE_LEER(1)
         TXHEAD=REPEAT(' ',72)
         IF (NCHTAL(ICHORI).EQ.1) THEN
-          CALL
-     .  EIRENE_HEADNG('CX-DETECTOR SIGNAL, MAXW. NEUTRL. DISTR. ',41)
+          CALL EIRENE_HEADNG
+     .      ('CX-DETECTOR SIGNAL, MAXW. NEUTRL. DISTR. ',41)
           TXHEAD(1:41) =
      .      'CX-DETECTOR SIGNALS, MAXW. NEUTRL. DISTR.'
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
-          CALL
-     .  EIRENE_HEADNG('H ALPHA-DETECTOR SIGNAL: #/S/CM2/STERAD  ',41)
+          CALL EIRENE_HEADNG
+     .      ('H emission SIGNAL: #/S/CM2/STERAD  ',41)
           TXHEAD(1:41) =
-     .      'H ALPHA-DETECTOR SIGNALS: #/S/CM2/STERAD '
+     .      'H emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
-          CALL
-     .  EIRENE_HEADNG('SIDE ON SPECTRAL RADIANCE: #/S/CM2/NM/STERAD',44)
+          CALL EIRENE_HEADNG
+     .      ('SIDE ON SPECTRAL RADIANCE: #/S/CM2/NM/STERAD',44)
           TXHEAD(1:44) =
      .      'SIDE ON SPECTRAL RADIANCE                   '
         ELSEIF (NCHTAL(ICHORI).EQ.4) THEN
-          CALL
-     .  EIRENE_HEADNG('DETECTOR SIGNALS VIA SPECTRA ALONG LOS',38)
+          CALL EIRENE_HEADNG
+     .      ('DETECTOR SIGNALS VIA SPECTRA ALONG LOS',38)
           TXHEAD(1:44) =
      .      'DETECTOR SIGNALS VIA SPECTRA ALONG LOS'
-        ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
+        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
           CALL
-     .  EIRENE_HEADNG('USER DEFINED LINE INTEGRAL (SUBR. SIGUSR)',41)
+     .  EIRENE_HEADNG('He emission SIGNAL: #/S/CM2/STERAD  ',33)
+          TXHEAD(1:33) =
+     .      'He emission SIGNALS: #/S/CM2/STERAD '
+        ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
+          CALL EIRENE_HEADNG
+     .      ('USER DEFINED LINE INTEGRAL (SUBR. SIGUSR)',41)
           TXHEAD(1:41) =
      .      'USER DEFINED LINE INTEGRAL (SUBR. SIGUSR)'
         ELSE
-          CALL
-     .  EIRENE_HEADNG('LINE INTEGRAL TESTING OPTION: NO SIGNALS)',41)
+          CALL EIRENE_HEADNG
+     .      ('LINE INTEGRAL TESTING OPTION: NO SIGNALS)',41)
           TXHEAD(1:41) =
      .      'LINE INTEGRAL TESTING OPTION: NO SIGNALS)'
         ENDIF
@@ -118,9 +130,14 @@ C
           ENERGY(I)=ENSAVE(ICHORI,I)
 30      CONTINUE
 C...................................................
-C  CX SPECTRA, ATOMS.  100 -- 199
+C  ENERGY RESOLVED CX SPECTRA, ATOMS.  100 -- 199
 C...................................................
         IF ((NCHTAL(ICHORI).EQ.1) .OR. (NCHTAL(ICHORI).EQ.4)) THEN
+
+CDR  nchtal=4 is an unfinished option (spectra estimated directly from
+CDR           Monte Carlo trajectories. Currently disabled in SGNAL.F
+cdr           So at this point: NCHTAL=1, CX energy resolved spectra.
+
           IF (NSPSPZ(ICHORI).EQ.0) THEN
             TEXTS(1)=TEXTSS
           ENDIF
@@ -129,15 +146,15 @@ C...................................................
             DO I=2,NCHNI-1
               DEL1=ENERGY(I+1)-ENERGY(I)
               DEL2=ENERGY(I)-ENERGY(I-1)
-!pb              DELENE(I)=0.5_DP*(DEL1+DEL2)
+!pb           DELENE(I)=0.5_DP*(DEL1+DEL2)
               DELENE(I)=DEL1
             ENDDO
             IF (NCHNI > 1) THEN
 C  FIRST INTERVAL (HALF SIZE)
-!pb              DELENE(1)=0.5*(ENERGY(2)-ENERGY(1))
+!pb           DELENE(1)=0.5*(ENERGY(2)-ENERGY(1))
               DELENE(1)=ENERGY(2)-ENERGY(1)
 C  LAST INTERVAL (HALF SIZE)
-!pb              DELENE(NCHNI)=0.5*(ENERGY(NCHNI)-ENERGY(NCHNI-1))
+!pb           DELENE(NCHNI)=0.5*(ENERGY(NCHNI)-ENERGY(NCHNI-1))
               DELENE(NCHNI)=ENERGY(NCHNI)-ENERGY(NCHNI-1)
  
             ELSE
@@ -153,24 +170,27 @@ C
             IF (NCHTAL(ICHORI).EQ.4) SUM=SUM+AH*DELENE(I)
             XPLEN(I)=ENERGY(I)
 70        CONTINUE
- 
-          CALL
-     .  EIRENE_MASRR2('ENERGY,CXFLUX         ',ENERGY,DUMFFD,NCHNI)
-          IF (NCHTAL(ICHORI).EQ.4) THEN
-            CALL EIRENE_LEER(1)
-            CALL EIRENE_MASR1('INTEGR. ',SUM)
-            CALL EIRENE_LEER(1)
-          END IF
-          CALL EIRENE_MASR1('INP. TEM.',TINP(ICHORI))
-          CALL EIRENE_MASR1('DT. TMP.',DUMTIL)
-          CALL EIRENE_MASAGE
-     .  ('FITTING RANGE:  TIMIN,TIMAX=                 ')
-          TIMI=NSPINI(ICHORI)*TINP(ICHORI)
-          TIMA=NSPEND(ICHORI)*TINP(ICHORI)
-          CALL EIRENE_MASR2 ('TIMIN,TIMAX=    ',TIMI,TIMA)
-          CALL EIRENE_LEER(2)
+c   printing:  conditional on prspec          
+          IF (PRSPEC) THEN 
+            CALL EIRENE_MASRR2('ENERGY,CXFLUX         ',
+     .                          ENERGY,DUMFFD,NCHNI)
+            IF (NCHTAL(ICHORI).EQ.4) THEN
+              CALL EIRENE_LEER(1)
+              CALL EIRENE_MASR1('INTEGR. ',SUM)
+              CALL EIRENE_LEER(1)
+            END IF
+            CALL EIRENE_MASR1('INP. TEM.',TINP(ICHORI))
+            CALL EIRENE_MASR1('DT. TMP.',DUMTIL)
+            CALL EIRENE_MASAGE
+     .         ('FITTING RANGE:  TIMIN,TIMAX=                 ')
+            TIMI=NSPINI(ICHORI)*TINP(ICHORI)
+            TIMA=NSPEND(ICHORI)*TINP(ICHORI)
+            CALL EIRENE_MASR2 ('TIMIN,TIMAX=    ',TIMI,TIMA)
+            CALL EIRENE_LEER(2)
+          ENDIF
 C
 C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
+c   plotting:  conditional on plspec 
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
 C  INITALIZE NEW PICTURE
@@ -211,7 +231,7 @@ C  PLOT
      .           1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
      .           LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
      .           NCHNI,NCHNI,L_SAME)
-          ENDIF
+          ENDIF  ! CX ENERGY RESOLVED PLOTS DONE.
 C
           TEXTS(1)=TSAFE
 C..............................................
@@ -220,11 +240,17 @@ C..............................................
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
 C
           DUMTIL=FUFFER(ICHORI,1)
-          CALL EIRENE_MASR1('H ALPHA ',DUMTIL)
+          CALL EIRENE_MASR1('H emiss ',DUMTIL)
           CALL EIRENE_LEER(2)
  
+        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+C
+          DUMTIL=FUFFER(ICHORI,1)
+          CALL EIRENE_MASR1('He emiss',DUMTIL)
+          CALL EIRENE_LEER(2)
+
 C...............................................
-C  PHOTONS, SIDE ON SPECTRA.  300-- 399
+C  PHOTONS, SPECTRALLY RESOLVED SIDE ON SPECTRA.  300-- 399
 C...............................................
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
  
@@ -286,12 +312,16 @@ C  LAST INTERVAL (HALF SIZE)
 C  3.)  CONVERT SPECTRAL DENSITY FROM EV TO NM
           WLDUMFFD=DUMFFD*DELWL/DELENE
 C
-          CALL
-     .  EIRENE_MASRR2('WAVEL. ,RADIATIVE FLUX ',XPLEN,WLDUMFFD,NCHNI)
-          CALL EIRENE_MASR1('INTEGR. ',SUM)
-          CALL EIRENE_LEER(2)
+c  printing:  conditional on prspec
+          IF (PRSPEC) THEN
+            CALL EIRENE_MASRR2('WAVEL. ,RADIATIVE FLUX ',
+     .                          XPLEN,WLDUMFFD,NCHNI)
+            CALL EIRENE_MASR1('INTEGR. ',SUM)
+            CALL EIRENE_LEER(2)
+          ENDIF
 C
 C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
+c  plotting:  conditional on plspec
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
 C  INITALIZE NEW PICTURE
@@ -332,14 +362,14 @@ C  PLOT, IN WAVELENGTH SCALE
      .           1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
      .           LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.FALSE.,IERR,
      .           NCHNI,NCHNI,L_SAME)
-          ENDIF
+          ENDIF  !  plots done
 C
           TEXTS(1)=TSAFE
 C
  
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           write (iunout,*)
-     .  'printout for user EIRMOD_defined line integral '
+     .           'printout for user-defined line integral '
           write (iunout,*) 'still to be written in subr. outsig '
         ENDIF
  

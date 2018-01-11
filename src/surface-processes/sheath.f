@@ -34,7 +34,7 @@ C
       REAL(DP), INTENT(IN) :: DPP(*),VP(*), TE, GAMMA, CUR
       INTEGER, INTENT(IN) :: NZP(*), NP, MS
       REAL(DP) :: SUM, DE, CE, EIRENE_SHEATH
-      INTEGER :: J, I, MSS, ICOUNT
+      INTEGER :: J, MSS, ICOUNT
  
       SAVE ICOUNT
       DATA ICOUNT/0/
@@ -50,6 +50,7 @@ C  UNITS OF SUM: VELOCITY (CM/SEC)
       DO 100 J=1,NP
         SUM=SUM+NZP(J)*DPP(J)/DE*VP(J)
 100   CONTINUE
+
       CE=CVEL2A*SQRT(TE/PMASSE)
       SUM=1./CE*SQRT(PI2A)/(1.-GAMMA)*(SUM-CUR/ELCHA/DE)
       IF (SUM.GT.0.D0) THEN
@@ -58,16 +59,21 @@ C  UNITS OF SUM: VELOCITY (CM/SEC)
         MSS=MS
         IF (MSS.GT.NLIM) MSS=-(MSS-NLIM)
         WRITE (iunout,*) 'WARNING FROM FCT. SHEATH: INVALID ARGUMENTS '
-        WRITE (iunout,*) 'NP,NZP,DPP,VP ',NP
+        
         WRITE (iunout,*) 'SHEATH RETURNED FOR SURFACE ', MSS,': 2.8*TE'
-        DO I=1,NP
-          WRITE (iunout,*) I,NZP(I),DPP(I),VP(I)
+        WRITE (iunout,*) 'NUMBER OF ION SPECIES FLOWS INTO SHEATH: ',NP
+
+        WRITE (iunout,*) 'NUMBER, CHARGE,    ION DENS.,     ION VEL. '
+        DO J=1,NP
+          WRITE (iunout,60) J,NZP(J),DPP(J),VP(J) 
         ENDDO
-        WRITE (iunout,*) 'SUM ',SUM
+        CALL EIRENE_MASR1('I-CURR  ',SUM)
         ICOUNT=ICOUNT+1
         EIRENE_SHEATH = 2.8*TE
       ELSE
         EIRENE_SHEATH = 2.8*TE
       ENDIF
+      
+60    FORMAT (1X,I6,2X,I6,3X,2(1PE12.4,3X))
       RETURN
       END

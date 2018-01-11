@@ -1,4 +1,8 @@
 c------------------------------------------------------------------------
-      subroutine gr3net(ar,ier,i1,xyz,i2,i3,i4,i5,i6,i7)
-      return
-      end
+      SUBROUTINE GR3NET(AR,IER,I1,XYZ,I2,I3,I4,I5,I6,I7)
+      IMPLICIT NONE
+      REAL, INTENT(OUT) :: AR(*)
+      REAL, INTENT(IN) :: XYZ(*)
+      INTEGER, INTENT(IN) :: IER, I1, I2, I3, I4, I5, I6, I7
+      RETURN
+      END

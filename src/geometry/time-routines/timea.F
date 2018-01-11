@@ -68,25 +68,23 @@ c     using special octree stuff, to speed up additional surface handling
       END INTERFACE
 C
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
-      REAL(DP) :: TADD, TMIN, XXR, V, VSAVE, A1, A2, PPP, ROT, VX, VY,
-     .          VZ, VXS, VYS, VZS,VVS, TS, T, X, Y, Z, A3, VXJ, VYJ,
-     .          VZJ, XLS2, XLS3, XMS3, XMS2, XX, YY, ZZ, XR, YR, ZR,
-     .          XN, YN, ZN, TMA, TMI, WR, TST, XMS1, XLS1, TMX, TUP,
+      REAL(DP) :: TMIN, 
+     .          XX, YY, ZZ, XR, YR, ZR,
      .          DZ3, TL, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX, SG,
      .          VV, VXX, VYY, VZZ, TMT, B, XK5, V445, XN5, V335, XK4,
-     .          V334, V3V45, XN4, YS, ZS, AT, XNORM, V224, CG1, CG2,
-     .          CG3, AR1, C, D, E, F, G, XK3, HELP, V2V34, XN3, V223
-     .          AR3, AR2, V113, V1V23, V223, AR3, DY2, X_S, Y_S, Z_S,
+     .          V334, V3V45, XN4, AT, XNORM, V224, CG1, CG2,
+     .          CG3, AR1, C, D, E, F, G, XK3, HELP, V2V34, XN3,
+     .          AR2, V113, V1V23, V223, AR3, DY2, X_S, Y_S, Z_S,
      .          SG_S
+C      REAL(DP) :: XLS1, XLS2, XLS3, XMS1, XMS2, XMS3
 
-      INTEGER :: NLLLI, NTNEW, NNR, ICOUNT, IPLGN, ITRII,
-     .           ISTS, I1000, K, J, I, IPERID, NTCELL, NCELL, MSURF,
+      INTEGER :: IPLGN, ITRII,
+     .           ISTS, I1000, J, I, IPERID, NTCELL, NCELL, MSURF,
      .           NLI, NLE, MASURF, ISPZ, NNTCL, IAB, JUM, MASURF_S,
      .           TRCNUM
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL, INTENT(OUT) :: LCNDEXP
-      LOGICAL :: LGJ, NLTRC, EIRENE_BITGET, LTSTCXP, LCNDEXP_S
-      LOGICAL :: LMTSRF(NLIMPS)
+      LOGICAL :: NLTRC, LCNDEXP_S
 
 c     the octree
       TYPE(octree), POINTER :: TREE
@@ -99,7 +97,6 @@ c     some vars for checking on intersection/where we are
       LOGICAL :: status
       REAL(DP), DIMENSION(3) :: ip, start, direction
       REAL(DP) :: runlength, norm
-      INTEGER :: surf, lastsurf
 
       SAVE
 C
@@ -194,7 +191,7 @@ C
         ENDIF
 C
         IF (RLB(J).GE.2.6.AND.RLB(J).LT.2.9) THEN
-C  2 POINTS, PLANE SURFACE WITH IGNORABLE X CO-ORDINATE
+C  2 POINTS, PLANE SURFACE WITH IGNORABLE X COORDINATE
           IF (RLB(J).LT.2.75) RLB(J)=1.
           IF (RLB(J).GE.2.75) RLB(J)=1.5
           XLIMS1(1,J)=P1(1,J)
@@ -233,7 +230,7 @@ C  AND X-INDEPENDENCE OF SURFACE EQUATION
           SAREA(J)=DL*DX
           GOTO 90
         ELSEIF (RLB(J).GE.2.3.AND.RLB(J).LT.2.6) THEN
-C  2 POINTS, PLANE SURFACE WITH IGNORABLE Y CO-ORDINATE
+C  2 POINTS, PLANE SURFACE WITH IGNORABLE Y COORDINATE
           IF (RLB(J).LT.2.45) RLB(J)=1.
           IF (RLB(J).GE.2.45) RLB(J)=1.5
           YLIMS1(1,J)=P1(2,J)
@@ -272,7 +269,7 @@ C  AND Y-INDEPENDENCE OF SURFACE EQUATION
           SAREA(J)=DL*DY
           GOTO 90
         ELSEIF (RLB(J).GE.2.0.AND.RLB(J).LT.2.3) THEN
-C  2 POINTS, PLANE SURFACE WITH IGNORABLE Z CO-ORDINATE
+C  2 POINTS, PLANE SURFACE WITH IGNORABLE Z COORDINATE
           IF (RLB(J).LT.2.15) RLB(J)=1.
           IF (RLB(J).GE.2.15) RLB(J)=1.5
           ZLIMS1(1,J)=P1(3,J)
@@ -340,7 +337,7 @@ C
         TEST4=0.
         TEST5=0.
 C
-C  SET PLANE SURFACE FROM CO-ORDINATES OF THE FIRST 3 VERTICES
+C  SET PLANE SURFACE FROM COORDINATES OF THE FIRST 3 VERTICES
 C  RLB.GE.3.0 AT THIS POINT
 C
 c     vektoren bilden (alle die in einem fuenfeck vorkommen koennen)
@@ -378,7 +375,7 @@ C   TEST, IF 4TH  AND 5TH POINT ON SURFACE
         TEST4=A0LM(J)+A1LM(J)*P4(1,J)+A2LM(J)*P4(2,J)+A3LM(J)*P4(3,J)
         TEST5=A0LM(J)+A1LM(J)*P5(1,J)+A2LM(J)*P5(2,J)+A3LM(J)*P5(3,J)
 C
-C  NEW CO-ORDINATE SYSTEM IN P3,P1,P2 ; P4,P2,P3 ; P5,P3,P4
+C  NEW COORDINATE SYSTEM IN P3,P1,P2 ; P4,P2,P3 ; P5,P3,P4
 C    XS = P3 + XLS1*(P1-P3) + XMS1*(P2-P3)
 C    XS = P4 + XLS2*(P2-P4) + XMS2*(P3-P4)
 C    XS = P5 + XLS3*(P3-P5) + XMS3*(P4-P5)
@@ -505,7 +502,7 @@ C
 C
 98      WRITE (iunout,*)
      .    'WARNING FROM TIMEA0, SURFACE NO J IS TURNED OFF'
-        WRITE (iunout,*) 'BECAUSE ILL DEFINED '
+        WRITE (iunout,*) 'BECAUSE ILL-DEFINED '
         WRITE (iunout,*) 'J= ',J
         IGJUM0(J)=1
         IF (NLIMPB >= NLIMPS) THEN
@@ -572,9 +569,10 @@ c
 
         CALL EIRENE_LEER(2)
 
+
+      ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
 c               i.e. OCTREE optimization in in-active
-      ELSE  !   NOT NLOCTREE
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J
@@ -783,10 +781,11 @@ c................................................................
      
 c     defining the internal subroutine for the octree build
       CONTAINS
-        SUBROUTINE EIRENE_TIMEA0_BUILDOC()
+
+      SUBROUTINE EIRENE_TIMEA0_BUILDOC()
 cdr  this routine is only called if NLOCTREE
 c
-c    It returns NOTOCSURFS(1:NURFNOT), a list of additional surfaces not
+c    It returns NOTOCSURFS(1:NSURFNOT), a list of additional surfaces not
 c       covered by the octree-procedure
 c
 c    unit number for the tracing debug ouput
@@ -799,9 +798,9 @@ C   as the code above is pretty much with gotos, simply put
 C   the octree stuff in here...
 c
 c   build octree
-            tree => EIRENE_TIMEA_BuildOctree()
+      tree => EIRENE_TIMEA_BuildOctree()
       
-c   count the surfaces that won't be in octree to get the
+c   count the surfaces that will not be in octree to get the
 c   right dimension for the array NOTOCSURFS 
 c   
       DO J=1,NLIMI
@@ -813,8 +812,8 @@ c  that are no tri/quad/quintangles
       END DO
       
 c   allocate enough space for lookup table which we will use for 
-c   surfaces that we don't have in the octree (like 2nd order surfaces, etc.)
-      ALLOCATE(NOTOCSURFS(NSURFNOT))
+c   surfaces that we do not have in the octree (like 2nd order surfaces, etc.)
+      if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NSURFNOT))
 cdr
       NSURFNOT = 0
 c   add the second order surfaces, etc into this

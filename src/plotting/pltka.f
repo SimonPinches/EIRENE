@@ -16,8 +16,9 @@ C
       INTEGER, INTENT(OUT) :: INN
       LOGICAL, INTENT(IN) ::  TRCPLT, LBOX
  
-      REAL(DP) :: XTRAN, YTRAN, XI, ETA, GERAX, XG, YG, XINC, DX,
+      REAL(DP) :: XTRAN, YTRAN, XI, ETA, GERAX, YG, XINC, DX,
      .          X, Y, XB1, YB1, XP, YP, XB2, YB2, XX, YY, XXO, YYO
+C      REAL(DP) :: XG
       INTEGER :: I, IFLAG, INC
       LOGICAL :: LBX, LBXO, LPA, L1, L2, L3, L4
  

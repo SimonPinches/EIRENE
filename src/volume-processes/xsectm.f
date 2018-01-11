@@ -50,7 +50,6 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP) :: CF(9,0:9)
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, DEIMIN, EELEC, CHRDF0, 
      .            RMASS, EBULK, EHEAVY, COU, EIRENE_RATE_COEFF, ERATE,
@@ -59,15 +58,16 @@ C
       INTEGER :: ITEST, IATM, IPLS, IION, IA1, IP2, ION, ICOUNT,
      .           IION3, IDSC1, NRC, KK, J, IMOL, IPLS1, IPLS2, IPLS3,
      .           IATM1, IATM2, ITYPB, ISPZB, IMEL, IDSC, IREL, IBGK_SP,
-     .           IMEI, IERR, IMCX, ISCND, ISCDE, IESTM, IML, IFRST,
+     .           IMEI, IMCX, ISCND, ISCDE, IESTM, IML, IFRST,
      .           IRCX, IREI, IPL, IMPI, IRPI, ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      CHARACTER(8) :: TEXTS1, TEXTS2
 
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits 
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -75,6 +75,11 @@ cdr: set hard wired lower density for H.4 type fits
 10      CONTINUE
       END IF
  
+C
+C
+C   ELECTRON IMPACT COLLISIONS:
+C
+
 C
 C
       DO 100 IMOL=1,NMOLI
@@ -430,6 +435,8 @@ C
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
 C
+C  EI PROCESS IDENTIFIED
+
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
@@ -483,7 +490,8 @@ C  NON DEFAULT CX MODEL:
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 130 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
-            IF (ISWR(KK).NE.3) GOTO 130
+            IF (ISWR(KK).NE.3) CYCLE
+C  make sure that incident particle is a bulk particle 
             IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
               WRITE (IUNOUT,*) 
@@ -491,10 +499,11 @@ C  WRONG TYPE OF INCIDENT BULK SPECIES
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  CX PROCESS IDENTIFIED
+
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
-            
+C  BULK PARTICLE INDEX            
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IDSC=IDSC+1
             NRCXI=NRCXI+1
@@ -549,7 +558,7 @@ C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 230 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
-            IF (ISWR(KK).NE.5) GOTO 230
+            IF (ISWR(KK).NE.5) CYCLE
 C
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
@@ -597,7 +606,8 @@ C
             IESTM=IESTMM(IMOL,NRC)
             EBULK=EBULKM(IMOL,NRC)
             CALL EIRENE_XSTEL(IREL,IML,IPL,EBULK,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                 ISCDE,IESTM,
+     .                 KK,FACTKK,PLS)
 C
 230       CONTINUE
 C
@@ -633,10 +643,12 @@ C
           DO NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.4) CYCLE
+C  PI PROCESS IDENTIFIED
+
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
-C  INCIDENT BULK PARTICLE INDEX
+C   BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
             IDSC=IDSC+1

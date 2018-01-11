@@ -1,6 +1,7 @@
 !pb  30.10.06:  XNUE removed
 cdr  sept. 2015: npartt=11, rather than 12 (xgener not stored on census)
 cdr  april 2017: some cleanup carried over from solps_iter branch
+cdr  nov.17    : dead flag: nlstor, (and call store...) now removed
 
 c.........................................................................
 c
@@ -103,10 +104,14 @@ c  unrelated to particle trajectories:  IO streams
       DATA IUNIN / 1 /  ! must be known already during compile time.
 c                       ! better: move iunin, iunout, etc.. to parmmod ??
  
+!     VARIABLES FOR UNIFIED SUBROUTINES
+      INTEGER, PUBLIC, SAVE ::
+     I IXSPZ, NMETOFF
+
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
-     L NLTRC,  NLSTOR, NLTRJ
+     L NLTRC,  NLTRJ
  
 
  
@@ -255,7 +260,6 @@ c  up to here: for splitting, mpartc
       NLSRFZ = .FALSE.
       NLSRFA = .FALSE.
       NLTRC  = .FALSE.
-      NLSTOR = .FALSE.
       NLTRJ  = .FALSE.
  
       LAST_EVENT%IFLAG  = 0
@@ -269,7 +273,7 @@ c  up to here: for splitting, mpartc
       DE0_RAYR = 0._DP
 
 c  io files
-      IUNIN = 1
+c     IUNIN = 1
       IUNOUT = 6 + IFOFF
       IF (NRPES > 1) IUNOUT = 7 + IFOFF
       IVTKOUT= 28

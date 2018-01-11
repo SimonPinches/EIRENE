@@ -27,18 +27,13 @@
       character(20) :: elementname
       character(1) :: cha
       character(2) :: kenn(12)
-      character(8) :: c6names(12)=(/'C6ARBORN','C6THEOR ','C6QS    ',
-     .                              'C6AR    ','C6ZN    ',
-     .                              'C6I     ','C6XE    ','C6DY    ',
-     .                              'C6HO    ','C6TM    ','C6HG    ',
-     .                              'C6TL    '/)
       character(2), save :: polari_elnam(120)
       type(line_data), pointer :: phline
  
       IF (REACDAT(IR)%LPHR) THEN
           WRITE (IUNOUT,*) ' PARAMETER FOR PHOTONIC REACTION ALREADY',
      .                     ' SPECIFIED FOR REACTION', IR
-          WRITE (IUNOUT,*) ' PLEASE CHECK SPECIFICATION OF REACTIONS'
+          WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
  
@@ -279,7 +274,7 @@
       phline%c4 = c4
  
       select case (isw)
-        case (1)    ! absorbtion
+        case (1)    ! absorption
            phline%ircart = 4
         case (2)    ! emission
            phline%ircart = 4

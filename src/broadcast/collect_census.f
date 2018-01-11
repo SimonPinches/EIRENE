@@ -1,5 +1,6 @@
       subroutine EIRENE_collect_census
 
+cpb July  17: bug fix, rpselect allocation from -1 , not from 0
 cdr sept. 15: bug fix:   after re-sampling (with replacement) from census, the weight of
 cdr                      sampled census particles is set to 1.0, rather than keeping the old weight.
 cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
@@ -33,8 +34,8 @@ c
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, weight, peflux, 
      .            totflux, sumrpw, sclfac, add, totrpw,
-     .            addph, adda, addm, addi,
-     .            pefluxp(0:nprs-1),sumrpwp(0,nprs-1)
+     .            addph, adda, addm, addi
+C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
       real(dp), external :: ranf_eirene
       integer, allocatable :: iranpro(:), ibuf(:,:)
       integer :: ier, i, istr, ncoreal, itotal, il, im, iu, ipe,
@@ -80,14 +81,14 @@ c
           ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
           ADDI=ADDI+ADD
         ENDIF
-! cummulativ distribution of weight of particle no I, for sampling. not atomic flux
+! cumulativ distribution of weight of particle no I, for sampling. not atomic flux
         RPARTW(I)=RPARTW(I-1)+WEIGHT*FLXFAC(ISTR)
-! total flux von census, atomic flux (AMP)
+! total flux on census, atomic flux (AMP)
         PEFLUX   = PEFLUX + ADD
       END DO
 
 c  peflux is the total, fully scaled census "atomic" flux accumulated on my_pe
-c  rpartw(i) is the cummulative, scaled, flux distribution on census accumulated on my_pe
+c  rpartw(i) is the cumulative, scaled, flux distribution on census accumulated on my_pe
       call eirene_leer(1)
       write (iunout,*) 'COLLECT CENSUS, from my_pe      ',my_pe
       write (iunout,*) 'scores on census: iprnli    ',iprnli
@@ -109,7 +110,7 @@ c     pefluxp(my_pe)=peflux
       call mpi_allreduce(peflux,totflux,1,MPI_REAL8,
      .                   MPI_SUM,MPI_COMM_WORLD,ier)
 c
-c  cummulated number of scores, and atomic flux, summed from all PEs.
+c  cumulated number of scores, and atomic flux, summed from all PEs.
       if (my_pe.eq.0) THEN
         write (iunout,*) ' itotal, totflux', itotal, totflux
       ENDIF
@@ -189,27 +190,30 @@ c  cummulated number of scores, and atomic flux, summed from all PEs.
 
         itotal = nprnl
 
-cdr     allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
-        allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1
+        allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
+!pb     allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1 !pb nein!
 
         if (my_pe == 0) then
           rpselect(-1) = 0._dp
-          rpselect(0) = RPARTW(iprnli)  !cdr  start with my_pe=0, flux to census (in amp, not atomic flux!)
+!cdr  start with my_pe=0, flux to census (in amp, not atomic flux!)
+          rpselect(0) = RPARTW(iprnli)  
         end if
 
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 ! fetch the total flux from all the individual processors
+! damit wird obiges rpselect(0) nochmal ueberschrieben
         call mpi_gather(rpartw(iprnli),1,MPI_REAL8,
-     .                  rpselect(0:nprs-1),1,MPI_REAL8,0,   ! damit obiges rpselect(0) nochmal ueberschrieben
+     .                  rpselect(0:nprs-1),1,MPI_REAL8,0,   
      .                  MPI_COMM_WORLD,ier)
 
         if (my_pe == 0) then
-! build accumulated flux distribution for the processores on my_pe=0
+! build accumulated flux distribution for all processores on my_pe=0
+cdr rpselect(0) war schon gesetzt.
           do ipe=1, nprs-1
-            rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)   !cdr rpselect(0) war schon gesetzt.
+            rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
           end do
 
-          write (iunout,*) 'total cummulated flux on census (AMP) ' 
+          write (iunout,*) 'total cumulated flux on census (AMP) ' 
           write (iunout,*) 'rpselect '
           write (iunout,'(i6,es12.4)') (ipe,rpselect(ipe),ipe=0,nprs-1)
 

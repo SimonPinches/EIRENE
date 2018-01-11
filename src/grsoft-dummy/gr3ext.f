@@ -1,4 +1,7 @@
 c------------------------------------------------------------------------
-      subroutine gr3ext(ar,ier,ext)
-      return
-      end
+      SUBROUTINE GR3EXT(AR,IER,EXT)
+      IMPLICIT NONE
+      INTEGER, INTENT(OUT) :: IER
+      REAL, INTENT(OUT) :: AR(*), EXT(3,3)
+      RETURN
+      END

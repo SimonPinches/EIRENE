@@ -1,6 +1,6 @@
       SUBROUTINE EIRENE_READ_TETRA (CASENAME)
  
-!pb 05.12.06: structur coortet is build up from tetrahedra
+!pb 05.12.06: structure COORTET is build up from tetrahedra
 !pb 07.12.06: set itethand to default value 1
  
       USE EIRMOD_PRECISION
@@ -14,8 +14,8 @@
  
       CHARACTER*(*), INTENT(IN) :: CASENAME
       CHARACTER(100) :: FILENAME, ZEILE
-      INTEGER :: LL, I, IND, IT, IS, IS1, IER, NRK, ISTS,
-     .           ISTMIN, ISTMAX, IC, J, JS, JT, IP1, i1, i2, i3, i4
+      INTEGER :: LL, I, IND, IT, IS, IER, NRK, 
+     .           IC, J, JS, JT, IP1, i1, i2, i3, i4
       INTEGER :: ITSIDE(3,4), IP(3), JP(3)
       TYPE(TET_ELEM), POINTER :: CUR
 C

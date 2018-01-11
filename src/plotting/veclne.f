@@ -37,7 +37,6 @@ C
       REAL(DP) :: SCLFCX, SCLFCY, VMIN, VMAX, DX, DY, CM, FAK, BRFL,
      .          D, DIAMETER, XM, YM, VX, VY, VABS, XMIN, XMAX, YMIN,
      .          YMAX, PLFL
-      REAL(SP) XY(800)
       REAL(SP) YH
       INTEGER :: ITR, IRAD, I, IR, IPART, NP1, NP2, IP
       CHARACTER*17 CH
@@ -136,7 +135,9 @@ C
 C
 C  PLOT FRAME
 C
-      CALL EIRENE_GRNXTB (1,'VECLNE.F')
+      CALL EIRENE_PLNXTB (1,'VECLNE.F')
+
+cdr  use FZJ proprietary GR plot software
       CALL GRSCLC (10.,4.,REAL(10.+DX*FAK,KIND(1.E0)),
      .             REAL(4.+DY*FAK,KIND(1.E0)))
       CALL GRSCLV (REAL(XMIN,KIND(1.E0)),REAL(YMIN,KIND(1.E0)),

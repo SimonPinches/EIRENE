@@ -1,16 +1,76 @@
-C  27.6.05: iadd removed
-C  02.01.06:    SIGMAX NOW SET ONLY FOR ACTIVE REACTIONS
+c  25.11.05: option modcol(3,4...)=3 added
+c            (first implemented in fpatha)
+c            cx rate option 4 added (adopted from fpatha)
 C               added: jcou,ncou
+!pb  30.08.06:  data structure for reaction data redefined
 !pb  12.10.06:  modcol revised
+!pb  22.11.06:  flag for shift of first parameter to rate_coeff introduced
 !pb  28.11.06:  initialization of XSTOR reactivated because of trouble in
 !pb             BGK iteration
+!pb  22.03.07:  PI reactions revised
+cdr  oct.14  :  ftabcx3 added. Full tests still to be done
+cdr  oct.14  :  syncronized with fpathm, fpathi
+
+cdr 31.10.14 :  speedup of final cut off evaluations
+
+cdr note:       sgnl_poly evaluations are just the 8th order polynom, 
+cdr             plus rcmin,rcmax consideration.
+cdr             unless rcmin,rcmax are set (as it is the case currently here), 
+cdr             there is no need to call  --> move to in-line 
 cdr 06.08.15 :  arguments added to vecusr
+
+cdr dec. 15:    missing: ftabel3
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+
+
+
+!pb APR  16:    eatds -> eatei
+!pb APR  16:    emlds -> emlei
+!pb APR  16:    eiods -> eioei
+!pb APR  16:    eelds -> eelei
+!pb MAY  16:    tabds1 -> tabei1
+!pb JUL  16:    ehvds1 -> ehvei1
+
+
+cdr aug. 16:    bug fix re EXPO in PI branch
+cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
+cdr             ei process: started to check for H.3, H.1 options for EI processes
+cdr                         according to v0/vth >> 1. criteria
+cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
+
 C
       FUNCTION EIRENE_FPATHPH (K,CFLAG,JCOU,NCOU)
 C
 C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR PHOTON
-C   "BEAM" OF VELOCITY (E0,VEL_X,Y,Z) IN DRIFTING MAXWELLIAN BACKGROUND
+C   "BEAM" SPECIES IPHOT, OF VELOCITY (E0,VEL_X,Y,Z) IN DRIFTING MAXWELLIAN BACKGROUND MEDIUM
 C   IN CELL K
+
+C
+C   INPUT:
+C   IPHOT     :  PHOTON LINE SPECIES INDEX (INPUT VIA COMMON)
+C   K         :  CURRENT GRID CELL
+C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
+C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
+ 
+C   OUTPUT: COMMON COMLCA
+C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
+C           CFLAG(1,...): EI
+C           CFLAG(2,...): NOT IN USE, was DS process class in very old versions
+C           CFLAG(3,...): CX
+C           CFLAG(4,...): PI
+C           CFLAG(5,...): EL
+C           CFLAG(6,...): RC
+c           CFLAG(7,...): OT
+C
+C   FLAG FOR POST COLLISION DISTRIBUTION IN VELOCITY SPACE
+C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IROT
+C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
+C                                                   SPECIES ALLOWED)
+C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
+C      =2:   VI: DRIFTING MAXWELLIAN
+C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
+C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
+C                TO BE WRITTEN
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -21,6 +81,7 @@ C
       USE EIRMOD_CZT1
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
+      USE EIRMOD_CTRCEI , ONLY: TRCAMD
       USE EIRMOD_CSPEI
       USE EIRMOD_PHOTON
  
@@ -32,9 +93,9 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplot3, 
-     .            vx, vy, vz, XC,YC,ZC,
-     .            DENEL, PVELQ0, fac
-      integer :: il, kk, ipl, irot, ipot, j, iph, i1, i2
+     .            DENEL, VX, VY, VZ, PVELQ0, fac,
+     .            XC,YC,ZC
+      integer :: il, kk, irot, ipot, j
 C
 C  SET DEFAULTS: NO REACTIONS
 C
@@ -44,15 +105,19 @@ C
 !pb      ENDIF
       EIRENE_FPATHPH = 1.E10_DP
       SIGMAX=0.D0
- 
+C
       IF (LGVAC(K,0)) RETURN
 C
 C   LOCAL PLASMA PARAMETERS
 C
       DENEL=DEIN(K)
+      
       DO 2 IPLS=1,NPLSI
         ZTI(IPLS)=ZT1(IPLS,K)
 2       DENIO(IPLS)=DIIN(IPLS,K)
+C
+C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
+C            PVELQ(IPLS) IS SQUARED THE PHOTON VELOCITY IN THESE FRAMES 
 C
       PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLSV
@@ -89,11 +154,12 @@ csw
 C
 C  1.) RATE COEFFICIENT
 C
-        IF (MODCOL(7,2,   IROT).EQ.1) THEN
+        IF (MODCOL(7,2,IROT).EQ.1) THEN
           GOTO 997
-        ELSEIF (MODCOL(7,2,   IROT).EQ.2) THEN
+        ELSEIF (MODCOL(7,2,IROT).EQ.2) THEN
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE. FULL ACCOUNT FOR DOPPLER SHIFT
+
 cdr       kk   = nreaot(irot)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
@@ -140,16 +206,17 @@ cdr       ESIGOT(irot,1)=e0*sigv   ziemlich sicher falsch
 C
 C  2.) BULK ION ENERGY LOSS RATE:
 C
-        IF (MODCOL(7,4,     IROT).EQ.1) THEN
+        IF (MODCOL(7,4,IROT).EQ.1) THEN
 C  MODEL 1:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
+C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
           IF (NSTORDR >= NRAD) THEN
             ESIGOT(IROT,1)=EPLOT3(IROT,K,1)
           ELSE
             ESIGOT(IROT,1)=EIRENE_FEPLOT3(IROT,K)
           END IF
           CFLAG(7,IROT)=2
-        ELSEIF (MODCOL(7,4,     IROT).EQ.3) THEN
+        ELSEIF (MODCOL(7,4,IROT).EQ.3) THEN
 C  MODEL 3:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
@@ -170,6 +237,10 @@ C
 100   CONTINUE
  
 C
+C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
+C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
+C
       IF (SIGOTT.GT.0._DP) THEN
         DO IROT=1,NROT
           IF (SIGVOT(IROT) .LE. SIGMAX*1.D-10) THEN
@@ -188,8 +259,8 @@ C
       RETURN
 997   CONTINUE
       WRITE (iunout,*)
-     .  'ERROR IN FPATHPH: INCONSISTENT PHOTON COLL. DATA.'
-      WRITE (iunout,*) 'IPHOT,IROT,MODCOL(7,J,IROT) '
-      WRITE (iunout,*) IPHOT,IROT,(MODCOL(7,J,IROT),J=1,4)
+     .  'ERROR IN FPATHPH: INCONSISTENT PHOTON COLL. DATA'
+      WRITE (iunout,*) 'ITYP,IPHOT,IROT,MODCOL(7,J,IROT),J=1,4 '
+      WRITE (iunout,*) ITYP, IPHOT,IROT,(MODCOL(7,J,IROT),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
       END

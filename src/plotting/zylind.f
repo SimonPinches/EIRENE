@@ -28,7 +28,7 @@ C
       LOGICAL, INTENT(IN) :: NF
       REAL(DP), ALLOCATABLE :: P(:,:), XP(:), YP(:)
       REAL(DP) :: PHI, PHAN, XK, YK, PXS, PYS, CX, CY, CZ, BA, BB, BC,
-     .          DANG, PZS, PSS, PX, T, PY, PYY, PXX, PZ, AX, AY, AZ,
+     .          DANG, PZS, PX, T, PY, PYY, PXX, PZ, AX, AY, AZ,
      .          PHID, BX, BY, BZ, PI, DT, PZZ
       REAL(SP), ALLOCATABLE :: XPS(:), YPS(:)
       INTEGER :: J, IA, JJ, IE, I, NAPK

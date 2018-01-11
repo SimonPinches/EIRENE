@@ -163,6 +163,11 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
  
  
       SUBROUTINE EIRENE_ALLOC_BCKGRND
+
+cdr  if any indpro(1..12)=6, then alloc background is called: provide storage for
+c    transfer of background (plasma) tallies into eirene
+c    currently: no efield information ?
+
  
       NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV
  
@@ -170,11 +175,11 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
  
         ALLOCATE(PLASMA_BCKGRND(NIDC,NRAD))
  
-        TEINTF => PLASMA_BCKGRND(1+0+0*NPLS             , :)
+        TEINTF => PLASMA_BCKGRND(1+0+0*NPLS             ,   :)
         TIINTF => PLASMA_BCKGRND(1+1+0*NPLS        :
-     .                           1+0+0*NPLS+NPLSTI, :)
+     .                           1+0+0*NPLS+NPLSTI,         :)
         DIINTF => PLASMA_BCKGRND(1+1+0*NPLS+NPLSTI :
-     .                           1+0+1*NPLS+NPLSTI, :)
+     .                           1+0+1*NPLS+NPLSTI,         :)
         VXINTF => PLASMA_BCKGRND(1+1+1*NPLS+NPLSTI+0*NPLSV :
      .                           1+0+1*NPLS+NPLSTI+1*NPLSV, :)
         VYINTF => PLASMA_BCKGRND(1+1+1*NPLS+NPLSTI+1*NPLSV :

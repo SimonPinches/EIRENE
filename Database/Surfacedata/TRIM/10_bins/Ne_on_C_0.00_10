@@ -1,10 +1,10 @@
-Ne_on_C   
+Ne_on_C_0.00  also includes: pdf boundaries emin,emax, angmin, angmax....   
+ 
+*  projectile surface binding energy parameter: 0.00 eV     
+*  parameter esbparm only added in first of the 84 blocks  
  
  
- 
- 
- 
-   10.  20.18    6.  12.01  1.00E+00  0.00E+00  0.00E+00  0.00E+00    10   0.00
+   10.  20.18    6.  12.01  1.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00    10   0.00
 
   0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00       0.00000E+00  0.00000E+00
 

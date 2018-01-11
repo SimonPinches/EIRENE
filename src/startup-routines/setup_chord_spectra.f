@@ -14,7 +14,7 @@ C  oct.14.  variance tallies corrected
  
       real(dp) :: c1(3), c2(3), PSIG(0:NSPZ+10)
       real(dp) :: ze, timax
-      integer :: ichori, ifirst, ichrd, ipvot, nbc2, nac2, iplots,
+      integer :: ichori, ifirst, ichrd, ipvot, nbc2, nac2,
      .           ispc, ntot_cell, ntotsp, iprtyp
  
       type(spect_array), allocatable :: svestiml(:), svsmestl(:)

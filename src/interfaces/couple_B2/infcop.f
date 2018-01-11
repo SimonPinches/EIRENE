@@ -159,7 +159,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
      .          FLX, ESUM, VR, VTEST, EADD, 
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI, CHP,
-     .          CNDYNP, CHI, CHE, CS, THMAX, EESHT, EEMAX,
+     .          CHI, CHE, CS, THMAX, EESHT, EEMAX,
      .          RP1, DELX, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFNISY, SFEEWX, SFEINY, PM1, DRR, UU, PITB,
@@ -171,7 +171,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
      .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
      .           IMODE, IERROR, LTARG, IN, IX, IY,
-     .           NCOPI, NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
+     .           NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, IF, I34,
      .           NREC11, NEM, JPLS, ISR, ISTEP, IST_RATE, ISTR,
      .           IXI, IXE, NCOPIB, NCOPEB, IPLSTI, IPLSV, IPLV, ISP,
@@ -399,18 +399,11 @@ C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
-      NCOPI=0
 
-!pb 16012013
-!pb    IF (NMODE.GT.0) NCOPI=4
-!      IF (NMODE.GT.0) NCOPI=1
-!      IF (NCOPEB.NE.0) NCOPI=MAX(0,NCOPEB)
-!      NCPVI=NCOPI*NPLSI
+
 !pb 30012013
-
-      NCOPI = 3*NPLSI + 4
-      NCPVI = NCOPI
-      NCOP = NCOPI
+      NCPVI = 3*NPLSI + 4
+      NCPV  = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       LNLPLG=NLPLG
@@ -424,6 +417,9 @@ C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NFILNN=NFILEN
 C
       IF (NCPVI.EQ.0) GOTO 70
+
+CDR  SET THE NCPVI= 3*NPLSI+4 COUPLE TALLIES
+
       DO IPLS=1,NPLSI
         ICPVE(IPLS)=1
         ICPRC(IPLS)=1
@@ -2289,7 +2285,6 @@ C
             JPLS = NSPEZ(ISTRAI)
             IF ((JPLS > 0) .AND. (JPLS <= NPLSI) .AND.
      .          (IPLS /= JPLS)) CYCLE
-            CNDYNP=AMUA*RMASSP(IPLS)
             IPLSTI = MPLSTI(IPLS)
             DO ISR=1, NSRFSI(ISTRAI)
               ISTEP = SORIND(ISR,ISTRAI) 
@@ -2695,7 +2690,7 @@ cdr  this is now identical to sei above ?
 !pb 30012013 sei internal
             cpv_cmp(icp4+ipls,in,istrai)=(cpv_cmp(icp4+ipls,in,istrai) + 
      .              EPLSUM) * VOLTAL(IN)*ELCHA
-            scpveii(istrai) = scpveii(istrai)+cpv_cmp(icp4+ipls,in,istrai)
+            scpveii(istrai)=scpveii(istrai)+cpv_cmp(icp4+ipls,in,istrai)
           end do
         end do
 

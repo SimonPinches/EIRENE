@@ -18,6 +18,9 @@ C            remove plsti(nstordt), now: TII
 c 25.03.15:  rename nelrcx  to nplrcx, in order to enable 
 c            consistency in notation with PI processes: not ready
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
+cdr   jan 17 : added nuclear charge number conservation test,
+cdr            such that first secondary always corresponds to incident bulk particle,
+cdr            just with charge state changed by an increment one (+1 or -1).
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
@@ -25,7 +28,8 @@ C
      .                        EBULK, CHRDF0,ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 
-c  set NON DEFAUKT cx collision cross sections and rates  ISP + IPL{n+} -->  ISP+ + IPL{(n-1)+}
+c  set NON-DEFAULT cx collision cross-sections and rates  
+c  IPL{n+} + ISP -->  IPL1{(n-1)+} + ISP2+
 c  defaults for CX type processes:  exchange of identity
 
 c  carry out some consistency checks
@@ -38,7 +42,7 @@ c   isp:   incident test species index
 c   ipl:   incident bulk ion species index (0 < ipl <= nplsi)
 c
 c   KK :   reaction number in modclf (input) array
-c   FACTKK: scaling factor for this collision process (cross section and rates)
+c   FACTKK: scaling factor for this collision process (cross-section and rates)
 c   PLS:   precomputed log of electron density
 
 C  RETURNS:
@@ -58,6 +62,7 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CZT1
       USE EIRMOD_COMXS
+      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
 
@@ -66,12 +71,14 @@ C
       INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, 
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, ADDTL, CHRDIF,
-     .            ADDT, TMASS, PMASS, COU, EIRENE_RATE_COEFF,
+      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, CHRDIF,
+     .            ADDT, ADDTL, TMASS, PMASS, COU, 
+     .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, ERATE, TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: ITYP1, ITYP2, ISPZ1, IERR, ISPZ2, KREAD,
-     .           J, NEND, MODC, NSECX4, I, IPL2, IIO2, IPLTI
+      INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2, KREAD,
+     .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
+     .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       CHARACTER(8) :: TEXTS1, TEXTS2
       type(poly_data), pointer :: rp
@@ -81,42 +88,52 @@ C
 
       NREACX(IRCX) = KK  ! needed for storage saving mode
 C
-C  SET NON DEFAULT CHARGE EXCHANGE COLLISION PROCESS NO. IRCX
+C  SET NON-DEFAULT CHARGE EXCHANGE COLLISION PROCESS NO. IRCX
 C
       IF (IPL.LE.0.OR.IPL.GT.NPLSI) GOTO 990
       IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
       RMBULK=RMASSP(IPL)
+      NCBULK=NCHARP(IPL)
+      NCGBLK=NCHRGP(IPL)
       RMTEST=RMASS
       IPLTI=MPLSTI(IPL)
 C
-C  1ST SECONDARY INDEX
-      N1STX(IRCX,1)=EIRENE_IDEZ(ISCD1,1,3)
-      N1STX(IRCX,2)=EIRENE_IDEZ(ISCD1,3,3)
+C  1ST SECONDARY INDEX, PREVIOUS BULK MASS
+      N1STX(IRCX,1)=EIRENE_IDEZ(ISCD1,1,3)    !TYPE
+      N1STX(IRCX,2)=EIRENE_IDEZ(ISCD1,3,3)    !SPECIES WITHIN TYPE CLASS
       N1STX(IRCX,3)=0
-      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1
+      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: 1 "FIRST" TEST SECONDARY, IF ANY
 
       IF ((N1STX(IRCX,2) < 1) .OR. 
      .    (N1STX(IRCX,2) > MAXSPC(N1STX(IRCX,1)))) GOTO 994
-C
+C   CHECK MASS AND NUCLEAR CHARGE NUMBER CONSERVATION, FIRST SECONDARY, PREV. BULK
       IF (N1STX(IRCX,1).EQ.1) THEN
         IF (RMBULK.NE.RMASSA(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARA(N1STX(IRCX,2))) GOTO 992 
+        IF (ABS(NCGBLK-0).ne.1) GOTO 992  
       ELSEIF (N1STX(IRCX,1).EQ.2) THEN
         IF (RMBULK.NE.RMASSM(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARM(N1STX(IRCX,2))) GOTO 992
+        IF (ABS(NCGBLK-0).ne.1) GOTO 992
       ELSEIF (N1STX(IRCX,1).EQ.3) THEN
         IF (RMBULK.NE.RMASSI(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARI(N1STX(IRCX,2))) GOTO 992
+        IF (ABS(NCGBLK-NCHRGI(N1STX(IRCX,2))).ne.1) GOTO 992
       ELSEIF (N1STX(IRCX,1).EQ.4) THEN
         IF (RMBULK.NE.RMASSP(N1STX(IRCX,2))) GOTO 992
+        IF (NCBULK.NE.NCHARP(N1STX(IRCX,2))) GOTO 992
+        IF (ABS(NCGBLK-NCHRGP(N1STX(IRCX,2))).ne.1) GOTO 992
       ENDIF
 C
-C  2ND SECONDARY INDEX
-      N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3)
-      N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3)
-      N2NDX(IRCX,3)=N1STX(IRCX,3)
-      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1
+C  2ND SECONDARY INDEX, PREVIOUS TEST PARTICLE MASS
+      N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3)    !TYPE
+      N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3)    !SPECIES WITHIN TYPE CLASS
+      N2NDX(IRCX,3)=N1STX(IRCX,3)             !CUMULATED NO. OF SECONDARIES
+      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT: 1 "SECOND" TEST SECONDARY, IF ANY
 C
       IF ((N2NDX(IRCX,2) < 1) .OR. 
      .    (N2NDX(IRCX,2) > MAXSPC(N2NDX(IRCX,1)))) GOTO 994
-C
+C   CHECK MASS CONSERVATION, SECOND SECONDARY
       IF (N2NDX(IRCX,1).EQ.1) THEN
         IF (RMTEST.NE.RMASSA(N2NDX(IRCX,2))) GOTO 992
       ELSEIF (N2NDX(IRCX,1).EQ.2) THEN
@@ -126,7 +143,8 @@ C
       ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
         IF (RMTEST.NE.RMASSP(N2NDX(IRCX,2))) GOTO 992
       ENDIF
-C
+
+C  CHECK CHARGE CONSERVATION
       CHRDIF=CHRDF0-NCHRGP(IPL)
       IF (N1STX(IRCX,1).EQ.3) THEN
         IIO2=N1STX(IRCX,2)
@@ -147,17 +165,17 @@ C
       IF (CHRDIF.NE.0) GOTO 991
 C
 C  TARGET MASS IN <SIGMA*V> FORMULA: MAXW. BULK PARTICLE
-C  (= PROJECTILE MASS IN CROSS SECTION MEASUREMENT: TARGET AT REST)
+C  (= PROJECTILE MASS IN CROSS-SECTION MEASUREMENT: TARGET AT REST)
       PMASS=MASSP(KK)*PMASSA
 C  PROJECTILE MASS IN <SIGMA*V> FORMULA: MONOENERG. TEST PARTICLE
-C  (= TARGET PARTICLE IN CROSS SECTION MEASUREMENT; TARGET AT REST)
+C  (= TARGET PARTICLE IN CROSS-SECTION MEASUREMENT; TARGET AT REST)
       TMASS=MASST(KK)*PMASSA
 C
       ADDT=PMASS/RMASSP(IPL)
       ADDTL=LOG(ADDT)
       ADDCX(IRCX,IPL) = ADDTL
 C
-C CROSS SECTION (E-LAB) AVAILABLE ?
+C CROSS-SECTION (E-LAB) AVAILABLE ?
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
         MODCOL(3,1,IRCX)=KK
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
@@ -185,7 +203,7 @@ C       NEND=1
               COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
               TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
 245       CONTINUE          
-        ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
+        ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
         ENDIF
         MODCOL(3,2,IRCX)=1 
@@ -203,19 +221,19 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
+cdr  safety cut off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(-2.3_dp,tii)
-c old
-c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
-c old
+c  evaluate 2 parametric fit, 
+c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII. 
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
-
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd) 
               TABCX3(IRCX,J,1:9) = CF(1:9)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
           END DO
-        ELSE ! NOT SUFFICIENT STORADE ON TABCX3 
+        ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 
         ENDIF
@@ -244,7 +262,7 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         ENDIF
         MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
-C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
+C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
       ENDIF
  
@@ -279,7 +297,7 @@ c        WITH WEIGHTING/REJECTION
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTCX: IRCX ', IRCX
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
-          WRITE (iunout,*) 'RATHER THEN WITH T = TIIN '
+          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
           WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '    
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
@@ -313,7 +331,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTCX: IRCX ', IRCX
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
-          WRITE (iunout,*) 'RATHER THEN WITH T = TIIN '
+          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
           WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '  
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
@@ -332,7 +350,7 @@ CDR   ERROR: EBULK < 0 IS NOT FORESEEN
 C     ELSEIF (NSECX4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSECX4.EQ.3) THEN
-C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
@@ -342,12 +360,12 @@ c  use collision estimator for energy balance
             WRITE (iunout,*)
      .        'COLLISION ESTIMATOR ENFORCED FOR ION ENERGY '
             WRITE (iunout,*) 'IN CX COLLISION IRCX= ',IRCX
-            WRITE (iunout,*) 'BECAUSE NO ENERGY WEIGHTED RATE AVAILABLE'
+            WRITE (iunout,*) 'BECAUSE NO ENERGY-WEIGHTED RATE AVAILABLE'
           ENDIF
           IESTCX(IRCX,3)=1
           MODCOL(3,4,IRCX)=2
         ELSE
-C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
+C  ION ENERGY-AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         NELRCX(IRCX) = KREAD
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.GE.1.AND.MODC.LE.2) THEN
@@ -389,7 +407,8 @@ c old
                 rp => reacdat(KREAD)%rtcew%poly
                 call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
-     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx)
+     .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
+     .               trcamd)
 
 
                 EPLCX3(IRCX,J,1:9) = CF(1:9)
@@ -397,7 +416,7 @@ c old
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplcx3
+          ELSE  ! STORAGE SAVING MODE, no pre-defined tallies eplcx3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLCX3(IRCX,1,1)=ADD   !  ????
@@ -410,7 +429,7 @@ c old
         ENDIF
         ENDIF
       ELSE
-        WRITE (iunout,*) 'NSECX4 ILL DEFINED IN XSTCX '
+        WRITE (iunout,*) 'NSECX4 ILL-DEFINED IN XSTCX '
         WRITE (iunout,*) 'check parameter ISCDE for process ircx ',ircx
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
@@ -426,7 +445,7 @@ C
       IF (IESTCX(IRCX,1).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR PART.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
         WRITE (iunout,*) 'IRCX = ',IRCX
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTCX(IRCX,1)=0
@@ -434,7 +453,7 @@ C
       IF (IESTCX(IRCX,2).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IRCX = ',IRCX
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTCX(IRCX,2)=0
@@ -443,7 +462,7 @@ C
       IF (IESTCX(IRCX,3).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR EN.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR EN. BALANCE '
         WRITE (iunout,*) 'IRCX = ',IRCX
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTCX(IRCX,3)=0
@@ -481,15 +500,15 @@ C
       CALL EIRENE_LEER(1)
 
       IF (IESTCX(IRCX,1).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART. BALANCE '
       IF (IESTCX(IRCX,2).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM. BALANCE '
       IF (IESTCX(IRCX,3).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN. BALANCE '
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
-      WRITE (iunout,*) 'PROCESS NO. KK ',NREACX(IRCX)
+      WRITE (IUNOUT,*) 'PROCESS NO. KK ',NREACX(IRCX)
       WRITE (IUNOUT,*) 'MODCOL ',MODCOL(3,1,IRCX),MODCOL(3,2,IRCX),
      .                           MODCOL(3,3,IRCX),MODCOL(3,4,IRCX)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
@@ -515,8 +534,10 @@ C
 992   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*)
-     .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
+     .  'INTERACTING PARTICLES INCONSISTENT (MASS OR CHARGE)'
       WRITE (iunout,*) 'KK ',KK
+      WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
+     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
 993   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
@@ -533,10 +554,10 @@ C
       CALL EIRENE_EXIT_OWN(1)
 996   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
-      WRITE (iunout,*) 'NO CROSS SECTION AVAILABLE FOR NON DEFAULT CX'
+      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT CX'
       WRITE (iunout,*) 'KK ',KK
       WRITE (iunout,*)
-     .  'EITHER PROVIDE CROSS SECTION OR USE DIFFERENT '
-      WRITE (iunout,*) 'POST COLLISION SAMPLING FLAG ISCDEA'
+     .  'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT '
+      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
       CALL EIRENE_EXIT_OWN(1)
       END

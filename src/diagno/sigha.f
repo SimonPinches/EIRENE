@@ -12,10 +12,11 @@ c            i.e. a new line is requested for same stratum flag.
 c            
 C
       SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
+
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
-cdr  line of side (ARGST)
-c    currently there are up to 6 contributions to each particular preprogrammed
+cdr  line of side (ARGST).
+c    Currently there are up to 6 contributions to each particular preprogrammed
 c    transition (depending on population coefficient data stored 
 c    in file AMJUEL, section H.11 and H.12 
 c  aug.16: available transitions in H-atom:
@@ -60,9 +61,10 @@ C
  
       INTEGER, INTENT(IN) :: INIT, JJJ
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
-      REAL(DP), INTENT(IN OUT) :: PSIG(0:NSPZ+10), ARGST(0:NSPZ+10,NRAD)
+      REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
       REAL(DP) :: PENOLD
       INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
+      LOGICAL :: LARGST
       DATA ISTOLD/-1/
       DATA ITROLD/-1/
       DATA PENOLD/-1._DP/
@@ -71,15 +73,21 @@ C
 C
 c     WRITE (IUNOUT,*) 'SIGHA,INIT,PEN,ISTRA ',
 c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
+
+      LARGST = SIZE(ARGST,2) >= NSBOX
+
       IF (INIT.EQ.0) THEN
-        DO 100 ISP=0,NSPZ+10
-          PSIG(ISP)=0.
-          DO 100 ICELL=1,NSBOX
-            ARGST(ISP,ICELL)=0.
-100     CONTINUE
+        PSIG=0.
+        IF (LARGST) ARGST=0.
+
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
+c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
+c         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+c    .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+c    .                 NADVI+7)
+
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '
             CALL EIRENE_Ly_beta 
@@ -115,7 +123,8 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
             WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
             ADDV(NADVI+1:NADVI+7,:) = 0._DP
           endif
-        endif
+        endif   ! NEW INTERNAL ITERATION, OR NEW LINE, OR NEW STRATUM
+
         ISTOLD=ISTRA
         ITROLD=IITER
         PENOLD=PEN
@@ -124,6 +133,7 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
 C
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2
 C
+!WZ:  This error message might be obsolete.
       IF (NSPZ+2.LT.6) THEN
         WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
         CALL EIRENE_EXIT_OWN(1)
@@ -137,13 +147,16 @@ C
       PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
       PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
       PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
-      ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
-      ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
-      ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
-      ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
-      ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
-      ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
-      ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
+
+      IF (LARGST) THEN
+        ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
+        ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
+        ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
+        ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
+        ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
+        ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
+        ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
+      END IF
 C
       RETURN
  
@@ -152,5 +165,7 @@ C     Following lines added for reinitialisation of eirene (DMH)
       ENTRY EIRENE_SIGHA_REINIT
       ISTOLD = -1
       ITROLD = -1
+      PENOLD = -1._DP
       RETURN
+
       END

@@ -9,7 +9,7 @@ cdr  the same fit format is also used most of the time in the eirene-home
 cdr  databases amjuel, h2vibr,
 
       function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp, 
-     .                                   ifexmn, ifexmx)
+     .                                   ifexmn, ifexmx,trc)
      .                   result(cou)
 c  input:
 c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1)) 
@@ -21,6 +21,7 @@ c  ifexmn: flag for choice of left (low end) extrapolation expression
 c  ifexmx: flag for choice of right (high end) extrapolation expression 
  
       use EIRMOD_precision
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
  
       implicit none
  
@@ -31,6 +32,7 @@ c  ifexmx: flag for choice of right (high end) extrapolation expression
      .            ccxm2, almin,almax,coumin,coumax, 
      .            EIRENE_extrap
       integer :: ii, if8, ifex
+      logical :: trc
  
       if (al < rcmin) then
  
@@ -78,6 +80,7 @@ C  determine parameter and fit value at left boundary. may be needed by fct. ext
 
 C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED
 C  WHAT TO WE DO NOW ???
+          if (trc) write (iunout,*) 'unclear extrapolation in sngl_poly'
           GOTO 100
 
         ENDIF
@@ -131,6 +134,7 @@ C  determine parameter and fit value at right boundary. may be needed by fct. ex
 
 C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED
 C  WHAT TO WE DO NOW ???
+          if (trc) write (iunout,*) 'unclear extrapolation in sngl_poly'
           GOTO 100
 
         ENDIF

@@ -2,11 +2,12 @@ cdr called from find_param.f in initialization phase. Read block 14
 c   and set storage for allocatable arrays:
 c   NPTRGT:
 c   NAIN  :
+c   NCPV  :
 c   NKNOT :
-C   NTRI  :
-C   NCOP  :    
+C   NTRII :
+C   NCPVI :  no. of special couple tallies    
 
-      SUBROUTINE EIRENE_IF0PRM(IUNIN)
+      SUBROUTINE EIRENE_IF0PRM(IUNIN,IUNOUT)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -16,22 +17,24 @@ C   NCOP  :
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: IUNIN
+      INTEGER, INTENT(IN) :: IUNIN,IUNOUT
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
      .           NAINB, IAIN, NAOTB, IAOT, NRKNOT,
-     .           NTRII, NCOPI
+     .           NTRII
       INTEGER, ALLOCATABLE :: NTGPRT(:)
       CHARACTER(72) :: ZEILE
 
+C  READ INPUT BLOCK 14
       READ (IUNIN,*)
       READ (IUNIN,'(3I6)') NFLA,NCUTB,NCUTL
       DO IPL=1,NPLS
         READ (IUNIN,*)
       END DO
+C  GRID SIZE IN 2D PLASMA FLUID CODE
       READ (IUNIN,'(2I6)') NDXA,NDYA
 C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
       READ (IUNIN,'(I6)') NTARGI
-C  NUMBER OF PARTS PER TARGET SOURCE
+C  NUMBER OF PARTS PER TARGET RECYCLING SOURCE
       IF (NTARGI.GT.0) THEN
         ALLOCATE (NTGPRT(NTARGI))
         READ (IUNIN,'(12I6)') (NTGPRT(IT),IT=1,NTARGI)
@@ -68,10 +71,8 @@ C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP)
 C                                              
-      NCOPI=4
-      NCPVI=NCOPI*NPLS
-      NCOP = NCOPI
-      NCPV = NCPVI
+      NCPVI=4*NPLS
+      NCPV = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NDX = NDXA
@@ -94,21 +95,18 @@ C
       OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED')
 C
       READ(33,*) NRKNOT
-      WRITE(6,*) 'NRKNOT = ',NRKNOT
+      WRITE(IUNOUT,*) 'NRKNOT = ',NRKNOT
 
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
       READ(34,*) NTRII
-      WRITE(6,*) 'NTRII = ',NTRII
+      WRITE(IUNOUT,*) 'NTRII =  ',NTRII
 
       CLOSE (UNIT=33)
       CLOSE (UNIT=34)
       
       NKNOT=NRKNOT
       NTRI=NTRII+1
-csw 09jan2012
-      IF(NOPTIM.LT.0) NOPTIM=(NTRII+1)*N3RD !VK no storage optimization
-csw
       
       RETURN
       END

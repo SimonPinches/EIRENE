@@ -1,10 +1,11 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced,
-cdr            (dsub), but later moved into eirene_energy_rate_coeff.
-
 !pb  19.12.06: bremsstrahlung added
 !dr  31.07.07: bug fix: tein(j) --> tein(k)
 cdr  nov.14:  function brems, replaces gaunt factor function,
 cdr           reaction scaling factor factkk removed from bremsstrahlung
+cdr  nov 17:  comments. bremsstrahlung handling is currently connected
+cdr           to 2d tab format. This is not generally correct, only if
+cdr           the 2d tab comes from ADAS.  Should be handled in read_tab2d?
+cdr           or as iftflg(..4) option. 
 
  
       FUNCTION EIRENE_FEELRC1 (IRRC,K)
@@ -19,11 +20,11 @@ cdr           reaction scaling factor factkk removed from bremsstrahlung
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: ELRC1(9), PLS, DELE, EE, EIRENE_FEELRC1,
+      REAL(DP) :: PLS, DELE, EE, EIRENE_FEELRC1,
      .            EIRENE_FTABRC1, 
      .            DEIMIN, ELRC, EIRENE_ENERGY_RATE_COEFF, BREMS, Z,
      .            eirene_brems
-      INTEGER :: J, I, KK, II
+      INTEGER :: KK
       LOGICAL :: LADAS
  
       EIRENE_FEELRC1=0.D0
@@ -54,14 +55,21 @@ cdr           reaction scaling factor factkk removed from bremsstrahlung
           EE=MAX(-100._DP,ELRC+DEINL(K)+FACRRC(IRRC,2))
           EIRENE_FEELRC1=-EXP(EE)
         END IF
- 
+c
+c  in some case (e.g. ADAS electron cooling rate tables), bremstrahlung is
+c  added in top of free-bound radiation. Subtract this contribution here,
+c  to avoid double counting. Carefull: what if other electron rates in 2D tab.
+c  from are used?
+c
         LADAS = EIRENE_IS_RTCEW_ADAS(KK)
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN
           Z = NCHRGP(IPLS)
           BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion
           EIRENE_FEELRC1=EIRENE_FEELRC1 + BREMS
         END IF
- 
+c
+c  turn radiation loss into an electron energy cooling/heating rate
+c  by adding potential energy transfer contribution 
         IF (DELPOT(KK).NE.0.D0) THEN
           DELE=DELPOT(KK)
           EIRENE_FEELRC1=EIRENE_FEELRC1+DELE*EIRENE_FTABRC1(IRRC,K)

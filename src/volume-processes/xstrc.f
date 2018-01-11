@@ -1,14 +1,15 @@
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 cdr  Jan. 2014:  minor bug in printout corrected
-cdr  currently this routine is not called
- 
+cdr  currently this routine is not called for RC processes, only for OT processes
+
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr
-cdr  to replace ph_xsectp, as called from XSECTP.F,
-cdr  prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
-cdr  e.g.                                    H+    +  e   --> H    (+ rad.)
-cdr  e.g.                                    H(n=2)       --> Ly-alpha (+H(n=1))
+cdr  to replace       ISWR==6, non default RC part, as called from XSECTP.F
+cdr  already done for ISWR==7 (photonic reaction part).
+cdr  Prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
+cdr  e.g.   ISWR==6  (RC)                    H+    +  e   --> H    (+ rad.)
+cdr  e.g.   ISWR==7  (OT)                    H(n=2)       --> Ly-alpha (+H(n=1))
 cdr
 c    ipls: incident bulk
 c    nrc : index of reaction in list of all reactions for IPLS
@@ -28,17 +29,17 @@ c
      .           j
       integer, external :: EIRENE_idez
       real(dp) :: factkk,aik
- 
+
 c  fetch data for process nrc of ipls
- 
+
       kk = IREACP(ipls,nrc)
       if (kk /= idreac) call EIRENE_get_reaction(kk)
- 
+
       FACTKK=FREACP(IPLS,NRC)
       IF (FACTKK.EQ.0.D0) FACTKK=1.
       aik=reaction%aik
- 
- 
+
+
       IPL0 =EIRENE_IDEZ(IBULKP(ipls,nrc),3,3)
       IPL1 =EIRENE_IDEZ(ISCD1P(ipls,nrc),3,3)
       IPL2 =EIRENE_IDEZ(ISCD2P(ipls,nrc),3,3)
@@ -49,9 +50,9 @@ c  fetch data for process nrc of ipls
       IF ((IPL0 < 1) .OR. (IPL0 > MAXSPC(ITYP0))) GOTO 994
       IF ((IPL1 < 1) .OR. (IPL1 > MAXSPC(ITYP1))) GOTO 994
       IF ((IPL2 < 1) .OR. (IPL2 > MAXSPC(ITYP2))) GOTO 994
- 
+
       LGPRC(IPLS,IDSC)=IRRC
- 
+
       facrrc(irrc,1) = factkk
       facrrc(irrc,2) = log(factkk)
       NREARC(irrc) = kk
@@ -59,7 +60,7 @@ c  fetch data for process nrc of ipls
          tabrc1(irrc,j)=aik*factkk
       enddo
       modcol(6,2,irrc)=1
- 
+
       select case(ityp1)
       case(0)
          NPHPRC(IRRC)=IPL1

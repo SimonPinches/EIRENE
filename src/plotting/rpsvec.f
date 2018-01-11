@@ -40,8 +40,6 @@ C
       INTEGER :: I, IP, IPART, IA, IB, IC, J, K, IT, LENCH, IERR, IR,
      .           NRAPS2, NVPLOT, IFC
       INTEGER :: ZUORD(NKNOT,0:30,2)
-      REAL(SP) :: XY(800)
-      REAL(SP) :: YH
       CHARACTER(17) :: CH
 c
       data nvplot/0/

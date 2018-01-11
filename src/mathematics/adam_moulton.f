@@ -22,7 +22,7 @@
       real*8 :: fp
 
       real*8 X(0:3), Y(0:3)
-      real*8 H,ER,F,C,C1,C2,C3,C4,XX,YY,YC,YP
+      real*8 H,C1,C2,C3,C4,XX,YY,YC,YP
       integer K, L, ms
       
       H = (xf - xi) / real(m-1,kind(1.d0))  !integration step

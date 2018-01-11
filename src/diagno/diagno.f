@@ -1,3 +1,7 @@
+cdr Oct 17  :
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
+cdr                    analogous to H emission lines,             NCHTAL=2 
+cdr  itp (select type) of compinent relevant for LOS (not in use yet) 
 cdr  Aug. 16:  re LOS option: 
 cdr            the option described in the manual regarding
 cdr            use of emin1, emax1 to identify a particular spectroscopic
@@ -18,6 +22,16 @@ C  AFTER ALL LINES OF SIGHT ARE DONE, THE OUTPUT ROUTINE OUTSIG IS CALLED
 C  FOR PRINTING AND PLOTTING.
 C
       SUBROUTINE EIRENE_DIAGNO
+cdr main program for side on (line of sight) diagnostics, in post processing phase
+
+c  step 1:  prepare arrays for energy (or spectral) resolution (binning) 
+c  step 2:  call sgnal, to carry out line of sight integration, all bins.
+c  step 3:  call outsig, to print (if prspec) and plot (if plspec) 
+c           energy/spectrally resolved "side-on" data, line integrated.
+
+c  nb    :  during step 2, also spatially resolved (along the line of sight)
+c           information can be extracted. This is controlled by the flags
+c           plargl, prargl
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -32,17 +46,18 @@ C
  
       REAL(DP) :: ENSAVE(NCHOR,NCHEN)
       REAL(DP) :: EN, EQUOT, FMXENM, ALEMX, ALEMN
-      INTEGER :: J, ISTR, ISP, NCHNI, ICHORI
+      INTEGER :: NSPTP(NCHOR) ! should come via comsig. not ready.
+      INTEGER :: J, ISTR, ISP, ITP, NCHNI, ICHORI
       LOGICAL :: PLSAVE,L_CHOR(NCHOR)
 C
 C  INITIALISE LINE INTEGRATION ROUTINE
 C
- 
+      NSPTP(1:NCHOR) = 0  !  NOT READY, NOT USED. TYPE OF RELEVANT COMPONENT, see nspspc...  
       PLSAVE=PLHST
       PLHST=PLCHOR
 C
       NSPNEW(1)=1
-      NCHNI=IABS(NCHENI)
+      NCHNI=IABS(NCHENI)    !Number of energy/wavelength grid points
       FMXENM=DBLE(NCHNI-1)
 
       IF (NCHORI.GT.0) THEN
@@ -58,10 +73,12 @@ C
 C
 C  SET ENERGY ARRAY IN CASE OF SPECTRALLY RESOLVED LINE INTEGRAL
 C
-        IF (NCHTAL(ICHORI).EQ.2.AND.NCHENI.NE.1) THEN 
+        IF (((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5))
+     >    .AND.NCHENI.NE.1) THEN
           WRITE (IUNOUT,*) 'AUTOMATIC CORRECTION  IN DIAGNO'
           WRITE (IUNOUT,*) 'SET NCHENI = 1 (DEFAULT) '
-          WRITE (IUNOUT,*) 'BECAUSE NCHTAL(ICHORI)=2 ENCOUNTERED '        
+          WRITE (IUNOUT,*) 'BECAUSE NCHTAL(ICHORI)=2 OR '
+          WRITE (IUNOUT,*) 'OR NCHTAL(ICHORI)=5 ENCOUNTERED '        
           NCHENI=1
         ENDIF
 
@@ -94,11 +111,12 @@ C  NO CALL TO SUBR. SGNAL
 C
 C  CARRY OUT LINE INTEGRATION
 C
-        ISTR=NSPSTR(ICHORI)
-        ISP=NSPSPZ(ICHORI)
+        ISTR=NSPSTR(ICHORI)  ! Stratum index
+        ISP =NSPSPZ(ICHORI)  ! Species index, or no. of contribution. Meaning depends on NCHTAL
+        ITP =NSPTP (ICHORI)  ! Type index  (not in use)
 C  TENTATIVELY ASSUME: THIS LINE OF SIGHT IS ACTIVE
         L_CHOR(ICHORI)=.TRUE.
-        CALL EIRENE_SGNAL(ICHORI,ISTR,ISP,L_CHOR(ICHORI))
+        CALL EIRENE_SGNAL(ICHORI,ISTR,ISP,ITP,L_CHOR(ICHORI))
 C
 100   CONTINUE
 C

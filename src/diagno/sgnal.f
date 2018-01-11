@@ -4,11 +4,18 @@ c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
 c            option NCHTAL=4 is unfinished. print warning and return 
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
-c            set default ncheni=1 for nchtal=2 alreay in calling routine,
+c            set default ncheni=1 for nchtal=2 already in calling routine,
 c            to avoid that chords are erroneously turned off there. 
+cpb jul.17:  request from aug.16: psig and ARGST depends on NCHTAL done
+cdr       :  commit PART 1: allocatable storage: ARGST, VPLOT, AA, XNTG
+cdr       :  PART 2: automatic detection of 1st dimension ND: tb committed later 
+cdr Oct 17  :
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
+cdr                    analogous to H emission lines,             NCHTAL=2 
+cdr       : added ITP (type of relevant component)           
 C
 C
-      SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,LCHOR)
+      SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
 C
 C  THIS SUBROUTINE CALCULATES LINE INTEGRATED SIGNALS, USING THE EIRENE
 C  VOLUME AVERAGED TALLIES AND THE PLASMA BACKGROUND DATA.
@@ -47,32 +54,51 @@ C
  
       IMPLICIT NONE
 C
-      INTEGER, INTENT(IN) :: ICHORI, ISP
+      INTEGER, INTENT(IN) :: ICHORI, ISP, ITP
       INTEGER :: IISTR
-      REAL(DP) :: C1(3),C2(3),PSIG(0:NSPZ+10),
+      REAL(DP), ALLOCATABLE, SAVE :: PSIG(:)
+      REAL(DP) :: C1(3),C2(3),
      .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
-     .          FP(6), DUM(9)
+     .          FP1(6), FP2(6), DUM(9)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
      .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
-     .            TEF, DEF, RCMIN, RCMAX, DE, TE, ZDS, RATE, CHKSUM
-     .           ,summt,addt, XMA
+     .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM
+     .           ,summt,addt, XMA, 
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX 
       REAL(DP) :: EIRENE_FTABRC1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
-     .           ISK, JSK, IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR,
-     .           KREC, IRRC, MAXREC, IFLAG, IPLOTS, ILTXT, ISPC,
-     .           ICELL, JFEXMN, JFEXMX
+     .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
+     .           KREC, IRRC, MAXREC, IFLAG, ISPC,
+     .           ICELL, 
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+      INTEGER, SAVE :: ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
-      CHARACTER(48) :: TX(14)
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123
       CHARACTER(9) :: REAC
       CHARACTER(3) :: CRC
+      CHARACTER(2) :: ELNAME
       TYPE(CELL_INFO), POINTER :: FIRST, CUR
+
+      INTERFACE
+        SUBROUTINE EIRENE_LININT
+     .           (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,PEN,
+     .            PSIG,TIMAX,ISP,NSPI,JEN,NCHNI)
+        USE EIRMOD_PRECISION
+        USE EIRMOD_PARMMOD
+        INTEGER, INTENT(IN) :: IFIRST,ICHORI, ICHRD,IPVOT,NBC2,NAC2,ISP,
+     .                         NSPI, JEN, NCHNI
+        REAL(DP), INTENT(IN) :: C1(3),C2(3),PEN
+        REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+        REAL(DP), INTENT(IN OUT) :: TIMAX
+        END SUBROUTINE EIRENE_LININT
+      END INTERFACE
 C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
 
-cdr   IF (NCHTAL(ICHORI).EQ.2) NCHNI=1  : this is now done in calling routine diagno.f
+cdr   IF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) NCHNI=1  
+cdr   this is now already done in calling routine diagno.f
 
 cdr:  aug. 2016
 cdr:  to be written: use emin1, emax1 to identify upper and lower state of a transition,
@@ -170,17 +196,29 @@ C  BALMER ALPHA
         FILNAM='AMJUEL  '
         H123='H.12'
         CRC='OT '
-        FP = 0._DP
-        RCMIN = -HUGE(1._DP)
-        RCMAX =  HUGE(1._DP)
-        JFEXMN = 0
-        JFEXMX = 0
+        FP1 = 0._DP
+        RC1MIN = -HUGE(1._DP)
+        RC1MAX =  HUGE(1._DP)
+        JFEX1MN = 0
+        JFEX1MX = 0
+        FP2 = 0._DP
+        RC2MIN = -HUGE(1._DP)
+        RC2MAX =  HUGE(1._DP)
+        JFEX2MN = 0
+        JFEX2MX = 0
+C        
+        ELNAME = 'H     '
+        IZ=0
+
+
 C
 C  H(n=3)/H(n=1)
         REAC='2.1.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
-     .              RCMIN, RCMAX, FP, JFEXMN, JFEXMX,'  ',0)
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              ELNAME,IZ)
  
         chksum = 0._dp
         do
@@ -200,7 +238,10 @@ C  H(n=3)/H(n=1)
  
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
      .                         TEF, DEF, RATE, DUM, 
-     .                         RCMIN, RCMAX, FP, JFEXMN, JFEXMX)
+     .                         RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .                         RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .                         TRCAMD)
+
           rate = exp(rate)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
@@ -222,7 +263,7 @@ C  H(n=3)/H(n=1)
         write (iunout,*) ' integral ',chksum
         return
  
-      END IF
+      END IF  !  END OF UNFINISHED NCHTAL=4 OPTION
 
 C  STEP 2
 C
@@ -366,7 +407,7 @@ c  nlvl is not true:
           return
         ENDIF
 C.................................................................
-      ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
+      ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
 C.................................................................
         write (iunout,*) 'sgnal, emis: ichord,istra ',
      .                            ichori,istra
@@ -398,9 +439,20 @@ C
       PMI=1.E30
       XMA=-1.E30
       XMI=1.E30
+
+      IF (.NOT.ALLOCATED(PSIG)) THEN
+        ND = 0
+        IF (ANY(NCHTAL == 1)) ND = MAX(ND, NATMI)
+        IF (ANY(NCHTAL == 2)) ND = MAX(ND,10)     
+        IF (ANY(NCHTAL == 3)) ND = MAX(ND, NPHOTI)
+        IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
+        ALLOCATE (PSIG(0:ND))
+      END IF
+
       IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
       IF (NCHTAL(ICHORI).EQ.2)  NSPI=10     ! up to 10 spectral line emissivities (transitions) in one single LOS evaluation
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
+      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10  
       IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
       IFIRST=0
@@ -435,8 +487,8 @@ C  THE NUMERICAL FACTOR 1./11.137 ARISES FROM A TRANSFORMATION
 C  OF A MAXWELLIAN VELOCITY DISTRIBUTION TO A MAXW. ENERGY DISTR.
 C  1./11.137=0.5*(1./PI)**1.5, IN SIGCX
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)/11.137
-        ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
-C  LINE INTEGRAL: PHOTONS/SEC/CM**2/STERAD (EMISSIVITY)
+        ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
+C  LINE INTEGRAL: PHOTONS/SEC/CM**2/STERAD (EMISSIVITY), JEN=1 HERE.
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)/(4.*PIA)
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2/EV/STERAD (SPECTRAL RADIANCE)
@@ -459,7 +511,7 @@ C
       ENDFIT(ICHORI)=NSPEND(ICHORI)*TIMAX
       TINP(ICHORI)=TIMAX
       IF (TRCSIG) THEN
-        WRITE (iunout,*) 'FITTING RANGE: E1--E2, TIMAX'
+        WRITE (iunout,*) 'SLOPE FITTING RANGE: E1--E2, TIMAX'
         WRITE (iunout,*) ESTART(ICHORI),'--',ENDFIT(ICHORI),'  ',TIMAX
       ENDIF
 C
@@ -470,7 +522,7 @@ C  SCALE RESULT
       CALL EIRENE_MASAGE
      .  ('NO SLOPE IN SIGNAL, BECAUSE MAX(BUFFER).LE.0   ')
       PLSPEC=.FALSE.
-      RETURN
+      GOTO 300
 235   ZSCALE=1./XMAX
       DO 233 I=1,NCHNI
         BUFFER(ICHORI,I)=BUFFER(ICHORI,I)*ZSCALE

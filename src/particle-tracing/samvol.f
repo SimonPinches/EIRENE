@@ -49,7 +49,6 @@ C
       REAL(DP), ALLOCATABLE, SAVE :: FREC(:,:,:), VSOURC(:,:), VSMXI(:)
       REAL(DP), ALLOCATABLE, SAVE :: RQ21(:), PS21(:)
       REAL(DP), ALLOCATABLE, SAVE :: ASIMP(:,:)
-      REAL(DP) :: D(3)
       INTEGER, ALLOCATABLE, SAVE  :: ISOURC(:,:), ICMX(:),
      .                               IFREC(:)
       REAL(DP) :: ZEP1, X1, Y1, X2, Y2, X3, Y3, RR, RRI, WINK,
@@ -60,9 +59,9 @@ C
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
      .            EIRENE_BREMS,XC,YC,ZC
       REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER :: IC1, IC2, ICOUNT, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
+      INTEGER :: IC1, IC2, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
-     .           IR2, IP1, IP2, ICTOT, IND, IR, IP, IT, IC, ISRFSI, I,
+     .           IR2, IP1, IP2, IND, IR, IP, IT, ISRFSI, I,
      .           ICC, IR1, ISR, ISTR, IL, IU, IM, MXREC, MXPLS, IFPLS,
      .           IPLSTI, IPLSV, KK, ICCT
       INTEGER, SAVE :: ISTROLD=-1
@@ -98,7 +97,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
-c  nspez out of range: 
+c  nspez out of range: Set volumetric sources for ALL species 
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
@@ -373,6 +372,7 @@ C
           IPLSTI = MPLSTI(IPLS)
           SUMM=0.D0
           EISUMM=0.D0
+C  VOLUMETRIC SUB-STRATA  BETTER NAME: IVOLSI RATHER THAN ISRFSI
           DO 53 ISRFSI=1,NSRFSI(ISTRA)
             ISR=ISRFSI
             SUM=0.D0

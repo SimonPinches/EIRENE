@@ -1,10 +1,15 @@
+Cdr Jan 2017:  start to syncronize with intvol. goal: should
+C              become identical, if weighting function "VOL == 1"
+C
 C
 C
 C*DK INTTAL
       SUBROUTINE EIRENE_INTTAL (A,VOL,J,M,N,YINT,NX,NY,NZ,NB)
 C
-C   INTEGRATE A(J,K), K=1,N, RESULT IS YINT
+C  SIMILAR TO INTVOL
+C   INTEGRATE TALLY A(J,K), K=1,N, RESULT IS YINT
 C   USE VOL(K) AS WEIGHTING
+C
 C   J FIXED, (SPECIES INDEX)
 C   M: LEADING DIMENSION OF A IN CALLING PROGRAM
 C   A IS A VOLUME AVERAGED TALLY
@@ -23,9 +28,9 @@ C
       REAL(DP), INTENT(IN) :: VOL(*)
       REAL(DP), INTENT(OUT) :: YINT
       REAL(DP) :: VR, YR, YPR, VRTP, VRT, YRT, VTP, YTP, VT, YT, YP,
-     .            VPR, A0, VP, YRTP
-      INTEGER :: IX, IY, IZ, NIR, NIRTP, NIRT, NITP, NIT, NIPR, NIP,
-     .           N1DEL, N2DEL, KX, KY, KZ, IB, K, NXM, NYM, NZM, IADD,
+     .            VPR, VP, YRTP
+      INTEGER :: IX, IY, IZ, IB, NIR, NIRTP, NIRT, NITP, NIT, NIPR, NIP,
+     .           N1DEL, N2DEL, KX, KY, KZ, K, NXM, NYM, NZM, IADD,
      .           KB, NS
 C
       N1DEL=0
@@ -104,7 +109,6 @@ C  INTEGRATE OVER POLOIDAL AND RADIAL CO-ORDINATE: YPR
 202       CONTINUE
           A(J,NIP)=YP/VP
 201     CONTINUE
-        A0=A(J,NIPR)
         A(J,NIPR)=YPR/VPR
 200   CONTINUE
 C  INTEGRATE OVER TOROIDAL CO-ORDINATE: YT

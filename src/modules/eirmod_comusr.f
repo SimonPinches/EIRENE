@@ -41,10 +41,16 @@ C   IS SUCH A DERIVED QUANTITY)
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
      R        BVIN(:,:), PARMOM(:,:), EDRIFT(:,:),
      R        BXPERP(:), BYPERP(:),
-
-     R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSP(:),
+C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
      R        DION(:),   DATM(:),     DMOL(:),   DPLS(:),    DPHOT(:)
+ 
+!  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES
+      REAL(DP), TARGET, ALLOCATABLE, PUBLIC, SAVE ::
+     R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSP(:)
+
+!     POINTER FOR UNIFIED SUBROUTINES
+      REAL(DP), POINTER, PUBLIC, SAVE :: RMASSX
 
 C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
@@ -142,14 +148,14 @@ cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct d
 
         MUSR=4*NATM+4*NMOL+5*NION+3*NPLS+30+NSPZ+
      .       6*(1+NPHOTP)*(1+NATMP)*(1+NMOLP)*(1+NIONP)*(1+NPLSP)+NSPZ*6
-     .       +2*NPLSI+NSPZ*NPLS
+     .       +2*NPLS+NSPZ*NPLS
 
         LUSR=NRAD*(NPLS+2)+NRAD
 
 C NPLPR1 + ... = NPLPRM
         ALLOCATE (TEIN(NRAD))
         ALLOCATE (TIIN(NPLSTI,NRAD))
-        ALLOCATE (DEIN(NRAD))
+        ALLOCATE (DEIN(NRAD))   !  ital=-3,  derived tally
         ALLOCATE (DIIN(NPLS,NRAD))
         ALLOCATE (VXIN(NPLSV,NRAD))
         ALLOCATE (VYIN(NPLSV,NRAD))
@@ -158,22 +164,22 @@ C NPLPR1 + ... = NPLPRM
         ALLOCATE (BYIN(NRAD))
         ALLOCATE (BZIN(NRAD))
         ALLOCATE (BFIN(NRAD))
-cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  not yet. done later below, ical == 2 option
-        ALLOCATE (VOL(NRAD))
+cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  ital=-12. Not yet. done later below, ical == 2 option
+        ALLOCATE (VOL(NRAD))   !  ital=-14
         ALLOCATE (WGHT(NSPZMC,NRAD))  ! check size of  nspzmc.  this "weight window" array is unused so far.
         ALLOCATE (EXIN(NRAD))
         ALLOCATE (EYIN(NRAD))
         ALLOCATE (EZIN(NRAD))
         ALLOCATE (EFIN(NRAD))
-        ALLOCATE (POT(NRAD))
+        ALLOCATE (POT(NRAD))      !  ital=-22
 c NPLPR2
         ALLOCATE (TEINL(NRAD))
         ALLOCATE (TIINL(NPLSTI,NRAD))
-        ALLOCATE (BVIN(NPLSV,NRAD))
-        ALLOCATE (PARMOM(NPLS,NRAD))
-        ALLOCATE (BXPERP(NRAD))
-        ALLOCATE (BYPERP(NRAD))
-        ALLOCATE (EDRIFT(NPLS,NRAD))
+        ALLOCATE (BVIN(NPLSV,NRAD))   ! ital=nn   
+        ALLOCATE (PARMOM(NPLS,NRAD))  ! ital=nn 
+        ALLOCATE (BXPERP(NRAD))       ! ital=-16
+        ALLOCATE (BYPERP(NRAD))       ! ital=-17
+        ALLOCATE (EDRIFT(NPLS,NRAD))  !  ital=-13
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
 
@@ -193,9 +199,9 @@ c NPLPR2
         ALLOCATE (DPHOT(MAX(1,NPHOT)))
  
 c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
-        ALLOCATE (TEDTEDX(NRTAL))
-        ALLOCATE (TEDTEDY(NRTAL))
-        ALLOCATE (TEDTEDZ(NRTAL))
+        ALLOCATE (TEDTEDX(NRTAL))  ! ital=nn
+        ALLOCATE (TEDTEDY(NRTAL))  ! ital=nn
+        ALLOCATE (TEDTEDZ(NRTAL))  ! ital=nn
  
         ALLOCATE (TEXTS(NSPZ))
 c  integer  species and background tally data
@@ -255,13 +261,14 @@ c  logicals
      .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
  
       ELSE IF (ICAL == 2) THEN
-c  first dimension of adin is now fixed.  reset nplprm
+c  NAIN: first dimension of adin is now fixed.  correct nplprm with nain*nrad
         IF (ALLOCATED(ADIN)) RETURN
  
         NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
         NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD
         ALLOCATE (ADIN(NAIN,NRAD))
 
+c  NCPV, NBGV are now set
         ALLOCATE (ICPVE(NCPV))
         ALLOCATE (ICPVS(NCPV))
         ALLOCATE (ICPVT(NCPV))
@@ -302,6 +309,7 @@ c  first dimension of adin is now fixed.  reset nplprm
 
       N1DIM = 0
       NTOT = 0
+cdr  are there any FEM interpolated background tallies in this run?
 
       IF (LTESMO) NTOT = NTOT + 1
       IF (LTISMO) NTOT = NTOT + NPLSTI
@@ -312,6 +320,8 @@ c  first dimension of adin is now fixed.  reset nplprm
       IF (LPOTSMO)  NTOT = NTOT + 1
       
       IF (NTOT > 0) THEN
+cdr  allocate storage for background tallies on cell vertices
+cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ALLOCATE (CORNER_PROFILES(NCORNER,NTOT))
       ELSE
         ALLOCATE (CORNER_PROFILES(1,1))
@@ -425,8 +435,7 @@ C
       DEALLOCATE (EZIN)
       DEALLOCATE (EFIN)
       DEALLOCATE (POT)
-      DEALLOCATE (FLXOUT)
-      DEALLOCATE (SAREA)
+c
       DEALLOCATE (TEINL)
       DEALLOCATE (TIINL)
       DEALLOCATE (BVIN)
@@ -434,6 +443,10 @@ C
       DEALLOCATE (EDRIFT)
       DEALLOCATE (DEINL)
       DEALLOCATE (DIINL)
+
+      DEALLOCATE (FLXOUT)
+      DEALLOCATE (SAREA)
+
       DEALLOCATE (RMASSI)
       DEALLOCATE (RMASSA)
       DEALLOCATE (RMASSM)
@@ -554,8 +567,8 @@ C
         BYIN   = 0._DP
         BZIN   = 0._DP
         BFIN   = 0._DP
-        VOL    = 0._DP
-        WGHT   = 1._DP
+        VOL    = 0._DP       ! ital=-14
+        WGHT   = 1._DP     
         BXPERP = 0._DP
         BYPERP = 0._DP
         EXIN   = 0._DP
@@ -642,7 +655,7 @@ C
  
       ELSE IF (ICAL == 2) THEN
 c  at this call: first dimension of adin is known, as well as size of cop and bgk tallies
-        ADIN   = 0._DP
+        ADIN   = 0._DP      ! ital=-12
 
         ICPVE  = 0
         ICPVS  = 0

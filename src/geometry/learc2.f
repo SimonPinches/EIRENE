@@ -3,8 +3,21 @@ C
 C
       FUNCTION EIRENE_LEARC2(X,Y,NR,NP,TEXT)
 C
-C  THIS SUBROUTINE FINDS THE POLYGON INDEX "IPOLG"
-C  ASSUMING THAT X,Y IS IN THE RADIAL ZONE NR
+C  CALLED ONLY IN CASE OF 2D POLYGONAL MESH
+C    A)  (LEVGEO=3), (EVEN FOR 1D GRID CASES)
+C  OR
+C    B)  (LEVGEO=2 and NLPOL) WHEN THE POLOIDAL SUB-GRID IS DEFINED
+C                             BY POLYGONAL LINES.
+
+C  SEARCH 2ND GRID INDEX IPOLG
+
+C  THIS SUBROUTINE FINDS THE POLODIAL POLYGON CELL INDEX "IPOLG"
+C  ASSUMING (knowing) THAT POINT (X,Y) IS IN THE RADIAL ZONE "NR",
+C  I.E. SEARCH ONLY BETWEEN THE TWO NEIGHBORING "RADIAL" POLYGONS NR AND NR+1
+
+C  stricly, subr. LEARC1 does the same, with ian=nr and ien=nr+1
+c  tbd:  which routine does it better? faster ?
+c  NB: (levgeo=2 and nlpol) is not covered in learc1, only here in learc2.
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -13,13 +26,13 @@ C
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y
       INTEGER, INTENT(IN) :: NR, NP
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
- 
+
       REAL(DP) :: ERR1(N2NDPLGS), ERR2(N2NDPLGS), ERR3(N2NDPLGS),
      .            ERR4(N2NDPLGS), ERR5(N2NDPLGS), ERR6(N2NDPLGS)
       REAL(DP) :: HELPN, DWYN, WY1N, XMX3, ERRMIN, UXN, UYN, TXN, TYN,
@@ -27,7 +40,7 @@ C
      .          DX1, DX2, DX3, DX4, XMX4, YMY4, VX1, VX2, WY2,
      .          WX2, VY2, Y3N, X3N, Y1N, Y2N, Y4N, X1N, DET1,
      .          YMY2, XMX2, DET2, YMY1, XMX1
-      INTEGER :: IM, LM, LMARK, IMARK, L, K, EIRENE_LEARC2, N, IFIRST, 
+      INTEGER :: IM, LM, LMARK, IMARK, L, K, EIRENE_LEARC2, N, IFIRST,
      .           INUM
       REAL(DP), ALLOCATABLE, SAVE ::
      .          X1(:,:),Y1(:,:),X2(:,:),Y2(:,:),X3(:,:),Y3(:,:),
@@ -37,6 +50,7 @@ C
      .          D12(:,:),D14(:,:),D32(:,:),D34(:,:)
 !pb      SAVE
       DATA IFIRST /0/
+
 csw 04aug08
       if(np .lt. 0) then
         if(allocated(x1)) then
@@ -70,6 +84,9 @@ csw 04aug08
 csw
 C
       IF (IFIRST .EQ. 0) THEN
+
+cdr   prepare arrays, independent of x,y
+
         IFIRST = 1
         ALLOCATE (X1(N1STS,N2NDS))
         ALLOCATE (Y1(N1STS,N2NDS))
@@ -129,6 +146,8 @@ C
       ENDIF
 C
 C  END OF IFIRST LOOP
+
+c................................................................................
 C
       INUM=0
 C
@@ -148,10 +167,12 @@ C
         ERR5(L)=ERR1(L)+ERR2(L)
         ERR6(L)=ERR3(L)+ERR4(L)
 101   CONTINUE
+
       IF (LEVGEO .EQ. 2) THEN
         DO 102 L=NPOINT(1,K),NPOINT(2,K)-1
 102       ERR6(L)=0.
       ENDIF
+
       DO 100 L=NPOINT(1,K),NPOINT(2,K)-1
         IF (ERR4(L).GT.1.D30) THEN
           X2N=XPOL(NR,L)
@@ -167,14 +188,14 @@ C
           UXN=X3N-X2N
           UYN=Y3N-Y2N
           DETN=1./(TXN*UYN-TYN*UXN-EPS60)
- 
+
           VX1=X4N-X1N
           VY1N=Y4N-Y1N
           WX1N=X3N-X1N
           WY1N=Y3N-Y1N
           DWYN=1./(WY1N+EPS60)
           HELPN=1./(VX1*WY1N-VY1N*WX1N-EPS60)
- 
+
           XMX2=X-X2N
           YMY2=Y-Y2N
           DET1=XMX2*UYN-YMY2*UXN
@@ -222,12 +243,14 @@ C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
           ERR3(L)=ABS(DX3+DX4-D34(NR,L))
           ERR4(L)=ABS(DX1+DX4-D14(NR,L))
 111     CONTINUE
+
         IF (LEVGEO .EQ. 2) THEN
 !PB          ERR1(L)=ERRMIN
 !PB          ERR3(L)=ERRMIN
           ERR1=ERRMIN
           ERR3=ERRMIN
         ENDIF
+
         DO 110 L=NPOINT(1,K),NPOINT(2,K)-1
           IF (ERR1(L).LT.ERRMIN) THEN
             IMARK=NR

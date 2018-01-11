@@ -2,6 +2,7 @@ cdr:  njump=3 option: continue new flight from previously found
 cdr                   intersection with cell boundary. used from levgeo=10
 C icts introduced, lcut --> llcut  (sometime after 2014)
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
+cdr   may 17:  commenting. tbd: commenting in particular of tetraheda-grid part.
 C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
 C
@@ -118,13 +119,16 @@ C
       INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-     .           ICALL, ITFRST, ISTS, MMSURF, ICOUP, J, K, I, JPOL,
+     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
      .           ISTS_CELL, ISD, nclpb, icts
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
+#ifdef TRACE
+      INTEGER :: ICOUP
+#endif
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
-      INTEGER :: NSTS_CELL,nrtest,ist
+      INTEGER :: NSTS_CELL
       LOGICAL :: LLCUT(N2NDPLGS), LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
@@ -144,6 +148,7 @@ C
      .             6,  3 /
       DATA ICALL /0/
       DATA ITFRST /0/
+
       SAVE
 C
 #ifdef TRACE
@@ -159,6 +164,7 @@ C
       IRCELL=NRCELL
       PT=1.D30
       IF ((LEVGEO <= 4) .AND. (ABS(VELZ).EQ.1.D0)) THEN
+c  zero velocity in x-y plane, i.e. flight purely in z-direction
         IPOLGN=IPOLG
         NCOUP=1
         ALPD(NCOUP)=PT
@@ -171,14 +177,21 @@ C
 C-------------------------------------------------------------------
       IF (LEVGEO.GT.1) GOTO 100
 C
-C****SLAB-MODEL IN X DIRECTION
+C****SLAB-MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
-      IF (ABS(VELY).EQ.1.D0) THEN
+      IF (ABS(VELX)<= EPS30) THEN 
+c  zero velocity in x direction, i.e. flight purely in y-z-direction 
         IPOLGN=IPOLG
+        NCOUP=1
+        ALPD(NCOUP)=PT
+        LUPC(NCOUP)=0
+        MUPC(NCOUP)=0
+        JUPC(NCOUP)=IPOLGN
         RETURN
       ENDIF
 C
       IF (NJUMP.EQ.0) THEN
+C  SAVE STARTING POINT, FLIGHT DIRECTION, FOR LATER CALLS ALONG SAME TRACK.
         XA=X0
         IF (NLSRFX) XA=RSURF(MRSURF)
         NINCX=1
@@ -194,7 +207,10 @@ C
         IR=NRCELL
         IF (NINCX.EQ.1) IR=IR+1
         DXA=RSURF(IR)-XA
+C  TENTATIVE FLIGHT TIME (DISTANCE) TO NEXT X-GRID BOUNDARY
         TST=DXA/(VELX+EPS60)
+C  IN CASE OF 2D OR 3D: CHECK IF WE HAVE LEFT THE GRID ACROSS ANOTHER BOUNDARY
+C                       BEFORE REACHING THIS NEXT X-GRID BOUNDARY
         IF (NLTOR.AND.NLTRZ) THEN
           Z0TEST=Z0+TST*VELZ
           IF (ZSURF(1).GT.Z0TEST.OR.ZSURF(NT3RD).LT.Z0TEST) GOTO 5
@@ -252,6 +268,7 @@ C
       ENDIF
 #endif
       IF (NJUMP.EQ.0) THEN
+C  SAVE STARTING POINT, FLIGHT DIRECTION, FOR LATER CALLS ALONG SAME TRACK.
         ZA=VELX*VELX+VELY*VELY
         ZB=X0*VELX+Y0*VELY
         ZB2=ZB*ZB
@@ -362,7 +379,7 @@ C
 C
 1000  CONTINUE
 C
-C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC OR CONFOCAL)
+C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
       IF (NRCELL.LE.0) THEN
         WRITE (iunout,*) 'NRCELL.LE.0 IN TIMER: NOT READY '
@@ -374,6 +391,7 @@ C  PARTICLE OUTSIDE GRID OPTION NOT READY, SEE NLCRC
  
 C  COEFFICIENTS OF QUADRATIC
       IF (NJUMP.EQ.0) THEN
+C  SAVE STARTING POINT, FLIGHT DIRECTION, FOR LATER CALLS ALONG SAME TRACK.
         YVY=Y0*VELY
         VELXQ=VELX*VELX
         VELYQ=VELY*VELY
@@ -517,12 +535,15 @@ C  SET INDICES OF STARTING CELL
         IR=NRCELL
         IP=NPCELL
         IF (.NOT.NLPOL) IP=IPOLG
+
         IF (NJUMP.EQ.1) THEN
+C  CONTINUATION OF A TRAJECTORY WITH SAME STARTING POINT AND SAME DIRECTION 
           IR=ICELLR
           IP=IPOLGN
           IF (NINCX.EQ.1) LNGB1=.FALSE.
           IF (NINCX.EQ.-1) LNGB3=.FALSE.
         ENDIF
+
         IF (NLSRFX) THEN
 !pb05032015          NLSRFX=.FALSE.
           IF (NRCELL.EQ.MRSURF) THEN
@@ -582,7 +603,7 @@ C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
         LCT3 = T3.GE.0.D0 .AND. T3.LE.1.D0
         LCT4 = T4.GE.0.D0 .AND. T4.LE.1.D0
 C  CALCULATE TIME OF FLIGHT FROM STARTING POINT X=(X0,Y0,Z0)
-C  TO THE BOUNDARY OF THE ACTUELL CELL
+C  TO THE BOUNDARY OF THE PRESENT CELL
         IF (ABS(VELX).GT.ABS(VELY)) THEN
           IF (LCT1) PT1=(XPOL(IR,IP)-X0+VPLX(IR,IP)*T1)/VELX
           IF (LCT2) PT2=(XPOL(IR,IP+1)-X0+VVTX(IR,IP+1)*T2)/VELX
@@ -883,7 +904,7 @@ C
 C
       IF (LEVGEO.GT.4) GOTO 10000
 C
-C   FINITE ELEMENT DISCRETISATION
+C   FINITE ELEMENT DISCRETISATION (MESH TRIANGLES IN X-Y- PLANE)
 C
 #ifdef TRACE
       IF (NLTRC) THEN
@@ -1100,7 +1121,7 @@ C
  
       IF (LEVGEO > 5) GOTO 12000
 C
-C     TETRAHEDRONS
+C  MESH OF TETRAHEDRA, FULL 3D DISCRETIZATION OF COMPUTATIONAL VOLUME
 C
       TIMTET = 1.E30
       NTIMT = 0
@@ -1289,10 +1310,14 @@ C  ON NON DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
  
       ELSE
 C
-C  PARTICLE OUTSIDE STANDARD MESH, IN ADDITIONAL CELL NACELL
+C  PARTICLE IS OUTSIDE STANDARD MESH, IN ADDITIONAL CELL NACELL
 C  NRCELL=0
 C
         IF (ITFRST == 0) THEN
+CDR  PREPARE SOME GRID DATA FOR FINDING RE-ENTRY INTO GRID OF TETRAHEDA
+CDR  ONLY ONCE FOR ALL FUTURE TRAJECTORIES.
+
+C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).   
           ITFRST = 1
           NTETSUR = COUNT(NTBAR(1:4,1:NTET) == 0)
           ALLOCATE (IDROB(NTETSUR,2))
@@ -1325,6 +1350,7 @@ C
             V1 = A2*B3 - A3*B2
             V2 = A3*B1 - A1*B3
             V3 = A1*B2 - A2*B1
+CDR  LOOP OVER ADDITIONAL SURFACES
             DO IL=1,NLIMI
               IF (RLB(IL) == 3.) THEN
                 S1=(P1(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
@@ -1344,7 +1370,7 @@ C
                       IGJUM3(ITET,IL) = 0
                     ELSE
                       CALL EIRENE_BITSET
-     .  (IGJUM3,0,NOPTIM,ITET,IL,0,NBITS)
+     .                    (IGJUM3,0,NOPTIM,ITET,IL,0,NBITS)
                     END IF
                   END IF
                 END IF
@@ -1353,7 +1379,7 @@ C
               END IF
             END DO
           END DO
-        END IF
+        END IF   ! ITFRST == 0 PART. NOW: ITFRST = 1 
  
         PT=1.D30
         MRSURF=0
@@ -1424,6 +1450,7 @@ C  SEITENNUMMER DES NEUEN DREIECKS
      .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
       END IF
+
       RETURN
  
 12000 CONTINUE
@@ -1432,9 +1459,10 @@ C  GENERAL GEOMETRY OPTION: PROVIDE FLIGHT TIME IN CURRENT CELL
 C
       IF (ICALL == 0) THEN
         ICALL = 1
-c  set nrmsrf:  = a "free radial" surface index, between 1 and nsurf, such that none
-c              of the block 3a defined nstsi "radial" non-default standard surfaces
-c              coincides with this "radial" surface.
+c  set nrmsrf:  = a "free virtual radial" surface index, between 1 and nsurf, such that none
+c              of the block 3a defined nstsi "real radial" non-default standard surfaces
+c              coincides with this "virtual radial" surface.
+
         MXSF = MAXVAL(INUMP(1:NSTSI,1))
         IF (MXSF < NSURF) THEN
           NRMSRF = MXSF+1

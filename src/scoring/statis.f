@@ -1,5 +1,6 @@
 C  may 06:  bug fix: SDC initialized to zero
 C  march 12: optimize calculations for surface tallies
+cdr jan  18: comments
 C
       SUBROUTINE EIRENE_STATIS
  
@@ -27,7 +28,7 @@ C
      .                              IADDC(:,:), IGFFC(:,:),
      .                              IND(:,:),   IIND(:),    INDSS(:,:)
       REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DA1, DD11, D2, DD12,
-     .          ZFLUXQ, DS, ZNM, SD2S, SD2, SG2, SG, DA, D, DD, DA2,
+     .          ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD, DA2,
      .          D2S11, D2S22, D2S12, SG12, SG1, DSA1, DSA2,
      .          SAV, SD1S, SD1, XNM
       INTEGER :: ISCO2, NR1, NP2, NT3, INP, IGF, IC,
@@ -252,20 +253,25 @@ C  update statistical variance for surface tallies, once after each flight
         IGF=IGFFW(IC)
         IGS=IGHW(IC)
         ITL=IIHW(IC)
+c  variance for tally itl, species igs.  in case igs=0: sum over species
         IF (NSPANW(ITL) == 0) THEN
+c  tally itl has no (first) species index
           ISCO = 1
         ELSE
           ISCO = 0
           IF (IGS == 0) THEN
+c  sum over species
             IF ( ANY(LMETSPW(NSPANW(ITL):NSPENW(ITL))) ) ISCO = 1
           ELSE
+c  only for species igs
             IF (LMETSPW(NSPANW(ITL)+IGS-1)) ISCO = 1
           END IF
         END IF
-        IF (ISCO == 0) GOTO 1022
+        IF (ISCO == 0) GOTO 1022  ! do not score tally ITL, 
+c                                   because no relevant species in this trajectory
 
 c  fill 'vector'
-c  vector is cummulated contribution after present flight no. n
+c  vector is cumulated contribution after present flight no. n
 c   
         IF (IGS.NE.0) THEN
 c  
@@ -288,7 +294,7 @@ c  tally is for sum over species
 
 c  next:
 C  contribution from current flight no. n only: sd1 =vector-sdviaw
-c  sdvia  is cummulated contribution after previous flight no. n-1 (previous call)
+c  sdvia  is cumulated contribution after previous flight no. n-1 (previous call)
 
         SD1S=0.
         DO 1021 ICO=1,NWLMT
@@ -301,7 +307,7 @@ c
 1021    CONTINUE
         SGMWS(IC)=SGMWS(IC)+SD1S*SD1S
 1022  CONTINUE
-c  sigma  now is cummulated squared contribution after flight no. n
+c  sigma  now is cumulated squared contribution after flight no. n
 C
 1030  CONTINUE
 C
@@ -486,7 +492,7 @@ C
 C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA(IC,IR)=SG*FSIG
-C CUMMULATED VARIANCE FOR SUM OVER STRATA
+C CUMULATED VARIANCE FOR SUM OVER STRATA
           STV(IC,IR)=STV(IC,IR)+SG2*ZFLUXQ/XNM/XN
           EE(IC,IR)=EE(IC,IR)+D*ZFLUX/XN
           SD(IR)=0._DP
@@ -536,7 +542,7 @@ c  tally for sum over species
 C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMAW(IC,IR)=SG*FSIG
-C CUMMULATED VARIANCE FOR SUM OVER STRATA
+C CUMULATED VARIANCE FOR SUM OVER STRATA
           STVW(IC,IR)=STVW(IC,IR)+SG2*ZFLUXQ/XNM/XN
           FF(IC,IR)=FF(IC,IR)+D*ZFLUX/XN
 2211    CONTINUE

@@ -78,25 +78,27 @@ C
 
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
-      REAL(DP) :: XTIM(0:NSTRA), DXTIM(0:NSTRA)
-      REAL(DP) :: ST, FFF, DELT, XFL1,
-     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, STW, STWS,
+      REAL(DP) :: XTIM(0:NSTRA)
+C      REAL(DP) :: DXTIM(0:NSTRA)
+      REAL(DP) :: XFL1,
+     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, 
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
-     .          FLX, VAL, ZW, ZWW, VALUE, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
+     .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
      .          tim1, tim2,
      .          rn1
+C      REAL(DP) :: DELT
       REAL(DP), EXTERNAL :: RANF_EIRENE 
       INTEGER, EXTERNAL :: RANSET_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE
 
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
-      INTEGER :: ITAL, ISDV, IALS, ISTRAA, ISTRAE, ICELL,
-     .           IGFFT, IALV, IDV, I, K, IER, IRC, IBGV, NMX,
+      INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
+     .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST,IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN, 
      -           ISTR, NPTTOT, NREC11, IB, N2,
-     .           IC, IR, IGFF, IADD, INDX, ICLV, IADV, ICPV, ISNV,
-     .           INODES, J, IPTSI, I1, I2, I3, IA, IT, IMCP,
+     .           IC, IGFF, IADD, INDX, ICLV, IADV, 
+     .           INODES, J, IPTSI, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0
@@ -282,7 +284,10 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
 7     CONTINUE
       XPT1=0.
       XFL1=0.
-      nsteff=0
+ 
+c NSTEFF: number of strata active in this run, i.e. not counting
+c         de-activated strata with NPTS(ISTRA)=0.
+      nsteff=0 
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         if (npts(istra) .gt. 0) then
@@ -385,7 +390,8 @@ c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
         if (.not.nlident) then
           do istra=1,nstrai
-            ninitl(istra)=ninitl(istra)+my_pe*10000
+            if (ninitl(istra) > 0) 
+     .        ninitl(istra)=ninitl(istra)+my_pe*10000
           enddo
         ELSE
           CALL EIRENE_LEER(1)
@@ -488,17 +494,19 @@ c  and otherwise enforces that or stops the run.
 
 c  find random number seed from truely random procedure from wall clock time (use date and time)
         ELSEIF (NINITL(ISTRA).LT.0) THEN
-          CALL DATE_AND_TIME(CDATE,CTIME)
+          CALL DATE_AND_TIME(CDATE,CTIME)  ! a number between 0 and 23:59:59 --> 5.094.060
           READ(CTIME(1:6),*) NINITL(ISTRA)
 !pb 28012016
-!  add number of calls to MCARLO in order to avoid same random seeds
+!  add number of calls to MCARLO in order to avoid same random seeds in very short
+!  cycles with an external code
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
+          IF (.NOT.NLIDENT) ninitl(istra)=ninitl(istra)+my_pe*10000
           NINIST=NINITL(ISTRA)
           iseed_istra=ranset_eirene(ninist)
 
         ELSEIF (NINITL(ISTRA).EQ.0) THEN
-C  DON'T INITIALIZE FOR THIS STRATUM, NOTHING TO BE DONE HERE
-C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO SEEDING.
+C  DON'T RE-INITIALIZE RANDOM GENERATOR FOR THIS STRATUM, NOTHING TO BE DONE HERE
+C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO FURTHER SEEDING.
           iseed_istra=ranset_eirene(0)
 
         ENDIF
@@ -600,6 +608,8 @@ C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             IN=ICLMT(I)
             IMETCL(IN) = 0
           END DO
+c  LMETSP: array for 1st ("species") index of volume averaged tallies,
+c  which is scored along a trajectory
           LMETSP=.FALSE.
           NCLMTS = 0
 
@@ -607,6 +617,8 @@ C  RE-INITIALIZE INDEX-ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             IN=IWLMT(I)
             IMETWL(IN) = 0
           END DO
+c  LMETSPW: array for 1st ("species") index of surface averaged tallies,
+c  which is scored along a trajectory
           LMETSPW=.FALSE.
           NWLMT = 0
           NWLMTS = 0
@@ -665,7 +677,7 @@ CDR       LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL
           LGSTOP = LGLAST
 
 C.......................................................................
-C  CORRELATED SAMPLING: CREATE AS RANDOM NUMBER GENERATOR SEED FOR NEXT PARTICLE
+C  CORRELATED SAMPLING: CREATE A RANDOM NUMBER GENERATOR SEED FOR NEXT PARTICLE
 C  FROM THE SEED USED FOR THE CURRENT PARTICLE
           IF (NLCRR) THEN
 C
@@ -683,13 +695,13 @@ c  then re-initialize with original seed
             iseed_istra=ranget_eirene(iseed_iptsi)
 ! now we have the seed iseed_iptsi to start the histrory.     
 
-C  FOR TEST ONLY TRY FIRST RANDOM NUMBER
+C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
             IF (TRCRNF) THEN
               call eirene_leer(1)
               write (iunout,*) 'new particle ',iptsi
               RN1=RANF_EIRENE()  ! sacrifize one random number for testing random sequence
-              write (iunout,*), 'iseed,iseed_next,rn',
-     .                           iseed_iptsi, iseed_istra,RN1
+              write (iunout,*) 'iseed,iseed_next,rn',
+     .                          iseed_iptsi, iseed_istra,RN1
             ENDIF
            
 c  derive one more seed, for reflec.f. cdr: unfinished....
@@ -720,7 +732,7 @@ c  a corresponding multi-processor run.
  
 c  The multiprocessor run must have been set up such that it completed
 c  exactly nptsdel(istra) trajectories on each of the iproc(istra) processors
-c  which ran on stratum istra.
+c  which ran on stratum ISTRA.
 c  The corresponding single processor run must complete exactly 
 c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
  
@@ -794,7 +806,11 @@ C  RESTORE VARIABLES AND START NEW TRACK
             NLSRFZ=MTSURF.GT.0
             NLSRFA=MASURF.GT.0
             IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,12)
-            IF (NLSTOR) CALL EIRENE_STORE(200)
+
+!  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
+!  PREPARE POINTER FOR UNIFIED SUBROUTINES FPATH, UPDATE, ETC.
+            CALL EIRENE_SWITCH_PARTINFO
+
             IC_NEUT=0
             IC_ION=0
             GOTO 102
@@ -880,13 +896,14 @@ C
 C**** PARTICLE TRACING FOR THIS STRATUM FINISHED **********************
 C
 c
-c     collect data for one stratum from all pe's performing calculations
-c     for this stratum
+c    collect data for one stratum ISTRA from all pe's performing calculations
+c    for this stratum
 c
-!pb       if ((nprs.gt.nsteff).and.(nstrpe(my_pe).eq.istra))
-!csw        if (count(procforstra(istra,0:nprs-1)) > 1)
-       if (nprs.gt.nsteff)
-     .  call EIRENE_calstr
+cdr  more processors than active strata.
+cdr  june 17: ?? what if nprs < nsteff, and still one stratum
+cdr              has more than one processor assigned ??
+cdr              Is it excluded that one pe deals with more than one stratum?  
+       if (nprs.gt.nsteff) call EIRENE_calstr
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
@@ -918,7 +935,6 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-csw      if ((nsteff.ge.nprs).or.(npesta(istra).eq.my_pe)) then
       if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
 
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
@@ -1129,11 +1145,10 @@ C
 C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE 
-C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STATA THEN PROCESSES
+C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STRATA THAN PROCESSES
 C
       IF (NMODE.GT.0) THEN
         IF (NPRS == 1) THEN
-!pb          IESTR=ISTRA
           ISTRAA=ISTRA
           ISTRAE=ISTRA
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
@@ -1143,12 +1158,11 @@ C
 C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
-cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
-cpara  csw 08mar2013: hat sich jetzt erledigt..
-!pb      IESTR=ISTRA
+
       IF (NFILEN.EQ.1) THEN
 csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
+cdr npesta is the master processor for stratum no ISTRA
         if(nprs==1.or.(nprs > 1 .and. npesta(istra)==my_pe)
      .            .or.(nprs > 1 .and. nprs < nstrai) ) then
         CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
@@ -1199,7 +1213,7 @@ C  covariances
 C
 1111  CONTINUE
         WRITE(iunout,*)
-     .  'CPU TIME USED UNTIL END OF STRATUM ISTRA '
+     .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA '
         WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
         CALL EIRENE_LEER(2)
         endif  ! nprs > nsteff ...
@@ -1243,8 +1257,8 @@ C   AND MORE PROCESSES THEN STRATA
           ISTRAE=NSTRAI
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
           NEW_ITER=1
-        ENDIF
-      ENDIF
+        ENDIF  ! nprs  > 1
+      ENDIF    ! nmode > 0
 csw
       IF (NPRS > 1) THEN
         CALL EIRENE_COLLECT_DATA_USR

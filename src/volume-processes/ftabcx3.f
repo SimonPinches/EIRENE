@@ -19,7 +19,7 @@ c  FTABCX3 is currently only called in case MODCOL(3,2,IRCX)=1, i.e. rate depend
 c          on background parameters, not on test particle energy.
 c 
 c
-cdr  hard wired: cut off (density) parameter for fits: 1e8. TO BE CHECKED WITH XSTCX.F
+cdr  hard-wired: cut-off (density) parameter for fits: 1e8. TO BE CHECKED WITH XSTCX.F
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -30,9 +30,9 @@ cdr  hard wired: cut off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRCX, K
-      REAL(DP) :: TBPIC(9), EIRENE_FTABCX3, DEIMIN, TII, PLS, TBCX, 
+      REAL(DP) :: EIRENE_FTABCX3, DEIMIN, TII, PLS, TBCX, 
      .            EIRENE_RATE_COEFF, ERATE
-      INTEGER :: J, I, II, KK, IPLSTI
+      INTEGER :: KK, IPLSTI
  
       TBCX=0.D0
       KK = NREACX(IRCX)

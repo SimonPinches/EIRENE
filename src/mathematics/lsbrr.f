@@ -4,7 +4,7 @@
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
-      INTEGER NRA,NCA,LDA,KBASIS,I,J,IAA
+      INTEGER NRA,NCA,LDA,KBASIS
       REAL(DP) A(LDA,NCA),B(NRA),X(NCA),RES(NRA),TOL
       write (iunout,*) ' lsbrr is called'
       call EIRENE_exit_own(1)

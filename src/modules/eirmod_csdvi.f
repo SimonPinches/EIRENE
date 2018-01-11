@@ -1,3 +1,6 @@
+cdr july 17:  nsnv already contained in nspztot, due to previous fix.
+cdr nov. 17:  nspztotw introduced, in analogy with nspztot
+ 
       MODULE EIRMOD_CSDVI
  
       USE EIRMOD_PRECISION
@@ -111,11 +114,11 @@ C SPEED UP OF SUBROUTINE STATIS
         IF (ALLOCATED(LMETSP)) RETURN
 
 c  arrays updated on the fly, to speed up statistical variance calculations in statis.f  
-c  lmetsp(is) : logical, indicator, whether for any particular trajectory a 
-c               volume averaged tally has been scored with species index "is"
-c  lmetspw(is): ditto, for surface averaged tallies 
-        ALLOCATE (LMETSP(NSPZTOT+NSNV))
-        ALLOCATE (LMETSPW(NSPZ+NADS+NALS+NSPZ))
+c  lmetsp(i1) : logical, indicator, whether for any particular trajectory a 
+c               volume averaged tally has been scored with species (first) index "i1"
+c  lmetspw(i1): ditto, for surface averaged tallies 
+        ALLOCATE (LMETSP(NSPZTOT))
+        ALLOCATE (LMETSPW(NSPZTOTW))
  
       END IF
  

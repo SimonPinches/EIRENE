@@ -7,9 +7,13 @@ cdr          when setting dynamic allocatable storage parameters in "find_param.
 cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
 cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
 !pb  MAY 16  nrds -> nrei
- 
- 
- 
+cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb...
+cdr           (to remove redundant dummy gr routines)
+cdr  Nov. 17: This routine has become pretty much a mess. 
+cdr           It must be cleaned up and documented. 
+
+
+
       RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
      .                                    MPI_INITIALIZE)
 C
@@ -20,13 +24,14 @@ C                  PLASMA DATA TRANSFER INTO EIRENE CONTROLLED BY REGULAR INPUT 
 C                  INCLUDING, POSSIBLY, TRANSFER VIA INFCOP, ARRAYS.....
 C  NLMODE=.TRUE. : CALLED FROM INTERFACING ROUTINE EIRSRT
 C                  PLASMA DATA ON COMMON BRAEIR IN SUBROUTINE INFCOP.
+C  NLLAST=.FALSE.:  ?
+C  NLLAST=.TRUE. :  ?
 C  ITNR          : ITERATION NUMBER, FOR ITERATIONS WITH EXTERNAL CODE (IF ANY)
 C  MPI_INITIALIZE: INITIALIZE USAGE OF MPI-ROUTINES FOR PARALLEL COMPUTATION
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
-!pb      USE EIRMOD_CREFMOD
       USE EIRMOD_CREF
       USE EIRMOD_CESTIM
       USE EIRMOD_CRECH
@@ -65,16 +70,16 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_CLAST
       use EIRMOD_cfplk
- 
+
       IMPLICIT NONE
- 
+
       INCLUDE 'mpif.h'
- 
+
       REAL(DP), INTENT(IN) :: DT
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
- 
-      INTEGER :: NA, NS, IAIN, ICELL, IERROR, IER, ISTRAI
+
+      INTEGER :: IERROR, IER, ISTRAI
       REAL(DP) :: EIRENE_RESET_SECOND, EIRENE_SECOND_OWN, DUMMY, TIMI
       integer, save :: inentry=1, init_log=0
       logical :: nlplas_save
@@ -90,12 +95,12 @@ C
       NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
 
-      CALL DEFAULTS_USR
+      CALL EIRENE_DEFAULTS_USR
 
 cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
-      IUNIN = 1
+c     IUNIN = 1
       IUNIN = IUNIN + IFOFF
- 
+
       IUNOUT = 6
       IF (NRPES > 1) IUNOUT = 7
       IUNOUT = IUNOUT + IFOFF
@@ -109,54 +114,57 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
       END IF
- 
+
       IF (MY_PE == 0) THEN
- 
+
         IF (ITNR == 1) THEN
           CALL EIRENE_FIND_PARAM
           CALL EIRENE_SET_PARMMOD(1)
         ELSE
           DUMMY=EIRENE_RESET_SECOND()
         END IF
- 
+
         write (iunout,*) ' Number of PEs ',nprs
         if (nprs .gt. nrpes) then
           write (iunout,*) ' Number of PE too large '
           write (iunout,*) ' increase parameter NRPES = ',nrpes
           call EIRENE_exit_own(1)
         endif
- 
+
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT
-
+cdr
+c  indicate: first entry to eirene has now been done. 
+c  calls to find_param, set_parmod(1),... have already been done above
         inentry = 0
- 
+
         NRAPS=60
         IRAPS=0
         IITER=ITNR
         ITIMV=1
         IPRNLI=0
-        
+
         DTIMVN=DT
         NLPLAS=NLMODE
 
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
- 
-       END IF  ! MY_PE == 0
+
+      END IF  ! MY_PE == 0
 
 C
-100   CONTINUE
-C
 C  READ FORMATTED INPUT FILE OR RESTART FOR NEXT ITERATION
+c  ENTRY TO EIRENE FROM AN EXTERNAL CODE
 C
       ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
- 
+
       IF (MY_PE == 0) THEN
 
         TIMI=EIRENE_SECOND_OWN()
 C
         IF (INENTRY == 1) THEN
+cdr  first entry to eirene is via call eirene_couple, not via call eirene
+cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_save,.... ??
           nlplas_save = nlplas
           CALL EIRENE_SET_PARMMOD(1)
           if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
@@ -192,118 +200,121 @@ C
 
         TIME=EIRENE_SECOND_OWN()
         write (iunout,*) ' CPU TIME for memory allocation ',time-timi
- 
-!ITER   IF (ITNR == 1) NLSRON = .TRUE.
+
+cdr make sure that nstrai is properly set in find_param.f
         IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
 C
 C   SET SOME CONSTANTS
 C
         CALL EIRENE_SETCON
- 
+
       END IF  ! MY_PE == 0
 C
-C  each internal iteration or time-step starts here
+C  each internal iteration or internal time-step (fixed plasma) starts here
 101   CONTINUE
 C  IITER=... , ITIME=...
-c  re-initialize some "ifirst"-blocks
-      CALL EIRENE_GRNXTB(3,'EIRENE.F')
- 
+
+      CALL EIRENE_PLNXTB(3,'EIRENE.F')
+
       IF (MY_PE == 0) THEN
- 
-      TIMI=EIRENE_SECOND_OWN()
+
+        TIMI=EIRENE_SECOND_OWN()
 C
-      CALL EIRENE_INPUT
- 
-      CALL EIRENE_ALLOC_COUTAU
+        CALL EIRENE_INPUT
+
+        CALL EIRENE_ALLOC_COUTAU
 C
 C  CHECK PARAMETER STATEMENTS, STORAGE REQUIREMENTS
 C
-      CALL EIRENE_SETPRM
- 
-      CALL EIRENE_ALLOC_CSTEP
-      CALL EIRENE_ALLOC_CSPEI
-      CALL EIRENE_ALLOC_CSDVI(2)
-      CALL EIRENE_ALLOC_CSDVI_BGK
-      CALL EIRENE_ALLOC_CSDVI_COP
-      CALL EIRENE_ALLOC_CLAST
- 
-      CALL EIRENE_STTXT1
+        CALL EIRENE_SETPRM
+
+        CALL EIRENE_ALLOC_CSTEP
+        CALL EIRENE_ALLOC_CSPEI
+        CALL EIRENE_ALLOC_CSDVI(2)
+        CALL EIRENE_ALLOC_CSDVI_BGK
+        CALL EIRENE_ALLOC_CSDVI_COP
+        CALL EIRENE_ALLOC_CLAST
+
+        CALL EIRENE_STTXT1
 C
-      TIME=EIRENE_SECOND_OWN()
-      WRITE (iunout,*) 'CPU-TIME CONSUMED IN INPUT: ',TIME-TIMI,' SEC'
-      CALL EIRENE_LEER(1)
+        TIME=EIRENE_SECOND_OWN()
+        WRITE (iunout,*) 'CPU-TIME CONSUMED IN INPUT: ',
+     .                    TIME-TIMI,' SEC'
+        CALL EIRENE_LEER(1)
 C
-C  SET UP SPLITTING SURFACES, IMPORTANCE FUNCTION AND OTHER DATA
-C  FOR NONANALOG METHODS
+C  SET UP SPLITTING SURFACES, IMPORTANCE FUNCTION, WEIGHT WINDOWS,
+C  AND OTHER DATA FOR NON-ANALOGUE METHODS: WMINV, WMINS
 C
-      IF (.NOT.NLANA) THEN
-        CALL EIRENE_NANALG
-      ELSEIF (NLANA) THEN
+        IF (.NOT.NLANA) THEN
+          CALL EIRENE_NANALG
+        ELSEIF (NLANA) THEN
 C  TURN OF ALL NON-ANALOG SAMPLING
-        CALL EIRENE_MASBOX('NON-ANALOG SAMPLING DE-ACTIVATED')
+          CALL EIRENE_MASBOX('NON-ANALOG SAMPLING DE-ACTIVATED')
 C 1: NO SPLITTING AND RUSSIAN ROULETTE
-        WRITE (iunout,*) 'SUBROUTINE NANALG NOT CALLED'
+          WRITE (iunout,*) 'SUBROUTINE NANALG NOT CALLED'
 C 2: SPECIES SOURCE SAMPLING
-        DO ISTRAI=1,NSTRAI
-          NSPEZ(ISTRAI)=MAX(0,NSPEZ(ISTRAI))
-        ENDDO
-        WRITE (iunout,*) 'NON-ANALOG SOURCE SPECIES SAMPLING TURNED OFF'
+          DO ISTRAI=1,NSTRAI
+            NSPEZ(ISTRAI)=MAX(0,NSPEZ(ISTRAI))
+          ENDDO
+          WRITE (iunout,*) 
+     .           'NON-ANALOGUE SOURCE SPECIES SAMPLING TURNED OFF'
 C 3: SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF
-        WMINS=1.D30
-        WRITE (iunout,*)
-     .    'SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF'
+          WMINS=1.D30
+          WRITE (iunout,*)
+     .        'SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF'
 C 4: SUPPRESSION OF ABSORPTION AT COLLISIONS TURNED OFF
-        WMINV=1.D30
-        WRITE (iunout,*)
-     .    'SUPPRESSION OF ABSORPTION AT COLLISIONS TURNED OFF'
-        CALL EIRENE_LEER(2)
-      ENDIF
+          WMINV=1.D30
+          WRITE (iunout,*)
+     .         'SUPPRESSION OF ABSORPTION AT COLLISIONS TURNED OFF'
+          CALL EIRENE_LEER(2)
+        ENDIF
 C
-      TIMI=EIRENE_SECOND_OWN()
+        TIMI=EIRENE_SECOND_OWN()
 C
 C
 C  PARAMETERS FOR BGK ITERATIONS
 C
-      NBGVI=NRBGI
-      NFSTVI(NTALB)=NBGVI
-      NBGVI_STAT=0
-      IF (NSIGI_BGK > 0) NBGVI_STAT=NBGVI+2*(NATMI+NMOLI)
-      IF (NBGVI_STAT > NBGV_STAT) THEN
-        CALL EIRENE_MASPRM('NBGVI_STAT',10,NBGVI_STAT,
-     .              'NBGV_STAT',9,NBGV_STAT,IERROR)
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
+        NBGVI=NRBGI
+        NFSTVI(NTALB)=NBGVI
+        NBGVI_STAT=0
+        IF (NSIGI_BGK > 0) NBGVI_STAT=NBGVI+2*(NATMI+NMOLI)
+        IF (NBGVI_STAT > NBGV_STAT) THEN
+          CALL EIRENE_MASPRM('NBGVI_STAT',10,NBGVI_STAT,
+     .                        'NBGV_STAT',9,NBGV_STAT,IERROR)
+          CALL EIRENE_EXIT_OWN(1)
+        END IF
 C
-      IF (TRCAMD) THEN
-        CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'NRCXI,NRCX ',NRCXI,NRCX
-        WRITE (iunout,*) 'NRELI,NREL ',NRELI,NREL
-        WRITE (iunout,*) 'NRPII,NRPI ',NRPII,NRPI
-        WRITE (iunout,*) 'NREII,NREI ',NREII,NREI
-        WRITE (iunout,*) 'NRRCI,NREC ',NRRCI,NREC
-        CALL EIRENE_LEER(1)
-      ENDIF
+        IF (TRCAMD) THEN
+          CALL EIRENE_LEER(1)
+          WRITE (iunout,*) 'NRCXI,NRCX ',NRCXI,NRCX
+          WRITE (iunout,*) 'NRELI,NREL ',NRELI,NREL
+          WRITE (iunout,*) 'NRPII,NRPI ',NRPII,NRPI
+          WRITE (iunout,*) 'NREII,NREI ',NREII,NREI
+          WRITE (iunout,*) 'NRRCI,NREC ',NRRCI,NREC
+          CALL EIRENE_LEER(1)
+        ENDIF
 C
 C
 C  READ EIRENE STATISTICAL RECOMMENDATIONS FROM PREVIOUS RUN,
 C  AND CARRY THEM OUT
 C
-      IF (NFILEK.EQ.2.OR.NFILEK.EQ.3) THEN
-        CALL EIRENE_RREC
-        WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
-        WRITE (iunout,*) 'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
-        DO 162 ISTRAI=1,NSTRAI
-          WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
-     .                      ' NPTS(MOD)= ',NRECOM(ISTRAI)
-          NPTS(ISTRAI)=NRECOM(ISTRAI)
-162     CONTINUE
-      ENDIF
+        IF (NFILEK.EQ.2.OR.NFILEK.EQ.3) THEN
+         CALL EIRENE_RREC
+          WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
+          WRITE (iunout,*) 
+     .           'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
+          DO 162 ISTRAI=1,NSTRAI
+            WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
+     .                              ' NPTS(MOD)= ',NRECOM(ISTRAI)
+            NPTS(ISTRAI)=NRECOM(ISTRAI)
+162       CONTINUE
+        ENDIF
 C
 C  IF NLERG:
 C  PERFORM A RUN, ONE-SPEED, COLLISION-LESS, UNTIL TIME-LIMIT
 C  FOR CELL VOLUME ESTIMATION FROM ERGODIC PRINZIPLE
 C
-      IF (NLERG) CALL EIRENE_ERGOD
+        IF (NLERG) CALL EIRENE_ERGOD
 C
 C  IF NLMOVIE:
 C  PERFORM A RUN, MANY TIMESTEPS, CONSTANT NUMBER OF PARTICLES IN
@@ -311,47 +322,51 @@ C  PICTURE, COLD START FROM PREVIOUS CENSUS.
 C  FOR MOVIE OF PARTICLE TRAJECTORIES
 C  INVERT ORDER OF STRATA IN ORDER TO HAVE CENSUS STRATUM FIRST.
 C
-      IF (NLMOVIE) CALL EIRENE_MOVIE
+        IF (NLMOVIE) CALL EIRENE_MOVIE
 
 C  ATOMIC & MOLECULAR DATA DIAGNOSTICS ON ADDITIONAL INPUT ARRAY ADIN
 C
-      CALL EIRENE_AMDIAG
+        CALL EIRENE_AMDIAG
 C
 C  PRINT VOLUME AVERAGED INPUT TALLIES.
 C
-      CALL EIRENE_OUTPLA(0)
+        CALL EIRENE_OUTPLA(0)
 C
-      TIME=EIRENE_SECOND_OWN()
-C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
-      CALL EIRENE_LEER(1)
+        TIME=EIRENE_SECOND_OWN()
+C       WRITE (iunout,*) 
+C    .        'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
+        CALL EIRENE_LEER(1)
 C
 C               2.         PLOT GEOMETRY
 C
-200   CONTINUE
-      IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
- 
-      TIMI=EIRENE_SECOND_OWN()
+200     CONTINUE
+        IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
+
+C     TIMI=EIRENE_SECOND_OWN()
       CALL EIRENE_PLT2D
-      TIME=EIRENE_SECOND_OWN()
+C     TIME=EIRENE_SECOND_OWN()
 C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION
 C
 300   CONTINUE
- 
+
       END IF   ! MY_PE == 0
- 
+
       if (nprs > 1) CALL EIRENE_BROADCAST
- 
+
+C  MAIN  MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
+
       CALL EIRENE_MCARLO
 C
 C               4.         OUTPUT , INTERFACE  AND PLOTTING
 C
 400   CONTINUE
 C
-C  OUTPUT FOR SELECTED STRATA AND/OR SUM OVER STRATA
+C  POST-PROCESSING: OUTPUT FOR SELECTED STRATA AND/OR SUM OVER STRATA
 C
       IF (MY_PE == 0) THEN
+
       DO 450 ISTRAI=1,NSTRAI
           ISTRA=ISTRAI
           IF (TRCSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.TRCSRC(0)))
@@ -361,7 +376,7 @@ C
 450   CONTINUE
 C
 
- 
+
       IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1))  THEN
         IF (TRCSRC(0)) CALL EIRENE_OUTEIR(0)
         IF (PLTSRC(0)) CALL EIRENE_PLTEIR(0)
@@ -390,8 +405,8 @@ c   fuer parallele version noch nicht richtig
 c   noch mal ganz scharf nachdenken !!!!!!!!
         CALL EIRENE_WRREC
       ENDIF
- 
- 
+
+
 C  POST PROCESSING FOR BACKGROUND TALLIES, E.G. FOR DIAGNO, ITERATION, ETC.
       CALL EIRENE_PLASMA_DERIV(1)
 C  PRINT THOSE BACKGROUND TALLIES WHICH HAVE BEEN MODIFIED
@@ -414,6 +429,7 @@ C
         END IF
         IITER=IITER+1
         IF (IITER.LE.NITER) THEN
+cdr  prepare next internal iteration
           DUMMY=EIRENE_RESET_SECOND()
           IPRNLI=0
           GOTO 101
@@ -424,12 +440,12 @@ C
 C
 C  CALL DIAGNOSTIC MODULE (COMPUTE LINE INTEGRALS FROM EIRENE TALLIES)
 C
- 
+
       IF (NCHORI.GT.0) CALL EIRENE_DIAGNO
 
 csw  user defined output
       CALL EIRENE_OUTUSR
- 
+
       END IF   ! MY_PE == 0
 C
 C  SUBROUTINE STOSS IS A SUBROUTINE, IN WHICH BINARY COLLISION
@@ -463,10 +479,9 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
       END IF
 
       call EIRENE_REINITIALIZATION_OF_EIRENE
- 
+
       IF (NLLAST) THEN
          CALL EIRENE_DEALLOC_COMUSR
-!pb      CALL EIRENE_DEALLOC_CREFMOD
          CALL EIRENE_DEALLOC_CREF
          CALL EIRENE_DEALLOC_CESTIM
          CALL EIRENE_DEALLOC_CADGEO
@@ -501,13 +516,15 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
          CALL EIRENE_DEALLOC_CSPEI
          CALL EIRENE_DEALLOC_CLAST
          call EIRENE_dealloc_cfplk
-         CALL EIRENE_LOCAT2            ! DEALLOCATE LOCAL ARRAYS IN LOCATE
-         CALL EIRENE_SAMSF2            ! DEALLOCATE LOCAL ARRAYS IN SAMSRF
-         CALL EIRENE_STATS3            ! DEALLOCATE LOCAL ARRAYS IN STATIS
+         CALL EIRENE_LOCAT2        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LOCATE
+         CALL EIRENE_SAMSF2        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.SAMSRF
+         CALL EIRENE_STATS3        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.STATIS
+! cdr, july 17, added:  argst de-allocation
+         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LININT  
 C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF
- 
+
 
 
 cdr april 2015
@@ -524,11 +541,11 @@ cdr april 2015
       IF (NPRS > 1) THEN
          CLOSE (UNIT=IUNOUT)
       END IF
- 
+
       RETURN
- 
+
 C     the following entry is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_EIRENE_REINIT
       inentry = 1
       return

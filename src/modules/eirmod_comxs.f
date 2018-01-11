@@ -1,3 +1,4 @@
+cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 cdr
 cdr  MXCOLLS --> MSTOR0
@@ -6,7 +7,7 @@ cdr  MXCOLLS --> MSTOR0
  
 !  jan-05: natprc_2,..... introduced
 !  07.12.05: bugfix: IFTFLG is now available for default reactions too
-!                    via dimensioning IFTFLG(-11:NREAC)
+!                    via dimensioning IFTFLG(-11:NREAC,0:5)
 !  30.08.06: data structure for reaction data redefined
 !  12.10.06: modcol revised
 !  19.12.06: test functions added which allow to test if a rate-coefficient
@@ -145,7 +146,7 @@ c  momentum exchange rates, by reaction
 c  totals
      R SIGCXT,      SIGPIT,      SIGEIT,      SIGELT,      SIGTOT,
      R SIGBGK,
-c  invers mean free path
+c  inverse mean free path
      R ZMFPI
  
       REAL(DP), PUBLIC, SAVE :: ZMFPTHI, TDGTEMX
@@ -167,8 +168,8 @@ c  secondaries, species distribution, for EI and PI processes
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PELEI(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
-c  ...and cummulated distributions thereof, for species sampling
-     R P2ND(:,:), P2NP(:,:),  P2NDS(:),   P2NPI(:)
+c  ...and cumulated distributions thereof, for species sampling
+     R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
@@ -181,17 +182,26 @@ c  ...and cummulated distributions thereof, for species sampling
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
-     I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:),
+     I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:)
+ 
+      INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I NAEII(:),    NMEII(:),    NIEII(:),
      I NACXI(:),    NMCXI(:),    NICXI(:),
      I NAELI(:),    NMELI(:),    NIELI(:),
      I NAPII(:),    NMPII(:),    NIPII(:),
+     I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKP(:,:)
+
+!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+      INTEGER, PUBLIC, POINTER, SAVE ::
+     I NXEII, NXCXI, NXELI, NXPII,
+     I NPBGKX
+ 
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),
      I NACXIM(:),   NMCXIM(:),   NICXIM(:),
      I NAELIM(:),   NMELIM(:),   NIELIM(:),
      I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),
-     I NPRCI(:),    NPRCIM(:),
-     I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKP(:,:)
+     I NPRCI(:),    NPRCIM(:)
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NATPRC(:),  NMLPRC(:), NIOPRC(:), NPLPRC(:), NPHPRC(:),
@@ -212,7 +222,9 @@ c  ...and cummulated distributions thereof, for species sampling
      I IPATEI(:,:),IPMLEI(:,:),
      I IPIOEI(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
-     I IPIOPI(:,:),IPPLPI(:,:),
+     I IPIOPI(:,:),IPPLPI(:,:)
+ 
+      INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I LGACX(:,:,:),LGMCX(:,:,:),
      I LGICX(:,:,:),
      I LGAEI(:,:),    LGMEI(:,:),
@@ -222,6 +234,10 @@ c  ...and cummulated distributions thereof, for species sampling
      I LGPRC(:,:),
      I LGAPI(:,:,:),LGMPI(:,:,:),
      I LGIPI(:,:,:)
+
+!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+      INTEGER, PUBLIC, POINTER, SAVE ::
+     I LGXCX(:,:,:), LGXEI(:,:), LGXEL(:,:,:), LGXPI(:,:,:)
  
       INTEGER, PUBLIC, SAVE ::
      I NRPII, NREII, NRCXI, NRELI, NRRCI, NRBGI
@@ -537,7 +553,7 @@ c  secondaries, EI processes
         ALLOCATE (PIOEI(NREI,0:NION))
         ALLOCATE (PPLEI(NREI,0:NPLS))
         ALLOCATE (P2ND(NREI,0:NSPZ))
-        ALLOCATE (P2NDS(NREI))
+        ALLOCATE (P2NEI(NREI))
 c  secondaries, PI processes
         ALLOCATE (PELPI(NRPI))
         ALLOCATE (PATPI(NRPI,0:NATM))
@@ -696,7 +712,7 @@ c
       DEALLOCATE (PPLPI)
       DEALLOCATE (P2ND)
       DEALLOCATE (P2NP)
-      DEALLOCATE (P2NDS)
+      DEALLOCATE (P2NEI)
       DEALLOCATE (P2NPI)
  
       DEALLOCATE (EELEI1)
@@ -1133,7 +1149,7 @@ cdr  ical=2:  ??
         PPLPI   = 0._DP
         P2ND    = 0._DP
         P2NP    = 0._DP
-        P2NDS   = 0._DP
+        P2NEI   = 0._DP
         P2NPI   = 0._DP
  
         EELEI1  = 0._DP
@@ -1241,7 +1257,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
  
      . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
-     . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
+     . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
  
      . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVEI1 ,EHVPI3 ,
@@ -1285,7 +1301,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
  
      . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
-     . P2ND   ,P2NP   ,P2NDS  ,P2NPI  ,
+     . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
  
      . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVEI1 ,EHVPI3 ,
@@ -1353,7 +1369,7 @@ c
       CALL FXDRDBL (IUN,PPLPI,NRPI*(NPLS+1))
       CALL FXDRDBL (IUN,P2ND,NREI*(NSPZ+1))
       CALL FXDRDBL (IUN,P2NP,NRPI*(NSPZ+1))
-      CALL FXDRDBL (IUN,P2NDS,NREI)
+      CALL FXDRDBL (IUN,P2NEI,NREI)
       CALL FXDRDBL (IUN,P2NPI,NRPI)
  
       CALL FXDRDBL (IUN,EELEI1,NREI*NSTORDR)
@@ -2108,26 +2124,26 @@ cdr  IFIT out of range
  
  
       SUBROUTINE EIRENE_SET_REACTION_DATA
-     .           (IR,ISW,IFTFLG,RDATA,IUNOUT,LTEST,
+     .           (IR,ISW,IFTFL,RDATA,IUNOUT,LTEST,
      .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .            RTMAX, ERTMAX, ETH)
  
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IR, ISW, IFTFLG, IUNOUT
+      INTEGER, INTENT(IN) :: IR, ISW, IFTFL, IUNOUT
       INTEGER, OPTIONAL, INTENT(IN) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN) :: RDATA(9,*)
       REAL(DP), OPTIONAL, INTENT(IN) :: RC1MIN, RC1MAX, FP1(6),
      .                                  RC2MIN, RC2MAX, FP2(6),
      .                                  RTMAX, ERTMAX, ETH
       LOGICAL, INTENT(IN) :: LTEST
-      INTEGER :: NDIM, NDIM2, I, J, IFIT
+      INTEGER :: NDIM, NDIM2, IFIT
       REAL(DP) :: CTEST
       TYPE(POLY_DATA), POINTER :: REA
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)
  
       NDIM = 9
-      IF (MOD(IFTFLG,100) == 10) NDIM = 1
+      IF (MOD(IFTFL,100) == 10) NDIM = 1
  
       NDIM2 = 1
       IF (COUNT(ISW2D == ISW) > 0) NDIM2=9
@@ -2556,6 +2572,7 @@ c
       IF (ASSOCIATED(RP%POLY)) THEN
          DEALLOCATE (RP%POLY%DBLPOL)
          DEALLOCATE (RP%POLY)
+         NULLIFY(RP%POLY)
       END IF
 
       IF (ASSOCIATED(RP%ADAS)) THEN
@@ -2565,10 +2582,12 @@ c
          DEALLOCATE (RP%ADAS%DDE)
          DEALLOCATE (RP%ADAS%DTE)
          DEALLOCATE (RP%ADAS)
+         NULLIFY(RP%ADAS)
       END IF
 
       IF (ASSOCIATED(RP%LINE)) THEN
          DEALLOCATE (RP%LINE)
+         NULLIFY(RP%LINE)
       END IF
 
       IF (ASSOCIATED(RP%HYD)) THEN
@@ -2576,6 +2595,7 @@ c
          DEALLOCATE (RP%HYD%RATES)
          DEALLOCATE (RP%HYD%RATIO)
          DEALLOCATE (RP%HYD)
+         NULLIFY(RP%HYD)
       END IF
 
       END SUBROUTINE EIRENE_FREE_FIT_FORM

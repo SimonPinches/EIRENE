@@ -13,8 +13,8 @@ cdr              rather than the mean electron energy itself.
 
 
       FUNCTION EIRENE_FEELPI1 (IRPI,K)
-C  this is the "on the fly" storage saving version to eliminate
-C  pre-computed array EELPI1(irpi,k) from with run
+C  this is the "on the fly", storage saving, version to eliminate
+C  pre-computed array EELPI1(irpi,k) from this run
 
 cdr  find electron energy loss for PI process no. IRPI,  energy in eV
 c    locally in cell K, for process kk= nelrpi(irpi) 
@@ -29,10 +29,10 @@ c
       IMPLICIT NONE
  
       INTEGER, INTENT(IN) :: IRPI, K
-      REAL(DP) :: ELPIC(9), EIRENE_FEELPI1, PLS, DEIMIN, EE,
+      REAL(DP) :: EIRENE_FEELPI1, PLS, DEIMIN, EE,
      .            EIRENE_FTABPI3,
      .            ELPI, EIRENE_ENERGY_RATE_COEFF, DELE
-      INTEGER :: J, I, KK, II
+      INTEGER :: KK
  
       EIRENE_FEELPI1=0.D0
       KK=NELRPI(IRPI)

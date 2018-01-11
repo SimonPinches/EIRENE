@@ -1,3 +1,5 @@
+cdr Nov. 17  commenting started
+
       MODULE EIRMOD_CPES
  
       USE EIRMOD_PRECISION
@@ -10,6 +12,9 @@
       PUBLIC :: EIRENE_ALLOC_CPES, EIRENE_DEALLOC_CPES, EIRENE_INIT_CPES
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+cdr  npesta(istra): master processor for ISTRA
+cdr  npestr(istra): total no. of processor working on ISTRA
+cdr  nstrpe(ipe)  : processor no. IPE works on stratum ISTRA=NSTRPE(IPE)
      I         NPESTR(:), NPESTA(:),
      I         NSTRPE(:)
  

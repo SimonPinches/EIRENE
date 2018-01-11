@@ -11,6 +11,8 @@ cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
 
 
 cdr  Nov.      2016: final ds --> ei notational unifications
+CDR  July      2017: RC reactions connected. trcamd in parameter list
+c                    for function eirene_sngl_poly  
 
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
@@ -64,6 +66,7 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CTRCEI, ONLY: TRCAMD
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
       USE EIRMOD_COMXS
@@ -80,7 +83,7 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
      .           irei,ircx,irpi,irel,irrc,
      .           iat,iml,iio,ipl,isp,iplti,
      .           icell,iapi,impi,iipi,iacx,imcx,iicx,
-     .           iael,imel,iiel,iaei,imei,iiei
+     .           iael,imel,iiel,iaei,imei,iiei,iprc
       CHARACTER(4) :: CNO, CN1
 
 
@@ -95,9 +98,8 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
 
         IF ((NA < 20) .OR. (NA > 29)) CYCLE
 
-!pb   avoid undefined MM
-        mm = 0
-        kk = 0
+        MM = 0
+        KK = 0
 
 c  currently:  only tabei1, tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
 c              modcol=1: rates depend only on background parameters, not on test particle parameters
@@ -105,6 +107,8 @@ c              modcol=2: rates depend also on test particle energy. use E_test=1
 c  to be done:  (e.g. for Beams)
 c              modcol=3: use sigma(E_test) * sqrt(E_test), ignore thermal background parameters 
 c
+c.....................................................................
+
         IF (NA.EQ.20.OR.NA.EQ.21) THEN       
 c  electron impact rate coefficient no. irei
           irei=ns
@@ -148,11 +152,11 @@ c  irei is a process for test ion iio, colliding with electron
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'ELECTRON IMPACT REACTION  IREI ='//CNO
+     .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified species on ELECTRONS'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '
-          goto 171       
+          goto 3000       
         ENDIF
 170     CONTINUE
 
@@ -173,9 +177,9 @@ c  no interacting particle species found
               ADIN(IAIN,ICELL)=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
 1720        CONTINUE
 
-            goto 180
+            goto 5000
           else  !  mm= MODCOL(1,2,irei)=2, not ready            
-            goto 171
+            goto 3000
           endif
 
         ELSEIF (NA.EQ.21) THEN
@@ -196,12 +200,13 @@ c  not ready
               ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)
 1721        CONTINUE
           else  !  mm= MODCOL(1,2,irei)=2, not ready
-            goto 171
+            goto 3000
           endif     
-          GOTO 171
-        endif
+          GOTO 3000
 
-        IF (NA.EQ.22.OR.NA.EQ.23) THEN          
+c.............................................................................
+
+        ELSEIF (NA.EQ.22.OR.NA.EQ.23) THEN          
 c  charge exchange rate coefficient no. ircx   
           ircx=ns
           mm=modcol(3,2,ircx)
@@ -248,11 +253,11 @@ c  ircx is a process for test ion iio, colliding with bulk ipl
 c
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'CHARGE EXCHANGE REACTION  IRCX ='//CNO
+     .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '
-          goto 171                
+          goto 3000                
 172       CONTINUE      
         ENDIF
 
@@ -274,7 +279,7 @@ c  no interacting particle species found
      .        TABCX3(IRCX,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1722        CONTINUE
             
-            GOTO 180 !done
+            GOTO 5000 !done
           ELSEIF (MM.EQ.2) THEN
 C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             IPLTI = MPLSTI(IPL)
@@ -289,13 +294,14 @@ c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
 c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
               ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)             
-              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD )
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
-            goto 180  !done
+            goto 5000  !done
           ELSE ! MM=MODCOL.gt.2:  NOT READY            
-            GOTO 171
+            GOTO 3000
           ENDIF
 
 
@@ -307,8 +313,9 @@ c  not ready
             ADIN(IAIN,ICELL)=EPLCX3(IRCX,ICELL,1)
 1723      CONTINUE
           
-          GOTO 171
+          GOTO 3000
 
+c........................................................................
 
         ELSEIF (NA.EQ.24.or.NA.EQ.25) THEN          
 c  elastic collision rate coefficient no. irel
@@ -358,11 +365,11 @@ c  irel is a process for test ion iio, colliding with bulk ipl
 
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'ELASTIC REACTION  IREL ='//CNO
+     .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '         
-          GOTO 171
+          GOTO 3000
 174       CONTINUE
         ENDIF
 
@@ -382,7 +389,7 @@ c  no interacting particle species found
               ADIN(IAIN,ICELL)=
      .        TABEL3(IREL,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1724        CONTINUE
-            GOTO 180
+            GOTO 5000  !done
           ELSEIF (MM.EQ.2) THEN
 C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             IPLTI = MPLSTI(IPL)
@@ -397,13 +404,14 @@ c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
 c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
               ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)             
-              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
-            goto 180  !done
+            goto 5000  !done
           ELSE ! MM=MODCOL.gt.2:  NOT READY            
-            GOTO 171
+            GOTO 3000
           ENDIF
 
         ELSEIF (NA.EQ.25) THEN
@@ -415,8 +423,9 @@ c  not ready
             ADIN(IAIN,ICELL)=EPLEL3(NS,ICELL,1)
 1725      CONTINUE
           
-          GOTO 171
+          GOTO 3000
 
+c......................................................................
         ELSEIF (NA.EQ.26.OR.NA.EQ.27) THEN
           
 c  general ion impact collision rate coefficient no. irpi
@@ -466,11 +475,11 @@ c  irpi is a process for test ion iio, colliding with bulk ipl
           
 c  no interacting particle species found 
           TXTPLS(IAIN,NTALN) = 
-     .      'HEAVY PARTICLE REACTION  IRPI ='//CNO
+     .      'HEAVY PARTICLE REACTION RATE COEFFICIENT IRPI ='//CNO
      .      //' KK='//CN1            
-          TXTPSP(IAIN,NTALN) = 'un-identified colliding species'     
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '         
-          GOTO 171
+          GOTO 3000
 176       CONTINUE
         ENDIF
 
@@ -491,7 +500,7 @@ c  no interacting particle species found
               ADIN(IAIN,ICELL)=
      .        TABPI3(NS,ICELL,1)/(diin(ipl,icell)+eps30)/AU
 1726        CONTINUE
-            GOTO 180  !DONE !
+            GOTO 5000  !DONE !
 
           ELSEIF (MM.EQ.2) THEN
 C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
@@ -507,13 +516,14 @@ c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
 c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
               ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)             
-              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0)
+              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                TRCAMD)
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
-            goto 180  !done
+            goto 5000  !done
           ELSE ! MM= MODCOL.gt.2:  NOT READY            
-            GOTO 171
+            GOTO 3000
           ENDIF
           
         ELSEIF (NA.EQ.27) THEN
@@ -523,37 +533,93 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
           DO 1727 ICELL=1,NSBOX            
             ADIN(IAIN,ICELL)=EPLPI3(irpi,ICELL,1)
 1727      CONTINUE
-          GOTO 171
+          GOTO 3000
 
-        ELSEIF (NA.EQ.28) THEN
-c  volume recombination rate coefficent no. irrc
-c  not ready
+c.................................................................
+
+        ELSEIF (NA.EQ.28.OR.NA.EQ.29) THEN       
+c  recombination rate coefficient no. irrc
           irrc=ns
-          DO 1728 ICELL=1,NSBOX          
-            ADIN(IAIN,ICELL)=TABRC1(irrc,ICELL)
-1728      CONTINUE
-          mm=0
-          kk=0
-          GOTO 171
+          mm=modcol(6,2,irrc)
+          kk=NREARC(irrc)
+c find collision partners corresponding to process irrc: IPL AND ISP
+          IPL=0  ! ELECTRONS
+          
+c  here: only try bulk ions:
+          LPLRC: do ipl=1,nplsi
+          do iprc=1,NPRCI(ipl)
+            if (IRRC.eq.LGPRC(IPL,IPRC)) then
+              ISP=NSPAMI+IPL
+              GOTO 178
+            endif
+          enddo
+          enddo LPLRC
+c  irrc is a process for bulk ion ipl, colliding with electron
+        
+c
+c  no interacting particle species found 
+          TXTPLS(IAIN,NTALN) = 
+     .      'RECOMBINATION REACTION RATE COEFFICIENT IRRC ='//CNO
+     .      //' KK='//CN1            
+          TXTPSP(IAIN,NTALN) = 'un-identified species   '     
+          TXTPUN(IAIN,NTALN) = ' '
+          goto 3000       
+        ENDIF
+178     CONTINUE
+
+        IF (NA.EQ.28) THEN
+          mm=modcol(6,2,irrc)
+          kk=NREARC(irrc)
+          WRITE (CNO,'(I4)') IRRC
+          WRITE (CN1,'(I4)') NREARC(IRRC)
+          TXTPLS(IAIN,NTALN) = 
+     .      'RECOMBINATION REACTION RATE COEFFICIENT IRRC ='//CNO
+     .      //' KK='//CN1            
+          TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
+          TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
+ 
+          if (mm.eq.1) then
+            DO 1728 ICELL=1,NSBOX
+              if (lgvac(icell,npls+1)) cycle  
+              ADIN(IAIN,ICELL)=TABRC1(irrc,ICELL)/(DEIN(ICELL)+EPS30)/AU
+1728        CONTINUE
+
+            goto 5000
+          else  !  mm= MODCOL(1,2,irei)=2, not ready            
+            goto 3000
+          endif
 
         ELSEIF (NA.EQ.29) THEN
+          mm=modcol(6,3,irrc)
+          kk=nelrrc(irrc)
+c  recombination energy loss rate coefficient no. irrc
 c  not ready
+          WRITE (CNO,'(I4)') IRRC
+          WRITE (CN1,'(I4)') NREARC(IRRC)
+          TXTPLS(IAIN,NTALN) = 
+     .      'RECOMBINATION ENERGY LOSS RATE COEFFICIENT IRRC ='//CNO
+     .      //' KK='//CN1            
+          TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
+          TXTPUN(IAIN,NTALN) = 'eV x A.U. (0.612 E-8 cm3/s)'
           irrc=ns
-          DO 1729 ICELL=1,NSBOX
-            ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)
-1729      CONTINUE
-          mm=0
-          kk=0
-          GOTO 171
+          if (mm.eq.1) then
+            DO 1729 ICELL=1,NSBOX
+              ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)
+1729        CONTINUE
+          else  !  mm= MODCOL(1,2,irei)=2, not ready
+            goto 3000
+          endif     
+          GOTO 3000
+
         ENDIF
 
-171     CONTINUE
+3000    CONTINUE  !  unfinished option, or error
 
         if (mm.ne.0) then
           call eirene_leer(1)
           WRITE (iunout,*) 'ERROR IN AMDIAG, OPTION NOT READY '
-          write (iunout,'(A72)') txtpls(IAIN,NTALN)
-          write (iunout,'(A24)') TXTPSP(IAIN,NTALN)
+          write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
+          write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
@@ -561,18 +627,18 @@ c  not ready
           call eirene_leer(1)
           WRITE (iunout,*) 'ERROR IN AMDIAG, ', 
      .                     'PROCESS KK NOT ASSIGNED TO ANY PARTICLE '
-          write (iunout,'(A72)') txtpls(IAIN,NTALN)
-          write (iunout,'(A24)') TXTPSP(IAIN,NTALN)
+          write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
+          write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
           GOTO 190
         endif 
 
-180   CONTINUE
+5000  CONTINUE
       CALL eirene_leer(1)
       WRITE (iunout,*) 'AMDIAG: ADDITIONAL INPUT TALLY ADIN(IAIN) SET'
-      write (iunout,'(A72)') txtpls(IAIN,NTALN)
-      write (iunout,'(A24)') TXTPSP(IAIN,NTALN)
+      write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
+      write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
       WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
        

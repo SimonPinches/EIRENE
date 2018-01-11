@@ -1,18 +1,41 @@
-!  18.06.09  correction added for NLTRA if particle accidently on toroidal surface
-C
+cdr
+!     oct 17: NLTRA correction, from june 09: apparently not properly functional, e.g. for chord (diagno) points
+cdr  sept 17: sync with timep
+!  18.06.09  correction added for NLTRA 
+!            if particle accidently on toroidal surface
 C
       SUBROUTINE EIRENE_TIMET (ZRAD)
-C  INPUT
 C
-C   NRCELL:
-C   NTCELL:
-C   ZRAD  : DISTANCE (CM) TO THE NEXT RADIAL SURFACE OF 1D STANDARD MESH
+C   CALCULATE TIME SEGMENTS FOR 2D-OR 3D PROFILES,
+C     X-RADIALLY AND Z-TOROIDALLY RESOLVED
+C
+C   BLOCK 1 : NLTRZ
+C   BLOCK 2B: NLTRA
+C   BLOCK 2A: NLTRT  circular in x-z. To be written
+C
+C   INPUT:
+C
+C     X01,Z01,PHI: STARTING POINT FOR THIS TRACK
+C     ZRAD  = DISTANCE (CM) TO THE NEXT RADIAL SURFACE OF 1D STANDARD MESH
 C           OR TO NEXT ADDITIONAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
-C   PHI   :
-C   X01   :
-C   Z01   :
+C     NRCELL = RADIAL CELL NUMBER, IN WHICH THIS TRACK OF LENGTH ZRAD
+C                                  IS PERFORMED
+C              = 0, IF TRACK OUTSIDE RADIAL MESH
+C                   IF MRSURF .NE. 0 THEN
+C                   REENTRY FOUND AT RADIAL SURFACE MRSURF.
+C                   OTHERWISE: REENTRY AT NON DEFAULT
+C                   POLOIDAL SURFACES IS SEARCHED FOR IN THIS CALL
+C     NPCELL =
+C     IPCELL =
+C     NTCELL = TOROIDAL CELL INDEX OF POINT X01,Z01,PHI
+C              AT WHICH THIS TRACK OF LENGTH ZRAD STARTS
+
+C  WARNING: IF NLSRFZ, NTCELL MAY BE WRONG
+C     ITCELL =
 C
-C  OUTPUT
+C       NCOUT,BLPD,NCOUNT
+C
+C   OUTPUT:
 C
 C  IF NLTRZ AND NLTOR
 C     NINCZ    :   DIRECTION IN Z-GRID
@@ -38,14 +61,11 @@ C     MTSURF   :   NEXT TOROIDAL SURFACE, IF ANY
 C     NINCZ    :   DIRECTION IN Z-GRID
 C     NINCX    :   RESET TO ZERO
 C     MRSURF   :   RESET TO ZERO
-C  ELSEIF NLTRP
+C  ELSEIF NLTRT
 C    TO BE WRITTEN
 C
 C  FOR THE TIME BEING: IF NLPOL, REDUCE PATH TO ONE TOROIDAL CELL
 C
-C
-C     CALCULATE TIME SEGMENTS FOR 2D-PROFILES,
-C     RADIALLY AND TOROIDALLY RESOLVED
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -61,10 +81,11 @@ C
  
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: TTT, PHI0, X001, TO, AA, SUM, TU, XTO, EPSTST, XTU,
-     .          F, FZ, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
+     .          F, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
      .          Y0TEST, z01_cell
       INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
-     .           NZSAVE, INCZ, J1, IRSAVE, EIRENE_LEARCA
+     .           NZSAVE, INCZ, J1, IRSAVE, 
+     .           EIRENE_LEARCA
       INTEGER, SAVE :: MTSAVE=-1
  
       ZRADS=ZRAD
@@ -72,18 +93,32 @@ C
 #ifdef TRACE
       IF (NLTRC) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'TIMET: ZRAD,NRCELL,NTCELL,MTSURF '
-        WRITE (iunout,*) '      ',ZRAD,NRCELL,NTCELL,MTSURF
-        WRITE (iunout,*) 'INITIAL: X0,X01,Z01,PHI ',
-     .                             X0,X01,Z01,PHI/DEGRAD
+        IF (NRCELL.GT.0) THEN
+          WRITE (iunout,*) 'TIMET FROM INSIDE, NPANU ', NPANU
+          WRITE (iunout,*) 'ZRAD,NRCELL,NTCELL,MTSURF '
+          WRITE (iunout,*)  ZRAD,NRCELL,NTCELL,MTSURF
+          WRITE (iunout,*) 'INITIAL: X01,Z01,PHI ',
+     .                               X01,Z01,PHI/DEGRAD
+        ELSE
+          WRITE (iunout,*) 'TIMET FROM OUTSIDE, NPANU ', NPANU
+          WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
+          WRITE (iunout,*)  MRSURF,MTSURF,ZRAD
+        ENDIF
       ENDIF
 #endif
 C
+C
+C  BLOCK 1 STARTS HERE....
+C
       IF (.NOT.NLTRZ) GOTO 1000
+
+c  STATEMENTS 100 -- 1000
 C
-C  CYLINDRICAL OR CARTHESIAN CO-ORDINATE SYSTEM
-C
-C  PARTICLE OUTSIDE STANDARD MESH ?
+C  CYLINDRICAL OR CARTHESIAN CO-ORDINATE SYSTEM.
+C  Z COORDINATE IS A STRAIGHT LINE.
+
+C  IDENTICAL, UP TO NAMES, TO POLOIDAL GRID PART, TIMEP.F,
+C                          THERE THE  LEVGEO=1 BLOCK
 C
       IF (NRCELL.EQ.0) THEN
 C
@@ -95,7 +130,7 @@ C
         BB=VELZ+EPS60
         NZSAVE=1
         IF (VELZ.LT.0.D0) NZSAVE=-1
-        DO 2903 ISTS=1,NSTSI
+        DO 120 ISTS=1,NSTSI
           MTTEST=INUMP(ISTS,3)
           IF (MTTEST.NE.0) THEN
 C  TEST TOROIDAL SURFACE NO. MTTEST FOR REENTRY
@@ -103,14 +138,16 @@ C  TIME FROM Z01 TO ZSURF
             DZ=ZSURF(MTTEST)-Z01
             F=DZ/BB
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*) 'MTTEST,F,DZ ',MTTEST,F,DZ
+              IF (NLTRC) 
+     .          WRITE (iunout,*) 'MTTEST,F,DZ ',MTTEST,F,DZ
 #endif
             IF (F.LE.ZRD.AND.F.GT.0.D0) THEN
               X0TEST=X0+VELX*F
               Y0TEST=Y0+VELY*F
 C  IS THIS RE-ENTRY INSIDE THE STANDARD GRID REGION?
               IF (LEVGEO.EQ.1) THEN
-                IF (X0TEST.GE.RSURF(1).AND.X0TEST.LE.RSURF(NR1ST)) THEN
+                  IF (X0TEST.GE.RSURF(1).AND.
+     .                X0TEST.LE.RSURF(NR1ST)) THEN
                   IRSAVE=EIRENE_LEARCA(X0TEST,RSURF,1,NR1ST,1,
      .                   'TIMET 1    ')
                   NCOUT=1
@@ -127,7 +164,8 @@ C  IS THIS RE-ENTRY INSIDE THE STANDARD GRID REGION?
               ENDIF
             ENDIF
           ENDIF
-2903    CONTINUE
+120     CONTINUE  ! end of loop over tor. non-def std surfaces 
+
         IF (NCOUT.GT.0.AND.MTSAVE.NE.MTSURF) THEN
 C  REENTRY FOUND, REDUCE ZRAD TO F
 C  NCOUT=1 AT THIS POINT
@@ -145,7 +183,8 @@ C  NCOUT=1 AT THIS POINT
           NINCY=0
 #ifdef TRACE
           IF (NLTRC) THEN
-            WRITE (iunout,*) 'REENTRY FOUND, MTSURF,ZRAD = ',MTSURF,ZRAD
+              WRITE (iunout,*) 'REENTRY FOUND, MTSURF,ZRAD = ',
+     .                                         MTSURF,ZRAD
             WRITE (iunout,*) 'IRCELL ',IRCELL
           ENDIF
 #endif
@@ -165,16 +204,19 @@ C  CHECK VALID RANGE ON MRSURF
             IF (NLTRC)
      .        WRITE (iunout,*) 'CHECK VALID RANGE: Z0TEST ',Z0TEST
 #endif
-            IF (Z0TEST.GE.ZSURF(1).AND.Z0TEST.LE.ZSURF(NT3RD)) THEN
-              ITCELL=EIRENE_LEARCA(Z0TEST,ZSURF,1,NT3RD,1,
+              IF (Z0TEST.GE.ZSURF(1).AND.Z0TEST.LE.ZSURF(NT3RD)) THEN
+                ITCELL=EIRENE_LEARCA(Z0TEST,ZSURF,1,NT3RD,1,
      .               'TIMET 2     ')
             ELSE
               MRSURF=0
+
               NINCX=0
+
             ENDIF
-          ENDIF
+          ENDIF  ! MRSURF.GT.0 
           MTSURF=0
           NINCZ=0
+
 #ifdef TRACE
           IF (NLTRC) THEN
             WRITE (iunout,*) 'NO REENTRY INTO TOROIDAL GRID FOUND '
@@ -184,18 +226,23 @@ C  CHECK VALID RANGE ON MRSURF
           GOTO 5000
         ENDIF
 C
-      ENDIF
+      ENDIF  !  part "reentry from outside grid" done
+
 C
-C  PARTICLE IN STANDARD MESH, RADIAL CELL NRCELL
+C  NOW: PARTICLE INSIDE STANDARD MESH, RADIAL CELL NRCELL
+c  still: nltrz
 C
-2900  CONTINUE
       Z001=Z01+VELZ*ZRAD
+#ifdef TRACE
+        IF (NLTRC) WRITE (iunout,*) 
+     .             'Z001,Z01,ZRAD ',Z001,Z00,ZRAD
+#endif
 C
       DUM=0.
       NCOUT=1
 C
-C  J1: CELL INDEX
-C  J2  SURFACE INDEX
+C  J1: CELL INDEX FOR CURRENT SUB_STEP
+C  J2: NEXT SURFACE INDEX
       J1=NTCELL
       IF (VELZ.LT.0.) THEN
         INCZ=0
@@ -210,11 +257,23 @@ C  J2  SURFACE INDEX
 C
       NLSRFZ=.FALSE.
 C
-10    CONTINUE
-      IF (J2.LE.0.OR.J2.GT.NT3RD) GOTO 990
+110   CONTINUE
+      IF (J2.LE.0.OR.J2.GT.NT3RD) GOTO 9990
+
+
+C OLD SURFACE = NEW SURFACE ?
+C POSSIBLE CONFLICT IF TRACK STARTED EXACTLY ON SURFACE
+C TRY NEXT SURFACE
+        IF (MTSURF.EQ.J2) THEN
+          J1=J1+NINCZ
+          J2=J1+INCZ
+          GOTO 110
+        ENDIF
+
 C  TIME FROM Z01 TO ZSURF
       DZ=(ZSURF(J2)-Z01)
-!pb reduce zrad if the trajectory comes too close to the next standard surface
+!pb reduce zrad if the trajectory comes too close
+!pb to the next z-standard surface
 !pb without hitting it
       IF (ABS(ABS(DZ/ZRAD)-1._DP) <= EPS10) THEN
         ZRAD=(1._DP-EPS6)*ZRAD
@@ -222,6 +281,9 @@ C  TIME FROM Z01 TO ZSURF
       END IF
       BB=VELZ+EPS60
       F=DZ/BB
+#ifdef TRACE
+        IF (NLTRC) WRITE (iunout,*) 'J2,F,DZ ',J2,F,DZ
+#endif
       IF (F.LE.ZRAD) THEN
         KUPC(NCOUT)=J1
         BLPD(NCOUT)=F-DUM
@@ -243,7 +305,8 @@ C  STOP HISTORY AT NON DEFAULT STANDARD SURFACE J2
           ITCELL=NTCELL
           Z01=ZSURF(J2)
 #ifdef TRACE
-          IF (NLTRC) WRITE (iunout,*) 'STOP AT MTSURF ',MTSURF
+            IF (NLTRC) WRITE (iunout,*)
+     .                'STOP AT MTSURF ',MTSURF
 #endif
           GOTO 5000
         ENDIF
@@ -251,12 +314,16 @@ C  NEXT CELL
         J1=J1+NINCZ
         J2=J1+INCZ
         NCOUT=NCOUT+1
-        GOTO 10
+        GOTO 110
       ENDIF
 C
 C  LAST CELL
 C
-100   CONTINUE
+
+#ifdef TRACE
+        IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
+#endif
+
       NTCELL=J1
       MTSURF=0
       NINCZ=0
@@ -267,27 +334,24 @@ C
 C
       GOTO 5000
 C
-990   CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMET, Z SURFACE INDEX OUT OF RANGE  '
-      WRITE (iunout,*) 'NPANU,Z0,Z01,ZRAD,VELZ,NTCELL '
-      WRITE (iunout,*)  NPANU,Z0,Z01,ZRAD,VELZ,NTCELL
-      WEIGHT=0.
-      ZRAD=-1.
-      GOTO 5000
-C
-C  CYLINDER APPROXIMATION FINISHED
+C  BLOCK 1 (NLTRZ)  done ::::::::::::::::::::::::::::::::::::::
 C
 1000  CONTINUE
 C
-      IF (.NOT.NLTRA) GOTO 5000
+C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
-C  DISCRETE TOROIDAL APPROXIMATION, ONLY ONE STEP AT A TIME
+      IF (.NOT.NLTRA) GOTO 2000
+C
+C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION, 
+C            also: default toroidal periodicity model.
+C            ONLY ONE STEP AT A TIME
 C
       NERR=0
       NCOUT=1
       KUPC(1)=NTCELL
 C
 C     IF (NLSRFZ) THEN ....
+C  PARTICLE ON TOROIDAL SURFACE MTSURF
       NLSRFZ=.FALSE.
 C
 1010  CONTINUE
@@ -307,6 +371,7 @@ C
       Z001=Z01+ZRAD*VELZ
       X001=X01+ZRAD*VELX
       IF (ZRAD.LT.1.D30.AND.X01*X001.GT.EPS10) THEN
+
         ITT=IDINT(REAL(Z001/(X001*TANAL),KIND(1.D0)))
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 'TIMET 1 ',X01,Z01,X001,Z001,ITT
@@ -342,7 +407,7 @@ C
 C
       IF (ITT) 1100,1200,1300
 C
-C  NO INTERSECTION WITH TOROIDAL SURFACE
+C  NO INTERSECTION WITH TOROIDAL SURFACE, particle stays within tor. cell.
 C
 1200  CONTINUE
       MTSURF=0
@@ -385,6 +450,8 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         ZRAD=1.D30
         GOTO 9998
       ENDIF
+
+C  a valid flight time F has been found 
       X01=X01+F*VELX
       Z01=TANAL*X01
       PHI=PHI0+ZHALF
@@ -430,6 +497,14 @@ C
       AA=Z01+X01*TANAL
       BB=-TANAL*VELX-VELZ+EPS60
       F=AA/BB
+
+C  try to identify particles exactly on toroidal surfaces. unfinished
+!      if (abs(aa*bb) <= eps30) then
+!        f = 0._dp
+!      else
+!        F=AA/BB
+!      end if
+c
       IF (F.LE.0.) THEN
 C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         IF (ABS(AA).LE.EPS10.AND.NERR.LE.1) THEN
@@ -446,6 +521,8 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         ZRAD=1.D30
         GOTO 9998
       ENDIF
+
+C  a valid flight time F has been found
       X01=X01+F*VELX
       Z01=-TANAL*X01
       PHI=PHI0-ZHALF
@@ -480,6 +557,8 @@ C
      .                    ZRAD,ISTS,ISRFCL,IPERID
       ENDIF
 #endif
+2000  CONTINUE      
+C
       GOTO 5000
 C
 C  DISCRETE TOROIDAL APPROXIMATION FINISHED
@@ -496,12 +575,13 @@ C
         IF (CLPD(J).LE.0..OR.KUPC(J).LE.0.OR.
      .      (KUPC(J).GE.NT3RD.AND.NLTOR)) THEN
           WRITE (iunout,*) 'ERROR DETECTED IN TIMET '
-          WRITE (iunout,*) 'NPANU,J,BLPD,KUPC ',NPANU,J,BLPD(J),KUPC(J)
+          WRITE (iunout,*) 'NPANU,J,BLPD,KUPC ',
+     .                      NPANU,J,BLPD(J),KUPC(J)
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
-          WRITE (iunout,*) 'TIMET: J,BLPD,NUPC,NCOUNT ',
-     .                        J,BLPD(J),NUPC(J),NCOUNT(J)
+          WRITE (iunout,*) 'TIMET: J,BLPD(J),NUPC(J),NCOUNT(J) ',
+     .                             J,BLPD(J),NUPC(J),NCOUNT(J)
         ENDIF
 #endif
 5100  CONTINUE
@@ -519,6 +599,7 @@ C
       SUM=0.
       DO 5110 ICOU=1,NCOU
         SUM=SUM+CLPD(ICOU)
+
 C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
 C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
 5110  CONTINUE
@@ -528,10 +609,21 @@ C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
         WRITE (iunout,*) 'TRY TO KILL PARTICLE ASAP '
         SUM=-1.0D0
       ENDIF
-      ZRAD=SUM
 C
+      ZRAD=SUM
       RETURN
 C
+9990  CONTINUE
+      WRITE (iunout,*) 'ERROR IN TIMET, Z SURFACE INDEX OUT OF RANGE  '
+      WRITE (iunout,*) 'NPANU,Z0,Z01,ZRAD,VELZ,NTCELL '
+      WRITE (iunout,*)  NPANU,Z0,Z01,ZRAD,VELZ,NTCELL
+      WEIGHT=0.
+      ZRAD=-1.
+      RETURN
+9991  CONTINUE
+      WRITE (iunout,*)
+     .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMET'
+      CALL EIRENE_EXIT_OWN(1)
 9998  CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN TIMET. RETURN ZRAD=1.D30'
       WRITE (iunout,*) 'NPANU,AA,BB ',NPANU,AA,BB

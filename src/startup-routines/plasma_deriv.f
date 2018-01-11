@@ -110,12 +110,10 @@ c   LGVAC(...,0)     : background vacuum flag
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
      .            TEI, DEJ, BOLTZFAC, RCORONA, RCOLRAD,
      .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX,
-     .            RC2MIN, RC2MAX, ERATE, BNORMI
-      REAL(DP) :: tpb1, tpb2, EIRENE_second_own
+     .            RC2MIN, RC2MAX, ERATE
       REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
-     .                         BASE_DENSITY(:), BASE_TEMP(:),
-     .                         BASE_VELX(:), BASE_VELY(:),BASE_VELZ(:)
+     .                         BASE_DENSITY(:), BASE_TEMP(:)
       INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
      .           I, J, JEND,
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,

@@ -2,10 +2,11 @@ cdr  25.08.15:  formated spectrum printout improved
 cdr  26.09.14:  commments, units added
 cdr  oct.2014:  parameter istr (stratum number) in argument list
 
-!pb  25.10.06:  format specifications corrected
+
 !pb  17.05.10:  write spectrum if the integral is nonzero
 !               this change is necessary because spectra for bulk ions are sampled 
 !               using negative weights
+!pb  25.10.06:  format specifications corrected
  
       SUBROUTINE EIRENE_OUTSPEC(ISTR)
  
@@ -131,10 +132,19 @@ c  directional spectra in cell
         END IF
 
  
+        IF (ESTIML(ISPC)%PSPC%LOG) THEN
+          WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
+     .           10._DP**ESTIML(ISPC)%PSPC%SPCMIN
+          WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
+     .           10._DP**ESTIML(ISPC)%PSPC%SPCMAX
+          WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
+        ELSE
         WRITE (IOUT,'(A20,5X,ES12.4)') ' MINIMAL ENERGY (EV) ',
      .         ESTIML(ISPC)%PSPC%SPCMIN
         WRITE (IOUT,'(A20,5X,ES12.4)') ' MAXIMAL ENERGY (EV) ',
      .         ESTIML(ISPC)%PSPC%SPCMAX
+          WRITE (IOUT,'(A)') ' LINEAR SPACING'
+        END IF
         WRITE (IOUT,'(A20,4x,I6)') ' NUMBER OF BINS     ',
      .         ESTIML(ISPC)%PSPC%NSPC
         CALL EIRENE_LEER(1)
@@ -155,14 +165,20 @@ C  STANDARD DEVIATION IS NOT AVAILABLE
 C  DEAL WITH ENERGY BIN NO. IE
 C  central energy bin value
               EN = ESTIML(ISPC)%PSPC%SPCMIN +
-     .             (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
+     .            (IE-0.5_DP)*ESTIML(ISPC)%PSPC%SPCDEL
 c  LOWER energy bin value
               EN1= ESTIML(ISPC)%PSPC%SPCMIN +
      .             (IE-1)*ESTIML(ISPC)%PSPC%SPCDEL
-              IF (IE.EQ.IINI) EN1=0.0
 c  UPPER energy bin value
               EN2= ESTIML(ISPC)%PSPC%SPCMIN +
      .             (IE  )*ESTIML(ISPC)%PSPC%SPCDEL
+              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                EN = 10._DP**EN
+                EN1= 10._DP**EN1
+                EN2= 10._DP**EN2
+              END IF
+
+              IF (IE.EQ.IINI) EN1=0.0_DP ! even for log energy binning
               IF (IE.EQ.IEND) THEN
                 WRITE (IOUT,'(I6,1ES12.4,A12,1ES12.4)') IE,EN1,
      .                                  ' INF       ',
@@ -186,14 +202,20 @@ C
 C  DEAL WITH ENERGY BIN NO. IE
 C  central energy bin value
               EN = ESTIML(ISPC)%PSPC%SPCMIN +
-     .             (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
+     .            (IE-0.5_DP)*ESTIML(ISPC)%PSPC%SPCDEL
 c  LOWER energy bin value
               EN1= ESTIML(ISPC)%PSPC%SPCMIN +
      .             (IE-1)*ESTIML(ISPC)%PSPC%SPCDEL
-              IF (IE.EQ.IINI) EN1=0.0
 c  UPPER energy bin value
               EN2= ESTIML(ISPC)%PSPC%SPCMIN +
      .             (IE  )*ESTIML(ISPC)%PSPC%SPCDEL
+              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                EN =10._DP**EN
+                EN1=10._DP**EN1
+                EN2=10._DP**EN2
+              END IF
+
+              IF (IE.EQ.IINI) EN1=0.0_DP ! even for log energy binning
               IF (IE.EQ.IEND) THEN
                 WRITE (IOUT,'(I6,1ES12.4,A12,2ES12.4)') IE,EN1,
      .                                  ' INF       ',

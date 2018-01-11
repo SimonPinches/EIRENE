@@ -4,7 +4,8 @@
 !DR  250311: ensure ELMIN <= ELAB <= ELMAX disabled again: would lead
 !DR          to wrong cross sections, e.g. for beam penetration
 CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
-cdr  aug.16: some test output, re asymptotic, rejection sampling. commented out.
+cdr  aug.16: some test output, re asymptotic, rejection sampling. Commented out.
+cdr  sept.17:sync with veloel. Prepare bgk relaxation. perhaps ready: nflag=2
 C
       SUBROUTINE EIRENE_VELOCX(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                  IRCX,DUMT,DUMV)
@@ -16,13 +17,15 @@ C
 C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
 C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
 C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
-C                  E=ESIGCX(IRCX,1)
+C                  E=M/2 V_M^2 =3/2 KT
+C                  to be generalized to E=ESIGCX(IRCX,1)
 C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
 C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
 C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
 C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
 C                  OR ALTERNATIVELY: REJECTION
 C
+C  K   : CELL INDEX 
  
 C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
 C  note: ti has already been converted into thermal velocity units: zrg(ipls,k)
@@ -71,9 +74,10 @@ C
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRCX
 
       REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, ZARGX, ZARGY, ZARGZ,
-     .          VXDR, VYDR, VZDR, VRELQ, E0MAX, TIMAX, SIGS, VRELS,
-     .          WRMEAN, TEST, VREL, WRAT, WO, ELAB, ELB, CXS,
+     .          VXDR, VYDR, VZDR, VRELQ, 
+     .          TEST, VREL, ELAB, CXS,
      .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
+C      REAL(DP) :: ELB
       REAL(DP), EXTERNAL :: RANF_EIRENE
  
       INTEGER :: ICOUNT, J, JJ, IRL, IREAC
@@ -107,11 +111,12 @@ c  elab:  here ln(E), with E from 0.1 to 1e4 eV
           CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 1')
           vrq=exp(elab-defCX(IRCX))
           vr=sqrt(vrq)
-          if (cXS*vr.gt.SGCVMX(IRCX)) then
+          if (cxs*vr.gt.SGCVMX(IRCX)) then
             JJ=J
-            SGCVMX(IRCX)=cXS*vr
+            SGCVMX(IRCX)=cxs*vr
           endif
         enddo
+
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
@@ -132,16 +137,18 @@ C
 C  INITIALIZE COUNTER FOR REJECTION SAMPLING OF INCIDENT BULK PARTICLE
 C
       ICOUNT=1
-
+C
 C  NEXT: STEP 1
 C
 C    set parameters for random sampling in cell icell=K
 
 C
       IF (K.GT.0) THEN  ! K is the grid cell number. Use local bulk medium parameters
+c  scaled 1d temperatures, per degree of fredom
         ZARGX=ZRG(IPLS,K)
         ZARGY=ZRG(IPLS,K)
         ZARGZ=ZRG(IPLS,K)
+c  drift velocity, cm/s
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
@@ -156,7 +163,7 @@ C
           VYDR=0.D0
           VZDR=0.D0
         ENDIF
-      ELSE  !  K=0, USE ARGUMENTS DUMT AND DUMV AS PARAMETERS FOR MAXWELLIAN
+      ELSE  !  K=0, USE ARGUMENTS DUMT AND DUMV AS PARAMETERS FOR DRIFTING MAXWELLIAN
         IF (NFLAG.NE.2) GOTO 999
         ZARGX=DUMT(1)
         ZARGY=DUMT(2)
@@ -179,7 +186,7 @@ C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN
       INIV2=INIV2-1
 C
       IF (NFLAG.EQ.1) THEN
-C  DRIFTING, MONOENERGETIC ISOTROPIC DISTRIBUTION
+C  DRIFTING, MONO-ENERGETIC ISOTROPIC DISTRIBUTION
 C  ZT1 CORRESPONDS TO MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VEL=SQRT(ZT1(IPLS,K))
         VN=VEL/SQRT(VXN*VXN+VYN*VYN+VZN*VZN)
@@ -197,6 +204,11 @@ C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONS
 C
       IF (NFLAG.EQ.2) THEN
 C
+C       VXI=VXN   ! INCIDENT ION.  NOT STORED FOR RELAXATION COLLISIONS
+C       VYI=VYN
+C       VZI=VZN
+
+C   EXCHANGE OF IDENTITY (RELAXATION). NOTHING MORE TO BE DONE
 
         VELQ=VXN*VXN+VYN*VYN+VZN*VZN
         VEL=SQRT(VELQ)
@@ -210,7 +222,7 @@ C   NOTHING MORE TO BE DONE
 C
         RETURN
 C
-      ELSE
+      ELSE  !   NFLAG.NE.2, ALL OTHER OPTIONS
 C
 C  SAVE  INCIDENT TEST PARTICLE VELOCITY
         VX=VXO*VLO
@@ -226,39 +238,40 @@ C   PRESENT VERSION: REJECTION
         VREL=SQRT(VRELQ)
         ELAB=LOG(VRELQ)+DEFCX(IRCX)
         IREAC=MODCOL(3,1,IRCX)
+        CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 
-cdr.........................................................  
+c...........................................................  
 cdr  test output only
 c       elb=exp(elab)
 c       if (elb.le.0.1) then
 c         write (6,*) 'elb velocx ',elab,elb
 c       endif
-cdr.........................................................  
+cdr
+c.....................................................................
 
-        CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
 C       IF (NLREJC) THEN    !  REJECTION IS NOW DEFAULT OPTION
 C
         IF (IFLRCX(IRCX).GT.0) THEN
           TEST=RANF_EIRENE()*SGCVMX(IRCX)
           if (test.gt.cxs*vrel) then
-c  reject
-            icount=icount+1
-            if (icount.lt.500) goto 123  ! fetch a new bulk ion velocity
+C  REJECT
+            ICOUNT=ICOUNT+1
+            IF (ICOUNT.LT.500) GOTO 123  ! fetch a new bulk ion velocity
 c  rejection loop failed, too many attempts.
-            write (iunout,*)
-     .        'icount too large ( > 500) IN VELOCX. ACCEPT SAMPLE '
+            WRITE (iunout,*)
+     .        'ICOUNT TOO LARGE ( > 500) IN VELOCX. ACCEPT SAMPLE '
 cdr............................................................   
 cdr  test output only
 cdr         ELB=EXP(ELAB)
 cdr         write (iunout,*) 'npanu, ireac, ircx, ELAB(EV),icell ',
 cdr  .                        npanu, ireac, ircx, ELB,  K
 cdr............................................................
-          else
-c  accept
-            xcmean(ircx)=xcmean(ircx)+icount
-            ncmean(ircx)=ncmean(ircx)+1
-          endif
+          ELSE
+C  ACCEPT
+            XCMEAN(IRCX)=XCMEAN(IRCX)+ICOUNT
+            NCMEAN(IRCX)=NCMEAN(IRCX)+1
+          ENDIF
 C       ELSEIF (NLWEIGHT) THEN
  
         ELSE
@@ -267,6 +280,10 @@ C  SO USE WEIGHTING RATHER THAN REJECTION
           WEIGHT=WEIGHT*CXS*VREL*DIIN(IPLS,K)/SIGVCX(IRCX)
         ENDIF
 C
+C       VXI=VXN  ! INCIDENT ION.  NOT STORED FOR RELAXATION COLLISIONS
+C       VYI=VYN
+C       VZI=VZN
+
 C
         VELQ=VXN*VXN+VYN*VYN+VZN*VZN
         VEL=SQRT(VELQ)

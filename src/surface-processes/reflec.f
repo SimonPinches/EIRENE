@@ -19,9 +19,10 @@ C           with reduced energy scaling.
 C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
 C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
 C  Oct 14:  arguments of velocs changed. "weight" now in argument list
-C  MAR 15:  remove Thompson distribution for thermal atom model: 
+C  MAR 15:  remove Thompson distribution for thermal atom model:
 c           TWALL=0 now leads to error exit
-cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl. 
+cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
+cdr Nov.17: lmetspw arguments corrected
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -41,13 +42,12 @@ C     LGPART= TRUE AND:
 C       ITYP = 1  ATOM IATM IS RETURNED TO CALLING PROGRAM
 C       ITYP = 2  MOLECULE IMOL IS RETURNED TO CALLING PROGRAM
 C       ITYP = 3  TEST ION  IION IS RETURNED TO CALLING PROGRAM
-C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORBTION)
+C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORPTION)
 C       ITYP = -1
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
-!pb      USE EIRMOD_CREFMOD
       USE EIRMOD_CESTIM
       USE EIRMOD_CADGEO
       USE EIRMOD_CCONA
@@ -61,13 +61,13 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CPES
       USE EIRMOD_CSDVI
- 
+
       IMPLICIT NONE
 C
 C---------------------------------------------------------------------
 C
 C  DATA FOR STOCHASTIC BEHRISCH REFLECTION MATRIX
-      REAL(DP) :: 
+      REAL(DP) ::
      .  ZRANGES(0:12),ZENGYS(0:12),ZRS(0:12),ZIDES(12,12)
       REAL(DP) ::
      .  ZRANGE(0:12),ZDE(12),ZDEL(12),ZENGY(0:12),ZR(0:12),ZIDE(12,12),
@@ -79,7 +79,7 @@ C  DATA FOR REDUCED ENERGY SCALING
       INTEGER , ALLOCATABLE :: IREDUC(:,:)
 
       REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
-     .          ZSPHI, RO5, PRBRF, EIRENE_FTHOMP, WATOM, RPROBA, ZE0, 
+     .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
      .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
      .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
      .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
@@ -87,22 +87,22 @@ C  DATA FOR REDUCED ENERGY SCALING
      .          PRFCF, XMW, CON, ZWDR, EOQ, XMP, WMIN,
      .          XCP, XCFE, DX, EXPP, RO1, EQSAVE, ZEP1, RO3,
      .          EMINR, EMAXR, RPROB, COSIN, EXPI, EXPE, RINTG, AINTG,
-     .          EINTG, EQTO, ETEST, EQT, F1, WFAC, F2, 
+     .          EINTG, EQTO, ETEST, EQT, F1, WFAC, F2,
      .          FR1, XMTT, XCTT, XMPP, XCPP, RO2
       REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
      .          RF11, RF12, RF13, RF14, RF15, RF16,
      .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
      .          RFFF1, RFFF2, RFFF3, RFFF4,
      .          RFFFF1, RFFFF2
-      REAL(DP), EXTERNAL :: RANF_EIRENE, RANSET_EIRENE
+      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
      .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF, IGAST,
-     .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP, ICOUNT, IFIRST, 
-     .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P, 
-     .           INDR1P, INDR1, ISPZO, IFILE, INDW
-      INTEGER, EXTERNAL :: RANGET_EIRENE
+     .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP, ICOUNT, IFIRST,
+     .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
+     .           INDR1P, INDR1, ISPZO, IFILE, INDW, idummy
+      INTEGER, EXTERNAL :: RANGET_EIRENE, RANSET_EIRENE
       LOGICAL :: NLDATA, NLBEHR
- 
+
       SAVE
 C  SIZE OF "BEHRISCH TABLES"
       DATA IDIM/12/
@@ -136,6 +136,8 @@ C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
 C---------------------------------------------------------------------
       DATA CON/0.4685/,EOQ/14.39/,ZWDR/0.666667/,IFIRST/0/,ICOUNT/0/
       DATA NPANOLD/0/
+
+cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
       EREDC(XMTT,XCTT,XMPP,XCPP)=CON/EOQ*XMTT/((XMPP+XMTT)*XCPP*XCTT*
      .                       SQRT(XCPP**ZWDR+XCTT**ZWDR))
 C
@@ -172,10 +174,12 @@ C
 C
         if (my_pe .eq. 0) then
           IF (NLTRIM) THEN
-C  OLD VERSION: READ ALL REFLECTION DATA FROM ONE SINGLE BIG, FIXED SET OF TARGET -- PROJECTILES, FILE
-            IF (LTRMOL) THEN
+C  OLD VERSION: READ ALL REFLECTION DATA FROM ONE SINGLE BIG, FIXED SET OF TARGET -- PROJECTILES,
+C               FIXED SET OF TARGET -- PROJECTILES CASES
+C               there are NHD6=12  target-projectile combinations on the file TRIM.DAT
+            IF (LTRIM_OLD) THEN
               CALL EIRENE_REFDAT(TM,TC,WM,WC)
-C  NEWER VERSION:  READ SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
+C  NEWER VERSION:  READ SOME SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
             ELSE
               CALL EIRENE_RDTRIM
             ENDIF
@@ -186,12 +190,12 @@ C  NEWER VERSION:  READ SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
         endif
- 
+
         if (nprs > 1) call EIRENE_broadref
 C
 C  SET FACTORS FOR REDUCED ENERGY SCALING FOR ALL TARGET/PROJECTILE
 C  COMBINATIONS AVAILABLE IN DATABASE MODEL
-        DO 3 J=1,NFLR
+        DO 3 J=1,NHD6
           ERDC(J)=EREDC(WM(J),WC(J),TM(J),TC(J))
 3       CONTINUE
 
@@ -203,7 +207,7 @@ C  FOR PERPENDICULAR INCIDENCE (INDW=1)
 4       CONTINUE
 C
         IF (TRCREF) THEN
-          DO 5 J=1,NFLR
+          DO 5 J=1,NHD6
             CALL EIRENE_LEER(1)
             WRITE (iunout,*) 'DATABASE REFLECTION MODEL DEFINED FOR:'
             WRITE (iunout,*) 'IFILE =                      ',J
@@ -215,11 +219,11 @@ C
 5         CONTINUE
           CALL EIRENE_LEER(2)
         ENDIF
-      ELSE
+      ELSE         !  .NOT.NLDATA, NO TRIM DATABASE REFLECTION MODEL AVAILABLE
         INE=1
         INW=1
         INR=1
-        NFLR=1
+        NHD6=1
         if (nprs > 1) call EIRENE_broadref
       ENDIF
 C
@@ -276,6 +280,7 @@ C  MASS NUMBER  : HYDROGEN
 C
         EPSHFE=EREDC(XMFE,XCFE,XMH,XCH)
 C
+C       ZRANGE(0)=0.0
         DO 12 J=1,12
           ZRANGE(J)=ZRANGE(J)*EPSHFE
           ZDE(J)=ZRANGE(J)-ZRANGE(J-1)
@@ -317,7 +322,7 @@ C
      .      'IMP. ENERGY (RED), REF. PROB, MEAN REFL. ENERGY'
           DO 19 J=0,12
             CALL
-     .        EIRENE_MASR3('                        ',ZRANGE(J),ZR(J),  
+     .        EIRENE_MASR3('                        ',ZRANGE(J),ZR(J),
      .                                                E0AV(J))
 19        CONTINUE
           CALL EIRENE_LEER(2)
@@ -377,10 +382,10 @@ cdr April 17:  turned off, revise random number generator seeds....,
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
 
-C  RE-INITIALIZE RANDOM NUMBERS FOR EACH NEW RECYCLING SOURCE PARTICLE, 
+C  RE-INITIALIZE RANDOM NUMBERS FOR EACH NEW RECYCLING SOURCE PARTICLE,
 C  TO ENHANCE CORRELATION
-C       
-        DUMMY=RANSET_EIRENE(ISEEDR)
+C
+        IDUMMY=RANSET_EIRENE(ISEEDR)
         DUMMY=RANF_EIRENE( )
         ISEEDR=RANGET_EIRENE(ISEEDR)
         ISEEDR=INTMAX-ISEEDR
@@ -481,7 +486,7 @@ C
 C  IDENTIFY REDUCED ENERGY SCALING FILE AND FACTOR
       EQTO=1.D40
       EFCT=1.
-      DO 120 IFILE=1,NFLR
+      DO 120 IFILE=1,NHD6
         IF (ABS(ERDC(IFILE)-ERDUC).LE.EPS12) THEN
 C  EXCACT TRIM DATABASE FILE FOUND: IFILE, SCALING FACTOR=1.
           IREDUC(ISPZ,MSURF)=IFILE
@@ -528,13 +533,21 @@ C
 C
 C  FIND INDICES FOR INCIDENT ENERGY AND ANGLE: INDE, INDW, R01, R02
 C
+cdr tbd : binary search
+cdr we must avoid extrapolation:
+cdr tbd : we also need the zero-quantil (= emin=enar(0))
+cdr tbd : we also need the one-quantil  (= emax=enar(ine+1))
       DO 102 I=2,INEM
         INDEP=I
         IF (E0.LE.ENAR(I)) GOTO 101
 102   CONTINUE
       INDEP=INE
-101   INDE=INDEP-1
+101   INDE=INDEP-1    !  we now have 1<=inde<=ine  (e.g. ine=5, or =10)
 C
+cdr tbd : binary search
+cdr we must avoid extrapolation:
+cdr tbd : we also need the zero-quantil (= cosmin=wiar(0)= 0)
+cdr tbd : we also need the one-quantil  (= cosmax=wiar(inw+1) =1)
       DO 103 I=2,INWM
         INDWP=I
         IF (COSIN.GE.WIAR(I)) GOTO 104
@@ -552,12 +565,17 @@ C
       ELSEIF (RINTG.LT.0) THEN
         RPROB=1.D0
       ELSE
+C  BI-LINEAR INTERPOLATION WRT: INCIDENT ENERGY AND ANGLE
+C     LINEAR EXTRAPOLATION IF INCIDENT ENERGY AND ANGLE ARE OUT OF RANGE
         RF1=HFTR0(INDE,INDW,IFILE)
         RF1=RF1+RO1*(HFTR0(INDEP,INDW,IFILE)-RF1)
         RF2=HFTR0(INDE,INDWP,IFILE)
         RF2=RF2+RO1*(HFTR0(INDEP,INDWP,IFILE)-RF2)
 C
         RPROB=RF1+RO2*(RF2-RF1)
+        RPROB=MAX(0.D0,MIN(1.D0,RPROB))   ! avoid spurious extrapolations
+
+C  APPLY SCALING (PRFCF= RECYCF) AND CUT OFF (PRCFT= RECYCT)
         RPROB=MIN(RPROB*PRFCF,PRFCT)
       ENDIF
 C
@@ -580,6 +598,10 @@ C
 C  ENERGY OF REFLECTED PARTICLE
 C
       ZEP1=RANF_EIRENE( )
+cdr tbd : binary search, or use specific structure in raar(i) array, integer arithmetic
+cdr       intermediate quantiles 0.2, 0.4, 0.6, 0.8  are also available from original TRIM run.
+cdr       including them here, plus 0.0 amd 1.0 quantiles (eminr,emaxr) would lead to equidistant raar(i),
+cdr       allow faster search, increase precision and avoid extrapolations.
       DO 105 I=2,INRM
         INDR1P=I
         IF (ZEP1.LE.RAAR(I)) GOTO 106
@@ -592,29 +614,41 @@ C
       IF (EINTG.GT.0.D0) THEN
 C  CONSTANT ENERGY REFLECTION COEFFICIENT
         E0=E0*EINTG
+C  SPECULAR REFLECTION. E_IN = E_OUT
       ELSEIF (EINTG.LT.0.D0) THEN
 C       E0=E0
 C  E0 FROM MEAN ENERGY MODEL
+C     ELSE
+C  TBD.
       ELSE
 C  E0 FROM STOCHASTIC MATRIX
+C  tri-linear interpolation
+C      linear extrapolation, if out of range
+c  indr1
         RF1=HFTR1(INDE,INDW,INDR1,IFILE)
         RF1=RF1+RO1*(HFTR1(INDEP,INDW,INDR1,IFILE)-RF1)
         RF2=HFTR1(INDE,INDWP,INDR1,IFILE)
         RF2=RF2+RO1*(HFTR1(INDEP,INDWP,INDR1,IFILE)-RF2)
+c  indr1p
         RF3=HFTR1(INDE,INDW,INDR1P,IFILE)
         RF3=RF3+RO1*(HFTR1(INDEP,INDW,INDR1P,IFILE)-RF3)
         RF4=HFTR1(INDE,INDWP,INDR1P,IFILE)
         RF4=RF4+RO1*(HFTR1(INDEP,INDWP,INDR1P,IFILE)-RF4)
 C
-        RFF1=RF1+RO2*(RF2-RF1)
-        RFF2=RF3+RO2*(RF4-RF3)
+        RFF1=RF1+RO2*(RF2-RF1)   ! bi-linear in incident parameters, for quantile indr1,
+        RFF2=RF3+RO2*(RF4-RF3)   ! bi-linear in incident parameters, for quantile indr1p,
+Cdr  cut off here, to avoid spurious extrapolations ??
 C
-        E0=RFF1+RO3*(RFF2-RFF1)
+        E0=RFF1+RO3*(RFF2-RFF1)  !    linear between quantiles indr1 and indr1p
+
+c  cut off, to avoid spurious extrapolation
         E0=MAX(E0,EMINR)
         E0=MIN(E0,EMAXR)
       ENDIF
-C
+
+C   REDUCED ENERGY SCALING, IF NEEDED
       E0=E0/EFCT
+
       VEL=RSQDVA(IATM)*SQRT(E0)
 C
 C  POLAR ANGLE OF REFLECTION
@@ -623,7 +657,7 @@ C
 C  SPECULAR REFLECTION
         GOTO 400
       ENDIF
-cdr  to be written: fixed momentum reflection in case aintg > 0.  
+cdr  to be written: fixed momentum reflection in case aintg > 0.
       IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
 C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
         F1=1.
@@ -884,7 +918,7 @@ C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
         ELSE
 C  INCLUDE SPECULAR CONTRIBUTION (F2 > 0., F1 < 1.)
-C  TO BE CHECKED: DOES THIS PROCUDE SPECULAR REFLECTION IN CASE OF F2=1. AND F1=0. ? 
+C  TO BE CHECKED: DOES THIS PROCUDE SPECULAR REFLECTION IN CASE OF F2=1. AND F1=0. ?
           ZTHET=PI2A*RANF_EIRENE( )
           ZSTHET=SIN(ZTHET)
           ZCTHET=COS(ZTHET)
@@ -953,7 +987,7 @@ C  SUPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF ((MSURF.GT.0) .AND. LSPUMP) THEN
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-            LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+            LMETSPW(ISPZO) = .TRUE.
           ENDIF
         ENDIF
         WEIGHT=WEIGHT*WMOLEC
@@ -1038,7 +1072,7 @@ C  SUPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF ((MSURF.GT.0) .AND. LSPUMP) THEN
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-            LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+            LMETSPW(ISPZO) = .TRUE.
           ENDIF
         ENDIF
         WEIGHT=WEIGHT*WATOM
@@ -1055,7 +1089,7 @@ C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE LIKE
       ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         TW=-E0TERM
-! these variables for velocs.f are INTENT(IN) 
+! these variables for velocs.f are INTENT(IN)
         VXR = 0._DP
         VYR = 0._DP
         VZR = 0._DP
@@ -1076,7 +1110,7 @@ C
 700   CONTINUE
       IF ((MSURF.GT.0) .AND. LSPUMP) THEN
         SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
-        LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+        LMETSPW(ISPZO) = .TRUE.
       ENDIF
       LGPART=.FALSE.
       WEIGHT=0.
@@ -1117,9 +1151,9 @@ C
       WEIGHT=0.
       RETURN
 C
- 
+
 C     The following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_REFLEC_REINIT
       IF (ALLOCATED(EREDUC)) DEALLOCATE(EREDUC)
       IF (ALLOCATED(FREDUC)) DEALLOCATE(FREDUC)

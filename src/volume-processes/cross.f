@@ -36,6 +36,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CTRCEI, ONLY: TRCAMD
  
       IMPLICIT NONE
  
@@ -43,11 +44,11 @@ C
       INTEGER, INTENT(IN) :: K, IR
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
       REAL(DP) :: B(8), FP(6)
-      REAL(DP) :: S01, S02, DS12, EXPO1, EXPO2, EIRENE_CROSS,
+      REAL(DP) :: EIRENE_CROSS,
      .            ALMIN,ALMAX,COUMIN,COUMAX,
-     .            CCXM1, CCXM2, EXPO, EIRENE_EXTRAP, E, XI, 
+     .            EXPO, EIRENE_EXTRAP, E, XI, 
      .            EIRENE_SNGL_POLY
-      INTEGER :: IF8, II, I
+      INTEGER :: I
       type(poly_data), pointer :: rpp
       type(fit_forms), pointer :: rpc
  
@@ -77,7 +78,8 @@ C  FILL CROSS SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           FP(4:6) = RPC%FP1R
           EXPO = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
      .                            RPC%RC1MIN,RPC%RC1MAX,FP,
-     .                            RPC%JFEX1MN,RPC%JFEX1MX)
+     .                            RPC%JFEX1MN,RPC%JFEX1MX,
+     .                            TRCAMD)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
  
           EIRENE_CROSS = EIRENE_CROSS*FACT

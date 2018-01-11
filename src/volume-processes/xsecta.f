@@ -46,24 +46,25 @@ C
  
       IMPLICIT NONE
  
-      REAL(DP) :: CF(9,0:9)
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, CHRDF0, EELEC, RMASS, DEIMIN, EHEAVY,
      .            EBULK, COU, EIRENE_RATE_COEFF, ERATE,
      .            TMASS, PMASS   ! FOR DEFAULT CX MODEL 
 
-      INTEGER :: II, IML, IM, IIO, NTE, ISTORE, ISCND, ISCDE, IFRST,
+      INTEGER :: NTE, ISTORE, ISCND, ISCDE, IFRST,
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
-     .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP, IA, ISP, IP,
+     .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP, 
      .           IAPI, IRPI, IACX, IDSC, IPL, IAEI, IESTM, IRCX, IPLSTI,
      .           ITHRD, IFRTH
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      CHARACTER(8) :: TEXTS1, TEXTS2
 
       ALLOCATE (PLS(NSTORDR))
 
-
-cdr: set hard wired lower density for H.4 type fits: 1e8 cm**-3 
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
+cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -192,6 +193,8 @@ C
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.1) GOTO 90
 C
+C  EI PROCESS IDENTIFIED
+
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
@@ -211,7 +214,8 @@ C
             LGAEI(IATM,IDSC1)=IREI
             CALL EIRENE_XSTEI(RMASS,IREI,IAT,
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
-     .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
+     .                 ISCDE,EELEC,IESTM,
+     .                 KK,FACTKK,PLS)
 90        CONTINUE
           NAEII(IATM)=IDSC1
         ENDIF
@@ -476,7 +480,7 @@ C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
             IF (IBGKA(IATM,NRC).NE.0) THEN
               IF (NPBGKA(IATM).EQ.0) THEN
-C  IATM HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
+C  IATM HAS NOT YET BEEN LABELLED AS BGK SPECIES.
 C  DO THIS HERE: IATM IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
@@ -507,7 +511,8 @@ C
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             CALL EIRENE_XSTEL(IREL,IAT,IPL,EBULK,
-     .                        ISCDE,IESTM,KK,FACTKK)
+     .                        ISCDE,IESTM,
+     .                        KK,FACTKK,PLS)
 C
 230       CONTINUE
  
