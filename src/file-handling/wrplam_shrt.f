@@ -1,6 +1,6 @@
 cdr  jan 16: started to cleanup, comment
 cdr          remove redundant parameter iflg
-c
+cdr  jan 18: comments
 c
 c
 C
@@ -10,9 +10,13 @@ C
 
 cdr this is the SHORT version of WRPLAM.F 
 cdr It writes and reads (entry RPLAM_SHRT) background data onto/from fort.13
-cdr Distinct from WRPLAM_long here only the background tallies are written-read, 
+cdr Distinct from WRPLAM_long here only the background tallies are written/read, 
 cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data, 
-cdr nor the primary source sampling information 
+cdr nor the primary source sampling information.
+cdr for BGK type non-linear iterations, with velocity independent rates,
+cdr this may be sufficient. 
+cdr Better: add here also the rates and other atomic data needed to streamline
+cdr         non-linear iterations.
 
 
 
@@ -24,10 +28,9 @@ cdr nor the primary source sampling information
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
       USE EIRMOD_CESTIM
-csw      USE EIRMOD_CCRM
+csw   USE EIRMOD_CCRM
       USE EIRMOD_CCOUPL
       USE EIRMOD_COMPRT,ONLY:IUNOUT !VKMPI
-csw      USE IFWRITE !VK
 
       IMPLICIT NONE
 
