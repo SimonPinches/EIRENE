@@ -1,3 +1,20 @@
+cdr
+cdr Jan 2018: This version:
+cdr    start to re-work (and document) the so called photon module.
+cdr    (revisions, cleanup, etc....Detlev Reiter, 2005, 2006)
+
+cdr    The original version was developed in 2000 -- 2003 within a project (BMBF)
+cdr    in collaboration with Philips research Lab. Aachen, for applications to
+cdr    to high pressure gas discharge lamps.
+cdr    It was largely re-written later, re-structured, several times, 
+cdr    for use in (non-linear) stand alone eirene
+cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
+cdr    Further re-writing: V.Kotov, to support iterations with 2D B2 plasma
+cdr    transport code.
+cdr      
+cdr
+cdr
+
 !  photon.f  this modules containes routines to sample, evaluate
 !            photon line profiles and photonic rates (absorption, emission, etc.)
 !            Only to be used for photon tracking in an atomic background.
@@ -6,9 +23,20 @@
 !            parameters after a collision (needed, e.g., to render photon-atom
 !            iterations more implicit than presently).
 ! Hence: currently photon.f works for purely absorbing media for photons.
+
+cdr STARTING ONCE AGAIN: 
+cdr new data structure REACDAT. Try to re-connect photonic reactions to
+cdr rest of code, unify notation....
+cdr
+cdr jan 18:  note: ph_xsectp is still there. 
+cdr          But corresponds to what would be called XSTOT?,
+cdr         (what is XSTRC?) 
+
+
  
  
-! 24.2.05: ph_xsectp removed, is now xstrc in 'volume-processes', cleaned up
+! 24.2.05: ph_xsectp removed partially, is now xstrc in 'volume-processes', cleaned up
+c
 !  7.3.05: ph_energy exchanged:  comments, cleaned up
 !  7.3.05: ph_sam_lorentz replaced by sam_lorentz: bug fix, was wrong
 !                         re-scaling from Cauchy to Lorentz, alph-->alphh
@@ -154,7 +182,7 @@ c ICAL=3
 c CROSS-SECTIONS, RATES, RATE COEFFICIENTS
 
       SUBROUTINE EIRENE_PH_GETCOEFF(kkin,isp,ity,icell,iipl,fac,res)
-c  evaluate absorption, emission and stim. emission rate coeff.
+c  evaluate absorption, emission and stim. emission rate coeff.  "res" (cm**3/s)
 c  for a photon with energy E=E0, in cell icell.
 C  This requires evaluation of the absorption line shape profiles "iptype"
 C  current version: iptype=0,1,2,3,4,5,6,7,8,9,10,11
@@ -202,6 +230,9 @@ c
       fac=0._dp
       hwvdw=0._dp
 
+cdr  find $fac$: the value of the line profile (emission profile or absorption profile) at E0: 
+cdr  the current photon energy. 
+cdr  units of fac:  1/eV, because: integral dE fac(E) = 1.0
  
       select case(iid)
 c  case 1,2,3  : atoms point of view in radiation field
@@ -217,7 +248,7 @@ c     P.2 PH_ABS OT, P.2 PH_STIM OT
             return
          endif
 
-         e00=reaction%e0
+         e00=reaction%e0  ! line center
          pnue0 = e00*EV2HZ
          pnue  = e0 *EV2HZ
 
@@ -352,10 +383,11 @@ c  --> do not multiply with density in calling program!
 c  --> divide by upper state density to make it a rate coefficient!
            phv_muldens=0
            res=res*fac
-        case default
+
+        case default   ! unknown line profile
           write(iunout,*)
      .  'PHOTON MODULE EIRMOD_(PH_GETCOEFF): iid=',iid,
-     .                    'not in useEIRMOD_'
+     .                    'not in use'
           res=0.
         end select ! iid
  
@@ -1743,16 +1775,21 @@ c  lorvdw                              --> evaluates lorentz-vdWalls convolution
       return
       END FUNCTION EIRENE_DOPPLER
  
-      real(dp) function EIRENE_planck(e, t, b_nu, imode) result(res)
+      real(dp) function EIRENE_planck(E, T, b_nu, imode) result(res)
 c  for testing purposes:
-c  a) evaluate planck function B_nu(T) for radiation intensity
-c  b) evaluate planck function B_E (T) for radiation intensity
+c  a) evaluate planck function B_nu(T) for radiation intensity at freq. nu
+c  b) evaluate planck function B_E (T) for radiation intensity at energ. E
 c
 c  i.e.: use energy scale instead of frequency scale
 c  B_E = 1/h_planck B_nu, with E = h_planck * nu
 c  input : E and T in eV
 c  output: B_E(T) in 1/cm**3/eV/sterad * cm/s * eV
 c          i.e.   in 1/cm**2/s/sterad
+
+cdr  imode:  =1 Planck
+cdr          =2 Wien limit E >> kT
+cdr          =3 Rayleigh-Jeans limit E << kT
+
       implicit none
       real(dp), intent(in) :: t,e
       integer , intent(in) :: imode

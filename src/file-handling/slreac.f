@@ -588,8 +588,9 @@ C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
           REACLINES(IRLINES)%CONST(1:9) = CREACD(1:9,1)
 
         END IF
-        CALL EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,
-     .                                IUNOUT,.FALSE.)
+        CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
+     .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.FALSE.)
+c  no optional extrapolation flags here 
         RETURN
       ENDIF
 C
@@ -875,10 +876,12 @@ C
 2000  CONTINUE
 
       CALL
-     .  EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,
-     .                       .TRUE.,RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
-     .                              RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .                              RTMAX,ERTMAX,ETH)
+     .  EIRENE_SET_REACTION_DATA   ! this routine sets only "POLY" data
+     .            (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.TRUE.,
+c  from here on: optional input to SET_REACTION_DATA
+     .                       RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
+     .                       RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
+     .                       RTMAX,ERTMAX,ETH)
 C
       CLOSE (UNIT=29+ifoff)
 C

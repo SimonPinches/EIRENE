@@ -50,6 +50,7 @@ cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
      .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF, 
      .          EIRENE_CMDTA_XDR, EIRENE_CMAMF_XDR,
      .          EIRENE_GET_REACTION, EIRENE_SET_REACTION_DATA,
+     .          EIRENE_FREE_REACDAT,
 cdr
      .          LINE_DATA, POLY_DATA, ADAS_DATA, HYDKIN_DATA,
      .          REACTION_DATA, 
@@ -172,7 +173,7 @@ c  ...and cumulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
+     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1, el and cx processes have no secondary electrons
      R EHVEI1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
@@ -577,7 +578,7 @@ c  secondaries, PI processes
         ALLOCATE (EPLEL3(NREL,NSTORDR,NSTORDT))
  
 
-        ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT))
+        ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT)) 
  
         ALLOCATE (EATPI(NRPI,0:NATM,2))
         ALLOCATE (EMLPI(NRPI,0:NMOL,2))
@@ -918,8 +919,8 @@ c
       DEALLOCATE (IBGKPH)
       DEALLOCATE (REAC_NAME)
  
-!pb      DEALLOCATE (REACDAT)
       CALL EIRENE_FREE_REACDAT
+
       DEALLOCATE (REACLINES)
  
       RETURN
@@ -2125,9 +2126,21 @@ cdr  IFIT out of range
  
       SUBROUTINE EIRENE_SET_REACTION_DATA
      .           (IR,ISW,IFTFL,RDATA,IUNOUT,LTEST,
+c  from here on: optional input parameters
      .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .            RTMAX, ERTMAX, ETH)
+
+c  set reaction data structure REACDAT, for reaction no. IR.
+c  here only:  1D or 2D polygonial fits for reaction data.
+c               RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
+c  and:                          NULLIFY REACDAT(IR)%...%ADAS 
+c  and:                          NULLIFY REACDAT(IR)%...%LINE 
+c  and:                          NULLIFY REACDAT(IR)%...%HYD 
+c
+c  1) called from READ_PHTDBK 
+c  2) called from SLREAC, option "CONST"
+c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
  
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IR, ISW, IFTFL, IUNOUT
@@ -2468,8 +2481,9 @@ c
       RETURN
       END SUBROUTINE EIRENE_SET_REACTION_DATA
  
- 
+CDR  NEXT THREE ROUTINES: PROBABALY NOT NEEDED ? 
       FUNCTION EIRENE_IS_RTC_ADAS (IREAC) RESULT(RES)
+c  something special about adas ?  unused !
  
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2483,6 +2497,7 @@ c
  
  
       FUNCTION EIRENE_IS_RTCEW_ADAS (IREAC) RESULT(RES)
+cdr   only used for adding/subtracting bremsstrahlung
  
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2496,6 +2511,7 @@ c
  
  
       FUNCTION EIRENE_IS_RTCMW_ADAS (IREAC) RESULT(RES)
+cdr  something special about adas ?  unused !
  
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2506,51 +2522,52 @@ c
       END IF
  
       END FUNCTION EIRENE_IS_RTCMW_ADAS
-  
+
 
       SUBROUTINE EIRENE_FREE_REACDAT
+cdr  called from dealloc_comxs:  Free data structure REACDAT at the end of a run.
 
       type(fit_forms), pointer :: rea
       integer :: ir
 
       DO IR = -11, NREAC
-
+c  interaction potentials, scattering angle information
         IF (REACDAT(IR)%LPOT) THEN
            rea => REACDAT(IR)%POT
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  cross-sections
         IF (REACDAT(IR)%LCRS) THEN
            rea => REACDAT(IR)%CRS
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  rate coefficients
         IF (REACDAT(IR)%LRTC) THEN
            rea => REACDAT(IR)%RTC
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  momentum weighted rate coefficients
         IF (REACDAT(IR)%LRTCMW) THEN
            rea => REACDAT(IR)%RTCMW
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  energy weighted rate coefficients
         IF (REACDAT(IR)%LRTCEW) THEN
            rea => REACDAT(IR)%RTCEW
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  "other reaction", e.g. population rate coefficient, density ratio
         IF (REACDAT(IR)%LOTH) THEN
            rea => REACDAT(IR)%OTH
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  photonic reaction
         IF (REACDAT(IR)%LPHR) THEN
            rea => REACDAT(IR)%PHR
            call eirene_free_fit_form (rea)

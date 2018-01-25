@@ -5,9 +5,11 @@ c              tbd: Compare with routine plotting/celint.f, remove dublicated co
 
 
       subroutine eirene_cell_to_corner (f, fcorner) 
+
 c  interpolate cell averaged tallies onto cell vertices     
 c  FOR EACH CELL VERTIX USE INVERSE DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
 c  FOR WEIGHTING
+
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_ctrig
@@ -30,7 +32,7 @@ c  FOR WEIGHTING
      .           it
       TYPE(CELL_ELEM), POINTER :: CUR
 
-c  2d carthesian x-y- grid      
+c  2d cartesian x-y- grid      
       if ((levgeo == 1) 
      .    .and. nlrad .and. nlpol.and..not.nltor) then
 c  ready for 2d x-y- slab grid.  
@@ -76,7 +78,7 @@ c  ready for 2d x-y- slab grid.
          fcorner(1:nrk) = fcorner(1:nrk)/(volsum(1:nrk)+eps60)
          deallocate (volsum)
 
-c  2d carthesian x-z grid
+c  2d cartesian x-z grid
       elseif ((levgeo == 1) 
      .    .and. nlrad .and..not.nlpol.and.nltor.and.nltrz) then 
 c   TO BE DONE: 2d  x,z grid

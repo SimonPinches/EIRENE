@@ -189,6 +189,7 @@ csw check photonic process
                idsc=idsc+1
                nrrci=nrrci+1
                IF (NRRCI.GT.NREC) GOTO 992
+cdr  here should come call to xstph or xstot
                call EIRENE_XSTRC(ipls,nrc,idsc,nrrci)
                cycle
 csw end branch
@@ -200,6 +201,7 @@ C  RECOMBINATION MODEL FOR BULK IONS
               IDSC=IDSC+1
               NRRCI=NRRCI+1
               IF (NRRCI.GT.NREC) GOTO 992
+
               IRRC=NRRCI
               LGPRC(IPLS,IDSC)=IRRC
 cdr  for notational consistency: here should come a call to routine xstrc,
