@@ -220,16 +220,19 @@ csw
         WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
  
 ! for each stratum define the number of the first processor NPESTA
-! that does calculations for this stratum.
-! This is used to determine the groups of processors in the
+! NPESTA(istra) is the "Master processor" for stratum no. ISTRA.
+
+! It does calculations for this stratum.
+! This is used to determine the groups of further processors in the
 ! accumulation of the results for one stratum
         NPESTA(0)=0
         NPESTA(1)=0
         DO ISTRA=2,NSTRAI
           NPESTA(ISTRA)=NPESTA(ISTRA-1)+NPESTR(ISTRA-1)
         ENDDO
-        WRITE (iunout,*) ' NPESTA '
-        WRITE (iunout,'(12I6)') (NPESTA(I),I=0,NSTRAI)
+        WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM '
+        WRITE (iunout,*) ' ISTRA, NPESTA '
+        WRITE (iunout,'(12I6)') (I,NPESTA(I),I=0,NSTRAI)
  
         XTIM(1:NSTRAI) = XX1
         CALL EIRENE_MASAGE
