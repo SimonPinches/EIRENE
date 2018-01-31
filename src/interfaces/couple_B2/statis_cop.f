@@ -1,8 +1,21 @@
+CDR:  evaluate standard deviation for specific tallies needed for coupling
+CDR   which would not be available otherwise.
+cdr   in early 2014 the sum over atomic (a) molecular (m) and test ion (i) components
+cdr   for particle, momentum and energy sources was removed here, so this routine is currently 
+cdr   empty. 
+cdr   These standard deviations are now, together with other linear combinations of default
+cdr   tallies, obtained "on the fly" by scoring per history, (in upfcop).
+
+
+
+
 !PB  17.11.05  USAGE OF SIGMA_COP CHANGED
 !PB            SIGMA_COP(      1:  NPLSI) : STATISTICS FOR MOMENTUM SOURCES
 !PB            SIGMA_COP(NPLSI+1:2*NPLSI) : STATISTICS FOR PARTICLE SOURCES
 !PB            SIGMA_COP(2*NPLSI+1)       : STATISTICS FOR ELECTRON ENERGY SOURCES  
 !PB            SIGMA_COP(2*NPLSI+2)       : STATISTICS FOR ION ENERGY SOURCES  
+cdr:  2015: all old preprogrammed sigma_cop removed.  COPV is a default tally, 
+cdr         and hence has its default variance options.
 C
 C
       SUBROUTINE EIRENE_STATIS_COP

@@ -1,4 +1,9 @@
-cdr called from find_param.f in initialization phase. Read block 14
+cdr called from find_param.f in initialization phase,
+cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0) 
+C
+cdr Read block 14 from interfacing routines (not from eirene_input.f)
+c   this version: couple_dummy, i.e. only dummy interfacing routines.
+c
 c   and set storage for allocatable arrays:
 c   NSTEP :
 c   NPTRGT:
