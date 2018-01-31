@@ -1,3 +1,5 @@
+cdr  Jan 18:  bypass this actions for photons (ityp=0). Code not ready for photon transport.
+
       subroutine eirene_switch_partinfo
 c  added oct. 2017:
 c  this routine sets the various pointers for tallies,
@@ -35,7 +37,7 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
      .    (iphot_old == iphot) .and. (ipls_old == ipls).and.
      .    (istra_old == istra)) return
 
-C  save stratum, old typ, species
+C  save stratum, old type, species
       istra_old= istra
       ityp_old = ityp
 
@@ -48,7 +50,14 @@ C  save stratum, old typ, species
       select case(ityp)
 
       case(0)
-!  photons: not ready
+!  photons: 
+cdr: not ready.
+cdr  currently: by-pass this code-section for photons (ityp=0),
+cdr  as long as update, collide, fpath for photons are still kept as separate routines.
+
+       return   ! for the time being....
+
+
        PDENX  => PDENPH(IPHOT,:) 
        EDENX  => EDENPH(IPHOT,:) 
        PXEL   => PAEL(:)   

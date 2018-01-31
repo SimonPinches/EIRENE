@@ -1,6 +1,14 @@
+cdr  "photon-module" of eirene code:
 cdr
-cdr Jan 2018: This version:
-cdr    start to re-work (and document) the so called photon module.
+cdr   D.Reiter, S.Wiesen, M. Born,  PPCF 44 (2002) p1723, 
+cdr                             and JNM 313-316 (2003) p 845
+cdr
+cdr   S.Wiesen, Phd Thesis, 2005 (Ruhr Univ. Bochum)
+cdr   V. Kotov, D. Reiter, A.K. Kukushkin, Phd Thesis (Ruhr Univ. Bochum), 
+cdr      Report JUEL-4257 (Nov 2007)
+cdr
+cdr This version: Jan. 2018:
+cdr    re-work (and document) the so called photon module.
 cdr    (revisions, cleanup, etc....Detlev Reiter, 2005, 2006)
 
 cdr    The original version was developed in 2000 -- 2003 within a project (BMBF)
@@ -9,11 +17,20 @@ cdr    to high pressure gas discharge lamps.
 cdr    It was largely re-written later, re-structured, several times, 
 cdr    for use in (non-linear) stand alone eirene
 cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
-cdr    Further re-writing: V.Kotov, to support iterations with 2D B2 plasma
+cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self consistently
+cdr    coupled 2D B2-EIRENE plasma solutions.
 cdr    transport code.
 cdr      
+cdr STARTING ONCE AGAIN: 
+cdr new data structure REACDAT. Try to re-connect photonic reactions to
+cdr rest of code, unify notation....
+cdr
+cdr jan 18:  note: ph_xsectp is still there. 
+cdr          But corresponds to what would be called XSTOT?,
+cdr         (what is XSTRC?) 
 cdr
 cdr
+!................................................................................
 
 !  photon.f  this modules containes routines to sample, evaluate
 !            photon line profiles and photonic rates (absorption, emission, etc.)
@@ -24,13 +41,7 @@ cdr
 !            iterations more implicit than presently).
 ! Hence: currently photon.f works for purely absorbing media for photons.
 
-cdr STARTING ONCE AGAIN: 
-cdr new data structure REACDAT. Try to re-connect photonic reactions to
-cdr rest of code, unify notation....
-cdr
-cdr jan 18:  note: ph_xsectp is still there. 
-cdr          But corresponds to what would be called XSTOT?,
-cdr         (what is XSTRC?) 
+
 
 
  
@@ -200,12 +211,14 @@ c          iid = 6  spont. photon emission
 c          iid = 7  photon net absorption (absorption - stim. emission)
  
 c  output:
-c          fac: value of profile shape function Phi(E)dE, normalized to 1
+c          fac: value of profile shape function Phi(E)dE, (Phi(E) is normalized to 1)
 c          res: value of rate, or rate coeff., at E
 c          iid = 4  res= rate coeff. = B12 * E00 * c/4 Pi * Phi(E)
 c          iid = 5  res= rate coeff. = B21 * E00 * c/4 Pi * Phi(E)
 c          iid = 6  res= rate        = A12 * Phi(E) to be done
 c          iid = 7  res= rate coeff. = out
+cdr  special treatment of delta function line shape: Phi(E)=1 und E00 weglassen ?
+cdr  als:  z.b. iid=4  res=B12 *c/4 Pi  --> Planck  bei E (=line center ?)
 c
       IMPLICIT NONE
       integer, intent(in) :: kkin,isp,ity,icell,iipl
@@ -235,13 +248,13 @@ cdr  the current photon energy.
 cdr  units of fac:  1/eV, because: integral dE fac(E) = 1.0
  
       select case(iid)
-c  case 1,2,3  : atoms point of view in radiation field
+c  case 1,2,3  : atoms point of view in radiation field:  out
 c  case 4,5,6  : photons point of view in neutral gas field
-c  to be done: remove case 7 from this routine. And add
+c  to be done: remove case iid=7 from this routine. And add
 c              rates for stim. emission in calling program, e.g.
 c              all absorb. and stim emiss rates.
 
-      case(4,5,6)
+      case(4,5,6)   !iid 4,5,6 only
 c     P.2 PH_ABS OT, P.2 PH_STIM OT
          if(lgvac(icell,iipl)) then
             res=0.
@@ -257,6 +270,8 @@ c     P.2 PH_ABS OT, P.2 PH_STIM OT
          select case(iptype)
          case(0)
 c  delta distribution, all mass at e0=e00
+cdr         FAC=1./E00  ! cancel e00 factor in rate coeff.
+cdr or, old version ??
             FAC=0._DP
             if (abs(E0-e00)/e00.lt.eps12) fac=1._DP
          case(1)
@@ -866,7 +881,7 @@ c calculates B12 Einstein coefficient in units: cm**2
 !      integer :: g1,g2,n1,n2
       real(dp) :: g1,g2
  
-      res=EIRENE_PH_B21()
+      res=EIRENE_PH_B21()  ! units:
  
       g1=reaction%g1
       g2=reaction%g2
