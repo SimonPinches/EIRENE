@@ -117,11 +117,17 @@ C
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
+cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IICX, IIEI, IIPI, IIEL,
-     .           IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
-     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI,  I, J, IPL
+      INTEGER :: 
+     .           IICX, IIEI, IIPI, IIEL,
+c    .           IMCX, IMEI, IMPI, IMEL,
+c    .           IACX, IAEI, IAPI, IAEL, IAOT,
+c    .           
+     .           IOLD, NOLD, 
+     .           IRCX, IREI, IRPI, IREL, IROT,
+     .           IBGK, IP, NFLAG,
+     .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
 Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
@@ -132,8 +138,8 @@ CDR         or integer (1/2 particle possible?)
  
  
 csw add n 2lines
-      INTEGER :: iaot,irot,kk,updf,t1
-      real(dp):: sump
+cdr   INTEGER :: kk,updf,t1
+cdr   real(dp):: sump
 csw external
       real(dp), external :: ranf_eirene
  
@@ -182,9 +188,10 @@ C  WEIGHT ALREADY TOO SMALL, NO SUPPRESION OF ABSORPTION
       ELSE
 C  TRY TO SUPPRESS ABSORPTION. IDENTIFY POSSIBLE EI PROCESSES
 C                              WITH ZERO TEST PARTICLE SECONDARIES
- 
+cdr     ss=0. 
         DO IIEI=1,NIEII(IOLD)
           IREI=LGIEI(IOLD,IIEI)
+cdr       ss=ss+SIGVEI(IREI)
 C  WHILE BEING IN THIS LOOP WEIGHT MAY BE REPEATEDLY REDUCED, FOR EARLIER (LOWER) IIEI
           IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -192,7 +199,7 @@ C  SIG_TEST=0 WOULD VIOLATE RADON-NYKODYM CONDITION OF WEIGHTING
           SIG_TEST=SIG_TOT_N-SIGVEI(IREI)
             PTOT=P2NEI(IREI)
           IF (PTOT.EQ.0..AND.SIG_TEST.GT.0.) THEN
-C  IREI IS A PURELY ABSORBING PROCESS
+C  IREI IS A PURELY ABSORBING EI PROCESS, but other EI processes exist.
 C  ELIMINATE THIS PROCESS IREI FROM ALL NIEII POSSIBLE EI PROCESSES
 C  REDUCE WEIGHT ACCORDINGLY
             SIG_ELIM=SIG_ELIM+SIGVEI(IREI)
@@ -209,11 +216,16 @@ C  NO, THIS PROCESS REMAINS ACTIVE, BECAUSE THERE ARE TEST-PARTICLE SECONDARIES
             LGEI_RED(NEII_RED)=IREI
           ENDIF
         ELSE
-C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOG GAME
+C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOGUE GAME
           NEII_RED=NEII_RED+1
           LGEI_RED(NEII_RED)=IREI
         ENDIF
       ENDDO
+cdr  test: ss=sigeit ?
+cdr     ssr=abs(ss-sigeit)/(ss+eps6)
+cdr     if (ssr.gt.1e-5) write (iunout,*) 'colatm', ss, sigeit,iold,
+cdr  .                                              naeii(iold),
+cdr  .                                      sigvei(1:naeii(iold))
       ENDIF  ! SUPPRESSION OF ABSORPTION AT EI PROCESSES: DONE.
 
 C  WEIGHT MAY HAVE BEEN REDUCED NOW, AND ALSO THE NUMBER OF ACTIVE EI PROCESSES.
@@ -227,7 +239,7 @@ C
 C
       IF (ZEP1.LE.SIGEIT) THEN
 C
-C  AT THIS POINT: NEII.GE.1, FOR OTHERWISE ZEP1 COULD NOT HAVE
+C  AT THIS POINT: NEII_RED.GE.1, FOR OTHERWISE ZEP1 COULD NOT HAVE
 C                 POINTED TO EI-PROCESSES
 C
 C  ELECTRON IMPACT COLLISION:
@@ -634,7 +646,33 @@ C
 C  1ST SECONDARY IS TEST ION
             IION=N1STX(IRCX,2)
             E0=CVRSSI(IION)*VELQ
-            XGENER=0.D0
+C
+            IF (NGENI(IION).GT.0) THEN
+              IF (IION.EQ.IOLD) THEN
+                XGENER=XGENER+1.D0
+            ELSE
+              XGENER=0.D0
+            ENDIF
+            IF (XGENER.GE.NGENI(IION)) THEN
+C  UPDATE GENERATION LIMIT TALLIES
+                IF (LPGENI) PGENI(IION,NCELL)=PGENI(IION,NCELL)-WEIGHT
+                IF (LEGENI)
+     .            EGENI(IION,NCELL)=EGENI(IION,NCELL)-WEIGHT*E0
+                IF (LVGENI) THEN
+                  V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
+                  V0_PARB=V0_PARB*AMUA*RMASSM(IMOL)
+                  VGENI(IION,NCELL)=VGENI(IION,NCELL)-WEIGHT*V0_PARB
+                END IF
+                IF (LPGENI.OR.LEGENI.OR.LVGENI) 
+     .            LMETSP(NSPAM+IION)=.TRUE.
+                LGPART=.FALSE.
+                IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,16)
+                ITYP=4
+                COLTYP=2
+                NCELL = NCLLO
+                RETURN
+              ENDIF
+            ENDIF
 C
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
             IF (IESTCX(IRCX,2).NE.0) GOTO 999
