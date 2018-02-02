@@ -1,0 +1,91 @@
+C  user supplied collision estimator.
+C  called from folion, folneut, at a collision event in cell NCELL 
+C
+      SUBROUTINE EIRENE_UPCUSR(WS,IND)
+C
+C  USER SUPPLIED COLLISION ESTIMATOR, VOLUME AVERAGED
+C
+C  ON INPUT:
+C     WS=WEIGHT/SIGTOT=WEIGHT/(VEL*ZMFPI)=WEIGHT/(SIGMA-V*DENS)
+C     IND =1  PRE-COLLISION ESTIMATOR,  called prior to call to subr. COLLIDE
+C     IND =2  POST-COLLISION ESTIMATOR, called after call to subr. COLLIDE
+C
+C  via modules:  NCELL, IATM
+C
+C
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CSDVI
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMXS
+      USE EIRMOD_CGEOM
+      IMPLICIT NONE
+      REAL(DP), INTENT(IN) :: WS
+      INTEGER, INTENT(IN) :: IND
+      INTEGER :: IRCX,IACX,ityp_save=0, IRD
+      REAL(DP) :: WSSIG
+C
+
+C
+C  FOR PARTICLE DENSITY IN CELL NO. NCELL
+C     COLV(1,NCELL)=COLV(1,NCELL)+WS
+
+C   THIS VERSION: 
+C   TALLY 1:   ATOM DENSITY
+C   TALLY 2:   POST COLLISION BULK ION CX ENERGY LOSS RATE
+C              E0 IS THE ENERGY SAMPLED FOR THE POST COLLISION PARTICLE
+C   TALLY 3:   PRE CX-COLLISION INCIDENT NEUTRAL ENERGY LOSS RATE
+C   TALLY 4:   NET CX ENERGY EXCHANGE RATE, PRE COLLISION MINUS POST COLLISION RATE
+c   IF (IND.EQ.1) RETURN
+
+
+      if (ind.eq.1) then
+        ityp_save=ityp
+      endif
+
+      IRD = NCLTAL(NCELL)
+
+      IF (ITYP.NE.1) RETURN
+
+C  CHECK: STORAGE FOR AT LEAST 2 COLLISION ESTIMATED TALLIES?
+      IF (NCLV.LT.4*NATMI) THEN
+        IF (IATM.GT.1) RETURN
+C  2 COLLISION ESTIMATED TALLIES, FOR IATM=1
+        IF (NCLV.LE.2) RETURN  ! NO STORAGE FOR EVEN THESE TWO TALLIES AVAILABLE.
+      ELSE
+c  initial species index for colv tally: nspan
+        LMETSP(NSPAN(ntalc):NSPAN(ntalc)+4*NATM-1)=.TRUE.
+      ENDIF
+C
+      IF (LGACX(IATM,0,0).EQ.0) GOTO 590
+        DO 560 IACX=1,NACXI(IATM)
+          IRCX=LGACX(IATM,IACX,0)
+          IPLS=LGACX(IATM,IACX,1)
+          IF (LGVAC(NCELL,IPLS)) GOTO 560
+          WSSIG=WS*SIGVCX(IRCX)
+C  TALLY 1: PARTICLE DENSITY (FOR TESTING/VERIFICATION)
+          if (ind.eq.1) COLV(IATM,IRD)=COLV(IATM,IRD)+WS
+C  TALLY 3: CX INCIDENT NEUTRAL ENERGY COLLISION RATE
+          if (ind.eq.1) then 
+            COLV(2*NATM+IATM,IRD)=COLV(2*NATM+IATM,IRD)-
+     .                            WSSIG*E0 
+C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE, PRE COLLISION LOSS       
+            COLV(3*NATM+IATM,IRD)=COLV(3*NATM+IATM,IRD)-
+     .                            WSSIG*E0
+          endif
+C  TALLY 2:  CX- INCIDENT ION ENERGY COLLISION RATE, POST COLLISION atoms, only from pre collision atoms       
+          if (ind.eq.2.and.ityp_save.eq.1) then 
+            COLV(1*NATM+IATM,IRD)=COLV(1*NATM+IATM,IRD)+
+     .                            WEIGHT*E0
+C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE,  POST COLLISION GAIN
+            COLV(3*NATM+IATM,IRD)=COLV(3*NATM+IATM,IRD)+
+     .                            WEIGHT*E0
+            ityp_save=0
+          endif
+560     CONTINUE
+590   CONTINUE
+C
+      RETURN
+      END
