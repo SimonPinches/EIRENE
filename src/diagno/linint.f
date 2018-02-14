@@ -1,8 +1,17 @@
-!pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-!cp  July 17 :  made  ARGST allocatable, conditional on  TRCSIG
-cdr             plspec only, if trcsig. to be done in input.f
-CDR             ditto: AA, XNTG, VPLOT
+cdr Oct 17  :
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
+cdr                    analogous to H emission lines,             NCHTAL=2 
+cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS 
+cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
+cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
+c
+c    July 17 :  distinguish flags for output with spectral resolution from
+c               output with spatial resolution along LOS.
+c               Made  ARGST allocatable, conditional on  PRARGL,PLARGL
+cdr             plargl only, if prargl. To be done in input.f
+CDR             ditto: made allocatable AA, XNTG, VPLOT
 CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
+!pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C
 C
 C*DK LININT
@@ -25,8 +34,9 @@ C  UNTIL THE NEXT INTERSECTION WITH ANY NON-TRANSPARENT
 C  SURFACE (P2) IS FOUND.
 c
 c  ifirst=0:  first call for one particular LOS
-c  ifirst=1:  same LOS as previous LOC, but different (energy, wavelength) parameter PEN
-c  ifirst<0:  irgend was mit short storing ??
+c  ifirst=1:  same LOS as previous LOS, but different (energy, wavelength) parameter PEN
+cdr
+c  ifirst<0:  unclear  ?? something related to nltrj, storing trajectories/chords ??
 c
 C
       USE EIRMOD_PRECISION
@@ -131,9 +141,9 @@ C
       
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
-        IF (TRCSIG) THEN
-cdr  TRCSIG: ENABLE STORING, PRINTING AND PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
-cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
+        IF (PRARGL.OR.PLARGL) THEN
+cdr  PRARGL/PLARGL: ENABLE STORING, PRINTING AND/OR PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
+cdr  
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -149,9 +159,11 @@ cdr  tbd:  turn off PLSPEC in input.f (+warning), unless also TRCSIG=.T.
       LARGST = SIZE(ARGST,2) >= NSBOX
 
 c.......................................................................
-cdr  some plot stuff, still to be moved to separate routine
-cdr  into folder: plotting, plot_dummy...
-      IF (PLSPEC.AND.TRCSIG) THEN
+cdr  some plot stuff for spatially resolved LOS, 
+cdr  ...still to be moved to separate routine
+cdr  into folders: plotting, plot_dummy... 
+
+      IF (PLARGL) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
           NCH = 1
           IF (ANY(NCHTAL(1:NCHORI) == 1)) NCH=IABS(NCHENI)
@@ -217,7 +229,7 @@ C  NEAREST NON-TRANSPARENT STANDARD MESH SURFACE OR NON-TRANSPARENT
 C  ADDITIONAL SURFACE,
 C  STARTING FROM C2, SEARCHING IN THE DIRECTION C1-C2
 C
-      IF (NLTRA) THEN
+      IF (NLTRA) THEN   ! NLTRA=.TRUE. => discrete toroidal approximation is used.
 C  IF ICHRD=0:
 C  C2(1) R COORDINATES IN THE TORUS SYSTEM (INCL. R0A!)
 C  C2(2) Z COORDINATES (REFERRED TO AS Y-COORDIANTE IN EIRENE)
@@ -243,7 +255,7 @@ C  FIND LOCAL CO-ORDINATES IN IPERID_2 FOR C2: X0,Z0
           CALL EIRENE_FZRTRI(X0,Z0,IPERID_2,X22,PHI22,IPERID_2)
           Y0=C2(2)
         ELSE
-          WRITE (iunout,*) 'ERROR IN LININT, 1'
+          WRITE (iunout,*) 'ERROR IN LININT, nltra'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
@@ -267,11 +279,11 @@ C  DIRECTION COSINUS OF CHORD, IN IPERID_2
           VELY=Y0-YPIV
           VELZ=Z0-ZPIV
         ELSE
-          WRITE (iunout,*) 'ERROR IN LININT, 2'
+          WRITE (iunout,*) 'ERROR IN LININT, nltrz'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-      ELSEIF (NLTRZ) THEN
+      ELSEIF (NLTRZ) THEN   !Default: NLTRZ = TRUE (cylindrical). z-coordinate is straight (cm)
 C
 C  C1(1) AND C2(1) X COORDINATES (CM)
 C  C1(2) AND C2(2) Y COORDINATES (CM)
@@ -283,14 +295,14 @@ C  C1(3) AND C2(3) Z COORDINATES (CM)
         VELY=C2(2)-C1(2)
         VELZ=C2(3)-C1(3)
 C
-      ELSEIF (NLTRT) THEN
+      ELSEIF (NLTRT) THEN   ! NLTRT=.TRUE. => torus co-ordinates R,PHI,THETA. Option not ready.
 C
 C  C1(1) AND C2(1) R COORDINATES IN CYLINDRICAL CO-ORDINATES
 C  C1(2) AND C2(2) Z COORDINATES IN CYLINDRICAL CO-ORDINATES
 C  C1(3) AND C2(3) ARE TOROIDAL ANGLES IN DEGREES
 C
 C  TO BE WRITTEN
-        WRITE (iunout,*) 'ERROR IN LININT, 3'
+        WRITE (iunout,*) 'ERROR IN LININT, nltrt'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
@@ -653,6 +665,8 @@ C
           CALL EIRENE_SIGHA (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,ICHORI)
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           CALL EIRENE_SIGRAD(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+            CALL EIRENE_SIGHE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,      
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
@@ -800,12 +814,14 @@ CDR WAS PASSIERT HIER ???
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
-        TRACKS=TRACKS+ZDS
+        
 cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
 
         IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
+
+        TRACKS=TRACKS+ZDS
         
 C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
@@ -815,6 +831,8 @@ C  contribution to line-of-sight integral, segment no. jjj
             CALL EIRENE_SIGHA (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,ICHORI)
           ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
             CALL EIRENE_SIGRAD (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+          ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+            CALL EIRENE_SIGHE (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
             CALL EIRENE_SIGUSR(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
@@ -939,18 +957,11 @@ C  FINAL SEGMENT ALONG LINE-OF-SIGHT
       JJJ=JJJ+1
       IF (LARGST) XNTG(JJJ)=TRACKS
 C
-C  PLOT INDIVIDUAL CONTRIBUTIONS ALONG LINE OF SIGHT.
+C  PLOT SPATIALLY RESOLVED CONTRIBUTIONS ALONG LINE OF SIGHT.
 C  ACTIVATION OF THIS PLOT DISABLES FURTHER LINE OF SIGHTS TO BE
-C  PLOTTED INTO GEOMETRY PLOT VIA CHCTRC CALLS.
+C  PLOTTED INTO GEOMETRY PLOT (PLT2D, PLT3D) VIA CHCTRC CALLS.
 C
-      IF (PLSPEC.AND.TRCSIG) THEN
-        IF (PLHST) THEN
-          WRITE (IUNOUT,*) 'FROM LININT: '
-          WRITE (IUNOUT,*) 'PLOTTING OF FURTHER LINE OF SIGHTS DISABLED'
-          WRITE (IUNOUT,*) 'BECAUSE NEW FRAME FOR CONTRIBUTIONS ALONG  '
-          WRITE (IUNOUT,*) 'LINE OF SIGHT                              '
-          PLHST=.FALSE.
-        ENDIF
+      IF (PLARGL.OR.PRARGL) THEN
 !pb     IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
         IF (ISP.GT.0.AND.ISP.LE.UBOUND(ARGST,1)) THEN
           AA(1:JJJ) = ARGST(ISP,1:JJJ)
@@ -961,6 +972,17 @@ C
           WRITE (iunout,*) 'ERROR IN SUBR. LININT: ISP= ',ISP
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
+      ENDIF
+
+      IF (PLARGL) THEN
+        IF (PLHST) THEN
+          WRITE (IUNOUT,*) 'FROM LININT: '
+          WRITE (IUNOUT,*) 'PLOTTING OF FURTHER LINE OF SIGHTS DISABLED'
+          WRITE (IUNOUT,*) 'BECAUSE NEW FRAME FOR CONTRIBUTIONS ALONG  '
+          WRITE (IUNOUT,*) 'LINE OF SIGHT                              '
+          PLHST=.FALSE.
+        ENDIF
+
         PPMA = MAXVAL(AA(1:JJJ))
         IF (NCHTAL(ICHORI).EQ.1) AA(1:JJJ) = MAX(1._DP,AA(1:JJJ))
         IF (PPMA.GT.0._DP) THEN
@@ -1023,7 +1045,7 @@ C  INITALIZE NEW PICTURE FOR NEW CHORD
         END IF
       END IF
 C
-      IF (TRCSIG) THEN
+      IF (PRARGL) THEN
         IF (NCHTAL(ICHORI).EQ.1) THEN
           WRITE (iunout,*) 'ENERGY (EV): ',PEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), FOR IATM= ',ISP
@@ -1069,7 +1091,7 @@ C
       ENTRY EIRENE_LININT2
 
       IF (ALLOCATED(ARGST)) THEN
-c  these arrays have been allocated for TRCSIG option.
+c  these arrays have been allocated for PRSPEC option.
         DEALLOCATE (ARGST)
         DEALLOCATE (AA)
         DEALLOCATE (VPLOT)

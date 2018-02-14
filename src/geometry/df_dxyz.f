@@ -5,11 +5,11 @@ cdr: nov 2015:  further comments
      .                           dfdx, dfdy, dfdz)
 
 
-c  return partial derivates of function f, at internal point x,y,z, 
+c  return partial derivatives of function fecken, at internal point x,y,z, 
 c         which is known to be located in grid cell icell
 
 c  input:  fecken: values of function f on cell vertices
-c          fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
+c          function fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
 c
 c  for speed-up, and overhead reduction:
 c  fill array 'visited' to indicate, which cells have been visitied in earlier calls
@@ -50,7 +50,7 @@ c  to be done:    range test for local coordinates r,s,t,u
       real(dp), allocatable, save :: x32(:), x13(:), x21(:), 
      .                               y23(:), y31(:), y12(:), twoai(:)
       
-c      integer, save :: icount=0
+cdr   integer, save :: icount=0  !  for test-output only
       
       real(dp) :: dummy
 
@@ -146,7 +146,7 @@ c: to be done: check for valid range of r,s,t,u ?
         drdy = jm1(2,1)
         dsdy = jm1(2,2)
 
-c  return partial derivaties wrt. carthesian coordinates, at point x,y,z
+c  return partial derivaties wrt. cartesian coordinates, at point x,y,z
 
         dfdx =   f1 * (dndr(1)*drdx + dnds(1)*dsdx)
      .         + f2 * (dndr(2)*drdx + dnds(2)*dsdx)
@@ -215,7 +215,7 @@ cdr     end if
         visited(icell) = .true.
         visited(0) = .false.    ! reset cell 0 for cell outside mesh
 
-c  tetrahedrons, 3d grid.
+c  tetrahedra, 3d grid.
 
       else if (levgeo == 5) then
 

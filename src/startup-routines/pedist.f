@@ -5,7 +5,7 @@ cdr  The present version of PEDIST is aiming at "proportional allocation",
 cdr  See EIRENE manual, "stratified source sampling". 
 
 cdr  currently it is ruled out that one processor deals
-cdr  with more than one stratum, except in the serial case (one one processor)
+cdr  with more than one stratum, except in the serial case (only one processor)
 cdr  To generalize this, some coding in MCARLO.f and perhaps elsewhere 
 cdr  may need to be adjusted...
 
@@ -13,15 +13,18 @@ cdr  may need to be adjusted...
 !pb            THAT IS AVAILABLE
 C
       SUBROUTINE EIRENE_PEDIST (XTIM,XX1)
+C  PURPOSE:
+C  SET:  PROCFORSTRA(ISTRA,IPE):   IF TRUE: PROCESSOR IPE WORKS ON STRATUM ISTRA
 C
-C   IF THERE ARE MORE PROCESSORS THAN STRATA
-C   SUBROUTINE PEDIST CALCULATES THE DISTRIBUTION OF PROCESSORS TO
-C   STRATA
-
+C   IF THERE ARE MORE PROCESSORS THAN STRATA:
+C   SUBROUTINE PEDIST CALCULATES THE ASSIGNMENT OF PROCESSORS TO
+C   STRATA, ACCORDING TO CERTAIN CRITERIA.
+C
+C  PRESENT VERSION:
 C   DISTRIBUTION OF PE'S IS DONE ACCORDING TO THE DISTRIBUTION OF
 C   COMPUTATION TIME.
 
-C   IF THERE ARE LESS PROCESSORS THAN STRATA:
+C   IF THERE ARE FEWER PROCESSORS THAN STRATA:
 C   CASE A: ONLY ONE PROCESSOR:  ALL STRATA TO THIS SINGLE PROCESSOR
 C   CASE B: SEVERAL PROCESSORS:  ASIGN A PROCESSOR TO EACH STRATUM. SOME PROCESSORS
 C                                MAY RECEIVE MORE THAN ONE STRATUM.
@@ -206,26 +209,30 @@ csw
 ! assign each processor the numbers ISTRA of the strata it shall work on
         IPE=0
         DO ISTRA=1,NSTRAI
-          DO K=1,NPESTR(ISTRA)
+          DO K=1,NPESTR(ISTRA)          
+            NSTRPE(IPE)=ISTRA
+            PROCFORSTRA(ISTRA,IPE) = .TRUE.
             IPE=IPE+1
-            NSTRPE(IPE-1)=ISTRA
-            PROCFORSTRA(ISTRA,IPE-1) = .TRUE.
           ENDDO
         ENDDO
+        WRITE (iunout,*) 'pedist:  proc. IPE works on stratum ISTRA '
         WRITE (iunout,*) ' IPE, ISTRA '
         WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
  
-! for each stratum define the number of the first processor
-! that does calculations for this stratum
-! this is used to determine the groups of processors in the
+! for each stratum define the number of the first processor NPESTA
+! NPESTA(istra) is the "Master processor" for stratum no. ISTRA.
+
+! It does calculations for this stratum.
+! This is used to determine the groups of further processors in the
 ! accumulation of the results for one stratum
         NPESTA(0)=0
         NPESTA(1)=0
         DO ISTRA=2,NSTRAI
           NPESTA(ISTRA)=NPESTA(ISTRA-1)+NPESTR(ISTRA-1)
         ENDDO
-        WRITE (iunout,*) ' NPESTA '
-        WRITE (iunout,'(12I6)') (NPESTA(I),I=0,NSTRAI)
+        WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM '
+        WRITE (iunout,*) ' ISTRA, NPESTA '
+        WRITE (iunout,'(12I6)') (I,NPESTA(I),I=0,NSTRAI)
  
         XTIM(1:NSTRAI) = XX1
         CALL EIRENE_MASAGE

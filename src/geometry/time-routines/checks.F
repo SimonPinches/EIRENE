@@ -1,6 +1,6 @@
 c*********************************************
 c     This file contains routines for checking on intersections
-c     between blocks and planes (triangles, quadrangels, ...)
+c     between blocks and planes (triangles, quadrangles, ...)
 c     It is only used by octree.f.
 c     -------------------------------
 c     Author: Oliver Schmidt <o.schmidt@fz-juelich.de>
@@ -267,7 +267,7 @@ C  TENTATIVELY ASSUME: NO LEGAL INTERSECTION WITH ANY OF THE
 C                      SURFACES J FOR WHICH NLPRCS(J)=TRUE
       LCNDEXP=.FALSE.
 
-C  SAVE INITIAL CO-ORDINATES
+C  SAVE INITIAL COORDINATES
       XS=XX
       YS=YY
       ZS=ZZ
@@ -277,7 +277,7 @@ C  SAVE INITIAL CO-ORDINATES
       VZS=VZZ
       VVS=VV
       NNTCLS=NNTCL
-C  WORKING CO-ORDINATES
+C  WORKING COORDINATES
       X=XX
       Y=YY
       Z=ZZ
@@ -325,7 +325,7 @@ C
 C
 C  FOR NLTRA OPTION ONLY:
 C  X,Z,VX AND VZ ARE GIVEN IN TOROIDAL CELL NN,
-C  TRANSFORM CO-ORDINATES FOR THIS TRACK FROM LOCAL SYSTEM NN
+C  TRANSFORM COORDINATES FOR THIS TRACK FROM LOCAL SYSTEM NN
 C  TO THE LOCAL SYSTEM ILTOR(J), IN WHICH SURFACE J IS GIVEN
 C  IF (ILTOR(J).LE.0) THIS SURFACE HAS TOROIDAL SYMMETRY
 C

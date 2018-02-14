@@ -44,7 +44,6 @@ csw 18apr07
 !pb   call EIRENE_BA_GAMMA_REINIT
 !pb   call EIRENE_LY_BETA_REINIT
       call EIRENE_UPTBGK_REINIT
-      call EIRENE_STORE_REINIT
 !out  call EIRENE_MKCENS_REINIT
       call EIRENE_update_reinit
       call EIRENE_update_spectrum_reinit

@@ -10,7 +10,7 @@ cdr            in intp_tables and intp_adas
 cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2. 
 cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRAD
 
-      function EIRENE_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
+      function EIRENE_rate_coeff (ir, p1, p2, lexp, iprshft, erate)
      .                     result (rate)
 
 !  evaluate reaction rate coefficient (cm^3/s),
@@ -51,38 +51,42 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
  
       implicit none
  
-      integer, intent(in) :: ir, iprshft, ic
+      integer, intent(in) :: ir, iprshft
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
+      real(dp), intent(out) :: erate
       real(dp) :: rate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max, scr
+     .                 rrc2min, rrc2max,
+     .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
+     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
      .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
+      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar           
+      integer :: ic,ip1,ip2            
  
       interface
-        function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
+        function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
           integer, intent(out) :: ip1,ip2
           real(dp) :: res
-        end function EIRENE_intp_adas
+        end function EIRENE_intp_tab2d
  
-        function EIRENE_intp_table (tb,p1,ip1) result(res)
+        function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
-        end function EIRENE_intp_table
+        end function EIRENE_intp_tab1d
       end interface
  
       if (.not.reacdat(ir)%lrtc) then
@@ -100,6 +104,8 @@ c.............................................................
 
 !  SET A CONSTANT RATE 
         rate = reacdat(ir)%rtc%poly%dblpol(1,1)
+
+cdr   missing: iftflg < 100:  multiply density,  else: not
 
 cdr   lexp missing
 
@@ -212,20 +218,35 @@ c..............................................................
 
 ! INTERNAL COLLISION RADIATIVE CODE
  
+! H-colrad   RATE AND ENERGY LOSS RATE IN ONE SINGLE STEP
+ 
+        if (.not.allocated(pop0)) then
+          allocate(pop0(40))
+          allocate(pop1(40))
+          allocate(pop2(40))
+
+          allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
+        end if
+ 
+        Q_EXT = 0._DP
+
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        
-        iflavor = reacdat(ir)%rtc%crm%iflav
-        ivar = reacdat(ir)%rtc%crm%ivarst
-
-        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, SCR)
+        CALL EIRENE_H_COLRAD(IC, PP1, PP2 ,Q_EXT,POP0,POP1,POP2,
+     .                ALPCR,    SCR,    SCR_EXT,
+     .                E_ALPCR,  E_SCR,  E_SCR_EXT,
+     .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
         
         if (.not.lexp) rate = log(scr)
         if (lexp)      rate = scr 
-        
+         
+
+        erate = -e_scr
+        if (.not.lexp) erate = log(-e_scr)
+ 
       end if
  
       return

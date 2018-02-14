@@ -1,0 +1,135 @@
+c
+c  this version: find vibrational temeperatur of H2.
+c  i.e. H2(v) must be treated as separate molec. species 
+c
+      SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
+     .                  TXTTL,TXTSP,TXTUN,ILAST,*)
+
+C  USER SUPPLIED POST-PROCESSED TALLY NO. ICOUNT, FOR STRATUM ISTRA,
+C  STORED ON VECTOR. (ISTRA IS KNOWN FROM COMMON COMPRT)
+C
+C  RETURN 1:       DO NOT PRINTOUT VOLUME AVERAGED TALLY "VECTOR"
+C                  VECTOR NEEDS NOT BE RETURNED. INSTEAD, THE POST-
+C                  PROCESSED TALLY CAN ALSO BE PUT ONTO THE ADDITIONAL TALLY
+C                  STORAGES (ADDV,COLV,...) IF STORAGE IS PROVIDED 
+C                  AND IF THE PARAMETERS NADVI, NCLVI, ETC. IN BLOCK 10A, OR 10B,
+C                  ARE PROPERLY SET.
+C  RETURN  :       PRINTOUT VOLUME AVERAGED TALLY VECTOR(I), I=1,NRAD,
+C                  AS SPECIFIED IN INPUT BLOCK 11 FOR PRINTOUT OF TALLY NO. 0
+C  INPUT:  ICOUNT: COUNTS THE NUMBER OF CALL TO TALUSR FOR EACH STRATUM
+C                  FIRST CALL FOR STRATUM ISTRA: ICOUNT=1
+C  OUTPUT: ILAST:  IF ILAST.GT.ICOUNT, THEN TALSUR IS CALLED
+C                  ONCE MORE WITH ICOUNT INCREASED BY ONE
+C                  OTHERWISE: TALUSR IS NOT CALLED AGAIN FOR THE CURRENT TALLY
+C          TXTTL,TXTSP,TXTUN: TEXT IN PRINTOUT FOR THIS TALLY: NAME, SPECIES, UNITS
+C          TALTOT,TALAV: TOTAL AND AVERAGE VALUE, FOR PRINTOUT
+C
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CESTIM
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_COMSOU
+      USE EIRMOD_CSPEZ
+      USE EIRMOD_CSDVI
+      USE EIRMOD_CSDVI_BGK
+      USE EIRMOD_CSDVI_COP
+
+      implicit NONE
+      integer, intent(in) :: icount
+      integer, intent(out) :: ilast
+      real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
+C      
+      real(dp) :: EN(15),YLD(15),RESULT(20)          
+      integer :: IC,  IAD, IRC , IFAIL, IESTR
+      REAL(DP), ALLOCATABLE :: OUTAU(:)
+C  ENERGIES ABOVE pot. MINUMUM OF 15 VIBR. LEVELS, IN H2 ELECTR. GROUND STATE            
+      DATA EN/0.269,0.785,1.270,1.726,2.151,2.546,2.911,3.246,
+     .        3.551,3.826,4.071,4.286,4.470,4.625,4.749/
+
+      character(len=*) :: txttl,txtsp,txtun
+
+      TXTTL=' '
+      TXTSP=' '
+      TXTUN=' '
+C
+C  COMPUTE VIBRATIONAL TEMPERATURE, OF MOLECULE GROUND STATE, REGRESSION
+C
+      DO IC=1,NRAD
+        IF (PDENM(1,IC).EQ.0.) THEN
+          VECTOR(IC)=0.D0
+        ELSE
+          YLD(1)=LOG(PDENM(1,IC)+EPS10)
+          YLD(2)=LOG(PDENM(min(2,nmoli),IC)+EPS10)
+          YLD(3)=LOG(PDENM(min(3,nmoli),IC)+EPS10)
+cdr presumably: linear regression to find vibr. temp vrom v=0,v=1 and v=2
+cdr             population
+cdr       CALL G02CAF(3,EN,YLD,RESULT,IFAIL)
+cdr       VECTOR(IC)=-1./(RESULT(6)+EPS10)
+        ENDIF
+      ENDDO
+C     TALTOT=?
+C     TALAV=?
+      TXTTL='VIBRATIONAL TEMPERATURE OF MOLECULE GROUND STATE '
+      TXTSP='H2                  '
+      TXTUN='EV                  '
+C
+C  STORE ON ADDV(IAD,....), FOR GRAPHICS AND POST-PROCESSING
+      IAD=NADVI+1
+      IF (IAD.LE.NADV) THEN
+        DO IC=1,NRAD
+          ADDV(IAD,IC)=VECTOR(IC)
+        ENDDO
+        CALL EIRENE_INTTAL (ADDV,VOL,IAD,NADV,NSBOX,ADDVI(IAD,ISTRA),
+     .                      NR1ST,NP2ND,NT3RD,NBMLT)
+C
+        IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+c  re-write on stream 10
+          IESTR=ISTRA
+          CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .               ESTIMV,ESTIMS,ESTIML,
+     .               NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .               NSIGI_SPC,TRCFLE)
+C
+C  re-write record no. 2 in stream 11
+          IRC=2
+          ALLOCATE (OUTAU(NOUTAU))
+          CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
+          WRITE (11,REC=IRC) OUTAU
+          IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+          DEALLOCATE (OUTAU)
+        ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
+c  re-write on stream 10
+          IESTR=ISTRA
+          CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .               ESTIMV,ESTIMS,ESTIML,
+     .               NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .               NSIGI_SPC,TRCFLE)
+C
+C  re-write record no. 2 in stream 11
+          IRC=2
+          ALLOCATE (OUTAU(NOUTAU))
+          CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
+          WRITE (11,REC=IRC) OUTAU
+          IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+          DEALLOCATE (OUTAU)
+        ENDIF
+      ENDIF
+C
+C
+C  WRITE DIRECTLY ONTO OUTPUT STREAM IUNOUT, I.E.: NOT: RETURN 1, BUT: RETURN
+
+      ILAST=0
+      RETURN
+      END

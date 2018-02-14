@@ -18,7 +18,8 @@ c             directly to be included in line shape sampling
 !pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
 !pb           spatial resolution of sptpl and spttot added
 !pb  8.11.06: set timestep index for time dependent mode
-!pb  8.11.06: as SORLIM can be negative ISOR=ABS(SORLIM)
+cdr         : as SORLIM can be negative, to call SAMUSR for spatial coordinates. 
+cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS(SORLIM)
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
@@ -40,6 +41,12 @@ cdr           to be done: epel volume tally (electron energy loss associated wit
 cdr                       or with sheath, etc)
 cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
 cdr nov. 15:  species index eppl added.
+cdr oct 17 :  code unification/reduction: set species pointer, near 5000
+cdr           Could be done earlier, and also simplify code here in locate already
+cdr nov.17 :  remove dead option: nlstor
+cdr jan.18 :  IND flag different now in update_sptflx.
+cdr           New arguments in update_surface.
+cdr           update_surface also called for outgoing bulk particle fluxes        
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:
@@ -333,7 +340,6 @@ C   SOURCE DUE TO TIME DEP. MODE, READ PARTICLES FROM CENSUS: RPARTC,IPARTC
 C   LABELS  11---20
 C   AT PRESENT: ONLY ONE SUBSTRATUM
         ISECT=1
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
 C
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
           IMP=IPANU
@@ -417,7 +423,6 @@ C
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
         GOTO 5000
 C
@@ -435,7 +440,6 @@ C   FIRSTLY FIND POINT NUMBER IPOINT
 22        CONTINUE
         ENDIF
         ISECT=IPOINT
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
 C
 C   NEXT FIND CO-ORDINATES AND CELL INDICES,
 C   LOCAL BACKGROUND TEMPERATURES TIWL AND TEWL, AND
@@ -482,7 +486,6 @@ C   FIRST FIND SOURCE-SURFACE NUMBER ISURF
 52        CONTINUE
         ENDIF
         ISECT=ISURF
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
 C
 C   NEXT FIND POSITION ON THIS SOURCE SURFACE, AS WELL AS
 C   CELL INDICES, LOCAL TEMPERATURES TIWL AND TEWL, AND
@@ -599,7 +602,6 @@ C  SUBSTRATA OF VOLUME SOURCE: IVOLM
         CALL EIRENE_SAMVL1(IVOLM,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
         IF (.NOT.LGPART) RETURN
-        NLSTOR=IPANU.LE.ISTOR(ISECT,ISTRA)
         MSURF=0
       ENDIF
 C
@@ -618,7 +620,7 @@ C
       ELSEIF (LGTIME) THEN
         ISOR=ABS(SORLIM(ISECT,ISTRA))
         INDTEC=EIRENE_IDEZ(ISOR,4,4)
-        IF (INDTEC.EQ.0) INDTEC=2
+        IF (INDTEC.EQ.0) INDTEC=2  !  default: sample uniformly in time interval
         IF (INDTEC.LE.1) TIME=TIME0
         IF (INDTEC.EQ.2) TIME=TIME0+RANF_EIRENE()*DTIMV
       ENDIF
@@ -1044,7 +1046,6 @@ C
         IF (NADSPC.GE.1.AND.NLSRF(ISTRA)) 
      .    CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
 C  PURELY MOLECULAR SOURCE?  300 --- 399
 C
@@ -1126,7 +1127,6 @@ C
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
 C  PURELY TEST IONIC SOURCE?  400 --- 499
 C
@@ -1246,7 +1246,6 @@ C
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-        IF (NLSTOR) CALL EIRENE_STORE(1)
 C
 C  PURELY BULK IONIC SOURCE?   500  ---  599
 C
@@ -1394,20 +1393,13 @@ C  SURFACE AVERAGED TALLIES (NOTE: FLUXES HERE COUNTED POSITIVE,
 C                            BUT INTEGRALS OF OUTGOING SURFACE FLUXES
 C                            POTPLI,... ARE TAKEN NEGATIVE).
 C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
-          IF (MSURF.GT.0) THEN
-            IF (LPOTPL) POTPL(IPLS,MSURF)=POTPL(IPLS,MSURF)+WEIGHT
-            IF (LEOTPL) EOTPL(IPLS,MSURF)=EOTPL(IPLS,MSURF)+WEIGHT*E0
-            IF (MSURFG.GT.0) THEN
-              IF (LPOTPL) POTPL(IPLS,MSURFG)=POTPL(IPLS,MSURFG)+WEIGHT
-              IF (LEOTPL)
-     .          EOTPL(IPLS,MSURFG)=EOTPL(IPLS,MSURFG)+E0*WEIGHT
-            ENDIF
-          ENDIF
+          ITYP_OLD=4
+          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,1) 
+
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(-WEIGHT,1)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(-WEIGHT,1,0)
 C
           IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-          IF (NLSTOR) CALL EIRENE_STORE(2)
 C
 C  REFLECT THIS ION AS TEST PARTICLE FROM SURFACE NO. MSURF
 C
@@ -1458,43 +1450,22 @@ C
 C
 C  UPDATE SPUTTER SURFACE TALLIES. SAME AS IN SUBR. ESCAPE, BUT HERE
 C                                  FOR INCICENT BULK IONS
-C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY 
+C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY
 C  FOR PHYSICAL AND CHEMICAL SPUTTERING RESP.
             ITYP_OLD  = 4
             IGASP_OLD = ISRS(ISPZ,MSURF)
             IGASC_OLD = ISRC(ISPZ,MSURF)
 
             IF (NLSPUT) THEN
-C
-CDR  THIS CALL IS INCORRECT, SINCE ITYP AND ISPZ OF SPUTTERED PARTICLE ARE NOT YET SET.
-CDR           CALL EIRENE_UPDATE_SPTFLX (ITOLD, WGHTSP+WGHTSC)
-C
+
 C   update total sputter fluxes for those cases in which sputtered particle species index is not set
-C   (e.g. target material is not an eirene test particle in this run)
+C   (e.g. if target material is not an eirene test particle in this run)
 
               IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
-     .          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,0)
+     .          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,1)
               IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
-     .          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,0)
- 
+     .          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,1)
 C
-C  UPDATE TOTAL SPUTTERED FLUX TALLY, OLD VERSION. ITYP AND ISPZ ARE AFTER CALL TO SPUTTER.
-C                                                  I.E. THEY MAY BE EITHER PHYSICALLY OR CHEMICALLY SPUTTERED PARTICLE
-C                                                  WHATEVER CAME LAST IN SUBR. SPUTER
-!              IF (LSPTTOT)
-!     .        SPTTOT(MSURF)=SPTTOT(MSURF)+WGHTSP+WGHTSC
-C             IF (ITYP.EQ.4) THEN
-!                IF (LSPTPL)
-!     .          SPTPL(IPLS,MSURF)=SPTPL(IPLS,MSURF)+WGHTSP+WGHTSC
-C             ENDIF
-!              IF (MSURFG.GT.0) THEN
-!                IF (LSPTTOT)
-!     .          SPTTOT(MSURFG)=SPTTOT(MSURFG)+WGHTSP+WGHTSC
-C               IF (ITYP.EQ.4) THEN
-!                  IF (LSPTPL)
-!     .            SPTPL(IPLS,MSURFG)=SPTPL(IPLS,MSURFG)+WGHTSP+WGHTSC
-C               ENDIF
-!              ENDIF
             ENDIF
           ENDIF
 C
@@ -1533,13 +1504,14 @@ C
 cdr  species index of physically sputtered particle is known.
 cdr  update total and sputtered species resolved sputtered fluxes
 
-            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,1)
-            IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
-            IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
+            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,2)
+C
+            IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSP,2)
+            IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WGHTSP,2,0)
 
             IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
 C                                           IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
-            CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)
+            CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSP,2)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -1553,8 +1525,8 @@ C
               LOGION(IION,ISTRA)=.TRUE.
               IF (LPPIO) PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
               IF (LEPIO) EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
-            ENDIF        
-            
+            ENDIF
+
 
 
 C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
@@ -1572,7 +1544,7 @@ C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
 C  NUMBER OF NODES AT THIS LEVEL
             NODES(NLEVEL)=2
 C
-C  SPLITTING DONE. 
+C  SPLITTING DONE.
 
           ENDIF
 C
@@ -1609,13 +1581,13 @@ C
 cdr  species index of physically sputtered particle is known.
 cdr  update total and sputtered species resolved sputtered fluxes
 
-            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,1)           
-            IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
-            IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
+            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,2)
+            IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSC,2)
+            IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WGHTSC,2,0)
 
             IF (IGASC_OLD.EQ.0) GOTO 4712 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
 C                                           IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
-            CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)
+            CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSC,2)
 C
             IF (ITYP.EQ.1) THEN
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -1629,7 +1601,7 @@ C
               LOGION(IION,ISTRA)=.TRUE.
               IF (LPPIO) PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
               IF (LEPIO) EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
-            ENDIF         
+            ENDIF
 
 
 C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
@@ -1689,12 +1661,13 @@ C
             ENDIF
           ENDIF
 C
-C  SURFACE TALLIES (VOLUME TALLIES PPAT,PPML,....WILL BE DONE BELOW,
+C  NOW:  SCORE SURFACE TALLIES.  RE-EMITTED CURRENTS
+C
+C  (VOLUME TALLIES PPAT,PPML,....WILL BE DONE BELOW,
 C                   ONCE FOR NLPNT,NLLNE,NLSRF,NLVOL)
 C
-          IF (NLSTOR) CALL EIRENE_STORE(1)
 C
-          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)         
+          IF (LGPART) CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,2)
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
 C
@@ -1706,17 +1679,17 @@ C  IN CELL ICELL=NCELL
 C
 !         nloop=npts(istra)
 !         DO ILOOP=1,nloop
- 
+
           NFLAG=2
           IDUM=1
- 
+
 c         DUMT(1)=SQRT(TIIN(IPLS,NCELL)/RMASSp(Ipls))*CVEL2A
 c         DUMT(2)=DUMT(1)
 c         DUMT(3)=DUMT(1)
 c         DUMV(1)=0._DP
 c         DUMV(2)=0._DP
 c         DUMV(3)=0._DP
- 
+
           CALL EIRENE_VELOCX(NCELL,VXO,VYO,VZO,VO,IO,NO,VELQ,NFLAG,
      .                IDUM,DUMT,DUMV)
           E0=VELQ*CVRSSP(IPLS)
@@ -1727,7 +1700,6 @@ c         DUMV(3)=0._DP
           IF (LEPPL) EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
 C         IF (LEPEL) EPEL(NCELLT)=EPEL(NCELLT)- ???  ELECTRON ENERGY LOSS/GAIN ASSOCIATED WITH PROCESS IRRC
           IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-          IF (NLSTOR) CALL EIRENE_STORE(2)
 C
 C  BULK SPECIES DONE
 C  NEXT: IDENTIFY RESULTING TEST PARTICLE SPECIES
@@ -1870,9 +1842,9 @@ C  MONOENERGETIC, ISOTROP
             VELY=FI2(INIV3)
             VELZ=FI3(INIV3)
             INIV3=INIV3-1
- 
+
           ELSEIF (ITYP.EQ.0.AND.NEMOD1.EQ.9) THEN
- 
+
 c  this option: only for photon test particles
 c  cut off "black part". this is the part of the emission line which will
 c  be reabsorbed within the same cell. hence it will not contribute to any
@@ -1897,12 +1869,12 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
 ! line is not thick  =>  sample from whole line
                 x1line(ivolm,ncell) = huge(1._dp)
                 x2line(ivolm,ncell) = 0._dp
- 
+
               else
- 
+
 ! mean free path at linecenter is small compared to cell diameter
 ! line is thick  =>  sample from wings only
- 
+
 ! suche linkes Ende des Intervalls
                 call
      .  EIRENE_PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac_e00,res)
@@ -1922,9 +1894,9 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                   yl = zmfp_e0
                   if (xl < hwvdw) exit
                 end do
- 
+
                 e0 = xl
- 
+
                 do while ((yl-yr)/yl > 1.E-3_dp)
                   xm = (xr + xl) * 0.5_dp
                   e0 = xm
@@ -1945,7 +1917,7 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                   end if
                 end do
                 x1line(ivolm,ncell) = xl
- 
+
 ! suche rechtes Ende des Intervalls
                 xr = e00
                 yr = zmfp_e00
@@ -1960,7 +1932,7 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                   zmfp_e0 = zmfp_e00*fac_e00/fac_e0
                   yr = zmfp_e0
                 end do
- 
+
                 do while ((yr-yl)/yr > 1.E-3_dp)
                   xm = (xr + xl) * 0.5_dp
                   e0 = xm
@@ -1981,7 +1953,7 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                   end if
                 end do
                 x2line(ivolm,ncell) = xr
- 
+
               endif ! X1LINE(EV), X2LINE(EV) FOR CELL NCELL DONE
               xleft = x1line(ivolm,ncell)
               xright = x2line(ivolm,ncell)
@@ -2110,7 +2082,6 @@ c  parts for plotting emission spectrum removed from here --> development branch
      .             ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           ENDIF
 C
-          IF (NLSTOR) CALL EIRENE_STORE(1)
 C
         ELSEIF (NLLNE(ISTRA)) THEN
           WRITE (iunout,*)
@@ -2166,7 +2137,12 @@ C
       ENDIF
 C
 5000  CONTINUE
- 
+
+!  PARTICLE TYPE AND SPECIES HAVE CHANGED
+!  PREPARE POINTER FOR UNIFIED SUBROUTINES
+      IF (LGPART) CALL EIRENE_SWITCH_PARTINFO
+
+C  RECORD EVENT
       LAST_EVENT%IFLAG = 1
       LAST_EVENT%NCELL = NCELLT
       LAST_EVENT%ITYP = ITYP
@@ -2315,7 +2291,6 @@ C
       WRITE (iunout,*)
      .  'TEST PARTICLE LAUNCHED WITH INVALID CELL INDICES'
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
-      IF (NLSTOR) CALL EIRENE_STORE(100)
       WEIGHT=0.
       LGPART=.FALSE.
       RETURN

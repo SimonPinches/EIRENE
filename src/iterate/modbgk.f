@@ -32,6 +32,8 @@ c  if not NCLTAL (I) = I everywhere, then we have two grids, grid structures
 C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER (SCORING) GRID CELL NCELL,
 C                   NCELL=NCLTAL(I-FINE)
 C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
+cdr  nov. 17:  PLS added to call xstel. (strictly not needed here until now, 
+cdr                but for other EL rates enhanced by CR effects)
 c               
 C
       SUBROUTINE EIRENE_MODBGK
@@ -64,6 +66,8 @@ C
      .                       CROSSTEMP(:,:)
 !pb 05.02.2013
       REAL(DP), ALLOCATABLE :: GBGKV(:,:)  ! TALLIES SCORED FOR BGK RELAXATION
+cdr:  Nov. 17:for sync between xstel, xstpi, etc...
+      REAL(DP), ALLOCATABLE :: PLS(:)
 
 CDR THESE TALLIES bgkv ARE SCORED IN (COARSER) SCORING GRID.
 C   ITERATION IS ON TALLIES DEFINED ON FINER GRID.
@@ -75,10 +79,10 @@ C   GBGKV == BGKV EVERYWHERE
      .          T2, ED1, ED2, VXMIX, VZMIX, DELX, DELY, DELZ, VX, VY,
      .          VZ, EOLD, ED, RM, FACTKK, TMIX, EBULK, TS1, DS1,
      .          FACT2, RMAS2, A_ROBIN, FACT1, RMAS1, 
-     .          RESE, RESM, TBEL, DOLD,
-     .          DEL, PLS, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
+     .          RESE, RESM, TBEL, DOLD, DEIMIN,
+     .          DEL, TII, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
      .          RM1, RM2, TCSUM, !VK
-     .          EIRENE_RATE_COEFF
+     .          EIRENE_RATE_COEFF, ERATE
       INTEGER :: ITYP1(NPLS), ITYP2(NPLS), ISPZ1(NPLS), ISPZ2(NPLS),
      .           IREL1(NPLS), INRC1(NPLS),CROSSINDEX(NPLS),NCROSS,
      .           ICROSS1,ICROSS2,ICROSS     
@@ -87,7 +91,7 @@ C   GBGKV == BGKV EVERYWHERE
      .           IAEL, IMEL, IUP12, IUP22, IION2, IBGK2, IMOL2, IUP2,
      .           IUP3, IUP1, IBGK1, IP, NRC,  IR, IT, IREL,
      .           KK, NXM, NYM, NZM, IUP32, IPLSTI, IPLSTI1, IPLSTI2,
-     .           IPLSV, IRD, I_FINE, IRAD
+     .           IPLSV, IRD, I_FINE, IRAD, IFLG
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LMARK(NPLS)
       LOGICAL :: TRCSAV
@@ -146,6 +150,19 @@ C
       ALLOCATE (PDEN2(NRAD))
       ALLOCATE (EDEN2(NRAD))
       ALLOCATE (ENERGY(NPLS,NRAD))
+
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
+cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the Corona limit values.
+      ALLOCATE (PLS(NSTORDR))
+      DEIMIN=LOG(1.D8)
+      IF (NSTORDR >= NRAD) THEN
+        DO J=1,NSBOX
+          PLS(J)=MAX(DEIMIN,DEINL(J))
+        ENDDO
+      END IF
 
 CVK  CALCULATES NUMBER OF CROSS COLLISION PROCESSES 'ncross' AND ALLOCATES MEMORY FOR
 C    "CROSS-COLLISION TEMPERATURE" CORRECTION
@@ -443,8 +460,8 @@ C
               ELSE
 cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
-                PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-                TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
+                TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+                TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 81            CONTINUE
@@ -520,8 +537,8 @@ C
           ELSE
 cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
-            PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
+            TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 91        CONTINUE
@@ -613,8 +630,8 @@ C
               ELSE
 cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
                 KK=NREAEL(IREL)
-                PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-                TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
+                TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+                TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
 181           CONTINUE
@@ -680,8 +697,8 @@ C
           ELSE
 cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three cards
             KK=NREAEL(IREL)
-            PLS=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,IRAD,PLS,0._DP,.TRUE.,0)
+            TII=TIINL(IPLSTI,IRAD)+ADDEL(IREL,IPLS)
+            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
 191       CONTINUE
@@ -775,7 +792,8 @@ C
       DO 500 I=1,6
         INDPRO(I)=7
 500   CONTINUE
-      NRWK1=6+5*NPLS+NAIN
+! STORAGE FOR INPUT TALLIES 1 (TEIN) TO 13 (ADIN), WITHOUT NO.3 (DEIN)
+      NRWK1=6+NPLS+NPLSTI+3*NPLSV+NAIN  ! STORAGE FOR INPUT TALLIES 1 TO 13, WITHOUT NO.3
       IF (NIDV < NRWK1) THEN
         WRITE (iunout,*) ' PLASMA_BCKGRND-ARRAY IS TOO SMALL TO HOLD '
         WRITE (iunout,*) ' PLASMA-DATA '
@@ -799,9 +817,9 @@ cdr
             DO IPLSTI=1,NPLSTI
               PLASMA_BCKGRND(1+0*NPLS+IPLSTI,IRAD)= TIIN(IPLSTI,IRAD)
             END DO
-            DO 520 IPLS=1,NPLS
+            DO IPLS=1,NPLS
               PLASMA_BCKGRND(1+0*NPLS+NPLSTI+IPLS,IRAD)= DIIN(IPLS,IRAD)
-520         CONTINUE
+            ENDDO
             DO IPLSV=1,NPLSV
               PLASMA_BCKGRND(1+1*NPLS+NPLSTI+0*NPLSV+IPLSV,IRAD)=
      .               VXIN(IPLSV,IRAD)
@@ -815,10 +833,10 @@ cdr
             PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
             PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
             PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
-            DO 530 IAIN=1,NAINI
+            DO IAIN=1,NAINI
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
      .               ADIN(IAIN,IRAD)
-530         CONTINUE
+            ENDDO
 550   CONTINUE
 C
 c  same as do 550 loop , for additional cell region
@@ -828,9 +846,9 @@ c
             DO IPLSTI=1,NPLSTI
               PLASMA_BCKGRND(1+0*NPLS+IPLSTI,IRAD)= TIIN(IPLSTI,IRAD)
             END DO
-            DO 560 IPLS=1,NPLSI
+            DO IPLS=1,NPLSI
               PLASMA_BCKGRND(1+0*NPLS+NPLSTI+IPLS,IRAD)= DIIN(IPLS,IRAD)
-560         CONTINUE
+            ENDDO
             DO IPLSV=1,NPLSV
               PLASMA_BCKGRND(1+1*NPLS+NPLSTI+0*NPLSV+IPLSV,IRAD)=
      .               VXIN(IPLSV,IRAD)
@@ -844,10 +862,10 @@ c
             PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
             PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
             PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
-            DO 565 IAIN=1,NAINI
+            DO IAIN=1,NAINI
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
      .               ADIN(IAIN,IRAD)
-565         CONTINUE
+            ENDDO
 570   CONTINUE
 C
       CALL EIRENE_PLASMA_DERIV(0)
@@ -886,14 +904,14 @@ C  FIND CORRESPONDING 2ND CROSS COLLISION TALLY
           ENDDO
           IF (IPLS2.EQ.0) GOTO 800
           CALL EIRENE_LEER(1)
-          IF (TRCAMD) THEN
+          IF (TRCMOD) THEN
             WRITE (iunout,*) 
      .        'MODBGK: CORRESPONDING CROSS COLLISION SPECIES '
             WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
           ENDIF
           IF (LMARK(IPLS1).OR.LMARK(IPLS2)) GOTO 800
 C  IPLS2 IS THE SECOND CROSS COLLISION TALLY
-          IF (TRCAMD) THEN
+          IF (TRCMOD) THEN
             WRITE (iunout,*) 
      .        'MODBGK: MODIFY PARAMETERS FOR CROSS COLLISIONALITIES '
             WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
@@ -941,10 +959,10 @@ C
 
             TCSUM=TCSUM+TS1*VOL(IRAD)   !VK FOR DIAGNOSTIC
           ENDDO
-          IF(TRCAMD)
+          IF (TRCMOD)
      f     WRITE(iunout,*) "MODBGK: AVERAGE CROSS COLLISION TEMPERATURE"
      .                     ," IPLSTI1, IPLSTI2",
-     .                        IPLSTI1,IPLSTI2,TCSUM/SUM(VOL)      !VK
+     .                        IPLSTI1, IPLSTI2,TCSUM/SUM(VOL)     
 
 800       CONTINUE
         ENDIF
@@ -988,7 +1006,8 @@ C
           ENDIF
           IF (FACTKK.EQ.0.D0) FACTKK=1.D0
 C  BGK COLLISION, RESET TABEL3, EPLEL3
-          CALL EIRENE_XSTEL(IREL,ISP,IPLS,EBULK,ISCDE,IESTM,KK,FACTKK)
+          CALL EIRENE_XSTEL(IREL,ISP,IPLS,EBULK,ISCDE,IESTM,
+     .                      KK,FACTKK,PLS)
           IF (NPBGKP(IPLS,2).NE.0) THEN
 C  CROSS COLLISION, RESET EPLEL3 FOR TRACKLENGTH ESTIMATOR
             IF (NSTORDR >= NRAD) THEN
@@ -1013,15 +1032,18 @@ C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
       NFILEL=3
-
-      CALL EIRENE_WRPLAM(TRCFLE,0)
+      IFLG=0
+      CALL EIRENE_WRPLAM(TRCFLE,IFLG)
 C
       DEALLOCATE (PDEN)
       DEALLOCATE (EDEN)
       DEALLOCATE (PDEN2)
       DEALLOCATE (EDEN2)
       DEALLOCATE (ENERGY)
+      DEALLOCATE (PLS) 
       IF(ALLOCATED(CROSSTEMP)) DEALLOCATE(CROSSTEMP) 
+      DEALLOCATE (GBGKV)
+
 C
       RETURN
 C

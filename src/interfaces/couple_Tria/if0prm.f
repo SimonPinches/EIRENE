@@ -1,11 +1,20 @@
-cdr called from find_param.f in initialization phase. Read block 14
+cdr called from find_param.f in initialization phase,
+cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0) 
+C
+cdr Read block 14 from interfacing routines (not from eirene_input.f)
+c   this version: couple_dummy, i.e. only dummy interfacing routines.
+c
 c   and set storage for allocatable arrays:
+c   NSTEP :
 c   NPTRGT:
 c   NAIN  :
+c   NAOT  :
 c   NCPV  :
 c   NKNOT :
 C   NTRII :
 C   NCPVI :  no. of special couple tallies    
+
+c  also set: NDX,NDY,NFL, NDXP, NDYP  
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN,IUNOUT)
 
@@ -36,6 +45,7 @@ C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
       READ (IUNIN,'(I6)') NTARGI
 C  NUMBER OF PARTS PER TARGET RECYCLING SOURCE
       IF (NTARGI.GT.0) THEN
+        NSTEP=MAX(NSTEP,NTARGI)
         ALLOCATE (NTGPRT(NTARGI))
         READ (IUNIN,'(12I6)') (NTGPRT(IT),IT=1,NTARGI)
         NPTRGT=SUM(NTGPRT)
@@ -69,8 +79,8 @@ C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
 C
-C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP)
-C                                              
+C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
+C                                          AND IN SUBR. COLLIDE)     
       NCPVI=3*NPLS+4
       NCPV = MAX(NCPV,NCPVI)
 C
@@ -86,8 +96,6 @@ C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NDXP = NDX+1
       NDYP = NDY+1
 C
-C
-C  TRANSFER GEOMETRY
 C
 C  READ DATA FOR TRIANGULAR MESH
 C

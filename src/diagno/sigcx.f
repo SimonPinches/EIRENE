@@ -1,4 +1,4 @@
-C
+CDR nov 17:  unification of fpath:  check logatm ??
 C
       SUBROUTINE EIRENE_SIGCX(IFIRST,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
 C
@@ -43,7 +43,7 @@ C
      .          SIGTTT(0:NATM,NPLS), CFLAG(7,MSTOR0), ZNI(NRCX)
       REAL(DP) :: ELAB, CXS, CXRATE, EIRENE_CROSS, PVELQ0, HEB, VREL,
      .          VRELQ, ZEXP2, ATTENU, ZEXP3, SIGADD, ARGU, ZEXP1,
-     .          ZMAX, VXS, VYS, VZS, ZTII, ZARG1, ZTI32, EIRENE_FPATHA, 
+     .          ZMAX, VXS, VYS, VZS, ZTII, ZARG1, ZTI32, EIRENE_FPATH, 
      .          ZTI, TTARG, EDR
       INTEGER :: IREAC, IAT, NCELC, ICELL, IRCX, IACX, IPLSTI
       LOGICAL :: LARGST
@@ -79,6 +79,7 @@ C
         NCELC=NCLTAL(NCELL)
  
         DO 200 IATM=1,NATMI
+c  at this point: LOGATM(IATM,ISTRA) must be true.  Checked ?
           VEL=SQRT(PEN/RMASSA(IATM))*CVELAA
           VXS=VELX
           VYS=VELY
@@ -86,7 +87,10 @@ C
           VELX=-VELX
           VELY=-VELY
           VELZ=-VELZ
-          ZLAMB(IATM)=EIRENE_FPATHA(NCELL,CFLAG,1,1)
+!  SET PARTICLE TYPE TO ATOM AND PREPARE POINTER FOR UNIFIED SUBROUTINE FPATH
+          ITYP = 1
+          CALL EIRENE_SWITCH_PARTINFO
+          ZLAMB(IATM)=EIRENE_FPATH(NCELL,CFLAG,1,1)
           VELX=VXS
           VELY=VYS
           VELZ=VZS

@@ -1,4 +1,5 @@
-C
+cdr dec. 17:  write (iunout,..), rather than write (6,...)
+cdr           further comments
 C
 C
       SUBROUTINE EIRENE_GEOUSR
@@ -18,11 +19,14 @@ C
       CHARACTER(80) :: ZEILE
       integer, save :: ifirst=0
 
+cdr Carry out geousr only once. It may be called from interfacing: infcop.
+cdr Then avoid second (default) call from input.f
+
       if (ifirst /= 0) return
       ifirst=1
 
-      READ (IUNIN,'(A80)') ZEILE
-      READ (IUNIN,'(A80)') ZEILE
+      READ (IUNIN,'(A80)') ZEILE    !*** 15
+      READ (IUNIN,'(A80)') ZEILE    !  geometry comment
 
       CALL EIRENE_UPPERCASE(ZEILE)
       
@@ -31,6 +35,7 @@ C
       ELSEIF (INDEX(ZEILE,'BIASED_GARCHING') /= 0) THEN
         CALL EIRENE_GEOUSR_BIASED_GARCHING
       ELSE
+c  no card: "geometry comment" found in input block 14.
         BACKSPACE(IUNIN)
         CALL EIRENE_GEOUSR_BIASED
       END IF
@@ -186,7 +191,7 @@ c
 c  version : 12.03.98 21:02
 c
 c======================================================================
-C***  PREPARE DATA FOR LIMITER-SURFACES
+C***  PREPARE DATA FOR ADDITIONAL SURFACES
 c======================================================================
       USE EIRMOD_PRECISION
       use EIRMOD_PARMMOD
@@ -207,6 +212,7 @@ c======================================================================
       integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
       character(80) :: geometry_comment
       REAL(DP), PARAMETER :: hlp_tol=0.001
+
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
 csw 03sep2013
@@ -265,6 +271,7 @@ C INNER RIGHT TARGET
 csw 03sep2013
         READ (IUNIN,'(2I6)') NADMOD,NASMOD
         WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
+
         DO I=1,NADMOD
           READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
 
@@ -318,6 +325,10 @@ csw
         normalcase=.true.
 csw 03sep2013        do i=1,max(npplg/3,1)*4
         do i=1,NASMOD
+
+cdr either read onetwo, limpos
+cdr or     read limpos, onetwo
+
 csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           read(iunin,*) limpos(i),onetwo(i)
           if(onetwo(i).lt.0) then
@@ -327,8 +338,8 @@ csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           end if
         end do
         first=.false.
-!        write(*,*) 'GEOMETRY FOR'
-!        write(*,'(a80)') geometry_comment
+!       write(iunout,*) 'GEOMETRY FOR'
+!       write(iunout,'(a80)') geometry_comment
         N=max(npplg/3,1)*4
 csw 03sep2013
         IF(NASMOD.NE.N) THEN
@@ -338,39 +349,41 @@ csw 03sep2013
      w                   ONETWO(I),LIMPOS(I)
           END DO
 csw
-csw        if (npplg.le.3) then
+
+cdr  NASMOD = N = max(npplg/3,1)*4
         elseif (npplg.le.3) then
           if(onetwo(1).eq.0) then
-            write(*,*) 'Geometry fixup skipped'
+            write(iunout,*) 'Geometry fixup skipped'
             goto 1001
           end if
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
         else if (npplg.eq.6) then
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
         else
-          write(*,*) 'Case NPPLG = ',NPPLG,' not coded. '
+          write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
         end if
       end if
 c
@@ -412,10 +425,11 @@ c*** Check whether this segment is marked as a target edge
                     if(onetwo(k).eq.1) then
                       go to 990
                     else
-                        write(*,*) 'geousr_biased:',
+                      write(iunout,*) 'geousr_biased:',
      ,                             ' something is wrong with ',
      ,                             'the target chain definition.'
-                       write(*,*) 'Check the data on the target edges ',
+                      write(iunout,*) 
+     .                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
                         call EIRENE_exit_own(1)
                       end if
@@ -490,7 +504,7 @@ C
       IF (NOPTIM >= NSURF) THEN
 
       if(normalcase) then
-        write(*,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
+        write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
             do J=1,NOPTIM
@@ -506,7 +520,7 @@ C
           end do
         endif
       else
-        write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+        write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
             do J=1,NOPTIM
@@ -679,40 +693,40 @@ C INNER RIGHT TARGET
           end if
         end do
         first=.false.
-!        write(*,*) 'GEOMETRY FOR'
-!        write(*,'(a80)') geometry_comment
+!        write(iunout,*) 'GEOMETRY FOR'
+!        write(iunout,'(a80)') geometry_comment
         if (npplg.le.3) then
           if(onetwo(1).eq.0) then
-            write(*,*) 'Geometry fixup skipped'
+            write(iunout,*) 'Geometry fixup skipped'
             goto 1001
           end if
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
         else if (npplg.eq.6) then
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-          write(*,'(''P'',i1,'' FOR SEGMENT '',i3,
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
      1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
         else
-          write(*,*) 'Case NPPLG = ',NPPLG,' not coded. '
+          write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
         end if
       end if
 c
@@ -753,10 +767,11 @@ c*** Check whether this segment is marked as a target edge
                     if(onetwo(k).eq.1) then
                       go to 990
                     else
-                        write(*,*) 'geousr_biased:',
+                      write(iunout,*) 'geousr_biased:',
      ,                             ' something is wrong with ',
      ,                             'the target chain definition.'
-                       write(*,*) 'Check the data on the target edges ',
+                      write(iunout,*) 
+     .                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
                         call EIRENE_exit_own(1)
                       end if
@@ -811,7 +826,7 @@ C
       IF (NOPTIM >= NSURF) THEN
 
       if(normalcase) then
-        write(*,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
+        write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
         if (nlimpb.ge.nlimps) then
           do I=1,NLIMI
             do J=1,NOPTIM
@@ -847,7 +862,7 @@ C
 
       END IF
 C
-C  SET SOME VOLUMES EXPLIZIT
+C  SET SOME VOLUMES EXPLICITLY
 C
 C
 C  MODIFY REFLECTION MODEL AT TARGET PLATES

@@ -218,4 +218,3 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
       return
  
       end function EIRENE_other_rate_coeff
- 

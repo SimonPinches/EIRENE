@@ -390,7 +390,8 @@ c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
         if (.not.nlident) then
           do istra=1,nstrai
-            ninitl(istra)=ninitl(istra)+my_pe*10000
+            if (ninitl(istra) > 0) 
+     .        ninitl(istra)=ninitl(istra)+my_pe*10000
           enddo
         ELSE
           CALL EIRENE_LEER(1)
@@ -499,6 +500,7 @@ c  find random number seed from truely random procedure from wall clock time (us
 !  add number of calls to MCARLO in order to avoid same random seeds in very short
 !  cycles with an external code
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
+          IF (.NOT.NLIDENT) ninitl(istra)=ninitl(istra)+my_pe*10000
           NINIST=NINITL(ISTRA)
           iseed_istra=ranset_eirene(ninist)
 
@@ -698,8 +700,8 @@ C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               call eirene_leer(1)
               write (iunout,*) 'new particle ',iptsi
               RN1=RANF_EIRENE()  ! sacrifize one random number for testing random sequence
-              write (iunout,*), 'iseed,iseed_next,rn',
-     .                           iseed_iptsi, iseed_istra,RN1
+              write (iunout,*) 'iseed,iseed_next,rn',
+     .                          iseed_iptsi, iseed_istra,RN1
             ENDIF
            
 c  derive one more seed, for reflec.f. cdr: unfinished....
@@ -804,7 +806,11 @@ C  RESTORE VARIABLES AND START NEW TRACK
             NLSRFZ=MTSURF.GT.0
             NLSRFA=MASURF.GT.0
             IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,12)
-            IF (NLSTOR) CALL EIRENE_STORE(200)
+
+!  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
+!  PREPARE POINTER FOR UNIFIED SUBROUTINES FPATH, UPDATE, ETC.
+            CALL EIRENE_SWITCH_PARTINFO
+
             IC_NEUT=0
             IC_ION=0
             GOTO 102
@@ -929,7 +935,6 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-csw      if ((nsteff.ge.nprs).or.(npesta(istra).eq.my_pe)) then
       if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
 
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
@@ -1146,11 +1151,10 @@ C
 C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE 
-C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STATA THEN PROCESSES
+C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STRATA THAN PROCESSES
 C
       IF (NMODE.GT.0) THEN
         IF (NPRS == 1) THEN
-!pb          IESTR=ISTRA
           ISTRAA=ISTRA
           ISTRAE=ISTRA
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
@@ -1160,12 +1164,11 @@ C
 C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
-cpara  hier muss fuer den fall nprs > nstrai noch was getan werden!!!
-cpara  csw 08mar2013: hat sich jetzt erledigt..
-!pb      IESTR=ISTRA
+
       IF (NFILEN.EQ.1) THEN
 csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
+cdr npesta is the master processor for stratum no ISTRA
         if(nprs==1.or.(nprs > 1 .and. npesta(istra)==my_pe)
      .            .or.(nprs > 1 .and. nprs < nstrai) ) then
         CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
@@ -1216,7 +1219,7 @@ C  covariances
 C
 1111  CONTINUE
         WRITE(iunout,*)
-     .  'CPU TIME USED UNTIL END OF STRATUM ISTRA '
+     .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA '
         WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
         CALL EIRENE_LEER(2)
         endif  ! nprs > nsteff ...
@@ -1260,8 +1263,8 @@ C   AND MORE PROCESSES THEN STRATA
           ISTRAE=NSTRAI
           CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
           NEW_ITER=1
-        ENDIF
-      ENDIF
+        ENDIF  ! nprs  > 1
+      ENDIF    ! nmode > 0
 csw
       IF (NPRS > 1) THEN
         CALL EIRENE_COLLECT_DATA_USR

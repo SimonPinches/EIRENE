@@ -5,9 +5,18 @@ cdr  k=-11  ei  He + e   (was formerly also k=-1)
 cdr  sept. 16:  extend options for asmyptotics  (extrapolation of fits)
 cdr             currently this is by far overdone, all fits in here are single parametric
 cdr             but leave as is, for later extensions....
+cdr  nov.17  : exclusively  iftflg(K,2)=0 for rate coefficients
+c                      and  iftflg(K,1)=0 for cross sections are set.
+c              H.8 reaction for process K=-10:  dis rec of H2+, could be set here.
+c                      then iftflg(K,4)=0  as well.
+cdr            asymt. corrections missing for He CX cross sections. 
 
       subroutine EIRENE_setup_default_reactions
-c  fill reacdat(k)%... with default reaction data, k < 0.
+C
+C  for the trivial minimal set of hard wired reaction processes,
+C  selected by ...=0 flag in input block 4 for each species.
+C
+c  fill reacdat(k)%... with default reaction data, K < 0.
 c  first set default rate coefficients K= -4,-5,...-11  (-1, -2 and -3 are not used)
 c                                                   (extrapolation flags: 0)                     
 c  and
@@ -299,6 +308,7 @@ c
 !      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
 !      REACDAT(IR)%ETH = 0._DP
 cdr
+cdr  original H.2, 2.2.14 fit in Janev 1987
 cdr   REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
 cdr  . (/-1.670435653561D+01, -6.035644995682D-01, -1.942745783445D-08,
 cdr  .   -2.005952284492D-07,  2.962996104431D-08,  2.134293274971D-08,
@@ -306,13 +316,14 @@ cdr  .   -6.353973401838D-09,  6.152557460831D-10, -2.025361858319D-11/)
 cdr  reduce original fit to linear expression in log-log scale
 cdr  the resulting mean electron energy loss per event
 cdr  is then exactly Te*(3/2+b1)=Te*(8.964355004318D-01)
+cdr
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-1.670435653561D+01, -6.035644995682D-01,  0.000000000000D+00,
      .    0.000000000000D+00,  0.000000000000D+00,  0.000000000000D+00,
      .    0.000000000000D+00,  0.000000000000D+00,  0.000000000000D+00/)
       IFTFLG(IR,2) = 0
 
-cdr  here a corresponding H.8 reaction can be set.....
+cdr  here a corresponding H.8 reaction can be set, and: IFTFLG(IR,4)=0
 
 C K=-11:   E + HE --> 2E + HE+
 C  RATE COEFFICIENT, JANEV, 2.3.9
@@ -355,7 +366,7 @@ c
 
 C
 
- 
+c....................................................................... 
  
 !  SPECIFY DEFAULT MODEL FOR CROSS SECTION
  

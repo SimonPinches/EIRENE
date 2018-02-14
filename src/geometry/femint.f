@@ -1,10 +1,9 @@
-cdr order of points 3 and 4 in quadranges got changed in 2015. IFEM documents
+cdr order of points 3 and 4 in quadranges (xpol,ypol) got changed in 2015.
+cdr See IFEM documents
+cdr june 17:  comments
+cdr nov. 17: comments.  Some unfinished options re levgeo= 1 and levgeo = 2
 
 
-
-c  function femint.f :  (-->  fem_interpolate.f)
-c  interpolate a given function fecken, defined on cell vertices of cell, 
-c  using fem-shape functions.
 
 c   
 
@@ -15,12 +14,19 @@ c                     fem_cell-corner
 
       function eirene_femint (fecken, icell, x, y, z, lsame) 
      .         result(res)
+
+c  former function femint.f :  (-->  fem_interpolate.f)
+c  interpolate a given function fecken, defined on cell vertices of grid cell no. icell, 
+c  using fem-shape functions.
+
 c  input:
-c  lsame:   call with same coordinates as previous call, just another function 'fecken'  
-c           if lsame    : local coordinates are taken from previous call
+c  lsame:   call with same coordinates x,y,z as in previous call, just another function 'fecken'  
+c           if lsame    : local coordinates r,s,t are taken from previous call
 c           if not lsame: local coordinates are calculated here (call fem_local-coord)  
 c  output:
-c  res : function evaluated at x,y,z 
+c  res : interpolated function fecken, evaluated at x,y,z 
+
+c  programmed for levgeo=4,5, as well as 2D (x,y) grids in case of levgeo=1,2,3
 
  
       use eirmod_precision
@@ -46,17 +52,21 @@ c  res : function evaluated at x,y,z
 
       res = 0._dp
 
+c  2D computational grid, quadrangles
       if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
      .    ((levgeo == 2) .and. nlpol) .or. 
      .    (levgeo == 3)) then
 
         if (.not.lsame) then
 
+c  new point x,y in icell. Find local coord. r,s
+
           call eirene_ncelln(icell,ir,ip,it,ia,ib,
      .                       nr1st,np2nd,nt3rd,nbmlt,
      .                       nlrad,nlpol,nltor)
 
           if (levgeo == 1) then
+cdr   not ready for 2D x-z grids, nor for 3d x-y-z- grids
             x1=rsurf(ir)
             x2=rsurf(ir+1)
             x3=rsurf(ir+1)
@@ -66,6 +76,11 @@ c  res : function evaluated at x,y,z
             y3=psurf(ip+1)
             y4=psurf(ip+1)
           else if ((levgeo == 2) .or. (levgeo == 3)) then
+cdr  not ready: in case levgeo=2 and nlcrc:  xpol and ypol are not set.
+cdr
+c  warning, possibly a hidden link:
+c  here we use xpol,ypol in case of levgeo=2.  These arrays may not be defined at all ??
+
             x1=xpol(ir+1,ip)
             x2=xpol(ir,ip)
             x3=xpol(ir+1,ip+1)
@@ -80,7 +95,7 @@ c  res : function evaluated at x,y,z
      .                           x3, y3, 0._dp, x4, y4, 0._dp, 
      .                           x, y, z, r, s, t, u)
 c       elseif (lsame)
-c  same icell, x,y,z as in previous call.
+c  same cell no. icell, x,y,z same as in previous call.
 c  ir,ip, and local coordinates r,s are already set in previous call
 
         end if
@@ -95,10 +110,14 @@ c  ir,ip, and local coordinates r,s are already set in previous call
      .      + f2 * 0.25_dp * (1._dp + r) * (1._dp - s)
      .      + f3 * 0.25_dp * (1._dp + r) * (1._dp + s)
      .      + f4 * 0.25_dp * (1._dp - r) * (1._dp + s)
-        
+
+c...................................................................
+
+c  2D computational grid, triangles        
       else if (levgeo == 4) then
 
         if (.not.lsame) then
+c  new point x,y in icell. Find local coord. r,s,t
 
           x1=xtrian(necke(1,icell)) 
           x2=xtrian(necke(2,icell)) 
@@ -111,7 +130,7 @@ c  ir,ip, and local coordinates r,s are already set in previous call
      .                           x3, y3, 0._dp, x4, y4, 0._dp, 
      .                           x, y, z, r, s, t, u)
 c       elseif (lsame)
-c  same icell, x,y,z as in previous call.
+c  same cell no icell, x,y as in previous call.
 c  Local coordinates r,s,t  are already set in previous call
 
         end if
@@ -121,10 +140,12 @@ c  Local coordinates r,s,t  are already set in previous call
         f3=fecken(necke(3,icell))
         
         res = f1*r + f2*s + f3*t
-
+c.........................................................................
+c  3D computational grid, tetrahedra 
       else if (levgeo == 5) then
 
         if (.not.lsame) then
+c  new point x,y,z in icell. Find local coord. r,s,t,u
 
           x1=xtetra(nteck(1,icell))
           x2=xtetra(nteck(2,icell))
@@ -143,7 +164,7 @@ c  Local coordinates r,s,t  are already set in previous call
      .                           x3, y3, z3, x4, y4, z4, 
      .                           x, y, z, r, s, t, u)
 c       elseif (lsame)
-c  same icell, x,y,z, as in previous call. 
+c  same cell no. icell, x,y,z, as in previous call. 
 c  Local coordinates r,s,t,u  are already set in previous call
         end if
 

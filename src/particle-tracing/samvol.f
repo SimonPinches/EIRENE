@@ -1,3 +1,4 @@
+cdr Jan   18 : only notational change, to distuingish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
 cdr            replaces explicit expression.
@@ -61,8 +62,8 @@ C
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IC1, IC2, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
-     .           IR2, IP1, IP2, IND, IR, IP, IT, ISRFSI, I,
-     .           ICC, IR1, ISR, ISTR, IL, IU, IM, MXREC, MXPLS, IFPLS,
+     .           IR2, IP1, IP2, IND, IR, IP, IT, IVOLSI, I,
+     .           ICC, IR1, IVL, ISTR, IL, IU, IM, MXREC, MXPLS, IFPLS,
      .           IPLSTI, IPLSV, KK, ICCT
       INTEGER, SAVE :: ISTROLD=-1
       LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:)
@@ -97,7 +98,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
-c  nspez out of range: 
+c  nspez out of range: Set volumetric sources for ALL species 
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
@@ -372,90 +373,91 @@ C
           IPLSTI = MPLSTI(IPLS)
           SUMM=0.D0
           EISUMM=0.D0
-          DO 53 ISRFSI=1,NSRFSI(ISTRA)
-            ISR=ISRFSI
+C  VOLUMETRIC SUB-STRATA  
+          DO 53 IVOLSI=1,NSRFSI(ISTRA)
+            IVL=IVOLSI
             SUM=0.D0
             EISUM=0.D0
-            IF (SORLIM(ISR,ISTRA).LT.0) THEN
+            IF (SORLIM(IVL,ISTRA).LT.0) THEN
 C  INITIALIZE SAMPLING DISTRIBUTIONS FOR USER SPECIFIED VOLUME SOURCE
-              CALL EIRENE_SM0USR(ISR,ISTRA,
-     .                    SORAD1(ISR,ISTRA),SORAD2(ISR,ISTRA),
-     .                    SORAD3(ISR,ISTRA),SORAD4(ISR,ISTRA),
-     .                    SORAD5(ISR,ISTRA),SORAD6(ISR,ISTRA))
+              CALL EIRENE_SM0USR(IVL,ISTRA,
+     .                    SORAD1(IVL,ISTRA),SORAD2(IVL,ISTRA),
+     .                    SORAD3(IVL,ISTRA),SORAD4(IVL,ISTRA),
+     .                    SORAD5(IVL,ISTRA),SORAD6(IVL,ISTRA))
 !pb assume flux is set in samusr
               SUMM=FLUX(ISTRA)
             ELSE
 C  INITIALIZE SAMPLING DISTRIBUTIONS FOR DEFAULT VOLUME RECOMBINATION SOURCES
-C  ACCOUNT FOR INGRDA(ISRFSI,ISTRA,...), INGRDE(ISRFSI,ISTRA,...)
+C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
               I=ISTRA
               ICC=0
               IRC=-1
               IF (NR1ST.GT.1) THEN
-              IF (INGRDA(ISR,I,1).LE.0..OR.INGRDE(ISR,I,1).LE.0.D0) THEN
+              IF (INGRDA(IVL,I,1).LE.0..OR.INGRDE(IVL,I,1).LE.0.D0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,1),INGRDE(.,.,1)'
                 WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
-                INGRDA(ISR,I,1)=1
-                INGRDE(ISR,I,1)=MAX0(1,NR1ST)
+                INGRDA(IVL,I,1)=1
+                INGRDE(IVL,I,1)=MAX0(1,NR1ST)
                 CALL EIRENE_LEER(1)
               ENDIF
               ENDIF
               IF (NP2ND.GT.1) THEN
-              IF (INGRDA(ISR,I,2).LE.0..OR.INGRDE(ISR,I,2).LE.0.D0) THEN
+              IF (INGRDA(IVL,I,2).LE.0..OR.INGRDE(IVL,I,2).LE.0.D0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,2),INGRDE(.,.,2)'
                 WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
-                INGRDA(ISR,I,2)=1
-                INGRDE(ISR,I,2)=MAX0(1,NP2ND)
+                INGRDA(IVL,I,2)=1
+                INGRDE(IVL,I,2)=MAX0(1,NP2ND)
                 CALL EIRENE_LEER(1)
               ENDIF
               ENDIF
               IF (NT3RD.GT.1) THEN
-              IF (INGRDA(ISR,I,3).LE.0..OR.INGRDE(ISR,I,3).LE.0.D0) THEN
+              IF (INGRDA(IVL,I,3).LE.0..OR.INGRDE(IVL,I,3).LE.0.D0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,3),INGRDE(.,.,3)'
                 WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
-                INGRDA(ISR,I,3)=1
-                INGRDE(ISR,I,3)=MAX0(1,NT3RD)
+                INGRDA(IVL,I,3)=1
+                INGRDE(IVL,I,3)=MAX0(1,NT3RD)
                 CALL EIRENE_LEER(1)
               ENDIF
               ENDIF
               IF (NPRCI(IPLS).EQ.0) THEN
                 WRITE (iunout,*) 'NO DEFAULT VOLUME SOURCE DISTRIBUTION'
                 WRITE (iunout,*) 'DEFINED. SUBSTRATUM TURNED OFF'
-                WRITE (iunout,*) 'IPLS,ISRFSI,ISTRA ',IPLS,ISRFSI,ISTRA
-                SORWGT(ISR,ISTRA)=0.D0
+                WRITE (iunout,*) 'IPLS,IVOLSI,ISTRA ',IPLS,IVOLSI,ISTRA
+                SORWGT(IVL,ISTRA)=0.D0
                 GOTO 53
               ENDIF
               IF (NLRAD) THEN
-                IR1=MAX0(1,INGRDA(ISR,ISTRA,1))
-                IR2=MIN0(NR1ST,INGRDE(ISR,ISTRA,1))
+                IR1=MAX0(1,INGRDA(IVL,ISTRA,1))
+                IR2=MIN0(NR1ST,INGRDE(IVL,ISTRA,1))
               ELSE
                 IR1=1
                 IR2=2
               ENDIF
               IF (NLPOL) THEN
-                IP1=MAX0(1,INGRDA(ISR,ISTRA,2))
-                IP2=MIN0(NP2ND,INGRDE(ISR,ISTRA,2))
+                IP1=MAX0(1,INGRDA(IVL,ISTRA,2))
+                IP2=MIN0(NP2ND,INGRDE(IVL,ISTRA,2))
               ELSE
                 IP1=1
                 IP2=2
               ENDIF
               IF (NLTOR) THEN
-                IT1=MAX0(1,INGRDA(ISR,ISTRA,3))
-                IT2=MIN0(NT3RD,INGRDE(ISR,ISTRA,3))
+                IT1=MAX0(1,INGRDA(IVL,ISTRA,3))
+                IT2=MIN0(NT3RD,INGRDE(IVL,ISTRA,3))
               ELSE
                 IT1=1
                 IT2=2
               ENDIF
  
-              ISTEP=SORIND(ISR,ISTRA)
+              ISTEP=SORIND(IVL,ISTRA)
               IFPLS=IFREC(IPLS)
               DO 52 IIRC=1,NPRCI(IPLS)
                 IRRC=LGPRC(IPLS,IIRC)
@@ -489,18 +491,18 @@ C  INDIRECT ADDRESSING
 52            CONTINUE
               IF (SUM.EQ.0.D0) THEN
                 WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '
-                WRITE (IUNOUT,*) 'ISTRA, ISRFSI, IPLS, ISTEP ',
-     .                            ISTRA, ISR   , IPLS, ISTEP
+                WRITE (IUNOUT,*) 'ISTRA, IVOLSI, IPLS, ISTEP ',
+     .                            ISTRA, IVL   , IPLS, ISTEP
                 WRITE (IUNOUT,*) 'EITHER: ISTEP OUT OF RANGE IN SAMVOL'
                 WRITE (IUNOUT,*) 'OR:  DENSITY OF RECOMBINING IPLS = 0 '
-                SORWGT(ISR,ISTRA)=0.D0
+                SORWGT(IVL,ISTRA)=0.D0
                 GOTO 53
               ENDIF
-              SORWGT(ISR,ISTRA)=SUM
+              SORWGT(IVL,ISTRA)=SUM
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED '
               CALL EIRENE_MASJ2R
-     .          ('ISRFSI,ISTRA,SORWGT     ',ISRFSI,ISTRA,SUM)
+     .          ('IVOLSI,ISTRA,SORWGT     ',IVOLSI,ISTRA,SUM)
               IF (TRCSOU) THEN
                 CALL EIRENE_MASJ3 ('IRRC,IPLS,ICMX          ',
      .                              IRC ,IPLS,ICC)
@@ -606,33 +608,33 @@ C
       IF (ISTROLD /= ISTRA) THEN
         ISTROLD=ISTRA
         IPLS=NSPEZ(ISTRA)
-        DO ISRFSI=1,NSRFSI(ISTRA)
-          ISR=ISRFSI
+        DO IVOLSI=1,NSRFSI(ISTRA)
+          IVL=IVOLSI
           ICC=0
-          VSOURC(ISR,0)=0.D0
+          VSOURC(IVL,0)=0.D0
           IF (NLRAD) THEN
-            IR1=MAX0(1,INGRDA(ISR,ISTRA,1))
-            IR2=MIN0(NR1ST,INGRDE(ISR,ISTRA,1))
+            IR1=MAX0(1,INGRDA(IVL,ISTRA,1))
+            IR2=MIN0(NR1ST,INGRDE(IVL,ISTRA,1))
           ELSE
             IR1=1
             IR2=2
           ENDIF
           IF (NLPOL) THEN
-            IP1=MAX0(1,INGRDA(ISR,ISTRA,2))
-            IP2=MIN0(NP2ND,INGRDE(ISR,ISTRA,2))
+            IP1=MAX0(1,INGRDA(IVL,ISTRA,2))
+            IP2=MIN0(NP2ND,INGRDE(IVL,ISTRA,2))
           ELSE
             IP1=1
             IP2=2
           ENDIF
           IF (NLTOR) THEN
-            IT1=MAX0(1,INGRDA(ISR,ISTRA,3))
-            IT2=MIN0(NT3RD,INGRDE(ISR,ISTRA,3))
+            IT1=MAX0(1,INGRDA(IVL,ISTRA,3))
+            IT2=MIN0(NT3RD,INGRDE(IVL,ISTRA,3))
           ELSE
             IT1=1
             IT2=2
           ENDIF
  
-          ISTEP=SORIND(ISR,ISTRA)
+          ISTEP=SORIND(IVL,ISTRA)
           IFPLS=IFREC(IPLS)
           DO IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
@@ -656,16 +658,16 @@ C  SUM OVER ALL RECOMBINATION PROCESSES FOR SPECIES IPLS
 C  INDIRECT ADDRESSING
                   IF (ADD.GT.0.D0) THEN
                     ICC=ICC+1
-                    ISOURC(ISR,ICC)=NCELL
-                    VSOURC(ISR,ICC)=VSOURC(ISR,ICC-1)+ADD
+                    ISOURC(IVL,ICC)=NCELL
+                    VSOURC(IVL,ICC)=VSOURC(IVL,ICC-1)+ADD
                   ENDIF
                 END DO
               END DO
             END DO
           END DO ! IIRC
-          ICMX(ISR)=ICC
-          VSMXI(ISR) = 1._DP / VSOURC(ISR,ICC)
-        END DO ! ISRFSI
+          ICMX(IVL)=ICC
+          VSMXI(IVL) = 1._DP / VSOURC(IVL,ICC)
+        END DO ! IVOLSI
 C
       END IF
 C

@@ -4,10 +4,15 @@ cdr  29.09.14: TXTUNT corrected for generation limits, momentum sources
 c    oct.14  : input tally 22 (potential) connnected to text arrays
 cdr  dec. 15 : energy source tallies for bulk ions: additional species index ipls
 cdr            tallies 38,44,50,56 and 84
+cdr  dec.17:   pumped flux tally SPUMP:  range 1--N5=NSPZ,  rather than N7+1--N8
+cdr            size of array LMETSPW decreased accordingly 
 
       SUBROUTINE EIRENE_SETTXT
-c  set default texts  (volume tallies: name, species, units), ditto: surface and input tallies 
-C  set first (leading) dimension of tally arrays: nfstvi, nfstwi
+c  Set default texts  (volume tallies: name, species, units), 
+C    ditto: surface and input tallies. 
+C  Set first (leading) dimension of tally arrays: nfstvi, nfstwi.
+C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
+c    for pointers to large tally-arrays
 c  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -451,6 +456,7 @@ C  TALLY NTLSR=83 (SEE PARMMOD.F)
 C   ADDIT. TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
 C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10E
       TXTTLW(1,83)='ALGEBRAIC EXPRESSION IN SURFACE AVERAGED TALLIES '
+C  PUMPED FLUXES
       TXTTLW(1,84)='PUMPED FLUX BY SPECIES                           '
 C
       DO J=1,NTALS
@@ -546,9 +552,9 @@ c  sputter tallies
       TXTUNW(1,79)='AMP                     '
       TXTUNW(1,80)='AMP                     '
       TXTUNW(1,81)='AMP                     '
-      TXTUNW(1,82)='TO BE READ              '
-      TXTUNW(1,83)='TO BE READ              '
-      TXTUNW(1,84)='AMP                     '
+      TXTUNW(1,82)='TO BE READ              '    ! ADD. SURF. TALLY
+      TXTUNW(1,83)='TO BE READ              '    ! ALG. SURF. TALLY
+      TXTUNW(1,84)='AMP                     '    ! PUMPED FLUX
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
@@ -814,9 +820,9 @@ C
       NFSTWI(79)=1
       NFSTWI(80)=1
       NFSTWI(81)=1
-      NFSTWI(NTLSA)=NADSI
-      NFSTWI(NTLSR)=NALSI
-      NFSTWI(NTALS)=NSPTOT
+      NFSTWI(NTLSA)=NADSI    !  ADD SURF. TALLY
+      NFSTWI(NTLSR)=NALSI    !  ALG. SURF. TALLY
+      NFSTWI(NTALS)=NSPTOT   !  PUMPED FLUX
 C
 C
       NFSTPI(1)=1
@@ -931,18 +937,22 @@ C  GENERATION LIMIT TALLIES
       NSPAN(63)=N1+1
       NSPAN(64)=N2+1
       NSPAN(65)=N3+1
+c
       NSPAN(66)=1
       NSPAN(67)=N1+1
       NSPAN(68)=N2+1
       NSPAN(69)=N3+1
+c
       NSPAN(70)=1
       NSPAN(71)=N1+1
       NSPAN(72)=N2+1
       NSPAN(73)=N3+1
+c
       NSPAN(74)=1
       NSPAN(75)=N1+1
       NSPAN(76)=N2+1
       NSPAN(77)=N3+1
+c
       NSPAN(78)=1
       NSPAN(79)=N4+1
       NSPAN(80)=0
@@ -1197,10 +1207,11 @@ c     N1=NPHOTI
 c     N2=N1+NATMI
 c     N3=N2+NMOLI
 c     N4=N3+NIONI
-c     N5=N4+NPLSI
+c     N5=N4+NPLSI   = NSPZTOT
+cdr also pumped flux SPUMP: now 1:N5  (was: n7+1:n8)
+c
       N6=N5+NADSI
       N7=N6+NALSI
-      N8=N7+NSPZ
  
       NSPANW(1)=N1+1
       NSPANW(2)=N1+1
@@ -1285,7 +1296,7 @@ c     N5=N4+NPLSI
       NSPANW(81)=0
       NSPANW(82)=N5+1
       NSPANW(83)=N6+1
-      NSPANW(84)=N7+1
+      NSPANW(84)=1   !PUMPED FLUX
  
       NSPENW(1)=N2
       NSPENW(2)=N2
@@ -1368,9 +1379,9 @@ c     N5=N4+NPLSI
       NSPENW(79)=0
       NSPENW(80)=0
       NSPENW(81)=0
-      NSPENW(82)=N6
-      NSPENW(83)=N7
-      NSPENW(84)=N8
+      NSPENW(82)=N6    ! ADD. SURF. TALLY:  N5+1--N6
+      NSPENW(83)=N7    ! ALG. SURF. TALLY:  N6+1--N7
+      NSPENW(84)=N5    ! PUMPED FLUX     :  1   --N5
 
       DO IPHOT=1,NPHOTI
         ISPZ=IPHOT

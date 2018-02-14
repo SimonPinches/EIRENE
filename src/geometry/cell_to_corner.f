@@ -1,7 +1,15 @@
-c  interpolate cell averaged tallies onto cell vertices
+cdr  nov. 17:  more error exits for unwritten options.
+CDR  Nov. 17:  no internal boundaries considered ?
+c              Interpolation at grid boundaries ?
+c              tbd: Compare with routine plotting/celint.f, remove dublicated code
 
 
-      subroutine eirene_cell_to_corner (f, fcorner)      
+      subroutine eirene_cell_to_corner (f, fcorner) 
+
+c  interpolate cell averaged tallies onto cell vertices     
+c  FOR EACH CELL VERTIX USE INVERSE DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
+c  FOR WEIGHTING
+
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_ctrig
@@ -11,6 +19,7 @@ c  interpolate cell averaged tallies onto cell vertices
       use eirmod_ccona
       USE eirmod_CPOLYG
       USE eirmod_CLOGAU
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
       
       implicit none
 
@@ -23,8 +32,10 @@ c  interpolate cell averaged tallies onto cell vertices
      .           it
       TYPE(CELL_ELEM), POINTER :: CUR
 
-c  2d carthesian x-y- grid      
-      if ((levgeo == 1) .and. nlrad .and. nlpol) then 
+c  2d cartesian x-y- grid      
+      if ((levgeo == 1) 
+     .    .and. nlrad .and. nlpol.and..not.nltor) then
+c  ready for 2d x-y- slab grid.  
 
          nrk = indpoint(nr1st,np2nd)
          allocate(volsum(nrk))
@@ -67,9 +78,25 @@ c  2d carthesian x-y- grid
          fcorner(1:nrk) = fcorner(1:nrk)/(volsum(1:nrk)+eps60)
          deallocate (volsum)
 
+c  2d cartesian x-z grid
+      elseif ((levgeo == 1) 
+     .    .and. nlrad .and..not.nlpol.and.nltor.and.nltrz) then 
+c   TO BE DONE: 2d  x,z grid
+         goto 999
+c  2d polar x-phi grid
+      elseif ((levgeo == 1) 
+     .    .and. nlrad .and..not.nlpol.and.nltor.and.nltra) then 
+c   TO BE DONE: 2d  x,phi grid
+         goto 999
+      elseif ((levgeo == 1) 
+     .    .and. nlrad .and.nlpol.and.nltor) then 
+c   TO BE DONE: 3d  x,y,z  or x,y,phi grid
+         goto 999
+
+
 c  2d  r-theta grid, cell vertices along a coordinate line are given as polygons
-      elseif (((levgeo == 2) .and. nlpol) .or.
-     .         (levgeo == 3)) then
+      elseif (((levgeo == 2) .and. nlpol.and..not.nlcrc) .or.
+     .         (levgeo == 3) .and. nlpol) then
 
          fcorner = 0.
          DO IR=1,NR1ST
@@ -95,6 +122,14 @@ c  2d  r-theta grid, cell vertices along a coordinate line are given as polygons
            END DO  ! ipart 
          END DO  ! ir
 
+c  2d  r-theta grid, cell vertices along a coordinate line are straight lines
+      elseif (((levgeo == 2) .and. nlpol.and.nlcrc)) then
+c   TO BE DONE: 2d  r,theta grid, but no polygons
+         goto 999
+      elseif ((levgeo == 3) .and. .not. nlpol) then
+c   TO BE DONE: 1d  r grid of polygons
+         goto 999     
+
 c  2d grid of triangles         
       elseif (levgeo == 4) then
 
@@ -109,10 +144,11 @@ c  2d grid of triangles
              fcorner(necke(j,i)) = fcorner(necke(j,i)) + dist*f(i)
            end do
          end do
+
          fcorner(1:nrknot) = fcorner(1:nrknot)/volsum(1:nrknot)
          deallocate (volsum)
 
-c  3d grid of tetrahedrons
+c  3d grid of tetrahedra
       elseif (levgeo.eq.5) then
          
          allocate(volsum(ncoord))
@@ -131,11 +167,16 @@ c  3d grid of tetrahedrons
          deallocate (volsum)
 
       else
-         write (6,*) ' levgeo = ',levgeo,' to be written in',
-     .               ' subroutine cell_to_corner '
-         write (6,*) ' calculation abandonned '
-         call  eirene_exit_own(1)
-      end if
+        goto 999
+      endif 
+
+      return
+
+999   continue
+      write (iunout,*) ' levgeo = ',levgeo,' to be written in',
+     .                 ' subroutine cell_to_corner '
+      write (iunout,*) ' calculation abandonned '
+      call  eirene_exit_own(1)
 
       return
       end subroutine  eirene_cell_to_corner

@@ -230,7 +230,7 @@ c                           if we intersect, add this surface to the block
           END DO
 
 c         if we have not reached our lowest level (=0), do another recursive step
-c         and let there be children, don't do so if we have less then 4 surfaces added
+c         and let there be children, do not do so if we have less then 4 surfaces added
 c         to this block!
           IF(child%layer .gt. 0 .and. child%nsurfaces .gt. 10)THEN
             CALL EIRENE_TIMEA_BuildBlocks(TREE, child)

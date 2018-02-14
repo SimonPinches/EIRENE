@@ -2,7 +2,7 @@ C
 C
       SUBROUTINE EIRENE_XSECTPH
 C
-C  TABLE FOR REACTION RATES FOR PHOTONS
+C  TABLE FOR CROSS SECTION AND REACTION RATES FOR PHOTONS
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -17,10 +17,10 @@ csw   PHOTON COLLISIONS, OT - type
 csw
       integer :: kk,iphot,idsc,nrc,ipl0,ipl1,ipl2,ityp1,ityp2,ifnd,
      .    updf,mode, idot
- 
- 
+
+
       idot=0
- 
+
       DO IPHOT=1,NPHOTI
         IDSC=0
         PHV_LGPHOT(IPHOT,0,0)=0
@@ -41,17 +41,18 @@ C
             IDOT=IDOT+1
             NREAOT(IDOT) = KK
             CALL EIRENE_PH_XSECTPH (IPHOT,NRC,IDSC)
+CDR  HERE SHOULD BE CALL TO XSTOT  GENERAL ROUTINE FOR OT PROCESSES
           ENDDO
           PHV_NPHOTI(IPHOT)=IDSC
 C  NO "OT" MODEL DEFINED
         ELSE
           PHV_NPHOTI(IPHOT)=0
         ENDIF
- 
+
 CDR     PHV_NPHOTIM(IPHOT)=PHV_NPHOTI(IPHOT)-1
- 
+
         PHV_LGPHOT(IPHOT,0,0)=IDSC
- 
+
       ENDDO
 csw
 csw output:
@@ -71,18 +72,18 @@ C
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) '(OTHER) REACTION NO. IROT= ',IDSC
               CALL EIRENE_LEER(1)
- 
+
                   ipl0=PHV_LGPHOT(iphot,idsc,1)
                   ifnd=PHV_LGPHOT(iphot,idsc,2)
                   kk=PHV_LGPHOT(iphot,idsc,3)
                   updf=PHV_LGPHOT(iphot,idsc,4)
                   mode=PHV_LGPHOT(iphot,idsc,5)
- 
+
                   ityp1=PHV_N1STOTph(iphot,idsc,1)
                   ipl1= PHV_N1STOTph(iphot,idsc,2)
                   ityp2=PHV_N2NDOTph(iphot,idsc,1)
                   ipl2= PHV_N2NDOTph(iphot,idsc,2)
- 
+
                   write (iunout,*) 'irot,ipl0,il,kk,updf,mode'
                   write (iunout,*)  idsc,ipl0,ifnd,kk,updf,mode
                   write (iunout,*) 'ityp1,ipl1,ityp2,ipl2'
@@ -92,6 +93,6 @@ C
             endif
          endif
       enddo
- 
+
       RETURN
       END SUBROUTINE EIRENE_XSECTPH

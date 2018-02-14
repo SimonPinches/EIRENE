@@ -60,7 +60,8 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
+cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
@@ -212,7 +213,8 @@ C  EI PROCESS IDENTIFIED
             LGAEI(IATM,IDSC1)=IREI
             CALL EIRENE_XSTEI(RMASS,IREI,IAT,
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
-     .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
+     .                 ISCDE,EELEC,IESTM,
+     .                 KK,FACTKK,PLS)
 90        CONTINUE
           NAEII(IATM)=IDSC1
         ENDIF
@@ -508,7 +510,8 @@ C
             IESTM=IESTMA(IATM,NRC)
             EBULK=EBULKA(IATM,NRC)
             CALL EIRENE_XSTEL(IREL,IAT,IPL,EBULK,
-     .                        ISCDE,IESTM,KK,FACTKK)
+     .                        ISCDE,IESTM,
+     .                        KK,FACTKK,PLS)
 C
 230       CONTINUE
  

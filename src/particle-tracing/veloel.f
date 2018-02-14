@@ -11,18 +11,26 @@ cdr           example He  He+  collisions, when both are test species.
 cdr           Or, e.g. elastic component in H + p
 cdr  Jan. 17: Added option: isotropic in COM frame, iflag=0, when modcol(5,0,..)=0
 cdr                         exchange of identity in lab system when modcol(5,0,..)=-1
-cdr                         (this was default for bgk collisions so far, with iflag=0)
-cdr  Feb. 17: disabled proprietary option LHABER  (sampling scattering angle from diff. cross secion)
-c             (this option was unfinished and not further developed for more than 10 years.)
+cdr                         (this was default for bgk collisions so far, with OLD iflag=0)
 C 
       SUBROUTINE EIRENE_VELOEL(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
-     .                  IREL,RMASS)
+     .                         IREL,RMASS)
 C
 C  THIS SUBROUTINE CARRIES OUT AN ELASTIC COLLISION OF A TEST PARTICLE
 C  WITH A BULK PARTICLE.
 C  IT RETURNS THE POST COLLISION VELOCITY VECTOR.
 C
-C  NFLAG: AS IN SUBR. VELOCX
+C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
+C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
+C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
+C                  E=M/2 V_M^2 =3/2 KT, IN REST FRAME OF IPLS
+C                  USE WEIGHT CORRECTION OR REJECTION
+C                  to be generalized to E=ESIGCX(IRCX,1)
+C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
+C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
+C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
+C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
+C                  OR ALTERNATIVELY: REJECTION
 C
 C  1ST STEP: FIND COLLISION PARTNER FROM BULK ION SPECIES "IPLS":
 C            (VXN,VYN,VZN)
@@ -34,6 +42,15 @@ C  4TH STEP: FIND NEW VELOCITY VECTOR
 C
 C
 C  K   : CELL INDEX
+
+C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
+C  note: Ti has already been converted into thermal velocity units: zrg(ipls,k) in [cm/s]
+
+C  K   : .EQ.0 :TX,TY,TZ,V-DRIFT_X,Y,Z ARE NOT FROM LOCAL BULK ION
+C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE 
+C               PARAMETERS DUMT AND DUMV, RESPECTIVELY.
+c  note: here dumt must also be in thermal velocity units
+
 C  VXO : X COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VYO : Y COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VZO : Z COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
@@ -67,20 +84,20 @@ C
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IREL
  
       REAL(DP) :: TEST, VRELX,
-     .          VXI, VYI, VZI, VRELQ, VN, VREL,
+     .          VXN, VYN, VZN, VXI, VYI, VZI, VRELQ, VN, VREL,
      .          RLMS, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
      .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS, 
      .          SEPS, RS,
      .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH,
      .          BMAX, ER, ELMIN, ELMAX, B,
-     .          VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ, VXN, VYN, VZN,
+     .          VXDR, VYDR, VZDR, 
+     .          ZARGX, ZARGY, ZARGZ, 
      .          VX, VY, VZ, ELAB,
-     .          VR, ZARG, CEL, EIRENE_CROSS, VRQ
-C      REAL(DP) :: CTCHDUM, CTTETHA, DUMSIGMA, ELTHDUM, ELTHETA, RAN, 
-C     .            SIGHABER
+     .          VR, CEL, EIRENE_CROSS, VRQ
       REAL(DP), EXTERNAL :: RANF_EIRENE
+
       REAL(DP) :: P(9)
-      INTEGER :: IFLAG, IRL, IREAC, JJ, J, ICOUNT, KK
+      INTEGER :: IFLAG, IRL, IREAC, JJ, J, ICOUNT
       INTEGER :: IFIRST = 0
 !  PARAMETERS FOR INTERACTION POTENTIALS ARE NOW READ FROM FILE AMJUEL,
 !  NOT HARD WIRED IN THIS ROUTINE OR (EVEN OLDER VERSIONS)
@@ -101,6 +118,8 @@ c       P_A_B(6)=P(4)*(1.+LOG(2.)/P(2)/P(3))    (=RW, INFLECTION OF V)
 c       P_A_B(8)=-3.*P(1)/4.                    (=V(RW) )
       SAVE
 C
+c initialize arrays for "on the fly" rejection efficiency estimates
+C IFLAG=1 AND IFLAG=3 OPTIONS
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
         DO IRL=1,NRELI
@@ -116,23 +135,18 @@ C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY
 C  IS CROSS SECTION AVAILABLE?
         IREAC=MODCOL(5,1,IREL)
         IF (IREAC.EQ.0) GOTO 1
-C
+C CURRENTLY: HARD WIRED SEARCH RANGE
         elmin=log(0.01_dp)
         elmax=log(1.e3_dp)
         SGEVMX(IREL)=-1.D60
         JJ=1
         do j=1,1000
-          elab=elmin+(j-1)/999.*(elmax-elmin)
-c         IF (LHABER) THEN
-cdr  proprietary option disabled.
-C    integrate angle-differential cross section at ELAB
-c           CALL EIRENE_SCATANG (ELAB,-1._DP,ELTHDUM,CTCHDUM,SIGHABER)
-c           CEL= SIGHABER*AU_TO_CM2
-c         ELSE
-c  find cross section at ENERGY ELAB from a fit or table. 
-            CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'VELOEL 1')
-cdr       END IF
+c  elab:  here ln(E), with E from 0.01 to 1e3 eV
+          elab=elmin+(j-1)/999._dp*(elmax-elmin)
 
+c  find cross section at ENERGY ELAB from a fit or table. 
+          CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'VELOEL 1')
+c
           vrq=exp(elab-defel(IREL))
           vr=sqrt(vrq)
           if (cel*vr.gt.SGEVMX(IREL)) then
@@ -157,6 +171,8 @@ cdr       END IF
         CALL EIRENE_LEER(1)
       ENDIF
 1     CONTINUE
+
+c  preparations for process IREL done. Start sampling procedure here.
 C
 C  INITIALIZE COUNTER FOR REJECTION SAMPLING OF INCIDENT BULK PARTICLE
 C
@@ -164,26 +180,34 @@ C
 C
 C  NEXT: STEP 1
 C
-      ZARG=ZRG(IPLS,K)
-      ZARGX=ZRG(IPLS,K)
-      ZARGY=ZRG(IPLS,K)
-      ZARGZ=ZRG(IPLS,K)
-      IF (NLDRFT) THEN
-        IF (INDPRO(4) == 8) THEN
-          CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
-     .                        .TRUE.)
+C    set parameters for random sampling in cell icell=K
+C
+      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number. Use local bulk medium parameters
+c  scaled 1d temperatures, per degree of freedom
+        ZARGX=ZRG(IPLS,K)
+        ZARGY=ZRG(IPLS,K)
+        ZARGZ=ZRG(IPLS,K)
+c  drift velocity, cm/s
+        IF (NLDRFT) THEN
+          IF (INDPRO(4) == 8) THEN
+            CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
+     .                          .TRUE.)
+          ELSE
+            VXDR=VXIN(IPLS,K)
+            VYDR=VYIN(IPLS,K)
+            VZDR=VZIN(IPLS,K)
+          END IF
         ELSE
-          VXDR=VXIN(IPLS,K)
-          VYDR=VYIN(IPLS,K)
-          VZDR=VZIN(IPLS,K)
-        END IF
+          VXDR=0.D0
+          VYDR=0.D0
+          VZDR=0.D0
+        ENDIF
       ELSE
-        VXDR=0.D0
-        VYDR=0.D0
-        VZDR=0.D0
+        GOTO 999
       ENDIF
 C
-C  SET VELOCITY VECTOR (CM/S) OF INCIDENT TEST PARTICLE
+C
+C  SAVE VELOCITY VECTOR (CM/S) OF INCIDENT TEST PARTICLE
       VX=VXO*VLO
       VY=VYO*VLO
       VZ=VZO*VLO
@@ -194,7 +218,7 @@ c   start random sampling here
 123   CONTINUE
       IF (INIV2.LE.0) CALL EIRENE_FGAUSS
 C
-C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN
+C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN (m=0;s=1)
       VXN=FG1(INIV2)
       VYN=FG2(INIV2)
       VZN=FG3(INIV2)
@@ -208,7 +232,7 @@ C  ZT1 CORRESPONDS TO MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VXN=VXN*VN+VXDR
         VYN=VYN*VN+VYDR
         VZN=VZN*VN+VZDR
-C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE AND DRIFT
+C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE TIIN AND DRIFT VDR
       ELSE
         VXN=VXN*ZARGX+VXDR
         VYN=VYN*ZARGY+VYDR
@@ -219,11 +243,14 @@ C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONS
 C
       IF (NFLAG.EQ.2) THEN
 C
-        VXI=VXN
+        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S. 
         VYI=VYN
         VZI=VZN
+
+C   NOTHING MORE TO BE DONE
+
 C
-      ELSE  !   NFLAG.EQ.3
+      ELSE  !   NFLAG.NE.2, ALL OTHER OPTIONS
 C
 C   ALL OTHER DISTRIBUTIONS
 C
@@ -237,20 +264,12 @@ C   PRESENT VERSION: REJECTION
         CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'VELOEL 2')
 C
 c.............................................................
-CH FOR SCATTERING ANGLE FROM DIFFERENTIAL CROSS SECTION:
-C
-cdr  this proprietary option is disabled, for the time being.
-c       IF (LHABER) THEN
-c         RMN=RMASS
-c         RMI=RMASSP(IPLS)
-c         RMSI=1./(RMN+RMI)
-c         RLMS=RMN*RMI*RMSI
-c         ER=RLMS*VRELQ*CVELI2
-c         RAN=RANF_EIRENE()
-c         CALL EIRENE_SCATANG (ER,RAN,ELTHDUM,CTCHDUM,SIGHABER)
-c         CEL= SIGHABER*AU_TO_CM2
-c      END IF
-Cdr
+cdr  test output only
+c       elb=exp(elab)
+c       if (elb.le.0.01) then
+c         write (6,*) 'elb veloel ',elab,elb
+c       endif
+cdr
 c.....................................................................
 
 C
@@ -264,9 +283,9 @@ C  REJECT
             IF (ICOUNT.LT.500) GOTO 123  ! fetch a new bulk ion velocity
 c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
-     .        'ICOUNT TOO LARGE IN VELOEL. ACCEPT SAMPLE '
+     .        'ICOUNT TOO LARGE ( > 500) IN VELOEL. ACCEPT SAMPLE '
             WRITE (iunout,*) 'NPANU, IREAC, IREL, ELAB ',
-     .                   NPANU, IREAC, IREL, ELAB
+     .                        NPANU, IREAC, IREL, ELAB
           ELSE
 C  ACCEPT
             XEMEAN(IREL)=XEMEAN(IREL)+ICOUNT
@@ -275,7 +294,7 @@ C  ACCEPT
 C       ELSEIF (NLWEIGHT) THEN
  
         ELSE
-C  FOR SOME REASON SGCVMX COULD NOT BE FOUND.
+C  FOR SOME REASON SGEVMX COULD NOT BE FOUND, or rejection is too inefficient.
 C  SO USE WEIGHTING RATHER THAN REJECTION
           WEIGHT=WEIGHT*CEL*VREL*DIIN(IPLS,K)/SIGVEL(IREL)
         ENDIF
@@ -283,6 +302,8 @@ C
         VXI=VXN
         VYI=VYN
         VZI=VZN
+
+C
       ENDIF
 C
 C  STEP 1 FINISHED, INCIDENT BULK "ION'S" (IPLS) VELOCITY IS SET: VXI,VYI,VZI
@@ -290,7 +311,8 @@ C
 200   CONTINUE
 C
 C  FIND TYPE OF COLLISION: IFLAG  
-C    IFLAG=-1       :  NOTHING TO BE DONE, POST COLLISION VELOCITY IS ALREADY SAMPLED FROM MAXWELLIAN
+C    IFLAG=-1       :  NOTHING TO BE DONE, POST COLLISION VELOCITY IS ALREADY SAMPLED 
+C                      FROM MAXWELLIAN
 C                      E.G. (relaxation)-BGK APPROXIMATION.
 C    IFLAG=0        :  ISOTROPIC, IN CENTER OF MASS
 C    IFLAG=IFTFLG>0 :  FIT-FORM OF ITERACTION POTENTIAL (ELASTIC COLLISION IREL)
@@ -301,7 +323,9 @@ C
 
 C  ELASTIC TEST-PARTICLE COLLISION IN BGK APPROXIMATION (E.G.: NEUTRAL-NEUTRAL)
 C  ENFORCE: EXCHANGE OF IDENTITY COLLISION IN LAB FRAME 
-C  (AS IT IS ALSO DEFAULT FOR CX COLLISIONS)
+C  (AS IT IS ALSO DEFAULT FOR CX COLLISIONS).
+C  FOR EQUAL MASSES OF BOTH COLLISION PARTNERS THIS CORRESPONDS
+C  TO SCATTERING ANGLE = PI IN COM FRAME
         IFLAG=-1
 
       ELSEIF (MODCOL(5,0,IREL).EQ.0) THEN
@@ -312,12 +336,12 @@ C  SOME STUFF HERE FOR COM ISOTROPIC COLLISIONS.....
  
       ELSEIF (MODCOL(5,0,IREL).GT.0) THEN
 C  INTERACTION POTENTIAL IS GIVEN, get fit coefficients of interaction potential
-        KK=MODCOL(5,0,IREL)
-        IFLAG=IFTFLG(KK,0)   !cdr  is iftflg correctly set for repulsive potential?
+        IREAC=MODCOL(5,0,IREL)
+        IFLAG=IFTFLG(IREAC,0)   !cdr  is iftflg correctly set for repulsive potential?
 cdr                                check slreac. There default is set to iftflg=2 (Morse)
-CDR REACDAT should not be used during trajectory generation, see comments on xstel.f
+CDR REACDAT should not be used during trajectory generation, see comments in xstel.f
 c   to be done.
-        P(1:9)=REACDAT(KK)%POT%POLY%DBLPOL(1:9,1)
+        P(1:9)=REACDAT(IREAC)%POT%POLY%DBLPOL(1:9,1)
       ENDIF
 C
 
@@ -342,7 +366,6 @@ c
         VREL=SQRT(VRELQ)
         VRYZ=SQRT(VRQYZ+EPS60)
 C  IMPACT PARAMETER --> SCATTERING ANGLE --> NEW VELOCITY
-C       IF (.NOT.LHABER) THEN
 C  CENTER OF MASS VELOCITY
         VSX=(RMI*VXI+RMN*VX)*RMSI
         VSY=(RMI*VYI+RMN*VY)*RMSI
@@ -367,11 +390,6 @@ C  NEXT: STEP 3 ,  FIND IMPACT PARAMETER B (--> SCATTERING ANGLE --> NEW VELOCIT
 
           BMAX=SQRT(CEL*PIAI)/0.52917E-8
           B= SQRT(RANF_EIRENE( ))*BMAX
-
-C  DIRECT SAMPLING FROM DIFFERENTIAL CROSS SECTION:  out
-C       ELSEIF (LHABER) THEN
-C  NOTHING TO BE DONE HERE
-
         END IF
 
       ENDIF
@@ -382,14 +400,17 @@ C  NEXT: STEP 4
 C
       IF (IFLAG.EQ.-1) THEN
 C
-C  THIS PART: ONLY RELAXATION TO BULK MAXWELLIAN, I.E., POST COLLISION
-C             TEST PARTICLE IS SAMPLED FROM (WEIGHTED) BULK POPULATION (E.G.: BGK-COLLISION)
+C  THIS PART: ONLY (BGK-TYPE) RELAXATION TO A MAXWELLIAN, I.E., POST COLLISION
+C             TEST PARTICLE IS SAMPLED FROM (WEIGHTED OR UNWEIGHTED) 
+C             BULK POPULATION (E.G.: EL. BGK-COLLISION; EXCHANGE OF IDENTIY)
 C
         VELQ=VXI*VXI+VYI*VYI+VZI*VZI
         VEL=SQRT(VELQ)
-        VELX=VXI/VEL
-        VELY=VYI/VEL
-        VELZ=VZI/VEL
+        VN=1./VEL
+        VELX=VXI*VN
+        VELY=VYI*VN
+        VELZ=VZI*VN
+C
         GOTO 1000
 
       ELSEIF (IFLAG.EQ.0) THEN
@@ -401,14 +422,7 @@ C
       ELSEIF (IFLAG.GT.0) THEN
 C
 C  THIS PART: FIND DEFLECTION ANGLE
-C             BINARY COLLISION KINETICS  OR
-C             SAMPLING FROM DIFFERENTIAL CROSS SECTION (IF LHABER)
-C
-C       IF (LHABER) THEN
-C         RAN=RANF_EIRENE()
-C         CALL EIRENE_SCATANG (ER,RAN,ELTHETA,CTTETHA,DUMSIGMA)
-C         PH=ELTHETA
-C       ELSE
+C             BINARY COLLISION KINETICS  
 C
 C  COLLISION PARAMETERS IFLAG, ER AND B ARE DEFINED NOW.
 C
@@ -462,6 +476,10 @@ C
       WRITE (iunout,*) 'AVAILABLE '
       WRITE (iunout,*) 'ITYP,IATM,IMOL,IION,IPLS ',
      .                  ITYP,IATM,IMOL,IION,IPLS
+      CALL EIRENE_EXIT_OWN(1)
+999   CONTINUE
+      WRITE (iunout,*)
+     .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
  
 C  the following ENTRY is for reinitialization of EIRENE 

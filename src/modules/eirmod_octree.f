@@ -7,20 +7,20 @@
 !*   IEK-4 FZJ
 !*   WS 2011
 !****************************************
- 
+
       MODULE EIRMOD_OCTREE
- 
-      USE EIRMOD_PRECISION 
+
+      USE EIRMOD_PRECISION
 !real precision parameter
-      USE EIRMOD_CCONA  
+      USE EIRMOD_CCONA
 !constants like EPS12, etc
       USE EIRMOD_COMPRT, only: iunout !common printing (unit nums)
       USE EIRMOD_CTRCEI, only: trcoct !tracing switches
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: OCTREE_NewTree,
      .          OCTREE_CreateChildren, OCTREE_AddSurface,
      .          OCTREE_GetLeafchild, OCTREE_Traverse,
@@ -63,9 +63,9 @@ c       by the factor below!
 c       by what factor do we divide the length to add to the "ray"?
         REAL(DP) :: factor
 c       bounds are the B1 and B2 point of the convex hull with a
-c       small amount more to have a slightly larger volume. we 
-c       divide by this length, so we don't have problems with floating
-c       point arithmetics anymore
+c       small amount more to have a slightly larger volume. we
+c       divide by this length, so we do not have problems with floating
+c       point arithmetic anymore
         REAL(DP), DIMENSION(3,2) :: bounds
       END TYPE octree
 
@@ -96,7 +96,7 @@ c       save how many surface we actually have (surfaces array is bigger ;) )
       END TYPE
 
       CONTAINS
- 
+
 
       FUNCTION OCTREE_NewTree (X, Y, Z, LAYERS, MAXNSURF) result(tree)
 
@@ -118,11 +118,11 @@ c     RETURNS: pointer to the new tree
 
         if(trcoct) WRITE (iunout,*) 'ALLOCATING NEW TREE OBJECT'
 
-c       strech the konvex hull a bit, so we have a closed intervall
+c       strech the konvex hull a bit, so we have a closed interval
 c       at the right ends of all directions, as we only check with .lt.
 c       for these ends... (otherwise a point exactly on the edge or vertex
 c       on the right ends would not be in the block)
-c       9.2.12: -> also add a little 
+c       9.2.12: -> also add a little
         XX=X
         YY=Y
         ZZ=Z
@@ -149,7 +149,7 @@ c       root node will have layer LAYERS-1, all leafs have level 0
 
 c       build a new root
         tree%root => OCTREE_NewNode(tree, XX,YY,ZZ, rootnumber, preroot)
-c       delete the preroot parent, we don't need this anymore
+c       delete the preroot parent, we do not need this anymore
         tree%root%parent => NULL()
         DEALLOCATE(preroot)
       END FUNCTION OCTREE_NewTree
@@ -218,7 +218,7 @@ c       half length of the norm of the vector between the edges)
         node%radius = 0.5 * sqrt((x(2)-x(1))**2 +
      .                           (y(2)-y(1))**2 +
      .                           (z(2)-z(1))**2)
-     
+
 c       get the length of the nodes edges, compare with shortest of tree
 c       and replace if shorter
         short = minval(B(:,2)-B(:,1))/tree%factor
@@ -243,15 +243,15 @@ c       the x, y, z coordinates for building the new nodes
 c       -> these coords save the lower and upper edge...
         REAL(DP), DIMENSION(3,3) :: B
         REAL(DP), DIMENSION(2) :: C1, C2, C3
-        
+
         if (trcoct) then
-          WRITE (iunout,*)'WE CREATE CHILDREN FOR BLOCK', 
+          WRITE (iunout,*)'WE CREATE CHILDREN FOR BLOCK',
      .                     parent%number,'ON LAYER', parent%layer
         end if
-        
+
 c       new layer!
         layer = parent%layer-1
-        
+
 c       fill our coordinates arrays - we already calculated
 c       x3, y3, z3 as we created the parent node -> center point!
         B = parent%B
@@ -344,7 +344,7 @@ c       => only inspect these layers!
 c         dot product of side norm vec and d
           DOTP = dot_product(d,NORMAL(:,I))
           IF (DOTP > EPS12) THEN
-c           now check on the intersection point. we dont need cramer here,
+c           now check on the intersection point. we do not need cramer here,
 c           as we have the hesse normal form of the plane:
 c           s = -(plane distance + <normal vec , aufpunkt>)/<normal vec, direction>
 c           ==> we need to calc the distance of the plane from (0,0,0) first:
@@ -382,7 +382,7 @@ c     RETURNS : true or false, depending on in or out of block
         LOGICAL :: yesno
 
         yesno = .FALSE.
-c       we define always an closed intervall at B1 and an open intervall
+c       we define always an closed interval at B1 and an open interval
 c       at B2 (the exact point is normally a B1 in another block)
         yesno = ALL(point .ge. (block%b(:,1)-EPS12)) .and.
      .          (ALL(point .lt. (block%b(:,2)+EPS12)) .or.
@@ -401,7 +401,7 @@ c        REAL(DP), DIMENSION(3), INTENT(IN) :: point
 c        LOGICAL :: yesno
 
 c        yesno = .FALSE.
-c       we define always an closed intervall at B1 and an open intervall
+c       we define always an closed interval at B1 and an open interval
 c       at B2 (the exact point is normally a B1 in another block)
 c        IF(ALL(point.ge.block%b(:,1)) .and.
 c     .     ALL(point.le.block%b(:,2))) yesno = .TRUE.
@@ -419,7 +419,7 @@ c     RETURNS : a pointer to the block, in which the location code lies
         TYPE(ocnode), POINTER :: child
         INTEGER, DIMENSION(3) :: location
         INTEGER :: nextlevel, branchbit, indx
-        
+
 c       convert the given point to a location code we can search for
         location = OCTREE_PointToLocation(tree, point)
 c       if any of the location code is < 0 we are NOT in the octree!
@@ -427,7 +427,7 @@ c       if any of the location code is < 0 we are NOT in the octree!
           nullify(child)
           return
         end if
-        
+
 c       start search at the given root node
         child => tree%root
 c       do not stop until we found a leaf
@@ -443,7 +443,7 @@ c       do not stop until we found a leaf
 
 c     --- TRAVERSE THE TREE ---
 c     this function returns a point at which we land, if we "fly"
-c     through the given block. this point lies in the correct neighbor 
+c     through the given block. this point lies in the correct neighbor
 c     (if there is any).
 c     tree    : the actual tree in which we traverse
 c     block   : the block through which we "fly"
@@ -469,7 +469,7 @@ c       z=-1 -> bottom, 1 -> top
      .                                                  0,-1,0, 0,1,0,
      .                                                  0,0,-1, 0,0,1/)
      .                                                 ,(/3, 6/))
-     
+
 c       we want to traverse our "ray" through the block we are in,
 c       so we first get the correct intersection point of ray and block
 c       walls...
@@ -482,7 +482,7 @@ c       => only inspect these layers!
 c         dot product of side norm vec and direction dir
           DOTP = dot_product(dir,NORMAL(:,I))
           IF (DOTP > EPS12) THEN
-c           now check on the intersection point. we dont need cramer here,
+c           now check on the intersection point. we do not need cramer here,
 c           as we have the hesse normal form of the plane:
 c           s = -(plane distance + <normal vec , aufpunkt>)/<normal vec, direction>
 c           ==> we need to calc the distance of the plane from (0,0,0) first:
@@ -499,10 +499,10 @@ c           our back!
             if(s .lt. s_min ) s_min = s
           END IF
         END DO
-        
+
 c       get the resulting intersection point out of the search...
         travp = point + s_min * dir
-        
+
 c       now as we have the point where we wanted to be, add an extra
 c       to be sure we land in the neighbor block
         travp = travp + tree%shortest/norm*dir
@@ -593,7 +593,7 @@ c       calc x3 (=t =line-equation parameter)
 c       if the parameter is not >0, we can stop here
         IF (RES(3).le.0) RES = (/0, 0, 0/)
       END FUNCTION OCTREE_Cramer
-      
+
 c     --- PRINTING OCTREE IN XML FOR VTK TOOL ---
 c     this function prints the octree as cubes for the vtk tool EGview3D
 c     tree : pointer to the tree that we want to be printed
@@ -601,19 +601,19 @@ c     unum : unit number of the ALREADY OPEN file we write to
       SUBROUTINE OCTREE_PrintVTK(tree, unum)
         TYPE(ocTree), POINTER, INTENT(IN) :: tree
         INTEGER, INTENT(IN) :: unum
-        
+
         write(unum,*) '<cubes>'
 c       recursive tour through the octree, printing leaf childs only
         call PrintCube(tree%root, unum)
         write(unum,*) '</cubes>'
-        
+
       END SUBROUTINE OCTREE_PrintVTK
-      
+
       RECURSIVE SUBROUTINE PrintCube(block, unum)
         TYPE(ocNode), POINTER, INTENT(IN) :: block
         INTEGER, INTENT(IN) :: unum
         INTEGER :: i
-        
+
 c       if this is a leaf, print it
         if(.not. allocated(block%children)) then
           write(unum,*) '<cube>'
@@ -627,26 +627,26 @@ c       else go one level deeper
           end do
         end if
       END SUBROUTINE PrintCube
-      
+
       SUBROUTINE OCTREE_PrintGraphviz(tree, unum)
         TYPE(ocTree), POINTER, INTENT(IN) :: tree
         INTEGER, INTENT(IN) :: unum
-        
+
         write(unum,*) 'digraph G {'
 c       recursive tour through the octree, printing leaf childs only
         call PrintDot(tree%root, unum)
         write(unum,*) '}'
       END SUBROUTINE OCTREE_PrintGraphviz
-      
+
       RECURSIVE SUBROUTINE PrintDot(block, unum)
         TYPE(ocNode), POINTER, INTENT(IN) :: block
         INTEGER, INTENT(IN) :: unum
         INTEGER :: i
         CHARACTER(40) :: me, kidname
         TYPE(ocNode), POINTER :: child
-        
+
         WRITE(me,"(4(i0))") block%layer,block%number
-        
+
 c       first print ourself
         write(unum,"('  ',a,a,a,':',i0,a)")
      .        trim(adjustl(me)),' [label="',trim(adjustl(me)),
@@ -658,15 +658,13 @@ c       to print their labels
           do i=1,8
             child => block%children(I)%node
             WRITE(kidname,"(4(i0))") child%layer,child%number
-            
+
             write(unum,*)'  ',trim(adjustl(me)),
      .                   ' -> ',trim(adjustl(kidname)),';'
             call PrintDot(child, unum)
           end do
         end if
       END SUBROUTINE PrintDot
-      
+
 
       END MODULE EIRMOD_OCTREE
- 
- 

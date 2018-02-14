@@ -66,7 +66,7 @@ cdr what does that mean for H-COL? ADAS ?  what about "spectral database"?
 cdr where described, where read ?
 
 C            in case FILNAM=ADAS:  the file name DSN = REAC_ELNAME.dat is opened (stream 29+ifoff)
-C                                  and then subroutine read_adas.f is called.
+C                                  and then subroutine read_tab2d.f is called.
 
 c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, OT, etc.
 c
@@ -107,34 +107,28 @@ c    MODCLF: see below: further information on input a&m data structure
 c    DELPOT: ionisation potential (for H.10 data),
 c            currently handeled in input.f. not nice! also missing still for: H.8, H.9
 c
-C    IFTFLG=IFTFLG(IR,IFLG): flag for type of fitting expression  
-C    IFLG  internally derived from ISW
-C          0 for potential, (ISW=0)
+C    IFTFLG=IFTFLG(IR,IH): flag for type of fitting expression  ("fit-flag=...")
+C    IH  internally derived from ISW, for different types of data:
+C          0 for interaction potential, or differenctial cross sections (ISW=0)
 C          1 for cross section, (ISW=1)
 C          2 for rate-coeff, (ISW=2,3,4)
 C          3 for mom-weighted rate coeff. (ISW=5,6,7)
 C          4 for energy weighted rate coeff. (ISW=8,9,10)
 C          5 for other quantities, population densities, etc.. (ISW=11,12)
-c    IFTFLG: eirene flag for type of fitting expression ("fit-flag=...")
-c
-cdr  is iftflg only known for option filname=const ?????
 c
 c
-C            DEFAULTS: =2 IFLG=0
-C                         FOR POTENTIAL (GEN. MORSE)
-C                         IFLG > 0:
-C                         NOT IN USE
-C                      =0 FOR ALL OTHERS (POLYNOM, DOUBLE POLYNOM)
-C                      =3, IFLG=1:
-C                          ionisation/excitation cross section formula (METHANE,...)
-C                          IFLG > 1, IFLG=0:
-C                          NOT IN USE
-C
-C                      =L10 (L=0,1): ONLY ONE CONSTANT RATE OR RATE-COEFF.
-C                      =LMN L=0: rate coefficient (volume/time).
-c                                multiply with density to turn it into a rate (1/time)
-C                      =LMN L=1: rate, not rate coefficient.
-c                                no multiplication of density
+C       DEFAULTS: IH=0  (H.0):
+C                      FOR INTERACTION POTENTIAL (GEN. MORSE)
+C                      =2
+C                 IH=1  (H.1):
+C                      =0,  CROSS-SECTION (9-POLYNOM
+C                      =3,  cross-section (ionisation/excitation cross section
+C                           formula (METHANE,...)
+C                 IH=2,3..... (H.2, H.3,....H.10)
+C                      =0,  FOR RATE COEFFICIENTS (9-POLYNOM, 9X9-DOUBLE POLYNOM)
+C                      =10, FOR RATE COEFFICIENTS (CONSTANT) 
+C                      =100 FOR RATE, not rate coefficient, 
+c                      =110 FOR RATE, not rate coefficient, (CONSTANT)
 c
 C  READ A&M DATA FROM THE FILES INTO EIRENE ARRAY CREAC
 C
@@ -352,14 +346,13 @@ C  H.0
         MODCLF(IR)=MODCLF(IR)+1
         IFLG=0
 C  DEFAULT POTENTIAL: GENERALISED MORSE
-        IFTFLG(IR,IFLG)=2
+        IFTFLG(IR,0)=2
         C1L = 'XXMIN'
         C1R = 'XXMAX'
         C2L = 'YYMIN'
         C2R = 'YYMAX'
 C  H.1
       ELSEIF (ISW.EQ.1) THEN
-!ITER   CHR='a0'
         CHR=' a0 '
         CHRL='al0'
         CHRR='ar0'
@@ -369,14 +362,13 @@ C  H.1
         MODCLF(IR)=MODCLF(IR)+10
         IFLG=1
 C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)  VS LN(E)
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,1)=0
         C1L = 'ELABMIN'
         C1R = 'ELABMAX'
         C2L = 'YYMIN'
         C2R = 'YYMAX'
 C  H.2
       ELSEIF (ISW.EQ.2) THEN
-!ITER   CHR='b0'
         CHR=' b0 '
         CHRL='bl0'
         CHRR='br0'
@@ -386,7 +378,7 @@ C  H.2
         MODCLF(IR)=MODCLF(IR)+100
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) VS LN(T), FOR E0=0.
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,2)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
         C2L = 'YYMIN'
@@ -402,7 +394,7 @@ C  H.3
         I0=1
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(E0)
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,2)=0
         C1L = 'TIMIN'
         C1R = 'TIMAX'
         C2L = 'EBMIN'
@@ -418,14 +410,13 @@ C  H.4
         I0=1
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(NE)
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,2)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
         C2L = 'NEMIN'
         C2R = 'NEMAX'
 C  H.5
       ELSEIF (ISW.EQ.5) THEN
-!ITER   CHR='e0'
         CHR=' e0 '
         CHRL='el0'
         CHRR='er0'
@@ -435,7 +426,7 @@ C  H.5
         MODCLF(IR)=MODCLF(IR)+1000
         IFLG=3
 C  MOMENTUM WEIGHTED RATE COEFFICIENT
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,3)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
         C2L = 'YYMIN'
@@ -451,7 +442,7 @@ C  H.6
         I0=1
         IFLG=3
 C  MOMENTUM WEIGHTED RATE COEFFICIENT
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,3)=0
         C1L = 'TIMIN'
         C1R = 'TIMAX'
         C2L = 'EBMIN'
@@ -467,14 +458,13 @@ C  H.7
         I0=1
         IFLG=3
 C  MOMENTUM WEIGHTED RATE COEFFICIENT
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,3)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
         C2L = 'NEMIN'
         C2R = 'NEMAX'
 C  H.8
       ELSEIF (ISW.EQ.8) THEN
-!ITER   CHR='h0'
         CHR=' h0 '
         CHRL='hl0'
         CHRR='hr0'
@@ -484,7 +474,7 @@ C  H.8
         MODCLF(IR)=MODCLF(IR)+10000
         IFLG=4
 C  ENERGY WEIGHTED RATE COEFFICIENT
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,4)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
         C2L = 'YYMIN'
@@ -500,7 +490,7 @@ C  H.9
         I0=1
         IFLG=4
 C  ENERGY WEIGHTED RATE COEFFICIENT
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,4)=0
         C1L = 'TIMIN'
         C1R = 'TIMAX'
         C2L = 'EBMIN'
@@ -516,14 +506,13 @@ C  H.10
         I0=1
         IFLG=4
 C  ENERGY WEIGHTED RATE COEFFICIENT
-        IFTFLG(IR,IFLG)=0
+        IFTFLG(IR,4)=0
         C1L = 'TEMIN'
         C1R = 'TEMAX'
         C2L = 'NEMIN'
         C2R = 'NEMAX'
 C  H.11
       ELSEIF (ISW.EQ.11) THEN
-!ITER   CHR='k0'
         CHR=' k0 '
         CHRL='kl0'
         CHRR='kr0'
@@ -552,6 +541,7 @@ C  H.12
         C2R = 'P2MAX'
       ENDIF
 
+
       IF (INDEX(FILNAM,'H-COL').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
@@ -559,8 +549,8 @@ c  close unit=29+ifoff:   done in READ_COLRAD.f
       END IF
 
       IF (INDEX(FILNAM,'ADAS').NE.0) THEN
-        CALL EIRENE_READ_ADAS (IR,REAC,ISW,IZ1)
-c  close unit=29+ifoff:   done in READ_TABLE2.f
+        CALL EIRENE_READ_TAB2D (IR,REAC,ISW,IZ1)
+c  close unit=29+ifoff:   done in READ_TAB2D.f
         RETURN
       END IF
 
@@ -592,14 +582,15 @@ C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE 'iunin'
           REACLINES(IRLINES)%CONST(1) = CREACD(1,1)
         ELSE
 C
-C  READ 9 FIT COEFFICIENTS FROM INPUT FILE 'iunin'
+C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) (CREACD(IC,1),IC=1,9)
           REACLINES(IRLINES)%NCONST = 9
           REACLINES(IRLINES)%CONST(1:9) = CREACD(1:9,1)
 
         END IF
-        CALL EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,
-     .                                IUNOUT,.FALSE.)
+        CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
+     .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.FALSE.)
+c  no optional extrapolation flags here 
         RETURN
       ENDIF
 C
@@ -607,7 +598,7 @@ C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
 C  FILNAM= "H-COL", "CONST", "ADAS", "HYDRTC", "PHOTON"
-C  in these cases: already returned to calling program
+C  in all these cases: already returned to calling program
 C
 C......................................................................
 C  AT THIS POINT: FILNAM= AMJUEL, HYDHEL, H2VIBR, METHAN, i.e. single or double polynomial fits
@@ -885,10 +876,12 @@ C
 2000  CONTINUE
 
       CALL
-     .  EIRENE_SET_REACTION_DATA(IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,
-     .                       .TRUE.,RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
-     .                              RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .                              RTMAX,ERTMAX,ETH)
+     .  EIRENE_SET_REACTION_DATA   ! this routine sets only "POLY" data
+     .            (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.TRUE.,
+c  from here on: optional input to SET_REACTION_DATA
+     .                       RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
+     .                       RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
+     .                       RTMAX,ERTMAX,ETH)
 C
       CLOSE (UNIT=29+ifoff)
 C

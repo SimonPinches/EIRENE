@@ -181,8 +181,8 @@ C
         IF (NSTGRD(NCELL) > 0) CYCLE
         IF (LGVAC(NCELL,NPLS+1)) CYCLE
 
-        TE=TEIN(NCELL)
-        DE=DEIN(NCELL)
+          TE=TEIN(NCELL)
+          DE=DEIN(NCELL)
 C
         SIGADD1=0.
         SIGADD2=0.

@@ -1,14 +1,16 @@
 C nov. 05:  add mcstep, fistep, festep, shstep, vpstep
 c                              ve and eltot
 c requires also:  2005, patch 1 of cstep.f
-C
+c
+Cdr  sept 17: call learca  --> learca2  (search along 1 coordinate in 2D array)
+
       FUNCTION EIRENE_STEP(NSPZI,NSPZE,NS,ISTEP)
 C
 C   SET  CUMULATIVE DISTRIBUTION FUNCTION VF(I),I=1,NS; VF(1)=0;
 C   VF(NS)=1. ON THE GRID RRSTEP(I),I=1,NS
 C   FROM PIECEWISE CONSTANT DISTRIBUTION DENSITY FLSTEP(..,I),I=1,NS-1
 C   FLSTEP(0,..,I) IS THE VALUE OF THE NON NORMALIZED DENSITY IN THE
-C   INTERVALL RRSTEP(I)<X<=RRSTEP(I+1), AFTER SUMMATION OVER THE
+C   INTERVAL RRSTEP(I)<X<=RRSTEP(I+1), AFTER SUMMATION OVER THE
 C   FIRST (SPECIES) INDEX ISPZ=NSPZI,NSPZE
 C
 C   THE NORMALIZING FACTOR: INTEGR. FLSTEP(0,X) DX  IS RETURNED AS
@@ -21,18 +23,18 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CTRCEI
       USE EIRMOD_CSTEP
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y
       INTEGER, INTENT(IN) :: NSPZ1, ISTEP, NSPZI, NSPZE, NS
       INTEGER, INTENT(OUT) :: IINDEX
-      REAL(DP), ALLOCATABLE :: 
+      REAL(DP), ALLOCATABLE ::
      .            SP0(:,:),SP1(:,:),SP2(:,:),
      .            SP3(:,:),SP4(:,:),SP5(:,:)
       INTEGER, ALLOCATABLE :: IP0(:),IP1(:),IP2(:),IP3(:),IP4(:)
       REAL(DP) ::  DELR, XX, EIRENE_STEP, EIRENE_STEP0, EIRENE_STEP1
-      INTEGER :: NS1, ISPZ1, ISPZ, EIRENE_LEARCA, I, IS, JJ, JJM, NSM,  
+      INTEGER :: NS1, ISPZ1, ISPZ, EIRENE_LEARCA2, I, IS, JJ, JJM, NSM,
      .           J, IND, ISPZTI, ISPZV
       LOGICAL :: NLINV
       SAVE
@@ -46,13 +48,13 @@ C
 C
       NLINV=.FALSE.
 
-1     CONTINUE  !  POSSIBLY: COME BACK HERE FROM DO 21 LOOP, 
+1     CONTINUE  !  POSSIBLY: COME BACK HERE FROM DO 21 LOOP,
 CDR                AND REVERT THE ORDERING OF STEP FUNCION
 CDR                SUCH THAT RRSTEP IS MONOTONICALLY INCREASING
 
       IF (NLINV) THEN
 
-cdr  temporarily allocate intermediate work-arrays, 
+cdr  temporarily allocate intermediate work-arrays,
 c    for preparing step-function no. ISTEP
 
         allocate (sp0(nspz,ngitt))
@@ -160,7 +162,7 @@ cdr  de-allocate temporary work-arrays
         deallocate (ip3)
         deallocate (ip4)
       ENDIF
- 
+
 C  inverting stepfunction: done
 C
 C  now: sum over species
@@ -181,9 +183,9 @@ C
           ELSTEP(ISPZ,ISTEP,J)=0.
         ENDDO
 10    CONTINUE
- 
+
 C
-C   set cummulative distribution VL (particles) and EL (energy),
+C   set cumulative distribution VL (particles) and EL (energy),
 C                   for all species: ispz and for sum over species: ispz=0
 C
       DO 20 ISPZ=0,NSPZ
@@ -207,11 +209,11 @@ C  INVERT COMPLETE STEPFUNCTION ISTEP (ONLY ONCE)
      .                     ELSTEP(ISPZ,ISTEP,J-1)
 21      CONTINUE
 20    CONTINUE
-C  CUMMULATIVE STEPFUNCTION "VF" NO. ISTEP IS DEFINED NOW
+C  CUMULATIVE STEPFUNCTION "VF" NO. ISTEP IS DEFINED NOW
 C  RETURN TOTAL FLUX, SUM OVER SPECIES
- 
+
       EIRENE_STEP=VF(0,ISTEP,NS)
- 
+
 C  NORMALIZE VF TO 1.
 C
       DO 25 ISPZ=0,NSPZ
@@ -219,7 +221,7 @@ C
 C  save totals before normalization
         FLTOT(ISPZ,ISTEP)=VF(ISPZ,ISTEP,NS)
         ELTOT(ISPZ,ISTEP)=VE(ISPZ,ISTEP,NS)
- 
+
         IF (FLTOT(ISPZ,ISTEP).LE.0.D0) THEN
           WRITE (iunout,*) 'WARNING FROM FUNCTION "STEP"'
           WRITE (iunout,*)
@@ -283,7 +285,7 @@ C
      .               RRSTEP(ISTEP,NS1)
         EIRENE_STEP0=1.
       ELSE
-        IND=EIRENE_LEARCA(X,RRSTEP,NSTEP,NS1,ISTEP,'STEP0       ')
+        IND=EIRENE_LEARCA2(X,RRSTEP,NSTEP,NS1,ISTEP,'STEP0       ')
         EIRENE_STEP0=ADDIV(ISPZ1,ISTEP,IND)+X*QUOTI(ISPZ1,ISTEP,IND)
       ENDIF
       RETURN

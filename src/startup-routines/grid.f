@@ -506,9 +506,13 @@ C  INDEX IS:           TRIANGLE SIDE
             J = INMTI(IS,IT)
             IF ( J .NE. 0) THEN
               IF ((NCHBAR(IS,IT) == 0) .AND. (ILIIN(J) <= 0)) THEN
+                IF ((ILIIN(J) < 0) .AND. (ILSWCH(J) < 1000)) THEN
+c  transparent surfaces, that switch into additional cells, are legal.
+c  all other transparent cell faces must either have a neighbor, or a surface boundary condition.
                 WRITE (iunout,*) 'SIDE',IS,' OF TRIANGLE ',IT,
      .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
                 LERROR = .TRUE.
+                END IF
               END IF
               SURF_TRIAN(J)%NUMTR = SURF_TRIAN(J)%NUMTR + 1
               SURF_TRIAN(J)%ITRIAS(SURF_TRIAN(J)%NUMTR) = IT
@@ -643,7 +647,7 @@ C
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.5
 C
-C  GRID DATA FOR TETRAHEDRONS ARE SET IN COUPLING ROUTINE
+C  GRID DATA FOR TETRAHEDRA ARE SET IN COUPLING ROUTINE
 C  NOTHING TO BE DONE HERE
 C
 C  SET DERIVED GRID DATA FOR LEVGEO = 5 OPTION
@@ -687,7 +691,7 @@ C  EDGE  3-4
           EDGELEN(1:6) = SQRT(VTETX(1:6,ITET)**2 +
      .                        VTETY(1:6,ITET)**2 +
      .                        VTETZ(1:6,ITET)**2)
-C  CALCULATE THE OUTER NORMALS OF TETRAHEDRONS
+C  CALCULATE THE OUTER NORMALS OF TETRAHEDRA
 C  SIDE 1-2-3
           PTETX(1,ITET) = VTETY(3,ITET)*VTETZ(1,ITET) -
      .                    VTETZ(3,ITET)*VTETY(1,ITET)
@@ -796,7 +800,7 @@ C
           END DO
           CALL EIRENE_LEER(2)
 
-          WRITE (iunout,*) ' NUMBER OF TETRAHEDRONS = ',NTET
+          WRITE (iunout,*) ' NUMBER OF TETRAHEDRA = ',NTET
           DO ITET=1,NTET
             WRITE (iunout,*)
             WRITE (iunout,*) ' TETRAEDER ',ITET

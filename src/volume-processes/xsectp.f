@@ -11,7 +11,7 @@ cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung.
 CDR           bremsstrahlung: new function eirene_brems, replaces gaunt factor function
 cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of rate as for H+ default model.
 cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
-cdr             should not have had any effect, on any run, so far, 
+cdr             should not have had any effect, on any run, so far,
 cdr             since this reaction did not exist in EIRENE at all until June 15
 
 C
@@ -48,7 +48,7 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
@@ -189,6 +189,7 @@ csw check photonic process
                idsc=idsc+1
                nrrci=nrrci+1
                IF (NRRCI.GT.NREC) GOTO 992
+cdr  here should come call to xstph or xstot
                call EIRENE_XSTRC(ipls,nrc,idsc,nrrci)
                cycle
 csw end branch
@@ -200,11 +201,12 @@ C  RECOMBINATION MODEL FOR BULK IONS
               IDSC=IDSC+1
               NRRCI=NRRCI+1
               IF (NRRCI.GT.NREC) GOTO 992
+
               IRRC=NRRCI
               LGPRC(IPLS,IDSC)=IRRC
 cdr  for notational consistency: here should come a call to routine xstrc,
 cdr  for rc type processes
-cdr  as already in case of xsecta, xsectm, xsecti, etc.. 
+cdr  as already in case of xsecta, xsectm, xsecti, etc..
 cdr  there for the corresponding ei,el,cx and pi processes
 cdr  this next stuff should go into xstrc.f
               ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
@@ -252,6 +254,8 @@ C           TO BE WRITTEN
 C  2.B) RATE COEFFICIENT(TE)
               IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
                 IF (NSTORDR >= NRAD) THEN
+
+cdr  lexp should not be set from mod(iftflg), that has completely different meaning !!!!!
                   LEXP = .NOT. (MOD(IFTFLG(KK,2),100) == 10)
                   DO J=1,NSBOX
 !pb                 IF (LGVAC(J,IPLS)) CYCLE
@@ -411,7 +415,7 @@ c  bremsstrahlung correction done.
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
 C  SHIFT ELECTRON COOLING RATE BY DELE * TABRC
-c  DELE= IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT 
+c  DELE= IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT
 C        INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)

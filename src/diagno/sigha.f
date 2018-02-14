@@ -11,7 +11,8 @@ c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
 c            
 C
-      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST,ICHORI)
+      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
+
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST).
@@ -55,16 +56,13 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_COMPRT
       USE EIRMOD_COMUSR
-      USE EIRMOD_COMSIG
  
       IMPLICIT NONE
  
-      INTEGER, INTENT(IN) :: INIT, JJJ, ICHORI
+      INTEGER, INTENT(IN) :: INIT, JJJ
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
       REAL(DP) :: PENOLD
-      INTEGER, SAVE :: LNO
-      INTEGER :: J, IADV
       INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
       LOGICAL :: LARGST
       DATA ISTOLD/-1/
@@ -81,51 +79,51 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
       IF (INIT.EQ.0) THEN
         PSIG=0.
         IF (LARGST) ARGST=0.
+
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
-     .      (PEN .NE. PENOLD)) then
-!          if (PEN.EQ.12.089_DP) THEN
-!            write (iunout,*) ' ly_beta '
-!            CALL EIRENE_Ly_beta 
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.10.2375_DP) THEN
-!            write (iunout,*) ' ly_alpha '
-!            CALL EIRENE_Ly_alpha 
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.3.0222_DP) THEN
-!            write (iunout,*) ' ba_delta '
-!            CALL EIRENE_Ba_delta
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!           elseif (PEN.EQ.2.8560_DP) THEN
-!            write (iunout,*) ' ba_gamma '
-!            CALL EIRENE_Ba_gamma
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.2.5500_DP) THEN
-!            write (iunout,*) ' ba_beta '
-!            CALL EIRENE_Ba_beta
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.1.8889_DP) THEN 
-!            write (iunout,*) ' ba_alpha '
-!            CALL EIRENE_Ba_alpha
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          else
-!            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
-!            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
-!            ADDV(NADVI+1:NADVI+7,:) = 0._DP
-!          endif
+     .      (PEN .NE. PENOLD) ) then
+c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
+c         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+c    .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+c    .                 NADVI+7)
 
-!          CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
-!     .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-
-           CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
-        endif
+          if (PEN.EQ.12.089_DP) THEN
+            write (iunout,*) ' ly_beta '
+            CALL EIRENE_Ly_beta 
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.10.2375_DP) THEN
+            write (iunout,*) ' ly_alpha '
+            CALL EIRENE_Ly_alpha 
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.3.0222_DP) THEN
+            write (iunout,*) ' ba_delta '
+            CALL EIRENE_Ba_delta
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+           elseif (PEN.EQ.2.8560_DP) THEN
+            write (iunout,*) ' ba_gamma '
+            CALL EIRENE_Ba_gamma
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.2.5500_DP) THEN
+            write (iunout,*) ' ba_beta '
+            CALL EIRENE_Ba_beta
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.1.8889_DP) THEN 
+            write (iunout,*) ' ba_alpha '
+            CALL EIRENE_Ba_alpha
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          else
+            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
+            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
+            ADDV(NADVI+1:NADVI+7,:) = 0._DP
+          endif
+        endif   ! NEW INTERNAL ITERATION, OR NEW LINE, OR NEW STRATUM
 
         ISTOLD=ISTRA
         ITROLD=IITER
@@ -135,41 +133,29 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
 C
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2
 C
-!      IF (NSPZ+2.LT.6) THEN
-!        WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
-!        CALL EIRENE_EXIT_OWN(1)
-!      ENDIF
+!WZ:  This error message might be obsolete.
+      IF (NSPZ+2.LT.6) THEN
+        WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
 C
       ncelc=ncltal(ncell)
-!      PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)
-!      PSIG(2)=PSIG(2)+ZDS*ADDV(NADVI+2,NCELC)
-!      PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
-!      PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
-!      PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
-!      PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
-!      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
-!      ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
-!      ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
-!      ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
-!      ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
-!      ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
-!      ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
-!      ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
+      PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)
+      PSIG(2)=PSIG(2)+ZDS*ADDV(NADVI+2,NCELC)
+      PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
+      PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
+      PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
+      PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
+      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
 
-      IF (LNO == 0) THEN
-! NO MATCHING EMISSION LINE FOUND 
-        PSIG(0) = 0._DP
-        IF (LARGST) ARGST(0,JJJ) = 0._DP
-      ELSE
-! USE DATA PROVIDED FOR EMISSION LINE LNO
-        DO J = 1, EMIS_LINES(LNO)%NO_COMPO
-          IADV = EMIS_LINES(LNO)%COMPO(J)%IADV
-          PSIG(J) = PSIG(J) + ZDS*ADDV(IADV,NCELC)
-          IF (LARGST) ARGST(J,JJJ) = ADDV(IADV,NCELC)
-        END DO
-        IADV = EMIS_LINES(LNO)%IADV_TOTAL
-        PSIG(0) = PSIG(0) + ZDS*ADDV(IADV,NCELC)
-        IF (LARGST) ARGST(0,JJJ) = ADDV(IADV,NCELC)
+      IF (LARGST) THEN
+        ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
+        ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
+        ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
+        ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
+        ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
+        ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
+        ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
       END IF
 C
       RETURN
@@ -181,4 +167,5 @@ C     Following lines added for reinitialisation of eirene (DMH)
       ITROLD = -1
       PENOLD = -1._DP
       RETURN
+
       END

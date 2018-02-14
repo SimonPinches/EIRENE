@@ -64,8 +64,7 @@ C
      .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
      .           NO_CONTRIB, ISP, ITP, IRATIO
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
-      REAL(DP), ALLOCATABLE :: ENERGY(:,:)
+     .            ZIA, YP, XP, YIA, YGA
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
@@ -75,7 +74,6 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: FOUND, NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
@@ -86,7 +84,6 @@ C
      .                              PART_NAME(:)
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
-      CHARACTER(8) :: FNAME, FRATIO
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
@@ -206,7 +203,7 @@ C  NUMBER OF BACKGROUND SPECTRA
       NBACK_SPEC=0
 
 
-c  NEXT:  READ INPUT FILE AND IDENTIY THE REAL STORAGE NEEDS.
+c  NEXT:  READ INPUT FILE AND IDENTIFY THE REAL STORAGE NEEDS.
 c   e.g. NPARMI, then set the storage (for allocatable arrays): NPARM = MAX(NPARM,NPARMI)
 c   in most cases then: NPARM=NPARMI
 
@@ -251,10 +248,10 @@ c  skip further comments in header
      .                  NTIME0,NTIME
 
       READ (IUNIN,'(A72)') ZEILE
-      LDEFSTOR = .FALSE.
+      LDEFSTOR = .FALSE.   ! INDICATES: NO STORAGE OPTIMIZATION INPUT CARD
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
-        LDEFSTOR = .TRUE.
+        LDEFSTOR = .TRUE.  ! INDICATES: STORAGE OPTIMIZATION INPUT CARD IS READ
 C   READ OPTIONAL INPUT CARD FOR STRAGE HANDLING.
 C   OTHERWISE: USE DEFAULTS DEFINED ABOVE.
         READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
@@ -706,7 +703,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
             LMULTI = LMULTI .OR. (IDUM(9) /= 0)
             LMULVI = LMULVI .OR. (IDUM(9) /= 0)
           END IF
-c     pb.......................................
+cpb.......................................
           READ (IUNIN,*)
         END DO
       END DO
@@ -1059,6 +1056,7 @@ cdr  this must be highly case specfic. To be reconsidered !!
           READ (IUNIN,6664) DUMM1, SORLIM, SORIND
           ISOR = INT(SORLIM)
           DO WHILE (ISOR > 0)
+cdr  here NSTEP is set to the largest step function number specified on SORIND
             ID = MOD(ISOR,10)
             IF ((ID == 4).OR.(ID==5)) NSTEP = MAX(NSTEP,INT(SORIND))
             ISOR = ISOR / 10
@@ -1175,7 +1173,7 @@ C
       END DO
 C
 C   READ TRCSRC (60 LOGICALS PER LINE)
-      do j=0, nstrai, 60
+      do j=0, NSTRAI, 60
         READ (IUNIN,*)
       end do
 
@@ -1274,77 +1272,11 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
-
-      ULINE=ZEILE
-      CALL EIRENE_UPPERCASE(ULINE)
-      NADV_ADD = 0
-      NLEMIS = .FALSE.
-      IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
-! EMISSIVITY LINES DEFINED IN INPUT
-        LINES = 0
-        NLEMIS = .TRUE.
-        READ (IUNIN,6666) NO_LINES, MOD_ADDV
-        DO I=1, NO_LINES
-          READ (IUNIN,'(A80)') ZEILE
-          DO WHILE (ZEILE(1:1) == '*')
-            READ (IUNIN,'(A80)') ZEILE
-          END DO
-          READ (IUNIN,6666) NO_COMPO
-          READ (IUNIN,*)
-          IF (MOD_ADDV == 0) THEN
-            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
-          ELSE 
-            NADV_ADD = NADV_ADD + NO_COMPO + 1
-          END IF
-          DO J=1, NO_COMPO
-            READ (IUNIN,*)
-            READ (IUNIN,*) NO_CONTRIB           
-            LINES = LINES + NO_CONTRIB
-            DO K = 1, NO_CONTRIB
-              READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
-              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
-              IF (IRATIO > 0) THEN
-                LINES = LINES + 1
-                READ (IUNIN,'(18X,1X,A6)') FRATIO
-                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
-                IF (IRATIO == 2) THEN
-                  LINES = LINES + 1
-                  READ (IUNIN,*)
-                  READ (IUNIN,'(18X,1X,A6)') FRATIO
-                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
-                END IF  
-              END IF
-            END DO
-          END DO
-        END DO
-
-! ADD 1 FOR TOTAL
-        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
-        NADV = NADV + NADV_ADD 
-        NREAC = NREAC + LINES
-
-        READ (IUNIN,'(A72)') ZEILE
-      END IF
-      
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
-
-      NLEMIS = NLEMIS .OR. (NCHOR > 0)
-      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
-! USE DEFAULT LINES FOR EMISSIVITY
-        MOD_ADDV = 0
-        NADV=NADV+10
-        NO_LINES = 6
-        NO_COMPO = 6
-! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
-        NREAC = NREAC + NO_CONTRIB*NO_COMPO
-            
-      END IF
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, AND ON CREAC FOR ONE MORE SET OF A&M FIT COEFFS.
-C  FROM AMJUEL,
-C  FOR REDUCED POPUL. COEFF. IN SIGHA LINE OF SIGHT INTEGRATION
+C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
+C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
 !pb        NREAC=NREAC+1
  
@@ -1536,6 +1468,15 @@ C  ADJUST SOME DEFAULT STORAGE OPTIMIZATION SETTING
         NOPTIM=N1ST*N2ND*N3RD+NADD     ! = NRAD ??
 C       NOPTM1=   ??
       ENDIF
+C  TRY TO BE INTELLIGENT:  AUTOMATIC STORAGE REDUCTION....
+C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
+c  TO BE TESTED, E.G. CHECK VARIANCES, AND VARIANCES SUM OVER STRATA
+      IF (NSTRAI == 1.AND.NSMSTRA.NE.0) THEN
+         WRITE (iunout,*) 'NSMSTRA SET = 0, BECAUSE NSTRAI=1 '
+         NSMSTRA = 0
+      ENDIF
+      CALL EIRENE_LEER(1)
+
 C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,*) 'NOPTIM =      ',NOPTIM
       WRITE (iunout,*) 'NOPTM1 =      ',NOPTM1
@@ -1545,6 +1486,7 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,*) 'NSTORAM =     ',NSTORAM
       WRITE (iunout,*) 'NGSTAL =      ',NGSTAL
       WRITE (iunout,*) 'NRPES  =      ',NRPES
+
 C
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF CENSUS STORAGE FOR T-DEP. MODE'

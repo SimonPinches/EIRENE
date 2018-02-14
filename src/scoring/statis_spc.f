@@ -61,9 +61,9 @@ C
 C  STATISTICS FOR SPECTRA
 
       DO ISPC=1,NADSPC
-c  vector = ESTIML(ISPC)%PSPC%SPC(I) is cummulated contribution after present (n-th) flight
+c  vector = ESTIML(ISPC)%PSPC%SPC(I) is cumulated contribution after present (n-th) flight
 
-c  sdvia = ESTIML(ISPC)%PSPC%SDV(I) is cummulated contribution after previous flight no. n-1 (previous call)
+c  sdvia = ESTIML(ISPC)%PSPC%SDV(I) is cumulated contribution after previous flight no. n-1 (previous call)
 C  contribution from current flight no. n only: sd1 =vector-sdviaw
 C
         IF (ESTIML(ISPC)%PSPC%IMETSP > 0) THEN
@@ -79,13 +79,13 @@ c  size of tally ISPC, ADD BIN 0 AND BIN NSPC+1 for low and high end of spectrum
             ESTIML(ISPC)%PSPC%SDV(I)=ESTIML(ISPC)%PSPC%SPC(I)
             SD(I) = SD1
           END DO
-c  now  sdvia = ESTIML(ISPC)%PSPC%SDV(I) is cummulated contribution after present flight no. n
+c  now  sdvia = ESTIML(ISPC)%PSPC%SDV(I) is cumulated contribution after present flight no. n
 
           DO I = NSPECI,NSPECE
             SD1=SD(I)
             ESTIML(ISPC)%PSPC%SGM(I)=ESTIML(ISPC)%PSPC%SGM(I)+SD1*SD1
           END DO
-c  sigma = ESTIML(ISPC)%PSPC%SGM(I)  now is cummulated squared contribution after flight no. n
+c  sigma = ESTIML(ISPC)%PSPC%SGM(I)  now is cumulated squared contribution after flight no. n
           ESTIML(ISPC)%PSPC%SGMS=ESTIML(ISPC)%PSPC%SGMS+SD1S*SD1S
           DEALLOCATE (SD)
         END IF
@@ -118,7 +118,7 @@ c  size of tally ISPC, ADD BIN 0 AND BIN NSPC+1 for low and high end of spectrum
         NSPECI=0
         NSPECE=ESTIML(ISPC)%PSPC%NSPC+1
         ALLOCATE (SD(NSPECI:NSPECE))
-C ESTIML(ISPC)%PSPC%SPC cummulated tally score after all flights from present stratum istra 
+C ESTIML(ISPC)%PSPC%SPC cumulated tally score after all flights from present stratum istra 
         SD=ESTIML(ISPC)%PSPC%SPC
         DS=SUM(SD)
  
@@ -131,7 +131,7 @@ C RELATIV STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
           ESTIML(ISPC)%PSPC%SGM(I)=SG*FSIG
 
-C CUMMULATED VARIANCE FOR SUM OVER STRATA
+C CUMULATED VARIANCE FOR SUM OVER STRATA
 ! STV, CORRESPONDS TO STV, STVW
           IF ((NSMSTRA > 0 ) .AND. (NSTRAI > 1)) THEN
             SMESTL(ISPC)%PSPC%STV(I)=SMESTL(ISPC)%PSPC%STV(I)+

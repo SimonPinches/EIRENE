@@ -1,15 +1,30 @@
 CDR  2014  : PROGRAMMING AND NOTATION SYNCRONIZED WITH VELOCX.F
 CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
+cdr  sept.17:sync with veloel,velocx. Prepare bgk relaxation. perhaps ready: nflag=2
 C
       SUBROUTINE EIRENE_VELOPI(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
-     .                  IRPI,RMASS,ZEP_IN)
+     .                         IRPI,RMASS,ZEP_IN)
 C
-C  FETCH A NEW SPECIES INDEX AND A
-C          NEW VELOCITY OF TEST PARTICLE AFTER BULK PARTICLE COLLISION (PI)
+C  THIS SUBROUTINE CARRIES OUT A HEAVY PARTICLE COLLISION OF A TEST PARTICLE
+C  WITH A BULK PARTICLE.
+C  IT RETURNS THE POST COLLISION VELOCITY VECTOR.
+C
+C
+C  FETCH A NEW SPECIES INDEX AND
+C        A NEW VELOCITY OF TEST PARTICLE AFTER BULK PARTICLE COLLISION (PI)
 C  AT THIS POINT: ONE NEXT GENERATION TEST PARTICLE WILL BE BORN
 C                 I.E. WEIGHT ADJUSTMENT ALREADY DONE IN CALLING PROGRAM
 C
 C  K   : CELL INDEX
+
+C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
+C  note: Ti has already been converted into thermal velocity units: zrg(ipls,k) in [cm/s]
+
+C  K   : .EQ.0 :TX,TY,TZ,V-DRIFT_X,Y,Z ARE NOT FROM LOCAL BULK ION
+C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE 
+C               PARAMETERS DUMT AND DUMV, RESPECTIVELY.
+c  note: here dumt must also be in thermal velocity units
+
 C  VXO : X COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VYO : Y COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VZO : Z COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
@@ -19,14 +34,8 @@ C  NOLD: DITO, IN MODCOL-ARRAY
 C  IPLS: SPECIES INDEX FOR THE THERMAL PLASMA ION VELOCITY
 C        AND FOR THE PLASMA DRIFT VELOCITY TO BE USED AS
 C        SHIFT VECTOR   (IPLS IN COMMON COMUSR)
-C  IRCX: LABEL FOR CX-REACTION, E.G., FOR SIGVCX(IRCX)
-C        NOT NEEDED FOR NFLAG=2, THEN SET E.G.: IRCX=1
- 
-C  USED E.G. FOR VOLUME RECOMBINATION SOURCE (NFLAG=2)
-C  OR TO  FETCH A NEW  VELOCITY FOR A NEUTRAL ATOM "IATM",
-C  A NEUTRAL MOLECULE "IMOL" OR A TEST ION "IION"
-C  AFTER CX-EVENT WITH BULK ION "IPLS" IN CELL NO. K FROM A SHIFTED
-C  MAXWELLIAN (NFLAG=2), WEIGHTED BY SIGMA*VREL (NFLAG=3)
+C  IRPI: LABEL FOR PI-REACTION, E.G., FOR SIGVPI(IRPI)
+C        NOT NEEDED FOR NFLAG=2, THEN SET E.G.: IRPI=1
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -36,22 +45,24 @@ C
       USE EIRMOD_CRAND
       USE EIRMOD_CINIT
       USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CLAST
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO, RMASS, ZEP_IN
+      REAL(DP), INTENT(IN) :: RMASS, ZEP_IN
+      REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRPI
 
       REAL(DP) :: EIRENE_FEHVPI3, VXISO, VYISO, VZISO, EHEAVY, 
      .            VX, VY, VZ,
-     .            CVRSS, RSQDV, EDISS, ZEP3, VELDS, VREL,VRELQ,
+     .            CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS, VREL,VRELQ,
      .            VXI, VYI, VZI,
      .            VXN, VYN, VZN, VN,
-     .            VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ, ZARG,
+     .            VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ,
      .            ELMIN,ELMAX,CPI,ELAB,ELLAB,VRQ,VR,EIRENE_CROSS,TEST
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISPZI, ISPZM, ISPZA
@@ -60,6 +71,8 @@ C
  
       SAVE
 C
+c initialize arrays for "on the fly" rejection efficiency estimates
+C IFLAG=1 AND IFLAG=3 OPTIONS
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
         DO IRL=1,NRPII
@@ -81,15 +94,12 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
         SGPVMX(IRPI)=-1.D60
         JJ=1
         do j=1,1000
-c  elab:  here ln(E), with E from 0.1 to 1e5 eV
-          elab=elmin+(j-1)/999.*(elmax-elmin)
-          IF (LHABER) THEN
-            write (iunout,*) 'error in velopi: no diff. PI Cr. Section '
-C           CALL SCATANG (ELAB,-1._DP,ELTHDUM,CTCHDUM,SIGHABER)
-C           CPI= SIGHABER*AU_TO_CM2
-          ELSE
-            CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 1')
-          END IF
+c  elab:  here ln(E), with E from 1.0 to 1e5 eV
+          elab=elmin+(j-1)/999._dp*(elmax-elmin)
+
+c  find cross section at ENERGY ELAB from a fit or table. 
+          CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 1')
+
           vrq=exp(elab-defpi(IRPI))
           vr=sqrt(vrq)
           if (cpi*vr.gt.SGPVMX(IRPI)) then
@@ -97,6 +107,7 @@ C           CPI= SIGHABER*AU_TO_CM2
             SGPVMX(IRPI)=cpi*vr
           endif
         enddo
+
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'FIRST CALL TO VELOPI FOR IRPI= ',IRPI
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
@@ -113,36 +124,43 @@ C           CPI= SIGHABER*AU_TO_CM2
         CALL EIRENE_LEER(1)
       ENDIF
 1     CONTINUE
+
+c  preparations for process IRPI done. Start sampling procedure here.
 C
 C  INITIALIZE COUNTER FOR REJECTION SAMPLING OF INCIDENT BULK PARTICLE
 C
       ICOUNT=1
-
+C
 C  NEXT: STEP 1
 C
 C    set parameters for random sampling in cell icell=K
-
 C
-      ZARG=ZRG(IPLS,K)
-      ZARGX=ZRG(IPLS,K)
-      ZARGY=ZRG(IPLS,K)
-      ZARGZ=ZRG(IPLS,K)
-      IF (NLDRFT) THEN
-        IF (INDPRO(4) == 8) THEN
-          CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
-     .                        .TRUE.)
+      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number. Use local bulk medium parameters
+c  scaled 1d temperatures, per degree of freedom
+        ZARGX=ZRG(IPLS,K)
+        ZARGY=ZRG(IPLS,K)
+        ZARGZ=ZRG(IPLS,K)
+c  drift velocity, cm/s
+        IF (NLDRFT) THEN
+          IF (INDPRO(4) == 8) THEN
+            CALL EIRENE_VECUSR (2,K,X0,Y0,Z0,VXDR,VYDR,VZDR,IPLS,
+     .                          .TRUE.)
+          ELSE
+            VXDR=VXIN(IPLS,K)
+            VYDR=VYIN(IPLS,K)
+            VZDR=VZIN(IPLS,K)
+          END IF
         ELSE
-          VXDR=VXIN(IPLS,K)
-          VYDR=VYIN(IPLS,K)
-          VZDR=VZIN(IPLS,K)
-        END IF
-      ELSE
-        VXDR=0.D0
-        VYDR=0.D0
-        VZDR=0.D0
+          VXDR=0.D0
+          VYDR=0.D0
+          VZDR=0.D0
+        ENDIF
+      ELSE 
+        GOTO 999
       ENDIF
 C
-C  SAVE  INCIDENT TEST PARTICLE VELOCITY
+C
+C  SAVE VELOCITY VECTOR (CM/S) OF INCIDENT TEST PARTICLE
       VX=VXO*VLO
       VY=VYO*VLO
       VZ=VZO*VLO
@@ -153,21 +171,21 @@ c   start random sampling here
 123   CONTINUE
       IF (INIV2.LE.0) CALL EIRENE_FGAUSS
 C
-C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN
+C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN (m=0;s=1)
       VXN=FG1(INIV2)
       VYN=FG2(INIV2)
       VZN=FG3(INIV2)
       INIV2=INIV2-1
 C
       IF (NFLAG.EQ.1) THEN
-C  DRIFTING, MONOENERGETIC ISOTROPIC DISTRIBUTION
+C  DRIFTING, MONO-ENERGETIC ISOTROPIC DISTRIBUTION
 C  ZT1 CORRESPONDS TO MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VEL=SQRT(ZT1(IPLS,K))
         VN=VEL/SQRT(VXN*VXN+VYN*VYN+VZN*VZN)
         VXN=VXN*VN+VXDR
         VYN=VYN*VN+VYDR
         VZN=VZN*VN+VZDR
-C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE AND DRIFT
+C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE TIIN AND DRIFT VDR
       ELSE
         VXN=VXN*ZARGX+VXDR
         VYN=VYN*ZARGY+VYDR
@@ -178,11 +196,14 @@ C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONS
 C
       IF (NFLAG.EQ.2) THEN
 C
-        VXI=VXN
+        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S. 
         VYI=VYN
         VZI=VZN
+
+C   NOTHING MORE TO BE DONE
+
 C
-      ELSE
+      ELSE  !   NFLAG.NE.2, ALL OTHER OPTIONS
 C
 C   ALL OTHER DISTRIBUTIONS
 C
@@ -195,19 +216,15 @@ C   PRESENT VERSION: REJECTION
         IREAC=MODCOL(4,1,IRPI)
         CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 2')
 C
-CH FOR SCATTERING ANGLE FROM DIFFERENTIAL CROSS SECTION:
-C
-        IF (LHABER) THEN
-C         RMN=RMASS
-C         RMI=RMASSP(IPLS)
-C         RMSI=1./(RMN+RMI)
-C         RLMS=RMN*RMI*RMSI
-C         ER=RLMS*VRELQ*CVELI2
-C         RAN=RANF_EIRENE()
-C         CALL SCATANG (ER,RAN,ELTHDUM,CTCHDUM,SIGHABER)
-C         CPI= SIGHABER*AU_TO_CM2
-        END IF
-CH
+c.............................................................
+cdr  test output only
+c       elb=exp(elab)
+c       if (elb.le.1.0) then
+c         write (6,*) 'elb velopi ',elab,elb
+c       endif
+cdr
+c.....................................................................
+
 C
 C       IF (NLREJC) THEN    !  REJECTION IS NOW DEFAULT OPTION
 C
@@ -220,9 +237,12 @@ C  REJECT
 c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
      .        'ICOUNT TOO LARGE ( > 500) IN VELOPI. ACCEPT SAMPLE '
-            ELLAB=EXP(ELAB)
-            WRITE (iunout,*) 'NPANU, IREAC, IRPI, ELAB(EV) ',
-     .                        NPANU, IREAC, IRPI, ELLAB
+cdr............................................................   
+cdr  test output only
+cdr         ELLAB=EXP(ELAB)
+cdr         WRITE (iunout,*) 'NPANU, IREAC, IRPI, ELAB(EV),icell ',
+cdr  .                        NPANU, IREAC, IRPI, ELLAB,  K
+cdr............................................................
           ELSE
 C  ACCEPT
             XPMEAN(IRPI)=XPMEAN(IRPI)+ICOUNT
@@ -231,7 +251,7 @@ C  ACCEPT
 C       ELSEIF (NLWEIGHT) THEN
  
         ELSE
-C  FOR SOME REASON SGPVMX COULD NOT BE FOUND.
+C  FOR SOME REASON SGPVMX COULD NOT BE FOUND, or rejection is too inefficient.
 C  SO USE WEIGHTING RATHER THAN REJECTION
           WEIGHT=WEIGHT*CPI*VREL*DIIN(IPLS,K)/SIGVPI(IRPI)
         ENDIF
@@ -239,16 +259,25 @@ C
         VXI=VXN
         VYI=VYN
         VZI=VZN
+
+C
       ENDIF
 C
-C  STEP 1 FINISHED, COLLIDING BULK ION'S VELOCITY IS SET: VXI,VYI,VZI
+C  STEP 1 FINISHED, INCIDENT BULK "ION'S" (IPLS) VELOCITY IS SET: VXI,VYI,VZI
 C
 200   CONTINUE
 C
 C  STEP 2:
+
+C assume: scattering angle = 0 in COM, (as for EI collisions)
+C         or: isotropic,  or PI.
+C         given the scattering angle, the KER is added 
+C         
 C
  
-C  DETERMINE NEXT GENERATION TEST PARTICLE, BY SAMPLING FROM P2NP
+C  DETERMINE NEXT GENERATION TEST PARTICLE, 
+C  BY SAMPLING FROM CUMULATIV DISTRIB: P2NP(IRPI,...)
+C  AND FIND EFRAC: FRACTION OF KER (=EDISS) ASSIGNED TO THE SAMPLED SECONDARY
  
       IF ((ZEP_IN > 0._DP) .AND. (ZEP_IN <= 1._DP)) THEN
         ZEP3 = ZEP_IN
@@ -277,7 +306,7 @@ C
 449     CONTINUE
         CVRSS=CVRSSA(IATM)
         RSQDV=RSQDVA(IATM)
-        EDISS=EATPI(IRPI,IATM,2)
+        EFRAC=EATPI(IRPI,IATM,2)
 C
       ELSEIF (ZEP3.LE.P2NP(IRPI,NSPAM)) THEN
 C
@@ -292,7 +321,7 @@ C
 459     CONTINUE
         CVRSS=CVRSSM(IMOL)
         RSQDV=RSQDVM(IMOL)
-        EDISS=EMLPI(IRPI,IMOL,2)
+        EFRAC=EMLPI(IRPI,IMOL,2)
 C
       ELSEIF (ZEP3.LE.P2NP(IRPI,NSPAMI)) THEN
 C
@@ -307,7 +336,7 @@ C
 469     CONTINUE
         CVRSS=CVRSSI(IION)
         RSQDV=RSQDVI(IION)
-        EDISS=EIOPI(IRPI,IION,2)
+        EFRAC=EIOPI(IRPI,IION,2)
 C
       ELSE
         WRITE (iunout,*) 'ERROR IN VELOPI '
@@ -315,15 +344,19 @@ C
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
+C  TOTAL KINETIC ENERGY RELEASED (KER) IN THIS PROCESS IRPI [eV].
       IF (NSTORDR >= NRAD) THEN
         EHEAVY=EHVPI3(IRPI,K,1)
       ELSE
         EHEAVY=EIRENE_FEHVPI3(IRPI,K)
       END IF
-      EDISS=EDISS*EHEAVY
+
+      EDISS=EFRAC*EHEAVY
 C
 C  FIND SPEED VECTOR FROM ISOTROPIC DISTRIBUTION IN CENTER OF MASS
 C  SYSTEM
+c  this is to be done. currently: no pi secondaries, and if so, then
+c  ediss is added to incident test particle velocity, rather COM. compare to el, and ei
 C
  
       IF (EDISS.GT.0.D0) THEN
@@ -356,9 +389,13 @@ C
       E0=CVRSS*VELQ
 C
       RETURN
+C
+999   CONTINUE
+      WRITE (iunout,*)
+     .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
+      CALL EIRENE_EXIT_OWN(1)
 
 C  the following ENTRY is for reinitialization of EIRENE
- 
       ENTRY EIRENE_VELOPI_REINIT
       IFIRST = 0
       return

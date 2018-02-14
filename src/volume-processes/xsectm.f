@@ -606,7 +606,8 @@ C
             IESTM=IESTMM(IMOL,NRC)
             EBULK=EBULKM(IMOL,NRC)
             CALL EIRENE_XSTEL(IREL,IML,IPL,EBULK,
-     .                 ISCDE,IESTM,KK,FACTKK)
+     .                 ISCDE,IESTM,
+     .                 KK,FACTKK,PLS)
 C
 230       CONTINUE
 C

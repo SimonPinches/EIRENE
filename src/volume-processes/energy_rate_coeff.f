@@ -7,6 +7,7 @@ c              re-use erate from previous call to rate_coeff
 
 cdr  19.02.14: COMMENTS
 cdr sept.15:  lexp not fully written, in case of adas 2d tables
+cdr           also unit conversion incorrect in that case. --> tbd
 cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 cdr  16.11.15: bug fix: error in arguments in call to H_colrad
@@ -16,7 +17,7 @@ cdr  26.11.15: additional parameter IC in call to H_colrad,
 cdr            for later use to identify "visited cells"
 cdr  sept. 16: started to add extrapolation options. not ready....
 
-      function EIRENE_energy_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
+      function EIRENE_energy_rate_coeff (ir, p1, p2, lexp, iprshft)
      .                            result (erate)
 
 !  evaluate energy weighted rate coefficient, eV/s per incident particle,
@@ -60,39 +61,42 @@ cdr  sept. 16: started to add extrapolation options. not ready....
  
       implicit none
  
-      integer, intent(in) :: ir, ic, iprshft
+      integer, intent(in) :: ir, iprshft
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
 
       real(dp) :: erate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max, e_scr
+     .                 rrc2min, rrc2max,
+     .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
+     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
      .                  dsub    = 18.420680744_dp,      !ln(1e8), hard wired. But should come from database
      .                  xlnelch =-43.2777390821         !ln(elcha) 
+      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar 
+      integer :: ic,ip1,ip2
 
       interface
-        function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
+        function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
           integer, intent(out) :: ip1,ip2
           real(dp) :: res
-        end function EIRENE_intp_adas
+        end function EIRENE_intp_tab2d
 
-        function EIRENE_intp_table (tb,p1,ip1) result(res)
+        function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
-        end function EIRENE_intp_table
+        end function EIRENE_intp_tab1d
       end interface
  
       if (.not.reacdat(ir)%lrtcew) then
@@ -111,6 +115,7 @@ c.............................................................
 !  SET A CONSTANT RATE 
         erate = reacdat(ir)%rtcew%poly%dblpol(1,1)
 
+cdr missing: iftflg < 100:  multiply density,  else: not
 cdr   lexp missing
 
 c.............................................................
@@ -189,7 +194,7 @@ c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        erate = eirene_intp_adas(reacdat(ir)%rtcew%adas,pp1,pp2,ip1,ip2)
+        erate=eirene_intp_tab2d(reacdat(ir)%rtcew%adas,pp1,pp2,ip1,ip2)
  
         if (lexp) then
           erate=10._dp**erate
@@ -212,7 +217,7 @@ cdr  to be added here
  
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        erate = eirene_intp_table(reacdat(ir)%rtcew%hyd,pp1,ip1)
+        erate = eirene_intp_tab1d(reacdat(ir)%rtcew%hyd,pp1,ip1)
 
 !  lexp option not connected here !
 
@@ -222,21 +227,28 @@ c..............................................................
  
 ! INTERNAL COLLISION RADIATIVE CODE
  
+        if (.not.allocated(pop0)) then
+          allocate(pop0(40))
+          allocate(pop1(40))
+          allocate(pop2(40))
+
+          allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
+        end if
+ 
+        Q_EXT = 0._DP
+
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        
-        iflavor = reacdat(ir)%rtcew%crm%iflav
-        ivar = reacdat(ir)%rtcew%crm%ivarst
-
-        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, E_SCR)
+        CALL EIRENE_H_COLRAD(IC,PP1, PP2 ,Q_EXT,POP0,POP1,POP2,
+     .                ALPCR,    SCR,    SCR_EXT,
+     .                E_ALPCR,  E_SCR,  E_SCR_EXT,
+     .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
  
-!pb e_scr > 0  ! corrected Aug. 2nd 2017
-!pb        IF (.NOT.LEXP) erate = log(-e_scr)
         IF (.NOT.LEXP) erate = log(-e_scr)
-        IF (LEXP)      erate = -e_scr
+        IF (LEXP)      erate = -E_SCR
  
       end if
  

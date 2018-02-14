@@ -15,8 +15,6 @@ cdr  many local variables have a redundant istra index, to enable MASYR1 printou
 
 C
 C
-C 22.10.03; ein falsches write statement rausgenommen (bei reemitted
-C           from incident test ions, totals.
 C 27.03.04; iliin=-3 option (only net fluxes on transp. surfaces) re-enforced
 C           simultaneous changes in escape.f.
 C           not active for bulk particle fluxes updated in subr. locate
@@ -28,7 +26,7 @@ c            This is for surface do loop "do 10000"
 c 16.12.05:  variance for adds tally:  printout activated
 c
 c 16.01.06:  bug fix: suma1, suma2, etc... initialized (=0)
-c            otherwise problems due to new options for deactivation of tallies
+c            otherwise problems due to new options for de-activation of tallies
 C 07.12.06:  some comments introduced to clarify status with iliin=-3 option
 C 18.04.16:  reduced string length to match variable, J.Lore
 C
@@ -317,10 +315,19 @@ C  SPECTRA
      .                 TEXTS(IADTYP(ESTIML(ISPC)%PSPC%IPRTYP)+
      .                       ESTIML(ISPC)%PSPC%IPRSP)
               END IF
+              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
+     .               10._DP**ESTIML(ISPC)%PSPC%SPCMIN
+                WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
+     .               10._DP**ESTIML(ISPC)%PSPC%SPCMAX
+                WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
+              ELSE
               WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
      .               ESTIML(ISPC)%PSPC%SPCMIN
               WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
      .               ESTIML(ISPC)%PSPC%SPCMAX
+                WRITE (IOUT,'(A)') ' LINEAR SPACING'
+              END IF
               WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
      .               ESTIML(ISPC)%PSPC%NSPC
               WRITE (IOUT,*)
@@ -329,16 +336,27 @@ C  SPECTRA
                   DO IE=1, ESTIML(ISPC)%PSPC%NSPC
                     EN = ESTIML(ISPC)%PSPC%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-                    WRITE (IOUT,'(I6,2ES12.4)') IE,EN,
+                    IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                      WRITE (IOUT,'(I6,2ES12.4)') IE,10._DP**EN,
      .                 ESTIML(ISPC)%PSPC%SPC(IE)
+                    ELSE
+                      WRITE (IOUT,'(I6,2ES12.4)') IE,EN,
+     .                 ESTIML(ISPC)%PSPC%SPC(IE)
+                    END IF
                   END DO
                 ELSE
                   DO IE=1, ESTIML(ISPC)%PSPC%NSPC
                     EN = ESTIML(ISPC)%PSPC%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-                    WRITE (IOUT,'(I6,3ES12.4)') IE,EN,
+                    IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                      WRITE (IOUT,'(I6,3ES12.4)') IE,10._DP**EN,
      .                   ESTIML(ISPC)%PSPC%SPC(IE),
      .                   ESTIML(ISPC)%PSPC%SDV(IE)
+                    ELSE
+                      WRITE (IOUT,'(I6,3ES12.4)') IE,EN,
+     .                   ESTIML(ISPC)%PSPC%SPC(IE),
+     .                   ESTIML(ISPC)%PSPC%SDV(IE)
+                    END IF
                   END DO
                 END IF
               ELSE
@@ -520,7 +538,7 @@ C
           ENDIF
 27      CONTINUE
 C
-C
+C  printout starts here
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMP)+ABS(SUMPH)
       IF (TTTT.EQ.0.D0) THEN
@@ -701,8 +719,9 @@ C  SURFACE AVERAGED TALLY NO. 44
           ENDIF
 C  SURFACE AVERAGED TALLY NO. 25
           IF (SUMP.NE.0.D0) THEN
+            CALL EIRENE_LEER(1)
             WRITE (iunout,*)
-     .        'FLUX INCIDENT ON SURFACE (RECYCLING SOURCE):'
+     .        'PRIMARY FLUX INCIDENT ON SURFACE (RECYCLING SOURCE):'
             WRITE (iunout,*) 'BULK IONS'
             CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMP1,LOGPLS,ISTRA,0,NPLS,0,NSTRA,
@@ -725,6 +744,8 @@ C  SURFACE AVERAGED TALLY NO. 50
      .    WRITE (iunout,*) '(EXCLUDING BULK IONS (RECYCLING SOURCE) '
           CALL EIRENE_MASR1 ('POS.PFLX',SUMMT)
           CALL EIRENE_MASR1 ('POS.EFLX',SUMME)
+C
+C.....................................................................
 C
         ELSEIF (ILIIN(I).EQ.-3) THEN
           IF (SUMA.NE.0.D0.OR.SUMM.NE.0.D0.OR.SUMI.NE.0.D0
@@ -798,10 +819,12 @@ C  SURFACE AVERAGED TALLY NO. 44
      .  EIRENE_MASYR1('ST.DEV.% ',VARPH2,LGVRPH2,ISTRA,0,NPHOT,0,
      .                   NSTRA,TEXTS(0+1))
           ENDIF
+
 C  SURFACE AVERAGED TALLY NO. 25
           IF (SUMP.NE.0.D0) THEN
+            CALL EIRENE_LEER(1)
             WRITE (iunout,*)
-     .        'FLUX INCIDENT ON SURFACE (RECYCLING SOURCE):'
+     .        'PRIMARY FLUX INCIDENT ON SURFACE (RECYCLING SOURCE):'
             WRITE (iunout,*) 'BULK IONS'
             CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMP1,LOGPLS,ISTRA,0,NPLS,0,NSTRA,
@@ -819,7 +842,7 @@ C  SURFACE AVERAGED TALLY NO. 50
           ENDIF
           CALL EIRENE_LEER (1)
           WRITE (iunout,*) 'TOTAL NET "ATOMIC" FLUXES, AMPERE AND WATT'
-          IF (SUMMTP.GT.0.D0)
+          IF (SUMMTP.GT.0._DP)
      .    WRITE (iunout,*) '(EXCLUDING BULK IONS (RECYCLING SOURCE) '
           CALL EIRENE_MASR1 ('NET PFLX',SUMMT)
           CALL EIRENE_MASR1 ('NET EFLX',SUMME)
@@ -829,7 +852,7 @@ C  SURFACE AVERAGED TALLY NO. 50
 C
 C  INDEPENDENT OF VALUE AND SIGN OF ILIIN:
 C
-        IF (SUMMTP.GT.0.D0) THEN
+        IF (SUMMTP.GT.0._DP) THEN
           CALL EIRENE_LEER (1)
           WRITE (iunout,*)
      .      'TOTAL INCIDENT RECYCLING SOURCE "ATOMIC" FLUXES'
@@ -840,17 +863,17 @@ C
       ENDIF
 C
 C  ******************************************
-C   REEMITTED FLUXES, NEGATIVE PARTIAL FLUXES
+C   RE-EMITTED FLUXES, NEGATIVE PARTIAL FLUXES
 C  ******************************************
 C
 C   FIRST: FROM INCIDENT ATOMS
 C
-      SUMMTA=0.
-      SUMMEA=0.
-      SUMA=0.
-      SUMM=0.
-      SUMI=0.
-      SUMPH=0.
+      SUMMTA=0._DP
+      SUMMEA=0._DP
+      SUMA=0._DP
+      SUMM=0._DP
+      SUMI=0._DP
+      SUMPH=0._DP
 C
 C   SURFACE AVERAGED TALLY NO.2 AND NO.27
 C
@@ -975,18 +998,18 @@ C
 C
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT ATOMS '
+        WRITE (iunout,*) 'NO FLUXES RE-EMITTED FROM INCIDENT ATOMS '
         CALL EIRENE_LEER(1)
       ELSEIF (ILIIN(I).NE.-3) THEN
         CALL EIRENE_LEER(1)
 C
         IF (ILIIN(I).GT.0) THEN
-        WRITE (iunout,*) 'FLUX REEMITTED FROM INCIDENT ATOMS:'
+        WRITE (iunout,*) 'FLUX RE-EMITTED FROM INCIDENT ATOMS:'
 C  SURFACE AVERAGED TALLY NO. 2
         IF (SUMA.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: ATOMS'
+        WRITE (iunout,*) 'RE-EMITTED: ATOMS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMA1,LOGATM,ISTRA,0,NATM,0,NSTRA,
      .               TEXTS(NSPH+1))
@@ -1003,7 +1026,7 @@ C  SURFACE AVERAGED TALLY NO. 27
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 8
         IF (SUMM.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: MOLECULES'
+        WRITE (iunout,*) 'RE-EMITTED: MOLECULES'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMM1,LOGMOL,ISTRA,0,NMOL,0,NSTRA,
      .               TEXTS(NSPA+1))
@@ -1020,7 +1043,7 @@ C  SURFACE AVERAGED TALLY NO. 33
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 14
         IF (SUMI.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: TEST IONS'
+        WRITE (iunout,*) 'RE-EMITTED: TEST IONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMI1,LOGION,ISTRA,0,NION,0,NSTRA,
      .               TEXTS(NSPAM+1))
@@ -1037,7 +1060,7 @@ C  SURFACE AVERAGED TALLY NO. 39
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 20
         IF (SUMPH.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: PHOTONS'
+        WRITE (iunout,*) 'RE-EMITTED: PHOTONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMPH1,LOGPHOT,ISTRA,0,NPHOT,0,NSTRA,
      .               TEXTS(0+1))
@@ -1085,7 +1108,7 @@ C     ELSEIF(ILIIN = -3): NOTHING TO BE DONE HERE, NET FLUXES ARE ALREADY PRINTE
       ENDIF
 C
 C
-C   REEMITTED FLUXES, NEXT: FROM INCIDENT MOLECULES
+C   RE-EMITTED FLUXES, NEXT: FROM INCIDENT MOLECULES
       SUMMTM=0.
       SUMMEM=0.
       SUMA=0.
@@ -1214,18 +1237,18 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT MOLECULES '
+        WRITE (iunout,*) 'NO FLUXES RE-EMITTED FROM INCIDENT MOLECULES '
         CALL EIRENE_LEER(1)
       ELSEIF (ILIIN(I).NE.-3) THEN
         CALL EIRENE_LEER(1)
 C
         IF (ILIIN(I).GT.0) THEN
-        WRITE (iunout,*) 'FLUX REEMITTED FROM INCIDENT MOLECULES:'
+        WRITE (iunout,*) 'FLUX RE-EMITTED FROM INCIDENT MOLECULES:'
 C  SURFACE AVERAGED TALLY NO. 3
         IF (SUMA.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: ATOMS'
+        WRITE (iunout,*) 'RE-EMITTED: ATOMS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMA1,LOGATM,ISTRA,0,NATM,0,NSTRA,
      .               TEXTS(NSPH+1))
@@ -1242,7 +1265,7 @@ C  SURFACE AVERAGED TALLY NO. 28
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 9
         IF (SUMM.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: MOLECULES'
+        WRITE (iunout,*) 'RE-EMITTED: MOLECULES'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMM1,LOGMOL,ISTRA,0,NMOL,0,NSTRA,
      .               TEXTS(NSPA+1))
@@ -1259,7 +1282,7 @@ C  SURFACE AVERAGED TALLY NO. 34
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 15
         IF (SUMI.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: TEST IONS'
+        WRITE (iunout,*) 'RE-EMITTED: TEST IONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMI1,LOGION,ISTRA,0,NION,0,NSTRA,
      .               TEXTS(NSPAM+1))
@@ -1276,7 +1299,7 @@ C  SURFACE AVERAGED TALLY NO. 40
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 21
         IF (SUMPH.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: PHOTONS'
+        WRITE (iunout,*) 'RE-EMITTED: PHOTONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMPH1,LOGPHOT,ISTRA,0,NPHOT,0,NSTRA,
      .               TEXTS(0+1))
@@ -1324,7 +1347,7 @@ C     ELSEIF(ILIIN = -3): NOTHING TO BE DONE HERE, NET FLUXES ARE ALREADY PRINTE
       ENDIF
 C
 C
-C   REEMITTED FLUXES, NEXT: FROM INCIDENT TEST-IONS
+C   RE-EMITTED FLUXES, NEXT: FROM INCIDENT TEST-IONS
       SUMMTI=0.
       SUMMEI=0.
       SUMA=0.
@@ -1453,18 +1476,18 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT TEST IONS '
+        WRITE (iunout,*) 'NO FLUXES RE-EMITTED FROM INCIDENT TEST IONS '
         CALL EIRENE_LEER(1)
       ELSEIF (ILIIN(I).NE.-3) THEN
         CALL EIRENE_LEER(1)
 C
         IF (ILIIN(I).GT.0) THEN
-        WRITE (iunout,*) 'FLUX REEMITTED FROM INCIDENT TEST IONS:'
+        WRITE (iunout,*) 'FLUX RE-EMITTED FROM INCIDENT TEST IONS:'
 C  SURFACE AVERAGED TALLY NO. 4
         IF (SUMA.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: ATOMS'
+        WRITE (iunout,*) 'RE-EMITTED: ATOMS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMA1,LOGATM,ISTRA,0,NATM,0,NSTRA,
      .               TEXTS(NSPH+1))
@@ -1481,7 +1504,7 @@ C  SURFACE AVERAGED TALLY NO. 29
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 10
         IF (SUMM.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: MOLECULES'
+        WRITE (iunout,*) 'RE-EMITTED: MOLECULES'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMM1,LOGMOL,ISTRA,0,NMOL,0,NSTRA,
      .               TEXTS(NSPA+1))
@@ -1498,7 +1521,7 @@ C  SURFACE AVERAGED TALLY NO. 35
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 16
         IF (SUMI.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: TEST IONS'
+        WRITE (iunout,*) 'RE-EMITTED: TEST IONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMI1,LOGION,ISTRA,0,NION,0,NSTRA,
      .               TEXTS(NSPAM+1))
@@ -1515,7 +1538,7 @@ C  SURFACE AVERAGED TALLY NO. 41
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 22
         IF (SUMPH.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: PHOTONS'
+        WRITE (iunout,*) 'RE-EMITTED: PHOTONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMPH1,LOGPHOT,ISTRA,0,NPHOT,0,NSTRA,
      .               TEXTS(0+1))
@@ -1563,7 +1586,7 @@ C     ELSEIF(ILIIN = -3): NOTHING TO BE DONE HERE, NET FLUXES ARE ALREADY PRINTE
       ENDIF
 C
 C
-C   REEMITTED FLUXES, NEXT: FROM INCIDENT PHOTONS
+C   RE-EMITTED FLUXES, NEXT: FROM INCIDENT PHOTONS
       SUMMTPH=0.
       SUMMEPH=0.
       SUMA=0.
@@ -1692,18 +1715,18 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0.AND.ILIIN(I).GT.0) THEN
+      IF (TTTT.EQ.0._DP.AND.ILIIN(I).GT.0) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'NO FLUXES REEMITTED FROM INCIDENT PHOTONS   '
+        WRITE (iunout,*) 'NO FLUXES RE-EMITTED FROM INCIDENT PHOTONS   '
         CALL EIRENE_LEER(1)
       ELSEIF (ILIIN(I).NE.-3) THEN
         CALL EIRENE_LEER(1)
 C
         IF (ILIIN(I).GT.0) THEN
-        WRITE (iunout,*) 'FLUX REEMITTED FROM INCIDENT PHOTONS:'
+        WRITE (iunout,*) 'FLUX RE-EMITTED FROM INCIDENT PHOTONS:'
 C  SURFACE AVERAGED TALLY NO. 5
         IF (SUMA.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: ATOMS'
+        WRITE (iunout,*) 'RE-EMITTED: ATOMS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMA1,LOGATM,ISTRA,0,NATM,0,NSTRA,
      .               TEXTS(NSPH+1))
@@ -1720,7 +1743,7 @@ C  SURFACE AVERAGED TALLY NO. 30
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 11
         IF (SUMM.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: MOLECULES'
+        WRITE (iunout,*) 'RE-EMITTED: MOLECULES'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMM1,LOGMOL,ISTRA,0,NMOL,0,NSTRA,
      .               TEXTS(NSPA+1))
@@ -1737,7 +1760,7 @@ C  SURFACE AVERAGED TALLY NO. 36
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 17
         IF (SUMI.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: TEST IONS'
+        WRITE (iunout,*) 'RE-EMITTED: TEST IONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMI1,LOGION,ISTRA,0,NION,0,NSTRA,
      .               TEXTS(NSPAM+1))
@@ -1754,7 +1777,7 @@ C  SURFACE AVERAGED TALLY NO. 42
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 23
         IF (SUMPH.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: PHOTONS'
+        WRITE (iunout,*) 'RE-EMITTED: PHOTONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMPH1,LOGPHOT,ISTRA,0,NPHOT,0,NSTRA,
      .               TEXTS(0+1))
@@ -1802,7 +1825,7 @@ C     ELSEIF(ILIIN = -3): NOTHING TO BE DONE HERE, NET FLUXES ARE ALREADY PRINTE
       ENDIF
 C
 C
-C   REEMITTED FLUXES, NEXT: FROM INCIDENT BULK-IONS
+C   RE-EMITTED FLUXES, NEXT: FROM INCIDENT BULK-IONS
       SUMMTP=0.
       SUMMEP=0.
       SUMA=0.
@@ -1931,7 +1954,7 @@ C
       ENDDO
 C
       TTTT=ABS(SUMA)+ABS(SUMM)+ABS(SUMI)+ABS(SUMPH)
-      IF (TTTT.EQ.0.D0) THEN
+      IF (TTTT.EQ.0._DP) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO FLUXES RE-EMITTED FROM INCIDENT BULK IONS '
         CALL EIRENE_LEER(1)
@@ -1942,7 +1965,7 @@ C
         WRITE (iunout,*) '(RECYCLING SOURCE) '
 C  SURFACE AVERAGED TALLY NO. 6
         IF (SUMA.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: ATOMS'
+        WRITE (iunout,*) 'RE-EMITTED: ATOMS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMA1,LOGATM,ISTRA,0,NATM,0,NSTRA,
      .               TEXTS(NSPH+1))
@@ -1959,7 +1982,7 @@ C  SURFACE AVERAGED TALLY NO. 31
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 12
         IF (SUMM.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: MOLECULES'
+        WRITE (iunout,*) 'RE-EMITTED: MOLECULES'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMM1,LOGMOL,ISTRA,0,NMOL,0,NSTRA,
      .               TEXTS(NSPA+1))
@@ -1976,7 +1999,7 @@ C  SURFACE AVERAGED TALLY NO. 37
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 18
         IF (SUMI.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: TEST IONS'
+        WRITE (iunout,*) 'RE-EMITTED: TEST IONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMI1,LOGION,ISTRA,0,NION,0,NSTRA,
      .               TEXTS(NSPAM+1))
@@ -1993,7 +2016,7 @@ C  SURFACE AVERAGED TALLY NO. 43
         ENDIF
 C  SURFACE AVERAGED TALLY NO. 24
         IF (SUMPH.NE.0.D0) THEN
-        WRITE (iunout,*) 'REEMITTED: PHOTONS'
+        WRITE (iunout,*) 'RE-EMITTED: PHOTONS'
         CALL
      .  EIRENE_MASYR1('P-FLUX:  ',SUMPH1,LOGPHOT,ISTRA,0,NPHOT,0,NSTRA,
      .               TEXTS(0+1))
@@ -2010,7 +2033,7 @@ C  SURFACE AVERAGED TALLY NO. 49
         ENDIF
         CALL EIRENE_LEER (1)
         WRITE (iunout,*)
-     .    'TOTAL REEMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
+     .    'TOTAL RE-EMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
         WRITE (iunout,*)
      .    'CONTRIB. FROM INCIDENT BULK IONS (REC. SOURCE)'
         CALL EIRENE_MASR1 ('TOT.PFLX',SUMMTP)
@@ -2019,13 +2042,13 @@ C
       ENDIF
 C
       IF (ABS(SUMMTA)+ABS(SUMMTM)+ABS(SUMMTI)+
-     .    ABS(SUMMTPH).NE.0.D0) THEN
+     .    ABS(SUMMTPH).NE.0._DP) THEN
         CALL EIRENE_LEER (1)
 C
         IF (ILIIN(I).GT.0) THEN
           WRITE (iunout,*)
-     .      'TOTAL REEMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
-          IF (SUMMTP.GT.0.D0) WRITE (iunout,*)
+     .      'TOTAL RE-EMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
+          IF (SUMMTP.GT.0._DP) WRITE (iunout,*)
      .      '(EXCLUDING CONTRIB. FROM INCIDENT BULK IONS)'
           CALL EIRENE_MASR1 ('TOT.PFLX',SUMMTA+SUMMTM+SUMMTI+SUMMTPH)
           CALL EIRENE_MASR1 ('TOT.EFLX',SUMMEA+SUMMEM+SUMMEI+SUMMEPH)
@@ -2034,7 +2057,7 @@ C
         ELSEIF (ILIIN(I).LT.0.AND.ILIIN(I).NE.-3) THEN
           WRITE (iunout,*)
      .      'TOTAL NEGATIVE "ATOMIC" FLUXES, AMPERE AND WATT'
-          IF (SUMMTP.GT.0.D0) WRITE (iunout,*)
+          IF (SUMMTP.GT.0._DP) WRITE (iunout,*)
      .      '(EXCLUDING CONTRIB. FROM INCIDENT BULK IONS)'
           CALL EIRENE_MASR1 ('TOT.PFLX',SUMMTA+SUMMTM+SUMMTI+SUMMTPH)
           CALL EIRENE_MASR1 ('TOT.EFLX',SUMMEA+SUMMEM+SUMMEI+SUMMEPH)
@@ -2165,7 +2188,7 @@ C
       TTSPTP  = TTSPTP + SUMMP
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT ATOMS')
@@ -2354,7 +2377,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!     IF (TTTT.EQ.0.D0) THEN
+!     IF (TTTT.EQ.0._DP) THEN
 !       CALL EIRENE_LEER(1)
 !       CALL EIRENE_MASAGE
 !    .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT MOLECULES')
@@ -2545,7 +2568,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT TEST IONS')
@@ -2736,7 +2759,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT PHOTONS')
@@ -2927,7 +2950,7 @@ C
       
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
-!      IF (TTTT.EQ.0.D0) THEN
+!      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
 !        CALL EIRENE_MASAGE
 !     .  ('NO FLUXES SPUTTERED FROM THIS SURFACE BY INCIDENT BULK IONS')
@@ -3062,7 +3085,7 @@ C
 322     CONTINUE
 321   CONTINUE
 C
-      IF (SUMMS.EQ.0.D0) THEN
+      IF (SUMMS.EQ.0._DP) THEN
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASAGE
      .  ('NO ADDITIONAL SURFACE TALLIES AT THIS SURFACE ')
@@ -3108,7 +3131,7 @@ C
 422     CONTINUE
 421   CONTINUE
 C
-      IF (SUMMS.EQ.0.D0) THEN
+      IF (SUMMS.EQ.0._DP) THEN
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASAGE
      .  ('NO ALGEBRAIC SURFACE TALLIES AT THIS SURFACE ')

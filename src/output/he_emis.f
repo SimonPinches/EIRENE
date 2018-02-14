@@ -1,0 +1,423 @@
+!WZ:  03.07.17: derived from ba_alpha,
+cdr             but 5 lines can be selected from AMJUEL
+cdr:  Oct 17  : sync with ba_alpha, comments, --> master
+cdr             error exit in case of invalid line
+
+      SUBROUTINE EIRENE_HE_EMIS (IST,REAC1,REAC2,IAD1,IAD2,IADS)
+c
+
+
+C     SUBROUTINE FOR He EMISSIVITY.
+C     CALLED FROM EIRENE, SECTION DIAGNO, SUBR. SIGHE
+C     THE He EMISSIVITY PROFILE (PHOTONS/S/CM**3) IS COMPUTED
+C     AND WRITTEN ONTO TALLIES ADDV(IAD1,IAD2),... FOR STRATUM NO. IST
+C     IAD1: CONTRIBUTION LINEAR IN He   -ATOM      DENSITY
+C     IAD2: CONTRIBUTION LINEAR IN He+  -ION       DENSITY
+C     IADS: SUM OVER ALL CONTRINUTIONS
+c  
+c     distinct from Ba_alpha etc, routines:
+!WZ:  The emissivity can be computed for 5 different wavelengths,
+!     controlled from calling routine over REAC1 and REAC2.
+!     No hard wired REAC, but input parameters
+!     But hard wired: read H.12, OT, from AMJUEL
+c     
+C
+C STORAGE FOR THE 3 ADDITIONAL TALLIES IAD1,....IAD3 SHOULD HAVE BEEN PROVIDED
+C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+3)
+C I.E. STORAGE CHECKS: NADV GE NADVI+3 ARE ALREADY DONE ELSEWHERE
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CADGEO
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CUPD
+      USE EIRMOD_COMSIG
+      USE EIRMOD_CGRID
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CSDVI
+      USE EIRMOD_CSDVI_BGK
+      USE EIRMOD_CSDVI_COP
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMSOU
+      USE EIRMOD_CLGIN
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMXS
+      USE EIRMOD_CSPEI
+      USE EIRMOD_CTEXT
+
+      IMPLICIT NONE
+C
+      INTEGER, INTENT(IN) :: IAD1, IAD2, IADS, IST
+
+      REAL(DP) :: DA(0:8,0:8) ! atomic helium density He
+      REAL(DP) :: DB(0:8,0:8) ! atomic helium ion He+
+
+      REAL(DP) :: DUMMY(NRTAL), FP1(6),FP2(6)
+      REAL(DP) :: DAT, DPL, DDA, DPP,
+     .          RATIO2, RATIO7, TEI, DEJ,
+     .          SIGADD1, SIGADD2, SIGADD,
+     .          TEF, DEF, DEE00, E_DIFF, EINSTEIN,
+     .          POWALF, POWALF1, POWALF2,
+     .          DE, TE, RC1MIN,RC2MIN, RC1MAX, RC2MAX
+
+      INTEGER :: IRC, NCELC, IERROR, IR, I, J, JEND,
+     >           JFEX1MN, JFEX2MN, JFEX1MX, JFEX2MX,
+     >           IFIRST
+      REAL(DP), ALLOCATABLE :: OUTAU(:)
+      CHARACTER(8) :: FILNAM
+      CHARACTER(4) :: H123
+      CHARACTER(9) :: REAC1, REAC2
+      CHARACTER(3) :: CRC
+      CHARACTER(6) :: CISTRA
+C
+      SAVE
+C
+      DATA IFIRST/0/   !  NOT USED
+
+!WZ:  E_DIFF = E(n) - E(m) [eV], energy difference in eV
+!WZ:  EINSTEIN = A_ik [1/s], spontaneous decay / radiative trans. rate
+!WZ:  EINSTEIN / A_ik are from Goto's CR model.
+      if ( REAC1.EQ.'2.2a     ' ) then      ! 31S->21P
+        E_DIFF = 1.7022945862
+        EINSTEIN = 1.82910E+07
+      elseif ( REAC1.EQ.'2.2b     ' ) then  ! 33S->23P
+        E_DIFF = 1.7543616340
+        EINSTEIN = 2.78492E+07
+      elseif ( REAC1.EQ.'2.2c     ' ) then  ! 31P->21S
+        E_DIFF = 2.4712436109
+        EINSTEIN = 1.33678E+07
+      elseif ( REAC1.EQ.'2.2d     ' ) then  ! 31D->21P
+        E_DIFF = 1.8560520209
+        EINSTEIN = 6.36763E+07
+      elseif ( REAC1.EQ.'2.2e     ' ) then  ! 41D->21P
+        E_DIFF = 2.5183122297
+        EINSTEIN = 1.98548E+07
+      else
+        write (IUNOUT,*) 'something went wrong in he_emis.f'
+        write (IUNOUT,*) 'NO EMISSIVITY RETURNED'
+        E_DIFF = 0.0
+        RETURN
+      endif
+!WZ:  Energy factor E_DIFF converted in Joule, for power loss in Watt.
+      E_DIFF = E_DIFF * ELCHA
+
+C
+C     INITIALIZE ATOMIC DATA ARRAYS
+C
+      IERROR=0
+C
+C  READ REDUCED POPULATION COEFFICIENTS FOR HELIUM ATOMS FROM FILE AMJUEL
+C  AND PUT THEM FROM REACDAT(NREACI+1,..,..) ONTO DA,DB ARRAY
+C
+      IR=NREACI+1
+      IF (IR.GT.NREAC) THEN
+        WRITE (IUNOUT,*) 'FROM SUBROUTINE EIRENE_HE_EMIS: '
+        CALL EIRENE_MASPRM('NREAC',5,NREAC,'IR',2,IR,IERROR)
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+C
+      FILNAM='AMJUEL  '
+      H123='H.12'
+      CRC='OT '
+
+c  default asymptotics
+      FP1 = 0._DP
+      FP2 = 0._DP
+      RC1MIN = -HUGE(1._DP)
+      RC1MAX =  HUGE(1._DP)
+      RC2MIN = -HUGE(1._DP)
+      RC2MAX =  HUGE(1._DP)
+      JFEX1MN = 0
+      JFEX1MX = 0
+      JFEX2MN = 0
+      JFEX2MX = 0
+C
+C     He(*)/He(11S)
+      REACDAT(NREACI+1)%LOTH = .FALSE.
+      CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC1,CRC,
+     .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .            '  ',0)
+      DO J=1,9
+        DO I=1,9
+          DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+        ENDDO
+      ENDDO
+C     He(*)/He+
+      REACDAT(NREACI+1)%LOTH = .FALSE.
+      CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC2,CRC,
+     .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .            '  ',0)
+      DO J=1,9
+        DO I=1,9
+          DB(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
+        ENDDO
+      ENDDO
+C
+C     END OF INITIALIZATION
+C
+      IF (IESTR.EQ.IST) THEN
+C     NOTHING TO BE DONE
+      ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+        IESTR=IST
+        CALL EIRENE_RSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .             ESTIMV,ESTIMS,ESTIML,
+     .             NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .             NSIGI_SPC,TRCFLE)
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
+        IESTR=IST
+        CALL EIRENE_RSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .             ESTIMV,ESTIMS,ESTIML,
+     .             NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .             NSIGI_SPC,TRCFLE)
+      ELSE
+        WRITE (IUNOUT,*) 'ERROR IN HE_EMIS: DATA FOR STRATUM ISTRA= ',
+     .                    IST
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. HE_EMIS ABANDONNED'
+        RETURN
+      ENDIF
+C
+C  LOOP OVER COMPUTATIONAL MESH
+C
+      POWALF=0.
+      POWALF1=0.
+      POWALF2=0.
+
+      IF (MAX(IAD1,IAD2,IADS) > NADV) GOTO 999
+!WZ:  NRTAL = Number of cells in the coarse, output tally grid.
+!WZ:  Default: 0 in input, =NRAD in code.
+!WZ:  NRAD = number of cells in the fine computational grid.
+      ADDV(IAD1,1:NRTAL) = 0.D0
+      ADDV(IAD2,1:NRTAL) = 0.D0
+
+      ADDV(IADS,1:NRTAL) = 0.D0
+C
+      DO 1000 NCELL=1,NSBOX
+C
+C  LOCAL BACKGROUND DATA ARE IN CELL NCELL
+C  LOCAL TEST PARTICLE DATA ARE IN (PERHAPS COARSER) SCORING CELL NCELC
+C  ACCUMULATE THE EMISSIVITIES ALSO ON THE "SCORING" GRID.
+C
+        NCELC=NCLTAL(NCELL)
+C
+        IF (NSTGRD(NCELL) > 0) CYCLE
+        IF (LGVAC(NCELL,NPLS+1)) CYCLE
+
+        TE=TEIN(NCELL)
+        DE=DEIN(NCELL)
+C
+        SIGADD1=0.
+        SIGADD2=0.
+
+C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
+
+
+
+CDR CONVERT TO DENSITY UNITS OF H.4, H.10, H.12 RATE COEFF. IN AMJUEL
+CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS
+        DEF=LOG(DE*1.D-8)
+
+C   DEFAULT LOW DENSITY ASYMPTOTICS IN AMJUEL FORMAT:
+C   AT DEF <= 0.  (I.E. DE <= 1E8),
+C   COLLAPSE DATA TO DENSITY INDEPENDENT H.2, H.8, H.11 CORONA VALUES
+C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUPLE POLYNOMAL FIT.
+CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS ASYMPTOTICS
+        JEND=8
+        IF (DEF.LE.0.0) THEN 
+          JEND=0
+C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEFF=DEF/(8.0*LOG(10.0)) 
+C       ELSEIF (DEFF.GT.1.0) THEN
+        ENDIF
+C
+        TEF=LOG(TE)
+        DAT=0.
+        DPL=0.
+        DO 150 J=0,JEND
+          DEJ=DEF**J    !  =1.0 FOR J=0
+          DO 150 I=0,8
+            TEI=TEF**I
+            DAT =DAT + DA(I,J)*TEI*DEJ
+            DPL =DPL + DB(I,J)*TEI*DEJ
+150     CONTINUE
+        DAT =EXP(DAT)
+        DPL =EXP(DPL)
+C
+C     CHANNEL 1
+!WZ:  He emission source rate SIGADD:  PHOTONS/SEC/CM**3
+C     LINEAR IN PDENA (IONIZATION)
+
+ 
+!WZ:  atomic neutral He: NCHAR=2,NPRT=1,NCHRG=0
+
+        DO 200 IATM=1,NATMI
+          IF (NCHARA(IATM).NE.2) GOTO 200
+          DDA=DAT*PDENA(IATM,NCELC)
+C  RADIATIVE TRANSITION PROB.  (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD1=SIGADD1+DDA*EINSTEIN
+200     CONTINUE
+C
+C     CHANNEL 2
+!WZ:  He emission source rate SIGADD:  PHOTONS/SEC/CM**3
+C     LINEAR IN DIIN (RECOMBINATION)
+C
+C  atomic He+ ion: NCHAR=2,NPRT=1,NCHRG=1
+C
+        DO 205 IPLS=1,NPLSI
+          IF (NCHARP(IPLS).NE.2.OR.NCHRGP(IPLS).NE.1) GOTO 205
+          DPP=DPL*DIIN(IPLS,NCELL)
+C  RADIATIVE TRANSITION PROB.  (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+          SIGADD2=SIGADD2+DPP*EINSTEIN
+205     CONTINUE
+
+c...............................................................................
+C     to be done: contributions from atomic He ions in TEST IONS
+
+500     CONTINUE
+C
+C
+        SIGADD=SIGADD1+SIGADD2
+C
+        ADDV(IAD1,NCELC)=ADDV(IAD1,NCELC)+SIGADD1*VOL(NCELL)
+        ADDV(IAD2,NCELC)=ADDV(IAD2,NCELC)+SIGADD2*VOL(NCELL)
+
+        ADDV(IADS,NCELC)=ADDV(IADS,NCELC)+SIGADD*VOL(NCELL)
+C
+cdr tbd: rausziehen hinter 1000, ist eh nur constanter faktor E_DIFF, only total power loss
+        POWALF1=POWALF1+SIGADD1*E_DIFF*VOL(NCELL)
+        POWALF2=POWALF2+SIGADD2*E_DIFF*VOL(NCELL)
+C
+        POWALF =POWALF +SIGADD *E_DIFF*VOL(NCELL)
+C
+1000  CONTINUE
+
+cdr at this place we know: voltal(icoarse)=sum(vol(ifine))
+
+      ADDV(IAD1,1:NSBOX_TAL)=ADDV(IAD1,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+      ADDV(IAD2,1:NSBOX_TAL)=ADDV(IAD2,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+
+      ADDV(IADS,1:NSBOX_TAL)=ADDV(IADS,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
+
+      CALL EIRENE_LEER(2)
+      CALL EIRENE_FTCRI(IST,CISTRA)
+      IF (IST.GT.0) CALL EIRENE_MASBOX
+     .   ('SUBR. HE_EMIS CALLED, FOR STRATUM NO. '//CISTRA)
+      IF (IST.EQ.0)
+     .CALL EIRENE_MASBOX('SUBR. HE_EMIS CALLED, FOR SUM OVER STRATA')
+      CALL EIRENE_LEER(1)
+      WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
+      WRITE (iunout,*) ' TOTAL FLUX (AMP) AND POWER (WATT) BY HE_EMIS:'
+     .                  ,POWALF/E_DIFF*ELCHA,POWALF
+      WRITE (iunout,*) ' COUPL. TO GROUNDSTATE                        :'
+     .                  ,POWALF1/E_DIFF*ELCHA,POWALF1
+      WRITE (iunout,*) ' COUPLING TO CONTINUUM                       :'
+     .                  ,POWALF2/E_DIFF*ELCHA,POWALF2
+      CALL EIRENE_LEER(2)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD1,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD1,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD1,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IAD2,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IAD2,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IAD2,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+
+      DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
+      CALL EIRENE_INTTAL
+     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,IST),
+     .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
+      ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+C
+      if ( REAC1.EQ.'2.2a     ' ) then
+        TXTTAL(IAD1,NTALA) ='HE_EMIS, 31S->21P EMISSION SOURCE RATE   '
+      elseif ( REAC1.EQ.'2.2b     ' ) then
+        TXTTAL(IAD1,NTALA) ='HE_EMIS, 33S->23P EMISSION SOURCE RATE   '
+      elseif ( REAC1.EQ.'2.2c     ' ) then
+        TXTTAL(IAD1,NTALA) ='HE_EMIS, 31P->21S EMISSION SOURCE RATE   '
+      elseif ( REAC1.EQ.'2.2d     ' ) then
+        TXTTAL(IAD1,NTALA) ='HE_EMIS, 31D->21P EMISSION SOURCE RATE   '
+      elseif ( REAC1.EQ.'2.2e     ' ) then
+        TXTTAL(IAD1,NTALA) ='HE_EMIS, 41D->21P EMISSION SOURCE RATE   '
+      else
+        TXTTAL(IAD1,NTALA) ='ERROR IN HE_EMIS, UNKNOWN REACTION'
+      endif
+C
+      TXTSPC(IAD1,NTALA) ='GROUNDSTATE             '
+      TXTUNT(IAD1,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTSPC(IAD2,NTALA) ='CONTINUUM               '
+      TXTUNT(IAD2,NTALA) ='PHOTONS/S/CM**3         '
+
+      TXTSPC(IADS,NTALA) ='SUM_OVER_ALL            '
+      TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
+
+C
+C  WRITE ON STREAM 11 DATA FOR STRATUM NO. IST
+      IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+        IESTR=IST
+        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .              ESTIMV,ESTIMS,ESTIML,
+     .              NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .              NSIGI_SPC,TRCFLE)
+C
+        IRC=2
+        ALLOCATE (OUTAU(NOUTAU))
+        CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
+        WRITE (11+ifoff,REC=IRC) OUTAU
+        DEALLOCATE (OUTAU)
+        IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+
+C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
+        IESTR=IST
+        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .              ESTIMV,ESTIMS,ESTIML,
+     .              NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
+     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
+     .              NSIGI_SPC,TRCFLE)
+C
+        IRC=2
+        ALLOCATE (OUTAU(NOUTAU))
+        CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
+        WRITE (11+ifoff,REC=IRC) OUTAU
+        DEALLOCATE (OUTAU)
+        IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+      ENDIF
+C
+      RETURN
+
+csw 19apr07
+      entry EIRENE_HE_EMIS_reinit
+      ifirst=0
+      return
+csw
+999   CONTINUE
+      WRITE (IUNOUT,*) 'ERROR IN SUBR. HE_EMIS '
+      WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
+      WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',
+     .             IAD1,IAD2,IADS
+      WRITE (IUNOUT,*) 'CHECK INPUT BLOCK 10A '
+      CALL EIRENE_EXIT_OWN(1)
+      END SUBROUTINE EIRENE_HE_EMIS

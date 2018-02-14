@@ -1,5 +1,6 @@
       subroutine EIRENE_broad_pedist (xtim)
- 
+
+cdr  Purpose: .... 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CPES

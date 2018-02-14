@@ -22,6 +22,7 @@ C  Oct 14:  arguments of velocs changed. "weight" now in argument list
 C  MAR 15:  remove Thompson distribution for thermal atom model:
 c           TWALL=0 now leads to error exit
 cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
+cdr Nov.17: lmetspw arguments corrected
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -47,7 +48,6 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
-!pb      USE EIRMOD_CREFMOD
       USE EIRMOD_CESTIM
       USE EIRMOD_CADGEO
       USE EIRMOD_CCONA
@@ -136,6 +136,8 @@ C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
 C---------------------------------------------------------------------
       DATA CON/0.4685/,EOQ/14.39/,ZWDR/0.666667/,IFIRST/0/,ICOUNT/0/
       DATA NPANOLD/0/
+
+cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
       EREDC(XMTT,XCTT,XMPP,XCPP)=CON/EOQ*XMTT/((XMPP+XMTT)*XCPP*XCTT*
      .                       SQRT(XCPP**ZWDR+XCTT**ZWDR))
 C
@@ -278,6 +280,7 @@ C  MASS NUMBER  : HYDROGEN
 C
         EPSHFE=EREDC(XMFE,XCFE,XMH,XCH)
 C
+C       ZRANGE(0)=0.0
         DO 12 J=1,12
           ZRANGE(J)=ZRANGE(J)*EPSHFE
           ZDE(J)=ZRANGE(J)-ZRANGE(J-1)
@@ -531,14 +534,20 @@ C
 C  FIND INDICES FOR INCIDENT ENERGY AND ANGLE: INDE, INDW, R01, R02
 C
 cdr tbd : binary search
+cdr we must avoid extrapolation:
+cdr tbd : we also need the zero-quantil (= emin=enar(0))
+cdr tbd : we also need the one-quantil  (= emax=enar(ine+1))
       DO 102 I=2,INEM
         INDEP=I
         IF (E0.LE.ENAR(I)) GOTO 101
 102   CONTINUE
       INDEP=INE
-101   INDE=INDEP-1
+101   INDE=INDEP-1    !  we now have 1<=inde<=ine  (e.g. ine=5, or =10)
 C
 cdr tbd : binary search
+cdr we must avoid extrapolation:
+cdr tbd : we also need the zero-quantil (= cosmin=wiar(0)= 0)
+cdr tbd : we also need the one-quantil  (= cosmax=wiar(inw+1) =1)
       DO 103 I=2,INWM
         INDWP=I
         IF (COSIN.GE.WIAR(I)) GOTO 104
@@ -978,7 +987,7 @@ C  SUPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF ((MSURF.GT.0) .AND. LSPUMP) THEN
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-            LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+            LMETSPW(ISPZO) = .TRUE.
           ENDIF
         ENDIF
         WEIGHT=WEIGHT*WMOLEC
@@ -1063,7 +1072,7 @@ C  SUPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF ((MSURF.GT.0) .AND. LSPUMP) THEN
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-            LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+            LMETSPW(ISPZO) = .TRUE.
           ENDIF
         ENDIF
         WEIGHT=WEIGHT*WATOM
@@ -1101,7 +1110,7 @@ C
 700   CONTINUE
       IF ((MSURF.GT.0) .AND. LSPUMP) THEN
         SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
-        LMETSPW(NSPAMI+NPLSI+NADSI+NALSI+ISPZO) = .TRUE.
+        LMETSPW(ISPZO) = .TRUE.
       ENDIF
       LGPART=.FALSE.
       WEIGHT=0.

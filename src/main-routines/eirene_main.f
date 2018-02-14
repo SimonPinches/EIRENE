@@ -1,4 +1,5 @@
 Cdr  june 17:  gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
+cdr  comments 
 C
 C     EIRENE VERSION SVN ....  (Jan.2014)... MOVED TO GIT REPOSITORY
 C
@@ -6,13 +7,30 @@ C
       PROGRAM EIRENE_MAIN
 
 cdr  Main program, to run eirene as stand alone code.
+c
+c     a)  initialize graphics routines
+c     b)  set default global run parameters NLM, DT, NLL, ITNR, MPI_INIT
+c         for stand alone runs.
+c     c)  call EIRENE(DT,NLM,NLL,ITNR,MPI_INIT)
+c     d)  close graphics routines
 
-cdr  As an alternative, there are other entry points,
-cdr  to run eirene from within other codes, e.g. in iterative mode.
-cdr  These calls to eirene_eirene (or entry point eirene_eirene_couple)
-cdr  are from main driving interfacing routine EIRSRT.f 
-cdr  and the parameters DT, NLM, NLL, ITNR, MPI_INIT... are
-cdr  external code and problem specific.
+c    NLM     :
+c    NLL     :
+c    DT      :
+c    ITNR    :
+c    MPI_INIT:
+
+cdr  As an alternative, there are other entry points into EIRENE,
+cdr  to run EIRENE from within other codes, e.g. in iterative mode.
+cdr  These calls are then to SUBR. EIRENE (rather than: PROGR. MAIN) 
+cdr  or to the entry point EIRENE_COUPLE in SUBR. EIRENE.
+
+cdr  For example: 
+cdr  CALL EIRENE_EIRENE and CALL_EIRENE_COUPLE 
+cdr  are preprogrammed in the main interfacing routine EIRSRT.f ,
+cdr  for some frequently used coupled applications (with B2, B2.5, etc..)
+cdr  The parameters DT, NLM, NLL, ITNR, MPI_INIT... are then
+cdr  set from the external code, or in EIRSRT, and are problem specific.
 
 
       USE EIRMOD_PRECISION

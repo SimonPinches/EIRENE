@@ -1,11 +1,13 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-!pb  01.07.10:  for LEVGEO==4 a search for the nearest triangle side was added 
+!pb  01.07.10:  for LEVGEO==4 a search for the nearest triangle side was added
 !    18.04.16:  default return value added in cleanup loop, J.Lore
 !               CUR --> CUR4 in deallocation loop, J.Lore
 !    28.04.16:  COMMENTS
-!cdr 25.06.16:  remove some exit calls in levgeo=1 level to avoit code crashes in long
-!cdr            (mpi) runs
- 
+!cdr 25.06.16:  remove some exit calls in levgeo=1 branch to avoid code crashes in long
+!cdr            (mpi) runs --> try softer landing
+cfr  sept. 17:  bug fix for levgeo=3 case EPDXDY=EPDX*EPDY, rather than EPDXDY=EPDX+EPDY
+c               This increases precision in 2d polygonal mesh search. Fewer particle tracing errors.
+
       FUNCTION EIRENE_LEARC1 (X,Y,Z,IPO,IAN,IEN,LOGX,LOGY,NP,TEXT)
 C
 C  REV. JULY 01: LEVGEO=3: ALL CALCULATIONS IN RELATIVE DISTANCES
@@ -15,9 +17,10 @@ C
 C   LOGX=TRUE: PARTICLE IS ON A RADIAL SURFACE
 C   LOGY=TRUE: PARTICLE IS ON A POLOIDAL SURFACE
 C
-C   FIND RADIAL MESHPOINT NUMBER LEARC1,
-C   (AND POLYGON INDEX IPO, IF NLPLG)
+C   FIND 1ST (RADIAL)  MESHPOINT NUMBER LEARC1,
+
 C  LEVGEO=3:
+C   (ADDITIONALLY: FIND POLYGON INDEX IPO, IF NLPLG)
 C   IF .NOT.LOGX AND .NOT.LOGY
 C     SEARCH IN RADIAL CELLS IR: [IAN,IEN], I.E.
 C     SEARCH BETWEEN (!!!) RADIAL SURFACES IAN AND IEN+1
@@ -26,7 +29,11 @@ C   IF LOGX
 C     SEARCH ON (!!!) RADIAL SURF. IAN FOR POLOIDAL MESH NUMBER IPO
 C   IF LOGY
 C     SEARCH ON (!!!) POLOIDAL SURF. IAN FOR RADIAL MESH NUMBER LEARC1
-C  LEVGEO=4:
+C  LEVGEO=4 :....
+C  LEVGEO=2 :....  nlcirc, nlell: ok. nltri: to be done.
+C  LEVGEO=1 :....  nlcirc, nlell: ok. nltri: to be done.
+C  LEVGEO=5 :  separate routine: LEARCT
+C  LEVGEO=10:  separate routine: LEAUSR
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -37,15 +44,15 @@ C
       USE EIRMOD_CPOLYG
       USE EIRMOD_CLOGAU
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y, Z
       INTEGER, INTENT(IN) :: IAN, IEN, NP
       INTEGER, INTENT(INOUT) :: IPO
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
       LOGICAL, INTENT(IN) ::  LOGX, LOGY
- 
+
       REAL(DP) :: X1, X2, X3, X4, Y1, Y2, Y3, Y4, DET4, XCMIN, XCMAX,
      .          ERRMIN, YCMIN, YCMAX, ERR7, YQ, DX4, ERR4, ATQ, XE, XEQ,
      .          XMX1, XMX2, YMY1, YMY2, YMY4, ERR1, DX1, XMX4, DET3,
@@ -55,36 +62,36 @@ C
       REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
      .                  EPDY, EPDXDY, EPDX
       INTEGER, SAVE :: IFIRST
-      INTEGER :: K, L, IM, LM, IEP, KH, EIRENE_LEARCT, EIRENE_LEAUSR, 
+      INTEGER :: K, L, IM, LM, IEP, KH, EIRENE_LEARCT, EIRENE_LEAUSR,
      .           IMARK, LMARK,
      .           I, J, IE, EIRENE_LEARC1, IA, INTR1, INTR2,
      .           IX, IY, INUM, IHEADX1, IHEADX2, IHEADY1, IHEADY2,
      .           EIRENE_LEARC1_RESET, I1, I2, I3
- 
+
       REAL(DP), ALLOCATABLE, SAVE ::
      R D12(:,:), D12I(:,:), D14(:,:), D14I(:,:), OBSC(:,:)
       LOGICAL :: LG(N1STS,N2NDPLGS), LG1(NRADS)
- 
+
 CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
       TYPE :: CELL
         INTEGER :: TRIANGLE
         TYPE(CELL),POINTER :: NEXT
       END TYPE CELL
- 
+
       TYPE :: CELL4
         INTEGER :: IX
         INTEGER :: IY
         TYPE(CELL4),POINTER :: NEXT
       END TYPE CELL4
- 
+
       TYPE :: POIFELD
         TYPE (CELL),POINTER :: P
       END TYPE POIFELD
- 
+
       TYPE :: POI4
         TYPE (CELL4),POINTER :: P
       END TYPE POI4
- 
+
       TYPE (POIFELD) :: HELPCUR(4)
       TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:)
       TYPE (CELL),POINTER :: CUR
@@ -95,8 +102,10 @@ csw 04aug08
       TYPE (POI4),ALLOCATABLE,SAVE :: HEADS4(:,:)
       TYPE (CELL4),POINTER :: CUR4,HELPP
 C
- 
+
       DATA IFIRST /0/
+
+C  tbd:  move into levgeo=4 branch, as already done in levgeo=3 branch
 csw 04aug08
       if(np .lt. 0 .and. levgeo.eq.4) then
         if(allocated(obsc)) deallocate(obsc)
@@ -124,15 +133,17 @@ C
       IE=IEN
       EIRENE_LEARC1 = -1
 C
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       IF (LEVGEO.EQ.4) THEN
 C
         IF (IFIRST.EQ.0) THEN
           IFIRST = 1
 
-C  SET EQUIDISTANT X-Y GRID, WHICH COVERS THE TRIANGULAR GRID
+C  SET EQUIDISTANT X-Y GRID, WHICH COVERS ENTIRELY THE TRIANGULAR GRID,
+C      TO SPEED UP CELL SEARCH:
 C  SET: HEADS, CUR
-         
-          
+
+
           ALLOCATE(HEADS(100,100))
           ALLOCATE (OBSC(NTRII,1))
 
@@ -156,7 +167,7 @@ C  SET: HEADS, CUR
           EPDXDY=EPDX*EPDY
 
 c  check grid, e.g. find obscure cells
-          
+
           DO I=1,NTRII
 C  CHECK CELLS FOR ORIENTATION, DISTORTION, CONVEX SHAPE, ETC...
               X1=XTRIAN(NECKE(1,I))
@@ -195,7 +206,7 @@ C  OPPOSITE GRID ORIENTATION: ORIENTATION IN TRIANGLE IS POSITIVE
 C  FOR EACH TRIANGLE CELL (I) FIND THE RANGE IHEADX1,....IHEADY2
 C                              SUCH THAT THIS CELL (I) IS ENTIRELY
 C                              IN THAT SECTION OF THE REGULAR IX,IY GRID
-C 
+C
           DO I=1,NTRII
             XTRMIN = MIN(XTRIAN(NECKE(1,I)),XTRIAN(NECKE(2,I)),
      .                   XTRIAN(NECKE(3,I)))
@@ -224,7 +235,8 @@ C
           ENDDO
         ENDIF
 C
-C  END OF IFIRST SEGMENT FOR TRIANGELS
+C  END OF PREPARATORY IFIRST SEGMENT FOR TRIANGELS
+C........................................................
 C
         INUM=0
 C
@@ -234,14 +246,14 @@ C
           IHEADX2=INT(DELTAX/DISTX)
         ENDIF
         IHEADX1=INT(DELTAX/DISTX)+1
- 
+
         DELTAY=Y-YMIN
         IHEADY2 = 0
         IF (ABS(MOD(DELTAY,DISTY)) .LT. EPDY) THEN
           IHEADY2=INT(DELTAY/DISTY)
         ENDIF
         IHEADY1=INT(DELTAY/DISTY)+1
- 
+
         HELPCUR(1)%P => HEADS(IHEADX1,IHEADY1)%P
         IF (IHEADX2 .GT. 0) THEN
           HELPCUR(2)%P => HEADS(IHEADX2,IHEADY1)%P
@@ -258,7 +270,7 @@ C
         ELSE
           NULLIFY(HELPCUR(4)%P)
         ENDIF
- 
+
         LG1=.FALSE.
         IM = 0
         DO J=1,4
@@ -313,18 +325,19 @@ C  CELL I ALREADY TESTED BEFORE ?
      .                           vtrix(3,im),vtriy(3,im))
            ipo = 1
            dd = d1
-           
+
            if (d2 < dd) then
               ipo = 2
               dd = d2
            end if
-           
+
            if (d3 < dd) then
               ipo = 3
               dd = d3
            end if
         end if
-        
+
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
       ELSEIF (LEVGEO.EQ.3) THEN
 C
@@ -334,7 +347,7 @@ C
           ALLOCATE (D12I(N1ST,N2ND))
           ALLOCATE (D14(N1ST,N2ND))
           ALLOCATE (D14I(N1ST,N2ND))
-          
+
           DO 1 I=1,NR1ST
 !pb            DO 2 L=1,NP2NDM
             DO 2 L=1,NRPLG-1
@@ -355,7 +368,8 @@ C
           ALLOCATE(HEADS4(100,100))
           ALLOCATE (OBSC(N1ST,N2ND))
 
-C  SET EQUIDISTANT X-Y GRID, WHICH COVERS POLYGON GRID,
+C  SET EQUIDISTANT X-Y GRID, WHICH COVERS ENTIRE POLYGON GRID,
+C      TO SPEED UP CELL SEARCH:
 c  SET: HEADS4, CUR4
 
           DO IX=1,100
@@ -369,7 +383,7 @@ c  SET: HEADS4, CUR4
           XMAX=-1.D60
           YMAX=-1.D60
           DO I=1,NR1ST
-!pb            DO L=1,NP2ND
+!pb         DO L=1,NP2ND
             DO L=1,NRPLG
               XMIN = MIN(XMIN,XPOL(I,L))
               YMIN = MIN(YMIN,YPOL(I,L))
@@ -385,7 +399,7 @@ c  SET: HEADS4, CUR4
           DISTY=(YMAX-YMIN)/100.
           EPDX=DISTX*EPS10
           EPDY=DISTY*EPS10
-          EPDXDY=EPDX+EPDY
+          EPDXDY=EPDX*EPDY
 
 C  FOR EACH POLYGON CELL (I,L) FIND THE RANGE IHEADX1,....IHEADY2
 C                              SUCH THAT THIS CELL (I,L) IS ENTIRELY
@@ -478,7 +492,8 @@ C  FOR PURPOSES OF LEARC1 THESE CELLS NEED NOT BE IDENTIFIED, HOWEVER.
           ENDDO
         ENDIF
 C
-C  END OF IFIRST SEGMENT FOR QUADRANGELS (POLYGON GRID)
+C  END OF PREPARATORY IFIRST SEGMENT FOR QUADRANGELS (POLYGON GRID)
+C..............................................................
 C
         INUM=0
 C
@@ -502,7 +517,7 @@ C  REGULAR GRID LINES
 C
 C  X,Y IS IN REGULAR CELL IX,IY=IHEADX1,IHEADY1. ALLWAYS CHECKED.
         HELPCUR4(1)%P => HEADS4(IHEADX1,IHEADY1)%P
- 
+
 C  X,Y POSSIBLY ALSO IN REGULAR CELL IHEADX2,IHEADY1?
         IF (IHEADX2 .GT. 0) THEN
           HELPCUR4(2)%P => HEADS4(IHEADX2,IHEADY1)%P
@@ -790,7 +805,10 @@ C
         EIRENE_LEARC1=IM
         IPO=LM
 C
+C::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
       ELSEIF (LEVGEO.EQ.2) THEN
+cdr:  to be done: add triangularity (NLTRI option) here
 C
         EIRENE_LEARC1=0
         IF (LOGX) RETURN
@@ -820,6 +838,8 @@ C
 15      CONTINUE
         EIRENE_LEARC1=IM
 C
+C::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
       ELSEIF (LEVGEO.EQ.1) THEN
 C
         EIRENE_LEARC1=0
@@ -830,6 +850,8 @@ C
         ENDIF
         IM=1
         IF (NR1ST.LT.2) GOTO 250
+
+cdr  we should do a binary search here. or just call learca1 
         DO 200 J=IA,IE
           I=J+1
           IM=J
@@ -848,10 +870,14 @@ C
 250     CONTINUE
         EIRENE_LEARC1=IM
 C
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
       ELSEIF (LEVGEO.EQ.5) THEN
 C
         EIRENE_LEARC1=EIRENE_LEARCT(X,Y,Z)
- 
+C
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
       ELSEIF (LEVGEO.EQ.10) THEN
 C
 C  GENERAL GEOMETRY OPTION: PROVIDE CELL NUMBER, GIVEN THE POSITION
@@ -860,11 +886,12 @@ C
 C
       ENDIF
 C
+C
       RETURN
 
 
       ENTRY EIRENE_LEARC1_RESET ()
-      
+
       EIRENE_LEARC1_RESET = 0
 
       if (levgeo == 3) then
@@ -876,7 +903,7 @@ C
         DEALLOCATE (D14I)
 
         IF (ALLOCATED(OBSC)) DEALLOCATE (OBSC)
-        IF (ALLOCATED(HEADS4)) THEN 
+        IF (ALLOCATED(HEADS4)) THEN
           do i=1,100
             do j=1,100
               cur4 => heads4(i,j)%p
@@ -910,7 +937,7 @@ C
           enddo
           deallocate(heads)
         endif
-        
+
         return
       endif
 
@@ -941,23 +968,23 @@ C
       det = vx*wy - vy*wx
 
       if (abs(det) < eps10) then
-! if line collapses to a point take distance P=(px,py) to (gx,gy)       
+! if line collapses to a point take distance P=(px,py) to (gx,gy)
         dist_point_line = sqrt ((px-gy)**2 + (py-gy)**2)
-      
-      else   
+
+      else
 
         deth = vx*(gy-py) - vy*(gx-px)
         t_h = deth / det
 
-!  footpoint f=(fx,fy) is given by 
+!  footpoint f=(fx,fy) is given by
 !      fx = px + t_h*wx
 !      fy = py + t_h*wy
 !      dist_point_line = sqrt((fx-px)**2+(fy-py)**2)
         dist_point_line = sqrt( t_h**2*(wx**2+wy**2) )
-      
+
       end if
 
       return
       end function dist_point_line
-      
+
       END

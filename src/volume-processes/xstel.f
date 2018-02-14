@@ -20,11 +20,12 @@ cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) direct
 cdr     Reaction identifyer KK is defined twice, within same routine veloel.
 cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
 cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.                   
+cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)                 
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
      .                 EBULK,ISCDE,IESTM,
-     .                 KK,FACTKK)
+     .                 KK,FACTKK,PLS)
 C
 C       SET UP TABLES (E.G. OF REACTION RATE ) FOR EL PROCESSES
 C
@@ -58,12 +59,14 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: EBULK, FACTKK
+      REAL(DP), INTENT(IN) :: PLS(NSTORDR)
       INTEGER, INTENT(IN) :: IREL, ISP, IPL,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, TII,
+     .            EIRENE_ENERGY_RATE_COEFF, 
+     .            TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
      .           IBGK,ISPZB,ITYPB
@@ -75,14 +78,14 @@ C
 
       NREAEL(IREL) = KK  ! needed for storage saving mode
 C
-C  SET NON DEFAULT ELASTIC COLLISION PROCESS NO. IREL
+C  SET NON-DEFAULT ELASTIC COLLISION PROCESS NO. IREL
 C
 C
 C  TARGET MASS IN <SIGMA*V> FORMULA: MAXW. BULK PARTICLE
-C  (= PROJECTILE MASS IN CROSS SECTION MEASUREMENT: TARGET AT REST)
+C  (= PROJECTILE MASS IN CROSS-SECTION MEASUREMENT: TARGET AT REST)
       PMASS=MASSP(KK)*PMASSA
 C  PROJECTILE MASS IN <SIGMA*V> FORMULA: MONOENERG. TEST PARTICLE
-C  (= TARGET PARTICLE IN CROSS SECTION MEASUREMENT; TARGET AT REST)
+C  (= TARGET PARTICLE IN CROSS-SECTION MEASUREMENT; TARGET AT REST)
       TMASS=MASST(KK)*PMASSA
 C
       ADDT=PMASS/RMASSP(IPL)
@@ -143,7 +146,7 @@ C       NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
+              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
@@ -265,13 +268,13 @@ c  use collision estimator for energy balance
           IF (EIRENE_IDEZ(IESTM,3,3).NE.1) THEN
             WRITE (iunout,*)
      .        'COLLISION ESTIMATOR ENFORCED FOR ION ENERGY '
-            WRITE (iunout,*) 'IN EL COLLISION IREL= ',IREL
-            WRITE (iunout,*) 'BECAUSE NO ENERGY WEIGHTED RATE AVAILABLE'
+            WRITE (iunout,*) 'IN ELASTIC COLLISION IREL= ',IREL
+            WRITE (iunout,*) 'BECAUSE NO ENERGY-WEIGHTED RATE AVAILABLE'
           ENDIF
           IESTEL(IREL,3)=1
           MODCOL(5,4,IREL)=2
         ELSE
-C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
+C  ION ENERGY-AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
         NELREL(IREL) = KREAD
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.GE.1.AND.MODC.LE.2) THEN
@@ -281,7 +284,7 @@ C  ION ENERGY AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
 C  STORAGE SAVING MODE ?
           IF (NSTORDR >= NRAD) THEN
 C  NO
-c           NSTORDT=9 HERE
+C           NSTORDT=9 HERE
       
             IF (MODC.EQ.1) THEN
 C             NEND=1
@@ -291,7 +294,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
-     .                          (KREAD,J,TII,
+     .                          (KREAD,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
@@ -334,7 +337,7 @@ c old
         ENDIF
         ENDIF
       ELSE
-        WRITE (iunout,*) 'NSEEL4 ILL DEFINED IN XSTEL '
+        WRITE (iunout,*) 'NSEEL4 ILL-DEFINED IN XSTEL '
         WRITE (iunout,*) 'check parameter ISCDE for process irel ',irel
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
@@ -344,8 +347,7 @@ C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
       IESTEL(IREL,2)=EIRENE_IDEZ(IESTM,2,3)
       IF (IESTEL(IREL,3).EQ.0) IESTEL(IREL,3)=EIRENE_IDEZ(IESTM,3,3)
 C
-C
-C
+
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
@@ -418,5 +420,11 @@ C
 993   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEL, SPECIES ISP: '
       WRITE (iunout,*) ISP,IREL
+      CALL EIRENE_EXIT_OWN(1)
+995   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEL: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'STORAGE SAVING MODE NOT READY; KK, IREL'
+      WRITE (iunout,*) 'KK, IREL ',KK,IREL
       CALL EIRENE_EXIT_OWN(1)
       END

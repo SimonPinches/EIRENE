@@ -191,7 +191,7 @@ C
         ENDIF
 C
         IF (RLB(J).GE.2.6.AND.RLB(J).LT.2.9) THEN
-C  2 POINTS, PLANE SURFACE WITH IGNORABLE X CO-ORDINATE
+C  2 POINTS, PLANE SURFACE WITH IGNORABLE X COORDINATE
           IF (RLB(J).LT.2.75) RLB(J)=1.
           IF (RLB(J).GE.2.75) RLB(J)=1.5
           XLIMS1(1,J)=P1(1,J)
@@ -230,7 +230,7 @@ C  AND X-INDEPENDENCE OF SURFACE EQUATION
           SAREA(J)=DL*DX
           GOTO 90
         ELSEIF (RLB(J).GE.2.3.AND.RLB(J).LT.2.6) THEN
-C  2 POINTS, PLANE SURFACE WITH IGNORABLE Y CO-ORDINATE
+C  2 POINTS, PLANE SURFACE WITH IGNORABLE Y COORDINATE
           IF (RLB(J).LT.2.45) RLB(J)=1.
           IF (RLB(J).GE.2.45) RLB(J)=1.5
           YLIMS1(1,J)=P1(2,J)
@@ -269,7 +269,7 @@ C  AND Y-INDEPENDENCE OF SURFACE EQUATION
           SAREA(J)=DL*DY
           GOTO 90
         ELSEIF (RLB(J).GE.2.0.AND.RLB(J).LT.2.3) THEN
-C  2 POINTS, PLANE SURFACE WITH IGNORABLE Z CO-ORDINATE
+C  2 POINTS, PLANE SURFACE WITH IGNORABLE Z COORDINATE
           IF (RLB(J).LT.2.15) RLB(J)=1.
           IF (RLB(J).GE.2.15) RLB(J)=1.5
           ZLIMS1(1,J)=P1(3,J)
@@ -337,7 +337,7 @@ C
         TEST4=0.
         TEST5=0.
 C
-C  SET PLANE SURFACE FROM CO-ORDINATES OF THE FIRST 3 VERTICES
+C  SET PLANE SURFACE FROM COORDINATES OF THE FIRST 3 VERTICES
 C  RLB.GE.3.0 AT THIS POINT
 C
 c     vektoren bilden (alle die in einem fuenfeck vorkommen koennen)
@@ -375,7 +375,7 @@ C   TEST, IF 4TH  AND 5TH POINT ON SURFACE
         TEST4=A0LM(J)+A1LM(J)*P4(1,J)+A2LM(J)*P4(2,J)+A3LM(J)*P4(3,J)
         TEST5=A0LM(J)+A1LM(J)*P5(1,J)+A2LM(J)*P5(2,J)+A3LM(J)*P5(3,J)
 C
-C  NEW CO-ORDINATE SYSTEM IN P3,P1,P2 ; P4,P2,P3 ; P5,P3,P4
+C  NEW COORDINATE SYSTEM IN P3,P1,P2 ; P4,P2,P3 ; P5,P3,P4
 C    XS = P3 + XLS1*(P1-P3) + XMS1*(P2-P3)
 C    XS = P4 + XLS2*(P2-P4) + XMS2*(P3-P4)
 C    XS = P5 + XLS3*(P3-P5) + XMS3*(P4-P5)
@@ -502,7 +502,7 @@ C
 C
 98      WRITE (iunout,*)
      .    'WARNING FROM TIMEA0, SURFACE NO J IS TURNED OFF'
-        WRITE (iunout,*) 'BECAUSE ILL DEFINED '
+        WRITE (iunout,*) 'BECAUSE ILL-DEFINED '
         WRITE (iunout,*) 'J= ',J
         IGJUM0(J)=1
         IF (NLIMPB >= NLIMPS) THEN
@@ -800,7 +800,7 @@ c
 c   build octree
       tree => EIRENE_TIMEA_BuildOctree()
       
-c   count the surfaces that won't be in octree to get the
+c   count the surfaces that will not be in octree to get the
 c   right dimension for the array NOTOCSURFS 
 c   
       DO J=1,NLIMI
@@ -812,7 +812,7 @@ c  that are no tri/quad/quintangles
       END DO
       
 c   allocate enough space for lookup table which we will use for 
-c   surfaces that we don't have in the octree (like 2nd order surfaces, etc.)
+c   surfaces that we do not have in the octree (like 2nd order surfaces, etc.)
       if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NSURFNOT))
 cdr
       NSURFNOT = 0

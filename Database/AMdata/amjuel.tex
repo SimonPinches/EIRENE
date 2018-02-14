@@ -1,11 +1,13 @@
 %\documentclass[12pt]{article}
-\documentclass[12pt,dvipdfm]{article}
+\documentclass[12pt,dvipdfmx]{article}
 
 \usepackage{epsf}
 \oddsidemargin 0. true cm
 \topmargin -2.5 true cm
 \textheight 24 true cm
 \textwidth 16 true cm
+
+
 \usepackage{color}
 \pagecolor{white}
 \setcounter{secnumdepth}{3}
@@ -14,7 +16,7 @@
 
 \usepackage[unicode=true,
 % hypertex, % use for activating links in DVI file
- dvipdfm, % use for bookmarks in final version
+ dvipdfmx, % use for bookmarks in final (pdf) version
  bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
  breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
  {hyperref}
@@ -42,16 +44,24 @@ Germany
 Version: \today
 \vspace{1truecm}
 
-Available via E-mail from d.reiter@fz-juelich.de
+Available via E-mail from d.reiter@fz-juelich.de, or as part of the
+EIRENE code git-repository hosted at FZ J\"ulich
 }
+\pagenumbering{Roman}
 \newpage
+\renewcommand\thesection{\Roman{section}}
 \tableofcontents
 %ende titelpage
 \newpage
-\section*{Introduction}
-\addcontentsline{toc}{section}{Introduction}
-\subsection*{Record:}
-\addcontentsline{toc}{subsection}{Record:}
+%\renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
+%\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\Roman{subsubsection}}
+\section{Introduction}\label{sec-intro}
+%\addcontentsline{toc}{section}{Introduction}
+
+Additional atomic data fits, read by EIRENE
+
+\subsection{Record:}\label{record}
+%\addcontentsline{toc}{subsection}{Record:}
 \begin{itemize}
 \item update  6.12/94 \\
    Bor ionization raten H.2, 2.5B0, 2.5B1 \\
@@ -84,14 +94,14 @@ Available via E-mail from d.reiter@fz-juelich.de
    wrong, and never used anyway
 (i.e. H.8 2.1.5G out).
  \item update   18.3/97 \\
-  H.4 2.1.5FU, H.4 2.1.8FU (fujimoto rates) \\
+  H.4 2.1.5FU, H.4 2.1.8FU (fujimoto rates) (0.1-1e3 eV\\
   H.2 3.2.3  (only slow molecules) \\
   H.2 2.2.17
  \item update   28.7/97 \\
-  H.3 3.2.3  = HYDHEL H.3 3.2.3(vs. Ebeam and Ti) + plus
+  H.3 3.2.3  = HYDHEL H.3 3.2.3 (vs. Ebeam and Ti) + plus
   slow vibr. ex. molecules\\
   must be modified to account for Ebeam of vibr. excited
-  molecules (scale cross section)\\
+  molecules (scale cross section). DONE: see below: 11.05.04\\
   H.4 2.2.5g, as 2.2.5 but vibr. distribution of H2 molecules
  \item update    8.8/97 \\
   H.2 2.10B0, 2.10B1 \\
@@ -102,11 +112,11 @@ Available via E-mail from d.reiter@fz-juelich.de
  \item update    8.9/97 \\
   H.1 3.1.8R (Riviere) revised (better extrapolation to low energy) \\
   H.1 3.1.8ST new (Schultz total cx cross section) \\
-  H.1 3.1.8SM new (Schultz momentum transfer cross section) \\
-  H.1 3.1.8       (Janev total cx cross section)\\
-  H.1 3.1.8JM new (Janev total cx cross section *2 = mom trans. x-section)\\
+  H.1 3.1.8SD new (Schultz momentum transfer cross section) \\
+  H.1 3.1.8       (Janev total cx cross section, also: 3.1.8J)\\
+  H.1 3.1.8J2 new (Janev total cx cross section *2 = mom trans. x-section)\\
   H.1 3.1.8ST2 new (Schultz total cx cross section *2 = mom trans. x-section)\\
-  note: 3.1.8SM $\approx$ 2  * 3.1.8ST within line-thickness
+  note: 3.1.8SD $\approx$ 2  * 3.1.8ST within line-thickness
  \item update   23.9/97 \\
   H.2 2.6B0 strahl carbon data ionization\\
   H.4 2.3.6B0 strahl carbon data recombination \\
@@ -209,7 +219,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   H.3:  3.1.8L done   \\
   H.8:  3.1.8L done (in Sept.2016   \\
   H.9:  3.1.8L done   \\
-  H.3:  3.1.8o:  original fit from Janev's springer 1987 book\\
+  H.3:  3.1.8org:  original fit from Janev's springer 1987 book\\
   (only for reference purpose. don't use!)
  \item update  11.05/04 \\
   H.11  2.0a, 2.0b  redone, correct $E_{H2}=0.1$ eV\\
@@ -231,7 +241,7 @@ Available via E-mail from d.reiter@fz-juelich.de
  \item update  14.01/07 H.10, 2.1.8-t: for comparison with ADAS PRB \\
   remove $d(ln\langle sigv\rangle)/d(ln T)$ corrections in free-bound transition\\
   then: good agreement with ADAS PRB found (tested for JET divertor case)\\
-  hence: this corrections seems to be missing in ADAS\\
+  hence: this corrections seemed to be missing in ADAS\\
   Also added: H.12 2.1.8de-t, (DE per event) and figures \\
   Old H.12 2.1.5t and 2.1.8t renamed into 2.1.5tot and 2.1.8tot, resp.
   \item update   07.08/07  2.1.5 H.4 and H.10 Johnson-Hinnov renamed to 2.1.5JH\\
@@ -292,7 +302,7 @@ Available via E-mail from d.reiter@fz-juelich.de
   \item April 15:\\
   HYDHEL cross section for 3.1.8 (cx) added here too (same as in hydhel.tex file)\\
   This can be used for low and high E0 limit extrapolation.
-  to be done: make H.2 rate to be used for low E0 limit extrapolation.
+  to be done: make H.2 rate to be used for low E0 limit extrapolation...Nov. 17 done now !
   \item April 15:\\
   Some header texts changed, e.g \emph{ratio} $\rightarrow$ \emph{Ratio} in H.12 headers
   \item June 15:\\
@@ -319,19 +329,27 @@ done: 0.4, 0.5, 0.6, 0.7, 0.8, both: T (total) and D (diffusion) rates.
 Currently all H.4 rates should have NEMIN=1.e8, and be extrapolated with this values taken also for all
 lower electron densities (Corona limit). In this case $ln^i(\tilde{ne})=0.0,  \ i=1,2,\dots,8$, fit must reduce to H.2 format.
 I.e., these 9 H.2 coefficients can directly be obtained as subset of the 81 H.4 coefficients.
-\item Jan.16: \\ 
+\item Jan.16: \\
 N2+ diss.rec added: rate: 2.7.14, linear on log-log scale, and hence corresponding H.1 and H.8 data follow analytically.
-\item May 16: \\ 
+\item May 16: \\
 H.2 2.2.17s,  H.4 2.2.17r and H.4 2.2.17d: effective, H- condensed, DIS, MAR, MAD rate coefficients for H2, via H2-.
-\item June 16: \\ 
+\item June 16: \\
 H.4 2.1.5 and H.10 2.1.5 CR electron impact ionisation: fit range extended from 1e3 to 2e4 eV, new fits and figures
 \item Jan. 17: \\
 H.11   4.0a added. Ratio of production rate constant for H3+ to destruction rate coefficient (vs.(Te)). From this ratio,
 by multiplying it with nH2+/ne, one finds the nH3+/nH2 ratio, when H2+ and H3+ are in equilibrium with H2.
+\item Jun. 17: \\
+H.4 2.1.8, H.10  2.1.8 and H.12  2.1.8de redone, fit range extended from 0.1 --1e3, to 0.1..2e4, to avoid spurious recombination
+rates in hot core plasmas.
+\item Aug. 17: \\
+H.1  3.1.8 and 3.1.8J2 left asympt. (al0) corrected. Slope was correct, but a small jump at E=0.1 eV.
+H.1  3.1.8ST  and 3.1.8ST2  left asympt. added. Was missing.
+\item Nov. 17: \\
+H.1  3.1.8 right asympt. added (taken from hydhel). Also H.2  3.1.8 added, (taken from hydhel)
 \end{itemize}
 
-\subsection*{to be done:}
-\addcontentsline{toc}{subsection}{to be done:}
+\subsection{to be done:}
+%\addcontentsline{toc}{subsection}{to be done:}
 \begin{itemize}
 \item  Check text in H.12, 2.2.5fl:  is Aik already multiplied into this ratio fit, i.e. is
 this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multiplied?
@@ -340,6 +358,9 @@ this fit a ``Fulcher emission rate" (1/s), or is this factor still to be multipl
 \item 2.2.14: H.2 fit made strictly linear on log-log scale, for H.1, H.2 and H.8. Then use H.2 coefficients to
 derive, exactly, the corresponding H.1 and H.8 coefficients. Done for H.8, 2.2.14,  To be done for H.1 for this
 process, and also for other (probably mostly recombination) processes, e.g. 2.1.8, 2.2.15, 2.3.13, 2.7.14....
+\item  Aug. 17:   3.1.8  H.2, H.3 and H.9 rate coefs. must be redone, due to Aug. 17 correction of left asmpt. in cross section.
+Will perhaps further improve the tracklength estim. energy balance.
+So far we have no 3.1.8S (Schultz) rate coeff. of any kind.
 \end{itemize}
 
 \newpage
@@ -348,9 +369,9 @@ Additional atomic data fits, read by EIRENE
 Format as HYDHEL DATEN \cite{kn:Janev}
 or METHANE DATEN \cite{kn:Ehrhardt}. See description in HYDHEL.pdf
 \newpage
-\section*{Numerical Fits to $\sigma$ and $\langle\sigma v\rangle$}
+\section{Numerical Fits to $\sigma$ and $\langle\sigma v\rangle$}\label{sec1}
 
-(See again: \cite{kn:Janev}, only slightly generalized version here:
+(See again: \cite{kn:Janev}, only slightly generalized version here:)
 \\
 
 We derived numerical fits for $\sigma$ and $\langle\sigma v\rangle$ so that these processes can be evaluated easily in
@@ -370,7 +391,7 @@ here.
 
 A more useful fit for the heavy-particle reactions is a double polynomial fit in both E and T:\\
 
-      $$\ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \alpha_{mn}(\ln E)^n(\ln T)^m.$$
+      $$\ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \alpha_{n,m}(\ln E)^m(\ln T)^n.$$
 
 Such a fit requires a large number of coefficients in order to be accurate, but can be used for arbitrary
 $E$ and $T$.
@@ -378,12 +399,20 @@ $E$ and $T$.
 Analogously, a fit for the density and temperature dependent reaction rate coefficients
 is a double polynomial fit in both $n$ and $T$:\\
 
-      $$\ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \alpha_{mn}(\ln \tilde{n})^n(\ln T)^m.$$
-Most fits in the present database have been set up for density range $1e8 - 1e16$ cm$^{-3}$,
+      $$\ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \alpha_{n,m}(\ln \tilde{n})^m(\ln T)^n.$$
+
+Most fits in the present database with density and temperature dependence have been set up for density range $1e8 - 1e16$ cm$^{-3}$,
 but with the density parameter $\tilde n$ being a scaled density: $\tilde n = n/10^8$, $n$ in cm$^{-3}$.
+As a result, at $n = 10^8, \ln(\tilde{n}) = 0$ the 2-parametric fit collapses to a one parametric fit vs. temperature only:
 
+$$\ln \langle\sigma v\rangle(T, n\leq 10^8) = \sum_{n=0}^N \alpha_{n,0}(\ln T)^n$$
 
-\subsection*{Example of Use of Fits}
+which can be taken as Corona (density independent) limit, for proper low density parameter asymptotic behaviour.
+
+Further asymptotically correct forms of these fits (at other boundaries of the parameters $E, n, T$, are described below
+in subsections \ref{sec1.3.1}, \ref{sec1.3.2}, etc.. for the various types of data.
+
+\subsection{Example of Use of Fits}\label{sec1.1}
 
 As an example (taken from \cite{kn:Janev}) of the use of the tables of fits for cross sections and reaction rate coefficients consider
 the calculation of $\langle\sigma v\rangle$ for reaction 2.1.5, $e + H(ls) \rightarrow e + H^+ + e$. We compute\\
@@ -395,9 +424,9 @@ six digits need to be kept for these to be nearly perfect fits (see Sect. 8.2) a
 been truncated at six digits.\\
 
 \begin{eqnarray*}
-\ln \langle\sigma v\rangle & = & (3.27139e+01) + 1.35365e+01 (2.30259)\\
+\ln \langle\sigma v\rangle & = & -3.27139e+01 \quad\quad\quad\quad \ \ + 1.35365e+01 (2.30259)\\
 & & -5.73932e+00 (2.30259)^2 + 1.56315e+00 (2.30259)^3\\
-& & -2.87705e-01 (2.380259)^4 + 3.48255e-02 (2.30259)^5\\
+& & -2.87705e-01 (2.30259)^4 + 3.48255e-02 (2.30259)^5\\
 & & -2.63197e-03 (2.30259)^6 + 1.11954e-04 (2.30259)^7\\
 & & -2.03914e-06 (2.30259)^8\\
 \\
@@ -408,8 +437,8 @@ been truncated at six digits.\\
 Thus,\\
 
 $$\langle\sigma v\rangle = 5.17228e-09  \ cm^3/s.$$
-\subsection*{SLREAC.f: Fortran module for reading Data from AMJUEL}
-\addcontentsline{toc}{subsection}{SLREAC.f: Fortran module for reading Data from AMJUEL}
+\subsection{SLREAC.f: Fortran module for reading Data from AMJUEL}\label{sec1.2}
+%\addcontentsline{toc}{subsection}{SLREAC.f: Fortran module for reading Data from AMJUEL}
 Single parameter fits are identified by the character string
 \begin{small}\begin{verbatim}
 'p0' in case of H.0  (interaction potential, or differential cross section)
@@ -502,14 +531,17 @@ C  Eirene/file-handling/slreac.f
       END
 \end{verbatim}\end{small}
 \newpage
-\subsection*{Types of data, general prescriptions}\label{sec1.3}
-\addcontentsline{toc}{subsection}{Types of Data, general prescriptions}
+
+\subsection{Types of data, general prescriptions}\label{sec1.3}
+%\addcontentsline{toc}{subsection}{Types of Data, general prescriptions}
 The present compilation contains data fits for atomic/molecular processes which can utilized in EIRENE runs.
 Fits are stored here for interaction potentials (H.0), total cross sections (H.1),
 rate coefficients (H.2, H.3 and H.4)  and momentum (H.5, H.6 and H.7) and energy weighted (H.8, H.9, H.10) rate coefficients, respectively, as well as some
 supplementary data fits (H.11 and H.12), often reduced population coefficients, and meant mainly for post processing and other purposes.
-\subsubsection*{H.0: interaction potentials}\label{sec1.3.0}
-\addcontentsline{toc}{subsubsection}{H.0: interaction potentials}
+
+\setcounter{subsubsection}{-1}
+\subsubsection{H.0: interaction potentials}\label{sec1.3.0}
+%\addcontentsline{toc}{subsubsection}{H.0: interaction potentials}
 The classical  elastic collision kinetics is determined by the
 interaction potential $V(r)$. In EIRENE for given  (random sampling)
 impact parameter $b$ and relative collision energy $E_r$ (in eV) the
@@ -549,15 +581,15 @@ $p_6$  not in use\\
 $p_7  = V(r_w)=-\frac{3\epsilon}{4}$ \\
 $p_8$  not in use
 \end{itemize}
-\subsubsection*{H.1: cross section vs. energy}\label{sec1.3.1}
-\addcontentsline{toc}{subsubsection}{H.1: cross section vs. energy}
+\subsubsection{H.1: cross section vs. energy}\label{sec1.3.1}
+%\addcontentsline{toc}{subsubsection}{H.1: cross section vs. energy}
 Fits for $\sigma  (E_{lab,1}) \ [cm^2]$
 
 Collision cross are functions of relative velocity, but, due to historic reasons
 in the EIRENE databases, which initially had been built on data of ref. \cite{kn:Janev}, the laboratory energy  of one of the colliding particles (usually the charged particle)
 is used, with the second collision partner (usually the neutral particle) being at rest. I.e., $\sigma= \sigma(E_{lab,1})$.
-To convert to center of mass energies, one uses $E_{lab,1} =m_1/2 \ v_1^2$ and $E_{CM} = \mu/2 \ v_{rel}^2$ with
-$\mu = m_1m_2/(m_1+m_2)$ being the reduced mass and $v_{rel}=|v_1-v_2|$ the relative collision velocity
+To convert to center of mass energies, or to other isotopes of the same atom, one uses $E_{lab,1} =m_1/2 \ v_1^2$ and $E_{CM} = \mu/2 \ v_{rel}^2$ with
+$\mu = m_1m_2/(m_1+m_2)$ being the reduced mass and $v_{rel}=|v_1-v_2|$ the relative collision velocity.
 
 Cross sections for elastic collision processes (classical orbits) are given in this paragraph.
 
@@ -608,8 +640,8 @@ Cross sections in this present database are fitted vs. ``laboratory" collision e
 in the EIRENE code is $\mbox{cvela} = 1.38912 e6 \ [cm/s]$ and $m$ is the mass of the charged particle, assuming the neutral particle to be at rest (not to be confused with the reduced mass $m_r$). A resulting linear fit (on log-log scale) for
 $\ln(\sigma(E)) = a_0 + a_1 \ln(E) $ then is:
 
-\subsubsection*{H.2: rate coefficients vs. temperature (zero beam energy)}\label{sec1.3.2}
-\addcontentsline{toc}{subsubsection}{H.2: rate coefficient vs. temperature (zero beam energy)}
+\subsubsection{H.2: rate coefficients vs. temperature (zero beam energy)}\label{sec1.3.2}
+%\addcontentsline{toc}{subsubsection}{H.2: rate coefficient vs. temperature (zero beam energy)}
 Fits for $\langle\sigma(v) \cdot v  \rangle (T_p) \ [cm^3/s]$
 
 Maxwellian rate coefficients are taken for neutral particle energy $E_0 = 0.0$ eV and for background (plasma) drift velocity ${\bf V}_p ={\bf 0}$
@@ -634,8 +666,8 @@ process considered, and $T_1$ and $T_2$ are their two temperatures.
 For electron impact collisions on heavy (neutral) particles (mass $m_1=m_0$), i.e. with $m_2 =m_p = m_e$  we have:  $m_e \ll m_1$, and hence
 typically $T_{eff} \approx T_e = T_2$, so the re-scaling to an effective temperature is only required for heavy particle (here: ion impact) collisions.
 
-\subsubsection*{H.3: rate coefficient vs. temperature and energy}\label{sec1.3.3}
-\addcontentsline{toc}{subsubsection}{H.3: rate coefficient vs. temperature and energy}
+\subsubsection{H.3: rate coefficient vs. temperature and energy}\label{sec1.3.3}
+%\addcontentsline{toc}{subsubsection}{H.3: rate coefficient vs. temperature and energy}
 Beam-Maxwellian rate coefficients. These coefficients are generalisations of the H.2 (isotropic) Maxwellian rate coefficients and account for either
 a finite velocity (energy $E_0$) of the  test particle (or beam) or a fluid drift ${\bf V_p}$ in the Maxwellian background, or both.
 
@@ -658,8 +690,8 @@ of (charged) particles $``p"$, mass $m_p$, with stationary Maxwellian distributi
 
 
 
-\subsubsection*{H.4: rate coefficient vs. temperature and density}\label{sec1.3.4}
-\addcontentsline{toc}{subsubsection}{H.4: rate coefficient vs. temperature and density}
+\subsubsection{H.4: rate coefficient vs. temperature and density}\label{sec1.3.4}
+%\addcontentsline{toc}{subsubsection}{H.4: rate coefficient vs. temperature and density}
 Fits for $\langle\sigma \cdot v_{rel}  \rangle (n_p,T_p) \ [cm^3/s]$
 
 Same expression of fit as for Beam-Maxwellian rate coefficients, but with beam energy
@@ -672,25 +704,56 @@ preserve backward compatibility, the density $n_p$ in this fit must be
 given in units of $10^8 \ cm^{-3}$, i.e., with density given in $cm^{-3}$ and
 the numerical value then divided by $10^8$, or density given in $m^{-3}$ and then
 divided by $100^3 \times 10^8 = 10^{14}$.
-\subsubsection*{H.5: momentum weighted rates vs. temperature}
-\addcontentsline{toc}{subsubsection}{H.5: momentum weighted rates vs. temperature}
+
+\paragraph{Asymptotical behaviour, density parameter}
+Unless otherwise stated the valid range of the scaled density $\ln(\tilde n) = \ln (n/10^8)$ ranges from $\ln(\tilde n) = \ln(1.0) = 0.0$  (at $n=10^8 \, cm^{-3}$)
+to $\ln(\tilde n) = \ln(10^8) = 8 \ln(10) \approx 18.421$  (at $n=10^{16} \, cm^{-3}$).  Rescaling the fit expression to a density parameter
+$\hat n = 1/b \ln(n/10^8)$ with $b = 8 \ln(10)$ brings the validity range $[10^8 ,10^{16}]$ of the density parameter $n$ $\, [cm^{-3}]$  to the
+interval $[0, 1]$ for the scaled density parameter $\hat n$. At these boundaries for the scaled density parameter the collisional radiative rate coefficients
+become density independent (Corona and LTE conditions, respectively).
+The fit expression (see \ref{sec1})
+
+$$\ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \alpha_{n,m}(\ln \tilde{n})^m(\ln T)^n $$
+
+then becomes
+$$\ln \langle\sigma v\rangle = \sum_{n=0}^N\sum_{m=0}^M \hat\alpha_{n,m}(\hat{n})^m(\ln T)^n $$
+with $ \hat\alpha_{n,m} = b^n \alpha_{n,m}$. At the validity boundaries $\hat n =0$  and $\hat n  =1$
+this expression collapses to the correct limiting single parameter fits for the temperature dependence:
+$$\ln \langle\sigma v\rangle = \sum_{n=0}^N\hat\alpha_{n,0}(\ln T)^n $$ at $ n\leq 10^8 \,  cm^{-3}$)
+and
+$$\ln \langle\sigma v\rangle = \sum_{n=0}^N\hat\beta_{n}(\ln T)^n $$ at $ n \geq 10^{16} \,  cm^{-3}$)
+with $\hat\beta_{n} = \sum_{m=0}^M \hat\alpha_{n,m}$
+
+The range between the density independent Corona and LTE limits, taken here to be
+$[10^8 ,10^{16}]$,  is representative for most relvant applications of EIRENE, but stricktly is also temperature dependent.
+The range should be made wider (on both boundaries) at lower temperatures (below a few eV)  and shrinks
+(at both boundaries) at higher temperatures. Therefore the density parameter $\hat n$ in the fit might better be made
+temperature dependent, e.g. as $\hat n = b \ln(a n)/ln(T)$, analogous as for the energy parameter in H.3 fits, see \ref{sec1.3.3}.
+
+\paragraph{Asymptotical behaviour, temperature parameter}
+to be written
+
+\subsubsection{H.5: momentum weighted rates vs. temperature}\label{sec1.3.5}
+%\addcontentsline{toc}{subsubsection}{H.5: momentum weighted rates vs. temperature}
 currently not in use. Probably for electron-neutral friction vs. $T_e$, Omega integrals, etc..
-\subsubsection*{H.6: momentum weighted rates vs. temperature and energy}
-\addcontentsline{toc}{subsubsection}{H.6: momentum weighted rates vs. temperature and energy}
+
+\subsubsection{H.6: momentum weighted rates vs. temperature and energy}\label{sec1.3.6}
+%\addcontentsline{toc}{subsubsection}{H.6: momentum weighted rates vs. temperature and energy}
 This section  contains reaction rates for track-length estimators for momentum sources (EIRENE, options {\tt IESTM=2}).
 The momentum exchange in a collision of a test particle, subscript $0$ and another (e.g. plasma) particle, subscript $p$,
 is:
 \begin{equation}
 \Delta {\bf P}_0 = m_0 \cdot \left({\bf v}_0-{\bf v}'_0\right) = \mu (1-\cos(\theta)) \left({\bf v}_0-{\bf v}_p\right)
 \end{equation}
-with ${\bf v}_0', \mu, \theta$ being the post collision test particle velocity, the reduced mass and the scattering angle in the center of mass frame, respectively.
+with ${\bf v}_0', \mu, \theta$ being the post collision test particle velocity,
+the reduced mass and the scattering angle in the center of mass frame, respectively.
 The second equality follows from momentum conservation
 and the additional assumption that no internal energy is transferred during
 the collision (i.e., elastic, or resonant ($v_0'=v_p , v_p'=v_0$) charge exchange). Also here:  $m_0 = m_0'$ and $m_p = m_p'$. Generalizations to un-symmetric
 resonant charge exchange are discussed below.
 
 \paragraph{Stationary Maxwellian background}
-
+\addcontentsline{toc}{paragraph}{Maxwellian background}
 The rate coefficient of momentum transfer from a single test particle, with velocity ${\bf v_0}$ and energy $E_0$ to the thermal (stationary) plasma background (temperature $T_p$) is
 \begin{eqnarray}\label{mom-tally}
 {\bf sm}_0=\langle\sigma\cdot v_{rel}\cdot \Delta {\bf P}_0\rangle(E_0,T_p)&=&
@@ -726,7 +789,7 @@ becomes a vector in the direction of ${\bf V}_0 = \int d^3v_0 {\bf v}_0f_0({\bf 
 and we see that this rate vanishes for isotropic distributions $f_0$, simply already because of ${\bf V_0} = 0$.
 \\
 \paragraph{drifting Maxwellian background}
-
+\addcontentsline{toc}{paragraph}{drifting Maxwellian background}
 We now turn to momentum exchange rates between the test particle community, subscript $0$ and a background (plasma), subscript $p$.
 
 As discussed already for general Beam-Maxwellian rate coefficients, paragraph H.3, in a first step we transform to the rest frame of the plasma:
@@ -765,10 +828,10 @@ $$\left<\sigma\cdot v_r\cdot p\right>=\left<\sigma\cdot v_r\cdot p\right>\left(\
 This rescaling is used for elastic collisions according to~\cite{kn:OakRidge}, see {\tt volume-processes/xstel.f}. Here superscript "o" means the masses for those the fitting was calculated, and "n" means real masses.
 
 The rate 0.3 (elastic $p+H_2$ collisions) from this set was successfully compared with the same sources, calculated by collisional estimator. The same test for the resonant CX rates 3.1.8  {\em was not yet successful}
-\subsubsection*{H.7: momentum weighted rates vs. temperature and density}
-\addcontentsline{toc}{subsubsection}{H.7: momentum weighted rates vs. temperature and density}
-\subsubsection*{\textbf{H.8: energy weighted rates vs. temperature}}
-\addcontentsline{toc}{subsubsection}{H.8: energy weighted rates vs. temperature}
+\subsubsection{H.7: momentum weighted rates vs. temperature and density}\label{sec1.3.7}
+%\addcontentsline{toc}{subsubsection}{H.7: momentum weighted rates vs. temperature and density}
+\subsubsection{H.8: energy weighted rates vs. temperature}\label{sec1.3.8}
+%\addcontentsline{toc}{subsubsection}{H.8: energy weighted rates vs. temperature}
 Under label H.8 energy weighted rate coefficients are stored, vs. temperature (eV) of the
 Maxwellian electron or heavy particle distributions.
 (E.g., unless otherwise stated, these rates are taken for test particles at rest: $E_0 \approx 0.0 eV$).
@@ -806,10 +869,10 @@ An explicit numerical example is detailed under H.8 2.2.14 (dissociative combina
 
 
 
-\subsubsection*{H.9: energy weighted rates vs. temperature and energy}
-\addcontentsline{toc}{subsubsection}{H.9: energy weighted rates vs. temperature and energy}
-\subsubsection*{H.10: energy weighted rates vs. temperature and density}
-\addcontentsline{toc}{subsubsection}{H.10: energy weighted rates vs. temperature and density}
+\subsubsection{H.9: energy weighted rates vs. temperature and energy}\label{sec1.3.9}
+%\addcontentsline{toc}{subsubsection}{H.9: energy weighted rates vs. temperature and energy}
+\subsubsection{H.10: energy weighted rates vs. temperature and density}\label{sec1.3.10}
+%\addcontentsline{toc}{subsubsection}{H.10: energy weighted rates vs. temperature and density}
 Fits for $\langle\sigma \cdot v \cdot E \rangle (n_e,T) \ [cm^3/s \cdot eV]$
 
 The units of $T$ and $n$ in the fits are the same as for H.4 and H.7
@@ -829,7 +892,7 @@ bremsstrahlung (free-free) losses.
 
 If the potential energy difference in a particular collision process
 is negative, as, e.g., in recombination processes
-or in electron impact de-excitation of meta-stables,
+or in electron impact de-excitation of meta-stables to a lower level,
 then this total energy loss rate
 may become negative, for some values of the parameters,
 and remain positive for others.
@@ -887,8 +950,8 @@ Similarly, electron cooling rates associated with a Helium atom, if meta-stables
 in the transport equations, are related to a weighted sum of excitation, de-excitation and ionization processes
 from a particular meta-stable state, but not to these individual processes.
 \newpage
-\subsubsection*{H.11: other data, e.g. reduced population coefficients}
-\addcontentsline{toc}{subsubsection}{H.11: other data, e.g. reduced population coefficients}
+\subsubsection{H.11: other data, e.g. reduced population coefficients}\label{sec1.3.11}
+%\addcontentsline{toc}{subsubsection}{H.11: other data, e.g. reduced population coefficients}
 single parameter fit for any other data, e.g.
 to be used in special user supplied
 programs, i.e. not generally understood by EIRENE, but can be used in problem
@@ -904,8 +967,8 @@ n_A \langle \sigma v; A \rightarrow B\rangle(T)  = n_B \langle \sigma v; B_{loss
 \end{equation}
 Also reduced population coefficients are such density ratios, however the production of upper level $B$
 may result from various multi-step processes, all starting from  (``coupled to") $A$.
-\subsubsection*{H.12: other data, e.g. reduced population coefficients}
-\addcontentsline{toc}{subsubsection}{H.12: other data, e.g. reduced population coefficients}
+\subsubsection{H.12: other data, e.g. reduced population coefficients}\label{sec1.3.12}
+%\addcontentsline{toc}{subsubsection}{H.12: other data, e.g. reduced population coefficients}
 double parameter fit for any other data, e.g.
 to be used in special user supplied
 programs, i.e. not generally understood by EIRENE, but can be used in problem
@@ -924,8 +987,8 @@ these are the reduced population coefficients for hydrogenic plasmas, i.e.
 EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ly$\_$alpha, Ba$\_$beta, Ba$\_$gamma, Ba$\_$gamma,..
 
 
-\subsection*{End of preface}
-\addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
+\subsection{End of preface}
+%\addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
 This next string is searched by EIRENE in subroutine SLREAC
 to initialize search for a particular set of fit coefficients.
 From here on, a character string \textbf{`H.n'} , n an integer, must only appear in the
@@ -943,7 +1006,15 @@ appear in the text elsewhere, from here on.
 ...........................................
 \end{verbatim}\end{small}
 \newpage
-
+% to make sure that bookmarks stay correct in pdf:
+% due to roman and arabic section numbering otherwise section1 would be there twice.
+% and pdf viewer gets confused.
+\renewcommand{\theHsection}{arabicsection.\thesection}
+\renewcommand\thesection{\arabic{section}}
+%\renewcommand{\thesection}{\arabic{section}}
+%\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+%\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\arabic{subsubsection}}
+\pagenumbering{arabic}
 \setcounter{section}{-1}
 \section{H.0 :  Fits for Potentials}\label{secpot}
 
@@ -1133,13 +1204,13 @@ currently: none
 
 \subsection{electron impact processes}
 \subsubsection{
-Reaction 2.2.5o
+Reaction 2.2.5org
 $ e + H_2(X_g^+S) \rightarrow . . . \rightarrow e + H(1s) + H(1s) $ }
 
 Fit as given in monograph \cite{kn:Janev}, repeated here only for reference purposes.
 EIRENE uses in its default database the corresponding fit as given in the unpublished preprint for
 \cite{kn:Janev}.
-This latter fit seems to be more plausible  and has been put
+This latter fit seems to be more plausible and has been put
 into the file HYDHEL.
 It is therefore recommended to read these
 fit coefficients from the database HYDHEL, and not from here (AMJUEL).
@@ -1160,7 +1231,7 @@ c^3\Pi_u)
    a0 -2.297914361380e+05    a1  5.303988579693e+05    a2 -5.316636672593e+05
    a3  3.022690779470e+05    a4 -1.066224144320e+05    a5  2.389841369114e+04
    a6 -3.324526406357e+03    a7  2.624761592546e+02    a8 -9.006246604428e+00
-       ETH 8.5
+       Eth 8.5
        Emin  1.08e+01   s(Emin)  1.00e-19   smax  2.92e-17   Error  5.62e-01
 \end{verbatim}\end{small}
 \newpage
@@ -1171,7 +1242,8 @@ Reaction 2.2.14 $   e + H_2^+(v) \rightarrow H(1s) + H(n), (v=0\ldots 9, n\geq 2
 
 
 EIRENE uses in its default database the corresponding fit from \cite{kn:Janev},
-but  with all fit coefficients a2, a3,...a8 set to zero.
+but  with all fit coefficients except the first two being set to zero,
+i.e. a linear fit on a log-log scale.
 
 This latter fit seems to be more plausible.
 It is therefore recommended to read these
@@ -1637,9 +1709,9 @@ This page is intentionally left blank
 \newpage
 
 \subsubsection{
-Reaction 3.1.8o $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8org $  p + H(1s) \rightarrow H(1s) + p  $
 }
-original Janev-Langer fit as in 1987 Springer book, i.e. without low energy correction.
+original Janev-Langer fit as in 1987 Springer book, i.e. without asympt. energy correction.
 
 
 \begin{small}\begin{verbatim}
@@ -1655,20 +1727,23 @@ original Janev-Langer fit as in 1987 Springer book, i.e. without low energy corr
 Reaction 3.1.8 $  p + H(1s) \rightarrow H(1s) + p  $
 }
 same as HYDHEL cx total cross section.
-Improved from original Janev-Langer fit at low energies by asymptotic fit.
+Improved from original Janev-Langer fit at low energies by asymptotic fit.:  al0 + al1* ln(E)
+al0 changed in Aug.17., ar0,.... added in Nov. 17
 
 \begin{small}\begin{verbatim}
    a0 -3.274123792568e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
    a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
    a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
-  al0 -3.225274882000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
+  al0 -3.294589355000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
+  ar0 -5.787734011000E+01   ar1  7.671416829000E+00   ar2 -5.208376804000E-01
 ELABMIN=   0.10000E 00 eV
+ELABMAX=   5.00000E 05 eV
        Emin  1.00e-01   s(Emin)  7.00e-15   smax  7.00e-15   Error  2.25e-03
        Eth  0.0
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 \subsubsection{
-Reaction 3.1.8JM $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8J2 $  p + H(1s) \rightarrow H(1s) + p  $
 }
 Janev cross section for momentum exchange ( = cx total cross sections times 2), obtained by
 increasing absolute coefficients $a_0$ and $al_0$  by adding $\ln(2)$
@@ -1677,7 +1752,7 @@ increasing absolute coefficients $a_0$ and $al_0$  by adding $\ln(2)$
    a0 -3.204809074000e+01    a1 -8.916456579806e-02    a2 -3.016990732025e-02
    a3  9.205482406462e-03    a4  2.400266568315e-03    a5 -1.927122311323e-03
    a6  3.654750340106e-04    a7 -2.788866460622e-05    a8  7.422296363524e-07
-  al0 -3.155960160000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
+  al0 -3.225274637000e+01   al1 -1.713112000000e-01   al2  0.000000000000e+00
 ELABMIN=   0.10000E 00 eV
        Eth  0.0
 \end{verbatim}\end{small}
@@ -1701,14 +1776,16 @@ Riviere cross section formula for charge exchange
 Reaction 3.1.8ST $  p + H(1s) \rightarrow H(1s) + p  $
 }
 D.Schultz total cross section for charge exchange
-fitted into ``Janev format"
+fitted into ``Janev format", left asmpt. added.
 
 
 \begin{small}\begin{verbatim}
    a0 -3.296040048723D+01    a1 -9.877533792693D-02    a2  2.622855374688D-03
    a3 -3.210858385884D-03    a4 -2.175078820057D-04    a5  2.394562232339D-05
    a6  1.665865000000D-05    a7  0.000000000000D+00    a8  0.000000000000D+00
+  al0 -3.307949733000D+01   al1 -1.713112000000D-01   al2  0.000000000000e+00
   ar0 -3.291743242047D+01   ar1 -1.358551000000D-01   ar2  0.000000000000D+00
+ELABMIN=  0.10000E 00 eV
 ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
@@ -1723,15 +1800,16 @@ increase absolute coefficients $a_0$ and $ar_0$ by adding ln(2)
    a0 -3.226725330000D+01    a1 -9.877533792693D-02    a2  2.622855374688D-03
    a3 -3.210858385884D-03    a4 -2.175078820057D-04    a5  2.394562232339D-05
    a6  1.665865000000D-05    a7  0.000000000000D+00    a8  0.000000000000D+00
+  al0 -3.238635015000D+01   al1 -1.713112000000D-01   al2  0.000000000000e+00
   ar0 -3.222428522000D+01   ar1 -1.358551000000D-01   ar2  0.000000000000D+00
 ELABMAX=  2.00000E 01 eV
        Eth  0.0
 \end{verbatim}\end{small}
 
 \subsubsection{
-Reaction 3.1.8SM $  p + H(1s) \rightarrow H(1s) + p  $
+Reaction 3.1.8SD $  p + H(1s) \rightarrow H(1s) + p  $
 }
-D.Schultz cross section for momentum exchange (elastic plus cx)
+D.Schultz ``diffusion" cross section for momentum exchange (elastic plus cx)
 fitted into ``Janev format". Should be close to ST2, total cx cross section times 2.
 
 \begin{small}\begin{verbatim}
@@ -2050,7 +2128,7 @@ This page is intentionally left blank
 Data from Freeman and Jones \cite{kn:Freeman},
 for comparison with old cases.
 
-Note: Maxwellian rate coefficients are taken for neutral particle energy = 0.0 eV
+Note: Maxwellian rate coefficients are taken at neutral particle energy = 0.0 eV
 vs. temperature (electron or ion temp., resp.) of the Maxwellian $f_{maxw}$.
 I.e. :
 
@@ -2081,14 +2159,29 @@ Reaction 2.1.5FJ  $e + H(1s) \rightarrow e + H^+ + e$
 \end{verbatim}\end{small}
 
 \subsection{
-Reaction 3.1.6FJ  $p + H(1s) \rightarrow H^+ + p + e $
+Reaction 3.1.6FJ  $p + H(1s) \rightarrow p + p + e $
 }
-
+This fit seems to be completely corrupted. Probably misprints in original F.J. CLM-R-137 report.
+Checked also with old AURORA code (PPPL, ca. 1979) implementation. Identical fit used there.
+Recommendation: Use cross section and HYDKIN online integration to rate coefficients.
 
 \begin{small}\begin{verbatim}
    b0 -0.149086100000e+03  b1  0.759257500000e+02  b2 -0.220928100000e+02
    b3  0.390970900000e+01  b4 -0.440216800000e+00  b5  0.320904700000e-01
-   b6 -0.149040900000e-02  b7  0.409415100000e-04  b8 -0.506977700000e-06
+   b6 -0.149340900000e-02  b7  0.409415100000e-04  b8 -0.506977700000e-06
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 3.1.8 $  p + H(1s) \rightarrow H(1s) + p$}
+
+added by DR: single parameter Maxwellian rate coeff., vs. $T_p$, for neutral target at rest,
+obtained from corresponding fit for Beam-Maxwellian rate coeff. evaluated at $E_b =0.1$ eV
+and then verified by independent integration of cross section with proper low energy asymptotics.
+
+\begin{small}\begin{verbatim}
+   b0 -1.850280000000E+01    b1  3.708409000000E-01    b2  7.949876000000E-03
+   b3 -6.143769000000E-04    b4 -4.698969000000E-04    b5 -4.096807000000E-04
+   b6  1.440382000000E-04    b7 -1.514243000000E-05    b8  5.122435000000E-07
 \end{verbatim}\end{small}
 
 \subsection{
@@ -2108,7 +2201,7 @@ This page is intentionally left blank
 
 
 \subsection{
-Reaction 2.2.5o
+Reaction 2.2.5org
 $e + H_2(X_g\!^+ S ) \rightarrow . . .\rightarrow e + H(1s) + H(1s)$}
 
 
@@ -2144,7 +2237,7 @@ c^3\Pi_u)
  \newpage
 \subsection{
 Reaction 2.2.14  $  e + H_2^+(v) \rightarrow H(1s) + H(n)   (v=0\ldots 9, n \geq 2)$}
-Fit as given in \cite{kn:Janev}  but with all coefficients b2,b3,...b8 set to zero,
+Fit as given in \cite{kn:Janev}  but with all higher coefficients b2,b3,...b8 set to zero,
       for this dissociative recombination process.
       This latter fit seems to be more plausible. Therefore, the
       (presumably more correct)  data are stored here,
@@ -2752,8 +2845,8 @@ Reaction 2.26B1   $e + Fe^+ \rightarrow e + Fe^{++} + e$
 
 
 \subsection{
-Reaction 0.1T  $p + H(1s) \rightarrow  + H(1s)$
-, elastic ,
+Reaction 0.1T  $p + H(1s) \rightarrow  p + H(1s)$
+, elastic,
 $\  I_{0,0}$
 }
 
@@ -2808,7 +2901,7 @@ Mean rel. Error:   0.0853 %
 
 
 \subsection{
-Reaction 0.1D  $p + H(1s) \rightarrow  + H(1s)$ ,
+Reaction 0.1D  $p + H(1s) \rightarrow  p + H(1s)$ ,
 elastic, $\ I_{1,0}$
 }
 
@@ -3723,7 +3816,7 @@ This page is intentionally left blank
 \newpage
 
 \subsection{
-Reaction 3.1.8o $ p + H(1s) \rightarrow H(1s) + p   $
+Reaction 3.1.8org $ p + H(1s) \rightarrow H(1s) + p   $
 }
 original fit from Janev's springer book 1987
 in HYDHEL.tex. Now there is the improved fit (see above), leading to better
@@ -4320,53 +4413,55 @@ NEMAX =   1.00000D 16 1/CM3
 
    Effective hydrogenic recombination rate
    Data: K. Sawada, T.Fujimoto, radiative + three-body contribution, \cite{kn:Sawada}
+   June17: Fit range extended from 0.1 -- 1e3 to 0.1 -- 2e4
 
 
 \begin{small}\begin{verbatim}
 
         E-Index:     0                     1                     2
   T-Index:
-        0   -2.859173412090D+01   -1.661007811717D-03    1.800123869432D-02
-        1   -7.727897152963D-01   -7.185510516868D-03   -6.664735116824D-03
-        2    2.731740252417D-04    1.841463674641D-02   -1.042796032026D-02
-        3   -9.412381843177D-03   -8.325885755900D-03    6.197039066476D-03
-        4    1.564398998662D-03   -1.001077253771D-03    1.281843907383D-03
-        5   -3.875231655429D-04    8.967038573752D-04   -9.737851139343D-04
-        6    5.743703850623D-05   -5.709392754051D-05    7.831607832493D-05
-        7   -3.896462887932D-06   -1.728485488993D-05    1.504835319823D-05
-        8    8.168921109996D-08    1.789661999688D-06   -1.723007265214D-06
+        0   -2.858858570847D+01    2.068671746773D-02   -7.868331504755D-03
+        1   -7.676413320499D-01    1.278006032590D-02   -1.870326896978D-02
+        2    2.823851790251D-03   -1.907812518731D-03    1.121251125171D-02
+        3   -1.062884273731D-02   -1.010719783828D-02    4.208412930611D-03
+        4    1.582701550903D-03    2.794099401979D-03   -2.024796037098D-03
+        5   -1.938012790522D-04    2.148453735781D-04    3.393285358049D-05
+        6    6.041794354114D-06   -1.421502819671D-04    6.143879076080D-05
+        7    1.742316850715D-06    1.595051038326D-05   -7.858419208668D-06
+        8   -1.384927774988D-07   -5.664673433879D-07    2.886857762387D-07
 
         E-Index:     3                     4                     5
   T-Index:
-        0   -5.901319721407D-03    1.008884427267D-03   -7.666468567133D-05
-        1    1.025718155555D-03   -2.371359765453D-05   -2.379761249077D-05
-        2    3.793816747821D-03   -5.381919535018D-04    2.996223783421D-05
-        3   -2.288446843140D-03    3.612389570540D-04   -2.632269904386D-05
-        4   -3.969582319908D-04    5.662371262429D-05   -3.470227226116D-06
-        5    3.466635482442D-04   -5.542034883238D-05    4.167611128622D-06
-        6   -2.931850335332D-05    4.165929395282D-06   -1.833910759412D-07
-        7   -5.498262806478D-06    1.109375120018D-06   -1.305413093317D-07
-        8    6.441246925770D-07   -1.229576937590D-07    1.308011799197D-08
+        0    3.843362133859D-03   -7.411492158905D-04    9.273687892997D-05
+        1    3.828555048890D-03   -3.627770385335D-04    4.401007253801D-07
+        2   -3.711328186517D-03    6.617485083301D-04   -6.860774445002D-05
+        3   -1.005744410540D-03    1.013652422369D-04   -2.044691594727D-06
+        4    6.250304936976D-04   -9.224891301052D-05    7.546853961575D-06
+        5   -3.746423753955D-05    7.509176112468D-06   -8.688365258514D-07
+        6   -1.232549226121D-05    1.394562183496D-06   -6.434833988001D-08
+        7    1.774935420144D-06   -2.187584251561D-07    1.327090702659D-08
+        8   -6.591743182569D-08    8.008790343319D-09   -4.805837071646D-10
 
         E-Index:     6                     7                     8
   T-Index:
-        0    1.997734434786D-06    5.093156468064D-08   -2.546978246800D-09
-        1    3.017661441193D-06   -1.459838627412D-07    2.519490281465D-09
-        2    3.746085786687D-07   -9.615385988357D-08    2.492563949079D-09
-        3    6.689181198740D-07    1.133271905873D-08   -5.680616540286D-10
-        4    1.907348094032D-08    6.472160529017D-09   -1.931397945496D-10
-        5   -1.201431943086D-07   -7.335510423575D-10    6.808738180475D-11
-        6   -8.594650668059D-09    9.039128783831D-10   -1.825430199313D-11
-        7    8.728480804730D-09   -2.967440451300D-10    3.804314675048D-12
-        8   -7.784991698470D-10    2.376732432651D-11   -2.798033819072D-13
+        0   -7.063529824805D-06    3.026539277057D-07   -5.373940838104D-09
+        1    1.932701779173D-06   -1.176872895577D-07    2.215851843121D-09
+        2    4.508046989099D-06   -1.723423509284D-07    2.805361431741D-09
+        3   -4.431181498017D-07    3.457903389784D-08   -7.374639775683D-10
+        4   -3.682709551169D-07    1.035928615391D-08   -1.325312585168D-10
+        5    7.144767938783D-08   -3.367897014044D-09    6.250111099227D-11
+        6   -2.746804724917D-09    3.564291012995D-10   -8.551708197610D-12
+        7   -1.386720240985D-10   -1.946206688519D-11    5.745422385081D-13
+        8    6.459706573699D-12    5.510729582791D-13   -1.680871303639D-14
 
-  Max. rel. Error:   4.0868 %
-  Mean rel. Error:    .3058 %
+  Max. rel. Error:   0.931E+01 %
+  Mean rel. Error:   0.745E+00 %
+
 
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8FU}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydr1FU.ps}
+\epsffile{Amjuel_PS/H4-2.1.8.eps}
 \end{figure}
 \newpage
 
@@ -7954,60 +8049,61 @@ Ditto, all Lyman lines (and continuum) opaque
    potential energy loss 13.6*(eff-rec.rate) still needs to be
    subtracted (may render the loss negative, i.e., turn it into a gain)
    Hence: the quantitity given here happens to be the radiation loss.
+   June17: Fit range extended from 0.1--1e3 to 0.1--2e4
 
 \begin{small}\begin{verbatim}
 
         E-Index:     0                     1                     2
   T-Index:
-        0   -2.589374312060D+01   -6.009166210069D-03    1.344053651580D-02
-        1   -7.200626698498D-01   -2.331360193865D-02    1.271471891444D-02
-        2    1.661484666745D-02    1.772769952301D-02   -1.424886103594D-02
-        3    3.502647662984D-03    1.361236801099D-03   -2.044757453549D-03
-        4    4.991543964404D-04   -1.488083475886D-03    1.715465346946D-03
-        5   -4.169287459210D-04    3.290537768840D-05   -9.071162586692D-05
-        6    6.947265413566D-05    4.141652153718D-05   -3.440885706672D-05
-        7   -4.976973887663D-06   -4.597628903794D-06    4.228338478163D-06
-        8    1.352447813992D-07    1.298225568141D-07   -1.235886550564D-07
+        0   -2.592450349909D+01    1.222097271874D-02    4.278499401907D-05
+        1   -7.290670236493D-01   -1.540323930666D-02   -3.406093779190D-03
+        2    2.363925869096D-02    1.164453346305D-02   -5.845209334594D-03
+        3    3.645333930947D-03   -1.005820792983D-03    6.956352274249D-04
+        4    1.594184648757D-03   -1.582238007548D-05    4.073695619272D-04
+        5   -1.216668033378D-03   -3.503070140126D-04    1.043500296633D-04
+        6    2.376115895241D-04    1.172709777146D-04   -6.695182045674D-05
+        7   -1.930977636766D-05   -1.318401491304D-05    8.848025453481D-06
+        8    5.599257775146D-07    4.977823319311D-07   -3.615013823092D-07
 
         E-Index:     3                     4                     5
   T-Index:
-        0   -4.253727306252D-03    8.278102981647D-04   -8.052584782094D-05
-        1   -4.884504230079D-03    6.641130375794D-04   -3.742148364520D-05
-        2    6.090473982805D-03   -1.176971915488D-03    1.231132798913D-04
-        3    3.651002250233D-04    3.537638276233D-06   -9.588255868825D-06
-        4   -5.939085281080D-04    9.746375288671D-05   -7.718327324859D-06
-        5    4.212511427706D-05   -9.046542545395D-06    9.361897045939D-07
-        6    1.025910458536D-05   -1.286001954285D-06    6.230197379424D-08
-        7   -1.337170391458D-06    1.790918755084D-07   -9.223488177985D-09
-        8    3.813621172574D-08   -4.472350183176D-09    8.841921964691D-11
+        0    1.943967743593D-03   -7.123474602102D-04    1.303523395892D-04
+        1    1.532243431817D-03   -4.658423772784D-04    5.972448753445D-05
+        2    2.854145868307D-03   -5.077485291132D-04    4.211106637742D-05
+        3   -9.305056373739D-04    2.584896294384D-04   -3.294643898894D-05
+        4   -9.379169243859D-05    1.490890502214D-06    2.245292872209D-06
+        5    9.536162767321D-06   -6.908681884097D-06    8.232019008169D-07
+        6    1.188184006210D-05   -4.381514364966D-07   -6.936267173079D-08
+        7   -2.072370711390D-06    2.055919993599D-07   -7.489632654212D-09
+        8    9.466989306497D-08   -1.146485227699D-08    6.772338917155D-10
 
         E-Index:     6                     7                     8
   T-Index:
-        0    4.112465057498D-06   -9.120123611956D-08    4.348069969762D-10
-        1   -3.230243835655D-07    1.028999877616D-07   -2.619274627156D-09
-        2   -6.882807794469D-06    1.909871253140D-07   -2.042975332082D-09
-        3    1.156883184011D-06   -5.473919858586D-08    9.513634275736D-10
-        4    2.531287396860D-07   -4.893558620829D-10   -9.642905929415D-11
-        5   -4.489659983751D-08    9.398133961039D-10   -7.447977789416D-12
-        6    3.348892041368D-10   -1.500889176513D-10    4.451964535623D-12
-        7   -8.099406688438D-11    2.552730001764D-11   -7.119172481272D-13
-        8    2.118934358596D-11   -1.649223972224D-12    3.731416769611D-14
+        0   -1.186560752561D-05    5.334455630031D-07   -9.349857887253D-09
+        1   -4.070843294052D-06    1.378709880644D-07   -1.818079729166D-09
+        2   -1.251436618314D-06   -1.626555745259D-08    1.073458810743D-09
+        3    2.112924018518D-06   -6.544682842175D-08    7.810293075700D-10
+        4   -3.150901014513D-07    1.631965635818D-08   -2.984093025695D-10
+        5   -2.905331051259D-08   -3.169038517749D-10    2.442765766167D-11
+        6    6.592249255001D-09   -1.778887958831D-10    1.160762106747D-12
+        7   -7.073797030749D-11    1.047087505147D-11   -1.877446271350D-13
+        8   -1.776496344763D-11    7.199195061382D-14    3.929300283002D-15
 
-  Max. rel. Error:   7.0717 %
-  Mean rel. Error:    .6696 %
+  Max. rel. Error:   0.930E+01 %
+  Mean rel. Error:   0.127E+01 %
 
 
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8r}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydlr1_tr.ps}
+\epsffile{Amjuel_PS/H10-2.1.8.eps}
 \end{figure}
 \newpage
 
 \subsection{
   Reaction 2.1.8t $H^+ + e  \rightarrow H(1s) $
 }
-     do not use: only for testing  ADAS PRB rate. Same as above,
+     do not use: only for testing  ADAS PRB rate. Same as above, JH database
      but $dln\langle sig v\rangle /dlnT$ correction removed in free bound transitions
 
 \begin{small}\begin{verbatim}
@@ -8122,7 +8218,8 @@ Ditto, all Lyman lines (and continuum) opaque
 }
 
    effective electron cooling rate due to destruction of H2 molecules by
-   processes 2.2.5 or 2.2.9, i.e. by dissociation or ionisation
+   processes 2.2.5 or 2.2.9, i.e. by dissociation or ionisation.
+$\Delta E_d = 9.94$, $\Delta E_i = 15.386$
 
 
 \begin{small}\begin{verbatim}
@@ -9842,51 +9939,52 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
   electron energy loss (radiative) due to one effective recombination.
   13.6 eV (ionization potential) has to be
   subtracted, which may render the total electron loss negative, i.e., make it a gain.
+  June17: Fit range extended from 0.1--1e3 to 0.1--2e4
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
   T-Index:
-        0    2.663320096798D+00   -1.320386526088D-03    1.077306300916D-03
-        1    4.637834318618D-02   -1.588463528038D-03    2.002995590656D-03
-        2    2.179688109388D-02    1.227809616939D-03   -1.372294046856D-03
-        3    8.786631426209D-03   -8.960302716704D-05    1.595966734727D-04
-        4    6.391144224017D-04    2.610866249230D-05   -3.057989576708D-05
-        5   -4.028137479647D-04   -2.206121470336D-05    1.483985932596D-05
-        6    4.407284278429D-05    4.822704225043D-06   -2.708391040884D-06
-        7   -1.800630823030D-06   -4.268416439260D-07    2.054565282375D-07
-        8    1.754888057605D-08    1.379566556295D-08   -5.693253510115D-09
+        0    2.665899500132D+00    6.909524133474D-03   -1.016251787345D-02
+        1    3.234097857001D-02   -1.342936828253D-03    2.649709301973D-03
+        2    1.839736371673D-02   -4.543287906774D-04    4.049474254061D-04
+        3    1.721979500535D-02   -2.420941858648D-04    1.070964671190D-04
+        4   -1.634188788045D-06    1.272188632742D-04   -9.608788872527D-05
+        5   -1.354019822678D-03    5.547796579740D-06    1.885659127034D-06
+        6    3.103952150736D-04   -7.717377610260D-06    4.450028524311D-06
+        7   -2.813815821385D-05    1.049652451777D-06   -6.757200946909D-07
+        8    9.248132243469D-07   -4.314339279524D-08    2.916075421796D-08
 
         E-Index:     3                     4                     5
   T-Index:
-        0   -5.652833135835D-04    1.291803029485D-04   -1.699440271234D-05
-        1   -8.658936631663D-04    1.964776542360D-04   -2.511974119325D-05
-        2    6.323096825415D-04   -1.469986402797D-04    1.904694837642D-05
-        3   -8.033905958159D-05    1.847264603217D-05   -2.183101421945D-06
-        4    8.826444477631D-06   -8.527003617234D-07   -4.498496855396D-08
-        5   -3.285199837204D-06    2.353573666059D-07    8.214927216612D-09
-        6    4.944231739776D-07   -1.901239754277D-08   -2.018685643310D-09
-        7   -2.517818591922D-08   -2.272219519599D-09    5.459755052746D-10
-        8    2.382569427426D-10    2.097919770643D-10   -3.284308598067D-11
+        0    4.785952485138D-03   -1.111528620197D-03    1.389338869715D-04
+        1   -1.417016315380D-03    3.507678014757D-04   -4.569145026078D-05
+        2   -9.053523602330D-05    1.610290448013D-06    2.067872533338D-06
+        3   -9.886490927616D-06   -1.137795705868D-06    2.009074194306D-07
+        4    2.503871421337D-05   -2.776557044750D-06    8.202377087937D-08
+        5   -1.899847063838D-06    3.608820989932D-07   -1.820175080726D-08
+        6   -8.590535929797D-07    6.494073446907D-08   -1.005495853368D-09
+        7    1.536224332903D-07   -1.526291610537D-08    5.443143280155D-10
+        8   -7.087510165394D-09    7.772501731042D-10   -3.490536063716D-11
 
         E-Index:     6                     7                     8
   T-Index:
-        0    1.256679592455D-06   -4.984258926618D-08    8.057248636970D-10
-        1    1.824600710728D-06   -6.979835386906D-08    1.089009846784D-09
-        2   -1.386974537374D-06    5.315788264477D-08   -8.319075356138D-10
-        3    1.356888246299D-07   -4.132215086182D-09    4.756405284626D-11
-        4    1.409300591671D-08   -9.388481841524D-10    2.040334695881D-11
-        5   -1.910545503689D-09    8.669945377667D-11   -1.226004969587D-12
-        6    9.160202016183D-11    7.808665752604D-12   -3.711189374604D-13
-        7   -2.036170999640D-11   -8.641575595254D-13    4.579180281382D-14
-        8    1.467413391747D-12    1.092457646878D-14   -1.442948963740D-15
+        0   -9.560728735427D-06    3.390700499449D-07   -4.846257262550D-09
+        1    3.245267105321D-06   -1.188371670550D-07    1.758631015908D-09
+        2   -2.955908411210D-07    1.631510169903D-08   -3.250767238535D-10
+        3   -5.336134881504D-09   -2.995961467613D-10    1.244053679153D-11
+        4    8.526944203010D-09   -7.591463931965D-10    1.735202334766D-11
+        5   -1.160792778179D-09    1.375444359851D-10   -3.427633513798D-12
+        6   -7.157425528109D-11    1.695155282725D-12    2.341575042551D-14
+        7    1.259157231611D-11   -1.469505460319D-12    3.084731172193D-14
+        8   -1.453313559078D-13    6.474896531735D-14   -1.572212991946D-15
 
-  Max. rel. Error:    .3337 %
-  Mean rel. Error:    .1540 %
+  Max. rel. Error:   0.331E+01 %
+  Mean rel. Error:   0.927E+00 %
 
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8lr2}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydlr2_tr.ps}
+\epsffile{Amjuel_PS/H12-2.1.8.eps}
 \end{figure}
 \newpage
 
@@ -9894,7 +9992,7 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
   Reaction 2.1.8det  $H^+  + e \rightarrow H(1s) $, \  $<de> + 13.6 \ [eV] $
 }
 
-     do not use: only for testing  ADAS PRB rate. Same as above,
+     do not use: only for testing  ADAS PRB rate. Same as above, Johnson Hinnov
      but $dln\langle sig v\rangle /dlnT$ correction removed in free bound transitions
 
 \begin{small}\begin{verbatim}
@@ -11788,7 +11886,7 @@ Reaction 2.2.15e $ H_3^+ + e \rightarrow ...+ H(6) $, \   Ratio $H(6)/H_3^+  $
  Production of initial $H(n=2)$ from $H_3^+$ via $1/3.5 \times \langle Hydhel~ 2.2.15\rangle$,
  then CR redistribution in H
 
- Ratio of population coefficients: p(n6)/nH3+
+ Ratio of population coefficients: p(6)/nH3+
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
