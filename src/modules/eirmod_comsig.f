@@ -12,7 +12,9 @@ cdr           Was so far all mixed with TRCSIG (for debugging printout)
       PRIVATE
  
       PUBLIC :: EIRENE_ALLOC_COMSIG, EIRENE_DEALLOC_COMSIG, 
-     P          EIRENE_INIT_COMSIG
+     P          EIRENE_INIT_COMSIG, TEMIS_MODEL, TCOMPO, TCONTRIB,
+     P          ASSIGNMENT(=)
+
  
       INTEGER, PUBLIC, SAVE ::
      P         NCMSIG, MCMSIG
@@ -40,12 +42,42 @@ cdr           Was so far all mixed with TRCSIG (for debugging printout)
       INTEGER, PUBLIC :: NCTSIG
  
       INTEGER, PUBLIC, SAVE ::
-     I         NCHORI,   NCHENI
+     I         NCHORI,   NCHENI,   MOD_ADDV
       LOGICAL, PUBLIC, SAVE :: 
      L         PRSPEC,   PRARGL
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
  
+      CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
+ 
+      TYPE TCONTRIB
+        INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2), 
+     .             IZ, IZ_RAT(2)
+        CHARACTER(8) :: FNAME, FRATIO(2)
+        CHARACTER(4) :: H2, RAT_H2(2)
+        CHARACTER(2) :: ELEMENT, RAT_ELEMENT(2)
+        CHARACTER(9) :: REACTION, RAT_REACTION(2)
+        CHARACTER(3) :: CR, RAT_CR(2)      
+      END TYPE TCONTRIB
+
+      TYPE TCOMPO
+        CHARACTER(80) :: COMPO_NAME
+        INTEGER :: NO_CONTRIB, IADV
+        TYPE(TCONTRIB), ALLOCATABLE :: CONTRIB(:)       
+      END TYPE TCOMPO
+
+      TYPE TEMIS_MODEL
+        CHARACTER(80) :: LINE_NAME
+        INTEGER :: NO_COMPO, IADV_TOTAL
+        REAL(DP) :: EINSTEIN, ENERGY, TRANS_EN
+        TYPE(TCOMPO), ALLOCATABLE :: COMPO(:)
+      END TYPE TEMIS_MODEL
+
+      TYPE(TEMIS_MODEL), PUBLIC, ALLOCATABLE, SAVE :: EMIS_LINES(:)
+ 
+      INTERFACE ASSIGNMENT(=)  ! DEFINE ASSIGNMENT
+        MODULE PROCEDURE EIRENE_CONTRIB_TO_CONTRIB
+      END INTERFACE
  
       CONTAINS
  
@@ -62,8 +94,11 @@ cdr           Was so far all mixed with TRCSIG (for debugging printout)
       ALLOCATE (ICMSIG(MCMSIG))
       ALLOCATE (NLSTCHR(NCHOR))
  
+      ALLOCATE (CH_LINE_NAME(NCHOR))
+
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .      ' COMSIG ',(NCMSIG+(NCHOR+1)*NCHEN)+8 + (MCMSIG+NCHOR)*4
+     .      ' COMSIG ',(NCMSIG+(NCHOR+1)*NCHEN)+8 + (MCMSIG+NCHOR)*4 +
+     .                 NCHOR*80
  
       XCHORD => RCMSIG( 0*NCHOR+1 :  1*NCHOR)
       YCHORD => RCMSIG( 1*NCHOR+1 :  2*NCHOR)
@@ -88,12 +123,16 @@ cdr           Was so far all mixed with TRCSIG (for debugging printout)
       NSPEND => ICMSIG( 8*NCHOR+1 :  9*NCHOR)
       NSPSCL => ICMSIG( 9*NCHOR+1 : 10*NCHOR)
       NSPNEW => ICMSIG(10*NCHOR+1 : 11*NCHOR)
+
+      CH_LINE_NAME = REPEAT(' ',80)
  
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMSIG
  
  
       SUBROUTINE EIRENE_DEALLOC_COMSIG
+ 
+      INTEGER :: I, J
  
       IF (.NOT.ALLOCATED(RCMSIG)) RETURN
  
@@ -102,6 +141,27 @@ cdr           Was so far all mixed with TRCSIG (for debugging printout)
       DEALLOCATE (ENERGY)
       DEALLOCATE (ICMSIG)
       DEALLOCATE (NLSTCHR)
+ 
+      DEALLOCATE (CH_LINE_NAME)
+
+      IF (NO_LINES > 0) THEN
+
+         DO I = 1, NO_LINES
+
+           IF (EMIS_LINES(I)%NO_COMPO > 0) THEN
+
+             DO J=1, EMIS_LINES(I)%NO_COMPO
+               DEALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB)
+             END DO
+
+           END IF
+
+           DEALLOCATE (EMIS_LINES(I)%COMPO)
+
+        ENDDO
+
+        DEALLOCATE (EMIS_LINES)
+      END IF
  
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMSIG
@@ -124,5 +184,32 @@ C
  
       RETURN
       END SUBROUTINE EIRENE_INIT_COMSIG
+
+
+      SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB (CONA, CONB)
+
+      TYPE(TCONTRIB), INTENT(OUT) :: CONA
+      TYPE(TCONTRIB), INTENT(IN) :: CONB
+
+      CONA%ISP          = CONB%ISP
+      CONA%ITP          = CONB%ITP
+      CONA%IRATIO       = CONB%IRATIO
+      CONA%IRC          = CONB%IRC
+      CONA%IRC_RAT      = CONB%IRC_RAT 
+      CONA%IZ           = CONB%IZ 
+      CONA%IZ_RAT       = CONB%IZ_RAT 
+      CONA%FNAME        = CONB%FNAME
+      CONA%FRATIO       = CONB%FRATIO
+      CONA%H2           = CONB%H2
+      CONA%RAT_H2       = CONB%RAT_H2  
+      CONA%REACTION     = CONB%REACTION
+      CONA%RAT_REACTION = CONB%RAT_REACTION
+      CONA%CR           = CONB%CR 
+      CONA%RAT_CR       = CONB%RAT_CR    
+      CONA%ELEMENT      = CONB%ELEMENT
+      CONA%RAT_ELEMENT  = CONB%RAT_ELEMENT
+      
+      RETURN
+      END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB
  
       END MODULE EIRMOD_COMSIG
