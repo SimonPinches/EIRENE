@@ -109,7 +109,7 @@ c            currently handeled in input.f. not nice! also missing still for: H.
 c
 C    IFTFLG=IFTFLG(IR,IH): flag for type of fitting expression  ("fit-flag=...")
 C    IH  internally derived from ISW, for different types of data:
-C          0 for interaction potential, or differenctial cross sections (ISW=0)
+C          0 for interaction potential, or differential cross sections (ISW=0)
 C          1 for cross section, (ISW=1)
 C          2 for rate-coeff, (ISW=2,3,4)
 C          3 for mom-weighted rate coeff. (ISW=5,6,7)

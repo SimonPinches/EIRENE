@@ -298,7 +298,7 @@
  
       reacdat(ir)%lphr = .true.
  
-      allocate (reacdat(ir)%phr)
+      call eirene_alloc_fit_form(reacdat(ir)%phr) 
       allocate (reacdat(ir)%phr%line)
       reacdat(ir)%phr%ifit = -1
       reacdat(ir)%phr%line => phline

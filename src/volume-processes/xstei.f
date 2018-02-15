@@ -29,7 +29,7 @@ cdr Sept.16 :   Started to implement H.3 rate coeff.
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
 cdr May 17  :   safety cut off for TEE at 0.1 eV, added in more cases
 cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
-
+!pb Juli 17 :   LHCOL removed
 
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
@@ -73,7 +73,7 @@ C
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF,
-     .          DELE, ERATE,
+     .          DELE, 
      .          FP1(6),FP2(6)
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
@@ -81,8 +81,6 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
-
-      LOGICAL :: LHCOL
  
       ITYP=EIRENE_IDEZ(IFRST,1,3)
       INUM=EIRENE_IDEZ(IFRST,2,3)
@@ -226,7 +224,7 @@ C..................................................................
 C  2.) RATE COEFFICIENT  (CM**3/S) * ELECTRON DENSITY (CM**-3)
 C..................................................................
 C
-      LHCOL = .FALSE.
+
 C
 C  2.A) RATE COEFFICIENT = CONST.
 C     TO BE WRITTEN
@@ -246,7 +244,7 @@ C .....................................
             TEE=TEINL(J)
 cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
-            COU = EIRENE_RATE_COEFF(KK,TEE,0._DP,.TRUE.,0,ERATE)
+            COU = EIRENE_RATE_COEFF(KK,J,TEE,0._DP,.TRUE.,0)
             TABEI1(IREI,J)=COU*FACTKK
 C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
             IF (IFTFLG(KK,2) < 100)
@@ -299,35 +297,18 @@ C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 C  2.D) RATE COEFFICIENT(TE,NE)
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
-C .....................................
-C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  PREPARE ELECTR. ENERGY LOSS FROM INTERNAL CR CODE
-          
-          IF ((REACDAT(KK)%RTC%IFIT == 5) .AND.
-     .        (EIRENE_IDEZ(ISCDE,5,5) == 3)) THEN
-            KREAD=EELEC
-            IF (REACDAT(KREAD)%LRTCEW) THEN
-              IF (REACDAT(KREAD)%RTCEW%IFIT == 5) LHCOL=.TRUE.
-            END IF
-          END IF
-C .......................................
+
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
 cdr  safety cut off at Te= 0.1 eV. (TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
 cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
-            COU = EIRENE_RATE_COEFF(KK,TEE,PLS(J),.FALSE.,1,ERATE)
+            COU = EIRENE_RATE_COEFF(KK,J,TEE,PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
             TB=MAX(-100._DP,TB)
             TABEI1(IREI,J)=EXP(TB)
-C .....................................
-C   ASIDE: SOMETHING FOR H-COL OPTIONS  ?? ERATE in subr. rate_coeff only needed for this?
-            IF (LHCOL) THEN
-              EE = MAX(-100._DP,ERATE+FCTKKL+DEINL(J))
-              EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
-            END IF
-C .......................................
           END DO
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 9
@@ -386,7 +367,7 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                   IF (NSTORDR >=NRAD) THEN
                     DO 102 J=1,NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-                      EELEI1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,
+                      EELEI1(IREI,J)=-EIRENE_ENERGY_RATE_COEFF(KREAD,J,
      .                                TEINL(J),
      .                                0._DP,.TRUE.,0)*DEIN(J)*FACTKK/
      .                                (TABEI1(IREI,J)+EPS60)
@@ -404,18 +385,13 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                 ELSEIF (MODC.EQ.3) THEN
                   IF (NSTORDR >= NRAD) THEN
                     FCTKKL=LOG(FACTKK)
-                    IF (.NOT.LHCOL) THEN
-                      DO J = 1, NSBOX
-                        IF (LGVAC(J,NPLS+1)) CYCLE
-                        EE = EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
+                    DO J = 1, NSBOX
+                      IF (LGVAC(J,NPLS+1)) CYCLE
+                      EE = EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
      .                                                PLS(J),.FALSE.,1)
-                        EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-                        EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
-                      END DO
-                    ELSEIF (LHCOL) THEN
-C  NOTHING TO BE DONE HERE,
-C  ??? EELEI1 ALREADY SET ABOVE, TOGETHER WITH TABEI1
-                    END IF
+                      EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
+                      EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
+                    END DO
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
                   ELSE
@@ -467,7 +443,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
           IF (NSTORDR >= NRAD) THEN
             DO 202 J=1,NSBOX
               IF (LGVAC(J,NPLS+1)) CYCLE
-              EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,TEINL(J),
+              EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
      .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
 202         CONTINUE
             NREAHV(IREI)=KREAD

@@ -75,7 +75,8 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: LMULTI, LMULVI, LEMISS   ! multiple ion temperatures (per species) multiple ion velocities (per species)
+      LOGICAL :: LEMISS, NLEMIS
+      LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT

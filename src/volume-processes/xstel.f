@@ -66,7 +66,7 @@ C
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, 
-     .            ERATE, TB, TII,
+     .            TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
      .           IBGK,ISPZB,ITYPB
@@ -146,7 +146,7 @@ C           NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
@@ -191,7 +191,7 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
                 
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -321,7 +321,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
-     .                          (KREAD,TII,
+     .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN

@@ -1,6 +1,7 @@
 !    20.06.07: constant NLOGAU = number of logicals introduced
 cdr  April 2017:  NEXCS added to logicals (something from Vlad for photons?),
 cdr               nlogau=38
+cdr  Jan. 2018:   NLEMIS added, nlogau=39
  
       MODULE EIRMOD_CLOGAU
  
@@ -12,7 +13,7 @@ cdr               nlogau=38
  
       PUBLIC :: EIRENE_ALLOC_CLOGAU
  
-      INTEGER, PUBLIC, PARAMETER :: NLOGAU=38
+      INTEGER, PUBLIC, PARAMETER :: NLOGAU=39
  
       LOGICAL, PUBLIC, TARGET, SAVE :: LLOGAU(NLOGAU)
  
@@ -25,7 +26,7 @@ cdr               nlogau=38
      L NLMLT,  NLADD,
      L NLTRIM, NLONE,  NLDFST, NLOLDRAN, 
      L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
-     L NEXVS
+     L NEXVS,  NLEMIS
 C    L NLFREE0, NLFREE1
  
       CONTAINS
@@ -73,6 +74,7 @@ C     NLFREE0 => LLOGAU(31) ! NOT IN USE
       NLSHRT13 => LLOGAU(36)
       NLWRMSH  => LLOGAU(37)
       NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
+      NLEMIS   => LLOGAU(39) 
  
       LLOGAU = .FALSE.
  

@@ -28,6 +28,9 @@ C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
 C   ICELL     : CELL NUMBER, ONLY NEEDED IN CASE OF CALLS FROM INSIDE EIRENE TRANSPORT CODE.
+C               REMOVED, WAS INTENDED FOR OPTIMIZATION 
+C               OPTIMIZATION IS TAKEN CARE OF IN CALLING SUBROUTINE COLRAD
+C
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
 C   Q_EXT(N): ???   ->  H*(N)  external source, e.g. molecules, or photo-excitation
@@ -55,7 +58,7 @@ c   hence: taken times "densel"
 c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
-      SUBROUTINE EIRENE_H_COLRAD (ICELL,TEMP, DENSEL, Q_EXT, 
+      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, 
      .                            POP0, POP1, POP2,
      .                            ALPCR, SCR, SCR_EXT,
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
@@ -66,7 +69,6 @@ C     USE EIRMOD_CCRM
       IMPLICIT NONE
  
 C--------- ATOMIC PARAMETER ------------------------------------------
-      INTEGER, INTENT(IN) :: ICELL
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
       REAL(DP), INTENT(IN) :: Q_EXT(40)
 
@@ -144,6 +146,12 @@ C  EFFECTIVE ELECTRON COOLING RATES
      &              E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
 C
  
+
+CPB  !!!!!!!!!!! PRELIMINARY  !!!!!!!!!!!!!!! to avoid change in sign, for log(..) in calling routine
+
+      E_ALPCR = -1.5_DP * TEMP * ALPCR
+
+CPB  !!!!!!!!!!! PRELIMINARY  !!!!!!!!!!!!!!!
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
       RETURN
@@ -215,6 +223,7 @@ c     else
         SAHA(I)=P**2*EXP(UION)/2.414D15/SQRT(TE**3)
 c     endif
   101 CONTINUE
+
       RETURN
       END
 
