@@ -150,6 +150,7 @@ C       NEND=1
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
+C           NEND=9
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
 C       NEND=9
           FCTKKL=LOG(FACTKK)
@@ -186,7 +187,7 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 CDR  MODEL NOT IMPLEMENTED FOR ELASTIC COLLISIONS, BUT SEE: XSTCX, XSTPI,....
 
       ELSE
-C  NO RATE COEFFICIENT. IS THERE A CROSS SECTION AT LEAST?
+C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
         IF (MODCOL(5,2,IREL).NE.3) GOTO 993
       ENDIF
 
@@ -245,7 +246,8 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTEL: IREL ', IREL
           WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
-          WRITE (iunout,*) 'RATHER THEN WITH T = TIIN '
+          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '  
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -256,12 +258,15 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
             NELREL(IREL) = -2
             EPLEL3(IREL,1,1)=EBULK
           END IF
+C       ELSE
+CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(5,4,IREL)=1
 C     ELSEIF (NSEEL4.EQ.2) THEN
 C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
-C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
+C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
         KREAD=EBULK
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
@@ -295,7 +300,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
-     .                          (KREAD,TII,
+     .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
@@ -325,7 +330,7 @@ c old
 257           CONTINUE
             ENDIF
 
-          ELSE  ! STORAGE SAVING MODE, no predefined tallies eplel3
+          ELSE  ! STORAGE SAVING MODE, no pre-defined tallies eplel3
             IF (MODC.EQ.1) THEN
               ADD=FACTKK/ADDT
               EPLEL3(IREL,1,1)=ADD   !  ????
@@ -377,6 +382,7 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'ELASTIC COLLISION WITH BULK IONS IPLS:'
       WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL)
+      CALL EIRENE_LEER(1)
 C
       IF (NPBGKP(IPL,1).NE.0) THEN
         IBGK=NPBGKP(IPL,1)
@@ -409,7 +415,8 @@ C
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
       WRITE (iunout,*) 'PROCESS NO. KK ',NREAEL(IREL)
       WRITE (IUNOUT,*) 'MODCOL(0)   ',MODCOL(5,0,IREL)
-      WRITE (IUNOUT,*) 'MODCOL(1:4) ',MODCOL(5,1,IREL),MODCOL(5,2,IREL),
+      WRITE (IUNOUT,*) 'MODCOL(1:4) ',
+     .                  MODCOL(5,1,IREL),MODCOL(5,2,IREL),
      .                           MODCOL(5,3,IREL),MODCOL(5,4,IREL)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)

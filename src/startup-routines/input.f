@@ -847,11 +847,9 @@ C  TOROIDAL MESH
 C
 C INPUT SUB-BLOCK 2C
 C
-230   READ (IUNIN,'(A72)') ZEILE
+      IREAD=0
+      CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
 
-CDR SKIP READING COMMENT INPUT CARDS STARTING WITH *
-      IF (ZEILE(1:1) .EQ. '*') GOTO 230
-      IREAD=1
       READ (ZEILE,6665) NLTOR
       IREAD=0
 C
@@ -866,9 +864,8 @@ C  MESH MULTIPLICATION
 C
 C INPUT SUB-BLOCK 2D
 C
-240   READ (IUNIN,'(A72)') ZEILE
-      IF (ZEILE(1:1) .EQ. '*') GOTO 240
-      IREAD=1
+      IREAD=0
+      CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1466,8 +1463,8 @@ C                     IS NOT USED IN CASE OF CONST - OPTION
             REAC2(1:9) = ZEILE(IEND+ITOK:IEND+ITOK+8)
 C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
             IEND = IEND+ITOK+2
-            CALL
-     .      EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
+            CALL EIRENE_READ_TOKEN
+     .           (ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
             IEND = IEND + ITOK
           END IF
         END IF
@@ -2455,6 +2452,7 @@ c  read this (single) file "TRIM.DAT" in subr. REFDAT
         DEALLOCATE(CURFILE)
       END DO
 cdr AT THIS POINT: IFLR=NFR OR IFLR=0 ??
+      IF (IFLR.NE.NFR.AND.IFLR.NE.0) GOTO 993
 
 c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
 
@@ -3648,8 +3646,8 @@ c  default asymptotics
       WRITE (iunout,*) '        NCHORI,NCHENI= ',NCHORI,NCHENI
       CALL EIRENE_LEER(1)
       IF (IABS(NCHENI).GT.NCHEN)
-     .    CALL
-     .  EIRENE_MASPRM('NCHEN',5,NCHEN,'IABS(NCHENI)',12,IABS(NCHENI),
+     .    CALL EIRENE_MASPRM
+     .         ('NCHEN',5,NCHEN,'IABS(NCHENI)',12,IABS(NCHENI),
      .                 IERROR)
       IF (NCHORI.LE.0) GOTO 1230
       CALL EIRENE_ALLOC_COMSIG

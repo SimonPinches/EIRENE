@@ -214,7 +214,6 @@ C  each internal iteration or internal time-step (fixed plasma) starts here
 101   CONTINUE
 C  IITER=... , ITIME=...
 
-c  re-initialize some "ifirst"-blocks
       CALL EIRENE_PLNXTB(3,'EIRENE.F')
 
       IF (MY_PE == 0) THEN

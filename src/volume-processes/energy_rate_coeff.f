@@ -238,7 +238,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
  
 !pb e_scr > 0  ! corrected Aug. 2nd 2017
 !pb        IF (.NOT.LEXP) erate = log(-e_scr)
-        IF (.NOT.LEXP) erate = log(-e_scr)
+        IF (.NOT.LEXP) erate = log(-e_scr)  ! check for e_src< 0.
         IF (LEXP)      erate = -E_SCR
  
       end if

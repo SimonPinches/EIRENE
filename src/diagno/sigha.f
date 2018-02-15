@@ -9,6 +9,7 @@ cpb Feb 17:  refresh ADDV tallies (volumetric line emissivities)
 c            not only for new stratum, but also when
 c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
+cdr Jan 18:  parameter ICHORI added
 c            
 C
       SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST,ICHORI)
