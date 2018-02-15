@@ -13,13 +13,17 @@ cdr  oct.14  :  syncronized with fpathm, fpathi
 
 cdr 31.10.14 :  speedup of final cut off evaluations
 
-cdr  oct.14  :  bug fix, elastic energy exchange tally in case of tracklength estimator
-
+cdr note:       sgnl_poly evaluations are just the 8th order polynom, 
+cdr             plus rcmin,rcmax consideration.
+cdr             unless rcmin,rcmax are set (as it is the case currently here), 
+cdr             there is no need to call  --> move to in-line 
 cdr 06.08.15 :  arguments added to vecusr
 cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
+
+
 
 !pb APR  16:    eatds -> eatei
 !pb APR  16:    emlds -> emlei
@@ -27,24 +31,34 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 !pb APR  16:    eelds -> eelei
 !pb MAY  16:    tabds1 -> tabei1
 !pb JUL  16:    ehvds1 -> ehvei1
-cdr sept 16:    nmdsi  -> nmeii
+cdr sept 16:    nadsi  -> naeii
 
 cdr aug. 16:    bug fix re EXPO in PI branch
-cdr             correction for PI reaction in case Ti < TVAC
+cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
+cdr             ei process: started to check for H.3, H.1 options for EI processes
+cdr                         according to v0/vth >> 1. criteria
+cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
+
+cdr nov. 17:    unified version of fpatha, fpathm and fpathi, 
+cdr             manually adapted from original branch "code-combine", aug. 16, (p.b.)
+cdr dec  17:    bug fix: pvelq(iplsv), rather than pvelq(ipls) 
+cdr             probably no effect so far, because iplsv = ipls ?always?
+cdr             
 
 C
-      FUNCTION EIRENE_FPATHM (K,CFLAG,JCOU,NCOU)
+      FUNCTION EIRENE_FPATH (K,CFLAG,JCOU,NCOU)
 C
-C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR NEUTRAL
-C   "BEAM MOLECULES" , SPECIES IMOL,  OF VELOCITY VEL IN DRIFTING MAXWELLIAN PLASMA-BACKGROUND
+C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR NEUTRAL OR CHARGED
+C   "BEAM PARTICLES" , SPECIES IXSPZ, OF VELOCITY VEL IN DRIFTING MAXWELLIAN BACKGROUND MEDIUM
 C   IN CELL K
 
 C
 C   INPUT:
-C   IMOL      :  MOLECULE SPECIES INDEX (INPUT VIA COMMON)
+C   IXSPZ     :  SPECIES INDEX (POINTER: IATM, IMOL, IION, IPHOT) (INPUT VIA COMMON)
 C   K         :  CURRENT GRID CELL
 C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
-C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
+C                COORDINATES WITH DIFFERENT CELL NUMBER K. 
+C                THIS CURRENT CALL IS CALL NO. JCOU.
  
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
@@ -66,7 +80,6 @@ C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
 C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
 C                TO BE WRITTEN
 C
-
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -76,7 +89,7 @@ C
       USE EIRMOD_CZT1
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
-      USE EIRMOD_CESTIM , ONLY: LEM
+      USE EIRMOD_CESTIM , ONLY: LEX
       USE EIRMOD_CTRCEI , ONLY: TRCAMD
  
       IMPLICIT NONE
@@ -86,33 +99,40 @@ C
  
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
-      REAL(DP) :: TBPI3(9), TBCX3(9), TBEL3(9), FP(6)
-      REAL(DP) :: EPCX3(9), EPEL3(9)
-      REAL(DP) :: EIRENE_FPATHM,
+      REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
+      REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
+      REAL(DP) :: EIRENE_FPATH,
      .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF,
-     .          VREL, VRELQ, TBEL,
-     .          EXPO, ELB, CEL,
-     .          SIGMAX, VX, VY, VZ, EHEAVY,
-     .          XC,YC,ZC,
-     .          PVELQ0, DENEL, VEFF, VEFFQ, CXS, ELAB,
-     .          TII, CII,
+     .          CEL,CXS, VEFFQ,VEFF,
+     .          TBEL, TBCX, TBPI, TBOT,
+     .          SIGMAX,  EHEAVY,
+     .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
+     .          VRELQ, VREL, XC,YC,ZC,
+     .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
+     .          EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
+!pb  
+     .          EIRENE_FPATHPH,
 
      .          RCMIN, RCMAX,
      .          ERATE
-C      REAL(DP) :: CTCHDUM, EIRENE_FEPLPI3, ELTHDUM, ER, PLS, RLMS, RMI,
-C     .            RMN, RMSI, SIG
-      INTEGER :: IBGK, IMEL, IREL, IMEI, IREI, IMPI,
-     .           IRPI, IMCX, IRCX,
-     .           J, 
-     .           IREAC, KK,  IPLSTI, IPLSV
+      INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
+     .                 IXCX, IRCX, IXOT, IROT,
+     .           J, KK, IPLSTI,
+     .           IPLSV, IREAC
+
+!  FOR PHOTONS CALL EIRENE_FPATHPH
+      IF (ITYP == 0) THEN
+        EIRENE_FPATH = EIRENE_FPATHPH(K,CFLAG,JCOU,NCOU)
+        RETURN
+      END IF
 C
 C  SET DEFAULTS: NO REACTIONS
 C
@@ -120,7 +140,7 @@ C
 !pb   IF (NCOU.GT.1) THEN
         XSTOR=0.D0
 !pb   ENDIF
-      EIRENE_FPATHM=1.D10
+      EIRENE_FPATH=1.D10
       SIGMAX=0.D0
 C
       IF (LGVAC(K,0)) RETURN
@@ -134,10 +154,11 @@ C
 2       DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLS) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES
+C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE REFERENCE FRAMES 
 C
       PVELQ0=VEL*VEL
-      DO 3 IPLS=1,NPLSV
+      DO 3 IPLS=1,NPLS
+        IPLSV=MPLSV(IPLS)
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             XC=0.
@@ -145,15 +166,15 @@ C
             ZC=0.
             CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
-            VX=VXIN(IPLS,K)
-            VY=VYIN(IPLS,K)
-            VZ=VZIN(IPLS,K)
+            VX=VXIN(IPLSV,K)
+            VY=VYIN(IPLSV,K)
+            VZ=VZIN(IPLSV,K)
           END IF
-          PVELQ(IPLS)=(VELX*VEL-VX)**2+
+          PVELQ(IPLSV)=(VELX*VEL-VX)**2+
      .                (VELY*VEL-VY)**2+
      .                (VELZ*VEL-VZ)**2
         ELSE
-          PVELQ(IPLS)=PVELQ0
+          PVELQ(IPLSV)=PVELQ0
         ENDIF
 3     CONTINUE
 C
@@ -161,9 +182,9 @@ C
 C  ELECTRON IMPACT COLLISION - RATE - COEFFICIENT
 C  NO MASS SCALING NEEDED FOR BULK ELECTRONS
 C
-20    IF (LGMEI(IMOL,0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
-      DO 10 IMEI=1,NMEII(IMOL)
-        IREI=LGMEI(IMOL,IMEI)
+20    IF (LGXEI(IXSPZ,0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
+      DO 10 IXEI=1,NXEII
+        IREI=LGXEI(IXSPZ,IXEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
             SIGVEI(IREI)=TABEI1(IREI,K)
@@ -213,7 +234,7 @@ C  MAXWELL, AT FIXED BEAM ENERGY, MOSTLY E0=0.0
 CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
 !pb         KK=NREAPI(IRPI)
 !pb         TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-!pb         TBPI = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*DIIN(IPLS,K)
+!pb         TBPI = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.TRUE.,0)*DIIN(IPLS,K)
 !pb         SIGVPI(IRPI)=TBPI
 c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
@@ -222,6 +243,9 @@ c
 
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
+
+! Scale log collision energy to projectile energy for proper isotope, for rate coefficient, 
+! i.e. use neutral particle mass.
 C
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
@@ -231,11 +255,14 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             ELAB=LOG(VRELQ)+DEFPI(IRPI)
             IREAC=MODCOL(4,1,IRPI)
             CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),
-     .                       'FPATHM PI1')
+     .                       'FPATH PI1')
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
-C  MINIMUM PROJECTILE ENERGY: 0.1 EV
+C  Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+            V0_REL=SQRT(PVELQ(IPLSV))
+! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
+            TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
             IF (NSTORDR >= NRAD) THEN
               TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
               FP = 0._DP
@@ -246,19 +273,18 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
-              TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .              + DIINL(IPLS,K) + FACRPI(IRPI,2)
             ENDIF
             SIGVPI(IRPI)=EXP(EXPO)
-          END IF
+          ENDIF
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
           VREL=SQRT(VRELQ)
           ELAB=LOG(VRELQ)+DEFPI(IRPI)
           IREAC=MODCOL(4,1,IRPI)
-          CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'FPATHM II')
+          CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'FPATH II')
           SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
         ELSE
           GOTO 991
@@ -359,7 +385,7 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               KK=NREACX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             SIGVCX(IRCX)=EXP(EXPO)
@@ -371,7 +397,7 @@ C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           VEFF=SQRT(VEFFQ)
           ELAB=LOG(VEFFQ)+DEFCX(IRCX)
           IREAC=MODCOL(3,1,IRCX)
-          CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'FPATHM CX2')
+          CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'FPATH CX2')
           SIGVCX(IRCX)=CXS*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(3,2,IRCX).EQ.4) THEN
 C  MODEL 4
@@ -380,7 +406,7 @@ C  BEAM - BEAM RATE, IGNORE THERMAL ION ENERGY
           VREL=SQRT(VRELQ)
           ELAB=LOG(VRELQ)+DEFCX(IRCX)
           IREAC=MODCOL(3,1,IRCX)
-          CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'FPATHM CX3')
+          CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'FPATH CX3')
           SIGVCX(IRCX)=CXS*VREL*DENIO(IPLS)
         ELSE
           GOTO 992
@@ -429,7 +455,7 @@ cdr         endif
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELRCX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
@@ -454,14 +480,14 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
         ENDIF
 41    CONTINUE
 C
-C  ELASTIC COLLISIONS OF MOLECULE IMOL WITH IONS OF SPEZIES IPLS=1,NPLSI
+C  ELASTIC COLLISIONS OF TEST PARTICLE IXSPZ  WITH BULK IONS OF SPEZIES IPLS=1,NPLSI
 C  50--->60
 C
 50    CONTINUE
-      IF (LGMEL(IMOL,0,0).EQ.0.OR.LGVAC(K,0)) GOTO 60
-      DO 51 IMEL=1,NMELI(IMOL)
-        IREL=LGMEL(IMOL,IMEL,0)
-        IPLS=LGMEL(IMOL,IMEL,1)
+      IF (LGXEL(IXSPZ,0,0).EQ.0.OR.LGVAC(K,0)) GOTO 60
+      DO 51 IXEL=1,NXELI
+        IREL=LGXEL(IXSPZ,IXEL,0)
+        IPLS=LGXEL(IXSPZ,IXEL,1)
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
         IBGK=NPBGKP(IPLS,1)
@@ -471,27 +497,27 @@ C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(5,2,IREL).EQ.1) THEN
 C  MODEL 1:
-C  MAXWELLIAN RATE, IGNORE MOLECULE VELOCITY
+C  MAXWELLIAN RATE, IGNORE ATOM VELOCITY
           IF (NSTORDR >= NRAD) THEN
             SIGVEL(IREL)=TABEL3(IREL,K,1)
           ELSE
 cdr  here should be call to ftabel3,  to be done
             KK=NREAEL(IREL)
             TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
+            TBEL = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.TRUE.,0)*
      .             DIIN(IPLS,K)
             SIGVEL(IREL)=TBEL
           END IF
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN
 C  BEAM - MAXWELL
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
-C  TEMPERATURE TOO LOW, USE: BEAM_MOLEC - BEAM_DRIFT-BULK RATECOEFF.
+C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATECOEFF.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
             ELAB=LOG(VRELQ)+DEFEL(IREL)
             IREAC=MODCOL(5,1,IREL)
             CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
-     .                       'FPATHM EL1')
+     .                       'FPATH EL1')
             SIGVEL(IREL)=CEL*VREL*DENIO(IPLS)
           ELSE
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
@@ -510,7 +536,7 @@ cdr  here should be call to ftabel3,  to be done
 ! CALCULATE RATE-COEFFICIENT ON THE FLY
               KK=NREAEL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             SIGVEL(IREL)=EXP(EXPO)
@@ -532,7 +558,7 @@ C  BEAM - BEAM RATE, IGNORE THERMAL ION ENERGY
           VREL=SQRT(VRELQ)
           ELAB=LOG(VRELQ)+DEFEL(IREL)
           IREAC=MODCOL(5,1,IREL)
-          CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'FPATHM EL3')
+          CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),'FPATH EL3')
           SIGVEL(IREL)=CEL*VREL*DENIO(IPLS)
         ELSE
           GOTO 995
@@ -577,7 +603,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELREL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
@@ -672,14 +698,14 @@ C
       CALL EIRENE_EXIT_OWN(1)
 992   CONTINUE
       WRITE (iunout,*)
-     .  'ERROR IN FPATHM: INCONSISTENT CHARGE EXCHANGE DATA'
-      WRITE (iunout,*) 'IMOL,IRCX,(MODCOL(3,J,IRCX),J=1,4) '
-      WRITE (iunout,*) IMOL,IRCX,(MODCOL(3,J,IRCX),J=1,4)
+     .  'ERROR IN FPATH: INCONSISTENT CHARGE EXCHANGE DATA'
+      WRITE (iunout,*) 'ITYP,IXSPZ,IRCX,MODCOL(3,J,IRCX),J=1,4 '
+      WRITE (iunout,*) ITYP,IXSPZ,IRCX,(MODCOL(3,J,IRCX),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
 995   CONTINUE
       WRITE (iunout,*)
-     .  'ERROR IN FPATHM: INCONSISTENT ELASTIC COLL. DATA'
-      WRITE (iunout,*) 'IMOL,IREL,(MODCOL(5,J,IREL),J=1,4) '
-      WRITE (iunout,*) IMOL,IREL,(MODCOL(5,J,IREL),J=1,4)
+     .  'ERROR IN FPATH: INCONSISTENT ELASTIC COLL. DATA'
+      WRITE (iunout,*) 'ITYP,IXSPZ,IREL,MODCOL(5,J,IREL),J=1,4 '
+      WRITE (iunout,*) ITYP,IXSPZ,IREL,(MODCOL(5,J,IREL),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
       END

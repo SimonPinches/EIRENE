@@ -6,11 +6,11 @@
 !dr  29.10.15: bug fix:  lexp option for ifit=5 was missing.
 !dr            no consequences for any earlier runs, except H-COL option with H.2 (corona) rates. 
 cdr  nov. 15:  indicators ip1, ip2 for extrapolation or interpolation added,
-cdr            in intp_tables and intp_adas
+cdr            in intp_tab1d and intp_tab2d
 cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2. 
 cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRAD
 
-      function EIRENE_rate_coeff (ir, p1, p2, lexp, iprshft, erate)
+      function EIRENE_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
      .                     result (rate)
 
 !  evaluate reaction rate coefficient (cm^3/s),
@@ -28,6 +28,7 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!              negative values of ir (-1 to -11):  default internal eirene A&M models
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
 !   lexp:      return rate=rate coefficient in cm**3/sec
@@ -51,23 +52,20 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
  
       implicit none
  
-      integer, intent(in) :: ir, iprshft
+      integer, intent(in) :: ir, iprshft, ic
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
-      real(dp), intent(out) :: erate
       real(dp) :: rate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
      .                 rrc2min, rrc2max,
-     .            ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
-     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
+     .                 scr
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
      .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
-      real(dp), allocatable, save :: pop0(:), pop1(:), pop2(:), q_ext(:)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ic,ip1,ip2            
+      integer :: ip1, ip2, iflavor, ivar           
  
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -185,7 +183,7 @@ c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        rate = eirene_intp_adas(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
+        rate = eirene_intp_tab2d(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
  
         if (lexp) then
           rate=10._dp**rate
@@ -208,7 +206,7 @@ cdr  to be added here
  
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        rate = eirene_intp_table(reacdat(ir)%rtc%hyd,pp1,ip1)
+        rate = eirene_intp_tab1d(reacdat(ir)%rtc%hyd,pp1,ip1)
 
 !  lexp option not connected here !
 
@@ -218,38 +216,22 @@ c..............................................................
 
 ! INTERNAL COLLISION RADIATIVE CODE
  
-! H-colrad   RATE AND ENERGY LOSS RATE IN ONE SINGLE STEP
- 
-        if (.not.allocated(pop0)) then
-          allocate(pop0(40))
-          allocate(pop1(40))
-          allocate(pop2(40))
-
-          allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
-        end if
- 
-        Q_EXT = 0._DP
-
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        CALL EIRENE_H_COLRAD(IC, PP1, PP2 ,Q_EXT,POP0,POP1,POP2,
-     .                ALPCR,    SCR,    SCR_EXT,
-     .                E_ALPCR,  E_SCR,  E_SCR_EXT,
-     .                E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
+        
+        iflavor = reacdat(ir)%rtc%crm%iflav
+        ivar = reacdat(ir)%rtc%crm%ivarst
+
+        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, SCR)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
         
-        if (.not.lexp) rate = log(scr)
+        if (.not.lexp) rate = log(scr)   !  check: scr > 0 ??
         if (lexp)      rate = scr 
-         
-
-        erate = -e_scr
-        if (.not.lexp) erate = log(-e_scr)
  
       end if
  
       return
  
       end function EIRENE_rate_coeff
- 

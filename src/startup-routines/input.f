@@ -175,6 +175,7 @@ C
       TYPE(REFFILE), POINTER :: REFFILES, CURFILE
 
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
+      TYPE(TCONTRIB) :: CNT
 C
       REAL(DP) :: AFF(3,3), AFFI(3,3), FP1(6), FP2(6)
       REAL(DP) :: RP1, SA, SI, THMAX, SM, SPP, DTIMVO, SAVE, VOLTOT_TAL,
@@ -208,14 +209,14 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IPRCSF, IR, MT, MP, NDUMM, NUMSEC, NDUMM1, NDUMM2,
      .           NRTAL1, NCOPII, NCOPIE, NFR, NREAC_ADD, IPLN,
      .           NDUMM3, NDUMM4, NRE, IFLR,
-     .           ISPSRF, ISPTYP, NSPS, IPTYP, IPSPZ,
+     .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA
-
+     .           NB,NS,NA,
+     .           NRC, IADV, NO_COMPO, NO_CONTRIB, ICNT, IDMDL, IND
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
@@ -380,7 +381,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND_PARAM
 !     NGSTAL = 0
 !
 !     NRTAL1 = 0     ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
-!     NREAC_ADD = 0  ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
+      NREAC_ADD = 0  ! NEEDED HERE FOR CORRECT PLACEMENT OF REACTION DATA
+                     ! USED FOR CALCULATION OF EMISSIVITY 
 
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
@@ -1023,9 +1025,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         ENDIF
         IF (IDIMP.NE.2) THEN
           IF (IRPTA2.GT.1) IRPTA(ISTS,2)=IRPTA2
-!pb          IF (IRPTE2.LE.1.OR.IRPTE2.GT.NP2ND) THEN
           IF (IRPTE2.LE.1.OR.IRPTE2.GT.MAX(NP2ND,NRPLG)) THEN
-!pb            IRPTE(ISTS,2)=MAX(2,NP2ND)
             IRPTE(ISTS,2)=MAX(2,NP2ND,NRPLG)
           ELSE
             IRPTE(ISTS,2)=IRPTE2
@@ -1044,8 +1044,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
           ELSE
             IRPTE(ISTS,3)=IRPTE3
           ENDIF
-!pb          IF ((IDIMP.EQ.1.AND.IRPTE1.GT.NR1ST).OR.
-!pb     .        (IDIMP.EQ.2.AND.IRPTE2.GT.NP2ND)) THEN
+
           IF ((IDIMP.EQ.1.AND.IRPTE1.GT.NR1ST).OR.
      .        (IDIMP.EQ.2.AND.IRPTE2.GT.MAX(NP2ND,NRPLG))) THEN
             WRITE (iunout,*) 'WARNING:'
@@ -1053,6 +1052,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
             WRITE (iunout,*) 'OUT OF RANGE. INVISIBLE!'
           ENDIF
         ENDIF
+
         READ (IUNIN,6666) ILIIN(NLJ),ILSIDE(NLJ),ILSWCH(NLJ),
      .                    ILEQUI(NLJ),ILTOR(NLJ),ILCOL(NLJ),
      .                    ILFIT(NLJ),ILCELL(NLJ),ILBOX(NLJ),
@@ -1072,7 +1072,7 @@ C  NO LOCAL SURFACE INTERACTION MODEL FOUND, USE: DEFAULT
           GOTO 314
 !pb     ELSEIF (ILIIN(NLJ).LE.0) THEN
 !pb       GOTO 312
-C  ASSIGN ONE OF THE SURFACE MODELLS (BLOCK 6) TO THIS SURFACE
+C  ASSIGN ONE OF THE SURFACE MODELS (BLOCK 6) TO THIS SURFACE
         ELSEIF (ZEILE(1:8).EQ.'SURFMOD_') THEN
           ALLOCATE(SURFCUR)
           SURFCUR%MODNAME = TRIM(ADJUSTL(ZEILE(9:)))
@@ -1583,41 +1583,48 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
         MASST(IR)=MT
         DELPOT(IR)=DPP
 
-C  ASYMPTOTICS FOR CROSS-SECTIONS OR (WEIGHTED) RATE COEFFICIENTS
+C  ASYMPTOTICS FOR CROSS-SECTIONS OR (WEIGHTED) RATE COEFFICIENTS FOR REACTION IR
 
 C  OVERWRITES ASYMPTOTICS READ FROM EXTERNAL DATA FILES FOR THIS RUN,
-C  IF THERE HAVE BEEN SUCH
+C  (IF THERE HAVE BEEN SUCH)
+
+C  CURRENT DEFAULT ASYMPTOTICS:  SET SUCH THAT "NO ASYMPTOTICS" IS USED
         FP1 = 0._DP
         FP2 = 0._DP
         IF (INDEX(H123,'P.').eq.0) then
-          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV
-          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV
-cdr
+c  single parametric data, or for first parameter in 2-parameteric data
+          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV  (2E-9 EV)
+          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV  (5E8  EV)
+c  2nd parameter in 2 parametric data
           RC2MIN = -20.  ! lower ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
           RC2MAX =  100. ! upper ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
           JFEX1MN = 0
           JFEX1MX = 0
           JFEX2MN = 0
           JFEX2MX = 0
+
+C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED EXPLICITLY IN input block 4?
+C  IF YES: OVERWRITE DEFAULTS, AND/OR DATA FROM EXTERNAL FILE
+C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE 
           IF (R1MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MN,(FP1(I),I=1,3)
             RC1MIN=LOG(R1MN)
-            WRITE (IUNOUT,*) 'NON DEF R1MN SET FOR REATION IR=',IR,R1MN
+            WRITE (IUNOUT,*) 'NON-DEF. R1MN FOR REACTION IR=',IR,R1MN
           ENDIF
           IF (R1MX.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MX,(FP1(I),I=4,6)
             RC1MAX=LOG(R1MX)
-            WRITE (IUNOUT,*) 'NON DEF R1MX SET FOR REATION IR=',IR,R1MX
+            WRITE (IUNOUT,*) 'NON-DEF. R1MX FOR REACTION IR=',IR,R1MX
           ENDIF
           IF (R2MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX2MN,(FP2(I),I=1,3)
             RC2MIN=LOG(R2MN)
-            WRITE (IUNOUT,*) 'NON DEF R2MN SET FOR REATION IR=',IR,R2MN
+            WRITE (IUNOUT,*) 'NON-DEF. R2MN FOR REACTION IR=',IR,R2MN
           ENDIF
           IF (R2MX.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX2MX,(FP2(I),I=4,6)
             RC2MAX=LOG(R2MX)
-            WRITE (IUNOUT,*) 'NON DEF R2MX SET FOR REATION IR=',IR,R2MX
+            WRITE (IUNOUT,*) 'NON-DEF. R2MX FOR REACTION IR=',IR,R2MX
           ENDIF
 
 cdr  reaclines only needed for hydkin interface?
@@ -1627,7 +1634,9 @@ cdr  reaclines only needed for hydkin interface?
           REACLINES(IL)%JFEX2MX = JFEX2MX
           REACLINES(IL)%FP1 = FP1
           REACLINES(IL)%FP2 = FP2
-        else  ! identifier "P" found in H123. Data for photon processes! No assymptotics available
+        else 
+! identifier "P" found in H123. Data for photon processes! No assymptotics available
+! set defaults
           RC1MIN=-20.
           RC1MAX= 20.
           RC2MIN=-20.
@@ -1637,6 +1646,8 @@ cdr  reaclines only needed for hydkin interface?
           JFEX2MN=0
           JFEX2MX=0
         endif
+
+C  ASYMPTOTICS: DONE
 C
 C REAC2 HAS TWO DIFFERENT MEANINGS:
 C       FILNAM=CONST:   REAC2 = FTFLAG
@@ -2025,6 +2036,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
+      IDMDL = 0
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2108,14 +2120,17 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
 c  default: only for bulk ions
                               TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
      .                        TDMPAR(IPLS)%TDM%ITP(1),
      .                        TDMPAR(IPLS)%TDM%ISTR(1)
           CASE ('CONSTANT  ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,6664) TDMPAR(IPLS)%TDM%TVAL,
      .                        TDMPAR(IPLS)%TDM%DVAL,
      .                        TDMPAR(IPLS)%TDM%VXVAL,
@@ -2131,8 +2146,10 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%VFACTOR
                  TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('SAHA      ')
+            IDMDL = IDMDL + 1
 !PB   TO BE WRITTEN
           CASE ('BOLTZMANN ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,'(3I6,6x,2E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2140,6 +2157,7 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%G_BOLTZ,
      .           TDMPAR(IPLS)%TDM%DELTAE
           CASE ('CORONA    ')
+            IDMDL = IDMDL + 1
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2157,6 +2175,7 @@ c  default: only for bulk ions
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD    ')
+            IDMDL = IDMDL + 1
             DO I=1, TDMPAR(IPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             TDMPAR(IPLS)%TDM%ISP(I),
@@ -2412,7 +2431,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
 620   CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
 
       IF (ASSOCIATED(REFFILES)) THEN
-c  trim files for NFR target projectile combinations are requested.
+c  TRIM files for NFR target projectile combinations are requested.
 c  read them one by one in subr. RDTRIM
         NHD6 = NFR
       ELSE
@@ -2859,12 +2878,14 @@ C
       IF (ZEILE(1:1) .EQ. '*') GOTO 910
 C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
       NLOGIN = MAX(1,NATMI_IN + NMOLI_IN + NIONI_IN + NPHOTI_IN)
+C  read 60 or more logical flags
       ALLOCATE (LOGRDH(NLOGIN))
       LOGRDH = .FALSE.
       DO J=1, NLOGIN, 60
         READ (ZEILE,6665) LOGRDH(J:MIN(J+59,NLOGIN))
         READ (IUNIN,'(A72)') ZEILE
       END DO
+c
       IF (NATMI_IN > 0) NLPRCA(1:NATMI_IN) = LOGRDH(1:NATMI_IN)
       IF (NMOLI_IN > 0)
      .    NLPRCM(1:NMOLI_IN) = LOGRDH(NATMI_IN+1 : NATMI_IN+NMOLI_IN)
@@ -2878,6 +2899,7 @@ C  DEFAULT: ???
       READ (ZEILE,6666) NPRCSF
 
       NPRCSF=MIN0(NLIMPS,NPRCSF)
+c  read 12 or more integer flags
       IPRCSF=1
 911   CONTINUE
       IF (IPRCSF.LE.NPRCSF) THEN
@@ -2889,6 +2911,7 @@ C  DEFAULT: ???
         IPRCSF=IPRCSF+12
         GOTO 911
       ENDIF
+
 C  DATA FOR SPLITTING AND RUSSIAN ROULETTE
       READ (IUNIN,6666) MAXLEV,MAXRAD,MAXPOL,MAXTOR,MAXADD
       MXL=15
@@ -3028,8 +3051,8 @@ C
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:3) == '** ') THEN
-        CALL
-     .  EIRENE_MASAGE('*** 10F. DATA FOR SPECTRA                   ')
+        CALL EIRENE_MASAGE
+     .             ('*** 10F. DATA FOR SPECTRA                   ')
         IF (NADSPC > 0) THEN
           ALLOCATE(ESTIML(NADSPC))
           IF (NSMSTRA > 0) ALLOCATE(SMESTL(NADSPC))
@@ -3037,6 +3060,7 @@ C
           ALLOCATE(ESTIML(1))
           NULLIFY (ESTIML(1)%PSPC)
         END IF
+C
         DO J=1,NADSPC
           DO
             READ (IUNIN,'(A72)') ZEILE
@@ -3151,13 +3175,31 @@ C    .      ... WRONG INPUT !
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
           ESPEC%ISPCTYP = ISPTYP
-          ESPEC%NSPC = NSPS
-          ESPEC%IMETSP = 0
+          ESPEC%NSPC = ABS(NSPS)
           ESPEC%ISRFCLL = ISRFCLL
           ESPEC%IDIREC = IDIREC
+cdr
+cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
+cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
+
+cdr   X.B. correction Sept 17, from SOLPS-ITER branch, 
+          IF (NSPS > 0) THEN
+            NSPSA=NSPS
           ESPEC%LOG = .FALSE.
           ESPEC%SPCMIN=SPCMN
           ESPEC%SPCMAX=SPCMX
+            ESPEC%SPCDEL=(SPCMX-SPCMN)/REAL(NSPSA,DP)
+          ELSEIF (NSPS < 0) THEN
+            NSPSA=-NSPS
+            ESPEC%LOG = .TRUE.
+            ESPEC%SPCMIN = log10(SPCMN)
+            ESPEC%SPCMAX = log10(SPCMX)
+            ESPEC%SPCDEL = log10(SPCMX/SPCMN)/REAL(NSPSA,DP)
+          ELSE
+            WRITE (iunout,*) ' SPECTRUM TALLY NUMBER = ',J
+            WRITE (iunout,*) ' ZERO NO. OF SPECTRAL BINS "NSPS". EXIT '
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
           ESPEC%ESP_00=SPC_SHIFT
           ESPEC%SPC_XPLT=SPCPLT_X
           ESPEC%SPC_YPLT=SPCPLT_Y
@@ -3165,29 +3207,32 @@ C    .      ... WRONG INPUT !
           ESPEC%SPCVX=SPCVX
           ESPEC%SPCVY=SPCVY
           ESPEC%SPCVZ=SPCVZ
+C  MIN AND MAX ENERGY SCORE (EV) ON THIS TALLY
           ESPEC%ESP_MIN=1.E30
           ESPEC%ESP_MAX=-1.E30
-          ESPEC%SPCDEL=(SPCMX-SPCMN)/REAL(NSPS,DP)
-          ESPEC%SPCDELI=1._DP/ESPEC%SPCDEL
-          ALLOCATE(ESPEC%SPC(0:NSPS+1))
-c  standard deviation of spectra tallies
+
+          ESPEC%SPCDELI=1._DP/(ESPEC%SPCDEL+EPS60)
+          ALLOCATE(ESPEC%SPC(0:NSPSA+1))
+c  standard deviation of spectrally resolved tallies
 !         IF (NSIGI_SPC > 0) THEN
-            ALLOCATE(ESPEC%SDV(0:NSPS+1))
-            ALLOCATE(ESPEC%SGM(0:NSPS+1))
-            ALLOCATE(ESPEC%STV(0:NSPS+1))
-            ALLOCATE(ESPEC%GG(0:NSPS+1))
+            ALLOCATE(ESPEC%SDV(0:NSPSA+1))
+            ALLOCATE(ESPEC%SGM(0:NSPSA+1))
+            ALLOCATE(ESPEC%STV(0:NSPSA+1))
+            ALLOCATE(ESPEC%GG(0:NSPSA+1))
 !         endif
-          ESPEC%SPC(0:NSPS+1) = 0._DP
+          ESPEC%SPC(0:NSPSA+1) = 0._DP
+          ESPEC%IMETSP = 0
 
           IF (NSMSTRA > 0) THEN
+c  sum over strata
             ALLOCATE(SSPEC)
-            ALLOCATE(SSPEC%SPC(0:NSPS+1))
+            ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
 !           IF (NSIGI_SPC > 0) THEN
-              ALLOCATE(SSPEC%SDV(0:NSPS+1))
-              ALLOCATE(SSPEC%SGM(0:NSPS+1))
-              ALLOCATE(SSPEC%STV(0:NSPS+1))
-              ALLOCATE(SSPEC%GG(0:NSPS+1))
+              ALLOCATE(SSPEC%SDV(0:NSPSA+1))
+              ALLOCATE(SSPEC%SGM(0:NSPSA+1))
+              ALLOCATE(SSPEC%STV(0:NSPSA+1))
+              ALLOCATE(SSPEC%GG(0:NSPSA+1))
 !           END IF
             SSPEC = ESPEC
             SMESTL(J)%PSPC => SSPEC
@@ -3197,6 +3242,8 @@ C
         END DO
         IREAD=0
       ELSE
+Cdr  No block 10F found, i.e. no spectrally resolved tallies at all.
+cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
         IF (.NOT.ALLOCATED(ESTIML)) THEN
           ALLOCATE(ESTIML(1))
           NULLIFY (ESTIML(1)%PSPC)
@@ -3220,7 +3267,7 @@ c  search for input block 11a
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
-CVK TRACING FOR DEBUGGING, V.KOTOV:  not in use in present eirene version
+CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
      .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
@@ -3445,6 +3492,156 @@ C
 1210  READ (IUNIN,'(A72)') ZEILE
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
+
+      ULINE=ZEILE
+      CALL EIRENE_UPPERCASE(ULINE)
+      NLEMIS = NCHOR > 0
+      IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
+        IADV = NADVI
+        NLEMIS = .TRUE.
+        READ (IUNIN,6666) NO_LINES, MOD_ADDV
+        IF (NO_LINES > 0) THEN
+          ALLOCATE (EMIS_LINES(NO_LINES))
+          EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+          EMIS_LINES%NO_COMPO = 0
+        END IF
+        DO I=1, NO_LINES
+          READ (IUNIN,'(A80)') ZEILE
+          DO WHILE (ZEILE(1:1) == '*')
+            READ (IUNIN,'(A80)') ZEILE
+          END DO
+          READ (ZEILE,'(A80)') EMIS_LINES(I)%LINE_NAME
+          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,6664) EMIS_LINES(I)%EINSTEIN, 
+     .                      EMIS_LINES(I)%TRANS_EN, 
+     .                      EMIS_LINES(I)%ENERGY
+          EMIS_LINES(I)%NO_COMPO = NO_COMPO
+          IADV = IADV + 1
+          IF (MOD_ADDV == 0) IADV = NADVI + 1 
+          EMIS_LINES(I)%IADV_TOTAL = IADV
+
+          IF (NO_COMPO > 0) THEN
+            ALLOCATE (EMIS_LINES(I)%COMPO(NO_COMPO))
+
+            DO J=1,NO_COMPO
+
+              READ (IUNIN,'(A72)') EMIS_LINES(I)%COMPO(J)%COMPO_NAME
+              READ (IUNIN,6666) NO_CONTRIB 
+              EMIS_LINES(I)%COMPO(J)%NO_CONTRIB = NO_CONTRIB
+              ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NO_CONTRIB))
+
+              IADV = IADV + 1
+              EMIS_LINES(I)%COMPO(J)%IADV = IADV
+              
+              DO ICNT = 1, NO_CONTRIB    
+                CNT%ISP = -1
+                CNT%ITP = -1
+                READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
+     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO, 
+     .             CNT%FNAME, CNT%H2, CNT%REACTION, CNT%CR
+                IF (INDEX(CNT%FNAME,'ADAS') .NE. 0) THEN
+                  READ (IUNIN,'(4X,A2,1X,I3)') CNT%ELEMENT,CNT%IZ
+                  CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                ELSE
+                  CNT%ELEMENT = '  '
+                  CNT%IZ = 0
+                END IF
+                IF (CNT%IRATIO > 0) THEN
+                  READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
+     .             CNT%FRATIO(1), CNT%RAT_H2(1), CNT%RAT_REACTION(1),
+     .             CNT%RAT_CR(1)
+                  IF (INDEX(CNT%FRATIO(1),'ADAS') .NE. 0) THEN
+                    READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
+     .                                           CNT%IZ_RAT(1)
+                    CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                  ELSE
+                    CNT%RAT_ELEMENT(1) = '  '
+                    CNT%IZ_RAT(1) = 0
+                  END IF
+                  IF (CNT%IRATIO == 2) THEN
+                    READ (IUNIN,6666) CNT%ISP(2),CNT%ITP(2),
+     .                                CNT%ISP(3),CNT%ITP(3)
+                    READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
+     .               CNT%FRATIO(2), CNT%RAT_H2(2), CNT%RAT_REACTION(2),
+     .               CNT%RAT_CR(2)
+                    IF (INDEX(CNT%FRATIO(2),'ADAS') .NE. 0) THEN
+                      READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
+     .                                             CNT%IZ_RAT(2)
+                      CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                    ELSE
+                      CNT%RAT_ELEMENT(2) = '  '
+                      CNT%IZ_RAT(2) = 0
+                    END IF
+                  END IF
+                ELSE 
+                  CNT%FRATIO       = '' 
+                  CNT%RAT_H2       = '' 
+                  CNT%RAT_REACTION = ''
+                  CNT%RAT_CR       = ''
+                  CNT%RAT_ELEMENT  = ''
+                  CNT%IZ_RAT       = 0
+                END IF
+                CNT%IRC = 0
+                CNT%IRC_RAT = 0
+                EMIS_LINES(I)%COMPO(J)%CONTRIB(ICNT) = CNT
+              END DO
+         
+            END DO
+          END IF
+        END DO
+        READ (IUNIN,'(A72)') ZEILE
+      ENDIF
+
+! no definition of emissivity lines was read in
+! define default emissivity model for chords
+      IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
+     .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
+
+! read in reaction data for emissivity lines
+
+c  default asymptotics
+
+      FP1 = 0._DP
+      FP2 = 0._DP
+      RC1MIN = -HUGE(1._DP)
+      RC1MAX =  HUGE(1._DP)
+      RC2MIN = -HUGE(1._DP)
+      RC2MAX =  HUGE(1._DP)
+      JFEX1MN = 0
+      JFEX1MX = 0
+      JFEX2MN = 0
+      JFEX2MX = 0
+
+      nrc = nreaci + nreac_add
+      if (idmdl > 0) nrc = nrc + 1
+
+      do i=1, no_lines
+        do j = 1, emis_lines(i)%no_compo
+          do k= 1, emis_lines(i)%compo(j)%no_contrib
+            cnt = emis_lines(i)%compo(j)%contrib(k)
+            nrc = nrc + 1
+            CALL EIRENE_SLREAC(NRC,CNT%FNAME,CNT%H2,
+     .              CNT%REACTION,CNT%CR,
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              CNT%ELEMENT,CNT%IZ)
+            emis_lines(i)%compo(j)%contrib(k)%irc = nrc
+
+            if (cnt%iratio > 0) then
+              do ir = 1, cnt%iratio
+                nrc = nrc + 1
+                CALL EIRENE_SLREAC(NRC,CNT%FRATIO(IR),CNT%RAT_H2(IR),
+     .              CNT%RAT_REACTION(IR),CNT%RAT_CR(IR),
+     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR))
+                emis_lines(i)%compo(j)%contrib(k)%irc_rat(ir) = nrc
+              end do
+            end if           
+          end do
+        end do
+      end do
+
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
       NCHEN = NCHENI
@@ -4145,8 +4342,8 @@ C
 C
 C  SPECIES INDEX DISTRIBUTION OF PRIMARY SOURCE PARTICLES
 C  OR FOR THERMAL PARTICLE REFLECTION MODEL
-C  datm is the cummulative of datd,
-C  dmol is the cummulative of dmld,
+C  datm is the cumulative of datd,
+C  dmol is the cumulative of dmld,
 C  and so on
 C
       NATMIM=NATMI-1
@@ -4498,8 +4695,8 @@ C
 
       NSIGI_COP=0  !  TURN OFF STATIS_COP FOR COUPLING TALLIES
 CDR  HIDDEN LINK REMOVAL:
-CDR  NSIGI_COP, STATUS_COP AND ALL RELATED CODE IS REDUNDANT, SINCE COUPLING
-CDR  TALLIES ARE ALSO DEFAULT TALLIES
+CDR  NSIGI_COP, STATIS_COP AND ALL RELATED CODE IS REDUNDANT, SINCE COUPLING
+CDR  TALLIES ARE ALSO DEFAULT TALLIES, and hence standard deviations are available for them
       IF ((NSIGI_COP > 0) .AND. (NCPVI >= 3*NPLSI+4))  THEN
         IIH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = NTALM
         IGH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = (/ (I,I=1,3*NPLSI+4) /)
@@ -4826,8 +5023,8 @@ C
       IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
      .    (ABS(NMODE).EQ.2)) THEN
 C  READ PLASMA BACKGROUND
-c  EITHER  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
-C  OR      FROM COMMON BRAEIR (NLPLAS)
+c  EITHER:  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
+C  OR    :  FROM COMMON BRAEIR (NLPLAS)
         IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
         CALL EIRENE_IF1COP
       ENDIF
@@ -5129,6 +5326,10 @@ C
       WRITE (iunout,*)
      .  'FINITE ELEMENT OPTION USED, BUT GRID INDICATOR '
       WRITE (iunout,*) 'LESS THAN 6. '
+      CALL EIRENE_EXIT_OWN(1)
+993   CONTINUE
+      WRITE (iunout,*)
+     .  'INCONSISTENCY WRT. SURFACE REFLECTION DATABASE, BLOCK 6 '
       CALL EIRENE_EXIT_OWN(1)
 994   CONTINUE
       WRITE (iunout,*) 'ERROR IN INPUT: NRPLG.NE.NP2ND, BUT NLPOL=TRUE'

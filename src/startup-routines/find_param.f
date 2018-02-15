@@ -59,12 +59,14 @@ C
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
      .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
-     .           IATM, IMOL, IION, IPHOT, IPLS, ISTRA, ISPZ,
+     .           IATM, IMOL, IION, IPHOT, IPLS, 
+     .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
      .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
      .           NO_CONTRIB, ISP, ITP, IRATIO
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA
+     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
+      REAL(DP), ALLOCATABLE :: ENERGY(:,:)
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
@@ -74,6 +76,7 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
+      LOGICAL :: FOUND, NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
@@ -84,6 +87,7 @@ C
      .                              PART_NAME(:)
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
+      CHARACTER(8) :: FNAME, FRATIO
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
@@ -207,11 +211,6 @@ c  NEXT:  READ INPUT FILE AND IDENTIFY THE REAL STORAGE NEEDS.
 c   e.g. NPARMI, then set the storage (for allocatable arrays): NPARM = MAX(NPARM,NPARMI)
 c   in most cases then: NPARM=NPARMI
 
-
-
-C
-C  INITIALIZE SOME DATA AND SET DEFAULTS
-C
 
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
@@ -1272,9 +1271,75 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+
+      ULINE=ZEILE
+      CALL EIRENE_UPPERCASE(ULINE)
+      NADV_ADD = 0
+      NLEMIS = .FALSE.
+      IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
+! EMISSIVITY LINES DEFINED IN INPUT
+        LINES = 0
+        NLEMIS = .TRUE.
+        READ (IUNIN,6666) NO_LINES, MOD_ADDV
+        DO I=1, NO_LINES
+          READ (IUNIN,'(A80)') ZEILE
+          DO WHILE (ZEILE(1:1) == '*')
+            READ (IUNIN,'(A80)') ZEILE
+          END DO
+          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,*)
+          IF (MOD_ADDV == 0) THEN
+            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
+          ELSE 
+            NADV_ADD = NADV_ADD + NO_COMPO + 1
+          END IF
+          DO J=1, NO_COMPO
+            READ (IUNIN,*)
+            READ (IUNIN,*) NO_CONTRIB           
+            LINES = LINES + NO_CONTRIB
+            DO K = 1, NO_CONTRIB
+              READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
+              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+              IF (IRATIO > 0) THEN
+                LINES = LINES + 1
+                READ (IUNIN,'(18X,1X,A6)') FRATIO
+                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                IF (IRATIO == 2) THEN
+                  LINES = LINES + 1
+                  READ (IUNIN,*)
+                  READ (IUNIN,'(18X,1X,A6)') FRATIO
+                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                END IF  
+              END IF
+            END DO
+          END DO
+        END DO
+
+! ADD 1 FOR TOTAL
+        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
+        NADV = NADV + NADV_ADD 
+        NREAC = NREAC + LINES
+
+        READ (IUNIN,'(A72)') ZEILE
+      END IF
+      
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
+
+      NLEMIS = NLEMIS .OR. (NCHOR > 0)
+      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
+! USE DEFAULT LINES FOR EMISSIVITY
+        MOD_ADDV = 0
+        NADV=NADV+10
+        NO_LINES = 6
+        NO_COMPO = 6
+! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
+        NREAC = NREAC + NO_CONTRIB*NO_COMPO
+            
+      END IF
+
 C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
@@ -1398,6 +1463,7 @@ cdr  some parameters may have gotten changed in IF0PRM,  case specific
 
 cdr  due to these changes there, also some derived storage parmeters may have changed....
       NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
+
 
       REWIND IUNIN
       CALL EIRENE_LEER(1)

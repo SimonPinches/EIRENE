@@ -4,7 +4,7 @@
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
-!   icell:     cell for which collisional-radiative model should be calulated
+!   icell:     cell for which collisional-radiative model should be calculated
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
  

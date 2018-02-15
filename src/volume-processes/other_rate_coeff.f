@@ -1,10 +1,22 @@
 !pb  01.06.2017  copied from rate_coeff.f
 
-      function EIRENE_other_rate_coeff(ir, ic, p1, p2, lexp, iprshft)
-     .                     result (rate)
+c  to be done: h_colrad called twice per cell ??
+c              re-use erate from previous call to rate_coeff
 
-!  evaluate rate coefficient for other reactions 
-!  and return this as "rate"
+cdr  19.02.14: COMMENTS
+cdr sept.15:  lexp not fully written, in case of adas 2d tables
+cdr           ifit=4 option was missing (1D tables). added, but not checked.
+
+
+
+
+
+      function EIRENE_other_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
+     .                     result (orate)
+
+!  evaluate other atomic data:  mostly: population coefficients, density ratios
+!                 e.g. from AMJUEL H.11, H.12 sections
+!  and return this as "orate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
 !  Only ifit=2 and ifit=3 tested so far. Caution!
@@ -13,7 +25,7 @@
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also energy rates, erate  for this particular option. 
+!            (currently here also other rates, orate  for this particular option. 
 !            More logical if the latter are moved
 !            to routine "eirene_energy-rate-coeff"
 
@@ -21,9 +33,9 @@
 !   ir:        reaction number, as stored in eirene arrays.
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
-!   lexp:      return rate=rate coefficient in cm**3/sec
-!   not lexp:  return rate=log_e(rate coefficient) with rate-coefficient in cm**3/sec
-!   iprshft:   >0: carry out shift in parameter p2, 
+!   lexp:      return orate=rate coefficient in ... units
+!   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ... units
+!   iprshft:   >0: carry out shift in parameter p2 for fit expression evaluation, 
 !              currently hard wired: 1e-8. 
 !              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.
 !              emissivity.f relies on the current use of iprshft in the tested cases!
@@ -32,11 +44,14 @@
 !              remove erate in case of ifit=5 and generalize to more cr models.
 !              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
-!              remove ifirst and ifsub conditions and set the data once, and save. 
+
+!              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
  
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
+      use EIRMOD_ccona
+      use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
  
       implicit none
@@ -44,9 +59,12 @@
       integer, intent(in) :: ir, iprshft, ic
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
-      real(dp) :: rate, EIRENE_sngl_poly, dum(9), rc1min, rc1max,
-     .            fp1(6), fp2(6), pp1, pp2, rc2min, rc2max,
-     .            rrc2min, rrc2max, SCR
+
+      real(dp) :: orate, EIRENE_sngl_poly, dum(9),
+     .            pp1, rc1min,  rc1max,fp1(6),
+     .            pp2, rc2min,  rc2max,fp2(6),
+     .            rrc2min, rrc2max,
+     .            SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10) 
      .                  dsub    = 18.420680744_dp       !ln(1e8)
@@ -55,23 +73,23 @@
       integer :: ip1, ip2, iflavor, ivar           
  
       interface
-        function EIRENE_intp_adas (ad,p1,p2,ip1,ip2) result(res)
+        function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: adas_data
           type(adas_data), pointer :: ad
           real(dp), intent(in) :: p1, p2
           integer, intent(out) :: ip1,ip2
           real(dp) :: res
-        end function EIRENE_intp_adas
+        end function EIRENE_intp_tab2d
  
-        function EIRENE_intp_table (tb,p1,ip1) result(res)
+        function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
           type(hydkin_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
-        end function EIRENE_intp_table
+        end function EIRENE_intp_tab1d
       end interface
  
  
@@ -81,7 +99,7 @@
         call EIRENE_exit_own(1)
       end if
  
-      rate = 0._dp
+      orate = 0._dp
 
 c.............................................................
 
@@ -89,15 +107,16 @@ c.............................................................
       if (mod(iftflg(ir,2),100) == 10) then
 
 !  SET A CONSTANT RATE 
-        rate = reacdat(ir)%oth%poly%dblpol(1,1)
+        orate = reacdat(ir)%oth%poly%dblpol(1,1)
 
+cdr   missing: iftflg < 100:  multiply density,  else: not
 cdr   lexp missing
 
 c.............................................................
  
       elseif (reacdat(ir)%oth%ifit == 1) then
 
-!  SINGLE POLYNOMIAL FIT VS. P1 (TEMPERATURE), FOR LN OF ENERGY WEIGHTED RATE
+!  SINGLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE), FOR LN(OTHER RATE)
  
 c  extrapolation data:  for 1d polynomial fits 
         rc1min  = reacdat(ir)%oth%rc1min
@@ -107,18 +126,19 @@ c  extrapolation data:  for 1d polynomial fits
         jfex1mn = reacdat(ir)%oth%jfex1mn
         jfex1mx = reacdat(ir)%oth%jfex1mx
  
-        rate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
-     .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx)
+        orate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
+     .                   p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                   trcamd)
 
-C       if (.not. lexp)  rate=rate
-        if (lexp)        rate = exp(max(-100._dp,rate))
+C       if (.not. lexp)  orate=orate
+        if (lexp)        orate = exp(max(-100._dp,orate))
 
 c..............................................................
 
  
       else if (reacdat(ir)%oth%ifit == 2) then
 
-!  DOUBLE POLYNOMIAL FIT VS. P1 (TEMPERATURE) AND P2,  FOR LN OF RATE 
+!  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(OTHER RATE)
 
 c  extrapolation data:  for 2d polynomial fits 
         rc1min  = reacdat(ir)%oth%rc1min
@@ -142,22 +162,23 @@ c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
           rrc2min=rc2min - dsub
           rrc2max=rc2max - dsub
         endif
-cdr     write (6,*) 'particle rate '
+cdr     write (6,*) 'other rate '
  
         call EIRENE_dbl_poly
-     .       (reacdat(ir)%oth%poly%dblpol,p1,pp2,rate,dum,
+     .       (reacdat(ir)%oth%poly%dblpol,p1,pp2,orate,dum,
      .        rc1min, rc1max, fp1, jfex1mn, jfex1mx,
-     .        rc2min, rc2max, fp2, jfex2mn, jfex2mx)
+     .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx,
+     .        trcamd)
 
-C       if (.not. lexp)  rate=rate
-        if (lexp)        rate = exp(max(-100._dp,rate))
+C       if (.not. lexp)  orate=orate
+        if (lexp)        orate = exp(max(-100._dp,orate))
 
 c.............................................................. 
 
       else if (reacdat(ir)%oth%ifit == 3) then
 
 ! 2D TABULAR INPUT,  FOR LOG10 OF RATE,  cm^3/s
-! E.G.: ADAS adf11 ACD and SCD FILES
+! E.G.: ADAS FILES
 cdr  extrapolation data: for 2d tabulated data, option not ready
 cdr  to be added here
 
@@ -167,12 +188,12 @@ c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        rate = eirene_intp_adas(reacdat(ir)%oth%adas,pp1,pp2,ip1,ip2)
+        orate = eirene_intp_tab2d(reacdat(ir)%oth%adas,pp1,pp2,ip1,ip2)
  
         if (lexp) then
-          rate=10._dp**rate
+          orate=10._dp**orate
         else
-          rate = xln10*rate     !    convert from log10(rate) to ln(rate)
+          orate = xln10*orate     !    convert from log10(orate) to ln(orate)
 
         end if
 
@@ -186,11 +207,12 @@ c..............................................................
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
 cdr  to be added here
+
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
  
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        rate = eirene_intp_table(reacdat(ir)%oth%hyd,pp1,ip1)
+        orate = eirene_intp_tab1d(reacdat(ir)%oth%hyd,pp1,ip1)
 
 !  lexp option not connected here !
 
@@ -210,11 +232,12 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
-        rate=scr 
-        if (.not.lexp) rate = log(scr)
+        orate=scr 
+        if (.not.lexp) orate = log(scr)
          
       end if
  
+
       return
  
       end function EIRENE_other_rate_coeff

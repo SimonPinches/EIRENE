@@ -257,7 +257,7 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
         CALL MPI_BCAST (ICMSIG,MCMSIG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (NLSTCHR,NCHOR,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
-     .                0,MPI_COMM_WORLD,ier)
+     .                   0,MPI_COMM_WORLD,ier)
       END IF
       CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
