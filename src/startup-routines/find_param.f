@@ -86,6 +86,7 @@ C
      .                              PART_NAME(:)
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
+      CHARACTER(8) :: FNAME, FRATIO
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
@@ -1269,9 +1270,122 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+
+c  optional input cards: 'define_lines'
+
+c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
+c  parent state contributions
+      ULINE=ZEILE
+      CALL EIRENE_UPPERCASE(ULINE)
+      NADV_ADD = 0
+      NLEMIS = .FALSE.
+      IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
+! EMISSIVITY LINES DEFINED IN INPUT
+        LINES = 0
+        NLEMIS = .TRUE.
+        READ (IUNIN,6666) NO_LINES, MOD_ADDV
+        DO I=1, NO_LINES
+          READ (IUNIN,'(A80)') ZEILE
+          DO WHILE (ZEILE(1:1) == '*')
+            READ (IUNIN,'(A80)') ZEILE
+          END DO
+          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,*)
+          IF (MOD_ADDV == 0) THEN
+            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
+          ELSE 
+            NADV_ADD = NADV_ADD + NO_COMPO + 1
+          END IF
+          DO J=1, NO_COMPO
+            READ (IUNIN,*)
+            READ (IUNIN,*) NO_CONTRIB           
+            LINES = LINES + NO_CONTRIB
+            DO K = 1, NO_CONTRIB
+              READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
+              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+              IF (IRATIO > 0) THEN
+                LINES = LINES + 1
+                READ (IUNIN,'(18X,1X,A6)') FRATIO
+                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                IF (IRATIO == 2) THEN
+                  LINES = LINES + 1
+                  READ (IUNIN,*)
+                  READ (IUNIN,'(18X,1X,A6)') FRATIO
+                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                END IF  
+              END IF
+            END DO
+          END DO
+        END DO
+
+! ADD 1 FOR TOTAL
+        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
+        NADV = NADV + NADV_ADD 
+        NREAC = NREAC + LINES
+
+        READ (IUNIN,'(A72)') ZEILE
+      END IF
+      
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
+
+      NLEMIS = NLEMIS .OR. (NCHOR > 0)
+      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
+! USE DEFAULT LINES FOR EMISSIVITY
+        MOD_ADDV = 0
+        NADV=NADV+10
+        NO_LINES = 6
+        NO_COMPO = 6
+! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
+        NREAC = NREAC + NO_CONTRIB*NO_COMPO
+            
+      END IF
+
+C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
+C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
+      IF (NCHORI > 0) THEN
+!pb        NREAC=NREAC+1
+ 
+C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
+        IF (.FALSE.) THEN
+          ALLOCATE (ENERGY(2,NCHORI))
+          ENERGY = 0._DP
+          LINES = 0
+
+          DO J = 1, NCHORI
+            READ (IUNIN,*)
+            READ (IUNIN,'(12I6)') NCHTAL
+            READ (IUNIN,*)
+            READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
+            READ (IUNIN,*)
+            READ (IUNIN,*)
+            IF (NCHTAL == 2) THEN
+              FOUND = .FALSE.
+              DO I = 1, LINES
+                D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
+                D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
+                IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
+                  FOUND = .TRUE.
+                  EXIT
+                END IF
+              END DO
+              IF (.NOT.FOUND) THEN
+                LINES = LINES + 1
+                ENERGY(1,LINES) = EMIN1
+                ENERGY(2,LINES) = EMAX1
+              END IF
+            END IF
+          END DO
+
+C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
+C  OF EMISSION PROFILES
+          NREAC = NREAC + LINES*6 + 3
+
+          DEALLOCATE (ENERGY)
+        END IF
+=======
 C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
