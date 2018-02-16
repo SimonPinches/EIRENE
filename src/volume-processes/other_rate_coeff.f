@@ -65,7 +65,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
      .            pp1, rc1min,  rc1max,fp1(6),
      .            pp2, rc2min,  rc2max,fp2(6),
      .                 rrc2min, rrc2max,
-     .            SCR
+     .            O_SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
      .                  dsub    = 18.420680744_dp       !ln(1e8)
@@ -229,12 +229,12 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         iflavor = reacdat(ir)%oth%crm%iflav
         ivar = reacdat(ir)%oth%crm%ivarst
 
-        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, SCR)
+        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, O_SCR)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
-        orate=scr 
-        if (.not.lexp) orate = log(scr)  ! check scr > 0 
+        orate=o_scr 
+        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0 
 
       end if
 

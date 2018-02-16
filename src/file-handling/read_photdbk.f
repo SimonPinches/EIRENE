@@ -1,6 +1,13 @@
+cdr  re-activated: Jan 2018
+
       subroutine EIRENE_read_photdbk (ir, reac, isw)
+c   read parameters relevant "reaction no IR" for line transport (photon gas transport)
+c   from photonic database, into EIRENE data structure REACDAT(IR). 
+c
+
+
 !  16.2.05:  write statement taken out
-!  2.11.05:  database handle introduced for file POLARI
+!  2.11.05:  database handling introduced for file POLARI
       use EIRMOD_precision
       use EIRMOD_parmmod
       USE EIRMOD_COMXS
@@ -69,7 +76,7 @@
         elementname = repeat(' ',20)
         elementname(1:iblnk) = zeile(ianf:ianf+iblnk-1)
  
-!  read Wellenlaenge
+!  read wavelength WL
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
         read (zeile(ianf:iend-1),*) wl
@@ -142,6 +149,8 @@
           read (zeile(ianf:iend-1),*) ei
         end if
  
+
+cdr next: line broadening constants, e.g. for pressure broadening etc.  
 !  read c2
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
@@ -205,6 +214,8 @@
           read (zeile(ianf:iend-1),*) c3_mess
         end if
  
+cdr  done with pressure broadening constants
+ 
         exit
  
       end do
@@ -223,11 +234,10 @@
  
       if (ifremd > 12) then
          write (iunout,*)
-     .     ' too many fremddruckverbreiterungen specified'
+     .     ' too many foreign pressure broadenings specified'
          write (iunout,*) ' calculation abandonned '
       end if
  
-!pb      if (nrjprt == 0) nrjprt = 1
  
       ipc6 = 0
       c6a = 0._dp
@@ -264,11 +274,14 @@
  
       phline%aik = aik
 !     wl is in nm
+!  line center energy in eV   
       phline%e0 = hpcl / wl *1.E7_DP
+!  stat. weights
       phline%g1 = gj
       phline%g2 = gi
-!     Ej is in [1/cm]
+!     Ej is in [1/cm] i.e. in 1.E-7 [1/nm]
       phline%e1 = ej * clight*hplanck*erg_to_ev
+c  unused, pressure broadening constants
       phline%c2 = c2
       phline%c3 = c3
       phline%c4 = c4
@@ -296,12 +309,21 @@
       phline%iprofiletype = iprftype
       phline%imess = imess
  
+cdr  jan 18: try to reconnet photonic data to reacdat structure.
+cdr          not finished
+
+c  reaction no IR is a "photonic" reaction 
       reacdat(ir)%lphr = .true.
  
-      call eirene_alloc_fit_form(reacdat(ir)%phr) 
-      allocate (reacdat(ir)%phr%line)
-      reacdat(ir)%phr%ifit = -1
+      allocate (reacdat(ir)%phr)
+
+      nullify (reacdat(ir)%phr%adas)
+      nullify (reacdat(ir)%phr%poly)
+      nullify (reacdat(ir)%phr%hyd)
+
       reacdat(ir)%phr%line => phline
+      reacdat(ir)%phr%ifit = -1
+
  
       call EIRENE_get_reaction(ir)
       b21=EIRENE_ph_b21()
@@ -312,12 +334,23 @@
  
       phline%reacname = reac_name(ir)
  
+cdr
+c  rest of data: use reacdat(ir)%phr%poly, e.g. for Aik, and volmetric
+c                                             source of photons. (RC process)
+c  This is done by call to set_reaction_data (better name would be: "set_poly")
+c  i.e. a single reaction IR can consist of OT and of RC processes.
+c     
+ 
       modclf(ir) = 100
       iftflg(ir,2) = 110
  
       rdata = 0._dp
       rdata(1,1) = aik
- 
+
+cdr 
+c  So far photonic cross sections, rate coeff. and rates are const.
+c  i.e. special (trivial, 0th order) cases of polygonial fits.
+c  Use REACDAT type "poly" also for photonic data 
       call EIRENE_set_reaction_data
      .  (ir,isw,iftflg(ir,2),rdata,iunout,.false.)
  

@@ -1,4 +1,5 @@
 cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
+cdr            added: MX_compo
 cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
 cdr                    analogous to H emission lines,             NCHTAL=2 
@@ -81,7 +82,7 @@ C
      .           MSURFS, NTCLLS, J, JJ, JJJ, IPOLGS, IPERID_2,
      .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2, 
      .           IPERID_1,
-     .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, ND
+     .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, MX_COMPO, ND
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
       REAL(DP), ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)

@@ -1671,9 +1671,101 @@ cdr     INVALID RP%IFIT
       RETURN
       END SUBROUTINE EIRENE_BROAD_FIT_FORM
 
-!++++++ IYS 27.02.2015
-!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM,
-!++++++ where dynamical data structures are proceeded with care
 
+
+      SUBROUTINE EIRENE_BROAD_EMIS_LINES
+      
+      INTEGER :: I, J, K, NO_COMPO, NO_CONTRIB
+      TYPE(TCONTRIB) :: CNT
+
+      IF (MY_PE /= 0) THEN
+        IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
+          ALLOCATE (EMIS_LINES(NO_LINES))
+          EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+          EMIS_LINES%NO_COMPO = 0         
+        END IF
+      END IF
+
+      DO I = 1, NO_LINES
+
+        CALL MPI_BCAST (EMIS_LINES(I)%LINE_NAME,80,MPI_CHARACTER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%NO_COMPO,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%IADV_TOTAL,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%EINSTEIN,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+
+        NO_COMPO = EMIS_LINES(I)%NO_COMPO
+
+        IF (MY_PE /= 0) THEN
+          ALLOCATE (EMIS_LINES(I)%COMPO(NO_COMPO))
+        END IF
+
+        DO J = 1, NO_COMPO
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%COMPO_NAME,80,
+     .                    MPI_CHARACTER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%NO_CONTRIB,1,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%IADV,1,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+          NO_CONTRIB = EMIS_LINES(I)%COMPO(J)%NO_CONTRIB
+
+          IF (MY_PE /= 0) THEN
+            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NO_CONTRIB))
+          END IF
+
+          DO K = 1, NO_CONTRIB
+        
+            IF (MY_PE == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
+
+            CALL MPI_BCAST (CNT%ISP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%ITP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IRATIO,1,MPI_INTEGER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IRC,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IRC_RAT,2,MPI_INTEGER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IZ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IZ_RAT,2,MPI_INTEGER,
+     .                      0,MPI_COMM_WORLD,ier)
+
+            CALL MPI_BCAST (CNT%FNAME,8,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%FRATIO,2*8,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%H2,4,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_H2,2*4,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%ELEMENT,2,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_ELEMENT,2*2,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%REACTION,9,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_REACTION,2*9,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%CR,3,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            
+            IF (MY_PE /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
+
+          END DO
+        END DO
+
+        
+      END DO
+
+      RETURN
+      END SUBROUTINE EIRENE_BROAD_EMIS_LINES
 
       END

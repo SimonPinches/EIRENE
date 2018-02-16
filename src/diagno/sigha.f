@@ -124,6 +124,8 @@ c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba
             WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
             ADDV(NADVI+1:NADVI+7,:) = 0._DP
           endif
+
+
         endif   ! NEW INTERNAL ITERATION, OR NEW LINE, OR NEW STRATUM
 
         ISTOLD=ISTRA
