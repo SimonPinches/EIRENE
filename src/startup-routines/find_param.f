@@ -62,7 +62,8 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL
+     .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
+     .           NO_CONTRIB, ISP, ITP, IRATIO
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
       REAL(DP), ALLOCATABLE :: ENERGY(:,:)
@@ -1343,49 +1344,7 @@ c  parent state contributions
             
       END IF
 
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
-C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
-      IF (NCHORI > 0) THEN
-!pb        NREAC=NREAC+1
- 
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
-        IF (.FALSE.) THEN
-          ALLOCATE (ENERGY(2,NCHORI))
-          ENERGY = 0._DP
-          LINES = 0
 
-          DO J = 1, NCHORI
-            READ (IUNIN,*)
-            READ (IUNIN,'(12I6)') NCHTAL
-            READ (IUNIN,*)
-            READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
-            READ (IUNIN,*)
-            READ (IUNIN,*)
-            IF (NCHTAL == 2) THEN
-              FOUND = .FALSE.
-              DO I = 1, LINES
-                D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
-                D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
-                IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                  FOUND = .TRUE.
-                  EXIT
-                END IF
-              END DO
-              IF (.NOT.FOUND) THEN
-                LINES = LINES + 1
-                ENERGY(1,LINES) = EMIN1
-                ENERGY(2,LINES) = EMAX1
-              END IF
-            END IF
-          END DO
-
-C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
-C  OF EMISSION PROFILES
-          NREAC = NREAC + LINES*6 + 3
-
-          DEALLOCATE (ENERGY)
-        END IF
-=======
 C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
@@ -1393,6 +1352,7 @@ C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
         NADV=NADV+10
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
+        IF (.FALSE.) THEN
         ALLOCATE (ENERGY(2,NCHORI))
         ENERGY = 0._DP
         LINES = 0
@@ -1427,6 +1387,7 @@ C  OF EMISSION PROFILES
         NREAC = NREAC + LINES*6 + 3
 
         DEALLOCATE (ENERGY)
+        END IF
       END IF
 
 C  SKIP READING REST OF THIS BLOCK

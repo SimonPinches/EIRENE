@@ -200,6 +200,7 @@ C
             ENDIF
             DO 6 J=1,NSBOX
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
+c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
                 IF (REC.LE.0.D0) GOTO 6
                 ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
@@ -211,9 +212,8 @@ C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
                 EIO(IPLS,IRRC)=EIO(IPLS,IRRC)-ADD
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
                  
-CDR  position x0,y0,z0 not yet known here. to be done: add logical argument to bfield
-cdr  as already done in vecusr ?
-cdr  take center of gravity in cell, if needed.
+CDR  position x0,y0,z0 is not yet known here
+cdr  take center of gravity in cell, if needed (last parameter (logical) in bfield.f
                 xc=0.
                 yc=0.
                 zc=0.                
@@ -242,6 +242,7 @@ cdr  take center of gravity in cell, if needed.
               ENDIF
 6         CONTINUE
 C
+C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
           DO 8 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
             KK=NREARC(IRRC)
@@ -250,7 +251,7 @@ C
             IF (KK.GT.0) THEN 
               ICCT=NREACT(KK)
             ENDIF
-            DO 8 J=1,NSBOX
+            DO J=1,NSBOX
               ADD=0.D0
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
                 IF (NSTORDR >= NRAD) THEN
@@ -258,6 +259,7 @@ C
                 ELSE
                   EELRC = EIRENE_FEELRC1(IRRC,J)
                 END IF
+c  Turn eV/s into Watt
                 ADD=EELRC*DIIN(IPLS,J)*VOL(J)*ELCHA
 C  SPECTRAL CUT OFF (PHOTONS ONLY)
                 IF (ICCT > 0)
@@ -265,10 +267,20 @@ C  SPECTRAL CUT OFF (PHOTONS ONLY)
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
 
               ENDIF
+              
               EEL(IPLS,IRRC)=EEL(IPLS,IRRC)+ADD
               EEL(IPLS,0   )=EEL(IPLS,0   )+ADD
-8         CONTINUE
-7       CONTINUE
+            ENDDO   !  nsbox loop 
+8         CONTINUE  !  irrc loop 
+
+cdr       if (ipls.eq.1) then
+c           do j=1,nsbox
+c             write (iunout,*) j,eelrc1(1,j),eelrc1(2,j),tein(j),
+c    .         dein(j),lgvac(j,1),nstgrd(j)
+c           enddo
+cdr       endif
+
+7       CONTINUE    !  npls loop
 
 C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS) 
         TOT_BREMS = 0._DP

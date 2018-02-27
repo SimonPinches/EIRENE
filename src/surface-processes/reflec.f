@@ -660,6 +660,8 @@ C  SPECULAR REFLECTION
 cdr  to be written: fixed momentum reflection in case aintg > 0.
       IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
 C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
+c       write (iunout,*) 'cosine distr. activated at surf msurf'
+c       write (iunout,*) 'msurf, expi ',msurf,expi 
         F1=1.
         F2=0.
         GOTO 400

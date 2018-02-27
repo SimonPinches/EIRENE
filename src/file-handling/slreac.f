@@ -23,7 +23,7 @@ cdr            May have corrupted extrapolation in some cases
 c     Sept.16: two new internal subroutines,
 c              a) to read validity range information,
 c              b) three parameters for each validity boundary, for extrapolation options
-c    June  17: read_colrad (for old H-COL option) moved to separate routine.
+c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -48,7 +48,8 @@ c
 C    FILNAM: read a&m data from file filnam,
 c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST
 CC           FILNAM=ADAS:  special treatment, see below.
-C            FILNAM=H-COL: nothing to be done here, use internal CR code h-colrad.f
+C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
+c                        currently available: h_colrad.f
 C            FILNAM=HYDRTC: nothing to be done here  ??
 C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
@@ -62,7 +63,7 @@ c               reac IS MIS-USED AS  fit-flag: iftflg.
 C               not NICE, VERY CONFUSING.
 C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
 
-cdr what does that mean for H-COL? ADAS ?  what about "spectral database"?
+cdr what does that mean for CRM? ADAS ?  what about "spectral database"?
 cdr where described, where read ?
 
 C            in case FILNAM=ADAS:  the file name DSN = REAC_ELNAME.dat is opened (stream 29+ifoff)
@@ -247,7 +248,7 @@ C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         LCONST=.TRUE.
 !  nothing to be done
-      ELSEIF (INDEX(FILNAM,'H-COL').NE.0) THEN
+      ELSEIF (INDEX(FILNAM,'CRM').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
       ELSE   ! in all other cases: open data file, stream 29+ifoff
@@ -294,7 +295,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' H-COL'
+          WRITE (iunout,*) ' CRM'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
           WRITE (iunout,*) ' OR '
@@ -542,7 +543,7 @@ C  H.12
       ENDIF
 
 
-      IF (INDEX(FILNAM,'H-COL').NE.0) THEN
+      IF (INDEX(FILNAM,'CRM').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
@@ -597,7 +598,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "H-COL", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  FILNAM= "CRM", "CONST", "ADAS", "HYDRTC", "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................

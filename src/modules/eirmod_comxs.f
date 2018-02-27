@@ -1,7 +1,20 @@
+!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
+cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabei1
+!pb  MAY  16:  nrds   -> nrei
+!pb  JUL  16:  ehvds1 -> ehvei1
+cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 cdr
 cdr  MXCOLLS --> MSTOR0
+cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 
       MODULE EIRMOD_COMXS
  
@@ -23,19 +36,6 @@ cdr sometime between 2004 and 2007 the atomic data structure was revised.
 cdr 
 cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !
-!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
-cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
-cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds   -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
-cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 
  
       USE EIRMOD_PRECISION

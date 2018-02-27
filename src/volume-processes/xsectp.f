@@ -383,11 +383,12 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
+C  change logical from false to true, to avoid log(erate), with erate negative 
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
-     .                               TEINL(J),
-     .                               PLS(J),.FALSE.,1)
-                      EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
-                      EELRC1(IRRC,J)=-EXP(EEMX)
+     .                               TEINL(J),PLS(J),.TRUE.,1)
+                      EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
+c                     EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
+c                     EELRC1(IRRC,J)=-EXP(EEMX)
 
 C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)

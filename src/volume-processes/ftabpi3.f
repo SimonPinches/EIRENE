@@ -45,7 +45,6 @@ c  hard wired: cut off (density) parameter for fits: 1e8
       IPLSTI=MPLSTI(IPLS)
       TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
 
-c  erate: not needed (only intermediate for H-COL option. Remove ! 
 c  input parameters for rate_coeff: ln(Ti), ln(ne)
 c 
       TBPI = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,0)*

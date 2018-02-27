@@ -237,10 +237,6 @@ C  RATE:  (1/S) =
 C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
-C .....................................
-C   ASIDE: SOMETHING FOR H-COL OPTIONS  ??  MISSING HERE, I.E. NOT READY FOR CORONA APPROXIMATION
-C   CORONA ERATE NOT WORKING !
-C .....................................
             TEE=TEINL(J)
 cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
             TEE = max(-2.3_dp,TEE)

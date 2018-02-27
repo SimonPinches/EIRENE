@@ -46,7 +46,6 @@ cdr  hard-wired: cut-off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
 
 cdr  :  check these next lines are only for modcol=1 !
 
-c  erate: not needed (only intermediate for H-COL option. Remove ! 
 c  input parameters for rate_coeff: ln(Ti), ln(ne)
 c 
       TBCX = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,0)*

@@ -13,7 +13,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 
 
-      function EIRENE_other_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
+      function EIRENE_other_rate_coeff (ir, ic, p1, p2, lexp, ip2shft)
      .                     result (orate)
 
 !  evaluate other atomic data:  mostly: population coefficients, density ratios
@@ -37,13 +37,13 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units
 !   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ...units
-!   iprshft:   >0: carry out shift in parameter p2 for fit expression evaluation,
+!   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
 !              currently hard wired: factor 1e-8.  p2 --> p2*factor
 !              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.
-!              emissivity.f relies on the current use of iprshft in the tested cases!
+!              emissivity.f relies on the current use of ip2shft in the tested cases!
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
+!              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
@@ -57,7 +57,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
       implicit none
 
-      integer, intent(in) :: ir, iprshft, ic
+      integer, intent(in) :: ir, ip2shft, ic
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
 
@@ -68,6 +68,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
      .            O_SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
+C  transformation of parameters
      .                  dsub    = 18.420680744_dp       !ln(1e8)
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
@@ -158,7 +159,7 @@ c  extrapolation data:  for 2d polynomial fits
 
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
         pp2 = p2
-        if (iprshft > 0) then
+        if (ip2shft > 0) then
           pp2 = pp2 - dsub
           rrc2min=rc2min - dsub
           rrc2max=rc2max - dsub

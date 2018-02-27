@@ -1,7 +1,6 @@
 !pb  22.11.06:   flag for shift of first parameter to rate_coeff introduced
 c                rather than shifting pls directly here.
 cdr  jan 2014:   comments.
-cdr: to be done: remove erate from here (needed only for H-colrad option, move to better place)
  
  
       FUNCTION EIRENE_FTABEI1 (IREI,K)
@@ -38,7 +37,7 @@ C      REAL(DP) :: DSUB
       DEIMIN=LOG(1.D8)
       PLS=MAX(DEIMIN,DEINL(K))
 
-c   density parameter rescaling: now done in rate_coeff(....,1,..)
+c   density parameter rescaling: now done in rate_coeff(....,1)
 c                                only for double polynomial fit
 !pb   DSUB=LOG(1.D8)
 !pb   PLS=MAX(DEIMIN,DEINL(K))-DSUB
