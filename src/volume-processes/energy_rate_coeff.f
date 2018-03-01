@@ -286,7 +286,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         else
           write (iunout,*) 'wrong sign from cr model'
           write (iunout,*) 'p1,p2,erate ',pp1,pp2,res
-          write (iunout,*) 'return exp(-50)
+          write (iunout,*) 'return exp(-50)'
           erate =-50.
         endif
 
