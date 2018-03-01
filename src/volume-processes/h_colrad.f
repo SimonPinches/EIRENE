@@ -1,8 +1,11 @@
 cdr   feb   18: sync with h_colrad, H,H2 CRM, Sawada-Fujimoto-Reiter
-cdr             cleaned up comments.
+cdr             cleaned up, more comments.
 cdr             added lopaque, ebeta,e_alpcr
 cdr   Jan   18: parameter ICELL removed, icell is now controlled by 
 cdr             new calling CRM-driver routine COLRAD
+cdr             popcof and matrix solver LAX, GALPD extended to handle 
+c               up to three right hand sides (parent states) simultaneously
+c               rather than inverting the matrix three times.
 cdr   July  17: bug fix in function mmdei (exp. integr.)
 cdr             A typo during syncronisation with solps-iter. 
 cdr             correct: z=0.25 *y, rather then z=0.25+0*y
@@ -49,9 +52,9 @@ c   F: elec. impact de-excitation processes (inverse to C, detailed balance)
 c   A: spontaneous radiative decay
 c   S: ionization
 c
-c   ALPHA(N)   : H+    ->  H*(N)  three-body recombination from H+
+c   ALPHA(N): H+    ->  H*(N)  three-body recombination from H+
 c                              (inverse to S: elect. impact ionization)
-c   BETA(N)    : H+    ->  H*(N)  radiative rec. from H+
+c   BETA(N) : H+    ->  H*(N)  radiative rec. from H+
 C   EBETA      :                  CORRESPONDING ENERGY WEIGHTED RATE
 c   C(1,N)  : H(1)  ->  H*(N)  excitation from ground state
 C   Q_EXT(N)   : ???   ->  H*(N)  external source
@@ -84,7 +87,7 @@ C--------- ATOMIC PARAMETER ------------------------------------------
  
       REAL(DP), SAVE :: A(40,40), E_AT(40), OSC(40,40)
       REAL(DP), SAVE :: A21SAVE, POP_ESC
-C--------- ATOMIC PARAMETER 
+ 
       REAL(DP) :: C(40,40),S(40),F(40,40)
      &           ,SAHA(40),BETA(40),ALPHA(40),EBETA(40)
       REAL(DP) :: R1(40),R0(40),R_EXT(40)
@@ -124,9 +127,10 @@ C***********************************************************************
 C
 C ATOMIC HYDROGEN
 C
-      CALL EIRENE_POPCOF(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,  ! ebeta is not needed here
-     &            R0,R1,R_EXT,
-     &                  Q_EXT)
+
+      CALL EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,  ! ebeta is not needed here
+     &             R0,R1,R_EXT,
+     &                   Q_EXT)
  
 C TRAINS OF ELECTRONICALLY EXCITED H
       DO IP=2,LIMA
@@ -468,8 +472,8 @@ c   next: radiative recombination: BETA
 
       DO 602 I=1,40
 
-        P=I
-        XP=UH/TEMP/P**2
+      P=I
+      XP=UH/TEMP/P**2
         EP=UH/P**2
         CALL EIRENE_CLBETA(XP,P,XS,EXS) ! return XS,EXS for rad. rec. rate and
 c                                  electron energy weighted rate, both: into P state at T= temp,
@@ -976,14 +980,15 @@ C
  
       A=0.0_DP
       B=20.0_DP
-      EPSR=1.0D-5
+      EPSR=1.0D-4
+cdr   EPSR=1.0D-5  slowed down code by factor of 100 !!
       NMIN=15
       NMAX=511
  
       CALL  EIRENE_AQC8(A,B,EIRENE_GAUNT3,EPSR,NMIN,NMAX, S)
       CALL  EIRENE_AQC8(A,B,EIRENE_GAUNT4,EPSR,NMIN,NMAX,ES)
 C
-
+ 
  
       RETURN
       END
@@ -1022,12 +1027,14 @@ c  vorsicht: integration von gaunt4 geht schief ca. bei Te gt 4500 eV
  
 C***********************************************************************
       SUBROUTINE
-     .  EIRENE_POPCOF(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
+     .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
      &      R0,R1,R_EXT,
      &            Q_EXT)
 C
 C     SOLUTION OF RATE EQUATION FOR ATOMIC HYDROGEN
 C
+C  COPY OF ORIGINAL ROUTINE EIRENE_POPCOF FOR SIMULTANEOUS SOLUTION 
+c  WITH OF UP TO 3 RIGHT HAND SIDES
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
@@ -1035,7 +1042,7 @@ C
      &         ,SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40)
      &         ,       Q_EXT(40),R_EXT(40)
      &         ,VW(40),WA(40,40)
-      REAL(DP) :: BLAX(40)
+      REAL(DP) :: BLAX(3,40)
       dimension ip(40)
  
       DO 201 K=2,LUP-1
@@ -1069,12 +1076,12 @@ cdr bevoelkerung durch: stoesse von oben, spontan von oben
  
   201 CONTINUE
 cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
-
+ 
  
 c  special treatment letzter zustand lup: 2-->lup, 3-->lup,..., gibt es nur bei excitation, nicht
 c                                  bei de-exit, auch nicht bei rad rec.
       DO 211 L=2,LUP-1
-
+ 
   211 W(LUP,L)=C(L,LUP)*DENSEL
 c  beitrag des letzten zustandes lup zu diagonal
       SUMF=0.
@@ -1114,39 +1121,30 @@ c  external source: Q_EXT
  
 cdr w besetzt fuer w(i,j) i=2,lup,j=2,lup+3
 cdr OK, AS LONG AS lup<38
-      DO 3001 II=LUP,LUP+2
-cdr  loop over the three right hand side vectors BLAX, same matrix WA
+
+
 cdr reduziere w indices um 1: auf wa: i=1,lup-1,j=1,(lup-1)+3
-cdr here the matrix is build three times, just for a different right hand side vector BLAX
-        DO 402 I=1,LUP-1
-        DO 402 J=1,LUP-1+3
-  402     WA(I,J)=W(I+1,J+1)
-        DO 3000 J=1,LUP-1
-          BLAX(J)=WA(J,II)
- 3000   CONTINUE
-cdr
-C  CALLED ONCE FOR EACH RIGHT HAND SIDE CONTRIBUTION.
-C  ON INPUT: BLAX IS RIGHT HAND SIDE (INHOMOGENEOUS PART)
-c 
-        CALL EIRENE_LAX(WA,40,LUP-1,  BLAX,0.0,1,IS,VW,IP,ICON)
+
+      DO 402 I=1,LUP-1
+      DO 402 J=1,LUP-1+3
+  402   WA(I,J)=W(I+1,J+1)
+      DO 3000 J=1,LUP-1
+        BLAX(1:3,J)=WA(J,LUP:LUP+2)
+ 3000 CONTINUE
+ 
+        CALL EIRENE_LAX_M(WA,40,LUP-1,  BLAX,3,0.0,1,IS,VW,IP,ICON)
 c
  
         DO 3010 J=1,LUP-1
-          IF(II.EQ.LUP) THEN
 coupling to H+
-            R0(J+1)   =BLAX(J)
-          ELSE IF(II.EQ.LUP+1) THEN
+            R0(J+1)   =BLAX(1,J)
 coupling to H-groundstate
-            R1(J+1)   =BLAX(J)
-          ELSE IF(II.EQ.LUP+2) THEN
-coupling to external source for H*(N): Q_EXT
-            R_EXT(J+1)=BLAX(J)
-          END IF
+            R1(J+1)   =BLAX(2,J)
+coupling to Q_EXT
+            R_EXT(J+1)=BLAX(3,J)
  3010   CONTINUE
-
- 3001 CONTINUE
-
-
+ 
+ 
       RETURN
       END
 
@@ -1191,10 +1189,15 @@ C  RECOMB. TRANSITION TO (1)
 
       ALPCR=ALPCR1+ALPCR2
 
+
+C  FROM EXTERNAL, TRANSITION TO CONTINUUM
       SCR_EXT=0.00
+
       DO 5002 I=2,LUP
         SUSRAD=Q_EXT(I)-R_EXT(I)*(F(I,1)*DENSEL+A(I,1))
  5002 SCR_EXT=SCR_EXT+SUSRAD
+
+C  ALP_EXT STILL MISSING
 
       RETURN
       END
@@ -1283,7 +1286,7 @@ C  i2--> i1.  i2>i1, R1(i2)=...
 C            (includes i1=1, i.e., inverse to PART III)
       DO I1=1,LUP-1
         DO I2=I1+1,LUP
-          DE=(E_AT(I2)-E_AT(I1))  !  POSITVE, GAIN FOR ELECTRON ENERGY
+          DE=(E_AT(I2)-E_AT(I1))  !  POSITIVE, GAIN FOR ELECTRON ENERGY
           SUSCR  =r1(i2)*densel*F(I2,I1)*DE
           E_SCR=E_SCR+SUSCR
 C  separate treatment of radiation losses alone, only for testing
@@ -1299,7 +1302,7 @@ C                  using radiation loss E_SCR_T and effective rate SCR
       E_SCR_T=E_SCR_T+SCR *DE
  
 C  contribution for "ordinary" coupling to ground state done
-
+ 
 
 
 c.....................................H+ RECOMBINATION,  EXTERNAL: H(INF) = CONTIN = H+.........................................
@@ -1524,25 +1527,35 @@ C
       RETURN
       END
 c
-      subroutine EIRENE_LAX(A,N1,N,B,eps,ifl,is,vw,ip,icon)
+      subroutine EIRENE_LAX_M(A,N1,N,B,nb,eps,ifl,is,vw,ip,icon)
+C
+C     COPY OF ORIGINAL ROUTINE EIRENE_LAX FOR USE OF MULTIPLE RIGHT HAND SIDES
+C     NEW ARGUMENT: nb:  NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
+C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      real(dp) a(n1,n1),B(*),vw(*)
+      real(dp) a(n1,n1),B(nb,*),vw(*)
       dimension ip(*)
       dimension iw(100)
       if (n1.gt.100) then
         write (iunout,*) 'error in lax'
         call eirene_exit_own(1)
       endif
-      call EIRENE_galpd(a,n1,n,b,iw,ier)
+      call EIRENE_galpd_m(a,n1,n,b,nb,iw,ier)
       if (ier.eq.1) then
         write (iunout,*) 'error in lax, matrix ist singulaer'
       endif
       return
       end
 c
-      SUBROUTINE EIRENE_GALPD(A,NA,NG,B,IW,IER)
+
+c
+      SUBROUTINE EIRENE_GALPD_M(A,NA,NG,B,NB,IW,IER)
+C
+C     COPY OF ORIGINAL ROUTINE EIRENE_GALPD FOR USE OF MULTIPLE RIGHT HAND SIDES
+C     NEW ARGUMENT: nb:  NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
+C
       USE EIRMOD_PRECISION
 C
 C***********************************************************************
@@ -1553,7 +1566,8 @@ C***********************************************************************
 C    A(NA,NA): KOEFFIZIENTEN-MATRIX DES GLEICHUNGS-SYSTEMS
 C    NA      : DIMENSION VON A WIE IM AUFRUFENDEN PROGRAMM ANGEGEBEN
 C    NG      : ANZAHL DER UNBEKANNTEN   (NG <= NA)
-C    B(NG)   : ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
+C    B(NB,NG): ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
+C    NB      : ANZAHL DER RECHTEN SEITEN (NB >= 1)
 c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NB LOESUNGSVEKTOREN
 C    IW(NG)  : INTEGER-HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
 C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
@@ -1561,7 +1575,8 @@ C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
 C***********************************************************************
 C
       IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION A(NA,NA),B(NG),IW(NG)
+      DIMENSION A(NA,NA),B(NB,NG),IW(NG)
+      DIMENSION HB(NB), R(NB,NG)
       DATA ZERO /1.E-71_DP/
       IER=0
 C
@@ -1570,11 +1585,13 @@ C     DER FALL:   NG = 2
 C     ******************************************************************
 C
       IF(NG.EQ.2) THEN
-                  H=A(1,1)*A(2,2)-A(2,1)*A(1,2)
-                  AI=B(1)*A(2,2)-B(2)*A(1,2)
-                  AK=A(1,1)*B(2)-A(2,1)*B(1)
-                  B(1)=AI/H
-                  B(2)=AK/H
+                  DO IB = 1, NB
+                    H=A(1,1)*A(2,2)-A(2,1)*A(1,2)
+                    AI=B(IB,1)*A(2,2)-B(IB,2)*A(1,2)
+                    AK=A(1,1)*B(IB,2)-A(2,1)*B(IB,1)
+                    B(IB,1)=AI/H
+                    B(IB,2)=AK/H
+                  END DO
                   RETURN
                   ENDIF
 C
@@ -1621,9 +1638,9 @@ C
                         H=A(I,N)
                         A(I,N)=A(IZ,N)
     4                   A(IZ,N)=H
-                     H=B(I)
-                     B(I)=B(IZ)
-                     B(IZ)=H
+                     HB=B(1:NB,I)
+                     B(1:NB,I)=B(1:NB,IZ)
+                     B(1:NB,IZ)=HB(1:NB)
                      ENDIF
 C
 C        ===============================================
@@ -1654,7 +1671,7 @@ C
                                     Q=A(M,I)*AP
                                     DO 7 N=I,NG
     7                                  A(M,N)=A(M,N)-A(I,N)*Q
-                                    B(M)=B(M)-B(I)*Q
+                                    B(1:NB,M)=B(1:NB,M)-B(1:NB,I)*Q
                                     ENDIF
     8       CONTINUE
    10    CONTINUE
@@ -1667,10 +1684,10 @@ C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
 C     ******************************************************************
 C
       DO 12 M=1,NG
-   12    A(M,M)=B(M)/A(M,M)
+   12    R(1:NB,M)=B(1:NB,M)/A(M,M)
       DO 14 M=1,NG
          II=IW(M)
-   14    B(II)=A(M,M)
+   14    B(1:NB,II)=R(1:NB,M)
 C
        RETURN
  
