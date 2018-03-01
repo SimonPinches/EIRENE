@@ -33,8 +33,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
 !              currently hard wired: 1e-8.
 !             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
-! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              remove erate in case of ifit=5 and generalize to more cr models.
+! to be done:  
 !              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
@@ -54,8 +53,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
       real(dp) :: res, rate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max,
-     .                 del
+     .                 rrc2min, rrc2max
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
 c  transformation of parameters p1 and p2:
@@ -90,7 +88,6 @@ c  transformation of parameters p1 and p2:
         call EIRENE_exit_own(1)
       end if
 
-      del=0._dp
       rate = 0._dp
 
 c.............................................................
@@ -220,7 +217,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         iflavor = reacdat(ir)%rtc%crm%iflav
         ivar = reacdat(ir)%rtc%crm%ivarst
 
-        CALL EIRENE_COLRAD(IR, DEL, IFLAVOR, IVAR, IC, PP1, PP2, RES)
+        CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
@@ -231,6 +228,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         else
           write (iunout,*) 'wrong sign from cr model'
           write (iunout,*) 'p1,p2,rate ',pp1,pp2,res
+          write (iunout,*) 'return exp(-50)'
           rate =-50.
         endif
 

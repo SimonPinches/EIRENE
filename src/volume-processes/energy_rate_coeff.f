@@ -18,7 +18,8 @@ cdr            for later use to identify "visited cells"
 cdr  sept. 16: started to add extrapolation options. not ready....
 cdr  jan.  18: call driver routine for CR models: colrad.f
 cdr            tbd:  eletron energy loss rates can change sign. 
-cdr            be careful with log(e_src)
+cdr            Be careful with log(e_src). Routine should only be called with
+cdr            LEXP=.true.
 
       function EIRENE_energy_rate_coeff (ir, ic, p1, p2, lexp, ip2shft)
      .                            result (erate)
@@ -54,10 +55,8 @@ cdr            be careful with log(e_src)
 !                  currently hard wired: 1e-8.
 !                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
-! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              erate in case of ifit=5 hard wired to E_scr.
-!              What happens in case of recombination ?
-!              and generalize to more cr models.
+! to be done:         
+!              
 !              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
@@ -79,8 +78,7 @@ cdr            be careful with log(e_src)
       real(dp) :: res, erate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max,
-     .                 del
+     .                 rrc2min, rrc2max
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
      .                  dsub    = 18.420680744_dp,      !ln(1e8), hard wired. But should come from database
@@ -114,7 +112,6 @@ cdr            be careful with log(e_src)
         call EIRENE_exit_own(1)
       end if
 
-      del  = delpot(ir)  !potential energy rate shift, in case of LN of negative e-rates
       erate = 0._dp
 
 c.............................................................
@@ -230,6 +227,7 @@ c  and in joule cm^3/s
         if (lexp) then
           erate=10._dp**res/elcha
         else
+c  in this database model erate is strictly positive, and log10(erate) is returned
           erate = xln10*res       !    convert from log10(erate) to ln(erate)
           erate = erate - xlnelch !    convert ln(erate) from ln[joule cm^3/s] to ln[eV cm^3/s]
         end if
@@ -275,10 +273,11 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         ivar = reacdat(ir)%rtcew%crm%ivarst
 
 
-        CALL EIRENE_COLRAD(IR, DEL, IFLAVOR, IVAR, IC, PP1, PP2, RES)
+        CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 
 !  electron energy weighted loss rates are taken positive in CRM COLRAD, and negative if
-!  it is a gain. a shift with a del-weighted rate is already applied
+!  it is a gain. For negative (i.e. gain) rates, the log(e-rate) return is not possible.
+!  energy-rate coefficient should always only be called with LEXP=.TRUE. for such processes
 
         IF (LEXP) then 
           erate = res
@@ -287,6 +286,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         else
           write (iunout,*) 'wrong sign from cr model'
           write (iunout,*) 'p1,p2,erate ',pp1,pp2,res
+          write (iunout,*) 'return exp(-50)
           erate =-50.
         endif
 

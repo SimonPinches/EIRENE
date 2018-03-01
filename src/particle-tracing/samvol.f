@@ -273,12 +273,14 @@ C  SPECTRAL CUT OFF (PHOTONS ONLY)
             ENDDO   !  nsbox loop 
 8         CONTINUE  !  irrc loop 
 
-cdr       if (ipls.eq.1) then
-c           do j=1,nsbox
-c             write (iunout,*) j,eelrc1(1,j),eelrc1(2,j),tein(j),
+cdr  testing internal CR model, using amjuel and h_colrad rates, nrrc=2,
+cdr  with scaling factor 0.5 each. ....TEST OK, FEB 18, out again.
+cdr   if (ipls.eq.1) then
+c          do j=1,nsbox
+c            write (iunout,*) j,eelrc1(1,j),eelrc1(2,j),tein(j),
 c    .         dein(j),lgvac(j,1),nstgrd(j)
-c           enddo
-cdr       endif
+c          enddo
+cdr   endif
 
 7       CONTINUE    !  npls loop
 
@@ -500,7 +502,8 @@ C  INDIRECT ADDRESSING
      .                   (1.5*TIIN(IPLSTI,NCELL)+EDRIFT(IPLS,NCELL))*ADD
                       ENDIF
 51              CONTINUE
-52            CONTINUE
+52            CONTINUE   ! suming gover irrc
+c
               IF (SUM.EQ.0.D0) THEN
                 WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '
                 WRITE (IUNOUT,*) 'ISTRA, IVOLSI, IPLS, ISTEP ',
@@ -553,7 +556,7 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
 C
       IF (LEVGEO.EQ.3) THEN
 c  split quadrangle into two triangles, 
-c  then 1st sample triangle according to its relative area, 
+c  then 1st: sample triangle according to its relative area, 
 c  then 2nd: sample uniform within this triangle
         IT=1
         DO 56 IR=1,NR1ST-1

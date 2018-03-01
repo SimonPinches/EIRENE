@@ -2051,7 +2051,7 @@ cdr  only one bulk ion species per volume source stratum supported
               DO 7471 IR=1,NR1ST-1
               DO 7471 K=1,NPPLG
               DO 7471 IP=NPOINT(1,K),NPOINT(2,K)-1
-c DPC 1997.05.20 added check for valid point in vol. rec.
+c DPC 1997.05.20 added check for valid point in specified vol. rec. domain
                 if(ir.ge.INGRDA(1,ISTRAI,1).and.
      1             ir.lt.INGRDE(1,ISTRAI,1).and.
      2             ip.ge.INGRDA(1,ISTRAI,2).and.
@@ -2063,8 +2063,8 @@ c dpc
                   RECADD=-TABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                   EEADD=  EELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 ELSE
-                     RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
-                     EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
+                  RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
+                  EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 END IF
                 PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                 SUMN=SUMN+RECADD*VOL(IN)
@@ -2076,11 +2076,15 @@ c dpc
                 SUMEI=SUMEI+EIADD*VOL(IN)
                 EPEL_COP(INC)=EPEL_COP(INC)+EEADD
                 SUMEE=SUMEE+EEADD*VOL(IN)
-              END IF
-7471          CONTINUE
+                END IF
+
+7471          CONTINUE  ! loop over grid
+
+
               WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
               CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
      .                     SUMN,SUMM,SUMEI,SUMEE)
+c  now sum over IRRC rec processes for bulk ion IPLS
               volSUMN(ISTRAI)=volSUMN(ISTRAI)+SUMN             ! dpc
               volSUMM(ISTRAI)=volSUMM(ISTRAI)+SUMM             ! dpc
               volSUMEI(ISTRAI)=volSUMEI(ISTRAI)+SUMEI          ! dpc

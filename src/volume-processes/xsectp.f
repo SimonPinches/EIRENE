@@ -13,6 +13,8 @@ cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of
 cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
 cdr             should not have had any effect, on any run, so far,
 cdr             since this reaction did not exist in EIRENE at all until June 15
+cdr  Jan 18  :  call energy-rate-coeff with lexp=true, because internal colrad (ifit=5)
+cdr             option is now available.
 
 C
       SUBROUTINE EIRENE_XSECTP
@@ -385,10 +387,12 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
                       IF (LGVAC(J,NPLS+1)) CYCLE
 C  change logical from false to true, to avoid log(erate), with erate negative 
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
+cdr  .                               TEINL(J),PLS(J),.FALSE.,1)
      .                               TEINL(J),PLS(J),.TRUE.,1)
                       EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
-c                     EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
-c                     EELRC1(IRRC,J)=-EXP(EEMX)
+cdr  old code, for log(e_rate) return. Not possible with h_colrad, due to sign change
+cdr                   EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
+cdr                   EELRC1(IRRC,J)=-EXP(EEMX)
 
 C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)

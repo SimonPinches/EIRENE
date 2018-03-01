@@ -1,4 +1,4 @@
-      subroutine eirene_colrad (ir, del, iflavor, ivar, 
+      subroutine eirene_colrad (ir, iflavor, ivar, 
      .                          icell, p1, p2, res)
 
 !   driver routine for collisional-radiative models
@@ -9,7 +9,6 @@
 
 !   input:
 !   ir:        reaction number, as stored in eirene input arrays.
-!   del:       energy shift (delpot parameter in input-card (eV).
 !   iflavor:   choice of internal CR model. Currently iflavor=1: H-colrad
 !              Soon: 
 !              iflavor=4: He-colrad, iflavor=2:  H2-colrad
@@ -30,7 +29,7 @@
       implicit none
  
       integer, intent(in) :: ir, icell, iflavor, ivar
-      real(dp), intent(in) :: p1, p2, del
+      real(dp), intent(in) :: p1, p2
       real(dp), intent(out) :: res
 
       real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
@@ -78,21 +77,21 @@ c  effective ionisation rate
             case (1)                      ! H.4  2.1.5
               h_stor(i,icell) = scr
             case (2)                      ! H.10 2.1.5
-c  electron cooling rate coeff. 
-c  note: with del=-13.6: this becomes the radiation loss rate coeff. alone
-              h_stor(i,icell) = e_scr+del*scr
+c  electron cooling rate coeff. e_scr is negative from h-colrad
+c  note: with delpot=-13.6 (input): this becomes the radiation loss rate coeff. alone
+              h_stor(i,icell) = -e_scr
 c  effective recombination rate
             case (3)                      ! H.4  2.1.8
               h_stor(i,icell) = alpcr
             case (4)                      ! H.10 2.1.8
-c  electron cooling/heating rate coeff. (both signs possible)
-c  note: with del=+13.6: this becomes the radiation loss rate coeff. alone 
-              h_stor(i,icell) = e_alpcr+del*alpcr
+c  electron cooling/heating rate coeff. (both signs possible. loss: negative e_alpcr))
+c  note: with delpot=+13.6 (input): this becomes the radiation loss rate coeff. alone 
+              h_stor(i,icell) = -e_alpcr
 c  external source driven ionisation rate, e.g. photo-excitation driven ionisation
             case (5)                      ! H.4  2.1.5PH
               h_stor(i,icell) = scr_ext
             case (6)                      ! H.10 2.1.5PH
-              h_stor(i,icell) = e_scr_ext
+              h_stor(i,icell) = -e_scr_ext
 c  population coefficients, coupling to ground state H(1) atom
             case (7)                      ! H.4  2.1.5a
               h_stor(i,icell) = pop1(3)
