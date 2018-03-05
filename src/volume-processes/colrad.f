@@ -1,18 +1,26 @@
-      subroutine eirene_colrad (ir, iflavor, ivar, 
+cdr jan 18:  distinct from solps4.3 version: e_alpcr correct now.
+cdr          (electron cooling/heating terms associated with recombination
+cdr feb 18:  l_ext, q_ext, lopaque, popesc: must not change,
+c            after first call, otherwise: reset LVIS 
+c            so far: q_ext not connected (l_ext=.false.)
+
+
+      subroutine eirene_colrad (ir, icrm, ivar, 
      .                          icell, p1, p2, res)
 
 !   driver routine for collisional-radiative models
-!     calls internal CR code for cell no. ICELL
+!     calls internal CR code no. icrm, for cell no. ICELL
 !     keeps all results from this call and 
-!     marks the cells already visited (lvis_h) to avoid douple calls
+!     marks the cells already visited (for icrm=1: lvis_h) to avoid douple calls
 !     for one and the same cell, for two or more differenct CRM output quantities 
 
 !   input:
 !   ir:        reaction number, as stored in eirene input arrays.
-!   iflavor:   choice of internal CR model. Currently iflavor=1: H-colrad
+!   icrm:      choice of internal CR model. Currently icrm=1: H-colrad
 !              Soon: 
-!              iflavor=4: He-colrad, iflavor=2:  H2-colrad
-!   ivar:      
+!              icrm=4: He-colrad, icrm=2:  H2-colrad
+!   ivar:      this call to colrad pick one particular CR variable for cell icell.
+!              Currently, for H_COLRAD, there are
 !
 !   icell:     cell for which collisional-radiative model should be calculated
 !   p1:        first parameter (usually:  log_e temperature,...)
@@ -28,18 +36,19 @@
  
       implicit none
  
-      integer, intent(in) :: ir, icell, iflavor, ivar
+      integer, intent(in) :: ir, icell, icrm, ivar
       real(dp), intent(in) :: p1, p2
       real(dp), intent(out) :: res
 
-      real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT,
-     .            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
+      real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT
+ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing only
       integer :: i
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:), 
      .                               q_ext(:)
       real(dp), allocatable, save :: h_stor(:,:)
       logical, allocatable, save :: lvis_h(:)
+      logical :: l_ext
  
       
       if (.not. allocated(lvis_h)) then
@@ -48,28 +57,33 @@
         lvis_h = .false.
       end if
 
-      if (iflavor == 1) then
+      if (icrm == 1) then
 
 ! COLLISIONAL-RADIATIVE MODEL OF ATOMIC HYDROGEN
         if (.not.allocated(pop0)) then
           allocate(pop0(40))
           allocate(pop1(40))
           allocate(pop_ext(40))
-
           allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
-          Q_EXT = 0._DP
         end if
+        Q_EXT = 0._DP
+        L_EXT = .FALSE.
 
         if (.not.lvis_h(icell))  then
-! cell number icell has not yet been visited so far in this run
-! cr-model needs to be calculated
+! cell number ICELL has not yet been visited so far in this run
+! cr-model needs to be calculated.
+! In later calls, for this ICELL, 
+!    we assume Q_EXT, L_EXT. LOPAQUE, POP_ESC to be unchanged !
 
-          CALL EIRENE_H_COLRAD(P1, P2, Q_EXT, POP0, POP1, POP_EXT,
+          CALL EIRENE_H_COLRAD(P1, P2, Q_EXT, L_EXT,
+     .                         POP0, POP1, POP_EXT,
      .                         ALPCR,    SCR,    SCR_EXT,
-     .                         E_ALPCR,  E_SCR,  E_SCR_EXT,
-     .                         E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
+     .                         E_ALPCR,  E_SCR,  E_SCR_EXT
+ctt  .                        ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T
+     .                         )
 c
-c  up to nhcol_store parameters from the cr-model are stored in cell ICELL 
+c  up to nhcol_store parameters from the cr-model are stored in cell ICELL
+C  TBD: if .NOT.L_EXT: only case(1) to case(16) are available  
           do i = 1, nhcol_store
           
             select case(m_hcol(i))
@@ -102,8 +116,8 @@ c  population coefficients, coupling to ground state H(1) atom
             case (10)                     ! H.4  2.1.5d
               h_stor(i,icell) = pop1(5)
             case (11)                     ! H.4  2.1.5e
-c  population coefficients, coupling to H+ ion
               h_stor(i,icell) = pop1(6)
+c  population coefficients, coupling to H+ ion
             case (12)                     ! H.4  2.1.8a
               h_stor(i,icell) = pop0(3)
             case (13)                     ! H.4  2.1.8b
@@ -115,6 +129,7 @@ c  population coefficients, coupling to H+ ion
             case (16)                     ! H.4  2.1.8e
               h_stor(i,icell) = pop0(6)
 c  population coefficients, coupling to external source of excitation (e.g. photons)
+c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
             case (17)                     ! H.4  2.1.5PHa
               h_stor(i,icell) = pop_ext(3)
             case (18)                     ! H.4  2.1.5PHb
@@ -126,8 +141,8 @@ c  population coefficients, coupling to external source of excitation (e.g. phot
             case (21)                     ! H.4  2.1.5PHe
               h_stor(i,icell) = pop_ext(6)
             case default
-              write (iunout,*) ' ERROR IN COLRAD '
-              write (iunout,*) ' REQUESTED RATE IS UNKNOWN '
+              write (iunout,*) ' ERROR IN COLRAD, M_HCOL(I) '
+              write (iunout,*) ' REQUESTED RATE FROM H_COLRAD ?? '
               call eirene_exit_own(1)
             end select
 
@@ -141,7 +156,7 @@ c  population coefficients, coupling to external source of excitation (e.g. phot
         return      
         
 
-      else   ! iflavor .ne.1
+      else   ! icrm .ne.1
          write (iunout,*) ' REQUESTED COLLISIONAL-RADIATIVE MODEL' //
      .                    ' NOT AVAILABLE '
          call eirene_exit_own

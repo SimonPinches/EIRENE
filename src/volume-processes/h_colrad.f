@@ -1,6 +1,9 @@
 cdr   feb   18: sync with h_colrad, H,H2 CRM, Sawada-Fujimoto-Reiter
 cdr             cleaned up, more comments.
 cdr             added lopaque, ebeta,e_alpcr
+cdr      tbd:  avoid 3rd right  hand side in popcof if Q_ext==0: done. l_ext
+cdr      tbd:  better do: gauss laguerre integration of gaunt3 and gaunt4 ?
+cdr      tbd:  avoid execution of develop-tests: e_alpcr_T, e-scr_T,....: done. ctt
 cdr   Jan   18: parameter ICELL removed, icell is now controlled by 
 cdr             new calling CRM-driver routine COLRAD
 cdr             popcof and matrix solver LAX, GALPD extended to handle 
@@ -35,10 +38,13 @@ C   ASSUME: SLOWLY EVOLVING SPECIES: H,H+
 C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
-C   ICELL     : CELL NUMBER, ONLY NEEDED IN CASE OF CALLS FROM INSIDE EIRENE TRANSPORT CODE.
+
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
-C   Q_EXT(N): ???   ->  H*(N)  external source, e.g. molecules, or photo-excitation
+C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
+C   Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, or photo-excitation
+C   L_EXT, LOPAQUE, POP_ESC:  TO BE DONE
+
 C
 C
 C   OUTPUT:
@@ -65,11 +71,12 @@ c   hence: taken times "densel"
 c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
-      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, 
+      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, L_EXT,
      .                            POP0, POP1, POP2,
      .                            ALPCR, SCR, SCR_EXT,
-     .                            E_ALPCR, E_SCR, E_SCR_EXT,
-     .                            E_ALPCR_T, E_SCR_T, E_SCR_EXT_T)
+     .                            E_ALPCR, E_SCR, E_SCR_EXT
+ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
+     .                            )
       USE EIRMOD_PRECISION
 C     USE EIRMOD_CCRM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -78,11 +85,11 @@ C     USE EIRMOD_CCRM
 C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
       REAL(DP), INTENT(IN) :: Q_EXT(40)
-      logical lopaque
+      logical lopaque,l_ext
 
       REAL(DP), INTENT(OUT) ::   ALPCR,    SCR,     SCR_EXT
       REAL(DP), INTENT(OUT) :: E_ALPCR,  E_SCR,   E_SCR_EXT
-      REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T
+ctt   REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T
       REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP2(40)
  
       REAL(DP), SAVE :: A(40,40), E_AT(40), OSC(40,40)
@@ -110,8 +117,10 @@ c
 c  only once and for all !!
 c
       lopaque=.false.
-      IF (IFRST == 0) THEN
-        POP_ESC=1.
+      POP_ESC=1.
+
+      IF (IFRST == 0) THEN  ! must be redone, if lopaque or pop_esc change
+cdr  better: move lopaque, pop_esc outside this routine. And check always
         CALL EIRENE_EINSTN(OSC,A,E_AT,40,lopaque,A21SAVE,POP_ESC)
         IFRST = 1
       END IF
@@ -130,7 +139,7 @@ C
 
       CALL EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,  ! ebeta is not needed here
      &             R0,R1,R_EXT,
-     &                   Q_EXT)
+     &                   Q_EXT,L_EXT)
  
 C TRAINS OF ELECTRONICALLY EXCITED H
       DO IP=2,LIMA
@@ -146,16 +155,17 @@ CDR COUPLING TO EXTERNAL SOURCE Q  FOR H*(N)
 C  EFFECTIVE COLLISION RATE COEFFICIENTS, ATOMS
       CALL EIRENE_IONREC(C,S,SAHA,A,ALPHA,BETA,
      &            R0,R1,DENSEL,LUPA,LIMA,
-     &            F,R_EXT,Q_EXT,
+     &            F,R_EXT,Q_EXT,L_EXT,
      &            ALPCR,SCR,SCR_EXT)
 C***********************************************************************
 C  EFFECTIVE ELECTRON COOLING RATE COEFFICIENTS, ATOMS
       CALL EIRENE_E_IONREC(C,S,SAHA,A,ALPHA,BETA,EBETA,
      &              R0,R1,DENSEL,LUPA,LIMA,
-     &              F,R_EXT,Q_EXT,E_AT,
+     &              F,R_EXT,Q_EXT,L_EXT,E_AT,
      &              ALPCR,      SCR,    SCR_EXT,
-     &              E_ALPCR,  E_SCR,  E_SCR_EXT,
-     &              E_ALPCR_T,E_SCR_T,E_SCR_EXT_T)
+     &              E_ALPCR,  E_SCR,  E_SCR_EXT
+ctt  &             ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T
+     &              )
 C***********************************************************************
 C
  
@@ -194,23 +204,24 @@ C
 
 cdr: johnson gaunt factor approx.
 cdr  gaunt=g(i,x)=G(I,J)
-CDR   IF(I.GE.3) ...
+      IF(I.GE.3) THEN
 
-      G=(.9935+.2328/AI-.1296/AI**2)
-     *-(.6282-.5598/AI+.5299/AI**2)/(AI*X)
+        G=(.9935+.2328/AI-.1296/AI**2)
+     *  -(.6282-.5598/AI+.5299/AI**2)/(AI*X)
 C Feb. 2008: TYPO CORRECTED: .3387 --> .3887
-     *+(.3887-1.181/AI+1.470/AI**2)/(AI*X)**2
-
-      IF(I.NE.1.AND.I.NE.2) GO TO 300
-      G=1.0785-.2319/X+.02947/X**2
-  200 IF(I.NE.1) GO TO 300
-      G=1.1330-.4059/X+.07014/X**2
+     *  +(.3887-1.181/AI+1.470/AI**2)/(AI*X)**2
+      ELSEIF(I.EQ.2) THEN
+        G=1.0785-.2319/X+.02947/X**2
+      ELSEIF(I.EQ.1) THEN
+        G=1.1330-.4059/X+.07014/X**2
+      ENDIF
 
 cdr  gaunt(x) done. gaunt=g(i,j)
 
 
-  300 F(I,J)=2.**6/(3.*SQRT(3.)*3.1416)*(AI/AJ)**3/(2.*AI**2)*G/X**3
+      F(I,J)=2.**6/(3.*SQRT(3.)*3.1416)*(AI/AJ)**3/(2.*AI**2)*G/X**3
       A(J,I)=8.03E9*AI**2/AJ**2*(AI**(-2)-AJ**(-2))**2*F(I,J)
+
 cdr  Ly opaque: all a(j-->1) transitions are removed.
       if (lopaque.and.i.eq.1) a(j,i)=0.
   102 CONTINUE
@@ -1011,8 +1022,9 @@ C***********************************************************************
 
       FUNCTION EIRENE_GAUNT4(X)
 c  same as gaunt3, but for energy weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
-c  gaunt4= u * gaunt3,  und zusaetzlicher vorfaktor Ep = UH/(p^2), zusaetzlich zu (EP/T)^...
-c  vorsicht: integration von gaunt4 geht schief ca. bei Te gt 4500 eV
+c  gaunt4= u * gaunt3,  and additional pre-factor Ep = UH/(p^2), additional to (EP/T)^...
+
+cdr careful: integration of gaunt4 fails above Te gt 4500 eV
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       REAL(DP) PP,XPP,U,B,X,EIRENE_GAUNT4
@@ -1029,12 +1041,13 @@ C***********************************************************************
       SUBROUTINE
      .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
      &      R0,R1,R_EXT,
-     &            Q_EXT)
+     &            Q_EXT,L_EXT)
 C
 C     SOLUTION OF RATE EQUATION FOR ATOMIC HYDROGEN
 C
 C  COPY OF ORIGINAL ROUTINE EIRENE_POPCOF FOR SIMULTANEOUS SOLUTION 
-c  WITH OF UP TO 3 RIGHT HAND SIDES
+c  WITH OF UP TO 3 RIGHT HAND SIDES. (DEFAULT: 2: IONISATION, RECOMBINATION)
+c  l_ext: indicate that 3rd right hand side term is requested
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
@@ -1043,6 +1056,7 @@ C
      &         ,       Q_EXT(40),R_EXT(40)
      &         ,VW(40),WA(40,40)
       REAL(DP) :: BLAX(3,40)
+      LOGICAL :: L_EXT
       dimension ip(40)
  
       DO 201 K=2,LUP-1
@@ -1128,22 +1142,31 @@ cdr reduziere w indices um 1: auf wa: i=1,lup-1,j=1,(lup-1)+3
       DO 402 I=1,LUP-1
       DO 402 J=1,LUP-1+3
   402   WA(I,J)=W(I+1,J+1)
+
+c  two or three right linearly additive hand side terms?
+      ie=2
+      if (L_EXT) ie=3
       DO 3000 J=1,LUP-1
-        BLAX(1:3,J)=WA(J,LUP:LUP+2)
+        BLAX(1:ie,J)=WA(J,LUP:LUP+ie-1)
  3000 CONTINUE
  
-        CALL EIRENE_LAX_M(WA,40,LUP-1,  BLAX,3,0.0,1,IS,VW,IP,ICON)
+      CALL EIRENE_LAX_M(WA,40,LUP-1,BLAX,3,ie,0.0,1,IS,VW,IP,ICON)
 c
  
-        DO 3010 J=1,LUP-1
+        DO J=1,LUP-1
 coupling to H+
             R0(J+1)   =BLAX(1,J)
 coupling to H-groundstate
             R1(J+1)   =BLAX(2,J)
+        ENDDO
 coupling to Q_EXT
+        IF (L_EXT) THEN
+          DO J=1,LUP-1
             R_EXT(J+1)=BLAX(3,J)
- 3010   CONTINUE
- 
+          ENDDO
+        ELSE
+          R_EXT=0.
+        ENDIF
  
       RETURN
       END
@@ -1151,7 +1174,7 @@ coupling to Q_EXT
 C***********************************************************************
       SUBROUTINE
      .  EIRENE_IONREC(C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
-     &                  F,R_EXT,Q_EXT,
+     &                  F,R_EXT,Q_EXT, L_EXT,
      &                  ALPCR,SCR,SCR_EXT)
 C
 C     EFFECTIVE IONIZATION AND RECOMBINATION RATE COEFFICIENTS
@@ -1165,6 +1188,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
+      LOGICAL :: L_EXT
 C
       DO 5000 I=LUP+1,LIM
         R0(I)=1.0*SAHA(I)
@@ -1193,11 +1217,13 @@ C  RECOMB. TRANSITION TO (1)
 C  FROM EXTERNAL, TRANSITION TO CONTINUUM
       SCR_EXT=0.00
 
+      IF (.NOT.L_EXT) RETURN
+
       DO 5002 I=2,LUP
         SUSRAD=Q_EXT(I)-R_EXT(I)*(F(I,1)*DENSEL+A(I,1))
  5002 SCR_EXT=SCR_EXT+SUSRAD
 
-C  ALP_EXT STILL MISSING
+C  ALP_EXT STILL MISSING: from external to ground state
 
       RETURN
       END
@@ -1206,10 +1232,11 @@ C***********************************************************************
       SUBROUTINE EIRENE_E_IONREC
      &                   (C,S,SAHA,A,ALPHA,BETA,EBETA,
      &                    R0,R1,DENSEL,LUP,LIM,
-     &                    F,R_EXT,Q_EXT,E_AT,
+     &                    F,R_EXT,Q_EXT,L_EXT,E_AT,
      &                    ALPCR,      SCR,    SCR_EXT,   !  ordinary rate coeffcients
-     &                    E_ALPCR,  E_SCR,  E_SCR_EXT,   !  electron energy weighted rate coefficients
-     &                    E_ALPCR_T,E_SCR_T,E_SCR_EXT_T) !  radiation energy losses only, for consistency testing
+     &                    E_ALPCR,  E_SCR,  E_SCR_EXT    !  electron energy weighted rate coefficients
+ctt  &                   ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T  !  radiation energy losses only, for consistency testing
+     &                    ) 
 C
 C     EFFECTIVE ELECTRON ENERGY LOSS IONIZATION AND RECOMBINATION
 C     RATE COEFFICIENTS FOR ATOMIC HYDROGEN AT DENSITY DENSEL, TEMPERATURE TEMP
@@ -1230,6 +1257,7 @@ C
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
      &          ALPHA(40),BETA(40),EBETA(40), 
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
+      LOGICAL :: L_EXT
 
       DIMENSION EMEAN_REC(41)
 C
@@ -1243,9 +1271,9 @@ C
       E_SCR_EXT=0.0
       E_ALPCR=0.0
 C  FOR TESTING:  ONLY CUMULATE RADIATION LOSSES HERE.
-      E_SCR_T=0.0
-      E_SCR_EXT_T=0.0
-      E_ALPCR_T=0.0
+ctt   E_SCR_T=0.0
+ctt   E_SCR_EXT_T=0.0
+ctt   E_ALPCR_T=0.0
 C
 C  EFFECTIVE ELECTRON COOLING CORRESPONDING TO
 C  "ORDINARY" COUPLING TO GROUND STATE S(I)
@@ -1290,16 +1318,16 @@ C            (includes i1=1, i.e., inverse to PART III)
           SUSCR  =r1(i2)*densel*F(I2,I1)*DE
           E_SCR=E_SCR+SUSCR
 C  separate treatment of radiation losses alone, only for testing
-          SUSCR_T=r1(i2)*A(I2,I1)*(-1.)*DE   !  NEGATIVE, RADIATIVE LOSS
-          E_SCR_T=E_SCR_T+SUSCR_T
+ctt       SUSCR_T=r1(i2)*A(I2,I1)*(-1.)*DE   !  NEGATIVE, RADIATIVE LOSS
+ctt       E_SCR_T=E_SCR_T+SUSCR_T
         ENDDO
       ENDDO
  
 C  for test only.  evaluate second formula for E_SCR,
 C                  using radiation loss E_SCR_T and effective rate SCR
-      UH=13.595
-      DE=(E_AT(1)-UH)  !  POTENTIAL DIFFERENCE IS NEGATIVE,  ELECTRONS LOSE ENERGY IN IONISATION
-      E_SCR_T=E_SCR_T+SCR *DE
+ctt   UH=13.595
+ctt   DE=(E_AT(1)-UH)  !  POTENTIAL DIFFERENCE IS NEGATIVE,  ELECTRONS LOSE ENERGY IN IONISATION
+ctt   E_SCR_T=E_SCR_T+SCR *DE
  
 C  contribution for "ordinary" coupling to ground state done
  
@@ -1327,10 +1355,10 @@ C
       E_ALPCR  =DENSEL*ALPHA(1)*(UH-E_AT(1))      !  * POPULATION OF H+ ! ENERGY GAINED BY ELECTRON GAS, THREE-BODY, SPECTATOR ELECTRON
       E_ALPCR  =E_ALPCR +BETA(1)*EMEAN_REC(1)     !  * POPULATION OF H+ ! ENERGY LOST FROM ELECTRON GAS, RAD REC, NEGATIVE
 C  for test only: SEPARATE TREATMENT OF RADIATION LOSS ALONE
-C     DE=0.
-C     E_ALPCR_T  =DENSEL*ALPHA(1)*DE ! no radiation loss involved in three-body rec. ALPHA
-      DE=EMEAN_REC(1)-(UH-E_AT(1))      ! TOTAL ENERGY CARRIED AWAY IN RADIATION IN RAD REC, SHOULD BE NEGATIVE
-      E_ALPCR_T  =E_ALPCR_T+BETA(1)*DE  !  * POPULATION OF H+,   radiation loss (continuum) involved in rad. rec BETA
+ctt   DE=0.
+ctt   E_ALPCR_T  =DENSEL*ALPHA(1)*DE    ! no radiation loss involved in three-body rec. ALPHA
+ctt   DE=EMEAN_REC(1)-(UH-E_AT(1))      ! TOTAL ENERGY CARRIED AWAY IN RADIATION IN RAD REC, SHOULD BE NEGATIVE
+ctt   E_ALPCR_T  =E_ALPCR_T+BETA(1)*DE  !  * POPULATION OF H+,   radiation loss (continuum) involved in rad. rec BETA
 
 
 C  PART II
@@ -1348,10 +1376,10 @@ C  cont--> I2.  POPULATION R0 OF H+: = 1  !  gain from three body rec ALPHA, los
         SUSCR=SUSCR+BETA(I2)*EMEAN_REC(I2)        ! RAD REC
         E_ALPCR=E_ALPCR+SUSCR
 C  FOR TEST ONLY: SEPARATE TREATMENT OF RADIATION LOSS ALONE
-C       DE=0.
-C       E_ALPCR_T  =DENSEL*ALPHA(I2)*DE ! no radiation loss involved in three-body rec. ALPHA
-        DE=EMEAN_REC(I2)-(UH-E_AT(I2)) ! TOTAL ENERGY CARRIED AWAY IN RADIATION, ALWAYS NEGATIVE (LOSS)
-        E_ALPCR_T  =E_ALPCR_T+BETA(I2)*DE  !  * POPULATION OF H+,   no radiation loss involved in three-body rec. ALPHA
+ctt     DE=0.
+ctt     E_ALPCR_T  =DENSEL*ALPHA(I2)*DE    ! no radiation loss involved in three-body rec. ALPHA
+ctt     DE=EMEAN_REC(I2)-(UH-E_AT(I2))     ! TOTAL ENERGY CARRIED AWAY IN RADIATION, ALWAYS NEGATIVE (LOSS)
+ctt     E_ALPCR_T  =E_ALPCR_T+BETA(I2)*DE  !  * POPULATION OF H+,   no radiation loss involved in three-body rec. ALPHA
       ENDDO
 
 C  PART IV
@@ -1373,17 +1401,17 @@ C            (includes i1=1)
           SUSCR  =r0(i2)*densel*F(I2,I1)*DE
           E_ALPCR=E_ALPCR+SUSCR
 C  separate treatment of radiation losses alone, only for testing
-          SUSCR_T=r0(i2)*A(I2,I1)*(-1.)*DE   !  NEGATIVE (= LOSS) BY ANSATZ
-          E_ALPCR_T=E_ALPCR_T+SUSCR_T
+ctt       SUSCR_T=r0(i2)*A(I2,I1)*(-1.)*DE   !  NEGATIVE (= LOSS) BY ANSATZ
+ctt       E_ALPCR_T=E_ALPCR_T+SUSCR_T
         ENDDO
       ENDDO
 
 C  for test only for lupa=lima=32.  evaluate second formula for E_ALPCR,
 C                  using radiation loss E_ALPCR_T, effective rate ALPCR AND DELPOT
-C  TEST DONE, OFFENBAR OK.   MUSS NOCH: EMEAN RICHTIGER, AUS RAD-REC RATE FORMEL.
-      UH=13.595
-      DEALP=(UH-E_AT(1))  !  ELECTRONS GAIN POTENTIAL ENERGY PER RECOMBINATION EVENT, DEALP IS THEREFORE TAKEN POSITIVE
-      E_ALPCR_TT=E_ALPCR_T+ALPCR *DEALP
+C  TEST DONE, OK.   
+ctt   UH=13.595
+ctt   DEALP=(UH-E_AT(1))  !  ELECTRONS GAIN POTENTIAL ENERGY PER RECOMBINATION EVENT, DEALP IS THEREFORE TAKEN POSITIVE
+ctt   E_ALPCR_TT=E_ALPCR_T+ALPCR *DEALP
 c  e_alpcr_TT:  test quantity, should be equal to E_alpcr
 c  e_alpcr_T :  this would be the shifted (radiation alone part) e.g. fitted in amjuel format
 
@@ -1394,6 +1422,7 @@ C  contribution for "ordinary" coupling to H+ state done
 
 c..................................................................
 c  next: contribution for coupling to external source Q_EXT
+      IF (.NOT.L_EXT) RETURN
 c        use same codes as for E_SCR, but with Q_EXT(K) <-- C(1,K)
 c                                     and S(1)=0
 c        and, of course, R_EXT(k) instead of R1(k)
@@ -1438,16 +1467,16 @@ C            (includes i1=1, i.e., inverse to PART III)
           SUSCR  =R_EXT(i2)*densel*F(I2,I1)*DE
           E_SCR_EXT=E_SCR_EXT+SUSCR
 C  separate treatment of radiation losses alone, only for testing
-C         SUSCR_T=R_EXT(i2)*A(I2,I1)*(-1.)*DE
-C         E_SCR_EXT_T=E_SCR_EXT_T+SUSCR_T
+ctt       SUSCR_T=R_EXT(i2)*A(I2,I1)*(-1.)*DE
+ctt       E_SCR_EXT_T=E_SCR_EXT_T+SUSCR_T
         ENDDO
       ENDDO
  
 C  for test only.  evaluate second formula for E_SCR_EXT,
 C                  using radiation loss E_SCR_EXT_T and effective rate SCR_EXT
-C     UH=13.595
-C     DE=(E_AT(1)-UH)
-C     E_SCR_EXT_T=E_SCR_EXT_T+SCR_EXT *DE
+ctt   UH=13.595
+ctt   DE=(E_AT(1)-UH)
+ctt   E_SCR_EXT_T=E_SCR_EXT_T+SCR_EXT *DE
  
 c  this test only works if in PART III one would set:
 C       DE=(E_AT(1)-E_AT(I2))
@@ -1527,10 +1556,11 @@ C
       RETURN
       END
 c
-      subroutine EIRENE_LAX_M(A,N1,N,B,nb,eps,ifl,is,vw,ip,icon)
+      subroutine EIRENE_LAX_M(A,N1,N,B,nb,nbi,eps,ifl,is,vw,ip,icon)
 C
 C     COPY OF ORIGINAL ROUTINE EIRENE_LAX FOR USE OF MULTIPLE RIGHT HAND SIDES
-C     NEW ARGUMENT: nb:  NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
+C     NEW ARGUMENT: nb:  STORAGE FOR NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
+C     NEW ARGUMENT: nbi: NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS. .LE.NB
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -1542,7 +1572,7 @@ C
         write (iunout,*) 'error in lax'
         call eirene_exit_own(1)
       endif
-      call EIRENE_galpd_m(a,n1,n,b,nb,iw,ier)
+      call EIRENE_galpd_m(a,n1,n,b,nb,nbi,iw,ier)
       if (ier.eq.1) then
         write (iunout,*) 'error in lax, matrix ist singulaer'
       endif
@@ -1551,7 +1581,7 @@ C
 c
 
 c
-      SUBROUTINE EIRENE_GALPD_M(A,NA,NG,B,NB,IW,IER)
+      SUBROUTINE EIRENE_GALPD_M(A,NA,NG,B,NB,NBI,IW,IER)
 C
 C     COPY OF ORIGINAL ROUTINE EIRENE_GALPD FOR USE OF MULTIPLE RIGHT HAND SIDES
 C     NEW ARGUMENT: nb:  NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
@@ -1567,8 +1597,9 @@ C    A(NA,NA): KOEFFIZIENTEN-MATRIX DES GLEICHUNGS-SYSTEMS
 C    NA      : DIMENSION VON A WIE IM AUFRUFENDEN PROGRAMM ANGEGEBEN
 C    NG      : ANZAHL DER UNBEKANNTEN   (NG <= NA)
 C    B(NB,NG): ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
-C    NB      : ANZAHL DER RECHTEN SEITEN (NB >= 1)
-c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NB LOESUNGSVEKTOREN
+C    NB      : DIMENSION ANZAHL DER RECHTEN SEITEN (NB >= 1)
+C    NBI     : ANZAHL DER RECHTEN SEITEN (NB >= 1)
+c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NBI LOESUNGSVEKTOREN
 C    IW(NG)  : INTEGER-HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
 C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
 C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
@@ -1585,7 +1616,7 @@ C     DER FALL:   NG = 2
 C     ******************************************************************
 C
       IF(NG.EQ.2) THEN
-                  DO IB = 1, NB
+                  DO IB = 1, NBI
                     H=A(1,1)*A(2,2)-A(2,1)*A(1,2)
                     AI=B(IB,1)*A(2,2)-B(IB,2)*A(1,2)
                     AK=A(1,1)*B(IB,2)-A(2,1)*B(IB,1)
@@ -1638,9 +1669,9 @@ C
                         H=A(I,N)
                         A(I,N)=A(IZ,N)
     4                   A(IZ,N)=H
-                     HB=B(1:NB,I)
-                     B(1:NB,I)=B(1:NB,IZ)
-                     B(1:NB,IZ)=HB(1:NB)
+                     HB=B(1:NBI,I)
+                     B(1:NBI,I)=B(1:NBI,IZ)
+                     B(1:NBI,IZ)=HB(1:NBI)
                      ENDIF
 C
 C        ===============================================
@@ -1671,7 +1702,7 @@ C
                                     Q=A(M,I)*AP
                                     DO 7 N=I,NG
     7                                  A(M,N)=A(M,N)-A(I,N)*Q
-                                    B(1:NB,M)=B(1:NB,M)-B(1:NB,I)*Q
+                                    B(1:NBI,M)=B(1:NBI,M)-B(1:NBI,I)*Q
                                     ENDIF
     8       CONTINUE
    10    CONTINUE
@@ -1684,10 +1715,10 @@ C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
 C     ******************************************************************
 C
       DO 12 M=1,NG
-   12    R(1:NB,M)=B(1:NB,M)/A(M,M)
+   12    R(1:NBI,M)=B(1:NBI,M)/A(M,M)
       DO 14 M=1,NG
          II=IW(M)
-   14    B(1:NB,II)=R(1:NB,M)
+   14    B(1:NBI,II)=R(1:NBI,M)
 C
        RETURN
  
@@ -1810,7 +1841,6 @@ c     endif
         S(J+1)=S(J)
         H(J+1)=H(J)/9.
 11    CONTINUE
-!pb      PAUSE 'Too many steps.'
       write(iunout,*) '(W) Too many steps.'
       END
  
