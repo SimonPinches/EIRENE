@@ -46,7 +46,10 @@ cdr           Could be done earlier, and also simplify code here in locate alrea
 cdr nov.17 :  remove dead option: nlstor
 cdr jan.18 :  IND flag different now in update_sptflx.
 cdr           New arguments in update_surface.
-cdr           update_surface also called for outgoing bulk particle fluxes        
+cdr           update_surface also called for outgoing bulk particle fluxes
+cdr feb 18 :  M.R.:  bug fix re WEIGHT in one-by-one resampling from census.
+cdr           (was proprietary option, no effects for 3rd parties).
+cdr         
  
       SUBROUTINE EIRENE_LOCATE
 c  old option:
@@ -388,13 +391,12 @@ C  DETERMINE THE REMAINING PARTICLE PARAMETERS
         NLSRFZ=.FALSE.
         MSURF=NLIM+NSTS
 C
-C  IGNORE THE WEIGHT RPARTC(9,IMP) OF THE SAMPLED PARTICLE,
+C  UNLESS ONE-BY-ONE RE-LAUNCH, WE MUST
+C  IGNORE THE STORED WEIGHT = RPARTC(9,IMP) OF THE SAMPLED PARTICLE,
 C  BECAUSE THIS WEIGHT HAS ALREADY BEEN TAKEN INTO ACCOUNT 
 C  IN THE SAMPLING (BOOTSTRAPPING) DISTRIBUTION
-        IF (NPTST.LT.0.OR.NLMOVIE) THEN
-C  ONE BY ONE RE-LAUNCH FROM CENSUS
-          WEIGHT=RPARTC(J,IMP)
-        ELSE
+C
+        IF (NPTST.GT.0.AND..NOT.NLMOVIE) THEN
           WEIGHT=1.D0
         ENDIF
 
