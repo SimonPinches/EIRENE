@@ -1,21 +1,26 @@
-      subroutine EIRENE_collect_census
-
 cpb July  17: bug fix, rpselect allocation from -1 , not from 0
 cdr sept. 15: bug fix:   after re-sampling (with replacement) from census, the weight of
 cdr                      sampled census particles is set to 1.0, rather than keeping the old weight.
 cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
 cdr                      and the weight stored on census during particle tracing is the probability mass of index "i"
-
+cdr  
+cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
 c
+
+      subroutine EIRENE_collect_census
+
+
 c this routine is called for each processer my_pe
 c it first defines the census array rpartw(i) and total flux peflux, for each processor.
-c it then tries to combine these onto a single new census.
+c It then tries to combine these onto a single new census.
 c If the combined census from all processors contains too many particles, then the
 c reduction is done by re-sampling, just like in subr. locate for re-launch from census.
-
-cdr  rpselect reduziert auf 0,nprs-1
-cdr  addph,adda,addm,addi: type resolved census fluxes.
+c
+cdr  so far unused information: 
+c from subr. calstr.f:  
+c npesta(istr) this the no. of the master processor for stratum istr
+c npestr(istr) is the number of processors dealing with istr
 c
 
       USE EIRMOD_PRECISION
@@ -33,9 +38,9 @@ c
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, weight, peflux, 
-     .            totflux, sumrpw, sclfac, add, totrpw,
+     .            totflux, sumrpw, sclfac, add,
+     .            totrpw,
      .            addph, adda, addm, addi
-C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
       real(dp), external :: ranf_eirene
       integer, allocatable :: iranpro(:), ibuf(:,:)
       integer :: ier, i, istr, ncoreal, itotal, il, im, iu, ipe,
@@ -81,7 +86,7 @@ C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
           ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
           ADDI=ADDI+ADD
         ENDIF
-! cumulativ distribution of weight of particle no I, for sampling. not atomic flux
+! cumulative distribution of WEIGHT of particle no I, for sampling. Not "atomic" flux
         RPARTW(I)=RPARTW(I-1)+WEIGHT*FLXFAC(ISTR)
 ! total flux on census, atomic flux (AMP)
         PEFLUX   = PEFLUX + ADD
@@ -110,7 +115,7 @@ c     pefluxp(my_pe)=peflux
       call mpi_allreduce(peflux,totflux,1,MPI_REAL8,
      .                   MPI_SUM,MPI_COMM_WORLD,ier)
 c
-c  cumulated number of scores, and atomic flux, summed from all PEs.
+c  cumulated number of census scores, and census atomic flux, summed from all PEs.
       if (my_pe.eq.0) THEN
         write (iunout,*) ' itotal, totflux', itotal, totflux
       ENDIF

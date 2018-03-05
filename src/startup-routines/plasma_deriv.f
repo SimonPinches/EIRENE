@@ -110,7 +110,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
      .            TEI, DEJ, BOLTZFAC, RCORONA, RCOLRAD,
      .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX,
-     .            RC2MIN, RC2MAX, ERATE
+     .            RC2MIN, RC2MAX, BXP, BYP, BNORM
       REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:)
@@ -377,7 +377,7 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
             RCORONA = EIRENE_RATE_COEFF(NREACI+1,TEF,0._DP,.TRUE.,
-     .                                    0,ERATE)
+     .                                    0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s)
@@ -652,20 +652,24 @@ C  SET B_PERP
 C
       DO J=1,NSBOX
         IF (ABS(BXIN(J)) > EPS10) THEN
-           BYPERP(J) = 1._DP
-           BXPERP(J) = -BYIN(J)/BXIN(J)
+           BYP = 1._DP
+           BXP = -BYIN(J)/BXIN(J)
         ELSEIF (ABS(BYIN(J)) > EPS10) THEN
-           BXPERP(J) = 0._DP
-           BYPERP(J) = -BXIN(J)/BYIN(J)
+           BXP = 1._DP
+           BYP = -BXIN(J)/BYIN(J)
         ELSE
-           BXPERP(J) = 1._DP
-           BYPERP(J) = 0._DP
+           BXP = 0._DP
+           BYP = 0._DP
         END IF
 C  CHECK ORIENTATION
-        IF (BXIN(J)*BYPERP(J)-BXPERP(J)*BYIN(J) < 0._DP) THEN
-           BXPERP(J) = -BXPERP(J)
-           BYPERP(J) = -BYPERP(J)
+        IF (BXIN(J)*BYP-BXP*BYIN(J) < 0._DP) THEN
+           BXP = -BXP
+           BYP = -BYP
         END IF
+C  NORMALIZE
+        BNORM=SQRT(BXP*BXP+BYP*BYP)+EPS60
+        BXPERP(J)=BXP/BNORM
+        BYPERP(J)=BYP/BNORM
       END DO
 
 

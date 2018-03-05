@@ -8,7 +8,7 @@ cdr: july 17: trc:  print warning in case of extrapolation
 
 c  called from: rate_coeff.f
 c               energy_rate_coeff.f
-c               sgnal.f
+c               other_rate_coeff.f
 
       subroutine EIRENE_dbl_poly (cf, al1, al2, cou, dum, 
      .                      rc1min, rc1max, fp1, ifex1mn, ifex1mx,
