@@ -1170,7 +1170,7 @@ C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
               CUR=0.
               DO IP=1,NPLSI
                 VPWL(IP)=SQRT(VXWL(IP)**2+VYWL(IP)**2+VZWL(IP)**2)
-                DIWL(IP)=DIWL(IP)
+C               DIWL(IP)=DIWL(IP)
               ENDDO
               ESHET=NCHRGI(IION)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                  NCHRGP,GAMMA,CUR,NPLSI,MSURF)
