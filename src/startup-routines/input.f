@@ -2180,8 +2180,8 @@ c  default: only for bulk ions
      .             TDMPAR(IPLS)%TDM%H2(I),
      .             TDMPAR(IPLS)%TDM%REACTION(I),
      .             TDMPAR(IPLS)%TDM%CR(I)
-              IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.11') == 0. AND.
-     .            INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.12') == 0.) THEN
+              IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.11') == 0 .AND.
+     .            INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.12') == 0) THEN
                 WRITE (iunout,*)
      .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL '
                 WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS '
