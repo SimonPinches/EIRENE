@@ -97,7 +97,8 @@ C  DATA FOR REDUCED ENERGY SCALING
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
      .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF, IGAST,
-     .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP, ICOUNT, IFIRST,
+     .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP,
+     .           ICOUNT, IFIRST, ICOANGL, 
      .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
      .           INDR1P, INDR1, ISPZO, IFILE, INDW, idummy
       INTEGER, EXTERNAL :: RANGET_EIRENE, RANSET_EIRENE
@@ -134,7 +135,8 @@ C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
      .  0.,0.001,0.003,0.006,0.011,0.025,0.073,0.215,0.505,0.865,2*1.,
      .  0.,0.001,0.003,0.005,0.009,0.015,0.035,0.105,0.305,0.6,0.9,1./
 C---------------------------------------------------------------------
-      DATA CON/0.4685/,EOQ/14.39/,ZWDR/0.666667/,IFIRST/0/,ICOUNT/0/
+      DATA CON/0.4685/,EOQ/14.39/,ZWDR/0.666667/,
+     .     IFIRST/0/,ICOUNT/0/,ICOANGL/0/
       DATA NPANOLD/0/
 
 cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
@@ -371,7 +373,11 @@ C
       CALL EIRENE_RF0USR
 C
       RETURN
-C
+c
+c  done with initialisation
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
       ENTRY EIRENE_REFLC1 (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
 
 C.................................................................
@@ -660,13 +666,19 @@ C  SPECULAR REFLECTION
 cdr  to be written: fixed momentum reflection in case aintg > 0.
       IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
 C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
-c       write (iunout,*) 'cosine distr. activated at surf msurf'
-c       write (iunout,*) 'msurf, expi ',msurf,expi 
+        icoangl=icoangl+1
+        if (icoangl.le.10) then
+          write (iunout,*) 'Subr. Reflec: '
+          write (iunout,*) 'cosine distr. activated at surface MSURF'
+          write (iunout,*) 'msurf, expi ',msurf,expi 
+          write (iunout,*) 'Is that intended? '
+        endif
         F1=1.
         F2=0.
         GOTO 400
       ENDIF
-C
+
+C  find polar angle of reflection from tabulated distribution
       ZEP1=RANF_EIRENE( )
       DO 107 I=2,INRM
         INDR2P=I

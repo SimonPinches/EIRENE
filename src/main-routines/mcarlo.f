@@ -227,6 +227,7 @@ C**** CLEAR WORK AREA FOR SUM OVER STRATA ****************************
 C
       CALL EIRENE_CLEAR_SUMOSTRA
 
+c now initialized in eirene_init_cspez
 !pb      LOGATM=.FALSE.
 !pb      LOGION=.FALSE.
 !pb      LOGMOL=.FALSE.
