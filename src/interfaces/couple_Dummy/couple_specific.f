@@ -1,3 +1,26 @@
+cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
+cdr:             check: is eirsrt universal, then: move even further up to "main routines".
+cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
+c  jan 2017: syncronisation with corresponding version in couple_SOLPS-ITER,
+c            re. reading polygon data in geomd_linda from fort.30
+c            added: species index in eapl,empl,eipl tallies
+C
+C  ASSISTANT ROUTINES, SPECIFIC TO A PARTICULAR EDGE CODE INTERFACE
+C  DATA STRUCTURES (grid, plasma data, etc...)
+c
+cdr:  GEOMD : DRIVER FOR DIFFERENT VERSIONS OF GEOMD_..ROUTINES, diff. geometry file formats
+C     GEOMD_CARRE
+C     GEOMD_LINDA
+C     GEOMD_SONNET
+c
+cdr   MESHPROJ
+cdr   INDMAP
+cdr   INDMPI
+cdr   PLASM
+cdr   NEUTR
+cdr   SAVE_TALLIES
+C
+C
 C
 C
       SUBROUTINE EIRENE_MSHPROJ(X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,
@@ -64,7 +87,7 @@ C
       SUBROUTINE EIRENE_INDMPI(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG,NSTR,ISTR)
 C
-C     INDEX MAPPING: INVERS TO SUBR. INDMAP
+C     INDEX MAPPING: INVERSE TO SUBR. INDMAP
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT

@@ -182,7 +182,7 @@ C
      .          YLCOR, ZLCOR, ALR, ROTNRM, RPSDL,
      .          XSH, YSH, ZSH,
      .          ALROT, REFNRM,
-     .          R1MN, DPP, R1MX, R2MN, R2MX,
+     .          DPP, R1MN, R1MX, R2MN, R2MX,
      .          SPCMN, SPCMX,SPC_SHIFT,
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, ESCD2A, ESCD2M, ESCD2I, ESCD2PH, ESCD2P,
@@ -309,7 +309,7 @@ C
 
 C  AS DEFAULT: SWITCH OFF MOMENTUM DENSITY TALLIES.
 C  FOR ACTIVATING THOSE TALLIES THEY NEED TO BE EXPLICITLY
-C  SWITCHED ON IN BLOCK 11 
+C  SWITCHED ON IN BLOCK 11
 
 C  LV?DEN.. IS AN ALIAS FOR AN ENTRY IN ARRAY LMISTALV
 C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
@@ -845,11 +845,14 @@ C  TOROIDAL MESH
 C
 C INPUT SUB-BLOCK 2C
 C
-230   READ (IUNIN,'(A72)') ZEILE
+      IREAD=0
+      CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
+c     READ (IUNIN,'(A72)') ZEILE
 
 CDR SKIP READING COMMENT INPUT CARDS STARTING WITH *
-      IF (ZEILE(1:1) .EQ. '*') GOTO 230
-      IREAD=1
+c     IF (ZEILE(1:1) .EQ. '*') GOTO 230
+c     IREAD=1
+
       READ (ZEILE,6665) NLTOR
       IREAD=0
 C
@@ -864,9 +867,11 @@ C  MESH MULTIPLICATION
 C
 C INPUT SUB-BLOCK 2D
 C
-240   READ (IUNIN,'(A72)') ZEILE
-      IF (ZEILE(1:1) .EQ. '*') GOTO 240
-      IREAD=1
+      IREAD=0
+      CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
+C240  READ (IUNIN,'(A72)') ZEILE
+C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
+C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1023,9 +1028,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         ENDIF
         IF (IDIMP.NE.2) THEN
           IF (IRPTA2.GT.1) IRPTA(ISTS,2)=IRPTA2
-!pb          IF (IRPTE2.LE.1.OR.IRPTE2.GT.NP2ND) THEN
           IF (IRPTE2.LE.1.OR.IRPTE2.GT.MAX(NP2ND,NRPLG)) THEN
-!pb            IRPTE(ISTS,2)=MAX(2,NP2ND)
             IRPTE(ISTS,2)=MAX(2,NP2ND,NRPLG)
           ELSE
             IRPTE(ISTS,2)=IRPTE2
@@ -1044,8 +1047,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
           ELSE
             IRPTE(ISTS,3)=IRPTE3
           ENDIF
-!pb          IF ((IDIMP.EQ.1.AND.IRPTE1.GT.NR1ST).OR.
-!pb     .        (IDIMP.EQ.2.AND.IRPTE2.GT.NP2ND)) THEN
+
           IF ((IDIMP.EQ.1.AND.IRPTE1.GT.NR1ST).OR.
      .        (IDIMP.EQ.2.AND.IRPTE2.GT.MAX(NP2ND,NRPLG))) THEN
             WRITE (iunout,*) 'WARNING:'
@@ -1053,6 +1055,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
             WRITE (iunout,*) 'OUT OF RANGE. INVISIBLE!'
           ENDIF
         ENDIF
+
         READ (IUNIN,6666) ILIIN(NLJ),ILSIDE(NLJ),ILSWCH(NLJ),
      .                    ILEQUI(NLJ),ILTOR(NLJ),ILCOL(NLJ),
      .                    ILFIT(NLJ),ILCELL(NLJ),ILBOX(NLJ),
@@ -1072,7 +1075,7 @@ C  NO LOCAL SURFACE INTERACTION MODEL FOUND, USE: DEFAULT
           GOTO 314
 !pb     ELSEIF (ILIIN(NLJ).LE.0) THEN
 !pb       GOTO 312
-C  ASSIGN ONE OF THE SURFACE MODELLS (BLOCK 6) TO THIS SURFACE
+C  ASSIGN ONE OF THE SURFACE MODELS (BLOCK 6) TO THIS SURFACE
         ELSEIF (ZEILE(1:8).EQ.'SURFMOD_') THEN
           ALLOCATE(SURFCUR)
           SURFCUR%MODNAME = TRIM(ADJUSTL(ZEILE(9:)))
@@ -1482,9 +1485,9 @@ C
 
 C  THE REST OF INPUT DATA FROM THIS REACTION CARD IS NOW ON 'CHR'
 C  these are flags to modify, scale, (or extrapolate) the input data tables or fits
-C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
+C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
-!  READ MP
+!  READ MP,   projectile mass
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
         READ (CHR,*) MP
@@ -1492,7 +1495,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING MP FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ MT
+!  READ MT,   target mass
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
         READ (CHR,*) MT
@@ -1500,7 +1503,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING MT FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ DPP
+!  READ DPP,  potential energy increment in energy weighted rate
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') DPP
@@ -1508,7 +1511,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING DPP FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R1MN
+!  READ R1MN,   lower boundary for extrapolation, 1st parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R1MN
@@ -1516,7 +1519,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING R1MN FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R1MX
+!  READ R1MX,   upper boundary for extrapolation, 1st parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R1MX
@@ -1524,7 +1527,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING R1MX FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R2MN
+!  READ R2MN,   lower boundary for extrapolation, 2nd parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R2MN
@@ -1532,7 +1535,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING R2MN FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R2MX
+!  READ R2MX,   upper boundary for extrapolation, 2nd parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R2MX
@@ -1605,7 +1608,7 @@ c  2nd parameter in 2 parametric data
 
 C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED EXPLICITLY IN input block 4?
 C  IF YES: OVERWRITE DEFAULTS, AND/OR DATA FROM EXTERNAL FILE
-C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE 
+C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           IF (R1MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MN,(FP1(I),I=1,3)
             RC1MIN=LOG(R1MN)
@@ -1634,7 +1637,7 @@ cdr  reaclines only needed for hydkin interface?
           REACLINES(IL)%JFEX2MX = JFEX2MX
           REACLINES(IL)%FP1 = FP1
           REACLINES(IL)%FP2 = FP2
-        else 
+        else
 ! identifier "P" found in H123. Data for photon processes! No assymptotics available
 ! set defaults
           RC1MIN=-20.
@@ -3175,7 +3178,7 @@ cdr
 cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
 cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
 
-cdr   X.B. correction Sept 17, from SOLPS-ITER branch, 
+cdr   X.B. correction Sept 17, from SOLPS-ITER branch,
           IF (NSPS > 0) THEN
             NSPSA=NSPS
             ESPEC%LOG = .FALSE.
@@ -3501,7 +3504,7 @@ C
         READ (IUNIN,'(A72)') TXTSIG(ICHORI)
         READ (IUNIN,6666) NCHTAL(ICHORI),NSPSCL(ICHORI),NSPNEW(ICHORI),
      .                    ISTCHR
-        READ (IUNIN,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE 
+        READ (IUNIN,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
      .                    NSPBLC(ICHORI),NSPADD(ICHORI)
         READ (IUNIN,6664) EMIN1(ICHORI),EMAX1(ICHORI),ESHIFT(ICHORI)

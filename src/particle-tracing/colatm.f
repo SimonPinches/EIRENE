@@ -86,6 +86,8 @@ C                           TRANSITION NEUTRAL-->ION (IF CALLED
 C                           BY FOLNEUT), OR
 C                           TRANSITION ION-->NEUTRAL (IF CALLED
 C                           BY FOLION)
+C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST COLL. SCORING.
+C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING 
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -117,9 +119,15 @@ C
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
 cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
-     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
+      INTEGER :: 
+c    .           IICX, IIEI, IIPI, IIEL,
+c    .           IMCX, IMEI, IMPI, IMEL,
+     .           IACX, IAEI, IAPI, IAEL, IAOT,
+c    .           
+     .           IOLD, NOLD, 
+     .           IRCX, IREI, IRPI, IREL, IROT,
+     .           IBGK, IP, NFLAG,
+     .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
 Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
@@ -130,8 +138,8 @@ CDR         or integer (1/2 particle possible?)
  
  
 csw add n 2lines
-      INTEGER :: iaot,irot,kk,updf,t1
-      real(dp):: sump
+cdr   INTEGER :: kk,updf,t1
+cdr   real(dp):: sump
 csw external
       real(dp), external :: ranf_eirene
  

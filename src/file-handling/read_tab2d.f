@@ -35,7 +35,7 @@ c  to be done: units, log-lin, scaling, asymptotics
       type(adas_data), pointer :: ap
 
 cdr  error exit for unfinished options
-      if (isw.ne.4 .and. isw.ne.10)  goto 1000
+      if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
 
 
 
@@ -139,25 +139,10 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         END IF
         reacdat(ir)%lpot = .true.
 
-        allocate (reacdat(ir)%pot)
-        nullify (reacdat(ir)%pot%line)
-        nullify (reacdat(ir)%pot%poly)
-        nullify (reacdat(ir)%pot%hyd)
+        call eirene_alloc_fit_form (reacdat(ir)%pot)
 
         reacdat(ir)%pot%adas => ap
         reacdat(ir)%pot%ifit = 3
-        REACDAT(IR)%POT%RC1MIN = 0._DP
-        REACDAT(IR)%POT%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%POT%RC2MIN = 0._DP
-        REACDAT(IR)%POT%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%POT%FP1L = 0._DP
-        REACDAT(IR)%POT%FP1R = 0._DP
-        REACDAT(IR)%POT%FP2B = 0._DP
-        REACDAT(IR)%POT%FP2T = 0._DP
-        REACDAT(IR)%POT%JFEX1MN = 0
-        REACDAT(IR)%POT%JFEX1MX = 0
-        REACDAT(IR)%POT%JFEX2MN = 0
-        REACDAT(IR)%POT%JFEX2MX = 0
  
       case (1)
         IF (REACDAT(IR)%LCRS) THEN
@@ -169,25 +154,11 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         END IF
         reacdat(ir)%lcrs = .true.
 
-        allocate (reacdat(ir)%crs)
-        nullify (reacdat(ir)%crs%line)
-        nullify (reacdat(ir)%crs%poly)
-        nullify (reacdat(ir)%crs%hyd)
+        call eirene_alloc_fit_form (reacdat(ir)%crs)
+
         reacdat(ir)%crs%adas => ap
 
         reacdat(ir)%crs%ifit = 3
-        REACDAT(IR)%CRS%RC1MIN = 0._DP
-        REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%CRS%RC2MIN = 0._DP
-        REACDAT(IR)%CRS%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%CRS%FP1L = 0._DP
-        REACDAT(IR)%CRS%FP1R = 0._DP
-        REACDAT(IR)%CRS%FP2B = 0._DP
-        REACDAT(IR)%CRS%FP2T = 0._DP
-        REACDAT(IR)%CRS%JFEX1MN = 0
-        REACDAT(IR)%CRS%JFEX1MX = 0
-        REACDAT(IR)%CRS%JFEX2MN = 0
-        REACDAT(IR)%CRS%JFEX2MX = 0
  
       case (2:4)
         IF (REACDAT(IR)%LRTC) THEN
@@ -199,10 +170,8 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         END IF
         reacdat(ir)%lrtc = .true.
 
-        allocate (reacdat(ir)%rtc)
-        nullify (reacdat(ir)%rtc%line)
-        nullify (reacdat(ir)%rtc%poly)
-        nullify (reacdat(ir)%rtc%hyd)
+        call eirene_alloc_fit_form (reacdat(ir)%rtc)
+
         reacdat(ir)%rtc%adas => ap
 
         reacdat(ir)%rtc%ifit = 3
@@ -210,14 +179,6 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         REACDAT(IR)%RTC%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTC%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTC%RC2MAX = ap%dens(nde)
-        REACDAT(IR)%RTC%FP1L = 0._DP
-        REACDAT(IR)%RTC%FP1R = 0._DP
-        REACDAT(IR)%RTC%FP2B = 0._DP
-        REACDAT(IR)%RTC%FP2T = 0._DP
-        REACDAT(IR)%RTC%JFEX1MN = 0
-        REACDAT(IR)%RTC%JFEX1MX = 0
-        REACDAT(IR)%RTC%JFEX2MN = 0
-        REACDAT(IR)%RTC%JFEX2MX = 0
  
       case (5:7)
         IF (REACDAT(IR)%LRTCMW) THEN
@@ -229,10 +190,8 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         END IF
         reacdat(ir)%lrtcmw = .true.
 
-        allocate (reacdat(ir)%rtcmw)
-        nullify (reacdat(ir)%rtcmw%line)
-        nullify (reacdat(ir)%rtcmw%poly)
-        nullify (reacdat(ir)%rtcmw%hyd)
+        call eirene_alloc_fit_form (reacdat(ir)%rtcmw)
+
         reacdat(ir)%rtcmw%adas => ap
 
         reacdat(ir)%rtcmw%ifit = 3
@@ -240,14 +199,6 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         REACDAT(IR)%RTCMW%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTCMW%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTCMW%RC2MAX = ap%dens(nde)
-        REACDAT(IR)%RTCMW%FP1L = 0._DP
-        REACDAT(IR)%RTCMW%FP1R = 0._DP
-        REACDAT(IR)%RTCMW%FP2B = 0._DP
-        REACDAT(IR)%RTCMW%FP2T = 0._DP
-        REACDAT(IR)%RTCMW%JFEX1MN = 0
-        REACDAT(IR)%RTCMW%JFEX1MX = 0
-        REACDAT(IR)%RTCMW%JFEX2MN = 0
-        REACDAT(IR)%RTCMW%JFEX2MX = 0
  
       case (8:10)
         IF (REACDAT(IR)%LRTCEW) THEN
@@ -258,24 +209,15 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
           CALL EIRENE_EXIT_OWN(1)
         END IF
         reacdat(ir)%lrtcew = .true.
-        allocate (reacdat(ir)%rtcew)
-        nullify (reacdat(ir)%rtcew%line)
-        nullify (reacdat(ir)%rtcew%poly)
-        nullify (reacdat(ir)%rtcew%hyd)
+
+        call eirene_alloc_fit_form (reacdat(ir)%rtcew)
+
         reacdat(ir)%rtcew%adas => ap
         reacdat(ir)%rtcew%ifit = 3
         REACDAT(IR)%RTCEW%RC1MIN = ap%temp(1)
         REACDAT(IR)%RTCEW%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTCEW%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTCEW%RC2MAX = ap%dens(nde)
-        REACDAT(IR)%RTCEW%FP1L = 0._DP
-        REACDAT(IR)%RTCEW%FP1R = 0._DP
-        REACDAT(IR)%RTCEW%FP2B = 0._DP
-        REACDAT(IR)%RTCEW%FP2T = 0._DP
-        REACDAT(IR)%RTCEW%JFEX1MN = 0
-        REACDAT(IR)%RTCEW%JFEX1MX = 0
-        REACDAT(IR)%RTCEW%JFEX2MN = 0
-        REACDAT(IR)%RTCEW%JFEX2MX = 0
  
       case (11:12)
         IF (REACDAT(IR)%LOTH) THEN
@@ -286,25 +228,12 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
           CALL EIRENE_EXIT_OWN(1)
         END IF
         reacdat(ir)%loth = .true.
-        allocate (reacdat(ir)%oth)
-        nullify (reacdat(ir)%oth%line)
-        nullify (reacdat(ir)%oth%poly)
-        nullify (reacdat(ir)%oth%hyd)
+
+        call eirene_alloc_fit_form (reacdat(ir)%oth)
+
 
         reacdat(ir)%oth%adas => ap
         reacdat(ir)%oth%ifit = 3
-        REACDAT(IR)%OTH%RC1MIN = 0._DP
-        REACDAT(IR)%OTH%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%OTH%RC2MIN = 0._DP
-        REACDAT(IR)%OTH%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%OTH%FP1L = 0._DP
-        REACDAT(IR)%OTH%FP1R = 0._DP
-        REACDAT(IR)%OTH%FP2B = 0._DP
-        REACDAT(IR)%OTH%FP2T = 0._DP
-        REACDAT(IR)%OTH%JFEX1MN = 0
-        REACDAT(IR)%OTH%JFEX1MX = 0
-        REACDAT(IR)%OTH%JFEX2MN = 0
-        REACDAT(IR)%OTH%JFEX2MX = 0
  
       case default
 

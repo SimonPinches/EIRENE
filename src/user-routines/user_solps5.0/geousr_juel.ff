@@ -1,0 +1,123 @@
+C
+      SUBROUTINE GEOUSR_Juel
+C
+C***   PREPARE DATA FOR ADDITIONAL SURFACES
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+#include <PARMMOD.F>
+#include <CADGEO.F>
+#include <COMPRT.F>
+#include <CLOGAU.F>
+#include <COMUSR.F>
+#include <CTRCEI.F>
+#include <CCONA.F>
+#include <CGEOM.F>
+#include <CGRID.F>
+#include <CLGIN.F>
+#include <CINIT.F>
+#include <CPOLYG.F>
+
+      IMPLICIT NONE
+
+C
+C MODIFY GEOMETRY
+C
+C
+      READ (IUNIN,*)
+      READ (IUNIN,'(2I6)') NADMOD,NASMOD
+
+      DO I=1,NADMOD
+        READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+
+        GOTO (1,2,3,4,5,6),IPUNKT
+        WRITE (6,*) 'WRONG POINTNUMBER IN GEOUSR '
+        WRITE (6,*) 'INPUT LINE READING'
+        WRITE (6,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+        WRITE (6,*) ' IS IGNORED '
+        GOTO 10
+
+    1   CONTINUE
+        P1(1,NRS)=XCOOR
+        P1(2,NRS)=YCOOR
+        P1(3,NRS)=ZCOOR
+        GOTO 10
+
+    2   CONTINUE
+        P2(1,NRS)=XCOOR
+        P2(2,NRS)=YCOOR
+        P2(3,NRS)=ZCOOR
+        GOTO 10
+
+    3   CONTINUE
+        P3(1,NRS)=XCOOR
+        P3(2,NRS)=YCOOR
+        P3(3,NRS)=ZCOOR
+        GOTO 10
+
+    4   CONTINUE
+        P4(1,NRS)=XCOOR
+        P4(2,NRS)=YCOOR
+        P4(3,NRS)=ZCOOR
+        GOTO 10
+
+    5   CONTINUE
+        P5(1,NRS)=XCOOR
+        P5(2,NRS)=YCOOR
+        P5(3,NRS)=ZCOOR
+        GOTO 10
+
+    6   CONTINUE
+        P6(1,NRS)=XCOOR
+        P6(2,NRS)=YCOOR
+        P6(3,NRS)=ZCOOR
+
+   10   CONTINUE
+      ENDDO
+
+      DO I=1,NASMOD
+        READ (IUNIN,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
+        IF (IPUNKT.EQ.1) THEN
+          P1(1,NAS)=XPOL(NSSIR,NSSIP)
+          P1(2,NAS)=YPOL(NSSIR,NSSIP)
+          write (6,*) 'additional surface no ',nas,'modified in geousr'
+          write (6,*) 'p1 : ',p1(1,nas),p1(2,nas)
+        ELSEIF (IPUNKT.EQ.2) THEN
+          P2(1,NAS)=XPOL(NSSIR,NSSIP)
+          P2(2,NAS)=YPOL(NSSIR,NSSIP)
+          write (6,*) 'additional surface no ',nas,'modified in geousr'
+          write (6,*) 'p2 : ',p2(1,nas),p2(2,nas)
+        ELSE
+          WRITE (6,*) 'WRONG POINTNUMBER IN ADDUSR '
+          WRITE (6,*) 'INPUT LINE READING'
+          WRITE (6,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
+          WRITE (6,*) ' IS IGNORED '
+        ENDIF
+C
+C
+      ENDDO
+C
+C  ABSCHALTEN NICHT ERREICHBARER ODER DOPPELT VORHANDENER FLAECHEN
+C
+C   HIERHER: LGJUM1, LGJUM2 SETZEN ZUR BESCHLEUNIGUNG (NICHT UNBEDINGT
+C   NOETIG)
+C
+C   LGJUM1(J,I)=.TRUE. :
+C   ABSCHALTEN DER FLAECHE I, FALLS TEILCHEN AUF J SITZT
+C
+C   LGJUM2(J,I)=.TRUE. :
+C   ABSCHALTEN DES ERSTEN SCHNITTPUNKTES MIT FLAECHE I, FALLS
+C   TEILCHEN AUF J SITZT (FALLS I EINE FLAECHE ZWEITER ORDNUNG IST)
+C
+C   DEFAULTS: LGJUM1(J,J)=.TRUE. FUER EBENE FLAECHEN,
+C             LGJUM2(J,J)=.TRUE. FUER FLAECHEN ZWEITER ORDNUNG
+C
+C
+C
+C  SET SOME VOLUMES EXPLICITLY
+C
+C
+C  MODIFY REFLECTION MODEL AT TARGET PLATES
+C
+C
+      RETURN
+      END

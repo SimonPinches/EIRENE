@@ -197,25 +197,13 @@ c  next: type of reaction:  EI, (=DS), CX, EL, RC, PI (=II)
       end if
  
       reacdat(ir)%lrtc = .true.
-      allocate(reacdat(ir)%rtc)
-      nullify (reacdat(ir)%rtc%adas)
-      nullify (reacdat(ir)%rtc%line)
-      nullify (reacdat(ir)%rtc%poly)
+
+      call eirene_alloc_fit_form(reacdat(ir)%rtc)
 
       reacdat(ir)%rtc%hyd => hp
       reacdat(ir)%rtc%ifit = 4
       REACDAT(IR)%RTC%RC1MIN = hp%temps(1)
       REACDAT(IR)%RTC%RC1MAX = hp%temps(hp%ntemps)
-      REACDAT(IR)%RTC%RC2MIN = 0._dp
-      REACDAT(IR)%RTC%RC2MAX = huge(1._dp)
-      REACDAT(IR)%RTC%FP1L = 0._DP
-      REACDAT(IR)%RTC%FP1R = 0._DP
-      REACDAT(IR)%RTC%FP2B = 0._DP
-      REACDAT(IR)%RTC%FP2T = 0._DP
-      REACDAT(IR)%RTC%JFEX1MN = 0
-      REACDAT(IR)%RTC%JFEX1MX = 0
-      REACDAT(IR)%RTC%JFEX2MN = 0
-      REACDAT(IR)%RTC%JFEX2MX = 0
  
       if (lffl) then
         h123 = 'H.2 '

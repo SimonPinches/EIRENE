@@ -16,6 +16,7 @@ cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot, 
 cdr           but is for surface tally pointers
+cdr  jan.18:  added: NO_LINES, NADV_ADD
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -56,7 +57,8 @@ csw 13apr07
      I NATM,   NMOL,   NION,   NPLS,   NPHOT,  NADV,   NADS,
      I NCLV,   NSNV,   NALV,   NALS,   NAIN,   NCPV,   NBGK,
      I NPLSTI, NPLSV,
-     I NADSPC, NBACK_SPEC ,NADSPC_S, NADSPC_C, NADSPC_D,NADSPC_CD
+     I NADSPC, NBACK_SPEC ,NADSPC_S, NADSPC_C, NADSPC_D,NADSPC_CD,
+     I NADV_ADD
 
       INTEGER, PUBLIC, SAVE ::
      I NSD,    NSDW,   NCV
@@ -68,7 +70,8 @@ csw 13apr07
      I NHD1,   NHD2,   NHD3,   NHD4,   NHD5,   NHD6
 
       INTEGER, PUBLIC, SAVE ::
-     I NCHOR,  NCHEN
+     I NCHOR,  NCHEN, NO_LINES
+
 
       INTEGER, PUBLIC, SAVE ::
      I NDX,    NDY,    NFL,    NDXP,   NDYP,   NPTRGT
@@ -530,6 +533,9 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
       INT_PARM(146) = NADSPC_D
       INT_PARM(147) = NADSPC_CD
 
+      INT_PARM(148) = NO_LINES
+      INT_PARM(149) = NADV_ADD
+ 
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
 
@@ -714,6 +720,9 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       NADSPC_C    = INT_PARM(145)
       NADSPC_D    = INT_PARM(146)
       NADSPC_CD   = INT_PARM(147)
+
+      NO_LINES    = INT_PARM(148)
+      NADV_ADD    = INT_PARM(149)
 
       RETURN
       END SUBROUTINE EIRENE_DISTRIB_PARM

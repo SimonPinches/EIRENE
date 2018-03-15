@@ -62,7 +62,8 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL
+     .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
+     .           NO_CONTRIB, ISP, ITP, IRATIO
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
       REAL(DP), ALLOCATABLE :: ENERGY(:,:)
@@ -75,7 +76,8 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: LMULTI, LMULVI, LEMISS   ! multiple ion temperatures (per species) multiple ion velocities (per species)
+      LOGICAL :: LEMISS, NLEMIS
+      LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
       CHARACTER(12) :: HYDKIN_DEFAULT, CHR, CADAPT
@@ -85,6 +87,7 @@ C
      .                              PART_NAME(:)
       CHARACTER(15) :: BNAME
       CHARACTER(1000) :: HLINE
+      CHARACTER(8) :: FNAME, FRATIO
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
@@ -273,6 +276,10 @@ C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
 C
 C
 C  READ DATA FOR STANDARD MESH, 200---299
+
+
+      WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION '
+
 C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -535,10 +542,11 @@ C
 C  READING FOR INPUT BLOCK 2 DONE
 C
 C
+      WRITE (iunout,*) '*** 3. DATA FOR BREP SURFACES'
 C  READ DATA FOR NON DEFAULT SURFACE MODELS ON STANDARD SURFACES
 C  300--349
 C
-      WRITE (iunout,*) '*** 3A. DATA FOR NON DEFAULT STANDARD SURFACES'
+      WRITE (iunout,*) '*3A.   NON DEFAULT STANDARD SURFACES'
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
@@ -554,7 +562,7 @@ C  FIND START OF NEXT INPUT BLOCK: 3B
 C
 C  READ DATA FOR ADDITIONAL SURFACES 350--399
 C
-      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES           '
+      WRITE (iunout,*) '*3B.   ADDITIONAL SURFACES           '
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -1268,9 +1276,80 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+
+c  optional input cards: 'define_lines'
+
+c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
+c  parent state contributions
+      ULINE=ZEILE
+      CALL EIRENE_UPPERCASE(ULINE)
+      NADV_ADD = 0
+      NLEMIS = .FALSE.
+      IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
+! EMISSIVITY LINES DEFINED IN INPUT
+        LINES = 0
+        NLEMIS = .TRUE.
+        READ (IUNIN,6666) NO_LINES, MOD_ADDV
+        DO I=1, NO_LINES
+          READ (IUNIN,'(A80)') ZEILE
+          DO WHILE (ZEILE(1:1) == '*')
+            READ (IUNIN,'(A80)') ZEILE
+          END DO
+          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,*)
+          IF (MOD_ADDV == 0) THEN
+            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
+          ELSE 
+            NADV_ADD = NADV_ADD + NO_COMPO + 1
+          END IF
+          DO J=1, NO_COMPO
+            READ (IUNIN,*)
+            READ (IUNIN,*) NO_CONTRIB           
+            LINES = LINES + NO_CONTRIB
+            DO K = 1, NO_CONTRIB
+              READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
+              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+              IF (IRATIO > 0) THEN
+                LINES = LINES + 1
+                READ (IUNIN,'(18X,1X,A6)') FRATIO
+                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                IF (IRATIO == 2) THEN
+                  LINES = LINES + 1
+                  READ (IUNIN,*)
+                  READ (IUNIN,'(18X,1X,A6)') FRATIO
+                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                END IF  
+              END IF
+            END DO
+          END DO
+        END DO
+
+! ADD 1 FOR TOTAL
+        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
+        NADV = NADV + NADV_ADD 
+        NREAC = NREAC + LINES
+
+        READ (IUNIN,'(A72)') ZEILE
+      END IF
+      
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
+
+      NLEMIS = NLEMIS .OR. (NCHOR > 0)
+      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
+! USE DEFAULT LINES FOR EMISSIVITY
+        MOD_ADDV = 0
+        NADV=NADV+10
+        NO_LINES = 6
+        NO_COMPO = 6
+! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
+        NREAC = NREAC + NO_CONTRIB*NO_COMPO
+            
+      END IF
+
+
 C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
@@ -1278,6 +1357,7 @@ C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
         NADV=NADV+10
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
+        IF (.FALSE.) THEN
         ALLOCATE (ENERGY(2,NCHORI))
         ENERGY = 0._DP
         LINES = 0
@@ -1312,6 +1392,7 @@ C  OF EMISSION PROFILES
         NREAC = NREAC + LINES*6 + 3
 
         DEALLOCATE (ENERGY)
+        END IF
       END IF
 
 C  SKIP READING REST OF THIS BLOCK

@@ -66,7 +66,7 @@ C
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, 
-     .            ERATE, TB, TII,
+     .            TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
      .           IBGK,ISPZB,ITYPB
@@ -95,7 +95,7 @@ C
       IPLTI = MPLSTI(IPL)
 
 C..................................................................
-C 0. INTERACTION POTENTIAL, DIFF. CROSS SECTION INFORMATION, ETC....
+C 0. INTERACTION POTENTIAL, DIFFERENTIAL CROSS SECTION INFORMATION, ETC....
 C..................................................................
       IF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.1) THEN
 cdr  use total cross section and rate coefficients for transport.
@@ -104,9 +104,16 @@ cdr  differential cross section or interaction potential for collision kinetics
 cdr                          !  this should become = iftflg(kk,0),
 cdr
 cdr                          !  set here: pot(1:9,irel)=reacdat(kk):.....
-      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN      
 cdr  use diffusion cross section and diffusion rate coeff. for transport
         modcol(5,0,irel)=0   !  isotropic scattering IN COM
+        if (NPBGKP(IPL,1).eq.0) then
+          WRITE (IUNOUT,*) 'WARNING FROM XSTEL: '
+          WRITE (IUNOUT,*) 'KK, IREL ',KK,IREL
+          WRITE (IUNOUT,*) 'NO SCATTERING ANGLE INFORMATION PROVIDED'
+          WRITE (IUNOUT,*) 'BUT ALSO NO BGK RELAXATION.'
+          WRITE (IUNOUT,*) 'USE ISOTROPIC SCATTERING'    
+        endif
 
 cdr  or
 cdr  use 0.5*(diffusion cross section) and 0.5*(diffusion rate coeff.) for transport 
@@ -146,7 +153,7 @@ C           NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              COU = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
 245         CONTINUE
           ELSEIF (MODC.EQ.2) THEN
@@ -162,7 +169,8 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii) ! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(-2.3_dp,tii) 
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -191,7 +199,7 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
                 
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),.FALSE.,1,ERATE)
+            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -199,8 +207,9 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
           END DO
 C         JEREAEL(IREL) = 9
         ELSE  ! ??
+
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
-          write (iunout,*) 'storage save mode not available yet for PI'
+          write (iunout,*) 'storage save mode not available yet for EL'
           write (iunout,*) 'in case modc=3  (n,T-dependence).'
           GOTO 995 
         ENDIF
@@ -321,7 +330,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
                 EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
-     .                          (KREAD,TII,
+     .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
