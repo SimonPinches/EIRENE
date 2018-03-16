@@ -465,6 +465,7 @@ c  combine all the resampled census from all processors into a single one: rpart
           write (iunout,*) ' totrpw ',totrpw
           write (iunout,*) ' sclfac ',sclfac
           do i=1,iprnli
+            RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
             weight = weight * sclfac
           end do
         end if
