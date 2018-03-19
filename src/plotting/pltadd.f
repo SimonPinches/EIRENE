@@ -1,3 +1,5 @@
+cpb  march 18: bug fix re plot option plnums (print surface numbers in geometry plot)
+cpb            Had cause segmentation faults in certain rare conditions).
 C
 C
       SUBROUTINE EIRENE_PLTADD (MANF,MEND)
@@ -905,8 +907,13 @@ C
             IF (ARC < ARC05) CUR => CUR%NXTPNT
           END DO
 C  POINT BETWEEN CUR AND CUR%NXTPNT
-          XINI=(CUR%XPL2D+CUR%NXTPNT%XPL2D)*0.5
-          YINI=(CUR%YPL2D+CUR%NXTPNT%YPL2D)*0.5
+          IF (ASSOCIATED(CUR%NXTPNT)) THEN
+            XINI=(CUR%XPL2D+CUR%NXTPNT%XPL2D)*0.5
+            YINI=(CUR%YPL2D+CUR%NXTPNT%YPL2D)*0.5
+          ELSE
+            XINI=CUR%XPL2D
+            YINI=CUR%YPL2D
+          END IF	
 C
 C  PLOT ARROWS: SURFACE NORMAL
           IF (PLARR) THEN
@@ -927,16 +934,19 @@ csw
             IF (CUR%NUMSUR.EQ.0) THEN
 ! do nothing
             ELSEIF (ABS(CUR%NUMSUR).LT.10) THEN
+c two digits
               WRITE (CH1,'(I2)') CUR%NUMSUR
               CALL GRTXT
      .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
      .                    2,CH1)
             ELSEIF (ABS(CUR%NUMSUR).LT.100) THEN
+c three digits
               WRITE (CH2,'(I3)') CUR%NUMSUR
               CALL GRTXT
      .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
      .                    3,CH2)
             ELSEIF (ABS(CUR%NUMSUR).LT.1000) THEN
+c four digits
               WRITE (CH3,'(I4)') CUR%NUMSUR
               CALL GRTXT
      .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),

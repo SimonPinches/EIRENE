@@ -1044,8 +1044,10 @@ cdr  this must be highly case specfic. To be reconsidered !!
 
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA) == 6) CYCLE
-        READ (IUNIN,*)
+        IF (INDSRC(ISTRA) == 6) CYCLE     
+C * 7ABCD...: STRATUM NAME
+        READ (IUNIN,'(A72)') ZEILE
+        WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
         READ (IUNIN,*)
         READ (IUNIN,*)
         READ (IUNIN,*)
@@ -1562,6 +1564,7 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,*) 'NSMSTRA =     ',NSMSTRA
       WRITE (iunout,*) 'NSTORAM =     ',NSTORAM
       WRITE (iunout,*) 'NGSTAL =      ',NGSTAL
+      WRITE (iunout,*) 'NREAC_ADD =   ',NREAC_ADD
       WRITE (iunout,*) 'NRPES  =      ',NRPES
 
 C
