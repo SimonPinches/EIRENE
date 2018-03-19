@@ -2,12 +2,12 @@ cdr  Nov. 2015
 
 cdr  internal energy:  make also ipls species dependent
 cdr  check for storage (copy) and return, if not enought storage
-cdr  upfcop should be identical in interface versions, and should
+cdr  updlin should
 cdr  be made a default eirene option for linear combination of tallies
 
       SUBROUTINE EIRENE_UPDLIN
 
-!  update tallies (currently: COPV) after completion of 
+!  update tallies (currently on: COPV) after completion of 
 !  trajectory. Use linear algebraic expressions of default tallies
 !  
 !  score per history --> automatically variances per history are available

@@ -1,5 +1,5 @@
 cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
-cdr             semi-transp fluxes: score only indicent and emitted current fractions
+cdr             semi-transp fluxes: score only incident and emitted current fractions
 cdr             for which surfaces are NOT transparent. 
 cdr             update_sptflx: different meaning of flag IND. More consistent
 cdr             now with IND-flag in other surface scoring routines.  
