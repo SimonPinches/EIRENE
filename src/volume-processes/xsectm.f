@@ -52,7 +52,7 @@ C
  
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, DEIMIN, EELEC, CHRDF0, 
-     .            RMASS, EBULK, EHEAVY, COU, EIRENE_RATE_COEFF, ERATE,
+     .            RMASS, EBULK, EHEAVY, COU, EIRENE_RATE_COEFF, 
      .            ACCMAS, ACCINV 
 
       INTEGER :: ITEST, IATM, IPLS, IION, IA1, IP2, ION, ICOUNT,
@@ -291,7 +291,7 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
 
           IF (NSTORDR >= NRAD) THEN
             DO 70 J=1,NSBOX
-              COU = EIRENE_RATE_COEFF(-5,TEINL(J),0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(-5,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
 70          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
@@ -358,7 +358,7 @@ c   Accumulate totals....
 
           IF (NSTORDR >= NRAD) THEN
             DO 71 J=1,NSBOX
-              COU = EIRENE_RATE_COEFF(-6,TEINL(J),0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(-6,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 71          CONTINUE
             EELEI1(IREI,1:NSBOX)=-25.0
@@ -404,7 +404,7 @@ C  THIRD PROCESS  H2 --> H2+:  DEFAULT PROCESS NO. KK=-7
 C
           IF (NSTORDR >= NRAD) THEN
             DO 72 J=1,NSBOX
-              COU = EIRENE_RATE_COEFF(-7,TEINL(J),0._DP,.TRUE.,0,ERATE)
+              COU = EIRENE_RATE_COEFF(-7,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED

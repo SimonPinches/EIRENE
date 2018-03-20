@@ -2632,7 +2632,6 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
      .                  cveli2/amua*2._DP 
               end do
             end do
-!pb
 
             IF (.NOT.LSHORT) THEN
 

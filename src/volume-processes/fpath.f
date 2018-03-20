@@ -18,6 +18,7 @@ cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here), 
 cdr             there is no need to call  --> move to in-line 
 cdr 06.08.15 :  arguments added to vecusr
+cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
@@ -153,7 +154,7 @@ C
 2       DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE FRAMES 
+C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE REFERENCE FRAMES 
 C
       PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLS
@@ -233,7 +234,7 @@ C  MAXWELL, AT FIXED BEAM ENERGY, MOSTLY E0=0.0
 CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
 !pb         KK=NREAPI(IRPI)
 !pb         TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-!pb         TBPI = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*DIIN(IPLS,K)
+!pb         TBPI = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.TRUE.,0)*DIIN(IPLS,K)
 !pb         SIGVPI(IRPI)=TBPI
 c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
@@ -260,7 +261,7 @@ C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
           ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
             KK=NREAPI(IRPI)
-            EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
           END IF
           SIGVPI(IRPI)=EXP(EXPO)
@@ -371,7 +372,7 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               KK=NREACX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             SIGVCX(IRCX)=EXP(EXPO)
@@ -441,7 +442,7 @@ cdr         endif
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELRCX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
@@ -490,7 +491,7 @@ C  MAXWELLIAN RATE, IGNORE ATOM VELOCITY
 cdr  here should be call to ftabel3,  to be done
             KK=NREAEL(IREL)
             TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-            TBEL = EIRENE_RATE_COEFF(KK,TII,0._DP,.TRUE.,0,ERATE)*
+            TBEL = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.TRUE.,0)*
      .             DIIN(IPLS,K)
             SIGVEL(IREL)=TBEL
           END IF
@@ -522,7 +523,7 @@ cdr  here should be call to ftabel3,  to be done
 ! CALCULATE RATE-COEFFICIENT ON THE FLY
               KK=NREAEL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_RATE_COEFF(KK,TII,ELB,.FALSE.,0,ERATE)
+              EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             SIGVEL(IREL)=EXP(EXPO)
@@ -589,7 +590,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
 ! CALCULATE ENERGY-WEIGHTED RATE-COEFFICIENT ON THE FLY
               KK=NELREL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
-              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,TII,ELB,.FALSE.,0)
+              EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)

@@ -53,6 +53,7 @@ c
       DATA ZMAX/40./
 
       LARGST = SIZE(ARGST,2) >= NSBOX
+      TIMAX=0.0
  
       IF (IFIRST.EQ.0) THEN
         ALLOCATE (ZARG2(0:NPHOT))

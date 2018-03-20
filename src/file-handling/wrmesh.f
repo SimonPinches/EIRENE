@@ -62,7 +62,15 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
         CALL EIRENE_LEER(1)
       END IF
 
-      if (ncont == 0) return
+      if (ncont == 0) then 
+        call EIRENE_leer(1)
+        write (iunout,*) 'No contours specified in blocks 3a,3b'
+        write (iunout,*)
+     .    'No input file fort.78 for FEM mesh generator written '
+        call EIRENE_leer(2)
+        return
+      endif  
+
 
       IF (.NOT.ALLOCATED(NCONPOINT)) THEN
         ALLOCATE (NCONPOINT(NCONT))

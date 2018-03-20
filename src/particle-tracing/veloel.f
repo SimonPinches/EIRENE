@@ -12,6 +12,9 @@ cdr           Or, e.g. elastic component in H + p
 cdr  Jan. 17: Added option: isotropic in COM frame, iflag=0, when modcol(5,0,..)=0
 cdr                         exchange of identity in lab system when modcol(5,0,..)=-1
 cdr                         (this was default for bgk collisions so far, with OLD iflag=0)
+cdr March 18: Slight changes in notation, to sync with a new proprietary version of this
+cdr           routine which carries out cross section integration directly
+cdr           from interaction potentials without intermediate fits. veloel_TEST.ff
 C 
       SUBROUTINE EIRENE_VELOEL(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                         IREL,RMASS)
@@ -88,7 +91,7 @@ C
      .          RLMS, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
      .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS, 
      .          SEPS, RS,
-     .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH,
+     .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH, CCHI,
      .          BMAX, ER, ELMIN, ELMAX, B,
      .          VXDR, VYDR, VZDR, 
      .          ZARGX, ZARGY, ZARGZ, 
@@ -97,9 +100,10 @@ C
       REAL(DP), EXTERNAL :: RANF_EIRENE
 
       REAL(DP) :: P(9)
-      INTEGER :: IFLAG, IRL, IREAC, JJ, J, ICOUNT
+      INTEGER :: IFLAG, IRL, IREAC, JM, J, ICOUNT
       INTEGER :: IFIRST = 0
-!  PARAMETERS FOR INTERACTION POTENTIALS ARE NOW READ FROM FILE AMJUEL,
+!  PARAMETERS P_A_B FOR INTERACTION POTENTIALS for A on B collisions
+!  ARE NOW READ FROM FILE AMJUEL,
 !  NOT HARD WIRED IN THIS ROUTINE OR (EVEN OLDER VERSIONS)
 !  IN FUNTIONS FI, FIVEC
 !     DATA P_HE_HE/2.55,2.35,0.90,1.9842,1.3990 ,2.6345  ,0.,-1.9125,0./
@@ -139,7 +143,7 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
         elmin=log(0.01_dp)
         elmax=log(1.e3_dp)
         SGEVMX(IREL)=-1.D60
-        JJ=1
+        JM=1
         do j=1,1000
 c  elab:  here ln(E), with E from 0.01 to 1e3 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
@@ -150,7 +154,7 @@ c
           vrq=exp(elab-defel(IREL))
           vr=sqrt(vrq)
           if (cel*vr.gt.SGEVMX(IREL)) then
-            JJ=J
+            JM=J
             SGEVMX(IREL)=cel*vr
           endif
         enddo
@@ -159,9 +163,9 @@ c
         WRITE (iunout,*) 'FIRST CALL TO VELOEL FOR IREL= ',IREL
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
-        CALL EIRENE_MASJ1R('JJ, SGEVMX      ',JJ, SGEVMX(IREL))
-        IF (JJ.NE.1.AND.JJ.NE.1000) THEN
-          elab=elmin+(JJ-1)/999.*(elmax-elmin)
+        CALL EIRENE_MASJ1R('JM, SGEVMX      ',JM, SGEVMX(IREL))
+        IF (JM.NE.1.AND.JM.NE.1000) THEN
+          elab=elmin+(JM-1)/999.*(elmax-elmin)
           ELAB=EXP(ELAB)
           WRITE (iunout,*) 'TRUE MAXIMUM FOUND AT ELAB(EV) = ',ELAB
           IFLREL(IREL)=1
@@ -434,10 +438,10 @@ C  SCATTERING INTEGRAL TO FIND DEFLECTION ANGLE CHI
 C
         CALL EIRENE_GAUMEH (RS,ER,B,IFLAG,P,10,1,RESULT)
         CHI=PIA-2.*B/RS*RESULT
-          
+        CCHI=COS(CHI)
 C
 C  CONVERT FROM DEFLECTION ANGLE CHI TO OBSERVABLE SCATTERING ANGLE PH, [0,...,PI]
-        PH=ACOS(COS(CHI))
+        PH=ACOS(CCHI)
         CPH=COS(PH)
         SPH=SQRT(1.0-CPH*CPH)
       ENDIF

@@ -25,7 +25,7 @@ c
  
       INTEGER, INTENT(IN) :: IREI, K
       REAL(DP) :: EIRENE_FEHVEI1, EHVEI, EIRENE_FTABEI1,
-     .            EIRENE_RATE_COEFF, ERATE, DE_10
+     .            EIRENE_RATE_COEFF, DE_10
       INTEGER :: KK
  
       EIRENE_FEHVEI1=0.D0
@@ -54,7 +54,7 @@ c           EIRENE_FEHVEI1 =0.0
 
 c  non default models, data from external databases
       ELSE IF (KK > 0) THEN
-        EHVEI = EIRENE_RATE_COEFF(KK,TEINL(K),0._DP,.FALSE.,0,ERATE)
+        EHVEI = EIRENE_RATE_COEFF(KK,K,TEINL(K),0._DP,.FALSE.,0)
         EHVEI=EXP(MAX(-100._DP,EHVEI+FACREI(IREI,2)))
         EIRENE_FEHVEI1=EHVEI*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
       END IF
