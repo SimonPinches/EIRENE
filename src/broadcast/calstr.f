@@ -48,10 +48,11 @@ c       npean, npeen:   the processors in the range npean,...,npeen work on stra
       USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COUTAU
       USE EIRMOD_CSTEP
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
 C
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       real(dp), allocatable :: help(:), helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),

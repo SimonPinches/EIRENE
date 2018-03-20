@@ -110,10 +110,11 @@ C
       USE EIRMOD_CESTIM
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
+      USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
 C
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI

@@ -20,9 +20,10 @@ c
       USE EIRMOD_COMSOU
       USE EIRMOD_CSDVI
       USE EIRMOD_CSPEI
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
-      include 'mpif.h'
+!      include 'mpif.h'
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
       integer :: ier, icolor, istr, icomgrp, ier1, i, my_pe_gr,
      .           mxdim, ns, ir
