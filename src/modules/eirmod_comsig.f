@@ -145,7 +145,7 @@ cdr  Jan. 2018  mod_addv added
  
       DEALLOCATE (CH_LINE_NAME)
 
-      IF (NO_LINES > 0) THEN
+      IF (ALLOCATED(EMIS_LINES) .AND. (NO_LINES > 0)) THEN
 
          DO I = 1, NO_LINES
 
