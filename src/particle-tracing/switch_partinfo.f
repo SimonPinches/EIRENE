@@ -47,6 +47,25 @@ C  save stratum, old type, species
       iion_old = iion
       ipls_old = ipls
 
+      NULLIFY (PDENX)
+      NULLIFY (EDENX)
+      NULLIFY (PXEL)
+      NULLIFY (PXAT)
+      NULLIFY (PXML)
+      NULLIFY (PXIO)
+      NULLIFY (PXPL)
+      NULLIFY (EXEL)
+      NULLIFY (EXAT)
+      NULLIFY (EXML)
+      NULLIFY (EXIO)
+      NULLIFY (EXPL)
+      NULLIFY (VXDENX)
+      NULLIFY (VYDENX)
+      NULLIFY (VZDENX)
+      NULLIFY (MXPL)
+      NULLIFY (PXX)
+      NULLIFY (EXX)
+      
       select case(ityp)
 
       case(0)
@@ -56,26 +75,6 @@ cdr  currently: by-pass this code-section for photons (ityp=0),
 cdr  as long as update, collide, fpath for photons are still kept as separate routines.
 
        return   ! for the time being....
-
-
-       PDENX  => PDENPH(IPHOT,:) 
-       EDENX  => EDENPH(IPHOT,:) 
-       PXEL   => PAEL(:)   
-       PXAT   => PAAT(1:NATMI,:)  
-       PXML   => PAML(1:NMOLI,:)  
-       PXIO   => PAIO(1:NIONI,:) 
-       PXPL   => PAPL(1:NPLSI,:)
-       EXEL   => EAEL(:)   
-       EXAT   => EAAT(:)   
-       EXML   => EAML(:)
-       EXIO   => EAIO(:)
-       EXPL   => EAPL(1:NPLSI,:)
-       VXDENX => VXDENA(IATM,:)
-       VYDENX => VYDENA(IATM,:)
-       VZDENX => VZDENA(IATM,:)
-       MXPL   => MAPL(1:NPLSI,:)
-       PXX    => PAAT(1:NATMI,:)
-       EXX    => EAAT(:)
 
        LPDENX  => LPDENA 
        LEDENX  => LEDENA 
@@ -95,6 +94,25 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
        LMXPL   => LMAPL
        LPXX    => LPAAT 
        LEXX    => LEAAT 
+
+       IF (LPDENX)  PDENX  => PDENPH(IPHOT,:) 
+       IF (LEDENX)  EDENX  => EDENPH(IPHOT,:) 
+       IF (LPXEL)   PXEL   => PPHEL(:)   
+       IF (LPXAT)   PXAT   => PPHAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PPHML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PPHIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PPHPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EPHEL(:)   
+       IF (LEXAT)   EXAT   => EPHAT(:)   
+       IF (LEXML)   EXML   => EPHML(:)
+       IF (LEXIO)   EXIO   => EPHIO(:)
+       IF (LEXPL)   EXPL   => EPHPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENPH(IPHOT,:)
+       IF (LVYDENX) VYDENX => VYDENPH(IPHOT,:)
+       IF (LVZDENX) VZDENX => VZDENPH(IPHOT,:)
+       IF (LMXPL)   MXPL   => MPHPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PPHPHT(1:NPHOTI,:)
+       IF (LEXX)    EXX    => EPHPHT(:)
 
        LEX     => LEPH
 
@@ -121,25 +139,6 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
 
       case(1)
 !  atoms
-       PDENX  => PDENA(IATM,:) 
-       EDENX  => EDENA(IATM,:) 
-       PXEL   => PAEL(:)   
-       PXAT   => PAAT(1:NATMI,:)  
-       PXML   => PAML(1:NMOLI,:)  
-       PXIO   => PAIO(1:NIONI,:) 
-       PXPL   => PAPL(1:NPLSI,:)
-       EXEL   => EAEL(:)   
-       EXAT   => EAAT(:)   
-       EXML   => EAML(:)
-       EXIO   => EAIO(:)
-       EXPL   => EAPL(1:NPLSI,:)
-       VXDENX => VXDENA(IATM,:)
-       VYDENX => VYDENA(IATM,:)
-       VZDENX => VZDENA(IATM,:)
-       MXPL   => MAPL(1:NPLSI,:)
-       PXX    => PAAT(1:NATMI,:)
-       EXX    => EAAT(:)
-
        LPDENX  => LPDENA 
        LEDENX  => LEDENA 
        LPXEL   => LPAEL  
@@ -158,6 +157,25 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
        LMXPL   => LMAPL
        LPXX    => LPAAT 
        LEXX    => LEAAT 
+
+       IF (LPDENX)  PDENX  => PDENA(IATM,:) 
+       IF (LEDENX)  EDENX  => EDENA(IATM,:) 
+       IF (LPXEL)   PXEL   => PAEL(:)   
+       IF (LPXAT)   PXAT   => PAAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PAML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PAIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PAPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EAEL(:)   
+       IF (LEXAT)   EXAT   => EAAT(:)   
+       IF (LEXML)   EXML   => EAML(:)
+       IF (LEXIO)   EXIO   => EAIO(:)
+       IF (LEXPL)   EXPL   => EAPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENA(IATM,:)
+       IF (LVYDENX) VYDENX => VYDENA(IATM,:)
+       IF (LVZDENX) VZDENX => VZDENA(IATM,:)
+       IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PAAT(1:NATMI,:)
+       IF (LEXX)    EXX    => EAAT(:)
 
        LEX     => LEA
 
@@ -185,25 +203,6 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
       case(2)
 !  molecules
 
-       PDENX  => PDENM(IMOL,:) 
-       EDENX  => EDENM(IMOL,:) 
-       PXEL   => PMEL(:)   
-       PXAT   => PMAT(1:NATMI,:)  
-       PXML   => PMML(1:NMOLI,:)  
-       PXIO   => PMIO(1:NIONI,:) 
-       PXPL   => PMPL(1:NPLSI,:)
-       EXEL   => EMEL(:)   
-       EXAT   => EMAT(:)   
-       EXML   => EMML(:)
-       EXIO   => EMIO(:)
-       EXPL   => EMPL(1:NPLSI,:)
-       VXDENX => VXDENM(IMOL,:)
-       VYDENX => VYDENM(IMOL,:)
-       VZDENX => VZDENM(IMOL,:)
-       MXPL   => MMPL(1:NPLSI,:)
-       PXX    => PMML(1:NMOLI,:)
-       EXX    => EMML(:)
-
        LPDENX  => LPDENM 
        LEDENX  => LEDENM 
        LPXEL   => LPMEL  
@@ -222,6 +221,25 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
        LMXPL   => LMMPL
        LPXX    => LPMML 
        LEXX    => LEMML 
+
+       IF (LPDENX)  PDENX  => PDENM(IMOL,:) 
+       IF (LEDENX)  EDENX  => EDENM(IMOL,:) 
+       IF (LPXEL)   PXEL   => PMEL(:)   
+       IF (LPXAT)   PXAT   => PMAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PMML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PMIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PMPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EMEL(:)   
+       IF (LEXAT)   EXAT   => EMAT(:)   
+       IF (LEXML)   EXML   => EMML(:)
+       IF (LEXIO)   EXIO   => EMIO(:)
+       IF (LEXPL)   EXPL   => EMPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENM(IMOL,:)
+       IF (LVYDENX) VYDENX => VYDENM(IMOL,:)
+       IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
+       IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PMML(1:NMOLI,:)
+       IF (LEXX)    EXX    => EMML(:)
 
        LEX     => LEM
 
@@ -249,25 +267,6 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
       case(3)
 !  test ions
 
-       PDENX  => PDENI(IION,:) 
-       EDENX  => EDENI(IION,:) 
-       PXEL   => PIEL(:)   
-       PXAT   => PIAT(1:NATMI,:)  
-       PXML   => PIML(1:NMOLI,:)  
-       PXIO   => PIIO(1:NIONI,:) 
-       PXPL   => PIPL(1:NPLSI,:)
-       EXEL   => EIEL(:)   
-       EXAT   => EIAT(:)   
-       EXML   => EIML(:)
-       EXIO   => EIIO(:)
-       EXPL   => EIPL(1:NPLSI,:)
-       VXDENX => VXDENI(IION,:)
-       VYDENX => VYDENI(IION,:)
-       VZDENX => VZDENI(IION,:)
-       MXPL   => MIPL(1:NPLSI,:)
-       PXX    => PIIO(1:NIONI,:)
-       EXX    => EIIO(:)
-
        LPDENX  => LPDENI 
        LEDENX  => LEDENI 
        LPXEL   => LPIEL  
@@ -286,6 +285,25 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
        LMXPL   => LMIPL
        LPXX    => LPIIO 
        LEXX    => LEIIO 
+
+       IF (LPDENX)  PDENX  => PDENI(IION,:) 
+       IF (LEDENX)  EDENX  => EDENI(IION,:) 
+       IF (LPXEL)   PXEL   => PIEL(:)   
+       IF (LPXAT)   PXAT   => PIAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PIML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PIIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PIPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EIEL(:)   
+       IF (LEXAT)   EXAT   => EIAT(:)   
+       IF (LEXML)   EXML   => EIML(:)
+       IF (LEXIO)   EXIO   => EIIO(:)
+       IF (LEXPL)   EXPL   => EIPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENI(IION,:)
+       IF (LVYDENX) VYDENX => VYDENI(IION,:)
+       IF (LVZDENX) VZDENX => VZDENI(IION,:)
+       IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PIIO(1:NIONI,:)
+       IF (LEXX)    EXX    => EIIO(:)
 
        LEX     => LEIO
 
