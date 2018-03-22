@@ -465,16 +465,10 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
           CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(3,1:nion,ISTR)))
         end if
 
-!        if (any(time_array(4,:,:) > 0._dp)) then
-!          write (iunout,*) ' TIME (SEC) SPENT IN FOLLOWING '
-!          CALL EIRENE_MASYR1 ('BULK IONS=',time_array(4,1:npls,:),
-!     .                LOGPLS,ISTR,1,NPLS,1,NSTRA,TEXTS(NSPAMI+1))
-!          CALL EIRENE_MASAGE
-!     .      ('SUM OVER SPECIES                               ')
-!          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(4,1:npls,ISTR)))
-!        end if
-
       end do
+
+      call eirene_leer(2)
+
       return
 
       entry eirene_reinit_partinfo
