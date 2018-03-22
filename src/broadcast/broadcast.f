@@ -1679,13 +1679,13 @@ cdr     INVALID RP%IFIT
       INTEGER :: I, J, K, NO_COMPO, NO_CONTRIB
       TYPE(TCONTRIB) :: CNT
 
-      IF (MY_PE /= 0) THEN
+!      IF (MY_PE /= 0) THEN
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
           ALLOCATE (EMIS_LINES(NO_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
           EMIS_LINES%NO_COMPO = 0         
         END IF
-      END IF
+!      END IF
 
       DO I = 1, NO_LINES
 

@@ -20,6 +20,20 @@ C  oct.14.  variance tallies corrected
       type(spect_array), allocatable :: svestiml(:), svsmestl(:)
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
       TYPE(CELL_INFO), POINTER :: FIRST, CUR
+
+      INTERFACE
+        SUBROUTINE EIRENE_LININT
+     .           (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,PEN,
+     .            PSIG,TIMAX,ISP,NSPI,JEN,NCHNI)
+        USE EIRMOD_PRECISION
+        USE EIRMOD_PARMMOD
+        INTEGER, INTENT(IN) :: IFIRST,ICHORI, ICHRD,IPVOT,NBC2,NAC2,ISP,
+     .                         NSPI, JEN, NCHNI
+        REAL(DP), INTENT(IN) :: C1(3),C2(3),PEN
+        REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+        REAL(DP), INTENT(IN OUT) :: TIMAX
+        END SUBROUTINE EIRENE_LININT
+      END INTERFACE
  
 !  FIND CELLS INTERSECTED BY CHORDS
  
