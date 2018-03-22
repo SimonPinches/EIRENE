@@ -155,9 +155,9 @@ cdr  Jan. 2018  mod_addv added
                DEALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB)
              END DO
 
-           END IF
+             DEALLOCATE (EMIS_LINES(I)%COMPO)
 
-           DEALLOCATE (EMIS_LINES(I)%COMPO)
+           END IF
 
         ENDDO
 
