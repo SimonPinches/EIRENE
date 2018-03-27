@@ -1,7 +1,10 @@
 %\documentclass[12pt]{article}
 \documentclass[12pt,dvipdfmx]{article}
+%this version: workaround, wegen dvi problems.
+%make dvi (viewer crashed aber), trotzdem dann pdf mit bildern ok,
+%aber keine hyperrefs in pdf.
+% vermutlich geloest: dvipdfm --> dvipdfmx
 
-\usepackage{epsf}
 \oddsidemargin 0. true cm
 \topmargin -2.5 true cm
 \textheight 24 true cm
@@ -12,6 +15,12 @@
 \pagecolor{white}
 \setcounter{secnumdepth}{3}
 \usepackage{times}
+\usepackage{longtable}
+\usepackage{epsf}
+\usepackage{amsbsy}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
 
 
 \usepackage[unicode=true,
@@ -84,10 +93,67 @@ Additional atomic data fits, read by EIRENE
  \item update  17. 8/96 \\
    elast.rate H.3, 0.3T revised
  \item update   3. 9/96 \\
-   ratios H.12 7.2a, 7.2b 2.0b, 2.0c\\
-   ratios H.11 7.0 2.0a
+ new: negative ions: H$^-$ contributions to Lyman and Balmer series\\
+   added: ratios H.12 7.2a, 7.2b 2.0b, 2.0c\\
+   added: ratios H.11 7.0 2.0a\\
+
+Note regarding the role of vibrationally excited molecules:
+
+if H2(v) is present, then in addition to the existing processes
+one may have:
+
+H2(v) + e $\rightarrow$ H + H$^-$, and the H$^-$ may provide a photon (e.g., H-alpha)
+after mutual neutralisation
+with protons,
+
+or
+
+H2(v) + p $\rightarrow$ H$_2^+$  + H , and the H$_2^+$ may provide a photon (e.g., H-alpha)
+after dissociative recombination
+
+
+
+Hence a suggested extended procedure in the EIRENE hydrogen line emission routines
+(e.g. Ba\_alpha):
+
+There have been already 4 channels contributing to H-light emissions:
+\begin{itemize}
+\item
+1.) proportional to H - density PDENA(..)
+\item
+2.) proportional to H$^+$ - density DIIN(..)
+\item
+3.) propportional to H$_2$ - density PDENM(..)
+\item
+4.) proportional to H$_2^+$ - density PDENI(..)
+\end{itemize}
+.....................................................\\
+now: we add one further channel:\\
+.....................................................\\
+\begin{itemize}
+\item
+5.) proportional to H$^-$ - density PDENI(..)
+\end{itemize}
+For example the CR population coefficient H(n=3)/H$^-$ is stored in AMJUEL, H.12, 7.2a
+This ratio must be multiplied by the H$^-$ density and by the Einstein coefficient 4.41e7
+(as in the other channels) to obtain an emissivity.
+Since we may not always have computed the H$^-$ density, we multiply instead by the H$_2$ density
+(PDENM) and by the CR-equilibrium ratio H$^-$/H$_2$ . This latter ratio is stored in AMJUEL H.11, 7.0
+
+To account for the additional new channel producing H$_2^+$ (ion conversion)
+it is suggested to only replace the
+H$_2^+$ density (PDENI) in the line emission routines now by H$_2$ (PDENM) and by the
+CR equilibrium ratio: H$_2^+$/H$_2$.
+That CR equilibrium ratio is stored in H.12, 2.0c.
+This equilibrium ratio includes the above mentioned additional
+process leading to H$_2^+$ production.
+If instead the H$_2^+$ density PDENI IN EIRENE
+is computed only from electron impact collisions, not
+yet including additionally ion impact (ion conversion) collisions, then the CR equilibrium density ratio H.12, 2.0b
+must be retained in the line emission routines as multiplicative factor for the H$_2$ density, for consistency.
+
  \item update   6. 9/96 \\
-   H- cx multistep recombination, low proton energy, H.4  7.2.3a\\
+   H- cx-multistep recombination, low proton energy, H.4  7.2.3a\\
    H- cx multistep ionization, low proton energy, H.4  7.2.3b
  \item update   26.2/97 \\
    Corona H-ionization rate from SOLXY: out, because:
@@ -325,7 +391,7 @@ Further H.2 rates added for heavy particle collisions. These H.2 rates should be
 the corresponding Omega integrals for continuum descriptions consistent with the kinetic formulations based on H.3 rates.
 done: 0.4, 0.5, 0.6, 0.7, 0.8, both: T (total) and D (diffusion) rates.
 \item Oct 15:\\
- started to add TEMIN, TEMAX, NEMIN, NEMAX parameters for extrapolation beyond fit range.
+ started to add T1MIN, T1MAX, N2MIN, N2MAX, E2MIN, E2MAX parameters for extrapolation beyond fit range.
 Currently all H.4 rates should have NEMIN=1.e8, and be extrapolated with this values taken also for all
 lower electron densities (Corona limit). In this case $ln^i(\tilde{ne})=0.0,  \ i=1,2,\dots,8$, fit must reduce to H.2 format.
 I.e., these 9 H.2 coefficients can directly be obtained as subset of the 81 H.4 coefficients.
@@ -4172,6 +4238,8 @@ Reaction 2.1.5JH   $H + e \rightarrow H^+ + 2e $}
         6    1.075473174260D-09    4.118000674849D-11   -1.089323091222D-12
         7   -2.048657335774D-10    3.027916374251D-12    1.155854020410D-14
         8    8.023660696154D-12   -2.396518500447D-13    2.173645280354D-15
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:    .8487 %
   Mean rel. Error:    .2419 %
@@ -4224,6 +4292,8 @@ Reaction 2.1.5o  $H + e \rightarrow H^+ + 2e $, Ly-opaque}
         6    6.001489992879D-10   -5.139558636314D-11    3.525452470540D-12
         7    3.249620872276D-10   -1.169248684183D-11    1.979747513777D-14
         8   -2.321096956876D-11    9.053581287584D-13   -1.015243451999D-14
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   1.6436 %
   Mean rel. Error:    .4360 %
@@ -4339,6 +4409,8 @@ NEMAX =   1.00000D 16 1/CM3
         6    7.786155463269D-09   -2.441127783437D-10    3.773208484020D-12
         7    5.178505597480D-10   -9.452402157390D-12   -4.672724022059D-14
         8   -6.854203970018D-11    1.836615031798D-12   -1.640492364811D-14
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   6.8962 %
   Mean rel. Error:    .5559 %
@@ -4396,6 +4468,8 @@ NEMAX =   1.00000D 16 1/CM3
         6   -6.966012349475D-08    1.046266371637D-08   -2.448127591728D-10
         7   -4.197741084618D-09   -6.390754230254D-10    1.836925499320D-11
         8    4.554850332229D-10    1.165730429588D-11   -4.891755053806D-13
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:  21.7976 %
   Mean rel. Error:   8.2471 %
@@ -4453,6 +4527,10 @@ NEMAX =   1.00000D 16 1/CM3
         6   -2.746804724917D-09    3.564291012995D-10   -8.551708197610D-12
         7   -1.386720240985D-10   -1.946206688519D-11    5.745422385081D-13
         8    6.459706573699D-12    5.510729582791D-13   -1.680871303639D-14
+T1MIN =   0.10000D 00 EV
+T1MAX =   2.00000D 04 EV
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   0.931E+01 %
   Mean rel. Error:   0.745E+00 %
@@ -4511,6 +4589,8 @@ NEMAX =   1.00000D 16 1/CM3
         6    1.302393677822D-09   -3.169013613822D-11   -1.783762758524D-13
         7   -7.373095178045D-11    4.314457229158D-12   -4.791677504810D-14
         8   -1.588254701759D-13   -1.226345218681D-13    2.329402447113D-15
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
  Max. rel. Error:   2.5215 %
  Mean rel. Error:   0.1955 %
@@ -4570,6 +4650,8 @@ NEMAX =   1.00000D 16 1/CM3
         6    3.574490849965D-09   -4.342693823216D-10    1.186584611296D-11
         7    7.775072659869D-10    4.164660123508D-11   -1.575223043337D-12
         8    2.251635634963D-11   -3.743444984134D-12    9.336979510479D-14
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
  Max. rel. Error:   6.0738 %
  Mean rel. Error:   0.8731 %
@@ -11231,10 +11313,11 @@ Reaction 2.2.5e  $H_2 + e \rightarrow ...+ H(6) $  , \  Ratio $H(6)/H_2 $
 \subsection{
 Reaction 2.2.5fl $H_2 + e \rightarrow ...+ H_2(N=3,Triplet)$}
 
-Ratio $H2(N=3, Triplet)/H_2/n_e*2/9*2E7 $
+Normalized emissivity: $H2(N=3, Triplet)/H_2/n_e*2/9* 2E7 $
 
  Fulcher emissivity, $cm^3/s$. relative 2/9: statistical weight of upper d (Pi) triplet state
-amongst all N=3 triplet states. 2E7: approx. Fulcher Aik coeff for $N=3: d \rightarrow N=2: a$ transition in triplet system.
+amongst all N=3 triplet states.
+2E7: approx. Fulcher Aik coeff for $N=3: d \rightarrow N=2: a$ transition in triplet system.
 
  Multi-step hydrogenic molecule population coefficients
  Data: K.Sawada, T.Fujimoto \cite{kn:Sawada}
@@ -11287,11 +11370,13 @@ amongst all N=3 triplet states. 2E7: approx. Fulcher Aik coeff for $N=3: d \righ
 \newpage
 
 \subsection{
-Reaction 2.2.5fu $H_2 + e \rightarrow ...+ H_2(N=3,Triplet)$}
+Reaction 2.2.5fu $H_2 + e \rightarrow ...+ H_2(N=3,Triplet, d-state)$}
+redone March 18, fit range 0.1 to 1e4 eV.
 
-Ratio $H_2(N=3, Triplet)/H_2*2/9 $
+Ratio $H_2(N=3, Triplet)/H_2*2/9 $,  2/9 stat. weight to reduce N=3 state to d-state
 
-upper Fulcher population coefficient. Triplet d-state, A$_{Fulch}$=2.53E7
+upper Fulcher population coefficient. Triplet d-state, A$_{Fulch} \approx $ 2.53E7
+for radiative d-triplet to a-triplet transitions.
 
  Multi-step hydrogenic molecule population coefficients
  Data: K.Sawada, T.Fujimoto \cite{kn:Sawada}
@@ -11299,47 +11384,169 @@ upper Fulcher population coefficient. Triplet d-state, A$_{Fulch}$=2.53E7
 
         E-Index:     0                     1                     2
   T-Index:
-        0   -3.349174061267D+01    1.107380092037D+00   -1.655827681081D-01
-        1    1.284047976186D+01   -1.213122026237D-02   -6.132056368717D-02
-        2   -6.413764746315D+00    1.053962121929D-01   -6.058203471496D-02
-        3    1.913028024117D+00    2.514347072348D-02    3.181942687879D-02
-        4   -3.712816383722D-01   -8.695525483414D-02    1.678189635748D-02
-        5    3.960600799571D-02    4.074080534020D-02   -1.134082769478D-02
-        6   -1.052874219789D-03   -8.083345350383D-03    2.128448882617D-03
-        7   -1.785154627634D-04    7.388146670979D-04   -1.479827212239D-04
-        8    1.236983575407D-05   -2.548553348211D-05    2.434481214858D-06
+        0   -3.354489060165D+01    1.468103242439D+00   -4.646307499703D-01
+        1    1.277739086685D+01    3.336987615778D-01   -2.662110674962D-01
+        2   -6.100361344044D+00   -1.199272310765D+00    7.903343009701D-01
+        3    1.668734740401D+00    7.492770342809D-01   -3.449602217244D-01
+        4   -2.995198269449D-01   -2.252050456671D-01    5.136460634062D-02
+        5    3.362068612317D-02    4.204168766681D-02   -2.887256470209D-03
+        6   -2.119643421070D-03   -5.136593278645D-03    3.021224427790D-04
+        7    5.764101894151D-05    3.665248081377D-04   -5.591909814617D-05
+        8   -7.556159315810D-08   -1.116271612850D-05    3.029453078051D-06
 
         E-Index:     3                     4                     5
   T-Index:
-        0    9.081831153858D-02   -2.155176531205D-02    2.687110630298D-03
-        1    5.251600630207D-02   -1.395960837597D-02    1.788290996793D-03
-        2    6.456727187820D-03    1.595488379837D-03   -4.162388909601D-04
-        3   -1.416086355652D-02    2.228765748284D-03   -1.755681970258D-04
-        4    4.890801701257D-05   -2.528675286395D-04    2.362149977157D-05
-        5    1.378478247903D-03   -1.216867717338D-04    1.169258210331D-05
-        6   -2.022364242066D-04    9.143064899344D-06   -7.499679999777D-07
-        7   -4.302790819505D-06    3.693903982739D-06   -4.071669440599D-07
-        8    1.444361088193D-06   -3.875548036922D-07    4.187131100236D-08
+        0    1.917594272036D-01   -3.914204712405D-02    4.405136273290D-03
+        1    8.977043337317D-02   -1.465813195424D-02    1.295941582003D-03
+        2   -2.277339349300D-01    3.517830118856D-02   -3.086638209564D-03
+        3    7.427634680932D-02   -9.056373914556D-03    6.168596878350D-04
+        4   -8.289600947012D-04   -9.842202184975D-04    1.569147488627D-04
+        5   -1.991926819207D-03    4.475984672915D-04   -4.330338627262D-05
+        6    1.465996491981D-04   -1.802283714021D-05   -6.406153919161D-09
+        7    1.108868720206D-05   -3.651785291583D-06    5.709622791954D-07
+        8   -1.032756417661D-06    2.547765262252D-07   -3.281099947589D-08
 
         E-Index:     6                     7                     8
   T-Index:
-        0   -1.837187135024D-04    6.451571682807D-06   -9.069754757405D-08
-        1   -1.202871787507D-04    4.089730888930D-06   -5.549056353363D-08
-        2    3.510814616606D-05   -1.292366561720D-06    1.769955642393D-08
-        3    8.265012930924D-06   -2.411216153218D-07    3.359929241882D-09
-        4   -1.058500206157D-06    2.788248190313D-08   -3.444629946902D-10
-        5   -8.243859256275D-07    3.097729075561D-08   -4.709916834130D-10
-        6    7.676056442394D-08   -3.719597774226D-09    6.637415766552D-11
-        7    2.100981276615D-08   -5.378074189405D-10    5.316692027152D-12
-        8   -2.402222996167D-09    7.235773530136D-11   -8.965563401217D-13
+        0   -2.784827610173D-04    9.205781819517D-06   -1.234563971007D-07
+        1   -6.294510247871D-05    1.558832548058D-06   -1.505796810383D-08
+        2    1.508616892274D-04   -3.741483445376D-06    3.548369121880D-08
+        3   -1.858979358827D-05   -1.756205740430D-08    8.600099983333D-09
+        4   -1.263963013577D-05    5.424603147976D-07   -9.427049641092D-09
+        5    2.594991460544D-06   -9.710865279198D-08    1.635299658521D-09
+        6    5.807832346907D-08   -1.194710140642D-09   -2.074052769889D-11
+        7   -4.002665073483D-08    1.260114477597D-09   -1.421785470367D-11
+        8    2.142746257616D-09   -6.776734606365D-11    8.207577984364D-13
 
-  Max. rel. Error:   3.6274 %
-  Mean rel. Error:   1.3835 %
+  Max. rel. Error:   0.145E+02 %
+  Mean rel. Error:   0.381E+01 %
+
+
 
 \end{verbatim}\end{small}
 \begin{figure} \label{2.2.5fu}
 \epsfxsize=16truecm
-\epsffile{Amjuel_PS/h2fu.ps}
+\epsffile{Amjuel_PS/h2fu.eps}
+\end{figure}
+
+\newpage
+
+\subsection{
+Reaction 2.2.5we $H_2 + e \rightarrow ...+ H_2(N=2,Singlet \ C)$}
+
+Ratio $H_2(N=2, Singlet \ C-state)/H_2 $
+
+upper Werner band population coefficient. Singlet C-state, A$_{Werner} \approx $ 1.18E9
+
+ Multi-step hydrogenic molecule population coefficients
+ Data: K.Sawada, T.Fujimoto \cite{kn:Sawada}
+\begin{small}\begin{verbatim}
+
+        E-Index:     0                     1                     2
+  T-Index:
+        0   -3.593649328832D+01    8.308979586264D-01    1.868771272352D-01
+        1    1.358996226939D+01    1.144733915906D-01   -7.166182521067D-02
+        2   -5.734471422048D+00   -2.150843448759D-02   -3.824097076465D-02
+        3    1.467418653563D+00   -2.501578958293D-03    2.923616954773D-02
+        4   -2.188119913056D-01    1.995231637494D-03   -6.640370721872D-03
+        5    1.406297652325D-02   -6.783126412988D-04    7.510665534693D-04
+        6    5.561129014609D-04    1.351258986187D-04   -5.745270250733D-05
+        7   -1.327036442082D-04   -1.315685619246D-05    3.749140942633D-06
+        8    5.386791451187D-06    4.829742920546D-07   -1.381191058408D-07
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0   -8.319521746811D-02    1.822290028150D-02   -2.139848284025D-03
+        1    3.561940208530D-02   -8.730170894414D-03    1.111181710062D-03
+        2    8.090632884354D-03   -3.760749351686D-04   -8.428342936127D-05
+        3   -7.006055255923D-03    9.723873035654D-04   -6.790200414082D-05
+        4    9.388209633191D-04   -1.188419004204D-04    8.205572285784D-06
+        5    4.252484681099D-05   -1.045078968002D-05    1.071348879998D-06
+        6   -1.359995374888D-05    1.767498689737D-06   -1.033888505778D-07
+        7    4.214609548524D-07    4.105679338979D-08   -1.391632590311D-08
+        8    1.760472357584D-08   -8.302282439471D-09    1.229878733295D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0    1.363166907638D-04   -4.410389531348D-06    5.649304185589D-08
+        1   -7.568165245508D-05    2.610898259323D-06   -3.590058481557D-08
+        2    1.332628938065D-05   -7.119317923666D-07    1.326801124893D-08
+        3    1.270541815502D-06    6.913679414367D-08   -2.456304218566D-09
+        4   -4.661860601440D-08   -1.560880825875D-08    4.036797301220D-10
+        5   -8.639208387211D-08    3.008291257423D-09   -2.251160398320D-11
+        6    2.681223177046D-09    1.999325699443D-10   -1.047788129925D-11
+        7    1.395885069414D-09   -8.052768706091D-11    1.889487362615D-12
+        8   -9.665361477916D-11    4.462593169355D-12   -8.850565688461D-14
+
+  Max. rel. Error:   0.115E+02 %
+  Mean rel. Error:   0.299E+01 %
+
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.2.5we}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/h2we.eps}
+\end{figure}
+
+\newpage
+
+
+\subsection{
+Reaction 2.2.5ly $H_2 + e \rightarrow ...+ H_2(N=2,Singlet \ B)$}
+
+Ratio $H_2(N=2, Singlet \ B-state)/H_2 $
+
+upper Lyman band population coefficient. Singlet B-state, A$_{Lyman} \approx $1.18E9
+
+ Multi-step hydrogenic molecule population coefficients
+ Data: K.Sawada, T.Fujimoto \cite{kn:Sawada}
+\begin{small}\begin{verbatim}
+
+        E-Index:     0                     1                     2
+  T-Index:
+        0   -3.397850573163D+01    1.006056939133D+00   -1.202042794510D-02
+        1    1.196167467450D+01    1.019392480038D-01   -3.246741602640D-02
+        2   -5.552980751071D+00   -2.182674613256D-01    1.310622385883D-01
+        3    1.710517188280D+00    1.056574565611D-01   -7.126216596227D-02
+        4   -3.699083854427D-01   -8.996140369756D-03    8.169425385102D-03
+        5    5.450770431960D-02   -5.497328775049D-03    3.109194223938D-03
+        6   -5.114378920377D-03    1.574026731653D-03   -9.964122308190D-04
+        7    2.718181436155D-04   -1.570909362877D-04    1.033573137707D-04
+        8   -6.182952661054D-06    5.533588242821D-06   -3.725344805031D-06
+
+        E-Index:     3                     4                     5
+  T-Index:
+        0    4.355523162462D-03   -6.382190527349D-04    3.974915237112D-05
+        1    3.508265857386D-04    1.382009361884D-03   -2.488403752281D-04
+        2   -3.383652044906D-02    4.052689315875D-03   -2.098203509930D-04
+        3    2.137531087390D-02   -2.874452928505D-03    1.560319164372D-04
+        4   -3.936780405633D-03    6.865779069553D-04   -4.267656587715D-05
+        5   -3.226247705626D-04   -2.485199148367D-05    4.187303245886D-06
+        6    1.949593539968D-04   -1.432573062806D-05    2.716870257549D-07
+        7   -2.279031922723D-05    2.122592718556D-06   -7.778350690825D-08
+        8    8.693803378144D-07   -8.875683289762D-08    3.853513064998D-09
+
+        E-Index:     6                     7                     8
+  T-Index:
+        0   -4.817941325124D-07   -4.818422950101D-08    1.400297189617D-09
+        1    1.880067470651D-05   -6.625349071032D-07    8.813516831326D-09
+        2    1.142439741442D-06    2.743493930710D-07   -7.006934630012D-09
+        3    4.392236473310D-07   -3.371829185419D-07    8.645219519537D-09
+        4   -3.428952578243D-07    1.270631026599D-07   -3.377504202843D-09
+        5    2.905622963853D-08   -1.867759838623D-08    5.575839817605D-10
+        6   -7.981727857836D-10    9.983567417040D-10   -3.988647877134D-11
+        7    3.870317660182D-10    8.064843019666D-12    7.746226928676D-13
+        8   -3.436981127862D-11   -1.627459347813D-12    2.106967385582D-14
+
+  Max. rel. Error:   0.922E+01 %
+  Mean rel. Error:   0.210E+01 %
+
+
+\end{verbatim}\end{small}
+\begin{figure} \label{2.2.5ly}
+\epsfxsize=16truecm
+\epsffile{Amjuel_PS/h2ly.eps}
 \end{figure}
 
 \newpage
@@ -12256,9 +12463,9 @@ Reaction 2.0a  $e + H_2 \rightarrow H_2^+ + ... $ , Ratio \ $H_2^+/H_2$
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and Janev et al, 1987, and P.T. Greenland
 
 
-  Ratio H2+ to H2 density
+  CR equilibrium ratio H2+ to H2 density
   (coll.rad model, Sawada/Fujimoto/Greenland)
- here:  gain from electr. impact only
+ here:  H2+-gain from electr. impact only
 
   only contribution from  EI on H2 and H2* to production rate of $H_2^+$
 
@@ -12318,7 +12525,7 @@ Reaction 2.0b $e + H_2(v=0) \rightarrow H_2^+ + ... $ , Ratio  \ $H_2^+/H_2$
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and R. Janev et al, 1987, and P.T. Greenland
 
 
-  Ratio $H_2^+$ to $H_2$ density
+  CR equilibrium ratio $H_2^+$ to $H_2$ density
   (coll.rad model, Sawada/Fujimoto/Greenland)
 
   contribution from  EI on $H_2$ and $H_2^*$  plus from CX on cold $H_2(v=0)$,
@@ -12378,7 +12585,7 @@ Reaction 2.0c   $e +  H_2(v) \rightarrow H_2^+ + ... $ , Ratio \ $H_2^+/H_2$
  Data: K. Sawada, T.Fujimoto, \cite{kn:Sawada} and R. Janev et al, 1987, and P.T. Greenland
 
 
-  Ratio H2+ to H2 density
+  CR equilibrium ratio H2+ to H2 density
   (coll.rad model, Sawada/Fujimoto/Greenland) for vibrational population $P(v)$
   contribution from CX on cold H2(v) ($E_{H_2}(v)=0.1$ eV) and EI on H2 and H2*
 
