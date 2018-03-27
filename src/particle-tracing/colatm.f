@@ -86,6 +86,8 @@ C                           TRANSITION NEUTRAL-->ION (IF CALLED
 C                           BY FOLNEUT), OR
 C                           TRANSITION ION-->NEUTRAL (IF CALLED
 C                           BY FOLION)
+C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST COLL. SCORING.
+C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING 
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -115,10 +117,17 @@ C
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
+cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
-     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
+      INTEGER :: 
+c    .           IICX, IIEI, IIPI, IIEL,
+c    .           IMCX, IMEI, IMPI, IMEL,
+     .           IACX, IAEI, IAPI, IAEL, IAOT,
+c    .           
+     .           IOLD, NOLD, 
+     .           IRCX, IREI, IRPI, IREL, IROT,
+     .           IBGK, IP, NFLAG,
+     .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
 Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
@@ -129,8 +138,8 @@ CDR         or integer (1/2 particle possible?)
  
  
 csw add n 2lines
-      INTEGER :: iaot,irot,kk,updf,t1
-      real(dp):: sump
+cdr   INTEGER :: kk,updf,t1
+cdr   real(dp):: sump
 csw external
       real(dp), external :: ranf_eirene
  
@@ -179,9 +188,10 @@ C  WEIGHT ALREADY TOO SMALL, NO SUPPRESION OF ABSORPTION
       ELSE
 C  TRY TO SUPPRESS ABSORPTION. IDENTIFY POSSIBLE EI PROCESSES
 C                              WITH ZERO TEST PARTICLE SECONDARIES
-
+cdr     ss=0.
         DO IAEI=1,NAEII(IOLD)
           IREI=LGAEI(IOLD,IAEI)
+cdr       ss=ss+SIGVEI(IREI)
 C  WHILE BEING IN THIS LOOP WEIGHT MAY BE REPEATEDLY REDUCED, FOR EARLIER (LOWER) IAEI
           IF (WEIGHT.GT.WMINV) THEN
 C  REMAINING RATE AFTER POSSIBLE ELIMINATION OF IREI
@@ -189,7 +199,7 @@ C  SIG_TEST=0 WOULD VIOLATE RADON-NYKODYM CONDITION OF WEIGHTING
             SIG_TEST=SIG_TOT_N-SIGVEI(IREI)
             PTOT=P2NEI(IREI)
             IF (PTOT.EQ.0..AND.SIG_TEST.GT.0.) THEN
-C  IREI IS A PURELY ABSORBING PROCESS
+C  IREI IS A PURELY ABSORBING EI PROCESS, but other EI processes exist.
 C  ELIMINATE THIS PROCESS IREI FROM ALL NAEII POSSIBLE EI PROCESSES
 C  REDUCE WEIGHT ACCORDINGLY
               SIG_ELIM=SIG_ELIM+SIGVEI(IREI)
@@ -206,11 +216,16 @@ C  NO, THIS PROCESS REMAINS ACTIVE, BECAUSE THERE ARE TEST-PARTICLE SECONDARIES
               LGEI_RED(NEII_RED)=IREI
             ENDIF
           ELSE
-C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOG GAME
+C  WEIGHT TOO SMALL COMPARED TO WMINV. ANALOGUE GAME
             NEII_RED=NEII_RED+1
             LGEI_RED(NEII_RED)=IREI
           ENDIF
         ENDDO
+cdr  test: ss=sigeit ?
+cdr     ssr=abs(ss-sigeit)/(ss+eps6)
+cdr     if (ssr.gt.1e-5) write (iunout,*) 'colatm', ss, sigeit,iold,
+cdr  .                                              naeii(iold),
+cdr  .                                      sigvei(1:naeii(iold))
       ENDIF  ! SUPPRESSION OF ABSORPTION AT EI PROCESSES: DONE.
 
 C  WEIGHT MAY HAVE BEEN REDUCED NOW, AND ALSO THE NUMBER OF ACTIVE EI PROCESSES.
@@ -224,7 +239,7 @@ C
 C
       IF (ZEP1.LE.SIGEIT) THEN
 C
-C  AT THIS POINT: NEII.GE.1, FOR OTHERWISE ZEP1 COULD NOT HAVE
+C  AT THIS POINT: NEII_RED.GE.1, FOR OTHERWISE ZEP1 COULD NOT HAVE
 C                 POINTED TO EI-PROCESSES
 C
 C  ELECTRON IMPACT COLLISION:
@@ -305,7 +320,7 @@ cdr
           END IF
 cdr  build one single distribution of secondary test particle species, all types, include photons
 cdr  this should not be done here, but instead only once, in preproc. phase !!
-cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cummulative p2nd(IREI) ?
+cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cumulative p2nd(IREI) ?
           NAMIEI = 0
 
           NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F

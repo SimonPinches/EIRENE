@@ -1,8 +1,26 @@
-c  jan 2017: some syncronisation with corresponding version in SOLPS_ITER,
+cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
+cdr:             check: is eirsrt universal, then: move even further up to "main routines".
+cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
+c  jan 2017: syncronisation with corresponding version in couple_SOLPS-ITER,
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
 C
-
+C  ASSISTANT ROUTINES, SPECIFIC TO A PARTICULAR EDGE CODE INTERFACE
+C  DATA STRUCTURES (grid, plasma data, etc...)
+c
+cdr:  GEOMD : DRIVER FOR DIFFERENT VERSIONS OF GEOMD_..ROUTINES, diff. geometry file formats
+C     GEOMD_CARRE
+C     GEOMD_LINDA
+C     GEOMD_SONNET
+c
+cdr   MESHPROJ
+cdr   INDMAP
+cdr   INDMPI
+cdr   PLASM
+cdr   NEUTR
+cdr   SAVE_TALLIES
+C
+C
 
 *//GEOMD//
 C=======================================================================
@@ -233,7 +251,7 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
-      USE EIRMOD_COMPRT,ONLY:IUNIN,IUNOUT !VK
+      USE EIRMOD_COMPRT,ONLY:IUNOUT
       IMPLICIT NONE
 C
       INTEGER, INTENT(INOUT) :: NDXA, NDYA, NPLP
@@ -245,7 +263,7 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
      R  X1(NDX),Y1(NDX),X2(NDX),Y2(NDX),X3(NDX),Y3(NDX),
      R  X4(NDX),Y4(NDX)
 C
-      CHARACTER(80) :: LINE,LINE2
+      CHARACTER(80) :: LINE
 C   DIMENSIONIERUNG FUER GITTER
       INTEGER :: DIMXH,DIMYH,NNCUT,NNISO,
      1 NXCUT1(10),NXCUT2(10),NYCUT1(10),NYCUT2(10),
@@ -253,7 +271,7 @@ C   DIMENSIONIERUNG FUER GITTER
       INTEGER :: IX, IY, I, J, NP, NWISO
 
       REAL(DP) :: DUMMI(3)
-      REAL(DP) :: MERK(NDY)
+
 C  ACTUAL MESH USED IN THIS RUN
 C
 C      EINLESEROUTINE ANGEPASST AUF BRAAMS-OUTPUT
@@ -775,7 +793,7 @@ C  LOOP FOR THE SPECIES
 C
       DO 500 IF=1,NFLA
 C
-C  INITIALIZE DUMMY
+C  INITIALISE DUMMY
 C
         DO 10 IY=0,NDY+1
           DO 10 IX=0,NDX+1
@@ -838,7 +856,7 @@ C
       SUBROUTINE EIRENE_INDMPI(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG,NSTR,ISTR)
 C
-C     INDEX MAPPING: INVERS TO SUBR. INDMAP
+C     INDEX MAPPING: INVERSE TO SUBR. INDMAP
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -855,7 +873,7 @@ C  LOOP OVER THE SPECIES
 C
       DO 500 IF=1,NFLA
 C
-C  INITIALIZE DUMMY
+C  INITIALISE DUMMY
 C
         DO 10 IY=0,NDY+1
           DO 10 IX=0,NDX+1
@@ -917,6 +935,7 @@ C
 C=======================================================================
 C          S U B R O U T I N E   P L A S M
 C=======================================================================
+!pb  dec. 2015 automatic detection of data format
       SUBROUTINE EIRENE_PLASM(KARD,NDIMX,NDIMY,NDIMF,N,M,NF,DUMMY)
 
       USE EIRMOD_PRECISION
@@ -928,6 +947,9 @@ C=======================================================================
       character(50) :: form
       character(200) :: zeile
 
+cdr  construct the proper format for reading from file FORT(KARD)  
+cdr  character string FORM replaces old card: 910  FORMAT(5(E16.8))
+c
       form = repeat(' ',50)
       read (kard,'(a200)',END=500) zeile
       i1 = index(zeile,'.')
@@ -935,6 +957,7 @@ C=======================================================================
       i3 = index(zeile(i2+1:),' ')
       write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
       backspace kard
+c     write (6,*) 'plasm: detected format ', form
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
@@ -979,19 +1002,23 @@ C
   110   CONTINUE
   500 CONTINUE
       RETURN
-  910 FORMAT(5(E16.8))
+  910 FORMAT(5(ES16.7E3))
 *//END NEUTR//
       END
 
 
-!pb  121206  check if tallies are available before using them
+
 
       SUBROUTINE EIRENE_SAVE_TALLIES (ISTRAI)
 C
 C  SAVE EIRENE TALLIES, SCALE PER UNIT FLUX (AMP), ON COMMON BRASCL
-C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS)
-C  ALL STRATA WHICH ARE NOT SPECIFIED BY INPUT BLOCK 14 (FROM
-C  PLASMA CODE DATA) ARE NOT RESCALED HERE
+C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS).
+C
+C  STRATA WHICH ARE SPECIFIED BY INPUT BLOCK 14 
+C     (SOURCES DEFINED FROM PLASMA CODE DATA DIRECTLY) 
+C     ARE RESCALED HERE TO UNIT SOURCE STRENGTH (FLXI)
+
+c  added in Nov. 15: ipls resolved ion energy sources eapl,empl,eipl
 C
 
       USE EIRMOD_PRECISION

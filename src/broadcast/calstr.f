@@ -23,13 +23,13 @@ c  Unclear: if more strata than processors: is it then excluded that still
 c           there may be strata with more than one processor dealing with them?
 c          
 c  Purpose:
-c   collect data from processors belonging to one particular stratum istra (comprt)
+c   collect data from processors belonging to one particular stratum istra (COMPRT)
 c   put merged data for output tallies for stratum istra then on:  my_pe_gr=0
 c
 c
 cdr
 c   input:
-c       istra  (stratum number, from common)
+c       istra  (stratum number, from common COMPRT)
 c       npesta(istra)  : number of master processor for stratum istra
 c       npestr(istra)  : total no. of processors working on stratum istra
 c
@@ -54,7 +54,6 @@ C
       INCLUDE 'mpif.h'
       real(dp), allocatable :: help(:), helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
-C     .            helpp(0:npls), helpph(0:nphot), helpv(nrtal+1),
      .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc
 C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1)

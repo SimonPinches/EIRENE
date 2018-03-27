@@ -110,7 +110,7 @@ c  ir,ip, and local coordinates r,s are already set in previous call
      .      + f2 * 0.25_dp * (1._dp + r) * (1._dp - s)
      .      + f3 * 0.25_dp * (1._dp + r) * (1._dp + s)
      .      + f4 * 0.25_dp * (1._dp - r) * (1._dp + s)
-        
+
 c...................................................................
 
 c  2D computational grid, triangles        

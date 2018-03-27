@@ -1,7 +1,20 @@
+!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
+cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabei1
+!pb  MAY  16:  nrds   -> nrei
+!pb  JUL  16:  ehvds1 -> ehvei1
+cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 cdr
 cdr  MXCOLLS --> MSTOR0
+cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 
       MODULE EIRMOD_COMXS
  
@@ -23,18 +36,6 @@ cdr sometime between 2004 and 2007 the atomic data structure was revised.
 cdr 
 cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !
-!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
-cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
-cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds   -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
 
  
       USE EIRMOD_PRECISION
@@ -50,15 +51,19 @@ cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
      .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF, 
      .          EIRENE_CMDTA_XDR, EIRENE_CMAMF_XDR,
      .          EIRENE_GET_REACTION, EIRENE_SET_REACTION_DATA,
+     .          EIRENE_FREE_REACDAT,
 cdr
      .          LINE_DATA, POLY_DATA, ADAS_DATA, HYDKIN_DATA,
+     .          COLRAD_DATA,
      .          REACTION_DATA, 
      .          FIT_FORMS,
      .          REACTION_INPUT_LINE,
 cdr
-     .          EIRENE_IS_RTC_ADAS,
-     .          EIRENE_IS_RTCEW_ADAS, 
-     .          EIRENE_IS_RTCMW_ADAS   
+     .          EIRENE_IS_RTC_TAB2D,
+     .          EIRENE_IS_RTCEW_TAB2D, 
+     .          EIRENE_IS_RTCMW_TAB2D,
+c
+     .          EIRENE_ALLOC_FIT_FORM   
  
       TYPE LINE_DATA
         REAL(DP) :: E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21
@@ -88,6 +93,10 @@ cdr  The extrapolation options are now made available generally, for all typs of
         CHARACTER(50) :: REAC_STRING, REACNAME
         CHARACTER(100) :: RPRT
       END TYPE HYDKIN_DATA
+
+      TYPE COLRAD_DATA
+        INTEGER :: IFLAV, IVARST
+      END TYPE COLRAD_DATA
  
       TYPE FIT_FORMS
         INTEGER :: IFIT
@@ -95,6 +104,7 @@ cdr  The extrapolation options are now made available generally, for all typs of
         TYPE(ADAS_DATA),   POINTER :: ADAS
         TYPE(LINE_DATA),   POINTER :: LINE
         TYPE(HYDKIN_DATA), POINTER :: HYD
+        TYPE(COLRAD_DATA), POINTER :: CRM
 c
         REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX 
         REAL(DP) :: FP1L(3), FP1R(3), FP2B(3), FP2T(3)
@@ -172,7 +182,7 @@ c  ...and cumulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1,  el and cx processes have no secondary electrons
+     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1, el and cx processes have no secondary electrons
      R EHVEI1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
  
@@ -269,9 +279,11 @@ c  ...and cumulated distributions thereof, for species sampling
      I IBGKA (:,:), IBGKM (:,:), IBGKI (:,:), IBGKPH (:,:)
  
       INTEGER, PUBLIC, SAVE ::
-     I NREACI
+     I NREACI, NHCOL_STORE
 
       INTEGER, PUBLIC, SAVE :: MAXSPC(0:4)
+      
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: M_HCOL(:)
  
       CHARACTER(50), PUBLIC, ALLOCATABLE, SAVE :: REAC_NAME(:)
  
@@ -447,10 +459,12 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
         ALLOCATE (REACDAT(-11:NREAC))
         ALLOCATE (REACLINES(NREAC_LINES))
 
+        ALLOCATE (M_HCOL(NREAC))
+
         MEM = (NSTORV+NAMF)*8_IL + (MAMF+
      .                      9_IL*(NATM+NMOL+NION)+4_IL*NPLS+
      .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
-     .                      NREAC*LEN(REAC_NAME(1))
+     .                      NREAC*LEN(REAC_NAME(1)) + NREAC*4_IL
  
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
@@ -577,7 +591,7 @@ c  secondaries, PI processes
         ALLOCATE (EPLEL3(NREL,NSTORDR,NSTORDT))
  
 
-        ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT))
+        ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT)) 
  
         ALLOCATE (EATPI(NRPI,0:NATM,2))
         ALLOCATE (EMLPI(NRPI,0:NMOL,2))
@@ -918,9 +932,11 @@ c
       DEALLOCATE (IBGKPH)
       DEALLOCATE (REAC_NAME)
  
-!pb      DEALLOCATE (REACDAT)
       CALL EIRENE_FREE_REACDAT
+
       DEALLOCATE (REACLINES)
+
+      DEALLOCATE (M_HCOL)
  
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMXS
@@ -1074,6 +1090,9 @@ cdr  ical=2:  ??
           REACDAT(IREAC)%LOTH   = .FALSE.
           REACDAT(IREAC)%LPHR   = .FALSE.
           REACDAT(IREAC)%NOSEC  = 0
+          REACDAT(IREAC)%RTMAX  = 0._DP
+          REACDAT(IREAC)%ERTMAX = -HUGE(1._DP)
+          REACDAT(IREAC)%ETH    = 0._DP
           NULLIFY(REACDAT(IREAC)%POT)
           NULLIFY(REACDAT(IREAC)%CRS)
           NULLIFY(REACDAT(IREAC)%RTC)
@@ -1109,6 +1128,9 @@ cdr  ical=2:  ??
         END DO
  
         IRLINES = 0
+ 
+        NHCOL_STORE = 0
+        M_HCOL = 0
  
       ELSE IF (ICAL == 2) THEN
  
@@ -1599,6 +1621,9 @@ c
           WRITE (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
      .                     RP%HYD%REAC_STRING,RP%HYD%REACNAME,
      .                     RP%HYD%RPRT 
+        ELSE IF (RP%IFIT == 5) THEN
+! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
+          WRITE (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST
         ELSE
 
         END IF
@@ -1717,6 +1742,10 @@ cdr options for extrapolation from data tables or from validity range of fits.
           READ (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
      .               RP%HYD%REAC_STRING,RP%HYD%REACNAME,
      .               RP%HYD%RPRT 
+        ELSE IF (RP%IFIT == 5) THEN
+! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
+          IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
+          READ (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST
         ELSE
 
         END IF
@@ -1950,6 +1979,11 @@ cdr options for extrapolation from data tables or from validity range of fits.
           CALL FXDRCHR (IUN,RP%HYD%REACNAME)
           CALL FXDRCHR (IUN,RP%HYD%RPRT)
  
+        ELSE IF (RP%IFIT == 5) THEN
+! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
+          IHELP(1:2) = (/ RP%CRM%IFLAV, RP%CRM%IVARST /)
+          CALL FXDRINT (IUN,IHELP,2)
+ 
         ELSE
 
         END IF
@@ -2085,6 +2119,13 @@ cdr options for extrapolation from data tables or from validity range of fits.
           CALL FXDRCHR (IUN,RP%HYD%REACNAME)
           CALL FXDRCHR (IUN,RP%HYD%RPRT)
  
+        ELSE IF (RP%IFIT == 5) THEN
+! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
+          CALL FXDRINT (IUN,IHELP,2)
+          IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
+          RP%CRM%IFLAV = IHELP(1)
+          RP%CRM%IVARST = IHELP(2)
+ 
         ELSE
 cdr  IFIT out of range
         END IF
@@ -2125,9 +2166,21 @@ cdr  IFIT out of range
  
       SUBROUTINE EIRENE_SET_REACTION_DATA
      .           (IR,ISW,IFTFL,RDATA,IUNOUT,LTEST,
+c  from here on: optional input parameters
      .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .            RTMAX, ERTMAX, ETH)
+
+c  set reaction data structure REACDAT, for reaction no. IR.
+c  here only:  1D or 2D polygonial fits for reaction data.
+c               RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
+c  and:                          NULLIFY REACDAT(IR)%...%ADAS 
+c  and:                          NULLIFY REACDAT(IR)%...%LINE 
+c  and:                          NULLIFY REACDAT(IR)%...%HYD 
+c
+c  1) called from READ_PHTDBK 
+c  2) called from SLREAC, option "CONST"
+c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
  
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IR, ISW, IFTFL, IUNOUT
@@ -2194,27 +2247,12 @@ cdr  IFIT out of range
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-        ALLOCATE (REACDAT(IR)%POT)
-        NULLIFY(REACDAT(IR)%POT%ADAS)
-        NULLIFY(REACDAT(IR)%POT%LINE)
-        NULLIFY(REACDAT(IR)%POT%HYD)
+cdr  allocate, initialize, default asymptotics
+        CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
 
         REACDAT(IR)%POT%POLY => REA
         REACDAT(IR)%LPOT = .TRUE.
         REACDAT(IR)%POT%IFIT = IFIT
-c  extrapolation options
-        REACDAT(IR)%POT%RC1MIN = 0._DP
-        REACDAT(IR)%POT%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%POT%RC2MIN = 0._DP
-        REACDAT(IR)%POT%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%POT%FP1L = 0._DP
-        REACDAT(IR)%POT%FP1R = 0._DP
-        REACDAT(IR)%POT%FP2B = 0._DP
-        REACDAT(IR)%POT%FP2T = 0._DP
-        REACDAT(IR)%POT%JFEX1MN = 0
-        REACDAT(IR)%POT%JFEX1MX = 0
-        REACDAT(IR)%POT%JFEX2MN = 0
-        REACDAT(IR)%POT%JFEX2MX = 0      
 
         IF (PRESENT(RC1MIN)) REACDAT(IR)%POT%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%POT%RC1MAX = RC1MAX
@@ -2239,27 +2277,13 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-        ALLOCATE (REACDAT(IR)%CRS)
-        NULLIFY(REACDAT(IR)%CRS%ADAS)
-        NULLIFY(REACDAT(IR)%CRS%LINE)
-        NULLIFY(REACDAT(IR)%CRS%HYD)
+cdr  allocate, initialize, default asymptotics
+        CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%CRS)
 
         REACDAT(IR)%CRS%POLY => REA
         REACDAT(IR)%LCRS = .TRUE.
         REACDAT(IR)%CRS%IFIT = IFIT
 c  extrapolation options
-        REACDAT(IR)%CRS%RC1MIN = 0._DP
-        REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%CRS%RC2MIN = 0._DP
-        REACDAT(IR)%CRS%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%CRS%FP1L = 0._DP
-        REACDAT(IR)%CRS%FP1R = 0._DP
-        REACDAT(IR)%CRS%FP2B = 0._DP
-        REACDAT(IR)%CRS%FP2T = 0._DP
-        REACDAT(IR)%CRS%JFEX1MN = 0
-        REACDAT(IR)%CRS%JFEX1MX = 0
-        REACDAT(IR)%CRS%JFEX2MN = 0
-        REACDAT(IR)%CRS%JFEX2MX = 0
 c
         
         IF (PRESENT(RC1MIN)) REACDAT(IR)%CRS%RC1MIN = RC1MIN
@@ -2285,27 +2309,13 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-        ALLOCATE (REACDAT(IR)%RTC)
-        NULLIFY(REACDAT(IR)%RTC%ADAS)
-        NULLIFY(REACDAT(IR)%RTC%LINE)
-        NULLIFY(REACDAT(IR)%RTC%HYD)
+cdr  allocate, initialize, default asymptotics
+        CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
 
         REACDAT(IR)%RTC%POLY => REA
         REACDAT(IR)%LRTC = .TRUE.
         REACDAT(IR)%RTC%IFIT = IFIT
 c  extrapolation options
-        REACDAT(IR)%RTC%RC1MIN = 0._DP
-        REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%RTC%RC2MIN = 0._DP
-        REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%RTC%FP1L = 0._DP
-        REACDAT(IR)%RTC%FP1R = 0._DP
-        REACDAT(IR)%RTC%FP2B = 0._DP
-        REACDAT(IR)%RTC%FP2T = 0._DP
-        REACDAT(IR)%RTC%JFEX1MN = 0
-        REACDAT(IR)%RTC%JFEX1MX = 0
-        REACDAT(IR)%RTC%JFEX2MN = 0
-        REACDAT(IR)%RTC%JFEX2MX = 0
 c
         
         IF (PRESENT(RC1MIN)) REACDAT(IR)%RTC%RC1MIN = RC1MIN
@@ -2331,27 +2341,13 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-        ALLOCATE (REACDAT(IR)%RTCMW)
-        NULLIFY(REACDAT(IR)%RTCMW%ADAS)
-        NULLIFY(REACDAT(IR)%RTCMW%LINE)
-        NULLIFY(REACDAT(IR)%RTCMW%HYD)
+cdr  allocate, initialize, default asymptotics
+        CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
 
         REACDAT(IR)%RTCMW%POLY => REA
         REACDAT(IR)%LRTCMW = .TRUE.
         REACDAT(IR)%RTCMW%IFIT = IFIT
 c  extrapolation options
-        REACDAT(IR)%RTCMW%RC1MIN = 0._DP
-        REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%RTCMW%RC2MIN = 0._DP
-        REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%RTCMW%FP1L = 0._DP
-        REACDAT(IR)%RTCMW%FP1R = 0._DP
-        REACDAT(IR)%RTCMW%FP2B = 0._DP
-        REACDAT(IR)%RTCMW%FP2T = 0._DP
-        REACDAT(IR)%RTCMW%JFEX1MN = 0
-        REACDAT(IR)%RTCMW%JFEX1MX = 0
-        REACDAT(IR)%RTCMW%JFEX2MN = 0
-        REACDAT(IR)%RTCMW%JFEX2MX = 0
 c
         
         IF (PRESENT(RC1MIN)) REACDAT(IR)%RTCMW%RC1MIN = RC1MIN
@@ -2376,27 +2372,13 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-        ALLOCATE (REACDAT(IR)%RTCEW)
-        NULLIFY(REACDAT(IR)%RTCEW%ADAS)
-        NULLIFY(REACDAT(IR)%RTCEW%LINE)
-        NULLIFY(REACDAT(IR)%RTCEW%HYD)
+cdr  allocate, initialize, default asymptotics
+        CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
 
         REACDAT(IR)%RTCEW%POLY => REA
         REACDAT(IR)%LRTCEW = .TRUE.
         REACDAT(IR)%RTCEW%IFIT = IFIT
 c  extrapolation options
-        REACDAT(IR)%RTCEW%RC1MIN = 0._DP
-        REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%RTCEW%RC2MIN = 0._DP
-        REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%RTCEW%FP1L = 0._DP
-        REACDAT(IR)%RTCEW%FP1R = 0._DP
-        REACDAT(IR)%RTCEW%FP2B = 0._DP
-        REACDAT(IR)%RTCEW%FP2T = 0._DP
-        REACDAT(IR)%RTCEW%JFEX1MN = 0
-        REACDAT(IR)%RTCEW%JFEX1MX = 0
-        REACDAT(IR)%RTCEW%JFEX2MN = 0
-        REACDAT(IR)%RTCEW%JFEX2MX = 0
 c
        
         IF (PRESENT(RC1MIN)) REACDAT(IR)%RTCEW%RC1MIN = RC1MIN
@@ -2422,27 +2404,13 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-        ALLOCATE (REACDAT(IR)%OTH)
-        NULLIFY(REACDAT(IR)%OTH%ADAS)
-        NULLIFY(REACDAT(IR)%OTH%LINE)
-        NULLIFY(REACDAT(IR)%OTH%HYD)
+cdr  allocate, initialize, default asymptotics
+        CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%OTH)
 
         REACDAT(IR)%OTH%POLY => REA
         REACDAT(IR)%LOTH = .TRUE.
         REACDAT(IR)%OTH%IFIT = IFIT
 c  extrapolation options
-        REACDAT(IR)%OTH%RC1MIN = 0._DP
-        REACDAT(IR)%OTH%RC1MAX = HUGE(1._DP)
-        REACDAT(IR)%OTH%RC2MIN = 0._DP
-        REACDAT(IR)%OTH%RC2MAX = HUGE(1._DP)
-        REACDAT(IR)%OTH%FP1L = 0._DP
-        REACDAT(IR)%OTH%FP1R = 0._DP
-        REACDAT(IR)%OTH%FP2B = 0._DP
-        REACDAT(IR)%OTH%FP2T = 0._DP
-        REACDAT(IR)%OTH%JFEX1MN = 0
-        REACDAT(IR)%OTH%JFEX1MX = 0
-        REACDAT(IR)%OTH%JFEX2MN = 0
-        REACDAT(IR)%OTH%JFEX2MX = 0
 
         IF (PRESENT(RC1MIN)) REACDAT(IR)%OTH%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%OTH%RC1MAX = RC1MAX
@@ -2468,8 +2436,9 @@ c
       RETURN
       END SUBROUTINE EIRENE_SET_REACTION_DATA
  
- 
-      FUNCTION EIRENE_IS_RTC_ADAS (IREAC) RESULT(RES)
+CDR  NEXT THREE ROUTINES: PROBABALY NOT NEEDED ? 
+      FUNCTION EIRENE_IS_RTC_TAB2D (IREAC) RESULT(RES)
+c  something special about adas ?  unused !
  
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2479,10 +2448,11 @@ c
         RES = REACDAT(IREAC)%RTC%IFIT == 3
       END IF
  
-      END FUNCTION EIRENE_IS_RTC_ADAS
+      END FUNCTION EIRENE_IS_RTC_TAB2D
  
  
-      FUNCTION EIRENE_IS_RTCEW_ADAS (IREAC) RESULT(RES)
+      FUNCTION EIRENE_IS_RTCEW_TAB2D (IREAC) RESULT(RES)
+cdr   only used for adding/subtracting bremsstrahlung
  
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2492,10 +2462,11 @@ c
         RES = REACDAT(IREAC)%RTCEW%IFIT == 3
       END IF
  
-      END FUNCTION EIRENE_IS_RTCEW_ADAS
+      END FUNCTION EIRENE_IS_RTCEW_TAB2D
  
  
-      FUNCTION EIRENE_IS_RTCMW_ADAS (IREAC) RESULT(RES)
+      FUNCTION EIRENE_IS_RTCMW_TAB2D (IREAC) RESULT(RES)
+cdr  something special about adas ?  unused !
  
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2505,52 +2476,53 @@ c
         RES = REACDAT(IREAC)%RTCMW%IFIT == 3
       END IF
  
-      END FUNCTION EIRENE_IS_RTCMW_ADAS
-  
+      END FUNCTION EIRENE_IS_RTCMW_TAB2D
+
 
       SUBROUTINE EIRENE_FREE_REACDAT
+cdr  called from dealloc_comxs:  Free data structure REACDAT at the end of a run.
 
       type(fit_forms), pointer :: rea
       integer :: ir
 
       DO IR = -11, NREAC
-
+c  interaction potentials, scattering angle information
         IF (REACDAT(IR)%LPOT) THEN
            rea => REACDAT(IR)%POT
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  cross-sections
         IF (REACDAT(IR)%LCRS) THEN
            rea => REACDAT(IR)%CRS
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  rate coefficients
         IF (REACDAT(IR)%LRTC) THEN
            rea => REACDAT(IR)%RTC
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  momentum weighted rate coefficients
         IF (REACDAT(IR)%LRTCMW) THEN
            rea => REACDAT(IR)%RTCMW
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  energy weighted rate coefficients
         IF (REACDAT(IR)%LRTCEW) THEN
            rea => REACDAT(IR)%RTCEW
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  "other reaction", e.g. population rate coefficient, density ratio
         IF (REACDAT(IR)%LOTH) THEN
            rea => REACDAT(IR)%OTH
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-
+c  photonic reaction
         IF (REACDAT(IR)%LPHR) THEN
            rea => REACDAT(IR)%PHR
            call eirene_free_fit_form (rea)
@@ -2598,7 +2570,44 @@ c
          NULLIFY(RP%HYD)
       END IF
 
+      IF (ASSOCIATED(RP%CRM)) THEN
+         DEALLOCATE (RP%CRM)
+         NULLIFY(RP%CRM)
+      END IF
+
       END SUBROUTINE EIRENE_FREE_FIT_FORM
+
+      
+
+      SUBROUTINE EIRENE_ALLOC_FIT_FORM (RP)
+
+      TYPE(FIT_FORMS),POINTER :: RP
+
+      IF (.NOT.ASSOCIATED(RP)) THEN
+        ALLOCATE (RP)
+        NULLIFY (RP%POLY)
+        NULLIFY (RP%ADAS)
+        NULLIFY (RP%LINE)
+        NULLIFY (RP%HYD)
+        NULLIFY (RP%CRM)
+
+c  default asymptotics 
+        RP%RC1MIN = -HUGE(1._DP)
+        RP%RC1MAX =  HUGE(1._DP)
+        RP%RC2MIN = -HUGE(1._DP)
+        RP%RC2MAX =  HUGE(1._DP)
+        RP%FP1L = 0._DP
+        RP%FP1R = 0._DP
+        RP%FP2B = 0._DP
+        RP%FP2T = 0._DP
+        RP%JFEX1MN = 0
+        RP%JFEX1MX = 0
+        RP%JFEX2MN = 0
+        RP%JFEX2MX = 0
+c
+      END IF
+
+      END SUBROUTINE EIRENE_ALLOC_FIT_FORM
 
 
       END MODULE EIRMOD_COMXS

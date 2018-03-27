@@ -9,15 +9,15 @@ C
 C   CALCULATE TIME SEGMENTS FOR 2D-OR 3D PROFILES,
 C     X-RADIALLY AND Z-TOROIDALLY RESOLVED
 C
-C   BLOCK 1 : NLTRZ
-C   BLOCK 2B: NLTRA
+C   BLOCK 1 : NLTRZ  slab in z-coordinate
+C   BLOCK 2B: NLTRA  polygonal in x-z
 C   BLOCK 2A: NLTRT  circular in x-z. To be written
 C
 C   INPUT:
 C
 C     X01,Z01,PHI: STARTING POINT FOR THIS TRACK
 C     ZRAD  = DISTANCE (CM) TO THE NEXT RADIAL SURFACE OF 1D STANDARD MESH
-C           OR TO NEXT ADDITIONAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
+C             OR TO NEXT ADDITIONAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
 C     NRCELL = RADIAL CELL NUMBER, IN WHICH THIS TRACK OF LENGTH ZRAD
 C                                  IS PERFORMED
 C              = 0, IF TRACK OUTSIDE RADIAL MESH
@@ -183,8 +183,8 @@ C  NCOUT=1 AT THIS POINT
           NINCY=0
 #ifdef TRACE
           IF (NLTRC) THEN
-              WRITE (iunout,*) 'REENTRY FOUND, MTSURF,ZRAD = ',
-     .                                         MTSURF,ZRAD
+            WRITE (iunout,*) 'REENTRY FOUND, MTSURF,ZRAD = ',
+     .                                       MTSURF,ZRAD
             WRITE (iunout,*) 'IRCELL ',IRCELL
           ENDIF
 #endif
@@ -282,7 +282,7 @@ C  TIME FROM Z01 TO ZSURF
       BB=VELZ+EPS60
       F=DZ/BB
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'J2,F,DZ ',J2,F,DZ
+      IF (NLTRC) WRITE (iunout,*) 'J2,F,DZ ',J2,F,DZ
 #endif
       IF (F.LE.ZRAD) THEN
         KUPC(NCOUT)=J1
@@ -557,12 +557,25 @@ C
      .                    ZRAD,ISTS,ISRFCL,IPERID
       ENDIF
 #endif
+
+      GOTO 5000
+
 2000  CONTINUE      
 C
-      GOTO 5000
+
+C  BLOCK 2B DONE.... NLTRA
+C                 polygonal in x-z, (rather than x-y, as in timep.f).
+C::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 C
-C  DISCRETE TOROIDAL APPROXIMATION FINISHED
-C
+C  BLOCK 2A STARTS HERE....  NLTRT,
+c                  circular in x-z, ( rather than x-y, as in timep.f).
+C                  TO BE WRITTEN
+
+
+C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
+C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
 5000  CONTINUE
 #ifdef TRACE

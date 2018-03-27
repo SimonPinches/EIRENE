@@ -1,6 +1,6 @@
 cdr  jan 16: started to cleanup, comment
 cdr          remove redundant parameter iflg
-c
+cdr  jan 18: comments
 c
 c
 C
@@ -8,11 +8,19 @@ C MODIFIED BY V. KOTOV  (when ??)
 C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
 
+c  if NLSRT13=true : wrplam_short and (entry) rplam_short are called from WRPLAM,
+c  if NLSRT13=false: wrplam_long and (entry)  rplam_long are called from WRPLAM,
+c
+
 cdr this is the SHORT version of WRPLAM.F 
 cdr It writes and reads (entry RPLAM_SHRT) background data onto/from fort.13
-cdr Distinct from WRPLAM_long here only the background tallies are written-read, 
+cdr Distinct from WRPLAM_long here only the background tallies are written/read, 
 cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data, 
-cdr nor the primary source sampling information 
+cdr nor the primary source sampling information.
+cdr for BGK type non-linear iterations, with velocity independent rates,
+cdr this may be sufficient. 
+cdr Better: add here also the rates and other atomic data needed to streamline
+cdr         non-linear iterations.
 
 
 
@@ -24,10 +32,9 @@ cdr nor the primary source sampling information
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
       USE EIRMOD_CESTIM
-csw      USE EIRMOD_CCRM
+csw   USE EIRMOD_CCRM
       USE EIRMOD_CCOUPL
       USE EIRMOD_COMPRT,ONLY:IUNOUT !VKMPI
-csw      USE IFWRITE !VK
 
       IMPLICIT NONE
 
@@ -43,6 +50,8 @@ csw      USE IFWRITE !VK
      w         "NO DATA WILL BE STORED IN FORT.13"
          RETURN
         END IF
+cdr  only write plasma background data for species, which are not already
+cdr  transfered via Common BRAEIR
         IF(NFLA.LT.NPLSI) THEN
           WRITE (13+ifoff,IOSTAT=IO)
      w           TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
@@ -63,14 +72,14 @@ C ........................................................................
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o      STATUS='OLD',IOSTAT=IO)
       IF(IO.NE.0) THEN
-        WRITE(iunout,*) 'ERROR IN WRPLAM_SHRT: CAN NOT READ FORT.13'
+        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CAN NOT READ FORT.13'
         RETURN
       END IF
 
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN 
         WRITE(IUNOUT,*) 
-     w       "ERROR IN WRPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
+     w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
      w       "NO DATA WILL BE STORED IN FORT.13"
         RETURN
       END IF
@@ -80,7 +89,7 @@ C FIRST TRY TO READ IN THE OLD "LONG" FORMAT
 csw 02jan2012 NO! will kill DIIN coming from B2.5 by memory transfer..
 csw         READ (13,IOSTAT=IO) TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN
 csw         IF(IO.EQ.0) THEN
-csw          WRITE(IUNOUT,*) "WARNING FROM WRPLAM: ", 
+csw          WRITE(IUNOUT,*) "WARNING FROM RPLAM: ", 
 csw     w                 "THE DATA IS READ IN THE OLD (LONG) FORMAT"
 csw         ELSE
 C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE        
@@ -91,7 +100,7 @@ C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE
      R          VZIN(NFLA+1:NPLSI,1:NRAD)
           IF(IO.NE.0) GOTO 200
           IF (TRCFLE) WRITE (iunout,*)
-     w                'WRPLAM: BGK BACKGROUND IS READ FROM FORT.13'
+     w                'RPLAM: BGK BACKGROUND IS READ FROM FORT.13'
 csw        END IF !IF(IO.EQ.0) THEN
        END IF
 csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
@@ -100,7 +109,7 @@ csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
 
  200  CONTINUE
 
-       WRITE(iunout,*) 'ERROR IN WRPLAM_SHRT: CAN NOT READ FORT.13',
+       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CAN NOT READ FORT.13',
      w                 'ZERO BACKGROUND WILL BE ASSIGNED'
        TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
        DIIN(NFLA+1:NPLSI,1:NRAD)=0._DP

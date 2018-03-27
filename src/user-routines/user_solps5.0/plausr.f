@@ -1,0 +1,12 @@
+ 
+ 
+      SUBROUTINE EIRENE_PLAUSR
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+
+      IMPLICIT NONE
+ 
+ 
+ 
+      RETURN
+      END

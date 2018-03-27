@@ -13,14 +13,14 @@ cdr  oct.14  :  syncronized with fpathm, fpathi
 
 cdr 31.10.14 :  speedup of final cut off evaluations
 
-cdr note:       sgnl_poly evaluations are just the 8th order polynom, 
+cdr note:       sgnl_poly evaluations are just the 8th order polynom,
 cdr             plus rcmin,rcmax consideration.
-cdr             unless rcmin,rcmax are set (as it is the case currently here), 
-cdr             there is no need to call  --> move to in-line 
+cdr             unless rcmin,rcmax are set (as it is the case currently here),
+cdr             there is no need to call  --> move to in-line
 cdr 06.08.15 :  arguments added to vecusr
 
 cdr dec. 15:    missing: ftabel3
-cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 
 
@@ -37,6 +37,9 @@ cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
 cdr             ei process: started to check for H.3, H.1 options for EI processes
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
+cdr Jan. 18:    This entire routine is largely unfinished. Photon transport
+cdr             with eirene currently not possible. 
+cdr             Started to prepare re-activating this option: for now: comments only
 
 C
       FUNCTION EIRENE_FPATHPH (K,CFLAG,JCOU,NCOU)
@@ -51,7 +54,7 @@ C   IPHOT     :  PHOTON LINE SPECIES INDEX (INPUT VIA COMMON)
 C   K         :  CURRENT GRID CELL
 C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
 C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
- 
+
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
 C           CFLAG(1,...): EI
@@ -84,15 +87,15 @@ C
       USE EIRMOD_CTRCEI , ONLY: TRCAMD
       USE EIRMOD_CSPEI
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: CFLAG(7,MSTOR0)
       INTEGER, INTENT(IN) :: K, JCOU,NCOU
- 
+
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
-      REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplot3, 
+      REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplot3,
      .            DENEL, VX, VY, VZ, PVELQ0, fac,
      .            XC,YC,ZC
       integer :: il, kk, irot, ipot, j
@@ -111,13 +114,13 @@ C
 C   LOCAL PLASMA PARAMETERS
 C
       DENEL=DEIN(K)
-      
+
       DO 2 IPLS=1,NPLSI
         ZTI(IPLS)=ZT1(IPLS,K)
 2       DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLS) IS SQUARED THE PHOTON VELOCITY IN THESE FRAMES 
+C            PVELQ(IPLS) IS SQUARED THE PHOTON VELOCITY IN THESE FRAMES
 C
       PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLSV
@@ -146,10 +149,12 @@ csw
 60    CONTINUE
       if(phv_lgphot(iphot,0,0) == 0) goto 70
       do 61 ipot=1,phv_nphoti(iphot)
-        irot=phv_lgphot(iphot,ipot,0)
-        ipls =phv_lgphot(iphot,ipot,1)
-        il   =phv_lgphot(iphot,ipot,2)
-        kk   =phv_lgphot(iphot,ipot,3)
+        irot=phv_lgphot(iphot,ipot,0)  !  -->  lgxot, mit x=ph, irot entspricht: irei, ircx, ....
+        ipls =phv_lgphot(iphot,ipot,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
+        il   =phv_lgphot(iphot,ipot,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
+cdr     il wird hier nirgends verwendet! kann ev. ganz raus aus photonenmodul
+        kk   =phv_lgphot(iphot,ipot,3) !  -->   diese gibt es nicht bei ei, cx, pi prozessen, KK=NREAPI(IRPI) z.b. bei pi
+cdr                                    !        d.h. hier sollte kk=nreaot(irot) verwendet werden
         IF (LGVAC(K,IPLS)) GOTO 61
 C
 C  1.) RATE COEFFICIENT
@@ -163,7 +168,7 @@ C  BEAM - MAXWELLIAN RATE. FULL ACCOUNT FOR DOPPLER SHIFT
 cdr       kk   = nreaot(irot)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
-cdr  getcoeff liefert nun maxw. average ueber Ti(ipls), z.b. voigt, ....
+cdr  getcoeff liefert nun maxw. average ueber Ti(ipls) (background neutrals), z.b. voigt, ....
           call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
           sigv=sigv*diin(ipls,k)
           if(phv_muldens .EQ. 0) then
@@ -200,7 +205,7 @@ cdr       ESIGOT(irot,1)=e0*sigv   ziemlich sicher falsch
         ELSE
           GOTO 997
         ENDIF
- 
+
         SIGMAX=MAX(SIGMAX,SIGVOT(IROT))
         SIGOTT=SIGOTT+SIGVOT(IROT)
 C
@@ -229,13 +234,13 @@ C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
           GOTO 997
         ENDIF
 61    CONTINUE
- 
+
 70    CONTINUE
 c
 C     TOTAL
 C
 100   CONTINUE
- 
+
 C
 C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
@@ -249,7 +254,7 @@ C
           END IF
         END DO
       END IF
- 
+
       SIGTOT=SIGEIT+SIGPIT+SIGCXT+SIGELT+SIGOTT
       IF (SIGTOT.GT.1.D-20) THEN
         EIRENE_FPATHPH=VEL/SIGTOT

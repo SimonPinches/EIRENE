@@ -1,5 +1,5 @@
-cc evaluate local coordinates r,s,t at a carthesian position px,yp,zp,
-cc in a cell icell with vertices given by x1,...z4 in carthesian coordinates
+cc evaluate local coordinates r,s,t at a carthesian position xp,yp,zp,
+cc in a cell icell with vertices given by x1,...z4 in cartesian coordinates
 
       subroutine eirene_xyz_to_rst (icell, x1, y1, z1, x2, y2, z2,
      .                              x3, y3, z3,
@@ -56,7 +56,7 @@ c
           allocate (y0(0:nrad))
           allocate (visited(0:nrad))
           visited = .false.
-         end if
+        end if
 
         if (.not.visited(icell)) then
           xb(icell) = x1 - x2 + x3 - x4

@@ -32,7 +32,7 @@ c  hard wired: cut off (density) parameter for fits: 1e8
  
       INTEGER, INTENT(IN) :: IREL, K
       REAL(DP) :: EIRENE_FTABEL3, DEIMIN, TII, PLS, TBEL, 
-     .            EIRENE_RATE_COEFF, ERATE
+     .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
  
       TBEL=0.D0
@@ -45,10 +45,9 @@ c  hard wired: cut off (density) parameter for fits: 1e8
       IPLSTI=MPLSTI(IPLS)
       TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
 
-c  erate: not needed (only intermediate for H-COL option. Remove ! 
 c  input parameters for rate_coeff: tii=ln(Ti), pls=ln(ni)
 c 
-      TBEL = EIRENE_RATE_COEFF(KK,TII,PLS,.TRUE.,0,ERATE)*
+      TBEL = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,0)*
      .       FACREL(IREL,1)
       IF (IFTFLG(KK,2) < 100) TBEL = TBEL*DIIN(IPLS,K)
  
