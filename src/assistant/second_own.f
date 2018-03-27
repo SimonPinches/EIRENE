@@ -15,7 +15,7 @@ c x05baf is a NAG routine
       EIRENE_second_own=time-start
       RETURN
 C
-      ENTRY EIRENE_RESET_SECOND()
+      ENTRY EIRENE_RESET_SECOND
 !pb      start=x05baf()
       call cpu_time(start)
       EIRENE_reset_second=start

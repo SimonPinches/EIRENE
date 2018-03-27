@@ -30,7 +30,6 @@ CVK TRACING FOR DEBUGGING VIA WRITE(0,...
      L                         TRCDBGM,  !... MCARLO
      L                         TRCDBGF,  !... FOLNEUT
      L                         TRCDBGL,  !... LOCATE
-     L
      L                         TRCDBGS,  !... SURFACE INTERACTION ROUTINES
      L                         TRCDBGG,  !... GEOMETRY ROUTINES
      L                         TRCDBGMPI,!... MPI ROUTINES

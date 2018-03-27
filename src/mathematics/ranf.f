@@ -91,7 +91,7 @@ c  done
 
 C     The following ENTRY is for reinitialization of EIRENE
 
-      ENTRY ranf_eirene_reinit ()
+      ENTRY ranf_eirene_reinit
 cdr   indicate that random number generator is not initialized.
       ifirst = 0
       ranf_eirene_reinit = 0.D0
