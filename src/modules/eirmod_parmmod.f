@@ -39,7 +39,7 @@ c    distrib_parm
       INTEGER, PUBLIC, PARAMETER ::
      P         NUM_PARM=200,
      P         NPARTC=12, NPARTT=11,
-     P         MPARTC=14, MPARTT=9
+     P         MPARTC=14, MPARTT=10
 csw 13apr07
       integer, public, save :: IFOFF = 0
 
