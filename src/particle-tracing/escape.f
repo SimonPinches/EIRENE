@@ -1,3 +1,9 @@
+cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
+cdr             semi-transp fluxes: score only indicent and emitted current fractions
+cdr             for which surfaces are NOT transparent. 
+cdr             update_sptflx: different meaning of flag IND. More consistent
+cdr             now with IND-flag in other surface scoring routines.  
+ 
 cdr nov. 17   :  lmetspw arguments corrected
 cdr sept.17   :  no ion sheath orbit correction at mirror surfaces (=symmetry BC)
 cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
@@ -23,16 +29,9 @@ c             now: do not fill prf... and erf... tallies at all in case ILIIN=-3
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
 !pb 21.08.06: calls to update_surface introduced
-!pb 18.08.06: if a particle hits a periodic surface with the conditional
-!             expectation estimator switched on and a collision is already stored
-!             the track is continued as if the periodic surface is transparent
-!             additional changes have been made in stdcol
-!pb 01.03.06: switch off storing of trajectory if a nontransparent surface is hit
 c   20.01.06: sheath repulsion added for negative ions (or
 c             positive ions and positive sheath potentials).
-!PB 12.01.06: index added to update_spectrum indicating particle has hit a surface
 CVK 25.02.04: splitting for sputtering is re-introduced, (from eirene_02)
-CVK 25.02.04: the ILIIN=-3 option support is re-introduced
 CVK 25.02.04: spttot updated (total sputtered flux tally)
 CDR 25.02.04: return, return1 for reflected flux tallies moved after call
 CDR 25.02.04:                 to upsusr, update_spectrum (from eirene_02)
@@ -50,6 +49,8 @@ C        LGPART=.TRUE.  UPDATE TALLIES FOR INCIDENT PARTICLES,
 C                       THEN CALL SURFACE MODEL (SPUTER, REFLEC,...)
 C                       THEN UPDATE TALLIES FOR EMITTED PARTICLES
 C        LGPART=.FALSE. UPDATE TALLIES FOR INCIDENT PARTICLES, THEN STOP.
+C        ICOL:  =1:  CONDITIONAL EXPECTATION ESTIMATOR, AND AN EARLIER COLLISION
+C                    ALONG THIS TRACK IS STORED
 C
 C  RETURN  : STOP TRACK OF THIS PARTICLE TYPE. RETURN TO SUBR. MCARLO
 C  RETURN 1: START NEW TRACK OF SAME TYPE IN CALLING PROGRAM
@@ -117,8 +118,8 @@ C  CURRENTLY: NO SURFACE TALLIES AT PERIODICITY SURFACES
       IF (ILIIN(MSURF).GE.4) THEN
 cdr: unfinished option: store trajectories for later post processing
 cdr: unused
-        NLTRJ = .FALSE.
-        TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+c       NLTRJ = .FALSE.
+c       TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 C  CONDITIONAL EXPECTATION ESTIMATOR: HAS THIS PARTICLE COLLIDED IN THE VOLUME,
 C  BEFORE IT HIT THE WALL?
         IF (ICOL.EQ.1) then
@@ -179,28 +180,21 @@ C
       IF ((ILIIN(MSURF).LT.0).AND.(SG.LT.0.D0).AND.(ILIIN(MSURF).NE.-3))
      .GOTO 10
 C
-C   HERE: EITHER: ILIIN .GE.0, OR ILIIN.EQ.-3, OR SG .GT.0
-C         SCORE OUTGOING FLUX
+C   HERE: EITHER: ILIIN .GE.0,    NOT TRANSPARENT, SCORE OUTGOING FLUX (WPR >=0 always)
+c             OR: ILIIN.EQ.-3,    TRANSPARENT,     SCORE NET FLUX (WPR contains sign)
+C             OR: SG .GT.0        SCORE ONE SIDED POSITIVE CURRENT EVEN FOR TRANSPARENT SURF.
+
 
       IF (ITYP.EQ.0) THEN
 C  INCIDENT PHOTONS
-        IF (LEOTPHT) EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WPR
-        IF (LPOTPHT) POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WPR
-        IF (LEOTPHT .OR. LPOTPHT) LMETSPW(IPHOT) = .TRUE.
         FMASS=0._dp
         FCHAR=0._dp
       ELSEIF (ITYP.EQ.1) THEN
 C  INCIDENT ATOMS
-        IF (LEOTAT) EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WPR
-        IF (LPOTAT) POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WPR
-        IF (LEOTAT .OR. LPOTAT) LMETSPW(NSPH+IATM) = .TRUE.
         FMASS=DBLE(NMASSA(IATM))
         FCHAR=DBLE(NCHARA(IATM))
       ELSEIF (ITYP.EQ.2) THEN
 C  INCIDENT MOLECULES
-        IF (LEOTML) EOTML(IMOL,MSURF)=EOTML(IMOL,MSURF)+E0*WPR
-        IF (LPOTML) POTML(IMOL,MSURF)=POTML(IMOL,MSURF)+WPR
-        IF (LEOTML .OR. LPOTML) LMETSPW(NSPA+IMOL) = .TRUE.
         FMASS=DBLE(NMASSM(IMOL))
         FCHAR=DBLE(NCHARM(IMOL))
       ELSEIF (ITYP.EQ.3) THEN
@@ -322,42 +316,17 @@ C             VEL=SQRT(E0)*RSQDVI(IION)
 
         ENDIF ! ILIIN > 0 ?
 
-        IF (LEOTIO) EOTIO(IION,MSURF)=EOTIO(IION,MSURF)+E0*WPR
-        IF (LPOTIO) POTIO(IION,MSURF)=POTIO(IION,MSURF)+WPR
-        IF (LEOTIO .OR. LPOTIO) LMETSPW(NSPAM+IION) = .TRUE.
         FMASS=DBLE(NMASSI(IION))
         FCHAR=DBLE(NCHARI(IION))
 
       ENDIF
+      CALL EIRENE_UPDATE_SURFACE(ITYP_OLD,WPR,1)
 C
-C   NOW THE SAME OUTGOING SURFACE FLUX TALLIES,
-C   BUT SPATIALLY GRID RESOLVED ON SURFACE
-C
-      IF (MSURFG.GT.0) THEN
-        IF (ITYP.EQ.0) THEN
-          IF (LEOTPHT) EOTPHT(IPHOT,MSURFG)=EOTPHT(IPHOT,MSURFG)+E0*WPR
-          IF (LPOTPHT) POTPHT(IPHOT,MSURFG)=POTPHT(IPHOT,MSURFG)+WPR
-          IF (LEOTPHT .OR. LPOTPHT) LMETSPW(IPHOT) = .TRUE.
-        ELSEIF (ITYP.EQ.1) THEN
-          IF (LEOTAT) EOTAT(IATM,MSURFG)=EOTAT(IATM,MSURFG)+E0*WPR
-          IF (LPOTAT) POTAT(IATM,MSURFG)=POTAT(IATM,MSURFG)+WPR
-          IF (LEOTAT .OR. LPOTAT) LMETSPW(NSPH+IATM) = .TRUE.
-        ELSEIF (ITYP.EQ.2) THEN
-          IF (LEOTML) EOTML(IMOL,MSURFG)=EOTML(IMOL,MSURFG)+E0*WPR
-          IF (LPOTML) POTML(IMOL,MSURFG)=POTML(IMOL,MSURFG)+WPR
-          IF (LEOTML .OR. LPOTML) LMETSPW(NSPA+IMOL) = .TRUE.
-        ELSEIF (ITYP.EQ.3) THEN
-          IF (LEOTIO) EOTIO(IION,MSURFG)=EOTIO(IION,MSURFG)+E0*WPR
-          IF (LPOTIO) POTIO(IION,MSURFG)=POTIO(IION,MSURFG)+WPR
-          IF (LEOTIO .OR. LPOTIO) LMETSPW(NSPAM+IION) = .TRUE.
-        ENDIF
-      ENDIF
-
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
-!  PARTICLE TYPE AND SPECIES HAVE CHANGED
+!  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES
-      CALL EIRENE_SWITCH_PARTINFO
+      CALL EIRENE_SWITCH_PARTINFO   !  HIER NICHT NOETIG ??
 
 C
 10    CONTINUE
@@ -441,6 +410,7 @@ C
         IF (SG.LT.0) ISG=2
         RATR=RANF_EIRENE( )
         LTRANS=RATR.LE.TRANSP(ISPZ,ISG,MSURF)
+
         IF (LTRANS) THEN
 C  A NON TRANSPARENT SURFACE IS MADE TRANSPARENT FOR THIS
 C  PARTICULAR PARTICLE
@@ -495,11 +465,11 @@ C
 C
 C   ..............................................
 C   .                                            .
-C   .   MIRROR, OR SEMI-TRANSPARENT SURFACE      .
+C   .   MIRROR                                   .
 C   .   REEMITTED FLUX=INCOMING FLUX AND RETURN  .
 C   ..............................................
 C
-      IF (LTRANS.OR.ILIIN(MSURF).EQ.3) THEN
+      IF (ILIIN(MSURF).EQ.3.AND..NOT.LTRANS) THEN
 C
 C ITYP_OLD=ITNEW=ITYP
 C
@@ -544,15 +514,21 @@ C
           ENDIF
         ENDIF
 C
-C  EITHER: SEMI-TRANSPARENT SURFACE
+C  EITHER: SEMI-TRANSPARENT SURFACE....
 C
         IF (LTRANS) THEN
+C  CONTINUE WITH UNMODIFIED VELOCITY.
+
+C  COMPENSATE INCIDENT SURFACE FLUX TALLY CONTRIBUTIONS
+C  SCORED ABOVE.                                       
+          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,-WPR,1)
+
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
           COLFLAG = .TRUE.
           RETURN 2
 C
-C  OR: PERFECT SPECULAR REFLECTION
+C  ... OR: PERFECT SPECULAR REFLECTION
 C
         ELSEIF (ILIIN(MSURF).EQ.3) THEN
           COSI2=-2.*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)
@@ -561,8 +537,8 @@ C
           VELZ=VELZ+COSI2*CRTZ
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
-          NLTRJ = .FALSE.
-          TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+C         NLTRJ = .FALSE.
+C         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
           IF (ICOL.EQ.1) RETURN 3
           RETURN 1
         ENDIF
@@ -580,7 +556,9 @@ C                  POSITIVE COMPONENT, SG.GT.0, WAS ALREADY ON "OT-TALLIES"
 C  IN CASE ILIIN=-3: NET FLUXES HAVE ALREADY BEEN UPDATED ABOVE ON "OT-TALLIES".
 C                    NEED NOT BE UPDATED AGAIN HERE.
 C
-        IF ((SG.GT.0.D0).AND.(ILIIN(MSURF).NE.-3))  GOTO 90 
+        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3))  GOTO 90 
+C 
+C  HERE:  ILIIN NE -3, AND SG LE 0, SCORE ONE SIDED "NEGATIVE" CURRENTS (WPR <=0)
 C
 C ITYP_OLD=ITNEW=ITYP
 C
@@ -776,9 +754,9 @@ C  UPDATE TOTAL SPUTTERED FLUXES IN CASE OF UNKNOWN SPECIES INDEX FOR SPUTTERED 
 C  IF ISSPT... GT.0 ('EMITTED SPECIES KNOWN') THEN SPUTTERED FLUXES WILL BE UPDATED BELOW,
 C                                             AND SPUTTERED PARTICLES MAY BE FOLLOWED
         IF (WGHTSP.GT.0..AND.ISSPTP.EQ.0)
-     .    CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,0)
+     .    CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,1)
         IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
-     .    CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC,0)
+     .    CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC,1)
 C
         IF (WGHTSP.GT.0..AND.ISSPTP.GT.0) THEN
 C  PHYSICAL SPUTTERING, RESTORE PHYSICALY SPUTTERED PARTICLE PARAMETERS
@@ -799,16 +777,17 @@ C
           VELX=VXSPTP
           VELY=VYSPTP
           VELZ=VZSPTP
+C
 C  ITYP_OLD.NE.ITNEW=ITYP POSSIBLE
 C
-          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,1)
-          IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WEIGHT,2)
-          IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,2,0)
+          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,2)
+          IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WGHTSP,2)
+          IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WGHTSP,2,0)
 
           IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES ON SURFACE TALLIES ONLY
 C                                         IF THEY ARE FOLLOWED.
 C                                         OTHERWISE: ONLY ON SPUTTER TALLIES
-          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)
+          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSP,2)
 C
 C.....................................................................
 C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
@@ -857,14 +836,14 @@ C
           VELZ=VZSPTC
 C  ITYP_OLD.NE.ITNEW=ITYP POSSIBLE
 C
-          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC,1)
+          CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC,2)
 
-          IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WEIGHT,2)
-          IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,2,0)
+          IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WGHTSC,2)
+          IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WGHTSC,2,0)
 
           IF (IGASC_OLD.EQ.0) GOTO 4712  ! SCORE SPUTTERED PARTICLES ON SURFACE TALLIES ONLY
 C                                          IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
-          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)
+          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSC,2)
 C
 C.....................................................................
 C  FOLLOW SPUTTERED PARTICLES LATER. PUT THEM INTO STATISTICAL CELLAR
@@ -943,12 +922,14 @@ C
 C
 C  ITYP_OLD.NE.ITNEW=ITYP POSSIBLE
 C
-      CALL EIRENE_UPDATE_SURFACE (ITYP_OLD)
+      CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,2)
+
       IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WEIGHT,2)
       IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,2,0)
 C
-      NLTRJ = .FALSE.
-      TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+C     NLTRJ = .FALSE.
+C     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+
       IF  (ITYP.EQ.ITYP_OLD) RETURN 1
       IF ((ITYP.EQ.1.AND.ITYP_OLD.EQ.2).OR.
      .    (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) RETURN 1

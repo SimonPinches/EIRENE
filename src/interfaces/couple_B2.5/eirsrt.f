@@ -70,19 +70,20 @@ C
       LOGICAL, INTENT(IN) :: LSTOP, LTIME
 
       REAL(DP) :: FLUXS(NSTRA)
-      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, FLXI, ESIG, 
+      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG, 
      .            EIRENE_RESET_SECOND, DUMMY,
      .            EIRENE_SECOND_OWN, DTIMVO
-      INTEGER :: IN, IAEI, IMEI, IIEI, IREI, ICPV, IFIRST, K, JC, NDXY,
+      INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       INTEGER, ALLOCATABLE :: IHELP(:)
       LOGICAL :: LSTP, LLST, LPLASM
+cdr  nlsron(istra): still to be transfered from couple_tria or couple_b2
 C
       TYPE(CELLSIM), POINTER :: CPSIM
       TYPE(CELLMUL), POINTER :: CPMUL
 
-cdr new, pointer :: rtis, FOR "OD" RATES (SHORT CYCLE) PER STRATUM
+cdr pointer :: rtis, FOR "OD" RATES (SHORT CYCLE) PER STRATUM
       TYPE(RATE_STORE), POINTER :: RTIS
 C
 C
@@ -107,8 +108,10 @@ C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
           LPLASM=.FALSE.
+          LLST=.FALSE.
+          ITNR=1
 C
-          CALL EIRENE_EIRENE(DELTAT,LPLASM,.FALSE.,1,.TRUE.)
+          CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
 C
 C  EIRENE RUN DONE. CENSUS ARRAY WRITTEN
 C  NOW ITIMV=ITIMV+1, NLPLAS=.TRUE.
@@ -180,7 +183,8 @@ C
           IITER=1
           IPRNLI=0
           NLSRON=.TRUE.
-          CALL EIRENE_EIRENE_COUPLE (LSTOP,1,.TRUE.)
+          ITNR=1
+          CALL EIRENE_EIRENE_COUPLE (LSTOP,ITNR,.TRUE.)
           IF (LSTOP) THEN
             CALL EIRENE_PLEND
           ENDIF
@@ -189,11 +193,15 @@ C
         WRITE(*,*) 'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
         CALL EIRENE_LEER(2)
 C
-        RETURN
+        RETURN   ! time dep. option done
+c.....................................................................
 C
 C  MAIN ENTRY POINT FROM B2 INTO EIRENE, IN CASE OF TIME-INDEPENDENT RUNS  
 C
       ELSEIF (.NOT.LTIME) THEN
+
+!swpb for multiprocessor calculation
+        DUMMY=EIRENE_RESET_SECOND()
 C
         IF (IFIRST.GE.1) GOTO 10000
 C
@@ -219,7 +227,7 @@ C
         LLST=LSTOP
         ITNR=1
 
- 10     CONTINUE
+10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
         CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
 C
@@ -238,7 +246,7 @@ C
           CALL EIRENE_ALLOC_BRASCL
 
           CALL EIRENE_ALLOC_RATE_ARRAY(IST_RATE)
-          
+          CALL EIRENE_INIT_RATE_ARRAY(IST_RATE)
 
           RTIS => RTS(IST_RATE)%RTA
 C.....................................................................................
@@ -247,7 +255,8 @@ cdr
 cdr  now start to store rates from present cycle, for future short cycle corrections
 cdr
 cdr  to be done
-cdr  all these "short cycle data" should only be computed if short cycle is turned on at all
+cdr  all these "short cycle data" should only be computed 
+cdr  if "short cycle" option is turned on at all
 
 C
 C  CURRENT RUN: STORE ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR 
@@ -344,7 +353,7 @@ C
         DO 27 IPLS=1,NPLSI
           DO 27 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
-
+c
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 27
           DO  IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -363,15 +372,15 @@ C                                      SUM OVER ALL EI PROCESSES
         DO 26 IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
             DO IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
+              IF (NSTORDR >= NRAD) THEN
+                ESIG=EELEI1(IREI,IN)
                 RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+
-     .                                        EELEI1(IREI,IN)*
-     .                                        TABEI1(IREI,IN)
-            ELSE
+     .                               TABEI1(IREI,IN)*ESIG
+              ELSE
+                ESIG=EIRENE_FEELEI1(IREI,IN)
                 RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+
-     .                                        EIRENE_FEELEI1(IREI,IN)*
-     .                                        EIRENE_FTABEI1(IREI,IN)
-            END IF
+     .                               EIRENE_FTABEI1(IREI,IN)*ESIG
+              END IF
             ENDDO
 26      CONTINUE
 C
@@ -424,19 +433,19 @@ C
         DO 35 IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
             DO IN=1,NDXY
-            IF (NSTORDR >= NRAD) THEN
+              IF (NSTORDR >= NRAD) THEN
                   RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
      .                                          EELEI1(IREI,IN)*
      .                                        TABEI1(IREI,IN)
-            ELSE
+              ELSE
                 RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
      .                                        EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
-            ENDIF
+              ENDIF
             ENDDO
 35      CONTINUE
 C
-C  CURRENT RUN: ION ENERGY EXCHANGE RATE: TEST IONS, EI-PROCESSES, FROM IION
+C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI-PROCESSES, FROM IMOL
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
         DO 49 IMOL=1,NMOLI
@@ -474,6 +483,7 @@ C
           CALL EIRENE_DEALLOC_RATE_ARRAY
           CALL EIRENE_DEALLOC_BRASPOI
 
+          CALL EIRENE_PLEND
         END IF
 
         RETURN
@@ -487,6 +497,9 @@ C  PREPARE ARRAY FOR SEMI-IMPLICIT "SHORT CYCLE" CORRECTIONS FOR NEW STEP.
 C
         LSTP = LSTOP
         NCUTB_SAVE=NCUTB
+
+        CALL EIRENE_ALLOC_BCKGRND
+
         CALL EIRENE_INTER1
 C
         CALL EIRENE_PLASMA
@@ -563,6 +576,8 @@ C
               END IF
 105     CONTINUE
 
+cdr  no seinwa, because only KER part is in short cycle correction for EI processes
+cdr             and for atoms this is identical == 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES
 C
@@ -687,6 +702,7 @@ C
           CALL EIRENE_DEALLOC_RATE_ARRAY
           CALL EIRENE_DEALLOC_BRASPOI
 
+          CALL EIRENE_PLEND
         END IF
 
         RETURN

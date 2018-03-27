@@ -1,11 +1,24 @@
 cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
 cdr:             check: is eirsrt universal, then: move even further up to "main routines".
 cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
-
-
+c  jan 2017: syncronisation with corresponding version in couple_SOLPS-ITER,
+c            re. reading polygon data in geomd_linda from fort.30
+c            added: species index in eapl,empl,eipl tallies
 C
 C  ASSISTANT ROUTINES, SPECIFIC TO A PARTICULAR EDGE CODE INTERFACE
 C  DATA STRUCTURES (grid, plasma data, etc...)
+c
+cdr:  GEOMD : DRIVER FOR DIFFERENT VERSIONS OF GEOMD_..ROUTINES, diff. geometry file formats
+C     GEOMD_CARRE
+C     GEOMD_LINDA
+C     GEOMD_SONNET
+c
+cdr   MESHPROJ
+cdr   INDMAP
+cdr   INDMPI
+cdr   PLASM
+cdr   NEUTR
+cdr   SAVE_TALLIES
 C
 C
 
@@ -238,7 +251,7 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
-      USE EIRMOD_COMPRT,ONLY:IUNIN,IUNOUT !VK
+      USE EIRMOD_COMPRT,ONLY:IUNOUT
       IMPLICIT NONE
 C
       INTEGER, INTENT(INOUT) :: NDXA, NDYA, NPLP
@@ -250,7 +263,7 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
      R  X1(NDX),Y1(NDX),X2(NDX),Y2(NDX),X3(NDX),Y3(NDX),
      R  X4(NDX),Y4(NDX)
 C
-      CHARACTER(80) :: LINE,LINE2
+      CHARACTER(80) :: LINE
 C   DIMENSIONIERUNG FUER GITTER
       INTEGER :: DIMXH,DIMYH,NNCUT,NNISO,
      1 NXCUT1(10),NXCUT2(10),NYCUT1(10),NYCUT2(10),
@@ -258,7 +271,7 @@ C   DIMENSIONIERUNG FUER GITTER
       INTEGER :: IX, IY, I, J, NP, NWISO
 
       REAL(DP) :: DUMMI(3)
-      REAL(DP) :: MERK(NDY)
+
 C  ACTUAL MESH USED IN THIS RUN
 C
 C      EINLESEROUTINE ANGEPASST AUF BRAAMS-OUTPUT
@@ -341,15 +354,15 @@ C    READING OF POLYGON DATA
        IF (IX.LE.nxcut1(1)-1) THEN
         DO 12 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),XPOL(IY,IX)
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
 12      CONTINUE
@@ -357,15 +370,17 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.nxcut1(1)) THEN
         DO 14 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,*) XPOL(IY,nxcut2(2)),DUMMI(1),
+         READ (30,*,ERR=100,END=100) XPOL(IY,nxcut2(2)),DUMMI(1),
      .                  DUMMI(2),XPOL(IY,IX)
-         READ (30,*) YPOL(IY,nxcut2(2)),DUMMI(1),
+         READ (30,*,ERR=100,END=100) YPOL(IY,nxcut2(2)),DUMMI(1),
      .                  DUMMI(2),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
+          READ (30,*,ERR=100,END=100) 
+     .                  XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
      .                                XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*) YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
+          READ (30,*,ERR=100,END=100) 
+     .                  YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
      .                                YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
 14      CONTINUE
@@ -373,15 +388,15 @@ C    READING OF POLYGON DATA
        IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(2)-1)) THEN
         DO 16 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
-          READ (30,*) DUMMI(1),
+          READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
 16      CONTINUE
@@ -389,15 +404,17 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.nxcut1(2)) THEN
         DO 18 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,*) XPOL(IY,nxcut2(1)+1),DUMMI(1),
+         READ (30,*,ERR=100,END=100) XPOL(IY,nxcut2(1)+1),DUMMI(1),
      .                  DUMMI(2),XPOL(IY,IX+1)
-         READ (30,*) YPOL(IY,nxcut2(1)+1),DUMMI(1),
+         READ (30,*,ERR=100,END=100) YPOL(IY,nxcut2(1)+1),DUMMI(1),
      .                  DUMMI(2),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
+          READ (30,*,ERR=100,END=100) 
+     .                  XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
      .                                XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*) YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
+          READ (30,*,ERR=100,END=100) 
+     .                  YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
      .                                YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
 18      CONTINUE
@@ -405,15 +422,15 @@ C    READING OF POLYGON DATA
        IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
         DO 22 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-          READ (30,*) DUMMI(1),DUMMI(2),DUMMI(3),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),DUMMI(3),
      .                   XPOL(IY,IX+2)
-          READ (30,*) DUMMI(1),DUMMI(2),DUMMI(3),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),DUMMI(3),
      .                   YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*) DUMMI(1),DUMMI(2),
+          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
 22      CONTINUE
@@ -421,15 +438,17 @@ C    READING OF POLYGON DATA
        IF (IX.EQ.dimxh) THEN
         DO 24 IY = 1, DIMYH
          IF (IY.LE.dimyh-1) THEN
-         READ (30,*) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
+         READ (30,*,ERR=100,END=100) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
      .                  XPOL(IY,IX+2)
-         READ (30,*) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
+         READ (30,*,ERR=100,END=100) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
      .                  YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*) XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
+          READ (30,*,ERR=100,END=100) 
+     .                  XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
      .                                XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*) YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
+          READ (30,*,ERR=100,END=100) 
+     .                  YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
      .                                YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
 24      CONTINUE
@@ -686,6 +705,7 @@ C
 
 
 C
+C
       SUBROUTINE EIRENE_MSHPROJ(X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,
      .                   NDXA,NR1ST,IY)
 
@@ -699,6 +719,7 @@ C
       REAL(DP) :: D12, D34, D13, D24, EPS60, PUPV, PVPV, DVX, DVY,
      .          DUX, DUY
       INTEGER :: IX, IN
+
       EPS60 = 1.E-60_DP
 C
 C
@@ -745,6 +766,7 @@ C
 
 
 C
+C
       SUBROUTINE EIRENE_INDMAP(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG)
 C
@@ -771,7 +793,7 @@ C  LOOP FOR THE SPECIES
 C
       DO 500 IF=1,NFLA
 C
-C  INITIALIZE DUMMY
+C  INITIALISE DUMMY
 C
         DO 10 IY=0,NDY+1
           DO 10 IX=0,NDX+1
@@ -834,7 +856,7 @@ C
       SUBROUTINE EIRENE_INDMPI(FIELD,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .                  NCUTB,NCUTL,NPOINT,NPPLG,NSTR,ISTR)
 C
-C     INDEX MAPPING: INVERS TO SUBR. INDMAP
+C     INDEX MAPPING: INVERSE TO SUBR. INDMAP
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -851,7 +873,7 @@ C  LOOP OVER THE SPECIES
 C
       DO 500 IF=1,NFLA
 C
-C  INITIALIZE DUMMY
+C  INITIALISE DUMMY
 C
         DO 10 IY=0,NDY+1
           DO 10 IX=0,NDX+1
@@ -925,6 +947,9 @@ C=======================================================================
       character(50) :: form
       character(200) :: zeile
 
+cdr  construct the proper format for reading from file FORT(KARD)  
+cdr  character string FORM replaces old card: 910  FORMAT(5(E16.8))
+c
       form = repeat(' ',50)
       read (kard,'(a200)',END=500) zeile
       i1 = index(zeile,'.')
@@ -932,6 +957,7 @@ C=======================================================================
       i3 = index(zeile(i2+1:),' ')
       write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
       backspace kard
+c     write (6,*) 'plasm: detected format ', form
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
@@ -976,7 +1002,7 @@ C
   110   CONTINUE
   500 CONTINUE
       RETURN
-  910 FORMAT(5(E16.8))
+  910 FORMAT(5(ES16.7E3))
 *//END NEUTR//
       END
 
@@ -986,9 +1012,11 @@ C
       SUBROUTINE EIRENE_SAVE_TALLIES (ISTRAI)
 C
 C  SAVE EIRENE TALLIES, SCALE PER UNIT FLUX (AMP), ON COMMON BRASCL
-C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS)
-C  ALL STRATA WHICH ARE NOT SPECIFIED BY INPUT BLOCK 14 (FROM
-C  PLASMA CODE DATA) ARE NOT RESCALED HERE
+C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS).
+C
+C  STRATA WHICH ARE SPECIFIED BY INPUT BLOCK 14 
+C     (SOURCES DEFINED FROM PLASMA CODE DATA DIRECTLY) 
+C     ARE RESCALED HERE TO UNIT SOURCE STRENGTH (FLXI)
 
 c  added in Nov. 15: ipls resolved ion energy sources eapl,empl,eipl
 C
@@ -1082,6 +1110,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             EMPLS(ISTRAI)%PMUL => CPMUL
           ENDIF
           ENDIF
+
           IF (LEIPL) THEN 
           IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPMUL)
@@ -1105,6 +1134,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               MAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
+
           IF (LMMPL) THEN
             IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
@@ -1116,6 +1146,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               MMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
+
           IF (LMIPL) THEN
             IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
@@ -1252,7 +1283,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
       RETURN
       END
-
 
 C
 C

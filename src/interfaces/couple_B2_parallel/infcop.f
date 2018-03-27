@@ -2,7 +2,7 @@ cdr Jan 2016: syncronize with couple_b2/infcop.f  retain only mpi related differ
 
 C
 cdr dec. 15: not ready.  started to comment, and to extend copv tallies
-for total and internal energy with species index.  Not ready...
+cdr for total and internal energy with species index.  Not ready...
 
 
 
@@ -211,7 +211,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
       LOGICAL, INTENT(INOUT) :: LSTP
-      LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3, LINDIM, LZDEN
+      LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3, LZDEN
       LOGICAL, ALLOCATABLE, SAVE :: LLCUT(:)
       LOGICAL, ALLOCATABLE, SAVE :: LZDENA(:,:), LZDENM(:,:),
      .                              LZDENI(:,:)
@@ -287,7 +287,7 @@ C  READ INPUT DATA OF BLOCK 14
 C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
         CALL EIRENE_LEER(1)
         CALL EIRENE_ALLOC_CCOUPL(1)
-        READ (IUNIN,'(5L1)') LSYMET,LBALAN,LINDIM,LZDEN
+        READ (IUNIN,'(5L1)') LSYMET,LBALAN,LZDEN
         IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN = ',LSYMET,LBALAN
         READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,imf,nfull
@@ -1552,15 +1552,12 @@ C
 C
       NSRFSI(ITARG)=1
       INDIM(1,ITARG)=4
-!      IF (LINDIM) INDIM(1,ITARG)=5
       IF (INDSRC(ITARG).NE.6) THEN
         I34=EIRENE_IDEZ(INT(SORLIM(1,ITARG)),3,3)
         SORLIM(1,ITARG)=I34*100+04
-        IF (LINDIM) SORLIM(1,ITARG)=I34*100+05
       ELSEIF (INDSRC(ITARG).EQ.6) THEN
 C  SORLIM DEFAULT WAS 0.D0
         SORLIM(1,ITARG)=0204
-        IF (LINDIM) SORLIM(1,ITARG)=0205
       ENDIF
       SORIND(1,ITARG)=ITARG
 !  SELECT THE PREPROGRAMMED SOURCE ENERGY CONDITIONAL DISTRIBUTION CONSISTENT 

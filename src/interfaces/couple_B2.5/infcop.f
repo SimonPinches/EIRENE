@@ -7,10 +7,12 @@ c             4) additional species index (ipls) in eapl,empl,eipl
 c             5) LLCUT included
 c             6) BFINTF set  (as in couple_B2, still not from B2.5 plasma files)
 c             7) if not lshort: call eirene_save_tallies
-c             8) sigma_cop raus. Ressni, ressee,..., now: per stratum. Allocatable
+c             8) sigma_cop removed. Ressni, ressee,..., now: per stratum. Allocatable
 c             9) clarify: dimensions (allocations) in braeir: b2 vs. b2.5 ??
 c            10) add. elstep, eemax,esheath in step fct. NEMODS=2,3, RATHER 8,9
 c            11) EPEL --> EPEL_COP  (also in couple_B2)
+c             CPPV --> MPPL_COP
+c             ELTEST, EMAXW,... for a target energ y flux as interpreted from B2 output. 
 c            12) bug fix re vol.rec., only one ipls per stratum is supported
 c                code was correct in solps4.3, and garching versions of couple_b2/b2.5
 c            
@@ -21,7 +23,6 @@ cdr Nov. 17: removed dead option LINDIM: here and in couple_b2_parallel
 cdr Dec. 17:
 c    trcsou --> trcint: consistency checks for target recycling step functions
 c               trcsou: print step functions from samsrf.f, as finally used in eirene.
-
 C
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
 C                                                           B2.5,
@@ -133,7 +134,7 @@ C  GEOMETRICAL DATA FROM GRIDADAP
       REAL(DP), ALLOCATABLE, SAVE ::
      R  PUX(:),      PUY(:),      PVX(:),      PVY(:),
      R  PUXE(:), PUYE(:), PUXN(:), PUYN(:),
-c  the 4 pv... arrays from couple_b2. Needed?
+c  the 4 pv... arrays. Needed?
      R  PVXE(:), PVYE(:), PVXN(:), PVYN(:)
 
       INTEGER, ALLOCATABLE, SAVE ::
@@ -143,8 +144,9 @@ C
       TYPE(CELLMUL), POINTER :: CPMUL
 C
       REAL(DP) :: SEES0(NSTRA), SEIS0(NSTRA)
-      REAL(DP) :: CHPM(NPLS,NRAD), CHEEM(NRAD), CHEIM(NRAD),
-     .            CHMOM(NPLS,NRAD)
+      REAL(DP), ALLOCATABLE, SAVE :: 
+     .            CHPM(:,:), CHEEM(:), CHEIM(:), 
+     .            CHMOM(:,:)
       REAL(DP) :: DI(NPLS), VP(NPLS)
 
 cdr for species dependent global particle balance
@@ -158,6 +160,7 @@ c the corresponding tallies scored from random sampling in eirene
       REAL(DP) , ALLOCATABLE, SAVE:: 
      .            PPPL_COP(:,:), MPPL_COP(:,:),
      .            EPPL_COP(:,:), EPEL_COP(:)
+
 C
       REAL(DP) :: EFLX(NSTRA),
      R          DUMMY(0:NDXP,0:NDYP),
@@ -180,6 +183,7 @@ C
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFEEWX, SFEINY, PM1, DRR, VDBC
       INTEGER :: NRWL(NSTRA)
+
       INTEGER, SAVE :: J, IRC, JC, INC, IADD, IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
      .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
@@ -188,7 +192,7 @@ C
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, IF, I34,
      .           NREC11, NEM, ISTR,
      .           IXI, IXE, IPLSTI, IPLSV, IPLV, ISP,
-     .           mshfrm, imf,
+     .           mshfrm, imf, ixm1,iym1,
      .           MINSPEZ, MAXSPEZ
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
@@ -218,6 +222,8 @@ C
       CHARACTER(10) :: CHR
       CHARACTER(6)  :: CITARG
       CHARACTER(72) :: ZEILE
+      CHARACTER(20) :: FORM
+      CHARACTER(1) :: NSEW
 
       TYPE(RATE_STORE), POINTER :: RTIS
 C
@@ -237,12 +243,24 @@ C
       ENTRY EIRENE_INTER0
       LSHORT=.TRUE.
 99990 CONTINUE
+
+      call eirene_leer(2)
+      write (iunout,*) 'Subr. INFCOP called ' 
+      write (iunout,*) 'This is a proprietary FZJ version of an '
+      write (iunout,*) 'interfacing code to B2, B2.5 plasma solvers.' 
+      write (iunout,*) 'NOT ready for 3rd parties'
+      call eirene_leer(2)
 C
       IERROR=0
 C
       IMODE=IABS(NMODE)
 C
-      IF (.NOT.ALLOCATED(PPPL_COP)) THEN
+      IF (.NOT.ALLOCATED(CHPM)) THEN
+        ALLOCATE (CHPM(NPLS,NRAD))
+        ALLOCATE (CHEEM(NRAD))
+        ALLOCATE (CHEIM(NRAD))
+        ALLOCATE (CHMOM(NPLS,NRAD))
+
         ALLOCATE (PPPL_COP(NPLS,NRAD))
         ALLOCATE (MPPL_COP(NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD)) 
@@ -250,6 +268,7 @@ C
       END IF
 
       mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
+      NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
 C
       IF (.NOT.LSHORT.AND.ITIMV.LE.1) THEN
         WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
@@ -260,7 +279,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
         READ (IUNIN,'(5L1)') LSYMET,LBALAN
         IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN = ',LSYMET,LBALAN
-        READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,imf,nfull
+        READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF,nfull
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. What is What?
         if (imf /= 0) mshfrm = imf
         NCUTB_SAVE=NCUTB
@@ -402,7 +421,7 @@ C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
 
 cdr  already done in if0prm. Hidden link, must be removed....
-      NCPVI = 4*NPLSI
+      NCPVI = NPLSI
       NCPV  = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
@@ -426,7 +445,7 @@ C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
       IF (NCPVI.EQ.0) GOTO 70
 
-CDR  SET THE NCPVI= 4*NPLSI COUPLE TALLIES
+CDR  SET THE NCPVI= NPLSI COUPLE TALLIES
 
       DO IPLS=1,NPLSI
         ICPVE(IPLS)=1
@@ -435,27 +454,6 @@ CDR  SET THE NCPVI= 4*NPLSI COUPLE TALLIES
      .  'ENERGY WEIGHTED CX RATE OF ATOMS WITH IPLS                  '
         TXTSPC(IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
         TXTUNT(IPLS,NTALM)='AMP                       '
-C
-        ICPVE(NPLSI+IPLS)=3
-        ICPRC(NPLSI+IPLS)=1
-        TXTTAL(NPLSI+IPLS,NTALM)=
-     .  'PAR. MOM. SOURCE, FROM ATOMS, FOR IPLS             '
-        TXTSPC(NPLSI+IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
-        TXTUNT(NPLSI+IPLS,NTALM)='G*CM/S* AMP * CM**-3       '
-C
-        ICPVE(2*NPLSI+IPLS)=3
-        ICPRC(2*NPLSI+IPLS)=2
-        TXTTAL(2*NPLSI+IPLS,NTALM)=
-     .  'PAR. MOM. SOURCE, FROM MOLECULES, FOR IPLS         '
-        TXTSPC(2*NPLSI+IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
-        TXTUNT(2*NPLSI+IPLS,NTALM)='G*CM/S* AMP * CM**-3       '
-C
-        ICPVE(3*NPLSI+IPLS)=3
-        ICPRC(3*NPLSI+IPLS)=3
-        TXTTAL(3*NPLSI+IPLS,NTALM)=
-     .  'PAR. MOM. SOURCE, FROM TEST IONS, FOR IPLS         '
-        TXTSPC(3*NPLSI+IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
-        TXTUNT(3*NPLSI+IPLS,NTALM)='G*CM/S* AMP * CM**-3       '
       ENDDO
 C
 70    CONTINUE
@@ -523,14 +521,18 @@ C
 C
       NPOINT = 0
       IF (.NOT.ALLOCATED(PUX)) THEN
+c  unit vector parallel to B field, in poloidal section
         ALLOCATE (PUX(NRAD))
         ALLOCATE (PUY(NRAD))
+c  only for inclined target option: 
         ALLOCATE (PUXE(NRAD))
         ALLOCATE (PUYE(NRAD))
         ALLOCATE (PUXN(NRAD))
         ALLOCATE (PUYN(NRAD))
+c  unit vector perp. to B field, in poloidal section 
         ALLOCATE (PVX(NRAD))
         ALLOCATE (PVY(NRAD))
+c  only for inclined target option:
         ALLOCATE (PVXE(NRAD))
         ALLOCATE (PVYE(NRAD))
         ALLOCATE (PVXN(NRAD))
@@ -592,10 +594,17 @@ C  SAME FORMAT AS FORT.31, I.E., INDEX MAPPING MAY BE NECESSARY
         ALLOCATE (XAISO(0:NDXP,0:NDYP))
         ALLOCATE (IAISO(0:NDXP,0:NDYP))
 
+C  DEFAULT: ALL CELLS ARE VALID
+        IAISO = 1
+
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHXB)
         CALL EIRENE_PLASM (29,NDX2,NDYA,1,NDX,NDY,1,ALPHYB)
+
+        FORM=REPEAT(' ',20)
+        FORM(1:10) = '(      I1)'
+        WRITE (FORM(2:7),'(I6)') NDX2+2
         DO IY=NDYA+1,0,-1
-          READ (29,'(500I1)') (IAISO(IX,IY),IX=0,NDX2+1)
+          READ (29,FORM) (IAISO(IX,IY),IX=0,NDX2+1)
         ENDDO
 C
         IF (NCUTL.EQ.NCUTB) GOTO 1020
@@ -637,8 +646,11 @@ C
             PUYE(IN)=SIN(ALE)
             PUXN(IN)=COS(ALN)
             PUYN(IN)=SIN(ALN)
+! cell centered unit vector along poloidal direcion
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
+! cell centered unit vector along "radial" (grad psi) direcion,
+!                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
           END DO
@@ -754,6 +766,7 @@ C
 C  OPTIONAL ARRAYS: VOLB, BFELDB
       VOLB = 0.D0
       BFELDB = 0.D0
+
 C  CELL VOLUMES AS USED IN B2
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,VOLB)
 C  MAGNETIC FIELD STRENGTH (TESLA)
@@ -814,7 +827,7 @@ C  ADDITIONAL INPUT TALLIES, ONLY FROM B2.5, NOT FROM B2
      .             NCUTB,NCUTL,NPOInt,NPLP)
       CALL EIRENE_INDMAP (VVDIAB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
-c  UNUSED INPUT TALLIES
+C  UNUSED INPUT TALLIES
       CALL EIRENE_INDMAP (VOLB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (BFELDB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
@@ -851,6 +864,8 @@ C
           BX=PUX(IN)*RRB(IX,IY)+PVX(IN)*0.
           BY=PUY(IN)*RRB(IX,IY)+PVY(IN)*0.
           BZ=SQRT(1.-RRB(IX,IY)**2)
+c  normalize B-field vector to length 1 (one)
+c
           BN=SQRT(BX*BX+BY*BY+BZ*BZ)
           BXINTF(IN)=BX/BN
           BYINTF(IN)=BY/BN
@@ -870,21 +885,45 @@ C
           TIINTF(IPLSTI,IN)=TIINTF(1,IN)
 2150  CONTINUE
 C
+CDR  set density from B2 array DNIB, for each fluid
+CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
+c  without drifts:
+c  upb * pitch:  poloidal velocity (i.e. cartesian x,y direction).
+c  poloidal field direction is given by that of the poloidal cell face PU..(in),
+C  i.e. along a flux surface. (PU(...) is cell centered)
+c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
+c                                                toroidal phi direction (nltra)
+c  sign of flowfield follows the sign of poloidal grid in B2.
+c
+c  with drifts:
+c  uudia and vvdia are additional flow velocities in b2.5 only.
+c
+c
+c
+c
       IREAD=0
       DO 2200 IPLS=1,NPLSI
-        IF (IFLB(IPLS).GT.0) THEN
+        IF (IFLB(IPLS).GT.0) THEN  ! DEAL WITH B2 ION SPECIES ONLY, EXCLUDE VIRTUAL EIRENE BACKGROUND
           IPLSV=MPLSV(IPLS)
           DO 2201 IFL=1,NFLA
             IF (IFLB(IPLS).NE.IFL) GOTO 2201
             DO 2210 IY=1,NDYA
+              IYM1=IY-1
               DO 2220 IX = 1,NDXA
                 IN=IY+(IX-1)*NR1ST
                 DIINTF(IPLS,IN)=DNIB(IX,IY,IFL)*D(IPLS)
+c
                 UPBC=UPB(IX,IY,IFL)
                 UDBC=UUDIAB(IX,IY,IFL)
-                VVBC=0.5*(VVB(IX,IY-1,IFL)+VVB(IX,IY,IFL))
+cdr  radial velocity
+                VVBC=0.5*(VVB(IX,IYM1,IFL)+VVB(IX,IY,IFL))
+
+cdr  rrb: pitch  B_pol/B_total
+C  UDBC: DIAMAGNETIC VELOCITY, SHOULD BE ZERO IN B2, AND NONZERO IN EB2
+C        NOTE: IN LINEAR DEVICES: RRB=1
                 VDBC=VVDIAB(IX,IY,IFL)
                 RRBC=RRB(IX,IY)
+cdr  now set cartesian flow velocity components
                 VXINTF(IPLSV,IN)=
      &           (PUX(IN)*(UPBC*RRBC-UDBC*SQRT(1.-RRBC**2))+
      &            PVX(IN)*VVBC)*V
@@ -894,8 +933,8 @@ C
                 VZINTF(IPLSV,IN)=(UPBC*SQRT(1.-RRBC**2)+UDBC*RRBC)*V
 2220          CONTINUE
 2210        CONTINUE
-C  EIRENE BACKGROUND SPECIES "IPLS" FILLED WITH B2 DATA "IFL"
-2201      CONTINUE
+C  EIRENE BACKGROUND SPECIES "IPLS" IS NOW FILLED WITH B2 DATA "IFL"
+2201      CONTINUE   !IFL loop
 
 C  NO DATA FOR "IPLS" IN B2 FILES
         ELSEIF (IFLB(IPLS).EQ.-13) THEN
@@ -1261,7 +1300,7 @@ C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
               IF (DELX.GT.0.) THEN
                 FLSTEP(IPLS,ITARG,IG)=MAX(0._DP,ORI(ITARG,IG)*
      .                                FNIYB(IX,NPBS,IFL))*FL(IPLS)/DELX
-C  SET ION ENERGY FLUXES FROM B2.5 BOUNDARY CONDITIONS
+C  SET DEFAULT ION ENERGY FLUXES FROM B2.5 BOUNDARY CONDITIONS
                 delti_para=3
                 delte_para=0.5
                 delti_perp=2
@@ -1521,11 +1560,12 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
      .                       ,IPLS,ITARG,IG,VTEST
 C           WRITE (iunout,*) 'POL., TOR., RAD. ',PM1,VPZ,VR
 C           CALL EIRENE_LEER(1)
+C
           ENDIF
 C
 C  BOHM CRITERION CHECK DONE
 C
-C  ELSTEP: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
+C  ELTEST: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
 
 C  NEXT: TARGET MAXW. ENERGY FLUXES
 C  EADD=  IN EV, SUCH THAT EADD*PARTICLE FLUX = ENERGY FLUX
@@ -1568,18 +1608,31 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
         GOTO 6011
 6010    CONTINUE
 C  TO BE WRITTEN
-6011  CONTINUE    ! IG loop
+6011  CONTINUE    ! IG,  CELL ALONG TARGET
 C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
-      WRITE (iunout,*)
-     .' IG,  ARC,     P-FLUX,   E-FLUX,     TE,       TI,    SHEATH/TE'
+      WRITE (iunout,*) TXTSOU(ISTRA)
+      WRITE (iunout,'(1X,A3,9A11,A3)')
+     .'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
+     . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
-        WRITE (iunout,'(1X,I3,1P,6E11.3)')
+
+        IF (IGSTEP(ITARG,IG).GT.200000) THEN
+          IF (ORI(ITARG,IG).LT.0) NSEW='W'
+          IF (ORI(ITARG,IG).GT.0) NSEW='E'
+        ENDIF
+        IF (IGSTEP(ITARG,IG).LT.200000) THEN
+          IF (ORI(ITARG,IG).LT.0) NSEW='N'
+          IF (ORI(ITARG,IG).GT.0) NSEW='S'
+        ENDIF
+        WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELTEST(ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
-     .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60)
+     .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60),
+     .             VXSTEP(1,ITARG,IG),VYSTEP(1,ITARG,IG),
+     .             VZSTEP(1,ITARG,IG),NSEW
 6100  CONTINUE
       WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
@@ -1677,6 +1730,13 @@ C
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
+C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
+C
+        sni(:,:,:,istrai) = 0.d0
+        smo(:,:,:,istrai) = 0.d0
+        see(:,:,istrai) = 0.d0
+        sei(:,:,istrai) = 0.d0
+C
         IF (XMCP(ISTRAI).LE.1.) GOTO 10000
 C
         IF (LSHORT) GOTO 7000
@@ -1684,7 +1744,6 @@ C
 C  READ DATA FROM STRATUM NO. ISTRAI BACK INTO WORKING SPACE
 C  IF REQUIRED
 C
-Cmpi    IF ....(MPI STUFF)
         IF (ISTRAI.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
         ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
@@ -1701,7 +1760,6 @@ C  NOTHING TO BE DONE
           WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
-Cmpi    endif  (MPI-STUFF)
 C
 C  DATA TRANSFER BACK FROM EIRENE TO EXTERNAL CODE
 C  STATEMENT NO 7000 ---> 7999
@@ -1725,34 +1783,14 @@ C  FLUX FROM EIRENE TO PLASMA CODE: NEGATIVE
         ELSEIF (ISTRAI.GT.NTARGI) THEN
           FLXI=1.
         ENDIF
+C
+C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
 
 C
-C  FIRSTLY INITIALISE SOURCE TERM ARRAYS
-C
-        DO 7100 IX=0,NDXA+1
-          DO 7150 IY=0,NDYA+1
-            SEE(IX,IY,ISTRAI)=0.
-            SEI(IX,IY,ISTRAI)=0.
-7150      CONTINUE
-7100    CONTINUE
-        DO 7210 IF=1,NFLA
-          DO 7220 IX=0,NDXA+1
-            DO 7230 IY=0,NDYA+1
-              SNI(IX,IY,IF,ISTRAI)=0.
-              SMO(IX,IY,IF,ISTRAI)=0.
-7230        CONTINUE
-7220      CONTINUE
-7210    CONTINUE
-C
-        DO 7300 IPLS=1,NPLSI
-        DO 7300 IN=1,NDXY
-          CHPM(IPLS,IN)=0.
-          CHMOM(IPLS,IN)=0.
-7300    CONTINUE
-        DO 7301 IN=1,NDXY
-          CHEEM(IN)=0.
-          CHEIM(IN)=0.
-7301    CONTINUE
+        CHPM  = 0._DP
+        CHMOM = 0._DP
+        CHEEM = 0._DP
+        CHEIM = 0._DP
 C
         IF (.NOT.LSHORT) GOTO 7400
 
@@ -2074,13 +2112,13 @@ C
 c  ipls contributes to plasma code species ifl
             DO 7520 IX=1,NDXA
               DO 7530 IY=1,NDYA
-                INN=IY+(IX-1)*NR1ST
-                IN=NCLTAL(INN)
-                SNICL=(PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN)+
-     .                 PPPL_COP(IPLS,IN))*VOLTAL(IN)
+                IN=IY+(IX-1)*NR1ST
+                INC=NCLTAL(IN)
+                SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
+     .                 PPPL_COP(IPLS,INC))*VOLTAL(INC)
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
                 SNIS(IFL)=SNIS(IFL)+SNICL
-                CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,IN)*VOLTAL(IN)
+                CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,INC)*VOLTAL(INC)
 7530          CONTINUE
 7520        CONTINUE
 !pb         DO 7539 IADD=NPLSI,3*NPLSI,NPLSI
@@ -2090,12 +2128,12 @@ c  ipls contributes to plasma code species ifl
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
                 SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
-                SMOCL=(MAPL(IPLS,IN)+MMPL(IPLS,IN)+MIPL(IPLS,IN)+
+                SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                 MPPL_COP(IPLS,INC))*
-     .                 VOLTAL(IN)*1.D-5*SIGNUM
+     .                 VOLTAL(INC)*1.D-5*SIGNUM
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
                 SMOS(IFL)=SMOS(IFL)+SMOCL
-                CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(IN)
+                CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
 7533          CONTINUE
 7536        CONTINUE
 !pb 7539        CONTINUE
@@ -2110,7 +2148,7 @@ C
             IN=NCLTAL(INN)
             SEE(IX,IY,ISTRAI)=(EAEL(IN)+EMEL(IN)+
      .                         EIEL(IN)+EPEL_COP(IN))*
-     .                        VOLTAL(IN)
+     .                         VOLTAL(IN)
             CHEES=CHEES+CHEEM(IN)*VOLTAL(IN)
             SEES=SEES+SEE(IX,IY,ISTRAI)
             SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)*ELCHA
@@ -2197,14 +2235,22 @@ C
 7553        CONTINUE
 7556      CONTINUE
 C
+          LTEST=.TRUE.  ! tactically assume: this stratum will continue in short cycle mode
+
           IF (LSTOP) THEN
             WRITE (iunout,*) 'STOP SHORT CYCLE: ALL B2 TIMESTEPS DONE '
-          ELSE
+
+          ELSE   ! DO AT LEAST ONE MORE TIME STEP
+CDR  DECIDE FOR THIS CURRENT STRATUM ISTRAI: 
+CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
+
+
             DO 7558 IFL=1,NFLA
               TEST=CHPS(IFL)/(SNIS(IFL)+1.D-60)*100.
               write (iunout,*) ' global change in sni,ifl ',test,ifl
               IF (ABS(TEST).GT.CHGP) THEN
                 LSTP3=.TRUE.
+                LTEST=.FALSE.  !  stop short cycle mode. Full new set of  trajectories.
                 WRITE (iunout,*) 'STOP SHORT CYCLE: PART. SOURCES: ',
      .                            SNIS(IFL),CHPS(IFL),TEST
                 WRITE (iunout,*) 'STRATUM ISTRAI, SPECIES IFL ',
@@ -2214,16 +2260,19 @@ C
               write (iunout,*) ' global change in smo,ifl ',test,ifl
               IF (ABS(TEST).GT.CHGMOM) THEN
                 LSTP3=.TRUE.
+                LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
                 WRITE (iunout,*) 'STOP SHORT CYCLE: MOMENTUM SOURCE: ',
      .                            SMOS(IFL),CHMOS(IFL),TEST
                 WRITE (iunout,*) 'STRATUM ISTRAI, SPECIES IFL ',
      .                            ISTRAI,IFL
               ENDIF
 7558        CONTINUE
+
             TEST=CHEES/(SEES+1.D-60)*100.
             write (iunout,*) ' global change in see,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGEE) THEN
               LSTP3=.TRUE.
+              LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
               WRITE (iunout,*) 'STOP SHORT CYCLE: EL EN. SOURCE: ',SEES,
      .                          CHEES,TEST
               WRITE (iunout,*) 'STRATUM ISTRAI ',ISTRAI
@@ -2232,10 +2281,12 @@ C
             write (iunout,*) ' global change in sei,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGEI) THEN
               LSTP3=.TRUE.
+              LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
               WRITE (iunout,*) 'STOP SHORT CYCLE: ION EN. SOURCE: ',
      .                          SEIS,CHEIS,TEST
               WRITE (iunout,*) 'STRATUM ISTRAI ',ISTRAI
             ENDIF
+            IF (LSHORT) LSTP=LSTP3
           ENDIF
 C
         ELSEIF (.NOT.LSHORT) THEN
@@ -2518,10 +2569,13 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
                 SFNIT(I,IF)=SFNIT(I,IF)-
      .                   NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IF)
 
+cdr sheath contributions: count negative for electrons, positive for ions 
+cdr unfinished:  need to account for charge state of ion species IF
                 SHEAE(I)=SHEAE(I)+TEB(NDT(I,IPRT),IY)*
      .           NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IF)*(-2.8)
                 SHEAI(I)=SHEAI(I)+TEB(NDT(I,IPRT),IY)*
      .           NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IF)*2.8
+cdr  sheath done
                 ELSE
                   WRITE (iunout,*)
      .              'WRONG ORIENTATION OF W/E-TARGET RECYCLING FLUX '
@@ -2532,7 +2586,7 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
                 ENDIF
 10131         CONTINUE
 10132       CONTINUE
-C  BALANCE CONTRIB. FROM Y-GRID REC. SOURCE
+C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIYB(IX,NDT(I,IPRT))
@@ -2542,10 +2596,15 @@ C  BALANCE CONTRIB. FROM Y-GRID REC. SOURCE
                 SFNIT(I,IF)=SFNIT(I,IF)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)
 
+cdr sheath contributions: count negative for electrons, positive for ions 
+cdr unfinished:  need to account for charge state of ion species IF
                 SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)*(-2.8)
+     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)*
+     .           (-2.8)
                 SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)*2.8
+     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)*
+     .           (2.8)
+cdr  sheath done
                 ELSE
                   WRITE (iunout,*)
      .              'WRONG ORIENTATION OF S/N-TARGET RECYCLING FLUX '
@@ -2660,36 +2719,41 @@ C
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
         CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'SFNISY(IF =',IF,') ',SFNISY(IF)
+          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IF =',IF,') ',
+     .                                     SFNISY(IF)
         ENDDO
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
         CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'SFNINY(IF =',IF,') ',SFNINY(IF)
+          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IF =',IF,') ',
+     .                                     SFNINY(IF)
         ENDDO
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
         CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'SFNIWX(IF =',IF,') ',SFNIWX(IF)
+          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IF =',IF,') ',
+     .                                     SFNIWX(IF)
         ENDDO
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
         CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'SFNIEX(IF =',IF,') ',SFNIEX(IF)
+          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IF =',IF,') ',
+     .                                     SFNIEX(IF)
         ENDDO
         CALL EIRENE_MASRR1 (' TARGETS,EI',SFEIT(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFEET(1),NTARGI,5)
         DO ITARG=1,NTARGI
           DO IF=1,NFLA
-             WRITE(iunout,*) 'TARGETS, NI(IF =',IF,') ',
-     .             SFNIT(ITARG,IF),ITARG
+             WRITE(iunout,'(A,I0,A,ES12.4)') 'TARGETS, NI(IF =',IF,') ',
+     .                                        SFNIT(ITARG,IF)
           ENDDO
           CALL EIRENE_LEER(1)
         ENDDO
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
                 DO IF=1,NFLA
-           WRITE(iunout,*) 'TOTALS, NI(IF =',IF,') ',SFNIT(0,IF)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IF =',IF,') ',
+     .                                      SFNIT(0,IF)
         ENDDO
 
         CALL EIRENE_LEER(2)
@@ -2697,7 +2761,7 @@ C
         WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION: '
         CALL EIRENE_MASR2(' SSEI,SSEE      ',SSEI,SSEE)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'SSNI(IF =',IF,') ',SSNI(IF)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IF =',IF,') ',SSNI(IF)
         ENDDO
         CALL EIRENE_LEER(2)
 
@@ -2714,13 +2778,14 @@ C
 
         CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'BALANN(IF =',IF,') ',BALANN(IF)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IF =',IF,') ',
+     .                                      BALANN(IF)
         ENDDO
         CALL EIRENE_LEER(1)
 
         CALL EIRENE_MASR2('REL.ERR.(%)RI,RE',RI,RE)
         DO IF=1,NFLA
-           WRITE(iunout,*) 'RN(IF =',IF,') ',RN(IF)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IF =',IF,') ',RN(IF)
         ENDDO
         CALL EIRENE_LEER(1)
         MINSPEZ=99

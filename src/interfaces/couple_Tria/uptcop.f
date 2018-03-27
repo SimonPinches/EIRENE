@@ -1,9 +1,18 @@
-C  Jan. 2017 remove cndyn arrays. these are now set in startup-routines
-c            once for the entire run.
+C  SCORE ADDITIONAL COUPLE TALLIES FOR B2/B2.5 COUPLING. 
+C  CURRENTLY ONLY THE E0/EP-1
+C  WEIGHTED CX RATE IS SCORED ON COPV(1:NPLSI,IRAD)
+C  ATOMIC CONTRIBUTION ONLY, IPLS RESOLVED 
+
+cdr  jan 17:  remove allocatable cndyn arrays, as these are now
+cdr           set in initialization routines.
+cdr  jan 18:  remove unused radial and poloidal velocity components VR and VP, resp.
+
+C  IN OLDER VERSION OF UPTCOP.F FOR B2/B2.5 INTERFACES ALSO PARALLEL MOMENTUM
+C  SOURCES HAVE BEEN SCORED HERE. THESE, HOWEVER, ARE NOW DEFAULT EIRENE TALLIES.
 C
       SUBROUTINE EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
 C
-C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED, FOR CODE INTERFACING
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -26,6 +35,7 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                      XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
+
       REAL(DP) :: P, WTRSIG, EION, V0_PARB, PARMOM_0, DIST, WTR
       INTEGER :: IAEL, IREL, IPL2, IAEI, IRDS, IBGK, IICX, IIEI, IIEL,
      .           IMEL, IPL1, I, IPL, IIO, IRD, IP, IR, IML, IAT, IFIRST,
@@ -34,19 +44,18 @@ C
       INTEGER, SAVE :: NMTSP
 
 CDR
-      REAL(DP), ALLOCATABLE, SAVE ::
-     . VPX(:),    VPY(:),    VRX(:),    VRY(:)
+!     REAL(DP), ALLOCATABLE, SAVE ::
+!    .         VPX(:),    VPY(:),    VRX(:),    VRY(:)
 CDR
       DATA IFIRST/0/
       SAVE
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
 
-        ALLOCATE (VPX(NRAD))
-        ALLOCATE (VPY(NRAD))
-        ALLOCATE (VRX(NRAD))
-        ALLOCATE (VRY(NRAD))
-
+!       ALLOCATE (VPX(NRAD))
+!       ALLOCATE (VPY(NRAD))
+!       ALLOCATE (VRX(NRAD))
+!       ALLOCATE (VRY(NRAD))
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
@@ -54,20 +63,20 @@ CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
 C
 CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
 C
-        DO 1 I=1,NRAD
-          VPX(I)=0.
-          VPY(I)=0.
-          VRX(I)=0.
-          VRY(I)=0.
-1       CONTINUE
-        DO 2 IR=1,NR1STM
-          DO 2 IP=1,NP2NDM
-            IRD=IR+(IP-1)*NR1P2
-            VPX(IRD)=PLNX(IR,IP)
-            VPY(IRD)=PLNY(IR,IP)
-            VRX(IRD)=PPLNX(IR,IP)
-            VRY(IRD)=PPLNY(IR,IP)
-2       CONTINUE
+!       DO 1 I=1,NRAD
+!         VPX(I)=0.
+!         VPY(I)=0.
+!         VRX(I)=0.
+!         VRY(I)=0.
+!1      CONTINUE
+!       DO 2 IR=1,NR1STM
+!         DO 2 IP=1,NP2NDM
+!           IRD=IR+(IP-1)*NR1P2
+!           VPX(IRD)=PLNX(IR,IP)
+!           VPY(IRD)=PLNY(IR,IP)
+!           VRX(IRD)=PPLNX(IR,IP)
+!           VRY(IRD)=PPLNY(IR,IP)
+!2      CONTINUE
 C
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI
 C
@@ -112,6 +121,7 @@ C
 52          CONTINUE
           END IF 
 51        CONTINUE
+C
 20      CONTINUE
 C
 C  MOLECULES
