@@ -1,44 +1,50 @@
-      subroutine EIRENE_collect_census
-
 cpb July  17: bug fix, rpselect allocation from -1 , not from 0
 cdr sept. 15: bug fix:   after re-sampling (with replacement) from census, the weight of
 cdr                      sampled census particles is set to 1.0, rather than keeping the old weight.
 cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
 cdr                      and the weight stored on census during particle tracing is the probability mass of index "i"
-
+cdr  
+cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
 c
+
+      subroutine EIRENE_collect_census
+
+
 c this routine is called for each processer my_pe
 c it first defines the census array rpartw(i) and total flux peflux, for each processor.
-c it then tries to combine these onto a single new census.
+c It then tries to combine these onto a single new census.
 c If the combined census from all processors contains too many particles, then the
 c reduction is done by re-sampling, just like in subr. locate for re-launch from census.
-
-cdr  rpselect reduziert auf 0,nprs-1
-cdr  addph,adda,addm,addi: type resolved census fluxes.
+c
+cdr  so far unused information: 
+c from subr. calstr.f:  
+c npesta(istr) this the no. of the master processor for stratum istr
+c npestr(istr) is the number of processors dealing with istr
 c
 
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMNNL
-      USE EIRMOD_COUTAU
-      USE EIRMOD_COMSOU
-      USE EIRMOD_COMUSR
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CPES
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: MPARTT, NPARTT, NPRNL
+      USE EIRMOD_COMNNL, ONLY: IPRNLI, IPART, IPARTC, RPART, RPARTC, 
+     >                         RPARTW 
+      USE EIRMOD_COUTAU, ONLY: FLXFAC
+      USE EIRMOD_COMSOU, ONLY: NSTRAI
+      USE EIRMOD_COMUSR, ONLY: ISPEZI, NPRT, NSPH, NSPA, NSPAM
+      USE EIRMOD_COMPRT, ONLY: IUNOUT, ISPZ, ISTRA, IPSTT, RPSTT, WEIGHT
+      USE EIRMOD_CPES, ONLY: MY_PE, NPRS
 
       IMPLICIT NONE
 
       INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
-      real(dp) :: ra, weight, peflux, 
-     .            totflux, sumrpw, sclfac, add, totrpw,
+      real(dp) :: ra, peflux, 
+     .            totflux, sumrpw, sclfac, add,
+     .            totrpw,
      .            addph, adda, addm, addi
-C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
       real(dp), external :: ranf_eirene
       integer, allocatable :: iranpro(:), ibuf(:,:)
-      integer :: ier, i, istr, ncoreal, itotal, il, im, iu, ipe,
+      integer :: ier, i, ncoreal, itotal, il, im, iu, ipe,
      .           ityp, iphot, iatm, imol, iion
       integer :: icopro(0:nprs), idistrib(0:nprs), icosend(0:nprs)
 
@@ -60,29 +66,30 @@ C      real(dp) :: pefluxp(0:nprs-1), sumrpwp(0,nprs-1)
       ADDI  =0._DP
 
       DO I=1,IPRNLI
-        ISTR=IPART(8,I)
-        ITYP=ISPEZI(IPART(9,I),-1)
-        WEIGHT=RPART(9,I)    !  THIS WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE 
-!                               RESCALING FACTORS, DONE LATER IN TMSTEP.
+        RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
+! WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE 
+! RESCALING FACTORS, DONE LATER IN TMSTEP.
+        IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
+        ITYP=ISPEZI(ISPZ,-1)
         IF (ITYP.EQ.0) THEN
-          IPHOT=ISPEZI(IPART(I,9),0)
-          ADD=WEIGHT*FLXFAC(ISTR)*NPRT(IPHOT)
+          IPHOT=ISPEZI(ISPZ,0)
+          ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(IPHOT)
           ADDPH=ADDPH+ADD
         ELSEIF (ITYP.EQ.1) THEN
-          IATM=ISPEZI(IPART(9,I),1)
-          ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPH+IATM)
+          IATM=ISPEZI(ISPZ,1)
+          ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(NSPH+IATM)
           ADDA=ADDA+ADD
         ELSEIF (ITYP.EQ.2) THEN
-          IMOL=ISPEZI(IPART(9,I),2)
-          ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPA+IMOL)
+          IMOL=ISPEZI(ISPZ,2)
+          ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(NSPA+IMOL)
           ADDM=ADDM+ADD
         ELSEIF (ITYP.EQ.3) THEN
-          IION=ISPEZI(IPART(9,I),3)
-          ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
+          IION=ISPEZI(ISPZ,3)
+          ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(NSPAM+IION)
           ADDI=ADDI+ADD
         ENDIF
-! cumulativ distribution of weight of particle no I, for sampling. not atomic flux
-        RPARTW(I)=RPARTW(I-1)+WEIGHT*FLXFAC(ISTR)
+! cumulative distribution of WEIGHT of particle no I, for sampling. Not "atomic" flux
+        RPARTW(I)=RPARTW(I-1)+WEIGHT*FLXFAC(ISTRA)
 ! total flux on census, atomic flux (AMP)
         PEFLUX   = PEFLUX + ADD
       END DO
@@ -110,7 +117,7 @@ c     pefluxp(my_pe)=peflux
       call mpi_allreduce(peflux,totflux,1,MPI_REAL8,
      .                   MPI_SUM,MPI_COMM_WORLD,ier)
 c
-c  cumulated number of scores, and atomic flux, summed from all PEs.
+c  cumulated number of census scores, and census atomic flux, summed from all PEs.
       if (my_pe.eq.0) THEN
         write (iunout,*) ' itotal, totflux', itotal, totflux
       ENDIF
@@ -120,8 +127,8 @@ c  cumulated number of scores, and atomic flux, summed from all PEs.
 !                          send all particles to processor 0
 
 
-        allocate (rbuf(size(rpart,1),size(rpart,2)))
-        allocate (ibuf(size(ipart,1),size(ipart,2)))
+        allocate (rbuf(npartt,nprnl))
+        allocate (ibuf(mpartt,nprnl))
         rbuf = 0._dp
         ibuf = 0
 
@@ -363,29 +370,29 @@ c  here we abuse this storage to for the re-sampled census per stratum.
           rpartc(:,i) = rpart(:,iu)
           ipartc(:,i) = ipart(:,iu)
 
-          ISTR=IPARTC(8,I)
-          ITYP=ISPEZI(IPARTC(9,I),-1)
+          RPSTT(1:NPARTT)=RPARTC(1:NPARTT,I)
+          IPSTT(1:MPARTT)=IPARTC(1:MPARTT,I)
+          ITYP=ISPEZI(ISPZ,-1)
 cdr> Sept. 2015
 cdr  reset weight to one, because sampling according to weight is already accounting for rpartc.
 c                       (same as in locate, except in case of one-by-one relaunch: then keep weight)
-          RPARTC(9,I)=1.0
+          WEIGHT=1.0
 c
-          WEIGHT=RPARTC(9,I)
           IF (ITYP.EQ.0) THEN
-             IPHOT=ISPEZI(IPARTC(I,9),0)
-             ADD=WEIGHT*FLXFAC(ISTR)*NPRT(IPHOT)
+             IPHOT=ISPEZI(ISPZ,0)
+             ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(IPHOT)
              addph=addph+add
           ELSEIF (ITYP.EQ.1) THEN
-             IATM=ISPEZI(IPARTC(9,I),1)
-             ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPH+IATM)
+             IATM=ISPEZI(ISPZ,1)
+             ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(NSPH+IATM)
              adda=adda+add
           ELSEIF (ITYP.EQ.2) THEN
-             IMOL=ISPEZI(IPARTC(9,I),2)
-             ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPA+IMOL)
+             IMOL=ISPEZI(ISPZ,2)
+             ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(NSPA+IMOL)
              addm=addm+add
           ELSEIF (ITYP.EQ.3) THEN
-             IION=ISPEZI(IPARTC(9,I),3)
-             ADD=WEIGHT*FLXFAC(ISTR)*NPRT(NSPAM+IION)
+             IION=ISPEZI(ISPZ,3)
+             ADD=WEIGHT*FLXFAC(ISTRA)*NPRT(NSPAM+IION)
              addi=addi+add
           ENDIF
 
@@ -458,7 +465,8 @@ c  combine all the resampled census from all processors into a single one: rpart
           write (iunout,*) ' totrpw ',totrpw
           write (iunout,*) ' sclfac ',sclfac
           do i=1,iprnli
-            rpart(9,i) = rpart(9,i) * sclfac
+            RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
+            weight = weight * sclfac
           end do
         end if
 cdr  for resampling in locate at next timestep:

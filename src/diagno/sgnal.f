@@ -12,7 +12,8 @@ cdr       :  PART 2: automatic detection of 1st dimension ND: tb committed later
 cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
 cdr                    analogous to H emission lines,             NCHTAL=2 
-cdr       : added ITP (type of relevant component)           
+cdr       : added ITP (type of relevant component)
+cdr Jan 18: added MX_COMPO           
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
@@ -71,7 +72,7 @@ C
      .           KREC, IRRC, MAXREC, IFLAG, ISPC,
      .           ICELL, 
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
-      INTEGER, SAVE :: ND
+      INTEGER, SAVE :: MX_COMPO, ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
       CHARACTER(8) :: FILNAM
       CHARACTER(4) :: H123

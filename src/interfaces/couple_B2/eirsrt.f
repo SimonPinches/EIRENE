@@ -229,6 +229,8 @@ C
         LLST=LSTOP
         ITNR=1
 
+cdr all the short cycle stuff below is only accessible in '.not.ltime' mode.
+
 10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
         CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
@@ -529,6 +531,7 @@ C
         B2QIE=B2Q
         B2VDP=B2VP
 C
+
         IFIRST=IFIRST+1
         ICOSTP = ICOSTP + 1
         write (iunout,*) 'icostp ',icostp
@@ -782,5 +785,8 @@ C
         RETURN
 C
       ENDIF  !(LTIME)
+ 
+      return
+   
 
       END

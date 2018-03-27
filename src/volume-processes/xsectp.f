@@ -13,6 +13,8 @@ cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of
 cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
 cdr             should not have had any effect, on any run, so far,
 cdr             since this reaction did not exist in EIRENE at all until June 15
+cdr  Jan 18  :  call energy-rate-coeff with lexp=true, because internal colrad (ifit=5)
+cdr             option is now available.
 
 C
       SUBROUTINE EIRENE_XSECTP
@@ -38,7 +40,7 @@ C
       REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
-     .            BREMS, Z, eirene_brems, ERATE
+     .            BREMS, Z, eirene_brems
       INTEGER :: IIRC, IION3, IPLS3, IATM3, IMOL3, KK, NRC, IATM,
      .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, MODC, IATM1,
      .           ITYP, ISPZ, ITYP2, ISPZ2, IPHOT3
@@ -263,8 +265,7 @@ cdr  a density independent rate can exist also in a vacuum cell.
 cdr  e.g. spontanuous emission of a line, also treated as "recombination" event
 cdr       by analogy.
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
-                    COU = EIRENE_RATE_COEFF(KK,TEINL(J),0._DP,
-     .                    LEXP,0,ERATE)
+                    COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),0._DP,LEXP,0)
                     TABRC1(IRRC,J)=COU*FACTKK
                     IF (IFTFLG(KK,2) < 100)
      .                TABRC1(IRRC,J)=TABRC1(IRRC,J)*DEIN(J)
@@ -285,8 +286,8 @@ C  2.D) RATE COEFFICIENT(TE,NE)
                   DO J=1,NSBOX
 !pb                 IF (LGVAC(J,IPLS)) CYCLE
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
-                    COU = EIRENE_RATE_COEFF(KK,TEINL(J),PLS(J),
-     .                   .TRUE.,1,ERATE)
+                    COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),
+     .                   .TRUE.,1)
                     TABRC1(IRRC,J)=COU*FACTKK
                     IF (IFTFLG(KK,2) < 100)
      .                TABRC1(IRRC,J)=TABRC1(IRRC,J)*DEIN(J)
@@ -342,7 +343,7 @@ C
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
 c  special treatment in case bremsstrahlung is contained in energy loss rate
 c  as e.g. the case in ADAS ADF11- PRB files
-                LADAS = EIRENE_IS_RTCEW_ADAS(KREAD)
+                LADAS = EIRENE_IS_RTCEW_TAB2D(KREAD)
                 Z = NCHRGP(IPLS)
 C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                 IF (MODC.EQ.1) THEN
@@ -350,7 +351,7 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
 C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
-                      EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
+                      EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
      .                               TEINL(J),
      .                               0._DP,.TRUE.,0)*DEIN(J)*FACTKK
 C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
@@ -384,11 +385,14 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-                      EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,
-     .                               TEINL(J),
-     .                               PLS(J),.FALSE.,1)
-                      EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
-                      EELRC1(IRRC,J)=-EXP(EEMX)
+C  change logical from false to true, to avoid log(erate), with erate negative 
+                      EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
+cdr  .                               TEINL(J),PLS(J),.FALSE.,1)
+     .                               TEINL(J),PLS(J),.TRUE.,1)
+                      EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
+cdr  old code, for log(e_rate) return. Not possible with h_colrad, due to sign change
+cdr                   EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
+cdr                   EELRC1(IRRC,J)=-EXP(EEMX)
 
 C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)

@@ -18,7 +18,7 @@ c             directly to be included in line shape sampling
 !pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
 !pb           spatial resolution of sptpl and spttot added
 !pb  8.11.06: set timestep index for time dependent mode
-cdr         : as SORLIM can be negative, to call SAMUSR for spatial coordinates. 
+cdr         : as SORLIM can be negative, to call SAMUSR for spatial coordinates.
 cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS(SORLIM)
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
@@ -32,7 +32,7 @@ cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS
 c
 cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species index)
 cdr 24.09.14: levgeo=2, surface normal on radial surface from algebraic relation, rather than from polygon
-cdr           levgeo=2 and 1D run: no polygons are set any more. 
+cdr           levgeo=2 and 1D run: no polygons are set any more.
 cdr oct   14: weight now as argument in velocs (not via comprt).
 CDR           RSQDV2:  factor for Mach number conversion to cm/s
 cdr           also: scoring sputter tallies revised, igasp,igasc=0 option:
@@ -46,8 +46,12 @@ cdr           Could be done earlier, and also simplify code here in locate alrea
 cdr nov.17 :  remove dead option: nlstor
 cdr jan.18 :  IND flag different now in update_sptflx.
 cdr           New arguments in update_surface.
-cdr           update_surface also called for outgoing bulk particle fluxes        
- 
+cdr           update_surface also called for outgoing bulk particle fluxes
+cdr feb 18 :  M.R.:  bug fix re WEIGHT in one-by-one resampling from census.
+cdr           (was proprietary option, no effects for 3rd parties).
+cdr mar 18 :  prepare missing option: MSURF in case of levgeo=5 plus additional surfaces 
+cdr
+
       SUBROUTINE EIRENE_LOCATE
 c  old option:
 c              sorind=irrc for volume sources
@@ -59,7 +63,7 @@ c                    1.) ipls (must be specified), and icell
 c                    2.) find irrc (random) amongst tabrc1
 c                    3.) find ityp, iatm,....
 c
-c  
+c
 
 C
 C  LOCATE MONTE-CARLO PARTICLE
@@ -128,9 +132,9 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CFPLK
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IPANU
       REAL(DP) :: DUMT(3),DUMV(3)
       REAL(DP), ALLOCATABLE, SAVE :: WMM(:), WEISPZ(:), X1LINE(:,:),
@@ -138,19 +142,19 @@ C
       REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
      .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
      .            CUMDIS(0:NREC)
-      REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS, 
+      REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
      .          EIRENE_FTABRC1,
      .          VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
-     .          VPERP, VPARX, VPARY, EIRENE_EMAXW, ESHET, EIRENE_SHEATH, 
-     .          GAMMA, 
+     .          VPERP, VPARX, VPARY, EIRENE_EMAXW, ESHET, EIRENE_SHEATH,
+     .          GAMMA,
      .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
      .          VXSPTC, VYSPTC, VZSPTC, A, ZV, SUM1, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
-     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL, 
-     .          TIWD, TEWD, DPH, E00, 
+     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
+     .          TIWD, TEWD, DPH, E00,
      .          res
       REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym, 
+     .            yr, ym,
      .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
      .            fac_e0, fac_e00,
      .            xleft, xright
@@ -164,9 +168,9 @@ C      REAL(DP) :: B_NU, pla
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
      .           I2, IM, I1, IMP, NPANUO, ILINE, ISURF, ITRSF,
      .           IPOINT, ISOUR, ISRFS, I, ISTEP,
-     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT, 
+     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT,
      .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
-     .           IPLTI, IROT, KK, 
+     .           IPLTI, IROT, KK,
      .           ITYP_OLD, IGASP_OLD,IGASC_OLD
 C      INTEGER :: ILOOP, IPLSTI, NLOOP
       INTEGER, SAVE :: NLIMSQ
@@ -187,7 +191,7 @@ C
         ALLOCATE (IUPSOR(NSRFS))
         ALLOCATE (IFPSOR(NSRFS))
       END IF
- 
+
       DO 1 ISPZ=1,NSPZ
         WEISPZ(ISPZ)=-1.
 1     CONTINUE
@@ -259,10 +263,10 @@ C
 C
 C  PREPARE SOME DATA FOR SPECIES SAMPLING
 C
- 
+
       IF (NLVOL(ISTRA) .AND. (NEMOD1 == 9) .AND.
      .    ANY(SORIND(1:NSRFSI(ISTRA),ISTRA) > 0)) THEN
- 
+
         IF (ALLOCATED(X1LINE)) THEN
           IF (SIZE(X1LINE) /= NSRFSI(ISTRA)) THEN
             DEALLOCATE(X1LINE)
@@ -274,11 +278,11 @@ C
           ALLOCATE(X1LINE(NSRFSI(ISTRA),NRAD))
           ALLOCATE(X2LINE(NSRFSI(ISTRA),NRAD))
         END IF
- 
+
         X1LINE = -1._DP
         X2LINE = 0._DP
       END IF
- 
+
       RETURN
 C
       ENTRY EIRENE_LOCAT1(IPANU)
@@ -390,7 +394,7 @@ C Surface sourse
 C
 C  UNLESS ONE-BY-ONE RE-LAUNCH, WE MUST
 C  IGNORE THE STORED WEIGHT = RPARTC(9,IMP) OF THE SAMPLED PARTICLE,
-C  BECAUSE THIS WEIGHT HAS ALREADY BEEN TAKEN INTO ACCOUNT 
+C  BECAUSE THIS WEIGHT HAS ALREADY BEEN TAKEN INTO ACCOUNT
 C  IN THE SAMPLING (BOOTSTRAPPING) DISTRIBUTION
 C
         IF (NTIME.GT.0.AND.NPTST.GE.0.) THEN
@@ -541,21 +545,30 @@ C Does an input array exist for the following?
           WEISPZ=0
         ENDIF
 C
+C   NEXT:  IDENTIFY MSURF
 C   MSURF: NUMBER OF NON-DEFAULT (OR ADDITIONAL) SURFACE
 C   MSURF=0 MEANS: SOURCE NOT ON ANY KNOWN SURFACE.
 C                  DEFAULT SURFACE INTERACTION MODEL
+
+C  TENTATIVELY ASSUME:
         MSURF=0
         ITRSF=0
+C
         IF (LEVGEO.EQ.4) THEN
           IF (MASURF == 0) THEN
+c  increment NLIM already added on inmti? msurf=nlim+ists
             MSURF=ABS(INMTI(IPOLG,NRCELL))
           ELSE
             MSURF=MASURF
           END IF
         ELSEIF (LEVGEO.EQ.5) THEN
-          MSURF=ABS(INMTIT(IPOLG,NRCELL))
-!pb          IF (MSURF > 0) MSURF=MSURF+NLIM !changed in infcop
-        ELSE
+          IF (MASURF == 0) THEN
+c  increment NLIM already added on inmtit? msurf=nlim+ists
+            MSURF=ABS(INMTIT(IPOLG,NRCELL))
+          ELSE
+            MSURF=MASURF
+          END IF
+        ELSEIF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
           IF (MASURF.GT.0) THEN
             MSURF=MASURF
             ITRSF=0
@@ -565,6 +578,16 @@ C                  DEFAULT SURFACE INTERACTION MODEL
             ITRSF=INMP2I(NRCELL,MPSURF,NTCELL)
           ELSEIF (MTSURF.GT.0) THEN
             ITRSF=INMP3I(NRCELL,NPCELL,MTSURF)
+          ENDIF
+cdr  same code as for levgeo<4. But explicitly only for first grid MRSURF, MASURF
+          IF (ITRSF.GT.0) MSURF=NLIM+ITRSF
+        ELSEIF (LEVGEO.EQ.10) THEN
+c  deal with 1st grid surfaces only (with "radial surfaces", by abuse of language)
+          IF (MASURF.GT.0) THEN
+            MSURF=MASURF
+            ITRSF=0
+          ELSEIF (MRSURF.GT.0) THEN
+            ITRSF=INMP1I(MRSURF,NPCELL,NTCELL)
           ENDIF
           IF (ITRSF.GT.0) MSURF=NLIM+ITRSF
         ENDIF
@@ -919,8 +942,8 @@ C  MAKE SURE NOT TO WASTE TIME IN PARTICLES WITH ZERO WEIGHT
 C
       LGPART=WEIGHT.GT.0.D0
       IF (.NOT.LGPART) RETURN
-C  
-C  FIND VELOCITY SPACE COORGINATES, GIVEN: POSITION, SPECIES 
+C
+C  FIND VELOCITY SPACE COORGINATES, GIVEN: POSITION, SPECIES
 C
 C  PARAMETERS FOR VELOCITY SAMPLING DISTRIBUTION:
 C  TEWD,TIWD,VXWD,VYWD,VZDW
@@ -1023,7 +1046,7 @@ C
         ELSE
           GOTO 998
         ENDIF
- 
+
         LOGATM(IATM,ISTRA)=.TRUE.
         IF (EMAX.GT.0) THEN
           E0=EMAX
@@ -1033,7 +1056,7 @@ C  COSINE LIKE OR GAUSSIAN ANGLE DISTRIBUTION
 C
 C  IN CASE (CRTX,CRTY,CRTZ) NE (0.,0.,0.)
 C  USE REFLECTION MODEL ANGULAR DISTRIBUTION:
-c  SEND A VIRTUAL PARTICLE ONTO VIRTUAL SURFACE, AND REFLECT THEN 
+c  SEND A VIRTUAL PARTICLE ONTO VIRTUAL SURFACE, AND REFLECT THEN
           VELX=CRTX
           VELY=CRTY
           VELZ=CRTZ
@@ -1086,9 +1109,9 @@ C         E0_MEAN=1.5*TIWD+0.
 C
         WTOTA(IATM,ISTRA)=WTOTA(IATM,ISTRA)+WEIGHT
         ETOTA(ISTRA)=ETOTA(ISTRA)+E0*WEIGHT
-        IF (NADSI.GE.1.AND.NLSRF(ISTRA)) 
+        IF (NADSI.GE.1.AND.NLSRF(ISTRA))
      .    CALL EIRENE_UPSUSR(WEIGHT,2)
-        IF (NADSPC.GE.1.AND.NLSRF(ISTRA)) 
+        IF (NADSPC.GE.1.AND.NLSRF(ISTRA))
      .    CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
 C
@@ -1213,20 +1236,20 @@ C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
               CUR=0.
               DO IP=1,NPLSI
                 VPWL(IP)=SQRT(VXWL(IP)**2+VYWL(IP)**2+VZWL(IP)**2)
-                DIWL(IP)=DIWL(IP)
+C               DIWL(IP)=DIWL(IP)
               ENDDO
               ESHET=NCHRGI(IION)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                  NCHRGP,GAMMA,CUR,NPLSI,MSURF)
             ELSE
               ESHET=NCHRGI(IION)*FSHEAT(MSURF)*TEWL
             ENDIF
- 
+
           ENDIF
 C   NO SHEATH POTENTIAL TO BE ADDED
         ELSE
           ESHET=0.
         ENDIF
- 
+
         LOGION(IION,ISTRA)=.TRUE.
         IF (EMAX.GT.0.D0) THEN
 C  CONSTANT VELOCITY
@@ -1271,7 +1294,7 @@ C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
 C
           IF (TIWD.LE.0.) TIWD=ABS(EMAX)
-          NFLAG=2   !  sample from (drifting) maxwellian, no cross section weighting 
+          NFLAG=2   !  sample from (drifting) maxwellian, no cross section weighting
           IDUM=1
           DUMT(1)=SQRT(TIWD/RMASSI(IION))*CVEL2A
           DUMT(2)=DUMT(1)
@@ -1426,7 +1449,7 @@ C             CHEMICAL SPUTTERING LFUX DEPENDENCE
             MSURFG=0
             FLX=0
           ENDIF
- 
+
 C  WTOTP, ETOTP: INTEGRAL FLUXES FOR SCALING
           WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
           ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
@@ -1439,7 +1462,7 @@ C                            BUT INTEGRALS OF OUTGOING SURFACE FLUXES
 C                            POTPLI,... ARE TAKEN NEGATIVE).
 C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
           ITYP_OLD=4
-          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,1) 
+          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,1)
 
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(-WEIGHT,1)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(-WEIGHT,1,0)
@@ -1859,7 +1882,7 @@ C  TEST SECONDARY ?
             IF(IPHOT.LE.0.OR.IPHOT.GT.NPHOTI) GOTO 999
             GOTO 580
           ENDIF
- 
+
 C  EXACTLY ONE TEST PARTICLE SECONDARY HAS NOW BEEN IDENTIFIED
 580       CONTINUE
           IF (ITYP.GE.4.OR.ITYP.LT.0) GOTO 999
@@ -1994,11 +2017,11 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
               endif ! X1LINE(EV), X2LINE(EV) FOR CELL NCELL DONE
               xleft = x1line(ivolm,ncell)
               xright = x2line(ivolm,ncell)
- 
+
             END IF ! NEMOD1=9 OPTION for photons prepared
- 
+
 !  now apply nemod1=9 option for ityp=0
- 
+
 C  PHOTON EMISSION PROFILE OPTIONS 0-9
 C  SAMPLE ONLY FROM LINE PROFILES WITHOUT DOPPLER CONTRIBUTION
 C  I.E., IN THE REST FRAME OF THE EMITTING ATOM
@@ -2016,7 +2039,7 @@ C  SAMPLE ISOTROPIC EMISSION OF PHOTON IN REST FRAME OF EMITTING PARTICLE
             INIV3=INIV3-1
 C  EMITTER VELOCITY COMPONENT IN DIRECTION OF LIGHT EMISSION
             VN=VEL_B*(VELX_B*VELX+VELY_B*VELY+VELZ_B*VELZ)
- 
+
 C  SAMPLE THE ENERGY (FREQUENCY) OF THE PHOTON
 C  IN CASE OF ZEEMAN SPLITTING, THIS IS CONDITIONAL
 C  ON THE DIRECTION OF EMISSION
@@ -2030,19 +2053,19 @@ C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)
               CALL EIRENE_EXIT_OWN(1)
 !             E0=E0*(1._DP+VN/CLIGHT)
             ENDIF
- 
+
             if ((e0 > x1line(ivolm,ncell)) .and.
      .          (e0 < x2line(ivolm,ncell))) then
               lgpart = .false.
               weight = 0._dp
             end IF
 C  nemod1=9 option FOR PHOTONS finished.
- 
+
 !  NEXT: PHOTON DEFAULT OPTION: NEMOD1 IS NOT =9 AND NOT =1
 !        SAME AS NEMOD=9, BUT WITHOUT CUT OFF OF BLACK PART
- 
+
           ELSEIF (ITYP.EQ.0) THEN
- 
+
 C  PHOTON EMISSION PROFILE OPTIONS 0-9
 C  SAMPLE ONLY FROM LINE PROFILES WITHOUT DOPPLER CONTRIBUTION
 C  I.E., IN THE REST FRAME OF THE EMITTING ATOM
@@ -2060,7 +2083,7 @@ C  SAMPLE ISOTROPIC EMISSION OF PHOTON IN REST FRAME OF EMITTING PARTICLE
             INIV3=INIV3-1
 C  EMITTER VELOCITY COMPONENT IN DIRECTION OF LIGHT EMISSION
             VN=VEL_B*(VELX_B*VELX+VELY_B*VELY+VELZ_B*VELZ)
- 
+
 c FOR ZEEMAN-SAMPLING TEST:
 c           VELX=1.
 c           VELY=0.
@@ -2083,7 +2106,7 @@ C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)
             IF (NL_ADD_DOPPLER) THEN
               E0=E0*(1._DP+VN/CLIGHT)
             ENDIF
- 
+
 !  options for plotting of sampled volume emission spectra
 c
 c  put spectrum no. 1, and use energy range from input block 10F
@@ -2093,7 +2116,7 @@ c             call exit_own(1)
 c           endif
 c           msurf=estiml(1)%pspc%ispcsrf
 c           call update_spectrum (1._dp,1,0)
- 
+
           ELSE
 C  AT THIS POINT: ITYP NE 0 (NEW TEST PARTICLE IS NOT A PHOTON)
 C                 AND NEMOD1 NE 1 (NEW TEST PARTICLE NOT SAMPLED
@@ -2106,12 +2129,12 @@ C         E0=E0
 C         VEL=VEL
 C
           ENDIF
- 
+
 c         end do ! iloop
 c         IF (NLTRC) CALL CHCTRC(X0,Y0,Z0,0,1)
 
 c  parts for plotting emission spectrum removed from here --> development branch
- 
+
           IF (NLTRC.AND.TRCHST) THEN
             WRITE (iunout,*) 'AFTER RECOMBINATION: '
             CALL EIRENE_MASJ6
@@ -2194,12 +2217,12 @@ C  RECORD EVENT
       ELSEIF (ITYP.EQ.0) THEN
         LAST_EVENT%ISPEZ = IPHOT
       ENDIF
- 
+
 C
 C  HAS THE SOURCE PARTICLE BEEN ABSORBED IN SUBR. REFLEC OR SPUTER?
 C
       IF (.NOT.LGPART) RETURN
- 
+
       IF (NLRAY(ISTRA)) THEN
         TRAJ(ITRJ)%TRJ%VX = VELX
         TRAJ(ITRJ)%TRJ%VY = VELY
@@ -2236,7 +2259,7 @@ C  IN CASE OF LEVGEO 10 NRCELL MUST BE KNOWN ALREADY, AND MRSURF NOT NECESSARILY
 C  NO FURTHER CORRECTION TO NRCELL DONE.
         IF (LEVGEO .NE. 10) THEN
 
-C  SET NRCELL FROM MRSURF AND SG 
+C  SET NRCELL FROM MRSURF AND SG
           IF (SG.LT.0) THEN
             NRCELL=MRSURF-1
           ELSEIF (SG.GT.0) THEN
@@ -2266,7 +2289,7 @@ C  POLOIDAL CELL NO. MAY BE WRONG
       ELSEIF (NLSRFZ) THEN
 C  TOROIDAL CELL NO. MAY BE WRONG
       ENDIF
- 
+
       IF (NLTEST) THEN
         CALL EIRENE_CLLTST(*997)
       ELSE
@@ -2279,9 +2302,9 @@ C  TOROIDAL CELL NO. MAY BE WRONG
         IF (NLTST) GOTO 995
       ENDIF
       RETURN
- 
+
       ENTRY EIRENE_LOCAT2
- 
+
       IF (ALLOCATED(WMM)) THEN
         DEALLOCATE (WMM)
         DEALLOCATE (WEISPZ)
@@ -2290,7 +2313,7 @@ C  TOROIDAL CELL NO. MAY BE WRONG
         DEALLOCATE (IUPSOR)
         DEALLOCATE (IFPSOR)
       END IF
- 
+
       RETURN
 C
 990   CONTINUE

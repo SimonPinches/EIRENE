@@ -44,14 +44,14 @@ cdr           or as iftflg(..4) option.
       ELSE IF (KK > 0) THEN
  
         IF (JELRRC(IRRC) == 1) THEN
-          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),0._DP,.FALSE.,0)
+          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.FALSE.,0)
           ELRC=ELRC+FACRRC(IRRC,2)
           ELRC=EXP(MAX(-100._DP,ELRC))
           EIRENE_FEELRC1=-ELRC*DEIN(K)
         ELSE
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
-          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,TEINL(K),PLS,.FALSE.,1)
+          ELRC = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.FALSE.,1)
           EE=MAX(-100._DP,ELRC+DEINL(K)+FACRRC(IRRC,2))
           EIRENE_FEELRC1=-EXP(EE)
         END IF
@@ -60,7 +60,7 @@ c  in some case (e.g. ADAS electron cooling rate tables), bremstrahlung is
 c  added on top of free-bound radiation. Subtract this contribution here,
 c  to avoid double counting. 
 c
-        LADAS = EIRENE_IS_RTCEW_ADAS(KK)  ! ifit=3 <--> ladas.
+        LADAS = EIRENE_IS_RTCEW_TAB2D(KK)  ! ifit=3 <--> ladas.
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN
           Z = NCHRGP(IPLS)
           BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion

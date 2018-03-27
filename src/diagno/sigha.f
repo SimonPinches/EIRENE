@@ -9,10 +9,10 @@ cpb Feb 17:  refresh ADDV tallies (volumetric line emissivities)
 c            not only for new stratum, but also when
 c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
+cdr Jan 18:  parameter ICHORI added
 c            
 C
-      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
-
+      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST,ICHORI)
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST).
@@ -56,10 +56,11 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_COMPRT
       USE EIRMOD_COMUSR
+      USE EIRMOD_COMSIG
  
       IMPLICIT NONE
  
-      INTEGER, INTENT(IN) :: INIT, JJJ
+      INTEGER, INTENT(IN) :: INIT, JJJ, ICHORI
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
       REAL(DP) :: PENOLD
@@ -84,9 +85,9 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
 c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
-c         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
-c    .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-c    .                 NADVI+7)
+!         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+!    .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!    .                 NADVI+7)
 
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '
@@ -123,6 +124,8 @@ c    .                 NADVI+7)
             WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
             ADDV(NADVI+1:NADVI+7,:) = 0._DP
           endif
+
+
         endif   ! NEW INTERNAL ITERATION, OR NEW LINE, OR NEW STRATUM
 
         ISTOLD=ISTRA
@@ -133,11 +136,6 @@ c    .                 NADVI+7)
 C
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2
 C
-!WZ:  This error message might be obsolete.
-      IF (NSPZ+2.LT.6) THEN
-        WRITE (iunout,*) 'ERROR EXIT FROM SIGHA '
-        CALL EIRENE_EXIT_OWN(1)
-      ENDIF
 C
       ncelc=ncltal(ncell)
       PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)

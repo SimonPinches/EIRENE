@@ -12,6 +12,7 @@
      P          EIRENE_SET_DEF_SURF_DATA
  
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+cdr  rlwmn, rlwmx: weight window for surface. Currently unused 
      R RLWMN(:),    RLWMX(:),
      R EWALL(:),    EWBIN(:),    TRANSP(:,:,:),
      R FSHEAT(:),
@@ -188,9 +189,10 @@
  
  
       SUBROUTINE EIRENE_INIT_CLGIN
- 
+cdr  rlwmn, rlwmx: weight window, unused. 
       RLWMN  = 1.E-5_DP
       RLWMX  = 1.E5_DP
+c
       EWALL  = 0.0388_DP
       EWBIN  = 0._DP
       TRANSP = 0._DP
