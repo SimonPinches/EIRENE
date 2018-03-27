@@ -54,7 +54,7 @@ CDR JAN 17:   re-syncronize with couple_tria, identify differences:
 
 c                    additional here:  mpi stuff from S. Wiesen
 c                    chpm,...allocatable
-c                    lcut in common, and broadcast.  check: additional llcut setting in timer.f ?
+c                    lcut in common, and broadcast.  
 
 cdr  NFL dependence:  SFNIT(0:NSTEP,NFL) in global particle balance, already implemented
 
@@ -411,7 +411,7 @@ C
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
-!pb
+cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
 cdr
       mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
@@ -3722,6 +3722,7 @@ cdr  scaling was on fine grid: sum up to coarse grid for B2.5: in=ncltal(it)
                     DO WHILE (ASSOCIATED(CURPOI))
                       IT=CURPOI%TRIANGLE
                       INC=NCLTAL(IT)
+
                       SNIRES=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+
      .                        PIPL(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                       RESSNI(ISTRAI,IFL)=RESSNI(ISTRAI,IFL)+
@@ -3736,6 +3737,7 @@ cdr  scaling was on fine grid: sum up to coarse grid for B2.5: in=ncltal(it)
             END IF
 
 cdr   particle sources done.
+
 cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
 cdr   ipls contributes to plasma code species ifl
 
@@ -3775,10 +3777,11 @@ cdr   ipls contributes to plasma code species ifl
                      DO WHILE (ASSOCIATED(CURPOI))
                        IT=CURPOI%TRIANGLE
                        INC=NCLTAL(IT)
+
                        SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                        SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
      .                         MIPL(IPLS,INC))*
-     .                        VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+     .                         VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                        RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                    ABS(SIGMA(ISTAT_COP,INC)*
      .                                    SMORES/100.D0*1.D5)
@@ -3856,6 +3859,7 @@ C
                 DO WHILE (ASSOCIATED(CURPOI))
                   IT=CURPOI%TRIANGLE
                   IN=NCLTAL(IT)
+
                   SEERES=(EAEL(IN)+EMEL(IN)+EIEL(IN))*VOLTAL(IN)*FLX_EIR
                   RESSEE(ISTRAI)=RESSEE(ISTRAI)+
      .                           ABS(SIGMA(ISTAT_COP,IN)*
@@ -4127,6 +4131,9 @@ C  WRITE ICCPL2
       IF (TRCINT.OR.TRCFLE)   
      .    WRITE (iunout,*) 'WRITE 11  LCCPL,  IRC= ',IRC
 C
+!pb  LSTP is dummy argument to entry IF3COP, thus not available here
+!pb  LSTP3 is stored in IF3COP
+!pb   IF (LSHORT) LSTOP=LSTP
       IF (LSHORT) LSTOP=LSTP3
 C
       IF (.NOT.LSTOP) RETURN
@@ -4404,6 +4411,7 @@ C
         SHEAE(I)=0.
         SHEAI(I)=0.
         DO IPRT=1,NTGPRT(I)
+
           IF (NIXY(I,IPRT).EQ.1) THEN
 C  BALANCE CONTRIB. X-GRID REC. SOURCE
             DO 10132 IY=NTIN(I,IPRT),NTEN(I,IPRT)-1
@@ -4434,6 +4442,7 @@ cdr  sheath done
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NDT(I,IPRT),IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NDT(I,IPRT),IY)
 10132       CONTINUE
+
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1

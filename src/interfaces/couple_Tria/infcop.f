@@ -3468,14 +3468,14 @@ c  ipls contributes to plasma code species ifl
 !               CURPOI => HEADS(IY,IX)%P
 !               DO WHILE (ASSOCIATED(CURPOI))
 !                 IT=CURPOI%TRIANGLE
-!                 IN=NCLTAL(IT)
-                  IN=IY+(IX-1)*NR1TAL_SAVE
-!pb                  
-                  SNICL=(PAPL(IPLS,IN)+PMPL(IPLS,IN)+PIPL(IPLS,IN)+
-     .                   PPPL_COP(IPLS,IN))*VOLTAL(IN)*FLX_EIR
+!                 INC=NCLTAL(IT)
+
+                  INC=IY+(IX-1)*NR1TAL_SAVE        
+                  SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
+     .                   PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
                   SNIS(IFL)=SNIS(IFL)+ SNICL
-                  CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,IN)*VOLTAL(IN)
+                  CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,INC)*VOLTAL(INC)
 !pb 21012013 ncltal
 !                 CURPOI=>CURPOI%NEXT
 !               ENDDO
@@ -3535,12 +3535,12 @@ cdr  add pppl contribution to internal energy sources rate
                   DO IY=1,NDYA
 cdr  scaling was already on coarse grained grid for B2: in=ncltal(it)
 
-                    IN=IY+(IX-1)*NR1TAL_SAVE
+                    INC=IY+(IX-1)*NR1TAL_SAVE
                  
-                    SNIRES=(PAPL(IPLS,IN)+PMPL(IPLS,IN)+
-     .                      PIPL(IPLS,IN))*VOLTAL(IN)*FLX_EIR
+                    SNIRES=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+
+     .                      PIPL(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                     RESSNI(ISTRAI,IFL)=RESSNI(ISTRAI,IFL)+
-     .                                 ABS(SIGMA(ISTAT_COP,IN)*
+     .                                 ABS(SIGMA(ISTAT_COP,INC)*
      .                                 SNIRES/100.D0)        
                   END DO
                 END DO
@@ -3572,7 +3572,6 @@ cdr   ipls contributes to plasma code species ifl
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
                 SMOS(IFL)=SMOS(IFL)+SMOCL
                 CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
-!pb                  
 7533          CONTINUE
 7536        CONTINUE
 
@@ -3624,17 +3623,15 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 !                  CURPOI => HEADS(IY,IX)%P
 !                  DO WHILE (ASSOCIATED(CURPOI))
 !                    IT=CURPOI%TRIANGLE
-!                    IN=NCLTAL(IT)
-                     IN=IY+(IX-1)*NR1TAL_SAVE
-!pb                  
-                    SMORES=(MAPL(IPLS,IN)+MMPL(IPLS,IN)+
-     .                      MIPL(IPLS,IN))*
-     .                     VOLTAL(IN)*1.D-5*SIGNUM*FLX_EIR
-                    RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
-     .                                 ABS(SIGMA(ISTAT_COP,IN)*
-     .                                 SMORES/100.D0*1.D5)
-
-!pb                  
+!                    INC=NCLTAL(IT)
+                     INC=IY+(IX-1)*NR1TAL_SAVE
+               
+                     SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
+     .                      MIPL(IPLS,INC))*
+     .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                     RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
+     .                                  ABS(SIGMA(ISTAT_COP,INC)*
+     .                                  SMORES/100.D0*1.D5)
                   END DO
                 END DO
               end if
@@ -3651,8 +3648,8 @@ C
 !            DO WHILE (ASSOCIATED(CURPOI))
 !              IT=CURPOI%TRIANGLE
 !              IN=NCLTAL(IT)
-              IN=IY+(IX-1)*NR1TAL_SAVE
-!pb                  
+
+              IN=IY+(IX-1)*NR1TAL_SAVE            
               SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
      .           (EAEL(IN)+EMEL(IN)+EIEL(IN)+
      .            EPEL_COP(IN))*VOLTAL(IN)*ELCHA
@@ -3708,8 +3705,9 @@ cdr  this is now identical to see above ?
 !             DO WHILE (ASSOCIATED(CURPOI))
 !               IT=CURPOI%TRIANGLE
 !               IN=NCLTAL(IT)
+
                 IN=IY+(IX-1)*NR1TAL_SAVE
-!pb                  
+
                 SEERES=(EAEL(IN)+EMEL(IN)+EIEL(IN))*VOLTAL(IN)*FLX_EIR
 !pb              RESSEE(ISTRAI)=RESSEE(ISTRAI)+
 !pb     .                       ABS(SIGMA_COP(2*NPLSI+1,IN)*
@@ -3717,10 +3715,6 @@ cdr  this is now identical to see above ?
                 RESSEE(ISTRAI)=RESSEE(ISTRAI)+
      .                         ABS(SIGMA(ISTAT_COP,IN)*
      .                         SEERES/100.D0)
-!pb 21012013 ncltal
-!              CURPOI=>CURPOI%NEXT
-!            END DO
-!pb                  
               END DO
             END DO
           end if
@@ -3739,8 +3733,8 @@ C
 !            DO WHILE (ASSOCIATED(CURPOI))
 !              IT=CURPOI%TRIANGLE
 !              IN=NCLTAL(IT)
+
                 IN=IY+(IX-1)*NR1TAL_SAVE
-!pb                  
                 SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .             (EAPL(IPLS,IN)+EMPL(IPLS,IN)+
      .              EIPL(IPLS,IN)+EPPL_COP(IPLS,IN))*
@@ -4303,6 +4297,7 @@ C
         SHEAI(I)=0.
         DO IPRT=1,NTGPRT(I)
           fniprt = 0.
+
           IF (NIXY(I,IPRT).EQ.1) THEN
 C  BALANCE CONTRIB. X-GRID REC. SOURCE
             NPBS=NDT(I,IPRT)
@@ -4355,6 +4350,7 @@ cdr  sheath done
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NPBS,IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NPBS,IY)
 10132       CONTINUE
+
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
