@@ -3727,8 +3727,11 @@ C
 c    reset clock of source particles from old census to time0
 cdr  must be done also for time0=0.0, for otherwise flight time =0 is possible
 cdr  for census source particles and resulting error exits
+C Would gain performance by turning RPSTT into a pointer
             DO I=1,IPRNL
-              RPARTC(10,I)=TIME0
+              RPSTT(1:NPARTT)=RPARTC(1:NPARTT,I)
+              TIME=TIME0
+              RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
             ENDDO
             WRITE (iunout,*) 'PARTICLE CLOCK RESET '
             WRITE (iunout,*) 'FIRST TIMESTEP RUNS FROM TIM1 TO TIM2:  '
