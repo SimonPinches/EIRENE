@@ -406,37 +406,37 @@ C
 C
 C Following may be optimised without repeats by using pointers, 
 C cf switch_partinfo.f
-        NLATM=.FALSE.
-        NLMOL=.FALSE.
-        NLION=.FALSE.
-        NLPLS=.FALSE.
-        NLPHOT=.FALSE.
+        NLATM(ISTRA)=.FALSE.
+        NLMOL(ISTRA)=.FALSE.
+        NLION(ISTRA)=.FALSE.
+        NLPLS(ISTRA)=.FALSE.
+        NLPHOT(ISTRA)=.FALSE.
         SELECT CASE( ITYP )
           CASE( 1 )
-            NLATM=.TRUE.
+            NLATM(ISTRA)=.TRUE.
 C Volume source
             WTOTA(IATM,ISTRA)=WTOTA(IATM,ISTRA)+WEIGHT
             ETOTA(ISTRA)=ETOTA(ISTRA)+E0*WEIGHT
             LOGATM(IATM,ISTRA)=.TRUE.
           CASE( 2 )
-            NLMOL=.TRUE.
+            NLMOL(ISTRA)=.TRUE.
 C Volume source
             WTOTM(IMOL,ISTRA)=WTOTM(IMOL,ISTRA)+WEIGHT
             ETOTM(ISTRA)=ETOTM(ISTRA)+E0*WEIGHT
             LOGMOL(IMOL,ISTRA)=.TRUE.
           CASE( 3 )
-            NLION=.TRUE.
+            NLION(ISTRA)=.TRUE.
 C Volume source
             WTOTI(IION,ISTRA)=WTOTI(IION,ISTRA)+WEIGHT
             ETOTI(ISTRA)=ETOTI(ISTRA)+E0*WEIGHT
             LOGION(IION,ISTRA)=.TRUE.
           CASE( 4 )
-            NLPLS=.TRUE.
+            NLPLS(ISTRA)=.TRUE.
 C Surface source parameter set below
 C add part for volume source (see above), i.e. check whether needed or 
 C elseif below can be used.
           CASE( 0 )
-            NLPHOT=.TRUE.
+            NLPHOT(ISTRA)=.TRUE.
 C Volume source
             WTOTPH(IPHOT,ISTRA)=WTOTPH(IPHOT,ISTRA)+WEIGHT
             ETOTPH(ISTRA)=ETOTPH(ISTRA)+E0*WEIGHT
