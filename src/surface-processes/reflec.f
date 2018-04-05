@@ -663,6 +663,7 @@ C
 C  SPECULAR REFLECTION
         GOTO 400
       ENDIF
+
 cdr  to be written: fixed momentum reflection in case aintg > 0.
       IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
 C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
@@ -921,7 +922,7 @@ C
 C
 C  ANGULAR DISTRIBUTION
 C
-      IF (AINTG.GE.0. AND. EXPI.LT.100.) THEN
+      IF (AINTG.GE.0. .AND. EXPI.LT.100.) THEN
         IF (F1.GT.0.999999) THEN
 C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           IF (INIV4.LE.0) CALL EIRENE_FCOSIN

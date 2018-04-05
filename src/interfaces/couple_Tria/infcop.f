@@ -2079,7 +2079,7 @@ C SORT TRIANGLES ALONG TARGET
              IS1=IS+1
              IF (IS1.GT.3) IS1=1
              IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2323,7 +2323,7 @@ C SORT TRIANGLES ALONG TARGET
             IS1=IS+1
             IF (IS1.GT.3) IS1=1
             IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI

@@ -1,5 +1,7 @@
+cdr march 18  : bug fix re semi-transp. surfaces. 
+cdr             This intermediate bug was introduced in jan 18 commit
 cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
-cdr             semi-transp fluxes: score only indicent and emitted current fractions
+cdr             semi-transp fluxes: score only incident and emitted current fractions
 cdr             for which surfaces are NOT transparent. 
 cdr             update_sptflx: different meaning of flag IND. More consistent
 cdr             now with IND-flag in other surface scoring routines.  
@@ -513,35 +515,35 @@ C
             IF (LERFPHPHT .OR. LPRFPHPHT) LMETSPW(IPHOT) =.TRUE.
           ENDIF
         ENDIF
+      ENDIF
 C
 C  EITHER: SEMI-TRANSPARENT SURFACE....
 C
-        IF (LTRANS) THEN
+      IF (LTRANS) THEN
 C  CONTINUE WITH UNMODIFIED VELOCITY.
 
 C  COMPENSATE INCIDENT SURFACE FLUX TALLY CONTRIBUTIONS
 C  SCORED ABOVE.                                       
-          CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,-WPR,1)
-
-          IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
-          IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
-          COLFLAG = .TRUE.
-          RETURN 2
+        CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,-WPR,1)
+        
+        IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
+        IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
+        COLFLAG = .TRUE.
+        RETURN 2
 C
 C  ... OR: PERFECT SPECULAR REFLECTION
 C
-        ELSEIF (ILIIN(MSURF).EQ.3) THEN
-          COSI2=-2.*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)
-          VELX=VELX+COSI2*CRTX
-          VELY=VELY+COSI2*CRTY
-          VELZ=VELZ+COSI2*CRTZ
-          IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
-          IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
-C         NLTRJ = .FALSE.
-C         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
-          IF (ICOL.EQ.1) RETURN 3
-          RETURN 1
-        ENDIF
+      ELSEIF (ILIIN(MSURF).EQ.3) THEN
+        COSI2=-2.*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)
+        VELX=VELX+COSI2*CRTX
+        VELY=VELY+COSI2*CRTY
+        VELZ=VELZ+COSI2*CRTZ
+        IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
+        IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
+C       NLTRJ = .FALSE.
+C       TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+        IF (ICOL.EQ.1) RETURN 3
+        RETURN 1
       ENDIF
 C
 C   .........................

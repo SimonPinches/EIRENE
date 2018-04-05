@@ -68,7 +68,7 @@ c
       DO I=1,IPRNLI
         RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
 ! WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE 
-! RESCALING FACTORS, DONE LATER IN TMSTEP.
+! RESCALING FACTORS FATM, FMOL, FION, FPHOT.  DONE LATER IN TMSTEP.
         IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
         ITYP=ISPEZI(ISPZ,-1)
         IF (ITYP.EQ.0) THEN
@@ -126,7 +126,10 @@ c  cumulated number of census scores, and census atomic flux, summed from all PE
 ! THERE IS ENOUGH STORAGE for all scores from all processors.
 !                          send all particles to processor 0
 
-
+cmr fix:   
+cdr Here we now trust that npartt and mpartt are properly set.
+cdr A corresponding check should be implemented in eirmod_parmmod,
+cdr where currently these numbers are hard coded. 
         allocate (rbuf(npartt,nprnl))
         allocate (ibuf(mpartt,nprnl))
         rbuf = 0._dp
