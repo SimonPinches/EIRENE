@@ -12,6 +12,7 @@ C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NST
 C             VIA FILES FROM FORT.29?
 
 c             plus minor notational cleanup, comments added
+
 cdr 150407:  orientation of B field made optional, additional input 
 cdr           flags ibrad,ibpol,ibtor in block 14.
 CDR 150419    THIS ROUTINE WAS OBTAINED MY MERGING COUPLE_B2.5 AND COUPLE_TRIA
@@ -68,11 +69,11 @@ c            parameters nr1st,  np2nd,  ..... for geometry
 c            parameters nr1tal, np2tal, ..... for scoring
 c            parameters nr1tal_save, ....     for interfacing tallies between b2 and eirene
 c                                             is always the b2 (structured) coarse grid
-
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
-cdr Mach 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
-cdr          on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure  
+cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
+cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure  
+cdr Mar 18:  ELTEST from couple_Tria
 c......................................................................................
 
 
@@ -335,12 +336,12 @@ C
 c
      . RESSNI(:,:),  RESSMO(:,:), 
      . RESSEE(:), RESSEI(:)
-     ., FLXEIR(:)
+     .,FLXEIR(:)
 cdr  sputter fluxes
       REAL(DP) :: SPAT(0:NATM,0:NSTRA), SPML(0:NMOL,0:NSTRA),
      .            SPIO(0:NION,0:NSTRA), SPPL(0:NPLS,0:NSTRA)
 
-      REAL(DP), ALLOCATABLE, SAVE::
+      REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ELTEST(:,:), ORI(:,:)
 
       real(dp),allocatable :: helpw(:)
@@ -505,7 +506,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
               NSPZE(IT,IPRT)=NFLA
             ENDIF
             IF (TRCINT)
-     .      WRITE (iunout,'(1X,7I6,2I7,3I6)') 
+     .      WRITE (iunout,'(1X,7I6,2I7,3I6)')
      .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
@@ -952,7 +953,7 @@ C  TO THE QUADRANGLE
         ENDIF
       ENDDO
  
-C  BUILD NSTGRD ARRAY OF "BLOCKED" TRANGLES FROM XAISO ARRAY FROM FORT.29
+C  BUILD NSTGRD ARRAY OF "BLOCKED" TRIANGLES FROM XAISO ARRAY FROM FORT.29
       IF (IO29.EQ.0) THEN
         DO ITRI=1,NTRII
           IY=IYTRI(ITRI)
@@ -1272,17 +1273,17 @@ C                 NCELL=NCLTAL(ITRI)
         write (iunout,*) 'SCORING OF VOLUME AVERAGED TALLIES  '
         write (iunout,*) 'IS ON FINE (TRIA) GRID ONLY. '
 C                 NCLTAL(ITRI)=ITRI
-      DO ITRI=1,NTRII
-        IY=IYTRI(ITRI)
-        IX=IXTRI(ITRI)
-        IF (IX .GT. 0) THEN
-           IN=IY+(IX-1)*NR1TAL
-           NCLTAL(ITRI)=ITRI
-        ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-           ico = ico+1
-           NCLTAL(ITRI)=itri
-        ENDIF
-      ENDDO
+        DO ITRI=1,NTRII
+          IY=IYTRI(ITRI)
+          IX=IXTRI(ITRI)
+          IF (IX .GT. 0) THEN
+            IN=IY+(IX-1)*NR1TAL
+            NCLTAL(ITRI)=ITRI
+          ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
+            ico = ico+1
+            NCLTAL(ITRI)=itri
+          ENDIF
+        ENDDO
       ENDIF
 
 c   ntrii+1 is the storage for summed/integrated tallies, over the standard grid
@@ -2260,7 +2261,7 @@ C SORT TRIANGLES ALONG TARGET
              IS1=IS+1
              IF (IS1.GT.3) IS1=1
              IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2512,7 +2513,7 @@ C SORT TRIANGLES ALONG TARGET
             IS1=IS+1
             IF (IS1.GT.3) IS1=1
             IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2587,7 +2588,7 @@ C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
               FLSTEP(IPLS,ITARG,IG)=0.
               IF (DELX.GT.0.) THEN
                 FLSTEP(IPLS,ITARG,IG)=MAX(0._DP,ORI(ITARG,IG)*
-     .                            FNIYB(IX,NPBS,IFL))*FL(IPLS)/DELX
+     .                                FNIYB(IX,NPBS,IFL))*FL(IPLS)/DELX
 
 C  CORRECT FOR INCLINED TARGETS: ADD FLUXES FROM SECOND DIRECTION
 !pb                IF (FLSTEP(IPLS,ITARG,IG).GT.0.) THEN
@@ -3694,7 +3695,7 @@ c  ipls contributes to plasma code species ifl
                   IT=CURPOI%TRIANGLE
                   INC=NCLTAL(IT)
                   SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
-     .                 PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
+     .                   PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
                   SNIS(IFL)=SNIS(IFL)+ SNICL
                   CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,INC)*VOLTAL(INC)
@@ -4094,7 +4095,7 @@ C
 C  WRITE RCCPL
       WRITE (11,REC=IRC) RCCPL
       IF (TRCINT.OR.TRCFLE)   
-     .    WRITE (iunout,*) 'WRITE 11  RCCPL,  IRC= ',IRC
+     .    WRITE (iunout,*) 'WRITE 11  RCCPL,   IRC= ',IRC
 C     IRC=3   STILL
 C  WRITE ICCPL1
       ALLOCATE (IHELP(NOUTAU))
@@ -4129,7 +4130,7 @@ C  WRITE ICCPL2
       IRC=IRC+1
       WRITE (11,REC=IRC) LCCPL
       IF (TRCINT.OR.TRCFLE)   
-     .    WRITE (iunout,*) 'WRITE 11  LCCPL,  IRC= ',IRC
+     .    WRITE (iunout,*) 'WRITE 11  LCCPL,   IRC= ',IRC
 C
 !pb  LSTP is dummy argument to entry IF3COP, thus not available here
 !pb  LSTP3 is stored in IF3COP
