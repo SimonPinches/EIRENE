@@ -32,7 +32,8 @@ C                                                           TETRA,
 C                                                           TRANSP,
 C                                                           DUMMY
 C
-C   THIS VERSION: $=B2.5  JAN. 2001
+C   THIS VERSION: $COUPLE_B2.5  JAN. 2018
+c                 proprietary version of FZJ, for local B2.5 code versions   
 C
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -266,7 +267,9 @@ C
         ALLOCATE (EPPL_COP(NPLS,NRAD)) 
         ALLOCATE (EPEL_COP(NRAD))
       END IF
-
+cdr
+cdr   lchkqud = .false.  !  only needed for triangular grid options
+cdr
       mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
       NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
 C
