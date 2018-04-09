@@ -55,7 +55,7 @@ C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
 
 
-c    REAC  : in case FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR:
+c    REAC  : in case FILNAM = AMJUEL, HYDHEL, METHAN, H2VIBR:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
 c    REAC  : in case FILNAM.eq.CONST:
@@ -84,12 +84,12 @@ c           Default: RiMX = exp(20.)
 c    FPi    Fitting coefficients for extrapolation (three for MIN and three for MAX, each)
 c
 c    JFEXiMN Flag for selecting extrapolation expression, left end (minimum)
-c           =0  :  no data yet, try to read extrapolation from atomic data file here
-c           else:  extrapolation is set explicitly in input file, block 4a
+c            =0  :  no data yet, try to read extrapolation from atomic data file here
+c            else:  extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 c    JFEXiMX Flag for selecting extrapolation expression, right end (maximum)
-c           =0  :  no data yet, try to read extrapolation from atomic data file here
-c           else:  extrapolation is set explicitly in input file, block 4a
+c            =0  :  no data yet, try to read extrapolation from atomic data file here
+c            else:  extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
@@ -131,8 +131,8 @@ C                      =3,  cross-section (ionisation/excitation cross section
 C                           formula (METHANE,...)
 C           CASE  IH=2,3....,10 (H.2, H.3,....H.10)
 C       IFTFLG(IR,...  =0,  FOR RATE COEFFICIENTS (9-POLYNOMIAL, 9X9-DOUBLE POLYNOMIAL)
-C                      =10, FOR RATE COEFFICIENTS (CONSTANT) 
-C                      =100 FOR RATE, not rate coefficient, 
+C                      =10, FOR RATE COEFFICIENTS (CONSTANT)
+C                      =100 FOR RATE, not rate coefficient,
 c                      =110 FOR RATE, not rate coefficient, (CONSTANT)
 c
 C  READ A&M DATA FROM THE FILES INTO EIRENE ARRAY CREAC
@@ -219,7 +219,7 @@ cdr  for reading asymptotics parameters from data files
       CHARACTER(8) :: SECTION, FITFLAG
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
       LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
-     .                  LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
+     .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
       BACK="\\"
@@ -555,7 +555,7 @@ c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'TAB2D').NE.0.OR.
+      IF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
      .    INDEX(FILNAM,'ADAS') .NE.0) THEN
         CALL EIRENE_READ_TAB2D (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_TAB2D.f
@@ -563,8 +563,8 @@ c  close unit=29+ifoff:   done in READ_TAB2D.f
       END IF
 
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-cdr  proprietary option at FZ Juelich. 
-cdr  Not ready, and not to be used by 3rd party 
+cdr  proprietary option at FZ Juelich.
+cdr  Not ready, and not to be used by 3rd party
         CLOSE (UNIT=29+ifoff)
         CH123 = H123
         CCRC = CRC
@@ -598,7 +598,7 @@ C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
         END IF
         CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
      .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.FALSE.)
-c  no optional extrapolation flags here 
+c  no optional extrapolation flags here
         RETURN
       ENDIF
 C
@@ -646,7 +646,7 @@ C
         INDFF=INDEX(ZEILE,FITFLAG)
         IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
 c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
-        IF (INDFF > 0) THEN  !OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
+        IF (INDFF > 0) THEN  ! OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
 c  read parameter for type of fitting expression from data file
           READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
           GOTO 3
@@ -704,7 +704,7 @@ C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
           ELSE
             DO 17 I=1,9
 C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1,K+2
-              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3) 
+              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
 c    first  index I: I-th block, vertical, Temp. dependence
 c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
 c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
@@ -739,7 +739,7 @@ c  DEFAULT:  NO DATA FOUND
       LGR1MAX=.FALSE.
       LGR2MIN=.FALSE.
       LGR2MAX=.FALSE.
-      
+
 c  INDICATE, IF EXTRAPOLATION COEFFICIENTS (fp1l,fp1r,fp2l,fp2r) ARE FOUND ON DATA FILE
 c  DEFAULT:  NO DATA FOUND
       LGC1MIN=.FALSE.
@@ -793,7 +793,7 @@ c
           CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2R)
           LGC2MAX = .TRUE.
         END IF
-        
+
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
 c  default extrapoloation from r1mn (by constant) will be: jfexmn1=1
@@ -992,7 +992,6 @@ c  to be used for extrapolation
       END SUBROUTINE EIRENE_READ_COEFFS
 
 
- 
       SUBROUTINE EIRENE_READ_RANGE (ZEILE,KEY1,KEY2,RNG,IFX)
 c  called from slreac, after the original fit coefficients for reaction IR
 c  are read.
@@ -1014,13 +1013,13 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
       INTEGER, INTENT(OUT) :: IFX
       INTEGER :: IND1, IND2, INDE, INDP, INDX, INDA, INDG
       CHARACTER(20) :: FORM
-      
+
       IND1 = INDEX(ZEILE,TRIM(KEY1))
       IND2 = INDEX(ZEILE,TRIM(KEY2))
 
       RNG = 0._DP
       IFX = 0
-      
+
       IF (IND1 > 0) THEN
         INDG = INDEX(ZEILE,'=')
         INDE = INDG + VERIFY(ZEILE(INDG+1:),'+-0123456789DEed. ') - 1
@@ -1036,5 +1035,5 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
       IF (IND2 > 0) READ (ZEILE(IND2+7:),*) IFX
 
       END SUBROUTINE EIRENE_READ_RANGE
-     
+
       END
