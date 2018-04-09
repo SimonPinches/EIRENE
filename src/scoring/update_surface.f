@@ -1,16 +1,17 @@
 cdr jan. 2018: added: outgoing current tallies: ind=1
 cdr sept.2014: only comments....
 
-c  SCORE "EMITTED" SURFACE FLUX TALLIES, FOR SURFACE MSURF, OR SURFACE SEGMENT MSURFG.
-c  update tallies PRF_A_B(iout,msurf) and ERF_A_B(iout,msurf)
+c  SCORE "INCIDENT" and "EMITTED" SURFACE FLUX TALLIES, FOR SURFACE MSURF, OR SURFACE SEGMENT MSURFG.
+c  INCIDENT: update tallies POT_A_B(iout,msurf) and EOT_A_B(iout,msurf)
+c  EMITTED : update tallies PRF_A_B(iout,msurf) and ERF_A_B(iout,msurf)
 c  A code-letter for incident type of particle: A, M, I, P, PH
 c  B code-letter for emitted type of particle :  AT, ML, IO, PL, PHT
 c  iout:  species index for emitted particle
  
       SUBROUTINE EIRENE_UPDATE_SURFACE (ITOLD,WGHTSG,IND)
  
-C       PARTICLE FLUXES (WEIGHT=WGHTSG),     score PRF...
-C       ENERGY FLUXES   (E0*WGHTSG),         score ERF...
+C       PARTICLE FLUXES (WEIGHT=WGHTSG),     score POT.., PRF...
+C       ENERGY FLUXES   (E0*WGHTSG),         score EOT.., ERF...
 
 c  input:
 c  itold:  type of incident particle

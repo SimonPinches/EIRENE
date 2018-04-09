@@ -48,7 +48,7 @@ cdr  Jan. 2018  mod_addv added
      L         PRSPEC,   PRARGL
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
- 
+
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
  
       TYPE TCONTRIB
@@ -79,7 +79,7 @@ cdr  Jan. 2018  mod_addv added
       INTERFACE ASSIGNMENT(=)  ! DEFINE ASSIGNMENT
         MODULE PROCEDURE EIRENE_CONTRIB_TO_CONTRIB
       END INTERFACE
- 
+
       CONTAINS
  
       SUBROUTINE EIRENE_ALLOC_COMSIG
@@ -94,7 +94,7 @@ cdr  Jan. 2018  mod_addv added
       ALLOCATE (ENERGY(NCHEN))
       ALLOCATE (ICMSIG(MCMSIG))
       ALLOCATE (NLSTCHR(NCHOR))
- 
+
       ALLOCATE (CH_LINE_NAME(NCHOR))
 
       WRITE (55+IFOFF,'(A,T25,I15)')
@@ -132,7 +132,7 @@ cdr  Jan. 2018  mod_addv added
  
  
       SUBROUTINE EIRENE_DEALLOC_COMSIG
- 
+
       INTEGER :: I, J
  
       IF (.NOT.ALLOCATED(RCMSIG)) RETURN
@@ -142,10 +142,10 @@ cdr  Jan. 2018  mod_addv added
       DEALLOCATE (ENERGY)
       DEALLOCATE (ICMSIG)
       DEALLOCATE (NLSTCHR)
- 
+
       DEALLOCATE (CH_LINE_NAME)
 
-      IF (NO_LINES > 0) THEN
+      IF (ALLOCATED(EMIS_LINES) .AND. (NO_LINES > 0)) THEN
 
          DO I = 1, NO_LINES
 
@@ -155,9 +155,9 @@ cdr  Jan. 2018  mod_addv added
                DEALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB)
              END DO
 
-           END IF
+             DEALLOCATE (EMIS_LINES(I)%COMPO)
 
-           DEALLOCATE (EMIS_LINES(I)%COMPO)
+           END IF
 
         ENDDO
 

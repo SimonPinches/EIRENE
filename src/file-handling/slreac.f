@@ -189,7 +189,7 @@ C
       CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
       CHARACTER(3), INTENT(IN) :: CRC
 cdr  asymptotics parameters already read from input block 4?
-cdr  if not:  try to read from data file
+cdr  if not:  try to read from external A&M data file
 cdr  in either case: store these on data structure REACDAT, in call to: set_reaction_data(IR,...)
       INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
@@ -555,7 +555,7 @@ c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'TAB2D').NE.0.OR.
+      IF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
      .    INDEX(FILNAM,'ADAS') .NE.0) THEN
         CALL EIRENE_READ_TAB2D (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_TAB2D.f
@@ -728,8 +728,8 @@ C
 C  NEXT: READ ASYMPTOTICS INFORMATION FROM ATOMIC DATA FILE
 C        HYDHEL, AMJUEL, H2VIBR, METHANE.
 
-C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT, RIGHT, BOTTOM, TOP.
-C FOR 1D: ONLY "LEFT" AND "RIGHT" ARE USED, "BOTTOM" AND "TOP" ARE FILLED WITH DEFAULTS
+C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT1, RIGHT1, LEFT2, RIGHT2.
+C FOR 1D: ONLY "LEFT1" AND "RIGHT1" ARE USED
 
       IF (ISW.EQ.0) GOTO 2000    ! NO ASYMPTOTICS FOR POTENTIALS
 
@@ -842,6 +842,7 @@ C
 
         READ (29+ifoff,'(A80)',END=990) ZEILE
       END DO
+
 c  unless asymptotics are already explicitly defined in input block 4a
 c  put asymptotics information into proper (intermediate) data structure:
 c  flags:      jfex1mn,jfex1mx,jfex2mn,jfex2mx
@@ -850,15 +851,15 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
 
       IF (JFEX1MN == 0) THEN
         IF (LGR1MIN .AND. .NOT. LGC1MIN.and.if1mn.ge.3.) THEN
-          WRITE (IUNOUT,*) 'WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR
-          WRITE (IUNOUT,*) 'LOWER RANGE FOR 1ST PARAMETER OF FIT',
-     .          'SPECIFIED BUT',
-     .          'NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
+          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MIN) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR
+          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           if (if1mn.ge.3)
@@ -876,14 +877,14 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
       IF (JFEX1MX == 0) THEN
         IF (LGR1MAX .AND. .NOT. LGC1MAX.and.if1mx.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MAX) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR
+          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           if (if1mx.ge.3)
@@ -901,14 +902,14 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
       IF (JFEX2MN == 0) THEN
         IF (LGR2MIN .AND. .NOT. LGC2MIN.and.if2mn.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR2MIN) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR
+          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           if (if2mn.ge.3)
@@ -923,14 +924,14 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
       IF (JFEX2MX == 0) THEN
         IF (LGR2MAX .AND. .NOT. LGC2MAX.and.if2mx.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR
+          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR2MAX) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR
+          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           if (if2mx.ge.3)
@@ -989,7 +990,6 @@ c  to be used for extrapolation
       END DO
 
       END SUBROUTINE EIRENE_READ_COEFFS
-
 
 
       SUBROUTINE EIRENE_READ_RANGE (ZEILE,KEY1,KEY2,RNG,IFX)
