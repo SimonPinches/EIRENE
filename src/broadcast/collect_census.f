@@ -370,7 +370,7 @@ c  binary search
           end do
 
 
-c  partc, ipartc will later be used in tmstep to store census for 
+c  rpartc, ipartc will later be used in tmstep to store census  [rpart,ipart] for 
 c  re-sampling in locate at next time-step
 c  here we abuse this storage to for the re-sampled census per stratum.
           rpartc(:,i) = rpart(:,iu)
