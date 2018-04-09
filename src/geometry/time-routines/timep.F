@@ -168,8 +168,8 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
               V1=(YPOL(IR,MPTEST)-Y00)*VELX-(XPOL(IR,MPTEST)-X00)*VELY
               V2=(YPOL(I1,MPTEST)-Y00)*VELX-(XPOL(I1,MPTEST)-X00)*VELY
 
-!pb allow only intersections with non-default poloidal standard surfaces
-!pb no intersections with transparent surfaces are calculated
+! allow only intersections with non-default poloidal standard surfaces
+! no intersections with "default parts" of the grid are calculated
               LHITP0=(V1*V2.LE.0.) .AND. (INMP2I(IR,MPTEST,0) /= 0)
 
               IF (.NOT.LHITP0) CYCLE

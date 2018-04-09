@@ -833,8 +833,9 @@ C
            
               V1=(YPOL(I,K+1)-Y0)*VELX-(XPOL(I,K+1)-X0)*VELY
               V2=(YPOL(I,K)-Y0)*VELX-(XPOL(I,K)-X0)*VELY
-!pb allow only intersection with non-default radial standard surfaces
-!pb no intersection with transparent parts
+! allow only intersection with non-default radial standard surfaces
+! no checking for intersection with default parts of the grid. 
+! Only: non-def. parts are checked.
 
               LHITP(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
 C
