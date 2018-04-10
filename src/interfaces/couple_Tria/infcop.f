@@ -12,7 +12,7 @@ C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NST
 C             VIA FILES FROM FORT.29?
 
 c             plus minor notational cleanup, comments added
-
+ 
 cdr  23.04.2015    
 cdr  issue: unterlying coarse grid format for printout?
 cdr  see previous version.
@@ -86,7 +86,9 @@ cdr          only partially done
 
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
-cdr Mar 18:  scpveii(nstra) removed, was unused.
+cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
+cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
+cdr           remove unused array: scpveii
 c......................................................................................
 
 
@@ -329,6 +331,9 @@ c
      . RESSNI(:,:),  RESSMO(:,:), 
      . RESSEE(:), RESSEI(:)
      .,FLXEIR(:)
+
+c  ion energy sources for internal (rather than total) ion energy balance
+      REAL(DP), ALLOCATABLE, SAVE :: SCPVEII(:)
 
       REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ELTEST(:,:), ORI(:,:)
@@ -921,7 +926,7 @@ C  TO THE QUADRANGLE
         ENDIF
       ENDDO
  
-C  BUILD NSTGRD ARRAY OF "BLOCKED" TRIANGLES FROM XAISO ARRAY FROM FORT.29
+C  BUILD NSTGRD ARRAY OF "BLOCKED" TRANGLES FROM XAISO ARRAY FROM FORT.29
       IF (IO29.EQ.0) THEN
         DO ITRI=1,NTRII
           IY=IYTRI(ITRI)
@@ -2077,7 +2082,7 @@ C SORT TRIANGLES ALONG TARGET
              IS1=IS+1
              IF (IS1.GT.3) IS1=1
              IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2321,7 +2326,7 @@ C SORT TRIANGLES ALONG TARGET
             IS1=IS+1
             IF (IS1.GT.3) IS1=1
             IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2727,7 +2732,7 @@ C
 C  BOHM CRITERION CHECK DONE
 C
 C  ELTEST: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
-C
+
 C  NEXT: TARGET MAXW. ENERGY FLUXES
 C  EADD=  IN EV, SUCH THAT EADD*PARTICLE FLUX = ENERGY FLUX
           DRR=RRSTEP(ITARG,IG+1)-RRSTEP(ITARG,IG)
@@ -2736,8 +2741,8 @@ C  ENERGY FLUX DEFINED WITH PARAMETERS IN INPUT BLOCK 7
             EADD=SORENI(ITARG)
           ELSEIF (NEM.EQ.2.OR.NEM.EQ.3) THEN
             EADD=SORENI(ITARG)*TISTEP(IPLSTI,ITARG,IG)+SORENE(ITARG)*
-     .           TESTEP(ITARG,IG)
-          ELSEIF (NEM.GE.4 .AND. NEM.LE.7) THEN
+     .           TESTEP(ITARG,IG)                
+          ELSEIF (NEM.GE.4.AND. NEM.LE.7) THEN
             PERWI=PERW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             PARWI=PARW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             EADD=EIRENE_EMAXW(TISTEP(IPLSTI,ITARG,IG),PERWI,PARWI)
@@ -2829,7 +2834,7 @@ C
       WRITE (iunout,*) ISTRAA,ISTRAE
       LSHORT=.FALSE.
       LSTP3=.TRUE.
-      LSTOP=LSTP3
+      LSTOP=.TRUE.
       IFIRST=0
       NDXY=(NDXA-1)*NR1TAL_SAVE+NDYA
       GOTO 99992
@@ -2867,6 +2872,8 @@ C
         ALLOCATE (RESSEI(0:NSTRA))
 
         ALLOCATE (FLXEIR(NSTRA))
+        ALLOCATE (scpveii(NSTRA))
+
         CALL EIRENE_ALLOC_BRASPOI
         CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NSTRA,IFOFF)
 C
@@ -2874,6 +2881,8 @@ C
         RESSMO = 0._DP
         RESSEE = 0._DP
         RESSEI = 0._DP
+c
+        scpveii = 0._dp
       ENDIF
 C
       IF (.NOT.LSHORT) THEN
@@ -2881,7 +2890,7 @@ C
         RESSMO(ISTRAA:ISTRAE,:) = 0._DP
         RESSEE(ISTRAA:ISTRAE) = 0._DP
         RESSEI(ISTRAA:ISTRAE) = 0._DP
-      ENDIF
+      END IF
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
@@ -3383,6 +3392,10 @@ cdr                                       can be set without need for covariance
         icp=nplsi
         icp2=2*nplsi
         icp3=3*nplsi
+cdr
+        scpveii(istrai) = 0._dp
+
+
 
 cdr  fill bulk particle source rate sni(...ifl) from all contributing
 cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
@@ -3702,6 +3715,7 @@ C
              copv(icp3+3,in)=(copv(icp3+3,in) + 
      .                  EPPL_COP(IPLS,IN)) * VOLTAL(IN)*ELCHA
              lhit(in) = .true.
+             scpveii(istrai) = scpveii(istrai) + copv(icp3+3,in)
            end do
 
            copv(icp3+2,:) = copv(icp3+2,:) * flxi 
@@ -4128,14 +4142,16 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
           TIFLX=0.
           PIFLX=0.
-          DO 10122 IF=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
-            FLX=FLX+FNIXB(0,IY,IF)
-            IF (NINCT(ITARG,IPRT)*FNIXB(0,IY,IF).LT.0) THEN
+          DO 10122 IFL=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
+            FLX=FLX+FNIXB(0,IY,IFL)
+            IF (NINCT(ITARG,IPRT)*FNIXB(0,IY,IFL).LT.0) THEN
               WRITE (iunout,*)
      .          'RECYCLING TARGET, BUT WRONG FLOW DIRECTION: '
-              WRITE (iunout,*) 'WEST,IY,ITARG,IPRT,IF ',IY,ITARG,IPRT,IF
-              PIFLX=PIFLX+FNIXB(0,IY,IF)
-              TIFLX=TIFLX+FEIXB(0,IY)*FNIXB(0,IY,IF)
+              WRITE (iunout,*) 'WEST,IY,ITARG,IPRT,IFL ',
+     .                               IY,ITARG,IPRT,IFL
+              SFNIWX(IFL)=SFNIWX(IFL)+FNIXB(0,IY,IFL)
+              PIFLX      =PIFLX      +FNIXB(0,IY,IFL)
+              TIFLX=TIFLX+FEIXB(0,IY)*FNIXB(0,IY,IFL)
             ENDIF
 10122     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
@@ -4185,9 +4201,9 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
           TIFLX=0.
           PIFLX=0.
-          DO 10127 IF=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
-            FLX=FLX+FNIXB(NDXA,IY,IF)
-            IF (NINCT(ITARG,IPRT)*FNIXB(NDXA,IY,IF).LT.0) THEN
+          DO 10127 IFL=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
+            FLX=FLX+FNIXB(NDXA,IY,IFL)
+            IF (NINCT(ITARG,IPRT)*FNIXB(NDXA,IY,IFL).LT.0) THEN
               WRITE (iunout,*)
      .          'RECYCLING TARGET, BUT WRONG FLOW DIRECTION: '
               WRITE (iunout,*) 'EAST,IY,ITARG,IPRT,IF ',IY,ITARG,IPRT,IF
@@ -4462,11 +4478,11 @@ C
         ENDDO
         CALL EIRENE_LEER(2)
 
-        WRITE (iunout,*)
+        WRITE (iunout,*) 
      .    ' VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2 '
         CALL EIRENE_MASR4(' B2BREM,B2RAD,-B2QIE,-B2VDP     ',
      .               B2BREM,B2RAD,-B2QIE,-B2VDP)
-        WRITE (iunout,*)
+        WRITE (iunout,*) 
      .    ' TARGET SHEATH CONTRIBUTIONS,ELECTRONS AND IONS '
         CALL EIRENE_MASRR1 (' TARGETS,EI',SHEAI(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SHEAE(1),NTARGI,5)

@@ -83,13 +83,13 @@ c    RCiMAX: LOG(RiMX), RiMX: upper boundary for indep. dependent variable (ener
 c           Default: RiMX = exp(20.)
 c    FPi    Fitting coefficients for extrapolation (three for MIN and three for MAX, each)
 c
-c    JFEXiMN Flag for selecting extrapolation expression, left end (minimum)
-c            =0  :  no data yet, try to read extrapolation from atomic data file here
-c            else:  extrapolation is set explicitly in input file, block 4a
+c    JFEXMN Flag for selecting extrapolation expression, left end (minimum)
+c           =0  :  no data yet, try to read extrapolation from atomic data file here
+c           else:  extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
-c    JFEXiMX Flag for selecting extrapolation expression, right end (maximum)
-c            =0  :  no data yet, try to read extrapolation from atomic data file here
-c            else:  extrapolation is set explicitly in input file, block 4a
+c    JFEXMX Flag for selecting extrapolation expression, right end (maximum)
+c           =0  :  no data yet, try to read extrapolation from atomic data file here
+c           else:  extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
@@ -120,19 +120,17 @@ C          4 for energy weighted rate coeff. (ISW=8,9,10)
 C          5 for other quantities, population densities, etc.. (ISW=11,12)
 c
 c
-C       IFTFLG(IR,IH) DEFAULTS:
- 
-C           CASE IH=0  (H.0):                    
-C       IFTFLG(IR,0)   =2,  FOR INTERACTION POTENTIAL (GEN. MORSE)
-
-C           CASE  IH=1  (H.1):
-C       IFTFLG(IR,1)   =0,  CROSS-SECTION (9-POLYNOMIAL)
+C       DEFAULTS: IH=0  (H.0):
+C                      FOR INTERACTION POTENTIAL (GEN. MORSE)
+C                      =2
+C                 IH=1  (H.1):
+C                      =0,  CROSS-SECTION (9-POLYNOM
 C                      =3,  cross-section (ionisation/excitation cross section
 C                           formula (METHANE,...)
-C           CASE  IH=2,3....,10 (H.2, H.3,....H.10)
-C       IFTFLG(IR,...  =0,  FOR RATE COEFFICIENTS (9-POLYNOMIAL, 9X9-DOUBLE POLYNOMIAL)
-C                      =10, FOR RATE COEFFICIENTS (CONSTANT)
-C                      =100 FOR RATE, not rate coefficient,
+C                 IH=2,3..... (H.2, H.3,....H.10)
+C                      =0,  FOR RATE COEFFICIENTS (9-POLYNOM, 9X9-DOUBLE POLYNOM)
+C                      =10, FOR RATE COEFFICIENTS (CONSTANT) 
+C                      =100 FOR RATE, not rate coefficient, 
 c                      =110 FOR RATE, not rate coefficient, (CONSTANT)
 c
 C  READ A&M DATA FROM THE FILES INTO EIRENE ARRAY CREAC
@@ -183,43 +181,34 @@ C
       IMPLICIT NONE
 
       INTEGER,      INTENT(IN) :: IR, IZ1
-
+      INTEGER,      INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       CHARACTER(8), INTENT(IN) :: FILNAM
       CHARACTER(4), INTENT(IN) :: H123
       CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
       CHARACTER(3), INTENT(IN) :: CRC
-cdr  asymptotics parameters already read from input block 4?
-cdr  if not:  try to read from external A&M data file
-cdr  in either case: store these on data structure REACDAT, in call to: set_reaction_data(IR,...)
-      INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                            RC2MIN, RC2MAX, FP2(6)
-cdr
       REAL(DP) :: RTMAX, ERTMAX, ETH
       CHARACTER(50) :: REACSTR
       REAL(DP) :: CONST, E_EL, E_K
-      LOGICAL :: LCONST
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
-
-cdr  for reading asymptotics parameters from data files
-      INTEGER ::  IF1MN, IF1MX, IF2MN, IF2MX
-      REAL(DP) :: FP1L(3), FP1R(3), FP2L(3), FP2R(3)
+      REAL(DP) :: FP1L(3), FP1R(3), FP2B(3), FP2T(3)
       REAL(DP) :: R1MN, R1MX, R2MN, R2MX
-
       INTEGER :: I, IND, J, K, IH, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, IANF, IFILE, IL, INDG
-
+      INTEGER :: IF1MN, IF1MX, IF2MN, IF2MX
       CHARACTER(80) :: ZEILE, LAST_TEX, ULINE
+!ITER CHARACTER(2) :: CHR
       CHARACTER(4) :: CHR, CETH, BEND
-      CHARACTER(3) :: CH1L, CH1R, CH2L, CH2R
+      CHARACTER(3) :: CHRL, CHRR, CHRB, CHRT
       CHARACTER(200) :: DSN, DIR
       CHARACTER(1) :: CUT, BACK
       CHARACTER(4) :: CH123
       CHARACTER(3) :: CCRC
-      CHARACTER(8) :: SECTION, FITFLAG
+      CHARACTER(8) :: SECTION
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
-      LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
-     .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
+      LOGICAL :: LCONST,LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
+     .                  LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
       BACK="\\"
@@ -230,11 +219,12 @@ C
 
       ISWR(IR)=0
       CONST=0.
+!ITER CHR='l0'
       CHR=' l0 '
-
+      CHRL='ll0'
+      CHRR='lr0'
       I0=0
       CREACD = 0._DP
-      FITFLAG ='fit-flag'
 
 c  some additional  (optional) reaction data:  threshold energy,
 c                                              max ratecoeff sigma*v_rel,
@@ -245,16 +235,6 @@ c                                              at E_rel=ERTMAX
       RTMAX = 0._DP
       ERTMAX = -HUGE(1._DP)
       ETH = 0._DP
-
-C     Defaults: no asymptotics
-      CH1L='ll0'
-      CH1R='lr0'
-      CH2L='ll0'
-      CH2R='lr0'
-      C1L = 'XXMIN'
-      C1R = 'XXMAX'
-      C2L = 'YYMIN'
-      C2R = 'YYMAX'
 C
 c  type (class) of reaction process
 
@@ -356,189 +336,205 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
       END IF
 
       REAC_NAME(IR) = REACSTR(2:)
-C
-C Set character string identifyers to search coefficients in data files.
+
 C  H.0
       IF (ISW.EQ.0) THEN
+!ITER   CHR='p0'
         CHR=' p0 '
+        CHRL='pl0'
+        CHRR='pr0'
+        CHRB='pb0'
+        CHRT='pt0'
         I0=-1
         MODCLF(IR)=MODCLF(IR)+1
         IFLG=0
 C  DEFAULT POTENTIAL: GENERALISED MORSE
         IFTFLG(IR,0)=2
-C  no asymptotics yet for interaction potentials
-
+        C1L = 'XXMIN'
+        C1R = 'XXMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.1
       ELSEIF (ISW.EQ.1) THEN
         CHR=' a0 '
+        CHRL='al0'
+        CHRR='ar0'
+        CHRB='ab0'
+        CHRT='at0'
         I0=0
         MODCLF(IR)=MODCLF(IR)+10
         IFLG=1
 C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)  VS LN(E)
         IFTFLG(IR,1)=0
-c  (laboratory)  energy range, asymptotics
-        CH1L='al0'
-        CH1R='ar0'
         C1L = 'ELABMIN'
         C1R = 'ELABMAX'
-
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.2
       ELSEIF (ISW.EQ.2) THEN
         CHR=' b0 '
-        CH1L='bl0'
-        CH1R='br0'
+        CHRL='bl0'
+        CHRR='br0'
+        CHRB='bb0'
+        CHRT='bt0'
         I0=1
         MODCLF(IR)=MODCLF(IR)+100
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) VS LN(T), FOR E0=0.
         IFTFLG(IR,2)=0
-c  temperature range, asymptotics
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.3
       ELSEIF (ISW.EQ.3) THEN
         CHR=' c0 '
-        CH1L='cl0'
-        CH1R='cr0'
-        CH2L='cb0'
-        CH2R='ct0'
+        CHRL='cl0'
+        CHRR='cr0'
+        CHRB='cb0'
+        CHRT='ct0'
         MODCLF(IR)=MODCLF(IR)+200
         I0=1
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(E0)
         IFTFLG(IR,2)=0
-c  temperature range, asymptotics
-c  beam energy range, asymptotics
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-        C2L = 'E2MIN'
-        C2R = 'E2MAX'
+        C1L = 'TIMIN'
+        C1R = 'TIMAX'
+        C2L = 'EBMIN'
+        C2R = 'EBMAX'
 C  H.4
       ELSEIF (ISW.EQ.4) THEN
         CHR=' d0 '
-        CH1L='dl0'
-        CH1R='dr0'
-        CH2L='db0'
-        CH2R='dt0'
+        CHRL='dl0'
+        CHRR='dr0'
+        CHRB='db0'
+        CHRT='dt0'
         MODCLF(IR)=MODCLF(IR)+300
         I0=1
         IFLG=2
 C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(NE)
         IFTFLG(IR,2)=0
-c  temperature range, asymptotics
-c  beam energy range, asymptotics
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-        C2L = 'N2MIN'
-        C2R = 'N2MAX'
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'NEMIN'
+        C2R = 'NEMAX'
 C  H.5
       ELSEIF (ISW.EQ.5) THEN
         CHR=' e0 '
-        CH1L='el0'
-        CH1R='er0'
+        CHRL='el0'
+        CHRR='er0'
+        CHRB='eb0'
+        CHRT='et0'
         I0=1
         MODCLF(IR)=MODCLF(IR)+1000
         IFLG=3
 C  MOMENTUM WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,3)=0
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.6
       ELSEIF (ISW.EQ.6) THEN
         CHR=' f0 '
-        CH1L='fl0'
-        CH1R='fr0'
-        CH2L='fb0'
-        CH2R='ft0'
+        CHRL='fl0'
+        CHRR='fr0'
+        CHRB='fb0'
+        CHRT='ft0'
         MODCLF(IR)=MODCLF(IR)+2000
         I0=1
         IFLG=3
 C  MOMENTUM WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,3)=0
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-        C2L = 'E2MIN'
-        C2R = 'E2MAX'
+        C1L = 'TIMIN'
+        C1R = 'TIMAX'
+        C2L = 'EBMIN'
+        C2R = 'EBMAX'
 C  H.7
       ELSEIF (ISW.EQ.7) THEN
         CHR=' g0 '
-        CH1L='gl0'
-        CH1R='gr0'
-        CH2L='gb0'
-        CH2R='gt0'
+        CHRL='gl0'
+        CHRR='gr0'
+        CHRB='gb0'
+        CHRT='gt0'
         MODCLF(IR)=MODCLF(IR)+3000
         I0=1
         IFLG=3
 C  MOMENTUM WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,3)=0
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-        C2L = 'N2MIN'
-        C2R = 'N2MAX'
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'NEMIN'
+        C2R = 'NEMAX'
 C  H.8
       ELSEIF (ISW.EQ.8) THEN
         CHR=' h0 '
-        CH1L='hl0'
-        CH1R='hr0'
+        CHRL='hl0'
+        CHRR='hr0'
+        CHRB='hb0'
+        CHRT='ht0'
         I0=1
         MODCLF(IR)=MODCLF(IR)+10000
         IFLG=4
 C  ENERGY WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,4)=0
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.9
       ELSEIF (ISW.EQ.9) THEN
         CHR=' i0 '
-        CH1L='il0'
-        CH1R='ir0'
-        CH2L='ib0'
-        CH2R='it0'
+        CHRL='il0'
+        CHRR='ir0'
+        CHRB='ib0'
+        CHRT='it0'
         MODCLF(IR)=MODCLF(IR)+20000
         I0=1
         IFLG=4
 C  ENERGY WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,4)=0
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-        C2L = 'E2MIN'
-        C2R = 'E2MAX'
+        C1L = 'TIMIN'
+        C1R = 'TIMAX'
+        C2L = 'EBMIN'
+        C2R = 'EBMAX'
 C  H.10
       ELSEIF (ISW.EQ.10) THEN
         CHR=' j0 '
-        CH1L='jl0'
-        CH1R='jr0'
-        CH2L='jb0'
-        CH2R='jt0'
+        CHRL='jl0'
+        CHRR='jr0'
+        CHRB='jb0'
+        CHRT='jt0'
         MODCLF(IR)=MODCLF(IR)+30000
         I0=1
         IFLG=4
 C  ENERGY WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,4)=0
-        C1L = 'T1MIN'
-        C1R = 'T1MAX'
-        C2L = 'N2MIN'
-        C2R = 'N2MAX'
+        C1L = 'TEMIN'
+        C1R = 'TEMAX'
+        C2L = 'NEMIN'
+        C2R = 'NEMAX'
 C  H.11
       ELSEIF (ISW.EQ.11) THEN
         CHR=' k0 '
-        CH1L='kl0'
-        CH1R='kr0'
+        CHRL='kl0'
+        CHRR='kr0'
+        CHRB='kb0'
+        CHRT='kt0'
         I0=1
         IFLG=5
         IFTFLG(IR,IFLG)=0
-        C1L = 'P1MIN'
-        C1R = 'P1MAX'
+        C1L = 'PMIN'
+        C1R = 'PMAX'
+        C2L = 'YYMIN'
+        C2R = 'YYMAX'
 C  H.12
       ELSEIF (ISW.EQ.12) THEN
         CHR=' l0 '
-        CH1L='ll0'
-        CH1R='lr0'
-        CH2L='lb0'
-        CH2R='lt0'
+        CHRL='ll0'
+        CHRR='lr0'
+        CHRB='lb0'
+        CHRT='lt0'
         I0=1
         IFLG=5
         IFTFLG(IR,IFLG)=0
@@ -555,16 +551,15 @@ c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
-     .    INDEX(FILNAM,'ADAS') .NE.0) THEN
+      IF (INDEX(FILNAM,'ADAS').NE.0) THEN
         CALL EIRENE_READ_TAB2D (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_TAB2D.f
         RETURN
       END IF
 
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-cdr  proprietary option at FZ Juelich.
-cdr  Not ready, and not to be used by 3rd party
+cdr  proprietary option at FZ Juelich. 
+cdr  Not ready, and not to be used by 3rd party 
         CLOSE (UNIT=29+ifoff)
         CH123 = H123
         CCRC = CRC
@@ -598,7 +593,7 @@ C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
         END IF
         CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
      .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.FALSE.)
-c  no optional extrapolation flags here
+c  no optional extrapolation flags here 
         RETURN
       ENDIF
 C
@@ -643,10 +638,10 @@ C
      .    ISW.EQ.11) THEN
 
 3       READ (29+ifoff,'(A80)',END=990) ZEILE
-        INDFF=INDEX(ZEILE,FITFLAG)
+        INDFF=INDEX(ZEILE,'fit-flag')
         IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
 c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
-        IF (INDFF > 0) THEN  ! OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
+        IF (INDFF > 0) THEN  !OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
 c  read parameter for type of fitting expression from data file
           READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
           GOTO 3
@@ -704,7 +699,7 @@ C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
           ELSE
             DO 17 I=1,9
 C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1,K+2
-              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
+              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3) 
 c    first  index I: I-th block, vertical, Temp. dependence
 c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
 c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
@@ -728,8 +723,8 @@ C
 C  NEXT: READ ASYMPTOTICS INFORMATION FROM ATOMIC DATA FILE
 C        HYDHEL, AMJUEL, H2VIBR, METHANE.
 
-C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT1, RIGHT1, LEFT2, RIGHT2.
-C FOR 1D: ONLY "LEFT1" AND "RIGHT1" ARE USED
+C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT, RIGHT, BOTTOM, TOP.
+C FOR 1D: ONLY "LEFT" AND "RIGHT" ARE USED, "BOTTOM" AND "TOP" ARE FILLED WITH DEFAULTS
 
       IF (ISW.EQ.0) GOTO 2000    ! NO ASYMPTOTICS FOR POTENTIALS
 
@@ -749,7 +744,10 @@ c  DEFAULT:  NO DATA FOUND
 
 C  FLAG FOR CHOICE OF EXTRAPOLATION OPTION:
 C  DEFAULT ASYMPTOTIC EXPRESSION  (...=0): NO ASYMPTOTICS
-C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): TAKE LAST VALID POINT AT r1mn,r1mx,....
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): SET TO ZERO BEYOND LAST VALID POINT
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=4): TAKE LAST VALID POINT AT r1mn,r1mx,....
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=5): 2ND ORDER POLYNOM BEYOND LAST VALID POINT
+C                                          (OLD DEFAULT FOR CROSS SECTIONS)
 c  AND EXTRAPOLATE CONSTANT FROM THERE
       IF1MN = 0
       IF1MX = 0
@@ -773,49 +771,45 @@ c
 c  at this point we have found a card ZEILE which contains
 c  one of the extrapolation parameter identifiers al0,ar0,....,k0l,k0r
 c  that correcsonds to the H.1, ....H.12 type of data IR.
-c  next: read up to three fit coefficients.
+c  next: read up to three fit coefficients FP.L OR FP.R.
 c  CHR(2:2) is set to either character a,b,c,....,or k
 c
         IF (INDEX(ZEILE,CH1L) /= 0) THEN
           CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP1L)
           LGC1MIN = .TRUE.
         ENDIF
-        IF (INDEX(ZEILE,CH1R) /= 0) THEN
+        IF (INDEX(ZEILE,CHRR) /= 0) THEN
           CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP1R)
           LGC1MAX = .TRUE.
         END IF
 
-        IF (INDEX(ZEILE,CH2L) /= 0) THEN
-          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2L)
+        IF (INDEX(ZEILE,CHRB) /= 0) THEN
+          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2B)
           LGC2MIN = .TRUE.
         END IF
-        IF (INDEX(ZEILE,CH2R) /= 0) THEN
-          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2R)
+        IF (INDEX(ZEILE,CHRT) /= 0) THEN
+          CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2T)
           LGC2MAX = .TRUE.
         END IF
-
+c
+c  currently foreseen asymptotic data identifyers in data files:
+c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX, 
+c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
+c                    P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
-c  default extrapoloation from r1mn (by constant) will be: jfexmn1=1
-          IF (IF1MN == 0) IF1MN = 1
           LGR1MIN = .TRUE.
         END IF
         IF (INDEX(ULINE,TRIM(C1R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1R,'EXT-FLG',R1MX,IF1MX)
-c  default extrapoloation from r1mx (by constant) will be: jfex1mx=1
-          IF (IF1MX == 0) IF1MX = 1
           LGR1MAX = .TRUE.
         END IF
         IF (INDEX(ULINE,TRIM(C2L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
-c  default extrapoloation from r2mn (by constant) will be: jfex2mn=1
-          IF (IF2MN == 0) IF2MN = 1
           LGR2MIN = .TRUE.
         END IF
         IF (INDEX(ULINE,TRIM(C2R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
-c  default extrapoloation from r2mx (by constant) will be: jfex2mx=1
-          IF (IF2MX == 0) IF2MX = 1
           LGR2MAX = .TRUE.
         END IF
 C
@@ -843,16 +837,10 @@ C
         READ (29+ifoff,'(A80)',END=990) ZEILE
       END DO
 
-c  unless asymptotics are already explicitly defined in input block 4a
-c  put asymptotics information into proper (intermediate) data structure:
-c  flags:      jfex1mn,jfex1mx,jfex2mn,jfex2mx
-c  boundaries: rc1min,rc1max,rc2min,rc2max
-c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
-
       IF (JFEX1MN == 0) THEN
-        IF (LGR1MIN .AND. .NOT. LGC1MIN.and.if1mn.ge.3.) THEN
+        IF (LGR1MIN .AND. .NOT. LGC1MIN) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' REACTION ',IR
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
@@ -863,9 +851,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           if (if1mn.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP1L         ',fp1l(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp1l,3,3)
         END IF
-
         IF (LGR1MIN) RC1MIN = LOG(R1MN)
         IF (LGC1MIN) FP1(1:3) = FP1L
         JFEX1MN = IF1MN
@@ -875,9 +862,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
       END IF
 
       IF (JFEX1MX == 0) THEN
-        IF (LGR1MAX .AND. .NOT. LGC1MAX.and.if1mx.ge.3.) THEN
+        IF (LGR1MAX .AND. .NOT. LGC1MAX) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' REACTION ',IR
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
@@ -888,9 +875,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           if (if1mx.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP1R         ',fp1r(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp1r,3,3)
         END IF
-
         IF (LGR1MAX) RC1MAX = LOG(R1MX)
         IF (LGC1MAX) FP1(4:6) = FP1R
         JFEX1MX = IF1MX
@@ -900,9 +886,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
       END IF
 
       IF (JFEX2MN == 0) THEN
-        IF (LGR2MIN .AND. .NOT. LGC2MIN.and.if2mn.ge.3.) THEN
+        IF (LGR2MIN .AND. .NOT. LGC2MIN) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' REACTION ',IR
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
@@ -913,7 +899,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           if (if2mn.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP2L         ',fp2l(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp2l,3,3)
         END IF
         IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2L
@@ -922,9 +908,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
       END IF
 
       IF (JFEX2MX == 0) THEN
-        IF (LGR2MAX .AND. .NOT. LGC2MAX.and.if2mx.ge.3.) THEN
+        IF (LGR2MAX .AND. .NOT. LGC2MAX) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' REACTION ',IR
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
@@ -935,10 +921,10 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           if (if2mx.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP2R         ',fp2r(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp2r,3,3)
         END IF
         IF (LGR2MAX) RC2MAX = LOG(R2MX)
-        IF (LGC2MAX) FP2(4:6) = FP2R
+        IF (LGC2MAX) FP2(4:6) = FP2T
         JFEX2MX = IF2MX
         IF (LGC2MAX .AND. LGR2MAX .AND. (JFEX2MX == 0)) JFEX2MX = 5
       END IF
@@ -971,10 +957,8 @@ C
       CONTAINS
 
       SUBROUTINE EIRENE_READ_COEFFS (ZEILE,CH,FP)
-c  ZEILE is in upper case, and CH is found.
-c  CH is: a,b,c,.....k,l, (depending on H.1, H.2, ...H.12)
-c  read up to three parameters FP(i), i=1,3 formatted: '(E20.12)'
-c  to be used for extrapolation
+
+c  read three parameters FP(i), i=1,3 for extrapolation
       CHARACTER(80), INTENT(IN) :: ZEILE
       CHARACTER(1), INTENT(IN) :: CH
       REAL(DP), INTENT(OUT) :: FP(3)
@@ -992,20 +976,10 @@ c  to be used for extrapolation
       END SUBROUTINE EIRENE_READ_COEFFS
 
 
+ 
       SUBROUTINE EIRENE_READ_RANGE (ZEILE,KEY1,KEY2,RNG,IFX)
-c  called from slreac, after the original fit coefficients for reaction IR
-c  are read.
-c  At this point an extrapolation card ZEILE belonging to this reaction IR
-c  has already been found.
-c  
-c  This routine:
-c  Reads validity range from atomic data file: 
-c  Search in ZEILE for key1, key2 and return: RNG, IFX 
 
-c  key1:  'ELABMIN', 'ELABMAX',   'T1MIN','T1MAX','E2MIN','E2MAX',
-C         'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=, 
-C                     read RNG (unformatted, real)
-c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
+c  reads validity range from atomic data file
 
       CHARACTER(80), INTENT(IN) :: ZEILE
       CHARACTER(7), INTENT(IN) :: KEY1, KEY2
@@ -1013,13 +987,13 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
       INTEGER, INTENT(OUT) :: IFX
       INTEGER :: IND1, IND2, INDE, INDP, INDX, INDA, INDG
       CHARACTER(20) :: FORM
-
+      
       IND1 = INDEX(ZEILE,TRIM(KEY1))
       IND2 = INDEX(ZEILE,TRIM(KEY2))
 
       RNG = 0._DP
       IFX = 0
-
+      
       IF (IND1 > 0) THEN
         INDG = INDEX(ZEILE,'=')
         INDE = INDG + VERIFY(ZEILE(INDG+1:),'+-0123456789DEed. ') - 1

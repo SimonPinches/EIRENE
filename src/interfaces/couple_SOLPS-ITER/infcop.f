@@ -69,7 +69,10 @@ c            parameters nr1st,  np2nd,  ..... for geometry
 c            parameters nr1tal, np2tal, ..... for scoring
 c            parameters nr1tal_save, ....     for interfacing tallies between b2 and eirene
 c                                             is always the b2 (structured) coarse grid
-
+cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
+c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
+cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
+cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure  
 cdr Mar 18:  ELTEST from couple_Tria
 c......................................................................................
 
@@ -258,7 +261,7 @@ C
      .          ALX, ALE, ALW, ALS, ALN, AL, ETOT,
      .          FLX, ESUM, DR, VR, VTEST, VTEST2, EADD, 
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI,
-     .          CHI, CHP, CHE, CS, THMAX, EESHT, EEMAX, EMAXW, ESHEATH,
+     .          CHI, CHP, CHE, CS, THMAX, EESHT, EEMAX,
      .          RP1, DELX, PNORM, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          PM1, DRR, VDBC,
@@ -326,13 +329,13 @@ C
 c
      . RESSNI(:,:),  RESSMO(:,:), 
      . RESSEE(:), RESSEI(:)
-     .,FLXEIR(:)
+     ., FLXEIR(:)
 cdr  sputter fluxes
       REAL(DP) :: SPAT(0:NATM,0:NSTRA), SPML(0:NMOL,0:NSTRA),
      .            SPIO(0:NION,0:NSTRA), SPPL(0:NPLS,0:NSTRA)
 
-      REAL(DP), ALLOCATABLE, SAVE ::
-     . TORL(:,:), ESHT(:,:), ELTEST(:,:), ORI(:,:)
+      REAL(DP), ALLOCATABLE, SAVE::
+     . TORL(:,:), ESHT(:,:), ORI(:,:)
 
       real(dp),allocatable :: helpw(:)
 
@@ -493,8 +496,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
               NSPZE(IT,IPRT)=NFLA
             ENDIF
             IF (TRCINT)
-     .      WRITE (iunout,'(1X,7I6,2I7,3I6)')
-     .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
+     .      WRITE (iunout,'(1X,12I6)') IT,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
      .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
@@ -933,7 +935,7 @@ C  TO THE QUADRANGLE
         ENDIF
       ENDDO
  
-C  BUILD NSTGRD ARRAY OF "BLOCKED" TRIANGLES FROM XAISO ARRAY FROM FORT.29
+C  BUILD NSTGRD ARRAY OF "BLOCKED" TRANGLES FROM XAISO ARRAY FROM FORT.29
       IF (IO29.EQ.0) THEN
         DO ITRI=1,NTRII
           IY=IYTRI(ITRI)
@@ -2202,7 +2204,7 @@ C SORT TRIANGLES ALONG TARGET
              IS1=IS+1
              IF (IS1.GT.3) IS1=1
              IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2454,7 +2456,7 @@ C SORT TRIANGLES ALONG TARGET
             IS1=IS+1
             IF (IS1.GT.3) IS1=1
             IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2). LT. 5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2765,9 +2767,8 @@ C
           ENDIF
         ENDIF
 C
-        ELTEST(ITARG,IG)=0.  ! ELSTEP MAY ALREADY HAVE BEEN SET IN CALL TO FCT. STEP
+
         DO 6009 IPLS=1,NPLSI
-          CALL EIRENE_MASJ2('ITARG,IPLS      ',ITARG,IPLS)
           IF (FLSTEP(IPLS,ITARG,IG).EQ.0.D0) GOTO 6009
 C
           IPLSTI=MPLSTI(IPLS)
@@ -2814,28 +2815,28 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
           IF (TRCINT) THEN
             WRITE (iunout,*) 'IG,MACH_PAR,MACH_Z ',
      .                        IG,VTEST,VTEST2
-C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
+C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S)',PM1,VPZ,VR
             CALL EIRENE_LEER(1)
           END IF
 C
 C  BOHM CRITERION CHECK DONE
 C
 C  ELTEST: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
-C
+
 C  NEXT: TARGET MAXW. ENERGY FLUXES
 C  EADD=  IN EV, SUCH THAT EADD*PARTICLE FLUX = ENERGY FLUX
           DRR=RRSTEP(ITARG,IG+1)-RRSTEP(ITARG,IG)
 C  ENERGY FLUX DEFINED WITH PARAMETERS IN INPUT BLOCK 7
-          IF (NEMODS(ITARG).EQ.1) THEN
+          IF (NEM.EQ.1) THEN
             EADD=SORENI(ITARG)
-          ELSEIF (NEMODS(ITARG).EQ.2.OR.NEMODS(ITARG).EQ.3) THEN
+          ELSEIF (NEM.EQ.2.OR.NEM.EQ.3) THEN
             EADD=SORENI(ITARG)*TISTEP(IPLSTI,ITARG,IG)+SORENE(ITARG)*
      .           TESTEP(ITARG,IG)
-          ELSEIF (NEMODS(ITARG).GE.4 .AND. NEMODS(ITARG).LE.7) THEN
+          ELSEIF (NEM.GE.4 .AND. NEM.LE.7) THEN
             PERWI=PERW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             PARWI=PARW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             EADD=EIRENE_EMAXW(TISTEP(IPLSTI,ITARG,IG),PERWI,PARWI)
-          ELSEIF (NEMODS(ITARG).EQ.8 .OR. NEMODS(ITARG).EQ.9) THEN
+          ELSEIF (NEM.EQ.8 .OR. NEM.EQ.9) THEN
 C  ENERGY FLUX ELSTEP IS ALREADY DEFINED BY B2-BOUNDARY CONDITIONS (SUM: IPLS=0?)
             EADD=ELSTEP(IPLS,ITARG,IG)/FLSTEP(IPLS,ITARG,IG)
           ENDIF
@@ -2844,17 +2845,14 @@ C  ENERGY FLUX ELSTEP IS ALREADY DEFINED BY B2-BOUNDARY CONDITIONS (SUM: IPLS=0?
           ELTEST(ITARG,IG)=ELTEST(ITARG,IG)+ESUM
           EEMAX=EEMAX+ESUM*DRR
 
-C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
-          IF (NEM.EQ.3.OR.NEM.EQ.5.OR.NEM.EQ.7.OR.NEM.EQ.9) THEN
-            ESHEATH=NCHRGP(IPLS)*ESHT(ITARG,IG)
-            ESUM=ESHEATH*FLSTEP(IPLS,ITARG,IG)
-            ELTEST(ITARG,IG)=ELTEST(ITARG,IG)+ESUM
-            EESHT=EESHT+ESUM*DRR
-          ENDIF
+C  ENERGY GAIN BY SHEATH ACCELERATION
+          EADD=NCHRGP(IPLS)*ESHT(ITARG,IG)
+          ESUM=EADD*FLSTEP(IPLS,ITARG,IG)
+          EESHT=EESHT+ESUM*DRR
 
-6009    CONTINUE  ! IPLS loop
+6009    CONTINUE   ! IPLS
 
-6011  CONTINUE   ! IG,  CELL ALONG TARGET
+6011  CONTINUE     ! IG,  CELL ALONG TARGET
 C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
@@ -2872,9 +2870,9 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='S'
           IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
-        WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
+        WRITE (iunout,'(1X,I3,1P,9E11.3,A3)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
-     .             ELTEST(ITARG,IG),
+     .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
      .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60),
      .             VXSTEP(1,ITARG,IG),VYSTEP(1,ITARG,IG),
@@ -2905,7 +2903,6 @@ C
       DEALLOCATE (NUMTRI)
       DEALLOCATE (TORL)
       DEALLOCATE (ESHT)
-      DEALLOCATE (ELTEST)
       DEALLOCATE (ORI)
 C
 C
@@ -4027,7 +4024,7 @@ C
 C  WRITE RCCPL
       WRITE (11,REC=IRC) RCCPL
       IF (TRCINT.OR.TRCFLE)   
-     .    WRITE (iunout,*) 'WRITE 11  RCCPL,   IRC= ',IRC
+     .    WRITE (iunout,*) 'WRITE 11  RCCPL,  IRC= ',IRC
 C     IRC=3   STILL
 C  WRITE ICCPL1
       ALLOCATE (IHELP(NOUTAU))
@@ -4062,11 +4059,8 @@ C  WRITE ICCPL2
       IRC=IRC+1
       WRITE (11,REC=IRC) LCCPL
       IF (TRCINT.OR.TRCFLE)   
-     .    WRITE (iunout,*) 'WRITE 11  LCCPL,   IRC= ',IRC
+     .    WRITE (iunout,*) 'WRITE 11  LCCPL,  IRC= ',IRC
 C
-!pb  LSTP is dummy argument to entry IF3COP, thus not available here
-!pb  LSTP3 is stored in IF3COP
-!pb   IF (LSHORT) LSTOP=LSTP
       IF (LSHORT) LSTOP=LSTP3
 C
       IF (.NOT.LSTOP) RETURN
@@ -4142,7 +4136,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           TIFLX=TIFLX/(FLX+EPS60)
           SFEISY=SFEISY+TIFLX
         ENDIF
-
 10113 CONTINUE
 C
       SFNISY=SFNISY*ELCHA
@@ -4185,7 +4178,6 @@ C
 10116   CONTINUE
         GOTO 10118
 10115   CONTINUE
-
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
@@ -4204,7 +4196,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           TIFLX=TIFLX/(FLX+EPS60)
           SFEINY=SFEINY-TIFLX
         ENDIF
-
 10118 CONTINUE
 C
       SFNINY=SFNINY*ELCHA
@@ -4290,7 +4281,6 @@ C
         DO 10126 IF=1,NFLA
           SFNIEX(IF)=SFNIEX(IF)-FNIXB(NDXA,IY,IF)
 10126   CONTINUE
-
 10125   CONTINUE
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
@@ -4309,7 +4299,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           TIFLX=TIFLX/(FLX+EPS60)
           SFEIEX=SFEIEX-TIFLX
         ENDIF
-
 10128 CONTINUE
 C
       SFNIEX=SFNIEX*ELCHA
@@ -4374,29 +4363,23 @@ cdr  sheath done
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NDT(I,IPRT),IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NDT(I,IPRT),IY)
 10132       CONTINUE
+
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
-              IF (LCUT(IX)) GOTO 10135
-              DO 10136 IF=NSPZI(I,IPRT),NSPZE(I,IPRT)
-                IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF).GT.0.) THEN
-!pb                SFNIT(I,IF)=SFNIT(I,IF)-
-!pb     .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)-
-!pb     .                   ABS(FNIY_XB(IX,NDT(I,IPRT),IF))
-                SFNIT(I,IF)=SFNIT(I,IF)-
-     .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)
-!pb                SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-!pb     .           (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)+
-!pb     .            ABS(FNIY_XB(IX,NDT(I,IPRT),IF)))*
-!pb     .           (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
+             IF (LCUT(IX)) GOTO 10135
+             DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
+                IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0.) THEN
+                SFNIT(I,IFL)=SFNIT(I,IFL)-
+     .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions 
-cdr unfinished:  need to account for charge state of ion species IF
+cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)*
+     .            NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
      .           (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
                 SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IF)*
+     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
      .           DELTA_SHEATHYB(IX,NDT(I,IPRT))
 cdr  sheath done
                 ELSE

@@ -267,9 +267,7 @@ C
         ALLOCATE (EPPL_COP(NPLS,NRAD)) 
         ALLOCATE (EPEL_COP(NRAD))
       END IF
-cdr
-cdr   lchkqud = .false.  !  only needed for triangular grid options
-cdr
+
       mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
       NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
 C
