@@ -749,7 +749,10 @@ c  DEFAULT:  NO DATA FOUND
 
 C  FLAG FOR CHOICE OF EXTRAPOLATION OPTION:
 C  DEFAULT ASYMPTOTIC EXPRESSION  (...=0): NO ASYMPTOTICS
-C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): TAKE LAST VALID POINT AT r1mn,r1mx,....
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): SET TO ZERO BEYOND LAST VALID POINT
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=4): TAKE LAST VALID POINT AT r1mn,r1mx,....
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=5): 2ND ORDER POLYNOM BEYOND LAST VALID POINT
+C                                          (OLD DEFAULT FOR CROSS SECTIONS)
 c  AND EXTRAPOLATE CONSTANT FROM THERE
       IF1MN = 0
       IF1MX = 0
@@ -773,7 +776,7 @@ c
 c  at this point we have found a card ZEILE which contains
 c  one of the extrapolation parameter identifiers al0,ar0,....,k0l,k0r
 c  that correcsonds to the H.1, ....H.12 type of data IR.
-c  next: read up to three fit coefficients.
+c  next: read up to three fit coefficients FP.L OR FP.R.
 c  CHR(2:2) is set to either character a,b,c,....,or k
 c
         IF (INDEX(ZEILE,CH1L) /= 0) THEN
@@ -793,30 +796,42 @@ c
           CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2R)
           LGC2MAX = .TRUE.
         END IF
-
+c
+c  currently foreseen asymptotic data identifyers in data files:
+c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX, 
+c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
+c                    P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
-c  default extrapoloation from r1mn (by constant) will be: jfexmn1=1
-          IF (IF1MN == 0) IF1MN = 1
           LGR1MIN = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPL1
+          IF (IF1MN == 0 .AND. LGC1MIN) IF1MN = 5
+c  default extrapolation from r1mn (by constant continuation) will be: jfexmn1=4
+          IF (IF1MN == 0) IF1MN = 1
         END IF
         IF (INDEX(ULINE,TRIM(C1R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1R,'EXT-FLG',R1MX,IF1MX)
-c  default extrapoloation from r1mx (by constant) will be: jfex1mx=1
-          IF (IF1MX == 0) IF1MX = 1
           LGR1MAX = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPR1
+          IF (IF1MX == 0 .AND. LGC1MAX) IF1MX = 5
+c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
+          IF (IF1MX == 0) IF1MX = 1
         END IF
         IF (INDEX(ULINE,TRIM(C2L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
-c  default extrapoloation from r2mn (by constant) will be: jfex2mn=1
-          IF (IF2MN == 0) IF2MN = 1
           LGR2MIN = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPL2
+          IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5 
+c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
+          IF (IF2MN == 0) IF2MN = 1
         END IF
         IF (INDEX(ULINE,TRIM(C2R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
-c  default extrapoloation from r2mx (by constant) will be: jfex2mx=1
-          IF (IF2MX == 0) IF2MX = 1
           LGR2MAX = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPr2
+          IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5 
+c  default extrapolation from r2mx (by constant continuation) will be: jfex2mx=4
+          IF (IF2MX == 0) IF2MX = 1
         END IF
 C
 C  ...AND FURTHER REACTION PARAMETERS, NOT RELATED TO ASYMPTOTICS
@@ -863,7 +878,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           if (if1mn.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP1L         ',fp1l(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp1l,3,3)
         END IF
 
         IF (LGR1MIN) RC1MIN = LOG(R1MN)
@@ -888,7 +903,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           if (if1mx.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP1R         ',fp1r(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp1r,3,3)
         END IF
 
         IF (LGR1MAX) RC1MAX = LOG(R1MX)
@@ -913,7 +928,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           if (if2mn.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP2L         ',fp2l(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp2l,3,3)
         END IF
         IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2L
@@ -935,7 +950,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           if (if2mx.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP2R         ',fp2r(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp2r,3,3)
         END IF
         IF (LGR2MAX) RC2MAX = LOG(R2MX)
         IF (LGC2MAX) FP2(4:6) = FP2R
