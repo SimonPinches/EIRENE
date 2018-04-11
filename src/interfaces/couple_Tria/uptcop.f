@@ -113,13 +113,13 @@ C
               IRCX=LGACX(IATM,IACX,0)
               IPLS=LGACX(IATM,IACX,1)
               IF (LGVAC(IRD,IPLS)) GOTO 52
-              IPLSTI = MPLSTI(IPLS)
+              IPLSTI= MPLSTI(IPLS)
               EION=1.5*TIIN(IPLSTI,IRD)+EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)
               COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EION-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.
 52          CONTINUE
-          END IF 
+          END IF
 51        CONTINUE
 C
 20      CONTINUE

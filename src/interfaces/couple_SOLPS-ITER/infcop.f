@@ -291,11 +291,12 @@ C
      .           NAS,IPUNKT,NSSIR,NUMSI,NBAR,ISNR,ISC,IS,NASMOD,
      .           NRS,NADMOD,NBARSI,IP1,IS1,IR1,
      .           NEND,NINI,NSSIP,MTRI,
-     .           IDUMMY,ISTS,ITRI,IACT,IANF,ICOG,
+     .           IDUMMY,ISTS,ITRI,IACT,IANF,
      .           ISC1,ISC2,ISCS,ICOU,IXI,IXE,NCOPIB,NCOPEB,
      .           IST_RATE, MSHFRM, IMF,
-     .           ico, 
-     .           istat_cop, IXM1, IYM1, ibrad,ibpol,ibtor,
+     .           icoadd, icoscr,
+     .           istat_cop, IXM1, IYM1,
+     .           ibrad,ibpol,ibtor,
      .           ntrfrm,
      .           nr1tal_save,np2tal_save,nt3tal_save,nsbox_tal_save,
      .           nsurf_tal_save,nradd_tal_save
@@ -312,6 +313,7 @@ C
 
 csw 14apr2011, LCUT now in EIRMOD_CPOLYG (broadcasted)
 csw      LOGICAL, ALLOCATABLE, SAVE :: LCUT(:)
+
       logical :: l1, l2, lxsrf
 
       real(DP) :: ud,vv,up
@@ -876,8 +878,8 @@ C                  1
 C
 C
       if (ntrfrm == 0) then
-         READ(33,*) (XTRIAN(I),I=1,NRKNOT)
-         READ(33,*) (YTRIAN(I),I=1,NRKNOT)
+        READ(33,*) (XTRIAN(I),I=1,NRKNOT)
+        READ(33,*) (YTRIAN(I),I=1,NRKNOT)
          
          if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
@@ -1249,7 +1251,7 @@ C  SET NEW, FINER GRID STRUCTURE
  
 
 C  counter for additional cells outside original COARSE standard grid
-      ico = NSURF_TAL
+      icoadd = NSURF_TAL
 
 C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
 C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
@@ -1264,8 +1266,8 @@ C                 NCELL=NCLTAL(ITRI)
            IN=IY+(IX-1)*NR1TAL
            NCLTAL(ITRI)=IN
         ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-           ico = ico+1
-           NCLTAL(ITRI)=ico
+           icoadd = icoadd+1
+           NCLTAL(ITRI)=icoadd
         ENDIF
       ENDDO
 
@@ -1280,7 +1282,7 @@ C                 NCLTAL(ITRI)=ITRI
             IN=IY+(IX-1)*NR1TAL
             NCLTAL(ITRI)=ITRI
           ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-            ico = ico+1
+            icoadd = icoadd+1
             NCLTAL(ITRI)=itri
           ENDIF
         ENDDO
@@ -1290,27 +1292,27 @@ c   ntrii+1 is the storage for summed/integrated tallies, over the standard grid
 c           i.e. not including the additional cell region (if any)         
       NCLTAL(NTRII+1) = 0
 
-C     ICO=   ! NUMBER OF SCORING CELLS, SO FAR.
-!  
+      ICOSCR= icoadd   ! NUMBER OF SCORING CELLS, SO FAR.
+!
       if (nsbox > nsurf) then
 c  There are NRADD further additional cells, from input block 2e. 
 c  These are not part of triangular grid. Add them now to grid
         IF (LCOARSE) THEN  
           do itri = nsurf+1, nsbox
-            ico = ico + 1
-            ncltal(itri) = ico
+            icoscr = icoscr + 1
+            ncltal(itri) = icoscr
           end do
         ELSEIF (.NOT.LCOARSE) THEN
-        do itri = nsurf+1, nsbox
-          ico = ico + 1
-          ncltal(itri) = itri
-        end do
+          do itri = nsurf+1, nsbox
+            icoscr = icoscr + 1
+            ncltal(itri) = itri
+          end do
         ENDIF
       end if
 
 C  ADDITIONAL CELLS: THOSE CELLS THAT ARE ADDED FROM OUTSIDE ORIGINAL GRID, 
 C  PLUS THOSE FROM INPUT FILE BLOCK 2E (NRADD)
-      NRADD_TAL = (ICO - NSURF_TAL) 
+      NRADD_TAL = (ICOSCR - NSURF_TAL) 
 C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
       NSBOX_TAL=NSURF_TAL+NRADD_TAL
 
@@ -1328,12 +1330,12 @@ C  save old COURSE grid structure
 c  if no coarser grid has been set for scoring:
 c  reset scoring grid parameters back to fine tally grid  
 
-      nr1tal=nr1st
-      np2tal=np2nd
-      nt3tal=nt3rd
-      nsurf_tal=nsurf
-      nsbox_tal=nsbox
-      nradd_tal=nradd
+        nr1tal=nr1st
+        np2tal=np2nd
+        nt3tal=nt3rd
+        nsurf_tal=nsurf
+        nsbox_tal=nsbox
+        nradd_tal=nradd
       ENDIF 
 
       NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
@@ -1389,12 +1391,12 @@ c                  is not part of the STANDARD (polygonal) grid
         IFBOUND=.FALSE.
         DO IS=1,3
           IT=NCHBAR(IS,ITRI)
-         IF(IT.GT.0) THEN
-          IF(IYTRI(IT).LE.0.OR.IXTRI(IT).LE.0) THEN
-           IFBOUND=.TRUE.
-           EXIT
+          IF(IT.GT.0) THEN
+            IF(IYTRI(IT).LE.0.OR.IXTRI(IT).LE.0) THEN
+              IFBOUND=.TRUE.
+              EXIT
+            END IF
           END IF
-         END IF
         END DO
 
 
@@ -2290,6 +2292,7 @@ C
           IF (IS1.GT.3) IS1=1
           IX=IXTRI(ITRI)
           IY=IYTRI(ITRI)
+          IF ((IX < 0) .OR. (IY < 0)) CYCLE
           IG=IG+1
           IF (IG.GT.NGITT) GOTO 999
 C  TESTEP, TISTEP: ZONE CENTERED TEMPERATURE IN BOUNDARY ZONE (EV)
@@ -2347,7 +2350,7 @@ C  USE SIGN FROM "MAIN" CONTRIBUTION TO DECIDE ORIENTATION OF SEC. CONTR.
 !pb     .                   FL(IPLS)/DELY
 !pb                ENDIF
 
-C  SET DEFAULT ION ENERGY FLUXES FROM B2-BOUNDARY CONDITIONS
+C  SET DEFAULT ION ENERGY FLUXES FROM B2.5-BOUNDARY CONDITIONS
                 delti_para=3
                 delte_para=0.5
                 delti_perp=2
@@ -2365,8 +2368,8 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2-BOUNDARY CONDITIONS
 !pb                delte_para=deltae_parxb(npbs,iy)
 !pb                delte_perp=deltae_radxb(npbs,iy)
 
-                tis=TISTEP(IPLSTI,ITARG,IG)
-                tes=TESTEP(ITARG,IG)
+                   tis=TISTEP(IPLSTI,ITARG,IG)
+                   tes=TESTEP(ITARG,IG)
 !pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
 !pb     .                                  FL(IPLS)/DELY*
 !pb     .            (TIS*delti_perp*ABS(Fnix_yb(npbs,iy,ifl))+
@@ -2378,8 +2381,8 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2-BOUNDARY CONDITIONS
 !pb     .             TIS*delti_para*ABS(fnixb  (npbs,iy,ifl))+
 !pb     .             TES*delte_para*ABS(fnixb  (npbs,iy,ifl)))
 
-                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
-     .                                  FL(IPLS)/DELY*
+                   ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
+     .                                     FL(IPLS)/DELY*
      .            (TIS*delti_para+TES*delte_para)
      .             *ABS(fnixb(npbs,iy,ifl))
               ENDIF
@@ -2542,6 +2545,7 @@ C
           IF (IS1.GT.3) IS1=1
           IX=IXTRI(ITRI)
           IY=IYTRI(ITRI)
+          IF ( (IX < 0) .OR. (IY < 0) ) CYCLE
           IG=IG+1
           IF (IG.GT.NGITT) GOTO 999
 C  TESTEP, TISTEP: ZONE CENTERED TEMPERATURE IN BOUNDARY ZONE (EV)
@@ -2872,7 +2876,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
           IF (TRCINT) THEN
             WRITE (iunout,*) 'IPL,ITG,IG,MACH_PAR',
      .                        IPLS,ITARG,IG,VTEST
-C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S)',PM1,VPZ,VR
+C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
 C           CALL EIRENE_LEER(1)
 C
           END IF
@@ -2880,7 +2884,7 @@ C
 C  BOHM CRITERION CHECK DONE
 C
 C  ELTEST: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
-
+C
 C  NEXT: TARGET MAXW. ENERGY FLUXES
 C  EADD=  IN EV, SUCH THAT EADD*PARTICLE FLUX = ENERGY FLUX
           DRR=RRSTEP(ITARG,IG+1)-RRSTEP(ITARG,IG)
@@ -3684,22 +3688,36 @@ C
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
 
+cdr  fill bulk particle source rate sni(...ifl) from all contributing
+cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
+cdr  test particle may have scored on a finer mesh (lcoarse=.false)
+
           DO 7510 IPLS=1,NPLSI
             IF (IFLB(IPLS).NE.IFL) GOTO 7510
             IPLSV=MPLSV(IPLS)
 c  ipls contributes to plasma code species ifl
             DO 7520 IX=1,NDXA
               DO 7530 IY=1,NDYA
-                CURPOI => HEADS(IY,IX)%P
-                DO WHILE (ASSOCIATED(CURPOI))
-                  IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)
+
+nicht fertig: wie kriege ich hin das beides geht ????????
+
+
+                IF (.FALSE.) THEN
+C  multiple grid options
+C  LOOP OVER ALL TRIANGLES CONTRIBUTING TO ix,iy CELL
+                  CURPOI => HEADS(IY,IX)%P
+                  DO WHILE (ASSOCIATED(CURPOI))
+                    IT=CURPOI%TRIANGLE
+                    INC=NCLTAL(IT)
+                    CURPOI=>CURPOI%NEXT
+                ELSE
+                  INC=IY+(IX-1)*NR1TAL_SAVE 
+                ENDIF
                   SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
      .                   PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
                   SNIS(IFL)=SNIS(IFL)+ SNICL
                   CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,INC)*VOLTAL(INC)
-                  CURPOI=>CURPOI%NEXT
                 ENDDO
 7530          CONTINUE
 7520        CONTINUE

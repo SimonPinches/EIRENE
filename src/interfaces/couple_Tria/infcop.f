@@ -293,11 +293,12 @@ C
      .           IN, IX, IY, NDX2, IIRC, NDXY,
      .           IFIRST, ISTRAI, NPES, MTRI, NPEC, NPBS,
      .           NPBC, IACT, IANF, IO, IIPLS, IEPLS, IG, ITARG, IGITT,
-     .           I34, IRRC, ICOG, ISC1, ISC2, ISCS, ICOU, ISP,
+     .           I34, IRRC, ISC1, ISC2, ISCS, ICOU, ISP,
      .           IXI, IXE, NCOPIB, NCOPEB, IPLSTI, IPLSV, IPLV,
      .           IST_RATE, MSHFRM, IMF, ITCO,
 !  ADDITIONAL STORAGE FOR LIN. COMB. OF TALLIES (E.G. INTERNAL ENERGY SOURCES) 
-     .           ICPV, icp1, icp2, icp3, 
+     .           ICPV, icp1, icp2, icp3,
+     .           icoadd, icoscr,
      .           istat_cop, IXM1, IYM1,
      .           ntrfrm,
      .           nr1tal_save,np2tal_save,nt3tal_save,nsbox_tal_save,
@@ -414,7 +415,7 @@ C
 cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
 cdr
-      mshfrm = 0!  optional flag for geometry file format: linda, carree, sonnet
+      mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
       ntrfrm = 0
 C
       IF (.NOT.LSHORT.AND.ITIMV.LE.1) THEN
@@ -493,7 +494,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
               NSPZE(IT,IPRT)=NFLA
             ENDIF
             IF (TRCINT)
-     .      WRITE (iunout,'(1X,7I6,2I7,3I6)') 
+     .      WRITE (iunout,'(1X,7I6,2I7,3I6)')
      .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
@@ -1242,7 +1243,7 @@ C  SET NEW, FINER GRID STRUCTURE
  
 
 C  counter for additional cells outside original COARSE standard grid
-      icog = NSURF_TAL
+      icoadd = NSURF_TAL
 
 C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
 C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
@@ -1257,8 +1258,8 @@ C                 NCELL=NCLTAL(ITRI)
            IN=IY+(IX-1)*NR1TAL
            NCLTAL(ITRI)=IN
         ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-           icog = icog+1
-           NCLTAL(ITRI)=icog
+           icoadd = icoadd+1
+           NCLTAL(ITRI)=icoadd
         ENDIF
       ENDDO
 
@@ -1273,7 +1274,7 @@ C                 NCLTAL(ITRI)=ITRI
             IN=IY+(IX-1)*NR1TAL
             NCLTAL(ITRI)=ITRI
           ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-            icog = icog+1
+            icoadd = icoadd+1
             NCLTAL(ITRI)=itri
           ENDIF
         ENDDO
@@ -1283,19 +1284,19 @@ c   ntrii+1 is the storage for summed/integrated tallies, over the standard grid
 c           i.e. not including the additional cell region (if any)         
       NCLTAL(NTRII+1) = 0
 
-C     ICOG=   ! NUMBER OF SCORING CELLS, SO FAR.
+      ICOSCR= icoadd   ! NUMBER OF SCORING CELLS, SO FAR.
 !
       if (nsbox > nsurf) then
 c  There are NRADD further additional cells, from input block 2e. 
 c  These are not part of triangular grid. Add them now to grid
         IF (LCOARSE) THEN  
           do itri = nsurf+1, nsbox
-            icog = icog + 1
-            ncltal(itri) = icog
+            icoscr = icoscr + 1
+            ncltal(itri) = icoscr
           end do
         ELSEIF (.NOT.LCOARSE) THEN
           do itri = nsurf+1, nsbox
-            icog = ico g+ 1
+            icoscr = icoscr + 1
             ncltal(itri) = itri
           end do
         ENDIF
@@ -1303,7 +1304,7 @@ c  These are not part of triangular grid. Add them now to grid
 
 C  ADDITIONAL CELLS: THOSE CELLS THAT ARE ADDED FROM OUTSIDE ORIGINAL GRID, 
 C  PLUS THOSE FROM INPUT FILE BLOCK 2E (NRADD)
-      NRADD_TAL = (ICOG - NSURF_TAL) 
+      NRADD_TAL = (ICOSCR - NSURF_TAL) 
 C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
       NSBOX_TAL=NSURF_TAL+NRADD_TAL
 
@@ -1316,7 +1317,7 @@ C  save old COURSE grid structure
       nsurf_tal_save=nsurf_tal
       nsbox_tal_save=nsbox_tal
       nradd_tal_save=nradd_tal
-  
+
       IF (.NOT.LCOARSE) THEN
 c  if no coarser grid has been set for scoring:
 c  reset scoring grid parameters back to fine tally grid  
@@ -1347,7 +1348,7 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
               write (iunout,*) 
      .               'triangle inside original structured grid'          
               call eirene_masj2('nr,np          ',
-     .                  iytri(itri),ixtri(itri))
+     .                           iytri(itri),ixtri(itri))
             endif
 
             write (iunout,*) ' necke ',necke(1:3,itri)
@@ -2310,7 +2311,7 @@ C  TEST WHETHER TRIANGLE BELONGS TO QUADRANGULAR CELLS ALONG THE TARGET
               dd = sqrt(dxpol*dxpol + dypol*dypol)
 c
               do is = 1, 3
-!    test if side IS of triangle IT is parallel to B2 cell face
+!  test if side IS of triangle IT is parallel to B2 cell face
                 par = vtrix(is,it)*dypol-vtriy(is,it)*dxpol
 cdr  scale to relative units of triangle coordinates
                 par=par/dd
@@ -2771,7 +2772,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
             WRITE (iunout,*) 'IPL,ITG,IG,MACH_PAR',
      .                        IPLS,ITARG,IG,VTEST
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
-C            CALL EIRENE_LEER(1)
+C           CALL EIRENE_LEER(1)
 C
           END IF
 C
@@ -2811,7 +2812,7 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
 
 6009    CONTINUE  ! IPLS loop
 
-6011  CONTINUE   ! IG,  CELL ALONG TARGET
+6011  CONTINUE     ! IG,  CELL ALONG TARGET
 C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
@@ -2919,7 +2920,7 @@ C
 
         ALLOCATE (FLXEIR(NSTRA))
         CALL EIRENE_ALLOC_BRASPOI
-        CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NSTRA,IFOFF)
+        CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA,IFOFF)
 C
         RESSNI = 0._DP
         RESSMO = 0._DP
@@ -3441,6 +3442,8 @@ cdr                                       can be set without need for covariance
 
 cdr  fill bulk particle source rate sni(...ifl) from all contributing
 cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
+cdr  test particle may have scored on a finer mesh (lcoarse=.false)
+
         DO 7510 IFL=1,NFLA
           CHPS(IFL)=0.
           SNIS(IFL)=0.
