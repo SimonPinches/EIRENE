@@ -51,6 +51,8 @@ csw 18apr07
       call EIRENE_update_spectrum_reinit
 !pb 03aug17
       call eirene_colrad_reinit
+
+      call eirene_reinit_partinfo
  
 C     reinitialization end
  
