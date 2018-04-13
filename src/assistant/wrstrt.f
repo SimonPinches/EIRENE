@@ -16,6 +16,7 @@ cdr     e.g. for printout, plotting etc.. of results from specified strata
 cdr  on input:  IG     :  number of stratum ISTRA
 cdr             IG=0   :  sum over strata
 cdr             TRCFLE :  print diagnostics  
+cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
  
       SUBROUTINE EIRENE_WRSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
      .                  TALLYV,TALLYS,TALLYL,
@@ -26,11 +27,13 @@ cdr             TRCFLE :  print diagnostics
      .                  ISPCI,TRCFLE)
  
       USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, SPECT_ARRAY, IFOFF
+!      USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, SPECT_ARRAY, IFOFF
+      USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, IFOFF
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
  
-      TYPE(SPECT_ARRAY), INTENT(INOUT) :: TALLYL(*)
+!      TYPE(SPECT_ARRAY), INTENT(INOUT) :: TALLYL(*)
+      TYPE(EIRENE_SPECTRUM), INTENT(INOUT) :: TALLYL(*)
       REAL(DP), INTENT(INOUT) :: TALLYV(*), TALLYS(*),
      .                         STAT1(*), SIG_BGK(*), SIG_COP(*)
       REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
@@ -63,9 +66,9 @@ C
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
 C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
-        IMAXS=IMAXS+(1+TALLYL(ISPC)%PSPC%NSPC+1)/NRECL+1
+        IMAXS=IMAXS+(1+TALLYL(ISPC)%NSPC+1)/NRECL+1
         IF (ISPCI.NE.0) THEN
-          IMAXS=IMAXS+4*((1+TALLYL(ISPC)%PSPC%NSPC+1)/NRECL+1)
+          IMAXS=IMAXS+4*((1+TALLYL(ISPC)%NSPC+1)/NRECL+1)
         END IF
       END DO
       IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAX41+IMAX42+IMAXS
@@ -231,52 +234,52 @@ C
       DO ISPC=1,IESTM3
 C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPECTRUM
         NSPECI=0
-        NSPECE=TALLYL(ISPC)%PSPC%NSPC+1
+        NSPECE=TALLYL(ISPC)%NSPC+1
         IRC=IRC+1
-        WRITE (10+ifoff,REC=IRC) TALLYL(ISPC)%PSPC%SPCMIN,
-     .                     TALLYL(ISPC)%PSPC%SPCMAX,
-     .                     TALLYL(ISPC)%PSPC%SPCDEL,
-     .                     TALLYL(ISPC)%PSPC%SPCDELI,
-     .                     TALLYL(ISPC)%PSPC%SPCS,
-     .                     TALLYL(ISPC)%PSPC%SGMS,
-     .                     TALLYL(ISPC)%PSPC%STVS,
-     .                     TALLYL(ISPC)%PSPC%GGS,
-     .                     TALLYL(ISPC)%PSPC%NSPC,
-     .                     TALLYL(ISPC)%PSPC%ISPCTYP,
-     .                     TALLYL(ISPC)%PSPC%ISPCSRF,
-     .                     TALLYL(ISPC)%PSPC%IPRTYP,
-     .                     TALLYL(ISPC)%PSPC%IPRSP,
-     .                     TALLYL(ISPC)%PSPC%IMETSP
+        WRITE (10+ifoff,REC=IRC) TALLYL(ISPC)%SPCMIN,
+     .                     TALLYL(ISPC)%SPCMAX,
+     .                     TALLYL(ISPC)%SPCDEL,
+     .                     TALLYL(ISPC)%SPCDELI,
+     .                     TALLYL(ISPC)%SPCS,
+     .                     TALLYL(ISPC)%SGMS,
+     .                     TALLYL(ISPC)%STVS,
+     .                     TALLYL(ISPC)%GGS,
+     .                     TALLYL(ISPC)%NSPC,
+     .                     TALLYL(ISPC)%ISPCTYP,
+     .                     TALLYL(ISPC)%ISPCSRF,
+     .                     TALLYL(ISPC)%IPRTYP,
+     .                     TALLYL(ISPC)%IPRSP,
+     .                     TALLYL(ISPC)%IMETSP
         DO JINI=NSPECI,NSPECE,NRECL
           IRC=IRC+1
           JEND=MIN(NSPECE, JINI+NRECL-1)
           WRITE (10+ifoff,REC=IRC) 
-     .      (TALLYL(ISPC)%PSPC%SPC(J),J=JINI,JEND)
+     .      (TALLYL(ISPC)%SPC(J),J=JINI,JEND)
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%SGM(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%SGM(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%SDV(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%SDV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%STV(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%STV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%GG(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%GG(J),J=JINI,JEND)
           END DO
         END IF
       END DO
@@ -311,9 +314,9 @@ C
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
 C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
-        IMAXS=IMAXS+(1+TALLYL(ISPC)%PSPC%NSPC+1)/NRECL+1
+        IMAXS=IMAXS+(1+TALLYL(ISPC)%NSPC+1)/NRECL+1
         IF (ISPCI.NE.0) THEN
-          IMAXS=IMAXS+4*((1+TALLYL(ISPC)%PSPC%NSPC+1)/NRECL+1)
+          IMAXS=IMAXS+4*((1+TALLYL(ISPC)%NSPC+1)/NRECL+1)
         END IF
       END DO
       IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAX41+IMAX42+IMAXS
@@ -481,51 +484,51 @@ C
         IRC=IRC+1
 C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPECTRUM
         NSPECI=0
-        NSPECE=TALLYL(ISPC)%PSPC%NSPC+1
-        READ (10+ifoff,REC=IRC) TALLYL(ISPC)%PSPC%SPCMIN,
-     .                    TALLYL(ISPC)%PSPC%SPCMAX,
-     .                    TALLYL(ISPC)%PSPC%SPCDEL,
-     .                    TALLYL(ISPC)%PSPC%SPCDELI,
-     .                    TALLYL(ISPC)%PSPC%SPCS,
-     .                    TALLYL(ISPC)%PSPC%SGMS,
-     .                    TALLYL(ISPC)%PSPC%STVS,
-     .                    TALLYL(ISPC)%PSPC%GGS,
-     .                    TALLYL(ISPC)%PSPC%NSPC,
-     .                    TALLYL(ISPC)%PSPC%ISPCTYP,
-     .                    TALLYL(ISPC)%PSPC%ISPCSRF,
-     .                    TALLYL(ISPC)%PSPC%IPRTYP,
-     .                    TALLYL(ISPC)%PSPC%IPRSP,
-     .                    TALLYL(ISPC)%PSPC%IMETSP
+        NSPECE=TALLYL(ISPC)%NSPC+1
+        READ (10+ifoff,REC=IRC) TALLYL(ISPC)%SPCMIN,
+     .                    TALLYL(ISPC)%SPCMAX,
+     .                    TALLYL(ISPC)%SPCDEL,
+     .                    TALLYL(ISPC)%SPCDELI,
+     .                    TALLYL(ISPC)%SPCS,
+     .                    TALLYL(ISPC)%SGMS,
+     .                    TALLYL(ISPC)%STVS,
+     .                    TALLYL(ISPC)%GGS,
+     .                    TALLYL(ISPC)%NSPC,
+     .                    TALLYL(ISPC)%ISPCTYP,
+     .                    TALLYL(ISPC)%ISPCSRF,
+     .                    TALLYL(ISPC)%IPRTYP,
+     .                    TALLYL(ISPC)%IPRSP,
+     .                    TALLYL(ISPC)%IMETSP
         DO JINI=NSPECI,NSPECE,NRECL
           IRC=IRC+1
           JEND=MIN(NSPECE, JINI+NRECL-1)
           READ (10+ifoff,REC=IRC) 
-     .      (TALLYL(ISPC)%PSPC%SPC(J),J=JINI,JEND)
+     .      (TALLYL(ISPC)%SPC(J),J=JINI,JEND)
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             READ (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%SGM(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%SGM(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             READ (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%SDV(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%SDV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             READ (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%STV(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%STV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             READ (10+ifoff,REC=IRC) 
-     .        (TALLYL(ISPC)%PSPC%GG(J),J=JINI,JEND)
+     .        (TALLYL(ISPC)%GG(J),J=JINI,JEND)
           END DO
         END IF
       END DO
