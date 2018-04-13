@@ -12,6 +12,7 @@ cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 cdr july 17:  comments re. call to user routine: calstr_usr.
+cpb Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
 
       SUBROUTINE EIRENE_CALSTR
 cdr
@@ -72,6 +73,7 @@ c  range of processors working on stratum ISTRA
       npeen = npesta(istra)+npestr(istra)-1
 c
       call mpi_comm_group (mpi_comm_world,mpicw,ier)
+!pb  istra is a pointer, type check failure with Intel compiler under Windows
       istr = istra
       call mpi_comm_split (mpi_comm_world,istr,my_pe-npesta(istra),
      .                     icomgrp(istra),ier)
@@ -217,33 +219,33 @@ c  all surface averaged tallies: estims
 
 c   energy resolved ("spectra") tallies
         do ispc=1,nadspc
-          ns = estiml(ispc)%pspc%nspc
+          ns = estiml(ispc)%nspc
           allocate (helpest(ns+2))
-          call mpi_reduce(estiml(ispc)%pspc%spc(0:ns+1),helpest,
-     .                    estiml(ispc)%pspc%nspc+2,
+          call mpi_reduce(estiml(ispc)%spc(0:ns+1),helpest,
+     .                    estiml(ispc)%nspc+2,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-          if (my_pe_gr==0) estiml(ispc)%pspc%spc(0:ns+1)=helpest(1:ns+2)
+          if (my_pe_gr==0) estiml(ispc)%spc(0:ns+1)=helpest(1:ns+2)
 
 c  standard deviation of energy resolved "spectra"
           if (nsigi_spc > 0) then
-            call mpi_reduce(estiml(ispc)%pspc%sdv,helpest,
-     .                      estiml(ispc)%pspc%nspc+2,
+            call mpi_reduce(estiml(ispc)%sdv,helpest,
+     .                      estiml(ispc)%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0)
-     .      estiml(ispc)%pspc%sdv(0:ns+1) = helpest(1:ns+2)
+     .      estiml(ispc)%sdv(0:ns+1) = helpest(1:ns+2)
 
-            call mpi_reduce(estiml(ispc)%pspc%sgm,helpest,
-     .                      estiml(ispc)%pspc%nspc+2,
+            call mpi_reduce(estiml(ispc)%sgm,helpest,
+     .                      estiml(ispc)%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0)
-     .        estiml(ispc)%pspc%sgm(0:ns+1) = helpest(1:ns+2)
+     .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
 
-!            call mpi_reduce(estiml(ispc)%pspc%sgms,helpest,1,
+!            call mpi_reduce(estiml(ispc)%sgms,helpest,1,
 !     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-!            if (my_pe_gr==0) estiml(ispc)%pspc%sgms = helpest(1)
-            call mpi_reduce(estiml(ispc)%pspc%sgms,helpc,1,
+!            if (my_pe_gr==0) estiml(ispc)%sgms = helpest(1)
+            call mpi_reduce(estiml(ispc)%sgms,helpc,1,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-            if (my_pe_gr==0) estiml(ispc)%pspc%sgms = helpc
+            if (my_pe_gr==0) estiml(ispc)%sgms = helpc
           end if
 
           deallocate (helpest)

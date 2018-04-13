@@ -1,5 +1,3 @@
-cdr  Jan 18:  bypass this actions for photons (ityp=0). Code not ready for photon transport.
-
       subroutine eirene_switch_partinfo
 c  added oct. 2017:
 c  this routine sets the various pointers for tallies,
@@ -23,8 +21,6 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
       USE EIRMOD_CSPEZ
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMSOU
-      USE EIRMOD_CPES
-      USE EIRMOD_MPI
        
       implicit none
 
@@ -35,11 +31,11 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
      .                 imol_old=-1, 
      .                 iion_old=-1,
      .                 ipls_old=-1
-      real(dp), allocatable, save :: time_array(:,:,:), helpt(:,:,:)
+      real(dp), allocatable, save :: time_array(:,:,:)
       real(dp) :: tim_spent
       real(dp), save :: tim_start=0._dp, tim_end=0._dp 
       real(dp) :: eirene_second_own
-      integer :: istr, nn, ier, itp, isp
+      integer :: istr, it, is
       
       if ((ityp_old == ityp) .and. (iatm_old == iatm) .and.
      .    (imol_old == imol) .and. (iion_old == iion) .and.
@@ -81,7 +77,7 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
         end select
       end if
 
-C  save stratum, old type, species
+C  save stratum, old typ, species
       istra_old= istra
       ityp_old = ityp
 
@@ -113,12 +109,7 @@ C  save stratum, old type, species
       select case(ityp)
 
       case(0)
-!  photons: 
-cdr: not ready.
-cdr  currently: by-pass this code-section for photons (ityp=0),
-cdr  as long as update, collide, fpath for photons are still kept as separate routines.
-
-       return   ! for the time being....
+!  photons: not ready
 
        LPDENX  => LPDENA 
        LEDENX  => LEDENA 
@@ -384,36 +375,27 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
 
       entry eirene_output_partinfo
 
-      if (nprs > 0) then
-        nn = max(nphot,natm,nmol,nion)
-        allocate (helpt(0:3,0:nn,0:nstra))
-        helpt = 0._dp
-        call mpi_reduce(time_array,helpt,4*(nn+1)*(nstra+1),
-     .       mpi_double_precision,mpi_sum,0,mpi_comm_world,ier)
-        time_array = helpt
-        deallocate (helpt)
-        if (my_pe /= 0) return
-      end if
-
       call eirene_leer(2)
 
       call eirene_headng ('STATISTICS OVER CPU TIME SPENT'//
      .                    ' IN FOLLOWING TRAJECTORIES ',57)
 
 ! sum over species
-      do istr = 1, nstrai
-        time_array(0,0,istr) = sum(time_array(0,1:,istr))
-        time_array(1,0,istr) = sum(time_array(1,1:,istr))
-        time_array(2,0,istr) = sum(time_array(2,1:,istr))
-        time_array(3,0,istr) = sum(time_array(3,1:,istr))
+!      time_array(:,0,1:nstra) = sum(time_array,2)
+      do it =0, 3
+        do is = 1, nstrai
+          time_array(it,0,is) = sum(time_array(it,1:,is))
+        end do
       end do
 ! sum over strata
-      do itp = 0,3
-        do isp = 0,nn
-          time_array(itp,isp,0) = sum(time_array(itp,isp,1:nstrai))
+!      time_array(:,:,0) = sum(time_array,3)
+      do it = 0, 3
+        do is = 0, ubound(time_array,2)
+           time_array(it,is,0) = sum(time_array(it,is,1:))
         end do
-      end do  
+      end do
 
+      write (0,*) ' vor do'
       do istr = 0, nstrai
 
         call eirene_leer(1)
@@ -425,7 +407,7 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
           write (iunout,'(1x,A,I6)') '============== '
         end if
 
-        if (any(time_array(0,:,istr) > 0._dp)) then
+        if (any(time_array(0,:,:) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('PHOTONS = ',time_array(0,0:nphot,:),
@@ -435,7 +417,7 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
           CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(0,1:nphot,ISTR)))
         end if
 
-        if (any(time_array(1,:,istr) > 0._dp)) then
+        if (any(time_array(1,:,:) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('ATOMS =   ',time_array(1,0:natm,:),
@@ -445,7 +427,7 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
           CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(1,1:natm,ISTR)))
         end if
 
-        if (any(time_array(2,:,istr) > 0._dp)) then
+        if (any(time_array(2,:,:) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('MOLECULES=',time_array(2,0:nmol,:),
@@ -455,7 +437,7 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
           CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(2,1:nmol,ISTR)))
         end if
 
-        if (any(time_array(3,:,istr) > 0._dp)) then
+        if (any(time_array(3,:,:) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('TEST IONS=',time_array(3,0:nion,:),
@@ -465,10 +447,16 @@ cdr  as long as update, collide, fpath for photons are still kept as separate ro
           CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(3,1:nion,ISTR)))
         end if
 
+!        if (any(time_array(4,:,:) > 0._dp)) then
+!          write (iunout,*) ' TIME (SEC) SPENT IN FOLLOWING '
+!          CALL EIRENE_MASYR1 ('BULK IONS=',time_array(4,1:npls,:),
+!     .                LOGPLS,ISTR,1,NPLS,1,NSTRA,TEXTS(NSPAMI+1))
+!          CALL EIRENE_MASAGE
+!     .      ('SUM OVER SPECIES                               ')
+!          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(4,1:npls,ISTR)))
+!        end if
+
       end do
-
-      call eirene_leer(2)
-
       return
 
       entry eirene_reinit_partinfo

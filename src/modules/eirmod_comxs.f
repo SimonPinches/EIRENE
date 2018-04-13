@@ -1858,6 +1858,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
      .               REACDAT(IR)%LPHR /)
 
           CALL FXDRLOG(IUN,LHELP,7)
+!pb type check failed with Intel compiler under Windows
 !          CALL FXDRDBL (IUN,REACDAT(IR)%ETH,1)
 !          CALL FXDRDBL (IUN,REACDAT(IR)%RTMAX,1)
 !          CALL FXDRDBL (IUN,REACDAT(IR)%ERTMAX,1)
@@ -1897,6 +1898,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
           REACDAT(IR)%LOTH = LHELP(6)
           REACDAT(IR)%LPHR = LHELP(7)
 
+!pb  type check failure with Itel compiler unser Windows
 !          CALL FXDRDBL (IUN,REACDAT(IR)%ETH,1)
 !          CALL FXDRDBL (IUN,REACDAT(IR)%RTMAX,1)
 !          CALL FXDRDBL (IUN,REACDAT(IR)%ERTMAX,1)
@@ -1984,6 +1986,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
 
 ! DATA FOR 1D TABLES  (E.G. single parameter table, HYDKIN)
           NT = RP%HYD%NTEMPS
+!pb  type check failure with Intel compiler under Windows
 !          CALL FXDRINT (IUN,NT,1)
           ihelp(1) = nt
           CALL FXDRINT (IUN,ihelp,1)
@@ -2108,6 +2111,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
         ELSE IF (RP%IFIT == 4) THEN
 
 ! DATA FOR 1D TABLES  (E.G. single parameter table, HYDKIN)
+!pb  type check failure with Intel compiler under Windows
 !          CALL FXDRINT (IUN,NT,1)
           CALL FXDRINT (IUN,ihelp,1)
           nt = ihelp(1)

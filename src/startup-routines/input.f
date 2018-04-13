@@ -3053,7 +3053,7 @@ C
           IF (NSMSTRA > 0) ALLOCATE(SMESTL(NADSPC))
         ELSE
           ALLOCATE(ESTIML(1))
-          NULLIFY (ESTIML(1)%PSPC)
+!          NULLIFY (ESTIML(1)%PSPC)
         END IF
 C
         DO J=1,NADSPC
@@ -3165,7 +3165,9 @@ C    .      ... WRONG INPUT !
             WRITE (IUNOUT,*) ' SPECTRUM TYPE = ',ISPTYP
           END IF
 
-          ALLOCATE(ESPEC)
+!          ALLOCATE(ESPEC)
+          ESPEC => ESTIML(J)
+          
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3220,7 +3222,8 @@ c  standard deviation of spectrally resolved tallies
 
           IF (NSMSTRA > 0) THEN
 c  sum over strata
-            ALLOCATE(SSPEC)
+!            ALLOCATE(SSPEC)
+            SSPEC => SMESTL(J)
             ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
 !           IF (NSIGI_SPC > 0) THEN
@@ -3229,11 +3232,11 @@ c  standard deviation of spectra tallies, sum over strata intermediate storage
               ALLOCATE(SSPEC%STV(0:NSPSA+1))
               ALLOCATE(SSPEC%GG(0:NSPSA+1))
 !           END IF
-            SSPEC = ESPEC
-            SMESTL(J)%PSPC => SSPEC
+!            SSPEC = ESPEC
+            SMESTL(J) = ESTIML(J)
           END IF
 C
-          ESTIML(J)%PSPC => ESPEC
+!          ESTIML(J)%PSPC => ESPEC
         END DO
         IREAD=0
       ELSE
@@ -3241,7 +3244,7 @@ Cdr  No block 10F found, i.e. no spectrally resolved tallies at all.
 cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
         IF (.NOT.ALLOCATED(ESTIML)) THEN
           ALLOCATE(ESTIML(1))
-          NULLIFY (ESTIML(1)%PSPC)
+!          NULLIFY (ESTIML(1)%PSPC)
         END IF
       END IF
 C
@@ -5126,19 +5129,19 @@ c  number of spectra directly estimated from Monte-Carlo trajectories
 
       DO J = 1, NADSPC
 !  directional spectrum in geometrical cell
-        IF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
-          ISPZ=IADTYP(ESTIML(J)%PSPC%IPRTYP) + ESTIML(J)%PSPC%IPRSP
+        IF (ESTIML(J)%ISRFCLL == 2) THEN
+          ISPZ=IADTYP(ESTIML(J)%IPRTYP) + ESTIML(J)%IPRSP
           NBACK_SPEC = NBACK_SPEC + COUNT(ISPZ_BACK(ISPZ,:)>0)
-          LSPCCLL(ESTIML(J)%PSPC%ISPCSRF) = .TRUE.
+          LSPCCLL(ESTIML(J)%ISPCSRF) = .TRUE.
         END IF
 
-        IF (ESTIML(J)%PSPC%ISRFCLL == 0) THEN
+        IF (ESTIML(J)%ISRFCLL == 0) THEN
 C  COUNT SURFACE SPECTRA
           NADSPC_S=NADSPC_S+1
-        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 1) THEN
+        ELSEIF (ESTIML(J)%ISRFCLL == 1) THEN
 C  COUNT CELL-BASED SPECTRA
           NADSPC_C=NADSPC_C+1
-        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
+        ELSEIF (ESTIML(J)%ISRFCLL == 2) THEN
 C  COUNT DIRECTIONAL CELL-BASED SPECTRA
           NADSPC_D=NADSPC_D+1
         ENDIF

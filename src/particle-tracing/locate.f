@@ -892,12 +892,12 @@ C  MAKE SURE NOT TO WASTE TIME IN PARTICLES WITH ZERO WEIGHT
 C
       LGPART=WEIGHT.GT.0.D0
       IF (.NOT.LGPART) RETURN
-
+!
 !  PARTICLE TYPE AND SPECIES HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES
       CALL EIRENE_SWITCH_PARTINFO
 C
-C  FIND VELOCITY SPACE COORGINATES, GIVEN: POSITION, SPECIES
+C  FIND VELOCITY SPACE COORDINATES, GIVEN: POSITION, SPECIES
 C
 C  PARAMETERS FOR VELOCITY SAMPLING DISTRIBUTION:
 C  TEWD,TIWD,VXWD,VYWD,VZDW
@@ -2068,7 +2068,7 @@ c           if (nadspc < 1) then
 c             write (iunout,*) 'locate: no storage for spectr. no. 1  '
 c             call exit_own(1)
 c           endif
-c           msurf=estiml(1)%pspc%ispcsrf
+c           msurf=estiml(1)%ispcsrf
 c           call update_spectrum (1._dp,1,0)
 
           ELSE

@@ -627,7 +627,7 @@ c  which is scored along a trajectory
 
           IF (NADSPC > 0) THEN
             DO ISPC=1,NADSPC
-              ESTIML(ISPC)%PSPC%IMETSP = 0
+              ESTIML(ISPC)%IMETSP = 0
             END DO
           END IF
 C...........................................................................
@@ -1018,10 +1018,10 @@ C  CONVERT TO %
         CALL EIRENE_STATS2_SPC(XMCP(ISTRA),FSIG,ZFLUX)
 C  CONVERT TO %
         DO ISPC=1,NADSPC
-          ESTIML(ISPC)%PSPC%SGMS=MAX(0._DP,ESTIML(ISPC)%PSPC%SGMS-EPS6)*
+          ESTIML(ISPC)%SGMS=MAX(0._DP,ESTIML(ISPC)%SGMS-EPS6)*
      .                           100.D0
-          DO J=0,ESTIML(ISPC)%PSPC%NSPC+1
-            ESTIML(ISPC)%PSPC%SGM(J)=MAX(0._DP,ESTIML(ISPC)%PSPC%SGM(J)-
+          DO J=0,ESTIML(ISPC)%NSPC+1
+            ESTIML(ISPC)%SGM(J)=MAX(0._DP,ESTIML(ISPC)%SGM(J)-
      .                               EPS6)*100.D0
           END DO
         END DO
@@ -1200,10 +1200,10 @@ C  SURFACE TALLIES
         SMESTS = SMESTS + ESTIMS
 C  SPECTRA
         DO ISPC=1,NADSPC
-          SMESTL(ISPC)%PSPC%SPC = SMESTL(ISPC)%PSPC%SPC +
-     .                            ESTIML(ISPC)%PSPC%SPC
-          SMESTL(ISPC)%PSPC%SPCS = SMESTL(ISPC)%PSPC%SPCS +
-     .                               ESTIML(ISPC)%PSPC%SPCS
+          SMESTL(ISPC)%SPC = SMESTL(ISPC)%SPC +
+     .                       ESTIML(ISPC)%SPC
+          SMESTL(ISPC)%SPCS = SMESTL(ISPC)%SPCS +
+     .                        ESTIML(ISPC)%SPCS
         END DO
       END IF
 
@@ -1230,6 +1230,7 @@ C
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
+      IF (TRCHKTIM) CALL EIRENE_OUTPUT_PARTINFO
 
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
@@ -1314,8 +1315,8 @@ C  SURFACE AVERAGED TALLIES
         ESTIMS = SMESTS
 C  SPECTRA TALLIES
         DO ISPC=1,NADSPC
-          ESTIML(ISPC)%PSPC%SPC = SMESTL(ISPC)%PSPC%SPC
-          ESTIML(ISPC)%PSPC%SPCS = SMESTL(ISPC)%PSPC%SPCS
+          ESTIML(ISPC)%SPC = SMESTL(ISPC)%SPC
+          ESTIML(ISPC)%SPCS = SMESTL(ISPC)%SPCS
         END DO
 C
 C  NOW PUT VARIANCES FOR SUM OVER STRATA BACK ONTO VARIANCE TALLIES
@@ -1323,8 +1324,8 @@ C
 C  SPECTRA TALLY VARIANCES
         DO ISPC=1,NADSPC
           IF (NSIGI_SPC > 0) THEN
-            ESTIML(ISPC)%PSPC%SGM = SMESTL(ISPC)%PSPC%STV
-            ESTIML(ISPC)%PSPC%SGMS = SMESTL(ISPC)%PSPC%STVS
+            ESTIML(ISPC)%SGM = SMESTL(ISPC)%STV
+            ESTIML(ISPC)%SGMS = SMESTL(ISPC)%STVS
           END IF
         END DO
 C  CELL AND SURFACE AVERAGED DEFAULT TALLY VARIANCES
