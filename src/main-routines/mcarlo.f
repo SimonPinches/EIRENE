@@ -66,10 +66,11 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
+      USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
 C
       CHARACTER(6) :: CIS
       CHARACTER(10) :: CDATE, CTIME

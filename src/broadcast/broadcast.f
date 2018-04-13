@@ -77,9 +77,10 @@ cdr
       USE EIRMOD_CTRIG
       USE EIRMOD_PHOTON
       USE EIRMOD_CFPLK
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
      .           imerk
       REAL(DP) :: RHELP(3)
