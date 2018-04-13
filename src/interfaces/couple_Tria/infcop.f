@@ -2296,7 +2296,7 @@ C  SECOND: SOURCES AT RADIAL (X) SURFACES
 C
         ITRI=0
         DO IX=NTIN(ITARG,IPRT),NTEN(ITARG,IPRT)-1
-          if (llcut(ix)) cycle
+          IF (LLCUT(IX)) CYCLE
           ICOU = 0
           CURPOI => HEADS(NPEC,IX)%P
           DO WHILE (ASSOCIATED(CURPOI))
@@ -3450,6 +3450,10 @@ cdr  test particle may have scored on a finer mesh (lcoarse=.false)
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
 
+cdr  fill bulk particle source rate sni(...ifl) from all contributing
+cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
+cdr  test particle may have scored on a finer mesh (lcoarse=.false)
+
           DO 7510 IPLS=1,NPLSI
             IF (IFLB(IPLS).NE.IFL) GOTO 7510
             IPLSV=MPLSV(IPLS)
@@ -3462,7 +3466,8 @@ c  ipls contributes to plasma code species ifl
 !                 IT=CURPOI%TRIANGLE
 !                 INC=NCLTAL(IT)
 
-                  INC=IY+(IX-1)*NR1TAL_SAVE        
+                  INC=IY+(IX-1)*NR1TAL_SAVE
+        
                   SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
      .                   PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
@@ -3553,6 +3558,7 @@ cdr   ipls contributes to plasma code species ifl
 !              DO WHILE (ASSOCIATED(CURPOI))
 !                IT=CURPOI%TRIANGLE
 !                INC=NCLTAL(IT)
+!
 ! use BVIN from first triangle belonging the quadrangular cell
                 CURPOI => HEADS(IY,IX)%P
                 IT=CURPOI%TRIANGLE
@@ -4063,8 +4069,8 @@ C
           SFNISY(IFL)=SFNISY(IFL)+FNIYB(IX,0,IFL)
 10111   CONTINUE
         GOTO 10113
-
 10110   CONTINUE
+
 C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
@@ -4133,6 +4139,7 @@ C
         GOTO 10118
 10115   CONTINUE
 
+C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
@@ -4193,6 +4200,8 @@ C
 
 cdr init  ... something seems fundamentally wrong here ... 
 10120   CONTINUE
+
+C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
@@ -4255,6 +4264,7 @@ C
 
 10125   CONTINUE
 
+C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.

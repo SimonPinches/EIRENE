@@ -93,7 +93,6 @@ C
           IF (NLTRZ) THEN
             VOL(IR)=AREA1(IR)*ZDF
           ELSEIF (NLTRA) THEN
-!PB            VOL(IR)=AREA1(IR)*(SX+RMTOR)*TANAL/ALPHA*PI2A
             VOL(IR)=AREA1(IR)*(SX+RMTOR)*TANAL/ALPHA*ZDF
           ELSE
             WRITE (iunout,*)
@@ -124,12 +123,10 @@ C  AREA, CENTER OF GRAVITY
      .                AELL,SX,SY,X1,Y1,X2,Y2,X3,Y3,X4,Y4)
           AREA1(IR)=AELL
           IF (NLTRT) THEN
-!PB            VOL(IR)=AREA1(IR)*(SX+RMTOR)*PI2A
             VOL(IR)=AREA1(IR)*(SX+RMTOR)*ZDF
           ELSEIF (NLTRZ) THEN
             VOL(IR)=AREA1(IR)*ZDF
           ELSEIF (NLTRA) THEN
-!PB            VOL(IR)=AREA1(IR)*(SX+RMTOR)*TANAL/ALPHA*PI2A
             VOL(IR)=AREA1(IR)*(SX+RMTOR)*TANAL/ALPHA*ZDF
           ENDIF
 121     CONTINUE

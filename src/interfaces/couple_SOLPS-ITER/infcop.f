@@ -2355,12 +2355,6 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2.5-BOUNDARY CONDITIONS
                 delte_para=0.5
                 delti_perp=2
                 delte_perp=0
-
-!pb 20.09.2011 moved up
-!pb csw 26sep2011
-!pb                delta_sheathxb=3.1
-!pb                delta_sheathyb=3.1
-!pb csw
 !  only one of the next two is different from 0
 !pb                delti_para=deltai_parxb(npbs,iy)
 !pb                delti_perp=deltai_radxb(npbs,iy)
@@ -2370,11 +2364,6 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2.5-BOUNDARY CONDITIONS
 
                    tis=TISTEP(IPLSTI,ITARG,IG)
                    tes=TESTEP(ITARG,IG)
-!pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
-!pb     .                                  FL(IPLS)/DELY*
-!pb     .            (TIS*delti_perp*ABS(Fnix_yb(npbs,iy,ifl))+
-!pb     .             TIS*delti_para*ABS(fnixb  (npbs,iy,ifl))+
-!pb     .             TES*delte_para*ABS(fnixb  (npbs,iy,ifl)))
 !pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG)+
 !pb     .                                  FL(IPLS)/DELY*
 !pb     .            (TIS*delti_perp*ABS(Fnix_yb(npbs,iy,ifl))+
@@ -2438,9 +2427,7 @@ C  SECOND: SOURCES AT RADIAL (X) SURFACES
 C
         ITRI=0
         DO IX=NTIN(ITARG,IPRT),NTEN(ITARG,IPRT)-1
-csw 11apr2011
-          IF(LCUT(IX)) CYCLE
-csw
+          IF (LCUT(IX)) CYCLE
           ICOU = 0
           CURPOI => HEADS(NPEC,IX)%P
           DO WHILE (ASSOCIATED(CURPOI))
@@ -2614,12 +2601,6 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
 !pb                delte_perp=deltae_radyb(ix,npbs)
                 tis=TISTEP(IPLSTI,ITARG,IG)
                 tes=TESTEP(ITARG,IG)
-!pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
-!pb     .                                  FL(IPLS)/DELX*
-!pb     .            (TIS*delti_perp*ABS(Fniyb  (ix,npbs,ifl))+
-!pb     .             TIS*delti_para*ABS(fniy_xb(ix,npbs,ifl))+
-!pb     .             TES*delte_para*ABS(fniy_xb(ix,npbs,ifl)))
-
 !pb                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
 !pb     .                                  FL(IPLS)/DELX*
 !pb     .            (TIS*delti_perp*ABS(Fniyb  (ix,npbs,ifl))+
@@ -3698,21 +3679,15 @@ cdr  test particle may have scored on a finer mesh (lcoarse=.false)
 c  ipls contributes to plasma code species ifl
             DO 7520 IX=1,NDXA
               DO 7530 IY=1,NDYA
-
-nicht fertig: wie kriege ich hin das beides geht ????????
-
-
-                IF (.FALSE.) THEN
 C  multiple grid options
-C  LOOP OVER ALL TRIANGLES CONTRIBUTING TO ix,iy CELL
-                  CURPOI => HEADS(IY,IX)%P
-                  DO WHILE (ASSOCIATED(CURPOI))
-                    IT=CURPOI%TRIANGLE
-                    INC=NCLTAL(IT)
-                    CURPOI=>CURPOI%NEXT
-                ELSE
-                  INC=IY+(IX-1)*NR1TAL_SAVE 
-                ENDIF
+C  either (not lcoarse) LOOP OVER ALL TRIANGLES CONTRIBUTING TO ix,iy CELL
+C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
+                CURPOI => HEADS(IY,IX)%P
+                DO WHILE (ASSOCIATED(CURPOI))
+                  IT=CURPOI%TRIANGLE
+                  INC=NCLTAL(IT)  !here: inc=it: all on fine grid
+                  CURPOI=>CURPOI%NEXT
+
                   SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
      .                   PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
@@ -3761,6 +3736,7 @@ cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
 cdr   ipls contributes to plasma code species ifl
 
             DO 7536 IX=1,NDXA
+              IF (LCUT(IX)) CYCLE
               DO 7533 IY=1,NDYA
                 CURPOI => HEADS(IY,IX)%P
                 DO WHILE (ASSOCIATED(CURPOI))
@@ -3796,6 +3772,7 @@ cdr   ipls contributes to plasma code species ifl
                      DO WHILE (ASSOCIATED(CURPOI))
                        IT=CURPOI%TRIANGLE
                        INC=NCLTAL(IT)
+                       CURPOI=>CURPOI%NEXT
 
                        SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                        SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
@@ -3804,7 +3781,7 @@ cdr   ipls contributes to plasma code species ifl
                        RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                    ABS(SIGMA(ISTAT_COP,INC)*
      .                                    SMORES/100.D0*1.D5)
-                       CURPOI=>CURPOI%NEXT
+
                      END DO
                    END DO
                  END DO
@@ -4206,13 +4183,14 @@ C
           SFNISY(IFL)=SFNISY(IFL)+FNIYB(IX,0,IFL)
 10111   CONTINUE
         GOTO 10113
-
 10110   CONTINUE
+
 C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
           TIFLX=0.
+          PIFLX=0.
           DO 10112 IFL=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIYB(IX,0,IFL)
             IF (NINCT(ITARG,IPRT)*FNIYB(IX,0,IFL).LT.0) THEN
@@ -4221,11 +4199,13 @@ C  ITARG, IPRT KNOWN FROM ABOVE
               WRITE (iunout,*)
      .          'SOUTH,IX,ITARG,IPRT,IF ',IX,ITARG,IPRT,IFL
               SFNISY(IFL)=SFNISY(IFL)+FNIYB(IX,0,IFL)
+              PIFLX      =PIFLX      +FNIYB(IX,0,IFL)
               TIFLX=TIFLX+FEIYB(IX,0)*FNIYB(IX,0,IFL)
             ENDIF
 10112     CONTINUE
 
           TIFLX=TIFLX/(FLX+EPS60)
+          SFNISY=SFNISY+PIFLX
           SFEISY=SFEISY+TIFLX
         ENDIF
 
@@ -4273,10 +4253,12 @@ C
         GOTO 10118
 10115   CONTINUE
 
+C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
           TIFLX=0.
+          PIFLX=0.
           DO 10117 IFL=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIYB(IX,NDYA,IFL)
             IF (NINCT(ITARG,IPRT)*FNIYB(IX,NDYA,IFL).LT.0) THEN
@@ -4285,10 +4267,12 @@ C  ITARG, IPRT KNOWN FROM ABOVE
               WRITE (iunout,*)
      .          'NORTH,IX,ITARG,IPRT,IFL ',IX,ITARG,IPRT,IFL
               SFNINY(IFL)=SFNINY(IFL)-FNIYB(IX,NDYA,IFL)
+              PIFLX      =PIFLX      +FNIYB(IX,NDYA,IFL)
               TIFLX=TIFLX+FEIYB(IX,NDYA)*(-FNIYB(IX,NDYA,IFL))
             ENDIF
 10117     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
+          SFNINY=SFNINY-PIFLX
           SFEINY=SFEINY-TIFLX
         ENDIF
 
@@ -4327,11 +4311,15 @@ C
         DO 10121 IFL=1,NFLA
           SFNIWX(IFL)=SFNIWX(IFL)+FNIXB(0,IY,IFL)
 10121   CONTINUE
+
 10120   CONTINUE
+
+C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
           TIFLX=0.
+          PIFLX=0.
           DO 10122 IFL=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIXB(0,IY,IFL)
             IF (NINCT(ITARG,IPRT)*FNIXB(0,IY,IFL).LT.0) THEN
@@ -4340,10 +4328,12 @@ C  ITARG, IPRT KNOWN FROM ABOVE
               WRITE (iunout,*) 'WEST,IY,ITARG,IPRT,IFL ',
      .                               IY,ITARG,IPRT,IFL
               SFNIWX(IFL)=SFNIWX(IFL)+FNIXB(0,IY,IFL)
+              PIFLX      =PIFLX      +FNIXB(0,IY,IFL)
               TIFLX=TIFLX+FEIXB(0,IY)*FNIXB(0,IY,IFL)
             ENDIF
 10122     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
+          SFNIWX=SFNIWX+PIFLX
           SFEIWX=SFEIWX+TIFLX
         ENDIF
 10123 CONTINUE
@@ -4385,10 +4375,12 @@ C
 
 10125   CONTINUE
 
+C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
         IF (ITARG.GT.0) THEN
 C  ITARG, IPRT KNOWN FROM ABOVE
           FLX=0.
           TIFLX=0.
+          PIFLX=0.
           DO 10127 IFL=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIXB(NDXA,IY,IFL)
             IF (NINCT(ITARG,IPRT)*FNIXB(NDXA,IY,IFL).LT.0) THEN
@@ -4397,10 +4389,12 @@ C  ITARG, IPRT KNOWN FROM ABOVE
               WRITE (iunout,*) 'EAST,IY,ITARG,IPRT,IFL ',
      .                               IY,ITARG,IPRT,IFL
               SFNIEX(IFL)=SFNIEX(IFL)-FNIXB(NDXA,IY,IFL)
+              PIFLX      =PIFLX      +FNIXB(NDXA,IY,IFL)
               TIFLX=TIFLX+FEIXB(NDXA,IY)*(-FNIXB(NDXA,IY,IFL))
             ENDIF
 10127     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
+          SFNIEX=SFNIEX-PIFLX
           SFEIEX=SFEIEX-TIFLX
         ENDIF
 
