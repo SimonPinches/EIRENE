@@ -188,9 +188,10 @@ csw
 csw 26jan2011 extra B25
       use eirmod_extraB25
 csw
+      use eirmod_mpi
       IMPLICIT NONE
 csw mpi
-      include 'mpif.h'
+!      include 'mpif.h'
       integer :: ier,istrx,irank,istrr, irnk
       real*8, allocatable :: dumvec(:)
       real*8, allocatable :: save_estimv(:,:),save_estims(:,:),

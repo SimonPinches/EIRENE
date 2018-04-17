@@ -2,6 +2,7 @@ cdr  may 2017:  preparing for storage reduction by elimination of unnecessary in
 cdr             commenting, 
 cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local, 
 cdr             rather than public
+cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 
       MODULE EIRMOD_COMUSR
  
@@ -121,7 +122,8 @@ C FROM HERE ON: NO EQUIVALENCE
      I         NFILE, NFILEN, NFILEM, NFILEL, NFILEK, NFILEJ,
      I         NITER, IITER,  NTIME,  ITIMV
  
-      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
+!      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
+      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
  
  

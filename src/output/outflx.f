@@ -292,12 +292,12 @@ C  SPECTRA
           IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
  
           DO ISPC=1,NADSPC
-            IF ((ESTIML(ISPC)%PSPC%ISRFCLL == 0) .AND.
-     .          (ESTIML(ISPC)%PSPC%ISPCSRF == ISF)) THEN
+            IF ((ESTIML(ISPC)%ISRFCLL == 0) .AND.
+     .          (ESTIML(ISPC)%ISPCSRF == ISF)) THEN
               WRITE (IOUT,*)
               WRITE (IOUT,*)
               WRITE (IOUT,*) ' SPECTRUM CALCULATED FOR SURFACE ',I
-              IT = ESTIML(ISPC)%PSPC%ISPCTYP
+              IT = ESTIML(ISPC)%ISPCTYP
               IF (IT == 1) THEN
                 WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
      .                            'PARTICLE FLUX IN AMP'
@@ -306,56 +306,56 @@ C  SPECTRA
      .                            'ENERGY FLUX IN WATT '
               END IF
               WRITE (IOUT,'(A20,A9)') ' TYPE OF PARTICLE : ',
-     .              TEXTYP(ESTIML(ISPC)%PSPC%IPRTYP)
-              IF (ESTIML(ISPC)%PSPC%IPRSP == 0) THEN
+     .              TEXTYP(ESTIML(ISPC)%IPRTYP)
+              IF (ESTIML(ISPC)%IPRSP == 0) THEN
                 WRITE (IOUT,'(A10,10X,A16)') ' SPECIES :',
      .                'SUM OVER SPECIES'
               ELSE
                 WRITE (IOUT,'(A10,10X,A8)') ' SPECIES :',
-     .                 TEXTS(IADTYP(ESTIML(ISPC)%PSPC%IPRTYP)+
-     .                       ESTIML(ISPC)%PSPC%IPRSP)
+     .                 TEXTS(IADTYP(ESTIML(ISPC)%IPRTYP)+
+     .                       ESTIML(ISPC)%IPRSP)
               END IF
-              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+              IF (ESTIML(ISPC)%LOG) THEN
                 WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
-     .               10._DP**ESTIML(ISPC)%PSPC%SPCMIN
+     .               10._DP**ESTIML(ISPC)%SPCMIN
                 WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
-     .               10._DP**ESTIML(ISPC)%PSPC%SPCMAX
+     .               10._DP**ESTIML(ISPC)%SPCMAX
                 WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
               ELSE
               WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
-     .               ESTIML(ISPC)%PSPC%SPCMIN
+     .               ESTIML(ISPC)%SPCMIN
               WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
-     .               ESTIML(ISPC)%PSPC%SPCMAX
+     .               ESTIML(ISPC)%SPCMAX
                 WRITE (IOUT,'(A)') ' LINEAR SPACING'
               END IF
               WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
-     .               ESTIML(ISPC)%PSPC%NSPC
+     .               ESTIML(ISPC)%NSPC
               WRITE (IOUT,*)
-              IF (ESTIML(ISPC)%PSPC%SPCS > EPS60) THEN
+              IF (ESTIML(ISPC)%SPCS > EPS60) THEN
                 IF (NSIGI_SPC == 0) THEN
-                  DO IE=1, ESTIML(ISPC)%PSPC%NSPC
-                    EN = ESTIML(ISPC)%PSPC%SPCMIN +
-     .                   (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-                    IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                  DO IE=1, ESTIML(ISPC)%NSPC
+                    EN = ESTIML(ISPC)%SPCMIN +
+     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+                    IF (ESTIML(ISPC)%LOG) THEN
                       WRITE (IOUT,'(I6,2ES12.4)') IE,10._DP**EN,
-     .                 ESTIML(ISPC)%PSPC%SPC(IE)
+     .                 ESTIML(ISPC)%SPC(IE)
                     ELSE
                       WRITE (IOUT,'(I6,2ES12.4)') IE,EN,
-     .                 ESTIML(ISPC)%PSPC%SPC(IE)
+     .                 ESTIML(ISPC)%SPC(IE)
                     END IF
                   END DO
                 ELSE
-                  DO IE=1, ESTIML(ISPC)%PSPC%NSPC
-                    EN = ESTIML(ISPC)%PSPC%SPCMIN +
-     .                   (IE-0.5)*ESTIML(ISPC)%PSPC%SPCDEL
-                    IF (ESTIML(ISPC)%PSPC%LOG) THEN
+                  DO IE=1, ESTIML(ISPC)%NSPC
+                    EN = ESTIML(ISPC)%SPCMIN +
+     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+                    IF (ESTIML(ISPC)%LOG) THEN
                       WRITE (IOUT,'(I6,3ES12.4)') IE,10._DP**EN,
-     .                   ESTIML(ISPC)%PSPC%SPC(IE),
-     .                   ESTIML(ISPC)%PSPC%SDV(IE)
+     .                   ESTIML(ISPC)%SPC(IE),
+     .                   ESTIML(ISPC)%SDV(IE)
                     ELSE
                       WRITE (IOUT,'(I6,3ES12.4)') IE,EN,
-     .                   ESTIML(ISPC)%PSPC%SPC(IE),
-     .                   ESTIML(ISPC)%PSPC%SDV(IE)
+     .                   ESTIML(ISPC)%SPC(IE),
+     .                   ESTIML(ISPC)%SDV(IE)
                     END IF
                   END DO
                 END IF
@@ -364,10 +364,10 @@ C  SPECTRA
               END IF
               WRITE (IOUT,*)
               WRITE (IOUT,*) ' INTEGRAL OF SPECTRUM ',
-     .               ESTIML(ISPC)%PSPC%SPCS
+     .               ESTIML(ISPC)%SPCS
               IF (NSIGI_SPC > 0)
      .          WRITE (IOUT,*) ' STANDARD DEVIATION  ',
-     .               ESTIML(ISPC)%PSPC%SGMS
+     .               ESTIML(ISPC)%SGMS
             END IF
           END DO
         END IF
@@ -3162,11 +3162,11 @@ C  SPECTRA
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
  
       DO ISPC=1,NADSPC
-        IF ((ESTIML(ISPC)%PSPC%ISRFCLL == 0) .AND.
-     .      (ESTIML(ISPC)%PSPC%ISPCSRF == I)) THEN
+        IF ((ESTIML(ISPC)%ISRFCLL == 0) .AND.
+     .      (ESTIML(ISPC)%ISPCSRF == I)) THEN
           CALL EIRENE_LEER (1)
           WRITE (iunout,'(A33)') ' SPECTRUM CALCULATED FOR SURFACE '
-          IT = ESTIML(ISPC)%PSPC%ISPCTYP
+          IT = ESTIML(ISPC)%ISPCTYP
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A40)') ' TYPE OF SPECTRUM : ',
      .                'INCIDENT PARTICLE FLUX IN AMP/BIN(EV)   '
@@ -3175,20 +3175,20 @@ C  SPECTRA
      .                'INCIDENT ENERGY FLUX IN WATT/BIN(EV)    '
           END IF
           WRITE (iunout,'(A20,A8)') ' TYPE OF PARTICLE : ',
-     .                       TEXTYP(ESTIML(ISPC)%PSPC%IPRTYP)
-          IF (ESTIML(ISPC)%PSPC%IPRSP == 0) THEN
+     .                       TEXTYP(ESTIML(ISPC)%IPRTYP)
+          IF (ESTIML(ISPC)%IPRSP == 0) THEN
             WRITE (iunout,'(A10,10X,A16)') ' SPECIES :',
      .                                     'SUM OVER SPECIES'
           ELSE
             WRITE (iunout,'(A10,10X,A8)') ' SPECIES :',
-     .             TEXTS(IADTYP(ESTIML(ISPC)%PSPC%IPRTYP)+
-     .                   ESTIML(ISPC)%PSPC%IPRSP)
+     .             TEXTS(IADTYP(ESTIML(ISPC)%IPRTYP)+
+     .                   ESTIML(ISPC)%IPRSP)
           END IF
           WRITE (iunout,'(A22,ES12.4)') ' INTEGRAL OF SPECTRUM ',
-     .           ESTIML(ISPC)%PSPC%SPCS
+     .           ESTIML(ISPC)%SPCS
           IF (NSIGI_SPC > 0)
      .      WRITE (iunout,'(A22,ES12.4)') ' STANDARD DEVIATION   ',
-     .           ESTIML(ISPC)%PSPC%SGMS
+     .           ESTIML(ISPC)%SGMS
         END IF
       END DO
  

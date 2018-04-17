@@ -21,24 +21,36 @@ C  AND EITHER STOP HISTORY OR CONTINUE
 C  RETURN 1: CONTINUE FLIGHT
 C  RETURN 2: STOP FLIGHT
 C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CESTIM
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CUPD
-      USE EIRMOD_CGRID
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMNNL
-      USE EIRMOD_CLGIN
-      USE EIRMOD_CSDVI
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: MPARTT, NLIM, NPARTT, NPRNL
+      USE EIRMOD_COMUSR, ONLY: ISPEZ, NSNVI
+      USE EIRMOD_CESTIM, ONLY: LEOTPHT, LEOTAT, LEOTIO, LEOTML, 
+     >                         LPOTPHT, LPOTAT, LPOTIO, LPOTML, 
+     >                         LSPUMP, 
+     >                         EOTPHT, EOTAT, EOTIO, EOTML, 
+     >                         POTPHT, POTAT, POTIO, POTML, 
+     >                         SPUMP
+      USE EIRMOD_CCONA, ONLY: PI2A
+      USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLTRA
+      USE EIRMOD_CUPD, ONLY: NNTCLL, X00, X01, Y00, Z00, Z01
+      USE EIRMOD_CGRID, ONLY: RMTOR
+      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, IPLS, ISPZ, 
+     >                         ITYP, IPERID, IPOLG, IPOLGN, IPSTT, 
+     >                         ISTRA, E0, LGLAST, MSURF, MSURFG,
+     >                         MASURF, MRSURF, MPSURF, MTSURF, NLSRFX, 
+     >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI, 
+     >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ, 
+     >                         WEIGHT, X0, Y0, Z0
+      USE EIRMOD_COMNNL, ONLY: IPART, IPRNLI, IPRNLS, ITMSTP, NPRNLS, 
+     >                         NTMSTP, RPART, TIME0
+      USE EIRMOD_CLGIN, ONLY: NSTSI
+      USE EIRMOD_CSDVI, ONLY: LMETSPW
  
       IMPLICIT NONE
  
       REAL(DP), INTENT(IN) :: PR
-      REAL(DP) :: DIST
-      INTEGER :: J
+      INTEGER  :: IND
+      REAL(DP) :: DIST, WGHTSG
 C
       X0=X0+VELX*TT
       Y0=Y0+VELY*TT
@@ -101,12 +113,8 @@ CDR STOP ALSO AFTER NPRNLS SCORES FOR STRATUM ISTRA ??
       if (iprnli <= nprnl.and.iprnls <= nprnls(istra)) then
 cdr   if (iprnli <= nprnl) then
 
-        DO 100 J=1,NPARTT
-          RPART(J,IPRNLI)=RPSTT(J)
-100     CONTINUE
-        DO 110 J=1,MPARTT
-          IPART(J,IPRNLI)=IPSTT(J)
-110     CONTINUE
+        RPART(1:NPARTT,IPRNLI)=RPSTT(1:NPARTT)
+        IPART(1:MPARTT,IPRNLI)=IPSTT(1:MPARTT)
       end if 
  
 C  DON'T SCORE ON CENSUS ANY MORE FOR THIS STRATUM
@@ -125,16 +133,17 @@ C  UPDATE ENERGY FLUX ONTO TIME-SURFACE MSURF=NLIM+NSTSI
 C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
-cdr 
-cdr  still to be tested, then the part ini ...end below can go out.
-cdr
-cdr     ITYP_OLD=ITYP
-cdr     MSURFG=0
-cdr     WPR=WEIGHT
-cdr     CALL EIRENE_UPDATE_SURFACE(ITYP_OLD,WPR,1)
-
-cdr ini--> out
-        IF (ITYP.EQ.1) THEN
+cdr  to replace out ini--out end code below
+cdr  to be tested....
+        MSURFG=0
+        WGHTSG=WEIGHT
+        IND=1
+c       CALL EIRENE_UPDATE_SURFACE (ITYP,WGHTSG,IND)
+cdr out ini
+        IF (ITYP.EQ.0) THEN
+          IF (LEOTPHT) EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WEIGHT
+          IF (LPOTPHT) POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WEIGHT
+        ELSEIF (ITYP.EQ.1) THEN
           IF (LEOTAT) EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WEIGHT
           IF (LPOTAT) POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WEIGHT
         ELSEIF (ITYP.EQ.2) THEN
@@ -143,10 +152,8 @@ cdr ini--> out
         ELSEIF (ITYP.EQ.3) THEN
           IF (LEOTIO) EOTIO(IION,MSURF)=EOTIO(IION,MSURF)+E0*WEIGHT
           IF (LPOTIO) POTIO(IION,MSURF)=POTIO(IION,MSURF)+WEIGHT
-cdr     elseif (ityp.eq.0) then
         ENDIF
-cdr end --> out
-
+cdr out end
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.

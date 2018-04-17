@@ -48,15 +48,15 @@ C  COP-ARRAYS:
 C  SPECTRA
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         DO ISPC=1,NADSPC
-          SMESTL(ISPC)%PSPC%SPC = 0._DP
+          SMESTL(ISPC)%SPC = 0._DP
           IF (NSIGI_SPC > 0) THEN
-            SMESTL(ISPC)%PSPC%STV = 0._DP
-            SMESTL(ISPC)%PSPC%GG = 0._DP
+            SMESTL(ISPC)%STV = 0._DP
+            SMESTL(ISPC)%GG = 0._DP
           END IF
-          SMESTL(ISPC)%PSPC%SPCS = 0._DP
-          SMESTL(ISPC)%PSPC%SGMS = 0._DP
-          SMESTL(ISPC)%PSPC%STVS = 0._DP
-          SMESTL(ISPC)%PSPC%GGS = 0._DP
+          SMESTL(ISPC)%SPCS = 0._DP
+          SMESTL(ISPC)%SGMS = 0._DP
+          SMESTL(ISPC)%STVS = 0._DP
+          SMESTL(ISPC)%GGS = 0._DP
         END DO
       END IF
  

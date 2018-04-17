@@ -59,10 +59,12 @@ cdr   a number of 'save' missing, compared to solps_iter
 cdr   llcut (FZJ versions) rather than lcut (solps_iter), lcut is broadcasted and on common 
 cdr   eirmod_cpolyg. Also set again in timer. same meaning?
 c
-c??   ???     additional input read from block 14:
-c             LCHKQUD       
+cdr      additional input read from block 14:
+c        LCHKQUD   uncommented read variable, taken out from read ***14,
+c                  now set to .false. Fills array IREVERS. Still needed ?
+cdr       
 c             IMF,ITCO 
-c  unused ??
+c  unused ?
 
 cdr feb 17:  nradd_tal corrected: NRADD was added twice
 c            set vacuum parameters also in additional cells from block 2e,
@@ -86,7 +88,10 @@ cdr          only partially done
 
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
-cdr Mar 18:  scpveii(nstra) removed, was unused.
+
+cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
+cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
+cdr           remove unused array: scpveii
 c......................................................................................
 
 
@@ -123,7 +128,7 @@ C   IT THEN PRODUCES INPUT DATA FOR EIRENE
 C   INPUT BLOCK 5 (PLASMA DATA) AND BLOCK 7 (SURFACE RECYCLING SOURCES)
 C
 C
-C   THIS PARTICULAR VERSION LINKS EIRENE TO THE B2   2D MULTIFLUID EDGE
+C   THIS PARTICULAR VERSION LINKS EIRENE TO THE B2_Tria   2D MULTIFLUID EDGE
 C   PLASMA TRANSPORT CODE.
 C
 C   IT WAS WRITTEN BY D.REITER AND P.BOERNER, FZ-JUELICH
@@ -235,6 +240,7 @@ c the corresponding tallies scored from random sampling in eirene
      .            EPPL_COP(:,:), EPEL_COP(:)
 C
      .           ,CPV_CMP(:,:,:)
+c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            PPLODA(:,:), CPVODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
@@ -276,7 +282,8 @@ C
      .          DXPOL,DYPOL,PAR,
      .          fniprt, fltt, e0b2, frac, celdel, dd, cfac
 
-      INTEGER, SAVE :: J, IRC, JC, INC, K, IADD, NAS, IPUNKT, NSSIR, 
+      INTEGER, SAVE :: J, IRC, JC, INC, 
+     .           K, IADD, NAS, IPUNKT, NSSIR, 
      .           NUMSI, NBAR, ISNR, ISC, IS, NASMOD, NRS, NADMOD, 
      .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
      .           NTGPRI, IPRT, IO29, NEND, NINI, NSSIP,
@@ -306,6 +313,7 @@ C
      .                ,IFBOUND, lchkqud
 
       LOGICAL, ALLOCATABLE, SAVE :: LLCUT(:)
+
       logical :: l1, l2, lxsrf
 CTRIG A
       TYPE :: CELL
@@ -402,8 +410,9 @@ C
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
-!pb
+cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
+cdr
       mshfrm = 0!  optional flag for geometry file format: linda, carree, sonnet
       ntrfrm = 0
 C
@@ -468,7 +477,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
             READ (ZEILE,'(12I6)') I,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                              NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                              NTEN(IT,IPRT),NIFLG(IT,IPRT),
-     .                              NPTC(IT,IPRT),NPTCM(IT,IPRT), !VK NPTCM
+     .                              NPTC(IT,IPRT),NPTCM(IT,IPRT),
      .                              NSPZI(IT,IPRT),NSPZE(IT,IPRT),
      .                              NEMOD(IT,IPRT) 
             IREAD=0
@@ -486,7 +495,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
      .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
-     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT), !VK NPTCM
+     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
      .                               NSPZI(IT,IPRT),NSPZE(IT,IPRT),
      .                               NEMOD(IT,IPRT)
             IF (NIXY(IT,IPRT).EQ.1) THEN
@@ -509,8 +518,8 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
         IF (TRCINT) CALL EIRENE_MASR4
      .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',
      .                           CHGP,CHGEE,CHGEI,CHGMOM)
-C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2 INTO EIRENE
-C  HERE: B2 VOLUME TALLIES
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2_TRIA INTO EIRENE
+C  HERE: B2_TRIA VOLUME TALLIES
         READ (IUNIN,'(I6)') NAINB
 C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12  
         NAIN = MAX(NAIN,NAINB)
@@ -707,11 +716,10 @@ C
         ENDDO
       ENDDO
       CALL EIRENE_LEER(1)
-!pb
+CDR UP TO NOW: UNDERLYING STRUCTURED (COARSE) GRID OF POLYGONS
       levgeo = 3
       nr1stm = nr1st-1
       call eirene_sneigh
-!pb
 C
 C  READ ADDITIONAL GEOMETRICAL DATA (MESH DISTORTION, DEAD CELLS)
 C  SAME FORMAT AS FORT.31, I.E., INDEX MAPPING MAY BE NECESSARY
@@ -799,6 +807,8 @@ C
 C
         DEALLOCATE (ALPHXB)
         DEALLOCATE (ALPHYB)
+        DEALLOCATE (XAISO)
+        DEALLOCATE (IAISO)
 C
       ELSE
         CALL EIRENE_LEER(1)
@@ -1054,7 +1064,7 @@ C
 
 C  NEXT TOROIDAL SURFACES
 
-C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2
+C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2_TRIA
 
         DO IT = 1, NT3RD
           IF (IT.EQ.INUMP(ISTS,3)) THEN

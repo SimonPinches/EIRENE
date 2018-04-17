@@ -55,7 +55,7 @@ C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
 
 
-c    REAC  : in case FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR:
+c    REAC  : in case FILNAM = AMJUEL, HYDHEL, METHAN, H2VIBR:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
 c    REAC  : in case FILNAM.eq.CONST:
@@ -219,7 +219,7 @@ cdr  for reading asymptotics parameters from data files
       CHARACTER(8) :: SECTION, FITFLAG
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
       LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
-     .                  LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
+     .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
       BACK="\\"
