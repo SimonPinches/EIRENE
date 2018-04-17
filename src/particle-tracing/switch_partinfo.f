@@ -90,6 +90,25 @@ C  save stratum, old type, species
       iion_old = iion
       ipls_old = ipls
 
+      NULLIFY (PDENX)
+      NULLIFY (EDENX)
+      NULLIFY (PXEL)
+      NULLIFY (PXAT)
+      NULLIFY (PXML)
+      NULLIFY (PXIO)
+      NULLIFY (PXPL)
+      NULLIFY (EXEL)
+      NULLIFY (EXAT)
+      NULLIFY (EXML)
+      NULLIFY (EXIO)
+      NULLIFY (EXPL)
+      NULLIFY (VXDENX)
+      NULLIFY (VYDENX)
+      NULLIFY (VZDENX)
+      NULLIFY (MXPL)
+      NULLIFY (PXX)
+      NULLIFY (EXX)
+      
       select case(ityp)
 
       case(0)
@@ -158,25 +177,6 @@ C  save stratum, old type, species
 
       case(1)
 !  atoms
-       PDENX  => PDENA(IATM,:) 
-       EDENX  => EDENA(IATM,:) 
-       PXEL   => PAEL(:)   
-       PXAT   => PAAT(1:NATMI,:)  
-       PXML   => PAML(1:NMOLI,:)  
-       PXIO   => PAIO(1:NIONI,:) 
-       PXPL   => PAPL(1:NPLSI,:)
-       EXEL   => EAEL(:)   
-       EXAT   => EAAT(:)   
-       EXML   => EAML(:)
-       EXIO   => EAIO(:)
-       EXPL   => EAPL(1:NPLSI,:)
-       VXDENX => VXDENA(IATM,:)
-       VYDENX => VYDENA(IATM,:)
-       VZDENX => VZDENA(IATM,:)
-       MXPL   => MAPL(1:NPLSI,:)
-       PXX    => PAAT(1:NATMI,:)
-       EXX    => EAAT(:)
-
        LPDENX  => LPDENA 
        LEDENX  => LEDENA 
        LPXEL   => LPAEL  
@@ -195,6 +195,25 @@ C  save stratum, old type, species
        LMXPL   => LMAPL
        LPXX    => LPAAT 
        LEXX    => LEAAT 
+
+       IF (LPDENX)  PDENX  => PDENA(IATM,:) 
+       IF (LEDENX)  EDENX  => EDENA(IATM,:) 
+       IF (LPXEL)   PXEL   => PAEL(:)   
+       IF (LPXAT)   PXAT   => PAAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PAML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PAIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PAPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EAEL(:)   
+       IF (LEXAT)   EXAT   => EAAT(:)   
+       IF (LEXML)   EXML   => EAML(:)
+       IF (LEXIO)   EXIO   => EAIO(:)
+       IF (LEXPL)   EXPL   => EAPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENA(IATM,:)
+       IF (LVYDENX) VYDENX => VYDENA(IATM,:)
+       IF (LVZDENX) VZDENX => VZDENA(IATM,:)
+       IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PAAT(1:NATMI,:)
+       IF (LEXX)    EXX    => EAAT(:)
 
        LEX     => LEA
 
@@ -222,25 +241,6 @@ C  save stratum, old type, species
       case(2)
 !  molecules
 
-       PDENX  => PDENM(IMOL,:) 
-       EDENX  => EDENM(IMOL,:) 
-       PXEL   => PMEL(:)   
-       PXAT   => PMAT(1:NATMI,:)  
-       PXML   => PMML(1:NMOLI,:)  
-       PXIO   => PMIO(1:NIONI,:) 
-       PXPL   => PMPL(1:NPLSI,:)
-       EXEL   => EMEL(:)   
-       EXAT   => EMAT(:)   
-       EXML   => EMML(:)
-       EXIO   => EMIO(:)
-       EXPL   => EMPL(1:NPLSI,:)
-       VXDENX => VXDENM(IMOL,:)
-       VYDENX => VYDENM(IMOL,:)
-       VZDENX => VZDENM(IMOL,:)
-       MXPL   => MMPL(1:NPLSI,:)
-       PXX    => PMML(1:NMOLI,:)
-       EXX    => EMML(:)
-
        LPDENX  => LPDENM 
        LEDENX  => LEDENM 
        LPXEL   => LPMEL  
@@ -259,6 +259,25 @@ C  save stratum, old type, species
        LMXPL   => LMMPL
        LPXX    => LPMML 
        LEXX    => LEMML 
+
+       IF (LPDENX)  PDENX  => PDENM(IMOL,:) 
+       IF (LEDENX)  EDENX  => EDENM(IMOL,:) 
+       IF (LPXEL)   PXEL   => PMEL(:)   
+       IF (LPXAT)   PXAT   => PMAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PMML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PMIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PMPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EMEL(:)   
+       IF (LEXAT)   EXAT   => EMAT(:)   
+       IF (LEXML)   EXML   => EMML(:)
+       IF (LEXIO)   EXIO   => EMIO(:)
+       IF (LEXPL)   EXPL   => EMPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENM(IMOL,:)
+       IF (LVYDENX) VYDENX => VYDENM(IMOL,:)
+       IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
+       IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PMML(1:NMOLI,:)
+       IF (LEXX)    EXX    => EMML(:)
 
        LEX     => LEM
 
@@ -286,25 +305,6 @@ C  save stratum, old type, species
       case(3)
 !  test ions
 
-       PDENX  => PDENI(IION,:) 
-       EDENX  => EDENI(IION,:) 
-       PXEL   => PIEL(:)   
-       PXAT   => PIAT(1:NATMI,:)  
-       PXML   => PIML(1:NMOLI,:)  
-       PXIO   => PIIO(1:NIONI,:) 
-       PXPL   => PIPL(1:NPLSI,:)
-       EXEL   => EIEL(:)   
-       EXAT   => EIAT(:)   
-       EXML   => EIML(:)
-       EXIO   => EIIO(:)
-       EXPL   => EIPL(1:NPLSI,:)
-       VXDENX => VXDENI(IION,:)
-       VYDENX => VYDENI(IION,:)
-       VZDENX => VZDENI(IION,:)
-       MXPL   => MIPL(1:NPLSI,:)
-       PXX    => PIIO(1:NIONI,:)
-       EXX    => EIIO(:)
-
        LPDENX  => LPDENI 
        LEDENX  => LEDENI 
        LPXEL   => LPIEL  
@@ -323,6 +323,25 @@ C  save stratum, old type, species
        LMXPL   => LMIPL
        LPXX    => LPIIO 
        LEXX    => LEIIO 
+
+       IF (LPDENX)  PDENX  => PDENI(IION,:) 
+       IF (LEDENX)  EDENX  => EDENI(IION,:) 
+       IF (LPXEL)   PXEL   => PIEL(:)   
+       IF (LPXAT)   PXAT   => PIAT(1:NATMI,:)  
+       IF (LPXML)   PXML   => PIML(1:NMOLI,:)  
+       IF (LPXIO)   PXIO   => PIIO(1:NIONI,:) 
+       IF (LPXPL)   PXPL   => PIPL(1:NPLSI,:)
+       IF (LEXEL)   EXEL   => EIEL(:)   
+       IF (LEXAT)   EXAT   => EIAT(:)   
+       IF (LEXML)   EXML   => EIML(:)
+       IF (LEXIO)   EXIO   => EIIO(:)
+       IF (LEXPL)   EXPL   => EIPL(1:NPLSI,:)
+       IF (LVXDENX) VXDENX => VXDENI(IION,:)
+       IF (LVYDENX) VYDENX => VYDENI(IION,:)
+       IF (LVZDENX) VZDENX => VZDENI(IION,:)
+       IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
+       IF (LPXX)    PXX    => PIIO(1:NIONI,:)
+       IF (LEXX)    EXX    => EIIO(:)
 
        LEX     => LEIO
 
@@ -356,5 +375,104 @@ C  save stratum, old type, species
       end select 
 
       return
+
+      entry eirene_output_partinfo
+
+      call eirene_leer(2)
+
+      call eirene_headng ('STATISTICS OVER CPU TIME SPENT'//
+     .                    ' IN FOLLOWING TRAJECTORIES ',57)
+
+! sum over species
+!      time_array(:,0,1:nstra) = sum(time_array,2)
+      do it =0, 3
+        do is = 1, nstrai
+          time_array(it,0,is) = sum(time_array(it,1:,is))
+        end do
+      end do
+! sum over strata
+!      time_array(:,:,0) = sum(time_array,3)
+      do it = 0, 3
+        do is = 0, ubound(time_array,2)
+           time_array(it,is,0) = sum(time_array(it,is,1:))
+        end do
+      end do
+
+      write (0,*) ' vor do'
+      do istr = 0, nstrai
+
+        call eirene_leer(1)
+        if (istr == 0) then
+          write (iunout,'(1x,A,I6)') 'SUM OVER STRATA '
+          write (iunout,'(1x,A,I6)') '=============== '
+        else
+          write (iunout,'(1x,A,I6)') 'STRATUM ',istr
+          write (iunout,'(1x,A,I6)') '============== '
+        end if
+
+        if (any(time_array(0,:,:) > 0._dp)) then
+          call eirene_leer(1)
+          write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
+          CALL EIRENE_MASYR1 ('PHOTONS = ',time_array(0,0:nphot,:),
+     .                LOGPHOT,ISTR,0,NPHOT,0,NSTRA,TEXTS(1))
+          CALL EIRENE_MASAGE
+     .      ('SUM OVER SPECIES                               ')
+          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(0,1:nphot,ISTR)))
+        end if
+
+        if (any(time_array(1,:,:) > 0._dp)) then
+          call eirene_leer(1)
+          write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
+          CALL EIRENE_MASYR1 ('ATOMS =   ',time_array(1,0:natm,:),
+     .                LOGATM,ISTR,0,NATM,0,NSTRA,TEXTS(NSPH+1))
+         CALL EIRENE_MASAGE
+     .      ('SUM OVER SPECIES                               ')
+          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(1,1:natm,ISTR)))
+        end if
+
+        if (any(time_array(2,:,:) > 0._dp)) then
+          call eirene_leer(1)
+          write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
+          CALL EIRENE_MASYR1 ('MOLECULES=',time_array(2,0:nmol,:),
+     .                LOGMOL,ISTR,0,NMOL,0,NSTRA,TEXTS(NSPA+1))
+          CALL EIRENE_MASAGE
+     .      ('SUM OVER SPECIES                               ')
+          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(2,1:nmol,ISTR)))
+        end if
+
+        if (any(time_array(3,:,:) > 0._dp)) then
+          call eirene_leer(1)
+          write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
+          CALL EIRENE_MASYR1 ('TEST IONS=',time_array(3,0:nion,:),
+     .                LOGION,ISTR,0,NION,0,NSTRA,TEXTS(NSPAM+1))
+          CALL EIRENE_MASAGE
+     .      ('SUM OVER SPECIES                               ')
+          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(3,1:nion,ISTR)))
+        end if
+
+!        if (any(time_array(4,:,:) > 0._dp)) then
+!          write (iunout,*) ' TIME (SEC) SPENT IN FOLLOWING '
+!          CALL EIRENE_MASYR1 ('BULK IONS=',time_array(4,1:npls,:),
+!     .                LOGPLS,ISTR,1,NPLS,1,NSTRA,TEXTS(NSPAMI+1))
+!          CALL EIRENE_MASAGE
+!     .      ('SUM OVER SPECIES                               ')
+!          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(4,1:npls,ISTR)))
+!        end if
+
+      end do
+      return
+
+      entry eirene_reinit_partinfo
+
+      if (allocated(time_array)) deallocate(time_array)
+      istra_old=-1
+      ityp_old=-1
+      iphot_old=-1 
+      iatm_old=-1 
+      imol_old=-1 
+      iion_old=-1
+      ipls_old=-1
+
+      return      
       end subroutine eirene_switch_partinfo
 

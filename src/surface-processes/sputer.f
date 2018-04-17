@@ -1,6 +1,7 @@
 c  apr. 15: For external use of sputer.f: reduce commons, 
 c           remove: ccona
-c  feb. 15: Flag: ITA=0: do not even try to sputer with modpys=2, if target is not identified.
+c  feb. 15: Flag: ITA=0: do not even try to sputter with modpys=2, 
+c                        if target is not identified.
 c           this avoids huge amounts of irrelevant error messages
 
 C  Nov. 14: meaning of igasp=0 and igasc=0 changed, see comments below
@@ -595,7 +596,7 @@ C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
         ENDIF
 C
       ELSEIF (MODPYS.EQ.9) THEN
-C  USER SUPPLIED SPUTER MODEL
+C  USER SUPPLIED SPUTTER MODEL
         CALL EIRENE_SP1USR
 C
       ENDIF
@@ -842,7 +843,7 @@ C  Haasz-Davis formula, 1998, with flx. dep from Roth, Nucl.Fus 2004
          C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
          yield2=C * EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(9)
-C  USER SUPPLIED SPUTER MODEL
+C  USER SUPPLIED SPUTTER MODEL
         CALL EIRENE_SP1USR
       CASE DEFAULT
         write (iunout,*) 'error in sputer.f. modchm ?? ',modchm

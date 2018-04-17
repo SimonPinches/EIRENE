@@ -78,9 +78,10 @@ cdr
       USE EIRMOD_CTRIG
       USE EIRMOD_PHOTON
       USE EIRMOD_CFPLK
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
      .           imerk
       REAL(DP) :: RHELP(3)
@@ -1229,50 +1230,50 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
          END IF
          DO I=1,NADSPC
            CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCMIN,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCMIN,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCMAX,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCMAX,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCDEL,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCDEL,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCDELI,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCDELI,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ESP_MIN,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%ESP_MIN,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ESP_MAX,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%ESP_MAX,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ESP_00,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%ESP_00,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPC_XPLT,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPC_XPLT,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPC_YPLT,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPC_YPLT,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPC_SAME,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPC_SAME,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCVX,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCVX,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCVY,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCVY,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCVZ,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCVZ,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%NSPC,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%NSPC,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ISPCTYP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%ISPCTYP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ISPCSRF,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%ISPCSRF,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IPRTYP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IPRTYP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IPRSP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IPRSP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IMETSP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IMETSP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ISRFCLL,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%ISRFCLL,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IDIREC,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IDIREC,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
-             NSPS = ESTIML(I)%PSPC%NSPC
+             NSPS = ESTIML(I)%NSPC
 !pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
 !pb     .                     my_pe, imerk, nsps
              IF (.NOT.ASSOCIATED(ESTIML(I)%SPC)) THEN

@@ -3,7 +3,7 @@
 c  changed in 2011:  new atomic/molecular data structure introduced,
 c                    REACDAT(IR)% ..., replaces array CREAC(...)
 C
-c    at the end of this routine, for each reaction card, call: SET_REACTION_DATA.F
+c    at the end of this routine, for each reaction card, call: SET_REACTION_DATA(IR,..)
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting, cleanup, nov. 15: continued
 cdr  jan 16: started to document options for asymptotics
@@ -21,8 +21,8 @@ cdr            some comments corrected
 cdr   Aug. 16: reading Tmin, Emin from hydhel disabled.
 cdr            May have corrupted extrapolation in some cases
 c     Sept.16: two new internal subroutines,
-c              a) to read validity range information,
-c              b) three parameters for each validity boundary, for extrapolation options
+c              a) READ_RANGE:  to read validity range information,
+c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
 C
 C
@@ -46,16 +46,16 @@ c
 c
 c
 C    FILNAM: read a&m data from file filnam,
-c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST
-CC           FILNAM=ADAS:  special treatment, see below.
+c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
+CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
 C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
 c                        currently available: h_colrad.f
-C            FILNAM=HYDRTC: nothing to be done here  ??
+C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
 C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
 
 
-c    REAC  : in case FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR:
+c    REAC  : in case FILNAM = AMJUEL, HYDHEL, METHAN, H2VIBR:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
 c    REAC  : in case FILNAM.eq.CONST:
@@ -186,17 +186,19 @@ C
       CHARACTER(3), INTENT(IN) :: CRC
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                            RC2MIN, RC2MAX, FP2(6)
+cdr
       REAL(DP) :: RTMAX, ERTMAX, ETH
       CHARACTER(50) :: REACSTR
       REAL(DP) :: CONST, E_EL, E_K
+      LOGICAL :: LCONST
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
       REAL(DP) :: FP1L(3), FP1R(3), FP2B(3), FP2T(3)
       REAL(DP) :: R1MN, R1MX, R2MN, R2MX
+
       INTEGER :: I, IND, J, K, IH, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, IANF, IFILE, IL, INDG
       INTEGER :: IF1MN, IF1MX, IF2MN, IF2MX
       CHARACTER(80) :: ZEILE, LAST_TEX, ULINE
-!ITER CHARACTER(2) :: CHR
       CHARACTER(4) :: CHR, CETH, BEND
       CHARACTER(3) :: CHRL, CHRR, CHRB, CHRT
       CHARACTER(200) :: DSN, DIR
@@ -205,8 +207,8 @@ C
       CHARACTER(3) :: CCRC
       CHARACTER(8) :: SECTION
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
-      LOGICAL :: LCONST,LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
-     .                  LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
+      LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
+     .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
       BACK="\\"

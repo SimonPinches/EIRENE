@@ -24,16 +24,19 @@ C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NLIM, NPARTT, NPRNL
       USE EIRMOD_COMUSR, ONLY: ISPEZ, NSNVI
-      USE EIRMOD_CESTIM, ONLY: LEOTAT, LEOTIO, LEOTML, LPOTAT, LPOTIO, 
-     >                         LPOTML, LSPUMP, EOTAT, EOTIO, EOTML, 
-     >                         POTAT, POTIO, POTML, SPUMP
+      USE EIRMOD_CESTIM, ONLY: LEOTPHT, LEOTAT, LEOTIO, LEOTML, 
+     >                         LPOTPHT, LPOTAT, LPOTIO, LPOTML, 
+     >                         LSPUMP, 
+     >                         EOTPHT, EOTAT, EOTIO, EOTML, 
+     >                         POTPHT, POTAT, POTIO, POTML, 
+     >                         SPUMP
       USE EIRMOD_CCONA, ONLY: PI2A
       USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLTRA
       USE EIRMOD_CUPD, ONLY: NNTCLL, X00, X01, Y00, Z00, Z01
       USE EIRMOD_CGRID, ONLY: RMTOR
       USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, IPLS, ISPZ, 
      >                         ITYP, IPERID, IPOLG, IPOLGN, IPSTT, 
-     >                         ISTRA, E0, LGLAST, MSURF, 
+     >                         ISTRA, E0, LGLAST, MSURF, MSURFG,
      >                         MASURF, MRSURF, MPSURF, MTSURF, NLSRFX, 
      >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI, 
      >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ, 
@@ -130,7 +133,17 @@ C  UPDATE ENERGY FLUX ONTO TIME-SURFACE MSURF=NLIM+NSTSI
 C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
-        IF (ITYP.EQ.1) THEN
+cdr  to replace out ini--out end code below
+cdr  to be tested....
+        MSURFG=0
+        WGHTSG=WEIGHT
+        IND=1
+c       CALL EIRENE_UPDATE_SURFACE (ITYP,WGHTSG,IND)
+cdr out ini
+        IF (ITYP.EQ.0) THEN
+          IF (LEOTPHT) EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WEIGHT
+          IF (LPOTPHT) POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WEIGHT
+        ELSEIF (ITYP.EQ.1) THEN
           IF (LEOTAT) EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WEIGHT
           IF (LPOTAT) POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WEIGHT
         ELSEIF (ITYP.EQ.2) THEN
@@ -140,6 +153,7 @@ C
           IF (LEOTIO) EOTIO(IION,MSURF)=EOTIO(IION,MSURF)+E0*WEIGHT
           IF (LPOTIO) POTIO(IION,MSURF)=POTIO(IION,MSURF)+WEIGHT
         ENDIF
+cdr out end
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.

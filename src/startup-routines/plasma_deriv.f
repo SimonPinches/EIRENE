@@ -209,7 +209,7 @@ c   check: itold ge 0 and itold.le 3
                   IBS = IBS + 1
                   SPEC%IPRTYP = 4
                   SPEC%IPRSP = IPLS
-                  BACK_SPEC(IBS)%PSPC => SPEC
+                  BACK_SPEC(IBS) = SPEC
                 END IF
               END IF
             ENDDO
@@ -283,7 +283,7 @@ c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
                   SPEC%SPC = SPEC%SPC * BOLTZFAC
                   SPEC%IPRTYP = 4
                   SPEC%IPRSP = IPLS
-                  BACK_SPEC(IBS)%PSPC => SPEC
+                  BACK_SPEC(IBS) = SPEC
                 END IF
               END IF
             END IF
@@ -392,7 +392,7 @@ cdr  what is this??  background spectrum ??
                   SPEC%IPRTYP = 4
                   SPEC%IPRSP = IPLS
                   SPEC%SPC = SPEC%SPC * RCORONA*DEIN(IR)*AM1
-                  BACK_SPEC(IBS)%PSPC => SPEC
+                  BACK_SPEC(IBS) = SPEC
                 END IF
               END IF
             END IF
@@ -476,11 +476,11 @@ c  only temperature dependence in reduced population coefficient
                         SPEC%IPRTYP = 4
                         SPEC%IPRSP = IPLS
                         SPEC%SPC = SPEC%SPC * RCOLRAD
-                        BACK_SPEC(IBS)%PSPC => SPEC
+                        BACK_SPEC(IBS) = SPEC
                       ELSE
-                        IF (  (BACK_SPEC(IBS)%PSPC%NSPC == SPEC%NSPC)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMIN==SPEC%SPCMIN)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMAX==SPEC%SPCMAX))
+                        IF (  (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
      .                  THEN
                           SPEC%SPC = SPEC%SPC * RCOLRAD
                           BACK_SPEC(IBS)%SPC =
@@ -550,11 +550,11 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
                         SPEC%IPRTYP = 4
                         SPEC%IPRSP = IPLS
                         SPEC%SPC = SPEC%SPC * RCOLRAD
-                        BACK_SPEC(IBS)%PSPC => SPEC
+                        BACK_SPEC(IBS) = SPEC
                       ELSE
-                        IF (  (BACK_SPEC(IBS)%PSPC%NSPC == SPEC%NSPC)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMIN==SPEC%SPCMIN)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMAX==SPEC%SPCMAX))
+                        IF (  (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
      .                  THEN
                           SPEC%SPC = SPEC%SPC * RCOLRAD
                           BACK_SPEC(IBS)%SPC =
