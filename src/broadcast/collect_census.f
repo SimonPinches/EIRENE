@@ -6,6 +6,8 @@ cdr                      and the weight stored on census during particle tracing
 cdr  
 cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
+cdr March 18:  cleanup M.R., use RPRTT and IPRTT pointer more consistently.
+cdr            But now: rpartt must be transfered back to rpart or rpartc census arrays.
 c
 
       subroutine EIRENE_collect_census
@@ -32,10 +34,11 @@ c
       USE EIRMOD_COMUSR, ONLY: ISPEZI, NPRT, NSPH, NSPA, NSPAM
       USE EIRMOD_COMPRT, ONLY: IUNOUT, ISPZ, ISTRA, IPSTT, RPSTT, WEIGHT
       USE EIRMOD_CPES, ONLY: MY_PE, NPRS
+      USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, peflux, 
@@ -68,7 +71,7 @@ c
       DO I=1,IPRNLI
         RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
 ! WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE 
-! RESCALING FACTORS, DONE LATER IN TMSTEP.
+! RESCALING FACTORS FATM, FMOL, FION, FPHOT.  DONE LATER IN TMSTEP.
         IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
         ITYP=ISPEZI(ISPZ,-1)
         IF (ITYP.EQ.0) THEN
@@ -126,7 +129,10 @@ c  cumulated number of census scores, and census atomic flux, summed from all PE
 ! THERE IS ENOUGH STORAGE for all scores from all processors.
 !                          send all particles to processor 0
 
-
+cmr fix:   
+cdr Here we now trust that npartt and mpartt are properly set.
+cdr A corresponding check should be implemented in eirmod_parmmod,
+cdr where currently these numbers are hard coded. 
         allocate (rbuf(npartt,nprnl))
         allocate (ibuf(mpartt,nprnl))
         rbuf = 0._dp
@@ -364,7 +370,7 @@ c  binary search
           end do
 
 
-c  partc, ipartc will later be used in tmstep to store census for 
+c  rpartc, ipartc will later be used in tmstep to store census  [rpart,ipart] for 
 c  re-sampling in locate at next time-step
 c  here we abuse this storage to for the re-sampled census per stratum.
           rpartc(:,i) = rpart(:,iu)
@@ -398,6 +404,9 @@ c
 
 c   accumulated atomic flux from current processor
           sumrpw = sumrpw + add
+
+C required to keep the changed weight:
+          RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
         end do
 
 cdr diagnose resampling procedure:
@@ -467,6 +476,8 @@ c  combine all the resampled census from all processors into a single one: rpart
           do i=1,iprnli
             RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
             weight = weight * sclfac
+C required to keep the changed weight:
+            RPART(1:NPARTT,I)=RPSTT(1:NPARTT)
           end do
         end if
 cdr  for resampling in locate at next timestep:

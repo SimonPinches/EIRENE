@@ -3,10 +3,11 @@
 C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
 
       USE EIRMOD_PRECISION
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
 csw mpi
-      include 'mpif.h'
+!      include 'mpif.h'
 csw
 
       PRIVATE

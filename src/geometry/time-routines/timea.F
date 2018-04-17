@@ -584,7 +584,7 @@ c               i.e. OCTREE optimization in in-active
       RETURN
       
 c  write the octree to vtk tool output
-      ENTRY EIRENE_TIMEA3_VTKOUT()
+      ENTRY EIRENE_TIMEA3_VTKOUT
         if (associated(tree) .and. NLOCTREE) then
 c  call octree function to plot the tree recursive
           call OCTREE_PrintVTK(tree, IVTKOUT)
@@ -773,7 +773,7 @@ c       check if we are inside of the octree space anymore...
       RETURN
       
 c     entry to call the octree building internal subroutine
-      ENTRY EIRENE_TIMEA0_OC()
+      ENTRY EIRENE_TIMEA0_OC
         CALL EIRENE_TIMEA0_BUILDOC()
       RETURN
 

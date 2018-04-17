@@ -19,7 +19,8 @@ cdr           correlated sampling etc.
      L TRCGRD, TRCSUR, TRCREF, TRCFLE, TRCAMD,
      L TRCINT, TRCLST, TRCSOU, TRCREC, TRCTIM,
      L TRCBLA, TRCBLP, TRCBLE, TRCBLM, TRCBLI,
-     L TRCBLPH,TRCTAL, TRCOCT, TRCCEN, TRCRNF
+     L TRCBLPH,TRCTAL, TRCOCT, TRCCEN, TRCRNF,
+     L TRCHKTIM
 
 CVK TRACING FOR DEBUGGING VIA WRITE(0,...
       INTEGER,PUBLIC,PARAMETER :: LDBGTRC=9
@@ -30,7 +31,6 @@ CVK TRACING FOR DEBUGGING VIA WRITE(0,...
      L                         TRCDBGM,  !... MCARLO
      L                         TRCDBGF,  !... FOLNEUT
      L                         TRCDBGL,  !... LOCATE
-     L
      L                         TRCDBGS,  !... SURFACE INTERACTION ROUTINES
      L                         TRCDBGG,  !... GEOMETRY ROUTINES
      L                         TRCDBGMPI,!... MPI ROUTINES
@@ -62,7 +62,7 @@ CVK END
       IF (ALLOCATED(LTRCEI)) RETURN
  
       MCTRC=5+3*NVLPR+4*NSRPR
-      LCTRC=25
+      LCTRC=26
  
       ALLOCATE (LTRCEI(LCTRC))
       ALLOCATE (ITRCEI(MCTRC))
@@ -102,6 +102,7 @@ CVK END
       TRCOCT => LTRCEI(23)
       TRCCEN => LTRCEI(24)
       TRCRNF => LTRCEI(25)
+      TRCHKTIM => LTRCEI(26)
 
 
 C  DEEPER DEBUGGING OPTIONS, VK

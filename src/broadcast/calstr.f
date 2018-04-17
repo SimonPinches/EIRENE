@@ -12,6 +12,7 @@ cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 cdr july 17:  comments re. call to user routine: calstr_usr.
+cpb Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
 
       SUBROUTINE EIRENE_CALSTR
 cdr
@@ -48,10 +49,11 @@ c       npean, npeen:   the processors in the range npean,...,npeen work on stra
       USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COUTAU
       USE EIRMOD_CSTEP
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
 C
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       real(dp), allocatable :: help(:), helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
@@ -61,7 +63,7 @@ C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1)
       real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: icomgrp(0:nstra)
       integer :: ier1, ier, ir, npean, npeen, i, mpicw, ispc, my_pe_gr,
-     .           mxdim, ns, j
+     .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm),lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
@@ -71,7 +73,9 @@ c  range of processors working on stratum ISTRA
       npeen = npesta(istra)+npestr(istra)-1
 c
       call mpi_comm_group (mpi_comm_world,mpicw,ier)
-      call mpi_comm_split (mpi_comm_world,istra,my_pe-npesta(istra),
+!pb  istra is a pointer, type check failure with Intel compiler under Windows
+      istr = istra
+      call mpi_comm_split (mpi_comm_world,istr,my_pe-npesta(istra),
      .                     icomgrp(istra),ier)
 
 
@@ -91,19 +95,19 @@ c
 
         allocate (help(mxdim))
      	
-        call mpi_reduce(WTOTM(0,istra),helpm,nmoli+1,
+        call mpi_reduce(WTOTM(0:nmoli,istra),helpm,nmoli+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) WTOTM(0:nmoli,istra) = helpm(0:nmoli)
 
-        call mpi_reduce(WTOTA(0,istra),helpa,natmi+1,
+        call mpi_reduce(WTOTA(0:natmi,istra),helpa,natmi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) WTOTA(0:natmi,istra) = helpa(0:natmi)
 
-        call mpi_reduce(WTOTI(0,istra),helpi,nioni+1,
+        call mpi_reduce(WTOTI(0:nioni,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) WTOTI(0:nioni,istra) = helpi(00:nioni)
 
-        call mpi_reduce(WTOTP(0,istra),helpp,nplsi+1,
+        call mpi_reduce(WTOTP(0:nplsi,istra),helpp,nplsi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) WTOTP(0:nplsi,istra) = helpp(0:nplsi)
 
@@ -146,30 +150,30 @@ csw
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) ETOTP(istra) = helpc
 
-        call mpi_reduce(EELFI(0,istra),helpi,nioni+1,
+        call mpi_reduce(EELFI(0:nioni,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) EELFI(0:nioni,istra) = helpi(0:nioni)
 
 c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
-        call mpi_reduce(PPATI(0,istra),helpa,natmi+1,
+        call mpi_reduce(PPATI(0:natmi,istra),helpa,natmi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) PPATI(0:natmi,istra) = helpa(0:natmi)
 
-        call mpi_reduce(PPMLI(0,istra),helpm,nmoli+1,
+        call mpi_reduce(PPMLI(0:nmoli,istra),helpm,nmoli+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) PPMLI(0:nmoli,istra) = helpm(0:nmoli)
 
-        call mpi_reduce(PPIOI(0,istra),helpi,nioni+1,
+        call mpi_reduce(PPIOI(0:nioni,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) PPIOI(0:nioni,istra) = helpi(0:nioni)
 
         if (nphoti > 0) then
-          call mpi_reduce(PPPHTI(0,istra),helpph,nphoti+1,
+          call mpi_reduce(PPPHTI(0:nphoti,istra),helpph,nphoti+1,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	      if (my_pe_gr==0) PPPHTI(0:nphoti,istra) = helpph(0:nphoti)
         end if
 
-        call mpi_reduce(PPPLI(0,istra),helpp,nplsi+1,
+        call mpi_reduce(PPPLI(0:nplsi,istra),helpp,nplsi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) PPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
@@ -190,7 +194,7 @@ c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) EPPHTI(istra) = helpc
 
-        call mpi_reduce(EPPLI(0,istra),helpp,nplsi+1,
+        call mpi_reduce(EPPLI(0:nplsi,istra),helpp,nplsi+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) EPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
@@ -215,30 +219,33 @@ c  all surface averaged tallies: estims
 
 c   energy resolved ("spectra") tallies
         do ispc=1,nadspc
-          ns = estiml(ispc)%pspc%nspc
+          ns = estiml(ispc)%nspc
           allocate (helpest(ns+2))
-          call mpi_reduce(estiml(ispc)%pspc%spc,helpest,
-     .                    estiml(ispc)%pspc%nspc+2,
+          call mpi_reduce(estiml(ispc)%spc(0:ns+1),helpest,
+     .                    estiml(ispc)%nspc+2,
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-          if (my_pe_gr==0) estiml(ispc)%pspc%spc(0:ns+1)=helpest(1:ns+2)
+          if (my_pe_gr==0) estiml(ispc)%spc(0:ns+1)=helpest(1:ns+2)
 
 c  standard deviation of energy resolved "spectra"
           if (nsigi_spc > 0) then
-            call mpi_reduce(estiml(ispc)%pspc%sdv,helpest,
-     .                      estiml(ispc)%pspc%nspc+2,
+            call mpi_reduce(estiml(ispc)%sdv,helpest,
+     .                      estiml(ispc)%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0)
-     .      estiml(ispc)%pspc%sdv(0:ns+1) = helpest(1:ns+2)
+     .      estiml(ispc)%sdv(0:ns+1) = helpest(1:ns+2)
 
-            call mpi_reduce(estiml(ispc)%pspc%sgm,helpest,
-     .                      estiml(ispc)%pspc%nspc+2,
+            call mpi_reduce(estiml(ispc)%sgm,helpest,
+     .                      estiml(ispc)%nspc+2,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
             if (my_pe_gr==0)
-     .        estiml(ispc)%pspc%sgm(0:ns+1) = helpest(1:ns+2)
+     .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
 
-            call mpi_reduce(estiml(ispc)%pspc%sgms,helpest,1,
+!            call mpi_reduce(estiml(ispc)%sgms,helpest,1,
+!     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+!            if (my_pe_gr==0) estiml(ispc)%sgms = helpest(1)
+            call mpi_reduce(estiml(ispc)%sgms,helpc,1,
      .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
-            if (my_pe_gr==0) estiml(ispc)%pspc%sgms = helpest(1)
+            if (my_pe_gr==0) estiml(ispc)%sgms = helpc
           end if
 
           deallocate (helpest)
@@ -398,25 +405,25 @@ csw
 
         allocate (lhelp(mxdim))
 
-        call mpi_reduce(LOGMOL(0,ISTRA),lhelpm,NMOLI+1,
+        call mpi_reduce(LOGMOL(0:nmoli,ISTRA),lhelpm,NMOLI+1,
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) LOGMOL(0:nmoli,ISTRA) = lhelpm(0:nmoli)
 
-        call mpi_reduce(LOGATM(0,ISTRA),lhelpa,NATMI+1,
+        call mpi_reduce(LOGATM(0:natmi,ISTRA),lhelpa,NATMI+1,
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) LOGATM(0:natmi,ISTRA) = lhelpa(0:natmi)
 
-        call mpi_reduce(LOGION(0,ISTRA),lhelpi,NIONI+1,
+        call mpi_reduce(LOGION(0:nioni,ISTRA),lhelpi,NIONI+1,
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) LOGION(0:nioni,ISTRA) = lhelpi(0:nioni)
 
         if (nphoti > 0) then
-          call mpi_reduce(LOGPHOT(0,ISTRA),lhelpph,NPHOTI+1,
+          call mpi_reduce(LOGPHOT(0:nphoti,ISTRA),lhelpph,NPHOTI+1,
      .         mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
 	      if (my_pe_gr==0) LOGPHOT(0:nphoti,ISTRA) = lhelpph(0:nphoti)
         end if
 
-        call mpi_reduce(LOGPLS(0,ISTRA),lhelpp,NPLSI+1,
+        call mpi_reduce(LOGPLS(0:nplsi,ISTRA),lhelpp,NPLSI+1,
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
 	    if (my_pe_gr==0) LOGPLS(0:nplsi,ISTRA) = lhelpp(0:nplsi)
 	
