@@ -14,11 +14,14 @@ cdr  databases amjuel, h2vibr,
 c  input:
 c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1)) 
 c  al    : argument of fit, log(parm)
-c  rcmin : left boundary of valid range
-c  rcmax : right boundary of valid range
+c  rcmin : left boundary of valid range of PARM
+c  rcmax : right boundary of valid range of PARM
 c  fpp   : parameters for extrapolation from valid range
 c  ifexmn: flag for choice of left (low end) extrapolation expression
 c  ifexmx: flag for choice of right (high end) extrapolation expression 
+cdr           ifex=0:  constant extrapolation
+cdr           ifex<0:  find extrapolation parameters here, and call extrap.f
+cdr           ifex>0:  find parameters boundary, and call extrap.f 
  
       use EIRMOD_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -28,13 +31,15 @@ c  ifexmx: flag for choice of right (high end) extrapolation expression
       real(dp), intent(in) :: cf(9), fpp(6)
       real(dp), intent(in) :: al, rcmin, rcmax
       integer, intent(in) :: ifexmn, ifexmx
-      real(dp) :: cou, fp(6), s01, s02, ds12, expo1, expo2, ccxm1,
+      real(dp) :: p1, cou, fp(6), s01, s02, ds12, expo1, expo2, ccxm1,
      .            ccxm2, almin,almax,coumin,coumax, 
      .            EIRENE_extrap
       integer :: ii, if8, ifex
       logical :: trc
+
+      p1=al
  
-      if (al < rcmin) then
+      if (p1 < rcmin) then
  
 C  PARM BELOW MINIMUM PARAMETER FOR POLYNOM FIT:
  
@@ -42,7 +47,7 @@ C  PARM BELOW MINIMUM PARAMETER FOR POLYNOM FIT:
 
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN
         IF (IFEXMN.LT.0) THEN
-C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(SIGMA)
+C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(parm)
           S01=RCMIN
           S02=LOG(1.25_DP)+RCMIN    ! use parm=exp(rcmin) and 1.25*parm for extrapolation
           DS12=S02-S01
@@ -59,7 +64,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(SIG
           FP(2)=      (CCXM2-CCXM1)/DS12
           FP(3)=0.D0
 C
-          IFEX=5
+          IFEX=3
           ALMIN =RCMIN
           COUMIN=EXP(EXPO1)
 
@@ -72,31 +77,32 @@ C  IFEXMN IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmn
             coumin = coumin * RCMIN + cf(ii)
           end do
           ifex = ifexmn
-C  determine parameter and fit value at left boundary. may be needed by fct. extrap
+C  determine parameter and fit value at left boundary. May be needed by fct. extrap
           ALMIN= RCMIN
           COUMIN=EXP(COUMIN)
 
         ELSE
 
-C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED
+C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED (IFEX=0)
 C  WHAT TO WE DO NOW ???
+          P1=RCMIN
           if (trc) write (iunout,*) 'unclear extrapolation in sngl_poly'
           GOTO 100
 
         ENDIF
  
-        COU=EIRENE_EXTRAP(AL,ALMIN,COUMIN,IFEX,FP(1),FP(2),FP(3))
+        COU=EIRENE_EXTRAP(P1,ALMIN,COUMIN,IFEX,FP(1),FP(2),FP(3))
         cou = log(cou)
         return
  
-      elseif (al > rcmax) then
+      elseif (p1 > rcmax) then
  
 C  PARM IS ABOVE MAXIMUM VALID PARAMETER FOR FIT:
  
         FP = FPP
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX
         IF (IFEXMX.LT.0) THEN
-C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(SIGMA)
+C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(parm)
           S01=RCMAX
           S02=LOG(0.75_DP)+RCMAX   ! use parm=exp(rcmin) and 0.75*parm for extrapolation 
           DS12=S02-S01
@@ -105,7 +111,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(SIG
           DO 2 II=1,8
             IF8=9-II
             EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at right boundary -->EXPO1=log(fit)
-            EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(0.75*parleft), parleft= left boundary
+            EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(0.75*parright), parright= right boundary
 2         CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
@@ -113,7 +119,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(SIG
           FP(5)=      (CCXM2-CCXM1)/DS12
           FP(6)=0.D0
 C
-          IFEX=5
+          IFEX=3
           ALMAX =RCMAX
           COUMAX=EXP(EXPO1)
 
@@ -132,25 +138,26 @@ C  determine parameter and fit value at right boundary. may be needed by fct. ex
 
         ELSE
 
-C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED
+C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED (IFEX=0)
 C  WHAT TO WE DO NOW ???
+          P1=RCMAX
           if (trc) write (iunout,*) 'unclear extrapolation in sngl_poly'
           GOTO 100
 
         ENDIF
 
-        COU=EIRENE_EXTRAP(AL,ALMAX,COUMAX,IFEX,FP(4),FP(5),FP(6))
+        COU=EIRENE_EXTRAP(P1,ALMAX,COUMAX,IFEX,FP(4),FP(5),FP(6))
         cou = log(cou)
         return
  
       ENDIF
  
-C  PARAMETER "AL" IS WITHIN VALID RANGE OF FIT:
+C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
  
 100   cou = cf(9)
  
       do ii = 8, 1, -1
-        cou = cou * al + cf(ii)
+        cou = cou * p1 + cf(ii)
       end do
  
 

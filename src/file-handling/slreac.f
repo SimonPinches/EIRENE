@@ -84,12 +84,12 @@ c           Default: RiMX = exp(20.)
 c    FPi    Fitting coefficients for extrapolation (three for MIN and three for MAX, each)
 c
 c    JFEXiMN Flag for selecting extrapolation expression, left end (minimum)
-c           =0  :  no data yet, try to read extrapolation from atomic data file here
-c           else:  extrapolation is set explicitly in input file, block 4a
+c            =0  :  no data yet, try to read extrapolation from atomic data file here
+c            else:  extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 c    JFEXiMX Flag for selecting extrapolation expression, right end (maximum)
-c           =0  :  no data yet, try to read extrapolation from atomic data file here
-c           else:  extrapolation is set explicitly in input file, block 4a
+c            =0  :  no data yet, try to read extrapolation from atomic data file here
+c            else:  extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
@@ -131,8 +131,8 @@ C                      =3,  cross-section (ionisation/excitation cross section
 C                           formula (METHANE,...)
 C           CASE  IH=2,3....,10 (H.2, H.3,....H.10)
 C       IFTFLG(IR,...  =0,  FOR RATE COEFFICIENTS (9-POLYNOMIAL, 9X9-DOUBLE POLYNOMIAL)
-C                      =10, FOR RATE COEFFICIENTS (CONSTANT) 
-C                      =100 FOR RATE, not rate coefficient, 
+C                      =10, FOR RATE COEFFICIENTS (CONSTANT)
+C                      =100 FOR RATE, not rate coefficient,
 c                      =110 FOR RATE, not rate coefficient, (CONSTANT)
 c
 C  READ A&M DATA FROM THE FILES INTO EIRENE ARRAY CREAC
@@ -357,7 +357,7 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
 
       REAC_NAME(IR) = REACSTR(2:)
 C
-C Set character string identifyers to search coefficients in data files.
+C Set character string identifyers CHR to search coefficients in data files.
 C  H.0
       IF (ISW.EQ.0) THEN
         CHR=' p0 '
@@ -555,7 +555,7 @@ c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'TAB2D').NE.0.OR.
+      IF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
      .    INDEX(FILNAM,'ADAS') .NE.0) THEN
         CALL EIRENE_READ_TAB2D (IR,REAC,ISW,IZ1)
 c  close unit=29+ifoff:   done in READ_TAB2D.f
@@ -563,8 +563,8 @@ c  close unit=29+ifoff:   done in READ_TAB2D.f
       END IF
 
       IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-cdr  proprietary option at FZ Juelich. 
-cdr  Not ready, and not to be used by 3rd party 
+cdr  proprietary option at FZ Juelich.
+cdr  Not ready, and not to be used by 3rd party
         CLOSE (UNIT=29+ifoff)
         CH123 = H123
         CCRC = CRC
@@ -598,7 +598,7 @@ C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
         END IF
         CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
      .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.FALSE.)
-c  no optional extrapolation flags here 
+c  no optional extrapolation flags here
         RETURN
       ENDIF
 C
@@ -646,7 +646,7 @@ C
         INDFF=INDEX(ZEILE,FITFLAG)
         IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
 c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
-        IF (INDFF > 0) THEN  !OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
+        IF (INDFF > 0) THEN  ! OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
 c  read parameter for type of fitting expression from data file
           READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
           GOTO 3
@@ -704,7 +704,7 @@ C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
           ELSE
             DO 17 I=1,9
 C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1,K+2
-              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3) 
+              READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
 c    first  index I: I-th block, vertical, Temp. dependence
 c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
 c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
@@ -739,7 +739,7 @@ c  DEFAULT:  NO DATA FOUND
       LGR1MAX=.FALSE.
       LGR2MIN=.FALSE.
       LGR2MAX=.FALSE.
-      
+
 c  INDICATE, IF EXTRAPOLATION COEFFICIENTS (fp1l,fp1r,fp2l,fp2r) ARE FOUND ON DATA FILE
 c  DEFAULT:  NO DATA FOUND
       LGC1MIN=.FALSE.
@@ -749,7 +749,10 @@ c  DEFAULT:  NO DATA FOUND
 
 C  FLAG FOR CHOICE OF EXTRAPOLATION OPTION:
 C  DEFAULT ASYMPTOTIC EXPRESSION  (...=0): NO ASYMPTOTICS
-C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): TAKE LAST VALID POINT AT r1mn,r1mx,....
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): SET TO ZERO BEYOND LAST VALID POINT
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=4): TAKE LAST VALID POINT AT r1mn,r1mx,....
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=5): 2ND ORDER POLYNOM BEYOND LAST VALID POINT
+C                                          (OLD DEFAULT FOR CROSS SECTIONS)
 c  AND EXTRAPOLATE CONSTANT FROM THERE
       IF1MN = 0
       IF1MX = 0
@@ -773,7 +776,7 @@ c
 c  at this point we have found a card ZEILE which contains
 c  one of the extrapolation parameter identifiers al0,ar0,....,k0l,k0r
 c  that correcsonds to the H.1, ....H.12 type of data IR.
-c  next: read up to three fit coefficients.
+c  next: read up to three fit coefficients FP.L OR FP.R.
 c  CHR(2:2) is set to either character a,b,c,....,or k
 c
         IF (INDEX(ZEILE,CH1L) /= 0) THEN
@@ -793,30 +796,42 @@ c
           CALL EIRENE_READ_COEFFS (ZEILE,CHR(2:2),FP2R)
           LGC2MAX = .TRUE.
         END IF
-        
+c
+c  currently foreseen asymptotic data identifyers in data files:
+c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX, 
+c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
+c                    P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
-c  default extrapoloation from r1mn (by constant) will be: jfexmn1=1
-          IF (IF1MN == 0) IF1MN = 1
           LGR1MIN = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPL1
+          IF (IF1MN == 0 .AND. LGC1MIN) IF1MN = 5
+c  default extrapolation from r1mn (by constant continuation) will be: jfex1mn=4
+          IF (IF1MN == 0) IF1MN = 4
         END IF
         IF (INDEX(ULINE,TRIM(C1R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1R,'EXT-FLG',R1MX,IF1MX)
-c  default extrapoloation from r1mx (by constant) will be: jfex1mx=1
-          IF (IF1MX == 0) IF1MX = 1
           LGR1MAX = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPR1
+          IF (IF1MX == 0 .AND. LGC1MAX) IF1MX = 5
+c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
+          IF (IF1MX == 0) IF1MX = 4
         END IF
         IF (INDEX(ULINE,TRIM(C2L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
-c  default extrapoloation from r2mn (by constant) will be: jfex2mn=1
-          IF (IF2MN == 0) IF2MN = 1
           LGR2MIN = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPL2
+          IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5 
+c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
+          IF (IF2MN == 0) IF2MN = 4
         END IF
         IF (INDEX(ULINE,TRIM(C2R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
-c  default extrapoloation from r2mx (by constant) will be: jfex2mx=1
-          IF (IF2MX == 0) IF2MX = 1
           LGR2MAX = .TRUE.
+c  old default: 2nd order polynom beyond valid range, with coefs. FPr2
+          IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5 
+c  default extrapolation from r2mx (by constant continuation) will be: jfex2mx=4
+          IF (IF2MX == 0) IF2MX = 4
         END IF
 C
 C  ...AND FURTHER REACTION PARAMETERS, NOT RELATED TO ASYMPTOTICS
@@ -863,7 +878,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           if (if1mn.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP1L         ',fp1l(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp1l,3,3)
         END IF
 
         IF (LGR1MIN) RC1MIN = LOG(R1MN)
@@ -888,7 +903,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           if (if1mx.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP1R         ',fp1r(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp1r,3,3)
         END IF
 
         IF (LGR1MAX) RC1MAX = LOG(R1MX)
@@ -913,7 +928,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           if (if2mn.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP2L         ',fp2l(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp2l,3,3)
         END IF
         IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2L
@@ -935,7 +950,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           if (if2mx.ge.3)
-     .      CALL EIRENE_MASR3('PARAMETERS FP2R         ',fp2r(1:3))
+     .      CALL EIRENE_MASRR1('PARAMETERS ',fp2r,3,3)
         END IF
         IF (LGR2MAX) RC2MAX = LOG(R2MX)
         IF (LGC2MAX) FP2(4:6) = FP2R
@@ -992,7 +1007,6 @@ c  to be used for extrapolation
       END SUBROUTINE EIRENE_READ_COEFFS
 
 
- 
       SUBROUTINE EIRENE_READ_RANGE (ZEILE,KEY1,KEY2,RNG,IFX)
 c  called from slreac, after the original fit coefficients for reaction IR
 c  are read.
@@ -1014,13 +1028,13 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
       INTEGER, INTENT(OUT) :: IFX
       INTEGER :: IND1, IND2, INDE, INDP, INDX, INDA, INDG
       CHARACTER(20) :: FORM
-      
+
       IND1 = INDEX(ZEILE,TRIM(KEY1))
       IND2 = INDEX(ZEILE,TRIM(KEY2))
 
       RNG = 0._DP
       IFX = 0
-      
+
       IF (IND1 > 0) THEN
         INDG = INDEX(ZEILE,'=')
         INDE = INDG + VERIFY(ZEILE(INDG+1:),'+-0123456789DEed. ') - 1
@@ -1036,5 +1050,5 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
       IF (IND2 > 0) READ (ZEILE(IND2+7:),*) IFX
 
       END SUBROUTINE EIRENE_READ_RANGE
-     
+
       END

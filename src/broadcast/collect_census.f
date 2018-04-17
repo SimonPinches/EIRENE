@@ -8,7 +8,6 @@ cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
 cdr March 18:  cleanup M.R., use RPRTT and IPRTT pointer more consistently.
 cdr            But now: rpartt must be transfered back to rpart or rpartc census arrays.
-cdr            Currently all weight corrections are lost again.
 c
 
       subroutine EIRENE_collect_census

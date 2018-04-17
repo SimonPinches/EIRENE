@@ -2877,6 +2877,7 @@ C
         ALLOCATE (RESSEI(0:NSTRA))
 
         ALLOCATE (FLXEIR(NSTRA))
+
         CALL EIRENE_ALLOC_BRASPOI
         CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NSTRA,IFOFF)
 C
@@ -3487,6 +3488,7 @@ cdr  scaling was already on coarse grained grid: in=ncltal(it)
             END IF
 
 cdr   particle sources done.
+
 cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
 cdr   ipls contributes to plasma code species ifl
 
@@ -4289,6 +4291,7 @@ cdr  sheath done
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NPBS,IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NPBS,IY)
 10132       CONTINUE
+
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
