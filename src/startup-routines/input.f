@@ -110,11 +110,10 @@ C
       USE EIRMOD_CESTIM
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
-      USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
+      INCLUDE 'mpif.h'
 C
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
@@ -2864,12 +2863,11 @@ C
 900   CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
-!pb      IREAD=0
+      IREAD=0
       CALL EIRENE_MASAGE
      .  ('*** 9. DATA FOR STATISTIC AND NON-ANALOG MODEL   ')
 C
-910   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
-      IREAD = 0
+910   READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 910
 C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
       NLOGIN = MAX(1,NATMI_IN + NMOLI_IN + NIONI_IN + NPHOTI_IN)
@@ -3261,7 +3259,7 @@ c  search for input block 11a
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
 CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
      .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
-     .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,TRCHKTIM
+     .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
 C
       READ (IUNIN,6666) NVOLPR, NSPCPR
@@ -3726,11 +3724,8 @@ C
 c    reset clock of source particles from old census to time0
 cdr  must be done also for time0=0.0, for otherwise flight time =0 is possible
 cdr  for census source particles and resulting error exits
-C Would gain performance by turning RPSTT into a pointer
             DO I=1,IPRNL
-              RPSTT(1:NPARTT)=RPARTC(1:NPARTT,I)
-              TIME=TIME0
-              RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
+              RPARTC(10,I)=TIME0
             ENDDO
             WRITE (iunout,*) 'PARTICLE CLOCK RESET '
             WRITE (iunout,*) 'FIRST TIMESTEP RUNS FROM TIM1 TO TIM2:  '
@@ -5123,19 +5118,19 @@ c  number of spectra directly estimated from Monte-Carlo trajectories
 
       DO J = 1, NADSPC
 !  directional spectrum in geometrical cell
-        IF (ESTIML(J)%ISRFCLL == 2) THEN
-          ISPZ=IADTYP(ESTIML(J)%IPRTYP) + ESTIML(J)%IPRSP
+        IF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
+          ISPZ=IADTYP(ESTIML(J)%PSPC%IPRTYP) + ESTIML(J)%PSPC%IPRSP
           NBACK_SPEC = NBACK_SPEC + COUNT(ISPZ_BACK(ISPZ,:)>0)
-          LSPCCLL(ESTIML(J)%ISPCSRF) = .TRUE.
+          LSPCCLL(ESTIML(J)%PSPC%ISPCSRF) = .TRUE.
         END IF
 
-        IF (ESTIML(J)%ISRFCLL == 0) THEN
+        IF (ESTIML(J)%PSPC%ISRFCLL == 0) THEN
 C  COUNT SURFACE SPECTRA
           NADSPC_S=NADSPC_S+1
-        ELSEIF (ESTIML(J)%ISRFCLL == 1) THEN
+        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 1) THEN
 C  COUNT CELL-BASED SPECTRA
           NADSPC_C=NADSPC_C+1
-        ELSEIF (ESTIML(J)%ISRFCLL == 2) THEN
+        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
 C  COUNT DIRECTIONAL CELL-BASED SPECTRA
           NADSPC_D=NADSPC_D+1
         ENDIF
