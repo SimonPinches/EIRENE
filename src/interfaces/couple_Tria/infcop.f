@@ -1536,7 +1536,7 @@ C  NOW THE SURFACE CENTERED DATA
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FNIYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
-C  distinct from B2.5: these velocities are cell centered in b2.5
+C  distinct from B2: these velocities are cell centered in b2.5
       CALL EIRENE_INDMAP (UUB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VVB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -2737,7 +2737,7 @@ C
 C  BOHM CRITERION CHECK DONE
 C
 C  ELTEST: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
-
+C
 C  NEXT: TARGET MAXW. ENERGY FLUXES
 C  EADD=  IN EV, SUCH THAT EADD*PARTICLE FLUX = ENERGY FLUX
           DRR=RRSTEP(ITARG,IG+1)-RRSTEP(ITARG,IG)
@@ -2746,8 +2746,8 @@ C  ENERGY FLUX DEFINED WITH PARAMETERS IN INPUT BLOCK 7
             EADD=SORENI(ITARG)
           ELSEIF (NEM.EQ.2.OR.NEM.EQ.3) THEN
             EADD=SORENI(ITARG)*TISTEP(IPLSTI,ITARG,IG)+SORENE(ITARG)*
-     .           TESTEP(ITARG,IG)                
-          ELSEIF (NEM.GE.4.AND. NEM.LE.7) THEN
+     .           TESTEP(ITARG,IG)
+          ELSEIF (NEM.GE.4 .AND. NEM.LE.7) THEN
             PERWI=PERW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             PARWI=PARW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             EADD=EIRENE_EMAXW(TISTEP(IPLSTI,ITARG,IG),PERWI,PARWI)
@@ -2839,7 +2839,7 @@ C
       WRITE (iunout,*) ISTRAA,ISTRAE
       LSHORT=.FALSE.
       LSTP3=.TRUE.
-      LSTOP=.TRUE.
+      LSTOP=LSTP3
       IFIRST=0
       NDXY=(NDXA-1)*NR1TAL_SAVE+NDYA
       GOTO 99992
@@ -2885,7 +2885,6 @@ C
         RESSMO = 0._DP
         RESSEE = 0._DP
         RESSEI = 0._DP
-c
       ENDIF
 C
       IF (.NOT.LSHORT) THEN
@@ -2893,7 +2892,7 @@ C
         RESSMO(ISTRAA:ISTRAE,:) = 0._DP
         RESSEE(ISTRAA:ISTRAE) = 0._DP
         RESSEI(ISTRAA:ISTRAE) = 0._DP
-      END IF
+      ENDIF
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
@@ -2954,8 +2953,6 @@ C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
 C  IF THE SOURCE STRENGTH IS TO BE CHANGED DURING THE SHORT CYCLE (E.G.: VOL-REC)
           FLXEIR(ISTRAI)=1._DP
         ENDIF
-C
-C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
 
 C
         CHPM  = 0._DP
@@ -3397,8 +3394,6 @@ cdr                                       can be set without need for covariance
         icp=nplsi
         icp2=2*nplsi
         icp3=3*nplsi
-
-
 
 cdr  fill bulk particle source rate sni(...ifl) from all contributing
 cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
@@ -4148,7 +4143,7 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           DO 10122 IF=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIXB(0,IY,IF)
             IF (NINCT(ITARG,IPRT)*FNIXB(0,IY,IF).LT.0) THEN
-              WRITE (iunout,*) 
+              WRITE (iunout,*)
      .          'RECYCLING TARGET, BUT WRONG FLOW DIRECTION: '
               WRITE (iunout,*) 'WEST,IY,ITARG,IPRT,IF ',IY,ITARG,IPRT,IF
               PIFLX=PIFLX+FNIXB(0,IY,IF)
@@ -4205,7 +4200,7 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           DO 10127 IF=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIXB(NDXA,IY,IF)
             IF (NINCT(ITARG,IPRT)*FNIXB(NDXA,IY,IF).LT.0) THEN
-              WRITE (iunout,*) 
+              WRITE (iunout,*)
      .          'RECYCLING TARGET, BUT WRONG FLOW DIRECTION: '
               WRITE (iunout,*) 'EAST,IY,ITARG,IPRT,IF ',IY,ITARG,IPRT,IF
               PIFLX=PIFLX+FNIXB(NDXA,IY,IF)
@@ -4480,11 +4475,11 @@ C
         ENDDO
         CALL EIRENE_LEER(2)
 
-        WRITE (iunout,*) 
+        WRITE (iunout,*)
      .    ' VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2 '
         CALL EIRENE_MASR4(' B2BREM,B2RAD,-B2QIE,-B2VDP     ',
      .               B2BREM,B2RAD,-B2QIE,-B2VDP)
-        WRITE (iunout,*) 
+        WRITE (iunout,*)
      .    ' TARGET SHEATH CONTRIBUTIONS,ELECTRONS AND IONS '
         CALL EIRENE_MASRR1 (' TARGETS,EI',SHEAI(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SHEAE(1),NTARGI,5)

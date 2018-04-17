@@ -6,6 +6,8 @@ cdr                      and the weight stored on census during particle tracing
 cdr  
 cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
+cdr March 18:  cleanup M.R., use RPRTT and IPRTT pointer more consistently.
+cdr            But now: rpartt must be transfered back to rpart or rpartc census arrays.
 c
 
       subroutine EIRENE_collect_census
@@ -368,7 +370,7 @@ c  binary search
           end do
 
 
-c  partc, ipartc will later be used in tmstep to store census for 
+c  rpartc, ipartc will later be used in tmstep to store census  [rpart,ipart] for 
 c  re-sampling in locate at next time-step
 c  here we abuse this storage to for the re-sampled census per stratum.
           rpartc(:,i) = rpart(:,iu)

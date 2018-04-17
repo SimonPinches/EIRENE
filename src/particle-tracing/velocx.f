@@ -30,15 +30,15 @@ C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
 C                  OR ALTERNATIVELY: REJECTION
 C
 C  K   : CELL INDEX 
- 
+
 C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
 C  note: Ti has already been converted into thermal velocity units: zrg(ipls,k) in [cm/s]
- 
+
 C  K   : .EQ.0 :TX,TY,TZ,V-DRIFT_X,Y,Z ARE NOT FROM LOCAL BULK ION
 C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE 
 C               PARAMETERS DUMT AND DUMV, RESPECTIVELY.
 c  note: here dumt must also be in thermal velocity units
- 
+
 C  VXO : X COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VYO : Y COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
 C  VZO : Z COMPONENT OF SPEED UNIT VECTOR OF TEST PARTICLE BEFORE EVENT
@@ -73,9 +73,9 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CLAST
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: DUMT(3), DUMV(3)
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
@@ -83,15 +83,15 @@ C
 
       REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, VXI, VYI, VZI,
      .          ZARGX, ZARGY, ZARGZ,
-     .          VXDR, VYDR, VZDR, VRELQ, 
+     .          VXDR, VYDR, VZDR, VRELQ,
      .          TEST, VREL, ELAB, CXS,
      .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
 C      REAL(DP) :: ELB
       REAL(DP), EXTERNAL :: RANF_EIRENE
- 
+
       INTEGER :: ICOUNT, J, JJ, IRL, IREAC
       INTEGER :: IFIRST = 0
- 
+
       SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
@@ -247,7 +247,7 @@ C   PRESENT VERSION: REJECTION
         IREAC=MODCOL(3,1,IRCX)
         CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
-c.............................................................
+c...........................................................
 cdr  test output only
 c       elb=exp(elab)
 c       if (elb.le.0.1) then
@@ -268,7 +268,7 @@ C  REJECT
 c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
      .        'ICOUNT TOO LARGE ( > 500) IN VELOCX. ACCEPT SAMPLE '
-cdr............................................................   
+cdr............................................................
 cdr  test output only
 cdr         ELB=EXP(ELAB)
 cdr         write (iunout,*) 'npanu, ireac, ircx, ELAB(EV),icell ',
@@ -280,7 +280,7 @@ C  ACCEPT
             NCMEAN(IRCX)=NCMEAN(IRCX)+1
           ENDIF
 C       ELSEIF (NLWEIGHT) THEN
- 
+
         ELSE
 C  FOR SOME REASON SGCVMX COULD NOT BE FOUND, or rejection is too inefficient.
 C  SO USE WEIGHTING RATHER THAN REJECTION
@@ -297,8 +297,8 @@ C
 C   CX = EXCHANGE OF IDENTITY (RELAXATION). NOTHING MORE TO BE DONE
 
       VELQ=VXI*VXI+VYI*VYI+VZI*VZI
-        VEL=SQRT(VELQ)
-        VN=1./VEL
+      VEL=SQRT(VELQ)
+      VN=1./VEL
       VELX=VXI*VN
       VELY=VYI*VN
       VELZ=VZI*VN
@@ -309,8 +309,8 @@ C
       WRITE (iunout,*)
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
- 
-C  the following ENTRY is for reinitialization of EIRENE 
+
+C  the following ENTRY is for reinitialization of EIRENE
       ENTRY EIRENE_VELOCX_REINIT
       IFIRST = 0
       return

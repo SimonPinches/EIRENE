@@ -392,7 +392,8 @@ the corresponding Omega integrals for continuum descriptions consistent with the
 done: 0.4, 0.5, 0.6, 0.7, 0.8, both: T (total) and D (diffusion) rates.
 \item Oct 15:\\
  started to add T1MIN, T1MAX, N2MIN, N2MAX, E2MIN, E2MAX parameters for extrapolation beyond fit range.
-Currently all H.4 rates should have NEMIN=1.e8, and be extrapolated with this values taken also for all
+Currently all H.4 rates should have N2MIN=1.e8, 
+and be extrapolated with this values taken also for all
 lower electron densities (Corona limit). In this case $ln^i(\tilde{ne})=0.0,  \ i=1,2,\dots,8$, fit must reduce to H.2 format.
 I.e., these 9 H.2 coefficients can directly be obtained as subset of the 81 H.4 coefficients.
 \item Jan.16: \\
@@ -4351,10 +4352,10 @@ extend Te range of fit validity from 0.1 -- 1e3 to 0.1 -- 2e4 eV)
         6   -2.622921686955D-09   -2.259663431436D-10    1.161438990709D-11
         7   -4.197728680251D-10    3.032260338723D-11   -8.911076930014D-13
         8    3.064611702159D-11   -1.355903284487D-12    2.935080031599D-14
-TEMIN =   0.10000D 00 EV
-TEMAX =   2.00000D 04 EV
-NEMIN =   1.00000D 08 1/CM3
-NEMAX =   1.00000D 16 1/CM3
+T1MIN =   0.10000D 00 EV
+T1MAX =   2.00000D 04 EV
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   1.98 %
   Mean rel. Error:   0.479 %
@@ -12467,7 +12468,7 @@ Reaction 2.0a  $e + H_2 \rightarrow H_2^+ + ... $ , Ratio \ $H_2^+/H_2$
 
   CR equilibrium ratio H2+ to H2 density
   (coll.rad model, Sawada/Fujimoto/Greenland)
- here:  H2+-gain from electr. impact only
+ here:  H2+ gain from electr. impact only
 
   only contribution from  EI on H2 and H2* to production rate of $H_2^+$
 
