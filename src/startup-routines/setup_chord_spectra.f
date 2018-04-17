@@ -1,5 +1,6 @@
 c  14.5.06:  bug fix: 1 line added: if nchtal.ne.1 and. nchtal.ne.3:  cycle
 C  oct.14.  variance tallies corrected
+cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
       subroutine EIRENE_setup_chord_spectra
  
       use EIRMOD_precision
@@ -15,11 +16,25 @@ C  oct.14.  variance tallies corrected
       real(dp) :: c1(3), c2(3), PSIG(0:NSPZ+10)
       real(dp) :: ze, timax
       integer :: ichori, ifirst, ichrd, ipvot, nbc2, nac2,
-     .           ispc, ntot_cell, ntotsp, iprtyp
- 
-      type(spect_array), allocatable :: svestiml(:), svsmestl(:)
+     .           ispc, ntot_cell, ntotsp, iprtyp, nsp
+CDR  NSP NEEDED FOR ANYTHING ?   
+      type(eirene_spectrum), allocatable :: svestiml(:), svsmestl(:)
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
       TYPE(CELL_INFO), POINTER :: FIRST, CUR
+
+      INTERFACE
+        SUBROUTINE EIRENE_LININT
+     .           (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,PEN,
+     .            PSIG,TIMAX,ISP,NSPI,JEN,NCHNI)
+        USE EIRMOD_PRECISION
+        USE EIRMOD_PARMMOD
+        INTEGER, INTENT(IN) :: IFIRST,ICHORI, ICHRD,IPVOT,NBC2,NAC2,ISP,
+     .                         NSPI, JEN, NCHNI
+        REAL(DP), INTENT(IN) :: C1(3),C2(3),PEN
+        REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+        REAL(DP), INTENT(IN OUT) :: TIMAX
+        END SUBROUTINE EIRENE_LININT
+      END INTERFACE
  
 !  FIND CELLS INTERSECTED BY CHORDS
  
@@ -69,23 +84,44 @@ C
  
       IF (NADSPC > 0) THEN
 C  SAVE ESTIML, SMESTL,...
-        ALLOCATE(SVESTIML(NADSPC))
- 
-        DO ISPC = 1, NADSPC
-          SVESTIML(ISPC)%PSPC => ESTIML(ISPC)%PSPC
-        END DO
- 
+        IF (ALLOCATED(ESTIML)) THEN
+          ALLOCATE(SVESTIML(NADSPC))
+          DO ISPC = 1, NADSPC
+            nsp = ESTIML(ISPC)%nspc
+
+            SVESTIML(ISPC) = ESTIML(ISPC)
+
+            DEALLOCATE (ESTIML(ISPC)%SPC)
+            IF (ASSOCIATED(ESTIML(ISPC)%SDV)) THEN
+              DEALLOCATE (ESTIML(ISPC)%SDV)
+              DEALLOCATE (ESTIML(ISPC)%SGM)
+              DEALLOCATE (ESTIML(ISPC)%STV)
+              DEALLOCATE (ESTIML(ISPC)%GG)
+            END IF
+          END DO
+          DEALLOCATE(ESTIML)
+        END IF
+
         IF (ALLOCATED(SMESTL)) THEN
           ALLOCATE(SVSMESTL(NADSPC))
           DO ISPC = 1, NADSPC
-            SVSMESTL(ISPC)%PSPC => SMESTL(ISPC)%PSPC
+            nsp = SMESTL(ISPC)%nspc
+
+            SVSMESTL(ISPC) = SMESTL(ISPC)
+
+            DEALLOCATE (SMESTL(ISPC)%SPC)
+            IF (ASSOCIATED(SMESTL(ISPC)%SDV)) THEN
+              DEALLOCATE (SMESTL(ISPC)%SDV)
+              DEALLOCATE (SMESTL(ISPC)%SGM)
+              DEALLOCATE (SMESTL(ISPC)%STV)
+              DEALLOCATE (SMESTL(ISPC)%GG)
+            END IF
           END DO
           DEALLOCATE(SMESTL)
         END IF
  
       END IF
  
-      IF (ALLOCATED(ESTIML)) DEALLOCATE(ESTIML)
  
 !  set up additional arrays for cell based spectra
  
@@ -93,13 +129,13 @@ C  SAVE ESTIML, SMESTL,...
  
       ALLOCATE(ESTIML(NTOTSP))
       DO ISPC = 1, NADSPC
-        ESTIML(ISPC)%PSPC => SVESTIML(ISPC)%PSPC
+        ESTIML(ISPC) = SVESTIML(ISPC)
       END DO
  
       IF (ALLOCATED(SVSMESTL).or.NSMSTRA.GT.0) THEN
         ALLOCATE(SMESTL(NTOTSP))
         DO ISPC = 1, NADSPC
-          SMESTL(ISPC)%PSPC => SVSMESTL(ISPC)%PSPC
+          SMESTL(ISPC) = SVSMESTL(ISPC)
         END DO
       END IF
  
@@ -129,7 +165,10 @@ C  SAVE ESTIML, SMESTL,...
  
 !  loop over all cells along trajectory
          do
-           allocate(espec)
+ 
+           ispc = ispc + 1
+           espec => estiml(ispc) 
+           
            espec%isrfcll = 2 ! SURFACE OR CELL BASED OR DIRECTIONAL CELL BASED
            espec%ispcsrf = cur%no_cell
            espec%iprtyp = iprtyp   !TYP
@@ -168,12 +207,14 @@ C  SAVE ESTIML, SMESTL,...
 
            espec%spc(0:espec%nspc+1) = 0
  
-           ispc = ispc + 1
-           estiml(ispc)%pspc => espec
+!           ispc = ispc + 1
+!           estiml(ispc) = espec
  
            if (allocated(smestl)) then
 C SUM OVER STRATA SPECTRA TALLIES
-             allocate(sspec)
+               
+             sspec => smestl(ispc)
+             
              allocate(sspec%spc(0:espec%nspc+1))
 
              allocate(sspec%sdv(0:espec%nspc+1))
@@ -181,8 +222,7 @@ C SUM OVER STRATA SPECTRA TALLIES
              allocate(sspec%stv(0:espec%nspc+1))
              allocate(sspec%gg(0:espec%nspc+1))
 
-             sspec = espec
-             smestl(ispc)%pspc => sspec
+             smestl(ispc) = estiml(ispc)
            end if
  
            cur%no_spect = ispc

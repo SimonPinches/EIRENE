@@ -1,6 +1,15 @@
 cdr: nov 2013: comments added
 cdr: nov 2015:  further comments
-
+c
+c  AFEM:  course "Advanced Finate Element Methods", 
+c         Department of Aerospace Enginerring Sciences, 
+c         University of Colorado at Boulder
+c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
+c  IFEM:  course "Introduction to Finite Element Methods"
+c         Department of Aerospace Enginerring Sciences, 
+c         University of Colorado at Boulder
+c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
+c
       subroutine  eirene_df_dxyz (fecken, icell, x, y, z,
      .                           dfdx, dfdy, dfdz)
 

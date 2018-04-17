@@ -32,10 +32,11 @@ c
       USE EIRMOD_COMUSR, ONLY: ISPEZI, NPRT, NSPH, NSPA, NSPAM
       USE EIRMOD_COMPRT, ONLY: IUNOUT, ISPZ, ISTRA, IPSTT, RPSTT, WEIGHT
       USE EIRMOD_CPES, ONLY: MY_PE, NPRS
+      USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, peflux, 
@@ -401,6 +402,9 @@ c
 
 c   accumulated atomic flux from current processor
           sumrpw = sumrpw + add
+
+C required to keep the changed weight:
+          RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
         end do
 
 cdr diagnose resampling procedure:
@@ -470,6 +474,8 @@ c  combine all the resampled census from all processors into a single one: rpart
           do i=1,iprnli
             RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
             weight = weight * sclfac
+C required to keep the changed weight:
+            RPART(1:NPARTT,I)=RPSTT(1:NPARTT)
           end do
         end if
 cdr  for resampling in locate at next timestep:

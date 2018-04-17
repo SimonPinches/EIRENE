@@ -19,8 +19,8 @@ C  TALLIES
       ESTIMV=0.
       ESTIMS=0.
       DO ISPC=1,NADSPC
-        ESTIML(ISPC)%PSPC%SPC = 0._DP
-        ESTIML(ISPC)%PSPC%SPCS = 0._DP
+        ESTIML(ISPC)%SPC = 0._DP
+        ESTIML(ISPC)%SPCS = 0._DP
       ENDDO
 
 C  VARIANCES, COVARIANCES,...
@@ -43,9 +43,9 @@ C  COP-ARRAYS
 C  SPECTRA
       IF (NSIGI_SPC > 0) THEN
         DO ISPC=1,NADSPC       
-          ESTIML(ISPC)%PSPC%SGMS = 0._DP
-          ESTIML(ISPC)%PSPC%SGM = 0._DP
-          ESTIML(ISPC)%PSPC%SDV = 0._DP
+          ESTIML(ISPC)%SGMS = 0._DP
+          ESTIML(ISPC)%SGM = 0._DP
+          ESTIML(ISPC)%SDV = 0._DP
         END DO
       END IF
  

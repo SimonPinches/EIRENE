@@ -4,10 +4,11 @@ cdr  Purpose: ....
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CPES
+      USE EIRMOD_MPI
  
       IMPLICIT NONE
  
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
  
       real(dp), intent(in) :: xtim(0:nstra)
       INTEGER :: IER
