@@ -452,6 +452,8 @@ C Volume source
 C
           GOTO 5000
         ENDIF
+
+        CALL EIRENE_CNSUSR( NPANU )
       ENDIF
 C
 C  POINT SOURCE MODEL  21---30

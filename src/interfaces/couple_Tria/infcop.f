@@ -4672,3 +4672,11 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
 CVK END
 
       END
+
+C> \brief Any property requirering hand-over in parallel part.
+C>
+C> This interfacing routine is called in the parallel part of EIRENE
+C> after the broadcase of any other quantity.
+      SUBROUTINE EIRENE_IFPARCOP
+      RETURN
+      END SUBROUTINE EIRENE_IFPARCOP
