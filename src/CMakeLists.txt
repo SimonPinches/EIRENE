@@ -3,9 +3,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(EIRENE Fortran)
 
-find_package(MPI REQUIRED)
-include_directories(${MPI_Fortran_INCLUDE_PATH})
-
 # Adds compiler flags to all build types.
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "-fp-model source")
@@ -94,6 +91,15 @@ if (TRACE)
   add_definitions(-DTRACE)
 endif()
 
+# Add option to control whether MPI will be use
+option(MPI "Build with MPI" ON)
+if (MPI)
+  message("-- Adding USE_MPI flag...")
+  add_definitions(-DUSE_MPI)
+  find_package(MPI REQUIRED)
+  include_directories(${MPI_Fortran_INCLUDE_PATH})
+endif()
+
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
 # relative path. Relative path is stored in variable 'fortran_dirs'.
 message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of " 
@@ -158,8 +164,10 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
-target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${LibGRS} 
-					${LibGKS} ${LibX11} ${Libz} ${LibXt})
+if (MPI)
+  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+endif()
+target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${Libz} ${LibXt})
 
 # Sets output directory of the library and executbales.
 set_target_properties(EIRENE PROPERTIES
