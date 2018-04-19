@@ -192,10 +192,10 @@ csw
 csw 26jan2011 extra B25
       use eirmod_extraB25
 csw
+      use eirmod_mpi
       IMPLICIT NONE
-C
 csw mpi
-      include 'mpif.h'
+!      include 'mpif.h'
       integer :: ier,istrx,irank,istrr, irnk
       real*8, allocatable :: dumvec(:)
       real*8, allocatable :: save_estimv(:,:),save_estims(:,:),
@@ -1397,6 +1397,7 @@ c                  is not part of the STANDARD (polygonal) grid
               EXIT
             END IF
           END IF
+         END IF
         END DO
 
 
@@ -2811,6 +2812,7 @@ C
 C
         ELTEST(ITARG,IG)=0.  ! ELSTEP MAY ALREADY HAVE BEEN SET IN CALL TO FCT. STEP
         DO 6009 IPLS=1,NPLSI
+          CALL EIRENE_MASJ2('ITARG,IPLS      ',ITARG,IPLS)
           IF (FLSTEP(IPLS,ITARG,IG).EQ.0.D0) GOTO 6009
 C
           IPLSTI=MPLSTI(IPLS)
@@ -2855,11 +2857,10 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
           VR=SQRT(VPX**2+VPY**2)
           VTEST2=VPZ/(CS+EPS60)
           IF (TRCINT) THEN
-            WRITE (iunout,*) 'IPL,ITG,IG,MACH_PAR',
-     .                        IPLS,ITARG,IG,VTEST
+            WRITE (iunout,*) 'IG,MACH_PAR,MACH_Z ',
+     .                        IG,VTEST,VTEST2
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
-C           CALL EIRENE_LEER(1)
-C
+            CALL EIRENE_LEER(1)
           END IF
 C
 C  BOHM CRITERION CHECK DONE

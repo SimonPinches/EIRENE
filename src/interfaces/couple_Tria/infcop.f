@@ -88,6 +88,7 @@ cdr          only partially done
 
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
+
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
 cdr           remove unused array: scpveii
@@ -2451,7 +2452,7 @@ C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
      .             (YTRIAN(NECKE(IS,ITRI))-YTRIAN(NECKE(IS1,ITRI)))**2)
               FLSTEP(IPLS,ITARG,IG)=0.
               IF (DELX.GT.0.) THEN
-cdr why should cdel and dely be different ??
+cdr why should celdel and dely be different ??
                 FRAC = DELX / CELDEL
                 FLSTEP(IPLS,ITARG,IG)=MAX(0._DP,ORI(ITARG,IG)*
      .                            FNIYB(IX,NPBS,IFL))*FL(IPLS)/DELX*FRAC
@@ -2725,6 +2726,7 @@ C
 C
         ELTEST(ITARG,IG)=0.  ! ELSTEP MAY ALREADY HAVE BEEN SET IN CALL TO FCT. STEP
         DO 6009 IPLS=1,NPLSI
+          CALL EIRENE_MASJ2('ITARG,IPLS      ',ITARG,IPLS)
           IF (FLSTEP(IPLS,ITARG,IG).EQ.0.D0) GOTO 6009
 C
           IPLSTI=MPLSTI(IPLS)
@@ -2772,8 +2774,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
             WRITE (iunout,*) 'IPL,ITG,IG,MACH_PAR',
      .                        IPLS,ITARG,IG,VTEST
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
-C           CALL EIRENE_LEER(1)
-C
+            CALL EIRENE_LEER(1)
           END IF
 C
 C  BOHM CRITERION CHECK DONE
@@ -2994,8 +2995,6 @@ C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
 C  IF THE SOURCE STRENGTH IS TO BE CHANGED DURING THE SHORT CYCLE (E.G.: VOL-REC)
           FLXEIR(ISTRAI)=1._DP
         ENDIF
-C
-C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
 
 C
         CHPM  = 0._DP

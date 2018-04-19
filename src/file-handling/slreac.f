@@ -357,7 +357,7 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
 
       REAC_NAME(IR) = REACSTR(2:)
 C
-C Set character string identifyers to search coefficients in data files.
+C Set character string identifyers CHR to search coefficients in data files.
 C  H.0
       IF (ISW.EQ.0) THEN
         CHR=' p0 '
@@ -806,8 +806,8 @@ c                    P1MIN,P1MAX,P2MIN,P2MAX
           LGR1MIN = .TRUE.
 c  old default: 2nd order polynom beyond valid range, with coefs. FPL1
           IF (IF1MN == 0 .AND. LGC1MIN) IF1MN = 5
-c  default extrapolation from r1mn (by constant continuation) will be: jfexmn1=4
-          IF (IF1MN == 0) IF1MN = 1
+c  default extrapolation from r1mn (by constant continuation) will be: jfex1mn=4
+          IF (IF1MN == 0) IF1MN = 4
         END IF
         IF (INDEX(ULINE,TRIM(C1R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1R,'EXT-FLG',R1MX,IF1MX)
@@ -815,7 +815,7 @@ c  default extrapolation from r1mn (by constant continuation) will be: jfexmn1=4
 c  old default: 2nd order polynom beyond valid range, with coefs. FPR1
           IF (IF1MX == 0 .AND. LGC1MAX) IF1MX = 5
 c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
-          IF (IF1MX == 0) IF1MX = 1
+          IF (IF1MX == 0) IF1MX = 4
         END IF
         IF (INDEX(ULINE,TRIM(C2L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
@@ -823,7 +823,7 @@ c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
 c  old default: 2nd order polynom beyond valid range, with coefs. FPL2
           IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5 
 c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
-          IF (IF2MN == 0) IF2MN = 1
+          IF (IF2MN == 0) IF2MN = 4
         END IF
         IF (INDEX(ULINE,TRIM(C2R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
@@ -831,7 +831,7 @@ c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
 c  old default: 2nd order polynom beyond valid range, with coefs. FPr2
           IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5 
 c  default extrapolation from r2mx (by constant continuation) will be: jfex2mx=4
-          IF (IF2MX == 0) IF2MX = 1
+          IF (IF2MX == 0) IF2MX = 4
         END IF
 C
 C  ...AND FURTHER REACTION PARAMETERS, NOT RELATED TO ASYMPTOTICS

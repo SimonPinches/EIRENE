@@ -12,7 +12,7 @@ C  pre-computed array EHVEI1(irei,k) from with run
 cdr  find heavy secondary particle energy for EI process no. IREI,  energy in eV
 c    locally in cell K, for process kk= nreahv(irei)
 c    sum over all heavy secondaries.
-c    distribution to individual heavy secondary typ and species is done later,
+c    distribution to individual heavy secondary type and species is done later,
 c    e.g. in veloei for sampling, and in update, collide for scoring 
 c
       USE EIRMOD_PRECISION

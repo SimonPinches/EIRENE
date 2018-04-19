@@ -48,15 +48,15 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
  
       DO ISPC=1,NADSPC
-        I = ESTIML(ISPC)%PSPC%ISPCSRF
-        IT = ESTIML(ISPC)%PSPC%ISPCTYP
+        I = ESTIML(ISPC)%ISPCSRF
+        IT = ESTIML(ISPC)%ISPCTYP
  
         WRITE (IOUT,*)
         IF (ISTR.GT.0) WRITE (IOUT,*) 'STRATUM NUMBER: ISTRA = ',istr
         IF (ISTR.EQ.0) WRITE (IOUT,*) 'SUM OVER STRATA'
         WRITE (IOUT,*)
  
-        IF (ESTIML(ISPC)%PSPC%ISRFCLL == 0)  THEN
+        IF (ESTIML(ISPC)%ISRFCLL == 0)  THEN
 c  surface averaged spectra
           IF (I > NLIM) THEN
             WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
@@ -65,10 +65,10 @@ c  surface averaged spectra
             WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                     ' ADDITIONAL SURFACE ',I
           END IF
-          IF (ESTIML(ISPC)%PSPC%IDIREC > 0) THEN
+          IF (ESTIML(ISPC)%IDIREC > 0) THEN
             WRITE (iunout,'(A,3(ES12.4,A1))')
-     .      ' IN DIRECTION (',ESTIML(ISPC)%PSPC%SPCVX,',',
-     .      ESTIML(ISPC)%PSPC%SPCVY,',',ESTIML(ISPC)%PSPC%SPCVZ,')'
+     .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
+     .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
           END IF
           IF (IT == 1) THEN
             WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
@@ -81,13 +81,13 @@ c  surface averaged spectra
             UNITOUT=UNITINT(2)
           END IF
 c  "cell based spectra"
-        ELSE IF (ESTIML(ISPC)%PSPC%ISRFCLL == 1)  THEN
+        ELSE IF (ESTIML(ISPC)%ISRFCLL == 1)  THEN
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' SCORING CELL ',I
-          IF (ESTIML(ISPC)%PSPC%IDIREC > 0) THEN
+          IF (ESTIML(ISPC)%IDIREC > 0) THEN
             WRITE (iunout,'(A,3(ES12.4,A1))')
-     .      ' IN DIRECTION (',ESTIML(ISPC)%PSPC%SPCVX,',',
-     .      ESTIML(ISPC)%PSPC%SPCVY,',',ESTIML(ISPC)%PSPC%SPCVZ,')'
+     .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
+     .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
           END IF
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
@@ -100,13 +100,13 @@ c  "cell based spectra"
      .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
           END IF
 c  directional spectra in cell 
-        ELSE IF (ESTIML(ISPC)%PSPC%ISRFCLL == 2)  THEN
-          WRITE (IOUT,'(A,A)') ' SPECTRUM CALCULATED FOR',
+        ELSE IF (ESTIML(ISPC)%ISRFCLL == 2)  THEN
+          WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' GEOMETRICAL CELL ',I
-          IF (ESTIML(ISPC)%PSPC%IDIREC > 0) THEN
+          IF (ESTIML(ISPC)%IDIREC > 0) THEN
             WRITE (iunout,'(A,3(ES12.4,A1))')
-     .      ' IN DIRECTION (',ESTIML(ISPC)%PSPC%SPCVX,',',
-     .      ESTIML(ISPC)%PSPC%SPCVY,',',ESTIML(ISPC)%PSPC%SPCVZ,')'
+     .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
+     .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
           END IF
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
@@ -121,41 +121,41 @@ c  directional spectra in cell
         END IF
  
         WRITE (IOUT,'(A20,A9)') ' TYPE OF PARTICLE : ',
-     .         TEXTYP(ESTIML(ISPC)%PSPC%IPRTYP)
-        IF (ESTIML(ISPC)%PSPC%IPRSP == 0) THEN
+     .         TEXTYP(ESTIML(ISPC)%IPRTYP)
+        IF (ESTIML(ISPC)%IPRSP == 0) THEN
           WRITE (IOUT,'(A10,10X,A16)') ' SPECIES :',
      .                'SUM OVER SPECIES'
         ELSE
           WRITE (IOUT,'(A10,10X,A8)') ' SPECIES :',
-     .          TEXTS(IADTYP(ESTIML(ISPC)%PSPC%IPRTYP)+
-     .          ESTIML(ISPC)%PSPC%IPRSP)
+     .          TEXTS(IADTYP(ESTIML(ISPC)%IPRTYP)+
+     .          ESTIML(ISPC)%IPRSP)
         END IF
 
  
-        IF (ESTIML(ISPC)%PSPC%LOG) THEN
+        IF (ESTIML(ISPC)%LOG) THEN
           WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
-     .           10._DP**ESTIML(ISPC)%PSPC%SPCMIN
+     .           10._DP**ESTIML(ISPC)%SPCMIN
           WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
-     .           10._DP**ESTIML(ISPC)%PSPC%SPCMAX
+     .           10._DP**ESTIML(ISPC)%SPCMAX
           WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
         ELSE
         WRITE (IOUT,'(A20,5X,ES12.4)') ' MINIMAL ENERGY (EV) ',
-     .         ESTIML(ISPC)%PSPC%SPCMIN
+     .         ESTIML(ISPC)%SPCMIN
         WRITE (IOUT,'(A20,5X,ES12.4)') ' MAXIMAL ENERGY (EV) ',
-     .         ESTIML(ISPC)%PSPC%SPCMAX
+     .         ESTIML(ISPC)%SPCMAX
           WRITE (IOUT,'(A)') ' LINEAR SPACING'
         END IF
         WRITE (IOUT,'(A20,4x,I6)') ' NUMBER OF BINS     ',
-     .         ESTIML(ISPC)%PSPC%NSPC
+     .         ESTIML(ISPC)%NSPC
         CALL EIRENE_LEER(1)
 C  HEADER DONE.
 
 C  FORMATTED PRINTOUT OF SPECTRA STARTS HERE
 
         WRITE (IOUT,*)
-        IF (ABS(ESTIML(ISPC)%PSPC%SPCS) > EPS60) THEN
+        IF (ABS(ESTIML(ISPC)%SPCS) > EPS60) THEN
           IINI=0
-          IEND=ESTIML(ISPC)%PSPC%NSPC+1
+          IEND=ESTIML(ISPC)%NSPC+1
 
           IF (NSIGI_SPC == 0) THEN
 C  STANDARD DEVIATION IS NOT AVAILABLE
@@ -164,15 +164,15 @@ C  STANDARD DEVIATION IS NOT AVAILABLE
             DO IE=IINI,IEND
 C  DEAL WITH ENERGY BIN NO. IE
 C  central energy bin value
-              EN = ESTIML(ISPC)%PSPC%SPCMIN +
-     .            (IE-0.5_DP)*ESTIML(ISPC)%PSPC%SPCDEL
+              EN = ESTIML(ISPC)%SPCMIN +
+     .            (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
 c  LOWER energy bin value
-              EN1= ESTIML(ISPC)%PSPC%SPCMIN +
-     .             (IE-1)*ESTIML(ISPC)%PSPC%SPCDEL
+              EN1= ESTIML(ISPC)%SPCMIN +
+     .             (IE-1)*ESTIML(ISPC)%SPCDEL
 c  UPPER energy bin value
-              EN2= ESTIML(ISPC)%PSPC%SPCMIN +
-     .             (IE  )*ESTIML(ISPC)%PSPC%SPCDEL
-              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+              EN2= ESTIML(ISPC)%SPCMIN +
+     .             (IE  )*ESTIML(ISPC)%SPCDEL
+              IF (ESTIML(ISPC)%LOG) THEN
                 EN = 10._DP**EN
                 EN1= 10._DP**EN1
                 EN2= 10._DP**EN2
@@ -182,10 +182,10 @@ c  UPPER energy bin value
               IF (IE.EQ.IEND) THEN
                 WRITE (IOUT,'(I6,1ES12.4,A12,1ES12.4)') IE,EN1,
      .                                  ' INF       ',
-     .                 ESTIML(ISPC)%PSPC%SPC(IE)
+     .                 ESTIML(ISPC)%SPC(IE)
               ELSE
                 WRITE (IOUT,'(I6,3ES12.4)') IE,EN1,EN2,
-     .                 ESTIML(ISPC)%PSPC%SPC(IE)
+     .                 ESTIML(ISPC)%SPC(IE)
               ENDIF
 c  first and last bin: all the fluxes outside specified spectral range
               IF (IE.EQ.IINI.OR.IE.EQ.IEND-1)
@@ -201,15 +201,15 @@ C
             DO IE=IINI,IEND
 C  DEAL WITH ENERGY BIN NO. IE
 C  central energy bin value
-              EN = ESTIML(ISPC)%PSPC%SPCMIN +
-     .            (IE-0.5_DP)*ESTIML(ISPC)%PSPC%SPCDEL
+              EN = ESTIML(ISPC)%SPCMIN +
+     .            (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
 c  LOWER energy bin value
-              EN1= ESTIML(ISPC)%PSPC%SPCMIN +
-     .             (IE-1)*ESTIML(ISPC)%PSPC%SPCDEL
+              EN1= ESTIML(ISPC)%SPCMIN +
+     .             (IE-1)*ESTIML(ISPC)%SPCDEL
 c  UPPER energy bin value
-              EN2= ESTIML(ISPC)%PSPC%SPCMIN +
-     .             (IE  )*ESTIML(ISPC)%PSPC%SPCDEL
-              IF (ESTIML(ISPC)%PSPC%LOG) THEN
+              EN2= ESTIML(ISPC)%SPCMIN +
+     .             (IE  )*ESTIML(ISPC)%SPCDEL
+              IF (ESTIML(ISPC)%LOG) THEN
                 EN =10._DP**EN
                 EN1=10._DP**EN1
                 EN2=10._DP**EN2
@@ -219,12 +219,12 @@ c  UPPER energy bin value
               IF (IE.EQ.IEND) THEN
                 WRITE (IOUT,'(I6,1ES12.4,A12,2ES12.4)') IE,EN1,
      .                                  ' INF       ',
-     .                 ESTIML(ISPC)%PSPC%SPC(IE),
-     .                 ESTIML(ISPC)%PSPC%SGM(IE)
+     .                 ESTIML(ISPC)%SPC(IE),
+     .                 ESTIML(ISPC)%SGM(IE)
               ELSE
                 WRITE (IOUT,'(I6,4ES12.4)') IE,EN1,EN2,
-     .                 ESTIML(ISPC)%PSPC%SPC(IE),
-     .                 ESTIML(ISPC)%PSPC%SGM(IE)
+     .                 ESTIML(ISPC)%SPC(IE),
+     .                 ESTIML(ISPC)%SGM(IE)
               ENDIF
 c  first and last bin: all the fluxes outside specified spectral range
               IF (IE.EQ.IINI.OR.IE.EQ.IEND-1)
@@ -239,10 +239,10 @@ C
 C  PRINTOUT OF ENERGY INTEGRAL OVER SPECTRA
         WRITE (IOUT,*)
         WRITE (IOUT,'(A,A,ES12.4)') ' INTEGRAL OF SPECTRUM ',
-     .             UNITOUT,ESTIML(ISPC)%PSPC%SPCS 
+     .             UNITOUT,ESTIML(ISPC)%SPCS 
         IF (NSIGI_SPC > 0)
      .    WRITE (IOUT,'(A,A,ES12.4)') ' STANDARD DEVIATION   ',
-     .                  ' %      ',ESTIML(ISPC)%PSPC%SGMS 
+     .                  ' %      ',ESTIML(ISPC)%SGMS 
       END DO
  
       RETURN

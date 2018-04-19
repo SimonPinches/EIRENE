@@ -11,6 +11,16 @@ c                     fem_interpolate  (this routine)
 c  related routines:  fem_differentiate 
 c                     fem_local-coord
 c                     fem_cell-corner
+c
+c  AFEM:  course "Advanced Finate Element Methods", 
+c         Department of Aerospace Enginerring Sciences, 
+c         University of Colorado at Boulder
+c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
+c  IFEM:  course "Introduction to Finite Element Methods"
+c         Department of Aerospace Enginerring Sciences, 
+c         University of Colorado at Boulder
+c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
+c
 
       function eirene_femint (fecken, icell, x, y, z, lsame) 
      .         result(res)
