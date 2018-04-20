@@ -198,6 +198,8 @@ c  up to here: for splitting, mpartc
  
  
       SUBROUTINE EIRENE_INIT_COMPRT
+
+      USE EIRMOD_CPES, ONLY: NPRS
  
       RPST   = 0._DP
       IPSTD  = 0
@@ -275,7 +277,7 @@ c  up to here: for splitting, mpartc
 c  io files
 c     IUNIN = 1
       IUNOUT = 6 + IFOFF
-      IF (NRPES > 1) IUNOUT = 7 + IFOFF
+      IF (NPRS > 1) IUNOUT = 7 + IFOFF
       IVTKOUT= 28
       
             

@@ -2,8 +2,7 @@ cdr Nov. 17  commenting started
 
       MODULE EIRMOD_CPES
  
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
+      USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
  
       IMPLICIT NONE
  
@@ -19,7 +18,7 @@ cdr  nstrpe(ipe)  : processor no. IPE works on stratum ISTRA=NSTRPE(IPE)
      I         NSTRPE(:)
  
       INTEGER, PUBLIC, SAVE ::
-     I         NSTEFF, nprs, my_pe
+     I         NSTEFF, NPRS, MY_PE
  
       LOGICAL, PUBLIC, SAVE :: NLIDENT
 
@@ -36,12 +35,12 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       ALLOCATE (NPESTR(0:NSTRA))
       ALLOCATE (NPESTA(0:NSTRA))
-      ALLOCATE (NSTRPE(0:NRPES-1))
+      ALLOCATE (NSTRPE(0:NPRS-1))
 
-      ALLOCATE(PROCFORSTRA(NSTRA,0:NRPES-1))
+      ALLOCATE(PROCFORSTRA(NSTRA,0:NPRS-1))
  
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .      ' CPES ',(2*(NSTRA+1)+NRPES)*4 + NSTRA*NRPES*4
+     .      ' CPES ',(2*(NSTRA+1)+NPRS)*4 + NSTRA*NPRS*4
  
       CALL EIRENE_INIT_CPES
  

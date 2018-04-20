@@ -92,7 +92,6 @@ C
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
 
-      NRPES = NPRS
       IF (NPRS == 1) NSTEFF=1
 
       CALL EIRENE_DEFAULTS_USR
@@ -102,7 +101,7 @@ c     IUNIN = 1
       IUNIN = IUNIN + IFOFF
 
       IUNOUT = 6
-      IF (NRPES > 1) IUNOUT = 7
+      IF (NPRS > 1) IUNOUT = 7
       IUNOUT = IUNOUT + IFOFF
 
 
@@ -125,11 +124,6 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         END IF
 
         write (iunout,*) ' Number of PEs ',nprs
-        if (nprs .gt. nrpes) then
-          write (iunout,*) ' Number of PE too large '
-          write (iunout,*) ' increase parameter NRPES = ',nrpes
-          call EIRENE_exit_own(1)
-        endif
 
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT

@@ -1565,7 +1565,6 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,*) 'NSTORAM =     ',NSTORAM
       WRITE (iunout,*) 'NGSTAL =      ',NGSTAL
       WRITE (iunout,*) 'NREAC_ADD =   ',NREAC_ADD
-      WRITE (iunout,*) 'NRPES  =      ',NRPES
 
 C
       CALL EIRENE_LEER(1)
