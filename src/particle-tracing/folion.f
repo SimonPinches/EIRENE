@@ -1,3 +1,6 @@
+cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
+cdr           scoring distance clpd (full gyro motion distance)
+cdr           clpd  is switched back and force. Needs clean up.
 cdr Oct. 17   minor sync with folneut
 cdr           started: implementation of QSS branch: folstat_ion.f  not ready
 
@@ -75,7 +78,7 @@ C  .............................................................................
 C
       SUBROUTINE EIRENE_FOLION
 C
-C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
+C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0 IN CELL NRCELL, IPOLG,
 C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
 C     IS FOLLOWED.
 C     (MODULE: COMPRT.F)
@@ -979,7 +982,8 @@ C
 C  SET NEW ACCUMULATED FLIGHT LENGTH, TENTATIVE
       ZT=ZTST
 C
-C  RESET CLPD TO REAL PATH LENGTH OF FULL GYRO MOTION
+C  RESET CLPD TO REAL PATH LENGTH OF FULL GYRO MOTION FOR SCORING
+C  vel is the full velocity, velpar is the parallel velocity only
 
       DO 217 ICOU=1,NCOU
         CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
@@ -1036,7 +1040,7 @@ C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
 
 c  DO THIS WITH REDUCED VELOCITY:
-          IF (LCART) THEN
+      IF (LCART) THEN
             VELXS=VELX
             VELYS=VELY
             VELZS=VELZ
@@ -1046,7 +1050,7 @@ c  DO THIS WITH REDUCED VELOCITY:
             VELZ=VLZPAR
             VEL =VELPAR
             LCART=.FALSE.
-          ENDIF
+      ENDIF
 C
       IF (LEVGEO.LE.3) THEN
 C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
@@ -1109,8 +1113,6 @@ C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
       ELSEIF (LEVGEO.EQ.5) THEN
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
-!pb          SG=ISIGN(1,NINCX)
-!pb          IF (NRCELL == 0) SG = -1.D0
           SG=SIGN(1._DP,VELX*PTETX(IPOLGN,MRSURF)+
      .                  VELY*PTETY(IPOLGN,MRSURF)+
      .                  VELZ*PTETZ(IPOLGN,MRSURF))
@@ -1154,7 +1156,12 @@ CCC
 C  EARLIER CLPD WAS FULL GYRO DISTANCE, FOR SCORING.
 C  NOW WE NEED AGAIN THE PARALLEL DISTANCE, FOR TRACKING TO
 C  POINT OF COLLISION OR SURFACE EVENT. (I.E. LCART=F)
-      ZTC=CLPD(1)*VELPAR/VEL
+      IF (.NOT.LCART) THEN
+c        WRITE (IUNOUT,*) 'SHIT: VEL IS ALREADY = VELPAR HERE'
+c        WRITE (IUNOUT,*) VEL,VELPAR,VELS
+         CLPD(1)=CLPD(1)*VELPAR/VELS     
+      ENDIF      
+      ZTC=CLPD(1)*VELPAR/VEL   !   this now does nothing: Velpar=vel here
       IF (LCART) THEN
         VELXS=VELX
         VELYS=VELY
@@ -1176,16 +1183,23 @@ C
 C
       CLPD(NCOU)=(ZLOG-ZINT2)*ZMFP
       ZTC=ZT+CLPD(NCOU)
-C  RESET CLPD TO REAL PATH LENGTH OF GYRO MOTION FOR SCORING
-      DO 221 ICOU=1,NCOU
-        CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
-221   CONTINUE
+C  RESET CLPD TO REAL (FULL) PATH LENGTH OF FULL GYRO MOTION FOR SCORING
+cdr I do not understand: for scoring clpd should be full (gyro) distance.
+cdr but if I rescale clpd with vels/velpar, then trace ion balances become
+cdr much worse.  
+cdr   if (.not.lcart) then
+        DO 221 ICOU=1,NCOU
+cdr       CLPD(ICOU)=CLPD(ICOU)*VELS/VELPAR
+          CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
+221     CONTINUE
+cdr   endif
+
       IF (IUPDTE.GE.1) THEN
         CALL EIRENE_UPDATE (XSTOR2,XSTORV2,4)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,4,1)
       ENDIF
 
-C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
+C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL. ZTC: PARALLEL (gc) DISTANCE)
 
 2211  CONTINUE
       X0=X0+VLXPAR*ZTC
@@ -1410,7 +1424,7 @@ c  add gyro velocity (with random phase) to GC velocity:
 !pb       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-C  DOES THE PARTICLE SPEED UNIT VECTOR NOw POINT TOWARDS THE SURFACE ?
+C  DOES THE PARTICLE SPEED UNIT VECTOR NOW POINT TOWARDS THE SURFACE ?
           IF (.NOT.LGPART) EXIT  ! DON'T CARE ABOUT GYRO MOTION, ABSORBED PARTICLE ANYWAY
           IF (ILIIN(MSURF) < 0) EXIT ! DON'T CARE ABOUT GYRO MOTION, TRANSPARENT SURFACE
           IF (COSIN.GT.0.) EXIT
