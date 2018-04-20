@@ -299,7 +299,7 @@ C
      .           IST_RATE, MSHFRM, IMF, ITCO,
 !  ADDITIONAL STORAGE FOR LIN. COMB. OF TALLIES (E.G. INTERNAL ENERGY SOURCES) 
      .           ICPV, icp1, icp2, icp3,
-     .           icoadd, icoscr,
+     .           icoadd, icoscr, icog,
      .           istat_cop, IXM1, IYM1,
      .           ntrfrm,
      .           nr1tal_save,np2tal_save,nt3tal_save,nsbox_tal_save,
@@ -2726,7 +2726,6 @@ C
 C
         ELTEST(ITARG,IG)=0.  ! ELSTEP MAY ALREADY HAVE BEEN SET IN CALL TO FCT. STEP
         DO 6009 IPLS=1,NPLSI
-          CALL EIRENE_MASJ2('ITARG,IPLS      ',ITARG,IPLS)
           IF (FLSTEP(IPLS,ITARG,IG).EQ.0.D0) GOTO 6009
 C
           IPLSTI=MPLSTI(IPLS)
@@ -2774,7 +2773,8 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
             WRITE (iunout,*) 'IPL,ITG,IG,MACH_PAR',
      .                        IPLS,ITARG,IG,VTEST
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
-            CALL EIRENE_LEER(1)
+C           CALL EIRENE_LEER(1)
+C
           END IF
 C
 C  BOHM CRITERION CHECK DONE

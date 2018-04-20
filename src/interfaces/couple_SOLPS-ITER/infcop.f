@@ -1397,7 +1397,6 @@ c                  is not part of the STANDARD (polygonal) grid
               EXIT
             END IF
           END IF
-         END IF
         END DO
 
 
