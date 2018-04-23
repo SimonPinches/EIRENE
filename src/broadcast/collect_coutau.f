@@ -3,9 +3,23 @@ cdr  Nov.17: comments started...
 
 
       subroutine eirene_collect_coutau
-cdr this routine......
-cdr .....
-c
+c This subroutine creates a MPI subgroup of all processes which are 
+C master processes of a stratum.
+C The subgroup is then used to gather information from all statrum 
+C masters onto the process with rank 0 (scalling and I/O process). 
+C Information are gathered with an MPI_REDUCE MPI_SUM statement. 
+C However, it always gathers only information that is 0 on all but one 
+C statum master.
+C The quantities gathered are: OUTAU (hiding many other arrays), 
+C LOGMOL, LOGATM, LOGION, LOGPHOT, LOGPLS, and some more quantities 
+C depending on whether sum-over-strata is active or other quantities 
+C have been calculated. 
+C
+C A call of this subroutine is only required if at all one statum 
+C master is not at the same time process with rank 0. (i.e. in a simple
+C "embarrassingly" parallelisation concept not needed)
+C ANY( NPESTA > 0, MASK = NLSRON )
+C
 c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
 c
       USE EIRMOD_PRECISION
@@ -28,6 +42,15 @@ c
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
+C Identifies the master processes of each strata.and colour them "1"
+C The if statemet can be made much simpler by just ask if my_pe is in 
+C npesta with masking the requrest by nlsron to ignore not active 
+C strata.
+C Destingtion between nsteff < nprs and the rest is not correct. It 
+C strongly depents on the parallisation concept. If nsteff >= nprs 
+C each process is a master of at least on strata, when considering the 
+C current parallelisation concept. Therefore, the first if block will 
+C give the correct colouring already.
       if (nsteff < nprs) then
 ! collect from group leader pe
         icolor=MPI_UNDEFINED
@@ -55,6 +78,8 @@ c
         mxdim = max(noutau,nidv,nids,3*nsigci,nsigvi,nsigsi)
         allocate (help(mxdim))
         
+C What for? The result of my_pe_gr should be my_pe. Furthermore,
+C my_pe_gr is not used...
         call mpi_comm_rank(mpi_comm_world,my_pe_gr,ier)
 
         CALL MPI_REDUCE(OUTAU,help,NOUTAU,
