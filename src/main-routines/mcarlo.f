@@ -599,7 +599,9 @@ csw
 
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 
+C NPTS scaling to be done in pedist
         DO 100 IPTSI=1,NPTS(ISTRA)/max(1,npestr(istra))
+C       DO 100 IPTSI=1,NPTS(ISTRA)
 
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
 C
@@ -900,11 +902,10 @@ c
 c    collect data for one stratum ISTRA from all pe's performing calculations
 c    for this stratum
 c
-cdr  more processors than active strata.
-cdr  june 17: ?? what if nprs < nsteff, and still one stratum
-cdr              has more than one processor assigned ??
-cdr              Is it excluded that one pe deals with more than one stratum?  
-       if (nprs.gt.nsteff) call EIRENE_calstr
+C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary 
+C MPI_BARRIER calles have been removed.
+       IF ( ANY( NPESTR(1:NSTRA) > 1 .AND. NPTS(ISTRA) .GT. 0 ) ) 
+     >   CALL EIRENE_CALSTR
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
@@ -936,7 +937,16 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-      if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
+C Identify the different cases based on current pedist:
+C nsteff >= nprs: each process is a master process of at least one 
+C                 stratum, procforstra irrelevant
+C                 always true
+C nsteff < nprs: for each stratum only those processes calculating it
+C                will perform if block. Are the others reaching this 
+C                location at all? No.
+C                => True for all.
+C => This if condition is always true.
+C     if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
 
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
 C
@@ -1224,7 +1234,7 @@ C
         WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
         CALL EIRENE_LEER(2)
         endif  ! nprs > nsteff ...
-      end if  ! nprs < nsteff ... or  nprs > nstef ...
+C     end if  ! nprs < nsteff ... or  nprs > nstef ...
 1000  CONTINUE
 C
 C*** STRATA LOOP FINISHED *******************************************
@@ -1249,13 +1259,18 @@ C   AND MORE PROCESSES THEN STRATA
 !pb  USE OF fort.10 IS REQUIRED 	
 !pb        IF (NPRS > NSTEFF) THEN
         IF (NPRS > 1) THEN
-          IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
-            WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
-     .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
-            WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
-     .                 'BE CALCULATED'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
+C This is very case specific and my be different for each plasma code.
+C Introducing another interfacing subroutine within the strata-loop 
+C solves this issue much more flexible.
+C This if block needs to go into the if3cop, if relevant for the 
+C plasma code.
+C         IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
+C           WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
+C    .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
+C           WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
+C    .                 'BE CALCULATED'
+C           CALL EIRENE_EXIT_OWN(1)
+C         END IF
 !pb ISTRA=NSTRAI FROM STRATA LOOP ABOVE
 !PB IESTR IS ALREADY SET IN STRATA LOOP
 !PB EACH PROCESSOR HAS SET ITS OWN STRATUM NO. 
@@ -1393,7 +1408,7 @@ cdr spectrum tally variances are already in ESTIML
         ENDIF
       ENDIF
 C
-      ENDIF
+      ENDIF ! PROCFORSTRA(ISTRA,MY_PE)
 C
 2000  CONTINUE
 
