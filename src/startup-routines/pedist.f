@@ -58,6 +58,8 @@ csw 18mar2013
 !              XTIM REMAINS UNCHANGED
         
         PROCFORSTRA(1:NSTRAI,0) = NLSRON(1:NSTRAI)
+        NPESTA = 0
+        NPESTR = 1
 
       ELSE IF (NPRS <= COUNT(NLSRON(1:NSTRAI))) THEN
 
@@ -66,6 +68,8 @@ csw 18mar2013
 ! EACH PROCESSOR CAN CALCULATE SEVERAL STRATA
 ! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
 ! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME       
+        NPESTA(0) = 0
+        NPESTR = 1
         TSTRPE = 0._DP
         IPE = -1
         DO ISTRA = 1, NSTRAI
@@ -73,6 +77,7 @@ csw 18mar2013
             IPE = IPE + 1
             IF (IPE >= NPRS) IPE = 0
             PROCFORSTRA(ISTRA,IPE) = .TRUE.
+            NPESTA(ISTRA) = IPE
             TSTRPE(ISTRA,IPE) = XTIM(ISTRA)
           END IF
         END DO

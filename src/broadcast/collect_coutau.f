@@ -42,29 +42,13 @@ c
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
-C Identifies the master processes of each strata.and colour them "1"
-C The if statemet can be made much simpler by just ask if my_pe is in 
-C npesta with masking the requrest by nlsron to ignore not active 
-C strata.
-C Destingtion between nsteff < nprs and the rest is not correct. It 
-C strongly depents on the parallisation concept. If nsteff >= nprs 
-C each process is a master of at least on strata, when considering the 
-C current parallelisation concept. Therefore, the first if block will 
-C give the correct colouring already.
-      if (nsteff < nprs) then
-! collect from group leader pe
-        icolor=MPI_UNDEFINED
-        do istr=1,nstrai
-          if (npts(istr) == 0) cycle
-          if (my_pe == npesta(istr)) then
-            icolor = 1
-            write (0,*) ' my_pe, istr ',my_pe, istr
-            exit
-          end if
-        end do
-      else
-! collect from all pes
+C When this process is a master processes of any strata.it gets colour 
+C "1".
+C nlsron rather then npts /= 0 should be the correct way.
+      if ( any( npesta(1:nstrai) == my_pe .and. npts /= 0 ) ) then
         icolor = 1
+      else
+        icolor=MPI_UNDEFINED
       end if
 
       call mpi_barrier(mpi_comm_world,ier)
