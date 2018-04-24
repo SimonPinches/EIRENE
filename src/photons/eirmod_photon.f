@@ -849,8 +849,17 @@ c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
       end function EIRENE_coll
 
 !******************************************************************
+!> \brief Approximation of the exponential integral E_1
+!>
+!> Integral E_1(arg) from x=arg to x=infinity of exp(-x)/x
+!> Here, Allen and Hastings approximation of the exponential integral 
+!> is used.
+!> See Handbook of Mathematical Functions: With Formulas, Graphs, and 
+!> Mathematical Tables, by Milton Abramowitz, Irene A. Stegun, Courier 
+!> Corporation, 1964, ISBN 0486612724, 9780486612720
+!> Formula 5.1.53 (0 <= arg <=1, |error| <= 2 x 10^-7)
+!> Formula 5.1.56 (1 <= arg < inf, |error| <= 2 x 10^-8) 
       function EIRENE_expint(arg)
-!Integral from x=arg to x=infinity of exp(-x)/x
       implicit none
       real(dp)::A0,A1,A2,A3,A4,A5
       real(dp)::   B1,B2,B3,B4
