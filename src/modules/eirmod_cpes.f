@@ -13,9 +13,7 @@ cdr Nov. 17  commenting started
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
 cdr  npesta(istra): master processor for ISTRA
 cdr  npestr(istra): total no. of processor working on ISTRA
-cdr  nstrpe(ipe)  : processor no. IPE works on stratum ISTRA=NSTRPE(IPE)
-     I         NPESTR(:), NPESTA(:),
-     I         NSTRPE(:)
+     I         NPESTR(:), NPESTA(:)
  
       INTEGER, PUBLIC, SAVE ::
      I         NSTEFF, NPRS, MY_PE
@@ -35,7 +33,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       ALLOCATE (NPESTR(0:NSTRA))
       ALLOCATE (NPESTA(0:NSTRA))
-      ALLOCATE (NSTRPE(0:NPRS-1))
 
       ALLOCATE(PROCFORSTRA(NSTRA,0:NPRS-1))
  
@@ -54,7 +51,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       DEALLOCATE (NPESTR)
       DEALLOCATE (NPESTA)
-      DEALLOCATE (NSTRPE)
 
       DEALLOCATE(PROCFORSTRA)
  
@@ -66,7 +62,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       NPESTR = 0
       NPESTA = 0
-      NSTRPE = 0
 
       PROCFORSTRA=.TRUE. !VK
  
