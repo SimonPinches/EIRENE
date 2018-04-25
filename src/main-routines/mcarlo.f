@@ -599,9 +599,7 @@ csw
 
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 
-C NPTS scaling to be done in pedist
-        DO 100 IPTSI=1,NPTS(ISTRA)/max(1,npestr(istra))
-C       DO 100 IPTSI=1,NPTS(ISTRA)
+        DO 100 IPTSI=1,NPTS(ISTRA)
 
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
 C
@@ -633,6 +631,10 @@ c  which is scored along a trajectory
           END IF
 C...........................................................................
 
+C LGSTOP is always equal LGLAST, see line 681
+C Should not this be (.NOT.LGLAST.AND.LGSTOP), if one corrects the 
+C rescalling of NPTS by moving it into pedist rather then in the 
+C do-loop above?
           IF (LGLAST.AND.LGSTOP) THEN
             CALL EIRENE_LEER(1)
             WRITE (iunout,*)

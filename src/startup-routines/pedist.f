@@ -246,6 +246,10 @@ csw
           CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
         END DO
 
+C Rescaling of particles per stratum, to keep total particle number 
+C independent of parallelisation (strong scaling appraoch):
+        NPTS = NPTS / NPESTR(1:NSTRA)
+
       END IF  
  
       RETURN
