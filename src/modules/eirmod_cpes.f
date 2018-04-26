@@ -15,8 +15,7 @@ cdr  npesta(istra): master processor for ISTRA
 cdr  npestr(istra): total no. of processor working on ISTRA
      I         NPESTR(:), NPESTA(:)
  
-      INTEGER, PUBLIC, SAVE ::
-     I         NSTEFF, NPRS, MY_PE
+      INTEGER, PUBLIC, SAVE :: NPRS, MY_PE
  
       LOGICAL, PUBLIC, SAVE :: NLIDENT
 

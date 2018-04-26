@@ -286,9 +286,6 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
       XPT1=0.
       XFL1=0.
  
-c NSTEFF: number of strata active in this run, i.e. not counting
-c         de-activated strata with NPTS(ISTRA)=0.
-      nsteff=0 
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         IF (NLSRON(ISTRA)) THEN
@@ -300,7 +297,6 @@ CVKMPI     +                             (   ALLOC)*XFL1/(XFL+EPS60))
           XFL1=FLUX(ISTRA) !VKMPI
           XTIM(ISTRA)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
      +                     (   ALLOC)*XFL1/(XFL+EPS60)) !VKMPI
-          nsteff=nsteff+1
         ELSE
 CVKMPI          xtim(istra)=xtim(istra-1)
           xtim(istra)=0.0 !VKMPI
@@ -910,6 +906,9 @@ C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary
 C MPI_BARRIER calls have been removed.
        IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
 C
+C Should not the following be done only for process rank zero as it 
+C got collected from all other ranks already?
+C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
       DO 120  IMOL=1,NMOLI
@@ -940,17 +939,6 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-C Identify the different cases based on current pedist:
-C nsteff >= nprs: each process is a master process of at least one 
-C                 stratum, procforstra irrelevant
-C                 always true
-C nsteff < nprs: for each stratum only those processes calculating it
-C                will perform if block. Are the others reaching this 
-C                location at all? No.
-C                => True for all.
-C => This if condition is always true.
-C     if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
-
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
 C
       WTT=0.
@@ -1236,8 +1224,7 @@ C
      .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA '
         WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
         CALL EIRENE_LEER(2)
-        endif  ! nprs > nsteff ...
-C     end if  ! nprs < nsteff ... or  nprs > nstef ...
+        END IF ! PROCFORSTRA(ISTRA,MY_PE)
       END DO ! ISTR
 C
 C*** STRATA LOOP FINISHED *******************************************
@@ -1258,9 +1245,6 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THEN STRATA
       IF (NMODE.GT.0) THEN
-!pb  NOW IF3COP CALLED HERE IN CASE OF LESS PROCESSORS THAN STRATA AS WELL
-!pb  USE OF fort.10 IS REQUIRED 	
-!pb        IF (NPRS > NSTEFF) THEN
         IF (NPRS > 1) THEN
 C This is very case specific and my be different for each plasma code.
 C Introducing another interfacing subroutine within the strata-loop 
@@ -1409,9 +1393,9 @@ C
 cdr spectrum tally variances are already in ESTIML   
      .                TRCFLE)
         ENDIF
-      ENDIF
+      ENDIF ! NSMSTRA == 1
 C
-      ENDIF ! PROCFORSTRA(ISTRA,MY_PE)
+      ENDIF ! MY_PE .EQ. 0 
 C
 2000  CONTINUE
 

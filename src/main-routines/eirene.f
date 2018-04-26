@@ -92,8 +92,6 @@ C
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
 
-      IF (NPRS == 1) NSTEFF=1
-
       CALL EIRENE_DEFAULTS_USR
 
 cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
