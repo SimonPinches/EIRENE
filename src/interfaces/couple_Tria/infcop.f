@@ -239,7 +239,6 @@ c the corresponding tallies scored from random sampling in eirene
      .            PPPL_COP(:,:), MPPL_COP(:,:),
      .            EPPL_COP(:,:), EPEL_COP(:)
 C
-     .           ,CPV_CMP(:,:,:)
 c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            PPLODA(:,:), CPVODA(:,:),
@@ -254,10 +253,11 @@ C
 
       REAL(DP), SAVE :: SCALM, SCALE, SCALI, SEES, SEIS,
      .          SFEISY, SFEESY, 
-     .          VPARA, PIADD, RECADD, RECTOT, EEADD, EIADD, 
+     .          VPARA, RECADD, RECTOT,
+     .          EEADD, EIADD, PIADD, 
      .          SMOCL, CHEES, CHEIS, SNICL,
      .          SIGNUM, FNIYB0, 
-     .          SSE, BALANI,BALANE, SSEE, SSI, RE, RI, RNT, TOT,
+     .          SSE, BALANI, BALANE, SSEE, SSI, RE, RI, RNT, TOT,
      .          TOTI, TOTE, SFEENY, SFEIWX, BALAN,
      .          TIFLX, PIFLX, 
      .          SSEI, SFEIEX, SFEEEX, SFEEWX, SFEINY,
@@ -277,8 +277,8 @@ C
      .          EEMAX, EESHT, RP1, THMAX, TIS, TES, 
      .          PIPV, PUXS, PNORM, PVXS, PVYS, PUPV,
      .          FLX_EIR,
-     .          SUMN_OLD, 
-     .          SNIRES, SMORES, SEERES, SEIRES, UU, PITB, 
+     .          SUMN_OLD,
+     .          SNIRES, SMORES, SEERES, SEIRES, UU, PITB,
      .          DXPOL,DYPOL,PAR,
      .          fniprt, fltt, e0b2, frac, celdel, dd, cfac
 
@@ -483,7 +483,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
      .                              NTEN(IT,IPRT),NIFLG(IT,IPRT),
      .                              NPTC(IT,IPRT),NPTCM(IT,IPRT),
      .                              NSPZI(IT,IPRT),NSPZE(IT,IPRT),
-     .                              NEMOD(IT,IPRT) 
+     .                              NEMOD(IT,IPRT)
             IREAD=0
             NSPZI(IT,IPRT)=MAX0(1,NSPZI(IT,IPRT))
             NSPZE(IT,IPRT)=MIN0(NFLA,NSPZE(IT,IPRT))
@@ -573,7 +573,7 @@ C                                              AND IN SUBR. COLLIDE)
 
 cdr  already done in if0prm. Hidden link, must be removed....
       NCPVI = NPLSI
-      NCPV = MAX(NCPV,NCPVI)
+      NCPV  = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       LNLPLG=NLPLG
@@ -693,7 +693,7 @@ c  only for inclined target option:
       END IF
 C
       CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,
-     .            PUX,PUY,PVX,PVY,MSHFRM)
+     .                   PUX,PUY,PVX,PVY,MSHFRM)
 C
       IF (NDXA+1.NE.NRPLG) THEN
         WRITE (iunout,*) 'ERROR IN INFCOP: NRPLG.NE.NDXA+1'
@@ -1578,7 +1578,7 @@ C  NOW THE SURFACE CENTERED DATA
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FNIYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
-C  distinct from B2.5: these velocities are cell centered in b2.5
+C  distinct from B2.5: these velocities are surface centered in b2
       CALL EIRENE_INDMAP (UUB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VVB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -2478,8 +2478,8 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
 
                 ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
      .                                  FL(IPLS)/DELX*
-     .              TIS*delti_perp*ABS(Fniyb(ix,npbs,ifl))
-!pb  .             +TES*(delte_para+delte_perp)*ABS(Fniyb(ix,npbs,ifl)))
+     .            (TIS*delti_perp*ABS(Fniyb(ix,npbs,ifl)))
+
 
 !dr  try ion energy fluxes from B2 directly. But then velocs-sampling inconsistency
 !                ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
@@ -2775,7 +2775,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
 C           CALL EIRENE_LEER(1)
 C
-          END IF
+          ENDIF
 C
 C  BOHM CRITERION CHECK DONE
 C
@@ -2813,7 +2813,7 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
 
 6009    CONTINUE  ! IPLS loop
 
-6011  CONTINUE     ! IG,  CELL ALONG TARGET
+6011  CONTINUE    ! IG,  CELL ALONG TARGET
 C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
@@ -2991,8 +2991,9 @@ C  FLUX FROM EIRENE TO PLASMA CODE: NEGATIVE
           GOTO 7999
         ELSEIF (ISTRAI.GT.NTARGI) THEN
           FLXI=1.
-C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
+
 C  IF THE SOURCE STRENGTH IS TO BE CHANGED DURING THE SHORT CYCLE (E.G.: VOL-REC)
+C  THEN FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
           FLXEIR(ISTRAI)=1._DP
         ENDIF
 
@@ -3078,10 +3079,10 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
         EAPL=0.D0
         CPMUL => EAPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
-          IPLS=CPMUL%IART
-          IN=CPMUL%ICM
+          IPLS=         CPMUL%IART
+          IN=           CPMUL%ICM
           EAPL(IPLS,IN)=CPMUL%VALUEM
-          CPMUL => CPMUL%NXTMUL
+          CPMUL =>      CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7310
@@ -3693,8 +3694,8 @@ cdr  this is now identical to see above ?
               exit
             end if
           end do
-           
-          if (istat_cop > 0) then 
+
+          if (istat_cop > 0) then
             DO IX=1,NDXA
               DO IY=1,NDYA
 !pb 21012013 ncltal
@@ -3724,6 +3725,7 @@ C
           DO  7543 IPLS=1,NPLSI
             IF (IFLB(IPLS).NE.IFL) GOTO 7543
             DO 7542 IX=1,NDXA
+              IF (LLCUT(IX)) CYCLE
               DO 7541 IY=1,NDYA
 !pb 21012013 ncltal
 !            CURPOI => HEADS(IY,IX)%P
@@ -4502,36 +4504,36 @@ C
         WRITE (iunout,*) 'ENERGY FLUXES (SFEI..,SFEE..,) IN WATT'
         CALL EIRENE_LEER(1)
         IF (LNONREC_SY) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
-        CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
+          CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL)=',IFL,') ',
      .                                       SFNISY(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         IF (LNONREC_NY) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
-        CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
+          CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL)=',IFL,') ',
      .                                       SFNINY(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         IF (LNONREC_WX) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
-        CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
+          CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL)=',IFL,') ',
      .                                       SFNIWX(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         IF (LNONREC_EX) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
-        CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
+          CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL)=',IFL,') ',
      .                                       SFNIEX(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         CALL EIRENE_MASRR1 (' TARGETS,EI',SFEIT(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFEET(1),NTARGI,5)
@@ -4547,7 +4549,7 @@ C
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IF =',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IFL)=',IFL,') ',
      .                                      SFNIT(0,IFL)
         ENDDO
 
@@ -4556,7 +4558,7 @@ C
         WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION: '
         CALL EIRENE_MASR2(' SSEI,SSEE      ',SSEI,SSEE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IF =',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IFL=',IFL,') ',
      .                                      SSNI(IFL)
         ENDDO
         CALL EIRENE_LEER(2)
@@ -4574,14 +4576,14 @@ C
 
         CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IF =',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IFL)=',IFL,') ',
      .                                      BALANN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
 
         CALL EIRENE_MASR2('REL.ERR.(%)RI,RE',RI,RE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IF =',IFL,') ',RN(IFL)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IFL)=',IFL,') ',RN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
         MINSPEZ=99

@@ -71,8 +71,9 @@ c            parameters nr1tal_save, ....     for interfacing tallies between b2
 c                                             is always the b2 (structured) coarse grid
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
+
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
-cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure  
+cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
 cdr Mar 18:  ELTEST from couple_Tria
 c......................................................................................
 
@@ -88,12 +89,11 @@ C
 C   THIS VERSION: $COUPLE_B2.5/$COUPLE_TRIA 
 c                 combined by s.wiesen@fz-juelich.de, from fzj repositories at 2011
 c                 additionally modified for MPI use, s.wiesen@fz-juelich.de, apr2011
-c
 C
 c  geometry data not any longer via work array into eirene
 c                due to module structure
 c  eliminate cut cells from balances (lcut(..))
-c  removed: ncopib,ncopeb
+c  removed: ncopib, ncopeb
 
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -236,7 +236,6 @@ c the corresponding tallies scored from random sampling in eirene
      .            PPPL_COP(:,:), MPPL_COP(:,:),
      .            EPPL_COP(:,:), EPEL_COP(:)
 C
-     .           ,CPV_CMP(:,:,:)
 c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            PPLODA(:,:), CPVODA(:,:),
@@ -256,6 +255,7 @@ C
      .          SIGNUM,
      .          SSE, BALANI, BALANE, SSEE, SSI, RE, RI, RNT, TOT,
      .          TOTI, TOTE, SFEENY, SFEIWX, BALAN, RRBC,
+     .          TIFLX, PIFLX, 
      .          SSEI, SFEIEX, SFEEEX, SFEEWX, SFEINY, 
      .          VVBC, UUBC, UPBC, RBC, UDBC, VL, V, T, 
      .          BX, BY, BZ, BN, TEST,
@@ -269,7 +269,7 @@ C
      .          RP1, DELX, PNORM, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          PM1, DRR, VDBC,
-     .          TIFLX,XCOOR,YCOOR,ZCOOR,VSX,VSY,VS,VTX,
+     .          XCOOR,YCOOR,ZCOOR,VSX,VSY,VS,VTX,
      .          BVAC,TX,TY,VPRO,VTY,XMUE,PX,PY,
      .          XANF,YANF,PIPV,
      .          FLX_EIR,
@@ -284,7 +284,7 @@ C
      .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
      .           IMODE, IERROR, LTARG, IN, IX, IY,
      .           NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
-     .           ISTRAI, IRRC, K, IR, IIRC, ICPV, I34,
+     .           ISTRAI, IRRC, K, IR, IIRC, I34,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ, 
      .           ISP, IPLSTI, IPLSV,
      .           IPLV,l,ISTR, JUN,
@@ -292,9 +292,12 @@ C
      .           NRS,NADMOD,NBARSI,IP1,IS1,IR1,
      .           NEND,NINI,NSSIP,MTRI,
      .           IDUMMY,ISTS,ITRI,IACT,IANF,
-     .           ISC1,ISC2,ISCS,ICOU,IXI,IXE,NCOPIB,NCOPEB,
+     .           ISC1,ISC2,ISCS,ICOU,
+     .           IXI, IXE, NCOPIB, NCOPEB,
      .           IST_RATE, MSHFRM, IMF,
-     .           icoadd, icoscr,
+!  ADDITIONAL STORAGE FOR LIN. COMB. OF TALLIES (E.G. INTERNAL ENERGY SOURCES) 
+     .           ICPV, icp1, icp2, icp3,
+     .           icoadd, icoscr, icog,
      .           istat_cop, IXM1, IYM1,
      .           ibrad,ibpol,ibtor,
      .           ntrfrm,
@@ -496,7 +499,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
      .                              NTEN(IT,IPRT),NIFLG(IT,IPRT),
      .                              NPTC(IT,IPRT),NPTCM(IT,IPRT),
      .                              NSPZI(IT,IPRT),NSPZE(IT,IPRT),
-     .                              NEMOD(IT,IPRT) 
+     .                              NEMOD(IT,IPRT)
             IREAD=0
             NSPZI(IT,IPRT)=MAX0(1,NSPZI(IT,IPRT))
             NSPZE(IT,IPRT)=MIN0(NFLA,NSPZE(IT,IPRT))
@@ -586,7 +589,7 @@ C                                              AND IN SUBR. COLLIDE)
 
 cdr  already done in if0prm. Hidden link, must be removed....
       NCPVI = NPLSI
-      NCPV = MAX(NCPV,NCPVI)
+      NCPV  = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NDX = NDXA
@@ -712,7 +715,7 @@ c  only for inclined target option:
       END IF
 C
       CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,
-     .            PUX,PUY,PVX,PVY,MSHFRM)
+     .                   PUX,PUY,PVX,PVY,MSHFRM)
 C
       IF (NDXA+1.NE.NRPLG) THEN
         WRITE (iunout,*) 'ERROR IN INFCOP: NRPLG.NE.NDXA+1'
@@ -2609,7 +2612,7 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
 
                 ELSTEP(IPLS,ITARG,IG) = ELSTEP(IPLS,ITARG,IG) +
      .                                  FL(IPLS)/DELX*
-     .              TIS*delti_perp*ABS(Fniyb(ix,npbs,ifl))
+     .            (TIS*delti_perp*ABS(Fniyb(ix,npbs,ifl)))
               ENDIF
             ENDIF
 C
@@ -2811,7 +2814,6 @@ C
 C
         ELTEST(ITARG,IG)=0.  ! ELSTEP MAY ALREADY HAVE BEEN SET IN CALL TO FCT. STEP
         DO 6009 IPLS=1,NPLSI
-          CALL EIRENE_MASJ2('ITARG,IPLS      ',ITARG,IPLS)
           IF (FLSTEP(IPLS,ITARG,IG).EQ.0.D0) GOTO 6009
 C
           IPLSTI=MPLSTI(IPLS)
@@ -2856,11 +2858,12 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
           VR=SQRT(VPX**2+VPY**2)
           VTEST2=VPZ/(CS+EPS60)
           IF (TRCINT) THEN
-            WRITE (iunout,*) 'IG,MACH_PAR,MACH_Z ',
-     .                        IG,VTEST,VTEST2
+            WRITE (iunout,*) 'IPL,ITG,IG,MACH_PAR',
+     .                        IPLS,ITARG,IG,VTEST
 C           WRITE (iunout,*) 'POL., TOR., RAD. (CM/S) ',PM1,VPZ,VR
-            CALL EIRENE_LEER(1)
-          END IF
+C           CALL EIRENE_LEER(1)
+C
+          ENDIF
 C
 C  BOHM CRITERION CHECK DONE
 C
@@ -2898,7 +2901,7 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
 
 6009    CONTINUE  ! IPLS loop
 
-6011  CONTINUE     ! IG,  CELL ALONG TARGET
+6011  CONTINUE    ! IG,  CELL ALONG TARGET
 C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
@@ -3176,8 +3179,9 @@ C  FLUX FROM EIRENE TO PLASMA CODE: NEGATIVE
           GOTO 7999
         ELSEIF (ISTRAI.GT.NTARGI) THEN
           FLXI=1.
-C  FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
+
 C  IF THE SOURCE STRENGTH IS TO BE CHANGED DURING THE SHORT CYCLE (E.G.: VOL-REC)
+C  THEN FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
           FLXEIR(ISTRAI)=1._DP
         ENDIF
 C
@@ -3282,10 +3286,10 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
         EAPL=0.D0
         CPMUL => EAPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
-          IPLS=CPMUL%IART
-          IN=CPMUL%ICM
+          IPLS=         CPMUL%IART
+          IN=           CPMUL%ICM
           EAPL(IPLS,IN)=CPMUL%VALUEM
-          CPMUL => CPMUL%NXTMUL
+          CPMUL =>      CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7310
@@ -3663,6 +3667,18 @@ C
           FLX_EIR = FLXEIR(ISTRAI)
         END IF
 
+!pb 22012013 copv
+cdr  copv(icp1+1,...) to copv(icp5+1,...)  linear algebraic tallies
+cdr                                       scored in upfcop, so also their variances 
+cdr                                       can be set without need for covariance matrices  
+        icp1=nplsi
+        icp2=2*nplsi
+        icp3=3*nplsi
+
+cdr  fill bulk particle source rate sni(...ifl) from all contributing
+cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
+cdr  test particle may have scored on a finer mesh (lcoarse=.false)
+
         DO 7510 IFL=1,NFLA
           CHPS(IFL)=0.
           SNIS(IFL)=0.
@@ -3810,6 +3826,7 @@ C
 7545      CONTINUE
 7540    CONTINUE
 C
+        if (NCPV.GE.ICP3+NPLS) THEN
 
         SEIS=0.
         CHEIS=0.
@@ -3865,6 +3882,7 @@ C
               END DO
             END DO
           end if
+        END IF
 
 !pb replace sigma_cop
           istat_cop = 0
@@ -4459,8 +4477,8 @@ cdr  sheath done
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
-             IF (LCUT(IX)) GOTO 10135
-             DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
+              IF (LCUT(IX)) GOTO 10135
+              DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
                 IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0.) THEN
                 SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
@@ -4468,7 +4486,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
 cdr sheath contributions: count negative for electrons, positive for ions 
 cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-     .            NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
+     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
      .           (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
                 SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
      .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
@@ -4588,36 +4606,36 @@ C
         WRITE (iunout,*) 'ENERGY FLUXES (SFEI..,SFEE..,) IN WATT'
         CALL EIRENE_LEER(1)
         IF (LNONREC_SY) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
-        CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
+          CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL)=',IFL,') ',
      .                                       SFNISY(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         IF (LNONREC_NY) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
-        CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
+          CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL)=',IFL,') ',
      .                                       SFNINY(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         IF (LNONREC_WX) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
-        CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
+          CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL)=',IFL,') ',
      .                                       SFNIWX(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         IF (LNONREC_EX) THEN
-        WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
-        CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
+          CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IF =',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL)=',IFL,') ',
      .                                       SFNIEX(IFL)
-        ENDDO
+          ENDDO
         ENDIF
         CALL EIRENE_MASRR1 (' TARGETS,EI',SFEIT(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFEET(1),NTARGI,5)
@@ -4633,7 +4651,7 @@ C
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IF =',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IFL)=',IFL,') ',
      .                                      SFNIT(0,IFL)
         ENDDO
 
@@ -4642,7 +4660,7 @@ C
         WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION: '
         CALL EIRENE_MASR2(' SSEI,SSEE      ',SSEI,SSEE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IF =',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IFL=',IFL,') ',
      .                                      SSNI(IFL)
         ENDDO
         CALL EIRENE_LEER(2)
@@ -4660,14 +4678,14 @@ C
 
         CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IF =',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IFL)=',IFL,') ',
      .                                      BALANN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
 
         CALL EIRENE_MASR2('REL.ERR.(%)RI,RE',RI,RE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IF =',IFL,') ',RN(IFL)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IFL)=',IFL,') ',RN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
         MINSPEZ=99
@@ -4680,10 +4698,10 @@ C
         ENDDO
         BALAN=0.
         TOT=0.
-      DO IFL=MINSPEZ,MAXSPEZ
-         BALAN=BALAN+SFNISY(IFL)+SFNINY(IFL)+SFNIWX(IFL)
-     .              +SFNIEX(IFL)+SFNIT(0,IFL)+SSNI(IFL)
-         TOT=TOT+ABS(SFNISY(IFL)+SFNINY(IFL))+ABS(SFNIT(0,IFL))+
+        DO IFL=MINSPEZ,MAXSPEZ
+          BALAN=BALAN+SFNISY(IFL)+SFNINY(IFL)+SFNIWX(IFL)
+     .               +SFNIEX(IFL)+SFNIT(0,IFL)+SSNI(IFL)
+          TOT=TOT+ABS(SFNISY(IFL)+SFNINY(IFL))+ABS(SFNIT(0,IFL))+
      .            ABS(SSNI(IFL))
         ENDDO
         RNT=BALAN/(TOT+EPS60)*100.
