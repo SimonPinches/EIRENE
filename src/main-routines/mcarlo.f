@@ -291,7 +291,7 @@ c         de-activated strata with NPTS(ISTRA)=0.
       nsteff=0 
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
-        if (npts(istra) .gt. 0) then
+        IF (NLSRON(ISTRA)) THEN
 CVKMPI          XPT1=XPT1+NPTS(ISTRA)
 CVKMPI          XFL1=XFL1+FLUX(ISTRA)
 CVKMPI          XTIM(ISTRA)=XTIM(0)+XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
@@ -301,10 +301,10 @@ CVKMPI     +                             (   ALLOC)*XFL1/(XFL+EPS60))
           XTIM(ISTRA)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
      +                     (   ALLOC)*XFL1/(XFL+EPS60)) !VKMPI
           nsteff=nsteff+1
-        else
+        ELSE
 CVKMPI          xtim(istra)=xtim(istra-1)
           xtim(istra)=0.0 !VKMPI
-        end if
+        END IF
 8     CONTINUE
 
 C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE SWITCHED OFF (SHORT CYCLE)
@@ -431,7 +431,7 @@ C
       NPANU=0
       OVER_ACC=0.D0
       NEW_ITER=0
-      DO 1000 ISTR=1,NSTRAI
+      DO ISTR=1,NSTRAI
 
         timan=EIRENE_second_own()
 
@@ -472,9 +472,10 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
 
 
           CALL EIRENE_LEER(2)
-          IF (NPTS(ISTRA).GT.0) THEN
+          IF (NLSRON(ISTRA)) THEN
             WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
-          ELSEIF (NPTS(ISTRA).LE.0) THEN
+          ELSE
+C This if branch will never be reached as .NOT.NLSRON(ISTRA) gets cycled
             WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
           ENDIF
           CALL EIRENE_LEER(2)
@@ -561,12 +562,13 @@ C
 C
         IPRNLS=0
 C
-        IF (NPTS(ISTRA).LE.0) GOTO 1000
+C This will never happen as NLSRON status have not changed...
+        IF (.NOT.NLSRON(ISTRA)) CYCLE
 C
 C  INITIALIZE SUBR. LOCATE
 C
         CALL EIRENE_LOCAT0
-        IF (NPTS(ISTRA).LE.0) GOTO 1000 ! LOCAT0 might also turn off a stratum        
+        IF (.NOT.NLSRON(ISTRA)) CYCLE ! LOCAT0 might also turn off a stratum        
 C
 C  LOCATE AND FOLLOW MC-PARTICLES
 C
@@ -905,9 +907,8 @@ c    collect data for one stratum ISTRA from all pe's performing calculations
 c    for this stratum
 c
 C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary 
-C MPI_BARRIER calles have been removed.
-       IF ( ANY( NPESTR > 1 .AND. NPTS(ISTRA) .GT. 0 ) ) 
-     >   CALL EIRENE_CALSTR
+C MPI_BARRIER calls have been removed.
+       IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
@@ -1237,7 +1238,7 @@ C
         CALL EIRENE_LEER(2)
         endif  ! nprs > nsteff ...
 C     end if  ! nprs < nsteff ... or  nprs > nstef ...
-1000  CONTINUE
+      END DO ! ISTR
 C
 C*** STRATA LOOP FINISHED *******************************************
 C

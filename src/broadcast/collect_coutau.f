@@ -44,8 +44,7 @@ c
 
 C When this process is a master processes of any strata.it gets colour 
 C "1".
-C nlsron rather then npts /= 0 should be the correct way.
-      if ( any( npesta(1:nstrai) == my_pe .and. npts /= 0 ) ) then
+      if ( any( npesta == my_pe .and. nlsron ) ) then
         icolor = 1
       else
         icolor=MPI_UNDEFINED

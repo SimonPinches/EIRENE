@@ -206,6 +206,7 @@ C
         WRITE (iunout,*) 'SORWGT(SUBSTRATUM,STRATUM) IS .LE. ZERO'
         WRITE (iunout,*) 'THIS STRATUM IS TURNED OF !!'
         NPTS(ISTRA)=0
+        NLSRON(ISTRA)=.FALSE.
         RETURN
       ENDIF
       SUM1=0.
