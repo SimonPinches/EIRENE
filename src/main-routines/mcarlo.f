@@ -906,7 +906,7 @@ c    for this stratum
 c
 C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary 
 C MPI_BARRIER calles have been removed.
-       IF ( ANY( NPESTR(1:NSTRA) > 1 .AND. NPTS(ISTRA) .GT. 0 ) ) 
+       IF ( ANY( NPESTR > 1 .AND. NPTS(ISTRA) .GT. 0 ) ) 
      >   CALL EIRENE_CALSTR
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES

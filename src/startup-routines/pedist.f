@@ -69,7 +69,6 @@ csw 18mar2013
 ! EACH PROCESSOR CAN CALCULATE SEVERAL STRATA
 ! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
 ! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME       
-        NPESTA(0) = 0
         NPESTR = 1
         TSTRPE = 0._DP
         IPE = -1
@@ -148,7 +147,6 @@ csw 18mar2013 added branch to test xmct from previous run
           FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
      .               (REAL(NPRS_OPT,KIND(1.D0))+eps30))
           write (iunout,*) ' facp ',facp
-          NPESTR(0)=NPRS
           DO ISTRA=1,NSTRAI
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
             NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
@@ -160,7 +158,6 @@ csw 18mar2013 added branch to test xmct from previous run
         else
 
 csw attempting better work load balancing           
-          npestr(0)=nprs
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstrai
             timpe(istra) = max(xtim(istra)-tmean,0.d0)/tmean
@@ -206,7 +203,7 @@ csw
         WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
 csw 14jul2011
-        if(sum(npestr(1:nstrai)) /= npestr(0) ) then
+        if(sum(npestr(1:nstrai)) /= nprs ) then
           write(iunout,*) 'pedist: wrong number of processors in npestr'
           call eirene_exit_own(1)
         endif
@@ -231,14 +228,13 @@ csw
 ! It does calculations for this stratum.
 ! This is used to determine the groups of further processors in the
 ! accumulation of the results for one stratum
-        NPESTA(0)=0
         NPESTA(1)=0
         DO ISTRA=2,NSTRAI
           NPESTA(ISTRA)=NPESTA(ISTRA-1)+NPESTR(ISTRA-1)
         ENDDO
         WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM '
         WRITE (iunout,*) ' ISTRA, NPESTA '
-        WRITE (iunout,'(12I6)') (I,NPESTA(I),I=0,NSTRAI)
+        WRITE (iunout,'(12I6)') (I,NPESTA(I),I=1,NSTRAI)
  
         XTIM(1:NSTRAI) = XX1
         CALL EIRENE_MASAGE
@@ -249,7 +245,7 @@ csw
 
 C Rescaling of particles per stratum, to keep total particle number 
 C independent of parallelisation (strong scaling appraoch):
-        NPTS = NPTS / NPESTR(1:NSTRA)
+        NPTS = NPTS / NPESTR
 
       END IF  
  
