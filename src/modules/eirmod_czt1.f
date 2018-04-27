@@ -1,4 +1,5 @@
 cdr Dec. 16.  added cndyn arrays into RCZT1 (formerly in : update, etc....)
+cdr Apr. 18:  added: RSQDVPH,...CNDYNPH, for species-wise synchonised pointers and targets
 
       MODULE EIRMOD_CZT1
  
@@ -19,6 +20,7 @@ C  ZT1 ARRAY  RCZT1(NZT1)
      R RSQDVP(:), CVRSSP(:), ALMASP(:), CNDYNP(:),
      R RSQDVA(:), CVRSSA(:), ALMASA(:), CNDYNA(:),
      R RSQDVM(:), CVRSSM(:), ALMASM(:), CNDYNM(:),
+     R RSQDVPH(:),CVRSSPH(:),ALMASPH(:),CNDYNPH(:),
      R DENE,      DENI,
 C  ZT2 ARRAY  RCZT2(NZT2)
      R DEFCX(:),  EEFCX(:),
@@ -48,7 +50,7 @@ C  ZT2 ARRAY  RCZT2(NZT2)
  
         IF (ALLOCATED(RCZT1)) RETURN
  
-        NZT1=4*(NION+NPLS+NATM+NMOL) + 2
+        NZT1=4*(NION+NPLS+NATM+NMOL+NPHOT) + 2
  
         ALLOCATE (RCZT1(NZT1))
         ALLOCATE (ZT1(NPLS,NRAD))
@@ -80,8 +82,15 @@ C  ZT2 ARRAY  RCZT2(NZT2)
         CVRSSM => RCZT1(1+IND+1*NMOL : IND+2*NMOL)
         ALMASM => RCZT1(1+IND+2*NMOL : IND+3*NMOL)
         CNDYNM => RCZT1(1+IND+3*NMOL : IND+4*NMOL)
- 
+
         IND = IND+4*NMOL
+        RSQDVPH => RCZT1(1+IND+0*NMOL : IND+1*NPHOT)
+        CVRSSPH => RCZT1(1+IND+1*NMOL : IND+2*NPHOT)
+        ALMASPH => RCZT1(1+IND+2*NMOL : IND+3*NPHOT)
+        CNDYNPH => RCZT1(1+IND+3*NMOL : IND+4*NPHOT)
+
+        IND = IND+4*NPHOT
+
         DENE   => RCZT1(1+IND)
         DENI   => RCZT1(2+IND)
  

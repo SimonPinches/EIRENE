@@ -1230,8 +1230,6 @@ C
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
-      IF (TRCHKTIM) CALL EIRENE_OUTPUT_PARTINFO
-
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
 C
