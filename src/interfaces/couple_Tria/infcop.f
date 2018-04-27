@@ -12,7 +12,7 @@ C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NST
 C             VIA FILES FROM FORT.29?
 
 c             plus minor notational cleanup, comments added
- 
+
 cdr  23.04.2015    
 cdr  issue: unterlying coarse grid format for printout?
 cdr  see previous version.
@@ -59,10 +59,12 @@ cdr   a number of 'save' missing, compared to solps_iter
 cdr   llcut (FZJ versions) rather than lcut (solps_iter), lcut is broadcasted and on common 
 cdr   eirmod_cpolyg. Also set again in timer. same meaning?
 c
-c??   ???     additional input read from block 14:
-c             LCHKQUD       
+cdr      additional input read from block 14:
+c        LCHKQUD   uncommented read variable, taken out from read ***14,
+c                  now set to .false. Fills array IREVERS. Still needed ?
+cdr       
 c             IMF,ITCO 
-c  unused ??
+c  unused ?
 
 cdr feb 17:  nradd_tal corrected: NRADD was added twice
 c            set vacuum parameters also in additional cells from block 2e,
@@ -86,6 +88,10 @@ cdr          only partially done
 
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
+
+cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
+cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
+cdr           remove unused array: scpveii
 c......................................................................................
 
 
@@ -122,7 +128,7 @@ C   IT THEN PRODUCES INPUT DATA FOR EIRENE
 C   INPUT BLOCK 5 (PLASMA DATA) AND BLOCK 7 (SURFACE RECYCLING SOURCES)
 C
 C
-C   THIS PARTICULAR VERSION LINKS EIRENE TO THE B2   2D MULTIFLUID EDGE
+C   THIS PARTICULAR VERSION LINKS EIRENE TO THE B2_Tria   2D MULTIFLUID EDGE
 C   PLASMA TRANSPORT CODE.
 C
 C   IT WAS WRITTEN BY D.REITER AND P.BOERNER, FZ-JUELICH
@@ -234,6 +240,7 @@ c the corresponding tallies scored from random sampling in eirene
      .            EPPL_COP(:,:), EPEL_COP(:)
 C
      .           ,CPV_CMP(:,:,:)
+c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE :: 
      .            PPLODA(:,:), CPVODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
@@ -275,7 +282,8 @@ C
      .          DXPOL,DYPOL,PAR,
      .          fniprt, fltt, e0b2, frac, celdel, dd, cfac
 
-      INTEGER, SAVE :: J, IRC, JC, INC, K, IADD, NAS, IPUNKT, NSSIR, 
+      INTEGER, SAVE :: J, IRC, JC, INC, 
+     .           K, IADD, NAS, IPUNKT, NSSIR, 
      .           NUMSI, NBAR, ISNR, ISC, IS, NASMOD, NRS, NADMOD, 
      .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
      .           NTGPRI, IPRT, IO29, NEND, NINI, NSSIP,
@@ -305,6 +313,7 @@ C
      .                ,IFBOUND, lchkqud
 
       LOGICAL, ALLOCATABLE, SAVE :: LLCUT(:)
+
       logical :: l1, l2, lxsrf
 CTRIG A
       TYPE :: CELL
@@ -328,9 +337,6 @@ c
      . RESSNI(:,:),  RESSMO(:,:), 
      . RESSEE(:), RESSEI(:)
      .,FLXEIR(:)
-
-c  ion energy sources for internal (rather than total) ion energy balance
-      REAL(DP), ALLOCATABLE, SAVE :: SCPVEII(:)
 
       REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ELTEST(:,:), ORI(:,:)
@@ -404,8 +410,9 @@ C
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
-!pb
+cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
+cdr
       mshfrm = 0!  optional flag for geometry file format: linda, carree, sonnet
       ntrfrm = 0
 C
@@ -470,7 +477,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
             READ (ZEILE,'(12I6)') I,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                              NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                              NTEN(IT,IPRT),NIFLG(IT,IPRT),
-     .                              NPTC(IT,IPRT),NPTCM(IT,IPRT), !VK NPTCM
+     .                              NPTC(IT,IPRT),NPTCM(IT,IPRT),
      .                              NSPZI(IT,IPRT),NSPZE(IT,IPRT),
      .                              NEMOD(IT,IPRT) 
             IREAD=0
@@ -488,7 +495,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
      .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
-     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT), !VK NPTCM
+     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
      .                               NSPZI(IT,IPRT),NSPZE(IT,IPRT),
      .                               NEMOD(IT,IPRT)
             IF (NIXY(IT,IPRT).EQ.1) THEN
@@ -511,8 +518,8 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
         IF (TRCINT) CALL EIRENE_MASR4
      .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',
      .                           CHGP,CHGEE,CHGEI,CHGMOM)
-C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2 INTO EIRENE
-C  HERE: B2 VOLUME TALLIES
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2_TRIA INTO EIRENE
+C  HERE: B2_TRIA VOLUME TALLIES
         READ (IUNIN,'(I6)') NAINB
 C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12  
         NAIN = MAX(NAIN,NAINB)
@@ -709,11 +716,10 @@ C
         ENDDO
       ENDDO
       CALL EIRENE_LEER(1)
-!pb
+CDR UP TO NOW: UNDERLYING STRUCTURED (COARSE) GRID OF POLYGONS
       levgeo = 3
       nr1stm = nr1st-1
       call eirene_sneigh
-!pb
 C
 C  READ ADDITIONAL GEOMETRICAL DATA (MESH DISTORTION, DEAD CELLS)
 C  SAME FORMAT AS FORT.31, I.E., INDEX MAPPING MAY BE NECESSARY
@@ -801,6 +807,8 @@ C
 C
         DEALLOCATE (ALPHXB)
         DEALLOCATE (ALPHYB)
+        DEALLOCATE (XAISO)
+        DEALLOCATE (IAISO)
 C
       ELSE
         CALL EIRENE_LEER(1)
@@ -923,7 +931,7 @@ C  TO THE QUADRANGLE
         ENDIF
       ENDDO
  
-C  BUILD NSTGRD ARRAY OF "BLOCKED" TRANGLES FROM XAISO ARRAY FROM FORT.29
+C  BUILD NSTGRD ARRAY OF "BLOCKED" TRIANGLES FROM XAISO ARRAY FROM FORT.29
       IF (IO29.EQ.0) THEN
         DO ITRI=1,NTRII
           IY=IYTRI(ITRI)
@@ -1056,7 +1064,7 @@ C
 
 C  NEXT TOROIDAL SURFACES
 
-C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2
+C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2_TRIA
 
         DO IT = 1, NT3RD
           IF (IT.EQ.INUMP(ISTS,3)) THEN
@@ -2729,7 +2737,7 @@ C
 C  BOHM CRITERION CHECK DONE
 C
 C  ELTEST: TOTAL ION ENERGY FLUX ONTO TARGET:EMAXW + ESHET
-
+C
 C  NEXT: TARGET MAXW. ENERGY FLUXES
 C  EADD=  IN EV, SUCH THAT EADD*PARTICLE FLUX = ENERGY FLUX
           DRR=RRSTEP(ITARG,IG+1)-RRSTEP(ITARG,IG)
@@ -2738,8 +2746,8 @@ C  ENERGY FLUX DEFINED WITH PARAMETERS IN INPUT BLOCK 7
             EADD=SORENI(ITARG)
           ELSEIF (NEM.EQ.2.OR.NEM.EQ.3) THEN
             EADD=SORENI(ITARG)*TISTEP(IPLSTI,ITARG,IG)+SORENE(ITARG)*
-     .           TESTEP(ITARG,IG)                
-          ELSEIF (NEM.GE.4.AND. NEM.LE.7) THEN
+     .           TESTEP(ITARG,IG)
+          ELSEIF (NEM.GE.4 .AND. NEM.LE.7) THEN
             PERWI=PERW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             PARWI=PARW/SQRT(BMASS(IPLS)/RMASSP(IPLS))
             EADD=EIRENE_EMAXW(TISTEP(IPLSTI,ITARG,IG),PERWI,PARWI)
@@ -2831,7 +2839,7 @@ C
       WRITE (iunout,*) ISTRAA,ISTRAE
       LSHORT=.FALSE.
       LSTP3=.TRUE.
-      LSTOP=.TRUE.
+      LSTOP=LSTP3
       IFIRST=0
       NDXY=(NDXA-1)*NR1TAL_SAVE+NDYA
       GOTO 99992
@@ -2869,7 +2877,6 @@ C
         ALLOCATE (RESSEI(0:NSTRA))
 
         ALLOCATE (FLXEIR(NSTRA))
-        ALLOCATE (scpveii(NSTRA))
 
         CALL EIRENE_ALLOC_BRASPOI
         CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NSTRA,IFOFF)
@@ -2878,8 +2885,6 @@ C
         RESSMO = 0._DP
         RESSEE = 0._DP
         RESSEI = 0._DP
-c
-        scpveii = 0._dp
       ENDIF
 C
       IF (.NOT.LSHORT) THEN
@@ -2887,7 +2892,7 @@ C
         RESSMO(ISTRAA:ISTRAE,:) = 0._DP
         RESSEE(ISTRAA:ISTRAE) = 0._DP
         RESSEI(ISTRAA:ISTRAE) = 0._DP
-      END IF
+      ENDIF
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
@@ -3389,10 +3394,6 @@ cdr                                       can be set without need for covariance
         icp=nplsi
         icp2=2*nplsi
         icp3=3*nplsi
-cdr
-        scpveii(istrai) = 0._dp
-
-
 
 cdr  fill bulk particle source rate sni(...ifl) from all contributing
 cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
@@ -3487,6 +3488,7 @@ cdr  scaling was already on coarse grained grid: in=ncltal(it)
             END IF
 
 cdr   particle sources done.
+
 cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
 cdr   ipls contributes to plasma code species ifl
 
@@ -3712,7 +3714,6 @@ C
              copv(icp3+3,in)=(copv(icp3+3,in) + 
      .                  EPPL_COP(IPLS,IN)) * VOLTAL(IN)*ELCHA
              lhit(in) = .true.
-             scpveii(istrai) = scpveii(istrai) + copv(icp3+3,in)
            end do
 
            copv(icp3+2,:) = copv(icp3+2,:) * flxi 
@@ -4142,7 +4143,7 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           DO 10122 IF=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIXB(0,IY,IF)
             IF (NINCT(ITARG,IPRT)*FNIXB(0,IY,IF).LT.0) THEN
-              WRITE (iunout,*) 
+              WRITE (iunout,*)
      .          'RECYCLING TARGET, BUT WRONG FLOW DIRECTION: '
               WRITE (iunout,*) 'WEST,IY,ITARG,IPRT,IF ',IY,ITARG,IPRT,IF
               PIFLX=PIFLX+FNIXB(0,IY,IF)
@@ -4199,7 +4200,7 @@ C  ITARG, IPRT KNOWN FROM ABOVE
           DO 10127 IF=NSPZI(ITARG,IPRT),NSPZE(ITARG,IPRT)
             FLX=FLX+FNIXB(NDXA,IY,IF)
             IF (NINCT(ITARG,IPRT)*FNIXB(NDXA,IY,IF).LT.0) THEN
-              WRITE (iunout,*) 
+              WRITE (iunout,*)
      .          'RECYCLING TARGET, BUT WRONG FLOW DIRECTION: '
               WRITE (iunout,*) 'EAST,IY,ITARG,IPRT,IF ',IY,ITARG,IPRT,IF
               PIFLX=PIFLX+FNIXB(NDXA,IY,IF)
@@ -4290,6 +4291,7 @@ cdr  sheath done
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NPBS,IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NPBS,IY)
 10132       CONTINUE
+
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
@@ -4473,11 +4475,11 @@ C
         ENDDO
         CALL EIRENE_LEER(2)
 
-        WRITE (iunout,*) 
+        WRITE (iunout,*)
      .    ' VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2 '
         CALL EIRENE_MASR4(' B2BREM,B2RAD,-B2QIE,-B2VDP     ',
      .               B2BREM,B2RAD,-B2QIE,-B2VDP)
-        WRITE (iunout,*) 
+        WRITE (iunout,*)
      .    ' TARGET SHEATH CONTRIBUTIONS,ELECTRONS AND IONS '
         CALL EIRENE_MASRR1 (' TARGETS,EI',SHEAI(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SHEAE(1),NTARGI,5)
