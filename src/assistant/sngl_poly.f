@@ -63,7 +63,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(par
           FP(1)=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
           FP(2)=      (CCXM2-CCXM1)/DS12
           FP(3)=0.D0
-C
+C  Linear extrapolation on log-log scale
           IFEX=3
           ALMIN =RCMIN
           COUMIN=EXP(EXPO1)
@@ -118,7 +118,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(par
           FP(4)=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
           FP(5)=      (CCXM2-CCXM1)/DS12
           FP(6)=0.D0
-C
+C  Linear extrapolation on log-log scale
           IFEX=3
           ALMAX =RCMAX
           COUMAX=EXP(EXPO1)

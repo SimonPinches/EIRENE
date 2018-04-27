@@ -1,4 +1,8 @@
-C
+Cdr  analog xsecta, xsectm,.... printout to be sync.  and: call xstot. 
+cdr  unfinished code, for photons.
+c
+cdr  aber nicht ot prozesse
+Cdr  in xsectp, dort nur xstrc rufen.  im moment ist es genau umgekehrt.
 C
       SUBROUTINE EIRENE_XSECTPH
 C

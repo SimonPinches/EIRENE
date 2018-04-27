@@ -45,12 +45,8 @@ cdr
 ! Hence: currently photon.f works for purely absorbing media for photons.
 
 
-
-
-
-
 ! 24.2.05: ph_xsectp removed partially, is now xstrc in 'volume-processes', cleaned up
-c
+cdr jan 18:  immer noch da. entspricht aber wohl dem xstot, (xstrc) was es nicht gibt.
 !  7.3.05: ph_energy exchanged:  comments, cleaned up
 !  7.3.05: ph_sam_lorentz replaced by sam_lorentz: bug fix, was wrong
 !                         re-scaling from Cauchy to Lorentz, alph-->alphh

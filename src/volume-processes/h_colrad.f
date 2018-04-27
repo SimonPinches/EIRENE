@@ -657,26 +657,28 @@ C
       Z1=-Z
 
       IF(Y.GT.50.0) THEN
-      E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
-      E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
-      E2Y=EXP(-Y)*(1.0-EIRENE_GINT(Y))
-      E2Z=EXP(-Z)*(1.0-EIRENE_GINT(Z))
-      E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
-      E2=E2Y/Y+RX*E2Z/Z
-      F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
+        E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
+        E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
+        E2Y=EXP(-Y)*(1.0-EIRENE_GINT(Y))
+        E2Z=EXP(-Z)*(1.0-EIRENE_GINT(Z))
+        E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
+        E2=E2Y/Y+RX*E2Z/Z
+        F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
       ELSE
 
-      CALL EIRENE_EXPI(Y1,E1Y,ICON)
-      CALL EIRENE_EXPI(Z1,E1Z,ICON)
+cdr  use exponential integral here
 
-      E1Y=-E1Y
-      E1Z=-E1Z
-      E2Y=EXP(-Y)-Y*E1Y
-      E2Z=EXP(-Z)-Z*E1Z
-      E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
-      E2=E2Y/Y+RX*E2Z/Z
+        CALL EIRENE_EXPI(Y1,E1Y,ICON)
+        CALL EIRENE_EXPI(Z1,E1Z,ICON)
 
-      F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
+        E1Y=-E1Y
+        E1Z=-E1Z
+        E2Y=EXP(-Y)-Y*E1Y
+        E2Z=EXP(-Z)-Z*E1Z
+        E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
+        E2=E2Y/Y+RX*E2Z/Z
+
+        F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
       END IF
       RETURN
       END
@@ -1740,7 +1742,7 @@ c  exponential integral
 c  -int exp(-x)/x, von -x nach unendlich     x<0,  identisch mit
 c  +int exp(x)/x,  von -unendl. bis x
 c
-c   PV +int exp(-x)/x von unendl bis -x     x>0 ,  identisch mit
+c   PV +int exp(-x)/x von unendl bis -x      x>0 ,  identisch mit
 c   PV +int exp(x)/x von -unendl bis x
       REAL(DP) EIRENE_mmdei,dei,xx
 cdr   if (x.gt.0) then
