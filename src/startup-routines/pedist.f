@@ -1,50 +1,97 @@
-cdr: This routine strictly should be a third party routine,
-cdr  because allocation of cpu time to strata may be done according
-cdr  different criteria. (load balancing, variance minimization via stratification....)
-cdr  The present version of PEDIST is aiming at "proportional allocation",
-cdr  See EIRENE manual, "stratified source sampling". 
-
-cdr  currently it is ruled out that one processor deals
-cdr  with more than one stratum, except in the serial case (only one processor)
-cdr  To generalize this, some coding in MCARLO.f and perhaps elsewhere 
-cdr  may need to be adjusted...
-
 !pb  18.12.06: COMPUTATION TIME PER PROCESSOR IS SET TO THE MAXIMUM TIME
 !pb            THAT IS AVAILABLE
 C
+C> \brief Allocation of MPI processes to strata
+C>
+C> Allocates the available MPI processes to strata.
+C> Allocation of CPU time to strata may be done according different 
+C> criteria (load balancing, variance minimization via stratification, 
+C> ...). Two standard techniques are implemented in EIRENE and can be 
+C> controlled via the block 1 input parameter NPRLL.
+C> The default set-up is a simple "embarrassingly parallel" schema as 
+C> typical for Monte Carlo codes. An more advanced method using a 
+C> proportional allocation (NPRLL == 1) to attempting load balancing 
+C> when applying stratification is also available.
+C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR) 
+C> can be used (NPRLL == -1).
+C>
+C> Within this subroutine three arrays are set that define the entrie 
+C> parallelisation of EIRENE.
+C> - PROCFORSTRA(ISTRA,IPE):   if .TRUE.: process IPE works on stratum ISTRA
+C> - NPESTR(ISTRA): number of processes calculating stratum ISTRA
+C> - NPESTA(ISTRA): master process for stratum ISTRA
       SUBROUTINE EIRENE_PEDIST (XTIM,XX1)
-C  PURPOSE:
-C  SET:  PROCFORSTRA(ISTRA,IPE):   IF TRUE: PROCESSOR IPE WORKS ON STRATUM ISTRA
-C
-C   IF THERE ARE MORE PROCESSORS THAN STRATA:
-C   SUBROUTINE PEDIST CALCULATES THE ASSIGNMENT OF PROCESSORS TO
-C   STRATA, ACCORDING TO CERTAIN CRITERIA.
-C
-C  PRESENT VERSION:
-C   DISTRIBUTION OF PE'S IS DONE ACCORDING TO THE DISTRIBUTION OF
-C   COMPUTATION TIME.
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_COMUSR, ONLY: NPRLL
+      USE EIRMOD_PARMMOD, ONLY: NSTRA
 
-C   IF THERE ARE FEWER PROCESSORS THAN STRATA:
-C   CASE A: ONLY ONE PROCESSOR:  ALL STRATA TO THIS SINGLE PROCESSOR
-C   CASE B: SEVERAL PROCESSORS:  ASIGN A PROCESSOR TO EACH STRATUM. SOME PROCESSORS
-C                                MAY RECEIVE MORE THAN ONE STRATUM.
-C                                DO NOT ASSIGN SEVERAL PROCESSORS TO ONE STRATUM
-cdr June 17: the last criterion may  be too restricitve 
-cdr          and perhaps not be needed either
-C
+      IMPLICIT NONE
+
+      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
+      REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
+
+      SELECT CASE( NPRLL )
+        CASE( -1 )
+          CALL EIRENE_PEDIST_USR( XTIM, XX1 )
+        CASE( 1 )
+          CALL EIRENE_PEDIST_PROPALLOC( XTIM, XX1 )
+        CASE DEFAULT
+          CALL EIRENE_PEDIST_EMBPARALL
+      END SELECT
+
+      CONTAINS
+
+C> \brief "Embarrassingly parallel" schema.
+C>
+C> Here, all strata are calculated by all processes. XTIM remains
+C> unchanged. 
+      SUBROUTINE EIRENE_PEDIST_EMBPARALL
+      USE EIRMOD_COMSOU, ONLY: NLSRON
+      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
+      USE EIRMOD_PARMMOD, ONLY: NSTRA
+
+      IMPLICIT NONE
+
+      INTEGER :: IPE
+
+      PROCFORSTRA = .FALSE.
+
+      DO IPE = 0, NPRS-1
+        PROCFORSTRA(1:NSTRA,IPE) = NLSRON
+      END DO
+      NPESTA = 0
+      NPESTR = NPRS
+
+      RETURN
+      END SUBROUTINE EIRENE_PEDIST_EMBPARALL
+
+C> \brief Proportional allocation schema.
+C>
+C> Here, the aim is a "proportional allocation", see EIRENE manual, 
+C> "stratified source sampling". 
+C>
+C> As long as there are more processes than strata the distribution of 
+C> processes to strata is done according to the distribution of 
+C> computation time.
+C>
+C> If there are fewer processes than strata:
+C> - Case A: only one process: all strata to this single process
+C> - Case B: several processes: asign a process to each stratum. Some 
+C>   processes may receive more than one stratum. Do not assign several 
+C>   processes to one stratum.
+      SUBROUTINE EIRENE_PEDIST_PROPALLOC( XTIM, XX1 )
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NSTRA
       USE EIRMOD_CCONA, ONLY: EPS30
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
       USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-csw 18mar2013
       USE EIRMOD_COUTAU, ONLY: XMCT, XMCP
  
       IMPLICIT NONE
  
-      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA)
-      REAL(DP), INTENT(IN) :: XX1
+      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
+      REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
       REAL(DP) :: TIMPE(0:NSTRA), TSTRPE(NSTRA,0:NPRS-1)
       REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
       INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT,n
@@ -249,4 +296,6 @@ C independent of parallelisation (strong scaling appraoch):
       END IF  
  
       RETURN
-      END
+      END SUBROUTINE EIRENE_PEDIST_PROPALLOC
+
+      END SUBROUTINE EIRENE_PEDIST

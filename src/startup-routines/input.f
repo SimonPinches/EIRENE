@@ -358,7 +358,7 @@ C
         CALL EIRENE_LEER(1)
         GOTO 109
       ELSE
-        READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
+        READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                    NTIME0,NTIME
       ENDIF
       CALL EIRENE_LEER(1)
@@ -452,19 +452,15 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE
      .  ('*** 1. DATA FOR OPERATING MODE                   ')
       CALL EIRENE_LEER(1)
-c     IF (NMACH.EQ.1) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON CRAY                      ')
-c     ELSEIF (NMACH.EQ.2) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON IBM                       ')
-c     ELSEIF (NMACH.EQ.3) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON FACOM                     ')
-c     ELSEIF (NMACH.EQ.4) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON VAX                       ')
-c     ENDIF
+      CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
+      SELECT CASE( NPRLL )
+        CASE( -1 )
+          CALL EIRENE_MASAGE('         USER DEFINED')
+        CASE( 1 )
+          CALL EIRENE_MASAGE('         PROPORTIONAL ALLOCATION')
+        CASE DEFAULT
+          CALL EIRENE_MASAGE('         "EMBARRASSINGLY PARALLEL"')
+      END SELECT
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE

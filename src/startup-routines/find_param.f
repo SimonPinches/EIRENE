@@ -243,7 +243,7 @@ c  skip further comments in header
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
+      READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                  NTIME0,NTIME
 
       READ (IUNIN,'(A72)') ZEILE
