@@ -389,7 +389,7 @@ C  DETERMINE THE REMAINING PARTICLE PARAMETERS
         NLSRFZ=.FALSE.
         MSURF=NLIM+NSTS
         IF ( MRSURF.NE.0 ) THEN
-C Surface sourse
+C Surface source
           NLSRF(ISTRA)=.TRUE.
         ENDIF
 C
