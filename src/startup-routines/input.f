@@ -458,10 +458,13 @@ C  READING OF INPUT BLOCK 1 DONE
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_MASAGE('         USER DEFINED')
+C       CASE( 0 )
+C         Reserved for default, see below
         CASE( 1 )
           CALL EIRENE_MASAGE('         PROPORTIONAL ALLOCATION')
         CASE DEFAULT
           CALL EIRENE_MASAGE('         "EMBARRASSINGLY PARALLEL"')
+          NPRLL = 0
       END SELECT
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN

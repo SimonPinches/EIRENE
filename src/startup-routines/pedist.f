@@ -33,10 +33,10 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_PEDIST_USR( XTIM, XX1 )
+        CASE( 0 )
+          CALL EIRENE_PEDIST_EMBPARALL
         CASE( 1 )
           CALL EIRENE_PEDIST_PROPALLOC( XTIM, XX1 )
-        CASE DEFAULT
-          CALL EIRENE_PEDIST_EMBPARALL
       END SELECT
 
       CONTAINS

@@ -631,9 +631,7 @@ c  which is scored along a trajectory
 C...........................................................................
 
 C LGSTOP is always equal LGLAST, see line 681
-C Should not this be (.NOT.LGLAST.AND.LGSTOP), if one corrects the 
-C rescalling of NPTS by moving it into pedist rather then in the 
-C do-loop above?
+C Should not this be (.NOT.LGLAST.AND.LGSTOP)?
           IF (LGLAST.AND.LGSTOP) THEN
             CALL EIRENE_LEER(1)
             WRITE (iunout,*)

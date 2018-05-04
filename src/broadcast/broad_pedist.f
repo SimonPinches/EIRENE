@@ -1,10 +1,12 @@
-      subroutine EIRENE_BROAD_PEDIST(XTIM)
+C> \brief Broadcasts the strata to process distribution.
+C>
+C> It broadcasts the distribution of strata to processes as defined in 
+C> the PEDIST routines.
+      SUBROUTINE EIRENE_BROAD_PEDIST(XTIM)
 
-cdr  Purpose: .... 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NSTRA
       USE EIRMOD_COMUSR, ONLY: NPRLL
-      USE EIRMOD_MPI
       IMPLICIT NONE
  
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
@@ -12,10 +14,10 @@ cdr  Purpose: ....
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_BROAD_PEDIST_USR( XTIM )
+        CASE( 0 )
+          CALL EIRENE_BRAOD_PEDIST_EMBPARALL
         CASE( 1 )
           CALL EIRENE_BROAD_PEDIST_PROPALLOC( XTIM )
-        CASE DEFAULT
-          CALL EIRENE_BRAOD_PEDIST_EMBPARALL
       END SELECT
 
       CONTAINS
@@ -23,10 +25,9 @@ cdr  Purpose: ....
       SUBROUTINE EIRENE_BRAOD_PEDIST_EMBPARALL
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
       USE EIRMOD_PARMMOD, ONLY: NSTRA
+      USE EIRMOD_MPI
 
       IMPLICIT NONE
-
-      INCLUDE 'mpif.h'
 
       INTEGER :: IER
 
@@ -43,10 +44,9 @@ cdr  Purpose: ....
       USE EIRMOD_COMSOU, ONLY: NPTS
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS,  
      >                       PROCFORSTRA
+      USE EIRMOD_MPI
       
       IMPLICIT NONE
- 
- !     INCLUDE 'mpif.h'
  
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
       INTEGER :: IER

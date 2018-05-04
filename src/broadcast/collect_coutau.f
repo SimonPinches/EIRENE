@@ -1,24 +1,25 @@
 cdr  Nov.17: comments started...
 !pb  060309  mpi_real8 --> mpi_double_precision
 
-
+C> \brief Gathers information from statrum masters to job master.
+C>
+C> This subroutine creates a MPI subgroup of all processes which are 
+C> master processes of a stratum.
+C> The subgroup is then used to gather information from all statrum 
+C> masters onto the process with rank 0 (scalling and I/O process). 
+C> Information are gathered with an MPI_REDUCE MPI_SUM statement. 
+C> However, it always gathers only information that is 0 on all but one 
+C> statum master.
+C> The quantities gathered are: OUTAU (hiding many other arrays), 
+C> LOGMOL, LOGATM, LOGION, LOGPHOT, LOGPLS, and some more quantities 
+C> depending on whether sum-over-strata is active or other quantities 
+C> have been calculated. 
       subroutine eirene_collect_coutau
-c This subroutine creates a MPI subgroup of all processes which are 
-C master processes of a stratum.
-C The subgroup is then used to gather information from all statrum 
-C masters onto the process with rank 0 (scalling and I/O process). 
-C Information are gathered with an MPI_REDUCE MPI_SUM statement. 
-C However, it always gathers only information that is 0 on all but one 
-C statum master.
-C The quantities gathered are: OUTAU (hiding many other arrays), 
-C LOGMOL, LOGATM, LOGION, LOGPHOT, LOGPLS, and some more quantities 
-C depending on whether sum-over-strata is active or other quantities 
-C have been calculated. 
 C
 C A call of this subroutine is only required if at all one statum 
 C master is not at the same time process with rank 0. (i.e. in a simple
 C "embarrassingly" parallelisation concept not needed)
-C ANY( NPESTA > 0, MASK = NLSRON )
+C ANY( NPESTA > 0 .AND. MASK = NLSRON )
 C
 c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
 c
