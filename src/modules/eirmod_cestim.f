@@ -5,6 +5,7 @@ cdr                  two further tallies introduced (gg, stv) for stand. dev.
 cdr                  of sum over strata
 cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
 cdr mar 17:  comments added
+cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
  
       MODULE EIRMOD_CESTIM
  
@@ -19,8 +20,12 @@ cdr mar 17:  comments added
      P          EIRENE_ASSOCIATE_CESTIM,
      P          EIRENE_INIT_CESTIM
  
-      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: ESTIML(:)
-      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: SMESTL(:)
+!      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: ESTIML(:)
+!      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: SMESTL(:)
+      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE :: 
+     .        ESTIML(:)
+      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE :: 
+     .        SMESTL(:)
  
       INTEGER, PUBLIC, SAVE ::
      I NESTM1, NESTM2, NESTIM
@@ -1326,18 +1331,18 @@ C
          IF (NADSPC > 0) THEN
 c  spectra tallies: standard deviation 
            DO I=1,NADSPC
-             DEALLOCATE(ESTIML(I)%PSPC%SPC)
-             DEALLOCATE(ESTIML(I)%PSPC%SDV)
-             DEALLOCATE(ESTIML(I)%PSPC%SGM)
-             DEALLOCATE(ESTIML(I)%PSPC%GG)
-             DEALLOCATE(ESTIML(I)%PSPC%STV)
+             DEALLOCATE(ESTIML(I)%SPC)
+             DEALLOCATE(ESTIML(I)%SDV)
+             DEALLOCATE(ESTIML(I)%SGM)
+             DEALLOCATE(ESTIML(I)%GG)
+             DEALLOCATE(ESTIML(I)%STV)
 c  spectra tallies: standard deviation for sum over strata, intermediate storage
              IF (NSMSTRA > 0) THEN
-               DEALLOCATE(SMESTL(I)%PSPC%SPC)
-               DEALLOCATE(SMESTL(I)%PSPC%SDV)
-               DEALLOCATE(SMESTL(I)%PSPC%SGM)
-               DEALLOCATE(SMESTL(I)%PSPC%GG)
-               DEALLOCATE(SMESTL(I)%PSPC%STV)
+               DEALLOCATE(SMESTL(I)%SPC)
+               DEALLOCATE(SMESTL(I)%SDV)
+               DEALLOCATE(SMESTL(I)%SGM)
+               DEALLOCATE(SMESTL(I)%GG)
+               DEALLOCATE(SMESTL(I)%STV)
              END IF
            END DO
            DEALLOCATE (ESTIML)

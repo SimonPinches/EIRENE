@@ -42,7 +42,7 @@
  
       end do
  
-      if (i > = 0) then
+      if (i >= 0) then
         write (iunout,*) ' ERROR IN REPLACE_STRING '
         write (iunout,*) ' STRING IS TOO SHORT TO HOLD ALL REPLACEMENTS'
         write (iunout,*) ' INCHAR = ',inchar

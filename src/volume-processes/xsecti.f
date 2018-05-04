@@ -351,9 +351,16 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
 
           EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS   ! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.  
           EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
           EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
+
+cdr  eatei, emlei, eioei(...,.,...) are secondary energy per secondary partile iat, iml, iio.
+cdr  eatei, emlei, eioei(...,0,...) is total per species
+cdr  this is different now for eplei.
+cdr  eplei  is secondary energy per secondary bulk species, i.e. twice, if two secondaries of same species.
+cdr  eatei, ...is used for sampling energy, veloel. eplei is used for scoring bulk energy tallies.
+
           EATEI(IREI,0,    1)=EATEI(IREI,IATM1,1)+EATEI(IREI,IATM2,1)
           EATEI(IREI,0,    2)=EATEI(IREI,IATM1,2)+EATEI(IREI,IATM2,2)
 

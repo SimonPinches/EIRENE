@@ -34,7 +34,7 @@ C
 C
         NTEST0=EIRENE_LEARCT(X0,Y0,Z0)
 C
-      ELSEIF (LEVGEO.EQ.10) THEN   !  user supplied geometry
+      ELSEIF (LEVGEO.EQ.10) THEN   !  externally supplied geometry
 C
         NTEST0=EIRENE_LEAUSR(X0,Y0,Z0)
 C

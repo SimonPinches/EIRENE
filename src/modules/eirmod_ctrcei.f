@@ -1,5 +1,9 @@
 cdr may 17:   add trcrnf: diagnostics from random number generation, 
 cdr           correlated sampling etc.
+cdr mar 18:   add trchktm (species resolved cpu consumption),
+cdr           read in first line block 11.
+cdr           and remove (deactivate) the unused trcdbg... flags inherited from
+cdr           V.K. proprietary versions 
       MODULE EIRMOD_CTRCEI
  
       USE EIRMOD_PRECISION
@@ -19,22 +23,22 @@ cdr           correlated sampling etc.
      L TRCGRD, TRCSUR, TRCREF, TRCFLE, TRCAMD,
      L TRCINT, TRCLST, TRCSOU, TRCREC, TRCTIM,
      L TRCBLA, TRCBLP, TRCBLE, TRCBLM, TRCBLI,
-     L TRCBLPH,TRCTAL, TRCOCT, TRCCEN, TRCRNF
+     L TRCBLPH,TRCTAL, TRCOCT, TRCCEN, TRCRNF,
+     L TRCHKTIM
 
 CVK TRACING FOR DEBUGGING VIA WRITE(0,...
-      INTEGER,PUBLIC,PARAMETER :: LDBGTRC=9
-      LOGICAL, PUBLIC, TARGET, SAVE :: TRCDBG(LDBGTRC)
-      LOGICAL, PUBLIC, POINTER, SAVE ::
-     L                         TRCDBG2,  !DEEPER LEVEL OF DEBUGGING
-     L                         TRCDBGE,  !TRACING OF EIRENE
-     L                         TRCDBGM,  !... MCARLO
-     L                         TRCDBGF,  !... FOLNEUT
-     L                         TRCDBGL,  !... LOCATE
-     L
-     L                         TRCDBGS,  !... SURFACE INTERACTION ROUTINES
-     L                         TRCDBGG,  !... GEOMETRY ROUTINES
-     L                         TRCDBGMPI,!... MPI ROUTINES
-     L                         TRCDBGC   !... COUPLING ROUTINES
+c     INTEGER,PUBLIC,PARAMETER :: LDBGTRC=9
+c     LOGICAL, PUBLIC, TARGET, SAVE :: TRCDBG(LDBGTRC)
+c     LOGICAL, PUBLIC, POINTER, SAVE ::
+c    L                         TRCDBG2,  !DEEPER LEVEL OF DEBUGGING
+c    L                         TRCDBGE,  !TRACING OF EIRENE
+c    L                         TRCDBGM,  !... MCARLO
+c    L                         TRCDBGF,  !... FOLNEUT
+c    L                         TRCDBGL,  !... LOCATE
+c    L                         TRCDBGS,  !... SURFACE INTERACTION ROUTINES
+c    L                         TRCDBGG,  !... GEOMETRY ROUTINES
+c    L                         TRCDBGMPI,!... MPI ROUTINES
+c    L                         TRCDBGC   !... COUPLING ROUTINES
 CVK END
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: TRCSRC(:)
@@ -62,7 +66,7 @@ CVK END
       IF (ALLOCATED(LTRCEI)) RETURN
  
       MCTRC=5+3*NVLPR+4*NSRPR
-      LCTRC=25
+      LCTRC=26
  
       ALLOCATE (LTRCEI(LCTRC))
       ALLOCATE (ITRCEI(MCTRC))
@@ -102,18 +106,19 @@ CVK END
       TRCOCT => LTRCEI(23)
       TRCCEN => LTRCEI(24)
       TRCRNF => LTRCEI(25)
+      TRCHKTIM => LTRCEI(26)
 
 
 C  DEEPER DEBUGGING OPTIONS, VK
-      TRCDBG2  => TRCDBG(1)
-      TRCDBGE  => TRCDBG(2)
-      TRCDBGM  => TRCDBG(3)
-      TRCDBGF  => TRCDBG(4)
-      TRCDBGL  => TRCDBG(5)
-      TRCDBGS  => TRCDBG(6)
-      TRCDBGG  => TRCDBG(7)
-      TRCDBGMPI=> TRCDBG(8)
-      TRCDBGC  => TRCDBG(9)
+c     TRCDBG2  => TRCDBG(1)
+c     TRCDBGE  => TRCDBG(2)
+c     TRCDBGM  => TRCDBG(3)
+c     TRCDBGF  => TRCDBG(4)
+c     TRCDBGL  => TRCDBG(5)
+c     TRCDBGS  => TRCDBG(6)
+c     TRCDBGG  => TRCDBG(7)
+c     TRCDBGMPI=> TRCDBG(8)
+c     TRCDBGC  => TRCDBG(9)
  
 !      NPRTLV => ITRCEI(  1 : 100)
 !      NFLAGV => ITRCEI(101 : 200)
@@ -169,7 +174,7 @@ C  DEEPER DEBUGGING OPTIONS, VK
       NSPEZV = 0
       NSPEZS = 0
       NFLAGV = 1
-      TRCDBG=.FALSE. !VK
+c     TRCDBG=.FALSE. !VK
  
       RETURN
       END SUBROUTINE EIRENE_INIT_CTRCEI

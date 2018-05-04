@@ -247,10 +247,10 @@ C  H(n=3)/H(n=1)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
      .                              zds * rate * FAC32 /(4.*PIA) *
-     .                              estiml(ispc)%pspc%spc(1:ncheni)
+     .                              estiml(ispc)%spc(1:ncheni)
  
           chksum = chksum + zds * rate * FAC32 /(4.*PIA) *
-     .                      estiml(ispc)%pspc%spcs
+     .                      estiml(ispc)%spcs
  
  500      continue
           cur => cur%nextc

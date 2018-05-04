@@ -1,3 +1,5 @@
+cdr march 18  : bug fix re semi-transp. surfaces. 
+cdr             This intermediate bug was introduced in jan 18 commit
 cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
 cdr             semi-transp fluxes: score only incident and emitted current fractions
 cdr             for which surfaces are NOT transparent. 
