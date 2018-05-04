@@ -2,6 +2,7 @@ cdr  may 2017:  preparing for storage reduction by elimination of unnecessary in
 cdr             commenting, 
 cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local, 
 cdr             rather than public
+cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 
       MODULE EIRMOD_COMUSR
  
@@ -47,7 +48,7 @@ C
  
 !  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES
       REAL(DP), TARGET, ALLOCATABLE, PUBLIC, SAVE ::
-     R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSP(:)
+     R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSPH(:), RMASSP(:)
 
 !     POINTER FOR UNIFIED SUBROUTINES
       REAL(DP), POINTER, PUBLIC, SAVE :: RMASSX
@@ -121,7 +122,8 @@ C FROM HERE ON: NO EQUIVALENCE
      I         NFILE, NFILEN, NFILEM, NFILEL, NFILEK, NFILEJ,
      I         NITER, IITER,  NTIME,  ITIMV
  
-      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
+!      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
+      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
  
  
@@ -183,10 +185,13 @@ c NPLPR2
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
 
-        ALLOCATE (RMASSI(MAX(1,NION)))
+        
         ALLOCATE (RMASSA(MAX(1,NATM)))
         ALLOCATE (RMASSM(MAX(1,NMOL)))
+        ALLOCATE (RMASSI(MAX(1,NION)))
+        ALLOCATE (RMASSPH(MAX(1,NPHOT)))
         ALLOCATE (RMASSP(MAX(1,NPLS)))
+
         ALLOCATE (DIOD(MAX(1,NION)))
         ALLOCATE (DATD(MAX(1,NATM)))
         ALLOCATE (DMLD(MAX(1,NMOL)))
@@ -447,10 +452,13 @@ c
       DEALLOCATE (FLXOUT)
       DEALLOCATE (SAREA)
 
-      DEALLOCATE (RMASSI)
+      
       DEALLOCATE (RMASSA)
       DEALLOCATE (RMASSM)
+      DEALLOCATE (RMASSI)
+      DEALLOCATE (RMASSPH)
       DEALLOCATE (RMASSP)
+
       DEALLOCATE (DIOD)
       DEALLOCATE (DATD)
       DEALLOCATE (DMLD)
@@ -583,10 +591,14 @@ c
         EDRIFT = 0._DP
         DEINL  = 0._DP
         DIINL  = 0._DP
-        RMASSI = 0._DP
+
+        
         RMASSA = 0._DP
         RMASSM = 0._DP
+        RMASSI = 0._DP
+        RMASSPH = 0._DP
         RMASSP = 0._DP
+
         DIOD   = 0._DP
         DATD   = 0._DP
         DMLD   = 0._DP

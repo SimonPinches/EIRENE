@@ -4,7 +4,7 @@ cdr  Purpose: ....
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NSTRA
       USE EIRMOD_COMUSR, ONLY: NPRLL
- 
+      USE EIRMOD_MPI
       IMPLICIT NONE
  
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
@@ -46,7 +46,7 @@ cdr  Purpose: ....
       
       IMPLICIT NONE
  
-      INCLUDE 'mpif.h'
+ !     INCLUDE 'mpif.h'
  
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
       INTEGER :: IER

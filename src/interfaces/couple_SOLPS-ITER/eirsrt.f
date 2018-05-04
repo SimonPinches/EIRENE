@@ -83,10 +83,11 @@ csw 12apr2011
       use eirmod_ctrig
 csw
       use eirmod_extrab25
+      use eirmod_mpi
 
       IMPLICIT NONE
 c
-      include 'mpif.h'
+!      include 'mpif.h'
       REAL(DP), INTENT(IN) :: FLUXES_in(NSTRA)
       REAL(DP), INTENT(IN) :: DELTAT_in, B2BRM_in, B2RD_in, B2Q_in,
      .                        B2VP_in,STEP_CPU_in

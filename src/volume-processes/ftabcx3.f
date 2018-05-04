@@ -14,7 +14,7 @@ c  input via common:
 c         bulk collision partner: IPLS
 c 
 
-cdr(first stage):
+cdr  (first stage):
 c  FTABCX3 is currently only called in case MODCOL(3,2,IRCX)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.
 c 

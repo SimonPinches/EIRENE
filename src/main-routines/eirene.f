@@ -70,10 +70,11 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_CLAST
       use EIRMOD_cfplk
+      use EIRMOD_MPI
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
 
       REAL(DP), INTENT(IN) :: DT
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE

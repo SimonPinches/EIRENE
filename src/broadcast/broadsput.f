@@ -7,9 +7,10 @@ cdr             evaluated "on the fly" instead (subr. sputer.f)
       SUBROUTINE EIRENE_BROADSPUT(ES,M2M1,ETF,ETH,Q,N1,N2)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
+      USE EIRMOD_MPI
       IMPLICIT NONE
  
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       INTEGER, INTENT(IN):: N1, N2
       REAL(DP), INTENT(IN OUT) :: ES(N1), M2M1(N1,0:N2), ETF(N1,0:N2),
      .                            ETH(N1,0:N2), Q(N1,0:N2)

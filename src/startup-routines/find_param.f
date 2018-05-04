@@ -1480,7 +1480,7 @@ cdr  due to these changes there, also some derived storage parmeters may have ch
 
       REWIND IUNIN
       CALL EIRENE_LEER(1)
-      WRITE (IUNOUT,*) 'AUTOMATTED STORAGE SETTING (FIND_PARAM.F)'
+      WRITE (IUNOUT,*) 'AUTOMATED STORAGE SETTING (FIND_PARAM.F)'
       CALL EIRENE_LEER(1)
 C
 cdr  grid size

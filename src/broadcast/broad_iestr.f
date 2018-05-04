@@ -1,9 +1,10 @@
  
  
       SUBROUTINE EIRENE_BROAD_IESTR(IESTR)
+      USE EIRMOD_MPI
       IMPLICIT NONE
  
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       INTEGER, INTENT(IN) :: IESTR
       INTEGER :: IER
  
