@@ -1,0 +1,7 @@
+build_gfortran:
+   stage: build
+   script:
+      - mkdir build
+      - cd build
+      - FC=gfortran cmake ../src
+      - make
