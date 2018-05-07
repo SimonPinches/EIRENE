@@ -9,3 +9,8 @@ build_gfortran:
       - cd build
       - FC=gfortran cmake ../src
       - make
+
+test_standalone:
+    stage: test
+    script:
+        - git clone git@src.ipp.kfa-juelich.de:eirene/EIRENE-sample-cases.git
