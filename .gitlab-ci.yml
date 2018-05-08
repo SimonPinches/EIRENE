@@ -13,4 +13,4 @@ build_gfortran:
 test_standalone:
     stage: test
     script:
-        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de:eirene/EIRENE-sample-cases.git
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
