@@ -9,6 +9,11 @@ build_gfortran:
       - cd build
       - FC=gfortran cmake ../src
       - make
+    artifacts:
+        name: "$CI_JOB_NAME"
+        paths:
+        - build/
+        - lib/
 
 test_standalone:
     stage: test
