@@ -1,3 +1,5 @@
+image: gcc
+
 before_script:
     # Install build dependencies
     - apt-get update && apt-get -y install cmake gfortran mpich
@@ -26,4 +28,4 @@ test_standalone:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-        - output/
+        - EIRENE-sample-cases/1D-H_slab/output/
