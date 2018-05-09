@@ -17,5 +17,5 @@ test_standalone:
         - cd EIRENE-sample-cases
         - git checkout buildSystem
         - cd 1D-H_slab
-        - ll /usr/bin/mpi*
+        - ls -l /usr/bin/mpi*
         - make test
