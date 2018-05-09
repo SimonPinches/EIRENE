@@ -2,7 +2,7 @@ image: gcc
 
 before_script:
     # Install build dependencies
-    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev
+    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran
 
 build_gfortran:
     stage: build
