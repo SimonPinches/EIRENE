@@ -18,10 +18,12 @@ build_gfortran:
 test_standalone:
     stage: test
     script:
-        - ls -l
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
-        - ls -l
         - cd EIRENE-sample-cases
         - git checkout buildSystem
         - cd 1D-H_slab
         - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        path:
+        - output/
