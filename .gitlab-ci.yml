@@ -3,12 +3,12 @@ before_script:
     - apt-get update && apt-get -y install cmake gfortran mpich
 
 build_gfortran:
-   stage: build
-   script:
-      - mkdir build
-      - cd build
-      - FC=gfortran cmake ../src
-      - make
+    stage: build
+    script:
+        - mkdir build
+        - cd build
+        - FC=gfortran cmake ../src
+        - make
     artifacts:
         name: "$CI_JOB_NAME"
         paths:
