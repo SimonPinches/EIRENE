@@ -1,8 +1,8 @@
 image: debian
 
 before_script:
-    # Install build dependencies
-    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran
+    # Install required programs
+    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git
 
 build_gfortran:
     stage: build
