@@ -2,7 +2,7 @@ image: debian
 
 before_script:
     # Install required programs
-    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git
+    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90
 
 build_gfortran:
     stage: build
@@ -17,7 +17,7 @@ build_gfortran:
         - build/*.mod
         - lib/
 
-test_standalone:
+test_standalone_1D-H_slab:
     stage: test
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
@@ -29,3 +29,18 @@ test_standalone:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
         - EIRENE-sample-cases/1D-H_slab/output/
+
+test_standalone_1D-H_slab_with_farming:
+    stage: test
+    only:
+        - PB/feature/farming
+    script:
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
+        - cd EIRENE-sample-cases
+        - git checkout buildSystem
+        - cd 1D-H_slab_with_farming
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/1D-H_slab_with_farming/output/
