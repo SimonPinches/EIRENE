@@ -9,8 +9,7 @@
       INTEGER :: IERR, I
       REAL(DP), ALLOCATABLE :: EVEC1(:,:),EVAL1(:),
      .                         FV1(:),FV2(:)
- 
-      entry EIRENE_evcsf (n,a,lda,eval,evec,ldevec)
+
  
       ALLOCATE (EVEC1(LDA,LDA))
       ALLOCATE (EVAL1(LDA))

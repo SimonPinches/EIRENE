@@ -1,3 +1,4 @@
+cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
 cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
@@ -2458,7 +2459,8 @@ c  next: read species index sampling distributions datm, dmol, dion, dpls, and i
       READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
       READ (IUNIN,6664) (DIOD(IION),IION=1,NIONI_IN)
       READ (IUNIN,6664) (DPLD(IPLS),IPLS=1,NPLSI_IN)
-      IF (NPHOTI > 0)
+      IF (NPHOTI > 0)   !dr try to make this more logic: always read dphd.
+cdr                     !dr backward compatible ?
      .  READ (IUNIN,6664) (DPHD(IPHOT),IPHOT=1,NPHOTI_IN)
 
 c  next: read universal surface reflection model flags
@@ -3259,8 +3261,10 @@ c  search for input block 11a
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
 CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
-     .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
-     .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,TRCHKTIM
+cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
+cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
+CPB  ACTIVATE SPECIES RESOLVED CPU CONSUMPTION OPTION
+     .                  TRCHKTIM
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
 C
       READ (IUNIN,6666) NVOLPR, NSPCPR

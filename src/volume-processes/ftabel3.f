@@ -18,6 +18,7 @@ c  ftabel3 is currently not called.
 c  soon (first stage):
 c  FTABEL3 is currently only called in case MODCOL(3,2,IREL)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.
+C  EVEN THAT MAY NOT BE TRUE:::
 c 
 c
 c  hard wired: cut off (density) parameter for fits: 1e8
