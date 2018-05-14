@@ -71,6 +71,7 @@ c            parameters nr1tal_save, ....     for interfacing tallies between b2
 c                                             is always the b2 (structured) coarse grid
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
+
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
 cdr Mar 18:  ELTEST from couple_Tria
