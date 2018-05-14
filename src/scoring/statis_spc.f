@@ -4,11 +4,11 @@ C  distinct from the other variances (volume tallies, surface tallies, bgk and c
 c  here in case of spectra tallies the variances are contained in the same structure (ESTIML)
 c  as the tallies themselves.
 c  nomenclature, however has been syncronized (oct. 2014)
-c  e.g.  ESTIML(ISPC)%PSPC%SGM  <--> sigma, sigmaw
-c        ESTIML(ISPC)%PSPC%SDV  <--> sdvia, sdviaw
+c  e.g.  ESTIML(ISPC)%SGM  <--> sigma, sigmaw
+c        ESTIML(ISPC)%SDV  <--> sdvia, sdviaw
 c  etc.
 c and similarly for the intermediate storage structure SMESTL
-c  e.g.  SMESTL(ISPC)%PSPC%GG   <--> ee, ff
+c  e.g.  SMESTL(ISPC)%GG   <--> ee, ff
 c  etc.
 C
       SUBROUTINE EIRENE_STATIS_SPC
@@ -41,7 +41,7 @@ C
  
       IF (NADSPC > 0) THEN
         DO ISPC=1,NADSPC
-          ESTIML(ISPC)%PSPC%IMETSP = 0
+          ESTIML(ISPC)%IMETSP = 0
         END DO
       END IF
 C
@@ -61,32 +61,32 @@ C
 C  STATISTICS FOR SPECTRA
 
       DO ISPC=1,NADSPC
-c  vector = ESTIML(ISPC)%PSPC%SPC(I) is cumulated contribution after present (n-th) flight
+c  vector = ESTIML(ISPC)%SPC(I) is cumulated contribution after present (n-th) flight
 
-c  sdvia = ESTIML(ISPC)%PSPC%SDV(I) is cumulated contribution after previous flight no. n-1 (previous call)
+c  sdvia = ESTIML(ISPC)%SDV(I) is cumulated contribution after previous flight no. n-1 (previous call)
 C  contribution from current flight no. n only: sd1 =vector-sdviaw
 C
-        IF (ESTIML(ISPC)%PSPC%IMETSP > 0) THEN
+        IF (ESTIML(ISPC)%IMETSP > 0) THEN
           SD1S=0.
 c  size of tally ISPC, ADD BIN 0 AND BIN NSPC+1 for low and high end of spectrum
           NSPECI=0
-          NSPECE=ESTIML(ISPC)%PSPC%NSPC+1
+          NSPECE=ESTIML(ISPC)%NSPC+1
           ALLOCATE (SD(NSPECI:NSPECE))
           SD = 0.D0
           DO I = NSPECI,NSPECE
-            SD1=ESTIML(ISPC)%PSPC%SPC(I)-ESTIML(ISPC)%PSPC%SDV(I)
+            SD1=ESTIML(ISPC)%SPC(I)-ESTIML(ISPC)%SDV(I)
             SD1S=SD1S+SD1
-            ESTIML(ISPC)%PSPC%SDV(I)=ESTIML(ISPC)%PSPC%SPC(I)
+            ESTIML(ISPC)%SDV(I)=ESTIML(ISPC)%SPC(I)
             SD(I) = SD1
           END DO
-c  now  sdvia = ESTIML(ISPC)%PSPC%SDV(I) is cumulated contribution after present flight no. n
+c  now  sdvia = ESTIML(ISPC)%SDV(I) is cumulated contribution after present flight no. n
 
           DO I = NSPECI,NSPECE
             SD1=SD(I)
-            ESTIML(ISPC)%PSPC%SGM(I)=ESTIML(ISPC)%PSPC%SGM(I)+SD1*SD1
+            ESTIML(ISPC)%SGM(I)=ESTIML(ISPC)%SGM(I)+SD1*SD1
           END DO
-c  sigma = ESTIML(ISPC)%PSPC%SGM(I)  now is cumulated squared contribution after flight no. n
-          ESTIML(ISPC)%PSPC%SGMS=ESTIML(ISPC)%PSPC%SGMS+SD1S*SD1S
+c  sigma = ESTIML(ISPC)%SGM(I)  now is cumulated squared contribution after flight no. n
+          ESTIML(ISPC)%SGMS=ESTIML(ISPC)%SGMS+SD1S*SD1S
           DEALLOCATE (SD)
         END IF
       END DO
@@ -116,42 +116,42 @@ C  STATISTICS FOR SPECTRA
 C
 c  size of tally ISPC, ADD BIN 0 AND BIN NSPC+1 for low and high end of spectrum
         NSPECI=0
-        NSPECE=ESTIML(ISPC)%PSPC%NSPC+1
+        NSPECE=ESTIML(ISPC)%NSPC+1
         ALLOCATE (SD(NSPECI:NSPECE))
-C ESTIML(ISPC)%PSPC%SPC cumulated tally score after all flights from present stratum istra 
-        SD=ESTIML(ISPC)%PSPC%SPC
+C ESTIML(ISPC)%SPC cumulated tally score after all flights from present stratum istra 
+        SD=ESTIML(ISPC)%SPC
         DS=SUM(SD)
  
         DO I=NSPECI,NSPECE
           D=SD(I)
           DD=D*D
           DA=ABS(D)
-          SG2=MAX(0._DP,ESTIML(ISPC)%PSPC%SGM(I)-DD/XN)
+          SG2=MAX(0._DP,ESTIML(ISPC)%SGM(I)-DD/XN)
 C RELATIV STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
-          ESTIML(ISPC)%PSPC%SGM(I)=SG*FSIG
+          ESTIML(ISPC)%SGM(I)=SG*FSIG
 
-C CUMULATED VARIANCE FOR SUM OVER STRATA
+C CUMMULATED VARIANCE FOR SUM OVER STRATA
 ! STV, CORRESPONDS TO STV, STVW
           IF ((NSMSTRA > 0 ) .AND. (NSTRAI > 1)) THEN
-            SMESTL(ISPC)%PSPC%STV(I)=SMESTL(ISPC)%PSPC%STV(I)+
+            SMESTL(ISPC)%STV(I)=SMESTL(ISPC)%STV(I)+
      .                               SG2*ZFLUXQ/XNM/XN
 ! GG, CORRESPONDS TO EE, FF
-            SMESTL(ISPC)%PSPC%GG(I)=SMESTL(ISPC)%PSPC%GG(I)+D*ZFLUX/XN
+            SMESTL(ISPC)%GG(I)=SMESTL(ISPC)%GG(I)+D*ZFLUX/XN
           END IF
         END DO
 
 c variance of summed (total) contribution: STVS, GGS
         D2S=DS*DS
         DSA=ABS(DS)
-        SG2=MAX(0._DP,ESTIML(ISPC)%PSPC%SGMS-D2S/XN)
+        SG2=MAX(0._DP,ESTIML(ISPC)%SGMS-D2S/XN)
         SG=SQRT(SG2)/(DSA+EPS60)
-        ESTIML(ISPC)%PSPC%SGMS=SG*FSIG
+        ESTIML(ISPC)%SGMS=SG*FSIG
 C
         IF ((NSMSTRA > 0 ) .AND. (NSTRAI > 1)) THEN
-          SMESTL(ISPC)%PSPC%STVS=SMESTL(ISPC)%PSPC%STVS+
+          SMESTL(ISPC)%STVS=SMESTL(ISPC)%STVS+
      .                           SG2*ZFLUXQ/XNM/XN
-          SMESTL(ISPC)%PSPC%GGS =SMESTL(ISPC)%PSPC%GGS+DS*ZFLUX/XN
+          SMESTL(ISPC)%GGS =SMESTL(ISPC)%GGS+DS*ZFLUX/XN
         END IF
  
         DEALLOCATE (SD)

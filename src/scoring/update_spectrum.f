@@ -67,13 +67,13 @@ C  set "type" specific parameters:  IS, CDYN
       IF (ISC == 0) THEN    ! SURFACE AVERAGED SPECTRUM
  
         DO ISPC=1,NADSPC
-          P => ESTIML(ISPC)%PSPC
+          P => ESTIML(ISPC)
           IF ((P%ISRFCLL == ISC) .AND.
      .        (P%ISPCSRF == MSURF) .AND.
      .        (P%IPRTYP == ITYP) .AND.
      .        ((P%IPRSP == IS) .OR. (P%IPRSP == 0))) THEN
  
-            SELECT CASE(ESTIML(ISPC)%PSPC%ISPCTYP)
+            SELECT CASE(ESTIML(ISPC)%ISPCTYP)
             CASE (1)
               ADD = WT  ! bin particle flux
             CASE (2)
@@ -84,20 +84,20 @@ C  set "type" specific parameters:  IS, CDYN
  
             EB = E0
  
-            IF (ESTIML(ISPC)%PSPC%LOG) EB=LOG10(EB)
+            IF (ESTIML(ISPC)%LOG) EB=LOG10(EB)
  
-            IF (EB < ESTIML(ISPC)%PSPC%SPCMIN) THEN
+            IF (EB < ESTIML(ISPC)%SPCMIN) THEN
               I = 0
-            ELSEIF (EB >= ESTIML(ISPC)%PSPC%SPCMAX) THEN
-              I = ESTIML(ISPC)%PSPC%NSPC + 1
+            ELSEIF (EB >= ESTIML(ISPC)%SPCMAX) THEN
+              I = ESTIML(ISPC)%NSPC + 1
             ELSE
-              I = (EB - ESTIML(ISPC)%PSPC%SPCMIN) *
-     .             ESTIML(ISPC)%PSPC%SPCDELI + 1
+              I = (EB - ESTIML(ISPC)%SPCMIN) *
+     .             ESTIML(ISPC)%SPCDELI + 1
             END IF
-            ESTIML(ISPC)%PSPC%SPC(I) = ESTIML(ISPC)%PSPC%SPC(I) + ADD
-            ESTIML(ISPC)%PSPC%ESP_MIN= MIN(ESTIML(ISPC)%PSPC%ESP_MIN,EB)
-            ESTIML(ISPC)%PSPC%ESP_MAX= MAX(ESTIML(ISPC)%PSPC%ESP_MAX,EB)
-            ESTIML(ISPC)%PSPC%IMETSP = 1
+            ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+            ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+            ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
+            ESTIML(ISPC)%IMETSP = 1
           END IF
         END DO
  
@@ -115,14 +115,14 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
  
  
           DO ISPC=1,NADSPC
-            P => ESTIML(ISPC)%PSPC
+            P => ESTIML(ISPC)
             IF ((P%ISRFCLL > 0) .AND.
      .          (((P%ISRFCLL == 1).AND.(P%ISPCSRF == IRD)) .OR.      ! scoring cell, coarse grid
      .           ((P%ISRFCLL == 2).AND.(P%ISPCSRF == IRDO))) .AND.   ! geometry cell, fine grid
      .          (P%IPRTYP == ITYP) .AND.
      .          ((P%IPRSP == IS) .OR. (P%IPRSP == 0))) THEN
  
-              SELECT CASE(ESTIML(ISPC)%PSPC%ISPCTYP)
+              SELECT CASE(ESTIML(ISPC)%ISPCTYP)
               CASE (1)
                 ADD = WTR
               CASE (2)
@@ -134,29 +134,29 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
               END SELECT
  
               EB = E0
-              IF (ESTIML(ISPC)%PSPC%IDIREC > 0) THEN
-                SPCVX = ESTIML(ISPC)%PSPC%SPCVX
-                SPCVY = ESTIML(ISPC)%PSPC%SPCVY
-                SPCVZ = ESTIML(ISPC)%PSPC%SPCVZ
+              IF (ESTIML(ISPC)%IDIREC > 0) THEN
+                SPCVX = ESTIML(ISPC)%SPCVX
+                SPCVY = ESTIML(ISPC)%SPCVY
+                SPCVZ = ESTIML(ISPC)%SPCVZ
                 EB = EB * (SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)
               END IF
  
-              IF (ESTIML(ISPC)%PSPC%LOG) EB=LOG10(EB)
+              IF (ESTIML(ISPC)%LOG) EB=LOG10(EB)
  
-              IF (EB < ESTIML(ISPC)%PSPC%SPCMIN) THEN
+              IF (EB < ESTIML(ISPC)%SPCMIN) THEN
                 I = 0
-              ELSEIF (EB >= ESTIML(ISPC)%PSPC%SPCMAX) THEN
-                I = ESTIML(ISPC)%PSPC%NSPC + 1
+              ELSEIF (EB >= ESTIML(ISPC)%SPCMAX) THEN
+                I = ESTIML(ISPC)%NSPC + 1
               ELSE
-                I = (EB - ESTIML(ISPC)%PSPC%SPCMIN) *
-     .               ESTIML(ISPC)%PSPC%SPCDELI + 1
+                I = (EB - ESTIML(ISPC)%SPCMIN) *
+     .               ESTIML(ISPC)%SPCDELI + 1
               END IF
-              ESTIML(ISPC)%PSPC%SPC(I) = ESTIML(ISPC)%PSPC%SPC(I) + ADD
-              ESTIML(ISPC)%PSPC%ESP_MIN =
-     .               MIN(ESTIML(ISPC)%PSPC%ESP_MIN,EB)
-              ESTIML(ISPC)%PSPC%ESP_MAX =
-     .               MAX(ESTIML(ISPC)%PSPC%ESP_MAX,EB)
-              ESTIML(ISPC)%PSPC%IMETSP = 1
+              ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+              ESTIML(ISPC)%ESP_MIN =
+     .               MIN(ESTIML(ISPC)%ESP_MIN,EB)
+              ESTIML(ISPC)%ESP_MAX =
+     .               MAX(ESTIML(ISPC)%ESP_MAX,EB)
+              ESTIML(ISPC)%IMETSP = 1
             END IF
           END DO
  

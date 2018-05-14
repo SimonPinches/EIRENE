@@ -1,20 +1,9 @@
-!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
-cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
-cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds   -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
+cdr Apr. 18: further pointer, targets set for photons, towards code syncronisation
+cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 cdr
 cdr  MXCOLLS --> MSTOR0
-cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 
       MODULE EIRMOD_COMXS
  
@@ -36,6 +25,19 @@ cdr sometime between 2004 and 2007 the atomic data structure was revised.
 cdr 
 cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !
+!  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
+cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
+cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
+!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
+!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
+!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
+!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
+!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
+!pb  MAY  16:  tabds1 -> tabei1
+!pb  MAY  16:  nrds   -> nrei
+!pb  JUL  16:  ehvds1 -> ehvei1
+cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
+cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 
  
       USE EIRMOD_PRECISION
@@ -195,11 +197,12 @@ c  ...and cumulated distributions thereof, for species sampling
      I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:)
  
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
-     I NAEII(:),    NMEII(:),    NIEII(:),
-     I NACXI(:),    NMCXI(:),    NICXI(:),
-     I NAELI(:),    NMELI(:),    NIELI(:),
-     I NAPII(:),    NMPII(:),    NIPII(:),
-     I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKP(:,:)
+     I NAEII(:),    NMEII(:),    NIEII(:),  NPHEII(:),
+     I NACXI(:),    NMCXI(:),    NICXI(:),  NPHCXI(:),
+     I NAELI(:),    NMELI(:),    NIELI(:),  NPHELI(:),
+     I NAPII(:),    NMPII(:),    NIPII(:),  NPHPII(:),
+     I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKPH(:),
+     I NPBGKP(:,:)
 
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
       INTEGER, PUBLIC, POINTER, SAVE ::
@@ -236,14 +239,14 @@ c  ...and cumulated distributions thereof, for species sampling
  
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I LGACX(:,:,:),LGMCX(:,:,:),
-     I LGICX(:,:,:),
-     I LGAEI(:,:),    LGMEI(:,:),
-     I LGIEI(:,:),
+     I LGICX(:,:,:),LGPHCX(:,:,:),
+     I LGAEI(:,:),  LGMEI(:,:),
+     I LGIEI(:,:),  LGPHEI(:,:),
      I LGAEL(:,:,:),LGMEL(:,:,:),
-     I LGIEL(:,:,:),
+     I LGIEL(:,:,:),LGPHEL(:,:,:),
      I LGPRC(:,:),
      I LGAPI(:,:,:),LGMPI(:,:,:),
-     I LGIPI(:,:,:)
+     I LGIPI(:,:,:),LGPHPI(:,:,:)
 
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
       INTEGER, PUBLIC, POINTER, SAVE ::
@@ -327,15 +330,23 @@ C
         ALLOCATE (NAEII(NATM))
         ALLOCATE (NMEII(NMOL))
         ALLOCATE (NIEII(NION))
+        ALLOCATE (NPHEII(NPHOT))
+
         ALLOCATE (NACXI(NATM))
         ALLOCATE (NMCXI(NMOL))
         ALLOCATE (NICXI(NION))
+        ALLOCATE (NPHCXI(NPHOT))
+
         ALLOCATE (NAELI(NATM))
         ALLOCATE (NMELI(NMOL))
         ALLOCATE (NIELI(NION))
+        ALLOCATE (NPHELI(NPHOT))
+
         ALLOCATE (NAPII(NATM))
         ALLOCATE (NMPII(NMOL))
         ALLOCATE (NIPII(NION))
+        ALLOCATE (NPHPII(NPHOT))
+
         ALLOCATE (NPRCI(NPLS))
         ALLOCATE (NAEIIM(NATM))
         ALLOCATE (NMEIIM(NMOL))
@@ -350,9 +361,11 @@ C
         ALLOCATE (NMPIIM(NMOL))
         ALLOCATE (NIPIIM(NION))
         ALLOCATE (NPRCIM(NPLS))
+
         ALLOCATE (NPBGKA(NATM))
         ALLOCATE (NPBGKM(NMOL))
         ALLOCATE (NPBGKI(NION))
+        ALLOCATE (NPBGKPH(NPHOT))
         ALLOCATE (NPBGKP(NPLS,2))
  
         ALLOCATE (NSEACX(NATM,NPLS,5))
@@ -591,7 +604,7 @@ c  secondaries, PI processes
         ALLOCATE (EPLEL3(NREL,NSTORDR,NSTORDT))
  
 
-        ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT)) 
+        ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT))
  
         ALLOCATE (EATPI(NRPI,0:NATM,2))
         ALLOCATE (EMLPI(NRPI,0:NMOL,2))
@@ -663,16 +676,20 @@ c
         ALLOCATE (LGACX(0:NATM,0:NRCX,0:1))
         ALLOCATE (LGMCX(0:NMOL,0:NRCX,0:1))
         ALLOCATE (LGICX(0:NION,0:NRCX,0:1))
+        ALLOCATE (LGPHCX(0:NPHOT,0:NRCX,0:1))
         ALLOCATE (LGAEI(0:NATM,0:NREI))
         ALLOCATE (LGMEI(0:NMOL,0:NREI))
         ALLOCATE (LGIEI(0:NION,0:NREI))
+        ALLOCATE (LGPHEI(0:NPHOT,0:NREI))
         ALLOCATE (LGAEL(0:NATM,0:NREL,0:1))
         ALLOCATE (LGMEL(0:NMOL,0:NREL,0:1))
         ALLOCATE (LGIEL(0:NION,0:NREL,0:1))
+        ALLOCATE (LGPHEL(0:NPHOT,0:NREL,0:1))
         ALLOCATE (LGPRC(0:NPLS,0:NREC))
         ALLOCATE (LGAPI(0:NATM,0:NRPI,0:1))
         ALLOCATE (LGMPI(0:NMOL,0:NRPI,0:1))
         ALLOCATE (LGIPI(0:NION,0:NRPI,0:1))
+        ALLOCATE (LGPHPI(0:NPHOT,0:NRPI,0:1))
 
         MEM = (MSTOR1*MSTOR2+NMDTA)*8_IL +
      .                      MMDTA*4_IL
@@ -758,15 +775,23 @@ c
       DEALLOCATE (NAEII)
       DEALLOCATE (NMEII)
       DEALLOCATE (NIEII)
+      DEALLOCATE (NPHEII)
+
       DEALLOCATE (NACXI)
       DEALLOCATE (NMCXI)
       DEALLOCATE (NICXI)
+      DEALLOCATE (NPHCXI)
+
       DEALLOCATE (NAELI)
       DEALLOCATE (NMELI)
       DEALLOCATE (NIELI)
+      DEALLOCATE (NPHELI)
+
       DEALLOCATE (NAPII)
       DEALLOCATE (NMPII)
       DEALLOCATE (NIPII)
+      DEALLOCATE (NPHPII)
+
       DEALLOCATE (NPRCI)
       DEALLOCATE (NAEIIM)
       DEALLOCATE (NMEIIM)
@@ -781,9 +806,11 @@ c
       DEALLOCATE (NMPIIM)
       DEALLOCATE (NIPIIM)
       DEALLOCATE (NPRCIM)
+
       DEALLOCATE (NPBGKA)
       DEALLOCATE (NPBGKM)
       DEALLOCATE (NPBGKI)
+      DEALLOCATE (NPBGKPH)
       DEALLOCATE (NPBGKP)
  
       DEALLOCATE (NATPRC_2)
@@ -835,19 +862,28 @@ c
       DEALLOCATE (IPMLPI)
       DEALLOCATE (IPIOPI)
       DEALLOCATE (IPPLPI)
+
       DEALLOCATE (LGACX)
       DEALLOCATE (LGMCX)
       DEALLOCATE (LGICX)
+      DEALLOCATE (LGPHCX)
+
       DEALLOCATE (LGAEI)
       DEALLOCATE (LGMEI)
       DEALLOCATE (LGIEI)
+      DEALLOCATE (LGPHEI)
+
       DEALLOCATE (LGAEL)
       DEALLOCATE (LGMEL)
       DEALLOCATE (LGIEL)
+      DEALLOCATE (LGPHEL)
+
       DEALLOCATE (LGPRC)
+
       DEALLOCATE (LGAPI)
       DEALLOCATE (LGMPI)
       DEALLOCATE (LGIPI)
+      DEALLOCATE (LGPHPI)
  
       DEALLOCATE (DELPOT)
       DEALLOCATE (FACREA)
@@ -1762,6 +1798,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
       SUBROUTINE EIRENE_CMAMF_XDR (IUN,IFLG)
  
       INTEGER, INTENT(IN) :: IUN,IFLG
+      REAL(DP) :: HELP(1)
       INTEGER :: IR, IHELP(1)
       LOGICAL :: LHELP(7)
  
@@ -1857,9 +1894,16 @@ cdr options for extrapolation from data tables or from validity range of fits.
      .               REACDAT(IR)%LPHR /)
 
           CALL FXDRLOG(IUN,LHELP,7)
-          CALL FXDRDBL (IUN,REACDAT(IR)%ETH,1)
-          CALL FXDRDBL (IUN,REACDAT(IR)%RTMAX,1)
-          CALL FXDRDBL (IUN,REACDAT(IR)%ERTMAX,1)
+!pb type check failed with Intel compiler under Windows
+!          CALL FXDRDBL (IUN,REACDAT(IR)%ETH,1)
+!          CALL FXDRDBL (IUN,REACDAT(IR)%RTMAX,1)
+!          CALL FXDRDBL (IUN,REACDAT(IR)%ERTMAX,1)
+          help(1) = reacdat(ir)%eth
+          CALL FXDRDBL (IUN,help,1)
+          help(1) = reacdat(ir)%rtmax
+          CALL FXDRDBL (IUN,help,1)
+          help(1) = reacdat(ir)%ertmax
+          CALL FXDRDBL (IUN,help,1)
           IHELP(1) = REACDAT(IR)%NOSEC
           CALL FXDRINT (IUN,IHELP,1)
 
@@ -1890,9 +1934,16 @@ cdr options for extrapolation from data tables or from validity range of fits.
           REACDAT(IR)%LOTH = LHELP(6)
           REACDAT(IR)%LPHR = LHELP(7)
 
-          CALL FXDRDBL (IUN,REACDAT(IR)%ETH,1)
-          CALL FXDRDBL (IUN,REACDAT(IR)%RTMAX,1)
-          CALL FXDRDBL (IUN,REACDAT(IR)%ERTMAX,1)
+!pb  type check failure with Itel compiler unser Windows
+!          CALL FXDRDBL (IUN,REACDAT(IR)%ETH,1)
+!          CALL FXDRDBL (IUN,REACDAT(IR)%RTMAX,1)
+!          CALL FXDRDBL (IUN,REACDAT(IR)%ERTMAX,1)
+          CALL FXDRDBL (IUN,help,1)
+          reacdat(ir)%eth = help(1) 
+          CALL FXDRDBL (IUN,help,1)
+          reacdat(ir)%rtmax = help(1) 
+          CALL FXDRDBL (IUN,help,1)
+          reacdat(ir)%ertmax = help(1) 
           CALL FXDRINT (IUN,IHELP,1)
           REACDAT(IR)%NOSEC = IHELP(1)
 
@@ -1971,7 +2022,10 @@ cdr options for extrapolation from data tables or from validity range of fits.
 
 ! DATA FOR 1D TABLES  (E.G. single parameter table, HYDKIN)
           NT = RP%HYD%NTEMPS
-          CALL FXDRINT (IUN,NT,1)
+!pb  type check failure with Intel compiler under Windows
+!          CALL FXDRINT (IUN,NT,1)
+          ihelp(1) = nt
+          CALL FXDRINT (IUN,ihelp,1)
           CALL FXDRDBL (IUN,RP%HYD%TEMPS,NT)
           CALL FXDRDBL (IUN,RP%HYD%RATES,NT)
           CALL FXDRDBL (IUN,RP%HYD%RATIO,NT)
@@ -2093,7 +2147,10 @@ cdr options for extrapolation from data tables or from validity range of fits.
         ELSE IF (RP%IFIT == 4) THEN
 
 ! DATA FOR 1D TABLES  (E.G. single parameter table, HYDKIN)
-          CALL FXDRINT (IUN,NT,1)
+!pb  type check failure with Intel compiler under Windows
+!          CALL FXDRINT (IUN,NT,1)
+          CALL FXDRINT (IUN,ihelp,1)
+          nt = ihelp(1)
           RP%HYD%NTEMPS = NT
 
           IF (.NOT.ASSOCIATED(RP%HYD)) THEN

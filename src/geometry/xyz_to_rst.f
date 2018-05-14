@@ -5,8 +5,14 @@ cc in a cell icell with vertices given by x1,...z4 in cartesian coordinates
      .                              x3, y3, z3,
      .                              x4, y4, z4, xp, yp, zp, r, s, t, u)
 c
-c  AFEM:  give reference here
-c  IFEM:
+c  AFEM:  course "Advanced Finate Element Methods", 
+c         Department of Aerospace Enginerring Sciences, 
+c         University of Colorado at Boulder
+c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
+c  IFEM:  course "Introduction to Finite Element Methods"
+c         Department of Aerospace Enginerring Sciences, 
+c         University of Colorado at Boulder
+c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c
       use eirmod_precision
       use eirmod_parmmod

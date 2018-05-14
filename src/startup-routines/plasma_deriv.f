@@ -119,7 +119,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
  
-      TYPE(EIRENE_SPECTRUM), POINTER :: SPEC
+      TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
 
       interface
@@ -204,17 +204,15 @@ c   check: itold ge 0 and itold.le 3
             FOUND = .TRUE.
             DO IR=1,NSBOX
               IF (LSPCCLL(IR)) THEN
-                IF (FOUND) ALLOCATE (SPEC)
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
                 IF (FOUND) THEN
                   IBS = IBS + 1
                   SPEC%IPRTYP = 4
                   SPEC%IPRSP = IPLS
-                  BACK_SPEC(IBS)%PSPC => SPEC
+                  BACK_SPEC(IBS) = SPEC
                 END IF
               END IF
             ENDDO
-            IF (.NOT.FOUND) DEALLOCATE(SPEC)
           END IF
  
         ELSEIF (INDEX(CDENMODEL(IPLS),'CONSTANT') > 0) THEN
@@ -279,20 +277,18 @@ c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
  
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
-                IF (FOUND) ALLOCATE (SPEC)
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
                 IF (FOUND) THEN
                   IBS = IBS + 1
                   SPEC%SPC = SPEC%SPC * BOLTZFAC
                   SPEC%IPRTYP = 4
                   SPEC%IPRSP = IPLS
-                  BACK_SPEC(IBS)%PSPC => SPEC
+                  BACK_SPEC(IBS) = SPEC
                 END IF
               END IF
             END IF
  
           ENDDO
-          IF (.NOT.FOUND) DEALLOCATE(SPEC)
           DEALLOCATE (BASE_DENSITY)
           DEALLOCATE (BASE_TEMP)
         END IF
@@ -390,20 +386,18 @@ c  these two processes  for the given "ground state" density BASE_DENSITY
 cdr  what is this??  background spectrum ??
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
-                IF (FOUND) ALLOCATE (SPEC)
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
                 IF (FOUND) THEN
                   IBS = IBS + 1
                   SPEC%IPRTYP = 4
                   SPEC%IPRSP = IPLS
                   SPEC%SPC = SPEC%SPC * RCORONA*DEIN(IR)*AM1
-                  BACK_SPEC(IBS)%PSPC => SPEC
+                  BACK_SPEC(IBS) = SPEC
                 END IF
               END IF
             END IF
  
           END DO
-          IF (.NOT.FOUND) DEALLOCATE(SPEC)
 c...............................................................corona: done
 
         CASE ('COLRAD    ')
@@ -475,7 +469,6 @@ c  only temperature dependence in reduced population coefficient
  
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                   IF (LSPCCLL(IR)) THEN
-                    IF (FOUND) ALLOCATE (SPEC)
                     CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
                     IF (FOUND) THEN
                       IF (IRE == 1) THEN
@@ -483,16 +476,15 @@ c  only temperature dependence in reduced population coefficient
                         SPEC%IPRTYP = 4
                         SPEC%IPRSP = IPLS
                         SPEC%SPC = SPEC%SPC * RCOLRAD
-                        BACK_SPEC(IBS)%PSPC => SPEC
+                        BACK_SPEC(IBS) = SPEC
                       ELSE
-                        IF (  (BACK_SPEC(IBS)%PSPC%NSPC == SPEC%NSPC)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMIN==SPEC%SPCMIN)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMAX==SPEC%SPCMAX))
+                        IF (  (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
      .                  THEN
                           SPEC%SPC = SPEC%SPC * RCOLRAD
-                          BACK_SPEC(IBS)%PSPC%SPC =
-     .                         BACK_SPEC(IBS)%PSPC%SPC + SPEC%SPC
-                          DEALLOCATE(SPEC)
+                          BACK_SPEC(IBS)%SPC =
+     .                         BACK_SPEC(IBS)%SPC + SPEC%SPC
                         ELSE
                           WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
      .                       ' DENSITY MODEL COLRAD '
@@ -508,7 +500,6 @@ c  only temperature dependence in reduced population coefficient
                 END IF
  
               END DO
-              IF (.NOT.FOUND) DEALLOCATE(SPEC)
 
             CASE (12)!  H.12 format, reduced population coefficient from AMJUEL
 c  temperature and density dependence in reduced population coefficient
@@ -552,7 +543,6 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
  
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                   IF (LSPCCLL(IR)) THEN
-                    IF (FOUND) ALLOCATE (SPEC)
                     CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
                     IF (FOUND) THEN
                       IF (IRE == 1) THEN
@@ -560,16 +550,15 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
                         SPEC%IPRTYP = 4
                         SPEC%IPRSP = IPLS
                         SPEC%SPC = SPEC%SPC * RCOLRAD
-                        BACK_SPEC(IBS)%PSPC => SPEC
+                        BACK_SPEC(IBS) = SPEC
                       ELSE
-                        IF (  (BACK_SPEC(IBS)%PSPC%NSPC == SPEC%NSPC)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMIN==SPEC%SPCMIN)
-     .                   .AND.(BACK_SPEC(IBS)%PSPC%SPCMAX==SPEC%SPCMAX))
+                        IF (  (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
+     .                   .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
      .                  THEN
                           SPEC%SPC = SPEC%SPC * RCOLRAD
-                          BACK_SPEC(IBS)%PSPC%SPC =
-     .                         BACK_SPEC(IBS)%PSPC%SPC + SPEC%SPC
-                          DEALLOCATE(SPEC)
+                          BACK_SPEC(IBS)%SPC =
+     .                         BACK_SPEC(IBS)%SPC + SPEC%SPC
                         ELSE
                           WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
      .                       ' DENSITY MODEL COLRAD '
@@ -585,7 +574,6 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
                 END IF
  
               END DO  ! IR
-              IF (.NOT.FOUND) DEALLOCATE(SPEC)
             CASE DEFAULT
               WRITE (iunout,*) ' H.',ISW,
      .             ' NOT FORESEEN IN COLRAD DENSITY MODEL '
@@ -623,7 +611,7 @@ c .................................................................colrad done
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
 C
-C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
+C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BPERP, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
  
 C  SET DRIFT ENERGY (EV)
       DO J=1,NSBOX
@@ -648,7 +636,8 @@ C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
         END DO
       END DO
 C
-C  SET B_PERP
+C  SET B_PERP UNIT VECTOR in POL PLANE (X,Y) FOR 2D cases
+C      B_PAR IS ALREADY GIVEN AS INPUT TALLY BXIN,BYIN,BZIN
 C
       DO J=1,NSBOX
         IF (ABS(BXIN(J)) > EPS10) THEN
@@ -661,7 +650,8 @@ C
            BXP = 0._DP
            BYP = 0._DP
         END IF
-C  CHECK ORIENTATION
+        
+C  CHECK ORIENTATION, SET B_PERP SUCH THAT B_PERP CROSS B_PAR > 0  
         IF (BXIN(J)*BYP-BXP*BYIN(J) < 0._DP) THEN
            BXP = -BXP
            BYP = -BYP
@@ -930,14 +920,19 @@ C  NOTHING TO BE DONE
       FOUND = .FALSE.
  
       DO ISPC = 1, NADSPC
-        IF ((ESTIML(ISPC)%PSPC%ISRFCLL == 2) .AND.
-     .      (ESTIML(ISPC)%PSPC%ISPCSRF == ICELL) .AND.
-     .      (ESTIML(ISPC)%PSPC%IPRTYP == TDMPAR(IPLS)%TDM%ITP(IRE)).AND.
-     .      (ESTIML(ISPC)%PSPC%IPRSP == TDMPAR(IPLS)%TDM%ISP(IRE))) THEN
-          ALLOCATE (SPEC%SPC(0:ESTIML(ISPC)%PSPC%NSPC+1))
-          ALLOCATE (SPEC%SDV(0:ESTIML(ISPC)%PSPC%NSPC+1))
-          ALLOCATE (SPEC%SGM(0:ESTIML(ISPC)%PSPC%NSPC+1))
-          SPEC = ESTIML(ISPC)%PSPC
+        IF ((ESTIML(ISPC)%ISRFCLL == 2) .AND.
+     .      (ESTIML(ISPC)%ISPCSRF == ICELL) .AND.
+     .      (ESTIML(ISPC)%IPRTYP == TDMPAR(IPLS)%TDM%ITP(IRE)).AND.
+     .      (ESTIML(ISPC)%IPRSP == TDMPAR(IPLS)%TDM%ISP(IRE))) THEN
+          IF (ASSOCIATED(SPEC%SPC)) THEN
+            DEALLOCATE (SPEC%SPC)
+            DEALLOCATE (SPEC%SDV)
+            DEALLOCATE (SPEC%SGM)
+          END IF    
+          ALLOCATE (SPEC%SPC(0:ESTIML(ISPC)%NSPC+1))
+          ALLOCATE (SPEC%SDV(0:ESTIML(ISPC)%NSPC+1))
+          ALLOCATE (SPEC%SGM(0:ESTIML(ISPC)%NSPC+1))
+          SPEC = ESTIML(ISPC)
           FOUND = .TRUE.
         END IF
       END DO

@@ -5,6 +5,10 @@ cdr:          to be written: 2nd parameter out of range   (2 options)
 cdr:          to be written: both parameters out of range (4 options)
 cdr: may 17 : speedup possible, if only dum(..) but not cou is needed. Tbd.
 cdr: july 17: trc:  print warning in case of extrapolation 
+cdr: aprl 18: extrapolation wrt. 2nd parameter added.
+cdr           ifex=0:  constant extrapolation
+cdr           ifex<0:  find extrapolation parameters here, and call extrap.f
+cdr           ifex>0:  find parameters boundary, and call extrap.f 
 
 c  called from: rate_coeff.f
 c               energy_rate_coeff.f
@@ -62,6 +66,7 @@ c          for reduced 1D fit evaluation "on the fly", at fixed parameter AL1.
       real(dp) :: p1, p2, s01, s02, ds12, expo1, expo2, ccxm1, ccxm2,
      .            fpar1, fpar2, fpar3,
      .            al1min,al1max,cou1min,cou1max, 
+     .            al2min,al2max,cou2min,cou2max, 
      .            eirene_extrap
       integer :: kk, jj, j, i, ii, ifex
       logical :: trc
@@ -71,7 +76,14 @@ c          for reduced 1D fit evaluation "on the fly", at fixed parameter AL1.
       p2=al2
 
       if (al1 < rc1min) then
-        IF (IFEX1MN.LT.0) THEN
+
+        IF (IFEX1MN.EQ.0) THEN
+C  FIT OUT OF VALID RANGE, AL1 < RC1MIN
+C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
+          p1=rc1min
+          if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al1,rc1min
+          GOTO 100      
+        ELSEIF (IFEX1MN.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL1 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL2
 C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
           S01=RC1MIN
@@ -80,34 +92,43 @@ C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
           EXPO1=0.
           EXPO2=0.
 c  evaluate double parameter fit at s01,al2,  and at s02,al2
-          DO 1 J=1,9
+          DO  J=1,9
             JJ=J-1
-            DO 1 I=1,9
+            DO  I=1,9
               II=I-1
               EXPO1=EXPO1+S01**II*AL2**JJ*CF(I,J)
               EXPO2=EXPO2+S02**II*AL2**JJ*CF(I,J)
- 1        CONTINUE
+            ENDDO
+          ENDDO
           CCXM1=EXPO1
           CCXM2=EXPO2
           FPAR1=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
           FPAR2=      (CCXM2-CCXM1)/DS12
           FPAR3=0.D0
 C
-          IFEX=5
+          IFEX=3
           AL1MIN=RC1MIN
           COU1MIN=EXP(EXPO1)
           
         ELSEIF (IFEX1MN.GT.0) THEN
 C  IFEX1MN IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES 
+C  PROVIDE FIT EXPRESSION AT BOUNDARY RC1MIN
+C  EVALUATED AT SECOND PARAMETER AL2, WHICH MUST BE INSIDE ITS VALID RANGE
+          S01=RC1MIN
+          EXPO1=0.
+c  evaluate double parameter fit at s01,al2
+          DO J=1,9
+            JJ=J-1
+            DO I=1,9
+              II=I-1
+              EXPO1=EXPO1+S01**II*AL2**JJ*CF(I,J)
+            enddo
+          enddo
           IFEX=IFEX1MN
-
-        ELSE
-C  FIT OUT OF VALID RANGE, AL1 < RC1MIN
-C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
-          p1=rc1min
-          if (trc) write (iunout,*) 'extrap option 1 dbl_pol',al1,rc1min
-          GOTO 100
+          AL1MIN=RC1MIN
+          COU1MIN=EXP(EXPO1)
         ENDIF
+
 
         COU=EIRENE_EXTRAP(AL1,AL1MIN,COU1MIN,IFEX,FPAR1,FPAR2,FPAR3)
         cou=log(cou)
@@ -115,7 +136,13 @@ C       DUM(1:9)= ???
         return    
  
       elseif (al1 > rc1max) then
-        IF (IFEX1MX.LT.0) THEN     
+       IF (IFEX1MX.EQ.0) THEN 
+C  FIT OUT OF VALID RANGE, AL1 > RC1MAX
+C  DEFAULT: TAKE THE FIT AT AL1=RC1MAX
+          p1=rc1max
+          if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al1,rc1max
+          GOTO 100
+        ELSEIF (IFEX1MX.LT.0) THEN     
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL1 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL2
 C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
           S01=RC1MAX
@@ -138,20 +165,27 @@ c  evaluate double parameter fit at s01,al2,  and at s02,al2
           FPAR2=      (CCXM2-CCXM1)/DS12
           FPAR3=0.D0
 C
-          IFEX=5
+          IFEX=3
           AL1MAX=RC1MAX
           COU1MAX=EXP(EXPO1)
 
         ELSEIF  (IFEX1MX.GT.0) THEN 
 C  IFEX1MX IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
+C  PROVIDE FIT EXPRESSION AT BOUNDARY RC1MAX
+C  EVALUATED AT SECOND PARAMETER AL2, WHICH MUST BE INSIDE ITS VALID RANGE
+          S01=RC1MAX
+          EXPO1=0.
+c  evaluate double parameter fit at s01,al2
+          DO J=1,9
+            JJ=J-1
+            DO I=1,9
+              II=I-1
+              EXPO1=EXPO1+S01**II*AL2**JJ*CF(I,J)
+             enddo
+          enddo
           IFEX=IFEX1MX
-
-        ELSEIF (IFEX1MX.EQ.0) THEN 
-C  FIT OUT OF VALID RANGE, AL1 > RC1MAX
-C  DEFAULT: TAKE THE FIT AT AL1=RC1MAX
-          p1=rc1max
-          if (trc) write (iunout,*) 'extrap option 2 dbl_pol',al1,rc1max
-          GOTO 100
+          AL1MAX=RC1MAX        !  HERE: AL1MAX=AL1MAX(AL2)
+          COU1MAX=EXP(EXPO1)   !  HERE: COU1MAX=COUMAX(AL2)
         ENDIF
 
         COU=EIRENE_EXTRAP(AL1,AL1MAX,COU1MAX,IFEX,FPAR1,FPAR2,FPAR3)
@@ -160,18 +194,121 @@ C       DUM(1:9)= ???
         return    
 
       elseif (al2 < rc2min) then
+        IF (IFEX2MN.EQ.0) THEN
+C  FIT OUT OF VALID RANGE, AL1 < RC1MIN
+C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
+          p2=rc2min
+          if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al2,rc2min
+          GOTO 100      
+        ELSEIF (IFEX2MN.LT.0) THEN
+C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL2 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL1
+C  EVALUATED AT AL1, WHICH MUST BE INSIDE VALID RANGE
+          S01=RC2MIN
+          S02=LOG(1.25_DP)+RC2MIN
+          DS12=S02-S01
+          EXPO1=0.
+          EXPO2=0.
+c  evaluate double parameter fit at s01,al1,  and at s02,al1
+          DO  J=1,9
+            JJ=J-1
+            DO  I=1,9
+              II=I-1
+              EXPO1=EXPO1+AL1**II*S01**JJ*CF(I,J)
+              EXPO2=EXPO2+AL1**II*S02**JJ*CF(I,J)
+            ENDDO
+          ENDDO
+          CCXM1=EXPO1
+          CCXM2=EXPO2
+          FPAR1=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
+          FPAR2=      (CCXM2-CCXM1)/DS12
+          FPAR3=0.D0
+C
+          IFEX=3
+          AL2MIN=RC2MIN
+          COU2MIN=EXP(EXPO1)
+          
+        ELSEIF (IFEX2MN.GT.0) THEN
+C  IFEX2MN IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES 
+C  PROVIDE FIT EXPRESSION AT BOUNDARY RC2MIN
+C  EVALUATED AT SECOND PARAMETER AL1, WHICH MUST BE INSIDE ITS VALID RANGE
+          S01=RC2MIN
+          EXPO1=0.
+c  evaluate double parameter fit at s01,al1
+          DO J=1,9
+            JJ=J-1
+            DO I=1,9
+              II=I-1
+              EXPO1=EXPO1+AL1**II*S01**JJ*CF(I,J)
+            enddo
+          enddo
+          IFEX=IFEX2MN
+          AL2MIN=RC2MIN       !  HERE: AL2MIN=AL2MIN(AL1)
+          COU2MIN=EXP(EXPO1)  !  HERE: COU2MIN=COU2MIN(AL1)
+        ENDIF
 
-cdr   to be written
-        p2=rc2min
-        if (trc) write (iunout,*) 'extrap option  3 dbl_pol ',al2,rc2min
-        goto 100
+
+        COU=EIRENE_EXTRAP(AL2,AL2MIN,COU2MIN,IFEX,FPAR1,FPAR2,FPAR3)
+        cou=log(cou)
+C       DUM(1:9)= ???
+        return 
 
       elseif (al2 > rc2max) then
+       IF (IFEX2MX.EQ.0) THEN 
+C  FIT OUT OF VALID RANGE, AL2 > RC2MAX
+C  DEFAULT: TAKE THE FIT AT AL2=RC2MAX
+          p2=rc2max
+          if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al2,rc2max
+          GOTO 100
+        ELSEIF (IFEX2MX.LT.0) THEN     
+C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL2 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL1
+C  EVALUATED AT AL1, WHICH MUST BE INSIDE VALID RANGE
+          S01=RC2MAX
+          S02=log(0.75_dp)+RC2MAX
+          DS12=S02-S01
+          EXPO1=0.
+          EXPO2=0.
+c  evaluate double parameter fit at s01,al1,  and at s02,al1
+          DO J=1,9
+            JJ=J-1
+            DO I=1,9
+              II=I-1
+              EXPO1=EXPO1+AL1**II*S01**JJ*CF(I,J)
+              EXPO2=EXPO2+AL1**II*S02**JJ*CF(I,J)
+            enddo
+          enddo
+          CCXM1=EXPO1
+          CCXM2=EXPO2
+          FPAR1=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
+          FPAR2=      (CCXM2-CCXM1)/DS12
+          FPAR3=0.D0
+C
+          IFEX=3
+          AL2MAX=RC2MAX
+          COU2MAX=EXP(EXPO1)
 
-cdr   to be written
-        p2=rc2max
-        if (trc) write (iunout,*) 'extrap option 4 dbl_pol',al2,rc2max
-        goto 100        
+        ELSEIF  (IFEX2MX.GT.0) THEN 
+C  IFEX1MX IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
+C  PROVIDE FIT EXPRESSION AT BOUNDARY RC2MAX
+C  EVALUATED AT FIRST PARAMETER AL1, WHICH MUST BE INSIDE ITS VALID RANGE
+          S01=RC2MAX
+          EXPO1=0.
+c  evaluate double parameter fit at s01,al1
+          DO J=1,9
+            JJ=J-1
+            DO I=1,9
+              II=I-1
+              EXPO1=EXPO1+AL1**II*S01**JJ*CF(I,J)
+            enddo
+          enddo
+          IFEX=IFEX2MX
+          AL2MAX=RC2MAX        !  HERE: AL2MAX=AL1MAX(AL1)
+          COU2MAX=EXP(EXPO1)   !  HERE: COU2MAX=COUMAX(AL1)
+        ENDIF
+
+        COU=EIRENE_EXTRAP(AL2,AL2MAX,COU2MAX,IFEX,FPAR1,FPAR2,FPAR3)
+        cou=log(cou)
+C       DUM(1:9)= ???
+        return
 
       else
 
@@ -200,7 +337,7 @@ cdr  is obtained by summing over the 9 terms
         end do
       end do
 
-cdr  this second evaluation may not be needed, if only collapsed fit is wanted.
+cdr  this second evaluation may not be needed, if only a collapsed fit is wanted.
 cdr  or if al2=0.0  (as in H.4, H.10, AMJUEL fits, for automatic Corona limit.
 
 cdr  H.4, H.10, H.12 fits from AMJUEL: Corona at p2 <= log(ne/10**8) = rc2min = 0.0 
