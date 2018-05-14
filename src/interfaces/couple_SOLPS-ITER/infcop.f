@@ -71,7 +71,6 @@ c            parameters nr1tal_save, ....     for interfacing tallies between b2
 c                                             is always the b2 (structured) coarse grid
 cdr Jan 18 : bug fix re vol.rec., only one ipls per stratum is supported
 c            code was correct in solps4.3, and garching versions of couple_b2/b2.5
-
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
 cdr Mar 18:  ELTEST from couple_Tria
@@ -3140,22 +3139,22 @@ csw 08mar2013 check for nprs < nstrai too
 csw 08mar2013 do this only for my_pe=0
           if(my_pe /=0) goto 10000
 csw
-        IF (ISTRAI.EQ.IESTR) THEN
+          IF (ISTRAI.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
-        ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-          IESTR=ISTRAI
-          CALL EIRENE_RSTRT(ISTRAI,NSTRAI,NESTM1,NESTM2,NADSPC,
+          ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+            IESTR=ISTRAI
+            CALL EIRENE_RSTRT(ISTRAI,NSTRAI,NESTM1,NESTM2,NADSPC,
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
-        ELSE
-          WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
-          WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
-          CALL EIRENE_EXIT_OWN(1)
-        ENDIF
+          ELSE
+            WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
+            WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
         endif  !nprs
 C
 C  DATA TRANSFER BACK FROM EIRENE TO EXTERNAL CODE
@@ -4244,9 +4243,6 @@ C  WRITE ICCPL2
       IF (TRCINT.OR.TRCFLE)   
      .    WRITE (iunout,*) 'WRITE 11  LCCPL,   IRC= ',IRC
 C
-!pb  LSTP is dummy argument to entry IF3COP, thus not available here
-!pb  LSTP3 is stored in IF3COP
-!pb   IF (LSHORT) LSTOP=LSTP
       IF (LSHORT) LSTOP=LSTP3
 C
       IF (.NOT.LSTOP) RETURN
@@ -4428,7 +4424,6 @@ C
         DO 10121 IFL=1,NFLA
           SFNIWX(IFL)=SFNIWX(IFL)+FNIXB(0,IY,IFL)
 10121   CONTINUE
-
 10120   CONTINUE
 
 C  DO NOT RECYCLE TARGET FLUXES WITH FALSE ORIENTATION
@@ -4551,7 +4546,6 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
      .                   NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)
 
 
-
 cdr sheath contributions: count negative for electrons, positive for ions 
 cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(NDT(I,IPRT),IY)*
@@ -4583,11 +4577,10 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
                 SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
-
 cdr sheath contributions: count negative for electrons, positive for ions 
 cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
+     .            NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
      .           (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
                 SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
      .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
@@ -4624,7 +4617,6 @@ C
       SSNI=0.
       SSEI=0.
       SSEE=0.
-
       DO 10150 ISTR=1,NSTRAI
         ISTRA = ISTR
         IF (XMCP(ISTRA).LE.1) GOTO 10150
@@ -4658,7 +4650,6 @@ C
 C     WRITE (37,*) 'RADIATION LOSSES VIA NEUTRAL CHANNEL ',ISTRA
 C     WRITE (37,8888) 0.,0.,0.
 C
-
         SSNI(1:NFLA)=SSNI(1:NFLA)+SSN(1:NFLA)*FLX
         SSEI=SSEI+SSI*FLX/ELCHA
         SSEE=SSEE+SSE*FLX/ELCHA
@@ -4835,7 +4826,6 @@ cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
         helpw(1:nfla) = RESSMO(0,1:NFLA)
         CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
         if (allocated(helpw)) deallocate (helpw)
-
       ENDIF  !LBALAN
 C
 c sputtering
