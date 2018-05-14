@@ -208,10 +208,12 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
         RETURN
 
 1000  continue
+      CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) ' ERROR IN "READ_COLRAD" : '
       WRITE (IUNOUT,*) ' WRONG DATA TYPE FOR INTERNAL COLRAD OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR
       WRITE (IUNOUT,'(1X,A,I0)') ' DATA TYPE H.', ISW
+      WRITE (IUNOUT,'(1X,A,A8)') ' DATA NR.    ', REAC(1:8)
       CALL EIRENE_EXIT_OWN(1)
       RETURN
 

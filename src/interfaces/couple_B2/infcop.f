@@ -1838,8 +1838,8 @@ C
           IF (ORI(ITARG,IG).GT.0) NSEW='E'
         ENDIF
         IF (IGSTEP(ITARG,IG).LT.200000) THEN
-          IF (ORI(ITARG,IG).LT.0) NSEW='N'
-          IF (ORI(ITARG,IG).GT.0) NSEW='S'
+          IF (ORI(ITARG,IG).LT.0) NSEW='S'
+          IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
         WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),

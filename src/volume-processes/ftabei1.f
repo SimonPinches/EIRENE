@@ -13,8 +13,13 @@ c         in cell no. K
 
 c  call to fct. RATE_COEFF, 
 
-c  hard wired: cut off (density) parameter for fits: 1e8. Minimum density is set to 1e8 cm**-3
-c              for evaluation of rate coefficient. But then the 'true' density is used to return a 'rate'
+c  hard wired: Cut off (density) parameter for fits: 1e8 cm**-3. 
+c              Minimum density is set to 1e8 cm**-3
+c              for evaluation of rate coefficient. 
+c              But then the 'true' density is used to return a 'rate'
+c  May 18: sync with xstei.f, Te cut off earlier than TVAC. 
+c              Cut off (Te) parameter for fits: 0.1 eV. Minimum density is set to 0.1 eV
+c              for evaluation of rate coefficient. 
 
  
       USE EIRMOD_PRECISION
@@ -27,7 +32,7 @@ c              for evaluation of rate coefficient. But then the 'true' density i
       INTEGER, INTENT(IN) :: IREI, K
       REAL(DP) :: EIRENE_FTABEI1, DEIMIN, PLS, TBEI,
      .            EIRENE_RATE_COEFF
-C      REAL(DP) :: DSUB
+      REAL(DP) :: TEE
       INTEGER :: KK
  
       TBEI=0.D0
@@ -42,8 +47,10 @@ c                                only for double polynomial fit
 !pb   DSUB=LOG(1.D8)
 !pb   PLS=MAX(DEIMIN,DEINL(K))-DSUB
 
+cdr  safety cut off at Te= 0.1 eV. (note: TVAC=0.02)
+      TEE = max(-2.3_dp,TEINL(K))
  
-      TBEI = EIRENE_RATE_COEFF(KK,K,TEINL(K),PLS,.TRUE.,1)*
+      TBEI = EIRENE_RATE_COEFF(KK,K,TEE,PLS,.TRUE.,1)*
      .       FACREI(IREI,1)
       IF (IFTFLG(KK,2) < 100) TBEI=TBEI*DEIN(K)
  

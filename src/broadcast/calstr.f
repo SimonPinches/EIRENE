@@ -77,6 +77,9 @@ c
       istr = istra
       call mpi_comm_split (mpi_comm_world,istr,my_pe-npesta(istra),
      .                     icomgrp(istra),ier)
+c
+c   collect data from pe's belonging to one particular stratum istra
+c
 
 
       if(      count( procforstra(istra,0:nprs-1) ) >1

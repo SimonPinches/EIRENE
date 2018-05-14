@@ -15,6 +15,8 @@ cdr             should not have had any effect, on any run, so far,
 cdr             since this reaction did not exist in EIRENE at all until June 15
 cdr  Jan 18  :  call energy-rate-coeff with lexp=true, because internal colrad (ifit=5)
 cdr             option is now available.
+cdr  May 18 :  still missing. low Te cut off (should be done as in xstei, there:
+cdr            0.1 eV, until assypmtotics from database are fully implemented.
 
 C
       SUBROUTINE EIRENE_XSECTP
