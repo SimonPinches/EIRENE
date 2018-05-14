@@ -871,6 +871,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          WRITE (IUNOUT,*) 'IFLG = ',if1mn
+          IF (IF1MN.EQ.4)
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MIN) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
@@ -879,12 +882,13 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           if (if1mn.ge.3)
      .      CALL EIRENE_MASRR1('PARAMETERS ',fp1l,3,3)
+          CALL EIRENE_LEER(1)
         END IF
 
         IF (LGR1MIN) RC1MIN = LOG(R1MN)
         IF (LGC1MIN) FP1(1:3) = FP1L
         JFEX1MN = IF1MN
-        IF (LGC1MIN .AND. LGR1MIN .AND. (JFEX1MN == 0))
+        IF (LGR1MIN .AND. LGC1MIN .AND. (JFEX1MN == 0))
 ! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .          JFEX1MN = 5
       END IF
@@ -896,6 +900,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          WRITE (IUNOUT,*) 'IFLG = ',if1mx
+          IF (IF1MX.EQ.4)
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MAX) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
@@ -904,12 +911,13 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           if (if1mx.ge.3)
      .      CALL EIRENE_MASRR1('PARAMETERS ',fp1r,3,3)
+          CALL EIRENE_LEER(1)
         END IF
 
         IF (LGR1MAX) RC1MAX = LOG(R1MX)
         IF (LGC1MAX) FP1(4:6) = FP1R
         JFEX1MX = IF1MX
-        IF (LGC1MAX .AND. LGR1MAX .AND. (JFEX1MX == 0))
+        IF (LGR1MAX .AND. LGC1MAX .AND. (JFEX1MX == 0))
 ! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .          JFEX1MX = 5
       END IF
@@ -921,6 +929,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          WRITE (IUNOUT,*) 'IFLG = ',if2mn
+          IF (IF2MN.EQ.4)
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR2MIN) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
@@ -929,11 +940,14 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           if (if2mn.ge.3)
      .      CALL EIRENE_MASRR1('PARAMETERS ',fp2l,3,3)
+          CALL EIRENE_LEER(1)
         END IF
         IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2L
         JFEX2MN = IF2MN
-        IF (LGC2MIN .AND. LGR2MIN .AND. (JFEX2MN == 0)) JFEX2MN = 5
+        IF (LGR2MIN .AND. LGC2MIN .AND. (JFEX2MN == 0)) 
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
+     .         JFEX2MN = 5
       END IF
 
       IF (JFEX2MX == 0) THEN
@@ -943,6 +957,9 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+          WRITE (IUNOUT,*) 'IFLG = ',if2mx
+          IF (IF2MX.EQ.4)
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
         ELSEIF (LGR2MAX) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
@@ -951,11 +968,14 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           if (if2mx.ge.3)
      .      CALL EIRENE_MASRR1('PARAMETERS ',fp2r,3,3)
+          CALL EIRENE_LEER(1)
         END IF
         IF (LGR2MAX) RC2MAX = LOG(R2MX)
         IF (LGC2MAX) FP2(4:6) = FP2R
         JFEX2MX = IF2MX
-        IF (LGC2MAX .AND. LGR2MAX .AND. (JFEX2MX == 0)) JFEX2MX = 5
+        IF (LGR2MAX .AND. LGC2MAX .AND. (JFEX2MX == 0))
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+     .        JFEX2MX = 5
       END IF
 C
 2000  CONTINUE

@@ -15,16 +15,6 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
 cdr  unification of naming conventions for electron impact collisions
 
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds -> pelei, eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-!dr  sept 16:  nmdsi  -> nmeii
-!dr  sept 16:  nidsi  -> nieii
 
 cdr  sept 16:  ETH (collision threshold energy) added to reaction data
 cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel

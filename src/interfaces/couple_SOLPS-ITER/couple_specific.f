@@ -1,7 +1,7 @@
 cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
 cdr:             check: is eirsrt universal, then: move even further up to "main routines".
 cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
-c  jan 2017: syncronisation with corresponding version in couple_Tria,
+c  jan 2017: syncronisation with corresponding version in other couple_...
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
 C
@@ -1055,7 +1055,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPAPL) THEN
             IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
-!pb            ALLOCATE(CPMUL)
+!pb           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1175,7 +1175,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
       DO IN=1,NSBOX_TAL
     	IF (LEAEL) THEN
           IF (EAEL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EAEL(IN)*FLXI
@@ -1185,7 +1185,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         ENDIF
         IF (LEMEL) THEN
           IF (EMEL(IN) .NE. 0.D0) THEN
-!PB          ALLOCATE(CPSIM)
+!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EMEL(IN)*FLXI
@@ -1195,7 +1195,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         ENDIF
         IF (LEIEL) THEN 
           IF (EIEL(IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPSIM)
+!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EIEL(IN)*FLXI
@@ -1221,7 +1221,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           IF (LEDENA) THEN
             IF (EDENA(IATM,IN) .NE. 0.D0) THEN
-!PB            ALLOCATE(CPMUL)
+!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IATM
               CPMUL%ICM = IN
@@ -1253,7 +1253,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
 	      IF (LPDENI) THEN
             IF (PDENI(IION,IN) .NE. 0.D0) THEN
-!PB            ALLOCATE(CPMUL)
+!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IION
               CPMUL%ICM = IN
@@ -1269,7 +1269,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
 	      IF (LCOPV) THEN
             IF (COPV(ICPV,IN) .NE. 0.D0) THEN
-!PB            ALLOCATE(CPMUL)
+!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = ICPV
               CPMUL%ICM = IN

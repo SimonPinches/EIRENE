@@ -351,6 +351,7 @@ cdr  sputter fluxes
 
       real(dp),allocatable :: helpw(:)
 
+      logical :: lhit(nrad)
 
       REAL(DP) :: OUTHELP(NFL)
 
@@ -3139,23 +3140,23 @@ csw 08mar2013 check for nprs < nstrai too
 csw 08mar2013 do this only for my_pe=0
           if(my_pe /=0) goto 10000
 csw
-          IF (ISTRAI.EQ.IESTR) THEN
+        IF (ISTRAI.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
-          ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-            IESTR=ISTRAI
-            CALL EIRENE_RSTRT(ISTRAI,NSTRAI,NESTM1,NESTM2,NADSPC,
+        ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+          IESTR=ISTRAI
+          CALL EIRENE_RSTRT(ISTRAI,NSTRAI,NESTM1,NESTM2,NADSPC,
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
-          ELSE
-            WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
-            WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
-            CALL EIRENE_EXIT_OWN(1)
-          ENDIF
-        endif
+        ELSE
+          WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
+          WRITE (iunout,*) 'IS NOT AVAILABLE. EXIT CALLED'
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
+        endif  !nprs
 C
 C  DATA TRANSFER BACK FROM EIRENE TO EXTERNAL CODE
 C  STATEMENT NO 7000 ---> 7999
@@ -3508,6 +3509,7 @@ cdr  only one bulk ion species per volume source stratum supported
               SUMM=0.0
               SUMEI=0.0
               SUMEE=0.0
+              lhit = .false.
               DO 7471 IN=1,NTRII
                 INC=NCLTAL(IN)
                 if ((nstgrd(in) /= 0) .or. lgvac(in,ipls)) cycle
@@ -3521,14 +3523,41 @@ cdr  only one bulk ion species per volume source stratum supported
                 PIADD=PARMOM(IPLS,IN)*RECADD
                 EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
 
-                PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
+!pb 21012013
+!  if lcoarse: add contribution to tallies only once per fine grid cell
+!  tallies are to be scaled with voltal
+                if (.not.lhit(inc)) then
+                  PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
+                  MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                  EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
+                  EPEL_COP(INC)=EPEL_COP(INC)+EEADD
+                  lhit(inc) = .true.
+                end if
+
+
+! ALL INPUT TALLIES, TAB.., FTAB.., VOL, ARE ON UNDERLYING FINE GRID. 
+! and hence: RECADD,PIADD,EIADD,EEADD also on fine grid.
+!  here we scale with volume of triangle cell 
+!  this needs to be done per triangle
                 SUMN=SUMN+RECADD*VOL(IN)
+                SUMM=SUMM+PIADD*VOL(IN)
+                SUMEI=SUMEI+EIADD*VOL(IN)
+                SUMEE=SUMEE+EEADD*VOL(IN)
+
+cdr may 18: This next code changes PAAT, EAPL, EAEL, for some B2.5 specific
+cdr         purpose, adding the vol-rec sink there, rather than on pppl_cop,.etc.. 
+cdr         PIADD (MPPL_COP) was probably forgotten ?
+cdr         Since we now use EPPL_COP and EPEL_COP for the sources transferred to
+cdr         we must bypass this (anyway incomplete) stuff 
+cdr         
+             if (.true.) cycle
 
 cdr..jan 17  double check code changes below
 cdr..  pppl_cop is set, and that part is removed here from paat
 cdr    mppl_cop is set, nothing done with it.
 cdr....eppl_cop is not set any more, instead that part is directly removed from eapl
 cdr    epel_cop is not set any more, instead that part is directly removed from eael
+cdr may 2018:  mppl moved up, sync with pppl_cop treatment (lhit condition)
 c.......
 csw 21feb2012, taken from SOLPS4.3
 C CORRECT PAAT FOR CALCULATING RADIATION  FOR ATOMS IN WNEUTRALS
@@ -3537,22 +3566,22 @@ C CORRECT PAAT FOR CALCULATING RADIATION  FOR ATOMS IN WNEUTRALS
 csw
 cdr..........................
                 
-                MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+cdr             MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD ! may 2018 now moved up into lhit-condition
 cdr  for consistency: this should probably be done with mapl, rather than mppl_cop,
 cdr  but perhaps mapl is not used in wneutrals ??
-                SUMM=SUMM+PIADD*VOL(IN)
+cdr             SUMM=SUMM+PIADD*VOL(IN)  ! may 2018 now moved up into lhit-condition
 
                 
 csw 08feb2013
 csw             EPPL_COP(INC)=EPPL_COP(INC)+EIADD
                 EAPL(IPLS,INC)=EAPL(IPLS,INC)+EIADD
 csw
-                SUMEI=SUMEI+EIADD*VOL(IN)
+cdr             SUMEI=SUMEI+EIADD*VOL(IN) ! may 2018 now moved up after lhit-condition
 csw 08feb2013
 csw             EPEL_COP(INC)=EPEL_COP(INC)+EEADD
                 EAEL(INC)=EAEL(INC)+EEADD
 csw
-                SUMEE=SUMEE+EEADD*VOL(IN)
+cdr             SUMEE=SUMEE+EEADD*VOL(IN)! may 2018 now moved up after lhit-condition
 
 7471          CONTINUE  ! loop over grid
 
@@ -3651,7 +3680,7 @@ csw 08mar2013 moved to here, i.e. after correction from volume recombination
 csw
         IF (.NOT.LSYMET) GOTO 7500
 C
-C  SECONDLY SYMMETRISE EIRENE ARRAYS ACCORDING TO SYMMETRY IN MODEL
+C  SECONDLY SYMMETRISE EIRENE ARRAYS IN CASE OF UP-DOWN SYMMETRY IN MODEL
 C
 C
 C   THIRDLY WRITE EIRENE ARRAYS (1D) ONTO BRAAMS ARRAYS (2D)
@@ -3693,15 +3722,18 @@ cdr  test particle may have scored on a finer mesh (lcoarse=.false)
             IF (IFLB(IPLS).NE.IFL) GOTO 7510
             IPLSV=MPLSV(IPLS)
 c  ipls contributes to plasma code species ifl
-            DO 7520 IX=1,NDXA
-              DO 7530 IY=1,NDYA
+            DO IX=1,NDXA
+              IF (LCUT(IX)) CYCLE
+              DO IY=1,NDYA
 C  multiple grid options
 C  either (not lcoarse) LOOP OVER ALL TRIANGLES CONTRIBUTING TO ix,iy CELL
 C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
+                IF (.NOT.LCOARSE) THEN
+
                 CURPOI => HEADS(IY,IX)%P
                 DO WHILE (ASSOCIATED(CURPOI))
                   IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)  !here: inc=it: all on fine grid
+                  INC=NCLTAL(IT)  !here: inc=it: all tally data are on fine grid
                   CURPOI=>CURPOI%NEXT
 
                   SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
@@ -3710,8 +3742,17 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
                   SNIS(IFL)=SNIS(IFL)+ SNICL
                   CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,INC)*VOLTAL(INC)
                 ENDDO
-7530          CONTINUE
-7520        CONTINUE
+                ELSEIF (LCOARSE) THEN
+                  INC=IY+(IX-1)*NR1TAL_SAVE
+        
+                  SNICL=(PAPL(IPLS,INC)+PMPL(IPLS,INC)+PIPL(IPLS,INC)+
+     .                   PPPL_COP(IPLS,INC))*VOLTAL(INC)*FLX_EIR
+                  SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
+                  SNIS(IFL)=SNIS(IFL)+ SNICL
+                  CHPS(IFL)=CHPS(IFL)+CHPM(IPLS,INC)*VOLTAL(INC)
+                ENDIF  ! LCOARSE OPTION
+              ENDDO  !IY LOOP
+            ENDDO  !IX LOOP
 
             IF (.NOT.LSHORT) THEN
 
@@ -3751,13 +3792,16 @@ cdr   particle sources done.
 cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
 cdr   ipls contributes to plasma code species ifl
 
-            DO 7536 IX=1,NDXA
+            DO IX=1,NDXA
               IF (LCUT(IX)) CYCLE
-              DO 7533 IY=1,NDYA
+              DO IY=1,NDYA
+                IF (.NOT.LCOARSE) THEN
                 CURPOI => HEADS(IY,IX)%P
                 DO WHILE (ASSOCIATED(CURPOI))
                   IT=CURPOI%TRIANGLE
                   INC=NCLTAL(IT)
+                  CURPOI=>CURPOI%NEXT
+
                   SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                   SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                   MPPL_COP(IPLS,INC))*
@@ -3765,10 +3809,27 @@ cdr   ipls contributes to plasma code species ifl
                   SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
                   SMOS(IFL)=SMOS(IFL)+SMOCL
                   CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
-                  CURPOI=>CURPOI%NEXT
                 ENDDO
-7533          CONTINUE
-7536        CONTINUE
+              ELSEIF (LCOARSE) THEN
+! use BVIN from first triangle belonging the quadrangular cell
+cdr  associated(curpoi) is taken for granted here !?
+
+                CURPOI => HEADS(IY,IX)%P
+                IT=CURPOI%TRIANGLE
+                INC=IY+(IX-1)*NR1TAL_SAVE
+
+                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
+     .                 MPPL_COP(IPLS,INC))*
+     .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
+                SMOS(IFL)=SMOS(IFL)+SMOCL
+                CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
+              ENDIF  ! LCOARSE OPTION
+
+              ENDDO  !IY LOOP
+            ENDDO  !IX LOOP
+
 
             IF (.NOT.LSHORT) THEN
 
@@ -3782,12 +3843,12 @@ cdr   ipls contributes to plasma code species ifl
               end do
 
               if (istat_cop > 0) then
-                 DO IX=1,NDXA
-                   DO IY=1,NDYA
+                DO IX=1,NDXA
+                  DO IY=1,NDYA
                      CURPOI => HEADS(IY,IX)%P
                      DO WHILE (ASSOCIATED(CURPOI))
                        IT=CURPOI%TRIANGLE
-                       INC=NCLTAL(IT)
+                       INC=NCLTAL(IT) !here: inc=it: all tally data are on fine grid
                        CURPOI=>CURPOI%NEXT
 
                        SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
@@ -3799,60 +3860,51 @@ cdr   ipls contributes to plasma code species ifl
      .                                    SMORES/100.D0*1.D5)
 
                      END DO
-                   END DO
-                 END DO
+                  END DO  !IY LOOP
+                END DO !IX LOOP
               end if
+
             END IF
 7510    CONTINUE  ! close loops nfla and npls
 
 C
         CHEES=0.
         SEES=0.
-        DO 7540 IX=1,NDXA
-          DO 7545 IY=1,NDYA
+        DO IX=1,NDXA
+          IF (LCUT(IX)) CYCLE
+          DO IY=1,NDYA
+C  multiple grid options
+C  either (not lcoarse) LOOP OVER ALL TRIANGLES CONTRIBUTING TO ix,iy CELL
+C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
+            IF (.NOT.LCOARSE) THEN
             CURPOI => HEADS(IY,IX)%P
             DO WHILE (ASSOCIATED(CURPOI))
               IT=CURPOI%TRIANGLE
-              IN=NCLTAL(IT)
-              SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
-     .           (EAEL(IN)+EMEL(IN)+EIEL(IN)+
-     .            EPEL_COP(IN))*VOLTAL(IN)*ELCHA
-              CHEES=CHEES+CHEEM(IN)*VOLTAL(IN)
-              SEES=SEES+(EAEL(IN)+EMEL(IN)+EIEL(IN)+
-     .                   EPEL_COP(IN))*VOLTAL(IN)
-              CHEIS=CHEIS+CHEIM(IN)*VOLTAL(IN)
+              INC=NCLTAL(IT) !here: inc=it: all tally data are on fine grid
               CURPOI=>CURPOI%NEXT
-           ENDDO
-7545      CONTINUE
-7540    CONTINUE
-C
-        if (NCPV.GE.ICP3+NPLS) THEN
 
-        SEIS=0.
-        CHEIS=0.
+              SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
+     .           (EAEL(INC)+EMEL(INC)+EIEL(INC)+
+     .            EPEL_COP(INC))*VOLTAL(INC)*ELCHA
+              CHEES=CHEES+CHEEM(INC)*VOLTAL(INC)
+              SEES=SEES+(EAEL(INC)+EMEL(INC)+EIEL(INC)+
+     .                   EPEL_COP(INC))*VOLTAL(INC)
+            ENDDO
+            ELSEIF (LCOARSE) THEN
+              INC=IY+(IX-1)*NR1TAL_SAVE            
+              SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
+     .           (EAEL(INC)+EMEL(INC)+EIEL(INC)+
+     .            EPEL_COP(INC))*VOLTAL(INC)*ELCHA
+              CHEES=CHEES+CHEEM(INC)*VOLTAL(INC)
+              SEES=SEES+(EAEL(INC)+EMEL(INC)+EIEL(INC)+
+     .                   EPEL_COP(INC))*VOLTAL(INC)
+            ENDIF  ! LCOARSE OPTION
 
-        DO 7544 IFL=1,NFLA
-          DO  7543 IPLS=1,NPLSI
-            IF (IFLB(IPLS).NE.IFL) GOTO 7543
-            DO 7542 IX=1,NDXA
-              DO 7541 IY=1,NDYA
-                CURPOI => HEADS(IY,IX)%P
-                DO WHILE (ASSOCIATED(CURPOI))
-                  IT=CURPOI%TRIANGLE
-                  IN=NCLTAL(IT)
-                  SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
-     .                 (EAPL(IPLS,IN)+EMPL(IPLS,IN)+
-     .                  EIPL(IPLS,IN)+
-     .                  EPPL_COP(IPLS,IN))*VOLTAL(IN)*ELCHA
-                  SEIS=SEIS+(EAPL(IPLS,IN)+EMPL(IPLS,IN)+
-     .                       EIPL(IPLS,IN)+
-     .                       EPPL_COP(IPLS,IN))*VOLTAL(IN)
-                  CURPOI=>CURPOI%NEXT
-                ENDDO
- 7541         CONTINUE
- 7542       CONTINUE
- 7543     CONTINUE
- 7544   CONTINUE
+          ENDDO  !IY LOOP
+        ENDDO  !IX LOOP
+
+
+
         
         IF (.NOT.LSHORT) THEN
 
@@ -3884,6 +3936,56 @@ C
           end if
         END IF
 
+C
+        CHEIS=0.
+        SEIS=0.
+        DO IFL=1,NFLA
+          DO  IPLS=1,NPLSI
+            IF (IFLB(IPLS).NE.IFL) CYCLE
+
+            DO IX=1,NDXA
+              IF (LCUT(IX)) CYCLE
+              DO IY=1,NDYA
+C  multiple grid options
+C  either (not lcoarse) LOOP OVER ALL TRIANGLES CONTRIBUTING TO ix,iy CELL
+C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
+              IF (.NOT.LCOARSE) THEN
+                CURPOI => HEADS(IY,IX)%P
+                DO WHILE (ASSOCIATED(CURPOI))
+                  IT=CURPOI%TRIANGLE
+                  INC=NCLTAL(IT) !here: inc=it: all tally data are on fine grid
+                  CURPOI=>CURPOI%NEXT
+
+                  SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
+     .                 (EAPL(IPLS,INC)+EMPL(IPLS,INC)+
+     .                  EIPL(IPLS,INC)+
+     .                  EPPL_COP(IPLS,INC))*VOLTAL(INC)*ELCHA
+                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(IN)
+                  SEIS=SEIS+(EAPL(IPLS,INC)+EMPL(IPLS,INC)+
+     .                       EIPL(IPLS,INC)+
+     .                       EPPL_COP(IPLS,INC))*VOLTAL(INC)
+                ENDDO
+              ELSEIF (LCOARSE) THEN
+                INC=IY+(IX-1)*NR1TAL_SAVE
+                SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
+     .               (EAPL(IPLS,INC)+EMPL(IPLS,INC)+
+     .                EIPL(IPLS,INC)+
+     .                EPPL_COP(IPLS,INC))*VOLTAL(INC)*ELCHA
+                CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
+                SEIS=SEIS+(EAPL(IPLS,INC)+EMPL(IPLS,INC)+
+     .                     EIPL(IPLS,INC)+
+     .                     EPPL_COP(IPLS,INC))*VOLTAL(INC)
+              ENDIF  ! LCOARSE OPTION
+
+              ENDDO ! IY LOOP
+            ENDDO ! IX LOOP
+ 
+          ENDDO  ! IPLS LOOP
+        ENDDO ! IFL LOOP
+
+
+      IF (.NOT.LSHORT) THEN
+
 !pb replace sigma_cop
           istat_cop = 0
           do i = 1, nsigvi
@@ -3907,21 +4009,21 @@ C
                          eamisum = eamisum + 
      .                        EAPL(IPLS,IN)+EMPL(IPLS,IN)+EIPL(IPLS,IN)
                       END IF
-                    END DO
-                  END DO
+                    END DO  !NPLSI
+                  END DO  !nfla
                   SEIRES=EAMISUM*VOLTAL(IN)*FLX_EIR
                   RESSEI(ISTRAI)=RESSEI(ISTRAI)+
      .                           ABS(SIGMA(ISTAT_COP,IN)*
      .                           SEIRES/100.D0)
                   CURPOI=>CURPOI%NEXT
-                END DO
-              END DO
-            END DO
-          end if
-        END IF
+                END DO ! CURPOI
+              END DO   !NDYA
+            END DO    !NDXA
+          end if   !ISTAT_COP
+      END IF  !lshort
 
-        WRITE (iunout,*) 'RECYCLING SOURCE FROM IFCOP ',ISTRAI
-        WRITE (iunout,8888) sum(SNIS(1:nfla)), seis, sees
+      WRITE (iunout,*) 'RECYCLING SOURCE FROM IF3COP ',ISTRAI
+      WRITE (iunout,8888) sum(SNIS(1:nfla)), seis, sees
 C
 C   NEXT:
 C   IF LSHORT OR IFIRST.GT.0     : CRITERION TO STOP SHORT CYCLE,
@@ -4021,6 +4123,7 @@ C
             WRITE (iunout,*) 'STRATUM ISTRAI ',ISTRAI
           ENDIF
           IF (LSHORT) LSTP=LSTP3
+
         ELSE
 cdr  here: .not.lshort .and. ifirst.gt.0
         ENDIF
@@ -4091,10 +4194,6 @@ csw 14jul2011
           estims = save_estims
           deallocate(save_estims)
         endif
-!pb 08.01.2014        if(allocated(save_sigma_cop)) then
-!pb 08.01.2014          sigma_cop = save_sigma_cop
-!pb 08.01.2014          deallocate(save_sigma_cop)
-!pb 08.01.2014         endif
 csw
 10000 CONTINUE
 C
@@ -4234,7 +4333,7 @@ C
       LNONREC_SY=ANY(SFNISY(1:nfla).NE.0.0).OR.SFEISY.NE.0.0.OR.
      .                                         SFEESY.NE.0.0
       WRITE (37,*) 'NON-RECYCLING FLUXES FROM SOUTH EDGE '
-      WRITE (37,8888) SFNISY,SFEISY,SFEESY
+      WRITE (37,8888) sum(SFNISY(1:nfla)),SFEISY,SFEESY
 C
 C
 C  SECOND: NORTH EDGE: IY=NDYA
@@ -4301,7 +4400,7 @@ C
       LNONREC_NY=ANY(SFNINY(1:nfla).NE.0.0).OR.SFEINY.NE.0.0.OR.
      .                                         SFEENY.NE.0.0
       WRITE (37,*) 'NON-RECYCLING FLUXES TO NORTH EDGE '
-      WRITE (37,8888) SFNINY,SFEINY,SFEENY
+      WRITE (37,8888) sum(SFNINY(1:nfla)),SFEINY,SFEENY
 C
 C
 C  THIRD: WEST EDGE: IX=0
@@ -4361,7 +4460,7 @@ C
       LNONREC_WX=ANY(SFNIWX(1:nfla).NE.0.0).OR.SFEIWX.NE.0.0.OR.
      .                                         SFEEWX.NE.0.0
       WRITE (37,*) 'NON-RECYCLING FLUXES FROM WEST EDGE '
-      WRITE (37,8888) SFNIWX,SFEIWX,SFEEWX
+      WRITE (37,8888) sum(SFNIWX(1:nfla)),SFEIWX,SFEEWX
 C
 C
 C  FOURTH: EAST EDGE: IX=NDXA
@@ -4423,7 +4522,7 @@ C
       LNONREC_EX=ANY(SFNIEX(1:nfla).NE.0.0).OR.SFEIEX.NE.0.0.OR.
      .                                         SFEEEX.NE.0.0
       WRITE (37,*) 'NON-RECYCLING FLUXES TO EAST EDGE '
-      WRITE (37,8888) SFNIEX,SFEIEX,SFEEEX
+      WRITE (37,8888) sum(SFNIEX(1:nfla)),SFEIEX,SFEEEX
 C
 C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY
 C        CONDITIONS ARE SPECIFIED
@@ -4450,6 +4549,7 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
                 IF (NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL).GT.0) THEN
                 SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)
+
 
 
 cdr sheath contributions: count negative for electrons, positive for ions 
@@ -4482,6 +4582,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
                 IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0.) THEN
                 SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
+
 
 cdr sheath contributions: count negative for electrons, positive for ions 
 cdr unfinished:  need to account for charge state of ion species IFL
@@ -4523,6 +4624,7 @@ C
       SSNI=0.
       SSEI=0.
       SSEE=0.
+
       DO 10150 ISTR=1,NSTRAI
         ISTRA = ISTR
         IF (XMCP(ISTRA).LE.1) GOTO 10150
@@ -4532,6 +4634,7 @@ C
         ELSE
           FLX=1.
         ENDIF
+
         SSN=0.
         SSI=0.
         SSE=0.
@@ -4555,6 +4658,7 @@ C
 C     WRITE (37,*) 'RADIATION LOSSES VIA NEUTRAL CHANNEL ',ISTRA
 C     WRITE (37,8888) 0.,0.,0.
 C
+
         SSNI(1:NFLA)=SSNI(1:NFLA)+SSN(1:NFLA)*FLX
         SSEI=SSEI+SSI*FLX/ELCHA
         SSEE=SSEE+SSE*FLX/ELCHA
@@ -4731,7 +4835,8 @@ cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
         helpw(1:nfla) = RESSMO(0,1:NFLA)
         CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
         if (allocated(helpw)) deallocate (helpw)
-      ENDIF
+
+      ENDIF  !LBALAN
 C
 c sputtering
 !      WRITE(iunout,*) 'Sputtering: Total'
