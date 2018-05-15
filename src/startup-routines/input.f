@@ -216,10 +216,11 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA
+     .           NB,NS,NA, ISTR
 
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
       LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
@@ -635,8 +636,8 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT '
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FROM FILE FT15'
+        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FROM'
+        WRITE (iunout,*) '       FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
         WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP'
@@ -645,8 +646,7 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
-        WRITE (iunout,*) '       FROM  FILE FT15 '
+        WRITE (iunout,*) '       FIRST TIMESTEP FROM  FILE FT15 '
         WRITE (iunout,*) '       NO FURTHER SNAPSHOP PRODUCED'
         WRITE (iunout,*) '       DUE TO NTIME=0'
       ENDIF
@@ -3706,7 +3706,7 @@ C  READ INITIAL POPULATION FROM FILE, FORT.15, OVERWRITE DEFAULTS
 C
         IPRNL=0
         IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
-          CALL EIRENE_RSNAP
+          CALL EIRENE_RSNAP(NSTRAI)
           DTIMVO=DTIMV
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
@@ -3767,6 +3767,28 @@ C
           SORWGT(1,NSTRAI)=1.D0
         ENDIF
 C
+      ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
+C Only read census from file if exactly one stratum is a census stratum
+          ISTR_A = PACK((/ (i, I = 1, NSTRA) /),NLCNS)
+          ISTR = ISTR_A(1)
+          CALL EIRENE_RSNAP( ISTR )
+C
+          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE FORT 15 '
+          CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
+          CALL EIRENE_MASR1('FLUX    ',FLUX(ISTR))
+C
+C  ONE BY ONE RELAUNCH FROM OLD CENSUS
+C  OLD CENSUS CONTAINS IPRNL ENTRIES.
+          NPTS(ISTR)=IPRNL
+          NMINPTS(ISTR)=IPRNL   ! NMINPTS is currently not used anywhere
+          CALL EIRENE_MASJ1('NPTS=    ',NPTS(ISTR))
+
+          IF (NPTS(ISTR).GT.0.AND.FLUX(ISTR).GT.0) THEN
+            NSRFSI(ISTR)=1
+            SORWGT(1,ISTR)=1.D0
+          ENDIF
+        ENDIF
       ENDIF
 1399  CONTINUE
 C
