@@ -97,10 +97,11 @@ C      REAL(DP) :: DELT
       INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST,IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN, 
-     -           ISTR, NPTTOT, NREC11, IB, N2,
+     -           ISTR, NPTTOT, NREC11, IB,
      .           IC, IGFF, IADD, INDX, ICLV, IADV, 
      .           INODES, J, IPTSI, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN
+C      INTEGER :: N2
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0
 csw
@@ -112,7 +113,7 @@ C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LOGHELP(NSTRA)
 C  OVERHEAD FOR POST PROCESSING (SECONDS)
-      DATA N2/2/
+C      DATA N2/2/
 C
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
@@ -1156,6 +1157,7 @@ csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE
 C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STRATA THAN PROCESSES
 C
       IF (NMODE.GT.0) THEN
+        CALL EIRENE_INFCOP_POST_STRATUM(ISTRA)
         IF (NPRS == 1) THEN
           ISTRAA=ISTRA
           ISTRAE=ISTRA
