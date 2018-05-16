@@ -1,6 +1,6 @@
 cdr  aug. 2015:  logical flag L added. position x,y,z known (L=true) or else use COM of cell icell)
 cdr  sept 2014:  comments added
-c    provide carthesian local magnetic field unit vector bx,by,bz,
+c    provide cartesian local magnetic field unit vector bx,by,bz,
 c    as well as b-field strength bf (Tesla)
 c    at point x,y,z, in cell icell
 

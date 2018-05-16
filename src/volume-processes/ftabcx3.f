@@ -14,7 +14,7 @@ c  input via common:
 c         bulk collision partner: IPLS
 c 
 
-cdr(first stage):
+cdr  (first stage):
 c  FTABCX3 is currently only called in case MODCOL(3,2,IRCX)=1, i.e. rate depends only
 c          on background parameters, not on test particle energy.
 c 
@@ -46,7 +46,6 @@ cdr  hard-wired: cut-off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
 
 cdr  :  check these next lines are only for modcol=1 !
 
-c  erate: not needed (only intermediate for H-COL option. Remove ! 
 c  input parameters for rate_coeff: ln(Ti), ln(ne)
 c 
       TBCX = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,0)*

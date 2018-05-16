@@ -10,7 +10,7 @@ cdr   current implementation: started for rate coefficients (%RTC$) only.
 
 cdr   july 16:   more error exits, to avoid code crashes when reading 1D tabulated data
 cdr              currently this routine expects hard wired HYDKIN, CxHy format. 
-cdr   to be done: distuingish between reading data, and automatted construction
+cdr   to be done: distuingish between reading data, and automated construction
 cdr               of full blocks 4a,b,c,d,5 from a HYDKIN output
 
       subroutine EIRENE_read_hydkin (ir,filename,h123,reac,crc,
@@ -199,27 +199,11 @@ c  next: type of reaction:  EI, (=DS), CX, EL, RC, PI (=II)
       reacdat(ir)%lrtc = .true.
 
       call eirene_alloc_fit_form(reacdat(ir)%rtc)
-!  already done in eirene_alloc_fit_form
-!      allocate(reacdat(ir)%rtc)
-!      nullify (reacdat(ir)%rtc%adas)
-!      nullify (reacdat(ir)%rtc%line)
-!      nullify (reacdat(ir)%rtc%poly)
 
       reacdat(ir)%rtc%hyd => hp
       reacdat(ir)%rtc%ifit = 4
       REACDAT(IR)%RTC%RC1MIN = hp%temps(1)
       REACDAT(IR)%RTC%RC1MAX = hp%temps(hp%ntemps)
-!  already initialized in eirene_alloc_fit_form
-!      REACDAT(IR)%RTC%RC2MIN = 0._dp
-!      REACDAT(IR)%RTC%RC2MAX = huge(1._dp)
-!      REACDAT(IR)%RTC%FP1L = 0._DP
-!      REACDAT(IR)%RTC%FP1R = 0._DP
-!      REACDAT(IR)%RTC%FP2B = 0._DP
-!      REACDAT(IR)%RTC%FP2T = 0._DP
-!      REACDAT(IR)%RTC%JFEX1MN = 0
-!      REACDAT(IR)%RTC%JFEX1MX = 0
-!      REACDAT(IR)%RTC%JFEX2MN = 0
-!      REACDAT(IR)%RTC%JFEX2MX = 0
  
       if (lffl) then
         h123 = 'H.2 '

@@ -1,3 +1,5 @@
+cdr  added: cell number ic, for optimization in called CR routines colrad.f
+cdr  call driver routine colrad for CR models. new variable: iflavor
 !pb  01.06.2017  copied from rate_coeff.f
 
 c  to be done: h_colrad called twice per cell ??
@@ -11,7 +13,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 
 
-      function EIRENE_other_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
+      function EIRENE_other_rate_coeff (ir, ic, p1, p2, lexp, ip2shft)
      .                     result (orate)
 
 !  evaluate other atomic data:  mostly: population coefficients, density ratios
@@ -21,7 +23,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
 !  Only ifit=2 and ifit=3 tested so far. Caution!
 !  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
-!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
+!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4, H.12,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
@@ -34,15 +36,14 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
 !   lexp:      return orate=rate coefficient in ... units
-!   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ... units
-!   iprshft:   >0: carry out shift in parameter p2 for fit expression evaluation, 
-!              currently hard wired: 1e-8. 
+!   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ...units
+!   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
+!              currently hard wired: factor 1e-8.  p2 --> p2*factor
 !              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.
-!              emissivity.f relies on the current use of iprshft in the tested cases!
+!              emissivity.f relies on the current use of ip2shft in the tested cases!
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              remove erate in case of ifit=5 and generalize to more cr models.
-!              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
+!              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
@@ -55,23 +56,23 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
       use EIRMOD_comprt, only: iunout
  
       implicit none
- 
-      integer, intent(in) :: ir, iprshft, ic
+
+      integer, intent(in) :: ir, ip2shft, ic
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
 
       real(dp) :: orate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max,fp1(6),
      .            pp2, rc2min,  rc2max,fp2(6),
-     .            rrc2min, rrc2max,
-     .            SCR
+     .                 rrc2min, rrc2max,
+     .            O_SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
-     .                  xln10   =  2.30258509299_dp,    !ln(10) 
+     .                  xln10   =  2.30258509299_dp,    !ln(10)
+C  transformation of parameters
      .                  dsub    = 18.420680744_dp       !ln(1e8)
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar           
- 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
@@ -157,7 +158,7 @@ c  extrapolation data:  for 2d polynomial fits
 
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
         pp2 = p2
-        if (iprshft > 0) then
+        if (ip2shft > 0) then
           pp2 = pp2 - dsub
           rrc2min=rc2min - dsub
           rrc2max=rc2max - dsub
@@ -221,16 +222,16 @@ c..............................................................
       else if (reacdat(ir)%oth%ifit == 5) then
 
 ! INTERNAL COLLISION RADIATIVE CODE
- 
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
         iflavor = reacdat(ir)%oth%crm%iflav
         ivar = reacdat(ir)%oth%crm%ivarst
 
-        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, SCR)
+        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, O_SCR)
 
-!  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
+        orate=o_scr 
+        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0 
 
         orate=scr 
         if (.not.lexp) orate = log(scr)

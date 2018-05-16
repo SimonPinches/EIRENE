@@ -1,4 +1,5 @@
-C
+Cdr  analog xsecta, xsectm,.... printout to be sync.  und: rufe xstot. aber nicht ot prozesse
+Cdr  in xsectp, dort nut xstrc rufen.  im moment ist es genau umgekehrt.
 C
       SUBROUTINE EIRENE_XSECTPH
 C

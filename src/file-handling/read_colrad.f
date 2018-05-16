@@ -42,28 +42,37 @@ c  to be done: units, log-lin, scaling, asymptotics
 
       if (ifirst == 0) then
         ifirst = 1
+c  identifyers for data available from intrinsic CR code
+c
+c  h_colrad (atomic)
+
+c   cr rate and e_rate, coupling to ground state H(1), ionisation
         ihsw(1) = 4
         hstr(1) = '2.1.5   ' 
         ihsw(2) = 10
-        hstr(2) = '2.1.5   ' 
+        hstr(2) = '2.1.5   '
+c   cr rate and e_rate, coupling to continuum H+, recombination 
         ihsw(3) = 4
         hstr(3) = '2.1.8   ' 
         ihsw(4) = 10
         hstr(4) = '2.1.8   ' 
+c   cr rate and e_rate, coupling to radiation field, photo-excitation 
         ihsw(5) = 4
         hstr(5) = '2.1.5PH ' 
         ihsw(6) = 10
-        hstr(6) = '2.1.5PH ' 
+        hstr(6) = '2.1.5PH '
+c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to ground state H(1), ionisation
         ihsw(7) = 12
-        hstr(7) = '2.1.5a  ' 
+        hstr(7) = '2.1.5a  '     ! n=3
         ihsw(8) = 12
-        hstr(8) = '2.1.5b  ' 
+        hstr(8) = '2.1.5b  '     ! n=2
         ihsw(9) = 12
-        hstr(9) = '2.1.5c  ' 
+        hstr(9) = '2.1.5c  '     ! n=4
         ihsw(10) = 12
-        hstr(10) = '2.1.5d  ' 
+        hstr(10) = '2.1.5d  '    ! n=5
         ihsw(11) = 12
-        hstr(11) = '2.1.5e  ' 
+        hstr(11) = '2.1.5e  '    ! n=6
+c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to H+, recombination 
         ihsw(12) = 12
         hstr(12) = '2.1.8a  ' 
         ihsw(13) = 12
@@ -132,34 +141,14 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
           END IF
 
           CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!          ALLOCATE (REACDAT(IR)%RTC)
-!          NULLIFY(REACDAT(IR)%RTC%ADAS)
-!          NULLIFY(REACDAT(IR)%RTC%LINE)
-!          NULLIFY(REACDAT(IR)%RTC%POLY)
-!          NULLIFY(REACDAT(IR)%RTC%HYD)
 
           REACDAT(IR)%LRTC = .TRUE.
           REACDAT(IR)%RTC%IFIT = 5
 
-!  ALREADY INITIALIZED IN EIRENE_ALLOC_FIT_FORM
-!          REACDAT(IR)%RTC%RC1MIN = 0._DP
-!          REACDAT(IR)%RTC%RC1MAX = HUGE(1._DP)
-!          REACDAT(IR)%RTC%RC2MIN = 0._DP
-!          REACDAT(IR)%RTC%RC2MAX = HUGE(1._DP)
-!          REACDAT(IR)%RTC%FP1L = 0._DP
-!          REACDAT(IR)%RTC%FP1R = 0._DP
-!          REACDAT(IR)%RTC%FP2B = 0._DP
-!          REACDAT(IR)%RTC%FP2T = 0._DP
-!          REACDAT(IR)%RTC%JFEX1MN = 0
-!          REACDAT(IR)%RTC%JFEX1MX = 0
-!          REACDAT(IR)%RTC%JFEX2MN = 0
-!          REACDAT(IR)%RTC%JFEX2MX = 0
-
           ALLOCATE (REACDAT(IR)%RTC%CRM)
           REACDAT(IR)%RTC%CRM%IFLAV = 1
           REACDAT(IR)%RTC%CRM%IVARST = ISTR
-
+          
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
             WRITE (IUNOUT,*) ' MOMENTUM WEIGHTED RATE COEFFICIENT',
@@ -169,34 +158,15 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
           END IF
 
           CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!          ALLOCATE (REACDAT(IR)%RTCMW)
-!          NULLIFY(REACDAT(IR)%RTCMW%ADAS)
-!          NULLIFY(REACDAT(IR)%RTCMW%LINE)
-!          NULLIFY(REACDAT(IR)%RTCMW%POLY)
-!          NULLIFY(REACDAT(IR)%RTCMW%HYD)
 
           REACDAT(IR)%LRTCMW = .TRUE.
           REACDAT(IR)%RTCMW%IFIT = 5
 
-!  ALREADY INITIALIZED IN EIRENE_ALLOC_FIT_FORM
-!          REACDAT(IR)%RTCMW%RC1MIN = 0._DP
-!          REACDAT(IR)%RTCMW%RC1MAX = HUGE(1._DP)
-!          REACDAT(IR)%RTCMW%RC2MIN = 0._DP
-!          REACDAT(IR)%RTCMW%RC2MAX = HUGE(1._DP)
-!          REACDAT(IR)%RTCMW%FP1L = 0._DP
-!          REACDAT(IR)%RTCMW%FP1R = 0._DP
-!          REACDAT(IR)%RTCMW%FP2B = 0._DP
-!          REACDAT(IR)%RTCMW%FP2T = 0._DP
-!          REACDAT(IR)%RTCMW%JFEX1MN = 0
-!          REACDAT(IR)%RTCMW%JFEX1MX = 0
-!          REACDAT(IR)%RTCMW%JFEX2MN = 0
-!          REACDAT(IR)%RTCMW%JFEX2MX = 0
 
           ALLOCATE (REACDAT(IR)%RTCMW%CRM)
           REACDAT(IR)%RTCMW%CRM%IFLAV = 1
-          REACDAT(IR)%RTCMW%CRM%IVARST = ISTR
-          
+          REACDAT(IR)%RTCMW%CRM%IVARST = ISTR  
+        
         CASE (8:10)
           IF (REACDAT(IR)%LRTCEW) THEN
             WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
@@ -206,29 +176,10 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
           END IF
 
           CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!          ALLOCATE (REACDAT(IR)%RTCEW)
-!          NULLIFY(REACDAT(IR)%RTCEW%ADAS)
-!          NULLIFY(REACDAT(IR)%RTCEW%LINE)
-!          NULLIFY(REACDAT(IR)%RTCEW%POLY)
-!          NULLIFY(REACDAT(IR)%RTCEW%HYD)
 
           REACDAT(IR)%LRTCEW = .TRUE.
           REACDAT(IR)%RTCEW%IFIT = 5
 
-!  ALREADY INITIALIZED IN EIRENE_ALLOC_FIT_FORM
-!          REACDAT(IR)%RTCEW%RC1MIN = 0._DP
-!          REACDAT(IR)%RTCEW%RC1MAX = HUGE(1._DP)
-!          REACDAT(IR)%RTCEW%RC2MIN = 0._DP
-!          REACDAT(IR)%RTCEW%RC2MAX = HUGE(1._DP)
-!          REACDAT(IR)%RTCEW%FP1L = 0._DP
-!          REACDAT(IR)%RTCEW%FP1R = 0._DP
-!          REACDAT(IR)%RTCEW%FP2B = 0._DP
-!          REACDAT(IR)%RTCEW%FP2T = 0._DP
-!          REACDAT(IR)%RTCEW%JFEX1MN = 0
-!          REACDAT(IR)%RTCEW%JFEX1MX = 0
-!          REACDAT(IR)%RTCEW%JFEX2MN = 0
-!          REACDAT(IR)%RTCEW%JFEX2MX = 0
 
           ALLOCATE (REACDAT(IR)%RTCEW%CRM)
           REACDAT(IR)%RTCEW%CRM%IFLAV = 1
@@ -257,10 +208,12 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
         RETURN
 
 1000  continue
+      CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) ' ERROR IN "READ_COLRAD" : '
       WRITE (IUNOUT,*) ' WRONG DATA TYPE FOR INTERNAL COLRAD OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR
       WRITE (IUNOUT,'(1X,A,I0)') ' DATA TYPE H.', ISW
+      WRITE (IUNOUT,'(1X,A,A8)') ' DATA NR.    ', REAC(1:8)
       CALL EIRENE_EXIT_OWN(1)
       RETURN
 

@@ -13,9 +13,11 @@ cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
 cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
 cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
+cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot, 
 cdr           but is for surface tally pointers
+cdr  jan.18:  added: NO_LINES, NADV_ADD
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -33,13 +35,13 @@ c    distrib_parm
 
       PUBLIC :: EIRENE_SET_PARMMOD, EIRENE_COLLECT_PARM,
      P          EIRENE_DISTRIB_PARM,
-     P          EIRENE_SPECTRUM, SPECT_ARRAY,
+     P          EIRENE_SPECTRUM, 
      P          ASSIGNMENT(=)
 
       INTEGER, PUBLIC, PARAMETER ::
      P         NUM_PARM=200,
      P         NPARTC=12, NPARTT=11,
-     P         MPARTC=14, MPARTT=9
+     P         MPARTC=14, MPARTT=10
 csw 13apr07
       integer, public, save :: IFOFF = 0
 
@@ -141,9 +143,6 @@ csw 13apr07
         REAL(DP), DIMENSION(:), POINTER :: SPC, SDV, SGM, STV, GG
       END TYPE EIRENE_SPECTRUM
 
-      TYPE SPECT_ARRAY
-        TYPE(EIRENE_SPECTRUM), POINTER :: PSPC
-      END TYPE SPECT_ARRAY
 
       INTERFACE ASSIGNMENT(=)  ! DEFINE ASSIGNMENT
         MODULE PROCEDURE EIRENE_SPEC_TO_SPEC
@@ -760,8 +759,29 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       SPECA%ISRFCLL = SPECB%ISRFCLL
       SPECA%IDIREC  = SPECB%IDIREC
       SPECA%LOG     = SPECB%LOG
+
+      if (associated(speca%spc)) then
+        if (size(speca%spc) < specb%nspc+2) deallocate(speca%spc)
+      end if
+      if (.not.associated(speca%spc)) 
+     .  allocate(speca%spc(0:specb%nspc+1))     
       SPECA%SPC     = SPECB%SPC
-      IF (ASSOCIATED(SPECA%SDV)) THEN
+
+      IF (ASSOCIATED(SPECB%SDV)) THEN
+        if (associated(speca%sdv)) then
+          if (size(speca%sdv) < specb%nspc+2) then
+            deallocate(speca%sdv)
+            deallocate(speca%sgm)
+            deallocate(speca%stv)
+            deallocate(speca%gg)
+          end if       
+        end if
+        if (.not.associated(speca%sdv)) then
+          allocate(speca%sdv(0:specb%nspc+1))
+          allocate(speca%sgm(0:specb%nspc+1))
+          allocate(speca%stv(0:specb%nspc+1))
+          allocate(speca%gg(0:specb%nspc+1))
+        end if
         SPECA%SDV     = SPECB%SDV
         SPECA%SGM     = SPECB%SGM
         SPECA%STV     = SPECB%STV

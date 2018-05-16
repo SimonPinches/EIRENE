@@ -53,14 +53,14 @@ C  SPECTRUM TALLIES
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         IF (NSIGI_SPC.GT.0) THEN
           DO ISPC=1,NADSPC
-            DO I=0,SMESTL(ISPC)%PSPC%NSPC+1
-              ST=MAX(0._DP,SMESTL(ISPC)%PSPC%STV(I))
-              SMESTL(ISPC)%PSPC%STV(I)=SQRT(ST)/
-     .                     (ABS(SMESTL(ISPC)%PSPC%GG(I))+EPS60)
+            DO I=0,SMESTL(ISPC)%NSPC+1
+              ST=MAX(0._DP,SMESTL(ISPC)%STV(I))
+              SMESTL(ISPC)%STV(I)=SQRT(ST)/
+     .                     (ABS(SMESTL(ISPC)%GG(I))+EPS60)
             END DO
-            ST=MAX(0._DP,SMESTL(ISPC)%PSPC%STVS)
-            SMESTL(ISPC)%PSPC%STVS=SQRT(ST)/
-     .                             (ABS(SMESTL(ISPC)%PSPC%GGS)+EPS60)
+            ST=MAX(0._DP,SMESTL(ISPC)%STVS)
+            SMESTL(ISPC)%STVS=SQRT(ST)/
+     .                             (ABS(SMESTL(ISPC)%GGS)+EPS60)
           END DO
         ENDIF
       ENDIF
@@ -111,9 +111,9 @@ C
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         IF (NSIGI_SPC.GT.0) THEN
           DO ISPC=1,NADSPC
-            SMESTL(ISPC)%PSPC%STVS=SMESTL(ISPC)%PSPC%STVS*100.D0
-            DO J=0,SMESTL(ISPC)%PSPC%NSPC+1
-              SMESTL(ISPC)%PSPC%STV(J)=SMESTL(ISPC)%PSPC%STV(J)*100.D0
+            SMESTL(ISPC)%STVS=SMESTL(ISPC)%STVS*100.D0
+            DO J=0,SMESTL(ISPC)%NSPC+1
+              SMESTL(ISPC)%STV(J)=SMESTL(ISPC)%STV(J)*100.D0
             END DO
           END DO
         ENDIF

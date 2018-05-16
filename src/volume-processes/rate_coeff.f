@@ -1,16 +1,15 @@
-!pb  22.11.06: flag iprshft for shift of second parameter to rate_coeff introduced
+!pb  22.11.06: flag ip2shft for shift of second parameter to rate_coeff introduced
 !pb  24.11.06: get extrapolation parameters for polynomial fit only
 
 !pb  07.12.06: double declaration of dsub removed
 !dr  19.02.14: COMMENTS
 !dr  29.10.15: bug fix:  lexp option for ifit=5 was missing.
-!dr            no consequences for any earlier runs, except H-COL option with H.2 (corona) rates. 
+!dr            no consequences for any earlier runs, except CRM option with H.2 (corona) rates.
 cdr  nov. 15:  indicators ip1, ip2 for extrapolation or interpolation added,
 cdr            in intp_tab1d and intp_tab2d
-cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2. 
-cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRAD
+cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
 
-      function EIRENE_rate_coeff (ir, ic, p1, p2, lexp, iprshft)
+      function EIRENE_rate_coeff (ir, ic, p1, p2, lexp, ip2shft)
      .                     result (rate)
 
 !  evaluate reaction rate coefficient (cm^3/s),
@@ -22,9 +21,6 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also energy rates, erate  for this particular option. 
-!            More logical if the latter are moved
-!            to routine "eirene_energy-rate-coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
@@ -33,13 +29,12 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
 !   lexp:      return rate=rate coefficient in cm**3/sec
 !   not lexp:  return rate=log_e(rate coefficient) with rate-coefficient in cm**3/sec
-!   iprshft:   >0: carry out shift in parameter p2 for fit expression evaluation, 
-!              currently hard wired: 1e-8. 
+!   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
+!              currently hard wired: 1e-8.
 !             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
-! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              remove erate in case of ifit=5 and generalize to more cr models.
-!              iprshft option: currently hard wired only for ifit=2 and shift = 1e-8
+! to be done:  
+!              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save. 
@@ -51,22 +46,21 @@ cdr            Bug fix wrt. to these arguments in erate_coeff in call to H_COLRA
       use EIRMOD_comprt, only: iunout
  
       implicit none
- 
-      integer, intent(in) :: ir, iprshft, ic
+
+      integer, intent(in) :: ir, ip2shft, ic
       real(dp), intent(in) :: p1, p2
       logical, intent(in) :: lexp
-      real(dp) :: rate, EIRENE_sngl_poly, dum(9),
+      real(dp) :: res, rate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max,
-     .                 scr
+     .                 rrc2min, rrc2max
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
-     .                  xln10   =  2.30258509299_dp,    !ln(10) 
+     .                  xln10   =  2.30258509299_dp,    !ln(10)
+c  transformation of parameters p1 and p2:
      .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar           
- 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
@@ -152,7 +146,7 @@ c  extrapolation data:  for 2d polynomial fits
 
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
         pp2 = p2
-        if (iprshft > 0) then
+        if (ip2shft > 0) then
           pp2 = pp2 - dsub
           rrc2min=rc2min - dsub
           rrc2max=rc2max - dsub
@@ -183,13 +177,12 @@ c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
-        rate = eirene_intp_tab2d(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
- 
-        if (lexp) then
-          rate=10._dp**rate
-        else
-          rate = xln10*rate     !    convert from log10(rate) to ln(rate)
+        res = eirene_intp_tab2d(reacdat(ir)%rtc%adas,pp1,pp2,ip1,ip2)
 
+        if (lexp) then
+          rate=10._dp**res
+        else
+          rate = xln10*res     !    convert from log10(rate) to ln(rate)
         end if
 cdr this unit conversion must be wrong in case lexp !!
 
@@ -215,7 +208,6 @@ c..............................................................
       else if (reacdat(ir)%rtc%ifit == 5) then
 
 ! INTERNAL COLLISION RADIATIVE CODE
- 
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
@@ -223,13 +215,21 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         iflavor = reacdat(ir)%rtc%crm%iflav
         ivar = reacdat(ir)%rtc%crm%ivarst
 
-        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, SCR)
+        CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
-        
-        if (.not.lexp) rate = log(scr)   !  check: scr > 0 ??
-        if (lexp)      rate = scr 
- 
+
+        if (lexp) then 
+          rate = res
+        elseif (res.gt.0.0) then
+          rate = log(res) 
+        else
+          write (iunout,*) 'wrong sign from cr model'
+          write (iunout,*) 'p1,p2,rate ',pp1,pp2,res
+          write (iunout,*) 'return exp(-50)'
+          rate =-50.
+        endif
+
       end if
  
       return

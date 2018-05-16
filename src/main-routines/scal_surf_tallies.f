@@ -42,37 +42,37 @@ C
 C   SCALE AND INTEGRATE SURFACE SPECTRA
  
       DO ISPC=1,NADSPC
-        IF (ESTIML(ISPC)%PSPC%ISRFCLL == 0) THEN
+        IF (ESTIML(ISPC)%ISRFCLL == 0) THEN
 C  SURFACE FLUX SPECTRA
-          ESTIML(ISPC)%PSPC%SPCS = 0._DP
-          DO I = 0, ESTIML(ISPC)%PSPC%NSPC+1
+          ESTIML(ISPC)%SPCS = 0._DP
+          DO I = 0, ESTIML(ISPC)%NSPC+1
             IF (I.EQ.0) THEN
 
-              ELEFT = MIN(ESTIML(ISPC)%PSPC%SPCMIN,
-     .                   ESTIML(ISPC)%PSPC%ESP_MIN)
-              ERIGHT= ESTIML(ISPC)%PSPC%SPCMIN
-            ELSE IF (I.EQ.ESTIML(ISPC)%PSPC%NSPC+1) THEN
-              ELEFT = ESTIML(ISPC)%PSPC%SPCMAX
-              ERIGHT= MAX(ESTIML(ISPC)%PSPC%SPCMAX,
-     .                   ESTIML(ISPC)%PSPC%ESP_MAX)
+              ELEFT = MIN(ESTIML(ISPC)%SPCMIN,
+     .                   ESTIML(ISPC)%ESP_MIN)
+              ERIGHT= ESTIML(ISPC)%SPCMIN
+            ELSE IF (I.EQ.ESTIML(ISPC)%NSPC+1) THEN
+              ELEFT = ESTIML(ISPC)%SPCMAX
+              ERIGHT= MAX(ESTIML(ISPC)%SPCMAX,
+     .                   ESTIML(ISPC)%ESP_MAX)
             ELSE
-              ELEFT = ESTIML(ISPC)%PSPC%SPCMIN+
-     .               ESTIML(ISPC)%PSPC%SPCDEL*(I-1)
-              ERIGHT= ESTIML(ISPC)%PSPC%SPCMIN+
-     .               ESTIML(ISPC)%PSPC%SPCDEL*I
+              ELEFT = ESTIML(ISPC)%SPCMIN+
+     .               ESTIML(ISPC)%SPCDEL*(I-1)
+              ERIGHT= ESTIML(ISPC)%SPCMIN+
+     .               ESTIML(ISPC)%SPCDEL*I
             END IF
-            IF (ESTIML(ISPC)%PSPC%LOG) THEN
+            IF (ESTIML(ISPC)%LOG) THEN
               DEL = 10._DP**ERIGHT-10._DP**ELEFT+EPS60
             ELSE
               DEL = ERIGHT-ELEFT+EPS60
             END IF
             DELI = 1._DP/(DEL+EPS60)
 C  SCALE: FROM SCORING PER ENERGY BIN --> TALLY UNITS: PER EV 
-            ESTIML(ISPC)%PSPC%SPC(I) =
-     .      ESTIML(ISPC)%PSPC%SPC(I)*FLXFAC(ISTR)*DELI
+            ESTIML(ISPC)%SPC(I) =
+     .      ESTIML(ISPC)%SPC(I)*FLXFAC(ISTR)*DELI
 C  INTEGRATE
-            ESTIML(ISPC)%PSPC%SPCS = ESTIML(ISPC)%PSPC%SPCS +
-     .                               ESTIML(ISPC)%PSPC%SPC(I)*DEL
+            ESTIML(ISPC)%SPCS = ESTIML(ISPC)%SPCS +
+     .                               ESTIML(ISPC)%SPC(I)*DEL
           END DO
         END IF
       END DO

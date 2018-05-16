@@ -15,16 +15,6 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
 cdr  unification of naming conventions for electron impact collisions
 
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds -> pelei, eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-!dr  sept 16:  nmdsi  -> nmeii
-!dr  sept 16:  nidsi  -> nieii
 
 cdr  sept 16:  ETH (collision threshold energy) added to reaction data
 cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel
@@ -36,6 +26,8 @@ cdr  July 17:  bug fix: dimensioning of LCUT(0:N2NDPLGS) corrected
 cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
+cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
+c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR) 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr 
@@ -76,9 +68,10 @@ cdr
       USE EIRMOD_CTRIG
       USE EIRMOD_PHOTON
       USE EIRMOD_CFPLK
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
      .           imerk
       REAL(DP) :: RHELP(3)
@@ -555,12 +548,6 @@ c  data for interaction potential
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%POT)
-!              NULLIFY (REACDAT(IR)%POT%POLY)
-!              NULLIFY (REACDAT(IR)%POT%ADAS)
-!              NULLIFY (REACDAT(IR)%POT%LINE)
-!              NULLIFY (REACDAT(IR)%POT%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
@@ -570,12 +557,6 @@ c  data for cross sections, cm**2
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%CRS)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%CRS)
-!              NULLIFY (REACDAT(IR)%CRS%POLY)
-!              NULLIFY (REACDAT(IR)%CRS%ADAS)
-!              NULLIFY (REACDAT(IR)%CRS%LINE)
-!              NULLIFY (REACDAT(IR)%CRS%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS)
@@ -585,12 +566,6 @@ c  data for rate coefficients, cm**3/s
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%RTC)
-!              NULLIFY (REACDAT(IR)%RTC%POLY)
-!              NULLIFY (REACDAT(IR)%RTC%ADAS)
-!              NULLIFY (REACDAT(IR)%RTC%LINE)
-!              NULLIFY (REACDAT(IR)%RTC%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
@@ -600,12 +575,6 @@ c  data for momentum weighted rate coefficients  g cm/s cm**3/s
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%RTCMW)
-!              NULLIFY (REACDAT(IR)%RTCMW%POLY)
-!              NULLIFY (REACDAT(IR)%RTCMW%ADAS)
-!              NULLIFY (REACDAT(IR)%RTCMW%LINE)
-!              NULLIFY (REACDAT(IR)%RTCMW%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
@@ -615,12 +584,6 @@ c  data for energy weighted rate coefficients,  eV cm**3-s
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%RTCEW)
-!              NULLIFY (REACDAT(IR)%RTCEW%POLY)
-!              NULLIFY (REACDAT(IR)%RTCEW%ADAS)
-!              NULLIFY (REACDAT(IR)%RTCEW%LINE)
-!              NULLIFY (REACDAT(IR)%RTCEW%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
@@ -630,12 +593,6 @@ c  other data, such as CR population coefficients
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%OTH)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%OTH)
-!              NULLIFY (REACDAT(IR)%OTH%POLY)
-!              NULLIFY (REACDAT(IR)%OTH%ADAS)
-!              NULLIFY (REACDAT(IR)%OTH%LINE)
-!              NULLIFY (REACDAT(IR)%OTH%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH)
@@ -645,12 +602,6 @@ c  data for photon line transport
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%PHR)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%PHR)
-!  ALREADY DONE IN EIRENE_ALLOC_FIT_FORM
-!              ALLOCATE(REACDAT(IR)%PHR)
-!              NULLIFY (REACDAT(IR)%PHR%POLY)
-!              NULLIFY (REACDAT(IR)%PHR%ADAS)
-!              NULLIFY (REACDAT(IR)%PHR%LINE)
-!              NULLIFY (REACDAT(IR)%PHR%HYD)
             END IF
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR)
@@ -1272,93 +1223,77 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
             IF (.NOT.ALLOCATED(ESTIML)) THEN
               ALLOCATE(ESTIML(NADSPC))
               ALLOCATE(SMESTL(NADSPC))
-              DO I=1, NADSPC
-                NULLIFY (ESTIML(I)%PSPC)
-                NULLIFY (SMESTL(I)%PSPC)
-              END DO
             END IF
          END IF
          DO I=1,NADSPC
-           IF (MY_PE .NE. 0) THEN
-             IMERK=0
-             IF (.NOT.ASSOCIATED(ESTIML(I)%PSPC)) THEN
-               ALLOCATE(ESTIML(I)%PSPC)
-               ALLOCATE(SMESTL(I)%PSPC)
-               IMERK = 1
-             END IF
-           END IF
            CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCMIN,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCMIN,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCMAX,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCMAX,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCDEL,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCDEL,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCDELI,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCDELI,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ESP_MIN,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%ESP_MIN,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ESP_MAX,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%ESP_MAX,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ESP_00,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%ESP_00,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPC_XPLT,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPC_XPLT,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPC_YPLT,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPC_YPLT,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPC_SAME,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPC_SAME,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCVX,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCVX,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCVY,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCVY,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%SPCVZ,1,MPI_REAL8,0,
+           CALL MPI_BCAST (ESTIML(I)%SPCVZ,1,MPI_REAL8,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%NSPC,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%NSPC,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ISPCTYP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%ISPCTYP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ISPCSRF,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%ISPCSRF,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IPRTYP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IPRTYP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IPRSP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IPRSP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IMETSP,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IMETSP,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%ISRFCLL,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%ISRFCLL,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
-           CALL MPI_BCAST (ESTIML(I)%PSPC%IDIREC,1,MPI_INTEGER,0,
+           CALL MPI_BCAST (ESTIML(I)%IDIREC,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
-             NSPS = ESTIML(I)%PSPC%NSPC
+             NSPS = ESTIML(I)%NSPC
 !pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
 !pb     .                     my_pe, imerk, nsps
-!pb             IF (.NOT.Associated(ESTIML(I)%PSPC%SPC)) THEN
-             IF (IMERK > 0) THEN
-               ALLOCATE(ESTIML(I)%PSPC%SPC(0:NSPS+1))
-               ALLOCATE(ESTIML(I)%PSPC%SDV(0:NSPS+1))
-               ALLOCATE(ESTIML(I)%PSPC%SGM(0:NSPS+1))
-               ALLOCATE(ESTIML(I)%PSPC%STV(0:NSPS+1))
-               ALLOCATE(ESTIML(I)%PSPC%GG(0:NSPS+1))
+             IF (.NOT.ASSOCIATED(ESTIML(I)%SPC)) THEN
+               ALLOCATE(ESTIML(I)%SPC(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%SDV(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%SGM(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%STV(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%GG(0:NSPS+1))
 C  variances for sum over strata
-               ALLOCATE(SMESTL(I)%PSPC%SPC(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SDV(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%SGM(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%STV(0:NSPS+1))
-               ALLOCATE(SMESTL(I)%PSPC%GG(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%SPC(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%SDV(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%SGM(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%STV(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%GG(0:NSPS+1))
              END IF
-!pb  due to problem in optimized parallel version with Intel compiler
-!pb             ESTIML(I)%PSPC%SPC(0:NSPS+1) = 0._DP
-             ESTIML(I)%PSPC%SPC = 0._DP
-             SMESTL(I)%PSPC = ESTIML(I)%PSPC
+             ESTIML(I)%SPC = 0._DP
+             SMESTL(I) = ESTIML(I)
            END IF
          END DO
       ELSE
         IF (MY_PE .NE. 0) THEN
           IF (.NOT.ALLOCATED(ESTIML)) THEN
             ALLOCATE(ESTIML(1))
-            NULLIFY (ESTIML(1)%PSPC)
           END IF
         END IF
       END IF
@@ -1719,9 +1654,6 @@ cdr     INVALID RP%IFIT
       RETURN
       END SUBROUTINE EIRENE_BROAD_FIT_FORM
 
-!++++++ IYS 27.02.2015
-!++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM,
-!++++++ where dynamical data structures are proceeded with care
 
 
       SUBROUTINE EIRENE_BROAD_EMIS_LINES
@@ -1729,13 +1661,14 @@ cdr     INVALID RP%IFIT
       INTEGER :: I, J, K, NO_COMPO, NO_CONTRIB
       TYPE(TCONTRIB) :: CNT
 
-      IF (MY_PE /= 0) THEN
+
+!     IF (MY_PE /= 0) THEN
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
           ALLOCATE (EMIS_LINES(NO_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
           EMIS_LINES%NO_COMPO = 0         
         END IF
-      END IF
+!     END IF
 
       DO I = 1, NO_LINES
 

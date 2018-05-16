@@ -20,9 +20,10 @@ c
       USE EIRMOD_COMSOU
       USE EIRMOD_CSDVI
       USE EIRMOD_CSPEI
+      USE EIRMOD_MPI
       IMPLICIT NONE
 
-      include 'mpif.h'
+!      include 'mpif.h'
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
       integer :: ier, icolor, istr, icomgrp, ier1, i, my_pe_gr,
      .           mxdim, ns, ir
@@ -102,51 +103,51 @@ c
 c  volume averaged output tallies
 
 	do ir = 1, nrtal
-          CALL MPI_REDUCE(SMESTV(1,ir),help,NIDV,
+          CALL MPI_REDUCE(SMESTV(1:nidv,ir),help,NIDV,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTV(1:nidv,ir) = help(1:nidv)
         end do
 c  surface averaged output tallies
 
 	do ir = 1, nlmpgs
-          CALL MPI_REDUCE(SMESTS(1,ir),help,NIDS,
+          CALL MPI_REDUCE(SMESTS(1:nids,ir),help,NIDS,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTS(1:nids,ir) = help(1:nids)
         end do
 
 c  spectrally resolved output tallies
         DO I=1,NADSPC
-          ns = SMESTL(I)%PSPC%NSPC
-          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPC,help,
-     .                    SMESTL(I)%PSPC%NSPC+2,
+          ns = SMESTL(I)%NSPC
+          CALL MPI_REDUCE(SMESTL(I)%SPC(0:ns+1),help,
+     .                    SMESTL(I)%NSPC+2,
      .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,icomgrp,IER1)
-          if (my_pe == 0) SMESTL(I)%PSPC%SPC(0:ns+1) = help(1:ns+2)
+          if (my_pe == 0) SMESTL(I)%SPC(0:ns+1) = help(1:ns+2)
 
-          CALL MPI_REDUCE(SMESTL(I)%PSPC%SPCS,help,
+          CALL MPI_REDUCE(SMESTL(I)%SPCS,help(1),
      .                    1,MPI_DOUBLE_PRECISION,MPI_SUM,0,icomgrp,IER1)
-          if (my_pe == 0) SMESTL(I)%PSPC%SPCS = help(1)
+          if (my_pe == 0) SMESTL(I)%SPCS = help(1)
 
 c  variances of spectrally resolved output tallies
           if (nsigi_spc > 0) then
-            call mpi_reduce(smestl(i)%pspc%GG,help,
-     .                      smestl(i)%pspc%nspc+2,
+            call mpi_reduce(smestl(i)%GG(0:ns+1),help,
+     .                      smestl(i)%nspc+2,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%GG(0:ns+1) = help(1:ns+2)
+            if (my_pe == 0) SMESTL(I)%GG(0:ns+1) = help(1:ns+2)
 
-            call mpi_reduce(smestl(i)%pspc%STV,help,
-     .                      smestl(i)%pspc%nspc+2,
+            call mpi_reduce(smestl(i)%STV(0:ns+1),help,
+     .                      smestl(i)%nspc+2,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%STV(0:ns+1) = help(1:ns+2)
+            if (my_pe == 0) SMESTL(I)%STV(0:ns+1) = help(1:ns+2)
 
-            call mpi_reduce(smestl(i)%pspc%stvs,
-     .                      help,1,
+            call mpi_reduce(smestl(i)%stvs,
+     .                      help(1),1,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%STVS = help(1)
+            if (my_pe == 0) SMESTL(I)%STVS = help(1)
   
-            call mpi_reduce(smestl(i)%pspc%ggs,
-     .                      help,1,
+            call mpi_reduce(smestl(i)%ggs,
+     .                      help(1),1,
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
-            if (my_pe == 0) SMESTL(I)%PSPC%GGS = help(1)
+            if (my_pe == 0) SMESTL(I)%GGS = help(1)
           end if
         END DO
 
@@ -155,7 +156,7 @@ c  variances of spectrally resolved output tallies
         IF (NSIGCI > 0) THEN
 c  covariances, volume tallies
           DO IR=1,NSBOX_TAL
-            CALL MPI_REDUCE(STVC(0,1,IR),
+            CALL MPI_REDUCE(reshape(STVC(0:2,1:NSIGCI,IR),(/3*nsigci/)),
      .                      help,3*NSIGCI,mpi_double_precision,
      .                      mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) STVC(0:2,1:NSIGCI,IR) = 
@@ -163,7 +164,8 @@ c  covariances, volume tallies
 
           ENDDO
 c  covariances, surface tallies
-          CALL MPI_REDUCE(STVCS,help,3*NSIGCI,
+          CALL MPI_REDUCE(reshape(STVCS(0:2,1:NSIGCI),(/3*nsigci/)),
+     .                    help,3*NSIGCI,
      .                    mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) STVCS(0:2,1:NSIGCI) = 
      .	                  RESHAPE(help(1:3*nsigci),(/3,nsigci/))
@@ -173,11 +175,11 @@ c  variances of volumetric output tallies
 
         IF (NSIGVI > 0) THEN
           DO IR=1,NSBOX_TAL
-            CALL MPI_REDUCE(STV(1,ir),help,
+            CALL MPI_REDUCE(STV(1:NSIGVI,ir),help,
      .           NSIGVI,MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) STV(1:NSIGVI,ir) = help(1:nsigvi)
 
-            CALL MPI_REDUCE(EE(1,IR),help,
+            CALL MPI_REDUCE(EE(1:NSIGVI,IR),help,
      .           NSIGVI,MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) EE(1:NSIGVI,ir) = help(1:nsigvi)
           ENDDO
@@ -196,11 +198,11 @@ c  variances of volumetric output tallies
 c  variances of surface averaged output tallies
 
           do ir=1,nlimps
-            CALL MPI_REDUCE(STVW(1,IR),help,NSIGSI,
+            CALL MPI_REDUCE(STVW(1:NSIGSI,IR),help,NSIGSI,
      .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) STVW(1:NSIGSI,IR) = help(1:nsigsi)
             
-            CALL MPI_REDUCE(FF(1,IR),help,NSIGSI,
+            CALL MPI_REDUCE(FF(1:NSIGSI,IR),help,NSIGSI,
      .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) FF(1:NSIGSI,IR) = help(1:nsigsi)
      	  end do

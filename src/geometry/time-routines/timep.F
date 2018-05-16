@@ -16,7 +16,7 @@ C
 C   BLOCK 1 : LEVGEO.EQ.1
 C   BLOCK 3 : LEVGEO.EQ.3
 C   BLOCK 2a: LEVGEO.EQ.2  and NLCRC
-C   BLOCK 2b: LEVGEO.EQ.2  and :NOT.NLCRC  (use poloidal polygons)
+C   BLOCK 2b: LEVGEO.EQ.2  and .NOT.NLCRC  (use poloidal polygons)
 
 C
 C   INPUT:
@@ -89,7 +89,9 @@ C
      .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1, 
      .           NJC, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
-      LOGICAL :: LCUTY(N2NDPLGS), LCUTX(N1STS), lnincz
+cdr logicals for intersection with poloidal surfaces 
+      LOGICAL :: LHITP(N2NDPLGS), LHITP0
+      LOGICAL :: lnincz
       SAVE
 C
 #ifdef TRACE
@@ -152,7 +154,8 @@ C
         IF (NRCELL.GT.0) GOTO 10
 C
 C  PARTICLE OUTSIDE STANDARD MESH
-C  CHECK AT NON DEFAULT POLOIDAL SURFACES
+C  CHECK AT NON DEFAULT POLOIDAL SURFACES 
+C  (RADIAL SURFACES ARE ALREADY DONE IN TIMER.F)
 C
         NCOUP=0
         ZRD=ZRAD
@@ -164,20 +167,19 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
               I1=IR+1
               V1=(YPOL(IR,MPTEST)-Y00)*VELX-(XPOL(IR,MPTEST)-X00)*VELY
               V2=(YPOL(I1,MPTEST)-Y00)*VELX-(XPOL(I1,MPTEST)-X00)*VELY
-!pb allow only intersections with nondefault standard surfaces
-!pb no intersections with transparent surfaces are calculated
-!pb              LCUTX(IR)=V1*V2.LE.0.
-              LCUTX(IR)=(V1*V2.LE.0.) .AND. (INMP2I(IR,MPTEST,0) /= 0)
-2           CONTINUE
-            DO 4 IR=1,NR1STM
-              IF (LCUTX(IR)) THEN
+
+! allow only intersections with non-default poloidal standard surfaces
+! no intersections with "default parts" of the grid are calculated
+              LHITP0=(V1*V2.LE.0.) .AND. (INMP2I(IR,MPTEST,0) /= 0)
+
+              IF (.NOT.LHITP0) CYCLE
                 T1=((XPOL(IR,MPTEST)-X00)*VVTY(IR,MPTEST)-
      .              (YPOL(IR,MPTEST)-Y00)*VVTX(IR,MPTEST))
      .             /(VELX*VVTY(IR,MPTEST)-VELY*VVTX(IR,MPTEST)+EPS60)
 #ifdef TRACE
                 IF (NLTRC) WRITE (iunout,*) 'IR,MPTEST,T1 ',IR,MPTEST,T1
 #endif
-                IF (T1.LT.0..OR.T1.GE.ZRD) GOTO 4
+                IF (T1.LT.0..OR.T1.GE.ZRD) CYCLE
 #ifdef TRACE
                 IF (NLTRC)
      .            WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
@@ -189,8 +191,8 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
      .                                 VELY*PPLNY(IR,MPTEST))
                 JUPC(NCOUP)=1
                 ZRD=T1
-              ENDIF
-4           CONTINUE
+2           CONTINUE
+
           ENDIF
 3       CONTINUE
         IF (NCOUP.GT.0.AND.LUPC(MAX(1,NCOUP)).NE.MPSURF) THEN
@@ -288,7 +290,7 @@ C
 4711      CONTINUE
         ENDIF
 C
-C   ADJUST ALPD AND ACCOUNT FOR "NONDEFAULT" POLOIDAL SURFACES
+C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
 C
         TSS=0.
         IST=0
@@ -456,13 +458,18 @@ C
 C  YES! ZRAD IS THE DISTANCE TRAVELLED IN X- OR RADIAL CELL NO. NRCELL
 C
           NCOUP=1
-          IF (NRCELL.LT.1.OR.NRCELL.GT.NR1STM) THEN
+
+        IF (NRCELL.LE.0.OR.NRCELL.GT.NR1STM) THEN
+C  PARTICLE OUTSIDE STANDARD MESH, BUT THETA GRID EXTENDS TO INFINITY
+
             X00=X00+VELX*ZRAD
             Y00=Y00+VELY*ZRAD
             WIN1=MOD(ATAN2(Y00,X00)+PI2A-PSURF(1),PI2A)+PSURF(1)
             NPCELL=WIN1/YDF*DBLE(NP2NDM)+1.
             GOTO 5000
           ENDIF
+C
+C  PARTICLE INSIDE STANDARD MESH, RADIAL CELL NO. NRCELL
 C
 C  THE OLD POLOIDAL CELL INDEX IS: NPCELL
 C  FIND THE NEW CELL INDEX : NJC
@@ -536,37 +543,37 @@ C
 C
 C   SEARCH FOR ALL POSSIBLE INTERSECTIONS WITHIN THE RADIAL CELL NRCELL
 C
-          DO 111 I=1,NP2ND
-111         LCUTY(I)=.FALSE.
+
+          LHITP=.FALSE.
 C
           DO 112 J=1,NP2ND
             V1=(YPOL(NRCELL,J)-Y00)*VELX-(XPOL(NRCELL,J)-X00)*VELY
             V2=(YPOL(NRCLLP,J)-Y00)*VELX-(XPOL(NRCLLP,J)-X00)*VELY
-            LCUTY(J)=V1*V2.LE.0.
+            LHITP(J)=V1*V2.LE.0.
 #ifdef TRACE
             IF (NLTRC) THEN
-              IF (LCUTY(J)) WRITE (iunout,*) 'LCUTY=TRUE FOR ',J
+              IF (LHITP(J)) WRITE (iunout,*) 'LHITP=TRUE FOR ',J
             ENDIF
 #endif
 112       CONTINUE
 
-C  PARTICLE EXACTLY ON A POLOIDAL SURFACE
+C  PARTICLE EXACTLY ON A (PLANE) POLOIDAL SURFACE
           IF (NLSRFY) THEN
-            LCUTY(MPSURF)=.FALSE.
+            LHITP(MPSURF)=.FALSE.
             NLSRFY=.FALSE.
 C  HARD WIRED PERIODICIY
 C  PSURF(1)=PSURF(NP2ND)
-            IF (MPSURF.EQ.1) LCUTY(NP2ND)=.FALSE.
-            IF (MPSURF.EQ.NP2ND) LCUTY(1)=.FALSE.
+            IF (MPSURF.EQ.1) LHITP(NP2ND)=.FALSE.
+            IF (MPSURF.EQ.NP2ND) LHITP(1)=.FALSE.
           ENDIF
 C
-          IANP=EIRENE_ILLZ(NP2ND,LCUTY,1)+1
-          IENP=NP2ND-EIRENE_ILLZ(NP2ND,LCUTY,-1)
+          IANP=EIRENE_ILLZ(NP2ND,LHITP,1)+1
+          IENP=NP2ND-EIRENE_ILLZ(NP2ND,LHITP,-1)
 C
 C   COMPUTE THE FLIGHT TIMES TO THE INTERSECTION POINTS
 C
         DO 114 I=IANP,IENP
-          IF (LCUTY(I)) THEN
+          IF (LHITP(I)) THEN
             T1=((XPOL(NRCELL,I)-X00)*VVTY(NRCELL,I)-
      .          (YPOL(NRCELL,I)-Y00)*VVTX(NRCELL,I))
      .         /(VELX*VVTY(NRCELL,I)-VELY*VVTX(NRCELL,I)+EPS60)
@@ -725,8 +732,9 @@ C
           NPCELL=JUPC(NCOUP)
           IPCELL=NPCELL
           GOTO 5000
+
+      ENDIF ! (LEVGEO=2,  block 2A and 2B)
 C
-        ENDIF
 C
       ELSEIF (LEVGEO.EQ.1) THEN
 C

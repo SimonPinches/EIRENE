@@ -61,11 +61,12 @@ C
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, P2N, TMASS, 
      .            ADDT, ADDTL, PMASS,
-     .            CHRDIF, COU, EIRENE_RATE_COEFF, ACCMAS, XLFTMAS,
+     .            CHRDIF, COU, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
      .            ACCINM, ACCMSP, ACCINV, 
      .            EFLAG, EIRENE_FEHVPI3, 
      .            EIRENE_FEELPI1,
+     .            EIRENE_RATE_COEFF, 
      .            EIRENE_ENERGY_RATE_COEFF, 
      .            EI, EA, EN, TB, TII,
      .            FP1(6),FP2(6)

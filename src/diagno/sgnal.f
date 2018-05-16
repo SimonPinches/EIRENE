@@ -12,7 +12,8 @@ cdr       :  PART 2: automatic detection of 1st dimension ND: tb committed later
 cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
 cdr                    analogous to H emission lines,             NCHTAL=2 
-cdr       : added ITP (type of relevant component)           
+cdr       : added ITP (type of relevant component)
+cdr Jan 18: added MX_COMPO           
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
@@ -246,10 +247,10 @@ C  H(n=3)/H(n=1)
  
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
      .                              zds * rate * FAC32 /(4.*PIA) *
-     .                              estiml(ispc)%pspc%spc(1:ncheni)
+     .                              estiml(ispc)%spc(1:ncheni)
  
           chksum = chksum + zds * rate * FAC32 /(4.*PIA) *
-     .                      estiml(ispc)%pspc%spcs
+     .                      estiml(ispc)%spcs
  
  500      continue
           cur => cur%nextc

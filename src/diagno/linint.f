@@ -1,3 +1,5 @@
+cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
+cdr            added: MX_compo
 cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
 cdr                    analogous to H emission lines,             NCHTAL=2 
@@ -119,13 +121,30 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
           REAL(DP), INTENT(IN OUT) :: PSIG(0:)
           REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
         END SUBROUTINE EIRENE_SIGRAD
-        SUBROUTINE EIRENE_SIGTST(IFIRST,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
+        SUBROUTINE EIRENE_SIGTST(IFIRST,JJJ,ZDS,DUMMY1,PSIG,
+     .                           DUMMY2,ARGST)
+          USE EIRMOD_PRECISION
+          INTEGER, INTENT(IN) :: IFIRST, JJJ
+          REAL(DP), INTENT(IN) :: ZDS, DUMMY1, DUMMY2
+          REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
+        END SUBROUTINE EIRENE_SIGTST
+        SUBROUTINE EIRENE_SIGHE(IFIRST,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
           USE EIRMOD_PRECISION
           INTEGER, INTENT(IN) :: IFIRST, JJJ
           REAL(DP), INTENT(IN) :: ZDS, DUM1, DUM2
           REAL(DP), INTENT(IN OUT) :: PSIG(0:)
           REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
-        END SUBROUTINE EIRENE_SIGTST
+        END SUBROUTINE EIRENE_SIGHE
+        SUBROUTINE EIRENE_SIGUSR(IFIRST,JJJ,ZDS,DUMMY1,PSIG,
+     .             DUMMY2,ARGST,XD0,YD0,ZD0,XD1,YD1,ZD1)
+          USE EIRMOD_PRECISION
+          USE EIRMOD_PARMMOD
+          INTEGER, INTENT(IN) :: IFIRST, JJJ
+          REAL(DP), INTENT(INOUT) :: 
+     .              PSIG(0:NSPZ+10),ARGST(0:NSPZ+10,NRAD)
+          REAL(DP), INTENT(IN) ::    
+     .              ZDS,DUMMY1,DUMMY2,XD0,YD0,ZD0,XD1,YD1,ZD1
+        END SUBROUTINE EIRENE_SIGUSR
       END INTERFACE
 
       SAVE

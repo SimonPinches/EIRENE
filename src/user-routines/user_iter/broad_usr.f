@@ -7,10 +7,11 @@
       USE EIRMOD_CTRIG
       USE EIRMOD_CPES
       use eirmod_extrab25
+      use eirmod_mpi
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
       integer :: ier
 
       if (my_pe > 0) then

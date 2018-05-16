@@ -1,4 +1,9 @@
+
+cdr  comments
+
+
       subroutine eirene_emissivity(ist, lstart, lend)
+
 
       use eirmod_precision
       use eirmod_parmmod
@@ -25,7 +30,8 @@
      .           irc_rat(2), ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
      .            einstein, trans_en, DE, TE, TEF, DEF, rate, 
-     .            EIRENE_OTHER_RATE_COEFF, ratio2
+     .            EIRENE_OTHER_RATE_COEFF, 
+     .            ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
@@ -86,7 +92,6 @@ C
               TE=TEIN(NCELL)
               DE=DEIN(NCELL)
               
-!WZ           DEF=LOG(DE*1.D-8)
               DEF=LOG(DE)
               TEF=LOG(TE)
 
@@ -119,29 +124,33 @@ C
                     end if
                 end select
               end do
-             
-!              rate = EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,0)
-!WZ:          iprshft = 1 relies on the current other_rate_coeff.f version,
-!WZ:          where this flag is only applied to 2D fits!
+  
+c  density is the "true" parent density         
+c  density(1) is taken as parent density. fetch reduced population coefficent
               rate = EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
               add = rate*density(1)
-
+c  density ratio, if true parent density is not available (or in QSS mode)
+c  then: ratio converts from density(1) to density 
               if (iratio > 0) then 
-!                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,TEF,DEF,
-!     .                                           .TRUE.,0)
+
                 ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
      .                                          TEF,DEF,.TRUE.,1)
                 add = add*ratio
+c  second conversion to jet another parent density
+c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2
+c       density(1) = H2
+c       ratio      = H2+/H2(Te,ne) (CR equilibrium)
                 if (iratio == 2) then
-!                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,TEF,DEF,
-!     .                                           .TRUE.,0)
                   ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,
      .                                             TEF,DEF,.TRUE.,1)
                   add = add * density(2) / density(3) *ratio2
                 end if
               end if
 
+cdr so far: add is scored on the fine grid cell "ncell".
+cdr         add volume weighted contribution to coarse cell "ncelc"
               sigadd = add * einstein * vol(ncell)
+
               addv(iadv,ncelc) = addv(iadv,ncelc) + sigadd
               addv(iads,ncelc) = addv(iads,ncelc) + sigadd
 
@@ -150,6 +159,8 @@ C
       
           end do ! k contributions of component j of line i
 
+cdr addv was volume weighted (extensive) sum. now divide by coarse cell volume
+cdr      to turn it into an intensive score:  [...] per cm**3  
           addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal) 
      .                             / voltal(1:nsbox_tal)
 

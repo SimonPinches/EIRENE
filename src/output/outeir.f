@@ -469,16 +469,16 @@ C  SPECTRA IN SELECTED CELLS
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
       DO ISPC=1,NADSPC
-        IF (ESTIML(ISPC)%PSPC%ISRFCLL /= 0) THEN
+        IF (ESTIML(ISPC)%ISRFCLL /= 0) THEN
           CALL EIRENE_LEER (1)
           WRITE (iunout,'(A,I6)') ' SPECTRUM CALCULATED FOR CELL ',
-     .      ESTIML(ISPC)%PSPC%ISPCSRF
-          IF (ESTIML(ISPC)%PSPC%IDIREC > 0) THEN
+     .      ESTIML(ISPC)%ISPCSRF
+          IF (ESTIML(ISPC)%IDIREC > 0) THEN
             WRITE (iunout,'(A,3(ES12.4,A1))')
-     .      ' IN DIRECTION (',ESTIML(ISPC)%PSPC%SPCVX,',',
-     .      ESTIML(ISPC)%PSPC%SPCVY,',',ESTIML(ISPC)%PSPC%SPCVZ,')'
+     .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
+     .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
           END IF
-          IT = ESTIML(ISPC)%PSPC%ISPCTYP
+          IT = ESTIML(ISPC)%ISPCTYP
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
      .        'SPECTRAL PARTICLE DENSITY IN #/CM**3/BIN(EV)   '
@@ -490,20 +490,20 @@ C  SPECTRA IN SELECTED CELLS
      .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
           END IF
           WRITE (iunout,'(A20,A8)') ' TYPE OF PARTICLE : ',
-     .                       TEXTYP(ESTIML(ISPC)%PSPC%IPRTYP)
-          IF (ESTIML(ISPC)%PSPC%IPRSP == 0) THEN
+     .                       TEXTYP(ESTIML(ISPC)%IPRTYP)
+          IF (ESTIML(ISPC)%IPRSP == 0) THEN
             WRITE (iunout,'(A10,10X,A16)') ' SPECIES :',
      .                                     'SUM OVER SPECIES'
           ELSE
             WRITE (iunout,'(A10,10X,A8)') ' SPECIES :',
-     .             TEXTS(IADTYP(ESTIML(ISPC)%PSPC%IPRTYP)+
-     .                   ESTIML(ISPC)%PSPC%IPRSP)
+     .             TEXTS(IADTYP(ESTIML(ISPC)%IPRTYP)+
+     .                   ESTIML(ISPC)%IPRSP)
           END IF
           WRITE (iunout,'(A22,ES12.4)') ' INTEGRAL OF SPECTRUM ',
-     .           ESTIML(ISPC)%PSPC%SPCS
+     .           ESTIML(ISPC)%SPCS
           IF (NSIGI_SPC > 0)
      .      WRITE (iunout,'(A22,ES12.4)') ' STANDARD DEVIATION   ',
-     .           ESTIML(ISPC)%PSPC%SGMS
+     .           ESTIML(ISPC)%SGMS
         END IF
       END DO
 

@@ -1,3 +1,4 @@
+cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
 cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
@@ -110,10 +111,11 @@ C
       USE EIRMOD_CESTIM
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
+      USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      INCLUDE 'mpif.h'
+!      INCLUDE 'mpif.h'
 C
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
@@ -183,7 +185,7 @@ C
      .          YLCOR, ZLCOR, ALR, ROTNRM, RPSDL,
      .          XSH, YSH, ZSH,
      .          ALROT, REFNRM,
-     .          R1MN, DPP, R1MX, R2MN, R2MX,
+     .          DPP, R1MN, R1MX, R2MN, R2MX,
      .          SPCMN, SPCMX,SPC_SHIFT,
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, ESCD2A, ESCD2M, ESCD2I, ESCD2PH, ESCD2P,
@@ -219,6 +221,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           NRC, IADV, NO_COMPO, NO_CONTRIB, ICNT, IDMDL, IND
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
       LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
@@ -310,7 +313,7 @@ C
 
 C  AS DEFAULT: SWITCH OFF MOMENTUM DENSITY TALLIES.
 C  FOR ACTIVATING THOSE TALLIES THEY NEED TO BE EXPLICITLY
-C  SWITCHED ON IN BLOCK 11 
+C  SWITCHED ON IN BLOCK 11
 
 C  LV?DEN.. IS AN ALIAS FOR AN ENTRY IN ARRAY LMISTALV
 C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
@@ -635,8 +638,8 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT '
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FROM FILE FT15'
+        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FROM'
+        WRITE (iunout,*) '       FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
         WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
@@ -645,8 +648,7 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
-        WRITE (iunout,*) '       FROM  FILE FT15 '
+        WRITE (iunout,*) '       FIRST TIMESTEP FROM  FILE FT15 '
         WRITE (iunout,*) '       NO FURTHER SNAPSHOP PRODUCED'
         WRITE (iunout,*) '       DUE TO NTIME=0'
       ENDIF
@@ -922,11 +924,8 @@ C
       IF (NLPLG.AND.INDGRD(1).LE.4) THEN
         IF (NLPOL.AND.NRPLG.NE.NP2ND) GOTO 994
       ENDIF
-!pb      IF (NLFEM.AND.INDGRD(1).LT.6) THEN
-!pb        GOTO 992
-!pb      ENDIF
 C
-C  READ DATA FOR NON-DEFAULT SURFACE MODELS ON STANDARD SURFACES
+C  * 3A: READ DATA FOR NON-DEFAULT SURFACE MODELS ON STANDARD SURFACES
 C  300--349
 C
 300   CONTINUE
@@ -1110,7 +1109,7 @@ C
 C
 311   CONTINUE
 C
-C     READ DATA FOR ADDITIONAL SURFACES 350--399
+C  * 3B: READ DATA FOR ADDITIONAL SURFACES 350--399
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
@@ -1479,9 +1478,9 @@ C
 
 C  THE REST OF INPUT DATA FROM THIS REACTION CARD IS NOW ON 'CHR'
 C  these are flags to modify, scale, (or extrapolate) the input data tables or fits
-C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
+C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
-!  READ MP
+!  READ MP,   projectile mass
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
         READ (CHR,*) MP
@@ -1489,7 +1488,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING MP FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ MT
+!  READ MT,   target mass
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
         READ (CHR,*) MT
@@ -1497,7 +1496,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING MT FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ DPP
+!  READ DPP,  potential energy increment in energy weighted rate
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') DPP
@@ -1505,7 +1504,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING DPP FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R1MN
+!  READ R1MN,   lower boundary for extrapolation, 1st parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R1MN
@@ -1513,7 +1512,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING R1MN FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R1MX
+!  READ R1MX,   upper boundary for extrapolation, 1st parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R1MX
@@ -1521,7 +1520,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING R1MX FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R2MN
+!  READ R2MN,   lower boundary for extrapolation, 2nd parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R2MN
@@ -1529,7 +1528,7 @@ C  READ FLAGS MP, MT, DPP, R1MN AND R1MX FROM CHR
           WRITE (iunout,*) ' ERROR READING R2MN FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ R2MX
+!  READ R2MX,   upper boundary for extrapolation, 2nd parameter
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') R2MX
@@ -1602,7 +1601,7 @@ c  2nd parameter in 2 parametric data
 
 C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED EXPLICITLY IN input block 4?
 C  IF YES: OVERWRITE DEFAULTS, AND/OR DATA FROM EXTERNAL FILE
-C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE 
+C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           IF (R1MN.GT.0.D0) THEN
             READ (IUNIN,66664) JFEX1MN,(FP1(I),I=1,3)
             RC1MIN=LOG(R1MN)
@@ -1631,7 +1630,7 @@ cdr  reaclines only needed for hydkin interface?
           REACLINES(IL)%JFEX2MX = JFEX2MX
           REACLINES(IL)%FP1 = FP1
           REACLINES(IL)%FP2 = FP2
-        else 
+        else
 ! identifier "P" found in H123. Data for photon processes! No assymptotics available
 ! set defaults
           RC1MIN=-20.
@@ -2182,8 +2181,8 @@ c  default: only for bulk ions
      .             TDMPAR(IPLS)%TDM%H2(I),
      .             TDMPAR(IPLS)%TDM%REACTION(I),
      .             TDMPAR(IPLS)%TDM%CR(I)
-              IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.11') == 0. AND.
-     .            INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.12') == 0.) THEN
+              IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.11') == 0 .AND.
+     .            INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.12') == 0) THEN
                 WRITE (iunout,*)
      .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL '
                 WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS '
@@ -2462,7 +2461,8 @@ c  next: read species index sampling distributions datm, dmol, dion, dpls, and i
       READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
       READ (IUNIN,6664) (DIOD(IION),IION=1,NIONI_IN)
       READ (IUNIN,6664) (DPLD(IPLS),IPLS=1,NPLSI_IN)
-      IF (NPHOTI > 0)
+      IF (NPHOTI > 0)   !dr try to make this more logic: always read dphd.
+cdr                     !dr backward compatible ?
      .  READ (IUNIN,6664) (DPHD(IPHOT),IPHOT=1,NPHOTI_IN)
 
 c  next: read universal surface reflection model flags
@@ -2868,11 +2868,11 @@ C
 900   CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
-      IREAD=0
       CALL EIRENE_MASAGE
      .  ('*** 9. DATA FOR STATISTIC AND NON-ANALOG MODEL   ')
 C
-910   READ (IUNIN,'(A72)') ZEILE
+910   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
+      IREAD = 0
       IF (ZEILE(1:1) .EQ. '*') GOTO 910
 C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
       NLOGIN = MAX(1,NATMI_IN + NMOLI_IN + NIONI_IN + NPHOTI_IN)
@@ -3056,7 +3056,6 @@ C
           IF (NSMSTRA > 0) ALLOCATE(SMESTL(NADSPC))
         ELSE
           ALLOCATE(ESTIML(1))
-          NULLIFY (ESTIML(1)%PSPC)
         END IF
 C
         DO J=1,NADSPC
@@ -3168,7 +3167,8 @@ C    .      ... WRONG INPUT !
             WRITE (IUNOUT,*) ' SPECTRUM TYPE = ',ISPTYP
           END IF
 
-          ALLOCATE(ESPEC)
+          ESPEC => ESTIML(J)
+          
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3180,7 +3180,7 @@ cdr
 cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
 cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
 
-cdr   X.B. correction Sept 17, from SOLPS-ITER branch, 
+cdr   X.B. correction Sept 17, from SOLPS-ITER branch,
           IF (NSPS > 0) THEN
             NSPSA=NSPS
           ESPEC%LOG = .FALSE.
@@ -3223,7 +3223,7 @@ c  standard deviation of spectrally resolved tallies
 
           IF (NSMSTRA > 0) THEN
 c  sum over strata
-            ALLOCATE(SSPEC)
+            SSPEC => SMESTL(J)
             ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
 !           IF (NSIGI_SPC > 0) THEN
@@ -3232,11 +3232,9 @@ c  standard deviation of spectra tallies, sum over strata intermediate storage
               ALLOCATE(SSPEC%STV(0:NSPSA+1))
               ALLOCATE(SSPEC%GG(0:NSPSA+1))
 !           END IF
-            SSPEC = ESPEC
-            SMESTL(J)%PSPC => SSPEC
+            SMESTL(J) = ESTIML(J)
           END IF
 C
-          ESTIML(J)%PSPC => ESPEC
         END DO
         IREAD=0
       ELSE
@@ -3244,7 +3242,6 @@ Cdr  No block 10F found, i.e. no spectrally resolved tallies at all.
 cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
         IF (.NOT.ALLOCATED(ESTIML)) THEN
           ALLOCATE(ESTIML(1))
-          NULLIFY (ESTIML(1)%PSPC)
         END IF
       END IF
 C
@@ -3266,8 +3263,10 @@ c  search for input block 11a
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
 CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
-     .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
-     .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC
+cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
+cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
+CPB  ACTIVATE SPECIES RESOLVED CPU CONSUMPTION OPTION
+     .                  TRCHKTIM
       READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
 C
       READ (IUNIN,6666) NVOLPR, NSPCPR
@@ -3281,6 +3280,7 @@ C
       DO 1120 J=1,NVOLPR
         READ (IUNIN,6666) NTLV,NFLGV,NSPZV1,NSPZV2,NTLVF
         IF (NTLV.LT.-NTALI.OR.NTLV.GT.NTALV) GOTO 990
+cdr  output stream for particular tallies: allow only ntlv>=70
         IF ((NTLVF.NE.0).AND.(NTLVF.LT.70)) GOTO 995
         NPRTLV(J)  =NTLV
         NFLAGV(J)  =NFLGV
@@ -3656,6 +3656,7 @@ c  default asymptotics
         READ (IUNIN,'(A72)') TXTSIG(ICHORI)
         READ (IUNIN,6666) NCHTAL(ICHORI),NSPSCL(ICHORI),NSPNEW(ICHORI),
      .                    ISTCHR
+cdr  new input option: generalized side on line emissivities
         READ (IUNIN,'(A400)') ZEILE
         IF (NCHTAL(ICHORI) == 2) THEN
           ULINE = ZEILE
@@ -3868,7 +3869,7 @@ C  READ INITIAL POPULATION FROM FILE, FORT.15, OVERWRITE DEFAULTS
 C
         IPRNL=0
         IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
-          CALL EIRENE_RSNAP
+          CALL EIRENE_RSNAP(NSTRAI)
           DTIMVO=DTIMV
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
@@ -3891,8 +3892,11 @@ C
 c    reset clock of source particles from old census to time0
 cdr  must be done also for time0=0.0, for otherwise flight time =0 is possible
 cdr  for census source particles and resulting error exits
+C Would gain performance by turning RPSTT into a pointer
             DO I=1,IPRNL
-              RPARTC(10,I)=TIME0
+              RPSTT(1:NPARTT)=RPARTC(1:NPARTT,I)
+              TIME=TIME0
+              RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
             ENDDO
             WRITE (iunout,*) 'PARTICLE CLOCK RESET '
             WRITE (iunout,*) 'FIRST TIMESTEP RUNS FROM TIM1 TO TIM2:  '
@@ -3926,6 +3930,28 @@ C
           SORWGT(1,NSTRAI)=1.D0
         ENDIF
 C
+      ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
+C Only read census from file if exactly one stratum is a census stratum
+          ISTR_A = PACK((/ (i, I = 1, NSTRA) /),NLCNS)
+          ISTR = ISTR_A(1)
+          CALL EIRENE_RSNAP( ISTR )
+C
+          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE FORT 15 '
+          CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
+          CALL EIRENE_MASR1('FLUX    ',FLUX(ISTR))
+C
+C  ONE BY ONE RELAUNCH FROM OLD CENSUS
+C  OLD CENSUS CONTAINS IPRNL ENTRIES.
+          NPTS(ISTR)=IPRNL
+          NMINPTS(ISTR)=IPRNL   ! NMINPTS is currently not used anywhere
+          CALL EIRENE_MASJ1('NPTS=    ',NPTS(ISTR))
+
+          IF (NPTS(ISTR).GT.0.AND.FLUX(ISTR).GT.0) THEN
+            NSRFSI(ISTR)=1
+            SORWGT(1,ISTR)=1.D0
+          ENDIF
+        ENDIF
       ENDIF
 1399  CONTINUE
 C
@@ -5017,7 +5043,7 @@ C
 !  NOTHING IS DONE IF ARRAYS FOR BACKGROUND ARE ALREADY ALLOCATED
       IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
 
-!pb   IF  (NMODE.NE.0.AND.IITER.LE.1) THEN
+
       IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
      .    (ABS(NMODE).EQ.2)) THEN
 C  READ PLASMA BACKGROUND
@@ -5285,19 +5311,19 @@ c  number of spectra directly estimated from Monte-Carlo trajectories
 
       DO J = 1, NADSPC
 !  directional spectrum in geometrical cell
-        IF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
-          ISPZ=IADTYP(ESTIML(J)%PSPC%IPRTYP) + ESTIML(J)%PSPC%IPRSP
+        IF (ESTIML(J)%ISRFCLL == 2) THEN
+          ISPZ=IADTYP(ESTIML(J)%IPRTYP) + ESTIML(J)%IPRSP
           NBACK_SPEC = NBACK_SPEC + COUNT(ISPZ_BACK(ISPZ,:)>0)
-          LSPCCLL(ESTIML(J)%PSPC%ISPCSRF) = .TRUE.
+          LSPCCLL(ESTIML(J)%ISPCSRF) = .TRUE.
         END IF
 
-        IF (ESTIML(J)%PSPC%ISRFCLL == 0) THEN
+        IF (ESTIML(J)%ISRFCLL == 0) THEN
 C  COUNT SURFACE SPECTRA
           NADSPC_S=NADSPC_S+1
-        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 1) THEN
+        ELSEIF (ESTIML(J)%ISRFCLL == 1) THEN
 C  COUNT CELL-BASED SPECTRA
           NADSPC_C=NADSPC_C+1
-        ELSEIF (ESTIML(J)%PSPC%ISRFCLL == 2) THEN
+        ELSEIF (ESTIML(J)%ISRFCLL == 2) THEN
 C  COUNT DIRECTIONAL CELL-BASED SPECTRA
           NADSPC_D=NADSPC_D+1
         ENDIF

@@ -126,7 +126,54 @@ c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba
 !    .                  NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
 !    .                  NADVI+7)
 
-           CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
+          CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
+
+!         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
+!    .                NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!    .                NADVI+7)
+ 
+cdr keep old code as backup:
+          if (.false.) then
+
+          if (PEN.EQ.12.089_DP) THEN
+            write (iunout,*) ' ly_beta '
+            CALL EIRENE_Ly_beta 
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.10.2375_DP) THEN
+            write (iunout,*) ' ly_alpha '
+            CALL EIRENE_Ly_alpha 
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.3.0222_DP) THEN
+            write (iunout,*) ' ba_delta '
+            CALL EIRENE_Ba_delta
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+           elseif (PEN.EQ.2.8560_DP) THEN
+            write (iunout,*) ' ba_gamma '
+            CALL EIRENE_Ba_gamma
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.2.5500_DP) THEN
+            write (iunout,*) ' ba_beta '
+            CALL EIRENE_Ba_beta
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          elseif (PEN.EQ.1.8889_DP) THEN 
+            write (iunout,*) ' ba_alpha '
+            CALL EIRENE_Ba_alpha
+     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+     .                 NADVI+7)
+          else
+            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
+            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
+            ADDV(NADVI+1:NADVI+7,:) = 0._DP
+          endif
+
+          endif ! false, old code
+
+
         endif   ! NEW INTERNAL ITERATION, OR NEW LINE, OR NEW STRATUM
 
         ISTOLD=ISTRA

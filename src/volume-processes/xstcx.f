@@ -1,6 +1,6 @@
 cdr modc=3 fuer cx rate coeff angefangen: um multi-step cx auch vs. t und n zu kriegen,
-cdr aber dann die Frage:  te=Ti,  ne=ni ? und E0 immer sehr klein? Korrektes te,ti,ne,ni 
-cdr koennen zellweise kommen, z.b. aus H-colrad. 
+cdr aber dann die Frage:  te=Ti,  ne=ni ? Und E0 immer sehr klein? Korrektes te,ti,ne,ni 
+cdr koennen zellweise kommen, z.b. aus CRM modell. 
 cdr dann bleibt es bei einem 9-parameter fit (fuer E0 abhaengigkeit)  pro Zelle.
 
 

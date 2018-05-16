@@ -1838,8 +1838,8 @@ C
           IF (ORI(ITARG,IG).GT.0) NSEW='E'
         ENDIF
         IF (IGSTEP(ITARG,IG).LT.200000) THEN
-          IF (ORI(ITARG,IG).LT.0) NSEW='N'
-          IF (ORI(ITARG,IG).GT.0) NSEW='S'
+          IF (ORI(ITARG,IG).LT.0) NSEW='S'
+          IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
         WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
@@ -2632,7 +2632,6 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
      .                  cveli2/amua*2._DP 
               end do
             end do
-!pb
 
             IF (.NOT.LSHORT) THEN
 
@@ -3545,3 +3544,29 @@ C
       RETURN
 C
       END
+
+C> \brief Any property requirering hand-over in parallel part.
+C>
+C> This interfacing routine is called in the parallel part of EIRENE
+C> after the broadcase of any other quantity and before MCARLO.
+      SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
+      RETURN
+      END SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
+
+C> \brief Return data at the end of an EIRENE stratum
+C>
+C> At this entry data are transferred back from EIRENE to the
+C> interfacing module (and from there, after possibly further
+C> processing, to the external code). This entry is called from the
+C> "strata-loop" in subr. MCARLO, after all trajectories for a
+C> particular stratum ISTRA have been sampled and after all volume and
+C> surface tallies have been scaled and processed to their final form.
+C>
+C> The call to IF3COP is controlled by the flag NMODE (input block 1).
+C> At call data are expected for stratum ISTRA. There they may be
+C> further prepared (e.g. normalized, or scaled to other units) for
+C> transfer to the external code
+      SUBROUTINE EIRENE_INFCOP_POST_STRATUM(ISTRA)
+      RETURN
+      END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
+

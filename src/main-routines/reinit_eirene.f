@@ -39,7 +39,8 @@ C     reinitialization start
 
 csw 18apr07
       call EIRENE_SPUTER_REINIT
-!pb   call EIRENE_BA_ALPHA_REINIT
+
+      call EIRENE_BA_ALPHA_REINIT
       call EIRENE_EMIS_PROFILES_REINIT
 !pb   call EIRENE_BA_GAMMA_REINIT
 !pb   call EIRENE_LY_BETA_REINIT
@@ -49,10 +50,10 @@ csw 18apr07
 !out  call EIRENE_MKCENS_REINIT
       call EIRENE_update_reinit
       call EIRENE_update_spectrum_reinit
-csw
-      
 !pb 03aug17
       call eirene_colrad_reinit
+
+      call eirene_reinit_partinfo
  
 C     reinitialization end
  

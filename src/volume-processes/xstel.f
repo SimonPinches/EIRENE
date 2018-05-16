@@ -95,7 +95,7 @@ C
       IPLTI = MPLSTI(IPL)
 
 C..................................................................
-C 0. INTERACTION POTENTIAL, DIFF. CROSS SECTION INFORMATION, ETC....
+C 0. INTERACTION POTENTIAL, DIFFERENTIAL CROSS SECTION INFORMATION, ETC....
 C..................................................................
       IF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.1) THEN
 cdr  use total cross section and rate coefficients for transport.
@@ -104,9 +104,16 @@ cdr  differential cross section or interaction potential for collision kinetics
 cdr                          !  this should become = iftflg(kk,0),
 cdr
 cdr                          !  set here: pot(1:9,irel)=reacdat(kk):.....
-      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN      
 cdr  use diffusion cross section and diffusion rate coeff. for transport
         modcol(5,0,irel)=0   !  isotropic scattering IN COM
+        if (NPBGKP(IPL,1).eq.0) then
+          WRITE (IUNOUT,*) 'WARNING FROM XSTEL: '
+          WRITE (IUNOUT,*) 'KK, IREL ',KK,IREL
+          WRITE (IUNOUT,*) 'NO SCATTERING ANGLE INFORMATION PROVIDED'
+          WRITE (IUNOUT,*) 'BUT ALSO NO BGK RELAXATION.'
+          WRITE (IUNOUT,*) 'USE ISOTROPIC SCATTERING'    
+        endif
 
 cdr  or
 cdr  use 0.5*(diffusion cross section) and 0.5*(diffusion rate coeff.) for transport 
@@ -133,16 +140,16 @@ C..................................................................
 
         MODCOL(5,2,IREL)=MODC
 C  2.B)
-      IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
+        IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
-      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
           
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
-      IF (MODC.EQ.1) THEN
-C       NEND=1
+          IF (MODC.EQ.1) THEN
+C           NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
@@ -162,7 +169,8 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii) ! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(-2.3_dp,tii) 
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -185,6 +193,26 @@ CDR   ELSEIF (MODC.EQ.3) THEN
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 CDR  MODEL NOT IMPLEMENTED FOR ELASTIC COLLISIONS, BUT SEE: XSTCX, XSTPI,....
+        MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+        FCTKKL=LOG(FACTKK)
+        IF (NSTORDR >= NRAD) THEN 
+                
+          DO J=1,NSBOX
+            IF (LGVAC(J,IPL)) CYCLE
+            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
+            TB = COU + FCTKKL
+            IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
+            TB=MAX(-100._DP,TB)
+            TABEL3(IREL,J,1)=EXP(TB)
+          END DO
+C         JEREAEL(IREL) = 9
+        ELSE  ! ??
+
+C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
+          write (iunout,*) 'storage save mode not available yet for EL'
+          write (iunout,*) 'in case modc=3  (n,T-dependence).'
+          GOTO 995 
+        ENDIF
 
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?

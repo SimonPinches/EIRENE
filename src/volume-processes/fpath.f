@@ -272,12 +272,11 @@ C  Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
      .                                TRCAMD)
             ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
-              KK=NREAPI(IRPI)
+            KK=NREAPI(IRPI)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
-     .              + DIINL(IPLS,K) + FACRPI(IRPI,2)
-            ENDIF
-            SIGVPI(IRPI)=EXP(EXPO)
-          ENDIF
+     .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
+          END IF
+          SIGVPI(IRPI)=EXP(EXPO)
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)

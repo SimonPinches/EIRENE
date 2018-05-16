@@ -4,24 +4,25 @@ c             Set default for NPARM             (for example NATM=0, no atomic s
 c             Read input file, to find NPARMI,  (for example NATMI)
 c             Then set NPARM=MAX(NPARM,NPARMI)  (for example NATM=MAX(NATM,NATMI))
 c
-c    Later these parameters may be modified, but NPARM >= NPARMI always.
+c    Later these parameters NPARMI may be modified, but NPARM >= NPARMI must be assured always.
 C
 !pb  11.12.06:  allow letters 'f' or 't' in case name of fem or tetrahedron
 !pb             calculation
 !pb  27.12.06:  bug fix: increase NSTS in case of time dependent mode
-!pb  15.01.07:  additional line in input block 4 defining HYDKIN  model
+!pb  15.01.07:  additional line in input block 4 defining HYDKIN model
 !pb  02.03.07:  NUMSEC=4 introduced
 !pb  20.03.07:  include input block written by HYDKIN model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
 !dr  16.01.14:  default NOPTIM changed from 1 to NRAD (automatically), some printout rearranged
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
-!               (same in find-param)
-!cd  2.2.15:    nfr (number of TRIM A_on_B files), now same name as in input.f
+!               (same in find_param.f)
+cdr  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
+cdr             because nflr (common CREF) is later used in RDTRIM and REFDAT with a slightly other meaning.
 cdr  Jan 2016:  storage for second dimension only if nlpol=true
 cdr             to be tested: storage for nplg, if nlpol=false?
 cdr             storage for third dimension only if nltor=true
 cdr             to be tested:  storage for nltra, if nltor=false?
-cdr             to be done: check for comment lines *... syncronized with input.f?
+cdr             to be done: check for comment lines *... synchronized with input.f?
 !pb  June 16:   default for NPLSTI changed from 1 to NPLS
 !pb  MAY  16:   nrds -> nrei
 cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 14.
@@ -30,7 +31,7 @@ cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCO
 cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures,
 cdr                              multiple ion velocities in case of BGK non-lin. colisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
-c               move nrad=... after call to if0prm, because of emc3 coupling
+c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -76,7 +77,8 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: FOUND, NLEMIS
+
+      LOGICAL :: LEMISS, NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
@@ -148,7 +150,7 @@ C  ATOMIC DATA
       NRCX=1
       NREL=1
       NRPI=1
-C  LINE-ON-SIDE-DIAGNOSTICS
+C  LINE-OF-SIDE-DIAGNOSTICS
       NCHOR=0
       NCHEN=0
       NPRNL=0
@@ -193,9 +195,9 @@ C  NSMSTRA = 0  ==> SUM OVER STRATA IS NOT PERFORMED
 C  NSMSTRA = 1  ==> SUM OVER STRATA IS PERFORMED
       NSMSTRA=1
 C
-C  CALULATION OR STORAGE OF ATOMIC DATA
-C  NSTORAM=0,9.    =0: MINIMUM STORAGE, MAXIMUM CALULATION
-C                  =9: MAXIMUM STORAGE, MINIMUM CALULATION
+C  CALCULATION OR STORAGE OF ATOMIC DATA
+C  NSTORAM=0,9.    =0: MINIMUM STORAGE, MAXIMUM CALCULATION
+C                  =9: MAXIMUM STORAGE, MINIMUM CALCULATION
       NSTORAM=9
 C
 C  SPATIALLY RESOLVED SURFACE TALLIES?
@@ -207,7 +209,7 @@ C  NUMBER OF BACKGROUND SPECTRA
       NBACK_SPEC=0
 
 
-c  NEXT:  READ INPUT FILE AND IDENTIFY THE REAL STORAGE NEEDS.
+c  NEXT:  BROWSE INPUT FILE AND IDENTIFY THE REAL STORAGE NEEDS.
 c   e.g. NPARMI, then set the storage (for allocatable arrays): NPARM = MAX(NPARM,NPARMI)
 c   in most cases then: NPARM=NPARMI
 
@@ -228,15 +230,16 @@ C
 C
       CALL EIRENE_LEER(3)
 
-
+      WRITE (IUNOUT,*) 'PRINTOUT FROM EIRENE PRE-PROCESSING:'
+      WRITE (IUNOUT,*) 'BROWSE INPUT FOR STORAGE NEEDS (FIND_PARAM.F)'
+      WRITE (IUNOUT,*) 'IUNIN = ', IUNIN
+      CALL EIRENE_LEER(1)
+C
 C  read and write header
       READ (IUNIN,'(A72)') ZEILE
       WRITE (IUNOUT,'(A72)') ZEILE
       CALL EIRENE_LEER(1)
 
-      WRITE (IUNOUT,*) 'PRINTOUT FROM EIRENE PRE-PROCESSING:'
-      WRITE (IUNOUT,*) 'BROWSE INPUT FOR STORAGE NEEDS (FIND_PARAM.F)'
-      CALL EIRENE_LEER(1)
 
 c  skip further comments in header
       DO WHILE (ZEILE(1:1).EQ.'*')
@@ -276,6 +279,10 @@ C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
 C
 C
 C  READ DATA FOR STANDARD MESH, 200---299
+
+
+      WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION '
+
 C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -538,10 +545,11 @@ C
 C  READING FOR INPUT BLOCK 2 DONE
 C
 C
-C  READ DATA FOR NON DEFAULT SURFACE MODELS ON STANDARD SURFACES
+      WRITE (iunout,*) '*** 3. DATA FOR BREP SURFACES'
+C  READ DATA FOR NON-DEFAULT SURFACE MODELS ON STANDARD SURFACES
 C  300--349
 C
-      WRITE (iunout,*) '*** 3A. DATA FOR NON DEFAULT STANDARD SURFACES'
+      WRITE (iunout,*) '*3A.  NON-DEFAULT STANDARD SURFACES'
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
@@ -557,7 +565,7 @@ C  FIND START OF NEXT INPUT BLOCK: 3B
 C
 C  READ DATA FOR ADDITIONAL SURFACES 350--399
 C
-      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES           '
+      WRITE (iunout,*) '*3B.   ADDITIONAL SURFACES           '
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -653,7 +661,7 @@ C
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
-cdr:  try to identify if there are so called NON-LINEAR BKG collisions, input flag IBGK:
+cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
@@ -689,7 +697,7 @@ C
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
-cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  try to identify if there are so-called BGK collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
@@ -724,7 +732,7 @@ C
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
-cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  try to identify if there are so-called BGK collisions, input flag IBGK::
 cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
@@ -757,7 +765,7 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
-cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
+cdr:  try to identify if there are so-called BGK collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
@@ -775,7 +783,7 @@ cpb.......................................
         END DO
       END DO
 C
-C  READ DATA FOR PLASMA-BACKGROUND , 500--599
+C  READ DATA FOR PLASMA BACKGROUND, 500--599
 C
 500   WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND            '
 C
@@ -913,6 +921,7 @@ cdr here should come an error exit: unfinished option, proprietary version only.
       END IF  ! LHYDDEF
 
       DEALLOCATE (BULK_NAME)
+      DEALLOCATE (PART_NAME)
 cdr ..................................................................
 
       READ (IUNIN,'(A72)') ZEILE
@@ -923,14 +932,14 @@ cdr ..................................................................
       END DO
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
-cdr to be done: syncronisation of options for Ti and Vi.
+cdr to be done: synchronisation of options for Ti and Vi.
 cdr these next 2 lines for Ti(ipls) have historically been just opposite to Vi options.
 !pb   NPLSTI = 1
 !pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
 
-      NPLSTI = NPLS  ! now same as for VI.  good
-cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  ! cdr this should be here, to syncronize with Vi
-      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from VI logic.
+      NPLSTI = NPLS  !dr now same as for Vi.  Good
+cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to synchronize with Vi
+      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from Vi logic. Bad
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
@@ -1039,8 +1048,10 @@ cdr  this must be highly case specfic. To be reconsidered !!
 
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA) == 6) CYCLE
-        READ (IUNIN,*)
+        IF (INDSRC(ISTRA) == 6) CYCLE     
+C * 7ABCD...: STRATUM NAME
+        READ (IUNIN,'(A72)') ZEILE
+        WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
         READ (IUNIN,*)
         READ (IUNIN,*)
         READ (IUNIN,*)
@@ -1105,10 +1116,10 @@ C  FIND START OF NEXT INPUT BLOCK: 10
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
-C   READ DATA FOR ADDITIONAL AND SURFACE AVERAGED TALLIES
+C   READ DATA FOR ADDITIONAL AND SURFACE-AVERAGED TALLIES
       WRITE (iunout,*)
-     .  '*** 10. DATA FOR ADDITIONAL TALLIES, COLLISION   '
-      WRITE (iunout,*) '        ESTIMATORS  AND ALGEBRAIC EXPRESSIONS  '
+     .  '*** 10. DATA FOR ADDITIONAL TALLIES, COLLISION '
+      WRITE (iunout,*) '        ESTIMATORS AND ALGEBRAIC EXPRESSIONS'
 C
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1195,7 +1206,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
 C  SKIP READING ALSO POSSIBLE LINES FOR DELIBERATE DE-ACTIVATION OR RE-ACTIVATION OF TALLIES
 c     to be written:  allow for comment lines here
 
-C  SEARCH START OF PLOTTING INPUT:  NEXT LINE WITH F OR T
+C  SEARCH START OF PLOTTING INPUT: NEXT LINE WITH F OR T
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
 !pb  LOOK FOR NEXT LINE OF LOGICAL INPUT VALUES DENOTING PLOTTING OPTIONS
@@ -1209,9 +1220,9 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C  FIRST CARD FOR (LOGICAL) PLOTTING FLAGS NOW ON 'zeile'
-      READ (ZEILE(16:16),'(L1)') LRPSCUT  ! needed below for further storage considerationes
+      READ (ZEILE(16:16),'(L1)') LRPSCUT  ! needed below for further storage considerations
 
-c  there are 13 geometry plotting input cards following,  before plotting of volume tallies
+c  there are 13 geometry plotting input cards following, before plotting of volume tallies
       DO J=1,13
         READ (IUNIN,*)
       END DO
@@ -1221,7 +1232,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
 C
-C  DATA FOR PLOTS OF VOLUME AVERAGED TALLIES
+C  DATA FOR PLOTS OF VOLUME-AVERAGED TALLIES
       READ (ZEILE,6666) NVOLPL
 C
 C
@@ -1272,6 +1283,10 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
+c  optional input cards: 'define_lines'
+
+c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
+c  parent state contributions
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
@@ -1347,9 +1362,9 @@ C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
         IF (.FALSE.) THEN
-          ALLOCATE (ENERGY(2,NCHORI))
-          ENERGY = 0._DP
-          LINES = 0
+        ALLOCATE (ENERGY(2,NCHORI))
+        ENERGY = 0._DP
+        LINES = 0
 
           DO J = 1, NCHORI
             READ (IUNIN,*)
@@ -1392,6 +1407,7 @@ C  SKIP READING REST OF THIS BLOCK
 C
 C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
+      IREAD=0  ! fix by XB
       WRITE (iunout,*)
      .  '*** 13. DATA FOR ITERATIVE AND TIME DEP. OPTION '
 
@@ -1411,12 +1427,14 @@ C   SNAPSHOT TALLIES AND CENSUS ARRAY
       NSNVI=0
       IF (NPRNLI > 0) THEN
         READ (IUNIN,'(A72)') ZEILE
+        IREAD=1  ! fix by XB
         IF (ZEILE(1:1).NE.'*') THEN
           READ (IUNIN,*)
 C   READ DATA FOR SNAPSHOT TALLIES
           READ (IUNIN,*)
           WRITE (iunout,*) '*** 13A. DATA FOR SNAPSHOT TALLIES'
           READ (IUNIN,6666) NSNVI
+          IREAD=0  !  fix by XB
         END IF
       END IF
       NSNV = MAX(NSNV,NSNVI)
@@ -1435,7 +1453,7 @@ cdr  tbd:  when reading fort 15 (census), the size is determined by the
 cdr        size of that file, (IPRNL) not by NPRNL
 
 C  SKIP READING REST OF THIS BLOCK
-      READ (IUNIN,'(A72)') ZEILE
+      IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE  ! fix by XB
       DO WHILE (ZEILE(1:3) .NE. '***')
         READ (IUNIN,'(A72)') ZEILE
       END DO
@@ -1467,65 +1485,66 @@ cdr  due to these changes there, also some derived storage parmeters may have ch
 
       REWIND IUNIN
       CALL EIRENE_LEER(1)
-      WRITE (IUNOUT,*) 'AUTOMATTED STORAGE SETTING (FIND_PARAM.F)'
+      WRITE (IUNOUT,*) 'AUTOMATED STORAGE SETTING (FIND_PARAM.F)'
       CALL EIRENE_LEER(1)
 C
 cdr  grid size
-      WRITE (iunout,*) 'N1ST =   ',N1ST
-      WRITE (iunout,*) 'N2ND =   ',N2ND
-      WRITE (iunout,*) 'N3RD =   ',N3RD
-      WRITE (iunout,*) 'NADD =   ',NADD
-      WRITE (iunout,*) 'NTOR =   ',NTOR
-      WRITE (iunout,*) 'NRTAL =  ',NRTAL
-      WRITE (iunout,*) 'NLIM =   ',NLIM
-      WRITE (iunout,*) 'NSTS =   ',NSTS
-      WRITE (iunout,*) 'NPLG =   ',NPLG
-      WRITE (iunout,*) 'NPPART = ',NPPART
-      WRITE (iunout,*) 'NKNOT =  ',NKNOT
-      WRITE (iunout,*) 'NTRI =   ',NTRI
-      WRITE (iunout,*) 'NTETRA = ',NTETRA
-      WRITE (iunout,*) 'NCOORD = ',NCOORD
+      WRITE (iunout,'(a14,i8)') 'N1ST        = ',N1ST
+      WRITE (iunout,'(a14,i8)') 'N2ND        = ',N2ND
+      WRITE (iunout,'(a14,i8)') 'N3RD        = ',N3RD
+      WRITE (iunout,'(a14,i8)') 'NADD        = ',NADD
+      WRITE (iunout,'(a14,i8)') 'NTOR        = ',NTOR
+      WRITE (iunout,'(a14,i8)') 'NRTAL       = ',NRTAL
+      WRITE (iunout,'(a14,i8)') 'NLIM        = ',NLIM
+      WRITE (iunout,'(a14,i8)') 'NSTS        = ',NSTS
+      WRITE (iunout,'(a14,i8)') 'NPLG        = ',NPLG
+      WRITE (iunout,'(a14,i8)') 'NPPART      = ',NPPART
+      WRITE (iunout,'(a14,i8)') 'NKNOT       = ',NKNOT
+      WRITE (iunout,'(a14,i8)') 'NTRI        = ',NTRI
+      WRITE (iunout,'(a14,i8)') 'NTETRA      = ',NTETRA
+      WRITE (iunout,'(a14,i8)') 'NCOORD      = ',NCOORD
+
       WRITE (iunout,*) ' '
-      WRITE (iunout,*) 'NRAD =   ',NRAD
+      WRITE (iunout,'(a14,i8)') 'NRAD        = ',NRAD
 cdr  primary source
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NSTRA =  ',NSTRA
-      WRITE (iunout,*) 'NSRFS =  ',NSRFS
-      WRITE (iunout,*) 'NSTEP =  ',NSTEP
-      WRITE (iunout,*) 'NPTRGT=  ',NPTRGT
+      WRITE (iunout,'(a14,i8)') 'NSTRA       = ',NSTRA
+      WRITE (iunout,'(a14,i8)') 'NSRFS       = ',NSRFS
+      WRITE (iunout,'(a14,i8)') 'NSTEP       = ',NSTEP
+      WRITE (iunout,'(a14,i8)') 'NPTRGT      = ',NPTRGT
 cdr species
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NATM =   ',NATM
-      WRITE (iunout,*) 'NMOL =   ',NMOL
-      WRITE (iunout,*) 'NION =   ',NION
-      WRITE (iunout,*) 'NPHOT =  ',NPHOT
-      WRITE (iunout,*) 'NPLS =   ',NPLS
+      WRITE (iunout,'(a14,i8)') 'NATM        = ',NATM
+      WRITE (iunout,'(a14,i8)') 'NMOL        = ',NMOL
+      WRITE (iunout,'(a14,i8)') 'NION        = ',NION
+      WRITE (iunout,'(a14,i8)') 'NPHOT       = ',NPHOT
+      WRITE (iunout,'(a14,i8)') 'NPLS        = ',NPLS
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'NADV =   ',NADV
-      WRITE (iunout,*) 'NCLV =   ',NCLV
-      WRITE (iunout,*) 'NSNV =   ',NSNV
-      WRITE (iunout,*) 'NALV =   ',NALV
+      WRITE (iunout,'(a14,i8)') 'NADV        = ',NADV
+      WRITE (iunout,'(a14,i8)') 'NCLV        = ',NCLV
+      WRITE (iunout,'(a14,i8)') 'NSNV        = ',NSNV
+      WRITE (iunout,'(a14,i8)') 'NALV        = ',NALV
 
-      WRITE (iunout,*) 'NADS =   ',NADS
-      WRITE (iunout,*) 'NALS =   ',NALS
+      WRITE (iunout,'(a14,i8)') 'NADS        = ',NADS
+      WRITE (iunout,'(a14,i8)') 'NALS        = ',NALS
 
-      WRITE (iunout,*) 'NAIN =   ',NAIN
-      WRITE (iunout,*) 'NCPV =   ',NCPV
-      WRITE (iunout,*) 'NBGK =   ',NBGK
-      WRITE (iunout,*) 'NSD =    ',NSD
-      WRITE (iunout,*) 'NSDW =   ',NSDW
-      WRITE (iunout,*) 'NCV =    ',NCV
+      WRITE (iunout,'(a14,i8)') 'NAIN        = ',NAIN
+      WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV
+      WRITE (iunout,'(a14,i8)') 'NBGK        = ',NBGK
+      WRITE (iunout,'(a14,i8)') 'NSD         = ',NSD
+      WRITE (iunout,'(a14,i8)') 'NSDW        = ',NSDW
+      WRITE (iunout,'(a14,i8)') 'NCV         = ',NCV
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS" '
-      WRITE (iunout,*) 'NREAC =  ',NREAC
+      WRITE (iunout,'(a14,i8)') 'NREAC       = ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
-C     WRITE (iunout,*) 'NREC =   ',NREC
-C     WRITE (iunout,*) 'NREI =   ',NREI
-C     WRITE (iunout,*) 'NRCX =   ',NRCX
-C     WRITE (iunout,*) 'NREL =   ',NREL
-C     WRITE (iunout,*) 'NRPI =   ',NRPI
+C     WRITE (iunout,'(a14,i8)') 'NREC        = ',NREC
+C     WRITE (iunout,'(a14,i8)') 'NREI        = ',NREI
+C     WRITE (iunout,'(a14,i8)') 'NRCX        = ',NRCX
+C     WRITE (iunout,'(a14,i8)') 'NREL        = ',NREL
+C     WRITE (iunout,'(a14,i8)') 'NRPI        = ',NRPI
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF STORAGE OPTIMIZATION OPTIONS'
@@ -1544,20 +1563,20 @@ c  TO BE TESTED, E.G. CHECK VARIANCES, AND VARIANCES SUM OVER STRATA
       CALL EIRENE_LEER(1)
 
 C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
-      WRITE (iunout,*) 'NOPTIM =      ',NOPTIM
-      WRITE (iunout,*) 'NOPTM1 =      ',NOPTM1
-      WRITE (iunout,*) 'NGEOM_USR =   ',NGEOM_USR
-      WRITE (iunout,*) 'NCOUP_INPUT = ',NCOUP_INPUT
-      WRITE (iunout,*) 'NSMSTRA =     ',NSMSTRA
-      WRITE (iunout,*) 'NSTORAM =     ',NSTORAM
-      WRITE (iunout,*) 'NGSTAL =      ',NGSTAL
-      WRITE (iunout,*) 'NRPES  =      ',NRPES
-
+      WRITE (iunout,'(a14,i8)') 'NOPTIM      = ',NOPTIM
+      WRITE (iunout,'(a14,i8)') 'NOPTM1      = ',NOPTM1
+      WRITE (iunout,'(a14,i8)') 'NGEOM_USR   = ',NGEOM_USR
+      WRITE (iunout,'(a14,i8)') 'NCOUP_INPUT = ',NCOUP_INPUT
+      WRITE (iunout,'(a14,i8)') 'NSMSTRA     = ',NSMSTRA
+      WRITE (iunout,'(a14,i8)') 'NSTORAM     = ',NSTORAM
+      WRITE (iunout,'(a14,i8)') 'NGSTAL      = ',NGSTAL
+      WRITE (iunout,'(a14,i8)') 'NREAC_ADD   = ',NREAC_ADD
+      WRITE (iunout,'(a14,i8)') 'NRPES       = ',NRPES
 C
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF CENSUS STORAGE FOR T-DEP. MODE'
-cdr  time dependent options: census array size
-      WRITE (iunout,*) 'NPRNL  =      ',NPRNL
+cdr  time-dependent options: census array size
+      WRITE (iunout,'(a14,i8)') 'NPRNL       = ',NPRNL
 C
       CALL EIRENE_LEER(2)
 C
@@ -1566,4 +1585,13 @@ C
 6664  FORMAT (6E12.4)
 6665  FORMAT (12(5L1,1X))
 6666  FORMAT (12I6)
+C
+6999  WRITE (IUNOUT,*) 'Empty input file found!'
+      WRITE (IUNOUT,*)
+     . 'Either remove it or replace it with a correct file.'
+      CALL EIRENE_EXIT_OWN(1)
+ 7999 WRITE (IUNOUT,*) 'Could not open input file!'
+      CALL EIRENE_EXIT_OWN(1)
+      RETURN
+
       END

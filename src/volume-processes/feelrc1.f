@@ -60,7 +60,7 @@ c  in some case (e.g. ADAS electron cooling rate tables), bremstrahlung is
 c  added on top of free-bound radiation. Subtract this contribution here,
 c  to avoid double counting. 
 c
-        LADAS = EIRENE_IS_RTCEW_ADAS(KK)  ! ifit=3 <--> ladas.
+        LADAS = EIRENE_IS_RTCEW_TAB2D(KK)  ! ifit=3 <--> ladas.
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN
           Z = NCHRGP(IPLS)
           BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion

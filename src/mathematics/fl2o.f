@@ -180,8 +180,8 @@ C
 C
 C        BERECHNUNG DER EIGENWERTE UND EIGENVEKTOREN VON A
 C
-         IF (NMACH.NE.1) CALL EIRENE_DEVCSF( 3,A,3,LAMBDA, EV, 3 )
-         IF (NMACH.EQ.1) CALL EIRENE_EVCSF( 3,A,3,LAMBDA, EV, 3 )
+         CALL EIRENE_DEVCSF( 3,A,3,LAMBDA, EV, 3 )
+         
 C        WRITE (iunout,*) ' LAMBDA ',(LAMBDA(I),I=1,3)
 C        WRITE (iunout,*) ' EV '
 C        WRITE (iunout,*) ((EV(I,J),J=1,3),I=1,3)

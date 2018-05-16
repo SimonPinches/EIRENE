@@ -1,18 +1,20 @@
 !pb  31.07.09: scaling for snapshot tallies corrected
-!              only for stationary calculations snapshot tallies 
+!              only for stationary calculations snapshot tallies
 !              need to be scaled by timestep DTIMV
 cdr  dec. 15 : species index added in volumetric energy tallies for bulk ions
 cdr            eapl,empl,eipl,ephpl,eppl (38, 44, 50, 56 and 84)
+cdr  March 18: X.B.: bug fix re scaling of addv, copv, snapv, copv,
+cdr                  in case scltal =4 this was erroneously overwritten with 0.
 
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
 cdr
-c  scaling of volume averaged tallies:  
-c  zvolin : source strength(amp)/vol(cell volume cm^-3)/elementary-charge(amp/(1/s)), 
+c  scaling of volume averaged tallies:
+c  zvolin : source strength(amp)/vol(cell volume cm^-3)/elementary-charge(amp/(1/s)),
 c           --> e.g. flight times(s) to densities (cm^-3)
-c  zvoliw : source strength(amp)/vol(cell volume cm^-3), 
+c  zvoliw : source strength(amp)/vol(cell volume cm^-3),
 c           --> e.g. events per cell(1) to source rates (amp/cm^-3)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMSOU
@@ -25,14 +27,14 @@ c           --> e.g. events per cell(1) to source rates (amp/cm^-3)
       USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
       USE EIRMOD_COMNNL
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTR, N1DIM
       REAL(DP), INTENT(IN) :: ZWW, ZW
       REAL(DP), INTENT(INOUT) :: SCLTAL(N1DIM,*)
       REAL(DP), INTENT(IN) :: ZVOLIN(*), ZVOLIW(*)
- 
+
       REAL(DP) :: ZFAC, FACDT
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
       INTEGER :: IATM, I, J, IMOL, IION, IPHOT, IPLS, IADV, ICLV,
@@ -223,7 +225,7 @@ C
 227   CONTINUE
 C
 C  ADDITIONAL TRACKLENGTH ESTIMATED TALLIES FOR THE STRATUM ISTRA
-C  TALLY NO. NTALA
+C  TALLY ADDV; NO. NTALA
 C
       IF (LADDV) THEN
         DO 230 IADV=1,NADVI
@@ -239,27 +241,27 @@ C  SCALE # PER CELL
               ADDV(IADV,J)=ADDV(IADV,J)*ZW
 232         CONTINUE
             SCLTAL(IADV,NTALA)=2
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
           ELSEIF (IADVE(IADV).EQ.3) THEN
             DO 233 J=1,NSBOX_TAL
               ADDV(IADV,J)=ADDV(IADV,J)*ZVOLIW(J)
 233         CONTINUE
             SCLTAL(IADV,NTALA)=3
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
           ELSEIF (IADVE(IADV).EQ.4) THEN
             DO 234 J=1,NSBOX_TAL
               ADDV(IADV,J)=ADDV(IADV,J)*ZWW
 234         CONTINUE
             SCLTAL(IADV,NTALA)=4
-C         ELSE
+          ELSE
 C  DON'T SCALE AT ALL
             SCLTAL(IADV,NTALA)=0
           ENDIF
 230     CONTINUE
       END IF
 C
-C  ADDITIONAL COLLISION ESTIMATED TALLIES COLV, FOR THE STRATUM ISTRA
-C  TALLY NO. NTALC
+C  ADDITIONAL COLLISION ESTIMATED TALLIES, FOR THE STRATUM ISTRA
+C  TALLY COLV; NO. NTALC
 C
       IF (LCOLV) THEN
         DO 235 ICLV=1,NCLVI
@@ -276,26 +278,26 @@ C  SCALE # PER CELL
 237         CONTINUE
             SCLTAL(ICLV,NTALC)=2
           ELSEIF (ICLVE(ICLV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 238 J=1,NSBOX_TAL
               COLV(ICLV,J)=COLV(ICLV,J)*ZVOLIW(J)
 238         CONTINUE
             SCLTAL(ICLV,NTALC)=3
           ELSEIF (ICLVE(ICLV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 239 J=1,NSBOX_TAL
               COLV(ICLV,J)=COLV(ICLV,J)*ZWW
 239         CONTINUE
             SCLTAL(ICLV,NTALC)=4
-C         ELSE
+          ELSE
 C  DON'T SCALE AT ALL
             SCLTAL(ICLV,NTALC)=0
           ENDIF
 235     CONTINUE
       END IF
 C
-C  ADDITIONAL SNAPSHOT ESTIMATED TALLIES SNAP, FOR THE STRATUM ISTRA
-C  TALLY NO. NTALT, 
+C  ADDITIONAL SNAPSHOT ESTIMATED TALLIES, FOR THE STRATUM ISTRA
+C  TALLY SNAPV; NO. NTALT,
 C  FIRST: SNAPV=SNAPV*DTIMV, THEN: SCALING
 C
       IF (LSNAPV) THEN
@@ -315,18 +317,18 @@ C  SCALE # PER CELL
 247         CONTINUE
             SCLTAL(ISNV,NTALT)=2
           ELSEIF (ISNVE(ISNV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 248 J=1,NSBOX_TAL
               SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZVOLIW(J)
 248         CONTINUE
             SCLTAL(ISNV,NTALT)=3
           ELSEIF (ISNVE(ISNV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 249 J=1,NSBOX_TAL
               SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZWW
 249         CONTINUE
             SCLTAL(ISNV,NTALT)=4
-C         ELSE
+          ELSE
 C  DON'T SCALE AT ALL
             DO J=1,NSBOX_TAL
               SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT
@@ -354,18 +356,18 @@ C  SCALE # PER CELL
 257         CONTINUE
             SCLTAL(ICPV,NTALM)=2
           ELSEIF (ICPVE(ICPV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 258 J=1,NSBOX_TAL
               COPV(ICPV,J)=COPV(ICPV,J)*ZVOLIW(J)
 258         CONTINUE
             SCLTAL(ICPV,NTALM)=3
           ELSEIF (ICPVE(ICPV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 259 J=1,NSBOX_TAL
               COPV(ICPV,J)=COPV(ICPV,J)*ZWW
 259         CONTINUE
             SCLTAL(ICPV,NTALM)=4
-C         ELSE
+          ELSE
 C  DON'T SCALE AT ALL
             SCLTAL(ICPV,NTALM)=0
           ENDIF
@@ -390,25 +392,25 @@ C  SCALE # PER CELL
 267         CONTINUE
             SCLTAL(IBGV,NTALB)=2
           ELSEIF (IBGVE(IBGV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 268 J=1,NSBOX_TAL
               BGKV(IBGV,J)=BGKV(IBGV,J)*ZVOLIW(J)
 268         CONTINUE
             SCLTAL(IBGV,NTALB)=3
           ELSEIF (IBGVE(IBGV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 269 J=1,NSBOX_TAL
               BGKV(IBGV,J)=BGKV(IBGV,J)*ZWW
 269         CONTINUE
             SCLTAL(IBGV,NTALB)=4
-C         ELSE
+          ELSE
 C  DON'T SCALE AT ALL
             SCLTAL(IBGV,NTALB)=0
           ENDIF
 265     CONTINUE
       END IF
 C
-C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO FIRST (SPECIES) INDEX) 
+C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO FIRST (SPECIES) INDEX)
 C
       DO 270 J=1,NSBOX_TAL
         IF (LPAEL)  PAEL(J) =PAEL(J) *ZVOLIW(J)
@@ -438,7 +440,7 @@ C
         IF (LEPHML)  EPHML(J) =EPHML(J) *ZVOLIW(J)
         IF (LEPHIO)  EPHIO(J) =EPHIO(J) *ZVOLIW(J)
         IF (LEPHPHT) EPHPHT(J)=EPHPHT(J)*ZVOLIW(J)
- 
+
         IF (LEPAT)  EPAT(J) =EPAT(J) *ZVOLIW(J)
         IF (LEPML)  EPML(J) =EPML(J) *ZVOLIW(J)
         IF (LEPIO)  EPIO(J) =EPIO(J) *ZVOLIW(J)
@@ -474,17 +476,17 @@ C
       SCLTAL(1,83)=3
 
 C  CHECK: ALL TALLIES 1 -- 100 SCALED ?   TBD.
- 
- 
+
+
 C   SCALE AND INTEGRATE VOLUMETRIC SPECTRA
- 
+
       DO ISPC=1,NADSPC
-        IF (ESTIML(ISPC)%PSPC%ISRFCLL /= 0) THEN
-          ICL = ESTIML(ISPC)%PSPC%ISPCSRF
-          IF (ESTIML(ISPC)%PSPC%ISRFCLL == 1) THEN
+        IF (ESTIML(ISPC)%ISRFCLL /= 0) THEN
+          ICL = ESTIML(ISPC)%ISPCSRF
+          IF (ESTIML(ISPC)%ISRFCLL == 1) THEN
 !  scoring cell
             ZFAC = ZVOLIN(ICL)
-          ELSE IF (ESTIML(ISPC)%PSPC%ISRFCLL == 2) THEN
+          ELSE IF (ESTIML(ISPC)%ISRFCLL == 2) THEN
 !  geometry cell
             ZFAC = ZW / VOL(ICL)
           ELSE
@@ -492,38 +494,38 @@ C   SCALE AND INTEGRATE VOLUMETRIC SPECTRA
             WRITE (IUNOUT,*) ' NO SCALING PERFORMED FOR SPECTRUM NO. ',
      .                         ISPC
           END IF
-          ESTIML(ISPC)%PSPC%SPCS = 0._DP
-          DO I = 0, ESTIML(ISPC)%PSPC%NSPC+1
+          ESTIML(ISPC)%SPCS = 0._DP
+          DO I = 0, ESTIML(ISPC)%NSPC+1
             IF (I.EQ.0) THEN
-              ELEFT = MIN(ESTIML(ISPC)%PSPC%SPCMIN,
-     .                   ESTIML(ISPC)%PSPC%ESP_MIN)
-              ERIGHT= ESTIML(ISPC)%PSPC%SPCMIN
-            ELSE IF (I.EQ.ESTIML(ISPC)%PSPC%NSPC+1) THEN
-              ELEFT = ESTIML(ISPC)%PSPC%SPCMAX
-              ERIGHT= MAX(ESTIML(ISPC)%PSPC%SPCMAX,
-     .                   ESTIML(ISPC)%PSPC%ESP_MAX)
+              ELEFT = MIN(ESTIML(ISPC)%SPCMIN,
+     .                   ESTIML(ISPC)%ESP_MIN)
+              ERIGHT= ESTIML(ISPC)%SPCMIN
+            ELSE IF (I.EQ.ESTIML(ISPC)%NSPC+1) THEN
+              ELEFT = ESTIML(ISPC)%SPCMAX
+              ERIGHT= MAX(ESTIML(ISPC)%SPCMAX,
+     .                   ESTIML(ISPC)%ESP_MAX)
             ELSE
-              ELEFT = ESTIML(ISPC)%PSPC%SPCMIN+
-     .               ESTIML(ISPC)%PSPC%SPCDEL*(I-1)
-              ERIGHT= ESTIML(ISPC)%PSPC%SPCMIN+
-     .               ESTIML(ISPC)%PSPC%SPCDEL*I
+              ELEFT = ESTIML(ISPC)%SPCMIN+
+     .               ESTIML(ISPC)%SPCDEL*(I-1)
+              ERIGHT= ESTIML(ISPC)%SPCMIN+
+     .               ESTIML(ISPC)%SPCDEL*I
             END IF
-            IF (ESTIML(ISPC)%PSPC%LOG) THEN
+            IF (ESTIML(ISPC)%LOG) THEN
               DEL = 10._DP**ERIGHT-10._DP**ELEFT+EPS60
             ELSE
               DEL = ERIGHT-ELEFT+EPS60
             END IF
             DELI = 1._DP/(DEL+EPS60)
-C  SCALE: FROM SCORING PER ENERGY BIN --> TALLY UNITS: PER EV 
-            ESTIML(ISPC)%PSPC%SPC(I) =
-     .       ESTIML(ISPC)%PSPC%SPC(I)*ZFAC*DELI
+C  SCALE: FROM SCORING PER ENERGY BIN --> TALLY UNITS: PER EV
+            ESTIML(ISPC)%SPC(I) =
+     .       ESTIML(ISPC)%SPC(I)*ZFAC*DELI
 C  INTEGRATE
-            ESTIML(ISPC)%PSPC%SPCS = ESTIML(ISPC)%PSPC%SPCS +
-     .       ESTIML(ISPC)%PSPC%SPC(I)*DEL
+            ESTIML(ISPC)%SPCS = ESTIML(ISPC)%SPCS +
+     .       ESTIML(ISPC)%SPC(I)*DEL
           END DO
         END IF
       END DO
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES

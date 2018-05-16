@@ -23,6 +23,12 @@ C  MAR 15:  remove Thompson distribution for thermal atom model:
 c           TWALL=0 now leads to error exit
 cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
 cdr Nov.17: lmetspw arguments corrected
+cdr Apr.18: cleaned up the use of RINTG,EINTG,AINTG  (for unit tests, reduced refl. models)
+cdr         vs. use of EXPP,EXPE,EXPI (for ilref=2 model, incident angle dependence).
+cdr         Maxwell's boundary conditions added via EINTG, AINTG flags.
+cdr         tbd:  the maxwellian evaporation flux part is repeated 4 times now.
+cdr         Maybe more of this in escape.f
+cdr         It should become an own subroutine.
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -35,6 +41,7 @@ C                  SCHOOL 1976
 C       ILREF = 9  USER SUPPLIED REFLECTION MODEL, CALL: RF1USR
 C
 C       ITYP  = 1  INCIDENT ATOM
+C       ITYP  = 2  INCIDENT MOLECULES:  this is handled in calling program: only thermal re-emission
 C       ITYP  = 3  INCIDENT TEST ION
 C       ITYP  = 4  INCIDENT BULK ION
 C  OUTPUT:
@@ -85,9 +92,10 @@ C  DATA FOR REDUCED ENERGY SCALING
      .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
      .          XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
      .          PRFCF, XMW, CON, ZWDR, EOQ, XMP, WMIN,
-     .          XCP, XCFE, DX, EXPP, RO1, EQSAVE, ZEP1, RO3,
-     .          EMINR, EMAXR, RPROB, COSIN, EXPI, EXPE, RINTG, AINTG,
-     .          EINTG, EQTO, ETEST, EQT, F1, WFAC, F2,
+     .          XCP, XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
+     .          EMINR, EMAXR, RPROB, APROB, COSIN,
+     .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
+     .          EQTO, ETEST, EQT, F1, WFAC, F2,
      .          FR1, XMTT, XCTT, XMPP, XCPP, RO2
       REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
      .          RF11, RF12, RF13, RF14, RF15, RF16,
@@ -97,9 +105,10 @@ C  DATA FOR REDUCED ENERGY SCALING
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
      .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF, IGAST,
-     .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP, ICOUNT, IFIRST,
+     .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP,
+     .           ICOUNT, IFIRST, ICOANGL,
      .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
-     .           INDR1P, INDR1, ISPZO, IFILE, INDW, idummy
+     .           INDR1P, INDR1, ISPZO, IFILE, INDW, IDUMMY
       INTEGER, EXTERNAL :: RANGET_EIRENE, RANSET_EIRENE
       LOGICAL :: NLDATA, NLBEHR
 
@@ -134,7 +143,8 @@ C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
      .  0.,0.001,0.003,0.006,0.011,0.025,0.073,0.215,0.505,0.865,2*1.,
      .  0.,0.001,0.003,0.005,0.009,0.015,0.035,0.105,0.305,0.6,0.9,1./
 C---------------------------------------------------------------------
-      DATA CON/0.4685/,EOQ/14.39/,ZWDR/0.666667/,IFIRST/0/,ICOUNT/0/
+      DATA CON/0.4685/,EOQ/14.39/,ZWDR/0.666667/,
+     .     IFIRST/0/,ICOUNT/0/,ICOANGL/0/
       DATA NPANOLD/0/
 
 cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
@@ -371,7 +381,11 @@ C
       CALL EIRENE_RF0USR
 C
       RETURN
-C
+c
+c  done with initialisation
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
       ENTRY EIRENE_REFLC1 (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
 
 C.................................................................
@@ -403,12 +417,15 @@ C
       EBIND=EWBIN(MSURF)
       PRFCF=RECYCF(ISPZ,MSURF)
       PRFCT=RECYCT(ISPZ,MSURF)
+C  PARAMETERS FOR INCIDENT ANGLE DEPENDENCE IN BEHRISH MATRIX MODEL (ilref=2)
       EXPP=EXPPL(ISPZ,MSURF)
       EXPE=EXPEL(ISPZ,MSURF)
       EXPI=EXPIL(ISPZ,MSURF)
+C  PARAMETERS FOR SIMPLE UNIT TESTS:  CONSTANT PARTICLE, ENERGY and MOMENTUM REFLECT: COEFFS.
       RINTG=RINTEG(MSURF)
       EINTG=EINTEG(MSURF)
       AINTG=AINTEG(MSURF)
+C
       ISPZO=ISPZ
 C
 C  SET EMIN AND EMAX FOR ENERGY SAMPLING FROM DATABASE (MODREF=1)
@@ -429,12 +446,13 @@ C   EINTG < 0 : ENFORCE ELASTIC REFLECTION: E_IN=E_OUT
 C
       IF (EINTG.GE.0..AND.(E0.LE.ERMIN.OR.IGASF.EQ.0)) THEN
 C
-C   THERMAL PARTICLE MODEL IS CALLED
+C   THERMAL PARTICLE RE-EMISSION MODEL IS CALLED
 C
         RPROB=0.
         WFAC=0.
         COSIN=1.
-C  RELATIVE FRACTION OF COSINE VS. SPECULAR REFLECTION
+C  SET PARAMETERS FOR EITHER PURE COSINE DISTRIBUTION (LAMBERTIAN)
+C              OR FOR MAXWELLIAN FLUX AT WALL TEMPERATURE TW
         F1=1.
         F2=0.
         FR1=RANF_EIRENE( )
@@ -561,10 +579,14 @@ C
 C  REFLECTION PROBALITY: RPROB
 C
       IF (RINTG.GT.0.D0) THEN
+C  CONSTANT PARTICLE REFLECTION COEFFICIENT, limited by specified absortpion
         RPROB=MIN(PRFCT,RINTG)
       ELSEIF (RINTG.LT.0) THEN
-        RPROB=1.D0
+C  PERFECT REFLECTION. P_REF=1-p_abs
+        RPROB=MIN(PRFCT,1.0)
       ELSE
+C  P_REF FROM DATA TABLE VS. INCIDENT ANGLE AND ENERGY
+
 C  BI-LINEAR INTERPOLATION WRT: INCIDENT ENERGY AND ANGLE
 C     LINEAR EXTRAPOLATION IF INCIDENT ENERGY AND ANGLE ARE OUT OF RANGE
         RF1=HFTR0(INDE,INDW,IFILE)
@@ -584,7 +606,7 @@ C   PARTICLE-MODEL" IS CALLED
 C
       WFAC=1.
       FR1=RANF_EIRENE( )
-C  THERMAL PARTICLE MODEL
+C  THERMAL PARTICLE MODEL OR ABSORPTION
       IF (FR1.GE.RPROB) THEN
         IF (IGAST) 500,700,600
       ENDIF
@@ -614,14 +636,12 @@ C
       IF (EINTG.GT.0.D0) THEN
 C  CONSTANT ENERGY REFLECTION COEFFICIENT
         E0=E0*EINTG
-C  SPECULAR REFLECTION. E_IN = E_OUT
       ELSEIF (EINTG.LT.0.D0) THEN
+C  PERFECT REFLECTION. E_IN = E_OUT
 C       E0=E0
-C  E0 FROM MEAN ENERGY MODEL
-C     ELSE
-C  TBD.
       ELSE
-C  E0 FROM STOCHASTIC MATRIX
+C  SAMPLING E0 FROM STOCHASTIC MATRIX VS. INCIDENT ENERGY AND ANGLE
+
 C  tri-linear interpolation
 C      linear extrapolation, if out of range
 c  indr1
@@ -650,21 +670,53 @@ C   REDUCED ENERGY SCALING, IF NEEDED
       E0=E0/EFCT
 
       VEL=RSQDVA(IATM)*SQRT(E0)
+
+C........................................................................
 C
-C  POLAR ANGLE OF REFLECTION
+C  NEXT: UNIT TEST ANGULAR DISTRIBUTION (AINTG)
+C        OR CONTINUE WITH ORIGINAL ANGULAR DISTRIBUTION FROM TRIM DATABASE SAMPLING
 C
-      IF (AINTG.LT.0.) THEN
-C  SPECULAR REFLECTION
+      IF (AINTG.GT.0.) THEN
+C  CONSTANT MOMENTUM REFLECTION COEFFICIENT (ACCOMMODATION COEFFICIENT)
+C  FRACTION  AINTG:     specular
+C  FRACTION (1.0-AINTG):  cosin
+        ZEP1=RANF_EIRENE( )
+        APROB=MIN(1.0,AINTG)
+        IF (ZEP1.GT.APROB) THEN
+C  evaporated fraction
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+          IF (E0TERM.LT.0.0) THEN
+            TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+            VXR = 0._DP
+            VYR = 0._DP
+            VZR = 0._DP
+            VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            CALL EIRENE_VELOCS(WGHTVS,
+     .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .                    CVRSSA(IATM),
+     .                   -CRTX,-CRTY,-CRTZ,
+     .                   E0,VELX,VELY,VELZ,VEL)
+            RETURN
+          ELSE
+            F1=1.0
+            F2=0.0
+            EXPI=0.0
+            GOTO 400
+          ENDIF
+        ELSE
+C  specular fraction
+          EXPI=200.
+          GOTO 400
+        ENDIF
+      ELSEIF (AINTG.LT.0.) THEN
+C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
+        EXPI=200.
         GOTO 400
       ENDIF
-cdr  to be written: fixed momentum reflection in case aintg > 0.
-      IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
-C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
-        F1=1.
-        F2=0.
-        GOTO 400
-      ENDIF
-C
+
+C  find polar and azimuthal angle of reflection from tabulated distribution
       ZEP1=RANF_EIRENE( )
       DO 107 I=2,INRM
         INDR2P=I
@@ -801,6 +853,7 @@ C *************************************************************
 C
 C
 C  MODIFIED BEHRISCH MATRIX MODEL STARTS HERE
+C  INCIDENT ANGLE DEPENDENCIES ARE CONTROLLED BY EXPP;EXPE;EXPI
 C
 200   CONTINUE
 C
@@ -828,7 +881,7 @@ C
         RPROB=MIN(RPROB*PRFCF,PRFCT)
       ENDIF
 C
-C  RELATIVE FRACTION OF COSINE VS. SPECULAR REFLECTION
+C  RELATIVE FRACTION OF LAMBERTIAN (cosine) VS. SPECULAR REFLECTION
       IF (EXPI.EQ.0.D0.OR.EXPI.GE.100.D0) THEN
         F1=1.
         F2=0.
@@ -901,13 +954,59 @@ C
 350   WEIGHT=WEIGHT*WFAC
       E0=E0/ERDUC
       VEL=RSQDVA(IATM)*SQRT(E0)
+
+C  NEXT: UNIT TEST ANGULAR DISTRIBUTION (AINTG)
+C        OR CONTINUE WITH ORIGINAL EIRENE ANGULAR DISTRIBUTION (WITH PARAMETER EXPI)
+C
+
+      IF (AINTG.GT.0.) THEN
+C  CONSTANT MOMENTUM REFLECTION (ACCOMMODATION) COEFFICIENT
+C  FRACTION  AINTG:     specular
+C  FRACTION (1_AINTG):  cosin
+        ZEP1=RANF_EIRENE( )
+        APROB=MIN(1.0,AINTG)
+        IF (ZEP1.GT.APROB) THEN
+C  evaporated fraction
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+          IF (E0TERM.LT.0.0) THEN
+            TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+            VXR = 0._DP
+            VYR = 0._DP
+            VZR = 0._DP
+            VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            CALL EIRENE_VELOCS(WGHTVS,
+     .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .                    CVRSSA(IATM),
+     .                   -CRTX,-CRTY,-CRTZ,
+     .                   E0,VELX,VELY,VELZ,VEL)
+            RETURN
+          ELSE
+            F1=1.0
+            F2=0.0
+            EXPI=0.0
+            GOTO 400
+          ENDIF
+        ELSE
+          EXPI=200.
+          GOTO 400
+        ENDIF
+      ELSEIF (AINTG.LT.0.) THEN
+C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
+        EXPI=200.
+        GOTO 400
+      ENDIF
+
 C     GOTO 400
 C
 400   CONTINUE
 C
-C  ANGULAR DISTRIBUTION
+C  ANGULAR DISTRIBUTION, used for behrisch matrix model,
+C                        and for thermal re-emission model
+C                        and for unit test models (ainteg ne.0 )
 C
-      IF (AINTG.GE.0. AND. EXPI.LT.100.) THEN
+      IF (EXPI.LT.100.) THEN
         IF (F1.GT.0.999999) THEN
 C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           IF (INIV4.LE.0) CALL EIRENE_FCOSIN
@@ -915,10 +1014,13 @@ C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           VY=FC2(INIV4)
           VZ=FC3(INIV4)
           INIV4=INIV4-1
+c  /vx,vy,vz/ is cosine distributed around surface normal vector/-1,0,0/
           CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
         ELSE
-C  INCLUDE SPECULAR CONTRIBUTION (F2 > 0., F1 < 1.)
-C  TO BE CHECKED: DOES THIS PROCUDE SPECULAR REFLECTION IN CASE OF F2=1. AND F1=0. ?
+C  mixed cosine-specular model anglular distribution, see manual.
+C  PURE COSINE DISTRIBUTION (LAMBERTIAN) FOR     F1 = 1., F2 = 0.
+C  INCLUDE A FORWARD "SPECULAR" CONTRIBUTION     F1 < 1., F2 > 0.
+C
           ZTHET=PI2A*RANF_EIRENE( )
           ZSTHET=SIN(ZTHET)
           ZCTHET=COS(ZTHET)
@@ -936,15 +1038,19 @@ C
           CALL EIRENE_ROTATE
      .      (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ,COSIN)
         ENDIF
-      ELSE
-C   PURELY SPECULAR REFLECTION :EXPI .GE. 100 OR AINTG.LT.0.
-C   EXPI.GE.100 MEANS: INELASTIC+SPECULAR
+
+      ELSEIF (EXPI.GE. 100.0) THEN
+
+C   PURELY SPECULAR REFLECTION
+C
         COSI2=-(COSIN+COSIN)
         VELX=VELX+COSI2*CRTX
         VELY=VELY+COSI2*CRTY
         VELZ=VELZ+COSI2*CRTZ
       ENDIF
       RETURN
+
+C   FAST PARTICLE REFLECTION MODEL DONE
 C
 C  "THERMAL MOLECULE MODEL"
 C
@@ -1005,7 +1111,9 @@ C  REFLECT THERMAL MOLECULE
 C  MONOENERGETIC, E0 (EV),  COSINE
         E0=E0TERM
         VEL=RSQDVM(IMOL)*SQRT(E0)
-        F1=1.
+        F1=1.0
+        F2=0.0
+        EXPI=0.0
         GOTO 400
       ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
@@ -1080,11 +1188,12 @@ C  SUPRESSION OF ABSORPTION
 C
 C  REFLECT THERMAL ATOM
       IF (E0TERM.GT.0.D0) THEN
-C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE LIKE
+C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE
         E0=E0TERM
-        E0_MEAN=E0TERM
         VEL=RSQDVA(IATM)*SQRT(E0)
-        F1=1.
+        F1=1.0
+        F2=0.0
+        EXPI= 0.0
         GOTO 400
       ELSEIF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)

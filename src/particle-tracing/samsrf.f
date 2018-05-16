@@ -684,9 +684,10 @@ C
               CALL EIRENE_MASR2('XI,XE           ',
      .                       XI(1,ISRFS,ISTRAI),XE(1,ISRFS,ISTRAI))
               RANDIF=XE(1,ISRFS,ISTRAI)-XI(1,ISRFS,ISTRAI)
-              IF (ABS(RANDIF-1.0).GE.EPS5) THEN
+              IF (ABS(RANDIF-1.0).GE.1.0D-4) THEN
                 DO IPL=1,NANZ
-                  WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',
+                  WRITE (IUNOUT,*) 
+     .              'TRUNCATED FLUX ONTO SOURCE SURFACE [A] ',
      .                   IPLSD(IPL),RANDIF*FLX(IPLSD(IPL))
                 END DO
               ENDIF
@@ -751,9 +752,7 @@ C
       ISTEP=0
       ICHWGHT = 0
 C
-      DO 101 JSPZ=1,NSPZ
-        WEISPZ(JSPZ)=-1.
-101   CONTINUE
+      WEISPZ(1:NSPZ)=-1.
 C
 C   USER SUPPLIED GENERATOR FOR X0,Y0,Z0. ONLY ONE CALL
 C   FOR ALL 3 CO-ORDINATES. SUBR. SURTST IS NOT CALLED!
