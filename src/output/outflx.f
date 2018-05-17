@@ -184,7 +184,8 @@ C
             n1 = 0
             n2 = 0
             n3 = 0
-            IF (LEVGEO.LE.3) THEN
+            select case (LEVGEO)
+            case (:3)
               IF (INUMP(ISTS,2).NE.0) then
 C  POLOIDAL SURFACE
                 sum1=0
@@ -234,7 +235,7 @@ C  TOROIDAL SURFACE
                 N2=NP2ND
                 N3=1
               ENDIF
-            ELSE IF (LEVGEO.EQ.4) THEN
+            case (4)
               sum1=0.D0
               ntco=0
               DO NP=1,3
@@ -250,7 +251,7 @@ C  TOROIDAL SURFACE
               N1=NTCO+1
               N2=1
               N3=1
-            END IF
+            end select
             write (iunout,*) 'test ',sum1
             NTOTAL=N1*N2*N3
             IF (NTOTAL > 0) THEN

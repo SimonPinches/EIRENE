@@ -145,7 +145,8 @@ C  TIME FROM Z01 TO ZSURF
               X0TEST=X0+VELX*F
               Y0TEST=Y0+VELY*F
 C  IS THIS RE-ENTRY INSIDE THE STANDARD GRID REGION?
-              IF (LEVGEO.EQ.1) THEN
+              select case (levgeo)
+              case (1)
                   IF (X0TEST.GE.RSURF(1).AND.
      .                X0TEST.LE.RSURF(NR1ST)) THEN
                   IRSAVE=EIRENE_LEARCA(X0TEST,RSURF,1,NR1ST,1,
@@ -155,13 +156,13 @@ C  IS THIS RE-ENTRY INSIDE THE STANDARD GRID REGION?
                   MTSAVE=MTTEST
                   ZRD=F
                 ENDIF
-              ELSEIF (LEVGEO.GT.1) THEN
+              case default
                 WRITE (iunout,*) 'ERROR FROM TIMET: '
                 WRITE (iunout,*)
      .            'RE-ENTRY THROUGH TOROIDAL SURFACE NOT '
-                WRITE (iunout,*) 'READY FOR LEVGEO.GT.1 '
+                WRITE (iunout,*) 'READY FOR LEVGEO > 1 '
                 CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+              end select
             ENDIF
           ENDIF
 120     CONTINUE  ! end of loop over tor. non-def std surfaces 

@@ -557,22 +557,8 @@ C                  DEFAULT SURFACE INTERACTION MODEL
 C  TENTATIVELY ASSUME:
         MSURF=0
         ITRSF=0
-C
-        IF (LEVGEO.EQ.4) THEN
-          IF (MASURF == 0) THEN
-c  increment NLIM already added on inmti? msurf=nlim+ists
-            MSURF=ABS(INMTI(IPOLG,NRCELL))
-          ELSE
-            MSURF=MASURF
-          END IF
-        ELSEIF (LEVGEO.EQ.5) THEN
-          IF (MASURF == 0) THEN
-c  increment NLIM already added on inmtit? msurf=nlim+ists
-            MSURF=ABS(INMTIT(IPOLG,NRCELL))
-          ELSE
-            MSURF=MASURF
-          END IF
-        ELSEIF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+        select case (LEVGEO)
+        case (1:3)
           IF (MASURF.GT.0) THEN
             MSURF=MASURF
             ITRSF=0
@@ -585,7 +571,21 @@ c  increment NLIM already added on inmtit? msurf=nlim+ists
           ENDIF
 cdr  same code as for levgeo<4. But explicitly only for first grid MRSURF, MASURF
           IF (ITRSF.GT.0) MSURF=NLIM+ITRSF
-        ELSEIF (LEVGEO.EQ.10) THEN
+        case (4)
+          IF (MASURF == 0) THEN
+c  increment NLIM already added on inmti? msurf=nlim+ists
+            MSURF=ABS(INMTI(IPOLG,NRCELL))
+          ELSE
+            MSURF=MASURF
+          END IF
+        case (5)
+      IF (MASURF == 0) THEN
+c  increment NLIM already added on inmtit? msurf=nlim+ists
+            MSURF=ABS(INMTIT(IPOLG,NRCELL))
+          ELSE
+            MSURF=MASURF
+          END IF
+        case (10)
 c  deal with 1st grid surfaces only (with "radial surfaces", by abuse of language)
           IF (MASURF.GT.0) THEN
             MSURF=MASURF
@@ -594,7 +594,7 @@ c  deal with 1st grid surfaces only (with "radial surfaces", by abuse of languag
             ITRSF=INMP1I(MRSURF,NPCELL,NTCELL)
           ENDIF
           IF (ITRSF.GT.0) MSURF=NLIM+ITRSF
-        ENDIF
+        end select
 C
 C  SET ICOS AND SCOS SUCH AS IF THE SOURCE PARTICLE HAD ARRIVED
 C  AT THE SURFACE FROM THE CORRECT SIDE AND IS NOW REFLECTED
