@@ -247,7 +247,7 @@ C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 ! Scale log collision energy to projectile energy for proper isotope, for rate coefficient, 
 ! i.e. use neutral particle mass.
 C
-          IF (TIIN(IPLSTI,K).LT.TVAC) THEN
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
