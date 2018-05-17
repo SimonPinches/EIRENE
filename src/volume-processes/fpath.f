@@ -21,7 +21,7 @@ cdr 06.08.15 :  arguments added to vecusr
 cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
-cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 
 
@@ -102,9 +102,9 @@ C
       REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
       REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATH,
-     .          EIRENE_CROSS, 
+     .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
-     .          EIRENE_ENERGY_RATE_COEFF, 
+     .          EIRENE_ENERGY_RATE_COEFF,
      .          CEL,CXS, VEFFQ,VEFF,
      .          TBEL, TBCX, TBPI, TBOT,
      .          SIGMAX,  EHEAVY,
@@ -116,7 +116,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
-     .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
 !pb  
      .          EIRENE_FPATHPH,
@@ -340,7 +340,7 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
-C     HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)

@@ -86,8 +86,8 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
      .      (PEN .NE. PENOLD) ) then
 c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
 !         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
-!    .                 NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!    .                 NADVI+7)
+!    .                NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
+!    .                NADVI+7)
 
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '

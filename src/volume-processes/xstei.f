@@ -385,7 +385,7 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
                       EE = EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
-     .                                                PLS(J),.FALSE.,1)
+     .                                              PLS(J),.FALSE.,1)
                       EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
                       EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
                     END DO

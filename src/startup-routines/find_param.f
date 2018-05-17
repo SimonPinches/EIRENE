@@ -1354,7 +1354,6 @@ c  parent state contributions
             
       END IF
 
-
 C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
@@ -1363,40 +1362,40 @@ C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
         IF (.FALSE.) THEN
-        ALLOCATE (ENERGY(2,NCHORI))
-        ENERGY = 0._DP
-        LINES = 0
+          ALLOCATE (ENERGY(2,NCHORI))
+          ENERGY = 0._DP
+          LINES = 0
 
-        DO J = 1, NCHORI
-          READ (IUNIN,*)
-          READ (IUNIN,'(12I6)') NCHTAL
-          READ (IUNIN,*)
-          READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
-          READ (IUNIN,*)
-          READ (IUNIN,*)
-          IF (NCHTAL == 2) THEN
-            LEMISS = .FALSE.
-            DO I = 1, LINES
-              D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
-              D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
-              IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                LEMISS = .TRUE.
-                EXIT
+          DO J = 1, NCHORI
+            READ (IUNIN,*)
+            READ (IUNIN,'(12I6)') NCHTAL
+            READ (IUNIN,*)
+            READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
+            READ (IUNIN,*)
+            READ (IUNIN,*)
+            IF (NCHTAL == 2) THEN
+              LEMISS = .FALSE.
+              DO I = 1, LINES
+                D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
+                D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
+                IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
+                  LEMISS = .TRUE.
+                  EXIT
+                END IF
+              END DO
+              IF (.NOT.LEMISS) THEN
+                LINES = LINES + 1
+                ENERGY(1,LINES) = EMIN1
+                ENERGY(2,LINES) = EMAX1
               END IF
-            END DO
-            IF (.NOT.LEMISS) THEN
-              LINES = LINES + 1
-              ENERGY(1,LINES) = EMIN1
-              ENERGY(2,LINES) = EMAX1
             END IF
-          END IF
-        END DO
+          END DO
 
 C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
 C  OF EMISSION PROFILES
-        NREAC = NREAC + LINES*6 + 3
+          NREAC = NREAC + LINES*6 + 3
 
-        DEALLOCATE (ENERGY)
+          DEALLOCATE (ENERGY)
         END IF
       END IF
 

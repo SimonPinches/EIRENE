@@ -309,7 +309,7 @@ c  unused, pressure broadening constants
       phline%iprofiletype = iprftype
       phline%imess = imess
  
-cdr  jan 18: try to reconnet photonic data to reacdat structure.
+cdr  jan 18: try to reconnect photonic data to reacdat structure.
 cdr          not finished
 
 c  reaction no IR is a "photonic" reaction 

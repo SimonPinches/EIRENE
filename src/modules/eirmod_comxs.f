@@ -2304,6 +2304,7 @@ c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
+
 cdr  allocate, initialize, default asymptotics
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
 

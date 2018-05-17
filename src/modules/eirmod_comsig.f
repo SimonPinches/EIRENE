@@ -48,7 +48,6 @@ cdr  Jan. 2018  mod_addv added
      L         PRSPEC,   PRARGL
  
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
-
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
  
       TYPE TCONTRIB
