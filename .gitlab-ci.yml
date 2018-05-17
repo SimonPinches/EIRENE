@@ -2,7 +2,7 @@ image: debian
 
 before_script:
     # Install required programs
-    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90
+    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd
 
 build_gfortran:
     stage: build
