@@ -16,9 +16,9 @@ C
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST).
-c    Currently there are up to 6 contributions to each particular preprogrammed
+c    Currently there are up to 6 contributions to each particular pre-programmed
 c    transition (depending on population coefficient data stored 
-c    in file AMJUEL, section H.11 and H.12 
+c    in file AMJUEL, section H.11 and H.12) 
 c  aug.16: available transitions in H-atom:
 c          ly-alpha  (2 - 1)
 c          ly-beta   (3 - 1)
@@ -86,45 +86,7 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
 C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
-!          if (PEN.EQ.12.089_DP) THEN
-!            write (iunout,*) ' ly_beta '
-!            CALL EIRENE_Ly_beta 
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.10.2375_DP) THEN
-!            write (iunout,*) ' ly_alpha '
-!            CALL EIRENE_Ly_alpha 
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.3.0222_DP) THEN
-!            write (iunout,*) ' ba_delta '
-!            CALL EIRENE_Ba_delta
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!           elseif (PEN.EQ.2.8560_DP) THEN
-!            write (iunout,*) ' ba_gamma '
-!            CALL EIRENE_Ba_gamma
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.2.5500_DP) THEN
-!            write (iunout,*) ' ba_beta '
-!            CALL EIRENE_Ba_beta
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          elseif (PEN.EQ.1.8889_DP) THEN 
-!            write (iunout,*) ' ba_alpha '
-!            CALL EIRENE_Ba_alpha
-!     .          (ISTRA,NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!     .                 NADVI+7)
-!          else
-!            WRITE (IUNOUT,*) 'NO LINE DEFINITION FOUND FOR PEN=',PEN
-!            WRITE (IUNOUT,*) 'SIGNAL IS SET TO 0'
-!            ADDV(NADVI+1:NADVI+7,:) = 0._DP
-!          endif
 c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
-!          CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
-!    .                  NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
-!    .                  NADVI+7)
 
           CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
 

@@ -2035,11 +2035,6 @@ cdr options for extrapolation from data tables or from validity range of fits.
           CALL FXDRCHR (IUN,RP%HYD%REAC_STRING)
           CALL FXDRCHR (IUN,RP%HYD%REACNAME)
           CALL FXDRCHR (IUN,RP%HYD%RPRT)
-
-        ELSE IF (RP%IFIT == 5) THEN
-! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          IHELP(1:2) = (/ RP%CRM%IFLAV, RP%CRM%IVARST /)
-          CALL FXDRINT (IUN,IHELP,2)
  
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
@@ -2183,13 +2178,6 @@ cdr options for extrapolation from data tables or from validity range of fits.
           CALL FXDRCHR (IUN,RP%HYD%REAC_STRING)
           CALL FXDRCHR (IUN,RP%HYD%REACNAME)
           CALL FXDRCHR (IUN,RP%HYD%RPRT)
-
-        ELSE IF (RP%IFIT == 5) THEN
-! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          CALL FXDRINT (IUN,IHELP,2)
-          IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
-          RP%CRM%IFLAV = IHELP(1)
-          RP%CRM%IVARST = IHELP(2)
  
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 

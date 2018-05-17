@@ -217,7 +217,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA,
+     .           NB,NS,NA, ISTR,
      .           NRC, IADV, NO_COMPO, NO_CONTRIB, ICNT, IDMDL, IND
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -642,8 +642,8 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
-        WRITE (iunout,*) '       FROM  FILE FT15 '
+        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP'
+        WRITE (iunout,*) '       FROM FILE FT15'
         WRITE (iunout,*) '       EIRENE SAVES NEW SNAPSHOT POPULATION'
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
@@ -3183,9 +3183,9 @@ cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
 cdr   X.B. correction Sept 17, from SOLPS-ITER branch,
           IF (NSPS > 0) THEN
             NSPSA=NSPS
-          ESPEC%LOG = .FALSE.
-          ESPEC%SPCMIN=SPCMN
-          ESPEC%SPCMAX=SPCMX
+            ESPEC%LOG = .FALSE.
+            ESPEC%SPCMIN=SPCMN
+            ESPEC%SPCMAX=SPCMX
             ESPEC%SPCDEL=(SPCMX-SPCMN)/REAL(NSPSA,DP)
           ELSEIF (NSPS < 0) THEN
             NSPSA=-NSPS
@@ -3658,7 +3658,10 @@ c  default asymptotics
      .                    ISTCHR
 cdr  new input option: generalized side on line emissivities
         READ (IUNIN,'(A400)') ZEILE
+        IREAD=1
         IF (NCHTAL(ICHORI) == 2) THEN
+cdr  for nchtal=2: one extra input card may be read:  search for 'USE_LINE'
+cdr  and fill CH_LINE_NAME(ICHORI) with the name of that line.
           ULINE = ZEILE
           CALL EIRENE_UPPERCASE(ULINE)
           IND = INDEX(ULINE,'USE_LINE')
@@ -3667,9 +3670,10 @@ cdr  new input option: generalized side on line emissivities
             READ (IUNIN,'(A400)') ZEILE
           END IF
         END IF
-        READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE 
+        READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
      .                    NSPBLC(ICHORI),NSPADD(ICHORI)
+        IREAD=0
         READ (IUNIN,6664) EMIN1(ICHORI),EMAX1(ICHORI),ESHIFT(ICHORI)
         READ (IUNIN,66664) IPIVOT(ICHORI),
      .                     XPIVOT(ICHORI),YPIVOT(ICHORI),ZPIVOT(ICHORI)
@@ -5125,7 +5129,7 @@ C
           ENDDO
         ENDIF
 C
-C   MODIFY SOME PLASMA DATA, USER-SUPPLIED ROUTINE
+C  MODIFY SOME PLASMA DATA, USER-SUPPLIED ROUTINE
 C
         CALL EIRENE_PLAUSR
 

@@ -1357,13 +1357,13 @@ c  parent state contributions
 C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
-!pb        NREAC=NREAC+1
+!pb     NREAC=NREAC+1
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
         IF (.FALSE.) THEN
-        ALLOCATE (ENERGY(2,NCHORI))
-        ENERGY = 0._DP
-        LINES = 0
+          ALLOCATE (ENERGY(2,NCHORI))
+          ENERGY = 0._DP
+          LINES = 0
 
           DO J = 1, NCHORI
             READ (IUNIN,*)
@@ -1373,16 +1373,16 @@ C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
             READ (IUNIN,*)
             READ (IUNIN,*)
             IF (NCHTAL == 2) THEN
-              FOUND = .FALSE.
+              LEMISS = .FALSE.
               DO I = 1, LINES
                 D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
                 D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
                 IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                  FOUND = .TRUE.
+                  LEMISS = .TRUE.
                   EXIT
                 END IF
               END DO
-              IF (.NOT.FOUND) THEN
+              IF (.NOT.LEMISS) THEN
                 LINES = LINES + 1
                 ENERGY(1,LINES) = EMIN1
                 ENERGY(2,LINES) = EMAX1
