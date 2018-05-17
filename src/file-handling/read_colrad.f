@@ -127,9 +127,10 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
           M_HCOL(NHCOL_STORE) = IVAR
         END IF
 
-        REACDAT(IR)%ETH = 0._DP
-        REACDAT(IR)%RTMAX = 0._DP
-        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!       REACDAT(IR)%ETH = 0._DP
+!       REACDAT(IR)%RTMAX = 0._DP
+!       REACDAT(IR)%ERTMAX = -HUGE(1._DP)
 
         SELECT CASE (ISW)
         CASE (2:4)

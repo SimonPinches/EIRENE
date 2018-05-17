@@ -17,6 +17,8 @@ C
 C  SET ATOMIC AND MOLECULAR DATA: DRIVER
 C
 CDR  CALLED IN INITIALIZATION PHASE OF RUN
+c  ical =   0:      allocate storage
+c  ical ne. 0:      call EIRENE_INIT_CMDTA(2) (contained in eirmod_comxs) cdr: called twice ??
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -187,10 +189,6 @@ cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI RE
      .          'AS SECONDARY PARTICLE OF PI REACTION IRPI = ',IRPI
         end if
       END DO
-
-!pb        tpb2 = second_own()
-!pb        write (6,*) ' cpu time for packs und counts ',tpb2-tpb1
-!pb        tpb1 = tpb2
 
       if (ierror > 0) then
          write (iunout,*) 'only a temporary fail safe step'
