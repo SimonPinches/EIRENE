@@ -3210,12 +3210,14 @@ C  MIN AND MAX ENERGY SCORE (EV) ON THIS TALLY
           ESPEC%SPCDELI=1._DP/(ESPEC%SPCDEL+EPS60)
           ALLOCATE(ESPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectrally resolved tallies
-!         IF (NSIGI_SPC > 0) THEN
+          IF (NSIGI_SPC > 0) THEN
             ALLOCATE(ESPEC%SDV(0:NSPSA+1))
             ALLOCATE(ESPEC%SGM(0:NSPSA+1))
             ALLOCATE(ESPEC%STV(0:NSPSA+1))
             ALLOCATE(ESPEC%GG(0:NSPSA+1))
-!         endif
+          ELSE
+            NULLIFY(ESPEC%SDV, ESPEC%SGM, ESPEC%STV, ESPEC%GG)
+          END IF
           ESPEC%SPC(0:NSPSA+1) = 0._DP
           ESPEC%IMETSP = 0
 
@@ -3224,12 +3226,14 @@ c  sum over strata
             SSPEC => SMESTL(J)
             ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
-!           IF (NSIGI_SPC > 0) THEN
+            IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPSA+1))
               ALLOCATE(SSPEC%SGM(0:NSPSA+1))
               ALLOCATE(SSPEC%STV(0:NSPSA+1))
               ALLOCATE(SSPEC%GG(0:NSPSA+1))
-!           END IF
+            ELSE
+              NULLIFY(SSPEC%SDV, SSPEC%SGM, SSPEC%STV, SSPEC%GG)
+            END IF
             SMESTL(J) = ESTIML(J)
           END IF
 C
