@@ -21,9 +21,7 @@ test_standalone_1D-H_slab:
     stage: test
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
-        - cd EIRENE-sample-cases
-        - git checkout buildSystem
-        - cd 1D-H_slab
+        - cd EIRENE-sample-cases/1D-H_slab
         - make test
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -36,9 +34,7 @@ test_standalone_1D-H_slab_with_farming:
         - PB/feature/farming
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
-        - cd EIRENE-sample-cases
-        - git checkout buildSystem
-        - cd 1D-H_slab_with_farming
+        - cd EIRENE-sample-cases/1D-H_slab_with_farming
         - make test
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
