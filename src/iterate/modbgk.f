@@ -62,8 +62,8 @@ C
       IMPLICIT NONE
 C
       REAL(DP), ALLOCATABLE :: PDEN(:),  EDEN(:),
-     .                       PDEN2(:), EDEN2(:), ENERGY(:,:),
-     .                       CROSSTEMP(:,:)
+     .                         PDEN2(:), EDEN2(:), ENERGY(:,:),
+     .                         CROSSTEMP(:,:)
 !pb 05.02.2013
       REAL(DP), ALLOCATABLE :: GBGKV(:,:)  ! TALLIES SCORED FOR BGK RELAXATION
 cdr:  Nov. 17:for sync between xstel, xstpi, etc...
@@ -842,7 +842,7 @@ C
 c  same as do 550 loop , for additional cell region
 c
       DO 570 IRAD=NSURF+1,NSURF+NRADD
-        PLASMA_BCKGRND  (0+0*NPLS+1   ,IRAD)= TEIN(IRAD)
+            PLASMA_BCKGRND  (0+0*NPLS+1   ,IRAD)= TEIN(IRAD)
             DO IPLSTI=1,NPLSTI
               PLASMA_BCKGRND(1+0*NPLS+IPLSTI,IRAD)= TIIN(IPLSTI,IRAD)
             END DO
@@ -1041,7 +1041,7 @@ C
       DEALLOCATE (EDEN2)
       DEALLOCATE (ENERGY)
       DEALLOCATE (PLS) 
-      IF(ALLOCATED(CROSSTEMP)) DEALLOCATE(CROSSTEMP) 
+      IF (ALLOCATED(CROSSTEMP)) DEALLOCATE(CROSSTEMP)
       DEALLOCATE (GBGKV)
 
 C

@@ -171,8 +171,8 @@ C
             VZ=VZIN(IPLSV,K)
           END IF
           PVELQ(IPLSV)=(VELX*VEL-VX)**2+
-     .                (VELY*VEL-VY)**2+
-     .                (VELZ*VEL-VZ)**2
+     .                 (VELY*VEL-VY)**2+
+     .                 (VELZ*VEL-VZ)**2
         ELSE
           PVELQ(IPLSV)=PVELQ0
         ENDIF

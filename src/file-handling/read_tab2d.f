@@ -142,7 +142,6 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         call eirene_alloc_fit_form (reacdat(ir)%pot)
 
         reacdat(ir)%pot%adas => ap
-
         reacdat(ir)%pot%ifit = 3
  
       case (1)
@@ -180,6 +179,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         REACDAT(IR)%RTC%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTC%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTC%RC2MAX = ap%dens(nde)
+ 
       case (5:7)
         IF (REACDAT(IR)%LRTCMW) THEN
           WRITE (IUNOUT,*) ' MOMEMTUM WEIGHTED RATE COEFFICIENT',
@@ -213,7 +213,6 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         call eirene_alloc_fit_form (reacdat(ir)%rtcew)
 
         reacdat(ir)%rtcew%adas => ap
-
         reacdat(ir)%rtcew%ifit = 3
         REACDAT(IR)%RTCEW%RC1MIN = ap%temp(1)
         REACDAT(IR)%RTCEW%RC1MAX = ap%temp(nte)
@@ -232,8 +231,8 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
         call eirene_alloc_fit_form (reacdat(ir)%oth)
 
-        reacdat(ir)%oth%adas => ap
 
+        reacdat(ir)%oth%adas => ap
         reacdat(ir)%oth%ifit = 3
  
       case default

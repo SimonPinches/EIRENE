@@ -19,7 +19,7 @@ cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) direct
 
 cdr     Reaction identifyer KK is defined twice, within same routine veloel.
 cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
-cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.                   
+cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.  
 cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)                 
 C
 C
@@ -186,13 +186,13 @@ c old
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+          GOTO 995
 
         ENDIF
-
-CDR   ELSEIF (MODC.EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, EBEAM=0)
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
-CDR  MODEL NOT IMPLEMENTED FOR ELASTIC COLLISIONS, BUT SEE: XSTCX, XSTPI,....
+
         MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
         IF (NSTORDR >= NRAD) THEN 
@@ -256,10 +256,12 @@ c        WITH WEIGHTING/REJECTION
             NELREL(IREL) = -1
             EPLEL3(IREL,1,1)=EBULK
           END IF
+C       ELSE
+CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(5,4,IREL)=3
       ELSEIF (NSEEL4.EQ.1) THEN
-C  4.B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
+C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -376,6 +378,12 @@ c old
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
+C  4.2. BULK ELECTRON ENERGY LOSS RATE  ! NOT APPLICABLE
+C
+C
+C  4.3. HEAVY PARTICLE ENERGY GAIN RATE
+C
+C
 C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
       IESTEL(IREL,1)=EIRENE_IDEZ(IESTM,1,3)
       IESTEL(IREL,2)=EIRENE_IDEZ(IESTM,2,3)
@@ -385,7 +393,7 @@ C
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM.-BALANCE '
+     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR '
         IESTEL(IREL,2)=1
@@ -393,7 +401,7 @@ C
       IF (IESTEL(IREL,3).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN.-BALANCE '
+     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE '
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR '
         IESTEL(IREL,3)=1
@@ -433,11 +441,11 @@ C
       CALL EIRENE_LEER(1)
 
       IF (IESTEL(IREL,1).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART. BALANCE '
       IF (IESTEL(IREL,2).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM. BALANCE '
       IF (IESTEL(IREL,3).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN. BALANCE '
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
@@ -445,7 +453,7 @@ C
       WRITE (IUNOUT,*) 'MODCOL(0)   ',MODCOL(5,0,IREL)
       WRITE (IUNOUT,*) 'MODCOL(1:4) ',
      .                  MODCOL(5,1,IREL),MODCOL(5,2,IREL),
-     .                           MODCOL(5,3,IREL),MODCOL(5,4,IREL)
+     .                  MODCOL(5,3,IREL),MODCOL(5,4,IREL)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)
       CALL EIRENE_LEER(1)

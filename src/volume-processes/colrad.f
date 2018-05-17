@@ -36,7 +36,6 @@ c            so far: q_ext not connected (l_ext=.false.)
  
       implicit none
  
-
       integer, intent(in) :: ir, icell, icrm, ivar
       real(dp), intent(in) :: p1, p2
       real(dp), intent(out) :: res
@@ -57,7 +56,6 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
         allocate (h_stor(nhcol_store,nrad))
         lvis_h = .false.
       end if
-
 
       if (icrm == 1) then
 
@@ -119,7 +117,6 @@ c  population coefficients, coupling to ground state H(1) atom
               h_stor(i,icell) = pop1(5)
             case (11)                     ! H.4  2.1.5e
               h_stor(i,icell) = pop1(6)
-
 c  population coefficients, coupling to H+ ion
             case (12)                     ! H.4  2.1.8a
               h_stor(i,icell) = pop0(3)
@@ -155,7 +152,6 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
         end if
 
 ! rate is calculated
-
         res = h_stor(ivar,icell)      
         return      
         

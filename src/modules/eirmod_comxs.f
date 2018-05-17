@@ -2322,12 +2322,7 @@ c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
 
 cdr  allocate, initialize, default asymptotics
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
-! NOW DONE IN EIRENE_ALLOC_FIT_FORM
-!        ALLOCATE (REACDAT(IR)%POT)
-!        NULLIFY(REACDAT(IR)%POT%ADAS)
-!        NULLIFY(REACDAT(IR)%POT%LINE)
-!        NULLIFY(REACDAT(IR)%POT%HYD)
-        
+
         REACDAT(IR)%POT%POLY => REA
         REACDAT(IR)%LPOT = .TRUE.
         REACDAT(IR)%POT%IFIT = IFIT

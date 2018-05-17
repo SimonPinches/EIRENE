@@ -83,6 +83,7 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to H+, recomb
         hstr(15) = '2.1.8d  ' 
         ihsw(16) = 12
         hstr(16) = '2.1.8e  ' 
+c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation field 
         ihsw(17) = 12
         hstr(17) = '2.1.5PHa' 
         ihsw(18) = 12

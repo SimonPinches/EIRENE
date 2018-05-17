@@ -18,7 +18,7 @@ cdr             (this may complicate stand alone use, outside eirene)
 cdr             call "exit_own" rather than "stop", further cleanup...
 cdr             remaining differences: 
 cdr                 use eirmod_ccrm (Vlad Kotov) in solps-iter (commented out)
-cdr                 lima=34 or lima=40, lima undefined in solps-iter ?
+cdr             lima=34 or lima=40, lima undefined in solps-iter ?
 
 cdr: nov. 2015  added first argument in parameter list: ICELL
 CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
@@ -38,6 +38,7 @@ C   ASSUME: SLOWLY EVOLVING SPECIES: H,H+
 C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
+
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
 C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
@@ -168,12 +169,6 @@ ctt  &             ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T
 C***********************************************************************
 C
  
-
-CPB  !!!!!!!!!!! PRELIMINARY  !!!!!!!!!!!!!!!
-
-      E_ALPCR = -1.5_DP * TEMP * ALPCR
-
-CPB  !!!!!!!!!!! PRELIMINARY  !!!!!!!!!!!!!!!
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
       RETURN
@@ -200,7 +195,7 @@ C
         P=I
         E_AT(I)=UH*(1.0-1.0/P**2)
 100   CONTINUE
- 
+
       DO 101 I=1,LIM-1
       DO 102 J=I+1,LIM
       AI=I
@@ -236,7 +231,7 @@ cdr  Ly alpha opaque: nur a(2-->1) rausnehmen
       A(2,1)=A(2,1)*pop_esc
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_CLSAHA(TEMP,SAHA)
 C
@@ -247,9 +242,9 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
- 
+
       TE=TEMP*1.1605E4
- 
+
       DO 101 I=1,40
       P=I
       UION=13.595/TEMP/P**2
@@ -262,7 +257,7 @@ c     endif
 
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_RATCOF(TEMP,OSC,SAHA,C,F,S,ALPHA,BETA,EBETA
      .                  ,lopaque)
@@ -456,7 +451,7 @@ C     INITIALIZATION
       TE=TEMP*1.1605E4     !  Te in Kelvin, TEMP in eV
       TEL10=log10(temp)
       UH=13.595
- 
+
       DO 101 I=1,40
       P=I
   101 UION(I)=13.595/TEMP/P**2
@@ -471,10 +466,10 @@ c  three body recombination: ALPHA (inverse to ionization S)
       IF(TE.GT.5.0E3) THEN
 ! Te gt than 5000 Kelvin:  calculate S, and derive alpha
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
- 
+
         DO 105 I=1,40
   105     ALPHA(I)=S(I)*SAHA(I)
- 
+
       ELSE
 ! Te lt than 5000 Kelvin:  calculate ALPHA, and derive S for transition to n=1
 !                          calculate S, and derive ALPHA for n=2,...40
@@ -522,10 +517,10 @@ C  EKIN=  <SIGMA * V * EKIN(ELEC)>   (EV*CM**3/S)
 c
       if (lopaque) beta(1)=0.
 c
- 
+
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
 C
@@ -555,7 +550,7 @@ C*********  1 -> J
       CALL EIRENE_COF1N(U(I,J),OSC(I,J),TE,F1,I,J)
       F(J,1)=F1
   100 C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
- 
+
 C*********  2-10 -> J
       DO 110 I=2,10
       P=I
@@ -563,14 +558,14 @@ C*********  2-10 -> J
       Q=J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       CALL EIRENE_COFJO(U(I,J),OSC(I,J),TE,CJ,I,J)
- 
+
       GG=((P-2.)/8.)**0.25
       C(I,J)=(1.-GG)*CJ+GG*CV
 110   F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
- 
- 
+
+
 C*********  I(>11) -> J
- 
+
       DO 120 I=11,39
       P=I
       DO 120 J=I+1,40
@@ -578,14 +573,14 @@ C*********  I(>11) -> J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       C(I,J)=CV
   120 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
- 
+
 C*********  S  1 ->  ionization
       I=1
- 
+
       IF(TE.GT.5.0E3) THEN
       CALL EIRENE_COFJS(TE,S1,I)
       S(1)=S1
- 
+
       ELSE      !  Te  <= 5000
       CALL EIRENE_COFJS2(TE,AL,I)
       ALPHA(1)=AL
@@ -594,13 +589,13 @@ C
 C*********  S  2-10 ->
       DO 210 I=2,10
       P=I
- 
+
       CALL EIRENE_COFJS(TE,SJ,I)
       CALL EIRENE_COFVS(TEMP,SV,I)
- 
+
       GGG=((P-2.)/8.)**0.25
   210 S(I)=(1.-GGG)*SJ+GGG*SV
- 
+
 C*********  S  I(>11) ->
       DO 220 I=11,40
       CALL EIRENE_COFVS(TEMP,SV,I)
@@ -660,7 +655,7 @@ C
       B=B-A*LOG(C1)
       Y1=-Y
       Z1=-Z
- 
+
       IF(Y.GT.50.0) THEN
         E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
         E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
@@ -687,7 +682,7 @@ cdr  use exponential integral here
       END IF
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFJO(U,OSC,TE,C,I,J)
 C
@@ -725,14 +720,14 @@ C
       E2Z=EXP(-Z)-Z*E1Z
       E1=(1/Y+0.5)*E1Y-(1/Z+0.5)*E1Z
       E2=E2Y/Y-E2Z/Z
- 
+
       C=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)
- 
+
       RETURN
  1000 WRITE(iunout,*) 'ERROR IN COFJO        ICON = ',ICON
       CALL EIRENE_EXIT_OWN(1)
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFVR(U,OSC,TEMP,C,I,J)
 C
@@ -761,12 +756,12 @@ C
       GAMMA=UH*LOG(G1)*G2/G3
       C1=1.6D-7*TEMP**0.5/(TEMP+GAMMA)*EXP(-U)
       C2=0.3*TEMP/UH+DELTA
- 
+
       C=C1*(A*LOG(C2)+B)
- 
+
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFJS(TE,S,I)
 C
@@ -781,7 +776,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION G(0:2,40)
- 
+
       G(0,1)=1.1330
       G(1,1)=-0.4059
       G(2,1)=0.07014
@@ -792,11 +787,11 @@ C
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
   350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
- 
+
       IF (I.EQ.1) THEN
- 
+
       P=1.0
- 
+
       Y=1.57770E5/TE
       R=0.45
       Z=R+Y
@@ -805,7 +800,7 @@ C
       DO 223 K=0,2
   223 A=A+G(K,1)/(K+3)
       A=A*1.9603*P
- 
+
       B=0.66667*P**2*(5-0.603)
       C1=2*P**2
       B=B-A*LOG(C1)
@@ -813,7 +808,7 @@ C
       Z1=-Z
       CALL EIRENE_EXPI(Y1,E1Y,ICON)
       CALL EIRENE_EXPI(Z1,E1Z,ICON)
- 
+
       E1Y=-E1Y
       E1Z=-E1Z
       E2Y=EXP(-Y)-Y*E1Y
@@ -824,9 +819,9 @@ C
       EGY=E0Y-2*E1Y+E2Y
       EGZ=E0Z-2*E1Z+E2Z
       E2=EGY+RX*EGZ
- 
+
       S=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)
- 
+
       ELSE
       P=I
       BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
@@ -1177,129 +1172,7 @@ coupling to Q_EXT
  
       RETURN
       END
-C***********************************************************************
-      SUBROUTINE
-     .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,R0,R1,
-     &      R_EXT,Q_EXT)
-C
-C     SOLUTION OF RATE EQUATION FOR ATOMIC HYDROGEN
-C
-C     COPY OF EIRENE_POPCOF FOR USE OF MULTIPLE RIGHT HAND SIDES
-C
-      USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      REAL(DP)  C(40,40),F(40,40),A(40,40),W(40,40)
-     &         ,SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40)
-     &         ,       Q_EXT(40),R_EXT(40)
-     &         ,VW(40),WA(40,40)
-      REAL(DP) :: BLAX(3,40)
-      dimension ip(40)
- 
-      DO 201 K=2,LUP-1
- 
-        DO 202 L=2,K
-cdr stoss bevoelkerung von k von unten
-  202     W(K,L)=C(L,K)*DENSEL
- 
-cc diagonale
-cc entvoelkerung durch stoesse nach unten
-        SUMF=0.
-        DO 301 I=1,K-1
-  301     SUMF=SUMF+F(K,I)
-cc entvoelkerung durch stoesse nach oben
-        SUMC=0.
-        DO 302 I=K+1,LIM
-  302     SUMC=SUMC+C(K,I)
-cc  spontan nach unten
-        SUMA=0.
-        DO 303 I=1,K-1
-  303     SUMA=SUMA+A(K,I)
-cdr entvoelkerung von k: stoesse nach unten, nach oben, ionis, spontan
-cdr                      nach unten
-        W(K,K)=-(DENSEL*(SUMF+SUMC+S(K))+SUMA)
- 
-cc diagonale fertig
- 
-        DO 203 L=K+1,LUP
-cdr bevoelkerung durch: stoesse von oben, spontan von oben
-  203     W(K,L)=DENSEL*F(L,K)+A(L,K)
- 
-  201 CONTINUE
- 
-cdr k loop finished
-cdr: jetzt: ditto fuer k=lup, d.h. bevoelkerung von oben entfaellt
-      DO 211 L=2,LUP-1
- 
-  211 W(LUP,L)=C(L,LUP)*DENSEL
- 
-      SUMF=0.
-      DO 311 I=1,LUP-1
-  311 SUMF=SUMF+F(LUP,I)
-      SUMC=0.0
-      DO 313 I=LUP+1,LIM
-  313 SUMC=SUMC+C(LUP,I)
-      SUMA=0.
-      DO 312 I=1,LUP-1
-  312 SUMA=SUMA+A(LUP,I)
- 
-      W(LUP,LUP)=-(DENSEL*(SUMF+SUMC+S(LUP))+SUMA)
- 
-C  RECHTE SEITEN:
- 
-c  vorbereiten fuer recombination
-      DO 550 K=2,LUP
-        SUMF=0.0
-        DO 500 I=LUP+1,LIM
-  500     SUMF=SUMF+F(I,K)*SAHA(I)
-        SUMAS=0.0
-        DO 501 I=LUP+1,LIM
-  501     SUMAS=SUMAS+SAHA(I)*A(I,K)
-c
-c  matrixelemente: 1/s  (densel*rate coeff. )
-c  rechte seiten : cm**3/s, nicht: 1/s, also fuer elektronendichte=1
-c                                      (bzw: stosspartnerdichte =1)
-c  geht wg. linearitaet.
-c  recombination e + H+ --> H*
-        W(K,LUP+1)=-(DENSEL*SUMF+SUMAS+(DENSEL*ALPHA(K)+BETA(K)))
-c  ionisation e + H --> H*
-        W(K,LUP+2)=-C(1,K)
-c  external source: Q_EXT
-        W(K,LUP+3)=-Q_EXT(K)
-  550 CONTINUE
- 
-cdr w besetzt fuer w(i,j) i=2,lup,j=2,lup+3
-cdr geht gut, solange lup<38
-cdr reduziere w indices um 1: auf wa: i=1,lup-1,j=1,(lup-1)+3
-      DO 402 I=1,LUP-1
-      DO 402 J=1,LUP-1+3
-  402   WA(I,J)=W(I+1,J+1)
-        
-!      DO 3001 II=LUP,LUP+2
-      DO 3000 J=1,LUP-1
-        BLAX(1:3,J)=WA(J,LUP:LUP+2)
- 3000 CONTINUE
- 
-        CALL EIRENE_LAX_M(WA,40,LUP-1,  BLAX,3,0.0,1,IS,VW,IP,ICON)
-c
- 
-        DO 3010 J=1,LUP-1
-!          IF(II.EQ.LUP) THEN
-coupling to H+
-            R0(J+1)=BLAX(1,J)
-!          ELSE IF(II.EQ.LUP+1) THEN
-coupling to H-groundstate
-            R1(J+1)=BLAX(2,J)
-!          ELSE IF(II.EQ.LUP+2) THEN
-coupling to Q_EXT
-            R_EXT(J+1)=BLAX(3,J)
-!          END IF
- 3010   CONTINUE
-! 3001 CONTINUE
- 
- 
-      RETURN
-      END
- 
+
 C***********************************************************************
       SUBROUTINE
      .  EIRENE_IONREC(C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
@@ -1330,15 +1203,16 @@ C  IONIS. TRANSITION TO CONTINUUM
       DO 5001 I=2,LUP
         SUSCR=C(1,I)-R1(I)*(F(I,1)*DENSEL+A(I,1))
  5001 SCR=SCR+SUSCR
+
 C  RECOMB. TRANSITION TO (1)
       ALPCR1=DENSEL*ALPHA(1)+BETA(1)
- 
+
       ALPCR2=0.0
 
       DO 5003 I=2,LIM
- 
+
  5003 ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
- 
+
       ALPCR=ALPCR1+ALPCR2
 
 
@@ -1355,7 +1229,7 @@ C  ALP_EXT STILL MISSING: from external to ground state
 
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_E_IONREC
      &                   (C,S,SAHA,A,ALPHA,BETA,EBETA,

@@ -21,7 +21,6 @@ cdr            tbd:  eletron energy loss rates can change sign.
 cdr            Be careful with log(e_src). Routine should only be called with
 cdr            LEXP=.true.
 
-
       function EIRENE_energy_rate_coeff (ir, ic, p1, p2, lexp, ip2shft)
      .                            result (erate)
 
@@ -42,14 +41,14 @@ cdr            LEXP=.true.
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also energy rates, erate  for this particular option. 
+!            (currently here also energy rates, erate  for this particular option.
 !            More logical if the latter are moved
 !            to routine "eirene_energy-rate-coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
 !   p1:        first parameter (usually:  log_e temperature,...)
-!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
+!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return erate=energy weighted rate coefficient in eV*cm**3/sec
 !   not lexp:  return erate=log_e(erate coefficient) with rate-coefficient in cm**3/sec
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
@@ -61,15 +60,15 @@ cdr            LEXP=.true.
 !              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
-!              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15) 
- 
+!              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
       use EIRMOD_ccona
       use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
- 
+
       implicit none
 
       integer, intent(in) :: ir, ic, ip2shft
@@ -81,7 +80,7 @@ cdr            LEXP=.true.
      .            pp2, rc2min,  rc2max, fp2(6),
      .                 rrc2min, rrc2max
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
-     .                  xln10   =  2.30258509299_dp,    !ln(10) 
+     .                  xln10   =  2.30258509299_dp,    !ln(10)
      .                  dsub    = 18.420680744_dp,      !ln(1e8), hard wired. But should come from database
      .                  xlnelch =-43.2777390821         !ln(elcha)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
@@ -106,18 +105,18 @@ cdr            LEXP=.true.
           real(dp) :: res
         end function EIRENE_intp_tab1d
       end interface
- 
+
       if (.not.reacdat(ir)%lrtcew) then
         write (iunout,*) ' no data for energy weighted rate',
      .                   ' coefficient available for reaction ',ir
         call EIRENE_exit_own(1)
       end if
- 
+
       erate = 0._dp
 
 c.............................................................
 
- 
+
       if (mod(iftflg(ir,4),100) == 10) then
 
 !  SET A CONSTANT ENERGY WEIGHTED RATE COEFFICIENT.
@@ -138,8 +137,8 @@ c.............................................................
       elseif (reacdat(ir)%rtcew%ifit == 1) then
 
 !  SINGLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE), FOR LN(ENERGY WEIGHTED RATE)
- 
-c  extrapolation data: for 1d polynomial fits 
+
+c  extrapolation data: for 1d polynomial fits
         rc1min  = reacdat(ir)%rtcew%rc1min
         rc1max  = reacdat(ir)%rtcew%rc1max
         fp1(1:3)= reacdat(ir)%rtcew%fp1l
@@ -163,12 +162,12 @@ c  extrapolation data: for 1d polynomial fits
 
 c..............................................................
 
- 
+
       else if (reacdat(ir)%rtcew%ifit == 2) then
 
 !  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(ENERGY WEIGHTED RATE)
 
-c  extrapolation data:  for 2d polynomial fits 
+c  extrapolation data:  for 2d polynomial fits
         rc1min  = reacdat(ir)%rtcew%rc1min
         rc1max  = reacdat(ir)%rtcew%rc1max
         rc2min  = reacdat(ir)%rtcew%rc2min
@@ -183,7 +182,7 @@ c  extrapolation data:  for 2d polynomial fits
         jfex2mx = reacdat(ir)%rtcew%jfex2mx
 
 
-c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
+c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
         pp2 = p2
         if (ip2shft > 0) then
           pp2 = pp2 - dsub
@@ -218,7 +217,7 @@ cdr  to be added here
 
 !  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
 
-c  convert parameters p1 and p2 from ln to log10:  pp1,pp2 
+c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
@@ -243,7 +242,7 @@ c  tbd: So subtract this part in read_tab2d already, not here nor in calling rou
 
 
 c..............................................................
-  
+
       else if (reacdat(ir)%rtcew%ifit == 4) then
 
 !  proprietary option: not ready
@@ -253,7 +252,7 @@ cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy dat
 cdr  to be added here
 
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
- 
+
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
         res = eirene_intp_tab1d(reacdat(ir)%rtcew%hyd,pp1,ip1)
@@ -263,8 +262,9 @@ C  assume here: tabulated data are neither ln nor log10  (to be generalized)
 c..............................................................
 
       else if (reacdat(ir)%rtcew%ifit == 5) then
- 
+
 ! INTERNAL COLLISION RADIATIVE CODE
+
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
@@ -291,8 +291,8 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         endif
 
       end if
- 
- 
+
+
       return
 
 990   continue

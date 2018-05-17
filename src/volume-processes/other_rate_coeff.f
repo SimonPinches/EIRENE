@@ -27,14 +27,14 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also other rates, orate  for this particular option. 
+!            (currently here also other rates, orate  for this particular option.
 !            More logical if the latter are moved
 !            to routine "eirene_energy-rate-coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
 !   p1:        first parameter (usually:  log_e temperature,...)
-!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...) 
+!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units
 !   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ...units
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
@@ -47,14 +47,14 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
- 
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
       use EIRMOD_ccona
       use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
- 
+
       implicit none
 
       integer, intent(in) :: ir, ip2shft, ic
@@ -73,6 +73,7 @@ C  transformation of parameters
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar           
+
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
           use EIRMOD_precision
@@ -82,7 +83,7 @@ C  transformation of parameters
           integer, intent(out) :: ip1,ip2
           real(dp) :: res
         end function EIRENE_intp_tab2d
- 
+
         function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
           use EIRMOD_comxs, only: hydkin_data
@@ -92,41 +93,41 @@ C  transformation of parameters
           real(dp) :: res
         end function EIRENE_intp_tab1d
       end interface
- 
- 
+
+
       if (.not.reacdat(ir)%loth) then
         write (iunout,*) ' no data for other reaction available',
      .                   ' for reaction ',ir
         call EIRENE_exit_own(1)
       end if
- 
+
       orate = 0._dp
 
 c.............................................................
 
- 
+
       if (mod(iftflg(ir,2),100) == 10) then
 
-!  SET A CONSTANT RATE 
+!  SET A CONSTANT RATE
         orate = reacdat(ir)%oth%poly%dblpol(1,1)
 
 cdr   missing: iftflg < 100:  multiply density,  else: not
 cdr   lexp missing
 
 c.............................................................
- 
+
       elseif (reacdat(ir)%oth%ifit == 1) then
 
 !  SINGLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE), FOR LN(OTHER RATE)
- 
-c  extrapolation data:  for 1d polynomial fits 
+
+c  extrapolation data:  for 1d polynomial fits
         rc1min  = reacdat(ir)%oth%rc1min
         rc1max  = reacdat(ir)%oth%rc1max
         fp1(1:3)= reacdat(ir)%oth%fp1l
         fp1(4:6)= reacdat(ir)%oth%fp1r
         jfex1mn = reacdat(ir)%oth%jfex1mn
         jfex1mx = reacdat(ir)%oth%jfex1mx
- 
+
         orate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
      .                   p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
      .                   trcamd)
@@ -136,12 +137,12 @@ C       if (.not. lexp)  orate=orate
 
 c..............................................................
 
- 
+
       else if (reacdat(ir)%oth%ifit == 2) then
 
 !  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(OTHER RATE)
 
-c  extrapolation data:  for 2d polynomial fits 
+c  extrapolation data:  for 2d polynomial fits
         rc1min  = reacdat(ir)%oth%rc1min
         rc1max  = reacdat(ir)%oth%rc1max
         rc2min  = reacdat(ir)%oth%rc2min
@@ -154,9 +155,9 @@ c  extrapolation data:  for 2d polynomial fits
         jfex1mx = reacdat(ir)%oth%jfex1mx
         jfex2mn = reacdat(ir)%oth%jfex2mn
         jfex2mx = reacdat(ir)%oth%jfex2mx
- 
 
-c  rescale parameter p2  (currently only by 1e-8 for density):  pp2 
+
+c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
         pp2 = p2
         if (ip2shft > 0) then
           pp2 = pp2 - dsub
@@ -164,17 +165,17 @@ c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
           rrc2max=rc2max - dsub
         endif
 cdr     write (6,*) 'other rate '
- 
+
         call EIRENE_dbl_poly
      .       (reacdat(ir)%oth%poly%dblpol,p1,pp2,orate,dum,
-     .        rc1min, rc1max, fp1, jfex1mn, jfex1mx,
+     .        rc1min,  rc1max,  fp1, jfex1mn, jfex1mx,
      .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx,
      .        trcamd)
 
 C       if (.not. lexp)  orate=orate
         if (lexp)        orate = exp(max(-100._dp,orate))
 
-c.............................................................. 
+c..............................................................
 
       else if (reacdat(ir)%oth%ifit == 3) then
 
@@ -185,12 +186,12 @@ cdr  to be added here
 
 !  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
 
-c  convert parameters p1 and p2 from ln to log10:  pp1,pp2 
+c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
 C  assume here: tabulated data are log10  (to be generalized)
         orate = eirene_intp_tab2d(reacdat(ir)%oth%adas,pp1,pp2,ip1,ip2)
- 
+
         if (lexp) then
           orate=10._dp**orate
         else
@@ -202,15 +203,15 @@ cdr this unit conversion must be wrong in case lexp !!
 
 
 c..............................................................
-  
+
       else if (reacdat(ir)%oth%ifit == 4) then
- 
+
 ! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
-cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?) 
+cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 
 ! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
- 
+
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
         orate = eirene_intp_tab1d(reacdat(ir)%oth%hyd,pp1,ip1)
@@ -218,10 +219,11 @@ C  assume here: tabulated data are neither ln nor log10  (to be generalized)
 !  lexp option not connected here !
 
 c..............................................................
- 
+
       else if (reacdat(ir)%oth%ifit == 5) then
 
 ! INTERNAL COLLISION RADIATIVE CODE
+
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
@@ -230,15 +232,14 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
         CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, O_SCR)
 
+!  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
+
         orate=o_scr 
         if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0 
 
-        orate=scr 
-        if (.not.lexp) orate = log(scr)
-         
       end if
- 
+
 
       return
- 
+
       end function EIRENE_other_rate_coeff

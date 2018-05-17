@@ -60,7 +60,7 @@ C
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
      .           N_BULKIONS, NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
-     .           IATM, IMOL, IION, IPHOT, IPLS, 
+     .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
      .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
@@ -77,7 +77,6 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-
       LOGICAL :: LEMISS, NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
