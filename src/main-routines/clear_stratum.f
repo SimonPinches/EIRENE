@@ -46,6 +46,8 @@ C  SPECTRA
           ESTIML(ISPC)%SGMS = 0._DP
           ESTIML(ISPC)%SGM = 0._DP
           ESTIML(ISPC)%SDV = 0._DP
+          ESTIML(ISPC)%STV = 0._DP
+          ESTIML(ISPC)%GG = 0._DP
         END DO
       END IF
  
