@@ -1281,39 +1281,42 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+      IREAD=1
 
-c  optional input cards: 'define_lines'
+c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
-c  parent state contributions
+c  read up to NUM_LINES transitions, each may consist of NUM_CONTRIB 
+c  for different parent (donor) state contributions.
+c  Identify the block of LINES and CONTRIBUTIONS by a card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
-! EMISSIVITY LINES DEFINED IN INPUT
+! EMISSIVITY LINE DEFINED IN INPUT
         LINES = 0
         NLEMIS = .TRUE.
-        READ (IUNIN,6666) NO_LINES, MOD_ADDV
-        DO I=1, NO_LINES
+        READ (IUNIN,6666) NUM_LINES, MOD_ADDV
+        DO I=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
-          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,6666) NUM_COMPO
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
-            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
+            NADV_ADD = MAX(NADV_ADD,NUM_COMPO)
           ELSE 
-            NADV_ADD = NADV_ADD + NO_COMPO + 1
+            NADV_ADD = NADV_ADD + NUM_COMPO + 1
           END IF
-          DO J=1, NO_COMPO
+          DO J=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NO_CONTRIB           
-            LINES = LINES + NO_CONTRIB
-            DO K = 1, NO_CONTRIB
+            READ (IUNIN,*) NUM_CONTRIB           
+            LINES = LINES + NUM_CONTRIB
+            DO K = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
-              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+              IF (INDEX(FNAME,'ADAS') .NE. 0 .OR. 
+     .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
               IF (IRATIO > 0) THEN
                 LINES = LINES + 1
                 READ (IUNIN,'(18X,1X,A6)') FRATIO
@@ -1324,12 +1327,12 @@ c  parent state contributions
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
                   IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
                 END IF  
-              END IF
-            END DO
-          END DO
-        END DO
+              END IF  !  IRATIO
+            END DO    !  NUM_CONTRIB   (POSSIBEL D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
+          END DO      !  NUM_COMPO  (E.G.  GROUND STATE
+        END DO        !  NUM_LINES  (E.G. BA-ALPHA)
 
-! ADD 1 FOR TOTAL
+! ADD ONE MORE ADDITIONAL TALLY FOR TOTAL (SUM OVER LINES AND CONTRIBUTIONS)
         IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
         NADV = NADV + NADV_ADD 
         NREAC = NREAC + LINES
@@ -1342,15 +1345,15 @@ c  parent state contributions
       NCHEN = MAX(NCHEN,NCHENI)
 
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
-      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
+      IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
 ! USE DEFAULT LINES FOR EMISSIVITY
         MOD_ADDV = 0
         NADV=NADV+10
-        NO_LINES = 6
-        NO_COMPO = 6
+        NUM_LINES = 6
+        NUM_COMPO = 6
 ! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
-        NREAC = NREAC + NO_CONTRIB*NO_COMPO
+        NUM_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
+        NREAC = NREAC + NUM_CONTRIB*NUM_COMPO
             
       END IF
 
@@ -1358,7 +1361,6 @@ C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS 
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
 !pb     NREAC=NREAC+1
-        NADV=NADV+10
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
         IF (.FALSE.) THEN

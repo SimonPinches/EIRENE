@@ -62,13 +62,13 @@ C  ENERGY FACTOR FOR POWER LOSS (W)
 
 
         powalfs = 0._dp
-        do j = 1, emis_lines(i)%no_compo
+        do j = 1, emis_lines(i)%num_compo
           iadv = emis_lines(i)%compo(j)%iadv
           addv(iadv,:) = 0._dp
           sigadd = 0._dp
           powalf = 0._dp
             
-          do k = 1, emis_lines(i)%compo(j)%no_contrib
+          do k = 1, emis_lines(i)%compo(j)%num_contrib
             isp = emis_lines(i)%compo(j)%contrib(k)%isp
             itp = emis_lines(i)%compo(j)%contrib(k)%itp
             iratio = emis_lines(i)%compo(j)%contrib(k)%iratio

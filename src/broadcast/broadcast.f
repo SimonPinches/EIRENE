@@ -27,7 +27,10 @@ cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR) 
+c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
+cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD): 
+cdr            nhcol_store 
+cdr            m_hcol(nreac) 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr 
@@ -248,9 +251,13 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ENERGY,NCHEN,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ICMSIG,MCMSIG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (NLSTCHR,NCHOR,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
+     .                   0,MPI_COMM_WORLD,ier)
       END IF
       CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  additional input tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       IF (NO_LINES > 0) THEN
@@ -739,6 +746,10 @@ c  data for photon line transport
       CALL MPI_BCAST (IBGKPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr something for the CRM options, of block 4, here: H_Colrad.
+      CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      
 
       CALL MPI_BCAST (NADDI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
