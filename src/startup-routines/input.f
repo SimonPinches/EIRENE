@@ -4609,11 +4609,12 @@ C
       NTTRAM=NTTRA-1
       NBMLTP=NBMLT+1
 
-      IF (LEVGEO == 4) THEN
+      select case (LEVGEO)
+      case (4)
         NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0) + 1
-      ELSE IF (LEVGEO == 5) THEN
+      case (5)
         NGITT = COUNT(INMTIT(1:4,1:NTET) .NE. 0) + 1
-      END IF
+      end select
 
       CALL EIRENE_SET_PARMMOD(3)
       CALL EIRENE_ALLOC_CGEOM(2)
