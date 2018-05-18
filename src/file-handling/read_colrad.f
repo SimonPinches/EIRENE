@@ -19,8 +19,8 @@ c                  =11,12 other data, such as red. pop. coefficients     (not in
 c           iz1:   not in use 
 c                  
 cdr:  currently used only H.4, 2.1.5 and H.10, 2.1.5, EI,  ionisation
-cdr   to be done:         H.4. 2.1.8 and H.10, 2.1.8, RC   recombination
-cdr                       and  H.11, H.12: selected population
+cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC   recombination
+cdr                       and  H.11, H.12: selected population coefficients
 c 
 c  to be done: units, log-lin, scaling, asymptotics
  
@@ -102,7 +102,7 @@ cdr  tbd: also exit unless 2.1.5,  in particular:
 cdr       2.1.8 (recombination) is missing.
 cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef. 
       
-!  FIND NUMBER OF VARIABLE TO BE STORED
+!  IDENTIFY THE NUMBER IVAR OF THE VARIABLE HSTR(IVAR) TO BE STORED 
         IVAR = 0
         DO I = 1, 21
            IF (ISW /= IHSW(I)) CYCLE
@@ -113,7 +113,7 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
         END DO
         IF (IVAR == 0) GOTO 1000
 
-!  CHECK IF VARIABLE HAS ALREADY BEEN MARKED FOR STORING
+!  CHECK IF VARIABLE HAS ALREADY BEEN MARKED FOR STORING EARLIER
         ISTR = NHCOL_STORE + 1
         DO I = 1, NHCOL_STORE
           IF (IVAR == M_HCOL(I)) THEN
@@ -128,9 +128,9 @@ cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef.
         END IF
 
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
-!        REACDAT(IR)%ETH = 0._DP
-!        REACDAT(IR)%RTMAX = 0._DP
-!        REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!       REACDAT(IR)%ETH = 0._DP
+!       REACDAT(IR)%RTMAX = 0._DP
+!       REACDAT(IR)%ERTMAX = -HUGE(1._DP)
 
         SELECT CASE (ISW)
         CASE (2:4)

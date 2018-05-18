@@ -1117,6 +1117,8 @@ cdr  ical=2:  ??
  
         XSTORV  = 0._DP
  
+cdr  ireac=-11, to ireac=-1   : minimal (hard coded) set of default reactions
+cdr  ireac=1    to ireac=nreac: reaction data sets read from external files
         DO IREAC= -11, NREAC
           REACDAT(IREAC)%LPOT   = .FALSE.
           REACDAT(IREAC)%LCRS   = .FALSE.
@@ -1126,9 +1128,15 @@ cdr  ical=2:  ??
           REACDAT(IREAC)%LOTH   = .FALSE.
           REACDAT(IREAC)%LPHR   = .FALSE.
           REACDAT(IREAC)%NOSEC  = 0
-          REACDAT(IREAC)%RTMAX  = 0._DP
-          REACDAT(IREAC)%ERTMAX = -HUGE(1._DP)
+
+c  some universal data for reaction no. ireac
+c  data needed for rejection sampling in velocx, veloel, velopi
+          REACDAT(IREAC)%RTMAX  = 0._DP   ! max value of vel times sigma(vel)
+c  kinetic collision energy at which this maximum is attained.
+          REACDAT(IREAC)%ERTMAX = -HUGE(1._DP)  
+c  reaction threshold (if any)
           REACDAT(IREAC)%ETH    = 0._DP
+
           NULLIFY(REACDAT(IREAC)%POT)
           NULLIFY(REACDAT(IREAC)%CRS)
           NULLIFY(REACDAT(IREAC)%RTC)
@@ -1164,9 +1172,6 @@ cdr  ical=2:  ??
         END DO
  
         IRLINES = 0
-
-        NHCOL_STORE = 0
-        M_HCOL = 0
  
         NHCOL_STORE = 0
         M_HCOL = 0

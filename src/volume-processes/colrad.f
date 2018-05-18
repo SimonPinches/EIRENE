@@ -50,7 +50,7 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
       logical, allocatable, save :: lvis_h(:)
       logical :: l_ext
  
-      
+c  try to avoid repeated calls to CR model in same plasma grid cell      
       if (.not. allocated(lvis_h)) then
         allocate (lvis_h(nrad))
         allocate (h_stor(nhcol_store,nrad))
@@ -151,7 +151,7 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
           lvis_h(icell) = .true.
         end if
 
-! rate is calculated
+! result from h_colrad is now calculated
         res = h_stor(ivar,icell)      
         return      
         

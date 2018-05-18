@@ -163,27 +163,6 @@ cdr  Jan. 2018  mod_addv added
         DEALLOCATE (EMIS_LINES)
       END IF
  
-      DEALLOCATE (CH_LINE_NAME)
-
-      IF (NO_LINES > 0) THEN
-
-         DO I = 1, NO_LINES
-
-           IF (EMIS_LINES(I)%NO_COMPO > 0) THEN
-
-             DO J=1, EMIS_LINES(I)%NO_COMPO
-               DEALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB)
-             END DO
-
-           END IF
-
-           DEALLOCATE (EMIS_LINES(I)%COMPO)
-
-        ENDDO
-
-        DEALLOCATE (EMIS_LINES)
-      END IF
- 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMSIG
  

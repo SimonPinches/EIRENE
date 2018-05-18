@@ -445,6 +445,7 @@ C
         ND = 0
         IF (ANY(NCHTAL == 1)) ND = MAX(ND, NATMI)
         IF (ANY(NCHTAL == 2)) THEN
+c  how many components are requested (max) for line "ichori"
           MX_COMPO = 0
           IF (ALLOCATED(EMIS_LINES)) THEN
             DO I=1, NO_LINES

@@ -3670,6 +3670,7 @@ cdr  and fill CH_LINE_NAME(ICHORI) with the name of that line.
             READ (IUNIN,'(A400)') ZEILE
           END IF
         END IF
+
         READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
      .                    NSPBLC(ICHORI),NSPADD(ICHORI)
