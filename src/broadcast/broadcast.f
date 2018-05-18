@@ -27,7 +27,10 @@ cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR) 
+c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
+cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD): 
+cdr            nhcol_store 
+cdr            m_hcol(nreac) 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr 
@@ -254,9 +257,10 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
       END IF
       CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  additional input tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-      IF (NO_LINES > 0) THEN
+      IF (num_LINES > 0) THEN
         CALL EIRENE_BROAD_EMIS_LINES
       END IF
 
@@ -742,7 +746,7 @@ c  data for photon line transport
       CALL MPI_BCAST (IBGKPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-
+cdr something for the CRM options, of block 4, here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       
@@ -1658,22 +1662,22 @@ cdr     INVALID RP%IFIT
 
       SUBROUTINE EIRENE_BROAD_EMIS_LINES
       
-      INTEGER :: I, J, K, NO_COMPO, NO_CONTRIB
+      INTEGER :: I, J, K, num_COMPO, num_CONTRIB
       TYPE(TCONTRIB) :: CNT
 
 !     IF (MY_PE /= 0) THEN
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
-          ALLOCATE (EMIS_LINES(NO_LINES))
+          ALLOCATE (EMIS_LINES(num_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NO_COMPO = 0         
+          EMIS_LINES%num_COMPO = 0         
         END IF
 !     END IF
 
-      DO I = 1, NO_LINES
+      DO I = 1, num_LINES
 
         CALL MPI_BCAST (EMIS_LINES(I)%LINE_NAME,80,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%NO_COMPO,1,MPI_INTEGER,
+        CALL MPI_BCAST (EMIS_LINES(I)%num_COMPO,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%IADV_TOTAL,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
@@ -1684,27 +1688,27 @@ cdr     INVALID RP%IFIT
         CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
-        NO_COMPO = EMIS_LINES(I)%NO_COMPO
+        num_COMPO = EMIS_LINES(I)%num_COMPO
 
         IF (MY_PE /= 0) THEN
-          ALLOCATE (EMIS_LINES(I)%COMPO(NO_COMPO))
+          ALLOCATE (EMIS_LINES(I)%COMPO(num_COMPO))
         END IF
 
-        DO J = 1, NO_COMPO
+        DO J = 1, num_COMPO
           CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%COMPO_NAME,80,
      .                    MPI_CHARACTER,0,MPI_COMM_WORLD,ier)
-          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%NO_CONTRIB,1,
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%num_CONTRIB,1,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
           CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%IADV,1,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-          NO_CONTRIB = EMIS_LINES(I)%COMPO(J)%NO_CONTRIB
+          num_CONTRIB = EMIS_LINES(I)%COMPO(J)%num_CONTRIB
 
           IF (MY_PE /= 0) THEN
-            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NO_CONTRIB))
+            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(num_CONTRIB))
           END IF
 
-          DO K = 1, NO_CONTRIB
+          DO K = 1, num_CONTRIB
         
             IF (MY_PE == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
 

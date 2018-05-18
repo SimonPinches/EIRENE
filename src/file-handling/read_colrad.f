@@ -102,7 +102,8 @@ cdr  tbd: also exit unless 2.1.5,  in particular:
 cdr       2.1.8 (recombination) is missing.
 cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef. 
       
-!  IDENTIFY THE NUMBER IVAR OF THE VARIABLE HSTR(IVAR) TO BE STORED 
+cdr  IDENTIFY THE NUMBER IVAR (between 1:21) OF THE VARIABLE HSTR(IVAR) 
+cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
         IVAR = 0
         DO I = 1, 21
            IF (ISW /= IHSW(I)) CYCLE

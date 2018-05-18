@@ -50,7 +50,8 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
       logical, allocatable, save :: lvis_h(:)
       logical :: l_ext
  
-c  try to avoid repeated calls to CR model in same plasma grid cell      
+c  try to avoid repeated calls to CR model in same plasma grid cell
+c      for the current run/iteration/time-cycle     
       if (.not. allocated(lvis_h)) then
         allocate (lvis_h(nrad))
         allocate (h_stor(nhcol_store,nrad))
@@ -151,7 +152,8 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
           lvis_h(icell) = .true.
         end if
 
-! result from h_colrad is now calculated
+cdr  Result RES from h_colrad is now calculated.
+cdr  it may be a rate, an energly loss rate or a reduced population coefficient
         res = h_stor(ivar,icell)      
         return      
         
@@ -163,6 +165,7 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
       end if
 
       entry eirene_colrad_reinit
+cdr this must be done after each internal iteration or time cycle
       
       if (allocated(lvis_h)) then
          lvis_h = .false.

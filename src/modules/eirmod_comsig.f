@@ -62,13 +62,13 @@ cdr  Jan. 2018  mod_addv added
 
       TYPE TCOMPO
         CHARACTER(80) :: COMPO_NAME
-        INTEGER :: NO_CONTRIB, IADV
+        INTEGER :: NUM_CONTRIB, IADV
         TYPE(TCONTRIB), ALLOCATABLE :: CONTRIB(:)       
       END TYPE TCOMPO
 
       TYPE TEMIS_MODEL
         CHARACTER(80) :: LINE_NAME
-        INTEGER :: NO_COMPO, IADV_TOTAL
+        INTEGER :: NUM_COMPO, IADV_TOTAL
         REAL(DP) :: EINSTEIN, ENERGY, TRANS_EN
         TYPE(TCOMPO), ALLOCATABLE :: COMPO(:)
       END TYPE TEMIS_MODEL
@@ -144,13 +144,13 @@ cdr  Jan. 2018  mod_addv added
 
       DEALLOCATE (CH_LINE_NAME)
 
-      IF (ALLOCATED(EMIS_LINES) .AND. (NO_LINES > 0)) THEN
+      IF (ALLOCATED(EMIS_LINES) .AND. (NUM_LINES > 0)) THEN
 
-         DO I = 1, NO_LINES
+         DO I = 1, NUM_LINES
 
-           IF (EMIS_LINES(I)%NO_COMPO > 0) THEN
+           IF (EMIS_LINES(I)%NUM_COMPO > 0) THEN
 
-             DO J=1, EMIS_LINES(I)%NO_COMPO
+             DO J=1, EMIS_LINES(I)%NUM_COMPO
                DEALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB)
              END DO
 

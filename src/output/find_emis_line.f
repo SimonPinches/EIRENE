@@ -32,7 +32,7 @@
 ! find corresponding line from line names
         ctest1 = adjustl(trim(ch_line_name(ichori)))
 
-        do i = 1, no_lines
+        do i = 1, num_lines
            ctest2 = adjustl(trim(emis_lines(i)%line_name))
            if (ctest1 == ctest2) then
              found = .true.
@@ -44,7 +44,7 @@
 
       if (.not.found) then
 ! check energies
-        do i = 1, no_lines
+        do i = 1, num_lines
           if (abs((ener-emis_lines(i)%energy)/emis_lines(i)%energy) <= 
      .        eps5) then
             found = .true.

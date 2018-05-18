@@ -8,7 +8,8 @@ c  current options:
 c  default    :  use input background tallies. B-field is constant per cell
 c  indpro(5)=8:  user provided B-field
 c  LBSMO (?)  :  apparently: only in case of levgeo=4, interpolation in triangles
-cpb              switch used for interpolation of magnetic field input tally from cell centers to cell vertices
+cpb              switch used for interpolation of magnetic field input tally 
+cdr              from cell centers (cell averages) to cell vertices
 cpb              if LBSMO = TRUE, interpolation to cell vertices is done for 1 <= LEVGEO <= 5
       subroutine eirene_bfield (icell, x, y, z, bx, by, bz, bf,l)
 
