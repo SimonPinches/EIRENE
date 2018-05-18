@@ -17,7 +17,7 @@ cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot, 
 cdr           but is for surface tally pointers
-cdr  jan.18:  added: NO_LINES, NADV_ADD
+cdr  jan.18:  added: NUM_LINES, NADV_ADD
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -71,7 +71,7 @@ csw 13apr07
      I NHD1,   NHD2,   NHD3,   NHD4,   NHD5,   NHD6
 
       INTEGER, PUBLIC, SAVE ::
-     I NCHOR,  NCHEN, NO_LINES
+     I NCHOR,  NCHEN, NUM_LINES
 
 
       INTEGER, PUBLIC, SAVE ::
@@ -531,7 +531,7 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
       INT_PARM(146) = NADSPC_D
       INT_PARM(147) = NADSPC_CD
 
-      INT_PARM(148) = NO_LINES
+      INT_PARM(148) = NUM_LINES
       INT_PARM(149) = NADV_ADD
  
       RETURN
@@ -719,7 +719,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       NADSPC_D    = INT_PARM(146)
       NADSPC_CD   = INT_PARM(147)
 
-      NO_LINES    = INT_PARM(148)
+      NUM_LINES    = INT_PARM(148)
       NADV_ADD    = INT_PARM(149)
 
       RETURN
