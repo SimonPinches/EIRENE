@@ -16,9 +16,9 @@ C
 CDR  this routine evaluates ("side on") hydrogen atom ("HA") emissivities,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST).
-c    Currently there are up to 6 contributions to each particular preprogrammed
+c    Currently there are up to 6 contributions to each particular pre-programmed
 c    transition (depending on population coefficient data stored 
-c    in file AMJUEL, section H.11 and H.12 
+c    in file AMJUEL, section H.11 and H.12) 
 c  aug.16: available transitions in H-atom:
 c          ly-alpha  (2 - 1)
 c          ly-beta   (3 - 1)
@@ -64,6 +64,8 @@ C
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
       REAL(DP) :: PENOLD
+      INTEGER, SAVE :: LNO
+      INTEGER :: JCOMP, IADV
       INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
       LOGICAL :: LARGST
       DATA ISTOLD/-1/
@@ -85,9 +87,16 @@ C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
 c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.
+
+c  identify the emission line LNO from the input flags.
+          CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
+
 !         CALL EIRENE_EMIS_PROFILES (ISTRA,PEN,
 !    .                NADVI+1,NADVI+2,NADVI+3,NADVI+4,NADVI+5,NADVI+6,
 !    .                NADVI+7)
+ 
+cdr keep old code as backup:
+          if (.false.) then
 
           if (PEN.EQ.12.089_DP) THEN
             write (iunout,*) ' ly_beta '
@@ -125,6 +134,8 @@ c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba
             ADDV(NADVI+1:NADVI+7,:) = 0._DP
           endif
 
+          endif ! false, old code
+
 
         endif   ! NEW INTERNAL ITERATION, OR NEW LINE, OR NEW STRATUM
 
@@ -138,22 +149,39 @@ C  LINE INTEGRAL: PHOTONS/SEC/CM**2
 C
 C
       ncelc=ncltal(ncell)
-      PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)
-      PSIG(2)=PSIG(2)+ZDS*ADDV(NADVI+2,NCELC)
-      PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
-      PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
-      PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
-      PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
-      PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
+!     PSIG(1)=PSIG(1)+ZDS*ADDV(NADVI+1,NCELC)
+!     PSIG(2)=PSIG(2)+ZDS*ADDV(NADVI+2,NCELC)
+!     PSIG(3)=PSIG(3)+ZDS*ADDV(NADVI+3,NCELC)
+!     PSIG(4)=PSIG(4)+ZDS*ADDV(NADVI+4,NCELC)
+!     PSIG(5)=PSIG(5)+ZDS*ADDV(NADVI+5,NCELC)
+!     PSIG(6)=PSIG(6)+ZDS*ADDV(NADVI+6,NCELC)
+!     PSIG(0)=PSIG(0)+ZDS*ADDV(NADVI+7,NCELC)
+cdr
+!      ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
+!      ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
+!      ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
+!      ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
+!      ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
+!      ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
+!      ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
 
-      IF (LARGST) THEN
-        ARGST(1,JJJ)=ADDV(NADVI+1,NCELC)
-        ARGST(2,JJJ)=ADDV(NADVI+2,NCELC)
-        ARGST(3,JJJ)=ADDV(NADVI+3,NCELC)
-        ARGST(4,JJJ)=ADDV(NADVI+4,NCELC)
-        ARGST(5,JJJ)=ADDV(NADVI+5,NCELC)
-        ARGST(6,JJJ)=ADDV(NADVI+6,NCELC)
-        ARGST(0,JJJ)=ADDV(NADVI+7,NCELC)
+      IF (LNO == 0) THEN
+! NO MATCHING EMISSION LINE FOUND 
+        PSIG(0) = 0._DP
+        IF (LARGST) ARGST(0,JJJ) = 0._DP
+      ELSE
+! USE DATA PROVIDED FOR EMISSION LINE LNO
+        DO JCOMP = 1, EMIS_LINES(LNO)%NUM_COMPO
+          IADV = EMIS_LINES(LNO)%COMPO(JCOMP)%IADV
+          PSIG(JCOMP) = PSIG(JCOMP) + ZDS*ADDV(IADV,NCELC)
+          IF (LARGST) ARGST(JCOMP,JJJ) = ADDV(IADV,NCELC)
+        END DO
+
+c  sum over components of line LNO
+        IADV = EMIS_LINES(LNO)%IADV_TOTAL
+
+        PSIG(0) = PSIG(0) + ZDS*ADDV(IADV,NCELC)
+        IF (LARGST) ARGST(0,JJJ) = ADDV(IADV,NCELC)
       END IF
 C
       RETURN

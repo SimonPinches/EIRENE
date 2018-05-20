@@ -53,8 +53,8 @@ C
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
-     .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
-     .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
+     .           NITER0, NTPER, NTTRA, NCOOR, NTET,
+     .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPII, NCOPIE, NREAC_ADD,
      .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
@@ -64,7 +64,9 @@ C
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
      .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO, 
-     .           NUM_CONTRIB, ISP, ITP, IRATIO
+     .           NUM_CONTRIB, ISP, ITP, IRATIO,
+     .           I, J, K,
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
       REAL(DP), ALLOCATABLE :: ENERGY(:,:)
@@ -637,6 +639,7 @@ cdr ....................................
       READ (ZEILE,*) NREACI
       NREAC = MAX(NREAC,NREACI)+NREAC_ADD
 C
+cdr  count the number of reaction cards read here.
       NREAC_LINES=0
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .NE. '*')
@@ -647,6 +650,7 @@ C
       ALLOCATE (PART_NAME(500))
       PART_NAME=REPEAT(' ',15)
 
+cdr  start reading species specification block 4a,4b,4c,4d
       WRITE (iunout,*)
      .  '*4A.   NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       READ (IUNIN,*) NATMI
@@ -659,6 +663,7 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
+cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI cards 
 cpb......................................
 cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
@@ -819,7 +824,7 @@ C
           READ (IUNIN,*)
           READ (IUNIN,*)
         END DO
-!pb     IF (VERIFY(ZEILE(57:66),' ') > 0) THEN
+
         IF (INMDL > 0) THEN
           NRE=0
           IF (VERIFY(ULINE(INMDL+11:),' ') > 0)
@@ -1285,57 +1290,77 @@ C
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NUM_LINES transitions, each may consist of NUM_CONTRIB 
-c  for different parent (donor) state contributions.
-c  Identify the block of LINES and CONTRIBUTIONS by a card containing 'DEFINE_LINES'
+c  read up to NUM_LINES transitions (volumetric line emissions), 
+c  Each LINE may consist of NUM_CONTRIB 
+c  for different parent (donor) state components.
+c  Identify the block of LINES and COMPONENTS available in this run 
+C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
+
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
-! EMISSIVITY LINE DEFINED IN INPUT
-        LINES = 0
+CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLOCK 12
+cdr as additional output tally ADDV(...).
+        IREAC_ADD = 0
         NLEMIS = .TRUE.
         READ (IUNIN,6666) NUM_LINES, MOD_ADDV
-        DO I=1, NUM_LINES
+        DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
-          READ (IUNIN,6666) NUM_COMPO
+          READ (IUNIN,6666) NUM_COMPO  ! components of line ILINE
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
             NADV_ADD = MAX(NADV_ADD,NUM_COMPO)
           ELSE 
             NADV_ADD = NADV_ADD + NUM_COMPO + 1
           END IF
-          DO J=1, NUM_COMPO
+          DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NUM_CONTRIB           
-            LINES = LINES + NUM_CONTRIB
-            DO K = 1, NUM_CONTRIB
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE        
+            IREAC_ADD = IREAC_ADD + NUM_CONTRIB
+cdr  specify all required contributions explicitly.
+cdr  In the old default with was automatically detected 
+cdr     from mass and charge states/numbers of hydrogenic particles.
+cdr     And only one set of emission data for all contributions was used,
+cdr     plus one or two population ratios.
+cdr     Now we provide storage for one additional AM data set for each contribution,
+cdr     plus one or two population ratios.
+            DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
-              IF (INDEX(FNAME,'ADAS') .NE. 0 .OR. 
+cdr skip one more input line in case of TAB2D or ADAS input
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR. 
      .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
+cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
-                LINES = LINES + 1
+                IREAC_ADD = IREAC_ADD + 1
                 READ (IUNIN,'(18X,1X,A6)') FRATIO
-                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+                IF (INDEX(FRATIO,'ADAS')  .NE. 0  .OR.
+     .              INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
+cdr do we require a second QSS population ratio for this contribution?
                 IF (IRATIO == 2) THEN
-                  LINES = LINES + 1
+                  IREAC_ADD = IREAC_ADD + 1
                   READ (IUNIN,*)
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
-                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                  IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
+     .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
                 END IF  
               END IF  !  IRATIO
             END DO    !  NUM_CONTRIB   (POSSIBEL D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
-          END DO      !  NUM_COMPO  (E.G.  GROUND STATE
-        END DO        !  NUM_LINES  (E.G. BA-ALPHA)
+          END DO      !  NUM_COMPO     (E.G.  GROUND STATE
+        END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
-! ADD ONE MORE ADDITIONAL TALLY FOR TOTAL (SUM OVER LINES AND CONTRIBUTIONS)
+! ADD ONE MORE ADDITIONAL TALLY FOR TOTAL (SUM OVER COMPONENTS)
+! (SUMING OVER CONTRIBUTIONS FOR EACH COMPONENT IS ALREADY ALWAYS DONE)
         IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
+
+c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
         NADV = NADV + NADV_ADD 
-        NREAC = NREAC + LINES
+        NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
@@ -1346,13 +1371,15 @@ c  Identify the block of LINES and CONTRIBUTIONS by a card containing 'DEFINE_LI
 
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
       IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
-! USE DEFAULT LINES FOR EMISSIVITY
+! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
         MOD_ADDV = 0
         NADV=NADV+10
         NUM_LINES = 6
         NUM_COMPO = 6
 ! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
         NUM_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
+cdr  ?? perhaps: in old default only one line possible per run ?
+cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO
             
       END IF
