@@ -1305,6 +1305,7 @@ CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLO
 cdr as additional output tally ADDV(...).
         IREAC_ADD = 0
         NLEMIS = .TRUE.
+c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
         READ (IUNIN,6666) NUM_LINES, MOD_ADDV
         DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
@@ -1314,9 +1315,12 @@ cdr as additional output tally ADDV(...).
           READ (IUNIN,6666) NUM_COMPO  ! components of line ILINE
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
-            NADV_ADD = MAX(NADV_ADD,NUM_COMPO)
-          ELSE 
-            NADV_ADD = NADV_ADD + NUM_COMPO + 1
+cdr  minimal storage, but each time when a new lines comes,
+cdr  tha emissivity profiles on ADDV must be re-calculated
+            NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
+          ELSE
+cdr  all possible emissivity profiles are kept on ADDV tallies. 
+            NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
           DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
@@ -1354,10 +1358,6 @@ cdr do we require a second QSS population ratio for this contribution?
           END DO      !  NUM_COMPO     (E.G.  GROUND STATE
         END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
-! ADD ONE MORE ADDITIONAL TALLY FOR TOTAL (SUM OVER COMPONENTS)
-! (SUMING OVER CONTRIBUTIONS FOR EACH COMPONENT IS ALREADY ALWAYS DONE)
-        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
-
 c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
         NADV = NADV + NADV_ADD 
         NREAC = NREAC + IREAC_ADD
@@ -1373,21 +1373,20 @@ c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSI
       IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
 ! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
         MOD_ADDV = 0
-        NADV=NADV+10
+        NADV=NADV +7
         NUM_LINES = 6
         NUM_COMPO = 6
-! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NUM_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
-cdr  ?? perhaps: in old default only one line possible per run ?
+! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI 
+cdr  ?? perhaps: in old default only one line possible at a time?
 cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
-        NREAC = NREAC + NUM_CONTRIB*NUM_COMPO
+        NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
             
       END IF
 
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
+C  PROVIDE STORAGE ON REACDAT, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
-!pb     NREAC=NREAC+1
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
         IF (.FALSE.) THEN

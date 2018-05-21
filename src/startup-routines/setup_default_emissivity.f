@@ -1,14 +1,16 @@
       subroutine eirene_setup_default_emissivity
+
+cdr  called from subr. INPUT.f
 cdr april 18:  the calculation of volumetric line emissitivies
 cdr            and their storing on additional tallies ADIN
 cdr            has been generalized, 
-cdr            replacing the former routines:
+cdr            replacing the former 6 routines:
 cdr            ba_alpha.f, ba_beta.f, ba_gamma.f, ba_delta.f, 
 cdr            ly_alpha.f, ly_beta.f
 
 cdr  this present routine (pb, 2017):
-cdr  try to reproduce the old oldions in these 6 routines,
-cdr  by using the new structures.
+cdr  Try to reproduce the old version of these 6 routines,
+cdr  by using the new structures EMISS_LINES%....
 cdr  
 cdr  number of lines       6     (BA_AL, BA_BET,....LY_BET)
 cdr  number of components: 6     (COUPLING TO H, H+,H2,H2+,H-,H3+)

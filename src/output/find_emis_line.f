@@ -104,8 +104,12 @@ C  NOTHING TO BE DONE
       ENDIF
 C      
       if (mod_addv == 0) then
-! ADDV is always overwritten. Thus recalculate the emissivity profile
+c ADDV is overwritten when a new line comes, within a run.
+c Thus recalculate the new emissivity profile on ADDV
          call eirene_emissivity(istr, lno, lno)
+c     else
+c Sufficiently large storage on ADDV additional tally array, 
+c for all lines and components. No need to reset ADDV tallies.    
       end if
 
       return
