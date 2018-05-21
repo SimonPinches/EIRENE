@@ -99,7 +99,7 @@ C
               DE=DEIN(NCELL)
               
               DEF=LOG(DE)
-              TEF=LOG(TE)
+              TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
 
               do idens = 1, ndens
                 select case (itp(idens))
