@@ -2033,7 +2033,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
-      IDMDL = 0
+      IDMDL = 0  ! count additional reaction cards needed for "density models".
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2120,17 +2120,14 @@ cdr                 so far only for DENSITYMODELS:
 
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
-            IDMDL = IDMDL + 1
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
 c  default: only for bulk ions
                               TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
-            IDMDL = IDMDL + 1
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
      .                        TDMPAR(IPLS)%TDM%ITP(1),
      .                        TDMPAR(IPLS)%TDM%ISTR(1)
           CASE ('CONSTANT  ')
-            IDMDL = IDMDL + 1
             READ (IUNIN,6664) TDMPAR(IPLS)%TDM%TVAL,
      .                        TDMPAR(IPLS)%TDM%DVAL,
      .                        TDMPAR(IPLS)%TDM%VXVAL,
@@ -2146,10 +2143,8 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%VFACTOR
                  TDMPAR(IPLS)%TDM%ITP(1)=4
           CASE ('SAHA      ')
-            IDMDL = IDMDL + 1
 !PB   TO BE WRITTEN
           CASE ('BOLTZMANN ')
-            IDMDL = IDMDL + 1
             READ (IUNIN,'(3I6,6x,2E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
