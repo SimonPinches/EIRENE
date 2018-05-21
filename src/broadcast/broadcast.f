@@ -257,7 +257,7 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
       END IF
       CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-cdr  additional input tallies added by code itself (rather than via input block 14).
+cdr  additional output tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       IF (num_LINES > 0) THEN
@@ -746,7 +746,8 @@ c  data for photon line transport
       CALL MPI_BCAST (IBGKPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-cdr something for the CRM options, of block 4, here: H_Colrad.
+
+cdr something for the internal CRM options, of block 4, here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       

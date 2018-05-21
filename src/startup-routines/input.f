@@ -3519,9 +3519,14 @@ cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in 
      .                      EMIS_LINES(ILINE)%TRANS_EN, 
      .                      EMIS_LINES(ILINE)%ENERGY
           EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
-          IADV = IADV + 1
 
+c  Deal with ADDV storage for sum over components.
+c  The storage on ADDV for individual components is done below (JCOMP loop).
+          IADV = IADV + 1
+c  if mod_addv=0: reset storage needs for each line back to nadvi+1,
+c                 i.e. addv tallies are only saved for one line at a time.
           IF (MOD_ADDV == 0) IADV = NADVI + 1 
+
           EMIS_LINES(ILINE)%IADV_TOTAL = IADV
 
           IF (NUM_COMPO > 0) THEN
@@ -3602,7 +3607,8 @@ cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in 
       ENDIF
 
 ! no definition of emissivity lines was read in
-! define OLD default emissivity model for chords for backward compatibility
+! define OLD default emissivity model for chords for backward compatibility.
+cdr  allocate and fill structure EMIS-LINES with old default options
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3622,7 +3628,10 @@ c  default asymptotics
       JFEX2MX = 0
 
       nrc = nreaci + nreac_add
-      if (idmdl > 0) nrc = nrc + 1
+
+! one extra A&M data file for "densitymodel" (block 5): "corona" or "colrad"
+      if (idmdl > 0) nrc = nrc + 1 
+
 
       do iline=1, num_lines
         do jcomp = 1, emis_lines(iline)%num_compo
