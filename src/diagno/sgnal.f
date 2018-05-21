@@ -13,7 +13,9 @@ cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
 cdr                    analogous to H emission lines,             NCHTAL=2 
 cdr       : added ITP (type of relevant component)
-cdr Jan 18: added MX_COMPO           
+cdr Jan 18: added MX_COMPO, generalize storage allocation PSIG(ND) for NCHTAL=2 option
+cdr         NCHTAL=5 option (He lines) is now redundant, due to generalization
+cdr                  of NCHTAL=2 option to arbitrary atomic or molecular lines.                   
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
@@ -443,26 +445,39 @@ C
 
       IF (.NOT.ALLOCATED(PSIG)) THEN
         ND = 0
+
         IF (ANY(NCHTAL == 1)) ND = MAX(ND, NATMI)
+
         IF (ANY(NCHTAL == 2)) THEN
-c  how many components are requested (max) for line "ichori"
+c  how many components are requested (max) for line "ichori"?
+c  previous default: 6 hydrogenic lines, but only one per run. 
+c                    6 components each, (H, H+, H2, H2+ H-, H3+)
           MX_COMPO = 0
           IF (ALLOCATED(EMIS_LINES)) THEN
-            DO I=1, NO_LINES
-              MX_COMPO = MAX(MX_COMPO, EMIS_LINES(I)%NO_COMPO)
+            DO I=1, NUM_LINES
+              MX_COMPO = MAX(MX_COMPO, EMIS_LINES(I)%NUM_COMPO)
             END DO
+          ELSE
+            write (iunout,*) 'error in diagno/sgnal: '
+            write (iunout,*) 'no emission data storage allocated'
+            CALL EIRENE_EXIT_OWN(1)
           END IF
           ND = MAX(ND, MX_COMPO)
         END IF
+
         IF (ANY(NCHTAL == 3)) ND = MAX(ND, NPHOTI)
+
         IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
+
+
         ALLOCATE (PSIG(0:ND))
       END IF
 
       IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
+cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES. Now superseeded.
       IF (NCHTAL(ICHORI).EQ.2)  NSPI=MX_COMPO ! use maximum number of components to spectral line emissivities (transitions) in one single LOS evaluation
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
-      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10  
+      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10 ! THIS OPTION WAS FOR HE EMISSION LINES. Now superseeded.
       IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
       IFIRST=0
@@ -489,7 +504,7 @@ C  SUM OVER SPECIES INDEX
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-C  PROCESS DATA FROM LINE INTEGRAL ROUTINES INTO REQUESTED DATA & UNITS
+C  PROCESS DATA FROM LINE OF SIGHT INTEGRAL ROUTINES INTO REQUESTED DATA & UNITS
 C
         IF (NCHTAL(ICHORI).EQ.1) THEN
 C  LINE INTEGRAL: CX ATOMS/SEC/CM**2/EV/STERAD

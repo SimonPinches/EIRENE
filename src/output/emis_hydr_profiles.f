@@ -7,20 +7,24 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
 cdr may 2017  : lower cuf off density for H.12 data: 1e8.
 c               for lower densities: AMJUEL Data collapse to
 c               Corona rates or Corona population coefficients.
+cdr may 2018:  this routine was an attempt to re-unite the 6 routines
+cdr            Ba_alpha,.....Ly_beta, into a single routine.
+cdr            It is now completely superseeded, due to generalized
+cdr            line emissivity handling in input block 12. 
 
 
-      SUBROUTINE EIRENE_EMIS_PROFILES (IST, ENER,
+      SUBROUTINE EIRENE_HYDR_EMIS_PROFILES (IST, ENER,
      .           IAD1,IAD2,IAD3,IAD4,IAD5,IAD6,IADS)
 c
-C  SUBROUTINE FOR LINE EMISSIVITY. (BALMER SERIES)
+C  SUBROUTINE FOR LINE EMISSIVITY. 
 C  CALLED FROM EIRENE, SECTION DIAGNO, SUBR. SIGHA
-C  THE BA_ALPHA EMISSIVITY PROFILE (PHOTONS/S/CM**3) IS COMPUTED
+C  THE HYDROGENIC EMISSIVITY PROFILE (PHOTONS/S/CM**3) IS COMPUTED
 C  AND WRITTEN ONTO TALLIES ADDV(IAD1,...),... FOR STRATUM NO. IST
 C  IAD1: CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
 C  IAD2: CONTRIBUTION LINEAR IN H+  -ION       DENSITY
@@ -175,7 +179,7 @@ C
 C
 C  LOCAL BACKGROUND DATA ARE IN CELL NCELL
 C  LOCAL TEST PARTICLE DATA ARE IN (PERHAPS COARSER) SCORING CELL NCELC
-C  ACCUMULATE THE EMISSIVITIES ALSO ON THE "SCORING" GRID.
+C  ACCUMULATE THE EMISSIVITIES ALSO ON THE (PERHAPS COARSER) "SCORING" GRID.
 C
         NCELC=NCLTAL(NCELL)
 C
@@ -194,7 +198,7 @@ C
 
 C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
 
-        IF (LGVAC(NCELL,NPLS+1)) GOTO 500
+        
         DEF=LOG(DE)
         TEF=LOG(TE)
 
@@ -536,7 +540,7 @@ C
       RETURN
 
 csw 19apr07
-      entry EIRENE_emis_profiles_reinit
+      entry EIRENE_hydr_emis_profiles_reinit
       return
 csw
 999   CONTINUE
@@ -904,4 +908,4 @@ C
 
       END SUBROUTINE EIRENE_PREPARE_LINE 
 
-      END SUBROUTINE EIRENE_EMIS_PROFILES
+      END SUBROUTINE EIRENE_HYDR_EMIS_PROFILES

@@ -218,7 +218,8 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB,NS,NA, ISTR,
-     .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND
+     .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
+     .           ILINE, JCOMP, KCONTR
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
@@ -384,8 +385,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND_PARAM
 !     NGSTAL = 0
 !
 !     NRTAL1 = 0     ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
-      NREAC_ADD = 0  ! NEEDED HERE FOR CORRECT PLACEMENT OF REACTION DATA
-                     ! USED FOR CALCULATION OF EMISSIVITY 
+      NREAC_ADD = 0  ! NEEDED HERE FOR CORRECT PLACEMENT OF ADDITIONAL REACTION DATA
+                     ! READ IN BLOCK 12, USED FOR CALCULATION OF EMISSIVITY 
 
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
@@ -2110,10 +2111,13 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ISP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
+cdr only if needed: for additional A&M data structure on REACDAT 
+cdr                 so far only for DENSITYMODELS: 
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
+
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
             IDMDL = IDMDL + 1
@@ -2153,7 +2157,7 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%G_BOLTZ,
      .           TDMPAR(IPLS)%TDM%DELTAE
           CASE ('CORONA    ')
-            IDMDL = IDMDL + 1
+            IDMDL = IDMDL + 1  !  ONE MORE H.2 REACTION data set
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2171,7 +2175,7 @@ c  default: only for bulk ions
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD    ')
-            IDMDL = IDMDL + 1
+            IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
             DO I=1, TDMPAR(IPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             TDMPAR(IPLS)%TDM%ISP(I),
@@ -3491,53 +3495,63 @@ C
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
+cdr read further atomic/moleuclar data: population coefficients, QSS ratios, etc
+cdr      needed for setting up volumetric line emissivity profils as further add. tally ADDV
+cdr      The ADDV tallies may then be used for line of sight integration, along
+cdr      the CHORDS defined further below.
+
+cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in next card
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NLEMIS = NCHOR > 0
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
         IADV = NADVI
         NLEMIS = .TRUE.
-        READ (IUNIN,6666) NO_LINES, MOD_ADDV
-        IF (NO_LINES > 0) THEN
-          ALLOCATE (EMIS_LINES(NO_LINES))
+        READ (IUNIN,6666) NUM_LINES, MOD_ADDV
+        IF (NUM_LINES > 0) THEN
+          ALLOCATE (EMIS_LINES(NUM_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NO_COMPO = 0
+          EMIS_LINES%NUM_COMPO = 0
         END IF
-        DO I=1, NO_LINES
+        DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
-          READ (ZEILE,'(A80)') EMIS_LINES(I)%LINE_NAME
-          READ (IUNIN,6666) NO_COMPO
-          READ (IUNIN,6664) EMIS_LINES(I)%EINSTEIN, 
-     .                      EMIS_LINES(I)%TRANS_EN, 
-     .                      EMIS_LINES(I)%ENERGY
-          EMIS_LINES(I)%NO_COMPO = NO_COMPO
+          READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
+          READ (IUNIN,6666) NUM_COMPO
+          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
+     .                      EMIS_LINES(ILINE)%TRANS_EN, 
+     .                      EMIS_LINES(ILINE)%ENERGY
+          EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
           IADV = IADV + 1
+
           IF (MOD_ADDV == 0) IADV = NADVI + 1 
-          EMIS_LINES(I)%IADV_TOTAL = IADV
+          EMIS_LINES(ILINE)%IADV_TOTAL = IADV
 
-          IF (NO_COMPO > 0) THEN
-            ALLOCATE (EMIS_LINES(I)%COMPO(NO_COMPO))
+          IF (NUM_COMPO > 0) THEN
+            ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
 
-            DO J=1,NO_COMPO
+            DO JCOMP=1,NUM_COMPO
 
-              READ (IUNIN,'(A72)') EMIS_LINES(I)%COMPO(J)%COMPO_NAME
-              READ (IUNIN,6666) NO_CONTRIB 
-              EMIS_LINES(I)%COMPO(J)%NO_CONTRIB = NO_CONTRIB
-              ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NO_CONTRIB))
+              READ (IUNIN,'(A72)') 
+     .              EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME
+              READ (IUNIN,6666) NUM_CONTRIB 
+              EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
+              ALLOCATE 
+     .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
 
               IADV = IADV + 1
-              EMIS_LINES(I)%COMPO(J)%IADV = IADV
+              EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
               
-              DO ICNT = 1, NO_CONTRIB    
+              DO KCONTR = 1, NUM_CONTRIB    
                 CNT%ISP = -1
                 CNT%ITP = -1
                 READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO, 
      .             CNT%FNAME, CNT%H2, CNT%REACTION, CNT%CR
-                IF (INDEX(CNT%FNAME,'ADAS') .NE. 0) THEN
+                IF (INDEX(CNT%FNAME,'ADAS')  .NE. 0 .OR.
+     .              INDEX(CNT%FNAME,'TAB2D') .NE. 0  ) THEN
                   READ (IUNIN,'(4X,A2,1X,I3)') CNT%ELEMENT,CNT%IZ
                   CALL EIRENE_LOWERCASE(CNT%ELEMENT)
                 ELSE
@@ -3548,7 +3562,8 @@ C
                   READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
      .             CNT%FRATIO(1), CNT%RAT_H2(1), CNT%RAT_REACTION(1),
      .             CNT%RAT_CR(1)
-                  IF (INDEX(CNT%FRATIO(1),'ADAS') .NE. 0) THEN
+                  IF (INDEX(CNT%FRATIO(1),'ADAS')  .NE. 0 .OR.
+     .                INDEX(CNT%FRATIO(1),'TAB2D') .NE. 0) THEN
                     READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
      .                                           CNT%IZ_RAT(1)
                     CALL EIRENE_LOWERCASE(CNT%ELEMENT)
@@ -3562,7 +3577,8 @@ C
                     READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
      .               CNT%FRATIO(2), CNT%RAT_H2(2), CNT%RAT_REACTION(2),
      .               CNT%RAT_CR(2)
-                    IF (INDEX(CNT%FRATIO(2),'ADAS') .NE. 0) THEN
+                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR. 
+     .                  INDEX(CNT%FRATIO(2),'TAB2D') .NE. 0) THEN
                       READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
      .                                             CNT%IZ_RAT(2)
                       CALL EIRENE_LOWERCASE(CNT%ELEMENT)
@@ -3581,7 +3597,7 @@ C
                 END IF
                 CNT%IRC = 0
                 CNT%IRC_RAT = 0
-                EMIS_LINES(I)%COMPO(J)%CONTRIB(ICNT) = CNT
+                EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
               END DO
          
             END DO
@@ -3591,7 +3607,7 @@ C
       ENDIF
 
 ! no definition of emissivity lines was read in
-! define default emissivity model for chords
+! define OLD default emissivity model for chords for backward compatibility
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3613,19 +3629,21 @@ c  default asymptotics
       nrc = nreaci + nreac_add
       if (idmdl > 0) nrc = nrc + 1
 
-      do i=1, no_lines
-        do j = 1, emis_lines(i)%no_compo
-          do k= 1, emis_lines(i)%compo(j)%no_contrib
-            cnt = emis_lines(i)%compo(j)%contrib(k)
+      do iline=1, num_lines
+        do jcomp = 1, emis_lines(iline)%num_compo
+          do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
+            cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1
             CALL EIRENE_SLREAC(NRC,CNT%FNAME,CNT%H2,
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              CNT%ELEMENT,CNT%IZ)
-            emis_lines(i)%compo(j)%contrib(k)%irc = nrc
+
+            emis_lines(iline)%compo(jcomp)%contrib(kcontr)%irc = nrc
 
             if (cnt%iratio > 0) then
+cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
               do ir = 1, cnt%iratio
                 nrc = nrc + 1
                 CALL EIRENE_SLREAC(NRC,CNT%FRATIO(IR),CNT%RAT_H2(IR),
@@ -3633,12 +3651,14 @@ c  default asymptotics
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR))
-                emis_lines(i)%compo(j)%contrib(k)%irc_rat(ir) = nrc
-              end do
+
+                emis_lines
+     .           (iline)%compo(jcomp)%contrib(kcontr)%irc_rat(ir) = nrc
+              end do  ! number of QSS ratios
             end if           
-          end do
-        end do
-      end do
+          end do   !kcontr
+        end do     !jcomp
+      end do       !iline
 
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
