@@ -458,8 +458,9 @@ c                    6 components each, (H, H+, H2, H2+ H-, H3+)
               MX_COMPO = MAX(MX_COMPO, EMIS_LINES(I)%NUM_COMPO)
             END DO
           ELSE
-            write (iunout,*) 'error in sgnal: '
+            write (iunout,*) 'error in diagno/sgnal: '
             write (iunout,*) 'no emission data storage allocated'
+            CALL EIRENE_EXIT_OWN(1)
           END IF
           ND = MAX(ND, MX_COMPO)
         END IF
@@ -503,7 +504,7 @@ C  SUM OVER SPECIES INDEX
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-C  PROCESS DATA FROM LINE INTEGRAL ROUTINES INTO REQUESTED DATA & UNITS
+C  PROCESS DATA FROM LINE OF SIGHT INTEGRAL ROUTINES INTO REQUESTED DATA & UNITS
 C
         IF (NCHTAL(ICHORI).EQ.1) THEN
 C  LINE INTEGRAL: CX ATOMS/SEC/CM**2/EV/STERAD

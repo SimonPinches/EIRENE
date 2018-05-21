@@ -663,7 +663,7 @@ cdr  start reading species specification block 4a,4b,4c,4d
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI cards 
+cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards 
 cpb......................................
 cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles

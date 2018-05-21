@@ -1,8 +1,14 @@
 
-cdr  comments
+cdr  comments  ??
 
 
-      subroutine eirene_emissivity(ist, lstart, lend)
+      subroutine eirene_emissivity(istr, lstart, lend)
+
+cdr  probably something to fill ADDV tallies with emissivities, stratum ISTR
+cdr  for lines lstart to lend ?? Contained parts of old reoutines Ba_alpha,....,Ly-Beta.
+cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
+
+cdr  may 18: some comments tried......
 
 
       use eirmod_precision
@@ -25,7 +31,7 @@ cdr  comments
 
       implicit none
 
-      integer, intent(in) :: ist, lstart, lend
+      integer, intent(in) :: istr, lstart, lend
       integer :: i, j, k, iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
@@ -38,10 +44,10 @@ cdr  comments
       CHARACTER(6) :: CISTRA
 
       CALL EIRENE_LEER(2)
-      CALL EIRENE_FTCRI(IST,CISTRA)
-      IF (IST.GT.0) CALL EIRENE_MASBOX
+      CALL EIRENE_FTCRI(ISTR,CISTRA)
+      IF (ISTR.GT.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR STRATUM NO. '//CISTRA)
-      IF (IST.EQ.0) CALL EIRENE_MASBOX
+      IF (ISTR.EQ.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR SUM OVER STRATA')
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
@@ -173,7 +179,7 @@ cdr      to turn it into an intensive score:  [...] per cm**3
 
           DUMMY(1:NSBOX_TAL) = ADDV(IADV,1:NSBOX_TAL)
           CALL EIRENE_INTTAL
-     .         (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADV,IST),
+     .         (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADV,ISTR),
      .          NR1TAL,NP2TAL,NT3TAL,NBMLT)
           ADDV(IADV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
@@ -195,7 +201,7 @@ cdr      to turn it into an intensive score:  [...] per cm**3
 
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
         CALL EIRENE_INTTAL
-     .       (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,IST),
+     .       (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,ISTR),
      .        NR1TAL,NP2TAL,NT3TAL,NBMLT)
         ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
@@ -206,10 +212,10 @@ cdr      to turn it into an intensive score:  [...] per cm**3
       end do ! line i
 
 C
-C  WRITE ON STREAM 11 DATA FOR STRATUM NO. IST
+C  WRITE ON STREAM 11 DATA FOR STRATUM NO. ISTR
       IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-        IESTR=IST
-        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+        IESTR=ISTR
+        CALL EIRENE_WRSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -225,9 +231,9 @@ C
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 
 C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
-      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
-        IESTR=IST
-        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
+        IESTR=ISTR
+        CALL EIRENE_WRSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,

@@ -1,4 +1,19 @@
-      subroutine eirene_find_emis_line (ist, ichori, ener, lno)
+      subroutine eirene_find_emis_line (istr, ichori, ener, lno)
+
+cdr documentation ? comments ?
+
+cdr may 18:  try to identify the line LNO,
+cdr          als specified by input flags 
+cdr                                       ICHORI  (line of sight number)
+cdr                                       ENER    (flag for selecting a particular line)
+
+cdr          this is done my trying to find a match of 'ch_line_name(ichori)'
+cdr          read from block 12 for chord ICHORI
+cdr          with 'emis_lines(i)%line_name'
+
+cdr          Then fill the appropriate additional tallies ADDV
+cdr          with the needed volumetric line emissivities, for stratum ISTR,
+cdr          by calling  EIRENE_EMISSIVITY(...)
 
       use eirmod_precision
       use eirmod_parmmod
@@ -18,10 +33,11 @@
 
       implicit none
       
-      integer, intent(in) :: ist, ichori
+      integer, intent(in) :: istr, ichori
       real(dp), intent(in) :: ener
       integer, intent(out) :: lno
-      integer :: i
+      real(dp) :: ener_il
+      integer :: iline
       character(len=:), allocatable :: ctest1, ctest2
       logical :: found
 
@@ -32,23 +48,23 @@
 ! find corresponding line from line names
         ctest1 = adjustl(trim(ch_line_name(ichori)))
 
-        do i = 1, num_lines
-           ctest2 = adjustl(trim(emis_lines(i)%line_name))
+        do iline = 1, num_lines
+           ctest2 = adjustl(trim(emis_lines(iline)%line_name))
            if (ctest1 == ctest2) then
              found = .true.
-             lno = i
+             lno = iline
              exit
            end if
         end do
       end if
 
       if (.not.found) then
-! check energies
-        do i = 1, num_lines
-          if (abs((ener-emis_lines(i)%energy)/emis_lines(i)%energy) <= 
-     .        eps5) then
+! check energies, for backward compatibility with old input block 12.
+        do iline = 1, num_lines
+          ener_il = emis_lines(iline)%energy
+          if (abs((ener-ener_il)/ener_il) <= eps5) then
             found = .true.
-            lno = i
+            lno = iline
             exit
           end if
         end do
@@ -60,20 +76,20 @@
         return
       end if
 
-      IF (IESTR.EQ.IST) THEN
+      IF (IESTR.EQ.ISTR) THEN
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-        IESTR=IST
-        CALL EIRENE_RSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+        IESTR=ISTR
+        CALL EIRENE_RSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
-      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
-        IESTR=IST
-        CALL EIRENE_RSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
+        IESTR=ISTR
+        CALL EIRENE_RSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -81,15 +97,15 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
       ELSE
-        WRITE (IUNOUT,*) 'ERROR IN EMIS_PROFILES: ' // 
-     .                   'DATA FOR STRATUM ISTRA= ', IST
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. EMIS_PROFILES ABANDONNED'
+        WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' // 
+     .                   'DATA FOR STRATUM ISTRA= ', ISTR
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. FIND_EMIS_LINE ABANDONNED'
         RETURN
       ENDIF
 C      
       if (mod_addv == 0) then
-! ADDV is always overwritten thus recalculate the emissivity profile
-         call eirene_emissivity(ist, lno, lno)
+! ADDV is always overwritten. Thus recalculate the emissivity profile
+         call eirene_emissivity(istr, lno, lno)
       end if
 
       return

@@ -2033,6 +2033,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
+      IDMDL = 0  ! count additional reaction cards needed for "density models".
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2110,10 +2111,13 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ISP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
+cdr only if needed: for additional A&M data structure on REACDAT 
+cdr                 so far only for DENSITYMODELS: 
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
+
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
@@ -2148,6 +2152,7 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%G_BOLTZ,
      .           TDMPAR(IPLS)%TDM%DELTAE
           CASE ('CORONA    ')
+            IDMDL = IDMDL + 1  !  ONE MORE H.2 REACTION data set
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2165,6 +2170,7 @@ c  default: only for bulk ions
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD    ')
+            IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
             DO I=1, TDMPAR(IPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             TDMPAR(IPLS)%TDM%ISP(I),
