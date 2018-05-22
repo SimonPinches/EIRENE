@@ -1,6 +1,7 @@
 cdr  Jan 18:  bypass this actions for photons (ityp=0). Code not ready for photon transport.
 cpb:  added: cpu time statistics by particle type, species and stratum: time_array
-
+cdr: Apr.18: testing, cleaning of time_array options (minor bug fix)
+cdr          further photonic arrays added (targets,pointer) 
       subroutine eirene_switch_partinfo
 c  added oct. 2017:
 c  this routine sets the various pointers for tallies,
@@ -154,23 +155,23 @@ C  save stratum, old type, species
 
        LEX     => LEPH
 
-       LGXCX => LGACX
-       LGXEI => LGAEI
-       LGXEL => LGAEL
-       LGXPI => LGAPI
+       LGXCX => LGPHCX
+       LGXEI => LGPHEI
+       LGXEL => LGPHEL
+       LGXPI => LGPHPI
 
-       NXEII => NAEII(IATM)
-       NXCXI => NACXI(IATM)
-       NXELI => NAELI(IATM)
-       NXPII => NAPII(IATM)
+       NXEII => NPHEII(IPHOT)
+       NXCXI => NPHCXI(IPHOT)
+       NXELI => NPHELI(IPHOT)
+       NXPII => NPHPII(IPHOT)
 
-       NPBGKX => NPBGKA(IATM)
+       NPBGKX => NPBGKPH(IPHOT)
 
        IXSPZ = IPHOT
        NMETOFF = 0
 
-       RMASSX => RMASSA(IATM)
-       CNDYNX => CNDYNA(IATM)
+       RMASSX => RMASSPH(IPHOT)
+       CNDYNX => CNDYNPH(IPHOT)
  
        LOGPHOT(IPHOT,ISTRA)=.TRUE.
        LOGXSPZ => LOGPHOT(IPHOT,ISTRA)
@@ -380,25 +381,25 @@ C  save stratum, old type, species
 
       call eirene_leer(2)
 
-      call eirene_headng ('STATISTICS OVER CPU TIME SPENT'//
+      call eirene_headng ('STATISTICS OF CPU TIME SPENT'//
      .                    ' IN FOLLOWING TRAJECTORIES ',57)
 
 ! sum over species
-!      time_array(:,0,1:nstra) = sum(time_array,2)
+
       do it =0, 3
-        do is = 1, nstrai
-          time_array(it,0,is) = sum(time_array(it,1:,is))
+        do istr = 1, nstrai
+          time_array(it,0,istr) = sum(time_array(it,1:,istr))
         end do
       end do
+
 ! sum over strata
-!      time_array(:,:,0) = sum(time_array,3)
+
       do it = 0, 3
         do is = 0, ubound(time_array,2)
            time_array(it,is,0) = sum(time_array(it,is,1:))
         end do
       end do
 
-      write (0,*) ' vor do'
       do istr = 0, nstrai
 
         call eirene_leer(1)
@@ -410,47 +411,47 @@ C  save stratum, old type, species
           write (iunout,'(1x,A,I6)') '============== '
         end if
 
-        if (any(time_array(0,:,:) > 0._dp)) then
+        if (any(time_array(0,:,istr) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('PHOTONS = ',time_array(0,0:nphot,:),
      .                LOGPHOT,ISTR,0,NPHOT,0,NSTRA,TEXTS(1))
           CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
-          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(0,1:nphot,ISTR)))
+          CALL EIRENE_MASR1 ('TOTAL=  ',time_array(0,0,ISTR))
         end if
 
-        if (any(time_array(1,:,:) > 0._dp)) then
+        if (any(time_array(1,:,istr) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('ATOMS =   ',time_array(1,0:natm,:),
      .                LOGATM,ISTR,0,NATM,0,NSTRA,TEXTS(NSPH+1))
          CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
-          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(1,1:natm,ISTR)))
+          CALL EIRENE_MASR1 ('TOTAL=  ',time_array(1,0,ISTR))
         end if
 
-        if (any(time_array(2,:,:) > 0._dp)) then
+        if (any(time_array(2,:,istr) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('MOLECULES=',time_array(2,0:nmol,:),
      .                LOGMOL,ISTR,0,NMOL,0,NSTRA,TEXTS(NSPA+1))
           CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
-          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(2,1:nmol,ISTR)))
+          CALL EIRENE_MASR1 ('TOTAL=  ',time_array(2,0,ISTR))
         end if
 
-        if (any(time_array(3,:,:) > 0._dp)) then
+        if (any(time_array(3,:,istr) > 0._dp)) then
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('TEST IONS=',time_array(3,0:nion,:),
      .                LOGION,ISTR,0,NION,0,NSTRA,TEXTS(NSPAM+1))
           CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
-          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(3,1:nion,ISTR)))
+          CALL EIRENE_MASR1 ('TOTAL=  ',time_array(3,0,ISTR))
         end if
 
-!        if (any(time_array(4,:,:) > 0._dp)) then
+!        if (any(time_array(4,:,istr) > 0._dp)) then
 !          write (iunout,*) ' TIME (SEC) SPENT IN FOLLOWING '
 !          CALL EIRENE_MASYR1 ('BULK IONS=',time_array(4,1:npls,:),
 !     .                LOGPLS,ISTR,1,NPLS,1,NSTRA,TEXTS(NSPAMI+1))

@@ -242,7 +242,8 @@ C
 C  CURRENTLY: IN STANDARD GEOMETRY BLOCK  IBLOCK=1
 C
  
-            IF (LEVGEO.EQ.1) THEN
+            select case (LEVGEO)
+            case (1)
               KAN=1
               KEN=NR1STM
               DO K=1,NR1STM
@@ -261,7 +262,7 @@ C
                 ENDIF
               ENDDO
               NBIN=NR1ST
-            ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+            case (2:3)
               KAN=1
               KEN=NR1STM
               DO K=1,NR1STM
@@ -280,7 +281,7 @@ C
                 ENDIF
               ENDDO
               NBIN=NR1ST
-            ELSEIF (LEVGEO.EQ.4) THEN
+            case (4)
 C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
               K=0
               RRSTEP(ISTEP,1) = 0._DP
@@ -320,7 +321,7 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
               KAN=1
               KEN=K
               NBIN=K+1
-            ELSEIF (LEVGEO.EQ.5) THEN
+            case (5)
 C  GRID OF TETRAHEDRA. RRSTEP IS A CUMULATED SURFACE AREA, INTEGRATING
 C                       OVER A SET OF TETRAHEDRON SIDES (=TRIANGLES)
               K=0
@@ -339,29 +340,30 @@ C                       OVER A SET OF TETRAHEDRON SIDES (=TRIANGLES)
 C  toroidal length: already included in RRSTEP, which is a surface area
               TORL(ISTEP,KAN:KEN)=1._DP
               NBIN=K+1
-            ELSEIF (LEVGEO.GE.10) THEN
+            case (10)
               WRITE (iunout,*) 'DEF. STEP FUNCTIONS NOT AVAILABLE FOR'
               WRITE (iunout,*) 'USER-SUPPLIED GEOMETRY OPTION '
               WRITE (iunout,*) 'DEFINE STEP FUNCTION ELSEWHERE, ',
      .                         'EG. IN SAMUSR'
               WRITE (iunout,*) 'CALL EXIT '
               CALL EIRENE_EXIT_OWN(1)
-            ENDIF
+            end select
 C
 C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS SURFACE TE, TI, V-PLASMA, NI
 C
 
             DO K=KAN,KEN
               NBLCKA=NSTRD*(IBSTEP(ISTEP,K)-1)+IASTEP(ISTEP,K)
-              IF ((LEVGEO == 4) .OR. (LEVGEO == 5)) THEN
+              select case (LEVGEO)
+              case (4:5)
                 NCELL=IRSTEP(ISTEP,K)+
      .            (ITSTEP(ISTEP,K)-1)*NP2T3*
      .             NR1P2+NBLCKA
-              ELSE
+              case default
                 NCELL=IRSTEP(ISTEP,K)+
      .            ((IPSTEP(ISTEP,K)-1)+(ITSTEP(ISTEP,K)-1)*NP2T3)*
      .             NR1P2+NBLCKA
-              END IF
+              end select
               TESTEP(ISTEP,K)=TEIN(NCELL)
               DO 2 IPLS=1,NPLSI
                 IPLSTI = MPLSTI(IPLS)
@@ -403,13 +405,14 @@ c    set drift velocities at cell center
 C
 C  LAST INTERVAL BOUNDARY FOR SAMPLING DISTRIBUTION
 C
-            IF (LEVGEO.EQ.1) THEN
+            select case (LEVGEO)
+            case (1)
               RRSTEP(ISTEP,NR1ST)=RSURF(NR1ST)
-            ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+            case (2:3)
               RRSTEP(ISTEP,NR1ST)=BGLP(NR1ST,IP)
-            ELSEIF (LEVGEO.GE.4) THEN
+            case (4:)
 C             RRSTEP(ISTEP,NBIN) ALREADY SET ABOVE
-            ENDIF
+            end select
             FL=EIRENE_STEP(1,NPLSI,NBIN,ISTEP)
 C
 c  NO DEFAULT STEP FUNCTIONS AVAILABLE FOR Y OR Z SURFACE SOURCES
@@ -538,20 +541,21 @@ C
             BRGHT(2,ISRFS,ISTRAI)=BGL(INSOR(ISRFS,ISTRAI),IS2)
           ELSEIF (LEVGEO.EQ.4.OR.LEVGEO.EQ.5) THEN
             IF (ISTEP == 0) THEN
-              IF (LEVGEO == 4) THEN
+              select case (LEVGEO)
+              case (4)
                 INS = INSOR(ISRFS,ISTRAI)
                 IF (INS < 0) INS = ABS(INS) + NLIM
                 ALEFT(2,ISRFS,ISTRAI)=SURF_TRIAN(INS)%BGLT(1)
                 BRGHT(2,ISRFS,ISTRAI)=SURF_TRIAN(INS)%
      .                               BGLT(SURF_TRIAN(INS)%NUMTR+1)
-              ELSEIF (LEVGEO ==5) THEN
+              case (5)
                 WRITE (iunout,*) ' ERROR IN SAMSRF '
                 WRITE (iunout,*)
      .            ' SAMPLING ON NONDEFAULT STANDARD X-SURFACE '
                 WRITE (iunout,*) ' IS NOT FORESEEN FOR THIS LEVGEO '
                 WRITE (iunout,*) ' EXCEPT FOR STEP FUNCTION OPTIONS '
                 CALL EIRENE_EXIT_OWN(1)
-              END IF
+              end select
 c  STEP FUNCTIONS ON RADIAL SURFACE MAY HAVE BEEN DEFINED EXTERNALLY
 C  TAKE FULL RANGE STEP FUNCTION. NO USE OF INGRDA, INGRDE FORSEEN
             ELSE IF (ISTEP.NE.0) THEN
@@ -752,9 +756,7 @@ C
       ISTEP=0
       ICHWGHT = 0
 C
-      DO 101 JSPZ=1,NSPZ
-        WEISPZ(JSPZ)=-1.
-101   CONTINUE
+      WEISPZ(1:NSPZ)=-1.
 C
 C   USER SUPPLIED GENERATOR FOR X0,Y0,Z0. ONLY ONE CALL
 C   FOR ALL 3 CO-ORDINATES. SUBR. SURTST IS NOT CALLED!
@@ -1065,13 +1067,14 @@ C                SET OF TRIANGLES (SELECTED SIDES OF TETRAHEDRA)
         IF (SORLIM(NLSF,ISTRA).LT.0.D0) GOTO 2000
         IF (JCALC.EQ.2.OR.JCALC.EQ.3) GOTO 993
 C
-        IF (LEVGEO.EQ.1) THEN
+        select case (LEVGEO)
+        case (1)
           X0=RSURF(MRSURF)
           Y0=ZZ(2)
-        ELSEIF (LEVGEO.EQ.2) THEN
+        case (2)
           X0=RSURF(MRSURF)*COS(ZZ(2)*DEGRAD)+EP1(MRSURF)
           Y0=RSURF(MRSURF)*SIN(ZZ(2)*DEGRAD)*ELL(MRSURF)
-        ELSEIF (LEVGEO.EQ.3) THEN
+        case (3)
 C  SAMPLING ON A RADIAL POLYGONIAL SURFACE
           BL=ZZ(2)
           DO 1501 I=1,NPPLG
@@ -1087,7 +1090,7 @@ C  SAMPLING ON A RADIAL POLYGONIAL SURFACE
           VVI=1./SQRT(VVX*VVX+VVY*VVY)
           X0=XPOL(MRSURF,IPLG)+D*VVX*VVI
           Y0=YPOL(MRSURF,IPLG)+D*VVY*VVI
-        ELSEIF (LEVGEO.EQ.4) THEN
+        case (4)
 C  SAMPLING ON SURFACE COMPOSED OF TRIANGLE SIDES
           BL=ZZ(2)
           IF (MRSURF < 0) MRSURF=ABS(MRSURF) + NLIM
@@ -1121,7 +1124,7 @@ C  USE STEP FUNCTION ISTEP
             X0=XTRIAN(NECKE(IS1,ITRI))-D*VVX*VVI
             Y0=YTRIAN(NECKE(IS1,ITRI))-D*VVY*VVI
           END IF  
-        ELSEIF (LEVGEO.EQ.5) THEN
+        case (5)
 C  SAMPLING ON A SURFACE COMPOSED OF TETRAHEDRON SIDES
           IF (ISTEP.LE.0) GOTO 995
           ITET=IRSTEP(ISTEP,IINDEX)
@@ -1137,10 +1140,10 @@ C  SAMPLING ON A SURFACE COMPOSED OF TETRAHEDRON SIDES
           Y3=YTETRA(NTECK(ITSIDE(3,ISID),ITET))
           Z3=ZTETRA(NTECK(ITSIDE(3,ISID),ITET))
           CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,Z0)
-        ELSEIF (LEVGEO.EQ.10) THEN
+        case (10)
           WRITE (iunout,*) 'ERROR EXIT FROM SAMSRF. NLPOL ',LEVGEO
           CALL EIRENE_EXIT_OWN(1)
-        ENDIF
+        end select
 C
       ELSEIF (INDIM(NLSF,ISTRA).EQ.2) THEN
 C  BIRTH POINT ON STANDARD POLOIDAL SURFACE MPSURF

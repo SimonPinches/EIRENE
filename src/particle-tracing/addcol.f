@@ -175,21 +175,22 @@ C  FIND NTCELL IN STANDARD MESH, BLOCK NBLOCK
      .                                        'ADDCOL   ')
             ENDIF
             IF (NLPOL) THEN
-              IF (LEVGEO.EQ.1) THEN
+              select case (LEVGEO)
+              case (1)
                 NPCELL=EIRENE_LEARCA(Y0,PSURF,1,NP2ND,1,'ADDCOL')
-              ELSEIF (LEVGEO.EQ.2) THEN
+              case (2)
                 IF (NLCRC) THEN
                   WINK=MOD(ATAN2(Y0,X0)+PI2A-PSURF(1),PI2A)+PSURF(1)
                   NPCELL=EIRENE_LEARCA(WINK,PSURF,1,NP2ND,1,'ADDCOL')
                 ELSE
                   NPCELL=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'ADDCOL')
                 ENDIF
-              ELSEIF (LEVGEO.EQ.3) THEN
+              case (3)
                 NPCELL=IPOLG
-              ELSE
+              case default
                 WRITE (iunout,*) 'ERROR EXIT FROM ADDCOL. NLPOL ',LEVGEO
                 CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+              end select
             ELSE
               NPCELL=1
             ENDIF
@@ -237,21 +238,22 @@ C  FIND NTCELL IN STANDARD MESH, BLOCK NBLOCK
             ENDIF
 C  FIND NPCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLPOL) THEN
-              IF (LEVGEO.EQ.1) THEN
+              select case (LEVGEO)
+              case (1)
                 NPCELL=EIRENE_LEARCA(Y0,PSURF,1,NP2ND,1,'ADDCOL')
-              ELSEIF (LEVGEO.EQ.2) THEN
+              case (2)
                 IF (NLCRC) THEN
                   WINK=MOD(ATAN2(Y0,X0)+PI2A-PSURF(1),PI2A)+PSURF(1)
                   NPCELL=EIRENE_LEARCA(WINK,PSURF,1,NP2ND,1,'ADDCOL')
                 ELSE
                   NPCELL=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'ADDCOL')
                 ENDIF
-              ELSEIF (LEVGEO.EQ.3) THEN
+              case (3)
                 NPCELL=IPOLG
-              ELSE
+              case default
                 WRITE (iunout,*) 'ERROR EXIT FROM ADDCOL. NLPOL ',LEVGEO
                 CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+              end select
             ELSE
               NPCELL=1
             ENDIF

@@ -1,3 +1,6 @@
+cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
+cdr           scoring distance clpd (full gyro motion distance)
+cdr           clpd  is switched back and forth. Needs clean up.
 cdr Oct. 17   minor sync with folneut
 cdr           started: implementation of QSS branch: folstat_ion.f  not ready
 
@@ -75,7 +78,7 @@ C  .............................................................................
 C
       SUBROUTINE EIRENE_FOLION
 C
-C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
+C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0 IN CELL NRCELL, IPOLG,
 C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
 C     IS FOLLOWED.
 C     (MODULE: COMPRT.F)
@@ -271,14 +274,15 @@ c  check orientation of parallel motion relativ to radidal coordinate
 
         NRCELL_OLD=NRCELL
 
-        IF (LEVGEO.EQ.1) THEN
+        select case (levgeo)
+	case(1)
           SG=SIGN(1._DP,VLXPAR)
           IF (SG.LT.0) THEN
             NRCELL=MRSURF-1
           ELSEIF (SG.GT.0) THEN
             NRCELL=MRSURF
           ENDIF
-        ELSEIF (LEVGEO.EQ.2) THEN
+        case(2)
           PUX= X0-EP1(MRSURF)
           PUY= Y0/ELL(MRSURF)/ELL(MRSURF)
           PN=SQRT(PUX*PUX+PUY*PUY+EPS60)
@@ -296,7 +300,7 @@ c  check orientation of parallel motion relativ to radidal coordinate
           ELSEIF (SG.GT.0) THEN
             NRCELL=NGHPLS(3,MRSURF,NPCELL)
           ENDIF
-        ELSEIF (LEVGEO.EQ.3) THEN
+        case (3)
           IFPB = 1
           XOLD = X0
           YOLD = Y0
@@ -320,7 +324,7 @@ c  check orientation of parallel motion relativ to radidal coordinate
             IF (NPCELL == IDUM) EXIT
             IFPB = -1
           END DO
-        ELSEIF (LEVGEO.EQ.4) THEN
+        case (4)
           SG=VLXPAR*PTRIX(IPOLG,MRSURF)+
      .       VLYPAR*PTRIY(IPOLG,MRSURF)
           IF (ABS(SG) .LT. EPS6) THEN
@@ -363,7 +367,7 @@ c  neighbor found. continue in neighbor cell.
 C  CONTINUE FLIGHT IN ORIGINAL CELL.
 C  NOTHING TO BE DONE
           ENDIF
-        ELSEIF (LEVGEO.EQ.5) THEN
+        case (5)
           SG=VLXPAR*PTETX(IPOLG,MRSURF)+
      .       VLYPAR*PTETY(IPOLG,MRSURF)+
      .       VLZPAR*PTETZ(IPOLG,MRSURF)
@@ -379,14 +383,14 @@ C  TO BE WRITTEN
           ELSEIF (SG.LT.0) THEN
 C  NOTHING TO BE DONE
           ENDIF
-        ELSEIF (LEVGEO.EQ.10) THEN
+        case (10)
 !PB EXPLICITLY ALLOW FOR LEVGEO=10
 !PB NOTHING TO BE DONE
-        ELSE
+        case default
           write (iunout,*) 'levgeo in folion  ', levgeo
           write (iunout,*) 'option not ready, exit called'
           call EIRENE_exit_own(1)
-        ENDIF
+        end select
  
         IF (NRCELL.NE.NRCELL_OLD) THEN
           ico=ico+1
@@ -402,14 +406,15 @@ C  POLOIDAL CELL NO. NPCELL MAY BE WRONG
 C  CHECK ORIENTATION OF PARALLEL MOTION RELATIV TO POLOIDAL COORDINATE
 C
         NPCELL_OLD=NPCELL
-        IF (LEVGEO.EQ.1) THEN
+        select case (LEVGEO)
+        case (1)
           SG=SIGN(1._DP,VLYPAR)
           IF (SG.LT.0) THEN
             NPCELL=MPSURF-1
           ELSEIF (SG.GT.0) THEN
             NPCELL=MPSURF
           ENDIF
-        ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+        case (2:3)
           SG=VLXPAR*PPLNX(NRCELL,MPSURF)+VLYPAR*PPLNY(NRCELL,MPSURF)
           IF (SG.LT.0) THEN
             npcell=nghpls(4,nrcell,mpsurf)
@@ -422,7 +427,7 @@ C           mpsurf is correct
 C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
             mpsurf=npcell
           ENDIF
-        ENDIF
+        end select
         IF (NPCELL.NE.NPCELL_OLD) THEN
           ico=ico+1
           if (ico.le.1) goto 1005
@@ -580,27 +585,28 @@ C PUSH PARTICLE TO SURFACE, USE REDUCED (GC) VELOCITY
           IF (NLSRFA) THEN
             CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,*101,*380)
           ELSEIF (NLSRFX) THEN
-            IF (LEVGEO.LE.3) THEN
+            select case (LEVGEO)
+            case (:3)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
-            ELSEIF (LEVGEO.EQ.4) THEN
+            case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
-            ELSEIF (LEVGEO.EQ.5) THEN
+            case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
-            ELSEIF (LEVGEO.EQ.10) THEN
+            case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
-            ENDIF
+            end select
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
@@ -979,7 +985,8 @@ C
 C  SET NEW ACCUMULATED FLIGHT LENGTH, TENTATIVE
       ZT=ZTST
 C
-C  RESET CLPD TO REAL PATH LENGTH OF FULL GYRO MOTION
+C  RESET CLPD TO REAL PATH LENGTH OF FULL GYRO MOTION FOR SCORING
+C  vel is the full velocity, velpar is the parallel velocity only
 
       DO 217 ICOU=1,NCOU
         CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
@@ -1036,7 +1043,7 @@ C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
 
 c  DO THIS WITH REDUCED VELOCITY:
-          IF (LCART) THEN
+      IF (LCART) THEN
             VELXS=VELX
             VELYS=VELY
             VELZS=VELZ
@@ -1046,9 +1053,10 @@ c  DO THIS WITH REDUCED VELOCITY:
             VELZ=VLZPAR
             VEL =VELPAR
             LCART=.FALSE.
-          ENDIF
+      ENDIF
 C
-      IF (LEVGEO.LE.3) THEN
+      select case (LEVGEO)
+      case (:3)
 C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -1080,7 +1088,7 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
         ENDIF
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
-      ELSEIF (LEVGEO.EQ.4) THEN
+      case (4)
         IF (MRSURF > 0) THEN
           ISTS=ABS(INMTI(IPOLGN,MRSURF))
           IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -1106,11 +1114,9 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
         END IF
 C
 C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
-!pb          SG=ISIGN(1,NINCX)
-!pb          IF (NRCELL == 0) SG = -1.D0
           SG=SIGN(1._DP,VELX*PTETX(IPOLGN,MRSURF)+
      .                  VELY*PTETY(IPOLGN,MRSURF)+
      .                  VELZ*PTETZ(IPOLGN,MRSURF))
@@ -1121,7 +1127,7 @@ C         MSURFG= ??
         ENDIF
 
 C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
-      ELSEIF (LEVGEO.EQ.10) THEN
+      case (10)
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
@@ -1129,7 +1135,7 @@ C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
           IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
-      ENDIF
+      end select
 C
 C
       NRCELL=NRCELL+NINCX
@@ -1154,7 +1160,12 @@ CCC
 C  EARLIER CLPD WAS FULL GYRO DISTANCE, FOR SCORING.
 C  NOW WE NEED AGAIN THE PARALLEL DISTANCE, FOR TRACKING TO
 C  POINT OF COLLISION OR SURFACE EVENT. (I.E. LCART=F)
-      ZTC=CLPD(1)*VELPAR/VEL
+      IF (.NOT.LCART) THEN
+c        WRITE (IUNOUT,*) 'SHIT: VEL IS ALREADY = VELPAR HERE'
+c        WRITE (IUNOUT,*) VEL,VELPAR,VELS
+         CLPD(1)=CLPD(1)*VELPAR/VELS     
+      ENDIF      
+      ZTC=CLPD(1)*VELPAR/VEL   !   this now does nothing: Velpar=vel here
       IF (LCART) THEN
         VELXS=VELX
         VELYS=VELY
@@ -1176,16 +1187,23 @@ C
 C
       CLPD(NCOU)=(ZLOG-ZINT2)*ZMFP
       ZTC=ZT+CLPD(NCOU)
-C  RESET CLPD TO REAL PATH LENGTH OF GYRO MOTION FOR SCORING
-      DO 221 ICOU=1,NCOU
-        CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
-221   CONTINUE
+C  RESET CLPD TO REAL (FULL) PATH LENGTH OF FULL GYRO MOTION FOR SCORING
+cdr I do not understand: for scoring clpd should be full (gyro) distance.
+cdr but if I rescale clpd with vels/velpar, then trace ion balances become
+cdr much worse.  
+cdr   if (.not.lcart) then
+        DO 221 ICOU=1,NCOU
+cdr       CLPD(ICOU)=CLPD(ICOU)*VELS/VELPAR
+          CLPD(ICOU)=CLPD(ICOU)*VEL/VELPAR
+221     CONTINUE
+cdr   endif
+
       IF (IUPDTE.GE.1) THEN
         CALL EIRENE_UPDATE (XSTOR2,XSTORV2,4)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,4,1)
       ENDIF
 
-C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
+C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL. ZTC: PARALLEL (gc) DISTANCE)
 
 2211  CONTINUE
       X0=X0+VLXPAR*ZTC
@@ -1225,26 +1243,27 @@ C  IT WAS A "RADIAL" (1 ST) GRID SURFACE
 C  AT THIS POINT: NRCELL IS THE NEW CELL TO BE ENTERED
 C                 FIND MRSURF: SURFACE OF CELL BOUNDARY
 C                 BETWEEN OLD AND NEW CELL.
-          IF (LEVGEO < 4) THEN
+          select case (LEVGEO)
+          case (:3)
             MRSURF=NRCELL
             IF (NINCX.EQ.-1) MRSURF=NRCELL+1
-          ELSEIF (LEVGEO == 4) THEN
+          case (4)
             NRCOLD=NRCELL-NINCX
             MRSURF=NCHBAR(IPOLGN,NRCOLD)
             IPOLG=NSEITE(IPOLGN,NRCOLD)
-          ELSEIF (LEVGEO == 5) THEN
+          case (5)
             NRCOLD=NRCELL-NINCX
             MRSURF=NTBAR(IPOLGN,NRCOLD)
             IPOLG=NTSEITE(IPOLGN,NRCOLD)
-          ELSEIF (LEVGEO == 10) THEN
-!PB EXPLICITLY ALLOW FOR LEVGEO=10
-!PB NOTHING DONE FOR DELTA EVENT AT CELL BOUNDARY
-             NJUMP_EMC3 = 3
-          ELSE
+          case (10)
+!PB         EXPLICITLY ALLOW FOR LEVGEO=10
+!PB         NOTHING DONE FOR DELTA EVENT AT CELL BOUNDARY
+            NJUMP_EMC3 = 3
+          case default
             WRITE (iunout,*) 'DELTA EVENT AT CELL BOUNDARY '
             WRITE (iunout,*) 'FOR INVALID LEVGEO IN SUBR. FOLION. '
             CALL EIRENE_EXIT_OWN(1)
-          END IF
+          end select
 
         ELSEIF (NINCZ.NE.0) THEN
 C  IT WAS A "TOROIDAL" (3 RD) GRID SURFACE
@@ -1259,14 +1278,15 @@ C  IT WAS A "TOROIDAL" (3 RD) GRID SURFACE
 C  IT WAS A "POLOIDAL" (2 ND) GRID SURFACE
         ELSEIF (NINCY.NE.0) THEN
           NLSRFY=.TRUE.
-          IF (LEVGEO.EQ.1) THEN
+          select case (LEVGEO)
+          case (1)
             NPCELL=JUPC(1)+NINCY
             IF (NINCY == 1) THEN
               MPSURF=NPCELL
             ELSEIF (NINCY.EQ.-1) THEN
               MPSURF=NPCELL+1
             ENDIF
-          ELSEIF (LEVGEO.LE.3) THEN
+          case (2:3)
             MPSURF=LUPC(1)
             IF (MUPC(1).EQ.1) NPCELL=NGHPLS(2,NRCELL,MPSURF)
             IF (MUPC(1).NE.1) NPCELL=NGHPLS(4,NRCELL,MPSURF)
@@ -1285,7 +1305,7 @@ C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN IN MORE GENERAL TERMS)
             ELSEIF (LEVGEO.EQ.3.AND..NOT.NLPOL) THEN
               IPOLG=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'FOLION neu   ')
             ENDIF
-          ENDIF
+          end select
 
         ELSE   !NONE OF THE ninc_x,y,z flags are set, 
 cdr  all the nincx,...y,...z=0. This can happen only in levgeo=10,
@@ -1410,7 +1430,7 @@ c  add gyro velocity (with random phase) to GC velocity:
 !pb       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-C  DOES THE PARTICLE SPEED UNIT VECTOR NOw POINT TOWARDS THE SURFACE ?
+C  DOES THE PARTICLE SPEED UNIT VECTOR NOW POINT TOWARDS THE SURFACE ?
           IF (.NOT.LGPART) EXIT  ! DON'T CARE ABOUT GYRO MOTION, ABSORBED PARTICLE ANYWAY
           IF (ILIIN(MSURF) < 0) EXIT ! DON'T CARE ABOUT GYRO MOTION, TRANSPARENT SURFACE
           IF (COSIN.GT.0.) EXIT
