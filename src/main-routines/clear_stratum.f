@@ -41,13 +41,17 @@ C  COP-ARRAYS
       SIGMA_COP=0.D0
       SDVIA_COP=0.D0
 C  SPECTRA
-      IF (NSIGI_SPC > 0) THEN
-        DO ISPC=1,NADSPC       
-          ESTIML(ISPC)%SGMS = 0._DP
-          ESTIML(ISPC)%SGM = 0._DP
+      DO ISPC=1,NADSPC       
+        IF (NSIGI_SPC > 0) THEN
           ESTIML(ISPC)%SDV = 0._DP
-        END DO
-      END IF
+          ESTIML(ISPC)%SGM = 0._DP
+          ESTIML(ISPC)%STV = 0._DP
+          ESTIML(ISPC)%GG = 0._DP
+        END IF
+        ESTIML(ISPC)%SGMS = 0._DP
+        ESTIML(ISPC)%STVS = 0._DP
+        ESTIML(ISPC)%GGS = 0._DP
+      END DO
  
       RETURN
  

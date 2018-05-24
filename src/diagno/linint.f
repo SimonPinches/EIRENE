@@ -385,20 +385,21 @@ C
 C
       NPCELL=1
       IF (NLPOL.AND.NACELL.EQ.0) THEN
-        IF (LEVGEO.EQ.1) THEN
+        select case (LEVGEO)
+        case (1)
           NPCELL=EIRENE_LEARCA(Y0,PSURF,1,NP2ND,1,'LININT')
-        ELSEIF (LEVGEO.EQ.2) THEN
+        case (2)
           IF (NLCRC) THEN
             WINK=MOD(ATAN2(Y0,X0)+PI2A,PI2A)
             NPCELL=EIRENE_LEARCA(WINK,PSURF,1,NP2ND,1,'LININT')
           ELSE
             NPCELL=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'LININT  ')
           ENDIF
-        ELSEIF (LEVGEO.EQ.3) THEN
+        case (3)
           NPCELL=IPOLG
-        ELSE
+        case default
           WRITE (iunout,*) 'ERROR EXIT FROM DIAGNO. NLPOL ',LEVGEO
-        ENDIF
+        end select
       ENDIF
 C
       IF (TRCSIG.AND.IFIRST.EQ.0) THEN
@@ -535,7 +536,8 @@ C
 C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
 C
-      IF (LEVGEO.LE.3) THEN
+      select case (LEVGEO)
+      case (:3)
 C
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -559,7 +561,7 @@ C
           CALL EIRENE_STDCOL (ISTS,3,SG,*14,*38)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.4) THEN
+      case (4)
         ISTS=ABS(INMTI(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
@@ -568,7 +570,7 @@ C
           CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
@@ -578,14 +580,14 @@ C         MSURFG= ??
           CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.10) THEN
+      case (10)
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
         ENDIF
-      ENDIF
+      end select
 C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM.OR.NRCELL.LT.1) GOTO 991
@@ -872,7 +874,8 @@ C  NO, CONTINUE TRACK
 C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
 C
-      IF (LEVGEO.LE.3) THEN
+      select case (LEVGEO)
+      case (:3)
 C
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -896,7 +899,7 @@ C
           CALL EIRENE_STDCOL (ISTS,3,SG,*104,*380)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.4) THEN
+      case (4)
         ISTS=ABS(INMTI(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
@@ -905,7 +908,7 @@ C
           CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
         ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
@@ -915,14 +918,14 @@ C         MSURFG= ??
           CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.10) THEN
+      case (10)
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
-      ENDIF
+      end select
 C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM.OR.NRCELL.LT.1) GOTO 991

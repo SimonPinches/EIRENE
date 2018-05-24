@@ -216,10 +216,11 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA
+     .           NB,NS,NA, ISTR
 
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
       LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
@@ -635,8 +636,8 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT '
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FROM FILE FT15'
+        WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FROM'
+        WRITE (iunout,*) '       FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.GT.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
         WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP'
@@ -645,8 +646,7 @@ C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       STRATUM NSTRAI+1 FOR FIRST TIMESTEP '
-        WRITE (iunout,*) '       FROM  FILE FT15 '
+        WRITE (iunout,*) '       FIRST TIMESTEP FROM  FILE FT15 '
         WRITE (iunout,*) '       NO FURTHER SNAPSHOP PRODUCED'
         WRITE (iunout,*) '       DUE TO NTIME=0'
       ENDIF
@@ -3210,12 +3210,14 @@ C  MIN AND MAX ENERGY SCORE (EV) ON THIS TALLY
           ESPEC%SPCDELI=1._DP/(ESPEC%SPCDEL+EPS60)
           ALLOCATE(ESPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectrally resolved tallies
-!         IF (NSIGI_SPC > 0) THEN
+          IF (NSIGI_SPC > 0) THEN
             ALLOCATE(ESPEC%SDV(0:NSPSA+1))
             ALLOCATE(ESPEC%SGM(0:NSPSA+1))
             ALLOCATE(ESPEC%STV(0:NSPSA+1))
             ALLOCATE(ESPEC%GG(0:NSPSA+1))
-!         endif
+          ELSE
+            NULLIFY(ESPEC%SDV, ESPEC%SGM, ESPEC%STV, ESPEC%GG)
+          END IF
           ESPEC%SPC(0:NSPSA+1) = 0._DP
           ESPEC%IMETSP = 0
 
@@ -3224,12 +3226,14 @@ c  sum over strata
             SSPEC => SMESTL(J)
             ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
-!           IF (NSIGI_SPC > 0) THEN
+            IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPSA+1))
               ALLOCATE(SSPEC%SGM(0:NSPSA+1))
               ALLOCATE(SSPEC%STV(0:NSPSA+1))
               ALLOCATE(SSPEC%GG(0:NSPSA+1))
-!           END IF
+            ELSE
+              NULLIFY(SSPEC%SDV, SSPEC%SGM, SSPEC%STV, SSPEC%GG)
+            END IF
             SMESTL(J) = ESTIML(J)
           END IF
 C
@@ -3706,7 +3710,7 @@ C  READ INITIAL POPULATION FROM FILE, FORT.15, OVERWRITE DEFAULTS
 C
         IPRNL=0
         IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
-          CALL EIRENE_RSNAP
+          CALL EIRENE_RSNAP(NSTRAI)
           DTIMVO=DTIMV
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
@@ -3767,6 +3771,28 @@ C
           SORWGT(1,NSTRAI)=1.D0
         ENDIF
 C
+      ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
+C Only read census from file if exactly one stratum is a census stratum
+          ISTR_A = PACK((/ (i, I = 1, NSTRA) /),NLCNS)
+          ISTR = ISTR_A(1)
+          CALL EIRENE_RSNAP( ISTR )
+C
+          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE FORT 15 '
+          CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
+          CALL EIRENE_MASR1('FLUX    ',FLUX(ISTR))
+C
+C  ONE BY ONE RELAUNCH FROM OLD CENSUS
+C  OLD CENSUS CONTAINS IPRNL ENTRIES.
+          NPTS(ISTR)=IPRNL
+          NMINPTS(ISTR)=IPRNL   ! NMINPTS is currently not used anywhere
+          CALL EIRENE_MASJ1('NPTS=    ',NPTS(ISTR))
+
+          IF (NPTS(ISTR).GT.0.AND.FLUX(ISTR).GT.0) THEN
+            NSRFSI(ISTR)=1
+            SORWGT(1,ISTR)=1.D0
+          ENDIF
+        ENDIF
       ENDIF
 1399  CONTINUE
 C
@@ -4583,11 +4609,12 @@ C
       NTTRAM=NTTRA-1
       NBMLTP=NBMLT+1
 
-      IF (LEVGEO == 4) THEN
+      select case (LEVGEO)
+      case (4)
         NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0) + 1
-      ELSE IF (LEVGEO == 5) THEN
+      case (5)
         NGITT = COUNT(INMTIT(1:4,1:NTET) .NE. 0) + 1
-      END IF
+      end select
 
       CALL EIRENE_SET_PARMMOD(3)
       CALL EIRENE_ALLOC_CGEOM(2)

@@ -894,7 +894,8 @@ C
 
       EIRENE_LEARC1_RESET = 0
 
-      if (levgeo == 3) then
+      select case (levgeo)
+      case (3)
 
         IFIRST=0
         DEALLOCATE (D12)
@@ -919,8 +920,7 @@ C
         ENDIF
 
 
-      elseif(levgeo.eq.4) then
-
+      case (4)
         IFIRST=0
         if(allocated(obsc)) deallocate(obsc)
         if(allocated(heads)) then
@@ -939,7 +939,7 @@ C
         endif
 
         return
-      endif
+      end select
 
       return
 

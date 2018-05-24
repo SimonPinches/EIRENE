@@ -466,119 +466,119 @@ C
       t1525 = eppa*t1473
       t1528 = trxa*t1473
       t1531 = trys*t1516
-      SX = SX -TRYS*TRXA*T1469-TRXS*TRYS*T1525+TRXS*TRYA*T562/2-EPPS*ELL
-     +s*t1516/2+epps*ella*t1440/2-ells*trxs*t1516/4-epps*ells*t7*t816/6+
-     +epps*ella*t13*t816/2+trxs*trys*trxa*t1120/6-3.0/40.0*trxs*ells*t12
-     +23+trys*trxs*t1090/36+ells*t14*t1235/9+3.0/40.0*trys*trxa*t1167-tr
-     +ys*trxs*t1140/60-2.0/3.0*trxs*trya*t1060-trys*trxa*t1026/4+trxs*tr
-     +ys*t1049/3-ells*trxs*t1276/4-trxs*trys*t704+ells*trxs*t1257/12-trx
-     +s*trys*t1098/3-t5*ella*t933/24+ells*trxs*t1227/48+trxs*ella*t859/2
-     +-ella*trxa*xhalb2*t140/16+epps*trya*trxa*t286/2-t5*ella*t247/24-tr
-     +xs*trys*trxa*t126/6-epps*trya*trxa*t877/2+trxs*trya*trxa*xhalb1*t1
-     +25/3-ells*epps*t14*t148/6+trya*t1440/4+trxs*ella*t830/6-ells*t42*t
-     +892/6+ells*t42*t996/10+epps*ella*t1003/2+epps*ella*t1008/6-ells*t1
-     +525/2-ella*trxs*t973/16-t5*ells*t215/12+t1458/3+t23*t1448/2-trxs*t
-     +rys*epps*t1129/6-epps*trya*t933/3+t5*t145/3-epps*trya*t938-ella*tr
-     +xs*t574/16+ella*trxa*xhalb2*t797/16-trxs*ella*t947/6+t731*t764/9-t
-     +2*t761/2+t729*t16/3-trxs*ella*t943/2-epps*ella*t939/2-ella*t1482/4
-     +-epps*ella*t934/6-t1338/3-t5*t1338/4+t2*t752/2+ells*trxs*t809/4-t5
-     +*ells*t1140/60+t5*ells*t1090/12+trya*trxs*t1136/10-ells*trxa*t943+
-     +trys*trxa*t878/2+trxs*trys*t1163/60+ells*trxs*t271/48+t5*ells*t362
-     +/60-trxs*trys*t1129/6-t5*trya*t1192/6
-      SX = SX+EPPS*ELLS*T1199/12+2.0/3.0*T
-     +rys*trxs*t784-3.0/4.0*epps*ells*t1206+t5*ella*t1007/24+t5*ells*t11
-     +63/60-t5*ells*t1114/12+t5*ella*t1136/40+2.0/3.0*trxs*trya*t917-ell
-     +s*trxs*t211/4+t2*t57/2-t729*t57/2-t5*trys*t14*t125/9-t722*t78/3-tr
-     +ya*t372/10+epps*t359/12-t731*t44/3-trys*t1294/4+trya*t345-trxs*try
-     +a*t878/2-t722*t1448/2+t2*t75/3+ella*trxs*t867/4+t23*t78/3-t729*t75
-     +2/2+t23*t70/2+t2*t67+t62*t63/9+ells*trxa*t859+t729*t914+trxs*ella*
-     +t900/20+ella*t1433/2-t722*t26+epps*t910/6+trya*t830/3+ella*t6*t229
-     +/6+epps*t346/2-ells*trxa*t830/3+ella*trxs*t798/16-ella*t416/4+2.0/
-     +9.0*t5*trys*t809+2.0/3.0*ells*trxs*epps*t259+2.0/3.0*ells*trxs*t78
-     +5+trya*t888-t731*t9/9+trys*t1101/2+3.0/4.0*trxs*ells*t780+trxs*t26
-     +5/36+ells*t42*t775/6+ella*t1441/4+trys*t784/3-t722*t70/2-ella*t146
-     +9/2-trys*trxa*t601/4-trys*trxa*t652-epps*trya*t692-t729*t75/3+trya
-     +*t1003+trys*t1257/12+ells*t1457/4-2.0/3.0*ells*trxs*epps*t1085-ell
-     +a*trxa*xhalb1*t797/16-ells*epps*t629/2-t1531/12+t729*t737/2+trya*t
-     +900/10-t23*t846/2+t4*t734/3+t435/3+ella*t1444/4+ells*trxs*t618/4+e
-     +lls*t305/4+trxs*t910/12+trys*t358/24-trys*t133/3+trys*trxa*t626-ep
-     +ps*t906/2+ells*t1502/4+epps*trya*t660+trxs*t1102/4-trys*t1038/12+t
-     +838/6-trxs*t1531/3-epps*trya*t656-trxs*trya*t652
-      SX = SX+EPPS*ELLA*T606/2+
-     +trxs*trya*t626+epps*t889/2-trys*t1031/48-t731*t734/3+trxs*trys*t63
-     +7+trys*t1227/48-epps*t438/6-3.0/4.0*epps*t252+epps*trya*t623+t722*
-     +t53/2+epps*ells*t618/2+trys*trxa*epps*t606+trya*t1008/6-epps*ella*
-     +t610/2-t5*trya*t126/6-t729*t67-t2*t48/2-t23*t53/2-trxs*ella*t372/2
-     +0+t4*t44/3-trys*t251/2+trya*t606/4+ells*trxa*t574/16+t2*t38/3-ells
-     +*trxa*t105/3-t23*t35-trya*t610/4-t4*t764/9-t4*t30/3-trys*trxa*t562
-     +/2-ella*t692/4-3.0/4.0*trxs*ells*t508+trys*trxa*epps*t1440-trys*tr
-     +xa*epps*t610-ella*t652/2+t729*t761/2+ells*t1509/2-trxs*trys*epps*t
-     +1516-t5*t269/4+5.0/24.0*trxs*t1106+t701/12-trxs*trya*t1469-epps*el
-     +la*t1473/2-epps*trya*t1482-t5*ella*t243/40+epps*trya*t1441+trxs*tr
-     +ya*t1433+trxs*trys*t1509+3.0/40.0*trxs*ells*t394+ells*trxa*t100-tr
-     +ys*epps*t215/18+ella*trxs*t144/4+t729*t48/2+t722*t846/2+ella*trxs*
-     +t383/16-epps*t631-2.0/9.0*t5*trys*t211+trys*t1502/2-ella*t656/4-tr
-     +xs*trya*t442/2-2.0/9.0*t5*trys*t1276-trys*trxa*t1081/2-ells*t42*t8
-     +99/10-ells*trxs*t141/48+trys*trxa*t1433+ells*epps*t1436/2+epps*try
-     +a*t1444-trxs*trys*t341/60-epps*trya*t1465+trxs*ells*t520/12+trxs*t
-     +rys*epps*t618-ella*trxs*t88/4-ells*t42*t426/6-t5*trys*t7*t872/9-ep
-     +ps*ella*t160/2+trys*t1090/9-t5*t134/6
-      SX = SX+T731*T85/3-TRYS*T1528/2-ELLS
-     +*trxa*t446+trxs*trys*trxa*t298/6-epps*t481/2-ells*t7*t1235/9+trys*
-     +trxa*t1071/4+ella*t13*t1235/6-trya*t973/16+ells*trxa*t449/3+ells*t
-     +42*t371/10-trxs*ella*t449/6-trya*t427/6-trys*t1206/2-trxs*ella*t44
-     +6/2+epps*t1458-trya*t446-5.0/24.0*ells*trxa*t934-ells*t630/4-trya*
-     +t893/6+ella*trxa*xhalb1*t140/16-t5*ella*t1167/40-3.0/4.0*ells*trxs
-     +*t1294+3.0/40.0*ells*trxa*t1168-ella*t6*t1235/6+epps*ells*t7*t148/
-     +6+t5*trys*t7*t125/9+trxs*trys*t452/6-epps*ella*t13*t148/2+trys*trx
-     +a*t442/2-trxs*trys*trxa*t1192/6+trxs*t701/3+trys*t1199/24-ella*t13
-     +*t229/6+t4*t9/9-3.0/40.0*trys*t1223+epps*ella*t6*t148/2-t5*t1220/6
-     ++2.0/3.0*trxs*trya*t192+epps*t265/18-t2*t16/3+ells*t7*t229/9+3.0/4
-     +0.0*trys*t394+t729*t20/3-2.0/9.0*t1220+epps*t262/2+ella*eppa*xhalb
-     +1*t148/2+t731*t30/3-2.0/3.0*trxs*trya*t416-ells*t611/4+trxs*ella*t
-     +156/20-ells*t14*t229/9-trys*t629/12-ells*trxa*t383/16-ells*t704/2-
-     +trxs*trya*trxa*xhalb1*t872/3+epps*t349/6-epps*ella*t248/6-t2*t20/3
-     ++3.0/4.0*epps*ells*t224-trya*t449/3+trys*trxs*t362/60+t145/4+ells*
-     +t42*t95/6-epps*trya*trxa*t441/2+trys*t271/48-trya*t1168/10-t729*t5
-     +8/2-t5*ells*t341/60-2.0/9.0*t134+t5*ells*t264/12-trys*trxa*epps*t1
-     +473-epps*ells*t315/12+t5*trya*t298/6-t332/6
-      SX = SX+trya*t383/16-t5*t1196/
-     +3-t131/4-3.0/40.0*trys*trxa*t200-t1196/4+trya*t909/6-epps*trya*t24
-     +7/3+trys*t780/4+3.0/4.0*ells*trxs*t163-trya*t248/6-epps*trya*trxs*
-     +t601/2-ells*trxs*t167/12
-      SX = SX+ELLS*T637/2-ELLA*T1465/4-TRYA*T947/3-TRYA
-     +*t1000/10+epps*trya*trxs*t1071/2+ells*trxa*t947/3+trxs*trya*t1081/
-     +2+trys*epps*t1090/18+epps*trya*t779+t5*trya*t1120/6-trxs*ella*t100
-     +0/20+trya*t100+epps*trya*trxs*t220/2-2.0/3.0*trys*trxs*t133+5.0/24
-     +.0*ells*trxa*t119-ells*t1528/4-trxs*trya*trxa*xhalb2*t125/3+trys*t
-     +rxa*t220/4+t5*ella*t200/40+t5*ella*t118/24-t631/3-2.0/3.0*trxs*t11
-     +11+ella*t626/2-ells*trxa*t798/16-ells*trxa*t939/4+ells*trxa*t973/1
-     +6+trya*t798/16-trya*trxs*t243/10-trys*trxs*t215/36+ells*t607/4-trx
-     +s*t252/4-trxs*t894/12-ells*t42*t155/10+trys*t1436/12-epps*trya*trx
-     +s*t1026/2-ella*trxs*t1022/4-ells*trxs*t1031/48+epps*trya*t1007/3-t
-     +rxs*ells*t1038/12+epps*trya*t113+epps*trya*t118/3-2.0/3.0*ells*trx
-     +s*t294+trxs*trys*t305/3+ella*t660/4+t1176/4+t5*t260/6-trya*t939+tr
-     +xs*trya*trxa*xhalb2*t872/3+ella*t623/4-trya*t934/6+trxs*t349/12+t5
-     +*t1176/3-epps*trya*t159-trys*t315/24-t2*t737/2-t23*t1335/3-epps*t8
-     +94/6-trys*t611/2-t806*t63/9-epps*t1115/18+trya*t859+trys*t224/2+t8
-     +06*t81/9+trxs*trys*epps*t452/6-epps*t1111/2+t722*t1335/3-trys*t167
-     +/12+trys*t163/4-epps*t1106/12+trys*t607/2+trya*t201/10-trya*t1473/
-     +4-ella*eppa*xhalb1*t816/2+t793/3+2.0/9.0*t801-trxs*t1115/36+3.0/4.
-     +0*epps*t1102-t5*t131/3+trya*t105/3-epps*ella*t6*t816/2
-      SX = SX+t5*trys*t14
-     +*t872/9-ells*t1098/4+t5*t801/6+t5*t435/4-trxs*t438/12-trys*t215/9+
-     +ella*t192/4-t729*t38/3-t4*t85/3+epps*trya*trxa*t862/2-trxs*trys*t8
-     +9/3+ella*t917/4+t722*t35+trxs*ella*t100/2-trys*t141/48+t23*t26+trx
-     +s*ella*t105/6+ella*eppa*xhalb2*t816/2
-      SX = SX+ELLS*TRXS*T109/4-ELLS*T89/4+
-     +2.0/9.0*t260-ella*eppa*xhalb2*t148/2-trya*t376-trxs*t481/2+trxs*t8
-     +89/2+t262/3-t2*t914+epps*ella*t114/2-trya*t943-trya*t905+trya*t96/
-     +6+trys*t520/12+ells*epps*t14*t816/6+t265/9+t2*t58/2+epps*ella*t119
-     +/6+2.0/3.0*trxs*t262-trya*t574/16+trya*t156/10-t1111/3-t62*t81/9+e
-     +pps*t838/6-3.0/40.0*ells*trxa*t201+ells*trxa*t114/4-trys*t1105/24+
-     +trya*t114+trys*t785/2-trys*t294/2+t5*t793/4-trys*t508/4+2.0/9.0*t5
-     +*trys*t109-5.0/24.0*trxs*t359-t1115/9-trxs*t906/2-ella*t1060/4+trx
-     +s*t346/2+trya*t119/6-t269/3-epps*t332/6-trya*t160+ells*t1049/4
+      SX = SX -TRYS*TRXA*T1469-TRXS*TRYS*T1525+TRXS*TRYA*T562/2-EPPS*
+     >ELLs*t1516/2+epps*ella*t1440/2-ells*trxs*t1516/4-epps*ells*t7*
+     >t816/6+epps*ella*t13*t816/2+trxs*trys*trxa*t1120/6-3.0/40.0*trxs*
+     >ells*t1223+trys*trxs*t1090/36+ells*t14*t1235/9+3.0/40.0*trys*trxa*
+     >t1167-trys*trxs*t1140/60-2.0/3.0*trxs*trya*t1060-trys*trxa*t1026/
+     >4+trxs*trys*t1049/3-ells*trxs*t1276/4-trxs*trys*t704+ells*trxs*
+     >t1257/12-trxs*trys*t1098/3-t5*ella*t933/24+ells*trxs*t1227/48+
+     >trxs*ella*t859/2-ella*trxa*xhalb2*t140/16+epps*trya*trxa*t286/2-
+     >t5*ella*t247/24-trxs*trys*trxa*t126/6-epps*trya*trxa*t877/2+trxs*
+     >trya*trxa*xhalb1*t125/3-ells*epps*t14*t148/6+trya*t1440/4+trxs*
+     >ella*t830/6-ells*t42*t892/6+ells*t42*t996/10+epps*ella*t1003/2+
+     >epps*ella*t1008/6-ells*t1525/2-ella*trxs*t973/16-t5*ells*t215/12+
+     >t1458/3+t23*t1448/2-trxs*trys*epps*t1129/6-epps*trya*t933/3+t5*
+     >t145/3-epps*trya*t938-ella*trxs*t574/16+ella*trxa*xhalb2*t797/16-
+     >trxs*ella*t947/6+t731*t764/9-t2*t761/2+t729*t16/3-trxs*ella*t943/
+     >2-epps*ella*t939/2-ella*t1482/4-epps*ella*t934/6-t1338/3-t5*t1338/
+     >4+t2*t752/2+ells*trxs*t809/4-t5*ells*t1140/60+t5*ells*t1090/12+
+     >trya*trxs*t1136/10-ells*trxa*t943+trys*trxa*t878/2+trxs*trys*
+     >t1163/60+ells*trxs*t271/48+t5*ells*t362/60-trxs*trys*t1129/6-t5*
+     >trya*t1192/6
+      SX = SX+EPPS*ELLS*T1199/12+2.0/3.0*Trys*trxs*t784-3.0/4.0*epps*
+     >ells*t1206+t5*ella*t1007/24+t5*ells*t1163/60-t5*ells*t1114/12+t5*
+     >ella*t1136/40+2.0/3.0*trxs*trya*t917-ells*trxs*t211/4+t2*t57/2-
+     >t729*t57/2-t5*trys*t14*t125/9-t722*t78/3-trya*t372/10+epps*t359/
+     >12-t731*t44/3-trys*t1294/4+trya*t345-trxs*trya*t878/2-t722*t1448/
+     >2+t2*t75/3+ella*trxs*t867/4+t23*t78/3-t729*t752/2+t23*t70/2+t2*
+     >t67+t62*t63/9+ells*trxa*t859+t729*t914+trxs*ella*t900/20+ella*
+     >t1433/2-t722*t26+epps*t910/6+trya*t830/3+ella*t6*t229/6+epps*t346/
+     >2-ells*trxa*t830/3+ella*trxs*t798/16-ella*t416/4+2.0/9.0*t5*trys*
+     >t809+2.0/3.0*ells*trxs*epps*t259+2.0/3.0*ells*trxs*t785+trya*t888-
+     >t731*t9/9+trys*t1101/2+3.0/4.0*trxs*ells*t780+trxs*t265/36+ells*
+     >t42*t775/6+ella*t1441/4+trys*t784/3-t722*t70/2-ella*t1469/2-trys*
+     >trxa*t601/4-trys*trxa*t652-epps*trya*t692-t729*t75/3+trya*t1003+
+     >trys*t1257/12+ells*t1457/4-2.0/3.0*ells*trxs*epps*t1085-ella*trxa*
+     >xhalb1*t797/16-ells*epps*t629/2-t1531/12+t729*t737/2+trya*t900/10-
+     >t23*t846/2+t4*t734/3+t435/3+ella*t1444/4+ells*trxs*t618/4+ells*
+     >t305/4+trxs*t910/12+trys*t358/24-trys*t133/3+trys*trxa*t626-epps*
+     >t906/2+ells*t1502/4+epps*trya*t660+trxs*t1102/4-trys*t1038/12+
+     >t838/6-trxs*t1531/3-epps*trya*t656-trxs*trya*t652
+      SX = SX+EPPS*ELLA*T606/2+trxs*trya*t626+epps*t889/2-trys*t1031/48-
+     >t731*t734/3+trxs*trys*t637+trys*t1227/48-epps*t438/6-3.0/4.0*epps*
+     >t252+epps*trya*t623+t722*t53/2+epps*ells*t618/2+trys*trxa*epps*
+     >t606+trya*t1008/6-epps*ella*t610/2-t5*trya*t126/6-t729*t67-t2*t48/
+     >2-t23*t53/2-trxs*ella*t372/20+t4*t44/3-trys*t251/2+trya*t606/4+
+     >ells*trxa*t574/16+t2*t38/3-ells*trxa*t105/3-t23*t35-trya*t610/4-
+     >t4*t764/9-t4*t30/3-trys*trxa*t562/2-ella*t692/4-3.0/4.0*trxs*ells*
+     >t508+trys*trxa*epps*t1440-trys*trxa*epps*t610-ella*t652/2+t729*
+     >t761/2+ells*t1509/2-trxs*trys*epps*t1516-t5*t269/4+5.0/24.0*trxs*
+     >t1106+t701/12-trxs*trya*t1469-epps*ella*t1473/2-epps*trya*t1482-
+     >t5*ella*t243/40+epps*trya*t1441+trxs*trya*t1433+trxs*trys*t1509+
+     >3.0/40.0*trxs*ells*t394+ells*trxa*t100-trys*epps*t215/18+ella*
+     >trxs*t144/4+t729*t48/2+t722*t846/2+ella*trxs*t383/16-epps*t631-
+     >2.0/9.0*t5*trys*t211+trys*t1502/2-ella*t656/4-trxs*trya*t442/2-
+     >2.0/9.0*t5*trys*t1276-trys*trxa*t1081/2-ells*t42*t899/10-ells*
+     >trxs*t141/48+trys*trxa*t1433+ells*epps*t1436/2+epps*trya*t1444-
+     >trxs*trys*t341/60-epps*trya*t1465+trxs*ells*t520/12+trxs*trys*
+     >epps*t618-ella*trxs*t88/4-ells*t42*t426/6-t5*trys*t7*t872/9-epps*
+     >ella*t160/2+trys*t1090/9-t5*t134/6
+      SX = SX+T731*T85/3-TRYS*T1528/2-ELLS*trxa*t446+trxs*trys*trxa*
+     >t298/6-epps*t481/2-ells*t7*t1235/9+trys*trxa*t1071/4+ella*t13*
+     >t1235/6-trya*t973/16+ells*trxa*t449/3+ells*t42*t371/10-trxs*ella*
+     >t449/6-trya*t427/6-trys*t1206/2-trxs*ella*t446/2+epps*t1458-trya*
+     >t446-5.0/24.0*ells*trxa*t934-ells*t630/4-trya*t893/6+ella*trxa*
+     >xhalb1*t140/16-t5*ella*t1167/40-3.0/4.0*ells*trxs*t1294+3.0/40.0*
+     >ells*trxa*t1168-ella*t6*t1235/6+epps*ells*t7*t148/6+t5*trys*t7*
+     >t125/9+trxs*trys*t452/6-epps*ella*t13*t148/2+trys*trxa*t442/2-
+     >trxs*trys*trxa*t1192/6+trxs*t701/3+trys*t1199/24-ella*t13*t229/6+
+     >t4*t9/9-3.0/40.0*trys*t1223+epps*ella*t6*t148/2-t5*t1220/6+2.0/
+     >3.0*trxs*trya*t192+epps*t265/18-t2*t16/3+ells*t7*t229/9+3.0/40.0*
+     >trys*t394+t729*t20/3-2.0/9.0*t1220+epps*t262/2+ella*eppa*xhalb1*
+     >t148/2+t731*t30/3-2.0/3.0*trxs*trya*t416-ells*t611/4+trxs*ella*
+     >t156/20-ells*t14*t229/9-trys*t629/12-ells*trxa*t383/16-ells*t704/
+     >2-trxs*trya*trxa*xhalb1*t872/3+epps*t349/6-epps*ella*t248/6-t2*
+     >t20/3+3.0/4.0*epps*ells*t224-trya*t449/3+trys*trxs*t362/60+t145/4+
+     >ells*t42*t95/6-epps*trya*trxa*t441/2+trys*t271/48-trya*t1168/10-
+     >t729*t58/2-t5*ells*t341/60-2.0/9.0*t134+t5*ells*t264/12-trys*trxa*
+     >epps*t1473-epps*ells*t315/12+t5*trya*t298/6-t332/6
+      SX = SX+trya*t383/16-t5*t1196/3-t131/4-3.0/40.0*trys*trxa*t200-
+     >t1196/4+trya*t909/6-epps*trya*t247/3+trys*t780/4+3.0/4.0*ells*
+     >trxs*t163-trya*t248/6-epps*trya*trxs*t601/2-ells*trxs*t167/12
+      SX = SX+ELLS*T637/2-ELLA*T1465/4-TRYA*T947/3-TRYA*t1000/10+epps*
+     >trya*trxs*t1071/2+ells*trxa*t947/3+trxs*trya*t1081/2+trys*epps*
+     >t1090/18+epps*trya*t779+t5*trya*t1120/6-trxs*ella*t1000/20+trya*
+     >t100+epps*trya*trxs*t220/2-2.0/3.0*trys*trxs*t133+5.0/24.0*ells*
+     >trxa*t119-ells*t1528/4-trxs*trya*trxa*xhalb2*t125/3+trys*trxa*
+     >t220/4+t5*ella*t200/40+t5*ella*t118/24-t631/3-2.0/3.0*trxs*t1111+
+     >ella*t626/2-ells*trxa*t798/16-ells*trxa*t939/4+ells*trxa*t973/16+
+     >trya*t798/16-trya*trxs*t243/10-trys*trxs*t215/36+ells*t607/4-trxs*
+     >t252/4-trxs*t894/12-ells*t42*t155/10+trys*t1436/12-epps*trya*trxs*
+     >t1026/2-ella*trxs*t1022/4-ells*trxs*t1031/48+epps*trya*t1007/3-
+     >trxs*ells*t1038/12+epps*trya*t113+epps*trya*t118/3-2.0/3.0*ells*
+     >trxs*t294+trxs*trys*t305/3+ella*t660/4+t1176/4+t5*t260/6-trya*
+     >t939+trxs*trya*trxa*xhalb2*t872/3+ella*t623/4-trya*t934/6+trxs*
+     >t349/12+t5*t1176/3-epps*trya*t159-trys*t315/24-t2*t737/2-t23*
+     >t1335/3-epps*t894/6-trys*t611/2-t806*t63/9-epps*t1115/18+trya*
+     >t859+trys*t224/2+t806*t81/9+trxs*trys*epps*t452/6-epps*t1111/2+
+     >t722*t1335/3-trys*t167/12+trys*t163/4-epps*t1106/12+trys*t607/2+
+     >trya*t201/10-trya*t1473/4-ella*eppa*xhalb1*t816/2+t793/3+2.0/9.0*
+     >t801-trxs*t1115/36+3.0/4.0*epps*t1102-t5*t131/3+trya*t105/3-epps*
+     >ella*t6*t816/2
+      SX = SX+t5*trys*t14*t872/9-ells*t1098/4+t5*t801/6+t5*t435/4-trxs*
+     >t438/12-trys*t215/9+ella*t192/4-t729*t38/3-t4*t85/3+epps*trya*
+     >trxa*t862/2-trxs*trys*t89/3+ella*t917/4+t722*t35+trxs*ella*t100/2-
+     >trys*t141/48+t23*t26+trxs*ella*t105/6+ella*eppa*xhalb2*t816/2
+      SX = SX+ELLS*TRXS*T109/4-ELLS*T89/4+2.0/9.0*t260-ella*eppa*xhalb2*
+     >t148/2-trya*t376-trxs*t481/2+trxs*t889/2+t262/3-t2*t914+epps*ella*
+     >t114/2-trya*t943-trya*t905+trya*t96/6+trys*t520/12+ells*epps*t14*
+     >t816/6+t265/9+t2*t58/2+epps*ella*t119/6+2.0/3.0*trxs*t262-trya*
+     >t574/16+trya*t156/10-t1111/3-t62*t81/9+epps*t838/6-3.0/40.0*ells*
+     >trxa*t201+ells*trxa*t114/4-trys*t1105/24+trya*t114+trys*t785/2-
+     >trys*t294/2+t5*t793/4-trys*t508/4+2.0/9.0*t5*trys*t109-5.0/24.0*
+     >trxs*t359-t1115/9-trxs*t906/2-ella*t1060/4+trxs*t346/2+trya*t119/
+     >6-t269/3-epps*t332/6-trya*t160+ells*t1049/4
       SX = SX/(AELL+1.D-30)
 C
       t1 = 2*alpha
@@ -775,86 +775,86 @@ C
       t911 = t12*t894
       t993 = sin(beta)**2
       t994 = t993*t559
-      SY = SY+TRYS*TRXA*ELLA*T163/10-TRXS*TRYS*ELLS*T463/60-TRYS*TRXA*EL
-     +la*t588/6-ells*trxs*ella*t650/4+ells*trxs*trya*t361/40+ells*trxa*t
-     +rya*t183+ells*trxa*trya*t187/6-ells*trys*t13*t19/48-trys*trxa*trya
-     +*xhalb1*t131/3-ells*ella*t4*t231/6-trys*trxa*ells*t274/6+trys*trxa
-     +*ells*t267/10-trys*trxa*ells*t224+ella*trys*t242/4+trys*trxa*ells*
-     +t213+trys*trxa*ella*t592/10-trxs*t11*t40*t131/9+ells*ella*t12*t231
-     +/6-2.0/9.0*trxs*t11*t251-ells*trxa*ella*t597/2+ells*trxa*ella*xhal
-     +b2*t607/8-t647/9-trya*t743/40-trys*trxa*ella*t632-t31*t48/9-t3*t11
-     +9/6+t3*t107/4+trys*trxa*trya*xhalb1*t894/3-t11*t377/36+trya*t362/4
-     +0+t86*t797/6-trya*t708/4-t700*t821/2-ella*t349/4-2.0/9.0*t26*t575-
-     +t692*t14/6-t86*t588/6+t693*t88/3-t693*t201/3+ells*ella*t4*t994/6-e
-     +lla*t598/4+ells*trys*t13*t607/48+epps*t825/2+t700*t54/2-trxs*t659-
-     +t3*t7/2+t86*t704/10+t701*t48/9-t25*t54/2+t25*t28/6-3.0/16.0*t19*t6
-     +4-trxs*t379/12-t25*t49/6+t3*t79/6-trxs*t374-t607*t68/16-t25*t60/2-
-     +t10*t45/3-epps*t303/6-trys*trxa*ells*t361/10-t700*t91/2+trxs*trys*
-     +t842/3+ells*ella*t213/3+trxs*ella*t786/40+t700*t60/2+ells*trys*t41
-     +0/4-trxs*t334+ells*trxa*t565+ells*trxa*t824/6-ells*ella*t618/3-try
-     +a*t322/8-trxs*trys*trya*t911/6-t693*t15/9+t31*t27/9-t10*t88/3-ells
-     +*trxa*t828/10-epps*ells*t678/4+t3*t95/2-t3*t103/2+t3*t108/2-t338/2
-     ++2.0/3.0*trys*trxa*t156+2.0/9.0*trxs*t11*t747
-      SY = SY+T692*T119/6-TRYS*TRX
-     +a*ella*t178/10+t11*trxa*t895/6-ells*trxs*t619+t607*t206/16-ells*t6
-     +55/4-t11*t835/3+t692*t103/2-ells*trxs*ella*t141/4+ells*trxa*ella*t
-     +146/2-t26*trxs*t879/6+2.0/3.0*trys*trxa*t767-t607*t83/48-ells*trys
-     +*t879/4+ells*ella*t560/3-trxs*t634+t709/2+epps*t709/4-ells*trxa*tr
-     +ya*t173/6-epps*t379/6+t26*t40*t994/9-t26*t13*t994/9+ells*trxa*t641
-     +/10-t693*t100/3-epps*t687/4-ells*trxa*t633+ells*trys*t747/4-t11*t6
-     +67/3-ells*trxs*trya*t742/40+ells*trxs*trya*t613/40+epps*t659/6-t68
-     +7/2+3.0/16.0*t607*t64+trxs*t638/12+t25*t91/2+t3*t14/6+t659/3+ells*
-     +t243/4-trys*trxa*trya*xhalb2*t894/3+t86*t178/10+trxs*t11*t13*t131/
-     +9+3.0/20.0*trxs*ella*t828-trxs*trys*t655/3+epps*t387/4+t692*t41/6+
-     +trys*trxa*ells*t124/6-ella*trys*t650/4+t298/9+t11*t585/60-trxs*t64
-     +7/12-ells*trxa*t637/6+t26*t286/4+t607*t76/48-t31*t59/3-trys*trxa*e
-     +lls*t613/10+t86*t187/6+t701*t59/3-t603/6+epps*t684/4+t11*t286/3-tr
-     +xs*t427/24-t11*trxa*t911/6+2.0/9.0*trxs*t11*t410-trxs*t603/24+2.0/
-     +9.0*t26*t301+t26*t793/4-t31*t53/3+trya*t261/8+t19*t83/48-t10*t42/9
-     +-epps*t647/6-2.0/9.0*trxs*t11*t879-ells*t329/4-trya*t450/40-trxs*t
-     +218/12+trys*trxa*ells*t560+epps*t759/6-epps*t754/6+trxs*t221+trxs*
-     +trys*ells*t585/60+t10*t100/3+t11*t793/3+trxs*t440/12-trxs*t11*t13*
-     +t894/9+t693*t45/3+ells*trxs*t678+t387/2-t19*t21/16
-      SY = SY+trya*t337/4-t60
-     +7*t72/16+trxs*t298/12+trys*trxa*ells*t670/6+epps*ells*t671/4-epps*
-     +t566/2+ells*trxs*t671/24
-      SY = SY+ELLA*T156/4+EPPS*T334/2-T11*T575/6-EPPS*T
-     +338/4-trya*t386/4+epps*t298/6-t11*t580/36+trya*t561/4+epps*t634/2-
-     +t692*t108/2+trxs*t566+ells*trxs*ella*t729/4-t11*t770/60-3.0/20.0*t
-     +rxs*ella*t641-epps*ells*t555/4+epps*ells*t619/4+t607*t21/16-t11*t3
-     +72/6-ells*trxa*ella*xhalb1*t607/8-t86*t592/10-2.0/3.0*trys*trxa*t5
-     +98-t692*t79/6-t26*trxa*t12*t19/16-2.0/9.0*t26*t372-ells*trxs*t555/
-     +24+ella*t767/4-t26*t835/4+t11*t301/6-trys*trxa*t439/6-trys*trxa*el
-     +la*t168-ells*trxa*t499/10+t31*t67/3-t700*t28/6-t26*t667/4+ells*trx
-     +a*ella*t766/2-t11*t463/60+trxs*trys*trya*t196/6-t3*t41/6+trxs*trys
-     +*t243/3-trya*t602/8+ells*trxa*ella*xhalb1*t19/8-ells*ella*t12*t994
-     +/6+ells*trxs*ella*t242/4+t684/6+ells*trxs*t209/24+ells*trxs*t214+3
-     +.0/20.0*trxs*ella*t499+ells*trys*t40*t19/48+trxs*trys*trya*t895/6+
-     +t26*t13*t231/9-trxs*ella*t450/40+3.0/16.0*t19*t37+trxs*trys*ells*t
-     +367/60+trxs*t759/12-3.0/20.0*trxs*ella*t164-ells*trxa*ella*t348/2-
-     +trxs*t825/12-t701*t33/3+trxs*t754-t19*t76/48+t11*t571/6+t25*t821/2
-     +-trxs*trys*trya*t279/6+epps*t402/4+trxs*t687+epps*ells*t225/4+t700
-     +*t49/6-epps*t440/2-t303/3-t26*trxa*t4*t607/16-epps*ells*t275/4+try
-     +s*trxa*ells*t742/10-ells*trxs*trya*t267/40+t11*t568/36+t26*trxs*t4
-     +10/6-trys*trxa*ells*t618-trys*trxa*ells*t554/6
-      SY = SY+trys*trxa*trya*xhal
-     +b2*t131/3+t26*trxa*t12*t607/16+t26*trxa*t4*t19/16-epps*t427/4-t427
-     +/6-epps*t221/2+trxs*ella*t362/40-ells*trys*t251/4+epps*t218/2-epps
-     +*t638/2+trxs*t11*t40*t894/9-epps*ells*t214/4-3.0/16.0*t607*t37-t69
-     +2*t107/4+trxs*t402/24+t402/6
-      SY = SY+T701*T53/3-T26*T40*T231/9-ELLS*TRXA*E
-     +lla*xhalb2*t19/8-2.0/3.0*trys*trxa*t349+trxs*t338-trys*trxa*ella*t
-     +704/10+trys*trxa*ella*t564+trys*trxa*ella*t797/6+t19*t68/16+t693*t
-     +42/9-t19*t206/16-t701*t67/3+ells*t842/4-ella*trys*t141/4-t3*t6/4+t
-     +10*t201/3+trxs*t684/24-trxs*t709+t11*t367/60-trxs*trys*t329/3+t692
-     +*t6/4+epps*ells*t209/4-ells*trxa*t169-t692*t95/2+t26*trxs*t747/6-t
-     +rxs*t387+t692*t7/2-trxs*trys*ells*t770/60-t86*t163/10-ells*trxs*t2
-     +75/24-ells*trys*t40*t607/48-t11*trxa*t279/6+trys*trxa*t184+trys*tr
-     +xa*t188/6-ells*trxs*t225-ells*ella*t224/3+trya*t786/40-t26*trxs*t2
-     +51/6+trya*t683/8-t86*t173/6+ells*trxa*t164/10+trxs*t303+t11*trxa*t
-     +196/6-t379/9+epps*t374/6-trxs*ella*t743/40+ella*trys*t729/4+t374/3
-     +-epps*t603/4+t759/9-t754/3+t11*t296/36+2.0/9.0*t26*t571+t19*t72/16
-     ++t31*t33/3+t10*t15/9-t701*t27/9
+      SY = SY+TRYS*TRXA*ELLA*T163/10-TRXS*TRYS*ELLS*T463/60-TRYS*TRXA*
+     >ELla*t588/6-ells*trxs*ella*t650/4+ells*trxs*trya*t361/40+ells*
+     >trxa*trya*t183+ells*trxa*trya*t187/6-ells*trys*t13*t19/48-trys*
+     >trxa*trya*xhalb1*t131/3-ells*ella*t4*t231/6-trys*trxa*ells*t274/6+
+     >trys*trxa*ells*t267/10-trys*trxa*ells*t224+ella*trys*t242/4+trys*
+     >trxa*ells*t213+trys*trxa*ella*t592/10-trxs*t11*t40*t131/9+ells*
+     >ella*t12*t231/6-2.0/9.0*trxs*t11*t251-ells*trxa*ella*t597/2+ells*
+     >trxa*ella*xhalb2*t607/8-t647/9-trya*t743/40-trys*trxa*ella*t632-
+     >t31*t48/9-t3*t119/6+t3*t107/4+trys*trxa*trya*xhalb1*t894/3-t11*
+     >t377/36+trya*t362/40+t86*t797/6-trya*t708/4-t700*t821/2-ella*t349/
+     >4-2.0/9.0*t26*t575-t692*t14/6-t86*t588/6+t693*t88/3-t693*t201/3+
+     >ells*ella*t4*t994/6-ella*t598/4+ells*trys*t13*t607/48+epps*t825/2+
+     >t700*t54/2-trxs*t659-t3*t7/2+t86*t704/10+t701*t48/9-t25*t54/2+t25*
+     >t28/6-3.0/16.0*t19*t64-trxs*t379/12-t25*t49/6+t3*t79/6-trxs*t374-
+     >t607*t68/16-t25*t60/2-t10*t45/3-epps*t303/6-trys*trxa*ells*t361/
+     >10-t700*t91/2+trxs*trys*t842/3+ells*ella*t213/3+trxs*ella*t786/40+
+     >t700*t60/2+ells*trys*t410/4-trxs*t334+ells*trxa*t565+ells*trxa*
+     >t824/6-ells*ella*t618/3-trya*t322/8-trxs*trys*trya*t911/6-t693*
+     >t15/9+t31*t27/9-t10*t88/3-ells*trxa*t828/10-epps*ells*t678/4+t3*
+     >t95/2-t3*t103/2+t3*t108/2-t338/2+2.0/3.0*trys*trxa*t156+2.0/9.0*
+     >trxs*t11*t747
+      SY = SY+T692*T119/6-TRYS*TRXa*ella*t178/10+t11*trxa*t895/6-ells*
+     >trxs*t619+t607*t206/16-ells*t655/4-t11*t835/3+t692*t103/2-ells*
+     >trxs*ella*t141/4+ells*trxa*ella*t146/2-t26*trxs*t879/6+2.0/3.0*
+     >trys*trxa*t767-t607*t83/48-ells*trys*t879/4+ells*ella*t560/3-trxs*
+     >t634+t709/2+epps*t709/4-ells*trxa*trya*t173/6-epps*t379/6+t26*t40*
+     >t994/9-t26*t13*t994/9+ells*trxa*t641/10-t693*t100/3-epps*t687/4-
+     >ells*trxa*t633+ells*trys*t747/4-t11*t667/3-ells*trxs*trya*t742/40+
+     >ells*trxs*trya*t613/40+epps*t659/6-t687/2+3.0/16.0*t607*t64+trxs*
+     >t638/12+t25*t91/2+t3*t14/6+t659/3+ells*t243/4-trys*trxa*trya*
+     >xhalb2*t894/3+t86*t178/10+trxs*t11*t13*t131/9+3.0/20.0*trxs*ella*
+     >t828-trxs*trys*t655/3+epps*t387/4+t692*t41/6+trys*trxa*ells*t124/
+     >6-ella*trys*t650/4+t298/9+t11*t585/60-trxs*t647/12-ells*trxa*t637/
+     >6+t26*t286/4+t607*t76/48-t31*t59/3-trys*trxa*ells*t613/10+t86*
+     >t187/6+t701*t59/3-t603/6+epps*t684/4+t11*t286/3-trxs*t427/24-t11*
+     >trxa*t911/6+2.0/9.0*trxs*t11*t410-trxs*t603/24+2.0/9.0*t26*t301+
+     >t26*t793/4-t31*t53/3+trya*t261/8+t19*t83/48-t10*t42/9-epps*t647/6-
+     >2.0/9.0*trxs*t11*t879-ells*t329/4-trya*t450/40-trxs*t218/12+trys*
+     >trxa*ells*t560+epps*t759/6-epps*t754/6+trxs*t221+trxs*trys*ells*
+     >t585/60+t10*t100/3+t11*t793/3+trxs*t440/12-trxs*t11*t13*t894/9+
+     >t693*t45/3+ells*trxs*t678+t387/2-t19*t21/16
+      SY = SY+trya*t337/4-t607*t72/16+trxs*t298/12+trys*trxa*ells*t670/
+     >6+epps*ells*t671/4-epps*t566/2+ells*trxs*t671/24
+      SY = SY+ELLA*T156/4+EPPS*T334/2-T11*T575/6-EPPS*T338/4-trya*t386/
+     >4+epps*t298/6-t11*t580/36+trya*t561/4+epps*t634/2-t692*t108/2+
+     >trxs*t566+ells*trxs*ella*t729/4-t11*t770/60-3.0/20.0*trxs*ella*
+     >t641-epps*ells*t555/4+epps*ells*t619/4+t607*t21/16-t11*t372/6-
+     >ells*trxa*ella*xhalb1*t607/8-t86*t592/10-2.0/3.0*trys*trxa*t598-
+     >t692*t79/6-t26*trxa*t12*t19/16-2.0/9.0*t26*t372-ells*trxs*t555/
+     >24+ella*t767/4-t26*t835/4+t11*t301/6-trys*trxa*t439/6-trys*trxa*
+     >ella*t168-ells*trxa*t499/10+t31*t67/3-t700*t28/6-t26*t667/4+ells*
+     >trxa*ella*t766/2-t11*t463/60+trxs*trys*trya*t196/6-t3*t41/6+trxs*
+     >trys*t243/3-trya*t602/8+ells*trxa*ella*xhalb1*t19/8-ells*ella*t12*
+     >t994/6+ells*trxs*ella*t242/4+t684/6+ells*trxs*t209/24+ells*trxs*
+     >t214+3.0/20.0*trxs*ella*t499+ells*trys*t40*t19/48+trxs*trys*trya*
+     >t895/6+t26*t13*t231/9-trxs*ella*t450/40+3.0/16.0*t19*t37+trxs*
+     >trys*ells*t367/60+trxs*t759/12-3.0/20.0*trxs*ella*t164-ells*trxa*
+     >ella*t348/2-trxs*t825/12-t701*t33/3+trxs*t754-t19*t76/48+t11*t571/
+     >6+t25*t821/2-trxs*trys*trya*t279/6+epps*t402/4+trxs*t687+epps*
+     >ells*t225/4+t700*t49/6-epps*t440/2-t303/3-t26*trxa*t4*t607/16-
+     >epps*ells*t275/4+trys*trxa*ells*t742/10-ells*trxs*trya*t267/40+
+     >t11*t568/36+t26*trxs*t410/6-trys*trxa*ells*t618-trys*trxa*ells*
+     >t554/6
+      SY = SY+trys*trxa*trya*xhalb2*t131/3+t26*trxa*t12*t607/16+t26*
+     >trxa*t4*t19/16-epps*t427/4-t427/6-epps*t221/2+trxs*ella*t362/40-
+     >ells*trys*t251/4+epps*t218/2-epps*t638/2+trxs*t11*t40*t894/9-epps*
+     >ells*t214/4-3.0/16.0*t607*t37-t692*t107/4+trxs*t402/24+t402/6
+      SY = SY+T701*T53/3-T26*T40*T231/9-ELLS*TRXA*Ella*xhalb2*t19/8-2.0/
+     >3.0*trys*trxa*t349+trxs*t338-trys*trxa*ella*t704/10+trys*trxa*
+     >ella*t564+trys*trxa*ella*t797/6+t19*t68/16+t693*t42/9-t19*t206/16-
+     >t701*t67/3+ells*t842/4-ella*trys*t141/4-t3*t6/4+t10*t201/3+trxs*
+     >t684/24-trxs*t709+t11*t367/60-trxs*trys*t329/3+t692*t6/4+epps*
+     >ells*t209/4-ells*trxa*t169-t692*t95/2+t26*trxs*t747/6-trxs*t387+
+     >t692*t7/2-trxs*trys*ells*t770/60-t86*t163/10-ells*trxs*t275/24-
+     >ells*trys*t40*t607/48-t11*trxa*t279/6+trys*trxa*t184+trys*trxa*
+     >t188/6-ells*trxs*t225-ells*ella*t224/3+trya*t786/40-t26*trxs*t251/
+     >6+trya*t683/8-t86*t173/6+ells*trxa*t164/10+trxs*t303+t11*trxa*
+     >t196/6-t379/9+epps*t374/6-trxs*ella*t743/40+ella*trys*t729/4+t374/
+     >3-epps*t603/4+t759/9-t754/3+t11*t296/36+2.0/9.0*t26*t571+t19*t72/
+     >16+t31*t33/3+t10*t15/9-t701*t27/9
       SY = SY/(AELL+1.D-30)
 C
 C     ELSE

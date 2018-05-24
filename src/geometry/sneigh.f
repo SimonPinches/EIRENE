@@ -38,7 +38,8 @@ C
       type(TAVLTree), pointer :: baum
       logical :: inserted
 
-      IF (LEVGEO == 1) THEN
+      select case (LEVGEO)
+      case (1)
 
         IC = 0
         DO IP=1,NP2ND
@@ -54,7 +55,7 @@ c  ncorner: number of cell vertices in case of 2d cartesian grid: levgeo=1
 C.........................................................................
 
       
-      ELSE IF ((LEVGEO == 2) .OR. (LEVGEO == 3)) THEN
+      case (2:3)
 cdr  warning: here we use polygon grid structure also in case of LEVGEO=2
  
         DO IR=1,NR1ST
@@ -278,7 +279,7 @@ C           WRITE (iunout,'(6I6)') IR,IP,(NGHPLS(K,IR,IP),K=1,4)
 C         ENDDO
 C       ENDDO
  
-      END IF
+      end select
   
       END
  

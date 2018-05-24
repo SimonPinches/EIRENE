@@ -1,0 +1,11 @@
+# Ignore non-src folders
+bin*
+build*
+doc*
+lib*
+
+# Ignore eclipse files
+.cproject
+.project
+.metadata
+.settings

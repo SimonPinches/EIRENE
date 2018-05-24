@@ -3,6 +3,9 @@ C
 C
 C  EVALUATE EIRENE RECOMMENDATIONS FOR A NEXT RUN OF THE SAME MODEL
 C
+C XMCT need to be used or stored here, somehow, somewhere...
+C not stored in FT 11 any more.
+C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CAI
