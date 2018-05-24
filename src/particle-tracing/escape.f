@@ -150,21 +150,22 @@ C  UPDATE ENERGY OUTGOING FLUX ONTO SURFACE MSURF
 C
 C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
       IF (MSURF.GT.NLIM.AND.NLMPGS.GT.NLIMPS) THEN
-        IF (LEVGEO.LE.3) THEN
+        select case (LEVGEO)
+        case (:3)
           ISTS=MSURF-NLIM
           MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
           FLX=FLXOUT(MSURFG)
-        ELSE IF (LEVGEO.EQ.4) THEN
+        case (4)
           MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
           FLX=FLXOUT(MSURFG)
-        ELSE IF (LEVGEO.EQ.5) THEN
-cdr  to be written
+        case (5)
+cdr  to be written    
 c         MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
 c         FLX=FLXOUT(MSURFG)
-        ELSE
+        case default
           MSURFG=0
           FLX=FLXOUT(MSURF)
-        END IF
+        end select
       ELSEIF (MSURF.GT.0) THEN
         MSURFG=0
         FLX=FLXOUT(MSURF)

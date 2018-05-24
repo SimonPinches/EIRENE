@@ -212,21 +212,22 @@ C  FIND NTCELL IN STANDARD MESH, BLOCK NBLOCK
             ENDIF
 C  FIND NPCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLPOL) THEN
-              IF (LEVGEO.EQ.1) THEN
+              select case (LEVGEO)
+              case (1)
                 NPCELL=EIRENE_LEARCA(Y0,PSURF,1,NP2ND,1,'STDCOL')
-              ELSEIF (LEVGEO.EQ.2) THEN
+              case (2)
                 IF (NLCRC) THEN
                   WINK=MOD(ATAN2(Y0,X0)+PI2A-PSURF(1),PI2A)+PSURF(1)
                   NPCELL=EIRENE_LEARCA(WINK,PSURF,1,NP2ND,1,'STDCOL')
                 ELSE
                   NPCELL=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'STDCOL')
                 ENDIF
-              ELSEIF (LEVGEO.EQ.3) THEN
+              case (3)
                 NPCELL=IPOLG
-              ELSE
+              case default
                 WRITE (iunout,*) 'ERROR EXIT IN STDCOL, NLPOL ',LEVGEO
                 CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+              end select
             ELSE
               NPCELL=1
             ENDIF
@@ -283,21 +284,22 @@ C  FIND NTCELL IN STANDARD MESH, BLOCK NBLOCK
             ENDIF
 C  FIND NPCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLPOL) THEN
-              IF (LEVGEO.EQ.1) THEN
+              select case (LEVGEO)
+              case (1)
                 NPCELL=EIRENE_LEARCA(Y0,PSURF,1,NP2ND,1,'STDCOL')
-              ELSEIF (LEVGEO.EQ.2) THEN
+              case (2)
                 IF (NLCRC) THEN
                   WINK=MOD(ATAN2(Y0,X0)+PI2A-PSURF(1),PI2A)+PSURF(1)
                   NPCELL=EIRENE_LEARCA(WINK,PSURF,1,NP2ND,1,'STDCOL')
                 ELSE
                   NPCELL=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'STDCOL')
                 ENDIF
-              ELSEIF (LEVGEO.EQ.3) THEN
+              case (3)
                 NPCELL=IPOLG
-              ELSE
+              case default
                 WRITE (iunout,*) 'ERROR EXIT IN STDCOL, NLPOL ',LEVGEO
                 CALL EIRENE_EXIT_OWN(1)
-              ENDIF
+              end select
             ELSE
               NPCELL=1
             ENDIF
@@ -368,7 +370,8 @@ C                            TETRAHEDAL AND GENERAL (usr) GRIDS
 C
 100   CONTINUE
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
         CRTX=SCOS
         CRTY=0.
         CRTZ=0.
@@ -393,7 +396,7 @@ C  NEW CELL NUMBERS
           GOTO 500
         ENDIF
 
-      ELSEIF (LEVGEO.EQ.2) THEN
+      case (2)
         CRTX=(X0-EP1(MRSURF))*ELLQ(MRSURF)
         CRTY=Y0
         PHINM=SQRT(CRTX*CRTX+CRTY*CRTY)
@@ -405,7 +408,7 @@ C  PERIODICITY SURFACE IN RADIAL DIRECTION, LEVGEO=2
           GOTO 998  ! OPTION NOT AVAILABLE
         ENDIF
 
-      ELSEIF (LEVGEO.EQ.3) THEN
+      case (3)
         IF (NLPOL)      IP=IPCELL
         IF (.NOT.NLPOL) IP=IPOLG
         CRTX=PLNX(MRSURF,IP)*SCOS
@@ -416,7 +419,7 @@ C  PERIODICITY SURFACE IN RADIAL DIRECTION, POLYGON GRID
           GOTO 998  ! OPTION NOT AVAILABLE
         ENDIF
 
-      ELSEIF (LEVGEO.EQ.4) THEN
+      case (4)
         IP=IPOLG
         CRTX=PTRIX(IP,MRSURF)*SCOS
         CRTY=PTRIY(IP,MRSURF)*SCOS
@@ -426,7 +429,7 @@ C  PERIODICITY SURFACE IN TRIANGULAR GRID
           GOTO 998  ! OPTION NOT AVAILABLE
         ENDIF
 
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
         IP=IPOLG
         CRTX=PTETX(IP,MRSURF)*SCOS
         CRTY=PTETY(IP,MRSURF)*SCOS
@@ -438,7 +441,7 @@ C  PERIODICITY SURFACE IN TETRAHEDAL GRID
      .                           VELX,VELY,VELZ,NRCELL)
         ENDIF
 
-      ELSEIF (LEVGEO.EQ.10) THEN
+      case (10)
 C
 C  GENERAL GEOMETRY OPTION: PROVIDE OUTER SURFACE NORMAL UNIT VECTOR
 C                           CRTX,CRTY,CRTZ
@@ -481,18 +484,20 @@ C     VL_PAR=(/VLXPAR,VLYPAR,VLZPAR/)
             LCART=.FALSE.
           ENDIF  ! TRACE ION CORRECTIONS AT PERIODICITY SURFACE: DONE
         ENDIF
-      ELSE
+      case default
        WRITE (iunout,*)
      .  'STDCOL IDIMM=1, BUT LEVGEO OUT OF RANGE. CALL EIRENE_EXIT '
         CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+      end select
+
       RETURN 2  ! CONTINUE IN CALLING PROGRAM (FOLNEUT, FOLION) AT "PARTICLE ESCAPE TO SURFACE"
 
 C  POLOIDAL SURFACE  MPSURF
 C
 150   CONTINUE
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
         CRTX=0.
         CRTY=SCOS
         CRTZ=0.
@@ -508,7 +513,7 @@ C  NEW CELL NUMBERS, NEW SURFACE NUMBER
         ENDIF
 
 C  PERIODICITY SURFACE IN POLOIDAL DIRECTION: USE POLYGON GRID EVEN IN CASE LEVGEO=2
-      ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+      case (2:3)
         IF (NLRAD)      IR=IRCELL
 C       IF (.NOT.NLRAD) IR=???
 !PB USE OUTER NORMAL OF PERIODICITY COUNTERPART
@@ -551,11 +556,11 @@ C  NEW CELL NUMBERS
         CRTX=PPLNX(IR,MPSURF)*SCOS
         CRTY=PPLNY(IR,MPSURF)*SCOS
         CRTZ=0.
-      ELSE
+      case default
         WRITE (iunout,*)
      .  'STDCOL IDIMM=2, BUT LEVGEO.GT.3 CALL EIRENE_EXIT '
         CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+      end select
       RETURN 2
 C
 C  TOROIDAL SURFACE

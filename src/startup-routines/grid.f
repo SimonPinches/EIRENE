@@ -81,7 +81,8 @@ C
 C
       IF (NR1ST.LT.2) RETURN
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.1
 C
@@ -113,7 +114,7 @@ C
           CALL EIRENE_LEER(2)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.2) THEN
+      case (2)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.2
 C
@@ -263,7 +264,7 @@ C
           CALL EIRENE_LEER(2)
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.3) THEN
+      case (3)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.3
 C
@@ -393,7 +394,7 @@ C
 C
         CALL EIRENE_SNEIGH
 C
-      ELSEIF (LEVGEO.EQ.4) THEN
+      case (4)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.4
 C
@@ -643,7 +644,7 @@ C
         ENDIF
 C
 C
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.5
 C
@@ -849,12 +850,12 @@ C  CHECK OUTER NORMALS
 
         ENDIF
 C
-      ELSEIF (LEVGEO.EQ.10) THEN
+      case (10)
 C
 C  GENERAL GEOMETRY OPTION: NOTHING TO DONE HERE
         NCORNER=0
 C
-      ENDIF
+      end select
 C
 C  SET GEOMETRICAL CONTANTS FOR IGNORABLE Y OR POLOIDAL CO-ORDINATE
 C  THESE MAY BE REVISED IF A 2ND (Y- OR POL.) GRID IS DEFINED BELOW
@@ -899,20 +900,15 @@ C
       IF (NLTRA) THEN
 
         IF (NTTRA.LE.3.OR.ROA.LT.0._DP) GOTO 991
-        IF (LEVGEO.EQ.1) THEN
+        select case (LEVGEO)
+        case (1,3:5)
           XDIFF=0.
-        ELSEIF (LEVGEO.EQ.2) THEN
+        case (2)
           XDIFF=EP1OT
-        ELSEIF (LEVGEO.EQ.3) THEN
-          XDIFF=0.
-        ELSEIF (LEVGEO.EQ.4) THEN
-          XDIFF=0.
-        ELSEIF (LEVGEO.EQ.5) THEN
-          XDIFF=0.
 C
 C  GENERAL GEOMETRY OPTION: NOTHING TO BE DONE HERE
 C
-        ENDIF
+        end select
 C
 C  TOROIDAL ANGLE, INPUT IS IN DEGREES, CONVERT TO RADIANS
         ZDF=(ZAA-ZIA)*DEGRAD
@@ -992,7 +988,8 @@ C
 C
 C  SET SURFACE AREA OF NON DEFAULT STANDARD SURFACES
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
         DO 180 ISTS=1,NSTSI
           IF (INUMP(ISTS,1).NE.0) THEN
             IR=INUMP(ISTS,1)
@@ -1006,7 +1003,7 @@ C
           ENDIF
 180     CONTINUE
 
-      ELSEIF (LEVGEO.EQ.4) THEN
+      case (4)
         DO ISTS=1,NSTSI
           NLJ=NLIM+ISTS
           SAREA(NLJ)=0.
@@ -1090,7 +1087,7 @@ cdr       write (iunout,*) ' sarea ', ists, SAREA(ISTS)
 
         DEALLOCATE (VISITED)
 
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
         DO ISTS=1,NSTSI
           NLJ=NLIM+ISTS
           SAREA(NLJ)=0.
@@ -1111,7 +1108,7 @@ cdr       write (iunout,*) ' sarea ', ists, SAREA(ISTS)
           END DO
         END DO
 C     ELSEIF (LEVGEO.EQ....) THEN
-      ENDIF
+      end select
 
 !  SET NSTGRD FOR AVERAGING CELLS
 
@@ -1132,7 +1129,8 @@ C
 C
 C  IF NLSYMP, Y-GRID MUST BE SYMMETRIC: PSURF(I)=PSURF(NP2ND-I+1)
 C
-      IF (LEVGEO.EQ.1) THEN  !  CARTHESIAN, Y-DIRECTION
+      select case (LEVGEO)
+      case (1) !  CARTESIAN, Y-DIRECTION
 C   Y-GRID
         IF (INDGRD(IND).LE.4) THEN
           CALL EIRENE_GRID_1(PSURF,NP2ND,NPSEP,NPPLA,YIA,YGA,YAA,YYA,2)
@@ -1159,7 +1157,7 @@ C
 C
         CALL EIRENE_SNEIGH
 C
-      ELSEIF (LEVGEO.EQ.2) THEN  ! POLAR ANGLE GRID, "THETA"-GRID, IN RADIANS
+      case (2) ! POLAR ANGLE GRID, "THETA"-GRID, IN RADIANS
 C
         IF (INDGRD(IND).EQ.1) THEN
           ND=NPSEP
@@ -1220,9 +1218,10 @@ C
 C
         CALL EIRENE_SNEIGH
 
-      ENDIF
+      end select
 C
-      IF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+      select case (LEVGEO)
+      case (2:3)
 C
         IF (TRCGRD) THEN
           DO 219 I=1,NRPLG
@@ -1309,10 +1308,10 @@ C
             NSTGRD(NCELL)=2
 229     CONTINUE
 C
-      ELSEIF (LEVGEO.GT.3) THEN
+      case (4:)
 C
         WRITE (iunout,*) 'ERROR EXIT FROM GRID. NLPOL ',LEVGEO
-      ENDIF
+      end select
 C
 C  1ST AND 2ND GRID DEFINED
 C  SET SURFACE AREA OF NON DEFAULT STANDARD SURFACES
@@ -1320,7 +1319,8 @@ C
 C  RADIAL (1ST GRID) SURFACES. OVERWRITE EARLIER VALUES FROM
 C  CALL EIRENE_GRID(1)
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
         DO 280 ISTS=1,NSTSI
           IF (INUMP(ISTS,1).NE.0) THEN
             IR=INUMP(ISTS,1)
@@ -1335,7 +1335,7 @@ C
             ENDIF
           ENDIF
 280     CONTINUE
-      ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+      case (2:3)
         DO 290 ISTS=1,NSTSI
           IF (INUMP(ISTS,1).NE.0) THEN
             IR=INUMP(ISTS,1)
@@ -1357,13 +1357,14 @@ cdr           write (iunout,*) 'sarea ', nlj, SAREA(NLJ)
             ENDIF
           ENDIF
 290     CONTINUE
-      ELSE
+      case default
 C TO BE WRITTEN
-      ENDIF
+      end select
 C
 C  POLOIDAL (2ND GRID) SURFACES.
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
         DO 285 ISTS=1,NSTSI
           IF (INUMP(ISTS,2).NE.0) THEN
             IP=INUMP(ISTS,2)
@@ -1387,7 +1388,7 @@ C
             ENDIF
           ENDIF
 285     CONTINUE
-      ELSEIF (LEVGEO.EQ.2.OR.LEVGEO.EQ.3) THEN
+      case (2:3)
         DO 295 ISTS=1,NSTSI
           IF (INUMP(ISTS,2).NE.0) THEN
             IP=INUMP(ISTS,2)
@@ -1411,9 +1412,9 @@ C
             ENDIF
           ENDIF
 295     CONTINUE
-      ELSE
+      case default
 C TO BE WRITTEN
-      ENDIF
+      end select
 
 !  SET NSTGRD FOR AVERAGING CELLS
 

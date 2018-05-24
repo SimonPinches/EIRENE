@@ -25,20 +25,21 @@ C
 C
 C  TEST FOR RADIAL CELL INDICES NRCELL, IPOLG
 C
-      IF (LEVGEO.LE.4) THEN        !  slab, circ, polyg, triang.
+      select case (LEVGEO)
+      case (:4)        !  slab, circ, polyg, triang.
 C
         NTEST0=EIRENE_LEARC1(X0,Y0,Z0,IPOLGT,1,NR1STM,.FALSE.,.FALSE.,
      .                NPANU,'CLLTST      ')
 C
-      ELSEIF (LEVGEO.EQ.5) THEN    !  tetrahedra
+      case (5)         !  tetrahedra
 C
         NTEST0=EIRENE_LEARCT(X0,Y0,Z0)
 C
-      ELSEIF (LEVGEO.EQ.10) THEN   !  externally supplied geometry
+      case (10)        !  externally supplied geometry
 C
         NTEST0=EIRENE_LEAUSR(X0,Y0,Z0)
 C
-      ENDIF
+      end select
 C
       IF(NTEST0.NE.NRCELL.AND..NOT.NLSRFX) THEN
         WRITE (iunout,*) 'WRONG CELL-NUMBER IN RADIAL DIRECTION'
@@ -50,21 +51,23 @@ C
 C  TEST FOR POLOIDAL CELL INDEX
 C
       IF (NLPOL) THEN
-        IF (LEVGEO.EQ.1) THEN
+        select case (LEVGEO)
+        case (1)
           NTEST1=EIRENE_LEARCA(Y0,PSURF,1,NP2ND,1,'CLLTST    ')
-        ELSEIF (LEVGEO.EQ.2) THEN
+        case (2)
           IF (NLCRC) THEN
             WINK=MOD(ATAN2(Y0,X0)+PI2A-PSURF(1),PI2A)+PSURF(1)
             NTEST1=EIRENE_LEARCA(WINK,PSURF,1,NP2ND,1,'CLLTST    ')
           ELSE
             NTEST1=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'CLLTST  ')
           ENDIF
-        ELSEIF (LEVGEO.EQ.3) THEN
+        case (3)
           NTEST1=IPOLGT
-        ELSE
+        case default
           WRITE (iunout,*) 'ERROR EXIT IN CLLTST, NLPOL ',NPCELL
           CALL EIRENE_EXIT_OWN(1)
-        ENDIF
+        end select
+
         IF (NTEST1.NE.NPCELL.AND..NOT.NLSRFY) THEN
           WRITE (iunout,*) 'WRONG CELL-NUMBER IN POLOIDAL DIRECTION'
           CALL EIRENE_MASJ3
