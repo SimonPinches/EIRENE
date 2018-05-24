@@ -71,7 +71,7 @@ endif()
 
 message(STATUS   " --  Setting interface and user routines:       ")
 message(STATUS   "       if flag -Dinterface is unspecified, dummies will")
-message(STATUS   "       be set. Try -Dinterface=ITER for ITER options.  ")
+message(STATUS   "       be set. Try e.g. -Dinterface=ITER or EMC3.  ")
 
 if(interface)
   get_filename_component(interface ${interface} NAME)
@@ -138,21 +138,25 @@ endif()
 # Decide whether to use ITER interface or dummy placeholders
 # (easily expandable for further interfaces)
 set(couplepath "")
-if( interface )
+if(     interface STREQUAL "ITER" )
   list(APPEND couplepath ${src_interfaces/couple_SOLPS-ITER})
+elseif( interface STREQUAL "EMC3" )
+  list(APPEND couplepath ${src_interfaces/couple_Dummy})
 else()
   list(APPEND couplepath ${src_interfaces/couple_Dummy})
 endif()
 set(userpath "")
-if( interface )
+if(     interface STREQUAL "ITER" )
   list(APPEND userpath ${src_user-routines/user_iter})
-else()
+elseif( interface STREQUAL "EMC3" )
   list(APPEND userpath ${src_user-routines/user_default})
+else()
+  list(APPEND userpath ${src_user-routines/user_box})
 endif()
 
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
-                   ${src_file-handling} ${src_geometry} 
+                   ${src_file-handling} ${src_geometry}
                    ${src_geometry/time-routines} ${couplepath} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
@@ -165,9 +169,8 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
-  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
 endif()
-target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${Libz} ${LibXt})
 
 # Sets output directory of the library and executbales.
 set_target_properties(EIRENE PROPERTIES
