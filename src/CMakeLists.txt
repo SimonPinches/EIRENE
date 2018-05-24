@@ -138,20 +138,19 @@ endif()
 # Decide whether to use ITER interface or dummy placeholders
 # (easily expandable for further interfaces)
 set(couplepath "")
-if(     interface STREQUAL "ITER" )
-  list(APPEND couplepath ${src_interfaces/couple_SOLPS-ITER})
-elseif( interface STREQUAL "EMC3" )
-  list(APPEND couplepath ${src_interfaces/couple_Dummy})
-else()
-  list(APPEND couplepath ${src_interfaces/couple_Dummy})
-endif()
 set(userpath "")
 if(     interface STREQUAL "ITER" )
-  list(APPEND userpath ${src_user-routines/user_iter})
+  list(APPEND couplepath ${src_interfaces/couple_SOLPS-ITER})
+  list(APPEND userpath   ${src_user-routines/user_iter})
 elseif( interface STREQUAL "EMC3" )
-  list(APPEND userpath ${src_user-routines/user_default})
+  list(APPEND couplepath ${src_interfaces/couple_Dummy})
+  list(APPEND userpath   ${src_user-routines/user_default})
+elseif( interface STREQUAL "BOX"  )
+  list(APPEND couplepath ${src_interfaces/couple_Dummy})
+  list(APPEND userpath   ${src_user-routines/user_box})
 else()
-  list(APPEND userpath ${src_user-routines/user_box})
+  list(APPEND couplepath ${src_interfaces/couple_Dummy})
+  list(APPEND userpath   ${src_user-routines/user_default})
 endif()
 
 # Adds EIRENE library to the project.
@@ -169,7 +168,11 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
-  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
+  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+endif()
+
+if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
+  target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
 endif()
 
 # Sets output directory of the library and executbales.
