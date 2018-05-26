@@ -140,6 +140,7 @@ test_EMC3-EIRENE_H:
         - EIRENE-sample-cases/EMC3/W7X_Limiter/H/output/
         when: on_failure
     dependencies:
+    - build_EMC3-EIRENE
     - run_EMC3-EIRENE_H
 
 run_EMC3-EIRENE_He:
@@ -166,4 +167,5 @@ test_EMC3-EIRENE_He:
         - EIRENE-sample-cases/EMC3/W7X_Limiter/He/output/
         when: on_failure
     dependencies:
+    - build_EMC3-EIRENE
     - run_EMC3-EIRENE_He
