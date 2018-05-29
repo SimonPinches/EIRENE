@@ -63,7 +63,7 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO, 
+     .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO,
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD
@@ -663,7 +663,7 @@ cdr  start reading species specification block 4a,4b,4c,4d
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards 
+cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards
 cpb......................................
 cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
@@ -1052,7 +1052,7 @@ cdr  this must be highly case specfic. To be reconsidered !!
 
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA) == 6) CYCLE     
+        IF (INDSRC(ISTRA) == 6) CYCLE
 C * 7ABCD...: STRATUM NAME
         READ (IUNIN,'(A72)') ZEILE
         WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
@@ -1213,8 +1213,6 @@ c     to be written:  allow for comment lines here
 C  SEARCH START OF PLOTTING INPUT: NEXT LINE WITH F OR T
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
-!pb  LOOK FOR NEXT LINE OF LOGICAL INPUT VALUES DENOTING PLOTTING OPTIONS
-!pb      DO WHILE (SCAN(ZEILE,'*FT') == 0)
       DO WHILE ((SCAN(ZEILE,'FT') == 0) .OR. (ZEILE(1:1) == '*'))
         READ (IUNIN,'(A72)') ZEILE
         CALL EIRENE_UPPERCASE(ZEILE)
@@ -1246,7 +1244,12 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
         DO J=0, NSTRAI, 60
           READ (IUNIN,*)
         END DO
-        IF (LRPSCUT) READ (IUNIN,*)
+
+cdr wrong place for this card here
+        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps cut option flags" would we
+                                    !dr read only below (3d plots and nlraps) then
+                                    !dr this exception would not be needed at all.
+
         DO J=1,NVOLPL
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1254,6 +1257,8 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
           END DO
           READ (ZEILE,6666) NSP
           NPLT = MAX(NPLT, NSP)
+c
+
           READ (IUNIN,6665) PLTL2D,PLTL3D
           READ (IUNIN,*)
           IF (PLTL2D) THEN
@@ -1290,15 +1295,16 @@ C
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NUM_LINES transitions (volumetric line emissions), 
-c  Each LINE may consist of NUM_CONTRIB 
+c  read up to NUM_LINES transitions (volumetric line emissions),
+c  Each LINE may consist of NUM_CONTRIB
 c  for different parent (donor) state components.
-c  Identify the block of LINES and COMPONENTS available in this run 
+c  Identify the block of LINES and COMPONENTS available in this run
 C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
+      NUM_LINES = 0
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
 CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLOCK 12
@@ -1319,15 +1325,15 @@ cdr  minimal storage, but each time when a new lines comes,
 cdr  tha emissivity profiles on ADDV must be re-calculated
             NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
           ELSE
-cdr  all possible emissivity profiles are kept on ADDV tallies. 
+cdr  all possible emissivity profiles are kept on ADDV tallies.
             NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
           DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE        
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
 cdr  specify all required contributions explicitly.
-cdr  In the old default with was automatically detected 
+cdr  In the old default with was automatically detected
 cdr     from mass and charge states/numbers of hydrogenic particles.
 cdr     And only one set of emission data for all contributions was used,
 cdr     plus one or two population ratios.
@@ -1336,7 +1342,7 @@ cdr     plus one or two population ratios.
             DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
 cdr skip one more input line in case of TAB2D or ADAS input
-              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR. 
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR.
      .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
 cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
@@ -1352,23 +1358,24 @@ cdr do we require a second QSS population ratio for this contribution?
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
                   IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
      .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
-                END IF  
+                END IF
               END IF  !  IRATIO
             END DO    !  NUM_CONTRIB   (POSSIBEL D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
           END DO      !  NUM_COMPO     (E.G.  GROUND STATE
         END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
 c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
-        NADV = NADV + NADV_ADD 
+        NADV = NADV + NADV_ADD
         NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
-      
+
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
-
+      
+cdr this next condition for old default: better also check for nchtal=2 ??
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
       IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
 ! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
@@ -1377,18 +1384,18 @@ c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSI
         NUM_LINES = 6
         NUM_COMPO = 6
 ! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI 
+        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI
 cdr  ?? perhaps: in old default only one line possible at a time?
 cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
-            
+
       END IF
 
 C  PROVIDE STORAGE ON REACDAT, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
-C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
+C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
       IF (NCHORI > 0) THEN
- 
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
+
+C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
         IF (.FALSE.) THEN
           ALLOCATE (ENERGY(2,NCHORI))
           ENERGY = 0._DP
