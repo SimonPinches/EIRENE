@@ -28,12 +28,12 @@ c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
 c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
-cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD): 
-cdr            nhcol_store 
-cdr            m_hcol(nreac) 
+cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
+cdr            nhcol_store
+cdr            m_hcol(nreac)
 
       SUBROUTINE EIRENE_BROADCAST
-cdr 
+cdr
 c     tbd: some text here, about logic of this code ??
 c
 cdr
@@ -96,7 +96,7 @@ c     for the trace ion module
 c     ------------------------------------------------------------     c
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
-cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as exception?  
+cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as exception?
       IF (MY_PE .NE. 0) THEN
         CALL EIRENE_DISTRIB_PARM
         CALL EIRENE_ALLOC_COMUSR(0)
@@ -255,7 +255,7 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
         CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
      .                   0,MPI_COMM_WORLD,ier)
       END IF
-      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
+      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cdr  additional output tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -323,7 +323,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (FACREI,NREI*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACRCX,NRCX*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  EI post collision species distribution 
+c  EI post collision species distribution
       CALL MPI_BCAST (PELEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATEI,NREI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLEI,NREI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -333,14 +333,14 @@ c  EI post collision species distribution
       CALL MPI_BCAST (P2ND,NREI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  PI post collision species distribution 
+c  PI post collision species distribution
       CALL MPI_BCAST (PELPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATPI,NRPI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLPI,NRPI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PIOPI,NRPI*NIONP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PPLPI,NRPI*NPLSP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      CALL MPI_BCAST (P2NP,NRPI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)     
+      CALL MPI_BCAST (P2NP,NRPI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
 c  EI post collision energetics
@@ -621,11 +621,11 @@ c  data for photon line transport
       CALL MPI_BCAST (FREACP,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FREACPH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMM,NMOL*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMI,NION*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMP,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMPH,NPHOT*NREAC,MPI_REAL8,0,
+      CALL MPI_BCAST (FDPOTA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (FDPOTM,NMOL*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (FDPOTI,NION*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (FDPOTP,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (FDPOTPH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EELECA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EELECM,NMOL*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -750,7 +750,7 @@ c  data for photon line transport
 cdr something for the internal CRM options, of block 4, here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      
+
 
       CALL MPI_BCAST (NADDI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1662,7 +1662,7 @@ cdr     INVALID RP%IFIT
 
 
       SUBROUTINE EIRENE_BROAD_EMIS_LINES
-      
+
       INTEGER :: I, J, K, num_COMPO, num_CONTRIB
       TYPE(TCONTRIB) :: CNT
 
@@ -1670,7 +1670,7 @@ cdr     INVALID RP%IFIT
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
           ALLOCATE (EMIS_LINES(num_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%num_COMPO = 0         
+          EMIS_LINES%num_COMPO = 0
         END IF
 !     END IF
 
@@ -1710,7 +1710,7 @@ cdr     INVALID RP%IFIT
           END IF
 
           DO K = 1, num_CONTRIB
-        
+
             IF (MY_PE == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
 
             CALL MPI_BCAST (CNT%ISP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1744,13 +1744,13 @@ cdr     INVALID RP%IFIT
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            
+
             IF (MY_PE /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
 
           END DO
         END DO
 
-        
+
       END DO
 
       RETURN

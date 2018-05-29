@@ -4358,6 +4358,7 @@ C
 C
 C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY
 C        CONDITIONS ARE SPECIFIED
+      CALL EIRENE_LEER(2)
 C
 10130 CONTINUE
 C
@@ -4424,10 +4425,14 @@ cdr  sheath done
                   WRITE (iunout,*) 'FNIX(NDT,IY) ',
      .                              FNIXB(NPBS,IY,IFL)
                 ENDIF
-10131         CONTINUE
+10131         CONTINUE  ! IFL
+
+CDR  feixb, feiyb are only defined for sum over species.
+cdr  try a proportional allocation of energy fluxes to species.
+
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NPBS,IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NPBS,IY)
-10132       CONTINUE
+10132       CONTINUE  !  IY=1,ntin.nten
 
 C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
           ELSEIF (NIXY(I,IPRT).EQ.2) THEN

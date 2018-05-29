@@ -27,6 +27,9 @@ cdr           to avoid conflict with default cx reaction kk=-1
 !pb  APR 16:  pelds -> pelei, eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabei1
 cdr  May 17:  A few more consistency checks implemented.
+cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENA(iatm) flag,
+cdr           rather than from the former fldlma(iatm,kk) flag (which is removed now).
+cdr           default: FDLMCX=0.0 (from initialisation phase) means: no fluid limit cut off at CX collisions.
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -55,7 +58,8 @@ C
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
      .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP, 
      .           IAPI, IRPI, IACX, IDSC, IPL, IAEI, IESTM, IRCX, IPLSTI,
-     .           ITHRD, IFRTH
+     .           ITHRD, IFRTH,
+     .           MFL
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
       ALLOCATE (PLS(NSTORDR))
@@ -406,7 +410,15 @@ C  BULK PARTICLE INDEX
             IRCX=NRCXI
             LGACX(IATM,IDSC,0)=IRCX
             LGACX(IATM,IDSC,1)=IPLS
-            FDLMCX(IRCX)=FLDLMA(IATM,NRC)
+c
+            if (ngena(iatm).lt.0) then  !  in range -1,...-infty
+c  set cx fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
+c  delta: typical length (could be cell size, or gradient length...)
+c  use the integer input flag ngena (generation limit).
+              MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infty
+c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
+              FDLMCX(IRCX)=1.0E4/(MFL+eps5)
+            endif
 
             IAT=NSPH+IATM
             IPL=IPLS

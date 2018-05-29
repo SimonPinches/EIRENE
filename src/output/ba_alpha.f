@@ -13,6 +13,8 @@ c               some further comments added
 cdr may 2017  : lower cuf off density for H.12 data: 1e8.
 c               for lower densities: AMJUEL Data collapse to
 c               Corona rates or Corona population coefficients.
+cdr aug 2017  : try more precise species identification, use NPRT(ispz)= ??
+c               unfinished
 
 
       SUBROUTINE EIRENE_BA_ALPHA (IST,IAD1,IAD2,IAD3,IAD4,IAD5,IAD6,
@@ -28,8 +30,7 @@ C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
 C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
-C  IADS: SUM OVER ALL CONTRINUTIONS
-c
+C  IADS: SUM OVER ALL CONTRIBUTIONS
 C
 C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
@@ -178,6 +179,7 @@ C  H(n=3)/H(n=1)
             DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H+
         REAC='2.1.8a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -190,6 +192,7 @@ C  H(n=3)/H+
             DB(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H2(g)
         REAC='2.2.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -202,6 +205,7 @@ C  H(n=3)/H2(g)
             DM(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H2+(g)
         REAC='2.2.14a  '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -214,6 +218,7 @@ C  H(n=3)/H2+(g)
             DI2(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H3+
         REAC='2.2.15a  '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -226,6 +231,7 @@ C  H(n=3)/H3+
             DI3(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H-
         REAC='7.2a     '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -301,7 +307,7 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
         H123='H.12'
         REAC='2.0c     '
         CRC='OT '
-c  If H2+ from ion conversion alone
+c  IF H2+ from ion conversion alone
 C  H.11 2.0c INCLUDES  ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
 C  H.11 2.0b INCLUDES  ION CONVERION (CX) ON H2(V=0) ONLY
 c  If H2+  also from multi-step electron impact ionisation --> explicit ne dependence
@@ -532,6 +538,7 @@ C  DIATOMIC NEUTRAL HYDR. MOL: NCHAR=NPRT=2,NCHRG=0
 C  LINEAR IN PDENM: (DISSOCIATION OF H2)
 C
         DO 210 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(IMOL).NE.2) GOTO 210
           DDM=DMO*PDENM(IMOL,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
@@ -550,6 +557,9 @@ C
 C  DIATOMIC NEUTRAL HYDR. MOL ION: NCHAR=NPRT=2,NCHRG=1
 C
 C       DO 215 IION=1,NIONI
+C  further rule out: He+, He++
+C         ISPZ= ??
+C         IF (NCHARI(IION).NE.2.OR.NCHRGI(IION).NE.1.OR.NPRT(ISPZ).NE.2) GOTO 215
 C         IF (NCHARI(IION).NE.2) GOTO 215
 C         DDI2=DIO2*PDENI(IION,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
@@ -562,6 +572,7 @@ C
 C  REVISED: USE (PDENM * DENSITY RATIO H2+/H2) NOW, INSTEAD OF PDENI
 
         DO 215 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(IMOL).NE.2) GOTO 215
           DDI2=DIO2*PDENM(IMOL,NCELC)*RATIO2
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
@@ -588,6 +599,7 @@ C
 C  REVISED: USE (PDENM * DENSITY RATIO H-/H2) NOW, INSTEAD OF PDENI
 C
         DO 220 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(IMOL).NE.2) GOTO 220
           DDN=DNM*PDENM(IMOL,NCELC)*RATIO7
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
@@ -601,10 +613,22 @@ C  LINEAR IN PDENI (DISSOCIATIVE RECOMBINATION OF H3+)
 C
 C  TRIATOMIC HYDR. ION: NCHAR=NPRT=3,NCHRG=1
 
+
+C       DO 230 IION=1,NIONI
+C         ISPZ= ??
+C         IF (NCHARI(IION).NE.3.OR.NCHRGI(IION).NE.1.OR.NPRT(ISPZ).NE.3) GOTO 230
+C         DDI3=DIO3*PDENI(IION,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+C         SIGADD6=SIGADD6+DDI3*FAC32
+C230     CONTINUE
+
+C  REVISED.
 c  USE (PDENM * RATIO H3+/H2),INSTEAD OF PDENI
 C  AND RATIO H3+/H2 = RATIO3 * H2+/NE = RATIO3 * RATIO2 * NH2/NE
 
         DO 230 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(NMOLI).NE.2) GOTO 230
           DDI3=DIO3*PDENM(IMOL,NCELC)*RATIO3
 C  APPLY FURTHER FACTOR NH2+/NE = NH2*RATIO2/NE

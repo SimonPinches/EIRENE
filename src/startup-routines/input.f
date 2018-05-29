@@ -1538,7 +1538,8 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
-        IF (INDEX(ZEILE,'ADAS') .NE. 0) THEN
+        IF (INDEX(ZEILE,'ADAS') .NE. 0 .OR.
+     .      INDEX(ZEILE,'TAB2D') .NE. 0 ) THEN
           READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
           CALL EIRENE_LOWERCASE(ELNAME)
         ELSE
@@ -1668,7 +1669,7 @@ C
       DO 421 IATM=1,NATMI
         ISPZ=NSPH+IATM
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSA(IATM),NCHARA(IATM),
-     .                       NDUMM1,NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
+     .                       NDUMM1, NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
      .                       NRCA(IATM),NFOLA(IATM),NGENA(IATM),
      .                       NHSTS(ISPZ)
@@ -1717,7 +1718,8 @@ C  DEFAULTS FOR ATOMIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKA(IATM,K) /= 0)
           READ (IUNIN,6664) EELECA(IATM,K),EBULKA(IATM,K),
      .                      ESCD1A(IATM,K),ESCD2A,
-     .                      FREACA(IATM,K),FLDLMA(IATM,K)
+     .                      FREACA(IATM,K),FDPOTA(IATM,K)
+cdr  .                      FLDLMA(IATM,K)  removed, now controlled by negative ngena
           ESCD1A(IATM,K) = ESCD1A(IATM,K)+ESCD2A
           NSC = 0
           IF (ISCD3A(IATM,K) > 0) NSC = 3
@@ -1809,7 +1811,9 @@ C
           END IF
           LMULTI = LMULTI .OR. (IBGKM(IMOL,K) /= 0)
           READ (IUNIN,6664) EELECM(IMOL,K),EBULKM(IMOL,K),
-     .                      ESCD1M(IMOL,K),ESCD2M,FREACM(IMOL,K)
+     .                      ESCD1M(IMOL,K),ESCD2M,
+     .                      FREACM(IMOL,K),FDPOTM(IMOL,K)
+cdr  for backward compatibility:  formerly: two KER values, now one total is used.
           ESCD1M(IMOL,K) = ESCD1M(IMOL,K)+ESCD2M
           NSC = 0
           IF (ISCD3M(IMOL,K) > 0) NSC = 3
@@ -1891,7 +1895,8 @@ C
           END IF
           LMULTI = LMULTI .OR. (IBGKI(IION,K) /= 0)
           READ (IUNIN,6664) EELECI(IION,K),EBULKI(IION,K),
-     .                      ESCD1I(IION,K),ESCD2I,FREACI(IION,K)
+     .                      ESCD1I(IION,K),ESCD2I,
+     .                      FREACI(IION,K),FDPOTI(IION,K)
           ESCD1I(IION,K) = ESCD1I(IION,K)+ESCD2I
           NSC = 0
           IF (ISCD3I(IION,K) > 0) NSC = 3
@@ -1984,7 +1989,8 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKPH(IPHOT,K) /= 0)
           READ (IUNIN,6664) EELECPH(IPHOT,K),EBULKPH(IPHOT,K),
      .                      ESCD1PH(IPHOT,K),ESCD2PH,
-     .                      FREACPH(IPHOT,K),FLDLMPH(IPHOT,K)
+     .                      FREACPH(IPHOT,K),FDPOTPH(IPHOT,K)
+cdr  .                      FLDLMPH(IPHOT,K)  removed. now controlled by negative ngenph
           ESCD1PH(IPHOT,K) = ESCD1PH(IPHOT,K)+ESCD2PH
           NSC = 0
           IF (ISCD3PH(IPHOT,K) > 0) NSC = 3
@@ -2076,7 +2082,8 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
             WRITE (iunout,*) ' ISCDEP = ',ISCDEP(IPLS,K)
           END IF
           READ (IUNIN,6664) EELECP(IPLS,K),EBULKP(IPLS,K),
-     .                      ESCD1P(IPLS,K),ESCD2P,FREACP(IPLS,K)
+     .                      ESCD1P(IPLS,K),ESCD2P,
+     .                      FREACP(IPLS,K),FDPOTP(IPLS,K)
           ESCD1P(IPLS,K) = ESCD1P(IPLS,K)+ESCD2P
 c
 cdr  deal with non-default number of secondaries, NSC > 2
@@ -2346,7 +2353,8 @@ C  NOT READY
         WRITE (IUNOUT,*)
      .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
         CALL EIRENE_EXIT_OWN(1)
-        CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
+cdr  subr. EIRENE_SETUP_HYDKIN_REACTIONS moved to folder: unfinished_business
+cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       ENDIF
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699
@@ -2364,6 +2372,7 @@ C
       IF (ZEILE(1:1) .EQ. '*') GOTO 610
       READ (ZEILE,6665) NLTRIM
       IREAD=0
+      NFR = 0
       IF (NLTRIM) THEN
 
 c  read TRIM reflection datasets A_on_B
@@ -2402,7 +2411,7 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
           FILE(1:)=PATH(1:I2-1)
           WRITE (iunout,*) ' PATH = ',FILE(1:I2-1)
 C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
-          NFR=0
+C         NFR=0  !dr now already set above
           READ (IUNIN,'(A72)') ZEILE
 625       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             NFR=NFR+1
@@ -3490,16 +3499,23 @@ C
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
-cdr read further atomic/moleuclar data: population coefficients, QSS ratios, etc
-cdr      needed for setting up volumetric line emissivity profils as further add. tally ADDV
+cdr read further atomic/molecular data: population coefficients, QSS ratios, etc
+cdr      needed for setting up volumetric line emissivity profils
+cdr      as further add. tally ADDV (additional to those already defined in block 10a)
 cdr      The ADDV tallies may then be used for line of sight integration, along
 cdr      the CHORDS defined further below.
+cdr  distinct from the other addv tallies from block 10a these
+cdr  further addv tallies (beyond NADVI) are currently apparently neither
+cdr  scaled, averaged, integrated, nor do they have text (units, species) assigned.
 
 cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in next card
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
-      NLEMIS = NCHOR > 0
+cdr  careful: slightly different from find_param
+      NLEMIS = NCHOR > 0  !dr  and: NCHTAL=2 ??
+
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
+cdr read volumetric emission profile data
         IADV = NADVI
         NLEMIS = .TRUE.
         READ (IUNIN,6666) NUM_LINES, MOD_ADDV
@@ -3607,8 +3623,9 @@ c                 i.e. addv tallies are only saved for one line at a time.
       ENDIF
 
 ! no definition of emissivity lines was read in
-! define OLD default emissivity model for chords for backward compatibility.
-cdr  allocate and fill structure EMIS-LINES with old default options
+! define OLD default emissivity model for chords, for backward compatibility.
+cdr  allocate storage and fill structure EMIS-LINES
+cdr  such that old default options are recovered
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 

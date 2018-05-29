@@ -4522,6 +4522,7 @@ C
 C
 C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY
 C        CONDITIONS ARE SPECIFIED
+      CALL EIRENE_LEER(2)
 C
 10130 CONTINUE
 C
@@ -4565,6 +4566,7 @@ cdr  sheath done
      .                              FNIXB(NDT(I,IPRT),IY,IFL)
                 ENDIF
 10131         CONTINUE
+
               SFEIT(I)=SFEIT(I)-NINCT(I,IPRT)*FEIXB(NDT(I,IPRT),IY)
               SFEET(I)=SFEET(I)-NINCT(I,IPRT)*FEEXB(NDT(I,IPRT),IY)
 10132       CONTINUE
@@ -4581,7 +4583,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
 cdr sheath contributions: count negative for electrons, positive for ions 
 cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-     .            NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
+     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
      .           (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
                 SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
      .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*

@@ -30,6 +30,10 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of 
 !pb  MAY  16:  tabds1 -> tabds1
 !pb  JUL  16:  ehvds1 -> ehvds1
 cdr  Sept 16:  nmdsi  -> nmeii
+cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENM(imol) flag,
+cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
+cdr           default: FDLMCX=0.0 (from initialisation phase) means: no fluid limit cut off at CX collisions.
+
 C
 
       SUBROUTINE EIRENE_XSECTM
@@ -59,7 +63,8 @@ C
      .           IION3, IDSC1, NRC, KK, J, IMOL, IPLS1, IPLS2, IPLS3,
      .           IATM1, IATM2, ITYPB, ISPZB, IMEL, IDSC, IREL, IBGK_SP,
      .           IMEI, IMCX, ISCND, ISCDE, IESTM, IML, IFRST,
-     .           IRCX, IREI, IPL, IMPI, IRPI, ITHRD, IFRTH
+     .           IRCX, IREI, IPL, IMPI, IRPI, ITHRD, IFRTH,
+     .           MFL
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
       ALLOCATE (PLS(NSTORDR))
@@ -510,7 +515,15 @@ C  BULK PARTICLE INDEX
             IRCX=NRCXI
             LGMCX(IMOL,IDSC,0)=IRCX
             LGMCX(IMOL,IDSC,1)=IPLS
-            FDLMCX(IRCX)=FLDLMM(IMOL,NRC)
+c
+            if (ngenm(imol).lt.0) then  !  in range -1,...-infty
+c  set cx fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
+c  delta: typical length (could be cell size, or gradient length...)
+c  use the integer input flag ngenm (generation limit).
+              MFL=-(ngenm(imol)+1)  !  now MFL in range 0 to +infty
+c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngenm) --> smaller Kn_c
+              FDLMCX(IRCX)=1.0E4/(MFL+eps5)
+            endif
 
             IML=NSPA+IMOL
             IPL=IPLS

@@ -21,6 +21,8 @@ cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 cdr   jan 17 : added nuclear charge number conservation test,
 cdr            such that first secondary always corresponds to incident bulk particle,
 cdr            just with charge state changed by an increment one (+1 or -1).
+cdr   may 18 : this jan 17 fix was too narrow, e.g. He + He++ CX, charge state
+cdr            increment=2.  Now fixed.
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
@@ -29,7 +31,7 @@ C
      .                        KK,FACTKK,PLS)
 
 c  set NON-DEFAULT cx collision cross-sections and rates  
-c  IPL{n+} + ISP -->  IPL1{(n-1)+} + ISP2+
+c  IPL{n+} + ISP -->  IPL1{(n-m)+} + ISP2{m+}
 c  defaults for CX type processes:  exchange of identity
 
 c  carry out some consistency checks
@@ -106,23 +108,24 @@ C  1ST SECONDARY INDEX, PREVIOUS BULK MASS
 
       IF ((N1STX(IRCX,2) < 1) .OR. 
      .    (N1STX(IRCX,2) > MAXSPC(N1STX(IRCX,1)))) GOTO 994
+
 C   CHECK MASS AND NUCLEAR CHARGE NUMBER CONSERVATION, FIRST SECONDARY, PREV. BULK
       IF (N1STX(IRCX,1).EQ.1) THEN
         IF (RMBULK.NE.RMASSA(N1STX(IRCX,2))) GOTO 992
         IF (NCBULK.NE.NCHARA(N1STX(IRCX,2))) GOTO 992 
-        IF (ABS(NCGBLK-0).ne.1) GOTO 992  
+cdr     IF (ABS(NCGBLK-0).ne.1) GOTO 992  ! allow also for double CX
       ELSEIF (N1STX(IRCX,1).EQ.2) THEN
         IF (RMBULK.NE.RMASSM(N1STX(IRCX,2))) GOTO 992
         IF (NCBULK.NE.NCHARM(N1STX(IRCX,2))) GOTO 992
-        IF (ABS(NCGBLK-0).ne.1) GOTO 992
+cdr     IF (ABS(NCGBLK-0).ne.1) GOTO 992  ! allow also for double CX
       ELSEIF (N1STX(IRCX,1).EQ.3) THEN
         IF (RMBULK.NE.RMASSI(N1STX(IRCX,2))) GOTO 992
         IF (NCBULK.NE.NCHARI(N1STX(IRCX,2))) GOTO 992
-        IF (ABS(NCGBLK-NCHRGI(N1STX(IRCX,2))).ne.1) GOTO 992
+cdr     IF (ABS(NCGBLK-NCHRGI(N1STX(IRCX,2))).ne.1) GOTO 992
       ELSEIF (N1STX(IRCX,1).EQ.4) THEN
         IF (RMBULK.NE.RMASSP(N1STX(IRCX,2))) GOTO 992
         IF (NCBULK.NE.NCHARP(N1STX(IRCX,2))) GOTO 992
-        IF (ABS(NCGBLK-NCHRGP(N1STX(IRCX,2))).ne.1) GOTO 992
+cdr     IF (ABS(NCGBLK-NCHRGP(N1STX(IRCX,2))).ne.1) GOTO 992
       ENDIF
 C
 C  2ND SECONDARY INDEX, PREVIOUS TEST PARTICLE MASS

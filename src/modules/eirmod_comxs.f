@@ -1,3 +1,7 @@
+cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by FDPOT arrays,
+cdr           for potential energy difference in reactions.
+cdr           The old fluid limit critical Knudsen number is now defined
+cdr           via negative ngen..(..) flags
 cdr Apr. 18: further pointer, targets set for photons, towards code syncronisation
 cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
@@ -6,7 +10,7 @@ cdr
 cdr  MXCOLLS --> MSTOR0
 
       MODULE EIRMOD_COMXS
- 
+
 !  jan-05: natprc_2,..... introduced
 !  07.12.05: bugfix: IFTFLG is now available for default reactions too
 !                    via dimensioning IFTFLG(-11:NREAC,0:5)
@@ -22,7 +26,7 @@ cdr  MXCOLLS --> MSTOR0
 !            database option
 !
 cdr sometime between 2004 and 2007 the atomic data structure was revised.
-cdr 
+cdr
 cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
@@ -39,34 +43,34 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
 cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_COMXS, EIRENE_DEALLOC_COMXS,
-     .          EIRENE_INIT_CMDTA,  EIRENE_WRITE_CMDTA,   
+     .          EIRENE_INIT_CMDTA,  EIRENE_WRITE_CMDTA,
      .          EIRENE_READ_CMDTA,
-     .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF, 
+     .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF,
      .          EIRENE_CMDTA_XDR, EIRENE_CMAMF_XDR,
      .          EIRENE_GET_REACTION, EIRENE_SET_REACTION_DATA,
      .          EIRENE_FREE_REACDAT,
 cdr
      .          LINE_DATA, POLY_DATA, ADAS_DATA, HYDKIN_DATA,
      .          COLRAD_DATA,
-     .          REACTION_DATA, 
+     .          REACTION_DATA,
      .          FIT_FORMS,
      .          REACTION_INPUT_LINE,
 cdr
      .          EIRENE_IS_RTC_TAB2D,
-     .          EIRENE_IS_RTCEW_TAB2D, 
+     .          EIRENE_IS_RTCEW_TAB2D,
      .          EIRENE_IS_RTCMW_TAB2D,
 c
-     .          EIRENE_ALLOC_FIT_FORM   
- 
+     .          EIRENE_ALLOC_FIT_FORM
+
       TYPE LINE_DATA
         REAL(DP) :: E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21
         REAL(DP) :: C6A(12)
@@ -75,20 +79,20 @@ c
         CHARACTER(2) :: KENN(12)
         CHARACTER(50) :: REACNAME
       END TYPE LINE_DATA
- 
+
       TYPE ADAS_DATA
         INTEGER :: NDENS, NTEMP
         REAL(DP), POINTER :: DENS(:), TEMP(:), TAB2D(:,:)
         REAL(DP), POINTER :: DDE(:), DTE(:)
       END TYPE ADAS_DATA
- 
+
 !pb  IFEXMN, IFEXMX, RCMN, RCMX, FPARM removed from POLY_DATA
 cdr  The extrapolation options are now made available generally, for all typs of A&M data input
 
       TYPE POLY_DATA
         REAL(DP), POINTER :: DBLPOL(:,:)
       END TYPE POLY_DATA
- 
+
       TYPE HYDKIN_DATA
         INTEGER :: NTEMPS
         REAL(DP), POINTER :: TEMPS(:), RATES(:), RATIO(:)
@@ -99,7 +103,7 @@ cdr  The extrapolation options are now made available generally, for all typs of
       TYPE COLRAD_DATA
         INTEGER :: IFLAV, IVARST
       END TYPE COLRAD_DATA
- 
+
       TYPE FIT_FORMS
         INTEGER :: IFIT
         TYPE(POLY_DATA),   POINTER :: POLY
@@ -262,7 +266,7 @@ c  ...and cumulated distributions thereof, for species sampling
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DELPOT(:),   FACREA(:,:),
      R FREACA(:,:), FREACM(:,:), FREACI(:,:), FREACP(:,:), FREACPH(:,:),
-     R FLDLMA(:,:), FLDLMM(:,:), FLDLMI(:,:), FLDLMP(:,:), FLDLMPH(:,:),
+     R FDPOTA(:,:), FDPOTM(:,:), FDPOTI(:,:), FDPOTP(:,:), FDPOTPH(:,:),
      R EELECA(:,:), EELECM(:,:), EELECI(:,:), EELECP(:,:), EELECPH(:,:),
      R EBULKA(:,:), EBULKM(:,:), EBULKI(:,:), EBULKP(:,:), EBULKPH(:,:),
      R ESCD1A(:,:), ESCD1M(:,:), ESCD1I(:,:), ESCD1P(:,:), ESCD1PH(:,:)
@@ -346,20 +350,27 @@ C
         ALLOCATE (NMPII(NMOL))
         ALLOCATE (NIPII(NION))
         ALLOCATE (NPHPII(NPHOT))
-
+c  for background particle we allow only RC type reactions
         ALLOCATE (NPRCI(NPLS))
+
+
+cdr apparently missing: ...M arrays for photon test aprticles
         ALLOCATE (NAEIIM(NATM))
         ALLOCATE (NMEIIM(NMOL))
         ALLOCATE (NIEIIM(NION))
+
         ALLOCATE (NACXIM(NATM))
         ALLOCATE (NMCXIM(NMOL))
         ALLOCATE (NICXIM(NION))
+
         ALLOCATE (NAELIM(NATM))
         ALLOCATE (NMELIM(NMOL))
         ALLOCATE (NIELIM(NION))
+
         ALLOCATE (NAPIIM(NATM))
         ALLOCATE (NMPIIM(NMOL))
         ALLOCATE (NIPIIM(NION))
+
         ALLOCATE (NPRCIM(NPLS))
 
         ALLOCATE (NPBGKA(NATM))
@@ -371,32 +382,54 @@ C
         ALLOCATE (NSEACX(NATM,NPLS,5))
         ALLOCATE (NSEMCX(NMOL,NPLS,5))
         ALLOCATE (NSEICX(NION,NPLS,5))
+
         ALLOCATE (NSEAEL(NATM,NPLS,5))
         ALLOCATE (NSEMEL(NMOL,NPLS,5))
         ALLOCATE (NSEIEL(NION,NPLS,5))
  
         ALLOCATE (DELPOT(NREAC))
+
         ALLOCATE (FACREA(-11:NREAC,2))
+
         ALLOCATE (FREACA(NATM,NREAC))
         ALLOCATE (FREACM(NMOL,NREAC))
         ALLOCATE (FREACI(NION,NREAC))
         ALLOCATE (FREACP(NPLS,NREAC))
         ALLOCATE (FREACPH(NPHOT,NREAC))
-        ALLOCATE (FLDLMA(NATM,NREAC))
-        ALLOCATE (FLDLMM(NMOL,NREAC))
-        ALLOCATE (FLDLMI(NION,NREAC))
-        ALLOCATE (FLDLMP(NPLS,NREAC))
-        ALLOCATE (FLDLMPH(NPHOT,NREAC))
+
+cdr  former fluid limit, now contained in ngen..
+cdr  fldlm=10000/[-(1+ngen)](generation limit: negative values)
+c       ALLOCATE (FLDLMA(NATM,NREAC))
+c       ALLOCATE (FLDLMM(NMOL,NREAC))
+c       ALLOCATE (FLDLMI(NION,NREAC))
+c       ALLOCATE (FLDLMP(NPLS,NREAC))
+c       ALLOCATE (FLDLMPH(NPHOT,NREAC))
+
+cdr new:  potential difference in a particular reaction.
+cdr       allows to derive radiation loss from
+cdr                electron energy loss      PELEC (=eelec)
+cdr                                            KER (=escd1)
+cdr                                            POT (=fdpot)
+cdr      PRAD= PELEC-KER-POT
+cdr
+        ALLOCATE (FDPOTA(NATM,NREAC))
+        ALLOCATE (FDPOTM(NMOL,NREAC))
+        ALLOCATE (FDPOTI(NION,NREAC))
+        ALLOCATE (FDPOTP(NPLS,NREAC))
+        ALLOCATE (FDPOTPH(NPHOT,NREAC))
+
         ALLOCATE (EELECA(NATM,NREAC))
         ALLOCATE (EELECM(NMOL,NREAC))
         ALLOCATE (EELECI(NION,NREAC))
         ALLOCATE (EELECP(NPLS,NREAC))
         ALLOCATE (EELECPH(NPHOT,NREAC))
+
         ALLOCATE (EBULKA(NATM,NREAC))
         ALLOCATE (EBULKM(NMOL,NREAC))
         ALLOCATE (EBULKI(NION,NREAC))
         ALLOCATE (EBULKP(NPLS,NREAC))
         ALLOCATE (EBULKPH(NPHOT,NREAC))
+
         ALLOCATE (ESCD1A(NATM,NREAC))
         ALLOCATE (ESCD1M(NMOL,NREAC))
         ALLOCATE (ESCD1I(NION,NREAC))
@@ -547,8 +580,8 @@ C  LG... ARRAYS
         VSIGCX => XSTOR(:,19)
         VSIGPI => XSTOR(:,20)
         VSIGEL => XSTOR(:,21)
-cdr     vsigei  : fehlt noch
-cdr     vsigot  : fehlt noch
+cdr     vsigei  : still missing
+cdr     vsigot  : still missing
  
  
         ALLOCATE (TABEI1(NREI,NSTORDR))
@@ -556,6 +589,7 @@ cdr     vsigot  : fehlt noch
         ALLOCATE (TABPI3(NRPI,NSTORDR,NSTORDT))
         ALLOCATE (TABCX3(NRCX,NSTORDR,NSTORDT))
         ALLOCATE (TABEL3(NREL,NSTORDR,NSTORDT))
+
         ALLOCATE (FDLMPI(NRPI))
         ALLOCATE (FDLMCX(NRCX))
         ALLOCATE (FDLMEL(NREL))
@@ -630,6 +664,7 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (NIOPRC(NREC))
         ALLOCATE (NPLPRC(NREC))
         ALLOCATE (NPHPRC(NREC))
+
         ALLOCATE (NATPRC_2(NREC))
         ALLOCATE (NMLPRC_2(NREC))
         ALLOCATE (NIOPRC_2(NREC))
@@ -767,6 +802,7 @@ c
       DEALLOCATE (EPLEI)
  
       DEALLOCATE (MODCOL)
+
       DEALLOCATE (IESTCX)
       DEALLOCATE (IESTEL)
       DEALLOCATE (IESTPI)
@@ -793,6 +829,7 @@ c
       DEALLOCATE (NPHPII)
 
       DEALLOCATE (NPRCI)
+
       DEALLOCATE (NAEIIM)
       DEALLOCATE (NMEIIM)
       DEALLOCATE (NIEIIM)
@@ -818,11 +855,13 @@ c
       DEALLOCATE (NIOPRC_2)
       DEALLOCATE (NPLPRC_2)
       DEALLOCATE (NPHPRC_2)
+
       DEALLOCATE (NATPRC)
       DEALLOCATE (NMLPRC)
       DEALLOCATE (NIOPRC)
       DEALLOCATE (NPLPRC)
       DEALLOCATE (NPHPRC)
+
       DEALLOCATE (N1STX)
       DEALLOCATE (N2NDX)
  
@@ -854,6 +893,7 @@ c
       DEALLOCATE (NREAOT)
       DEALLOCATE (NREACT)
       DEALLOCATE (NRHVPI)
+
       DEALLOCATE (IPATEI)
       DEALLOCATE (IPMLEI)
       DEALLOCATE (IPIOEI)
@@ -886,27 +926,39 @@ c
       DEALLOCATE (LGPHPI)
  
       DEALLOCATE (DELPOT)
+
       DEALLOCATE (FACREA)
+
       DEALLOCATE (FREACA)
       DEALLOCATE (FREACM)
       DEALLOCATE (FREACI)
       DEALLOCATE (FREACP)
       DEALLOCATE (FREACPH)
-      DEALLOCATE (FLDLMA)
-      DEALLOCATE (FLDLMM)
-      DEALLOCATE (FLDLMI)
-      DEALLOCATE (FLDLMP)
-      DEALLOCATE (FLDLMPH)
+
+cdr   DEALLOCATE (FLDLMA)
+c     DEALLOCATE (FLDLMM)
+c     DEALLOCATE (FLDLMI)
+c     DEALLOCATE (FLDLMP)
+c     DEALLOCATE (FLDLMPH)
+
+      DEALLOCATE (FDPOTA)
+      DEALLOCATE (FDPOTM)
+      DEALLOCATE (FDPOTI)
+      DEALLOCATE (FDPOTP)
+      DEALLOCATE (FDPOTPH)
+
       DEALLOCATE (EELECA)
       DEALLOCATE (EELECM)
       DEALLOCATE (EELECI)
       DEALLOCATE (EELECP)
       DEALLOCATE (EELECPH)
+
       DEALLOCATE (EBULKA)
       DEALLOCATE (EBULKM)
       DEALLOCATE (EBULKI)
       DEALLOCATE (EBULKP)
       DEALLOCATE (EBULKPH)
+
       DEALLOCATE (ESCD1A)
       DEALLOCATE (ESCD1M)
       DEALLOCATE (ESCD1I)
@@ -923,49 +975,59 @@ c
       DEALLOCATE (NRCM)
       DEALLOCATE (NRCI)
       DEALLOCATE (NRCPH)
+
       DEALLOCATE (IREACA)
       DEALLOCATE (IREACM)
       DEALLOCATE (IREACI)
       DEALLOCATE (IREACP)
       DEALLOCATE (IREACPH)
+
       DEALLOCATE (IBULKA)
       DEALLOCATE (IBULKM)
       DEALLOCATE (IBULKI)
       DEALLOCATE (IBULKP)
       DEALLOCATE (IBULKPH)
+
       DEALLOCATE (ISCD1A)
       DEALLOCATE (ISCD1M)
       DEALLOCATE (ISCD1I)
       DEALLOCATE (ISCD1P)
       DEALLOCATE (ISCD1PH)
+
       DEALLOCATE (ISCD2A)
       DEALLOCATE (ISCD2M)
       DEALLOCATE (ISCD2I)
       DEALLOCATE (ISCD2P)
       DEALLOCATE (ISCD2PH)
+
       DEALLOCATE (ISCD3A)
       DEALLOCATE (ISCD3M)
       DEALLOCATE (ISCD3I)
       DEALLOCATE (ISCD3P)
       DEALLOCATE (ISCD3PH)
+
       DEALLOCATE (ISCD4A)
       DEALLOCATE (ISCD4M)
       DEALLOCATE (ISCD4I)
       DEALLOCATE (ISCD4P)
       DEALLOCATE (ISCD4PH)
+
       DEALLOCATE (ISCDEA)
       DEALLOCATE (ISCDEM)
       DEALLOCATE (ISCDEI)
       DEALLOCATE (ISCDEP)
       DEALLOCATE (ISCDEPH)
+
       DEALLOCATE (IESTMA)
       DEALLOCATE (IESTMM)
       DEALLOCATE (IESTMI)
       DEALLOCATE (IESTMPH)
+
       DEALLOCATE (IBGKA )
       DEALLOCATE (IBGKM )
       DEALLOCATE (IBGKI )
       DEALLOCATE (IBGKPH)
+
       DEALLOCATE (REAC_NAME)
  
       CALL EIRENE_FREE_REACDAT
@@ -1033,21 +1095,25 @@ cdr  ical=2:  ??
         FREACI  = 0._DP
         FREACP  = 0._DP
         FREACPH = 0._DP
-        FLDLMA  = 0._DP
-        FLDLMM  = 0._DP
-        FLDLMI  = 0._DP
-        FLDLMP  = 0._DP
-        FLDLMPH = 0._DP
+
+        FDPOTA  = 0._DP
+        FDPOTM  = 0._DP
+        FDPOTI  = 0._DP
+        FDPOTP  = 0._DP
+        FDPOTPH = 0._DP
+
         EELECA  = 0._DP
         EELECM  = 0._DP
         EELECI  = 0._DP
         EELECP  = 0._DP
         EELECPH = 0._DP
+
         EBULKA  = 0._DP
         EBULKM  = 0._DP
         EBULKI  = 0._DP
         EBULKP  = 0._DP
         EBULKPH = 0._DP
+
         ESCD1A  = 0._DP
         ESCD1M  = 0._DP
         ESCD1I  = 0._DP
@@ -1581,7 +1647,7 @@ c
       WRITE (13+IFOFF)
      . DELPOT, FACREA,
      . FREACA, FREACM, FREACI, FREACP, FREACPH,
-     . FLDLMA, FLDLMM, FLDLMI, FLDLMP, FLDLMPH,
+     . FDPOTA, FDPOTM, FDPOTI, FDPOTP, FDPOTPH,
      . EELECA, EELECM, EELECI, EELECP, EELECPH,
      . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
@@ -1689,7 +1755,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
       READ (13+IFOFF)
      . DELPOT, FACREA,
      . FREACA, FREACM, FREACI, FREACP, FREACPH,
-     . FLDLMA, FLDLMM, FLDLMI, FLDLMP, FLDLMPH,
+     . FDPOTA, FDPOTM, FDPOTI, FDPOTP, FDPOTPH,
      . EELECA, EELECM, EELECI, EELECP, EELECPH,
      . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
@@ -1812,26 +1878,31 @@ cdr options for extrapolation from data tables or from validity range of fits.
  
       CALL FXDRDBL (IUN,DELPOT,NREAC)
       CALL FXDRDBL (IUN,FACREA,(NREAC+11)*2)
+
       CALL FXDRDBL (IUN,FREACA,NATM*NREAC)
       CALL FXDRDBL (IUN,FREACM,NMOL*NREAC)
       CALL FXDRDBL (IUN,FREACI,NION*NREAC)
       CALL FXDRDBL (IUN,FREACP,NPLS*NREAC)
       CALL FXDRDBL (IUN,FREACPH,NPHOT*NREAC)
-      CALL FXDRDBL (IUN,FLDLMA,NATM*NREAC)
-      CALL FXDRDBL (IUN,FLDLMM,NMOL*NREAC)
-      CALL FXDRDBL (IUN,FLDLMI,NION*NREAC)
-      CALL FXDRDBL (IUN,FLDLMP,NPLS*NREAC)
-      CALL FXDRDBL (IUN,FLDLMPH,NPHOT*NREAC)
+
+      CALL FXDRDBL (IUN,FDPOTA,NATM*NREAC)
+      CALL FXDRDBL (IUN,FDPOTM,NMOL*NREAC)
+      CALL FXDRDBL (IUN,FDPOTI,NION*NREAC)
+      CALL FXDRDBL (IUN,FDPOTP,NPLS*NREAC)
+      CALL FXDRDBL (IUN,FDPOTPH,NPHOT*NREAC)
+
       CALL FXDRDBL (IUN,EELECA,NATM*NREAC)
       CALL FXDRDBL (IUN,EELECM,NMOL*NREAC)
       CALL FXDRDBL (IUN,EELECI,NION*NREAC)
       CALL FXDRDBL (IUN,EELECP,NPLS*NREAC)
       CALL FXDRDBL (IUN,EELECPH,NPHOT*NREAC)
+
       CALL FXDRDBL (IUN,EBULKA,NATM*NREAC)
       CALL FXDRDBL (IUN,EBULKM,NMOL*NREAC)
       CALL FXDRDBL (IUN,EBULKI,NION*NREAC)
       CALL FXDRDBL (IUN,EBULKP,NPLS*NREAC)
       CALL FXDRDBL (IUN,EBULKPH,NPHOT*NREAC)
+
       CALL FXDRDBL (IUN,ESCD1A,NATM*NREAC)
       CALL FXDRDBL (IUN,ESCD1M,NMOL*NREAC)
       CALL FXDRDBL (IUN,ESCD1I,NION*NREAC)

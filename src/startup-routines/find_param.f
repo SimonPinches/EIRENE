@@ -1213,8 +1213,6 @@ c     to be written:  allow for comment lines here
 C  SEARCH START OF PLOTTING INPUT: NEXT LINE WITH F OR T
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
-!pb  LOOK FOR NEXT LINE OF LOGICAL INPUT VALUES DENOTING PLOTTING OPTIONS
-!pb      DO WHILE (SCAN(ZEILE,'*FT') == 0)
       DO WHILE ((SCAN(ZEILE,'FT') == 0) .OR. (ZEILE(1:1) == '*'))
         READ (IUNIN,'(A72)') ZEILE
         CALL EIRENE_UPPERCASE(ZEILE)
@@ -1246,7 +1244,12 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
         DO J=0, NSTRAI, 60
           READ (IUNIN,*)
         END DO
-        IF (LRPSCUT) READ (IUNIN,*)
+
+cdr wrong place for this card here
+        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps cut option flags" would we
+                                    !dr read only below (3d plots and nlraps) then
+                                    !dr this exception would not be needed at all.
+
         DO J=1,NVOLPL
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1254,6 +1257,8 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
           END DO
           READ (ZEILE,6666) NSP
           NPLT = MAX(NPLT, NSP)
+c
+
           READ (IUNIN,6665) PLTL2D,PLTL3D
           READ (IUNIN,*)
           IF (PLTL2D) THEN
@@ -1299,6 +1304,7 @@ C  by an extra input card containing 'DEFINE_LINES'
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
+      NUM_LINES = 0
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
 CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLOCK 12
@@ -1369,6 +1375,7 @@ c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
 
+cdr this next condition for old default: better also check for nchtal=2 ??
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
       IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
 ! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
