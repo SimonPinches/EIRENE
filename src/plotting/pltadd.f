@@ -1,5 +1,6 @@
 cpb  march 18: bug fix re plot option plnums (print surface numbers in geometry plot)
 cpb            Had cause segmentation faults in certain rare conditions).
+cdr            plarr for additional surfaces: to be written
 C
 C
       SUBROUTINE EIRENE_PLTADD (MANF,MEND)
@@ -19,9 +20,9 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: MANF, MEND
       REAL(DP) :: G(4,2), R(4,2), AFF(3,3), AFFI(3,3)
       REAL(DP) :: EIRENE_ELLO, EIRENE_ELLU, EIRENE_PARA1, EIRENE_PARA2O,
@@ -45,11 +46,11 @@ C
       CHARACTER(3) :: CH2
       CHARACTER(4) :: CH3
       TYPE(PPOINT), POINTER :: CUR, SURFAN, SURFEN
- 
+
       EXTERNAL EIRENE_ELLO,EIRENE_ELLU,EIRENE_PARA1,EIRENE_PARA2O,
      .         EIRENE_PARA2U,EIRENE_HYPP,EIRENE_HYPM,
      .         EIRENE_GERADY,EIRENE_GERADX
- 
+
       XTRAN(XI,ETA)=XI*COSA-ETA*SINA
       YTRAN(XI,ETA)=XI*SINA+ETA*COSA
 C
