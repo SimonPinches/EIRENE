@@ -1,4 +1,4 @@
-cdr  apr. 18:   fully connected and tested: trchktm option, in block 11.
+cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
 cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
@@ -386,7 +386,7 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND_PARAM
 !
 !     NRTAL1 = 0     ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
       NREAC_ADD = 0  ! NEEDED HERE FOR CORRECT PLACEMENT OF ADDITIONAL REACTION DATA
-                     ! READ IN BLOCK 12, USED FOR CALCULATION OF EMISSIVITY
+                     ! READ IN BLOCK 12, USED FOR CALCULATION OF EMISSIVITY 
 
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
@@ -2118,8 +2118,8 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ISP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
-cdr only if needed: for additional A&M data structure on REACDAT
-cdr                 so far only for DENSITYMODELS:
+cdr only if needed: for additional A&M data structure on REACDAT 
+cdr                 so far only for DENSITYMODELS: 
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
@@ -3176,7 +3176,7 @@ C    .      ... WRONG INPUT !
           END IF
 
           ESPEC => ESTIML(J)
-
+          
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3499,12 +3499,12 @@ C
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
-cdr read further atomic/molecular data: population coefficients, QSS ratios, etc
-cdr      needed for setting up volumetric line emissivity profils
-cdr      as further add. tally ADDV (additional to those already defined in block 10a)
-cdr      The ADDV tallies may then be used for line of sight integration, along
-cdr      the CHORDS defined further below.
-cdr  distinct from the other addv tallies from block 10a these
+cdr  read further atomic/molecular data: population coefficients, QSS ratios, etc
+cdr       needed for setting up volumetric line emissivity profils
+cdr       as further add. tally ADDV (additional to those already defined in block 10a)
+cdr       The ADDV tallies may then be used for line of sight integration, along
+cdr       the CHORDS defined further below.
+cdr  Distinct from the other addv tallies from block 10a these
 cdr  further addv tallies (beyond NADVI) are currently apparently neither
 cdr  scaled, averaged, integrated, nor do they have text (units, species) assigned.
 
@@ -3529,10 +3529,13 @@ cdr read volumetric emission profile data
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
+cdr  further below, a particular emission profile is identified 
+cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
+cdr  or, if that fails, by its energy (and EMIN1 flag)
           READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
           READ (IUNIN,6666) NUM_COMPO
-          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN,
-     .                      EMIS_LINES(ILINE)%TRANS_EN,
+          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
+     .                      EMIS_LINES(ILINE)%TRANS_EN, 
      .                      EMIS_LINES(ILINE)%ENERGY
           EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
 
@@ -3541,7 +3544,7 @@ c  The storage on ADDV for individual components is done below (JCOMP loop).
           IADV = IADV + 1
 c  if mod_addv=0: reset storage needs for each line back to nadvi+1,
 c                 i.e. addv tallies are only saved for one line at a time.
-          IF (MOD_ADDV == 0) IADV = NADVI + 1
+          IF (MOD_ADDV == 0) IADV = NADVI + 1 
 
           EMIS_LINES(ILINE)%IADV_TOTAL = IADV
 
@@ -3550,22 +3553,24 @@ c                 i.e. addv tallies are only saved for one line at a time.
 
             DO JCOMP=1,NUM_COMPO
 
-              READ (IUNIN,'(A72)')
+              READ (IUNIN,'(A72)') 
      .              EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME
-              READ (IUNIN,6666) NUM_CONTRIB
+              READ (IUNIN,6666) NUM_CONTRIB 
               EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
-              ALLOCATE
+              ALLOCATE 
      .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
 
               IADV = IADV + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
-
-              DO KCONTR = 1, NUM_CONTRIB
+              
+              DO KCONTR = 1, NUM_CONTRIB    
                 CNT%ISP = -1
                 CNT%ITP = -1
                 READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
-     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO,
-     .             CNT%FNAME, CNT%H2, CNT%REACTION, CNT%CR
+     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO, 
+     .             CNT%FNAME,              
+     .             CNT%H123, CNT%REACTION, CNT%CR
+
                 IF (INDEX(CNT%FNAME,'ADAS')  .NE. 0 .OR.
      .              INDEX(CNT%FNAME,'TAB2D') .NE. 0  ) THEN
                   READ (IUNIN,'(4X,A2,1X,I3)') CNT%ELEMENT,CNT%IZ
@@ -3574,10 +3579,12 @@ c                 i.e. addv tallies are only saved for one line at a time.
                   CNT%ELEMENT = '  '
                   CNT%IZ = 0
                 END IF
+cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1
                 IF (CNT%IRATIO > 0) THEN
                   READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
-     .             CNT%FRATIO(1), CNT%RAT_H2(1), CNT%RAT_REACTION(1),
-     .             CNT%RAT_CR(1)
+     .             CNT%FRATIO(1), 
+     .             CNT%RAT_H123(1), CNT%RAT_REACTION(1), CNT%RAT_CR(1) 
+    
                   IF (INDEX(CNT%FRATIO(1),'ADAS')  .NE. 0 .OR.
      .                INDEX(CNT%FRATIO(1),'TAB2D') .NE. 0) THEN
                     READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
@@ -3587,13 +3594,15 @@ c                 i.e. addv tallies are only saved for one line at a time.
                     CNT%RAT_ELEMENT(1) = '  '
                     CNT%IZ_RAT(1) = 0
                   END IF
+cdr   read a second density ratio
                   IF (CNT%IRATIO == 2) THEN
                     READ (IUNIN,6666) CNT%ISP(2),CNT%ITP(2),
      .                                CNT%ISP(3),CNT%ITP(3)
                     READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
-     .               CNT%FRATIO(2), CNT%RAT_H2(2), CNT%RAT_REACTION(2),
-     .               CNT%RAT_CR(2)
-                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR.
+     .               CNT%FRATIO(2), 
+     .               CNT%RAT_H123(2), CNT%RAT_REACTION(2), CNT%RAT_CR(2)
+
+                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR. 
      .                  INDEX(CNT%FRATIO(2),'TAB2D') .NE. 0) THEN
                       READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
      .                                             CNT%IZ_RAT(2)
@@ -3603,19 +3612,21 @@ c                 i.e. addv tallies are only saved for one line at a time.
                       CNT%IZ_RAT(2) = 0
                     END IF
                   END IF
-                ELSE
-                  CNT%FRATIO       = ''
-                  CNT%RAT_H2       = ''
+
+                ELSE 
+                  CNT%FRATIO       = '' 
+                  CNT%RAT_H123     = '' 
                   CNT%RAT_REACTION = ''
                   CNT%RAT_CR       = ''
                   CNT%RAT_ELEMENT  = ''
                   CNT%IZ_RAT       = 0
                 END IF
+
                 CNT%IRC = 0
                 CNT%IRC_RAT = 0
                 EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
               END DO
-
+         
             END DO
           END IF
         END DO
@@ -3626,6 +3637,8 @@ c                 i.e. addv tallies are only saved for one line at a time.
 ! define OLD default emissivity model for chords, for backward compatibility.
 cdr  allocate storage and fill structure EMIS-LINES
 cdr  such that old default options are recovered
+cdr This is exclusive: as soon as at least one emission profile is
+cdr read from block "12.0", no defualt emissivities are set. 
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3647,7 +3660,7 @@ c  default asymptotics
       nrc = nreaci + nreac_add
 
 ! one extra A&M data file for "densitymodel" (block 5): "corona" or "colrad"
-      if (idmdl > 0) nrc = nrc + 1
+      if (idmdl > 0) nrc = nrc + 1 
 
 
       do iline=1, num_lines
@@ -3655,7 +3668,7 @@ c  default asymptotics
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1
-            CALL EIRENE_SLREAC(NRC,CNT%FNAME,CNT%H2,
+            CALL EIRENE_SLREAC(NRC,CNT%FNAME,CNT%H123,
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
@@ -3667,7 +3680,7 @@ c  default asymptotics
 cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
               do ir = 1, cnt%iratio
                 nrc = nrc + 1
-                CALL EIRENE_SLREAC(NRC,CNT%FRATIO(IR),CNT%RAT_H2(IR),
+                CALL EIRENE_SLREAC(NRC,CNT%FRATIO(IR),CNT%RAT_H123(IR),
      .              CNT%RAT_REACTION(IR),CNT%RAT_CR(IR),
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
@@ -3676,7 +3689,7 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
                 emis_lines
      .           (iline)%compo(jcomp)%contrib(kcontr)%irc_rat(ir) = nrc
               end do  ! number of QSS ratios
-            end if
+            end if           
           end do   !kcontr
         end do     !jcomp
       end do       !iline
@@ -3698,19 +3711,23 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
         READ (IUNIN,6666) NCHTAL(ICHORI),NSPSCL(ICHORI),NSPNEW(ICHORI),
      .                    ISTCHR
 cdr  new input option: generalized side on line emissivities
+cdr                    for nchtal=2 option.
         READ (IUNIN,'(A400)') ZEILE
         IREAD=1
+
         IF (NCHTAL(ICHORI) == 2) THEN
 cdr  for nchtal=2: one extra input card may be read:  search for 'USE_LINE'
 cdr  and fill CH_LINE_NAME(ICHORI) with the name of that line.
+cdr  Alternatively the energy parameters EMIN1 may be used.
           ULINE = ZEILE
           CALL EIRENE_UPPERCASE(ULINE)
           IND = INDEX(ULINE,'USE_LINE')
           IF (IND > 0) THEN
             READ (ZEILE(IND+8:),'(A80)') CH_LINE_NAME(ICHORI)
             READ (IUNIN,'(A400)') ZEILE
+            IREAD=1
           END IF
-        END IF
+        END IF        
 
         READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),

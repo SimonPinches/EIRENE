@@ -10,9 +10,11 @@ cdr            size of array LMETSPW decreased accordingly
       SUBROUTINE EIRENE_SETTXT
 c  Set default texts  (volume tallies: name, species, units), 
 C    ditto: surface and input tallies. 
+C  Main call: SETTXT
 C  Set first (leading) dimension of tally arrays: nfstvi, nfstwi.
+C  Entry    : STTXT1
 C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
-c    for pointers to large tally-arrays
+c                                 for pointers to large tally-arrays
 c  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

@@ -63,7 +63,7 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO,
+     .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO, 
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD
@@ -663,7 +663,7 @@ cdr  start reading species specification block 4a,4b,4c,4d
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
-cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards
+cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards 
 cpb......................................
 cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
@@ -1052,7 +1052,7 @@ cdr  this must be highly case specfic. To be reconsidered !!
 
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA) == 6) CYCLE
+        IF (INDSRC(ISTRA) == 6) CYCLE     
 C * 7ABCD...: STRATUM NAME
         READ (IUNIN,'(A72)') ZEILE
         WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
@@ -1295,10 +1295,10 @@ C
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NUM_LINES transitions (volumetric line emissions),
-c  Each LINE may consist of NUM_CONTRIB
+c  read up to NUM_LINES transitions (volumetric line emissions), 
+c  Each LINE may consist of NUM_CONTRIB 
 c  for different parent (donor) state components.
-c  Identify the block of LINES and COMPONENTS available in this run
+c  Identify the block of LINES and COMPONENTS available in this run 
 C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
@@ -1324,16 +1324,16 @@ c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
 cdr  minimal storage, but each time when a new lines comes,
 cdr  tha emissivity profiles on ADDV must be re-calculated
             NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
-          ELSE
-cdr  all possible emissivity profiles are kept on ADDV tallies.
+          ELSE 
+cdr  all possible emissivity profiles are kept on ADDV tallies. 
             NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
           DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE        
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
 cdr  specify all required contributions explicitly.
-cdr  In the old default with was automatically detected
+cdr  In the old default with was automatically detected 
 cdr     from mass and charge states/numbers of hydrogenic particles.
 cdr     And only one set of emission data for all contributions was used,
 cdr     plus one or two population ratios.
@@ -1342,7 +1342,7 @@ cdr     plus one or two population ratios.
             DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
 cdr skip one more input line in case of TAB2D or ADAS input
-              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR.
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR. 
      .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
 cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
@@ -1358,23 +1358,23 @@ cdr do we require a second QSS population ratio for this contribution?
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
                   IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
      .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
-                END IF
+                END IF  
               END IF  !  IRATIO
             END DO    !  NUM_CONTRIB   (POSSIBEL D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
           END DO      !  NUM_COMPO     (E.G.  GROUND STATE
         END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
 c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
-        NADV = NADV + NADV_ADD
+        NADV = NADV + NADV_ADD 
         NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
-
+      
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
-      
+
 cdr this next condition for old default: better also check for nchtal=2 ??
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
       IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
@@ -1384,53 +1384,53 @@ cdr this next condition for old default: better also check for nchtal=2 ??
         NUM_LINES = 6
         NUM_COMPO = 6
 ! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI
+        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI 
 cdr  ?? perhaps: in old default only one line possible at a time?
 cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
-
+            
       END IF
 
 C  PROVIDE STORAGE ON REACDAT, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
-C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
+C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
-
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
+ 
+C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
         IF (.FALSE.) THEN
-          ALLOCATE (ENERGY(2,NCHORI))
-          ENERGY = 0._DP
-          LINES = 0
+        ALLOCATE (ENERGY(2,NCHORI))
+        ENERGY = 0._DP
+        LINES = 0
 
-          DO J = 1, NCHORI
-            READ (IUNIN,*)
-            READ (IUNIN,'(12I6)') NCHTAL
-            READ (IUNIN,*)
-            READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
-            READ (IUNIN,*)
-            READ (IUNIN,*)
-            IF (NCHTAL == 2) THEN
-              LEMISS = .FALSE.
-              DO I = 1, LINES
-                D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
-                D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
-                IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                  LEMISS = .TRUE.
-                  EXIT
-                END IF
-              END DO
-              IF (.NOT.LEMISS) THEN
-                LINES = LINES + 1
-                ENERGY(1,LINES) = EMIN1
-                ENERGY(2,LINES) = EMAX1
+        DO J = 1, NCHORI
+          READ (IUNIN,*)
+          READ (IUNIN,'(12I6)') NCHTAL
+          READ (IUNIN,*)
+          READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
+          READ (IUNIN,*)
+          READ (IUNIN,*)
+          IF (NCHTAL == 2) THEN
+            LEMISS = .FALSE.
+            DO I = 1, LINES
+              D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
+              D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
+              IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
+                LEMISS = .TRUE.
+                EXIT
               END IF
+            END DO
+            IF (.NOT.LEMISS) THEN
+              LINES = LINES + 1
+              ENERGY(1,LINES) = EMIN1
+              ENERGY(2,LINES) = EMAX1
             END IF
-          END DO
+          END IF
+        END DO
 
 C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
 C  OF EMISSION PROFILES
-          NREAC = NREAC + LINES*6 + 3
+        NREAC = NREAC + LINES*6 + 3
 
-          DEALLOCATE (ENERGY)
+        DEALLOCATE (ENERGY)
         END IF
       END IF
 

@@ -5,7 +5,7 @@ cdr  comments  ??
       subroutine eirene_emissivity(istr, lstart, lend)
 
 cdr  probably something to fill ADDV tallies with emissivities, stratum ISTR
-cdr  for lines lstart to lend ?? Contained parts of old reoutines Ba_alpha,....,Ly-Beta.
+cdr  for lines lstart to lend ?? Contained parts of old routines Ba_alpha,....,Ly-Beta.
 cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
 cdr  may 18: some comments tried......
@@ -32,10 +32,11 @@ cdr  may 18: some comments tried......
       implicit none
 
       integer, intent(in) :: istr, lstart, lend
-      integer :: i, j, k, iads, iadv, isp(3), itp(3), iratio, irc,
+      integer :: i, j, k, iline, jcomp, kcontr,
+     .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
-     .            einstein, trans_en, DE, TE, TEF, DEF, rate, 
+     .            einstein, trans_en, DE, TE, TEF, DEF, popcf, 
      .            EIRENE_OTHER_RATE_COEFF, 
      .            ratio2
       REAL(DP) :: DUMMY(NRTAL)
@@ -50,9 +51,12 @@ cdr  may 18: some comments tried......
       IF (ISTR.EQ.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR SUM OVER STRATA')
       CALL EIRENE_LEER(1)
+
       WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
 
       do i = lstart, lend
+        ILINE=I
+        WRITE (iunout,*) 'LINE no. ',ILINE       
         WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
      .                 EMIS_LINES(I)%LINE_NAME // ':'
         write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
@@ -63,11 +67,13 @@ cdr  may 18: some comments tried......
         einstein = emis_lines(i)%einstein
 C  ENERGY FACTOR FOR POWER LOSS (W)
         trans_en = emis_lines(i)%trans_en * elcha
+
+cdr initialize sum over components
         iads = emis_lines(i)%iadv_total
         addv(iads,:) = 0._dp
-
-
         powalfs = 0._dp
+
+cdr run over components
         do j = 1, emis_lines(i)%num_compo
           iadv = emis_lines(i)%compo(j)%iadv
           addv(iadv,:) = 0._dp
@@ -133,8 +139,11 @@ C
   
 c  density is the "true" parent density         
 c  density(1) is taken as parent density. fetch reduced population coefficent
-              rate = EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
-              add = rate*density(1)
+c  and density ratios ratio="density"/"density(1)" will be applied below, 
+c  to turn it into "density"
+              popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
+              add = popcf*density(1)
+
 c  density ratio, if true parent density is not available (or in QSS mode)
 c  then: ratio converts from density(1) to density 
               if (iratio > 0) then 
@@ -142,7 +151,7 @@ c  then: ratio converts from density(1) to density
                 ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
      .                                          TEF,DEF,.TRUE.,1)
                 add = add*ratio
-c  second conversion to jet another parent density
+c  second conversion to yet another parent density
 c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2
 c       density(1) = H2
 c       ratio      = H2+/H2(Te,ne) (CR equilibrium)
@@ -163,7 +172,7 @@ cdr         add volume weighted contribution to coarse cell "ncelc"
               powalf = powalf + sigadd
             end do               ! ncell
       
-          end do ! k contributions of component j of line i
+          end do ! k contributions (summed) of component j of line iline
 
 cdr addv was volume weighted (extensive) sum. now divide by coarse cell volume
 cdr      to turn it into an intensive score:  [...] per cm**3  
@@ -189,7 +198,11 @@ cdr      to turn it into an intensive score:  [...] per cm**3
           TXTSPC(IADV,NTALA) =TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
           TXTUNT(IADV,NTALA) ='PHOTONS/S/CM**3         '
 
-        end do ! j components of line i
+          WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV 
+
+        end do ! j components of line ILINE are done
+
+cdr  now sum over compontents: on tally ADDV(iads)
 
         addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) 
      .                           / voltal(1:nsbox_tal)
@@ -206,10 +219,12 @@ cdr      to turn it into an intensive score:  [...] per cm**3
         ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
         TXTTAL(IADS,NTALA) =TXTTAL(IADV,NTALA)
-        TXTSPC(IADS,NTALA) ='SUM_OVER_ALL            '
+        TXTSPC(IADS,NTALA) ='SUM OVER CONTRIBUTIONS  '
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
+        WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS 
 
-      end do ! line i
+
+      end do ! line no. ILINE
 
 C
 C  WRITE ON STREAM 11 DATA FOR STRATUM NO. ISTR

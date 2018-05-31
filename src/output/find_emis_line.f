@@ -1,15 +1,33 @@
       subroutine eirene_find_emis_line (istr, ichori, ener, lno)
 
 cdr documentation ? comments ?
+c  input:   istr  :  stratum number
+c           ichori:  chord number of line of sight
+c           ener  :  energy parameter for identifying a particular emission profile
+c  output:  lno   :  "line number", i.e. the volumetric emission profile.
+
+cdr  so far: guessing:
+cdr currently called from SIGHA (former Balmer and Lyman line of side routine)
+cdr SIGHA is called only for chords ICHORI, for which NCHTAL(ichori)=2.
+cdr Calls are whenever a change in stratum number istr, transition energy ener,
+cdr       or a new internal iteration (time stepping, non-linear BGK iterations)
+
+cdr from here we call EMISSIVITY.F  (similar to former Ba_alpha.f,...etc.)
+cdr to fill ADDV tallies, and to write them onto fort.11, for stratum ISTR.
 
 cdr may 18:  try to identify the line LNO,
-cdr          als specified by input flags 
+cdr          or (old options) as specified by input flags 
 cdr                                       ICHORI  (line of sight number)
 cdr                                       ENER    (flag for selecting a particular line)
 
-cdr          this is done my trying to find a match of 'ch_line_name(ichori)'
+cdr          this is done by trying to find a match of 'ch_line_name(ichori)'
 cdr          read from block 12 for chord ICHORI
 cdr          with 'emis_lines(i)%line_name'
+cdr          If this is not successful, then we try to use the ENER identifyer,
+cdr          which may have been read in input for emission profiles
+cdr          or set from old default hydrogenic line models (setup_default_emissivity)
+cdr          which is done whenever there are chords and no emissivities 
+cdr          read from external files.
 
 cdr          Then fill the appropriate additional tallies ADDV
 cdr          with the needed volumetric line emissivities, for stratum ISTR,
@@ -44,6 +62,10 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       lno = 0
       found = .false.
 
+      if (ichori.gt. 0) then
+cdr  for ichori <= 0: bypass ichori, 
+cdr  to set emission profiles also without any chords.
+
       if (len_trim(ch_line_name(ichori)) > 0) then
 ! find corresponding line from line names
         ctest1 = adjustl(trim(ch_line_name(ichori)))
@@ -57,6 +79,8 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
            end if
         end do
       end if
+
+      endif
 
       if (.not.found) then
 ! check energies, for backward compatibility with old input block 12.
