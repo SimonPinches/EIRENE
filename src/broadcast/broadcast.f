@@ -1728,9 +1728,9 @@ cdr     INVALID RP%IFIT
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%FRATIO,2*8,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%H2,4,MPI_CHARACTER,
+            CALL MPI_BCAST (CNT%H123,4,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%RAT_H2,2*4,MPI_CHARACTER,
+            CALL MPI_BCAST (CNT%RAT_H123,2*4,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%ELEMENT,2,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)

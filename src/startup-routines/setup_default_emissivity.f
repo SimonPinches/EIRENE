@@ -2,7 +2,7 @@
 
 cdr  called from subr. INPUT.f
 cdr april 18:  the calculation of volumetric line emissitivies
-cdr            and their storing on additional tallies ADIN
+cdr            and their storing on additional tallies ADDV
 cdr            has been generalized, 
 cdr            replacing the former 6 routines:
 cdr            ba_alpha.f, ba_beta.f, ba_gamma.f, ba_delta.f, 
@@ -10,21 +10,26 @@ cdr            ly_alpha.f, ly_beta.f
 
 cdr  this present routine (pb, 2017):
 cdr  Try to reproduce the old version of these 6 routines,
-cdr  by using the new structures EMISS_LINES%....
+cdr  by using the new structures EMIS_LINES%....
 cdr  
 cdr  number of lines       6     (BA_AL, BA_BET,....LY_BET)
 cdr  number of components: 6     (COUPLING TO H, H+,H2,H2+,H-,H3+)
 cdr  number of contributions:  detected from input file, 
-cdr                            as is old ba... ly... routines 
-cdr                           (there sum over contributions only),
-cdr                            but now kept separate
+cdr                            as in old ba... ly... routines 
+cdr                           (there sum over contributions only
+cdr                            on ADDV tallies),
 cdr  hard coded here: use pop.coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
 cdr
 cdr  tbd:  make consistent notation "component vs. contribution"
 cdr  tbd:  below we now still have 6*6=36 times mostly identical code.
-cdr  documentation needed: what and how is CNT%... filled ? 
+cdr  I beliefe:
+cdr  all that this routine does is: define CNT%.., and set emis_lines%...=CNT%..
+cdr  for each of the 36 hydrogenic components. The ADDV tallies are filled later,
+cdr  in calls to emission.f from sigha. So we need at least one chord and nchtal=2,
+cdr  to fill the addv arrays.
+cdr  
 
       use eirmod_precision
       use eirmod_parmmod
@@ -62,8 +67,10 @@ c     num_contrib  = inferred from input file, species specification block 4.
       EMIS_LINES(1)%num_COMPO = num_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(1)%EINSTEIN = 4.410E7
+c  transition enery
       EMIS_LINES(1)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(3._DP*3._DP))
+C  identifyer of Line:
       EMIS_LINES(1)%ENERGY = 1.8889_DP
       EMIS_LINES(1)%IADV_TOTAL = NADVI + num_COMPO+1 
       
@@ -83,7 +90,7 @@ C  H(n=3)/H(n=1)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -93,7 +100,7 @@ C  H(n=3)/H(n=1)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 1 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.5a   '
       CNT%CR           = 'OT ' 
 
@@ -120,7 +127,7 @@ C  H(n=3)/H+
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -130,7 +137,7 @@ C  H(n=3)/H+
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 4 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.8a   '
       CNT%CR           = 'OT ' 
 
@@ -157,7 +164,7 @@ C  H(n=3)/H2(g)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -167,7 +174,7 @@ C  H(n=3)/H2(g)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 2
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.2.5a   '
       CNT%CR           = 'OT ' 
 
@@ -193,7 +200,7 @@ C  H(n=3)/H2+(g)
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -203,11 +210,11 @@ C  H(n=3)/H2+(g)
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.14a   '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.12' 
+      CNT%RAT_H123(1)     = 'H.12' 
       CNT%RAT_REACTION(1) = '2.0c     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -233,7 +240,7 @@ C  H(n=3)/H-
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -243,11 +250,12 @@ C  H(n=3)/H-
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '7.2a     '
       CNT%CR              = 'OT ' 
+
       CNT%FRATIO(1)       = 'AMJUEL   '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '7.0a     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -273,7 +281,7 @@ C  H(n=3)/H3+
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -283,19 +291,21 @@ C  H(n=3)/H3+
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.15a  '
       CNT%CR              = 'OT ' 
+
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '4.0a     '
       CNT%RAT_CR(1)       = 'OT '
+
       CNT%ISP(2)          = 1
       CNT%ITP(2)          = 2
       CNT%ISP(3)          = 1
       CNT%ITP(3)          = 5
       CNT%FRATIO(2)       = 'AMJUEL  '
-      CNT%RAT_H2(2)       = 'H.12' 
+      CNT%RAT_H123(2)     = 'H.12' 
       CNT%RAT_REACTION(2) = '2.0c     '
       CNT%RAT_CR(2)       = 'OT '
 
@@ -336,7 +346,7 @@ C  H(n=4)/H(n=1)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -346,7 +356,7 @@ C  H(n=4)/H(n=1)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 1 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.5c   '
       CNT%CR           = 'OT ' 
 
@@ -371,7 +381,7 @@ C  H(n=4)/H+
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -381,7 +391,7 @@ C  H(n=4)/H+
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 4 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.8c   '
       CNT%CR           = 'OT ' 
 
@@ -406,7 +416,7 @@ C  H(n=4)/H2(g)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -416,7 +426,7 @@ C  H(n=4)/H2(g)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 2
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.2.5c   '
       CNT%CR           = 'OT ' 
 
@@ -442,7 +452,7 @@ C  H(n=4)/H2+(g)
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -452,11 +462,11 @@ C  H(n=4)/H2+(g)
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.14c   '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.12' 
+      CNT%RAT_H123(1)     = 'H.12' 
       CNT%RAT_REACTION(1) = '2.0c     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -482,7 +492,7 @@ C  H(n=4)/H-
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -492,11 +502,11 @@ C  H(n=4)/H-
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '7.2c      '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '7.0a     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -522,7 +532,7 @@ C  H(n=4)/H3+
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -532,11 +542,11 @@ C  H(n=4)/H3+
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.15c  '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '4.0a     '
       CNT%RAT_CR(1)       = 'OT '
       CNT%ISP(2)          = 1
@@ -544,7 +554,7 @@ C  H(n=4)/H3+
       CNT%ISP(3)          = 1
       CNT%ITP(3)          = 5
       CNT%FRATIO(2)       = 'AMJUEL  '
-      CNT%RAT_H2(2)       = 'H.12' 
+      CNT%RAT_H123(2)     = 'H.12' 
       CNT%RAT_REACTION(2) = '2.0c     '
       CNT%RAT_CR(2)       = 'OT '
 
@@ -585,7 +595,7 @@ C  H(n=5)/H(n=1)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -595,7 +605,7 @@ C  H(n=5)/H(n=1)
       CNT%ITP(1)       = 1 
       CNT%IRATIO       = 0
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.5d   '
       CNT%CR           = 'OT ' 
 
@@ -620,7 +630,7 @@ C  H(n=5)/H+
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -630,7 +640,7 @@ C  H(n=5)/H+
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 4 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.8d   '
       CNT%CR           = 'OT ' 
 
@@ -655,7 +665,7 @@ C  H(n=5)/H2(g)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -665,7 +675,7 @@ C  H(n=5)/H2(g)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 2
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.2.5d   '
       CNT%CR           = 'OT ' 
 
@@ -691,7 +701,7 @@ C  H(n=5)/H2+(g)
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -701,11 +711,11 @@ C  H(n=5)/H2+(g)
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.14d   '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.12' 
+      CNT%RAT_H123(1)     = 'H.12' 
       CNT%RAT_REACTION(1) = '2.0c     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -731,7 +741,7 @@ C  H(n=5)/H-
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -741,11 +751,11 @@ C  H(n=5)/H-
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '7.2d      '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '7.0a     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -771,7 +781,7 @@ C  H(n=5)/H3+
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -781,11 +791,11 @@ C  H(n=5)/H3+
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.15d  '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '4.0a     '
       CNT%RAT_CR (1)      = 'OT '
       CNT%ISP(2)          = 1
@@ -793,7 +803,7 @@ C  H(n=5)/H3+
       CNT%ISP(3)          = 1
       CNT%ITP(3)          = 5
       CNT%FRATIO(2)       = 'AMJUEL  '
-      CNT%RAT_H2(2)       = 'H.12' 
+      CNT%RAT_H123(2)     = 'H.12' 
       CNT%RAT_REACTION(2) = '2.0c     '
       CNT%RAT_CR(2)       = 'OT '
 
@@ -835,7 +845,7 @@ C  H(n=6)/H(n=1)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -845,7 +855,7 @@ C  H(n=6)/H(n=1)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 1 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.5e   '
       CNT%CR           = 'OT ' 
 
@@ -870,7 +880,7 @@ C  H(n=6)/H+
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -880,7 +890,7 @@ C  H(n=6)/H+
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 4 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.8e   '
       CNT%CR           = 'OT ' 
 
@@ -905,7 +915,7 @@ C  H(n=6)/H2(g)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -915,7 +925,7 @@ C  H(n=6)/H2(g)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 2
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.2.5e   '
       CNT%CR           = 'OT ' 
 
@@ -941,7 +951,7 @@ C  H(n=6)/H2+(g)
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -951,11 +961,11 @@ C  H(n=6)/H2+(g)
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.14e   '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.12' 
+      CNT%RAT_H123(1)     = 'H.12' 
       CNT%RAT_REACTION(1) = '2.0c     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -981,7 +991,7 @@ C  H(n=6)/H-
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -991,11 +1001,11 @@ C  H(n=6)/H-
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '7.2e      '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '7.0a     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -1021,7 +1031,7 @@ C  H(n=6)/H3+
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1031,11 +1041,11 @@ C  H(n=6)/H3+
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.15e  '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '4.0a     '
       CNT%RAT_CR(1)       = 'OT '
       CNT%ISP(2)          = 1
@@ -1043,7 +1053,7 @@ C  H(n=6)/H3+
       CNT%ISP(3)          = 1
       CNT%ITP(3)          = 5
       CNT%FRATIO(2)       = 'AMJUEL  '
-      CNT%RAT_H2(2)       = 'H.12' 
+      CNT%RAT_H123(2)     = 'H.12' 
       CNT%RAT_REACTION(2) = '2.0c     '
       CNT%RAT_CR(2)       = 'OT '
 
@@ -1084,7 +1094,7 @@ C  H(n=2)/H(n=1)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -1094,7 +1104,7 @@ C  H(n=2)/H(n=1)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 1 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.5b   '
       CNT%CR           = 'OT ' 
 
@@ -1119,7 +1129,7 @@ C  H(n=2)/H+
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -1129,7 +1139,7 @@ C  H(n=2)/H+
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 4 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.8b   '
       CNT%CR           = 'OT ' 
 
@@ -1154,7 +1164,7 @@ C  H(n=2)/H2(g)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -1164,7 +1174,7 @@ C  H(n=2)/H2(g)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 2
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.2.5b   '
       CNT%CR           = 'OT ' 
 
@@ -1190,7 +1200,7 @@ C  H(n=2)/H2+(g)
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1200,11 +1210,11 @@ C  H(n=2)/H2+(g)
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.14b   '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.12' 
+      CNT%RAT_H123(1)     = 'H.12' 
       CNT%RAT_REACTION(1) = '2.0c     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -1230,7 +1240,7 @@ C  H(n=2)/H-
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1240,11 +1250,11 @@ C  H(n=2)/H-
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '7.2b      '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '7.0a     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -1270,7 +1280,7 @@ C  H(n=2)/H3+
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1280,11 +1290,11 @@ C  H(n=2)/H3+
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.15b  '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '4.0a     '
       CNT%RAT_CR(1)       = 'OT '
       CNT%ISP(2)          = 1
@@ -1292,7 +1302,7 @@ C  H(n=2)/H3+
       CNT%ISP(3)          = 1
       CNT%ITP(3)          = 5
       CNT%FRATIO(2)       = 'AMJUEL  '
-      CNT%RAT_H2(2)       = 'H.12' 
+      CNT%RAT_H123(2)     = 'H.12' 
       CNT%RAT_REACTION(2) = '2.0c     '
       CNT%RAT_CR(2)       = 'OT '
 
@@ -1333,7 +1343,7 @@ C  H(n=3)/H(n=1)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -1343,7 +1353,7 @@ C  H(n=3)/H(n=1)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 1 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.5a   '
       CNT%CR           = 'OT ' 
 
@@ -1368,7 +1378,7 @@ C  H(n=3)/H+
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -1378,7 +1388,7 @@ C  H(n=3)/H+
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 4 
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.1.8a   '
       CNT%CR           = 'OT ' 
 
@@ -1403,7 +1413,7 @@ C  H(n=3)/H2(g)
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
-      CNT%RAT_H2       = '' 
+      CNT%RAT_H123     = '' 
       CNT%RAT_REACTION = ''
       CNT%RAT_CR       = ''
       CNT%IRC          = 0
@@ -1413,7 +1423,7 @@ C  H(n=3)/H2(g)
       CNT%ISP(1)       = 1
       CNT%ITP(1)       = 2
       CNT%FNAME        = 'AMJUEL  '
-      CNT%H2           = 'H.12'
+      CNT%H123         = 'H.12'
       CNT%REACTION     = '2.2.5a   '
       CNT%CR           = 'OT ' 
 
@@ -1439,7 +1449,7 @@ C  H(n=3)/H2+(g)
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1449,11 +1459,11 @@ C  H(n=3)/H2+(g)
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.14a   '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.12' 
+      CNT%RAT_H123(1)     = 'H.12' 
       CNT%RAT_REACTION(1) = '2.0c     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -1479,7 +1489,7 @@ C  H(n=3)/H-
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1489,11 +1499,11 @@ C  H(n=3)/H-
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '7.2a      '
       CNT%CR              = 'OT ' 
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '7.0a     '
       CNT%RAT_CR(1)       = 'OT '
 
@@ -1519,7 +1529,7 @@ C  H(n=2)/H3+
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
-      CNT%RAT_H2          = '' 
+      CNT%RAT_H123        = '' 
       CNT%RAT_REACTION    = ''
       CNT%RAT_CR          = ''
       CNT%IRC             = 0
@@ -1529,19 +1539,21 @@ C  H(n=2)/H3+
       CNT%ISP(1)          = 1
       CNT%ITP(1)          = 2
       CNT%FNAME           = 'AMJUEL  '
-      CNT%H2              = 'H.12'
+      CNT%H123            = 'H.12'
       CNT%REACTION        = '2.2.15a  '
       CNT%CR              = 'OT ' 
+
       CNT%FRATIO(1)       = 'AMJUEL  '
-      CNT%RAT_H2(1)       = 'H.11' 
+      CNT%RAT_H123(1)     = 'H.11' 
       CNT%RAT_REACTION(1) = '4.0a     '
       CNT%RAT_CR(1)       = 'OT '
+
       CNT%ISP(2)          = 1
       CNT%ITP(2)          = 2
       CNT%ISP(3)          = 1
       CNT%ITP(3)          = 5
       CNT%FRATIO(2)       = 'AMJUEL  '
-      CNT%RAT_H2(2)       = 'H.12' 
+      CNT%RAT_H123(2)     = 'H.12' 
       CNT%RAT_REACTION(2) = '2.0c     '
       CNT%RAT_CR(2)       = 'OT '
 
