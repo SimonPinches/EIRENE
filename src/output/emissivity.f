@@ -8,7 +8,7 @@ cdr  probably something to fill ADDV tallies with emissivities, stratum ISTR
 cdr  for lines lstart to lend ?? Contained parts of old routines Ba_alpha,....,Ly-Beta.
 cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
-cdr  may 18: some comments tried......
+cdr  may 18: some comments tried......NOT READY
 
 
       use eirmod_precision
@@ -197,7 +197,6 @@ cdr      to turn it into an intensive score:  [...] per cm**3
      .                    ' SOURCE RATE '
           TXTSPC(IADV,NTALA) =TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
           TXTUNT(IADV,NTALA) ='PHOTONS/S/CM**3         '
-
           WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV 
 
         end do ! j components of line ILINE are done
@@ -210,7 +209,7 @@ cdr  now sum over compontents: on tally ADDV(iads)
         WRITE (iunout,'(A50,2ES16.7)') 
      ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
      .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
-        CALL EIRENE_LEER(2)
+
 
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
         CALL EIRENE_INTTAL
@@ -222,6 +221,7 @@ cdr  now sum over compontents: on tally ADDV(iads)
         TXTSPC(IADS,NTALA) ='SUM OVER CONTRIBUTIONS  '
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
         WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS 
+        CALL EIRENE_LEER(2)
 
 
       end do ! line no. ILINE

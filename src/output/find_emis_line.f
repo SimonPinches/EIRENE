@@ -78,7 +78,16 @@ cdr  to set emission profiles also without any chords.
              exit
            end if
         end do
-      end if
+CDR
+        IF (FOUND) THEN
+          WRITE (IUNOUT,*) 'EMISSION LINE FOUND BY NAME, iline=',LNO
+          WRITE (IUNOUT,*) 'name: ',CTEST2   ! =CTEST1
+        ELSE
+          WRITE (IUNOUT,*) 'NO EMISSION LINE FOUND BY NAME'
+          WRITE (IUNOUT,*) 'name: ',CTEST1
+        ENDIF
+
+      end if  ! ch_line_name(ichori) defined
 
       endif
 
@@ -86,17 +95,26 @@ cdr  to set emission profiles also without any chords.
 ! check energies, for backward compatibility with old input block 12.
         do iline = 1, num_lines
           ener_il = emis_lines(iline)%energy
-          if (abs((ener-ener_il)/ener_il) <= eps5) then
+          if (abs((ener-ener_il)/(ener_il+eps10)) <= eps5) then
             found = .true.
             lno = iline
             exit
           end if
         end do
+CDR
+        IF  (FOUND) THEN
+          WRITE (IUNOUT,*) 'EMISSION LINE FOUND BY energy, iline=',LNO
+          WRITE (IUNOUT,*) 'energy: ',ener_il
+        ELSE
+          WRITE (IUNOUT,*) 'NO EMISSION LINE FOUND BY energy'
+          WRITE (IUNOUT,*) 'energy: ',ENER
+        endif
+
       end if
 
       if (.not.found) then
         write (iunout,*) ' NO MATCHING EMISSION LINE FOUND FOR CHORD ',
-     .                   ICHORD
+     .                     ICHORI
         return
       end if
 
