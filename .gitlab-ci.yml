@@ -112,7 +112,8 @@ build_EMC3-EIRENE:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-        - EIRENE-sample-cases/EMC3/
+        - EIRENE-sample-cases/EMC3/emc3/bin/
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/
 
 run_EMC3-EIRENE_H:
     stage: run
