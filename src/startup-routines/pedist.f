@@ -57,7 +57,7 @@ C> unchanged.
       PROCFORSTRA = .FALSE.
 
       DO IPE = 0, NPRS-1
-        PROCFORSTRA(1:NSTRA,IPE) = NLSRON
+        PROCFORSTRA(:,IPE) = NLSRON
       END DO
       NPESTA = 0
       NPESTR = NPRS
