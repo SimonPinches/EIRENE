@@ -71,7 +71,7 @@ endif()
 
 message(STATUS   " --  Setting interface and user routines:       ")
 message(STATUS   "       if flag -Dinterface is unspecified, dummies will")
-message(STATUS   "       be set. Try e.g. -Dinterface=ITER or EMC3.  ")
+message(STATUS   "       be set. Try e.g. -Dinterface=SOLPS.  ")
 
 if(interface)
   get_filename_component(interface ${interface} NAME)
@@ -135,16 +135,13 @@ else()
   list(APPEND plotpath ${src_plot_dummy})
 endif()
 
-# Decide whether to use ITER interface or dummy placeholders
+# Decide whether to use SOLPS interface or dummy placeholders
 # (easily expandable for further interfaces)
 set(couplepath "")
 set(userpath "")
-if(     interface STREQUAL "ITER" )
+if(     interface STREQUAL "SOLPS" )
   list(APPEND couplepath ${src_interfaces/couple_SOLPS-ITER})
   list(APPEND userpath   ${src_user-routines/user_iter})
-elseif( interface STREQUAL "EMC3" )
-  list(APPEND couplepath ${src_interfaces/couple_Dummy})
-  list(APPEND userpath   ${src_user-routines/user_default})
 elseif( interface STREQUAL "BOX"  )
   list(APPEND couplepath ${src_interfaces/couple_Dummy})
   list(APPEND userpath   ${src_user-routines/user_box})
