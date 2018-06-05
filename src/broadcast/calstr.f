@@ -33,9 +33,6 @@ c   input:
 c       istra  (stratum number, from common COMPRT)
 c       npesta(istra)  : number of master processor for stratum istra
 c       npestr(istra)  : total no. of processors working on stratum istra
-c
-c   results:
-c       npean, npeen:   the processors in the range npean,...,npeen work on stratum istra
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -61,22 +58,22 @@ C
 C     real(dp) :: dummyv(nrtal+1), dummys(nlmpgs+1)
       real(dp) :: dummys(nlmpgs+1)
       real(dp), allocatable :: dummyw(:), helpw(:)
-      integer :: icomgrp(0:nstra)
-      integer :: ier1, ier, ir, npean, npeen, i, mpicw, ispc, my_pe_gr,
+      integer :: icomgrp(nstra)
+      integer :: ier1, ier, ir, i, ispc, my_pe_gr,
      .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm),lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
 c
-c  range of processors working on stratum ISTRA
-      npean = npesta(istra)
-      npeen = npesta(istra)+npestr(istra)-1
-c
-      call mpi_comm_group (mpi_comm_world,mpicw,ier)
 !pb  istra is a pointer, type check failure with Intel compiler under Windows
       istr = istra
       call mpi_comm_split (mpi_comm_world,istr,my_pe-npesta(istra),
      .                     icomgrp(istra),ier)
+      if (ier /= mpi_success) then
+        call eirene_masage
+     .  ('ERROR IN SUBROUTINE EIRENE_CALSTR at mpi_comm_split.')
+        call eirene_exit_own(1)
+      end if
 
 
       if( npestr(istra) > 1 .and. procforstra(istra,my_pe)) then
@@ -440,7 +437,6 @@ c  Strictly there should also be an analogue  call to eirene_calstr_cop.f
       endif
 
       call mpi_comm_free (icomgrp(istra),ier)
-      call mpi_group_free(mpicw,ier)
       call mpi_barrier(mpi_comm_world,ier)
 
       if (allocated(helpv)) deallocate (helpv)
