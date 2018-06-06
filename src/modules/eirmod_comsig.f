@@ -69,7 +69,7 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 
       TYPE TEMIS_MODEL
         CHARACTER(80) :: LINE_NAME
-        INTEGER :: NUM_COMPO, IADV_TOTAL
+        INTEGER :: NUM_COMPO, IADV_TOTAL, IROW_ESC, ICOL_ESC
         REAL(DP) :: EINSTEIN, TRANS_EN, ENERGY, POPESC
         TYPE(TCOMPO), ALLOCATABLE :: COMPO(:)
       END TYPE TEMIS_MODEL

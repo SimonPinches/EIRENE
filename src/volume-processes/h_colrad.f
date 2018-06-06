@@ -119,7 +119,7 @@ c
 c  only once and for all !!
 c
       lopaque=.false.
-      POP_ESC=1.
+!PB   POP_ESC=1.
 
       IF (IFRST == 0) THEN  ! must be redone, if lopaque or pop_esc change
 cdr  better: move lopaque, pop_esc outside this routine. And check always

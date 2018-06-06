@@ -128,6 +128,23 @@ c   LGVAC(...,0)     : background vacuum flag
           real(dp), intent(in) :: f(:)
           real(dp), intent(out) :: fcorner(:)
         end subroutine eirene_cell_to_corner
+
+        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POPESC)
+        USE EIRMOD_PRECISION
+        INTEGER,      INTENT(IN) :: IR, IZ1
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: POPESC       
+        CHARACTER(8), INTENT(IN) :: FILNAM
+        CHARACTER(4), INTENT(IN) :: H123
+        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+        CHARACTER(3), INTENT(IN) :: CRC
+        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                              RC2MIN, RC2MAX, FP2(6)
+        END SUBROUTINE EIRENE_SLREAC
       end interface
  
       FP1 = 0._DP

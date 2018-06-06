@@ -101,7 +101,8 @@ cdr  The extrapolation options are now made available generally, for all typs of
       END TYPE HYDKIN_DATA
 
       TYPE COLRAD_DATA
-        INTEGER :: IFLAV, IVARST
+        INTEGER :: IFLAV, IVARST, IROW_ESC, ICOL_ESC
+        REAL(DP) :: POP_ESC
       END TYPE COLRAD_DATA
  
       TYPE FIT_FORMS
@@ -129,9 +130,9 @@ c
  
       TYPE REACTION_INPUT_LINE
         INTEGER :: NO, MT, MP, IZ, JFEX1MN, JFEX1MX, NCONST,
-     .             JFEX2MN, JFEX2MX
+     .             JFEX2MN, JFEX2MX, IROW_ESC, ICOL_ESC
         REAL(DP) :: R1MN, R1MX, DPP, FP1(6), CONST(9),
-     .              R2MN, R2MX, FP2(6)
+     .              R2MN, R2MX, FP2(6), POPESC
         CHARACTER(8) :: FILE
         CHARACTER(50) :: REAC_STRING
         CHARACTER(4) :: H_SELECT
@@ -1235,6 +1236,9 @@ c  reaction threshold (if any)
           REACLINES(IL)%H_SELECT = REPEAT(' ',4)
           REACLINES(IL)%REACTYP = REPEAT(' ',3)
           REACLINES(IL)%ELEMENT = REPEAT(' ',2)
+          REACLINES(IL)%IROW_ESC = 0
+          REACLINES(IL)%ICOL_ESC = 0
+          REACLINES(IL)%POPESC = 1._DP
         END DO
  
         IRLINES = 0
@@ -1733,7 +1737,9 @@ c
      .                     RP%HYD%RPRT 
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          WRITE (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST
+          WRITE (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST,
+     .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
+          WRITE (13+IFOFF) RP%CRM%POP_ESC
         ELSE
 
         END IF
@@ -1855,7 +1861,9 @@ cdr options for extrapolation from data tables or from validity range of fits.
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
           IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
-          READ (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST
+          READ (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST,
+     .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
+          READ (13+IFOFF) RP%CRM%POP_ESC
         ELSE
 
         END IF
@@ -2114,8 +2122,11 @@ cdr options for extrapolation from data tables or from validity range of fits.
  
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          IHELP(1:2) = (/ RP%CRM%IFLAV, RP%CRM%IVARST /)
-          CALL FXDRINT (IUN,IHELP,2)
+          IHELP(1:4) = (/ RP%CRM%IFLAV, RP%CRM%IVARST,
+     .                    RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC /)
+          CALL FXDRINT (IUN,IHELP,4)
+          RHELP(1) = RP%CRM%POP_ESC
+          CALL FXDRDBL (IUN,RHELP,1)
  
         ELSE
 
@@ -2257,10 +2268,14 @@ cdr options for extrapolation from data tables or from validity range of fits.
  
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          CALL FXDRINT (IUN,IHELP,2)
+          CALL FXDRINT (IUN,IHELP,4)
           IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
           RP%CRM%IFLAV = IHELP(1)
           RP%CRM%IVARST = IHELP(2)
+          RP%CRM%IROW_ESC = IHELP(3)
+          RP%CRM%ICOL_ESC = IHELP(4) 
+          CALL FXDRDBL (IUN,RHELP,1)
+          RP%CRM%POP_ESC = RHELP(1)
  
         ELSE
 cdr  IFIT out of range

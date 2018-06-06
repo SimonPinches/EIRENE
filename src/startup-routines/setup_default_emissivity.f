@@ -72,7 +72,9 @@ c  transition enery
      .                        (1._dp/(2._DP*2._DP)-1._DP/(3._DP*3._DP))
 C  identifyer of Line:
       EMIS_LINES(1)%ENERGY = 1.8889_DP
-      EMIS_LINES(1)%POPESC = 0.0_DP
+      EMIS_LINES(1)%POPESC = 1.0_DP
+      EMIS_LINES(1)%IROW_ESC = 0
+      EMIS_LINES(1)%ICOL_ESC = 0
       EMIS_LINES(1)%IADV_TOTAL = NADVI + num_COMPO+1 
       
       ALLOCATE (EMIS_LINES(1)%COMPO(num_COMPO))
@@ -331,7 +333,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(2)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(4._DP*4._DP))
       EMIS_LINES(2)%ENERGY = 2.5500_DP
-      EMIS_LINES(1)%POPESC = 0.0_DP
+      EMIS_LINES(2)%POPESC = 1.0_DP
+      EMIS_LINES(2)%IROW_ESC = 0
+      EMIS_LINES(2)%ICOL_ESC = 0
       EMIS_LINES(2)%IADV_TOTAL = NADVI + num_COMPO+1 
       
       ALLOCATE (EMIS_LINES(2)%COMPO(num_COMPO))
@@ -581,7 +585,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(3)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(5._DP*5._DP))
       EMIS_LINES(3)%ENERGY = 2.8560_DP
-      EMIS_LINES(1)%POPESC = 0.0_DP
+      EMIS_LINES(3)%POPESC = 1.0_DP
+      EMIS_LINES(3)%IROW_ESC = 0
+      EMIS_LINES(3)%ICOL_ESC = 0
       EMIS_LINES(3)%IADV_TOTAL = NADVI + num_COMPO+1
       
       ALLOCATE (EMIS_LINES(3)%COMPO(num_COMPO))
@@ -832,7 +838,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(4)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(6._DP*6._DP))
       EMIS_LINES(4)%ENERGY = 3.0222_DP
-      EMIS_LINES(1)%POPESC = 0.0_DP
+      EMIS_LINES(4)%POPESC = 1.0_DP
+      EMIS_LINES(4)%IROW_ESC = 0
+      EMIS_LINES(4)%ICOL_ESC = 0
       EMIS_LINES(4)%IADV_TOTAL = NADVI + num_COMPO+1
       
       ALLOCATE (EMIS_LINES(4)%COMPO(num_COMPO))
@@ -1082,7 +1090,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(5)%TRANS_EN = RY * 
      .                        (1._dp/(1._DP*1._DP)-1._DP/(2._DP*2._DP))
       EMIS_LINES(5)%ENERGY = 10.2375_DP
-      EMIS_LINES(1)%POPESC = 0.0_DP
+      EMIS_LINES(5)%POPESC = 1.0_DP
+      EMIS_LINES(5)%IROW_ESC = 0
+      EMIS_LINES(5)%ICOL_ESC = 0
       EMIS_LINES(5)%IADV_TOTAL = NADVI + num_COMPO+1
       
       ALLOCATE (EMIS_LINES(5)%COMPO(num_COMPO))
@@ -1332,7 +1342,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(6)%TRANS_EN = RY * 
      .                        (1._dp/(1._DP*1._DP)-1._DP/(3._DP*3._DP))
       EMIS_LINES(6)%ENERGY = 12.089_DP
-      EMIS_LINES(1)%POPESC = 0.0_DP
+      EMIS_LINES(6)%POPESC = 1.0_DP
+      EMIS_LINES(6)%IROW_ESC = 0
+      EMIS_LINES(6)%ICOL_ESC = 0
       EMIS_LINES(6)%IADV_TOTAL = NADVI + num_COMPO+1
       
       ALLOCATE (EMIS_LINES(6)%COMPO(num_COMPO))

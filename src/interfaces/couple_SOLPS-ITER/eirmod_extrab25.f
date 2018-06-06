@@ -139,6 +139,26 @@
       !c     with the neutral densities, temperatures, and fluxes
       !c     (summed up for all strata)
       implicit none
+     
+      INTERFACE
+        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POPESC)
+        USE EIRMOD_PRECISION
+        INTEGER,      INTENT(IN) :: IR, IZ1
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: POPESC       
+        CHARACTER(8), INTENT(IN) :: FILNAM
+        CHARACTER(4), INTENT(IN) :: H123
+        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+        CHARACTER(3), INTENT(IN) :: CRC
+        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                              RC2MIN, RC2MAX, FP2(6)
+        END SUBROUTINE EIRENE_SLREAC
+      END INTERFACE
+
       real*8 :: dummy(0:ndxp,0:ndyp)
       !c*** label for fort.44 file
       integer, parameter  :: jvft44=20000727
@@ -178,10 +198,13 @@
       real*8 :: powalf,datm3,dpls3,dmol3,dion3,dnml3,sigadd
       real*8 :: da,dp,dm,di,dn,ratio2,ratio7
       integer :: istra_in,istra_save
-      real*8 :: rcmin,rcmax,fp(6),vl
-      integer :: jfexmn,jfexmx
+!pb      real*8 :: rcmin,rcmax,fp(6),vl
+!pb      integer :: jfexmn,jfexmx
+      real*8 :: rc1min,rc1max,fp1(6),rc2min,rc2max,fp2(6),vl
+      integer :: jfex1mn,jfex1mx,jfex2mn,jfex2mx
       real*8 :: value
-      external eirene_indmpi,eirene_neutr,eirene_slreac
+!pb   external eirene_indmpi,eirene_neutr,eirene_slreac
+      external eirene_indmpi,eirene_neutr
 
 !     !c======================================================================
       !c---------------------------------------------------------------------<
@@ -242,11 +265,16 @@
       if(lhalpha) then
           write(*,*) 'Using new SIGHA (941017)'
           IERROR=0
-          rcmin=-huge(1.d0)
-          rcmax= huge(1.d0)
-          jfexmn=0
-          jfexmx=0
-          fp=0.d0
+          rc1min=-huge(1.d0)
+          rc1max= huge(1.d0)
+          jfex1mn=0
+          jfex1mx=0
+          fp1=0.d0
+          rc2min=-huge(1.d0)
+          rc2max= huge(1.d0)
+          jfex2mn=0
+          jfex2mx=0
+          fp2=0.d0
           !C
           !C  READ REDUCED POPULATION COEFFICIENT FOR HYDR. ATOMS FROM FILE AMJUEL
           !C  AND PUT THEM FROM CREAC(..,..,IR) ONTO DA,DP,DM,DI, AND DN ARRAY
@@ -265,8 +293,11 @@
           !C  H(n=3)/H(n=1)
           REAC='2.1.5a   '
           IR=IR+1
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                    rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
           do J=1,9
             do I=1,9
               !DA31(J-1,I-1)=CREAC(J,I,NREACI+1)
@@ -276,8 +307,11 @@
           !C  H(n=3)/H+
           REAC='2.1.8a   '
           IR=IR+1
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                    rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
           do J=1,9
             do I=1,9
               !DP31(J-1,I-1)=CREAC(J,I,NREACI+1)
@@ -287,8 +321,11 @@
           !C  H(n=3)/H2(g)
           REAC='2.2.5a   '
           IR=IR+1
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                    rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
           do J=1,9
             do I=1,9
               !DM31(J-1,I-1)=CREAC(J,I,NREACI+1)
@@ -298,8 +335,11 @@
           !C  H(n=3)/H2+(g)
           REAC='2.2.14a  '
           IR=IR+1
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
           do J=1,9
             do I=1,9
               !DI31(J-1,I-1)=CREAC(J,I,NREACI+1)
@@ -309,8 +349,11 @@
           !C  H(n=3)/H-
           REAC='7.2a     '
           IR=IR+1
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
           do J=1,9
             do I=1,9
               !DN31(J-1,I-1)=CREAC(J,I,NREACI+1)
@@ -327,8 +370,11 @@
           REAC='7.0b    '
           CRC='OT '
           IR=IR+1
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
           do I=1,9
             !RHMH2(I-1)=CREAC(I,1,NREACI+1)
             RHMH2(I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(I,1)
@@ -343,8 +389,11 @@
           !C  2.0C INCLUDES ION CONVERION (CX) ON H2(V)
           !C  OLD VERSION (WITHOUT THIS CX) SHOULD BE RECOVERED BY
           !C  READING 2.0B INSTEAD, AND OMITTING THE H- CHANNEL 5.
+!pb       CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
+!pb  .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
           CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                        rcmin,rcmax,fp,jfexmn,jfexmx,'  ',0)
+     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
            do I=1,9
             do J=1,9
               !RH2PH2(I-1,J-1)=CREAC(I,J,NREACI+1)

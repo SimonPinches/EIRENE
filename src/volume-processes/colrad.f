@@ -42,9 +42,9 @@ cdr          default: optically thin: pop_esc=1
       real(dp), intent(in) :: p1, p2
       real(dp), intent(out) :: res
 
-      real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT
+      real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT, popesc
 ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing only
-      integer :: i
+      integer :: i, irow_esc, icol_esc, irc
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:), 
      .                               q_ext(:), pop_esc(:,:)
@@ -69,10 +69,49 @@ c      for the current run/iteration/time-cycle
           allocate(pop_ext(40))
           allocate(q_ext(40))      !   e.g. photo excitation rate for H*(n)
           allocate(pop_esc(40,40)) !   line population escape factor (default:==1)
+
+          POP_ESC =1.0_DP
+          do irc = 1, nreac
+            if (reacdat(irc)%lrtc) then  ! rate coeff 
+              if (reacdat(irc)%rtc%ifit == 5) then ! crm 
+                if (reacdat(irc)%rtc%crm%iflav == 1) then ! h-col
+                  irow_esc = reacdat(irc)%rtc%crm%irow_esc
+                  icol_esc = reacdat(irc)%rtc%crm%icol_esc
+                  if ((irow_esc > 0) .and. (icol_esc > 0)) then
+                    pop_esc(irow_esc,icol_esc) = 
+     .                      reacdat(irc)%rtc%crm%pop_esc
+                  end if
+                end if
+              end if
+            end if
+            if (reacdat(irc)%lrtcew) then ! energy rate coeff 
+              if (reacdat(irc)%rtcew%ifit == 5) then ! crm 
+                if (reacdat(irc)%rtcew%crm%iflav == 1) then ! h-col
+                  irow_esc = reacdat(irc)%rtcew%crm%irow_esc
+                  icol_esc = reacdat(irc)%rtcew%crm%icol_esc
+                  if ((irow_esc > 0) .and. (icol_esc > 0)) then
+                    pop_esc(irow_esc,icol_esc) = 
+     .                      reacdat(irc)%rtcew%crm%pop_esc
+                  end if
+                end if
+              end if
+            end if
+            if (reacdat(irc)%loth) then ! other rate coeff 
+              if (reacdat(irc)%oth%ifit == 5) then ! crm 
+                if (reacdat(irc)%oth%crm%iflav == 1) then ! h-col
+                  irow_esc = reacdat(irc)%oth%crm%irow_esc
+                  icol_esc = reacdat(irc)%oth%crm%icol_esc
+                  if ((irow_esc > 0) .and. (icol_esc > 0)) then
+                    pop_esc(irow_esc,icol_esc) = 
+     .                      reacdat(irc)%oth%crm%pop_esc
+                  end if
+                end if
+              end if
+            end if
+         end do
         end if
         Q_EXT = 0._DP
         L_EXT = .FALSE.
-        POP_ESC =1.0_DP
 
         if (.not.lvis_h(icell))  then
 ! cell number ICELL has not yet been visited so far in this run

@@ -1650,6 +1650,12 @@ cdr  internal CR Model
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%CRM%IVARST,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%IROW_ESC,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%ICOL_ESC,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%POP_ESC,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
 
 C.....................................................................
       ELSE

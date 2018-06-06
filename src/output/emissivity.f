@@ -64,7 +64,8 @@ cdr  may 18: some comments tried......NOT READY
         write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
 
-        einstein = emis_lines(i)%einstein
+!pb        einstein = emis_lines(i)%einstein
+        einstein = emis_lines(i)%einstein * emis_lines(i)%popesc
 C  ENERGY FACTOR FOR POWER LOSS (W)
         trans_en = emis_lines(i)%trans_en * elcha
 

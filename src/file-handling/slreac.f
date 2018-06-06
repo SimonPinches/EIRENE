@@ -29,7 +29,7 @@ C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                          ELNAME, IZ1)
+     .                          ELNAME, IZ1, IROW_ESC, ICOL_ESC, POPESC)
 c
 c  open data stream 29 and read atomic data set no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
@@ -183,6 +183,8 @@ C
       IMPLICIT NONE
 
       INTEGER,      INTENT(IN) :: IR, IZ1
+      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+      REAL(DP),     INTENT(IN), OPTIONAL :: POPESC
 
       CHARACTER(8), INTENT(IN) :: FILNAM
       CHARACTER(4), INTENT(IN) :: H123
@@ -550,7 +552,8 @@ C  H.12
 
 
       IF (INDEX(FILNAM,'CRM').NE.0) THEN
-        CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1)
+        CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1,
+     .                           IROW_ESC,ICOL_ESC,POPESC)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF

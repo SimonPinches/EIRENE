@@ -60,7 +60,7 @@ c  transformation of parameters p1 and p2:
      .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar           
+      integer :: ip1, ip2, iflavor, ivar          
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
