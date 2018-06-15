@@ -1236,7 +1236,7 @@ C
       NINITL = NINITL_SAVE
 C
       IF (NPRS > 1) THEN
-        call EIRENE_collect_coutau
+        IF (ANY(NPESTA /= 0 .AND. NLSRON)) CALL EIRENE_COLLECT_COUTAU
         IF (NPRNLI > 0) CALL EIRENE_COLLECT_CENSUS
       END IF
 
