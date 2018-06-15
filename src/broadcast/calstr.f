@@ -69,7 +69,7 @@ C> - tallies
 C Perform split only if there is in total more then one master process. 
 C Otherwise use mpi_comm_world as communicator to avoid unnecessary
 C split.
-      if ( all( npesta == 0 .or. nlsron == .false. ) ) then
+      if ( all( npesta == 0 .or. .not. nlsron ) ) then
         icomgrp(istra) = mpi_comm_world
         use_split = .FALSE.
       else
