@@ -3,6 +3,8 @@ image: debian
 before_script:
     # Install required programs
     - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd
+    # Bypass mpirun abort due to execution as root
+    - export MPIRUN_FLAGS='--allow-run-as-root'
 
 stages:
     - build:library
@@ -168,3 +170,138 @@ test_EMC3-EIRENE_He:
     dependencies:
     - build_EMC3-EIRENE
     - run_EMC3-EIRENE_He
+    
+run_EMC3-EIRENE_H_multiStrata:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrata/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrata/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H_multiStrata:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrata/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrata/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_H_multiStrata
+    
+run_EMC3-EIRENE_H_multiStrataMpi:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H_multiStrataMpi:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_H_multiStrataMpi
+    
+run_EMC3-EIRENE_H_multiStrataMpi2:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H_multiStrataMpi2:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_H_multiStrataMpi2
+    
+run_EMC3-EIRENE_H_multiStrataMpi3:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H_multiStrataMpi3:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_H_multiStrataMpi3
+
+run_EMC3-EIRENE_H_profile:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_profile/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_profile/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H_profile:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_profile/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H_profile/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_H_profile
