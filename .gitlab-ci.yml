@@ -7,6 +7,7 @@ before_script:
 stages:
     - build:library
     - build:executable
+    - run
     - test
 
 build_library:
@@ -33,6 +34,19 @@ build_standalone_1D_slab:
         paths:
         - EIRENE-sample-cases/1D-H_slab/
 
+run_standalone_1D-H_slab:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/1D-H_slab
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/1D-H_slab/
+        when: always
+    dependencies:
+    - build_standalone_1D_slab
+
 test_standalone_1D-H_slab:
     stage: test
     script:
@@ -44,7 +58,7 @@ test_standalone_1D-H_slab:
         - EIRENE-sample-cases/1D-H_slab/output/
         when: on_failure
     dependencies:
-    - build_standalone_1D_slab
+    - run_standalone_1D-H_slab
 
 build_standalone_1D_slab_with_farming:
     stage: build:executable
@@ -59,6 +73,21 @@ build_standalone_1D_slab_with_farming:
         paths:
         - EIRENE-sample-cases/1D-H_slab_with_farming/
 
+run_standalone_1D-H_slab_with_farming:
+    stage: run
+    only:
+        - PB/feature/farming
+    script:
+        - cd EIRENE-sample-cases/1D-H_slab_with_farming
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/1D-H_slab_with_farming/
+        when: always
+    dependencies:
+    - build_standalone_1D_slab_with_farming
+
 test_standalone_1D-H_slab_with_farming:
     stage: test
     only:
@@ -72,4 +101,69 @@ test_standalone_1D-H_slab_with_farming:
         - EIRENE-sample-cases/1D-H_slab_with_farming/output/
         when: on_failure
     dependencies:
-    - build_standalone_1D_slab_with_farming
+    - run_standalone_1D-H_slab_with_farming
+
+build_EMC3-EIRENE:
+    stage: build:executable
+    script:
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
+        - cd EIRENE-sample-cases/EMC3/
+        - make
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/
+
+run_EMC3-EIRENE_H:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/H/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_H
+
+run_EMC3-EIRENE_He:
+    stage: run
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/He/
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/He/
+        when: always
+    dependencies:
+    - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_He:
+    stage: test
+    script:
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/He/
+        - make test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - EIRENE-sample-cases/EMC3/W7X_Limiter/He/output/
+        when: on_failure
+    dependencies:
+    - build_EMC3-EIRENE
+    - run_EMC3-EIRENE_He
