@@ -222,7 +222,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI
+      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI, LRDMLTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
@@ -2236,16 +2236,21 @@ C  Ti profile(s)
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
+!pb   ion temperature for each bulk ion
+      NLMLTI = (NPLSTI > 1)
       MPLSTI=1
-!pb   IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
-      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
+      IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
+!pb      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
 
       INDPRO(2)=IABS(INDPRO(2))
-      NLMLTI= INDPRO(2) > 9
+!pb      NLMLTI= INDPRO(2) > 9
+!pb   read parameters TI0...TI5 for each temperature
+      LRDMLTI= INDPRO(2) > 9
       IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
 
       IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
-        IF (NLMLTI) THEN
+!pb        IF (NLMLTI) THEN
+        IF (LRDMLTI) THEN
           READ (IUNIN,6664) (TI0(I),TI1(I),TI2(I),TI3(I),TI4(I),TI5(I),
      .                       I=1,NPLSI)
         ELSE
