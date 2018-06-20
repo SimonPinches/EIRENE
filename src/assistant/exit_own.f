@@ -5,5 +5,8 @@ C
       INTEGER, INTENT(IN) :: ICC
 C  LEGAL ENDING OF  GR PLOTTING SOFTWARE      
       CALL EIRENE_PLEND
-      STOP ICC
+!pb compiler complains about ICC
+!pb no variables allowed, only character or integer constants
+!     STOP ICC
+      STOP 
       END SUBROUTINE EIRENE_EXIT_OWN
