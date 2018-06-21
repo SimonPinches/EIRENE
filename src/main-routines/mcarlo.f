@@ -558,6 +558,8 @@ C
           NLTOR=.FALSE.
         ENDIF
 C
+C Should not this go into EIRENE_CLEAN_STRATUM as it resets a quantity 
+C for this stratum?
         IPRNLS=0
 C
 C This will never happen as NLSRON status have not changed...
