@@ -125,7 +125,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         write (iunout,*) ' Number of PEs ',nprs
 
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
-        CALL EIRENE_ALLOC_COMPRT
+        CALL EIRENE_ALLOC_COMPRT(NPRS)
 cdr
 c  indicate: first entry to eirene has now been done. 
 c  calls to find_param, set_parmod(1),... have already been done above
@@ -161,7 +161,7 @@ cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_sav
           nlplas_save = nlplas
           CALL EIRENE_SET_PARMMOD(1)
           if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
-          CALL EIRENE_ALLOC_COMPRT
+          CALL EIRENE_ALLOC_COMPRT(NPRS)
           nlplas = nlplas_save
         END IF
 

@@ -637,6 +637,7 @@ cdr ....................................
       READ (ZEILE,*) NREACI
       NREAC = MAX(NREAC,NREACI)+NREAC_ADD
 C
+cdr  count the number of reaction cards read here.
       NREAC_LINES=0
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .NE. '*')
@@ -647,6 +648,7 @@ C
       ALLOCATE (PART_NAME(500))
       PART_NAME=REPEAT(' ',15)
 
+cdr  start reading species specification block 4a,4b,4c,4d
       WRITE (iunout,*)
      .  '*4A.   NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       READ (IUNIN,*) NATMI
@@ -659,6 +661,7 @@ C
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
+cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards
 cpb......................................
 cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
@@ -819,7 +822,7 @@ C
           READ (IUNIN,*)
           READ (IUNIN,*)
         END DO
-!pb     IF (VERIFY(ZEILE(57:66),' ') > 0) THEN
+
         IF (INMDL > 0) THEN
           NRE=0
           IF (VERIFY(ULINE(INMDL+11:),' ') > 0)
@@ -1047,7 +1050,7 @@ cdr  this must be highly case specfic. To be reconsidered !!
 
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
-        IF (INDSRC(ISTRA) == 6) CYCLE     
+        IF (INDSRC(ISTRA) == 6) CYCLE
 C * 7ABCD...: STRATUM NAME
         READ (IUNIN,'(A72)') ZEILE
         WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
@@ -1208,8 +1211,6 @@ c     to be written:  allow for comment lines here
 C  SEARCH START OF PLOTTING INPUT: NEXT LINE WITH F OR T
       READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
-!pb  LOOK FOR NEXT LINE OF LOGICAL INPUT VALUES DENOTING PLOTTING OPTIONS
-!pb      DO WHILE (SCAN(ZEILE,'*FT') == 0)
       DO WHILE ((SCAN(ZEILE,'FT') == 0) .OR. (ZEILE(1:1) == '*'))
         READ (IUNIN,'(A72)') ZEILE
         CALL EIRENE_UPPERCASE(ZEILE)
@@ -1249,6 +1250,8 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
           END DO
           READ (ZEILE,6666) NSP
           NPLT = MAX(NPLT, NSP)
+c
+
           READ (IUNIN,6665) PLTL2D,PLTL3D
           READ (IUNIN,*)
           IF (PLTL2D) THEN
@@ -1282,7 +1285,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-c  optional input cards: 'define_lines'
+c  optional input cards: 'DEFINE_LINES'
 
 c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
 c  parent state contributions
@@ -1290,6 +1293,8 @@ c  parent state contributions
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
+      NO_LINES = 0
+
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
 ! EMISSIVITY LINES DEFINED IN INPUT
         LINES = 0
@@ -1361,7 +1366,7 @@ C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION
 !pb     NREAC=NREAC+1
         NADV=NADV+10
  
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES 
+C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
         IF (.FALSE.) THEN
         ALLOCATE (ENERGY(2,NCHORI))
         ENERGY = 0._DP

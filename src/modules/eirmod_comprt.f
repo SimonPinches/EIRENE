@@ -118,7 +118,9 @@ c                       ! better: move iunin, iunout, etc.. to parmmod ??
       CONTAINS
  
  
-      SUBROUTINE EIRENE_ALLOC_COMPRT
+      SUBROUTINE EIRENE_ALLOC_COMPRT(NPRS)
+
+      INTEGER, INTENT(IN) :: NPRS
  
       IF (ALLOCATED(RPST)) RETURN
  
@@ -174,7 +176,7 @@ c  up to here: for census, mpartt
 c  up to here: for splitting, mpartc
       MSURFG => IPSTD(15)
  
-      CALL EIRENE_INIT_COMPRT
+      CALL EIRENE_INIT_COMPRT (NPRS)
  
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMPRT
@@ -197,9 +199,9 @@ c  up to here: for splitting, mpartc
       END SUBROUTINE EIRENE_DEALLOC_COMPRT
  
  
-      SUBROUTINE EIRENE_INIT_COMPRT
+      SUBROUTINE EIRENE_INIT_COMPRT (NPRS)
 
-      USE EIRMOD_CPES, ONLY: NPRS
+      INTEGER, INTENT(IN) :: NPRS
  
       RPST   = 0._DP
       IPSTD  = 0
