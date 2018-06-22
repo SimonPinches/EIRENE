@@ -288,12 +288,9 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
       XPT1=0.
       XFL1=0.
  
-c NSTEFF: number of strata active in this run, i.e. not counting
-c         de-activated strata with NPTS(ISTRA)=0.
-      nsteff=0 
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
-        if (npts(istra) .gt. 0) then
+        IF (NLSRON(ISTRA)) THEN
 CVKMPI          XPT1=XPT1+NPTS(ISTRA)
 CVKMPI          XFL1=XFL1+FLUX(ISTRA)
 CVKMPI          XTIM(ISTRA)=XTIM(0)+XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
@@ -302,11 +299,10 @@ CVKMPI     +                             (   ALLOC)*XFL1/(XFL+EPS60))
           XFL1=FLUX(ISTRA) !VKMPI
           XTIM(ISTRA)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
      +                     (   ALLOC)*XFL1/(XFL+EPS60)) !VKMPI
-          nsteff=nsteff+1
-        else
+        ELSE
 CVKMPI          xtim(istra)=xtim(istra-1)
           xtim(istra)=0.0 !VKMPI
-        end if
+        END IF
 8     CONTINUE
 
 C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE SWITCHED OFF (SHORT CYCLE)
@@ -433,7 +429,7 @@ C
       NPANU=0
       OVER_ACC=0.D0
       NEW_ITER=0
-      DO 1000 ISTR=1,NSTRAI
+      DO ISTR=1,NSTRAI
 
         timan=EIRENE_second_own()
 
@@ -474,9 +470,10 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
 
 
           CALL EIRENE_LEER(2)
-          IF (NPTS(ISTRA).GT.0) THEN
+          IF (NLSRON(ISTRA)) THEN
             WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
-          ELSEIF (NPTS(ISTRA).LE.0) THEN
+          ELSE
+C This if branch will never be reached as .NOT.NLSRON(ISTRA) gets cycled
             WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
           ENDIF
           CALL EIRENE_LEER(2)
@@ -561,14 +558,17 @@ C
           NLTOR=.FALSE.
         ENDIF
 C
+C Should not this go into EIRENE_CLEAN_STRATUM as it resets a quantity 
+C for this stratum?
         IPRNLS=0
 C
-        IF (NPTS(ISTRA).LE.0) GOTO 1000
+C This will never happen as NLSRON status have not changed...
+        IF (.NOT.NLSRON(ISTRA)) CYCLE
 C
 C  INITIALIZE SUBR. LOCATE
 C
         CALL EIRENE_LOCAT0
-        IF (NPTS(ISTRA).LE.0) GOTO 1000 ! LOCAT0 might also turn off a stratum        
+        IF (.NOT.NLSRON(ISTRA)) CYCLE ! LOCAT0 might also turn off a stratum        
 C
 C  LOCATE AND FOLLOW MC-PARTICLES
 C
@@ -601,7 +601,7 @@ csw
 
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 
-        DO 100 IPTSI=1,NPTS(ISTRA)/max(1,npestr(istra))
+        DO 100 IPTSI=1,NPTS(ISTRA)
 
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
 C
@@ -633,6 +633,8 @@ c  which is scored along a trajectory
           END IF
 C...........................................................................
 
+C LGSTOP is always equal LGLAST, see line 681
+C Should not this be (.NOT.LGLAST.AND.LGSTOP)?
           IF (LGLAST.AND.LGSTOP) THEN
             CALL EIRENE_LEER(1)
             WRITE (iunout,*)
@@ -902,11 +904,12 @@ c
 c    collect data for one stratum ISTRA from all pe's performing calculations
 c    for this stratum
 c
-cdr  more processors than active strata.
-cdr  june 17: ?? what if nprs < nsteff, and still one stratum
-cdr              has more than one processor assigned ??
-cdr              Is it excluded that one pe deals with more than one stratum?  
-       if (nprs.gt.nsteff) call EIRENE_calstr
+C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary 
+C MPI_BARRIER calls have been removed.
+       IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
+C
+C Should not the following be done only for process rank zero as it 
+C got collected from all other ranks already?
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
@@ -938,8 +941,6 @@ C
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-      if ((nsteff.ge.nprs).or. procforstra(istra,my_pe)) then
-
       IF(XMCP(ISTRA).LT.1.) GOTO 1111
 C
       WTT=0.
@@ -1226,9 +1227,8 @@ C
      .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA '
         WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
         CALL EIRENE_LEER(2)
-        endif  ! nprs > nsteff ...
-      end if  ! nprs < nsteff ... or  nprs > nstef ...
-1000  CONTINUE
+        END IF ! PROCFORSTRA(ISTRA,MY_PE)
+      END DO ! ISTR
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
@@ -1249,17 +1249,19 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THEN STRATA
       IF (NMODE.GT.0) THEN
-!pb  NOW IF3COP CALLED HERE IN CASE OF LESS PROCESSORS THAN STRATA AS WELL
-!pb  USE OF fort.10 IS REQUIRED 	
-!pb        IF (NPRS > NSTEFF) THEN
         IF (NPRS > 1) THEN
-          IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
-            WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
-     .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
-            WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
-     .                 'BE CALCULATED'
-            CALL EIRENE_EXIT_OWN(1)
-          END IF
+C This is very case specific and my be different for each plasma code.
+C Introducing another interfacing subroutine within the strata-loop 
+C solves this issue much more flexible.
+C This if block needs to go into the if3cop, if relevant for the 
+C plasma code.
+C         IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
+C           WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
+C    .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
+C           WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
+C    .                 'BE CALCULATED'
+C           CALL EIRENE_EXIT_OWN(1)
+C         END IF
 !pb ISTRA=NSTRAI FROM STRATA LOOP ABOVE
 !PB IESTR IS ALREADY SET IN STRATA LOOP
 !PB EACH PROCESSOR HAS SET ITS OWN STRATUM NO. 
@@ -1395,9 +1397,9 @@ C
 cdr spectrum tally variances are already in ESTIML   
      .                TRCFLE)
         ENDIF
-      ENDIF
+      ENDIF ! NSMSTRA == 1
 C
-      ENDIF
+      ENDIF ! MY_PE .EQ. 0 
 C
 2000  CONTINUE
 

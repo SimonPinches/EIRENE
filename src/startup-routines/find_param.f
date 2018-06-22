@@ -245,7 +245,7 @@ c  skip further comments in header
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
+      READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                  NTIME0,NTIME
 
       READ (IUNIN,'(A72)') ZEILE
@@ -1577,7 +1577,6 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,'(a14,i8)') 'NSTORAM     = ',NSTORAM
       WRITE (iunout,'(a14,i8)') 'NGSTAL      = ',NGSTAL
       WRITE (iunout,'(a14,i8)') 'NREAC_ADD   = ',NREAC_ADD
-      WRITE (iunout,'(a14,i8)') 'NRPES       = ',NRPES
 C
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF CENSUS STORAGE FOR T-DEP. MODE'

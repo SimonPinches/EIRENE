@@ -79,14 +79,15 @@ c
      .                     icomgrp(istra),ier)
 
 
-      if(      count( procforstra(istra,0:nprs-1) ) >1
-     .   .and.        procforstra(istra,my_pe)) then
+      if( npestr(istra) > 1 .and. procforstra(istra,my_pe)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
 
         call mpi_barrier(icomgrp(istra),ier)
 c
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
+C Would it make more sense to turn my_pe_gr into a logical?
+C Need to clarify what eirene_calstr_usr does with my_pe_gr.
 c   
         my_pe_gr = my_pe-npesta(istra)
 

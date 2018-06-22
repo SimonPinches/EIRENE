@@ -1,11 +1,26 @@
 cdr  Nov.17: comments started...
 !pb  060309  mpi_real8 --> mpi_double_precision
 
-
+C> \brief Gathers information from stratum masters to job master.
+C>
+C> This subroutine creates a MPI subgroup of all processes which are 
+C> master processes of a stratum.
+C> The subgroup is then used to gather information from all stratum 
+C> masters onto the process with rank 0 (scaling and I/O process). 
+C> Informations are gathered with an MPI_REDUCE MPI_SUM statement. 
+C> However, it always gathers only information that is 0 on all but one 
+C> statum master.
+C> The quantities gathered are: OUTAU (hiding many other arrays), 
+C> LOGMOL, LOGATM, LOGION, LOGPHOT, LOGPLS, and some more quantities 
+C> depending on whether sum-over-strata is active or other quantities 
+C> have been calculated. 
       subroutine eirene_collect_coutau
-cdr this routine......
-cdr .....
-c
+C
+C A call of this subroutine is only required if at all one stratum 
+C master is not at the same time process with rank 0. (i.e. in a simple
+C "embarrassingly" parallelisation concept not needed)
+C ANY( NPESTA > 0 .AND. MASK = NLSRON )
+C
 c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
 c
       USE EIRMOD_PRECISION
@@ -25,24 +40,16 @@ c
 
 !      include 'mpif.h'
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
-      integer :: ier, icolor, istr, icomgrp, ier1, i, my_pe_gr,
+      integer :: ier, icolor, icomgrp, ier1, i, 
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
-      if (nsteff < nprs) then
-! collect from group leader pe
-        icolor=MPI_UNDEFINED
-        do istr=1,nstrai
-          if (npts(istr) == 0) cycle
-          if (my_pe == npesta(istr)) then
-            icolor = 1
-            write (0,*) ' my_pe, istr ',my_pe, istr
-            exit
-          end if
-        end do
-      else
-! collect from all pes
+C When this process is a master processes of any strata.it gets colour 
+C "1".
+      if ( any( npesta == my_pe .and. nlsron ) ) then
         icolor = 1
+      else
+        icolor=MPI_UNDEFINED
       end if
 
       call mpi_barrier(mpi_comm_world,ier)
@@ -56,7 +63,6 @@ c
         mxdim = max(noutau,nidv,nids,3*nsigci,nsigvi,nsigsi)
         allocate (help(mxdim))
         
-        call mpi_comm_rank(mpi_comm_world,my_pe_gr,ier)
 
         CALL MPI_REDUCE(OUTAU,help,NOUTAU,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
