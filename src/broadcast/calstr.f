@@ -94,7 +94,7 @@ CDR  and my_pe is one of them
         call mpi_barrier(icomgrp(istra),ier)
 c
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
-C Would it make more sence to turn my_pe_gr into a logical?
+C Would it make more sense to turn my_pe_gr into a logical?
 C Need to clarify what eirene_calstr_usr does with my_pe_gr.
 c   
         my_pe_gr = my_pe-npesta(istra)

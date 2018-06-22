@@ -1,13 +1,13 @@
 cdr  Nov.17: comments started...
 !pb  060309  mpi_real8 --> mpi_double_precision
 
-C> \brief Gathers information from statrum masters to job master.
+C> \brief Gathers information from stratum masters to job master.
 C>
 C> This subroutine creates a MPI subgroup of all processes which are 
 C> master processes of a stratum.
-C> The subgroup is then used to gather information from all statrum 
-C> masters onto the process with rank 0 (scalling and I/O process). 
-C> Information are gathered with an MPI_REDUCE MPI_SUM statement. 
+C> The subgroup is then used to gather information from all stratum 
+C> masters onto the process with rank 0 (scaling and I/O process). 
+C> Informations are gathered with an MPI_REDUCE MPI_SUM statement. 
 C> However, it always gathers only information that is 0 on all but one 
 C> statum master.
 C> The quantities gathered are: OUTAU (hiding many other arrays), 
@@ -16,7 +16,7 @@ C> depending on whether sum-over-strata is active or other quantities
 C> have been calculated. 
       subroutine eirene_collect_coutau
 C
-C A call of this subroutine is only required if at all one statum 
+C A call of this subroutine is only required if at all one stratum 
 C master is not at the same time process with rank 0. (i.e. in a simple
 C "embarrassingly" parallelisation concept not needed)
 C ANY( NPESTA > 0 .AND. MASK = NLSRON )
@@ -43,7 +43,7 @@ c
       IMPLICIT NONE
 
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
-      integer :: ier, icolor, icomgrp, ier1, i, my_pe_gr,
+      integer :: ier, icolor, icomgrp, ier1, i, 
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
@@ -66,9 +66,6 @@ C "1".
         mxdim = max(noutau,nidv,nids,3*nsigci,nsigvi,nsigsi)
         allocate (help(mxdim))
         
-C What for? The result of my_pe_gr should be my_pe. Furthermore,
-C my_pe_gr is not used...
-        call mpi_comm_rank(mpi_comm_world,my_pe_gr,ier)
 
         CALL MPI_REDUCE(OUTAU,help,NOUTAU,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)

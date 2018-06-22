@@ -15,7 +15,7 @@ C> when applying stratification is also available.
 C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR) 
 C> can be used (NPRLL == -1).
 C>
-C> Within this subroutine three arrays are set that define the entrie 
+C> Within this subroutine three arrays are set that define the entire 
 C> parallelisation of EIRENE.
 C> - PROCFORSTRA(ISTRA,IPE):   if .TRUE.: process IPE works on stratum ISTRA
 C> - NPESTR(ISTRA): number of processes calculating stratum ISTRA
@@ -302,7 +302,7 @@ csw
         END DO
 
 C Rescaling of particles per stratum, to keep total particle number 
-C independent of parallelisation (strong scaling appraoch):
+C independent of parallelisation (strong scaling approach):
         NPTS = NPTS / NPESTR
 
       END IF  
