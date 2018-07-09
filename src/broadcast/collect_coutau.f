@@ -23,28 +23,31 @@ C ANY( NPESTA > 0 .AND. MASK = NLSRON )
 C
 c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
 c
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CPES
-      USE EIRMOD_COUTAU
-      USE EIRMOD_CSPEZ
-      use EIRMOD_CESTIM
-      use EIRMOD_COMUSR
-      use EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CGRID
-      USE EIRMOD_COMSOU
-      USE EIRMOD_CSDVI
-      USE EIRMOD_CSPEI
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: NADSPC, NLIMPS, NLMPGS, NRTAL, NSTRA, 
+     .                          NSMSTRA
+      USE EIRMOD_CPES, ONLY: NPESTA, MY_PE
+      USE EIRMOD_COUTAU, ONLY: NOUTAU, EIRENE_WRITE_COUTAU, 
+     .                         EIRENE_READ_COUTAU
+      USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
+      USE EIRMOD_CESTIM, ONLY: SMESTL
+      USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CGRID, ONLY: NSBOX_TAL
+      USE EIRMOD_COMSOU, ONLY: NLSRON
+      USE EIRMOD_CSDVI, ONLY: NSIGCI, NSIGVI, NSIGSI, NSIGI_SPC 
+      USE EIRMOD_CSPEI, ONLY: EE, EES, FF, FFS, NIDS, SMESTS, SMESTV, 
+     .                        STV, STVS, STVC, STVCS, STVW, STVWS, NIDV
       USE EIRMOD_MPI
+
       IMPLICIT NONE
 
-!      include 'mpif.h'
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
       integer :: ier, icolor, icomgrp, ier1, i, 
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
-C When this process is a master processes of any strata.it gets colour 
+C If this process is a master processes of any strata it gets colour 
 C "1".
       if ( any( npesta == my_pe .and. nlsron ) ) then
         icolor = 1
@@ -75,31 +78,31 @@ C "1".
 
         call mpi_reduce(LOGMOL,lhelp,(NMOLI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-     	if (my_pe == 0) 
+        if (my_pe == 0) 
      .    LOGMOL(0:nmoli,0:nstra) = 
      .      reshape(lhelp(1:(NMOLI+1)*(NSTRA+1)),(/nmoli+1,nstra+1/))
 
         call mpi_reduce(LOGATM,lhelp,(NATMI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-     	if (my_pe == 0) 
+        if (my_pe == 0) 
      .    LOGATM(0:natmi,0:nstra) = 
      .      reshape(lhelp(1:(NATMI+1)*(NSTRA+1)),(/natmi+1,nstra+1/))
 
         call mpi_reduce(LOGION,lhelp,(NIONI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-     	if (my_pe == 0) 
+        if (my_pe == 0) 
      .    LOGION(0:nioni,0:nstra) = 
      .      reshape(lhelp(1:(NIONI+1)*(NSTRA+1)),(/nIONi+1,nstra+1/))
 
         call mpi_reduce(LOGPHOT,lhelp,(NPHOTI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-     	if (my_pe == 0) 
+        if (my_pe == 0) 
      .    LOGPHOT(0:nphoti,0:nstra) = 
      .      reshape(lhelp(1:(NPHOTI+1)*(NSTRA+1)),(/nPHOTi+1,nstra+1/))
 
         call mpi_reduce(LOGPLS,lhelp,(NPLSI+1)*(NSTRA+1),
      .                  mpi_logical,mpi_LOR,0,icomgrp,ier)
-     	if (my_pe == 0) 
+        if (my_pe == 0) 
      .    LOGPLS(0:nplsi,0:nstra) = 
      .      reshape(lhelp(1:(NPLSI+1)*(NSTRA+1)),(/nPLSi+1,nstra+1/))
 
@@ -108,14 +111,14 @@ C "1".
         if (nsmstra > 0) then
 c  volume averaged output tallies
 
-	do ir = 1, nrtal
+        do ir = 1, nrtal
           CALL MPI_REDUCE(SMESTV(1:nidv,ir),help,NIDV,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTV(1:nidv,ir) = help(1:nidv)
         end do
 c  surface averaged output tallies
 
-	do ir = 1, nlmpgs
+        do ir = 1, nlmpgs
           CALL MPI_REDUCE(SMESTS(1:nids,ir),help,NIDS,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTS(1:nids,ir) = help(1:nids)
@@ -174,7 +177,7 @@ c  covariances, surface tallies
      .                    help,3*NSIGCI,
      .                    mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) STVCS(0:2,1:NSIGCI) = 
-     .	                  RESHAPE(help(1:3*nsigci),(/3,nsigci/))
+     .                    RESHAPE(help(1:3*nsigci),(/3,nsigci/))
         END IF
 
 c  variances of volumetric output tallies
@@ -211,7 +214,7 @@ c  variances of surface averaged output tallies
             CALL MPI_REDUCE(FF(1:NSIGSI,IR),help,NSIGSI,
      .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) FF(1:NSIGSI,IR) = help(1:nsigsi)
-     	  end do
+          end do
           CALL MPI_REDUCE(STVWS,help,NSIGSI,
      .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) STVWS(1:NSIGSI) = help(1:nsigsi)
@@ -232,3 +235,4 @@ c  variances of surface averaged output tallies
       
       return
       end subroutine eirene_collect_coutau
+
