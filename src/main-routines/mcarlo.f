@@ -280,6 +280,16 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
      .                     ' TURNED OFF, BECAUSE FLUX=0.0'
           CALL EIRENE_LEER(1)
         ENDIF
+        IF (SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA)).LE.0.D0) THEN
+          NPTS(ISTRA)=0
+          NLSRON(ISTRA)=.FALSE.
+          WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
+     .                     ' TURNED OFF, BECAUSE'
+          WRITE (iunout,*) 'THE SUM OF THE FLUXES'
+          WRITE (iunout,*) 'FROM THE SUBSTRATA DEFINED BY'
+          WRITE (iunout,*) 'SORWGT(SUBSTRATUM,STRATUM) IS .LE. ZERO'
+          CALL EIRENE_LEER(1)
+        ENDIF
         IF (NPTS(ISTRA).LE.0.OR.FLUX(ISTRA).LE.0.D0)
      .     NLSRON(ISTRA) = .FALSE.
         XPT=XPT+FLOAT(NPTS(ISTRA))
@@ -568,7 +578,6 @@ C
 C  INITIALIZE SUBR. LOCATE
 C
         CALL EIRENE_LOCAT0
-        IF (.NOT.NLSRON(ISTRA)) CYCLE ! LOCAT0 might also turn off a stratum        
 C
 C  LOCATE AND FOLLOW MC-PARTICLES
 C
