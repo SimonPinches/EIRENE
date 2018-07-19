@@ -1,5 +1,5 @@
 cdr Nov. 17  commenting started
-cdr July 18  remove nsteff, redundant, retain NSTPRE for diagnostics printout
+cdr July 18  remove nsteff, redundant
 
       MODULE EIRMOD_CPES
  
@@ -14,11 +14,8 @@ cdr July 18  remove nsteff, redundant, retain NSTPRE for diagnostics printout
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
 cdr  npesta(istra): master processor for ISTRA
 cdr  npestr(istra): total no. of processor working on ISTRA
-cdr  For diagnostics only:
-cdr  nstrpe(ipe)  : processor no. IPE works on stratum ISTRA=NSTRPE(IPE)
+     I         NPESTR(:), NPESTA(:)
 
-     I         NPESTR(:), NPESTA(:),
-     I         NSTRPE(:)
  
       INTEGER, PUBLIC, SAVE :: NPRS, MY_PE
  
@@ -37,12 +34,11 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       ALLOCATE (NPESTR(NSTRA))
       ALLOCATE (NPESTA(NSTRA))
-      ALLOCATE (NSTRPE(0:NPRS-1))
 
       ALLOCATE(PROCFORSTRA(NSTRA,0:NPRS-1))
  
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .      ' CPES ',(2*NSTRA+NPRS)*4 + NSTRA*NPRS*4
+     .      ' CPES ',(2*NSTRA)*4 + NSTRA*NPRS*4
  
       CALL EIRENE_INIT_CPES
  
@@ -56,7 +52,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       DEALLOCATE (NPESTR)
       DEALLOCATE (NPESTA)
-      DEALLOCATE (NSTRPE)
 
       DEALLOCATE(PROCFORSTRA)
  
@@ -68,7 +63,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
  
       NPESTR = 0
       NPESTA = 0
-      NSTRPE = 0
 
       PROCFORSTRA=.TRUE. !VK
  
