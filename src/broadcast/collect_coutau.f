@@ -7,7 +7,7 @@ C> This subroutine creates a MPI subgroup of all processes which are
 C> master processes of a stratum.
 C> The subgroup is then used to gather information from all stratum 
 C> masters onto the process with rank 0 (scaling and I/O process). 
-C> Informations are gathered with an MPI_REDUCE MPI_SUM statement. 
+C> Information is gathered with an MPI_REDUCE MPI_SUM statement. 
 C> However, it always gathers only information that is 0 on all but one 
 C> statum master.
 C> The quantities gathered are: OUTAU (hiding many other arrays), 
@@ -43,23 +43,22 @@ c
       IMPLICIT NONE
 
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
-      integer :: ier, icolor, icomgrp, ier1, i, 
+      integer :: ier, imaster, icomgrp, ier1, i, 
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
-C If this process is a master processes of any strata it gets colour 
-C "1".
+C When the current process is a master processes of any stratum it gets imaster= "1".
       if ( any( npesta == my_pe .and. nlsron ) ) then
-        icolor = 1
+            imaster = 1
       else
-        icolor=MPI_UNDEFINED
+        imaster=MPI_UNDEFINED
       end if
 
       call mpi_barrier(mpi_comm_world,ier)
 
       call mpi_comm_split (mpi_comm_world,icolor,my_pe,icomgrp,ier)
       
-      if (icolor == 1) then
+      if (imaster == 1) then
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
         
@@ -177,7 +176,7 @@ c  covariances, surface tallies
      .                    help,3*NSIGCI,
      .                    mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) STVCS(0:2,1:NSIGCI) = 
-     .                    RESHAPE(help(1:3*nsigci),(/3,nsigci/))
+     .	                  RESHAPE(help(1:3*nsigci),(/3,nsigci/))
         END IF
 
 c  variances of volumetric output tallies
@@ -226,10 +225,9 @@ c  variances of surface averaged output tallies
         
         deallocate (help)
 
-!csw 08jul2011 missing comm_free fixed (invalid comms from icolor/=1 are actually not allocated, is this conform to MPI standard?)
         call mpi_comm_free(icomgrp,ier)
 
-      end if ! icolor=1
+      end if ! imaster=1
       
       call mpi_barrier(mpi_comm_world,ier)
       

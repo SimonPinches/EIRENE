@@ -301,21 +301,16 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         IF (NLSRON(ISTRA)) THEN
-CVKMPI          XPT1=XPT1+NPTS(ISTRA)
-CVKMPI          XFL1=XFL1+FLUX(ISTRA)
-CVKMPI          XTIM(ISTRA)=XTIM(0)+XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
-CVKMPI     +                             (   ALLOC)*XFL1/(XFL+EPS60))
           XPT1=NPTS(ISTRA) !VKMPI
           XFL1=FLUX(ISTRA) !VKMPI
           XTIM(ISTRA)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
      +                     (   ALLOC)*XFL1/(XFL+EPS60)) !VKMPI
         ELSE
-CVKMPI          xtim(istra)=xtim(istra-1)
           xtim(istra)=0.0 !VKMPI
         END IF
 8     CONTINUE
 
-C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE SWITCHED OFF (SHORT CYCLE)
+C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE TEMPORARILY SWITCHED OFF (SHORT CYCLE)
 CVKMPI      DO ISTRA=1,NSTRAI
 CVKMPI        DXTIM(ISTRA)=XTIM(ISTRA)-XTIM(ISTRA-1)
 CVKMPI        IF (.NOT.NLSRON(ISTRA)) DXTIM(ISTRA)=0._DP
@@ -475,17 +470,17 @@ C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
 
-        IF (.NOT.NLSRON(ISTRA)) CYCLE
+        IF (.NOT.NLSRON(ISTRA)) THEN
+          CALL EIRENE_LEER(2)
+          WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED' 
+          CALL EIRENE_LEER(2)
+          CYCLE
+        ENDIF
+
         IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
 
-
           CALL EIRENE_LEER(2)
-          IF (NLSRON(ISTRA)) THEN
-            WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
-          ELSE
-C This if branch will never be reached as .NOT.NLSRON(ISTRA) gets cycled
-            WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
-          ENDIF
+          WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
           CALL EIRENE_LEER(2)
           XMCP(ISTRA)=0.
 c??
@@ -568,7 +563,7 @@ C
           NLTOR=.FALSE.
         ENDIF
 C
-C Should not this go into EIRENE_CLEAN_STRATUM as it resets a quantity 
+C Should this not go into EIRENE_CLEAR_STRATUM as it resets a quantity 
 C for this stratum?
         IPRNLS=0
 C

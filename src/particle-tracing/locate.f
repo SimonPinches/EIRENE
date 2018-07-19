@@ -197,6 +197,7 @@ C
 1     CONTINUE
 C
       SUMM = SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA))
+c  at this point: SUMM .gt.0 already verified in calling routine (NLSRON)
       SUM1=0.
       NLIMSQ=NSRFSI(ISTRA)
       DO 4 ISOUR=1,NSRFSI(ISTRA)
@@ -1146,8 +1147,6 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
             CALL EIRENE_REFANG(SORCOS(ISTRA),SORMAX(ISTRA),
      .                         SORCTX(ISTRA),SORCTY(ISTRA),
      .                         SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
-C           VEL_MEAN=VEL
-C           E0_MEAN=E0
 
           ELSEIF (EMAX.LE.0..AND..NOT.NLVOL(ISTRA)) THEN
 C
@@ -1169,10 +1168,7 @@ C  A NON-COSINE DISTRIBUTION IS REQUESTED
               CALL EIRENE_REFANG(SORCOS(ISTRA),SORMAX(ISTRA),
      .                           SORCTX(ISTRA),SORCTY(ISTRA),
      .                           SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
-C             VEL_MEAN=VEL
-C             E0_MEAN=E0
             ENDIF
-!pb          ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.NLVOL(ISTRA)) THEN
           ELSEIF (EMAX.LE.0..AND.NLVOL(ISTRA)) THEN
 C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
@@ -1187,9 +1183,8 @@ C
             DUMV(2)=0
             DUMV(3)=0
             CALL EIRENE_VELOCX(0,VXO,VYO,VZO,VO,IO,NO,VELQ,NFLAG,
-     .                  IDUM,DUMT,DUMV)
+     .                         IDUM,DUMT,DUMV)
             E0=VELQ*CVRSSM(IMOL)
-C           E0_MEAN=1.5*TIWD+0.
           ELSE
             GOTO 998
           ENDIF
@@ -1270,8 +1265,6 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
             CALL EIRENE_REFANG(SORCOS(ISTRA),SORMAX(ISTRA),
      .                         SORCTX(ISTRA),SORCTY(ISTRA),
      .                         SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
-C           VEL_MEAN=VEL
-C           E0_MEAN=E0
 
           ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.NLSRF(ISTRA)) THEN
 C
@@ -1308,7 +1301,7 @@ C
             DUMV(2)=0
             DUMV(3)=0
             CALL EIRENE_VELOCX(0,VXO,VYO,VZO,VO,IO,NO,VELQ,NFLAG,
-     .                  IDUM,DUMT,DUMV)
+     .                         IDUM,DUMT,DUMV)
             E0=VELQ*CVRSSI(IION)
           ELSE
             GOTO 998
@@ -1405,8 +1398,6 @@ C  TRUNCATED COSINE DISTRIBUTION ONTO WALL
               CALL EIRENE_REFANG(SORCOS(ISTRA),SORMAX(ISTRA),
      .                           SORCTX(ISTRA),SORCTY(ISTRA),
      .                           SORCTZ(ISTRA),NAMODS(ISTRA),SNORM)
-C             E0_MEAN=E0
-C             VEL_MEAN=VEL
             ELSEIF (EMAX.LE.0.D0.AND.TIWD.GT.0.D0) THEN
 C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX AND ACCELERATE IN SHEATH
               VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
@@ -1758,7 +1749,7 @@ c           DUMV(2)=0._DP
 c           DUMV(3)=0._DP
 
             CALL EIRENE_VELOCX(NCELL,VXO,VYO,VZO,VO,IO,NO,VELQ,NFLAG,
-     .                  IDUM,DUMT,DUMV)
+     .                         IDUM,DUMT,DUMV)
             E0=VELQ*CVRSSP(IPLS)
             LOGPLS(IPLS,ISTRA)=.TRUE.
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT

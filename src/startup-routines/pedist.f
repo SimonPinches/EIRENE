@@ -1,5 +1,8 @@
-!pb  18.12.06: COMPUTATION TIME PER PROCESSOR IS SET TO THE MAXIMUM TIME
-!pb            THAT IS AVAILABLE
+cdr  In NPRLL = 1 mode, it is currently ruled out that one processor deals
+cdr  with more than one stratum, except in the serial case (only one processor)
+cdr  To generalize this, some coding in MCARLO.f and perhaps elsewhere 
+cdr  may need to be adjusted...
+
 C
 C> \brief Allocation of MPI processes to strata
 C>
@@ -8,9 +11,10 @@ C> Allocation of CPU time to strata may be done according different
 C> criteria (load balancing, variance minimization via stratification, 
 C> ...). Two standard techniques are implemented in EIRENE and can be 
 C> controlled via the block 1 input parameter NPRLL.
-C> The default set-up is a simple "embarrassingly parallel" schema as 
+C> The default set-up is a simple "embarrassingly parallel" scheme as 
 C> typical for Monte Carlo codes. An more advanced method using a 
-C> proportional allocation (NPRLL == 1) to attempting load balancing 
+C> proportional allocation (NPRLL == 1) to attempt variance minimization 
+C> See EIRENE manual, "stratified source sampling". 
 C> when applying stratification is also available.
 C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR) 
 C> can be used (NPRLL == -1).
@@ -41,7 +45,7 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
 
       CONTAINS
 
-C> \brief "Embarrassingly parallel" schema.
+C> \brief "Embarrassingly parallel" scheme.
 C>
 C> Here, all strata are calculated by all processes. XTIM remains
 C> unchanged. 
@@ -65,7 +69,7 @@ C> unchanged.
       RETURN
       END SUBROUTINE EIRENE_PEDIST_EMBPARALL
 
-C> \brief Proportional allocation schema.
+C> \brief Proportional allocation scheme.
 C>
 C> Here, the aim is a "proportional allocation", see EIRENE manual, 
 C> "stratified source sampling". 
