@@ -49,7 +49,7 @@ c
 
 C When the current process is a master processes of any stratum it gets imaster= "1".
       if ( any( npesta == my_pe .and. nlsron ) ) then
-            imaster = 1
+        imaster = 1
       else
         imaster=MPI_UNDEFINED
       end if
@@ -176,7 +176,7 @@ c  covariances, surface tallies
      .                    help,3*NSIGCI,
      .                    mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) STVCS(0:2,1:NSIGCI) = 
-     .	                  RESHAPE(help(1:3*nsigci),(/3,nsigci/))
+     .                    RESHAPE(help(1:3*nsigci),(/3,nsigci/))
         END IF
 
 c  variances of volumetric output tallies
