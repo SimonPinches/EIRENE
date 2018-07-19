@@ -56,7 +56,7 @@ C When the current process is a master processes of any stratum it gets imaster=
 
       call mpi_barrier(mpi_comm_world,ier)
 
-      call mpi_comm_split (mpi_comm_world,icolor,my_pe,icomgrp,ier)
+      call mpi_comm_split (mpi_comm_world,imaster,my_pe,icomgrp,ier)
       
       if (imaster == 1) then
         ALLOCATE (OUTAU(NOUTAU))
