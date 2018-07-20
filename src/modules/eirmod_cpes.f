@@ -1,4 +1,5 @@
 cdr Nov. 17  commenting started
+cdr July 18  remove nsteff, redundant
 
       MODULE EIRMOD_CPES
  
@@ -14,7 +15,7 @@ cdr Nov. 17  commenting started
 cdr  npesta(istra): master processor for ISTRA
 cdr  npestr(istra): total no. of processor working on ISTRA
      I         NPESTR(:), NPESTA(:)
- 
+
       INTEGER, PUBLIC, SAVE :: NPRS, MY_PE
  
       LOGICAL, PUBLIC, SAVE :: NLIDENT

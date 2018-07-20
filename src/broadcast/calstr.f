@@ -66,7 +66,7 @@ C> - tallies
      .           lhelpp(0:npls), lhelpph(0:nphot), 
      .           use_split
 
-C Perform split only if there is in total more then one master process. 
+C Perform split only if there is in total more than one master process. 
 C Otherwise use mpi_comm_world as communicator to avoid unnecessary
 C split.
       if ( all( npesta == 0 .or. .not. nlsron ) ) then
@@ -86,7 +86,7 @@ C split.
       end if
 
 C This subroutine is only called if PROCFORSTR(ISTRA,MY_PE), check is duplication.
-C Could not check for NPESTR(ISTRA) > 1 be moved outside of this subroutine.
+C Could not check whether NPESTR(ISTRA) > 1 can be moved outside of this subroutine.
       if( npestr(istra) > 1 .and. procforstra(istra,my_pe)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
