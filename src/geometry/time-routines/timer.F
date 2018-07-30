@@ -1016,8 +1016,12 @@ C
       MRSURF=NRCELL
       PT=TIMINT(MRSURF)
       TIMINT(MRSURF)=0.
-      NIMINT = NIMINT+1
-      IIMINT(NIMINT) = MRSURF
+!pb   NIMINT = NIMINT+1
+!PB   IIMINT(NIMINT) = MRSURF
+      IF (IIMINT(NIMINT) == MRSURF) THEN
+        IIMINT(NIMINT) = 0
+        NIMINT = NIMINT - 1
+      END IF
       IPOLGN=NTIM(NRCELL)
       ISTS=ABS(INMTI(IPOLGN,NRCELL))
       IF (ISTS.EQ.0) THEN
@@ -1026,7 +1030,6 @@ c  on internal grid surface:  ISTS=0
       ELSEIF (ISTS.GT.0.AND.
      .        ISTS.LE.NLIM+NSTSI) THEN
 C  on non-default surface (add. or. std.): ISTS=INMTI(IPOLGN,NRCELL)
-!pb        IF (ILIIN(ISTS) == 0) THEN
         IF (ILIIN(ISTS) <= 0) THEN
           NINCX=NCHBAR(IPOLGN,NRCELL)-NRCELL
         ELSE

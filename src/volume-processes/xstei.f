@@ -27,7 +27,8 @@ cdr  Jan. 2014:
 cdr Aug.16  :   minor syncronisation with xstpi.f. 
 cdr Sept.16 :   Started to implement H.3 rate coeff. 
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
-cdr May 17  :   safety cut off for TEE at 0.1 eV, added in more cases
+cdr May 17  :   TABEI1: safety cut off for TEE at 0.1 eV, 
+cdr 	        (rather than the eirene default TVAC (=0.02 eV), added in more cases
 cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 !pb Juli 17 :   LHCOL removed
 
@@ -231,7 +232,7 @@ C     TO BE WRITTEN
 
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
 C  2.B) RATE COEFFICIENT(TE)  (FIXED, OR: LOW DENSITY (CORONA) RATE COEFF.
-C                              E0 FIXED (E.G. =0.0)
+C                              E0 FIXED (E.G. E0=0.0)
         IF (NSTORDR >= NRAD) THEN
 C  RATE:  (1/S) =
 C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
@@ -270,7 +271,7 @@ C  TO BE WRITTEN
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
-cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
+cdr  safety cut off at TE= 0.1 eV. (note: TVAC=0.02)
               TEE = max(-2.3_dp,TEE)
 c  evaluate 2 parametric fit, 
 c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
@@ -297,7 +298,7 @@ C  2.D) RATE COEFFICIENT(TE,NE)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
-cdr  safety cut off at Te= 0.1 eV. (TVAC=0.02)
+cdr  safety cut off at Te= 0.1 eV. (note: TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
 cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,PLS(J),.FALSE.,1)
@@ -308,7 +309,7 @@ cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. D
           END DO
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 9
-        ELSE
+        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           NREAEI(IREI) = KK
           JEREAEI(IREI) = 9
@@ -337,7 +338,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
                   EELEI1(IREI,J)=EELEC
 101             CONTINUE
                 NELREI(IREI)=-2
-              ELSE
+              ELSE ! NOT SUFFICIENT STORADE ON TABEI1
                 NELREI(IREI)=-2
                 EELEI1(IREI,1)=EELEC
               END IF
@@ -350,7 +351,7 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
                   EELEI1(IREI,J)=-1.5*TEIN(J)
 103             CONTINUE
                 NELREI(IREI)=-3
-              ELSE
+              ELSE ! NOT SUFFICIENT STORADE ON TABEI1
                 NELREI(IREI)=-3
               END IF
               MODCOL(1,4,IREI)=1
@@ -384,7 +385,7 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
                       EE = EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
-     .                                                PLS(J),.FALSE.,1)
+     .                                              PLS(J),.FALSE.,1)
                       EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
                       EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
                     END DO

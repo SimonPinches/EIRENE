@@ -222,7 +222,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI
+      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI, LRDMLTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
@@ -361,7 +361,7 @@ C
         CALL EIRENE_LEER(1)
         GOTO 109
       ELSE
-        READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
+        READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                    NTIME0,NTIME
       ENDIF
       CALL EIRENE_LEER(1)
@@ -383,7 +383,8 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND_PARAM
 !     NGSTAL = 0
 !
 !     NRTAL1 = 0     ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
-!     NREAC_ADD = 0  ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
+      NREAC_ADD = 0  ! NEEDED HERE FOR CORRECT PLACEMENT OF ADDITIONAL REACTION DATA
+                     ! READ IN BLOCK 12, USED FOR CALCULATION OF EMISSIVITY
 
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
@@ -455,19 +456,18 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE
      .  ('*** 1. DATA FOR OPERATING MODE                   ')
       CALL EIRENE_LEER(1)
-c     IF (NMACH.EQ.1) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON CRAY                      ')
-c     ELSEIF (NMACH.EQ.2) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON IBM                       ')
-c     ELSEIF (NMACH.EQ.3) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON FACOM                     ')
-c     ELSEIF (NMACH.EQ.4) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON VAX                       ')
-c     ENDIF
+      CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
+      SELECT CASE( NPRLL )
+        CASE( -1 )
+          CALL EIRENE_MASAGE('         USER DEFINED')
+C       CASE( 0 )
+C         Reserved for default, see below
+        CASE( 1 )
+          CALL EIRENE_MASAGE('         PROPORTIONAL ALLOCATION')
+        CASE DEFAULT
+          CALL EIRENE_MASAGE('         "EMBARRASSINGLY PARALLEL"')
+          NPRLL = 0
+      END SELECT
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE
@@ -849,11 +849,6 @@ C INPUT SUB-BLOCK 2C
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
-c     READ (IUNIN,'(A72)') ZEILE
-
-CDR SKIP READING COMMENT INPUT CARDS STARTING WITH *
-c     IF (ZEILE(1:1) .EQ. '*') GOTO 230
-c     IREAD=1
 
       READ (ZEILE,6665) NLTOR
       IREAD=0
@@ -871,9 +866,6 @@ C INPUT SUB-BLOCK 2D
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
-C240  READ (IUNIN,'(A72)') ZEILE
-C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
-C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1468,8 +1460,8 @@ C                     IS NOT USED IN CASE OF CONST - OPTION
             REAC2(1:9) = ZEILE(IEND+ITOK:IEND+ITOK+8)
 C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
             IEND = IEND+ITOK+2
-            CALL
-     .      EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
+            CALL EIRENE_READ_TOKEN
+     .           (ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
             IEND = IEND + ITOK
           END IF
         END IF
@@ -1543,7 +1535,8 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
-        IF (INDEX(ZEILE,'ADAS') .NE. 0) THEN
+        IF (INDEX(ZEILE,'ADAS') .NE. 0 .OR.
+     .      INDEX(ZEILE,'TAB2D') .NE. 0 ) THEN
           READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
           CALL EIRENE_LOWERCASE(ELNAME)
         ELSE
@@ -1673,7 +1666,7 @@ C
       DO 421 IATM=1,NATMI
         ISPZ=NSPH+IATM
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSA(IATM),NCHARA(IATM),
-     .                       NDUMM1,NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
+     .                       NDUMM1, NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
      .                       NRCA(IATM),NFOLA(IATM),NGENA(IATM),
      .                       NHSTS(ISPZ)
@@ -2115,10 +2108,13 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ISP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
+cdr only if needed: for additional A&M data structure on REACDAT
+cdr                 so far only for DENSITYMODELS:
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
+
           SELECT CASE (CDENMODEL(IPLS))
           CASE ('FORT.13   ')
             READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
@@ -2239,16 +2235,21 @@ C  Ti profile(s)
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
+!pb   ion temperature for each bulk ion
+      NLMLTI = (NPLSTI > 1)
       MPLSTI=1
-!pb   IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
-      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
+      IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
+!pb      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
 
       INDPRO(2)=IABS(INDPRO(2))
-      NLMLTI= INDPRO(2) > 9
+!pb      NLMLTI= INDPRO(2) > 9
+!pb   read parameters TI0...TI5 for each temperature
+      LRDMLTI= INDPRO(2) > 9
       IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
 
       IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
-        IF (NLMLTI) THEN
+!pb        IF (NLMLTI) THEN
+        IF (LRDMLTI) THEN
           READ (IUNIN,6664) (TI0(I),TI1(I),TI2(I),TI3(I),TI4(I),TI5(I),
      .                       I=1,NPLSI)
         ELSE
@@ -2345,7 +2346,8 @@ C  NOT READY
         WRITE (IUNOUT,*)
      .    'LHYDDEF IS TRUE: OPTION NOT READY, EXIT CALLED'
         CALL EIRENE_EXIT_OWN(1)
-        CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
+cdr  subr. EIRENE_SETUP_HYDKIN_REACTIONS moved to folder: unfinished_business
+cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       ENDIF
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699
@@ -2363,6 +2365,7 @@ C
       IF (ZEILE(1:1) .EQ. '*') GOTO 610
       READ (ZEILE,6665) NLTRIM
       IREAD=0
+      NFR = 0
       IF (NLTRIM) THEN
 
 c  read TRIM reflection datasets A_on_B
@@ -2401,7 +2404,7 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
           FILE(1:)=PATH(1:I2-1)
           WRITE (iunout,*) ' PATH = ',FILE(1:I2-1)
 C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
-          NFR=0
+C         NFR=0  !dr now already set above
           READ (IUNIN,'(A72)') ZEILE
 625       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             NFR=NFR+1
@@ -3166,7 +3169,7 @@ C    .      ... WRONG INPUT !
           END IF
 
           ESPEC => ESTIML(J)
-          
+
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3498,8 +3501,8 @@ C
       WRITE (iunout,*) '        NCHORI,NCHENI= ',NCHORI,NCHENI
       CALL EIRENE_LEER(1)
       IF (IABS(NCHENI).GT.NCHEN)
-     .    CALL
-     .  EIRENE_MASPRM('NCHEN',5,NCHEN,'IABS(NCHENI)',12,IABS(NCHENI),
+     .    CALL EIRENE_MASPRM
+     .         ('NCHEN',5,NCHEN,'IABS(NCHENI)',12,IABS(NCHENI),
      .                 IERROR)
       IF (NCHORI.LE.0) GOTO 1230
       CALL EIRENE_ALLOC_COMSIG
@@ -3511,6 +3514,7 @@ C
         READ (IUNIN,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
      .                    NSPBLC(ICHORI),NSPADD(ICHORI)
+        IREAD=0
         READ (IUNIN,6664) EMIN1(ICHORI),EMAX1(ICHORI),ESHIFT(ICHORI)
         READ (IUNIN,66664) IPIVOT(ICHORI),
      .                     XPIVOT(ICHORI),YPIVOT(ICHORI),ZPIVOT(ICHORI)

@@ -93,9 +93,6 @@ C
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
 
-      NRPES = NPRS
-      IF (NPRS == 1) NSTEFF=1
-
       CALL EIRENE_DEFAULTS_USR
 
 cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
@@ -103,7 +100,7 @@ c     IUNIN = 1
       IUNIN = IUNIN + IFOFF
 
       IUNOUT = 6
-      IF (NRPES > 1) IUNOUT = 7
+      IF (NPRS > 1) IUNOUT = 7
       IUNOUT = IUNOUT + IFOFF
 
 
@@ -126,14 +123,9 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         END IF
 
         write (iunout,*) ' Number of PEs ',nprs
-        if (nprs .gt. nrpes) then
-          write (iunout,*) ' Number of PE too large '
-          write (iunout,*) ' increase parameter NRPES = ',nrpes
-          call EIRENE_exit_own(1)
-        endif
 
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
-        CALL EIRENE_ALLOC_COMPRT
+        CALL EIRENE_ALLOC_COMPRT(NPRS)
 cdr
 c  indicate: first entry to eirene has now been done. 
 c  calls to find_param, set_parmod(1),... have already been done above
@@ -169,7 +161,7 @@ cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_sav
           nlplas_save = nlplas
           CALL EIRENE_SET_PARMMOD(1)
           if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
-          CALL EIRENE_ALLOC_COMPRT
+          CALL EIRENE_ALLOC_COMPRT(NPRS)
           nlplas = nlplas_save
         END IF
 
