@@ -2,7 +2,7 @@ cdr  aug. 17: added prspec, prargl;
 cdr           separate printout for energy (spectrally) resolved
 cdr           from spatially (along LOS) resolved data.
 cdr           Was so far all mixed with TRCSIG (for debugging printout)
-cdr  Jan. 2018  mod_addv added
+cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       MODULE EIRMOD_COMSIG
  
       USE EIRMOD_PRECISION
@@ -55,7 +55,7 @@ cdr  Jan. 2018  mod_addv added
         INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2), 
      .             IZ, IZ_RAT(2)
         CHARACTER(8) :: FNAME, FRATIO(2)
-        CHARACTER(4) :: H2, RAT_H2(2)
+        CHARACTER(4) :: H123, RAT_H123(2)
         CHARACTER(2) :: ELEMENT, RAT_ELEMENT(2)
         CHARACTER(9) :: REACTION, RAT_REACTION(2)
         CHARACTER(3) :: CR, RAT_CR(2)      
@@ -201,8 +201,8 @@ C
       CONA%IZ_RAT       = CONB%IZ_RAT 
       CONA%FNAME        = CONB%FNAME
       CONA%FRATIO       = CONB%FRATIO
-      CONA%H2           = CONB%H2
-      CONA%RAT_H2       = CONB%RAT_H2  
+      CONA%H123         = CONB%H123
+      CONA%RAT_H123     = CONB%RAT_H123
       CONA%REACTION     = CONB%REACTION
       CONA%RAT_REACTION = CONB%RAT_REACTION
       CONA%CR           = CONB%CR 

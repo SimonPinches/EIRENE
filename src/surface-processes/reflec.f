@@ -23,6 +23,12 @@ C  MAR 15:  remove Thompson distribution for thermal atom model:
 c           TWALL=0 now leads to error exit
 cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
 cdr Nov.17: lmetspw arguments corrected
+cdr Apr.18: cleaned up the use of RINTG,EINTG,AINTG  (for unit tests, reduced refl. models)
+cdr         vs. use of EXPP,EXPE,EXPI (for ilref=2 model, incident angle dependence).
+cdr         Maxwell's boundary conditions added via EINTG, AINTG flags.
+cdr         tbd:  the maxwellian evaporation flux part is repeated 4 times now.
+cdr         Maybe more of this in escape.f
+cdr         It should become an own subroutine.
 C
       SUBROUTINE EIRENE_REFLEC
 C
@@ -1111,7 +1117,7 @@ C  SUPRESSION OF ABSORPTION
 C
 C  REFLECT THERMAL ATOM
       IF (E0TERM.GT.0.D0) THEN
-C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE LIKE
+C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE
         E0=E0TERM
         VEL=RSQDVA(IATM)*SQRT(E0)
         F1=1.

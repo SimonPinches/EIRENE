@@ -1,3 +1,7 @@
+cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by FDPOT arrays,
+cdr           for potential energy difference in reactions.
+cdr           The old fluid limit critical Knudsen number is now defined
+cdr           via negative ngen..(..) flags
 cdr Apr. 18: further pointer, targets set for photons, towards code syncronisation
 cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
