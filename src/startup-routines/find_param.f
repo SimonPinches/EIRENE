@@ -53,8 +53,8 @@ C
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
-     .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
-     .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
+     .           NITER0, NTPER, NTTRA, NCOOR, NTET,
+     .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPII, NCOPIE, NREAC_ADD,
      .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
@@ -64,7 +64,9 @@ C
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
      .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
-     .           NO_CONTRIB, ISP, ITP, IRATIO
+     .           NO_CONTRIB, ISP, ITP, IRATIO,
+     .           I, J, K,
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
       REAL(DP), ALLOCATABLE :: ENERGY(:,:)
@@ -1242,7 +1244,12 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
         DO J=0, NSTRAI, 60
           READ (IUNIN,*)
         END DO
-        IF (LRPSCUT) READ (IUNIN,*)
+
+cdr wrong place for this card here
+        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps-cut option flags" would we
+                                    !dr read only below (3d plots and nlraps) then
+                                    !dr this exception would not be needed at all.
+
         DO J=1,NVOLPL
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1284,23 +1291,28 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+      IREAD=1
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
-c  parent state contributions
+c  read up to NUM_LINES transitions (volumetric line emissions), 
+c  Each LINE may consist of NUM_CONTRIB 
+c  for different parent (donor) state components.
+c  Identify the block of LINES and COMPONENTS available in this run 
+C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
-      NO_LINES = 0
+      NUM_LINES = 0
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
 ! EMISSIVITY LINES DEFINED IN INPUT
         LINES = 0
         NLEMIS = .TRUE.
-        READ (IUNIN,6666) NO_LINES, MOD_ADDV
-        DO I=1, NO_LINES
+c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
+        READ (IUNIN,6666) NUM_LINES, MOD_ADDV
+        DO I=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
@@ -1346,12 +1358,13 @@ c  parent state contributions
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
 
+cdr this next condition for old default: better also check for nchtal=2 ??
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
-      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
-! USE DEFAULT LINES FOR EMISSIVITY
+      IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
+! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
         MOD_ADDV = 0
-        NADV=NADV+10
-        NO_LINES = 6
+        NADV=NADV +7
+        NUM_LINES = 6
         NO_COMPO = 6
 ! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
         NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
@@ -1359,8 +1372,7 @@ c  parent state contributions
             
       END IF
 
-
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
+C  PROVIDE STORAGE ON REACDAT, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
 !pb     NREAC=NREAC+1

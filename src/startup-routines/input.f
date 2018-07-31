@@ -216,8 +216,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA, ISTR
-
+     .           NB,NS,NA, ISTR, IDMDL
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
@@ -459,13 +458,13 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
       SELECT CASE( NPRLL )
         CASE( -1 )
-          CALL EIRENE_MASAGE('         USER DEFINED')
+          CALL EIRENE_MASAGE('       MPI USER DEFINED')
 C       CASE( 0 )
 C         Reserved for default, see below
         CASE( 1 )
-          CALL EIRENE_MASAGE('         PROPORTIONAL ALLOCATION')
+          CALL EIRENE_MASAGE('       MPI PROPORTIONAL ALLOCATION')
         CASE DEFAULT
-          CALL EIRENE_MASAGE('         "EMBARRASSINGLY PARALLEL"')
+          CALL EIRENE_MASAGE('       MPI "EMBARRASSINGLY PARALLEL"')
           NPRLL = 0
       END SELECT
       CALL EIRENE_LEER(1)
@@ -1715,7 +1714,8 @@ C  DEFAULTS FOR ATOMIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKA(IATM,K) /= 0)
           READ (IUNIN,6664) EELECA(IATM,K),EBULKA(IATM,K),
      .                      ESCD1A(IATM,K),ESCD2A,
-     .                      FREACA(IATM,K),FLDLMA(IATM,K)
+     .                      FREACA(IATM,K),FDPOTA(IATM,K)
+cdr  .                      FLDLMA(IATM,K)  removed, now controlled by negative ngena
           ESCD1A(IATM,K) = ESCD1A(IATM,K)+ESCD2A
           NSC = 0
           IF (ISCD3A(IATM,K) > 0) NSC = 3
@@ -1807,7 +1807,9 @@ C
           END IF
           LMULTI = LMULTI .OR. (IBGKM(IMOL,K) /= 0)
           READ (IUNIN,6664) EELECM(IMOL,K),EBULKM(IMOL,K),
-     .                      ESCD1M(IMOL,K),ESCD2M,FREACM(IMOL,K)
+     .                      ESCD1M(IMOL,K),ESCD2M,
+     .                      FREACM(IMOL,K),FDPOTM(IMOL,K)
+cdr  for backward compatibility:  formerly: two KER values, now one total is used.
           ESCD1M(IMOL,K) = ESCD1M(IMOL,K)+ESCD2M
           NSC = 0
           IF (ISCD3M(IMOL,K) > 0) NSC = 3
@@ -1889,7 +1891,8 @@ C
           END IF
           LMULTI = LMULTI .OR. (IBGKI(IION,K) /= 0)
           READ (IUNIN,6664) EELECI(IION,K),EBULKI(IION,K),
-     .                      ESCD1I(IION,K),ESCD2I,FREACI(IION,K)
+     .                      ESCD1I(IION,K),ESCD2I,
+     .                      FREACI(IION,K),FDPOTI(IION,K)
           ESCD1I(IION,K) = ESCD1I(IION,K)+ESCD2I
           NSC = 0
           IF (ISCD3I(IION,K) > 0) NSC = 3
@@ -1982,7 +1985,8 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKPH(IPHOT,K) /= 0)
           READ (IUNIN,6664) EELECPH(IPHOT,K),EBULKPH(IPHOT,K),
      .                      ESCD1PH(IPHOT,K),ESCD2PH,
-     .                      FREACPH(IPHOT,K),FLDLMPH(IPHOT,K)
+     .                      FREACPH(IPHOT,K),FDPOTPH(IPHOT,K)
+cdr  .                      FLDLMPH(IPHOT,K)  removed. now controlled by negative ngenph
           ESCD1PH(IPHOT,K) = ESCD1PH(IPHOT,K)+ESCD2PH
           NSC = 0
           IF (ISCD3PH(IPHOT,K) > 0) NSC = 3
@@ -2031,6 +2035,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
+      IDMDL = 0  ! count additional reaction cards needed for "density models".
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2073,7 +2078,8 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
             WRITE (iunout,*) ' ISCDEP = ',ISCDEP(IPLS,K)
           END IF
           READ (IUNIN,6664) EELECP(IPLS,K),EBULKP(IPLS,K),
-     .                      ESCD1P(IPLS,K),ESCD2P,FREACP(IPLS,K)
+     .                      ESCD1P(IPLS,K),ESCD2P,
+     .                      FREACP(IPLS,K),FDPOTP(IPLS,K)
           ESCD1P(IPLS,K) = ESCD1P(IPLS,K)+ESCD2P
 c
 cdr  deal with non-default number of secondaries, NSC > 2
@@ -2149,6 +2155,7 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%G_BOLTZ,
      .           TDMPAR(IPLS)%TDM%DELTAE
           CASE ('CORONA    ')
+            IDMDL = IDMDL + 1  !  ONE MORE H.2 REACTION data set
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(IPLS)%TDM%ISP(1),
      .           TDMPAR(IPLS)%TDM%ITP(1),
@@ -2166,6 +2173,7 @@ c  default: only for bulk ions
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD    ')
+            IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
             DO I=1, TDMPAR(IPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
      .             TDMPAR(IPLS)%TDM%ISP(I),

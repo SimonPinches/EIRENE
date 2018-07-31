@@ -1,5 +1,7 @@
       MODULE EIRMOD_CREF
 cdr  june 17: remove parameter NFLR. Redundant. Was same as NHD6
+cdr  may 18 : perhaps unnecessary hard coding of dimensions in some arrays,
+cdr           rather than using parameters NHD1,...NHD5 ??
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -69,7 +71,8 @@ C  storage for TRIM database reflection model
       ALLOCATE (HFTR2(NHD1,NHD2,NHD3,NHD4,NHD6))
       ALLOCATE (HFTR3(NHD1,NHD2,NHD3,NHD4,NHD5,NHD6))
  
-C  storage for semianalytic reflection model ("Behrisch-Matrix") 
+C  storage for general reflection model (both: "Behrisch-Matrix" and database models)
+C  generalized to become surface specific (allows for different values per surface)
       ALLOCATE (RINTEG(0:NLIMPS))
       ALLOCATE (EINTEG(0:NLIMPS))
       ALLOCATE (AINTEG(0:NLIMPS))
@@ -82,10 +85,11 @@ C  storage for semianalytic reflection model ("Behrisch-Matrix")
       RPROB0    => RCREF(1)
       ERMIN     => RCREF(2)
       ERCUT     => RCREF(3)
-
-      ENAR      => RCREF(4:15)
-      DENAR     => RCREF(16:26)
-      WIAR      => RCREF(27:33)
+cdr these next arrays contain hard coded assumptions on parameters NHDI.
+cdr Why can we not use NHDI directly?
+      ENAR      => RCREF(4:15)  ! here for NHD1=12.
+      DENAR     => RCREF(16:26)  ! here for NHD1=12
+      WIAR      => RCREF(27:33)  ! here for NHD2=7.
       DWIAR     => RCREF(34:39)
       RAAR      => RCREF(40:44)
       DRAAR     => RCREF(45:48)
@@ -95,6 +99,7 @@ C  storage for semianalytic reflection model ("Behrisch-Matrix")
       WM        => RCREF(49+2*NHD6 : 48+3*NHD6)
       WC        => RCREF(49+3*NHD6 : 48+4*NHD6)
       ERDC      => RCREF(49+4*NHD6 : 48+5*NHD6)
+
       HFTR3F    => RCREF(49+5*NHD6 : 48+5*NHD6+NHD5)
  
       INE  => ICREF(1)
