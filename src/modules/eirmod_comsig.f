@@ -145,9 +145,9 @@ cdr  Jan. 2018  mod_addv added
 
       DEALLOCATE (CH_LINE_NAME)
 
-      IF (ALLOCATED(EMIS_LINES) .AND. (NO_LINES > 0)) THEN
+      IF (ALLOCATED(EMIS_LINES) .AND. (NUM_LINES > 0)) THEN
 
-         DO I = 1, NO_LINES
+         DO I = 1, NUM_LINES
 
            IF (EMIS_LINES(I)%NO_COMPO > 0) THEN
 
