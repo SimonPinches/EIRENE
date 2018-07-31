@@ -38,6 +38,9 @@ c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
 c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR) 
+cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
+cdr            nhcol_store
+cdr            m_hcol(nreac)
 
       SUBROUTINE EIRENE_BROADCAST
 cdr 
@@ -67,6 +70,7 @@ cdr
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
+      USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMSPL
@@ -228,19 +232,44 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
 
       CALL MPI_BCAST (LLOGAU,NLOGAU,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BCAST (DTIMV,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (DTIMVI,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (DTIMVN,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TIME0,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RPART,NPRNL*NPARTT,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RPARTC,NPRNL*NPARTT,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RPARTW,NPRNL+1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPRNLI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPRNLI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPRNLS,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPRNL ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPTST ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NTMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ITMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPART,NPRNL*MPARTT,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPARTC,NPRNL*MPARTT,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPRNLS,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       IF (ALLOCATED(RCMSIG)) THEN
         CALL MPI_BCAST (RCMSIG,NCMSIG,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (FUFFER,NCHOR*NCHEN,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ENERGY,NCHEN,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ICMSIG,MCMSIG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (NLSTCHR,NCHOR,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
+     .                   0,MPI_COMM_WORLD,ier)
       END IF
       CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cdr  additional output tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-      IF (num_LINES > 0) THEN
+      IF (NUM_LINES > 0) THEN
         CALL EIRENE_BROAD_EMIS_LINES
       END IF
 
@@ -726,6 +755,11 @@ c  data for photon line transport
       CALL MPI_BCAST (IBGKPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
+      CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
 
       CALL MPI_BCAST (NADDI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1645,13 +1679,13 @@ cdr     INVALID RP%IFIT
 
 !     IF (MY_PE /= 0) THEN
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
-          ALLOCATE (EMIS_LINES(num_LINES))
+          ALLOCATE (EMIS_LINES(NUM_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
           EMIS_LINES%NUM_COMPO = 0         
         END IF
 !     END IF
 
-      DO I = 1, num_LINES
+      DO I = 1, NUM_LINES
 
         CALL MPI_BCAST (EMIS_LINES(I)%LINE_NAME,80,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)

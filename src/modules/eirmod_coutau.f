@@ -47,7 +47,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
  
-! SURFACE TALLIES
+! INTEGRALS OF SURFACE TALLIES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
      R PRFPAI(:,:),
@@ -67,7 +67,8 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R ERFPII(:,:),
      R EOTPHTI(:,:), ERFAPHTI(:,:), ERFMPHTI(:,:), ERFIPHTI(:,:),
      R ERFPHPHTI(:,:), ERFPPHTI(:,:),
-     R EOTPLI(:,:),
+     R EOTPLI(:,:)
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:), 
      R SPTPATI(:,:),
      R SPTAMLI(:,:), SPTMMLI(:,:), SPTIMLI(:,:), SPTPHMLI(:,:), 
