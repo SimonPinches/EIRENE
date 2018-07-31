@@ -33,7 +33,7 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
-     .                      XSTORV2(NSTORV,N2ND+N3RD), WV
+     .                        XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
 
       REAL(DP) :: P, WTRSIG, EION, V0_PARB, PARMOM_0, DIST, WTR
