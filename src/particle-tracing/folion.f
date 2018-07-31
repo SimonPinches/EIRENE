@@ -754,9 +754,9 @@ ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 
-!PB       IF (.NOT.LGVAC(NCELL,IPL))
-!PB  .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
-          IF (.NOT.LGVAC(NCELL,IPL)) THEN
+C  Coulomb collisions frequencies. 
+C  Exclude vacuum region and virtual neutral background species
+          IF (.NOT.LGVAC(NCELL,IPL) .AND. NCHRGP(IPL).GT.0) THEN
             FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
             FNUI=FNUI+FNUIAR(IPL)
           END IF
