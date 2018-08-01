@@ -419,8 +419,8 @@ C
 csw 19mar2013 moved to here after call to pedist (xmct/xmcp)
 cdr  presumably because pedist uses xmct,xmcp from previous cycle with
 cdr  external code.
-cdr  In dedist we currently hope that COUTAU has not been deallocated
-cdr  after previous cycle.
+cdr  In pedist.f we currently hope that COUTAU has not been deallocated
+cdr  between the present and the previous cycle.
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
 !pb      CALL EIRENE_INIT_COUTAU(NLSRON)
 
