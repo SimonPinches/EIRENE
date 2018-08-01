@@ -1,3 +1,5 @@
+cdr aug. 18   bug fix: remove virtual neutral background species
+cdr           from coulomb collision frequency evaluation 
 cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
 cdr           scoring distance clpd (full gyro motion distance)
 cdr           clpd  is switched back and forth. Needs clean up.

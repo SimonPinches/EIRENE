@@ -1,6 +1,9 @@
 c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
+cdr aug 18 :  xmct removed from read/write ft11, but still in coutau.
+cdr           perhaps to be simplified: move xmct into storage for
+cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
  
       USE EIRMOD_PRECISION
@@ -371,6 +374,7 @@ cdr  etote still missing ??
       ALLOCATE (NFSTWI(NTALS))
       ALLOCATE (NFSTPI(NTALI))
  
+cdr  coutau still contains xmct, but NOUTAU does not. 
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' COUTAU ',(NOUTAU+NSTRAP)*8 + NOUTTL*4
  
@@ -852,10 +856,10 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         FISCL(ISTRA)  = 0._DP
         FPHSCL(ISTRA)  = 0._DP
  
-!pb      IF (IFRST == 0) THEN
-        XMCP(ISTRA)   = 0._DP
-        XMCT(ISTRA)   = 0._DP
-!pb      END IF
+!pb     IF (IFRST == 0) THEN
+          XMCP(ISTRA)   = 0._DP
+          XMCT(ISTRA)   = 0._DP
+!pb     END IF
  
       END DO
       IFRST = 1

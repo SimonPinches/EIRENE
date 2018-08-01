@@ -388,15 +388,15 @@ C  LAST CALL TO INTERFACING ROUTINE (GLOBAL BALANCES, ETC)
 C
       IF (NMODE.GT.0) CALL EIRENE_IF4COP
 C
-!dr   IF (NFILEN.EQ.2.OR.NFILEN.EQ.7) RETURN
 C
 C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS
 C  FOR NEXT RUN  AND WRITE THEM ON FT 14
 C
       IF (NFILEK.EQ.1.OR.NFILEK.EQ.3) THEN
+c  this should not be done in a "read run" (NFILEN=2 or =7)
 c   achtung !!!!!!!!!!!!!
-c   fuer parallele version noch nicht richtig
-c   noch mal ganz scharf nachdenken !!!!!!!!
+c   not ready for parallel mode
+c
         CALL EIRENE_WRREC
       ENDIF
 
