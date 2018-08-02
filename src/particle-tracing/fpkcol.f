@@ -59,6 +59,13 @@ C
  
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
+cdr  old code was:
+c    .            D_VELPAR(1:NPLSI),
+c    .            D_VELPER(1:NPLSI),
+c    .            D_E0NEW_tmp(1:NPLSI)
+cdr: I beliefe this is now wrong  (old code correct ?) 
+cdr  argument IPL in these arrays is in the range 1:NPLS, 
+cdr  because LGIEL(..,..1) is.
      .            D_VELPAR(1:NIELI(IION)),
      .            D_VELPER(1:NIELI(IION)),
      .            D_E0NEW_tmp(1:NIELI(IION))

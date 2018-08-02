@@ -34,8 +34,8 @@ c  njump=3, for internal grid surface und timusr. reset time=0
 c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
 cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
 cdr           also: manual. to be done: remove static loop from folneut and folion.
-c  nov. 2015:  fnui collision frequency: retain individual frequencies, for
-c              all background species: fnuiar(ipls)
+c   Nov. 15:  fnui collision frequency: retain individual frequencies, for
+c             all background species: fnuiar(ipls)
 
 
 C  .......................................................................................
@@ -157,7 +157,6 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
       LCART=.TRUE.
 
 100   LGPART=.TRUE.
-
 c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
       IF (.NOT.LCART) GOTO 9921
       IC_ION=IC_ION+1
@@ -182,8 +181,7 @@ C
 c  find direction parallel and perpendicular to B-field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
 c  parallel and perpendicular unit velocity componentes VELPAR
-c  find B-field in cell ncell
-c  FHa: WHERE DOES VELS COME FROM???
+c  find B-field in cell NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
 1003  CONTINUE
@@ -226,14 +224,14 @@ c  VL_PAR: parallel unit speed vector, VL_PAR = SIG*B
 c  VL_PAR = (/ VLXPAR, VLYPAR, VLZPAR /)
 
 c  set ion energy = parallel energy of the ionized test particle
-c  FHa WHY?
+c  
       E0PAR=CVRSSI(IION)*VELPAR*VELPAR
-
+C
 1004  CONTINUE
 
 c  follow motion of test ion or "static approximation"?
       IF (NFOLI(IION).EQ.-1.AND.IFPATH.EQ.1) GOTO 1001 ! go to static loop
-
+C
 C  the particle may be sitting exactly on a surface (nlsrf...=.true.).
 C
 C  this part is special for ions: due to projection of velocity
@@ -704,6 +702,8 @@ C     LATER: VELPAR --> VEL_GC
           ISRFCL=2
         ENDIF
       ENDIF
+C
+C FNUI: collision frequency with background ions.
 
 C  get new TF and data for the FP collision carried out in fpkcol
       CALL EIRENE_PREPARE_FPKCOL(TF)
@@ -751,7 +751,7 @@ c  switch to gc velocity
         IF (NLRAD) THEN
           CALL EIRENE_TIMER(TS)
           IF (.NOT.LGPART) GOTO 9911
-
+C
           IF (TL.LT.TS.OR.TT.LT.TS.OR.TF.LT.TS) THEN
             MRSURF=0
             IPOLGN=0
@@ -769,8 +769,7 @@ c  collision with time surface
               TT=ZT+ZDT1
               ZTST=TT
               ISRFCL=2
-
-c  Fokker Planck collision
+c  Fokker-Planck collision
             ELSEIF (TF.LT.TL.AND.TF.LE.TT) THEN
               ZDT1=TF-ZT
               TF=ZT+ZDT1
@@ -785,25 +784,25 @@ c  collision with radial surface
             ZTST=TS
           ENDIF
         ENDIF
-
+C
         NCOU=1
         NUPC(1)=0
         CLPD(1)=ZDT1
         NCOUNT(1)=1
         NCOUNP(1)=1
-
+C
         IF (NLTOR.OR.NLTRA) THEN
           CALL EIRENE_TIMET (ZDT1)
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
-
+C
         IF (NLPOL) THEN
           CALL EIRENE_TIMEP(ZDT1)
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
-
+C
         IF (ZDT1.LE.0.D0) GOTO 990
 
 c  switch to full velocity but gc velocity is not saved
@@ -865,7 +864,7 @@ c switch to parallel gc velocity
 C  UPDATE INTEGRAL
           ZINT1=ZINT1+CLPD(J)*ZMFPI
 C         IF (.NOT.NLPR) THEN
-C           IF (ZINT1.GE.ZLOG) THEN
+CCC         IF (ZINT1.GE.ZLOG) THEN
               IF (NLPOL) NPCELL=NCOUNP(J)
               IF (NLTOR) NTCELL=NCOUNT(J)
 
@@ -884,7 +883,7 @@ C           ZT=ZT+CLPD(J)
 C         ELSEIF (JCOL.EQ.0) THEN
 C   CONDITIONAL EXPECTATION ESTIMATOR FOR TEST IONS: TO BE WRITTEN
 C         ENDIF
-
+C
 212     CONTINUE
         VELX=VELXS
         VELY=VELYS
@@ -892,7 +891,7 @@ C         ENDIF
         VEL =VELS
         LCART=.TRUE.
       ENDIF
-
+C
 213   CONTINUE
       NCOUS=NCOU
       NCOU=JJ
@@ -908,10 +907,10 @@ CCC  IF NO COLLISION, THEN: ENFORCE ONLY ONE STEP AT A TIME
         NINCY=0
         NINCZ=0
       ENDIF
-
-
+CCC
+C
 C  CHECK FOR EVENT
-
+C
 C     IF (NLPR)    ......
       IF (ZINT1.GE.ZLOG) GO TO 220
 C
@@ -1312,8 +1311,8 @@ C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
 C STORE NEW FULL VELOCITY
         VELS = VEL
         CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
-C!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
-C!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
+!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
+!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
 
         ICO = 0
         GOTO 1004
@@ -1402,7 +1401,8 @@ c
 !pb       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,2)
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-C  DOES THE PARTICLE SPEED UNIT VECTOR POINT TOWARDS THE SURFACE ?
+C  DOES THE PARTICLE SPEED UNIT VECTOR NOW POINT TOWARDS THE SURFACE ?
+          IF (.NOT.LGPART) EXIT  ! DON'T CARE ABOUT GYRO MOTION, ABSORBED PARTICLE ANYWAY
           IF (COSIN.GT.0.) EXIT
 C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1
@@ -1492,6 +1492,7 @@ C
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       ZT=0.
       GOTO 9951
+
 9921  CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
@@ -1565,7 +1566,7 @@ c  written for fnueqi without that factor.
       END FUNCTION FNUEQI
 
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
-C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS
+C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
 C  this corresponds to the formula (11.102) of the EIRENE manual,
 C  Version 11/2009
 
@@ -1631,6 +1632,10 @@ C     extended model where the trace ion velocity changes in agreement with the
 C     change of the expectation values (next step after the minimal collision model
 C     where only the energy is relaxed)
 
+cdr Aug 18:  presumably: 
+cdr return dvelprl_dt(ipls) and dvelperb_dt(ipls), for use in fpkcol, 
+cdr as well as TF  (time step for next PF collision)
+
       implicit none
 
       integer :: IPL, IPLTI, IDSC
@@ -1684,8 +1689,14 @@ C     where only the energy is relaxed)
         IPL = LGIEL(IION,IDSC,1)
         IPLTI = MPLSTI(IPL)
 
+cdr:  here we should also exclude neutral background particles from virtual
+cdr   BGK species. Otherwise we carry out false coulomb collisions with them as well
+CDR     IF (NCHRGP(IPL).LT.1) CYCLE
+
 ! check that density and temperatures are set properly
         IF ((LGVAC(NCELL,IPL)).OR.(TIIN(IPLTI,NCELL).LT.TVAC)) THEN
+
+
           CYCLE
         ELSE
           DItmp = DIIN(IPL,NCELL)
@@ -1706,9 +1717,26 @@ c  get the parallel part of the background velocity, cm/s
         END IF
 
         ub = CVELAA*sqrt(TItmp/RMASSP(IPL))
+
+cdr  strickly: here we should move the entire test particle velocity vector
+cdr  into the plasma frame of IPL (not just the parallel component
+cdr  of the plasma flow)
+cdr  not just the parallel component. 
         DVelPrl = SIGPAR*VELPAR - VelPrlBG
+
+cdr  here we confuse the parallel (to B) velocites with the
+cdr  parallel to initial v_rel_test velocity.
+cdr  All in all this collision term is only correct for a 1D problem,
+cdr  in which both the test particle velocity and the plasma flow
+cdr  are in the same direction.
+
+
         ChiPrl  = DVelPrl/ub
         ChiPerp = VELPER/ub
+cdr in what follows: chiprl and chiperp are used as if these
+cdr are the par and perp velocities relative to the initial test particle velocities.
+cdr  
+
         Chi = sqrt(ChiPerp**2 + ChiPrl**2)
         ExpChi2 = exp(-Chi**2)
         Lambda = DItmp*NCHRGI(IION)**2*NCHRGP(IPL)**2/RMASSP(IPL)**2*
