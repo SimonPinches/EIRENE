@@ -604,7 +604,7 @@ C             MSURFG= ??
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
-              IF (ILIIN(ISTS) .NE. 0)
+              IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             end select
           ELSEIF (NLSRFY) THEN
@@ -1133,7 +1133,7 @@ C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
+          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
       end select
