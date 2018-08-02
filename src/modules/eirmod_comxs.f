@@ -1,4 +1,4 @@
-cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by FDPOT arrays,
+cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by EDPOT arrays,
 cdr           for potential energy difference in reactions.
 cdr           The old fluid limit critical Knudsen number is now defined
 cdr           via negative ngen..(..) flags
@@ -266,7 +266,7 @@ c  ...and cumulated distributions thereof, for species sampling
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DELPOT(:),   FACREA(:,:),
      R FREACA(:,:), FREACM(:,:), FREACI(:,:), FREACP(:,:), FREACPH(:,:),
-     R FDPOTA(:,:), FDPOTM(:,:), FDPOTI(:,:), FDPOTP(:,:), FDPOTPH(:,:),
+     R EDPOTA(:,:), EDPOTM(:,:), EDPOTI(:,:), EDPOTP(:,:), EDPOTPH(:,:),
      R EELECA(:,:), EELECM(:,:), EELECI(:,:), EELECP(:,:), EELECPH(:,:),
      R EBULKA(:,:), EBULKM(:,:), EBULKI(:,:), EBULKP(:,:), EBULKPH(:,:),
      R ESCD1A(:,:), ESCD1M(:,:), ESCD1I(:,:), ESCD1P(:,:), ESCD1PH(:,:)
@@ -405,14 +405,14 @@ cdr new:  potential difference in a particular reaction.
 cdr       allows to derive radiation loss from
 cdr                electron energy loss      PELEC (=eelec)
 cdr                                            KER (=escd1)
-cdr                                            POT (=fdpot)
+cdr                                            POT (=edpot)
 cdr      PRAD= PELEC-KER-POT
 cdr
-        ALLOCATE (FDPOTA(NATM,NREAC))
-        ALLOCATE (FDPOTM(NMOL,NREAC))
-        ALLOCATE (FDPOTI(NION,NREAC))
-        ALLOCATE (FDPOTP(NPLS,NREAC))
-        ALLOCATE (FDPOTPH(NPHOT,NREAC))
+        ALLOCATE (EDPOTA(NATM,NREAC))
+        ALLOCATE (EDPOTM(NMOL,NREAC))
+        ALLOCATE (EDPOTI(NION,NREAC))
+        ALLOCATE (EDPOTP(NPLS,NREAC))
+        ALLOCATE (EDPOTPH(NPHOT,NREAC))
 
         ALLOCATE (EELECA(NATM,NREAC))
         ALLOCATE (EELECM(NMOL,NREAC))
@@ -932,11 +932,11 @@ c
       DEALLOCATE (FREACPH)
 
 
-      DEALLOCATE (FDPOTA)
-      DEALLOCATE (FDPOTM)
-      DEALLOCATE (FDPOTI)
-      DEALLOCATE (FDPOTP)
-      DEALLOCATE (FDPOTPH)
+      DEALLOCATE (EDPOTA)
+      DEALLOCATE (EDPOTM)
+      DEALLOCATE (EDPOTI)
+      DEALLOCATE (EDPOTP)
+      DEALLOCATE (EDPOTPH)
 
       DEALLOCATE (EELECA)
       DEALLOCATE (EELECM)
@@ -1087,11 +1087,11 @@ cdr  ical=2:  ??
         FREACP  = 0._DP
         FREACPH = 0._DP
 
-        FDPOTA  = 0._DP
-        FDPOTM  = 0._DP
-        FDPOTI  = 0._DP
-        FDPOTP  = 0._DP
-        FDPOTPH = 0._DP
+        EDPOTA  = 0._DP
+        EDPOTM  = 0._DP
+        EDPOTI  = 0._DP
+        EDPOTP  = 0._DP
+        EDPOTPH = 0._DP
 
         EELECA  = 0._DP
         EELECM  = 0._DP
@@ -1638,7 +1638,7 @@ c
       WRITE (13+IFOFF)
      . DELPOT, FACREA,
      . FREACA, FREACM, FREACI, FREACP, FREACPH,
-     . FDPOTA, FDPOTM, FDPOTI, FDPOTP, FDPOTPH,
+     . EDPOTA, EDPOTM, EDPOTI, EDPOTP, EDPOTPH,
      . EELECA, EELECM, EELECI, EELECP, EELECPH,
      . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
@@ -1746,7 +1746,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
       READ (13+IFOFF)
      . DELPOT, FACREA,
      . FREACA, FREACM, FREACI, FREACP, FREACPH,
-     . FDPOTA, FDPOTM, FDPOTI, FDPOTP, FDPOTPH,
+     . EDPOTA, EDPOTM, EDPOTI, EDPOTP, EDPOTPH,
      . EELECA, EELECM, EELECI, EELECP, EELECPH,
      . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
@@ -1876,11 +1876,11 @@ cdr options for extrapolation from data tables or from validity range of fits.
       CALL FXDRDBL (IUN,FREACP,NPLS*NREAC)
       CALL FXDRDBL (IUN,FREACPH,NPHOT*NREAC)
 
-      CALL FXDRDBL (IUN,FDPOTA,NATM*NREAC)
-      CALL FXDRDBL (IUN,FDPOTM,NMOL*NREAC)
-      CALL FXDRDBL (IUN,FDPOTI,NION*NREAC)
-      CALL FXDRDBL (IUN,FDPOTP,NPLS*NREAC)
-      CALL FXDRDBL (IUN,FDPOTPH,NPHOT*NREAC)
+      CALL FXDRDBL (IUN,EDPOTA,NATM*NREAC)
+      CALL FXDRDBL (IUN,EDPOTM,NMOL*NREAC)
+      CALL FXDRDBL (IUN,EDPOTI,NION*NREAC)
+      CALL FXDRDBL (IUN,EDPOTP,NPLS*NREAC)
+      CALL FXDRDBL (IUN,EDPOTPH,NPHOT*NREAC)
 
       CALL FXDRDBL (IUN,EELECA,NATM*NREAC)
       CALL FXDRDBL (IUN,EELECM,NMOL*NREAC)

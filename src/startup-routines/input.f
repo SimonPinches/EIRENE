@@ -1717,7 +1717,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKA(IATM,K) /= 0)
           READ (IUNIN,6664) EELECA(IATM,K),EBULKA(IATM,K),
      .                      ESCD1A(IATM,K),ESCD2A,
-     .                      FREACA(IATM,K),FDPOTA(IATM,K)
+     .                      FREACA(IATM,K),EDPOTA(IATM,K)
 cdr  .                      FLDLMA(IATM,K)  removed, now controlled by negative ngena
           ESCD1A(IATM,K) = ESCD1A(IATM,K)+ESCD2A
           NSC = 0
@@ -1811,7 +1811,7 @@ C
           LMULTI = LMULTI .OR. (IBGKM(IMOL,K) /= 0)
           READ (IUNIN,6664) EELECM(IMOL,K),EBULKM(IMOL,K),
      .                      ESCD1M(IMOL,K),ESCD2M,
-     .                      FREACM(IMOL,K),FDPOTM(IMOL,K)
+     .                      FREACM(IMOL,K),EDPOTM(IMOL,K)
 cdr  for backward compatibility:  formerly: two KER values, now one total is used.
           ESCD1M(IMOL,K) = ESCD1M(IMOL,K)+ESCD2M
           NSC = 0
@@ -1895,7 +1895,7 @@ C
           LMULTI = LMULTI .OR. (IBGKI(IION,K) /= 0)
           READ (IUNIN,6664) EELECI(IION,K),EBULKI(IION,K),
      .                      ESCD1I(IION,K),ESCD2I,
-     .                      FREACI(IION,K),FDPOTI(IION,K)
+     .                      FREACI(IION,K),EDPOTI(IION,K)
           ESCD1I(IION,K) = ESCD1I(IION,K)+ESCD2I
           NSC = 0
           IF (ISCD3I(IION,K) > 0) NSC = 3
@@ -1988,7 +1988,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKPH(IPHOT,K) /= 0)
           READ (IUNIN,6664) EELECPH(IPHOT,K),EBULKPH(IPHOT,K),
      .                      ESCD1PH(IPHOT,K),ESCD2PH,
-     .                      FREACPH(IPHOT,K),FDPOTPH(IPHOT,K)
+     .                      FREACPH(IPHOT,K),EDPOTPH(IPHOT,K)
 cdr  .                      FLDLMPH(IPHOT,K)  removed. now controlled by negative ngenph
           ESCD1PH(IPHOT,K) = ESCD1PH(IPHOT,K)+ESCD2PH
           NSC = 0
@@ -2082,7 +2082,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
           END IF
           READ (IUNIN,6664) EELECP(IPLS,K),EBULKP(IPLS,K),
      .                      ESCD1P(IPLS,K),ESCD2P,
-     .                      FREACP(IPLS,K),FDPOTP(IPLS,K)
+     .                      FREACP(IPLS,K),EDPOTP(IPLS,K)
           ESCD1P(IPLS,K) = ESCD1P(IPLS,K)+ESCD2P
 c
 cdr  deal with non-default number of secondaries, NSC > 2
