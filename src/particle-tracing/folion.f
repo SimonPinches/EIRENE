@@ -756,7 +756,8 @@ ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 
-C  Coulomb collisions frequencies. 
+C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
+C  Set Coulomb collisions (energy relaxation) frequencies. 
 C  Exclude vacuum region and virtual neutral background species
           IF (.NOT.LGVAC(NCELL,IPL) .AND. NCHRGP(IPL).GT.0) THEN
             FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
