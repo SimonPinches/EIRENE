@@ -301,7 +301,7 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
 70          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
-            EHVEI1(IREI,1:NSBOX)=6.
+            EHVEI1(IREI,1:NSBOX)=6.0
 C           EPOTEI(IREI)=4.5   !  default for EDPOTM for this dissoc. reaction)
             NREAEI(IREI)=-5
             JEREAEI(IREI)=1
@@ -417,6 +417,7 @@ C
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
 C           EPOTEI(IREI)=15.45   !  default for EDPOTM for this ionis. reaction)
+C           EHVEI1(IREI,1:NSBOX)=0.0
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
@@ -424,12 +425,12 @@ C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
           ELSE  ! storage save mode
             EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
+C           EHVEI1(IREI,1)= 0.0 SET IN ....? 
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
             JEREAEI(IREI) = 1
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7: 
 
           END IF
-c         EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
 C

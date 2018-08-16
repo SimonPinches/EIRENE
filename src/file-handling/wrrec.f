@@ -3,9 +3,9 @@ C
 C
 C  EVALUATE EIRENE RECOMMENDATIONS FOR A NEXT RUN OF THE SAME MODEL
 C 
-C   find NRECOM(istra):  recommended number of test partiles for next MC cycle.
+C   find NRECOM(istra):  recommended number of test particles for next MC cycle.
 c   find RATIO(istra) :  ratio between used and recommended no. of particles.
-c   (the procedure should approach ratio approx 1.0, after cycling. 
+c   (the procedure should approach RATIO approx 1.0, after cycling. 
 c
 c   write NRECOM and RATIO on stream 14.
 c
@@ -16,8 +16,8 @@ C
 cmr: Aug.18:
 C XMCT need to be used or stored here, somehow, somewhere...
 C not stored in FT 11 any more.
-cdr:  Aug 18:  xmct is not used here at all. CPUFAC just somehow
-cdr            infered.
+cdr:  Aug 18:  xmct is not used here at all. Instead CPUFAC is just somehow
+cdr            infered by other considerations.
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
