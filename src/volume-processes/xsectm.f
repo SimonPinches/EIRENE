@@ -368,6 +368,7 @@ c   Accumulate totals....
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 71          CONTINUE
             EELEI1(IREI,1:NSBOX)=-25.0
+C           EPOTEI(IREI)=15.00   !  default for EDPOTM for this diss ionis. reaction)
 C  TRANSFERRED KINETIC ENERGY: 10 EV
             EHVEI1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
