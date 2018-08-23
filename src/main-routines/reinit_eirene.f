@@ -14,7 +14,7 @@ C      REAL(DP) :: H1RN_REINIT
  
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
-      call EIRENE_SIGHA_REINIT
+      call EIRENE_SIGLINE_REINIT
  
       dummy = ranf_eirene_reinit()
       idummy = ranset_eirene_reinit()

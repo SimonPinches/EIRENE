@@ -10,9 +10,12 @@ c            not only for new stratum, but also when
 c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
 cdr Jan 18:  parameter ICHORI added
+c   june 18: renamed from sigha (hydrogen only) to sigline (generalized,
+c            any transition line)
 c            
 C
-      SUBROUTINE EIRENE_SIGHA(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST,ICHORI)
+      SUBROUTINE EIRENE_SIGLINE(INIT,JJJ,ZDS,PEN,PSIG,
+     .                          DUMMY2,ARGST,ICHORI)
 CDR  this routine evaluates ("side on") emissivities of certain transition lines,
 cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
 cdr  line of side (ARGST).
@@ -37,6 +40,7 @@ c    4) coupling to H2+
 c    5) coupling to H-
 c    6) coupling to H3+
 c    0) total, sum over these 6 components.
+c
 c    for each of this components there may be several contributions,
 c    e.g. component 1) may have contributions from H, D and T atoms.
 c
@@ -79,7 +83,7 @@ C
 C
       SAVE
 C
-c     WRITE (IUNOUT,*) 'SIGHA,INIT,PEN,ISTRA ',
+c     WRITE (IUNOUT,*) 'SIGLINE,INIT,PEN,ISTRA ',
 c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
 
       LARGST = SIZE(ARGST,2) >= NSBOX
@@ -133,7 +137,7 @@ C
  
 C     Following lines added for reinitialisation of eirene (DMH)
  
-      ENTRY EIRENE_SIGHA_REINIT
+      ENTRY EIRENE_SIGLINE_REINIT
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP

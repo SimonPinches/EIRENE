@@ -1430,10 +1430,10 @@ C
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 
       ELSEIF (NFILEN.EQ.2.OR.NFILEN.EQ.7) THEN
-cdr  in this case the entire MC calculation has been skipped (recall option only)
+cdr  in this case the entire MC calculation has been skipped ("recall option" only)
 cdr  Nothing has been recalculated in present cycle.
 cdr  Both Monte Carlo loops: 
-cdr     DO ISTRA=1,NSTRAI   (strata)  
+cdr     DO ISTRA=1,NSTRAI              (strata)  
 cdr       DO 100 IPTSI=1,NPTS(ISTRA)   (histories)
 cdr  are bypassed.     
         IF (TRCFLE) WRITE (iunout,*) 'READ DATA FOR RECALL OPTION'
@@ -1452,7 +1452,7 @@ C END SEQUENTIAL REGION
       ENDIF
 
 cdr  dec. 15
-cdr  see above. updlin contains linear combination of tallies
+cdr  see above. Routine UPDLIN.f contains linear combination of tallies
       if (nmode.gt.0) call eirene_reset_updlin  
 
 

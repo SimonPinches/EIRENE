@@ -1,8 +1,8 @@
 c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
-cdr aug 18 :  xmct removed from read/write ft11, but still in coutau.
-cdr           perhaps to be simplified: move xmct into storage for
+cdr aug 18 :  XMCT removed from read/write ft11, but still in coutau.
+cdr           Perhaps to be simplified: Move XMCT into storage for
 cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
  
@@ -50,7 +50,7 @@ cdr           writing on ft14.
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
  
-! INTEGRALS OF SURFACE TALLIES
+! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
      R PRFPAI(:,:),
@@ -61,6 +61,7 @@ cdr           writing on ft14.
      R POTPHTI(:,:), PRFAPHTI(:,:), PRFMPHTI(:,:), PRFIPHTI(:,:),
      R PRFPHPHTI(:,:), PRFPPHTI(:,:),
      R POTPLI(:,:)
+! INTEGRALS OF SURFACE TALLIES: ENERGY FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EOTATI(:,:), ERFAAI(:,:), ERFMAI(:,:), ERFIAI(:,:), ERFPHAI(:,:),
      R ERFPAI(:,:),
@@ -71,6 +72,7 @@ cdr           writing on ft14.
      R EOTPHTI(:,:), ERFAPHTI(:,:), ERFMPHTI(:,:), ERFIPHTI(:,:),
      R ERFPHPHTI(:,:), ERFPPHTI(:,:),
      R EOTPLI(:,:)
+! INTEGRALS OF SURFACE TALLIES: SPUTTERING
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:), 
      R SPTPATI(:,:),
@@ -87,7 +89,7 @@ cdr           writing on ft14.
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
  
-! INTEGRAL VALUES
+! INTEGRAL VALUES, global balances, scaling
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),

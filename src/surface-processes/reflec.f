@@ -679,7 +679,7 @@ C
       IF (AINTG.GT.0.0) THEN
 C  CONSTANT MOMENTUM REFLECTION COEFFICIENT (ACCOMMODATION COEFFICIENT)
 C  FRACTION  AINTG:     specular
-C  FRACTION (1.0-AINTG):  cosin
+C  FRACTION (1.0-AINTG):  cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
         APROB=MIN(1.0,AINTG)
         IF (ZEP1.GT.APROB) THEN
@@ -719,7 +719,7 @@ C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
         GOTO 400
       ENDIF
 
-C  find polar and azimuthal angle of reflection from tabulated distribution
+C  AINTG=0.0: find polar and azimuthal angle of reflection from tabulated distribution
       ZEP1=RANF_EIRENE( )
       DO 107 I=2,INRM
         INDR2P=I
@@ -965,7 +965,7 @@ C
       IF (AINTG.GT.0.) THEN
 C  CONSTANT MOMENTUM REFLECTION (ACCOMMODATION) COEFFICIENT
 C  FRACTION  AINTG:     specular
-C  FRACTION (1_AINTG):  cosin
+C  FRACTION (1_AINTG):  cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
         APROB=MIN(1.0,AINTG)
         IF (ZEP1.GT.APROB) THEN
@@ -1004,15 +1004,15 @@ C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
         EXPI=200.
         GOTO 400
       ENDIF
-
+C  AINTG=0.0:  Original Behrisch Matrix assigned angular reflection distribution
 C     GOTO 400
 C
 400   CONTINUE
 C
-C  ANGULAR DISTRIBUTION, used for behrisch matrix model,
+C  ANGULAR DISTRIBUTION, used for Behrisch matrix model,
 C                        and for thermal re-emission model
-C                        and for SIMPLE models (ainteg ne.0 )
-C                        e.g. to test Database histogram sampling
+C                        and for SIMPLE models (ainteg ne.0.)
+C                        e.g. also to test Database histogram sampling
 C
       IF (EXPI.LT.100.) THEN
 C  At this point: F2=sqrt(1-F1*F1) must be ensured

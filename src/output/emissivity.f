@@ -1,5 +1,7 @@
+cdr  comments
 
-cdr  comments  ??
+cdr  may 18: some comments tried......NOT FINISHED
+
 
 
       subroutine eirene_emissivity(istr, lstart, lend)
@@ -8,7 +10,6 @@ cdr  probably something to fill ADDV tallies with emissivities, stratum ISTR
 cdr  for lines lstart to lend ?? Contained parts of old routines Ba_alpha,....,Ly-Beta.
 cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
-cdr  may 18: some comments tried......
 
 
       use eirmod_precision
@@ -138,9 +139,9 @@ C
               end do
   
 c  density is the "true" parent density         
-c  density(1) is taken as parent density. fetch reduced population coefficent
+c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
 c  and density ratios ratio="density"/"density(1)" will be applied below, 
-c  to turn it into "density"
+c  to turn density(1)it into "density"
               popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
               add = popcf*density(1)
 
@@ -202,15 +203,14 @@ cdr      to turn it into an intensive score:  [...] per cm**3
 
         end do ! j components of line ILINE are done
 
-cdr  now sum over compontents: on tally ADDV(iads)
-
+cdr  now sum over compontents: on tally ADDV(IADS)
+        call eirene_leer(1)
         addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) 
      .                           / voltal(1:nsbox_tal)
 
         WRITE (iunout,'(A50,2ES16.7)') 
      ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
      .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
-        CALL EIRENE_LEER(2)
 
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
         CALL EIRENE_INTTAL
@@ -218,11 +218,13 @@ cdr  now sum over compontents: on tally ADDV(iads)
      .        NR1TAL,NP2TAL,NT3TAL,NBMLT)
         ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
-        TXTTAL(IADS,NTALA) =TXTTAL(IADV,NTALA)
-        TXTSPC(IADS,NTALA) ='SUM OVER CONTRIBUTIONS  '
+        TXTTAL(IADS,NTALA) =REPEAT(' ',72)
+        TXTTAL(IADS,NTALA) ='SUM OVER COMPONENTS  '
+        TXTSPC(IADS,NTALA) ='  '
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
         WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS 
 
+        CALL EIRENE_LEER(2)
 
       end do ! line no. ILINE
 

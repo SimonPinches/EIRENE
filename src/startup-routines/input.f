@@ -3507,6 +3507,8 @@ C
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
+c June 18: new: more general option for definition of emission lines (in NCHTAL=2 option)
+
 cdr  read further atomic/molecular data: population coefficients, QSS ratios, etc
 cdr       needed for setting up volumetric line emissivity profils
 cdr       as further add. tally ADDV (additional to those already defined in block 10a)
@@ -3701,6 +3703,8 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
           end do   !kcontr
         end do     !jcomp
       end do       !iline
+
+c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 option
 
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI

@@ -283,7 +283,7 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
           ENDIF
 
 C  SECOND PROCESS,  H2+ --> H+ +  H+ + e :  DEFAULT PROCESS NO. KK=-9
-cdr   KER = 0.8, ETH = -15.5, I.E. KER=0.4 PER PARTICLE
+cdr   KER = 0.5, ETH = -15.5, I.E. KER=0.25 PER PARTICLE
           KK=-9
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -318,15 +318,15 @@ C
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=-15.5
 C           EPOTEI(IREI) = 14.7!  default for EDPOTI for this diss ionis. reaction)
-C  TRANSFERRED KINETIC ENERGY: 0.8  (=0.4 EV PER PARTICLE)
-            EHVEI1(IREI,1:NSBOX)=0.8
+C  TRANSFERRED KINETIC ENERGY: 0.5  (=0.25 EV PER PARTICLE)
+            EHVEI1(IREI,1:NSBOX)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
             NREAHV(IREI) = -5
           ELSE  ! storage save mode
             EELEI1(IREI,1)=-15.5
-            EHVEI1(IREI,1)=0.8
+            EHVEI1(IREI,1)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1
             NELREI(IREI) = -9
