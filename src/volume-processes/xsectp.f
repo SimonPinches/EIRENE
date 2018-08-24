@@ -387,7 +387,8 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-C  change logical from false to true, to avoid log(erate), with erate negative 
+C  change logical from false to true, to avoid log(erate), with erate negative
+C  as it may result from internal CR code H_COL,...., when used with delpot=0.0 
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
 cdr  .                               TEINL(J),PLS(J),.FALSE.,1)
      .                               TEINL(J),PLS(J),.TRUE.,1)
@@ -421,9 +422,11 @@ c  bremsstrahlung correction done.
 
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
+C  EELRC1: NEGATIVE SIGN: LOSS FOR ELECTRONS
+C
 C  SHIFT ELECTRON COOLING RATE BY DELE * TABRC
-c  DELE= IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT
-C        INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
+c  DELE= +IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT
+C         INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN

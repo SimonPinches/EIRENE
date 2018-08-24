@@ -372,8 +372,7 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
           DO IR=1,NSURF
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-            RCORONA = EIRENE_RATE_COEFF(NREACI+1,TEF,0._DP,.TRUE.,
-     .                                    0)
+            RCORONA = EIRENE_RATE_COEFF(NREACI+1,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s)

@@ -272,7 +272,6 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         iflavor = reacdat(ir)%rtcew%crm%iflav
         ivar = reacdat(ir)%rtcew%crm%ivarst
 
-
         CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 
 !  electron energy weighted loss rates are taken positive in CRM COLRAD, and negative if

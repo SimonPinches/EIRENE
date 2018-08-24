@@ -247,6 +247,8 @@ C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 
 ! Scale log collision energy to projectile energy for proper isotope, for rate coefficient, 
 ! i.e. use neutral particle mass.
+C
+
 C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
           V0_REL=SQRT(PVELQ(IPLSV))
@@ -264,8 +266,11 @@ C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
             KK=NREAPI(IRPI)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
+            ENDIF
+            SIGVPI(IRPI)=EXP(EXPO)
           END IF
-          SIGVPI(IRPI)=EXP(EXPO)
+
+C  MODEL 3:
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
