@@ -7,9 +7,9 @@ c           ener  :  energy parameter for identifying a particular emission prof
 c  output:  lno   :  "line number", i.e. the volumetric emission profile.
 
 cdr  so far: guessing:
-cdr currently called from SIGHA (former Balmer and Lyman line of side routine)
-cdr SIGHA is called only for chords ICHORI, for which NCHTAL(ichori)=2.
-cdr Calls are whenever a change in stratum number istr, transition energy ener,
+cdr currently called from SIGLINE (former Balmer and Lyman line of side routine)
+cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
+cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
 cdr       or a new internal iteration (time stepping, non-linear BGK iterations)
 
 cdr from here we call EMISSIVITY.F  (similar to former Ba_alpha.f,...etc.)
@@ -25,9 +25,9 @@ cdr          read from block 12 for chord ICHORI
 cdr          with 'emis_lines(i)%line_name'
 cdr          If this is not successful, then we try to use the ENER identifyer,
 cdr          which may have been read in input for emission profiles
-cdr          or set from old default hydrogenic line models (setup_default_emissivity)
-cdr          which is done whenever there are chords and no emissivities 
-cdr          read from external files.
+cdr          or set from old default hydrogenic line models (setup_default_emissivity).
+cdr          The latter is done whenever there are chords and no emissivities 
+cdr          have been read from external files.
 
 cdr          Then fill the appropriate additional tallies ADDV
 cdr          with the needed volumetric line emissivities, for stratum ISTR,
@@ -64,7 +64,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
 
       if (ichori.gt. 0) then
 cdr  for ichori <= 0: bypass ichori, 
-cdr  to set emission profiles also without any chords.
+cdr  to set volumetric emission profiles on ADDV array, also without any chords.
 
       if (len_trim(ch_line_name(ichori)) > 0) then
 ! find corresponding line from line names
@@ -80,12 +80,16 @@ cdr  to set emission profiles also without any chords.
         end do
 CDR
         IF (FOUND) THEN
-          WRITE (IUNOUT,*) 'EMISSION LINE FOUND BY NAME, iline=',LNO
+          WRITE (IUNOUT,*) 'EMISSION LINE identified by NAME,', 
+     .                     ' iline=',LNO
           WRITE (IUNOUT,*) 'name: ',CTEST2   ! =CTEST1
         ELSE
-          WRITE (IUNOUT,*) 'NO EMISSION LINE FOUND BY NAME'
+          WRITE (IUNOUT,*) 'NO EMISSION LINE identified by NAME'
           WRITE (IUNOUT,*) 'name: ',CTEST1
         ENDIF
+      else
+        WRITE (IUNOUT,*) 'NO EMISSION LINE identified by NAME'
+        WRITE (IUNOUT,*) 'name: ', 'not specified'
 
       end if  ! ch_line_name(ichori) defined
 
@@ -103,11 +107,12 @@ CDR
         end do
 CDR
         IF  (FOUND) THEN
-          WRITE (IUNOUT,*) 'EMISSION LINE FOUND BY energy, iline=',LNO
-          WRITE (IUNOUT,*) 'energy: ',ener_il
+          WRITE (IUNOUT,*) 'EMISSION LINE identified by ENERGY,', 
+     .                     ' iline=',LNO
+          WRITE (IUNOUT,*) 'ENERGY: ',ener_il
         ELSE
-          WRITE (IUNOUT,*) 'NO EMISSION LINE FOUND BY energy'
-          WRITE (IUNOUT,*) 'energy: ',ENER
+          WRITE (IUNOUT,*) 'NO EMISSION LINE identified by ENERGY'
+          WRITE (IUNOUT,*) 'ENERGY: ',ENER
         endif
 
       end if
