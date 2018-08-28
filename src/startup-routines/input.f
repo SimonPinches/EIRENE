@@ -97,7 +97,7 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
-      USE EIRMOD_CPES
+      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
@@ -244,7 +244,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI
+      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI, LRDMLTI
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
@@ -383,7 +383,7 @@ C
         CALL EIRENE_LEER(1)
         GOTO 109
       ELSE
-        READ (ZEILE,6666) NMACH,NMODE,NTCPU,NFILE,NITER0,NITER,
+        READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                    NTIME0,NTIME
       ENDIF
       CALL EIRENE_LEER(1)
@@ -406,7 +406,7 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND_PARAM
 !
 !     NRTAL1 = 0     ONLY FOR FIND_PARAM, NOT USED ANY FURTHER
       NREAC_ADD = 0  ! NEEDED HERE FOR CORRECT PLACEMENT OF ADDITIONAL REACTION DATA
-                     ! READ IN BLOCK 12, USED FOR CALCULATION OF EMISSIVITY 
+                     ! READ IN BLOCK 12, USED FOR CALCULATION OF EMISSIVITY
 
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
@@ -478,19 +478,19 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE
      .  ('*** 1. DATA FOR OPERATING MODE                   ')
       CALL EIRENE_LEER(1)
-c     IF (NMACH.EQ.1) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON CRAY                      ')
-c     ELSEIF (NMACH.EQ.2) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON IBM                       ')
-c     ELSEIF (NMACH.EQ.3) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON FACOM                     ')
-c     ELSEIF (NMACH.EQ.4) THEN
-c       CALL EIRENE_MASAGE
-c    .  ('       EIRENE RUN ON VAX                       ')
-c     ENDIF
+      CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
+      WRITE (IUNOUT,*) '       NUMBER OF PROCESSORS NPRS= ',NPRS
+      SELECT CASE( NPRLL )
+        CASE( -1 )
+          CALL EIRENE_MASAGE('       MPI USER DEFINED')
+C       CASE( 0 )
+C         Reserved for default, see below
+        CASE( 1 )
+          CALL EIRENE_MASAGE('       MPI PROPORTIONAL ALLOCATION')
+        CASE DEFAULT
+          CALL EIRENE_MASAGE('       MPI "EMBARRASSINGLY PARALLEL"')
+          NPRLL = 0
+      END SELECT
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE
@@ -872,6 +872,11 @@ C INPUT SUB-BLOCK 2C
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
+c     READ (IUNIN,'(A72)') ZEILE
+
+CDR SKIP READING COMMENT INPUT CARDS STARTING WITH *
+c     IF (ZEILE(1:1) .EQ. '*') GOTO 230
+c     IREAD=1
 
       READ (ZEILE,6665) NLTOR
       IREAD=0
@@ -889,6 +894,9 @@ C INPUT SUB-BLOCK 2D
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
+C240  READ (IUNIN,'(A72)') ZEILE
+C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
+C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1768,7 +1776,7 @@ C  DEFAULTS FOR ATOMIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKA(IATM,K) /= 0)
           READ (IUNIN,6664) EELECA(IATM,K),EBULKA(IATM,K),
      .                      ESCD1A(IATM,K),ESCD2A,
-     .                      FREACA(IATM,K),FDPOTA(IATM,K)
+     .                      FREACA(IATM,K),EDPOTA(IATM,K)
 cdr  .                      FLDLMA(IATM,K)  removed, now controlled by negative ngena
           ESCD1A(IATM,K) = ESCD1A(IATM,K)+ESCD2A
           NSC = 0
@@ -1862,7 +1870,7 @@ C
           LMULTI = LMULTI .OR. (IBGKM(IMOL,K) /= 0)
           READ (IUNIN,6664) EELECM(IMOL,K),EBULKM(IMOL,K),
      .                      ESCD1M(IMOL,K),ESCD2M,
-     .                      FREACM(IMOL,K),FDPOTM(IMOL,K)
+     .                      FREACM(IMOL,K),EDPOTM(IMOL,K)
 cdr  for backward compatibility:  formerly: two KER values, now one total is used.
           ESCD1M(IMOL,K) = ESCD1M(IMOL,K)+ESCD2M
           NSC = 0
@@ -1946,7 +1954,7 @@ C
           LMULTI = LMULTI .OR. (IBGKI(IION,K) /= 0)
           READ (IUNIN,6664) EELECI(IION,K),EBULKI(IION,K),
      .                      ESCD1I(IION,K),ESCD2I,
-     .                      FREACI(IION,K),FDPOTI(IION,K)
+     .                      FREACI(IION,K),EDPOTI(IION,K)
           ESCD1I(IION,K) = ESCD1I(IION,K)+ESCD2I
           NSC = 0
           IF (ISCD3I(IION,K) > 0) NSC = 3
@@ -2039,7 +2047,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
           LMULTI = LMULTI .OR. (IBGKPH(IPHOT,K) /= 0)
           READ (IUNIN,6664) EELECPH(IPHOT,K),EBULKPH(IPHOT,K),
      .                      ESCD1PH(IPHOT,K),ESCD2PH,
-     .                      FREACPH(IPHOT,K),FDPOTPH(IPHOT,K)
+     .                      FREACPH(IPHOT,K),EDPOTPH(IPHOT,K)
 cdr  .                      FLDLMPH(IPHOT,K)  removed. now controlled by negative ngenph
           ESCD1PH(IPHOT,K) = ESCD1PH(IPHOT,K)+ESCD2PH
           NSC = 0
@@ -2133,7 +2141,7 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
           END IF
           READ (IUNIN,6664) EELECP(IPLS,K),EBULKP(IPLS,K),
      .                      ESCD1P(IPLS,K),ESCD2P,
-     .                      FREACP(IPLS,K),FDPOTP(IPLS,K)
+     .                      FREACP(IPLS,K),EDPOTP(IPLS,K)
           ESCD1P(IPLS,K) = ESCD1P(IPLS,K)+ESCD2P
 c
 cdr  deal with non-default number of secondaries, NSC > 2
@@ -2168,8 +2176,8 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ISP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
-cdr only if needed: for additional A&M data structure on REACDAT 
-cdr                 so far only for DENSITYMODELS: 
+cdr only if needed: for additional A&M data structure on REACDAT
+cdr                 so far only for DENSITYMODELS:
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
@@ -2297,16 +2305,21 @@ C  Ti profile(s)
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
+!pb   ion temperature for each bulk ion
+      NLMLTI = (NPLSTI > 1)
       MPLSTI=1
-!pb   IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
-      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
+      IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
+!pb      IF (NPLSTI > 1) MPLSTI = (/ (I,I=1,NPLS) /)
 
       INDPRO(2)=IABS(INDPRO(2))
-      NLMLTI= INDPRO(2) > 9
+!pb      NLMLTI= INDPRO(2) > 9
+!pb   read parameters TI0...TI5 for each temperature
+      LRDMLTI= INDPRO(2) > 9
       IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
 
       IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
-        IF (NLMLTI) THEN
+!pb        IF (NLMLTI) THEN
+        IF (LRDMLTI) THEN
           READ (IUNIN,6664) (TI0(I),TI1(I),TI2(I),TI3(I),TI4(I),TI5(I),
      .                       I=1,NPLSI)
         ELSE
@@ -3270,12 +3283,14 @@ C  MIN AND MAX ENERGY SCORE (EV) ON THIS TALLY
           ESPEC%SPCDELI=1._DP/(ESPEC%SPCDEL+EPS60)
           ALLOCATE(ESPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectrally resolved tallies
-!         IF (NSIGI_SPC > 0) THEN
+          IF (NSIGI_SPC > 0) THEN
             ALLOCATE(ESPEC%SDV(0:NSPSA+1))
             ALLOCATE(ESPEC%SGM(0:NSPSA+1))
             ALLOCATE(ESPEC%STV(0:NSPSA+1))
             ALLOCATE(ESPEC%GG(0:NSPSA+1))
-!         endif
+          ELSE
+            NULLIFY(ESPEC%SDV, ESPEC%SGM, ESPEC%STV, ESPEC%GG)
+          END IF
           ESPEC%SPC(0:NSPSA+1) = 0._DP
           ESPEC%IMETSP = 0
 
@@ -3284,12 +3299,14 @@ c  sum over strata
             SSPEC => SMESTL(J)
             ALLOCATE(SSPEC%SPC(0:NSPSA+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
-!           IF (NSIGI_SPC > 0) THEN
+            IF (NSIGI_SPC > 0) THEN
               ALLOCATE(SSPEC%SDV(0:NSPSA+1))
               ALLOCATE(SSPEC%SGM(0:NSPSA+1))
               ALLOCATE(SSPEC%STV(0:NSPSA+1))
               ALLOCATE(SSPEC%GG(0:NSPSA+1))
-!           END IF
+            ELSE
+              NULLIFY(SSPEC%SDV, SSPEC%SGM, SSPEC%STV, SSPEC%GG)
+            END IF
             SMESTL(J) = ESTIML(J)
           END IF
 C
@@ -3549,6 +3566,8 @@ C
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
+c June 18: new: more general option for definition of emission lines (in NCHTAL=2 option)
+
 cdr  read further atomic/molecular data: population coefficients, QSS ratios, etc
 cdr       needed for setting up volumetric line emissivity profils
 cdr       as further add. tally ADDV (additional to those already defined in block 10a)
@@ -3761,6 +3780,8 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
         end do     !jcomp
       end do       !iline
 
+c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 option
+
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
       NCHEN = NCHENI
@@ -3792,7 +3813,7 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
           IF (IND > 0) THEN
             READ (ZEILE(IND+8:),'(A80)') CH_LINE_NAME(ICHORI)
             READ (IUNIN,'(A400)') ZEILE
-            IREAD=1
+           IREAD=1
           END IF
         END IF        
 
@@ -4898,11 +4919,12 @@ C
       NTTRAM=NTTRA-1
       NBMLTP=NBMLT+1
 
-      IF (LEVGEO == 4) THEN
+      select case (LEVGEO)
+      case (4)
         NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0) + 1
-      ELSE IF (LEVGEO == 5) THEN
+      case (5)
         NGITT = COUNT(INMTIT(1:4,1:NTET) .NE. 0) + 1
-      END IF
+      end select
 
       CALL EIRENE_SET_PARMMOD(3)
       CALL EIRENE_ALLOC_CGEOM(2)

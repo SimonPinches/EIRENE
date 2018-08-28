@@ -1,5 +1,7 @@
+cdr  comments
 
-cdr  comments  ??
+cdr  may 18: some comments tried......NOT FINISHED
+
 
 
       subroutine eirene_emissivity(istr, lstart, lend)
@@ -8,7 +10,6 @@ cdr  probably something to fill ADDV tallies with emissivities, stratum ISTR
 cdr  for lines lstart to lend ?? Contained parts of old routines Ba_alpha,....,Ly-Beta.
 cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
-cdr  may 18: some comments tried......NOT READY
 
 
       use eirmod_precision
@@ -43,6 +44,7 @@ cdr  may 18: some comments tried......NOT READY
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
       CHARACTER(6) :: CISTRA
+      character(len=:), allocatable :: ctest2
 
       CALL EIRENE_LEER(2)
       CALL EIRENE_FTCRI(ISTR,CISTRA)
@@ -56,16 +58,18 @@ cdr  may 18: some comments tried......NOT READY
 
       do i = lstart, lend
         ILINE=I
-        WRITE (iunout,*) 'LINE no. ',ILINE       
-        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
-     .                 EMIS_LINES(I)%LINE_NAME // ':'
+        ctest2 = adjustl(trim(emis_lines(iline)%line_name))
+        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':' 
+
         write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
         write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
+     
+        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' 
 
-!pb        einstein = emis_lines(i)%einstein
-        einstein = emis_lines(i)%einstein * emis_lines(i)%popesc
+
+        einstein = emis_lines(i)%einstein
 C  ENERGY FACTOR FOR POWER LOSS (W)
         trans_en = emis_lines(i)%trans_en * elcha
 
@@ -139,9 +143,9 @@ C
               end do
   
 c  density is the "true" parent density         
-c  density(1) is taken as parent density. fetch reduced population coefficent
+c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
 c  and density ratios ratio="density"/"density(1)" will be applied below, 
-c  to turn it into "density"
+c  to turn density(1)it into "density"
               popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
               add = popcf*density(1)
 
@@ -198,12 +202,13 @@ cdr      to turn it into an intensive score:  [...] per cm**3
      .                    ' SOURCE RATE '
           TXTSPC(IADV,NTALA) =TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
           TXTUNT(IADV,NTALA) ='PHOTONS/S/CM**3         '
+
           WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV 
 
         end do ! j components of line ILINE are done
 
-cdr  now sum over compontents: on tally ADDV(iads)
-
+cdr  now sum over compontents: on tally ADDV(IADS)
+        call eirene_leer(1)
         addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) 
      .                           / voltal(1:nsbox_tal)
 
@@ -211,19 +216,19 @@ cdr  now sum over compontents: on tally ADDV(iads)
      ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
      .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
 
-
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
         CALL EIRENE_INTTAL
      .       (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,ISTR),
      .        NR1TAL,NP2TAL,NT3TAL,NBMLT)
         ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
-        TXTTAL(IADS,NTALA) =TXTTAL(IADV,NTALA)
-        TXTSPC(IADS,NTALA) ='SUM OVER CONTRIBUTIONS  '
+        TXTTAL(IADS,NTALA) =REPEAT(' ',72)
+        TXTTAL(IADS,NTALA) ='SUM OVER COMPONENTS  '
+        TXTSPC(IADS,NTALA) ='  '
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
         WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS 
-        CALL EIRENE_LEER(2)
 
+        CALL EIRENE_LEER(2)
 
       end do ! line no. ILINE
 

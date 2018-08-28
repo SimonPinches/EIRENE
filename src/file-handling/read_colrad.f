@@ -107,7 +107,7 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation 
       if (present(ic_esc)) icol_esc = ic_esc
       popesc = 0._dp
       if (present(pesc)) popesc = pesc
-        
+
 cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
 cdr  tbd: also exit unless HSRT contains 2.1.5, OR 2.1.8 
@@ -127,16 +127,16 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
         IF (IVAR == 0) GOTO 1000
 
 !  CHECK IF VARIABLE HAS ALREADY BEEN MARKED FOR STORING EARLIER
-        IVST = NHCOL_STORE + 1
+        ISTR = NHCOL_STORE + 1
         DO I = 1, NHCOL_STORE
           IF (IVAR == M_HCOL(I)) THEN
-            IVST = I
+            ISTR = I
             EXIT
           END IF
         END DO
 !  VARIABLE NOT YET MARKED FOR STORING --> MARK
-        IF (IVST > NHCOL_STORE) THEN
-          NHCOL_STORE = IVST
+        IF (ISTR > NHCOL_STORE) THEN
+          NHCOL_STORE = ISTR
           M_HCOL(NHCOL_STORE) = IVAR
         END IF
 
@@ -161,7 +161,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
 
           ALLOCATE (REACDAT(IR)%RTC%CRM)
           REACDAT(IR)%RTC%CRM%IFLAV = 1
-          REACDAT(IR)%RTC%CRM%IVARST = IVST
+          REACDAT(IR)%RTC%CRM%IVARST = ISTR
           REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC
           REACDAT(IR)%RTC%CRM%POP_ESC = POPESC
@@ -182,7 +182,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
 
           ALLOCATE (REACDAT(IR)%RTCMW%CRM)
           REACDAT(IR)%RTCMW%CRM%IFLAV = 1
-          REACDAT(IR)%RTCMW%CRM%IVARST = IVST  
+          REACDAT(IR)%RTCMW%CRM%IVARST = ISTR  
           REACDAT(IR)%RTCMW%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTCMW%CRM%ICOL_ESC = ICOL_ESC
           REACDAT(IR)%RTCMW%CRM%POP_ESC = POPESC
@@ -203,7 +203,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
 
           ALLOCATE (REACDAT(IR)%RTCEW%CRM)
           REACDAT(IR)%RTCEW%CRM%IFLAV = 1
-          REACDAT(IR)%RTCEW%CRM%IVARST = IVST
+          REACDAT(IR)%RTCEW%CRM%IVARST = ISTR
           REACDAT(IR)%RTCEW%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTCEW%CRM%ICOL_ESC = ICOL_ESC
           REACDAT(IR)%RTCEW%CRM%POP_ESC = POPESC
@@ -223,7 +223,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
 
           ALLOCATE (REACDAT(IR)%OTH%CRM)
           REACDAT(IR)%OTH%CRM%IFLAV = 1
-          REACDAT(IR)%OTH%CRM%IVARST = IVST
+          REACDAT(IR)%OTH%CRM%IVARST = ISTR
           REACDAT(IR)%OTH%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%OTH%CRM%ICOL_ESC = ICOL_ESC
           REACDAT(IR)%OTH%CRM%POP_ESC = POPESC

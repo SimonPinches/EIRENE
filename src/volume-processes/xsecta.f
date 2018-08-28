@@ -17,11 +17,11 @@ C           also modified: cross.f, xsecta_param.f
 ! 23.02.14: call to xstpi: additional arguments: IAT, pls (for H.4 option)
 ! oct.2014: call to xstpi: additional argument: chrdf0
 cdr  oct.14:  comsou, clogau removed
-cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing)
+cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
 cdr  oct.14:  further syncronization with xsectm,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
-cdr  oct.15:  default he ionisation kk=-1 --> kk=-11,
+cdr  oct.15:  default he ionisation kk=-1 --> kk=-11, 
 cdr           to avoid conflict with default cx reaction kk=-1
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  pelds -> pelei, eelds -> eelei
@@ -46,17 +46,17 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
-
+ 
       IMPLICIT NONE
-
+ 
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, CHRDF0, EELEC, RMASS, DEIMIN, EHEAVY,
-     .            EBULK, COU, EIRENE_RATE_COEFF,
-     .            TMASS, PMASS   ! FOR DEFAULT CX MODEL
+     .            EBULK, COU, EIRENE_RATE_COEFF, 
+     .            TMASS, PMASS   ! FOR DEFAULT CX MODEL 
 
       INTEGER :: NTE, ISTORE, ISCND, ISCDE, IFRST,
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
-     .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP,
+     .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP, 
      .           IAPI, IRPI, IACX, IDSC, IPL, IAEI, IESTM, IRCX, IPLSTI,
      .           ITHRD, IFRTH,
      .           MFL
@@ -64,9 +64,9 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
-cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
+cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
@@ -75,7 +75,7 @@ cdr: that they collapse to the Corona limit values.
           PLS(J)=MAX(DEIMIN,DEINL(J))
 10      CONTINUE
       END IF
-
+ 
 C
 C
 C   ELECTRON IMPACT COLLISIONS:
@@ -93,16 +93,16 @@ C
         ENDDO
 C
 C  CHECK IF THIS REALLY IS AN ATOM: USE NPRT(ISPZ).EQ.1?
-
+ 
         IF (NPRT(IATM).NE.1) THEN
           WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTA: '
           WRITE (IUNOUT,*) 'IATM= ',IATM,' CARRIES NOT ONE FLUX UNIT'
           WRITE (IUNOUT,*) 'EXIT CALLED FROM XSECTA '
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
-
+ 
 C  YES, "IATM" IS AN ATOM !
-
+ 
         IF (NRCA(IATM).EQ.0.AND.NCHARA(IATM).LE.2) THEN
 C
 C  DEFAULT H,D,T OR HE ELEC. IMP. IONIZATION MODEL
@@ -144,14 +144,14 @@ C
           KK=0
           IF (NCHARA(IATM).EQ.1) THEN
 c  hydrogenic atoms
-c  default electron impact ionization process for H atoms: kk = -4
+c  default electron impact ionization process for H atoms: kk = -4 
             KK=-4
             ISTORE=-4
             EELEC=-EIONH
           ELSEIF (NCHARA(IATM).EQ.2) THEN
 c  helium atoms
 c  default electron impact ionization process for He atoms: kk = -11
-            KK=-11
+            KK=-11 
             ISTORE=-11
             EELEC=-EIONHE
           ENDIF
@@ -294,7 +294,7 @@ C  FIND BULK SECONDARIES
      .          GOTO 135
 134           CONTINUE
               GOTO 155
-
+ 
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
 135           CONTINUE
 C  PROJECTILE MASS IS 4.
@@ -322,7 +322,7 @@ C  FIND BULK SECONDARIES
      .          GOTO 145
 144           CONTINUE
               GOTO 155
-
+ 
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
 145           CONTINUE
 C  PROJECTILE MASS IS 4.
@@ -338,8 +338,8 @@ C
             ELSE
               GOTO 155
             ENDIF
-
-
+ 
+ 
             IDSC=IDSC+1
             NRCXI=NRCXI+1
             IRCX=NRCXI
@@ -352,7 +352,7 @@ C
             N2NDX(IRCX,2)=IPL
             N2NDX(IRCX,3)=1
             MODCOL(3,1,IRCX)=ISTORE
-
+ 
             DEFCX(IRCX)=LOG(CVELI2*PMASS)
             EEFCX(IRCX)=LOG(CVELI2*TMASS)
 C
@@ -369,7 +369,7 @@ C
               DO 150 J=1,NSBOX
                 EPLCX3(IRCX,J,1)=1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J)
 150           CONTINUE
-              NELRCX(IRCX) = -1
+              NELRCX(IRCX) = -1  
               NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
             ELSE
               NELRCX(IRCX) = -1
@@ -389,11 +389,11 @@ C
           DO 160 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.3) CYCLE
-C  make sure that incident particle is a bulk particle
+C  make sure that incident particle is a bulk particle 
             IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*)
-     .        'INPUT ERROR FOR CX PROCESS, IATM,KK ',IATM,KK
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR CX PROCESS, IATM,KK ',IATM,KK 
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  CX PROCESS IDENTIFIED
@@ -417,7 +417,7 @@ c  delta: typical length (could be cell size, or gradient length...)
 c  use the integer input flag ngena (generation limit).
               MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infty
 c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
-              FDLMCX(IRCX)=1.0E4/(MFL+eps5)
+              FDLMCX(IRCX)=1.0E4/(MFL+eps30)
             endif
 
             IAT=NSPH+IATM
@@ -467,11 +467,11 @@ C
           DO 230 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.5) CYCLE
-C  make sure that incident particle is a bulk particle
+C  make sure that incident particle is a bulk particle 
             IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*)
-     .        'INPUT ERROR FOR EL PROCESS, IATM,KK ',IATM,KK
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR EL PROCESS, IATM,KK ',IATM,KK 
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  EL PROCESS IDENTIFIED
@@ -526,7 +526,7 @@ C
      .                        KK,FACTKK,PLS)
 C
 230       CONTINUE
-
+ 
           NAELI(IATM)=IDSC
         ENDIF
 C
@@ -542,7 +542,7 @@ C
 C
 C   GENERAL HEAVY PARTICLE IMPACT COLLISIONS
 C
-
+ 
       DO IATM=1,NATMI
         IDSC=0
         LGAPI(IATM,0,0)=0
@@ -559,18 +559,18 @@ C
           DO NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.4) CYCLE
-C  make sure that incident particle is a bulk particle
+C  make sure that incident particle is a bulk particle 
             IF (EIRENE_IDEZ(IBULKA(IATM,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*)
-     .        'INPUT ERROR FOR PI PROCESS, IATM,KK ',IATM,KK
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR PI PROCESS, IATM,KK ',IATM,KK 
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  PI PROCESS IDENTIFIED
 
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
-
+            
 C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 992
@@ -679,11 +679,11 @@ C
               CALL EIRENE_XSTPI_2(IRPI,IPL)
 885         CONTINUE
           ENDIF
-
+ 
         ENDIF
 C
 1000  CONTINUE
-
+ 
       DEALLOCATE (PLS)
 C
       RETURN
@@ -691,7 +691,7 @@ C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX COLLISION '
-      CALL EIRENE_EXIT_OWN(1)
+      CALL EIRENE_EXIT_OWN(1)     
 991   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ELASTIC COLLISION'

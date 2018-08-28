@@ -2,8 +2,9 @@ cdr  aug.16 extended options for extrapolation beyond valid range of fit.
 cdr         parmlim,fparlim added to argument list
 cdr         added: iflag=4  constant extrapolation  (e.g. for low density limit, corona)
 cdr         to be done: automatically ensure continuity across parmlim,
-cdr                     in case of iflag=2,5. Only when fp1,fp2,fp3 are internally
-cdr                     derived in sngl_poly.f, then this is guaranteed
+cdr                     in case of iflag=2,...,5. 
+cdr         Only when fp1,fp2,fp3 are internally
+cdr         derived in sngl_poly.f, then this is guaranteed
 C
       FUNCTION EIRENE_EXTRAP(PARM,PARMLIM,FPARLIM,
      .                       IFLAG,FP1,FP2,FP3)

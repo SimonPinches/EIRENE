@@ -1,9 +1,9 @@
 cdr  Nov. 2015
 
 cdr  internal energy:  make also ipls species dependent
-cdr  check for storage (copy) and return, if not enought storage
-cdr  updlin should
-cdr  be made a default eirene option for linear combination of tallies
+cdr  check for storage (copy) and return, if not enough storage
+cdr  updlin should be made a default eirene option
+cdr  for linear combination of tallies
 
       SUBROUTINE EIRENE_UPDLIN
 
@@ -18,7 +18,7 @@ cdr  be made a default eirene option for linear combination of tallies
 !    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3) 
 !    3)   total ion energy source           (sei=eapl+empl+eipl      , ICP3+1 ,ICP4)
 !    4)   internal energy source            (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
-!    5)   total electr. energy source       (see=eael+emel+eiel, ICP5+1) 
+!    5)   total electr. energy source       (see=eael+emel+eiel      , ICP5+1) 
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -52,7 +52,7 @@ cdr  ir is fine grid for background medium, geometry, etc...
 cdr  ird is coarse grid for scoring
              IF (IRD > 0) THEN
                UAH(IPL,IRD) = BVIN(IS,IR)
-               EKIN(IPL,IRD)= cvrssp(IPL) * UAH(IPL,IR)**2       ! eV
+               EKIN(IPL,IRD)= cvrssp(IPL) * UAH(IPL,IRD)**2       ! eV
              ENDIF
            END DO
          END DO

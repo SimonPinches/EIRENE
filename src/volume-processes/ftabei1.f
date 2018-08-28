@@ -18,7 +18,8 @@ c              Minimum density is set to 1e8 cm**-3
 c              for evaluation of rate coefficient. 
 c              But then the 'true' density is used to return a 'rate'
 c  May 18: sync with xstei.f, Te cut off earlier than TVAC. 
-c              Cut off (Te) parameter for fits: 0.1 eV. Minimum density is set to 0.1 eV
+c              Cut off (Te) parameter for fits: 0.1 eV. 
+c              Minimum temperature is set to 0.1 eV
 c              for evaluation of rate coefficient. 
 
  

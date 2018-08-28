@@ -2,7 +2,7 @@ C
  
       SUBROUTINE
      .  EIRENE_FL2O(A00,A1,A2,A3,A4,A5,A6,A7,A8,A9,INDE,X0,Y0,Z0,
-     >                CX,CY,CZ,R,B0,B1,B2,B3,C0,C1,C2,C3,EPSIN,NMACH)
+     >                CX,CY,CZ,R,B0,B1,B2,B3,C0,C1,C2,C3,EPSIN)
 C
 C***********************************************************************
 C                                                  11. Juli    1988
@@ -96,7 +96,6 @@ C
      >                      EPSIN
       REAL(DP), INTENT(OUT) :: X0, Y0, Z0, CX, CY, CZ, R,
      >                       B0, B1, B2, B3, C0, C1, C2, C3
-      INTEGER, INTENT(IN) :: NMACH
       INTEGER, INTENT(OUT) :: INDE
       REAL(DP) :: A( 3,3 ), LAMBDA( 3 ), EV( 3,3 ), EPS, C, B(3),
      >          M(3),NUE,NORM,P(3),RES(3)
@@ -181,7 +180,6 @@ C
 C        BERECHNUNG DER EIGENWERTE UND EIGENVEKTOREN VON A
 C
          CALL EIRENE_DEVCSF( 3,A,3,LAMBDA, EV, 3 )
-         
 C        WRITE (iunout,*) ' LAMBDA ',(LAMBDA(I),I=1,3)
 C        WRITE (iunout,*) ' EV '
 C        WRITE (iunout,*) ((EV(I,J),J=1,3),I=1,3)
@@ -240,8 +238,7 @@ C     Sind die Residuen (b-A*m=RES) alle gleich Null, so gibt es
 C     mindestens eine Loesung, sonst nicht.
 C     IMSL - Verfahren:  DLSBRR
 c
-      IF (NMACH.NE.1) CALL EIRENE_DLSBRR(3,3,A,3,B,EPS,M,RES,KBASIS)
-      IF (NMACH.EQ.1) CALL EIRENE_LSBRR(3,3,A,3,B,EPS,M,RES,KBASIS)
+      CALL EIRENE_DLSBRR(3,3,A,3,B,EPS,M,RES,KBASIS)
 C     WRITE (iunout,*) ' IMSL  KBASIS = ',KBASIS
 C     WRITE (iunout,*) ' M ',M
 C

@@ -131,7 +131,8 @@ C  ERROR
           ENDIF
         ENDDO
 
-        IF (LEVGEO == 3) THEN
+        select case (LEVGEO)
+        case (3)
         DO I=1,NSTSI
           IF (ABS(ILPLG(NLIM+I)) .EQ. ICONT) THEN
             IUHR=ILPLG(NLIM+I)
@@ -179,7 +180,7 @@ C  ERROR
           ENDIF
         ENDDO
 
-        ELSEIF (LEVGEO == 4) THEN
+        case (4)
 C  TRIANGLE SIDES
           DO ITRI = 1, NTRII
             DO IS = 1, 3
@@ -205,7 +206,7 @@ C  TRIANGLE SIDES
               END IF
             END DO
           END DO
-        END IF
+        end select
 
         IF (IPOIN.LE.0) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'

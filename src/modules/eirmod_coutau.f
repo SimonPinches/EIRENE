@@ -1,6 +1,9 @@
 c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
+cdr aug 18 :  XMCT removed from read/write ft11, but still in coutau.
+cdr           Perhaps to be simplified: Move XMCT into storage for
+cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
  
       USE EIRMOD_PRECISION
@@ -47,7 +50,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
  
-! SURFACE TALLIES
+! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
      R PRFPAI(:,:),
@@ -58,6 +61,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R POTPHTI(:,:), PRFAPHTI(:,:), PRFMPHTI(:,:), PRFIPHTI(:,:),
      R PRFPHPHTI(:,:), PRFPPHTI(:,:),
      R POTPLI(:,:)
+! INTEGRALS OF SURFACE TALLIES: ENERGY FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EOTATI(:,:), ERFAAI(:,:), ERFMAI(:,:), ERFIAI(:,:), ERFPHAI(:,:),
      R ERFPAI(:,:),
@@ -67,7 +71,9 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R ERFPII(:,:),
      R EOTPHTI(:,:), ERFAPHTI(:,:), ERFMPHTI(:,:), ERFIPHTI(:,:),
      R ERFPHPHTI(:,:), ERFPPHTI(:,:),
-     R EOTPLI(:,:),
+     R EOTPLI(:,:)
+! INTEGRALS OF SURFACE TALLIES: SPUTTERING
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:), 
      R SPTPATI(:,:),
      R SPTAMLI(:,:), SPTMMLI(:,:), SPTIMLI(:,:), SPTPHMLI(:,:), 
@@ -83,7 +89,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
  
-! INTEGRAL VALUES
+! INTEGRAL VALUES, global balances, scaling
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
@@ -108,7 +114,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
  
       NOUTA1 = NVLTLP*NSTRAP
       NOUTA2 = NSFTLP*NSTRAP
-      NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+16)*NSTRAP
+      NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+15)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
       NOUTTL = 3*(NTALV+NTALS)+NTALI
  
@@ -370,8 +376,9 @@ cdr  etote still missing ??
       ALLOCATE (NFSTWI(NTALS))
       ALLOCATE (NFSTPI(NTALI))
  
+cdr  coutau still contains xmct, but NOUTAU does not. 
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
+     .       ' COUTAU ',(NOUTAU+NSTRAP)*8 + NOUTTL*4
  
       NADDI  = 0
       NFRSTI = 0
@@ -622,7 +629,7 @@ csw 19mar2013
  
       DO ISTRA=0,NSTRA
  
-        IF (ISTRA >= 1) THEN
+        IF (ISTRA >= 1 .AND. IFRST > 0) THEN
           IF (.NOT. LOGARR(ISTRA)) CYCLE
         END IF
 
@@ -851,13 +858,13 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         FISCL(ISTRA)  = 0._DP
         FPHSCL(ISTRA)  = 0._DP
  
-!pb      IF (IFRST == 0) THEN
-        XMCP(ISTRA)   = 0._DP
-        XMCT(ISTRA)   = 0._DP
-!pb        IFRST = 1
-!pb      END IF
+!pb     IF (IFRST == 0) THEN
+          XMCP(ISTRA)   = 0._DP
+          XMCT(ISTRA)   = 0._DP
+!pb     END IF
  
       END DO
+      IFRST = 1
  
       RETURN
  
@@ -1674,10 +1681,6 @@ C     The following ENTRY is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(XMCP)
       OUTAU(IA:IE) = PACK(XMCP  ,.TRUE.)
 
-      IA = IE + 1
-      IE = IA - 1 + SIZE(XMCT)
-      OUTAU(IA:IE) = PACK(XMCT  ,.TRUE.)
- 
       IA = IE + 1
       IE = IA - 1 + SIZE(FLUXT)
       OUTAU(IA:IE) = PACK(FLUXT ,.TRUE.)
@@ -2528,10 +2531,6 @@ C     The following ENTRY is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(XMCP)
       XMCP   = RESHAPE(OUTAU(IA:IE),SHAPE(XMCP  ))
 
-      IA = IE + 1
-      IE = IA - 1 + SIZE(XMCT)
-      XMCT   = RESHAPE(OUTAU(IA:IE),SHAPE(XMCT  ))
- 
       IA = IE + 1
       IE = IA - 1 + SIZE(FLUXT)
       FLUXT  = RESHAPE(OUTAU(IA:IE),SHAPE(FLUXT ))

@@ -38,15 +38,14 @@ C
 C
 C FIND RADIAL SURFACE LABELING CO-ORDINATE AT "SEP"
 C
-        IF (LEVGEO.EQ.2) THEN
+        select case (LEVGEO)
+        case (1,3)
+          RHOSEP=SEP
+        case (2)
           JM1=EIRENE_LEARCA(SEP,RSURF,1,NLOCAL,1,'PROFN       ')
           AR=EIRENE_AREAA (SEP,JM1,ARCA,YR,EP1R,ELLR)
           RHOSEP=SQRT(AR*PIAI)
-        ELSEIF (LEVGEO.EQ.1) THEN
-          RHOSEP=SEP
-        ELSEIF (LEVGEO.EQ.3) THEN
-          RHOSEP=SEP
-        ENDIF
+        end select
       ELSE
         WRITE (iunout,*)
      .  'WARNING: SUBR. PROFN CALLED WITH LEVGEO.GT.3 '

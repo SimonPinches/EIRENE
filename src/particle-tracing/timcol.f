@@ -133,13 +133,13 @@ C  UPDATE ENERGY FLUX ONTO TIME-SURFACE MSURF=NLIM+NSTSI
 C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
-cdr  to replace cdr out ini -- cdr out end code below
-cdr  to be tested first...
+cdr  to replace cdr out ini -- cdr out end code below with call to update_surface.
+cdr  Still to be tested first...
 cdr     ITYP_OLD=ITYP
         MSURFG=0
         WGHTSG=WEIGHT
         IND=1
-c       CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSG,IND)
+cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSG,IND)
 cdr out ini
         IF (ITYP.EQ.0) THEN
           IF (LEOTPHT) EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WEIGHT

@@ -40,12 +40,12 @@ cdr
 
       TYPE(TCONTRIB) :: CNT
       
-      integer :: i, num_compo, iat, iml, ipl, nat, npl, nml
+      integer :: i, NUM_compo, iat, iml, ipl, nat, npl, nml
       real(dp) :: ry = 13.605
 
-      num_lines    = 6
-      num_compo    = 6 
-c     num_contrib  = inferred from input file, species specification block 4.
+      NUM_lines    = 6
+      NUM_compo    = 6 
+c     NUM_contrib  = inferred from input file, species specification block 4.
       MOD_ADDV = 0
 
 ! NOT USED IN DEFAULT MODEL
@@ -54,9 +54,9 @@ c     num_contrib  = inferred from input file, species specification block 4.
       CNT%ELEMENT = '  '
       CNT%RAT_ELEMENT = '  '
 
-      ALLOCATE (EMIS_LINES(num_LINES))
+      ALLOCATE (EMIS_LINES(NUM_LINES))
       EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-      EMIS_LINES%num_COMPO = 0
+      EMIS_LINES%NUM_COMPO = 0
  
 
 ************************************************
@@ -64,10 +64,10 @@ c     num_contrib  = inferred from input file, species specification block 4.
 ************************************************
 
       EMIS_LINES(1)%LINE_NAME = 'BA_ALPHA'
-      EMIS_LINES(1)%num_COMPO = num_COMPO
+      EMIS_LINES(1)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(1)%EINSTEIN = 4.410E7
-c  transition enery
+c  transition energy
       EMIS_LINES(1)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(3._DP*3._DP))
 C  identifyer of Line:
@@ -75,9 +75,9 @@ C  identifyer of Line:
       EMIS_LINES(1)%POPESC = 1.0_DP
       EMIS_LINES(1)%IROW_ESC = 0
       EMIS_LINES(1)%ICOL_ESC = 0
-      EMIS_LINES(1)%IADV_TOTAL = NADVI + num_COMPO+1 
+      EMIS_LINES(1)%IADV_TOTAL = NADVI + NUM_COMPO+1 
       
-      ALLOCATE (EMIS_LINES(1)%COMPO(num_COMPO))
+      ALLOCATE (EMIS_LINES(1)%COMPO(NUM_COMPO))
 
 C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH 
@@ -89,7 +89,7 @@ C  H(n=3)/H(n=1)
 
       NAT = COUNT(NCHARA == 1)
       ALLOCATE (EMIS_LINES(1)%COMPO(1)%CONTRIB(NAT))
-      EMIS_LINES(1)%COMPO(1)%num_CONTRIB = NAT  
+      EMIS_LINES(1)%COMPO(1)%NUM_CONTRIB = NAT  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -126,7 +126,7 @@ C  H(n=3)/H+
 
       NPL = COUNT((NCHARP == 1).and.(NCHRGP == 1))
       ALLOCATE (EMIS_LINES(1)%COMPO(2)%CONTRIB(NPL))
-      EMIS_LINES(1)%COMPO(2)%num_CONTRIB = NPL  
+      EMIS_LINES(1)%COMPO(2)%NUM_CONTRIB = NPL  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -163,7 +163,7 @@ C  H(n=3)/H2(g)
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(3)%CONTRIB(NML))
-      EMIS_LINES(1)%COMPO(3)%num_CONTRIB = NML  
+      EMIS_LINES(1)%COMPO(3)%NUM_CONTRIB = NML  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -194,12 +194,12 @@ C  COMPONENT 4: LINEAR IN "H2+" -MOLEC.ION DENSITY
 C  H(n=3)/H2+(g)
   
       EMIS_LINES(1)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(1)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(4)%CONTRIB(NML))
-      EMIS_LINES(1)%COMPO(4)%num_CONTRIB = NML  
+      EMIS_LINES(1)%COMPO(4)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -239,7 +239,7 @@ C  H(n=3)/H-
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(5)%CONTRIB(NML))
-      EMIS_LINES(1)%COMPO(5)%num_CONTRIB = NML  
+      EMIS_LINES(1)%COMPO(5)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -280,7 +280,7 @@ C  H(n=3)/H3+
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(6)%CONTRIB(NML))
-      EMIS_LINES(1)%COMPO(6)%num_CONTRIB = NML  
+      EMIS_LINES(1)%COMPO(6)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -327,7 +327,7 @@ C  H(n=3)/H3+
 ************************************************
       
       EMIS_LINES(2)%LINE_NAME = 'BA_BETA'
-      EMIS_LINES(2)%num_COMPO = num_COMPO
+      EMIS_LINES(2)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(2)%EINSTEIN = 8.419E6
       EMIS_LINES(2)%TRANS_EN = RY * 
@@ -336,11 +336,13 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(2)%POPESC = 1.0_DP
       EMIS_LINES(2)%IROW_ESC = 0
       EMIS_LINES(2)%ICOL_ESC = 0
-      EMIS_LINES(2)%IADV_TOTAL = NADVI + num_COMPO+1 
+      EMIS_LINES(2)%IADV_TOTAL = NADVI + NUM_COMPO+1 
       
-      ALLOCATE (EMIS_LINES(2)%COMPO(num_COMPO))
+      ALLOCATE (EMIS_LINES(2)%COMPO(NUM_COMPO))
 
-C  CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH 
+C                         NUCLEAR CHARGE NUMBER=1 
 C  H(n=4)/H(n=1)
   
       EMIS_LINES(2)%COMPO(1)%COMPO_NAME = 'ATOMIC NEUTRAL HYDR.'
@@ -348,7 +350,7 @@ C  H(n=4)/H(n=1)
 
       NAT = COUNT(NCHARA == 1)
       ALLOCATE (EMIS_LINES(2)%COMPO(1)%CONTRIB(NAT))
-      EMIS_LINES(2)%COMPO(1)%num_CONTRIB = NAT  
+      EMIS_LINES(2)%COMPO(1)%NUM_CONTRIB = NAT  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -383,7 +385,7 @@ C  H(n=4)/H+
 
       NPL = COUNT((NCHARP == 1).and.(NCHRGP == 1))
       ALLOCATE (EMIS_LINES(2)%COMPO(2)%CONTRIB(NPL))
-      EMIS_LINES(2)%COMPO(2)%num_CONTRIB = NPL  
+      EMIS_LINES(2)%COMPO(2)%NUM_CONTRIB = NPL  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -418,7 +420,7 @@ C  H(n=4)/H2(g)
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(2)%COMPO(3)%CONTRIB(NML))
-      EMIS_LINES(2)%COMPO(3)%num_CONTRIB = NML  
+      EMIS_LINES(2)%COMPO(3)%NUM_CONTRIB = NML  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -449,12 +451,12 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=4)/H2+(g)
   
       EMIS_LINES(2)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(2)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(2)%COMPO(4)%CONTRIB(NML))
-      EMIS_LINES(2)%COMPO(4)%num_CONTRIB = NML  
+      EMIS_LINES(2)%COMPO(4)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -494,7 +496,7 @@ C  H(n=4)/H-
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(2)%COMPO(5)%CONTRIB(NML))
-      EMIS_LINES(2)%COMPO(5)%num_CONTRIB = NML  
+      EMIS_LINES(2)%COMPO(5)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -534,7 +536,7 @@ C  H(n=4)/H3+
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(2)%COMPO(6)%CONTRIB(NML))
-      EMIS_LINES(2)%COMPO(6)%num_CONTRIB = NML  
+      EMIS_LINES(2)%COMPO(6)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -579,7 +581,7 @@ C  H(n=4)/H3+
 ************************************************
       
       EMIS_LINES(3)%LINE_NAME = 'BA_GAMMA'
-      EMIS_LINES(3)%num_COMPO = num_COMPO
+      EMIS_LINES(3)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(3)%EINSTEIN = 2.530E6
       EMIS_LINES(3)%TRANS_EN = RY * 
@@ -588,11 +590,13 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(3)%POPESC = 1.0_DP
       EMIS_LINES(3)%IROW_ESC = 0
       EMIS_LINES(3)%ICOL_ESC = 0
-      EMIS_LINES(3)%IADV_TOTAL = NADVI + num_COMPO+1
+      EMIS_LINES(3)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
-      ALLOCATE (EMIS_LINES(3)%COMPO(num_COMPO))
+      ALLOCATE (EMIS_LINES(3)%COMPO(NUM_COMPO))
 
-C  CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH 
+C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=5)/H(n=1)
   
       EMIS_LINES(3)%COMPO(1)%COMPO_NAME = 'ATOMIC NEUTRAL HYDR.'
@@ -600,7 +604,7 @@ C  H(n=5)/H(n=1)
 
       NAT = COUNT(NCHARA == 1)
       ALLOCATE (EMIS_LINES(3)%COMPO(1)%CONTRIB(NAT))
-      EMIS_LINES(3)%COMPO(1)%num_CONTRIB = NAT  
+      EMIS_LINES(3)%COMPO(1)%NUM_CONTRIB = NAT  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -635,7 +639,7 @@ C  H(n=5)/H+
 
       NPL = COUNT((NCHARP == 1).and.(NCHRGP == 1))
       ALLOCATE (EMIS_LINES(3)%COMPO(2)%CONTRIB(NPL))
-      EMIS_LINES(3)%COMPO(2)%num_CONTRIB = NPL  
+      EMIS_LINES(3)%COMPO(2)%NUM_CONTRIB = NPL  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -670,7 +674,7 @@ C  H(n=5)/H2(g)
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(3)%COMPO(3)%CONTRIB(NML))
-      EMIS_LINES(3)%COMPO(3)%num_CONTRIB = NML  
+      EMIS_LINES(3)%COMPO(3)%NUM_CONTRIB = NML  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -701,12 +705,12 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=5)/H2+(g)
   
       EMIS_LINES(3)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(3)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(3)%COMPO(4)%CONTRIB(NML))
-      EMIS_LINES(3)%COMPO(4)%num_CONTRIB = NML  
+      EMIS_LINES(3)%COMPO(4)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -746,7 +750,7 @@ C  H(n=5)/H-
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(3)%COMPO(5)%CONTRIB(NML))
-      EMIS_LINES(3)%COMPO(5)%num_CONTRIB = NML  
+      EMIS_LINES(3)%COMPO(5)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -786,7 +790,7 @@ C  H(n=5)/H3+
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(3)%COMPO(6)%CONTRIB(NML))
-      EMIS_LINES(3)%COMPO(6)%num_CONTRIB = NML  
+      EMIS_LINES(3)%COMPO(6)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -832,7 +836,7 @@ C  H(n=5)/H3+
 ************************************************
      
       EMIS_LINES(4)%LINE_NAME = 'BA_DELTA'
-      EMIS_LINES(4)%num_COMPO = num_COMPO
+      EMIS_LINES(4)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(4)%EINSTEIN = 9.732E5
       EMIS_LINES(4)%TRANS_EN = RY * 
@@ -841,11 +845,13 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(4)%POPESC = 1.0_DP
       EMIS_LINES(4)%IROW_ESC = 0
       EMIS_LINES(4)%ICOL_ESC = 0
-      EMIS_LINES(4)%IADV_TOTAL = NADVI + num_COMPO+1
+      EMIS_LINES(4)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
-      ALLOCATE (EMIS_LINES(4)%COMPO(num_COMPO))
+      ALLOCATE (EMIS_LINES(4)%COMPO(NUM_COMPO))
 
-C  CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH 
+C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=6)/H(n=1)
   
       EMIS_LINES(4)%COMPO(1)%COMPO_NAME = 'ATOMIC NEUTRAL HYDR.'
@@ -853,7 +859,7 @@ C  H(n=6)/H(n=1)
 
       NAT = COUNT(NCHARA == 1)
       ALLOCATE (EMIS_LINES(4)%COMPO(1)%CONTRIB(NAT))
-      EMIS_LINES(4)%COMPO(1)%num_CONTRIB = NAT  
+      EMIS_LINES(4)%COMPO(1)%NUM_CONTRIB = NAT  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -888,7 +894,7 @@ C  H(n=6)/H+
 
       NPL = COUNT((NCHARP == 1).and.(NCHRGP == 1))
       ALLOCATE (EMIS_LINES(4)%COMPO(2)%CONTRIB(NPL))
-      EMIS_LINES(4)%COMPO(2)%num_CONTRIB = NPL  
+      EMIS_LINES(4)%COMPO(2)%NUM_CONTRIB = NPL  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -923,7 +929,7 @@ C  H(n=6)/H2(g)
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(4)%COMPO(3)%CONTRIB(NML))
-      EMIS_LINES(4)%COMPO(3)%num_CONTRIB = NML  
+      EMIS_LINES(4)%COMPO(3)%NUM_CONTRIB = NML  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -954,12 +960,12 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=6)/H2+(g)
   
       EMIS_LINES(4)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(4)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(4)%COMPO(4)%CONTRIB(NML))
-      EMIS_LINES(4)%COMPO(4)%num_CONTRIB = NML  
+      EMIS_LINES(4)%COMPO(4)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -999,7 +1005,7 @@ C  H(n=6)/H-
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(4)%COMPO(5)%CONTRIB(NML))
-      EMIS_LINES(4)%COMPO(5)%num_CONTRIB = NML  
+      EMIS_LINES(4)%COMPO(5)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1039,7 +1045,7 @@ C  H(n=6)/H3+
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(4)%COMPO(6)%CONTRIB(NML))
-      EMIS_LINES(4)%COMPO(6)%num_CONTRIB = NML  
+      EMIS_LINES(4)%COMPO(6)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1084,7 +1090,7 @@ C  H(n=6)/H3+
 ************************************************
       
       EMIS_LINES(5)%LINE_NAME = 'LY_ALPHA'
-      EMIS_LINES(5)%num_COMPO = num_COMPO
+      EMIS_LINES(5)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(5)%EINSTEIN = 4.699E8
       EMIS_LINES(5)%TRANS_EN = RY * 
@@ -1093,11 +1099,13 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(5)%POPESC = 1.0_DP
       EMIS_LINES(5)%IROW_ESC = 0
       EMIS_LINES(5)%ICOL_ESC = 0
-      EMIS_LINES(5)%IADV_TOTAL = NADVI + num_COMPO+1
+      EMIS_LINES(5)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
-      ALLOCATE (EMIS_LINES(5)%COMPO(num_COMPO))
+      ALLOCATE (EMIS_LINES(5)%COMPO(NUM_COMPO))
 
-C  CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH 
+C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=2)/H(n=1)
   
       EMIS_LINES(5)%COMPO(1)%COMPO_NAME = 'ATOMIC NEUTRAL HYDR.'
@@ -1105,7 +1113,7 @@ C  H(n=2)/H(n=1)
 
       NAT = COUNT(NCHARA == 1)
       ALLOCATE (EMIS_LINES(5)%COMPO(1)%CONTRIB(NAT))
-      EMIS_LINES(5)%COMPO(1)%num_CONTRIB = NAT  
+      EMIS_LINES(5)%COMPO(1)%NUM_CONTRIB = NAT  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -1140,7 +1148,7 @@ C  H(n=2)/H+
 
       NPL = COUNT((NCHARP == 1).and.(NCHRGP == 1))
       ALLOCATE (EMIS_LINES(5)%COMPO(2)%CONTRIB(NPL))
-      EMIS_LINES(5)%COMPO(2)%num_CONTRIB = NPL  
+      EMIS_LINES(5)%COMPO(2)%NUM_CONTRIB = NPL  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -1175,7 +1183,7 @@ C  H(n=2)/H2(g)
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(5)%COMPO(3)%CONTRIB(NML))
-      EMIS_LINES(5)%COMPO(3)%num_CONTRIB = NML  
+      EMIS_LINES(5)%COMPO(3)%NUM_CONTRIB = NML  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -1206,12 +1214,12 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=2)/H2+(g)
   
       EMIS_LINES(5)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(5)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(5)%COMPO(4)%CONTRIB(NML))
-      EMIS_LINES(5)%COMPO(4)%num_CONTRIB = NML  
+      EMIS_LINES(5)%COMPO(4)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1251,7 +1259,7 @@ C  H(n=2)/H-
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(5)%COMPO(5)%CONTRIB(NML))
-      EMIS_LINES(5)%COMPO(5)%num_CONTRIB = NML  
+      EMIS_LINES(5)%COMPO(5)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1291,7 +1299,7 @@ C  H(n=2)/H3+
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(5)%COMPO(6)%CONTRIB(NML))
-      EMIS_LINES(5)%COMPO(6)%num_CONTRIB = NML  
+      EMIS_LINES(5)%COMPO(6)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1336,7 +1344,7 @@ C  H(n=2)/H3+
 ************************************************
       
       EMIS_LINES(6)%LINE_NAME = 'LY_BETA'
-      EMIS_LINES(6)%num_COMPO = num_COMPO
+      EMIS_LINES(6)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(6)%EINSTEIN = 5.575E7
       EMIS_LINES(6)%TRANS_EN = RY * 
@@ -1345,11 +1353,13 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(6)%POPESC = 1.0_DP
       EMIS_LINES(6)%IROW_ESC = 0
       EMIS_LINES(6)%ICOL_ESC = 0
-      EMIS_LINES(6)%IADV_TOTAL = NADVI + num_COMPO+1
+      EMIS_LINES(6)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
-      ALLOCATE (EMIS_LINES(6)%COMPO(num_COMPO))
+      ALLOCATE (EMIS_LINES(6)%COMPO(NUM_COMPO))
 
-C  CONTRIBUTION LINEAR IN H   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH 
+C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=3)/H(n=1)
   
       EMIS_LINES(6)%COMPO(1)%COMPO_NAME = 'ATOMIC NEUTRAL HYDR.'
@@ -1357,7 +1367,7 @@ C  H(n=3)/H(n=1)
 
       NAT = COUNT(NCHARA == 1)
       ALLOCATE (EMIS_LINES(6)%COMPO(1)%CONTRIB(NAT))
-      EMIS_LINES(6)%COMPO(1)%num_CONTRIB = NAT  
+      EMIS_LINES(6)%COMPO(1)%NUM_CONTRIB = NAT  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -1392,7 +1402,7 @@ C  H(n=3)/H+
 
       NPL = COUNT((NCHARP == 1).and.(NCHRGP == 1))
       ALLOCATE (EMIS_LINES(6)%COMPO(2)%CONTRIB(NPL))
-      EMIS_LINES(6)%COMPO(2)%num_CONTRIB = NPL  
+      EMIS_LINES(6)%COMPO(2)%NUM_CONTRIB = NPL  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -1427,7 +1437,7 @@ C  H(n=3)/H2(g)
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(3)%CONTRIB(NML))
-      EMIS_LINES(6)%COMPO(3)%num_CONTRIB = NML  
+      EMIS_LINES(6)%COMPO(3)%NUM_CONTRIB = NML  
       CNT%ISP          = -1
       CNT%ITP          = -1
       CNT%FRATIO       = ''
@@ -1458,12 +1468,12 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=3)/H2+(g)
   
       EMIS_LINES(6)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(6)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(4)%CONTRIB(NML))
-      EMIS_LINES(6)%COMPO(4)%num_CONTRIB = NML  
+      EMIS_LINES(6)%COMPO(4)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1503,7 +1513,7 @@ C  H(n=3)/H-
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(5)%CONTRIB(NML))
-      EMIS_LINES(6)%COMPO(5)%num_CONTRIB = NML  
+      EMIS_LINES(6)%COMPO(5)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''
@@ -1543,7 +1553,7 @@ C  H(n=2)/H3+
 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(6)%CONTRIB(NML))
-      EMIS_LINES(6)%COMPO(6)%num_CONTRIB = NML  
+      EMIS_LINES(6)%COMPO(6)%NUM_CONTRIB = NML  
       CNT%ISP             = -1
       CNT%ITP             = -1
       CNT%FRATIO          = ''

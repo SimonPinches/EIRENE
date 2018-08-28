@@ -88,7 +88,7 @@ csw 13apr07
 
 
       INTEGER, PUBLIC, SAVE ::
-     I NGEOM_USR, NCOUP_INPUT, NSMSTRA, NSTORAM, NGSTAL, NRPES
+     I NGEOM_USR, NCOUP_INPUT, NSMSTRA, NSTORAM, NGSTAL
 
       INTEGER, PUBLIC, SAVE ::
      I NRAD,   NSWIT,   N1F,    N2F,    N3F,    NGITT,  NGITTP,
@@ -424,7 +424,7 @@ c  storage reduction parameters
       INT_PARM( 61) = NSTORAM
       INT_PARM( 62) = NGSTAL
 
-      INT_PARM( 63) = NRPES
+C     INT_PARM( 63) =        !free, not in use.
 
       INT_PARM( 64) = NRAD
       INT_PARM( 65) = NSWIT
@@ -613,7 +613,7 @@ c  species indices (1st dimension) of output tallies
       NSMSTRA     = INT_PARM( 60)
       NSTORAM     = INT_PARM( 61)
       NGSTAL      = INT_PARM( 62)
-      NRPES       = INT_PARM( 63)
+C                 = INT_PARM( 63)
 
       NRAD        = INT_PARM( 64)
       NSWIT       = INT_PARM( 65)
@@ -719,7 +719,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       NADSPC_D    = INT_PARM(146)
       NADSPC_CD   = INT_PARM(147)
 
-      NUM_LINES    = INT_PARM(148)
+      NUM_LINES   = INT_PARM(148)
       NADV_ADD    = INT_PARM(149)
 
       RETURN

@@ -1,6 +1,6 @@
 cdr modc=3 fuer cx rate coeff angefangen: um multi-step cx auch vs. t und n zu kriegen,
-cdr aber dann die Frage:  te=Ti,  ne=ni ? Und E0 immer sehr klein? Korrektes te,ti,ne,ni 
-cdr koennen zellweise kommen, z.b. aus CRM modell. 
+cdr aber dann die Frage:  te=Ti,  ne=ni ? Und E0 immer sehr klein? Korrektes te,ti,ne,ni
+cdr koennen zellweise kommen, z.b. aus CRM modell.
 cdr dann bleibt es bei einem 9-parameter fit (fuer E0 abhaengigkeit)  pro Zelle.
 
 
@@ -14,8 +14,8 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 ! 21.09.09: dr: a few more comments
 ! 20.01.14:  H.4 option for cx rate coefficients (e.g. CR rates: p + H-minus)
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
-C            remove plsti(nstordt), now: TII 
-c 25.03.15:  rename nelrcx  to nplrcx, in order to enable 
+C            remove plsti(nstordt), now: TII
+c 25.03.15:  rename nelrcx  to nplrcx, in order to enable
 c            consistency in notation with PI processes: not ready
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 cdr   jan 17 : added nuclear charge number conservation test,
@@ -30,7 +30,7 @@ C
      .                        EBULK, CHRDF0,ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 
-c  set NON-DEFAULT cx collision cross-sections and rates  
+c  set NON-DEFAULT cx collision cross-sections and rates
 c  IPL{n+} + ISP -->  IPL1{(n-m)+} + ISP2{m+}
 c  defaults for CX type processes:  exchange of identity
 
@@ -55,7 +55,7 @@ C    DEFCX(IRCX)
 C    EEFCX(IRCX)
 C    IESTCX(IRCX,...)
 C
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -70,11 +70,11 @@ C
 
       REAL(DP), INTENT(IN) :: RMASS, EBULK, FACTKK, CHRDF0
       REAL(DP), INTENT(IN) :: PLS(NSTORDR)
-      INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2, 
+      INTEGER, INTENT(IN) :: IRCX, ISP, IPL, ISCD1, ISCD2,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, CHRDIF,
-     .            ADDT, ADDTL, TMASS, PMASS, COU, 
+     .            ADDT, ADDTL, TMASS, PMASS, COU,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
      .            FP1(6),FP2(6)
@@ -393,13 +393,13 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
 254           CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
-C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
+C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               ADDL=LOG(FACTKK)-ADDTL
               rt => reacdat(kread)%rtcew
               fp1(1:3) = rt%fp1l
               fp1(4:6) = rt%fp1r
               fp2(1:3) = rt%fp2b
-              fp2(4:6) = rt%fp2t    
+              fp2(4:6) = rt%fp2t
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
@@ -515,7 +515,7 @@ C
       WRITE (IUNOUT,*) 'MODCOL ',MODCOL(3,1,IRCX),MODCOL(3,2,IRCX),
      .                           MODCOL(3,3,IRCX),MODCOL(3,4,IRCX)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                  FACRCX(IRCX,1) 
+     .                  FACRCX(IRCX,1)
       CALL EIRENE_LEER(1)
 
 

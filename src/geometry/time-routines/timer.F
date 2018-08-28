@@ -3,7 +3,7 @@ cdr                   intersection with cell boundary. used from levgeo=10
 C icts introduced, 
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 cdr   may 17:  commenting. tbd: commenting in particular of tetraheda-grid part.
-cdr  march 18: variable LHITP (same meaning now as in timep.F), had another name
+cdr  march 18: variable LHITP (meaning analogue as in timep.F). Had another name
 cdr            before, which had caused confusion with another variable in interfacing routines
 C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
@@ -1019,8 +1019,12 @@ C
       MRSURF=NRCELL
       PT=TIMINT(MRSURF)
       TIMINT(MRSURF)=0.
-      NIMINT = NIMINT+1
-      IIMINT(NIMINT) = MRSURF
+!pb   NIMINT = NIMINT+1
+!PB   IIMINT(NIMINT) = MRSURF
+      IF (IIMINT(NIMINT) == MRSURF) THEN
+        IIMINT(NIMINT) = 0
+        NIMINT = NIMINT - 1
+      END IF
       IPOLGN=NTIM(NRCELL)
       ISTS=ABS(INMTI(IPOLGN,NRCELL))
       IF (ISTS.EQ.0) THEN
@@ -1029,7 +1033,6 @@ c  on internal grid surface:  ISTS=0
       ELSEIF (ISTS.GT.0.AND.
      .        ISTS.LE.NLIM+NSTSI) THEN
 C  on non-default surface (add. or. std.): ISTS=INMTI(IPOLGN,NRCELL)
-!pb        IF (ILIIN(ISTS) == 0) THEN
         IF (ILIIN(ISTS) <= 0) THEN
           NINCX=NCHBAR(IPOLGN,NRCELL)-NRCELL
         ELSE

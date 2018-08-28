@@ -33,9 +33,9 @@ C
       USE EIRMOD_PHOTON
       USE EIRMOD_CPES
       USE EIRMOD_CSDVI
-
+ 
       IMPLICIT NONE
-
+ 
       REAL(DP), INTENT(IN) :: WMIN, XMP, XCP
       INTEGER, INTENT(IN) :: NPRIN
       INTEGER, INTENT(INOUT) :: IGASF, IGAST
@@ -44,7 +44,7 @@ C
      .           IMAT, IREFL, MSS, IDUMMY
       REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND, 
      .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT,
+     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT, 
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1
@@ -54,7 +54,7 @@ C
 C
 C---------------------------------------------------------------------
 C
-
+ 
 C
 C  INITIALIZE SURFACE REFLECTION MODELS FOR PHOTONS
 C
@@ -148,8 +148,8 @@ C   LAMBERTIAN (COSINE DISTRIBUTION
         GOTO 600
       ELSE
 C   COSINE OF ANGLE OF INCIDENCE against outer normal
-        COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-        IF (COSIN.LT.0.D0) GOTO 993
+      COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
+      IF (COSIN.LT.0.D0) GOTO 993
       ENDIF
 
  
@@ -168,13 +168,13 @@ C   CHECK IF WALL REFLECTION DATA FOR IPHOT INCIDENT ON
 C   XWALL/ZWALL ARE AVAILABLE
 C
 C  CARBON OR MOLYBDENUM ?
-
+ 
       IMAT = 2
-
+ 
 C
       THETA = ACOS(COSIN)*RADDEG
       XLAMBDA = hpcl/E0*10._DP*1.E7_DP
-
+ 
       CALL EIRENE_REFLECT_HOLLMANN (THETA, XLAMBDA, IMAT, IREFL,
      .                              THETA_OUT,ALPHA_OUT, RPROB)
 C

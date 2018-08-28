@@ -1332,17 +1332,21 @@ C
 c  spectra tallies: standard deviation 
            DO I=1,NADSPC
              DEALLOCATE(ESTIML(I)%SPC)
-             DEALLOCATE(ESTIML(I)%SDV)
-             DEALLOCATE(ESTIML(I)%SGM)
-             DEALLOCATE(ESTIML(I)%GG)
-             DEALLOCATE(ESTIML(I)%STV)
+             IF (ASSOCIATED(ESTIML(I)%SDV)) THEN
+               DEALLOCATE(ESTIML(I)%SDV)
+               DEALLOCATE(ESTIML(I)%SGM)
+               DEALLOCATE(ESTIML(I)%GG)
+               DEALLOCATE(ESTIML(I)%STV)
+             END IF
 c  spectra tallies: standard deviation for sum over strata, intermediate storage
              IF (NSMSTRA > 0) THEN
                DEALLOCATE(SMESTL(I)%SPC)
-               DEALLOCATE(SMESTL(I)%SDV)
-               DEALLOCATE(SMESTL(I)%SGM)
-               DEALLOCATE(SMESTL(I)%GG)
-               DEALLOCATE(SMESTL(I)%STV)
+               IF (ASSOCIATED(SMESTL(I)%SDV)) THEN
+                 DEALLOCATE(SMESTL(I)%SDV)
+                 DEALLOCATE(SMESTL(I)%SGM)
+                 DEALLOCATE(SMESTL(I)%GG)
+                 DEALLOCATE(SMESTL(I)%STV)
+               END IF
              END IF
            END DO
            DEALLOCATE (ESTIML)

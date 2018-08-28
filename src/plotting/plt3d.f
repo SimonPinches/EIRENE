@@ -258,7 +258,7 @@ C**GEKRUEMMTE FLAECHE ODER  EBENENPAAR ?
      .                   A3LM(J),A4LM(J),A5LM(J),
      .                   A6LM(J),A7LM(J),A8LM(J),
      .                   A9LM(J),MERK,ZX0,ZY0,ZZ0,CX,CY,CZ,
-     .                   RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10,NMACH)
+     .                   RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10)
               IF (TRCPLT) THEN
                 WRITE (iunout,*) 'FL2O CALLED'
                 WRITE (iunout,*) 'MERK= ',MERK
@@ -386,7 +386,7 @@ C
      .                   A3LM(J),A4LM(J),A5LM(J),
      .                   A6LM(J),A7LM(J),A8LM(J),
      .                   A9LM(J),MERK,ZX0,ZY0,ZZ0,CX,CY,CZ,
-     .                   RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10,NMACH)
+     .                   RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10)
               IF (TRCPLT) THEN
                 WRITE (iunout,*) 'FL2O CALLED'
                 WRITE (iunout,*) 'MERK= ',MERK
@@ -427,7 +427,7 @@ C**ZYLINDER BEGRENZT DURCH MAXIMAL EINE FLAECHE ZWEITER ORDNUNG
      .                      ZLIMS2(IB,J),XLIMS3(IB,J),YLIMS3(IB,J),
      .                      ZLIMS3(IB,J),MERK2,ZX0B,ZY0B,ZZ0B,CXB,CYB,
      .                      CZB,RZYLB,B0B,B1B,B2B,B3B,F0B,F1B,F2B,F3B,
-     .                      EPS10,NMACH)
+     .                      EPS10)
                  IF (TRCPLT) THEN
                    WRITE (iunout,*) 'FL2O CALLED'
                    WRITE (iunout,*) 'MERK2= ',MERK2
@@ -540,7 +540,7 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
      .                     ZLIMS1(IB,J),XLIMS2(IB,J),YLIMS2(IB,J),
      .                     ZLIMS2(IB,J),XLIMS3(IB,J),YLIMS3(IB,J),
      .                     ZLIMS3(IB,J),MERK2,ZX0,ZY0,ZZ0,CX,CY,CZ,
-     .                     RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10,NMACH)
+     .                     RZYL,B0,B1,B2,B3,F0,F1,F2,F3,EPS10)
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'FL2O CALLED'
                   WRITE (iunout,*) 'MERK2= ',MERK2

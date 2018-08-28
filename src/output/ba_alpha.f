@@ -310,7 +310,7 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
 c  IF H2+ from ion conversion alone
 C  H.11 2.0c INCLUDES  ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
 C  H.11 2.0b INCLUDES  ION CONVERION (CX) ON H2(V=0) ONLY
-c  If H2+  also from multi-step electron impact ionisation --> explicit ne dependence
+c  IF H2+  also from multi-step electron impact ionisation --> explicit ne dependence
 C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
 C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
 C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY

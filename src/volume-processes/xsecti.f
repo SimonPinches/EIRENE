@@ -29,6 +29,8 @@ cdr           (was missing, but accidentally correct)
 !pb  MAY  16:  tabds1 -> tabds1
 !pb  JUL  16:  ehvds1 -> ehvds1
 cdr  sept 16:  nidsi  -> nieii
+cdr  aug.18:   process kk=-9, default KER changed from 0.5 to 0.8  (=0.4 per particle)
+cdr            to better sync with HYDHEL original data.
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -255,6 +257,7 @@ C
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 73          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
+C           EPOTEI(IREI)=1.9   !  default for EDPOTI for this diss. excit. reaction)
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             EHVEI1(IREI,1:NSBOX)=8.6
             NREAEI(IREI) = -8
@@ -262,8 +265,6 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             NELREI(IREI) = -8
             NREAHV(IREI) = -4
           ELSE ! storage save mode
-!pb  in storage save mode EELEI1 has dimensions (NREI,1)
-!pb            EELEI1(IREI,1:NSBOX)=-10.5
             EELEI1(IREI,1)=-10.5
             EHVEI1(IREI,1)=8.6
             NREAEI(IREI) = -8
@@ -282,7 +283,7 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
           ENDIF
 
 C  SECOND PROCESS,  H2+ --> H+ +  H+ + e :  DEFAULT PROCESS NO. KK=-9
-cdr   KER = 0.5, ETH = -15.5  or KER=2 times 0.5 ??
+cdr   KER = 0.5, ETH = -15.5, I.E. KER=0.25 PER PARTICLE
           KK=-9
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -316,7 +317,8 @@ C
 71          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=-15.5
-C  TRANSFERRED KINETIC ENERGY: 0.5 EV
+C           EPOTEI(IREI) = 14.7!  default for EDPOTI for this diss ionis. reaction)
+C  TRANSFERRED KINETIC ENERGY: 0.5  (=0.25 EV PER PARTICLE)
             EHVEI1(IREI,1:NSBOX)=0.5
             NREAEI(IREI) = -9
             JEREAEI(IREI) = 1

@@ -535,7 +535,8 @@ C
 50    CONTINUE
 C
 C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
-      IF (LEVGEO.EQ.2) THEN
+      select case (LEVGEO)
+      case (2)
         IF (NLPOL) THEN
           DO 54 IP=1,NP2NDM
             PS21(IP)=PSURF(IP+1)-PSURF(IP)
@@ -544,9 +545,8 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
         DO 55 IR=1,NR1STM
           RQ21(IR)=RQ(IR+1)-RQ(IR)
 55      CONTINUE
-      ENDIF
-C
-      IF (LEVGEO.EQ.3) THEN
+
+      case (3)
 c  split quadrangle into two triangles, 
 c  then 1st: sample triangle according to its relative area, 
 c  then 2nd: sample uniform within this triangle
@@ -569,7 +569,7 @@ c  then 2nd: sample uniform within this triangle
           Y3=YPOL(IR+1,IP+1)
           ASIMP(2,IND)=0.5*(X1*(Y2-Y3)+X2*(Y3-Y1)+X3*(Y1-Y2))
 56      CONTINUE
-      ENDIF
+      end select
 C
       RETURN
 C
@@ -761,7 +761,8 @@ C         Z0=??, TO BE FOUND FROM X01,PHI LATER
 C
 C  FIND RADIAL AND POLOIDAL CO-ORDINATE
 C
-      IF (LEVGEO.EQ.1) THEN
+      select case (LEVGEO)
+      case (1)
         X0=RSURF(NRCELL)+RANF_EIRENE()*(RSURF(NRCELL+1)-RSURF(NRCELL))
         IF (NLPOL) THEN
           Y0=PSURF(NPCELL)+RANF_EIRENE()*(PSURF(NPCELL+1)-PSURF(NPCELL))
@@ -769,7 +770,7 @@ C
           Y0=YIA+RANF_EIRENE()*(YAA-YIA)
         END IF
 C..........................................................................
-      ELSEIF (LEVGEO.EQ.2) THEN
+      case (2)
         IF (NLCRC) THEN
 C  POLOIDAL CO-ORDINATE
           IF (NLPOL) THEN
@@ -807,46 +808,49 @@ C
           GOTO 999
         ENDIF
 C...................................................................  
-      ELSEIF (LEVGEO.EQ.3.OR.LEVGEO.EQ.4) THEN
-        IF (LEVGEO.EQ.3) THEN
-          IF (.NOT.NLPOL) THEN
-            GOTO 999
-          ENDIF
-          IN = NRCELL + (NPCELL-1)*NR1ST
-          ZEP1=AREA(IN)*RANF_EIRENE()
-!pb          IF (ZEP1.LE.ASIMP(1,NCELL)) THEN
-          IF (ZEP1.LE.ASIMP(1,IN)) THEN
-C   PUNKT IN DREIECK 1
-            X1=XPOL(NRCELL,NPCELL)
-            X2=XPOL(NRCELL,NPCELL+1)
-            X3=XPOL(NRCELL+1,NPCELL+1)
-            Y1=YPOL(NRCELL,NPCELL)
-            Y2=YPOL(NRCELL,NPCELL+1)
-            Y3=YPOL(NRCELL+1,NPCELL+1)
-          ELSE
-C   PUNKT IN DREIECK 2
-            X1=XPOL(NRCELL+1,NPCELL)
-            X2=XPOL(NRCELL,NPCELL)
-            X3=XPOL(NRCELL+1,NPCELL+1)
-            Y1=YPOL(NRCELL+1,NPCELL)
-            Y2=YPOL(NRCELL,NPCELL)
-            Y3=YPOL(NRCELL+1,NPCELL+1)
-          ENDIF
-          IPOLG=NPCELL
-        ELSEIF (LEVGEO.EQ.4) THEN
-          X1=XTRIAN(NECKE(1,NCELL))
-          X2=XTRIAN(NECKE(2,NCELL))
-          X3=XTRIAN(NECKE(3,NCELL))
-          Y1=YTRIAN(NECKE(1,NCELL))
-          Y2=YTRIAN(NECKE(2,NCELL))
-          Y3=YTRIAN(NECKE(3,NCELL))
+      case (3)
+        IF (.NOT.NLPOL) THEN
+          GOTO 999
         ENDIF
+        IN = NRCELL + (NPCELL-1)*NR1ST
+        ZEP1=AREA(IN)*RANF_EIRENE()
+        IF (ZEP1.LE.ASIMP(1,IN)) THEN
+C   POINT TO BE SAMPLED WITHIN TRIANGLE 1
+          X1=XPOL(NRCELL,NPCELL)
+          X2=XPOL(NRCELL,NPCELL+1)
+          X3=XPOL(NRCELL+1,NPCELL+1)
+          Y1=YPOL(NRCELL,NPCELL)
+          Y2=YPOL(NRCELL,NPCELL+1)
+          Y3=YPOL(NRCELL+1,NPCELL+1)
+        ELSE
+C   POINT TO BE SAMPLED WITHIN TRIANGLE 2
+          X1=XPOL(NRCELL+1,NPCELL)
+          X2=XPOL(NRCELL,NPCELL)
+          X3=XPOL(NRCELL+1,NPCELL+1)
+          Y1=YPOL(NRCELL+1,NPCELL)
+          Y2=YPOL(NRCELL,NPCELL)
+          Y3=YPOL(NRCELL+1,NPCELL+1)
+        ENDIF
+        IPOLG=NPCELL
+        Z1=0.
+        Z2=0.
+        Z3=0.
+        CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,ZZ)
+
+C...................................................................  
+      case (4)
+        X1=XTRIAN(NECKE(1,NCELL))
+        X2=XTRIAN(NECKE(2,NCELL))
+        X3=XTRIAN(NECKE(3,NCELL))
+        Y1=YTRIAN(NECKE(1,NCELL))
+        Y2=YTRIAN(NECKE(2,NCELL))
+        Y3=YTRIAN(NECKE(3,NCELL))
         Z1=0.
         Z2=0.
         Z3=0.
         CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,ZZ)
 C.................................................................
-      ELSEIF (LEVGEO.EQ.5) THEN
+      case (5)
         X1=XTETRA(NTECK(1,NCELL))
         Y1=YTETRA(NTECK(1,NCELL))
         Z1=ZTETRA(NTECK(1,NCELL))
@@ -862,11 +866,11 @@ C.................................................................
         CALL
      .  EIRENE_FPOLYT_4(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,X0,Y0,Z0)
 C....................................................................
-      ELSEIF (LEVGEO.EQ.10) THEN
+      case (10)
         WRITE (iunout,*) 'ERROR EXIT FROM SAMVOL. LEVGEO ',LEVGEO
         WRITE (iunout,*) 'TO BE DONE: RETURN CENTER OF GRAVITY IN NCELL'
         CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+      end select
 C
       IF (NLTRA) THEN
 C  FIND Z0 FROM X01,PHI IN LOCAL TOROIDAL CELL NTCELL

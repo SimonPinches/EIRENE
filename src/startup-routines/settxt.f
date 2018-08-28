@@ -5,7 +5,8 @@ c    oct.14  : input tally 22 (potential) connnected to text arrays
 cdr  dec. 15 : energy source tallies for bulk ions: additional species index ipls
 cdr            tallies 38,44,50,56 and 84
 cdr  dec.17:   pumped flux tally SPUMP:  range 1--N5=NSPZ,  rather than N7+1--N8
-cdr            size of array LMETSPW decreased accordingly 
+cdr            size of array LMETSPW decreased accordingly
+cdr  june 18:  nlemis used to condition some storage setting (FOR REVISED BLOCK 12) 
 
       SUBROUTINE EIRENE_SETTXT
 c  Set default texts  (volume tallies: name, species, units), 

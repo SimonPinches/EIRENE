@@ -49,39 +49,39 @@ c                                 NHD6: dimensioning in allocatable arrays
 c
 
       CHARACTER(500), PUBLIC, ALLOCATABLE, SAVE :: REFFIL(:)
-
-
+ 
+ 
       CONTAINS
-
-
+ 
+ 
       SUBROUTINE EIRENE_ALLOC_CREF
-
+ 
       IF (ALLOCATED(RCREF)) RETURN
-
-C  storage for TRIM database reflection model
+ 
+C  storage for TRIM database reflection model 
       NCREF = 3+12+11+7+6+5+4+5*NHD6+NHD5
       MCREF  = 6
-
+ 
       ALLOCATE (RCREF(NCREF))
       ALLOCATE (ICREF(MCREF))
       ALLOCATE (REFFIL(NHD6))
-
+ 
       ALLOCATE (HFTR0(NHD1,NHD2,NHD6))
       ALLOCATE (HFTR1(NHD1,NHD2,NHD3,NHD6))
       ALLOCATE (HFTR2(NHD1,NHD2,NHD3,NHD4,NHD6))
       ALLOCATE (HFTR3(NHD1,NHD2,NHD3,NHD4,NHD5,NHD6))
-
+ 
 C  storage for general reflection model (both: "Behrisch-Matrix" and database models)
 C  generalized to become surface specific (allows for different values per surface)
       ALLOCATE (RINTEG(0:NLIMPS))
       ALLOCATE (EINTEG(0:NLIMPS))
       ALLOCATE (AINTEG(0:NLIMPS))
 
-
+      
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*500 +
+     .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*500 + 
      .                (NHD1*NHD2*NHD6*(1+NHD3*(1+NHD4*(1+NHD5))))*8
-
+ 
       RPROB0    => RCREF(1)
       ERMIN     => RCREF(2)
       ERCUT     => RCREF(3)
@@ -101,7 +101,7 @@ cdr Why can we not use NHDI directly?
       ERDC      => RCREF(49+4*NHD6 : 48+5*NHD6)
 
       HFTR3F    => RCREF(49+5*NHD6 : 48+5*NHD6+NHD5)
-
+ 
       INE  => ICREF(1)
       INEM => ICREF(2)
       INW  => ICREF(3)
@@ -109,51 +109,51 @@ cdr Why can we not use NHDI directly?
       INR  => ICREF(5)
       INRM => ICREF(6)
 
-
+ 
       CALL EIRENE_INIT_CREF
-
+ 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CREF
-
-
+ 
+ 
       SUBROUTINE EIRENE_DEALLOC_CREF
-
+ 
       IF (.NOT.ALLOCATED(RCREF)) RETURN
-
+ 
       DEALLOCATE (RCREF)
       DEALLOCATE (ICREF)
       DEALLOCATE (REFFIL)
-
+ 
       DEALLOCATE (RINTEG)
       DEALLOCATE (EINTEG)
       DEALLOCATE (AINTEG)
-
+ 
       DEALLOCATE (HFTR0)
       DEALLOCATE (HFTR1)
       DEALLOCATE (HFTR2)
       DEALLOCATE (HFTR3)
-
+ 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CREF
-
-
+ 
+ 
       SUBROUTINE EIRENE_INIT_CREF
-
+ 
       RCREF  = 0._DP
       ICREF  = 0
       REFFIL = ' '
-
+ 
       RINTEG = 0._DP
       EINTEG = 0._DP
       AINTEG = 0._DP
-
+ 
       HFTR0 = 0._DP
       HFTR1 = 0._DP
       HFTR2 = 0._DP
       HFTR3 = 0._DP
-
+ 
       RETURN
       END SUBROUTINE EIRENE_INIT_CREF
-
-
+ 
+ 
       END MODULE EIRMOD_CREF

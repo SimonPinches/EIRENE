@@ -27,7 +27,7 @@ c
 
 c  former function femint.f :  (-->  fem_interpolate.f)
 c  interpolate a given function fecken, defined on cell vertices of grid cell no. icell, 
-c  using certain fem-shape functions.
+c  using certain FEM-shape functions.
 
 c  input:
 c  lsame:   call with same coordinates x,y,z as in previous call, just another function 'fecken'  

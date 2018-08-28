@@ -64,7 +64,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
       real(dp) :: orate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
-     .                 rrc2min, rrc2max, 
+     .                 rrc2min, rrc2max,
      .            O_SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
