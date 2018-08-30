@@ -1,5 +1,5 @@
        subroutine EIRENE_read_colrad (ir,reac,isw,iz1,
-     .                                ir_esc,ic_esc,pesc)
+     .                                ir_esc,ic_esc,p_esc)
 
 cdr  purpose:  prepare usage of A&M data from an internal, built-in, 
 cdr            collisional radiative code: 
@@ -34,12 +34,12 @@ c  to be done: units, log-lin, scaling, asymptotics
  
       integer, intent(in) :: ir, isw, iz1
       integer, intent(in), optional :: ir_esc, ic_esc
-      real(dp) , intent(in), optional :: pesc
+      real(dp) , intent(in), optional :: p_esc
       character(len=*), intent(in) :: reac
       integer, save :: ifirst
       integer, save :: ihsw(21)
-      integer :: ivar, i, IVST, irow_esc, icol_esc
-      real(dp) :: popesc
+      integer :: ivar, i, istr, irow_esc, icol_esc
+      real(dp) :: pop_esc
       character(8), save :: hstr(21)
 
       close (29+ifoff)  ! nothing further to be read, currently
@@ -105,8 +105,8 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation 
       if (present(ir_esc)) irow_esc = ir_esc
       icol_esc = 0
       if (present(ic_esc)) icol_esc = ic_esc
-      popesc = 0._dp
-      if (present(pesc)) popesc = pesc
+      pop_esc = 0._dp
+      if (present(p_esc)) pop_esc = p_esc
 
 cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
@@ -164,7 +164,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%RTC%CRM%IVARST = ISTR
           REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC
-          REACDAT(IR)%RTC%CRM%POP_ESC = POPESC
+          REACDAT(IR)%RTC%CRM%POP_ESC  = POP_ESC
           
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
@@ -185,7 +185,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%RTCMW%CRM%IVARST = ISTR  
           REACDAT(IR)%RTCMW%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTCMW%CRM%ICOL_ESC = ICOL_ESC
-          REACDAT(IR)%RTCMW%CRM%POP_ESC = POPESC
+          REACDAT(IR)%RTCMW%CRM%POP_ESC  = POP_ESC
         
         CASE (8:10)
           IF (REACDAT(IR)%LRTCEW) THEN
@@ -206,7 +206,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%RTCEW%CRM%IVARST = ISTR
           REACDAT(IR)%RTCEW%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTCEW%CRM%ICOL_ESC = ICOL_ESC
-          REACDAT(IR)%RTCEW%CRM%POP_ESC = POPESC
+          REACDAT(IR)%RTCEW%CRM%POP_ESC  = POP_ESC
 
         CASE (11:12)
           IF (REACDAT(IR)%LOTH) THEN
@@ -226,7 +226,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%OTH%CRM%IVARST = ISTR
           REACDAT(IR)%OTH%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%OTH%CRM%ICOL_ESC = ICOL_ESC
-          REACDAT(IR)%OTH%CRM%POP_ESC = POPESC
+          REACDAT(IR)%OTH%CRM%POP_ESC  = POP_ESC
           
         CASE DEFAULT
           GOTO 1000         

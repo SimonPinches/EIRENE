@@ -132,11 +132,11 @@ c   LGVAC(...,0)     : background vacuum flag
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POPESC)
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POPESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME

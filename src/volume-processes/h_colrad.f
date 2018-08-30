@@ -42,7 +42,8 @@ C   INPUT:
 
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
-C   
+C
+C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)   
 C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, 
 C                                     or photo-excitation
 C   LOPAQUE, POP_ESC:  population escape factor

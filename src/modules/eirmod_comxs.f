@@ -132,7 +132,7 @@ c
         INTEGER :: NO, MT, MP, IZ, JFEX1MN, JFEX1MX, NCONST,
      .             JFEX2MN, JFEX2MX, IROW_ESC, ICOL_ESC
         REAL(DP) :: R1MN, R1MX, DPP, FP1(6), CONST(9),
-     .              R2MN, R2MX, FP2(6), POPESC
+     .              R2MN, R2MX, FP2(6), POP_ESC
         CHARACTER(8) :: FILE
         CHARACTER(50) :: REAC_STRING
         CHARACTER(4) :: H_SELECT
@@ -1229,7 +1229,7 @@ c  reaction threshold (if any)
           REACLINES(IL)%ELEMENT = REPEAT(' ',2)
           REACLINES(IL)%IROW_ESC = 0
           REACLINES(IL)%ICOL_ESC = 0
-          REACLINES(IL)%POPESC = 1._DP
+          REACLINES(IL)%POP_ESC = 1._DP
         END DO
  
         IRLINES = 0

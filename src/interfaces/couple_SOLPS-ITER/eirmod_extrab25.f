@@ -144,11 +144,11 @@
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POPESC)
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POPESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
@@ -198,12 +198,9 @@
       real*8 :: powalf,datm3,dpls3,dmol3,dion3,dnml3,sigadd
       real*8 :: da,dp,dm,di,dn,ratio2,ratio7
       integer :: istra_in,istra_save
-!pb      real*8 :: rcmin,rcmax,fp(6),vl
-!pb      integer :: jfexmn,jfexmx
       real*8 :: rc1min,rc1max,fp1(6),rc2min,rc2max,fp2(6),vl
       integer :: jfex1mn,jfex1mx,jfex2mn,jfex2mx
       real*8 :: value
-!pb   external eirene_indmpi,eirene_neutr,eirene_slreac
       external eirene_indmpi,eirene_neutr
 
 !     !c======================================================================

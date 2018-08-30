@@ -1,6 +1,6 @@
 cdr jan 18:  distinct from solps4.3 version: e_alpcr correct now.
 cdr          (electron cooling/heating terms associated with recombination
-cdr feb 18:  l_ext, q_ext, lopaque, popesc: must not change,
+cdr feb 18:  l_ext, q_ext, lopaque, pop_esc: must not change,
 c            after first call, otherwise: reset LVIS 
 c            so far: q_ext not connected (l_ext=.false.)
 cdr may 18:  add population escape factors pop_esc(40,40), for hydrogen atom.
@@ -42,12 +42,13 @@ cdr          default: optically thin: pop_esc=1
       real(dp), intent(in) :: p1, p2
       real(dp), intent(out) :: res
 
-      real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT, popesc
+      real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT
 ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing only
       integer :: i, irow_esc, icol_esc, irc
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:), 
-     .                               q_ext(:), pop_esc(:,:)
+     .                               q_ext(:), 
+     .                               pop_esc(:,:)
       real(dp), allocatable, save :: h_stor(:,:)
       logical, allocatable, save :: lvis_h(:)
       logical :: l_ext

@@ -117,25 +117,25 @@ csw mpi
       integer :: inum, ierr
 
       inum = (ndxd+1)*(ndyd+1)*nfld*nstrad
-      call mpi_bcast (sni,inum,MPI_REAL8,
+      call mpi_bcast (sni,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast (smo,inum,MPI_REAL8,
+      call mpi_bcast (smo,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 
       inum = (ndxd+1)*(ndyd+1)*nstrad
-      call mpi_bcast (see,inum,MPI_REAL8,
+      call mpi_bcast (see,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast (sei,inum,MPI_REAL8,
+      call mpi_bcast (sei,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 
       inum = nstrad
-      call mpi_bcast (volsumn,inum,MPI_REAL8,
+      call mpi_bcast (volsumn,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast (volsumm,inum,MPI_REAL8,
+      call mpi_bcast (volsumm,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast (volsumee,inum,MPI_REAL8,
+      call mpi_bcast (volsumee,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast (volsumei,inum,MPI_REAL8,
+      call mpi_bcast (volsumei,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
       end subroutine eirene_broadcast_eirbra
 csw

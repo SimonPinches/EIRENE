@@ -183,11 +183,11 @@ C
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POPESC)
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POPESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
@@ -209,7 +209,7 @@ C
      .          SPCMN, SPCMX,SPC_SHIFT,
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, ESCD2A, ESCD2M, ESCD2I, ESCD2PH, ESCD2P,
-     .          RC1MIN, RC1MAX, RC2MIN, RC2MAX, POPESC
+     .          RC1MIN, RC1MAX, RC2MIN, RC2MAX, POP_ESC
 
 C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
 cdr   REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
@@ -1586,17 +1586,17 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
             IREAD = 1
             IROW_ESC = 0
             ICOL_ESC = 0
-            POPESC = 0.
+            POP_ESC = 0.
           ELSE
-! READ ESC NUMBERS
-            READ (ZEILE,'(2I6,E12.4)') IROW_ESC, ICOL_ESC, POPESC
+! READ POPULATION ESCAPE NUMBERS
+            READ (ZEILE,'(2I6,E12.4)') IROW_ESC, ICOL_ESC, POP_ESC
             IREAD = 0
           END IF
         ELSE
           IREAD = 0   ! CONTINUE NORMAL READING
           IROW_ESC = 0
           ICOL_ESC = 0
-          POPESC = 0.
+          POP_ESC = 0.
         END IF
 
 C  SAVE INPUT LINES ON REACLINES,  FOR SETUP-HYDKIN REACTIONS.
@@ -1624,7 +1624,7 @@ C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
         REACLINES(IL)%FP2 = 0._DP
         REACLINES(IL)%IROW_ESC = IROW_ESC
         REACLINES(IL)%ICOL_ESC = ICOL_ESC
-        REACLINES(IL)%POPESC = POPESC
+        REACLINES(IL)%POP_ESC = POP_ESC
 
         IRLINES = IL
 C  DONE
@@ -1689,7 +1689,7 @@ cdr  reaclines only needed for hydkin interface?
           REACLINES(IL)%FP2 = FP2
           REACLINES(IL)%IROW_ESC = 0
           REACLINES(IL)%ICOL_ESC = 0
-          REACLINES(IL)%POPESC = 1._DP
+          REACLINES(IL)%POP_ESC = 1._DP
         else
 ! identifier "P" found in H123. Data for photon processes! No assymptotics available
 ! set defaults
@@ -1712,7 +1712,7 @@ C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC2,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POPESC)
+     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC)
         GOTO 411
       ENDIF
 C
@@ -3603,18 +3603,18 @@ cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
 cdr  or, if that fails, by its energy (and EMIN1 flag)
           IROW_ESC = 0
           ICOL_ESC = 0
-          POPESC = 1._DP
+          POP_ESC = 1._DP
           READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
           READ (IUNIN,6666) NUM_COMPO, IROW_ESC, ICOL_ESC 
           READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
      .                      EMIS_LINES(ILINE)%TRANS_EN, 
      .                      EMIS_LINES(ILINE)%ENERGY,
-     .                      POPESC
-          IF ((IROW_ESC <= 0) .OR. (ICOL_ESC <= 0)) POPESC=1._DP
+     .                      POP_ESC
+          IF ((IROW_ESC <= 0) .OR. (ICOL_ESC <= 0)) POP_ESC=1._DP
           EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
           EMIS_LINES(ILINE)%IROW_ESC = IROW_ESC
           EMIS_LINES(ILINE)%ICOL_ESC = ICOL_ESC
-          EMIS_LINES(ILINE)%POPESC = POPESC
+          EMIS_LINES(ILINE)%POP_ESC = POP_ESC
 
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
@@ -3749,7 +3749,7 @@ c  default asymptotics
         do jcomp = 1, emis_lines(iline)%num_compo
           IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
           ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
-          POPESC = EMIS_LINES(ILINE)%POPESC
+          POP_ESC = EMIS_LINES(ILINE)%POP_ESC
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1
@@ -3757,7 +3757,8 @@ c  default asymptotics
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%ELEMENT, CNT%IZ, IROW_ESC, ICOL_ESC, POPESC )
+     .              CNT%ELEMENT, CNT%IZ, 
+     .              IROW_ESC, ICOL_ESC, POP_ESC )
 
             emis_lines(iline)%compo(jcomp)%contrib(kcontr)%irc = nrc
 
@@ -3770,7 +3771,7 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR), 
-     .              IROW_ESC, ICOL_ESC, POPESC )
+     .              IROW_ESC, ICOL_ESC, POP_ESC )
 
                 emis_lines
      .           (iline)%compo(jcomp)%contrib(kcontr)%irc_rat(ir) = nrc
