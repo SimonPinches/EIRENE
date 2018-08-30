@@ -433,7 +433,11 @@ C.................................................................
         write (iunout,*) 'sgnal, emis: ichord,istra ',
      .                            ichori,istra
         write (iunout,*) 'volumetric line emission '
-        write (iunout,*) 'contribution no. isp ',isp
+        if (isp > 0) then
+          write (iunout,*) 'contribution no. isp ',isp        
+        else
+          write (iunout,*) 'sum over contributions'
+        endif
       ENDIF
 
 C   STEP 2 DONE

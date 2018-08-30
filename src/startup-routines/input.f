@@ -1570,6 +1570,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
         IF (INDEX(ZEILE,'ADAS') .NE. 0 .OR.
      .      INDEX(ZEILE,'TAB2D') .NE. 0 ) THEN
+!  CHECK FOR ELOEMENT NAME AND CHARGE STATE IN TABLE
           READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
           CALL EIRENE_LOWERCASE(ELNAME)
         ELSE
@@ -1579,24 +1580,30 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
         IF (INDEX(ZEILE,'CRM') .NE. 0) THEN
           READ (IUNIN,'(A80)') ZEILE
-          CALL EIRENE_UPPERCASE (ZEILE)
-! CHECK FOR ESC NUMBERS
-! IF ANY OTHER CHARACTER IS FOUND "ZEILE" CONTAINS NEW REACTION LINE
-          IF (VERIFY(ZEILE,'+-.ED0123456789') > 0) THEN
+cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wreck format
+! CHECK FOR POPULATION ESCAPE  FACTORS
+! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND, 
+! "ZEILE" CONTAINS NEXT REACTION LINE
+          IF (VERIFY(ZEILE,'+-.edED0123456789') == 0) THEN
+            WRITE (IUNOUT,*)  'IR: NO POP_ESC FOUND FOR CRM'
+CDR  ??? ODER < 0 ???
             IREAD = 1
             IROW_ESC = 0
             ICOL_ESC = 0
-            POP_ESC = 0.
+            POP_ESC = 1.0
           ELSE
-! READ POPULATION ESCAPE NUMBERS
-            READ (ZEILE,'(2I6,E12.4)') IROW_ESC, ICOL_ESC, POP_ESC
+! READ POPULATION ESCAPE FACTOR, FOR TRANSITION "UPPER=IROW --> LOWER=ICOL"
+            READ (ZEILE,66665) IROW_ESC, ICOL_ESC, POP_ESC
+            WRITE (IUNOUT,*)  'IR: POP_ESC FOUND FOR CRM '
+            WRITE (IUNOUT,*)   ir,IROW_ESC,'-->',ICOL_ESC,POP_ESC
             IREAD = 0
           END IF
+C  POP. ESC. FACTORS ARE ONLY AVAILABLE FOR INTERNAL CRM MODELS
         ELSE
           IREAD = 0   ! CONTINUE NORMAL READING
           IROW_ESC = 0
           ICOL_ESC = 0
-          POP_ESC = 0.
+          POP_ESC = 1.0
         END IF
 
 C  SAVE INPUT LINES ON REACLINES,  FOR SETUP-HYDKIN REACTIONS.
@@ -2097,7 +2104,9 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
-      IDMDL = 0  ! count additional reaction cards needed for "density models".
+! counter for  additional reaction cards possibly needed for "density models".
+      IDMDL = 0 
+c  loop over background species (except: electrons) 
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2177,9 +2186,9 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
 cdr only if needed: for additional A&M data structure on REACDAT
-cdr                 so far only for DENSITYMODELS:
+cdr                 so far only for "DENSITYMODELS":
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(IPLS)%TDM%H123(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
 
@@ -2223,11 +2232,11 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%ITP(1),
      .           TDMPAR(IPLS)%TDM%ISTR(1),
      .           TDMPAR(IPLS)%TDM%FNAME(1),
-     .           TDMPAR(IPLS)%TDM%H2(1),
+     .           TDMPAR(IPLS)%TDM%H123(1),
      .           TDMPAR(IPLS)%TDM%REACTION(1),
      .           TDMPAR(IPLS)%TDM%CR(1),
      .           TDMPAR(IPLS)%TDM%A_CORONA
-            IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.2') == 0) THEN
+            IF (INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.2') == 0) THEN
               WRITE (iunout,*)
      .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL '
               WRITE (iunout,*) ' ONLY H.2 REACTIONS ARE PERMITTED '
@@ -2242,11 +2251,11 @@ c  default: only for bulk ions
      .             TDMPAR(IPLS)%TDM%ITP(I),
      .             TDMPAR(IPLS)%TDM%ISTR(I),
      .             TDMPAR(IPLS)%TDM%FNAME(I),
-     .             TDMPAR(IPLS)%TDM%H2(I),
+     .             TDMPAR(IPLS)%TDM%H123(I),
      .             TDMPAR(IPLS)%TDM%REACTION(I),
      .             TDMPAR(IPLS)%TDM%CR(I)
-              IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.11') == 0 .AND.
-     .            INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.12') == 0) THEN
+              IF (INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.11') == 0 .AND.
+     .            INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.12') == 0) THEN
                 WRITE (iunout,*)
      .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL '
                 WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS '
@@ -2259,11 +2268,14 @@ c  default: only for bulk ions
 !PB  NOTHING TO BE DONE
           END SELECT
         END IF
-511   CONTINUE
+511   CONTINUE   ! nplsi
+cdr  additional reaction cards due to density models: idmdl
+cdr   nreaci=nreaci=idmdl  ??
 C
       DO I=1,NSPZ
         CALL EIRENE_UPPERCASE (TEXTS(I))
       END DO
+       
 C
 520   READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') THEN
@@ -3609,12 +3621,16 @@ cdr  or, if that fails, by its energy (and EMIN1 flag)
           READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
      .                      EMIS_LINES(ILINE)%TRANS_EN, 
      .                      EMIS_LINES(ILINE)%ENERGY,
-     .                      POP_ESC
+     .                                        POP_ESC
           IF ((IROW_ESC <= 0) .OR. (ICOL_ESC <= 0)) POP_ESC=1._DP
           EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
           EMIS_LINES(ILINE)%IROW_ESC = IROW_ESC
           EMIS_LINES(ILINE)%ICOL_ESC = ICOL_ESC
           EMIS_LINES(ILINE)%POP_ESC = POP_ESC
+          IF ((IROW_ESC > 0) .AND. (ICOL_ESC > 0)) THEN
+            WRITE (IUNOUT,*)  'ILINE: POP_ESC FOUND FOR EMISS. LINE '
+            WRITE (IUNOUT,*)   ILINE,IROW_ESC,'-->',ICOL_ESC,POP_ESC
+          ENDIF
 
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
@@ -3718,9 +3734,9 @@ c                         is stored on num_compo+1
 ! no definition of emissivity lines was read in
 ! define OLD default emissivity model for chords, for backward compatibility.
 cdr  allocate storage and fill structure EMIS-LINES
-cdr  such that old default options are recovered
+cdr  such that old default options are recovered.
 cdr This is exclusive: as soon as at least one emission profile is
-cdr read from block "12.0", no defualt emissivities are set. 
+cdr read from block "12.0", no default emissivities are set at all. 
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3742,14 +3758,15 @@ c  default asymptotics
       nrc = nreaci + nreac_add
 
 ! one extra A&M data file for "densitymodel" (block 5): "corona" or "colrad"
-      if (idmdl > 0) nrc = nrc + 1 
+      if (idmdl > 0) nrc = nrc + 1   !dr  or better:  nrc=nrc+idmdl ??
 
-
+      WRITE (IUNOUT,*) 'BEFORE DEFINE LINES: NRC=',NRC,NREACI,NREAC_ADD
       do iline=1, num_lines
+cdr  once, for all components and contributions.
+        IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
+        ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
+        POP_ESC  = EMIS_LINES(ILINE)%POP_ESC
         do jcomp = 1, emis_lines(iline)%num_compo
-          IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
-          ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
-          POP_ESC = EMIS_LINES(ILINE)%POP_ESC
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1
@@ -3759,6 +3776,10 @@ c  default asymptotics
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              CNT%ELEMENT, CNT%IZ, 
      .              IROW_ESC, ICOL_ESC, POP_ESC )
+c  pop_esc factor is the same for all components and contributions
+            irow_esc=0
+            icol_esc=0
+            pop_esc=1.0
 
             emis_lines(iline)%compo(jcomp)%contrib(kcontr)%irc = nrc
 
@@ -3780,6 +3801,7 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
           end do   !kcontr
         end do     !jcomp
       end do       !iline
+      WRITE (IUNOUT,*) 'AFTER DEFINE LINES: NRC=',NRC
 
 c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 option
 

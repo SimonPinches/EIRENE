@@ -7,7 +7,7 @@ c           ener  :  energy parameter for identifying a particular emission prof
 c  output:  lno   :  "line number", i.e. the volumetric emission profile.
 
 cdr  so far: guessing:
-cdr currently called from SIGLINE (former Balmer and Lyman line of side routine)
+cdr currently called from SIGLINE (former Balmer and Lyman line of side routines)
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
 cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
 cdr       or a new internal iteration (time stepping, non-linear BGK iterations)

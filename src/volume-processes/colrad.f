@@ -71,16 +71,27 @@ c      for the current run/iteration/time-cycle
           allocate(q_ext(40))      !   e.g. photo excitation rate for H*(n)
           allocate(pop_esc(40,40)) !   line population escape factor (default:==1)
 
-          POP_ESC =1.0_DP
+          POP_ESC =1.0_DP          !   default: all transitions are optically thin
+
+cdr  cummulate all population escape factors for internal CR model.
+cdr  either read  
+cdr              via reaction cards (block 4) 
+cdr           or via line-emission cards (block 12) 
+cdr  
           do irc = 1, nreac
+cdr  scan over all reaction decks (from block 4 and/or block 12)
             if (reacdat(irc)%lrtc) then  ! rate coeff 
-              if (reacdat(irc)%rtc%ifit == 5) then ! crm 
+              if (reacdat(irc)%rtc%ifit == 5) then ! internal crm 
                 if (reacdat(irc)%rtc%crm%iflav == 1) then ! h-col
                   irow_esc = reacdat(irc)%rtc%crm%irow_esc
                   icol_esc = reacdat(irc)%rtc%crm%icol_esc
                   if ((irow_esc > 0) .and. (icol_esc > 0)) then
                     pop_esc(irow_esc,icol_esc) = 
      .                      reacdat(irc)%rtc%crm%pop_esc
+                    write (iunout,*) 'H-crm: pop_esc set for transition'
+                    write (iunout,*) irc,irow_esc,'p-->',icol_esc, 
+     .                               'to ',
+     .                               pop_esc(irow_esc,icol_esc)          
                   end if
                 end if
               end if
@@ -93,11 +104,15 @@ c      for the current run/iteration/time-cycle
                   if ((irow_esc > 0) .and. (icol_esc > 0)) then
                     pop_esc(irow_esc,icol_esc) = 
      .                      reacdat(irc)%rtcew%crm%pop_esc
+                    write (iunout,*) 'H-crm: pop_esc set for transition'
+                    write (iunout,*) irc,irow_esc,'e-->',icol_esc, 
+     .                               'to ',
+     .                               pop_esc(irow_esc,icol_esc)          
                   end if
                 end if
               end if
             end if
-            if (reacdat(irc)%loth) then ! other rate coeff 
+            if (reacdat(irc)%loth) then ! other rate coeff, pop_coef 
               if (reacdat(irc)%oth%ifit == 5) then ! crm 
                 if (reacdat(irc)%oth%crm%iflav == 1) then ! h-col
                   irow_esc = reacdat(irc)%oth%crm%irow_esc
@@ -105,12 +120,17 @@ c      for the current run/iteration/time-cycle
                   if ((irow_esc > 0) .and. (icol_esc > 0)) then
                     pop_esc(irow_esc,icol_esc) = 
      .                      reacdat(irc)%oth%crm%pop_esc
+                    write (iunout,*) 'H-crm: pop_esc set for transition'
+                    write (iunout,*) irc,irow_esc,'o-->',icol_esc, 
+     .                               'to ', 
+     .                               pop_esc(irow_esc,icol_esc)        
                   end if
                 end if
               end if
             end if
          end do
         end if
+
         Q_EXT = 0._DP
         L_EXT = .FALSE.
 

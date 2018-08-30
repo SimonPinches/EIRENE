@@ -982,7 +982,7 @@ cdr dimensioning of LCUT array corrected:
           DO IRF=1,NREF
             CHELP(IAN+1:IAN+8) = TRANSFER(TDMPAR(IPLS)%TDM%FNAME(IRF),
      .                                    CHELP)
-            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H2(IRF),
+            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H123(IRF),
      .                                    CHELP)
             CHELP(IAN+13:IAN+21) = TRANSFER(
      .                        TDMPAR(IPLS)%TDM%REACTION(IRF),CHELP)
@@ -1009,7 +1009,7 @@ csw
             ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%H2(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%H123(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
 csw
@@ -1026,8 +1026,8 @@ csw
           DO IRF=1,NREF
             TDMPAR(IPLS)%TDM%FNAME(IRF) = TRANSFER(CHELP(IAN+1:IAN+8),
      .            TDMPAR(IPLS)%TDM%FNAME(IRF))
-            TDMPAR(IPLS)%TDM%H2(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
-     .            TDMPAR(IPLS)%TDM%H2(IRF))
+            TDMPAR(IPLS)%TDM%H123(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
+     .            TDMPAR(IPLS)%TDM%H123(IRF))
             TDMPAR(IPLS)%TDM%REACTION(IRF) =
      .            TRANSFER(CHELP(IAN+13:IAN+21),
      .            TDMPAR(IPLS)%TDM%REACTION(IRF))

@@ -279,21 +279,22 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             case (4)
-              ISTS=ABS(INMTI(IPOLGN,MRSURF))
+              ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             case (5)
-              ISTS=ABS(INMTIT(IPOLGN,MRSURF))
+              ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
-              IF (ILIIN(ISTS) .NE. 0)
+              IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             end select
+C
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
@@ -708,7 +709,7 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
       case (4)
-        ISTS=ABS(INMTI(IPOLGN,MRSURF))
+        ISTS=ABS(INMTI(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
         IF (NLRAD.AND.ISTS.NE.0) THEN
 !pb          SG=ISIGN(1,NINCX)
           SG=SIGN(1._DP,VELX*PTRIX(IPOLGN,MRSURF)+
@@ -736,7 +737,7 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
 C
 C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
       case (5)
-        ISTS=ABS(INMTIT(IPOLGN,MRSURF))
+        ISTS=ABS(INMTIT(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
         IF (NLRAD.AND.ISTS.NE.0) THEN
 !pb          SG=ISIGN(1,NINCX)
 !pb          IF (NRCELL == 0) SG = -1.D0
@@ -755,7 +756,7 @@ C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
+          IF (ILIIN(ISTS+NLIM) .NE. 0) CALL EIRENE_STDCOL
      .  (ISTS,1,SG,*104,*380)
         ENDIF
       end select

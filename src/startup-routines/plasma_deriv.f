@@ -377,7 +377,7 @@ c...............................................................saha: done
  
           REACDAT(NREACI+1)%LRTC = .FALSE.
           CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(1),
-     .                 TDMPAR(IPLS)%TDM%H2(1),
+     .                 TDMPAR(IPLS)%TDM%H123(1),
      .                 TDMPAR(IPLS)%TDM%REACTION(1),
      .                 TDMPAR(IPLS)%TDM%CR(1),
      .                 RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
@@ -445,13 +445,13 @@ c  sum up contributions coupled to one or more (NRE) base-densities
 
             REACDAT(NREACI+1)%LOTH = .FALSE.
             CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(IRE),
-     .                   TDMPAR(IPLS)%TDM%H2(IRE),
+     .                   TDMPAR(IPLS)%TDM%H123(IRE),
      .                   TDMPAR(IPLS)%TDM%REACTION(IRE),
      .                   TDMPAR(IPLS)%TDM%CR(IRE),
      .                   RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                   RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
-            I1=INDEX(TDMPAR(IPLS)%TDM%H2(IRE),'.')
-            READ (TDMPAR(IPLS)%TDM%H2(IRE)(I1+1:),*) ISW
+            I1=INDEX(TDMPAR(IPLS)%TDM%H123(IRE),'.')
+            READ (TDMPAR(IPLS)%TDM%H123(IRE)(I1+1:),*) ISW
 
             SELECT CASE (ISW)
 
