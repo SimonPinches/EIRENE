@@ -1580,22 +1580,27 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
         IF (INDEX(ZEILE,'CRM') .NE. 0) THEN
           READ (IUNIN,'(A80)') ZEILE
-cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wreck format
+cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
 ! CHECK FOR POPULATION ESCAPE  FACTORS
 ! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND, 
+! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION. 
+          IF (VERIFY(ZEILE,'+-.edED0123456789 ') > 0) THEN
 ! "ZEILE" CONTAINS NEXT REACTION LINE
-          IF (VERIFY(ZEILE,'+-.edED0123456789') == 0) THEN
-            WRITE (IUNOUT,*)  'IR: NO POP_ESC FOUND FOR CRM'
-CDR  ??? ODER < 0 ???
+            WRITE (IUNOUT,*)  'NO POP_ESC FOUND FOR CRM'
+            WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
             IREAD = 1
             IROW_ESC = 0
             ICOL_ESC = 0
             POP_ESC = 1.0
           ELSE
+! only integer or reals found in string ZEILE
 ! READ POPULATION ESCAPE FACTOR, FOR TRANSITION "UPPER=IROW --> LOWER=ICOL"
             READ (ZEILE,66665) IROW_ESC, ICOL_ESC, POP_ESC
-            WRITE (IUNOUT,*)  'IR: POP_ESC FOUND FOR CRM '
-            WRITE (IUNOUT,*)   ir,IROW_ESC,'-->',ICOL_ESC,POP_ESC
+            WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
+            WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
+            WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+     .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
+     .                    ' POP_ESC',     POP_ESC
             IREAD = 0
           END IF
 C  POP. ESC. FACTORS ARE ONLY AVAILABLE FOR INTERNAL CRM MODELS
@@ -2352,7 +2357,7 @@ c  di profiles
       IF (INDPRO(3).LE.5)
      .  READ (IUNIN,6664) (DI0(I),DI1(I),DI2(I),DI3(I),DI4(I),DI5(I),
      .                     I=1,NPLSI)
-c  vi profile(s)
+c  v_in profile(s)
 cdr  default is: cm/s units for flow field(s)
       NLMACH=INDPRO(4).LT.0  ! Mach number units instead, rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
@@ -3627,10 +3632,6 @@ cdr  or, if that fails, by its energy (and EMIN1 flag)
           EMIS_LINES(ILINE)%IROW_ESC = IROW_ESC
           EMIS_LINES(ILINE)%ICOL_ESC = ICOL_ESC
           EMIS_LINES(ILINE)%POP_ESC = POP_ESC
-          IF ((IROW_ESC > 0) .AND. (ICOL_ESC > 0)) THEN
-            WRITE (IUNOUT,*)  'ILINE: POP_ESC FOUND FOR EMISS. LINE '
-            WRITE (IUNOUT,*)   ILINE,IROW_ESC,'-->',ICOL_ESC,POP_ESC
-          ENDIF
 
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
@@ -3777,6 +3778,16 @@ cdr  once, for all components and contributions.
      .              CNT%ELEMENT, CNT%IZ, 
      .              IROW_ESC, ICOL_ESC, POP_ESC )
 c  pop_esc factor is the same for all components and contributions
+            H123 = CNT%H123
+            FILNAM= CNT%FNAME
+            IF ((IROW_ESC > 0) .AND. (ICOL_ESC > 0) .AND.
+     .           INDEX(FILNAM,'CRM') > 0) THEN
+              WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
+              WRITE (IUNOUT,*)  'EMISS. LINE',ILINE,'TYPE ',H123
+              WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+     .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
+     .                    ' POP_ESC',     POP_ESC
+            ENDIF
             irow_esc=0
             icol_esc=0
             pop_esc=1.0
