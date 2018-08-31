@@ -1706,7 +1706,7 @@ cdr     INVALID RP%IFIT
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%POPESC,1,MPI_REAL8,
+        CALL MPI_BCAST (EMIS_LINES(I)%POP_ESC,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO

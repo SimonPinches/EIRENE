@@ -105,7 +105,7 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation 
       if (present(ir_esc)) irow_esc = ir_esc
       icol_esc = 0
       if (present(ic_esc)) icol_esc = ic_esc
-      pop_esc = 0._dp
+      pop_esc = 1._dp
       if (present(p_esc)) pop_esc = p_esc
 
 cdr  error exit for unfinished options
@@ -160,11 +160,11 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%RTC%IFIT = 5
 
           ALLOCATE (REACDAT(IR)%RTC%CRM)
-          REACDAT(IR)%RTC%CRM%IFLAV = 1
-          REACDAT(IR)%RTC%CRM%IVARST = ISTR
-          REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC
-          REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC
-          REACDAT(IR)%RTC%CRM%POP_ESC  = POP_ESC
+          REACDAT(IR)%RTC%CRM%IFLAV = 1      !  decide: H, He, H2,....
+          REACDAT(IR)%RTC%CRM%IVARST = ISTR  !   ??
+          REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC  !  population excape factor, upper level
+          REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC  !  population excape factor, lower level
+          REACDAT(IR)%RTC%CRM%POP_ESC  = POP_ESC   !  population escape factor, reaction IR
           
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN

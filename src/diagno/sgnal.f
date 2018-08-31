@@ -474,6 +474,7 @@ C
 c  how many components are requested (max) for line "ichori"?
 c  previous default: 6 hydrogenic lines, but only one per run. 
 c                    6 components each, (H, H+, H2, H2+ H-, H3+)
+c  summation over contributions (different isotopes but same emission reactions, etc..)
           MX_COMPO = 0
           IF (ALLOCATED(EMIS_LINES)) THEN
             DO I=1, NUM_LINES

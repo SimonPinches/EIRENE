@@ -107,6 +107,8 @@ C  H(n=3)/H(n=1)
       CNT%REACTION     = '2.1.5a   '
       CNT%CR           = 'OT ' 
 
+cdr all reaction data are the same for all contributions.
+cdr only CNT%ISP  (species index) may differ for different contributions.
       IAT = 0
       DO I = 1, NATMI
         IF (NCHARA(I) == 1) THEN
