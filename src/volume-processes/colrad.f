@@ -73,7 +73,7 @@ c      for the current run/iteration/time-cycle
 
           POP_ESC =1.0_DP          !   default: all transitions are optically thin
 
-cdr  cummulate all population escape factors for internal CR model.
+cdr  cumulate all population escape factors for internal CR model.
 cdr  either read  
 cdr              via reaction cards (block 4) 
 cdr           or via line-emission cards (block 12) 
