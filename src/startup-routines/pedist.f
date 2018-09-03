@@ -169,19 +169,21 @@ C>   processes to one stratum.
         NPRS_FREE=NPRS
 
 
-csw 18mar2013 added branch to test xmct from previous run
+
 C XMCT not stored on fort.11 any more (better place fort.14)
 C Without activating fort.11:
 C 1st iteration, XMCT == 0
 C 2nd iteration, XMCT value of 1st iteration 
 C etc.
-C When XMCT still was stored on fort.11 and read from fort.11 was 
-C active the situation was as follows:
-C 1st iteration, XMCT == 0, at the end of MCARLO XMCT was read from 
-C   some old fort.11
-C 2nd iteration, XMCT used from the "some old fort.11", definitly not 
-C   the last
-C   => feature broken anyway... 
+c
+cdr  reading from fort.11 was only done in pure "read-runs", 
+cdr  for modified printout, initialization, post processing, etc..
+cdr  I.e., without any Monte Carlo execution.
+cdr  The use of XMCT for parallelisation optimization therefore
+cdr  only worked within a single run 
+cdr  (but perhaps over many internal or external iterations)
+cdr  until COUTAU was deallocated again.
+
         if(xmct(0) <= 0.0 ) then
           DO ISTRA=1,NSTRA
             delt=xtim(istra)

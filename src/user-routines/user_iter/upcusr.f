@@ -1,5 +1,5 @@
 C  user supplied collision estimator.
-C  called from folion, folneut
+C  called from folion, folneut, at a collision event in cell NCELL 
 C
       SUBROUTINE EIRENE_UPCUSR(WS,IND)
 C
@@ -8,7 +8,9 @@ C
 C  ON INPUT:
 C     WS=WEIGHT/SIGTOT=WEIGHT/(VEL*ZMFPI)=WEIGHT/(VEL*SIGMA,MACR.)
 C     IND =1  PRE-COLLISION ESTIMATOR,  called prior to call to subr. COLLIDE
-C     IND =2  POST COLLISION ESTIMATOR, called after call to subr. COLLIDE
+C     IND =2  POST-COLLISION ESTIMATOR, called after call to subr. COLLIDE
+C
+C  via modules:  NCELL, IATM
 C
 C
       USE EIRMOD_PRECISION

@@ -32,6 +32,8 @@ cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures
 cdr                              multiple ion velocities in case of BGK non-lin. colisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
+cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
+cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -63,8 +65,8 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
-     .           NO_CONTRIB, ISP, ITP, IRATIO,
+     .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO, 
+     .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
@@ -1307,49 +1309,66 @@ C  by an extra input card containing 'DEFINE_LINES'
       NUM_LINES = 0
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
-! EMISSIVITY LINES DEFINED IN INPUT
-        LINES = 0
+CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLOCK 12
+cdr as additional output tally ADDV(...).
+        IREAC_ADD = 0
         NLEMIS = .TRUE.
 c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
         READ (IUNIN,6666) NUM_LINES, MOD_ADDV
-        DO I=1, NUM_LINES
+        DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
-          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,6666) NUM_COMPO  ! components of line ILINE
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
-            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
+cdr  minimal storage, but each time when a new lines comes,
+cdr  the emissivity profiles on ADDV must be re-calculated
+            NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
           ELSE 
-            NADV_ADD = NADV_ADD + NO_COMPO + 1
+cdr  all possible emissivity profiles are kept on ADDV tallies. 
+            NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
-          DO J=1, NO_COMPO
+          DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NO_CONTRIB           
-            LINES = LINES + NO_CONTRIB
-            DO K = 1, NO_CONTRIB
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE        
+            IREAC_ADD = IREAC_ADD + NUM_CONTRIB
+cdr  specify all required contributions explicitly.
+cdr  In the old default with was automatically detected 
+cdr     from mass and charge states/numbers of hydrogenic particles.
+cdr     And only one set of emission data for all contributions was used,
+cdr     plus one or two population ratios.
+cdr     Now we provide storage for one additional AM data set for each contribution,
+cdr     plus one or two population ratios.
+            DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
-              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR. 
+     .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
+cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
-                LINES = LINES + 1
+                IREAC_ADD = IREAC_ADD + 1
                 READ (IUNIN,'(18X,1X,A6)') FRATIO
-                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+                IF (INDEX(FRATIO,'ADAS')  .NE. 0  .OR.
+     .              INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
+cdr do we require a second QSS population ratio for this contribution?
                 IF (IRATIO == 2) THEN
-                  LINES = LINES + 1
+                  IREAC_ADD = IREAC_ADD + 1
                   READ (IUNIN,*)
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
-                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                  IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
+     .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
                 END IF  
-              END IF
-            END DO
-          END DO
-        END DO
+              END IF  !  IRATIO
+            END DO    !  NUM_CONTRIB   (POSSIBEL D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
+          END DO      !  NUM_COMPO     (E.G.  GROUND STATE
+        END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
-! ADD 1 FOR TOTAL
-        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
+c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
         NADV = NADV + NADV_ADD 
-        NREAC = NREAC + LINES
+        NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
@@ -1365,18 +1384,18 @@ cdr this next condition for old default: better also check for nchtal=2 ??
         MOD_ADDV = 0
         NADV=NADV +7
         NUM_LINES = 6
-        NO_COMPO = 6
-! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
-        NREAC = NREAC + NO_CONTRIB*NO_COMPO
+        NUM_COMPO = 6
+! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI 
+cdr  ?? perhaps: in old default only one line possible at a time?
+cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
+        NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
             
       END IF
 
 C  PROVIDE STORAGE ON REACDAT, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
 C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
       IF (NCHORI > 0) THEN
-!pb     NREAC=NREAC+1
-        NADV=NADV+10
  
 C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
         IF (.FALSE.) THEN

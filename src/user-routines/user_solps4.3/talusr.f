@@ -1,6 +1,9 @@
 c
+c  this version: find vibrational temeperatur of H2.
+c  i.e. H2(v) must be treated as separate molec. species 
+c
       SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
-     .              TXTTL,TXTSP,TXTUN,ILAST,*)
+     .                  TXTTL,TXTSP,TXTUN,ILAST,*)
 
 C  USER SUPPLIED POST-PROCESSED TALLY NO. ICOUNT, FOR STRATUM ISTRA,
 C  STORED ON VECTOR. (ISTRA IS KNOWN FROM COMMON COMPRT)
@@ -31,6 +34,7 @@ C
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 
       character(len=*) :: txttl,txtsp,txtun
+
       TXTTL=' '
       TXTSP=' '
       TXTUN=' '

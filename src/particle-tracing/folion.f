@@ -1,3 +1,5 @@
+cdr aug. 18   bug fix: remove virtual neutral background species
+cdr           from coulomb collision frequency evaluation 
 cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
 cdr           scoring distance clpd (full gyro motion distance)
 cdr           clpd  is switched back and forth. Needs clean up.
@@ -754,9 +756,9 @@ ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 
-!PB       IF (.NOT.LGVAC(NCELL,IPL))
-!PB  .    FNUI=FNUI+FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
-!pb       IF (.NOT.LGVAC(NCELL,IPL)) THEN
+C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
+C  Set Coulomb collisions (energy relaxation) frequencies. 
+C  Exclude vacuum region and virtual neutral background species
           IF (.NOT.LGVAC(NCELL,IPL) .AND. (NCHRGP(IPL) > 0) ) THEN
             FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
             FNUI=FNUI+FNUIAR(IPL)
@@ -896,6 +898,10 @@ c  for interactions with electrons this is usually irrelevant
         XSTORV(:)=0.D0
         DO 214 J=1,NCOU
           JJ=J
+cdr  next 2 lines added, Aug. 18. Strickly not necessary, but safer
+cdr  (allows using NCELL later also in this case).
+          NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
+          IF (LDAMCEL(NCELL)) GOTO 9912
           XSTOR2(:,:,J)=0.D0
           XSTORV2(:,J)=0.D0
           ZMFP=1.D10
