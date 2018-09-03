@@ -33,6 +33,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!   ic:        cell number
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units

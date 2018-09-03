@@ -47,6 +47,7 @@ cdr            LEXP=.true.
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!   ic:        cell number (e.g. for internal CR models).
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return erate=energy weighted rate coefficient in eV*cm**3/sec
