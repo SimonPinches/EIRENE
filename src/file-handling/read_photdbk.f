@@ -315,21 +315,11 @@ cdr          not finished
 c  reaction no IR is a "photonic" reaction 
       reacdat(ir)%lphr = .true.
  
-cdr petra's code begin
-cdr      call eirene_alloc_fit_form(reacdat(ir)%phr) 
-cdr  !  done in eirene_alloc_fit_form
-cdr  !      allocate (reacdat(ir)%phr)
-cdr         allocate (reacdat(ir)%phr%line)
-cdr         reacdat(ir)%phr%ifit = -1
-cdr  petra's code end
-
-cdr  detlev's code begin
       allocate (reacdat(ir)%phr)
 
       nullify (reacdat(ir)%phr%adas)
       nullify (reacdat(ir)%phr%poly)
       nullify (reacdat(ir)%phr%hyd)
-cdr detlev's code end
 
       reacdat(ir)%phr%line => phline
       reacdat(ir)%phr%ifit = -1

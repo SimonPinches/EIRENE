@@ -309,7 +309,9 @@ csw
 
 C Rescaling of particles per stratum, to keep total particle number 
 C independent of parallelisation (strong scaling approach):
-        NPTS = NPTS / NPESTR
+        WHERE ( NPESTR > 1 )
+          NPTS = NPTS / NPESTR
+        END WHERE
 
       END IF  
  
