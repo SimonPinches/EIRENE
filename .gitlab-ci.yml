@@ -1,5 +1,7 @@
 image: debian
 
+include: '.update_fork_branches.yml'
+
 before_script:
     # Install required programs
     - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd
@@ -11,9 +13,12 @@ stages:
     - build:executable
     - run
     - test
+    - on-schedule
 
 build_library:
     stage: build:library
+    except: 
+        - schedules
     script:
         - mkdir build
         - cd build
@@ -27,6 +32,8 @@ build_library:
 
 build_standalone_1D_slab:
     stage: build:executable
+    except: 
+        - schedules
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases/1D-H_slab
@@ -38,6 +45,8 @@ build_standalone_1D_slab:
 
 run_standalone_1D-H_slab:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/1D-H_slab
         - make output
@@ -51,6 +60,8 @@ run_standalone_1D-H_slab:
 
 test_standalone_1D-H_slab:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/1D-H_slab
         - make test
@@ -64,6 +75,8 @@ test_standalone_1D-H_slab:
 
 build_standalone_1D_slab_with_farming:
     stage: build:executable
+    except: 
+        - schedules
     only:
         - PB/feature/farming
     script:
@@ -77,6 +90,8 @@ build_standalone_1D_slab_with_farming:
 
 run_standalone_1D-H_slab_with_farming:
     stage: run
+    except: 
+        - schedules
     only:
         - PB/feature/farming
     script:
@@ -92,6 +107,8 @@ run_standalone_1D-H_slab_with_farming:
 
 test_standalone_1D-H_slab_with_farming:
     stage: test
+    except: 
+        - schedules
     only:
         - PB/feature/farming
     script:
@@ -107,6 +124,8 @@ test_standalone_1D-H_slab_with_farming:
 
 build_EMC3-EIRENE:
     stage: build:executable
+    except: 
+        - schedules
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases/EMC3/
@@ -119,6 +138,8 @@ build_EMC3-EIRENE:
 
 run_EMC3-EIRENE_H:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H/
         - make output
@@ -132,6 +153,8 @@ run_EMC3-EIRENE_H:
 
 test_EMC3-EIRENE_H:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H/
         - make test
@@ -146,6 +169,8 @@ test_EMC3-EIRENE_H:
 
 run_EMC3-EIRENE_He:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/He/
         - make output
@@ -159,6 +184,8 @@ run_EMC3-EIRENE_He:
 
 test_EMC3-EIRENE_He:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/He/
         - make test
@@ -173,6 +200,8 @@ test_EMC3-EIRENE_He:
     
 run_EMC3-EIRENE_H_multiStrata:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrata/
         - make output
@@ -186,6 +215,8 @@ run_EMC3-EIRENE_H_multiStrata:
 
 test_EMC3-EIRENE_H_multiStrata:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrata/
         - make test
@@ -200,6 +231,8 @@ test_EMC3-EIRENE_H_multiStrata:
     
 run_EMC3-EIRENE_H_multiStrataMpi:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/
         - make output
@@ -213,6 +246,8 @@ run_EMC3-EIRENE_H_multiStrataMpi:
 
 test_EMC3-EIRENE_H_multiStrataMpi:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/
         - make test
@@ -227,6 +262,8 @@ test_EMC3-EIRENE_H_multiStrataMpi:
     
 run_EMC3-EIRENE_H_multiStrataMpi2:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/
         - make output
@@ -240,6 +277,8 @@ run_EMC3-EIRENE_H_multiStrataMpi2:
 
 test_EMC3-EIRENE_H_multiStrataMpi2:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/
         - make test
@@ -254,6 +293,8 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
     
 run_EMC3-EIRENE_H_multiStrataMpi3:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/
         - make output
@@ -267,6 +308,8 @@ run_EMC3-EIRENE_H_multiStrataMpi3:
 
 test_EMC3-EIRENE_H_multiStrataMpi3:
     stage: test
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/
         - make test
@@ -281,6 +324,8 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
 
 run_EMC3-EIRENE_H_profile:
     stage: run
+    except: 
+        - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_profile/
         - make output
@@ -294,6 +339,8 @@ run_EMC3-EIRENE_H_profile:
 
 test_EMC3-EIRENE_H_profile:
     stage: test
+    except: 
+       - schedules
     script:
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_profile/
         - make test
