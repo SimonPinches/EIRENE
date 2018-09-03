@@ -30,13 +30,16 @@ c
  
       implicit none
  
-      integer :: ir
+      integer :: ir  ! corresponds to flags k, kk, istore,..... in calling programs
  
  
-!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS, HERE: K= -4,-5,...-11  
-!                                              (K=-1,-2,-3: currently not used)
+!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS, 
+!  FILL REACDAT..%RTC...
  
 
+!  HERE: K= -4,-5,...-10,-11  
+!        K= -1,-2,-3: currently not used, only for cross sections, see below 
+C
 C K=-1:   FREE 
 C K=-2:   FREE
 C K=-3:   FREE
@@ -52,8 +55,9 @@ C  RATE COEFFICIENT, JANEV, 2.1.5
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
       REACDAT(IR)%ETH = 13.6_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
@@ -72,9 +76,10 @@ C  RATE COEFFICIENT, JANEV, 2.2.5, PREPRINT (CORRECT), NOT "BOOK"
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 10.5_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-2.787217511174D+01,  1.052252660075D+01, -4.973212347860D+00,
@@ -92,9 +97,10 @@ C  RATE COEFFICIENT, JANEV, 2.2.10
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 25.0_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.834597006782D+01,  1.426322356722D+01, -5.826468569506D+00,
@@ -112,9 +118,10 @@ C  RATE COEFFICIENT, JANEV, 2.2.9
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 15.45_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.568640293666D+01,  1.733468989961D+01, -7.767469363538D+00,
@@ -132,9 +139,10 @@ C  RATE COEFFICIENT, JANEV, 2.2.12
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 10.5_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-1.781416067709D+01,  2.277799785711D+00, -1.266868411626D+00,
@@ -152,9 +160,10 @@ C  RATE COEFFICIENT, JANEV, 2.2.11
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 15.5
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      . (/-3.746192301092D+01,  1.559355031108D+01, -6.693238367093D+00,
@@ -172,9 +181,10 @@ C  RATE COEFFICIENT, JANEV, 2.2.14
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!     REACDAT(IR)%ETH = 0._DP
 cdr
 cdr  original H.2, 2.2.14 fit in Janev 1987
 cdr   REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
@@ -203,9 +213,10 @@ C  RATE COEFFICIENT, JANEV, 2.3.9
       REACDAT(IR)%RTC%IFIT = 1
 c  currently:  no asymptotics for this default reaction
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+      REACDAT(IR)%ETH = 24.56_DP
 
       REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1) =
      .  (/-4.409864886561d+01, 2.391596563469d+01,-1.075323019821d+01,
@@ -217,7 +228,8 @@ C
 
 c....................................................................... 
  
-!  SPECIFY DEFAULT MODEL FOR CROSS SECTION
+!  SPECIFY DEFAULT MODEL FOR CROSS SECTIONS:  K=-1,-2,-3, DEFAULT CX CROSS SECTIONS
+!  FILL REACDAT..%CRS...
  
  
  
@@ -244,15 +256,16 @@ c  asymptotic expression from data file HYDHEL, at low energy limit
       REACDAT(IR)%CRS%FP1R = 0._DP
       REACDAT(IR)%CRS%FP2B = 0._DP
       REACDAT(IR)%CRS%FP2T = 0._DP
-C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
+C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5 AT LOW ENERGY END
       REACDAT(IR)%CRS%JFEX1MN = 5
       REACDAT(IR)%CRS%JFEX1MX = 0
       REACDAT(IR)%CRS%JFEX2MN = 0
       REACDAT(IR)%CRS%JFEX2MX = 0
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!     REACDAT(IR)%ETH = 0._DP
       IFTFLG(IR,1) = 0
  
 C
@@ -285,9 +298,10 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
       REACDAT(IR)%CRS%JFEX2MN = 0
       REACDAT(IR)%CRS%JFEX2MX = 0
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!     REACDAT(IR)%ETH = 0._DP
       IFTFLG(IR,1) = 0
  
 C
@@ -320,9 +334,10 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFMN=5
       REACDAT(IR)%CRS%JFEX2MN = 0
       REACDAT(IR)%CRS%JFEX2MX = 0
 c
-      REACDAT(IR)%RTMAX = 0._DP
-      REACDAT(IR)%ERTMAX = -HUGE(1._DP)
-      REACDAT(IR)%ETH = 0._DP
+!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
+!     REACDAT(IR)%RTMAX = 0._DP
+!     REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+!     REACDAT(IR)%ETH = 0._DP
       IFTFLG(IR,1) = 0
  
  

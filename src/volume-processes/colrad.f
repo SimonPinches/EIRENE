@@ -3,6 +3,8 @@ cdr          (electron cooling/heating terms associated with recombination
 cdr feb 18:  l_ext, q_ext, lopaque, popesc: must not change,
 c            after first call, otherwise: reset LVIS 
 c            so far: q_ext not connected (l_ext=.false.)
+cdr may 18:  add population escape factors pop_esc(40,40), for hydrogen atom.
+cdr          default: optically thin: pop_esc=1
 
 
       subroutine eirene_colrad (ir, icrm, ivar, 
@@ -45,12 +47,13 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
       integer :: i
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:), 
-     .                               q_ext(:)
+     .                               q_ext(:), pop_esc(:,:)
       real(dp), allocatable, save :: h_stor(:,:)
       logical, allocatable, save :: lvis_h(:)
       logical :: l_ext
  
-      
+c  try to avoid repeated calls to CR model in same plasma grid cell
+c      for the current run/iteration/time-cycle     
       if (.not. allocated(lvis_h)) then
         allocate (lvis_h(nrad))
         allocate (h_stor(nhcol_store,nrad))
@@ -64,10 +67,12 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
           allocate(pop0(40))
           allocate(pop1(40))
           allocate(pop_ext(40))
-          allocate(q_ext(40))    !   e.g. photo excitation rate for H*(n)
+          allocate(q_ext(40))      !   e.g. photo excitation rate for H*(n)
+          allocate(pop_esc(40,40)) !   line population escape factor (default:==1)
         end if
         Q_EXT = 0._DP
         L_EXT = .FALSE.
+        POP_ESC =1.0_DP
 
         if (.not.lvis_h(icell))  then
 ! cell number ICELL has not yet been visited so far in this run
@@ -78,9 +83,9 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
           CALL EIRENE_H_COLRAD(P1, P2, Q_EXT, L_EXT,
      .                         POP0, POP1, POP_EXT,
      .                         ALPCR,    SCR,    SCR_EXT,
-     .                         E_ALPCR,  E_SCR,  E_SCR_EXT
+     .                         E_ALPCR,  E_SCR,  E_SCR_EXT,
 ctt  .                        ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T
-     .                         )
+     .                         POP_ESC)
 c
 c  up to nhcol_store parameters from the cr-model are stored in cell ICELL
 C  TBD: if .NOT.L_EXT: only case(1) to case(16) are available  
@@ -151,7 +156,8 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
           lvis_h(icell) = .true.
         end if
 
-! rate is calculated
+cdr  Result RES from h_colrad is now calculated.
+cdr  it may be a rate, an energly loss rate or a reduced population coefficient
         res = h_stor(ivar,icell)      
         return      
         
@@ -159,10 +165,13 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
       else   ! icrm .ne.1
          write (iunout,*) ' REQUESTED COLLISIONAL-RADIATIVE MODEL' //
      .                    ' NOT AVAILABLE '
+         WRITE (iunout,*) 'icrm ',icrm
+         WRITE (iunout,*) 'ir   ',ir
          call eirene_exit_own
       end if
 
       entry eirene_colrad_reinit
+cdr this must be done after each internal iteration or time cycle
       
       if (allocated(lvis_h)) then
          lvis_h = .false.
@@ -183,6 +192,7 @@ c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
         deallocate (pop1)
         deallocate (pop_ext)
         deallocate (q_ext)
+        deallocate (pop_esc)
       end if
 
       return

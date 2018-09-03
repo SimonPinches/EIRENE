@@ -2,7 +2,7 @@ cdr  aug. 17: added prspec, prargl;
 cdr           separate printout for energy (spectrally) resolved
 cdr           from spatially (along LOS) resolved data.
 cdr           Was so far all mixed with TRCSIG (for debugging printout)
-cdr  Jan. 2018  mod_addv added
+cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       MODULE EIRMOD_COMSIG
  
       USE EIRMOD_PRECISION
@@ -55,7 +55,7 @@ cdr  Jan. 2018  mod_addv added
         INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2), 
      .             IZ, IZ_RAT(2)
         CHARACTER(8) :: FNAME, FRATIO(2)
-        CHARACTER(4) :: H2, RAT_H2(2)
+        CHARACTER(4) :: H123, RAT_H123(2)
         CHARACTER(2) :: ELEMENT, RAT_ELEMENT(2)
         CHARACTER(9) :: REACTION, RAT_REACTION(2)
         CHARACTER(3) :: CR, RAT_CR(2)      
@@ -63,14 +63,14 @@ cdr  Jan. 2018  mod_addv added
 
       TYPE TCOMPO
         CHARACTER(80) :: COMPO_NAME
-        INTEGER :: NO_CONTRIB, IADV
+        INTEGER :: NUM_CONTRIB, IADV
         TYPE(TCONTRIB), ALLOCATABLE :: CONTRIB(:)       
       END TYPE TCOMPO
 
       TYPE TEMIS_MODEL
         CHARACTER(80) :: LINE_NAME
-        INTEGER :: NO_COMPO, IADV_TOTAL
-        REAL(DP) :: EINSTEIN, ENERGY, TRANS_EN
+        INTEGER :: NUM_COMPO, IADV_TOTAL
+        REAL(DP) :: EINSTEIN, TRANS_EN, ENERGY, POPESC
         TYPE(TCOMPO), ALLOCATABLE :: COMPO(:)
       END TYPE TEMIS_MODEL
 
@@ -145,13 +145,13 @@ cdr  Jan. 2018  mod_addv added
 
       DEALLOCATE (CH_LINE_NAME)
 
-      IF (ALLOCATED(EMIS_LINES) .AND. (NO_LINES > 0)) THEN
+      IF (ALLOCATED(EMIS_LINES) .AND. (NUM_LINES > 0)) THEN
 
-         DO I = 1, NO_LINES
+         DO I = 1, NUM_LINES
 
-           IF (EMIS_LINES(I)%NO_COMPO > 0) THEN
+           IF (EMIS_LINES(I)%NUM_COMPO > 0) THEN
 
-             DO J=1, EMIS_LINES(I)%NO_COMPO
+             DO J=1, EMIS_LINES(I)%NUM_COMPO
                DEALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB)
              END DO
 
@@ -201,8 +201,8 @@ C
       CONA%IZ_RAT       = CONB%IZ_RAT 
       CONA%FNAME        = CONB%FNAME
       CONA%FRATIO       = CONB%FRATIO
-      CONA%H2           = CONB%H2
-      CONA%RAT_H2       = CONB%RAT_H2  
+      CONA%H123         = CONB%H123
+      CONA%RAT_H123     = CONB%RAT_H123
       CONA%REACTION     = CONB%REACTION
       CONA%RAT_REACTION = CONB%RAT_REACTION
       CONA%CR           = CONB%CR 

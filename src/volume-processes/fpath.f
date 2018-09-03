@@ -21,7 +21,7 @@ cdr 06.08.15 :  arguments added to vecusr
 cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
-cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 
 
@@ -102,9 +102,9 @@ C
       REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
       REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATH,
-     .          EIRENE_CROSS, 
+     .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
-     .          EIRENE_ENERGY_RATE_COEFF, 
+     .          EIRENE_ENERGY_RATE_COEFF,
      .          CEL,CXS, VEFFQ,VEFF,
      .          TBEL, TBCX, TBPI, TBOT,
      .          SIGMAX,  EHEAVY,
@@ -116,7 +116,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
-     .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
 !pb  
      .          EIRENE_FPATHPH,
@@ -239,6 +239,7 @@ CDR  SIGVPI(IRPI)=FTABPI3 : NOT READY
 c
             SIGVPI(IRPI)=EIRENE_FTABPI3(IRPI,K)
           END IF
+
         ELSEIF (MODCOL(4,2,IRPI).EQ.2) THEN
 
 C  MODEL 2:
@@ -246,25 +247,40 @@ C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 
 ! Scale log collision energy to projectile energy for proper isotope, for rate coefficient, 
 ! i.e. use neutral particle mass.
-C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
-          ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
-          V0_REL=SQRT(PVELQ(IPLSV))
+C
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)=T
+C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+C           HENCE: USE BEAM-BEAM RATE INSTEAD.
+            VRELQ=PVELQ(IPLSV)
+            VREL=SQRT(VRELQ)
+            ELAB=LOG(VRELQ)+DEFPI(IRPI)
+            IREAC=MODCOL(4,1,IRPI)
+            CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),
+     .                       'FPATH PI1')
+            SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
+          ELSE
+C  Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
+            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+            V0_REL=SQRT(PVELQ(IPLSV))
 ! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
-          TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-          IF (NSTORDR >= NRAD) THEN
-            TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
-            FP = 0._DP
-            RCMIN = -HUGE(1._DP)
-            RCMAX = HUGE(1._DP)
+            TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+            IF (NSTORDR >= NRAD) THEN
+              TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
+              FP = 0._DP
+              RCMIN = -HUGE(1._DP)
+              RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                TRCAMD)
-          ELSE
+            ELSE
 ! CALCULATE RATE-COEFFICIENT "ON THE FLY"
-            KK=NREAPI(IRPI)
+              KK=NREAPI(IRPI)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
-          END IF
-          SIGVPI(IRPI)=EXP(EXPO)
+            ENDIF
+            SIGVPI(IRPI)=EXP(EXPO)
+          END IF        
+
+C  MODEL 3:
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
@@ -340,7 +356,7 @@ C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
-C     HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
@@ -377,6 +393,7 @@ CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
             END IF
             SIGVCX(IRCX)=EXP(EXPO)
           ENDIF
+
         ELSEIF (MODCOL(3,2,IRCX).EQ.3) THEN
 C  MODEL 3:  (ALSO:  DEFAULT CX MODEL, ONLY CROSS SECTION IS USED, NO RATE COEFFICIENTS)
 C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY

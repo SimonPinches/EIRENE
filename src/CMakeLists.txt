@@ -166,6 +166,8 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
   target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+else()
+  target_link_libraries(eirene EIRENE)
 endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
@@ -202,7 +204,7 @@ if(DOXYGEN_FOUND)
                    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../doc
                    COMMENT "Generating documentation with Doxygen" VERBATIM)
   message("-----------------------------------------------------")
-  message("To generate the documentation, type \"make docs\"")
+  message("To generate the documentation, type \"make doc\"")
   message("-----------------------------------------------------")
 endif()
 

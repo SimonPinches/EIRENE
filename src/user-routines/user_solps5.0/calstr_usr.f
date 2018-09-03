@@ -8,4 +8,3 @@ c PEs sharing calculations for a particular stratum
       integer, intent(in) :: ipe, ic
       RETURN
       END
-

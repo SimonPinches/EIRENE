@@ -104,6 +104,8 @@ c
 
         allocate (help(mxdim))
         
+cdr missing: wtotph ??
+     	
         call mpi_reduce(WTOTM(0:nmoli,istra),helpm,nmoli+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) WTOTM(0:nmoli,istra) = helpm(0:nmoli)
@@ -426,6 +428,7 @@ csw
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) LOGION(0:nioni,ISTRA) = lhelpi(0:nioni)
 
+cdr why do we need if(...) here, and not above ?
         if (nphoti > 0) then
           call mpi_reduce(LOGPHOT(0:nphoti,ISTRA),lhelpph,NPHOTI+1,
      .         mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)

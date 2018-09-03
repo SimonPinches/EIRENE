@@ -5,20 +5,24 @@ c    oct.14  : input tally 22 (potential) connnected to text arrays
 cdr  dec. 15 : energy source tallies for bulk ions: additional species index ipls
 cdr            tallies 38,44,50,56 and 84
 cdr  dec.17:   pumped flux tally SPUMP:  range 1--N5=NSPZ,  rather than N7+1--N8
-cdr            size of array LMETSPW decreased accordingly 
+cdr            size of array LMETSPW decreased accordingly
+cdr  june 18:  nlemis used to condition some storage setting (FOR REVISED BLOCK 12) 
 
       SUBROUTINE EIRENE_SETTXT
 c  Set default texts  (volume tallies: name, species, units), 
 C    ditto: surface and input tallies. 
+C  Main call: SETTXT
 C  Set first (leading) dimension of tally arrays: nfstvi, nfstwi.
+C  Entry    : STTXT1
 C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
-c    for pointers to large tally-arrays
+c                                 for pointers to large tally-arrays
 c  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
+      USE EIRMOD_CLOGAU
  
       IMPLICIT NONE
  
@@ -688,6 +692,7 @@ C
       NFSTVI(56)=NPLSI
 C
       NFSTVI(NTALA)=NADVI
+      IF (NLEMIS) NFSTVI(NTALA)=NADVI+NADV_ADD
       NFSTVI(NTALC)=NCLVI
       NFSTVI(NTALT)=NSNVI
       NFSTVI(NTALM)=NCPVI
@@ -854,6 +859,7 @@ C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
       N4=N3+NIONI
       N5=N4+NPLSI
       N6=N5+NADVI
+      IF (NLEMIS) N6 = N5+NADVI+NADV_ADD
       N7=N6+NALVI
       N8=N7+NCLVI
       N9=N8+NCPVI

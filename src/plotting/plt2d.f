@@ -5,6 +5,9 @@ cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  11.04.08: remove restriction NTTRA<100
 cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
 cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces 
+cdr  may 2018: plarr (surface normal) only for levgeo 2 and levgeo 3.
+cdr            if levgeo=2 and nlcrc: then polygon grid may not be defined.
+cdr             tbd: print warning... 
  
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
  
@@ -692,6 +695,11 @@ c  segment): all cells j with nstgrd(j)=1
             ENDIF
           enddo
           call grclp(0)
+
+
+C  PLOT ARROWS TO INDICATE SURFACE NORMAL
+C
+
           IF (PLARR) THEN
             CALL GRNWPN(2)
             do ir=1,nr1st
@@ -1142,7 +1150,7 @@ C Y-Z-PLANE
  
         CALL GRDSH(1.,0.,1.)
 C
-      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  !AND POLOIDAL GRID
+      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  ! AND POLOIDAL GRID
 C
         DO 176 NU=NPLINP,NPLOTP,NPLDLP
           IF (NLSPLT(N1ST+NU)) CALL GRNWPN(2)

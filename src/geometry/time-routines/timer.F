@@ -1,8 +1,10 @@
 cdr:  njump=3 option: continue new flight from previously found
 cdr                   intersection with cell boundary. used from levgeo=10
-C icts introduced, lcut --> llcut  (sometime after 2014)
+C icts introduced, 
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 cdr   may 17:  commenting. tbd: commenting in particular of tetraheda-grid part.
+cdr  march 18: variable LHITP (meaning analogue as in timep.F). Had another name
+cdr            before, which had caused confusion with another variable in interfacing routines
 C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
 C
@@ -129,7 +131,9 @@ C
 #endif
       INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
       INTEGER :: NSTS_CELL
-      LOGICAL :: LLCUT(N2NDPLGS), LCTS(4)
+
+      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
+      LOGICAL :: LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
  
@@ -807,8 +811,9 @@ C
 C
       DO 6100 I=1,NR1ST
         ISTS=INMP1I(I,0,0)
-C  SURFACE I IS NOT A NON DEFAULT RADIAL STANDARD SURFACE
-        IF (ISTS.EQ.0) GOTO 6100
+C  SURFACE I IS NOT A NON-DEFAULT RADIAL STANDARD SURFACE
+
+        IF (ISTS.EQ.0) CYCLE
 
         IF (TIMINT(I).EQ.0) THEN
           TIMINT(I)=1
@@ -818,27 +823,26 @@ C  SURFACE I IS NOT A NON DEFAULT RADIAL STANDARD SURFACE
 C
 C   SEARCH FOR ALL POSSIBLE INTERSECTIONS WITHIN THE CELL
 C
-          DO 6011 J=1,NRPLG
-6011        LLCUT(J)=.FALSE.
+
+          LHITP=.FALSE.
 C
           DO 6012 J=1,NPPLG
             DO 6012 K=NPOINT(1,J),NPOINT(2,J)-1
+             
+              IF (I.EQ.MPOL.and.K.EQ.JPOL) cycle
+           
               V1=(YPOL(I,K+1)-Y0)*VELX-(XPOL(I,K+1)-X0)*VELY
               V2=(YPOL(I,K)-Y0)*VELX-(XPOL(I,K)-X0)*VELY
-!pb allow only intersection with nondefault standard surfaces
-!pb no intersection with transparent parts
-!pb              LLCUT(K)=V1*V2.LE.0.
-              LLCUT(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
-6012      CONTINUE
-C
-          IF (I.EQ.MPOL) LLCUT(JPOL)=.FALSE.
-          KAN=EIRENE_ILLZ(NRPLG,LLCUT,1)+1
-          KEN=NRPLG-EIRENE_ILLZ(NRPLG,LLCUT,-1)
+! allow only intersection with non-default radial standard surfaces
+! no checking for intersection with default parts of the grid. 
+! Only: non-def. parts are checked.
+
+              LHITP(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
 C
 C   COMPUTE THE FLIGHT TIMES TO THE INTERSECTION POINTS
 C
-          DO 6013 K=KAN,KEN
-            IF (LLCUT(K)) THEN
+              if (.not.lhitp(k)) cycle
+ 
               T1=((XPOL(I,K)-X0)*VPLY(I,K)-(YPOL(I,K)-Y0)*VPLX(I,K))
      .           /(VELX*VPLY(I,K)-VELY*VPLX(I,K)+EPS60)
               IF (T1.GT.0.) THEN
@@ -846,8 +850,7 @@ C
                 TIMPOL(I,NTIM(I))=T1
                 IIMPOL(I,NTIM(I))=K
               ENDIF
-            ENDIF
-6013      CONTINUE
+6012        continue
 C
 6015      ISW=0
           DO 6020 J=1,NTIM(I)-1

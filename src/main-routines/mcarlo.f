@@ -16,7 +16,7 @@ c             also needed for this bug fix: clear_sumostra, stat_sumostra
 !pb 15.12.06: COLSUM replaced by COLLECT_COUTAU
 !pb 18.12.06: call to PEDIST only done by processor 0 to avoid trouble because
 !             of inaccuracies, call to broad_pedist needed to distribute
-!             informations calculated in pedist
+!             information calculated in pedist
 !pb 05.02.07: copy ALGV to help array before integrating to avoid array bound violation
 !pb 22.05.07: option introduced to set the random number seed after a specified
 !             number of particles (used to check parallelization)
@@ -80,7 +80,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
       REAL(DP) :: XTIM(0:NSTRA)
-C      REAL(DP) :: DXTIM(0:NSTRA)
+
       REAL(DP) :: XFL1,
      .          XPRNLS, XFACT, OVER_ACC, XPRNLI, 
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
@@ -88,7 +88,7 @@ C      REAL(DP) :: DXTIM(0:NSTRA)
      .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
      .          tim1, tim2,
      .          rn1
-C      REAL(DP) :: DELT
+
       REAL(DP), EXTERNAL :: RANF_EIRENE 
       INTEGER, EXTERNAL :: RANSET_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE
@@ -243,7 +243,6 @@ C   OR LINEAR COMBINATION THEREOF
 C   THEREFORE NUMBER OF TEST PARTICLES MAY BE LESS THAN NPTS
 C   BUT DO AT LEAST 2 PARTICLES, IN CASE NPTS(ISTRA).GE.2
 C
-!pb      CALL TRMAIN(XX,NTCPU)
       XX = NTCPU
 CVKMPI      XTIM(0)=EIRENE_SECOND_OWN()
 CVKMPI      SECND=XTIM(0)
@@ -418,6 +417,10 @@ C
 C**** INITIALIZE COMMONS COUTAU AND CSPEZ
 C
 csw 19mar2013 moved to here after call to pedist (xmct/xmcp)
+cdr  presumably because pedist uses xmct,xmcp from previous cycle with
+cdr  external code.
+cdr  In pedist.f we currently hope that COUTAU has not been deallocated
+cdr  between the present and the previous cycle.
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
 !pb      CALL EIRENE_INIT_COUTAU(NLSRON)
 
@@ -434,7 +437,7 @@ C
       NPANU=0
       OVER_ACC=0.D0
       NEW_ITER=0
-      DO ISTR=1,NSTRAI
+      DO ISTR=1,NSTRAI   ! main loop over strata
 
         timan=EIRENE_second_own()
 
@@ -870,15 +873,14 @@ C
             SECDEL=SECND2-SECND1
             CALL EIRENE_MASJ1R('PART., CPU TIME ',NPANU,SECDEL)
           ENDIF
-100     CONTINUE
+100     CONTINUE    !  nprt(istra)
+
         CALL EIRENE_LEER(1)
 
         WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
         WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
         WRITE (iunout,*) 'THIS STRATUM'
 
-
-!pb 0312 2013        timend=mpi_wtime()
         call system_clock (itimend, itimrate)
         timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
         CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
@@ -1141,7 +1143,7 @@ C
 C  CALCULATE VOLMETRIC LINE EMISSIVITIES FOR SELECTED SPECIES AND LINES
 C
       IF (NLEMIS) THEN
-        CALL EIRENE_EMISSIVITY (ISTRA,1,NO_LINES)
+        CALL EIRENE_EMISSIVITY (ISTRA,1,NUM_LINES)
       END IF
 C
 C  SCALE STANDARD DEVIATIONS, WHICH ARE NOT GIVEN IN % REL.ERROR
@@ -1384,7 +1386,7 @@ C
 C  CALCULATE VOLUMETRIC LINE EMISSIVITIES, SUM OVER STRATA
 C
         IF (NLEMIS) THEN
-          CALL EIRENE_EMISSIVITY (0,1,NO_LINES)
+          CALL EIRENE_EMISSIVITY (0,1,NUM_LINES)
         ENDIF
 C
 C  WRITE RESULTS FOR SUM OVER STRATA ON TEMP. FILE
@@ -1412,7 +1414,7 @@ C
       IF(MY_PE .EQ. 0) THEN
 C
 C  SAVE OR RESTORE SOME DATA FOR "EIRENE RECALL OPTION NFILE.NE.0"
-C  FROM FILE "FT11"
+C  FROM FILE "FT11" (all data in module COUTAU)
 C  NOTE: RECORD IRC=3 MAY BE USED IN INTERFACING ROUTINE INFCOP
 C
       IF (NFILEN.EQ.1.OR.NFILEN.EQ.6) THEN
@@ -1426,7 +1428,14 @@ C
         WRITE (11+ifoff,REC=IRC) OUTAU
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+
       ELSEIF (NFILEN.EQ.2.OR.NFILEN.EQ.7) THEN
+cdr  in this case the entire MC calculation has been skipped ("recall option" only)
+cdr  Nothing has been recalculated in present cycle.
+cdr  Both Monte Carlo loops: 
+cdr     DO ISTRA=1,NSTRAI              (strata)  
+cdr       DO 100 IPTSI=1,NPTS(ISTRA)   (histories)
+cdr  are bypassed.     
         IF (TRCFLE) WRITE (iunout,*) 'READ DATA FOR RECALL OPTION'
         IRC=1
         READ (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
@@ -1443,7 +1452,9 @@ C END SEQUENTIAL REGION
       ENDIF
 
 cdr  dec. 15
-      if (nmode.gt.0) call eirene_reset_updlin  !cdr  see above.updlin contains linear combination of tallies
+cdr  see above. Routine UPDLIN.f contains linear combination of tallies
+      if (nmode.gt.0) call eirene_reset_updlin  
+
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 

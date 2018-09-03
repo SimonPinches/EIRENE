@@ -1,5 +1,6 @@
 cpb  march 18: bug fix re plot option plnums (print surface numbers in geometry plot)
 cpb            Had cause segmentation faults in certain rare conditions).
+cdr            plarr for additional surfaces: to be written
 C
 C
       SUBROUTINE EIRENE_PLTADD (MANF,MEND)

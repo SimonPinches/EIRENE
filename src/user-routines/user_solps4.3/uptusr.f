@@ -1,3 +1,8 @@
+! 23.08.06: VPX, VPY, VRX, VRY changed to ALLOCATABLE, SAVE to speed up
+!           subroutine call (save time in storage allocation)
+cdr Jan 17: remove local allocatable cndyn.. arrays. These are now
+cdr         set in code initialisation phase
+C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
@@ -8,7 +13,7 @@ C  ALSO: SUMMED OVER IRCX (ALL CX PROCESSES)
 C  THIS VERSION:
 
 CCC   1     PARTICLE CX RATE  (ONLY TOTAL, ZERO PARTICLE SOURCE WITH THIS PROCESS, IN SINGLE SPECIES RUN)
-CCC   2-4   ENERGY   CX RATE
+CCC   2-4   ENERGY   CX RATES
 
 C    ADDV(IATM,ICELL)         : VOLUMETRIC CX RATE  (REACTIONS/S/CM**3), ATOMS
 
@@ -39,7 +44,9 @@ C
      .             IMCX,IMEL,IREL
       REAL(DP) ::  DIST,WTR,WTRSIG
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
-     .            V0_PARB,PARMOM_0
+     .            VSIG_PERP(NPLS), VAL_PERP(NPLS),
+     .            V0_PARB,PARMOM_0, 
+     .            V0_PERP,PERPMOM_0
 
 C
 C  ON INPUT:  WV=WEIGHT/VEL
@@ -65,13 +72,18 @@ C
           WTR=WV*DIST
           IRDO=NRCELL+NUPC(ICOU)*NR1P2+NBLCKA
           IRD=NCLTAL(IRDO)
+c  set parallel plasma flow parameters
 c  assume here: bvin, parmom are set in plasma_deriv. 
 c               In case of other options (indpro): see update.f
           VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
           VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
+C  for the time being: no perpendicular plasma flow.
+         VAL_PERP(1:NPLSI) =0.0
+         VSIG_PERP(1:NPLSI)=0.0 
+                  
  
 C
-          IF (LGVAC(IRDO,0)) GOTO 200
+cdr       IF (LGVAC(IRDO,0)) GOTO 200
 C
           if (ncou.gt.1) then
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
@@ -91,15 +103,15 @@ c  volumetric charge exchange rate
               ADDV(IA+IATM,IRD)=ADDV(IA+IATM,IRD)+WTRSIG
 c  note: in case of collision estimator for energy tallies in ircx process:
 c        esigcx is not set (== 0.) in fpatha.f
-c  volumetric incident ion energy loss rate due to charge exchange
-c  gain for neutrals
+c  volumetric incident ion energy loss rate due to charge exchange with iatm.
+c  Gain for neutrals
               ADDV(IA+1*NATM+IATM,IRD)=ADDV(IA+1*NATM+IATM,IRD)+
      .                            WTRSIG*ESIGCX(IRCX,1)
 c  volumetric incident neutral energy loss rate due to charge exchange
-c  loss for neutrals
+c  Loss for neutrals
               ADDV(IA+2*NATM+IATM,IRD)=ADDV(IA+2*NATM+IATM,IRD)+
      .                              WTRSIG*(-E0)
-c  volumetric net ion energy loss rate due to charge exchange
+c  volumetric net ion energy loss rate due to charge exchange with iatm.
 c  sign:  for neutrals.
               ADDV(IA+3*NATM+IATM,IRD)=ADDV(IA+3*NATM+IATM,IRD)+
      .                              WTRSIG*(ESIGCX(IRCX,1)-E0)
@@ -111,6 +123,14 @@ ccc
              V0_PARB=VEL*
      .               (VELX*BXIN(IRDO)+VELY*BYIN(IRDO)+VELZ*BZIN(IRDO))
              PARMOM_0=V0_PARB*CNDYNA(IATM)
+
+c   next: PERP NEUTRAL MOMENTUM = neutral momentum - par-neutral momentum
+
+             V0_PERP=VEL*
+     .               (VELX*(1.0-BXIN(IRDO))+
+     .                VELY*(1.0-BYIN(IRDO))+
+     .                VELZ*(1.0-BZIN(IRDO)))
+             PERPMOM_0=V0_PERP*CNDYNA(IATM)
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM ATOMS
 C

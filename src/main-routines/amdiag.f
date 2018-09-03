@@ -16,7 +16,7 @@ c                    for function eirene_sngl_poly
 
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
-C PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
+C  PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
 C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS 
 c 
 c  modcol=1: rate coefficients only dependent on local background data, not on test particle parameters
@@ -39,7 +39,7 @@ c
 c
 C  
 C  ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
-C  TO CONVERT THE ADDITIONAL TALLIES ADIN INTO UNITS OF 1/S, DIVIDE ADIN BY 0.612 e-08
+C  TO CONVERT THE ADDITIONAL TALLIES ADIN INTO UNITS OF CM**3/S, MULTIPLY ADIN BY 0.612 e-08
 c
 c  done for naint=20,22,24,26 and modcol=1
 
@@ -101,9 +101,12 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
         MM = 0
         KK = 0
 
-c  currently:  only tabei1, tabcx3, tabel3 and tabpi3 are available, and only for modcol(..,2,ns)=1,2
-c              modcol=1: rates depend only on background parameters, not on test particle parameters
-c              modcol=2: rates depend also on test particle energy. use E_test=1.5 kT_background
+c  currently:  only tabei1, tabcx3, tabel3 and tabpi3 are available, 
+c              and only for modcol(..,2,ns)=1,2
+c              modcol=1: rates depend only on background parameters,
+c                        not on test particle parameters
+c              modcol=2: rates depend also on test particle energy. 
+c                        Use E_test=1.5 kT_background
 c  to be done:  (e.g. for Beams)
 c              modcol=3: use sigma(E_test) * sqrt(E_test), ignore thermal background parameters 
 c
@@ -169,7 +172,7 @@ c  no interacting particle species found
      .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
-          TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
  
           if (mm.eq.1) then
             DO 1720 ICELL=1,NSBOX
@@ -193,7 +196,7 @@ c  not ready
      .      'ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
-          TXTPUN(IAIN,NTALN) = 'eV x A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           irei=ns
           if (mm.eq.1) then
             DO 1721 ICELL=1,NSBOX
@@ -270,7 +273,7 @@ c  no interacting particle species found
      .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)     
-          TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
           if (mm.eq.1) then            
             DO 1722 ICELL=1,NSBOX 
@@ -382,7 +385,7 @@ c  no interacting particle species found
      .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)     
-          TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
           if (mm.eq.1) then
             DO 1724 ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle            
@@ -492,7 +495,7 @@ c  no interacting particle species found
      .      'BULK ION IMPACT REACTION RATE COEFFICIENT IRPI ='//CNO
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)     
-          TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
           if (mm.eq.1) then   
             DO 1726 ICELL=1,NSBOX
@@ -576,7 +579,7 @@ c  no interacting particle species found
      .      'RECOMBINATION REACTION RATE COEFFICIENT IRRC ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
-          TXTPUN(IAIN,NTALN) = 'A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
  
           if (mm.eq.1) then
             DO 1728 ICELL=1,NSBOX
@@ -600,7 +603,7 @@ c  not ready
      .      'RECOMBINATION ENERGY LOSS RATE COEFFICIENT IRRC ='//CNO
      .      //' KK='//CN1            
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'     
-          TXTPUN(IAIN,NTALN) = 'eV x A.U. (0.612 E-8 cm3/s)'
+          TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           irrc=ns
           if (mm.eq.1) then
             DO 1729 ICELL=1,NSBOX
@@ -647,4 +650,3 @@ c  not ready
 
       RETURN
       END
-

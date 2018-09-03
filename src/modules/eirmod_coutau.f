@@ -1,6 +1,9 @@
 c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
+cdr aug 18 :  XMCT removed from read/write ft11, but still in coutau.
+cdr           Perhaps to be simplified: Move XMCT into storage for
+cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
  
       USE EIRMOD_PRECISION
@@ -47,7 +50,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
  
-! SURFACE TALLIES
+! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
      R PRFPAI(:,:),
@@ -58,6 +61,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R POTPHTI(:,:), PRFAPHTI(:,:), PRFMPHTI(:,:), PRFIPHTI(:,:),
      R PRFPHPHTI(:,:), PRFPPHTI(:,:),
      R POTPLI(:,:)
+! INTEGRALS OF SURFACE TALLIES: ENERGY FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EOTATI(:,:), ERFAAI(:,:), ERFMAI(:,:), ERFIAI(:,:), ERFPHAI(:,:),
      R ERFPAI(:,:),
@@ -67,7 +71,9 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R ERFPII(:,:),
      R EOTPHTI(:,:), ERFAPHTI(:,:), ERFMPHTI(:,:), ERFIPHTI(:,:),
      R ERFPHPHTI(:,:), ERFPPHTI(:,:),
-     R EOTPLI(:,:),
+     R EOTPLI(:,:)
+! INTEGRALS OF SURFACE TALLIES: SPUTTERING
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:), 
      R SPTPATI(:,:),
      R SPTAMLI(:,:), SPTMMLI(:,:), SPTIMLI(:,:), SPTPHMLI(:,:), 
@@ -83,7 +89,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
  
-! INTEGRAL VALUES
+! INTEGRAL VALUES, global balances, scaling
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
@@ -370,6 +376,7 @@ cdr  etote still missing ??
       ALLOCATE (NFSTWI(NTALS))
       ALLOCATE (NFSTPI(NTALI))
  
+cdr  coutau still contains xmct, but NOUTAU does not. 
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' COUTAU ',(NOUTAU+NSTRAP)*8 + NOUTTL*4
  
@@ -851,10 +858,10 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         FISCL(ISTRA)  = 0._DP
         FPHSCL(ISTRA)  = 0._DP
  
-!pb      IF (IFRST == 0) THEN
-        XMCP(ISTRA)   = 0._DP
-        XMCT(ISTRA)   = 0._DP
-!pb      END IF
+!pb     IF (IFRST == 0) THEN
+          XMCP(ISTRA)   = 0._DP
+          XMCT(ISTRA)   = 0._DP
+!pb     END IF
  
       END DO
       IFRST = 1

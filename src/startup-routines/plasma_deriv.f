@@ -372,8 +372,7 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
           DO IR=1,NSURF
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-            RCORONA = EIRENE_RATE_COEFF(NREACI+1,TEF,0._DP,.TRUE.,
-     .                                    0)
+            RCORONA = EIRENE_RATE_COEFF(NREACI+1,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s)
@@ -611,7 +610,7 @@ c .................................................................colrad done
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
 C
-C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
+C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BPERP, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
  
 C  SET DRIFT ENERGY (EV)
       DO J=1,NSBOX
@@ -636,7 +635,8 @@ C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
         END DO
       END DO
 C
-C  SET B_PERP
+C  SET B_PERP UNIT VECTOR in POL PLANE (X,Y) FOR 2D cases
+C      B_PAR IS ALREADY GIVEN AS INPUT TALLY BXIN,BYIN,BZIN
 C
       DO J=1,NSBOX
         IF (ABS(BXIN(J)) > EPS10) THEN
@@ -649,7 +649,8 @@ C
            BXP = 0._DP
            BYP = 0._DP
         END IF
-C  CHECK ORIENTATION
+        
+C  CHECK ORIENTATION, SET B_PERP SUCH THAT B_PERP CROSS B_PAR > 0  
         IF (BXIN(J)*BYP-BXP*BYIN(J) < 0._DP) THEN
            BXP = -BXP
            BYP = -BYP

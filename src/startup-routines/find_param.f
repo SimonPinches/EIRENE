@@ -32,6 +32,8 @@ cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures
 cdr                              multiple ion velocities in case of BGK non-lin. colisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
+cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
+cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -53,8 +55,8 @@ C
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
-     .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
-     .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
+     .           NITER0, NTPER, NTTRA, NCOOR, NTET,
+     .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPII, NCOPIE, NREAC_ADD,
      .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
@@ -63,11 +65,12 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
-     .           NO_CONTRIB, ISP, ITP, IRATIO
+     .           NCHTAL, MOD_ADDV, NUM_COMPO, 
+     .           NUM_CONTRIB, ISP, ITP, IRATIO,
+     .           I, J, K,
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
-      REAL(DP), ALLOCATABLE :: ENERGY(:,:)
+     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
@@ -77,7 +80,7 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: LEMISS, NLEMIS
+      LOGICAL :: NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
@@ -253,7 +256,7 @@ c  skip further comments in header
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
         LDEFSTOR = .TRUE.  ! INDICATES: STORAGE OPTIMIZATION INPUT CARD IS READ
-C   READ OPTIONAL INPUT CARD FOR STRAGE HANDLING.
+C   READ OPTIONAL INPUT CARD FOR STORAGE HANDLING.
 C   OTHERWISE: USE DEFAULTS DEFINED ABOVE.
         READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL,NREAC_ADD
@@ -945,11 +948,11 @@ cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to synch
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
-        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
+        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY'
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
         IF (LMULTI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
           NPLSTI = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
@@ -962,11 +965,11 @@ cdr these next 2 lines for Vi(ipls)
 
       IF ((NPLS > 1) .AND. (NPLSV == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
-        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
+        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY'
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
         IF (LMULVI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE  PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE  PRESENT'
           NPLSV = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
@@ -1242,7 +1245,12 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
         DO J=0, NSTRAI, 60
           READ (IUNIN,*)
         END DO
-        IF (LRPSCUT) READ (IUNIN,*)
+
+cdr wrong place for this card here
+        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps-cut option flags" would we
+                                    !dr read only below (3d plots and nlraps) then
+                                    !dr this exception would not be needed at all.
+
         DO J=1,NVOLPL
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1284,60 +1292,82 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+      IREAD=1
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
-c  parent state contributions
+c  read up to NUM_LINES transitions (volumetric line emissions), 
+c  Each LINE may consist of NUM_CONTRIB 
+c  for different parent (donor) state components.
+c  Identify the block of LINES and COMPONENTS available in this run 
+C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
-      NO_LINES = 0
+      NUM_LINES = 0
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
-! EMISSIVITY LINES DEFINED IN INPUT
-        LINES = 0
+CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLOCK 12
+cdr as additional output tally ADDV(...).
+        IREAC_ADD = 0
         NLEMIS = .TRUE.
-        READ (IUNIN,6666) NO_LINES, MOD_ADDV
-        DO I=1, NO_LINES
+c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
+        READ (IUNIN,6666) NUM_LINES, MOD_ADDV
+        DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
-          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,6666) NUM_COMPO  ! components of line ILINE
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
-            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
+cdr  minimal storage, but each time when a new lines comes,
+cdr  the emissivity profiles on ADDV must be re-calculated
+            NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
           ELSE 
-            NADV_ADD = NADV_ADD + NO_COMPO + 1
+cdr  all possible emissivity profiles are kept on ADDV tallies. 
+            NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
-          DO J=1, NO_COMPO
+          DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NO_CONTRIB           
-            LINES = LINES + NO_CONTRIB
-            DO K = 1, NO_CONTRIB
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE        
+            IREAC_ADD = IREAC_ADD + NUM_CONTRIB
+cdr  specify all required contributions explicitly.
+cdr  In the old default with was automatically detected 
+cdr     from mass and charge states/numbers of hydrogenic particles.
+cdr     And only one set of emission data for all contributions was used,
+cdr     plus one or two population ratios.
+cdr     Now we provide storage for one additional AM data set for each contribution,
+cdr     plus one or two population ratios.
+            DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
-              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR. 
+     .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
+cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
-                LINES = LINES + 1
+                IREAC_ADD = IREAC_ADD + 1
                 READ (IUNIN,'(18X,1X,A6)') FRATIO
-                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+                IF (INDEX(FRATIO,'ADAS')  .NE. 0  .OR.
+     .              INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
+cdr do we require a second QSS population ratio for this contribution?
                 IF (IRATIO == 2) THEN
-                  LINES = LINES + 1
+                  IREAC_ADD = IREAC_ADD + 1
                   READ (IUNIN,*)
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
-                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+                  IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
+     .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
                 END IF  
-              END IF
-            END DO
-          END DO
-        END DO
+              END IF  !  IRATIO
+            END DO    !  NUM_CONTRIB   (POSSIBEL D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
+          END DO      !  NUM_COMPO     (E.G.  GROUND STATE
+        END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
-! ADD 1 FOR TOTAL
-        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
+c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
         NADV = NADV + NADV_ADD 
-        NREAC = NREAC + LINES
+        NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
@@ -1346,64 +1376,23 @@ c  parent state contributions
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
 
+cdr this next condition for old default: better also check for nchtal=2 ??
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
-      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
-! USE DEFAULT LINES FOR EMISSIVITY
+      IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
+! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
         MOD_ADDV = 0
-        NADV=NADV+10
-        NO_LINES = 6
-        NO_COMPO = 6
-! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
-        NREAC = NREAC + NO_CONTRIB*NO_COMPO
+        NADV=NADV +7
+        NUM_LINES = 6
+        NUM_COMPO = 6
+! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI 
+cdr  ?? perhaps: in old default only one line possible at a time?
+cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
+        NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
             
       END IF
 
 
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
-C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
-      IF (NCHORI > 0) THEN
-!pb     NREAC=NREAC+1
-        NADV=NADV+10
- 
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
-        IF (.FALSE.) THEN
-        ALLOCATE (ENERGY(2,NCHORI))
-        ENERGY = 0._DP
-        LINES = 0
-
-        DO J = 1, NCHORI
-          READ (IUNIN,*)
-          READ (IUNIN,'(12I6)') NCHTAL
-          READ (IUNIN,*)
-          READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
-          READ (IUNIN,*)
-          READ (IUNIN,*)
-          IF (NCHTAL == 2) THEN
-            LEMISS = .FALSE.
-            DO I = 1, LINES
-              D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
-              D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
-              IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                LEMISS = .TRUE.
-                EXIT
-              END IF
-            END DO
-            IF (.NOT.LEMISS) THEN
-              LINES = LINES + 1
-              ENERGY(1,LINES) = EMIN1
-              ENERGY(2,LINES) = EMAX1
-            END IF
-          END IF
-        END DO
-
-C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
-C  OF EMISSION PROFILES
-          NREAC = NREAC + LINES*6 + 3
-
-          DEALLOCATE (ENERGY)
-        END IF
-      END IF
 
 C  SKIP READING REST OF THIS BLOCK
       READ (IUNIN,'(A72)') ZEILE

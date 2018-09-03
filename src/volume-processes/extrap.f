@@ -2,27 +2,28 @@ cdr  aug.16 extended options for extrapolation beyond valid range of fit.
 cdr         parmlim,fparlim added to argument list
 cdr         added: iflag=4  constant extrapolation  (e.g. for low density limit, corona)
 cdr         to be done: automatically ensure continuity across parmlim,
-cdr                     in case of iflag=2,5. Only when fp1,fp2,fp3 are internally
-cdr                     derived in sngl_poly.f, then this is guaranteed
+cdr                     in case of iflag=2,...,5. 
+cdr         Only when fp1,fp2,fp3 are internally
+cdr         derived in sngl_poly.f, then this is guaranteed
 C
       FUNCTION EIRENE_EXTRAP(PARM,PARMLIM,FPARLIM,
      .                       IFLAG,FP1,FP2,FP3)
 C
-C  FUNCTION FOR EXTRAPOLATING SINGLE PARAMETER FITS "FF" BEYOND THEIR
-C  RANGE OF VALIDITY, WHEN PARM IS OUT OF RANGE. RETURN EXTRAP=FF(PARM)
+C  FUNCTION FOR EXTRAPOLATING SINGLE PARAMETER FITS "FF(PP)" BEYOND THEIR
+C  RANGE OF VALIDITY, WHEN LN(PP)=PARM IS OUT OF RANGE. RETURN EXTRAP=FF(PARM)
 C  
 C  INPUT:  PARM   : LOG OF INDEPENDENT PARAMETER (RELATIVE ENERGY, TEMPERATURE, DENSITY)
-C                   WHICH IS OUT OF VALID FIT RANGE
+C                   WHICH IS OUT OF VALID FIT RANGE: PARM=LN(PP)
 C          PARMLIM: LOG OF THE NEAREST BOUNDARY FOR VALID PARAMETER PARM.
 C          FPARLIM: FF(PARMLIM)  (NOT: LOG THEREOF)
 
-C  OUTPUT: EXTRAP IS NOT LOG, BUT THE TRUE VALUE OF THE EXTRAPOLATED FIT EXPRESSION
+C  OUTPUT: EXTRAP IS NOT LOG(FF), BUT THE TRUE VALUE OF THE EXTRAPOLATED FIT EXPRESSION
 C          EXTRAP = FF(PARM) 
 
 C  TYPE  IFLAG=1--3: JANEV ET AL. , SPRINGER, 1987, P13
 C  TYPE  IFLAG=5  BACHMANN ET AL., IPP-REPORT, .....ELASTIC
 
-C  IFLAG=1 :  RETURN EXTRAP=0.0
+C  IFLAG=1 :  RETURN EXTRAP=0.0 OUTSIDE RANGE OF FIT VALIDITY
 C  IFLAG=4 :  RETURN EXTRAP=FPARLIM  (EXTRAPOLATION BY A CONSTANT, DETERMINED
 C                                     BY THE FIT VALUE AT THE VALIDITY BOUNDARY)
 C  IFLAG=5:   RETURN EXTRAP=EXP(FP1+FP2*PARM+FP3*PARM**2), 2ND ORDER ON LOG SCALE
@@ -53,6 +54,7 @@ C  FP3=-N
         EIRENE_EXTRAP=FP2*X**FP3*LOG(X)
 
       ELSEIF (IFLAG.EQ.3) THEN
+C  LINEAR EXTRAPOLATION OF LN(FF) IN PARM= LN(P)
         EIRENE_EXTRAP=EXP(FP1+FP2*PARM)
 
       ELSEIF (IFLAG.EQ.4) THEN
@@ -61,7 +63,7 @@ C
         EIRENE_EXTRAP=FPARLIM
 
       ELSEIF (IFLAG.EQ.5) THEN
-C  LINEAR OR QUADRATIC EXTRAPOLATION IN LN(PARM)
+C  QUADRATIC EXTRAPOLATION OF LN(FF) IN PARM=LN(PP)
         EIRENE_EXTRAP=EXP(FP1+FP2*PARM+FP3*PARM**2)
       ELSE
         GOTO 999

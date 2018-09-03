@@ -148,6 +148,11 @@ C in this particlar case: retain old pitch: velpar/velper. No pitch angle scatte
         VELPAR=VELPAR*FAC
         VELPER=VELPER*FAC
         E0PAR=E0PAR*FAC*FAC
+      ELSE
+        WRITE (IUNOUT,*) 'NEGATIVE TIMESTEP IN FPKCOL '
+        WRITE (IUNOUT,*) 'KILL PARTICLE '
+        WRITE (IUNOUT,*) 'NPANU, ZT, VEL ',NPANU,ZT,VEL
+        GOTO 999
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
 c  gets new B-field

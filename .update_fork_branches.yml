@@ -1,0 +1,36 @@
+update_fork_branches:
+    stage: on-schedule
+    only: 
+        - schedules
+    variables:
+        ITER_REPO: 'ssh://git@git.iter.org/bnd/eirene.git'
+    before_script:
+        # Install ssh-agent and git
+        - apt-get update -y && apt-get -y install openssh-client git
+        # Run ssh-agent (inside the build environment)
+        - eval $(ssh-agent -s)
+        # Add the required SSH keys to the agent store
+        # We're using tr to fix line endings which makes ed25519 keys work
+        # without extra base64 encoding.
+        - echo "$SSH_KEY_ITER" | tr -d '\r' | ssh-add - > /dev/null
+        - echo "$SSH_KEY_EIRENE_DEPLOY" | tr -d '\r' | ssh-add - > /dev/null
+        # Create the SSH directory and give it the right permissions
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Use ssh-keyscan to scan the keys of your private servers.
+        - ssh-keyscan git.iter.org >> ~/.ssh/known_hosts
+        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        # Add ITER repository as additional remote
+        - git remote add -t master -t develop iter $ITER_REPO || git remote set-url iter $ITER_REPO
+        - git remote set-url --push iter no_push
+        # Change origin push URL to get write access to EIRENE repository
+        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+        # Fetch available branches from ITER
+        - git fetch iter
+        # Checkout and push branches to EIRENE repository
+        - git checkout forks/iter/master && git merge iter/master || git checkout -b forks/iter/master iter/master 
+        - git push -u origin forks/iter/master:forks/iter/master
+        - git checkout forks/iter/develop && git merge iter/develop || git checkout -b forks/iter/develop iter/develop
+        - git push -u origin forks/iter/develop:forks/iter/develop

@@ -27,7 +27,7 @@ c
 
 c  former function femint.f :  (-->  fem_interpolate.f)
 c  interpolate a given function fecken, defined on cell vertices of grid cell no. icell, 
-c  using fem-shape functions.
+c  using certain FEM-shape functions.
 
 c  input:
 c  lsame:   call with same coordinates x,y,z as in previous call, just another function 'fecken'  
@@ -36,7 +36,8 @@ c           if not lsame: local coordinates are calculated here (call fem_local-
 c  output:
 c  res : interpolated function fecken, evaluated at x,y,z 
 
-c  programmed for levgeo=4,5, as well as 2D (x,y) grids in case of levgeo=1,2,3
+c  programmed for levgeo=4,5, 
+c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
 
  
       use eirmod_precision
@@ -47,6 +48,8 @@ c  programmed for levgeo=4,5, as well as 2D (x,y) grids in case of levgeo=1,2,3
       use eirmod_cpolyg
       use eirmod_ctrig
       use eirmod_ctetra
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+
 
       implicit none
 
@@ -64,7 +67,7 @@ c  programmed for levgeo=4,5, as well as 2D (x,y) grids in case of levgeo=1,2,3
 
 c  2D computational grid, quadrangles
       if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
-     .    ((levgeo == 2) .and. nlpol) .or. 
+     .    ((levgeo == 2 .and. .not.nlcrc) .and. nlpol) .or. 
      .    (levgeo == 3)) then
 
         if (.not.lsame) then
@@ -85,6 +88,7 @@ cdr   not ready for 2D x-z grids, nor for 3d x-y-z- grids
             y2=psurf(ip)
             y3=psurf(ip+1)
             y4=psurf(ip+1)
+
           else if ((levgeo == 2) .or. (levgeo == 3)) then
 cdr  not ready: in case levgeo=2 and nlcrc:  xpol and ypol are not set.
 cdr
@@ -184,6 +188,11 @@ c  Local coordinates r,s,t,u  are already set in previous call
         f4=fecken(nteck(4,icell))
 
         res = f1*r + f2*s + f3*t + f4*u
+
+      else
+
+        write (iunout,*) 'error in femint, un-written levgeo option'
+        call eirene_exit_own(1)
 
       end if
 

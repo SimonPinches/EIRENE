@@ -1,5 +1,5 @@
 !WZ:  03.07.17: derived from ba_alpha,
-cdr             but 5 lines can be selected from AMJUEL
+cdr             but 5 HELIUM lines can be selected from AMJUEL
 cdr:  Oct 17  : sync with ba_alpha, comments, --> master
 cdr             error exit in case of invalid line
 
@@ -22,9 +22,10 @@ c     distinct from Ba_alpha etc, routines:
 !     But hard wired: read H.12, OT, from AMJUEL
 c     
 C
-C STORAGE FOR THE 3 ADDITIONAL TALLIES IAD1,....IAD3 SHOULD HAVE BEEN PROVIDED
+C STORAGE FOR THE 3 ADDITIONAL TALLIES IAD1,IAD2 and IADS SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+3)
 C I.E. STORAGE CHECKS: NADV GE NADVI+3 ARE ALREADY DONE ELSEWHERE
+C ALSO: NREACI --> NREACI+1 IS USED.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -137,6 +138,7 @@ c  default asymptotics
       JFEX2MN = 0
       JFEX2MX = 0
 C
+C  COUPLING TO GROUND STATE, FORMULATION II
 C     He(*)/He(11S)
       REACDAT(NREACI+1)%LOTH = .FALSE.
       CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC1,CRC,
@@ -148,6 +150,8 @@ C     He(*)/He(11S)
           DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
         ENDDO
       ENDDO
+C
+C  COUPLING TO HE+ STATE, FORMULATION II
 C     He(*)/He+
       REACDAT(NREACI+1)%LOTH = .FALSE.
       CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC2,CRC,
@@ -241,7 +245,7 @@ C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEFF=DEF/(8.0*LOG(10.0))
 C       ELSEIF (DEFF.GT.1.0) THEN
         ENDIF
 C
-        TEF=LOG(TE)
+        TEF=max (-2.30,LOG(TE))  !  cut off at Te = 0.1 eV
         DAT=0.
         DPL=0.
         DO 150 J=0,JEND
@@ -408,11 +412,10 @@ C
 C
       RETURN
 
-csw 19apr07
       entry EIRENE_HE_EMIS_reinit
       ifirst=0
       return
-csw
+
 999   CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. HE_EMIS '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '

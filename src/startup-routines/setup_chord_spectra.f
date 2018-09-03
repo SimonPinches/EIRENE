@@ -1,6 +1,17 @@
 c  14.5.06:  bug fix: 1 line added: if nchtal.ne.1 and. nchtal.ne.3:  cycle
 C  oct.14.  variance tallies corrected
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr  May 18: Probably here we use the data structure traj(i..) for storing the
+cdr  line of sight, e.g for scoring spectra along lines of sight?
+cdr  This same data structure is (or was) probably also used
+cdr  for an unfinished correlated sampling option.
+cdr  In either case it may not be complete any more.
+
+cdr: tbd:  Try to document status and purpose
+
+
+
+
       subroutine EIRENE_setup_chord_spectra
  
       use EIRMOD_precision
