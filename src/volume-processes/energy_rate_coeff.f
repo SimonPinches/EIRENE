@@ -47,6 +47,7 @@ cdr            LEXP=.true.
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!   ic:        cell number (e.g. for internal CR models).
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return erate=energy weighted rate coefficient in eV*cm**3/sec
@@ -271,7 +272,6 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         
         iflavor = reacdat(ir)%rtcew%crm%iflav
         ivar = reacdat(ir)%rtcew%crm%ivarst
-
 
         CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 

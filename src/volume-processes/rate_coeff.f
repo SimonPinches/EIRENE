@@ -25,6 +25,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
 !              negative values of ir (-1 to -11):  default internal eirene A&M models
+!   ic:        cell number
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return rate=rate coefficient in cm**3/sec
@@ -233,6 +234,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         endif
 
       end if
+
 
       return
 

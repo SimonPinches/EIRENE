@@ -97,7 +97,7 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
-      USE EIRMOD_CPES
+      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
@@ -459,6 +459,7 @@ C  READING OF INPUT BLOCK 1 DONE
      .  ('*** 1. DATA FOR OPERATING MODE                   ')
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
+      WRITE (IUNOUT,*) '       NUMBER OF PROCESSORS NPRS= ',NPRS
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_MASAGE('       MPI USER DEFINED')
@@ -3546,17 +3547,20 @@ cdr  or, if that fails, by its energy (and EMIN1 flag)
           READ (IUNIN,6666) NUM_COMPO
           READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
      .                      EMIS_LINES(ILINE)%TRANS_EN, 
-     .                      EMIS_LINES(ILINE)%ENERGY
+     .                      EMIS_LINES(ILINE)%ENERGY,
+     .                      EMIS_LINES(ILINE)%POPESC
           EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
 
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
-          IADV = IADV + 1
-c  if mod_addv=0: reset storage needs for each line back to nadvi+1,
+cdr       IADV = IADV + 1
+c  if mod_addv=0: reset storage needs for each line 
+c                 back to nadvi+1..nadvi+num_compo+1,
 c                 i.e. addv tallies are only saved for one line at a time.
-          IF (MOD_ADDV == 0) IADV = NADVI + 1 
+cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1 
+          IF (MOD_ADDV == 0) IADV = NADVI 
 
-          EMIS_LINES(ILINE)%IADV_TOTAL = IADV
+          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + num_COMPO+1 
 
           IF (NUM_COMPO > 0) THEN
             ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
@@ -3569,7 +3573,7 @@ c                 i.e. addv tallies are only saved for one line at a time.
               EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
               ALLOCATE 
      .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
-
+cdr  for each new new component: store emission profile on addv(iadv)
               IADV = IADV + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
               
@@ -3635,11 +3639,14 @@ cdr   read a second density ratio
                 CNT%IRC = 0
                 CNT%IRC_RAT = 0
                 EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
-              END DO
+              END DO  !  kcontr
          
-            END DO
-          END IF
-        END DO
+            END DO    ! jcomp
+c  increase counter iadv, for next line, because sum over comp. 
+c                         is stored on num_compo+1
+            IADV=IADV+1
+          END IF      ! if jcomp.gt.0
+        END DO        ! iline
         READ (IUNIN,'(A72)') ZEILE
       ENDIF
 

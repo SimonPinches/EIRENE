@@ -98,8 +98,8 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation 
 
 cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
-cdr  tbd: also exit unless 2.1.5,  in particular: 
-cdr       2.1.8 (recombination) is missing.
+cdr  tbd: also exit unless HSRT contains 2.1.5, OR 2.1.8 
+cdr       
 cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef. 
       
 cdr  IDENTIFY THE NUMBER IVAR (between 1:21) OF THE VARIABLE HSTR(IVAR) 
