@@ -2,7 +2,9 @@
 !           subroutine call (save time in storage allocation)
 cdr Jan 17: remove local allocatable cndyn.. arrays. These are now
 cdr         set in code initialisation phase
-cdr may 18: revised, particle currents, particle flux,....
+cdr may 18: revised, particle currents, particle flux,...., comments..
+cdr         I am not sure that the rad and pol normal vectors are correct.
+cdr         In solps5.0 we use the underlying polygon grid. 
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -12,7 +14,6 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
-      USE EIRMOD_CSDVI
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT
       USE EIRMOD_CUPD
@@ -27,7 +28,8 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
-     .                        XSTORV2(NSTORV,N2ND+N3RD), WV
+     .                        XSTORV2(NSTORV,N2ND+N3RD),
+     .                        WV
       INTEGER, INTENT(IN) :: IFLAG
 
 CDR
@@ -47,12 +49,16 @@ CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
 CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
 CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
 C
-        DO 1 I=1,NRAD
-          VPX(I)=0.
-          VPY(I)=0.
-          VRX(I)=0.
-          VRY(I)=0.
-1       CONTINUE
+        if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
+        ALLOCATE (VPX(NRAD))
+        ALLOCATE (VPY(NRAD))
+        ALLOCATE (VRX(NRAD))
+        ALLOCATE (VRY(NRAD))
+        VPX=0.
+        VPY=0.
+        VRX=0.
+        VRY=0.
+
         DO 2 IR=1,NR1STM
           DO 2 IP=1,NP2NDM
             IRD=IR+(IP-1)*NR1P2
@@ -64,7 +70,7 @@ C
 
 cdr  increments for tally number iadv
         IA0=0               !  RADIAL CURRENT
-        IA1=NATMI+NMOLI     !  RADIAL ENREGY FLUX
+        IA1=NATMI+NMOLI     !  RADIAL ENERGY FLUX
         IA2=2*IA1           !  POLOIDAL CURRENT
         IA3=3*IA1           !  POLOIDAL ENERGY FLUX
         IA4=4*IA1           !  FLUX (ANGULAR AVERAGED)
