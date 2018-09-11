@@ -1,6 +1,6 @@
 cdr jan 18:  distinct from solps4.3 version: e_alpcr correct now.
 cdr          (electron cooling/heating terms associated with recombination
-cdr feb 18:  l_ext, q_ext, lopaque, popesc: must not change,
+cdr feb 18:  l_ext, q_ext, lopaque, pop_esc: must not change,
 c            after first call, otherwise: reset LVIS 
 c            so far: q_ext not connected (l_ext=.false.)
 cdr may 18:  add population escape factors pop_esc(40,40), for hydrogen atom.
@@ -44,10 +44,11 @@ cdr          default: optically thin: pop_esc=1
 
       real(dp) :: ALPCR, SCR, SCR_EXT, E_ALPCR, E_SCR, E_SCR_EXT
 ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing only
-      integer :: i
+      integer :: i, irow_esc, icol_esc, irc
 
       real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:), 
-     .                               q_ext(:), pop_esc(:,:)
+     .                               q_ext(:), 
+     .                               pop_esc(:,:)
       real(dp), allocatable, save :: h_stor(:,:)
       logical, allocatable, save :: lvis_h(:)
       logical :: l_ext
@@ -69,10 +70,69 @@ c      for the current run/iteration/time-cycle
           allocate(pop_ext(40))
           allocate(q_ext(40))      !   e.g. photo excitation rate for H*(n)
           allocate(pop_esc(40,40)) !   line population escape factor (default:==1)
+
+          POP_ESC =1.0_DP          !   default: all transitions are optically thin
+
+cdr  cumulate all population escape factors for internal CR model.
+cdr  either read  
+cdr              via reaction cards (block 4) 
+cdr           or via line-emission cards (block 12) 
+cdr  
+          do irc = 1, nreac
+cdr  scan over all reaction decks (from block 4 and/or block 12)
+            if (reacdat(irc)%lrtc) then  ! rate coeff 
+              if (reacdat(irc)%rtc%ifit == 5) then ! internal crm 
+                if (reacdat(irc)%rtc%crm%iflav == 1) then ! h-col
+                  irow_esc = reacdat(irc)%rtc%crm%irow_esc
+                  icol_esc = reacdat(irc)%rtc%crm%icol_esc
+                  if ((irow_esc > 0) .and. (icol_esc > 0)) then
+                    pop_esc(irow_esc,icol_esc) = 
+     .                      reacdat(irc)%rtc%crm%pop_esc
+                    write (iunout,*) 'H-crm: pop_esc set for transition'
+                    write (iunout,*) irc,irow_esc,'p-->',icol_esc, 
+     .                               'to ',
+     .                               pop_esc(irow_esc,icol_esc)          
+                  end if
+                end if
+              end if
+            end if
+            if (reacdat(irc)%lrtcew) then ! energy rate coeff 
+              if (reacdat(irc)%rtcew%ifit == 5) then ! crm 
+                if (reacdat(irc)%rtcew%crm%iflav == 1) then ! h-col
+                  irow_esc = reacdat(irc)%rtcew%crm%irow_esc
+                  icol_esc = reacdat(irc)%rtcew%crm%icol_esc
+                  if ((irow_esc > 0) .and. (icol_esc > 0)) then
+                    pop_esc(irow_esc,icol_esc) = 
+     .                      reacdat(irc)%rtcew%crm%pop_esc
+                    write (iunout,*) 'H-crm: pop_esc set for transition'
+                    write (iunout,*) irc,irow_esc,'e-->',icol_esc, 
+     .                               'to ',
+     .                               pop_esc(irow_esc,icol_esc)          
+                  end if
+                end if
+              end if
+            end if
+            if (reacdat(irc)%loth) then ! other rate coeff, pop_coef 
+              if (reacdat(irc)%oth%ifit == 5) then ! crm 
+                if (reacdat(irc)%oth%crm%iflav == 1) then ! h-col
+                  irow_esc = reacdat(irc)%oth%crm%irow_esc
+                  icol_esc = reacdat(irc)%oth%crm%icol_esc
+                  if ((irow_esc > 0) .and. (icol_esc > 0)) then
+                    pop_esc(irow_esc,icol_esc) = 
+     .                      reacdat(irc)%oth%crm%pop_esc
+                    write (iunout,*) 'H-crm: pop_esc set for transition'
+                    write (iunout,*) irc,irow_esc,'o-->',icol_esc, 
+     .                               'to ', 
+     .                               pop_esc(irow_esc,icol_esc)        
+                  end if
+                end if
+              end if
+            end if
+         end do
         end if
+
         Q_EXT = 0._DP
         L_EXT = .FALSE.
-        POP_ESC =1.0_DP
 
         if (.not.lvis_h(icell))  then
 ! cell number ICELL has not yet been visited so far in this run

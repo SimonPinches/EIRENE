@@ -106,7 +106,7 @@ C  DATA FOR REDUCED ENERGY SCALING
       INTEGER :: NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
      .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF, IGAST,
      .           IGASF, NPRIN, EIRENE_LEARCA, NRE, NREP,
-     .           ICOUNT, IFIRST, ICOANGL,
+     .           ICOUNT, IFIRST, ICOANGL, 
      .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
      .           INDR1P, INDR1, ISPZO, IFILE, INDW, IDUMMY
       INTEGER, EXTERNAL :: RANGET_EIRENE, RANSET_EIRENE
@@ -704,10 +704,10 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             F1=1.0
             F2=0.0
             EXPI=0.0
-            GOTO 400
+        GOTO 400
           ELSE  ! E0TERM=0
             GOTO 991
-          ENDIF
+      ENDIF
         ELSE
 C  specular fraction
           EXPI=200.

@@ -42,9 +42,11 @@ C   INPUT:
 
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
-C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
-C   Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, or photo-excitation
-C   L_EXT, LOPAQUE, POP_ESC:  TO BE DONE
+C
+C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)   
+C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, 
+C                                     or photo-excitation
+C   LOPAQUE, POP_ESC:  population escape factor
 
 C
 C
@@ -118,7 +120,7 @@ c
 c  only once and for all !!
 c
       lopaque=.false.
-      POP_ESC=1.
+!PB   POP_ESC=1.
 
       IF (IFRST == 0) THEN  ! must be redone, if lopaque or pop_esc change
 cdr  better: move lopaque, pop_esc outside this routine. And check always

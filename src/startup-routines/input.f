@@ -178,6 +178,26 @@ C
 
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
       TYPE(TCONTRIB) :: CNT
+      
+      INTERFACE
+        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC)
+        USE EIRMOD_PRECISION
+        INTEGER,      INTENT(IN) :: IR, IZ1
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        CHARACTER(8), INTENT(IN) :: FILNAM
+        CHARACTER(4), INTENT(IN) :: H123
+        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+        CHARACTER(3), INTENT(IN) :: CRC
+        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                              RC2MIN, RC2MAX, FP2(6)
+        END SUBROUTINE EIRENE_SLREAC
+      END INTERFACE
+
 C
       REAL(DP) :: AFF(3,3), AFFI(3,3), FP1(6), FP2(6)
       REAL(DP) :: RP1, SA, SI, THMAX, SM, SPP, DTIMVO, SAVE, VOLTOT_TAL,
@@ -189,7 +209,7 @@ C
      .          SPCMN, SPCMX,SPC_SHIFT,
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, ESCD2A, ESCD2M, ESCD2I, ESCD2PH, ESCD2P,
-     .          RC1MIN, RC1MAX, RC2MIN, RC2MAX
+     .          RC1MIN, RC1MAX, RC2MIN, RC2MAX, POP_ESC
 
 C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
 cdr   REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
@@ -219,7 +239,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB,NS,NA, ISTR,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
-     .           ILINE, JCOMP, KCONTR
+     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
@@ -869,6 +889,9 @@ C INPUT SUB-BLOCK 2D
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
+C240  READ (IUNIN,'(A72)') ZEILE
+C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
+C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1415,8 +1438,10 @@ C  Normal start of reading database A&M processes
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(0)
       IL = 0
+!pbcrm      
+      IREAD = 0
 C
-411   READ (IUNIN,'(A80)') ZEILE
+411   IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
@@ -1437,8 +1462,8 @@ C  THE INPUT FLAG  "FT...." IS NOT AVAILABLE HERE
 C  IT MIGHT BE READ LATER FROM A&M DATA FILE AMJUEL, IN SUBR. SLREAC
 C  READ INPUT FLAG "REAC", UP TO 50 CHARACTERS ALLOWED.
 C  PUT THIS FLAG ON REAC2.
-          CALL
-     .    EIRENE_READ_TOKEN(ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
+          CALL EIRENE_READ_TOKEN
+     .         (ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
           IF (IER > 0) THEN
             WRITE (iunout,*)
      .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG '
@@ -1540,11 +1565,45 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
         IF (INDEX(ZEILE,'ADAS') .NE. 0 .OR.
      .      INDEX(ZEILE,'TAB2D') .NE. 0 ) THEN
+!  CHECK FOR ELEMENT NAME AND CHARGE STATE IN TABLE
           READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
           CALL EIRENE_LOWERCASE(ELNAME)
         ELSE
           ELNAME = ' '
           IZ = 0
+        END IF
+
+        IF (INDEX(ZEILE,'CRM') .NE. 0) THEN
+          READ (IUNIN,'(A80)') ZEILE
+cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
+! CHECK FOR POPULATION ESCAPE  FACTORS
+! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND, 
+! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION. 
+          IF (VERIFY(ZEILE,'+-.edED0123456789 ') > 0) THEN
+! "ZEILE" CONTAINS NEXT REACTION LINE
+            WRITE (IUNOUT,*)  'NO POP_ESC FOUND FOR CRM'
+            WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
+            IREAD = 1
+            IROW_ESC = 0
+            ICOL_ESC = 0
+            POP_ESC = 1.0
+          ELSE
+! only integer or reals found in string ZEILE
+! READ POPULATION ESCAPE FACTOR, FOR TRANSITION "UPPER=IROW --> LOWER=ICOL"
+            READ (ZEILE,66665) IROW_ESC, ICOL_ESC, POP_ESC
+            WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
+            WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
+            WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+     .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
+     .                    ' POP_ESC',     POP_ESC
+            IREAD = 0
+          END IF
+C  POP. ESC. FACTORS ARE ONLY AVAILABLE FOR INTERNAL CRM MODELS
+        ELSE
+          IREAD = 0   ! CONTINUE NORMAL READING
+          IROW_ESC = 0
+          ICOL_ESC = 0
+          POP_ESC = 1.0
         END IF
 
 C  SAVE INPUT LINES ON REACLINES,  FOR SETUP-HYDKIN REACTIONS.
@@ -1570,6 +1629,9 @@ C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
         REACLINES(IL)%JFEX2MX = 0
         REACLINES(IL)%FP1 = 0._DP
         REACLINES(IL)%FP2 = 0._DP
+        REACLINES(IL)%IROW_ESC = IROW_ESC
+        REACLINES(IL)%ICOL_ESC = ICOL_ESC
+        REACLINES(IL)%POP_ESC = POP_ESC
 
         IRLINES = IL
 C  DONE
@@ -1632,6 +1694,9 @@ cdr  reaclines only needed for hydkin interface?
           REACLINES(IL)%JFEX2MX = JFEX2MX
           REACLINES(IL)%FP1 = FP1
           REACLINES(IL)%FP2 = FP2
+          REACLINES(IL)%IROW_ESC = 0
+          REACLINES(IL)%ICOL_ESC = 0
+          REACLINES(IL)%POP_ESC = 1._DP
         else
 ! identifier "P" found in H123. Data for photon processes! No assymptotics available
 ! set defaults
@@ -1654,7 +1719,7 @@ C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC2,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ)
+     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC)
         GOTO 411
       ENDIF
 C
@@ -2039,7 +2104,9 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
-      IDMDL = 0  ! count additional reaction cards needed for "density models".
+! counter for  additional reaction cards possibly needed for "density models".
+      IDMDL = 0 
+c  loop over background species (except: electrons) 
       DO 511 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
@@ -2119,9 +2186,9 @@ c
           ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
 cdr only if needed: for additional A&M data structure on REACDAT
-cdr                 so far only for DENSITYMODELS:
+cdr                 so far only for "DENSITYMODELS":
           ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%H2(TDMPAR(IPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(IPLS)%TDM%H123(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
 
@@ -2165,11 +2232,11 @@ c  default: only for bulk ions
      .           TDMPAR(IPLS)%TDM%ITP(1),
      .           TDMPAR(IPLS)%TDM%ISTR(1),
      .           TDMPAR(IPLS)%TDM%FNAME(1),
-     .           TDMPAR(IPLS)%TDM%H2(1),
+     .           TDMPAR(IPLS)%TDM%H123(1),
      .           TDMPAR(IPLS)%TDM%REACTION(1),
      .           TDMPAR(IPLS)%TDM%CR(1),
      .           TDMPAR(IPLS)%TDM%A_CORONA
-            IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.2') == 0) THEN
+            IF (INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.2') == 0) THEN
               WRITE (iunout,*)
      .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL '
               WRITE (iunout,*) ' ONLY H.2 REACTIONS ARE PERMITTED '
@@ -2184,11 +2251,11 @@ c  default: only for bulk ions
      .             TDMPAR(IPLS)%TDM%ITP(I),
      .             TDMPAR(IPLS)%TDM%ISTR(I),
      .             TDMPAR(IPLS)%TDM%FNAME(I),
-     .             TDMPAR(IPLS)%TDM%H2(I),
+     .             TDMPAR(IPLS)%TDM%H123(I),
      .             TDMPAR(IPLS)%TDM%REACTION(I),
      .             TDMPAR(IPLS)%TDM%CR(I)
-              IF (INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.11') == 0 .AND.
-     .            INDEX(TDMPAR(IPLS)%TDM%H2(1),'H.12') == 0) THEN
+              IF (INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.11') == 0 .AND.
+     .            INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.12') == 0) THEN
                 WRITE (iunout,*)
      .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL '
                 WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS '
@@ -2201,11 +2268,14 @@ c  default: only for bulk ions
 !PB  NOTHING TO BE DONE
           END SELECT
         END IF
-511   CONTINUE
+511   CONTINUE   ! nplsi
+cdr  additional reaction cards due to density models: idmdl
+cdr   nreaci=nreaci=idmdl  ??
 C
       DO I=1,NSPZ
         CALL EIRENE_UPPERCASE (TEXTS(I))
       END DO
+       
 C
 520   READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') THEN
@@ -2282,7 +2352,7 @@ c  di profiles
       IF (INDPRO(3).LE.5)
      .  READ (IUNIN,6664) (DI0(I),DI1(I),DI2(I),DI3(I),DI4(I),DI5(I),
      .                     I=1,NPLSI)
-c  vi profile(s)
+c  v_in profile(s)
 cdr  default is: cm/s units for flow field(s)
       NLMACH=INDPRO(4).LT.0  ! Mach number units instead, rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
@@ -3181,7 +3251,7 @@ C    .      ... WRONG INPUT !
           END IF
 
           ESPEC => ESTIML(J)
-
+          
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3543,13 +3613,20 @@ cdr read volumetric emission profile data
 cdr  further below, a particular emission profile is identified 
 cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
 cdr  or, if that fails, by its energy (and EMIN1 flag)
+          IROW_ESC = 0
+          ICOL_ESC = 0
+          POP_ESC = 1._DP
           READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
-          READ (IUNIN,6666) NUM_COMPO
+          READ (IUNIN,6666) NUM_COMPO, IROW_ESC, ICOL_ESC 
           READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
      .                      EMIS_LINES(ILINE)%TRANS_EN, 
      .                      EMIS_LINES(ILINE)%ENERGY,
-     .                      EMIS_LINES(ILINE)%POPESC
+     .                                        POP_ESC
+          IF ((IROW_ESC <= 0) .OR. (ICOL_ESC <= 0)) POP_ESC=1._DP
           EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
+          EMIS_LINES(ILINE)%IROW_ESC = IROW_ESC
+          EMIS_LINES(ILINE)%ICOL_ESC = ICOL_ESC
+          EMIS_LINES(ILINE)%POP_ESC = POP_ESC
 
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
@@ -3653,9 +3730,9 @@ c                         is stored on num_compo+1
 ! no definition of emissivity lines was read in
 ! define OLD default emissivity model for chords, for backward compatibility.
 cdr  allocate storage and fill structure EMIS-LINES
-cdr  such that old default options are recovered
+cdr  such that old default options are recovered.
 cdr This is exclusive: as soon as at least one emission profile is
-cdr read from block "12.0", no defualt emissivities are set. 
+cdr read from block "12.0", no default emissivities are set at all. 
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3677,10 +3754,14 @@ c  default asymptotics
       nrc = nreaci + nreac_add
 
 ! one extra A&M data file for "densitymodel" (block 5): "corona" or "colrad"
-      if (idmdl > 0) nrc = nrc + 1 
+      if (idmdl > 0) nrc = nrc + 1   !dr  or better:  nrc=nrc+idmdl ??
 
-
+      WRITE (IUNOUT,*) 'BEFORE DEFINE LINES: NRC=',NRC,NREACI,NREAC_ADD
       do iline=1, num_lines
+cdr  once, for all components and contributions.
+        IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
+        ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
+        POP_ESC  = EMIS_LINES(ILINE)%POP_ESC
         do jcomp = 1, emis_lines(iline)%num_compo
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
@@ -3689,7 +3770,22 @@ c  default asymptotics
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%ELEMENT,CNT%IZ)
+     .              CNT%ELEMENT, CNT%IZ, 
+     .              IROW_ESC, ICOL_ESC, POP_ESC )
+c  pop_esc factor is the same for all components and contributions
+            H123 = CNT%H123
+            FILNAM= CNT%FNAME
+            IF ((IROW_ESC > 0) .AND. (ICOL_ESC > 0) .AND.
+     .           INDEX(FILNAM,'CRM') > 0) THEN
+              WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
+              WRITE (IUNOUT,*)  'EMISS. LINE',ILINE,'TYPE ',H123
+              WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+     .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
+     .                    ' POP_ESC',     POP_ESC
+            ENDIF
+            irow_esc=0
+            icol_esc=0
+            pop_esc=1.0
 
             emis_lines(iline)%compo(jcomp)%contrib(kcontr)%irc = nrc
 
@@ -3701,7 +3797,8 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
      .              CNT%RAT_REACTION(IR),CNT%RAT_CR(IR),
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR))
+     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR), 
+     .              IROW_ESC, ICOL_ESC, POP_ESC )
 
                 emis_lines
      .           (iline)%compo(jcomp)%contrib(kcontr)%irc_rat(ir) = nrc
@@ -3710,6 +3807,7 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
           end do   !kcontr
         end do     !jcomp
       end do       !iline
+      WRITE (IUNOUT,*) 'AFTER DEFINE LINES: NRC=',NRC
 
 c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 option
 
