@@ -69,7 +69,8 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
+cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
@@ -578,6 +579,14 @@ C
           DO 230 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.5) CYCLE
+C  make sure that incident particle is a bulk particle 
+            IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR EL PROCESS, IMOL,KK ',IMOL,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+C  EL PROCESS IDENTIFIED
 C
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
@@ -594,7 +603,7 @@ C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
-C  IMOL HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
+C  IMOL HAS NOT YET BEEN LABELLED AS BGK SPECIES.
 C  DO THIS HERE: IMOL IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
@@ -625,8 +634,8 @@ C
             IESTM=IESTMM(IMOL,NRC)
             EBULK=EBULKM(IMOL,NRC)
             CALL EIRENE_XSTEL(IREL,IML,IPL,EBULK,
-     .                 ISCDE,IESTM,
-     .                 KK,FACTKK,PLS)
+     .                        ISCDE,IESTM,
+     .                        KK,FACTKK,PLS)
 C
 230       CONTINUE
 C
@@ -662,12 +671,19 @@ C
           DO NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.4) CYCLE
+C  make sure that incident particle is a bulk particle 
+            IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
+C  WRONG TYPE OF INCIDENT BULK SPECIES
+              WRITE (IUNOUT,*) 
+     .        'INPUT ERROR FOR PI PROCESS, IMOL,KK ',IMOL,KK 
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
 C  PI PROCESS IDENTIFIED
 
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
-C   BULK PARTICLE INDEX
+C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
             IDSC=IDSC+1
