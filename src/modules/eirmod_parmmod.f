@@ -17,6 +17,7 @@ cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot, 
 cdr           but is for surface tally pointers
+cpb  input tallies   ntali, increased from 22 to 24 (BVIN, PARMOM)
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
 c
       MODULE EIRMOD_PARMMOD
@@ -108,7 +109,7 @@ csw 13apr07
      I NPLSP,  NPHOTP, NADVP,  NADSP,
      I NCLVP,  NALVP,  NALSP,
      I NSNVP,  NCPVP,  NBGVP,
-     I NTALI,  NTALN,  NTALO,  NTALV,
+     I NTALI,  NTALG,  NTALN,  NTALO,  NTALV,
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
      I NTALS,  NTLSA,  NTLSR,  NSPZTOTW,
@@ -116,7 +117,8 @@ csw 13apr07
 
       INTEGER, PUBLIC, SAVE ::
      I NVOLTL, NVLTLP,
-     I NSRFTL, NSFTLP
+     I NSRFTL, NSFTLP,
+     I NINPTL
 
       INTEGER, PUBLIC, SAVE ::
      I NH0,    NH1,    NH2,    NH3
@@ -227,8 +229,9 @@ C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
+C                           NTALG: NUMBER OF INPUT TALLIES, EXCLUDING THE OPT. GRADIENT TALLIES
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
-C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
+C                           NTALO: INDEX OF THE CELL VOLUME TALLY
 
         NIONP=NION+1
         NATMP=NATM+1
@@ -242,11 +245,15 @@ C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
         NALSP=NALS+1
         NSNVP=NSNV+1
 
-        NTALI=22   ! total number of VOLUME INPUT TALLIES:
-c                    INCREASED IN 2014 FROM 21 TO 22
-c  additional volume averaged input tallies
-        NTALN=12
-        NTALO=14
+        NTALG=24        ! number of VOLUME INPUT TALLIES,  WITHOUT COUNTING GRADIENT TALLIES:
+c                         INCREASED IN 2014 FROM 21 TO 22
+c                         INCREASED IN 2018 FROM 22 TO 24
+        NTALI=NTALG*4   ! total number of VOLUME INPUT TALLIES
+c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ...
+
+c  additional volume averaged INPUT tallies
+        NTALN=12  ! (ADIN: ADDITIONAL INPUT TALLIES)
+        NTALO=14  ! (CELL VOLUME)
 
         NTALV=100  ! total number of VOLUME AVERAGED OUTPUT TALLIES
 c  additional volume averaged output tallies
@@ -533,6 +540,9 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
 
       INT_PARM(148) = NUM_LINES
       INT_PARM(149) = NADV_ADD
+
+      INT_PARM(150) = NINPTL
+      INT_PARM(151) = NTALG   
  
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
@@ -721,6 +731,9 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
 
       NUM_LINES   = INT_PARM(148)
       NADV_ADD    = INT_PARM(149)
+
+      NINPTL      = INT_PARM(150)
+      NTALG       = INT_PARM(151)
 
       RETURN
       END SUBROUTINE EIRENE_DISTRIB_PARM
