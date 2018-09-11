@@ -247,7 +247,19 @@ C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 
 ! Scale log collision energy to projectile energy for proper isotope, for rate coefficient, 
 ! i.e. use neutral particle mass.
-C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
+C
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)=T
+C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+C           HENCE: USE BEAM-BEAM RATE INSTEAD.
+            VRELQ=PVELQ(IPLSV)
+            VREL=SQRT(VRELQ)
+            ELAB=LOG(VRELQ)+DEFPI(IRPI)
+            IREAC=MODCOL(4,1,IRPI)
+            CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),
+     .                       'FPATH PI1')
+            SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
+          ELSE
+C  Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
           ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
           V0_REL=SQRT(PVELQ(IPLSV))
 ! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
@@ -264,8 +276,11 @@ C Set hard wired MINIMUM PROJECTILE ENERGY: 0.1 EV
             KK=NREAPI(IRPI)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
-          END IF
+          ENDIF
           SIGVPI(IRPI)=EXP(EXPO)
+          END IF        
+
+C  MODEL 3:
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)

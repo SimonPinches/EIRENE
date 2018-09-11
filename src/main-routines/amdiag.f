@@ -36,7 +36,6 @@ c            tabcx3(...,1:nend),tabel3(...,1:nend),tabpi3(...,1:nend)
 c               are ln(rate)
 c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
 c            ADIN is evaluated with Eb = ????, T =T(ipls)
-c  
 c
 c
 C
@@ -191,7 +190,7 @@ c  no interacting particle species found
           mm=modcol(1,4,irei)
           kk=nelrei(irei)
 c  electron impact energy loss rate coefficient no. irei
-c  not ready
+c 
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NELREI(IREI)
           TXTPLS(IAIN,NTALN) =
@@ -210,7 +209,6 @@ c  not ready
           else  !  mm= MODCOL(1,4,irei)=2, not ready
             goto 3000
           endif
-cdr       GOTO 3000   ! now ready ?
 
 c.............................................................................
 
@@ -601,8 +599,9 @@ c  no interacting particle species found
           mm=modcol(6,4,irrc)
           kk=nelrrc(irrc)
 c  recombination energy loss rate coefficient no. irrc
-c  not ready
+c 
           WRITE (CNO,'(I4)') IRRC
+
           WRITE (CN1,'(I4)') NELRRC(IRRC)
           TXTPLS(IAIN,NTALN) =
      .      'RECOMBINATION ENERGY LOSS RATE COEFFICIENT IRRC ='//CNO
@@ -621,8 +620,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
           else  !  mm= MODCOL(6,4,irei)=2, not ready
             goto 3000
           endif
-          GOTO 3000
-
+        
         ENDIF
 
 3000    CONTINUE  !  unfinished option, or error

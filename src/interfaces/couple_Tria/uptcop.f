@@ -119,7 +119,7 @@ C
               COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EION-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.
 52          CONTINUE
-          END IF 
+          END IF
 51        CONTINUE
 C
 20      CONTINUE

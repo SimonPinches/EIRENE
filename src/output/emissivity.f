@@ -44,6 +44,7 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
       CHARACTER(6) :: CISTRA
+      character(len=:), allocatable :: ctest2
 
       CALL EIRENE_LEER(2)
       CALL EIRENE_FTCRI(ISTR,CISTRA)
@@ -57,13 +58,16 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
       do i = lstart, lend
         ILINE=I
-        WRITE (iunout,*) 'LINE no. ',ILINE       
-        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
-     .                 EMIS_LINES(I)%LINE_NAME // ':'
+        ctest2 = adjustl(trim(emis_lines(iline)%line_name))
+        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':' 
+
         write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
         write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
+     
+        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' 
+
 
         einstein = emis_lines(i)%einstein
 C  ENERGY FACTOR FOR POWER LOSS (W)

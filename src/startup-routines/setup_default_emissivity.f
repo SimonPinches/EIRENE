@@ -22,7 +22,7 @@ cdr  hard coded here: use pop.coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
 cdr
-cdr  tbd:  make consistent notation "component vs. contribution". Done for Line 1 (Ba-alpha)
+cdr  tbd:  make consistent notation "component vs. contribution"
 cdr  tbd:  below we now still have 6*6=36 times mostly identical code.
 cdr  I beliefe:
 cdr  all that this routine does is: define CNT%.., and set emis_lines%...=CNT%..
@@ -67,11 +67,14 @@ c     NUM_contrib  = inferred from input file, species specification block 4.
       EMIS_LINES(1)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(1)%EINSTEIN = 4.410E7
-c  transition enery
+c  transition energy
       EMIS_LINES(1)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(3._DP*3._DP))
 C  identifyer of Line:
       EMIS_LINES(1)%ENERGY = 1.8889_DP
+      EMIS_LINES(1)%POP_ESC = 1.0_DP
+      EMIS_LINES(1)%IROW_ESC = 0
+      EMIS_LINES(1)%ICOL_ESC = 0
       EMIS_LINES(1)%IADV_TOTAL = NADVI + NUM_COMPO+1 
       
       ALLOCATE (EMIS_LINES(1)%COMPO(NUM_COMPO))
@@ -104,6 +107,8 @@ C  H(n=3)/H(n=1)
       CNT%REACTION     = '2.1.5a   '
       CNT%CR           = 'OT ' 
 
+cdr all reaction data are the same for all contributions.
+cdr only CNT%ISP  (species index) may differ for different contributions.
       IAT = 0
       DO I = 1, NATMI
         IF (NCHARA(I) == 1) THEN
@@ -191,7 +196,7 @@ C  COMPONENT 4: LINEAR IN "H2+" -MOLEC.ION DENSITY
 C  H(n=3)/H2+(g)
   
       EMIS_LINES(1)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(1)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
@@ -330,6 +335,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(2)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(4._DP*4._DP))
       EMIS_LINES(2)%ENERGY = 2.5500_DP
+      EMIS_LINES(2)%POP_ESC = 1.0_DP
+      EMIS_LINES(2)%IROW_ESC = 0
+      EMIS_LINES(2)%ICOL_ESC = 0
       EMIS_LINES(2)%IADV_TOTAL = NADVI + NUM_COMPO+1 
       
       ALLOCATE (EMIS_LINES(2)%COMPO(NUM_COMPO))
@@ -445,7 +453,7 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=4)/H2+(g)
   
       EMIS_LINES(2)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(2)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
@@ -581,6 +589,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(3)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(5._DP*5._DP))
       EMIS_LINES(3)%ENERGY = 2.8560_DP
+      EMIS_LINES(3)%POP_ESC = 1.0_DP
+      EMIS_LINES(3)%IROW_ESC = 0
+      EMIS_LINES(3)%ICOL_ESC = 0
       EMIS_LINES(3)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
       ALLOCATE (EMIS_LINES(3)%COMPO(NUM_COMPO))
@@ -696,7 +707,7 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=5)/H2+(g)
   
       EMIS_LINES(3)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(3)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
@@ -833,6 +844,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(4)%TRANS_EN = RY * 
      .                        (1._dp/(2._DP*2._DP)-1._DP/(6._DP*6._DP))
       EMIS_LINES(4)%ENERGY = 3.0222_DP
+      EMIS_LINES(4)%POP_ESC = 1.0_DP
+      EMIS_LINES(4)%IROW_ESC = 0
+      EMIS_LINES(4)%ICOL_ESC = 0
       EMIS_LINES(4)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
       ALLOCATE (EMIS_LINES(4)%COMPO(NUM_COMPO))
@@ -948,7 +962,7 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=6)/H2+(g)
   
       EMIS_LINES(4)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(4)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
@@ -1084,6 +1098,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(5)%TRANS_EN = RY * 
      .                        (1._dp/(1._DP*1._DP)-1._DP/(2._DP*2._DP))
       EMIS_LINES(5)%ENERGY = 10.2375_DP
+      EMIS_LINES(5)%POP_ESC = 1.0_DP
+      EMIS_LINES(5)%IROW_ESC = 0
+      EMIS_LINES(5)%ICOL_ESC = 0
       EMIS_LINES(5)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
       ALLOCATE (EMIS_LINES(5)%COMPO(NUM_COMPO))
@@ -1199,7 +1216,7 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=2)/H2+(g)
   
       EMIS_LINES(5)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(5)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
@@ -1335,6 +1352,9 @@ C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(6)%TRANS_EN = RY * 
      .                        (1._dp/(1._DP*1._DP)-1._DP/(3._DP*3._DP))
       EMIS_LINES(6)%ENERGY = 12.089_DP
+      EMIS_LINES(6)%POP_ESC  = 1.0_DP
+      EMIS_LINES(6)%IROW_ESC = 0
+      EMIS_LINES(6)%ICOL_ESC = 0
       EMIS_LINES(6)%IADV_TOTAL = NADVI + NUM_COMPO+1
       
       ALLOCATE (EMIS_LINES(6)%COMPO(NUM_COMPO))
@@ -1450,7 +1470,7 @@ C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  H(n=3)/H2+(g)
   
       EMIS_LINES(6)%COMPO(4)%COMPO_NAME = 
-     .     'DIATOMIC NEUTRAL HYDR. MOL ION'
+     .     'DIATOMIC HYDR. MOL ION'
       EMIS_LINES(6)%COMPO(4)%IADV = NADVI + 4
 
       NML = COUNT(NCHARM == 2)
