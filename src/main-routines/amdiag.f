@@ -14,6 +14,7 @@ cdr  Nov.      2016: final ds --> ei notational unifications
 CDR  July      2017: RC reactions connected. trcamd in parameter list
 c                    for function eirene_sngl_poly
 cdr  Sept      2018  modcol(...,4,...), (energy weighted rates) (rather than (..,3,..)
+cdr                  naint=21 and =29: done
 
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
@@ -191,7 +192,7 @@ c  no interacting particle species found
           mm=modcol(1,4,irei)
           kk=nelrei(irei)
 c  electron impact energy loss rate coefficient no. irei
-c  not ready
+c  
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NELREI(IREI)
           TXTPLS(IAIN,NTALN) =
@@ -210,7 +211,6 @@ c  not ready
           else  !  mm= MODCOL(1,4,irei)=2, not ready
             goto 3000
           endif
-cdr       GOTO 3000   ! now ready ?
 
 c.............................................................................
 
@@ -601,7 +601,7 @@ c  no interacting particle species found
           mm=modcol(6,4,irrc)
           kk=nelrrc(irrc)
 c  recombination energy loss rate coefficient no. irrc
-c  not ready
+c  
           WRITE (CNO,'(I4)') IRRC
           WRITE (CN1,'(I4)') NELRRC(IRRC)
           TXTPLS(IAIN,NTALN) =
@@ -621,7 +621,6 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
           else  !  mm= MODCOL(6,4,irei)=2, not ready
             goto 3000
           endif
-          GOTO 3000
 
         ENDIF
 
