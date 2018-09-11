@@ -203,7 +203,9 @@ C
 c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
                 IF (REC.LE.0.D0) GOTO 6
-                ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
+!pb                ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
+                ADD=1.5*TIIN(IPLSTI,J)*REC
+                IF (LEDRIFT) ADD=ADD+EDRIFT(IPLS,J)*REC
 C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
@@ -492,17 +494,19 @@ C  TRY OTHER RECOMBINATION PROCESS ASSIGNED TO IPLS
                   DO 51 IP=IP1,IP2-1
                     DO 51 IT=IT1,IT2-1
                       NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
-                      ADD=FREC(IFPLS,IFRC,NCELL)-
+                      REC=FREC(IFPLS,IFRC,NCELL)-
      .                    FREC(IFPLS,IFRC,NCELL-1)
 C  INDIRECT ADDRESSING
-                      IF (ADD.GT.0.D0) THEN
+                      IF (REC.GT.0.D0) THEN
                         ICC=ICC+1
-                        SUM=SUM+ADD
-                        EISUM=EISUM-
-     .                   (1.5*TIIN(IPLSTI,NCELL)+EDRIFT(IPLS,NCELL))*ADD
+                        SUM=SUM+REC
+!pb                        EISUM=EISUM-
+!pb     .                   (1.5*TIIN(IPLSTI,NCELL)+EDRIFT(IPLS,NCELL))*REC
+                        EISUM=EISUM-1.5*TIIN(IPLSTI,NCELL)*REC
+                        IF (LEDRIFT) EISUM=EISUM-EDRIFT(IPLS,NCELL)*REC
                       ENDIF
 51              CONTINUE
-52            CONTINUE   ! suming gover irrc
+52            CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN
                 WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '

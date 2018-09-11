@@ -366,9 +366,12 @@ C  DEFAULT BULK ION ENERGY LOSS RATE = 1.5*TI+EDRIFT PER COLLISION
 C
             IF (NSTORDR >= NRAD) THEN
               IPLSTI=MPLSTI(IPLS)
-              DO 150 J=1,NSBOX
-                EPLCX3(IRCX,J,1)=1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J)
-150           CONTINUE
+!pb              DO 150 J=1,NSBOX
+!pb                EPLCX3(IRCX,J,1)=1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J)
+!pb150           CONTINUE
+              EPLCX3(IRCX,1:NSBOX,1)=1.5*TIIN(IPLSTI,1:NSBOX)
+              IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
+     .                     EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPLS,1:NSBOX)
               NELRCX(IRCX) = -1  
               NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
             ELSE

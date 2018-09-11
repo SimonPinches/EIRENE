@@ -102,7 +102,7 @@ C
       REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG, 
      .            EIRENE_RESET_SECOND, DUMMY,
-     .            EIRENE_SECOND_OWN, DTIMVO
+     .            EIRENE_SECOND_OWN, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST
      .          ,IFRSTR, ISTH, ISTNEW, ISTIN
@@ -418,8 +418,11 @@ C
           DO IPLS=1,NPLSI
             IPLSTI= MPLSTI(IPLS)
             DO IN=1,NDXY
-              RTIS%SEIOD(IN,IPLS)=DIIN(IPLS,IN)*
-     .                        (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
+!pb           RTIS%SEIOD(IN,IPLS)=DIIN(IPLS,IN)*
+!pb     .                    (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
+              EN = 1.5*TIIN(IPLSTI,IN)
+              IF (LEDRIFT) EN = EN + EDRIFT(IPLS,IN)
+              RTIS%SEIOD(IN,IPLS)=DIIN(IPLS,IN)*EN
             ENDDO
           ENDDO
 C
@@ -712,8 +715,11 @@ C
         DO IPLS=1,NPLSI
           IPLSTI= MPLSTI(IPLS)
           DO IN=1,NDXY
-            SEINW(IN,IPLS)=DIIN(IPLS,IN)*
-     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
+!pb            SEINW(IN,IPLS)=DIIN(IPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
+            EN = 1.5*TIIN(IPLSTI,IN)
+            IF (LEDRIFT) EN = EN + EDRIFT(IPLS,IN)
+            SEINW(IN,IPLS)=DIIN(IPLS,IN)*EN
           ENDDO
         ENDDO
 C

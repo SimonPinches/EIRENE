@@ -1,3 +1,4 @@
+cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
 cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
 cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
@@ -217,7 +218,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA, ISTR,
+     .           NB, NS, NA, ISTR, IOPT
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           ILINE, JCOMP, KCONTR
       INTEGER, SAVE :: NZADD, NITER0
@@ -2217,6 +2218,10 @@ C       WRITE (iunout,'(1x,a)') trim(ZEILE)
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
       DO J=1,12
+C  Indicate "smoothed" input tallies (interpolation into cells)
+C  amongst the 12 input tallies read here.
+C  formerly: LSMOPRO(J) flag.
+C  Smoothing currently only for tallies 1 to 7.
         IF (ABS(INDPRO(J)) > 100) THEN
           LSMOPRO(J) = .TRUE.
           INDPRO(J) = MOD(INDPRO(J),100)
@@ -2281,7 +2286,7 @@ c  di profiles
       IF (INDPRO(3).LE.5)
      .  READ (IUNIN,6664) (DI0(I),DI1(I),DI2(I),DI3(I),DI4(I),DI5(I),
      .                     I=1,NPLSI)
-c  vi profile(s)
+c  v_in profile(s)
 cdr  default is: cm/s units for flow field(s)
       NLMACH=INDPRO(4).LT.0  ! Mach number units instead, rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
@@ -3646,9 +3651,9 @@ cdr   read a second density ratio
 ! no definition of emissivity lines was read in
 ! define OLD default emissivity model for chords, for backward compatibility.
 cdr  allocate storage and fill structure EMIS-LINES
-cdr  such that old default options are recovered
+cdr  such that old default options are recovered.
 cdr This is exclusive: as soon as at least one emission profile is
-cdr read from block "12.0", no defualt emissivities are set. 
+cdr read from block "12.0", no default emissivities are set at all. 
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
