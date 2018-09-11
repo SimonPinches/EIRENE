@@ -618,7 +618,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
               ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)*RATE
 1729        CONTINUE
             goto 5000
-          else  !  mm= MODCOL(6,4,irei)=2, not ready
+          else  !  mm= MODCOL(6,4,irrc)=2, not ready
             goto 3000
           endif
 
