@@ -24,9 +24,10 @@ cdr: nov. 2015  added first argument in parameter list: ICELL
 CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
 cdr               for next call to H_colrad, see e.g. fem routine df_xyz.f in geometry block
 cdr               currently this new argument is not yet used.
-cdr  H_COLRAD is called from rate_coef.f and from energy_rate_coef.f, 
+cdr  H_COLRAD is called from rate_coef.f, from energy_rate_coef.f, 
+cdr                 and from other_rate_coef.f  
 cdr           to provide ionization, radiation and electron cooling rates, either in a given cell (tbd) or
-cdr           for given Te, ne.
+cdr           for given Te, ne., as well as reduced CR population coefficients
 c****************************************************************************************************
 C*
 C*     COLLISIONAL-RADIATIVE MODEL OF
@@ -41,9 +42,11 @@ C   INPUT:
 
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
-C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
-C   Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, or photo-excitation
-C   L_EXT, LOPAQUE, POP_ESC:  TO BE DONE
+C
+C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)   
+C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, 
+C                                     or photo-excitation
+C   LOPAQUE, POP_ESC:  population escape factor
 
 C
 C
@@ -74,9 +77,9 @@ C***********************************************************************
       SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, L_EXT,
      .                            POP0, POP1, POP2,
      .                            ALPCR, SCR, SCR_EXT,
-     .                            E_ALPCR, E_SCR, E_SCR_EXT
+     .                            E_ALPCR, E_SCR, E_SCR_EXT,
 ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
-     .                            )
+     .                            POP_ESC)
       USE EIRMOD_PRECISION
 C     USE EIRMOD_CCRM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -84,7 +87,7 @@ C     USE EIRMOD_CCRM
  
 C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
-      REAL(DP), INTENT(IN) :: Q_EXT(40)
+      REAL(DP), INTENT(INOUT) :: Q_EXT(40), POP_ESC(40,40)
       logical lopaque,l_ext
 
       REAL(DP), INTENT(OUT) ::   ALPCR,    SCR,     SCR_EXT
@@ -93,7 +96,7 @@ ctt   REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T
       REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP2(40)
  
       REAL(DP), SAVE :: A(40,40), E_AT(40), OSC(40,40)
-      REAL(DP), SAVE :: A21SAVE, POP_ESC
+c     REAL(DP), SAVE :: POP_ESC(40,40)
  
       REAL(DP) :: C(40,40),S(40),F(40,40)
      &           ,SAHA(40),BETA(40),ALPHA(40),EBETA(40)
@@ -110,18 +113,18 @@ c
       ENDIF
 C
 C ATOM
-c  pop_esc   : lyman alpha population escape factor
-c  pop_esc= 1: lyman alpha opt. thin
-c  pop_esc= 0: lyman alpha opt. thick
+c  pop_esc   : population escape factor
+c  pop_esc= 1: opt. thin
+c  pop_esc= 0: opt. thick
 c
 c  only once and for all !!
 c
       lopaque=.false.
-      POP_ESC=1.
+!PB   POP_ESC=1.
 
       IF (IFRST == 0) THEN  ! must be redone, if lopaque or pop_esc change
 cdr  better: move lopaque, pop_esc outside this routine. And check always
-        CALL EIRENE_EINSTN(OSC,A,E_AT,40,lopaque,A21SAVE,POP_ESC)
+        CALL EIRENE_EINSTN(OSC,A,E_AT,40,lopaque,POP_ESC)
         IFRST = 1
       END IF
  
@@ -175,7 +178,7 @@ C
       END SUBROUTINE EIRENE_H_COLRAD
  
 C**********************************************************************
-      SUBROUTINE EIRENE_EINSTN(F,A,E_AT,LIM,LOPAQUE,A21SAVE,POP_ESC)
+      SUBROUTINE EIRENE_EINSTN(F,A,E_AT,LIM,LOPAQUE,POP_ESC)
 C
 C     CALCULATION OF OSCILLATOR STRENGTH AND EINSTEIN COEFFICIENT
 C     FOR ATOMIC HYDROGEN
@@ -188,6 +191,7 @@ C
       DIMENSION F(40,40)
       DIMENSION A(40,40)
       DIMENSION E_AT(40)
+      DIMENSION POP_ESC(40,40)
       logical lopaque
 
       UH=13.595
@@ -222,13 +226,13 @@ cdr  gaunt(x) done. gaunt=g(i,j)
       F(I,J)=2.**6/(3.*SQRT(3.)*3.1416)*(AI/AJ)**3/(2.*AI**2)*G/X**3
       A(J,I)=8.03E9*AI**2/AJ**2*(AI**(-2)-AJ**(-2))**2*F(I,J)
 
-cdr  Ly opaque: all a(j-->1) transitions are removed.
+cdr  Fully Ly opaque: all a(j-->1) transitions are removed.
       if (lopaque.and.i.eq.1) a(j,i)=0.
+cdr apply population escape factor to transition J-->I
+      A(J,I)=A(J,I) * POP_ESC(J,I)
   102 CONTINUE
   101 CONTINUE
-cdr  Ly alpha opaque: nur a(2-->1) rausnehmen
-      A21SAVE=A(2,1)
-      A(2,1)=A(2,1)*pop_esc
+
       RETURN
       END
 

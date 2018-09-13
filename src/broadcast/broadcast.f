@@ -37,13 +37,13 @@ cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR) 
+c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
 cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
 cdr            nhcol_store
 cdr            m_hcol(nreac)
 
       SUBROUTINE EIRENE_BROADCAST
-cdr 
+cdr
 c     tbd: some text here, about logic of this code ??
 c
 cdr
@@ -106,7 +106,7 @@ c     for the trace ion module
 c     ------------------------------------------------------------     c
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
-cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as exception?  
+cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as exception?
       IF (MY_PE .NE. 0) THEN
         CALL EIRENE_DISTRIB_PARM
         CALL EIRENE_ALLOC_COMUSR(0)
@@ -264,7 +264,7 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
         CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
      .                   0,MPI_COMM_WORLD,ier)
       END IF
-      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
+      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cdr  additional output tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -332,7 +332,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (FACREI,NREI*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACRCX,NRCX*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  EI post collision species distribution 
+c  EI post collision species distribution
       CALL MPI_BCAST (PELEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATEI,NREI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLEI,NREI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -342,7 +342,7 @@ c  EI post collision species distribution
       CALL MPI_BCAST (P2ND,NREI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  PI post collision species distribution 
+c  PI post collision species distribution
       CALL MPI_BCAST (PELPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATPI,NRPI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLPI,NRPI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -982,7 +982,7 @@ cdr dimensioning of LCUT array corrected:
           DO IRF=1,NREF
             CHELP(IAN+1:IAN+8) = TRANSFER(TDMPAR(IPLS)%TDM%FNAME(IRF),
      .                                    CHELP)
-            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H2(IRF),
+            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H123(IRF),
      .                                    CHELP)
             CHELP(IAN+13:IAN+21) = TRANSFER(
      .                        TDMPAR(IPLS)%TDM%REACTION(IRF),CHELP)
@@ -1009,7 +1009,7 @@ csw
             ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%H2(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%H123(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
 csw
@@ -1026,8 +1026,8 @@ csw
           DO IRF=1,NREF
             TDMPAR(IPLS)%TDM%FNAME(IRF) = TRANSFER(CHELP(IAN+1:IAN+8),
      .            TDMPAR(IPLS)%TDM%FNAME(IRF))
-            TDMPAR(IPLS)%TDM%H2(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
-     .            TDMPAR(IPLS)%TDM%H2(IRF))
+            TDMPAR(IPLS)%TDM%H123(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
+     .            TDMPAR(IPLS)%TDM%H123(IRF))
             TDMPAR(IPLS)%TDM%REACTION(IRF) =
      .            TRANSFER(CHELP(IAN+13:IAN+21),
      .            TDMPAR(IPLS)%TDM%REACTION(IRF))
@@ -1661,6 +1661,13 @@ cdr  internal CR Model
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%CRM%IVARST,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
+C STUFF TO TRANSFER POPULATION ESCAPE FACTORS INTO INTERNAL CRM ROUTINES
+        CALL MPI_BCAST (RP%CRM%IROW_ESC,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%ICOL_ESC,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%POP_ESC,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
 
 C.....................................................................
       ELSE
@@ -1673,7 +1680,7 @@ cdr     INVALID RP%IFIT
 
 
       SUBROUTINE EIRENE_BROAD_EMIS_LINES
-      
+
       INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB
       TYPE(TCONTRIB) :: CNT
 
@@ -1695,9 +1702,11 @@ cdr     INVALID RP%IFIT
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%EINSTEIN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
+        CALL MPI_BCAST (EMIS_LINES(I)%POP_ESC,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
@@ -1721,7 +1730,7 @@ cdr     INVALID RP%IFIT
           END IF
 
           DO K = 1, NUM_CONTRIB
-        
+
             IF (MY_PE == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
 
             CALL MPI_BCAST (CNT%ISP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1755,13 +1764,13 @@ cdr     INVALID RP%IFIT
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            
+
             IF (MY_PE /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
 
           END DO
         END DO
 
-        
+
       END DO
 
       RETURN

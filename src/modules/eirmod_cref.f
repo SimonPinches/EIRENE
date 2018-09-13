@@ -2,26 +2,26 @@
 cdr  june 17: remove parameter NFLR. Redundant. Was same as NHD6
 cdr  may 18 : perhaps unnecessary hard coding of dimensions in some arrays,
 cdr           rather than using parameters NHD1,...NHD5 ??
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_CREF, EIRENE_DEALLOC_CREF, EIRENE_INIT_CREF
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCREF(:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ICREF(:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R RPROB0,    ERMIN,     ERCUT,
      R ENAR(:),   DENAR(:),  WIAR(:),   DWIAR(:),  RAAR(:),
      R DRAAR(:),
      R TM(:),     TC(:),     WM(:),     WC(:),    ERDC(:),  HFTR3F(:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R RINTEG(:), EINTEG(:), AINTEG(:)
 
@@ -29,25 +29,25 @@ cdr           rather than using parameters NHD1,...NHD5 ??
      .                                 HFTR1(:,:,:,:),
      .                                 HFTR2(:,:,:,:,:),
      .                                 HFTR3(:,:,:,:,:,:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I INE, INEM, INW, INWM, INR, INRM
- 
+
       INTEGER, PUBLIC, SAVE :: NCREF, MCREF
- 
+
       LOGICAL, PUBLIC, SAVE :: LTRIM_OLD    !  flag:
-c                              true: 
+c                              true:
 c                                 use old trim reflection data file,
 c                                 nhd6=12 projectile-target combinations in
 c                                 one single data file TRIM.DAT
-c                                 NHD6=12: hard wired in: FIND_PARAM.f 
-c                              false: 
+c                                 NHD6=12: hard wired in: FIND_PARAM.f
+c                              false:
 c                                 read NFR different trim data files A_on_B
 c                                 path and names "A_on_B" as specified in input.f
 c                                 set NHD6=NFR
 c                                 NHD6: dimensioning in allocatable arrays
-c                                             
- 
+c
+
       CHARACTER(500), PUBLIC, ALLOCATABLE, SAVE :: REFFIL(:)
  
  

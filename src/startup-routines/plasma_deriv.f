@@ -128,6 +128,23 @@ c   LGVAC(...,0)     : background vacuum flag
           real(dp), intent(in) :: f(:)
           real(dp), intent(out) :: fcorner(:)
         end subroutine eirene_cell_to_corner
+
+        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC)
+        USE EIRMOD_PRECISION
+        INTEGER,      INTENT(IN) :: IR, IZ1
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        CHARACTER(8), INTENT(IN) :: FILNAM
+        CHARACTER(4), INTENT(IN) :: H123
+        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+        CHARACTER(3), INTENT(IN) :: CRC
+        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                              RC2MIN, RC2MAX, FP2(6)
+        END SUBROUTINE EIRENE_SLREAC
       end interface
  
       FP1 = 0._DP
@@ -360,7 +377,7 @@ c...............................................................saha: done
  
           REACDAT(NREACI+1)%LRTC = .FALSE.
           CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(1),
-     .                 TDMPAR(IPLS)%TDM%H2(1),
+     .                 TDMPAR(IPLS)%TDM%H123(1),
      .                 TDMPAR(IPLS)%TDM%REACTION(1),
      .                 TDMPAR(IPLS)%TDM%CR(1),
      .                 RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
@@ -372,8 +389,7 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
           DO IR=1,NSURF
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-            RCORONA = EIRENE_RATE_COEFF(NREACI+1,TEF,0._DP,.TRUE.,
-     .                                    0)
+            RCORONA = EIRENE_RATE_COEFF(NREACI+1,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s)
@@ -429,13 +445,13 @@ c  sum up contributions coupled to one or more (NRE) base-densities
 
             REACDAT(NREACI+1)%LOTH = .FALSE.
             CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(IRE),
-     .                   TDMPAR(IPLS)%TDM%H2(IRE),
+     .                   TDMPAR(IPLS)%TDM%H123(IRE),
      .                   TDMPAR(IPLS)%TDM%REACTION(IRE),
      .                   TDMPAR(IPLS)%TDM%CR(IRE),
      .                   RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                   RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
-            I1=INDEX(TDMPAR(IPLS)%TDM%H2(IRE),'.')
-            READ (TDMPAR(IPLS)%TDM%H2(IRE)(I1+1:),*) ISW
+            I1=INDEX(TDMPAR(IPLS)%TDM%H123(IRE),'.')
+            READ (TDMPAR(IPLS)%TDM%H123(IRE)(I1+1:),*) ISW
 
             SELECT CASE (ISW)
 

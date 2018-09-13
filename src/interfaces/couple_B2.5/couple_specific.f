@@ -1123,7 +1123,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           ENDIF
 
-          IF (LMAPL) THEN 
+          IF (LMAPL) THEN
             IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
 !pb           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()

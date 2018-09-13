@@ -37,7 +37,7 @@ c            tabcx3(...,1:nend),tabel3(...,1:nend),tabpi3(...,1:nend)
 c               are ln(rate)
 c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
 c            ADIN is evaluated with Eb = ????, T =T(ipls)
-c  
+c
 c
 c
 C
@@ -192,7 +192,7 @@ c  no interacting particle species found
           mm=modcol(1,4,irei)
           kk=nelrei(irei)
 c  electron impact energy loss rate coefficient no. irei
-c  
+c 
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') NELREI(IREI)
           TXTPLS(IAIN,NTALN) =
@@ -601,7 +601,7 @@ c  no interacting particle species found
           mm=modcol(6,4,irrc)
           kk=nelrrc(irrc)
 c  recombination energy loss rate coefficient no. irrc
-c  
+c 
           WRITE (CNO,'(I4)') IRRC
           WRITE (CN1,'(I4)') NELRRC(IRRC)
           TXTPLS(IAIN,NTALN) =

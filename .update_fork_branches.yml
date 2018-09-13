@@ -1,4 +1,4 @@
-update_fork_branches:
+update_fork_branches_ITER:
     stage: on-schedule
     only: 
         - schedules
@@ -34,3 +34,43 @@ update_fork_branches:
         - git push -u origin forks/iter/master:forks/iter/master
         - git checkout forks/iter/develop && git merge iter/develop || git checkout -b forks/iter/develop iter/develop
         - git push -u origin forks/iter/develop:forks/iter/develop
+
+update_fork_branches_CEA:
+    stage: on-schedule
+    only: 
+        - schedules
+    before_script:
+        # Install ssh-agent and git
+        - apt-get update -y && apt-get -y install openssh-client git git-svn
+        # Run ssh-agent (inside the build environment)
+        - eval $(ssh-agent -s)
+        # Add the required SSH keys to the agent store
+        # We're using tr to fix line endings which makes ed25519 keys work
+        # without extra base64 encoding.
+        - echo "$SSH_KEY_CEA" | tr -d '\r' | ssh-add - > /dev/null
+        - echo "$SSH_KEY_EIRENE_DEPLOY" | tr -d '\r' | ssh-add - > /dev/null
+        # Create the SSH directory and give it the right permissions
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Use ssh-keyscan to scan the keys of your private servers.
+        - ssh-keyscan subversion.assembla.com >> ~/.ssh/known_hosts
+        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+        # Adjust ssh_config to pass required environment variables
+        - printf "Host cea-svn\n  HostName subversion.assembla.com\n  SendEnv REPO_NAME\n" >> ~/.ssh/config
+    script:
+        # Get local copy of CEA SVN repository
+        - REPO_NAME=e-styx git svn clone svn+ssh://svn@cea-svn --stdlayout eirene_cea && cd eirene_cea && git checkout -b eirene_up2date origin/eirene_up2date || cd eirene_cea && REPO_NAME=e-styx git svn fetch
+        # Add CEA repository as additional remote
+        - cd ..
+        - git remote add -t master -t eirene_up2date cea eirene_cea || git remote set-url cea eirene_cea
+        # Change origin push URL to get write access to EIRENE repository
+        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+        # Fetch available branches from CEA
+        - git fetch cea
+        # Checkout and push branches to EIRENE repository
+        - git checkout forks/cea/master && git merge cea/master || git checkout -b forks/cea/master cea/master 
+        - git push -u origin forks/cea/master:forks/cea/master
+        - git checkout forks/cea/eirene_up2date && git merge cea/eirene_up2date || git checkout -b forks/cea/eirene_up2date cea/eirene_up2date
+        - git push -u origin forks/cea/eirene_up2date:forks/cea/eirene_up2date
+
