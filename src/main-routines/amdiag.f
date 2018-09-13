@@ -12,7 +12,9 @@ cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
 
 cdr  Nov.      2016: final ds --> ei notational unifications
 CDR  July      2017: RC reactions connected. trcamd in parameter list
-c                    for function eirene_sngl_poly  
+c                    for function eirene_sngl_poly
+cdr  Sept      2018  modcol(...,4,...), (energy weighted rates) (rather than (..,3,..)
+cdr                  naint=21 and =29: done
 
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
@@ -37,6 +39,7 @@ c               with ln(rate)= sum_i=1^nend  ln^i(Eb) tab..3(...,i)
 c            ADIN is evaluated with Eb = ????, T =T(ipls)
 c
 c
+c
 C
 C  ATOMIC UNITS FOR REACTION RATE COEFFICIENTS: A0^2 V0 = 0.612E-08 CM^3-S
 C  TO CONVERT THE ADDITIONAL TALLIES ADIN INTO UNITS OF CM**3/S, MULTIPLY ADIN BY 0.612 e-08
@@ -44,7 +47,7 @@ c
 c  done for naint=20,22,24,26 and modcol=1
 
 c  naint=20:   Tabei1(irei,....) electron impact collision rate, 1/s --> cm^3/s      ! done 
-c  naint=21:   eelei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! not ready
+c  naint=21:   eelei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! done
 
 c  naint=22:   Tabcx3(ircx,..,1) charge exchange collision rate, 1/s --> cm^3/s      ! done 
 c  naint=23:   eplcx3(ircx,..,1) cx        energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
@@ -57,7 +60,7 @@ c  naint=26:   Tabpi3(irpi,..,1) heavy particle imp.  coll.rate, 1/s --> cm^3/s 
 c  naint=27:   eplpi3(irpi,..,1) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s     ! not ready 
-c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
+c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! done
 
 
 
@@ -78,7 +81,7 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
       REAL(DP) :: AU, ELB, EXPO, FP(6), RCMIN,RCMAX,
      .            TBCX3(9),TBPI3(9),TBEL3(9),
      .            EIRENE_SNGL_POLY,
-     .            RMASSS,EBFAC
+     .            RMASSS,EBFAC,RATE
       INTEGER :: NS,NA,IAIN,MM,KK,
      .           irei,ircx,irpi,irel,irrc,
      .           iat,iml,iio,ipl,isp,iplti,
@@ -102,7 +105,7 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
         KK = 0
 
 c  currently:  only tabei1, tabcx3, tabel3 and tabpi3 are available, 
-c              and only for modcol(..,2,ns)=1,2
+c              and only for modcol(..,2,ns)=1,2, also: some modcol(..,4,ns) started
 c              modcol=1: rates depend only on background parameters,
 c                        not on test particle parameters
 c              modcol=2: rates depend also on test particle energy. 
@@ -186,12 +189,12 @@ c  no interacting particle species found
           endif
 
         ELSEIF (NA.EQ.21) THEN
-          mm=modcol(1,3,irei)
+          mm=modcol(1,4,irei)
           kk=nelrei(irei)
 c  electron impact energy loss rate coefficient no. irei
-c  not ready
+c 
           WRITE (CNO,'(I4)') IREI
-          WRITE (CN1,'(I4)') NREAEI(IREI)
+          WRITE (CN1,'(I4)') NELREI(IREI)
           TXTPLS(IAIN,NTALN) =
      .      'ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1
@@ -200,12 +203,14 @@ c  not ready
           irei=ns
           if (mm.eq.1) then
             DO 1721 ICELL=1,NSBOX
-              ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)
+              RATE=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
+              ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)*RATE
 1721        CONTINUE
-          else  !  mm= MODCOL(1,2,irei)=2, not ready
+
+            goto 5000
+          else  !  mm= MODCOL(1,4,irei)=2, not ready
             goto 3000
           endif
-          GOTO 3000
 
 c.............................................................................
 
@@ -309,7 +314,7 @@ c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
 
 
         ELSEIF (NA.EQ.23) THEN
-          mm=modcol(3,3,ircx)
+          mm=modcol(3,4,ircx)
           kk=NELRCX(IRCX)
 c  not ready
           DO 1723 ICELL=1,NSBOX            
@@ -418,7 +423,7 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
           ENDIF
 
         ELSEIF (NA.EQ.25) THEN
-          mm=modcol(5,3,irel)
+          mm=modcol(5,4,irel)
           kk=NELREL(irel)
 c  not ready
           irel=ns
@@ -530,7 +535,7 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
           ENDIF
           
         ELSEIF (NA.EQ.27) THEN
-          mm=modcol(4,3,irpi)
+          mm=modcol(4,4,irpi)
           kk=NELRPI(irpi)
           irpi=ns
           DO 1727 ICELL=1,NSBOX            
@@ -593,12 +598,12 @@ c  no interacting particle species found
           endif
 
         ELSEIF (NA.EQ.29) THEN
-          mm=modcol(6,3,irrc)
+          mm=modcol(6,4,irrc)
           kk=nelrrc(irrc)
 c  recombination energy loss rate coefficient no. irrc
-c  not ready
+c 
           WRITE (CNO,'(I4)') IRRC
-          WRITE (CN1,'(I4)') NREARC(IRRC)
+          WRITE (CN1,'(I4)') NELRRC(IRRC)
           TXTPLS(IAIN,NTALN) =
      .      'RECOMBINATION ENERGY LOSS RATE COEFFICIENT IRRC ='//CNO
      .      //' KK='//CN1
@@ -607,12 +612,15 @@ c  not ready
           irrc=ns
           if (mm.eq.1) then
             DO 1729 ICELL=1,NSBOX
-              ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)
+c             RATE=TABRC1(irrc,ICELL)/(DEIN(ICELL)+EPS30)/AU
+cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
+              RATE=1.0/(DEIN(ICELL)+EPS30)/AU
+              ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)*RATE
 1729        CONTINUE
-          else  !  mm= MODCOL(1,2,irei)=2, not ready
+            goto 5000
+          else  !  mm= MODCOL(6,4,irrc)=2, not ready
             goto 3000
           endif
-          GOTO 3000
 
         ENDIF
 
@@ -624,7 +632,7 @@ c  not ready
           write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
           write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
-          WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
+          WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
           GOTO 190
         else   !mm = 0,  reaction kk has not been assgined to any particle
           call eirene_leer(1)
@@ -633,7 +641,7 @@ c  not ready
           write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
           write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
-          WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
+          WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
           GOTO 190
         endif
 
@@ -643,7 +651,7 @@ c  not ready
       write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
       write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
-      WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,2,.)   ', KK,MM
+      WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
 
 
 190   CONTINUE

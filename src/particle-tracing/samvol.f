@@ -259,7 +259,7 @@ C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
                 ELSE
                   EELRC = EIRENE_FEELRC1(IRRC,J)
                 END IF
-c  Turn eV/s into Watt
+c  Turn eV/s/particle into Watt/cell
                 ADD=EELRC*DIIN(IPLS,J)*VOL(J)*ELCHA
 C  SPECTRAL CUT OFF (PHOTONS ONLY)
                 IF (ICCT > 0)
