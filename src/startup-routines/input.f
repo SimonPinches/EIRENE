@@ -1606,35 +1606,6 @@ C  POP. ESC. FACTORS ARE ONLY AVAILABLE FOR INTERNAL CRM MODELS
           POP_ESC = 1.0
         END IF
 
-C  SAVE INPUT LINES ON REACLINES,  FOR SETUP-HYDKIN REACTIONS.
-C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
-
-        REACLINES(IL)%NO = IR
-        REACLINES(IL)%FILE = FILNAM
-        REACLINES(IL)%H_SELECT = H123
-        REACLINES(IL)%REAC_STRING = REAC2
-        REACLINES(IL)%REACTYP = CRC
-        REACLINES(IL)%MP = MP
-        REACLINES(IL)%MT = MT
-        REACLINES(IL)%DPP = DPP
-        REACLINES(IL)%R1MN = R1MN
-        REACLINES(IL)%R1MX = R1MX
-        REACLINES(IL)%R2MN = R2MN
-        REACLINES(IL)%R2MX = R2MX
-        REACLINES(IL)%ELEMENT = ELNAME
-        REACLINES(IL)%IZ = IZ
-        REACLINES(IL)%JFEX1MN = 0
-        REACLINES(IL)%JFEX1MX = 0
-        REACLINES(IL)%JFEX2MN = 0
-        REACLINES(IL)%JFEX2MX = 0
-        REACLINES(IL)%FP1 = 0._DP
-        REACLINES(IL)%FP2 = 0._DP
-        REACLINES(IL)%IROW_ESC = IROW_ESC
-        REACLINES(IL)%ICOL_ESC = ICOL_ESC
-        REACLINES(IL)%POP_ESC = POP_ESC
-
-        IRLINES = IL
-C  DONE
 
 C  SAVE SOME OF THE INPUT FLAGS FOR LATER
 C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
@@ -1687,16 +1658,6 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
             WRITE (IUNOUT,*) 'NON-DEF. R2MX FOR REACTION IR=',IR,R2MX
           ENDIF
 
-cdr  reaclines only needed for hydkin interface?
-          REACLINES(IL)%JFEX1MN = JFEX1MN
-          REACLINES(IL)%JFEX1MX = JFEX1MX
-          REACLINES(IL)%JFEX2MN = JFEX2MN
-          REACLINES(IL)%JFEX2MX = JFEX2MX
-          REACLINES(IL)%FP1 = FP1
-          REACLINES(IL)%FP2 = FP2
-          REACLINES(IL)%IROW_ESC = 0
-          REACLINES(IL)%ICOL_ESC = 0
-          REACLINES(IL)%POP_ESC = 1._DP
         else
 ! identifier "P" found in H123. Data for photon processes! No assymptotics available
 ! set defaults
@@ -3650,10 +3611,12 @@ cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
               ALLOCATE 
      .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
-cdr  for each new new component: store emission profile on addv(iadv)
+cdr  for each new component: store emission profile on addv(iadv)
               IADV = IADV + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
               
+cdr  now we dwell on the contributions: 
+cdr  e.g. different isotops,... but same rates, same population factors in each component             
               DO KCONTR = 1, NUM_CONTRIB    
                 CNT%ISP = -1
                 CNT%ITP = -1
@@ -3670,8 +3633,14 @@ cdr  for each new new component: store emission profile on addv(iadv)
                   CNT%ELEMENT = '  '
                   CNT%IZ = 0
                 END IF
-cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1
+
+cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1.
+cdr  If density n_B of parent state for upper level is not amongst the densities
+cdr  known in this run, 
+cdr  but is in an (QSS) equilibrium with such a density n_A instead.
                 IF (CNT%IRATIO > 0) THEN
+cdr  read QSS density ratio n_B/n_A(Te,ne). Then the
+cdr  upper state population is n_B *pop_B(upper)= n_A * ratio * pop_B(upper)
                   READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
      .             CNT%FRATIO(1), 
      .             CNT%RAT_H123(1), CNT%RAT_REACTION(1), CNT%RAT_CR(1) 
@@ -3685,7 +3654,12 @@ cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1
                     CNT%RAT_ELEMENT(1) = '  '
                     CNT%IZ_RAT(1) = 0
                   END IF
-cdr   read a second density ratio
+cdr   Read a second density ratio.
+cdr   It may turn out that, after reading the first density ratio,
+cdr   that now the new parent density n_A is still not amongst the density
+cdr   known to eirene in this run. Then read a second density ratio.
+cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+. 
+cdr   See routine emissivity.f for further explanations. 
                   IF (CNT%IRATIO == 2) THEN
                     READ (IUNIN,6666) CNT%ISP(2),CNT%ITP(2),
      .                                CNT%ISP(3),CNT%ITP(3)

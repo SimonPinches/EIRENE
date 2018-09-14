@@ -141,14 +141,10 @@ c
       END TYPE REACTION_INPUT_LINE
  
       TYPE(LINE_DATA), POINTER, PUBLIC, SAVE :: REACTION
-      INTEGER, PUBLIC, SAVE :: IDREAC, IRLINES
+      INTEGER, PUBLIC, SAVE :: IDREAC
  
       TYPE(REACTION_DATA), ALLOCATABLE, PUBLIC, SAVE :: REACDAT(:)
- 
-      TYPE(REACTION_INPUT_LINE), ALLOCATABLE, PUBLIC, SAVE ::
-     .                           REACLINES(:)
- 
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        XSTOR(:,:), XSTORV(:)
 
@@ -500,7 +496,6 @@ cdr
 cdr  -11 ... -1   : internal default atomic-molecular data
 cdr    1 ... NREAC: atomic/molecular data read from external data files, input block 4
         ALLOCATE (REACDAT(-11:NREAC))
-        ALLOCATE (REACLINES(NREAC_LINES))
 
         ALLOCATE (M_HCOL(NREAC))
 
@@ -1024,7 +1019,6 @@ c
  
       CALL EIRENE_FREE_REACDAT
 
-      DEALLOCATE (REACLINES)
 
       DEALLOCATE (M_HCOL)
  
@@ -1203,36 +1197,7 @@ c  reaction threshold (if any)
           NULLIFY(REACDAT(IREAC)%OTH)
           NULLIFY(REACDAT(IREAC)%PHR)
         END DO
- 
-        DO IL = 1, NREAC_LINES
-          REACLINES(IL)%NO = 0
-          REACLINES(IL)%MT = 0
-          REACLINES(IL)%MP = 0
-          REACLINES(IL)%IZ = 0
-          REACLINES(IL)%JFEX1MN = 0
-          REACLINES(IL)%JFEX1MX = 0
-          REACLINES(IL)%JFEX2MN = 0
-          REACLINES(IL)%JFEX2MX = 0
-          REACLINES(IL)%NCONST = 0
-          REACLINES(IL)%R1MN = 0._DP
-          REACLINES(IL)%R1MX = 0._DP
-          REACLINES(IL)%R2MN = 0._DP
-          REACLINES(IL)%R2MX = 0._DP
-          REACLINES(IL)%DPP = 0._DP
-          REACLINES(IL)%FP1 = 0._DP
-          REACLINES(IL)%FP2 = 0._DP
-          REACLINES(IL)%CONST = 0._DP
-          REACLINES(IL)%FILE = REPEAT(' ',8)
-          REACLINES(IL)%REAC_STRING = REPEAT(' ',50)
-          REACLINES(IL)%H_SELECT = REPEAT(' ',4)
-          REACLINES(IL)%REACTYP = REPEAT(' ',3)
-          REACLINES(IL)%ELEMENT = REPEAT(' ',2)
-          REACLINES(IL)%IROW_ESC = 0
-          REACLINES(IL)%ICOL_ESC = 0
-          REACLINES(IL)%POP_ESC = 1._DP
-        END DO
- 
-        IRLINES = 0
+
  
         NHCOL_STORE = 0
         M_HCOL = 0
