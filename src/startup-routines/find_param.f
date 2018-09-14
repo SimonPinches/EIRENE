@@ -68,7 +68,8 @@ C
      .           NCHTAL, MOD_ADDV, NUM_COMPO, 
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
-     .           ILINE, JCOMP, KCONTR, IREAC_ADD
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD,
+     .           NREAC_LINES
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
@@ -146,7 +147,6 @@ C  STATISTICS
 C  ATOMIC DATA
       NREAC=1
       NREAC_ADD=0
-      NREAC_LINES=0
       NREC=1
       NREI=1
       NRCX=1
@@ -938,13 +938,13 @@ cdr ..................................................................
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
 cdr to be done: synchronisation of options for Ti and Vi.
-cdr these next 2 lines for Ti(ipls) have historically been just opposite to Vi options.
+cdr these next 2 lines for Ti(ipls) have historically been just opposite to V_IN options.
 !pb   NPLSTI = 1
 !pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
 
-      NPLSTI = NPLS  !dr now same as for Vi.  Good
+      NPLSTI = NPLS  !dr now same as for V_IN.  Good
 cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to synchronize with Vi
-      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from Vi logic. Bad
+      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from V_IN logic. Bad
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
@@ -959,7 +959,7 @@ cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to synch
       END IF
 
 
-cdr these next 2 lines for Vi(ipls)
+cdr these next 2 lines for V_IN(ipls)
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 
@@ -986,7 +986,6 @@ C  FIND START OF NEXT INPUT BLOCK: 6
       DO
         READ (IUNIN,'(A72)') ZEILE
         IF ((ZEILE(1:3) == '***') .AND.
-!     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
      ,      (INDEX(ZEILE,'6') > 0)) EXIT
       END DO
 C

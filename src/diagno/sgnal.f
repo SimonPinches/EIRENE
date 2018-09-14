@@ -95,6 +95,24 @@ C
         REAL(DP), INTENT(IN OUT) :: PSIG(0:)
         REAL(DP), INTENT(IN OUT) :: TIMAX
         END SUBROUTINE EIRENE_LININT
+
+        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .             ELNAME, IZ1, 
+     .             IROW_ESC, ICOL_ESC, POP_ESC)
+        USE EIRMOD_PRECISION
+        INTEGER,      INTENT(IN) :: IR, IZ1
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        CHARACTER(8), INTENT(IN) :: FILNAM
+        CHARACTER(4), INTENT(IN) :: H123
+        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+        CHARACTER(3), INTENT(IN) :: CRC
+        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                              RC2MIN, RC2MAX, FP2(6)
+        END SUBROUTINE EIRENE_SLREAC
       END INTERFACE
 C
       ISTRA=IISTR
@@ -415,7 +433,11 @@ C.................................................................
         write (iunout,*) 'sgnal, emis: ichord,istra ',
      .                            ichori,istra
         write (iunout,*) 'volumetric line emission '
-        write (iunout,*) 'contribution no. isp ',isp
+        if (isp > 0) then
+          write (iunout,*) 'contribution no. isp ',isp        
+        else
+          write (iunout,*) 'sum over contributions'
+        endif
       ENDIF
 
 C   STEP 2 DONE
@@ -452,6 +474,7 @@ C
 c  how many components are requested (max) for line "ichori"?
 c  previous default: 6 hydrogenic lines, but only one per run. 
 c                    6 components each, (H, H+, H2, H2+ H-, H3+)
+c  summation over contributions (different isotopes but same emission reactions, etc..)
           MX_COMPO = 0
           IF (ALLOCATED(EMIS_LINES)) THEN
             DO I=1, NUM_LINES
