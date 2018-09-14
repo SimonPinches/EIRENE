@@ -1325,6 +1325,7 @@ CDR  ONLY ONCE FOR ALL FUTURE TRAJECTORIES.
 
 C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).   
           ITFRST = 1
+!    find number of boundary tetrahedra
           NTETSUR = COUNT(NTBAR(1:4,1:NTET) == 0)
           ALLOCATE (IDROB(NTETSUR,2))
           IOB = 0
@@ -1332,6 +1333,7 @@ C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).
             DO IS = 1,4
               IF (NTBAR(IS,ITET) == 0) THEN
                 IOB = IOB + 1
+!    side IS of tetrahedron ITET belongs to boundary 
                 IDROB(IOB,:) = (/ ITET,IS /)
               END IF
             END DO
@@ -1340,51 +1342,53 @@ C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).
           ALLOCATE (ISEEOB(0:NLIMI,NTETSUR/NBITS+1))
           ISEEOB = 0
           ISEEOB(0,:) = -1
-          DO I=1,NTETSUR
-            IT=IDROB(I,1)
-            IS=IDROB(I,2)
-            SIG1=SIGN(1,IRICH(1,IS))
-            I1=ABS(IRICH(1,IS))
-            SIG2=SIGN(1,IRICH(2,IS))
-            I2=ABS(IRICH(2,IS))
-            A1 = VTETX(I1,IT) * SIG1
-            A2 = VTETY(I1,IT) * SIG1
-            A3 = VTETZ(I1,IT) * SIG1
-            B1 = VTETX(I2,IT) * SIG2
-            B2 = VTETY(I2,IT) * SIG2
-            B3 = VTETZ(I2,IT) * SIG2
-            V1 = A2*B3 - A3*B2
-            V2 = A3*B1 - A1*B3
-            V3 = A1*B2 - A2*B1
+          IF ((NLIMI > 0) .AND. ANY(RLB == 3.)) THEN
+            DO I=1,NTETSUR
+              IT=IDROB(I,1)
+              IS=IDROB(I,2)
+              SIG1=SIGN(1,IRICH(1,IS))
+              I1=ABS(IRICH(1,IS))
+              SIG2=SIGN(1,IRICH(2,IS))
+              I2=ABS(IRICH(2,IS))
+              A1 = VTETX(I1,IT) * SIG1
+              A2 = VTETY(I1,IT) * SIG1
+              A3 = VTETZ(I1,IT) * SIG1
+              B1 = VTETX(I2,IT) * SIG2
+              B2 = VTETY(I2,IT) * SIG2
+              B3 = VTETZ(I2,IT) * SIG2
+              V1 = A2*B3 - A3*B2
+              V2 = A3*B1 - A1*B3
+              V3 = A1*B2 - A2*B1
 CDR  LOOP OVER ADDITIONAL SURFACES
-            DO IL=1,NLIMI
-              IF (RLB(IL) == 3.) THEN
-                S1=(P1(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
-     .             (P1(2,IL)-YTETRA(NTECK(ITSIDE(1,IS),IT)))*V2 +
-     .             (P1(3,IL)-ZTETRA(NTECK(ITSIDE(1,IS),IT)))*V3
-                S2=(P2(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
-     .             (P2(2,IL)-YTETRA(NTECK(ITSIDE(1,IS),IT)))*V2 +
-     .             (P2(3,IL)-ZTETRA(NTECK(ITSIDE(1,IS),IT)))*V3
-                S3=(P3(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
-     .             (P3(2,IL)-YTETRA(NTECK(ITSIDE(1,IS),IT)))*V2 +
-     .             (P3(3,IL)-ZTETRA(NTECK(ITSIDE(1,IS),IT)))*V3
-                IF (ANY( (/ S1,S2,S3 /) > 0.D0)) THEN
-                  CALL EIRENE_BITSET (ISEEOB,0,NLIMI,IL,I,1,NBITS)
-                ELSE
-                  IF (NOPTIM >= NTET) THEN
-                    IF (NLIMPB >= NLIMPS) THEN
-                      IGJUM3(ITET,IL) = 0
-                    ELSE
-                      CALL EIRENE_BITSET
+              DO IL=1,NLIMI
+                IF (RLB(IL) == 3.) THEN
+                  S1=(P1(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
+     .               (P1(2,IL)-YTETRA(NTECK(ITSIDE(1,IS),IT)))*V2 +
+     .               (P1(3,IL)-ZTETRA(NTECK(ITSIDE(1,IS),IT)))*V3
+                  S2=(P2(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
+     .               (P2(2,IL)-YTETRA(NTECK(ITSIDE(1,IS),IT)))*V2 +
+     .               (P2(3,IL)-ZTETRA(NTECK(ITSIDE(1,IS),IT)))*V3
+                  S3=(P3(1,IL)-XTETRA(NTECK(ITSIDE(1,IS),IT)))*V1 +
+     .               (P3(2,IL)-YTETRA(NTECK(ITSIDE(1,IS),IT)))*V2 +
+     .               (P3(3,IL)-ZTETRA(NTECK(ITSIDE(1,IS),IT)))*V3
+                  IF (ANY( (/ S1,S2,S3 /) > 0.D0)) THEN
+                    CALL EIRENE_BITSET (ISEEOB,0,NLIMI,IL,I,1,NBITS)
+                  ELSE
+                    IF (NOPTIM >= NTET) THEN
+                      IF (NLIMPB >= NLIMPS) THEN
+                        IGJUM3(ITET,IL) = 0
+                      ELSE
+                        CALL EIRENE_BITSET
      .                    (IGJUM3,0,NOPTIM,ITET,IL,0,NBITS)
+                      END IF
                     END IF
                   END IF
+                ELSE
+                  CALL EIRENE_BITSET (ISEEOB,0,NLIMI,IL,I,1,NBITS)
                 END IF
-              ELSE
-                CALL EIRENE_BITSET (ISEEOB,0,NLIMI,IL,I,1,NBITS)
-              END IF
+              END DO
             END DO
-          END DO
+          END IF
         END IF   ! ITFRST == 0 PART. NOW: ITFRST = 1 
  
         PT=1.D30
@@ -1394,8 +1398,11 @@ CDR  LOOP OVER ADDITIONAL SURFACES
         NTMZ=0
         NTMS=0
         DO IT=1,NTETSUR
-          IF ((MRSURF == 0) .AND.
-     .        .NOT.EIRENE_BITGET(ISEEOB,0,NLIMI,MSURF,IT,NBITS)) CYCLE
+!pb       IF ((MRSURF == 0) .AND.
+!pb  .       .NOT.EIRENE_BITGET(ISEEOB,0,NLIMI,MSURF,IT,NBITS)) CYCLE
+          IF ((MRSURF == 0) .AND. (NLIMI > 0)) THEN
+            IF (.NOT.EIRENE_BITGET(ISEEOB,0,NLIMI,MSURF,IT,NBITS)) CYCLE
+          END IF
           I = IDROB(IT,1)
           J = IDROB(IT,2)
           IF (I == IZELLO)  CYCLE

@@ -55,12 +55,12 @@
         XMAX=MAXVAL(XTETRA(1:NCOOR))
         YMAX=MAXVAL(YTETRA(1:NCOOR))
         ZMAX=MAXVAL(ZTETRA(1:NCOOR))
-        XMIN = XMIN *(1.-EPS5)
-        XMAX = XMAX *(1.+EPS5)
-        YMIN = YMIN *(1.-EPS5)
-        YMAX = YMAX *(1.+EPS5)
-        ZMIN = ZMIN *(1.-EPS5)
-        ZMAX = ZMAX *(1.+EPS5)
+        XMIN = MIN( XMIN *(1.-EPS5), XMIN *(1.+EPS5) )
+        XMAX = MAX( XMAX *(1.-EPS5), XMAX *(1.+EPS5) )
+        YMIN = MIN( YMIN *(1.-EPS5), YMIN *(1.+EPS5) )
+        YMAX = MAX( YMAX *(1.-EPS5), YMAX *(1.+EPS5) )
+        ZMIN = MIN( ZMIN *(1.-EPS5), ZMIN *(1.+EPS5) )
+        ZMAX = MAX( ZMAX *(1.-EPS5), ZMAX *(1.+EPS5) )
         DISTX=(XMAX-XMIN)/REAL(NCL,KIND=DP)
         DISTY=(YMAX-YMIN)/REAL(NCL,KIND=DP)
         DISTZ=(ZMAX-ZMIN)/REAL(NCL,KIND=DP)
@@ -161,6 +161,11 @@
         ELSE
           NULLIFY(HELPCUR(8)%P)
         ENDIF
+      ELSE
+        NULLIFY(HELPCUR(5)%P)        
+        NULLIFY(HELPCUR(6)%P)        
+        NULLIFY(HELPCUR(7)%P)        
+        NULLIFY(HELPCUR(8)%P)        
       END IF
  
  

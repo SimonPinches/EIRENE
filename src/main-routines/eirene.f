@@ -468,6 +468,7 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
          CALL EIRENE_MASBOX
      .          ('OUTPUT OPTION: IDL, PER STRATUM ')
         call eirene_outidlconf
+        call eirene_outidlsrf
         call eirene_outidlpla
         call eirene_outidltal
       END IF
