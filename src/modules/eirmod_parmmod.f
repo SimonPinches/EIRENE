@@ -1,6 +1,5 @@
 !cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
 !pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
-!pb  30.01.07:  NREAC_LINES introduced
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
@@ -82,9 +81,6 @@ csw 13apr07
 
       INTEGER, PUBLIC, SAVE ::
      I NTRJ
-
-      INTEGER, PUBLIC, SAVE ::
-     I NREAC_LINES
 
 
       INTEGER, PUBLIC, SAVE ::
@@ -520,7 +516,8 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
       INT_PARM(137) = NPLSV
       INT_PARM(138) = NTRJ
       INT_PARM(139) = NBACK_SPEC
-      INT_PARM(140) = NREAC_LINES
+
+cdr   INT_PARM(140) = not in use
 
       INT_PARM(141) = NCORNER
       INT_PARM(142) = NVLPR
@@ -708,7 +705,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       NPLSV       = INT_PARM(137)
       NTRJ        = INT_PARM(138)
       NBACK_SPEC  = INT_PARM(139)
-      NREAC_LINES = INT_PARM(140)
+cdr   not in use  = INT_PARM(140)
 
       NCORNER     = INT_PARM(141)
       NVLPR       = INT_PARM(142)

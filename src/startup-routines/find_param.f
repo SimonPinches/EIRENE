@@ -68,7 +68,8 @@ C
      .           NCHTAL, MOD_ADDV, NUM_COMPO, 
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
-     .           ILINE, JCOMP, KCONTR, IREAC_ADD
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD,
+     .           NREAC_LINES
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
@@ -146,7 +147,6 @@ C  STATISTICS
 C  ATOMIC DATA
       NREAC=1
       NREAC_ADD=0
-      NREAC_LINES=0
       NREC=1
       NREI=1
       NRCX=1
