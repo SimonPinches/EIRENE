@@ -74,3 +74,48 @@ update_fork_branches_CEA:
         - git checkout forks/cea/eirene_up2date && git merge cea/eirene_up2date || git checkout -b forks/cea/eirene_up2date cea/eirene_up2date
         - git push -u origin forks/cea/eirene_up2date:forks/cea/eirene_up2date
 
+update_fork_branches_JET:
+    stage: on-schedule
+    only: 
+        - schedules
+    variables:
+        JET_REPO: 'git@git.ccfe.ac.uk:jintrac/EIRENE.git'
+        JET_REPO_NEW: 'git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git'
+    before_script:
+        # Install ssh-agent and git
+        - apt-get update -y && apt-get -y install openssh-client git
+        # Run ssh-agent (inside the build environment)
+        - eval $(ssh-agent -s)
+        # Add the required SSH keys to the agent store
+        # We're using tr to fix line endings which makes ed25519 keys work
+        # without extra base64 encoding.
+        - echo "$SSH_KEY_JET" | tr -d '\r' | ssh-add - > /dev/null
+        - echo "$SSH_KEY_EIRENE_DEPLOY" | tr -d '\r' | ssh-add - > /dev/null
+        # Create the SSH directory and give it the right permissions
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Use ssh-keyscan to scan the keys of your private servers.
+        - ssh-keyscan git.ccfe.ac.uk >> ~/.ssh/known_hosts
+        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        # Add JET repositories as additional remotes
+        - git remote add -t master -t develop jet $JET_REPO || git remote set-url jet $JET_REPO
+        - git remote add -t JET_master -t v170517_NewJuel jet_new $JET_REPO_NEW || git remote set-url jet_new $JET_REPO_NEW
+        - git remote set-url --push jet no_push
+        - git remote set-url --push jet_new no_push
+        # Change origin push URL to get write access to EIRENE repository
+        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+        # Fetch available branches from JET
+        - git fetch jet
+        - git fetch jet_new
+        # Checkout and push branches to EIRENE repository
+        - git checkout forks/jet/master && git merge jet/master || git checkout -b forks/jet/master jet/master 
+        - git push -u origin forks/jet/master:forks/jet/master
+        - git checkout forks/jet/develop && git merge jet/develop || git checkout -b forks/jet/develop jet/develop
+        - git push -u origin forks/jet/develop:forks/jet/develop
+        - git checkout forks/jet_new/JET_master && git merge jet_new/JET_master || git checkout -b forks/jet_new/JET_master jet_new/JET_master
+        - git push -u origin forks/jet_new/JET_master:forks/jet_new/JET_master
+        - git checkout forks/jet_new/v170517_NewJuel && git merge jet_new/v170517_NewJuel || git checkout -b forks/jet_new/v170517_NewJuel jet_new/v170517_NewJuel
+        - git push -u origin forks/jet_new/v170517_NewJuel:forks/jet_new/v170517_NewJuel
+
