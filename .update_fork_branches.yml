@@ -62,37 +62,18 @@ update_fork_branches_CEA:
         - git push -u origin forks/cea/eirene_up2date:forks/cea/eirene_up2date
 
 update_fork_branches_JET:
-    stage: on-schedule
-    only: 
-        - schedules
+    <<: *update_fork_branches
     variables:
-        JET_REPO: 'git@git.ccfe.ac.uk:jintrac/EIRENE.git'
-        JET_REPO_NEW: 'git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git'
-    before_script:
-        # Install ssh-agent and git
-        - apt-get update -y && apt-get -y install openssh-client git
-        # Run ssh-agent (inside the build environment)
-        - eval $(ssh-agent -s)
-        # Add the required SSH keys to the agent store
-        # We're using tr to fix line endings which makes ed25519 keys work
-        # without extra base64 encoding.
-        - echo "$SSH_KEY_JET" | tr -d '\r' | ssh-add - > /dev/null
-        - echo "$SSH_KEY_EIRENE_DEPLOY" | tr -d '\r' | ssh-add - > /dev/null
-        # Create the SSH directory and give it the right permissions
-        - mkdir -p ~/.ssh
-        - chmod 700 ~/.ssh
-        # Use ssh-keyscan to scan the keys of your private servers.
-        - ssh-keyscan git.ccfe.ac.uk >> ~/.ssh/known_hosts
-        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
-        - chmod 644 ~/.ssh/known_hosts
+        SSH_KEY: ${SSH_KEY_JET}
+        REPO_DOMAIN: "git.ccfe.ac.uk"
+        REPO_URL: 'git@git.ccfe.ac.uk:jintrac/EIRENE.git'
+        REPO_NEW_URL: 'git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git'
     script:
         # Add JET repositories as additional remotes
-        - git remote add -t master -t develop jet $JET_REPO || git remote set-url jet $JET_REPO
-        - git remote add -t JET_master -t v170517_NewJuel jet_new $JET_REPO_NEW || git remote set-url jet_new $JET_REPO_NEW
+        - git remote add -t master -t develop jet $REPO_URL || git remote set-url jet $REPO_URL
+        - git remote add -t JET_master -t v170517_NewJuel jet_new $REPO_NEW_URL || git remote set-url jet_new $REPO_NEW_URL
         - git remote set-url --push jet no_push
         - git remote set-url --push jet_new no_push
-        # Change origin push URL to get write access to EIRENE repository
-        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
         # Fetch available branches from JET
         - git fetch jet
         - git fetch jet_new
