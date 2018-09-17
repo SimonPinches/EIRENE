@@ -1,41 +1,4 @@
-update_fork_branches_ITER:
-    stage: on-schedule
-    only: 
-        - schedules
-    variables:
-        ITER_REPO: 'ssh://git@git.iter.org/bnd/eirene.git'
-    before_script:
-        # Install ssh-agent and git
-        - apt-get update -y && apt-get -y install openssh-client git
-        # Run ssh-agent (inside the build environment)
-        - eval $(ssh-agent -s)
-        # Add the required SSH keys to the agent store
-        # We're using tr to fix line endings which makes ed25519 keys work
-        # without extra base64 encoding.
-        - echo "$SSH_KEY_ITER" | tr -d '\r' | ssh-add - > /dev/null
-        - echo "$SSH_KEY_EIRENE_DEPLOY" | tr -d '\r' | ssh-add - > /dev/null
-        # Create the SSH directory and give it the right permissions
-        - mkdir -p ~/.ssh
-        - chmod 700 ~/.ssh
-        # Use ssh-keyscan to scan the keys of your private servers.
-        - ssh-keyscan git.iter.org >> ~/.ssh/known_hosts
-        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
-        - chmod 644 ~/.ssh/known_hosts
-    script:
-        # Add ITER repository as additional remote
-        - git remote add -t master -t develop iter $ITER_REPO || git remote set-url iter $ITER_REPO
-        - git remote set-url --push iter no_push
-        # Change origin push URL to get write access to EIRENE repository
-        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
-        # Fetch available branches from ITER
-        - git fetch iter
-        # Checkout and push branches to EIRENE repository
-        - git checkout forks/iter/master && git merge iter/master || git checkout -b forks/iter/master iter/master 
-        - git push -u origin forks/iter/master:forks/iter/master
-        - git checkout forks/iter/develop && git merge iter/develop || git checkout -b forks/iter/develop iter/develop
-        - git push -u origin forks/iter/develop:forks/iter/develop
-
-update_fork_branches_CEA:
+.update_fork_branches: &update_fork_branches
     stage: on-schedule
     only: 
         - schedules
@@ -47,25 +10,49 @@ update_fork_branches_CEA:
         # Add the required SSH keys to the agent store
         # We're using tr to fix line endings which makes ed25519 keys work
         # without extra base64 encoding.
-        - echo "$SSH_KEY_CEA" | tr -d '\r' | ssh-add - > /dev/null
-        - echo "$SSH_KEY_EIRENE_DEPLOY" | tr -d '\r' | ssh-add - > /dev/null
+        - echo "${SSH_KEY}" | tr -d '\r' | ssh-add - > /dev/null
+        - echo "${SSH_KEY_EIRENE_DEPLOY}" | tr -d '\r' | ssh-add - > /dev/null
         # Create the SSH directory and give it the right permissions
         - mkdir -p ~/.ssh
         - chmod 700 ~/.ssh
         # Use ssh-keyscan to scan the keys of your private servers.
-        - ssh-keyscan subversion.assembla.com >> ~/.ssh/known_hosts
+        - ssh-keyscan ${REPO_DOMAIN} >> ~/.ssh/known_hosts
         - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
         - chmod 644 ~/.ssh/known_hosts
+        # Change origin push URL to get write access to EIRENE repository
+        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+
+update_fork_branches_ITER:
+    <<: *update_fork_branches
+    variables:
+        SSH_KEY: ${SSH_KEY_ITER}
+        REPO_DOMAIN: "git.iter.org"
+        REPO_URL: 'ssh://git@git.iter.org/bnd/eirene.git'
+    script:
+        # Add ITER repository as additional remote
+        - git remote add -t master -t develop iter $REPO_URL || git remote set-url iter $REPO_URL
+        - git remote set-url --push iter no_push
+        # Fetch available branches from ITER
+        - git fetch iter
+        # Checkout and push branches to EIRENE repository
+        - git checkout forks/iter/master && git merge iter/master || git checkout -b forks/iter/master iter/master 
+        - git push -u origin forks/iter/master:forks/iter/master
+        - git checkout forks/iter/develop && git merge iter/develop || git checkout -b forks/iter/develop iter/develop
+        - git push -u origin forks/iter/develop:forks/iter/develop
+
+update_fork_branches_CEA:
+    <<: *update_fork_branches
+    variables:
+        SSH_KEY: ${SSH_KEY_CEA}
+        REPO_DOMAIN: "subversion.assembla.com"
+    script:
         # Adjust ssh_config to pass required environment variables
         - printf "Host cea-svn\n  HostName subversion.assembla.com\n  SendEnv REPO_NAME\n" >> ~/.ssh/config
-    script:
         # Get local copy of CEA SVN repository
         - REPO_NAME=e-styx git svn clone svn+ssh://svn@cea-svn --stdlayout eirene_cea && cd eirene_cea && git checkout -b eirene_up2date origin/eirene_up2date || cd eirene_cea && REPO_NAME=e-styx git svn fetch
         # Add CEA repository as additional remote
         - cd ..
         - git remote add -t master -t eirene_up2date cea eirene_cea || git remote set-url cea eirene_cea
-        # Change origin push URL to get write access to EIRENE repository
-        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
         # Fetch available branches from CEA
         - git fetch cea
         # Checkout and push branches to EIRENE repository
