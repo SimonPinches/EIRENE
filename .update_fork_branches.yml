@@ -27,7 +27,7 @@ update_fork_branches_ITER:
     variables:
         SSH_KEY: ${SSH_KEY_ITER}
         REPO_DOMAIN: "git.iter.org"
-        REPO_URL: 'ssh://git@git.iter.org/bnd/eirene.git'
+        REPO_URL: "ssh://git@git.iter.org/bnd/eirene.git"
     script:
         # Add ITER repository as additional remote
         - git remote add -t master -t develop iter $REPO_URL || git remote set-url iter $REPO_URL
@@ -66,8 +66,8 @@ update_fork_branches_JET:
     variables:
         SSH_KEY: ${SSH_KEY_JET}
         REPO_DOMAIN: "git.ccfe.ac.uk"
-        REPO_URL: 'git@git.ccfe.ac.uk:jintrac/EIRENE.git'
-        REPO_NEW_URL: 'git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git'
+        REPO_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE.git"
+        REPO_NEW_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git"
     script:
         # Add JET repositories as additional remotes
         - git remote add -t master -t develop jet $REPO_URL || git remote set-url jet $REPO_URL
