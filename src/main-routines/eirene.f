@@ -465,7 +465,7 @@ C  HENCE: RESET IITER TO 1
 
 C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
       IF (PLIDL.AND.(MY_PE == 0)) THEN
-         CALL EIRENE_MASBOX
+        CALL EIRENE_MASBOX
      .          ('OUTPUT OPTION: IDL, PER STRATUM ')
         call eirene_outidlconf
         call eirene_outidlsrf
