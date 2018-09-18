@@ -27,7 +27,7 @@ update_fork_branches_ITER:
     variables:
         SSH_KEY: ${SSH_KEY_ITER}
         REPO_DOMAIN: "git.iter.org"
-        REPO_URL: 'ssh://git@git.iter.org/bnd/eirene.git'
+        REPO_URL: "ssh://git@git.iter.org/bnd/eirene.git"
     script:
         # Add ITER repository as additional remote
         - git remote add -t master -t develop iter $REPO_URL || git remote set-url iter $REPO_URL
@@ -60,4 +60,30 @@ update_fork_branches_CEA:
         - git push -u origin forks/cea/master:forks/cea/master
         - git checkout forks/cea/eirene_up2date && git merge cea/eirene_up2date || git checkout -b forks/cea/eirene_up2date cea/eirene_up2date
         - git push -u origin forks/cea/eirene_up2date:forks/cea/eirene_up2date
+
+update_fork_branches_JET:
+    <<: *update_fork_branches
+    variables:
+        SSH_KEY: ${SSH_KEY_JET}
+        REPO_DOMAIN: "git.ccfe.ac.uk"
+        REPO_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE.git"
+        REPO_NEW_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git"
+    script:
+        # Add JET repositories as additional remotes
+        - git remote add -t master -t develop jet $REPO_URL || git remote set-url jet $REPO_URL
+        - git remote add -t JET_master -t v170517_NewJuel jet_new $REPO_NEW_URL || git remote set-url jet_new $REPO_NEW_URL
+        - git remote set-url --push jet no_push
+        - git remote set-url --push jet_new no_push
+        # Fetch available branches from JET
+        - git fetch jet
+        - git fetch jet_new
+        # Checkout and push branches to EIRENE repository
+        - git checkout forks/jet/master && git merge jet/master || git checkout -b forks/jet/master jet/master 
+        - git push -u origin forks/jet/master:forks/jet/master
+        - git checkout forks/jet/develop && git merge jet/develop || git checkout -b forks/jet/develop jet/develop
+        - git push -u origin forks/jet/develop:forks/jet/develop
+        - git checkout forks/jet_new/JET_master && git merge jet_new/JET_master || git checkout -b forks/jet_new/JET_master jet_new/JET_master
+        - git push -u origin forks/jet_new/JET_master:forks/jet_new/JET_master
+        - git checkout forks/jet_new/v170517_NewJuel && git merge jet_new/v170517_NewJuel || git checkout -b forks/jet_new/v170517_NewJuel jet_new/v170517_NewJuel
+        - git push -u origin forks/jet_new/v170517_NewJuel:forks/jet_new/v170517_NewJuel
 
