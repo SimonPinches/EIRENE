@@ -1693,7 +1693,8 @@ c
      .                     RP%HYD%RPRT 
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          WRITE (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST,
+          WRITE (13+IFOFF) RP%CRM%IFLAV, 
+     .                     RP%CRM%IVARST,
      .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
           WRITE (13+IFOFF) RP%CRM%POP_ESC
         ELSE
@@ -1817,8 +1818,9 @@ cdr options for extrapolation from data tables or from validity range of fits.
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
           IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
-          READ (13+IFOFF) RP%CRM%IFLAV, RP%CRM%IVARST,
-     .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
+          READ (13+IFOFF) RP%CRM%IFLAV, 
+     .                    RP%CRM%IVARST,
+     .                    RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
           READ (13+IFOFF) RP%CRM%POP_ESC
         ELSE
 
@@ -2078,7 +2080,8 @@ cdr options for extrapolation from data tables or from validity range of fits.
  
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          IHELP(1:4) = (/ RP%CRM%IFLAV, RP%CRM%IVARST,
+          IHELP(1:4) = (/ RP%CRM%IFLAV, 
+     .                    RP%CRM%IVARST,
      .                    RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC /)
           CALL FXDRINT (IUN,IHELP,4)
           RHELP(1) = RP%CRM%POP_ESC

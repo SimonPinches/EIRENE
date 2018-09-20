@@ -102,8 +102,8 @@ C
       IER = 0
       IF ((MAXVAL(NTECK(1:4,1:NTET)) > NCOORD) .OR.
      .    (MINVAL(NTECK(1:4,1:NTET)) <= 0 )) THEN
-        WRITE (iunout,*) ' WRONG COORDINATE NUMBER IS DEFINITION OF',
-     .              ' TRIANGLES FOUND '
+        WRITE (iunout,*) ' WRONG COORDINATE NUMBER IN DEFINITION OF',
+     .                   ' TETRAHEDRA FOUND '
         IER = 2
       END IF
  
@@ -121,6 +121,11 @@ C
           CUR%NOTET = IT
           CUR%NEXT_TET => COORTET(IC)%PTET
           COORTET(IC)%PTET => CUR
+!
+          if (ntseite(is,it) > 4) then
+            ntbar(is,it) = 0
+            ntseite(is,it) = 0
+          end if
         ENDDO
       ENDDO
  
