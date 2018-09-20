@@ -384,10 +384,18 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
+cdr return erate, rather than ln(erate), because a recombination
+cdr reaction (with delpot .ne. 0) may be used as EI reaction too,
+cdr e.g. when trace ions are followed and recombine.
+cdr But delpot .ne.0 with ln(erate) causes trouble with internal CR models.
+cdr Had already been taken care of similarly in xstrc.f
                       EE = EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
-     .                                              PLS(J),.FALSE.,1)
-                      EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-                      EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
+cdr  .                                              PLS(J),.FALSE.,1) ! to be removed
+     .                                              PLS(J),.TRUE.,1)
+                      EELEI1(IREI,J)=-EE*DEIN(J)*FACTKK/
+     .                               (TABEI1(IREI,J)+EPS60)
+cdr                   EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))     ! to be removed
+cdr                   EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)   ! to be removed
                     END DO
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
