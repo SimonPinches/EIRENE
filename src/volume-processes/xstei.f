@@ -390,12 +390,12 @@ cdr e.g. when trace ions are followed and recombine.
 cdr But delpot .ne.0 with ln(erate) causes trouble with internal CR models.
 cdr Had already been taken care of in xstrc.f
                       EE = EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
-cdr  .                                              PLS(J),.FALSE.,1)
-     .                                              PLS(J),.TRUE.,1)
-                      EELEI1(IREI,J)=-EE*DEIN(J)*FACTKK/
-     .                               (TABEI1(IREI,J)+EPS60)
-cdr                   EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-cdr                   EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
+     .                                              PLS(J),.FALSE.,1) ! to be removed
+cdr  .                                              PLS(J),.TRUE.,1)
+cdr                   EELEI1(IREI,J)=-EE*DEIN(J)*FACTKK/
+cdr  .                               (TABEI1(IREI,J)+EPS60)
+                      EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))     ! to be removed
+                      EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)   ! to be removed
                     END DO
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
