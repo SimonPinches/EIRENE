@@ -36,11 +36,17 @@ C      REAL(DP) :: DSUB
       KK = NREARC(IRRC)
 
 c  default radiative rate coefficient, see xstrc.f 
-      IF (KK == 0) THEN
+      IF (KK == -1) THEN   ! E + H+ --> H + hv
         ZX=EIONH/MAX(1.E-5_DP,TEIN(K))
         TBRC=1.27E-13*ZX**1.5/(ZX+0.59)*DEIN(K)
 
-      ELSEIF (KK .LT.0 ) THEN
+      ELSEIF (KK == -2) THEN  ! E + He+ --> He + hv
+         ZX=EIONHE/MAX(1.E-5_DP,TEIN(K))
+C  rate = [rate coeff <sig v>] times [electr. density],  1/s per ion
+c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
+         TBRC=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(K)
+
+      ELSEIF (KK .LE. 0 ) THEN
         WRITE (IUNOUT,*) 'INVALID KK IN FTABRC1, KK= ',KK
         CALL EIRENE_EXIT_OWN(1)
 
