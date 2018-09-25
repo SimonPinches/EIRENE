@@ -1,4 +1,4 @@
-!cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
+
 !pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
@@ -7,6 +7,7 @@ cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
 
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
+cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
 cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
@@ -14,7 +15,7 @@ cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
 cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
 cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
-cdr           fully corresponds to vol tally parameter nspztot, 
+cdr           fully corresponds to vol tally parameter nspztot,
 cdr           but is for surface tally pointers
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
 c
@@ -34,7 +35,7 @@ c    distrib_parm
 
       PUBLIC :: EIRENE_SET_PARMMOD, EIRENE_COLLECT_PARM,
      P          EIRENE_DISTRIB_PARM,
-     P          EIRENE_SPECTRUM, 
+     P          EIRENE_SPECTRUM,
      P          ASSIGNMENT(=)
 
       INTEGER, PUBLIC, PARAMETER ::
@@ -530,7 +531,7 @@ cdr   INT_PARM(140) = not in use
 
       INT_PARM(148) = NUM_LINES
       INT_PARM(149) = NADV_ADD
- 
+
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
 
@@ -760,8 +761,8 @@ cdr   not in use  = INT_PARM(140)
       if (associated(speca%spc)) then
         if (size(speca%spc) < specb%nspc+2) deallocate(speca%spc)
       end if
-      if (.not.associated(speca%spc)) 
-     .  allocate(speca%spc(0:specb%nspc+1))     
+      if (.not.associated(speca%spc))
+     .  allocate(speca%spc(0:specb%nspc+1))
       SPECA%SPC     = SPECB%SPC
 
       IF (ASSOCIATED(SPECB%SDV)) THEN
@@ -771,7 +772,7 @@ cdr   not in use  = INT_PARM(140)
             deallocate(speca%sgm)
             deallocate(speca%stv)
             deallocate(speca%gg)
-          end if       
+          end if
         end if
         if (.not.associated(speca%sdv)) then
           allocate(speca%sdv(0:specb%nspc+1))

@@ -59,7 +59,7 @@ c  naint=25:   eplel3(irel,..,1) elastic   energy weighted rate, eV/s --> cm^3 e
 c  naint=26:   Tabpi3(irpi,..,1) heavy particle imp.  coll.rate, 1/s --> cm^3/s      ! done 
 c  naint=27:   eplpi3(irpi,..,1) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
-c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s     ! not ready 
+c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s     ! done 
 c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! done
 
 
@@ -93,13 +93,20 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
 
       AU=0.6120D-08
 
-      IF (NSTORDR < NRAD) RETURN
+
 
       DO 190 IAIN=1,NAINI
         NS=NAINS(IAIN)    !  ns stands for ircx,irei,irel,irpi,irpi,..., internal number of process
         NA=NAINT(IAIN)    !  na stands for tally:  TAB..3(...),  EPL..3(...)
 
         IF ((NA < 20) .OR. (NA > 29)) CYCLE
+
+        IF (NSTORDR < NRAD) THEN
+          WRITE (IUNOUT,*) 'AMDIAG NOT READY FOR STORAGE SAVING MODE'
+          WRITE (IUNOUT,*) 'NS, NA ',NS,NA
+          CALL EIRENE_LEER(1) 
+          CYCLE
+        ENDIF
 
         MM = 0
         KK = 0

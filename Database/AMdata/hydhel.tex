@@ -188,14 +188,20 @@ The same is needed still for
 2.3.13 (helium rad. rec), in particular since the closed form 
 expression from the book is hard wired as default recombination rate in EIRENE code for He$^+$.
 
-Perhaps the closed form expression allows a direct (analytical) translation into polynomial fit? It seems to be the case indeed from
-the new 2.1.8 fits that only two coefficients may be needed. To be checked.
+Perhaps the closed form expression allows a direct (analytical) 
+translation into polynomial fit? 
+It seems to be the case indeed from
+the new 2.1.8 fits that only two coefficients may be needed. 
+No: two different slopes Te**s at low Te and at high Te. Cannot be accomodated
+by a fit linear in log-log
 
 \item {H.8 rates for recombination processes}
 
 for the closed form expressions for 2.1.8 and 2.3.13 these rates can be given also in closed form (and are coded in
-the EIRENE default model routines). It might be desirable to add them also as H.8 into the database. Same
-for 2.2.14 (diss. rec of H2+). This latter is already here in HYDHEL (update from July 2015), and EIRENE default was 0.88*Te times rate 2.2.14.
+the EIRENE default model routines). It might be desirable to add them also as H.8 
+into the database. Same for 2.2.14 (diss. rec of H2+). 
+This latter is already here in HYDHEL (update from July 2015), 
+and EIRENE default was 0.88*Te times rate 2.2.14.
 So the H.8  2.2.14 was approximately, but not exactly, the previous EIRENE default.
 Check: can the H.8 fit be derived from the H.2 fit exactly? If yes: then this should become default in EIRENE, rather then 0.88*Te.
 Done:  H.8 follows from H.2 directly, if only b0 and b1 coefficients are non-zero, see: AMJUEL.
@@ -6252,6 +6258,18 @@ $\langle\sigma v_A E_{A}\rangle(T_A) = kT_A \cdot \langle\sigma v_A\rangle \cdot
 \left(3/2 + \frac{d \ln \langle\sigma v_A\rangle}{d \ln(kT_A)}\right)$
 
 \newpage
+
+\subsection{
+Reaction 2.1.8  $  e + H^+ \rightarrow H(1s) + hv $}
+general formula for rate: see original text. Here:  fit to rate for recomb into 1s ground state
+then: take only the first 2 coeffs and derive the corresponding electron energy rate.
+
+
+\begin{small}\begin{verbatim}
+   h0 -2.96197012800e+01     h1  0.470220050000e+00    h2  0.000000000000e+00
+   h3  0000000000000e+00     h4  0.000000000000e+00    h5  0.000000000000e+00
+   h6  0.00000000000e+00     h7  0.000000000000e+00    h8  0.000000000000e+00
+\end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.2.14   $e + H_2^+(v) \rightarrow H(1s) + H^*(n)   (v=0-9, n \ge 2) $
