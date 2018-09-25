@@ -422,6 +422,7 @@ C  NSTORAM IS REDEFINED, FINALLY EITHER =0  (A&M STORAGE SAVE MODE)
 C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       NSTORAM = MIN(NSTORAM,9)
       IF (NSTORAM < 9) NSTORAM = 0
+      NOPTM1 = MAX(NOPTM1,1)
 C...........................................................................
 c   done with this optional "storage save mode card"
 C

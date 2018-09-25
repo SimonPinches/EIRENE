@@ -1,3 +1,5 @@
+cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
+
       MODULE EIRMOD_CTEXT
  
       USE EIRMOD_PRECISION
@@ -64,7 +66,7 @@
         ALLOCATE (TXTPUN(N1MX,NTALI))
  
         WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' CTEXT(2) ',N1MX*(NTALV*NTALI)*72 +
+     .        ' CTEXT(2) ',  N1MX*(NTALV+NTALI)*72 +
      .                     2*N1MX*(NTALV+NTALI)*24
  
       END IF

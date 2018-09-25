@@ -42,7 +42,11 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  JUL  16:  ehvds1 -> ehvei1
 cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
 cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
-
+cdr  sept 18:  prepare reviving "storage save mode (for large 3D grids):
+cdr            first: rationalize naming of integer flags for collision models
+cdr            nhvrei, nhvrpi, for KER (heavy particle post collision kinetics)
+cdr            remove redundant flags: JEREARC  (UNUSED)
+cdr            remove redundant flags: JEREAEI  (UNUSED)
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -229,10 +233,10 @@ c  ...and cumulated distributions thereof, for species sampling
  
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NREACX(:),NREAPI(:),NREAEL(:),
-     I NREAEI(:),JEREAEI(:),NREARC(:),JEREARC(:),
-     I NELREI(:),JELREI(:),NREAHV(:),NELREL(:),
+     I NREAEI(:),NREARC(:),
+     I NELREI(:),JELREI(:),NHVREI(:),NELREL(:),
      I NELRRC(:),JELRRC(:),NELRPI(:),JELRPI(:),NELRCX(:),
-     I NELROT(:),NREAOT(:),NREACT(:),NRHVPI(:),
+     I NELROT(:),NREAOT(:),NREACT(:),NHVRPI(:),
      I IPATEI(:,:),IPMLEI(:,:),
      I IPIOEI(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
@@ -542,7 +546,7 @@ C
      P        5*NREC+
      P        6*NRCX+
      P        10*NREC+
-     P        2*NRCX+4*NRPI+2*NREL+5*NREI+4*NREC+NREAC+2*NROT+
+     P        2*NRCX+4*NRPI+2*NREL+4*NREI+3*NREC+NREAC+2*NROT+
      P        (NREI+NRPI)*
      P        (NATMP+NMOLP+NIONP+NPLSP)+
 C  LG... ARRAYS
@@ -672,12 +676,10 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (NREAPI(NRPI))
         ALLOCATE (NREAEL(NREL))
         ALLOCATE (NREAEI(NREI))
-        ALLOCATE (JEREAEI(NREI))
         ALLOCATE (NREARC(NREC))
-        ALLOCATE (JEREARC(NREC))
         ALLOCATE (NELREI(NREI))
         ALLOCATE (JELREI(NREI))
-        ALLOCATE (NREAHV(NREI))
+        ALLOCATE (NHVREI(NREI))
         ALLOCATE (NELREL(NREL))
         ALLOCATE (NELRRC(NREC))
         ALLOCATE (JELRRC(NREC))
@@ -687,7 +689,7 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (NELROT(NROT))
         ALLOCATE (NREAOT(NROT))
         ALLOCATE (NREACT(NREAC))
-        ALLOCATE (NRHVPI(NRPI))
+        ALLOCATE (NHVRPI(NRPI))
 c  again: some arrays for species distribution of secondaries
 c         derived from P..EI and P..PI, above. 
 c         for speeding up scoring in update, collide 
@@ -869,12 +871,10 @@ c
       DEALLOCATE (NREAPI)
       DEALLOCATE (NREAEL)
       DEALLOCATE (NREAEI)
-      DEALLOCATE (JEREAEI)
       DEALLOCATE (NREARC)
-      DEALLOCATE (JEREARC)
       DEALLOCATE (NELREI)
       DEALLOCATE (JELREI)
-      DEALLOCATE (NREAHV)
+      DEALLOCATE (NHVREI)
       DEALLOCATE (NELREL)
       DEALLOCATE (NELRRC)
       DEALLOCATE (JELRRC)
@@ -884,7 +884,7 @@ c
       DEALLOCATE (NELROT)
       DEALLOCATE (NREAOT)
       DEALLOCATE (NREACT)
-      DEALLOCATE (NRHVPI)
+      DEALLOCATE (NHVRPI)
 
       DEALLOCATE (IPATEI)
       DEALLOCATE (IPMLEI)
@@ -1294,12 +1294,10 @@ c  reaction threshold (if any)
         NREAPI  = 0
         NREAEL  = 0
         NREAEI  = 0
-        JEREAEI = 0
         NREARC  = 0
-        JEREARC = 0
         NELREI  = 0
         JELREI  = 0
-        NREAHV  = 0
+        NHVREI  = 0
         NELREL  = 0
         NELRRC  = 0
         JELRRC  = 0
@@ -1309,7 +1307,7 @@ c  reaction threshold (if any)
         NELROT  = 0
         NREAOT  = 0
         NREACT  = 0
-        NRHVPI  = 0
+        NHVRPI  = 0
         IPATEI  = 0
         IPMLEI  = 0
         IPIOEI  = 0
@@ -1372,9 +1370,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
  
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
-     . NREACX ,NREAPI ,NREAEL ,NREAEI ,JEREAEI,NREARC ,JEREARC,
-     . NELREI ,JELREI ,NREAHV ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
-     . NELRCX ,NELROT ,NREAOT ,NREACT ,NRHVPI ,
+     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
+     . NELRCX ,NELROT ,NREAOT ,NREACT ,NHVRPI ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
@@ -1416,9 +1414,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
  
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
-     . NREACX ,NREAPI ,NREAEL ,NREAEI ,JEREAEI,NREARC ,JEREARC,
-     . NELREI ,JELREI ,NREAHV ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
-     . NELRCX ,NELROT ,NREAOT ,NREACT ,NRHVPI ,
+     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
+     . NELRCX ,NELROT ,NREAOT ,NREACT ,NHVRPI ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
@@ -1557,12 +1555,10 @@ c
       CALL FXDRINT (IUN,NREAPI ,NRPI)
       CALL FXDRINT (IUN,NREAEL ,NREL)
       CALL FXDRINT (IUN,NREAEI ,NREI)
-      CALL FXDRINT (IUN,JEREAEI,NREI)
       CALL FXDRINT (IUN,NREARC ,NREC)
-      CALL FXDRINT (IUN,JEREARC,NREC)
       CALL FXDRINT (IUN,NELREI ,NREI)
       CALL FXDRINT (IUN,JELREI ,NREI)
-      CALL FXDRINT (IUN,NREAHV ,NREI)
+      CALL FXDRINT (IUN,NHVREI ,NREI)
       CALL FXDRINT (IUN,NELREL ,NREL)
       CALL FXDRINT (IUN,NELRRC ,NREC)
       CALL FXDRINT (IUN,JELRRC ,NREC)
@@ -1572,7 +1568,7 @@ c
       CALL FXDRINT (IUN,NELROT ,NROT)
       CALL FXDRINT (IUN,NREAOT ,NROT)
       CALL FXDRINT (IUN,NREACT ,NREAC)
-      CALL FXDRINT (IUN,NRHVPI ,NRPI)
+      CALL FXDRINT (IUN,NHVRPI ,NRPI)
       CALL FXDRINT (IUN,IPATEI ,NREI*(NATM+1))
       CALL FXDRINT (IUN,IPMLEI ,NREI*(NMOL+1))
       CALL FXDRINT (IUN,IPIOEI ,NREI*(NION+1))
