@@ -1,6 +1,8 @@
 image: debian
 
-include: '.update_fork_branches.yml'
+include:
+    - '.update_fork_branches.yml'
+    - '.tag_and_deploy.yml'
 
 before_script:
     # Install required programs
@@ -13,6 +15,8 @@ stages:
     - build:executable
     - run
     - test
+    - tag
+    - deploy
     - on-schedule
 
 .build_executable: &build_executable
