@@ -1278,4 +1278,5 @@ C     The following ENTRY is for reinitialization of EIRENE (DMH)
       IF (ALLOCATED(IREDUC)) DEALLOCATE(IREDUC)
       ICOUNT = 0
       NPANOLD = 0
+      IFIRST = 0
       END
