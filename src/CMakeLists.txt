@@ -4,14 +4,12 @@ cmake_minimum_required(VERSION 2.8)
 project(EIRENE Fortran)
 
 # Adds compiler flags to all build types.
-if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "-fp-model source")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
-elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(CMAKE_Fortran_FLAGS "-O3")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
-elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
-  set(CMAKE_Fortran_FLAGS "-r8")
 endif()
 
 # Libraries used for plotting
