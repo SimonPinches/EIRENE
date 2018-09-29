@@ -26,6 +26,7 @@ stages:
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases/${PATH_CASE}
+        - git checkout feature/NLSHRT13
         - make
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
