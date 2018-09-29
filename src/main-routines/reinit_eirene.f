@@ -2,6 +2,7 @@
  
       use EIRMOD_PRECISION
       use EIRMOD_PARMMOD
+      use EIRMOD_COMUSR
       use EIRMOD_COUTAU
       use EIRMOD_CRECH
  
@@ -21,6 +22,7 @@ C     reinitialization start
  
 !pb   call INIT_COUTAU_REINIT
       call EIRENE_CRECH_REINIT
+      call EIRENE_COMUSR_REINIT
  
       call EIRENE_STCOOR_REINIT
       call EIRENE_SAMVOL_REINIT
