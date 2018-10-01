@@ -800,9 +800,6 @@ C
       IF ((NFILEL >=1) .AND. (NFILEL <=4)) THEN
 cdr      NFILEL=3  probably wrong,  jan. 2016
          CALL EIRENE_WRPLAM(TRCFLE,0)
-      ELSE IF ((NFILEL >= 6) .AND. (NFILEL <=9)) THEN
-cdr      NFILEL=9  probably wrong, jan 16.  3 and 8 ?,   or 4 and 9 ?, but not 3 and 9
-         CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
       END IF
  
 
