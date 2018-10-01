@@ -36,6 +36,8 @@
  \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
 
 
+
+
 \begin{document}
 \parindent 0pt
 %titelpage
@@ -62,6 +64,8 @@ EIRENE code git-repository hosted at FZ J\"ulich
 \pagenumbering{Roman}
 \newpage
 \renewcommand\thesection{\Roman{section}}
+\newpage
+\addcontentsline{toc}{section}{Table of contents}
 \tableofcontents
 %ende titelpage
 \newpage
@@ -313,6 +317,7 @@ must be retained in the line emission routines as multiplicative factor for the 
   hence: this corrections seemed to be missing in ADAS\\
   Also added: H.12 2.1.8de-t, (DE per event) and figures \\
   Old H.12 2.1.5t and 2.1.8t renamed into 2.1.5tot and 2.1.8tot, resp.
+  Sept. 18: The intermediate "test-fits" H.10 2.1.8-t, H.12 2-1-8de-t from 2007 removed now. 
   \item update   07.08/07  2.1.5 H.4 and H.10 Johnson-Hinnov renamed to 2.1.5JH\\
   new ``default'' is Sawada-Fujimoto: old H.4 2.1.5FU now: H.4 2.1.5\\
   and H.10 2.1.5  (FU) is newly added.\\
@@ -8803,59 +8808,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{figure}
 \newpage
 
-\subsection{
-  Reaction 2.1.8t $H^+ + e  \rightarrow H(1s) $
-}
-     do not use: only for testing  ADAS PRB rate. Same as above, JH database
-     but $dln\langle sig v\rangle /dlnT$ correction removed in free bound transitions
 
-\begin{small}\begin{verbatim}
-
-        E-Index:     0                     1                     2
-  T-Index:
-        0   -2.584114063574D+01    3.954583810848D-03    1.226207753369D-03
-        1   -6.722051475883D-01   -2.374237574381D-02    1.220732882547D-02
-        2    4.298773953306D-02    1.518903102685D-02   -1.040687790971D-02
-        3    1.175376172121D-02    1.836334349240D-03   -2.184151606814D-03
-        4    2.444695663440D-04   -1.441024928821D-03    1.471132341668D-03
-        5   -7.999296912631D-04   -4.378152568604D-05   -2.668044290688D-05
-        6    1.108758364533D-04    7.121000938022D-05   -5.163434271747D-05
-        7   -4.950502517163D-06   -8.912712700419D-06    6.926837416082D-06
-        8    3.557192989612D-08    3.359548284329D-07   -2.657303348021D-07
-
-        E-Index:     3                     4                     5
-  T-Index:
-        0    1.161886460214D-03   -3.757012643654D-04    6.587092485914D-05
-        1   -4.427696784538D-03    5.748375032819D-04   -3.220643016363D-05
-        2    4.132078943994D-03   -7.076580646192D-04    6.327610663109D-05
-        3    3.146181789043D-04    1.651017598401D-05   -9.612296616067D-06
-        4   -4.351131677737D-04    5.788339105175D-05   -2.828897327260D-06
-        5    2.417709468754D-05   -5.927135718855D-06    5.113794389586D-07
-        6    1.195371206751D-05   -1.052408071577D-06    2.254123815507D-08
-        7   -1.758251512799D-06    1.862206781908D-07   -6.990610754370D-09
-        8    6.869977978150D-08   -7.443450588757D-09    2.763775786889D-10
-
-        E-Index:     6                     7                     8
-  T-Index:
-        0   -5.795276987659D-06    2.579368998990D-07   -4.547564421362D-09
-        1   -2.041847132375D-07    8.196018761672D-08   -2.096446721567D-09
-        2   -2.702581145483D-06    4.031977763649D-08    1.430532547657D-10
-        3    1.006448379973D-06   -4.380712513696D-08    7.199826302410D-10
-        4   -7.020663824401D-08    1.049689217264D-08   -2.472269909817D-10
-        5   -7.721165607539D-09   -7.397060161257D-10    2.189989404804D-11
-        6    1.603333205140D-09   -1.122265017519D-10    2.612077503992D-12
-        7   -1.801587396805D-10    2.305224523251D-11   -5.710248072777D-13
-        8    9.775403278327D-12   -1.119509805266D-12    2.693883939329D-14
-
-  Max. rel. Error:   6.9014 %
-  Mean rel. Error:   0.7184 %
-
-\end{verbatim}\end{small}
-\begin{figure} \label{2.1.8r4}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydlr4_tr.ps}
-\end{figure}
-\newpage
 
 \subsection{
   Reaction 2.1.8o $H^+ + e \rightarrow H(1s) $ Ly-opaque
@@ -10692,61 +10645,6 @@ Reaction 2.1.8tot  $H^+ + e \rightarrow H(1s) $, Ratio $H(tot)/H^+$
 \end{figure}
 \newpage
 
-\subsection{
-  Reaction 2.1.8det  $H^+  + e \rightarrow H(1s) $, \  $<de> + 13.6 \ [eV] $
-}
-
-     do not use: only for testing  ADAS PRB rate. Same as above, Johnson Hinnov
-     but $dln\langle sig v\rangle /dlnT$ correction removed in free bound transitions
-
-\begin{small}\begin{verbatim}
-        E-Index:     0                     1                     2
-  T-Index:
-        0    2.717272483503D+00    4.838148584777D-03   -5.452382162679D-03
-        1    9.398477868692D-02   -3.227619737070D-03    4.226409144028D-03
-        2    4.655561657301D-02   -1.794086218129D-03    1.574904484615D-03
-        3    1.752147403614D-02    6.571521522207D-04   -6.466109863122D-04
-        4    5.711608146415D-04    3.906159455991D-05   -8.042732179727D-07
-        5   -8.855564492615D-04   -4.860632362483D-06   -1.651598787923D-05
-        6    1.014374299565D-04   -4.027760840144D-06    8.484592724246D-06
-        7   -2.846502397515D-06    5.309122118644D-07   -9.356021739680D-07
-        8   -5.679960598221D-08   -1.558419266886D-08    2.906797123044D-08
-
-        E-Index:     3                     4                     5
-  T-Index:
-        0    1.885124626882D-03   -3.490656696534D-04    3.491186099671D-05
-        1   -1.900077557522D-03    4.379278113300D-04   -5.603024107776D-05
-        2   -4.448332157963D-04    5.714274030709D-05   -2.749703564976D-06
-        3    2.681568205449D-04   -5.998554426398D-05    7.698667304288D-06
-        4   -2.181979202874D-05    8.551373474056D-06   -1.412905455689D-06
-        5    1.135371808870D-05   -2.664709675423D-06    2.912002096469D-07
-        6   -3.800776412567D-06    7.135817419881D-07   -6.186941704782D-08
-        7    3.881982777721D-07   -6.848429314039D-08    5.416002739854D-09
-        8   -1.174898545591D-08    1.964026350500D-09   -1.349132007732D-10
-
-        E-Index:     6                     7                     8
-  T-Index:
-        0   -1.927839216428D-06    5.349623808990D-08   -5.709971819658D-10
-        1    4.013822594444D-06   -1.505270436160D-07    2.297907111216D-09
-        2   -5.363215391657D-08    9.480384182490D-09   -2.385933435062D-10
-        3   -5.631660932587D-07    2.182421032038D-08   -3.453636466989D-10
-        4    1.168216950481D-07   -4.806652273476D-09    7.830157266677D-11
-        5   -1.531714455229D-08    3.317225758981D-10   -1.284623080698D-12
-        6    2.145180037262D-09    6.298630910549D-12   -1.357497097473D-12
-        7   -1.412805388428D-10   -3.796755190068D-12    1.881402203423D-13
-        8    1.168883361950D-12    2.677503515711D-13   -8.533609868832D-15
-
-  Max. rel. Error:   0.5477 %
-  Mean rel. Error:   0.2357 %
-
-
-\end{verbatim}\end{small}
-
-\begin{figure} \label{2.1.8lr3}
-\epsfxsize=16truecm
-\epsffile{Amjuel_PS/hydlr3_tr.ps}
-\end{figure}
-\newpage
 
 
 
