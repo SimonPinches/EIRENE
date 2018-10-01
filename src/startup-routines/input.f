@@ -428,7 +428,8 @@ c   done with this optional "storage save mode card"
 C
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
-     .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS
+     .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
+     .                  NLSHRT13
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....
