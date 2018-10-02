@@ -1,3 +1,4 @@
+cdr  sept.18:   XDR format options for fort.13 stream: removed.
 cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
 cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
@@ -595,40 +596,6 @@ C         Reserved for default, see below
         WRITE (iunout,*)
      .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
         WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-        WRITE (iunout,*)
-     .  '       SOURCE DISTRIBUTION IS NEWLY DETERMINED'
-C     ELSEIF (NFILEL.EQ.5) THEN  !  NOT IN USE
-      ELSEIF (NFILEL.EQ.6) THEN  !  AS OPTION NFILEL=1, BUT XDR FORMAT
-        WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-        WRITE (iunout,*) '       IN XDR FORMAT              '
-      ELSEIF (NFILEL.EQ.7) THEN  !  AS OPTION NFILEL=2, BUT XDR FORMAT
-        WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA      '
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA FROM'
-        WRITE (iunout,*) '       FILE FT13 '
-        WRITE (iunout,*) '       IN XDR FORMAT              '
-      ELSEIF (NFILEL.EQ.8) THEN  !  AS OPTION NFILEL=3, BUT XDR FORMAT
-        WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA '
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA FROM'
-        WRITE (iunout,*) '       FILE FT13  AND '
-        WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-        WRITE (iunout,*) '       IN XDR FORMAT              '
-      ELSEIF (NFILEL.EQ.9) THEN  !  AS OPTION NFILEL=4, BUT XDR FORMAT
-        WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA      '
-        WRITE (iunout,*) '       FROM FILE FT13 AND'
-        WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-        WRITE (iunout,*) '       IN XDR FORMAT              '
         WRITE (iunout,*)
      .  '       SOURCE DISTRIBUTION IS NEWLY DETERMINED'
       ENDIF
@@ -5029,7 +4996,7 @@ C
         IF (NPHOTI > 0) CALL EIRENE_PH_INIT(2)
 C
 C   MODIFY SOME GEOMETRICAL DATA, USER-SUPPLIED ROUTINE
-C
+Cstartup-routines/input.f
         CALL EIRENE_GEOUSR
 
         IF (LEVGEO == 4) CALL EIRENE_CUT_ADS_CELL
@@ -5306,12 +5273,10 @@ C
 
 C
         IF (NFILEL.EQ.1) CALL EIRENE_WRPLAM(TRCFLE,0)
-        IF (NFILEL.EQ.6) CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
 
 
 C
-      ELSEIF (NFILEL.EQ.2.OR.NFILEL.EQ.3.OR.NFILEL.EQ.4.OR.
-     .        NFILEL.EQ.7.OR.NFILEL.EQ.8.OR.NFILEL.EQ.9) THEN
+      ELSEIF (NFILEL.EQ.2.OR.NFILEL.EQ.3.OR.NFILEL.EQ.4) THEN 
 C
 C  READ PLASMA DATA, ATOMIC DATA, SOURCE DATA FROM FT13
 C
@@ -5324,14 +5289,10 @@ C
 cdr  iflg rather than nfilel  ??
         IF ((NFILEL == 2) .OR. (NFILEL == 3)) THEN
           CALL EIRENE_RPLAM(TRCFLE,IFLG)
-        ELSEIF ((NFILEL == 7) .OR. (NFILEL == 8)) THEN
-          CALL EIRENE_RPLAM_XDR(TRCFLE,IFLG)
 
 cdr  from now on: iflg=nfilel
         ELSEIF (NFILEL == 4) THEN
           CALL EIRENE_RPLAM(TRCFLE,NFILEL)
-        ELSEIF (NFILEL == 9) THEN
-          CALL EIRENE_RPLAM_XDR(TRCFLE,NFILEL)
         END IF
         CALL EIRENE_XSECTPH
 
