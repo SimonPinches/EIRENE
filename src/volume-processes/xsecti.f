@@ -29,6 +29,9 @@ cdr           (was missing, but accidentally correct)
 !pb  MAY  16:  tabds1 -> tabds1
 !pb  JUL  16:  ehvds1 -> ehvds1
 cdr  sept 16:  nidsi  -> nieii
+cdr  aug.18:   process kk=-9, default KER changed from 0.5 to 0.8  (=0.4 per particle)
+cdr            to better sync with HYDHEL original data.
+cdr  sept 18:  rationalization for nhvrei flags for default reaction:  same as -KK
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -255,21 +258,18 @@ C
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 73          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
+C           EPOTEI(IREI)=1.9   !  default for EDPOTI for this diss. excit. reaction)
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             EHVEI1(IREI,1:NSBOX)=8.6
             NREAEI(IREI) = -8
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -8
-            NREAHV(IREI) = -4
+            NHVREI(IREI) = -8
           ELSE ! storage save mode
-!pb  in storage save mode EELEI1 has dimensions (NREI,1)
-!pb            EELEI1(IREI,1:NSBOX)=-10.5
             EELEI1(IREI,1)=-10.5
             EHVEI1(IREI,1)=8.6
             NREAEI(IREI) = -8
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -8
-            NREAHV(IREI) = -4
+            NHVREI(IREI) = -8
           END IF
 
           FACREI(IREI,1) = FACTKK
@@ -282,7 +282,7 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
           ENDIF
 
 C  SECOND PROCESS,  H2+ --> H+ +  H+ + e :  DEFAULT PROCESS NO. KK=-9
-cdr   KER = 0.5, ETH = -15.5  or KER=2 times 0.5 ??
+cdr   KER = 0.8, ETH = -15.5, I.E. KER=0.4 PER PARTICLE
           KK=-9
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -316,19 +316,18 @@ C
 71          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=-15.5
-C  TRANSFERRED KINETIC ENERGY: 0.5 EV
-            EHVEI1(IREI,1:NSBOX)=0.5
+C           EPOTEI(IREI) = 14.7!  default for EDPOTI for this diss ionis. reaction)
+C  TRANSFERRED KINETIC ENERGY: 0.8  (=0.4 EV PER PARTICLE)
+            EHVEI1(IREI,1:NSBOX)=0.8
             NREAEI(IREI) = -9
-            JEREAEI(IREI) = 1
-            NELREI(IREI) = -9
-            NREAHV(IREI) = -5
+            NELREI(IREI) = -9   !  electron energy loss model
+            NHVREI(IREI) = -9   !  KER model for process KK=-9
           ELSE  ! storage save mode
             EELEI1(IREI,1)=-15.5
-            EHVEI1(IREI,1)=0.5
+            EHVEI1(IREI,1)=0.8
             NREAEI(IREI) = -9
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -9
-            NREAHV(IREI) = -5
+            NHVREI(IREI) = -9
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
@@ -380,17 +379,15 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
 C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
             EHVEI1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
             NREAEI(IREI) = -10
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -10
-            NREAHV(IREI) = -6
+            NHVREI(IREI) = -10
           ELSE ! storage save mode
 cdr 
 cdr here: eelds1 und ehvds1 set in felee1 ?  there 0.88 times tein, i.e. not constant.
 cdr
             NREAEI(IREI) = -10
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -10
-            NREAHV(IREI) = -6
+            NHVREI(IREI) = -10
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP

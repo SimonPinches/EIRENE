@@ -14,7 +14,8 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
       PRIVATE
  
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
-     P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS
+     P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS, 
+     P          EIRENE_COMUSR_REINIT
  
       INTEGER, SAVE ::
      P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
@@ -686,6 +687,11 @@ c  at this call: first dimension of adin is known, as well as size of cop and bg
       END IF
  
       RETURN
+
+      ENTRY EIRENE_COMUSR_REINIT
+      IFIRST = 0
+      RETURN
+
       END SUBROUTINE EIRENE_INIT_COMUSR
  
       END MODULE EIRMOD_COMUSR

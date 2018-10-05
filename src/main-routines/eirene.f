@@ -305,7 +305,7 @@ C
 C
 C  IF NLERG:
 C  PERFORM A RUN, ONE-SPEED, COLLISION-LESS, UNTIL TIME-LIMIT
-C  FOR CELL VOLUME ESTIMATION FROM ERGODIC PRINZIPLE
+C  FOR CELL VOLUME ESTIMATION FROM ERGODIC PRINCIPLE
 C
         IF (NLERG) CALL EIRENE_ERGOD
 C
@@ -335,14 +335,14 @@ C
 200     CONTINUE
         IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
 
-C     TIMI=EIRENE_SECOND_OWN()
-      CALL EIRENE_PLT2D
-C     TIME=EIRENE_SECOND_OWN()
-C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
+C       TIMI=EIRENE_SECOND_OWN()
+        CALL EIRENE_PLT2D
+C       TIME=EIRENE_SECOND_OWN()
+C       WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION
 C
-300   CONTINUE
+300     CONTINUE
 
       END IF   ! MY_PE == 0
 
@@ -388,15 +388,15 @@ C  LAST CALL TO INTERFACING ROUTINE (GLOBAL BALANCES, ETC)
 C
       IF (NMODE.GT.0) CALL EIRENE_IF4COP
 C
-!dr   IF (NFILEN.EQ.2.OR.NFILEN.EQ.7) RETURN
 C
 C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS
 C  FOR NEXT RUN  AND WRITE THEM ON FT 14
 C
       IF (NFILEK.EQ.1.OR.NFILEK.EQ.3) THEN
+c  this should not be done in a "read run" (NFILEN=2 or =7)
 c   achtung !!!!!!!!!!!!!
-c   fuer parallele version noch nicht richtig
-c   noch mal ganz scharf nachdenken !!!!!!!!
+c   not ready for parallel mode
+c
         CALL EIRENE_WRREC
       ENDIF
 
@@ -465,9 +465,10 @@ C  HENCE: RESET IITER TO 1
 
 C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
       IF (PLIDL.AND.(MY_PE == 0)) THEN
-         CALL EIRENE_MASBOX
+        CALL EIRENE_MASBOX
      .          ('OUTPUT OPTION: IDL, PER STRATUM ')
         call eirene_outidlconf
+        call eirene_outidlsrf
         call eirene_outidlpla
         call eirene_outidltal
       END IF

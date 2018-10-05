@@ -26,7 +26,7 @@ cdr Nov.17: lmetspw arguments corrected
 cdr Apr.18: cleaned up the use of RINTG,EINTG,AINTG  (for unit tests, reduced refl. models)
 cdr         vs. use of EXPP,EXPE,EXPI (for ilref=2 model, incident angle dependence).
 cdr         Maxwell's boundary conditions added via EINTG, AINTG flags.
-cdr         tbd:  the maxwellian evaporation flux part is repeated 4 times now.
+cdr         tbd:  the Maxwellian evaporation flux part is repeated 4 times now.
 cdr         Maybe more of this in escape.f
 cdr         It should become an own subroutine.
 C
@@ -579,10 +579,10 @@ C
 C  REFLECTION PROBALITY: RPROB
 C
       IF (RINTG.GT.0.D0) THEN
-C  CONSTANT PARTICLE REFLECTION COEFFICIENT, limited by specified absorption
+C  CONSTANT PARTICLE REFLECTION COEFFICIENT RINTG, limited only by specified absorption
         RPROB=MIN(PRFCT,RINTG)
       ELSEIF (RINTG.LT.0) THEN
-C  PERFECT REFLECTION. P_REF=1-p_abs
+C  PERFECT REFLECTION. P_REF=1-P_ABS, limited only by specified absorption
         RPROB=MIN(PRFCT,1.0)
       ELSE
 C  P_REF FROM DATA TABLE VS. INCIDENT ANGLE AND ENERGY
@@ -673,29 +673,53 @@ C   REDUCED ENERGY SCALING, IF NEEDED
 
 C........................................................................
 C
-C  POLAR ANGLE OF REFLECTION
+C  NEXT: SIMPLE ANGULAR DISTRIBUTION (AINTG)
+C        OR CONTINUE WITH ORIGINAL ANGULAR DISTRIBUTION FROM TRIM DATABASE SAMPLING
 C
-      IF (AINTG.LT.0.) THEN
-C  SPECULAR REFLECTION
+      IF (AINTG.GT.0.0) THEN
+C  CONSTANT MOMENTUM REFLECTION COEFFICIENT (ACCOMMODATION COEFFICIENT)
+C  FRACTION  AINTG:     specular
+C  FRACTION (1.0-AINTG):  cosine (Lambertian)
+        ZEP1=RANF_EIRENE( )
+        APROB=MIN(1.0,AINTG)
+        IF (ZEP1.GT.APROB) THEN
+C  evaporated fraction
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+          IF (E0TERM.LT.0.0) THEN
+            TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+            VXR = 0._DP
+            VYR = 0._DP
+            VZR = 0._DP
+            VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            CALL EIRENE_VELOCS(WGHTVS,
+     .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .                    CVRSSA(IATM),
+     .                   -CRTX,-CRTY,-CRTZ,
+     .                   E0,VELX,VELY,VELZ,VEL)
+            RETURN
+
+          ELSEIF (E0TERM.GT.0.0) THEN 
+            F1=1.0
+            F2=0.0
+            EXPI=0.0
+        GOTO 400
+          ELSE  ! E0TERM=0
+            GOTO 991
+      ENDIF
+        ELSE
+C  specular fraction
+          EXPI=200.
+          GOTO 400
+        ENDIF
+      ELSEIF (AINTG.LT.0.) THEN
+C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
+        EXPI=200.
         GOTO 400
       ENDIF
 
-cdr  to be written: fixed momentum reflection in case aintg > 0.
-      IF (EXPI.EQ.0..OR.EXPI.GE.100.D0) THEN  ! this should become the case aintg=0.
-C  PURE COSINE DISTRIBUTION OR PURE SPECULAR REFLECTION
-        icoangl=icoangl+1
-        if (icoangl.le.10) then
-          write (iunout,*) 'Subr. Reflec: '
-          write (iunout,*) 'cosine distr. activated at surface MSURF'
-          write (iunout,*) 'msurf, expi ',msurf,expi 
-          write (iunout,*) 'Is that intended? '
-        endif
-        F1=1.
-        F2=0.
-        GOTO 400
-      ENDIF
-
-C  find polar and azimuthal angle of reflection from tabulated distribution
+C  AINTG=0.0: find polar and azimuthal angle of reflection from tabulated distribution
       ZEP1=RANF_EIRENE( )
       DO 107 I=2,INRM
         INDR2P=I
@@ -933,15 +957,65 @@ C
 350   WEIGHT=WEIGHT*WFAC
       E0=E0/ERDUC
       VEL=RSQDVA(IATM)*SQRT(E0)
+
+C  NEXT: SIMPLE ANGULAR DISTRIBUTION (AINTG)
+C        OR CONTINUE WITH ORIGINAL EIRENE ANGULAR DISTRIBUTION (WITH PARAMETER EXPI)
+C
+
+      IF (AINTG.GT.0.) THEN
+C  CONSTANT MOMENTUM REFLECTION (ACCOMMODATION) COEFFICIENT
+C  FRACTION  AINTG:     specular
+C  FRACTION (1_AINTG):  cosine (Lambertian)
+        ZEP1=RANF_EIRENE( )
+        APROB=MIN(1.0,AINTG)
+        IF (ZEP1.GT.APROB) THEN
+C  evaporated fraction
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+          IF (E0TERM.LT.0.0) THEN
+            TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+            VXR = 0._DP
+            VYR = 0._DP
+            VZR = 0._DP
+            VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            CALL EIRENE_VELOCS(WGHTVS,
+     .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .                    CVRSSA(IATM),
+     .                   -CRTX,-CRTY,-CRTZ,
+     .                   E0,VELX,VELY,VELZ,VEL)
+            RETURN
+C  SAMPLE FROM COSINE (LAMBERTIAN), E0 not modified
+          ELSEIF (E0TERM.GT.0.0) THEN
+            F1=1.0
+            F2=0.0
+            EXPI=0.0
+            GOTO 400
+          ELSE  ! E0TERM=0
+            GOTO 991
+          ENDIF
+        ELSE
+c  specular fraction
+          EXPI=200.
+          GOTO 400
+        ENDIF
+      ELSEIF (AINTG.LT.0.) THEN
+C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
+        EXPI=200.
+        GOTO 400
+      ENDIF
+C  AINTG=0.0:  Original Behrisch Matrix assigned angular reflection distribution
 C     GOTO 400
 C
 400   CONTINUE
 C
-C  ANGULAR DISTRIBUTION, used for behrisch matrix model,
+C  ANGULAR DISTRIBUTION, used for Behrisch matrix model,
 C                        and for thermal re-emission model
-C                        and for unit test models (ainteg ne.0 )
+C                        and for SIMPLE models (ainteg ne.0.)
+C                        e.g. also to test Database histogram sampling
 C
-      IF (AINTG.GE.0. .AND. EXPI.LT.100.) THEN
+      IF (EXPI.LT.100.) THEN
+C  At this point: F2=sqrt(1-F1*F1) must be ensured
         IF (F1.GT.0.999999) THEN
 C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
           IF (INIV4.LE.0) CALL EIRENE_FCOSIN
@@ -952,8 +1026,10 @@ C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
 c  /vx,vy,vz/ is cosine distributed around surface normal vector/-1,0,0/
           CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
         ELSE
-C  INCLUDE SPECULAR CONTRIBUTION (F2 > 0., F1 < 1.)
-C  TO BE CHECKED: DOES THIS PROCUDE SPECULAR REFLECTION IN CASE OF F2=1. AND F1=0. ?
+C  mixed cosine-specular model angular distribution, see manual.
+C  PURE COSINE DISTRIBUTION (LAMBERTIAN) FOR     F1 = 1., F2 = 0.
+C  INCLUDE A FORWARD "SPECULAR" CONTRIBUTION     F1 < 1., F2 > 0.
+C
           ZTHET=PI2A*RANF_EIRENE( )
           ZSTHET=SIN(ZTHET)
           ZCTHET=COS(ZTHET)
@@ -971,9 +1047,11 @@ C
           CALL EIRENE_ROTATE
      .      (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ,COSIN)
         ENDIF
-      ELSE
-C   PURELY SPECULAR REFLECTION :EXPI .GE. 100 OR AINTG.LT.0.
-C   EXPI.GE.100 MEANS: INELASTIC+SPECULAR
+
+      ELSEIF (EXPI.GE. 100.0) THEN
+
+C   PURELY SPECULAR REFLECTION
+C
         COSI2=-(COSIN+COSIN)
         VELX=VELX+COSI2*CRTX
         VELY=VELY+COSI2*CRTY
@@ -1038,13 +1116,7 @@ C
       WEIGHT=WEIGHT*FLPRT
 C
 C  REFLECT THERMAL MOLECULE
-      IF (E0TERM.GT.0.D0) THEN
-C  MONOENERGETIC, E0 (EV),  COSINE
-        E0=E0TERM
-        VEL=RSQDVM(IMOL)*SQRT(E0)
-        F1=1.
-        GOTO 400
-      ELSEIF (E0TERM.LT.0.D0) THEN
+      IF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         TW=-E0TERM
 ! these variables are INTENT(IN) (not altered in velocs)
@@ -1058,6 +1130,14 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
      .                CVRSSM(IMOL),
      .               -CRTX,-CRTY,-CRTZ,
      .               E0,VELX,VELY,VELZ,VEL)
+      ELSEIF (E0TERM.GT.0.D0) THEN
+C  MONOENERGETIC, E0 (EV),  COSINE
+        E0=E0TERM
+        VEL=RSQDVM(IMOL)*SQRT(E0)
+        F1=1.0
+        F2=0.0
+        EXPI=0.0
+        GOTO 400
       ELSE  ! E0TERM=0
         GOTO 991
       ENDIF
@@ -1116,13 +1196,7 @@ C  SUPRESSION OF ABSORPTION
       ENDIF
 C
 C  REFLECT THERMAL ATOM
-      IF (E0TERM.GT.0.D0) THEN
-C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE
-        E0=E0TERM
-        VEL=RSQDVA(IATM)*SQRT(E0)
-        F1=1.
-        GOTO 400
-      ELSEIF (E0TERM.LT.0.D0) THEN
+      IF (E0TERM.LT.0.D0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         TW=-E0TERM
 ! these variables for velocs.f are INTENT(IN)
@@ -1137,7 +1211,15 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
      .             -CRTX,-CRTY,-CRTZ,
      .             E0,VELX,VELY,VELZ,VEL)
         RETURN
-      ELSE
+      ELSEIF (E0TERM.GT.0.D0) THEN
+C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE
+        E0=E0TERM
+        VEL=RSQDVA(IATM)*SQRT(E0)
+        F1=1.0
+        F2=0.0
+        EXPI= 0.0
+        GOTO 400
+      ELSE ! E0TERM=0
         GOTO 991
       ENDIF
 C
@@ -1196,4 +1278,5 @@ C     The following ENTRY is for reinitialization of EIRENE (DMH)
       IF (ALLOCATED(IREDUC)) DEALLOCATE(IREDUC)
       ICOUNT = 0
       NPANOLD = 0
+      IFIRST = 0
       END

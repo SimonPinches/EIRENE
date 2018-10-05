@@ -1120,7 +1120,7 @@ C
 
         CASE (2)
 C
-C  MOLECULS?  300 --- 399
+C  MOLECULES?  300 --- 399
 C
 C
           IF (NEMOD1.EQ.1) THEN

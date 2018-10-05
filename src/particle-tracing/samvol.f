@@ -259,7 +259,7 @@ C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
                 ELSE
                   EELRC = EIRENE_FEELRC1(IRRC,J)
                 END IF
-c  Turn eV/s into Watt
+c  Turn eV/s/particle into Watt/cell
                 ADD=EELRC*DIIN(IPLS,J)*VOL(J)*ELCHA
 C  SPECTRAL CUT OFF (PHOTONS ONLY)
                 IF (ICCT > 0)
@@ -816,41 +816,43 @@ C
           GOTO 999
         ENDIF
 C...................................................................  
-      case (3:4)
-        select case (LEVGEO)
-        case (3)
-          IF (.NOT.NLPOL) THEN
-            GOTO 999
-          ENDIF
-          IN = NRCELL + (NPCELL-1)*NR1ST
-          ZEP1=AREA(IN)*RANF_EIRENE()
-!pb          IF (ZEP1.LE.ASIMP(1,NCELL)) THEN
-          IF (ZEP1.LE.ASIMP(1,IN)) THEN
-C   PUNKT IN DREIECK 1
-            X1=XPOL(NRCELL,NPCELL)
-            X2=XPOL(NRCELL,NPCELL+1)
-            X3=XPOL(NRCELL+1,NPCELL+1)
-            Y1=YPOL(NRCELL,NPCELL)
-            Y2=YPOL(NRCELL,NPCELL+1)
-            Y3=YPOL(NRCELL+1,NPCELL+1)
-          ELSE
-C   PUNKT IN DREIECK 2
-            X1=XPOL(NRCELL+1,NPCELL)
-            X2=XPOL(NRCELL,NPCELL)
-            X3=XPOL(NRCELL+1,NPCELL+1)
-            Y1=YPOL(NRCELL+1,NPCELL)
-            Y2=YPOL(NRCELL,NPCELL)
-            Y3=YPOL(NRCELL+1,NPCELL+1)
-          ENDIF
-          IPOLG=NPCELL
-        case (4)
-          X1=XTRIAN(NECKE(1,NCELL))
-          X2=XTRIAN(NECKE(2,NCELL))
-          X3=XTRIAN(NECKE(3,NCELL))
-          Y1=YTRIAN(NECKE(1,NCELL))
-          Y2=YTRIAN(NECKE(2,NCELL))
-          Y3=YTRIAN(NECKE(3,NCELL))
-        end select
+      case (3)
+        IF (.NOT.NLPOL) THEN
+          GOTO 999
+        ENDIF
+        IN = NRCELL + (NPCELL-1)*NR1ST
+        ZEP1=AREA(IN)*RANF_EIRENE()
+        IF (ZEP1.LE.ASIMP(1,IN)) THEN
+C   POINT TO BE SAMPLED WITHIN TRIANGLE 1
+          X1=XPOL(NRCELL,NPCELL)
+          X2=XPOL(NRCELL,NPCELL+1)
+          X3=XPOL(NRCELL+1,NPCELL+1)
+          Y1=YPOL(NRCELL,NPCELL)
+          Y2=YPOL(NRCELL,NPCELL+1)
+          Y3=YPOL(NRCELL+1,NPCELL+1)
+        ELSE
+C   POINT TO BE SAMPLED WITHIN TRIANGLE 2
+          X1=XPOL(NRCELL+1,NPCELL)
+          X2=XPOL(NRCELL,NPCELL)
+          X3=XPOL(NRCELL+1,NPCELL+1)
+          Y1=YPOL(NRCELL+1,NPCELL)
+          Y2=YPOL(NRCELL,NPCELL)
+          Y3=YPOL(NRCELL+1,NPCELL+1)
+        ENDIF
+        IPOLG=NPCELL
+        Z1=0.
+        Z2=0.
+        Z3=0.
+        CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,ZZ)
+
+C...................................................................  
+      case (4)
+        X1=XTRIAN(NECKE(1,NCELL))
+        X2=XTRIAN(NECKE(2,NCELL))
+        X3=XTRIAN(NECKE(3,NCELL))
+        Y1=YTRIAN(NECKE(1,NCELL))
+        Y2=YTRIAN(NECKE(2,NCELL))
+        Y3=YTRIAN(NECKE(3,NCELL))
         Z1=0.
         Z2=0.
         Z3=0.

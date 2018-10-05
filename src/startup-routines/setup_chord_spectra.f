@@ -1,8 +1,19 @@
 c  14.5.06:  bug fix: 1 line added: if nchtal.ne.1 and. nchtal.ne.3:  cycle
 C  oct.14.  variance tallies corrected
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr  May 18: Probably here we use the data structure traj(i..) for storing the
+cdr  line of sight, e.g for scoring spectra along lines of sight?
+cdr  This same data structure is (or was) probably also used
+cdr  for an unfinished correlated sampling option.
+cdr  In either case it may not be complete any more.
+
+cdr: tbd:  Try to document status and purpose
+
+
+
+
       subroutine EIRENE_setup_chord_spectra
- 
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_cestim
@@ -10,9 +21,9 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
       use EIRMOD_comprt
       use EIRMOD_cupd
       use EIRMOD_ccona
- 
+
       implicit none
- 
+
       real(dp) :: c1(3), c2(3), PSIG(0:NSPZ+10)
       real(dp) :: ze, timax
       integer :: ichori, ifirst, ichrd, ipvot, nbc2, nac2,
@@ -34,20 +45,20 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
         REAL(DP), INTENT(IN OUT) :: TIMAX
         END SUBROUTINE EIRENE_LININT
       END INTERFACE
- 
+
 !  FIND CELLS INTERSECTED BY CHORDS
- 
+
       ze = 1._dp
- 
+
       ifirst = -1
       ntot_cell = 0
- 
+
       do ichori = 1, nchori
- 
+
         IF (.NOT.NLSTCHR(ICHORI)) CYCLE
         IF ((NCHTAL(ICHORI) /= 1) .AND. (NCHTAL(ICHORI) /= 3) .AND.
      .      (NCHTAL(ICHORI) /= 4) ) CYCLE
- 
+
         IPVOT=IPIVOT(ICHORI)
         C1(1)=XPIVOT(ICHORI)
         C1(2)=YPIVOT(ICHORI)
@@ -60,27 +71,27 @@ C
 C
         NBC2=NSPBLC(ICHORI)
         NAC2=NSPADD(ICHORI)
- 
+
         ALLOCATE(TRAJ(ICHORI)%TRJ)
         TRAJ(ICHORI)%TRJ%P1 = C1
         TRAJ(ICHORI)%TRJ%P2 = C2
         TRAJ(ICHORI)%TRJ%NCOU_CELL = 0
         NULLIFY(TRAJ(ICHORI)%TRJ%CELLS)
- 
+
         CALL EIRENE_LININT
      .  (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,ZE,
      .               PSIG,TIMAX,1,1,1,IABS(NCHENI))
- 
+
         ntot_cell = ntot_cell + traj(ichori)%trj%ncou_cell
- 
+
       end do
- 
+
       IF (NTOT_CELL == 0) RETURN
 
 !  there are 'NTOT_CELL'  FURTHER CELL BASED SPECTRA TO BE ADDED TO SPECTRUM TALLIES
- 
+
 !  SAVE SPECTRA SPECIFIED VIA INPUT
- 
+
       IF (NADSPC > 0) THEN
 C  SAVE ESTIML, SMESTL,...
         IF (ALLOCATED(ESTIML)) THEN
@@ -116,38 +127,38 @@ C  SAVE ESTIML, SMESTL,...
           END DO
           DEALLOCATE(SMESTL)
         END IF
- 
+
       END IF
- 
- 
+
+
 !  set up additional arrays for cell based spectra
- 
+
       NTOTSP = NADSPC + NTOT_CELL
- 
+
       ALLOCATE(ESTIML(NTOTSP))
       DO ISPC = 1, NADSPC
         ESTIML(ISPC) = SVESTIML(ISPC)
       END DO
- 
+
       IF (ALLOCATED(SVSMESTL).or.NSMSTRA.GT.0) THEN
         ALLOCATE(SMESTL(NTOTSP))
         DO ISPC = 1, NADSPC
           SMESTL(ISPC) = SVSMESTL(ISPC)
         END DO
       END IF
- 
+
 !  add spectra for cells along chords
- 
+
       ispc = nadspc
       do ichori = 1,nchori
- 
+
         IF ((NCHTAL(ICHORI) /= 1) .AND. (NCHTAL(ICHORI) /= 3) .AND.
      .      (NCHTAL(ICHORI) /= 4) ) CYCLE
- 
+
          if (.not.associated(traj(ichori)%trj%cells)) cycle
          first => traj(ichori)%trj%cells
          cur => first
- 
+
          if (nchtal(ichori) == 1) then
            iprtyp = 1
          else if (nchtal(ichori) == 3) then
@@ -159,13 +170,13 @@ C  SAVE ESTIML, SMESTL,...
            write (iunout,*) ' no spectrum set up for cell',cur%no_cell
            cycle
          end if
- 
+
 !  loop over all cells along trajectory
          do
- 
+
            ispc = ispc + 1
-           espec => estiml(ispc) 
-           
+           espec => estiml(ispc)
+
            espec%isrfcll = 2 ! SURFACE OR CELL BASED OR DIRECTIONAL CELL BASED
            espec%ispcsrf = cur%no_cell
            espec%iprtyp = iprtyp   !TYP
@@ -203,13 +214,13 @@ C  SAVE ESTIML, SMESTL,...
            allocate(espec%gg(0:espec%nspc+1))
 
            espec%spc(0:espec%nspc+1) = 0
- 
- 
+
+
            if (allocated(smestl)) then
 C SUM OVER STRATA SPECTRA TALLIES
-               
+
              sspec => smestl(ispc)
-             
+
              allocate(sspec%spc(0:espec%nspc+1))
 
              allocate(sspec%sdv(0:espec%nspc+1))
@@ -219,14 +230,14 @@ C SUM OVER STRATA SPECTRA TALLIES
 
              smestl(ispc) = estiml(ispc)
            end if
- 
+
            cur%no_spect = ispc
            cur => cur%nextc
 !pb associated with two arguments tests if both arguments point to the same target
            if (associated(cur,first)) exit
          end do
       end do
- 
+
       NADSPC = ISPC
- 
+
       end subroutine EIRENE_setup_chord_spectra

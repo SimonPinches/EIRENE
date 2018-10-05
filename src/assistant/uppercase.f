@@ -1,6 +1,8 @@
  
  
       subroutine EIRENE_uppercase (zeile)
+cdr  set letters in character string to "upper case".
+cdr  cut ZEILE by removing leading and final blanks.
  
       IMPLICIT NONE
       character(*), INTENT(INOUT) :: zeile

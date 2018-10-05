@@ -2,6 +2,7 @@
  
       use EIRMOD_PRECISION
       use EIRMOD_PARMMOD
+      use EIRMOD_COMUSR
       use EIRMOD_COUTAU
       use EIRMOD_CRECH
  
@@ -14,13 +15,14 @@ C      REAL(DP) :: H1RN_REINIT
  
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
-      call EIRENE_SIGHA_REINIT
+      call EIRENE_SIGLINE_REINIT
  
       dummy = ranf_eirene_reinit()
       idummy = ranset_eirene_reinit()
  
 !pb   call INIT_COUTAU_REINIT
       call EIRENE_CRECH_REINIT
+      call EIRENE_COMUSR_REINIT
  
       call EIRENE_STCOOR_REINIT
       call EIRENE_SAMVOL_REINIT
@@ -41,7 +43,6 @@ csw 18apr07
       call EIRENE_SPUTER_REINIT
 
       call EIRENE_BA_ALPHA_REINIT
-      call EIRENE_EMIS_PROFILES_REINIT
 !pb   call EIRENE_BA_GAMMA_REINIT
 !pb   call EIRENE_LY_BETA_REINIT
       call EIRENE_LININT_REINIT  !cdr, july 17, added

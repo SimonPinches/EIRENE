@@ -32,8 +32,9 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of 
 cdr  Sept 16:  nmdsi  -> nmeii
 cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
-cdr           default: FDLMCX=0.0 (from initialisation phase) means: no fluid limit cut off at CX collisions.
-
+cdr           default: FDLMCX=0.0 (from initialisation phase) means: 
+CDR           no fluid limit cut off at CX collisions.
+cdr  sept 18: nhvrei rationalization for default reactions (==-KK)
 C
 
       SUBROUTINE EIRENE_XSECTM
@@ -301,17 +302,16 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
 70          CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
-            EHVEI1(IREI,1:NSBOX)=6.
+            EHVEI1(IREI,1:NSBOX)=6.0
+C           EPOTEI(IREI)=4.5   !  default for EDPOTM for this dissoc. reaction)
             NREAEI(IREI)=-5
-            JEREAEI(IREI)=1
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
-            NREAHV(IREI)=-2
+            NHVREI(IREI)=-5
           ELSE
             EELEI1(IREI,1)=-10.5
             NREAEI(IREI)=-5
-            JEREAEI(IREI)=1
             NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
-            NREAHV(IREI)=-2
+            NHVREI(IREI)=-5
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
@@ -367,18 +367,18 @@ c   Accumulate totals....
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
 71          CONTINUE
             EELEI1(IREI,1:NSBOX)=-25.0
+C           EPOTEI(IREI)=15.00   !  default for EDPOTM for this diss ionis. reaction)
 C  TRANSFERRED KINETIC ENERGY: 10 EV
             EHVEI1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
-            NREAHV(IREI) = -3
+            NHVREI(IREI) = -6
           ELSE
             EELEI1(IREI,1)=-25.0
+C           EHVEI1(IREI,1)= 10.0 SET IN ....? 
             NREAEI(IREI) = -6
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6: 
-            NREAHV(IREI) = -3
+            NHVREI(IREI) = -6
           END IF
           FACREI(IREI,1) = FACTKK
           FACREI(IREI,2) = LOG(FACTKK)
@@ -414,17 +414,19 @@ C
 72          CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
+C           EPOTEI(IREI)=15.45   !  default for EDPOTM for this ionis. reaction)
+C           EHVEI1(IREI,1:NSBOX)=0.0
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
-            JEREAEI(IREI) = 1
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
+            NHVREI(IREI) = -7
           ELSE  ! storage save mode
             EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
+C           EHVEI1(IREI,1)= 0.0 SET IN ....? 
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7: 
-
+            NHVREI(IREI) = -7
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
