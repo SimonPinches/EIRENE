@@ -892,13 +892,12 @@ cdr special treatment of Ti:  intlopts.....
       IF (ALLOCATED(CORNER_PROFILES)) RETURN
 
       N1DIM = 0
-      NTOT = 0
 cdr  are there any FEM interpolated background tallies in this run?
 
 !  interpolation to vertices can only be done if input tally is available (active)
       LSMOPRO(1:NTALG) = LSMOPRO(1:NTALG) .AND. LIVTALI(1:NTALG)
 
-c  notal number of smoothed talles, counting also with species index 
+c  NTOT2: total number of smoothed talles, counting also with species index 
       NTOT2 = 0
       DO I= 1, NTALG
         IF (LSMOPRO(I)) THEN
@@ -906,7 +905,8 @@ c  notal number of smoothed talles, counting also with species index
         END IF
       END DO     
 
-c  cummulated index of position of smoothed tally J within all smoothed tallies
+c  NADDCOR: cummulated index of position of smoothed tally J within all smoothed tallies
+C  NLSTLL : highest tally index J amongst all smoothed tallies
       NADDCOR(1)=0
       DO 6 J=2,NTALG
         IF (LSMOPRO(J-1)) THEN
@@ -919,7 +919,7 @@ c  cummulated index of position of smoothed tally J within all smoothed tallies
 
       IF (LSMOPRO(NTALG)) NLSTTL = NTALG
 C
-C  TOTAL NUMBER OF INPUT TALLIES
+c  NTOT: total number of smoothed talles, counting also with species index 
       NTOT = 0
       IF (ANY(LSMOPRO)) THEN
         NTOT = NADDCOR(NTALG)
@@ -963,9 +963,12 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         IF (LDISMO) THEN
           DIINCORNER => CORNER_PROFILES(:,NADDCOR(4)+1 : NADDCOR(5))
         ELSE
-          NULLIFY(DEINCORNER)
           NULLIFY(DIINCORNER)
         END IF
+CDR:  ADDED, BUT NOT SURE ! PERHAPS THE SAME TO BE DONE BELOW
+      ELSE
+        NULLIFY(DEINCORNER)
+        NULLIFY(DIINCORNER)
       END IF
 
       IF (LVSMO) THEN
@@ -1417,9 +1420,9 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LDPARMOMDZ => LIVTALI(96)
  
       ELSE IF (ICAL == 2) THEN
-c  input for active volumetric tallies
+c  Active volumetric input tallies
         PLSTLS = 0._DP
-c  cemetry for inactive input tallies (no storage)
+c  Cemetery for inactive input tallies (no storage)
         CEMETERYP = 0._DP
 
         TEINL  = 0._DP

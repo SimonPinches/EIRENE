@@ -8,7 +8,7 @@ cdr  dec.17:   pumped flux tally SPUMP:  range 1--N5=NSPZ,  rather than N7+1--N8
 cdr            size of array LMETSPW decreased accordingly
 cdr  june 18:  nlemis used to condition some storage setting (FOR REVISED BLOCK 12)
 cdr  oct 18 :  setting text and range for input tallies: moved to own routines:
-cdr            settxt_intal, and setprm_intal, to accomodate also input gradient tallies. 
+cdr            settxt_intal, and setprm_intal, to accomodate also the new input gradient tallies. 
 
       SUBROUTINE EIRENE_SETTXT
 c  Set default texts  (volume tallies: name, species, units), 
@@ -563,74 +563,7 @@ c  sputter tallies
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
-C
-C  TEXT FOR INPUT (BACKGROUND) TALLIES
-C
-      TXTPLS(1,1)='PLASMA TEMPERATURE                               '
-      TXTPLS(1,2)='PLASMA TEMPERATURE                               '
-      TXTPLS(1,3)='PLASMA DENSITY (BULK PARTICLES)                  '
-      TXTPLS(1,4)='PLASMA DENSITY (BULK PARTICLES)                  '
-      TXTPLS(1,5)='DRIFT VELOCITY IN X-DIRECTION (BULK IONS)        '
-      TXTPLS(1,6)='DRIFT VELOCITY IN Y-DIRECTION (BULK IONS)        '
-      TXTPLS(1,7)='DRIFT VELOCITY IN Z-DIRECTION (BULK IONS)        '
-      TXTPLS(1,8)='MAGN. FIELD UNIT VECTOR, X DIRECTION             '
-      TXTPLS(1,9)='MAGN. FIELD UNIT VECTOR, Y DIRECTION             '
-      TXTPLS(1,10)='MAGN. FIELD UNIT VECTOR, Z DIRECTION             '
-      TXTPLS(1,11)='MAGN. FIELD STRENGTH                             '
-C     TXTPLS(1,12)='TO BE READ, ADIN TALLY                           ' 
-      TXTPLS(1,13)='BULK ION KINETIC DRIFT ENERGY                    '
-      TXTPLS(1,14)='ZONE VOLUMES                                     '
      
-      TXTPLS(1,15)='SPACE-SPECIES WEIGHT FUNCTION                    '
-      TXTPLS(1,16)='PERP. MAGN. FIELD VECTOR, X DIRECTION            '
-      TXTPLS(1,17)='PERP. MAGN. FIELD VECTOR, Y DIRECTION            '
-
-      TXTPLS(1,18)='ELEC. FIELD UNIT VECTOR, X DIRECTION             '
-      TXTPLS(1,19)='ELEC. FIELD UNIT VECTOR, Y DIRECTION             '
-      TXTPLS(1,20)='ELEC. FIELD UNIT VECTOR, Z DIRECTION             '
-      TXTPLS(1,21)='ELEC. FIELD STRENGTH                             '
-      TXTPLS(1,22)='POTENTIAL                                        '
-C
-      DO J=1,NTALI
-        IF (J.NE.12) THEN
-          DO I=2,N1MX
-            TEXT72=TXTPLS(1,J)
-            TXTPLS(I,J)=TEXT72
-          ENDDO
-        ENDIF
-      ENDDO
-C  
-      TXTPUN(1,1)='EV                      '
-      TXTPUN(1,2)='EV                      '
-      TXTPUN(1,3)='CM**-3                  '
-      TXTPUN(1,4)='CM**-3                  '
-      TXTPUN(1,5)='CM/SEC                  '
-      TXTPUN(1,6)='CM/SEC                  '
-      TXTPUN(1,7)='CM/SEC                  '
-      TXTPUN(1,8)=' ---                    '
-      TXTPUN(1,9)=' ---                    '
-      TXTPUN(1,10)=' ---                    '
-      TXTPUN(1,11)='TESLA                   '
-C     TXTPUN(1,12)='TO BE READ, ADIN        '
-      TXTPUN(1,13)='EV                      '  ! EDRIFT  --> DERIVED QUANTITY
-      TXTPUN(1,14)='CM**3                   '  ! VOL
-      TXTPUN(1,15)=' ---                    '  ! WEIGHT WINDOW
-      TXTPUN(1,16)=' ---                    '  ! BX_PERP --> DERIVED QUANTITY 
-      TXTPUN(1,17)=' ---                    '  ! BY_PERP --> DERIVED QUANTITY
-      TXTPUN(1,18)=' ---                    '
-      TXTPUN(1,19)=' ---                    '
-      TXTPUN(1,20)=' ---                    '
-      TXTPUN(1,21)='V/CM                    '  ! EF
-      TXTPUN(1,22)='V                       '  ! POT
-C
-      DO J=1,NTALI
-        IF (J.NE.12) THEN
-          DO I=2,N1MX
-            TEXT24=TXTPUN(1,J)
-            TXTPUN(I,J)=TEXT24
-          ENDDO
-        ENDIF
-      ENDDO
       RETURN
 C
       ENTRY EIRENE_STTXT1
@@ -828,30 +761,6 @@ C
       NFSTWI(NTLSA)=NADSI    !  ADD SURF. TALLY
       NFSTWI(NTLSR)=NALSI    !  ALG. SURF. TALLY
       NFSTWI(NTALS)=NSPTOT   !  PUMPED FLUX
-C
-C
-      NFSTPI(1)=1
-      NFSTPI(2)=NPLSTI
-      NFSTPI(3)=1
-      NFSTPI(4)=NPLSI
-      NFSTPI(5)=NPLSV
-      NFSTPI(6)=NPLSV
-      NFSTPI(7)=NPLSV
-      NFSTPI(8)=1
-      NFSTPI(9)=1
-      NFSTPI(10)=1
-      NFSTPI(11)=1
-      NFSTPI(12)=NAINI
-      NFSTPI(13)=NPLSI
-      NFSTPI(14)=1
-      NFSTPI(15)=NATMI+NMOLI+NIONI
-      NFSTPI(16)=1
-      NFSTPI(17)=1
-      NFSTPI(18)=1
-      NFSTPI(19)=1
-      NFSTPI(20)=1
-      NFSTPI(21)=1
-      NFSTPI(22)=1
 C
 C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
  
@@ -1487,35 +1396,6 @@ C
       TXTSPW(1,43)='                        '
       TXTSPW(1,44)='                        '
       TXTSPW(1,45)='                        '
-C
-      TXTPSP(1,1)='ELECTRONS               '
-      TXTPSP(1,3)='ELECTRONS               '
-      TXTPSP(1,8)=' ---                    '
-      TXTPSP(1,9)=' ---                    '
-      TXTPSP(1,10)=' ---                    '
-      TXTPSP(1,11)=' ---                    '
-      TXTPSP(1,14)=' ---                    '
-      TXTPSP(1,16)=' ---                    '
-      TXTPSP(1,17)=' ---                    '
-      TXTPSP(1,18)=' ---                    '
-      TXTPSP(1,19)=' ---                    '
-      TXTPSP(1,20)=' ---                    '
-      TXTPSP(1,21)=' ---                    '
-      TXTPSP(1,22)=' ---                    '
-C
-C     TXTPSP(IAIN,12)='TO BE READ            '
-C
-      DO 50 ISPZ=1,NSPAMI
-50      TXTPSP(ISPZ,15)=TEXTS(ISPZ)
-C
-      DO 80 IPLS=1,NPLSI
-        ISPZ=NSPAMI+IPLS
-        TXTPSP(IPLS,2)=TEXTS(ISPZ)
-        TXTPSP(IPLS,4)=TEXTS(ISPZ)
-        TXTPSP(IPLS,5)=TEXTS(ISPZ)
-        TXTPSP(IPLS,6)=TEXTS(ISPZ)
-        TXTPSP(IPLS,7)=TEXTS(ISPZ)
-80      TXTPSP(IPLS,13)=TEXTS(ISPZ)
 C
       RETURN
       END

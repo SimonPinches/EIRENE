@@ -16,6 +16,8 @@ cdr                                          and use abs(nflagv) as before nflag
 cdr to be done: loops 121 and 122 are identical, once i_fine is set. eliminate one of them?  
 cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
+cdr oct 18    : all input tallies selectable, also derived tallies.
+cdr             also: gradient tallies of input tallies: currently no. 25--96
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -52,13 +54,14 @@ C
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTALW
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL, 
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
-     .           ITALI, K, NF, NFTI, NFTE
+     .           ITALI, K, NF, NFTI, NFTE, KK
  
 C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POST PROCESSING
 C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
       INTEGER :: JPRTAL(5) = (/-2,-4,-5,-6,-7/)
 C
-C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
+cdr: extensitve or intensive quantities? Needed for averaging....
+C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)          
 C                 TALTYP=1: #-DENSITY      (#-UNITS/CM**3)
 C                 TALTYP=2: VOLUME         (CM**3)
 C                 TALTYP=3: DIMENSIONLESS  (1)
@@ -85,6 +88,11 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(20)=0
       TALTYP(21)=0
       TALTYP(22)=0
+      TALTYP(23)=0  ! bvin   units ??
+      TALTYP(24)=0  ! parmom units ??
+
+cdr to be done: weighting function for gradient tallies. Tentatively set =0
+      TALTYP(25:NTALI)=0
  
       IF (ICAL == 1) THEN
 !  IS ANY DENSITY MODEL DEFINED ?
@@ -137,6 +145,13 @@ c  negative tally numbers ital: background (input) tallies, printed here
 c  positive tally numbers ital: output tallies, printed from OUTEIR. 
         IF (ITAL.LT.0) THEN
           ITALI=-ITAL
+!  TALLY SWITCHED OFF ?
+          IF (.NOT.LIVTALI(ITALI)) THEN
+            WRITE (iunout,*) ' TALLY NOT AVAILABLE (OUTPLA)',
+     .                       ' ITAL = ', ITAL
+            CALL EIRENE_LEER(1)
+            CYCLE
+          END IF
           NF=NFRSTP(ITALI)
           NFTI=1
           NFTE=NFSTPI(ITALI)
@@ -145,6 +160,7 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
             NFTE=MAX(NFTI,NSPEZV(IPRV,2))
           ENDIF
           DO 119 K=NFTI,NFTE
+c  check for valid range of tally ITALI
             IF (K.GT.NFSTPI(ITALI)) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*)
@@ -153,6 +169,7 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
               CALL EIRENE_LEER(1)
               GOTO 119
             ENDIF
+
             SELECT CASE (ITALI)
             CASE (1)
               HELPP(1:NSBOX) = TEIN(1:NSBOX)
@@ -203,6 +220,17 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
               HELPP(1:NSBOX) = EFIN(1:NSBOX)
             CASE (22)
               HELPP(1:NSBOX) = POT(1:NSBOX)
+            CASE (23)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
+              HELPP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
+            CASE (24)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
+              HELPP(1:NSBOX) = PARMOM(K,1:NSBOX)
+c
+            CASE (25:96)  ! ntali=96, constant required here
+!  GRADIENTS
+              KK = NADDP(ITALI)+K
+              HELPP(1:NSBOX) = PLSTLS(KK,1:NSBOX)
             CASE DEFAULT
               WRITE (iunout,*)
      .          ' WRONG TALLY NUMBER (OUTPLA), ITAL = ',ITAL
@@ -257,61 +285,75 @@ C  COARSE GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
 C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE GRAINING IS DONE
               I=NCLTPR(I_FINE)
-              IF (ITALI.EQ.1) THEN
+              SELECT CASE (ITALI)
+              CASE (1)
 C  1) ELECTR. TEMPERATURE: NE*VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.2) THEN
+              CASE (2)
 C  2) ION TEMPERTURE: NI(K)*VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.3.OR.ITALI.EQ.4) THEN
+              CASE (3:4)
 C  3,4) PARTICLE DENSITY PROFILES: VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              ELSEIF (ITALI.EQ.5.OR.ITALI.EQ.6.OR.ITALI.EQ.7) THEN
+              CASE (5:7,23)
 C  5,6,7) ION DRIFT VELOCITY: NI(K)*VOLUME WEIGHTED AVERAGES
+C  23) FLOW VELOCITY PARALLEL B
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.8.AND.ITALI.LE.11) THEN
+              CASE (8:11)
 C  8,9,10,11) B-FIELD UNIT VECTOR, B-FIELD STRENGTH   " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.16.OR.ITALI.EQ.17) THEN
+              CASE (16:17)
 C  16,17) B_PERP-FIELD: " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.14) THEN
+              CASE (14)
 C  14) CELL VOLUME  = UN-WEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
-              ELSEIF (ITALI.EQ.12.OR.ITALI.EQ.15) THEN
+              CASE (12,15)
 C  12) ADDITIONAL TALLY (NO.12) 
 C  15) WEIGHT FUNCTION  (NO.15)
 C  " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.13) THEN
+              CASE (13)
 C  13) ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.18.AND.ITALI.LE.21) THEN
+              CASE (18:21)
 C  18,19,29,21) E-FIELD UNIT VECTOR, E-FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)   
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.22) THEN
+              CASE (22)
 C  22) (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ENDIF
+              CASE (24)
+C  24) PARALLEL TO B FLOW MOMENTUM
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+
+              CASE (25:96)  ! ntali=96, constant required here
+C  25 .. NTALI) GRADIENTS
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+!              ENDIF
+              END SELECT
 121         CONTINUE
 
 C
@@ -322,61 +364,73 @@ C  COARSE GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
 C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE GRAINING IS DONE
               I=NCLTPR(I_FINE)
-              IF (ITALI.EQ.1) THEN
+              SELECT CASE (ITALI)
+              CASE (1)
 C  ELECTR. TEMPERATURE: NE*VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.2) THEN
+              CASE (2)
 C  ION TEMPERTURE: NI(K)*VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.3.OR.ITALI.EQ.4) THEN
+              CASE (3:4)
 C  PARTICLE DENSITY PROFILES: VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              ELSEIF (ITALI.EQ.5.OR.ITALI.EQ.6.OR.ITALI.EQ.7) THEN
+              CASE (5:7,23)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME WEIGHTED AVERAGES
+C  FLOW VELOCITY PARALLEL TO B FIELD
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.8.AND.ITALI.LE.11) THEN
+              CASE (8:11)
 C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH   " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.16.OR.ITALI.EQ.17) THEN
+              CASE (16:17)
 C  B_PERP-FIELD: " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.14) THEN
+              CASE (14)
 C  CELL VOLUME  = UN-WEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
-              ELSEIF (ITALI.EQ.12.OR.ITALI.EQ.15) THEN
+              CASE (12,15)
 C  ADDITIONAL TALLY (NO.12)
 C  WEIGHT FUNCTION  (NO.15)
 C  " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.13) THEN
+              CASE (13)
 C  ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.18.AND.ITALI.LE.21) THEN
+              CASE (18:21)
 C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)   
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.22) THEN
+              CASE (22)
 C  (ELECTRIC) POTENTIAL  
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ENDIF
+              CASE (24)
+C  PARALLEL TO B FLOW MOMENTUM  
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (25:96)  ! ntali=96, constant required here
+C  GRADIENTS
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              END SELECT
 122         CONTINUE
 
 C  COARSE GRAINING: NORMALIZE WEIGHTED SUMS BY THEIR WEIGHT

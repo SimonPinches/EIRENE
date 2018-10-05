@@ -1,3 +1,4 @@
+c  fe. 2018:  restructured because of switchable input tallies
 c  sept. 05:  five more tallies added to step function, see also CSTEP.f
 c  nov.  05:  add eltot and ve to step function data
  
@@ -10,7 +11,7 @@ C  from unit 13.
 C
 C  trcfle:  confirm writing on printout on unit IUNOUT
 C  IFLG    :  only for  RPLAM:  
-C        = 0   do not readm primary source data COMSOU
+C        = 0   do not read primary source data COMSOU
 C        else  do also read data from COMSOU
  
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
@@ -32,14 +33,16 @@ C        else  do also read data from COMSOU
 C
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
+      WRITE (13+ifoff) LIVTALI
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: LIVTALI '
+      WRITE (13+ifoff) NFRSTP, NADDP
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: NFRSTP, NADDP '
+      WRITE (13+ifoff) PLSTLS
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: input tallies PLSTLS '
       WRITE (13+ifoff)
 C  REAL
-     R           TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN,
-     R           BXIN,BYIN,BZIN,BFIN,ADIN,EDRIFT,
-     R           VOL,WGHT,BXPERP,BYPERP,
-     R           EXIN,EYIN,EZIN,EFIN,
      R           FLXOUT,SAREA,
-     R           TEINL,TIINL,DEINL,DIINL,BVIN,PARMOM,
+     R           TEINL,TIINL,DEINL,DIINL,
      R           RMASSI,RMASSA,RMASSM,RMASSP,
      R           DIOD,DATD,DMLD,DPLD,DPHD,
      R           DION,DATM,DMOL,DPLS,DPHOT,
@@ -53,7 +56,7 @@ C  MUSR, INTEGER
      I           NSPAMI,NIONI,NIONIM,NMASSI,NCHARI,NCHRGI,NFOLI,NGENI,
      I           NSPTOT,NPLSI,NPLSIM,NMASSP,NCHARP,NCHRGP,NBITS,
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
-     I           NPRT,ISPEZ,ISPEZI,
+     I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
      L           LGVAC,LGDFT,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
@@ -81,14 +84,26 @@ C
       ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLG)
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
-      READ (13+ifoff)
+      READ (13+ifoff,IOSTAT=IO) LIVT
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
+      IF (IO /= 0) GOTO 990
+      DO I=1, NTALI
+        IF ((LIVTALI(I).AND.LIVT(I)).OR.
+     .      (.NOT.LIVTALI(I).AND..NOT.LIVT(I))) CYCLE
+        GOTO 991
+      END DO
+      READ (13+ifoff,IOSTAT=IO) NFRS, NAD
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: NFRSTP, NADDP '
+      IF (IO /= 0) GOTO 990
+      IF (ANY(NFRSTP(1:NTALI) /= NFRS(1:NTALI))) GOTO 992
+      IF (ANY(NADDP(1:NTALI) /= NAD(1:NTALI))) GOTO 993
+      READ (13+ifoff,IOSTAT=IO) PLSTLS
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS '
+      IF (IO /= 0) GOTO 990
+      READ (13+ifoff,IOSTAT=IO)
 C  REAL
-     R           TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN,
-     R           BXIN,BYIN,BZIN,BFIN,ADIN,EDRIFT,
-     R           VOL,WGHT,BXPERP,BYPERP,
-     R           EXIN,EYIN,EZIN,EFIN,
      R           FLXOUT,SAREA,
-     R           TEINL,TIINL,DEINL,DIINL,BVIN,PARMOM,
+     R           TEINL,TIINL,DEINL,DIINL,
      R           RMASSI,RMASSA,RMASSM,RMASSP,
      R           DIOD,DATD,DMLD,DPLD,DPHD,
      R           DION,DATM,DMOL,DPLS,DPHOT,
@@ -102,7 +117,7 @@ C  MUSR, INTEGER
      I           NSPAMI,NIONI,NIONIM,NMASSI,NCHARI,NCHRGI,NFOLI,NGENI,
      I           NSPTOT,NPLSI,NPLSIM,NMASSP,NCHARP,NCHRGP,NBITS,
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
-     I           NPRT,ISPEZ,ISPEZI,
+     I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
      L           LGVAC,LGDFT,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f '
@@ -144,4 +159,23 @@ cdr:  this CSTEP reading should go into iflg=0 branch, as it belongs to primary 
 
       CLOSE (UNIT=13+ifoff)
       RETURN
+
+ 990  CONTINUE
+      WRITE (IUNOUT,*) ' ERROR READING FILE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+ 991  CONTINUE
+      WRITE (IUNOUT,*) ' AVAILABLE INPUT TALLIES ARE DIFFERENT FROM',
+     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+ 992  CONTINUE
+      WRITE (IUNOUT,*) ' LEADING DIMENSIONS OF INPUT TALLIES ARE',
+     .                 ' DIFFERENT FROM',
+     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+ 993  CONTINUE
+      WRITE (IUNOUT,*) ' STARTING POSITIONS OF INPUT TALLIES ',
+     .                 ' IN ARRAY PLSTLS ARE DIFFERENT FROM',
+     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+     
       END
