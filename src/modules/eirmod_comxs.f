@@ -2098,6 +2098,9 @@ c  photonic reaction
       
 
       SUBROUTINE EIRENE_ALLOC_FIT_FORM (RP)
+c  RP = REACDAT(ir)%???
+C  Initialize pointers (NULLIFY) and 
+c  set default asymptotics, for reacdat(ir)%???%.....
 
       TYPE(FIT_FORMS),POINTER :: RP
 

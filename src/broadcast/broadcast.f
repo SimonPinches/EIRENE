@@ -45,6 +45,8 @@ cdr            m_hcol(nreac)
 cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
 cdr            NHVREI  (formerly: NREAHV) 
 cdr            NHVRPI  (formerly: NRHVPI)
+cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies but
+cdr            but also derived tallies: EDRIFT, BVIN, PARMOM
 
       SUBROUTINE EIRENE_BROADCAST
 cdr 
@@ -1011,7 +1013,7 @@ cdr dimensioning of LCUT array corrected:
 
         IF (MY_PE > 0) THEN
 csw
-!pb          if(.not.allocated(tdmpar)) then
+!pb       if(.not.allocated(tdmpar)) then
           if(.not.associated(tdmpar(ipls)%tdm)) then
 csw
             ALLOCATE (TDMPAR(IPLS)%TDM)
@@ -1051,6 +1053,7 @@ csw
         DEALLOCATE (CHELP)
 
       END DO
+
       CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
      .               MPI_COMM_WORLD,ier)
 

@@ -42,12 +42,15 @@ C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
      R        ADIN(:,:),      VOL(:),         WGHT(:,:),
      R        EXIN(:),        EYIN(:),        EZIN(:),     EFIN(:),
      R        POT(:),
-c  derived from primary input profils:
+c  derived from primary input profils, in subr. PLASMA_DERIV  
+c  (strictly: DEIN is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
+
 c  optional: gradients of all scalar input tallies.
 c  For the vectorial input tallies (V_IN, B_IN, E_IN) these gradients
 c  then provide the full dyadic (all nine components).
+
      R        DTEDX(:),       DTEDY(:),       DTEDZ(:),
      R        DTIDX(:,:),     DTIDY(:,:),     DTIDZ(:,:),
      R        DDEDX(:),       DDEDY(:),       DDEDZ(:),
@@ -80,8 +83,8 @@ C  THIS SECOND SET OF DATA ARE DERIVED INPUT PROFILES, SET IN SUBROUTINE PLASMA_
 C  (STRICTLY ALSO DEIN (ELECTRON DENSITY) FROM THE NPLPR1 BLOCK ABOVE
 C   IS SUCH A DERIVED QUANTITY)  
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
-     R        BVIN(:,:), PARMOM(:,:), EDRIFT(:,:),
-     R        BXPERP(:), BYPERP(:),
+C  NSFPRM
+     R        FLXOUT(:), SAREA(:),
 C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
      R        DION(:),   DATM(:),     DMOL(:),   DPLS(:),    DPHOT(:)
@@ -97,6 +100,8 @@ C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        CORNER_PROFILES(:,:)
 
+c  storage for setting tallies at cell vertices, rather than cell centres,
+c  for interpolations
       REAL(DP), POINTER, PUBLIC, SAVE ::
      .        TEINCORNER(:),   TIINCORNER(:,:), DEINCORNER(:),
      .        DIINCORNER(:,:),
@@ -145,11 +150,60 @@ C  LUSR, LOGICAL
      L         LSMOPRO(:)
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
-     L         LTESMO, LTISMO, LDESMO, LDISMO,
-     L         LVSMO,  LBSMO,  LESMO,  LPOTSMO
+     L         LTESMO,     LTISMO,     LDESMO,    LDISMO,
+     L         LVXSMO,     LVYSMO,     LVZSMO,
+     L         LBXSMO,     LBYSMO,     LBZSMO,    LBFSMO,
+     L         LADSMO,     LVOLSMO,    LWGHTSMO,
+     L         LEXSMO,     LEYSMO,     LEZSMO,    LEFSMO,
+     L         LPOTSMO,
+C
+     L         LBXPSMO,    LBYPSMO,
+     L         LBVSMO,     LPARMOMSMO, LEDRIFTSMO
 
+      LOGICAL, PUBLIC, SAVE ::
+     L         LDSMO, LVSMO,  LBSMO,  LESMO
+
+      LOGICAL, PUBLIC, POINTER, SAVE ::
+c  background, drifting maxwellian parameters
+     L         LTEIN,      LTIIN,      LDEIN,     LDIIN,
+     L         LVXIN,      LVYIN,      LVZIN,
+c  magn. field
+     L         LBXIN,      LBYIN,      LBZIN,     LBFIN,
+c  additional stuff....
+     L         LADIN,      LVOL,       LWGHT,
+c  electr. field
+     L         LEXIN,      LEYIN,      LEZIN,     LEFIN,
+     L         LPOT,
+c  derived tallies
+     L         LBXPERP,    LBYPERP,
+     L         LBVIN,      LPARMOM,    LEDRIFT,
+c  gradient tallies
+     L         LDTEDX,     LDTEDY,     LDTEDZ,
+     L         LDTIDX,     LDTIDY,     LDTIDZ,
+     L         LDDEDX,     LDDEDY,     LDDEDZ,
+     L         LDDIDX,     LDDIDY,     LDDIDZ,
+     L         LDVXDX,     LDVXDY,     LDVXDZ,
+     L         LDVYDX,     LDVYDY,     LDVYDZ,
+     L         LDVZDX,     LDVZDY,     LDVZDZ,
+     L         LDBXDX,     LDBXDY,     LDBXDZ,
+     L         LDBYDX,     LDBYDY,     LDBYDZ,
+     L         LDBZDX,     LDBZDY,     LDBZDZ,
+     L         LDBFDX,     LDBFDY,     LDBFDZ,
+     L         LDADINDX,   LDADINDY,   LDADINDZ,
+     L         LDVOLDX,    LDVOLDY,    LDVOLDZ,
+     L         LDWGHTDX,   LDWGHTDY,   LDWGHTDZ,
+     L         LDEXDX,     LDEXDY,     LDEXDZ,
+     L         LDEYDX,     LDEYDY,     LDEYDZ,
+     L         LDEZDX,     LDEZDY,     LDEZDZ,
+     L         LDEFDX,     LDEFDY,     LDEFDZ,
+     L         LDPOTDX,    LDPOTDY,    LDPOTDZ,
+C  gradients of derived tallies
+     L         LDBXPERPDX, LDBXPERPDY, LDBXPERPDZ,
+     L         LDBYPERPDX, LDBYPERPDY, LDBYPERPDZ,
+     L         LDBVINDX,   LDBVINDY,   LDBVINDZ,
+     L         LDPARMOMDX, LDPARMOMDY, LDPARMOMDZ,
+     L         LDEDRIFTDX, LDEDRIFTDY, LDEDRIFTDZ
  
-C FROM HERE ON: NO EQUIVALENCE
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         IADVE(:),  IADVS(:), IADVT(:),  IADRC(:),
      I         ICLVE(:),  ICLVS(:), ICLVT(:),  ICLRC(:),
@@ -161,6 +215,8 @@ C FROM HERE ON: NO EQUIVALENCE
      I         NSPAN(:),  NSPEN(:),
      I         NSPANW(:), NSPENW(:)
 
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
+     I         INTLOPTS(:)
  
       INTEGER, PUBLIC, SAVE ::
      I         NPRLL, NMODE,  NTCPU,
@@ -184,51 +240,16 @@ C FROM HERE ON: NO EQUIVALENCE
 
       IF (ICAL == 1) THEN
  
-        IF (ALLOCATED(TEIN)) RETURN
-c
-        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD  ! background data, set in plasma.f, 17 arrays
-        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD        !  adin, wght,...??? adin is allocated in call with ICAL == 2
-cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct dimension of bvin !
-        NPLPR2=(4+3*NPLS+NPLSTI+NPLSV)*NRAD+    ! additional background data, set in plasma_deriv.f, currently 9 arrays
-     .          3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT ! species (test particle and background) related data
-        NUSR=NPLPRM+NPLPR2
+        IF (ALLOCATED(RMASSI)) RETURN
 
-        MUSR=4*NATM+4*NMOL+5*NION+3*NPLS+30+NSPZ+
+        NPLPR2= 3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT ! species (test particle and background) related data
+ 
+        MUSR=4*NATM+4*NMOL+5*NION+3*NPLS+30+NSPZ+2*NPHOT+
      .       6*(1+NPHOTP)*(1+NATMP)*(1+NMOLP)*(1+NIONP)*(1+NPLSP)+NSPZ*6
      .       +2*NPLS+NSPZ*NPLS
+     .       +4*NADV+4*NCLV+4*NSNV+4*NADS+4*NTALI+NTALG+2*NTALV+2*NTALS
 
-        LUSR=NRAD*(NPLS+2)+NRAD
-
-C NPLPR1 + ... = NPLPRM
-        ALLOCATE (TEIN(NRAD))
-        ALLOCATE (TIIN(NPLSTI,NRAD))
-        ALLOCATE (DEIN(NRAD))   !  ital=-3,  derived tally
-        ALLOCATE (DIIN(NPLS,NRAD))
-        ALLOCATE (VXIN(NPLSV,NRAD))
-        ALLOCATE (VYIN(NPLSV,NRAD))
-        ALLOCATE (VZIN(NPLSV,NRAD))
-        ALLOCATE (BXIN(NRAD))
-        ALLOCATE (BYIN(NRAD))
-        ALLOCATE (BZIN(NRAD))
-        ALLOCATE (BFIN(NRAD))
-cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  ital=-12. Not yet. done later below, ical == 2 option
-        ALLOCATE (VOL(NRAD))   !  ital=-14
-        ALLOCATE (WGHT(NSPZMC,NRAD))  ! check size of  nspzmc.  this "weight window" array is unused so far.
-        ALLOCATE (EXIN(NRAD))
-        ALLOCATE (EYIN(NRAD))
-        ALLOCATE (EZIN(NRAD))
-        ALLOCATE (EFIN(NRAD))
-        ALLOCATE (POT(NRAD))      !  ital=-22
-c NPLPR2
-        ALLOCATE (TEINL(NRAD))
-        ALLOCATE (TIINL(NPLSTI,NRAD))
-        ALLOCATE (BVIN(NPLSV,NRAD))   ! ital=nn   
-        ALLOCATE (PARMOM(NPLS,NRAD))  ! ital=nn 
-        ALLOCATE (BXPERP(NRAD))       ! ital=-16
-        ALLOCATE (BYPERP(NRAD))       ! ital=-17
-        ALLOCATE (EDRIFT(NPLS,NRAD))  !  ital=-13
-        ALLOCATE (DEINL(NRAD))
-        ALLOCATE (DIINL(NPLS,NRAD))
+        LUSR=NRAD*(NPLS+2)+2*NRAD+NTALI
 
         
         ALLOCATE (RMASSA(MAX(1,NATM)))
@@ -301,6 +322,9 @@ c  integer  species and background tally data
         ALLOCATE (NSPEN(NTALV))
         ALLOCATE (NSPANW(NTALS))
         ALLOCATE (NSPENW(NTALS))
+
+        ALLOCATE (INTLOPTS(NTALI))
+
 c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
         ALLOCATE (LGDFT(NRAD))
@@ -308,15 +332,29 @@ c  logicals
         ALLOCATE (LIVTALI(NTALI))
  
         WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
+     .        ' COMUSR(1) ', NPLPR2*8 + MUSR*4 + LUSR*4 
  
       ELSE IF (ICAL == 2) THEN
-c  NAIN: first dimension of adin is now fixed.  correct nplprm with nain*nrad
-        IF (ALLOCATED(ADIN)) RETURN
  
-        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
-        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD
-        ALLOCATE (ADIN(NAIN,NRAD))
+        IF (ALLOCATED(PLSTLS)) RETURN
+
+c
+!        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD  ! background data, set in plasma.f, 17 arrays
+!        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD        !  adin, wght,...??? adin is allocated in call with ICAL == 2
+cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct dimension of bvin !
+
+
+        NPLPR1 = NINPTL*NRAD            ! storage only for active input tallies
+
+        ALLOCATE (PLSTLS(NINPTL,NRAD))
+ 
+        ALLOCATE (CEMETERYP(0:0,NRAD))  ! storage for in-active input tallies
+
+
+        ALLOCATE (TEINL(NRAD))
+        ALLOCATE (TIINL(NPLSTI,NRAD))
+        ALLOCATE (DEINL(NRAD))
+        ALLOCATE (DIINL(NPLS,NRAD))
 
 c  NCPV, NBGV are now set
         ALLOCATE (ICPVE(NCPV))
@@ -327,6 +365,10 @@ c  NCPV, NBGV are now set
         ALLOCATE (IBGVS(NBGV))
         ALLOCATE (IBGVT(NBGV))
         ALLOCATE (IBGRC(NBGV))
+
+        WRITE (55+IFOFF,'(A,T25,I15)')
+     .        ' COMUSR(2) ',(NPLPR1+(3+NPLSTI+NPLS)*NRAD)*8 + 
+     .                      4*(NCPV+NBGV)*4 
 
       ELSE IF (ICAL == 3) THEN
  
@@ -360,7 +402,7 @@ cdr special treatment of Ti:  intlopts.....
         IF (INTLOPTS(2) >= 0) THEN
           TIIN => PLSTLS(NADDP(2)+1:NADDP(3),:)
         ELSE 
-          TIIN => PLSTLS(NADDP(1)+1:NADDP(1)+1,:)        ! Ti = Te
+          TIIN => PLSTLS(NADDP(1)+1,:)    ! Ti = Te, no own storage for Ti
         END IF
       END IF
       IF (LDEIN) THEN
@@ -844,7 +886,7 @@ cdr special treatment of Ti:  intlopts.....
 
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: N1DIM(12)
-      INTEGER :: NTOT, ICO
+      INTEGER :: NTOT, ICO, NLST, I, J, NLSTTL, NTOT2
       
 
       IF (ALLOCATED(CORNER_PROFILES)) RETURN
@@ -853,13 +895,36 @@ cdr special treatment of Ti:  intlopts.....
       NTOT = 0
 cdr  are there any FEM interpolated background tallies in this run?
 
-      IF (LTESMO) NTOT = NTOT + 1
-      IF (LTISMO) NTOT = NTOT + NPLSTI
-      IF (LDISMO) NTOT = NTOT + NPLS + 1
-      IF (LVSMO)  NTOT = NTOT + 4*NPLSV
-      IF (LBSMO)  NTOT = NTOT + 4
-      IF (LESMO)  NTOT = NTOT + 4
-      IF (LPOTSMO)  NTOT = NTOT + 1
+!  interpolation to vertices can only be done if input tally is available (active)
+      LSMOPRO(1:NTALG) = LSMOPRO(1:NTALG) .AND. LIVTALI(1:NTALG)
+
+c  notal number of smoothed talles, counting also with species index 
+      NTOT2 = 0
+      DO I= 1, NTALG
+        IF (LSMOPRO(I)) THEN
+          NTOT2 = NTOT2 + NFRSTP(I)
+        END IF
+      END DO     
+
+c  cummulated index of position of smoothed tally J within all smoothed tallies
+      NADDCOR(1)=0
+      DO 6 J=2,NTALG
+        IF (LSMOPRO(J-1)) THEN
+          NADDCOR(J)=NADDCOR(J-1)+NFRSTP(J-1)
+          NLSTTL=J-1
+        ELSE
+          NADDCOR(J)=NADDCOR(J-1)
+        END IF
+ 6    CONTINUE
+
+      IF (LSMOPRO(NTALG)) NLSTTL = NTALG
+C
+C  TOTAL NUMBER OF INPUT TALLIES
+      NTOT = 0
+      IF (ANY(LSMOPRO)) THEN
+        NTOT = NADDCOR(NTALG)
+        IF (NFRSTP(NLSTTL) > 1) NTOT = NTOT+NFRSTP(NLSTTL)
+      END IF
       
       IF (NTOT > 0) THEN
 cdr  allocate storage for background tallies on cell vertices
@@ -869,36 +934,45 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ALLOCATE (CORNER_PROFILES(1,1))
       END IF
 
-      ICO = 0
+       WRITE (55+IFOFF,'(A,T25,I15)')
+     .        ' COMUSR(3) ',SIZE(CORNER_PROFILES)*8
+
+      LDSMO = LDESMO .OR. LDISMO 
+      LVSMO = LVXSMO .OR. LVYSMO .OR. LVZSMO .OR. LBVSMO
+      LBSMO = LBXSMO .OR. LBYSMO .OR. LBZSMO .OR. LBFSMO
+      LESMO = LEXSMO .OR. LEYSMO .OR. LEZSMO .OR. LEFSMO
 
       IF (LTESMO) THEN
-        TEINCORNER => CORNER_PROFILES(:,ICO+1)
-        ICO = ICO + 1
+        TEINCORNER => CORNER_PROFILES(:,NADDCOR(1)+1)
       ELSE
         NULLIFY(TEINCORNER)
       END IF
 
       IF (LTISMO) THEN
-        TIINCORNER => CORNER_PROFILES(:,ICO+1 : ICO+NPLSTI )
-        ICO = ICO + NPLSTI
+        TIINCORNER => CORNER_PROFILES(:,NADDCOR(2)+1 : NADDCOR(3))
       ELSE
         NULLIFY(TIINCORNER)
       END IF
 
-      IF (LDISMO) THEN
-        DEINCORNER => CORNER_PROFILES(:,ICO+1)
-        DIINCORNER => CORNER_PROFILES(:,ICO+2 : ICO+NPLS+1 )
-        ICO = ICO + NPLS + 1
-      ELSE
-        NULLIFY(DEINCORNER)
-        NULLIFY(DIINCORNER)
+      IF (LDSMO) THEN
+        IF (LDESMO) THEN
+          DEINCORNER => CORNER_PROFILES(:,NADDCOR(3)+1)
+        ELSE
+          NULLIFY(DEINCORNER)
+        END IF
+        IF (LDISMO) THEN
+          DIINCORNER => CORNER_PROFILES(:,NADDCOR(4)+1 : NADDCOR(5))
+        ELSE
+          NULLIFY(DEINCORNER)
+          NULLIFY(DIINCORNER)
+        END IF
       END IF
 
       IF (LVSMO) THEN
         IF (LVXSMO) THEN
           VXINCORNER => CORNER_PROFILES(:,NADDCOR(5)+1 : NADDCOR(6))
-      ELSE
-        NULLIFY(VXINCORNER)
+        ELSE
+          NULLIFY(VXINCORNER)
         END IF 
         IF (LVYSMO) THEN
           VYINCORNER => CORNER_PROFILES(:,NADDCOR(6)+1 : NADDCOR(7))
@@ -915,46 +989,83 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
       IF (LBSMO) THEN
         IF (LBXSMO) THEN
           BXINCORNER => CORNER_PROFILES(:,NADDCOR(8)+1)
-      ELSE
-        NULLIFY(BXINCORNER)
+        ELSE
+          NULLIFY(BXINCORNER)
         END IF
         IF (LBYSMO) THEN
           BYINCORNER => CORNER_PROFILES(:,NADDCOR(9)+1)
         ELSE
-        NULLIFY(BYINCORNER)
+          NULLIFY(BYINCORNER)
         END IF
         IF (LBZSMO) THEN
           BZINCORNER => CORNER_PROFILES(:,NADDCOR(10)+1)
         ELSE
-        NULLIFY(BZINCORNER)
+          NULLIFY(BZINCORNER)
         END IF
         IF (LBFSMO) THEN
           BFINCORNER => CORNER_PROFILES(:,NADDCOR(11)+1)
         ELSE
-        NULLIFY(BFINCORNER)
+          NULLIFY(BFINCORNER)
+        END IF
+      END IF
+
+      IF (LADSMO) THEN
+        ADCORNER => CORNER_PROFILES(:,NADDCOR(12)+1 : NADDCOR(13))
+      ELSE
+        NULLIFY(ADCORNER)
+      END IF
+
+      IF (LEDRIFTSMO) THEN
+        EDRIFTCORNER => CORNER_PROFILES(:,NADDCOR(13)+1 : NADDCOR(14))
+      ELSE
+        NULLIFY(EDRIFTCORNER)
+      END IF
+
+      IF (LVOLSMO) THEN
+        VOLCORNER => CORNER_PROFILES(:,NADDCOR(14)+1 )
+      ELSE
+        NULLIFY(VOLCORNER)
+      END IF
+
+      IF (LWGHTSMO) THEN
+        WGHTCORNER => CORNER_PROFILES(:,NADDCOR(15)+1 : NADDCOR(16))
+      ELSE
+        NULLIFY(WGHTCORNER)
+      END IF
+
+      IF (LBXPSMO) THEN
+        BXPERPCORNER => CORNER_PROFILES(:,NADDCOR(16)+1 )
+      ELSE
+        NULLIFY(BXPERPCORNER)
+      END IF
+
+      IF (LBYPSMO) THEN
+        BYPERPCORNER => CORNER_PROFILES(:,NADDCOR(17)+1 )
+      ELSE
+        NULLIFY(BYPERPCORNER)
       END IF
 
       IF (LESMO) THEN
         IF (LEXSMO) THEN
           EXCORNER => CORNER_PROFILES(:,NADDCOR(18)+1)
-      ELSE
-        NULLIFY(EXCORNER)
+        ELSE
+          NULLIFY(EXCORNER)
         END IF
         IF (LEYSMO) THEN
           EYCORNER => CORNER_PROFILES(:,NADDCOR(19)+1)
         ELSE
-        NULLIFY(EYCORNER)
+          NULLIFY(EYCORNER)
         END IF
         IF (LEZSMO) THEN
           EZCORNER => CORNER_PROFILES(:,NADDCOR(20)+1)
         ELSE
-        NULLIFY(EZCORNER)
+          NULLIFY(EZCORNER)
         END IF
         IF (LEFSMO) THEN
           EFCORNER => CORNER_PROFILES(:,NADDCOR(21)+1)
         ELSE
           NULLIFY(EFCORNER)
-      END IF
+        END IF
       END IF
 
       IF (LPOTSMO) THEN
@@ -963,10 +1074,16 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         NULLIFY(POTCORNER)
       END IF
 
-      IF (ICO /= NTOT) THEN
-        WRITE (IUNOUT,*) ' ERROR IN EIRENE_ALLOC_CORNERS '
-        WRITE (IUNOUT,*) ' NTOT = ',NTOT,' /= ICO = ',ICO
-        CALL EIRENE_EXIT_OWN(1)
+      IF (LVSMO .AND. LBVSMO) THEN
+        BVINCORNER => CORNER_PROFILES(:,NADDCOR(22)+1 : NADDCOR(24))
+      ELSE
+        NULLIFY(BVINCORNER)
+      END IF
+
+      IF (LPARMOMSMO) THEN
+        PARMOMCORNER => CORNER_PROFILES(:,NADDCOR(24+1) : NTOT )
+      ELSE
+        NULLIFY(PARMOMCORNER)
       END IF
 
       CORNER_PROFILES = 0._DP
@@ -1092,31 +1209,42 @@ c
         LTISMO      => LSMOPRO(2)
         LDESMO      => LSMOPRO(3)
         LDISMO      => LSMOPRO(4)
+c  plasma flow field
         LVXSMO      => LSMOPRO(5)
         LVYSMO      => LSMOPRO(6)
         LVZSMO      => LSMOPRO(7)
+c  plasma flow parallel
+        LBVSMO      => LSMOPRO(23)
+        LPARMOMSMO  => LSMOPRO(24)
+
+c  B field
         LBXSMO      => LSMOPRO(8)
         LBYSMO      => LSMOPRO(9)
         LBZSMO      => LSMOPRO(10)
         LBFSMO      => LSMOPRO(11)
+
+c  B  perp
+        LBXPSMO     => LSMOPRO(16)
+        LBYPSMO     => LSMOPRO(17)
+
         LADSMO      => LSMOPRO(12)
         LEDRIFTSMO  => LSMOPRO(13)
         LVOLSMO     => LSMOPRO(14)
         LWGHTSMO    => LSMOPRO(15)
-        LBXPSMO     => LSMOPRO(16)
-        LBYPSMO     => LSMOPRO(17)
+
+c  E field
         LEXSMO      => LSMOPRO(18)
         LEYSMO      => LSMOPRO(19)
         LEZSMO      => LSMOPRO(20)
         LEFSMO      => LSMOPRO(21)
         LPOTSMO     => LSMOPRO(22)
-        LBVSMO      => LSMOPRO(23)
-        LPARMOMSMO  => LSMOPRO(24)
+
 
         IFIRST = 1
       ENDIF
  
       IF (ICAL == 1) THEN
+cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         
         RMASSA = 0._DP
         RMASSM = 0._DP
@@ -1289,8 +1417,15 @@ c
         LDPARMOMDZ => LIVTALI(96)
  
       ELSE IF (ICAL == 2) THEN
-c  at this call: first dimension of adin is known, as well as size of cop and bgk tallies
-        ADIN   = 0._DP      ! ital=-12
+c  input for active volumetric tallies
+        PLSTLS = 0._DP
+c  cemetry for inactive input tallies (no storage)
+        CEMETERYP = 0._DP
+
+        TEINL  = 0._DP
+        TIINL  = 0._DP
+        DEINL  = 0._DP
+        DIINL  = 0._DP
 
         ICPVE  = 0
         ICPVS  = 0
