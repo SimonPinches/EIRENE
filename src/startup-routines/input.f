@@ -1,3 +1,4 @@
+cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
 cdr  sept.18:   XDR format options for fort.13 stream: removed.
 cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
@@ -235,10 +236,10 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
+     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA, ISTR,
+     .           NB, NS, NA, ISTR, IOPT
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC
       INTEGER, SAVE :: NZADD, NITER0
@@ -858,9 +859,6 @@ C INPUT SUB-BLOCK 2D
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
-C240  READ (IUNIN,'(A72)') ZEILE
-C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
-C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1406,7 +1404,6 @@ C  Normal start of reading database A&M processes
       CALL EIRENE_LEER(1)
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(0)
-      IL = 0
 !pbcrm      
       IREAD = 0
 C
@@ -1415,7 +1412,6 @@ C
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
-        IL = IL + 1
         READ (ZEILE,66661) IR,FILNAM,H123
         IEND = 16
 
@@ -2218,6 +2214,10 @@ C       WRITE (iunout,'(1x,a)') trim(ZEILE)
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
       DO J=1,12
+C  Indicate "smoothed" input tallies (interpolation into cells)
+C  amongst the 12 input tallies read here.
+C  formerly: LSMOPRO(J) flag.
+C  Smoothing currently only for tallies 1 to 7.
         IF (ABS(INDPRO(J)) > 100) THEN
           LSMOPRO(J) = .TRUE.
           INDPRO(J) = MOD(INDPRO(J),100)
@@ -4996,7 +4996,7 @@ C
         IF (NPHOTI > 0) CALL EIRENE_PH_INIT(2)
 C
 C   MODIFY SOME GEOMETRICAL DATA, USER-SUPPLIED ROUTINE
-Cstartup-routines/input.f
+C
         CALL EIRENE_GEOUSR
 
         IF (LEVGEO == 4) CALL EIRENE_CUT_ADS_CELL
