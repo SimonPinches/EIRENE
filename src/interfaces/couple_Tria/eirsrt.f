@@ -569,9 +569,6 @@ C
       IF ((NFILEL >=1) .AND. (NFILEL <=5)) THEN
          NFILEL=3
          CALL EIRENE_WRPLAM(TRCFLE,0)
-      ELSE IF (NFILEL > 5) THEN
-         NFILEL=9
-         CALL EIRENE_WRPLAM_XDR(TRCFLE,0)
       END IF
 
 C

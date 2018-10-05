@@ -36,14 +36,15 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       integer :: i, j, k, iline, jcomp, kcontr,
      .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
-      real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
+      real(dp) :: density(3), sigadd, add,  powalf, powalfs, 
      .            einstein, trans_en, DE, TE, TEF, DEF, popcf, 
      .            EIRENE_OTHER_RATE_COEFF, 
-     .            ratio2
+     .            ratio1,ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
       CHARACTER(6) :: CISTRA
+      character(len=:), allocatable :: ctest2
 
       CALL EIRENE_LEER(2)
       CALL EIRENE_FTCRI(ISTR,CISTRA)
@@ -57,13 +58,16 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
       do i = lstart, lend
         ILINE=I
-        WRITE (iunout,*) 'LINE no. ',ILINE       
-        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
-     .                 EMIS_LINES(I)%LINE_NAME // ':'
+        ctest2 = adjustl(trim(emis_lines(iline)%line_name))
+        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':' 
+
         write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
         write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
+     
+        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' 
+
 
         einstein = emis_lines(i)%einstein
 C  ENERGY FACTOR FOR POWER LOSS (W)
@@ -137,25 +141,35 @@ C
                     end if
                 end select
               end do
-  
-c  density is the "true" parent density         
-c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
-c  and density ratios ratio="density"/"density(1)" will be applied below, 
-c  to turn density(1)it into "density"
+c  population coefficient, relative to density(1)  
               popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
               add = popcf*density(1)
 
 c  density ratio, if true parent density is not available (or in QSS mode)
-c  then: ratio converts from density(1) to density 
+c  then: ratio1 converts from density(1) to density
+c  density is the "true" parent density for this component.         
+c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
+c  and density ratio  ratio1="density"/"density(1)" will be applied, 
+c  to turn density(1) into "density"
+c  e.g. density    = H2+
+c       density(1) = H2
+c       ratio1     = [H2+]/[H2] 
+c  this works when the second species involved in loss and gain
+c  for species H2+ from H2 is the same, here: electron density, and hence cancels.
               if (iratio > 0) then 
 
-                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
+                ratio1 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
      .                                          TEF,DEF,.TRUE.,1)
-                add = add*ratio
+                add = add*ratio1
+c  
 c  second conversion to yet another parent density
-c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2
+c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2 = [H2] * ratio1 * [H2/ne] *ratio2
 c       density(1) = H2
-c       ratio      = H2+/H2(Te,ne) (CR equilibrium)
+c       ratio1     = H2+/H2(Te,ne) (CR equilibrium)
+c       ratio2     = .....
+c  this works when the second species involved in loss and gain rate
+c  for species H3+ from H2+ is not the same, 
+c  here: electron density, and H2 density, hence: does not cancel.
                 if (iratio == 2) then
                   ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,
      .                                             TEF,DEF,.TRUE.,1)

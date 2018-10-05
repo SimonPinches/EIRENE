@@ -77,7 +77,7 @@ C
 C
         IF (NRCP(IPLS).EQ.0) THEN   ! default model for bulk ion IPLS
 C
-          IF (NCHARP(IPLS).EQ.1.AND.NCHRGP(IPLS).EQ.1) THEN   ! this is now H+, or D+, or T+
+          IF (NCHARP(IPLS).EQ.1 .AND. NCHRGP(IPLS).EQ.1) THEN   ! this is now H+, or D+, or T+
 C
 C  DEFAULT HYDROGENIC RECOMBINATION MODEL, for capture on all levels of H
 C  HYDR. RECOMBINATION RATE-COEFFICIENT (1/S/CCM) E + H+ --> H + RAD.
@@ -107,12 +107,10 @@ c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
 51                CONTINUE
-                  NREARC(IRRC) = 0
-                  JEREARC(IRRC) = 0
+                  NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
-                  NREARC(IRRC) = 0
-                  JEREARC(IRRC) = 0
+                  NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 END IF
                 IATM1=IATM
@@ -147,7 +145,7 @@ C
                 IF (NSTORDR >= NRAD) THEN
                   DO 53 J=1,NSBOX
                     ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
-C  rate = rate coeff: <sig v> times electr. density,  1/s per ion
+C  rate = [rate coeff <sig v>] times [electr. density],  1/s per ion
 c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
                     TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
@@ -160,13 +158,11 @@ c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
 53                CONTINUE
-                  NREARC(IRRC) = 0
-                  JEREARC(IRRC) = 0
-                  NELRRC(IRRC) = -1
+                  NREARC(IRRC) = -2
+                  NELRRC(IRRC) = -2
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
-                  NREARC(IRRC) = 0
-                  JEREARC(IRRC) = 0
-                  NELRRC(IRRC) = -1
+                  NREARC(IRRC) = -2
+                  NELRRC(IRRC) = -2
                 END IF
                 IATM1=IATM
                 NATPRC(IRRC)=IATM1
@@ -273,11 +269,9 @@ cdr       by analogy.
      .                TABRC1(IRRC,J)=TABRC1(IRRC,J)*DEIN(J)
                   END DO
                   NREARC(IRRC) = KK
-                  JEREARC(IRRC) = 1
                 ELSE
 C  DON'T STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
-                  JEREARC(IRRC) = 1
                 END IF
                 MODCOL(6,2,IRRC)=1
 C             ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
@@ -296,11 +290,9 @@ C  2.D) RATE COEFFICIENT(TE,NE)
                   END DO
 
                   NREARC(IRRC) = KK
-                  JEREARC(IRRC) = 2
                 ELSE
 C  DON'T STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
-                  JEREARC(IRRC) = 2
                 END IF
                 MODCOL(6,2,IRRC)=1
               ENDIF
@@ -311,6 +303,7 @@ C  3. ELECTRON MOMENTUM LOSS RATE
 C
 C
 C  4. ELECTRON ENERGY LOSS RATE  eV/s per ion
+C  flags:  NELRRC, and for storage saving mode: additionally JELRRC
 C
               NSERC5=EIRENE_IDEZ(ISCDEP(IPLS,NRC),5,5)
 
@@ -318,23 +311,26 @@ C
 C  4.A)  ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
                 IF (NSTORDR >= NRAD) THEN
                   DO 101 J=1,NSBOX
-                    EELRC1(IRRC,J)=EELECP(IPLS,NRC)*TABRC1(IRRC,J)
+                    EELRC1(IRRC,J)=-EELECP(IPLS,NRC)*TABRC1(IRRC,J)
 101               CONTINUE
-                  NELRRC(IRRC) = -2
+                  NELRRC(IRRC) = 0
                 ELSE
-                  NELRRC(IRRC) = -2
+                  NELRRC(IRRC) = 0
+                  JELRRC(IRRC) = -1
                   EELRC1(IRRC,1)=EELECP(IPLS,NRC)
                 END IF
                 MODCOL(6,4,IRRC)=1
+
               ELSEIF (NSERC5.EQ.1) THEN
 C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATECOEFF.
                 IF (NSTORDR >= NRAD) THEN
                   DO 102 J=1,NSBOX
                     EELRC1(IRRC,J)=-1.5*TEIN(J)*TABRC1(IRRC,J)
 102               CONTINUE
-                  NELRRC(IRRC) = -3
+                  NELRRC(IRRC) = 0
                 ELSE
-                  NELRRC(IRRC) = -3
+                  NELRRC(IRRC) = 0
+                  JELRRC(IRRC) = -2
                 END IF
                 MODCOL(6,4,IRRC)=1
 C
@@ -354,8 +350,8 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
                       IF (LGVAC(J,NPLS+1)) CYCLE
 C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
-     .                               TEINL(J),
-     .                               0._DP,.TRUE.,0)*DEIN(J)*FACTKK
+     .                               TEINL(J),0._DP,.TRUE.,0)
+                      EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
 C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)
                       IF (LADAS) THEN
@@ -372,7 +368,7 @@ c  bremsstrahlung correction done.
                     END DO
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=1
-                  ELSE
+                  ELSE  ! storage saving mode: only eelrc1(irrc,1)
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=1
                   END IF
@@ -387,7 +383,8 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-C  change logical from false to true, to avoid log(erate), with erate negative 
+C  change logical from false to true, to avoid log(erate), with erate negative
+C  as it may result from internal CR code H_COL,...., when used with delpot=0.0 
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
 cdr  .                               TEINL(J),PLS(J),.FALSE.,1)
      .                               TEINL(J),PLS(J),.TRUE.,1)
@@ -412,18 +409,20 @@ c  bremsstrahlung correction done.
                     END DO
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=9
-                  ELSE
+                  ELSE  ! STORAGE SAVING MODE
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=9
                   END IF
                   MODCOL(6,4,IRRC)=1
-                ENDIF
+                ENDIF   ! MODC =3
 
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
+C  EELRC1: NEGATIVE SIGN: LOSS FOR ELECTRONS
+C
 C  SHIFT ELECTRON COOLING RATE BY DELE * TABRC
-c  DELE= IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT
-C        INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
+c  DELE= +IONISATION POTENTIAL TURNS A RADIATION LOSS COMPONENT
+C         INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                 IF (DELPOT(KREAD).NE.0.D0) THEN
                   DELE=DELPOT(KREAD)
                   IF (NSTORDR >= NRAD) THEN
@@ -431,10 +430,15 @@ C        INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                       EELRC1(IRRC,J)=EELRC1(IRRC,J)+
      .                               DELE*TABRC1(IRRC,J)
  110                CONTINUE
+c  STORAGE SAVING MODE AND DELPOT NE 0.0
+c                 ELSE  ! ??
                   END IF
-                ENDIF
-              ENDIF
-            ENDIF
+C         
+                ENDIF   ! DELPOT
+              ENDIF  !  MODC =1 OR =3
+            ELSE
+              GOTO 997
+            ENDIF  !  NSERC5
 C
 82        CONTINUE
           NPRCI(IPLS)=IDSC
@@ -448,6 +452,7 @@ C
         LGPRC(IPLS,0)=NPRCI(IPLS)
 C
         IF (TRCAMD) THEN
+
           CALL EIRENE_MASBOX
      .    ('BULK ION SPECIES IPLS = '//TEXTS(NSPAMI+IPLS))
           CALL EIRENE_LEER(1)
@@ -500,10 +505,21 @@ C               WRITE (iunout,*) 'EL      ',1.,EELRC1(IRRC,1)
 C             ELSE
 C               WRITE (iunout,*) 'EL      ',1.,FEELRC1(IRRC,1)
 C             END IF
-220         CONTINUE
+
+              CALL EIRENE_LEER(1)
+              WRITE (IUNOUT,*) 'COLLISION MODEL: '
+              WRITE (iunout,*) 'PROCESS NO. KK ',NREARC(IRRC)
+              WRITE (IUNOUT,*) 'MODCOL         ',
+     .                  MODCOL(6,1,IRRC),MODCOL(6,2,IRRC),
+     .                  MODCOL(6,3,IRRC),MODCOL(6,4,IRRC)
+              WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
+     .                     FACRRC(IRRC,1) 
+              CALL EIRENE_LEER(1)
+220         CONTINUE   !irrc for ipls
           ENDIF
           CALL EIRENE_LEER(1)
-        ENDIF
+
+        ENDIF  !trcamd
 C
 1000  CONTINUE
 
@@ -543,6 +559,10 @@ C
      .  'WRONG REACTION INDEX SPECIFIED FOR KREAD IN REACTION KK'
       WRITE (iunout,*) 'KK ',KK
       WRITE (IUNOUT,*) 'KREAD ',KREAD
+      CALL EIRENE_EXIT_OWN(1)
+997   CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSECTP: ISCDE FLAG'
+      WRITE (iunout,*) 'IRRC, EFLAG ',IRRC,NSERC5
       CALL EIRENE_EXIT_OWN(1)
 C
       END

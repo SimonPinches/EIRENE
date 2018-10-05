@@ -65,13 +65,13 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, MOD_ADDV, NUM_COMPO, 
+     .           NCHTAL, MOD_ADDV, NUM_COMPO, 
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
-     .           ILINE, JCOMP, KCONTR, IREAC_ADD
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD,
+     .           NREAC_LINES
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
-      REAL(DP), ALLOCATABLE :: ENERGY(:,:)
+     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
@@ -81,7 +81,7 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: LEMISS, NLEMIS
+      LOGICAL :: NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
@@ -147,7 +147,6 @@ C  STATISTICS
 C  ATOMIC DATA
       NREAC=1
       NREAC_ADD=0
-      NREAC_LINES=0
       NREC=1
       NREI=1
       NRCX=1
@@ -257,7 +256,7 @@ c  skip further comments in header
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
         LDEFSTOR = .TRUE.  ! INDICATES: STORAGE OPTIMIZATION INPUT CARD IS READ
-C   READ OPTIONAL INPUT CARD FOR STRAGE HANDLING.
+C   READ OPTIONAL INPUT CARD FOR STORAGE HANDLING.
 C   OTHERWISE: USE DEFAULTS DEFINED ABOVE.
         READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL,NREAC_ADD
@@ -272,6 +271,7 @@ C  NSTORAM IS REDEFINED, FINALLY EITHER =0  (A&M STORAGE SAVE MODE)
 C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       NSTORAM = MIN(NSTORAM,9)
       IF (NSTORAM < 9) NSTORAM = 0
+      NOPTM1 = MAX(NOPTM1,1)
 
       WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE '
 
@@ -939,38 +939,38 @@ cdr ..................................................................
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
 cdr to be done: synchronisation of options for Ti and Vi.
-cdr these next 2 lines for Ti(ipls) have historically been just opposite to Vi options.
+cdr these next 2 lines for Ti(ipls) have historically been just opposite to V_IN options.
 !pb   NPLSTI = 1
 !pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
 
-      NPLSTI = NPLS  !dr now same as for Vi.  Good
+      NPLSTI = NPLS  !dr now same as for V_IN.  Good
 cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to synchronize with Vi
-      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from Vi logic. Bad
+      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from V_IN logic. Bad
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
-        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
+        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY'
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
         IF (LMULTI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
           NPLSTI = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
 
-cdr these next 2 lines for Vi(ipls)
+cdr these next 2 lines for V_IN(ipls)
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 
       IF ((NPLS > 1) .AND. (NPLSV == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
-        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
+        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY'
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
         IF (LMULVI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE  PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE  PRESENT'
           NPLSV = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
@@ -987,7 +987,6 @@ C  FIND START OF NEXT INPUT BLOCK: 6
       DO
         READ (IUNIN,'(A72)') ZEILE
         IF ((ZEILE(1:3) == '***') .AND.
-!     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
      ,      (INDEX(ZEILE,'6') > 0)) EXIT
       END DO
 C
@@ -1393,48 +1392,7 @@ cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
             
       END IF
 
-C  PROVIDE STORAGE ON REACDAT, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
-C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
-      IF (NCHORI > 0) THEN
- 
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
-        IF (.FALSE.) THEN
-        ALLOCATE (ENERGY(2,NCHORI))
-        ENERGY = 0._DP
-        LINES = 0
 
-        DO J = 1, NCHORI
-          READ (IUNIN,*)
-          READ (IUNIN,'(12I6)') NCHTAL
-          READ (IUNIN,*)
-          READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
-          READ (IUNIN,*)
-          READ (IUNIN,*)
-          IF (NCHTAL == 2) THEN
-            LEMISS = .FALSE.
-            DO I = 1, LINES
-              D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
-              D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
-              IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                LEMISS = .TRUE.
-                EXIT
-              END IF
-            END DO
-            IF (.NOT.LEMISS) THEN
-              LINES = LINES + 1
-              ENERGY(1,LINES) = EMIN1
-              ENERGY(2,LINES) = EMAX1
-            END IF
-          END IF
-        END DO
-
-C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
-C  OF EMISSION PROFILES
-          NREAC = NREAC + LINES*6 + 3
-
-          DEALLOCATE (ENERGY)
-        END IF
-      END IF
 
 C  SKIP READING REST OF THIS BLOCK
       READ (IUNIN,'(A72)') ZEILE

@@ -320,6 +320,7 @@ c  reaction no IR is a "photonic" reaction
       nullify (reacdat(ir)%phr%adas)
       nullify (reacdat(ir)%phr%poly)
       nullify (reacdat(ir)%phr%hyd)
+      nullify (reacdat(ir)%phr%crm)
 
       reacdat(ir)%phr%line => phline
       reacdat(ir)%phr%ifit = -1

@@ -1,4 +1,5 @@
-C
+cdr dec. 17:  write (iunout,..), rather than write (6,...)
+cdr           further comments
 C
 C
       SUBROUTINE EIRENE_GEOUSR

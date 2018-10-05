@@ -29,7 +29,8 @@ C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                          ELNAME, IZ1)
+     .                          ELNAME, IZ1, 
+     .                          IROW_ESC, ICOL_ESC, POP_ESC)
 c
 c  open data stream 29 and read atomic data set no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
@@ -183,6 +184,8 @@ C
       IMPLICIT NONE
 
       INTEGER,      INTENT(IN) :: IR, IZ1
+      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+      REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
 
       CHARACTER(8), INTENT(IN) :: FILNAM
       CHARACTER(4), INTENT(IN) :: H123
@@ -550,7 +553,8 @@ C  H.12
 
 
       IF (INDEX(FILNAM,'CRM').NE.0) THEN
-        CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1)
+        CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1,
+     .                           IROW_ESC,ICOL_ESC,POP_ESC)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
         RETURN
       END IF
@@ -586,14 +590,10 @@ C
 C  SET A REACTION CONSTANT
 C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) CREACD(1,1)
-          REACLINES(IRLINES)%NCONST = 1
-          REACLINES(IRLINES)%CONST(1) = CREACD(1,1)
         ELSE
 C
 C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
           READ (IUNIN,6664) (CREACD(IC,1),IC=1,9)
-          REACLINES(IRLINES)%NCONST = 9
-          REACLINES(IRLINES)%CONST(1:9) = CREACD(1:9,1)
 
         END IF
         CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data

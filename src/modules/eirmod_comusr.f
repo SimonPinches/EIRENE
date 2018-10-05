@@ -18,6 +18,7 @@ cdr             added: nstpi (formerly: coutou), naddcor
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
      P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS,
      P          EIRENE_ASSOCIATE_COMUSR
+     P          EIRENE_COMUSR_REINIT
  
       INTEGER, SAVE ::
      P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
@@ -902,12 +903,12 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         IF (LVYSMO) THEN
           VYINCORNER => CORNER_PROFILES(:,NADDCOR(6)+1 : NADDCOR(7))
         ELSE
-        NULLIFY(VYINCORNER)
+          NULLIFY(VYINCORNER)
         END IF 
         IF (LVZSMO) THEN
           VZINCORNER => CORNER_PROFILES(:,NADDCOR(7)+1 : NADDCOR(8))
         ELSE
-        NULLIFY(VZINCORNER)
+          NULLIFY(VZINCORNER)
         END IF 
       END IF
 
@@ -952,7 +953,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         IF (LEFSMO) THEN
           EFCORNER => CORNER_PROFILES(:,NADDCOR(21)+1)
         ELSE
-        NULLIFY(EFCORNER)
+          NULLIFY(EFCORNER)
       END IF
       END IF
 
@@ -1308,6 +1309,11 @@ c  at this call: first dimension of adin is known, as well as size of cop and bg
       END IF
  
       RETURN
+
+      ENTRY EIRENE_COMUSR_REINIT
+      IFIRST = 0
+      RETURN
+
       END SUBROUTINE EIRENE_INIT_COMUSR
  
       END MODULE EIRMOD_COMUSR

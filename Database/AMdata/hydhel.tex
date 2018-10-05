@@ -7,6 +7,8 @@
 \topmargin -1 true cm
 \textheight 24 true cm
 \textwidth 16 true cm
+
+
 \usepackage{color}
 \pagecolor{white}
 \setcounter{secnumdepth}{1}
@@ -38,13 +40,13 @@ Processes in Hydrogen-Helium Plasmas", \\
 Springer 1987
 \vspace*{3truecm}
 
-D.Reiter \\
-FZ, Forschungszentrum J\"ulich GmbH \\
+D. Reiter \\
+FZJ, Forschungszentrum J\"ulich GmbH \\
 52425 J\"ulich \\
 %Post-box 1917 \\
 Germany
-
 \vspace{3truecm}
+
 Version: \today
 \vspace{1truecm}
 
@@ -60,7 +62,11 @@ EIRENE code git-repository hosted at FZ J\"ulich
 %ende titelpage
 \newpage
 \section{Errata, list of modifications as compared to the original 1987 book \cite{kn:Janev87}}
-\addcontentsline{toc}{section}{Errata, list of modifications}
+%\addcontentsline{toc}{section}{Errata, list of modifications}
+
+A first set of corrections, errata, modifications was published by Reiter et al,
+in \cite{kn:Reiter92}.
+Most of them are also contained in the following, more comprehensive list.
 \begin{itemize}
 \item{Reaction 2.2.5}
 
@@ -81,8 +87,11 @@ it becomes more consistent with the cross section H.1 3.1.8.
 This leads to significantly improved energy balance in case of
 tracklength estimators for the CX energy loss.
 
-The original fit from the 1987 book has been kept in file amjuel.tex,
+The original fits from the 1987 book have been kept in file amjuel.tex,
 under H.3, 3.1.8org
+
+In Aug. 2017 the cross section fit was further improved. It had a tiny remaining discontinuity
+at E=0.1 eV, which is now removed.
 \item{Feb 2013}
 
 Some reaction and species formulas in section headers slightly changed to permit automated CR
@@ -95,10 +104,13 @@ Added: H.1 (cross sections) \textbf{\emph{Mcross}} (Mass as used in energy scale
 
 \item{Reaction 2.1.3}
 
-cross section and reaction rate of process 2.1.3 (Chibisov) are both a factor 10 too small.
-Also Chibisov analytic formula for cross section given in 1987 book: factor 10 too small.
-Not yet corrected here in fits. (Can be done by a modification of coefficients $a_0$ and $b_0$,
-respectively. Compare also: 3.1.3, same process, but proton impact)
+cross section and reaction rate of electron-impact process 2.1.3 (Chibisov) are both
+a factor 10 too small.
+Also Chibisov analytic formula for cross section given in 1987 book:
+factor 10 too small.
+Not yet corrected here in fits.
+(Can be done by a modification of coefficients $a_0$ and $b_0$)
+The corresponding proton-impact data (3.1.3) seem to be correct.
 
 \item{Reaction 2.2.13}
 
@@ -127,8 +139,8 @@ automated processing with same format as for other cross sections and rate coeff
 
 A single parameter fit: H.2  3.1.8 is added, vs. proton temperature only and for ``stationary" H(1s). It has been derived
 algebraically from the H.3 fit, evaluated at
-E=0.1 eV, and this procedure was verified by independent Maxwellian averaging 
-of the asymptotically correct cross section fit H.1  3.1.8, (vs.E)
+E=0.1 eV, and this procedure was verified by independent Maxwellian averaging
+of the asymptotically correct cross section fit H.1  3.1.8, (vs. E)
 The mass used on the temperature scale is the proton mass.
 
 \item{July 2015-I}
@@ -156,7 +168,7 @@ The corresponding new cross sections are labeled: 3.3.2n, 3.3.6an 3.3.6bn, 6.2.1
 
 \item{H.8  2.2.14 added here, consistent with H.2 2.2.14 dissociative. recomb.}
 A better representation is given in AMJUEL. from the linearity on a log-log scale exact consistency
-can be achieved, and is stored there, and is also the EIRENE default for process 2.2.14
+can be achieved, and is stored there, and is also the hard coded EIRENE default for process 2.2.14
 
 \item{Feb 16 added for various cross sections: ELABMAX and high energy end extrapolation:
 H.1:  3.1.1, 3.1.2, 3.1.6, 3.1.8, 3.1.9, 3.1.11b, 3.2.1b, 3.2.4a, 3.2.5, 3.2.6, 3.3.1, 3.3.6a, 3.3.6b,
@@ -168,14 +180,16 @@ Ebmin of H.3 fit for 3.2.3 is about 0.1 eV.
 
 \item{May 2016 H.2 2.2.10 and 2.2.12:}
 
-Process 2.2.12, starting from bound state H$_2^+$, is not contained in two step process 2.2.10, 
+Process 2.2.12, starting from bound state H$_2^+$, is not contained in two step process 2.2.10,
 which starts from H$_2$,
 because in 2.2.10 the transition from H$_2$ to H + H$^+$ proceeds either via the repulsive part
 of the H$_2^+$ ground state,
 or by direct transition from H$_2$ to the first excited H$_2^+$  B state, without an intermediate bound H$_2^+$ state.
 \end{itemize}
+
 \section{to be done}
-\addcontentsline{toc}{section}{to be done}
+%\addcontentsline{toc}{section}{to be done}
+
 \begin{itemize}
 \item {2.1.8  and 2.3.13 missing fits for H.2 rate coeffs. (for stationary (E0=0.0) beam)}
 
@@ -185,22 +199,35 @@ In original monograph only closed form analytic expressions are given for H+ and
 (and nothing for the cross sections).
 2.1.8, 2.1.8a and 2.1.8b fits for H.2 rad rec rate coefficients had already been added earlier (see list of changes/errata in previous section).
 The same is needed still for
-2.3.13 (helium rad. rec), in particular since the closed form 
+2.3.13 (helium rad. rec), in particular since the closed form
 expression from the book is hard wired as default recombination rate in EIRENE code for He$^+$.
 
-Perhaps the closed form expression allows a direct (analytical) translation into polynomial fit? It seems to be the case indeed from
-the new 2.1.8 fits that only two coefficients may be needed. To be checked.
+Perhaps the closed form expression allows a direct (analytical)
+translation into polynomial fit?
+It seems to be the case indeed from
+the new 2.1.8 fits that only two coefficients may be needed.
+No: two different slopes Te**s at low Te and at high Te. Cannot be accomodated
+by a single fit which is linear in log-log scale.
 
 \item {H.8 rates for recombination processes}
 
 for the closed form expressions for 2.1.8 and 2.3.13 these rates can be given also in closed form (and are coded in
-the EIRENE default model routines). It might be desirable to add them also as H.8 into the database. Same
-for 2.2.14 (diss. rec of H2+). This latter is already here in HYDHEL (update from July 2015), and EIRENE default was 0.88*Te times rate 2.2.14.
+the EIRENE default A\&M model routines). It might be desirable to add them also as H.8
+into the database. Same for 2.2.14 (diss. rec of H2+).
+This latter is already here in HYDHEL (update from July 2015),
+and EIRENE default was 0.88*Te times rate 2.2.14.
 So the H.8  2.2.14 was approximately, but not exactly, the previous EIRENE default.
-Check: can the H.8 fit be derived from the H.2 fit exactly? If yes: then this should become default in EIRENE, rather then 0.88*Te.
-Done:  H.8 follows from H.2 directly, if only b0 and b1 coefficients are non-zero, see: AMJUEL.
+The H.8 fit can not be derived from the H.2 fit exactly.
+H.8 follows from H.2 directly, if only the b0 and b1 coefficients in the H.2 fit are non-zero, see: AMJUEL.tex
 For 2.2.14: Change EIRENE default (H.2 and H.8) to that 2 parameter fit
-from AMJUEL for H.8, done.
+from AMJUEL for H.8, Done.
+
+In Sept. 18  a fit for recombination: H.8 2.1.8 has been added, using only the first 2 coefficients b0 and b1 from
+the corresponding H.2 fit. (In an attempt to mimik the closed form analytical default model in EIRENE):
+However: in case of process 2.1.8 this turns out to be unsatisfactory.
+Apparently the higher coefficients in H.2, although small, matter, to provide the
+T**-3/2 decay of the rate at high Te (rather than the near T**-1/2 decay at low Te.
+
 
 \item{process 2.2.15 is linear in log log scale. }
 
@@ -210,11 +237,12 @@ Check coefficients, make H.8, set spurious coeffs. to zero
 m\_lab=4,  but m\_reduced=2 for these processes
 \item {Maxrate: sigma * v\_lab }
 
-started to implement the maximum of product sigma * v\_lab, for heavy particle process cross sections:
+started to implement the maximum of product sigma * v\_lab,
+for heavy particle process cross sections:
 Done for 7.2.2
-\item{corrections from 1992 PSI paper (with Bogen, Samm)}
+\item{corrections from 1992 PSI paper (Reiter, Bogen, Samm, \cite{kn:Reiter92})}
 
-various KER values
+various KER values....
 
 \end{itemize}
 \newpage
@@ -6245,13 +6273,31 @@ the energy weighted rate is a function of temperature [eV] of the
 impacting electron or ion.
 
 The general expression for this type of incident particle energy weighted
-rate, vs. temperature of the first particle $A$ involved in the collision process 
+rate, vs. temperature of the first particle $A$ involved in the collision process
 and in which the second particle $B$ is at rest, reads:
 
 $\langle\sigma v_A E_{A}\rangle(T_A) = kT_A \cdot \langle\sigma v_A\rangle \cdot
 \left(3/2 + \frac{d \ln \langle\sigma v_A\rangle}{d \ln(kT_A)}\right)$
 
 \newpage
+
+\subsection{
+Reaction 2.1.8  $  e + H^+ \rightarrow H(1s) + hv $}
+general formula for rate: see original text. Here:  fit to rate for recomb into
+1s ground state.
+Then: take only the first 2 coeffs and derive the corresponding electron energy rate.
+
+
+Do not use: This is a poor approximation at higher Te, as it only captures the low Te
+behaviour (b1 approx -0.5, h1 approx 0.5).
+
+
+
+\begin{small}\begin{verbatim}
+   h0 -2.96197012800e+01     h1  0.470220050000e+00    h2  0.000000000000e+00
+   h3  0000000000000e+00     h4  0.000000000000e+00    h5  0.000000000000e+00
+   h6  0.00000000000e+00     h7  0.000000000000e+00    h8  0.000000000000e+00
+\end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.2.14   $e + H_2^+(v) \rightarrow H(1s) + H^*(n)   (v=0-9, n \ge 2) $
@@ -6273,7 +6319,8 @@ i.e. low energy electrons are preferred in this reaction, rather than the averag
 \end{verbatim}\end{small}
 \newpage
 \begin{thebibliography}{99}
-\bibitem{kn:Janev87} R.K. Janev, B. Langer et al.  Springer Series on Atoms+Plasmas,
+\bibitem{kn:Janev87} R.K. Janev, B. Langer et al.,  Springer Series on Atoms+Plasmas,
                    Vol 4, 1987
+\bibitem{kn:Reiter92} D. Reiter, P. Bogen, U. Samm, Journal Nuclear Materials, Vol 196-198, 1992, 1059-1064
 \end{thebibliography}
 \end{document}

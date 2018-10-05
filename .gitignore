@@ -4,6 +4,9 @@ build*
 doc*
 lib*
 
+# Ignore temporary files
+*~
+
 # Ignore eclipse files
 .cproject
 .project

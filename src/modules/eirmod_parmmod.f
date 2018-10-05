@@ -1,6 +1,5 @@
-!cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
+
 !pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
-!pb  30.01.07:  NREAC_LINES introduced
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
@@ -8,6 +7,7 @@ cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
 
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
+cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
 cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
@@ -15,7 +15,7 @@ cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
 cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
 cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
-cdr           fully corresponds to vol tally parameter nspztot, 
+cdr           fully corresponds to vol tally parameter nspztot,
 cdr           but is for surface tally pointers
 cpb  input tallies   ntali, increased from 22 to 24 (BVIN, PARMOM)
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
@@ -36,7 +36,7 @@ c    distrib_parm
 
       PUBLIC :: EIRENE_SET_PARMMOD, EIRENE_COLLECT_PARM,
      P          EIRENE_DISTRIB_PARM,
-     P          EIRENE_SPECTRUM, 
+     P          EIRENE_SPECTRUM,
      P          ASSIGNMENT(=)
 
       INTEGER, PUBLIC, PARAMETER ::
@@ -83,9 +83,6 @@ csw 13apr07
 
       INTEGER, PUBLIC, SAVE ::
      I NTRJ
-
-      INTEGER, PUBLIC, SAVE ::
-     I NREAC_LINES
 
 
       INTEGER, PUBLIC, SAVE ::
@@ -527,7 +524,8 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
       INT_PARM(137) = NPLSV
       INT_PARM(138) = NTRJ
       INT_PARM(139) = NBACK_SPEC
-      INT_PARM(140) = NREAC_LINES
+
+cdr   INT_PARM(140) = not in use
 
       INT_PARM(141) = NCORNER
       INT_PARM(142) = NVLPR
@@ -718,7 +716,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       NPLSV       = INT_PARM(137)
       NTRJ        = INT_PARM(138)
       NBACK_SPEC  = INT_PARM(139)
-      NREAC_LINES = INT_PARM(140)
+cdr   not in use  = INT_PARM(140)
 
       NCORNER     = INT_PARM(141)
       NVLPR       = INT_PARM(142)
@@ -776,8 +774,8 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       if (associated(speca%spc)) then
         if (size(speca%spc) < specb%nspc+2) deallocate(speca%spc)
       end if
-      if (.not.associated(speca%spc)) 
-     .  allocate(speca%spc(0:specb%nspc+1))     
+      if (.not.associated(speca%spc))
+     .  allocate(speca%spc(0:specb%nspc+1))
       SPECA%SPC     = SPECB%SPC
 
       IF (ASSOCIATED(SPECB%SDV)) THEN
@@ -787,7 +785,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
             deallocate(speca%sgm)
             deallocate(speca%stv)
             deallocate(speca%gg)
-          end if       
+          end if
         end if
         if (.not.associated(speca%sdv)) then
           allocate(speca%sdv(0:specb%nspc+1))

@@ -537,13 +537,15 @@ C  4.3A)  RATE = CONST.*RATECOEFF.
           DO 201 J=1,NSBOX
             EHVPI3(IRPI,J,1)=EHEAVY
 201       CONTINUE
-          NRHVPI(IRPI)=-1
+          NHVRPI(IRPI)=0
         ELSE
-          NRHVPI(IRPI)=-1
+          NHVRPI(IRPI)=0
           EHVPI3(IRPI,1,1)=EHEAVY
         END IF
+
 C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
+
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
         KREAD=EHEAVY
@@ -557,9 +559,9 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
      .                           TII,0._DP,.TRUE.,0)*
      .          DIIN(IPL,J)*FACTKK/(TABPI3(IRPI,J,1)+EPS60)
 202         CONTINUE
-            NRHVPI(IRPI)=KREAD
+            NHVRPI(IRPI)=KREAD
           ELSE
-            NRHVPI(IRPI)=KREAD
+            NHVRPI(IRPI)=KREAD
           END IF
         ELSE
           WRITE (iunout,*) 'INVALID OPTION IN XSTPI: MODC, EFLAG '

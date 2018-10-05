@@ -1,0 +1,15 @@
+Changes from Derek Harting for coupling EDGE2D to new EIRENE version
+--------------------------------------------------------------------
+
+1) Added dummy Releasetag Release-v010117
+2) Split routines from user_Edge2d.f in individual files
+3) Introduced species dependency of EAPL, EMPL, EIPL in outusr.f
+4) Replicate deprecated sputter flux arrays SPTPL, SPTAT, SPTML, SPTIO, SPTPHT
+   for linkeirene.f interface. At the moment the sum is stored in the 
+   first species index from SPTPLTOT,SPTATOT,SPTMTOT,SPTITOT,SPTPHTOT, as in 
+   linkeirene.f only the sum is used and not the species dependency.
+5) Changed INDX in prousr.f: 
+   PSI is retrieved now with indx == 11+1*NPLS+NPLSTI+3*NPLSV
+   to avoid clashing with indx = 5+1*NPLS+NPLSTI+3*NPLSV wich is reserved
+   for volume retrival
+   

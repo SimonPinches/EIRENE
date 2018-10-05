@@ -31,6 +31,8 @@ cdr May 17  :   TABEI1: safety cut off for TEE at 0.1 eV,
 cdr 	        (rather than the eirene default TVAC (=0.02 eV), added in more cases
 cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 !pb Juli 17 :   LHCOL removed
+cdr Sept 18 :   JELREI: flags for electron energy loss, in storage save mode only.
+cdr             i.e. only needed in FEELEI1 
 
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
@@ -248,10 +250,8 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
      .        TABEI1(IREI,J)=TABEI1(IREI,J)*DEIN(J)
           END DO
           NREAEI(IREI) = KK
-          JEREAEI(IREI) = 1
         ELSE ! NOT SUFFICIENT STORADE ON TABEI1
           NREAEI(IREI) = KK
-          JEREAEI(IREI) = 1
         ENDIF
         MODCOL(1,2,IREI)=1
 
@@ -308,11 +308,9 @@ cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. D
             TABEI1(IREI,J)=EXP(TB)
           END DO
           NREAEI(IREI) = KK
-          JEREAEI(IREI) = 9
         ELSE ! NOT SUFFICIENT STORADE ON TABEI1
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           NREAEI(IREI) = KK
-          JEREAEI(IREI) = 9
         ENDIF
         MODCOL(1,2,IREI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
@@ -337,12 +335,14 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
                 DO 101 J=1,NSBOX
                   EELEI1(IREI,J)=EELEC
 101             CONTINUE
-                NELREI(IREI)=-2
-              ELSE ! NOT SUFFICIENT STORADE ON TABEI1
-                NELREI(IREI)=-2
+                NELREI(IREI)=0
+              ELSE ! NOT SUFFICIENT STORADE ON EELEI1
+                NELREI(IREI)=0
+                JELREI(IREI)=-1
                 EELEI1(IREI,1)=EELEC
               END IF
               MODCOL(1,4,IREI)=1
+
       ELSEIF (EFLAG.EQ.1) THEN
 C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
               IF (NSTORDR >= NRAD) THEN
@@ -350,11 +350,13 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
                   IF (LGVAC(J,NPLS+1)) CYCLE
                   EELEI1(IREI,J)=-1.5*TEIN(J)
 103             CONTINUE
-                NELREI(IREI)=-3
-              ELSE ! NOT SUFFICIENT STORADE ON TABEI1
-                NELREI(IREI)=-3
+                NELREI(IREI)=0
+              ELSE ! NOT SUFFICIENT STORADE ON EELEI1
+                JELREI(IREI)=-2
+                NELREI(IREI)=0
               END IF
               MODCOL(1,4,IREI)=1
+
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                 KREAD=EELEC
@@ -384,10 +386,18 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
+cdr return erate, rather than ln(erate), because a recombination
+cdr reaction (with delpot .ne. 0) may be used as EI reaction too,
+cdr e.g. when trace ions are followed and recombine.
+cdr But delpot .ne.0 with ln(erate) causes trouble with internal CR models.
+cdr Had already been taken care of similarly in xstrc.f
                       EE = EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
-     .                                              PLS(J),.FALSE.,1)
-                      EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))
-                      EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)
+cdr  .                                              PLS(J),.FALSE.,1) ! to be removed
+     .                                              PLS(J),.TRUE.,1)
+                      EELEI1(IREI,J)=-EE*DEIN(J)*FACTKK/
+     .                               (TABEI1(IREI,J)+EPS60)
+cdr                   EE = MAX(-100._DP,EE+FCTKKL+DEINL(J))     ! to be removed
+cdr                   EELEI1(IREI,J)=-EXP(EE)/(TABEI1(IREI,J)+EPS60)   ! to be removed
                     END DO
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=9
@@ -399,6 +409,8 @@ C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
                 ENDIF
                 FACREI(IREI,1)=FACTKK
                 FACREI(IREI,2)=LOG(FACTKK)
+C  NEGATIVE SIGN: LOSS FOR ELECTRONS
+C  POSITIVE SIGN: GAIN FOR ELECTRONS
 C  SHIFT ELECTRON COOLING RATE BY DELE * TABEI
 c  DELE= -IONISATION POTENTIAL TURNS EELEI INTO A RADIATION LOSS COMPONENT ONLY
                 IF (DELPOT(KREAD).NE.0.D0) THEN
@@ -423,13 +435,15 @@ C  4.B1)  RATE = CONST.*RATECOEFF.
           DO 201 J=1,NSBOX
             EHVEI1(IREI,J)=EHEAVY
 201       CONTINUE
-          NREAHV(IREI)=-1
+          NHVREI(IREI)=0
         ELSE
-          NREAHV(IREI)=-1
+          NHVREI(IREI)=0
           EHVEI1(IREI,1)=EHEAVY
         END IF
+
 C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
+
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
         KREAD=EHEAVY
@@ -443,9 +457,9 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
               EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
      .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
 202         CONTINUE
-            NREAHV(IREI)=KREAD
+            NHVREI(IREI)=KREAD
           ELSE
-            NREAHV(IREI)=KREAD
+            NHVREI(IREI)=KREAD
           END IF
         ELSE
           WRITE (iunout,*) 'INVALID OPTION IN XSTEI: MODC=EFLAG '
@@ -716,7 +730,7 @@ C
       CALL EIRENE_EXIT_OWN(1)
 997   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: ISCDE FLAG'
-      WRITE (iunout,*) IREI
+      WRITE (iunout,*) 'IREI, EFLAG ',IREI,EFLAG
       CALL EIRENE_EXIT_OWN(1)
 998   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'

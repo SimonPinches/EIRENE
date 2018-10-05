@@ -79,7 +79,9 @@ C
 C
       ENTRY EIRENE_REFLC1_PHOTON (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
 C
-C  SYNCHRONIZE RANDOM NUMBERS:  out.
+C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING):  out.
+C  tbd:  introduce counter of max. possible random numbers used up to this point
+C  see report Kalos, 1955, on correlated sampling, syncronisation...
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
 C  re-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
