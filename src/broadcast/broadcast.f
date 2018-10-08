@@ -46,7 +46,8 @@ cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
 cdr            NHVREI  (formerly: NREAHV) 
 cdr            NHVRPI  (formerly: NRHVPI)
 cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies but
-cdr            but also derived tallies: EDRIFT, BVIN, PARMOM
+cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
+cdr  tbd:      broadcast: livtali etc. move to correct position
 
       SUBROUTINE EIRENE_BROADCAST
 cdr 
@@ -1057,6 +1058,11 @@ csw
       CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
      .               MPI_COMM_WORLD,ier)
 
+c  active and inactive tallies:
+c  INPUT:
+      CALL MPI_BCAST (LIVTALI,NTALI,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+cdr   intlopts  ??, and more ?  smoothed tallies ?
+
       CALL MPI_BCAST (PLSTLS,NINPTL*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
 
@@ -1210,6 +1216,8 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
 
       CALL EIRENE_BROAD_USR
 
+c  active and inactive tallies:
+C  OUTPUT:
       CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LMISTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)

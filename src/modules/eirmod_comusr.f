@@ -5,6 +5,9 @@ cdr             rather than public
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 cpb  jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
 cdr             added: nstpi (formerly: coutou), naddcor
+cdr  oct 2018:  bvin moved into LBSMO condition
+cdr             POT  moved into LESMO condition
+cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
 
       MODULE EIRMOD_COMUSR
  
@@ -17,7 +20,7 @@ cdr             added: nstpi (formerly: coutou), naddcor
  
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
      P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS,
-     P          EIRENE_ASSOCIATE_COMUSR
+     P          EIRENE_ASSOCIATE_COMUSR,
      P          EIRENE_COMUSR_REINIT
  
       INTEGER, SAVE ::
@@ -145,7 +148,8 @@ C  LUSR, LOGICAL
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LIVTALI(:)
-
+c
+C  SMOOTHED INPUT TALLIES (interpolation from cell vertices into cell)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LSMOPRO(:)
 
@@ -163,6 +167,7 @@ C
       LOGICAL, PUBLIC, SAVE ::
      L         LDSMO, LVSMO,  LBSMO,  LESMO
 
+c  pointer to LIVTALI: active or inactive input tallies
       LOGICAL, PUBLIC, POINTER, SAVE ::
 c  background, drifting maxwellian parameters
      L         LTEIN,      LTIIN,      LDEIN,     LDIIN,
@@ -402,7 +407,7 @@ cdr special treatment of Ti:  intlopts.....
         IF (INTLOPTS(2) >= 0) THEN
           TIIN => PLSTLS(NADDP(2)+1:NADDP(3),:)
         ELSE 
-          TIIN => PLSTLS(NADDP(1)+1,:)    ! Ti = Te, no own storage for Ti
+          TIIN => PLSTLS(NADDP(1)+1:NADDP(1)+1,:)    ! Ti = Te, no own storage for Ti
         END IF
       END IF
       IF (LDEIN) THEN
@@ -941,7 +946,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
       LVSMO = LVXSMO .OR. LVYSMO .OR. LVZSMO .OR. LBVSMO
       LBSMO = LBXSMO .OR. LBYSMO .OR. LBZSMO .OR. LBFSMO
       LESMO = LEXSMO .OR. LEYSMO .OR. LEZSMO .OR. LEFSMO .OR.
-              LPOTSMO
+     .        LPOTSMO
 
       IF (LTESMO) THEN
         TEINCORNER => CORNER_PROFILES(:,NADDCOR(1)+1)
@@ -987,10 +992,16 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ELSE
           NULLIFY(VZINCORNER)
         END IF
+        IF (LBVSMO) THEN
+          BVINCORNER => CORNER_PROFILES(:,NADDCOR(22)+1 : NADDCOR(24))
+        ELSE
+          NULLIFY(BVINCORNER)
+        END IF
       ELSE
         NULLIFY(VXINCORNER)
         NULLIFY(VYINCORNER)
         NULLIFY(VZINCORNER)
+        NULLIFY(BVINCORNER)
       END IF
 
       IF (LBSMO) THEN
@@ -1045,6 +1056,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         NULLIFY(WGHTCORNER)
       END IF
 
+cdr these next two B field tallies should go into LBSMO
       IF (LBXPSMO) THEN
         BXPERPCORNER => CORNER_PROFILES(:,NADDCOR(16)+1 )
       ELSE
@@ -1089,12 +1101,6 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         NULLIFY(EZCORNER)
         NULLIFY(EFCORNER)
         NULLIFY(POTCORNER)
-      END IF
-
-      IF (LVSMO .AND. LBVSMO) THEN
-        BVINCORNER => CORNER_PROFILES(:,NADDCOR(22)+1 : NADDCOR(24))
-      ELSE
-        NULLIFY(BVINCORNER)
       END IF
 
       IF (LPARMOMSMO) THEN

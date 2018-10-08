@@ -239,7 +239,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB, NS, NA, ISTR, IOPT
+     .           NB, NS, NA, ISTR, IOPT,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC
       INTEGER, SAVE :: NZADD, NITER0
@@ -3705,7 +3705,9 @@ cdr  once, for all components and contributions.
         IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
         ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
         POP_ESC  = EMIS_LINES(ILINE)%POP_ESC
+cdr  once per component, for all contributions
         do jcomp = 1, emis_lines(iline)%num_compo
+cdr  once per contribution
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1

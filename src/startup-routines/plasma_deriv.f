@@ -778,6 +778,7 @@ C
       END IF
 
       IF (LBSMO) THEN
+C  SMOOTH B-FIELD
         call eirene_cell_to_corner(BXIN,BXINCORNER)
         call eirene_cell_to_corner(BYIN,BYINCORNER)
         call eirene_cell_to_corner(BZIN,BZINCORNER)
@@ -785,10 +786,12 @@ C
       END IF
 
       IF (LESMO) THEN
+C  SMOOTH E-FIELD
         call eirene_cell_to_corner(EXIN,EXCORNER)
         call eirene_cell_to_corner(EYIN,EYCORNER)
         call eirene_cell_to_corner(EZIN,EZCORNER)
         call eirene_cell_to_corner(EFIN,EFCORNER)
+        call eirene_cell_to_corner(POT,POTCORNER)
       END IF
      
  

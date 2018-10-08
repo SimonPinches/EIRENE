@@ -27,7 +27,7 @@ C
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: HELPI, TOTAL
       INTEGER :: IR, IP, IT, I, NBLCKA, IB, ITAL, NXM, NYM, NZM,
-     .           K, NFTI, NFTE, MXSPZ, IOUT
+     .           K, KK, NFTI, NFTE, MXSPZ, IOUT
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
 C
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
@@ -105,6 +105,7 @@ C
         NFTI=1
         NFTE=NFSTPI(ITAL)
 
+c  K  leading dimension of input tally ITAL
         DO 119 K=NFTI,NFTE
 
           SELECT CASE (ITAL)
