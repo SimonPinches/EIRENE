@@ -49,8 +49,8 @@ c
 C    FILNAM: read a&m data from file filnam,
 c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
 CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
-C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
-c                        currently available: h_colrad.f
+C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
+c                          currently available: h_colrad.f
 C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
 C
 c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
@@ -273,7 +273,7 @@ C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         LCONST=.TRUE.
 !  nothing to be done
-      ELSEIF (INDEX(FILNAM,'CRM').NE.0) THEN
+      ELSEIF (INDEX(FILNAM,'CR').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
       ELSE   ! in all other cases: open data file, stream 29+ifoff
@@ -320,7 +320,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' CRM'
+          WRITE (iunout,*) ' CR'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
           WRITE (iunout,*) ' OR '
@@ -552,7 +552,7 @@ C  H.12
       ENDIF
 
 
-      IF (INDEX(FILNAM,'CRM').NE.0) THEN
+      IF (INDEX(FILNAM,'CR').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1,
      .                           IROW_ESC,ICOL_ESC,POP_ESC)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
@@ -605,7 +605,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CRM", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  FILNAM= "CR", "CONST", "ADAS", "HYDRTC", "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................

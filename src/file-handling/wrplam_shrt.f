@@ -8,8 +8,11 @@ C MODIFIED BY V. KOTOV  (when ??)
 C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
 
+cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
+cdr are written/read using I/O stream fort.13
+
 c  if NLSRT13=true : wrplam_short and (entry) rplam_short are called from WRPLAM,
-c  if NLSRT13=false: wrplam_long and (entry)  rplam_long are called from WRPLAM,
+c  if NLSRT13=false: wrplam_long  and (entry) rplam_long are called from WRPLAM,
 c
 
 cdr this is the SHORT version of WRPLAM.F 
@@ -51,7 +54,9 @@ csw   USE EIRMOD_CCRM
          RETURN
         END IF
 cdr  only write plasma background data for species, which are not already
-cdr  transfered via Common BRAEIR
+cdr  transfered via Common BRAEIR, i.e. only:  nfla+1,....nplsi
+cdr  I.e. the virtual background species for non-linear iterations
+cdr  have to come last in the list of all background species.
         IF(NFLA.LT.NPLSI) THEN
           WRITE (13+ifoff,IOSTAT=IO)
      w           TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
@@ -80,19 +85,15 @@ C ........................................................................
       IF(.NOT.ASSOCIATED(NFLA)) THEN 
         WRITE(IUNOUT,*) 
      w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
-     w       "NO DATA WILL BE STORED IN FORT.13"
+     w       "NO DATA WILL BE READ FROM FORT.13"
         RETURN
       END IF
 
        IF(NFLA.LT.NPLSI) THEN
-C FIRST TRY TO READ IN THE OLD "LONG" FORMAT
-csw 02jan2012 NO! will kill DIIN coming from B2.5 by memory transfer..
-csw         READ (13,IOSTAT=IO) TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN
-csw         IF(IO.EQ.0) THEN
-csw          WRITE(IUNOUT,*) "WARNING FROM RPLAM: ", 
-csw     w                 "THE DATA IS READ IN THE OLD (LONG) FORMAT"
-csw         ELSE
-C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE        
+cdr  only read plasma background data for species, which are not already
+cdr  transfered via Common BRAEIR, i.e. only: nfla+1,....nplsi
+cdr  I.e. the virtual background species for non-linear iterations
+cdr  have to come last in the list of all background species.  
           REWIND 13+ifoff  
           READ (13+ifoff,IOSTAT=IO)
      R          TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
@@ -101,9 +102,8 @@ C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE
           IF(IO.NE.0) GOTO 200
           IF (TRCFLE) WRITE (iunout,*)
      w                'RPLAM: BGK BACKGROUND IS READ FROM FORT.13'
-csw        END IF !IF(IO.EQ.0) THEN
        END IF
-csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
+csw   CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM: A&M data for iteration
       CLOSE (UNIT=13+ifoff)
       RETURN
 
