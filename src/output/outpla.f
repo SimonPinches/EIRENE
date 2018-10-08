@@ -60,7 +60,7 @@ C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POST PROCESSING
 C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
       INTEGER :: JPRTAL(5) = (/-2,-4,-5,-6,-7/)
 C
-cdr: extensitve or intensive quantities? Needed for averaging....
+cdr: extensive or intensive quantities? Needed for averaging....
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)          
 C                 TALTYP=1: #-DENSITY      (#-UNITS/CM**3)
 C                 TALTYP=2: VOLUME         (CM**3)
@@ -348,7 +348,7 @@ C  24) PARALLEL TO B FLOW MOMENTUM
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
 
               CASE (25:96)  ! ntali=96, constant required here
-C  25 .. NTALI) GRADIENTS
+C  (25 .. NTALI) GRADIENTS
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0

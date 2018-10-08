@@ -5,7 +5,8 @@ C
 cdr  entry multig:  copy grid data NBMLT times
 cdr  entry multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
-cdr                 indpro =4: check this option: tbd.  
+cdr                 indpro =4: check this option: tbd. 
+cdr                 Currently available for indpro(I), I=1,2,3,4,5,6 
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -50,6 +51,7 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         IF (NP2ND.GT.1.AND.MOD(J,NP2ND).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.LE.1.AND.MOD(J,NT3RD).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.GT.1.AND.J.GT.NP2ND*(NT3RD-1)) GOTO 210
+
         IF (INDPRO(1).LT.4) THEN
           DO 201 I=1,NR1ST
             TEIN(I+(J-1)*NR1ST)=TEIN(I)
@@ -78,7 +80,7 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         IF (INDPRO(5).LT.4) THEN
 C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
         ENDIF
-        IF (INDPRO(6).LT.4) THEN
+        IF (LADIN.AND.(INDPRO(6).LT.4)) THEN
           DO 207 K=1,NAINI
           DO 207 I=1,NR1ST
             ADIN(K,I+(J-1)*NR1ST)=ADIN(K,I)
@@ -113,15 +115,17 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
               VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
 305       CONTINUE
         ENDIF
-        IF (INDPRO(5).GT.4) THEN
-          DO 306 I=1,NSTRD
-            BXIN(I+(J-1)*NSTRD)=BXIN(I)
-            BYIN(I+(J-1)*NSTRD)=BYIN(I)
-            BZIN(I+(J-1)*NSTRD)=BZIN(I)
-            BFIN(I+(J-1)*NSTRD)=BFIN(I)
-306       CONTINUE
+        IF (LBXIN .AND. LBYIN .AND. LBZIN .AND. LBFIN) THEN
+          IF (INDPRO(5).GT.4) THEN
+            DO 306 I=1,NSTRD
+              BXIN(I+(J-1)*NSTRD)=BXIN(I)
+              BYIN(I+(J-1)*NSTRD)=BYIN(I)
+              BZIN(I+(J-1)*NSTRD)=BZIN(I)
+              BFIN(I+(J-1)*NSTRD)=BFIN(I)
+306         CONTINUE
+          ENDIF
         ENDIF
-        IF (INDPRO(6).GT.4) THEN
+        IF (LADIN.AND.(INDPRO(6).GT.4)) THEN
           DO 307 K=1,NAINI
           DO 307 I=1,NSTRD
             ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)
