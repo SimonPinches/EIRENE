@@ -2239,7 +2239,7 @@ C  Smoothing is currently only for tallies 1 to 7.
             LEYSMO = .TRUE.
             LEZSMO = .TRUE.
             LEFSMO = .TRUE.
-            LPTSMO = .TRUE.     ! smoothed electric potential
+            LPOTSMO = .TRUE.     ! smoothed electric potential
           END SELECT
         END IF
       ENDDO

@@ -352,7 +352,6 @@ C  (25 .. NTALI) GRADIENTS
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-!              ENDIF
               END SELECT
 121         CONTINUE
 
