@@ -15,7 +15,7 @@ cdr n,T,V for background (bulk) velocity distribution: not finished.
 !  sept. 16 change variable names ipls --> iplsti, (for TI)
 !                                 ipls --> iplsv,  (for VX,VY,VZ)
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
-!  nov. 16  nlpitch option added, for orientation of B-field in 1D runs
+!  nov. 16  nlpitch option added, for orientation of B-field in 1D and 2D runs
 
 cpb: add parameter ndim: special treatment of Ti fields species index.
 cpb: reading tiin from profr:  set 1st dimension of tiin array.
@@ -64,15 +64,19 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(4) /= 9) VXIN = 0.D0
       IF (INDPRO(4) /= 9) VYIN = 0.D0
       IF (INDPRO(4) /= 9) VZIN = 0.D0
+
       IF (INDPRO(5) /= 9) BXIN = 0.D0
       IF (INDPRO(5) /= 9) BYIN = 0.D0
       IF (INDPRO(5) /= 9) BZIN = 0.D0
       IF (INDPRO(5) /= 9) BFIN = 0.D0
+
       IF (INDPRO(6) /= 9) ADIN = 0.D0
+
       IF (INDPRO(7) /= 9) EXIN = 0.D0
       IF (INDPRO(7) /= 9) EYIN = 0.D0
       IF (INDPRO(7) /= 9) EZIN = 0.D0
       IF (INDPRO(7) /= 9) EFIN = 0.D0
+cdr  missing here:  POT
  
       ALLOCATE (HELP(NRAD))
       ALLOCATE (HELP2(NRAD))

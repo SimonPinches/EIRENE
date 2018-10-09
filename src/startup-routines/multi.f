@@ -6,7 +6,8 @@ cdr  entry multig:  copy grid data NBMLT times
 cdr  entry multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
 cdr                 indpro =4: check this option: tbd. 
-cdr                 Currently available for indpro(I), I=1,2,3,4,5,6 
+cdr                 Currently available for indpro(I), I=1,2,3,4,5,6
+cdr                 indpro(7) (electr. field): still missing here 
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
