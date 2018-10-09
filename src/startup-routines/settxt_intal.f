@@ -37,7 +37,7 @@ C
       TXTPLS(1,10)='MAGN. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,11)='MAGN. FIELD STRENGTH                             '
 cdr to be added here  TXTPLS(1,xx)='Magn. POTENTIAL, e.g. PSI fct.   '
-C     TXTPLS(1,12)='TO BE READ, ADIN TALLY                           ' 
+      TXTPLS(1,12)='ADDITIONAL INPUT TALLIES, OPTIONAL' 
       TXTPLS(1,13)='BULK ION KINETIC DRIFT ENERGY                    '
       TXTPLS(1,14)='ZONE VOLUMES                                     '
      
@@ -150,7 +150,7 @@ C
       TXTPUN(1,10)=' ---                    '
       TXTPUN(1,11)='TESLA                   '
 cdr  here might come: magn. potential (at least: tor. component?): PSI fct. TESLA*CM
-C     TXTPUN(1,12)='TO BE READ, ADIN        '
+      TXTPUN(1,12)='ADDITIONAL TALLY UNITS  '
       TXTPUN(1,13)='EV                      '  ! EDRIFT  --> DERIVED QUANTITY
       TXTPUN(1,14)='CM**3                   '  ! VOL
       TXTPUN(1,15)=' ---                    '  ! WEIGHT WINDOW
@@ -246,7 +246,6 @@ C
           ENDDO
         ENDIF
       ENDDO
-!      RETURN
 C
 !      ENTRY EIRENE_STTXT1_INTAL
 C
@@ -261,7 +260,7 @@ C
       NFSTPI(9)=1
       NFSTPI(10)=1
       NFSTPI(11)=1
-      NFSTPI(12)=NAIN    ! use NAIN here as NAINI is not yet known
+      NFSTPI(12)=NAIN    ! use NAIN here, as NAINI is not yet known
       NFSTPI(13)=NPLSI
       NFSTPI(14)=1
       NFSTPI(15)=NATMI+NMOLI+NIONI

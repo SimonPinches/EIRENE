@@ -10,7 +10,7 @@ C
       USE EIRMOD_COUTAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CTEXT
-      USE EIRMOD_CTRCEI
+      USE EIRMOD_CTRCEI, ONLY: TRCTAL
  
       IMPLICIT NONE
  
@@ -32,7 +32,7 @@ c  plasma background
       LIVTALI(3)   = .TRUE.       ! DEIN
       LIVTALI(4)   = .TRUE.       ! DIIN
 
-C  velocities
+C  backgound flow velocities
       LIVTALI(5)   = NPLSV>0      ! VXIN
       LIVTALI(6)   = NPLSV>0      ! VYIN 
       LIVTALI(7)   = NPLSV>0      ! VZIN 
@@ -44,6 +44,7 @@ c  magnetic field
       LIVTALI(11)  = .TRUE.       ! BFIN
 
       LIVTALI(12)  = NAIN>0       ! ADIN
+
       LIVTALI(13)  = .TRUE.       ! EDRIFT
       LIVTALI(14)  = .TRUE.       ! VOL
 
@@ -93,6 +94,7 @@ C  ARE SWITCHED ON
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' TALLY IS SWITCHED ON AGAIN '
         LTEIN = .TRUE.
+        INTLOPTS(1) = 0
       END IF
 
       IF (.NOT.LTIIN) THEN
@@ -100,6 +102,7 @@ C  ARE SWITCHED ON
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' SET NPLSTI = 1 AND TI = TE '
         LTIIN = .TRUE.
+        INTLOPTS(2) = 0
         NPLSTI = 1
         MPLSTI = 1
       END IF
@@ -109,7 +112,9 @@ C  ARE SWITCHED ON
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' TALLIES ARE SWITCHED ON AGAIN '
         LDEIN = .TRUE.
+        INTLOPTS(3) = MAX(0,INTLOPTS(3))
         LDIIN = .TRUE.
+        INTLOPTS(4) = MAX(0,INTLOPTS(4))
       END IF
 
       IF (.NOT.(LVXIN .AND. LVYIN .AND. LVZIN)) THEN
@@ -117,8 +122,11 @@ C  ARE SWITCHED ON
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' TALLIES ARE SWITCHED ON AGAIN '
         LVXIN = .TRUE.
+        INTLOPTS(5) = 0
         LVYIN = .TRUE.
+        INTLOPTS(6) = 0
         LVZIN = .TRUE.
+        INTLOPTS(7) = 0
         LBVIN = .TRUE.
       END IF
 
@@ -127,6 +135,7 @@ C  ARE SWITCHED ON
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' TALLY IS SWITCHED ON AGAIN '
         LVOL = .TRUE.
+        INTLOPTS(14) = 0
       END IF
 
 C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
@@ -150,10 +159,12 @@ C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
         LEYIN = .FALSE.
         LEZIN = .FALSE.
         LEFIN = .FALSE.
+        LPOT  = .FALSE.
       END IF
 
       
-C  19 primary input tallies plus 5 derived background tallies unfortunately mixed in
+C  19 primary input tallies plus 5 derived background tallies,
+c     unfortunately mixed in
 C  --> 24 rather than 18 background tallies
       NFRSTP(1)=0
       NFRSTP(2)=NPLSTI
@@ -259,10 +270,9 @@ cdr since primary and derived input tallies got mixed up anyway,
 cdr to do: change ntali, add other derived input tallies, here, and in settxt.
 cdr be careful:
 cdr in some places in code the numbering  of input tallies is hard coded.
-cdr (algtal, plaout,....) 
+cdr (ALGTAL, OUTPLA,....) 
 C
       DO 5 J=1,NTALI
-!pb        NFSTPI(J)=NFRSTP(J)+1
         IF (LIVTALI(J)) NFRSTP(J)=MAX0(1,NFRSTP(J))
 5     CONTINUE
 C

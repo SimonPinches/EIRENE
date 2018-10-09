@@ -8,6 +8,7 @@ cdr             added: nstpi (formerly: coutou), naddcor
 cdr  oct 2018:  bvin moved into LBSMO condition
 cdr             POT  moved into LESMO condition
 cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
+cdr             missing:  dealloc_corners  ??
 
       MODULE EIRMOD_COMUSR
  
@@ -19,7 +20,8 @@ cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
       PRIVATE
  
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
-     P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS,
+     P          EIRENE_INIT_COMUSR, 
+     P          EIRENE_ALLOC_CORNERS,
      P          EIRENE_ASSOCIATE_COMUSR,
      P          EIRENE_COMUSR_REINIT
  
@@ -940,7 +942,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
       END IF
 
        WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' COMUSR(3) ',SIZE(CORNER_PROFILES)*8
+     .        ' COMUSR(CORNERS) ',SIZE(CORNER_PROFILES)*8
 
       LDSMO = LDESMO .OR. LDISMO 
       LVSMO = LVXSMO .OR. LVYSMO .OR. LVZSMO .OR. LBVSMO

@@ -2361,8 +2361,9 @@ c  cell volume -profile card, OPTIONAL
         ENDIF
       ENDIF
 
-c  check for optional input 
-c  switch off input tallies, gradients
+c  check for optional input cards.
+c  Here: explicitly switch off input tallies, or gradients gradients: INTLOPTS(ITAL),
+c  -ntali<ital<0,  then: ital=iabs(ital)
 
       IF (IREAD == 0) READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
       IREAD = 1
