@@ -62,7 +62,7 @@ C
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IFIRST, IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I0, I1, I2, IT,
-     .           INDX, ITT, ITP
+     .           INDX, ITT, ITP, KK
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LPLTT2, LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -237,6 +237,7 @@ C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
             IF (JTAL.GT.0.AND.XMCP(ISTRA).LE.1) GOTO 10000
 C  PLOT INPUT TALLIES ONLY ONCE PER ITERATION
             IF (JTAL.LT.0.AND.ISAVE.NE.ISTRA) GOTO 10000
+c
             TXHEAD=HEAD0
             IF (JTAL.GT.0)     TXHEAD=HEAD1
             IF (JTAL.EQ.NTALA) TXHEAD=HEAD2
@@ -261,16 +262,30 @@ C
             LSDVI(ICURV)=.FALSE.
             LPLOT2(ICURV)=.FALSE.
             ISPZ=ISPTAL(IBLD,ICURV)
+
             IF (JTAL.LT.0.) THEN
+cdr  here we deal with input tallies (and gradients thereof)
+cdr  ITL = IABS(JTAL)
               NF=NFRSTP(ITL)
-              DO 111 I=1,NRAD
-111             VECTOR(I,ICURV)=0.
+              DO I=1,NRAD
+                VECTOR(I,ICURV)=0.
+              ENDDO
+
+!  TALLY SWITCHED OFF ?
+              IF (.NOT.LIVTALI(ITL)) THEN
+                WRITE (iunout,*) TXTPLS(1,ITL)
+                WRITE (iunout,*) ' TALLY NOT AVAILABLE (PLTEIR)',
+     .                           ' JTAL = ', JTAL
+                CALL EIRENE_LEER(1)
+                CYCLE
+              END IF  
               IF (ISPZ.EQ.0) THEN
+cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
                 CASE (2)
-                  VECTOR(1:NSBOX,ICURV) = SUM(TIIN(1:NF,1:NSBOX),1)
+                  VECTOR(1:NSBOX,ICURV) = SUM(TIIN(1:NF,1:NSBOX),1)                
                 CASE (3)
                   VECTOR(1:NSBOX,ICURV) = DEIN(1:NSBOX)
                 CASE (4)
@@ -309,6 +324,17 @@ C
                   VECTOR(1:NSBOX,ICURV) = EZIN(1:NSBOX)
                 CASE (21)
                   VECTOR(1:NSBOX,ICURV) = EFIN(1:NSBOX)
+                CASE (22)
+                  VECTOR(1:NSBOX,ICURV) = POT(1:NSBOX)
+                CASE (23)
+                  VECTOR(1:NSBOX,ICURV) = SUM(BVIN(1:NF,1:NSBOX),1)
+                CASE (24)
+                  VECTOR(1:NSBOX,ICURV) = SUM(PARMOM(1:NF,1:NSBOX),1)
+                CASE (25:96)     ! ntali=96, constant required here
+! GRADIENTS
+                  KK = NADDP(ITL)
+                  VECTOR(1:NSBOX,ICURV) = 
+     .                   SUM(PLSTLS(KK+1:KK+NF,1:NSBOX),1)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
@@ -316,7 +342,9 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NF) THEN
+cdr  individual species indices
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -360,13 +388,25 @@ C
                   VECTOR(1:NSBOX,ICURV) = EZIN(1:NSBOX)
                 CASE (21)
                   VECTOR(1:NSBOX,ICURV) = EFIN(1:NSBOX)
+                CASE (22)
+                  VECTOR(1:NSBOX,ICURV) = POT(1:NSBOX)
+                CASE (23)
+                  VECTOR(1:NSBOX,ICURV) = BVIN(MPLSV(ISPZ),1:NSBOX)
+                CASE (24)
+                  VECTOR(1:NSBOX,ICURV) = PARMOM(ISPZ,1:NSBOX)
+
+                CASE (25:96)     ! ntali=96, constant required here
+! GRADIENTS
+                  KK = NADDP(ITL)+ISPZ
+                  VECTOR(1:NSBOX,ICURV) = PLSTLS(KK,1:NSBOX)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
                   WRITE (iunout,*) ' NO PLOT PERFORMED '
                   CALL EIRENE_LEER(1)
-                  GOTO 10000
+                  CYCLE
                 END SELECT
+
               ELSE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
@@ -379,18 +419,25 @@ C
                 PLTL3D(IBLD)=.FALSE.
                 GOTO 110
               ENDIF
+
             ELSEIF (JTAL.GE.0) THEN
+cdr  plot output tallies
+              NFT=NFSTVI(ITL)
+              NF=NFIRST(ITL)
+              DO I=1,NRAD
+                VECTOR(I,ICURV)=0.
+              ENDDO
+
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
                 WRITE (iunout,*) 'TALLY SWITCHED OFF '
                 WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
-                GOTO 10000
+                CYCLE
               END IF
-              NFT=NFSTVI(ITL)
-              NF=NFIRST(ITL)
+
               IF (ISPZ.EQ.0) THEN
-                DO 121 I=1,NRAD
-121               VECTOR(I,ICURV)=0.
+c  sum over species
+
                 DO 122 K=1,NFT
                   DO 122 I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
