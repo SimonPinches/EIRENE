@@ -478,7 +478,7 @@ C
               IMOL=N2NDX(IRCX,2)
               E0=CVRSSM(IMOL)*VELO*VELO
  
-            CASE(3)
+            CASE (3)
               IION=N2NDX(IRCX,2)
               E0=CVRSSI(IION)*VELO*VELO
  
@@ -663,10 +663,11 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BU
                   CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
+                  SIG=SIGN(1._DP,VPLASP)
                 ELSE
-                  VPLASP = BVIN(IPLSV,NCLLO)
+                  SIG=1._DP
+                  IF (LBVIN) SIG =(1._DP,BVIN(IPLSV,NCLLO))
                 ENDIF
-                SIG=SIGN(1._DP,VPLASP)
 C  ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW ATOM MOMENTUM
                 MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)-WEIGHT*V0_PARB*SIG
                 LMETSP(NSPAMI+IPLS)=.TRUE.
@@ -729,7 +730,7 @@ C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
 C
           CASE(1)
             IATM=N2NDX(IRCX,2)
-            XGENER= 0.D0
+            XGENER=0.D0
 C
             E0=CVRSSA(IATM)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
@@ -741,7 +742,7 @@ C
 C
           CASE(2)
             IMOL=N2NDX(IRCX,2)
-            XGENER= 0.D0
+            XGENER=0.D0
 C
             E0=CVRSSM(IMOL)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
@@ -838,10 +839,11 @@ C
               CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                           .TRUE.)
               VPLASP=VX*BX+VY*BY+VZ*BZ
+              SIG=SIGN(1._DP,VPLASP)
             ELSE
-              VPLASP=BVIN(IPLSV,NCLLO)
+              SIG=1._DP
+              IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCLLO))
             ENDIF
-            SIG=SIGN(1._DP,VPLASP)
             MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)+VDEL*SIG
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF
