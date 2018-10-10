@@ -35,9 +35,7 @@ cdr  tentatively assume: x,y,z are known here, i.e. call vecusr with L=true
          bf = 1.
 
       ELSE IF (LBSMO) THEN
-cdr    to be done:
-cdr    if not levgeo.eq.4  error exit
-cdr    use logical input flag L:  return COM value or local value
+cdr    use logical input flag L:  return either value at COM or local value at x,y,z
 
          bx = eirene_Femint(bxincorner, icell, x, y, z, .false.)
          by = eirene_Femint(byincorner, icell, x, y, z, .true.)
@@ -49,11 +47,16 @@ cdr    use logical input flag L:  return COM value or local value
          bz = bz * bni
 
       ELSE
-
-         BX=BXIN(ICELL)
-         BY=BYIN(ICELL)
-         BZ=BZIN(ICELL)
-         BF=BFIN(ICELL)
+cdrif no BFIELD input tallies: 
+cdr use default B-field: 1 [T] in z-direction
+         BX = 0._DP
+         BY = 0._DP
+         BZ = 1._DP
+         BF = 1._DP
+         IF (LBXIN) BX=BXIN(ICELL)
+         IF (LBYIN) BY=BYIN(ICELL)
+         IF (LBZIN) BZ=BZIN(ICELL)
+         IF (LBFIN) BF=BFIN(ICELL)
 
       END IF
       

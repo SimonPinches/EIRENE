@@ -35,7 +35,7 @@ cdr  for linear combination of tallies
       IMPLICIT NONE
       
       INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5, 
-     .           ICO, IR, IPL, NMTSP, IS, IRD
+     .           ICO, IR, IPL, IPLV, NMTSP, IRD
       INTEGER, SAVE :: IFIRST=0
 
       REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:),EKIN(:,:)
@@ -45,14 +45,14 @@ cdr  for linear combination of tallies
          ALLOCATE (EKIN(NPLS,NRTAL))
          
          DO IPL = 1, NPLSI
-           IS = MPLSV(IPL)
+           IPLV = MPLSV(IPL)
            DO IR = 1, NRAD
              IRD = NCLTAL(IR)
 cdr  ir is fine grid for background medium, geometry, etc...
 cdr  ird is coarse grid for scoring
              IF (IRD > 0) THEN
                UAH(IPL,IRD) = 0._DP
-               UAH(IPL,IRD) = BVIN(IS,IR)
+               IF (LBVIN) UAH(IPL,IRD) = BVIN(IPLV,IR)
                EKIN(IPL,IRD)= cvrssp(IPL) * UAH(IPL,IRD)**2       ! eV
              ENDIF
            END DO

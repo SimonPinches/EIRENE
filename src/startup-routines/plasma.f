@@ -64,20 +64,20 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(4) /= 9) VXIN = 0.D0
       IF (INDPRO(4) /= 9) VYIN = 0.D0
       IF (INDPRO(4) /= 9) VZIN = 0.D0
+c  magnetic field
+      IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0
+      IF (LBYIN .AND. (INDPRO(5) /= 9)) BYIN = 0.D0
+      IF (LBZIN .AND. (INDPRO(5) /= 9)) BZIN = 0.D0
+      IF (LBFIN .AND. (INDPRO(5) /= 9)) BFIN = 0.D0
 
-      IF (INDPRO(5) /= 9) BXIN = 0.D0
-      IF (INDPRO(5) /= 9) BYIN = 0.D0
-      IF (INDPRO(5) /= 9) BZIN = 0.D0
-      IF (INDPRO(5) /= 9) BFIN = 0.D0
+      IF (LADIN .AND. (INDPRO(6) /= 9)) ADIN = 0.D0
+c  electric field
+      IF (LEXIN .AND. (INDPRO(7) /= 9)) EXIN = 0.D0
+      IF (LEYIN .AND. (INDPRO(7) /= 9)) EYIN = 0.D0
+      IF (LEZIN .AND. (INDPRO(7) /= 9)) EZIN = 0.D0
+      IF (LEFIN .AND. (INDPRO(7) /= 9)) EFIN = 0.D0
+      IF (LPOT .AND.  (INDPRO(7) /= 9)) POT  = 0.D0
 
-      IF (INDPRO(6) /= 9) ADIN = 0.D0
-
-      IF (INDPRO(7) /= 9) EXIN = 0.D0
-      IF (INDPRO(7) /= 9) EYIN = 0.D0
-      IF (INDPRO(7) /= 9) EZIN = 0.D0
-      IF (INDPRO(7) /= 9) EFIN = 0.D0
-cdr  missing here:  POT
- 
       ALLOCATE (HELP(NRAD))
       ALLOCATE (HELP2(NRAD))
       HELP=0.
@@ -323,6 +323,9 @@ cdr first dimension of arrays:  always NPLSV
 C
 C
 C  MAGNETIC FIELD UNIT VECTOR
+C
+      IF (.NOT.(LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN)) GOTO 154
+
 C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
 C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
@@ -470,8 +473,12 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 153   CONTINUE
+
+154   CONTINUE  !  BFIELD SPECIFIED AT ALL ??
 C
 C  ADDITIONAL INPUT TALLIES
+
+      IF (.NOT.LADIN) GOTO 1160
       IND=INDPRO(6)
       DO 160 K=1,NAINI
         GOTO (151,151,151,151,155,156,157,160,160),IND
@@ -492,9 +499,11 @@ c          (transfer from problem specific codes or external data structures)
       GOTO 1160
 157   CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,NAINI,NAIN,NSBOX)
       GOTO 1160
+C
 1160  CONTINUE
 C
 C  ELECTRIC FIELD
+      IF (.NOT.(LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN)) GOTO 170
       IND=INDPRO(7)
       GOTO (170,170,170,170,175,176,177,170,170),IND
 C  DEFAULT: ZERO, only options ind=5,6,7
@@ -519,6 +528,7 @@ c          (transfer from problem specific codes or external data structures)
         CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         GOTO 170
+c
 170   CONTINUE
 C
 CDR
@@ -560,29 +570,33 @@ C
 19        CONTINUE
         ENDDO
       ENDIF
-      IF (INDPRO(5).LE.6 .OR. INDPRO(5).EQ.9) THEN
-        DO J=NSURF+1,NSURF+NRADD
-          BXIN(J)=0.
-          BYIN(J)=0.
-          BZIN(J)=1.
-          BFIN(J)=1.
-        ENDDO
+      IF (LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN) THEN
+        IF (INDPRO(5).LE.6 .OR. INDPRO(5).EQ.9) THEN
+          DO J=NSURF+1,NSURF+NRADD
+            BXIN(J)=0.
+            BYIN(J)=0.
+            BZIN(J)=1.
+            BFIN(J)=1.
+          ENDDO
+        ENDIF
       ENDIF
-      IF (INDPRO(6).LE.6 .OR. INDPRO(6).EQ.9) THEN
+      IF (LADIN .AND. (INDPRO(6).LE.6 .OR. INDPRO(6).EQ.9)) THEN
         DO J=NSURF+1,NSURF+NRADD
           DO 20 IAIN=1,NAINI
             ADIN(IAIN,J)=0.
 20        CONTINUE
         ENDDO
       ENDIF
-      IF (INDPRO(7) == 5 .OR. INDPRO(5).EQ.6
-     .                   .OR. INDPRO(5).EQ.9) THEN
-        DO J=NSURF+1,NSURF+NRADD
-          EXIN(J)=0.
-          EYIN(J)=0.
-          EZIN(J)=0.
-          EFIN(J)=1.
-        ENDDO
+      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
+        IF (INDPRO(7) == 5 .OR. INDPRO(5).EQ.6
+     .                     .OR. INDPRO(5).EQ.9) THEN
+          DO J=NSURF+1,NSURF+NRADD
+            EXIN(J)=0.
+            EYIN(J)=0.
+            EZIN(J)=0.
+            EFIN(J)=1.
+          ENDDO
+        ENDIF
       ENDIF
  
       DEALLOCATE(HELP)

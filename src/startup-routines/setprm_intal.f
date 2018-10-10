@@ -32,7 +32,7 @@ c  plasma background
       LIVTALI(3)   = .TRUE.       ! DEIN
       LIVTALI(4)   = .TRUE.       ! DIIN
 
-C  backgound flow velocities
+C  background flow velocities
       LIVTALI(5)   = NPLSV>0      ! VXIN
       LIVTALI(6)   = NPLSV>0      ! VYIN 
       LIVTALI(7)   = NPLSV>0      ! VZIN 
@@ -127,7 +127,6 @@ C  ARE SWITCHED ON
         INTLOPTS(6) = 0
         LVZIN = .TRUE.
         INTLOPTS(7) = 0
-        LBVIN = .TRUE.
       END IF
 
       IF (.NOT.LVOL) THEN
@@ -191,6 +190,7 @@ C  --> 24 rather than 18 background tallies
       NFRSTP(23)=NPLSV  ! BVIN
       NFRSTP(24)=NPLS   ! PARMON
 
+c  from here on: derivatives (gradients) of input tallies
       NFRSTP(25)=0
       NFRSTP(26)=0
       NFRSTP(27)=0

@@ -346,8 +346,8 @@ c  Stark  broadening by ions: protons, deuterons, tritons
 c  Zeeman splitting
            bx = 0._dp
            by = 0._dp
-           bz = 0._dp
-           bf = 0._dp
+           bz = 1._dp
+           bf = 1._dp
            if (lbxin) bx = bxin(icell)
            if (lbyin) by = byin(icell)
            if (lbzin) bz = bzin(icell)
@@ -1120,8 +1120,8 @@ c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
          v=0.0
          bx = 0._dp
          by = 0._dp
-         bz = 0._dp
-         bf = 0._dp
+         bz = 1._dp
+         bf = 1._dp
          if (lbxin) bx = bxin(icell)
          if (lbyin) by = byin(icell)
          if (lbzin) bz = bzin(icell)
@@ -1142,8 +1142,8 @@ c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
          v=vn/100._dp
          bx = 0._dp
          by = 0._dp
-         bz = 0._dp
-         bf = 0._dp
+         bz = 1._dp
+         bf = 1._dp
          if (lbxin) bx = bxin(icell)
          if (lbyin) by = byin(icell)
          if (lbzin) bz = bzin(icell)
@@ -1789,8 +1789,8 @@ c  FWHM-Griem, done,  not in use.
 
       bx = 0._dp
       by = 0._dp
-      bz = 0._dp
-      bf = 0._dp
+      bz = 1._dp
+      bf = 1._dp
       if (lbxin) bx = bxin(icell)
       if (lbyin) by = byin(icell)
       if (lbzin) bz = bzin(icell)
