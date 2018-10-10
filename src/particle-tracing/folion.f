@@ -80,7 +80,7 @@ C  .............................................................................
 C
       SUBROUTINE EIRENE_FOLION
 C
-C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0 IN CELL NRCELL, IPOLG,
+C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
 C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
 C     IS FOLLOWED.
 C     (MODULE: COMPRT.F)
@@ -132,7 +132,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
       USE EIRMOD_CZT1
-      USE EIRMOD_CGEOM
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
@@ -144,7 +143,7 @@ C
 
       IMPLICIT NONE
  
-C      REAL(DP) :: a,aa,aaa
+C     REAL(DP) :: a,aa,aaa
 c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: CFLAG(7,MSTOR0)
       REAL(DP) :: AX(2)

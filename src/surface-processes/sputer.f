@@ -280,13 +280,14 @@ C
         READ(33,*)
         READ(33,*)
         DO I28=1,28
+cdr sept 18:  use F format rather than E format (removes some compiler warnings)
           READ(33,*)
           READ(33,*)
-          READ(33,'(4X,E5.2)') ES(I28)
-          READ(33,'(12X,11(E8.2,1X))') (M2M1(I28,I11),I11=1,11)
+          READ(33,'(4X,F5.2)') ES(I28)
+          READ(33,'(12X,11(F8.2,1X))') (M2M1(I28,I11),I11=1,11)
           READ(33,'(12X,11(I8,  1X))') (IETF(I11),I11=1,11)
-          READ(33,'(12X,11(E8.2,1X))') (ETH(I28,I11),I11=1,11)
-          READ(33,'(12X,11(E8.2,1X))') (Q(I28,I11),I11=1,11)
+          READ(33,'(12X,11(F8.2,1X))') (ETH(I28,I11),I11=1,11)
+          READ(33,'(12X,11(F8.2,1X))') (Q(I28,I11),I11=1,11)
           ETF(I28,1:11) = IETF(1:11)
         ENDDO
         CLOSE (UNIT=33)
