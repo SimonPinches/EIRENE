@@ -203,7 +203,6 @@ C
 c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
                 IF (REC.LE.0.D0) GOTO 6
-!pb                ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
                 ADD=1.5*TIIN(IPLSTI,J)*REC
                 IF (LEDRIFT) ADD=ADD+EDRIFT(IPLS,J)*REC
 C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
@@ -500,8 +499,6 @@ C  INDIRECT ADDRESSING
                       IF (REC.GT.0.D0) THEN
                         ICC=ICC+1
                         SUM=SUM+REC
-!pb                        EISUM=EISUM-
-!pb     .                   (1.5*TIIN(IPLSTI,NCELL)+EDRIFT(IPLS,NCELL))*REC
                         EISUM=EISUM-1.5*TIIN(IPLSTI,NCELL)*REC
                         IF (LEDRIFT) EISUM=EISUM-EDRIFT(IPLS,NCELL)*REC
                       ENDIF

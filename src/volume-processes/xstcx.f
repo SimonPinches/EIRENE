@@ -289,9 +289,9 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
 c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
-            DO J=1,NSBOX
-              EPLCX3(IRCX,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-            ENDDO
+            EPLCX3(IRCX,1:NSBOX,1)=1.5*TIIN(IPLTI,1:NSBOX)
+            IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
+     .                   EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRCX(IRCX) = -3
           ELSE
             NELRCX(IRCX) = -3
@@ -304,9 +304,9 @@ c        WITH WEIGHTING/REJECTION
           WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '    
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
-            DO 251 J=1,NSBOX
-              EPLCX3(IRCX,J,1)=EBULK+EDRIFT(IPL,J)
-251         CONTINUE
+            EPLCX3(IRCX,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
+     .                   EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRCX(IRCX) = -2
           ELSE
             NELRCX(IRCX) = -2
@@ -321,9 +321,9 @@ C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
-            DO 252 J=1,NSBOX
-              EPLCX3(IRCX,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-252         CONTINUE
+            EPLCX3(IRCX,1:NSBOX,1)=1.5*TIIN(IPLTI,1:NSBOX)
+            IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
+     .                   EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRCX(IRCX) = -3
           ELSE
             NELRCX(IRCX) = -3
@@ -338,9 +338,9 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '  
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
-            DO 2511 J=1,NSBOX
-              EPLCX3(IRCX,J,1)=EBULK+EDRIFT(IPL,J)
-2511        CONTINUE
+            EPLCX3(IRCX,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
+     .                   EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRCX(IRCX) = -2
           ELSE
             NELRCX(IRCX) = -2

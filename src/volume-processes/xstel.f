@@ -239,18 +239,18 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
 c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
-            DO J=1,NSBOX
-              EPLEL3(IREL,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-            ENDDO
+            EPLEL3(IREL,1:NSBOX,1)=1.5*TIIN(IPLTI,1:NSBOX)
+            IF (LEDRIFT) EPLEL3(IREL,1:NSBOX,1)=
+     .                   EPLEL3(IREL,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELREL(IREL) = -3
           ELSE
             NELREL(IREL) = -3
           END IF
         ELSE ! EBULK GT.0
           IF (NSTORDR >= NRAD) THEN
-            DO 251 J=1,NSBOX
-              EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
-251         CONTINUE
+            EPLEL3(IREL,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLEL3(IREL,1:NSBOX,1)=
+     .                   EPLEL3(IREL,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELREL(IREL) = -1
           ELSE
             NELREL(IREL) = -1
@@ -265,9 +265,9 @@ C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
-            DO 252 J=1,NSBOX
-              EPLEL3(IREL,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-252         CONTINUE
+            EPLEL3(IREL,1:NSBOX,1)=1.5*TIIN(IPLTI,1:NSBOX)
+            IF (LEDRIFT) EPLEL3(IREL,1:NSBOX,1)=
+     .                   EPLEL3(IREL,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELREL(IREL) = -3
           ELSE
             NELREL(IREL) = -3
@@ -280,9 +280,9 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '  
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
-            DO 2511 J=1,NSBOX
-              EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
-2511        CONTINUE
+            EPLEL3(IREL,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLEL3(IREL,1:NSBOX,1)=
+     .                   EPLEL3(IREL,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELREL(IREL) = -2
           ELSE
             NELREL(IREL) = -2

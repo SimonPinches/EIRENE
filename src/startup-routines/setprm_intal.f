@@ -38,18 +38,18 @@ C  background flow velocities
       LIVTALI(7)   = NPLSV>0      ! VZIN 
 
 c  magnetic field
-      LIVTALI(8)   = .TRUE.       ! BXIN
-      LIVTALI(9)   = .TRUE.       ! BYIN
-      LIVTALI(10)  = .TRUE.       ! BZIN
-      LIVTALI(11)  = .TRUE.       ! BFIN
+      LIVTALI(8)   = .TRUE.       ! BXIN, else: =0.0
+      LIVTALI(9)   = .TRUE.       ! BYIN, else: =0.0
+      LIVTALI(10)  = .TRUE.       ! BZIN, else: =1.0
+      LIVTALI(11)  = .TRUE.       ! BFIN, else: =1.0
 
       LIVTALI(12)  = NAIN>0       ! ADIN
 
-      LIVTALI(13)  = .TRUE.       ! EDRIFT
+      LIVTALI(13)  = .TRUE.       ! EDRIFT, else: =0.0
       LIVTALI(14)  = .TRUE.       ! VOL
 
-      LIVTALI(23)  = NPLSV>0      ! BVIN   
-      LIVTALI(24)  = NPLS>0       ! PARMOM
+      LIVTALI(23)  = NPLSV>0      ! BVIN, else: sign(1.,bvin)=1.0   
+      LIVTALI(24)  = NPLS>0       ! PARMOM, else: = 0.0
 
 C  CURRENTLY THE LAST INPUT TALLY IS TALLY NO. 24 (NTALG)
 

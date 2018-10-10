@@ -463,7 +463,7 @@ cdr         endif
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
             END IF
             ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
-            ESIGCX(IRCX,1)=ESIGCX(IRCX,1)+EDRIFT(IPLS,K)
+            IF (LEDRIFT) ESIGCX(IRCX,1)=ESIGCX(IRCX,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
           CFLAG(3,IRCX)=3
         ELSEIF (MODCOL(3,4,IRCX).EQ.3) THEN
@@ -611,7 +611,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
             END IF
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
-            ESIGEL(IREL,1)=ESIGEL(IREL,1)+EDRIFT(IPLS,K)
+            IF (LEDRIFT) ESIGEL(IREL,1)=ESIGEL(IREL,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
           CFLAG(5,IREL)=3
         ELSEIF (MODCOL(5,4,IREL).EQ.3) THEN

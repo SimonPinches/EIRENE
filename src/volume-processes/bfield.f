@@ -47,7 +47,7 @@ cdr    use logical input flag L:  return either value at COM or local value at x
          bz = bz * bni
 
       ELSE
-cdrif no BFIELD input tallies: 
+cdr if no BFIELD input tallies: 
 cdr use default B-field: 1 [T] in z-direction
          BX = 0._DP
          BY = 0._DP
