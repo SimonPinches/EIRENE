@@ -11,6 +11,7 @@ c             EPEL --> EPEL_COP  (also in couple_B2.5)
 c             CPPV --> MPPL_COP
 c             ELTEST, EMAXW,... for a target energy flux as interpreted from B2 output. 
 cdr March 18: Sync with couple_B2 re-established, only MPI related differences remain
+cdr Oct. 18:  bug fix: bvin(iplsv) instead bvin(ipls) in 2 places
 
 C
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
@@ -178,7 +179,7 @@ C
      .          TOTI, TOTE, BALAN, RRBC,
      .          SSEI, SFEIEX, SFEEEX, SFEENY, SFEIWX, VVBC,
      .          UUBC, UPBC, RBC, UDBC, VL, V, T, BX, BY, BZ, BN,
-c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
+c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES,TIS,
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
      .          FLX, ESUM, VR, VTEST, EADD, EMAXW, ESHEATH, 
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI, CHP,
@@ -187,8 +188,8 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFEEWX, SFEINY, PM1, DRR, UU, PITB,
      .          FLX_EIR, SUMN_OLD, SNIRES, SMORES, SEERES, SEIRES,
-     .          fltt, e0b2, dmaxiso, dminiso, CFAC, !pb 22012013
-     .          eamisum, eplsum
+     .          fltt, e0b2, dmaxiso, dminiso, CFAC, 
+     .          eamisum, eplsum, bv
       INTEGER :: NRWL(NSTRA)
 
       INTEGER, SAVE :: J, IRC, JC, INC, IADD, IP, ITARG, IO, IFL, NPES,
@@ -290,6 +291,7 @@ C
       END IF
 
       mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
+      NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
 C
       IF (.NOT.LSHORT.AND.ITIMV.LE.1) THEN
         WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
@@ -343,7 +345,7 @@ C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
 C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
         IF (TRCINT)
      .  WRITE (iunout,*) '    IT,  NDT,NINCT, NIXY, NTIN, NTEN',
-     .              ',NIFLG, NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
+     .              ',NIFLG,  NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
         DO 30 IT=1,NTARGI
           DO 33 IPRT=1,NTGPRT(IT)
             CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
@@ -573,7 +575,7 @@ c  only for inclined target option:
       END IF
 C
       CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,
-     .            PUX,PUY,PVX,PVY,MSHFRM)
+     .                   PUX,PUY,PVX,PVY,MSHFRM)
 C
       IF (NDXA+1.NE.NRPLG) THEN
         WRITE (iunout,*) 'ERROR IN INFCOP: NRPLG.NE.NDXA+1'
@@ -1276,7 +1278,7 @@ C  EIRENE SURFACE NUMBER AT TARGET
         NPES=NPBS+1
         IF (TRCINT) THEN
           WRITE (iunout,'(a,6(i4))') 'ITARG,IPRT,NPBS,NPBC,NPES,NPEC ',
-     .                 ITARG,IPRT,NPBS,NPBC,NPES,NPEC
+     .                                ITARG,IPRT,NPBS,NPBC,NPES,NPEC
         ENDIF
 C
 C  FIRST: SOURCES AT POLOIDAL (Y) SURFACES (EAST OR WEST CELL FACES)
@@ -1851,8 +1853,8 @@ C
           IF (ORI(ITARG,IG).GT.0) NSEW='E'
         ENDIF
         IF (IGSTEP(ITARG,IG).LT.200000) THEN
-          IF (ORI(ITARG,IG).LT.0) NSEW='N'
-          IF (ORI(ITARG,IG).GT.0) NSEW='S'
+          IF (ORI(ITARG,IG).LT.0) NSEW='S'
+          IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
         WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
@@ -2171,10 +2173,10 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
         EAPL=0.D0
         CPMUL => EAPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
-          IPLS=CPMUL%IART
-          IN=CPMUL%ICM
+          IPLS=         CPMUL%IART
+          IN=           CPMUL%ICM
           EAPL(IPLS,IN)=CPMUL%VALUEM
-          CPMUL => CPMUL%NXTMUL
+          CPMUL =>      CPMUL%NXTMUL
         END DO
 
         IF (IFIRST.EQ.0) GOTO 7310
@@ -2456,10 +2458,12 @@ C  EXCLUDE IPLS-VACUUM CELLS
                     END IF
                     PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                     SUMN=SUMN+RECADD*VOL(IN)
-                    PIADD=PARMOM(IPLS,IN)*RECADD
+                    PIADD=0._DP
+                    IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
                     MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
                     SUMM=SUMM+PIADD*VOL(IN)
-                    EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
+                    EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+                    IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                     EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                     SUMEI=SUMEI+EIADD*VOL(IN)
                     EPEL_COP(INC)=EPEL_COP(INC)+EEADD
@@ -2629,9 +2633,11 @@ cdr  is this now any different from sni set above?
 
 
 cdr  add pppl contribution to internal energy sources rate
+                bv = 0._dp
+                if (lbvin) bv = bvin(iplsv,inn)
                 cpv_cmp(icp4+ipls,in,istrai)=
      .                  cpv_cmp(icp4+ipls,in,istrai) + 
-     .                  cvrssp(ipls)*bvin(ipls,inn)**2*PPPL_COP(IPLS,IN)
+     .                  cvrssp(ipls)*bv**2*PPPL_COP(IPLS,IN)
               end do  ! iy
             end do    ! ix
 
@@ -2674,7 +2680,8 @@ cdr   ipls contributes to plasma code species ifl
               DO 7533 IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                SIGNUM=1._DP
+                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                 SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                 MPPL_COP(IPLS,INC))*
      .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -2693,7 +2700,8 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
               DO IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                SIGNUM=1._DP
+                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                 cfac = (MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC))/
      .                 (cpv_cmp(icp2+ipls,inc,istrai) + eps60)
                 cpv_cmp(icp2+ipls,inc,istrai)=
@@ -2701,13 +2709,13 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
      .                  MPPL_COP(IPLS,INC))*
      .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
 !pb 30012013 sei internal
+                bv = 0._dp
+                if (lbvin) bv = bvin(iplsv,in)
                 cpv_cmp(icp3+3,inc,istrai)=cpv_cmp(icp3+3,inc,istrai) - 
-     .                  bvin(ipls,in)*MPPL_COP(IPLS,INC)*SIGNUM*
+     .                  bv*MPPL_COP(IPLS,INC)*SIGNUM*
      .                  cveli2/amua*2._DP 
               end do
             end do
-!pb            cpv_cmp(icp2+ipls,:,istrai)=cpv_cmp(icp2+ipls,:,istrai)*flxi 
-!pb
 
             IF (.NOT.LSHORT) THEN
 
@@ -2726,7 +2734,8 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
                   DO IY=1,NDYA
                     IN=IY+(IX-1)*NR1ST
                     INC=NCLTAL(IN)
-                    SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                    SIGNUM=1._DP
+                    IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                     SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
      .                 MIPL(IPLS,INC))*VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                     RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
@@ -2749,7 +2758,7 @@ C
             IN=NCLTAL(INN)
             SEE(IX,IY,ISTRAI)=(EAEL(IN)+EMEL(IN)+
      .                         EIEL(IN)+EPEL_COP(IN))*
-     .                        VOLTAL(IN)*FLX_EIR
+     .                         VOLTAL(IN)*FLX_EIR
             CHEES=CHEES+CHEEM(IN)*VOLTAL(IN)
             SEES=SEES+SEE(IX,IY,ISTRAI)
             SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)*ELCHA
@@ -2769,7 +2778,7 @@ C
                 SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI) + 
      .                           (EAPL(IPLS,IN)+EMPL(IPLS,IN)+
      .                            EIPL(IPLS,IN)+EPPL_COP(IPLS,IN))*
-     .                        VOLTAL(IN)*FLX_EIR
+     .                            VOLTAL(IN)*FLX_EIR
  7541         CONTINUE
  7542       CONTINUE
  7543     CONTINUE
@@ -3126,7 +3135,7 @@ C  WRITE ICCPL2
 C
 !pb  LSTP is dummy argument to entry IF3COP, thus not available here
 !pb  LSTP3 is stored in IF3COP
-!pb      IF (LSHORT) LSTOP=LSTP
+!pb   IF (LSHORT) LSTOP=LSTP
       IF (LSHORT) LSTOP=LSTP3
 C
       IF (.NOT.LSTOP) RETURN

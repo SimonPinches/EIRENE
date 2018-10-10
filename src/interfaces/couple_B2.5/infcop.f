@@ -2150,10 +2150,12 @@ c dpc
                 END IF
                 PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                 SUMN=SUMN+RECADD*VOL(IN)
-                PIADD=PARMOM(IPLS,IN)*RECADD
+                PIADD=0._DP
+                IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
                 MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
                 SUMM=SUMM+PIADD*VOL(IN)
-                EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
+                EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+                IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                 EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                 SUMEI=SUMEI+EIADD*VOL(IN)
                 EPEL_COP(INC)=EPEL_COP(INC)+EEADD
@@ -2212,7 +2214,8 @@ c  ipls contributes to plasma code species ifl
               DO 7533 IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                SIGNUM=1._DP
+                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                 SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                 MPPL_COP(IPLS,INC))*
      .                 VOLTAL(INC)*1.D-5*SIGNUM

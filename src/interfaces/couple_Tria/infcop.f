@@ -92,6 +92,7 @@ c            code was correct in solps4.3, and garching versions of couple_b2/b2
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
 cdr           remove unused array: scpveii
+cdr Oct.  18: bug fix: bfin(iplsv) rather than bfin(ipls) in one place
 c......................................................................................
 
 
@@ -280,7 +281,7 @@ C
      .          SUMN_OLD,
      .          SNIRES, SMORES, SEERES, SEIRES, UU, PITB,
      .          DXPOL,DYPOL,PAR,
-     .          fniprt, fltt, e0b2, frac, celdel, dd, cfac
+     .          fniprt, fltt, e0b2, frac, celdel, dd, cfac, bv
 
       INTEGER, SAVE :: J, IRC, JC, INC, 
      .           K, IADD, NAS, IPUNKT, NSSIR, 
@@ -3309,9 +3310,10 @@ cdr  only one bulk ion species per volume source stratum supported
                   RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                   EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 END IF
-                PIADD=PARMOM(IPLS,IN)*RECADD
-                EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
-
+                PIADD=0._DP
+                IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
+                EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+                IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
 !pb 21012013
 !  if lcoarse: add contribution to tallies only once per fine grid cell
 !  tallies are to be scaled with voltal
@@ -3517,8 +3519,6 @@ cdr  is this now any different from sni set above?
 
 
 cdr  add pppl_cop contribution to internal energy sources rate
-!pb              copv(icp3+3,in)=copv(icp3+3,in) + 
-!pb     .            0.5_dp*rmassp(ipls)*bvin(ipls,in)**2*PPPL_COP(IPLS,IN)
               copv(icp3+3,in)=copv(icp3+3,in) + 
      .            cvrssp(ipls)*bvin(ipls,itri)**2*PPPL_COP(IPLS,IN)
               lhit(in) = .true.
@@ -3587,8 +3587,8 @@ cdr  associated(curpoi) is taken for granted here !?
                 CURPOI => HEADS(IY,IX)%P
                 IT=CURPOI%TRIANGLE
                 INC=IY+(IX-1)*NR1TAL_SAVE
-
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                SIGNUM = 1._DP
+                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                 SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                 MPPL_COP(IPLS,INC))*
      .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -3614,15 +3614,18 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
               if ((ix<=0).or.(iy <= 0)) cycle
               IN=IY+(IX-1)*NR1TAL_SAVE
               if (lhit(in)) cycle
-              SIGNUM=SIGN(1._DP,BVIN(IPLSV,ITRI))
+              SIGNUM = 1._DP
+              IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,ITRI))
               cfac = (MAPL(IPLS,IN)+MMPL(IPLS,IN)+MIPL(IPLS,IN))/
      .               (copv(icp2+ipls,in) + eps60)
               copv(icp2+ipls,in)=(copv(icp2+ipls,in)*cfac + 
      .                MPPL_COP(IPLS,IN))*
      .                VOLTAL(IN)*1.D-5*SIGNUM*FLX_EIR
 !pb 30012013 sei internal
+              bv = 0._dp
+              if (lbvin) bv = bvin(iplsv,itri)
               copv(icp3+3,in)=copv(icp3+3,in) - 
-     .            bvin(ipls,itri)*MPPL_COP(IPLS,IN)*SIGNUM*
+     .            bv*MPPL_COP(IPLS,IN)*SIGNUM*
      .            cveli2/amua*2._DP 
               lhit(in) = .true.
             end do  !itri loop

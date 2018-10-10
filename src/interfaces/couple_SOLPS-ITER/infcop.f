@@ -3520,8 +3520,10 @@ cdr  only one bulk ion species per volume source stratum supported
                   RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                   EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 END IF
-                PIADD=PARMOM(IPLS,IN)*RECADD
-                EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
+                PIADD=0._DP
+                IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
+                EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+                IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
 
 !pb 21012013
 !  if lcoarse: add contribution to tallies only once per fine grid cell
@@ -3801,8 +3803,8 @@ cdr   ipls contributes to plasma code species ifl
                   IT=CURPOI%TRIANGLE
                   INC=NCLTAL(IT)
                   CURPOI=>CURPOI%NEXT
-
-                  SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                  SIGNUM=1._DP
+                  IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                   SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                   MPPL_COP(IPLS,INC))*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -3850,8 +3852,8 @@ cdr  associated(curpoi) is taken for granted here !?
                        IT=CURPOI%TRIANGLE
                        INC=NCLTAL(IT) !here: inc=it: all tally data are on fine grid
                        CURPOI=>CURPOI%NEXT
-
-                       SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                       SIGNUM=1._DP
+                       IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                        SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
      .                         MIPL(IPLS,INC))*
      .                         VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
