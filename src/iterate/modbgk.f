@@ -485,8 +485,10 @@ c             ENDIF
 C DELTA_E
 c             EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 c    .             DIIN(IPLS,IRAD)
-              EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
-     .             PDEN(IRAD)
+!pb              EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
+!pb     .             PDEN(IRAD)
+              EOLD=1.5*TIIN(IPLSTI,IRAD)*PDEN(IRAD)
+              IF (LEDRIFT) EOLD=EOLD+EDRIFT(IPLS,IRAD)*PDEN(IRAD)
               DEL=EOLD-EDEN(IRAD)
 
 c  rate of energy exchange: (eV)/s, per cell I_fine
@@ -560,8 +562,10 @@ c         ENDIF
 C DELTA_E
 c         EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 c    .          DIIN(IPLS,IRAD)
-          EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
-     .          PDEN(IRAD)
+!pb          EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
+!pb     .          PDEN(IRAD)
+          EOLD=1.5*TIIN(IPLSTI,IRAD)*PDEN(IRAD)
+          IF (LEDRIFT) EOLD=EOLD+EDRIFT(IPLS,IRAD)*PDEN(IRAD)
           DEL=EOLD-EDEN(IRAD)
 c  cdr  rate of energy exchange: (eV)/s, per cell I_fine
           RATE=RATE+TBEL*DEL*VOL(IRAD)
@@ -637,8 +641,10 @@ cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next t
 181           CONTINUE
 c             EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 c    .              DIIN(IPLS,IRAD)
-              EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
-     .              PDEN(IRAD)
+!pb              EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
+!pb     .              PDEN(IRAD)
+              EOLD=1.5*TIIN(IPLSTI,IRAD)*PDEN(IRAD)
+              IF (LEDRIFT) EOLD=EOLD+EDRIFT(IPLS,IRAD)*PDEN(IRAD)
               DOLD=DIIN(IPLS,IRAD)
               DEL=EOLD-EDEN(IRAD)
               RATE=RATE+TBEL*DEL*VOL(IRAD)
@@ -704,8 +710,10 @@ cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three
 191       CONTINUE
 C         EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 C    .          DIIN(IPLS,IRAD)
-          EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
-     .          PDEN(IRAD)
+!pb          EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
+!pb     .          PDEN(IRAD)
+          EOLD=1.5*TIIN(IPLSTI,IRAD)*PDEN(IRAD)
+          IF (LEDRIFT) EOLD=EOLD+EDRIFT(IPLS,IRAD)*PDEN(IRAD)
           DOLD=DIIN(IPLS,IRAD)
           DEL=EOLD-EDEN(IRAD)
           RATE=RATE+TBEL*DEL*VOL(IRAD)
@@ -803,7 +811,11 @@ C
       CALL EIRENE_ALLOC_BCKGRND
       PLASMA_BCKGRND(1:NRWK1,:) = 0.D0
 
-cdr  
+cdr
+cdr initialize BXIN=0
+      PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,:)= 0._DP  
+cdr initialize BYIN=0
+      PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,:)= 0._DP  
 !pb initialize BZIN=1
       PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
 !pb initialize BFIN=1
@@ -828,15 +840,24 @@ cdr
               PLASMA_BCKGRND(1+1*NPLS+NPLSTI+2*NPLSV+IPLSV,IRAD)=
      .               VZIN(IPLSV,IRAD)
             END DO
-            PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BXIN(IRAD)
-            PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BYIN(IRAD)
-            PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
-            PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
-            PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
-            DO IAIN=1,NAINI
+            IF (LBXIN)
+     .        PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BXIN(IRAD)
+            IF (LBYIN)
+     .        PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BYIN(IRAD)
+            IF (LBZIN)
+     .        PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
+            IF (LBFIN)
+     .        PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
+
+            IF (LVOL)
+     .        PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
+
+            IF (LADIN) THEN
+              DO 530 IAIN=1,NAINI
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
-     .               ADIN(IAIN,IRAD)
-            ENDDO
+     .                 ADIN(IAIN,IRAD)
+530           CONTINUE
+            END IF
 550   CONTINUE
 C
 c  same as do 550 loop , for additional cell region
@@ -857,15 +878,25 @@ c
               PLASMA_BCKGRND(1+1*NPLS+NPLSTI+2*NPLSV+IPLSV,IRAD)=
      .               VZIN(IPLSV,IRAD)
             END DO
-            PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BXIN(IRAD)
-            PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BYIN(IRAD)
-            PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
-            PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
-            PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
-            DO IAIN=1,NAINI
+
+            IF (LBXIN)
+     .        PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BXIN(IRAD)
+            IF (LBYIN)
+     .        PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BYIN(IRAD)
+            IF (LBZIN)
+     .        PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
+            IF (LBFIN)
+     .        PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
+
+            IF (LVOL)
+     .        PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
+
+            IF (LADIN) THEN
+              DO 565 IAIN=1,NAINI
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
-     .               ADIN(IAIN,IRAD)
-            ENDDO
+     .                 ADIN(IAIN,IRAD)
+565           CONTINUE
+            END IF
 570   CONTINUE
 C
       CALL EIRENE_PLASMA_DERIV(0)
@@ -946,8 +977,13 @@ CSW 02jan2012 CHECK FOLLOWING TWO LINES !!!! ipls1/ipls2 mixed up?
 CVK END
 C
 C
-            ENERGY(IPLS1,IRAD)=1.5*TIIN(IPLSTI1,IRAD)+EDRIFT(IPLS1,IRAD)
-            ENERGY(IPLS2,IRAD)=1.5*TIIN(IPLSTI2,IRAD)+EDRIFT(IPLS2,IRAD)
+            ENERGY(IPLS1,IRAD)=1.5*TIIN(IPLSTI1,IRAD)
+            IF (LEDRIFT) ENERGY(IPLS1,IRAD)=ENERGY(IPLS1,IRAD)
+     .                                      +EDRIFT(IPLS1,IRAD)
+
+            ENERGY(IPLS2,IRAD)=1.5*TIIN(IPLSTI2,IRAD)
+            IF (LEDRIFT) ENERGY(IPLS2,IRAD)=ENERGY(IPLS2,IRAD)
+     .                                      +EDRIFT(IPLS2,IRAD)
 C
 C EFFECTIVE TEMPERATURE FOR THE CALCULATION OF THE MUTUAL REACTON RATES
 C [L.H. Holway, Phys. Fluids, vol. 9,pp.1658-1673,1966]

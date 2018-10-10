@@ -34,7 +34,7 @@ c
 cdr:  may 2015
 cdr:  output tallies for new background: in case of multiple strata: how to get sum over strata?
 cdr:  do we need fort.10 ?
-cdr:  edrift, vdion:  only for ipls=1 available?
+cdr:  in case indpro(4)=8:  edrift, vdion:  only for ipls=1 available?
 cdr:  warnings in case of missing edrift removed: have been too many (one per cell)
 cdr: jan 2016: automated resetting of nfilel to =3 or =9 removed.
 cdr:           (had caused problems with t-dep mode)

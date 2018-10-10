@@ -92,7 +92,7 @@ c            code was correct in solps4.3, and garching versions of couple_b2/b2
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure 
 cdr           remove unused array: scpveii
-cdr Oct.  18: bug fix: bfin(iplsv) rather than bfin(ipls) in one place
+cdr Oct.  18: bug fix: bvin(iplsv) rather than bvin(ipls) in one place
 c......................................................................................
 
 
@@ -3519,8 +3519,10 @@ cdr  is this now any different from sni set above?
 
 
 cdr  add pppl_cop contribution to internal energy sources rate
+              bv = 0._dp
+              if (lbvin) bv = bvin(iplsv,itri)
               copv(icp3+3,in)=copv(icp3+3,in) + 
-     .            cvrssp(ipls)*bvin(ipls,itri)**2*PPPL_COP(IPLS,IN)
+     .            cvrssp(ipls)*bv**2*PPPL_COP(IPLS,IN)
               lhit(in) = .true.
             end do  ! ITRI LOOP
             copv(icp1+ipls,:) = copv(icp1+ipls,:) * flxi 
@@ -3571,8 +3573,8 @@ cdr   ipls contributes to plasma code species ifl
                   IT=CURPOI%TRIANGLE
                   INC=NCLTAL(IT)
                   CURPOI=>CURPOI%NEXT
-
-                  SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                  SIGNUM = 1._DP
+                  IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                   SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                   MPPL_COP(IPLS,INC))*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -3653,10 +3655,11 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 !                    IT=CURPOI%TRIANGLE
 !                    INC=NCLTAL(IT)
                      INC=IY+(IX-1)*NR1TAL_SAVE
-               
+                     SIGNUM = 1._DP
+                     IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))                
                      SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
-     .                      MIPL(IPLS,INC))*
-     .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+     .                       MIPL(IPLS,INC))*
+     .                       VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                      RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                  ABS(SIGMA(ISTAT_COP,INC)*
      .                                  SMORES/100.D0*1.D5)

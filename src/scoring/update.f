@@ -662,9 +662,10 @@ C
           END DO
 
 c  set parameters for parallel momentum of incident bulk particle
-c  val_parb   : parallel velocity component, incl. sign, relavive to B
+c  val_parb   : parallel velocity component, incl. sign, relative to B
 c  vsig_parb  : parallel momentum, modulus (always positive)  
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
+cdr vdion: for which ipl? 
             vion=EIRENE_vdion(irdo)
             VAL_PARB(1:NPLSI) =VION
             VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
@@ -678,8 +679,16 @@ C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
      .                        SIGN(1._DP,VAL_PARB(IPL))
             END DO
           ELSE
-            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
+            VAL_PARB(1:NPLSI) = 0._DP
+            VSIG_PARB(1:NPLSI)= 0._DP
+
+cdr  from here on: only signum=sign(1.,val_parp) is used.
+cdr  tbd for consistency (default signum if bvin is not set:) 
+cdr       signum=1.
+cdr       if (lbvin) signum=sign(1.,val_parp)
+       
+            IF (LBVIN)   VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+            IF (LPARMOM) VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
           END IF
 c
 c  set parameters for parallel momentum of incident neutral particle
