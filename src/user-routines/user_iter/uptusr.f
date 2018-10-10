@@ -60,10 +60,10 @@ C
         VRX=0.
         VRY=0.
         DO I=1,ntrii
-            VPX(I)=PLNXTRI(i)
-            VPY(I)=PLNYTRI(i)
-            VRX(I)=PPLNXTRI(i)
-            VRY(I)=PPLNYTRI(i)
+            VPX(I)=PLNXTRI(i)    ! radial unit vector 
+            VPY(I)=PLNYTRI(i)    ! => bxperp, byperp
+            VRX(I)=PPLNXTRI(i)   ! poloidal unit vector
+            VRY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
         END DO
 
 cdr  increments for tally number iadv

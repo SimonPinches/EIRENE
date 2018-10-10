@@ -29,6 +29,20 @@ C
       LOGICAL :: LLMPS
       CHARACTER(72) :: HCHR
       CHARACTER(1) :: OPER(20)
+
+      interface
+        subroutine eirene_cell_to_corner (f,fcorner)
+          use eirmod_precision
+          real(dp), intent(in) :: f(:)
+          real(dp), intent(out) :: fcorner(:)
+        end subroutine eirene_cell_to_corner
+        subroutine eirene_calc_grad (f, fdx, fdy, fdz, lfdx, lfdy, lfdz)
+          use eirmod_precision
+          real(dp), intent(in) :: f(:)
+          real(dp), intent(out) :: fdx(:), fdy(:), fdz(:)
+          logical, intent(in) :: lfdx, lfdy, lfdz
+        end subroutine eirene_calc_grad 
+      end interface
 C
 C
 C     CALCULATE ALGEBRAIC VOLUME TALLIES
