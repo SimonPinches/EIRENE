@@ -1,3 +1,4 @@
+cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
 cdr  sept.18:   XDR format options for fort.13 stream: removed.
 cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
 cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
@@ -235,10 +236,10 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
+     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA, ISTR,
+     .           NB, NS, NA, ISTR, IOPT,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC
       INTEGER, SAVE :: NZADD, NITER0
@@ -815,15 +816,9 @@ C
 C  POLOIDAL MESH
 C
 C INPUT SUB-BLOCK 2B
-C
-220   IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
 
-CDR SKIP READING COMMENT INPUT CARDS STARTING WITH *
-      IF (ZEILE(1:1) .EQ. '*') THEN
-        READ (IUNIN,'(A72)') ZEILE
-        IREAD = 1
-        GOTO 220
-      END IF
+      IREAD=0
+      CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
 
       READ (ZEILE,6665) NLPOL
       IREAD = 0
@@ -858,9 +853,6 @@ C INPUT SUB-BLOCK 2D
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
-C240  READ (IUNIN,'(A72)') ZEILE
-C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
-C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -1406,7 +1398,6 @@ C  Normal start of reading database A&M processes
       CALL EIRENE_LEER(1)
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(0)
-      IL = 0
 !pbcrm      
       IREAD = 0
 C
@@ -1415,7 +1406,6 @@ C
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
-        IL = IL + 1
         READ (ZEILE,66661) IR,FILNAM,H123
         IEND = 16
 
@@ -1542,7 +1532,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           IZ = 0
         END IF
 
-        IF (INDEX(ZEILE,'CRM') .NE. 0) THEN
+        IF (INDEX(ZEILE,'CR') .NE. 0) THEN
           READ (IUNIN,'(A80)') ZEILE
 cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
 ! CHECK FOR POPULATION ESCAPE  FACTORS
@@ -1550,7 +1540,7 @@ cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal 
 ! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION. 
           IF (VERIFY(ZEILE,'+-.edED0123456789 ') > 0) THEN
 ! "ZEILE" CONTAINS NEXT REACTION LINE
-            WRITE (IUNOUT,*)  'NO POP_ESC FOUND FOR CRM'
+            WRITE (IUNOUT,*)  'No POP_ESC found for internal CR Model'
             WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
             IREAD = 1
             IROW_ESC = 0
@@ -1560,7 +1550,7 @@ cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal 
 ! only integer or reals found in string ZEILE
 ! READ POPULATION ESCAPE FACTOR, FOR TRANSITION "UPPER=IROW --> LOWER=ICOL"
             READ (ZEILE,66665) IROW_ESC, ICOL_ESC, POP_ESC
-            WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
+            WRITE (IUNOUT,*)  'POP_ESC found for CR Model reaction '
             WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
             WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
      .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
@@ -1647,9 +1637,10 @@ C       FILNAM=CONST:   REAC2 = FTFLAG
 C       ELSE:           REAC2 = 'REAC' AS READ IN. (UP TO 50 CHARACTERS)
 C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC2,CRC,
-     .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
+     .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC)
+     .               ELNAME,IZ,                 ! additional input card read for TAB2D/ADAS format
+     .               IROW_ESC,ICOL_ESC,POP_ESC) ! (optional) additional input card read CR  internal models
         GOTO 411
       ENDIF
 C
@@ -2218,6 +2209,10 @@ C       WRITE (iunout,'(1x,a)') trim(ZEILE)
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
       DO J=1,12
+C  Indicate "smoothed" input tallies (interpolation into cells)
+C  amongst the 12 input tallies read here.
+C  formerly: LSMOPRO(J) flag.
+C  Smoothing is currently only for tallies 1 to 7.
         IF (ABS(INDPRO(J)) > 100) THEN
           LSMOPRO(J) = .TRUE.
           INDPRO(J) = MOD(INDPRO(J),100)
@@ -2324,7 +2319,7 @@ c                              !  default:                B-FIELD WITH BX=0
       IF (INDPRO(5).LE.5)
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
 
-c  cell volume -profile
+c  cell volume -profile card, OPTIONAL
 
       IF (INDPRO(12).LE.5) THEN
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
@@ -3534,11 +3529,13 @@ cdr read volumetric emission profile data
           ALLOCATE (EMIS_LINES(NUM_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
           EMIS_LINES%NUM_COMPO = 0
+          WRITE (IUNOUT,*) 'FURTHER EMISSIVITY PROFILES SET:'
         END IF
         DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
+            write (IUNOUT,'(A80)') ZEILE
           END DO
 cdr  further below, a particular emission profile is identified 
 cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
@@ -3705,7 +3702,9 @@ cdr  once, for all components and contributions.
         IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
         ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
         POP_ESC  = EMIS_LINES(ILINE)%POP_ESC
+cdr  once per component, for all contributions
         do jcomp = 1, emis_lines(iline)%num_compo
+cdr  once per contribution
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1
@@ -3719,7 +3718,7 @@ c  pop_esc factor is the same for all components and contributions
             H123 = CNT%H123
             FILNAM= CNT%FNAME
             IF ((IROW_ESC > 0) .AND. (ICOL_ESC > 0) .AND.
-     .           INDEX(FILNAM,'CRM') > 0) THEN
+     .           INDEX(FILNAM,'CR') > 0) THEN
               WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
               WRITE (IUNOUT,*)  'EMISS. LINE',ILINE,'TYPE ',H123
               WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
@@ -4996,7 +4995,7 @@ C
         IF (NPHOTI > 0) CALL EIRENE_PH_INIT(2)
 C
 C   MODIFY SOME GEOMETRICAL DATA, USER-SUPPLIED ROUTINE
-Cstartup-routines/input.f
+C
         CALL EIRENE_GEOUSR
 
         IF (LEVGEO == 4) CALL EIRENE_CUT_ADS_CELL
@@ -5254,7 +5253,11 @@ C
         CALL EIRENE_PLAUSR
 
 
-
+C  THIS POINT IS ONLY REACHED WITH NFILEL=3 IF NLSHRT13=.T.
+c  (SHORT VERSION OF FORT.13 ONLY).
+C  READ ONLY PLASMA DATA OF THOSE BACKGROUND SPECIES
+C  WHICH ARE NOT CONTAINED IN EXTERNAL PLASMA CODE,
+C  I.E. ONLY THOSE WHICH ARE NEEDED FOR INTERNAL EIRENE CYCLING (NON-LINEARITIES) 
         IF (NFILEL.EQ.3) CALL EIRENE_RPLAM(TRCFLE,0)
 
 
