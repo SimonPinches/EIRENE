@@ -85,7 +85,7 @@ cdr test output from algtal:
 c         WRITE (iunout,*) 'IOP ',IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
 1       CONTINUE
         LFREE1=.TRUE.
-        LFREE2=.TRUE.VEC2
+        LFREE2=.TRUE.
  
         IF (ANY(IZIF(2,1:NOP)<0).OR.ANY(IZIF(4,1:NOP)<0)) THEN
           ALLOCATE(OP(MAX(NSBOX,NLIMPS)))
