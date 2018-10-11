@@ -1,8 +1,17 @@
 cdr:   evalute algebraic expression of tallies, as specified in
 cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
+
+c  revised, to accomodate more algebraic, analytic and differentiation operations.
+c  1) get_intal.f :  pick input tally, return it on the fine grid, 
+c                    and also return the weighting function for averaqging onto the
+C                    coarse (scoring) grid (if any)   
 C
       SUBROUTINE EIRENE_ALGTAL
+cdr  purpose:  take character string CHRTAL(IALV)  (IALV=1,NALVI)
+cdr            carry out the coded operations on input and/or output tallies
+cdr            write resulting tally ALGV(IALV,ICELL), ICELL is from coarse 
+cdr            (scoring) grid:  ICELL=NCLTAL(IC), IC=1,NSBOX, ICELL=1,NSBOX_TAL
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -18,17 +27,18 @@ C
  
       IMPLICIT NONE
 C
-      REAL(DP), ALLOCATABLE :: VEC1(:), VEC2(:), RESULT(:,:)
+      REAL(DP), ALLOCATABLE :: VEC1(:), VEC2(:), RESULT(:,:), VECCOR(:),
+     .                         DFDX(:), DFDY(:), DFDZ(:)
       REAL(DP), ALLOCATABLE :: OP(:), WEI(:), SUMWEI(:)
       REAL(DP) :: CONST(20)
       INTEGER :: IIND(20), IZIF(4,20)
       INTEGER :: I, ITL, IALV, NOP, IOP, K, ILIMPS,
-     .           IINDEX, II, J, IALS, IN, KK, NF, IC
+     .           IINDEX, II, J, IALS, IN, KK, NF, IC, IER
       LOGICAL :: LFREE1, LFREE2
       LOGICAL, ALLOCATABLE :: LLIMPS(:)
       LOGICAL :: LLMPS
       CHARACTER(72) :: HCHR
-      CHARACTER(1) :: OPER(20)
+      CHARACTER(2) :: OPER(20)
 
       interface
         subroutine eirene_cell_to_corner (f,fcorner)
@@ -75,7 +85,7 @@ cdr test output from algtal:
 c         WRITE (iunout,*) 'IOP ',IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
 1       CONTINUE
         LFREE1=.TRUE.
-        LFREE2=.TRUE.
+        LFREE2=.TRUE.VEC2
  
         IF (ANY(IZIF(2,1:NOP)<0).OR.ANY(IZIF(4,1:NOP)<0)) THEN
           ALLOCATE(OP(MAX(NSBOX,NLIMPS)))
@@ -123,167 +133,17 @@ c  fetch an output tally from ESTIMV
             END IF
 C
           ELSEIF (IZIF(2,IOP).LT.0) THEN
-c  fetch an input tally, case 1 to case 25
+c  1ST OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(2,IOP))
             IF (ITL.GT.NTALI) GOTO 90
             IF (IZIF(1,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(1,IOP)
             NF=NFRSTP(ITL)
-            SELECT CASE (ITL)
-            CASE (1)
-c  Te
-              OP(1:NSBOX)  = TEIN(1:NSBOX)
-              WEI(1:NSBOX) = DEIN(1:NSBOX)*VOL(1:NSBOX)
-            CASE (2)
-c  Ti
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + TIIN(MPLSTI(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX)  = TIIN(MPLSTI(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (3)
-c  ne
-              OP(1:NSBOX) = DEIN(1:NSBOX)
-              WEI(1:NSBOX) = VOL(1:NSBOX)
-            CASE (4)
-c  ni
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = DIIN(K,1:NSBOX)
-                WEI(1:NSBOX) = VOL(1:NSBOX)
-              END IF
-            CASE (5)
-c  vxin
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + VXIN(MPLSV(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = VXIN(MPLSV(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (6)
-c  vyin
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + VYIN(MPLSV(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = VYIN(MPLSV(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (7)
-c  vzin
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + VZIN(MPLSV(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = VZIN(MPLSV(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (8)
-c  Bx
-              OP(1:NSBOX) = BXIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (9)
-c  By
-              OP(1:NSBOX) = BYIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (10)
-c  Bz
-              OP(1:NSBOX) = BZIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (11)
-c  |B|
-              OP(1:NSBOX) = BFIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (12)
-c  Adin
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(ADIN(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = 1._DP
-              ELSE
-                OP(1:NSBOX) = ADIN(K,1:NSBOX)
-                WEI(1:NSBOX) = 1._DP
-              END IF
-            CASE (13)
-c  Ed
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(EDRIFT(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)*VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = EDRIFT(K,1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (14)
-c  Vol
-              OP(1:NSBOX) = VOL(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (15)
-c  Wght
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(WGHT(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = 1._DP
-              ELSE
-                OP(1:NSBOX) = WGHT(K,1:NSBOX)
-                WEI(1:NSBOX) = 1._DP
-              END IF
-            CASE (16)
-c  ??
-              OP(1:NSBOX) = BXPERP(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (17)
-              OP(1:NSBOX) = BYPERP(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (18)
-c  Ex
-              OP(1:NSBOX) = EXIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (19)
-c  Ey
-              OP(1:NSBOX) = EYIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (20)
-c  Ez
-              OP(1:NSBOX) = EZIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (21)
-c  |E|
-              OP(1:NSBOX) = EFIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (22)
-c  electr. Potential
-              OP(1:NSBOX) = POT(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE DEFAULT
-              WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
-     .                           IALV
-              WRITE (iunout,*) ' NO ALGBRAIC TALLY CALCULATED '
-              CALL EIRENE_LEER(1)
-              EXIT
-            END SELECT
+
+            CALL EIRENE_GET_INTAL
+            IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
+cdr  input tally(itl,:) is returned as OP(:), 
+cdr  weighting fct is returned as WEI(:).              
 
 cdr  weighted sum over sub-cells: in=ncltal(i)
             SUMWEI = EPS60
@@ -354,141 +214,13 @@ C
             IF (IZIF(3,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(3,IOP)
             NF=NFRSTP(ITL)
-            SELECT CASE (ITL)
-            CASE (1)
-              OP(1:NSBOX)  = TEIN(1:NSBOX)
-              WEI(1:NSBOX) = DEIN(1:NSBOX)*VOL(1:NSBOX)
-            CASE (2)
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + TIIN(MPLSTI(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX)  = TIIN(MPLSTI(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (3)
-              OP(1:NSBOX) = DEIN(1:NSBOX)
-              WEI(1:NSBOX) = VOL(1:NSBOX)
-            CASE (4)
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = DIIN(K,1:NSBOX)
-                WEI(1:NSBOX) = VOL(1:NSBOX)
-              END IF
-            CASE (5)
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + VXIN(MPLSV(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = VXIN(MPLSV(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (6)
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + VYIN(MPLSV(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = VYIN(MPLSV(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (7)
-              IF ( K == 0 ) THEN
-                OP = 0._DP
-                WEI = 0._DP
-                DO KK = 1, NF
-                  OP(1:NSBOX)  = OP(1:NSBOX) + VZIN(MPLSV(KK),1:NSBOX)
-                  WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
-                END DO
-                WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = VZIN(MPLSV(K),1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (8)
-              OP(1:NSBOX) = BXIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (9)
-              OP(1:NSBOX) = BYIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (10)
-              OP(1:NSBOX) = BZIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (11)
-              OP(1:NSBOX) = BFIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (12)
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(ADIN(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = 1._DP
-              ELSE
-                OP(1:NSBOX) = ADIN(K,1:NSBOX)
-                WEI(1:NSBOX) = 1._DP
-              END IF
-            CASE (13)
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(EDRIFT(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)*VOL(1:NSBOX)
-              ELSE
-                OP(1:NSBOX) = EDRIFT(K,1:NSBOX)
-                WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
-              END IF
-            CASE (14)
-              OP(1:NSBOX) = VOL(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (15)
-              IF ( K == 0 ) THEN
-                OP(1:NSBOX) = SUM(WGHT(1:NF,1:NSBOX),1)
-                WEI(1:NSBOX) = 1._DP
-              ELSE
-                OP(1:NSBOX) = WGHT(K,1:NSBOX)
-                WEI(1:NSBOX) = 1._DP
-              END IF
-            CASE (16)
-              OP(1:NSBOX) = BXPERP(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (17)
-              OP(1:NSBOX) = BYPERP(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (18)
-              OP(1:NSBOX) = EXIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (19)
-              OP(1:NSBOX) = EYIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (20)
-              OP(1:NSBOX) = EZIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (21)
-              OP(1:NSBOX) = EFIN(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE (22)
-              OP(1:NSBOX) = POT(1:NSBOX)
-              WEI(1:NSBOX) = 1._DP
-            CASE DEFAULT
-              WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
-     .                           IALV
-              WRITE (iunout,*) ' NO ALGBRAIC TALLY CALCULATED '
-              CALL EIRENE_LEER(1)
-              EXIT
-            END SELECT
 
+c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
+            CALL EIRENE_GET_INTAL
+            IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
+cdr  input tally(itl,:) is returned as OP(:), 
+cdr  weighting fct is returned as WEI(:).
+     
 cdr  weighted sum over sub-cells: in=ncltal(i) 
             SUMWEI = EPS60
             VEC2 = 0._DP
@@ -500,7 +232,8 @@ cdr  weighted sum over sub-cells: in=ncltal(i)
             END DO
             VEC2(1:NSBOX_TAL) = VEC2(1:NSBOX_TAL)/SUMWEI(1:NSBOX_TAL)
 
-          ELSE
+!pb          ELSE
+          ELSE IF (ABS(IZIF(3,IOP)) + ABS(IZIF(4,IOP)) > 0) THEN
 C  ZWISCHENERGEBNIS HOLEN
             IF (IIND(IZIF(3,IOP)).EQ.1) THEN
               DO 40 I=1,NSBOX_TAL
@@ -534,19 +267,24 @@ C
             GOTO 92
           ENDIF
 C
-          IF (OPER(IOP).EQ.'+') THEN
+          SELECT CASE (OPER(IOP))
+          CASE ('+ ')
+!         IF (OPER(IOP).EQ.'+ ') THEN
             DO 50 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)+VEC2(I)
 50          CONTINUE
-          ELSEIF (OPER(IOP).EQ.'-') THEN
+          CASE ('- ')
+!         ELSEIF (OPER(IOP).EQ.'- ') THEN
             DO 60 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)-VEC2(I)
 60          CONTINUE
-          ELSEIF (OPER(IOP).EQ.'*') THEN
+          CASE ('* ')
+!         ELSEIF (OPER(IOP).EQ.'* ') THEN
             DO 70 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)*VEC2(I)
 70          CONTINUE
-          ELSEIF (OPER(IOP).EQ.'/') THEN
+          CASE ('/ ')
+!         ELSEIF (OPER(IOP).EQ.'/ ') THEN
             DO 81 I=1,NSBOX_TAL
               IF (VEC2(I).NE.0.D0) GOTO 82
 81          CONTINUE
@@ -558,13 +296,61 @@ C  DIVISION BY IDENTICALLY ZERO TALLY. ALGEBR. TALLY CANNOT BE EVALUATED. RETURN
 82          DO 80 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)/(VEC2(I)+EPS30)
 80          CONTINUE
-          ELSEIF (OPER(IOP).EQ.'^') THEN
+          CASE ('^ ')
+!         ELSEIF (OPER(IOP).EQ.'^ ') THEN
             DO 85 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)**VEC2(I)
 85          CONTINUE
-          ELSE
+          CASE ('QA', 'QB', 'QC')
+! dF/dX, dF/dY, dF/dZ
+            DO I=1,NSBOX_TAL
+              IF ((NCLTAL(I) /= I) .AND. (NCLTAL(I) > 0)) GOTO 97
+            END DO
+            IF (.NOT.ALLOCATED(VECCOR)) THEN
+              ALLOCATE (VECCOR(NCORNER))
+              ALLOCATE (DFDX(NRAD))
+              ALLOCATE (DFDY(NRAD))
+              ALLOCATE (DFDZ(NRAD))
+            END IF
+            CALL EIRENE_CELL_TO_CORNER (VEC1,VECCOR)
+            CALL EIRENE_CALC_GRAD (VECCOR,DFDX,DFDY,DFDZ,
+     .                            .TRUE.,.TRUE.,.TRUE.)
+            IF (OPER(IOP) == 'QA') 
+     .          RESULT(II,1:NSBOX_TAL) = DFDX(1:NSBOX_TAL)
+            IF (OPER(IOP) == 'QB') 
+     .          RESULT(II,1:NSBOX_TAL) = DFDY(1:NSBOX_TAL)
+            IF (OPER(IOP) == 'QC') 
+     .          RESULT(II,1:NSBOX_TAL) = DFDZ(1:NSBOX_TAL)
+          CASE ('QD')
+!         ELSEIF (OPER(IOP) == 'QD') THEN
+! exp
+            IF (ANY(VEC1(1:NSBOX_TAL) > 150._DP)) GOTO 96
+            RESULT(II,1:NSBOX_TAL) = EXP(VEC1(1:NSBOX_TAL))
+          CASE ('QE')
+!         ELSEIF (OPER(IOP) == 'QE') THEN
+! ln
+            WHERE (VEC1(1:NSBOX_TAL) > 1.E-20_DP)
+              RESULT(II,1:NSBOX_TAL) = LOG(VEC1(1:NSBOX_TAL))
+            ELSEWHERE
+              RESULT(II,1:NSBOX_TAL) = LOG(1.E-20_DP)
+            END WHERE
+          CASE ('QF')
+!         ELSEIF (OPER(IOP) == 'QF') THEN
+! log10
+            WHERE (VEC1(1:NSBOX_TAL) > 1.E-20_DP)
+              RESULT(II,1:NSBOX_TAL) = LOG10(VEC1(1:NSBOX_TAL))
+            ELSEWHERE
+              RESULT(II,1:NSBOX_TAL) = LOG10(1.E-20_DP)
+            END WHERE
+          CASE ('QG')
+!         ELSEIF (OPER(IOP) == 'QG') THEN
+! abs
+            RESULT(II,1:NSBOX_TAL) = ABS(VEC1(1:NSBOX_TAL))
+          CASE DEFAULT
+!         ELSE
             GOTO 93
-          ENDIF
+!         ENDIF
+          END SELECT
 C
 cdr  test output for specific cell "icell"
 c         write (iunout,*) 'iop, k=icell ',result(II,icell)
@@ -617,6 +403,28 @@ C
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*)
      .      ' OPERAND OF ALGEBRAIC EXPRESSION IS SWITCHED OFF'
+          WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
+          WRITE (iunout,*) CHRTAL(IALV)
+          WRITE (iunout,'(1X,A,4I4)')
+     .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
+          GOTO 160
+C
+96        CONTINUE
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*)
+     .      ' OPERAND OF EXPONENTIAL FUNCTION > 150'
+          WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
+          WRITE (iunout,*) CHRTAL(IALV)
+          WRITE (iunout,'(1X,A,4I4)')
+     .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
+          GOTO 160
+C
+97        CONTINUE
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*)
+     .      ' EIRENE SCORES ON COMPLEX CELLS, CALCULATION OF',
+     .      ' DERIVATIVES IS NOT POSSIBLE '
+          WRITE (iunout,*) ' I, NCLTAL(I) ', I, NCLTAL(I)
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
           WRITE (iunout,*) CHRTAL(IALV)
           WRITE (iunout,'(1X,A,4I4)')
@@ -902,4 +710,196 @@ C
 999   CONTINUE
       WRITE (iunout,*) 'STORAGE CONFLICT IN ALGTAL, BECAUSE NRAD<NLIMPS'
       CALL EIRENE_EXIT_OWN(1)
+      return
+
+      CONTAINS
+
+      SUBROUTINE EIRENE_GET_INTAL
+cdr fetch input tally no. ITL, return as OP(:)
+cdr also set weighting function WEI(:) for averaging in calling routine 
+
+      IER = 0
+
+!  TALLY SWITCHED OFF ?
+      IF (.NOT.LIVTALI(ITL)) THEN
+        WRITE (iunout,*) ' WRONG TALLY NOT AVAILABLE ALGTAL IALV = ',
+     .                      IALV, ' ITAL = ', ITL
+        WRITE (iunout,*) ' NO ALGBRAIC TALLY CALCULATED '
+        CALL EIRENE_LEER(1)
+        IER = 1
+      END IF
+
+      SELECT CASE (ITL)
+      CASE (1)
+c  Te
+        OP(1:NSBOX)  = TEIN(1:NSBOX)
+        WEI(1:NSBOX) = DEIN(1:NSBOX)*VOL(1:NSBOX)
+      CASE (2)
+c  Ti
+        IF ( K == 0 ) THEN
+          OP = 0._DP
+          WEI = 0._DP
+          DO KK = 1, NF
+            OP(1:NSBOX)  = OP(1:NSBOX) + TIIN(MPLSTI(KK),1:NSBOX)
+            WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
+          END DO
+          WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
+        ELSE
+          OP(1:NSBOX)  = TIIN(MPLSTI(K),1:NSBOX)
+          WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
+        END IF
+      CASE (3)
+c  ne
+        OP(1:NSBOX) = DEIN(1:NSBOX)
+        WEI(1:NSBOX) = VOL(1:NSBOX)
+      CASE (4)
+c  ni
+        IF ( K == 0 ) THEN
+          OP(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)
+          WEI(1:NSBOX) = VOL(1:NSBOX)
+        ELSE
+          OP(1:NSBOX) = DIIN(K,1:NSBOX)
+          WEI(1:NSBOX) = VOL(1:NSBOX)
+        END IF
+      CASE (5)
+c  vxin
+        IF ( K == 0 ) THEN
+          OP = 0._DP
+          WEI = 0._DP
+          DO KK = 1, NF
+            OP(1:NSBOX)  = OP(1:NSBOX) + VXIN(MPLSV(KK),1:NSBOX)
+            WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
+          END DO
+          WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
+        ELSE
+          OP(1:NSBOX) = VXIN(MPLSV(K),1:NSBOX)
+          WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
+        END IF
+      CASE (6)
+c  vyin
+        IF ( K == 0 ) THEN
+          OP = 0._DP
+          WEI = 0._DP
+          DO KK = 1, NF
+            OP(1:NSBOX)  = OP(1:NSBOX) + VYIN(MPLSV(KK),1:NSBOX)
+            WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
+          END DO
+          WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
+        ELSE
+          OP(1:NSBOX) = VYIN(MPLSV(K),1:NSBOX)
+          WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
+        END IF
+      CASE (7)
+c  vzin
+        IF ( K == 0 ) THEN
+          OP = 0._DP
+          WEI = 0._DP
+          DO KK = 1, NF
+            OP(1:NSBOX)  = OP(1:NSBOX) + VZIN(MPLSV(KK),1:NSBOX)
+            WEI(1:NSBOX) = WEI(1:NSBOX) + DIIN(K,1:NSBOX)
+          END DO
+          WEI(1:NSBOX) = WEI(1:NSBOX) * VOL(1:NSBOX)
+        ELSE
+          OP(1:NSBOX) = VZIN(MPLSV(K),1:NSBOX)
+          WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
+        END IF
+      CASE (8)
+c  Bx
+        OP(1:NSBOX) = BXIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (9)
+c  By
+        OP(1:NSBOX) = BYIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (10)
+c  Bz
+        OP(1:NSBOX) = BZIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (11)
+c  |B|
+        OP(1:NSBOX) = BFIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (12)
+c  Adin
+        IF ( K == 0 ) THEN
+          OP(1:NSBOX) = SUM(ADIN(1:NF,1:NSBOX),1)
+          WEI(1:NSBOX) = 1._DP
+        ELSE
+          OP(1:NSBOX) = ADIN(K,1:NSBOX)
+          WEI(1:NSBOX) = 1._DP
+        END IF
+      CASE (13)
+c  Ed
+        IF ( K == 0 ) THEN
+          OP(1:NSBOX) = SUM(EDRIFT(1:NF,1:NSBOX),1)
+          WEI(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)*VOL(1:NSBOX)
+        ELSE
+          OP(1:NSBOX) = EDRIFT(K,1:NSBOX)
+          WEI(1:NSBOX) = DIIN(K,1:NSBOX)*VOL(1:NSBOX)
+        END IF
+      CASE (14)
+c  Vol
+        OP(1:NSBOX) = VOL(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (15)
+c  Wght
+        IF ( K == 0 ) THEN
+          OP(1:NSBOX) = SUM(WGHT(1:NF,1:NSBOX),1)
+          WEI(1:NSBOX) = 1._DP
+        ELSE
+          OP(1:NSBOX) = WGHT(K,1:NSBOX)
+          WEI(1:NSBOX) = 1._DP
+        END IF
+      CASE (16)
+c  BXPERP
+        OP(1:NSBOX) = BXPERP(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (17)
+c  BYPERP
+        OP(1:NSBOX) = BYPERP(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (18)
+c  Ex
+        OP(1:NSBOX) = EXIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (19)
+c  Ey
+        OP(1:NSBOX) = EYIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (20)
+c  Ez
+        OP(1:NSBOX) = EZIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (21)
+c  |E|
+        OP(1:NSBOX) = EFIN(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (22)
+c  electr. Potential
+        OP(1:NSBOX) = POT(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (23)
+c  flow velocity parallele to B field
+        OP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (24)
+c  parallel to B flow momentum
+        OP(1:NSBOX) = PARMOM(K,1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+c  
+c
+      CASE (25:96)   ! ntali=96, constant required here
+!  GRADIENTS
+        KK = NADDP(ITL)+K
+        OP(1:NSBOX) = PLSTLS(KK,1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE DEFAULT
+        WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
+     .                      IALV
+        WRITE (iunout,*) ' NO ALGBRAIC TALLY CALCULATED '
+        CALL EIRENE_LEER(1)
+        IER = 1
+      END SELECT
+
+      END SUBROUTINE EIRENE_GET_INTAL
       END

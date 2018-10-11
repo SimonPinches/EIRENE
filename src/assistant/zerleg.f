@@ -60,11 +60,22 @@ C           : POSITION DES ERSTEN ZEICHENS VOM TEILAUSDRUCK
  
          INTEGER :: OMEGA
 C           : POSITION DES LEZTEN ZEICHENS VOM TEILAUSDRUCK
+
+         INTEGER :: BEGINN
+C           : POSITION IN AUSDRU, BEI DER DIE ZERLEGUNG BEGINNT
  
+         INTEGER :: ENDE
+C           : POSITION IN AUSDRU, BEI DER DIE ZERLEGUNG BEENDET WIRD
+
+         CHARACTER(6), PARAMETER :: FUCHAR= 'ABCDEF'
+
+         CHARACTER(2) :: TEILCH
+C           : INHALT VON TEIL
 C
 C     HILFSVARIABLEN :
 C
       INTEGER :: POS
+      LOGICAL :: CHECK
  
  
 C
@@ -96,8 +107,7 @@ C
 C           BESTIMME ERSTES ZEICHEN IM ERSTEN INNERSTEN KLAMMERAUSDRUCK
 C
             POS=0
-11             POS=INDEX( AUSDRU(POS+1:OMEGA), '(' ) +POS
-            IF ( INDEX ( AUSDRU(POS+1:OMEGA), '(' ) .GT. 0 ) GOTO 11
+            POS=INDEX( AUSDRU(POS+1:OMEGA), '(', .true. ) +POS
             ALPHA=POS+1
 C
 C           ZERLEGUNG DES KLAMMERAUSDRUCKS
@@ -105,29 +115,63 @@ C
             CALL EIRENE_SCHRIT(AUSDRU, AKTLEN, ALPHA, OMEGA, TEIL,
      >                  IPART, PART, IARITH, ARITH)
 C
-C           UEBERPRUEFUNG,OB DIE KLAMMERN WEGFALLEN KOENNEN
+C           UEBERPRUEFUNG, OB DIE KLAMMERN WEGFALLEN KOENNEN
 C
             IF (OMEGA+1-ALPHA .LE. 2
      >          .AND. INDEX('+-',AUSDRU(ALPHA:ALPHA)) .EQ. 0) THEN
-C
-C              ENTFERNUNG DER KLAMMERN
-C
-               IF (ALPHA-1 .EQ. 1) THEN
-                  IF (OMEGA+1 .EQ. AKTLEN) THEN
-                     HILFE=AUSDRU(ALPHA:OMEGA)
+               
+!              PRUEFE, OB EINE FUNKTION AUSGEWERTET WERDEN SOLL 
+               CHECK = .FALSE.
+               IF (ALPHA > 3) THEN
+                 CHECK = (AUSDRU(ALPHA-3:ALPHA-3) == 'Q') .AND.
+     >             (INDEX(FUCHAR,AUSDRU(ALPHA-2:ALPHA-2)) > 0)
+               END IF
+               IF (CHECK) THEN
+
+!                 FUNKTIONSAUFRUF
+                  TEIL = TEIL + 1
+                  WRITE(TEILCH,'(I2.2)') TEIL
+                  BEGINN = ALPHA - 3
+                  ENDE = OMEGA + 1
+                  IPART(TEIL) = 5 + ENDE - BEGINN + 1
+                  PART(TEIL) = TEILCH//' = '//AUSDRU(BEGINN:ENDE)//' '
+                  IARITH(TEIL)=AKTLEN - (ENDE+1-BEGINN) +2
+                  IF (BEGINN .EQ. 1) then
+                     if (ENDE .EQ. AKTLEN) THEN
+                        ARITH(TEIL)=TEILCH
+                     ELSE
+                        ARITH(TEIL)=TEILCH//AUSDRU(ENDE+1:AKTLEN)
+                     ENDIF
+                  ELSEIF (ENDE .EQ. AKTLEN) THEN
+                     ARITH(TEIL)=AUSDRU(1:BEGINN-1)//TEILCH
                   ELSE
-                     HILFE=AUSDRU(ALPHA:OMEGA)//AUSDRU(OMEGA+2:AKTLEN)
+                     ARITH(TEIL)=AUSDRU(1:BEGINN-1)//TEILCH
+     >                    //AUSDRU(ENDE+1:AKTLEN)
                   ENDIF
-               ELSEIF (OMEGA+1 .EQ. AKTLEN) THEN
-                  HILFE=AUSDRU(1:ALPHA-2)//AUSDRU(ALPHA:OMEGA)
+                  AKTLEN=IARITH(TEIL)
+                  AUSDRU=ARITH(TEIL)
+                  
                ELSE
-                  HILFE=AUSDRU(1:ALPHA-2)//AUSDRU(ALPHA:OMEGA)
-     >                   //AUSDRU(OMEGA+2:AKTLEN)
-               ENDIF
-               AKTLEN=AKTLEN-2
-               AUSDRU=HILFE
-               IARITH(TEIL)=AKTLEN
-               ARITH(TEIL)=AUSDRU
+C
+C                 ENTFERNUNG DER KLAMMERN
+C
+                  IF (ALPHA-1 .EQ. 1) THEN
+                     IF (OMEGA+1 .EQ. AKTLEN) THEN
+                       HILFE=AUSDRU(ALPHA:OMEGA)
+                     ELSE
+                       HILFE=AUSDRU(ALPHA:OMEGA)//AUSDRU(OMEGA+2:AKTLEN)
+                     ENDIF
+                  ELSEIF (OMEGA+1 .EQ. AKTLEN) THEN
+                     HILFE=AUSDRU(1:ALPHA-2)//AUSDRU(ALPHA:OMEGA)
+                  ELSE
+                     HILFE=AUSDRU(1:ALPHA-2)//AUSDRU(ALPHA:OMEGA)
+     >                    //AUSDRU(OMEGA+2:AKTLEN)
+                  ENDIF
+                  AKTLEN=AKTLEN-2
+                  AUSDRU=HILFE
+                  IARITH(TEIL)=AKTLEN
+                  ARITH(TEIL)=AUSDRU
+               END IF
             ENDIF
  
             ALPHA=1

@@ -25,7 +25,7 @@ C
          CHARACTER(*), INTENT(INOUT) :: TERM
 C           : EINZULESENDER AUSDRUCK
  
-         CHARACTER(1), INTENT(OUT) :: OPER(*)
+         CHARACTER(2), INTENT(OUT) :: OPER(*)
          INTEGER, INTENT(OUT) :: IZIF(4,*)
          REAL(DP), INTENT(INOUT) :: CONST(*)
          INTEGER, INTENT(OUT) :: NOP
@@ -86,13 +86,16 @@ chr
 C
 C     HILFSVARIABLEN :
 C
-         INTEGER :: MAXI, I, IC
+         INTEGER :: I, IC
 chr
 chr   string, der die neuen variablennamen enthaelt
       buchst='ABCDEFGHIJ'
 chr
 !pb count number of constant terms
       ic = 0
+
+!pb change TERM to uppercase
+      call eirene_uppercase(term)
 C
 C        LESE TERM UND WERTE AUS
 C
@@ -129,27 +132,18 @@ chr
 C
 C           ERMITTELN DER LAENGE VON TERM
 C
-            LAENGE=LEN(TERM)
-20          IF (TERM(LAENGE:LAENGE) .EQ. ' ') THEN
-               LAENGE=LAENGE-1
-               GOTO 20
-            ENDIF
+            LAENGE=LEN_TRIM(TERM)
  
             AUSDRU=TERM
             AKTLEN=LAENGE
  
             CALL EIRENE_ZERLEG(AUSDRU, AKTLEN, IPART, PART, IARITH,
-     .  ARITH,
-     >                  TEIL, HILFE, ERROR)
+     .                         ARITH, TEIL, HILFE, ERROR)
  
             IF (ERROR .EQ. 0) THEN
 C
 C              AUSGABE DER ZERLEGUNG
 C
-               MAXI=0
-               DO 45, I=1,TEIL
-                   MAXI=MAX(IPART(I),MAXI)
-45                 CONTINUE
  
                NOP=TEIL
                DO 30, I=1,TEIL
@@ -161,7 +155,40 @@ chr               entweder stellt eine solche einheit einen operanden
 chr               dar oder ein zwischenergebnis mit der 1. ziffer als
 chr               nummer und der 2. als 0 zur kennzeichnung des paares
 chr               als zwischenergebnis
-                  if (part(i)(7:7).ne.'Z') then
+                  oper(i) = '  '
+                  izif(1:4,i) = 0
+                  if (part(i)(7:7).eq.'Q') then
+                    oper(i) = part(i)(7:8)
+                    feldind=index(buchst,part(i)(10:10))
+                    if (feldind == 0) then
+                      READ(PART(I)(12:12),'(I1)') IZIF(1,I)
+                      IZIF(2,I)=0
+                    else   
+                      IK=INDEX(ERSETZ(FELDIND),',')
+                      IF (IK.EQ.0) THEN
+                        IC = IC + 1
+                        IZIF(1,I)=-I
+                        IZIF(2,I)= IC
+                        CALL EIRENE_RDCN (ERSETZ(FELDIND),CONST(IC))
+                      ELSE
+                        IKM=IK-1
+                        IKP=IK+1
+                        FO(1:4)='(I )'
+                        WRITE (FO(3:3),'(I1)') IK-2
+                        READ(ERSETZ(FELDIND)(2:IKM),FO) IZIF(1,I)
+                        IF (ERSETZ(FELDIND)(IK+2:IK+2).EQ.'>') THEN
+                          READ(ERSETZ(FELDIND)(IKP:IKP),'(I1)')
+     .                         IZIF(2,I)
+                        ELSEIF (ERSETZ(FELDIND)(IK+3:IK+3).EQ.'>') THEN
+                          READ(ERSETZ(FELDIND)(IKP:IKP+1),'(I2)')
+     .                         IZIF(2,I)
+                        ELSEIF (ERSETZ(FELDIND)(IK+4:IK+4).EQ.'>') THEN
+                          READ(ERSETZ(FELDIND)(IKP:IKP+2),'(I3)')
+     .                         IZIF(2,I)
+                        ENDIF
+                      ENDIF
+                    ENDIF
+                  elseif (part(i)(7:7).ne.'Z') then
                      OPER(I)=PART(I)(9:9)
                      feldind=index(buchst,part(i)(7:7))
                      IK=INDEX(ERSETZ(FELDIND),',')

@@ -71,9 +71,10 @@ C
 C
 C              GEHE WEITER IM STRING
 C
+               if (AUSDRU(I:I) == AUSDRU(I+1:I+1)) OANDEN=OANDEN+1
                I=I+2
                POS=INDEX( BUCHST, AUSDRU(I:I) )
-               OANDEN=OANDEN+1
+!pb               OANDEN=OANDEN+1
             ENDIF
             GOTO 10
          ENDIF
