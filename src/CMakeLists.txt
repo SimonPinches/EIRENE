@@ -157,8 +157,7 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
                    ${src_photons} ${plotpath} ${src_sampling} 
                    ${src_scoring} ${src_startup-routines} 
                    ${src_surface-processes} ${src_tetrahedra} 
-                   ${userpath} ${src_volume-processes} 
-                   ${src_xdr-dummy})
+                   ${userpath} ${src_volume-processes})
 
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)

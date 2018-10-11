@@ -179,15 +179,18 @@ deploy_database_website_methane:
             TEX_FILE=../../Database/AMdata/$DATABASE.tex;
             ./ex_prog.sh -d h0 -p "$DATABASE" $TEX_FILE ./output/;
             ./ex_prog.sh -spec -p "$DATABASE" $TEX_FILE ./output/ specific;
-            git add ../plotform/index_*.html ../inputdir*/*.txt;
-            git commit -m 'Automated database update following on EIRENE repository database update.';
-            git push origin;
+            if [[ "$(git diff --exit-code --quiet; echo $?)" != 0 ]];
+            then
+              git add ../plotform/index_*.html ../inputdir*/*.txt;
+              git commit -m 'Automated database update following on EIRENE repository database update.';
+              git push origin;
+              rsync -t -e ssh ../inputdir/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir;
+              rsync -t -e ssh ../inputdir_amjuel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_amjuel;
+              rsync -t -e ssh ../inputdir_hydhel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_hydhel;
+              rsync -t -e ssh ../plotform/index_*.html eirene@apps.fz-juelich.de:/var/www/hydkin/plotform;
+            fi;
             git tag -a -m "$DATABASE update" $CI_COMMIT_TAG;
             git push origin $CI_COMMIT_TAG;
-            rsync -t -e ssh ../inputdir/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir;
-            rsync -t -e ssh ../inputdir_amjuel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_amjuel;
-            rsync -t -e ssh ../inputdir_hydhel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_hydhel;
-            rsync -t -e ssh ../plotform/index_*.html eirene@apps.fz-juelich.de:/var/www/hydkin/plotform;
           fi
 
 deploy_database_hydkin_amjuel:
