@@ -51,7 +51,7 @@ c  magnetic field
       LIVTALI(23)  = NPLSV>0      ! BVIN, else: sign(1.,bvin)=1.0   
       LIVTALI(24)  = NPLS>0       ! PARMOM, else: = 0.0
 
-C  CURRENTLY THE LAST INPUT TALLY IS TALLY NO. 24 (NTALG)
+C  CURRENTLY THE LAST INPUT TALLY IS TALLY NO. 24 (=NTALG)
 
 C  INTLOPT < 0  : SWITCH OFF TALLY
 C          = 0  : KEEP DEFAULT
@@ -163,7 +163,7 @@ C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
 
       
 C  19 primary input tallies plus 5 derived background tallies,
-c     unfortunately mixed in
+c     unfortunately mixed 
 C  --> 24 rather than 18 background tallies
       NFRSTP(1)=0
       NFRSTP(2)=NPLSTI
@@ -264,18 +264,20 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(95)=NPLS   ! PARMON
       NFRSTP(96)=NPLS   ! PARMON
 C
-C  NTALI=24?  number of input tallies  (19 PRIMARY + 5 DERIVED)
-cdr there are many more derived input tallies. 
-cdr since primary and derived input tallies got mixed up anyway, 
-cdr to do: change ntali, add other derived input tallies, here, and in settxt.
-cdr be careful:
-cdr in some places in code the numbering  of input tallies is hard coded.
+C  NTALI=96?  number of input tallies  (19 PRIMARY + 5 DERIVED + 24 GRADIENTS)
+ 
+cdr Since primary and derived input tallies got mixed up anyway, 
+cdr add magnetic flux (vector potential). 
+cdr Be careful:
+cdr in some places in the code currently the numbering  of input tallies is hard coded.
 cdr (ALGTAL, OUTPLA,....) 
 C
       DO 5 J=1,NTALI
         IF (LIVTALI(J)) NFRSTP(J)=MAX0(1,NFRSTP(J))
 5     CONTINUE
 C
+C  SET CUMULATED FIRST INDICES OF ACTIVE INPUT TALLIES: NADDP(J)
+C  THE LAST ACTIVE INPUT TALLY IS TALLY NO. NLSTTL
       NADDP(1)=0
       DO 6 J=2,NTALI
         IF (LIVTALI(J-1)) THEN
@@ -294,10 +296,9 @@ C  TOTAL NUMBER OF INPUT TALLIES
       CALL EIRENE_ALLOC_COMUSR(2)
       CALL EIRENE_ASSOCIATE_COMUSR
 
+!  CHECK VALUE ON LAST CELL IN LAST ACTIVE TALLY
 !  THIS TEST CAN NOT BE PERFORMED DUE TO SWITCHING OFF OF INPUT TALLIES
-!      NTESTP=NADDP(NTALI)+NFRSTP(NLSTTL)
-!      NTESTP=NINPTL
-!      NTESTP=NTESTP*NRAD
+!     NTESTP=NINPTL*NRAD  ! STORAGE POSITION OF LAST CELL IN LAST TALLY
 
 cdr  correct for the derived tallies mixed into primary input tallies.  
 !      NPLPRM_TEST=NPLPRM + (2+NPLS)*NRAD
@@ -309,7 +310,7 @@ cdr  correct for the derived tallies mixed into primary input tallies.
 !      ENDIF
 c............................................................................. 
  
-      IF (TRCTAL) THEN
+      IF (TRCTAL) THEN        
         CALL EIRENE_LEER(2)
         WRITE(IUNOUT,*) 'INPUT TALLIES USED IN THIS RUN'
         CALL EIRENE_LEER(1)

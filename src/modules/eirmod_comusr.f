@@ -374,8 +374,9 @@ c  NCPV, NBGV are now set
         ALLOCATE (IBGRC(NBGV))
 
         WRITE (55+IFOFF,'(A,T25,I15)')
-     .        ' COMUSR(2) ',(NPLPR1+(3+NPLSTI+NPLS)*NRAD)*8 + 
-     .                      4*(NCPV+NBGV)*4 
+     .        ' COMUSR(2) ',(NPLPR1+                   ! ACTIVE INPUT TALLIES PLSTLS
+     .                      (3+NPLSTI+NPLS)*NRAD)*8 +  ! TEINL,TIINL,DEINL,DIINL
+     .                      4*(NCPV+NBGV)*4            ! BGK AND CPV INTEGERS
 
       ELSE IF (ICAL == 3) THEN
  
