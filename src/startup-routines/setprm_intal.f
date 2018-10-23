@@ -8,6 +8,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COUTAU
+      USE EIRMOD_CCONA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CTEXT
       USE EIRMOD_CTRCEI, ONLY: TRCTAL
@@ -16,6 +17,7 @@ C
  
       INTEGER :: NTESTP, J, ITAL, NLSTTL, INDGRAD, INDTL
       INTEGER :: NPLPRM_TEST
+      REAL(DP):: TSAVE
 C
  
 C  LIVTALI: SWITCH OFF SOME INPUT TALLIES AUTOMATICALLY;
@@ -162,7 +164,7 @@ C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
       END IF
 
       
-C  19 primary input tallies plus 5 derived background tallies,
+C  18 primary input tallies plus 6 derived background tallies, (# ...)
 c     unfortunately mixed 
 C  --> 24 rather than 18 background tallies
       NFRSTP(1)=0
@@ -187,8 +189,8 @@ C  --> 24 rather than 18 background tallies
       NFRSTP(20)=0      ! EZ
       NFRSTP(21)=0      ! EF
       NFRSTP(22)=0      ! POT
-      NFRSTP(23)=NPLSV  ! BVIN
-      NFRSTP(24)=NPLS   ! PARMON
+      NFRSTP(23)=NPLSV  ! # BVIN
+      NFRSTP(24)=NPLS   ! # PARMON
 
 c  from here on: derivatives (gradients) of input tallies
       NFRSTP(25)=0
@@ -288,26 +290,35 @@ C  THE LAST ACTIVE INPUT TALLY IS TALLY NO. NLSTTL
         END IF
  6    CONTINUE
 
-      IF (LIVTALI(NTALI)) NLSTTL = NTALI
-C
-C  TOTAL NUMBER OF INPUT TALLIES
-      NINPTL = NADDP(NTALI)+NFRSTP(NLSTTL)
+C  TOTAL NUMBER OF INPUT TALLIES, ALSO COUNTING FIRST INDICES
+      NINPTL = NADDP(NTALI)
 
+CDR  CORRECT FOR LAST TALLY:
+      IF (LIVTALI(NTALI)) THEN 
+        NLSTTL = NTALI
+C  TOTAL NUMBER OF INPUT TALLIES, LAST TALLY NTALI WAS NOT YET IN NADDP(..)
+        NINPTL = NINPTL+NFRSTP(NLSTTL)
+      ENDIF
+      
+c  allocate and initialize plstls
       CALL EIRENE_ALLOC_COMUSR(2)
+c  set pointers:  input tallies tein, tiin,....parmom,.....on plttls
       CALL EIRENE_ASSOCIATE_COMUSR
+
+cdr  hard coded test, in case parmom is the last active input tally
+      tsave=parmom(npls,nrad)
+      parmom(npls,nrad)=1.2345678
+      if (abs(plstls(ninptl,nrad)-1.2345678).gt.eps10) then
+        write (iunout,*) 'error ninptl, assuming parmom is last tally'
+        call eirene_exit_own(1)
+      endif
+      parmom(npls,nrad)=tsave
 
 !  CHECK VALUE ON LAST CELL IN LAST ACTIVE TALLY
 !  THIS TEST CAN NOT BE PERFORMED DUE TO SWITCHING OFF OF INPUT TALLIES
 !     NTESTP=NINPTL*NRAD  ! STORAGE POSITION OF LAST CELL IN LAST TALLY
 
-cdr  correct for the derived tallies mixed into primary input tallies.  
-!      NPLPRM_TEST=NPLPRM + (2+NPLS)*NRAD
-!      IF (NTESTP.NE.NPLPRM_TEST) THEN
-!        WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM_INTAL: ' //
-!     .                   'NPLPRM'
-!        WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM_TEST
-!        CALL EIRENE_EXIT_OWN(1)
-!      ENDIF
+
 c............................................................................. 
  
       IF (TRCTAL) THEN        
