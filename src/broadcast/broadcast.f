@@ -1175,7 +1175,6 @@ cdr   intlopts  ??, and more ?  smoothed tallies ?
       CALL MPI_BCAST (NSPEN,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGVAC,NRAD*(NPLS+2),MPI_LOGICAL,0,MPI_COMM_WORLD,
      .                ier)
-      CALL MPI_BCAST (LGDFT,NRAD,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRLL,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception made for this variable
       CALL MPI_BCAST (NTCPU,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)

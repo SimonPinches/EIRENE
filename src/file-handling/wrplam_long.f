@@ -1,5 +1,7 @@
 c  oct. 2018:  iflg=0 read primary source data (incl. stepfunctions)
-c              else   no reading of primary source data (also not of  stepfunctions)
+c              else   no reading of primary source data 
+c             (also not of  stepfunctions)
+c              remove redundant logical tally LGDFT
 c  feb. 2018:  restructured because of switchable input tallies
 c              Tests: are the same input tallies active in read and write runs?
 c  sept. 05:  five more tallies added to step function, see also CSTEP.f
@@ -61,7 +63,7 @@ C  MUSR, INTEGER
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
      I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
-     L           LGVAC,LGDFT,LSMOPRO
+     L           LGVAC,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
       CALL EIRENE_WRITE_CMDTA
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMDTA,ICMDTA'
@@ -129,7 +131,7 @@ C  MUSR, INTEGER
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
      I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
-     L           LGVAC,LGDFT,LSMOPRO
+     L           LGVAC,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f '
       IF (IO /= 0) GOTO 990
       CALL EIRENE_READ_CMDTA

@@ -8,7 +8,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COUTAU
-      USE EIRMOD_CCONA
+      USE EIRMOD_CCONA, ONLY: EPS10
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CTEXT
       USE EIRMOD_CTRCEI, ONLY: TRCTAL
@@ -306,13 +306,13 @@ c  set pointers:  input tallies tein, tiin,....parmom,.....on plttls
       CALL EIRENE_ASSOCIATE_COMUSR
 
 cdr  hard coded test, in case parmom is the last active input tally
-      tsave=parmom(npls,nrad)
-      parmom(npls,nrad)=1.2345678
-      if (abs(plstls(ninptl,nrad)-1.2345678).gt.eps10) then
-        write (iunout,*) 'error ninptl, assuming parmom is last tally'
-        call eirene_exit_own(1)
-      endif
-      parmom(npls,nrad)=tsave
+cdr   tsave=parmom(npls,nrad)
+cdr   parmom(npls,nrad)=1.2345678
+cdr   if (abs(plstls(ninptl,nrad)-1.2345678).gt.eps10) then
+cdr     write (iunout,*) 'error ninptl, assuming parmom is last tally'
+cdr     call eirene_exit_own(1)
+cdr   endif
+cdr   parmom(npls,nrad)=tsave
 
 !  CHECK VALUE ON LAST CELL IN LAST ACTIVE TALLY
 !  THIS TEST CAN NOT BE PERFORMED DUE TO SWITCHING OFF OF INPUT TALLIES

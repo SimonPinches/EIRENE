@@ -9,6 +9,7 @@ cdr  oct 2018:  bvin moved into LBSMO condition
 cdr             POT  moved into LESMO condition
 cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
 cdr             missing:  dealloc_corners  ??
+cdr             remove redundant tally LGDFT (also from LUSR)
 
       MODULE EIRMOD_COMUSR
  
@@ -149,7 +150,7 @@ C  MUSR, INTEGER
  
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
-     L         LGVAC(:,:), LGDFT(:)
+     L         LGVAC(:,:) 
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LIVTALI(:)
@@ -260,7 +261,7 @@ C  gradients of derived tallies
      .       +2*NPLS+NSPZ*NPLS
      .       +4*NADV+4*NCLV+4*NSNV+4*NADS+4*NTALI+NTALG+2*NTALV+2*NTALS
 
-        LUSR=NRAD*(NPLS+2)+2*NRAD+NTALI
+        LUSR=NRAD*(NPLS+2)+NRAD+NTALI
 
         
         ALLOCATE (RMASSA(MAX(1,NATM)))
@@ -338,7 +339,6 @@ c  integer  species and background tally data
 
 c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
-        ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
         ALLOCATE (LIVTALI(NTALI))
  
@@ -1213,7 +1213,6 @@ c
       DEALLOCATE (NSPENW)
       DEALLOCATE (INTLOPTS)
       DEALLOCATE (LGVAC)
-      DEALLOCATE (LGDFT)
       DEALLOCATE (LSPCCLL)
       DEALLOCATE (LSMOPRO)
       DEALLOCATE (LIVTALI)
@@ -1343,7 +1342,6 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         NSPENW = 0
         INTLOPTS  = 0
         LGVAC  = .FALSE.
-        LGDFT  = .FALSE.
         LSPCCLL = .FALSE.
         LIVTALI = .TRUE.
 
