@@ -13,7 +13,7 @@ c
       SUBROUTINE EIRENE_RDTRIM
 C
 C  THIS SUBROUTINE READS, AS EXPLICITLY SELECTED, SINGLE
-C  REFLECTION DATA FILES "A_ON_B" PRODUCED E.G. BY MONTE CARLO BCA CODES
+C  REFLECTION DATA FILES "A_ON_B" PRODUCED E.G. BY MONTE-CARLO BCA CODES
 C  THERE ARE NHD6 SUCH FILES IN THIS RUN
 C  INPUT 
 C     STREAM: IUN=20+IFOFF
@@ -68,7 +68,7 @@ C  READ: REFLECTION PROBABILITY HFTR0, ???, PROJECTILE SURFACE BINDING ENERGY PA
             IF (I1.EQ.1.AND.I2.EQ.1) THEN    
 cdr
 !  additional data DUMMY and ESBPARM only for the first of the 12*7=84 datasets
-!  SOME COMPILERS DON'T LIKE READING MORE DATA THAN THERE ARE IN A SINGLE LINE
+!  SOME COMPILERS DO NOT LIKE READING MORE DATA THAN THERE ARE IN A SINGLE LINE
 !  to be done: check length of input line, and decide then whether to read
 !  DUMMY and ESBPARM, or not.
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
@@ -93,26 +93,30 @@ C  FIND NEAREST INTEGER FOR NUCLEAR MASS NUMBER OF PROJECTILE
               READ (IUN,*) (HFTR2(I1,I2,I3,I4,IFILE),I4=1,INR)
 5           CONTINUE
             READ (IUN,*)
-            DO 6 I3=1,INR
-            DO 6 I4=1,INR
+            DO I3=1,INR
+             DO I4=1,INR
               READ (IUN,*) (HFTR3(I1,I2,I3,I4,I5,IFILE),I5=1,INR)
-6           CONTINUE
-3         CONTINUE
-2       CONTINUE
+             END DO
+            END DO
+    3     CONTINUE
+    2   CONTINUE
         CLOSE (UNIT=IUN)
 7     CONTINUE
 C
       INEM=INE-1
-      DO 11 I=1,INEM
-11      DENAR(I)=1./(ENAR(I+1)-ENAR(I))
+      DO I=1,INEM
+        DENAR(I)=1./(ENAR(I+1)-ENAR(I))
+      END DO
       PID180=ATAN(1.)/45.
-      DO 12 I=1,INW
-12      WIAR(I)=COS(WIAR(I)*PID180)
+      DO I=1,INW
+        WIAR(I)=COS(WIAR(I)*PID180)
+      END DO
       INWM=INW-1
-      DO 13 I=1,INWM
-13      DWIAR(I)=1./(WIAR(I+1)-WIAR(I))
+      DO I=1,INWM
+        DWIAR(I)=1./(WIAR(I+1)-WIAR(I))
+      END DO
       INRM=INR-1
-cdr  old version: hard wired INR=5
+cdr  old version: hard-wired INR=5
       RAAR(1)=0.1
       RAAR(2)=0.3
       RAAR(3)=0.5
@@ -125,8 +129,9 @@ cdr  for INR=5: should produce the same RAAR as above.
         raar(I)=float(1+2*(I-1))/float(inr2)
       enddo
 
-      DO 15 I=1,INRM
-15      DRAAR(I)=1./(RAAR(I+1)-RAAR(I))
+      DO I=1,INRM
+        DRAAR(I)=1./(RAAR(I+1)-RAAR(I))
+      END DO
 C
       RETURN
       END

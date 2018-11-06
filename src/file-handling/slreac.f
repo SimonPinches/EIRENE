@@ -16,7 +16,7 @@ cdr          taken over from ITER-IO branch
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
 cdr:  june 16:  added H.5 - H.7 options for H_COL case.
-cdr            started to clarify extrapolation options for polynom fits. Not ready
+cdr            started to clarify extrapolation options for polynomial fits. Not ready
 cdr            some comments corrected
 cdr   Aug. 16: reading Tmin, Emin from hydhel disabled.
 cdr            May have corrupted extrapolation in some cases
@@ -32,7 +32,7 @@ C
      .                          ELNAME, IZ1, 
      .                          IROW_ESC, ICOL_ESC, POP_ESC)
 c
-c  open data stream 29 and read atomic data set no. IR
+c  open data stream 29 and read atomic dataset no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
 c           may have been set (for entire eirene run),
 c           then stream is "29+ifoff".  default: ifoff=0)
@@ -46,21 +46,21 @@ c    IR    : store data on eirene data structure REACDAT(...,...,IR)
 c
 c
 c
-C    FILNAM: read a&m data from file filnam,
+C    FILNAM: read A&M data from file filnam,
 c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
 CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
 C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
 c                        currently available: h_colrad.f
 C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
 C
-c    H123  : identifyer for data type in filnam, e.g. H.1, H.2, H.3, ...
+c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
 
 
 c    REAC  : in case FILNAM = AMJUEL, HYDHEL, METHAN, H2VIBR:
 c               number of reaction in data file "filnam", e.g. 2.2.5
 c               and parameter fit-flag is found from the datafile (if available)
 c    REAC  : in case FILNAM.eq.CONST:
-c               reac IS MIS-USED AS  fit-flag: iftflg.
+c               reac IS MISUSED AS fit-flag: iftflg.
 C               not NICE, VERY CONFUSING.
 C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM= "CONST"
 
@@ -95,29 +95,29 @@ c                  skip reading extrapolation data from data file, even if they 
 
 c  specific input, only available in case FILNAM=ADAS
 c    ELNAME:  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
-C    IZ1   :  only in case FILNAM=ADAS:    ???????????????  ion charge in filename ?????
+C    IZ1   :  only in case FILNAM=ADAS: ionization stage number within ADAS file
 
 C  internal
 C    ISW   <-- H123:   H.0: ISW=0, H.1: ISW=1, H.2: ISW=2, ...,H.12: ISW=12
-C    I0    derived from ISW, initial value of 2nd index in old CREAC-arrays
+C    I0    derived from ISW, initial value of 2nd index in old CREAC arrays
 
 C  output
-c    ISWR  : eirene flag for type of process  (1,2,...7), coding EI,CX,EL,PI,...
+c    ISWR  : eirene flag for type of process (1,2,...7), coding EI,CX,EL,PI,...
 
 c    CREAC :          (old version) eirene storage array for a&m data CREAC(9,-1:9,IR)
 c    REACDAT(IR)%.... (new version) eirene atomic data structure.
 
 c    MODCLF: see below: further information on input a&m data structure
 c    DELPOT: ionisation potential (for H.10 data),
-c            currently handeled in input.f. not nice! also missing still for: H.8, H.9
+c            currently handled in input.f. not nice! also missing still for: H.8, H.9
 c
-C    IFTFLG=IFTFLG(IR,IH): flag for type of fitting expression  ("fit-flag=...")
+C    IFTFLG=IFTFLG(IR,IH): flag for type of fitting expression ("fit-flag=...")
 C    IH  internally derived from ISW, for different types of data:
-C          0 for interaction potential, or differential cross sections (ISW=0)
-C          1 for cross section, (ISW=1)
-C          2 for rate-coeff, (ISW=2,3,4)
+C          0 for interaction potential, or differential cross-sections (ISW=0)
+C          1 for cross-section, (ISW=1)
+C          2 for rate coeff, (ISW=2,3,4)
 C          3 for mom-weighted rate coeff. (ISW=5,6,7)
-C          4 for energy weighted rate coeff. (ISW=8,9,10)
+C          4 for energy-weighted rate coeff. (ISW=8,9,10)
 C          5 for other quantities, population densities, etc.. (ISW=11,12)
 c
 c
@@ -128,7 +128,7 @@ C       IFTFLG(IR,0)   =2,  FOR INTERACTION POTENTIAL (GEN. MORSE)
 
 C           CASE  IH=1  (H.1):
 C       IFTFLG(IR,1)   =0,  CROSS-SECTION (9-POLYNOMIAL)
-C                      =3,  cross-section (ionisation/excitation cross section
+C                      =3,  cross-section (ionisation/excitation cross-section
 C                           formula (METHANE,...)
 C           CASE  IH=2,3....,10 (H.2, H.3,....H.10)
 C       IFTFLG(IR,...  =0,  FOR RATE COEFFICIENTS (9-POLYNOMIAL, 9X9-DOUBLE POLYNOMIAL)
@@ -142,13 +142,13 @@ C
 C  OUTPUT (IN COMMON COMXS):
 C    READ DATA FROM "FILNAM" INTO ARRAY "CREAC"
 C    DEFINE PARAMETER MODCLF(IR) (5 DIGITS NMLKJ)
-C    FIRST DEZIMAL  J           =1  POTENTIAL AVAILABLE
+C    FIRST DECIMAL  J           =1  POTENTIAL AVAILABLE
 C                                   (ON CREAC(..,-1,IR))
 C                   J           =0  ELSE
-C    SECOND DEZIMAL K           =1  CROSS SECTION AVAILABLE
+C    SECOND DECIMAL K           =1  CROSS-SECTION AVAILABLE
 C                                   (ON CREAC(..,0,IR))
 C                   K           =0  ELSE
-C    THIRD  DEZIMAL L           =1  <SIGMA V> FOR ONE
+C    THIRD  DECIMAL L           =1  <SIGMA V> FOR ONE
 C                                   PARAMETER E (E.G.
 C                                   PROJECTILE ENERGY OR ELECTRON
 C                                   DENSITY) AVAILABLE
@@ -160,9 +160,9 @@ C                               =3  <SIGMA V> FOR
 C                                   9 ELECTRON DENSITIES  AVAILABLE
 C                                   (ON CREAC(..,J,IR),J=1,9)
 C                   L           =0  ELSE
-C    FOURTH DEZIMAL M               DATA FOR MOMENTUM EXCHANGE
+C    FOURTH DECIMAL M               DATA FOR MOMENTUM EXCHANGE
 C                                   TO BE WRITTEN
-C    FIFTH  DEZIMAL N           =1  DELTA E FOR ONE PARAMETER E (E.G.
+C    FIFTH  DECIMAL N           =1  DELTA E FOR ONE PARAMETER E (E.G.
 C                                   PROJECTILE ENERGY OR ELECTRON
 C                                   DENSITY) AVAILABLE
 C                                   (ON CREAC(..,1,IR))
@@ -240,7 +240,7 @@ C
       FITFLAG ='fit-flag'
 
 c  some additional  (optional) reaction data:  threshold energy,
-c                                              max ratecoeff sigma*v_rel,
+c                                              max rate coeff sigma*v_rel,
 c                                              at E_rel=ERTMAX
       CMR  = 'MAXRATE'
       CEMR = 'ELAB'
@@ -290,7 +290,7 @@ C  proper filnam found
 
           ELSEIF (INDEX(FILNAM,'ADAS').NE.0) THEN
 ! FILNAM=ADAS: open data file
-! FIND NAME OF SPECIFIC TAB2D-FILE TO BE READ,  DSN=abc.dat
+! FIND NAME OF SPECIFIC TAB2D FILE TO BE READ, DSN=abc.dat
 !           reconstruct 'DSN' from:  reac, elname
             DIR = ' '
             IL = 0
@@ -326,7 +326,8 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' PHOTON'
           WRITE (iunout,*) ' FOR ENTERING REACTION DATA VIA '
-          WRITE (iunout,*) ' EIRENE INPUT-FILE '
+          WRITE (iunout,*) ' EIRENE INPUT FILE '
+          WRITE (iunout,*) ' FILNAM WAS : ', FILNAM
           CALL EIRENE_EXIT_OWN(1)
         END IF
       ENDIF
@@ -360,7 +361,7 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
 
       REAC_NAME(IR) = REACSTR(2:)
 C
-C Set character string identifyers CHR to search coefficients in data files.
+C Set character string identifiers CHR to search coefficients in data files.
 C  H.0
       IF (ISW.EQ.0) THEN
         CHR=' p0 '
@@ -377,7 +378,7 @@ C  H.1
         I0=0
         MODCLF(IR)=MODCLF(IR)+10
         IFLG=1
-C  DEFAULT CROSS SECTION: 8TH ORDER POLYNOM OF LN(SIGMA)  VS LN(E)
+C  DEFAULT CROSS-SECTION: 8TH-ORDER POLYNOMIAL OF LN(SIGMA) VS LN(E)
         IFTFLG(IR,1)=0
 c  (laboratory)  energy range, asymptotics
         CH1L='al0'
@@ -393,7 +394,7 @@ C  H.2
         I0=1
         MODCLF(IR)=MODCLF(IR)+100
         IFLG=2
-C  DEFAULT RATE COEFFICIENT: 8TH ORDER POLYNOM OF LN(<SIGMA V>) VS LN(T), FOR E0=0.
+C  DEFAULT RATE COEFFICIENT: 8TH-ORDER POLYNOMIAL OF LN(<SIGMA V>) VS LN(T), FOR E0=0.
         IFTFLG(IR,2)=0
 c  temperature range, asymptotics
         C1L = 'T1MIN'
@@ -409,7 +410,7 @@ C  H.3
         MODCLF(IR)=MODCLF(IR)+200
         I0=1
         IFLG=2
-C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(E0)
+C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOMIAL OF LN(<SIGMA V>) VS LN(T) AND LN(E0)
         IFTFLG(IR,2)=0
 c  temperature range, asymptotics
 c  beam energy range, asymptotics
@@ -427,7 +428,7 @@ C  H.4
         MODCLF(IR)=MODCLF(IR)+300
         I0=1
         IFLG=2
-C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOM OF LN(<SIGMA V>) VS LN(T) AND LN(NE)
+C  DEFAULT RATE COEFFICIENT: DOUBLE POLYNOMIAL OF LN(<SIGMA V>) VS LN(T) AND LN(NE)
         IFTFLG(IR,2)=0
 c  temperature range, asymptotics
 c  beam energy range, asymptotics
@@ -443,7 +444,7 @@ C  H.5
         I0=1
         MODCLF(IR)=MODCLF(IR)+1000
         IFLG=3
-C  MOMENTUM WEIGHTED RATE COEFFICIENT
+C  MOMENTUM-WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,3)=0
         C1L = 'T1MIN'
         C1R = 'T1MAX'
@@ -458,7 +459,7 @@ C  H.6
         MODCLF(IR)=MODCLF(IR)+2000
         I0=1
         IFLG=3
-C  MOMENTUM WEIGHTED RATE COEFFICIENT
+C  MOMENTUM-WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,3)=0
         C1L = 'T1MIN'
         C1R = 'T1MAX'
@@ -474,7 +475,7 @@ C  H.7
         MODCLF(IR)=MODCLF(IR)+3000
         I0=1
         IFLG=3
-C  MOMENTUM WEIGHTED RATE COEFFICIENT
+C  MOMENTUM-WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,3)=0
         C1L = 'T1MIN'
         C1R = 'T1MAX'
@@ -488,7 +489,7 @@ C  H.8
         I0=1
         MODCLF(IR)=MODCLF(IR)+10000
         IFLG=4
-C  ENERGY WEIGHTED RATE COEFFICIENT
+C  ENERGY-WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,4)=0
         C1L = 'T1MIN'
         C1R = 'T1MAX'
@@ -503,7 +504,7 @@ C  H.9
         MODCLF(IR)=MODCLF(IR)+20000
         I0=1
         IFLG=4
-C  ENERGY WEIGHTED RATE COEFFICIENT
+C  ENERGY-WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,4)=0
         C1L = 'T1MIN'
         C1R = 'T1MAX'
@@ -519,7 +520,7 @@ C  H.10
         MODCLF(IR)=MODCLF(IR)+30000
         I0=1
         IFLG=4
-C  ENERGY WEIGHTED RATE COEFFICIENT
+C  ENERGY-WEIGHTED RATE COEFFICIENT
         IFTFLG(IR,4)=0
         C1L = 'T1MIN'
         C1R = 'T1MAX'
@@ -728,7 +729,7 @@ C
 C  NEXT: READ ASYMPTOTICS INFORMATION FROM ATOMIC DATA FILE
 C        HYDHEL, AMJUEL, H2VIBR, METHANE.
 
-C FOR 1D OR 2D DATA SETS. 4 BOUNDARIES,  LEFT1, RIGHT1, LEFT2, RIGHT2.
+C FOR 1D OR 2D DATASETS. 4 BOUNDARIES, LEFT1, RIGHT1, LEFT2, RIGHT2.
 C FOR 1D: ONLY "LEFT1" AND "RIGHT1" ARE USED
 
       IF (ISW.EQ.0) GOTO 2000    ! NO ASYMPTOTICS FOR POTENTIALS
@@ -751,8 +752,8 @@ C  FLAG FOR CHOICE OF EXTRAPOLATION OPTION:
 C  DEFAULT ASYMPTOTIC EXPRESSION  (...=0): NO ASYMPTOTICS
 C  DEFAULT ASYMPTOTIC EXPRESSION  (...=1): SET TO ZERO BEYOND LAST VALID POINT
 C  DEFAULT ASYMPTOTIC EXPRESSION  (...=4): TAKE LAST VALID POINT AT r1mn,r1mx,....
-C  DEFAULT ASYMPTOTIC EXPRESSION  (...=5): 2ND ORDER POLYNOM BEYOND LAST VALID POINT
-C                                          (OLD DEFAULT FOR CROSS SECTIONS)
+C  DEFAULT ASYMPTOTIC EXPRESSION  (...=5): 2ND-ORDER POLYNOMIAL BEYOND LAST VALID POINT
+C                                          (OLD DEFAULT FOR CROSS-SECTIONS)
 c  AND EXTRAPOLATE CONSTANT FROM THERE
       IF1MN = 0
       IF1MX = 0
@@ -775,7 +776,7 @@ c  data for one "reaction IR" are located between "\begin" and "\end"
 c
 c  at this point we have found a card ZEILE which contains
 c  one of the extrapolation parameter identifiers al0,ar0,....,k0l,k0r
-c  that correcsonds to the H.1, ....H.12 type of data IR.
+c  that corresponds to the H.1, ....H.12 type of data IR.
 c  next: read up to three fit coefficients FP.L OR FP.R.
 c  CHR(2:2) is set to either character a,b,c,....,or k
 c
@@ -797,14 +798,14 @@ c
           LGC2MAX = .TRUE.
         END IF
 c
-c  currently foreseen asymptotic data identifyers in data files:
+c  currently foreseen asymptotic data identifiers in data files:
 c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX, 
 c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
 c                    P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
           LGR1MIN = .TRUE.
-c  old default: 2nd order polynom beyond valid range, with coefs. FPL1
+c  old default: 2nd-order polynomial beyond valid range, with coefs. FPL1
           IF (IF1MN == 0 .AND. LGC1MIN) IF1MN = 5
 c  default extrapolation from r1mn (by constant continuation) will be: jfex1mn=4
           IF (IF1MN == 0) IF1MN = 4
@@ -812,7 +813,7 @@ c  default extrapolation from r1mn (by constant continuation) will be: jfex1mn=4
         IF (INDEX(ULINE,TRIM(C1R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1R,'EXT-FLG',R1MX,IF1MX)
           LGR1MAX = .TRUE.
-c  old default: 2nd order polynom beyond valid range, with coefs. FPR1
+c  old default: 2nd-order polynomial beyond valid range, with coefs. FPR1
           IF (IF1MX == 0 .AND. LGC1MAX) IF1MX = 5
 c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
           IF (IF1MX == 0) IF1MX = 4
@@ -820,7 +821,7 @@ c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
         IF (INDEX(ULINE,TRIM(C2L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
           LGR2MIN = .TRUE.
-c  old default: 2nd order polynom beyond valid range, with coefs. FPL2
+c  old default: 2nd-order polynomial beyond valid range, with coefs. FPL2
           IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5 
 c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
           IF (IF2MN == 0) IF2MN = 4
@@ -828,7 +829,7 @@ c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
         IF (INDEX(ULINE,TRIM(C2R)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
           LGR2MAX = .TRUE.
-c  old default: 2nd order polynom beyond valid range, with coefs. FPr2
+c  old default: 2nd-order polynomial beyond valid range, with coefs. FPr2
           IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5 
 c  default extrapolation from r2mx (by constant continuation) will be: jfex2mx=4
           IF (IF2MX == 0) IF2MX = 4
@@ -866,11 +867,11 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
 
       IF (JFEX1MN == 0) THEN
         IF (LGR1MIN .AND. .NOT. LGC1MIN.and.if1mn.ge.3.) THEN
-          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
-     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           WRITE (IUNOUT,*) 'IFLG = ',if1mn
           IF (IF1MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
@@ -1013,7 +1014,7 @@ c  to be used for extrapolation
       CHARACTER(80), INTENT(IN) :: ZEILE
       CHARACTER(1), INTENT(IN) :: CH
       REAL(DP), INTENT(OUT) :: FP(3)
-      INTEGER :: IND, INC
+      INTEGER :: I, IND, INC
 
       IND=0
       DO I=1,3

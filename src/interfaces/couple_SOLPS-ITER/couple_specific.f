@@ -1,7 +1,7 @@
 cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
 cdr:             check: is eirsrt universal, then: move even further up to "main routines".
-cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
-c  jan 2017: syncronisation with corresponding version in other couple_...
+cdr  09.02.2016:  done ! synchronization of eirsrt.f started, but not completed fully
+c  jan 2017: synchronisation with corresponding version in other couple_...
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
 C
@@ -157,10 +157,10 @@ C
 !pb          Y3(IX)=bz(ix,iy,4)
 !pb          X4(IX)=br(ix,iy,3)
 !pb          Y4(IX)=bz(ix,iy,3)
-!pb1014    CONTINUE
+!pb 1014   CONTINUE
 !pb        CALL MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,NDXA,
 !pb     .                NR1ST,IY)
-!pb1015  CONTINUE
+!pb 1015 CONTINUE
 C
 C SEARCH FOR THE CUTS
 C
@@ -318,8 +318,9 @@ C    ANZAHL DER TEILSTUECKE PRO POLYGON
 C    COMPUTE WIDTH OF INSULATING CUT FOR DOUBLE NULL
       NWISO=NXISO2(1)-NXISO1(1)     
 C     PRINT MESSAGE AND CHECK
-      WRITE(IUNOUT,*) "GEOMD: NNCUT, NNISO, NPLP, NWISO ", 
-     w                        NNCUT, NNISO, NPLP, NWISO 
+      CALL EIRENE_LEER (1)
+      CALL EIRENE_MASJ4 ('GEOMD: NNCUT, NNISO, NPLP, NWISO', 
+     w                           NNCUT, NNISO, NPLP, NWISO)
       IF(NNCUT.NE.0.AND.NNCUT.NE.2.AND.NNCUT.NE.4) THEN
         WRITE(IUNOUT,*) "WARNING FROM GEOMD: UNKNOWN TOPOLOGY"
         WRITE(IUNOUT,*) " NNCUT ",NNCUT
@@ -505,11 +506,12 @@ C
 C
       NP=NPOINT(2,NPLP)
       DO 1020 J=1,NDYA+1
-        DO 1020 I=1,NP
+        DO I=1,NP
           XPOL(J,I)=XPOL(J,I)*100.
           YPOL(J,I)=YPOL(J,I)*100.
           IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
           IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
+        END DO
 1020  CONTINUE
       RETURN
 
@@ -540,7 +542,7 @@ C
       character(200) :: zeile
       REAL(DP) :: br(0:ndxp,0:ndyp,4),bz(0:ndxp,0:ndyp,4)
 C
-C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
+C  GEOMETRY DATA: CELL VERTICES (SONNET ---> EIRENE)
       REAL(DP) ::
      R  X1(NDX),Y1(NDX),X2(NDX),Y2(NDX),X3(NDX),Y3(NDX),
      R  X4(NDX),Y4(NDX)
@@ -772,7 +774,7 @@ C
 C
 C     INDEX MAPPING FOR BRAAMS DATA FIELDS. DATA IN DUMMY ZONES
 C     (CUTS OR BOUNDARY ZONES) MAY BE NEEDED AND THUS ARE KEPT
-C     AND DUBLICATED IN CASE NCUTL GT NCUTB
+C     AND DUPLICATED IN CASE NCUTL GT NCUTB
 C
 C     NCUTB= NUMBER OF CELLS IN IX DIRECTION PER CUT IN BRAAMS
 C     NCUTL= NUMBER OF CELLS IN IX DIRECTION PER CUT IN LINDA (AND
@@ -787,17 +789,19 @@ C            THUS ALSO IN EIRENE) GEOMETRY
      .                       NCUTL, NPPLG
       REAL(DP), INTENT(INOUT) :: FIELD(0:NDX+1,0:NDY+1,NFL),
      .                         DUMMY(0:NDX+1,0:NDY+1)
-      INTEGER :: IX, IPART, IY, IF, IENDD, INB, IINID, IINIV, IENDV
+      INTEGER :: IX, IPART, IY, IFL, IENDD, INB, IINID, IINIV, IENDV
 C
 C  LOOP FOR THE SPECIES
 C
-      DO 500 IF=1,NFLA
+      DO 500 IFL=1,NFLA
 C
-C  INITIALISE DUMMY
+C  INITIALIZE DUMMY
 C
-        DO 10 IY=0,NDY+1
-          DO 10 IX=0,NDX+1
-10          DUMMY(IX,IY)=FIELD(IX,IY,IF)
+        DO IY=0,NDY+1
+          DO IX=0,NDX+1
+            DUMMY(IX,IY)=FIELD(IX,IY,IFL)
+          END DO
+        END DO
 C
 C
 C      NDX DIRECTION: IX=0: NOT MODIFIED
@@ -824,16 +828,18 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
           DO 212 IY=0,NDYA+1
             DO 213 IX = IINIV,IENDV
               INB=IX-(IPART-1)*(NCUTL-NCUTB)
-              DUMMY(IX,IY)=FIELD(INB,IY,IF)
+              DUMMY(IX,IY)=FIELD(INB,IY,IFL)
 213         CONTINUE
-            DUMMY(IINID,IY) = FIELD(INB+1,IY,IF)
-            IF (IENDD.NE.IINID) DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IF)
+            DUMMY(IINID,IY) = FIELD(INB+1,IY,IFL)
+            IF (IENDD.NE.IINID) 
+     .          DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IFL)
 212       CONTINUE
 211     CONTINUE
-        DO 220 IY=0,NDYA+1
-          DO 220 IX=0,NDXA+1
-            FIELD(IX,IY,IF)=DUMMY(IX,IY)
-220     CONTINUE
+        DO IY=0,NDYA+1
+          DO IX=0,NDXA+1
+            FIELD(IX,IY,IFL)=DUMMY(IX,IY)
+          END DO
+        END DO
 C
 500   CONTINUE
       RETURN
@@ -867,17 +873,19 @@ C
      .                       NCUTL, NPPLG, NSTR, ISTR
       REAL(DP), INTENT(INOUT) :: FIELD(0:NDX+1,0:NDY+1,NFL,NSTR),
      .                         DUMMY(0:NDX+1,0:NDY+1)
-      INTEGER :: IX, IY, IF, IENDD, IPART, INB, IINID, IINIV, IENDV
+      INTEGER :: IX, IY, IFL, IENDD, IPART, INB, IINID, IINIV, IENDV
 C
 C  LOOP OVER THE SPECIES
 C
-      DO 500 IF=1,NFLA
+      DO 500 IFL=1,NFLA
 C
-C  INITIALISE DUMMY
+C  INITIALIZE DUMMY
 C
-        DO 10 IY=0,NDY+1
-          DO 10 IX=0,NDX+1
-10          DUMMY(IX,IY)=0.
+        DO IY=0,NDY+1
+          DO IX=0,NDX+1
+            DUMMY(IX,IY)=0.
+          END DO
+        END DO
 C
 C
 C      NDX DIRECTION
@@ -902,17 +910,18 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
           DO 212 IY=0,NDYA+1
             DO 213 IX = IINIV,IENDV
               INB=IX-(IPART-1)*(NCUTL-NCUTB)
-              DUMMY(INB,IY)=FIELD(IX,IY,IF,ISTR)
+              DUMMY(INB,IY)=FIELD(IX,IY,IFL,ISTR)
 213         CONTINUE
-            DUMMY(INB+1,IY)=FIELD(IINID,IY,IF,ISTR)
+            DUMMY(INB+1,IY)=FIELD(IINID,IY,IFL,ISTR)
             IF (IENDD.NE.IINID)
-     .          DUMMY(INB+NCUTB,IY)=FIELD(IENDD,IY,IF,ISTR)
+     .          DUMMY(INB+NCUTB,IY)=FIELD(IENDD,IY,IFL,ISTR)
 212       CONTINUE
 211     CONTINUE
-        DO 220 IY=0,NDYA+1
-          DO 220 IX=0,NDXA+1
-            FIELD(IX,IY,IF,ISTR)=DUMMY(IX,IY)
-220     CONTINUE
+        DO IY=0,NDYA+1
+          DO IX=0,NDXA+1
+            FIELD(IX,IY,IFL,ISTR)=DUMMY(IX,IY)
+          END DO
+        END DO
 C
 500   CONTINUE
       RETURN
@@ -962,14 +971,17 @@ c     write (6,*) 'plasm: detected format ', form
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
       DUMMY(0:N+1,0:M+1,NF)=0._DP
-      DO    110  IF = 1,NDIMF
-      DO    110  IY = 0,NDIMY+1
-      DO    100  IX = 1,LIM,5
-100     READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
-        IF( (LIM+4).EQ.ND1 )     GOTO 110
-        READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
-110   CONTINUE
-500   RETURN
+      DO IF = 1,NDIMF
+        DO IY = 0,NDIMY+1
+          DO IX = 1,LIM,5
+           READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+          END DO
+          IF( (LIM+4).EQ.ND1 )     GOTO 110
+          READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+110     CONTINUE
+       END DO
+      END DO
+  500 RETURN
 *//END PLASM//
       END
 
@@ -989,16 +1001,17 @@ C=======================================================================
       INTEGER, INTENT(IN) :: KARD, NDIMX, NDIMY, NDIMF, LDMX, LDMY,
      .                       LDMF, LDNS, IS
       REAL(DP), INTENT(IN) :: DUMMY(0:LDMX+1,0:LDMY+1,LDMF,LDNS)
-      INTEGER :: ND1, LIM, IX, IY, III, IF
+      INTEGER :: ND1, LIM, IX, IY, III, IFL
 C
       ND1 = NDIMX
       LIM = (ND1/5)*5 - 4
-      DO  500  IF = 1,NDIMF
+      DO  500  IFL = 1,NDIMF
         DO  110  IY = 1,NDIMY
           DO  100  IX = 1,LIM,5
-  100     WRITE(KARD,910) (DUMMY(IX-1+III,IY,IF,IS),III = 1,5)
+            WRITE(KARD,910) (DUMMY(IX-1+III,IY,IFL,IS),III = 1,5)
+  100     CONTINUE
           IF( (LIM+4).EQ.ND1 )   GOTO 110
-          WRITE(KARD,910) (DUMMY(IX,IY,IF,IS),IX = LIM+5,ND1)
+          WRITE(KARD,910) (DUMMY(IX,IY,IFL,IS),IX = LIM+5,ND1)
   110   CONTINUE
   500 CONTINUE
       RETURN
@@ -1075,7 +1088,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               PMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-
           IF (LPIPL) THEN
             IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB           ALLOCATE(CPMUL)
@@ -1099,6 +1111,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             EAPLS(ISTRAI)%PMUL => CPMUL
           ENDIF
           ENDIF
+
           IF (LEMPL) THEN 
           IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB         ALLOCATE(CPMUL)
@@ -1158,6 +1171,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               MIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
+
           IF (LMPHPL) THEN
             IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
 !PB           ALLOCATE(CPMUL)
@@ -1169,6 +1183,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               MPHPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
+
         ENDDO
       ENDDO
 
@@ -1203,7 +1218,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             EIELS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-
       ENDDO
 
       DO IATM=1,NATMI

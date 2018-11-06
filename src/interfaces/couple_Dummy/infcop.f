@@ -1,4 +1,7 @@
 *DK INFCOP
+      MODULE EIRMOD_INFCOP
+      IMPLICIT NONE
+      CONTAINS
       SUBROUTINE EIRENE_INFCOP
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I1, I2, I3
@@ -7,12 +10,12 @@
       ENTRY EIRENE_IF2COP(I1)
       ENTRY EIRENE_IF3COP(I1,I2,I3)
       ENTRY EIRENE_IF4COP
-      END
+      END SUBROUTINE
 
-C> \brief Any property requirering hand-over in parallel part.
+C> \brief Any property requiring hand-over in parallel part.
 C>
 C> This interfacing routine is called in the parallel part of EIRENE
-C> after the broadcase of any other quantity and before MCARLO.
+C> after the broadcast of any other quantity and before MCARLO.
       SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
       RETURN
       END SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
@@ -34,3 +37,4 @@ C> transfer to the external code
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
+      END MODULE

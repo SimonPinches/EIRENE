@@ -26,8 +26,9 @@
       END DO
  
       IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASENAME FOR graphite.ext.dat DEFINED'
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
+          WRITE (IUNOUT,*)
+     .      ' NO DATABASE NAME FOR graphite.ext.dat DEFINED'
+        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
  
@@ -48,8 +49,8 @@
       END DO
  
       IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASENAME FOR mo.ext.dat DEFINED'
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
+        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR mo.ext.dat DEFINED'
+        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
  
@@ -226,7 +227,7 @@
  
 ! r
 ! berechnet Wahrscheinlichkeit einer Reflektion eines Photon mit
-! Wellenlaenge  lambda Angstrom, welches im Winkel theta_i auftrifft
+! Wellenlaenge lambda Angstrom, welches im Winkel theta_i auftrifft
 ! (die Winkel im Winkelmass)
       subroutine EIRENE_R(theta_i, lambda, mat,  out)
       real(dp), intent(in) :: theta_i, lambda

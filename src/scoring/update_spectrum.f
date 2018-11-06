@@ -3,13 +3,13 @@ cdr  29.09.14:  only comments
 cdr             meaning of isc=1, 2,... unclear. All current calls are with either isc=0 or isc=1
  
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
-C  update contributions to surface or volume/line averaged energy spectra
+C  update contributions to surface- or volume/line-averaged energy spectra
 c  wt:  particle weight, (or wt=wpr, conditional particle weight) 
 c  
 c  cell crossing   : (conditional) tracklength estimator for cell based spectra
 c  surface crossing: here tracklength estim. collapses to a collision estim. 
 
-c  isc:    =0: update surface averaged spectra, 
+c  isc:    =0: update surface-averaged spectra,
 c       ind:  =1: particle incident on surface
 c       ind:  =2: particle re-emitted from surface
 
@@ -64,7 +64,7 @@ C  set "type" specific parameters:  IS, CDYN
         CDYN = CNDYNP(IPLS)
       END SELECT
  
-      IF (ISC == 0) THEN    ! SURFACE AVERAGED SPECTRUM
+      IF (ISC == 0) THEN    ! SURFACE-AVERAGED SPECTRUM
  
         DO ISPC=1,NADSPC
           P => ESTIML(ISPC)
@@ -77,9 +77,9 @@ C  set "type" specific parameters:  IS, CDYN
             CASE (1)
               ADD = WT  ! bin particle flux
             CASE (2)
-              ADD = WT*E0 ! bin energy weighted flux
+              ADD = WT*E0 ! bin energy-weighted flux
             CASE DEFAULT
-              ADD = 0._DP !  no scoring
+              ADD = 0._DP ! no scoring
             END SELECT
  
             EB = E0

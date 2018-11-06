@@ -1,4 +1,4 @@
-Cdr  Sept. 16: Bug fix:  added option: two or more  constants next to each other
+Cdr  Sept. 16: Bug fix: added option: two or more constants next to each other
 C
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_ALGEBR (TERM,OPER,IZIF,CONST,NOP)
@@ -149,7 +149,7 @@ C
                MAXI=0
                DO 45, I=1,TEIL
                    MAXI=MAX(IPART(I),MAXI)
-45                 CONTINUE
+45             CONTINUE
  
                NOP=TEIL
                DO 30, I=1,TEIL
@@ -251,12 +251,12 @@ chr               als zwischenergebnis
                         IZIF(4,I)=0
                      endif
                   endif
-30                CONTINUE
+30             CONTINUE
             ELSE
 C
 C              AUSGABE DER FEHLERMELDUNG
 C
-               WRITE(iunout,'(2A)') ' FOLGENDE REGELVERLETZUNG ',
+               WRITE(iunout,'(2A)') 'FOLGENDE REGELVERLETZUNG ',
      >                        'WURDE ERKANNT:'
                CALL EIRENE_MECKER(ERROR)
                NOP=0

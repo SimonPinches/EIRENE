@@ -42,7 +42,7 @@ C
 
       IF (.NOT.PLSPEC) GOTO 1
 
-CDR  PREPARE SOME STUFF FOR PROPRIETARY GR-GRPAHICS SOFTWARE.
+CDR  PREPARE SOME STUFF FOR PROPRIETARY GR-GRAPHICS SOFTWARE.
 C
 C  NULLPUNKT AUF DEM PAPIER
  
@@ -103,8 +103,8 @@ C
           TXHEAD(1:44) =
      .      'DETECTOR SIGNALS VIA SPECTRA ALONG LOS'
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
-          CALL
-     .  EIRENE_HEADNG('He emission SIGNAL: #/S/CM2/STERAD  ',33)
+          CALL EIRENE_HEADNG
+     .     ('He emission SIGNAL: #/S/CM2/STERAD  ',33)
           TXHEAD(1:33) =
      .      'He emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
@@ -130,13 +130,13 @@ C
           ENERGY(I)=ENSAVE(ICHORI,I)
 30      CONTINUE
 C...................................................
-C  ENERGY RESOLVED CX SPECTRA, ATOMS.  100 -- 199
+C  ENERGY-RESOLVED CX SPECTRA, ATOMS.  100 -- 199
 C...................................................
         IF ((NCHTAL(ICHORI).EQ.1) .OR. (NCHTAL(ICHORI).EQ.4)) THEN
 
 CDR  nchtal=4 is an unfinished option (spectra estimated directly from
-CDR           Monte Carlo trajectories. Currently disabled in SGNAL.F
-cdr           So at this point: NCHTAL=1, CX energy resolved spectra.
+CDR           Monte-Carlo trajectories. Currently disabled in SGNAL.F
+cdr           So at this point: NCHTAL=1, CX energy-resolved spectra.
 
           IF (NSPSPZ(ICHORI).EQ.0) THEN
             TEXTS(1)=TEXTSS
@@ -193,7 +193,7 @@ C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
 c   plotting:  conditional on plspec 
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
-C  INITALIZE NEW PICTURE
+C  INITIALIZE NEW PICTURE
             IF (NSPNEW(ICHORI).EQ.1) THEN
               IF (NSPSCL(ICHORI).EQ.0) THEN
                 LOGX=.FALSE.
@@ -231,7 +231,7 @@ C  PLOT
      .           1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
      .           LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
      .           NCHNI,NCHNI,L_SAME)
-          ENDIF  ! CX ENERGY RESOLVED PLOTS DONE.
+          ENDIF  ! CX ENERGY-RESOLVED PLOTS DONE.
 C
           TEXTS(1)=TSAFE
 C..............................................
@@ -324,7 +324,7 @@ C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
 c  plotting:  conditional on plspec
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
-C  INITALIZE NEW PICTURE
+C  INITIALIZE NEW PICTURE
             IF (NSPNEW(ICHORI).EQ.1) THEN
               IF (NSPSCL(ICHORI).EQ.0) THEN
                 LOGX=.FALSE.

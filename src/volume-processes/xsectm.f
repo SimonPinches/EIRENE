@@ -13,15 +13,15 @@ c          (was ok already for call to xstei)
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
 ! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
-! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: IML, pls (for H.4 option)
 ! oct.2014: call to xstpi: additional argument: chrdf0
 cdr  oct.14:  clogau removed 
 cdr  oct.14:  PLS made allocatable, 
-cdr  oct.14:  further syncronization with xsecta,xsecti
+cdr  oct.14:  further synchronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
-cdr  aug.15:  ibgk_sp:  no of bgk species. to be distuingished from ibgk: no of bgk reaction.
+cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 
 !pb  APR  16:  pplds  -> pplei
 !pb  APR  16:  patds  -> patei, eatds -> eatei
@@ -33,7 +33,7 @@ cdr  Sept 16:  nmdsi  -> nmeii
 cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
 cdr           default: FDLMCX=0.0 (from initialisation phase) means: 
-CDR           no fluid limit cut off at CX collisions.
+CDR           no fluid limit cut-off at CX collisions.
 cdr  sept 18: nhvrei rationalization for default reactions (==-KK)
 C
 
@@ -72,7 +72,7 @@ C
 
 cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
-cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
@@ -98,7 +98,7 @@ C
           IF (ISWR(KK).LE.0.OR.ISWR(KK).GT.6) GOTO 994
         ENDDO
 C
-C  CHECK IF THIS REALLY IS A  MOLECULE: USE NPRT(ISPZ).GT.1?
+C  CHECK IF THIS REALLY IS A MOLECULE: USE NPRT(ISPZ).GT.1?
  
         IF (NPRT(NSPA+IMOL).LE.1) THEN
           WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTM: '
@@ -330,8 +330,8 @@ c   e.g. DT -->  0.5 (D + T+)  + 0.5 (D+ + T)
 C
           IA1=IATM1
           IP2=IPLS2
-c   in case iatm1 ne iatm2:  this next segement is executed twice.
-c   Split reaction  kk=-6 into two ei processes irei and irei+1, with factkk=0.5 each. 
+c   in case iatm1 ne iatm2:  this next segment is executed twice.
+c   Split reaction kk=-6 into two ei processes irei and irei+1, with factkk=0.5 each.
 c   Accumulate totals....
 73        ACCMAS=0.D0
           ACCINV=0.D0
@@ -436,7 +436,7 @@ C
 
           NMEII(IMOL)=IDSC1
 C
-C  NON DEFAULT ELEC IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
+C  NON-DEFAULT ELEC IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 90 NRC=1,NRCM(IMOL)
@@ -494,7 +494,7 @@ C
         IF (NRCM(IMOL).EQ.0) THEN
           NMCXI(IMOL)=0
 C
-C  NON DEFAULT CX MODEL:
+C  NON-DEFAULT CX MODEL:
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 130 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
@@ -569,7 +569,7 @@ C
         IF (NRCM(IMOL).EQ.0) THEN
           NMELI(IMOL)=0
 C
-C  NON DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL:  240--
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 230 NRC=1,NRCM(IMOL)
@@ -596,11 +596,11 @@ C  BULK PARTICLE INDEX
             LGMEL(IMOL,IDSC,0)=IREL
             LGMEL(IMOL,IDSC,1)=IPLS
 C
-C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
+C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
 C  IMOL HAS NOT YET BEEN LABELLED AS BGK SPECIES.
-C  DO THIS HERE: IMOL IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
+C  DO THIS HERE: IMOL IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
                 NPBGKM(IMOL)=IBGK_SP
@@ -610,11 +610,11 @@ C  DO THIS HERE: IMOL IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLI
               ELSE
                 GOTO 999
               ENDIF
-C  SELF OR CROSS COLLISION?
+C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKM(IMOL,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKM(IMOL,NRC),3,3)
               IF (ITYPB.NE.2.OR.ISPZB.NE.IMOL) THEN
-C  CROSS COLLISION !
+C  CROSS-COLLISION !
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKM(IMOL,NRC)
                 ELSE
@@ -622,7 +622,7 @@ C  CROSS COLLISION !
                 ENDIF
               ENDIF
             ENDIF
-C  BGK-COLLISION PARAMETERS DONE
+C  BGK COLLISION PARAMETERS DONE
 C
             IML=NSPA+IMOL
             IPL=IPLS
@@ -661,7 +661,7 @@ C
         IF (NRCM(IMOL).EQ.0) THEN
           NMPII(IMOL)=0
 C
-C  NON DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL:  130--190
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO NRC=1,NRCM(IMOL)
@@ -808,7 +808,8 @@ C
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK,IMOL,IPLS ',KK,IMOL,IPLS
-994   CONTINUE
+      CALL EIRENE_EXIT_OWN(1)
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTM.'
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IMOL = ',IMOL

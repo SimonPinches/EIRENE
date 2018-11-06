@@ -1,4 +1,4 @@
-cdr order of points 3 and 4 in quadranges (xpol,ypol) got changed in 2015.
+cdr order of points 3 and 4 in quadrangles (xpol,ypol) got changed in 2015. IFEM documents
 cdr See IFEM documents
 cdr june 17:  comments
 cdr nov. 17: comments.  Some unfinished options re levgeo= 1 and levgeo = 2
@@ -12,12 +12,12 @@ c  related routines:  fem_differentiate
 c                     fem_local-coord
 c                     fem_cell-corner
 c
-c  AFEM:  course "Advanced Finate Element Methods", 
-c         Department of Aerospace Enginerring Sciences, 
+c  AFEM:  course "Advanced Finite Element Methods",
+c         Department of Aerospace Engineering Sciences,
 c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
 c  IFEM:  course "Introduction to Finite Element Methods"
-c         Department of Aerospace Enginerring Sciences, 
+c         Department of Aerospace Engineering Sciences,
 c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c

@@ -49,7 +49,7 @@ C     MODIFIED FOR CFT BY MIKE ESS, CRI, JULY 1980
 C
 C     ------------------------------------------------------------------
 C
-C     ********** MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C     ********** MACHEP IS A MACHINE-DEPENDENT PARAMETER SPECIFYING
 C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
 C
 C                **********
@@ -76,7 +76,7 @@ C        H = MACHEP * (ABS(D(L)) + SQRT(E2(L)))
          IF (B .GT. H) GO TO 105
          B = H
          C = B * B
-C     ********** LOOK FOR SMALL SQUARED SUB-DIAGONAL ELEMENT **********
+C     ********** LOOK FOR SMALL SQUARED SUBDIAGONAL ELEMENT **********
   105    DO 110 M = L, N
             IF (E2(M) .LE. C) GO TO 120
 C     ********** E2(N) IS ALWAYS ZERO, SO THERE IS NO EXIT

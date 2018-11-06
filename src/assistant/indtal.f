@@ -38,10 +38,11 @@ C
 C NS: NUMBER OF STANDARD MESH CELLS
       NS=NX*NY*NZ*NB
 C
-      DO 10 I=1,M
-        DO 10 J=1,8
+      DO I=1,M
+        DO J=1,8
           IND(I,J)=0
-10    CONTINUE
+        END DO
+      END DO
 C
 C  additional cells contribute only to themselves
 C

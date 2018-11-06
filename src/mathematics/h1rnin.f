@@ -59,8 +59,10 @@ cdr  next: initialize RANMAR, data are transfered via common RASET1
             K = M
             L = MOD(53*L+1, 169)
             IF ( MOD(L*M,64) .GE. 32) S = S + T
-  250       T = 0.5*T
-  300 U(II) = S
+            T = 0.5*T
+  250    CONTINUE
+         U(II) = S
+  300 CONTINUE
 
       C  =   362436./16777216.
       CD =  7654321./16777216.

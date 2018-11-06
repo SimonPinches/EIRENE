@@ -1,7 +1,7 @@
 !pb APR   16:   pplds  -> pplei
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
-cdr Nov   16    finalizing notational syncronisation (..DS.. (legacy) --> ..EI..)
+cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI..)
 cdr Nov.  17:   1) sync with couple_B2.5 from SVN, 2008. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
@@ -27,7 +27,7 @@ C
 
 C   INPUT:
 C     LSTOP: 
-C     LTIME: TIME DEPENDENT MODE. PREPARE TIME DEPENDENT OPTIONS,
+C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
 C     
@@ -83,8 +83,8 @@ C
      .            EIRENE_RESET_SECOND, DUMMY,
      .            EIRENE_SECOND_OWN, DTIMVO
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, ICPV, IFIRST, K, JC, NDXY,
-     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST
-     .          ,IFRSTR, ISTH, ISTNEW, ISTIN, ICOSTP
+     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
+     .           IFRSTR, ISTH, ISTNEW, ISTIN, ICOSTP
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       INTEGER, ALLOCATABLE :: IHELP(:)
       LOGICAL :: LSTP, LLST, LPLASM
@@ -501,7 +501,7 @@ cdr                     because it was already summed over ipls
             DO IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
                 RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
-     .                          TABEI1(IREI,IN)*ESIG
+     .                        TABEI1(IREI,IN)*ESIG
               ELSE
                 RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG

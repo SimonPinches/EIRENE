@@ -1,7 +1,7 @@
 !pb APR   16:   pplds  -> pplei
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
-cdr Nov   16    finalizing notational syncronisation (..DS.. (legacy) --> ..EI..)
+cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI..)
 cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
@@ -41,7 +41,7 @@ C
 
 C   INPUT:
 C     LSTOP: 
-C     LTIME: TIME DEPENDENT MODE. PREPARE TIME DEPENDENT OPTIONS,
+C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
 C     
@@ -104,8 +104,8 @@ C
      .            EIRENE_RESET_SECOND, DUMMY,
      .            EIRENE_SECOND_OWN, DTIMVO
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
-     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST
-     .          ,IFRSTR, ISTH, ISTNEW, ISTIN
+     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
+     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       INTEGER, ALLOCATABLE :: IHELP(:)
       LOGICAL :: LSTP, LLST, LPLASM
@@ -158,7 +158,8 @@ csw
 C
       IF (LTIME) THEN
 csw mpi
-        stop 'NO MPI FOR LTIME=.true.'
+        CALL EIRENE_MASAGE ('NO MPI FOR LTIME=.true.')
+        CALL EIRENE_EXIT_OWN(1)
 csw
 C
         B2BREM=B2BRM
@@ -172,7 +173,7 @@ C
           CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -194,9 +195,9 @@ C
             WRITE (iunout,*) 'LTIME=TRUE, BUT NTIME = ', NTIME
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
-          DO 3 ISTRA=1,NSTRAI
-            FLUXS(ISTRA)=FLUX(ISTRA)
-3         CONTINUE
+          DO 3 ISTRAI=1,NSTRAI
+            FLUXS(ISTRAI)=FLUX(ISTRAI)
+    3     CONTINUE
           IFIRST=1
 
 
@@ -230,7 +231,8 @@ C  STRATUM NSTRAI IS RESCALED WITH RATIO OF OLD TO NEW TIMESTEP
 C
 C     RETURN TO PLASMA CODE THE PROFILES WITH FLUX(ISTRA) (AMP)
 C
-          DO ISTRA=NTARGI+1,NSTRAI-1
+          DO ISTRAI=NTARGI+1,NSTRAI-1
+            ISTRA = ISTRAI
             IF (FLUXES(ISTRA).NE.0.) THEN
               FLUX(ISTRA)=FLUXS(ISTRA)*FLUXES(ISTRA)*ELCHA
             ELSE
@@ -263,7 +265,8 @@ C
           ENDIF
         ENDIF
         CALL EIRENE_LEER(2)
-        WRITE(*,*) 'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+        WRITE(iunout,*)
+     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
         CALL EIRENE_LEER(2)
 C
         RETURN   ! time dep. option done
@@ -290,7 +293,7 @@ csw
           CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -313,7 +316,8 @@ csw
 
 csw 17feb2011
 c        if(itnr > 1 .and. rank_mpi==0) then
-c          DO ISTRA=NTARGI+1,NSTRAI
+c          DO ISTRAI=NTARGI+1,NSTRAI
+c            ISTRA = ISTRAI
 c            if(.not.nlvol(istra)) then
 c              IF (FLUXES(ISTRA).NE.0.d0 ) THEN
 c                FLUX(ISTRA)=FLUXES(ISTRA)*ELCHA
@@ -326,8 +330,8 @@ c        endif
 csw 24oct2011
 
         if(rank_mpi==0) then
-          DO ISTRA=1,NSTRA
-            FLUX_save(ISTRA)=FLUXES(ISTRA)
+          DO ISTRAI=1,NSTRA
+            FLUX_save(ISTRAI)=FLUXES(ISTRAI)
           ENDDO
         endif
 
@@ -520,8 +524,8 @@ c
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: TEST IONS, EI-PROCESSES, FROM IION,
 C                                      SUM OVER ALL EI PROCESSES
-          DO 26 IION=1,NIONI
-          DO 26 IIEI=1,NIEII(IION)
+          DO IION=1,NIONI
+          DO IIEI=1,NIEII(IION)
             IREI=LGIEI(IION,IIEI)
             DO IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
@@ -534,15 +538,16 @@ C                                      SUM OVER ALL EI PROCESSES
      .                         EIRENE_FTABEI1(IREI,IN)*ESIG
               END IF
             ENDDO
-26        CONTINUE
+          ENDDO
+        ENDDO
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: TEST IONS, EI-PROCESSES, FROM IION
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
 C
-        DO 29 IION=1,NIONI
-        DO 29 IPLS=1,NPLSI
-        DO 29 IIEI=1,NIEII(IION)
+        DO IION=1,NIONI
+        DO IPLS=1,NPLSI
+        DO IIEI=1,NIEII(IION)
           IREI=LGIEI(IION,IIEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect, 
 cdr                     because it was already summed over ipls
@@ -556,16 +561,18 @@ cdr                     because it was already summed over ipls
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
           ENDDO
-29      CONTINUE
+          END DO
+         END DO
+        END DO
 C
 C
 C  NEXT: MOLECULES, EI RATES: SPLODM, SEEODM, SEIODM
 C
-        DO 47 IMOL=1,NMOLI
-        DO 47 IPLS=1,NPLSI
-        DO 47 IMEI=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMEI)
-          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 47
+        DO IMOL=1,NMOLI
+         DO IPLS=1,NPLSI
+          DO 47 IMEI=1,NMEII(IMOL)
+           IREI=LGMEI(IMOL,IMEI)
+           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 47
             DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SPLODM(IN,IMOL,IPLS)=RTIS%SPLODM(IN,IMOL,IPLS)+
@@ -575,14 +582,16 @@ C
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
             END IF
             ENDDO
-47      CONTINUE
+   47     CONTINUE
+         END DO
+        END DO
 C
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: MOLECULES, EI-PROCESSES, FROM IMOL,
 C                                      SUM OVER ALL EI PROCESSES
 C
-        DO 35 IMOL=1,NMOLI
-        DO 35 IMEI=1,NMEII(IMOL)
+        DO IMOL=1,NMOLI
+        DO IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
             DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -595,14 +604,15 @@ C
      .                                        EIRENE_FTABEI1(IREI,IN)
             ENDIF
             ENDDO
-35      CONTINUE
+         END DO
+        END DO
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI-PROCESSES, FROM IMOL
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
-        DO 49 IMOL=1,NMOLI
-        DO 49 IPLS=1,NPLSI
-        DO 49 IMEI=1,NMEII(IMOL)
+        DO IMOL=1,NMOLI
+        DO IPLS=1,NPLSI
+        DO IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
 !pb 09022106         ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls 
@@ -616,7 +626,9 @@ cdr                     because it was already summed over ipls
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
           ENDDO
-49      CONTINUE
+          END DO
+         END DO
+        END DO
 
         END IF   ! (not llst) 
 C
@@ -758,12 +770,12 @@ cdr             and for atoms this is identical == 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES
 C
-        DO 107 IION=1,NIONI
-        DO 107 IPLS=1,NPLSI
-        DO 107 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
-          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 107
-          DO 108 IN=1,NDXY
+        DO IION=1,NIONI
+         DO IPLS=1,NPLSI
+          DO 107 IIEI=1,NIEII(IION)
+           IREI=LGIEI(IION,IIEI)
+           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 107
+           DO 108 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               SPLNWI(IN,IION,IPLS)=SPLNWI(IN,IION,IPLS)+
      .                             TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
@@ -773,6 +785,8 @@ C
             END IF
 108       CONTINUE
 107     CONTINUE
+         END DO
+        END DO
 C
 C
         DO 106 IION=1,NIONI

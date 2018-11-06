@@ -1,9 +1,9 @@
 C> \brief Broadcast quantities of module EIRMOD_COMNNL
 C>
 C> All quantities of the module EIRMOD_COMNNL are broadcasted here.
-C> The census arrays are only broadcased in the parallelisation mode 
+C> The census arrays are only broadcasted in the parallelisation mode
 C> with proportional allocation. Especially, in the embarrassingly 
-C> parallel mode, each process should keep its on census. (Attention: 
+C> parallel mode, each process should keep its own census. (Attention:
 C> write out of the census of each process for the restart of a run is 
 C> not (yet) implemented and may be part of the plasma code interface.)
       SUBROUTINE EIRENE_BROAD_COMNNL

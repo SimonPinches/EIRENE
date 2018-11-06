@@ -32,7 +32,6 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
-
 CDR
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
 CDR
@@ -47,7 +46,7 @@ CDR
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
-CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
+CDR  VPX,VPY NEEDED FOR PROJECTING PARTICLE VELOCITIES
 CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
 C
         if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
@@ -59,7 +58,7 @@ C
         VPY=0.
         VRX=0.
         VRY=0.
-        DO I=1,ntrii
+        DO I=1,NTRII
             VPX(I)=PLNXTRI(i)
             VPY(I)=PLNYTRI(i)
             VRX(I)=PPLNXTRI(i)
@@ -71,12 +70,12 @@ cdr  increments for tally number iadv
         IA1=NATMI+NMOLI     !  RADIAL ENREGY FLUX
         IA2=2*IA1           !  POLOIDAL CURRENT
         IA3=3*IA1           !  POLOIDAL ENERGY FLUX
-        IA4=4*IA1           !  FLUX (ANGULAR AVERAGED)
+        IA4=4*IA1           !  FLUX (ANGLE-AVERAGED)
       ENDIF
 
 csw
 csw added for B2.5 coupling (ank_mods in eirene_mc.F of B2.5)
-csw so called 'STANDARD' option in Vlad's SOLPS4.3 user/uptusr.f
+csw so-called 'STANDARD' option in SOLPS4.3 user/uptusr.f from Vlad
 csw 21oct2011
 csw
 C
@@ -112,7 +111,7 @@ C  particle current, poloidal component (CM/SEC)
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)  
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin  
+c    can be found from default tallies: vden_xzy scalar product bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 C  particle flux, integrated over all directions
@@ -144,7 +143,7 @@ C  particle current, poloidal component (CM/SEC)
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)  
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin  
+c    can be found from default tallies: vden_xzy scalar product bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 c::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -164,6 +163,3 @@ C
 C
       RETURN
       END
- 
- 
- 

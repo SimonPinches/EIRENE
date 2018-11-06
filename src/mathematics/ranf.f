@@ -18,7 +18,7 @@ C
 C RANDOM NUMBER GENERATOR FROM
 C  http://www.srcc.msu.su/num_anal/lib_na/cat/g/gsu1r.htm (in russian)
 
-cdr:  web page is not accessible any more,
+cdr:  web page is not accessible anymore,
 C
 C SOURCE:  Knuth, D.E. 1981, Seminumerical Algorithms, 2nd ed., vol. 2 of The Art
 C          of Computer Programming (Reading, MA: Addison-Wesley)
@@ -33,7 +33,7 @@ cdr                                 for IBM for its system/360
 cdr                                 It was state of the art in 1968.
 cdr                                 Not recommended anymore.
 
-C ISEED IS THE INTEGER FROM 1 TO  2147483647, AFTER FINISHING ITS VALUE IS
+C ISEED IS THE INTEGER FROM 1 TO 2147483647, AFTER FINISHING ITS VALUE IS
 C (2**31) * R (N) AND CAN BE USED FOR THE FUTURE CALLS
 C RETURNS ONE RANDOM NUMBER FROM 0 TO 1
 
@@ -50,7 +50,7 @@ C
 
 cdr  parameters for SURAND  (IBM, 1968)
       INTEGER D2P32M
-      DOUBLE PRECISION Z,D2P31M,D2PN31,DMOD
+      DOUBLE PRECISION Z,D2P31M,D2PN31
       DATA  D2PN31/4.656612873077393D-10/,  !    = 1 / 2**31   = 1/m
      .      D2P31M/2147483647.D0/,          !    = 2**31-1 = m
      .      D2P32M/16807/                   !    = a = 7**5
@@ -58,7 +58,7 @@ cdr  parameters for SURAND  (IBM, 1968)
       IF (NLOLDRAN) THEN
 cdr April 2017:  h1rn is a variant of RANMAR. It has period 2**144, if properly used.
 cdr              initialization is by a 32 bit integer
-cdr here: initialization enfored with seeds 0<= iseed<=900.000.000 in subr. ranset.
+cdr here: initialization enforced with seeds 0<= iseed<=900.000.000 in subr. ranset.
 cdr       for each such seed a different sequence of average length 10**30 is produced.
          ranf_eirene=h1rn(dummy)
 
@@ -70,7 +70,7 @@ cdr  IBM, 1968 generator, kept here for historic reasons and backward compatibil
             call eirene_headng
      .      ('ANCIENT (1968) RANDOM NUMBER GENERATOR ACTIVATED',48)
             call eirene_headng
-     .      ('IS THAT INTENTIONAL? Check flag  NLOLDRAN in RANF.f',51)
+     .      ('IS THAT INTENTIONAL? Check flag NLOLDRAN in RANF.f',50)
             call eirene_leer(2)
             ifirst=1
          end if

@@ -3,7 +3,7 @@ c           otherwise sometimes problems with non-closing polygons encountered.
 cdr june 17:  separate WRMESH (WRITING) and PLMESH (PLOTTING).
 
       SUBROUTINE EIRENE_WRMESH
-c  create close polygonal contours, from the eirene standard and additional surfaces
+c  create closed polygonal contours, from the eirene standard and additional surfaces
 c  use ILPLG(isurf) flag, from input blocks 3A LEVGEO=3 OR LEVGEO=4,
 C                         or certain additional surfaces, input block 3B,
 c                         0<RLB<2.
@@ -34,7 +34,7 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       INTEGER, PARAMETER :: MAXPOIN=2000
       REAL(DP) :: partcont(maxpoin,2,2), maxlen
       REAL(DP) :: XPE, YPE, HELP, XT, YT, PHI1, X1, X2, Y1, Y2, PHI2
-      REAL(DP) :: DISTQI,DISTQJ1,DISTQJ2,YMN
+      REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN
       INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
      .            ICO, IPO, IN, IS, IS1, ITRI
@@ -44,9 +44,9 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
 
 
 C ANZAHL DER KONTOUREN BESTIMMEN
-C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
+C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
-      WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED '
+      WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED'
       CALL EIRENE_LEER(1)
 
       NCONT = 0
@@ -84,7 +84,7 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
         IPOIN = 0
         MAXLEN = 0.
         irip=0
-C AKTUELLE CONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
+C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
 C AKTUELLEN CONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
 
@@ -125,8 +125,8 @@ C               Y,Z-KOORDINATEN
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
             ELSE
 C  ERROR
-              WRITE(iunout,*) 'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),
-     >                         ILPLG(I),I
+              WRITE(iunout,'(a,f11.4,2i4)')
+     >         'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),ILPLG(I),I
             ENDIF
           ENDIF
         ENDDO

@@ -77,7 +77,7 @@ C  OUTPUT:
      >                       X1ALPHA, Y1ALPHA, X2ALPHA, Y2ALPHA,
      >                       X1BETA, Y1BETA, X2BETA, Y2BETA
  
-      REAL(DP) :: INTSIN, INTCOS, PI, SIN2, COS2, COS3, COS2T, COSSIN,
+      REAL(DP) :: INTSIN, INTCOS, SIN2, COS2, COS3, COS2T, COSSIN,
      .          COS2SIN, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRYA, TRXS,
      .          TRXA, TRYS, EPPA, YHALB1, YHALB2, TRX1, SIN2TSIN,
      .          COS22T, SIN22T, COS2TCOS, ELLS, ELLA, EPPS, DENOM, TRX2,
@@ -131,8 +131,6 @@ C  OUTPUT:
      .          T315, T332, T372, T375, T376, T371, T358, T359, T362,
      .          T410, T835, T141, T793
  
-C     BERECHNUNG VON PI
-      PI = 4.*ATAN(1.)
 C
       INTSIN = COS(BETA)-COS(ALPHA)
       INTCOS = SIN(ALPHA) - SIN(BETA)
