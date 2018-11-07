@@ -34,6 +34,7 @@ C> At call data are expected for stratum ISTRA. There they may be
 C> further prepared (e.g. normalized, or scaled to other units) for
 C> transfer to the external code
       SUBROUTINE EIRENE_INFCOP_POST_STRATUM(ISTRA)
+      INTEGER, INTENT(IN) :: ISTRA
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
