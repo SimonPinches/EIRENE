@@ -1,7 +1,4 @@
 *DK INFCOP
-      MODULE EIRMOD_INFCOP
-      IMPLICIT NONE
-      CONTAINS
       SUBROUTINE EIRENE_INFCOP
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I1, I2, I3
@@ -10,7 +7,7 @@
       ENTRY EIRENE_IF2COP(I1)
       ENTRY EIRENE_IF3COP(I1,I2,I3)
       ENTRY EIRENE_IF4COP
-      END SUBROUTINE
+      END
 
 C> \brief Any property requiring hand-over in parallel part.
 C>
@@ -38,4 +35,3 @@ C> transfer to the external code
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
-      END MODULE
