@@ -98,6 +98,16 @@ C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
      >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
      >          .OR. P3(3,I) .EQ. 1.D55)) THEN
               IPOIN = IPOIN + 1
+              IF (IPOIN.GT.MAXPOIN) THEN
+                WRITE(IUNOUT,*)
+     .           'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .            ICONT
+                WRITE(IUNOUT,*)
+     .           'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                WRITE(IUNOUT,*)
+     .           'CURRENTLY MAXPOIN = ', MAXPOIN
+                CALL EIRENE_EXIT_OWN(1)
+              ENDIF
               IF (A3LM(I) .EQ. 0.) THEN
 C               X,Y-KOORDINATEN
                 PARTCONT(IPOIN,1,1) = P1(1,I)
@@ -142,6 +152,16 @@ C  POLOIDAL SURFACES
                 IF ((XPOL(J,INUMP(I,2)) .NE. XPOL(J+1,INUMP(I,2))) .OR.
      >              (YPOL(J,INUMP(I,2)) .NE. YPOL(J+1,INUMP(I,2)))) THEN
                   IPOIN = IPOIN + 1
+                  IF (IPOIN.GT.MAXPOIN) THEN
+                    WRITE(IUNOUT,*)
+     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                ICONT
+                    WRITE(IUNOUT,*)
+     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                    WRITE(IUNOUT,*)
+     .               'CURRENTLY MAXPOIN = ', MAXPOIN
+                    CALL EIRENE_EXIT_OWN(1)
+                  ENDIF
                   PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
                   PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
                   PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
@@ -160,6 +180,16 @@ C  RADIAL SURFACES
                 IF ((XPOL(INUMP(I,1),J) .NE. XPOL(INUMP(I,1),J+1)) .OR.
      >              (YPOL(INUMP(I,1),J) .NE. YPOL(INUMP(I,1),J+1))) THEN
                   IPOIN = IPOIN + 1
+                  IF (IPOIN.GT.MAXPOIN) THEN
+                    WRITE(IUNOUT,*)
+     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                ICONT
+                    WRITE(IUNOUT,*)
+     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                    WRITE(IUNOUT,*)
+     .               'CURRENTLY MAXPOIN = ', MAXPOIN
+                    CALL EIRENE_EXIT_OWN(1)
+                  ENDIF
                   PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
                   PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
                   PARTCONT(IPOIN,2,1) = XPOL(INUMP(I,1),J+1)
@@ -191,6 +221,16 @@ C  TRIANGLE SIDES
                   IS1 = IS+1
                   IF (IS1 > 3) IS1=1
                   IPOIN = IPOIN + 1
+                  IF (IPOIN.GT.MAXPOIN) THEN
+                    WRITE(IUNOUT,*)
+     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                ICONT
+                    WRITE(IUNOUT,*)
+     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                    WRITE(IUNOUT,*)
+     .               'CURRENTLY MAXPOIN = ', MAXPOIN
+                    CALL EIRENE_EXIT_OWN(1)
+                  ENDIF
                   PARTCONT(IPOIN,1,1) = XTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,1,2) = YTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,2,1) = XTRIAN(NECKE(IS1,ITRI))
@@ -212,7 +252,6 @@ C  TRIANGLE SIDES
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'
           GOTO 1000
         ENDIF
-
 
 C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
         DO I=1,IPOIN-1
@@ -289,16 +328,19 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
             ENDIF
           ENDDO
           IF (IFOUND.EQ.0) THEN
-            WRITE (iunout,*) 'NO MATCHING POINT FOUND FOR CONTOUR ',
-     >                        ICONT
-            write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
-     >                   partcont(i,1,1),partcont(i,1,2),
-     >                   partcont(i,2,1),partcont(i,2,2)
-            WRITE (iunout,*) 'USE NEXT POINT '
+            WRITE(iunout,*) 'NO MATCHING POINT FOUND FOR CONTOUR ',
+     >                       ICONT
+            write(iunout,'(I4,3(1X,I4),4(1X,G14.7))') i,idiag(i),
+     >                    irip(i,1),irip(i,2),
+     >                    partcont(i,1,1),partcont(i,1,2),
+     >                    partcont(i,2,1),partcont(i,2,2)
+            WRITE(iunout,*) 'USE NEXT POINT '
             IP=I+1
-            write(iunout,*) iP,idiag(iP),irip(ip,1),irip(ip,2),
+            write(iunout,'(I4,3(1X,I4),4(1X,G14.7))') iP,idiag(iP),
+     >                    irip(ip,1),irip(ip,2),
      >                    partcont(iP,1,1),partcont(iP,1,2),
      >                    partcont(iP,2,1),partcont(iP,2,2)
+            CALL EIRENE_LEER(1)
           ENDIF
         ENDDO
 
@@ -313,10 +355,12 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
 
         IF (TRCSUR) THEN
           do i=1,ipoin
-            write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
+            write(iunout,'(1X,I4,3(1X,I4),4(1X,G14.7))') i,idiag(i),
+     >                   irip(i,1),irip(i,2),
      >                   partcont(i,1,1),partcont(i,1,2),
      >                   partcont(i,2,1),partcont(i,2,2)
           enddo
+          CALL EIRENE_LEER(1)
         END IF  !  contour no. icont  done.
 
 C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
@@ -427,7 +471,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
 
       call EIRENE_leer(1)
       write (iunout,*)
-     .  'input file fort.78 for FEM mesh generator written '
+     .  'input file fort.78 for FEM mesh generator written'
       call EIRENE_leer(2)
 
 cdr

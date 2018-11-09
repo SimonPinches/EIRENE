@@ -36,7 +36,7 @@ C
       INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
       LOGICAL, INTENT(IN) :: LP, LT
 
-      INTEGER, ALLOCATABLE, SAVE :: IND(:,:),   IIND(:),    INDSS(:,:)
+      INTEGER, ALLOCATABLE :: IND(:,:), IIND(:), INDSS(:,:)
       REAL(DP) :: SD(0:NRTAL), SDD(0:NRTAL)
       REAL(DP) :: XNM, SD2, DS, ZFLUXQ, SD2S, SDS, SDI, SDE, D2S, SG,
      .          DSA, DD, D, SG2, DA, SD1, SD1S

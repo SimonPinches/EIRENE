@@ -339,7 +339,7 @@ cdr  is obtained by summing over the 9 terms
 cdr  this second evaluation may not be needed, if only a collapsed fit is wanted.
 cdr  or if al2=0.0  (as in H.4, H.10, AMJUEL fits, for automatic Corona limit.
 
-cdr  H.4, H.10, H.12 fits from AMJUEL: Corona at p2 <= log(ne/10**8) = rc2min = 0.0 
+cdr  H.4, H.10, H.12 fits from AMJUEL: Corona at p2 <= log(ne/10**8) = rc2min = 0.0
 cdr   if p2.le.0.0, just return cou=dum(0) = fit2(AL1,AL2)  
 
       cou = dum(9)          
