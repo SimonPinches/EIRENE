@@ -667,7 +667,7 @@ cdr  start reading species specification block 4a,4b,4c,4d
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
-        READ (ZEILE(12:17),'(2I3)') NMASSA(IATM),NCHARA(IATM)
+cdr     READ (ZEILE(12:17),'(2I3)') NMASSA(IATM),NCHARA(IATM)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards
@@ -705,7 +705,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
-        READ (ZEILE(12:14),'(I3)') NMASSM(IMOL)
+cdr     READ (ZEILE(12:14),'(I3)') NMASSM(IMOL)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -742,7 +742,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
-        READ (ZEILE(12:14),'(I3)') NMASSI(IION)
+cdr     READ (ZEILE(12:14),'(I3)') NMASSI(IION)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -776,6 +776,7 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+cdr
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -1253,7 +1254,7 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
         END DO
 
 cdr wrong place for this card here
-        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps-cut option flags" would we
+        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps-cut option flags" would be
                                     !dr read only below (3d plots and nlraps) then
                                     !dr this exception would not be needed at all.
 
@@ -1391,7 +1392,8 @@ cdr this next condition for old default: better also check for nchtal=2 ??
         NUM_LINES = 6
         NUM_COMPO = 6
 ! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI 
+        NUM_CONTRIB =
+     .   NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI
 cdr  ?? perhaps: in old default only one line possible at a time?
 cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large

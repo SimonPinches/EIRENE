@@ -27,10 +27,6 @@
      .          OCTREE_CheckBlock, OCTREE_CheckVolume,
      .          OCTREE_Cramer, OCTREE_PrintVTK, OCTREE_PrintGraphviz
 
-      INTEGER, PARAMETER :: less = -1,
-     .                      equal = 0,
-     .                      more = 1
-
 c     lookup table for the correct combination of coords in
 c     OCTREE_CreateChildren
       INTEGER, DIMENSION(8,2) :: XTAB = reshape(
@@ -51,7 +47,7 @@ c     --- DERIVED POINTER TYPE FOR ARRAY ---
         TYPE(ocNode), POINTER :: node
       END TYPE pOcNode
 
-c     --- OCTREE TYPE, CONTAINING THE ROOT-NODE ---
+c     --- OCTREE TYPE, CONTAINING THE ROOT NODE ---
       TYPE, PUBLIC :: octree
         TYPE(ocNode), POINTER :: root
 c       how many layers will this tree have?
@@ -75,7 +71,7 @@ c       node id in the directions, coded as integers, using the bits
         INTEGER, DIMENSION(3) :: number
 c       remember on which layer in the octree we are, default to layer 1
         INTEGER :: layer = 1
-c       as we take cubes as our octree-nodes, define two points
+c       as we take cubes as our octree nodes, define two points
 c       => (:,1) left front corner
 c          (:,2) right back corner
 c          (:,3) center point of the cube
@@ -86,10 +82,10 @@ c       this is the radius of the convex ball of this block
 c       pointer to parent node
         TYPE(ocNode), POINTER :: parent => NULL()
 c       field of 8 child nodes
-        TYPE(pOcNode), DIMENSION(8), ALLOCATABLE :: children(:)
+        TYPE(pOcNode), ALLOCATABLE :: children(:)
 
 c       associated objects with this node
-c       -> save the index-number of the add. surface here
+c       -> save the index number of the add. surface here
         INTEGER, DIMENSION(:), ALLOCATABLE :: surfaces
 c       save how many surface we actually have (surfaces array is bigger ;) )
         INTEGER :: nsurfaces = 0
@@ -101,7 +97,7 @@ c       save how many surface we actually have (surfaces array is bigger ;) )
       FUNCTION OCTREE_NewTree (X, Y, Z, LAYERS, MAXNSURF) result(tree)
 
 c     --- BUILD A NEW TREE ---
-c     x,y,z   : 2d-arrays with the lower left and upper right points
+c     x,y,z   : 2d arrays with the lower left and upper right points
 c              of the convex hull of all surfaces we want in our tree
 c     layers  : number of layers the tree will have. 0 = lowest level (leafs)
 c     maxnsurf : maximum number of surfaces we will have in our tree
@@ -118,7 +114,7 @@ c     RETURNS: pointer to the new tree
 
         if(trcoct) WRITE (iunout,*) 'ALLOCATING NEW TREE OBJECT'
 
-c       strech the konvex hull a bit, so we have a closed interval
+c       strech the convex hull a bit, so we have a closed interval
 c       at the right ends of all directions, as we only check with .lt.
 c       for these ends... (otherwise a point exactly on the edge or vertex
 c       on the right ends would not be in the block)
@@ -158,7 +154,7 @@ c       delete the preroot parent, we do not need this anymore
       FUNCTION OCTREE_NewNode(TREE, X, Y, Z, NUMBER,PARENT) RESULT(NODE)
 
 c     --- CREATE A NEW NODE (AS LEAF) ---
-c     x,y,z    : 2d-arrays with the lower left and upper right points
+c     x,y,z    : 2d arrays with the lower left and upper right points
 c     number   : the index numbers in the 3 directions (bits are used)
 c     parent   : pointer to the parent node
 c     RETURNS: pointer to the new node
@@ -226,7 +222,6 @@ c       and replace if shorter
           tree%shortest = short
         end if
       END FUNCTION OCTREE_NewNode
-
 
       SUBROUTINE OCTREE_CreateChildren(TREE, PARENT)
 

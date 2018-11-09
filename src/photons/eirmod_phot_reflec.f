@@ -36,10 +36,10 @@
  
       do i = 1, 9
         read(unit = 23, fmt = *)
-     .   graphite(i, 1),graphite(i, 2),graphite(i, 3),graphite(i, 4),
-     .   graphite(i, 5),graphite(i, 6),graphite(i, 7),graphite(i, 8),
-     .   graphite(i, 9),graphite(i, 10),graphite(i, 11),graphite(i, 12),
-     .   graphite(i, 13),graphite(i, 14),graphite(i, 15),graphite(i, 16)
+     .     graphite(i, 1),graphite(i, 2),graphite(i, 3),graphite(i, 4),
+     .     graphite(i, 5),graphite(i, 6),graphite(i, 7),graphite(i, 8),
+     .     graphite(i, 9),graphite(i,10),graphite(i,11),graphite(i,12),
+     .     graphite(i,13),graphite(i,14),graphite(i,15),graphite(i,16)
       end do
       close(unit = 23)
  
@@ -57,9 +57,9 @@
       OPEN (UNIT=23,FILE=DBFNAME(IFILE))
       do i = 1, 9
         read(unit = 23, fmt = *)
-     .   mo(i, 1),mo(i, 2),mo(i, 3),mo(i, 4),mo(i, 5),mo(i, 6),
-     .   mo(i, 7),mo(i, 8),mo(i, 9),mo(i, 10),mo(i, 11),mo(i, 12),
-     .   mo(i, 13),mo(i, 14),mo(i, 15),mo(i, 16)
+     .     mo(i, 1),mo(i, 2),mo(i, 3),mo(i, 4),mo(i, 5),mo(i, 6),
+     .     mo(i, 7),mo(i, 8),mo(i, 9),mo(i,10),mo(i,11),mo(i,12),
+     .     mo(i,13),mo(i,14),mo(i,15),mo(i,16)
       end do
       close(unit = 23)
  
@@ -233,7 +233,7 @@
       real(dp), intent(in) :: theta_i, lambda
       integer, intent(in) :: mat
       real(dp), intent(out) :: out
-      real(dp) :: theta_0, k, rho_0, theta
+      real(dp) :: theta_0, k, rho_0
       real(dp) :: n_0, n_1
  
       real(dp) :: rnd_alpha, rnd_theta, rnd, rho
@@ -253,7 +253,6 @@
      .  rho_0)
 ! umrechnen ins Bogenmass
          theta_0 = theta_0 * PI / 180.0;
-         theta = theta_i * PI / 180.0;
 ! berechne linke und rechte Nullstelle von theta_0
          n_0 = -PI*k/2.0 + theta_0;
          n_1 = PI*k/2.0 + theta_0;

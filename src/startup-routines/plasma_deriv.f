@@ -21,7 +21,7 @@ c  march 06
 c     new option: icall > 0, and call base_density
 c       allows to use output tallies and special "density model" to
 c       construct new input tallies (densities, temperatures, drift velocities)
-c       e.g. for post processing (diagno), or for iterations (bgk).
+c       e.g. for postprocessing (diagno), or for iterations (bgk).
 c
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 !pb  06.03.07: new density models 'CONSTANT' and 'MULTIPLY' introduced
@@ -38,11 +38,11 @@ cdr:  edrift, vdion:  only for ipls=1 available?
 cdr:  warnings in case of missing edrift removed: have been too many (one per cell)
 cdr: jan 2016: automated resetting of nfilel to =3 or =9 removed.
 cdr:           (had caused problems with t-dep mode)
-cdr:           should be done more explicitly, by problem specific routines,
+cdr:           should be done more explicitly, by problem-specific routines,
 cdr:           or mod_bgk, mod_timstep,.....
-cdr:           post processing Balmer lines, etc:  to be confirmed that this now
+cdr:           postprocessing Balmer lines, etc:  to be confirmed that this now
 cdr:           still works properly
-cdr: jan 2017: generalized assymptotics options for A&M data structures included
+cdr: jan 2017: generalized asymptotics options for A&M data structures included
 cdr:           cleanup. logical FOUND seems to be redundant
 
 c
@@ -57,15 +57,15 @@ c                           set new flow velocity for ipls
 c    icall:               :
 
 c    icall=0
-c      called PRIOR to Monte Carlo Loop (from subr. input)
+c      called PRIOR to Monte Carlo loop (from subr. input)
 c      in this call all density models referring to output tallies
 c      are ignored (e.g. 'fort.10').
 c    icall=1
-c      called AFTER Monte Carlo Loop and sum over strata
+c      called AFTER Monte Carlo loop and sum over strata
 c        this allows to put output tallies from a run onto the
-c        background for a next iteration or post processing.
-c        In this call all density models referring to input tallies  are
-c        ignored, because they are aready done in a previous call
+c        background for a next iteration or postprocessing.
+c        In this call all density models referring to input tallies are
+c        ignored, because they are already done in a previous call
 
 c  for appropriate values of nfilel:  = 1,3,4,6,8,9
 c      write fort.13 (CALL WRPLAM) after all density models are done.
@@ -179,7 +179,7 @@ cdr  read all plasma background data (all ipls), each time. Better: move outside
 
           IF (IO.EQ.0) THEN
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
+c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
             IF (NLMLTI) TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
@@ -243,7 +243,7 @@ c   check: itold ge 0 and itold.le 3
           END IF
  
         ELSEIF (INDEX(CDENMODEL(IPLS),'MULTIPLY') > 0) THEN
-c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard wired
+c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           
           IOLDTI=MPLSTI(IOLD)
@@ -316,7 +316,7 @@ c......................................................................
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
-C  SET ELECTRON-DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,0:NPLS+1)
+C  SET ELECTRON DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,0:NPLS+1)
       LGVAC=.TRUE.
       DO 5102 J=1,NSBOX
         DEIN(J)=0.
@@ -333,7 +333,6 @@ C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
         LGVAC(J,NPLS+1)=TEPLS.LE.TVAC.OR.DEPLS.LE.DVAC
         LGVAC(J,0)     =LGVAC(J,0).AND.LGVAC(J,NPLS+1)
 5102  CONTINUE
- 
 
 c.....................................................................
 C
@@ -394,12 +393,12 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s)
 c  compute new density of species ipls from equilibrium between
-c  these two processes  for the given "ground state" density BASE_DENSITY
+c  these two processes for the given "ground state" density BASE_DENSITY
 
             DIIN(IPLS,IR)=BASE_DENSITY(IR)*RCORONA*DEIN(IR)*AM1
             DIIN(IPLS,IR)=MAX(DVAC,DIIN(IPLS,IR))
  
-cdr  what is this??  background spectrum ??
+cdr  what is this?  background spectrum ?
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
@@ -612,7 +611,6 @@ c .................................................................colrad done
 !  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
  
-
       END DO
       IF (ALLOCATED(SUMNI)) THEN
         DEALLOCATE (SUMNI)
@@ -622,7 +620,6 @@ c .................................................................colrad done
       DEALLOCATE (BASE_TEMP)
  
       NBACK_SPEC = IBS
- 
 
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
@@ -700,12 +697,13 @@ C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
           DO 5162 IP=NPOINT(2,I),NPOINT(1,I+1)-1
             IPM=IP-1
             DO 5163 IPLS=0,NPLS+1
-              DO 5163 IR=1,NR1STM
+              DO IR=1,NR1STM
                 IN=IR+IPM*NR1ST
                 LGVAC(IN,IPLS)=.TRUE.
-5163        CONTINUE
-5162      CONTINUE
-5161    CONTINUE
+              END DO
+ 5163       CONTINUE
+ 5162     CONTINUE
+ 5161   CONTINUE
       ENDIF
 C
       DO 5205 IPLS=1,NPLSI
@@ -730,7 +728,7 @@ C  FACTOR FOR ROOT MEAN SQUARE SPEED
      .                   AMUA*RMASSP(IPLS)
 
 C
-C  ZT1: FOR "EFFECTIVE" PLASMA PARTICLE VELOCITY IN CROSS SECTIONS
+C  ZT1: FOR "EFFECTIVE" PLASMA PARTICLE VELOCITY IN CROSS-SECTIONS
 C       FOR HEAVY PARTICLE INTERACTIONS
 C       SQRT(ZT1) IS THE MEAN VELOCITY V_M AT TI=ZTII, TAKEN AS
 C       ROOT MEAN SQUARE SPEED, M/2 V_M^2 = 3/2 KT
@@ -757,7 +755,8 @@ C
 
       IF (LTISMO) THEN
         do iplsti = 1, nplsti
- 	  call eirene_cell_to_corner(TIIN(iplsti,:),TIINCORNER(:,iplsti))
+          call eirene_cell_to_corner(TIIN(iplsti,:),
+     .                               TIINCORNER(:,iplsti))
         end do
       END IF
 
@@ -856,9 +855,9 @@ C  NOTHING TO BE DONE
      .                 NLSYMP(ISTRA),NLSYMT(ISTRA))
           ENDIF
         ELSE
-          WRITE (6,*)
+          WRITE (iunout,*)
      .      'ERROR IN PLASMA_DERIV: DATA FOR STRATUM ISTRA= ',ISTRA
-          WRITE (6,*) 'ARE NOT AVAILABLE. '
+          WRITE (iunout,*) 'ARE NOT AVAILABLE. '
           RETURN
         ENDIF
       END IF   ! ICALL > 0

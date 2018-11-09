@@ -27,8 +27,8 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species resolved.
-cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
+cdr DEC. 15 :  bulk ion energy estimators: species-resolved.
+cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators. 
 cdr                  probably not correct (outdated).
@@ -45,7 +45,7 @@ cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
 cdr analog cascading NLCASCAD: started to document, 
-cdr        syncronize and re-activate option, not ready !!
+cdr        synchronize and re-activate option, not ready !!
 c   this version: prepare cascading at collisions, 
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators
@@ -86,7 +86,7 @@ C                           TRANSITION NEUTRAL-->ION (IF CALLED
 C                           BY FOLNEUT), OR
 C                           TRANSITION ION-->NEUTRAL (IF CALLED
 C                           BY FOLION)
-C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST COLL. SCORING.
+C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
 C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING 
 C
       USE EIRMOD_PRECISION
@@ -171,7 +171,7 @@ C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION
         IMETCL(NCELL) = NCLMT
       END IF
 C
-C  ABSORPTION BIASSING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES 
+C  ABSORPTION BIASING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES
 
 C  SUPPRESS THOSE IREI PROCESSES WITH ZERO
 C                       TEST PARTICLE SECONDARIES
@@ -182,7 +182,7 @@ C                       TEST PARTICLE SECONDARIES
       NEII_RED=0
 
       IF (WEIGHT.LT.WMINV) THEN
-C  WEIGHT ALREADY TOO SMALL, NO SUPPRESION OF ABSORPTION
+C  WEIGHT ALREADY TOO SMALL, NO SUPPRESSION OF ABSORPTION
         NEII_RED=NIEII(IOLD)
         LGEI_RED(:)=LGIEI(IOLD,:)
       ELSE
@@ -211,7 +211,7 @@ C  REDUCE WEIGHT ACCORDINGLY
             IF (IESTEI(IREI,2).NE.0) GOTO 990
             IF (IESTEI(IREI,3).NE.0) GOTO 990
           ELSE
-C  NO, THIS PROCESS REMAINS ACTIVE, BECAUSE THERE ARE TEST-PARTICLE SECONDARIES
+C  NO, THIS PROCESS REMAINS ACTIVE, BECAUSE THERE ARE TEST PARTICLE SECONDARIES
             NEII_RED=NEII_RED+1
             LGEI_RED(NEII_RED)=IREI
           ENDIF
@@ -256,7 +256,7 @@ C  FIND TYPE OF ELECTR. IMPACT COLLISION PROCESS: IREI
 445     CONTINUE
 C
 C  CALCULATE WEIGHT OF THE NEXT GENERATION PARTICLE
-C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
+C  ONLY ONE ATOM, MOLECULE OR TEST ION HISTORY WITH MODIFIED WEIGHT
 C  IS FOLLOWED.
 C  PTOT IS THE (INTEGER) NUMBER OF ANALOGUE NEXT GENERATION TEST PARTICLES
 C
@@ -266,7 +266,7 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
 C  PRE-COLLISION ESTIMATOR FOR EIIO, 
-C  PRE- AND POST COLLISION ESTIMATOR FOR EIPL AND EIEL
+C  PRE- AND POST-COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
@@ -276,7 +276,7 @@ cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
           IF (LEIPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
+cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -309,7 +309,7 @@ Cdr  PTOT=0,1,2,etc..., = integer, number of next generation test particles
 CC.......................................................................
         IF (.NOT.NLCASCAD) GOTO 451  !  EI PROCESS CASCADING ION
 cdr
-c    splitting of post collision particles, i.e. create a true cascade
+c    splitting of post-collision particles, i.e. create a true cascade
 
 cdr  ANALOGUE SAMPLING, I.E. SPLITTING, IN CASE OF MORE THAN ONE SECONDARY.
         IF (NLEVEL+PTOT <= MAXLEVEL) THEN   ! there is still storage for splitting
@@ -365,7 +365,7 @@ C  NUMBER OF NODES AT THIS LEVEL
               ENDIF
             END DO
           END DO  ! LOOP OVER ALL POTENTIAL SECONDARIES DONE
-C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST COLLISION PARAMETERS
+C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST-COLLISION PARAMETERS
 C  ON SPLITTING ARRAYS.
 
 !  REMOVE LAST PARTICLE FROM STORAGE AS ITS TRAJECTORY WILL BE CONTINUED NOW
@@ -741,7 +741,7 @@ C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT) THEN
 C
 cdr:  at this place to be done: elastic collisions of test ions
-cdr   in particular: fokker planck (velocity space diffusion--> TAU approximation?)
+cdr   in particular: Fokker-Planck (velocity space diffusion--> TAU approximation?)
 cdr:  currently still somewhere in folion. To be moved here, 
 cdr   build on analogy with other elastic collisions
 C
@@ -841,7 +841,7 @@ C   FIND INDEX OF THAT ION IMPACT COLLISION
 562     CONTINUE
 C
 C  CALCULATE WEIGHT OF THE NEXT GENERATION PARTICLE
-C  ONLY ONE ATOM, MOLECULE OR TEST-ION HISTORY WITH MODIFIED WEIGHT
+C  ONLY ONE ATOM, MOLECULE OR TEST ION HISTORY WITH MODIFIED WEIGHT
 C  IS FOLLOWED
 C
         PTOT=P2NPI(IRPI)
@@ -850,7 +850,7 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLPI(IRPI,0)
 C
 C  PRE- COLLISION ESTIMATOR FOR EIIO,
-C  PRE- AND POST COLLISION ESTIMATOR FOR EIPL AND EIEL
+C  PRE- AND POST-COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTPI(IRPI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0

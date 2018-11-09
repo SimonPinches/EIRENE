@@ -35,7 +35,7 @@ C
      .            'PHOTON IMPACT(4)    ',
      .            'ELASTIC COLL.(5)    ',
      .            'CHARGE EXCHANGE(6)  ',
-     .            'FOKKER PLANCK(7)    ',
+     .            'FOKKER-PLANCK(7)    ',
      .            'SURFACE(8)          ',
      .            'SPLITTING(9)        ',
      .            'RUSSIAN ROULETTE(10)',
