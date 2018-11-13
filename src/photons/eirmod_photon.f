@@ -3010,7 +3010,7 @@ c
 
 
       subroutine EIRENE_line_cutoff
-
+      IMPLICIT NONE
       real(dp), allocatable :: ete(:), en0(:), floc(:), en0log(:),
      .                         eminus(:), eplus(:),
      .                         xintminus(:), xintplus(:),
@@ -3028,7 +3028,7 @@ c
      .            fwhm, shift, dvdw, xx, xintinf, l0,
      .            eintmax, eintinf
       integer :: istr, mxrec, ite, iloc, iirc, irrc, kk,
-     .           ipl, icell, ire, ibulk, lr, in0, jloc,
+     .           ipl, iplsi, icell, ire, ibulk, lr, in0, jloc,
      .           iccnt, mxrjprt, irj, ios
       integer :: nte, nn0, nloc
       integer :: nte_old=0, nn0_old=0, nloc_old=0
@@ -3053,8 +3053,9 @@ c
 
       MXREC = 0
       mxrjprt = 1
-      do ipls = 1, nplsi
+      do iplsi = 1, nplsi
 
+        ipls = iplsi
         if (.not.lsrcpls(ipls)) cycle
         if (lgprc(ipls,0) == 0) cycle
 
@@ -3109,8 +3110,9 @@ c
       end if
 
       iccnt = 0
-      do ipls = 1, nplsi
+      do iplsi = 1, nplsi
 
+        ipls = iplsi
         if (.not.lsrcpls(ipls)) cycle
         if (lgprc(ipls,0) == 0) cycle
 
@@ -3585,7 +3587,7 @@ c
 
 
         end do  ! iirc
-      end do  ! ipls
+      end do  ! iplsi
 
       deallocate (ete)
       deallocate (en0)

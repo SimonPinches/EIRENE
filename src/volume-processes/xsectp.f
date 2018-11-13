@@ -17,6 +17,7 @@ cdr  Jan 18  :  call energy_rate_coeff with lexp=true, because internal colrad (
 cdr             option is now available.
 cdr  May 18 :  still missing. low Te cut-off (should be done as in xstei, there:
 cdr            0.1 eV, until asymptotics from database are fully implemented.
+cdr            DEIMIN density cut off now redundant, due to defaults read from AMJUEL ?
 
 C
       SUBROUTINE EIRENE_XSECTP

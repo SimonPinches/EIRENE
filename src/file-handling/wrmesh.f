@@ -1,6 +1,7 @@
 c  nov 03:  use relative distances to find neighbor segment,
 c           otherwise sometimes problems with non-closing polygons encountered.
 cdr june 17:  separate WRMESH (WRITING) and PLMESH (PLOTTING).
+cdr Nov. 18:  fixes from ITER branch
 
       SUBROUTINE EIRENE_WRMESH
 c  create closed polygonal contours, from the eirene standard and additional surfaces
@@ -37,9 +38,10 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN
       INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
-     .            ICO, IPO, IN, IS, IS1, ITRI
+     .            ICO, IPO, IN, IS, IS1, ITRI, INBT, INBS
       INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
-      LOGICAL  :: LCLOSED
+      LOGICAL  :: LCLOSED, LFOUND
+      LOGICAL, ALLOCATABLE :: FOUND(:,:)
 
 
 
@@ -85,7 +87,7 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         MAXLEN = 0.
         irip=0
 C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
-C AKTUELLEN CONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
+C AKTUELLEN KONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
 
 c  ADDITIONAL SURFACES
@@ -212,10 +214,13 @@ C  ERROR
 
         case (4)
 C  TRIANGLE SIDES
+          ALLOCATE (FOUND(1:3,1:NTRII))
+          FOUND = .FALSE.
           DO ITRI = 1, NTRII
             DO IS = 1, 3
               IN=INMTI(IS,ITRI)
-              IF (IN /= 0) THEN
+              LFOUND=FOUND(IS,ITRI)
+              IF (IN /= 0 .AND. .NOT.LFOUND) THEN
                 IF (ABS(ILPLG(IN)) == ICONT) THEN
                   IUHR=ILPLG(IN)
                   IS1 = IS+1
@@ -241,11 +246,18 @@ C  TRIANGLE SIDES
                   maxlen = maxlen +
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
-
+                  FOUND(IS,ITRI)=.TRUE.
+                  INBT=NCHBAR(IS,ITRI)
+cwdk Make sure the corresponding side of the neighboring triangle is not found again
+                  IF (INBT.GT.0) THEN
+                    INBS=NSEITE(IS,ITRI)
+                    FOUND(INBS,INBT)=.TRUE.
+                  ENDIF
                 END IF
               END IF
             END DO
           END DO
+          DEALLOCATE (FOUND)
         end select
 
         IF (IPOIN.LE.0) THEN
@@ -361,7 +373,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      >                   partcont(i,2,1),partcont(i,2,2)
           enddo
           CALL EIRENE_LEER(1)
-        END IF  !  contour no. icont  done.
+        END IF  !  contour no. icont done.
 
 C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
 C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
@@ -405,8 +417,13 @@ C  PUNKT, DER IM UMLAUF DER VORHERGEHENDE IST
             X1 = PARTCONT(IMN,1,1)
             Y1 = PARTCONT(IMN,1,2)
 C  PUNKT, DER IM UMLAUF DER NAECHSTE IST
-            X2 = PARTCONT(IMN+1,2,1)
-            Y2 = PARTCONT(IMN+1,2,2)
+            IF (IMN.LT.IPOIN) THEN
+              X2 = PARTCONT(IMN+1,2,1)
+              Y2 = PARTCONT(IMN+1,2,2)
+            ELSE
+              X2 = PARTCONT(1,2,1)
+              Y2 = PARTCONT(1,2,2)
+            ENDIF
           ENDIF
 
 C  BESTIMME POLARWINKEL VON (X1,Y1) UND (X2,Y2) MIT (XT,YT) ALS URSPRUNG

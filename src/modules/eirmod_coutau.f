@@ -18,7 +18,7 @@ cdr           writing on ft14.
      .          EIRENE_WRITE_COUTAU, EIRENE_READ_COUTAU, 
      .          EIRENE_INIT_COUTAU_REINIT
  
-! INTEGRALS OF VOLUME AVERAGED TALLIES
+! INTEGRALS OF VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PDENAI(:,:), PDENMI(:,:), PDENII(:,:), PDENPHI(:,:),
      R EDENAI(:,:), EDENMI(:,:), EDENII(:,:), EDENPHI(:,:),
@@ -30,13 +30,13 @@ cdr           writing on ft14.
      R PIPLI(:,:),
      R PPHELI(:),   PPHATI(:,:), PPHMLI(:,:), PPHIOI(:,:), PPHPHTI(:,:),
      R PPHPLI(:,:),
-     R EAELI(:),  EAATI(:),  EAMLI(:),  EAIOI(:),  EAPHTI(:), 
+     R EAELI(:),    EAATI(:),    EAMLI(:),  EAIOI(:),  EAPHTI(:),
      R EAPLI(:,:),
-     R EMELI(:),  EMATI(:),  EMMLI(:),  EMIOI(:),  EMPHTI(:), 
+     R EMELI(:),    EMATI(:),    EMMLI(:),  EMIOI(:),  EMPHTI(:),
      R EMPLI(:,:),
-     R EIELI(:),  EIATI(:),  EIMLI(:),  EIIOI(:),  EIPHTI(:), 
+     R EIELI(:),    EIATI(:),    EIMLI(:),  EIIOI(:),  EIPHTI(:),
      R EIPLI(:,:),
-     R EPHELI(:), EPHATI(:), EPHMLI(:), EPHIOI(:), EPHPHTI(:),
+     R EPHELI(:),   EPHATI(:),   EPHMLI(:), EPHIOI(:), EPHPHTI(:),
      R EPHPLI(:,:),
      R ADDVI(:,:),
      R COLVI(:,:),  SNAPVI(:,:), COPVI(:,:),  BGKVI(:,:), ALGVI(:,:),
@@ -239,7 +239,7 @@ cdr             tally for electron source missing ??
       ALLOCATE (MIPLI(0:NPLS,0:NSTRA))
       ALLOCATE (MPHPLI(0:NPLS,0:NSTRA))
  
-cdr surface averaged tallies
+cdr surface-averaged tallies
 cdr  note: distinct from volumetric sources, these are ordered here
 cdr  by receiving species
 cdr  surface rates, for particle balance atoms
@@ -645,28 +645,28 @@ cdr  energy densities
         EDENPHI(:,ISTRA) = 0._DP
 
 cdr volumetric tallies for particle balance, sources from atoms for el, a,m,i,ph,pl 
-        PAELI(ISTRA)   = 0._DP
+        PAELI(ISTRA)     = 0._DP
         PAATI(:,ISTRA)   = 0._DP
         PAMLI(:,ISTRA)   = 0._DP
         PAIOI(:,ISTRA)   = 0._DP
         PAPHTI(:,ISTRA)  = 0._DP
         PAPLI(:,ISTRA)   = 0._DP
 
-        PMELI(ISTRA)   = 0._DP
+        PMELI(ISTRA)     = 0._DP
         PMATI(:,ISTRA)   = 0._DP
         PMMLI(:,ISTRA)   = 0._DP
         PMIOI(:,ISTRA)   = 0._DP
         PMPHTI(:,ISTRA)  = 0._DP
         PMPLI(:,ISTRA)   = 0._DP
 
-        PIELI(ISTRA)   = 0._DP
+        PIELI(ISTRA)     = 0._DP
         PIATI(:,ISTRA)   = 0._DP
         PIMLI(:,ISTRA)   = 0._DP
         PIIOI(:,ISTRA)   = 0._DP
         PIPHTI(:,ISTRA)  = 0._DP
         PIPLI(:,ISTRA)   = 0._DP
 cdr
-        PPHELI(ISTRA)  = 0._DP
+        PPHELI(ISTRA)    = 0._DP
         PPHATI(:,ISTRA)  = 0._DP
         PPHMLI(:,ISTRA)  = 0._DP
         PPHIOI(:,ISTRA)  = 0._DP
@@ -679,21 +679,21 @@ cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,p
         EAMLI(ISTRA)   = 0._DP
         EAIOI(ISTRA)   = 0._DP
         EAPHTI(ISTRA)  = 0._DP
-        EAPLI(:,ISTRA)   = 0._DP
+        EAPLI(:,ISTRA) = 0._DP
 
         EMELI(ISTRA)   = 0._DP
         EMATI(ISTRA)   = 0._DP
         EMMLI(ISTRA)   = 0._DP
         EMIOI(ISTRA)   = 0._DP
         EMPHTI(ISTRA)  = 0._DP
-        EMPLI(:,ISTRA)   = 0._DP
+        EMPLI(:,ISTRA) = 0._DP
 
         EIELI(ISTRA)   = 0._DP
         EIATI(ISTRA)   = 0._DP
         EIMLI(ISTRA)   = 0._DP
         EIIOI(ISTRA)   = 0._DP
         EIPHTI(ISTRA)  = 0._DP
-        EIPLI(:,ISTRA)   = 0._DP
+        EIPLI(:,ISTRA) = 0._DP
 
         EPHELI(ISTRA)  = 0._DP
         EPHATI(ISTRA)  = 0._DP
