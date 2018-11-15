@@ -1,31 +1,31 @@
 C 0406: default resonant cx for He in He+/He++ plasma added:
 C       Janev (HYDHEL) ,1987, reactions 5.3.1 and 6.3.1
 C
-C 0710: provide value of cross section for reaction K
-C       K=0 means no cross section available for this reaction
-c       k=-1,-2,-3:  default (hard wired) CX cross sections
+C 0710: provide value of cross-section for reaction K
+C       K=0 means no cross-section available for this reaction
+c       k=-1,-2,-3:  default (hard-wired) CX cross-sections
 c 0315: increase kk>=-10 to kk>=-11 for He ei process, to fully reserve k=-1 
 c       for H+p CX as default process
 
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
 C
-C  CROSS SECTION
+C  CROSS-SECTION
 C    AL=LN(ELAB), ELAB IN (EV)
-C    RETURN CROSS SECTION IN CM**2
+C    RETURN CROSS-SECTION IN CM**2
 C
 C  K>0 :  DATA FROM ARRAY REACDAT, I.E. FROM EXTERNAL DATABASE
 C
 C  K<0 :  DEFAULT MODEL DEFINED IN SETUP_DEFAULT_REACTIONS, BUT NOW ALSO ON REACDAT
 C
-C  K=-1:  H + H+ --> H+ + H   CROSS SECTION, JANEV, 3.1.8
+C  K=-1:  H + H+ --> H+ + H   CROSS-SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 5.3.1
+C  K=-2:  He + He+ --> He+ + He   CROSS-SECTION, JANEV, 5.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
 C
-C  K=-3:  He + He++ --> He++ + He   CROSS SECTION, JANEV, 6.3.1
+C  K=-3:  He + He++ --> He++ + He   CROSS-SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
 
@@ -61,17 +61,17 @@ C
           WRITE (IUNOUT,*) 'ERROR IN CROSS '
           WRITE (iunout,*) 'CALLED FROM ',TEXT
           WRITE (iunout,*) 'REACTION NO. ',IR
-          WRITE (IUNOUT,*) 'NO CROSS SECTION DATA AVAILABLE FOR ',
+          WRITE (IUNOUT,*) 'NO CROSS-SECTION DATA AVAILABLE FOR ',
      .                     'THIS REACTION'
           CALL EIRENE_EXIT_OWN(1)
 
-CDR:  SAME EVALUATION OF CROSS SECTION FORMULAS FOR DEFAULT 
-CDR:       (K<0) AND NON-DEFAULT (K>0) CROSS SECTIONS
+CDR:  SAME EVALUATION OF CROSS-SECTION FORMULAS FOR DEFAULT
+CDR:       (K<0) AND NON-DEFAULT (K>0) CROSS-SECTIONS
 
         ELSE IF (IFTFLG(K,1) == 0) THEN
 
 C  EVALUATE POLYNOMIAL FIT NO. K, IFTFLG=0
-C  FILL CROSS SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E) 
+C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           RPC => REACDAT(K)%CRS
           RPP => RPC%POLY
           FP(1:3) = RPC%FP1L

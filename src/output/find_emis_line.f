@@ -7,7 +7,7 @@ c           ener  :  energy parameter for identifying a particular emission prof
 c  output:  lno   :  "line number", i.e. the volumetric emission profile.
 
 cdr  so far: guessing:
-cdr currently called from SIGLINE (former Balmer and Lyman line of side routines)
+cdr currently called from SIGLINE (former Balmer and Lyman line of sight routines)
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
 cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
 cdr       or a new internal iteration (time stepping, non-linear BGK iterations)
@@ -23,7 +23,7 @@ cdr                                       ENER    (flag for selecting a particul
 cdr          this is done by trying to find a match of 'ch_line_name(ichori)'
 cdr          read from block 12 for chord ICHORI
 cdr          with 'emis_lines(i)%line_name'
-cdr          If this is not successful, then we try to use the ENER identifyer,
+cdr          If this is not successful, then we try to use the ENER identifier,
 cdr          which may have been read in input for emission profiles
 cdr          or set from old default hydrogenic line models (setup_default_emissivity).
 cdr          The latter is done whenever there are chords and no emissivities 
@@ -146,7 +146,7 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' // 
      .                   'DATA FOR STRATUM ISTRA= ', ISTR
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. FIND_EMIS_LINE ABANDONNED'
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. FIND_EMIS_LINE ABANDONED'
         RETURN
       ENDIF
 C      

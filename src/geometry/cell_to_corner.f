@@ -1,13 +1,13 @@
 cdr  nov. 17:  more error exits for unwritten options.
 CDR  Nov. 17:  no internal boundaries considered ?
 c              Interpolation at grid boundaries ?
-c              tbd: Compare with routine plotting/celint.f, remove dublicated code
+c              tbd: Compare with routine plotting/celint.f, remove duplicated code
 
 
       subroutine eirene_cell_to_corner (f, fcorner) 
 
-c  interpolate cell averaged tallies onto cell vertices     
-c  FOR EACH CELL VERTIX USE INVERSE DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
+c  interpolate cell-averaged tallies onto cell vertices
+c  FOR EACH CELL VERTEX USE INVERSE DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
 c  FOR WEIGHTING
 
       use eirmod_precision
@@ -175,10 +175,9 @@ c  3d grid of tetrahedra
 999   continue
       write (iunout,*) ' levgeo = ',levgeo,' to be written in',
      .                 ' subroutine cell_to_corner '
-      write (iunout,*) ' calculation abandonned '
+      write (iunout,*) ' calculation abandoned '
       call  eirene_exit_own(1)
 
       return
       end subroutine  eirene_cell_to_corner
-
          

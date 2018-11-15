@@ -40,7 +40,7 @@ C
       U(1) = U(1) / NORM
       U(2) = U(2) / NORM
 *
-*     Ruecktransformation des Normalenvektors:'
+*     Ruecktransformation des Normalenvektors:
 *
       B1 = EV(1,1) * U(1) + EV(1,2) * U(2)
       B2 = EV(2,1) * U(1) + EV(2,2) * U(2)
@@ -76,7 +76,7 @@ C
       U(1) = U(1) / NORM
       U(2) = U(2) / NORM
 *
-*     Ruecktransformation des Normalenvektors:'
+*     Ruecktransformation des Normalenvektors:
 *
       C1 = EV(1,1) * U(1) + EV(1,2) * U(2)
       C2 = EV(2,1) * U(1) + EV(2,2) * U(2)

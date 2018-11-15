@@ -9,13 +9,13 @@ cdr  input:
 c           ir:           internal reaction number on eirene structure REACDAT
 c           reac:         
 c           isw:   =0     data for interaction potential                 (not in use)
-c                  =1     data for collision cross section               (not in use)
+c                  =1     data for collision cross-section               (not in use)
 c                  =2-4   data for reaction rate coefficient             (only = 4  in use)
-c                  =5-7   data for momentum weighted rate coefficient    (not in use)
-c                  =8-10  data for energy weighted rate coefficient      (only = 10 in use)
+c                  =5-7   data for momentum-weighted rate coefficient    (not in use)
+c                  =8-10  data for energy-weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
 c           iz1:   particular charge state to be found within data file, 
-c                  which containes charge states in the range  iza,....ize
+c                  which contains charge states in the range  iza,....ize
 
 c 
 c  to be done: units, log-lin, scaling, asymptotics
@@ -146,7 +146,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
  
       case (1)
         IF (REACDAT(IR)%LCRS) THEN
-          WRITE (IUNOUT,*) ' CROSS SECTION ALREADY SPECIFIED',
+          WRITE (IUNOUT,*) ' CROSS-SECTION ALREADY SPECIFIED',
      .                     ' FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
@@ -182,7 +182,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
  
       case (5:7)
         IF (REACDAT(IR)%LRTCMW) THEN
-          WRITE (IUNOUT,*) ' MOMEMTUM WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' MOMEMTUM-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
@@ -202,7 +202,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
  
       case (8:10)
         IF (REACDAT(IR)%LRTCEW) THEN
-          WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' ENERGY-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'

@@ -86,7 +86,7 @@ c       if we do not have any surfaces we could add, do not build a tree
 
 c       calc how many layers we will get by the amount of surfaces
 c       we have: int(log10(# surface)) + 1 (add 0.0 to have a real value for
-c       log10()-function)
+c       log10() function)
         LAYERS = floor(log10(nsurfaces+0.0))+1
 c        LAYERS=32
         

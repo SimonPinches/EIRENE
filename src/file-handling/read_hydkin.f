@@ -1,4 +1,4 @@
-cdr   This routine is only for internal use at FJZ
+cdr   This routine is only for internal use at FZJ
 cdr   Purpose:  establish an interface to online A&M data repository and toolbox
 
 cdr   called from:  setup_hydkin_reactions
@@ -9,8 +9,8 @@ cdr              for generalization
 cdr   current implementation: started for rate coefficients (%RTC$) only.
 
 cdr   july 16:   more error exits, to avoid code crashes when reading 1D tabulated data
-cdr              currently this routine expects hard wired HYDKIN, CxHy format. 
-cdr   to be done: distuingish between reading data, and automated construction
+cdr              currently this routine expects hard-wired HYDKIN, CxHy format.
+cdr   to be done: distinguish between reading data, and automated construction
 cdr               of full blocks 4a,b,c,d,5 from a HYDKIN output
 
       subroutine EIRENE_read_hydkin (ir,filename,h123,reac,crc,
@@ -50,7 +50,6 @@ c  skip blank lines at top of file
   
       zeile = repeat(' ',len(zeile))
  
-
       do while (index(zeile,'Default energy mesh') == 0)
          read (28+ifoff,'(A132)',iostat=io,end=100) zeile
       end do

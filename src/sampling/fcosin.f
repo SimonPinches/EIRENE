@@ -19,7 +19,7 @@ C
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: J
 
-      DATA PI2/6.283185/
+      DATA PI2/6.283185_DP/
 C
       DO 100 J=1,IRNDVC
         ZTHET=PI2*RANF_EIRENE( )
@@ -27,7 +27,7 @@ C
         ZCTHET=COS(ZTHET)
         A=RANF_EIRENE( )
         ZCPHI=SQRT(A)
-        ZSPHI=SQRT(1.-A)
+        ZSPHI=SQRT(1._DP-A)
         FC1(J)=-ZCPHI
         FC2(J)=ZSPHI*ZCTHET
         FC3(J)=ZSPHI*ZSTHET

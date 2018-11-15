@@ -36,7 +36,7 @@ C
 C     DATA              EPS  / 5.D-10 /
 cdr  noch nicht fertig
 !     write (iunout,*) 'exit in subr. kugel '
-!     call exit_own(1)
+!     call eirene_exit_own(1)
 *
       A3 = A(1:3,1:3)
       DD = EIRENE_SARRUS(A3)

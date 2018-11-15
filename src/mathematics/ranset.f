@@ -43,7 +43,7 @@ c   Loc.cit. F.James, CPC (1990)
 !   else  seed is already set, do nothing
            else
              write (iunout,*) 'RANSET.F: '
-             write (iunout,*) 'no initializatin of random generator'
+             write (iunout,*) 'no initialization of random generator'
              write (iunout,*) 'continue sequence without new seed'
            end if
          else  ! here: ise > 0
@@ -53,17 +53,16 @@ cdr  900000000 is the maximum value for the single input seed initialization. Lo
          end if
 
 
-
 cdr  initializing the old IBM (1968) generator
       ELSE
 
          if (ise <= 0) then
            if (ifirst == 0) then
              iseed = 9876543
-!   else  seed is already set, do nothing, some older seed is already available
+!   else seed is already set, do nothing, some older seed is already available
            else
              write (iunout,*) 'RANSET.F: '
-             write (iunout,*) 'no initializatin of random generator'
+             write (iunout,*) 'no initialization of random generator'
              write (iunout,*) 'continue sequence without new seed'
            end if
          else  ! here: ise > 0

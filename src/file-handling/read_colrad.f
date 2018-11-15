@@ -2,7 +2,7 @@
      .                                ir_esc,ic_esc,p_esc)
 
 cdr  purpose:  prepare usage of A&M data from an internal, built-in, 
-cdr            collisional radiative code: 
+cdr            collisional-radiative code:
 cdr  1)  H_colrad, 
 cdr  2)  He_colrad,
 cdr  3)  H2-colrad....
@@ -12,10 +12,10 @@ cdr  input:
 c           ir:           internal reaction number on eirene structure REACDAT
 c           reac:
 c           isw:   =0     data for interaction potential                 (not in use)
-c                  =1     data for collision cross section               (not in use)
+c                  =1     data for collision cross-section               (not in use)
 c                  =2-4   data for reaction rate coefficient             (only = 4  in use)
-c                  =5-7   data for momentum weighted rate coefficient    (not in use)
-c                  =8-10  data for energy weighted rate coefficient      (only = 10 in use)
+c                  =5-7   data for momentum-weighted rate coefficient    (not in use)
+c                  =8-10  data for energy-weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
 c           iz1:   not in use 
 c                  
@@ -46,7 +46,7 @@ c  to be done: units, log-lin, scaling, asymptotics
 
       if (ifirst == 0) then
         ifirst = 1
-c  identifyers for data available from intrinsic CR code
+c  identifiers for data available from intrinsic CR code
 c
 c  h_colrad (atomic)
 
@@ -112,7 +112,7 @@ cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
 cdr  tbd: also exit unless HSRT contains 2.1.5, OR 2.1.8 
 cdr       
-cdr  other reactions are not programmed in xsectp, rate-coeff, energy rate coef. 
+cdr  other reactions are not programmed in xsectp, rate coeff, energy rate coef.
       
 cdr  IDENTIFY THE NUMBER IVAR (between 1:21) OF THE VARIABLE HSTR(IVAR) 
 cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
@@ -168,7 +168,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
-            WRITE (IUNOUT,*) ' MOMENTUM WEIGHTED RATE COEFFICIENT',
+            WRITE (IUNOUT,*) ' MOMENTUM-WEIGHTED RATE COEFFICIENT',
      .                       ' ALREADY SPECIFIED FOR REACTION', IR
             WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)
@@ -189,7 +189,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
         
         CASE (8:10)
           IF (REACDAT(IR)%LRTCEW) THEN
-            WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
+            WRITE (IUNOUT,*) ' ENERGY-WEIGHTED RATE COEFFICIENT',
      .                       ' ALREADY SPECIFIED FOR REACTION', IR
             WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
             CALL EIRENE_EXIT_OWN(1)

@@ -23,7 +23,6 @@ C
  
       IMPLICIT NONE
  
-
       INTEGER :: ISP, ISP0, IION, ICOL, IATM, IMOL, IREI, IMEI
  
       DO 10 IATM=1,NATMI
@@ -52,8 +51,8 @@ C  test ion secondaries:
             IF (PIOEI(IREI,IION).GT.0) THEN
               IF (NFOLI(IION).LT.0) THEN
                 WRITE (iunout,*) 'TEST ION ',TEXTS(ISP),
-     .                           'BORN FROM MOLECULE ', TEXTS(ISP0),
-     .                           'CAN BE CONDENSED'
+     .                           ' BORN FROM MOLECULE ',TEXTS(ISP0),
+     .                           ' CAN BE CONDENSED'
               ENDIF
             ENDIF
 220       CONTINUE

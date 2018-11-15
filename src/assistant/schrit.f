@@ -17,7 +17,6 @@ C
 C     KONSTANTENDEKLARATION :
 C
          CHARACTER(5), PARAMETER :: FAKTOR='^*/+-'
- 
 C
 C     EIN/AUSGABEPARAMETER :
 C
@@ -84,7 +83,6 @@ C
 C     HILFSVARIABLEN :
 C
          INTEGER :: I, POS
- 
  
       BEGINN=ALPHA
       ENDE=OMEGA

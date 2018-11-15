@@ -9,10 +9,10 @@ cdr            in case of bgk: always multiple temperatures and multiple flow ve
 cdr  tbd:  implement corresponding check.
 
 c         
-c  to be done: cross temperature correction (Kotov)  (already done in solps-iter part)
+c  to be done: cross-temperature correction (Kotov)  (already done in solps-iter part)
 C              HERE: ALLOCATION, DEALLOCATION: DONE, but not used
 c
-!pb  24.11.06: flag for shifting of first parameter of rate-coeff introduced
+!pb  24.11.06: flag for shifting of first parameter of rate coeff introduced
 !pb  24.11.06: BZIN initialized with 1
 C
 !pb  05.04.11: BFIN initialized with 1
@@ -21,7 +21,7 @@ C
 
 cdr 29.08.15 :  CROSSTEMP WAS INTRODUCED BY VK SO THAT different
 c               EFFECTIVE COLLISION RATE IS EVALUATED 
-c               WITH THIS EEFECTIVE TEMPERATURE
+c               WITH THIS EFFECTIVE TEMPERATURE
 c               this appears to be another option for the 5th (free) 
 c               bgk model parameter, to match certain transport coefficients.
 c               (the other 4 are fixed by conservation laws.
@@ -31,7 +31,7 @@ c  multigrid option (NCLTAL):
 c  if not NCLTAL (I) = I everywhere, then we have two grids, grid structures 
 C  NCLTAL(I-FINE):  CELL I-FINE IS ONLY A PART OF COARSER (SCORING) GRID CELL NCELL,
 C                   NCELL=NCLTAL(I-FINE)
-C                   SCORING OF VOLUME AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
+C                   SCORING OF VOLUME-AVERAGED TALLIES IS ON COARSE GRID CELLS NCELL ONLY.
 cdr  nov. 17:  PLS added to call xstel. (strictly not needed here until now, 
 cdr                but for other EL rates enhanced by CR effects)
 c               
@@ -78,18 +78,18 @@ C   GBGKV == BGKV EVERYWHERE
       REAL(DP) :: VXIN1, VXIN2, VYIN1, VYIN2, VZIN1, VZIN2, VYMIX, T1,
      .          T2, ED1, ED2, VXMIX, VZMIX, DELX, DELY, DELZ, VX, VY,
      .          VZ, EOLD, ED, RM, FACTKK, TMIX, EBULK, TS1, DS1,
-     .          FACT2, RMAS2, A_ROBIN, FACT1, RMAS1, 
+     .          FACT2, RMAS2, A_ROBIN, FACT1, RMAS1,
      .          RESE, RESM, TBEL, DOLD, DEIMIN,
      .          DEL, TII, CNDYN, RRN, RATE, RESN, RATN, RRE, RRM,
      .          RM1, RM2, TCSUM, !VK
      .          EIRENE_RATE_COEFF
       INTEGER :: ITYP1(NPLS), ITYP2(NPLS), ISPZ1(NPLS), ISPZ2(NPLS),
      .           IREL1(NPLS), INRC1(NPLS),CROSSINDEX(NPLS),NCROSS,
-     .           ICROSS1,ICROSS2,ICROSS     
-      INTEGER :: J, IESTM, IBGV, 
+     .           ICROSS1,ICROSS2,ICROSS
+      INTEGER :: J, IESTM, IBGV,
      .           ISCDE, IAIN, IPLS1, NRWK1, I, ISP, IPLS2, IATM2, IIEL,
      .           IAEL, IMEL, IUP12, IUP22, IION2, IBGK2, IMOL2, IUP2,
-     .           IUP3, IUP1, IBGK1, IP, NRC,  IR, IT, IREL,
+     .           IUP3, IUP1, IBGK1, IP, NRC, IR, IT, IREL,
      .           KK, NXM, NYM, NZM, IUP32, IPLSTI, IPLSTI1, IPLSTI2,
      .           IPLSV, IRD, I_FINE, IRAD, IFLG
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -153,7 +153,7 @@ C
 
 cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
-cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
       ALLOCATE (PLS(NSTORDR))
@@ -177,7 +177,7 @@ C    "CROSS-COLLISION TEMPERATURE" CORRECTION
       ICROSS=0 !VK COUNTER
 CVK END
 
-cdr  set bgk volume averaged tallies BGKV, which MAY HAVE been scored on goarser grid only, 
+cdr  set bgk volume-averaged tallies BGKV, which MAY HAVE been scored on goarser grid only,
 CDR  now also on fine grid, because input tallies may be needed on finer grid.
 cdr  Assume: constant "extensive" fine grid values IN ALL I_fine cells
 cdr  within one coarse grid cell IRD
@@ -192,7 +192,7 @@ C  ird=0: additional cells for averaging over all fine grid cells.
 c         no value assigned.
           GBGKV(IBGV,I_fine)=BGKV(IBGV,IRD)
 c  COARSER INPUT CELL VALUES ARE TURNED INTO FINER INPUT CELL VALUES
-C  IN USER SPECIFIC PARTS.
+C  IN USER-SPECIFIC PARTS.
 C  FINE GRID INPUT CELLS ARE AVERAGED BACK TO COARSER CELLS VALUES,
 c  DEPENDING ON... (EXTENSIVE, INTENSIVE QUANTITIES) SEE OUTPLA.
         END DO
@@ -239,7 +239,7 @@ cdr  Those IRD should not appear here  (hopefully)
               PDEN(I_fine)=PDENA(IATM,IRD)
               EDEN(I_fine)=EDENA(IATM,IRD)
             ENDDO
-C  FIND INDEX  NRC
+C  FIND INDEX NRC
             DO NRC=1,NRCA(IATM)
               IP=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
               IF (IP.EQ.IPLS) THEN
@@ -250,7 +250,7 @@ C  FIND INDEX  NRC
             GOTO 995
 C  FIND INDEX IREL
 10          DO IAEL=1,NAELI(IATM)
-              IF  (LGAEL(IATM,IAEL,1).EQ.IPLS) THEN
+              IF (LGAEL(IATM,IAEL,1).EQ.IPLS) THEN
                 IREL1(IPLS)=LGAEL(IATM,IAEL,0)
                 GOTO 50
               ENDIF
@@ -275,7 +275,7 @@ cdr  Those IRD should not appear here  (hopefully)
               PDEN(I_fine)=PDENM(IMOL,IRD)
               EDEN(I_fine)=EDENM(IMOL,IRD)
             ENDDO
-C  FIND INDEX  NRC
+C  FIND INDEX NRC
             DO NRC=1,NRCM(IMOL)
               IP=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
               IF (IP.EQ.IPLS) THEN
@@ -331,13 +331,13 @@ C  FIND INDEX IREL
         ENDDO
         GOTO 995
 
-C  AT THIS POINT: COLLISION PARTNER AMONST TEST PARTICLES HAS BEEN IDENTIFIED 
+C  AT THIS POINT: COLLISION PARTNER AMONGST TEST PARTICLES HAS BEEN IDENTIFIED
 C  (ITYP1, IATM1, IMOL1, IION1)
 C  AS WELL AS THE NUMBER OF COLLISION PROCESS IREL1
 C  DENSITY AND ENERGY DENSITY TALLIES OF COLLISION PARTNER "PDEN,EDEN"
 C  HAVE NOW BEEN SET ON FINE GRID
 C
-C  SELF COLLISION OR CROSS COLLISION
+C  SELF-COLLISION OR CROSS-COLLISION
 C
 50      CONTINUE
 C
@@ -347,8 +347,8 @@ C
 C
         ELSEIF (NPBGKP(IPLS,2).NE.0) THEN
 C
-C  CROSS COLLISION, FIND SECOND COLLISION PARTNER
-C  THIS IS NOT THE INGOING COLLIDING TESTPARTICLE, WHICH WE HAVE ALREADY IDENTIFIED,
+C  CROSS-COLLISION, FIND SECOND COLLISION PARTNER
+C  THIS IS NOT THE INGOING COLLIDING TEST PARTICLE, WHICH WE HAVE ALREADY IDENTIFIED,
 C  (AND WHICH, E.G., DETERMINES MASS AND DENSITY OF ARTIFICIAL BACKGROUND PARTICLE IPLS)
 C  BUT, INSTEAD, IT IS THE TEST PARTICLE WHICH PLAYS THE ROLE 
 c  OF THE "SECOND" PARTICLE, AMONGST THE TEST PARTICLES
@@ -434,7 +434,7 @@ C
         IF (ITYP2(IPLS).EQ.-1) THEN
 C
         IF (TRCMOD) THEN
-          WRITE (iunout,*) 'MODBGK: SELF COLLISION WITH, IPLS',IPLS
+          WRITE (iunout,*) 'MODBGK: SELF-COLLISION WITH, IPLS',IPLS
           WRITE (iunout,*) 'ITYP,ISPZ,IBGK_SP,IREL ',ITYP1(IPLS),
      .                                ISPZ1(IPLS),IBGK1,IREL1(IPLS)
         ENDIF 
@@ -448,9 +448,9 @@ C                              on which the eirene tallies had been updated.
         NYM=MAX(1,NP2NDM)
         NZM=MAX(1,NT3RDM)
 
-        DO 80 IR=1,NXM
-          DO 80 IP=1,NYM
-            DO 80 IT=1,NZM
+        DO IR=1,NXM
+          DO IP=1,NYM
+            DO IT=1,NZM
               IRAD=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA  !irad=i_fine
 C
               TBEL=0.
@@ -495,7 +495,7 @@ c  L1 norm of energy residual
               RESE=RESE+TBEL*ABS(DEL)*VOL(IRAD)
 C DELTA_V
 CDR  next lines: gbgkv (=bgkv) is redundant, because momentum density vector
-cdr              components have become default volume averaged output tallies
+cdr              components have become default volume-averaged output tallies
               DELX=GBGKV(IUP1,IRAD)-VXIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
               DELY=GBGKV(IUP2,IRAD)-VYIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
               DELZ=GBGKV(IUP3,IRAD)-VZIN(IPLSV,IRAD)*DIIN(IPLS,IRAD)
@@ -524,9 +524,11 @@ c  RRE: total energy content (eV)
               RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C             RRM=?
               RRE=RRE+EDEN(IRAD)*VOL(IRAD)
-80      CONTINUE
+            END DO
+          END DO
+        END DO
 c
-c  same as do 80 loop , for additional cell region
+c  same as do loop above, for additional cell region
 c
         DO 90 IRAD=NSURF+1,NSURF+NRADD
 C
@@ -595,14 +597,14 @@ C         RRM=?
           RRE=RRE+EDEN(IRAD)*VOL(IRAD)
 90      CONTINUE
 C
-C   IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A  SELF COLLISION  :  DONE !
+C   IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A SELF-COLLISION  :  DONE !
 C
-C   NEXT, IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A CROSS COLLISION BETWEEN TWO DISTINCT
+C   NEXT, IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A CROSS-COLLISION BETWEEN TWO DISTINCT
 C        SPECIES OF TEST PARTICLES
         ELSE
 C
           IF (TRCMOD) THEN
-            WRITE (iunout,*) 'MODBGK: CROSS COLLISION, IPLS ',IPLS
+            WRITE (iunout,*) 'MODBGK: CROSS-COLLISION, IPLS ',IPLS
             WRITE (iunout,*) 'ITYP1,ISPZ1,IBGK1,IREL1 ',
      .                        ITYP1(IPLS),ISPZ1(IPLS),
      .                        IBGK1,IREL1(IPLS)
@@ -618,9 +620,9 @@ CVK FOR "CROSS-COLLISION TEMPERATURE"
           RM=2.D0*RMAS1*RMAS2/(RMAS1+RMAS2)**2
 CVK END
 
-        DO 180 IR=1,NXM
-          DO 180 IP=1,NYM
-            DO 180 IT=1,NZM
+        DO IR=1,NXM
+          DO IP=1,NYM
+            DO IT=1,NZM
               IRAD=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
 C
               TBEL=0
@@ -684,9 +686,11 @@ C  SET NEW DENSITY OF ARTIFICIAL BACKGROUND SPECIES
               RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C             RRM=?
               RRE=RRE+EDEN(IRAD)*VOL(IRAD)
-180     CONTINUE
+            END DO
+          END DO
+        END DO
 c
-c  same as do 180 loop , for additional cell region
+c  same as do loop above, for additional cell region
 c
         DO 190 IRAD=NSURF+1,NSURF+NRADD
 C
@@ -795,8 +799,8 @@ C
 ! STORAGE FOR INPUT TALLIES 1 (TEIN) TO 13 (ADIN), WITHOUT NO.3 (DEIN)
       NRWK1=6+NPLS+NPLSTI+3*NPLSV+NAIN  ! STORAGE FOR INPUT TALLIES 1 TO 13, WITHOUT NO.3
       IF (NIDV < NRWK1) THEN
-        WRITE (iunout,*) ' PLASMA_BCKGRND-ARRAY IS TOO SMALL TO HOLD '
-        WRITE (iunout,*) ' PLASMA-DATA '
+        WRITE (iunout,*) ' PLASMA_BCKGRND ARRAY IS TOO SMALL TO HOLD '
+        WRITE (iunout,*) ' PLASMA DATA '
         WRITE (iunout,*) ' CHECK PARAMETER NSMSTRA '
         CALL EIRENE_EXIT_OWN(1)
       END IF
@@ -809,9 +813,9 @@ cdr
 !pb initialize BFIN=1
       PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
 
-      DO 550 IR=1,NXM
-        DO 550 IP=1,NYM
-          DO 550 IT=1,NZM
+      DO IR=1,NXM
+        DO IP=1,NYM
+          DO IT=1,NZM
             IRAD=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
             PLASMA_BCKGRND  (0+0*NPLS+1,IRAD)= TEIN(IRAD)
             DO IPLSTI=1,NPLSTI
@@ -837,9 +841,11 @@ cdr
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
      .               ADIN(IAIN,IRAD)
             ENDDO
-550   CONTINUE
+          END DO
+        END DO
+      END DO
 C
-c  same as do 550 loop , for additional cell region
+c  same as do loop above, for additional cell region
 c
       DO 570 IRAD=NSURF+1,NSURF+NRADD
             PLASMA_BCKGRND  (0+0*NPLS+1   ,IRAD)= TEIN(IRAD)
@@ -876,8 +882,8 @@ C .........................................................................
 C  NOW: NEW COLLISION RATES MUST BE SET FOR THE NEXT ITERATION
 C .........................................................................
 C
-C  IN CASE OF CROSS COLLISION, SOME MODIFICATIONS OF THE
-C  BACKGROUND PARAMETERS ARE REQUIRED TEMPORARYLY TO ENFORCE
+C  IN CASE OF CROSS-COLLISION, SOME MODIFICATIONS OF THE
+C  BACKGROUND PARAMETERS ARE REQUIRED TEMPORARILY TO ENFORCE
 C  A SPECIFIC RELATION BETWEEN TAU_1,2 AND TAU_2,1
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE PROFILES
@@ -893,8 +899,8 @@ C
       ENDDO
       DO IPLS1=1,NPLSI
         IF (NPBGKP(IPLS1,2).NE.0) THEN
-C  IPLS1 IS A CROSS COLLISION TALLY
-C  FIND CORRESPONDING 2ND CROSS COLLISION TALLY
+C  IPLS1 IS A CROSS-COLLISION TALLY
+C  FIND CORRESPONDING 2ND CROSS-COLLISION TALLY
           IPLS2=0
           DO IPLS=1,NPLSI
             IF (ITYP1(IPLS).EQ.ITYP2(IPLS1).AND.
@@ -906,14 +912,14 @@ C  FIND CORRESPONDING 2ND CROSS COLLISION TALLY
           CALL EIRENE_LEER(1)
           IF (TRCMOD) THEN
             WRITE (iunout,*) 
-     .        'MODBGK: CORRESPONDING CROSS COLLISION SPECIES '
+     .        'MODBGK: CORRESPONDING CROSS-COLLISION SPECIES '
             WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
           ENDIF
           IF (LMARK(IPLS1).OR.LMARK(IPLS2)) GOTO 800
-C  IPLS2 IS THE SECOND CROSS COLLISION TALLY
+C  IPLS2 IS THE SECOND CROSS-COLLISION TALLY
           IF (TRCMOD) THEN
             WRITE (iunout,*) 
-     .        'MODBGK: MODIFY PARAMETERS FOR CROSS COLLISIONALITIES '
+     .        'MODBGK: MODIFY PARAMETERS FOR CROSS-COLLISIONALITIES '
             WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
             CALL EIRENE_LEER(1)
           ENDIF
@@ -924,8 +930,8 @@ CVK
           ICROSS1=CROSSINDEX(IPLS1)
           ICROSS2=CROSSINDEX(IPLS2)
           IF(ABS(CROSSTEMP(ICROSS1,1)-CROSSTEMP(ICROSS2,1)).GT.EPS12)
-     .      WRITE(iunout,*) "WARNING FROM MODBGK:",
-     .                 " CROSSCOLLISION TEMPERATURES ARE WRONG",
+     .      WRITE(iunout,*) "WARNING FROM MODBGK: ",
+     .                 "CROSS-COLLISION TEMPERATURES ARE WRONG ",
      .                 "IPLS1,IPLS2,CROSSIND1,CROSSIND2",
      .                  IPLS1,IPLS2,CROSSINDEX(IPLS1),CROSSINDEX(IPLS2)
           ICROSS=ICROSS1
@@ -949,7 +955,7 @@ C
             ENERGY(IPLS1,IRAD)=1.5*TIIN(IPLSTI1,IRAD)+EDRIFT(IPLS1,IRAD)
             ENERGY(IPLS2,IRAD)=1.5*TIIN(IPLSTI2,IRAD)+EDRIFT(IPLS2,IRAD)
 C
-C EFFECTIVE TEMPERATURE FOR THE CALCULATION OF THE MUTUAL REACTON RATES
+C EFFECTIVE TEMPERATURE FOR THE CALCULATION OF THE MUTUAL REACTION RATES
 C [L.H. Holway, Phys. Fluids, vol. 9,pp.1658-1673,1966]
 C           TS1=0.5*(TIIN(IPLS1,IRAD)+TIIN(IPLS2,IRAD))
 C
@@ -960,7 +966,7 @@ C
             TCSUM=TCSUM+TS1*VOL(IRAD)   !VK FOR DIAGNOSTIC
           ENDDO
           IF (TRCMOD)
-     f     WRITE(iunout,*) "MODBGK: AVERAGE CROSS COLLISION TEMPERATURE"
+     f     WRITE(iunout,*) "MODBGK: AVERAGE CROSS-COLLISION TEMPERATURE"
      .                     ," IPLSTI1, IPLSTI2",
      .                        IPLSTI1, IPLSTI2,TCSUM/SUM(VOL)     
 
@@ -974,7 +980,7 @@ C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE MODIFIED PROFILES
 C
       CALL EIRENE_PLASMA_DERIV(0)
 C
-C  RESET BGK-ATOMIC AND MOLECULAR DATA ARRAYS
+C  RESET BGK ATOMIC AND MOLECULAR DATA ARRAYS
 C
       DO IPLS=1,NPLSI
         IF (NPBGKP(IPLS,1).NE.0) THEN
@@ -1009,7 +1015,7 @@ C  BGK COLLISION, RESET TABEL3, EPLEL3
           CALL EIRENE_XSTEL(IREL,ISP,IPLS,EBULK,ISCDE,IESTM,
      .                      KK,FACTKK,PLS)
           IF (NPBGKP(IPLS,2).NE.0) THEN
-C  CROSS COLLISION, RESET EPLEL3 FOR TRACKLENGTH ESTIMATOR
+C  CROSS-COLLISION, RESET EPLEL3 FOR TRACKLENGTH ESTIMATOR
             IF (NSTORDR >= NRAD) THEN
               DO J=1,NSBOX
                 EPLEL3(IREL,J,1)=ENERGY(IPLS,J)

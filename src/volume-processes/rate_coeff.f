@@ -16,9 +16,9 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
 !  and return this as "rate"
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
-!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, AMJUEL, H.2)
-!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
-!  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
+!  ifit=1:   single polynomial fit, use P1, (e.g. HYDHEL, AMJUEL, H.2)
+!  ifit=2:   double polynomial fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4,...)
+!  ifit=3:   interpolation in 2 parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
 
@@ -27,15 +27,15 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
 !              negative values of ir (-1 to -11):  default internal eirene A&M models
 !   ic:        cell number
 !   p1:        first parameter (usually:  log_e temperature,...)
-!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
+!   p2:        second parameter  (if any, e.g. log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return rate=rate coefficient in cm**3/sec
-!   not lexp:  return rate=log_e(rate coefficient) with rate-coefficient in cm**3/sec
+!   not lexp:  return rate=log_e(rate coefficient) with rate coefficient in cm**3/sec
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
-!              currently hard wired: 1e-8.
+!              currently hard-wired: 1e-8.
 !             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
 ! to be done:  
-!              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
+!              ip2shft option: currently hard-wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save.
@@ -58,7 +58,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
 c  transformation of parameters p1 and p2:
-     .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
+     .                  dsub    = 18.420680744_dp       !ln(1e8), hard-wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar          
@@ -173,7 +173,7 @@ c..............................................................
 cdr  extrapolation data: for 2d tabulated data, option not ready
 cdr  to be added here
 
-!  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
+!  currently hard-wired:  input parameters pp1, pp2 and table coefficients are log10
 
 c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
@@ -197,7 +197,7 @@ c..............................................................
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 
-! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
+! currently hard-wired:  input parameters q1 and table coefficients are neither ln nor log10
 
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
@@ -234,7 +234,6 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         endif
 
       end if
-
 
       return
 

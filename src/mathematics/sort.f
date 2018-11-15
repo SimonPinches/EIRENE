@@ -50,7 +50,7 @@ C
       IF ( J .GE. 2 ) THEN
 C
          DO 17, K = 1,J-1
-            DO 17, L = K+1,J
+            DO L = K+1,J
 C
                IF ( HILFL( K ) .GT. HILFL( L ) ) THEN
                   DO 16, I =1,3
@@ -62,6 +62,7 @@ C
                   HILFL( K ) = HILFL( L )
                   HILFL( L ) = MERK
                ENDIF
+            END DO
    17    CONTINUE
 C
       ENDIF

@@ -20,11 +20,11 @@ C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
 C
-C  THIS SUBROUTINE CALCULATES LINE INTEGRATED SIGNALS, USING THE EIRENE
-C  VOLUME AVERAGED TALLIES AND THE PLASMA BACKGROUND DATA.
+C  THIS SUBROUTINE CALCULATES LINE-INTEGRATED SIGNALS, USING THE EIRENE
+C  VOLUME-AVERAGED TALLIES AND THE PLASMA BACKGROUND DATA.
 C  THERE MAY BE A CONTRIBUTION DIRECTLY FROM A PRIMARY SOURCE,
 C  DUE TO DIRECT EMISSION FROM THE SOURCE INTO THE LINE OF SIGHT,
-C  AS WELL AS A SECONDARY SOURCE (POST COLLISION) CONTRIBUTION, DUE TO
+C  AS WELL AS A SECONDARY SOURCE (POST-COLLISION) CONTRIBUTION, DUE TO
 C  SCATTERING INTO THE LINE OF SIGHT
 
 C  STEP 1)  FETCH THE APPROPRIATE STRATUM DATA (OR: SUM OVER STRATA) IISTR
@@ -171,7 +171,7 @@ C  NOTHING TO BE DONE
         WRITE (iunout,*) 'ERROR IN DIAGNO: DATA FOR STRATUM ISTRA= ',
      .                   ISTRA
         WRITE (iunout,*)
-     .    'ARE NOT AVAILABLE. LINE INTEGRATION ABANDONNED'
+     .    'ARE NOT AVAILABLE. LINE INTEGRATION ABANDONED'
         RETURN
       ENDIF
 
@@ -200,9 +200,9 @@ C
         cur => first
 C
 CDR : this next part is not generally valid, nor ready to use.
-cdr : an attempt had been made, apparently, to use velocity resolved 
+cdr : an attempt had been made, apparently, to use velocity-resolved
 cdr : neutral distributions (the velocity component along the line of sight),
-cdr : then to turn that into a doppler broadened line shape of the Ba-alpha line
+cdr : then to turn that into a Doppler-broadened line shape of the Ba-alpha line
 
         write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
         write (iunout,*) 'error in proprietary section NCHTAL=4 '
@@ -492,15 +492,14 @@ c  summation over contributions (different isotopes but same emission reactions,
 
         IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
 
-
         ALLOCATE (PSIG(0:ND))
       END IF
 
-      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post collision CX atomic species
-cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES. Now superseeded.
+      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post-collision CX atomic species
+cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES. Now superseded.
       IF (NCHTAL(ICHORI).EQ.2)  NSPI=MX_COMPO ! use maximum number of components to spectral line emissivities (transitions) in one single LOS evaluation
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
-      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10 ! THIS OPTION WAS FOR HE EMISSION LINES. Now superseeded.
+      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10 ! THIS OPTION WAS FOR HE EMISSION LINES. Now superseded.
       IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
       PSIG = 0._DP
       IFIRST=0
@@ -542,7 +541,7 @@ C  LINE INTEGRAL: PHOTONS/SEC/CM**2/STERAD (EMISSIVITY), JEN=1 HERE.
 C  LINE INTEGRAL: PHOTONS/SEC/CM**2/EV/STERAD (SPECTRAL RADIANCE)
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)/(4.*PIA)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-C  LINE INTEGRAL: USER SUPPLIED INTEGRAND ALONG LINE OF SIGHT
+C  LINE INTEGRAL: USER-SUPPLIED INTEGRAND ALONG LINE OF SIGHT
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
         ENDIF
 231   CONTINUE
@@ -575,7 +574,8 @@ C  SCALE RESULT
       DO 233 I=1,NCHNI
         BUFFER(ICHORI,I)=BUFFER(ICHORI,I)*ZSCALE
         ZZ=MAX(1.E-10_DP,BUFFER(ICHORI,I))
-233     BUFFER(ICHORI,I)=LOG(ZZ)
+        BUFFER(ICHORI,I)=LOG(ZZ)
+  233 CONTINUE
 C
 C  CURVE FITTING
 C

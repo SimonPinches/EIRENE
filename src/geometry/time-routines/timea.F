@@ -569,7 +569,6 @@ c
 
         CALL EIRENE_LEER(2)
 
-
       ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
 c               i.e. OCTREE optimization in in-active
@@ -613,7 +612,6 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
       ELSEIF (NLTRA.AND..NOT.NLTOR) THEN
         NNTCL=IPERID
       ENDIF
-
 
 
 #ifdef TRACE
@@ -783,6 +781,7 @@ c     defining the internal subroutine for the octree build
       CONTAINS
 
       SUBROUTINE EIRENE_TIMEA0_BUILDOC()
+      INTEGER J
 cdr  this routine is only called if NLOCTREE
 c
 c    It returns NOTOCSURFS(1:NSURFNOT), a list of additional surfaces not

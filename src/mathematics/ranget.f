@@ -22,7 +22,7 @@ cdr      F :  use old IBM (1968) generator
 c             A legal seed must be 1<=ise<=2147483647 (=2**31-1)
 C            ISE:   old reference seed, 
 C                   from which the current status of random generator is set 
-C                   and from which new seed should result in a determinsitic way
+C                   and from which new seed should result in a deterministic way
 c                   
 
       USE EIRMOD_PRECISION
@@ -39,7 +39,7 @@ c
 c  1st generator: H1RN  (RANMAR)
 
          if (iseed.le.0.or.iseed.gt.900000000) then
-c  no legal seed availble
+c  no legal seed available
            write (iunout,*) 'error in fct. ranget of random generator'
            write (iunout,*) 'exit called from subr. ranget'
            call eirene_exit_own(1)
@@ -52,7 +52,7 @@ c  no legal seed availble
 c  old seed already known from previous call to ranf, or ranset
 c  (from common CMEM).
          if (iseed.le.0.or.iseed.gt.2147483647.or.iseed.ne.ISE) then
-c  no legal seed availble
+c  no legal seed available
            write (iunout,*) 'error in fct. ranget of random generator'
            write (iunout,*) 'exit called from subr. ranget'
            call eirene_exit_own(1)
@@ -61,7 +61,7 @@ c
 c  set a new seed iseed 
 c  Return a "derived seed" for a fresh sequence for random number starting from there
 c  call ranf with seed ISEED=ISE
-         ran=ranf_eirene()   !  switch to a next seed, by vasting a call to ranf().
+         ran=ranf_eirene()   !  switch to a next seed, by wasting a call to ranf().
 c                               now: new ISEED on CMEM
          ranget_eirene=2147483647-ISEED
          idumran=ranset_eirene(ISE) !  return to current seed for continuation

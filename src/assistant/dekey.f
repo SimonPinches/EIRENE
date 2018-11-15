@@ -27,8 +27,9 @@ C
       IANF=IANF+IN+IN2
       LOG=0
       IF (NMIN.GT.0) LOG=1
-      DO 2 J=ABS(NMIN),NMAX
-2        NLFLD(NFIX,J)=LOG
+      DO J=ABS(NMIN),NMAX
+        NLFLD(NFIX,J)=LOG
+      END DO
       IF (IANF.GE.LA) RETURN
       GOTO 1
 C

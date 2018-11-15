@@ -1,12 +1,12 @@
 cdr: nov 2013: comments added
 cdr: nov 2015:  further comments
 c
-c  AFEM:  course "Advanced Finate Element Methods", 
-c         Department of Aerospace Enginerring Sciences, 
+c  AFEM:  course "Advanced Finite Element Methods",
+c         Department of Aerospace Engineering Sciences,
 c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
 c  IFEM:  course "Introduction to Finite Element Methods"
-c         Department of Aerospace Enginerring Sciences, 
+c         Department of Aerospace Engineering Sciences,
 c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c
@@ -59,14 +59,14 @@ c  to be done:    range test for local coordinates r,s,t,u
       real(dp), allocatable, save :: x32(:), x13(:), x21(:), 
      .                               y23(:), y31(:), y12(:), twoai(:)
       
-cdr   integer, save :: icount=0  !  for test-output only
+cdr   integer, save :: icount=0  !  for test output only
       
       real(dp) :: dummy
 
-c  2d grid, quadrangels, x-y plane. z: ignorable.
+c  2d grid, quadrangles, x-y plane. z: ignorable.
 
-c  levgeo=1,  2d regular orthogonal carthesian grid, x-y plane. z: ignorable.
-c  levgeo=2:  quadrangels obtained from second order alg. surfaces,
+c  levgeo=1,  2d regular orthogonal cartesian grid, x-y plane. z: ignorable.
+c  levgeo=2:  quadrangles obtained from second order alg. surfaces,
 c  levgeo=3:  general polygon grid, but convex cell.
 
 
@@ -155,7 +155,7 @@ c: to be done: check for valid range of r,s,t,u ?
         drdy = jm1(2,1)
         dsdy = jm1(2,2)
 
-c  return partial derivaties wrt. cartesian coordinates, at point x,y,z
+c  return partial derivatives wrt. cartesian coordinates, at point x,y,z
 
         dfdx =   f1 * (dndr(1)*drdx + dnds(1)*dsdx)
      .         + f2 * (dndr(2)*drdx + dnds(2)*dsdx)
@@ -286,7 +286,7 @@ c  setting of array 'visited(icell)':  to be done
       else
         write (iunout,*) ' levgeo = ',levgeo,' to be written in',
      .              ' subroutine derivative: df_dxyz '
-!pb         write (iunout,*) ' calculation abandonned '
+!pb         write (iunout,*) ' calculation abandoned '
 !pb         call eirene_exit_own(1)
         dfdx = 0._dp
         dfdy = 0._dp

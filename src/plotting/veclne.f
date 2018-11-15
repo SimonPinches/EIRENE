@@ -179,28 +179,32 @@ C
         CALL GRJMP(REAL(XPOL(IXXI,NP1),KIND(1.E0)),
      .             REAL(YPOL(IXXI,NP1),KIND(1.E0)))
           DO 10 IR=IXXI+1,IXXE
-10          CALL GRDRW (REAL(XPOL(IR,NP1),KIND(1.E0)),
+            CALL GRDRW (REAL(XPOL(IR,NP1),KIND(1.E0)),
      .                  REAL(YPOL(IR,NP1),KIND(1.E0)))
+   10     CONTINUE
 C
         CALL GRJMP (REAL(XPOL(IXXI,NP2),KIND(1.E0)),
      .              REAL(YPOL(IXXI,NP2),KIND(1.E0)))
         DO 11 IR=IXXI+1,IXXE
-11        CALL GRDRW (REAL(XPOL(IR,NP2),KIND(1.E0)),
+          CALL GRDRW (REAL(XPOL(IR,NP2),KIND(1.E0)),
      .                REAL(YPOL(IR,NP2),KIND(1.E0)))
+   11   CONTINUE
         DO 15 I=1,NPPLG
           NP1=MAX(IYYI,NPOINT(1,I))
           NP2=MIN(IYYE,NPOINT(2,I))
           CALL GRJMP (REAL(XPOL(IXXI,NP1),KIND(1.E0)),
      .                REAL(YPOL(IXXI,NP1),KIND(1.E0)))
           DO 12 IP=NP1,NP2
-12          CALL GRDRW (REAL(XPOL(IXXI,IP),KIND(1.E0)),
+            CALL GRDRW (REAL(XPOL(IXXI,IP),KIND(1.E0)),
      .                  REAL(YPOL(IXXI,IP),KIND(1.E0)))
+   12     CONTINUE
           CALL GRJMP (REAL(XPOL(IXXE,NPOINT(1,I)),KIND(1.E0)),
      .                REAL(YPOL(IXXE,NPOINT(1,I)),KIND(1.E0)))
           DO 13 IP=NP1,NP2
-13          CALL GRDRW (REAL(XPOL(IXXE,IP),KIND(1.E0)),
+            CALL GRDRW (REAL(XPOL(IXXE,IP),KIND(1.E0)),
      .                  REAL(YPOL(IXXE,IP),KIND(1.E0)))
-15      CONTINUE
+   13     CONTINUE
+   15   CONTINUE
       ELSEIF (LEVGEO.EQ.4) THEN
         DO ITR=1,NTRII
 c   .true.or. .... added, to plot all triangles, not only those with no neighbor
@@ -234,15 +238,16 @@ C 1. SEARCH FOR MINIMA AND MAXIMA
           VMIN=1.D60
           VMAX=-1.D60
           DO 900 IR=IXXI,IXXE-1
-          DO 900 IP=IYYI,IYYE-1
+           DO IP=IYYI,IYYE-1
             IRAD = IR + (IP-1)*NR1ST
             VABS = SQRT(AORIG(IRAD)**2 + BORIG(IRAD)**2)
             VMIN = MIN(VMIN,VABS)
             VMAX = MAX(VMAX,VABS)
-900       CONTINUE
+           END DO
+  900     CONTINUE
 C 2. SCALING
           DO 1100 IR=IXXI,IXXE-1
-          DO 1100 IP=IXXI,IYYE-1
+           DO IP=IXXI,IYYE-1
             IRAD = IR + (IP-1)*NR1ST
             VX = (AORIG(IRAD) / VMAX)
             VY = (BORIG(IRAD) / VMAX)
@@ -255,7 +260,8 @@ C 3. PLOT VECTOR
             call grarrw(REAL(xm,KIND(1.E0)),REAL(ym,KIND(1.E0)),
      .                  REAL(xm+vx,KIND(1.E0)),REAL(ym+vy,KIND(1.E0)),
      .                  REAL(PLFL,KIND(1.E0)),REAL(BRFL,KIND(1.E0)),1)
-1100      CONTINUE
+           END DO
+ 1100     CONTINUE
 C
       ELSEIF ((LEVGEO.EQ.2.AND.NLPOL).OR.
      .         LEVGEO.EQ.3) THEN
@@ -265,7 +271,7 @@ C 1. SEARCH FOR MINIMA AND MAXIMA
           VMAX=-1.D60
           DIAMETER=1.D60
           DO 901 IR=IXXI,IXXE-1
-          DO 901 IP=IXXI,IYYE-1
+           DO IP=IXXI,IYYE-1
             IRAD = IR + (IP-1)*NR1ST
             D=SQRT((XPOL(IR,IP)-XPOL(IR+1,IP+1))**2+
      .             (YPOL(IR,IP)-YPOL(IR+1,IP+1))**2)
@@ -285,7 +291,8 @@ C 3. PLOT VECTOR
             call grarrw(REAL(xm,KIND(1.E0)),REAL(ym,KIND(1.E0)),
      .                  REAL(xm+vx,KIND(1.E0)),REAL(ym+vy,KIND(1.E0)),
      .                  REAL(PLFL,KIND(1.E0)),REAL(BRFL,KIND(1.E0)),1)
-901       CONTINUE
+           END DO
+  901     CONTINUE
 C
       ELSEIF (LEVGEO.EQ.4) THEN
 C

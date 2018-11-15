@@ -8,7 +8,6 @@ C
       INTEGER I,J,K,L,M,N,II,NM,MML,IERR
       REAL(DP) D(N),E(N),Z(NM,N)
       REAL(DP) B,C,F,G,H,P,R,S,MACHEP,EIRENE_SMACH
-      REAL(DP) DSQRT
 C
 C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE TQL2,
 C     NUM. MATH. 11, 293-306(1968) BY BOWDLER, MARTIN, REINSCH, AND
@@ -62,7 +61,7 @@ C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
 C
 C     ------------------------------------------------------------------
 C
-C     :::::::::: MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C     :::::::::: MACHEP IS A MACHINE-DEPENDENT PARAMETER SPECIFYING
 C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
 C                MACHEP = 16.0D0**(-13) FOR LONG FORM ARITHMETIC
 C                ON S360 ::::::::::
@@ -72,7 +71,8 @@ C
       IF (N .EQ. 1) GO TO 1001
 C
       DO 100 I = 2, N
-  100 E(I-1) = E(I)
+      E(I-1) = E(I)
+  100 CONTINUE
 C
       F = 0.0D0
       B = 0.0D0
@@ -82,7 +82,7 @@ C
          J = 0
          H = MACHEP * (ABS(D(L)) + ABS(E(L)))
          IF (B .LT. H) B = H
-C     :::::::::: LOOK FOR SMALL SUB-DIAGONAL ELEMENT ::::::::::
+C     :::::::::: LOOK FOR SMALL SUBDIAGONAL ELEMENT ::::::::::
          DO 110 M = L, N
             IF (ABS(E(M)) .LE. B) GO TO 120
 C     :::::::::: E(N) IS ALWAYS ZERO, SO THERE IS NO EXIT
@@ -98,7 +98,8 @@ C     :::::::::: FORM SHIFT ::::::::::
          H = D(L) - E(L) / (P + SIGN(R,P))
 C
          DO 140 I = L, N
-  140    D(I) = D(I) - H
+         D(I) = D(I) - H
+  140    CONTINUE
 C
          F = F + H
 C     :::::::::: QL TRANSFORMATION ::::::::::

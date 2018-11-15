@@ -14,20 +14,20 @@ C             VIA FILES FROM FORT.29?
 c             plus minor notational cleanup, comments added
 
 cdr  23.04.2015    
-cdr  issue: unterlying coarse grid format for printout?
+cdr  issue: underlying coarse grid format for printout?
 cdr  see previous version.
 cdr  now: 
 cdr  ncelln test for coarse grid cell number replaced, by ixtri(itri)=0 test
 cdr 
 cdr  distinct from solps-iter version:  
 cdr  nr1tal, np2tal still set such that underlying structured grid is enabled for printout
-cdr  with PRTTAL, and SYMET option.  To be checked: is this consistent with NCLTAL coarse graining 
+cdr  with PRTTAL, and SYMET option.  To be checked: is this consistent with NCLTAL coarse-graining
 cdr  to be done: 
 cdr  can one always find a "ncltal map" such that underlying structured grid is preserved 
 cdr  for printing and plotting?              
 c
 
-cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell wise. 
+cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell-wise.
 
 
 cdr  start to use species resolved energy tallies.
@@ -116,7 +116,7 @@ C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
 C   FOR NON-ORTHOGONAL GRIDS
 C
-C   THIS CODE SEGMENT CONTAINES VARIOUS SUBROUTINES NEEDED FOR
+C   THIS CODE SEGMENT CONTAINS VARIOUS SUBROUTINES NEEDED FOR
 C   INTERFACING THE EIRENE CODE TO PLASMA FLUID CODES.
 C   IT READS GEOMETRICAL DATA (MESHES) FROM FILE FT30
 C   AND PRODUCES THE EIRENE INPUT DATA (BLOCK 2).
@@ -227,7 +227,7 @@ C
      .            CHMOM(:,:)
       REAL(DP) :: DI(NPLS), VP(NPLS)
 
-cdr for species dependent global particle balance
+cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
       REAL(DP) :: SSN(NFL),SSNI(NFL),BALANN(NFL),TOTN(NFL),RN(NFL)
 
@@ -268,7 +268,7 @@ C
      .          PY, 
      .          ALX, ALE, ALW, ALS, ALN, AL, UUBC, VTEST, VTEST2, 
      .          VR, CS, 
-     .          PERW, PARW, PARWI,PERWI, DRR, EADD, EMAXW, ESHEATH, 
+     .          PERW, PARW, PARWI, PERWI, DRR, EADD, EMAXW, ESHEATH,
      .          TE, CUR, 
      .          VPZ, PM1, VPY, PN1, VPX, GAMMA, ESUM, 
      .          CHI, CHP, CHE, SUMEI, SUMEE, SUMM, SUMN,  
@@ -279,7 +279,7 @@ C
      .          FLX_EIR,
      .          SUMN_OLD,
      .          SNIRES, SMORES, SEERES, SEIRES, UU, PITB,
-     .          DXPOL,DYPOL,PAR,
+     .          DXPOL, DYPOL, PAR,
      .          fniprt, fltt, e0b2, frac, celdel, dd, cfac
 
       INTEGER, SAVE :: J, IRC, JC, INC, 
@@ -344,7 +344,7 @@ c
       REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ELTEST(:,:), ORI(:,:)
 
-      real(dp),allocatable :: helpw(:)
+      real(dp), allocatable :: helpw(:)
 
       REAL(DP), ALLOCATABLE, save :: uuba(:,:,:), upba(:,:,:)
       REAL(DP), ALLOCATABLE, save :: uubh(:,:,:), upbh(:,:,:)
@@ -376,7 +376,7 @@ C
 C
       GOTO 99990
 C
-C  TO INITIALISE THE SHORT CYCLING, THE GEOMETRY HAS TO BE
+C  TO INITIALIZE THE SHORT CYCLING, THE GEOMETRY HAS TO BE
 C  DEFINED ONCE (ENTRY: INTER0)
 C
       ENTRY EIRENE_INTER0
@@ -413,7 +413,7 @@ C
 cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
 cdr
-      mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
+      mshfrm = 0   !  optional flag for geometry file format: linda, carre, sonnet
       ntrfrm = 0
 C
       IF (.NOT.LSHORT.AND.ITIMV.LE.1) THEN
@@ -439,8 +439,8 @@ cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. Wh
         ENDIF
         DO 20 IPL=1,NPLSI
           READ (IUNIN,'(2I6,2E12.4)') I,IFLB(IPL),FCTE(IPL),BMASS(IPL)
-          IF (TRCINT)
-     .    WRITE (iunout,*)          IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
+          IF (TRCINT) WRITE (iunout,'(2I6,2E12.4)')
+     .                              IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
 20      CONTINUE
         READ (IUNIN,'(2I6)') NDXA,NDYA
         IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
@@ -593,7 +593,7 @@ CDR  SET THE NCPVI= NPLSI COUPLE TALLIES
         ICPVE(IPLS)=1
         ICPRC(IPLS)=1
         TXTTAL(IPLS,NTALM)=
-     .  'ENERGY WEIGHTED CX RATE OF ATOMS WITH IPLS                  '
+     .  'ENERGY-WEIGHTED CX RATE OF ATOMS WITH IPLS                  '
         TXTSPC(IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
         TXTUNT(IPLS,NTALM)='AMP                     '
       ENDDO
@@ -781,18 +781,18 @@ C
             END IF
             ALN=ALPHYB(IX,IY)
             ALS=ALPHYB(IX,IY-1)
-! cell centered angle of B_pol (psi-contour line) against eirene x-coordinate
+! cell-centered angle of B_pol (psi-contour line) against eirene x-coordinate
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
 c           write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
 c    .                                          ale,alw,aln,als,alx
-! cell centered unit vector along poloidal direcion
+! cell-centered unit vector along poloidal direction
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
-! cell centered unit vector along "radial" (grad psi) direcion,
+! cell-centered unit vector along "radial" (grad psi) direction,
 !                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
-! surface centered: nothing to be done, the values on fort.29 are already surface centered
+! surface-centered: nothing to be done, the values on fort.29 are already surface-centered
 !                   on east and north sides of a cell, respectively
             PUXE(IN)=COS(ALE)
             PUYE(IN)=SIN(ALE)
@@ -840,7 +840,7 @@ C
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
       READ(34,*) NTRII
-      WRITE(iunout,*) 'NTRII  = ',NTRII
+      WRITE(iunout,*) 'NTRII = ',NTRII
 
 C
 C  EACH ELEMENT (TRIANGLE) IS GIVEN BY 3 POINTS
@@ -854,7 +854,7 @@ C          1.................2
 C                  1
 C
 C
-      if (ntrfrm == 0) then
+      IF (NTRFRM == 0) THEN
         READ(33,*) (XTRIAN(I),I=1,NRKNOT)
         READ(33,*) (YTRIAN(I),I=1,NRKNOT)
          
@@ -870,11 +870,11 @@ c next: write file 'triang_new.npco_char'
            ENDDO
            close (unit=jun)
          end if
-      else
+      ELSE
         DO I=1,NRKNOT
           READ(33,*) J,XTRIAN(I),YTRIAN(I)
         ENDDO
-      end if
+      END IF
 C
       IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
         WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
@@ -899,10 +899,10 @@ C
 cdr  june 17:
 cdr: careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
 cdr           This is implicitly assumed here ??
-        READ(35,*) J,NCHBAR(1,I),NSEITE(1,I),IDUMMY,
-     >               NCHBAR(2,I),NSEITE(2,I),IDUMMY,
-     >               NCHBAR(3,I),NSEITE(3,I),IDUMMY,
-     >               IXTRI(I),IYTRI(I)
+          READ(35,*) J,NCHBAR(1,I),NSEITE(1,I),IDUMMY,
+     >                 NCHBAR(2,I),NSEITE(2,I),IDUMMY,
+     >                 NCHBAR(3,I),NSEITE(3,I),IDUMMY,
+     >                 IXTRI(I),IYTRI(I)
 
 C       WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
 C    >                   NCHBAR(1,J),NSEITE(1,J),
@@ -914,7 +914,7 @@ C EIRENE VIA COMMON.
 
 C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
 C  TO THE QUADRANGLE
-      ALLOCATE (HEADS(N1ST,N2ND))
+      IF(.NOT.ALLOCATED(HEADS)) ALLOCATE (HEADS(N1ST,N2ND))
       DO IR=1,NR1ST
         DO IP=1,NP2ND
           NULLIFY(HEADS(IR,IP)%P)

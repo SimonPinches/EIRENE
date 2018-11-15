@@ -8,7 +8,7 @@ cdr            use of emin1, emax1 to identify a particular spectroscopic
 cdr            line  (by upper and lower quantum number in H-atom)
 cdr            is apparently not available.  Lost from an earier version? to be checked.
 C
-C  CALLED IN POST PROCESSING PHASE:
+C  CALLED IN POSTPROCESSING PHASE:
 C  CALCULATE A NUMBER OF (ICHORI=1,NCHORI) LINE INTEGRALS ALONG LINES-OF-SIGHT
 C  USING THE INPUT DATA OF INPUT BLOCK 12, AND THE VOLUMETRIC INPUT AND OUTPUT
 C  TALLIES FROM THE EIRENE RUN.
@@ -90,13 +90,15 @@ C  LOG. ENERGY SCALE
           DO 10 J=1,NCHNI
             EN=ALEMN+(J-1)*EQUOT
             ENERGY(J)=10.**EN
-10          ENSAVE(ICHORI,J)=ENERGY(J)
+            ENSAVE(ICHORI,J)=ENERGY(J)
+   10     CONTINUE
         ELSEIF (NCHENI.GT.1) THEN
 C  LIN. ENERGY SCALE
           EQUOT=(EMAX1(ICHORI)-EMIN1(ICHORI))/FMXENM
           DO 20 J=1,NCHNI
             ENERGY(J)=EMIN1(ICHORI)+(J-1)*EQUOT
-20          ENSAVE(ICHORI,J)=ENERGY(J)
+            ENSAVE(ICHORI,J)=ENERGY(J)
+   20     CONTINUE
         ELSEIF (NCHENI.EQ.1) THEN
 C  NO ENERGY DEPENDENCE
           NCHNI=1

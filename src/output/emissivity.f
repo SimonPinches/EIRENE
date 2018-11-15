@@ -36,10 +36,10 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       integer :: i, j, k, iline, jcomp, kcontr,
      .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
-      real(dp) :: density(3), sigadd, add,  powalf, powalfs, 
+      real(dp) :: density(3), sigadd, add, powalf, powalfs,
      .            einstein, trans_en, DE, TE, TEF, DEF, popcf, 
      .            EIRENE_OTHER_RATE_COEFF, 
-     .            ratio1,ratio2
+     .            ratio1, ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
@@ -110,7 +110,7 @@ C
               DE=DEIN(NCELL)
               
               DEF=LOG(DE)
-              TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
+              TEF=max(-2.30_DP,LOG(TE)) ! cut-off at 0.1 eV
 
               do idens = 1, ndens
                 select case (itp(idens))
@@ -178,7 +178,7 @@ c  here: electron density, and H2 density, hence: does not cancel.
               end if
 
 cdr so far: add is scored on the fine grid cell "ncell".
-cdr         add volume weighted contribution to coarse cell "ncelc"
+cdr         add volume-weighted contribution to coarse cell "ncelc"
               sigadd = add * einstein * vol(ncell)
 
               addv(iadv,ncelc) = addv(iadv,ncelc) + sigadd
@@ -189,7 +189,7 @@ cdr         add volume weighted contribution to coarse cell "ncelc"
       
           end do ! k contributions (summed) of component j of line iline
 
-cdr addv was volume weighted (extensive) sum. now divide by coarse cell volume
+cdr addv was volume-weighted (extensive) sum. now divide by coarse cell volume
 cdr      to turn it into an intensive score:  [...] per cm**3  
           addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal) 
      .                             / voltal(1:nsbox_tal)

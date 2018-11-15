@@ -1,6 +1,6 @@
 cdr  Nov. 2015
 
-cdr  internal energy:  make also ipls species dependent
+cdr  internal energy:  make also ipls species-dependent
 cdr  check for storage (copy) and return, if not enough storage
 cdr  updlin should be made a default eirene option
 cdr  for linear combination of tallies

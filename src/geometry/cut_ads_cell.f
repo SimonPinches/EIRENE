@@ -127,7 +127,7 @@
  
             do j = 1, 3
  
-! don't check entrance side of triangle
+! do not check entrance side of triangle
               if (j == is) cycle
  
               RICHTX = VTRIX(J,IZELL)

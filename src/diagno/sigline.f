@@ -1,6 +1,6 @@
 !pb  100107 ENTRY SIGHA_REINIT added
 CDR  parameter PEN introduced, to identify hydrogen line by central energy
-Cdr Aug.16:  The idenitifcation of particular lines 
+Cdr Aug.16:  The identification of particular lines
 cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 12)
 cdr          is not functional in this version, distinct from the manual description
 cdr          currently lines can only be identified by their central energy PEN (EMIN1)
@@ -17,8 +17,8 @@ C
       SUBROUTINE EIRENE_SIGLINE(INIT,JJJ,ZDS,PEN,PSIG,
      .                          DUMMY2,ARGST,ICHORI)
 CDR  this routine evaluates ("side on") emissivities of certain transition lines,
-cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
-cdr  line of side (ARGST).
+cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
+cdr  line of sight (ARGST).
 cdr new version:  the lines, components and contributions are specified in input block 12.
 
 cdr old version (up to May 2018):
@@ -55,8 +55,8 @@ C          PEN:    CENTRAL ENERGY OF LINE (EV)
 C  OUTPUT: PSIG:  LINE INTEGRAL OF EMISSION,I=0,6 COMPONENTS
 C          ARGST: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
 C          THE H LINE FLUX PSIG(I),I=0,6 COMPONENTS
-C          FROM ATOMS, MOLECULES, TEST IONS, BULK IONS AND NEGATIV IONS
-C          THE INTEGRANT ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
+C          FROM ATOMS, MOLECULES, TEST IONS, BULK IONS AND NEGATIVE IONS
+C          THE INTEGRAND ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -99,7 +99,6 @@ c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba
 
 c  identify the selected emission line LNO from the input flags.
           CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
-
 
         endif   ! additional tallies ADDV are now filled, for new LINE, and for present stratum
 

@@ -7,7 +7,7 @@ C
 C   PREPARE/MODIFY GEOMETRICAL DATA, OUTSIDE STANDARD INPUT OPTIONS
 C   CALLED FROM SUBR. INPUT, AFTER READING FORMATED INPUT FILE
 C
-C   ALSO BEST HERE: CASE SPECIFIC SPEED-UP OF GEOMETRICAL WORK
+C   ALSO BEST HERE: CASE-SPECIFIC SPEED-UP OF GEOMETRICAL WORK
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -49,7 +49,7 @@ C
 C
       SUBROUTINE EIRENE_GEOUSR_GENERAL
 C
-C   PREPARE DATA FOR LIMITER-SURFACES
+C   PREPARE DATA FOR LIMITER SURFACES
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -82,7 +82,7 @@ C
         SELECT CASE(IPUNKT)
  
         CASE DEFAULT
-           WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
+           WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR '
            WRITE (iunout,*) 'INPUT LINE READING'
            WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
            WRITE (iunout,*) ' IS IGNORED '
@@ -129,7 +129,7 @@ C
           P2(1,NAS)=XPOL(NSSIR,NSSIP)
           P2(2,NAS)=YPOL(NSSIR,NSSIP)
         ELSE
-          WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
+          WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR '
           WRITE (iunout,*) 'INPUT LINE READING'
           WRITE (iunout,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
           WRITE (iunout,*) ' IS IGNORED '
@@ -169,7 +169,7 @@ C             LGJUM2(J,J)=.TRUE. FUER FLAECHEN ZWEITER ORDNUNG
 C
 C
 C
-C  SET SOME VOLUMES EXPLIZIT
+C  SET SOME VOLUMES EXPLICITLY
 C
 C
 C  MODIFY REFLECTION MODEL AT TARGET PLATES
@@ -276,9 +276,10 @@ csw 03sep2013
           READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
 
           GOTO (1,2,3,4,5,6),IPUNKT
-          WRITE (iunout,*) 'WRONG POINTNUMBER IN INFCOP '
+            WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
           WRITE (iunout,*) 'INPUT LINE READING'
-          WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+            WRITE (iunout,'(2I6,1P,3E12.4)')
+     .                                  NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
           WRITE (iunout,*) ' IS IGNORED '
           GOTO 10
 
@@ -404,7 +405,7 @@ c          print *,i,hlp_p1,hlp_p2
           do 980 l=1,nlimi
             do j=1,nlimi
               hlp_found=.false.
-c              print *,'lgjum0,j,m = ',lgjum0(j),j,m
+c               write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
               if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
                 if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
      .                             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
@@ -418,7 +419,7 @@ c              print *,'lgjum0,j,m = ',lgjum0(j),j,m
                 hlp_p2=p1(2,j)
               end if
               if(hlp_found) then
-c                print *,j,hlp_p1,hlp_p2
+c                   write (iunout,*) j,hlp_p1,hlp_p2
 c*** Check whether this segment is marked as a target edge
                 do k=1,n
                   if(j.eq.limpos(k)) then
@@ -426,24 +427,25 @@ c*** Check whether this segment is marked as a target edge
                       go to 990
                     else
                       write(iunout,*) 'geousr_biased:',
-     ,                             ' something is wrong with ',
-     ,                             'the target chain definition.'
+     ,                               ' something is wrong with ',
+     ,                               'the target chain definition.'
                       write(iunout,*) 
-     .                      'Check the data on the target edges ',
+     ,                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
-                        call EIRENE_exit_own(1)
+                          call EIRENE_EXIT_OWN(1)
                       end if
                     end if
                   end do
 c*** Switch off the segment
                   igjum0(j)=1
-                  print *,'geousr_biased: segment ',j,'  is turned off'
+                    write (iunout,*) 'geousr_biased: segment ',j,
+     ,                                              '  is turned off'
                   go to 980
                 end if
               end if
             end do
 c*** The chain is broken
-            print *,'geousr_biased: the chain is broken'
+              write (iunout,*) 'geousr_biased: the chain is broken'
             go to 990
  980      continue
         end if
@@ -463,20 +465,24 @@ csw 03sep2013      do i=1,max(npplg/3,1)*4
           p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
         CASE(10)
           CALL FIND_NEAREST_NDS(p1(1,limpos(i)),p1(2,limpos(i)),
-     .                          XN,YN,J,IXN,IYN)
-          WRITE(iunout,*) "REPLACE i, limpos, p1(1), p1(2)",
+     .                            XN,YN,J,IXN,IYN)
+            WRITE(iunout,'(a,2i5,2e16.8)')
+     w               "REPLACE i, limpos, p1(1), p1(2)",
      w                i, limpos(i), p1(1,limpos(i)), p1(2,limpos(i))
-          WRITE(iunout,*) "...WITH NEAREST, INDS, IX, IY, XN, YN",
-     w               j,IXN,IYN,XN,YN
+            WRITE(iunout,'(a,3i5,2e16.8)')
+     w               "...WITH NEAREST, INDS, IX, IY, XN, YN",
+     w                j,IXN,IYN,XN,YN
           p1(1,limpos(i))=XN
           p1(2,limpos(i))=YN
         CASE(20)
           CALL FIND_NEAREST_NDS(p2(1,limpos(i)),p2(2,limpos(i)),
-     .                          XN,YN,J,IXN,IYN)
-          WRITE(iunout,*) "REPLACE i, limpos, p2(1), p2(2)",
+     .                            XN,YN,J,IXN,IYN)
+            WRITE(iunout,'(a,2i5,2e16.8)')
+     w               "REPLACE i, limpos, p2(1), p2(2)",
      w                i, limpos(i), p2(1,limpos(i)), p2(2,limpos(i))
-          WRITE(iunout,*) "...WITH NEAREST, INDS, IX, IY, XN, YN",
-     w               j,IXN,IYN,XN,YN
+            WRITE(iunout,'(a,3i5,2e16.8)')
+     w               "...WITH NEAREST, INDS, IX, IY, XN, YN",
+     w                j,IXN,IYN,XN,YN
           p2(1,limpos(i))=XN
           p2(2,limpos(i))=YN
         end select
@@ -540,7 +546,7 @@ C
 
       END IF
 C
-C  SET SOME VOLUMES EXPLIZIT
+C  SET SOME VOLUMES EXPLICITLY
 C
 C
 C  MODIFY REFLECTION MODEL AT TARGET PLATES
@@ -600,7 +606,7 @@ C  ERROR
        XN=XPOL(IXN,IYN)
        YN=YPOL(IXN,IYN)
        IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
-     w                          "CAN NOT FIND A NEAREST POINT"
+     w                          "CANNOT FIND A NEAREST POINT"
       END SUBROUTINE  FIND_NEAREST_NDS
 
       END subroutine eirene_geousr_biased
@@ -613,7 +619,7 @@ c
 c  version : 12.03.98 21:02
 c
 c======================================================================
-C***  PREPARE DATA FOR LIMITER-SURFACES
+C***  PREPARE DATA FOR LIMITER SURFACES
 c======================================================================
       USE EIRMOD_PRECISION
       use EIRMOD_PARMMOD
@@ -633,7 +639,7 @@ c======================================================================
       logical :: first, normalcase, hlp_found
       integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
       character(80) :: geometry_comment
-      REAL(DP), PARAMETER :: hlp_tol=0.001
+      REAL(DP), PARAMETER :: hlp_tol=0.001_DP
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
       save first,onetwo,limpos,geometry_comment
@@ -735,21 +741,22 @@ c*** that is, the surfaces between the ones to be linked to the grid
 c*** corners.
 c
       n=max(npplg/3,1)*4
-c      print '(/(2i8))',(limpos(i),onetwo(i),i=1,n)
+c      write (iunout,'(/(2i8))') (limpos(i),onetwo(i),i=1,n)
       do 990 i=1,n
         if(onetwo(i).eq.2) then
           m=limpos(i)
           hlp_p1=p2(1,m)
           hlp_p2=p2(2,m)
-c          print *,'onetwo=2. igjum0= ',igjum0(j),',  i,hlp_p1,hlp_p2 =
-c          print *,i,hlp_p1,hlp_p2
+c          write (iunout,*) 'onetwo=2. igjum0= ',igjum0(j),
+c     .     ',  i,hlp_p1,hlp_p2 = '
+c          write (iunout,*) i,hlp_p1,hlp_p2
           do 980 l=1,nlimi
             do j=1,nlimi
               hlp_found=.false.
-c              print *,'lgjum0,j,m = ',lgjum0(j),j,m
+c              write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
               if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
                 if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
-     .                             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
+     .                            abs(hlp_p2-p1(2,j)).le.hlp_tol) then
                   hlp_found=.true.
                   hlp_p1=p2(1,j)
                   hlp_p2=p2(2,j)
@@ -760,7 +767,7 @@ c              print *,'lgjum0,j,m = ',lgjum0(j),j,m
                 hlp_p2=p1(2,j)
               end if
               if(hlp_found) then
-c                print *,j,hlp_p1,hlp_p2
+c                write (iunout,*) j,hlp_p1,hlp_p2
 c*** Check whether this segment is marked as a target edge
                 do k=1,n
                   if(j.eq.limpos(k)) then
@@ -768,24 +775,25 @@ c*** Check whether this segment is marked as a target edge
                       go to 990
                     else
                       write(iunout,*) 'geousr_biased:',
-     ,                             ' something is wrong with ',
-     ,                             'the target chain definition.'
+     ,                               ' something is wrong with ',
+     ,                               'the target chain definition.'
                       write(iunout,*) 
-     .                      'Check the data on the target edges ',
+     ,                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
-                        call EIRENE_exit_own(1)
+                          call EIRENE_EXIT_OWN(1)
                       end if
                     end if
                   end do
 c*** Switch off the segment
                   igjum0(j)=1
-                  print *,'geousr_biased: segment ',j,'  is turned off'
+                    write (iunout,*) 'geousr_biased: segment ',j,
+     .                                              '  is turned off'
                   go to 980
                 end if
               end if
             end do
 c*** The chain is broken
-            print *,'geousr_biased: the chain is broken'
+              write (iunout,*) 'geousr_biased: the chain is broken'
             go to 990
  980      continue
         end if

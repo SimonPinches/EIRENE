@@ -43,7 +43,7 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
 
       UNITINT(1)= '(AMP)   '
       UNITINT(2)= '(WATT)  '
-      UNITOUT   = '(???)   '
+      UNITOUT   = '(?)     '
 
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
  
@@ -57,10 +57,10 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
         WRITE (IOUT,*)
  
         IF (ESTIML(ISPC)%ISRFCLL == 0)  THEN
-c  surface averaged spectra
+c  surface-averaged spectra
           IF (I > NLIM) THEN
             WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
-     .                     ' NONDEFAULT STANDARD SURFACE ',I-NLIM
+     .                     ' NON-DEFAULT STANDARD SURFACE ',I-NLIM
           ELSE
             WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                     ' ADDITIONAL SURFACE ',I
@@ -233,7 +233,7 @@ c  first and last bin: all the fluxes outside specified spectral range
 
           END IF
         ELSE
-          WRITE (IOUT,'(A)') ' SPECTRUM IDENTICAL 0 '
+          WRITE (IOUT,'(A)') ' SPECTRUM IDENTICALLY 0 '
         END IF
 C
 C  PRINTOUT OF ENERGY INTEGRAL OVER SPECTRA

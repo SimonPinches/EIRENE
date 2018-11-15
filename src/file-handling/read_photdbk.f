@@ -69,8 +69,8 @@ c
         if (iblnk < 0) iblnk = iend-ianf+1
         if (iblnk == 0) then
            write (iunout,*) ' ERROR IN DATABASE PHOTON'
-           write (iunout,*) ' NO ELEMENTNAME FOUND '
-           stop
+           write (iunout,*) ' NO ELEMENT NAME FOUND '
+           call eirene_exit_own(1)
         end if
  
         elementname = repeat(' ',20)
@@ -235,7 +235,7 @@ cdr  done with pressure broadening constants
       if (ifremd > 12) then
          write (iunout,*)
      .     ' too many foreign pressure broadenings specified'
-         write (iunout,*) ' calculation abandonned '
+         write (iunout,*) ' calculation abandoned '
       end if
  
  
@@ -336,7 +336,7 @@ c  reaction no IR is a "photonic" reaction
       phline%reacname = reac_name(ir)
  
 cdr
-c  rest of data: use reacdat(ir)%phr%poly, e.g. for Aik, and volmetric
+c  rest of data: use reacdat(ir)%phr%poly, e.g. for Aik, and volumetric
 c                                             source of photons. (RC process)
 c  This is done by call to set_reaction_data (better name would be: "set_poly")
 c  i.e. a single reaction IR can consist of OT and of RC processes.
@@ -349,8 +349,8 @@ c
       rdata(1,1) = aik
 
 cdr 
-c  So far photonic cross sections, rate coeff. and rates are const.
-c  i.e. special (trivial, 0th order) cases of polygonial fits.
+c  So far photonic cross-sections, rate coeff. and rates are const.
+c  i.e. special (trivial, 0th-order) cases of polygonial fits.
 c  Use REACDAT type "poly" also for photonic data 
       call EIRENE_set_reaction_data
      .  (ir,isw,iftflg(ir,2),rdata,iunout,.false.)
@@ -424,8 +424,8 @@ c  Use REACDAT type "poly" also for photonic data
       END DO
  
       IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASENAME FOR POLARI DEFINED '
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
+        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR POLARI DEFINED '
+        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
  
@@ -459,8 +459,8 @@ c  Use REACDAT type "poly" also for photonic data
         if (iblnk < 0) iblnk = iend-ianf+1
         if (iblnk == 0) then
            write (iunout,*) ' ERROR IN DATABASE POLARI'
-           write (iunout,*) ' NO ELEMENTNAME FOUND '
-           stop
+           write (iunout,*) ' NO ELEMENT NAME FOUND '
+           call eirene_exit_own(1)
         end if
  
         name(n) = repeat(' ',2)
