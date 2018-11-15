@@ -9,7 +9,6 @@
  
       PUBLIC :: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM, 
      P          EIRENE_INIT_CGEOM,
-c
      P          CELL_ELEM, CELL_LIST
  
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
@@ -97,7 +96,6 @@ c  integer arrays
      .                     NADD+NRTAL+NBMAX+7*NRAD)
          VOLTOT => RCGM1(1+NADD+NRTAL+NBMAX+7*NRAD)
  
-
          XPOL => RCGM2(:,1:N2NDPLGS)
          YPOL => RCGM2(:,1+N2NDPLGS:2*N2NDPLGS)
  

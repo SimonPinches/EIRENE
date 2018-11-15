@@ -1,5 +1,5 @@
 !********************************************************************
-!*   Solve Y' = F(X,Y) with initial conditions using the Adams-     *
+!*   Solve dY/dX = F(X,Y) with initial conditions using the Adams-  *
 !*   Moulton Prediction-Correction Method                           *
 !* ---------------------------------------------------------------- *
 !*  INPUTS:                                                                *
@@ -16,13 +16,15 @@
 
       subroutine adam_moulton (fp, xi, xf, yi, ec, m, xb, yb)
 
-      real*8, intent(in) :: xi, xf, yi, ec
+      USE EIRMOD_PRECISION
+      implicit none
+      real(DP), intent(in) :: xi, xf, yi, ec
       integer, intent(in) :: m
-      real*8, intent(out) :: xb(m+1), yb(m+1)
-      real*8 :: fp
+      real(DP), intent(out) :: xb(m+1), yb(m+1)
+      real(DP) :: fp
 
-      real*8 X(0:3), Y(0:3)
-      real*8 H,C1,C2,C3,C4,XX,YY,YC,YP
+      real(DP) X(0:3), Y(0:3)
+      real(DP) H,C1,C2,C3,C4,XX,YY,YC,YP
       integer K, L, ms
       
       H = (xf - xi) / real(m-1,kind(1.d0))  !integration step
@@ -62,7 +64,7 @@
       END DO
 
 ! explicit precdictor step Adams-Bashford
- 100  K = 2
+  100 K = 2
       XX = X(K) 
       YY = Y(K) 
       C1 = FP(XX,YY)
@@ -80,7 +82,7 @@
       
 ! implicit corrector step Adams-Moulton
       L = 0
- 200  XX = X(K + 1) 
+  200 XX = X(K + 1) 
       YY = YP 
       C1 = FP(XX,YY)
 

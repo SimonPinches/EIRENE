@@ -7,10 +7,10 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
-cdr may 2017  : lower cuf off density for H.12 data: 1e8.
+cdr may 2017  : lower cut-off density for H.12 data: 1e8.
 c               for lower densities: AMJUEL Data collapse to
 c               Corona rates or Corona population coefficients.
 cdr aug 2017  : try more precise species identification, use NPRT(ispz)= ??
@@ -70,7 +70,7 @@ C
       REAL(DP) :: DM(0:8,0:8) ! diatomic hydrogenic molecule H2,D2,T2,HD,HT,DT
       REAL(DP) :: DI2(0:8,0:8) ! diatomic hydr. mol. ion H2+, D2+,...,DT+
       REAL(DP) :: DI3(0:8,0:8)! triatomic hydr. mol. ion H3+, ...,D2T+
-      REAL(DP) :: DN(0:8,0:8) ! negativ hydr. ion H-,D- T-
+      REAL(DP) :: DN(0:8,0:8) ! negative hydr. ion H-,D- T-
 
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP) :: RHMH2(0:8), RH2PH2(0:8,0:8), RH3PH2(0:8),

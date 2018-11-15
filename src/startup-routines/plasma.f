@@ -27,7 +27,7 @@ cdr: why is that not needed for V and n profiles?
       SUBROUTINE EIRENE_PLASMA
 C  SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES, B AND E FIELDS, 
 C  ON: 
-C  INDPRO=1,2,3    1D MESH "RHOZNE(J)", 1,NR1STM, CELL CENTERED
+C  INDPRO=1,2,3    1D MESH "RHOZNE(J)", 1,NR1STM, CELL-CENTERED
 C                  B-FIELD (INDPRO(5)) SET ON 1:NSURF 
 C  INDPRO=4        READ FROM EXTERNAL FILE ISTREAM, EVERYWHERE, 1,NSBOX, 
 C  INDPRO=5        PROUSR: ONLY IN STANDARD GRID, 1:NSURF
@@ -83,14 +83,13 @@ C  SET EIRENE VACUUM BACKGROUND MODEL DATA. I.E. IF TEMPERATURES ARE
 C  LESS THAN TVAC OR THE BACKGROUND DENSITY IS LESS THAN DVAC,
 C  THEN THIS ZONE IS CONSIDERED TO BE AN "EIRENE VACUUM ZONE",
 C  FOR A PARTICULAR BACKGROUND SPECIES:
-C  PARTICLE MEAN FREE PATHES IN SUCH ZONES           ARE SET EQUAL TO 1.D10 (CM)
+C  PARTICLE MEAN FREE PATHS IN SUCH ZONES            ARE SET EQUAL TO 1.D10 (CM)
 C  AND ALL REACTION RATES WRT: TO THIS BULK PARTICLE ARE SET EQUAL TO ZERO (1/S)
       TVAC=0.02_dp
       DVAC=1.E2_dp
       VVAC=0._dp
       BVAC=1._dp  ! dr:  B field must not be "vacuum". check use of BVAC
 C
-
 C
 C  ELECTRON TEMPERATURE
       IND=INDPRO(1)
@@ -113,7 +112,6 @@ c  INDPRO=4:  read tally from stream TEO
 c  INDPRO=5:  tally from PROUSR, indx=0
 105     CALL EIRENE_PROUSR (TEIN,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
         GOTO 110
-
 c  INDPRO=6:  tally from PROFR,  1:NSURF
 106     CALL EIRENE_PROFR (TEIN,0,1,1,NSURF)
         GOTO 110
@@ -299,7 +297,6 @@ C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
       ENDIF
       GOTO 1140
 
-
 cdr all nplsv vector component profiles set in a single call
 
 c  read tally from external data structure, all V.IN fields in one single call
@@ -472,7 +469,7 @@ C  ADDITIONAL INPUT TALLIES
       DO 160 K=1,NAINI
         GOTO (151,151,151,151,155,156,157,160,160),IND
 C  DEFAULT: ZERO, only options ind=5,6,7 are available
-c          (transfer from problem specific codes or external data structures)
+c          (transfer from problem-specific codes or external data structures)
 151     CONTINUE
         DO 1151 J=1,NR1ST
           ADIN(K,J)=0.
@@ -494,7 +491,7 @@ C  ELECTRIC FIELD
       IND=INDPRO(7)
       GOTO (170,170,170,170,175,176,177,170,170),IND
 C  DEFAULT: ZERO, only options ind=5,6,7
-c          (transfer from problem specific codes or external data structures)
+c          (transfer from problem-specific codes or external data structures)
       goto 170
 175     CALL EIRENE_PROUSR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)

@@ -1,16 +1,16 @@
 !pb  27.11.06: open and close statements for fort.10 moved here
-Cdr  15.10.14: variances of spectral tallies: names syncronized with other variance tallies,
+Cdr  15.10.14: variances of spectral tallies: names synchronized with other variance tallies,
 c              range of spectra corrected: 0 -- nspc+1, rather than 1 -- nspc
 c    Jan.  16: remove redundant PSGM
 C.........................................................................................
 
 cdr  ENTRY WRSTRT:
 cdr  write MC estimated tallies, per stratum, onto fort.10 
-cdr    (volume averaged, surface averaged, spectra, and their standard deviations)
+cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
 
 cdr  ENTRY RSTRT: 
 cdr  read MC estimated tallies, per stratum, onto fort.10 
-cdr    (volume averaged, surface averaged, spectra, and their standard deviations)
+cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
 cdr     e.g. for printout, plotting etc.. of results from specified strata   
 
 cdr  on input:  IG     :  number of stratum ISTRA

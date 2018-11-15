@@ -242,7 +242,7 @@ C                 AND THE DISTANCE "TL" ALONG RAY UNTIL INTERSECTION POINT.
         INTEGER, INTENT(in) :: MSURF, NCELL, NLI, NLE, NNTCL, NACTSURFS
         INTEGER, DIMENSION(:), INTENT(in) :: ACTSURFS
         INTEGER, INTENT(out) :: MASURF
-        INTEGER :: NLLLI, LM1, LM2, NNTCLS, NN, I, J, K, ICOUNT, NNR,
+        INTEGER :: NLLLI, NNTCLS, NN, I, J, K, ICOUNT, NNR,
      .             NTNEW
         
         LOGICAL, INTENT(out) :: LCNDEXP
@@ -259,8 +259,6 @@ c        LOGICAL :: LMTSRF(NLIMPS)
      .              A1, A2, A3, F, G, TMI, TMA, TMX, ROT, TST, TUP,
      .              XXR, PPP
       
-      LM1=NLI
-      LM2=NLE
 c      LMTSRF=.FALSE.
  
 C  TENTATIVELY ASSUME: NO LEGAL INTERSECTION WITH ANY OF THE

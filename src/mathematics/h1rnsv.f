@@ -11,7 +11,8 @@
       COMMON /RASET1/ U(97),C,CD,CM,I,J
 *
       DO 10 IC = 1, 97
-   10 VEC(IC) = U(IC)
+        VEC(IC) = U(IC)
+   10 CONTINUE
       VEC(98) = C
       VEC(99) = REAL(I)
       VEC(100)= REAL(J)

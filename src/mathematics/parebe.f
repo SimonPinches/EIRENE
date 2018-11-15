@@ -1,8 +1,8 @@
 C
 C
 C
-      SUBROUTINE
-     .  EIRENE_PAREBE(EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,EPS)
+      SUBROUTINE EIRENE_PAREBE
+     .  (EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,EPS)
 **********************************************************************
 *                                                     1. JUNI 1988   *
 *     Inde = 2 ===> Es liegen 2 parallele Ebenen zur u2,-u3 Ebene vor*
@@ -33,7 +33,7 @@ C
       U(2) = 0.0
       U(3) = 0.0
 *
-*     Aufstellen des Normalenvektors:'
+*     Aufstellen des Normalenvektors:
 *
       B1 = EV(1,1) * U(1)
       B2 = EV(2,1) * U(1)
@@ -63,7 +63,7 @@ C
       U(2) = 0.0
       U(3) = 0.0
 *
-*     Aufstellen des Normalenvektors:'
+*     Aufstellen des Normalenvektors:
 *
       C1 = EV(1,1) * U(1)
       C2 = EV(2,1) * U(1)

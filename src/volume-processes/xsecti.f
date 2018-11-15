@@ -12,12 +12,12 @@ c          (was ok already for call to xstei)
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
 ! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
-! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 cdr  oct.14:  pls made allocatable
 cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
-cdr  oct.14:  further syncronization with xsectm,xsecta,
+cdr  oct.14:  further synchronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
@@ -66,7 +66,7 @@ C
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits
+cdr: set hard-wired lower density for H.4 type fits
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -397,7 +397,7 @@ C
           NIEII(IION)=IDSC1
 C
 C
-C  NON DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
+C  NON-DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 90 NRC=1,NRCI(IION)
@@ -452,7 +452,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NICXI(IION)=0
 C
-C  NON DEFAULT CX MODEL:
+C  NON-DEFAULT CX MODEL:
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 130 NRC=1,NRCI(IION)
@@ -517,7 +517,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NIELI(IION)=0
 C
-C  NON DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL:  240--
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 230 NRC=1,NRCI(IION)
@@ -536,11 +536,11 @@ C  BULK PARTICLE INDEX
             LGIEL(IION,IDSC,0)=IREL
             LGIEL(IION,IDSC,1)=IPLS
 C
-C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
+C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             IF (IBGKI(IION,NRC).NE.0) THEN
               IF (NPBGKI(IION).EQ.0) THEN
 C  IION HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
-C  DO THIS HERE: IION IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
+C  DO THIS HERE: IION IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
                 NPBGKI(IION)=IBGK_SP
@@ -550,11 +550,11 @@ C  DO THIS HERE: IION IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLI
               ELSE
                 GOTO 999
               ENDIF
-C  SELF OR CROSS COLLISION?
+C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKI(IION,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKI(IION,NRC),3,3)
               IF (ITYPB.NE.3.OR.ISPZB.NE.IION) THEN
-C  CROSS COLLISION !
+C  CROSS-COLLISION !
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKI(IION,NRC)
                 ELSE
@@ -562,7 +562,7 @@ C  CROSS COLLISION !
                 ENDIF
               ENDIF
             ENDIF
-C  BGK-COLLISION PARAMETERS DONE
+C  BGK COLLISION PARAMETERS DONE
 C
             III=NSPAM+IION
             IPL=IPLS
@@ -601,7 +601,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NIPII(IION)=0
 C
-C  NON DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL:  130--190
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO NRC=1,NRCI(IION)
@@ -740,7 +740,8 @@ C
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK,IION,IPLS ',KK,IION,IPLS
-994   CONTINUE
+      CALL EIRENE_EXIT_OWN(1)
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTI.'
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IION = ',IION

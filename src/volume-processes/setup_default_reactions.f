@@ -2,25 +2,25 @@ cdr  oct. 2015:
 cdr  k=-1:  cx  H  + p  
 cdr  k=-11  ei  He + e   (was formerly also k=-1)
 !pb  june 2016: nullify unused pointers in default reaction k=-11
-cdr  sept. 16:  extend options for asmyptotics  (extrapolation of fits)
+cdr  sept. 16:  extend options for asymptotics  (extrapolation of fits)
 cdr             currently this is by far overdone, all fits in here are single parametric
 cdr             but leave as is, for later extensions....
 cdr  nov.17  : exclusively  iftflg(K,2)=0 for rate coefficients
-c                      and  iftflg(K,1)=0 for cross sections are set.
+c                      and  iftflg(K,1)=0 for cross-sections are set.
 c              H.8 reaction for process K=-10:  dis rec of H2+, could be set here.
 c                      then iftflg(K,4)=0  as well.
-cdr            asymt. corrections missing for He CX cross sections. 
+cdr            asympt. corrections missing for He CX cross-sections.
 
       subroutine EIRENE_setup_default_reactions
 C
-C  for the trivial minimal set of hard wired reaction processes,
+C  for the trivial minimal set of hard-wired reaction processes,
 C  selected by ...=0 flag in input block 4 for each species.
 C
 c  fill reacdat(k)%... with default reaction data, K < 0.
 c  first set default rate coefficients K= -4,-5,...-11  (-1, -2 and -3 are not used)
 c                                                   (extrapolation flags: 0)                     
 c  and
-c  then  set default cross sections    K= -1,-2,-3  (extrapolation flags: 5)
+c  then  set default cross-sections    K= -1,-2,-3  (extrapolation flags: 5)
 c
 
 
@@ -38,7 +38,7 @@ c
  
 
 !  HERE: K= -4,-5,...-10,-11  
-!        K= -1,-2,-3: currently not used, only for cross sections, see below 
+!        K= -1,-2,-3: currently not used, only for cross-sections, see below
 C
 C K=-1:   FREE 
 C K=-2:   FREE
@@ -228,12 +228,10 @@ C
 
 c....................................................................... 
  
-!  SPECIFY DEFAULT MODEL FOR CROSS SECTIONS:  K=-1,-2,-3, DEFAULT CX CROSS SECTIONS
+!  SPECIFY DEFAULT MODEL FOR CROSS-SECTIONS:  K=-1,-2,-3, DEFAULT CX CROSS-SECTIONS
 !  FILL REACDAT..%CRS...
  
- 
- 
-C  K=-1:  H + H+ --> H+ + H   CROSS SECTION, JANEV, 3.1.8
+C  K=-1:  H + H+ --> H+ + H   CROSS-SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
       IR = -1
@@ -269,7 +267,7 @@ c
       IFTFLG(IR,1) = 0
  
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS SECTION, JANEV, 5.3.1
+C  K=-2:  He + He+ --> He+ + He   CROSS-SECTION, JANEV, 5.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
       IR = -2
@@ -283,7 +281,7 @@ C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
      .    -3.592504363592d-03,-1.745382918016d-04, 1.497204460315d-04,
      .    -2.152122621503d-05, 1.473684503283d-06,-4.401831552698d-08/)
       IFTFLG(IR,1) = 0
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
       REACDAT(IR)%CRS%RC1MIN = -HUGE(1._DP)
       REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
       REACDAT(IR)%CRS%RC2MIN = -HUGE(1._DP)
@@ -305,7 +303,7 @@ c
       IFTFLG(IR,1) = 0
  
 C
-C  K=-3:  He + He++ --> He++ + He   CROSS SECTION, JANEV, 6.3.1
+C  K=-3:  He + He++ --> He++ + He   CROSS-SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
       IR = -3
@@ -319,7 +317,7 @@ C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
      .     2.392295193337d-03, 9.876388162277d-04,-2.282012750308d-04,
      .     3.598361283629d-06, 1.940270105613d-06,-1.105794797036d-07/)
       IFTFLG(IR,1) = 0
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
       REACDAT(IR)%CRS%RC1MIN = -HUGE(1._DP)
       REACDAT(IR)%CRS%RC1MAX = HUGE(1._DP)
       REACDAT(IR)%CRS%RC2MIN = -HUGE(1._DP)

@@ -12,13 +12,13 @@ C           also modified: cross.f, xsecta_param.f
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
 ! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
-! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: IAT, pls (for H.4 option)
 ! oct.2014: call to xstpi: additional argument: chrdf0
 cdr  oct.14:  comsou, clogau removed
 cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
-cdr  oct.14:  further syncronization with xsectm,xsecti
+cdr  oct.14:  further synchronization with xsectm,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  oct.15:  default he ionisation kk=-1 --> kk=-11, 
@@ -29,7 +29,7 @@ cdr           to avoid conflict with default cx reaction kk=-1
 cdr  May 17:  A few more consistency checks implemented.
 cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENA(iatm) flag,
 cdr           rather than from the former fldlma(iatm,kk) flag (which is removed now).
-cdr           default: FDLMCX=0.0 (from initialisation phase) means: no fluid limit cut off at CX collisions.
+cdr           default: FDLMCX=0.0 (from initialisation phase) means: no fluid limit cut-off at CX collisions.
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -66,7 +66,7 @@ C
 
 cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
-cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3 
+cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
@@ -187,7 +187,7 @@ C
 C
           NAEII(IATM)=IDSC1
 C
-C  NON DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
+C  NON-DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 90 NRC=1,NRCA(IATM)
@@ -272,7 +272,7 @@ C  TARGET     MASS IS 1.
               PMASS=1.*PMASSA
               TMASS=1.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-1
+C  CROSS-SECTION (E-LAB): IN FUNCTION CROSS, KK=-1
               ISTORE = -1
 C
 C  TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
@@ -300,7 +300,7 @@ C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
               TMASS=4.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-2
+C  CROSS-SECTION (E-LAB): IN FUNCTION CROSS, KK=-2
               ISTORE = -2
 C
 C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
@@ -328,7 +328,7 @@ C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
               TMASS=4.*PMASSA
 C
-C  CROSS SECTION (E-LAB): IN FUNCTION CROSS, KK=-3
+C  CROSS-SECTION (E-LAB): IN FUNCTION CROSS, KK=-3
               ISTORE = -3
 C
 C             TABCX3(IRCX,...)= NOT AVAILABLE FOR DEFAULT MODEL
@@ -336,7 +336,6 @@ C
             ELSE
               GOTO 155
             ENDIF
- 
  
             IDSC=IDSC+1
             NRCXI=NRCXI+1
@@ -381,7 +380,7 @@ C
 C
           NACXI(IATM)=IDSC
 C
-C  NON DEFAULT CX MODEL:
+C  NON-DEFAULT CX MODEL:
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 160 NRC=1,NRCA(IATM)
@@ -459,7 +458,7 @@ C
         IF (NRCA(IATM).EQ.0) THEN
           NAELI(IATM)=0
 C
-C  NON DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL:  240--
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 230 NRC=1,NRCA(IATM)
@@ -486,11 +485,11 @@ C  BULK PARTICLE INDEX
             LGAEL(IATM,IDSC,0)=IREL
             LGAEL(IATM,IDSC,1)=IPLS
 C
-C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
+C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             IF (IBGKA(IATM,NRC).NE.0) THEN
               IF (NPBGKA(IATM).EQ.0) THEN
 C  IATM HAS NOT YET BEEN LABELLED AS BGK SPECIES.
-C  DO THIS HERE: IATM IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
+C  DO THIS HERE: IATM IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
                 NPBGKA(IATM)=IBGK_SP
@@ -500,11 +499,11 @@ C  DO THIS HERE: IATM IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLI
               ELSE
                 GOTO 999
               ENDIF
-C  SELF OR CROSS COLLISION?
+C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKA(IATM,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKA(IATM,NRC),3,3)
               IF (ITYPB.NE.1.OR.ISPZB.NE.IATM) THEN
-C  CROSS COLLISION !
+C  CROSS-COLLISION !
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKA(IATM,NRC)
                 ELSE
@@ -512,7 +511,7 @@ C  CROSS COLLISION !
                 ENDIF
               ENDIF
             ENDIF
-C  BGK-COLLISION PARAMETERS DONE
+C  BGK COLLISION PARAMETERS DONE
 C
             IAT=NSPH+IATM
             IPL=IPLS
@@ -551,7 +550,7 @@ C
         IF (NRCA(IATM).EQ.0) THEN
           NAPII(IATM)=0
 C
-C  NON DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL:  130--190
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO NRC=1,NRCA(IATM)
@@ -688,7 +687,7 @@ C
 C
 990   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
-      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX COLLISION '
+      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX COLLISION'
       CALL EIRENE_EXIT_OWN(1)     
 991   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
@@ -703,7 +702,8 @@ C
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK,IATM,IPLS ',KK,IATM,IPLS
-994   CONTINUE
+      CALL EIRENE_EXIT_OWN(1)
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTA.'
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IATM = ',IATM
@@ -713,7 +713,7 @@ C
 996   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
       WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE  '
-      WRITE (iunout,*) 'OF POST COLLISION SAMPLING FLAG ISCDEA'
+      WRITE (iunout,*) 'OF POST-COLLISION SAMPLING FLAG ISCDEA'
       WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENY '
       CALL EIRENE_EXIT_OWN(1)
 998   CONTINUE

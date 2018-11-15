@@ -22,22 +22,26 @@ C  ***INITIALIZATION
       N2=N+2
       M1=M+1
       N1=N+1
-      DO 1 J=1,N
+      DO J=1,N
       Q(M2,J)=J
-    1 A(J)=0.
+        A(J)=0.
+      END DO
       DO 3 I=1,M
       Q(I,N2)=N+I
       D(I)=0.
       IF(Q(I,N1).GE.0) GO TO 3
-      DO 2 J=1,N2
-    2 Q(I,J)=-Q(I,J)
+      DO J=1,N2
+        Q(I,J)=-Q(I,J)
+      END DO
     3 CONTINUE
 C  ***COMPUTE MARGINAL COSTS
-      DO 5 J=1,N1
+      DO J=1,N1
       SUM=0.
-      DO 4 I=1,M
-    4 SUM=SUM+Q(I,J)
-    5 Q(M1,J)=SUM
+       DO I=1,M
+        SUM=SUM+Q(I,J)
+       END DO
+       Q(M1,J)=SUM
+      END DO
 C  ***STAGE I
 C  ***DETERMINE VECTOR TO ENTER THE BASIS
       STAGE=.TRUE.
@@ -53,8 +57,9 @@ C  ***DETERMINE VECTOR TO ENTER THE BASIS
       IN=J
     7 CONTINUE
       IF(Q(M1,IN).GE.0) GO TO 9
-      DO 8 I=1,M2
-    8 Q(I,IN)=-Q(I,IN)
+      DO I=1,M2
+        Q(I,IN)=-Q(I,IN)
+      END DO
 C  ***DETERMINE VECTOR TO LEAVE THE BASIS
     9 K=0
       DO 10 I=KL,M
@@ -83,7 +88,8 @@ C  ***CHECK FOR LINEAR DEPENDENCE IN STAGE I
       DO 15 I=1,M2
       B=Q(I,KR)
       Q(I,KR)=Q(I,IN)
-   15 Q(I,IN)=B
+      Q(I,IN)=B
+   15 CONTINUE
       KR=KR+1
       GO TO 25
    16 IF(TEST) GO TO 17
@@ -94,7 +100,8 @@ C  ***CHECK FOR LINEAR DEPENDENCE IN STAGE I
       DO 18 J=KR,N1
       B=Q(OUT,J)
       Q(M1,J)=Q(M1,J)-B-B
-   18 Q(OUT,J)=-B
+      Q(OUT,J)=-B
+   18 CONTINUE
       Q(OUT,N2)=-Q(OUT,N2)
       GO TO 11
 C  ***PIVOT ON Q(OUT,IN)
@@ -125,7 +132,8 @@ C  ***INTERCHANGE ROWS IN STAGE I
       DO 24 J=KR,N2
       B=Q(OUT,J)
       Q(OUT,J)=Q(KOUNT,J)
-   24 Q(KOUNT,J)=B
+        Q(KOUNT,J)=B
+   24 CONTINUE
    25 IF(KOUNT+KR.NE.N1) GO TO 6
 C  ***STAGE II
       STAGE=.FALSE.
@@ -143,7 +151,8 @@ C  ***DETERMINE VECTOR TO ENTER THE BASIS
       IF(MAX.LE.TOLER) GO TO 30
       IF(Q(M1,IN).GT.0) GO TO 9
       DO 29 I=1,M2
-   29 Q(I,IN)=-Q(I,IN)
+      Q(I,IN)=-Q(I,IN)
+   29 CONTINUE
       Q(M1,IN)=Q(M1,IN)-2.
       GO TO 9
 C  ***PREPARE OUTPUT
@@ -151,7 +160,8 @@ C  ***PREPARE OUTPUT
       DO 32 I=1,L
       IF(Q(I,N1).GE.0) GO TO 32
       DO 31 J=KR,N2
-   31 Q(I,J)=-Q(I,J)
+      Q(I,J)=-Q(I,J)
+   31 CONTINUE
    32 CONTINUE
       Q(M2,N1)=0.
       IF(KR.NE.1) GO TO 34
@@ -176,7 +186,8 @@ C  ***PREPARE OUTPUT
       Q(M1,N2)=N1-KR
       SUM=0.
       DO 38 I=KL,M
-   38 SUM=SUM+Q(I,N1)
+      SUM=SUM+Q(I,N1)
+   38 CONTINUE
       Q(M1,N1)=SUM
 C     WRITE (iunout,*) ' A ',(A(I),I=1,M)
       RETURN

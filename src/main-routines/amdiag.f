@@ -2,24 +2,19 @@ cdr  feb, 16., 2015, added: naint=22, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=24, modcol=2 option, EB=1.5 Ti
 cdr  aug,  4., 2015, added: naint=26, modcol=2 option, EB=1.5 Ti
 cdr  nov.      2015: noted: modcol=3: take sigma(E) * sqrt(E), to be done
-
-cdr  aug.      2016: set e0 low energy cut off, as on fpath routines, for H.3 rates
+cdr  aug.      2016: set e0 low energy cut-off, as on fpath routines, for H.3 rates
 cdr                  also: lgvac(i,ipl), lgvac(i,npls+1) is used, not finished.
-
 !pb  apr       2016: eelds -> eelei
 !pb  may       2016: tabds1 -> tabei1
-
-
 cdr  Nov.      2016: final ds --> ei notational unifications
 CDR  July      2017: RC reactions connected. trcamd in parameter list
 c                    for function eirene_sngl_poly
-cdr  Sept      2018  modcol(...,4,...), (energy weighted rates) (rather than (..,3,..)
+cdr  Sept      2018  modcol(...,4,...), (energy-weighted rates) (rather than (..,3,..)
 cdr                  naint=21 and =29: done
 
-
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
-C  PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN-ARRAY FOR OUTPUT.
-C  ADIN CONTAINES RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS 
+C  PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN ARRAY FOR OUTPUT.
+C  ADIN CONTAINS RATE COEFFICIENTS (VOL/TIME) IN ATOMIC UNITS
 c 
 c  modcol=1: rate coefficients only dependent on local background data, not on test particle parameters
 c            tabcx3(...,1),tabel3(...1),tabpi3(...1),tabei1(...) 
@@ -50,19 +45,18 @@ c  naint=20:   Tabei1(irei,....) electron impact collision rate, 1/s --> cm^3/s 
 c  naint=21:   eelei1(irei,....) electron cooling rate           eV/s --> cm^3 eV/s  ! done
 
 c  naint=22:   Tabcx3(ircx,..,1) charge exchange collision rate, 1/s --> cm^3/s      ! done 
-c  naint=23:   eplcx3(ircx,..,1) cx        energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
+c  naint=23:   eplcx3(ircx,..,1) cx        energy-weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=24:   Tabel3(irel,..,1) elastic         collision rate, 1/s --> cm^3/s      ! done 
-c  naint=25:   eplel3(irel,..,1) elastic   energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
-
+c  naint=25:   eplel3(irel,..,1) elastic   energy-weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=26:   Tabpi3(irpi,..,1) heavy particle imp.  coll.rate, 1/s --> cm^3/s      ! done 
-c  naint=27:   eplpi3(irpi,..,1) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! not ready
+c  naint=27:   eplpi3(irpi,..,1) ditto,    energy-weighted rate, eV/s --> cm^3 eV/s  ! not ready
 
 c  naint=28:   Tabrc1(irrc,....) electron-ion volume recomb.rate, 1/s --> cm^3/s     ! done 
-c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 eV/s  ! done
+c  naint=29:   eelrc1(irrc,....) ditto,    energy-weighted rate, eV/s --> cm^3 eV/s  ! done
 
-
+c
 
       SUBROUTINE EIRENE_AMDIAG
       USE EIRMOD_PRECISION
@@ -78,7 +72,7 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
 
       IMPLICIT NONE
 
-      REAL(DP) :: AU, ELB, EXPO, FP(6), RCMIN,RCMAX,
+      REAL(DP) :: AU, ELB, EXPO, FP(6), RCMIN, RCMAX,
      .            TBCX3(9),TBPI3(9),TBEL3(9),
      .            EIRENE_SNGL_POLY,
      .            RMASSS,EBFAC,RATE
@@ -92,7 +86,6 @@ c  naint=29:   eelrc1(irrc,....) ditto,    energy weighted rate, eV/s --> cm^3 e
 
 
       AU=0.6120D-08
-
 
 
       DO 190 IAIN=1,NAINI
@@ -302,12 +295,12 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
-c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
+c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
 c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
-              ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
+              ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                TRCAMD )
@@ -412,12 +405,12 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
-c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
+c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
 c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
-              ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
+              ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                TRCAMD)
@@ -524,12 +517,12 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE T_TEST = T-IPLS, and apply mass scaling
-c      MASST(KK)=  TARGET MASS FOR CROSS SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF. 
+c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
 c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
-              ELB=log(max(0.1003,1.5*TIIN(iplti,icell)*EBFAC))
+              ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)             
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                TRCAMD)
@@ -641,7 +634,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
           GOTO 190
-        else   !mm = 0,  reaction kk has not been assgined to any particle
+        else   !mm = 0,  reaction kk has not been assigned to any particle
           call eirene_leer(1)
           WRITE (iunout,*) 'ERROR IN AMDIAG, ',
      .                     'PROCESS KK NOT ASSIGNED TO ANY PARTICLE '

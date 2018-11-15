@@ -11,7 +11,7 @@ cdr      Report JUEL-4257 (Nov 2007) and
 cdr      V.Kotov, D.Reiter, Plasma Phys. Control. Fusion 54(2012) 082003
 cdr
 cdr This version: Jan. 2018:
-cdr    re-work (and document) the so called photon module.
+cdr    re-work (and document) the so-called photon module.
 cdr    (contains earlier revisions, cleanup, etc....Detlev Reiter, 2005, 2006)
 
 cdr    The original version was developed in 2000 -- 2003 within a project (BMBF)
@@ -35,7 +35,7 @@ cdr
 cdr
 !................................................................................
 
-!  photon.f  this modules containes routines to sample, evaluate
+!  photon.f  this modules contains routines to sample, evaluate
 !            photon line profiles and photonic rates (absorption, emission, etc.)
 !            Only to be used for photon tracking in an atomic background.
 !            All references to test atom collisions with photon background removed.
@@ -49,7 +49,7 @@ cdr
 cdr jan 18:  immer noch da. entspricht aber wohl dem xstot, (xstrc) was es nicht gibt.
 !  7.3.05: ph_energy exchanged:  comments, cleaned up
 !  7.3.05: ph_sam_lorentz replaced by sam_lorentz: bug fix, was wrong
-!                         re-scaling from Cauchy to Lorentz, alph-->alphh
+!                         rescaling from Cauchy to Lorentz, alph-->alphh
 !  7.3.05: ph_lorentz replaced by lorentz: comments, speed-up
 !  7.3.05: ph_homprof replaced by naturalprof: comments, speed-up
 !          still wrong: Sum_Aik missing, over all upper and lower levels.
@@ -153,7 +153,6 @@ csw external
 
 c I/O & MISC-ROUTINES
       SUBROUTINE EIRENE_PH_INIT(ICAL)
-
       integer, intent(in) :: ical
 
       select case(ical)
@@ -222,8 +221,7 @@ c
       IMPLICIT NONE
       integer, intent(in) :: kkin,isp,ity,icell,iipl
       real(dp), intent(out) :: fac,res
-      integer :: iid,kk,
-     .           iptype
+      integer :: iid,kk,iptype
       real(dp):: gam,e00,
      .           v,dnd,xx,yy,pnue,pnue0,
      .           fwhm,shift,dvdw,drft
@@ -263,7 +261,6 @@ c     P.2 PH_ABS OT, P.2 PH_STIM OT
          e00=reaction%e0  ! line center
          pnue0 = e00*EV2HZ
          pnue  = e0 *EV2HZ
-
 
          iptype = reaction%iprofiletype
          select case(iptype)
@@ -498,8 +495,8 @@ c  next cases:  perhaps from atoms point of view?
 c               all taken out.
 
         case default
-           write(*,*) 'zm_profile: error(1)'
-           stop
+           write(iunout,*) 'zm_profile: error(1)'
+           call eirene_exit_own(1)
        end select
 
        select case(ipol)
@@ -508,8 +505,8 @@ c               all taken out.
         case(0)
           val = val * (1.d0-ctheta2)/2.d0
         case default
-           write(*,*) 'zm_profile: error(2)'
-           stop
+           write(iunout,*) 'zm_profile: error(2)'
+           call eirene_exit_own(1)
         end select
 
        res=res+val
@@ -592,7 +589,6 @@ c     integer,intent(inout)::npt
      .          e00,e0
 c      real(dp) :: delta_omega, interval_omega, omega_D_th
 c      integer::i
-
 
       omega_SF=alpha*alpha*EI/24.
       omega_Z=hbar*B/(2.*me)
@@ -716,10 +712,8 @@ c     omega_max: estimated upper bound of interval (eV)
 c     real(dp),intent(inout)::omega_min,omega_max
 c     integer,intent(inout)::npt
       real(dp)::omega_SF,omega_Z,gamma,gam,epsilon,
-     .          omega_plus,omega_minus,
-     .          omega1,omega2
-      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,line_shape,
-     .          res,
+     .          omega_plus,omega_minus,omega1,omega2
+      real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,line_shape,res,
      .          v,xx,yy,val,ssum,ssum1,e00,e0,x(-1:8),ci(-1:8)
       integer::i
 
@@ -862,12 +856,12 @@ c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
       real(dp)::   C1,C2,C3,C4
       REAL(DP),intent(in)::arg
       REAL(DP)::EIRENE_expint
-      data A0/-.57721566/,A1/.99999193/,A2/-.24991055/
-      data A3/.05519968/,A4/-.00976004/,A5/.00107857/
-      data B1/8.5733287401/,B2/18.0590169730/,B3/8.6347608925/
-      data B4/.2677737343/
-      data C1/9.5733223454/,C2/25.6329561486/,C3/21.0996530827/
-      data C4/3.9584969228/
+      data A0/-.57721566_DP/,A1/.99999193_DP/,A2/-.24991055_DP/
+      data A3/.05519968_DP/,A4/-.00976004_DP/,A5/.00107857_DP/
+      data B1/8.5733287401_DP/,B2/18.0590169730_DP/,B3/8.6347608925_DP/
+      data B4/.2677737343_DP/
+      data C1/9.5733223454_DP/,C2/25.6329561486_DP/,C3/21.0996530827_DP/
+      data C4/3.9584969228_DP/
       if(arg.gt.1.0) then
         EIRENE_expint=exp(-arg)*(B4+arg*(B3+arg*(B2+arg*(B1+arg))))/
      .         (C4+arg*(C3+arg*(C2+arg*(C1+arg))))
@@ -886,7 +880,6 @@ c  photon absorption B12 coefficient, obtained from stim. em. B21 coefficient by
       IMPLICIT NONE
 c calculates B12 Einstein coefficient in units: cm**2
 ! change G1, G2 to REAL, better precision, avoid integer division
-!      integer :: g1,g2,n1,n2
       real(dp) :: g1,g2
 
       res=EIRENE_PH_B21()  ! units:
@@ -1140,7 +1133,7 @@ c POST-COLLISION
       SUBROUTINE EIRENE_PH_POST_ENERGY(icell,kk,iflg,il,
      .                          iold,itypold,vxo,vyo,vzo,vlo,e0o,
      .                          itypnew)
-c sample post collision energy.
+c sample post-collision energy.
 c
 c incident particle: (iold,itypold,vxo,....e0o)
 c already decided: new test particle has type itypnew
@@ -1163,7 +1156,6 @@ c        2: stim.em
      .    velx_b, vely_b, velz_b, velparm, vel_b
 
       if (idreac /= kk) call EIRENE_get_reaction(kk)
-
       ir=kk
 
       select case(itypold)
@@ -1661,7 +1653,7 @@ c  convert to frequency (Hz), and then to energy, eV
 ! return FWHM for linear electron stark broadening (energy units, eV)
 !  output:      fwhm is the FWHM,
 !               shift is the line-shift.
-!  currently formula from Sobel'man, Vainshtein, for Lyman alpha only.
+!  currently formula from Sobelman, Vainshtein, for Lyman alpha only.
 !
       IMPLICIT NONE
       integer, intent(in) :: icell
@@ -1687,7 +1679,7 @@ c compton length h^bar/m_e/c [cm]
       lc = 3.8616e-11_dp
 
 c
-c   FWHM from Sobel'man, Vainshtein, Yukov, eq. 7.3.35
+c   FWHM from Sobelman, Vainshtein, Yukov, eq. 7.3.35
 
 c  eq.7.3.36
       Inn=n1**4+nn**4
@@ -1700,7 +1692,7 @@ c  weisskopf radius, (cm) eq. 7.3.33,  use for Bohr radius: a_0=h^bar^2/(m_e*e^2
 
       hw0= 32._dp/3._dp*de/ve*lc*lc*clight*clight
      .                 * (dlog(rd/rw)+.215_dp)*Inn
-c  hw0 (=gamma) is FWHM, see definition in Sobel'man, Lorentzian, eq. 7.1.18
+c  hw0 (=gamma) is FWHM, see definition in Sobelman, Lorentzian, eq. 7.1.18
 c  convert w (rad/s) to frequency (Hz), and then to energy (eV)
       hw0=hw0*hplnk_bar
 csw
@@ -2251,8 +2243,7 @@ c   res:  random number sampled from zeemann-stark-profile
      .          omega1,omega2,omega_D
       real(dp)::C1,C2,C3,C4,C5,C6,C7,C8,omega,
      .          res,Ci(-1:8),x(-1:8)
-      real(dp)::r0,
-     .          tha,thb,shift
+      real(dp)::r0,tha,thb,shift
       integer::i
 
       omega_SF=alpha*alpha*EI/24.
@@ -2362,7 +2353,7 @@ c  x0 is needed in case of energy sampling to ensure positive energies
 c  from convoluted profile.
       IMPLICIT NONE
       real(dp), intent(in) :: dvdw,x0
-      real(dp) :: xx,sig,beta, xxq
+      real(dp) :: xx,sig,beta,xxq
 
       beta=piqu*dvdw
       sig=1._dp/sqrt(beta)
@@ -2384,8 +2375,8 @@ C      THIS WORK PUBLISHED IN TRANSACTIONS ON MATHEMATICAL SOFTWARE,
 C      VOL. 16, NO. 1, PP. 47.
 C
 C  GIVEN A COMPLEX NUMBER Z = (XI,YI), THIS SUBROUTINE COMPUTES
-C  THE VALUE OF THE FADDEEVA-FUNCTION W(Z) = EXP(-Z**2)*ERFC(-I*Z),
-C  WHERE ERFC IS THE COMPLEX COMPLEMENTARY ERROR-FUNCTION AND I
+C  THE VALUE OF THE FADDEEVA FUNCTION W(Z) = EXP(-Z**2)*ERFC(-I*Z),
+C  WHERE ERFC IS THE COMPLEX COMPLEMENTARY ERROR FUNCTION AND I
 C  MEANS SQRT(-1).
 C  THE ACCURACY OF THE ALGORITHM FOR Z IN THE 1ST AND 2ND QUADRANT
 C  IS 14 SIGNIFICANT DIGITS; IN THE 3RD AND 4TH IT IS 13 SIGNIFICANT
@@ -2427,7 +2418,7 @@ C  THE ROUTINE IS NOT UNDERFLOW-PROTECTED BUT ANY VARIABLE CAN BE
 C  PUT TO 0 UPON UNDERFLOW;
 C
 C  REFERENCE - GPM POPPE, CMJ WIJERS; MORE EFFICIENT COMPUTATION OF
-C  THE COMPLEX ERROR-FUNCTION, ACM TRANS. MATH. SOFTWARE.
+C  THE COMPLEX ERROR FUNCTION, ACM TRANS. MATH. SOFTWARE.
 C
 *
 *
@@ -2459,7 +2450,7 @@ c     *                        RMAXGONI = 3.53711887601422D+15
       Y    = YABS/4.4
 *
 C
-C     THE FOLLOWING IF-STATEMENT PROTECTS
+C     THE FOLLOWING IF STATEMENT PROTECTS
 C     QRHO = (X**2 + Y**2) AGAINST OVERFLOW
 C
       IF ((XABS.GT.RMAXREAL).OR.(YABS.GT.RMAXREAL)) GOTO 100
@@ -2474,8 +2465,8 @@ C
 *
       IF (A) THEN
 C
-C  IF (QRHO.LT.0.085264D0) THEN THE FADDEEVA-FUNCTION IS EVALUATED
-C  USING A POWER-SERIES (ABRAMOWITZ/STEGUN, EQUATION (7.1.5), P.297)
+C  IF (QRHO.LT.0.085264D0) THEN THE FADDEEVA FUNCTION IS EVALUATED
+C  USING A POWER SERIES (ABRAMOWITZ/STEGUN, EQUATION (7.1.5), P.297)
 C  N IS THE MINIMUM NUMBER OF TERMS NEEDED TO OBTAIN THE REQUIRED
 C  ACCURACY
 C
@@ -2578,7 +2569,7 @@ C
           XQUAD =  -XQUAD
 *
 C
-C         THE FOLLOWING IF-STATEMENT PROTECTS 2*EXP(-Z**2)
+C         THE FOLLOWING IF STATEMENT PROTECTS 2*EXP(-Z**2)
 C         AGAINST OVERFLOW
 C
           IF ((YQUAD.GT.RMAXGONI).OR.
@@ -2623,15 +2614,15 @@ c Constants
       REAL(dp), save :: C(0:5), S(0:5), T(0:5)
 c SAVE preserves values of C, S and T (static) arrays between procedure calls
 
-      DATA C / 1.0117281,     -0.75197147,        0.012557727,
-     .     0.010022008,   -0.00024206814,     0.00000050084806 /
-      DATA S / 1.393237,       0.23115241,       -0.15535147,
-     .     0.0062183662,   0.000091908299,   -0.00000062752596 /
-      DATA T / 0.31424038,     0.94778839,        1.5976826,
-     .     2.2795071,      3.0206370,         3.8897249 /
+      DATA C / 1.0117281_DP, -0.75197147_DP,     0.012557727_DP,
+     .       0.010022008_DP, -0.00024206814_DP,  0.00000050084806_DP /
+      DATA S / 1.393237_DP,   0.23115241_DP,    -0.15535147_DP,
+     .     0.0062183662_DP,   0.000091908299_DP,-0.00000062752596_DP /
+      DATA T / 0.31424038_DP, 0.94778839_DP,     1.5976826_DP,
+     .        2.2795071_DP,   3.0206370_DP,      3.8897249_DP /
 
 c Local variables
-      INTEGER :: J              ! Loop variables
+      INTEGER :: J                 ! Loop variable
       INTEGER :: RG1, RG2, RG3     ! y polynomial flags
       REAL(dp) :: ABX, XQ, YQ, YRRTPI ! |x|, x^2, y^2, y/SQRT(pi)
       REAL(dp) :: XLIM0, XLIM1, XLIM2, XLIM3, XLIM4 ! |x| on region boundaries
@@ -2814,7 +2805,7 @@ c allocate
       IMPLICIT NONE
       integer, intent(in) :: ipht,nrc,idsc,ipl
       integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,
-     .    ifnd,mode,updf, j, nseot4, ierr, ipl0ti
+     .    ifnd,mode,updf,j,nseot4,ierr,ipl0ti
       real(dp) :: factkk, ebulk
 
       kk=ireacph(ipht,nrc)
@@ -2855,8 +2846,7 @@ CDR  2ND SECONDARY
       IF (ityp2 < 4)
      .  PHV_N2NDOTph(ipht,idsc,3) = eirene_IDEZ(ISCD2PH(ipht,nrc),2,3)
 
-
-cdr  CROSS SECTION: HERE: BEAM-BEAM, NO DOPPLER FROM THERMAL MOTION
+cdr  CROSS-SECTION: HERE: BEAM-BEAM, NO DOPPLER FROM THERMAL MOTION
       MODCOL(7,1,IDSC)=KK
 cdr  COLLISION MODEL 4: BEAM-BEAM
       MODCOL(7,2,IDSC)=4
@@ -2873,7 +2863,7 @@ cdr bulk energy loss not ready
       ebulk=0.
 cdr
       IF (NSEOT4.EQ.0) THEN
-C  4.A)  ENERGY LOSS RATE OF IMP. BULK ION = CONST.*RATECOEFF.
+C  4.A)  ENERGY LOSS RATE OF IMP. BULK ION = CONST.*RATE COEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         write (iunout,*) ' in ph_xsectph, nseot4=0 '
         IF (EBULK.LE.0.D0) THEN
@@ -2907,7 +2897,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
         write (iunout,*) ' in ph_xsectph, Modcol(7,4,1,1) ',
      .                MODCOL(7,4,IDSC)
       ELSEIF (NSEOT4.EQ.1) THEN
-C  4.B) ENERGY LOSS RATE OF IMP. ION = 1.5*TI* RATECOEFF.
+C  4.B) ENERGY LOSS RATE OF IMP. ION = 1.5*TI* RATE COEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         write (iunout,*) ' in ph_xsectph, nseot4=1 '
         IF (EBULK.LE.0.D0) THEN
@@ -2924,7 +2914,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'WARNING FROM SUBR. xsectph '
           WRITE (iunout,*) 'MODIFIED TREATMENT OF photon collision '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
-          WRITE (iunout,*) 'RATHER THEN WITH T = TIIN '
+          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -2940,8 +2930,8 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
 C     ELSEIF (NSECX4.EQ.2) THEN
 C  use i-integral expressions. to be written
 c     ELSEIF (NSECX4.EQ.3) THEN
-C  4.B)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
-C  4.C)  ENERGY LOSS RATE OF IMP. ION = EN.WEIGHTED RATE
+C  4.B)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
+C  4.C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
       ELSE
         IERR=5
         GOTO 996
@@ -2958,33 +2948,33 @@ c
 c     ITYP1=N1STX(IRCX,1)
 c     ITYP2=N2NDX(IRCX,1)
 c     IF (IESTCX(IRCX,1).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
-c       CALL LEER(1)
-c       WRITE (iunout,*) 'WARNING: COLL.EST NOT AVAILABLE FOR PART.-BALANCE '
+c       WRITE (iunout,*) 'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
 c       WRITE (iunout,*) 'IRCX = ',IRCX
 c       WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+c       CALL EIRENE_LEER(1)
 c       IESTCX(IRCX,1)=0
 c     ENDIF
 c     IF (IESTCX(IRCX,2).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
-c       CALL LEER(1)
-c       WRITE (iunout,*) 'WARNING: COLL.EST NOT AVAILABLE FOR MOM.-BALANCE '
+c       WRITE (iunout,*) 'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
 c       WRITE (iunout,*) 'IRCX = ',IRCX
 c       WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+c       CALL EIRENE_LEER(1)
 c       IESTCX(IRCX,2)=0
 c     ENDIF
 c     IF (IESTCX(IRCX,3).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
-c       CALL LEER(1)
-c       WRITE (iunout,*) 'WARNING: COLL.EST NOT AVAILABLE FOR EN.-BALANCE '
+c       WRITE (iunout,*) 'WARNING: COLL.EST NOT AVAILABLE FOR EN. BALANCE '
 c       WRITE (iunout,*) 'IRCX = ',IRCX
 c       WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+c       CALL EIRENE_LEER(1)
 c       IESTCX(IRCX,3)=0
 c     ENDIF
       RETURN
 C
       ENTRY EIRENE_XSTPH_2(Idsc,IPL)
 C
-c     CALL LEER(1)
+c     CALL EIRENE_LEER(1)
 c     WRITE (iunout,*) 'Photon REACTION NO. Idsc= ',Idsc
-c     CALL LEER(1)
+c     CALL EIRENE_LEER(1)
 c     WRITE (iunout,*) 'Collision WITH BULK IONS IPLS:'
 c     WRITE (iunout,*) '1ST AND 2ND NEXT GEN. SPECIES I2ND1, I2ND2:'
 c     ITYP1=N1STX(IRCX,1)
@@ -3001,15 +2991,15 @@ c     IF (ITYP2.EQ.3) TEXTS2=TEXTS(NSPAM+ISPZ2)
 c     IF (ITYP2.EQ.4) TEXTS2=TEXTS(NSPAMI+ISPZ2)
 c     WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL),'I2ND1= ',TEXTS1,
 c    .                    'I2ND2= ',TEXTS2
-c     CALL LEER(1)
+c     CALL EIRENE_LEER(1)
       RETURN
 C
 996   CONTINUE
       WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
-      WRITE (iunout,*) 'NO CROSS SECTION AVAILABLE FOR NON DEFAULT OT'
+      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
       WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
-      WRITE (iunout,*) 'EITHER PROVIDE CROSS SECTION OR USE DIFFERENT '
-      WRITE (iunout,*) 'POST COLLISION SAMPLING FLAG ISCDEA'
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT '
+      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
       CALL EIRENE_EXIT_OWN(1)
       return
       END SUBROUTINE EIRENE_PH_XSECTPH
@@ -3020,7 +3010,7 @@ c
 
 
       subroutine EIRENE_line_cutoff
-
+      IMPLICIT NONE
       real(dp), allocatable :: ete(:), en0(:), floc(:), en0log(:),
      .                         eminus(:), eplus(:),
      .                         xintminus(:), xintplus(:),
@@ -3038,7 +3028,7 @@ c
      .            fwhm, shift, dvdw, xx, xintinf, l0,
      .            eintmax, eintinf
       integer :: istr, mxrec, ite, iloc, iirc, irrc, kk,
-     .           ipl, icell, ire, ibulk, lr, in0, jloc,
+     .           ipl, iplsi, icell, ire, ibulk, lr, in0, jloc,
      .           iccnt, mxrjprt, irj, ios
       integer :: nte, nn0, nloc
       integer :: nte_old=0, nn0_old=0, nloc_old=0
@@ -3063,8 +3053,9 @@ c
 
       MXREC = 0
       mxrjprt = 1
-      do ipls = 1, nplsi
+      do iplsi = 1, nplsi
 
+        ipls = iplsi
         if (.not.lsrcpls(ipls)) cycle
         if (lgprc(ipls,0) == 0) cycle
 
@@ -3119,8 +3110,9 @@ c
       end if
 
       iccnt = 0
-      do ipls = 1, nplsi
+      do iplsi = 1, nplsi
 
+        ipls = iplsi
         if (.not.lsrcpls(ipls)) cycle
         if (lgprc(ipls,0) == 0) cycle
 
@@ -3154,12 +3146,13 @@ c
           end do  ! ire
 
           if (.not.found) then
-            write (6,*) ' no self absorption for ipls, irrc ',ipls,irrc
-            write (6,*) ' no cutoff for this line '
+            write (iunout,*) ' no self-absorption for ipls, irrc ',
+     .                                                ipls, irrc
+            write (iunout,*) ' no cutoff for this line '
             cycle
           end if
 
-! line with self absorption found
+! line with self-absorption found
 
           iccnt = iccnt + 1
           nreact(kk) = iccnt
@@ -3594,7 +3587,7 @@ c
 
 
         end do  ! iirc
-      end do  ! ipls
+      end do  ! iplsi
 
       deallocate (ete)
       deallocate (en0)

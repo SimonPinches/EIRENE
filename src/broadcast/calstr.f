@@ -441,9 +441,9 @@ cdr why do we need if(...) here, and not above ?
         
         deallocate(lhelp)
 c
-c  collect user or case specific information from all Pes that worked on
+c  collect user or case-specific information from all PEs that worked on
 c  stratum no. ISTRA.  Depends on ...usr.f  or ...cop.f routines.
-c  Strictly there should also be an analogue  call to eirene_calstr_cop.f 
+c  Strictly there should also be an analogue call to eirene_calstr_cop.f
 
         call mpi_barrier(icomgrp(istra),ier)
         call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
@@ -457,4 +457,3 @@ c  Strictly there should also be an analogue  call to eirene_calstr_cop.f
       if (allocated(dummyv)) deallocate (dummyv)
       RETURN
       END
-

@@ -1,6 +1,6 @@
 !***************************************************************************
 !*        SOLVING DIFFERENTIAL EQUATIONS WITH 1 VARIABLE OF ORDER 1        *
-!*                       of type y' = f(x,y)                               *
+!*                       of type dy/dx = f(x,y)                            *
 !*        BY RUNGE-KUTTA METHOD OF ORDER 4                                 *
 !* ----------------------------------------------------------------------- *
 !*  INPUTS:                                                                *
@@ -15,10 +15,12 @@
 !*    xb      : real vector storing m nodes for function y                 *
 !*    t       : real vector storing m results for function y               *
 !***************************************************************************
-      Subroutine Equadif1(fp,xi,xf,yi,m,fi,xb,t)
+      Subroutine Runge_Kutta_4(fp,xi,xf,yi,m,fi,xb,t)
+      USE EIRMOD_PRECISION
+      implicit none
       integer fi,i,j,m,ni
-      real*8, intent(out) :: xb(m+1),t(m+1)
-      real*8 :: xi,xf,yi,a,b,c,d,h,x,y,fp
+      real(DP), intent(out) :: xb(m+1),t(m+1)
+      real(DP) :: xi,xf,yi,a,b,c,d,h,x,y,fp
 
       if (fi < 1) return
 

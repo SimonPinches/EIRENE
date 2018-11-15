@@ -13,7 +13,7 @@ cdr          default: optically thin: pop_esc=1
 !   driver routine for collisional-radiative models
 !     calls internal CR code no. icrm, for cell no. ICELL
 !     keeps all results from this call and 
-!     marks the cells already visited (for icrm=1: lvis_h) to avoid douple calls
+!     marks the cells already visited (for icrm=1: lvis_h) to avoid double calls
 !     for one and the same cell, for two or more differenct CRM output quantities 
 
 !   input:
@@ -68,7 +68,7 @@ c      for the current run/iteration/time-cycle
           allocate(pop0(40))
           allocate(pop1(40))
           allocate(pop_ext(40))
-          allocate(q_ext(40))      !   e.g. photo excitation rate for H*(n)
+          allocate(q_ext(40))      !   e.g. photoexcitation rate for H*(n)
           allocate(pop_esc(40,40)) !   line population escape factor (default:==1)
 
           POP_ESC =1.0_DP          !   default: all transitions are optically thin
@@ -136,7 +136,7 @@ cdr  scan over all reaction decks (from block 4 and/or block 12)
 
         if (.not.lvis_h(icell))  then
 ! cell number ICELL has not yet been visited so far in this run
-! cr-model needs to be calculated.
+! CR model needs to be calculated.
 ! In later calls, for this ICELL, 
 !    we assume Q_EXT, L_EXT. LOPAQUE, POP_ESC to be unchanged !
 
@@ -147,7 +147,7 @@ cdr  scan over all reaction decks (from block 4 and/or block 12)
 ctt  .                        ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T
      .                         POP_ESC)
 c
-c  up to nhcol_store parameters from the cr-model are stored in cell ICELL
+c  up to nhcol_store parameters from the CR model are stored in cell ICELL
 C  TBD: if .NOT.L_EXT: only case(1) to case(16) are available  
           do i = 1, nhcol_store
           
@@ -227,7 +227,7 @@ cdr  it may be a rate, an energly loss rate or a reduced population coefficient
      .                    ' NOT AVAILABLE '
          WRITE (iunout,*) 'icrm ',icrm
          WRITE (iunout,*) 'ir   ',ir
-         call eirene_exit_own
+         call eirene_exit_own(1)
       end if
 
       entry eirene_colrad_reinit

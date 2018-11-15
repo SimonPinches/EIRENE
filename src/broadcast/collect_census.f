@@ -4,7 +4,7 @@ cdr                      sampled census particles is set to 1.0, rather than kee
 cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
 cdr                      and the weight stored on census during particle tracing is the probability mass of index "i"
 cdr  
-cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
+cdr  addph,adda,addm,addi: type-resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
 cdr March 18:  cleanup M.R., use RPRTT and IPRTT pointer more consistently.
 cdr            But now: rpartt must be transfered back to rpart or rpartc census arrays.
@@ -132,7 +132,7 @@ c  cumulated number of census scores, and census atomic flux, summed from all PE
 cmr fix:   
 cdr Here we now trust that npartt and mpartt are properly set.
 cdr A corresponding check should be implemented in eirmod_parmmod,
-cdr where currently these numbers are hard coded. 
+cdr where currently these numbers are hard-coded.
         allocate (rbuf(npartt,nprnl))
         allocate (ibuf(mpartt,nprnl))
         rbuf = 0._dp
@@ -220,7 +220,7 @@ cdr where currently these numbers are hard coded.
      .                  MPI_COMM_WORLD,ier)
 
         if (my_pe == 0) then
-! build accumulated flux distribution for all processores on my_pe=0
+! build accumulated flux distribution for all processors on my_pe=0
 cdr rpselect(0) war schon gesetzt.
           do ipe=1, nprs-1
             rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
@@ -371,7 +371,7 @@ c  binary search
 
 
 c  rpartc, ipartc will later be used in tmstep to store census  [rpart,ipart] for 
-c  re-sampling in locate at next time-step
+c  re-sampling in locate at next time step
 c  here we abuse this storage to for the re-sampled census per stratum.
           rpartc(:,i) = rpart(:,iu)
           ipartc(:,i) = ipart(:,iu)

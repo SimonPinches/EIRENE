@@ -1,13 +1,13 @@
 C  27.6.05 updphot: iadd removed
 C  21.01.06: photon background for test atoms: removed
-C  18.04.06: test ions and atoms: syncronized
+C  18.04.06: test ions and atoms: synchronized
 C            bug fix: V0_para  --> parmom_0 for elastic momentum source
 C                                  contribution from atoms.
 C  10.01.07: parallel momentum exchange tallies MAPL, MMPL, MIPL
 C            included as default EIRENE tallies.
 C            Before these tallies have been updated in problem
 C            specific section UPTCOP, as COPV tallies.
-C  12.02.07: Add user supplied B field and plasma flow option indpro=8
+C  12.02.07: Add user-supplied B field and plasma flow option indpro=8
 C            to evaluation of parallel momentum sources,
 C            Do not use BVIN, PARMOM arrays in this case, because they
 C            may not have been initialized in subr. PLASMA_DERIV
@@ -15,12 +15,12 @@ C            for these options.
 C            Use vsig_parp und val_parp instead.
 C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
-C           entries: atm, mol, ion voll syncronisiert.
+C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
-cdr dec.15: tracklength estimators for heavy test particle post collision energies 
+cdr dec.15: tracklength estimators for heavy test particle post-collision energies
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
@@ -36,7 +36,7 @@ cdr          so no effect on any result.  Few further comments corrected
 cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
 cdr dec. 16: some more comments re sign convention for momentum sources
 cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
-cdr          branch "code-combine (p.b.), plus some nameing conventions re-enforced 
+cdr          branch "code-combine (p.b.), plus some naming conventions re-enforced
 cdr          tbd: entry update_photons now own routine: update_phot. to be integrated still.
 
  
@@ -51,26 +51,26 @@ C
 C  NCOU:  NUMBER OF PIECES OF TRACK IN DIFFERENT CELLS SCORED IN THIS PRESENT CALL (BUT FIXED NRCELL)
 C     I:  INDIVIDUAL TRACK, I=1,NCOU
 C  IRDO:  TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
-C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD  (=NCLTAL(IRDO))
+C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD (=NCLTAL(IRDO))
 C
 C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
 
 C  IFLAG=1:  
 C  IFLAG=2:  
 C  IFLAG=3:  
-C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
+C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
 C  IFLAG=5: 
 
-C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUEL BACKGROUND SPECIES) 
+C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUAL BACKGROUND SPECIES)
 C
-C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO CALLED "BGK" SPECIES
+C  A) NPBGK..(ITEST) : IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
 C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
 C  B) SIGBGK         : TOTAL RATE OF BGK TYPE COLLISIONS. INCIDENT TEST PARTICLE AND ITS ENERGY IS NOT LOST
-C  C) NPBGKP (IPLS,1):  IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
+C  C) NPBGKP (IPLS,1): IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
 C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
-C          IONS WITH ENERGY SOURCES FOR VIRTUEL BACKGROUND "IONS"  (MISSING SPECIES INDEX) 
+C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS" (MISSING SPECIES INDEX)
 C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS 
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
   

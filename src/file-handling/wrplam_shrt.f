@@ -4,7 +4,7 @@ cdr  jan 18: comments
 c
 c
 C
-C MODIFIED BY V. KOTOV  (when ??)
+C MODIFIED BY V. KOTOV  (when ?)
 C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
 
@@ -17,7 +17,7 @@ cdr It writes and reads (entry RPLAM_SHRT) background data onto/from fort.13
 cdr Distinct from WRPLAM_long here only the background tallies are written/read, 
 cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data, 
 cdr nor the primary source sampling information.
-cdr for BGK type non-linear iterations, with velocity independent rates,
+cdr for BGK type non-linear iterations, with velocity-independent rates,
 cdr this may be sufficient. 
 cdr Better: add here also the rates and other atomic data needed to streamline
 cdr         non-linear iterations.
@@ -72,7 +72,7 @@ C ........................................................................
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o      STATUS='OLD',IOSTAT=IO)
       IF(IO.NE.0) THEN
-        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CAN NOT READ FORT.13'
+        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FORT.13'
         RETURN
       END IF
 
@@ -92,12 +92,12 @@ csw         IF(IO.EQ.0) THEN
 csw          WRITE(IUNOUT,*) "WARNING FROM RPLAM: ", 
 csw     w                 "THE DATA IS READ IN THE OLD (LONG) FORMAT"
 csw         ELSE
-C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE        
+C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
           REWIND 13+ifoff  
           READ (13+ifoff,IOSTAT=IO)
-     R          TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
-     R          VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
-     R          VZIN(NFLA+1:NPLSI,1:NRAD)
+     R        TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
+     R        VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
+     R        VZIN(NFLA+1:NPLSI,1:NRAD)
           IF(IO.NE.0) GOTO 200
           IF (TRCFLE) WRITE (iunout,*)
      w                'RPLAM: BGK BACKGROUND IS READ FROM FORT.13'
@@ -109,7 +109,7 @@ csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
 
  200  CONTINUE
 
-       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CAN NOT READ FORT.13',
+       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FORT.13',
      w                 'ZERO BACKGROUND WILL BE ASSIGNED'
        TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
        DIIN(NFLA+1:NPLSI,1:NRAD)=0._DP

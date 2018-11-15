@@ -4,8 +4,8 @@ c
       SUBROUTINE EIRENE_SIGHE(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
 
 CDR  this routine evaluates ("side on") helium atom ("He") emissivities,
-cdr  integrated along a line of side (PSIG) and also the integrant resolved along 
-cdr  line of side (ARGST).
+cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
+cdr  line of sight (ARGST).
 c    Currently there are up to 2 contributions to each particular preprogrammed
 c    transition (depending on population coefficient data stored 
 c    in file AMJUEL, section H.11 and H.12 
@@ -31,7 +31,7 @@ C          PEN:    CENTRAL wavelength OF LINE (nm)
 C  OUTPUT: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
 C          THE H LINE FLUX PSIG(I),I=0,5 CONTRIBUTIONS
 C          FROM ATOMS (only Ground state, MS unresolved), and BULK IONS
-C          THE INTEGRANT ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
+C          THE INTEGRAND ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

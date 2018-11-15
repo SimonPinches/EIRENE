@@ -10,7 +10,7 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
 
@@ -27,7 +27,7 @@ C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
 C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
-C  IADS: SUM OVER ALL CONTRINUTIONS
+C  IADS: SUM OVER ALL CONTRIBUTIONS
 C
 C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
@@ -301,11 +301,11 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
         REAC='2.0c     '
         CRC='OT '
 c  H2+ from ion conversion alone
-C  H.11 2.0c INCLUDES  ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
-C  H.11 2.0b INCLUDES  ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.11 2.0c INCLUDES ION CONVERSION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
+C  H.11 2.0b INCLUDES ION CONVERSION (CX) ON H2(V=0) ONLY
 c  H2+  also from multi-step electron impact ionisation --> explicit ne dependence
-C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
-C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V)
+C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V=0) ONLY
 C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY
 C
 C
@@ -354,7 +354,7 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN BA_DELTA: DATA FOR STRATUM ISTRA= ',
      .                    IST
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. BA_DELTA ABANDONNED'
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. BA_DELTA ABANDONED'
         RETURN
       ENDIF
 C
@@ -415,7 +415,7 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
         DIO3=0.
         DO 150 J=0,8
           DEJ=DEF**J
-          DO 150 I=0,8
+          DO I=0,8
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
             DPL =DPL + DB(I,J)*TEI*DEJ
@@ -423,7 +423,8 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
             DIO2=DIO2+ DI2(I,J)*TEI*DEJ
             DIO3=DIO3+ DI3(I,J)*TEI*DEJ
             DNM =DNM + DN(I,J)*TEI*DEJ
-150     CONTINUE
+          END DO
+  150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
         DMO =EXP(DMO)
@@ -484,7 +485,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
-C  e.g. due to bgk -iterations.  Careful: no double counting !
+C  e.g. due to bgk iterations.  Careful: no double-counting !
 C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
@@ -496,7 +497,7 @@ C201     CONTINUE
 c...............................................................................
 C
 C  CHANNEL 2
-C  H DELTA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  H DELTA SOURCE RATE: PHOTONS/SEC/CM**3
 C  LINEAR IN DIIN (RECOMBINATION)
 C
 C  ATOMIC HYDR. ION: NCHAR=NPRT=1,NCHRG=1
@@ -513,7 +514,7 @@ c...............................................................................
 C  to be done: contributions from atomic hydr. ions in TEST IONS
 C
 C  CHANNEL 3
-C  H DELTA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  H DELTA SOURCE RATE: PHOTONS/SEC/CM**3
 C  DIATOMIC NEUTRAL HYDR. MOL: NCHAR=NPRT=2,NCHRG=0
 C  LINEAR IN PDENM: (DISSOCIATION OF H2)
 C
@@ -530,7 +531,7 @@ C  to be done: contributions from neutral diatomic hydr. molec. in BULK IONS
 c...............................................................................
 C
 C  CHANNEL 4
-C  H DELTA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  H DELTA SOURCE RATE: PHOTONS/SEC/CM**3
 C  LINEAR IN PDENI: (DISSOCIATION OF H2+)
 C
 C  DIATOMIC NEUTRAL HYDR. MOL ION: NCHAR=NPRT=2,NCHRG=1
@@ -556,7 +557,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 215     CONTINUE
 C
 C  CHANNEL 5
-C  H DELTA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  H DELTA SOURCE RATE: PHOTONS/SEC/CM**3
 C  LINEAR IN H- DENSITY (CHARGE EXCHANGE RECOMBINATION)
 
 C  NEGATIVE HYDR. ION: NCHAR=NPRT=1,NCHRG=-1
@@ -582,7 +583,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 220     CONTINUE
 C
 C  CHANNEL 6
-C  H DELTA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  H DELTA SOURCE RATE: PHOTONS/SEC/CM**3
 C  LINEAR IN PDENI (DISSOCIATIVE RECOMBINATION OF H3+)
 C
 C  TRIATOMIC HYDR. ION: NCHAR=NPRT=3,NCHRG=1
@@ -715,7 +716,7 @@ C
       TXTUNT(IAD3,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IAD4,NTALA) ='BA_DELTA, H DELTA SOURCE RATE             '
-      TXTSPC(IAD4,NTALA) ='DIAT.MOL.IONS       '
+      TXTSPC(IAD4,NTALA) ='DIATOMIC MOL.IONS       '
       TXTUNT(IAD4,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IAD5,NTALA) ='BA_DELTA, H DELTA SOURCE RATE             '
@@ -723,7 +724,7 @@ C
       TXTUNT(IAD5,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IAD6,NTALA) ='BA_DELTA, H DELTA SOURCE RATE             '
-      TXTSPC(IAD6,NTALA) ='TRIAT.MOL.IONS      '
+      TXTSPC(IAD6,NTALA) ='TRIATOMIC MOL.IONS      '
       TXTUNT(IAD6,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IADS,NTALA) ='BA_DELTA, H DELTA SOURCE RATE             '
@@ -777,7 +778,7 @@ csw 19apr07
 csw
 999   CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. BA_DELTA '
-      WRITE (IUNOUT,*) 'NO STORAGE AVAILBALE ON ADDITIONAL TALLY ADDV '
+      WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',
      .             IAD1,IAD2,IAD3,IAD4,
      .             IAD5,IAD6,IADS

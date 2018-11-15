@@ -1,13 +1,13 @@
 C  27.6.05 updphot: iadd removed
 C  21.01.06: photon background for test atoms: removed
-C  18.04.06: test ions and atoms: syncronized
+C  18.04.06: test ions and atoms: synchronized
 C            bug fix: V0_para  --> parmom_0 for elastic momentum source
 C                                  contribution from atoms.
 C  10.01.07: parallel momentum exchange tallies MAPL, MMPL, MIPL
 C            included as default EIRENE tallies.
 C            Before these tallies have been updated in problem
 C            specific section UPTCOP, as COPV tallies.
-C  12.02.07: Add user supplied B field and plasma flow option indpro=8
+C  12.02.07: Add user-supplied B field and plasma flow option indpro=8
 C            to evaluation of parallel momentum sources,
 C            Do not use BVIN, PARMOM arrays in this case, because they
 C            may not have been initialized in subr. PLASMA_DERIV
@@ -15,7 +15,7 @@ C            for these options.
 C            Use vsig_parp und val_parp instead.
 C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
-C           entries: atm, mol, ion voll syncronisiert.
+C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
 c  06.08.15 arguments added to vecusr
@@ -58,7 +58,7 @@ C  IFLAG=5:
 
 C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUEL BACKGROUND SPECIES) 
 C
-C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO CALLED "BGK" SPECIES
+C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
 C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
 C  B) SIGBGK         : TOTAL RATE OF BGK TYPE COLLISIONS. INCIDENT ATOM AND ITS ENERGY IS NOT LOST
 C  C) NPBGKP (IPLS,1):  IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
@@ -137,7 +137,7 @@ C
       IF (NADVI.GT.0) CALL EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
       IF (NCPVI.GT.0) CALL EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
 cdr generalise flag NPBGK to mean: model collision term for bi-linear collision
-cdr only in this case: set backgound radiation intensity profiles.
+cdr only in this case: set background radiation intensity profiles.
 cdr   IF (NPBGK.GT.0) CALL ....
 C
       IF (IUPDTE == 2) RETURN
@@ -182,7 +182,7 @@ C
           XSTORV(:)  = XSTORV2(:,I)
         endif
 C
-C  PRE COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
+C  PRE-COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
 C
         IF ((LAST_EVENT%IFLAG == 1) .AND.
      .      (LAST_EVENT%NCELL == IRD)) THEN
@@ -220,14 +220,14 @@ C
           WTRSIG=WTR*SIGVOT(IROT)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
-C  COMPENSATE PRE COLLISION RATES HERE
+C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (PHV_IESTOTph(iphot,IROT,1).NE.0) THEN
             IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
 cdr         if(updf==1) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG !prob. wrong
           ELSE
 C
-C  PRE COLLISION RATES, BULK IONS
+C  PRE-COLLISION RATES, BULK IONS
 C
 cdr  if(ipls > 0) then
 cdr  do this check in initialisation, only once
@@ -354,14 +354,14 @@ C
 C  PARTICLE ESTIMATORS DONE. NEXT: ENERGY ESTIMATORS
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
-C  COMPENSATE PRE COLLISION RATES HERE
+C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (LEPHPHT.AND.(PHV_IESTOTph(iphot,IROT,3).NE.0)) THEN
             EPHPHT(IRD)=EPHPHT(IRD)          +WTRSIG*E0
 cdr         if(updf==1) EPHPHT(IRD)=EPHPHT(IRD)+WTRSIG*E0 ! verm. falsch
           ELSE
 C
-C  PRE COLLISION RATES, BULK IONS
+C  PRE-COLLISION RATES, BULK IONS
 C
 cdr if(ipls > 0) then : this check only once in initialisation. removed
 cdr         IF (LEPHEL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*E0  vermutl. falsch

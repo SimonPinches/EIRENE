@@ -108,14 +108,14 @@ C When the current process is a master processes of any stratum it gets imaster=
         deallocate(lhelp)
 
         if (nsmstra > 0) then
-c  volume averaged output tallies
+c  volume-averaged output tallies
 
         do ir = 1, nrtal
           CALL MPI_REDUCE(SMESTV(1:nidv,ir),help,NIDV,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTV(1:nidv,ir) = help(1:nidv)
         end do
-c  surface averaged output tallies
+c  surface-averaged output tallies
 
         do ir = 1, nlmpgs
           CALL MPI_REDUCE(SMESTS(1:nids,ir),help,NIDS,
@@ -203,7 +203,7 @@ c  variances of volumetric output tallies
 
 
         IF (NSIGSI > 0) THEN
-c  variances of surface averaged output tallies
+c  variances of surface-averaged output tallies
 
           do ir=1,nlimps
             CALL MPI_REDUCE(STVW(1:NSIGSI,IR),help,NSIGSI,
@@ -233,4 +233,3 @@ c  variances of surface averaged output tallies
       
       return
       end subroutine eirene_collect_coutau
-

@@ -91,10 +91,10 @@ C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
           DS12=S02-S01
           EXPO1=0.
           EXPO2=0.
-c  evaluate double parameter fit at s01,al2,  and at s02,al2
-          DO  J=1,9
+c  evaluate double parameter fit at s01,al2, and at s02,al2
+          DO J=1,9
             JJ=J-1
-            DO  I=1,9
+            DO I=1,9
               II=I-1
               EXPO1=EXPO1+S01**II*AL2**JJ*CF(I,J)
               EXPO2=EXPO2+S02**II*AL2**JJ*CF(I,J)
@@ -111,7 +111,7 @@ C
           COU1MIN=EXP(EXPO1)
           
         ELSEIF (IFEX1MN.GT.0) THEN
-C  IFEX1MN IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES 
+C  IFEX1MN IS GT 0, USE ONE OF THE PRE-PROGRAMMED EXTRAPOLATION SCHEMES
 C  PROVIDE FIT EXPRESSION AT BOUNDARY RC1MIN
 C  EVALUATED AT SECOND PARAMETER AL2, WHICH MUST BE INSIDE ITS VALID RANGE
           S01=RC1MIN
@@ -128,7 +128,6 @@ c  evaluate double parameter fit at s01,al2
           AL1MIN=RC1MIN
           COU1MIN=EXP(EXPO1)
         ENDIF
-
 
         COU=EIRENE_EXTRAP(AL1,AL1MIN,COU1MIN,IFEX,FPAR1,FPAR2,FPAR3)
         cou=log(cou)
@@ -150,7 +149,7 @@ C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
           DS12=S02-S01
           EXPO1=0.
           EXPO2=0.
-c  evaluate double parameter fit at s01,al2,  and at s02,al2
+c  evaluate double parameter fit at s01,al2, and at s02,al2
           DO J=1,9
             JJ=J-1
             DO I=1,9
@@ -208,7 +207,7 @@ C  EVALUATED AT AL1, WHICH MUST BE INSIDE VALID RANGE
           DS12=S02-S01
           EXPO1=0.
           EXPO2=0.
-c  evaluate double parameter fit at s01,al1,  and at s02,al1
+c  evaluate double parameter fit at s01,al1, and at s02,al1
           DO  J=1,9
             JJ=J-1
             DO  I=1,9
@@ -340,7 +339,7 @@ cdr  is obtained by summing over the 9 terms
 cdr  this second evaluation may not be needed, if only a collapsed fit is wanted.
 cdr  or if al2=0.0  (as in H.4, H.10, AMJUEL fits, for automatic Corona limit.
 
-cdr  H.4, H.10, H.12 fits from AMJUEL: Corona at p2 <= log(ne/10**8) = rc2min = 0.0 
+cdr  H.4, H.10, H.12 fits from AMJUEL: Corona at p2 <= log(ne/10**8) = rc2min = 0.0
 cdr   if p2.le.0.0, just return cou=dum(0) = fit2(AL1,AL2)  
 
       cou = dum(9)          

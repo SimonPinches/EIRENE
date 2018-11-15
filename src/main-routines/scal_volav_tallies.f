@@ -9,7 +9,7 @@ cdr                  in case scltal =4 this was erroneously overwritten with 0.
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
 cdr
-c  scaling of volume averaged tallies:
+c  scaling of volume-averaged tallies:
 c  zvolin : source strength(amp)/vol(cell volume cm^-3)/elementary-charge(amp/(1/s)),
 c           --> e.g. flight times(s) to densities (cm^-3)
 c  zvoliw : source strength(amp)/vol(cell volume cm^-3),
@@ -41,7 +41,7 @@ c           --> e.g. events per cell(1) to source rates (amp/cm^-3)
      .           ISNV, ICPV, IBGV, ISPC, ICL
 C
 C
-C*****VOLUME AVERAGED TALLIES  220 - 239
+C*****VOLUME-AVERAGED TALLIES  220 - 239
 C
 C  ATOMIC PARTICLE SPECIES LOOP FOR THE STRATUM ISTRA
 C
@@ -210,7 +210,6 @@ C
           SCLTAL(IPLS,20)=3
           SCLTAL(IPLS,26)=3
           SCLTAL(IPLS,32)=3
-          SCLTAL(IPLS,32)=3
           SCLTAL(IPLS,38)=3
           SCLTAL(IPLS,44)=3
           SCLTAL(IPLS,50)=3
@@ -224,7 +223,7 @@ C
         ENDIF
 227   CONTINUE
 C
-C  ADDITIONAL TRACKLENGTH ESTIMATED TALLIES FOR THE STRATUM ISTRA
+C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY ADDV; NO. NTALA
 C
       IF (LADDV) THEN
@@ -254,13 +253,13 @@ C  SCALE # AMP/S PER CELL
 234         CONTINUE
             SCLTAL(IADV,NTALA)=4
           ELSE
-C  DON'T SCALE AT ALL
+C  DO NOT SCALE AT ALL
             SCLTAL(IADV,NTALA)=0
           ENDIF
 230     CONTINUE
       END IF
 C
-C  ADDITIONAL COLLISION ESTIMATED TALLIES, FOR THE STRATUM ISTRA
+C  ADDITIONAL COLLISION-ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY COLV; NO. NTALC
 C
       IF (LCOLV) THEN
@@ -290,13 +289,13 @@ C  SCALE # AMP/S PER CELL
 239         CONTINUE
             SCLTAL(ICLV,NTALC)=4
           ELSE
-C  DON'T SCALE AT ALL
+C  DO NOT SCALE AT ALL
             SCLTAL(ICLV,NTALC)=0
           ENDIF
 235     CONTINUE
       END IF
 C
-C  ADDITIONAL SNAPSHOT ESTIMATED TALLIES, FOR THE STRATUM ISTRA
+C  ADDITIONAL SNAPSHOT-ESTIMATED TALLIES, FOR THE STRATUM ISTRA
 C  TALLY SNAPV; NO. NTALT,
 C  FIRST: SNAPV=SNAPV*DTIMV, THEN: SCALING
 C
@@ -329,7 +328,7 @@ C  SCALE # AMP/S PER CELL
 249         CONTINUE
             SCLTAL(ISNV,NTALT)=4
           ELSE
-C  DON'T SCALE AT ALL
+C  DO NOT SCALE AT ALL
             DO J=1,NSBOX_TAL
               SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT
             ENDDO
@@ -368,7 +367,7 @@ C  SCALE # AMP/S PER CELL
 259         CONTINUE
             SCLTAL(ICPV,NTALM)=4
           ELSE
-C  DON'T SCALE AT ALL
+C  DO NOT SCALE AT ALL
             SCLTAL(ICPV,NTALM)=0
           ENDIF
 255     CONTINUE
@@ -404,7 +403,7 @@ C  SCALE # AMP/S PER CELL
 269         CONTINUE
             SCLTAL(IBGV,NTALB)=4
           ELSE
-C  DON'T SCALE AT ALL
+C  DO NOT SCALE AT ALL
             SCLTAL(IBGV,NTALB)=0
           ENDIF
 265     CONTINUE

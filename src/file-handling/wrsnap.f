@@ -1,5 +1,5 @@
 !pb  26.10.06: close file after read or write
-!pb  31.10.06:  definition of census arrays RPART, RPARTC, IPART, IPARTC changed
+!pb  31.10.06: definition of census arrays RPART, RPARTC, IPART, IPARTC changed
 cdr:  2015
 !               RPART (NPARTT,NPRNL) (now) <-- RPART (NPRNL,NPARTT) (formerly)
 !               RPARTC(NPARTT,NPRNL) (now) <-- RPARTC(NPRNL,NPARTT) (formerly)

@@ -2,7 +2,7 @@ cdr:  njump=3 option: continue new flight from previously found
 cdr                   intersection with cell boundary. used from levgeo=10
 C icts introduced, 
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
-cdr   may 17:  commenting. tbd: commenting in particular of tetraheda-grid part.
+cdr   may 17:  commenting. tbd: commenting in particular of tetrahedra-grid part.
 cdr  march 18: variable LHITP (meaning analogue as in timep.F). Had another name
 cdr            before, which had caused confusion with another variable in interfacing routines
 C
@@ -16,12 +16,12 @@ C  MESH "RSURF" (X- OR RADIAL DIRECTION)
 C
 C  INPUT:
 C       NRCELL = CELL NUMBER FOR WHICH NEXT INTERSECTION
-C                TIME IS TO BE CALCULATED (I.E. NOT NECESSARLY THE
+C                TIME IS TO BE CALCULATED (I.E. NOT NECESSARILY THE
 C                CELL WHICH CONTAINS THE STARTING POINT X0,Y0,Z0)
 C       NRCELL=0 IF PARTICLE OUTSIDE STANDARD MESH
 C
 C       NJUMP = 0 MEANS: THIS IS THE FIRST CALL OF TIMER FOR THIS TRACK
-C                        IN THIS CASE , NLSRFX MUST BE KNOWN
+C                        IN THIS CASE, NLSRFX MUST BE KNOWN
 C           NLSRFX = .TRUE. :PARTICLE ON A SURFACE, IN THIS CASE
 C                            THE SUBROUTINE NEEDS 'MRSURF'
 C                            MRSURF = NUMBER OF THIS SURFACE
@@ -118,7 +118,7 @@ C
      .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
      .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
       INTEGER :: IRICH(2,4), ITSIDE(3,4)
-      INTEGER :: IZELLO, NTIMT, IPOLGOO, IOB, I1, I2, ISW, KAN, KEN,
+      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
@@ -181,7 +181,7 @@ C
 C-------------------------------------------------------------------
       IF (LEVGEO.GT.1) GOTO 100
 C
-C****SLAB-MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
+C****SLAB MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
       IF (ABS(VELX)<= EPS30) THEN 
 c  zero velocity in x direction, i.e. flight purely in y-z-direction 
@@ -227,7 +227,7 @@ C                       BEFORE REACHING THIS NEXT X-GRID BOUNDARY
         MRSURF=IR
 5       CONTINUE
       ELSE
-C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON DEFAULT RADIAL SURFACES
+C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
         DO 10 IR=1,NR1ST
           IF (INMP1I(IR,0,0).NE.0) THEN
             DXA=RSURF(IR)-XA
@@ -285,7 +285,7 @@ C  TEST FOR DIRECTION
 C
         IF (NLSRFX) THEN
           ZC1=RQ(MRSURF)
-C  IN THIS CASE: DON'T TRUST THE VALUE OF NRCELL. RECOMPUTE FROM MRSURF
+C  IN THIS CASE: DO NOT TRUST THE VALUE OF NRCELL. RECOMPUTE FROM MRSURF
           IF (NINCX.EQ.1) NRCELL=MRSURF
           IF (NINCX.EQ.-1) NRCELL=MRSURF-1
         ELSE
@@ -407,7 +407,7 @@ C  SAVE STARTING POINT, FLIGHT DIRECTION, FOR LATER CALLS ALONG SAME TRACK.
           ZR=RQ(MRSURF)
           Y0Q=(ZR-X0SURF*X0SURF)*DSRF
           MSAVE=MRSURF
-C  IN THIS CASE: DON'T TRUST THE VALUE OF NRCELL. RECOMPUTE FROM MRSURF
+C  IN THIS CASE: DO NOT TRUST THE VALUE OF NRCELL. RECOMPUTE FROM MRSURF
           ZB=X0SURF*VELX+Y0*VELY/ELLQ(MRSURF)
 C  TEST FOR DIRECTION. CASE: NLSRFX, MRSURF KNOWN
           NINCX=1
@@ -630,7 +630,7 @@ C  TO THE BOUNDARY OF THE PRESENT CELL
 #endif
 
         ICTS=COUNT(LCTS)
-C  MORE THAN ONE TENTATIVE INTERECTION FOUND
+C  MORE THAN ONE TENTATIVE INTERSECTION FOUND
         IF (ICTS > 1) THEN
           WHERE (PTS < 0._DP)
             PTS = 1.E30_DP
@@ -639,7 +639,7 @@ C  MORE THAN ONE TENTATIVE INTERECTION FOUND
           LCTS = .FALSE.
           LCTS(ISD) = .TRUE.
           T = PTS(ISD)
-C  EXACTLY ONE TENTATIVE INTERESECTION FOUND
+C  EXACTLY ONE TENTATIVE INTERSECTION FOUND
         ELSE IF (ICTS == 1) THEN
           T=MAX(PT1,PT2,PT3,PT4)
 C  NO TENTATIVE INTERSECTION FOUND, T IS NOT SET.
@@ -781,7 +781,7 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
 #ifdef TRACE
         IF (NLTRC) THEN
           WRITE (iunout,*) ' PT,MRSURF,NINCX,IPOLGN ',
-     .                  PT,MRSURF,NINCX,IPOLGN
+     .                       PT,MRSURF,NINCX,IPOLGN
           WRITE (iunout,*) 'NCOUP ',NCOUP
           DO ICOUP=1,NCOUP
             WRITE (iunout,*) 'ICOUP,ALPD(ICOUP) ',ICOUP,ALPD(ICOUP)
@@ -850,7 +850,7 @@ C
                 TIMPOL(I,NTIM(I))=T1
                 IIMPOL(I,NTIM(I))=K
               ENDIF
-6012        continue
+6012      CONTINUE
 C
 6015      ISW=0
           DO 6020 J=1,NTIM(I)-1
@@ -898,7 +898,7 @@ C
 C
 #ifdef TRACE
       IF (NLTRC) WRITE (iunout,*) 'PT,MRSURF,IPOLGN,NINCX ',
-     .                        PT,MRSURF,IPOLGN,NINCX
+     .                             PT,MRSURF,IPOLGN,NINCX
 #endif
       RETURN
 C
@@ -965,7 +965,8 @@ C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                 NTIM(IZELL) = J
 #ifdef TRACE
                 IF (NLTRC) THEN
-                  WRITE (iunout,*) 'IZELL,XX,YY,J ',IZELL,XX,YY,J
+                  WRITE (iunout,'(A,I6,1P,2(1X,1E14.7),1X,I1)')
+     .             'IZELL,XX,YY,J ',IZELL,XX,YY,J
                 ENDIF
 #endif
 C  ZELLENNUMMER DES NEUEN DREIECKS
@@ -1042,8 +1043,9 @@ C  on non-default surface (add. or. std.): ISTS=INMTI(IPOLGN,NRCELL)
         GOTO 9999
       ENDIF
 #ifdef TRACE
-      IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-     .                         NRCELL,MRSURF,PT,NINCX,IPOLGN
+      IF (NLTRC) WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .  ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .    NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
  
       RETURN
@@ -1116,8 +1118,10 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
         IPOLGN = ISIDNO(ISTS_CELL)
         NINCX = ITRINO(ISTS_CELL)
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-     .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
+        IF (NLTRC)
+     .   WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .      NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
       END IF
  
@@ -1244,7 +1248,6 @@ C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
 #endif
 C  ZELLENNUMMER DES NEUEN DREIECKS
                   IZELLO=IZELL
-                  IPOLGOO=IPOLGO
                   IZELL = NTBAR(J,IZELLO)
                   PT = TM
                   IF (IZELL .EQ. 0) GOTO 11050
@@ -1298,7 +1301,7 @@ C
           NINCX=NTBAR(IPOLGN,NRCELL)-NRCELL
         ELSEIF (ISTS.GT.0.AND.
      .          ISTS.LE.NLIM+NSTSI) THEN
-C  ON NON DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
+C  ON NON-DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
           IF (ILIIN(ISTS) == 0) THEN
             NINCX=NTBAR(IPOLGN,NRCELL)-NRCELL
           ELSE
@@ -1308,8 +1311,10 @@ C  ON NON DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
           GOTO 9999
         ENDIF
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-     .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
+        IF (NLTRC)
+     .   WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .      NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
  
         RETURN
@@ -1441,7 +1446,6 @@ CDR  LOOP OVER ADDITIONAL SURFACES
         END DO
         PT = TIMT
         IZELLO = 0
-        IPOLGOO = 0
         IF (NTMZ .NE. 0) THEN
 C  SEITENNUMMER DES NEUEN DREIECKS
           IPOLGO = NTMS
@@ -1459,8 +1463,10 @@ C  SEITENNUMMER DES NEUEN DREIECKS
         IPOLGN=NTMS
         NINCX=NTMZ-NRCELL
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
-     .                                NRCELL,MRSURF,PT,NINCX,IPOLGN
+        IF (NLTRC)
+     .   WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .      NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
       END IF
 

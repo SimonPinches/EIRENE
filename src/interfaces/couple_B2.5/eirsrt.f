@@ -1,7 +1,7 @@
 !pb APR   16:   pplds  -> pplei
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
-cdr Nov   16    finalizing notational syncronisation (..DS.. (legacy) --> ..EI..)
+cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI..)
 cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
@@ -27,7 +27,7 @@ C
 
 C   INPUT:
 C     LSTOP: 
-C     LTIME: TIME DEPENDENT MODE. PREPARE TIME DEPENDENT OPTIONS,
+C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
 C     

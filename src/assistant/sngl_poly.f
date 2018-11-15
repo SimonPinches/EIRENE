@@ -1,7 +1,7 @@
 cdr  Aug. 2016:  generalized (ifexmx<0 enabled), two new parameters in list for fct. extrap
 
-cdr  this function evaluates the standard single parameter 8th order polynomial
-cdr  fits for cross section and rate coefficients, used in the 
+cdr  this function evaluates the standard single parameter 8th-order polynomial
+cdr  fits for cross-section and rate coefficients, used in the
 cdr  HYDHEL  (Janev, Langer et al, Springer, 1987)
 cdr  METHANE (Ehrhardt, Langer et al, PPPL report) 
 cdr  databases. See references in online manual.
@@ -9,7 +9,7 @@ cdr  the same fit format is also used most of the time in the eirene-home
 cdr  databases amjuel, h2vibr,
 
       function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp, 
-     .                                   ifexmn, ifexmx,trc)
+     .                                   ifexmn, ifexmx, trc)
      .                   result(cou)
 c  input:
 c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1)) 
@@ -41,7 +41,7 @@ cdr           ifex>0:  find parameters boundary, and call extrap.f
  
       if (p1 < rcmin) then
  
-C  PARM BELOW MINIMUM PARAMETER FOR POLYNOM FIT:
+C  PARM BELOW MINIMUM PARAMETER FOR POLYNOMIAL FIT:
  
         FP = FPP
 
@@ -68,9 +68,9 @@ C  Linear extrapolation on log-log scale
           ALMIN =RCMIN
           COUMIN=EXP(EXPO1)
 
-        ELSEIF  (IFEXMN.GT.0) THEN
+        ELSEIF (IFEXMN.GT.0) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN  
-C  IFEXMN IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmn
+C  IFEXMN IS .GT. 0, use pre-programmed extrapolation scheme no. ifexmn
           
           coumin = cf(9)
           do ii = 8, 1, -1
@@ -125,7 +125,7 @@ C  Linear extrapolation on log-log scale
 
         ELSEIF (IFEXMX.GT.0) THEN 
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN  
-C  IFEXMX IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmx   
+C  IFEXMX IS .GT. 0, use pre-programmed extrapolation scheme no. ifexmx
           
           COUMAX = cf(9)
           do ii = 8, 1, -1

@@ -47,8 +47,9 @@ C     ------------------------------------------------------------------
 C
       DO 100 I = 1, N
 C
-         DO 100 J = 1, I
+         DO J = 1, I
             Z(I,J) = A(I,J)
+         END DO
   100 CONTINUE
 C
       IF (N .EQ. 1) GO TO 320
@@ -61,7 +62,8 @@ C     :::::::::: FOR I=N STEP -1 UNTIL 2 DO -- ::::::::::
          IF (L .LT. 2) GO TO 130
 C     :::::::::: SCALE ROW (ALGOL TOL THEN NOT NEEDED) ::::::::::
          DO 120 K = 1, L
-  120    SCALE = SCALE + ABS(Z(I,K))
+         SCALE = SCALE + ABS(Z(I,K))
+  120    CONTINUE
 C
          IF (SCALE .NE. 0.0_DP) GO TO 140
   130    E(I) = Z(I,L)
@@ -84,13 +86,15 @@ C
             G = 0.0D0
 C     :::::::::: FORM ELEMENT OF A*U ::::::::::
             DO 180 K = 1, J
-  180       G = G + Z(J,K) * Z(I,K)
+            G = G + Z(J,K) * Z(I,K)
+  180       CONTINUE
 C
             JP1 = J + 1
             IF (L .LT. JP1) GO TO 220
 C
             DO 200 K = JP1, L
-  200       G = G + Z(K,J) * Z(I,K)
+            G = G + Z(K,J) * Z(I,K)
+  200       CONTINUE
 C     :::::::::: FORM ELEMENT OF P ::::::::::
   220       E(J) = G / H
             F = F + E(J) * Z(I,J)
@@ -103,12 +107,14 @@ C     :::::::::: FORM REDUCED A ::::::::::
             G = E(J) - HH * F
             E(J) = G
 C
-            DO 260 K = 1, J
+            DO K = 1, J
                Z(J,K) = Z(J,K) - F * E(K) - G * Z(I,K)
+            END DO
   260    CONTINUE
 C
          DO 280 K = 1, L
-  280    Z(I,K) = SCALE * Z(I,K)
+           Z(I,K) = SCALE * Z(I,K)
+  280    CONTINUE
 C
   290    D(I) = H
   300 CONTINUE
@@ -124,10 +130,12 @@ C
             G = 0.0D0
 C
             DO 340 K = 1, L
-  340       G = G + Z(I,K) * Z(K,J)
+              G = G + Z(I,K) * Z(K,J)
+  340       CONTINUE
 C
-            DO 360 K = 1, L
+            DO K = 1, L
                Z(K,J) = Z(K,J) - G * Z(K,I)
+            END DO
   360    CONTINUE
 C
   380    D(I) = Z(I,I)

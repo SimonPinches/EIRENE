@@ -18,9 +18,9 @@
       DO 10,I=1,NRA
          DO 20,J=1,NCA
             Q(I,J) = A(I,J)
-20       CONTINUE
+   20    CONTINUE
          Q(I,NCA+1) = B(I)
-10    CONTINUE
+   10 CONTINUE
       CALL EIRENE_MA20A(Q,RES,X,R,S,NRA+2,NRA,NCA,TOL)
       KBASIS = Q(NRA+1,NCA+2)
  

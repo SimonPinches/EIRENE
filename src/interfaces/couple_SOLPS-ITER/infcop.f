@@ -3960,7 +3960,7 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
      .                 (EAPL(IPLS,INC)+EMPL(IPLS,INC)+
      .                  EIPL(IPLS,INC)+
      .                  EPPL_COP(IPLS,INC))*VOLTAL(INC)*ELCHA
-                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(IN)
+                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
                   SEIS=SEIS+(EAPL(IPLS,INC)+EMPL(IPLS,INC)+
      .                       EIPL(IPLS,INC)+
      .                       EPPL_COP(IPLS,INC))*VOLTAL(INC)

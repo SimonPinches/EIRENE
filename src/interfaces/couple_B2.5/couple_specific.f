@@ -1,7 +1,7 @@
 cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
 cdr:             check: is eirsrt universal, then: move even further up to "main routines".
-cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
-c  jan 2017: syncronisation with corresponding version in couple_SOLPS-ITER,
+cdr  09.02.2016:  done ! synchronization of eirsrt.f started, but not completed fully
+c  jan 2017: synchronisation with corresponding version in couple_SOLPS-ITER,
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
 C
@@ -772,7 +772,7 @@ C
 C
 C     INDEX MAPPING FOR BRAAMS DATA FIELDS. DATA IN DUMMY ZONES
 C     (CUTS OR BOUNDARY ZONES) MAY BE NEEDED AND THUS ARE KEPT
-C     AND DUBLICATED IN CASE NCUTL GT NCUTB
+C     AND DUPLICATED IN CASE NCUTL GT NCUTB
 C
 C     NCUTB= NUMBER OF CELLS IN IX DIRECTION PER CUT IN BRAAMS
 C     NCUTL= NUMBER OF CELLS IN IX DIRECTION PER CUT IN LINDA (AND
