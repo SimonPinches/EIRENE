@@ -1,17 +1,14 @@
-C
+C> \brief Evaluate EIRENE recommendations for a next run of the same 
+C>        model
+C> 
+C> 1. find NRECOM(istra): recommended number of test particles for next MC cycle.
+C> 2. find RATIO(istra) : ratio between used and recommended no. of particles.
+C>     (the procedure should approach RATIO approx 1.0, after cycling. 
+C> 3. write NRECOM and RATIO on stream 14.
+C>
+C> At entry rrec:
+C> - read NRECOM and RATIO from stream 14.
       SUBROUTINE EIRENE_WRREC
-C
-C  EVALUATE EIRENE RECOMMENDATIONS FOR A NEXT RUN OF THE SAME MODEL
-C 
-C   find NRECOM(istra):  recommended number of test particles for next MC cycle.
-c   find RATIO(istra) :  ratio between used and recommended no. of particles.
-c   (the procedure should approach RATIO approx 1.0, after cycling. 
-c
-c   write NRECOM and RATIO on stream 14.
-c
-c  (at entry rrec:  
-c    read NRECOM and RATIO from stream 14.  
-C
 C
 cmr: Aug.18:
 C XMCT need to be used or stored here, somehow, somewhere...
@@ -19,17 +16,15 @@ C not stored in FT 11 any more.
 cdr:  Aug 18:  xmct is not used here at all. Instead CPUFAC is just somehow
 cdr            infered by other considerations.
 C
-C XMCT need to be used or stored here, somehow, somewhere...
-C not stored in FT 11 any more.
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CAI
-      USE EIRMOD_CCONA
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMSOU
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
+      USE EIRMOD_CAI, ONLY: NRECOM, RATIO
+      USE EIRMOD_CCONA, ONLY: EPS60
+      USE EIRMOD_CTRCEI, ONLY: TRCFLE, TRCREC
+      USE EIRMOD_COMSOU, ONLY: NPTS, NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_COUTAU
+      USE EIRMOD_COUTAU, ONLY: FLXFAC, FLUXT, WTOTA, WTOTI, WTOTM, 
+     >                         WTOTP, XMCP
  
       IMPLICIT NONE
  
