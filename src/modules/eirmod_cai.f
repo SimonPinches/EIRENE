@@ -15,6 +15,8 @@ C> previous run.
  
 C> Ratio between used and recommended no. of particles.
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: RATIO(:)
+C> Run time global and each stratum.
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: XMCT(:)
  
 C> Recommended number of test particles for next MC cycle.
       INTEGER, PUBLIC, ALLOCATABLE, SAVE :: NRECOM(:)
@@ -29,10 +31,11 @@ C> Recommended number of test particles for next MC cycle.
       IF (ALLOCATED(RATIO)) RETURN
  
       ALLOCATE (RATIO(NSTRA))
+      ALLOCATE (XMCT(0:NSTRA))
       ALLOCATE (NRECOM(NSTRA))
  
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .      ' CAI ',NSTRA*(8+4)
+     .      ' CAI ',NSTRA*(8*2+4)
  
       CALL EIRENE_INIT_CAI
  
@@ -45,6 +48,7 @@ C> Recommended number of test particles for next MC cycle.
       IF (.NOT.ALLOCATED(RATIO)) RETURN
  
       DEALLOCATE (RATIO)
+      DEALLOCATE (XMCT)
       DEALLOCATE (NRECOM)
  
       RETURN
@@ -54,6 +58,7 @@ C> Recommended number of test particles for next MC cycle.
       SUBROUTINE EIRENE_INIT_CAI
  
       RATIO  = 0.D0
+      XMCT   = 0.D0
       NRECOM = 0
  
       RETURN

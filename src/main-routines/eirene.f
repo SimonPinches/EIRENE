@@ -287,21 +287,23 @@ C
           CALL EIRENE_LEER(1)
         ENDIF
 C
-C
+        SELECT CASE (NFILEK)
+          CASE (2:3)
 C  READ EIRENE STATISTICAL RECOMMENDATIONS FROM PREVIOUS RUN,
 C  AND CARRY THEM OUT
-C
-        IF (NFILEK.EQ.2.OR.NFILEK.EQ.3) THEN
-         CALL EIRENE_RREC
-          WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
-          WRITE (iunout,*) 
-     .           'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
-          DO 162 ISTRAI=1,NSTRAI
-            WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
-     .                              ' NPTS(MOD)= ',NRECOM(ISTRAI)
-            NPTS(ISTRAI)=NRECOM(ISTRAI)
-162       CONTINUE
-        ENDIF
+            CALL EIRENE_RREC
+            WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
+            WRITE (iunout,*) 
+     .             'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
+            DO 162 ISTRAI=1,NSTRAI
+              WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
+     .                                ' NPTS(MOD)= ',NRECOM(ISTRAI)
+              NPTS(ISTRAI)=NRECOM(ISTRAI)
+162         CONTINUE
+          CASE (5:6)
+C read stratum run time from prvious run
+            CALL EIRENE_RREC
+        END SELECT
 C
 C  IF NLERG:
 C  PERFORM A RUN, ONE-SPEED, COLLISION-LESS, UNTIL TIME-LIMIT
@@ -389,10 +391,10 @@ C
       IF (NMODE.GT.0) CALL EIRENE_IF4COP
 C
 C
-C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS
-C  FOR NEXT RUN  AND WRITE THEM ON FT 14
+C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS FOR NEXT 
+C  RUN AND WRITE THEM TOGETHER WITH THE STRATUM RUN TIME ON FT 14
 C
-      IF (NFILEK.EQ.1.OR.NFILEK.EQ.3) THEN
+      IF (NFILEK.EQ.1.OR.NFILEK.EQ.3.OR.NFILEK.EQ.4.OR.NFILEK.EQ.6) THEN
 c  this should not be done in a "read run" (NFILEN=2 or =7)
 c   achtung !!!!!!!!!!!!!
 c   not ready for parallel mode
