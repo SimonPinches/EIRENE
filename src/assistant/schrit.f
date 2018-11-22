@@ -91,7 +91,7 @@ C
 C
 C     SUCHE NACH DEM 1. OPERATOR IM TEILSTRING
 C
-10       CONTINUE
+   10    CONTINUE
          I=I+1
          POS=INDEX(FAKTOR, ausdru(I:I))
       IF (POS .LE. 0 .AND. I .LT. omega) GOTO 10
@@ -104,7 +104,7 @@ C
 C
 C     WHILE : SOLANGE TEILSTRING EINEN OPERATOR ENTHAELT
 C
-60    IF (POS .GT. 0) THEN
+   60 IF (POS .GT. 0) THEN
 C
 C        POSITION UND RANGBESTIMMUNG DES OPERATORS
 C
@@ -114,13 +114,13 @@ C
 C
 C        REPEAT-1
 C
-30          CONTINUE
+   30       CONTINUE
  
 C
 C           SUCHE NACH DEM 2. OPERATOR IM TEILSTRING
 C           REPEAT-2
 C
-20             CONTINUE
+   20          CONTINUE
                I=I+1
                POS=INDEX(FAKTOR,ausdru(I:I))
             IF (POS .LE. 0  .AND.  I .LT. omega) GOTO 20
@@ -208,7 +208,7 @@ C
 C
 C        SUCHE NACH DEM 1. OPERATOR IM TEILSTRING
 C
-50          CONTINUE
+   50       CONTINUE
             I=I+1
             POS=INDEX(FAKTOR, AUSDRU(I:I))
          IF (POS .LE. 0 .AND. I .LT. OMEGA) GOTO 50

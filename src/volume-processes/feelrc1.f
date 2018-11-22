@@ -97,7 +97,7 @@ c  by adding potential energy transfer contribution
  
       RETURN
 
-999   continue
+  999 continue
       write (iunout,*) 'error in feelrc1, KK= 0 option'
       call eirene_exit_own(1)
       END

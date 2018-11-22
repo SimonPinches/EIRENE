@@ -309,7 +309,7 @@ c  no tallies for emitted bulk particles
  
       RETURN
 
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR EXIT IN UPDATE_SURFACE'
       WRITE (IUNOUT,*) 'IND,ITOLD,ITYP ',IND,ITOLD,ITYP
       CALL EIRENE_EXIT_OWN(1)

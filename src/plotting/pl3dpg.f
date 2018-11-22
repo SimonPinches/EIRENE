@@ -41,7 +41,7 @@ C
       DO 1 I=1,3
       DO 1 J=1,128
       DO 1 K=1,128
-1       XYZ(I,J,K)=-75.75E20
+    1   XYZ(I,J,K)=-75.75E20
 C
       IF (LEVGEO.LE.1.OR.LEVGEO.GT.3.OR..NOT.LPTOR3(IBLD)) THEN
         WRITE (iunout,*) 'PLOTOPTION NOT READY. RETURN FROM PL3DPG '
@@ -78,7 +78,7 @@ C  SEARCH MINIMA AND MAXIMA OF DEPENDENT VARIABLE Z=ARR
                 RMA=MAX(RMA,ARR(IR))
               ENDIF
             ENDIF
-10    CONTINUE
+   10 CONTINUE
 C
       REMIN=ZMI
       REMAX=ZMA
@@ -150,9 +150,9 @@ C
             XYZ(3,IPX+2,IPY+1)=AAR
             XYZ(3,IPX+2,IPY+2)=AAR
             IPY=IPY+2
-20        CONTINUE
+   20     CONTINUE
           IPX=IPX+2
-25      CONTINUE
+   25   CONTINUE
 C
         IF (IPX+1.GT.128) GOTO 999
         IF (IPY+1.GT.128) GOTO 999
@@ -163,7 +163,7 @@ C
           XYZ(1,IPX+1,I)=XYZ(1,IPX,I)
           XYZ(2,IPX+1,I)=XYZ(2,IPX,I)
           XYZ(3,IPX+1,I)=REMIN
-26      CONTINUE
+   26   CONTINUE
         DO 27 I=2,IPX
           XYZ(1,I,1)=XYZ(1,I,2)
           XYZ(2,I,1)=XYZ(2,I,2)
@@ -171,7 +171,7 @@ C
           XYZ(1,I,IPY+1)=XYZ(1,I,IPY)
           XYZ(2,I,IPY+1)=XYZ(2,I,IPY)
           XYZ(3,I,IPY+1)=REMIN
-27      CONTINUE
+   27   CONTINUE
         XYZ(1,1,1)=XYZ(1,2,2)
         XYZ(2,1,1)=XYZ(2,2,2)
         XYZ(3,1,1)=REMIN
@@ -192,7 +192,7 @@ C
           ENDDO
         ENDDO
         CALL GR3NET(AR,IER,128,XYZ,IPX+1,1,IPY+1,1,1,2)
-30    CONTINUE
+   30 CONTINUE
       CALL GR3EXT(AR,IER,EXT)
       VALU(1,1)=XMI
       VALU(1,2)=XMA
@@ -233,7 +233,7 @@ C
       CALL GRTXT (1.,REAL(YH-3.5,KIND(1.E0)),10,CH)
 C
       RETURN
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'NOT ENOUGH STORAGE FOR 3D HISTOGRAM PLOT'
       WRITE (iunout,*) 'REDUCE PLOT AREA '
       WRITE (iunout,*) 'PLOT ABANDONNED'

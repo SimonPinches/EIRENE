@@ -105,7 +105,7 @@ chr         vorbereiten des terms fuer die weitere verarbeitung, d.h.
 chr         bringen der operanden in die vom programm verlangte
 chr         zweistellige alphabetische form
             nr=0
-101         anfang=index(term,'<')
+  101       anfang=index(term,'<')
             if (anfang.ne.0) then
                nr=nr+1
                ende=index(term,'>')
@@ -130,7 +130,7 @@ C
 C           ERMITTELN DER LAENGE VON TERM
 C
             LAENGE=LEN(TERM)
-20          IF (TERM(LAENGE:LAENGE) .EQ. ' ') THEN
+   20       IF (TERM(LAENGE:LAENGE) .EQ. ' ') THEN
                LAENGE=LAENGE-1
                GOTO 20
             ENDIF
@@ -149,7 +149,7 @@ C
                MAXI=0
                DO 45, I=1,TEIL
                    MAXI=MAX(IPART(I),MAXI)
-45             CONTINUE
+   45          CONTINUE
  
                NOP=TEIL
                DO 30, I=1,TEIL
@@ -251,7 +251,7 @@ chr               als zwischenergebnis
                         IZIF(4,I)=0
                      endif
                   endif
-30             CONTINUE
+   30          CONTINUE
             ELSE
 C
 C              AUSGABE DER FEHLERMELDUNG

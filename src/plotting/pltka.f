@@ -114,6 +114,6 @@ CPB   IM FALLE EINER "SCHIEFEN" ELLIPSE FEHLER MOEGLICH
                IFLAG=0
             ENDIF
          ENDIF
-1     CONTINUE
+    1 CONTINUE
       RETURN
       END

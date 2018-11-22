@@ -313,7 +313,7 @@ csw mpi
         endif
 csw
 
-10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
+   10   CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
 csw 17feb2011
 c        if(itnr > 1 .and. rank_mpi==0) then
@@ -756,7 +756,7 @@ C                                     SUM OVER ALL EI PROCESSES
                 SPLNWA(IN,JATM,JPLS)=SPLNWA(IN,JATM,JPLS)+
      .                          EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
               END IF
-102       CONTINUE
+  102     CONTINUE
           END DO
   101    END DO
         END DO
@@ -795,7 +795,7 @@ C
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
   108      CONTINUE
-107     CONTINUE
+  107   CONTINUE
          END DO
         END DO
 C
@@ -852,7 +852,7 @@ C
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
   118      CONTINUE
-117     CONTINUE
+  117   CONTINUE
          END DO
         END DO
 C

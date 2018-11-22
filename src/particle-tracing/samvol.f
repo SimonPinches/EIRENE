@@ -160,8 +160,8 @@ C  SPECTRAL CUT OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
 
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
-3         CONTINUE
-2     CONTINUE
+    3     CONTINUE
+    2 CONTINUE
  
 C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
       DO 4 IPLS=1,NPLSI
@@ -175,8 +175,8 @@ C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
           SREC(0,0)   =SREC(0,0)   +SREC(IPLS,IRRC)
           DO 5 J=1,NSBOX
             FREC(IFPLS,0,J)=FREC(IFPLS,0,J)+FREC(IFPLS,IIRC,J)
-5         CONTINUE
-4     CONTINUE
+    5     CONTINUE
+    4 CONTINUE
 C
 C
       IF (TRCSOU.AND.IFPLS.GT.0) THEN
@@ -241,7 +241,7 @@ cdr  take center of gravity in cell, if needed (last parameter (logical) in bfie
                 MOM(IPLS,IRRC)=MOM(IPLS,IRRC)-ADD
                 MOM(IPLS,0)   =MOM(IPLS,0   )-ADD
               ENDIF
-6         CONTINUE
+    6     CONTINUE
 C
 C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
           DO 8 IIRC=1,NPRCI(IPLS)
@@ -272,7 +272,7 @@ C  SPECTRAL CUT OFF (PHOTONS ONLY)
               EEL(IPLS,IRRC)=EEL(IPLS,IRRC)+ADD
               EEL(IPLS,0   )=EEL(IPLS,0   )+ADD
             ENDDO   !  nsbox loop 
-8         CONTINUE  !  irrc loop 
+    8     CONTINUE  !  irrc loop 
 
 cdr  testing internal CR model, using amjuel and h_colrad rates, nrrc=2,
 cdr  with scaling factor 0.5 each. ....TEST OK, FEB 18, out again.
@@ -283,7 +283,7 @@ c    .         dein(j),lgvac(j,1),nstgrd(j)
 c          enddo
 cdr   endif
 
-7       CONTINUE    !  npls loop
+    7   CONTINUE    !  npls loop
 
 C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS) 
         TOT_BREMS = 0._DP
@@ -313,12 +313,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC, SREC         ',
      .                   TEXTS(ISPZ),IRRC,-SREC(IPLS,IRRC))
-11        CONTINUE
+   11     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT., SREC(IPLS,0) ',
      .                   TEXTS(ISPZ),0   ,-SREC(IPLS,0))
           ENDIF
-10      CONTINUE
+   10   CONTINUE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RECOMBINATION ION ENERGY LOSS (WATT): '
         DO 12 IPLS=1,NPLSI
@@ -328,12 +328,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC,EIO           ',
      .                   TEXTS(ISPZ),IRRC,EIO(IPLS,IRRC))
-13        CONTINUE
+   13     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT.,EIO(IPLS,0)   ',
      .                   TEXTS(ISPZ),0   ,EIO(IPLS,0))
           ENDIF
-12      CONTINUE
+   12   CONTINUE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RECOMBINATION ELECTRON ENERGY LOSS (WATT): '
         DO 14 IPLS=1,NPLSI
@@ -343,12 +343,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC,EEL           ',
      .                   TEXTS(ISPZ),IRRC,EEL(IPLS,IRRC))
-15        CONTINUE
+   15     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT.,EEL(IPLS,0)   ',
      .                   TEXTS(ISPZ),0   ,EEL(IPLS,0))
           ENDIF
-14      CONTINUE
+   14   CONTINUE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RECOMBINATION PARALLEL MOMENTUM LOSS : '
         DO 16 IPLS=1,NPLSI
@@ -358,12 +358,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC,MOM           ',
      .                   TEXTS(ISPZ),IRRC,MOM(IPLS,IRRC))
-17        CONTINUE
+   17     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT.,MOM(IPLS,0)   ',
      .                   TEXTS(ISPZ),0   ,MOM(IPLS,0))
           ENDIF
-16      CONTINUE
+   16   CONTINUE
         CALL EIRENE_LEER(1)
  
         WRITE (iunout,*) 'BREMSSTRAHLUNG (WATT): '
@@ -502,8 +502,8 @@ C  INDIRECT ADDRESSING
                         EISUM=EISUM-
      .                   (1.5*TIIN(IPLSTI,NCELL)+EDRIFT(IPLS,NCELL))*REC
                       ENDIF
-51              CONTINUE
-52            CONTINUE   ! summing over irrc
+   51           CONTINUE
+   52         CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN
                 WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '
@@ -527,7 +527,7 @@ c
               SUMM=SUMM+SUM
               EISUMM=EISUMM+EISUM
             ENDIF
-53        CONTINUE
+   53     CONTINUE
 C
           IF (SUMM.GT.0.D0) THEN
             FLUX(ISTRA)=SUMM
@@ -541,7 +541,7 @@ C
             CALL EIRENE_LEER(1)
           ENDIF
         ENDIF
-50    CONTINUE
+   50 CONTINUE
 C
 C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
       select case (LEVGEO)
@@ -549,11 +549,11 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
         IF (NLPOL) THEN
           DO 54 IP=1,NP2NDM
             PS21(IP)=PSURF(IP+1)-PSURF(IP)
-54        CONTINUE
+   54     CONTINUE
         ENDIF
         DO 55 IR=1,NR1STM
           RQ21(IR)=RQ(IR+1)-RQ(IR)
-55      CONTINUE
+   55   CONTINUE
 
       case (3)
 c  split quadrangle into two triangles, 
@@ -577,7 +577,7 @@ c  then 2nd: sample uniformly within this triangle
           Y2=YPOL(IR,IP)
           Y3=YPOL(IR+1,IP+1)
           ASIMP(2,IND)=0.5*(X1*(Y2-Y3)+X2*(Y3-Y1)+X3*(Y1-Y2))
-56      CONTINUE
+   56   CONTINUE
       end select
 C
       RETURN
@@ -898,7 +898,7 @@ C  NEXT: ANALOG SPECIES INDEX DISTRIBUTION: WEISPZ(IPL)
 C
       DO 630 ISPZ=1,NSPZ
         WEISPZ(ISPZ)=-1.
-630   CONTINUE
+  630 CONTINUE
 C
 C  NOT IN USE ANYMORE
 C  CURRENTLY: ONLY SINGLE SPECIES VOLUME SOURCES POSSIBLE
@@ -911,14 +911,14 @@ C           IFPLS=IFREC(IPLS)
 C           WEISPZ(IPL)=(FREC(IFPLS,0,1))/
 C    .                  (FREC(0,  0,1))
 C           IF (WEISPZ(IPL).LT.0) GOTO 991
-640       CONTINUE
+  640     CONTINUE
 C       ELSE
 C         DO 645 IPL=1,NPLSI
 C           IFPLS=IFREC(IPLS)
 C           WEISPZ(IPL)=(FREC(IFPLS,0,NCELL)-FREC(IFPLS,0,NCELL-1))/
 C     .                 (FREC(0,    0,NCELL)-FREC(0,    0,NCELL-1))
 C           IF (WEISPZ(IPL).LT.0) GOTO 991
-645       CONTINUE
+  645     CONTINUE
 C       ENDIF
 C     ENDIF
 C
@@ -941,18 +941,18 @@ C
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMVOL'
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'SAMPLING ERROR IN SAMVOL'
       WRITE (iunout,*) 'NCELL,NSURF,NSBOX ',NCELL,NSURF,NSBOX
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'SORIND (=IRRC) OUT OF RANGE IN SAMVOL'
       WRITE (iunout,*) 'IRRC,NREC ',IRRC,NREC
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'UNWRITTEN OPTION IN SAMVOL'
       CALL EIRENE_EXIT_OWN(1)
  

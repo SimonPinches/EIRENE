@@ -24,12 +24,12 @@ C
          RETURN
       ENDIF
       ZHL2=ABS(ZAHL)
-  10  IF (ZHL2.LT.1) THEN
+   10 IF (ZHL2.LT.1) THEN
          I=I-1
          ZHL2=ZHL2*10
          GOTO 10
       ENDIF
-  20  IF (ZHL2.GE.10) THEN
+   20 IF (ZHL2.GE.10) THEN
          I=I+1
          ZHL2=ZHL2/10
          GOTO 20

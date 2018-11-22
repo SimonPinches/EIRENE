@@ -76,29 +76,29 @@ C SET ROOTS AND WEIGHTS FOR GAUSS QUADRATURE RULES
           X=0.5*(1.+X5(I))
           X5A(I)=SQRT(X*(1.-X))
           X5B(I)=1./X
-5       CONTINUE
+    5   CONTINUE
         DO 10 I=1,10
           X=0.5*(1.+X10(I))
           X10A(I)=SQRT(X*(1.-X))
           X10B(I)=1./X
-10      CONTINUE
+   10   CONTINUE
         DO 11 I=1,10
           X=XG10(I)
           XG10A(I)=SQRT(1.-X)
           XG10B(I)=1./X
-11      CONTINUE
+   11   CONTINUE
         DO 20 I=1,20
           X=0.5*(1.+X20(I))
           X20A(I)=SQRT(X*(1.-X))
           X20B(I)=1./X
-20      CONTINUE
+   20   CONTINUE
       ENDIF
 C
       NFI=N
       IF (N.EQ.5) THEN
         DO 50 IFI=1,5
           AR(IFI)=RS*X5B(IFI)
-50      CONTINUE
+   50   CONTINUE
 C
         CALL EIRENE_FIVEC(ER,B,IFLAG,P)
         SUM=0.D0
@@ -106,14 +106,14 @@ C
           F=AFI(IFI)
           IF (F.GT.0.D0)
      .    SUM=SUM+X5A(IFI)/SQRT(F)
-51      CONTINUE
+   51   CONTINUE
         RESULT=W5*SUM
 C
       ELSEIF (N.EQ.10) THEN
         IF (IGAUS.EQ.1) THEN
           DO 100 IFI=1,10
             AR(IFI)=RS*X10B(IFI)
-100       CONTINUE
+  100     CONTINUE
 C
           CALL EIRENE_FIVEC(ER,B,IFLAG,P)
           SUM=0.D0
@@ -121,12 +121,12 @@ C
             F=AFI(IFI)
             IF (F.GT.0.D0)
      .      SUM=SUM+X10A(IFI)/SQRT(F)
-101       CONTINUE
+  101     CONTINUE
           RESULT=W10*SUM
         ELSEIF (IGAUS.EQ.2) THEN
           DO 110 IFI=1,10
             AR(IFI)=RS*XG10B(IFI)
-110       CONTINUE
+  110     CONTINUE
 C
           CALL EIRENE_FIVEC(ER,B,IFLAG,P)
           SUM=0.D0
@@ -134,14 +134,14 @@ C
             F=AFI(IFI)
             IF (F.GT.0.D0)
      .      SUM=SUM+XG10A(IFI)/SQRT(F)*WG10(IFI)
-111       CONTINUE
+  111     CONTINUE
           RESULT=SUM
         ENDIF
 C
       ELSEIF (N.EQ.20) THEN
         DO 200 IFI=1,20
           AR(IFI)=RS*X20B(IFI)
-200     CONTINUE
+  200   CONTINUE
 C
         CALL EIRENE_FIVEC(ER,B,IFLAG,P)
         SUM=0.D0
@@ -149,7 +149,7 @@ C
           F=AFI(IFI)
           IF (F.GT.0.D0)
      .    SUM=SUM+X20A(IFI)/SQRT(F)
-201     CONTINUE
+  201   CONTINUE
         RESULT=W20*SUM
 C
       ELSE

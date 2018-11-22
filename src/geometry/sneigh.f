@@ -133,7 +133,7 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
                   ENDIF
                 ENDDO
               ENDIF
-1           ENDDO
+    1       ENDDO
           ENDDO
         ENDDO
  

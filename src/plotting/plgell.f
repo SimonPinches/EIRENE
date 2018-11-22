@@ -64,7 +64,7 @@ C   NO!
         YY(ICOU)=YNEW
         XOLD=XX(ICOU)
         YOLD=YY(ICOU)
-100   CONTINUE
+  100 CONTINUE
 C
       NRET=ICOU
       RETURN

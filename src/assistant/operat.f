@@ -49,7 +49,7 @@ C
 C
 C     REPEAT
 C
-10    CONTINUE
+   10 CONTINUE
          POS= INDEX (FAKTOR, AUSDRU(I:I) )
          IF (POS .GT. 0  .AND.  ERROR .EQ. 0 ) THEN
             IF (INDEX(FAKTOR, AUSDRU(I+1:I+1)) .GT. 0) THEN
@@ -110,7 +110,7 @@ C
                ERROR=11
             ENDIF
          ENDIF
-20    CONTINUE
+   20 CONTINUE
 C
 C     ENDE VON OPRATO
 C

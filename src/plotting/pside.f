@@ -61,6 +61,6 @@ C
           ENDIF
         ENDIF
       ENDIF
-100   CONTINUE
+  100 CONTINUE
       RETURN
       END

@@ -447,9 +447,9 @@ c*** Switch off the segment
 c*** The chain is broken
               write (iunout,*) 'geousr_biased: the chain is broken'
             go to 990
- 980      continue
+  980     continue
         end if
- 990  continue
+  990 continue
  1001 continue
 C
 C  ANFANG: MODIFY GEOMETRY
@@ -795,9 +795,9 @@ c*** Switch off the segment
 c*** The chain is broken
               write (iunout,*) 'geousr_biased: the chain is broken'
             go to 990
- 980      continue
+  980     continue
         end if
- 990  continue
+  990 continue
  1001 continue
 C
 C  ANFANG: MODIFY GEOMETRY

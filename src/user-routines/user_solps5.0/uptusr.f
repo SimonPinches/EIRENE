@@ -67,7 +67,7 @@ C
             VPY(IRD)=PLNY(IR,IP)
             VRX(IRD)=PPLNX(IR,IP)
             VRY(IRD)=PPLNY(IR,IP)
-2       CONTINUE
+    2   CONTINUE
 
 cdr  increments for tally number iadv
         IA0=0               !  RADIAL CURRENT
@@ -118,7 +118,7 @@ C  particle flux, integrated over all directions
           if(ia4+iatm.gt.nadv) goto 20
           ADDV(IA4+IATM,IRD)=ADDV(IA4+IATM,IRD)+WTR*VEL
 CDR
-20      CONTINUE
+   20   CONTINUE
 C
 C  MOLECULES
       ELSEIF (ITYP.EQ.2) THEN
@@ -152,7 +152,7 @@ C  particle flux, integrated over all directions
           if(ia4+NATMI+IMOL.gt.nadv) goto 200
           ADDV(IA4+NATMI+IMOL,IRD)=ADDV(IA4+NATMI+IMOL,IRD)+WTR*VEL
 C
-200     CONTINUE
+  200   CONTINUE
 CDR
 C
 C  TEST IONS
@@ -219,9 +219,9 @@ C
               IF (LGVAC(IRD,IPLS)) GOTO 560
               WTRSIG=WTR*SIGVCX(IRCX)
               ADDV(1,IRD)=ADDV(1,IRD)+WTRSIG
-560         CONTINUE
-590       CONTINUE
-200     CONTINUE
+  560       CONTINUE
+  590     CONTINUE
+  200   CONTINUE
 C
 C
       ENDIF

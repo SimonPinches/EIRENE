@@ -86,7 +86,7 @@ C
         NRPS=60+ifoff+IF
         OPEN (UNIT=NRPS,ACCESS='SEQUENTIAL',FORM='FORMATTED')
         REWIND NRPS
-5     CONTINUE
+    5 CONTINUE
 !pb
 !pb find index of first RAPS plot, to be used for scaling with FCABS
 
@@ -177,7 +177,7 @@ cdr     write (iunout,*) ' in rpsout levego=1 and lptorr'
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
              DO 105 IF=1,IRAPS
                READ (60+ifoff+IF,*) YWERT(IF)
-105          CONTINUE
+  105        CONTINUE
 
              IF (IP .NE. NP2ND) THEN
                I = I + 1
@@ -202,11 +202,11 @@ cdr              write (iunout,*) ir,ip,it,ncell,nstgrd(ncell)
                WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .               I+1,(YWERT(IF),IF=1,IRAPS)
              ENDIF
-110        CONTINUE
+  110      CONTINUE
            I = I + 1
            WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR)*FCABS1(IFC),
      .                                  PSURF(NP2ND)*FCABS2(IFC)
-100     CONTINUE
+  100   CONTINUE
         NCO=I
 C
       ELSEIF (LEVGEO.LE.2.AND.LPPOLR) THEN
@@ -231,7 +231,7 @@ C
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
             DO 2105 IF=1,IRAPS
               READ (60+ifoff+IF,*) YWERT(IF)
-2105        CONTINUE
+ 2105       CONTINUE
 
             IF (IT .NE. NT3RD) THEN
               I = I + 1
@@ -253,10 +253,10 @@ C  EXCLUDE DEAD CELLS ON FORT.18
               WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .              I+1,(YWERT(IF),IF=1,IRAPS)
             ENDIF
-2100      CONTINUE
+ 2100     CONTINUE
           I = I + 1
           WRITE(17+ifoff,'(I6,1P,2E12.4)') I,RSURF(IR),ZSURF(NT3RD)
-1100    CONTINUE
+ 1100   CONTINUE
         NCO=I
 C
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.LPTORR) THEN
@@ -310,7 +310,7 @@ C
             NPUNKT = 0
             DO 11 IPPLG=1,NPPLG
               NPUNKT = NPUNKT+NPOINT(2,IPPLG)-NPOINT(1,IPPLG)+1
- 11         CONTINUE
+   11       CONTINUE
             DO 20 IPPLG=1,NPPLG
               xgeomin = min(xgeomin,minval(
      .                  xpol(ir,NPOINT(1,IPPLG):NPOINT(2,IPPLG))))
@@ -325,7 +325,7 @@ C
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
                 DO 25 IF=1,IRAPS
                   READ (60+ifoff+IF,*) YWERT(IF)
- 25             CONTINUE
+   25           CONTINUE
 
                 IF (IP .NE. NPOINT(2,IPPLG)) THEN
                   I = I + 1
@@ -389,7 +389,7 @@ C  EXCLUDE DEAD CELLS ON FORT.18
                   WRITE(19+ifoff,'(I6,1P,50E12.4)')
      .                  I+1,(YWERT(IF),IF=1,IRAPS)
                 ENDIF
-30            CONTINUE
+   30         CONTINUE
               I = I + 1
               if (lraps3d.and.nltra) then
                 WRITE(17+ifoff,'(I6,1P,3E12.4)')
@@ -405,8 +405,8 @@ C  EXCLUDE DEAD CELLS ON FORT.18
      .            I,XPOL(IR,NPOINT(2,IPPLG))*FCABS1(IFC),
      .              YPOL(IR,NPOINT(2,IPPLG))*FCABS2(IFC)
               endif
-20          CONTINUE
-10        CONTINUE
+   20       CONTINUE
+   10     CONTINUE
           if (ipl.eq.0) ipoints=i
           DO IF=1,IRAPS
             close (60+ifoff+IF)
@@ -444,7 +444,7 @@ C NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
             DO 50 IF=1,IRAPS
               READ(60+ifoff+IF,*) YWERT(IF)
               if (ywert(if) < valcont(if)) valcont(if) = ywert(if)
-50          CONTINUE
+   50       CONTINUE
             WRITE(19+ifoff,'(I6,1P,50E12.4)') I+ipl*nrknot,
      .                                  (YWERT(IF),IF=1,IRAPS)
             if (lraps3d.and.nltra) then
@@ -459,7 +459,7 @@ C NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
               WRITE(17+ifoff,'(I6,1P,2E12.4)') I,XTRIAN(I)*FCABS1(IFC),
      .                                           YTRIAN(I)*FCABS2(IFC)
             endif
-40        CONTINUE
+   40     CONTINUE
           DO IF=1,IRAPS
             close(60+ifoff+IF)
           enddo
@@ -490,7 +490,7 @@ C NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
      .                                '0',NECKE(1,I)+ipl*nrknot,
      .                                    NECKE(2,I)+ipl*nrknot,
      .                                    NECKE(3,I)+ipl*nrknot
-60          CONTINUE
+   60       CONTINUE
             igroups = iplane
           endif
         enddo

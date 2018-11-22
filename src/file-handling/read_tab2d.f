@@ -242,7 +242,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
       end select
       return
 
-1000  continue
+ 1000 continue
       WRITE (IUNOUT,*) ' ERROR IN "READ_TAB2D" : '
       WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPECIFIED FOR TAB2D OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR

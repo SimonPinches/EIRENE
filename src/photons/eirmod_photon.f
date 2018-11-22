@@ -2295,7 +2295,7 @@ c   res:  random number sampled from zeemann-stark-profile
         if (r0.lt.ci(i)) goto 4711
       enddo
       i=8
-4711  continue
+ 4711 continue
 
 c  sample from lorentzian no. i
 c  EIRENE function "Lorentz" needs FWHM, gamma is HWHM.
@@ -2480,7 +2480,7 @@ C
           XAUX = (XSUM*XQUAD - YSUM*YQUAD)/I
           YSUM = (XSUM*YQUAD + YSUM*XQUAD)/I
           XSUM = XAUX + 1.0/J
- 10     CONTINUE
+   10   CONTINUE
         U1   = -FACTOR*(XSUM*YABS + YSUM*XABS) + 1.0
         V1   =  FACTOR*(XSUM*XABS - YSUM*YABS)
         DAUX =  DEXP(-XQUAD)
@@ -2541,7 +2541,7 @@ C
             SY = RY*TX + RX*SY
             QLAMBDA = QLAMBDA/H2
           ENDIF
- 11     CONTINUE
+   11   CONTINUE
 *
         IF (H.EQ.0.0) THEN
           U = FACTOR*RX
@@ -2885,7 +2885,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
             write (iunout,*) ' in ph_xsectph, nstordr>nrad '
             DO 251 J=1,NSBOX
               EPLOT3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
-251         CONTINUE
+  251       CONTINUE
             NELROT(Idsc) = -2
           ELSE
             NELROT(Idsc) = -2
@@ -2919,7 +2919,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
               EPLOT3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
-2511        CONTINUE
+ 2511       CONTINUE
             NELROT(Idsc) = -2
           ELSE
             NELROT(Idsc) = -2
@@ -2994,7 +2994,7 @@ c    .                    'I2ND2= ',TEXTS2
 c     CALL EIRENE_LEER(1)
       RETURN
 C
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
       WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
       WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0

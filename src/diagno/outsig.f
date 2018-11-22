@@ -72,7 +72,7 @@ C  MACHE GRADE GRENZEN, X-ACHSE (Y ACHSE, NUR WENN TALZMI=TALZMA=666.)
 C  NEW FRAME FOR EACH PICTURE IN PLTTLY
       L_SAME=.FALSE.
 
-1     CONTINUE
+    1 CONTINUE
  
       DO 100  ICHORI=1,NCHORI
         IF (.NOT.L_CHOR(ICHORI)) GOTO 100
@@ -128,7 +128,7 @@ C
      .               XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI))
         DO 30 I=1,NCHNI
           ENERGY(I)=ENSAVE(ICHORI,I)
-30      CONTINUE
+   30   CONTINUE
 C...................................................
 C  ENERGY-RESOLVED CX SPECTRA, ATOMS.  100 -- 199
 C...................................................
@@ -169,7 +169,7 @@ C
             DUMFFD(I)=MAX(1.E-10_DP,AH)
             IF (NCHTAL(ICHORI).EQ.4) SUM=SUM+AH*DELENE(I)
             XPLEN(I)=ENERGY(I)
-70        CONTINUE
+   70     CONTINUE
 c   printing:  conditional on prspec          
           IF (PRSPEC) THEN 
             CALL EIRENE_MASRR2('ENERGY,CXFLUX         ',
@@ -281,7 +281,7 @@ C  SET ORDINATES, FOR PLOT AND PRINTOUT: DUMFFD
             DUMFFD(NCHNI-I+1)=MAX(1.E-30_DP,AH)
             SUM=SUM+AH*DELENE(I)
 c           write (iunout,*) 'outsig ',delene(i),energy(i),AH,Sum
-310       CONTINUE
+  310     CONTINUE
  
 C  CONVERT FROM ENERGY TO WAVELENGTH
  
@@ -297,7 +297,7 @@ C  2.)  CONVERT FROM EV TO NM
      .            WLSHFT=HPCL/ESHIFT(ICHORI)*1.D7
           DO 370 I=1,NCHNI
             XPLEN(NCHNI-I+1)=HPCL/ENERGY(I)*1.D7-WLSHFT
-370       CONTINUE
+  370     CONTINUE
  
           DO I=2,NCHNI-1
             DEL1=XPLEN(I+1)-XPLEN(I)
@@ -373,7 +373,7 @@ C
           write (iunout,*) 'still to be written in subr. outsig '
         ENDIF
  
-100   CONTINUE
+  100 CONTINUE
       CALL EIRENE_LEER(2)
  
       RETURN

@@ -93,7 +93,7 @@ C
                ERROR=3
             ENDIF
          ENDIF
-10       CONTINUE
+   10    CONTINUE
  
       IF ((ANZAHL .NE. 0  .OR. MINKLA .LT. 0) .AND. ERROR .EQ. 0) THEN
 C

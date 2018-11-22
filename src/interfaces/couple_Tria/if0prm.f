@@ -51,7 +51,7 @@ C  NUMBER OF PARTS PER TARGET RECYCLING SOURCE
         NPTRGT=SUM(NTGPRT)
         DO IT=1,NTARGI
           DO IPRT=1,NTGPRT(IT)
- 331        READ (IUNIN,'(A72)') ZEILE
+  331       READ (IUNIN,'(A72)') ZEILE
             IF (ZEILE(1:1).EQ.'*') THEN
               GOTO 331
             ENDIF

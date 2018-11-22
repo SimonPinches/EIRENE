@@ -100,9 +100,9 @@ C
                 WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
                 CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
      .                      SUMN,SUMM,SUMEI,SUMEE)
-7472          CONTINUE
+ 7472         CONTINUE
             END DO
-7473      CONTINUE
+ 7473     CONTINUE
         END IF
 
         IF (LCOPV) THEN

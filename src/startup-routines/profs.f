@@ -42,7 +42,7 @@ C
         NLOCAL=NR1ST
         DO 25 J=1,NLOCAL-1
           PRO(J)=PRO0
-25      CONTINUE
+   25   CONTINUE
         PRO(NR1ST)=0.
         RETURN
       ENDIF
@@ -51,8 +51,8 @@ C
         IF (RHOZNE(J).GT.RHOSEP) GOTO 15
         PRO(J)=PRO0
         GOTO 20
-15      PRO(J)=PRO1
-20    CONTINUE
+   15   PRO(J)=PRO1
+   20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
       END

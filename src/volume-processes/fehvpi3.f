@@ -43,7 +43,7 @@ c    e.g. in velopi for sampling, and in update, collide,.. for scoring
  
       RETURN
 
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'FEHVPI3: INVALID PARAMETER NHVRPI '
       WRITE (IUNOUT,*) 'IRPI, NHVRPI ',IRPI,NHVRPI
       CALL EIRENE_EXIT_OWN(1)

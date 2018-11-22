@@ -36,7 +36,7 @@ C
         ZT=SQRT(-(AR+AR))
         FG1(JJ)=ZT*ZSIN
         FG2(JJ)=ZT*ZCOS
-1     CONTINUE
+    1 CONTINUE
 C
       DO 2 JJ=1,IRNDVH
 C
@@ -48,7 +48,7 @@ C
         ZT=SQRT(-(AR+AR))
         FG3(JJ)=ZT*ZSIN
         FG3(JJ+IRNDVH)=ZT*ZCOS
-2     CONTINUE
+    2 CONTINUE
 C
       INIV2=IRNDVC
       RETURN
