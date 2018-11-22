@@ -308,6 +308,3 @@ C
 C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
       RETURN
       END
-
-
-

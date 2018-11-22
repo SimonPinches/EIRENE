@@ -304,7 +304,3 @@
       end subroutine EIRENE_R
 
       end module EIRMOD_phot_reflec
-
-
-
-

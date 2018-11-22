@@ -238,5 +238,3 @@ c         to this block!
         END DO
 
       END SUBROUTINE EIRENE_TIMEA_BuildBlocks
-
-

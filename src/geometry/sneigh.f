@@ -282,7 +282,3 @@ C       ENDDO
       end select
 
       END
-
-
-
-

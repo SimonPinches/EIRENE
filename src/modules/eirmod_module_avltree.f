@@ -695,5 +695,3 @@
 
 
       END MODULE EIRMOD_module_avltree
-
-

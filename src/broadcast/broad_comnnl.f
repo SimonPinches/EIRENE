@@ -45,4 +45,3 @@ C> not (yet) implemented and may be part of the plasma code interface.)
       RETURN
 
       END SUBROUTINE EIRENE_BROAD_COMNNL
-

@@ -173,9 +173,3 @@ c  integer arrays
       END SUBROUTINE EIRENE_INIT_CGEOM
 
       END MODULE EIRMOD_CGEOM
-
-
-
-
-
-

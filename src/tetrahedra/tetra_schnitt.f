@@ -278,5 +278,3 @@
        end subroutine EIRENE_solve_lgs
 
        end subroutine EIRENE_sort_ueberpruef
-
-

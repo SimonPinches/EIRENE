@@ -1131,7 +1131,3 @@ c  these arrays have been allocated for PRSPEC option.
 c  clarify role of ifirst<0 first.
       RETURN
       END
-
-
-
-

@@ -26,4 +26,3 @@ cdr  cut ZEILE by removing leading and final blanks.
 
       return
       end subroutine EIRENE_uppercase
-

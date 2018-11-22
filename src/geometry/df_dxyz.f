@@ -295,5 +295,3 @@ c  setting of array 'visited(icell)':  to be done
 
       return
       end subroutine eirene_df_dxyz
-
-

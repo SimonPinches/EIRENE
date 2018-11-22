@@ -1433,4 +1433,3 @@
       END FUNCTION COORD_TEST
 
       END
-

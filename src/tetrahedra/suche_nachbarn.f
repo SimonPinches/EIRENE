@@ -74,10 +74,3 @@ C      INTEGER :: IC
 
       RETURN
       END
-
-
-
-
-
-
-

@@ -488,4 +488,3 @@ c  Use REACDAT type "poly" also for photonic data
       end subroutine EIRENE_read_polari
 
       end subroutine EIRENE_read_photdbk
-

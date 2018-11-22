@@ -231,5 +231,3 @@ c    currently: no efield information ?
       END SUBROUTINE EIRENE_INIT_BCKGRND
 
       END MODULE EIRMOD_CSPEI
-
-

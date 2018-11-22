@@ -146,4 +146,3 @@ c         skip invis and non tri/quad/pentagons
         end do
         write (ivtkout,'(a)') '</planes>'
       end subroutine eirene_vtkout_surfaces
-

@@ -134,5 +134,3 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
       END SUBROUTINE EIRENE_INIT_CTEXT
 
       END MODULE EIRMOD_CTEXT
-
-

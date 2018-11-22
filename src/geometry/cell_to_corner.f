@@ -180,4 +180,3 @@ c  3d grid of tetrahedra
 
       return
       end subroutine  eirene_cell_to_corner
-

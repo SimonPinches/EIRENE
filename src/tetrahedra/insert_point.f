@@ -33,6 +33,3 @@ C
       IC = NCOOR
       RETURN
       END
-
-
-

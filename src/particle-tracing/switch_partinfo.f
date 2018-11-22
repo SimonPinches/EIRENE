@@ -476,4 +476,3 @@ C  save stratum, old type, species
 
       return
       end subroutine eirene_switch_partinfo
-

@@ -53,6 +53,3 @@
 
       return
       end subroutine EIRENE_read_token
-
-
-

@@ -70,4 +70,3 @@ cdr  only valid for AMJUEL fits.
 
       RETURN
       END
-
