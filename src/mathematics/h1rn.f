@@ -51,7 +51,7 @@ cdr         ISEED1      = 12345
 cdr         ISEED2      = 98765
 cdr         CALL H1RNIN(ISEED1,ISEED2)
 
-cdr this default seed produces the 4 Marsaglia-Zaman seeds. 
+cdr this single default seed produces the 4 Marsaglia-Zaman seeds. 
 cdr Loc.cit. F.James, CPC (1990), p340
             iseed = 54217137 
             CALL H1RNIN(ISEED)

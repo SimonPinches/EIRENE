@@ -46,7 +46,7 @@ C
       common /cmem/ iseed
       integer, save :: ifirst=0
       real(dp) :: ra, dummy, ranf_eirene,
-     &            ranf_eirene_reinit, h1rn
+     .	            ranf_eirene_reinit, h1rn
 
 cdr  parameters for SURAND  (IBM, 1968)
       INTEGER D2P32M
