@@ -378,7 +378,7 @@ c  last point on contour
           call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
         END IF
 
-1000    CONTINUE
+ 1000   CONTINUE
       ENDDO    ! END OF DO ICONT.... LOOP
 
 

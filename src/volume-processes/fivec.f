@@ -53,7 +53,7 @@ C  FIND V=V(R)
             V=27.211*((RI-(1.+RI)*EX2-(1.+R)*EX)/SS+RI)
           ENDIF
           AFI(IFI)=1.-V/ER-B2/R2
-1       CONTINUE
+    1   CONTINUE
 C
       ELSEIF(IFLAG.EQ.2) THEN
 C  INTERACTION POTENTIAL V(R): H+ + NOBLE GASES, (MORSE LIKE POTENTIAL)
@@ -82,7 +82,7 @@ C
             V=EPS*(EX2-(EX+EX))
           ENDIF
           AFI(IFI)=1.-V/ER-B2/R2
-2       CONTINUE
+    2   CONTINUE
 C
       ELSE
         WRITE (iunout,*)

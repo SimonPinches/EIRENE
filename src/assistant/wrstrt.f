@@ -81,7 +81,7 @@ C
  
       JINI=1
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMV'
-1     JEND=MIN0(JINI-1+NRECL,IESTM1)
+    1 JEND=MIN0(JINI-1+NRECL,IESTM1)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IESTM1)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -92,11 +92,11 @@ C
       IRC=IRC+1
       GOTO 1
  
-12    CONTINUE
+   12 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMS'
       IRC=IRC+1
       JINI=1
-11    JEND=MIN0(JINI-1+NRECL,IESTM2)
+   11 JEND=MIN0(JINI-1+NRECL,IESTM2)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IESTM2)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -107,11 +107,11 @@ C
       IRC=IRC+1
       GOTO 11
 C
-2     CONTINUE
+    2 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 1'
       IRC=IRC+1
       JINI=1
-3     JEND=MIN0(JINI-1+NRECL,ISDVI1)
+    3 JEND=MIN0(JINI-1+NRECL,ISDVI1)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVI1)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -122,11 +122,11 @@ C
       IRC=IRC+1
       GOTO 3
 C
-21    CONTINUE
+   21 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 2'
       IRC=IRC+1
       JINI=1
-22    JEND=MIN0(JINI-1+NRECL,ISDVI2)
+   22 JEND=MIN0(JINI-1+NRECL,ISDVI2)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVI2)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -137,11 +137,11 @@ C
       IRC=IRC+1
       GOTO 22
 C
-23    CONTINUE
+   23 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 3'
       IRC=IRC+1
       JINI=1
-24    JEND=MIN0(JINI-1+NRECL,ISDVC1)
+   24 JEND=MIN0(JINI-1+NRECL,ISDVC1)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVC1)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -152,11 +152,11 @@ C
       IRC=IRC+1
       GOTO 24
 C
-25    CONTINUE
+   25 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 4'
       IRC=IRC+1
       JINI=1
-26    JEND=MIN0(JINI-1+NRECL,ISDVC2)
+   26 JEND=MIN0(JINI-1+NRECL,ISDVC2)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVC2)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -167,11 +167,11 @@ C
       IRC=IRC+1
       GOTO 26
 C
-4     CONTINUE
+    4 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS_BGK'
       IRC=IRC+1
       JINI=1
-5     JEND=MIN0(JINI-1+NRECL,IBGKI)
+    5 JEND=MIN0(JINI-1+NRECL,IBGKI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IBGKI)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -182,11 +182,11 @@ C
       IRC=IRC+1
       GOTO 5
 C
-6     CONTINUE
+    6 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_BGK'
       IRC=IRC+1
       JINI=1
-61    JEND=MIN0(JINI-1+NRECL,JBGKI)
+   61 JEND=MIN0(JINI-1+NRECL,JBGKI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JBGKI)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -197,11 +197,11 @@ C
       IRC=IRC+1
       GOTO 61
 C
-62    CONTINUE
+   62 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS_COP'
       IRC=IRC+1
       JINI=1
-7     JEND=MIN0(JINI-1+NRECL,ICOPI)
+    7 JEND=MIN0(JINI-1+NRECL,ICOPI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ICOPI)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -212,11 +212,11 @@ C
       IRC=IRC+1
       GOTO 7
 C
-8     CONTINUE
+    8 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_COP'
       IRC=IRC+1
       JINI=1
-9     JEND=MIN0(JINI-1+NRECL,JCOPI)
+    9 JEND=MIN0(JINI-1+NRECL,JCOPI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JCOPI)) THEN
         WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
      .                             IRC,JINI,JEND
@@ -227,7 +227,7 @@ C
       IRC=IRC+1
       GOTO 9
 C
-13    CONTINUE
+   13 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'SPECTRA'
       DO ISPC=1,IESTM3
 C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPECTRUM
@@ -330,7 +330,7 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
 C
       JINI=1
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMV'
-10    JEND=MIN0(JINI-1+NRECL,IESTM1)
+   10 JEND=MIN0(JINI-1+NRECL,IESTM1)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IESTM1)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -341,11 +341,11 @@ C
       IRC=IRC+1
       GOTO 10
 C
-15    CONTINUE
+   15 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMS'
       JINI=1
       IRC=IRC+1
-16    JEND=MIN0(JINI-1+NRECL,IESTM2)
+   16 JEND=MIN0(JINI-1+NRECL,IESTM2)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IESTM2)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -356,11 +356,11 @@ C
       IRC=IRC+1
       GOTO 16
 C
-20    CONTINUE
+   20 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 1'
       IRC=IRC+1
       JINI=1
-30    JEND=MIN0(JINI-1+NRECL,ISDVI1)
+   30 JEND=MIN0(JINI-1+NRECL,ISDVI1)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVI1)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -371,11 +371,11 @@ C
       IRC=IRC+1
       GOTO 30
 C
-31    CONTINUE
+   31 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 2'
       IRC=IRC+1
       JINI=1
-32    JEND=MIN0(JINI-1+NRECL,ISDVI2)
+   32 JEND=MIN0(JINI-1+NRECL,ISDVI2)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVI2)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                                      IRC,JINI,JEND
@@ -386,11 +386,11 @@ C
       IRC=IRC+1
       GOTO 32
 C
-33    CONTINUE
+   33 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 3'
       IRC=IRC+1
       JINI=1
-34    JEND=MIN0(JINI-1+NRECL,ISDVC1)
+   34 JEND=MIN0(JINI-1+NRECL,ISDVC1)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVC1)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -401,11 +401,11 @@ C
       IRC=IRC+1
       GOTO 34
 C
-35    CONTINUE
+   35 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS 4'
       IRC=IRC+1
       JINI=1
-36    JEND=MIN0(JINI-1+NRECL,ISDVC2)
+   36 JEND=MIN0(JINI-1+NRECL,ISDVC2)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ISDVC2)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -416,11 +416,11 @@ C
       IRC=IRC+1
       GOTO 36
 C
-40    CONTINUE
+   40 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS_BGK'
       IRC=IRC+1
       JINI=1
-50    JEND=MIN0(JINI-1+NRECL,IBGKI)
+   50 JEND=MIN0(JINI-1+NRECL,IBGKI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IBGKI)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -431,11 +431,11 @@ C
       IRC=IRC+1
       GOTO 50
 C
-60    CONTINUE
+   60 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_BGK'
       IRC=IRC+1
       JINI=1
-65    JEND=MIN0(JINI-1+NRECL,JBGKI)
+   65 JEND=MIN0(JINI-1+NRECL,JBGKI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JBGKI)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -446,11 +446,11 @@ C
       IRC=IRC+1
       GOTO 65
 C
-66    CONTINUE
+   66 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'STATIS_COP'
       IRC=IRC+1
       JINI=1
-70    JEND=MIN0(JINI-1+NRECL,ICOPI)
+   70 JEND=MIN0(JINI-1+NRECL,ICOPI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ICOPI)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -461,11 +461,11 @@ C
       IRC=IRC+1
       GOTO 70
 C
-80    CONTINUE
+   80 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_COP'
       IRC=IRC+1
       JINI=1
-90    JEND=MIN0(JINI-1+NRECL,JCOPI)
+   90 JEND=MIN0(JINI-1+NRECL,JCOPI)
       IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JCOPI)) THEN
         WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
      .                            IRC,JINI,JEND
@@ -476,7 +476,7 @@ C
       IRC=IRC+1
       GOTO 90
 C
-100   CONTINUE
+  100 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'SPECTRA'
       DO ISPC=1,IESTM3
         IRC=IRC+1

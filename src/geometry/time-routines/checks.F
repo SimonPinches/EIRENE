@@ -291,7 +291,7 @@ C  WORKING COORDINATES
       IF(IGJUM0(MSURF).NE.0) NLLLI=0     !VK!!!!!!!!!
       TADD=0.
 C
-1000  TMIN=1.D30
+ 1000 TMIN=1.D30
       TL=1.D30
       MASURF=0
 C
@@ -410,7 +410,7 @@ C  NO
 C
 C  RLB(J) .EQ. 0.  NO FURTHER CONSTRAINS FOR THIS SURFACE. STATEMENT 11---20
 C
-11      IF (TMI.LE.EPS12) GOTO 12
+   11   IF (TMI.LE.EPS12) GOTO 12
         IF (LTSTCXP) THEN
           LCNDEXP =.TRUE.
           GOTO 100
@@ -422,15 +422,15 @@ C
         TMX=TMI
         GOTO 70
 C
-12      IF (TMA.GT.TMIN) THEN
+   12   IF (TMA.GT.TMIN) THEN
           IF (LTSTCXP) LCNDEXP =.TRUE.
           GOTO 100
         END IF
         WR=A2+A1*(TMA+TMA)
-16      XN=X+TMA*VX
+   16   XN=X+TMA*VX
         YN=Y+TMA*VY
         ZN=Z+TMA*VZ
-18      TMX=TMA
+   18   TMX=TMA
         GOTO 70
 C
 C  CHECK BOUNDARY INEQUALITIES OF SURFACE
@@ -439,7 +439,7 @@ C  LGJ=.FALSE.: INTERSECTION POINT IS OUTSIDE THE SPECIFIED AREA
 C
 C  RLB(J) .LT. 0.  STATEMENT 21---30
 C
-21      IF (TMI.LE.EPS12) GOTO 22
+   21   IF (TMI.LE.EPS12) GOTO 22
         WR=A2+A1*(TMI+TMI)
         XN=X+TMI*VX
         YN=Y+TMI*VY
@@ -448,7 +448,7 @@ C
         ICOUNT=1
         GOTO 28
 C
-22      IF (TMA.GT.TMIN) THEN
+   22   IF (TMA.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
             GOTO 100
           ELSE
@@ -456,23 +456,23 @@ C
           END IF
         END IF
         WR=A2+A1*(TMA+TMA)
-26      XN=X+TMA*VX
+   26   XN=X+TMA*VX
         YN=Y+TMA*VY
         ZN=Z+TMA*VZ
         TUP=TMA
         ICOUNT=2
 C
-28      LGJ=.TRUE.
+   28   LGJ=.TRUE.
         IF (ILIN(J).GT.0) THEN
           I=0
-27        I=1+I
+   27     I=1+I
           TST=ALIMS(I,J)+XLIMS(I,J)*XN+YLIMS(I,J)*YN+ZLIMS(I,J)*ZN
           LGJ=TST.LE.0.
           IF (LGJ.AND.I.LT.ILIN(J)) GOTO 27
         ENDIF
         IF (LGJ.AND.ISCN(J).GT.0) THEN
           I=0
-29        I=1+I
+   29     I=1+I
           TST=ALIMS0(I,J)+
      .        XN*(XLIMS1(I,J)+XN*XLIMS2(I,J)+YN*XLIMS3(I,J))+
      .        YN*(YLIMS1(I,J)+YN*YLIMS2(I,J)+ZN*ZLIMS3(I,J))+
@@ -492,7 +492,7 @@ C
 C
 C   RLB(J) .GT. 0.  STATEMENT 31---40
 C
-31      IF (TMI.LE.EPS12) GOTO 32
+   31   IF (TMI.LE.EPS12) GOTO 32
         WR=A2+A1*(TMI+TMI)
         XN=X+TMI*VX
         YN=Y+TMI*VY
@@ -509,7 +509,7 @@ C  IF DISTANCE TOO LARGE: LOOSE INTEREST IN THIS SURFACE
         TMX=TMI
         IF (LGJ) GOTO 70
 C
-32      IF (TMA.GT.TMIN) THEN
+   32   IF (TMA.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
             GOTO 100
           ELSE
@@ -517,10 +517,10 @@ C
           END IF
         END IF
         WR=A2+A1*(TMA+TMA)
-36      XN=X+TMA*VX
+   36   XN=X+TMA*VX
         YN=Y+TMA*VY
         ZN=Z+TMA*VZ
-38      CONTINUE
+   38   CONTINUE
         IF (RLB(J).LT.2.) THEN
           LGJ=XN.LE.XLIMS2(1,J).AND.XN.GE.XLIMS1(1,J).AND.
      .        YN.LE.YLIMS2(1,J).AND.YN.GE.YLIMS1(1,J).AND.
@@ -552,7 +552,7 @@ C  IF DISTANCE TOO LARGE: LOOSE INTEREST IN THIS SURFACE
 C
 C   A1*TMX+A2=0
 C
-40      TMA=-A2/A1
+   40   TMA=-A2/A1
 #ifdef TRACE
         IF (NLTRC)
      .    WRITE (iunout,*) 'TIMEA AT 40, J,TMA,A1,A2 ',J,TMA,A1,A2
@@ -570,7 +570,7 @@ C
 C
 C   A2*TMX+A3=0
 C
-50      IF (A2.EQ.0.) GOTO 100
+   50   IF (A2.EQ.0.) GOTO 100
         TMA=-A3/A2
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 'TIMEA AT 50, J,TMA,A2,A3 ',
@@ -589,7 +589,7 @@ C
 C
 C  A1LM(J).NE.0
 C
-60      CONTINUE
+   60   CONTINUE
         A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
         A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
         IF (A2.EQ.0.) GOTO 100
@@ -612,7 +612,7 @@ C
 C
 C  A2LM(J).NE.0
 C
-63      CONTINUE
+   63   CONTINUE
         A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
         A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
         IF (A2.EQ.0.) GOTO 100
@@ -635,7 +635,7 @@ C
 C
 C  A3LM(J).NE.0
 C
-66      CONTINUE
+   66   CONTINUE
         A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
         A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
         IF (A2.EQ.0.) GOTO 100
@@ -660,7 +660,7 @@ C
 C   DATA RETURNED TO CALLING PROGRAM
 C   TENTATIVELY FOR SURFACE NO. J
 C
-70      TL=TMX+TADD
+   70   TL=TMX+TADD
         TMIN=TMX
         XR=XN
         YR=YN
@@ -679,7 +679,7 @@ C
 C
 C  LOOP OVER SURFACE-INDEX FINISHED
 C
-100   CONTINUE
+  100 CONTINUE
 C
 C **********************************************************************
 C

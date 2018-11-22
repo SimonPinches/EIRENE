@@ -23,7 +23,7 @@ C
       WRITE (iunout,*) 'K,IFRST1,IFRST2 ',K,IFRST1,IFRST2
  
       GOTO (1,2,3),K
-1     IF (IFRST1.EQ.1) THEN
+    1 IF (IFRST1.EQ.1) THEN
         CALL GRNXTF
         RETURN
       ELSE
@@ -31,7 +31,7 @@ C
       ENDIF
       RETURN
 C
-2     IF (IFRST1.EQ.0) THEN
+    2 IF (IFRST1.EQ.0) THEN
         CALL GRSCLC (0.,0.0,39.5,28.7)
         CALL GRSCLC (3.,3.5,39.5,28.7)
         IFRST1=1
@@ -46,7 +46,7 @@ C
       ENDIF
       RETURN
  
-3     CONTINUE
+    3 CONTINUE
       IF (IFRST1.EQ.1) CALL GRNXTF
       IFRST1=0
       IF (IFRST2.EQ.1) THEN

@@ -254,7 +254,7 @@ C
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
             DPL =DPL + DB(I,J)*TEI*DEJ
-150     CONTINUE
+  150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
 C
@@ -271,7 +271,7 @@ C     LINEAR IN PDENA (IONIZATION)
 C  RADIATIVE TRANSITION PROB.  (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD1=SIGADD1+DDA*EINSTEIN
-200     CONTINUE
+  200   CONTINUE
 C
 C     CHANNEL 2
 !WZ:  He emission source rate SIGADD:  PHOTONS/SEC/CM**3
@@ -285,12 +285,12 @@ C
 C  RADIATIVE TRANSITION PROB.  (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD2=SIGADD2+DPP*EINSTEIN
-205     CONTINUE
+  205   CONTINUE
 
 c...............................................................................
 C     to be done: contributions from atomic He ions in TEST IONS
 
-500     CONTINUE
+  500   CONTINUE
 C
 C
         SIGADD=SIGADD1+SIGADD2
@@ -306,7 +306,7 @@ cdr tbd: rausziehen hinter 1000, ist eh nur constanter faktor E_DIFF, only total
 C
         POWALF =POWALF +SIGADD *E_DIFF*VOL(NCELL)
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
 cdr at this place we know: voltal(icoarse)=sum(vol(ifine))
 
@@ -416,7 +416,7 @@ C
       ifirst=0
       return
 
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. HE_EMIS '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',

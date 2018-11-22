@@ -172,7 +172,7 @@ c  3d grid of tetrahedra
 
       return
 
-999   continue
+  999 continue
       write (iunout,*) ' levgeo = ',levgeo,' to be written in',
      .                 ' subroutine cell_to_corner '
       write (iunout,*) ' calculation abandoned '

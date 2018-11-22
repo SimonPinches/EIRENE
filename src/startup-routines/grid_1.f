@@ -47,17 +47,17 @@ C NO.
  
       DO 101 J=1,N2
         C(J)=C1+DBLE(J-1)/DBLE(N2-1)*(C2-C1)
-101   CONTINUE
+  101 CONTINUE
       DO 102 J=N2+1,N3
         C(J)=C2+DBLE(J-N2)/DBLE(N3-N2)*(C3-C2)
-102   CONTINUE
+  102 CONTINUE
       DO 103 J=N3+1,NT
         C(J)=C3+DBLE(J-N3)/DBLE(NT-N3)*(CT-C3)
-103   CONTINUE
+  103 CONTINUE
 C
       RETURN
 C
-991   CONTINUE
+  991 CONTINUE
       IF (IL.EQ.1) THEN
         WRITE (iunout,*)
      .    'GRID DATA INCONSISTENCY: 1ST GRID.  RGA > RIA ?'
@@ -76,7 +76,7 @@ C
         WRITE (iunout,*) 'C1,C2 = ',C1,C2
       ENDIF
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       IF (IL.EQ.1) THEN
         WRITE (iunout,*)
      .   'GRID DATA INCONSISTENCY: 1ST GRID.  RAA > RGA ?'

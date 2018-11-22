@@ -9,9 +9,9 @@ C*DK MASRR3
       REAL(DP), INTENT(IN) :: B(N), C(N), D(N)
       INTEGER :: J
       WRITE (iunout,60) A
-60    FORMAT (1X,A22)
+   60 FORMAT (1X,A22)
       DO 5 J=1,N
-5        WRITE (iunout,61) J,B(J),C(J),D(J)
-61    FORMAT (1X,I4,1X,3(1PE12.4,3X))
+    5    WRITE (iunout,61) J,B(J),C(J),D(J)
+   61 FORMAT (1X,I4,1X,3(1PE12.4,3X))
       RETURN
       END

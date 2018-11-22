@@ -77,7 +77,7 @@ C
         PVX(IN)=PVX(IN)/PVPV
         PVY(IN)=PVY(IN)/PVPV
 C
-1     CONTINUE
+    1 CONTINUE
       RETURN
       END
 

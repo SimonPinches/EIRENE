@@ -74,7 +74,7 @@ C  2ND EXPONENTIAL
           ZR=RHOZNE(J)-RHOSEP
           PRO(J)=PROSEP*EXP(-ZR/E)
         ENDIF
-20    CONTINUE
+   20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
       END

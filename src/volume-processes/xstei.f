@@ -102,7 +102,7 @@ C ACCUMULATED MASS OF SECONDARIES: ACCMAS (AMU)
       ACCINP=0.D0
 C
       ICOUNT=1
- 85   CONTINUE
+   85 CONTINUE
 
       IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
 
@@ -212,11 +212,11 @@ C
       CHRDIF=CHRDF0
       DO 83 IIO=1,NIONI
         CHRDIF=CHRDIF+PIOEI(IREI,IIO)*NCHRGI(IIO)
-83    CONTINUE
+   83 CONTINUE
 
       DO 84 IP=1,NPLSI
         CHRDIF=CHRDIF+PPLEI(IREI,IP)*NCHRGP(IP)
-84    CONTINUE
+   84 CONTINUE
       PELEI(IREI)=PELEI(IREI)+CHRDIF
 C
 C
@@ -334,7 +334,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               IF (NSTORDR >= NRAD) THEN
                 DO 101 J=1,NSBOX
                   EELEI1(IREI,J)=EELEC
-101             CONTINUE
+  101           CONTINUE
                 NELREI(IREI)=0
               ELSE ! NOT SUFFICIENT STORADE ON EELEI1
                 NELREI(IREI)=0
@@ -349,7 +349,7 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
                 DO 103 J=1,NSBOX
                   IF (LGVAC(J,NPLS+1)) CYCLE
                   EELEI1(IREI,J)=-1.5*TEIN(J)
-103             CONTINUE
+  103           CONTINUE
                 NELREI(IREI)=0
               ELSE ! NOT SUFFICIENT STORADE ON EELEI1
                 JELREI(IREI)=-2
@@ -370,7 +370,7 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
      .                                TEINL(J),
      .                                0._DP,.TRUE.,0)*DEIN(J)*FACTKK/
      .                                (TABEI1(IREI,J)+EPS60)
-102                 CONTINUE
+  102               CONTINUE
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=1
                   ELSE
@@ -434,7 +434,7 @@ C  4.B1)  RATE = CONST.*RATECOEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
             EHVEI1(IREI,J)=EHEAVY
-201       CONTINUE
+  201     CONTINUE
           NHVREI(IREI)=0
         ELSE
           NHVREI(IREI)=0
@@ -456,7 +456,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
               IF (LGVAC(J,NPLS+1)) CYCLE
               EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
      .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
-202         CONTINUE
+  202       CONTINUE
             NHVREI(IREI)=KREAD
           ELSE
             NHVREI(IREI)=KREAD
@@ -510,7 +510,7 @@ C  ATOM SECONDARIES
      +                      PATEI(IREI,IAT)
         P2ND(IREI,IA)=P2ND(IREI,IA-1)+
      +                      P2ND(IREI,IA)
-510   CONTINUE
+  510 CONTINUE
 C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
@@ -518,7 +518,7 @@ C  MOLECULE SECONDARIES
      +                      PMLEI(IREI,IML)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
-520   CONTINUE
+  520 CONTINUE
 C  TEST ION SECONDARIES 
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
@@ -526,12 +526,12 @@ C  TEST ION SECONDARIES
      +                      PIOEI(IREI,IIO)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
-530   CONTINUE
+  530 CONTINUE
 C  BULK SECONDARIES (NOT ON P2ND)
       DO 540 IPP=1,NPLSI
         PPLEI(IREI,0)=PPLEI(IREI,0)+
      +                      PPLEI(IREI,IPP)
-540   CONTINUE
+  540 CONTINUE
 C
 C  TOTAL NUMBER OF SECONDARIES
       P2NEI(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
@@ -545,7 +545,7 @@ C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       DO 550 ISPZ=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
      .  P2ND(IREI,ISPZ)=P2ND(IREI,ISPZ)/P2N
-550   CONTINUE
+  550 CONTINUE
 C
       RETURN
 C
@@ -572,7 +572,7 @@ C
         if (en > ea) imax=irad
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
-875   CONTINUE
+  875 CONTINUE
  
       WRITE (iunout,*) 'BACKGROUND SECONDARIES:'
 
@@ -597,14 +597,14 @@ C
         END IF
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
-876   CONTINUE
+  876 CONTINUE
       IF (PPLEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'BULK IONS: PPLEI '
         DO 874 IPP=1,NPLSI
           IP=NSPAMI+IPP
           IF (PPLEI(IREI,IPP).NE.0.D0)
      .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLEI(IREI,IPP)
-874     CONTINUE
+  874   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLEI(IREI,0,1),
@@ -636,7 +636,7 @@ C
           IA=NSPH+IAT
           IF (PATEI(IREI,IAT).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IA),PATEI(IREI,IAT)
-871     CONTINUE
+  871   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EATEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EATEI(IREI,0,1),
@@ -656,7 +656,7 @@ C
           IM=NSPA+IML
           IF (PMLEI(IREI,IML).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLEI(IREI,IML)
-872     CONTINUE
+  872   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EMLEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLEI(IREI,0,1),
@@ -676,7 +676,7 @@ C
           IO=NSPAM+IIO
           IF (PIOEI(IREI,IIO).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IO),PIOEI(IREI,IIO)
-873     CONTINUE
+  873   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EIOEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EIOEI(IREI,0,1),
@@ -691,7 +691,7 @@ C
         ENDIF
       ENDIF
 
-880   CONTINUE 
+  880 CONTINUE 
 
       CALL EIRENE_LEER(1)
 
@@ -718,21 +718,21 @@ C
 C
 C-----------------------------------------------------------------------
 C
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI, MODCLF(KK) ',MODCLF(KK)
       WRITE (iunout,*) IREI,KK
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: ISCDE FLAG'
       WRITE (iunout,*) 'IREI, EFLAG ',IREI,EFLAG
       CALL EIRENE_EXIT_OWN(1)
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'
       WRITE (iunout,*) IREI,KREAD
       CALL EIRENE_EXIT_OWN(1)

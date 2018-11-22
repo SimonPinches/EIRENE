@@ -98,7 +98,7 @@ C
         LCOLM(I)=P(1,I)**2+P(2,I)**2+P(3,I)**2+P(4,I)**2.GT.EPS30
         IF (LROW(I)) IROW=IROW+1
         IF (LCOLM(I)) ICOL=ICOL+1
-1     CONTINUE
+    1 CONTINUE
 C
       IF (IROW.EQ.0) THEN
 C  NO ROW IS NON ZERO, I.E. NO PARTICLES FOLLOWED
@@ -119,7 +119,7 @@ C                                    OR  ONLY TEST IONS ARE FOLLOWED
                FC(4)=B(I)/P(I,4)
              ENDIF
            ENDIF
-10       CONTINUE
+   10    CONTINUE
 C
 C
       ELSEIF (IROW.EQ.2) THEN
@@ -135,13 +135,13 @@ C  DETERMINE THE INDICES FOR THE NON ZERO ROWS
               J2=J
             ENDIF
           ENDIF
-20      CONTINUE
+   20   CONTINUE
 C
         IF (ICOL.EQ.1) THEN
 C  ONLY ONE COLUMN IS NON ZERO
           DO 30 I=1,4
             IF (LCOLM(I)) FC(I)=B(J1)/P(J1,I)
-30        CONTINUE
+   30     CONTINUE
 C
         ELSE
 C  MORE THAN ONE COLUMN IS NON ZERO
@@ -157,7 +157,7 @@ C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
                 EXIT
               ENDIF
             ENDIF
-40        CONTINUE
+   40     CONTINUE
 C
 ! nur spalten rechts von spalte i2 koennen noch werte enthalten
           DO I=I2+1,4
@@ -297,7 +297,7 @@ C
         IF (ICOL.EQ.1) THEN
           DO 50 I=1,4
             IF (LCOLM(I)) FC(I)=B(I)/P(1,I)
-50        CONTINUE
+   50     CONTINUE
 C
         ELSEIF (ICOL.EQ.2) THEN
           I1=0
@@ -311,7 +311,7 @@ C  DETERMINE THE INDICES FOR THE NON ZERO COLUMNS
                 I2=I
               ENDIF
             ENDIF
-60        CONTINUE
+   60     CONTINUE
 C
           FNEN=P(1,I1)*P(2,I2)-P(2,I1)*P(1,I2)
           IF (ABS(FNEN).GT.EPS12) THEN
@@ -397,7 +397,7 @@ C  THE WHOLE MATRIX IS TO BE USED
         ENDIF
       ENDIF
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
 !  FOR THE TIME BEING
 

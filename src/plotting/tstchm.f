@@ -94,7 +94,7 @@ C
           TIME=(YT-YTO)/(YTN-YTO)
           XT=XTO+TIME*(XTN-XTO)
         ENDIF
-146     CONTINUE
+  146   CONTINUE
         IINDEX=2
       ELSEIF (TESTN.EQ.0..AND.TESTO.NE.0.) THEN
         IF (TBDXO.LT.0.) THEN
@@ -117,7 +117,7 @@ C
           TIME=(YT-YTN)/(YTN-YTO)
           XT=XTN+TIME*(XTN-XTO)
         ENDIF
-148     CONTINUE
+  148   CONTINUE
         IINDEX=3
       ELSE
         TESTX=ABS(TBDXO+TBDXN)
@@ -172,7 +172,7 @@ C
           ENDIF
         ENDIF
       ENDIF
-100   TESTO=TESTN
+  100 TESTO=TESTN
       TBDXO=TBDXN
       TBDYO=TBDYN
       XTO=XTN

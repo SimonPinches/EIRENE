@@ -204,7 +204,7 @@ C
       END IF  ! MY_PE == 0
 C
 C  each internal iteration or internal time-step (fixed plasma) starts here
-101   CONTINUE
+  101 CONTINUE
 C  IITER=... , ITIME=...
 
       CALL EIRENE_PLNXTB(3,'EIRENE.F')
@@ -300,7 +300,7 @@ C
             WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
      .                              ' NPTS(MOD)= ',NRECOM(ISTRAI)
             NPTS(ISTRAI)=NRECOM(ISTRAI)
-162       CONTINUE
+  162     CONTINUE
         ENDIF
 C
 C  IF NLERG:
@@ -332,7 +332,7 @@ C    .        'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
 C
 C               2.         PLOT GEOMETRY
 C
-200     CONTINUE
+  200   CONTINUE
         IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
 
 C       TIMI=EIRENE_SECOND_OWN()
@@ -342,7 +342,7 @@ C       WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION
 C
-300     CONTINUE
+  300   CONTINUE
 
       END IF   ! MY_PE == 0
 
@@ -355,7 +355,7 @@ C  MAIN  MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
 C
 C               4.         OUTPUT , INTERFACE  AND PLOTTING
 C
-400   CONTINUE
+  400 CONTINUE
 C
 C  POST-PROCESSING: OUTPUT FOR SELECTED STRATA AND/OR SUM OVER STRATA
 C
@@ -367,7 +367,7 @@ C
      .        CALL EIRENE_OUTEIR(ISTRA)
           IF (PLTSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.PLTSRC(0)))
      .        CALL EIRENE_PLTEIR(ISTRA)
-450   CONTINUE
+  450 CONTINUE
 C
 
 

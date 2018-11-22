@@ -321,7 +321,7 @@ cdr  the reduced single parameter fit coefficients at fixed AL1 are returned on 
       endif
 
 
-100   CONTINUE
+  100 CONTINUE
 
 cdr  split the fit evaluation into two steps.
 cdr  first:   p1=al1 dependence, to provide collapsed fit dum(..)

@@ -23,7 +23,7 @@ C
          DO 2 K=N0,N1
             WRITE (iunout,'(1X,I4,1X,A1,12(1X,10L1))') K,'I',
      .       (EIRENE_BITGET(NLFLD,NFIRST0,NFIRST1,K,J,NBITS),J=JA,JE)
-2        CONTINUE
-1     CONTINUE
+    2    CONTINUE
+    1 CONTINUE
       RETURN
       END

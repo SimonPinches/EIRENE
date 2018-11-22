@@ -31,7 +31,7 @@ C
         FC1(J)=-ZCPHI
         FC2(J)=ZSPHI*ZCTHET
         FC3(J)=ZSPHI*ZSTHET
-100   CONTINUE
+  100 CONTINUE
       INIV4=IRNDVC
       RETURN
       END

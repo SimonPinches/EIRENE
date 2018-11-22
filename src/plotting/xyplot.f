@@ -13,7 +13,7 @@ C
 C
       NBEG=1
       IANF=3
-1     CONTINUE
+    1 CONTINUE
       DO 2 I=IANF+2,NC,2
         DXY=ABS(XY(IANF)-XY(I))+ABS(XY(IANF+1)-XY(I+1))
         IF (DXY.LT.1.E-3) THEN
@@ -41,11 +41,11 @@ C
           IANF=IANF+4
           GOTO 1
         ENDIF
-2     CONTINUE
+    2 CONTINUE
 C
       CALL GRJMP (REAL(XY(NBEG),KIND(1.E0)),REAL(XY(NBEG+1),KIND(1.E0)))
       DO 5 I=NBEG+2,IANF,4
-5       CALL GRDRW (REAL(XY(I),KIND(1.E0)),REAL(XY(I+1),KIND(1.E0)))
+    5   CALL GRDRW (REAL(XY(I),KIND(1.E0)),REAL(XY(I+1),KIND(1.E0)))
 C
       IF (IANF.LT.NC-1) THEN
         NBEG=IANF+2

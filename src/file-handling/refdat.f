@@ -115,7 +115,7 @@ C  HARD-WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files.
         TCC(J)=TCL(J)
         WMM(J)=WML(J)
         WCC(J)=WCL(J)
-10    CONTINUE
+   10 CONTINUE
 
 c  INE=12 incident energies 
 c  (not to be confused with the nhd6=12 projectile-target cases)
@@ -230,7 +230,7 @@ c  7*5*5*5:  azimuthal angle quantiles
     1 CONTINUE
 C
 
-661   FORMAT (4E20.12)
+  661 FORMAT (4E20.12)
 
 
       RETURN

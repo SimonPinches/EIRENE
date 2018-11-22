@@ -81,7 +81,7 @@ c  else: jhvrei=9:   densiy dependent KER, to be written
       RETURN
 
 
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'FEHVEI1: INVALID PARAMETER NHVREI '
       WRITE (IUNOUT,*) 'IREI, NHVREI ',IREI,NHVREI
       CALL EIRENE_EXIT_OWN(1)

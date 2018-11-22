@@ -15,7 +15,7 @@ C
       S=SIN(W3)
       C=COS(W3)
       WO=W3
-1     CONTINUE
+    1 CONTINUE
 C
       XS=X1
       X1=C*XS+S*Z1

@@ -139,12 +139,12 @@ C
             ELSE
               DO 110 I=1,NSBOX_TAL
                 VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,I)
-110           CONTINUE
+  110         CONTINUE
           END IF
 
             TALTOT(K)=OUTAUI
             TALAV(K)=TALTOT(K)/VOLTOT
- 119      CONTINUE
+  119     CONTINUE
 C
           FNAME = 'outtal_   '
           WRITE (FNAME(8:9),'(i0)') ITAL
@@ -190,7 +190,7 @@ C
 
           CLOSE (UNIT=IOUT)
 C
-100     CONTINUE
+  100   CONTINUE
       
         LFIRST = .FALSE.
 

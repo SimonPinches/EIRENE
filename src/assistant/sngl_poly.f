@@ -57,7 +57,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(par
             IF8=9-II
             EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at left boundary -->EXPO1=log(fit)
             EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(1.25*parleft), parleft= left boundary
- 1        CONTINUE
+    1     CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
           FP(1)=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
@@ -112,7 +112,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(par
             IF8=9-II
             EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at right boundary -->EXPO1=log(fit)
             EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(0.75*parright), parright= right boundary
-2         CONTINUE
+    2     CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
           FP(4)=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
@@ -154,7 +154,7 @@ C  WHAT TO WE DO NOW ???
  
 C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
  
-100   cou = cf(9)
+  100 cou = cf(9)
  
       do ii = 8, 1, -1
         cou = cou * p1 + cf(ii)

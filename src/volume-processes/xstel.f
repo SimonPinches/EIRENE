@@ -155,7 +155,7 @@ C           NEND=1
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
-245         CONTINUE
+  245       CONTINUE
           ELSEIF (MODC.EQ.2) THEN
 C           NEND=9
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
@@ -250,7 +250,7 @@ c        WITH WEIGHTING/REJECTION
           IF (NSTORDR >= NRAD) THEN
             DO 251 J=1,NSBOX
               EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
-251         CONTINUE
+  251       CONTINUE
             NELREL(IREL) = -1
           ELSE
             NELREL(IREL) = -1
@@ -267,7 +267,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 252 J=1,NSBOX
               EPLEL3(IREL,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-252         CONTINUE
+  252       CONTINUE
             NELREL(IREL) = -3
           ELSE
             NELREL(IREL) = -3
@@ -282,7 +282,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
               EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
-2511        CONTINUE
+ 2511       CONTINUE
             NELREL(IREL) = -2
           ELSE
             NELREL(IREL) = -2
@@ -332,7 +332,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
      .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
-254           CONTINUE
+  254         CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM)
@@ -357,7 +357,7 @@ c old
 
                 EPLEL3(IREL,J,1:9) = CF(1:9)
                 EPLEL3(IREL,J,1) = EPLEL3(IREL,J,1)+DIINL(IPL,J)+ADDL
-257           CONTINUE
+  257         CONTINUE
             ENDIF
 
           ELSE  ! STORAGE SAVING MODE, no pre-defined tallies eplel3
@@ -461,11 +461,11 @@ C
 
       RETURN
 C
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEL, SPECIES ISP: '
       WRITE (iunout,*) ISP,IREL
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEL: EXIT CALLED '
       WRITE (iunout,*)
      .  'STORAGE SAVING MODE NOT READY; KK, IREL'

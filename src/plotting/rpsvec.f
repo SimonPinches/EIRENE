@@ -120,8 +120,8 @@ C  PROJECTION INTO X,Z PLANE
             WRITE (NRAPS+ifoff,*) BETRAG
             YWERT(IR,IT)=YWERT(IR,IT)/(BETRAG+1.D-20)
             ZWERT(IR,IT)=ZWERT(IR,IT)/(BETRAG+1.D-20)
-3100      CONTINUE
-1100    CONTINUE
+ 3100     CONTINUE
+ 1100   CONTINUE
 C
 C
 C  PROJECTION INTO X,Y PLANE,  CARTHESIAN
@@ -137,8 +137,8 @@ C  PROJECTION INTO X,Y PLANE,  CARTHESIAN
             WRITE (NRAPS+ifoff,*) BETRAG
             YWERT(IR,IP)=YWERT(IR,IP)/(BETRAG+1.D-20)
             ZWERT(IR,IP)=ZWERT(IR,IP)/(BETRAG+1.D-20)
-3101      CONTINUE
-1101    CONTINUE
+ 3101     CONTINUE
+ 1101   CONTINUE
 C
 C  PROJECTION INTO X,Y PLANE, POLAR OR GENERAL CURVILINEAR (POLYGON)
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.NLPOL
@@ -154,9 +154,9 @@ C  PROJECTION INTO X,Y PLANE, POLAR OR GENERAL CURVILINEAR (POLYGON)
               WRITE (NRAPS+ifoff,*) BETRAG
               YWERT(IR,IP)=YWERT(IR,IP)/(BETRAG+1.D-20)
               ZWERT(IR,IP)=ZWERT(IR,IP)/(BETRAG+1.D-20)
-30          CONTINUE
-20        CONTINUE
-10      CONTINUE
+   30       CONTINUE
+   20     CONTINUE
+   10   CONTINUE
 C
       ELSEIF (LEVGEO.EQ.4) THEN
         DO 60 I=1,NRKNOT
@@ -168,7 +168,7 @@ C
           WRITE (NRAPS+ifoff,*) BETRAG
           YWERT1(I,1)=YWERT1(I,1)/(BETRAG+1.D-20)
           ZWERT1(I,1)=ZWERT1(I,1)/(BETRAG+1.D-20)
-60      CONTINUE
+   60   CONTINUE
 C
       ELSE
         WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSVEC: PLOT ABANDONNED '
@@ -277,7 +277,7 @@ C  SIDE 8
               ENDIF
             ENDIF
             CYCLE IPLOOP1
-101         CONTINUE
+  101       CONTINUE
             ywert(IR,IP)=ywert(IR,IP)*xl*0.9
             zwert(IR,IP)=zwert(IR,IP)*xl*0.9
           ENDDO IPLOOP1
@@ -380,7 +380,7 @@ C  SIDE 8
                 ENDIF
               ENDIF
               CYCLE IPLOOP2
-100           CONTINUE
+  100         CONTINUE
               ywert(IR,IP)=ywert(IR,IP)*xl*0.9
               zwert(IR,IP)=zwert(IR,IP)*xl*0.9
             ENDDO IPLOOP2
@@ -406,8 +406,8 @@ C  SIDE 8
           DO 51 J=0,30
             DO 51 K=1,2
             ZUORD(I,J,K) = 0
-51        CONTINUE
-41      CONTINUE
+   51     CONTINUE
+   41   CONTINUE
         DO 40 J=1,NTRII
           DO 50 I=1,3
             ZUORD(NECKE(I,J),0,1) = ZUORD(NECKE(I,J),0,1) + 1
@@ -418,8 +418,8 @@ c zuord darf maximal 30 werden
             endif
             ZUORD(NECKE(I,J),ZUORD(NECKE(I,J),0,1),1) = J
             ZUORD(NECKE(I,J),ZUORD(NECKE(I,J),0,1),2) = I
-50        CONTINUE
-40      CONTINUE
+   50     CONTINUE
+   40   CONTINUE
         DO 61 I=1,NRKNOT
           IF (ZUORD(I,0,1).LT.1) THEN
             WRITE (iunout,*) 'ERROR IN RPSVEC: POINT ',I,' NOT IN MESH'
@@ -444,13 +444,13 @@ c
               zwert1(i,1)=zwert1(i,1)*xl*0.9
               goto 61
             endif
-70        CONTINUE
+   70     CONTINUE
 c   no intersection found.
 c   point I is on a boundary, and the vector is pointing outside
 c   the computational volume. don't plot it.
           YWERT1(I,1) = 0.
           YWERT1(I,1) = 0.
-61      continue
+   61   continue
  
         DO I=1,NRKNOT
           BETRAG=SQRT(YWERT1(I,1)**2+ZWERT1(I,1)**2)

@@ -159,7 +159,7 @@ C  NOTHING TO BE DONE
         RETURN
       ENDIF
 
-10    CONTINUE
+   10 CONTINUE
 C
       IF (ISTRA.EQ.0)
      .HEAD='SUM OVER STRATA
@@ -230,7 +230,7 @@ C  REDO ALGEBRAIC TALLY IN CASE NFILEN=2 OR NFILEN=7
      .                       ALGVI(IALV,ISTRA),
      .                       NR1TAL,NP2TAL,NT3TAL,NBMLT)
                 ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-105           CONTINUE
+  105         CONTINUE
             ENDIF
             ITL=IABS(JTAL)
 C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
@@ -264,7 +264,7 @@ C
             IF (JTAL.LT.0.) THEN
               NF=NFRSTP(ITL)
               DO 111 I=1,NRAD
-111             VECTOR(I,ICURV)=0.
+  111           VECTOR(I,ICURV)=0.
               IF (ISPZ.EQ.0) THEN
                 SELECT CASE (ITL)
                 CASE (1)
@@ -390,16 +390,16 @@ C
               NF=NFIRST(ITL)
               IF (ISPZ.EQ.0) THEN
                 DO 121 I=1,NRAD
-121               VECTOR(I,ICURV)=0.
+  121             VECTOR(I,ICURV)=0.
                 DO 122 K=1,NFT
                   DO 122 I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
      .                              ESTIMV(NADDV(ITL)+K,NCLTAL(I))
-122             CONTINUE
+  122           CONTINUE
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NFT) THEN
                 DO 125 I=1,NRAD
                   VECTOR(I,ICURV)=ESTIMV(NADDV(ITL)+ISPZ,NCLTAL(I))
-125             CONTINUE
+  125           CONTINUE
               ELSE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
@@ -421,8 +421,8 @@ C  CHECK IF STANDARD DEVIATION IS AVAILABLE FOR THIS TALLY
                   LSDVI(ICURV)=.TRUE.
                   DO 127 I=1,NRAD
                     VSDVI(I,ICURV)=SIGMA(N,NCLTAL(I))
-127               CONTINUE
-126             CONTINUE
+  127             CONTINUE
+  126           CONTINUE
               ENDIF
 C
             ENDIF
@@ -430,10 +430,10 @@ C
             IF (PLTL2D(IBLD) .AND. PLTL3D(IBLD)) THEN
               DO 129 I=1,NRAD
                 VECSAV(I,ICURV)=VECTOR(I,ICURV)
-129           CONTINUE
+  129         CONTINUE
             END IF
 C
-110       CONTINUE
+  110     CONTINUE
 C
 C ...................................
 C                                   .
@@ -494,13 +494,13 @@ C   USE RADIAL SURFACE CENTERED GRID "RHOSRF"
 C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
               DO 130 I=1,NR1ST
                 XXP2D(I)=RHOSRF(I)
-130           CONTINUE
+  130         CONTINUE
               DO 131 J=2,NP2ND*NT3RD*NBMLT
                 DO 131 I=1,NR1ST
                   XXP2D(I+(J-1)*NR1ST)=XXP2D(I)
-131            CONTINUE
+  131          CONTINUE
               DO 138 I=NSURF+1,NRAD
-138             XXP2D(I)=0.
+  138           XXP2D(I)=0.
               IXSET2=1
             ELSEIF (LEVGEO.EQ.3) THEN
 C   USE PERPEND. ARCLENGTH "BGLP" IN CASE OF POLYGON GRID, 
@@ -510,9 +510,9 @@ C   ...FOR EACH POLOIDAL AND TOROIDAL POSITION, IF APPLICABLE
                   DO 133 K=1,NT3RD
                     IRAD=I+((J-1)+(K-1)*NP2T3)*NR1P2
                     XXP2D(IRAD)=BGLP(I,J)
-133           CONTINUE
+  133         CONTINUE
               DO 136 I=NSURF+1,NRAD
-136             XXP2D(I)=0.
+  136           XXP2D(I)=0.
               IXSET2=1
             ELSE
 C   NO 2D PLOTOPTIONS AVAILABLE
@@ -520,7 +520,7 @@ C   NO 2D PLOTOPTIONS AVAILABLE
             XMI=XXP2D(NPLIN2(IBLD,1))*(1.+1.E-6)
             XMA=XXP2D(NPLOT2(IBLD,1))/(1.+1.E-6)
 C
-139         CONTINUE
+  139       CONTINUE
 C
             IF (IXSET2.NE.1) THEN
               WRITE (iunout,*) ' NO GRID SET FOR 2D PLOTTING '
@@ -535,7 +535,7 @@ C
             IF (LSMOT2(IBLD)) THEN
               DO 137 J=1,NRAD-1
                 XXP2D(J)=(XXP2D(J)+XXP2D(J+1))*0.5
-137           CONTINUE
+  137         CONTINUE
             ENDIF
 C
             DO 140 ICURV=1,NSPTAL(IBLD)
@@ -579,10 +579,10 @@ C
 C YMNLG2, YMXLG2: REAL MAX/MIN, FOR LEGENDE ON 2D PLOT ONLY
               DO 141 I=I1,I2M,IS
                 YMNLG2(ICURV)=MIN(YMNLG2(ICURV),VECTOR(I,ICURV))
-141           CONTINUE
+  141         CONTINUE
               DO 142 I=I1,I2M,IS
                 YMXLG2(ICURV)=MAX(YMXLG2(ICURV),VECTOR(I,ICURV))
-142           CONTINUE
+  142         CONTINUE
 C
 C YMN2, YMX2: FOR AXIS
               FITY=.TRUE.
@@ -591,7 +591,7 @@ C YMN2, YMX2: FOR AXIS
                 YMN2(ICURV)=TALZMI(IBLD)
                 DO 143 I=1,NRAD
                   VECTOR(I,ICURV)=MAX(YMN2(ICURV),VECTOR(I,ICURV))
-143             CONTINUE
+  143           CONTINUE
                 IF (LOGY) YMN2(ICURV)=YMN2(ICURV)*(1.+1.E-6)
               ELSE
                 YMN2(ICURV)=YMNLG2(ICURV)
@@ -602,12 +602,12 @@ C
                 YMX2(ICURV)=TALZMA(IBLD)
                 DO 144 I=1,NRAD
                   VECTOR(I,ICURV)=MIN(YMX2(ICURV),VECTOR(I,ICURV))
-144             CONTINUE
+  144           CONTINUE
                 IF (LOGY) YMX2(ICURV)=YMX2(ICURV)/(1.+1.E-6)
               ELSE
                 YMX2(ICURV)=YMXLG2(ICURV)
               ENDIF
-140         CONTINUE
+  140       CONTINUE
 C
 C  PLOT ALL CURVES REQUESTED FROM THIS TALLY INTO ONE PICTURE
             DO 150 ICURV=1,NSPTAL(IBLD)
@@ -631,7 +631,7 @@ C  PLOT ALL CURVES REQUESTED FROM THIS TALLY INTO ONE PICTURE
                   TXUNIT(ICURV)=TXTUNT(ISPZ,ITL)
                 ENDIF
               ENDIF
-150         CONTINUE
+  150       CONTINUE
             IERR=0
             L_SAME=.FALSE.
             CALL EIRENE_PLTTLY (XXP2D,VECTOR,VSDVI,YMN2,YMX2,
@@ -655,12 +655,12 @@ C  PLOT ALL CURVES REQUESTED FROM THIS TALLY INTO ONE PICTURE
      .                        ' YMIN= ',YMNLG2(ICURV),
      .                        ' YMAX= ',YMXLG2(ICURV),
      .                        ' LSDVI= ',LSDVI(ICURV)
-160           CONTINUE
+  160         CONTINUE
             ENDIF
 C
           ENDIF
 C
-1000      CONTINUE
+ 1000     CONTINUE
 C
 C   3D PLOT GRID
 C
@@ -670,7 +670,7 @@ C
               IF (PLTL2D(IBLD)) THEN
                 DO 1035 I=1,NRAD
                    VECTOR(I,ICURV)=VECSAV(I,ICURV)
-1035            CONTINUE
+ 1035           CONTINUE
               END IF
 C  SYMMETRY CONDITION AT POLAR ANGLE THETA=YIA AND THETA=2*PI+YIA
 C  NOT READY: IXTL3 NOT DEFINED HERE. ENFORCE SYMMETRY AUTOMATICALLY EARLIER
@@ -678,7 +678,7 @@ C             IF (LEVGEO.EQ.2.AND.IYTL3.EQ.NP2ND) THEN
 C               DO 1036 I=1,IXTL3
 C1036             VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
 C             ENDIF
-1040        CONTINUE
+ 1040       CONTINUE
 C
 C SET QUASIRECTANGULAR PLOT GRIDS XXP3D (IX), IX=1,IXTL3
 C                             AND YYP3D (IY), IY=1,IYTL3
@@ -713,14 +713,14 @@ c  at this point: either lppol3 or lptor3 must be true
 c  set a x-y or a x-z grid, by abuse of notation on xxp3d,yyp3d
                 IXTL3=NR1ST
                 DO 218 I=1,IXTL3
-218               XXP3D(I)=RHOSRF(I)
+  218             XXP3D(I)=RHOSRF(I)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
 c  at this point:  lppol3 must be true, i.e. we need x-z grid
                 IYTL3=NT3RD
                 DO 220 I=1,IYTL3
-220               YYP3D(I)=ZSURF(I)
+  220             YYP3D(I)=ZSURF(I)
                 DO I=1,NR1ST
                   DO J=1,NT3RD
                     XPOL(I,J)=RHOSRF(I)
@@ -733,7 +733,7 @@ c  at this point:  lppol3 must be true, i.e. we need x-z grid
 c  at this point: lptor3 must be true, i.e. we need x-y grid
                 IYTL3=NP2ND
                 DO 221 I=1,IYTL3
-221               YYP3D(I)=PSURF(I)
+  221             YYP3D(I)=PSURF(I)
                 DO I=1,NR1ST
                   DO J=1,NP2ND
                     XPOL(I,J)=RHOSRF(I)
@@ -748,19 +748,19 @@ C
               IF (NLRAD.AND..NOT.LPRAD3(IBLD)) THEN
                 IXTL3=NR1ST
                 DO 223 I=1,IXTL3
-223               XXP3D(I)=RHOSRF(I)
+  223             XXP3D(I)=RHOSRF(I)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
                 IYTL3=NT3RD
                 DO 226 I=1,IYTL3
-226               YYP3D(I)=ZSURF(I)
+  226             YYP3D(I)=ZSURF(I)
                 IYSET3=1
               ENDIF
               IF (NLPOL.AND..NOT.LPPOL3(IBLD)) THEN
                 IYTL3=NP2ND
                 DO 225 I=1,IYTL3-1
-225               YYP3D(I)=0.5*(PSURF(I+1)+PSURF(I))
+  225             YYP3D(I)=0.5*(PSURF(I+1)+PSURF(I))
                 YYP3D(NP2ND)=PSURF(1)+PI2A
                 IYSET3=1
               ENDIF
@@ -770,11 +770,11 @@ C
               IF (LPTOR3(IBLD)) THEN
                 IXTL3=NR1ST
                 DO 228 IX=1,IXTL3
-228               XXP3D(IX)=IX
+  228             XXP3D(IX)=IX
                 IXSET3=1
                 IYTL3=NP2ND
                 DO 230 IX=1,IYTL3
-230               YYP3D(IX)=IX
+  230             YYP3D(IX)=IX
                 IYSET3=1
               ENDIF
 C
@@ -833,7 +833,7 @@ C
               TMIN=TALZMI(IBLD)
               TMAX=TALZMA(IBLD)
 C
-1200          CONTINUE
+ 1200         CONTINUE
 C
 C
 C  CONTOUR PLOTS
@@ -903,7 +903,7 @@ C
                     VECTOR(I,ICURV)=101._DP
                     INULL = INULL + 1
                   END IF
-1222            CONTINUE
+ 1222           CONTINUE
                 LINLOG=.FALSE.
                 TMIN=0.
                 TMAX=100.
@@ -919,7 +919,7 @@ C
                 GOTO 1200
               ENDIF
 C
-1160        CONTINUE
+ 1160       CONTINUE
 C  LOOP ICURV FINISHED
           ENDIF
 C

@@ -93,7 +93,7 @@ C                        /C1 C2 C3/
 C
 C  2. FALL: CZ=1. ODER CZ=-1., D.H. CX=CY=0.
 C
- 1    CONTINUE
+    1 CONTINUE
 C     A2=0.
 C     B2=-CZ
 C     C2=0.
@@ -143,7 +143,7 @@ C
 C  FAST VERSION
 C  2. FALL: CZ=1. ODER CZ=-1., D.H. CX=CY=0.
 C
- 2    CONTINUE
+    2 CONTINUE
 C     A2=0.
 C     B2=-CZ
 C     C2=0.

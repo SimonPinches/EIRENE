@@ -329,7 +329,7 @@ C
             READ (IUNIN,6666) (NP1,NP2,K=1,NPPLG)
             DO 212 I=1,NR1ST
               READ (IUNIN,6664) (XP,YP,    J=1,NRPLG)
-212         CONTINUE
+  212       CONTINUE
           ENDIF
 
           IF (NLFEM .OR. NLTET) THEN
@@ -609,7 +609,7 @@ c   read block 4 and block 5 from external include file, stream fort.2
         IUNIN = 2+ifoff
         OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
 c  read comment lines on external A&M data file FILE45, stream fort.2
-401     READ (IUNIN,'(A72)') ZEILE
+  401   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 401
         IREAD=1  ! now ZEILE contains the first non-comment line from fort.2
         GOTO 402
@@ -621,7 +621,7 @@ C
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
       READ (IUNIN,'(A420)') ZEILE
 
-402   CALL EIRENE_UPPERCASE(ZEILE)
+  402 CALL EIRENE_UPPERCASE(ZEILE)
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
 cdr ............................................
@@ -800,7 +800,7 @@ cpb.......................................
 C
 C  READ DATA FOR PLASMA BACKGROUND, 500--599
 C
-500   WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND'
+  500 WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND'
 C
 C  READ BULK IONS SPECIES CARDS
 C
@@ -1580,11 +1580,11 @@ C
 C
       RETURN
 C
-6664  FORMAT (6E12.4)
-6665  FORMAT (12(5L1,1X))
-6666  FORMAT (12I6)
+ 6664 FORMAT (6E12.4)
+ 6665 FORMAT (12(5L1,1X))
+ 6666 FORMAT (12I6)
 C
-6999  WRITE (IUNOUT,*) 'Empty input file found!'
+ 6999 WRITE (IUNOUT,*) 'Empty input file found!'
       WRITE (IUNOUT,*)
      . 'Either remove it or replace it with a correct file.'
       CALL EIRENE_EXIT_OWN(1)

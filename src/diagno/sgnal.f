@@ -272,7 +272,7 @@ C  H(n=3)/H(n=1)
           chksum = chksum + zds * rate * FAC32 /(4.*PIA) *
      .                      estiml(ispc)%spcs
  
- 500      continue
+  500     continue
           cur => cur%nextc
 !pb associated with two arguments tests if both arguments point to the same target
           if (associated(cur,first)) exit
@@ -298,7 +298,7 @@ C  PRIMARY SOURCE CONTRIBUTION, REFER TO INPUT BLOCK 7
 C  (PRIMARY) VOLUME RECOMBINATION SOURCE:
 C  HOWEVER, THIS STRATUM MIGHT NOT NECESSARILY HAVE BEEN ACTIVE?
         NLVL(ISTR)=NLVOL(ISTR).AND.NLPLS(ISTR)
-10    CONTINUE
+   10 CONTINUE
       NLVL(0)=ANY(NLVL(1:NSTRAI))
 C.................................................................
       IF (NCHTAL(ICHORI).EQ.1) THEN
@@ -318,8 +318,8 @@ C           IF (IATM.LE.0.OR.IATM.GT.NATMI) GOTO 100
 C           DO 101 IR=1,NSBOX
 C             RECADD(IATM,IR)=RECADD(IATM,IR)+
 C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
-101         CONTINUE
-100     CONTINUE
+  101       CONTINUE
+  100   CONTINUE
         write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'
@@ -398,14 +398,14 @@ C  SEARCH FOR NEXT IRRC FOR THIS SAME SOURCE PARTICLE IPLS=NSPEZ(ISTRA)
               RECADD(ICOUNT,IR)=ADD
               SUMM=SUMM+ADD*VOL(IR)*ELCHA
               SUMMt=SUMMt+ADDt*VOL(IR)*ELCHA
-131         CONTINUE
+  131       CONTINUE
             IFLAG=1
             write (iunout,*) 'sgnal, rad: ichord,istra,icount,',
      .                                                     'vol-source',
      .                            ichori,istra,icount,summ,summt
             write (iunout,*) 'ipls, irrc ',texts(nspami+ipls),' ',irrc
             write (iunout,*) 'iphot, isp ',texts(iphot),' ',texts(isp)
-130       CONTINUE
+  130     CONTINUE
           IF (IFLAG.EQ.0) THEN
 C  NO EMISSION FOUND FOR THIS STRATUM, turn off this chord
             LCHOR=.FALSE.
@@ -517,7 +517,7 @@ C  SUM OVER SPECIES INDEX
           ZSI=0.
           DO 239 IS=1,NSPI
             ZSI=ZSI+PSIG(IS)
-239       CONTINUE
+  239     CONTINUE
           BUFFER(ICHORI,JEN)=ZSI
           WRITE (80,'(I6,3ES12.4)') ICHORI,C2
           WRITE (80,'(6ES12.4)') PSIG(0:NSPI)
@@ -544,7 +544,7 @@ C  LINE INTEGRAL: PHOTONS/SEC/CM**2/EV/STERAD (SPECTRAL RADIANCE)
 C  LINE INTEGRAL: USER-SUPPLIED INTEGRAND ALONG LINE OF SIGHT
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
         ENDIF
-231   CONTINUE
+  231 CONTINUE
 C
 C  ENERGY LOOP FINISHED
 C
@@ -570,7 +570,7 @@ C  SCALE RESULT
      .  ('NO SLOPE IN SIGNAL, BECAUSE MAX(BUFFER).LE.0   ')
       PLSPEC=.FALSE.
       GOTO 300
-235   ZSCALE=1./XMAX
+  235 ZSCALE=1./XMAX
       DO 233 I=1,NCHNI
         BUFFER(ICHORI,I)=BUFFER(ICHORI,I)*ZSCALE
         ZZ=MAX(1.E-10_DP,BUFFER(ICHORI,I))
@@ -588,14 +588,14 @@ C  FIND ELEMENTS
       DO 241 JEN=2,NCHNI
         I1=JEN
         IF (ENERGY(I1).GE.ZE1) GO TO 242
-241   CONTINUE
-242   CONTINUE
+  241 CONTINUE
+  242 CONTINUE
 C
       DO 243 JEN=I1,NCHNI
         I2=JEN
         IF (ENERGY(I2).GE.ZE2) GO TO 244
-243   CONTINUE
-244   CONTINUE
+  243 CONTINUE
+  244 CONTINUE
 C
 C   NUMBER OF POINTS FOR FITTING
       IN=I2-I1+1
@@ -619,7 +619,7 @@ C
         WRITE (iunout,*) 'ICHORI,TILINE(ICHORI) ',ICHORI,TILINE(ICHORI)
       ENDIF
  
-300   CONTINUE
+  300 CONTINUE
 C
       IF (NCHTAL(ICHORI).EQ.3) THEN
         DEALLOCATE(RECADD)

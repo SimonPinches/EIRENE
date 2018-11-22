@@ -236,10 +236,10 @@ C
       CHRDIF = CHRDIF-NCHRGP(IPL)
       DO 133 IIO=1,NIONI
         CHRDIF=CHRDIF+PIOPI(IRPI,IIO)*NCHRGI(IIO)
-133   CONTINUE
+  133 CONTINUE
       DO 134 IP=1,NPLSI
         CHRDIF=CHRDIF+PPLPI(IRPI,IP)*NCHRGP(IP)
-134   CONTINUE
+  134 CONTINUE
       PELPI(IRPI)=PELPI(IRPI)+CHRDIF
 C
 C
@@ -286,7 +286,7 @@ C           NEND=1
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABPI3(IRPI,J,1)=COU*DIIN(IPL,J)*FACTKK
-145         CONTINUE
+  145       CONTINUE
           ELSEIF (MODC.EQ.2) THEN
 C           NEND=9
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
@@ -378,7 +378,7 @@ c        WITH WEIGHTING/REJECTION
           IF (NSTORDR >= NRAD) THEN
             DO 151 J=1,NSBOX
               EPLPI3(IRPI,J,1)=EBULK+EDRIFT(IPL,J)
-151         CONTINUE
+  151       CONTINUE
             NELRPI(IRPI) = -2
           ELSE
             NELRPI(IRPI) = -2
@@ -395,7 +395,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 252 J=1,NSBOX
               EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-252         CONTINUE
+  252       CONTINUE
             NELRPI(IRPI) = -3
           ELSE
             NELRPI(IRPI) = -3
@@ -410,7 +410,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
               EPLPI3(IRPI,J,1)=EBULK+EDRIFT(IPL,J)
-2511        CONTINUE
+ 2511       CONTINUE
             NELRPI(IRPI) = -2
           ELSE
             NELRPI(IRPI) = -2
@@ -460,7 +460,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 EPLPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF
      .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
-254           CONTINUE
+  254         CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
@@ -485,7 +485,7 @@ c old
 
                 EPLPI3(IRPI,J,1:9) = CF(1:9)
                 EPLPI3(IRPI,J,1) = EPLPI3(IRPI,J,1)+DIINL(IPL,J)+ADDL
-257           CONTINUE
+  257         CONTINUE
             ENDIF
 
           ELSE  ! STORAGE SAVING MODE, no pre-defined tallies eplpi3
@@ -535,7 +535,7 @@ C  4.3A)  RATE = CONST.*RATE COEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
             EHVPI3(IRPI,J,1)=EHEAVY
-201       CONTINUE
+  201     CONTINUE
           NHVRPI(IRPI)=0
         ELSE
           NHVRPI(IRPI)=0
@@ -557,7 +557,7 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
                 EHVPI3(IRPI,J,1)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
      .                           TII,0._DP,.TRUE.,0)*
      .          DIIN(IPL,J)*FACTKK/(TABPI3(IRPI,J,1)+EPS60)
-202         CONTINUE
+  202       CONTINUE
             NHVRPI(IRPI)=KREAD
           ELSE
             NHVRPI(IRPI)=KREAD
@@ -623,7 +623,7 @@ C  ATOM SECONDARIES
      +                      PATPI(IRPI,IAT)
         P2NP(IRPI,IA)=P2NP(IRPI,IA-1)+
      +                      P2NP(IRPI,IA)
-510   CONTINUE
+  510 CONTINUE
 C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
@@ -631,7 +631,7 @@ C  MOLECULE SECONDARIES
      +                      PMLPI(IRPI,IML)
         P2NP(IRPI,IM)=P2NP(IRPI,IM-1)+
      +                      P2NP(IRPI,IM)
-520   CONTINUE
+  520 CONTINUE
 C  TEST ION SECONDARIES 
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
@@ -639,12 +639,12 @@ C  TEST ION SECONDARIES
      +                      PIOPI(IRPI,IIO)
         P2NP(IRPI,IO)=P2NP(IRPI,IO-1)+
      +                      P2NP(IRPI,IO)
-530   CONTINUE
+  530 CONTINUE
 C  BULK SECONDARIES (NOT ON P2NP)
       DO 540 IPP=1,NPLSI
         PPLPI(IRPI,0)=PPLPI(IRPI,0)+
      +                      PPLPI(IRPI,IPP)
-540   CONTINUE
+  540 CONTINUE
 C
 C  TOTAL NUMBER OF TEST PARTICLE SECONDARIES
       P2NPI(IRPI)=PATPI(IRPI,0)+PMLPI(IRPI,0)+
@@ -659,7 +659,7 @@ CDR  no photon secondaries here, otherwise loop would start with ispz1=1
       DO 550 ISPZ1=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
      .  P2NP(IRPI,ISPZ1)=P2NP(IRPI,ISPZ1)/P2N
-550   CONTINUE
+  550 CONTINUE
 C
       RETURN
 C
@@ -694,7 +694,7 @@ C  ARE SECONDARY ELECTRONS INVOLVED?
           if (en > ea) imax=irad
           EI=MIN(EI,EN)
           EA=MAX(EA,EN)
-875     CONTINUE
+  875   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10.OR.EI.EQ.1.D30) THEN
           WRITE (iunout,*) 'ELECTRONS: PELPI, CONSTANT ENERGY: EEL'
           WRITE (iunout,'(1X,A8,2(1PE12.4))') 'EL      ',PELPI(IRPI),EI
@@ -718,7 +718,7 @@ C
         END IF
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
-876   CONTINUE
+  876 CONTINUE
 
       IF (PPLPI(IRPI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'BULK IONS: PPLPI, INCIDENT BULK SUBTRACTED '
@@ -730,7 +730,7 @@ C  SUBTRACT ONE, BECAUSE INCIDENT BULK IS LOST
           ELSEIF (PPLPI(IRPI,IPP).NE.0.D0) THEN
             WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLPI(IRPI,IPP)
           ENDIF
-874     CONTINUE
+  874   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10.OR.EI.EQ.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLPI(IRPI,0,1),
@@ -763,7 +763,7 @@ C
           IA=NSPH+IAT
           IF (PATPI(IRPI,IAT).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IA),PATPI(IRPI,IAT)
-871     CONTINUE
+  871   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EATPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EATPI(IRPI,0,1),
@@ -783,7 +783,7 @@ C
           IM=NSPA+IML
           IF (PMLPI(IRPI,IML).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLPI(IRPI,IML)
-872     CONTINUE
+  872   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EMLPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLPI(IRPI,0,1),
@@ -803,7 +803,7 @@ C
           IO=NSPAM+IIO
           IF (PIOPI(IRPI,IIO).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IO),PIOPI(IRPI,IIO)
-873     CONTINUE
+  873   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EIOPI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EIOPI(IRPI,0,1),
@@ -818,7 +818,7 @@ C
         ENDIF
       ENDIF
 
-880   CONTINUE 
+  880 CONTINUE 
 
       CALL EIRENE_LEER(1)
 
@@ -845,50 +845,50 @@ C
 C
 C-----------------------------------------------------------------------
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR PI ',IRPI
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
       WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED '
       WRITE (iunout,*) 'IRPI, TEST SPECIES, BULK SPECIES ',IRPI,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
       WRITE (iunout,*)
      .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
       WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
       WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
       WRITE (iunout,*)
      .  'STORAGE SAVING MODE NOT READY; KK, IRPI'
       WRITE (iunout,*) 'KK, IRPI ',KK,IRPI
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: INVALID DATA OPTION'
       WRITE (iunout,*) 'IRPI, MODC ',IRPI, MODC
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: ISCDE FLAG'
       WRITE (iunout,*) IRPI
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI
       CALL EIRENE_EXIT_OWN(1)
       RETURN

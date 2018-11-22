@@ -357,7 +357,7 @@ c  Use REACDAT type "poly" also for photonic data
  
       return
  
- 990  continue
+  990 continue
       write (iunout,*) 'REACTION ',reac,' NOT FOUND IN FILE PHOTON'
       call EIRENE_exit_own(1)
  
@@ -482,7 +482,7 @@ c  Use REACDAT type "poly" also for photonic data
  
       end do
  
- 990  continue
+  990 continue
  
       return
       end subroutine EIRENE_read_polari

@@ -84,8 +84,8 @@ C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE,  POST COLLISION GAIN
      .                            WEIGHT*E0
             ityp_save=0
           endif
-560     CONTINUE
-590   CONTINUE
+  560   CONTINUE
+  590 CONTINUE
 C
       RETURN
       END

@@ -37,7 +37,7 @@ C
         ZT=SQRT(-(AR+AR))
         FM2(JJ)=ZT*ZSIN
         FM3(JJ)=ZT*ZCOS
-1     CONTINUE
+    1 CONTINUE
 C
 C  SAMPLE FROM MAXWELLIAN FLUX BY INVERSION RULE
 C
@@ -45,7 +45,7 @@ C
         AR=LOG(RANF_EIRENE( ))
         ZT=SQRT(-(AR+AR))
         FM1(JJ)=ZT
-2     CONTINUE
+    2 CONTINUE
       INIV1=IRNDVC
       RETURN
       END

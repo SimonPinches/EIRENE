@@ -249,7 +249,7 @@ C  FIND INDEX NRC
             ENDDO
             GOTO 995
 C  FIND INDEX IREL
-10          DO IAEL=1,NAELI(IATM)
+   10       DO IAEL=1,NAELI(IATM)
               IF (LGAEL(IATM,IAEL,1).EQ.IPLS) THEN
                 IREL1(IPLS)=LGAEL(IATM,IAEL,0)
                 GOTO 50
@@ -285,7 +285,7 @@ C  FIND INDEX NRC
             ENDDO
             GOTO 995
 C  FIND INDEX IREL
-20          DO IMEL=1,NMELI(IMOL)
+   20       DO IMEL=1,NMELI(IMOL)
               IF  (LGMEL(IMOL,IMEL,1).EQ.IPLS) THEN
                 IREL1(IPLS)=LGMEL(IMOL,IMEL,0)
                 GOTO 50
@@ -320,7 +320,7 @@ C  FIND INDEX NRC
               ENDIF
             ENDDO
 C  FIND INDEX IREL
-30          DO IIEL=1,NIELI(IION)
+   30       DO IIEL=1,NIELI(IION)
               IF  (LGIEL(IION,IIEL,1).EQ.IPLS) THEN
                 IREL1(IPLS)=LGIEL(IION,IIEL,0)
                 GOTO 50
@@ -339,7 +339,7 @@ C  HAVE NOW BEEN SET ON FINE GRID
 C
 C  SELF-COLLISION OR CROSS-COLLISION
 C
-50      CONTINUE
+   50   CONTINUE
 C
         IF (NPBGKP(IPLS,2).EQ.0) THEN
           ITYP2(IPLS)=-1
@@ -464,7 +464,7 @@ cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next t
                 TBEL = EIRENE_RATE_COEFF(KK,IRAD,TII,0._DP,.TRUE.,0)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
-81            CONTINUE
+   81         CONTINUE
 C DELTA_N
               DOLD=DIIN(IPLS,IRAD)
               DEL=DOLD-PDEN(IRAD)
@@ -543,7 +543,7 @@ cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three
             TBEL = EIRENE_RATE_COEFF(KK,IRAD,TII,0._DP,.TRUE.,0)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
-91        CONTINUE
+   91     CONTINUE
 C DELTA_N
           DOLD=DIIN(IPLS,IRAD)
           DEL=DOLD-PDEN(IRAD)
@@ -595,7 +595,7 @@ C FOR GLOBAL BALANCES
           RRN=RRN+PDEN(IRAD)*VOL(IRAD)
 C         RRM=?
           RRE=RRE+EDEN(IRAD)*VOL(IRAD)
-90      CONTINUE
+   90   CONTINUE
 C
 C   IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A SELF-COLLISION  :  DONE !
 C
@@ -636,7 +636,7 @@ cdr             TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next t
                 TBEL = EIRENE_RATE_COEFF(KK,IRAD,TII,0._DP,.TRUE.,0)
      .                 *DIIN(IPLS,IRAD)*FACREL(IREL,1)
               END IF
-181           CONTINUE
+  181         CONTINUE
 c             EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 c    .              DIIN(IPLS,IRAD)
               EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
@@ -705,7 +705,7 @@ cdr         TBEL=EIRENE_FTABEL3(IREL,IRAD)  ! this should replace the next three
             TBEL = EIRENE_RATE_COEFF(KK,IRAD,TII,0._DP,.TRUE.,0)
      .             *DIIN(IPLS,IRAD)*FACREL(IREL,1)
           END IF
-191       CONTINUE
+  191     CONTINUE
 C         EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
 C    .          DIIN(IPLS,IRAD)
           EOLD=(1.5*TIIN(IPLSTI,IRAD)+EDRIFT(IPLS,IRAD))*
@@ -756,7 +756,7 @@ C  SET NEW DENSITY OF ARTIFICIAL BACKGROUND SPECIES
 C         RRM=?
           RRE=RRE+EDEN(IRAD)*VOL(IRAD)
 C
-190     CONTINUE
+  190   CONTINUE
 c
         ENDIF
 c
@@ -778,7 +778,7 @@ C    .                   ,RATM(2)/(RRM+EPS60),RATM(3)/(RRM+EPS60))
         CALL EIRENE_LEER(2)
 C
 C.................................................................
-1000  CONTINUE
+ 1000 CONTINUE
 C.................................................................
 
       CALL EIRENE_LEER(2)
@@ -795,7 +795,7 @@ C
 
       DO 500 I=1,6
         INDPRO(I)=7
-500   CONTINUE
+  500 CONTINUE
 ! STORAGE FOR INPUT TALLIES 1 (TEIN) TO 13 (ADIN), WITHOUT NO.3 (DEIN)
       NRWK1=6+NPLS+NPLSTI+3*NPLSV+NAIN  ! STORAGE FOR INPUT TALLIES 1 TO 13, WITHOUT NO.3
       IF (NIDV < NRWK1) THEN
@@ -872,11 +872,11 @@ c
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
      .               ADIN(IAIN,IRAD)
             ENDDO
-570   CONTINUE
+  570 CONTINUE
 C
       CALL EIRENE_PLASMA_DERIV(0)
 C
-600   CONTINUE
+  600 CONTINUE
 C
 C .........................................................................
 C  NOW: NEW COLLISION RATES MUST BE SET FOR THE NEXT ITERATION
@@ -970,7 +970,7 @@ C
      .                     ," IPLSTI1, IPLSTI2",
      .                        IPLSTI1, IPLSTI2,TCSUM/SUM(VOL)     
 
-800       CONTINUE
+  800     CONTINUE
         ENDIF
       ENDDO
       CALL EIRENE_LEER(2)
@@ -1053,11 +1053,11 @@ C
 C
       RETURN
 C
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'SPECIES ERROR IN MODBGK'
       CALL EIRENE_EXIT_OWN(1)
 C
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'ERROR IN MODBGK. IPLS,IBGK_SP= ',
      .                  IPLS,IBGK1,IBGK2
       CALL EIRENE_EXIT_OWN(1)

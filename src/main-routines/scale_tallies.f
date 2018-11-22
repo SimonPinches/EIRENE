@@ -66,7 +66,7 @@ c  volumetric atomic tallies
             IF (LVXDENA) VXDENA(IATM,J)=VXDENA(IATM,J)*FATM
             IF (LVYDENA) VYDENA(IATM,J)=VYDENA(IATM,J)*FATM
             IF (LVZDENA) VZDENA(IATM,J)=VZDENA(IATM,J)*FATM
-111       CONTINUE
+  111     CONTINUE
 c  atomic surface tallies
           DO 310 J=1,NLIMPS
             IF (LPOTAT) POTAT(IATM,J)=POTAT(IATM,J)*FATM
@@ -87,9 +87,9 @@ cdr  ?? scaling with bulk flux?
 cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
 
             IF (LSPUMP) SPUMP (NSPH+IATM,J)=SPUMP (NSPH+IATM,J)*FATM
-310       CONTINUE
+  310     CONTINUE
 
-2101    CONTINUE
+ 2101   CONTINUE
 
         if (lsptatot) sptatot = sptatot * fatm
 
@@ -127,7 +127,7 @@ cdr       SPTPATI(IATM,ISTRA)=SPTPATI(IATM,ISTRA)*FATM
 
           SPUMPI(NSPH+IATM,ISTRA)=SPUMPI(NSPH+IATM,ISTRA)*FATM
           
-2111    CONTINUE
+ 2111   CONTINUE
 
         sptatti(istra) = sptatti(istra)*fatm
 
@@ -136,7 +136,7 @@ cdr       SPTPATI(IATM,ISTRA)=SPTPATI(IATM,ISTRA)*FATM
           IF (LEMAT) EMAT(J)=EMAT(J)*FMOL
           IF (LEIAT) EIAT(J)=EIAT(J)*FION
           IF (LEPHAT) EPHAT(J)=EPHAT(J)*FPHOT
-2112    CONTINUE
+ 2112   CONTINUE
         EAATI(ISTRA)=EAATI(ISTRA)*FATM
         EMATI(ISTRA)=EMATI(ISTRA)*FMOL
         EIATI(ISTRA)=EIATI(ISTRA)*FION
@@ -158,7 +158,7 @@ C
             IF (LVXDENM) VXDENM(IMOL,J)=VXDENM(IMOL,J)*FMOL
             IF (LVYDENM) VYDENM(IMOL,J)=VYDENM(IMOL,J)*FMOL
             IF (LVZDENM) VZDENM(IMOL,J)=VZDENM(IMOL,J)*FMOL
-115       CONTINUE
+  115     CONTINUE
           DO 315 J=1,NLIMPS
             IF (LPOTML) POTML(IMOL,J)=POTML(IMOL,J)*FMOL
             IF (LPRFAML) PRFAML(IMOL,J)=PRFAML(IMOL,J)*FATM
@@ -177,8 +177,8 @@ C
 cdr  ?? scaling with bulk flux ??  
 cdr         IF (LSPTPML) SPTPML(IMOL,J)=SPTPML(IMOL,J)*FMOL
             IF (LSPUMP) SPUMP (NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
-315       CONTINUE
-2115    CONTINUE
+  315     CONTINUE
+ 2115   CONTINUE
 
         if (lsptmtot) sptmtot = sptmtot*fmol 
  
@@ -214,7 +214,7 @@ cdr  ?? scaling with bulk flux ??
 cdr       SPTPMLI(IMOL,ISTRA)=SPTPMLI(IMOL,ISTRA)*FMOL
           SPUMPI(NSPA+IMOL,ISTRA)=SPUMPI(NSPA+IMOL,ISTRA)*FMOL
           
-2116    CONTINUE
+ 2116   CONTINUE
 
         sptmtti(istra) = sptmtti(istra)*fmol
  
@@ -223,7 +223,7 @@ cdr       SPTPMLI(IMOL,ISTRA)=SPTPMLI(IMOL,ISTRA)*FMOL
           IF (LEMML) EMML(J)=EMML(J)*FMOL
           IF (LEIML) EIML(J)=EIML(J)*FION
           IF (LEPHML) EPHML(J)=EPHML(J)*FPHOT
-2117    CONTINUE
+ 2117   CONTINUE
         EAMLI(ISTRA)=EAMLI(ISTRA)*FATM
         EMMLI(ISTRA)=EMMLI(ISTRA)*FMOL
         EIMLI(ISTRA)=EIMLI(ISTRA)*FION
@@ -245,7 +245,7 @@ C
             IF (LVXDENI) VXDENI(IION,J)=VXDENI(IION,J)*FION
             IF (LVYDENI) VYDENI(IION,J)=VYDENI(IION,J)*FION
             IF (LVZDENI) VZDENI(IION,J)=VZDENI(IION,J)*FION
-421       CONTINUE
+  421     CONTINUE
           DO 422 J=1,NLIMPS
             IF (LPOTIO) POTIO(IION,J)=POTIO(IION,J)*FION
             IF (LPRFAIO) PRFAIO(IION,J)=PRFAIO(IION,J)*FATM
@@ -264,8 +264,8 @@ C
 cdr  ?? scaling with bulk flux ??  
 cdr         IF (LSPTPIO) SPTPIO(IION,J)=SPTPIO(IION,J)*FION
             IF (LSPUMP) SPUMP(NSPAM+IION,J)=SPUMP(NSPAM+IION,J)*FION
-422       CONTINUE
-420     CONTINUE
+  422     CONTINUE
+  420   CONTINUE
  
         if (lsptitot) sptitot = sptitot*fion
 
@@ -301,7 +301,7 @@ cdr  ?? scaling with bulk flux ??
 cdr       SPTPIOI(IION,ISTRA)=SPTPIOI(IION,ISTRA)*FION
           SPUMPI(NSPAM+IION,ISTRA)=SPUMPI(NSPAM+IION,ISTRA)*FION
           
-431     CONTINUE
+  431   CONTINUE
 
         sptitti(istra) = sptitti(istra)*fion
         
@@ -310,7 +310,7 @@ cdr       SPTPIOI(IION,ISTRA)=SPTPIOI(IION,ISTRA)*FION
           IF (LEMIO) EMIO(J)=EMIO(J)*FMOL
           IF (LEIIO) EIIO(J)=EIIO(J)*FION
           IF (LEPHIO) EPHIO(J)=EPHIO(J)*FPHOT
-432     CONTINUE
+  432   CONTINUE
         EAIOI(ISTRA)=EAIOI(ISTRA)*FATM
         EMIOI(ISTRA)=EMIOI(ISTRA)*FMOL
         EIIOI(ISTRA)=EIIOI(ISTRA)*FION
@@ -428,9 +428,9 @@ C
             ENDIF
             DO 424 J=1,NSBOX_TAL
               ADDV(IADV,J)=ADDV(IADV,J)*FADD
-424         CONTINUE
+  424       CONTINUE
             ADDVI(IADV,ISTRA)=ADDVI(IADV,ISTRA)*FADD
-423       CONTINUE
+  423     CONTINUE
         END IF
 C
 C  ADDITIONAL COLLISION ESTIMATED TALLIES
@@ -450,9 +450,9 @@ C
             ENDIF
             DO 427 J=1,NSBOX_TAL
               COLV(ICLV,J)=COLV(ICLV,J)*FADD
-427         CONTINUE
+  427       CONTINUE
             COLVI(ICLV,ISTRA)=COLVI(ICLV,ISTRA)*FADD
-426       CONTINUE
+  426     CONTINUE
         END IF
 C
 C  SNAPSHOT TALLIES
@@ -476,9 +476,9 @@ C
             ENDIF
             DO 436 J=1,NSBOX_TAL
               COPV(ICPV,J)=COPV(ICPV,J)*FADD
-436         CONTINUE
+  436       CONTINUE
             COPVI(ICPV,ISTRA)=COPVI(ICPV,ISTRA)*FADD
-435       CONTINUE
+  435     CONTINUE
         END IF
 C
 C  TALLIES FOR BGK SELF COLLISION ITERATIONS
@@ -498,9 +498,9 @@ C
             ENDIF
             DO 438 J=1,NSBOX_TAL
               BGKV(IBGV,J)=BGKV(IBGV,J)*FADD
-438         CONTINUE
+  438       CONTINUE
             BGKVI(IBGV,ISTRA)=BGKVI(IBGV,ISTRA)*FADD
-437       CONTINUE
+  437     CONTINUE
         END IF
 C
 C  BULK ION TALLIES
@@ -543,7 +543,7 @@ C
           IF (LPMEL) PMEL(J)=PMEL(J)*FMOL
           IF (LPIEL) PIEL(J)=PIEL(J)*FION
           IF (LPPHEL) PPHEL(J)=PPHEL(J)*FPHOT
-551     CONTINUE
+  551   CONTINUE
         PAELI(ISTRA)=PAELI(ISTRA)*FATM
         PMELI(ISTRA)=PMELI(ISTRA)*FMOL
         PIELI(ISTRA)=PIELI(ISTRA)*FION
@@ -553,7 +553,7 @@ C
           IF (LEMEL) EMEL(J)=EMEL(J)*FMOL
           IF (LEIEL) EIEL(J)=EIEL(J)*FION
           IF (LEPHEL) EPHEL(J)=EPHEL(J)*FPHOT
-552     CONTINUE
+  552   CONTINUE
         EAELI(ISTRA)=EAELI(ISTRA)*FATM
         EMELI(ISTRA)=EMELI(ISTRA)*FMOL
         EIELI(ISTRA)=EIELI(ISTRA)*FION

@@ -60,7 +60,7 @@ cdr: that they collapse to the Corona limit values.
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
-10      CONTINUE
+   10   CONTINUE
       END IF
 
 C
@@ -107,7 +107,7 @@ c  corsum approx  0.0 for Te approx 11.43
 c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
-51                CONTINUE
+   51             CONTINUE
                   NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -123,7 +123,7 @@ C
                 MODCOL(6,2,IRRC)=1
                 MODCOL(6,4,IRRC)=1
               ENDIF
-52          CONTINUE
+   52       CONTINUE
 C
             NPRCI(IPLS)=IDSC
 
@@ -158,7 +158,7 @@ c  corsum approx  0.0 for Te approx 11.5
 c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
-53                CONTINUE
+   53             CONTINUE
                   NREARC(IRRC) = -2
                   NELRRC(IRRC) = -2
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -174,7 +174,7 @@ C
                 MODCOL(6,2,IRRC)=1
                 MODCOL(6,4,IRRC)=1
               ENDIF
-54          CONTINUE
+   54       CONTINUE
 C
             NPRCI(IPLS)=IDSC
           ENDIF
@@ -312,7 +312,7 @@ C  4.A)  ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATE COEFF.
                 IF (NSTORDR >= NRAD) THEN
                   DO 101 J=1,NSBOX
                     EELRC1(IRRC,J)=-EELECP(IPLS,NRC)*TABRC1(IRRC,J)
-101               CONTINUE
+  101             CONTINUE
                   NELRRC(IRRC) = 0
                 ELSE
                   NELRRC(IRRC) = 0
@@ -326,7 +326,7 @@ C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATE COEFF.
                 IF (NSTORDR >= NRAD) THEN
                   DO 102 J=1,NSBOX
                     EELRC1(IRRC,J)=-1.5*TEIN(J)*TABRC1(IRRC,J)
-102               CONTINUE
+  102             CONTINUE
                   NELRRC(IRRC) = 0
                 ELSE
                   NELRRC(IRRC) = 0
@@ -429,7 +429,7 @@ C         INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                     DO 110 J=1,NSBOX
                       EELRC1(IRRC,J)=EELRC1(IRRC,J)+
      .                               DELE*TABRC1(IRRC,J)
- 110                CONTINUE
+  110               CONTINUE
 c  STORAGE SAVING MODE AND DELPOT NE 0.0
 c                 ELSE  ! ??
                   END IF
@@ -440,7 +440,7 @@ C
               GOTO 997
             ENDIF  !  NSERC5
 C
-82        CONTINUE
+   82     CONTINUE
           NPRCI(IPLS)=IDSC
 C
 C  NO MODEL DEFINED
@@ -515,52 +515,52 @@ C             END IF
               WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                     FACRRC(IRRC,1) 
               CALL EIRENE_LEER(1)
-220         CONTINUE   !irrc for ipls
+  220       CONTINUE   !irrc for ipls
           ENDIF
           CALL EIRENE_LEER(1)
 
         ENDIF  !trcamd
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
       DEALLOCATE (PLS)
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR RECOMBINATION'
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'NREC TOO SMALL, CHECK PARAMETER STATEMENTS'
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'MASS CONSERVATION VIOLATED, IPLS,IRRC ',
      .                  IPLS,IRRC
       CALL EIRENE_EXIT_OWN(1)
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTP.'
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IPLS = ',IPLS
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*)
      .  'WRONG REACTION INDEX SPECIFIED FOR KREAD IN REACTION KK'
       WRITE (iunout,*) 'KK ',KK
       WRITE (IUNOUT,*) 'KREAD ',KREAD
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: ISCDE FLAG'
       WRITE (iunout,*) 'IRRC, EFLAG ',IRRC,NSERC5
       CALL EIRENE_EXIT_OWN(1)

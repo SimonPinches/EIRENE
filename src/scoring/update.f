@@ -338,8 +338,8 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
             ENDIF
           ENDIF
 C
-44      CONTINUE
-43      CONTINUE
+   44   CONTINUE
+   43   CONTINUE
 C
 C  ELASTIC NEUTRAL BULK-ION COLLISION CONTRIBUTION
 C
@@ -409,8 +409,8 @@ C  SECOND SECONDARY: = INCIDENT TEST PARTICLE IXSPZ REMAINS SAME PARTICLE BY DEF
             ENDIF
           ENDIF
 C
-61      CONTINUE
-60      CONTINUE
+   61   CONTINUE
+   60   CONTINUE
 C
 C.............................................................
 C  ELECTRON IMPACT COLLISION CONTRIBUTION:  EL + IXSPZ --> ....
@@ -514,9 +514,9 @@ cdr  Must be fragmented into individual ipl contributions
 C
             ENDIF
           ENDIF
-55      CONTINUE
+   55   CONTINUE
  
-57      CONTINUE
+   57   CONTINUE
 C
 C........................................................
 C  PLASMA ION IMPACT CONTRIBUTION: IPLS + IXSPZ --> ......
@@ -625,9 +625,9 @@ cdr  Must be fragmented into individual ipl contributions
               END IF
             ENDIF
           ENDIF
-58      CONTINUE
+   58   CONTINUE
  
-59      CONTINUE
+   59   CONTINUE
 C
 C.........................................................................
 C
@@ -725,8 +725,8 @@ C  NEW BULK ION IPL
      .                      SIGN(1._DP,VAL_PARB(IPL))
               LMETSP(NSPAMI+IPL)=.TRUE.
             ENDIF
-156       CONTINUE
-159       CONTINUE
+  156     CONTINUE
+  159     CONTINUE
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
@@ -746,9 +746,9 @@ C  NEW BULK ION IPL
      .                          SIGN(1._DP,VAL_PARB(IPL))
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 ENDIF
-162           CONTINUE
+  162         CONTINUE
             ENDIF
-161       CONTINUE
+  161     CONTINUE
 C
 C  ION IMPACT CONTRIBUTION: NOT READY
 C
@@ -778,11 +778,11 @@ C
             MXPL(IPL2,IRD)=MXPL(IPL2,IRD)+WTRSIG*PARMOM_0*
      .                     SIGN(1._DP,VAL_PARB(IPL2))
             LMETSP(NSPAMI+IPL2)=.TRUE.
-181       CONTINUE
-180       CONTINUE
+  181     CONTINUE
+  180     CONTINUE
 C
         END IF
-51    CONTINUE
+   51 CONTINUE
       RETURN
 
       entry EIRENE_update_reinit

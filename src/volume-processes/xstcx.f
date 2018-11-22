@@ -205,7 +205,7 @@ C       NEND=1
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
-245       CONTINUE          
+  245     CONTINUE          
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
         ENDIF
@@ -306,7 +306,7 @@ c        WITH WEIGHTING/REJECTION
           IF (NSTORDR >= NRAD) THEN
             DO 251 J=1,NSBOX
               EPLCX3(IRCX,J,1)=EBULK+EDRIFT(IPL,J)
-251         CONTINUE
+  251       CONTINUE
             NELRCX(IRCX) = -2
           ELSE
             NELRCX(IRCX) = -2
@@ -323,7 +323,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 252 J=1,NSBOX
               EPLCX3(IRCX,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-252         CONTINUE
+  252       CONTINUE
             NELRCX(IRCX) = -3
           ELSE
             NELRCX(IRCX) = -3
@@ -340,7 +340,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
               EPLCX3(IRCX,J,1)=EBULK+EDRIFT(IPL,J)
-2511        CONTINUE
+ 2511       CONTINUE
             NELRCX(IRCX) = -2
           ELSE
             NELRCX(IRCX) = -2
@@ -390,7 +390,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 EPLCX3(IRCX,J,1)=EIRENE_ENERGY_RATE_COEFF
      .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
-254           CONTINUE
+  254         CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM)
@@ -416,7 +416,7 @@ c old
 
                 EPLCX3(IRCX,J,1:9) = CF(1:9)
                 EPLCX3(IRCX,J,1) = EPLCX3(IRCX,J,1)+DIINL(IPL,J)+ADDL
-257           CONTINUE
+  257         CONTINUE
             ENDIF
 
           ELSE  ! STORAGE SAVING MODE, no pre-defined tallies eplcx3
@@ -524,17 +524,17 @@ C
 C
 C-----------------------------------------------------------------------
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX ',IRCX
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED '
       WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*)
      .  'INTERACTING PARTICLES INCONSISTENT (MASS OR CHARGE)'
@@ -542,20 +542,20 @@ C
       WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*)
      .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
       WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
       WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
       WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT CX'
       WRITE (iunout,*) 'KK ',KK

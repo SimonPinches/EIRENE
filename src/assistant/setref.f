@@ -31,11 +31,11 @@ C  NORMALIZE ROTATION AXIS
             DO 1 I=1,3
               AFF(I,J)=0.
               AFFI(I,J)=0.
-1         CONTINUE
+    1     CONTINUE
           DO 2 J=1,3
             AFF(J,J)=1.
             AFFI(J,J)=1.
-2         CONTINUE
+    2     CONTINUE
           RETURN
         ENDIF
         CN=SQRT(C)
@@ -54,7 +54,7 @@ C  NORMALIZE ROTATION AXIS
         DO 10 I=1,3
           DO 10 J=1,3
             AFFI(I,J)=AFF(I,J)
-10      CONTINUE
+   10   CONTINUE
       ELSE
       ENDIF
       RETURN

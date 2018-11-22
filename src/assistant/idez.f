@@ -27,7 +27,7 @@ C                           J=4: ERROR ,J GT IZIF
         IT=10**(IZIF-K)
         IQ=IZ/IT
         IZ=IZ-IQ*IT
-1     CONTINUE
+    1 CONTINUE
       EIRENE_IDEZ=IQ
       RETURN
       END

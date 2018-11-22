@@ -67,7 +67,7 @@ C
         ELSE
           PRO(J)=PROS*EXP((RHOSEP-RHOZNE(J))/E)
         ENDIF
-20    CONTINUE
+   20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
       END
