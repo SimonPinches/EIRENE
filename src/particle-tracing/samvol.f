@@ -1,3 +1,4 @@
+chf Nov.  18 :  samvol_usr added, for levgeo=10 option
 cdr Jan   18 : only notational change, to distuingish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
@@ -159,7 +160,7 @@ C  SPECTRAL CUT OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
 
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
-3       CONTINUE
+3         CONTINUE
 2     CONTINUE
  
 C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
@@ -557,7 +558,7 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
       case (3)
 c  split quadrangle into two triangles, 
 c  then 1st: sample triangle according to its relative area, 
-c  then 2nd: sample uniform within this triangle
+c  then 2nd: sample uniformly within this triangle
         IT=1
         DO 56 IR=1,NR1ST-1
         DO 56 IP=1,NP2ND-1
@@ -875,9 +876,9 @@ C.................................................................
      .  EIRENE_FPOLYT_4(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,X0,Y0,Z0)
 C....................................................................
       case (10)
-        WRITE (iunout,*) 'ERROR EXIT FROM SAMVOL. LEVGEO ',LEVGEO
-        WRITE (iunout,*) 'TO BE DONE: RETURN CENTER OF GRAVITY IN NCELL'
-        CALL EIRENE_EXIT_OWN(1)
+chf added Nov. 2018
+        CALL EIRENE_SAMVOL_USR(NCELL,X0,Y0,Z0)
+        NRCELL=NCELL
       end select
 C
       IF (NLTRA) THEN
