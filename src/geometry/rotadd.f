@@ -96,7 +96,7 @@ C
      .     (A9LM(I)**2+A8LM(I)**2+A7LM(I)**2)*0.25
 C         WRITE (iunout,*) 'AFTER:  S,DEL,T= ',S,DEL,T
 C
-1         IF (RLB(I).LT.0.) THEN
+    1     IF (RLB(I).LT.0.) THEN
 C   CHANGE COEFFICIENTS IN LINEAR INEQUALITIES BOUNDING THE SURFACE
             DO 10 J=1,ILIN(I)
 C             ALIMS(J,I)=ALIMS(J,I)
@@ -109,7 +109,7 @@ C             ALIMS(J,I)=ALIMS(J,I)
               XLIMS(J,I)=A1S
               YLIMS(J,I)=A2S
               ZLIMS(J,I)=A3S
-10          CONTINUE
+   10       CONTINUE
 C   CHANGE COEFFICIENTS IN NONLINEAR INEQUALITIES BOUNDING THE SURFACE
             DO 20 J=1,ISCN(I)
 C             ALIMS0(J,I)=ALIMS0(J,I)
@@ -160,7 +160,7 @@ C
               XLIMS3(J,I)=A7S
               YLIMS3(J,I)=A8S
               ZLIMS3(J,I)=A9S
-20          CONTINUE
+   20       CONTINUE
           ELSEIF (RLB(I).GT.0.AND.RLB(I).LT.2) THEN
 C  BOUNDED BY QUADER: CHANGE TO RLB(I)=-6 OPTION AND DEFINE 6 LINEAR
 C                     INEQUALITIES
@@ -244,7 +244,7 @@ C   POINT OPTIONS
           ENDIF
         ENDIF
 C
-100   CONTINUE
+  100 CONTINUE
 C
       RETURN
       END

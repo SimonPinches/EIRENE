@@ -58,7 +58,7 @@ C   POLAR ANGLE: MODIFIED COSINE WITH CUT OFF COSM
       ELSE
 C   POLAR ANGLE: FROM GAUSSIAN, St. dev.= COSP , with cut off COSM, done by rejection sampling
         ICOUNT=0
-410     IF (INIV2.EQ.0) CALL EIRENE_FGAUSS
+  410   IF (INIV2.EQ.0) CALL EIRENE_FGAUSS
 
 cdr  this sampling from Gaussian is currently highly inefficient.
 cdr  a) due to rejection
@@ -75,7 +75,7 @@ C   CUT OFF ANGLE: COSM (RADIANS)
           GOTO 420
         ENDIF
         IF (ABS(ZPHI).GT.COSM) GOTO 410
-420     ZCPHI=COS(ZPHI)
+  420   ZCPHI=COS(ZPHI)
       ENDIF
 C
       ZSPHI=SQRT(1.-ZCPHI*ZCPHI)

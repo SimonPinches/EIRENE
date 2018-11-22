@@ -73,7 +73,7 @@ cdr: that they collapse to the Corona limit values.
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
-10      CONTINUE
+   10   CONTINUE
       END IF
  
 C
@@ -134,11 +134,11 @@ C
 
               GOTO 50
             ENDIF
-52        CONTINUE
+   52     CONTINUE
 
           GOTO 100
 C
-50        CONTINUE
+   50     CONTINUE
           NTE=NSBOX
           IF (NSTORDR < NRAD) NTE=1
           KK=0
@@ -163,7 +163,7 @@ C
             DO 80 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(ISTORE,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
-80          CONTINUE
+   80       CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=EELEC
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
@@ -217,7 +217,7 @@ C  EI PROCESS IDENTIFIED
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
      .                 ISCDE,EELEC,IESTM,
      .                 KK,FACTKK,PLS)
-90        CONTINUE
+   90     CONTINUE
           NAEII(IATM)=IDSC1
         ENDIF
 C
@@ -230,7 +230,7 @@ C
         ENDDO
 
 
-100   CONTINUE
+  100 CONTINUE
 C
 C
 C   CHARGE EXCHANGE:
@@ -258,15 +258,15 @@ C  FIND BULK SECONDARIES
               DO 121 IPL=1,NPLSI
                 IF (NMASSA(IATM).EQ.NMASSP(IPL).AND.NCHRGP(IPL).EQ.1)
      .          GOTO 123
-121           CONTINUE
+  121         CONTINUE
               GOTO 155
-123           DO 124 IAT=1,NATMI
+  123         DO 124 IAT=1,NATMI
                 IF (NMASSA(IAT).EQ.NMASSP(IPLS))
      .          GOTO 125
-124           CONTINUE
+  124         CONTINUE
               GOTO 155
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
-125           CONTINUE
+  125         CONTINUE
 C  PROJECTILE MASS IS 1.
 C  TARGET     MASS IS 1.
               PMASS=1.*PMASSA
@@ -285,16 +285,16 @@ C  FIND BULK SECONDARIES
               DO 131 IPL=1,NPLSI
                 IF (NMASSA(IATM).EQ.NMASSP(IPL).AND.NCHRGP(IPL).EQ.1)
      .          GOTO 133
-131           CONTINUE
+  131         CONTINUE
               GOTO 155
-133           DO 134 IAT=1,NATMI
+  133         DO 134 IAT=1,NATMI
                 IF (NMASSA(IAT).EQ.NMASSP(IPLS))
      .          GOTO 135
-134           CONTINUE
+  134         CONTINUE
               GOTO 155
  
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
-135           CONTINUE
+  135         CONTINUE
 C  PROJECTILE MASS IS 4.
 C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
@@ -313,16 +313,16 @@ C  FIND BULK SECONDARIES
               DO 141 IPL=1,NPLSI
                 IF (NMASSA(IATM).EQ.NMASSP(IPL).AND.NCHRGP(IPL).EQ.2)
      .          GOTO 143
-141           CONTINUE
+  141         CONTINUE
               GOTO 155
-143           DO 144 IAT=1,NATMI
+  143         DO 144 IAT=1,NATMI
                 IF (NMASSA(IAT).EQ.NMASSP(IPLS))
      .          GOTO 145
-144           CONTINUE
+  144         CONTINUE
               GOTO 155
  
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
-145           CONTINUE
+  145         CONTINUE
 C  PROJECTILE MASS IS 4.
 C  TARGET     MASS IS 4.
               PMASS=4.*PMASSA
@@ -365,7 +365,7 @@ C
               IPLSTI=MPLSTI(IPLS)
               DO 150 J=1,NSBOX
                 EPLCX3(IRCX,J,1)=1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J)
-150           CONTINUE
+  150         CONTINUE
               NELRCX(IRCX) = -1  
               NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
             ELSE
@@ -376,7 +376,7 @@ C
             MODCOL(3,2,IRCX)=3
             MODCOL(3,4,IRCX)=3
 C
-155       CONTINUE   ! end of nplsi loop, bulk collision partners for default cx models
+  155     CONTINUE   ! end of nplsi loop, bulk collision partners for default cx models
 C
           NACXI(IATM)=IDSC
 C
@@ -429,7 +429,7 @@ c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
      .                 IFRST,ISCND,EBULK,CHRDF0,
      .                 ISCDE,IESTM,KK,FACTKK,PLS)
 C
-160       CONTINUE
+  160     CONTINUE
 C
           NACXI(IATM)=IDSC
 C  NO CX MODEL DEFINED
@@ -444,7 +444,7 @@ C
           LGACX(IATM,0,0)=LGACX(IATM,0,0)+LGACX(IATM,IACX,0)
         ENDDO
 C
-200   CONTINUE
+  200 CONTINUE
 C
 C   ELASTIC COLLISIONS
 C
@@ -522,7 +522,7 @@ C
      .                        ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 C
-230       CONTINUE
+  230     CONTINUE
  
           NAELI(IATM)=IDSC
         ENDIF
@@ -532,10 +532,10 @@ C
         LGAEL(IATM,0,0)=0.
         DO 280 IAEL=1,NAELI(IATM)
           LGAEL(IATM,0,0)=LGAEL(IATM,0,0)+LGAEL(IATM,IAEL,0)
-280     CONTINUE
+  280   CONTINUE
 C
 C
-300   CONTINUE
+  300 CONTINUE
 C
 C   GENERAL HEAVY PARTICLE IMPACT COLLISIONS
 C
@@ -633,7 +633,7 @@ C
             DO 870 IAEI=1,NAEII(IATM)
               IREI=LGAEI(IATM,IAEI)
               CALL EIRENE_XSTEI_2(IREI)
-870         CONTINUE
+  870       CONTINUE
           ENDIF
 C
 C
@@ -647,7 +647,7 @@ C
               IRCX=LGACX(IATM,IACX,0)
               IPL =LGACX(IATM,IACX,1)
               CALL EIRENE_XSTCX_2(IRCX,IPL)
-890         CONTINUE
+  890       CONTINUE
           ENDIF
 C
 C
@@ -661,7 +661,7 @@ C
               IREL=LGAEL(IATM,IAEL,0)
               IPL =LGAEL(IATM,IAEL,1)
               CALL EIRENE_XSTEL_2(IREL,IPL)
-895         CONTINUE
+  895       CONTINUE
           ENDIF
 C
           CALL EIRENE_LEER(2)
@@ -674,30 +674,30 @@ C
               IRPI=LGAPI(IATM,IAPI,0)
               IPL =LGAPI(IATM,IAPI,1)
               CALL EIRENE_XSTPI_2(IRPI,IPL)
-885         CONTINUE
+  885       CONTINUE
           ENDIF
  
         ENDIF
 C
-1000  CONTINUE
+ 1000 CONTINUE
  
       DEALLOCATE (PLS)
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX COLLISION'
       CALL EIRENE_EXIT_OWN(1)     
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ELASTIC COLLISION'
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ION IMPACT COLLISION '
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
@@ -710,16 +710,16 @@ C
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
       WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE  '
       WRITE (iunout,*) 'OF POST-COLLISION SAMPLING FLAG ISCDEA'
       WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENY '
       CALL EIRENE_EXIT_OWN(1)
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'SPECIES CONFLICT FOR BGK COLLISIONS. IATM,IREL '
       WRITE (iunout,*) IATM,IREL,IPLS
       CALL EIRENE_EXIT_OWN(1)

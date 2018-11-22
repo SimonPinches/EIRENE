@@ -443,7 +443,7 @@ C
             DIO2=DIO2+ DI2(I,J)*TEI*DEJ
             DIO3=DIO3+ DI3(I,J)*TEI*DEJ
             DNM =DNM + DN(I,J)*TEI*DEJ
-150     CONTINUE
+  150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
         DMO =EXP(DMO)
@@ -459,7 +459,7 @@ C  (ONLY TE-DEPENDENT)
         DO 160 I=0,8
           TEI=TEF**I
           RATIO7=RATIO7+RHMH2(I)*TEI
-160     CONTINUE
+  160   CONTINUE
         RATIO7=EXP(RATIO7)
 
 C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATION
@@ -471,7 +471,7 @@ C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATIO
           DO 170 I=0,8
             TEI=TEF**I
             RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
-170     CONTINUE
+  170   CONTINUE
         RATIO2=EXP(RATIO2)
 
 C  RATIO OF DENSITIES: H3+ TO H2, = [RATIO3  * NH2+/NE]
@@ -482,7 +482,7 @@ C  (ONLY TE-DEPENDENT)
         DO 180 I=0,8
           TEI=TEF**I
           RATIO3=RATIO3+RH3PH2(I)*TEI
-180     CONTINUE
+  180   CONTINUE
         RATIO3=EXP(RATIO3)
 
 
@@ -500,7 +500,7 @@ C  ATOMIC NEUTRAL HYDR.: NCHAR=NPRT=1,NCHRG=0
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD1=SIGADD1+DDA*FAC32
-200     CONTINUE
+  200   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
@@ -527,7 +527,7 @@ C
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD2=SIGADD2+DPP*FAC32
-205     CONTINUE
+  205   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from atomic hydr. ions in TEST IONS
@@ -544,7 +544,7 @@ C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD3=SIGADD3+DDM*FAC32
-210     CONTINUE
+  210   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from neutral diatomic hydr. molec. in BULK IONS
@@ -578,7 +578,7 @@ C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD4=SIGADD4+DDI2*FAC32
-215     CONTINUE
+  215   CONTINUE
 C
 C  CHANNEL 5
 C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
@@ -605,7 +605,7 @@ C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD5=SIGADD5+DDN*FAC32
-220     CONTINUE
+  220   CONTINUE
 C
 C  CHANNEL 6
 C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
@@ -636,9 +636,9 @@ C  APPLY FURTHER FACTOR NH2+/NE = NH2*RATIO2/NE
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD6=SIGADD6+DDI3*FAC32
-230     CONTINUE
+  230   CONTINUE
 C
-500     CONTINUE
+  500   CONTINUE
 C
 C
         SIGADD=SIGADD1+SIGADD2+SIGADD3+SIGADD4+SIGADD5+SIGADD6
@@ -662,7 +662,7 @@ cdr tbd: rausziehen hinter 1000, ist eh nur constanter faktor facte, only total 
 C
         POWALF =POWALF +SIGADD *FACTE*VOL(NCELL)
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
 cdr at this place we know: voltal(icoarse)=sum(vol(ifine))
 
@@ -815,7 +815,7 @@ csw 19apr07
       ifirst=0
       return
 csw
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. BA_ALPHA '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',

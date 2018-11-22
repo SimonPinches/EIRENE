@@ -23,12 +23,12 @@ c
 C
         IF (IN.EQ.0) IN=4
         GOTO (1481,1482,1483,1484,14852),IN
-1481      CONTINUE
+ 1481     CONTINUE
             CALL GRDRW
      .  (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
             GOTO 1485
-1482      CONTINUE
+ 1482     CONTINUE
             CALL GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
             CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) THEN
@@ -36,7 +36,7 @@ C
               CALL EIRENE_STCOOR(XTN,YTN,1)
             END IF
             GOTO 1485
-1483      CONTINUE
+ 1483     CONTINUE
             CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
             CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) THEN
@@ -44,7 +44,7 @@ C
               CALL EIRENE_STCOOR(XTN,YTN,1)
             END IF
             GOTO 1485
-1484      CONTINUE
+ 1484     CONTINUE
             CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
             GOTO 1485
@@ -56,8 +56,8 @@ C
               CALL EIRENE_STCOOR(XT2,YT2,1)
             END IF
             GOTO 1485
-1485    CONTINUE
+ 1485   CONTINUE
 C
-148   CONTINUE
+  148 CONTINUE
       return
       end

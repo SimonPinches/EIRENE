@@ -48,7 +48,7 @@ C
       IKURV=0
       DO 1 I=1,NKURV
         IF (LPLOT(I)) IKURV=IKURV+1
-1     CONTINUE
+    1 CONTINUE
       IF (IKURV.EQ.0) RETURN
 C
       MINX=XMI
@@ -59,7 +59,7 @@ C
         IF (.NOT.LPLOT(I)) GOTO 3
         MINY=MIN(MINY,REAL(YMN(I),SP))
         MAXY=MAX(MAXY,REAL(YMX(I),SP))
-3     CONTINUE
+    3 CONTINUE
 C
       IF (LOGY) THEN
         DMAXY=MAXY
@@ -124,7 +124,7 @@ cdr  use FZJ proprietary GR plot software
         WRITE (CHR,'(1P,E10.3)') YMNLG(I)
         CALL GRTXTC (10,CHR)
         YA=YA-1.0
-2     CONTINUE
+    2 CONTINUE
       CALL GRNWPN(1)
  
       IF (L_SAME) THEN
@@ -175,8 +175,8 @@ C
         DO 20 ICURV=1,NKURV
           IF (.NOT.LPLOT(ICURV)) GOTO 20
           DO 21 I=IR1(ICURV),IR2(ICURV)-1,IRS(ICURV)
-21          Y(I,ICURV)=LOG10(MAX(YMINY,Y(I,ICURV)))
-20      CONTINUE
+   21       Y(I,ICURV)=LOG10(MAX(YMINY,Y(I,ICURV)))
+   20   CONTINUE
       ENDIF
 C
 C  PLOT !
@@ -223,7 +223,7 @@ C  PLOT LINES
           CALL
      .  GRJMP(REAL(X(I1),KIND(1.E0)),REAL(Y(I1,I),KIND(1.E0)))
           DO 33 J=I1+IS,I2,IS
-33          CALL GRDRW
+   33       CALL GRDRW
      .  (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)))
 C  PLOT SYMBOLS
           ISY=IPEN2+1
@@ -264,9 +264,9 @@ C  PLOT ERROR BARS
               CALL GRDRW
      .  (REAL(X(J),KIND(1.E0)),REAL(ST2,KIND(1.E0)))
             ENDIF
-40        CONTINUE
+   40     CONTINUE
         ENDIF
-50    CONTINUE
+   50 CONTINUE
       CALL GRNWPN(1)
  
       CALL GRCHRC (0.3,0.,16)

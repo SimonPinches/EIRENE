@@ -91,19 +91,19 @@ C
       DO 101 J=1,NSIGVI
         IGFF(J)=NFIRST(IIH(J))
         IADD(J)=NADDV(IIH(J))
-101   CONTINUE
+  101 CONTINUE
 C
       DO 102 J=1,NSIGCI
         IGFFC(1,J)=NFIRST(IIHC(1,J))
         IGFFC(2,J)=NFIRST(IIHC(2,J))
         IADDC(1,J)=NADDV(IIHC(1,J))
         IADDC(2,J)=NADDV(IIHC(2,J))
-102   CONTINUE
+  102 CONTINUE
 C
       DO 108 J=1,NSIGSI
         IGFFW(J)=NFRSTW(IIHW(J))
         IADDW(J)=NADDW(IIHW(J))
-108   CONTINUE
+  108 CONTINUE
 C
       RETURN
 C
@@ -177,7 +177,7 @@ C  USE SYMMETRY IN POLOIDAL/Y AND/OR TOROIDAL/Z COORDINATE
                 SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
                 ESTIMV(INP+IG,J1)=SAV
                 ESTIMV(INP+IG,J2)=SAV
-1003      CONTINUE
+ 1003     CONTINUE
         ENDIF
         IF (LT) THEN
           NSYM=NT3
@@ -191,9 +191,9 @@ C  USE SYMMETRY IN POLOIDAL/Y AND/OR TOROIDAL/Z COORDINATE
                 SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
                 ESTIMV(INP+IG,J1)=SAV
                 ESTIMV(INP+IG,J2)=SAV
-1004      CONTINUE
+ 1004     CONTINUE
         ENDIF
-1005    CONTINUE
+ 1005   CONTINUE
 C
 C  FILL ARRAY VECTOR, EITHER FOR SUM OVER SPECIES OR FOR INDIVIDUAL SPECIES
 C  VECTOR IS FILLED ONLY FOR THOSE CELLS,
@@ -208,12 +208,12 @@ C  PRESENT HISTORY
         ELSE
           DO 1014 ICO=1,NCLMT
             VECTOR(ICO)=0.
-1014      CONTINUE
+ 1014     CONTINUE
           DO 1015 IS=1,IGF
           DO 1015 ICO=1,NCLMT
             IR = ICLMT(ICO)
             VECTOR(ICO)=VECTOR(ICO)+ESTIMV(INP+IS,IR)
-1015      CONTINUE
+ 1015     CONTINUE
         ENDIF
  
         SD1S = 0.D0
@@ -241,12 +241,12 @@ C  I.E., AVERAGES OVER COORDINATES OR OVER THE ENTIRE COMPUTATIONAL DOMAIN
           SD(IR)=0._DP
         END DO
         SGMS(IC)=SGMS(IC)+SD1S*SD1S
-1012  CONTINUE
+ 1012 CONTINUE
 c  updating of statistical variance (once per flight) for volume tallies: done 
 
 C
 C  update statistical variance for surface tallies, once after each flight
-1020  CONTINUE
+ 1020 CONTINUE
       IF (NSIGSI.EQ.0) GOTO 1030
       DO 1022 IC=1,NSIGSI
         INP=IADDW(IC)
@@ -279,17 +279,17 @@ c
 c  tally is for single species igs
             IR = IWLMT(ICO)
             VECTOR(ICO)=ESTIMS(INP+IGS,IR)
-1023      CONTINUE
+ 1023     CONTINUE
         ELSE
 c  tally is for sum over species
           DO 1024 ICO=1,NWLMT
             VECTOR(ICO)=0.
-1024      CONTINUE
+ 1024     CONTINUE
           DO 1025 IS=1,IGF
           DO 1025 ICO=1,NWLMT
             IR = IWLMT(ICO)
             VECTOR(ICO)=VECTOR(ICO)+ESTIMS(INP+IS,IR)
-1025      CONTINUE
+ 1025     CONTINUE
         ENDIF
 
 c  next:
@@ -304,12 +304,12 @@ c
           SD1S=SD1S+SD1
           SIGMAW(IC,IR)=SIGMAW(IC,IR)+SD1*SD1
           SDVIAW(IC,IR)=VECTOR(ICO)
-1021    CONTINUE
+ 1021   CONTINUE
         SGMWS(IC)=SGMWS(IC)+SD1S*SD1S
-1022  CONTINUE
+ 1022 CONTINUE
 c  sigma  now is cumulated squared contribution after flight no. n
 C
-1030  CONTINUE
+ 1030 CONTINUE
 C
 
 c  surface tallies done.  next: covariances
@@ -365,7 +365,7 @@ C
                   SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
                   ESTIMV(INP+IG,J1)=SAV
                   ESTIMV(INP+IG,J2)=SAV
-1033        CONTINUE
+ 1033       CONTINUE
           ENDIF
           IF (LT) THEN
             NSYM=NT3
@@ -379,9 +379,9 @@ C
                   SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
                   ESTIMV(INP+IG,J1)=SAV
                   ESTIMV(INP+IG,J2)=SAV
-1034        CONTINUE
+ 1034       CONTINUE
           ENDIF
-1035      CONTINUE
+ 1035     CONTINUE
 C
           IF (IGS.NE.0) THEN
             DO ICO = 1,NCLMT
@@ -391,14 +391,14 @@ C
           ELSE
             DO 1044 ICO=1,NCLMT
               VECTRC(I,ICO)=0.
-1044        CONTINUE
+ 1044       CONTINUE
             DO 1045 IS=1,IGF
             DO 1045 ICO=1,NCLMT
               IR = ICLMT(ICO)
               VECTRC(I,ICO)=VECTRC(I,ICO)+ESTIMV(INP+IS,IR)
-1045        CONTINUE
+ 1045       CONTINUE
           ENDIF
-1037    CONTINUE
+ 1037   CONTINUE
 C
 C
         SD1S = 0.D0
@@ -433,10 +433,10 @@ C
         SGMCS(0,IC)=SGMCS(0,IC)+SD1S*SD2S
         SGMCS(1,IC)=SGMCS(1,IC)+SD1S*SD1S
         SGMCS(2,IC)=SGMCS(2,IC)+SD2S*SD2S
-1032  CONTINUE
+ 1032 CONTINUE
 C
 C
-1050  CONTINUE
+ 1050 CONTINUE
       RETURN
 C
 c  scale statistical variance. called after all flights from a given stratum istra
@@ -462,15 +462,15 @@ C
         IF (IGS.NE.0) THEN
           DO 2113 IR=1,NSB
             VECTOR(IR)=ESTIMV(INP+IGS,IR)
-2113      CONTINUE
+ 2113     CONTINUE
         ELSE
           DO 2114 IR=1,NSB
             VECTOR(IR)=0.
-2114      CONTINUE
+ 2114     CONTINUE
           DO 2115 IS=1,IGF
           DO 2115 IR=1,NSB
             VECTOR(IR)=VECTOR(IR)+ESTIMV(INP+IS,IR)
-2115      CONTINUE
+ 2115     CONTINUE
         ENDIF
 C  tally is now on vector
         DS=0.
@@ -481,8 +481,8 @@ C  tally is now on vector
             J=INDSS(IR,IIN)
             IRU=IND(IR,J)
             SD(IRU)=SD(IRU)+SD1
-2016      CONTINUE
-2011    CONTINUE
+ 2016     CONTINUE
+ 2011   CONTINUE
 C
         DO 2111 IR=1,NSB
           D=SD(IR)
@@ -496,7 +496,7 @@ C CUMULATED VARIANCE FOR SUM OVER STRATA
           STV(IC,IR)=STV(IC,IR)+SG2*ZFLUXQ/XNM/XN
           EE(IC,IR)=EE(IC,IR)+D*ZFLUX/XN
           SD(IR)=0._DP
-2111    CONTINUE
+ 2111   CONTINUE
         D2S=DS*DS
         DSA=ABS(DS)
         SG2=MAX(0._DP,SGMS(IC)-D2S/XN)
@@ -505,11 +505,11 @@ C CUMULATED VARIANCE FOR SUM OVER STRATA
 C
         STVS(IC)=STVS(IC)+SG2*ZFLUXQ/XNM/XN
         EES(IC)=EES(IC)+DS*ZFLUX/XN
-2112  CONTINUE
+ 2112 CONTINUE
 
 
 C
-2200  CONTINUE
+ 2200 CONTINUE
       IF (NSIGSI.EQ.0) GOTO 2300
 c  put requested tally on 'vector'
       DO 2212 IC=1,NSIGSI
@@ -521,16 +521,16 @@ c  put requested tally on 'vector'
 c  tally for individual species
           DO 2213 IR=1,NRW
             VECTOR(IR)=ESTIMS(INP+IGS,IR)
-2213      CONTINUE
+ 2213     CONTINUE
         ELSE
 c  tally for sum over species
           DO 2214 IR=1,NRW
             VECTOR(IR)=0.
-2214      CONTINUE
+ 2214     CONTINUE
           DO 2215 IS=1,IGF
           DO 2215 IR=1,NRW
             VECTOR(IR)=VECTOR(IR)+ESTIMS(INP+IS,IR)
-2215      CONTINUE
+ 2215     CONTINUE
         ENDIF
 
         DO 2211 IR=1,NRW
@@ -545,7 +545,7 @@ C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
 C CUMULATED VARIANCE FOR SUM OVER STRATA
           STVW(IC,IR)=STVW(IC,IR)+SG2*ZFLUXQ/XNM/XN
           FF(IC,IR)=FF(IC,IR)+D*ZFLUX/XN
-2211    CONTINUE
+ 2211   CONTINUE
         D2S=DS*DS
         DSA=ABS(DS)
         SG2=MAX(0._DP,SGMWS(IC)-D2S/XN)
@@ -554,9 +554,9 @@ C CUMULATED VARIANCE FOR SUM OVER STRATA
 C
         STVWS(IC)=STVWS(IC)+SG2*ZFLUXQ/XNM/XN
         FFS(IC)=FFS(IC)+DS*ZFLUX/XN
-2212  CONTINUE
+ 2212 CONTINUE
 C
-2300  CONTINUE
+ 2300 CONTINUE
 C
 
 c  now deal with covariances
@@ -570,17 +570,17 @@ C
           IF (IGS.NE.0) THEN
             DO 2313 IR=1,NSB
               VECTRC(I,IR)=ESTIMV(INP+IGS,IR)
-2313        CONTINUE
+ 2313       CONTINUE
           ELSE
             DO 2314 IR=1,NSB
               VECTRC(I,IR)=0.
-2314        CONTINUE
+ 2314       CONTINUE
             DO 2315 IS=1,IGF
             DO 2315 IR=1,NSB
               VECTRC(I,IR)=VECTRC(I,IR)+ESTIMV(INP+IS,IR)
-2315        CONTINUE
+ 2315       CONTINUE
           ENDIF
-2317    CONTINUE
+ 2317   CONTINUE
 C
         DS1=0.
         DS2=0.
@@ -594,8 +594,8 @@ C
             IRU=IND(IR,J)
             SDC(1,IRU)=SDC(1,IRU)+SD1
             SDC(2,IRU)=SDC(2,IRU)+SD2
-2316      CONTINUE
-2311    CONTINUE
+ 2316     CONTINUE
+ 2311   CONTINUE
         DO 2411 IR=1,NSB
           D1=SDC(1,IR)
           D2=SDC(2,IR)
@@ -612,7 +612,7 @@ C ABSOLUTE STANDARD DEVIATION AND COVARIANCES
           SIGMAC(1,IC,IR)=SQRT(SG1/XNM/XN)
           SIGMAC(2,IC,IR)=SQRT(SG2/XNM/XN)
           SDC(1:2,IR)=0._DP
-2411    CONTINUE
+ 2411   CONTINUE
         D2S12=DS1*DS2
         D2S11=DS1*DS1
         D2S22=DS2*DS2
@@ -624,9 +624,9 @@ C ABSOLUTE STANDARD DEVIATION AND COVARIANCES
         SGMCS(0,IC)=SG12/XNM/XN
         SGMCS(1,IC)=SQRT(SG1/XNM/XN)
         SGMCS(2,IC)=SQRT(SG2/XNM/XN)
-2312  CONTINUE
+ 2312 CONTINUE
 C
-2400  RETURN
+ 2400 RETURN
  
       ENTRY EIRENE_STATS3
  

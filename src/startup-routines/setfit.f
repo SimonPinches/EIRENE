@@ -81,7 +81,7 @@ C
 C
             GOTO 100
           ENDIF
-5         CONTINUE
+    5     CONTINUE
           LINFX=.FALSE.
           IF (LINFY) THEN
             IF (A2LM(IE).NE.0..OR.A5LM(IE).NE.0..OR.
@@ -110,7 +110,7 @@ C
 C
             GOTO 100
           ENDIF
-6         CONTINUE
+    6     CONTINUE
           LINFY=.FALSE.
           IF (LINFZ) THEN
             IF (A3LM(IE).NE.0..OR.A6LM(IE).NE.0..OR.
@@ -139,10 +139,10 @@ C
 C
             GOTO 100
           ENDIF
-7         CONTINUE
+    7     CONTINUE
           LINFZ=.FALSE.
           GOTO 990
-100       CONTINUE
+  100     CONTINUE
 C
 C
 C  IS SURFACE IE GIVEN BY TWO-POINT OPTION ?
@@ -276,21 +276,21 @@ C  SELECT THE DISTANCES TO THE INTERSECTION POINTS
      .      DST(K,1)=SQRT((XS(K)-XP1)**2+(YS(K)-YP1)**2)
             IF (IPNT2.EQ.0)
      .      DST(K,2)=SQRT((XS(K)-XP2)**2+(YS(K)-YP2)**2)
-3         CONTINUE
+    3     CONTINUE
 C
           IMIN1=1
           IMIN2=1
           DO 4 K=2,IS
             IF (DST(K,1).LT.DST(IMIN1,1)) IMIN1=K
             IF (DST(K,2).LT.DST(IMIN2,2)) IMIN2=K
-4         CONTINUE
+    4     CONTINUE
 C
           IF (TRCSUR) THEN
             WRITE (iunout,*) 'SETFIT, I,IE ',I,IE
             DO 4711 K=1,IS
               WRITE (iunout,*) 'K,XS,YS,DIST1,DIST2 ',
      .                     K,XS(K),YS(K),DST(K,1),DST(K,2)
-4711        CONTINUE
+ 4711       CONTINUE
           ENDIF
 C
 C  SET THE SELECTED POINT
@@ -401,18 +401,18 @@ C
           A3LM(I)=A3LM(I)/XNORM
           JUM=JUMLIM(I)
           GOTO (91,92,93),JUM
-91          ALM(I)=-A0LM(I)/A1LM(I)
+   91       ALM(I)=-A0LM(I)/A1LM(I)
             BLM(I)=-A2LM(I)/A1LM(I)
             CLM(I)=-A3LM(I)/A1LM(I)
           GOTO 97
-92          ALM(I)=-A0LM(I)/A2LM(I)
+   92       ALM(I)=-A0LM(I)/A2LM(I)
             BLM(I)=-A1LM(I)/A2LM(I)
             CLM(I)=-A3LM(I)/A2LM(I)
           GOTO 97
-93          ALM(I)=-A0LM(I)/A3LM(I)
+   93       ALM(I)=-A0LM(I)/A3LM(I)
             BLM(I)=-A1LM(I)/A3LM(I)
             CLM(I)=-A2LM(I)/A3LM(I)
-97        CONTINUE
+   97     CONTINUE
 C
           IF (TRCSUR) THEN
             WRITE (iunout,*) ' A0-A3 ',A0LM(I),A1LM(I),A2LM(I),A3LM(I)
@@ -426,11 +426,11 @@ C  ALL OTHER SURFACE COEFFICIENTS ALSO REDEFINED
  
 C  NOW: GENERAL SECOND ORDER EQUATION, RLB=1., FOR SURFACE I
 C
-2       CONTINUE
-1     CONTINUE
+    2   CONTINUE
+    1 CONTINUE
 C
       RETURN
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
       WRITE (iunout,*)
      .  'INCONSISTENCY IN IGNORABLE CO-ORDINATES DETECTED'
@@ -439,19 +439,19 @@ C
      .                  JUMLIM(I),LINFX,LINFY,LINFZ
       WRITE (iunout,*) 'EXIT CALLED '
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
       WRITE (iunout,*) 'FIT OPTION FOR RLB(IE) = ',RLB(IE),
      .                 ' NOT FORESEEN'
       WRITE (iunout,*) 'REQUEST FROM SURFACE NO. ',I
       WRITE (iunout,*) 'IE = ',IE,' EXIT CALLED '
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
       WRITE (iunout,*) 'THE VALID AREAS DO NOT INTERSECT'
       WRITE (iunout,*) 'I,IE ',I,IE
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
       WRITE (iunout,*) 'STRAIGHT LINE NO I= ',I,' COLLAPSED TO A POINT'
       WRITE (iunout,*)

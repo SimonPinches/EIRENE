@@ -73,7 +73,7 @@ c       write (6,*) ' rmi, rma ',rmi, rma
             I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             RMI=MIN(RMI,AORIG(I))
             RMA=MAX(RMA,AORIG(I))
-21      CONTINUE
+   21   CONTINUE
       ELSEIF (LEVGEO .LE. 2.AND.LPPOL3(IBLD)) THEN
         IP=1
         IF (NLPOL) IP=IPROJ3(IBLD,ICURV)
@@ -83,7 +83,7 @@ c       write (6,*) ' rmi, rma ',rmi, rma
             I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             RMI=MIN(RMI,AORIG(I))
             RMA=MAX(RMA,AORIG(I))
-23      CONTINUE
+   23   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
         IT=1
         IF (NLTOR) IT=IPROJ3(IBLD,ICURV)
@@ -94,12 +94,12 @@ c       write (6,*) ' rmi, rma ',rmi, rma
             I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             RMI=MIN(RMI,AORIG(I))
             RMA=MAX(RMA,AORIG(I))
-20      CONTINUE
+   20   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
         DO 22 I=1,NTRII
           RMI=MIN(RMI,AORIG(I))
           RMA=MAX(RMA,AORIG(I))
-22      CONTINUE
+   22   CONTINUE
       ELSE
         WRITE (iunout,*) 'MISSING OPTION IN ISOLNE: RMI,RMA '
         WRITE (iunout,*) 'PLOT ABANDONNED '
@@ -149,7 +149,7 @@ C  SUFFICIENT TO SEARCH ON OUTERMOST RADIAL SURFACE (BECAUSE: CONVEX)
           XMAX = MAX(XMAX,XPOL(NR1ST,IP))
           YMIN = MIN(YMIN,YPOL(NR1ST,IP))
           YMAX = MAX(YMAX,YPOL(NR1ST,IP))
-5       CONTINUE
+    5   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
 C  SEARCH ON WHOLE MESH
         DO 1 IR=1,NR1ST
@@ -159,7 +159,7 @@ C  SEARCH ON WHOLE MESH
           YMIN=MIN(YMIN,YPOL(IR,NP1),YPOL(IR,NP2))
           XMAX=MAX(XMAX,XPOL(IR,NP1),XPOL(IR,NP2))
           YMAX=MAX(YMAX,YPOL(IR,NP1),YPOL(IR,NP2))
-1       CONTINUE
+    1   CONTINUE
 C
         DO 4 IPART=1,NPPLG
           DO 2 IP=NPOINT(1,IPART),NPOINT(2,IPART)
@@ -167,14 +167,14 @@ C
             YMIN=MIN(YMIN,YPOL(1,IP))
             XMAX=MAX(XMAX,XPOL(1,IP))
             YMAX=MAX(YMAX,YPOL(1,IP))
-2         CONTINUE
+    2     CONTINUE
           DO 3 IP=NPOINT(1,IPART),NPOINT(2,IPART)
             XMIN=MIN(XMIN,XPOL(NR1ST,IP))
             YMIN=MIN(YMIN,YPOL(NR1ST,IP))
             XMAX=MAX(XMAX,XPOL(NR1ST,IP))
             YMAX=MAX(YMAX,YPOL(NR1ST,IP))
-3         CONTINUE
-4       CONTINUE
+    3     CONTINUE
+    4   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
 C  SEARCH ON WHOLE MESH
         DO I=1,NRKNOT
@@ -230,34 +230,34 @@ C
           CALL GRJMP(real(XPOL(IR,1),KIND(1.E0)),
      .               real(YPOL(IR,1),KIND(1.E0)))
           DO 9 IP = 2,NP2ND
-9           CALL GRDRW(real(XPOL(IR,IP),KIND(1.E0)),
+    9       CALL GRDRW(real(XPOL(IR,IP),KIND(1.E0)),
      .                 real(YPOL(IR,IP),KIND(1.E0)))
-7       CONTINUE
+    7   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
         CALL GRJMP(real(XPOL(1,NPOINT(1,1)),KIND(1.E0)),
      .             real(YPOL(1,NPOINT(1,1)),KIND(1.E0)))
           DO 10 IR=2,NR1ST
-10          CALL GRDRW (real(XPOL(IR,NPOINT(1,1)),KIND(1.E0)),
+   10       CALL GRDRW (real(XPOL(IR,NPOINT(1,1)),KIND(1.E0)),
      .                  real(YPOL(IR,NPOINT(1,1)),KIND(1.E0)))
 C
         CALL GRJMP (real(XPOL(1,NPOINT(2,NPPLG)),KIND(1.E0)),
      .              real(YPOL(1,NPOINT(2,NPPLG)),KIND(1.E0)))
         DO 11 IR=2,NR1ST
           NP=NPOINT(2,NPPLG)
-11        CALL GRDRW (real(XPOL(IR,NP),KIND(1.E0)),
+   11     CALL GRDRW (real(XPOL(IR,NP),KIND(1.E0)),
      .                real(YPOL(IR,NP),KIND(1.E0)))
         DO 15 I=1,NPPLG
           CALL GRJMP (real(XPOL(1,NPOINT(1,I)),KIND(1.E0)),
      .                real(YPOL(1,NPOINT(1,I)),KIND(1.E0)))
           DO 12 IP=NPOINT(1,I),NPOINT(2,I)
-12          CALL GRDRW (real(XPOL(1,IP),KIND(1.E0)),
+   12       CALL GRDRW (real(XPOL(1,IP),KIND(1.E0)),
      .                  real(YPOL(1,IP),KIND(1.E0)))
           CALL GRJMP (real(XPOL(NR1ST,NPOINT(1,I)),KIND(1.E0)),
      .                real(YPOL(NR1ST,NPOINT(1,I)),KIND(1.E0)))
           DO 13 IP=NPOINT(1,I),NPOINT(2,I)
-13          CALL GRDRW (real(XPOL(NR1ST,IP),KIND(1.E0)),
+   13       CALL GRDRW (real(XPOL(NR1ST,IP),KIND(1.E0)),
      .                  real(YPOL(NR1ST,IP),KIND(1.E0)))
-15      CONTINUE
+   15   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
         DO ITR=1,NTRII
           IF (NCHBAR(1,ITR) .EQ. 0) THEN
@@ -369,9 +369,9 @@ C               WRITE (iunout,*) ' EIN ZUSAETZLICHER PUNKT EINGEGEBEN '
                 IC=0
               ENDIF
             ENDIF
-1100      CONTINUE
+ 1100     CONTINUE
           IF (IC.GT.0) CALL EIRENE_XYPLOT (XY,IC)
-1000    CONTINUE
+ 1000   CONTINUE
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.LPTOR3(IBLD)) THEN
         DO 100 IS=1,NISO
           ACONT=RAMIN+(IS-1)*DA
@@ -430,9 +430,9 @@ C               WRITE (iunout,*) ' EIN ZUSAETZLICHER PUNKT EINGEGEBEN '
                 IC=0
               ENDIF
             ENDIF
-110       CONTINUE
+  110     CONTINUE
           IF (IC.GT.0) CALL EIRENE_XYPLOT (XY,IC)
-100     CONTINUE
+  100   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
         DO IS=1,NISO
           ACONT=RAMIN+(IS-1)*DA
@@ -537,7 +537,7 @@ C
         CALL GRNWPN (1)
         WRITE (CH,'(1P,E10.3)') ACONT
         CALL GRTXT (3.,REAL(YH,KIND(1.E0)),10,CH)
-200   CONTINUE
+  200 CONTINUE
 C
       IF (ALLOCATED(A)) DEALLOCATE (A)
       IF (ALLOCATED(AA)) DEALLOCATE (AA)

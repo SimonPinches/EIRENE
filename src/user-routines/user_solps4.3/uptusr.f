@@ -157,19 +157,19 @@ c  volumetric net ion parallel momentum loss/gain rate due to charge exchange
      .                      WTRSIG*(-VSIG_PARB(IPLS)+PARMOM_0*
      .                      SIGN(1._DP,VAL_PARB(IPLS)))
 
-560         CONTINUE
-590       CONTINUE
+  560       CONTINUE
+  590     CONTINUE
 
-200   CONTINUE  ! NCOU LOOP
+  200 CONTINUE  ! NCOU LOOP
 C
 C
 C
       RETURN
 
-999   CONTINUE
+  999 CONTINUE
 
 
-1000  CONTINUE
+ 1000 CONTINUE
 C  MOLECULES, CX ENERGY
       IF (ITYP.NE.2) GOTO 1999
 
@@ -227,17 +227,17 @@ ccc
 ccc  next: parallel momentum exchange rates due to CX
 ccc
 
-1560        CONTINUE
-1590      CONTINUE
-1200  CONTINUE
+ 1560       CONTINUE
+ 1590     CONTINUE
+ 1200 CONTINUE
 C
 C
 C
       RETURN
 
-1999  CONTINUE
+ 1999 CONTINUE
 
-2000  CONTINUE
+ 2000 CONTINUE
 C  MOLECULES, EL ENERGY
       IF (ITYP.NE.2) GOTO 2999
 
@@ -291,19 +291,19 @@ ccc
 ccc  next: parallel momentum exchange rates due to EL
 ccc
 
-2560        CONTINUE
-2590      CONTINUE
-2200  CONTINUE
+ 2560       CONTINUE
+ 2590     CONTINUE
+ 2200 CONTINUE
 C
 C
 C
       RETURN
 
-2999  CONTINUE
+ 2999 CONTINUE
 
 
 
-9999  CONTINUE
+ 9999 CONTINUE
 
 C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
       RETURN

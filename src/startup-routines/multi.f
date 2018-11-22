@@ -26,11 +26,11 @@ C  ZONE VOLUMES, KNOWN IN ZONE 1 TO NSTRD
       DO 130 J=2,NBMLT
         DO 120 I=1,NSTRD
           VOL(I+(J-1)*NSTRD)=VOL(I)*VOLCOR(J)
-120     CONTINUE
-130   CONTINUE
+  120   CONTINUE
+  130 CONTINUE
       DO 140 I=1,NSTRD
         VOL(I)=VOL(I)*VOLCOR(1)
-140   CONTINUE
+  140 CONTINUE
 C
       RETURN
 C
@@ -53,19 +53,19 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         IF (INDPRO(1).LT.4) THEN
           DO 201 I=1,NR1ST
             TEIN(I+(J-1)*NR1ST)=TEIN(I)
-201       CONTINUE
+  201     CONTINUE
         ENDIF
         IF (INDPRO(2).LT.4) THEN
           DO 202 K=1,NPLSTI
             DO 202 I=1,NR1ST
               TIIN(K,I+(J-1)*NR1ST)=TIIN(K,I)
-202       CONTINUE
+  202     CONTINUE
         ENDIF
         IF (INDPRO(3).LT.4) THEN
           DO 204 K=1,NPLSI
             DO 204 I=1,NR1ST
               DIIN(K,I+(J-1)*NR1ST)=DIIN(K,I)
-204       CONTINUE
+  204     CONTINUE
         ENDIF
         IF (INDPRO(4).LT.4) THEN
           DO 205 K=1,NPLSV
@@ -73,7 +73,7 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
               VXIN(K,I+(J-1)*NR1ST)=VXIN(K,I)
               VYIN(K,I+(J-1)*NR1ST)=VYIN(K,I)
               VZIN(K,I+(J-1)*NR1ST)=VZIN(K,I)
-205       CONTINUE
+  205     CONTINUE
         ENDIF
         IF (INDPRO(5).LT.4) THEN
 C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
@@ -82,28 +82,28 @@ C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
           DO 207 K=1,NAINI
           DO 207 I=1,NR1ST
             ADIN(K,I+(J-1)*NR1ST)=ADIN(K,I)
-207       CONTINUE
+  207     CONTINUE
         ENDIF
-210   CONTINUE
+  210 CONTINUE
 C
 C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
       DO 310 J=2,NBMLT
         IF (INDPRO(1).GT.4) THEN
           DO 301 I=1,NSTRD
             TEIN(I+(J-1)*NSTRD)=TEIN(I)
-301       CONTINUE
+  301     CONTINUE
         ENDIF
         IF (INDPRO(2).GT.4) THEN
           DO 302 K=1,NPLSTI
             DO 302 I=1,NSTRD
               TIIN(K,I+(J-1)*NSTRD)=TIIN(K,I)
-302       CONTINUE
+  302     CONTINUE
         ENDIF
         IF (INDPRO(3).GT.4) THEN
           DO 304 K=1,NPLSI
             DO 304 I=1,NSTRD
               DIIN(K,I+(J-1)*NSTRD)=DIIN(K,I)
-304       CONTINUE
+  304     CONTINUE
         ENDIF
         IF (INDPRO(4).GT.4) THEN
           DO 305 K=1,NPLSV
@@ -111,7 +111,7 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
               VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
               VYIN(K,I+(J-1)*NSTRD)=VYIN(K,I)
               VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
-305       CONTINUE
+  305     CONTINUE
         ENDIF
         IF (INDPRO(5).GT.4) THEN
           DO 306 I=1,NSTRD
@@ -119,15 +119,15 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
             BYIN(I+(J-1)*NSTRD)=BYIN(I)
             BZIN(I+(J-1)*NSTRD)=BZIN(I)
             BFIN(I+(J-1)*NSTRD)=BFIN(I)
-306       CONTINUE
+  306     CONTINUE
         ENDIF
         IF (INDPRO(6).GT.4) THEN
           DO 307 K=1,NAINI
           DO 307 I=1,NSTRD
             ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)
-307       CONTINUE
+  307     CONTINUE
         ENDIF
-310   CONTINUE
+  310 CONTINUE
 C
       RETURN
       END

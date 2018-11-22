@@ -54,7 +54,7 @@ c  skip blank lines at top of file
          read (28+ifoff,'(A132)',iostat=io,end=100) zeile
       end do
  
-100   allocate (hp)
+  100 allocate (hp)
       hp%reacname = reac
 
 ! find number of temperatures 
@@ -66,7 +66,7 @@ c  skip blank lines at top of file
         read (28+ifoff,'(A132)',iostat=io,end=110) zeile
       end do
  
-110   allocate (hp%temps(hp%ntemps))
+  110 allocate (hp%temps(hp%ntemps))
       allocate (hp%rates(hp%ntemps))
       allocate (hp%ratio(hp%ntemps))
  
@@ -91,7 +91,7 @@ c  skip blank lines at top of file
         read (28+ifoff,'(A132)',iostat=io,end=120) zeile
       end do
  
-120   if (io .ne. 0) then
+  120 if (io .ne. 0) then
         write (iunout,*) ' ERROR READING REACTION FROM HYDKIN DATABASE '
         write (iunout,*) ' FILE ',filename, ' NOT FOUND'
         write (iunout,*) ' REACTION IS ',reac
@@ -105,7 +105,7 @@ c  skip blank lines at top of file
         read (28+ifoff,'(A132)',iostat=io,end=130) zeile
       end do
 
-130   if (io .ne. 0) then
+  130 if (io .ne. 0) then
         write (iunout,*) ' ERROR READING REACTION FROM HYDKIN DATABASE '
         write (iunout,*) ' FILE IS ',filename
         write (iunout,*) ' E_el NOT FOUND'
@@ -120,7 +120,7 @@ c  skip blank lines at top of file
         read (28+ifoff,'(A132)',iostat=io,end=140) zeile
       end do
 
-140   if (io .ne. 0) then
+  140 if (io .ne. 0) then
         write (iunout,*) ' ERROR READING REACTION FROM HYDKIN DATABASE '
         write (iunout,*) ' FILE IS ',filename
         write (iunout,*) ' E_K NOT FOUND'
@@ -136,7 +136,7 @@ c  next: type of reaction:  EI, (=DS), CX, EL, RC, PI (=II)
         read (28+ifoff,'(A132)',iostat=io,end=150) zeile
       end do
 
-150   if (io .ne. 0) then
+  150 if (io .ne. 0) then
         write (iunout,*) ' ERROR READING REACTION FROM HYDKIN DATABASE '
         write (iunout,*) ' FILE IS ',filename
         write (iunout,*) ' RPrT NOT FOUND'
@@ -152,7 +152,7 @@ c  next: type of reaction:  EI, (=DS), CX, EL, RC, PI (=II)
         read (28+ifoff,'(A132)',iostat=io,end=160) zeile
       end do
 
-160   if (io .ne. 0) then
+  160 if (io .ne. 0) then
         write (iunout,*) ' ERROR READING REACTION FROM HYDKIN DATABASE '
         write (iunout,*) ' FILE IS ',filename
         write (iunout,*) ' RName NOT FOUND'
@@ -168,7 +168,7 @@ c  next: type of reaction:  EI, (=DS), CX, EL, RC, PI (=II)
         read (28+ifoff,'(A132)',iostat=io,end=170) zeile
       end do
 
-170   if (io .ne. 0) then
+  170 if (io .ne. 0) then
         write (iunout,*) ' ERROR READING REACTION FROM HYDKIN DATABASE '
         write (iunout,*) ' FILE IS ',filename
         write (iunout,*) ' RData NOT FOUND'

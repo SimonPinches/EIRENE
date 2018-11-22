@@ -243,7 +243,7 @@ C
             DO 35 I=MINLX+1,MAXLX
                T=I-0.3*(MAXLX-MINLX)/LENX
                CALL GRTXT(REAL(T,KIND(1.E0)),-0.90,2,'10')
-  35        CONTINUE
+   35       CONTINUE
 C
             DO 40 I=MINLX+1,MAXLX
                WRITE(CZHNLB,'(I3)') I
@@ -253,7 +253,7 @@ C
                ELSE
                   CALL GRTXT(REAL(I,KIND(1.E0)),-0.60,3,CZHNLB)
                ENDIF
-  40        CONTINUE
+   40       CONTINUE
 C
 C  EINFACHE LABELS AN DER X-ACHSE
 C

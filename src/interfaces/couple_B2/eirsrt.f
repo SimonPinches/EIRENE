@@ -125,7 +125,7 @@ C
           ENDIF
           DO 3 ISTRA=1,NSTRAI
             FLUXS(ISTRA)=FLUX(ISTRA)
-3         CONTINUE
+    3     CONTINUE
           IFIRST=1
 
 
@@ -231,7 +231,7 @@ C
 
 cdr all the short cycle stuff below is only accessible in '.not.ltime' mode.
 
-10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
+   10   CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
         CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
         
@@ -353,7 +353,7 @@ C
      .                        EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
               END IF
             ENDDO
-21        CONTINUE
+   21     CONTINUE
 C
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: ATOMS, EI-PROCESSES, FROM IATM,
@@ -373,7 +373,7 @@ C
      .                                        EIRENE_FTABEI1(IREI,IN)
               END IF
             ENDDO
-25        CONTINUE
+   25     CONTINUE
 C
 C
 C
@@ -397,7 +397,7 @@ cdr                     because it was already summed over ipls
      .                               EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF  
           ENDDO
-24      CONTINUE
+   24   CONTINUE
 c....................................................................
 C
 C  NEXT: TEST IONS, EI RATES: SPLODI, SEEODI, SEIODI
@@ -421,7 +421,7 @@ c
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
               ENDIF
           ENDDO
-27        CONTINUE
+   27     CONTINUE
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: TEST IONS, EI-PROCESSES, FROM IION,
 C                                      SUM OVER ALL EI PROCESSES
@@ -439,7 +439,7 @@ C                                      SUM OVER ALL EI PROCESSES
      .                         EIRENE_FTABEI1(IREI,IN)*ESIG
               END IF
             ENDDO
-26        CONTINUE
+   26     CONTINUE
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: TEST IONS, EI-PROCESSES, FROM IION
 C                                         SUM OVER ALL EI PROCESSES
@@ -461,7 +461,7 @@ cdr                     because it was already summed over ipls
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
               END IF
             ENDDO
-29        CONTINUE
+   29     CONTINUE
 C
 C
 C  NEXT: MOLECULES, EI RATES: SPLODM, SEEODM, SEIODM
@@ -480,7 +480,7 @@ C
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
               END IF
             ENDDO
-47        CONTINUE
+   47     CONTINUE
 C
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: MOLECULES, EI-PROCESSES, FROM IMOL,
@@ -500,7 +500,7 @@ C
      .                                        EIRENE_FTABEI1(IREI,IN)
               ENDIF
             ENDDO
-35        CONTINUE
+   35     CONTINUE
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI-PROCESSES, FROM IMOL
 C                                         SUM OVER ALL EI PROCESSES
@@ -521,7 +521,7 @@ cdr                     because it was already summed over ipls
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
               END IF
             ENDDO
-49        CONTINUE
+   49     CONTINUE
 
         END IF   ! (not llst) 
 C
@@ -623,8 +623,8 @@ C                                     SUM OVER ALL EI PROCESSES
                 SPLNWA(IN,IATM,IPLS)=SPLNWA(IN,IATM,IPLS)+
      .                          EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
               END IF
-102       CONTINUE
-101     CONTINUE
+  102     CONTINUE
+  101   CONTINUE
 
 C
         DO 105 IATM=1,NATMI
@@ -638,7 +638,7 @@ C
                 SEENWA(IN,IATM)=SEENWA(IN,IATM)+EIRENE_FEELEI1(IREI,IN)*
      .                                          EIRENE_FTABEI1(IREI,IN)
               END IF
-105     CONTINUE
+  105   CONTINUE
 
 cdr  no seinwa, because only KER part is in short cycle correction for EI processes
 cdr             and for atoms this is identical == 0.0
@@ -658,8 +658,8 @@ C
               SPLNWI(IN,IION,IPLS)=SPLNWI(IN,IION,IPLS)+
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
             END IF
-108       CONTINUE
-107     CONTINUE
+  108     CONTINUE
+  107   CONTINUE
 C
 C
         DO 106 IION=1,NIONI
@@ -673,7 +673,7 @@ C
                 SEENWI(IN,IION)=SEENWI(IN,IION)+EIRENE_FEELEI1(IREI,IN)*
      .                                          EIRENE_FTABEI1(IREI,IN)
               END IF
-106     CONTINUE
+  106   CONTINUE
 C
 
         DO 109 IION=1,NIONI
@@ -692,8 +692,8 @@ cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
               SEINWI(IN,IION)=SEINWI(IN,IION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-110       CONTINUE
-109     CONTINUE
+  110     CONTINUE
+  109   CONTINUE
 C
 C  NEW: MOLECULES, EI PROCESSES
 C
@@ -710,8 +710,8 @@ C
               SPLNWM(IN,IMOL,IPLS)=SPLNWM(IN,IMOL,IPLS)+
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
             END IF
-118       CONTINUE
-117     CONTINUE
+  118     CONTINUE
+  117   CONTINUE
 C
 C
         DO 115 IMOL=1,NMOLI
@@ -725,8 +725,8 @@ C
               SEENWM(IN,IMOL)=SEENWM(IN,IMOL)+EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
             END IF
-116       CONTINUE
-115     CONTINUE
+  116     CONTINUE
+  115   CONTINUE
 
         DO 119 IMOL=1,NMOLI
         DO 119 IPLS=1,NPLSI
@@ -740,8 +740,8 @@ C
               SEINWM(IN,IMOL)=SEINWM(IN,IMOL)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-120       CONTINUE
-119     CONTINUE
+  120     CONTINUE
+  119   CONTINUE
 C
         B2BREM=B2BRM
         B2RAD=B2RD

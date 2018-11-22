@@ -57,7 +57,7 @@ C
         ELSE
           XH=EIRENE_RTSAF
         ENDIF
-11    CONTINUE
+   11 CONTINUE
       WRITE (iunout,*) 'RTSAF EXCEEDING MAXIMUM ITERATIONS'
       RETURN
       END

@@ -8,6 +8,6 @@ C*DK MASJR2
       REAL(DP), INTENT(IN) :: B, C
       INTEGER, INTENT(IN) :: I
       WRITE (iunout,60) A,I,B,C
-60    FORMAT (1X,A24,3X,I6,3X,2(1PE12.4,3X))
+   60 FORMAT (1X,A24,3X,I6,3X,2(1PE12.4,3X))
       RETURN
       END

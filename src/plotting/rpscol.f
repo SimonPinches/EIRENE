@@ -149,8 +149,8 @@ C
             IF (ZMA.NE.666.) YWERT(IR,IT)=MIN(YWERT(IR,IT),ZMA)
             IF (ABS(YWERT(IR,IT)) < EPS30) YWERT(IR,IT)=0._DP
             WRITE (NRAPS+ifoff,*) YWERT(IR,IT)
-3100      CONTINUE
-1100    CONTINUE
+ 3100     CONTINUE
+ 1100   CONTINUE
 C
       ELSEIF (LEVGEO.LE.2.AND.LPTOR3(IBLD)) THEN
         LPTORR=.TRUE.
@@ -167,8 +167,8 @@ C
             IF (ZMA.NE.666.) YWERT(IR,IP)=MIN(YWERT(IR,IP),ZMA)
             IF (ABS(YWERT(IR,IP)) < EPS30) YWERT(IR,IP)=0._DP
             WRITE (NRAPS+ifoff,*) YWERT(IR,IP)
-3         CONTINUE
-1       CONTINUE
+    3     CONTINUE
+    1   CONTINUE
 C
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
         LPTORR=.TRUE.
@@ -186,9 +186,9 @@ C
               IF (ZMA.NE.666.) YWERT(IR,IP)=MIN(YWERT(IR,IP),ZMA)
               IF (ABS(YWERT(IR,IP)) < EPS30) YWERT(IR,IP)=0._DP
               WRITE (NRAPS+ifoff,*) YWERT(IR,IP)
-30          CONTINUE
-20        CONTINUE
-10      CONTINUE
+   30       CONTINUE
+   20     CONTINUE
+   10   CONTINUE
 C
 C  icase=4
 !PB      ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
@@ -200,7 +200,7 @@ C  icase=4
           IF (ZMA.NE.666.) YWERT1(I,1)=MIN(YWERT1(I,1),ZMA)
           IF (ABS(YWERT1(I,1)) < EPS30) YWERT1(I,1)=0._DP
           WRITE(NRAPS+ifoff,*) YWERT1(I,1)
-60      CONTINUE
+   60   CONTINUE
 C
 C  icase=5
       ELSEIF ((LEVGEO.EQ.5).AND..NOT.LRPSCUT) THEN

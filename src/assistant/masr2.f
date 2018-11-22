@@ -9,6 +9,6 @@ C*DK MASR2
       CHARACTER(*), INTENT(IN) :: A
       REAL(DP), INTENT(IN) :: B, C
       WRITE (iunout,60) A,B,C
-60    FORMAT (1X,A16,2(3X,1PE12.4))
+   60 FORMAT (1X,A16,2(3X,1PE12.4))
       RETURN
       END

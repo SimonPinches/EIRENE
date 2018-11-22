@@ -447,8 +447,8 @@ cdr if(iph2 > 0) then  ! dieser test nur in initialisation phase
           ENDIF
 C
        ENDDO
-133    CONTINUE
-131    CONTINUE
+  133  CONTINUE
+  131  CONTINUE
       RETURN
 
       END

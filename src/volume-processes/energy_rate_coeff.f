@@ -295,7 +295,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
       return
 
-990   continue
+  990 continue
       write (iunout,*) 'Proprietary (unfinished) option ifit=4 '
       write (iunout,*) 'encountered in routine: energy-rate-coeff.f '
       call eirene_exit_own(1)

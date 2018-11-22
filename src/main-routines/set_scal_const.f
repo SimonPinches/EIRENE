@@ -91,13 +91,13 @@ cdr: to be written
         GOTO 205
 
 c  error, inconsistent input
-207     WRITE (iunout,*)
+  207   WRITE (iunout,*)
      .    'INCONSISTENT INPUT FOR SCALING OF STRATUM ISTR '
         WRITE (iunout,*) 'ISTR ',ISTR,IS,IT,IC
         WRITE (iunout,*) 'USE DEFAULT SCALING (FLUX(ISTR)) '
         FLUXT(ISTR)=FLUX(ISTR)
         IF (WTT.NE.0.D0) FLXFAC(ISTR)=FLUXT(ISTR)/WTT
-205     CONTINUE
+  205   CONTINUE
       ELSE
 C  DEFAULT SCALING OPTION: USE FLUX(ISTR)
         FLUXT(ISTR)=FLUX(ISTR)
@@ -120,7 +120,7 @@ C  ZONE DEPENDENT SCALING FACTORS
           ZVOLIN(IC)=ZW /VOLTAL(IC)
           ZVOLIW(IC)=ZWW/VOLTAL(IC)
         ENDIF
-206   CONTINUE
+  206 CONTINUE
       ZVOLNT=ZW /VOLTOT
       ZVOLWT=ZWW/VOLTOT
  

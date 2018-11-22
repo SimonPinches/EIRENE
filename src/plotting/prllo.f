@@ -17,7 +17,7 @@ C
       CORD(3+I)=P2(I)
       CORD(6+I)=P4(I)
       CORD(9+I)=P5(I)
-1     CORD(12+I)=P3(I)
+    1 CORD(12+I)=P3(I)
       CALL EIRENE_PL3Q (CORD,5,IO,NF)
       RETURN
       END

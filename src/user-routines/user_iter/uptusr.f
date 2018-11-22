@@ -118,7 +118,7 @@ C  particle flux, integrated over all directions
           if(ia4+iatm.gt.nadv) goto 20
           ADDV(IA4+IATM,IRD)=ADDV(IA4+IATM,IRD)+WTR*VEL
 CDR
-20      CONTINUE
+   20   CONTINUE
 C
 C  MOLECULES
       ELSEIF (ITYP.EQ.2) THEN
@@ -152,7 +152,7 @@ C  particle flux, integrated over all directions
           if(ia4+NATMI+IMOL.gt.nadv) goto 200
           ADDV(IA4+NATMI+IMOL,IRD)=ADDV(IA4+NATMI+IMOL,IRD)+WTR*VEL
 C
-200     CONTINUE
+  200   CONTINUE
 CDR
 C
 C  TEST IONS

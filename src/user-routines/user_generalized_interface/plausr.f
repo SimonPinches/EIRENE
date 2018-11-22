@@ -334,7 +334,7 @@ c        enddo isrfs
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
      .             SHSTEP(ITARG,IG)
-6100     CONTINUE
+ 6100    CONTINUE
          WRITE (6,'(1X,I3,1P,1E11.3)') KSTEP(ISTEP)+1,
      .                                 RRSTEP(ITARG,KSTEP(ISTEP)+1)
 C
@@ -372,5 +372,5 @@ c     enddo istra
       close(fp+ifoff)
 
 
- 99   RETURN
+   99 RETURN
       END

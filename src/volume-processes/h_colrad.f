@@ -198,7 +198,7 @@ C
       DO 100 I=1,LIM
         P=I
         E_AT(I)=UH*(1.0-1.0/P**2)
-100   CONTINUE
+  100 CONTINUE
 
       DO 101 I=1,LIM-1
       DO 102 J=I+1,LIM
@@ -513,11 +513,11 @@ C  EKIN=  <SIGMA * V * EKIN(ELEC)>   (EV*CM**3/S)
             DO 57 II=1,7
               JJ=8-II
               DCCX=DCCX*ELN+RECOMB(JJ+1,Iii)*JJ
- 57         CONTINUE
+   57       CONTINUE
             EBETA(I)=TEMP*BETA(I)*(DCCX+1.5)
           ENDIF
 
-602   CONTINUE
+  602 CONTINUE
 c
       if (lopaque) beta(1)=0.
 c
@@ -565,7 +565,7 @@ C*********  2-10 -> J
 
       GG=((P-2.)/8.)**0.25
       C(I,J)=(1.-GG)*CJ+GG*CV
-110   F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+  110 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
 
 
 C*********  I(>11) -> J
@@ -1847,7 +1847,7 @@ c     endif
         ENDIF
         S(J+1)=S(J)
         H(J+1)=H(J)/9.
-11    CONTINUE
+   11 CONTINUE
       write(iunout,*) '(W) Too many steps.'
       END
  
@@ -1869,7 +1869,7 @@ c     endif
         ENDIF
         C(I)=YA(I)
         D(I)=YA(I)
-11    CONTINUE
+   11 CONTINUE
       Y=YA(NS)
       NS=NS-1
       DO 13 M=1,N-1
@@ -1881,7 +1881,7 @@ c     endif
           DEN=W/DEN
           D(I)=HP*DEN
           C(I)=HO*DEN
-12      CONTINUE
+   12   CONTINUE
         IF (2*NS.LT.N-M)THEN
           DY=C(NS+1)
  
@@ -1893,7 +1893,7 @@ c     endif
           NS=NS-1
         ENDIF
         Y=Y+DY
-13    CONTINUE
+   13 CONTINUE
       RETURN
       END
 C
@@ -1916,7 +1916,7 @@ C
           X=X+DDEL
           SUM=SUM+FUNC(X)
           X=X+DEL
-11      CONTINUE
+   11   CONTINUE
         S=(S+(B-A)*SUM/TNM)/3.
         IT=3*IT
       ENDIF

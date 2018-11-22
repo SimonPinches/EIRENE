@@ -10,6 +10,6 @@ C*DK MASAL1
       LOGICAL, INTENT(IN) :: NL(N)
       INTEGER :: I
       WRITE (iunout,60) A,(NL(I),I=1,N)
-60    FORMAT (1X,A6/(20L3))
+   60 FORMAT (1X,A6/(20L3))
       RETURN
       END

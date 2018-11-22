@@ -28,8 +28,8 @@ C
       DO 10 IATM=1,NATMI
 C  NRCA=0 ?
         DO 100 ICOL=1,NRCA(IATM)
-100     CONTINUE
-10    CONTINUE
+  100   CONTINUE
+   10 CONTINUE
 C
 C
       DO 20 IMOL=1,NMOLI
@@ -55,9 +55,9 @@ C  test ion secondaries:
      .                           ' CAN BE CONDENSED'
               ENDIF
             ENDIF
-220       CONTINUE
-200     CONTINUE
-20    CONTINUE
+  220     CONTINUE
+  200   CONTINUE
+   20 CONTINUE
 C
       RETURN
       END

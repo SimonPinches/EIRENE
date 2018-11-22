@@ -34,19 +34,19 @@ C
       ENDIF
 C
       INC=100
-100   CONTINUE
+  100 CONTINUE
       XINC=DBLE(INC)
       DX=(XEND-XANF)/XINC
       INN=0
       IFLAG=0
 C
       DO 1 I=1,MLIN
-1        ALIN(I)=ALIN(I)+ZLIN(I)*ZPLT
+    1    ALIN(I)=ALIN(I)+ZLIN(I)*ZPLT
       DO 2 I=1,MSCN
          A0S(I)=A0S(I)+(A3S(I)+A6S(I)*ZPLT)*ZPLT
          A1S(I)=A1S(I)+A8S(I)*ZPLT
          A2S(I)=A2S(I)+A9S(I)*ZPLT
-2     CONTINUE
+    2 CONTINUE
       DO 10 I=1,INC+1
          X=XANF+(I-1)*DX
          Y=FCN(X)
@@ -57,12 +57,12 @@ C
          DO 11 J=1,MLIN
             GL=ALIN(J)+XLIN(J)*XX+YLIN(J)*YY
             LIN=LIN.AND.GL.LE.0.
-11       CONTINUE
+   11    CONTINUE
          DO 12 J=1,MSCN
             GS=A0S(J)+(A1S(J)+A4S(J)*XX)*XX+(A2S(J)+
      .         A5S(J)*YY)*YY+A7S(J)*XX*YY
             LIN=LIN.AND.GS.LE.0.
-12       CONTINUE
+   12    CONTINUE
 C
          IF (I.EQ.1) THEN
 C*****FIRST POINT OF LINE
@@ -119,7 +119,7 @@ C*****INTERPOLATE POINT ON CONFIGURATION BOUNDARY
                     DXX=DX
                   ENDIF
 C
-13                DXX=DXX*0.5
+   13             DXX=DXX*0.5
                   XT=XS+DXX
                   YT=FCN(XT)
                   XTT=XTRAN(XT+XM,YT+YM)
@@ -128,12 +128,12 @@ C
                   DO 14 J=1,MLIN
                      GL=ALIN(J)+XLIN(J)*XTT+YLIN(J)*YTT
                      LTST=LTST.AND.GL.LE.0.
-14                CONTINUE
+   14             CONTINUE
                   DO 15 J=1,MSCN
                      GS=A0S(J)+(A1S(J)+A4S(J)*XTT)*XTT+
      .                  (A2S(J)+A5S(J)*YTT)*YTT+A7S(J)*XTT*YTT
                      LTST=LTST.AND.GS.LE.0.
-15                CONTINUE
+   15             CONTINUE
                   IF (LTST) XS=XS+DXX
                   IF (ABS(DXX).GT.1.E-3) GOTO 13
 C
@@ -216,11 +216,11 @@ C*****INTERPOLATE POINT ON BOUNDARY OF PLOTAREA
                ENDIF
             ENDIF
          ENDIF
-16       XXO=XX
+   16    XXO=XX
          YYO=YY
          LINO=LIN
          LPLAO=LPLA
-10    CONTINUE
+   10 CONTINUE
       IF (INN.GT.0.OR.INC.GE.400) RETURN
       INC=INC*2
       GOTO 100

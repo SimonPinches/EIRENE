@@ -146,7 +146,7 @@ c
         ENDIF
         CALL EIRENE_LEER(1)
       ENDIF
-1     CONTINUE
+    1 CONTINUE
 
 c  preparations for process IRCX done. Start sampling procedure here.
 C
@@ -199,7 +199,7 @@ C
 
 c   start random sampling here
 
-123   CONTINUE
+  123 CONTINUE
       IF (INIV2.LE.0) CALL EIRENE_FGAUSS
 C
 C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN (m=0;s=1)
@@ -305,7 +305,7 @@ C   CX = EXCHANGE OF IDENTITY (RELAXATION). NOTHING MORE TO BE DONE
 C
       RETURN
 C
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*)
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)

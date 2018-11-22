@@ -122,7 +122,7 @@ C  DON'T SCORE ON CENSUS ANY MORE FOR THIS STRATUM
       if (iprnli > nprnl)         iprnli = nprnl
 
 C
-112   continue
+  112 continue
 
 C  DECIDE: CONTINUE OR STOP TRAJECTORY
       IF (NTMSTP.GE.0.AND.ITMSTP.GE.NTMSTP) THEN

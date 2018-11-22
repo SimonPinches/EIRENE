@@ -55,7 +55,7 @@ C
 C        ERSETZEN VON '^' DURCH '**' IN PART(J)
 C
          I=2
-20       IF (I .LT. IPART(J)) THEN
+   20    IF (I .LT. IPART(J)) THEN
             IF (PART(J)(I:I) .EQ. '^') THEN
 CPB            HILFE=PART(J)(1:I-1)//'**'//PART(J)(I+1:IPART(J))//' '
 CPB            I=I+1
@@ -69,7 +69,7 @@ C
 C        ERSETZEN VON '^' DURCH '**' IN ARITH(J)
 C
          I=2
-30       IF (I .LT. IARITH(J)) THEN
+   30    IF (I .LT. IARITH(J)) THEN
             IF (ARITH(J)(I:I) .EQ. '^') THEN
 CPB            HILFE=ARITH(J)(1:I-1)//'**'//ARITH(J)(I+1:IARITH(J))//' '
 CPB            I=I+1
@@ -83,7 +83,7 @@ C
 C        EINFUEGEN  VON 'Z' FUER ZERLEGUNG IN PART(J)
 C
          I=1
-40       IF (I .LT. IPART(J)) THEN
+   40    IF (I .LT. IPART(J)) THEN
             IF (INDEX(ZIFFER,PART(J)(I:I)) .GT. 0) THEN
                IF (I .EQ. 1) THEN
                   HILFE='Z'//PART(J)(I:IPART(J))//' '
@@ -103,7 +103,7 @@ C
 C        EINFUEGEN VON 'Z' FUER ZERLEGUNG IN ARITH(J)
 C
          I=1
-50       IF (I .LT. IARITH(J)) THEN
+   50    IF (I .LT. IARITH(J)) THEN
             IF (INDEX(ZIFFER,ARITH(J)(I:I)) .GT. 0) THEN
                IF (I .EQ. 1) THEN
                   HILFE='Z'//ARITH(J)(I:IARITH(J))//' '
@@ -120,7 +120,7 @@ C
             GOTO 50
          ENDIF
  
-10       CONTINUE
+   10    CONTINUE
 C
 C     ENDE VON RUKSUB
 C

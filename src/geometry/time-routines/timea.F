@@ -163,7 +163,7 @@ C     iterate over all additional surfaces
           GOTO 97
         ENDIF
 
-85      IF (RLB(J).LT.2.0) THEN
+   85   IF (RLB(J).LT.2.0) THEN
 C
 C   SURFACE COEFFICIENTS ARE INPUT
 C
@@ -470,7 +470,7 @@ C
 C  SET SOME MORE ASSISTENT SURFACE DATA AND CHECK CONSISTENCY
 C  ST. NO. 90 --- 99
 C
-90      CONTINUE
+   90   CONTINUE
 C
         RLBNOT(J)=RLB(J).EQ.1.5.OR.RLB(J).EQ.2.5.OR.RLB(J).EQ.3.5.OR.
      .            RLB(J).EQ.4.5.OR.RLB(J).EQ.5.5
@@ -488,7 +488,7 @@ C
      .      GOTO 95
           ENDDO
           GOTO 96
-95        WRITE (iunout,*) 'EXIT FROM TIMEA0: SURFACE NO J IS OPERATING'
+   95     WRITE (iunout,*) 'EXIT FROM TIMEA0: SURFACE NO J IS OPERATING'
           WRITE (iunout,*) 'A SWITCH BUT IS SOMETIMES TRANSPARENT AND '
           WRITE (iunout,*)
      .      'SOMETIMES REFLECTING (SEMI-TRANSPARENCY OPTION)'
@@ -498,9 +498,9 @@ C
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-96      GOTO 94
+   96   GOTO 94
 C
-98      WRITE (iunout,*)
+   98   WRITE (iunout,*)
      .    'WARNING FROM TIMEA0, SURFACE NO J IS TURNED OFF'
         WRITE (iunout,*) 'BECAUSE ILL-DEFINED '
         WRITE (iunout,*) 'J= ',J
@@ -516,7 +516,7 @@ C
         END IF
         GOTO 97
 C
-94      CONTINUE
+   94   CONTINUE
 C
         JUMLIM(J)=0
         ALM(J)=2.*A4LM(J)
@@ -544,21 +544,21 @@ c  create HNF coefficients (normalized vector and distance)
           
           JUM=JUMLIM(J)
           GOTO (91,92,93),JUM
-91          ALM(J)=-A0LM(J)/A1LM(J)
+   91       ALM(J)=-A0LM(J)/A1LM(J)
             BLM(J)=-A2LM(J)/A1LM(J)
             CLM(J)=-A3LM(J)/A1LM(J)
           GOTO 97
-92          ALM(J)=-A0LM(J)/A2LM(J)
+   92       ALM(J)=-A0LM(J)/A2LM(J)
             BLM(J)=-A1LM(J)/A2LM(J)
             CLM(J)=-A3LM(J)/A2LM(J)
           GOTO 97
-93          ALM(J)=-A0LM(J)/A3LM(J)
+   93       ALM(J)=-A0LM(J)/A3LM(J)
             BLM(J)=-A1LM(J)/A3LM(J)
             CLM(J)=-A2LM(J)/A3LM(J)
         ENDIF
-97    CONTINUE
+   97 CONTINUE
 
-99    CONTINUE
+   99 CONTINUE
 
       IF (NLOCTREE) then
 c  calling an internal subroutine for preparing octree procedure:

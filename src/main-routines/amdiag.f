@@ -164,7 +164,7 @@ c  no interacting particle species found
           TXTPUN(IAIN,NTALN) = ' '
           goto 3000       
         ENDIF
-170     CONTINUE
+  170   CONTINUE
 
         IF (NA.EQ.20) THEN
           mm=modcol(1,2,irei)
@@ -181,7 +181,7 @@ c  no interacting particle species found
             DO 1720 ICELL=1,NSBOX
               if (lgvac(icell,npls+1)) cycle  
               ADIN(IAIN,ICELL)=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
-1720        CONTINUE
+ 1720       CONTINUE
 
             goto 5000
           else  !  mm= MODCOL(1,2,irei)=2, not ready            
@@ -205,7 +205,7 @@ c
             DO 1721 ICELL=1,NSBOX
               RATE=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
               ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)*RATE
-1721        CONTINUE
+ 1721       CONTINUE
 
             goto 5000
           else  !  mm= MODCOL(1,4,irei)=2, not ready
@@ -266,7 +266,7 @@ c  no interacting particle species found
           TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '
           goto 3000                
-172       CONTINUE      
+  172     CONTINUE      
         ENDIF
 
         IF (NA.EQ.22) THEN
@@ -285,7 +285,7 @@ c  no interacting particle species found
               if (lgvac(icell,ipl)) cycle           
               ADIN(IAIN,ICELL)=
      .        TABCX3(IRCX,ICELL,1)/(diin(ipl,icell)+eps30)/AU
-1722        CONTINUE
+ 1722       CONTINUE
             
             GOTO 5000 !done
           ELSEIF (MM.EQ.2) THEN
@@ -319,7 +319,7 @@ c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
 c  not ready
           DO 1723 ICELL=1,NSBOX            
             ADIN(IAIN,ICELL)=EPLCX3(IRCX,ICELL,1)
-1723      CONTINUE
+ 1723     CONTINUE
           
           GOTO 3000
 
@@ -378,7 +378,7 @@ c  no interacting particle species found
           TXTPSP(IAIN,NTALN) = 'un-identified species   '     
           TXTPUN(IAIN,NTALN) = ' '         
           GOTO 3000
-174       CONTINUE
+  174     CONTINUE
         ENDIF
 
         IF (NA.EQ.24) THEN
@@ -396,7 +396,7 @@ c  no interacting particle species found
               if (lgvac(icell,ipl)) cycle            
               ADIN(IAIN,ICELL)=
      .        TABEL3(IREL,ICELL,1)/(diin(ipl,icell)+eps30)/AU
-1724        CONTINUE
+ 1724       CONTINUE
             GOTO 5000  !done
           ELSEIF (MM.EQ.2) THEN
 C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
@@ -429,7 +429,7 @@ c  not ready
           irel=ns
           DO 1725 ICELL=1,NSBOX            
             ADIN(IAIN,ICELL)=EPLEL3(NS,ICELL,1)
-1725      CONTINUE
+ 1725     CONTINUE
           
           GOTO 3000
 
@@ -488,7 +488,7 @@ c  no interacting particle species found
           TXTPSP(IAIN,NTALN) = 'un-identified species   '
           TXTPUN(IAIN,NTALN) = ' '
           GOTO 3000
-176       CONTINUE
+  176     CONTINUE
         ENDIF
 
         IF (NA.EQ.26) THEN
@@ -507,7 +507,7 @@ c  no interacting particle species found
               if (lgvac(icell,ipl)) cycle            
               ADIN(IAIN,ICELL)=
      .        TABPI3(NS,ICELL,1)/(diin(ipl,icell)+eps30)/AU
-1726        CONTINUE
+ 1726       CONTINUE
             GOTO 5000  !DONE !
 
           ELSEIF (MM.EQ.2) THEN
@@ -540,7 +540,7 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
           irpi=ns
           DO 1727 ICELL=1,NSBOX            
             ADIN(IAIN,ICELL)=EPLPI3(irpi,ICELL,1)
-1727      CONTINUE
+ 1727     CONTINUE
           GOTO 3000
 
 c.................................................................
@@ -573,7 +573,7 @@ c  no interacting particle species found
           TXTPUN(IAIN,NTALN) = ' '
           goto 3000
         ENDIF
-178     CONTINUE
+  178   CONTINUE
 
         IF (NA.EQ.28) THEN
           mm=modcol(6,2,irrc)
@@ -590,7 +590,7 @@ c  no interacting particle species found
             DO 1728 ICELL=1,NSBOX
               if (lgvac(icell,npls+1)) cycle
               ADIN(IAIN,ICELL)=TABRC1(irrc,ICELL)/(DEIN(ICELL)+EPS30)/AU
-1728        CONTINUE
+ 1728       CONTINUE
 
             goto 5000
           else  !  mm= MODCOL(1,2,irei)=2, not ready
@@ -616,7 +616,7 @@ c             RATE=TABRC1(irrc,ICELL)/(DEIN(ICELL)+EPS30)/AU
 cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
               RATE=1.0/(DEIN(ICELL)+EPS30)/AU
               ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)*RATE
-1729        CONTINUE
+ 1729       CONTINUE
             goto 5000
           else  !  mm= MODCOL(6,4,irrc)=2, not ready
             goto 3000
@@ -624,7 +624,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
 
         ENDIF
 
-3000    CONTINUE  !  unfinished option, or error
+ 3000   CONTINUE  !  unfinished option, or error
 
         if (mm.ne.0) then
           call eirene_leer(1)
@@ -645,7 +645,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
           GOTO 190
         endif
 
-5000  CONTINUE
+ 5000 CONTINUE
       CALL eirene_leer(1)
       WRITE (iunout,*) 'AMDIAG: ADDITIONAL INPUT TALLY ADIN(IAIN) SET'
       write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
@@ -654,7 +654,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
       WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
 
 
-190   CONTINUE
+  190 CONTINUE
 
       RETURN
       END
