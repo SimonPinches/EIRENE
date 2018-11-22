@@ -1,12 +1,12 @@
-CDR  OCT.14 ADDED:  READ ESBPARM  (PROJECTILE SURFACE BINDING ENERGY) FROM TRIM FILES.  
+CDR  OCT.14 ADDED:  READ ESBPARM  (PROJECTILE SURFACE BINDING ENERGY) FROM TRIM FILES.
 c                   CURRENTLY NOT IN USE.
-C                   CURRENTLY ALSO NOT YET READ (TO BE DONE): 
+C                   CURRENTLY ALSO NOT YET READ (TO BE DONE):
 c                             FIND END OF LINE AND READ DATA ONLY IF AVAILABLE.
 cdr  Jan 17      :  started: read INR (resolution on data file), rather than fixed INR=5
-c                   tbd:  read   DUMMY=INR from 1st of the 84 files. 
+c                   tbd:  read   DUMMY=INR from 1st of the 84 files.
 C
 C                         DEFAULT              : DUMMY=5
-C                         SOME FILES READY WITH: DUMMY=10      
+C                         SOME FILES READY WITH: DUMMY=10
 c                         (DUMMY was reserved for sputter data in TRIM format?)
 cdr  june 17:  remove variable NFLR, was same as NHD6
 c
@@ -15,7 +15,7 @@ C
 C  THIS SUBROUTINE READS, AS EXPLICITLY SELECTED, SINGLE
 C  REFLECTION DATA FILES "A_ON_B" PRODUCED E.G. BY MONTE-CARLO BCA CODES
 C  THERE ARE NHD6 SUCH FILES IN THIS RUN
-C  INPUT 
+C  INPUT
 C     STREAM: IUN=20+IFOFF
 C     NHD6  : FROM PARMMOD
 C
@@ -24,12 +24,12 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CREF
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: PID180
 C     REAL(DP) :: DUMMY, ESBPARM  ! ESBPARM SHOULD BE ARRAY(IFILE)
-      INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I, 
+      INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I,
      .           IWWW, ITTT, INR2, IFLR
 C
 C
@@ -65,25 +65,25 @@ C  READ: PROJECTILE CHARGE AND MASS TC,TM
 C  READ: WALL (TARGET) CHARGE AND MASS WC,WM
 C  READ: INCIDENT ENERGY, ANGLE ENAR,WIAR
 C  READ: REFLECTION PROBABILITY HFTR0, ???, PROJECTILE SURFACE BINDING ENERGY PARAMETER
-            IF (I1.EQ.1.AND.I2.EQ.1) THEN    
+            IF (I1.EQ.1.AND.I2.EQ.1) THEN
 cdr
 !  additional data DUMMY and ESBPARM only for the first of the 12*7=84 datasets
 !  SOME COMPILERS DO NOT LIKE READING MORE DATA THAN THERE ARE IN A SINGLE LINE
 !  to be done: check length of input line, and decide then whether to read
 !  DUMMY and ESBPARM, or not.
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
-     .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE) 
+     .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE)
 !2 NEW PARAMETERS, MAYBE ONLY IN FIRST OF THE 84 BLOCKS i1=i2=1??  IF AT ALL?
-C    .                    ,DUMMY, ESBPARM(IFILE)) 
+C    .                    ,DUMMY, ESBPARM(IFILE))
 
-            ELSE  
+            ELSE
               READ (IUN,*) TC(IFILE),TM(IFILE),WC(IFILE),WM(IFILE),
-     .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE) 
+     .                     enar(i1),wiar(i2),HFTR0(I1,I2,IFILE)
             ENDIF
 C  FIND NEAREST INTEGER FOR NUCLEAR MASS NUMBER OF WALL MATERIAL
             IWWW=NINT(WM(IFILE))
             WM(IFILE)=IWWW
-C  FIND NEAREST INTEGER FOR NUCLEAR MASS NUMBER OF PROJECTILE 
+C  FIND NEAREST INTEGER FOR NUCLEAR MASS NUMBER OF PROJECTILE
             ITTT=NINT(TM(IFILE))
             TM(IFILE)=ITTT
             READ (IUN,*)
@@ -123,7 +123,7 @@ cdr  old version: hard-wired INR=5
       RAAR(4)=0.7
       RAAR(5)=0.9
 cdr  new version (not ready, allow higher resolution "INR" in quantile data tables)
-cdr  for INR=5: should produce the same RAAR as above. 
+cdr  for INR=5: should produce the same RAAR as above.
       INR2=2*INR
       do I=1,INR
         raar(I)=float(1+2*(I-1))/float(inr2)

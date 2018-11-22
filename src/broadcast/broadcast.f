@@ -42,7 +42,7 @@ cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD)
 cdr            nhcol_store
 cdr            m_hcol(nreac)
 cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
-cdr            NHVREI  (formerly: NREAHV) 
+cdr            NHVREI  (formerly: NREAHV)
 cdr            NHVRPI  (formerly: NRHVPI)
 
       SUBROUTINE EIRENE_BROADCAST
@@ -1381,7 +1381,7 @@ C  variances for sum over strata
 
 c     distribute seppis arrays all over the world
 !      call eirene_broadcast_tim()
-c	
+c
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 cOS   now call the octree-builder to build an octree on every node except
@@ -1696,7 +1696,7 @@ cdr     INVALID RP%IFIT
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
           ALLOCATE (EMIS_LINES(NUM_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NUM_COMPO = 0         
+          EMIS_LINES%NUM_COMPO = 0
         END IF
 !     END IF
 

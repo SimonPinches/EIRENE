@@ -21,8 +21,8 @@ c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
 cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
-cdr Dec.15  :  bug fix pi reaction and cascading was wrong: 
-cdr            irei, rather than irpi, and p2nd 
+cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
+cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
@@ -30,7 +30,7 @@ cdr         :  see also corresponding corrections/changes in update for tracklen
 cdr DEC. 15 :  bulk ion energy estimators: species-resolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved.
 
-cdr            tbd:  check setting of iestm..flags for collision estimators. 
+cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
 
 
@@ -44,19 +44,19 @@ cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
 
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
-cdr analog cascading NLCASCAD: started to document, 
+cdr analog cascading NLCASCAD: started to document,
 cdr        synchronize and re-activate option, not ready !!
-c   this version: prepare cascading at collisions, 
+c   this version: prepare cascading at collisions,
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators
 c   started for colatm, and ei processes.
 c   not sure if ispz is known, NOW
-cdr tbd: 
+cdr tbd:
 c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
 c   cascading with CX: define analogue PTOT
-c   cascading with PI: identical to EI ?? 
+c   cascading with PI: identical to EI ??
 
-cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0) 
+cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
 cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
 cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
@@ -87,7 +87,7 @@ C                           BY FOLNEUT), OR
 C                           TRANSITION ION-->NEUTRAL (IF CALLED
 C                           BY FOLION)
 C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
-C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING 
+C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -107,9 +107,9 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       REAL(DP), INTENT(OUT) :: COLTYP
       REAL(DP) :: DUMT(3), DUMV(3)
@@ -119,32 +119,32 @@ C
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
 cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: 
+      INTEGER ::
      .           IICX, IIEI, IIPI, IIEL,
 c    .           IMCX, IMEI, IMPI, IMEL,
 c    .           IACX, IAEI, IAPI, IAEL, IAOT,
-c    .           
-     .           IOLD, NOLD, 
+c    .
+     .           IOLD, NOLD,
      .           IRCX, IREI, IRPI, IREL, IROT,
      .           IBGK, IP, NFLAG,
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
-Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
+Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
-CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real 
+CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
- 
- 
+
+
 csw add n 2lines
 cdr   INTEGER :: kk,updf,t1
 cdr   real(dp):: sump
 csw external
       real(dp), external :: ranf_eirene
- 
+
       SAVE
- 
+
 C  INCIDENT SPECIES: IOLD
       VELXO=VELX
       VELYO=VELY
@@ -153,7 +153,7 @@ C  INCIDENT SPECIES: IOLD
       NCLLO = NCELL
       NCELL = NCLTAL(NCLLO)
 
-C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION  
+C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION
       IF (LMIPL.OR.NGENI(IION).NE.0) THEN
         CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
         V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
@@ -175,7 +175,7 @@ C  ABSORPTION BIASING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT
 
 C  SUPPRESS THOSE IREI PROCESSES WITH ZERO
 C                       TEST PARTICLE SECONDARIES
- 
+
       SIG_ELIM=0.
       SIG_TOT_N=SIGTOT
       SIG_TOT_O=SIGTOT
@@ -188,7 +188,7 @@ C  WEIGHT ALREADY TOO SMALL, NO SUPPRESSION OF ABSORPTION
       ELSE
 C  TRY TO SUPPRESS ABSORPTION. IDENTIFY POSSIBLE EI PROCESSES
 C                              WITH ZERO TEST PARTICLE SECONDARIES
-cdr     ss=0. 
+cdr     ss=0.
         DO IIEI=1,NIEII(IOLD)
           IREI=LGIEI(IOLD,IIEI)
 cdr       ss=ss+SIGVEI(IREI)
@@ -230,7 +230,7 @@ cdr  .                                      sigvei(1:naeii(iold))
 
 C  WEIGHT MAY HAVE BEEN REDUCED NOW, AND ALSO THE NUMBER OF ACTIVE EI PROCESSES.
 C  similar weight reduction (wminv-criterion) also to be done for PI and CX
-C  
+C
 C
 C  FIRST DECIDE: ELECTRON IMPACT (COLLISION TYPE: EI) OR OTHER PROCESS
 C
@@ -265,14 +265,14 @@ C       PTOTAL=PTOT+PPLEI(IREI,0)
 C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
-C  PRE-COLLISION ESTIMATOR FOR EIIO, 
+C  PRE-COLLISION ESTIMATOR FOR EIIO,
 C  PRE- AND POST-COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
 
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
-cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
+cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
           IF (LEIPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
@@ -337,7 +337,7 @@ cdr  generate secondaries, one by one, call veloei, and store them on splitting 
             DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
 C  FIND A "RANDOM NUMBER" TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
 cdr
-cdr die drei zeilen hier vor: ggfls. sehr lange do loop, meist aber nur 1 oder hoechstens 2 treffer 
+cdr die drei zeilen hier vor: ggfls. sehr lange do loop, meist aber nur 1 oder hoechstens 2 treffer
 cdr (1 oder 2 test folgeteilchen). grund in der der naechsten zeile soll ggfls 2 mal das gleiche
 cdr teilchen durch zep ausgewaehlt werden.
 cdr
@@ -358,8 +358,8 @@ C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
               ISPLST(1:MPARTC,NLEVEL)=IPST(1:MPARTC)
 C  NUMBER OF NODES AT THIS LEVEL
               NODES(NLEVEL)=2  !  ONE PARTICLE SCORE IN EACH LEVEL
-              
-              IF (NLTRC) THEN 
+
+              IF (NLTRC) THEN
                 WRITE (IUNOUT,*) 'SPLITTING IN COLION, EI PROCESS '
                 WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
               ENDIF
@@ -377,7 +377,7 @@ CDR:   VELOEI FOR THIS CONTINUED PARTICLE HAS ALREADY BEEN CALLED
 
         ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .      'ANALOGUE CALCULATION ABANDONED FOR PART. NO. ',NPANU
           WRITE (iunout,*) 'CASCADE OVERFLOW: NEVEL: ',NLEVEL
 
@@ -434,7 +434,7 @@ C
 C  ARE THERE SECONDARY TEST PARTICLES AT ALL?
         FRSTP=N1STX(IRCX,3)
         SCNDP=N2NDX(IRCX,3)
- 
+
         IPLSV=MPLSV(IPLS)
 C
 C  ARE THERE SECONDARY TEST PARTICLES AT ALL?
@@ -473,15 +473,15 @@ C
             CASE(1)
               IATM=N2NDX(IRCX,2)
               E0=CVRSSA(IATM)*VELO*VELO
- 
+
             CASE(2)
               IMOL=N2NDX(IRCX,2)
               E0=CVRSSM(IMOL)*VELO*VELO
- 
+
             CASE(3)
               IION=N2NDX(IRCX,2)
               E0=CVRSSI(IION)*VELO*VELO
- 
+
             CASE DEFAULT
               WRITE (iunout,*) ' ITYP ',ITYP,' AS 2ND SECONDARY IS NOT',
      .                    ' FORESEEN IN COLLIDE '
@@ -499,19 +499,19 @@ C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
 C  NUMBER OF NODES AT THIS LEVEL
             NODES(NLEVEL)=2
 
-            IF (NLTRC) 
+            IF (NLTRC)
      .        WRITE (IUNOUT,*) 'CX CASCADING: STORE ', TEXTS(ISPZ)
 
           ENDIF  !  splitting done.
 
 C  FOLLOW 1ST SECONDARY
-          
+
           ZEP3 = 0.5*FRSTP
 
         ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
-            WRITE (iunout,*) 
+            WRITE (iunout,*)
      .        'ANALOG CALCULATION ABANDONED FOR PART. NO. ',NPANU
             WRITE (iunout,*) 'CX CASCADE OVERFLOW: NEVEL: ',NLEVEL
           ENDIF
@@ -534,7 +534,7 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .                  NFLAG,IRCX,DUMT,DUMV)
- 
+
           SELECT CASE (ITYP)
 C
           CASE(1)
@@ -663,7 +663,7 @@ C  UPDATE GENERATION LIMIT TALLIES
                   V0_PARB=V0_PARB*AMUA*RMASSM(IMOL)
                   VGENI(IION,NCELL)=VGENI(IION,NCELL)-WEIGHT*V0_PARB
                 END IF
-                IF (LPGENI.OR.LEGENI.OR.LVGENI) 
+                IF (LPGENI.OR.LEGENI.OR.LVGENI)
      .            LMETSP(NSPAM+IION)=.TRUE.
                 LGPART=.FALSE.
                 IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,16)
@@ -687,7 +687,7 @@ C
           END SELECT
 
         ELSE
- 
+
 C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
 
@@ -742,7 +742,7 @@ C
 C
 cdr:  at this place to be done: elastic collisions of test ions
 cdr   in particular: Fokker-Planck (velocity space diffusion--> TAU approximation?)
-cdr:  currently still somewhere in folion. To be moved here, 
+cdr:  currently still somewhere in folion. To be moved here,
 cdr   build on analogy with other elastic collisions
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
@@ -800,7 +800,7 @@ c  UPDATE collision estimator for EL energy exchange tallies
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MIPL (FORMERLY: COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
           IF (LMIPL) THEN
-C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY 
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY
             V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
             V0_PARB=V0_PARB*AMUA*RMASSI(IION)
 C
@@ -856,7 +856,7 @@ C  score loss of incoming test particle energy
           IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
 
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
-cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER. 
+cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
           IF (LEIPL) THEN
             DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
@@ -917,7 +917,7 @@ C  NUMBER OF NODES AT THIS LEVEL
               NODES(NLEVEL)=2
 
               IF (NLTRC) WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
-              
+
             END DO
           END DO
 
@@ -928,7 +928,7 @@ C  NUMBER OF NODES AT THIS LEVEL
         ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
-            WRITE (iunout,*) 
+            WRITE (iunout,*)
      .        'ANALOG CALCULATION ABANDONED FOR PART. NO. ',NPANU
             WRITE (iunout,*) 'CASCADE OVERFLOW: NEVEL: ',NLEVEL
           ENDIF
@@ -971,7 +971,7 @@ C
 
       GOTO 999
 C
- 
+
 C
   990 WRITE (iunout,*) 'ERROR IN COLLIDE '
       WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'

@@ -1,5 +1,5 @@
 Cdr:  at some point (after 2010) this routine was extended by an "octree option" to
-c     to speed up calculation for intersections of rays with add. surfaces 
+c     to speed up calculation for intersections of rays with add. surfaces
 c     implemented as triangles in 3d space (rlb >=3 options>).
 
 cdr Jan 2017:  the octree option NLOCTREE is part of a proprietary development branch
@@ -42,7 +42,7 @@ C
 c     in case: NLOCTREE...
 c     using special octree stuff, to speed up additional surface handling
       USE EIRMOD_OCTREE
- 
+
       IMPLICIT NONE
 
       INTERFACE
@@ -50,7 +50,7 @@ c     using special octree stuff, to speed up additional surface handling
           USE EIRMOD_OCTREE
           TYPE(octree), POINTER :: tree
         END FUNCTION
-        
+
         SUBROUTINE EIRENE_TIMEA_CheckInter(
      .             MSURF,NCELL,NLI,NLE,NNTCL,XX,YY,ZZ,TMT,
      .             VXX,VYY,VZZ,VV,
@@ -68,7 +68,7 @@ c     using special octree stuff, to speed up additional surface handling
       END INTERFACE
 C
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
-      REAL(DP) :: TMIN, 
+      REAL(DP) :: TMIN,
      .          XX, YY, ZZ, XR, YR, ZR,
      .          DZ3, TL, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX, SG,
      .          VV, VXX, VYY, VZZ, TMT, B, XK5, V445, XN5, V335, XK4,
@@ -299,7 +299,7 @@ C  2 POINTS, PLANE SURFACE WITH IGNORABLE Z COORDINATE
             YLIMS1(1,J)=YLIMS1(1,J)-0.1
             YLIMS2(1,J)=YLIMS2(1,J)+0.1
           ENDIF
- 
+
 C  INDICATE 2-POINT OPTION (BECAUSE RLB IS OVERWRITTEN)
 C  AND Z-INDEPENDENCE OF SURFACE EQUATION
           P3(3,J)=1.D55
@@ -534,14 +534,14 @@ c       if first order surface:
           IF (ABS(A1LM(J)).EQ.AT) JUMLIM(J)=1
           IF (ABS(A2LM(J)).EQ.AT) JUMLIM(J)=2
           IF (ABS(A3LM(J)).EQ.AT) JUMLIM(J)=3
-          
+
 c  create HNF coefficients (normalized vector and distance)
           XNORM=SQRT(A1LM(J)*A1LM(J)+A2LM(J)*A2LM(J)+A3LM(J)*A3LM(J))
           A0LM(J)=A0LM(J)/XNORM
           A1LM(J)=A1LM(J)/XNORM
           A2LM(J)=A2LM(J)/XNORM
           A3LM(J)=A3LM(J)/XNORM
-          
+
           JUM=JUMLIM(J)
           GOTO (91,92,93),JUM
    91       ALM(J)=-A0LM(J)/A1LM(J)
@@ -581,19 +581,19 @@ c               i.e. OCTREE optimization in in-active
 
 
       RETURN
-      
+
 c  write the octree to vtk tool output
       ENTRY EIRENE_TIMEA3_VTKOUT
         if (associated(tree) .and. NLOCTREE) then
 c  call octree function to plot the tree recursive
           call OCTREE_PrintVTK(tree, IVTKOUT)
-          
+
           open(200,file='graphviz.out')
           call OCTREE_PrintGraphviz(tree, 200)
           close(200)
         end if
       RETURN
-      
+
 C
       ENTRY
      .  EIRENE_TIMEA1(MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
@@ -623,21 +623,21 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
         IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
       ENDIF
 #endif
-      
+
 !trc  if(msurf .eq. 0 .and. pladd) then
 !trc    WRITE(trcnum,*) 'RESTART', XX, YY, ZZ, VXX, VYY, VZZ
 !trc  end if
-      
+
       TMIN=1.D30
       TL=1.D30
       MASURF=0
-      
+
       if (NLOCTREE .and. trcoct) then
         WRITE(iunout,*)
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB < 3"
       endif
-      
-c   call timea2 for all those SURFACES which ARE no plane triangle 
+
+c   call timea2 for all those SURFACES which ARE no plane triangle
 c   -> we will get a time minimum out of this, if any of these
 c   surfaces are hit.
       CALL EIRENE_TIMEA_CheckInter(MSURF,NCELL,NLI,NLE,NNTCL,
@@ -661,17 +661,17 @@ c   etc, save these values for later comparison with octree surfs values
         MASURF = MASURF_S
         LCNDEXP = LCNDEXP_S
       end if
-      
+
 c  if we do not have a tree, skip this part, all done, return to calling program.
       if(.not. associated(tree) .or. .not. NLOCTREE) then
         return
       end if
-      
+
       if (trcoct) then
         WRITE(iunout,*)
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB >= 3"
       end if
-      
+
 c  set working coords to initial coords (xx,yy,zz)
       start = (/XX, YY, ZZ/)
       direction = (/VXX, VYY, VZZ/)
@@ -725,7 +725,7 @@ c       -> get the pointer to our leaf-block containing the IP
      .                    " on layer", block%layer, " testing",
      .                    block%nsurfaces, " surfaces"
         end if
-     
+
 c       if we have no surfaces to check in this block, continue to next
         if(block%nsurfaces .gt. 0) then
 c         now get all surfaces in this block and search with these
@@ -735,8 +735,8 @@ c         in CheckInter
      .                             MASURF_S,X_S,Y_S,Z_S,SG_S,TMIN,
      .                             NLTRC,LCNDEXP_S,
      .                             block%surfaces, block%nsurfaces)
-          
-c         if we found a valid intersection and the time is less than TL 
+
+c         if we found a valid intersection and the time is less than TL
 c         save these values for later comparison with octree surfs values
           if (masurf_s .gt. 0 .and. tmin .lt. TL) then
 c            WRITE(iunout,*) "found intersection with surface", masurf_s
@@ -753,30 +753,30 @@ c           (there is no one with a smaller time reachable) else continue...
             if(OCTREE_CheckVolume(ip, block, .true.)) exit
           end if
         end if
-        
-c       if we did not end the search before, we need to traverse 
+
+c       if we did not end the search before, we need to traverse
 c       through this block and start over in the neighbor.
 c       -> if we get out of octree space, start%p will be =-1
-        start = OCTREE_Traverse(tree, block, start, 
+        start = OCTREE_Traverse(tree, block, start,
      .                          direction, norm)
 c       check if we are inside of the octree space anymore...
         status = OCTREE_CheckVolume(start, tree%root, .true.)
         if(.not.status.and.trcoct) WRITE(iunout,*)'left octree space...'
       end do
-      
+
 !trc      if(MASURF .gt. 0 .and. pladd) then
 !trc        WRITE(TRCNUM,*) MASURF, XX, YY, ZZ, XR, YR, ZR, VXX, VYY, VZZ
 !trc      end if
-      
+
       RETURN
-      
+
 c     entry to call the octree building internal subroutine
       ENTRY EIRENE_TIMEA0_OC
         CALL EIRENE_TIMEA0_BUILDOC()
       RETURN
 
-c................................................................ 
-     
+c................................................................
+
 c     defining the internal subroutine for the octree build
       CONTAINS
 
@@ -798,10 +798,10 @@ C   the octree stuff in here...
 c
 c   build octree
       tree => EIRENE_TIMEA_BuildOctree()
-      
+
 c   count the surfaces that will not be in octree to get the
-c   right dimension for the array NOTOCSURFS 
-c   
+c   right dimension for the array NOTOCSURFS
+c
       DO J=1,NLIMI
 c  only add surfaces that are valid and only surfaces
 c  that are no tri/quad/quintangles
@@ -809,8 +809,8 @@ c  that are no tri/quad/quintangles
            NSURFNOT = NSURFNOT +1
         END IF
       END DO
-      
-c   allocate enough space for lookup table which we will use for 
+
+c   allocate enough space for lookup table which we will use for
 c   surfaces that we do not have in the octree (like 2nd order surfaces, etc.)
       if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NSURFNOT))
 cdr
@@ -827,5 +827,5 @@ c  that are no tri/quad/quintangles
 
 
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
-      
+
       END

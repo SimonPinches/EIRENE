@@ -6,21 +6,21 @@ C  CALLED FROM ZYLIND
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: P(3,*), A(*)
       REAL(DP), INTENT(OUT) :: XP(*), YP(*)
       REAL(DP), INTENT(IN) :: PX, PY, PZ, VX, VY, VZ
       INTEGER, INTENT(IN) :: I, JA, JE, IXS
- 
+
       REAL(DP) :: EPS12, XX, YY, ZZ, XN, ALAMDA, ALAM2, DET, ROOT,
      .            ALAM1, AA, BB, CC
       INTEGER :: J, IX
       LOGICAL :: LERR
- 
+
       DATA EPS12 /1.E-12_DP/
- 
+
       LERR=.FALSE.
       IX=IXS-1
 C     WRITE (iunout,*) ' SHNITT  I = ',I

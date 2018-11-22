@@ -9,18 +9,18 @@ c               This segment contains a routine UPTBGK which updates the tallies
 c               required for iteration (carried out in MODBGK).
 c
 C  CURRENTLY:  3 TALLIES ARE SCORED PER BGK COLLISION SPECIES,IBGK_SP, IBGK_SP=1,NRBGI/3
-c              On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion) 
+c              On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion)
 c              ibgk_sp=npbgk, and update three tallies for bgk species no. ibgk_sp.
 c
-c  no not confuse: ibgk is the bgk-reaction number, the bgk-reactions form a 
+c  no not confuse: ibgk is the bgk-reaction number, the bgk-reactions form a
 c                  subset of the elastic reactions, IREL=1,NREL.
 c
-c                  ibgk_sp is the counter for the number of those test-particle species 
+c                  ibgk_sp is the counter for the number of those test-particle species
 c                  which have at least one BGK collision.
 c                  For each test-particle species ibgk_sp there are currently
 c                  three so called additional "bgk-tallies" scored
 c                  (by default: the transport flux vector components).
- 
+
 c  Note:  for velocity dependent BGK collision rates probably 5 tallies per bgk-collision (ibgk)
 c         need to be scored, rather than the three per bgk species (ibgk_sp),
 c         to enforce the 5 collision invariants by iteration.
@@ -38,7 +38,7 @@ c
 C
 C  UPDATE BGK-SPECIFIC TALLIES, TRACKLENGTH ESTIMATORS
 C
-C  INPUT:  NPBGK IDENTIFIER FOR THE BGK-SPECIES 
+C  INPUT:  NPBGK IDENTIFIER FOR THE BGK-SPECIES
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -52,7 +52,7 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_COMXS
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                      XSTORV2(NSTORV,N2ND+N3RD)
       REAL(DP), INTENT(IN) :: WV
@@ -129,19 +129,19 @@ C  BGK-SPECIES NO. IBGK_SP
 cdr: this species index increment should be set in input.f,
 cdr  like all the others
 cdr  sequence:  test species, bulk species, add tallies, alg. tallies, collest tallies,
-cdr             cop tallies, bgk tallies. 
+cdr             cop tallies, bgk tallies.
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI+NCPVI
 C
 C  END OF IFIRST BLOCK
       ENDIF
 C
 C  UPDATE BGK TALLIES FOR THE NPBGK "BGK-SPECIES"
-C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV-TALLY, 
+C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV-TALLY,
 C  THREE TALLIES PER BGK-SPECIES CONTRIBUTING IN BGK PROCESSES.
 C
       IBGK_SP=NPBGK
 C  FROM CALLING PROGRAM: IBGK_SP.NE.0, I.E. FOR THIS TEST PARTICLE (IATM, IMOL OR IION)
-C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED. 
+C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
       IUPD1=(IBGK_SP-1)*3+1
       IUPD2=(IBGK_SP-1)*3+2
       IUPD3=(IBGK_SP-1)*3+3
@@ -155,16 +155,16 @@ C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
         WTRVY=WTRV*VELY
         WTRVZ=WTRV*VELZ
 ! cdr: May 2017.
-! BGKV output tallies are now identical with the default 
+! BGKV output tallies are now identical with the default
 !      VXDEN..., VYDEN..., VZDEN... tallies. Compare UPDATE.f, identical code!
-!      
+!
         IRDO=NRCELL+NUPC(I)*NR1P2+NBLCKA
         IRD=NCLTAL(IRDO)
         BGKV(IUPD1,IRD)=BGKV(IUPD1,IRD)+WTRVX
         BGKV(IUPD2,IRD)=BGKV(IUPD2,IRD)+WTRVY
         BGKV(IUPD3,IRD)=BGKV(IUPD3,IRD)+WTRVZ
    51 CONTINUE
- 
+
       RETURN
 
 csw 19apr07

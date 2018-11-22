@@ -13,12 +13,12 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_COMSOU
       USE EIRMOD_CESTIM
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: ST
       INTEGER :: K, I, ISPC, J, ISDV, ICELL, IB
-C  VOLUME TALLIES 
+C  VOLUME TALLIES
       DO 1207 K=1,NSIGVI
         DO 1208 I=1,NSBOX_TAL
           ST=MAX(0._DP,STV(K,I))
@@ -107,7 +107,7 @@ C
           END DO
         END DO
       ENDIF
- 
+
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         IF (NSIGI_SPC.GT.0) THEN
           DO ISPC=1,NADSPC
@@ -118,7 +118,7 @@ C
           END DO
         ENDIF
       ENDIF
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_STAT_SUMOSTRA

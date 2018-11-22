@@ -18,9 +18,9 @@ C  D.H. ILEFT (IRIGHT) <= 4 ENTSPRICHT DEM SCHNITT MIT EINER EBENE.
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, T1, T2, RAD,
      .                      PHIAN, PHIEN
       REAL(DP), INTENT(IN) :: AL(10), AR(10)
@@ -39,7 +39,7 @@ C
       ALLOCATE (YP(NAPK))
       ALLOCATE (XPS(NAPK))
       ALLOCATE (YPS(NAPK))
- 
+
       IF (NK.EQ.1) THEN
         DT=0.
       ELSE
@@ -176,12 +176,12 @@ C
     9   continue
         CALL GRLN (XPS,YPS,NK)
     5 CONTINUE
- 
+
       DEALLOCATE (P)
       DEALLOCATE (XP)
       DEALLOCATE (YP)
       DEALLOCATE (XPS)
       DEALLOCATE (YPS)
- 
+
       RETURN
       END

@@ -5,17 +5,17 @@ C
 cdr  entry multig:  copy grid data NBMLT times
 cdr  entry multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
-cdr                 indpro =4: check this option: tbd.  
- 
+cdr                 indpro =4: check this option: tbd.
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: I, J, K
 C
 C  GEOMETRY DATA

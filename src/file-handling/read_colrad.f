@@ -1,9 +1,9 @@
        subroutine EIRENE_read_colrad (ir,reac,isw,iz1,
      .                                ir_esc,ic_esc,p_esc)
 
-cdr  purpose:  prepare usage of A&M data from an internal, built-in, 
+cdr  purpose:  prepare usage of A&M data from an internal, built-in,
 cdr            collisional-radiative code:
-cdr  1)  H_colrad, 
+cdr  1)  H_colrad,
 cdr  2)  He_colrad,
 cdr  3)  H2-colrad....
 cdr            internal eirene reaction no. IR
@@ -17,21 +17,21 @@ c                  =2-4   data for reaction rate coefficient             (only =
 c                  =5-7   data for momentum-weighted rate coefficient    (not in use)
 c                  =8-10  data for energy-weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
-c           iz1:   not in use 
-c                  
+c           iz1:   not in use
+c
 cdr:  currently used only H.4, 2.1.5 and H.10, 2.1.5, EI,  ionisation
 cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC   recombination
 cdr                       and  H.11, H.12: selected population coefficients
-c 
+c
 c  to be done: units, log-lin, scaling, asymptotics
- 
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
       use EIRMOD_comprt, only: iunout
- 
+
       implicit none
- 
+
       integer, intent(in) :: ir, isw, iz1
       integer, intent(in), optional :: ir_esc, ic_esc
       real(dp) , intent(in), optional :: p_esc
@@ -52,17 +52,17 @@ c  h_colrad (atomic)
 
 c   cr rate and e_rate, coupling to ground state H(1), ionisation
         ihsw(1) = 4
-        hstr(1) = '2.1.5   ' 
+        hstr(1) = '2.1.5   '
         ihsw(2) = 10
         hstr(2) = '2.1.5   '
-c   cr rate and e_rate, coupling to continuum H+, recombination 
+c   cr rate and e_rate, coupling to continuum H+, recombination
         ihsw(3) = 4
-        hstr(3) = '2.1.8   ' 
+        hstr(3) = '2.1.8   '
         ihsw(4) = 10
-        hstr(4) = '2.1.8   ' 
-c   cr rate and e_rate, coupling to radiation field, photo-excitation 
+        hstr(4) = '2.1.8   '
+c   cr rate and e_rate, coupling to radiation field, photo-excitation
         ihsw(5) = 4
-        hstr(5) = '2.1.5PH ' 
+        hstr(5) = '2.1.5PH '
         ihsw(6) = 10
         hstr(6) = '2.1.5PH '
 c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to ground state H(1), ionisation
@@ -76,28 +76,28 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to ground sta
         hstr(10) = '2.1.5d  '    ! n=5
         ihsw(11) = 12
         hstr(11) = '2.1.5e  '    ! n=6
-c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to H+, recombination 
+c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to H+, recombination
         ihsw(12) = 12
-        hstr(12) = '2.1.8a  ' 
+        hstr(12) = '2.1.8a  '
         ihsw(13) = 12
-        hstr(13) = '2.1.8b  ' 
+        hstr(13) = '2.1.8b  '
         ihsw(14) = 12
-        hstr(14) = '2.1.8c  ' 
+        hstr(14) = '2.1.8c  '
         ihsw(15) = 12
-        hstr(15) = '2.1.8d  ' 
+        hstr(15) = '2.1.8d  '
         ihsw(16) = 12
-        hstr(16) = '2.1.8e  ' 
-c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation field 
+        hstr(16) = '2.1.8e  '
+c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation field
         ihsw(17) = 12
-        hstr(17) = '2.1.5PHa' 
+        hstr(17) = '2.1.5PHa'
         ihsw(18) = 12
-        hstr(18) = '2.1.5PHb' 
+        hstr(18) = '2.1.5PHb'
         ihsw(19) = 12
-        hstr(19) = '2.1.5PHc' 
+        hstr(19) = '2.1.5PHc'
         ihsw(20) = 12
-        hstr(20) = '2.1.5PHd' 
+        hstr(20) = '2.1.5PHd'
         ihsw(21) = 12
-        hstr(21) = '2.1.5PHe' 
+        hstr(21) = '2.1.5PHe'
       end if
 
 !pb check optional arguments
@@ -110,11 +110,11 @@ c  reduced population coefficient, H(n=3,2,4,5,6) states, coupling to radiation 
 
 cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000
-cdr  tbd: also exit unless HSRT contains 2.1.5, OR 2.1.8 
-cdr       
+cdr  tbd: also exit unless HSRT contains 2.1.5, OR 2.1.8
+cdr
 cdr  other reactions are not programmed in xsectp, rate coeff, energy rate coef.
-      
-cdr  IDENTIFY THE NUMBER IVAR (between 1:21) OF THE VARIABLE HSTR(IVAR) 
+
+cdr  IDENTIFY THE NUMBER IVAR (between 1:21) OF THE VARIABLE HSTR(IVAR)
 cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
         IVAR = 0
         DO I = 1, 21
@@ -165,7 +165,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC  !  population excape factor, upper level
           REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC  !  population excape factor, lower level
           REACDAT(IR)%RTC%CRM%POP_ESC  = POP_ESC   !  population escape factor, reaction IR
-          
+
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
             WRITE (IUNOUT,*) ' MOMENTUM-WEIGHTED RATE COEFFICIENT',
@@ -182,11 +182,11 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
 
           ALLOCATE (REACDAT(IR)%RTCMW%CRM)
           REACDAT(IR)%RTCMW%CRM%IFLAV = 1
-          REACDAT(IR)%RTCMW%CRM%IVARST = ISTR  
+          REACDAT(IR)%RTCMW%CRM%IVARST = ISTR
           REACDAT(IR)%RTCMW%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%RTCMW%CRM%ICOL_ESC = ICOL_ESC
           REACDAT(IR)%RTCMW%CRM%POP_ESC  = POP_ESC
-        
+
         CASE (8:10)
           IF (REACDAT(IR)%LRTCEW) THEN
             WRITE (IUNOUT,*) ' ENERGY-WEIGHTED RATE COEFFICIENT',
@@ -227,9 +227,9 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           REACDAT(IR)%OTH%CRM%IROW_ESC = IROW_ESC
           REACDAT(IR)%OTH%CRM%ICOL_ESC = ICOL_ESC
           REACDAT(IR)%OTH%CRM%POP_ESC  = POP_ESC
-          
+
         CASE DEFAULT
-          GOTO 1000         
+          GOTO 1000
         END SELECT
         RETURN
 

@@ -1,7 +1,7 @@
 C
 C*DK MASRR1
       SUBROUTINE EIRENE_MASRR1 (A,B,N,IS)
-c  print 1 D array B(N), real, with IS numbers per print line 
+c  print 1 D array B(N), real, with IS numbers per print line
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE

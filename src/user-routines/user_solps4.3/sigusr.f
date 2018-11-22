@@ -1,5 +1,5 @@
-cdr  june 17 try to avoid storage argst(0:NSPZ+10,NRAD)  
- 
+cdr  june 17 try to avoid storage argst(0:NSPZ+10,NRAD)
+
       SUBROUTINE EIRENE_SIGUSR(IFIRST,JJJ,ZDS,DUMMY1,PSIG,DUMMY2,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
 C

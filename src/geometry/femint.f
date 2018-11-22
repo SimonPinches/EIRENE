@@ -5,10 +5,10 @@ cdr nov. 17: comments.  Some unfinished options re levgeo= 1 and levgeo = 2
 
 
 
-c   
+c
 
 c                     fem_interpolate  (this routine)
-c  related routines:  fem_differentiate 
+c  related routines:  fem_differentiate
 c                     fem_local-coord
 c                     fem_cell-corner
 c
@@ -22,24 +22,24 @@ c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c
 
-      function eirene_femint (fecken, icell, x, y, z, lsame) 
+      function eirene_femint (fecken, icell, x, y, z, lsame)
      .         result(res)
 
 c  former function femint.f :  (-->  fem_interpolate.f)
-c  interpolate a given function fecken, defined on cell vertices of grid cell no. icell, 
+c  interpolate a given function fecken, defined on cell vertices of grid cell no. icell,
 c  using certain FEM-shape functions.
 
 c  input:
-c  lsame:   call with same coordinates x,y,z as in previous call, just another function 'fecken'  
+c  lsame:   call with same coordinates x,y,z as in previous call, just another function 'fecken'
 c           if lsame    : local coordinates r,s,t are taken from previous call
-c           if not lsame: local coordinates are calculated here (call fem_local-coord)  
+c           if not lsame: local coordinates are calculated here (call fem_local-coord)
 c  output:
-c  res : interpolated function fecken, evaluated at x,y,z 
+c  res : interpolated function fecken, evaluated at x,y,z
 
-c  programmed for levgeo=4,5, 
+c  programmed for levgeo=4,5,
 c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
 
- 
+
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_clogau
@@ -58,7 +58,7 @@ c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
       integer, intent(in) :: icell
       logical, intent(in) :: lsame
 
-      real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4, 
+      real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4,
      .            z1, z2, z3, z4, res
       real(dp), save :: r, s, t, u
       integer, save :: ir, ip, it, ia, ib
@@ -67,7 +67,7 @@ c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
 
 c  2D computational grid, quadrangles
       if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
-     .    ((levgeo == 2 .and. .not.nlcrc) .and. nlpol) .or. 
+     .    ((levgeo == 2 .and. .not.nlcrc) .and. nlpol) .or.
      .    (levgeo == 3)) then
 
         if (.not.lsame) then
@@ -106,7 +106,7 @@ c  here we use xpol,ypol in case of levgeo=2.  These arrays may not be defined a
           end if
 
           call eirene_xyz_to_rst(icell, x1, y1, 0._dp, x2, y2, 0._dp,
-     .                           x3, y3, 0._dp, x4, y4, 0._dp, 
+     .                           x3, y3, 0._dp, x4, y4, 0._dp,
      .                           x, y, z, r, s, t, u)
 c       elseif (lsame)
 c  same cell no. icell, x,y,z same as in previous call.
@@ -118,7 +118,7 @@ c  ir,ip, and local coordinates r,s are already set in previous call
         f2=fecken(INDPOINT(IR,IP))
         f3=fecken(INDPOINT(IR+1,IP+1))
         f4=fecken(INDPOINT(IR,IP+1))
-        
+
 
         res = f1 * 0.25_dp * (1._dp - r) * (1._dp - s)
      .      + f2 * 0.25_dp * (1._dp + r) * (1._dp - s)
@@ -127,21 +127,21 @@ c  ir,ip, and local coordinates r,s are already set in previous call
 
 c...................................................................
 
-c  2D computational grid, triangles        
+c  2D computational grid, triangles
       else if (levgeo == 4) then
 
         if (.not.lsame) then
 c  new point x,y in icell. Find local coord. r,s,t
 
-          x1=xtrian(necke(1,icell)) 
-          x2=xtrian(necke(2,icell)) 
-          x3=xtrian(necke(3,icell)) 
-          y1=ytrian(necke(1,icell)) 
-          y2=ytrian(necke(2,icell)) 
+          x1=xtrian(necke(1,icell))
+          x2=xtrian(necke(2,icell))
+          x3=xtrian(necke(3,icell))
+          y1=ytrian(necke(1,icell))
+          y2=ytrian(necke(2,icell))
           y3=ytrian(necke(3,icell))
-          
-          call eirene_xyz_to_rst(icell, x1, y1, 0._dp, x2, y2, 0._dp, 
-     .                           x3, y3, 0._dp, x4, y4, 0._dp, 
+
+          call eirene_xyz_to_rst(icell, x1, y1, 0._dp, x2, y2, 0._dp,
+     .                           x3, y3, 0._dp, x4, y4, 0._dp,
      .                           x, y, z, r, s, t, u)
 c       elseif (lsame)
 c  same cell no icell, x,y as in previous call.
@@ -149,13 +149,13 @@ c  Local coordinates r,s,t  are already set in previous call
 
         end if
 
-        f1=fecken(necke(1,icell)) 
-        f2=fecken(necke(2,icell)) 
+        f1=fecken(necke(1,icell))
+        f2=fecken(necke(2,icell))
         f3=fecken(necke(3,icell))
-        
+
         res = f1*r + f2*s + f3*t
 c.........................................................................
-c  3D computational grid, tetrahedra 
+c  3D computational grid, tetrahedra
       else if (levgeo == 5) then
 
         if (.not.lsame) then
@@ -173,12 +173,12 @@ c  new point x,y,z in icell. Find local coord. r,s,t,u
           z2=ztetra(nteck(2,icell))
           z3=ztetra(nteck(3,icell))
           z4=ztetra(nteck(4,icell))
-          
-          call eirene_xyz_to_rst(icell, x1, y1, z1, x2, y2, z2,  
-     .                           x3, y3, z3, x4, y4, z4, 
+
+          call eirene_xyz_to_rst(icell, x1, y1, z1, x2, y2, z2,
+     .                           x3, y3, z3, x4, y4, z4,
      .                           x, y, z, r, s, t, u)
 c       elseif (lsame)
-c  same cell no. icell, x,y,z, as in previous call. 
+c  same cell no. icell, x,y,z, as in previous call.
 c  Local coordinates r,s,t,u  are already set in previous call
         end if
 

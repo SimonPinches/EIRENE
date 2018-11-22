@@ -14,7 +14,7 @@ c
      .                           dfdx, dfdy, dfdz)
 
 
-c  return partial derivatives of function fecken, at internal point x,y,z, 
+c  return partial derivatives of function fecken, at internal point x,y,z,
 c         which is known to be located in grid cell icell
 
 c  input:  fecken: values of function f on cell vertices
@@ -22,7 +22,7 @@ c          function fecken must be defined already, e.g. from an earlier call to
 c
 c  for speed-up, and overhead reduction:
 c  fill array 'visited' to indicate, which cells have been visitied in earlier calls
-c  currently: array 'visited' is only set for levgeo=4, 
+c  currently: array 'visited' is only set for levgeo=4,
 C  to be done for levgeo=5
 C  TO BE DONE: deallocate 'visited(icell)' at the end of a run.
 
@@ -47,20 +47,20 @@ c  to be done:    range test for local coordinates r,s,t,u
       real(dp), intent(out) :: dfdx, dfdy, dfdz
       integer, intent(in) :: icell
 
-      real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4, 
-     .            z1, z2, z3, z4, det, eirene_deter4x4, 
-     .            deti, r, s, t, u, dxdr, dxds, dydr, dyds,  
+      real(dp) :: x1, x2, x3, x4, y1, y2, y3, y4, f1, f2, f3, f4,
+     .            z1, z2, z3, z4, det, eirene_deter4x4,
+     .            deti, r, s, t, u, dxdr, dxds, dydr, dyds,
      .            drdx, dsdx, drdy, dsdy
-      real(dp) :: a(4,4), ad(4,4), am1(4,4), 
+      real(dp) :: a(4,4), ad(4,4), am1(4,4),
      .            dndr(4), dnds(4), j(2,2), jm1(2,2)
       integer :: ir, ip, it, ia, ib
 
       logical, allocatable, save :: visited(:)
-      real(dp), allocatable, save :: x32(:), x13(:), x21(:), 
+      real(dp), allocatable, save :: x32(:), x13(:), x21(:),
      .                               y23(:), y31(:), y12(:), twoai(:)
-      
+
 cdr   integer, save :: icount=0  !  for test output only
-      
+
       real(dp) :: dummy
 
 c  2d grid, quadrangles, x-y plane. z: ignorable.
@@ -71,7 +71,7 @@ c  levgeo=3:  general polygon grid, but convex cell.
 
 
       if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
-     .    ((levgeo == 2) .and. nlpol).or. 
+     .    ((levgeo == 2) .and. nlpol).or.
      .     (levgeo == 3)) then
 
         dfdz = 0._dp
@@ -161,7 +161,7 @@ c  return partial derivatives wrt. cartesian coordinates, at point x,y,z
      .         + f2 * (dndr(2)*drdx + dnds(2)*dsdx)
      .         + f3 * (dndr(3)*drdx + dnds(3)*dsdx)
      .         + f4 * (dndr(4)*drdx + dnds(4)*dsdx)
-        
+
 
 
         dfdy =   f1 * (dndr(1)*drdy + dnds(1)*dsdy)
@@ -188,11 +188,11 @@ c  precompute some parameters in cell icell, unless done so on earlier call
 
         if (.not.visited(icell)) then
 c  pre-compute some variables per cell (which are independent of point x,y,z)
-          x1=xtrian(necke(1,icell)) 
-          x2=xtrian(necke(2,icell)) 
-          x3=xtrian(necke(3,icell)) 
-          y1=ytrian(necke(1,icell)) 
-          y2=ytrian(necke(2,icell)) 
+          x1=xtrian(necke(1,icell))
+          x2=xtrian(necke(2,icell))
+          x3=xtrian(necke(3,icell))
+          y1=ytrian(necke(1,icell))
+          y2=ytrian(necke(2,icell))
           y3=ytrian(necke(3,icell))
           x32(icell)=x3-x2
           x13(icell)=x1-x3
@@ -200,12 +200,12 @@ c  pre-compute some variables per cell (which are independent of point x,y,z)
           y23(icell)=y2-y3
           y31(icell)=y3-y1
           y12(icell)=y1-y2
-          twoai(icell)=1._dp / 
+          twoai(icell)=1._dp /
      .         (x1*y23(icell) + x2*y31(icell) + x3*y12(icell))
         end if
 
-        f1=fecken(necke(1,icell)) 
-        f2=fecken(necke(2,icell)) 
+        f1=fecken(necke(1,icell))
+        f2=fecken(necke(2,icell))
         f3=fecken(necke(3,icell))
         dfdx = twoai(icell) *
      .         (f1*y23(icell) + f2*y31(icell) + f3*y12(icell))
@@ -217,7 +217,7 @@ cdr     icount=icount+1
 cdr     if (icount <= 1000) then
 cdr        write (56,*) ' icount = ',icount, ' icell = ',icell
 cdr        write (56,*) ' x, y, z ', x, y, z
-cdr        write (56,*) ' dfdx,dfdy,dfdz ', dfdx, dfdy, dfdz 
+cdr        write (56,*) ' dfdx,dfdy,dfdz ', dfdx, dfdy, dfdz
 cdr        write (56,*)
 cdr     end if
 
@@ -296,4 +296,4 @@ c  setting of array 'visited(icell)':  to be done
       return
       end subroutine eirene_df_dxyz
 
-      
+

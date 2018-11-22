@@ -1,5 +1,5 @@
 !pb  28.06.06: bug fix for NSTORAM=0 and MODC=1
-!pb            FACREA=FACTKK instead of FACREA=log(FACTKK) 
+!pb            FACREA=FACTKK instead of FACREA=log(FACTKK)
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
@@ -24,15 +24,15 @@ cdr  Jan. 2014:
 !pb JUL   16:   ehvds1 -> ehvei1
 
 
-cdr Aug.16  :   minor syncronisation with xstpi.f. 
-cdr Sept.16 :   Started to implement H.3 rate coeff. 
+cdr Aug.16  :   minor syncronisation with xstpi.f.
+cdr Sept.16 :   Started to implement H.3 rate coeff.
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
-cdr May 17  :   TABEI1: safety cut off for TEE at 0.1 eV, 
+cdr May 17  :   TABEI1: safety cut off for TEE at 0.1 eV,
 cdr 	        (rather than the eirene default TVAC (=0.02 eV), added in more cases
 cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 !pb Juli 17 :   LHCOL removed
 cdr Sept 18 :   JELREI: flags for electron energy loss, in storage save mode only.
-cdr             i.e. only needed in FEELEI1 
+cdr             i.e. only needed in FEELEI1
 
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
@@ -47,8 +47,8 @@ c   rmass: mass of incident test particle
 c   irei: counting index for this particular electron impact collision
 c   isp:  incident test particle species identifier
 c   PLS:   precomputed log of electron density
-  
- 
+
+
 C
 C  SET NON DEFAULT ELECTRON IMPACT COLLISION PROCESS NO. IREI
 C
@@ -68,15 +68,15 @@ C
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, 
-     .          EIRENE_FEHVEI1, EE, TB, TEE, 
+      REAL(DP) :: EFLAG, CHRDIF, FCTKKL,
+     .          EIRENE_FEHVEI1, EE, TB, TEE,
      .          EIRENE_FEELEI1, EN,
-     .          P2N, EA, EI, 
+     .          P2N, EA, EI,
      .          ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
-     .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
+     .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU,
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF,
-     .          DELE, 
+     .          DELE,
      .          FP1(6),FP2(6)
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
@@ -84,7 +84,7 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
- 
+
       ITYP=EIRENE_IDEZ(IFRST,1,3)
       INUM=EIRENE_IDEZ(IFRST,2,3)
       ISPE=EIRENE_IDEZ(IFRST,3,3)
@@ -267,13 +267,13 @@ C  TO BE WRITTEN
           fp1(1:3) = rt%fp1l
           fp1(4:6) = rt%fp1r
           fp2(1:3) = rt%fp2b
-          fp2(4:6) = rt%fp2t  
+          fp2(4:6) = rt%fp2t
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
 cdr  safety cut off at TE= 0.1 eV. (note: TVAC=0.02)
               TEE = max(-2.3_dp,TEE)
-c  evaluate 2 parametric fit, 
+c  evaluate 2 parametric fit,
 c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
@@ -284,7 +284,7 @@ cdr  not ready, tabei1 --> tabei3 to be done.
 C             TABEI3(IREI,J,1:9) = CF(1:9)
 C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
           END DO
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI3 
+        ELSE ! NOT SUFFICIENT STORADE ON TABEI3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 
         ENDIF
@@ -317,7 +317,7 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         IERR=1
         GOTO 996
       ENDIF
- 
+
       FACREI(IREI,1) = FACTKK
       FACREI(IREI,2) = LOG(FACTKK)
 C
@@ -503,7 +503,7 @@ C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2ND(IREI)  INTO
 C  CUMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
 
-C  ATOM SECONDARIES 
+C  ATOM SECONDARIES
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
         PATEI(IREI,0)=PATEI(IREI,0)+
@@ -519,7 +519,7 @@ C  MOLECULE SECONDARIES
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
   520 CONTINUE
-C  TEST ION SECONDARIES 
+C  TEST ION SECONDARIES
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
         PIOEI(IREI,0)=PIOEI(IREI,0)+
@@ -536,9 +536,9 @@ C
 C  TOTAL NUMBER OF SECONDARIES
       P2NEI(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
      .            PIOEI(IREI,0)
- 
+
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
-C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION 
+C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION
 C          FOR TEST PARTICLE SECONDARIES
 C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)
@@ -573,7 +573,7 @@ C
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
   875 CONTINUE
- 
+
       WRITE (iunout,*) 'BACKGROUND SECONDARIES:'
 
       IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
@@ -614,7 +614,7 @@ C
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLEI(IREI,0,1),
      .                                 ' * E0 + ',EPLEI(IREI,0,2),
      .                                 ' * EHEAVY '
-C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0 
+C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
@@ -691,7 +691,7 @@ C
         ENDIF
       ENDIF
 
-  880 CONTINUE 
+  880 CONTINUE
 
       CALL EIRENE_LEER(1)
 
@@ -709,7 +709,7 @@ C
      .                  MODCOL(1,1,IREI),MODCOL(1,2,IREI),
      .                  MODCOL(1,3,IREI),MODCOL(1,4,IREI)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                  FACREI(IREI,1) 
+     .                  FACREI(IREI,1)
       CALL EIRENE_LEER(1)
 
 

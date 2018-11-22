@@ -1,26 +1,26 @@
- 
- 
+
+
       SUBROUTINE EIRENE_MAKE_TETRA
      .  (IC1,IC2,IC3,IC4,IC5,IC6,IC7,IC8,IR,IP,IT)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       INTEGER,INTENT(IN) :: IC1,IC2,IC3,IC4,IC5,IC6,IC7,IC8,IR,IP,IT
- 
+
       IF (NTET+6 > NTETRA) THEN
         WRITE (iunout,*) ' ALLOWED NUMBER OF TETRAHEDRA EXCEEDED '
         WRITE (iunout,*) ' INCREASE NTETRA '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       INMTIT(1:4,NTET+1:NTET+6) = 0
- 
+
       NTECK(1,NTET+1) = IC1
       NTECK(2,NTET+1) = IC4
       NTECK(3,NTET+1) = IC3
@@ -38,7 +38,7 @@
         NTBAR(1:4,NTET+1) = -1
         NTSEITE(1:4,NTET+1) = -1
       END IF
- 
+
       NTECK(1,NTET+2) = IC1
       NTECK(2,NTET+2) = IC8
       NTECK(3,NTET+2) = IC4
@@ -56,7 +56,7 @@
         NTBAR(1:4,NTET+2) = -1
         NTSEITE(1:4,NTET+2) = -1
       END IF
- 
+
       NTECK(1,NTET+3) = IC1
       NTECK(2,NTET+3) = IC5
       NTECK(3,NTET+3) = IC8
@@ -74,7 +74,7 @@
         NTBAR(1:4,NTET+3) = -1
         NTSEITE(1:4,NTET+3) = -1
       END IF
- 
+
       NTECK(1,NTET+4) = IC1
       NTECK(2,NTET+4) = IC6
       NTECK(3,NTET+4) = IC5
@@ -92,7 +92,7 @@
         NTBAR(1:4,NTET+4) = -1
         NTSEITE(1:4,NTET+4) = -1
       END IF
- 
+
       NTECK(1,NTET+5) = IC1
       NTECK(2,NTET+5) = IC2
       NTECK(3,NTET+5) = IC6
@@ -110,7 +110,7 @@
         NTBAR(1:4,NTET+5) = -1
         NTSEITE(1:4,NTET+5) = -1
       END IF
- 
+
       NTECK(1,NTET+6) = IC1
       NTECK(2,NTET+6) = IC3
       NTECK(3,NTET+6) = IC2
@@ -128,57 +128,57 @@
         NTBAR(1:4,NTET+6) = -1
         NTSEITE(1:4,NTET+6) = -1
       END IF
- 
+
 !pb      INMTIT(1,NTET+1) = INMP3I(IR,IP,IT)
       INMTIT(1,NTET+1) = INMP3I(IR,IP,IT+1)
       INMTIT(3,NTET+1) = INMP2I(IR,IP+1,IT)
- 
+
       INMTIT(1,NTET+2) = INMP1I(IR,IP,IT)
       INMTIT(3,NTET+2) = INMP2I(IR,IP+1,IT)
- 
+
       INMTIT(1,NTET+3) = INMP1I(IR,IP,IT)
 !pb      INMTIT(3,NTET+3) = INMP3I(IR,IP,IT+1)
       INMTIT(3,NTET+3) = INMP3I(IR,IP,IT)
- 
+
       INMTIT(1,NTET+4) = INMP2I(IR,IP,IT)
 !pb      INMTIT(3,NTET+4) = INMP3I(IR,IP,IT+1)
       INMTIT(3,NTET+4) = INMP3I(IR,IP,IT)
- 
+
       INMTIT(1,NTET+5) = INMP2I(IR,IP,IT)
       INMTIT(3,NTET+5) = INMP1I(IR+1,IP,IT)
- 
+
 !pb      INMTIT(1,NTET+6) = INMP3I(IR,IP,IT)
       INMTIT(1,NTET+6) = INMP3I(IR,IP,IT+1)
       INMTIT(3,NTET+6) = INMP1I(IR+1,IP,IT)
- 
+
       NTET = NTET+6
- 
+
       RETURN
- 
+
       CONTAINS
- 
+
       SUBROUTINE EIRENE_EINFUEGEN (IC,ITET)
         INTEGER, INTENT(IN) :: IC, ITET
         TYPE(TET_ELEM), POINTER :: CUR
- 
+
         ALLOCATE (CUR)
         CUR%NOTET = ITET
         CUR%NEXT_TET => COORTET(IC)%PTET
         COORTET(IC)%PTET => CUR
         MCLSTR = MCLSTR+1
       END SUBROUTINE EIRENE_EINFUEGEN
- 
- 
+
+
       FUNCTION COORD_TEST (I1,I2,I3,I4)
         INTEGER, INTENT(IN) :: I1,I2,I3,I4
         LOGICAL COORD_TEST
         LOGICAL LTEST
- 
+
         LTEST= (I1==I2) .OR. (I1==I3) .OR. (I1==I4) .OR.
      .         (I2==I3) .OR. (I2==I4) .OR. (I3==I4)
         COORD_TEST = .NOT. LTEST
         RETURN
       END FUNCTION COORD_TEST
- 
- 
+
+
       END

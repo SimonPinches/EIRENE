@@ -13,47 +13,47 @@
 !* Changes:
 !*   2001-05-29 Added Search
 !****************************************
- 
+
       MODULE EIRMOD_module_avltree
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_CCONA
- 
+
       implicit none
- 
+
       private
- 
-      public :: EIRENE_NewTree, EIRENE_DestroyTree, EIRENE_Insert, 
+
+      public :: EIRENE_NewTree, EIRENE_DestroyTree, EIRENE_Insert,
      P          EIRENE_Search, EIRENE_Remove, Eirene_Dump
- 
+
       integer, parameter :: less = -1,
      .                      equal = 0,
      .                      more = 1
- 
+
       type, public :: TAVLNode
         integer :: balance
         type(TAVLNode), pointer :: left, right
         real(dp) :: xco, yco, zco, dist
         integer :: ind
       end type TAVLNode
- 
+
       type, public :: TAVLTree
         type(TAVLNode), pointer :: root
       end type TAVLTree
- 
- 
+
+
       contains
- 
+
 !****************************************
 !* Speicherverwaltung
 !****************************************
- 
+
       FUNCTION EIRENE_NewNode(X, Y, Z, DST, IND) RESULT(NODE)
- 
+
       REAL(DP), INTENT(IN) :: X, Y, Z, DST
       INTEGER, INTENT(INOUT) :: IND
       TYPE(TAVLNode), POINTER :: NODE
- 
+
       allocate (node)
       node%balance = 0
       NULLIFY(node%left)
@@ -63,15 +63,15 @@
       node%zco = z
       node%dist = dst
       node%ind = ind
- 
+
       END FUNCTION EIRENE_NewNode
- 
- 
+
+
       RECURSIVE SUBROUTINE EIRENE_DestroyNode(node)
- 
+
       type(tavlnode), pointer :: node
       type(tavlnode), pointer :: cur, l, r
- 
+
       IF (ASSOCIATED(node)) THEN
          if (associated(node%left)) then
            l => node%left
@@ -87,14 +87,14 @@
          if (associated(cur)) DEALLOCATE(cur)
          NULLIFY(node)
       END IF
- 
+
       END SUBROUTINE EIRENE_DestroyNode
- 
- 
+
+
       SUBROUTINE EIRENE_DestroyNodes(node)
- 
+
       type(tavlnode), pointer :: node
-      
+
       type TNodelist
          type(tavlnode), pointer :: cnode
          type(TNodelist), pointer :: next
@@ -122,7 +122,7 @@
            tliste => nliste
            cur => cur%left
            fertig =.false.
-           
+
         else if (associated(cur%right)) then
 
            allocate (nliste)
@@ -161,38 +161,38 @@
            end if
 
         end if
-        
+
       end do
 
       END SUBROUTINE EIRENE_DestroyNodes
- 
- 
+
+
       FUNCTION EIRENE_NewTree () result(tree)
- 
+
       type (tavltree), pointer :: tree
- 
+
       ALLOCATE (tree)
       NULLIFY (tree%root)
- 
+
       END FUNCTION EIRENE_NewTree
- 
- 
+
+
       SUBROUTINE EIRENE_DestroyTree (tree)
- 
+
       type (tavltree), pointer :: tree
- 
+
       IF (ASSOCIATED(tree)) THEN
 !pb         call EIRENE_DestroyNode(tree%root)
          call EIRENE_DestroyNodes(tree%root)
          DEALLOCATE(tree)
       END IF
       END SUBROUTINE EIRENE_DestroyTree
- 
- 
+
+
 !****************************************
 !* Rotationen
 !****************************************
- 
+
 !****************************************
 !* n(l,r(rl,rr)) =>
 !* r(n(l,rl),rr)
@@ -203,22 +203,22 @@
 !*     / \       / \
 !*    rl  rr    l   rl
 !****************************************
- 
+
       FUNCTION EIRENE_RotLeft(node) result(right)
- 
+
       type(TAVLNode), POINTER :: node
       type(TAVLNode), POINTER :: left, right
       integer :: abal, bbal
- 
+
       left => node%left
       right => node%right
- 
+
       node%right => right%left
       right%left => node
- 
+
       abal = node%balance
       bbal = right%balance
- 
+
       IF (bbal <= EQUAL) THEN
          IF (abal >= MORE) THEN
             right%balance = bbal - 1
@@ -234,10 +234,10 @@
          END IF
          node%balance = abal - bbal - 1
       END IF
- 
+
       END FUNCTION EIRENE_RotLeft
- 
- 
+
+
 !****************************************
 !* n(l(ll,lr),r) =>
 !* l(ll,n(lr,r))
@@ -248,22 +248,22 @@
 !*  / \             / \
 !* ll  lr          lr  r
 !****************************************
- 
+
       FUNCTION EIRENE_RotRight(node) RESULT(left)
- 
+
       type(TAVLNode), pointer :: node
       type(TAVLNode), pointer :: left, right
       integer :: abal, bbal
- 
+
       left => node%left
       right => node%right
- 
+
       node%left => left%right
       left%right => node
- 
+
       abal = node%balance
       bbal = left%balance
- 
+
       IF (bbal <= EQUAL) THEN
          IF (abal < bbal) THEN
             left%balance = bbal + 1
@@ -280,12 +280,12 @@
          node%balance = abal + 1
       END IF
       END FUNCTION EIRENE_RotRight
- 
- 
+
+
 !****************************************
 !* Ausbalancieren
 !****************************************
- 
+
 !****************************************
 !* Beispiel: (Doppelrotation)
 !* 2(1,6(5(4),7)) =>
@@ -300,11 +300,11 @@
 !*     /                 \     1 4    7
 !*    4                   7
 !****************************************
- 
+
       FUNCTION EIRENE_BalanceNode(node) result(retnode)
- 
+
       type(TAVLNode), pointer :: node, retnode
- 
+
       IF (node%balance < LESS) THEN
          IF (node%left%balance > EQUAL) THEN
             node%left => EIRENE_RotLeft(node%left)
@@ -317,16 +317,16 @@
          retnode => EIRENE_RotLeft(node)
       END IF
       END FUNCTION EIRENE_BalanceNode
- 
- 
+
+
 ! Called after a node of node^.left was removed
       FUNCTION EIRENE_RestoreLeftBalance(node, oldbalance)
      .  result(retnode)
- 
+
       type(TAVLNode), pointer :: node
       type(TAVLNode), pointer :: retnode
       integer :: oldbalance
- 
+
       IF (.NOT.ASSOCIATED(node%left)) THEN
          node%balance = node%balance + 1
       ELSEIF ((node%left%balance /= oldbalance) .AND.
@@ -339,17 +339,17 @@
       ELSE
          retnode => node
       END IF
- 
+
       END FUNCTION EIRENE_RestoreLeftBalance
- 
- 
+
+
 ! Called after a node of node^.right was removed
       FUNCTION EIRENE_RestoreRightBalance(node, oldbalance)
      .  result(retnode)
       type(TAVLNode), pointer :: node
       integer :: oldbalance
       type(TAVLNode), pointer :: retnode
- 
+
       IF (.NOT.ASSOCIATED(node%right)) THEN
          node%balance = node%balance - 1
       ELSEIF ((node%right%balance /= oldbalance) .AND.
@@ -363,51 +363,51 @@
          retnode => node
       END IF
       END FUNCTION EIRENE_RestoreRightBalance
- 
- 
+
+
       RECURSIVE FUNCTION EIRENE_RemoveNodeMostLeft(node, leftmost)
      .          result(retnode)
- 
+
       type(TAVLNode), pointer :: node, leftmost
       integer :: oldbalance
       type(TAVLNode), pointer :: retnode
- 
+
       IF (.NOT.ASSOCIATED(node%left)) THEN
          leftmost => node
          retnode => node%right
          RETURN
       END IF
- 
+
       oldbalance = node%left%balance
       node%left => EIRENE_RemoveNodeMostLeft(node%left, leftmost)
       retnode => EIRENE_RestoreLeftBalance(node, oldbalance)
- 
+
       END FUNCTION EIRENE_RemoveNodeMostLeft
- 
- 
+
+
 !****************************************
 !* grundlegende Operationen
 !****************************************
- 
- 
+
+
       RECURSIVE FUNCTION EIRENE_InsertNode(node, x, y, z, dst, ind,
      .  inserted)
      .          result(retnode)
- 
+
       type (TAVLNode), pointer :: node, retnode
       real(dp), intent(in) :: x, y, z, dst
       integer, intent(inout) :: ind
       logical, intent(INOUT) :: INSERTED
- 
+
       integer :: relation, oldbalance
- 
+
       IF (.NOT.ASSOCIATED(node)) THEN
          inserted = .TRUE.
          retnode => EIRENE_NewNode(x, y, z, dst, ind)
          RETURN
       END IF
- 
-      relation = EIRENE_cmp(x, y, z, 
+
+      relation = EIRENE_cmp(x, y, z,
      .                      node%xco, node%yco, node%zco, node%dist)
       IF (relation == EQUAL) THEN
          ! Don't insert dublicate key/value
@@ -446,50 +446,50 @@
             node%balance = node%balance + 1
          END IF
       ENDIF
- 
+
       IF (inserted) THEN
          IF (ABS(node%balance) > 1) THEN
             node => EIRENE_BalanceNode(node)
          END IF
       END IF
- 
+
       retnode => node
- 
+
       END Function EIRENE_InsertNode
- 
- 
+
+
       SUBROUTINE EIRENE_Insert(tree, x, y, z, dst, ind, inserted)
- 
+
       type(TAVLTree), pointer :: tree
       real(dp) :: x, y, z, dst
       integer :: ind
       logical :: inserted
- 
+
       IF (ASSOCIATED(tree)) THEN
          inserted = .FALSE.
-         tree%root => EIRENE_InsertNode(tree%root, x, y, z, dst, ind, 
+         tree%root => EIRENE_InsertNode(tree%root, x, y, z, dst, ind,
      .                                  inserted)
 !         call EIRENE_traverse (tree%root,0)
       END IF
       END SUBROUTINE EIRENE_Insert
- 
- 
+
+
 !pb      RECURSIVE INTEGER Function SearchNode(node, x, y, z)
       RECURSIVE INTEGER Function EIRENE_SearchNode(node, x, y, z)
      .  RESULT (nr)
- 
+
       type (TAVLNode), pointer :: node
       real(dp), intent(in) :: x, y, z
- 
+
       integer :: relation, ind
- 
+
       IF (.NOT.ASSOCIATED(node)) THEN
 !pb         SearchNode = 0
          nr = 0
          RETURN
       END IF
- 
-      relation = EIRENE_cmp(x, y, z, 
+
+      relation = EIRENE_cmp(x, y, z,
      .                      node%xco, node%yco, node%zco, node%dist)
       IF (relation == EQUAL) THEN
          ind = node%ind
@@ -498,24 +498,24 @@
       ELSE
          ind = EIRENE_SearchNode(node%right, x, y, z)
       END IF
- 
+
 !pb      EIRENE_SearchNode = ind
       nr = ind
- 
+
       END Function EIRENE_SearchNode
- 
- 
+
+
       Integer Function EIRENE_Search(tree, x, y, z)
- 
+
       type (TAVLTree), pointer :: tree
       real(dp), intent(in) :: x, y, z
- 
+
       EIRENE_Search = 0
       IF (ASSOCIATED(tree)) THEN
          EIRENE_Search = EIRENE_SearchNode(tree%root, x, y, z)
       END IF
       END FUNCTION EIRENE_Search
- 
+
 !****************************************
 !* Beispiel:
 !* n(l(:,:),r(rl(rll,rlr),rr)) =>
@@ -529,22 +529,22 @@
 !*      _'  \                 \                   \
 !*     rll   rlr               rlr                 rlr
 !****************************************
- 
+
       RECURSIVE Function EIRENE_RemoveNode(node, x, y, z)
      .  result(retnode)
- 
+
       type (TAVLNode), pointer :: node, retnode
       real(dp), intent(in) :: x, y, z
- 
+
       integer :: relation, oldbalance
       type (TAVLNode), pointer :: garbage, newroot
- 
+
       IF (.NOT.ASSOCIATED(node)) THEN
          NULLIFY(retnode)
          RETURN
       END IF
- 
-      relation = EIRENE_cmp(x, y, z, node%xco, node%yco, node%zco, 
+
+      relation = EIRENE_cmp(x, y, z, node%xco, node%yco, node%zco,
      .                      node%dist)
       IF (relation == EQUAL) THEN
          garbage => node
@@ -577,30 +577,30 @@
             retnode => EIRENE_RestoreRightBalance(node, oldbalance)
          END IF
       END IF
- 
+
       END FUNCTION EIRENE_RemoveNode
- 
- 
+
+
       Subroutine EIRENE_Remove(tree, x, y, z)
- 
+
       type (TAVLTree), pointer :: tree
       real(dp), intent(in) :: x, y, z
- 
+
       IF (ASSOCIATED(tree)) THEN
          tree%root => EIRENE_RemoveNode(tree%root, x, y, z)
       END IF
       END SUBROUTINE EIRENE_Remove
- 
- 
+
+
 !****************************************
 !* Debug
 !****************************************
- 
+
       RECURSIVE SUBROUTINE EIRENE_Traverse(node,iunout)
- 
+
       type (TAVLNode), pointer :: node
       integer, intent(in) :: iunout
- 
+
       IF (ASSOCIATED(node)) THEN
         write (iunout,*) node%ind, node%xco, node%yco, node%zco
         IF (ASSOCIATED(node%left) .OR. ASSOCIATED(node%right)) THEN
@@ -616,21 +616,21 @@
           Write (iunout,*) "Ende"
         END IF
       END IF
- 
+
       END SUBROUTINE EIRENE_Traverse
- 
- 
+
+
       Subroutine EIRENE_Dump(tree)
       type(TAVLTree), pointer :: tree
- 
+
       call EIRENE_Traverse(tree%root,6)
       END SUBROUTINE EIRENE_Dump
- 
- 
+
+
       integer function EIRENE_cmp (x1, y1, z1, x2, y2, z2, dist)
- 
+
       real(dp), intent(in) :: x1, y1, z1, x2, y2, z2, dist
- 
+
 !pb 5.1.10      IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < EPS10) THEN
       IF ( ((X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2)/dist**2 < 1.D-8) THEN
          EIRENE_cmp = equal
@@ -645,16 +645,16 @@
             EIRENE_cmp=merge(less,more,z1 < z2)
          end if
       end if
- 
+
       return
       end function EIRENE_cmp
- 
- 
+
+
       integer function EIRENE_cmp_old (x1, y1, z1, x2, y2, z2)
- 
+
       real(dp), intent(in) :: x1, y1, z1, x2, y2, z2
       real(dp) :: dx, dy, dz
- 
+
       IF ( (X1-X2)**2 + (Y1-Y2)**2 + (Z1-Z2)**2 < 1.D-10) THEN
          EIRENE_cmp_old = equal
       else
@@ -690,10 +690,10 @@
             EIRENE_cmp_old = more
          end if
       end if
- 
+
       end function EIRENE_cmp_old
- 
- 
+
+
       END MODULE EIRMOD_module_avltree
- 
- 
+
+

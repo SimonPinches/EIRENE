@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
               SUBROUTINE EIRENE_FEHLER(AUSDRU,AKTLEN,ERROR)
 C-----------------------------------------------------------------------
@@ -12,38 +12,38 @@ C     VON AUSDRU
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
- 
+
 C
 C     KONSTANTENDEKLARATION :
 C
          INTEGER, PARAMETER :: MAXOPT=15
 C           : MAXIMAL ZULAESSIGE ANZAHL VON OPERATOREN IN AUSDRU
- 
+
 C
 C     EINGABEPARAMETER :
 C
          INTEGER, INTENT(IN) :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          CHARACTER(*), INTENT(INOUT) :: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
 C
 C     AUSGABEPARAMETER :
 C
          INTEGER, INTENT(OUT) :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
+
 C
 C     LOKALE VARIABLEN :
 C
          INTEGER :: OANDEN
 C           : ANZAHL DER OPERANDEN IN AUSDRU
- 
+
          INTEGER :: OTOREN
 C           : ANZAHL DER OPERATOREN IN AUSDRU
- 
- 
+
+
       ERROR=0
 C
 C     UEBERPRUEFUNG AUF GUELTIGE ZEICHEN

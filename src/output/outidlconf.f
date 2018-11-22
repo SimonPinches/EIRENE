@@ -49,7 +49,7 @@
         write (iout,'(A,I10)') ' NCOORD ',NCOORD
         write (iout,'(A,I10)') ' NTET   ',NTET
       case default
-       
+
       end select
 
       write (iout,'(//A)') txtrun

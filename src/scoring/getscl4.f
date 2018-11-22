@@ -1,6 +1,6 @@
 C  oct.2014  only comments added
-cdr  aug 2016  comments only: 
-cdr            potati, potmli, potioi and potphi (OUTGOING FLUXES) 
+cdr  aug 2016  comments only:
+cdr            potati, potmli, potioi and potphi (OUTGOING FLUXES)
 cdr            include also the fluxes onto census.
 cdr  hence: in t-dep mode and nlscl=T, total particle balances should be exact
 cdr  to be done: apply that scaling also to flux and weights in census for re-sampling
@@ -79,7 +79,7 @@ C
       P(3,3)=PIIOI(0,ISTRA)+POTIOI(0,ISTRA)+PRFIII(0,ISTRA)+
      .       PGENII(0,ISTRA)
       P(3,4)=0._DP
-Cdr PHOTONIC TALLIES ARE CURRENTLY NOT INCLUDED IN RESCALING. TO BE DONE 
+Cdr PHOTONIC TALLIES ARE CURRENTLY NOT INCLUDED IN RESCALING. TO BE DONE
 CDR FC(4) SHOULD ALWAYS TURN OUT TO BE EXACTLY 1.0
       P(4,1)=0._DP
       P(4,2)=0._DP

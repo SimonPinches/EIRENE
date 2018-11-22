@@ -1,16 +1,16 @@
 cdr    dec. 15:  added species index ipls, for volumetric energy source tallies for bulk ions
 cdr              eapl,empl,eipl,ephpl
-cdr   24.09.14:  scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected 
+cdr   24.09.14:  scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected
 c  spring 2014:  new sputter tallies introduced: emitted species resolved
 C  15.02.05 :    double printout: fatm2,....taken out. use only getscl4, not getscl
 C   6. 7.05 :    call ph_integrate for photon-background tallies taken out.
 C                no more additional photon background tallies active
 C  15.12.05 :    rescaling connected to spump surface tally
 
- 
+
       SUBROUTINE EIRENE_SCALE_TALLIES (ISTRA)
 C
-C  RESCALE TRACKLENGTH ESTIMATED VOLUME AVERAGED TALLIES 
+C  RESCALE TRACKLENGTH ESTIMATED VOLUME AVERAGED TALLIES
 C  WITH PARTICLE BALANCE CORRECTION FACTORS FATM,FMOL,FION,FPHOT
 C  TO ENFORCE PERFECT GLOBAL PARTICLE BALANCE
 C
@@ -23,9 +23,9 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CCONA
       USE EIRMOD_CESTIM
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP) :: FATM, FMOL, FION, FPHOT, FADD
       INTEGER :: IATM, IMOL, IION, IPLS, IPHOT, IADV, ICLV, IBGV, ICPV,
@@ -35,13 +35,13 @@ C
       CALL EIRENE_GETSCL4 (ISTRA,FATM,FMOL,FION,FPHOT)
 C
       IF (.NOT.NLSCL) THEN
- 
+
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'NO RESCALING DONE (NLSCL=FALSE)'
         CALL EIRENE_LEER(2)
- 
+
       ELSEIF (NLSCL) THEN
- 
+
         FASCL(ISTRA) = FATM
         FMSCL(ISTRA) = FMOL
         FISCL(ISTRA) = FION
@@ -83,7 +83,7 @@ c  atomic surface tallies
             IF (LSPTMAT) SPTMAT(IATM,J)=SPTMAT(IATM,J)*FMOL
             IF (LSPTIAT) SPTIAT(IATM,J)=SPTIAT(IATM,J)*FION
             IF (LSPTPHAT) SPTPHAT(IATM,J)=SPTPHAT(IATM,J)*FPHOT
-cdr  ?? scaling with bulk flux? 
+cdr  ?? scaling with bulk flux?
 cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
 
             IF (LSPUMP) SPUMP (NSPH+IATM,J)=SPUMP (NSPH+IATM,J)*FATM
@@ -93,7 +93,7 @@ cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
 
         if (lsptatot) sptatot = sptatot * fatm
 
-c  integrated atomic tallies, both volumetric and surface averaged 
+c  integrated atomic tallies, both volumetric and surface averaged
         DO 2111 IATM=0,NATMI
           PDENAI(IATM,ISTRA)=PDENAI(IATM,ISTRA)*FATM
           EDENAI(IATM,ISTRA)=EDENAI(IATM,ISTRA)*FATM
@@ -122,11 +122,11 @@ c  integrated atomic tallies, both volumetric and surface averaged
           SPTMATI(IATM,ISTRA)=SPTMATI(IATM,ISTRA)*FMOL
           SPTIATI(IATM,ISTRA)=SPTIATI(IATM,ISTRA)*FION
           SPTPHATI(IATM,ISTRA)=SPTPHATI(IATM,ISTRA)*FPHOT
-cdr  ?? scaling with bulk flux ?? 
+cdr  ?? scaling with bulk flux ??
 cdr       SPTPATI(IATM,ISTRA)=SPTPATI(IATM,ISTRA)*FATM
 
           SPUMPI(NSPH+IATM,ISTRA)=SPUMPI(NSPH+IATM,ISTRA)*FATM
-          
+
  2111   CONTINUE
 
         sptatti(istra) = sptatti(istra)*fatm
@@ -174,14 +174,14 @@ C
             IF (LSPTMML) SPTMML(IMOL,J)=SPTMML(IMOL,J)*FMOL
             IF (LSPTIML) SPTIML(IMOL,J)=SPTIML(IMOL,J)*FION
             IF (LSPTPHML) SPTPHML(IMOL,J)=SPTPHML(IMOL,J)*FPHOT
-cdr  ?? scaling with bulk flux ??  
+cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPML) SPTPML(IMOL,J)=SPTPML(IMOL,J)*FMOL
             IF (LSPUMP) SPUMP (NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
   315     CONTINUE
  2115   CONTINUE
 
-        if (lsptmtot) sptmtot = sptmtot*fmol 
- 
+        if (lsptmtot) sptmtot = sptmtot*fmol
+
         DO 2116 IMOL=0,NMOLI
           PDENMI(IMOL,ISTRA)=PDENMI(IMOL,ISTRA)*FMOL
           EDENMI(IMOL,ISTRA)=EDENMI(IMOL,ISTRA)*FMOL
@@ -210,14 +210,14 @@ cdr         IF (LSPTPML) SPTPML(IMOL,J)=SPTPML(IMOL,J)*FMOL
           SPTMMLI(IMOL,ISTRA)=SPTMMLI(IMOL,ISTRA)*FMOL
           SPTIMLI(IMOL,ISTRA)=SPTIMLI(IMOL,ISTRA)*FION
           SPTPHMLI(IMOL,ISTRA)=SPTPHMLI(IMOL,ISTRA)*FPHOT
-cdr  ?? scaling with bulk flux ??  
+cdr  ?? scaling with bulk flux ??
 cdr       SPTPMLI(IMOL,ISTRA)=SPTPMLI(IMOL,ISTRA)*FMOL
           SPUMPI(NSPA+IMOL,ISTRA)=SPUMPI(NSPA+IMOL,ISTRA)*FMOL
-          
+
  2116   CONTINUE
 
         sptmtti(istra) = sptmtti(istra)*fmol
- 
+
         DO 2117 J=1,NSBOX_TAL
           IF (LEAML) EAML(J)=EAML(J)*FATM
           IF (LEMML) EMML(J)=EMML(J)*FMOL
@@ -261,12 +261,12 @@ C
             IF (LSPTMIO) SPTMIO(IION,J)=SPTMIO(IION,J)*FMOL
             IF (LSPTIIO) SPTIIO(IION,J)=SPTIIO(IION,J)*FION
             IF (LSPTPHIO) SPTPHIO(IION,J)=SPTPHIO(IION,J)*FPHOT
-cdr  ?? scaling with bulk flux ??  
+cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPIO) SPTPIO(IION,J)=SPTPIO(IION,J)*FION
             IF (LSPUMP) SPUMP(NSPAM+IION,J)=SPUMP(NSPAM+IION,J)*FION
   422     CONTINUE
   420   CONTINUE
- 
+
         if (lsptitot) sptitot = sptitot*fion
 
         DO 431 IION=0,NIONI
@@ -297,14 +297,14 @@ cdr         IF (LSPTPIO) SPTPIO(IION,J)=SPTPIO(IION,J)*FION
           SPTMIOI(IION,ISTRA)=SPTMIOI(IION,ISTRA)*FMOL
           SPTIIOI(IION,ISTRA)=SPTIIOI(IION,ISTRA)*FION
           SPTPHIOI(IION,ISTRA)=SPTPHIOI(IION,ISTRA)*FPHOT
-cdr  ?? scaling with bulk flux ??  
+cdr  ?? scaling with bulk flux ??
 cdr       SPTPIOI(IION,ISTRA)=SPTPIOI(IION,ISTRA)*FION
           SPUMPI(NSPAM+IION,ISTRA)=SPUMPI(NSPAM+IION,ISTRA)*FION
-          
+
   431   CONTINUE
 
         sptitti(istra) = sptitti(istra)*fion
-        
+
         DO 432 J=1,NSBOX_TAL
           IF (LEAIO) EAIO(J)=EAIO(J)*FATM
           IF (LEMIO) EMIO(J)=EMIO(J)*FMOL
@@ -351,7 +351,7 @@ C  SURFACE AVERAGED TALLIES
             IF (LSPTMPHT) SPTMPHT(IPHOT,J)=SPTMPHT(IPHOT,J)*FMOL
             IF (LSPTIPHT) SPTIPHT(IPHOT,J)=SPTIPHT(IPHOT,J)*FION
             IF (LSPTPHPHT) SPTPHPHT(IPHOT,J)=SPTPHPHT(IPHOT,J)*FPHOT
-cdr  ?? scaling with bulk flux ?? 
+cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPPHT) SPTPPHT(IPHOT,J)=SPTPPHT(IPHOT,J)*FPHOT
             IF (LSPUMP) SPUMP (IPHOT,J)=SPUMP (IPHOT,J)*FPHOT
           END DO
@@ -387,10 +387,10 @@ cdr         IF (LSPTPPHT) SPTPPHT(IPHOT,J)=SPTPPHT(IPHOT,J)*FPHOT
           SPTMPHTI(IPHOT,ISTRA)=SPTMPHTI(IPHOT,ISTRA)*FMOL
           SPTIPHTI(IPHOT,ISTRA)=SPTIPHTI(IPHOT,ISTRA)*FION
           SPTPHPHTI(IPHOT,ISTRA)=SPTPHPHTI(IPHOT,ISTRA)*FPHOT
-cdr  ?? scaling with bulk flux ?? 
+cdr  ?? scaling with bulk flux ??
 cdr       SPTPPHTI(IPHOT,ISTRA)=SPTPPHTI(IPHOT,ISTRA)*FPHOT
           SPUMPI(IPHOT,ISTRA)=SPUMPI(IPHOT,ISTRA)*FPHOT
-          
+
         END DO
 
         sptphtti(istra) = sptphtti(istra)*fphot
@@ -405,7 +405,7 @@ cdr       SPTPPHTI(IPHOT,ISTRA)=SPTPPHTI(IPHOT,ISTRA)*FPHOT
         EMPHTI(ISTRA)=EMPHTI(ISTRA)*FMOL
         EIPHTI(ISTRA)=EIPHTI(ISTRA)*FION
         EPHPHTI(ISTRA)=EPHPHTI(ISTRA)*FPHOT
- 
+
 csw integrate/scale internal photon tallies
 cdr     IF (NPHOTI > 0)
 cdr  .    CALL PH_INTEGRATE(ISTRA,FLXFAC(ISTRA)/ELCHA,
@@ -560,7 +560,7 @@ C
         EPHELI(ISTRA)=EPHELI(ISTRA)*FPHOT
 C
 C  SPECTRUM TALLIES
-C 
+C
         DO ISPC=1,NADSPC
           SELECT CASE (ESTIML(ISPC)%IPRTYP)
           CASE (0)
@@ -577,7 +577,7 @@ C
           ESTIML(ISPC)%SPC = ESTIML(ISPC)%SPC * FADD
           ESTIML(ISPC)%SPCS = ESTIML(ISPC)%SPCS * FADD
         END DO
- 
+
 C
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) ('RESCALING OF TRACKLENGTH TALLIES COMPLETED')
@@ -589,6 +589,6 @@ C
         CALL EIRENE_LEER(2)
 C
       ENDIF
- 
+
       RETURN
       END SUBROUTINE EIRENE_SCALE_TALLIES

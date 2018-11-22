@@ -82,21 +82,21 @@ C
       REAL(DP) :: XTIM(0:NSTRA)
 
       REAL(DP) :: XFL1,
-     .          XPRNLS, XFACT, OVER_ACC, XPRNLI, 
+     .          XPRNLS, XFACT, OVER_ACC, XPRNLI,
      .          TIMI, EIRENE_SECOND_OWN, XPT, XX1, XPT1, XFL, SECND, XX,
      .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
      .          tim1, tim2,
      .          rn1
 
-      REAL(DP), EXTERNAL :: RANF_EIRENE 
+      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, EXTERNAL :: RANSET_EIRENE
       INTEGER, EXTERNAL :: RANGET_EIRENE
 
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
       INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
-     .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN, 
+     .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
      .           ISTR, NPTTOT, NREC11, IB,
      .           IC, IGFF, IADD, INDX, ICLV, IADV,
      .           INODES, J, IPTSI, IT, IMCP,
@@ -109,7 +109,7 @@ csw
 !pb 03122013      real(dp) :: timstart,timend,timused
 !pb 03122013      real(dp), external :: mpi_wtime
       real(dp) :: timused
-      integer :: itimstart, itimend, itimrate   
+      integer :: itimstart, itimend, itimrate
 C
       LOGICAL :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LOGHELP(NSTRA)
@@ -297,7 +297,7 @@ C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
     7 CONTINUE
       XPT1=0.
       XFL1=0.
- 
+
       xtim = 0._dp
       DO 8 ISTRA=1,NSTRAI
         IF (NLSRON(ISTRA)) THEN
@@ -394,7 +394,7 @@ c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
         if (.not.nlident) then
           do istra=1,nstrai
-            if (ninitl(istra) > 0) 
+            if (ninitl(istra) > 0)
      .        ninitl(istra)=ninitl(istra)+my_pe*10000
           enddo
         ELSE
@@ -407,10 +407,10 @@ c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
           WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
           WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL '
           WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST  '
-          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),' 
-          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE' 
+          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
+          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
           WRITE (IUNOUT,*) '......................................... '
-          CALL EIRENE_LEER(1)         
+          CALL EIRENE_LEER(1)
         endif
         NPRNLS=NPRNLI
       ENDIF
@@ -443,7 +443,7 @@ C
         timan=EIRENE_second_own()
 
         ISTRA=ISTR
-        
+
 C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
 C  IN TIME DEP. MODE
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
@@ -469,14 +469,14 @@ C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
           ENDIF
         ENDIF
 
-C  MOVIE OPTION (NLMOVIE):  DONE, 
+C  MOVIE OPTION (NLMOVIE):  DONE,
 C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai comes first!
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
 
         IF (.NOT.NLSRON(ISTRA)) THEN
           CALL EIRENE_LEER(2)
-          WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED' 
+          WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
           CALL EIRENE_LEER(2)
           CYCLE
         ENDIF
@@ -567,7 +567,7 @@ C
           NLTOR=.FALSE.
         ENDIF
 C
-C Should this not go into EIRENE_CLEAR_STRATUM as it resets a quantity 
+C Should this not go into EIRENE_CLEAR_STRATUM as it resets a quantity
 C for this stratum?
         IPRNLS=0
 C
@@ -593,7 +593,7 @@ CVKMPI        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
         TIMI=EIRENE_SECOND_OWN()            !VKMPI
         XTIM(ISTRA)=XTIM(ISTRA)+TIMI !VKMPI
 C
-cdr  LGLAST = T: LAST TRAJECTORY OF PRESENT STRATUM ISTRA 
+cdr  LGLAST = T: LAST TRAJECTORY OF PRESENT STRATUM ISTRA
         LGLAST=.FALSE.
 cdr  LGSTOP = T: same as lglast, but only due to npts or cpu-time criterion
 cdr  LGLAST      may also have been set during particle tracking, for other reasons.
@@ -681,11 +681,11 @@ C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
           SECND1=EIRENE_SECOND_OWN()
 C
 C  LAST HISTORY FOR PRESENT STRATUM ?
-          LGLAST = IPTSI.EQ.NPTS(ISTRA)   
+          LGLAST = IPTSI.EQ.NPTS(ISTRA)
           LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
      .                        IPTSI.GE.NMINPTS(ISTRA).AND.
      .                        .NOT.NLMOVIE)
-CDR       LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL 
+CDR       LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL
 
           LGSTOP = LGLAST
 
@@ -695,18 +695,18 @@ C  FROM THE SEED USED FOR THE CURRENT PARTICLE
           IF (NLCRR) THEN
 C
 C  RE-INITIALIZE RANDOM NUMBERS FOR PARTICLE IPTSI, TO GENERATE CORRELATION
-C 
-c  current seed within current stratum is iseed_istra        
+C
+c  current seed within current stratum is iseed_istra
 c  NLCRR: get new tentative seed, and save this for next particle.
 c  then re-initialize with original seed
             iseed_iptsi=iseed_istra
 ! we need this well defined status of random generator below in ranget.
             idumran=ranset_eirene(iseed_iptsi)
-! save a derived new seed for next particle.      
+! save a derived new seed for next particle.
 ! after returning a new seed, the status of the random number generator is
 ! in ranget.f arleady reset back to iseed_iptsi
             iseed_istra=ranget_eirene(iseed_iptsi)
-! now we have the seed iseed_iptsi to start the histrory.     
+! now we have the seed iseed_iptsi to start the histrory.
 
 C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
             IF (TRCRNF) THEN
@@ -716,7 +716,7 @@ C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               write (iunout,*) 'iseed,iseed_next,rn',
      .                          iseed_iptsi, iseed_istra,RN1
             ENDIF
-           
+
 c  derive one more seed, for reflec.f. cdr: unfinished....
             ISEEDR=ISEED_ISTRA*0.3D0
 
@@ -728,32 +728,32 @@ C......................................................................
 
 
           ELSE IF (
-     .             (MY_PE == 0) .AND. 
+     .             (MY_PE == 0) .AND.
      .             (NPTSDEL(ISTRA).GT.0) .AND.
      .             (NINITL(ISTRA).GT.0) .AND.
      .             (.NOT.NLCRR)
      .                                  )  THEN
-c  Proprietary option for internal testing of MPI parallelization only: 
+c  Proprietary option for internal testing of MPI parallelization only:
 c  NPTSDEL(ISTRA)  (input block 7)
 
-c  IDENTICALLY MATCHING MULTIPROC. RUNS ON A SINGLE PROC: 
+c  IDENTICALLY MATCHING MULTIPROC. RUNS ON A SINGLE PROC:
 c
 c  only in runs with no correlated sampling, and with NINITL(ISTRA) ge 0:
 c  simulate seeds of a multi-processor run, if run on a single processor.
 c  Set a new seed after nptsdel particles to exactly match the seeds used in
 c  a corresponding multi-processor run.
- 
+
 c  The multiprocessor run must have been set up such that it completed
 c  exactly nptsdel(istra) trajectories on each of the iproc(istra) processors
 c  which ran on stratum ISTRA.
-c  The corresponding single processor run must complete exactly 
+c  The corresponding single processor run must complete exactly
 c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
- 
+
             IF (MOD(IPTSI-1,NPTSDEL(ISTRA)) == 0) THEN
               NINIST=NINITL(ISTRA)+IPTSI/NPTSDEL(ISTRA)*10000
-c  initialize random number generator with a "legal" seed, 
+c  initialize random number generator with a "legal" seed,
               idumran=ranset_eirene(ninist)
-              
+
               INIV1=0
               INIV2=0
               INIV3=0
@@ -848,7 +848,7 @@ C
 cdr  dec. 15:
 cdr  update linear algebraic combinations of tallies after finishing trajectory
 cdr  this enables also statistical variances for those tallies, avoiding covariance estimators.
-          if (nmode.gt.0) call eirene_updlin  !cdr  
+          if (nmode.gt.0) call eirene_updlin  !cdr
 
 C   MEAN SQUARE
           IF (NSIGI.GT.0) CALL EIRENE_STATS1
@@ -909,11 +909,11 @@ c
 c    collect data for one stratum ISTRA from all PEs performing calculations
 c    for this stratum
 c
-C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary 
+C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary
 C MPI_BARRIER calls have been removed.
        IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
 C
-C Should not the following be done only for process rank zero as it 
+C Should not the following be done only for process rank zero as it
 C got collected from all other ranks already?
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
@@ -1159,7 +1159,7 @@ C
       IESTR=ISTRA
 C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
-csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE 
+csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE
 C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STRATA THAN PROCESSES
 C
       IF (NMODE.GT.0) THEN
@@ -1256,9 +1256,9 @@ C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
         IF (NPRS > 1) THEN
 C This is very case specific and my be different for each plasma code.
-C Introducing another interfacing subroutine within the strata-loop 
+C Introducing another interfacing subroutine within the strata-loop
 C solves this issue much more flexible.
-C This if block needs to go into the if3cop, if relevant for the 
+C This if block needs to go into the if3cop, if relevant for the
 C plasma code.
 C         IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
 C           WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
@@ -1269,7 +1269,7 @@ C           CALL EIRENE_EXIT_OWN(1)
 C         END IF
 !pb ISTRA=NSTRAI FROM STRATA LOOP ABOVE
 !PB IESTR IS ALREADY SET IN STRATA LOOP
-!PB EACH PROCESSOR HAS SET ITS OWN STRATUM NO. 
+!PB EACH PROCESSOR HAS SET ITS OWN STRATUM NO.
 !pb          IESTR=ISTRA
           ISTRAA=1
           ISTRAE=NSTRAI
@@ -1398,13 +1398,13 @@ C
      .                NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .                NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .                NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
-     .                NSIGI_SPC,  
-cdr spectrum tally variances are already in ESTIML   
+     .                NSIGI_SPC,
+cdr spectrum tally variances are already in ESTIML
      .                TRCFLE)
         ENDIF
       ENDIF ! NSMSTRA == 1
 C
-      ENDIF ! MY_PE .EQ. 0 
+      ENDIF ! MY_PE .EQ. 0
 C
  2000 CONTINUE
 
@@ -1432,9 +1432,9 @@ C
 cdr  in this case the entire MC calculation has been skipped ("recall option" only)
 cdr  Nothing has been recalculated in present cycle.
 cdr  Both Monte Carlo loops:
-cdr     DO ISTRA=1,NSTRAI              (strata)  
+cdr     DO ISTRA=1,NSTRAI              (strata)
 cdr       DO 100 IPTSI=1,NPTS(ISTRA)   (histories)
-cdr  are bypassed.     
+cdr  are bypassed.
         IF (TRCFLE) WRITE (iunout,*) 'READ DATA FOR RECALL OPTION'
         IRC=1
         READ (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
@@ -1452,7 +1452,7 @@ C END SEQUENTIAL REGION
 
 cdr  dec. 15
 cdr  see above. Routine UPDLIN.f contains linear combination of tallies
-      if (nmode.gt.0) call eirene_reset_updlin  
+      if (nmode.gt.0) call eirene_reset_updlin
 
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)

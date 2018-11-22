@@ -65,7 +65,7 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           NCHTAL, MOD_ADDV, NUM_COMPO, 
+     .           NCHTAL, MOD_ADDV, NUM_COMPO,
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD,
@@ -1303,10 +1303,10 @@ C
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NUM_LINES transitions (volumetric line emissions), 
-c  Each LINE may consist of NUM_CONTRIB 
+c  read up to NUM_LINES transitions (volumetric line emissions),
+c  Each LINE may consist of NUM_CONTRIB
 c  for different parent (donor) state components.
-c  Identify the block of LINES and COMPONENTS available in this run 
+c  Identify the block of LINES and COMPONENTS available in this run
 C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
@@ -1332,16 +1332,16 @@ c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
 cdr  minimal storage, but each time when a new lines comes,
 cdr  the emissivity profiles on ADDV must be re-calculated
             NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
-          ELSE 
-cdr  all possible emissivity profiles are kept on ADDV tallies. 
+          ELSE
+cdr  all possible emissivity profiles are kept on ADDV tallies.
             NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
           DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE        
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
 cdr  specify all required contributions explicitly.
-cdr  In the old default with was automatically detected 
+cdr  In the old default with was automatically detected
 cdr     from mass and charge states/numbers of hydrogenic particles.
 cdr     And only one set of emission data for all contributions was used,
 cdr     plus one or two population ratios.
@@ -1350,7 +1350,7 @@ cdr     plus one or two population ratios.
             DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
 cdr skip one more input line in case of TAB2D or ADAS input
-              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR. 
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR.
      .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
 cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
@@ -1366,19 +1366,19 @@ cdr do we require a second QSS population ratio for this contribution?
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
                   IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
      .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
-                END IF  
+                END IF
               END IF  !  IRATIO
             END DO    !  NUM_CONTRIB   (POSSIBLE D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
           END DO      !  NUM_COMPO     (E.G.  GROUND STATE
         END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
 c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
-        NADV = NADV + NADV_ADD 
+        NADV = NADV + NADV_ADD
         NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
-      
+
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
@@ -1397,7 +1397,7 @@ cdr this next condition for old default: better also check for nchtal=2 ??
 cdr  ?? perhaps: in old default only one line possible at a time?
 cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
-            
+
       END IF
 
 C  SKIP READING REST OF THIS BLOCK

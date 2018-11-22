@@ -1,5 +1,5 @@
-c  free free gaunt factor routine, obtained from Martin O'Mullane in 2007 
-c  slightly adapted to use eirene precision convention (eirmod_precision) 
+c  free free gaunt factor routine, obtained from Martin O'Mullane in 2007
+c  slightly adapted to use eirene precision convention (eirmod_precision)
 
        FUNCTION EIRENE_NGFFMH(GAM2)
 !pb    IMPLICIT REAL*8(A-H,O-Z)
@@ -40,7 +40,7 @@ C-----------------------------------------------------------------------
        REAL(DP), INTENT(IN) :: GAM2
        REAL(DP) :: EIRENE_NGFFMH, GAM2L
        INTEGER :: K
- 
+
 !PB    DIMENSION GAM2LA(17),GA(17)
        REAL(DP) :: GAM2LA(17),GA(17)
        DATA GAM2LA/-3.0D0,-2.75D0,-2.50D0,-2.25D0,-2.00D0,-1.75D0,
@@ -49,7 +49,7 @@ C-----------------------------------------------------------------------
        DATA GA/1.139D0,1.151D0,1.167D0,1.189D0,1.215D0,1.248D0,1.283D0,
      &1.326D0,1.370D0,1.411D0,1.431D0,1.436D0,1.433D0,1.415D0,1.379D0,
      &1.338D0,1.296D0/
- 
+
        GAM2L=DLOG10(GAM2)
        IF(GAM2L.LE.-3.0D0)GO TO 30
        IF(GAM2L.GE.1.0D0)GO TO 40
@@ -73,4 +73,4 @@ C  EXTRAPOLATION FOR LOW GAM2
    40  EIRENE_NGFFMH=1.0D0+0.296D0/GAM2L
        RETURN
        END
- 
+

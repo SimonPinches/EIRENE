@@ -1,15 +1,15 @@
-cdr march 18  : bug fix re semi-transp. surfaces. 
+cdr march 18  : bug fix re semi-transp. surfaces.
 cdr             This intermediate bug was introduced in jan 18 commit
 cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
 cdr             semi-transp fluxes: score only incident and emitted current fractions
-cdr             for which surfaces are NOT transparent. 
+cdr             for which surfaces are NOT transparent.
 cdr             update_sptflx: different meaning of flag IND. More consistent
-cdr             now with IND-flag in other surface scoring routines.  
- 
+cdr             now with IND-flag in other surface scoring routines.
+
 cdr nov. 17   :  lmetspw arguments corrected
 cdr sept.17   :  no ion sheath orbit correction at mirror surfaces (=symmetry BC)
 cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
-c                return 3, if icol=1, even for purely absorbing surfaces. 
+c                return 3, if icol=1, even for purely absorbing surfaces.
 c                plus some minor clean-up, commenting.
 c 06.08.15    :  arguments added to vecusr
 c   aug.15    :  periodicity and icol=1, return 3 rather than return 2
@@ -159,7 +159,7 @@ C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
           MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
           FLX=FLXOUT(MSURFG)
         case (5)
-cdr  to be written    
+cdr  to be written
 c         MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
 c         FLX=FLXOUT(MSURFG)
         case default
@@ -453,7 +453,7 @@ C  NOTHING ELSE TO BE DONE, RETURN
 C
       IF (ILIIN(MSURF).EQ.2.AND..NOT.LTRANS) THEN
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WPR
-        IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
+        IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.
 
         NLTRJ = .FALSE.
         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
@@ -524,9 +524,9 @@ C
 C  CONTINUE WITH UNMODIFIED VELOCITY.
 
 C  COMPENSATE INCIDENT SURFACE FLUX TALLY CONTRIBUTIONS
-C  SCORED ABOVE.                                       
+C  SCORED ABOVE.
         CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,-WPR,1)
-        
+
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
         COLFLAG = .TRUE.
@@ -559,8 +559,8 @@ C                  POSITIVE COMPONENT, SG.GT.0, WAS ALREADY ON "OT-TALLIES"
 C  IN CASE ILIIN=-3: NET FLUXES HAVE ALREADY BEEN UPDATED ABOVE ON "OT-TALLIES".
 C                    NEED NOT BE UPDATED AGAIN HERE.
 C
-        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3))  GOTO 90 
-C 
+        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3))  GOTO 90
+C
 C  HERE:  ILIIN NE -3, AND SG LE 0, SCORE ONE SIDED "NEGATIVE" CURRENTS (WPR <=0)
 C
 C ITYP_OLD=ITNEW=ITYP
@@ -671,7 +671,7 @@ C  NO SUPPRESSION OF ABSORPTION
           IF (ZVZ.LT.RECYCT(ISPZ,MSURF)) GOTO 610
 C  ABSORB THIS PARTICLE
           IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
-          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
+          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.
           LGPART=.FALSE.
           RETURN
         ENDIF
@@ -693,7 +693,7 @@ C       ITYP=2
         ELSEIF (IMOL.EQ.0) THEN
 C  NO THERMAL EMISSION, ABSORB INSTEAD
           IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
-          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
+          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.
           LGPART=.FALSE.
           RETURN
         ELSEIF (IMOL.LT.0) THEN

@@ -1,60 +1,60 @@
       MODULE EIRMOD_CSPEI
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CSPEI, EIRENE_DEALLOC_CSPEI, 
+
+      PUBLIC :: EIRENE_ALLOC_CSPEI, EIRENE_DEALLOC_CSPEI,
      P          EIRENE_INIT_CSPEI,
-     P          EIRENE_ALLOC_BCKGRND, EIRENE_DEALLOC_BCKGRND, 
+     P          EIRENE_ALLOC_BCKGRND, EIRENE_DEALLOC_BCKGRND,
      P          EIRENE_INIT_BCKGRND
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R  SMESTV(:,:), SMESTS(:,:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R  STV(:,:), STVW(:,:), STVC(:,:,:),
      R  STVS(:),  STVWS(:),  STVCS(:,:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R  EE(:,:),    FF(:,:),
      R  EES(:),     FFS(:),
      R  SDVIA(:,:), SDVIAW(:,:), SDVIAC(:,:,:)
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R  PLASMA_BCKGRND(:,:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      .  TEINTF(:),   TIINTF(:,:), DIINTF(:,:),
      .  VXINTF(:,:), VYINTF(:,:), VZINTF(:,:),
      .  BXINTF(:),   BYINTF(:),   BZINTF(:),   BFINTF(:),
      .  VLINTF(:),   ADINTF(:,:)
- 
+
       INTEGER, PUBLIC, SAVE :: IESTR
- 
+
       INTEGER, PUBLIC, SAVE ::
      I  NIDC, NIDV, NIDS
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CSPEI
 cdr
-c  called from main routine eirene.f, allocates storage for 
+c  called from main routine eirene.f, allocates storage for
 c  storage arrays which are needed for "sum over strata"
 c  smestv, smests, smestl
 c  and for intermediate storage arrays for variance per history evaluation
 c  stv,sdvia,....
-cdr  
+cdr
       INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
       INTEGER(IL) :: MEM
 
-      IF (ALLOCATED(SMESTV)) RETURN  ! allocated smestv is used as indicator for: 'all fields are allocated' 
- 
+      IF (ALLOCATED(SMESTV)) RETURN  ! allocated smestv is used as indicator for: 'all fields are allocated'
+
       IF (NSMSTRA > 0) THEN
         NIDV=NVOLTL
         NIDS=NSRFTL
@@ -62,14 +62,14 @@ cdr
         NIDV=1
         NIDS=1
       END IF
-C  storage for for sum over strata.... 
+C  storage for for sum over strata....
       ALLOCATE (SMESTV(NIDV,NRTAL))
       ALLOCATE (SMESTS(NIDS,NLMPGS))
 CDR   same for spectra, but:
 cdr   ALLOCATE (SMESTL(NADSPC))   ! TO BE MOVED HERE FROM INPUT.F,  NOT POSSIBLE BECAUSE DIFFERENT DATA TYPE FOR SMESTL
 
 
-cdr  these next arrays are intermediate storage array to perform variance per history calculations. 
+cdr  these next arrays are intermediate storage array to perform variance per history calculations.
       ALLOCATE (STV(NSD,NRTAL))
       ALLOCATE (STVW(NSDW,NLIMPS))
       ALLOCATE (STVC(0:2,NCV,NRTAL))
@@ -104,23 +104,23 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
       MEM = (NIDV*NRTAL+(3*NSD+5*NCV)*NRTAL +
      .                  NIDS*NLMPGS + 3*NSDW*NLIMPS + 2*NSD +
      .                  2*NSDW + 3*NCV)*8
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CSPEI ', MEM
 
       CALL EIRENE_INIT_CSPEI
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CSPEI
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CSPEI
- 
+
       IF (.NOT.ALLOCATED(SMESTV)) RETURN
- 
+
       DEALLOCATE (SMESTV)
       DEALLOCATE (SMESTS)
- 
+
       DEALLOCATE (STV)
       DEALLOCATE (STVW)
       DEALLOCATE (STVC)
@@ -134,16 +134,16 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
       DEALLOCATE (SDVIA)
       DEALLOCATE (SDVIAW)
       DEALLOCATE (SDVIAC)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CSPEI
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CSPEI
- 
+
       SMESTV = 0._DP
       SMESTS = 0._DP
- 
+
       STV    = 0._DP
       STVW   = 0._DP
       STVC   = 0._DP
@@ -157,24 +157,24 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
       SDVIA  = 0._DP
       SDVIAW = 0._DP
       SDVIAC = 0._DP
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CSPEI
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_BCKGRND
 
 cdr  if any indpro(1..12)=6, then alloc background is called: provide storage for
 c    transfer of background (plasma) tallies into eirene
 c    currently: no efield information ?
 
- 
+
       NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV
- 
+
       IF (.NOT.ALLOCATED(PLASMA_BCKGRND)) THEN
- 
+
         ALLOCATE(PLASMA_BCKGRND(NIDC,NRAD))
- 
+
         TEINTF => PLASMA_BCKGRND(1+0+0*NPLS             ,   :)
         TIINTF => PLASMA_BCKGRND(1+1+0*NPLS        :
      .                           1+0+0*NPLS+NPLSTI,         :)
@@ -193,19 +193,19 @@ c    currently: no efield information ?
         VLINTF => PLASMA_BCKGRND(1+5+1*NPLS+NPLSTI+3*NPLSV, :)
         ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
      .                             6+1*NPLS+NPLSTI+4*NPLSV+NAIN, :)
- 
+
         CALL EIRENE_INIT_BCKGRND
- 
+
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_BCKGRND
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_BCKGRND
- 
+
       IF (ALLOCATED(PLASMA_BCKGRND)) DEALLOCATE(PLASMA_BCKGRND)
- 
+
       NULLIFY(TEINTF)
       NULLIFY(TIINTF)
       NULLIFY(DIINTF)
@@ -218,18 +218,18 @@ c    currently: no efield information ?
       NULLIFY(BFINTF)
       NULLIFY(VLINTF)
       NULLIFY(ADINTF)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_BCKGRND
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_BCKGRND
- 
+
       PLASMA_BCKGRND = 0._DP
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_BCKGRND
- 
+
       END MODULE EIRMOD_CSPEI
- 
- 
+
+

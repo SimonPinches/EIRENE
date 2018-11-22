@@ -9,8 +9,8 @@ cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nx
 !pb  MAY 16  nrds -> nrei
 cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb...
 cdr           (to remove redundant dummy gr routines)
-cdr  Nov. 17: This routine has become pretty much a mess. 
-cdr           It must be cleaned up and documented. 
+cdr  Nov. 17: This routine has become pretty much a mess.
+cdr           It must be cleaned up and documented.
 
 
 
@@ -127,7 +127,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT(NPRS)
 cdr
-c  indicate: first entry to eirene has now been done. 
+c  indicate: first entry to eirene has now been done.
 c  calls to find_param, set_parmod(1),... have already been done above
         inentry = 0
 
@@ -249,7 +249,7 @@ C 2: SPECIES SOURCE SAMPLING
           DO ISTRAI=1,NSTRAI
             NSPEZ(ISTRAI)=MAX(0,NSPEZ(ISTRAI))
           ENDDO
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .           'NON-ANALOGUE SOURCE SPECIES SAMPLING TURNED OFF'
 C 3: SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF
           WMINS=1.D30
@@ -294,7 +294,7 @@ C
         IF (NFILEK.EQ.2.OR.NFILEK.EQ.3) THEN
          CALL EIRENE_RREC
           WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .           'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
           DO 162 ISTRAI=1,NSTRAI
             WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
@@ -326,7 +326,7 @@ C
         CALL EIRENE_OUTPLA(0)
 C
         TIME=EIRENE_SECOND_OWN()
-C       WRITE (iunout,*) 
+C       WRITE (iunout,*)
 C    .        'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
         CALL EIRENE_LEER(1)
 C
@@ -514,8 +514,8 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
          CALL EIRENE_LOCAT2        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LOCATE
          CALL EIRENE_SAMSF2        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.SAMSRF
          CALL EIRENE_STATS3        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.STATIS
-         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LININT  
-         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM  
+         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LININT
+         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM
 C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF

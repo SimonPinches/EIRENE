@@ -28,7 +28,7 @@
       y  = yi
       xb(1) = xi
       t(1) = yi
-      
+
       do i=1, m
         ni = (i - 1) * fi - 1
         do j=1, fi

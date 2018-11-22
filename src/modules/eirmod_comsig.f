@@ -1,38 +1,38 @@
-cdr  aug. 17: added prspec, prargl; 
+cdr  aug. 17: added prspec, prargl;
 cdr           separate printout for energy (spectrally) resolved
 cdr           from spatially (along LOS) resolved data.
 cdr           Was so far all mixed with TRCSIG (for debugging printout)
 cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       MODULE EIRMOD_COMSIG
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_COMSIG, EIRENE_DEALLOC_COMSIG, 
+
+      PUBLIC :: EIRENE_ALLOC_COMSIG, EIRENE_DEALLOC_COMSIG,
      P          EIRENE_INIT_COMSIG, TEMIS_MODEL, TCOMPO, TCONTRIB,
      P          ASSIGNMENT(=)
 
- 
+
       INTEGER, PUBLIC, SAVE ::
      P         NCMSIG, MCMSIG
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCMSIG(:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R        FUFFER(:,:), ENERGY(:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R        XCHORD(:), YCHORD(:), ZCHORD(:),
      R        XPIVOT(:), YPIVOT(:), ZPIVOT(:),
      R        TILINE(:), TINP(:),   EMIN1(:),  EMAX1(:), ESHIFT(:)
       REAL(DP), PUBLIC, ALLOCATABLE :: RECADD(:,:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ICMSIG(:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I         IPIVOT(:), ICHORD(:),
      I         NSPSTR(:), NSPSPZ(:),
@@ -41,30 +41,30 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
      I         NSPSCL(:), NSPNEW(:)
       INTEGER, PUBLIC, ALLOCATABLE :: INTADD(:,:)
       INTEGER, PUBLIC :: NCTSIG
- 
+
       INTEGER, PUBLIC, SAVE ::
      I         NCHORI,   NCHENI,   MOD_ADDV
-      LOGICAL, PUBLIC, SAVE :: 
+      LOGICAL, PUBLIC, SAVE ::
      L         PRSPEC,   PRARGL
- 
+
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
 
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
- 
+
       TYPE TCONTRIB
-        INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2), 
+        INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2),
      .             IZ, IZ_RAT(2)
         CHARACTER(8) :: FNAME, FRATIO(2)
         CHARACTER(4) :: H123, RAT_H123(2)
         CHARACTER(2) :: ELEMENT, RAT_ELEMENT(2)
         CHARACTER(9) :: REACTION, RAT_REACTION(2)
-        CHARACTER(3) :: CR, RAT_CR(2)      
+        CHARACTER(3) :: CR, RAT_CR(2)
       END TYPE TCONTRIB
 
       TYPE TCOMPO
         CHARACTER(80) :: COMPO_NAME
         INTEGER :: NUM_CONTRIB, IADV
-        TYPE(TCONTRIB), ALLOCATABLE :: CONTRIB(:)       
+        TYPE(TCONTRIB), ALLOCATABLE :: CONTRIB(:)
       END TYPE TCOMPO
 
       TYPE TEMIS_MODEL
@@ -75,20 +75,20 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       END TYPE TEMIS_MODEL
 
       TYPE(TEMIS_MODEL), PUBLIC, ALLOCATABLE, SAVE :: EMIS_LINES(:)
- 
+
       INTERFACE ASSIGNMENT(=)  ! DEFINE ASSIGNMENT
         MODULE PROCEDURE EIRENE_CONTRIB_TO_CONTRIB
       END INTERFACE
 
       CONTAINS
- 
+
       SUBROUTINE EIRENE_ALLOC_COMSIG
- 
+
       IF (ALLOCATED(RCMSIG)) RETURN
- 
+
       NCMSIG=11*NCHOR
       MCMSIG=11*NCHOR
- 
+
       ALLOCATE (RCMSIG(NCMSIG))
       ALLOCATE (FUFFER(NCHOR,NCHEN))
       ALLOCATE (ENERGY(NCHEN))
@@ -100,7 +100,7 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' COMSIG ',(NCMSIG+(NCHOR+1)*NCHEN)+8 + (MCMSIG+NCHOR)*4 +
      .                 NCHOR*80
- 
+
       XCHORD => RCMSIG( 0*NCHOR+1 :  1*NCHOR)
       YCHORD => RCMSIG( 1*NCHOR+1 :  2*NCHOR)
       ZCHORD => RCMSIG( 2*NCHOR+1 :  3*NCHOR)
@@ -112,7 +112,7 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       EMIN1  => RCMSIG( 8*NCHOR+1 :  9*NCHOR)
       EMAX1  => RCMSIG( 9*NCHOR+1 : 10*NCHOR)
       ESHIFT => RCMSIG(10*NCHOR+1 : 11*NCHOR)
- 
+
       IPIVOT => ICMSIG( 0*NCHOR+1 :  1*NCHOR)
       ICHORD => ICMSIG( 1*NCHOR+1 :  2*NCHOR)
       NSPSTR => ICMSIG( 2*NCHOR+1 :  3*NCHOR)
@@ -126,17 +126,17 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       NSPNEW => ICMSIG(10*NCHOR+1 : 11*NCHOR)
 
       CH_LINE_NAME = REPEAT(' ',80)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMSIG
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_COMSIG
 
       INTEGER :: I, J
- 
+
       IF (.NOT.ALLOCATED(RCMSIG)) RETURN
- 
+
       DEALLOCATE (RCMSIG)
       DEALLOCATE (FUFFER)
       DEALLOCATE (ENERGY)
@@ -163,13 +163,13 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 
         DEALLOCATE (EMIS_LINES)
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMSIG
 
 
       SUBROUTINE EIRENE_INIT_COMSIG
- 
+
       RCMSIG = 0._DP
       FUFFER = 0._DP
       ENERGY = 0._DP
@@ -180,9 +180,9 @@ C
       NSPBLC = 1
       NSPADD = 0
       NSPNEW = 0
- 
+
       NLSTCHR = .FALSE.
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_COMSIG
 
@@ -196,21 +196,21 @@ C
       CONA%ITP          = CONB%ITP
       CONA%IRATIO       = CONB%IRATIO
       CONA%IRC          = CONB%IRC
-      CONA%IRC_RAT      = CONB%IRC_RAT 
-      CONA%IZ           = CONB%IZ 
-      CONA%IZ_RAT       = CONB%IZ_RAT 
+      CONA%IRC_RAT      = CONB%IRC_RAT
+      CONA%IZ           = CONB%IZ
+      CONA%IZ_RAT       = CONB%IZ_RAT
       CONA%FNAME        = CONB%FNAME
       CONA%FRATIO       = CONB%FRATIO
       CONA%H123         = CONB%H123
       CONA%RAT_H123     = CONB%RAT_H123
       CONA%REACTION     = CONB%REACTION
       CONA%RAT_REACTION = CONB%RAT_REACTION
-      CONA%CR           = CONB%CR 
-      CONA%RAT_CR       = CONB%RAT_CR    
+      CONA%CR           = CONB%CR
+      CONA%RAT_CR       = CONB%RAT_CR
       CONA%ELEMENT      = CONB%ELEMENT
       CONA%RAT_ELEMENT  = CONB%RAT_ELEMENT
-      
+
       RETURN
       END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB
- 
+
       END MODULE EIRMOD_COMSIG

@@ -1,13 +1,13 @@
 cdr  Jan 18:  bypass this actions for photons (ityp=0). Code not ready for photon transport.
 cpb:  added: cpu time statistics by particle type, species and stratum: time_array
 cdr: Apr.18: testing, cleaning of time_array options (minor bug fix)
-cdr          further photonic arrays added (targets,pointer) 
+cdr          further photonic arrays added (targets,pointer)
       subroutine eirene_switch_partinfo
 c  added oct. 2017:
 c  this routine sets the various pointers for tallies,
-c  for a unified treatment of scoring volume tallies (update), 
+c  for a unified treatment of scoring volume tallies (update),
 c                                     mfp evaluation (fpath)
-c  and a for scoring a number of surface tallies (locate, escape, ...) 
+c  and a for scoring a number of surface tallies (locate, escape, ...)
 
 c  It is called from: LOCATE (for primary source particles),
 c          and after: COLLIDE and REFLEC (for new post collision species)
@@ -25,27 +25,27 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
       USE EIRMOD_CSPEZ
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMSOU
-       
+
       implicit none
 
       integer, save :: istra_old=-1,
      .                 ityp_old=-1,
-     .                 iphot_old=-1, 
-     .                 iatm_old=-1, 
-     .                 imol_old=-1, 
+     .                 iphot_old=-1,
+     .                 iatm_old=-1,
+     .                 imol_old=-1,
      .                 iion_old=-1,
      .                 ipls_old=-1
       real(dp), allocatable, save :: time_array(:,:,:)
       real(dp) :: tim_spent
-      real(dp), save :: tim_start=0._dp, tim_end=0._dp 
+      real(dp), save :: tim_start=0._dp, tim_end=0._dp
       real(dp) :: eirene_second_own
       integer :: istr, it, is
-      
+
       if ((ityp_old == ityp) .and. (iatm_old == iatm) .and.
      .    (imol_old == imol) .and. (iion_old == iion) .and.
      .    (iphot_old == iphot) .and. (ipls_old == ipls).and.
      .    (istra_old == istra)) return
-      
+
       if (trchktim) then
         tim_end = EIRENE_SECOND_OWN()
         tim_spent = tim_end - tim_start
@@ -54,23 +54,23 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
         select case(ityp_old)
         case(0)
 !  photons
-          time_array(ityp_old,iphot_old,istra_old) = 
+          time_array(ityp_old,iphot_old,istra_old) =
      .    time_array(ityp_old,iphot_old,istra_old) + tim_spent
         case(1)
 !  atoms
-          time_array(ityp_old,iatm_old,istra_old) = 
+          time_array(ityp_old,iatm_old,istra_old) =
      .    time_array(ityp_old,iatm_old,istra_old) + tim_spent
         case(2)
 !  molecules
-          time_array(ityp_old,imol_old,istra_old) = 
+          time_array(ityp_old,imol_old,istra_old) =
      .    time_array(ityp_old,imol_old,istra_old) + tim_spent
         case(3)
 !  test ions
-          time_array(ityp_old,iion_old,istra_old) = 
+          time_array(ityp_old,iion_old,istra_old) =
      .    time_array(ityp_old,iion_old,istra_old) + tim_spent
         case(4)
 !  bulk ions: NOT IN USE
-!         time_array(ityp_old,ipls_old,istra_old) = 
+!         time_array(ityp_old,ipls_old,istra_old) =
 !     .   time_array(ityp_old,ipls_old,istra_old) + tim_spent
         case default
           if (.not.allocated(time_array)) then
@@ -109,21 +109,21 @@ C  save stratum, old type, species
       NULLIFY (MXPL)
       NULLIFY (PXX)
       NULLIFY (EXX)
-      
+
       select case(ityp)
 
       case(0)
 !  photons
 
-       LPDENX  => LPDENPH 
-       LEDENX  => LEDENPH 
-       LPXEL   => LPPHEL  
-       LPXAT   => LPPHAT 
-       LPXML   => LPPHML 
+       LPDENX  => LPDENPH
+       LEDENX  => LEDENPH
+       LPXEL   => LPPHEL
+       LPXAT   => LPPHAT
+       LPXML   => LPPHML
        LPXIO   => LPPHIO
        LPXPL   => LPPHPL
-       LEXEL   => LEPHEL   
-       LEXAT   => LEPHAT   
+       LEXEL   => LEPHEL
+       LEXAT   => LEPHAT
        LEXML   => LEPHML
        LEXIO   => LEPHIO
        LEXPL   => LEPHPL
@@ -131,18 +131,18 @@ C  save stratum, old type, species
        LVYDENX => LVYDENPH
        LVZDENX => LVZDENPH
        LMXPL   => LMPHPL
-       LPXX    => LPPHPHT 
-       LEXX    => LEPHPHT 
+       LPXX    => LPPHPHT
+       LEXX    => LEPHPHT
 
-       IF (LPDENX)  PDENX  => PDENPH(IPHOT,:) 
-       IF (LEDENX)  EDENX  => EDENPH(IPHOT,:) 
-       IF (LPXEL)   PXEL   => PPHEL(:)   
-       IF (LPXAT)   PXAT   => PPHAT(1:NATMI,:)  
-       IF (LPXML)   PXML   => PPHML(1:NMOLI,:)  
-       IF (LPXIO)   PXIO   => PPHIO(1:NIONI,:) 
+       IF (LPDENX)  PDENX  => PDENPH(IPHOT,:)
+       IF (LEDENX)  EDENX  => EDENPH(IPHOT,:)
+       IF (LPXEL)   PXEL   => PPHEL(:)
+       IF (LPXAT)   PXAT   => PPHAT(1:NATMI,:)
+       IF (LPXML)   PXML   => PPHML(1:NMOLI,:)
+       IF (LPXIO)   PXIO   => PPHIO(1:NIONI,:)
        IF (LPXPL)   PXPL   => PPHPL(1:NPLSI,:)
-       IF (LEXEL)   EXEL   => EPHEL(:)   
-       IF (LEXAT)   EXAT   => EPHAT(:)   
+       IF (LEXEL)   EXEL   => EPHEL(:)
+       IF (LEXAT)   EXAT   => EPHAT(:)
        IF (LEXML)   EXML   => EPHML(:)
        IF (LEXIO)   EXIO   => EPHIO(:)
        IF (LEXPL)   EXPL   => EPHPL(1:NPLSI,:)
@@ -172,21 +172,21 @@ C  save stratum, old type, species
 
        RMASSX => RMASSPH(IPHOT)
        CNDYNX => CNDYNPH(IPHOT)
- 
+
        LOGPHOT(IPHOT,ISTRA)=.TRUE.
        LOGXSPZ => LOGPHOT(IPHOT,ISTRA)
 
       case(1)
 !  atoms
-       LPDENX  => LPDENA 
-       LEDENX  => LEDENA 
-       LPXEL   => LPAEL  
-       LPXAT   => LPAAT 
-       LPXML   => LPAML 
+       LPDENX  => LPDENA
+       LEDENX  => LEDENA
+       LPXEL   => LPAEL
+       LPXAT   => LPAAT
+       LPXML   => LPAML
        LPXIO   => LPAIO
        LPXPL   => LPAPL
-       LEXEL   => LEAEL   
-       LEXAT   => LEAAT   
+       LEXEL   => LEAEL
+       LEXAT   => LEAAT
        LEXML   => LEAML
        LEXIO   => LEAIO
        LEXPL   => LEAPL
@@ -194,18 +194,18 @@ C  save stratum, old type, species
        LVYDENX => LVYDENA
        LVZDENX => LVZDENA
        LMXPL   => LMAPL
-       LPXX    => LPAAT 
-       LEXX    => LEAAT 
+       LPXX    => LPAAT
+       LEXX    => LEAAT
 
-       IF (LPDENX)  PDENX  => PDENA(IATM,:) 
-       IF (LEDENX)  EDENX  => EDENA(IATM,:) 
-       IF (LPXEL)   PXEL   => PAEL(:)   
-       IF (LPXAT)   PXAT   => PAAT(1:NATMI,:)  
-       IF (LPXML)   PXML   => PAML(1:NMOLI,:)  
-       IF (LPXIO)   PXIO   => PAIO(1:NIONI,:) 
+       IF (LPDENX)  PDENX  => PDENA(IATM,:)
+       IF (LEDENX)  EDENX  => EDENA(IATM,:)
+       IF (LPXEL)   PXEL   => PAEL(:)
+       IF (LPXAT)   PXAT   => PAAT(1:NATMI,:)
+       IF (LPXML)   PXML   => PAML(1:NMOLI,:)
+       IF (LPXIO)   PXIO   => PAIO(1:NIONI,:)
        IF (LPXPL)   PXPL   => PAPL(1:NPLSI,:)
-       IF (LEXEL)   EXEL   => EAEL(:)   
-       IF (LEXAT)   EXAT   => EAAT(:)   
+       IF (LEXEL)   EXEL   => EAEL(:)
+       IF (LEXAT)   EXAT   => EAAT(:)
        IF (LEXML)   EXML   => EAML(:)
        IF (LEXIO)   EXIO   => EAIO(:)
        IF (LEXPL)   EXPL   => EAPL(1:NPLSI,:)
@@ -242,15 +242,15 @@ C  save stratum, old type, species
       case(2)
 !  molecules
 
-       LPDENX  => LPDENM 
-       LEDENX  => LEDENM 
-       LPXEL   => LPMEL  
-       LPXAT   => LPMAT 
-       LPXML   => LPMML 
+       LPDENX  => LPDENM
+       LEDENX  => LEDENM
+       LPXEL   => LPMEL
+       LPXAT   => LPMAT
+       LPXML   => LPMML
        LPXIO   => LPMIO
        LPXPL   => LPMPL
-       LEXEL   => LEMEL   
-       LEXAT   => LEMAT   
+       LEXEL   => LEMEL
+       LEXAT   => LEMAT
        LEXML   => LEMML
        LEXIO   => LEMIO
        LEXPL   => LEMPL
@@ -258,18 +258,18 @@ C  save stratum, old type, species
        LVYDENX => LVYDENM
        LVZDENX => LVZDENM
        LMXPL   => LMMPL
-       LPXX    => LPMML 
-       LEXX    => LEMML 
+       LPXX    => LPMML
+       LEXX    => LEMML
 
-       IF (LPDENX)  PDENX  => PDENM(IMOL,:) 
-       IF (LEDENX)  EDENX  => EDENM(IMOL,:) 
-       IF (LPXEL)   PXEL   => PMEL(:)   
-       IF (LPXAT)   PXAT   => PMAT(1:NATMI,:)  
-       IF (LPXML)   PXML   => PMML(1:NMOLI,:)  
-       IF (LPXIO)   PXIO   => PMIO(1:NIONI,:) 
+       IF (LPDENX)  PDENX  => PDENM(IMOL,:)
+       IF (LEDENX)  EDENX  => EDENM(IMOL,:)
+       IF (LPXEL)   PXEL   => PMEL(:)
+       IF (LPXAT)   PXAT   => PMAT(1:NATMI,:)
+       IF (LPXML)   PXML   => PMML(1:NMOLI,:)
+       IF (LPXIO)   PXIO   => PMIO(1:NIONI,:)
        IF (LPXPL)   PXPL   => PMPL(1:NPLSI,:)
-       IF (LEXEL)   EXEL   => EMEL(:)   
-       IF (LEXAT)   EXAT   => EMAT(:)   
+       IF (LEXEL)   EXEL   => EMEL(:)
+       IF (LEXAT)   EXAT   => EMAT(:)
        IF (LEXML)   EXML   => EMML(:)
        IF (LEXIO)   EXIO   => EMIO(:)
        IF (LEXPL)   EXPL   => EMPL(1:NPLSI,:)
@@ -306,15 +306,15 @@ C  save stratum, old type, species
       case(3)
 !  test ions
 
-       LPDENX  => LPDENI 
-       LEDENX  => LEDENI 
-       LPXEL   => LPIEL  
-       LPXAT   => LPIAT 
-       LPXML   => LPIML 
+       LPDENX  => LPDENI
+       LEDENX  => LEDENI
+       LPXEL   => LPIEL
+       LPXAT   => LPIAT
+       LPXML   => LPIML
        LPXIO   => LPIIO
        LPXPL   => LPIPL
-       LEXEL   => LEIEL   
-       LEXAT   => LEIAT   
+       LEXEL   => LEIEL
+       LEXAT   => LEIAT
        LEXML   => LEIML
        LEXIO   => LEIIO
        LEXPL   => LEIPL
@@ -322,18 +322,18 @@ C  save stratum, old type, species
        LVYDENX => LVYDENI
        LVZDENX => LVZDENI
        LMXPL   => LMIPL
-       LPXX    => LPIIO 
-       LEXX    => LEIIO 
+       LPXX    => LPIIO
+       LEXX    => LEIIO
 
-       IF (LPDENX)  PDENX  => PDENI(IION,:) 
-       IF (LEDENX)  EDENX  => EDENI(IION,:) 
-       IF (LPXEL)   PXEL   => PIEL(:)   
-       IF (LPXAT)   PXAT   => PIAT(1:NATMI,:)  
-       IF (LPXML)   PXML   => PIML(1:NMOLI,:)  
-       IF (LPXIO)   PXIO   => PIIO(1:NIONI,:) 
+       IF (LPDENX)  PDENX  => PDENI(IION,:)
+       IF (LEDENX)  EDENX  => EDENI(IION,:)
+       IF (LPXEL)   PXEL   => PIEL(:)
+       IF (LPXAT)   PXAT   => PIAT(1:NATMI,:)
+       IF (LPXML)   PXML   => PIML(1:NMOLI,:)
+       IF (LPXIO)   PXIO   => PIIO(1:NIONI,:)
        IF (LPXPL)   PXPL   => PIPL(1:NPLSI,:)
-       IF (LEXEL)   EXEL   => EIEL(:)   
-       IF (LEXAT)   EXAT   => EIAT(:)   
+       IF (LEXEL)   EXEL   => EIEL(:)
+       IF (LEXAT)   EXAT   => EIAT(:)
        IF (LEXML)   EXML   => EIML(:)
        IF (LEXIO)   EXIO   => EIIO(:)
        IF (LEXPL)   EXPL   => EIPL(1:NPLSI,:)
@@ -373,7 +373,7 @@ C  save stratum, old type, species
       case default
          write (iunout,*) ' WRONG TYPE IN SWITCH_PARTINFO '
          write (iunout,*) ' ITYP = ',ITYP
-      end select 
+      end select
 
       return
 
@@ -468,12 +468,12 @@ C  save stratum, old type, species
       if (allocated(time_array)) deallocate(time_array)
       istra_old=-1
       ityp_old=-1
-      iphot_old=-1 
-      iatm_old=-1 
-      imol_old=-1 
+      iphot_old=-1
+      iatm_old=-1
+      imol_old=-1
       iion_old=-1
       ipls_old=-1
 
-      return      
+      return
       end subroutine eirene_switch_partinfo
 

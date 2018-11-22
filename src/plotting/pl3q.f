@@ -1,18 +1,18 @@
 C
 C
       SUBROUTINE EIRENE_PL3Q(CORD,N,IO,NF)
- 
+
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: CORD(*)
       INTEGER, INTENT(IN) :: N, IO
       LOGICAL, INTENT(IN) :: NF
       REAL(DP) :: XP(N+1),YP(N+1)
       REAL(SP) :: XPS(N+1),YPS(N+1)
       INTEGER :: J, JJ, I, N3
- 
+
       N3=3*N
       I=0
       DO 100 J=1,N3,3

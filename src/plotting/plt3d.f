@@ -3,7 +3,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
 
       SUBROUTINE EIRENE_PLT3D
      .  (XR,YR,FAKX,FAKY,ITH,ABSMIN,ABSMAX,ORDMIN,ORDMAX)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -23,13 +23,13 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: XR, YR, FAKX, FAKY,
      .                       ABSMIN, ABSMAX, ORDMIN, ORDMAX
       INTEGER, INTENT(OUT) :: ITH
- 
+
       INTEGER, PARAMETER :: NPLY=501
       REAL(DP) :: AL(10), AR(10), XP(NPLY), YP(NPLY), ZPLOT(N3RD+NTOR),
      .          XSAVE(NPLY,N3RD+NTOR), YSAVE(NPLY,N3RD+NTOR),
@@ -244,7 +244,7 @@ C                       SURFACE
             ENDIF
           ENDIF
 C
- 
+
           DO IJZ=1,NJZ
           IF (NLTRA) WINJ=ZZONE(ILT(IJZ))
 C
@@ -867,7 +867,7 @@ C
 C
  3000 CONTINUE
 C
-C  POLOIDAL GRID 
+C  POLOIDAL GRID
 C
       DO IBP=1,IPLTS(2)
         DO IP=IPLAS(2,IBP),IPLES(2,IBP)
@@ -906,7 +906,7 @@ C
 C  TO BE WRITTEN
           ENDIF
         END DO
-      
+
       END DO
 C
 C  RADIAL GRID
@@ -950,7 +950,7 @@ C
 C  TO BE WRITTEN
           ENDIF
         END DO
-      
+
       END DO
 
       CALL GRNWPN(1)

@@ -20,9 +20,9 @@ C
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), ALLOCATABLE :: HELPP(:,:),HELPW(:,:),TALAV(:),TALTOT(:)
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: HELPI, TOTAL
@@ -61,7 +61,7 @@ c  number of volumetric input tallies: ntali = 22
       TALTYP(22)=0
 
       MXSPZ = MAXVAL(NFSTPI(1:NTALI))
-      
+
       ALLOCATE (HELPP(NRAD,MXSPZ))
       ALLOCATE (HELPW(NRAD,MXSPZ))
       ALLOCATE (TALTOT(MXSPZ))
@@ -72,15 +72,15 @@ c  number of volumetric input tallies: ntali = 22
       FORMA=REPEAT(' ',50)
       FORMA='(6X,   A25)'
       WRITE (FORMA(5:7),'(I3)') MXSPZ
-      
+
       FORME=REPEAT(' ',50)
       FORME='(I10,   ES25.7)'
-      WRITE (FORME(6:8),'(I3)') MXSPZ 
-      
+      WRITE (FORME(6:8),'(I3)') MXSPZ
+
       FORME2=REPEAT(' ',50)
       FORME2='(6X,   ES25.7)'
-      WRITE (FORME2(5:7),'(I3)') MXSPZ 
-C     
+      WRITE (FORME2(5:7),'(I3)') MXSPZ
+C
 C  PRINT INPUT VOLUME AVERAGED TALLIES
 C
       NXM=MAX(1,NR1STM)
@@ -182,10 +182,10 @@ C  ADDITIONAL TALLY, CELL VOLUME ,WEIGHT FUNCTION " 1 - WEIGHTED" AVERAGES
 C  ION DRIFT ENERGY
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             ELSEIF (ITAL.GE.18.AND.ITAL.LE.21) THEN
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
+C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
               HELPW(I,K)=1.D0
             ELSEIF (ITAL.EQ.22) THEN
-C  ELECTRIC POTENTIAL   
+C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
             ENDIF
             TOTAL=TOTAL+HELPW(I,K)
@@ -223,10 +223,10 @@ C  WEIGHT FUNCTION  (NO.15)
 C  ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             ELSEIF (ITAL.GE.18.AND.ITAL.LE.21) THEN
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH   
+C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
               HELPW(I,K)=1.D0
             ELSEIF (ITAL.EQ.22) THEN
-C  ELECTRIC POTENTIAL   
+C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
             ENDIF
             TOTAL=TOTAL+HELPW(I,K)
@@ -292,15 +292,15 @@ C
 
         WRITE (IOUT,'(A)') '==========================================='
           DO I=1, NSBOX
-            IF (ANY(ABS(HELPP(I,NFTI:NFTE)) > EPS30)) 
-     .        WRITE (IOUT,FORME) I,(HELPP(I,K), K=NFTI, NFTE) 
+            IF (ANY(ABS(HELPP(I,NFTI:NFTE)) > EPS30))
+     .        WRITE (IOUT,FORME) I,(HELPP(I,K), K=NFTI, NFTE)
           END DO
         WRITE (IOUT,'(A)') '==========================================='
 
         CLOSE (UNIT=IOUT)
 C
   100 CONTINUE
- 
+
       DEALLOCATE (HELPP)
       DEALLOCATE (HELPW)
       DEALLOCATE (TALTOT)

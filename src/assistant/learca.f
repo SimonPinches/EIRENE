@@ -16,13 +16,13 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       CHARACTER(*), INTENT(IN) :: TEXT
       INTEGER, INTENT(IN) :: N1, N, NS
       REAL(DP), INTENT(IN) :: R(N1,*)
       REAL(DP), INTENT(IN) :: X
       INTEGER :: NNN, I, J, EIRENE_LEARCA
- 
+
       NNN=1
       IF (X.LT.R(NS,1)-1.D-12) GOTO 20
 

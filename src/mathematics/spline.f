@@ -26,7 +26,7 @@ C
       INTEGER, INTENT(IN) :: N
       REAL(DP) :: FAC, DX1, DX2, DY1, DY2, DDX, H
       INTEGER :: I, J, K, NMH, NM1
- 
+
       NM1=N-1
 C  SETZE C ARRAY (LOESE TRIDIAGONALE MATRIX)
       A(1)=2.E0

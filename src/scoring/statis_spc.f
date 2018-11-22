@@ -12,7 +12,7 @@ c  e.g.  SMESTL(ISPC)%GG   <--> ee, ff
 c  etc.
 C
       SUBROUTINE EIRENE_STATIS_SPC
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -23,13 +23,13 @@ C
       USE EIRMOD_CSDVI_COP
       USE EIRMOD_COUTAU
       USE EIRMOD_COMSOU
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XN, FSIG, ZFLUX
       INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
       LOGICAL, INTENT(IN) :: LP, LT
- 
+
       REAL(DP), ALLOCATABLE :: SD(:)
       REAL(DP) :: XNM, DS, ZFLUXQ, D2S, SG,
      .            DSA, DD, D, SG2, DA, SD1, SD1S
@@ -38,7 +38,7 @@ C
       SAVE
 C
       ENTRY EIRENE_STATS0_SPC
- 
+
       IF (NADSPC > 0) THEN
         DO ISPC=1,NADSPC
           ESTIML(ISPC)%IMETSP = 0
@@ -46,7 +46,7 @@ C
       END IF
 C
       RETURN
- 
+
 C
       ENTRY EIRENE_STATS1_SPC(NBIN,NRIN,NPIN,NTIN,NSIN,LP,LT)
       NSB=NBIN
@@ -118,10 +118,10 @@ c  size of tally ISPC, ADD BIN 0 AND BIN NSPC+1 for low and high end of spectrum
         NSPECI=0
         NSPECE=ESTIML(ISPC)%NSPC+1
         ALLOCATE (SD(NSPECI:NSPECE))
-C ESTIML(ISPC)%SPC cumulated tally score after all flights from present stratum istra 
+C ESTIML(ISPC)%SPC cumulated tally score after all flights from present stratum istra
         SD=ESTIML(ISPC)%SPC
         DS=SUM(SD)
- 
+
         DO I=NSPECI,NSPECE
           D=SD(I)
           DD=D*D
@@ -153,7 +153,7 @@ C
      .                           SG2*ZFLUXQ/XNM/XN
           SMESTL(ISPC)%GGS =SMESTL(ISPC)%GGS+DS*ZFLUX/XN
         END IF
- 
+
         DEALLOCATE (SD)
       END DO
 C

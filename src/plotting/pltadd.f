@@ -914,7 +914,7 @@ C  POINT BETWEEN CUR AND CUR%NXTPNT
           ELSE
             XINI=CUR%XPL2D
             YINI=CUR%YPL2D
-          END IF	
+          END IF
 C
 C  PLOT ARROWS: SURFACE NORMAL
           IF (PLARR) THEN

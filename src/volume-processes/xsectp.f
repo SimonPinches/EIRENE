@@ -384,7 +384,7 @@ C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,NE), eV/s/ion
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
 C  change logical from false to true, to avoid log(erate), with erate negative
-C  as it may result from internal CR code H_COL,...., when used with delpot=0.0 
+C  as it may result from internal CR code H_COL,...., when used with delpot=0.0
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
 cdr  .                               TEINL(J),PLS(J),.FALSE.,1)
      .                               TEINL(J),PLS(J),.TRUE.,1)
@@ -433,7 +433,7 @@ C         INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
 c  STORAGE SAVING MODE AND DELPOT NE 0.0
 c                 ELSE  ! ??
                   END IF
-C         
+C
                 ENDIF   ! DELPOT
               ENDIF  !  MODC =1 OR =3
             ELSE
@@ -513,7 +513,7 @@ C             END IF
      .                  MODCOL(6,1,IRRC),MODCOL(6,2,IRRC),
      .                  MODCOL(6,3,IRRC),MODCOL(6,4,IRRC)
               WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                     FACRRC(IRRC,1) 
+     .                     FACRRC(IRRC,1)
               CALL EIRENE_LEER(1)
   220       CONTINUE   !irrc for ipls
           ENDIF

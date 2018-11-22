@@ -17,10 +17,10 @@ C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
-c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
+c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
-cdr dec.15: tracklength estimators for heavy test particle post collision energies 
+cdr dec.15: tracklength estimators for heavy test particle post collision energies
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
@@ -34,7 +34,7 @@ cdr          so no effect on any result.  Few further comments corrected
 !pb APR 16: ipiods -> ipioei, piods -> pioei
 !pb APR 16: pelds -> pelei
 
- 
+
 C
       SUBROUTINE EIRENE_UPDPHOT (XSTOR2,XSTORV2,IFLAG)
 C
@@ -50,13 +50,13 @@ C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD  (=NCLTAL(IRDO))
 C
 C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
 
-C  IFLAG=1:  
-C  IFLAG=2:  
-C  IFLAG=3:  
+C  IFLAG=1:
+C  IFLAG=2:
+C  IFLAG=3:
 C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
-C  IFLAG=5: 
+C  IFLAG=5:
 
-C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUEL BACKGROUND SPECIES) 
+C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUEL BACKGROUND SPECIES)
 C
 C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
 C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
@@ -65,10 +65,10 @@ C  C) NPBGKP (IPLS,1):  IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION
 C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
-C          IONS WITH ENERGY SOURCES FOR VIRTUEL BACKGROUND "IONS"  (MISSING SPECIES INDEX) 
-C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS 
+C          IONS WITH ENERGY SOURCES FOR VIRTUEL BACKGROUND "IONS"  (MISSING SPECIES INDEX)
+C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
-  
+
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -84,7 +84,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -118,7 +118,7 @@ C EI PROCESSES
       INTEGER ::      IAEI,IREI
       INTEGER ::      IMEI
       INTEGER ::      IIEI
- 
+
       REAL(DP) :: EIRENE_VDION
 
 
@@ -141,7 +141,7 @@ cdr only in this case: set background radiation intensity profiles.
 cdr   IF (NPBGK.GT.0) CALL ....
 C
       IF (IUPDTE == 2) RETURN
- 
+
       CNDYNPH = EV_TO_ERG/CLIGHT
       VELQ=VEL*VEL
 C
@@ -165,7 +165,7 @@ C
         IF (LEDENPH) EDENPH(IPHOT,IRD)=EDENPH(IPHOT,IRD)+WTRE0
         IF (LPDENPH) PDENPH(IPHOT,IRD)=PDENPH(IPHOT,IRD)+WTR
         IF (LEDENPH.OR.LPDENPH) LMETSP(IPHOT)=.TRUE.
- 
+
         IF (LVXDENPH) VXDENPH(IPHOT,IRD)=VXDENPH(IPHOT,IRD)+WTRV*VELX
         IF (LVYDENPH) VYDENPH(IPHOT,IRD)=VYDENPH(IPHOT,IRD)+WTRV*VELY
         IF (LVZDENPH) VZDENPH(IPHOT,IRD)=VZDENPH(IPHOT,IRD)+WTRV*VELZ
@@ -186,7 +186,7 @@ C  PRE-COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
 C
         IF ((LAST_EVENT%IFLAG == 1) .AND.
      .      (LAST_EVENT%NCELL == IRD)) THEN
- 
+
 ! collision estimator for first cell ("brick") along the track
 ! in case of a collision sample 1 (the whole weight)
 ! in case of no collision sample 0
@@ -196,7 +196,7 @@ C
           ELSE
 !  nothing to be done, sample a 0
           END IF
- 
+
         ELSE
           WTRSIG=WTR*(SIGTOT-SIGBGK)
           IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
@@ -294,7 +294,7 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
                 end if
               ENDIF
 !pb         END IF
- 
+
 !pb         IF (PHV_N2NDOTph(iphot,IROT,3).NE.0) THEN
 !pb PHV_N2NDOTph(iphot,IROT,3) does not include bulk
 C  SECOND SECONDARY:
@@ -369,7 +369,7 @@ cdr  gibt es schon ESIGOT ? ist dann IROT das richtige argument ?
 cdr         IF (LEPHPL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*ESIGOT(IROT)
 C
 C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
- 
+
 !dr       IF (PHV_N1STOTph(iphot,IROT,3).NE.0) THEN
 !dr PHV_N1STOTph(iphot,IROT,3) does not include bulk
 C  FIRST SECONDARY:
@@ -407,7 +407,7 @@ cdr  if(iph1 > 0) then abfrage hier raus, nur in initialisation
                 IF (LEPHPHT) EPHPHT(IRD)=EPHPHT(IRD) +WTRSIG*E0*INUM
               ENDIF
 !dr         ENDIF
- 
+
 !dr     IF (PHV_N2NDOTph(iphot,IROT,3).NE.0) THEN
 !dr PHV_N2NDOTph(iphot,IROT,3) does not include bulk
 C  SECOND SECONDARY:

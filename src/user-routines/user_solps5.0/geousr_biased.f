@@ -236,7 +236,7 @@ c*** Check whether this segment is marked as a target edge
                       write(iunout,*) 'geousr_biased:',
      ,                             ' something is wrong with ',
      ,                             'the target chain definition.'
-                      write(iunout,*) 
+                      write(iunout,*)
      .                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
                       call EIRENE_exit_own(1)
@@ -265,7 +265,7 @@ C
         case(1)
           p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        case(2) 
+        case(2)
           p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
 c

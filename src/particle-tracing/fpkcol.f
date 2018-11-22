@@ -8,7 +8,7 @@ C                               new position.
 c  july 15:  set E0PAR,  (was missing).
 cdr nov. 15:  multiple bulk ion species, new array fnuiar(ipl)
 cdr           to be done:  proper definition of eipl, and e0new, in cases
-cdr                        of multiple background ion species 
+cdr                        of multiple background ion species
 C
       SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
 C
@@ -18,7 +18,7 @@ C  2.) CARRY OUT FOKKER PLANCK ELASTIC COLLISION
 C  3.) TURN VELOCITY INTO FULL CARTESIAN PARTICLE VELOCITY
 
 C  IF IND=1, SKIP STEP 1, ONLY FOKKER PLANCK COLLISION AND FULL
-C                         VELOCITY, 
+C                         VELOCITY,
 C                         LCART=T
 C  IF IND=2, SKIP STEP 3, ONLY PUSH AND FOKKER PLANCK COLLISION,
 C                         BUT STAY IN REDUCED (GUIDING CENTRE) VELOCITY
@@ -53,9 +53,9 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
       INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
@@ -94,7 +94,7 @@ C     write (6,*) 'fpkcol push, zt used', zt
       MASURF=0
       MSURF=0
       IF (NLTRA) PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
-      
+
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
 
 C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
@@ -124,7 +124,7 @@ C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
 C  PARALLEL DISTANCE ZT (CM)
 C  ENERGY RELAXATION CONSTANT TAUE
 C
-cdr to be done: proper new energy, according to weighting by fnuiar(ipl) 
+cdr to be done: proper new energy, according to weighting by fnuiar(ipl)
 cdr relaxation towards a weighted mean background energy
 cdr currently: arbitrary 1.5*Tiin(1,...)
         E0NEW=E0OLD*EXP(-DUR/TAUE)+1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
@@ -135,7 +135,7 @@ C  UPDATE ESTIMATORS EIIO,EIPL
 cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
 cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
 cdr  temprature(ipls), even different sign.
-cdr  
+cdr
         EWG = WEIGHT*(E0NEW-E0OLD)
         FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
         DO IPL = 1, NPLSI
@@ -166,7 +166,7 @@ C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
       IF (IND.EQ.2.OR.IND.EQ.3) GOTO 300
 
 C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
- 
+
 C  NEW B-FIELD
 
 !pb VELS is not used in NEWFIELD with option 0
@@ -182,7 +182,7 @@ C  BACK TO CARTESIAN COORDIANTES
       VELY = VVEC(2)
       VELZ = VVEC(3)
       LCART=.TRUE.
-c strictly: e0new, vnew should be modified, due to new gyro phase. 
+c strictly: e0new, vnew should be modified, due to new gyro phase.
 
   300 CONTINUE
 

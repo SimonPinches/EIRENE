@@ -41,7 +41,7 @@ c       define an explicit interface to the block building function
         REAL(DP), DIMENSION(2) :: XLIM, YLIM, ZLIM
         REAL(DP) :: EIRENE_SECOND_OWN, start
         INTEGER :: J, LAYERS, NSURFACES
-        
+
         if (trcoct) then
           WRITE (iunout,*)
           WRITE (iunout,*) 'STARTING ON BUILDING OCTREE...'
@@ -76,7 +76,7 @@ c           find out how many surfaces we will get as a maximum
             nsurfaces = nsurfaces + 1
           end if
         END DO
-        
+
 c       if we do not have any surfaces we could add, do not build a tree
         if(nsurfaces == 0) then
           if(trcoct) WRITE(iunout,*)'NO USABLE SURFACES FOUND, SKIPPING'
@@ -89,7 +89,7 @@ c       we have: int(log10(# surface)) + 1 (add 0.0 to have a real value for
 c       log10() function)
         LAYERS = floor(log10(nsurfaces+0.0))+1
 c        LAYERS=32
-        
+
 c       for only 10 surfaces we do not split the root...
 c       -> this shall be the same criteria we have for deciding of
 c          splitting up child nodes
@@ -128,7 +128,7 @@ c          which actually have been associated with the root node
         IF(root%nsurfaces .gt. 0 .and. layers .gt. 1)THEN
           CALL EIRENE_TIMEA_BuildBlocks(tree, root)
         END IF
-        
+
         if (trcoct) then
           WRITE(iunout,*)
           WRITE(iunout,*) 'OCTREE BUILD PHASE FINISHED'
@@ -196,7 +196,7 @@ c           only for nice 3,4 or 5 edge objects
 c             first check: is at least one point of this surface
 c                          in the block?
               IF (EIRENE_TIMEA_FirstCheck(SID, CHILD)) THEN
-                if(trcoct) 
+                if(trcoct)
      .            WRITE(iunout,*) 'FIRST CHECK: ASSOC. SURFACE',
      .                             SID, 'WITH NODE', child%number,
      .                             'ON LAYER', child%layer

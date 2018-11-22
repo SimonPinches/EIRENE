@@ -1,16 +1,16 @@
- 
- 
+
+
       subroutine EIRENE_uppercase (zeile)
 cdr  set letters in character string to "upper case".
 cdr  cut ZEILE by removing leading and final blanks.
- 
+
       IMPLICIT NONE
       character(*), INTENT(INOUT) :: zeile
       INTEGER :: L, I, J, LANF, LEND
       character(26) :: klein, gross
       data klein /'abcdefghijklmnopqrstuvwxyz'/
       data gross /'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
- 
+
       LANF=verify(zeile,' ')
       LEND=verify(zeile,' ',.true.)
       if (lanf == 0) return
@@ -23,7 +23,7 @@ cdr  cut ZEILE by removing leading and final blanks.
         j=index(klein,zeile(i:i))
         if (j>0) zeile(i:i)=gross(j:j)
       end do
- 
+
       return
       end subroutine EIRENE_uppercase
- 
+

@@ -2,15 +2,15 @@ C
       SUBROUTINE EIRENE_WRREC
 C
 C  EVALUATE EIRENE RECOMMENDATIONS FOR A NEXT RUN OF THE SAME MODEL
-C 
+C
 C   find NRECOM(istra):  recommended number of test particles for next MC cycle.
 c   find RATIO(istra) :  ratio between used and recommended no. of particles.
-c   (the procedure should approach RATIO approx 1.0, after cycling. 
+c   (the procedure should approach RATIO approx 1.0, after cycling.
 c
 c   write NRECOM and RATIO on stream 14.
 c
-c  (at entry rrec:  
-c    read NRECOM and RATIO from stream 14.  
+c  (at entry rrec:
+c    read NRECOM and RATIO from stream 14.
 C
 C
 cmr: Aug.18:
@@ -30,14 +30,14 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_COUTAU
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: WSUM, FTOT, XNSUM
       INTEGER :: NREQ, ISTRA
       REAL(DP) :: WTOTT(NSTRA),WMEAN(NSTRA),WREC(NSTRA),XNEXP(NSTRA),
      .            CPUFAC(NSTRA)
- 
+
       OPEN (UNIT=14+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 14+ifoff
 C
