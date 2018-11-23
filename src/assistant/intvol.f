@@ -1,4 +1,4 @@
-Cdr Jan 2017:  start to syncronize with inttal. goal: should
+Cdr Jan 2017:  start to synchronize with inttal. goal: should
 C              become identical, if weighting function "VOL == 1"
 C
 C*DK INTVOL
