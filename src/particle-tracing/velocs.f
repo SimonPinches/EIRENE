@@ -50,10 +50,8 @@ C     USE EIRMOD_COMPRT
      .          VFKT, VLX, RCCM, ZARG, ZARG2, VXDR, VYDR, VZDR,
      .          PISQ, SQ2I
       REAL(DP), EXTERNAL :: RANF_EIRENE
-      DATA PISQ/1.772454/  ! sqrt(pi)
-      DATA SQ2I/0.707107/  ! 1/sqrt(2)
-c     DATA PISQ/1.772454_DP/  ! sqrt(pi)
-c     DATA SQ2I/0.707107_DP/  ! 1/sqrt(2)
+      DATA PISQ/1.772454_DP/  ! sqrt(pi)
+      DATA SQ2I/0.707107_DP/  ! 1/sqrt(2)
 C
 C---------------------------------------------------------------------
 C
