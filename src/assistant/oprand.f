@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
            SUBROUTINE EIRENE_OPRAND(AUSDRU,AKTLEN,OANDEN,ERROR)
 C-----------------------------------------------------------------------
@@ -11,7 +11,7 @@ C     UEBERPRUEFEN AUF ZULAESSIGE OPERANDEN
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
- 
+
 C
 C     KONSTANTENDEKLARATION :
 C
@@ -22,31 +22,31 @@ C     EINGABEPARAMETER :
 C
          INTEGER, INTENT(IN) :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          CHARACTER(*), INTENT(INOUT) :: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
 C
 C     EIN/AUSGABEPARAMETER :
 C
          INTEGER, INTENT(INOUT) :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
+
 C
 C     AUSGABEPARAMETER :
 C
          INTEGER, INTENT(OUT) :: OANDEN
 C           : ANZAHL DER OPERANDEN IN AUSDRU
- 
+
 C
 C     HILFSVARIABLEN :
 C
          INTEGER :: I, POS
- 
- 
+
+
       OANDEN=0
       AUSDRU(AKTLEN+1:AKTLEN+2)='  '
- 
+
       I=1
 C
 C     WHILE-1 : SOLANGE AUSDRU NOCH NICHT VOLLSTAENDIG DURCHLAUFEN

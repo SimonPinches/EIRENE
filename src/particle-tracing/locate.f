@@ -49,7 +49,7 @@ cdr           New arguments in update_surface.
 cdr           update_surface also called for outgoing bulk particle fluxes
 cdr feb 18 :  M.R.:  bug fix re WEIGHT in one-by-one resampling from census.
 cdr           (was proprietary option, no effects for 3rd parties).
-cdr mar 18 :  prepare missing option: MSURF in case of levgeo=5 plus additional surfaces 
+cdr mar 18 :  prepare missing option: MSURF in case of levgeo=5 plus additional surfaces
 cdr
 
       SUBROUTINE EIRENE_LOCATE
@@ -413,7 +413,7 @@ C Volume source
             LOGION(IION,ISTRA)=.TRUE.
           CASE( 4 )
 C Surface source parameter set below
-C add part for volume source (see above), i.e. check whether needed or 
+C add part for volume source (see above), i.e. check whether needed or
 C elseif below can be used.
           CASE( 0 )
 C Volume source
@@ -520,7 +520,7 @@ C
           IF (.NOT.LGPART) RETURN
         ELSE
           SELECT CASE( INDIM(ISURF,ISTRA) )
-            CASE( 1 ) 
+            CASE( 1 )
               NLSRFX=.TRUE.
             CASE( 2 )
               NLSRFY=.TRUE.

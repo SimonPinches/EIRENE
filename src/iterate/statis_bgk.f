@@ -2,10 +2,10 @@ CDR May 2017
 C  this entire routine is probabaly redundant, as well as all bgkv_stat tallies
 c   ALL TALLIES bgkv (ntalb=61), pdena, edena,pdenm,edenm are now also default tallies,
 c               and their variances are available by default variance routines.
-c   bgkv tallies: currently coincide with vxden*,vyden*,vzden* momentum densities. 
+c   bgkv tallies: currently coincide with vxden*,vyden*,vzden* momentum densities.
 c   But we may need special BGKV tallies in case of velolcity dep rates, or
 c   ES-BGK extensions. Even then: special variances may not be needed, because
-c   BGKV is a regular tally and variances are computed by default eirene variance routines. 
+c   BGKV is a regular tally and variances are computed by default eirene variance routines.
 C
       SUBROUTINE EIRENE_STATIS_BGK
 C  TALLY BGKV IS DEFAULT TALLY NUMBER ntalb =61. No special treatment re variance.
@@ -27,13 +27,13 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COUTAU
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XN, FSIG, ZFLUX
       INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
       LOGICAL, INTENT(IN) :: LP,LT
- 
+
       INTEGER, ALLOCATABLE, SAVE :: IND(:,:),   IIND(:),    INDSS(:,:)
       REAL(DP), ALLOCATABLE, SAVE :: SD(:), SDD(:)
       REAL(DP) :: XNM, ZFLUXQ, SD2, SD2S, DS, SG, D2S, DSA, SG2, D, DD,
@@ -58,7 +58,7 @@ C
         SD=0._DP
         SDD=0._DP
       END IF
- 
+
       CALL EIRENE_INDTAL(IND,NRTAL,NR1TAL,NP2TAL,NT3TAL,NBMLT)
       DO IR=1,NSBOX_TAL
         IIND(IR)=0
@@ -71,7 +71,7 @@ C
           ENDIF
         ENDDO
       ENDDO
- 
+
       RETURN
 C
       ENTRY EIRENE_STATS1_BGK(NBIN,NRIN,NPIN,NTIN,NSIN,LP,LT)
@@ -114,7 +114,7 @@ C
               SD(IRU)=SD(IRU)+SD1
             END DO
           END DO
- 
+
           DO ICO = 1,NCLMTS
             IR = ICLMT(ICO)
             SD1=SD(IR)
@@ -124,7 +124,7 @@ C
           SGMS_BGK(IBGV)=SGMS_BGK(IBGV)+SD1S*SD1S
         END IF
       END DO
- 
+
 C  STATISTICS FOR PDENA AND EDENA
 C
       DO IAT=1,NATMI
@@ -140,11 +140,11 @@ C
             SD1=PDENA(IAT,IR)-SDVIA_BGK(IBGV1,IR)
             SD1S=SD1S+SD1
             SDVIA_BGK(IBGV1,IR)=PDENA(IAT,IR)
- 
+
             SD2=EDENA(IAT,IR)-SDVIA_BGK(IBGV2,IR)
             SD2S=SD2S+SD2
             SDVIA_BGK(IBGV2,IR)=EDENA(IAT,IR)
- 
+
             SD(IR) = SD1
             SDD(IR) = SD2
             DO IIN=2,IIND(IR)
@@ -154,7 +154,7 @@ C
               SDD(IRU)=SDD(IRU)+SD2
             END DO
           END DO
- 
+
           DO ICO = 1,NCLMTS
             IR = ICLMT(ICO)
             SD1=SD(IR)
@@ -168,7 +168,7 @@ C
           SGMS_BGK(IBGV2)=SGMS_BGK(IBGV2)+SD2S*SD2S
         END IF
       END DO
- 
+
 C  STATISTICS FOR PDENM AND EDENM
 C
       DO IMO=1,NMOLI
@@ -184,11 +184,11 @@ C
             SD1=PDENM(IMO,IR)-SDVIA_BGK(IBGV1,IR)
             SD1S=SD1S+SD1
             SDVIA_BGK(IBGV1,IR)=PDENM(IMO,IR)
- 
+
             SD2=EDENM(IMO,IR)-SDVIA_BGK(IBGV2,IR)
             SD2S=SD2S+SD2
             SDVIA_BGK(IBGV2,IR)=EDENM(IMO,IR)
- 
+
             SD(IR) = SD1
             SDD(IR) = SD2
             DO IIN=2,IIND(IR)
@@ -198,7 +198,7 @@ C
               SDD(IRU)=SDD(IRU)+SD2
             END DO
           END DO
- 
+
           DO ICO = 1,NCLMTS
             IR = ICLMT(ICO)
             SD1=SD(IR)
@@ -242,7 +242,7 @@ C   STATISTICS FOR BGKV
             SD(IRU)=SD(IRU)+SD1
           END DO
         END DO
- 
+
         DO 2111 IR=1,NSB
           D=SD(IR)
           DD=D*D
@@ -280,7 +280,7 @@ C   STATISTICS FOR PDENA
             SD(IRU)=SD(IRU)+SD1
           END DO
         END DO
- 
+
         DO IR=1,NSB
           D=SD(IR)
           DD=D*D
@@ -318,7 +318,7 @@ C   STATISTICS FOR EDENA
             SD(IRU)=SD(IRU)+SD1
           END DO
         END DO
- 
+
         DO IR=1,NSB
           D=SD(IR)
           DD=D*D
@@ -356,7 +356,7 @@ C   STATISTICS FOR PDENM
             SD(IRU)=SD(IRU)+SD1
           END DO
         END DO
- 
+
         DO IR=1,NSB
           D=SD(IR)
           DD=D*D
@@ -394,7 +394,7 @@ C   STATISTICS FOR EDENM
             SD(IRU)=SD(IRU)+SD1
           END DO
         END DO
- 
+
         DO IR=1,NSB
           D=SD(IR)
           DD=D*D
@@ -420,8 +420,8 @@ C
 C
  2200 CONTINUE
       RETURN
- 
- 
+
+
       ENTRY EIRENE_STATIS_BGK_REINIT
 C
       IF (ALLOCATED(IND)) THEN
@@ -431,5 +431,5 @@ C
         DEAllOCATE (SD)
         DEAllOCATE (SDD)
       END IF
- 
+
       END

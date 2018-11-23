@@ -24,7 +24,7 @@ C     ARGUMENT:
 C
          CHARACTER(*), INTENT(INOUT) :: TERM
 C           : EINZULESENDER AUSDRUCK
- 
+
          CHARACTER(1), INTENT(OUT) :: OPER(*)
          INTEGER, INTENT(OUT) :: IZIF(4,*)
          REAL(DP), INTENT(INOUT) :: CONST(*)
@@ -34,48 +34,48 @@ C     KONSTANTENDEKLARATION :
 C
          INTEGER, PARAMETER :: ZMAX = 20
 C           : ANZAHL DER MAXIMALEN ZERLEGUNGEN
- 
+
          INTEGER, PARAMETER :: MAXLEN = 72
 C           : MAXIMALE STRINGLAENGE
- 
+
 C
 C     LOKALE VARIABLEN :
 C
          INTEGER ::  LAENGE
 C           : AKTUELLE LAENGE VON TERM
- 
+
          CHARACTER(MAXLEN) :: HLFTERM
 C           : HILFSSTRING ZUM UMSPEICHERN
- 
+
          CHARACTER(MAXLEN+2):: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
          INTEGER :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          INTEGER :: TEIL
 C           : AKTUELLE ANZAHL DER ZERLEGUNGEN
- 
+
          CHARACTER(MAXLEN) :: PART(ZMAX)
 C           : FELD VON STRINGS, AUF DENEN DIE EINZELNEN
 C             ELEMENTARZERLEGUNGEN FESTGEHALTEN WERDEN
- 
+
          INTEGER :: IPART(ZMAX)
 C           : AKTUELLE LAENGEN VON PART(ZMAX)
- 
+
          CHARACTER(MAXLEN) :: ARITH(ZMAX)
 C           : FELD VON STRINGS, AUF DENEN DIE TEIL-TE GENERATION
 C             VON AUSDRU FESTGEHALTEN WIRD
- 
+
          INTEGER :: IARITH(ZMAX)
 C           : AKTUELLE LAENGEN VON ARITH(ZMAX)
- 
+
          CHARACTER(MAXLEN) :: HILFE
 C           : ARBEITSSPEICHER FUER UNTERPROGRAMM ZERLEG
- 
+
          INTEGER :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
+
 CHR
 CHR      VARIABLEN ZUR MODIFIKATION DES PROGRAMMES
          INTEGER :: NR, ANFANG, ENDE, FELDIND, IK, IKM, IKP
@@ -134,14 +134,14 @@ C
                LAENGE=LAENGE-1
                GOTO 20
             ENDIF
- 
+
             AUSDRU=TERM
             AKTLEN=LAENGE
- 
+
             CALL EIRENE_ZERLEG(AUSDRU, AKTLEN, IPART, PART, IARITH,
      .  ARITH,
      >                  TEIL, HILFE, ERROR)
- 
+
             IF (ERROR .EQ. 0) THEN
 C
 C              AUSGABE DER ZERLEGUNG
@@ -150,7 +150,7 @@ C
                DO 45, I=1,TEIL
                    MAXI=MAX(IPART(I),MAXI)
    45          CONTINUE
- 
+
                NOP=TEIL
                DO 30, I=1,TEIL
 chr               ausgabe der zerlegung in der form:
@@ -187,7 +187,7 @@ chr               als zwischenergebnis
      .                         IZIF(2,I)
                        ENDIF
                      ENDIF
- 
+
                      IF (PART(I)(10:10).NE.'Z') THEN
                        FELDIND=INDEX(BUCHST,PART(I)(10:10))
                        IK=INDEX(ERSETZ(FELDIND),',')

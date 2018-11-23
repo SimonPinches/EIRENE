@@ -1,13 +1,13 @@
 !pb  24.04.07:  allow for logarithmic equidistant energy bins
-cdr  29.09.14:  only comments 
+cdr  29.09.14:  only comments
 cdr             meaning of isc=1, 2,... unclear. All current calls are with either isc=0 or isc=1
- 
+
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface- or volume/line-averaged energy spectra
-c  wt:  particle weight, (or wt=wpr, conditional particle weight) 
-c  
+c  wt:  particle weight, (or wt=wpr, conditional particle weight)
+c
 c  cell crossing   : (conditional) tracklength estimator for cell based spectra
-c  surface crossing: here tracklength estim. collapses to a collision estim. 
+c  surface crossing: here tracklength estim. collapses to a collision estim.
 
 c  isc:    =0: update surface-averaged spectra,
 c       ind:  =1: particle incident on surface
@@ -16,7 +16,7 @@ c       ind:  =2: particle re-emitted from surface
 c  isc:  =1,2: else (update cell based spectra)
 c       isc =1:  score in coarse (scoring) grid
 c       isc =2:  score in fine (geometry)  grid
-c       ind:  not in use  (often: ind = iflag in calling programs, 
+c       ind:  not in use  (often: ind = iflag in calling programs,
 c                          iflag is a flag used for special (non-standard) options for volume averged tally estimators)
 c  ityp:  type of particle
 
@@ -30,9 +30,9 @@ c  ityp:  type of particle
       USE EIRMOD_CCONA
       USE EIRMOD_COMUSR
       USE EIRMOD_CZT1
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IND, ISC
       REAL(DP), INTENT(IN) :: WT
       INTEGER :: ISPC, I, IS, IC, IRDO, IRD
@@ -63,16 +63,16 @@ C  set "type" specific parameters:  IS, CDYN
         IS = IPLS
         CDYN = CNDYNP(IPLS)
       END SELECT
- 
+
       IF (ISC == 0) THEN    ! SURFACE-AVERAGED SPECTRUM
- 
+
         DO ISPC=1,NADSPC
           P => ESTIML(ISPC)
           IF ((P%ISRFCLL == ISC) .AND.
      .        (P%ISPCSRF == MSURF) .AND.
      .        (P%IPRTYP == ITYP) .AND.
      .        ((P%IPRSP == IS) .OR. (P%IPRSP == 0))) THEN
- 
+
             SELECT CASE(ESTIML(ISPC)%ISPCTYP)
             CASE (1)
               ADD = WT  ! bin particle flux
@@ -81,11 +81,11 @@ C  set "type" specific parameters:  IS, CDYN
             CASE DEFAULT
               ADD = 0._DP ! no scoring
             END SELECT
- 
+
             EB = E0
- 
+
             IF (ESTIML(ISPC)%LOG) EB=LOG10(EB)
- 
+
             IF (EB < ESTIML(ISPC)%SPCMIN) THEN
               I = 0
             ELSEIF (EB >= ESTIML(ISPC)%SPCMAX) THEN
@@ -100,20 +100,20 @@ C  set "type" specific parameters:  IS, CDYN
             ESTIML(ISPC)%IMETSP = 1
           END IF
         END DO
- 
+
       ELSE     ! CELL based spectra
 
 cdr  meaning of isc = 1,2  see subr. input, flag ISRFCLL
 cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling program ??
- 
+
         WV=WEIGHT/VEL
         DO IC=1,NCOU
           DIST=CLPD(IC)
           WTR=WV*DIST
           IRDO=NRCELL+NUPC(IC)*NR1P2+NBLCKA
           IRD=NCLTAL(IRDO)
- 
- 
+
+
           DO ISPC=1,NADSPC
             P => ESTIML(ISPC)
             IF ((P%ISRFCLL > 0) .AND.
@@ -121,7 +121,7 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
      .           ((P%ISRFCLL == 2).AND.(P%ISPCSRF == IRDO))) .AND.   ! geometry cell, fine grid
      .          (P%IPRTYP == ITYP) .AND.
      .          ((P%IPRSP == IS) .OR. (P%IPRSP == 0))) THEN
- 
+
               SELECT CASE(ESTIML(ISPC)%ISPCTYP)
               CASE (1)
                 ADD = WTR
@@ -132,7 +132,7 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
               CASE DEFAULT
                 ADD = 0._DP
               END SELECT
- 
+
               EB = E0
               IF (ESTIML(ISPC)%IDIREC > 0) THEN
                 SPCVX = ESTIML(ISPC)%SPCVX
@@ -140,9 +140,9 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
                 SPCVZ = ESTIML(ISPC)%SPCVZ
                 EB = EB * (SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)
               END IF
- 
+
               IF (ESTIML(ISPC)%LOG) EB=LOG10(EB)
- 
+
               IF (EB < ESTIML(ISPC)%SPCMIN) THEN
                 I = 0
               ELSEIF (EB >= ESTIML(ISPC)%SPCMAX) THEN
@@ -159,11 +159,11 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
               ESTIML(ISPC)%IMETSP = 1
             END IF
           END DO
- 
+
         END DO
- 
+
       END IF
- 
+
       RETURN
 
 csw 21oct08

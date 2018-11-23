@@ -7,7 +7,7 @@ C*DK LEARCA1
 C
 C   THIS FUNCTION COMPUTES THE INDEX OF THE SMALLER MESHPOINT OF THE
 C   INTERVAL CONTAINING THE POINT X IN THE 1D MESH R(I),I=1,N
-C   
+C
 
 C   return learca1=1 or learca1=N, if x out of bounds at left or right end, respectively
 C

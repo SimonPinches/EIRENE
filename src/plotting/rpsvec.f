@@ -23,7 +23,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CTRIG
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: AORIG(*), BORIG(*)
@@ -33,7 +33,7 @@ C
       LOGICAL, INTENT(IN) :: LOGL, TRC
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP) :: XL, XM, BETRAG
       REAL(DP), ALLOCATABLE :: YWERT(:,:), YWERT1(:,:),
      .                       ZWERT(:,:), ZWERT1(:,:)
@@ -66,7 +66,7 @@ C
       NRAPS2=NRAPS2+nvplot
       nraps=nraps+1
       IRAPS=IRAPS+1
-!pb 
+!pb
 !pb find index of first RAPS plot, to be used for scaling with FCABS
 
       IFC = 1
@@ -188,11 +188,11 @@ C
       OPEN (UNIT=NRAPS2+ifoff,file=ch(1:lench),
      .                  ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND NRAPS2+ifoff
- 
+
       WRITE(NRAPS2+ifoff,'(1X,A5,8X,A4,50(11X,I1))') '-1111',
      .'PFEI',1,3,1,1,1
 C
- 
+
       IF ((LEVGEO.EQ.1).AND.NLPOL
      .     .AND.LPTOR3(IBLD)) THEN
 C
@@ -282,7 +282,7 @@ C  SIDE 8
             zwert(IR,IP)=zwert(IR,IP)*xl*0.9
           ENDDO IPLOOP1
         ENDDO
- 
+
         I=0
         DO IR=1,NR1ST
           DO IP=1,NP2ND
@@ -294,7 +294,7 @@ C  SIDE 8
      .             zwert(IR,IP)*fcabs2(ifc),0.,0.,0.
           enddo
         enddo
- 
+
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.NLPOL
      .        .AND.LPTOR3(IBLD)) THEN
 C
@@ -386,7 +386,7 @@ C  SIDE 8
             ENDDO IPLOOP2
           ENDDO
         ENDDO
- 
+
         I=0
         DO IR=1,NR1ST
           DO IPART=1,NPPLG
@@ -400,7 +400,7 @@ C  SIDE 8
             enddo
           enddo
         enddo
- 
+
       ELSEIF (LEVGEO.EQ.4) THEN
         DO 41 I=1,NRKNOT
           DO 51 J=0,30
@@ -451,11 +451,11 @@ c   the computational volume. don't plot it.
           YWERT1(I,1) = 0.
           YWERT1(I,1) = 0.
    61   continue
- 
+
         DO I=1,NRKNOT
           BETRAG=SQRT(YWERT1(I,1)**2+ZWERT1(I,1)**2)
           IF (BETRAG .GT. 1.D-5)
-     .    WRITE(nraps2+ifoff,'(I6,1P,5E12.4)') 
+     .    WRITE(nraps2+ifoff,'(I6,1P,5E12.4)')
      .          I,YWERT1(I,1)*fcabs1(ifc),
      .            ZWERT1(I,1)*fcabs2(ifc),0.,0.,0.
         enddo

@@ -1,9 +1,9 @@
-CDR  decompose (interpret) expression AUSDRU into 
-cdr  single algebraic operations on tallies. 
- 
- 
+CDR  decompose (interpret) expression AUSDRU into
+cdr  single algebraic operations on tallies.
+
+
 C-----------------------------------------------------------------------
-      SUBROUTINE EIRENE_ZERLEG(AUSDRU, AKTLEN, 
+      SUBROUTINE EIRENE_ZERLEG(AUSDRU, AKTLEN,
      .                         IPART, PART, IARITH,
      .                         ARITH, TEIL, HILFE, ERROR)
 C-----------------------------------------------------------------------
@@ -16,56 +16,56 @@ C     BEI SEQUENTIELLER ABARBEITUNG RICHTIG AUSGEWERTET WIRD
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
- 
+
 C
 C     EIN/AUSGABEPARAMETER :
 C
          CHARACTER(*), INTENT(INOUT) :: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
          INTEGER, INTENT(INOUT) :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
 C
 C     AUSGABEPARAMETER :
 C
          INTEGER, INTENT(OUT) :: TEIL
 C           : AKTUELLE ANZAHL DER ZERLEGUNGEN
- 
+
          CHARACTER(*), INTENT(OUT) :: PART(*)
 C           : FELD VON STRINGS, AUF DENEN DIE EINZELNEN
 C             ELEMENTARZERLEGUNGEN FESTGEHALTEN WERDEN
- 
+
          INTEGER, INTENT(OUT) :: IPART(*)
 C           : AKTUELLE LAENGEN VON PART(ZMAX)
- 
+
          CHARACTER(*), INTENT(OUT) :: ARITH(*)
 C           : FELD VON STRINGS, AUF DENEN DIE TEIL-TE GENERATION
 C             VON AUSDRU FESTGEHALTEN WIRD
- 
+
          INTEGER, INTENT(OUT) :: IARITH(*)
 C           : AKTUELLE LAENGEN VON ARITH(ZMAX)
- 
+
          CHARACTER(*), INTENT(OUT) :: HILFE
 C           : HILFSSTRING, DER FUER ZUWEISUNGEN BENOETIGT WIRD
- 
+
          INTEGER, INTENT(OUT) :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
+
 C
 C     LOKALE VARIABLEN :
 C
          INTEGER :: ALPHA
 C           : POSITION DES ERSTEN ZEICHENS VOM TEILAUSDRUCK
- 
+
          INTEGER :: OMEGA
 C           : POSITION DES LEZTEN ZEICHENS VOM TEILAUSDRUCK
- 
+
 C
 C     HILFSVARIABLEN :
 C
       INTEGER :: POS
- 
+
 C
 C     ELIMINATION VON BLANKS UND ERSETZEN VON '**' DURCH '^'
 C
@@ -79,7 +79,7 @@ C
 C        BEGINN DER ZERLEGUNG
 C
          TEIL=0
- 
+
          ALPHA=1
          OMEGA=AKTLEN
          POS=INDEX( AUSDRU(1:AKTLEN), ')' )
@@ -128,7 +128,7 @@ C
                IARITH(TEIL)=AKTLEN
                ARITH(TEIL)=AUSDRU
             ENDIF
- 
+
             ALPHA=1
             OMEGA=AKTLEN
             POS=INDEX( AUSDRU(1:AKTLEN), ')' )
@@ -142,7 +142,7 @@ C          => ZERLEGUNG DES GESAMMTEN AUSDRUCKS
 C
          CALL EIRENE_SCHRIT(AUSDRU, AKTLEN, ALPHA, OMEGA, TEIL,
      >               IPART, PART, IARITH, ARITH)
- 
+
          IF (TEIL .EQ. 0) THEN
 C
 C           ES SIND KEINE ZERLEGUNGEN GEMACHT WORDEN, DA
@@ -160,7 +160,7 @@ C           ZERLEGUNG
 C
             CALL EIRENE_RUKSUB(TEIL, IPART, PART, IARITH, ARITH, HILFE)
          ENDIF
- 
+
       ENDIF
 C
 C     ENDE VON ZERLEG

@@ -1,5 +1,5 @@
 cdr aug. 18   bug fix: remove virtual neutral background species
-cdr           from coulomb collision frequency evaluation 
+cdr           from coulomb collision frequency evaluation
 cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
 cdr           scoring distance clpd (full gyro motion distance)
 cdr           clpd  is switched back and forth. Needs clean-up.
@@ -42,8 +42,8 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !              LCART=FALSE:
 !                              velx,vely,velx,vel: reduced "guiding centre velocities"
 !                              i.e. excluding the gyromotion.
-!                              velperp and vrelpar are parameters to solve 
-!                              (e.g. numerically) for 
+!                              velperp and vrelpar are parameters to solve
+!                              (e.g. numerically) for
 !                              guiding center equation.
 !                              in this latter case the last "true" velocity vector
 !                              is stored in: velxts, velyts, velzts, velts, velt(3)
@@ -64,7 +64,7 @@ C  DIFFERENCES FROM SUBR. FOLNEUT:
 
 
 
-C    0) INTRODUCE PARAMETERS VELPAR, VELPER: 
+C    0) INTRODUCE PARAMETERS VELPAR, VELPER:
 C       VELOCITY PARALLEL AND PERP TO B FIELD, RESP.
 C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B-FIELD: VEL= VELPAR
 C                              B) GUIDING CENTRE, INCL DRIFTS (EXPL. EULER: JOSEF)
@@ -107,13 +107,13 @@ C     LGPART=FALSE
 C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
-c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true 
+c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true
 c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
 C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.
-c  at 104 :   an earlier track continues here. 
-c             initial position of track and cumulated integral for mfp sampling is not refreshed. 
+c  at 104 :   an earlier track continues here.
+c             initial position of track and cumulated integral for mfp sampling is not refreshed.
 c             meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION
@@ -142,7 +142,7 @@ C
       USE EIRMOD_CTRCEI
 
       IMPLICIT NONE
- 
+
 C     REAL(DP) :: a,aa,aaa
 c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: CFLAG(7,MSTOR0)
@@ -151,17 +151,17 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .            XSTORV2(NSTORV,N2ND+N3RD)
       REAL(DP) :: COSIN, XLI, YLI, ZLI, DIST,
      .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
-     .          FNUI, 
+     .          FNUI,
      .          VELXS, VELYS, VELZS, VELS,
      .          PUX, PUY, SG,
-     .          VCOS, 
+     .          VCOS,
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
      .          ZMFP, PN, SH, EIRENE_FPATH, ZTC,
      .          DELFAC, TIFAC,
      .          SCOS_NEW, XOLD, YOLD
 C      REAL(DP) :: TI
       REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER :: ISTS, EIRENE_LEARC2, NCOUS, ICOU, J, JJ, IPL, 
+      INTEGER :: ISTS, EIRENE_LEARC2, NCOUS, ICOU, J, JJ, IPL,
      .           NRCELL_OLD,
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
@@ -244,7 +244,7 @@ c  VL_PAR: parallel unit speed vector, VL_PAR = SIG*B
 c  VL_PAR = (/ VLXPAR, VLYPAR, VLZPAR /)
 
 c  set ion energy = parallel energy of the ionized test particle
-c  
+c
       E0PAR=CVRSSI(IION)*VELPAR*VELPAR
 C
  1004 CONTINUE
@@ -265,10 +265,10 @@ C  Fiddle around a bit with cell number and flight direction in this case.
 c  using the reduced (guiding centre) velocity to find orientation
 C  relative to surface, and possibly correct side of surface, i.e. cell
 c  number
- 
+
 
       IF (NLSRFX) THEN
- 
+
 c  particle is exactly on one of the radial grid surfaces (MRSURF)
 c  radial cell no. NRCELL may be wrong
 c  check orientation of parallel motion relative to radial coordinate
@@ -392,16 +392,16 @@ C  NOTHING TO BE DONE
           write (iunout,*) 'option not ready, exit called'
           call EIRENE_exit_own(1)
         end select
- 
+
         IF (NRCELL.NE.NRCELL_OLD) THEN
           ico=ico+1
           if (ico.le.1) goto 1005
         ENDIF
- 
- 
+
+
       ELSEIF (NLSRFY) THEN
- 
- 
+
+
 c  particle is on one of the poloidal grid surfaces (MPSURF)
 C  POLOIDAL CELL NO. NPCELL MAY BE WRONG
 C  CHECK ORIENTATION OF PARALLEL MOTION RELATIVE TO POLOIDAL COORDINATE
@@ -433,11 +433,11 @@ C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
           ico=ico+1
           if (ico.le.1) goto 1005
         ENDIF
- 
- 
+
+
       ELSEIF (NLSRFZ) THEN
- 
- 
+
+
 c  particle is on one of the toroidal grid surfaces (MTSURF)
 C  TOROIDAL CELL NO. NTCELL MAY BE WRONG
 C  CHECK ORIENTATION OF PARALLEL MOTION RELATIVE TO POLOIDAL COORDINATE
@@ -462,7 +462,7 @@ c***********************************************************************
 c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
 c***********************************************************************
 
-c  at this point: V_PARALLEL, V_PERP known, 
+c  at this point: V_PARALLEL, V_PERP known,
 c                 gyrophase: to be sampled, if needed
 
       GOTO 1002
@@ -470,12 +470,12 @@ C
  1001 CONTINUE
       IF (IC_ION.EQ.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
- 
+
 C***********************************************************************
 C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
- 
+
 C  WEIGHT TOO SMALL? STOP HISTORY
       IF (WEIGHT.LT.EPS30) THEN
         LGPART=.FALSE.
@@ -485,7 +485,7 @@ C
 C  PARTICLE ON SURFACE ?
       IF (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA) THEN
 C  CURRENTLY: REDUCED (GC) VELOCITIES ARE USED TO HANDLE SURFACE EVENTS
-C             IN THE STATIC LOOP. 
+C             IN THE STATIC LOOP.
 C             PERHAPS NEEDS TO BE REVISED TO FULL VELOCITIES?
 C  EMITTED  ?  CALL COLLIDE, AFTER UPDATE
         IF (IC_ION.EQ.1) THEN
@@ -549,7 +549,7 @@ C
 C
  1002 CONTINUE
 
-C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION, 
+C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION,
 C                 BUT NOW IT RETURNS TO FULL MOTION
 C
       IF (IC_ION.GT.1.AND.NLTRC.AND.TRCHST)
@@ -560,7 +560,7 @@ C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
       IF (IC_ION.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
 
-C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" 
+C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP"
 C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
         IC_ION=0
         IC_NEUT=0
@@ -621,11 +621,11 @@ C             MSURFG= ??
           ENDIF
         ENDIF
       ENDIF
- 
+
 C**********************************************************************
 C   STATIC LOOP FINISHED. REGULAR PARTICLE TRACKING CONTINUES
 C**********************************************************************
- 
+
       IC_ION=0
       IC_NEUT=0
 C
@@ -684,7 +684,7 @@ C  AT THIS POINT: LCART=F
       TT=1.D30
       TL=1.D30
       TS=1.D30
-      ZTST=1.D30                                            
+      ZTST=1.D30
       ZT=0.0
 C
       NCOU=1
@@ -756,7 +756,7 @@ ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 
 C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
-C  Set Coulomb collisions (energy relaxation) frequencies. 
+C  Set Coulomb collisions (energy relaxation) frequencies.
 C  Exclude vacuum region and virtual neutral background species
           IF (.NOT.LGVAC(NCELL,IPL) .AND. (NCHRGP(IPL) > 0) ) THEN
             FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
@@ -778,7 +778,7 @@ C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELO
 C     LATER: VELPAR --> VEL_GC
       TF=TAUE*VELPAR*0.1*DELFAC
       if (nldfst) tf=1.E-5_DP*vel
- 
+
       IF (TF.LT.ZTST) THEN
         ZTST=TF
         ZDT1=TF
@@ -788,7 +788,7 @@ C     LATER: VELPAR --> VEL_GC
 C
 C  SCAN OVER RADIAL CELLS
 
-C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME STEP, FP_COL OR ADD. SURF. 
+C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME STEP, FP_COL OR ADD. SURF.
 C
   210 CONTINUE
 C
@@ -815,7 +815,7 @@ c  switch to gc velocity
           VEL =VELPAR
           LCART=.FALSE.
         ENDIF
- 
+
         IF (NLRAD) THEN
           CALL EIRENE_TIMER(TS)
           IF (.NOT.LGPART) GOTO 9911
@@ -878,7 +878,7 @@ c  switch to full velocity but gc velocity is not saved
           VEL =VELS
           LCART=.TRUE.
         ENDIF
- 
+
       ENDIF
 C
       IF (ZTST.GE.1.D30) GOTO 990
@@ -967,7 +967,7 @@ C
   213 CONTINUE
       NCOUS=NCOU
       NCOU=JJ
- 
+
 CCC  IF NO COLLISION, THEN: ENFORCE ONLY ONE STEP AT A TIME
       IF (ZINT1.LT.ZLOG.AND.NCOUS.GT.1) THEN
         MRSURF=0
@@ -1169,8 +1169,8 @@ C  POINT OF COLLISION OR SURFACE EVENT. (I.E. LCART=F)
       IF (.NOT.LCART) THEN
 c        WRITE (IUNOUT,*) 'SHIT: VEL IS ALREADY = VELPAR HERE'
 c        WRITE (IUNOUT,*) VEL,VELPAR,VELS
-         CLPD(1)=CLPD(1)*VELPAR/VELS     
-      ENDIF      
+         CLPD(1)=CLPD(1)*VELPAR/VELS
+      ENDIF
       ZTC=CLPD(1)*VELPAR/VEL   !   this now does nothing: Velpar=vel here
       IF (LCART) THEN
         VELXS=VELX
@@ -1196,7 +1196,7 @@ C
 C  RESET CLPD TO REAL (FULL) PATH LENGTH OF FULL GYRO MOTION FOR SCORING
 cdr I do not understand: for scoring clpd should be full (gyro) distance.
 cdr but if I rescale clpd with vels/velpar, then trace ion balances become
-cdr much worse.  
+cdr much worse.
 cdr   if (.not.lcart) then
         DO 221 ICOU=1,NCOU
 cdr       CLPD(ICOU)=CLPD(ICOU)*VELS/VELPAR
@@ -1238,7 +1238,7 @@ C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL. ZTC: PARALLEL (gc)
 C
 CCC
 
-C  DELTA EVENT AT CELL BOUNDARY: STOP TEST ION, AND RESTART WITH REFRESHED E AND B FIELDS 
+C  DELTA EVENT AT CELL BOUNDARY: STOP TEST ION, AND RESTART WITH REFRESHED E AND B FIELDS
 
       IF (ZINT1.LT.ZLOG) THEN
 C  CELL SURFACE HAS BEEN REACHED BEFORE COLLISION EVENT
@@ -1313,9 +1313,9 @@ C  PERIODICITY FOR LEVGEO=2 (TO BE WRITTEN IN MORE GENERAL TERMS)
             ENDIF
           end select
 
-        ELSE   !NONE OF THE ninc_x,y,z flags are set, 
+        ELSE   !NONE OF THE ninc_x,y,z flags are set,
 cdr  all the nincx,...y,...z=0. This can happen only in levgeo=10,
-cdr  for an internal surface which is only known to external geometry block but not to eirene 
+cdr  for an internal surface which is only known to external geometry block but not to eirene
 cdr  try to tell external code: particle on surface, but it is an old particle, which continues.
           NLSRFX=.TRUE.
           IF (LEVGEO .NE. 10) GOTO 994
@@ -1398,7 +1398,7 @@ C   USE FULL VELOCITY, NOT ONLY THE REDUCED PARALLEL VELOCITY.
 C   THIS IS DONE BY SAMPLING THE GYRO-PHASE IN SUBR. NEWFIELD
 C   REJECT THOSE GYROPHASES WHICH WOULD LEAD TO NEGATIVE ANGLE OF INCIDENCE
 C
-C   EXCEPTION: PERIODICITY SURFACE. THEN: NO NEED TO CONVERT TO 
+C   EXCEPTION: PERIODICITY SURFACE. THEN: NO NEED TO CONVERT TO
 C              FULL CARTESIAN VELOCITY COMPONENTS
       IF (ILIIN(MSURF).GE.4) THEN
         PR=1.0
@@ -1421,7 +1421,7 @@ cdr:  try to distinguish: transparent or not. Use arrays "transp(ispz...)
 cdr:  indf=1: transparent, indf=2: non-transparent
 
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
-cdr  for solid surface: produce a full cartesian velocity vector, lcart=.true.  
+cdr  for solid surface: produce a full cartesian velocity vector, lcart=.true.
         indf=2
 cdr  for transparent surface: stick to reduced (GC) velocity, lcart=false
 cdr: check here: are any of "transp" flags ne. zero ???
@@ -1452,7 +1452,7 @@ C  NO, TRY ANOTHER GYRO PHASE
             ZT=0.0
             GOTO 9951
           ENDIF
- 
+
         ENDDO
 C  NOW A PARTICLE WITH FULL CARTESIAN VELOCITY VECTOR (LCART=T)
 C  IS SET. ITS SPEED VECTOR POINTS TOWARDS THE SURFACE (COSIN.GT.0)
@@ -1600,7 +1600,7 @@ c  to obtain an effective  nu(Ti) that can be compared with a
 c  "relaxation time"
 c  in the dgl dEA/dt=-nu(Ti,EA,...) times EA
 c  In the present limit: this must be multiplied by a factor(EA,Ti)
-      FNUEQI=8.5E-8*XNI*TI**(-1.5)  
+      FNUEQI=8.5E-8*XNI*TI**(-1.5)
 c  in calling program: FNUEQI = FNUEQI*(1.+mB/mA)**0.5-1.5*Ti/EA
 c  but this is already implicitly contained in the analytic BGK solution
 c  written for fnueqi without that factor.
@@ -1666,14 +1666,14 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
 
 
       END
- 
-      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)                   
+
+      SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
 C  IF (IND.EQ.0) RETURN WITH NEW LOCAL B-FIELD BVEC
 C
 C  IF (IND.GE.1) ADDITIONALLY ALSO PROVIDE REDUCED (GC) VELOCITY VECTOR (SPEED UNIT VECTOR)
 C    BUT RETAIN PREVIOUS MODULI: V_PARALLEL, V_PERP.
-C    NEW REDUCED SPEED VECTOR:  LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),  
+C    NEW REDUCED SPEED VECTOR:  LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),
 C    CHECKS DONE THAT VELPER AND VERPAR ARE PRESERVED, CHECKS REMOVED.
 
 C  IF (IND.GE.2) ADDITIONALLY ALSO PROVIDE NEW CARTESIAN VELOCITY
@@ -1694,7 +1694,7 @@ C
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
- 
+
       CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF,.TRUE.)
       BVEC = (/ BBX, BBY, BBZ /)
 
@@ -1713,7 +1713,7 @@ C  ONLY THE NEW DIRECTION (REDUCED SPEED UNIT VECTORS) ARE EVALUATED
       LCART=.FALSE.
 
       IF (IND.LT.2) RETURN
-                                            
+
 C  FIND NEW CARTESIAN VELX,VELY,VELZ (SAME VEL=VELS), LCART=T
 C  NEW GYRO PHASE
       GYRO=RANF_EIRENE()*PI2A

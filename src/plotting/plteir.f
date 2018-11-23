@@ -14,7 +14,7 @@ C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
-cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !  
+cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
@@ -44,11 +44,11 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTRA
- 
+
       REAL(DP), ALLOCATABLE :: VECTOR(:,:),VECSAV(:,:),VSDVI(:,:)
       REAL(DP), ALLOCATABLE :: XSPEC(:),YSPEC(:,:),VSPEC(:,:),
      .          WLSPEC(:),YSPECWL(:,:),VSPECWL(:,:)
@@ -87,10 +87,10 @@ C
         ENDIF
       ENDIF
 C
-C  prepare plot frame. 
+C  prepare plot frame.
 
 C  NULLPUNKT AUF DEM PAPIER
- 
+
       X0PL=10.
       Y0PL=3.
 C  ACHSENLAENGEN
@@ -126,7 +126,7 @@ C  PROVIDE EIRENE OUTPUT TALLIES FOR SELECTED STRATUM ISTRA
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTRA
-        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: ' 
+        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: '
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -140,7 +140,7 @@ C  NOTHING TO BE DONE
         ENDIF
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
         IESTR=ISTRA
-        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: ' 
+        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: '
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -184,7 +184,7 @@ C
      .           '
       HEAD6='BGK TALLY
      .           '
-      HEAD7='ALGEBRAIC FUNCTION OF VOLUME AVERAGED TALLIES         
+      HEAD7='ALGEBRAIC FUNCTION OF VOLUME AVERAGED TALLIES
      .           '
       HEAD8='RELATIVE STANDARD DEVIATION
      .           '
@@ -212,7 +212,7 @@ C
           N1SDVI = 1
         END IF
       END IF
- 
+
       DO 10000 IBLD=1,NVOLPL
 C
         IF (PLTL2D(IBLD).OR.PLTL3D(IBLD)) THEN
@@ -490,7 +490,7 @@ C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1.ST (RADIAL) GRID
 C
             IXSET2=0
             IF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2) THEN
-C   USE RADIAL SURFACE CENTERED GRID "RHOSRF" 
+C   USE RADIAL SURFACE CENTERED GRID "RHOSRF"
 C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
               DO 130 I=1,NR1ST
                 XXP2D(I)=RHOSRF(I)
@@ -503,7 +503,7 @@ C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
   138           XXP2D(I)=0.
               IXSET2=1
             ELSEIF (LEVGEO.EQ.3) THEN
-C   USE PERPEND. ARCLENGTH "BGLP" IN CASE OF POLYGON GRID, 
+C   USE PERPEND. ARCLENGTH "BGLP" IN CASE OF POLYGON GRID,
 C   ...FOR EACH POLOIDAL AND TOROIDAL POSITION, IF APPLICABLE
               DO 133 I=1,NR1ST
                 DO 133 J=1,NP2ND
@@ -934,16 +934,16 @@ C
 
 C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
-C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED 
+C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED
 C        PLOTTING IS NOT YET CONDITIONED BY FLAGS
 C        ALL PLOTS FOR ALL SPECTRA ARE ALWAYS DONE
 C
       IF (XMCP(ISTRA).LE.1.0) GOTO 20000
-C 
+C
       DO ISPC=1,NADSPC
 C  THERE ARE NSPS BINS, AND NSPS+1 ENERGY BIN BOUNDARIES
 C  THESE ARE EQUALLY SPACED LINEARLY OR LOGARITHMICALLY
-C       LOGX=ESTIML(ISPC)%LOG 
+C       LOGX=ESTIML(ISPC)%LOG
         NSPS=ESTIML(ISPC)%NSPC
         ALLOCATE (XSPEC(NSPS+1))
         ALLOCATE (YSPEC(NSPS+1,1))
@@ -962,7 +962,7 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
           YSPEC(I,1)=ESTIML(ISPC)%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%SGM(I)
         END DO
- 
+
         YMN2(1)=MINVAL(YSPEC(1:NSPS,1))
         YMX2(1)=MAXVAL(YSPEC(1:NSPS,1))
         IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
@@ -985,7 +985,7 @@ CDR:  NOT READY: ABUSE SPCPLT FOR MIN MAX ON PLOT, ALWAYS: LIN-LOG SCALE
         XMI=XSPEC(1)
         XMA=XSPEC(NSPS+1)
 
-C  LINEAR OR LOGARITHMIC Y SCALE ?  
+C  LINEAR OR LOGARITHMIC Y SCALE ?
         LOGY=.FALSE.
         FITY=.FALSE.
 
@@ -995,8 +995,8 @@ CDR     IF (ESTIML(ISPC)%SPC_YPLT.GT.0.0)  THEN
           LOGY=.TRUE.
           FITY=.TRUE.
         ENDIF
-CDR 
- 
+CDR
+
         IF (ESTIML(ISPC)%ISRFCLL == 0) THEN
          TXTALL(1)='SPECTRUM FOR SURFACE        PARTICLE TYPE        '//
      .             'SPECIES                '
@@ -1008,7 +1008,7 @@ CDR
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%IPRTYP
         WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%IPRSP
         IT = ESTIML(ISPC)%ISPCTYP
-        ITT= ESTIML(ISPC)%ISRFCLL 
+        ITT= ESTIML(ISPC)%ISRFCLL
         TXSPEC=REPEAT(' ',24)
         TXUNIT=REPEAT(' ',24)
         IF (ITT.EQ.0.AND.IT == 1) TXUNIT='AMP/BIN(EV)             '
@@ -1022,8 +1022,8 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
         TXHEAD(1:30)=HEAD9(1:30)
         TXHEAD(32:42)='INTEGRAL: '
         WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%SPCS
-        IERR=0   
-C  MANY SPECTRA INTO ONE PICTURE_        
+        IERR=0
+C  MANY SPECTRA INTO ONE PICTURE_
         L_SAME=ESTIML(ISPC)%SPC_SAME .NE. 1.D0
 C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
         IF (ISPC.EQ.1) L_SAME=.FALSE.
@@ -1035,13 +1035,13 @@ C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
         DEALLOCATE (XSPEC)
         DEALLOCATE (YSPEC)
         DEALLOCATE (VSPEC)
- 
+
       END DO
- 
+
 C  NOW REPEAT SAME PLOTS, BUT VS. WAVELENGTH
       IF (NPHOTI > 0) THEN
 CDR TO BE DONE: DISTUINGISH BETWEEN PHOTON AND PARTICLE SPECTRA
- 
+
       DO ISPC=1,NADSPC
         ITP=ESTIML(ISPC)%IPRTYP
         IF (ITP.NE.0) CYCLE
@@ -1064,7 +1064,7 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
           YSPEC(I,1)=ESTIML(ISPC)%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%SGM(I)
         END DO
- 
+
 C  PLOT ALSO VS. WAVELENGTH (NM)
         WL00            =HPCL/MAX(1.E-6_DP,SPC00)*1.E7_DP
 C  x axis: cell faces
@@ -1083,11 +1083,11 @@ C  rescaling:  flux/ev to flux/nm
           DW=WLSPEC(I+1)-WLSPEC(I)
           YSPECWL(I,1) = YSPECWL(I,1)*DE/DW
         END DO
- 
+
         DEALLOCATE (XSPEC)
         DEALLOCATE (YSPEC)
         DEALLOCATE (VSPEC)
- 
+
         YMN2(1)=MINVAL(YSPECWL(1:NSPS,1))
         YMX2(1)=MAXVAL(YSPECWL(1:NSPS,1))
         IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
@@ -1115,7 +1115,7 @@ C  rescaling:  flux/ev to flux/nm
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%IPRTYP
         WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%IPRSP
         IT = ESTIML(ISPC)%ISPCTYP
-        ITT= ESTIML(ISPC)%ISRFCLL 
+        ITT= ESTIML(ISPC)%ISRFCLL
         TXSPEC=REPEAT(' ',24)
         TXUNIT=REPEAT(' ',24)
         IF (ITT.EQ.0.AND.IT == 1) TXUNIT='AMP/BIN(NM)             '
@@ -1143,17 +1143,17 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
         DEALLOCATE (VSPECWL)
       END DO  !  LOOP OVER PHOTON SPECTRA ENDS HERE
 
-      END IF 
+      END IF
 
 20000 CONTINUE
- 
+
       IF (ALLOCATED(VECTOR)) DEALLOCATE(VECTOR)
       IF (ALLOCATED(VECSAV)) DEALLOCATE(VECSAV)
       IF (ALLOCATED(VSDVI))  DEALLOCATE(VSDVI)
       RETURN
- 
+
 C     the following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_PLTEIR_REINIT
       IFIRST = 0
       return

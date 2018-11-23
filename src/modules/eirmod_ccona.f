@@ -4,26 +4,26 @@ C  22.12.06   Periodic Table of Elements introduced
 C  16.01.06   function FIND_ELEMENT identifies an element in the PTE
 C             and returns the element number
 !  20.06.07   constant NCONA = number of constants in module introduced
- 
+
       MODULE EIRMOD_CCONA
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CCONA, PTE_TYPE, EIRENE_SET_PTE_ELEMENT, 
+
+      PUBLIC :: EIRENE_ALLOC_CCONA, PTE_TYPE, EIRENE_SET_PTE_ELEMENT,
      P          EIRENE_FIND_ELEMENT
- 
+
       TYPE PTE_TYPE
         CHARACTER(13) :: NAME
         CHARACTER(2) :: ABBR
         REAL(DP) :: EL_MASS, EL_CHARGE
       END TYPE
- 
+
       INTEGER, PUBLIC, PARAMETER :: NCONA=50
       REAL(DP), PUBLIC, TARGET, SAVE :: RCONA(NCONA)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R EPS60,   EPS30,   EPS12,    EPS10,    EPS6,      EPS5,
      R PMASSA,  PMASSE,  AMUA,
@@ -35,13 +35,13 @@ C             and returns the element number
      R HPLANCK, CLIGHT, MUB, HPLNK, HPCL, EV2HZ,
      R AU_TO_CM2, HPLNK_BAR,
      R EPSILON0,AMUAKG,FAKVTH,FAKLAM,COULOMBLOG,MY0,FAKTAUT !JS
- 
+
       TYPE (PTE_TYPE), PUBLIC, SAVE :: PTE(113)
- 
+
       CONTAINS
- 
+
       SUBROUTINE EIRENE_ALLOC_CCONA
- 
+
       EPS60     => RCONA(1)
       EPS30     => RCONA(2)
       EPS12     => RCONA(3)
@@ -92,42 +92,42 @@ C             and returns the element number
       COULOMBLOG=> RCONA(48) !JS
       MY0       => RCONA(49) !JS
       FAKTAUT   => RCONA(50) !JS
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CCONA
- 
- 
+
+
       SUBROUTINE EIRENE_SET_PTE_ELEMENT (IEL,NAME,AB,EM,CH)
- 
+
       INTEGER, INTENT(IN) :: IEL
       CHARACTER(*), INTENT(IN) :: NAME, AB
       REAL(DP), INTENT(IN) :: EM, CH
- 
+
       PTE(IEL)%NAME = NAME
       PTE(IEL)%ABBR = AB
       PTE(IEL)%EL_MASS = EM
       PTE(IEL)%EL_CHARGE = CH
- 
+
       RETURN
       END SUBROUTINE EIRENE_SET_PTE_ELEMENT
- 
- 
- 
+
+
+
       FUNCTION EIRENE_FIND_ELEMENT(NAME) RESULT(IELEM)
- 
+
       CHARACTER(2),INTENT(IN) :: NAME
       INTEGER :: IELEM, I
- 
+
       IELEM = 0
- 
+
       do i = 1,113
          if (pte(i)%abbr == name) then
            ielem = i
            return
          end if
       end do
- 
+
       return
       END FUNCTION EIRENE_FIND_ELEMENT
- 
+
       END MODULE EIRMOD_CCONA

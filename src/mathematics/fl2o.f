@@ -1,5 +1,5 @@
 C
- 
+
       SUBROUTINE EIRENE_FL2O
      .               (A00,A1,A2,A3,A4,A5,A6,A7,A8,A9,INDE,X0,Y0,Z0,
      >                CX,CY,CZ,R,B0,B1,B2,B3,C0,C1,C2,C3,EPSIN)
@@ -132,12 +132,12 @@ C
       B(1) = A1/2.
       B(2) = A2/2.
       B(3) = A3/2.
- 
+
       AM4(1:3,1:3) = A
       AM4(4,1:3) = B
       AM4(1:3,4) = B
       AM4(4,4) = C
- 
+
       ICOUNT=1
     4 CONTINUE
 C
@@ -175,7 +175,7 @@ C
 C
          INDE = 1
          GOTO 999
- 
+
       ELSE
 C
 C        BERECHNUNG DER EIGENWERTE UND EIGENVEKTOREN VON A
@@ -256,7 +256,7 @@ C
 C        Gleichungssystem ist loesbar!
 C        d.h. singulaeres Gebilde ist nicht leer.
 C        eine Loesung : M(I)
- 
+
 C                T
 C        NUE := B  M + C
 C
@@ -468,7 +468,7 @@ C         + 1./2./p3 * (p1**2 / lambda(1) + p2**2/lambda(2)-c)*ev3
 C                  t                     t
 C     mit p1 := ev1  * b    und p2 := ev2  *b
 C
- 
+
          DO 160, I = 1,2
             P(I) = 0.D0
             DO 170, J = 1,3

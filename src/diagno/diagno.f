@@ -1,8 +1,8 @@
 cdr Oct 17  :
-cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
-cdr                    analogous to H emission lines,             NCHTAL=2 
-cdr  itp (select type) of compinent relevant for LOS (not in use yet) 
-cdr  Aug. 16:  re LOS option: 
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
+cdr                    analogous to H emission lines,             NCHTAL=2
+cdr  itp (select type) of compinent relevant for LOS (not in use yet)
+cdr  Aug. 16:  re LOS option:
 cdr            the option described in the manual regarding
 cdr            use of emin1, emax1 to identify a particular spectroscopic
 cdr            line  (by upper and lower quantum number in H-atom)
@@ -24,15 +24,15 @@ C
       SUBROUTINE EIRENE_DIAGNO
 cdr main program for side on (line of sight) diagnostics, in post processing phase
 
-c  step 1:  prepare arrays for energy (or spectral) resolution (binning) 
+c  step 1:  prepare arrays for energy (or spectral) resolution (binning)
 c  step 2:  call sgnal, to carry out line of sight integration, all bins.
-c  step 3:  call outsig, to print (if prspec) and plot (if plspec) 
+c  step 3:  call outsig, to print (if prspec) and plot (if plspec)
 c           energy/spectrally resolved "side-on" data, line integrated.
 
 c  nb    :  during step 2, also spatially resolved (along the line of sight)
 c           information can be extracted. This is controlled by the flags
 c           plargl, prargl
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -41,9 +41,9 @@ c           plargl, prargl
       USE EIRMOD_COMSIG
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: ENSAVE(NCHOR,NCHEN)
       REAL(DP) :: EN, EQUOT, FMXENM, ALEMX, ALEMN
       INTEGER :: NSPTP(NCHOR) ! should come via comsig. not ready.
@@ -52,7 +52,7 @@ c           plargl, prargl
 C
 C  INITIALISE LINE INTEGRATION ROUTINE
 C
-      NSPTP(1:NCHOR) = 0  !  NOT READY, NOT USED. TYPE OF RELEVANT COMPONENT, see nspspc...  
+      NSPTP(1:NCHOR) = 0  !  NOT READY, NOT USED. TYPE OF RELEVANT COMPONENT, see nspspc...
       PLSAVE=PLHST
       PLHST=PLCHOR
 C
@@ -65,9 +65,9 @@ C
       CALL EIRENE_HEADNG
      .     ('DIAGNOSTICS MODULE (LINE-OF-SIGHT-INTEGRATION)',46)
       ENDIF
- 
+
       DO 100 ICHORI=1,NCHORI
- 
+
         CALL EIRENE_LEER(1)
         WRITE (IUNOUT,*) 'CHORD NO. ',ICHORI
 C
@@ -78,7 +78,7 @@ C
           WRITE (IUNOUT,*) 'AUTOMATIC CORRECTION  IN DIAGNO'
           WRITE (IUNOUT,*) 'SET NCHENI = 1 (DEFAULT) '
           WRITE (IUNOUT,*) 'BECAUSE NCHTAL(ICHORI)=2 OR '
-          WRITE (IUNOUT,*) 'OR NCHTAL(ICHORI)=5 ENCOUNTERED '        
+          WRITE (IUNOUT,*) 'OR NCHTAL(ICHORI)=5 ENCOUNTERED '
           NCHENI=1
         ENDIF
 

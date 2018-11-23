@@ -14,14 +14,14 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: K
       CHARACTER(LEN=*), INTENT(IN) :: NAME
       INTEGER, SAVE :: IFRST1=0, IFRST2=0
- 
+
       WRITE (iunout,*) 'PLNXTB CALLED FROM ',NAME
       WRITE (iunout,*) 'K,IFRST1,IFRST2 ',K,IFRST1,IFRST2
- 
+
       GOTO (1,2,3),K
     1 IF (IFRST1.EQ.1) THEN
         CALL GRNXTF
@@ -45,7 +45,7 @@ C
         CALL GRSCLC (3.,3.5,39.5,28.7)
       ENDIF
       RETURN
- 
+
     3 CONTINUE
       IF (IFRST1.EQ.1) CALL GRNXTF
       IFRST1=0

@@ -17,7 +17,7 @@ cdr           to allow also there an outer vacuum (void) zone.
 cdr           tested, ok.
 cdr july 17:  initialize NCORNER also in case LEVGEO=10.
 cdr           For several other LEVGEO options NCORNER is set here,
-cdr           for some other is routine sneigh.f (geometry module) 
+cdr           for some other is routine sneigh.f (geometry module)
 
       SUBROUTINE EIRENE_GRID (IND)
 

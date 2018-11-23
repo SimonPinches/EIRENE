@@ -5,19 +5,19 @@ c    Jan.  16: remove redundant PSGM
 C.........................................................................................
 
 cdr  ENTRY WRSTRT:
-cdr  write MC estimated tallies, per stratum, onto fort.10 
+cdr  write MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
 
-cdr  ENTRY RSTRT: 
-cdr  read MC estimated tallies, per stratum, onto fort.10 
+cdr  ENTRY RSTRT:
+cdr  read MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
-cdr     e.g. for printout, plotting etc.. of results from specified strata   
+cdr     e.g. for printout, plotting etc.. of results from specified strata
 
 cdr  on input:  IG     :  number of stratum ISTRA
 cdr             IG=0   :  sum over strata
-cdr             TRCFLE :  print diagnostics  
+cdr             TRCFLE :  print diagnostics
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
- 
+
       SUBROUTINE EIRENE_WRSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
      .                  TALLYV,TALLYS,TALLYL,
      .                  ISDVI1,STAT1,ISDVI2,STAT2,
@@ -25,12 +25,12 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
      .                  IBGKI,SIG_BGK,JBGKI,SIGS_BGK,
      .                  ICOPI,SIG_COP,JCOPI,SIGS_COP,
      .                  ISPCI,TRCFLE)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, IFOFF
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       TYPE(EIRENE_SPECTRUM), INTENT(INOUT) :: TALLYL(*)
       REAL(DP), INTENT(INOUT) :: TALLYV(*), TALLYS(*),
      .                         STAT1(*), SIG_BGK(*), SIG_COP(*)
@@ -40,7 +40,7 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
      .                       ISDVC1, ISDVC2, IBGKI, JBGKI, ICOPI, JCOPI,
      .                       IESTM3, ISPCI
       LOGICAL, INTENT(IN) :: TRCFLE
- 
+
       INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
      .           IMAX31, IMAX32, IMAX41, IMAX42, NRECL, IRC, ISTRA,
      .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
@@ -78,7 +78,7 @@ C
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
 !pb     .      RECL=8*NRECL,STATUS='UNKNOWN',FILE='fort.10')
      .      RECL=8*NRECL,STATUS='UNKNOWN')
- 
+
       JINI=1
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMV'
     1 JEND=MIN0(JINI-1+NRECL,IESTM1)
@@ -91,7 +91,7 @@ C
       JINI=JEND+1
       IRC=IRC+1
       GOTO 1
- 
+
    12 CONTINUE
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMS'
       IRC=IRC+1
@@ -251,37 +251,37 @@ C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPEC
         DO JINI=NSPECI,NSPECE,NRECL
           IRC=IRC+1
           JEND=MIN(NSPECE, JINI+NRECL-1)
-          WRITE (10+ifoff,REC=IRC) 
+          WRITE (10+ifoff,REC=IRC)
      .      (TALLYL(ISPC)%SPC(J),J=JINI,JEND)
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            WRITE (10+ifoff,REC=IRC) 
+            WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%SGM(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            WRITE (10+ifoff,REC=IRC) 
+            WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%SDV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            WRITE (10+ifoff,REC=IRC) 
+            WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%STV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            WRITE (10+ifoff,REC=IRC) 
+            WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%GG(J),J=JINI,JEND)
           END DO
         END IF
       END DO
- 
+
       CLOSE (UNIT=10+ifoff)
 C
       RETURN
@@ -322,11 +322,11 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'READ STRATUM NO. ',IG
       IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA '
- 
+
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
 !pb     .      RECL=8*NRECL,STATUS='OLD',FILE='fort.10')
      .      RECL=8*NRECL,STATUS='OLD')
- 
+
 C
       JINI=1
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMV'
@@ -500,37 +500,37 @@ C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPEC
         DO JINI=NSPECI,NSPECE,NRECL
           IRC=IRC+1
           JEND=MIN(NSPECE, JINI+NRECL-1)
-          READ (10+ifoff,REC=IRC) 
+          READ (10+ifoff,REC=IRC)
      .      (TALLYL(ISPC)%SPC(J),J=JINI,JEND)
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            READ (10+ifoff,REC=IRC) 
+            READ (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%SGM(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            READ (10+ifoff,REC=IRC) 
+            READ (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%SDV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            READ (10+ifoff,REC=IRC) 
+            READ (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%STV(J),J=JINI,JEND)
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
-            READ (10+ifoff,REC=IRC) 
+            READ (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%GG(J),J=JINI,JEND)
           END DO
         END IF
       END DO
- 
+
       CLOSE (UNIT=10+ifoff)
 C
       RETURN

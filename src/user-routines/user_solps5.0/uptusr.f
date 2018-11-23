@@ -4,7 +4,7 @@ cdr Jan 17: remove local allocatable cndyn.. arrays. These are now
 cdr         set in code initialisation phase
 cdr may 18: revised, particle currents, particle flux,...., comments..
 cdr         I am not sure that the rad and pol normal vectors are correct.
-cdr         In solps5.0 we use the underlying polygon grid. 
+cdr         In solps5.0 we use the underlying polygon grid.
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -41,7 +41,7 @@ CDR
       integer :: icou
       real(dp) :: wtr,vr,vp,dist
       DATA IFIRST/0/
- 
+
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
 C
@@ -110,8 +110,8 @@ C  particle current, poloidal component (CM/SEC)
           if(ia3+iatm.gt.nadv) goto 20
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 
-c  particle current: toroidal component (cm/sec)  
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin  
+c  particle current: toroidal component (cm/sec)
+c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 C  particle flux, integrated over all directions
@@ -142,8 +142,8 @@ C  particle current, poloidal component (CM/SEC)
           if(ia3+natmi+imol.gt.nadv) goto 200
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 
-c  particle current: toroidal component (cm/sec)  
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin  
+c  particle current: toroidal component (cm/sec)
+c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 c::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

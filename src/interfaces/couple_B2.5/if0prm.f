@@ -1,5 +1,5 @@
 cdr called from find_param.f in initialization phase,
-cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0) 
+cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0)
 C
 cdr Read block 14 from interfacing routines (not from eirene_input.f)
 c   this version: couple_dummy, i.e. only dummy interfacing routines.
@@ -12,9 +12,9 @@ c   NAOT  :
 c   NCPV  :
 c   NKNOT :
 C   NTRII :
-C   NCPVI :  no. of special couple tallies    
+C   NCPVI :  no. of special couple tallies
 
-c  also set: NDX,NDY,NFL, NDXP, NDYP  
+c  also set: NDX,NDY,NFL, NDXP, NDYP
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN,IUNOUT)
 
@@ -80,7 +80,7 @@ C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
-C                                          AND IN SUBR. COLLIDE)     
+C                                          AND IN SUBR. COLLIDE)
       NCPVI=NPLS
       NCPV = MAX(NCPV,NCPVI)
 C

@@ -18,16 +18,16 @@ C          B  IMPACT PARAMETER
 C          V  INTERACTION POTENTIAL (EV)
 C
 C     DIMENSION RV0(3),RVM(3),RVW(3),VM(3),VW(3),VSW(3)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: ER, B, P(*)
       INTEGER, INTENT(IN) :: IFLAG
- 
-      REAL(DP) :: FIW, RV, EIRENE_RTSAF, BQ, TOL, EIRENE_RSTERN, 
+
+      REAL(DP) :: FIW, RV, EIRENE_RTSAF, BQ, TOL, EIRENE_RSTERN,
      .            EIRENE_FI, DFI,
      .        FITEST, rup, rlw, vw, rw, r0
       SAVE

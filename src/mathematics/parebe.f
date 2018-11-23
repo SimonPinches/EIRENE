@@ -18,12 +18,12 @@ C
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: B0, B1, B2, B3, C0, C1, C2, C3
       REAL(DP), INTENT(IN) :: LAMBDA( 3 ), EV(3,3), EPS,
      >                      M(3), NUE
       REAL(DP) :: NORM, P(3), U(3)
- 
+
 C
 C     DATA              EPS  / 5.D-10 /
 C

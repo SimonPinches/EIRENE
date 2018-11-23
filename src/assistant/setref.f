@@ -10,13 +10,13 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: AFF(3,3),AFFI(3,3)
       REAL(DP), INTENT(IN) :: CC1, CC2, CC3
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: C, C1, C2, C3, CN
       INTEGER :: I, J
- 
+
       C1=CC1
       C2=CC2
       C3=CC3

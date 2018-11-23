@@ -1,7 +1,7 @@
 cdr
 !     oct 17: NLTRA correction, from june 09: apparently not properly functional, e.g. for chord (diagno) points
 cdr  sept 17: sync with timep
-!  18.06.09  correction added for NLTRA 
+!  18.06.09  correction added for NLTRA
 !            if particle accidently on toroidal surface
 C
       SUBROUTINE EIRENE_TIMET (ZRAD)
@@ -76,18 +76,18 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: TTT, PHI0, X001, TO, AA, SUM, TU, XTO, EPSTST, XTU,
      .          F, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
      .          Y0TEST, z01_cell
       INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
-     .           NZSAVE, INCZ, J1, IRSAVE, 
+     .           NZSAVE, INCZ, J1, IRSAVE,
      .           EIRENE_LEARCA
       INTEGER, SAVE :: MTSAVE=-1
- 
+
       ZRADS=ZRAD
 C
 #ifdef TRACE
@@ -164,7 +164,7 @@ C  IS THIS RE-ENTRY INSIDE THE STANDARD GRID REGION?
               end select
             ENDIF
           ENDIF
-  120   CONTINUE  ! end of loop over tor. non-def std surfaces 
+  120   CONTINUE  ! end of loop over tor. non-def std surfaces
 
         IF (NCOUT.GT.0.AND.MTSAVE.NE.MTSURF) THEN
 C  REENTRY FOUND, REDUCE ZRAD TO F
@@ -213,7 +213,7 @@ C  CHECK VALID RANGE ON MRSURF
               NINCX=0
 
             ENDIF
-          ENDIF  ! MRSURF.GT.0 
+          ENDIF  ! MRSURF.GT.0
           MTSURF=0
           NINCZ=0
 
@@ -234,7 +234,7 @@ c  still: nltrz
 C
       Z001=Z01+VELZ*ZRAD
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 
+        IF (NLTRC) WRITE (iunout,*)
      .             'Z001,Z01,ZRAD ',Z001,Z00,ZRAD
 #endif
 C
@@ -342,7 +342,7 @@ C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
       IF (.NOT.NLTRA) GOTO 2000
 C
-C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION, 
+C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION,
 C            also: default toroidal periodicity model.
 C            ONLY ONE STEP AT A TIME
 C
@@ -451,7 +451,7 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         GOTO 9998
       ENDIF
 
-C  a valid flight time F has been found 
+C  a valid flight time F has been found
       X01=X01+F*VELX
       Z01=TANAL*X01
       PHI=PHI0+ZHALF
@@ -560,7 +560,7 @@ C
 
       GOTO 5000
 
- 2000 CONTINUE      
+ 2000 CONTINUE
 C
 
 C  BLOCK 2B DONE.... NLTRA

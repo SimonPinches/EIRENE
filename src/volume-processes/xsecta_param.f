@@ -3,7 +3,7 @@ C  april 07:  setting of NRPI adapted (ion impact collisions)
 C  MAY 16  :  nrds -> nrei
 C
       SUBROUTINE EIRENE_XSECTA_PARAM
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -17,9 +17,9 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: IPLS, NRC, IATM, IAT, KK, IPL
 C
       DO 100 IATM=1,NATMI
@@ -98,7 +98,7 @@ C  FIND BULK SECONDARIES
      .          GOTO 135
   134         CONTINUE
               GOTO 155
- 
+
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
   135         CONTINUE
               NRCX=NRCX+1
@@ -118,11 +118,11 @@ C  FIND BULK SECONDARIES
      .          GOTO 145
   144         CONTINUE
               GOTO 155
- 
+
 C  CHARGE EXCHANGE BETWEEN IATM AND IPLS RESULTS IN IPL AND IAT
   145         CONTINUE
               NRCX=NRCX+1
- 
+
             ENDIF
   155     CONTINUE
 C
@@ -166,7 +166,7 @@ C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             ENDIF
 C
   230     CONTINUE
- 
+
         ENDIF
 C
   300 CONTINUE
@@ -193,7 +193,7 @@ C
 C
 C   ION IMPACT COLLISIONS
 C
- 
+
       DO 1000 IATM=1,NATMI
 C
 C  NO DEFAULT MODEL
@@ -219,8 +219,3 @@ C
       RETURN
 C
       END
- 
- 
- 
- 
- 

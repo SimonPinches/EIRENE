@@ -50,17 +50,17 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
       USE EIRMOD_CTETRA
- 
+
       IMPLICIT NONE
 C
       TYPE(CELL_ELEM), POINTER :: CUR
- 
+
       INTEGER, INTENT(IN) :: IBLD, ICURV, N1DIM
       INTEGER, INTENT(OUT) :: IERR
       REAL(DP), INTENT(IN) :: AORIG(*)
       REAL(DP), INTENT(OUT) :: YWERT(N1DIM,*)
       LOGICAL, INTENT(IN) :: LOGL
- 
+
       REAL(DP) :: TEILA(4), TEILWERT(4), VOLSUM(NCOORD)
       REAL(DP) :: IY, JX, KY, LX, MY
       REAL(DP) :: AX, AY, FX,
@@ -72,12 +72,12 @@ C
      .            dist8, summedist
       REAL(DP), ALLOCATABLE, SAVE :: XSTGRD(:)
       INTEGER :: ZUORD(NKNOT,0:50)
-      INTEGER :: K, I, J, IT, IR, IP, 
-     .           IRD, IPART, 
+      INTEGER :: K, I, J, IT, IR, IP,
+     .           IRD, IPART,
      .           IC, IN, IRM1, IPM1, ITM1,
      .           IN1, IN2, IN3, IN4, IN5, IN6, IN7, IN8, INTA
 C
- 
+
       IF ((LEVGEO <= 3) .AND. .NOT.ALLOCATED(XSTGRD)) THEN
         ALLOCATE (XSTGRD(NRAD))
         WHERE (NSTGRD > 0)
@@ -86,7 +86,7 @@ C
           XSTGRD = 1._DP
         END WHERE
       END IF
- 
+
       IERR=0
 C   X-Z PLOT ON Y=CONST PLANE
       IF ((LEVGEO.EQ.1.OR.LEVGEO.EQ.2).AND.LPPOL3(IBLD)) THEN
@@ -414,7 +414,7 @@ c berechnung der seiten
      .              dist2*vorig(ir-1,ip,1)   +
      .              dist3*vorig(ir,ip-1,1)   +
      .              dist4*vorig(ir,ip,1))/summedist
- 
+
                irm1=ir-1
                ipm1=ip-1
                it=nt3rd-1
@@ -459,7 +459,7 @@ c berechnung der seiten
      .              dist2*vorig(ir-1,1,it)   +
      .              dist3*vorig(ir,1,it-1)   +
      .              dist4*vorig(ir,1,it))/summedist
- 
+
                irm1=ir-1
                ip=np2nd-1
                itm1=it-1
@@ -504,7 +504,7 @@ c berechnung der seiten
      .              dist2*vorig(1,ip-1,it)   +
      .              dist3*vorig(1,ip,it-1)   +
      .              dist4*vorig(1,ip,it))/summedist
- 
+
                ir=nr1st-1
                ipm1=ip-1
                itm1=it-1
@@ -539,7 +539,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,1,it) = (dist1*vorig(1,1,it-1) +
      .           dist2*vorig(1,1,it))/summedist
- 
+
             ir=nr1st-1
             ip=1
             itm1=it-1
@@ -550,7 +550,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,1,it) = (dist1*vorig(nr1st-1,1,it-1) +
      .           dist2*vorig(nr1st-1,1,it))/summedist
- 
+
             ir=1
             ip=np2nd-1
             itm1=it-1
@@ -561,7 +561,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,np2nd,it) = (dist1*vorig(1,np2nd-1,it-1) +
      .           dist2*vorig(1,np2nd-1,it))/summedist
- 
+
             ir=nr1st-1
             ip=np2nd-1
             itm1=it-1
@@ -574,9 +574,9 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,np2nd,it) = (dist1*vorig(nr1st-1,np2nd-1,it-1) +
      .           dist2*vorig(nr1st-1,np2nd-1,it))/summedist
- 
+
          enddo
- 
+
          do ir=2,nr1st-1
             irm1=ir-1
             ip=1
@@ -588,7 +588,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,1,1) = (dist1*vorig(ir-1,1,1) +
      .           dist2*vorig(ir,1,1))/summedist
- 
+
             irm1=ir-1
             ip=1
             it=nt3rd-1
@@ -599,7 +599,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,1,nt3rd) = (dist1*vorig(ir-1,1,nt3rd-1) +
      .           dist2*vorig(ir,1,nt3rd-1))/summedist
- 
+
             irm1=ir-1
             ip=np2nd-1
             it=1
@@ -610,7 +610,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,np2nd,1) = (dist1*vorig(ir-1,np2nd-1,1) +
      .           dist2*vorig(ir,np2nd-1,1))/summedist
- 
+
             irm1=ir-1
             ip=np2nd-1
             it=nt3rd-1
@@ -623,9 +623,9 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,np2nd,nt3rd) = (dist1*vorig(ir-1,np2nd-1,nt3rd-1) +
      .           dist2*vorig(ir,np2nd-1,nt3rd-1))/summedist
- 
+
          enddo
- 
+
          do ip=2,np2nd-1
             ir=1
             ipm1=ip-1
@@ -637,7 +637,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,ip,1) = (dist1*vorig(1,ip-1,1) +
      .           dist2*vorig(1,ip,1))/summedist
- 
+
             ir=1
             ipm1=ip-1
             it=nt3rd-1
@@ -648,7 +648,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,ip,nt3rd) = (dist1*vorig(1,ip-1,nt3rd-1) +
      .           dist2*vorig(1,ip,nt3rd-1))/summedist
- 
+
             ir=nr1st-1
             ipm1=ip-1
             it=1
@@ -659,7 +659,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,ip,1) = (dist1*vorig(nr1st-1,ip-1,1) +
      .           dist2*vorig(nr1st-1,ip,1))/summedist
- 
+
             ir=nr1st-1
             ipm1=ip-1
             it=nt3rd-1
@@ -672,7 +672,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,ip,nt3rd) = (dist1*vorig(nr1st-1,ip-1,nt3rd-1) +
      .           dist2*vorig(nr1st-1,ip,nt3rd-1))/summedist
- 
+
          enddo
 c berechnung der ecken
          in1=1+((1-1)+(1-1)*NP2T3)*NR1P2
@@ -702,7 +702,7 @@ c  fertig, zurueck auf ywert
                enddo
             enddo
          enddo
- 
+
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.LPTOR3(IBLD)) THEN
 C
         IT=1

@@ -5,7 +5,7 @@ cdr Feb. 2015:  total sputer tallies now included, resolved wrt. incident type
 cdr these total tallies may include sputtering of unidentified wall material,
 cdr  hence may be different from the totals obtained by sum over sputtered species resolved fluxes
 cdr  e.g. sptatot may be larger than summt, etc....
-  
+
 cdr SEPT.2014:  PRINTPOUT OF SPUTTERED FLUXES REVISED
 cdr  total sputter fluxes spttot(msurf) added.
 CDR  TO BE DONE:
@@ -31,7 +31,7 @@ C 07.12.06:  some comments introduced to clarify status with iliin=-3 option
 C 18.04.16:  reduced string length to match variable, J.Lore
 C
       SUBROUTINE EIRENE_OUTFLX(A,ISTRA)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -46,9 +46,9 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTRA
       CHARACTER(32), INTENT(IN) :: A
       REAL(DP) :: SUMA1(0:NATM,0:NSTRA), VARA1(0:NATM,0:NSTRA),
@@ -93,7 +93,7 @@ C      REAL(DP) :: HELP(NRAD), HELPP(NLMPGS)
       LOGICAL :: PRINTED(NLIMPS)
       CHARACTER(8) :: TEXTA(NADS), TEXTL(NALS)
       CHARACTER(10) :: TEXTYP(0:4)
- 
+
       IF (.NOT.ALLOCATED(HELP)) ALLOCATE (HELP(NRAD))
 
       LGVRA1=.FALSE.
@@ -110,7 +110,7 @@ C      REAL(DP) :: HELP(NRAD), HELPP(NLMPGS)
       LGVARL=.FALSE.
       LOGADS=.FALSE.
       LOGALS=.FALSE.
- 
+
       PRINTED = .FALSE.
       CALL EIRENE_LEER(1)
       WRITE (iunout,9999) A
@@ -277,21 +277,21 @@ C  TOROIDAL SURFACE
    10     CONTINUE
    11     CONTINUE
         ENDIF
- 
- 
+
+
 C  SPECTRA
         IF (NTLSFL(ISPR) > 0) THEN
           ISF=I
           IF (I < 0) ISF=ABS(I)+NLIM
           IOUT = NTLSFL(ISPR)+ifoff
- 
+
           TEXTYP(0) = 'PHOTONS   '
           TEXTYP(1) = 'ATOMS     '
           TEXTYP(2) = 'MOLECULES '
           TEXTYP(3) = 'TEST IONS '
           TEXTYP(4) = 'BULK IONS '
           IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
- 
+
           DO ISPC=1,NADSPC
             IF ((ESTIML(ISPC)%ISRFCLL == 0) .AND.
      .          (ESTIML(ISPC)%ISPCSRF == ISF)) THEN
@@ -372,7 +372,7 @@ C  SPECTRA
             END IF
           END DO
         END IF
- 
+
         IF (PRINTED(I)) CYCLE
 C
 C  *****************************************************
@@ -492,7 +492,7 @@ C
           IF (LEOTPHT) SUMPH2(IPHOT,ISTRA)=EOTPHT(IPHOT,I)
           SUMME=SUMME+SUMPH2(IPHOT,ISTRA)
         ENDDO
- 
+
         DO N=1,NSIGSI
           IF (IIHW(N).EQ.19) THEN
             DO IPHOT=1,NPHOTI
@@ -847,8 +847,8 @@ C  SURFACE AVERAGED TALLY NO. 50
      .    WRITE (iunout,*) '(EXCLUDING BULK IONS (RECYCLING SOURCE) '
           CALL EIRENE_MASR1 ('NET PFLX',SUMMT)
           CALL EIRENE_MASR1 ('NET EFLX',SUMME)
- 
- 
+
+
         ENDIF
 C
 C  INDEPENDENT OF VALUE AND SIGN OF ILIIN:
@@ -1698,7 +1698,7 @@ C
         IF (LERFPHPHT) SUMPH2(IPHOT,ISTRA)=ERFPHPHT(IPHOT,I)
         SUMMEI=SUMMEI+SUMPH2(IPHOT,ISTRA)
       ENDDO
- 
+
       DO N=1,NSIGSI
         IF (IIHW(N).EQ.23) THEN
           DO IPHOT=1,NPHOTI
@@ -2187,7 +2187,7 @@ C
       TTSPTI  = TTSPTI + SUMMI
       TTSPTPH = TTSPTPH + SUMMPH
       TTSPTP  = TTSPTP + SUMMP
-      
+
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 !      IF (TTTT.EQ.0._DP) THEN
 !        CALL EIRENE_LEER(1)
@@ -2245,7 +2245,7 @@ C  SURFACE AVERAGED TALLY NO. 71
         ENDIF
       END DO
       CALL EIRENE_LEER(1)
-      
+
       ELSEIF (SPTATOT(I) > 0._DP) THEN
 
         CALL EIRENE_LEER (1)
@@ -2316,7 +2316,7 @@ C
         IF (LSPTMIO) SUMI1(IION,ISTRA)=SPTMIO(IION,I)
         SUMMT=SUMMT+SUMI1(IION,ISTRA)
         SUMMI=SUMMI+SUMI1(IION,ISTRA)
-      END DO  
+      END DO
 C
       DO N=1,NSIGSI
         IF (IIHW(N).EQ.62) THEN
@@ -2375,7 +2375,7 @@ C
       TTSPTI  = TTSPTI + SUMMI
       TTSPTPH = TTSPTPH + SUMMPH
       TTSPTP  = TTSPTP + SUMMP
-      
+
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
 !     IF (TTTT.EQ.0._DP) THEN
@@ -2388,7 +2388,7 @@ C
 
       IF (TTTT > 0) THEN
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 
+      WRITE (iunout,*)
      .   'FLUX SPUTTERED FROM SURFACE BY INCIDENT MOLECULES:'
       IF (SUMMA.NE.0.D0) THEN
 C  SURFACE AVERAGED TALLY NO. 52
@@ -2436,7 +2436,7 @@ C  SURFACE AVERAGED TALLY NO. 72
         ENDIF
       END DO
       CALL EIRENE_LEER(1)
-      
+
       ELSEIF (SPTMTOT(I) > 0._DP) THEN
 
         CALL EIRENE_LEER (1)
@@ -2507,7 +2507,7 @@ C
         IF (LSPTIIO) SUMI1(IION,ISTRA)=SPTIIO(IION,I)
         SUMMT=SUMMT+SUMI1(IION,ISTRA)
         SUMMI=SUMMI+SUMI1(IION,ISTRA)
-      END DO  
+      END DO
 C
       DO N=1,NSIGSI
         IF (IIHW(N).EQ.63) THEN
@@ -2566,7 +2566,7 @@ C
       TTSPTI  = TTSPTI + SUMMI
       TTSPTPH = TTSPTPH + SUMMPH
       TTSPTP  = TTSPTP + SUMMP
-      
+
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
 !      IF (TTTT.EQ.0._DP) THEN
@@ -2576,10 +2576,10 @@ C
 !        CALL EIRENE_LEER(1)
 !        GOTO 208
 !      ENDIF
-      
+
       IF (TTTT > 0._DP) THEN
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 
+      WRITE (iunout,*)
      .   'FLUX SPUTTERED FROM SURFACE BY INCIDENT TEST IONS:'
       IF (SUMMA.NE.0.D0) THEN
 C  SURFACE AVERAGED TALLY NO. 53
@@ -2698,7 +2698,7 @@ C
         IF (LSPTPHIO) SUMI1(IION,ISTRA)=SPTPHIO(IION,I)
         SUMMT=SUMMT+SUMI1(IION,ISTRA)
         SUMMI=SUMMI+SUMI1(IION,ISTRA)
-      END DO  
+      END DO
 C
       DO N=1,NSIGSI
         IF (IIHW(N).EQ.64) THEN
@@ -2757,7 +2757,7 @@ C
       TTSPTI  = TTSPTI + SUMMI
       TTSPTPH = TTSPTPH + SUMMPH
       TTSPTP  = TTSPTP + SUMMP
-      
+
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
 !      IF (TTTT.EQ.0._DP) THEN
@@ -2770,7 +2770,7 @@ C
 
       IF (TTTT > 0._DP) THEN
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 
+      WRITE (iunout,*)
      .   'FLUX SPUTTERED FROM SURFACE BY INCIDENT PHOTONS:'
       IF (SUMMA.NE.0.D0) THEN
 C  SURFACE AVERAGED TALLY NO. 54
@@ -2889,7 +2889,7 @@ C
         IF (LSPTPIO) SUMI1(IION,ISTRA)=SPTPIO(IION,I)
         SUMMT=SUMMT+SUMI1(IION,ISTRA)
         SUMMI=SUMMI+SUMI1(IION,ISTRA)
-      END DO  
+      END DO
 C
       DO N=1,NSIGSI
         IF (IIHW(N).EQ.65) THEN
@@ -2948,7 +2948,7 @@ C
       TTSPTI  = TTSPTI + SUMMI
       TTSPTPH = TTSPTPH + SUMMPH
       TTSPTP  = TTSPTP + SUMMP
-      
+
       TTTT = ABS(SUMMA)+ABS(SUMMM)+ABS(SUMMI)+ABS(SUMMPH)+ABS(SUMMP)
 
 !      IF (TTTT.EQ.0._DP) THEN
@@ -2961,7 +2961,7 @@ C
 
       IF (TTTT > 0._DP) THEN
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 
+      WRITE (iunout,*)
      .   'FLUX SPUTTERED FROM SURFACE BY INCIDENT BULK IONS'
       IF (SUMMA.NE.0.D0) THEN
 C  SURFACE AVERAGED TALLY NO. 55
@@ -3025,7 +3025,7 @@ C  SURFACE AVERAGED TALLY NO. 75
       END IF  ! TTTT
   210 CONTINUE
 
-     
+
       TTSPT = TTSPTA + TTSPTM + TTSPTI + TTSPTPH + TTSPTP
 
       IF (ABS(TTSPT) < EPS10.AND.SPTTOT(I) < EPS10) THEN
@@ -3042,9 +3042,9 @@ C  SURFACE AVERAGED TALLY NO. 75
         IF (ABS(TTSPTP) > EPS10) CALL EIRENE_MASR1 ('BULKIONS',TTSPTP)
 
         CALL EIRENE_LEER(1)
-        WRITE (IUNOUT,*) 'TOTAL FLUX SPUTTERED FROM SURFACE' 
-        CALL EIRENE_MASR1 ('TOT. FLX',TTSPT)       
-      END IF 
+        WRITE (IUNOUT,*) 'TOTAL FLUX SPUTTERED FROM SURFACE'
+        CALL EIRENE_MASR1 ('TOT. FLX',TTSPT)
+      END IF
 
       IF (SPTTOT(I) > 0._DP.and.spttot(i).ne.ttspt) THEN
         CALL EIRENE_LEER (1)
@@ -3153,7 +3153,7 @@ C  SURFACE AVERAGED TALLY NO. 83
 C
   405 CONTINUE
 C
- 
+
 C  SPECTRA
       TEXTYP(0) = 'PHOTONS   '
       TEXTYP(1) = 'ATOMS     '
@@ -3161,7 +3161,7 @@ C  SPECTRA
       TEXTYP(3) = 'TEST IONS '
       TEXTYP(4) = 'BULK IONS '
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
- 
+
       DO ISPC=1,NADSPC
         IF ((ESTIML(ISPC)%ISRFCLL == 0) .AND.
      .      (ESTIML(ISPC)%ISPCSRF == I)) THEN
@@ -3192,10 +3192,10 @@ C  SPECTRA
      .           ESTIML(ISPC)%SGMS
         END IF
       END DO
- 
+
         PRINTED(I) = .TRUE.
 10000 CONTINUE  ! END OF LOOP OVER SURFACES, FOR WHICH PRINTOUT WAS REQUESTED
- 
+
       RETURN
  9999 FORMAT (1X,A32)
       END

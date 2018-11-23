@@ -15,9 +15,9 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CRECH
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y
       INTEGER, INTENT(IN) :: IFL
       TYPE(PPOINT), POINTER :: POINT
@@ -36,7 +36,7 @@ C
       POINT%NPL2D = IFL
       POINT%NUMSUR = INOSF
       NULLIFY(POINT%NXTPNT)
- 
+
       IF (ASSOCIATED(LAST_POINT)) THEN
         LAST_POINT%NXTPNT => POINT
         LAST_POINT => POINT
@@ -44,16 +44,16 @@ C
         FIRST_POINT => POINT
         LAST_POINT => FIRST_POINT
       END IF
- 
+
       INUMS = INUMS + 1
       INSTOR = INSTOR + 1
 C
       RETURN
- 
+
 C     the following ENTRY is for reinitialization of EIRENE
- 
+
       ENTRY EIRENE_STCOOR_REINIT
       IFIRST = 0
       return
- 
+
       END

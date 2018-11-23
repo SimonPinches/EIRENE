@@ -26,7 +26,7 @@
       real(DP) X(0:3), Y(0:3)
       real(DP) H,C1,C2,C3,C4,XX,YY,YC,YP
       integer K, L, ms
-      
+
       H = (xf - xi) / real(m-1,kind(1.d0))  !integration step
       X(0) = xi
       Y(0) = yi               !Initial conditions
@@ -38,12 +38,12 @@
 
 !Start with Runge-Kutta
       DO K = 0, 1
-        XX = X(K) 
-        YY = Y(K) 
+        XX = X(K)
+        YY = Y(K)
         C1 = FP(XX,YY)
 
         XX = X(K) + H / 2.d0
-        YY = Y(K) + H / 2.d0 * C1 
+        YY = Y(K) + H / 2.d0 * C1
         C2 = FP(XX,YY)
 
         YY = Y(K) + H / 2.d0 * C2
@@ -51,12 +51,12 @@
 
         X(K + 1) = X(K) + H
         XX = X(K + 1)
-        YY = Y(K) + H * C3 
+        YY = Y(K) + H * C3
         C4 = FP(XX,YY)
 
         Y(K + 1) = Y(K) + H * (C1 + 2 * C2 + 2 * C3 + C4) / 6.d0
-        XX = X(K + 1) 
-        
+        XX = X(K + 1)
+
         ms = ms + 1
         xb(ms) = x(k+1)
         yb(ms) = y(k+1)
@@ -65,54 +65,54 @@
 
 ! explicit precdictor step Adams-Bashford
   100 K = 2
-      XX = X(K) 
-      YY = Y(K) 
+      XX = X(K)
+      YY = Y(K)
       C1 = FP(XX,YY)
 
       XX = X(K - 1)
       YY = Y(K - 1)
       C2 = FP(XX,YY)
 
-      XX = X(K - 2) 
-      YY = Y(K - 2) 
+      XX = X(K - 2)
+      YY = Y(K - 2)
       C3 = FP(XX,YY)
 
       X(K + 1) = X(K) + H
       YP = Y(K) + H / 12.d0 * (23.d0 * C1 - 16.d0 * C2 + 5.d0 * C3)
-      
+
 ! implicit corrector step Adams-Moulton
       L = 0
-  200 XX = X(K + 1) 
-      YY = YP 
+  200 XX = X(K + 1)
+      YY = YP
       C1 = FP(XX,YY)
 
-      XX = X(K) 
-      YY = Y(K) 
+      XX = X(K)
+      YY = Y(K)
       C2 = FP(XX,YY)
 
       XX = X(K - 1)
-      YY = Y(K - 1) 
+      YY = Y(K - 1)
       C3 = FP(XX,YY)
 
       YC = Y(K) + H / 12.d0 * (5.d0 * C1 + 8.d0 * C2 - C3)
-      
+
       IF (DABS(YP - YC) > EC) THEN
-         YP = YC 
-         L = L + 1 
+         YP = YC
+         L = L + 1
          GOTO 200
       END IF
-      
-      Y(K + 1) = YC 
+
+      Y(K + 1) = YC
 
       ms = ms + 1
       xb(ms) = x(k+1)
       yb(ms) = y(k+1)
-     
+
       DO K = 0, 2
-        X(K) = X(K + 1) 
+        X(K) = X(K + 1)
         Y(K) = Y(K + 1)
       END DO
 
       IF (X(2) < xf)  GOTO 100
-           
+
       END

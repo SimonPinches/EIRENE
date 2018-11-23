@@ -2,15 +2,15 @@ C
 C
       FUNCTION EIRENE_FMU
      .  (V1,V2,V3,VR1,VR2,VR3,P1,P2,P3,PR1,PR2,PR3,EPS)
- 
+
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: V1, V2, V3, VR1, VR2, VR3,
      .                      P1, P2, P3, PR1, PR2, PR3, EPS
       REAL(DP) :: XNEN, EIRENE_FMU
- 
+
       XNEN=PR1*VR2-PR2*VR1
       IF (ABS(XNEN).GT.EPS) THEN
         EIRENE_FMU=(VR2*(V1-P1)-VR1*(V2-P2))/XNEN

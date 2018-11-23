@@ -16,11 +16,11 @@ c          (was ok already for call to xstei)
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 cdr  oct.14:  pls made allocatable
-cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
+cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing)
 cdr  oct.14:  further synchronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
-cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
+cdr  apr.16:  accmas and accinv set explicitly also for reaction -9
 cdr           (was missing, but accidentally correct)
 
 !pb  APR  16:  pplds  -> pplei
@@ -48,18 +48,18 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, CHRDF0, RMASS, DEIMIN,
-     .          EHEAVY, EELEC, EBULK, COU, EIRENE_RATE_COEFF, 
+     .          EHEAVY, EELEC, EBULK, COU, EIRENE_RATE_COEFF,
      .          ACCMAS, ACCINV,DE_10
 
       INTEGER :: ICOUNT, IA1, IP2, IPLS, ITEST, IIO, IION, IDSC1,
      .           NRC, J, IPLS1, IPLS2, IATM, KK, IATM1, IATM2, ITYPB,
-     .           ISPZB, III, IDSC, IREL, IBGK_SP, 
-     .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL, 
+     .           ISPZB, III, IDSC, IREL, IBGK_SP,
+     .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL,
      .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
@@ -73,7 +73,7 @@ cdr: set hard-wired lower density for H.4 type fits
           PLS(J)=MAX(DEIMIN,DEINL(J))
    10   CONTINUE
       END IF
- 
+
 C
 C
 C  SET TEST IONIC SPECIES ATOMIC AND MOLECULAR DATA;
@@ -99,7 +99,7 @@ C
      .      NPRT(NSPAM+IION).GT.1) THEN
 C  APPLY THE DEFAULT MODEL FOR H2+ DISSOCIATION
 C  USE NPRT.GT.1 TO DISTINGUISH ATOMIC FROM MOLECULAR IONS
- 
+
 C  FIRST: FIND SECONDARY SPECIES INDICES:
           IATM1=0
           IATM2=0
@@ -213,7 +213,7 @@ C
 C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, LABELED -8, -9 AND -10.
 C
 C  FIRST PROCESS (MAY BE SPLIT INTO 1A AND 1B)  H2+  -->  H + H+ :  DEFAULT PROCESS NO. KK=-8
-          KK=-8 
+          KK=-8
           IF (IATM1.NE.IATM2) THEN
             FACTKK=0.5
             ICOUNT=1
@@ -350,7 +350,7 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
 
           EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS   ! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.  
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS   ! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.
           EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
           EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
 
@@ -382,7 +382,7 @@ C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
             NELREI(IREI) = -10
             NHVREI(IREI) = -10
           ELSE ! storage save mode
-cdr 
+cdr
 cdr here: eelds1 und ehvds1 set in felee1 ?  there 0.88 times tein, i.e. not constant.
 cdr
             NREAEI(IREI) = -10
@@ -438,7 +438,7 @@ C
 
 
   100 CONTINUE
- 
+
 C   SECONDLY: DEAL WITH CX (CHARGE EXCHANGE) COLLISIONS
 
 C  TENTATIVELY ASSUME: NO CHARGE EXCHANGE BETWEEN IION AND ANY IPLS
@@ -574,7 +574,7 @@ C
      .                 KK,FACTKK,PLS)
 C
   230     CONTINUE
- 
+
           NIELI(IION)=IDSC
         ENDIF
 C
@@ -590,7 +590,7 @@ C
 C
 C   GENERAL HEAVY PARTICLE IMPACT COLLISIONS
 C
- 
+
       DO IION=1,NIONI
         IDSC=0
         LGIPI(IION,0,0)=0
@@ -718,11 +718,11 @@ C
               CALL EIRENE_XSTPI_2(IRPI,IPL)
   885       CONTINUE
           ENDIF
- 
+
         ENDIF
 C
  1000 CONTINUE
- 
+
       DEALLOCATE (PLS)
 C
       RETURN

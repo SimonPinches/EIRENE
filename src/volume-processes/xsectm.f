@@ -17,8 +17,8 @@ c          (was ok already for call to xstei)
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: IML, pls (for H.4 option)
 ! oct.2014: call to xstpi: additional argument: chrdf0
-cdr  oct.14:  clogau removed 
-cdr  oct.14:  PLS made allocatable, 
+cdr  oct.14:  clogau removed
+cdr  oct.14:  PLS made allocatable,
 cdr  oct.14:  further synchronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
@@ -32,7 +32,7 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of 
 cdr  Sept 16:  nmdsi  -> nmeii
 cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
-cdr           default: FDLMCX=0.0 (from initialisation phase) means: 
+cdr           default: FDLMCX=0.0 (from initialisation phase) means:
 CDR           no fluid limit cut-off at CX collisions.
 cdr  sept 18: nhvrei rationalization for default reactions (==-KK)
 C
@@ -52,13 +52,13 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), ALLOCATABLE :: PLS(:)
-      REAL(DP) :: FACTKK, DEIMIN, EELEC, CHRDF0, 
-     .            RMASS, EBULK, EHEAVY, COU, EIRENE_RATE_COEFF, 
-     .            ACCMAS, ACCINV 
+      REAL(DP) :: FACTKK, DEIMIN, EELEC, CHRDF0,
+     .            RMASS, EBULK, EHEAVY, COU, EIRENE_RATE_COEFF,
+     .            ACCMAS, ACCINV
 
       INTEGER :: ITEST, IATM, IPLS, IION, IA1, IP2, ION, ICOUNT,
      .           IION3, IDSC1, NRC, KK, J, IMOL, IPLS1, IPLS2, IPLS3,
@@ -70,7 +70,7 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS 
+cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
@@ -81,7 +81,7 @@ cdr: that they collapse to the Corona limit values.
           PLS(J)=MAX(DEIMIN,DEINL(J))
    10   CONTINUE
       END IF
- 
+
 C
 C
 C   ELECTRON IMPACT COLLISIONS:
@@ -99,14 +99,14 @@ C
         ENDDO
 C
 C  CHECK IF THIS REALLY IS A MOLECULE: USE NPRT(ISPZ).GT.1?
- 
+
         IF (NPRT(NSPA+IMOL).LE.1) THEN
           WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTM: '
           WRITE (IUNOUT,*) 'IMOL= ',IMOL,' CARRIES ONLY ONE FLUX UNIT'
           WRITE (IUNOUT,*) 'EXIT CALLED FROM XSECTM '
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
- 
+
 C  YES, "IMOL" IS A MOLECULE !
 C
         IF (NRCM(IMOL).EQ.0.AND.NCHARM(IMOL).EQ.2) THEN
@@ -311,7 +311,7 @@ C           EPOTEI(IREI)=4.5   !  default for EDPOTM for this dissoc. reaction)
           ELSE
             EELEI1(IREI,1)=-10.5
             NREAEI(IREI)=-5
-            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5: 
+            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
             NHVREI(IREI)=-5
           END IF
           FACREI(IREI,1) = 1._DP
@@ -348,7 +348,7 @@ c   Accumulate totals....
           P2ND(IREI,NSPH+IA1)=P2ND(IREI,NSPH+IA1)+1.
 
           EATEI(IREI,IA1,1)=RMASSA(IA1)/ACCMAS
-          EATEI(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV        
+          EATEI(IREI,IA1,2)=1./RMASSA(IA1)/ACCINV
           EATEI(IREI,0,    1)=EATEI(IREI,IA1,1)
           EATEI(IREI,0,    2)=EATEI(IREI,IA1,2)
 
@@ -376,9 +376,9 @@ C  TRANSFERRED KINETIC ENERGY: 10 EV
             NHVREI(IREI) = -6
           ELSE
             EELEI1(IREI,1)=-25.0
-C           EHVEI1(IREI,1)= 10.0 SET IN ....? 
+C           EHVEI1(IREI,1)= 10.0 SET IN ....?
             NREAEI(IREI) = -6
-            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6: 
+            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
             NHVREI(IREI) = -6
           END IF
           FACREI(IREI,1) = FACTKK
@@ -424,9 +424,9 @@ C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NHVREI(IREI) = -7
           ELSE  ! storage save mode
             EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
-C           EHVEI1(IREI,1)= 0.0 SET IN ....? 
+C           EHVEI1(IREI,1)= 0.0 SET IN ....?
             NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
-            NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7: 
+            NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
             NHVREI(IREI) = -7
           END IF
           FACREI(IREI,1) = 1._DP
@@ -483,7 +483,7 @@ C
 C
 C   CHARGE EXCHANGE:
 C
-C  TENTATIVELY ASSUME: NO CHARGE EXCHANGE BETWEEN IATM AND ANY IPLS 
+C  TENTATIVELY ASSUME: NO CHARGE EXCHANGE BETWEEN IATM AND ANY IPLS
       DO 200 IMOL=1,NMOLI
         IDSC=0
         LGMCX(IMOL,0,0)=0
@@ -499,11 +499,11 @@ C  NON-DEFAULT CX MODEL:
           DO 130 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.3) CYCLE
-C  make sure that incident particle is a bulk particle 
+C  make sure that incident particle is a bulk particle
             IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*) 
-     .        'INPUT ERROR FOR CX PROCESS, IMOL,KK ',IMOL,KK 
+              WRITE (IUNOUT,*)
+     .        'INPUT ERROR FOR CX PROCESS, IMOL,KK ',IMOL,KK
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  CX PROCESS IDENTIFIED
@@ -511,7 +511,7 @@ C  CX PROCESS IDENTIFIED
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
-C  BULK PARTICLE INDEX            
+C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IDSC=IDSC+1
             NRCXI=NRCXI+1
@@ -575,11 +575,11 @@ C
           DO 230 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.5) CYCLE
-C  make sure that incident particle is a bulk particle 
+C  make sure that incident particle is a bulk particle
             IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*) 
-     .        'INPUT ERROR FOR EL PROCESS, IMOL,KK ',IMOL,KK 
+              WRITE (IUNOUT,*)
+     .        'INPUT ERROR FOR EL PROCESS, IMOL,KK ',IMOL,KK
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  EL PROCESS IDENTIFIED
@@ -650,7 +650,7 @@ C
 C
 C   GENERAL HEAVY PARTICLE IMPACT COLLISIONS
 C
- 
+
       DO IMOL=1,NMOLI
         IDSC=0
         LGMPI(IMOL,0,0)=0
@@ -667,11 +667,11 @@ C
           DO NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
             IF (ISWR(KK).NE.4) CYCLE
-C  make sure that incident particle is a bulk particle 
+C  make sure that incident particle is a bulk particle
             IF (EIRENE_IDEZ(IBULKM(IMOL,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
-              WRITE (IUNOUT,*) 
-     .        'INPUT ERROR FOR PI PROCESS, IMOL,KK ',IMOL,KK 
+              WRITE (IUNOUT,*)
+     .        'INPUT ERROR FOR PI PROCESS, IMOL,KK ',IMOL,KK
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  PI PROCESS IDENTIFIED
@@ -786,11 +786,11 @@ C
               CALL EIRENE_XSTPI_2(IRPI,IPL)
   885       CONTINUE
           ENDIF
- 
+
         ENDIF
 C
  1000 CONTINUE
- 
+
       DEALLOCATE (PLS)
 C
       RETURN

@@ -1,4 +1,4 @@
-cdr Nov. 17   unification of update, fpath.  
+cdr Nov. 17   unification of update, fpath.
 cdr           tbd: photon routines, static loop, logatm,mol.ion in static loop.
 cdr Oct. 17   minor sync with folion
 cdr           started: implementation of QSS branch: folstat_neut.f  not ready
@@ -10,11 +10,11 @@ cdr           (NCOU.GT.1) use PR rather then AX(2)=1, when leaving the NCOU loop
 c
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
-Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum? 
+Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum?
 cdr Oct.14             spectra scoring only called if cell based spectra are defined
 c
 c   ???     LDAMCEL(icell) introduced ??  "damaged cell" ??, comes via eirmod_cgeom.
-c   ???     checking for 3rd grid intersection in case levgeo=4 
+c   ???     checking for 3rd grid intersection in case levgeo=4
 c           (triangles plus resolution in z-direction)
 C
 !PB 30.01.08: optimization of calculation of intersection with additional surfaces
@@ -29,7 +29,7 @@ C
 
 !PB 18.04.06: xstorv=0 in "vacuum region" added
 !PB 26.09.06: sg corrected for levgeo=4 and levgeo=5
- 
+
 C  MAY05: CALL UPDATE FROM STATIC LOOP WITH IFLAG=4 (RATHER =1)
 C         WG. COLL EST. ON 1ST FLIGHT AFTER BIRTH.
 C
@@ -62,13 +62,13 @@ C     LGPART=FALSE
 C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
-c  at 100 :   start a new neutral particle, velocity is given as full cartesian vector, lcart=true 
+c  at 100 :   start a new neutral particle, velocity is given as full cartesian vector, lcart=true
 c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
 C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.
-c  at 104 :   an earlier track continues here. 
-c             initial position of track and cumulated integral for mfp sampling is not refreshed. 
+c  at 104 :   an earlier track continues here.
+c             initial position of track and cumulated integral for mfp sampling is not refreshed.
 c             meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION
@@ -94,9 +94,9 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: CFLAG(7,MSTOR0)
       REAL(DP) :: AX(2)
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -106,14 +106,14 @@ C
      .          X0ERR, Y0ERR, Z0ERR, VELC, E0C, VELYC, VELZC, SG,
      .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, T, ZTS,
      .          ZMFP, ZEP1, ZLOG, ZTST, ZINT1, ZINT2, Z0S, TIMES,
-     .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE, 
+     .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE,
      .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond exp. est
      .          EIRENE_FPATH,
      .          SCOS_NEW
       REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
       INTEGER :: NBLCKC, NCELLC, NRCLLC, NACLLC, ITIMEC, IPERIDC,
      .           IFPTHC, IUPDTC, NPCLLC, NTCLLC, NTSAVE, NPSAVE,
-     .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS, 
+     .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS,
      .           NPCOLC,
      .           JJ, NPCELC, NTCELC, NTCOLC, IFLAG, I, IM,
      .           NCLLN
@@ -170,12 +170,12 @@ C
  1001 CONTINUE
       IF (IC_NEUT.EQ.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
- 
+
 C***********************************************************************
 C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
- 
+
 C  WEIGHT TOO SMALL? STOP HISTORY
         IF (WEIGHT.LT.EPS30) THEN
           LGPART=.FALSE.
@@ -214,7 +214,7 @@ C
         ELSE
           NUPC(1)=(NCELL-NRCELL-NBLCKA)/NR1P2
         END IF
-        
+
         IF (IFPATH.NE.1) GOTO 993
 !  EIRENE_FPATHPH IS CALLED FROM EIRENE_FPATH
         ZMFP=EIRENE_FPATH(NCELL,CFLAG,1,1)
@@ -248,7 +248,7 @@ C
 C
  1002 CONTINUE
 
-C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION, 
+C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION,
 C                 BUT NOW IT RETURNS TO FULL MOTION
 C
       IF (IC_NEUT.GT.1.AND.NLTRC.AND.TRCHST)
@@ -259,7 +259,7 @@ C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
       IF (IC_NEUT.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
 
-C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" 
+C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP"
 C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
         IC_ION=0
         IC_NEUT=0
@@ -307,11 +307,11 @@ C             MSURFG= ??
           ENDIF
         ENDIF
       ENDIF
- 
+
 C**********************************************************************
 C   STATIC LOOP FINISHED. REGULAR PARTICLE TRACKING CONTINUES
 C**********************************************************************
- 
+
       IC_ION=0
       IC_NEUT=0
 C
@@ -377,13 +377,13 @@ C                            REFRESH MFP SAMPLING
       ZT=0.0
 C
   110 CONTINUE
- 
+
       NCOU=1
       NUPC(1)=0
       NCOUNT(1)=1
       NCOUNP(1)=1
       ISRFCL=-1
- 
+
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
       IF (LDAMCEL(NCELL)) GOTO 9912
 C
@@ -500,7 +500,7 @@ C
           TS=ZT+ZDT1
           ZTST=TS
         ENDIF
- 
+
       ENDIF
 C
       IF (ZTST.GE.1.D30) GOTO 990
@@ -512,7 +512,7 @@ C  NCOU CELLS ARE CROSSED BY THE CURRENT TRACK.
 C  EVALUATE REACTION RATES, MEAN FREE PATH, ETC. IN THESE CELLS
 C
       IFLAG=3
- 
+
       IF (NLTRJ) THEN
 C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATED SAMPLING
         TRAJ(ITRJ)%TRJ%NCOU_CELL = TRAJ(ITRJ)%TRJ%NCOU_CELL + NCOU
@@ -602,7 +602,7 @@ c             EXPM=EXP(-EX)
 c             AX(1)=AX(1)*(1.-EXPM)/EX
 c           ENDIF
 c  done: AX(1) is adapted, and EXPM is set.
-c 
+c
             ZTS=ZTS+CLPD(J)
             IF (NLPOL) NPCELC=NCOUNP(J)
             IF (NLTOR) NTCELC=NCOUNT(J)
@@ -638,7 +638,7 @@ C  STOP CONDITIONAL TRACK AT EARLIER SECTION,  BECAUSE JCOL AND WMINC-CRITERION?
           IFLAG=2
           IF (IUPDTE.GE.1) THEN
             CALL EIRENE_UPDATE(XSTOR2,XSTORV2,IFLAG)
-            IF (NADSPC_CD >= 1) 
+            IF (NADSPC_CD >= 1)
      .        CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
           ENDIF
           ZT=ZTS
@@ -763,7 +763,7 @@ C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM) GOTO 990
       IF (NACELL.LT.1.AND.NRCELL.LT.1) GOTO 990
-!pb      
+!pb
       if (.not.lgpart) goto 9912
 C
 C  PARTICLE ON SURFACE MRSURF BELONGING TO 1ST (RADIAL OR X-) GRID
@@ -804,7 +804,7 @@ C  SWITCH OFF CONDITIONAL EXP. ESTIMATOR
 C  AT AN INTERNAL SURFACE ?
       IF (NLPR.AND..NOT.NLTRJ.AND.(AX(2).LT.WMINC_LOCAL)) THEN
         IF (NLTRC) THEN
-C  TEMPORARILY 
+C  TEMPORARILY
           X0S=X0+VELX*ZT
           Y0S=Y0+VELY*ZT
           Z0S=Z0+VELZ*ZT
@@ -822,7 +822,7 @@ C  TEMPORARILY
         IF (ICOL.EQ.1) GOTO 512
 C  ICOL=0: NO COLLISION YET; RESTART AGAIN WITH FRESH COND. EXP. ESTIMATOR
 C                            IN NEXT CELL
-c       IF (NLTRC) 
+c       IF (NLTRC)
 c    .     write (iunout,*) 'continue without restart, npanu ',
 c    .                       npanu,ICOL
         AX(1)=1.
@@ -974,7 +974,7 @@ C   IN WHICH 1ST COLLISION FOUND.
 C  IN CASE NCOU.EQ.1: XSTORV HAS NOT BEEN STORED ONTO XSTORV2
         ZMFP=1./XSTORV(NSTORV)
       ENDIF
-      
+
       NPCLLC=1
       NTCLLC=1
       IF (NLPOL) NPCLLC=NPCOLC
@@ -1047,7 +1047,7 @@ C   RESTORE PRE COLLISION DATA AND SAMPLE FROM COLLISION KERNEL
       NLSRFX=.FALSE.
       NLSRFY=.FALSE.
       NLSRFZ=.FALSE.
-      NLSRFA=.FALSE.                                                
+      NLSRFA=.FALSE.
       MSURF=0
       MRSURF=0
       MPSURF=0

@@ -2,20 +2,20 @@ c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
 c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
-c            option NCHTAL=4 is unfinished. print warning and return 
+c            option NCHTAL=4 is unfinished. print warning and return
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
 c            set default ncheni=1 for nchtal=2 already in calling routine,
-c            to avoid that chords are erroneously turned off there. 
+c            to avoid that chords are erroneously turned off there.
 cpb jul.17:  request from aug.16: psig and ARGST depends on NCHTAL done
 cdr       :  commit PART 1: allocatable storage: ARGST, VPLOT, AA, XNTG
-cdr       :  PART 2: automatic detection of 1st dimension ND: tb committed later 
+cdr       :  PART 2: automatic detection of 1st dimension ND: tb committed later
 cdr Oct 17  :
-cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
-cdr                    analogous to H emission lines,             NCHTAL=2 
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
+cdr                    analogous to H emission lines,             NCHTAL=2
 cdr       : added ITP (type of relevant component)
 cdr Jan 18: added MX_COMPO, generalize storage allocation PSIG(ND) for NCHTAL=2 option
 cdr         NCHTAL=5 option (He lines) is now redundant, due to generalization
-cdr                  of NCHTAL=2 option to arbitrary atomic or molecular lines.                   
+cdr                  of NCHTAL=2 option to arbitrary atomic or molecular lines.
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
@@ -54,7 +54,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CTEXT
       USE EIRMOD_CUPD
- 
+
       IMPLICIT NONE
 C
       INTEGER, INTENT(IN) :: ICHORI, ISP, ITP
@@ -66,13 +66,13 @@ C
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
      .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
      .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM
-     .           ,summt,addt, XMA, 
-     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX 
+     .           ,summt,addt, XMA,
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX
       REAL(DP) :: EIRENE_FTABRC1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
      .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
      .           KREC, IRRC, MAXREC, IFLAG, ISPC,
-     .           ICELL, 
+     .           ICELL,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       INTEGER, SAVE :: MX_COMPO, ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
@@ -99,12 +99,12 @@ C
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, 
+     .             ELNAME, IZ1,
      .             IROW_ESC, ICOL_ESC, POP_ESC)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
@@ -118,14 +118,14 @@ C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
 
-cdr   IF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) NCHNI=1  
+cdr   IF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) NCHNI=1
 cdr   this is now already done in calling routine diagno.f
 
 cdr:  aug. 2016
 cdr:  to be written: use emin1, emax1 to identify upper and lower state of a transition,
 cdr                  as already described in manual, but apparently not programmed.
 C
- 
+
 C
       IF (NCHTAL(ICHORI) .NE. 3) THEN
 c  no volumetric tallies at all are needed in case NCHTAL=3
@@ -136,8 +136,8 @@ c  all tallies are still in active storage
         IISTR=1
         ISTRA=1
         IESTR=1
-      ENDIF 
-  
+      ENDIF
+
       IF (ISTRA.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
 
@@ -179,14 +179,14 @@ C  NOTHING TO BE DONE
 
 C  STEP 1 DONE
 
- 
-cdr  intermediate part, 
-cdr  proprietary option only. nchtal=4 option is not ready. 
-cdr  complain and then return to calling program  
+
+cdr  intermediate part,
+cdr  proprietary option only. nchtal=4 option is not ready.
+cdr  complain and then return to calling program
 !  INTEGRATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
- 
+
       IF ((NCHTAL(ICHORI) == 4) .AND. NLSTCHR(ICHORI)) THEN
- 
+
         if (.not.associated(traj(ichori)%trj%cells)) then
            write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
            write (iunout,*) 'error in SGNAL, NCHTAL=4 '
@@ -207,13 +207,13 @@ cdr : then to turn that into a Doppler-broadened line shape of the Ba-alpha line
         write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
         write (iunout,*) 'error in proprietary section NCHTAL=4 '
         write (iunout,*) 'OPTION NOT READY, RETURN '
-        return  
+        return
 
-C 
+C
 C  RADIATIVE TRANSITION RATES (1/S)
 C  BALMER ALPHA
         FAC32=4.410E7
- 
+
         FILNAM='AMJUEL  '
         H123='H.12'
         CRC='OT '
@@ -227,7 +227,7 @@ C  BALMER ALPHA
         RC2MAX =  HUGE(1._DP)
         JFEX2MN = 0
         JFEX2MX = 0
-C        
+C
         ELNAME = 'H     '
         IZ=0
 
@@ -240,58 +240,58 @@ C  H(n=3)/H(n=1)
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              ELNAME,IZ)
- 
+
         chksum = 0._dp
         do
           ispc = cur%no_spect
           icell = cur%no_cell
           zds = cur%flight
- 
+
           IF (NSTGRD(ICELL) > 0) GOTO 500
- 
+
           IF (LGVAC(ICELL,NPLS+1)) GOTO 500
- 
+
           TE=TEIN(ICELL)
           DE=DEIN(ICELL)
- 
+
           DEF=LOG(DE*1.D-8)
           TEF=LOG(TE)
- 
+
           call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
-     .                         TEF, DEF, RATE, DUM, 
+     .                         TEF, DEF, RATE, DUM,
      .                         RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                         RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .                         TRCAMD)
 
           rate = exp(rate)
- 
+
           fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
      .                              zds * rate * FAC32 /(4.*PIA) *
      .                              estiml(ispc)%spc(1:ncheni)
- 
+
           chksum = chksum + zds * rate * FAC32 /(4.*PIA) *
      .                      estiml(ispc)%spcs
- 
+
   500     continue
           cur => cur%nextc
 !pb associated with two arguments tests if both arguments point to the same target
           if (associated(cur,first)) exit
         end do
- 
+
         write (iunout,*) ' chord ', ichori
         write (iunout,*) ' integral along chord calculated from '
         write (iunout,*) ' spectra in the cells '
         write (iunout,*) ' integral ',chksum
         return
- 
+
       END IF  !  END OF UNFINISHED NCHTAL=4 OPTION
 
 C  STEP 2
 C
 C  PREPARE DIRECT (PRIMARY) EMISSION FROM SOURCE, INTO LINE OF SIGHT
-C  THE SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE 
+C  THE SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE
 C  IN SUBR. SIGCX, SIGRAD, SIGLINE, SIGUSR, ETC.
- 
+
       NLVL=.FALSE.
       DO 10 ISTR=1,NSTRAI
 C  PRIMARY SOURCE CONTRIBUTION, REFER TO INPUT BLOCK 7
@@ -324,7 +324,7 @@ C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'
 C     ENDIF
-C................................................................. 
+C.................................................................
 C  FOR RADIANCE OF LINE ISP=IPHOT, IN STRATUM ISTR
       ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
 C.................................................................
@@ -434,7 +434,7 @@ C.................................................................
      .                            ichori,istra
         write (iunout,*) 'volumetric line emission '
         if (isp > 0) then
-          write (iunout,*) 'contribution no. isp ',isp        
+          write (iunout,*) 'contribution no. isp ',isp
         else
           write (iunout,*) 'sum over contributions'
         endif
@@ -472,7 +472,7 @@ C
 
         IF (ANY(NCHTAL == 2)) THEN
 c  how many components are requested (max) for line "ichori"?
-c  previous default: 6 hydrogenic lines, but only one per run. 
+c  previous default: 6 hydrogenic lines, but only one per run.
 c                    6 components each, (H, H+, H2, H2+ H-, H3+)
 c  summation over contributions (different isotopes but same emission reactions, etc..)
           MX_COMPO = 0
@@ -553,7 +553,7 @@ C  FIT A STRAIGHT LINE TO SPECTRUM, BETWEEN ESTART AND ENDFIT
 C  TO BE DONE ONLY FOR NCHTAL=1
 C
       IF ((NCHTAL(ICHORI).NE.1) .OR. (NCHENI == 1)) GOTO 300
- 
+
       ESTART(ICHORI)=NSPINI(ICHORI)*TIMAX
       ENDFIT(ICHORI)=NSPEND(ICHORI)*TIMAX
       TINP(ICHORI)=TIMAX
@@ -618,7 +618,7 @@ C
       IF (TRCSIG) THEN
         WRITE (iunout,*) 'ICHORI,TILINE(ICHORI) ',ICHORI,TILINE(ICHORI)
       ENDIF
- 
+
   300 CONTINUE
 C
       IF (NCHTAL(ICHORI).EQ.3) THEN

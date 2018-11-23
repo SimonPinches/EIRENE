@@ -106,13 +106,13 @@ C  1ST SECONDARY INDEX, PREVIOUS BULK MASS
       N1STX(IRCX,3)=0
       IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: 1 "FIRST" TEST SECONDARY, IF ANY
 
-      IF ((N1STX(IRCX,2) < 1) .OR. 
+      IF ((N1STX(IRCX,2) < 1) .OR.
      .    (N1STX(IRCX,2) > MAXSPC(N1STX(IRCX,1)))) GOTO 994
 
 C   CHECK MASS AND NUCLEAR CHARGE NUMBER CONSERVATION, FIRST SECONDARY, PREV. BULK
       IF (N1STX(IRCX,1).EQ.1) THEN
         IF (RMBULK.NE.RMASSA(N1STX(IRCX,2))) GOTO 992
-        IF (NCBULK.NE.NCHARA(N1STX(IRCX,2))) GOTO 992 
+        IF (NCBULK.NE.NCHARA(N1STX(IRCX,2))) GOTO 992
 cdr     IF (ABS(NCGBLK-0).ne.1) GOTO 992  ! allow also for double CX
       ELSEIF (N1STX(IRCX,1).EQ.2) THEN
         IF (RMBULK.NE.RMASSM(N1STX(IRCX,2))) GOTO 992
@@ -134,7 +134,7 @@ C  2ND SECONDARY INDEX, PREVIOUS TEST PARTICLE MASS
       N2NDX(IRCX,3)=N1STX(IRCX,3)             !CUMULATED NO. OF SECONDARIES
       IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT: 1 "SECOND" TEST SECONDARY, IF ANY
 C
-      IF ((N2NDX(IRCX,2) < 1) .OR. 
+      IF ((N2NDX(IRCX,2) < 1) .OR.
      .    (N2NDX(IRCX,2) > MAXSPC(N2NDX(IRCX,1)))) GOTO 994
 C   CHECK MASS CONSERVATION, SECOND SECONDARY
       IF (N2NDX(IRCX,1).EQ.1) THEN
@@ -195,7 +195,7 @@ C  2.B)
       IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
 C  2.C)
       IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
-          
+
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
 C       NEND=1
@@ -205,12 +205,12 @@ C       NEND=1
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
-  245     CONTINUE          
+  245     CONTINUE
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
         ENDIF
-        MODCOL(3,2,IRCX)=1 
- 
+        MODCOL(3,2,IRCX)=1
+
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
 C       NEND=9
@@ -220,19 +220,19 @@ C       NEND=9
           fp1(1:3) = rt%fp1l
           fp1(4:6) = rt%fp1r
           fp2(1:3) = rt%fp2b
-          fp2(4:6) = rt%fp2t  
+          fp2(4:6) = rt%fp2t
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 cdr  safety cut off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(-2.3_dp,tii)
-c  evaluate 2 parametric fit, 
-c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII. 
+c  evaluate 2 parametric fit,
+c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
      .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
-     .               trcamd) 
+     .               trcamd)
               TABCX3(IRCX,J,1:9) = CF(1:9)
               TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
           END DO
@@ -246,7 +246,7 @@ C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN                
+        IF (NSTORDR >= NRAD) THEN
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
@@ -261,14 +261,14 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for CX'
           write (iunout,*) 'in case modc=3  (n,T-dependence).'
           write (iunout,*) 'exit called '
-          call eirene_exit_own(1) 
+          call eirene_exit_own(1)
         ENDIF
         MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
       ENDIF
- 
+
       FACRCX(IRCX,1) = FACTKK
       FACRCX(IRCX,2) = LOG(FACTKK)
 
@@ -301,7 +301,7 @@ c        WITH WEIGHTING/REJECTION
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
           WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
-          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '    
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 251 J=1,NSBOX
@@ -335,7 +335,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
           WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
-          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '  
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOCX) '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -375,11 +375,11 @@ C  ION ENERGY-AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           MODCOL(3,4,IRCX)=MODC
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
-C  STORAGE SAVING MODE ? 
+C  STORAGE SAVING MODE ?
           IF (NSTORDR >= NRAD) THEN
 C  NO
 C           NSTORDT=9 HERE
-      
+
             IF (MODC.EQ.1) THEN
 C             NEND=1
 C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)

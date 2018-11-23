@@ -1,10 +1,10 @@
 C  IDENTIFY PARAMETER NREC (STORAGE FOR VOLUME RECOMBINATION PROCESSES)
 C
 C  june 2015:  added: default single step vol.rec. process  e + He+ --> He(1S)+ rad.
-c              rate taken from Janev et al., 1987, Process 2.3.13. 
+c              rate taken from Janev et al., 1987, Process 2.3.13.
 C
       SUBROUTINE EIRENE_XSECTP_PARAM
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -15,9 +15,9 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: NRC, IATM, IPLS, KK
 C
 C

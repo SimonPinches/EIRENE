@@ -846,7 +846,7 @@ C
         IM=1
         IF (NR1ST.LT.2) GOTO 250
 
-cdr  we should do a binary search here. or just call learca1 
+cdr  we should do a binary search here. or just call learca1
         DO 200 J=IA,IE
           I=J+1
           IM=J

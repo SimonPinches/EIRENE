@@ -9,15 +9,15 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y, Z
       INTEGER, INTENT(IN) :: N
       LOGICAL, INTENT(OUT) :: L
       REAL(DP) :: XMS1, XMS2, XMS3, XLS1, XLS2, XLS3
       INTEGER :: I
- 
+
       L=.TRUE.
       IF (RLB(N).EQ.1..OR.RLB(N).EQ.1.5) THEN
                L=L.AND.XLIMS1(1,N).LE.X.AND.X.LE.XLIMS2(1,N)

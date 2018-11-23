@@ -7,7 +7,7 @@ CDR  5.8.15 : ARGUMENTS ADDED TO VECUSR
 cdr  4.9.15 : npbgkp(ipls,1).ne.0, rather than nchrgp(ipls)=0 to identify bgk collisions
 cdr           There may be also neutral atom -test ion  bgk collisions, in which case
 cdr           the virtual bgk background species may be an ion ? (not contributing to electron density, however).
-cdr           example He  He+  collisions, when both are test species. 
+cdr           example He  He+  collisions, when both are test species.
 cdr           Or, e.g. elastic component in H + p
 cdr  Jan. 17: Added option: isotropic in COM frame, iflag=0, when modcol(5,0,..)=0
 cdr                         exchange of identity in lab system when modcol(5,0,..)=-1
@@ -15,7 +15,7 @@ cdr                         (this was default for bgk collisions so far, with OL
 cdr March 18: Slight changes in notation, to sync with a new proprietary version of this
 cdr           routine which carries out cross-section integration directly
 cdr           from interaction potentials without intermediate fits. veloel_TEST.ff
-C 
+C
       SUBROUTINE EIRENE_VELOEL(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                         IREL,RMASS)
 C
@@ -50,7 +50,7 @@ C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
 C  note: Ti has already been converted into thermal velocity units: zrg(ipls,k) in [cm/s]
 
 C  K   : .EQ.0 :TX,TY,TZ,V-DRIFT_X,Y,Z ARE NOT FROM LOCAL BULK ION
-C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE 
+C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE
 C               PARAMETERS DUMT AND DUMV, RESPECTIVELY.
 c  note: here dumt must also be in thermal velocity units
 
@@ -78,23 +78,23 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CLAST
- 
+
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: RMASS 
+      REAL(DP), INTENT(IN) :: RMASS
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IREL
- 
+
       REAL(DP) :: TEST, VRELX,
      .          VXN, VYN, VZN, VXI, VYI, VZI, VRELQ, VN, VREL,
      .          RLMS, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
-     .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS, 
+     .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS,
      .          SEPS, RS,
      .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH, CCHI,
      .          BMAX, ER, ELMIN, ELMAX, B,
-     .          VXDR, VYDR, VZDR, 
-     .          ZARGX, ZARGY, ZARGZ, 
+     .          VXDR, VYDR, VZDR,
+     .          ZARGX, ZARGY, ZARGZ,
      .          VX, VY, VZ, ELAB,
      .          VR, CEL, EIRENE_CROSS, VRQ
       REAL(DP), EXTERNAL :: RANF_EIRENE
@@ -247,7 +247,7 @@ C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONS
 C
       IF (NFLAG.EQ.2) THEN
 C
-        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S. 
+        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S.
         VYI=VYN
         VZI=VZN
 
@@ -296,7 +296,7 @@ C  ACCEPT
             NEMEAN(IREL)=NEMEAN(IREL)+1
           ENDIF
 C       ELSEIF (NLWEIGHT) THEN
- 
+
         ELSE
 C  FOR SOME REASON SGEVMX COULD NOT BE FOUND, or rejection is too inefficient.
 C  SO USE WEIGHTING RATHER THAN REJECTION
@@ -314,7 +314,7 @@ C  STEP 1 FINISHED, INCIDENT BULK ION (IPLS) VELOCITY IS SET: VXI,VYI,VZI
 C
   200 CONTINUE
 C
-C  FIND TYPE OF COLLISION: IFLAG  
+C  FIND TYPE OF COLLISION: IFLAG
 C    IFLAG=-1       :  NOTHING TO BE DONE, POST-COLLISION VELOCITY IS ALREADY SAMPLED
 C                      FROM MAXWELLIAN
 C                      E.G. (relaxation)-BGK APPROXIMATION.
@@ -326,7 +326,7 @@ C
       IF (NPBGKP(IPLS,1).NE.0.OR.MODCOL(5,0,IREL).EQ.-1) THEN
 
 C  ELASTIC TEST PARTICLE COLLISION IN BGK APPROXIMATION (E.G.: NEUTRAL-NEUTRAL)
-C  ENFORCE: EXCHANGE OF IDENTITY COLLISION IN LAB FRAME 
+C  ENFORCE: EXCHANGE OF IDENTITY COLLISION IN LAB FRAME
 C  (AS IT IS ALSO DEFAULT FOR CX COLLISIONS).
 C  FOR EQUAL MASSES OF BOTH COLLISION PARTNERS THIS CORRESPONDS
 C  TO SCATTERING ANGLE = PI IN COM FRAME
@@ -334,10 +334,10 @@ C  TO SCATTERING ANGLE = PI IN COM FRAME
 
       ELSEIF (MODCOL(5,0,IREL).EQ.0) THEN
 C  NEITHER BGK-TYPE, NOR INTERACTION POTENTIAL PARAMETERS ARE GIVEN
-C  USE ISOTROPIC SCATTERING IN CENTER OF MASS FRAME 
-        IFLAG= 0 
+C  USE ISOTROPIC SCATTERING IN CENTER OF MASS FRAME
+        IFLAG= 0
 C  SOME STUFF HERE FOR COM ISOTROPIC COLLISIONS.....
- 
+
       ELSEIF (MODCOL(5,0,IREL).GT.0) THEN
 C  INTERACTION POTENTIAL IS GIVEN, get fit coefficients of interaction potential
         IREAC=MODCOL(5,0,IREL)
@@ -351,7 +351,7 @@ C
 
 C
 C  NEXT: STEP 2, FIND PRE-COLLISION DATA AND, IF NEEDED, ALSO THE TOTAL CROSS-SECTION
-C                IN CASE IFLAG=-1 (RELAXATION COLLISION), NOTHING OF ALL THAT IS NEEDED. 
+C                IN CASE IFLAG=-1 (RELAXATION COLLISION), NOTHING OF ALL THAT IS NEEDED.
 C
       IF (IFLAG.NE.-1) THEN
         RMN=RMASS
@@ -405,7 +405,7 @@ C
       IF (IFLAG.EQ.-1) THEN
 C
 C  THIS PART: ONLY (BGK-TYPE) RELAXATION TO A MAXWELLIAN, I.E., POST-COLLISION
-C             TEST PARTICLE IS SAMPLED FROM (WEIGHTED OR UNWEIGHTED) 
+C             TEST PARTICLE IS SAMPLED FROM (WEIGHTED OR UNWEIGHTED)
 C             BULK POPULATION (E.G.: EL. BGK COLLISION; EXCHANGE OF IDENTITY)
 C
         VELQ=VXI*VXI+VYI*VYI+VZI*VZI
@@ -426,7 +426,7 @@ C
       ELSEIF (IFLAG.GT.0) THEN
 C
 C  THIS PART: FIND DEFLECTION ANGLE
-C             BINARY COLLISION KINETICS  
+C             BINARY COLLISION KINETICS
 C
 C  COLLISION PARAMETERS IFLAG, ER AND B ARE DEFINED NOW.
 C
@@ -485,8 +485,8 @@ C
       WRITE (iunout,*)
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
- 
-C  the following ENTRY is for reinitialization of EIRENE 
+
+C  the following ENTRY is for reinitialization of EIRENE
       ENTRY EIRENE_VELOEL_REINIT
       IFIRST = 0
       return

@@ -29,13 +29,13 @@ C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
 C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
 C                  OR ALTERNATIVELY: REJECTION
 C
-C  K   : CELL INDEX 
+C  K   : CELL INDEX
 
 C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
 C  note: Ti has already been converted into thermal velocity units: zrg(ipls,k) in [cm/s]
 
 C  K   : .EQ.0 :TX,TY,TZ,V-DRIFT_X,Y,Z ARE NOT FROM LOCAL BULK ION
-C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE 
+C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE
 C               PARAMETERS DUMT AND DUMV, RESPECTIVELY.
 c  note: here dumt must also be in thermal velocity units
 
@@ -54,11 +54,11 @@ C        NOT NEEDED FOR NFLAG=2, THEN SET E.G.: IRCX=1
 
 C  OR TO  FETCH A NEW  VELOCITY FOR A NEUTRAL ATOM "IATM",
 C  A NEUTRAL MOLECULE "IMOL" OR A TEST ION "IION"
-C  AFTER CX-EVENT WITH BULK ION "IPLS" IN CELL NO. K 
+C  AFTER CX-EVENT WITH BULK ION "IPLS" IN CELL NO. K
 C  FROM A SHIFTED
 C  MAXWELLIAN (NFLAG=2), WEIGHTED BY SIGMA*VREL (NFLAG=3)
 
-C  ADDITIONALLY: 
+C  ADDITIONALLY:
 C  USED E.G. FOR VOLUME RECOMBINATION SOURCE (NFLAG=2)
 C
       USE EIRMOD_PRECISION
@@ -120,7 +120,7 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
 c  elab:  here ln(E), with E from 0.1 to 1e4 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
 
-c  find cross section at ENERGY ELAB from a fit or table. 
+c  find cross section at ENERGY ELAB from a fit or table.
           CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 1')
 c
           vrq=exp(elab-defCX(IRCX))
@@ -186,7 +186,7 @@ c  drift velocity, cm/s
         VXDR=DUMV(1)
         VYDR=DUMV(2)
         VZDR=DUMV(3)
-      ELSE 
+      ELSE
         GOTO 999
       ENDIF
 C
@@ -227,7 +227,7 @@ C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONS
 C
       IF (NFLAG.EQ.2) THEN
 C
-        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S. 
+        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S.
         VYI=VYN
         VZI=VZN
 

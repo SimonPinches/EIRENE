@@ -1,7 +1,7 @@
 C
 C
       FUNCTION EIRENE_FI(R,ER,B,IFLAG,P,DFI)
- 
+
 C  EVALUATE EFFECTIVE POTENTIAL FUNCTION FI AT R
 C  EVALUATE DFI(R)/DR AT R
 C  RETURN FI=FI(R), DFI=DFI(R)/DR
@@ -9,20 +9,20 @@ C     --------------
 C  IFLAG=1:  H+ + H
 C  IFLAG=2:  H+ + NOBLE GASES,  H+ + H2,  HE+ + HE
 C
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: R, ER, B, P(*)
       REAL(DP), INTENT(OUT) :: DFI
       INTEGER, INTENT(IN) :: IFLAG
- 
+
       REAL(DP) :: DSS, U, DU, SS, RI, RIQ, G1, REFF, RR,
-     .            EMRR, G2, EX2, B2, V, DV, EX, RLOW, R2, R3, 
+     .            EMRR, G2, EX2, B2, V, DV, EX, RLOW, R2, R3,
      .            EIRENE_FI, G, RMI, EPS
- 
+
       B2=B*B
 C
       IF(IFLAG.EQ.1) THEN

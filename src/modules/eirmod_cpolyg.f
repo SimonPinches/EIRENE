@@ -1,20 +1,20 @@
       MODULE EIRMOD_CPOLYG
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CPOLYG, EIRENE_DEALLOC_CPOLYG, 
+
+      PUBLIC :: EIRENE_ALLOC_CPOLYG, EIRENE_DEALLOC_CPOLYG,
      P          EIRENE_INIT_CPOLYG
- 
+
       INTEGER, PUBLIC, SAVE :: NCPLYG, NCPLY2, MCPLYG
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        RCPLYG(:,:), RCPLY2(:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
 C NCPLYG, REAL
      R VPLX(:,:),  VPLY(:,:),
@@ -23,34 +23,34 @@ C NCPLYG, REAL
      R BGL(:,:),   BGLP(:,:),
      R PPLNX(:,:), PPLNY(:,:),
      R XPCOR,  YPCOR,  ZPCOR,  PLREFL
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ICPLYG(:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NRPLG,  NPPLG
 
 csw 14apr2011
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LCUT(:)
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CPOLYG
- 
+
       IF (ALLOCATED(RCPLYG)) RETURN
- 
+
       NCPLYG = N1STS*10*N2NDPLGS
       NCPLY2 = 4
       MCPLYG = 2
- 
+
       ALLOCATE (RCPLYG(10*N1STS,N2NDPLGS))
       ALLOCATE (RCPLY2(NCPLY2))
       ALLOCATE (ICPLYG(MCPLYG))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CPOLYG ',(NCPLYG+NCPLY2)*8 + MCPLYG*4
- 
+
 C NCPLYG, REAL
       VPLX  => RCPLYG(1+0*N1STS :  1*N1STS,:)
       VPLY  => RCPLYG(1+1*N1STS :  2*N1STS,:)
@@ -62,50 +62,50 @@ C NCPLYG, REAL
       BGLP  => RCPLYG(1+7*N1STS :  8*N1STS,:)
       PPLNX => RCPLYG(1+8*N1STS :  9*N1STS,:)
       PPLNY => RCPLYG(1+9*N1STS : 10*N1STS,:)
- 
+
       XPCOR  => RCPLY2(1)
       YPCOR  => RCPLY2(2)
       ZPCOR  => RCPLY2(3)
       PLREFL => RCPLY2(4)
- 
+
 C MCPLYG, INTEGER
       NRPLG => ICPLYG(1)
       NPPLG => ICPLYG(2)
 
 
 !pb 03122013 use N2NDPLGS instead of NDXP (NDXP might be unknown in some cases)
-      allocate(lcut(0:N2NDPLGS)) 
- 
+      allocate(lcut(0:N2NDPLGS))
+
       CALL EIRENE_INIT_CPOLYG
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CPOLYG
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CPOLYG
- 
+
       IF (.NOT.ALLOCATED(RCPLYG)) RETURN
- 
+
       DEALLOCATE (RCPLYG)
       DEALLOCATE (RCPLY2)
       DEALLOCATE (ICPLYG)
 
 csw 14apr2011
       deallocate (lcut)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CPOLYG
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CPOLYG
- 
+
       RCPLYG = 0._DP
       RCPLY2 = 0._DP
       ICPLYG = 0
 csw 14apr2011
       lcut=.false.
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CPOLYG
- 
+
       END MODULE EIRMOD_CPOLYG

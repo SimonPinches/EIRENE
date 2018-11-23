@@ -1,4 +1,4 @@
- 
+
       SUBROUTINE MPI_BCAST (buffer,cnt,datatype,root,comm,ier)
       IMPLICIT NONE
       integer, intent(out) :: ier

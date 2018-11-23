@@ -25,7 +25,7 @@ C
      >                      M(3), NUE
       REAL(DP), INTENT(OUT) :: B0, B1, B2, B3, C0, C1, C2, C3
       REAL(DP) :: NORM, P(3), U(3)
- 
+
 *
 *
 *     1. Loesung der Gleichung:
@@ -69,7 +69,7 @@ C
       U(1) = 1.0
       U(2) = SQRT(-LAMBDA(2)/LAMBDA(1))
       U(3) = 0.0
- 
+
       NORM = U(1)**2 + U(2)**2
       NORM = SQRT(NORM)
 *

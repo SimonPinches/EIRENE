@@ -1,14 +1,14 @@
- 
- 
+
+
       SUBROUTINE EIRENE_CTELL
      .  (X0,Y0,RX,RY,XLIMS1,YLIMS1,XLIMS2,YLIMS2,RLB,
      .                  PHIAN,PHIEN,IPART)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_CCONA
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X0, Y0, RX, RY, XLIMS1, YLIMS1, XLIMS2,
      .                      YLIMS2, RLB
       REAL(DP), INTENT(OUT) :: PHIAN(*), PHIEN(*)
@@ -17,11 +17,11 @@
       REAL(DP) :: PHI1, PHI2, X1, X2, Y1, Y2, XPHI, YPHI, QY1, QX2,
      .            PHIH, PHI, QX1
       INTEGER :: IPHI, ISORT, I
- 
+
       IPHI = 0
- 
+
 !  DETERMINE INTERSECTION POINTS OF ELLIPSE WITH BOX
- 
+
 !  INTERSECTION WITH X=XLIMS1
       QX1 = (XLIMS1 - X0) / (RX+EPS30)
       IF (ABS(QX1) <= 1.D0) THEN
@@ -38,7 +38,7 @@
           PHIANG(IPHI) = PHI
         END IF
       END IF
- 
+
 !  INTERSECTION WITH X=XLIMS2
       QX2 = (XLIMS2 - X0) / (RX+EPS30)
       IF (ABS(QX2) <= 1.D0) THEN
@@ -55,7 +55,7 @@
           PHIANG(IPHI) = PHI
         END IF
       END IF
- 
+
 !  INTERSECTION WITH Y=YLIMS1
       QY1 = (YLIMS1 - Y0) / (RY+EPS30)
       IF (ABS(QY1) <= 1.D0) THEN
@@ -73,7 +73,7 @@
           PHIANG(IPHI) = PHI2
         END IF
       END IF
- 
+
 !  INTERSECTION WITH Y=YLIMS2
       QY1 = (YLIMS2 - Y0) / (RY+EPS30)
       IF (ABS(QY1) <= 1.D0) THEN
@@ -91,7 +91,7 @@
           PHIANG(IPHI) = PHI2
         END IF
       END IF
- 
+
       IF (IPHI == 0) THEN
         IPART = 1
         PHIAN(1) = 0.D0

@@ -1,5 +1,5 @@
 C  sept 2014: few minor comments
-c  
+c
 c  "weight" moved to argument list as "WGHTVS"  (removed: use parmmod, use comprt, use ccona)
 c  drift vector: vxwl,vywl,vzwl,vwl:  intent(in). Do not modify ! (rather than intent(inout))
 
@@ -19,10 +19,10 @@ C  THERE IS A DRIFT AT ALL (VWL.GT.0) OR NOT (VWL.LE.0.).
 
 C  UNIT CONVERSION FACTORS:
 C  THE STANDARD DEVIATION OF THE MAXWELLIAN: SIGMA(CM/S) = SQRT(T/M)*1.38912E6/SQRT(2)
-C                                                        = SQRT(T/M)*CVEL2A          
+C                                                        = SQRT(T/M)*CVEL2A
 C  WITH T IN EV, M IN AMU.
- 
-C  TIWL = T, TEMPERATURE IN EV, 
+
+C  TIWL = T, TEMPERATURE IN EV,
 C  RSQDV= CVELAA/SQRT(M)=1.38912E6/SQRT(M)  [CM/S] , M THE MASS IN AMU
 c  CVRSS= 1/RSQDV**2 = M * CVELI2 = M *1/(1.39812E6)**2, AGAIN M = MASS IN AMU
 
@@ -44,9 +44,9 @@ C     USE EIRMOD_COMPRT
      .                        VXWL, VYWL, VZWL, VWL
       REAL(DP), INTENT(INOUT) :: WGHTVS
       REAL(DP), INTENT(OUT) :: E0S, VELXS, VELYS, VELZS, VELS
-      REAL(DP) :: ARBV, A1, A2, A3, A4, A5, A6, 
+      REAL(DP) :: ARBV, A1, A2, A3, A4, A5, A6,
      .          VLLX, VLLY, VLLZ, VMX, SHIFT,
-     .          CCM, FNOM, VMXSQ, FACTOR, VELSQ, VELSH, 
+     .          CCM, FNOM, VMXSQ, FACTOR, VELSQ, VELSH,
      .          VFKT, VLX, RCCM, ZARG, ZARG2, VXDR, VYDR, VZDR,
      .          PISQ, SQ2I
       REAL(DP), EXTERNAL :: RANF_EIRENE

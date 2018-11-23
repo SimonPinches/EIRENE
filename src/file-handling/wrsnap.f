@@ -17,9 +17,9 @@ C
       USE EIRMOD_COMSOU, ONLY: FLUX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTR
       INTEGER :: I, J
 C
@@ -43,20 +43,20 @@ C
 
       IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV '
 
-cdr  tbd:      
+cdr  tbd:
 cdr  fort.15 (census) was written in a previous run.
-cdr  in the present run allocation of storage for census arrays rpartc,ipartc,rpartw 
+cdr  in the present run allocation of storage for census arrays rpartc,ipartc,rpartw
 cdr  is determined by input: --> nprnl
 cdr  make sure that iprnl in previous run was not larger than in present run.
       IF (NPRNL.LT.IPRNL) THEN
-        WRITE (IUNOUT,*) 
+        WRITE (IUNOUT,*)
      .     ' ERROR WHEN READING CENSUS ARRAY FOR T-DEP MODE'
-        WRITE (IUNOUT,*) 
+        WRITE (IUNOUT,*)
      .     ' OLD CENSUS FILE CANNOT BE READ, BECAUSE NPRNL TOO SMALL '
         CALL EIRENE_MASJ2(' NPRNL, IPRNL=  ',NPRNL,IPRNL)
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-  
+
       READ (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
       READ (15+ifoff)  (RPARTW(  I)            ,I=0,IPRNL)
       READ (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)

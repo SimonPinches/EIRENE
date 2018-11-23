@@ -2,7 +2,7 @@ cdr  oct 16:  levgeo=1, error exit due to round off errors removed,
 cdr                     now: "save landing of lost particle".
 cdr           prevents random error exits in very long (parallel) runs.
 C
-Cdr:  at some point in time: included LDAMCEL  
+Cdr:  at some point in time: included LDAMCEL
 cdr   (indicator for "damaged cells" in 2D (x-y) plane.
 cdr   LDAMCEL is set in initialization phase
 
@@ -22,7 +22,7 @@ C
 C   INPUT:
 C
 C       X00,Y00,Z00: STARTING POINT FOR THIS TRACK
-C     ZRAD  = DISTANCE (CM) 
+C     ZRAD  = DISTANCE (CM)
 C                TO NEXT RADIAL SURFACE OF 1D STANDARD MESH
 C             OR TO NEXT ADDITIONAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
 C             OR TO NEXT TOROIDAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
@@ -75,21 +75,21 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
      .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
      .          TWIN1, XT, Y000, TSS, X0T, Y0T
-      INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1, 
+      INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
+     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
-     .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1, 
+     .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1,
      .           NJC, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
-cdr logicals for intersection with poloidal surfaces 
+cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS), LHITP0
       LOGICAL :: lnincz
       SAVE
@@ -135,7 +135,7 @@ C       NTCELL=1
 C
 10000 CONTINUE
 C
-CDR NOV.99: ADDED BECAUSE OF FOLION OPTION, 
+CDR NOV.99: ADDED BECAUSE OF FOLION OPTION,
 C           WITH DEFAULT B-FIELD (IN Z DIRECTION)
 C
       IF (ABS(VELZ).EQ.1.D0) THEN
@@ -329,7 +329,7 @@ C
             mtsurf=0
             NCOUP=NCOUPE
             GOTO 311
- 
+
           ELSEIF (ldamcel(itc).or.(ityp==3)) THEN
 C
 C  STOP TRACK ANYHOW
@@ -953,7 +953,7 @@ C
      .                      NPANU,J,IADD+J,ALPD(J),JUPC(J)
         ENDIF
 #ifdef TRACE
-        IF (NLTRC) THEN 
+        IF (NLTRC) THEN
           JJ=J+IADD
           WRITE (iunout,*) 'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
      .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)

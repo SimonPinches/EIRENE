@@ -4,20 +4,20 @@
 !             NPTSDEL IS THE NUMBER OF PARTICLES AFTER WHICH THE RANDOM NUMBER
 !             GENERATOR IS INITIALISED WITH A NEW SEED
       MODULE EIRMOD_COMSOU
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_COMSOU, EIRENE_DEALLOC_COMSOU, 
+
+      PUBLIC :: EIRENE_ALLOC_COMSOU, EIRENE_DEALLOC_COMSOU,
      P          EIRENE_INIT_COMSOU
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        RCMSOU(:,:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R FLUX(:),     SCALV(:),    RAYFRAC(:),
      R SORENI(:),   SORENE(:),
@@ -28,13 +28,13 @@
      R SORLIM(:,:), SORIND(:,:), SORIFL(:,:),
      R SORAD1(:,:), SORAD2(:,:), SORAD3(:,:),
      R SORAD4(:,:), SORAD5(:,:), SORAD6(:,:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R SREC(:,:),   EIO(:,:),    EEL(:,:),   MOM(:,:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I         ICMSOU(:,:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I IVLSF(:),   ISCLS(:),   ISCLT(:),   ISCL1(:),  ISCL2(:),
      I ISCL3(:),   ISCLB(:),   ISCLA(:),
@@ -44,55 +44,55 @@
      I NSPEZ(:),   NPTS(:),    NINITL(:),  NEMODS(:),
      I NAMODS(:),  NSRFSI(:),  NPTSDEL(:), NRAYEN(:),
      I NMINPTS(:)!VK
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I INGRDA(:,:,:), INGRDE(:,:,:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NSTRAI, NOMSOU, MOMSOU, LOMSOU
- 
+
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LCMSOU(:,:)
- 
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L NLPNT(:),  NLLNE(:),  NLSRF(:),  NLVOL(:),  NLCNS(:),
      L NLMOL(:),  NLATM(:),  NLION(:),  NLPLS(:),  NLPHOT(:),
      L NLAVRP(:), NLAVRT(:), NLSRON(:), NLRAY(:)
- 
+
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLSYMP(:), NLSYMT(:)
- 
+
       REAL(DP),PUBLIC,SAVE :: MPTS_COMSOU !VK
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_COMSOU (ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
       IF (ICAL == 1) THEN
- 
+
         IF (ALLOCATED(RCMSOU)) RETURN
- 
+
         NOMSOU=11*NSTRA*NSRFS+13*NSTRA
         MOMSOU=9*NSTRA*NSRFS+17*NSTRA
         LOMSOU=14*NSTRA
- 
+
         ALLOCATE (RCMSOU(13+11*NSRFS,NSTRA))
         ALLOCATE (ICMSOU(17+9*NSRFS,NSTRA))
         ALLOCATE (LCMSOU(14,NSTRA))
- 
+
         ALLOCATE (INGRDA(NSRFS,NSTRA,3))
         ALLOCATE (INGRDE(NSRFS,NSTRA,3))
- 
+
         ALLOCATE (NLSYMP(0:NSTRA))
         ALLOCATE (NLSYMT(0:NSTRA))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMSOU ',NOMSOU*8 + (MOMSOU+NSRFS*NSTRA*6)*4 +
      .                  (LOMSOU+2*(NSTRA+1))*4
- 
+
         FLUX   => RCMSOU( 1,:)
         SCALV  => RCMSOU( 2,:)
         SORENI => RCMSOU( 3,:)
@@ -117,7 +117,7 @@
         SORAD4 => RCMSOU(14+ 8*NSRFS : 13+ 9*NSRFS,:)
         SORAD5 => RCMSOU(14+ 9*NSRFS : 13+10*NSRFS,:)
         SORAD6 => RCMSOU(14+10*NSRFS : 13+11*NSRFS,:)
- 
+
         IVLSF  => ICMSOU( 1,:)
         ISCLS  => ICMSOU( 2,:)
         ISCLT  => ICMSOU( 3,:)
@@ -144,7 +144,7 @@
         INDIM  => ICMSOU(18+ 6*NSRFS : 17+ 7*NSRFS,:)
         INSOR  => ICMSOU(18+ 7*NSRFS : 17+ 8*NSRFS,:)
         ISTOR  => ICMSOU(18+ 8*NSRFS : 17+ 9*NSRFS,:)
- 
+
         NLPNT  => LCMSOU( 1,:)
         NLLNE  => LCMSOU( 2,:)
         NLSRF  => LCMSOU( 3,:)
@@ -159,81 +159,81 @@
         NLAVRT => LCMSOU(12,:)
         NLSRON => LCMSOU(13,:)
         NLRAY  => LCMSOU(14,:)
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         IF (ALLOCATED(SREC)) RETURN
- 
+
         ALLOCATE (SREC(0:NPLS,0:NREC))
         ALLOCATE (EIO(0:NPLS,0:NREC))
         ALLOCATE (EEL(0:NPLS,0:NREC))
         ALLOCATE (MOM(0:NPLS,0:NREC))
- 
+
       END IF
- 
+
       CALL EIRENE_INIT_COMSOU(ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMSOU
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_COMSOU
- 
+
       IF (ALLOCATED(RCMSOU)) THEN
- 
+
         DEALLOCATE (RCMSOU)
         DEALLOCATE (ICMSOU)
         DEALLOCATE (LCMSOU)
- 
+
         DEALLOCATE (INGRDA)
         DEALLOCATE (INGRDE)
- 
+
         DEALLOCATE (NLSYMP)
         DEALLOCATE (NLSYMT)
 
       END IF
- 
+
       IF (ALLOCATED(SREC)) THEN
         DEALLOCATE (SREC)
         DEALLOCATE (EIO)
         DEALLOCATE (EEL)
         DEALLOCATE (MOM)
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMSOU
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_COMSOU (ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
       IF (ICAL == 1) THEN
- 
+
         RCMSOU = 0._DP
         ICMSOU = 0
         LCMSOU = .FALSE.
         NLSRON = .TRUE.
- 
+
         INGRDA = 0
         INGRDE = 0
- 
+
         NLSYMP = .FALSE.
         NLSYMT = .FALSE.
 
         NMINPTS = 1
         MPTS_COMSOU=1.0_DP !VK
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         SREC   = 0._DP
         EIO    = 0._DP
         EEL    = 0._DP
         MOM    = 0._DP
- 
+
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_COMSOU
- 
+
       END MODULE EIRMOD_COMSOU

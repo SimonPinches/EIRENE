@@ -7,9 +7,9 @@ C  PLOT PLANE, SECTION INSIDE A BOX
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: A0, A1, A2, A3, RL, EPS
       INTEGER, INTENT(IN) :: N1, IO, NUM
       REAL(DP), INTENT(IN) :: AL(N1,*),  XL(N1,*),  YL(N1,*),  ZL(N1,*),
@@ -18,8 +18,8 @@ C
      .                      XL3(N1,*), YL3(N1,*), ZL3(N1,*)
       LOGICAL NF
       REAL(DP) :: P(3,36), XYZG(3,36), ANGLE(36), CORD(108), PS(3)
-      REAL(DP) :: B1, B2, B3, DET, EIRENE_DETER, TEST, T, DX, DY, DZ, 
-     .            HELP, XMIT, YMIT, ZMIT, PI, ANG, X1, X2, Y1, Y2, 
+      REAL(DP) :: B1, B2, B3, DET, EIRENE_DETER, TEST, T, DX, DY, DZ,
+     .            HELP, XMIT, YMIT, ZMIT, PI, ANG, X1, X2, Y1, Y2,
      .            Z1, Z2
       INTEGER :: K, J, IPOINT, IP, ILN, I, II, ISORT, ICOUNT, ICHECK,
      .           IS

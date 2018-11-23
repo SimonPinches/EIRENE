@@ -28,7 +28,7 @@ C  FURTHER (TO SPEED UP SUBR.STATIS)
 C
 C
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: M, NX, NY, NZ, NB
       INTEGER, INTENT(OUT) :: IND(M,8)
       INTEGER :: IX, IY, IZ, NIR, NIRT, NIRTP, IADD, K, IR, IJ, IK,
@@ -60,7 +60,7 @@ C
       NXM=MAX(1,NX-1)
       NYM=MAX(1,NY-1)
       NZM=MAX(1,NZ-1)
- 
+
 C  LOOP OVER STANDARD MESH BLOCKS
       DO 1000 IB=1,NB
       IADD=(IB-1)*NX*NY*NZ
@@ -130,7 +130,7 @@ C
           ij=ind(ir,j)
         enddo
  2002 continue
- 
+
 C
       RETURN
       END

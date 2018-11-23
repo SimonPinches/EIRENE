@@ -37,8 +37,8 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
      .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, powalf, powalfs,
-     .            einstein, trans_en, DE, TE, TEF, DEF, popcf, 
-     .            EIRENE_OTHER_RATE_COEFF, 
+     .            einstein, trans_en, DE, TE, TEF, DEF, popcf,
+     .            EIRENE_OTHER_RATE_COEFF,
      .            ratio1, ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
@@ -59,14 +59,14 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       do i = lstart, lend
         ILINE=I
         ctest2 = adjustl(trim(emis_lines(iline)%line_name))
-        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':' 
+        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':'
 
         write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
         write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
-     
-        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' 
+
+        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY '
 
 
         einstein = emis_lines(i)%einstein
@@ -84,7 +84,7 @@ cdr run over components
           addv(iadv,:) = 0._dp
           sigadd = 0._dp
           powalf = 0._dp
-            
+
           do k = 1, emis_lines(i)%compo(j)%num_contrib
             isp = emis_lines(i)%compo(j)%contrib(k)%isp
             itp = emis_lines(i)%compo(j)%contrib(k)%itp
@@ -108,7 +108,7 @@ C
 
               TE=TEIN(NCELL)
               DE=DEIN(NCELL)
-              
+
               DEF=LOG(DE)
               TEF=max(-2.30_DP,LOG(TE)) ! cut-off at 0.1 eV
 
@@ -129,8 +129,8 @@ C
                   case default
                     density(idens) = 0._dp
                     if (lwrite) then
-                      write (iunout,*) ' ERROR IN EMISSIVITY' 
-                      write (iunout,*) 
+                      write (iunout,*) ' ERROR IN EMISSIVITY'
+                      write (iunout,*)
      .                  ' WRONG PARTICLE TYPE SPECIFIED FOR'
                       write (iunout,*) ' line ',i,
      .                   emis_lines(i)%line_name
@@ -141,34 +141,34 @@ C
                     end if
                 end select
               end do
-c  population coefficient, relative to density(1)  
+c  population coefficient, relative to density(1)
               popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
               add = popcf*density(1)
 
 c  density ratio, if true parent density is not available (or in QSS mode)
 c  then: ratio1 converts from density(1) to density
-c  density is the "true" parent density for this component.         
+c  density is the "true" parent density for this component.
 c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
-c  and density ratio  ratio1="density"/"density(1)" will be applied, 
+c  and density ratio  ratio1="density"/"density(1)" will be applied,
 c  to turn density(1) into "density"
 c  e.g. density    = H2+
 c       density(1) = H2
-c       ratio1     = [H2+]/[H2] 
+c       ratio1     = [H2+]/[H2]
 c  this works when the second species involved in loss and gain
 c  for species H2+ from H2 is the same, here: electron density, and hence cancels.
-              if (iratio > 0) then 
+              if (iratio > 0) then
 
                 ratio1 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
      .                                          TEF,DEF,.TRUE.,1)
                 add = add*ratio1
-c  
+c
 c  second conversion to yet another parent density
 c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2 = [H2] * ratio1 * [H2/ne] *ratio2
 c       density(1) = H2
 c       ratio1     = H2+/H2(Te,ne) (CR equilibrium)
 c       ratio2     = .....
 c  this works when the second species involved in loss and gain rate
-c  for species H3+ from H2+ is not the same, 
+c  for species H3+ from H2+ is not the same,
 c  here: electron density, and H2 density, hence: does not cancel.
                 if (iratio == 2) then
                   ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,
@@ -186,18 +186,18 @@ cdr         add volume-weighted contribution to coarse cell "ncelc"
 
               powalf = powalf + sigadd
             end do               ! ncell
-      
+
           end do ! k contributions (summed) of component j of line iline
 
 cdr addv was volume-weighted (extensive) sum. now divide by coarse cell volume
-cdr      to turn it into an intensive score:  [...] per cm**3  
-          addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal) 
+cdr      to turn it into an intensive score:  [...] per cm**3
+          addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal)
      .                             / voltal(1:nsbox_tal)
 
           powalf = powalf * trans_en
           powalfs = powalfs + powalf
 
-          WRITE (iunout,'(A50,2ES16.7)') ' COUPL. TO ' // 
+          WRITE (iunout,'(A50,2ES16.7)') ' COUPL. TO ' //
      .                     TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
      .                    ,POWALF/TRANS_EN*ELCHA,POWALF
 
@@ -213,17 +213,17 @@ cdr      to turn it into an intensive score:  [...] per cm**3
           TXTSPC(IADV,NTALA) =TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
           TXTUNT(IADV,NTALA) ='PHOTONS/S/CM**3         '
 
-          WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV 
+          WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV
 
         end do ! j components of line ILINE are done
 
 cdr  now sum over compontents: on tally ADDV(IADS)
         call eirene_leer(1)
-        addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) 
+        addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal)
      .                           / voltal(1:nsbox_tal)
 
-        WRITE (iunout,'(A50,2ES16.7)') 
-     ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
+        WRITE (iunout,'(A50,2ES16.7)')
+     ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) '
      .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
 
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
@@ -236,7 +236,7 @@ cdr  now sum over compontents: on tally ADDV(IADS)
         TXTTAL(IADS,NTALA) ='SUM OVER COMPONENTS  '
         TXTSPC(IADS,NTALA) ='  '
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
-        WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS 
+        WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS
 
         CALL EIRENE_LEER(2)
 

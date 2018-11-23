@@ -1,9 +1,9 @@
 cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
 cdr            added: MX_compo
 cdr Oct 17  :
-cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
-cdr                    analogous to H emission lines,             NCHTAL=2 
-cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS 
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
+cdr                    analogous to H emission lines,             NCHTAL=2
+cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS
 cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
 cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
 c
@@ -63,9 +63,9 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_CTEXT
       USE EIRMOD_CPLMSK
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IFIRST,ICHORI, ICHRD,IPVOT,NBC2,NAC2,ISP,
      .                       NSPI, JEN, NCHNI
       REAL(DP), INTENT(IN) :: C1(3),C2(3),PEN
@@ -80,7 +80,7 @@ C
      .          PPMA
       INTEGER :: NBCKAS, NBOCKS, MRSRFS, MPSRFS, MTSRFS, NPCLLS, NACLLS,
      .           MSURFS, NTCLLS, J, JJJ, IPOLGS, IPERID_2,
-     .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2, 
+     .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2,
      .           IPERID_1,
      .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, MX_COMPO, ND
       TYPE(CELL_INFO), POINTER :: NEW_CELL
@@ -141,15 +141,15 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
           USE EIRMOD_PRECISION
           USE EIRMOD_PARMMOD
           INTEGER, INTENT(IN) :: IFIRST, JJJ
-          REAL(DP), INTENT(INOUT) :: 
+          REAL(DP), INTENT(INOUT) ::
      .              PSIG(0:NSPZ+10),ARGST(0:NSPZ+10,NRAD)
-          REAL(DP), INTENT(IN) ::    
+          REAL(DP), INTENT(IN) ::
      .              ZDS,DUMMY1,DUMMY2,XD0,YD0,ZD0,XD1,YD1,ZD1
         END SUBROUTINE EIRENE_SIGUSR
       END INTERFACE
 
       SAVE
- 
+
       NLTRC=TRCSIG.AND.IFIRST.EQ.0.AND.TRCHST
       NPANU=0
       SCOS=1.
@@ -158,12 +158,12 @@ C
 C  COMPUTE LINE-INTEGRATED SIGNAL FOR A GIVEN LOS
 C
       IF (IFIRST.GT.0) GOTO 100
-      
+
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
         IF (PRARGL.OR.PLARGL) THEN
 cdr  PRARGL/PLARGL: ENABLE STORING, PRINTING AND/OR PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
-cdr  
+cdr
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -179,9 +179,9 @@ cdr
       LARGST = SIZE(ARGST,2) >= NSBOX
 
 c.......................................................................
-cdr  some plot stuff for spatially resolved LOS, 
+cdr  some plot stuff for spatially resolved LOS,
 cdr  ...still to be moved to separate routine
-cdr  into folders: plotting, plot_dummy... 
+cdr  into folders: plotting, plot_dummy...
 
       IF (PLARGL) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
@@ -213,7 +213,7 @@ cdr  into folders: plotting, plot_dummy...
         XMA = 0._DP
 C
 C  NULLPUNKT AUF DEM PAPIER
- 
+
         X0PL=10.
         Y0PL=3.
 C  ACHSENLAENGEN
@@ -690,13 +690,13 @@ C
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
             CALL EIRENE_SIGHE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-          CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,      
+          CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
         ELSE
           CALL EIRENE_SIGTST(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ENDIF
       END IF
- 
+
       IF (IFIRST < 0) THEN
         TRAJ(ICHORI)%TRJ%VX = VELX
         TRAJ(ICHORI)%TRJ%VY = VELY
@@ -810,7 +810,7 @@ C
       ENDIF
       IF (ZTST.GE.1.D30) GOTO 990
 C
- 
+
       IF (IFIRST < 0) THEN
 CDR WAS PASSIERT HIER ???
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
@@ -823,7 +823,7 @@ CDR WAS PASSIERT HIER ???
           CALL EIRENE_CELL_INSERT(ICHORI,NEW_CELL)
         END DO
       END IF
- 
+
       DO 250 J=1,NCOU
         NCELL=NRCELL+NUPC(J)*NR1ST+NBLCKA
         XD0 = X0 + ZT*VELX
@@ -835,7 +835,7 @@ CDR WAS PASSIERT HIER ???
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
-        
+
 cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
@@ -843,7 +843,7 @@ cdr
         IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
 
         TRACKS=TRACKS+ZDS
-        
+
 C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
           IF (NCHTAL(ICHORI).EQ.1) THEN
@@ -959,9 +959,9 @@ C
 C  LINE OF SIGHT INTEGRATION IS DONE NOW.
 C  DEALLOCATE ARRAYS IN SIGCX, SIGRAD, ETC...
 C
- 
+
       IF (IFIRST < 0) RETURN
- 
+
       IF (NCHTAL(ICHORI).EQ.1) THEN
         CALL EIRENE_SIGCX (2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
       ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
@@ -1029,7 +1029,7 @@ C
           TXSPEC(IPLOTS)(1:8)='ENERGY ='
           WRITE (TXSPEC(IPLOTS)(9:),'(ES12.4)') PEN
         END IF
- 
+
         IF (JEN == NCHNI) THEN    ! last energy for this present chord?
 C  INITIALIZE NEW PICTURE FOR NEW CHORD
           IF (NSPSCL(ICHORI).EQ.0) THEN
@@ -1058,7 +1058,7 @@ C  INITIALIZE NEW PICTURE FOR NEW CHORD
           IF (NCHTAL(ICHORI) == 3)
      .      TXHEAD(1:58) =
      .      'SPECTRAL EMISSIVITY DISTRIBUTION ALONG LINE OF SIGHT      '
- 
+
           CALL EIRENE_PLTTLY (XNTG,YPLOT,VPLOT,YMN2,YMX2,
      .         IR1,IR2,IRS,
      .         IPLOTS,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
@@ -1122,7 +1122,7 @@ c  these arrays have been allocated for PRSPEC option.
         DEALLOCATE (VPLOT)
         DEALLOCATE (XNTG)
       END IF
- 
+
       RETURN
       END
 
@@ -1131,7 +1131,3 @@ c  these arrays have been allocated for PRSPEC option.
 c  clarify role of ifirst<0 first.
       RETURN
       END
-
-
-       
-

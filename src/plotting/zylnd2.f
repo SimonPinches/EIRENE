@@ -19,21 +19,21 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_CCONA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: NK, NP, NA, IO, NUM, ILEFT, IRIGHT, NDP
       REAL(DP), INTENT(IN) :: AL(*), AR(*), PHIAN(NDP,*), PHIEN(NDP,*),
      .                      TAR(NK)
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, RAD
       INTEGER, INTENT(IN) :: IPART(NK)
       LOGICAL, INTENT(IN) :: NF
- 
+
       REAL(DP) :: XK, YK, PHI, PI, PXS, PYS, PZS, PHAN, BA, BB, BC,
      .          T, PX, PHIDEG, PY, PZ, PXX, PYY, PZZ, CZ, BX, BY, BZ,
      .          AX, AY, AZ, CX, CY, PHID, DANG
       INTEGER :: J, I, IP, IA, IE, JP, JJ, ILFT, IRGHT, NAPK
- 
+
       REAL(DP), ALLOCATABLE :: P(:,:), XP(:), YP(:)
       REAL(SP), ALLOCATABLE :: XPS(:), YPS(:)
 C
@@ -203,12 +203,12 @@ C
           CALL GRLN (XPS,YPS,JP)
         endif
     5 CONTINUE
- 
+
       DEALLOCATE (P)
       DEALLOCATE (XP)
       DEALLOCATE (YP)
       DEALLOCATE (XPS)
       DEALLOCATE (YPS)
- 
+
       RETURN
       END
