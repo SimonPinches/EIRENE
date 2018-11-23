@@ -34,7 +34,7 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: AORIG(*)
@@ -44,7 +44,7 @@ C
       LOGICAL, INTENT(IN) :: LOGL, TRC
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP), ALLOCATABLE :: YWERT(:,:),ywert1(:,:), BORIG(:)
       REAL(DP) :: WMIN, WMAX
       INTEGER :: IR, IERR, IT, I, IPART, IP, ICASE, IRD
@@ -110,7 +110,7 @@ C  3D MESH, TETRAHEDRA, PROJECTION INTO PLANE
       IF (ZMA .NE. 666.) WMAX = MAX(ZMA, WMAX)
       WRITE (60+ifoff,*) WMIN, WMAX
       WRITE (60+ifoff,*)
- 
+
       IF (IERR.GT.0) THEN
         IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
         IF (ALLOCATED(YWERT1)) DEALLOCATE (YWERT1)
@@ -118,7 +118,7 @@ C  3D MESH, TETRAHEDRA, PROJECTION INTO PLANE
       END IF
 C
       IF (ICASE.EQ.1) THEN
- 
+
          do ir=1,nr1st
             do ip=1,np2nd
                do it=1,nt3rd
@@ -132,8 +132,8 @@ C
                enddo
             enddo
          enddo
- 
- 
+
+
       ELSEIF (LEVGEO.LE.2.AND.LPPOL3(IBLD)) THEN
         LPPOLR=.TRUE.
         IPPOLR=MAX(1,IPROJ3(IBLD,ICURV))
@@ -149,8 +149,8 @@ C
             IF (ZMA.NE.666.) YWERT(IR,IT)=MIN(YWERT(IR,IT),ZMA)
             IF (ABS(YWERT(IR,IT)) < EPS30) YWERT(IR,IT)=0._DP
             WRITE (NRAPS+ifoff,*) YWERT(IR,IT)
-3100      CONTINUE
-1100    CONTINUE
+ 3100     CONTINUE
+ 1100   CONTINUE
 C
       ELSEIF (LEVGEO.LE.2.AND.LPTOR3(IBLD)) THEN
         LPTORR=.TRUE.
@@ -167,8 +167,8 @@ C
             IF (ZMA.NE.666.) YWERT(IR,IP)=MIN(YWERT(IR,IP),ZMA)
             IF (ABS(YWERT(IR,IP)) < EPS30) YWERT(IR,IP)=0._DP
             WRITE (NRAPS+ifoff,*) YWERT(IR,IP)
-3         CONTINUE
-1       CONTINUE
+    3     CONTINUE
+    1   CONTINUE
 C
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
         LPTORR=.TRUE.
@@ -186,9 +186,9 @@ C
               IF (ZMA.NE.666.) YWERT(IR,IP)=MIN(YWERT(IR,IP),ZMA)
               IF (ABS(YWERT(IR,IP)) < EPS30) YWERT(IR,IP)=0._DP
               WRITE (NRAPS+ifoff,*) YWERT(IR,IP)
-30          CONTINUE
-20        CONTINUE
-10      CONTINUE
+   30       CONTINUE
+   20     CONTINUE
+   10   CONTINUE
 C
 C  icase=4
 !PB      ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
@@ -200,7 +200,7 @@ C  icase=4
           IF (ZMA.NE.666.) YWERT1(I,1)=MIN(YWERT1(I,1),ZMA)
           IF (ABS(YWERT1(I,1)) < EPS30) YWERT1(I,1)=0._DP
           WRITE(NRAPS+ifoff,*) YWERT1(I,1)
-60      CONTINUE
+   60   CONTINUE
 C
 C  icase=5
       ELSEIF ((LEVGEO.EQ.5).AND..NOT.LRPSCUT) THEN
@@ -219,9 +219,6 @@ C
 C
       IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
       IF (ALLOCATED(YWERT1)) DEALLOCATE (YWERT1)
- 
+
       RETURN
       END
- 
- 
- 

@@ -4,10 +4,10 @@ C
      .  (A0LM,A1LM,A2LM,A3LM,A4LM,A5LM,A6LM,A7LM,A8LM,
      .                  A9LM,XLIMS1,XLIMS2,YLIMS1,YLIMS2,ZLIMS1,ZLIMS2,
      .                  RLB,RAD,CX,CY,CZ,PHIAN,PHIEN,IPART)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: A0LM, A1LM, A2LM, A3LM, A4LM, A5LM, A6LM,
@@ -111,7 +111,7 @@ C
      .                        PHIANG,IPHI,1)
 C
 C  SORTIERE WINKEL
-10    ISORT=0
+   10 ISORT=0
       DO 15 I=1,IPHI-1
         IF (PHIANG(I+1).LT.PHIANG(I)) THEN
           PHIH=PHIANG(I)
@@ -119,7 +119,7 @@ C  SORTIERE WINKEL
           PHIANG(I+1)=PHIH
           ISORT=ISORT+1
         ENDIF
-15    CONTINUE
+   15 CONTINUE
       IF (ISORT.GT.0) GOTO 10
 C
       IPHI=IPHI+1
@@ -147,7 +147,7 @@ C
             PHIEN(IPART)=PHIANG(I+1)
           ENDIF
         ENDIF
-20    CONTINUE
+   20 CONTINUE
 C
       RETURN
       END

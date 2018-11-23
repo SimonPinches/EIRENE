@@ -20,17 +20,16 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
 
       INTEGER :: ISP, ISP0, IION, ICOL, IATM, IMOL, IREI, IMEI
- 
+
       DO 10 IATM=1,NATMI
 C  NRCA=0 ?
         DO 100 ICOL=1,NRCA(IATM)
-100     CONTINUE
-10    CONTINUE
+  100   CONTINUE
+   10 CONTINUE
 C
 C
       DO 20 IMOL=1,NMOLI
@@ -41,24 +40,24 @@ C  currently: only electron impact collisions on molecules
 C  electron impact process no. irei, on molecules imol
 c  search for secondaries, that are not followed:
 c  atom secondaries
-c         DO   NATMI 
+c         DO   NATMI
 c  molecule secondaries
 C         DO   NMOLI
 c  photonic secondaries
 C         DO   NPHOTI
-C  test ion secondaries:  
+C  test ion secondaries:
           DO 220 IION=1,NIONI
             ISP=NSPAM+IION
             IF (PIOEI(IREI,IION).GT.0) THEN
               IF (NFOLI(IION).LT.0) THEN
                 WRITE (iunout,*) 'TEST ION ',TEXTS(ISP),
-     .                           'BORN FROM MOLECULE ', TEXTS(ISP0),
-     .                           'CAN BE CONDENSED'
+     .                           ' BORN FROM MOLECULE ',TEXTS(ISP0),
+     .                           ' CAN BE CONDENSED'
               ENDIF
             ENDIF
-220       CONTINUE
-200     CONTINUE
-20    CONTINUE
+  220     CONTINUE
+  200   CONTINUE
+   20 CONTINUE
 C
       RETURN
       END

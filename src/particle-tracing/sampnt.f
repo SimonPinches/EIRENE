@@ -19,9 +19,9 @@ C
 
 cdr  point source. identify the starting point coordinates (from IPOINT)
 c  input:
-c    NLPT = IPOINT (no. of sub-stratum, i.e. "point" source) 
+c    NLPT = IPOINT (no. of sub-stratum, i.e. "point" source)
 c    ISTRA         (no. of stratum), via Common
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -32,14 +32,14 @@ c    ISTRA         (no. of stratum), via Common
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*), EFWL(*),
      .                         VXWL(*), VYWL(*), VZWL(*), WEISPZ(*)
       INTEGER, INTENT(IN) :: NLPT
       REAL(DP) :: X01, CNORM, WINK
-      INTEGER :: NT, EIRENE_LEARCA, EIRENE_LEARC1, EIRENE_LEARC2, 
+      INTEGER :: NT, EIRENE_LEARCA, EIRENE_LEARC1, EIRENE_LEARC2,
      .           EIRENE_LEARCT, EIRENE_LEAUSR, IPOINT, JSPZ,
      .           IAUSR, IBUSR, IRUSR, IPUSR, ITUSR, IPLSTI, IPLSV
 C
@@ -77,7 +77,7 @@ c  set 1st grid (radial) grid point
         IPOLG =NISOR(IPOINT,ISTRA)
       ELSEIF (NRSOR(IPOINT,ISTRA).EQ.0.AND.
      .        NASOR(IPOINT,ISTRA).EQ.0) THEN
-C  find nrcell, ipolg automatically. 
+C  find nrcell, ipolg automatically.
         select case (LEVGEO)
         case (:4)
           NRCELL=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,1,NR1STM,.FALSE.,.FALSE.,
@@ -90,7 +90,7 @@ C  find nrcell, ipolg automatically.
         IF (NRCELL.GT.0.AND.NRCELL.LT.NR1ST) then
           NACELL=0
         ELSE
-          GOTO 991 
+          GOTO 991
         ENDIF
       ELSE
         GOTO 991
@@ -181,7 +181,7 @@ C
       IF (NACELL.GT.0) NBLOCK=NBMLTP
       NBLCKA=NSTRD*(NBLOCK-1)+NACELL
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
-C 
+C
 c  set local plasma parameters in cell of point source
 c
       TEWL=TEIN(NCELL)
@@ -198,17 +198,17 @@ c
           VZWL(IPLS)=VZIN(IPLSV,NCELL)
         END IF
         DIWL(IPLS)=DIIN(IPLS,NCELL)
-13    CONTINUE
+   13 CONTINUE
 C
       DO 20 JSPZ=1,NSPZ
         WEISPZ(JSPZ)=-1.
-20    CONTINUE
+   20 CONTINUE
       IF (NSPEZ(ISTRA).LE.0) THEN
 C  ANALOG SPECIES SAMPLING DISTRIBUTION NOT AVAILABLE FOR POINT SOURCE
         GOTO 992
       ENDIF
 C
-C  set reference directional unit vector 
+C  set reference directional unit vector
 C
       CRTX=SORAD4(IPOINT,ISTRA)
       CRTY=SORAD5(IPOINT,ISTRA)
@@ -219,13 +219,13 @@ C
       CRTZ=CRTZ/CNORM
 C
       RETURN
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMPNT , IPOINT, ISTRA ', IPOINT,ISTRA
       WRITE (iunout,*) 'NRCELL,NACELL,IPOLG ',NRCELL,NACELL,IPOLG
       WRITE (iunout,*) 'NPCELL              ',NPCELL
       WRITE (iunout,*) 'NTCELL,IPERID       ',NTCELL,IPERID
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMPNT, NSPEZ OUT OF RANGE           '
       CALL EIRENE_EXIT_OWN(1)
       END

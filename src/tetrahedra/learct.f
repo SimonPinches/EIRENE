@@ -1,17 +1,17 @@
- 
- 
+
+
       INTEGER FUNCTION EIRENE_LEARCT (X,Y,Z)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
       USE EIRMOD_CTETRA
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, PARAMETER :: NCL=30
- 
+
       REAL(DP), INTENT(IN) :: X,Y,Z
       REAL(DP) :: PC1(3), PC2(3), PC3(3), PC4(3), P(3)
       REAL(DP) :: V1, V2, V3, V4, EIRENE_CAL_VOL
@@ -23,22 +23,22 @@
       INTEGER :: ITET, IFIRST, I, J, K, IX, IY, IZ, IHEADX1, IHEADX2,
      .           IHEADY1, IHEADY2, IHEADZ1, IHEADZ2
       LOGICAL :: LG(NTET)
- 
+
       TYPE :: CELL
         INTEGER :: TETNR
         TYPE(CELL),POINTER :: NEXT
       END TYPE CELL
- 
+
       TYPE :: POIFELD
         TYPE (CELL),POINTER :: P
       END TYPE POIFELD
- 
+
       TYPE (POIFELD) :: HELPCUR(8)
       TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:,:)
       TYPE (CELL),POINTER :: CUR
- 
+
       DATA IFIRST /0/
- 
+
       IF (IFIRST.EQ.0) THEN
         IFIRST = 1
         ALLOCATE(HEADS(NCL,NCL,NCL))
@@ -55,12 +55,12 @@
         XMAX=MAXVAL(XTETRA(1:NCOOR))
         YMAX=MAXVAL(YTETRA(1:NCOOR))
         ZMAX=MAXVAL(ZTETRA(1:NCOOR))
-        XMIN = XMIN *(1.-EPS5)
-        XMAX = XMAX *(1.+EPS5)
-        YMIN = YMIN *(1.-EPS5)
-        YMAX = YMAX *(1.+EPS5)
-        ZMIN = ZMIN *(1.-EPS5)
-        ZMAX = ZMAX *(1.+EPS5)
+        XMIN = MIN( XMIN *(1.-EPS5), XMIN *(1.+EPS5) )
+        XMAX = MAX( XMAX *(1.-EPS5), XMAX *(1.+EPS5) )
+        YMIN = MIN( YMIN *(1.-EPS5), YMIN *(1.+EPS5) )
+        YMAX = MAX( YMAX *(1.-EPS5), YMAX *(1.+EPS5) )
+        ZMIN = MIN( ZMIN *(1.-EPS5), ZMIN *(1.+EPS5) )
+        ZMAX = MAX( ZMAX *(1.-EPS5), ZMAX *(1.+EPS5) )
         DISTX=(XMAX-XMIN)/REAL(NCL,KIND=DP)
         DISTY=(YMAX-YMIN)/REAL(NCL,KIND=DP)
         DISTZ=(ZMAX-ZMIN)/REAL(NCL,KIND=DP)
@@ -105,28 +105,28 @@
           ENDDO
         ENDDO
       ENDIF
- 
+
       DELTAX=X-XMIN
       IHEADX2 = 0
       IF (ABS(MOD(DELTAX,DISTX)) .LT. EPDX) THEN
         IHEADX2=INT(DELTAX/DISTX)
       ENDIF
       IHEADX1=INT(DELTAX/DISTX)+1
- 
+
       DELTAY=Y-YMIN
       IHEADY2 = 0
       IF (ABS(MOD(DELTAY,DISTY)) .LT. EPDY) THEN
         IHEADY2=INT(DELTAY/DISTY)
       ENDIF
       IHEADY1=INT(DELTAY/DISTY)+1
- 
+
       DELTAZ=Z-ZMIN
       IHEADZ2 = 0
       IF (ABS(MOD(DELTAZ,DISTZ)) .LT. EPDZ) THEN
         IHEADZ2=INT(DELTAZ/DISTZ)
       ENDIF
       IHEADZ1=INT(DELTAZ/DISTZ)+1
- 
+
       HELPCUR(1)%P => HEADS(IHEADX1,IHEADY1,IHEADZ1)%P
       IF (IHEADX2 .GT. 0) THEN
         HELPCUR(2)%P => HEADS(IHEADX2,IHEADY1,IHEADZ1)%P
@@ -143,7 +143,7 @@
       ELSE
         NULLIFY(HELPCUR(4)%P)
       ENDIF
- 
+
       IF (IHEADZ2 .GT. 0) THEN
         HELPCUR(5)%P => HEADS(IHEADX1,IHEADY1,IHEADZ2)%P
         IF (IHEADX2 .GT. 0) THEN
@@ -161,9 +161,14 @@
         ELSE
           NULLIFY(HELPCUR(8)%P)
         ENDIF
+      ELSE
+        NULLIFY(HELPCUR(5)%P)
+        NULLIFY(HELPCUR(6)%P)
+        NULLIFY(HELPCUR(7)%P)
+        NULLIFY(HELPCUR(8)%P)
       END IF
- 
- 
+
+
       P(1:3) = (/ X, Y, Z /)
       LG = .FALSE.
       DO J=1,8
@@ -180,19 +185,19 @@ C  CELL I ALREADY TESTED BEFORE ?
      .                   ZTETRA(NTECK(3,ITET)) /)
             PC4(1:3)= (/ XTETRA(NTECK(4,ITET)), YTETRA(NTECK(4,ITET)),
      .                   ZTETRA(NTECK(4,ITET)) /)
- 
+
             IF ((MIN(PC1(1),PC2(1),PC3(1),PC4(1)) <= X) .AND.
      .          (MAX(PC1(1),PC2(1),PC3(1),PC4(1)) >= X) .AND.
      .          (MIN(PC1(2),PC2(2),PC3(2),PC4(2)) <= Y) .AND.
      .          (MAX(PC1(2),PC2(2),PC3(2),PC4(2)) >= Y) .AND.
      .          (MIN(PC1(3),PC2(3),PC3(3),PC4(3)) <= Z) .AND.
      .          (MAX(PC1(3),PC2(3),PC3(3),PC4(3)) >= Z)) THEN
- 
+
               V1 = EIRENE_CAL_VOL (PC1,PC2,PC3,P)
               V2 = EIRENE_CAL_VOL (PC3,PC2,PC4,P)
               V3 = EIRENE_CAL_VOL (PC1,PC3,PC4,P)
               V4 = EIRENE_CAL_VOL (PC1,PC4,PC2,P)
- 
+
               IF ((ABS(V1+V2+V3+V4-VOL(ITET)) < 1.D-3*VOL(ITET)) .AND.
      .            (MIN(V1,V2,V3,V4) >= -EPS5*VOL(ITET))) THEN
                 EIRENE_LEARCT=ITET
@@ -203,7 +208,7 @@ C  CELL I ALREADY TESTED BEFORE ?
           HELPCUR(J)%P => HELPCUR(J)%P%NEXT
         END DO
       END DO
- 
+
       WRITE (iunout,*) ' POINT ',X,Y,Z
       WRITE (iunout,*) ' OUTSIDE OF ALL TETRAHEDRA '
       EIRENE_LEARCT=0

@@ -11,13 +11,13 @@ c
 !             is defined
 !pb   ??      use nrplg rather than np2nd for 1D radial polygons,
 !             to allow 1D levgeo=3 runs
-!dr 17.01.14  test-printout removed, some comments added
+!dr 17.01.14  test printout removed, some comments added
 cdr 19.07.16  arguments corrected in call to grid_1 for levgeo=1,
 cdr           to allow also there an outer vacuum (void) zone.
 cdr           tested, ok.
 cdr july 17:  initialize NCORNER also in case LEVGEO=10.
 cdr           For several other LEVGEO options NCORNER is set here,
-cdr           for some other is routine sneigh.f (geometry module) 
+cdr           for some other is routine sneigh.f (geometry module)
 
       SUBROUTINE EIRENE_GRID (IND)
 
@@ -77,7 +77,7 @@ C
 C
 C   RADIAL GRID
 C
-100   CONTINUE
+  100 CONTINUE
 C
       IF (NR1ST.LT.2) RETURN
 C
@@ -95,7 +95,7 @@ C
 C** USE ONE OF THE EIRENE DEFAULT GRID OPTIONS
           CALL EIRENE_GRID_1(RSURF,NR1ST,NRSEP,NLOCAL,RIA,RGA,RAA,RRA,1)
         ELSEIF (INDGRD(IND).EQ.5) THEN
-C** TAKE RADIAL GRID DATA FROM USER SUPPLIED SUBROUTINE
+C** TAKE RADIAL GRID DATA FROM USER-SUPPLIED SUBROUTINE
 C         CALL PROUSR (RSURF,2+4*NPLS+3,0._DP,0._DP,0._DP,0._DP,
 C    .                 0._DP,0._DP,0._DP,NR1ST)
         ELSEIF (INDGRD(IND).EQ.6) THEN
@@ -135,10 +135,10 @@ C** EQUIDISTANT IN RADIUS
             ND=NRSEP
             DO 105 J=1,ND
               RSURF(J)=RIA+DBLE(J-1)/DBLE(ND-1)*(RGA-RIA)
-105         CONTINUE
+  105       CONTINUE
             DO 106 J=ND+1,NLOCAL
               RSURF(J)=RGA+DBLE(J-ND)/DBLE(NLOCAL-ND)*(RAA-RGA)
-106         CONTINUE
+  106       CONTINUE
           ELSEIF (INDGRD(IND).EQ.2) THEN
 C** RADIAL GRID WITH CONSTANT AREA
             IF (NLCRC) THEN
@@ -148,7 +148,7 @@ C** RADIAL GRID WITH CONSTANT AREA
               RSURF(NLOCAL)=RAA
               DO 103 J=2,NLOCAL-1
                 RSURF(J)=RIA+SQRT((J-1)*FRING*PIAI)
-103           CONTINUE
+  103         CONTINUE
             ELSEIF (NLELL) THEN
               GESFL=(RAA*RAA*ELLOT-RIA*RIA*ELLIN)*PIA
               FRING=GESFL/(NLOCAL-1)
@@ -159,8 +159,8 @@ C  SOLVE RSURF**2*ELL(RSURF)-(J-1)*FRING/PIA=0., RSURF(J-1)<RSURF<RAA
                 CONST=(J-1)*FRING*PIAI
                 RL=RSURF(J-1)+EPS30
                 RR=RAA
-108             RRL=(RL-RSURF(1))/(RSURF(NLOCAL)-RSURF(1))
-109             RRR=(RR-RSURF(1))/(RSURF(NLOCAL)-RSURF(1))
+  108           RRL=(RL-RSURF(1))/(RSURF(NLOCAL)-RSURF(1))
+  109           RRR=(RR-RSURF(1))/(RSURF(NLOCAL)-RSURF(1))
                 FL=RL**2*ELPARM(RRL,ELLIN,ELLOT,EXELL)-CONST
                 FR=RR**2*ELPARM(RRR,ELLIN,ELLOT,EXELL)-CONST
                 QUOTI=(RR-RL)/(FR-FL)
@@ -177,7 +177,7 @@ C  SOLVE RSURF**2*ELL(RSURF)-(J-1)*FRING/PIA=0., RSURF(J-1)<RSURF<RAA
                   RR=RN
                   GOTO 109
                 ENDIF
-104           CONTINUE
+  104         CONTINUE
             ELSEIF (NLTRI) THEN
               GESFL=((RAA*RAA-2.*TRIOT*TRIOT)*ELLOT-
      .               (RIA*RIA-2.*TRIIN*TRIIN)*ELLIN)*PIA
@@ -194,7 +194,7 @@ C  SOLVE RSURF**2*ELL(RSURF)-(J-1)*FRING/PIA=0., RSURF(J-1)<RSURF<RAA
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
         ELSEIF (INDGRD(IND).EQ.5) THEN
-C** TAKE RADIAL GRID DATA FROM USER SUPPLIED SUBROUTINE
+C** TAKE RADIAL GRID DATA FROM USER-SUPPLIED SUBROUTINE
           CALL EIRENE_PROUSR (RSURF,2+4*NPLS+3,0._DP,0._DP,0._DP,0._DP,
      .                 0._DP,0._DP,0._DP,NR1ST)
         ELSEIF (INDGRD(IND).EQ.6) THEN
@@ -210,7 +210,7 @@ C
               EP1(J)=0.
               ELL(J)=1.
               TRI(J)=0.
-111         CONTINUE
+  111       CONTINUE
           ELSEIF (NLELL) THEN
             EP1(1)=EP1IN
             ELL(1)=ELLIN
@@ -218,10 +218,10 @@ C
               RR=(RSURF(J)-RSURF(1))/(RSURF(NLOCAL)-RSURF(1))
               EP1(J)=ELPARM(RR,EP1IN,EP1OT,EXEP1)
               ELL(J)=ELPARM(RR,ELLIN,ELLOT,EXELL)
-112         CONTINUE
+  112       CONTINUE
             DO 113 J=1,NR1ST
               TRI(J)=0.
-113         CONTINUE
+  113       CONTINUE
           ELSEIF (NLTRI) THEN
             EP1(1)=EP1IN
             ELL(1)=ELLIN
@@ -236,10 +236,10 @@ C
               EP1(J)=ELPARM(RR,EP1IN,EP1OT,EXEP1)
               ELL(J)=ELPARM(RR,ELLIN,ELLOT,EXELL)
               TRI(J)=ELPARM(RR,TRIIN,TRIOT,EXTRI)
-114         CONTINUE
+  114       CONTINUE
           ENDIF
         ELSEIF (INDGRD(IND).EQ.5) THEN
-C** TAKE ELLIP. GRID DATA FROM USER SUPPLIED SUBROUTINE
+C** TAKE ELLIP. GRID DATA FROM USER-SUPPLIED SUBROUTINE
 C         CALL PROUSR (EP1,2+4*NPLS+?,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,
 C         CALL PROUSR (ELL,2+4*NPLS+?,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,
 C         CALL PROUSR (TRI,2+4*NPLS+?,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,
@@ -256,7 +256,7 @@ C
         DO 115 J=1,NR1ST
           RQ(J)=RSURF(J)*RSURF(J)
           ELLQ(J)=ELL(J)*ELL(J)
-115     CONTINUE
+  115   CONTINUE
 C
         IF (TRCGRD) THEN
           CALL EIRENE_MASRR4('  N, RSURF,EP1,ELL,TRI',
@@ -272,7 +272,7 @@ C
 C  ALL POLYGON DATA HAVE BEEN READ FROM INPUT FILE, NOTHING ELSE
 C  TO BE DONE HERE
         ELSEIF (INDGRD(IND).EQ.5) THEN
-C*** POLYGON DATA NOT JET AVAILABLE FROM PROUSR (INDGRD.EQ.5 OPTION)
+C*** POLYGON DATA NOT YET AVAILABLE FROM PROUSR (INDGRD.EQ.5 OPTION)
         ELSEIF (INDGRD(IND).EQ.6) THEN
 C*** GEOMETRICAL DATA ARE SET IN IF0COP NOTHING TO BE DONE HERE
         ENDIF
@@ -290,63 +290,73 @@ C  OUTERMOST POLYGON SPECIFIED SO FAR
               VPY=VPYY/XNORM*PLREFL
               XPOL(I+1,K)=XPOL(I,K)+VPX
               YPOL(I+1,K)=YPOL(I,K)+VPY
-132         CONTINUE
-133       CONTINUE
+  132       CONTINUE
+  133     CONTINUE
         ENDIF
 C
         IF (XPCOR.NE.0._DP) THEN
 C  SHIFT WHOLE POLYGON MESH IN X DIRECTION BY XPCOR (CM)
 C
           DO 135 I=1,NR1ST
-            DO 135 J=1,NPPLG
-              DO 135 K=NPOINT(1,J),NPOINT(2,J)
+            DO J=1,NPPLG
+              DO K=NPOINT(1,J),NPOINT(2,J)
                 XPOL(I,K)=XPOL(I,K)+XPCOR
-135       CONTINUE
+              END DO
+            END DO
+  135     CONTINUE
         ENDIF
 C
         IF (YPCOR.NE.0._DP) THEN
 C  SHIFT WHOLE POLYGON MESH IN Y DIRECTION BY YPCOR (CM)
 C
           DO 136 I=1,NR1ST
-            DO 136 J=1,NPPLG
-              DO 136 K=NPOINT(1,J),NPOINT(2,J)
+            DO J=1,NPPLG
+              DO K=NPOINT(1,J),NPOINT(2,J)
                 YPOL(I,K)=YPOL(I,K)+YPCOR
-136       CONTINUE
+              END DO
+            END DO
+  136     CONTINUE
         ENDIF
 C
 C  SET DERIVED GRID DATA FOR LEVGEO = 3 OPTION
 C  (SAME FOR ALL INDGRD OPTIONS)
 C
         DO 140 I=1,NR1ST
-          DO 140 J=1,NPPLG
-            DO 140 K=NPOINT(1,J),NPOINT(2,J)-1
+          DO J=1,NPPLG
+            DO K=NPOINT(1,J),NPOINT(2,J)-1
               VPLX(I,K)=XPOL(I,K+1)-XPOL(I,K)
               VPLY(I,K)=YPOL(I,K+1)-YPOL(I,K)
-140     CONTINUE
+            END DO
+          END DO
+  140   CONTINUE
         DO 141 I=1,NR1ST
-          DO 141 J=1,NPPLG
+          DO J=1,NPPLG
             IF (J.EQ.1) THEN
               DO 142 K=1,NPOINT(1,1)
                 BGL(I,K)=0.
-142           CONTINUE
+  142         CONTINUE
             ELSE
               DO 143 K=NPOINT(2,J-1),NPOINT(1,J)
                 BGL(I,K)=BGL(I,NPOINT(2,J-1))
-143           CONTINUE
+  143         CONTINUE
             ENDIF
-            DO 141 K=NPOINT(1,J)+1,NPOINT(2,J)
+            DO K=NPOINT(1,J)+1,NPOINT(2,J)
               BGL(I,K)=BGL(I,K-1)+SQRT(VPLX(I,K-1)**2+VPLY(I,K-1)**2)
-141     CONTINUE
+            END DO
+          END DO
+  141   CONTINUE
 C
 C   CALCULATE THE OUTER NORMALS OF POLYGONS
 C
         DO 144 I=1,NR1ST
-          DO 144 J=1,NPPLG
-            DO 144 K=NPOINT(1,J),NPOINT(2,J)-1
+          DO J=1,NPPLG
+            DO K=NPOINT(1,J),NPOINT(2,J)-1
               PLABS=SQRT(VPLX(I,K)**2+VPLY(I,K)**2)
               PLNX(I,K)=VPLY(I,K)/(PLABS+EPS60)
               PLNY(I,K)=-VPLX(I,K)/(PLABS+EPS60)
-144     CONTINUE
+            END DO
+          END DO
+  144   CONTINUE
 C
         DO 147 I=1,NR1ST
           IUP=I+1
@@ -355,9 +365,9 @@ C
             IUP=I
             IDN=I-1
           ENDIF
-          DO 147 J=1,NPPLG
-          DO 147 K=NPOINT(1,J),NPOINT(2,J)-1
-146         XD=XPOL(IUP,K+1)-XPOL(IDN,K+1)
+          DO J=1,NPPLG
+           DO K=NPOINT(1,J),NPOINT(2,J)-1
+  146       XD=XPOL(IUP,K+1)-XPOL(IDN,K+1)
             YD=YPOL(IUP,K+1)-YPOL(IDN,K+1)
             IF (XD*XD+YD*YD.LT.EPS30) THEN
               IF (IUP.LT.NR1ST) THEN
@@ -370,7 +380,9 @@ C
             XS=SIGN(1._DP,XD*PLNX(I,K)+YD*PLNY(I,K))
             PLNX(I,K)=PLNX(I,K)*XS
             PLNY(I,K)=PLNY(I,K)*XS
-147     CONTINUE
+           END DO
+          END DO
+  147   CONTINUE
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NO. OF VALID PARTS = ',NPPLG
@@ -380,8 +392,8 @@ C
               WRITE (iunout,*) 'IA = ',NPOINT(1,K),' IE = ',NPOINT(2,K)
               WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(J,I),YPOL(J,I),
      .                                   I=NPOINT(1,K),NPOINT(2,K))
-156         CONTINUE
-155       CONTINUE
+  156       CONTINUE
+  155     CONTINUE
           CALL EIRENE_LEER(2)
           WRITE (iunout,*)
      .      'ARCLENGTH BGL(I,K) OF RADIAL SURFACES AT Z=0.'
@@ -389,7 +401,7 @@ C
             WRITE (iunout,*) 'I = ',I
             WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
             CALL EIRENE_LEER(1)
-153       CONTINUE
+  153     CONTINUE
         ENDIF
 C
         CALL EIRENE_SNEIGH
@@ -434,7 +446,7 @@ cdr  ncorner: number of cell vertices in case levgeo=4, for FEM interpolation
           CUR%NOTRI = I
           CUR%NEXT_TRI => COORTRI(NECKE(3,I))%PTRI
           COORTRI(NECKE(3,I))%PTRI => CUR
-165     CONTINUE
+  165   CONTINUE
 C
 C
 C   CALCULATE THE OUTER NORMALS OF TRIANGLES
@@ -449,10 +461,10 @@ C
           PTRIY(1,I)=-VTRIX(1,I)/(PLABS1+EPS60)
           PTRIY(2,I)=-VTRIX(2,I)/(PLABS2+EPS60)
           PTRIY(3,I)=-VTRIX(3,I)/(PLABS3+EPS60)
-161     CONTINUE
+  161   CONTINUE
 C
 C PTRIX/PTRIY POINT OUT OF TRIANGE FOR A MATHEMATICAL POSITVE
-C             ORIENTATION OF TRIANGLE (1-2-3-1: COUNTER CLOCKWISE,
+C             ORIENTATION OF TRIANGLE (1-2-3-1: COUNTER-CLOCKWISE,
 C                                               AS IT MUST BE)
 C PTRIX/PTRIY POINT INTO TRIANGE FOR A MATHEMATICAL NEGATIVE
 C             ORIENTATION OF TRIANGLE (1-2-3-1: CLOCKWISE,
@@ -474,9 +486,9 @@ C
           XS3=SIGN(1._DP,XD3*VTRIX(3,I)+YD3*VTRIY(3,I))
           PTRIX(3,I)=PTRIX(3,I)*XS3
           PTRIY(3,I)=PTRIY(3,I)*XS3
-162     CONTINUE
+  162   CONTINUE
 C
-C  BUILD LIST OF TRIANGLE SIDES COMPRISING A NONDEFAULT STANDARD SURFACE
+C  BUILD LIST OF TRIANGLE SIDES COMPRISING A NON-DEFAULT STANDARD SURFACE
 C                               OR AN ADDITIONAL SURFACE
 C
         IF (MAXVAL(INMTI(1:3,1:NTRII)) > NSTSI+NLIM) THEN
@@ -487,7 +499,7 @@ C
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
-C  INDEX J:            EIRENE SURFACE  (NON DEFAULT, OR ADDITIONAL)
+C  INDEX J:            EIRENE SURFACE  (NON-DEFAULT, OR ADDITIONAL)
 C  INDEX IT, OR ITRI:  TRIANGLE
 C  INDEX IS:           TRIANGLE SIDE
 
@@ -564,7 +576,7 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
                WRITE (IUNOUT,*) ' PROBLEM FINDING STARTING POINT',
      .                          ' FOR SORTING OF TRIANGLES '
                WRITE (IUNOUT,*)
-     .            ' SORTING ABANDONNED FOR SURFACE NUMBER ',I
+     .            ' SORTING ABANDONED FOR SURFACE NUMBER ',I
                CYCLE
             END IF
 
@@ -623,11 +635,12 @@ C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
           WRITE (iunout,*) ' I,(XTRIAN(J),YTRIAN(J),J=1,3) '
+          CALL EIRENE_LEER(1)
           DO 163 I=1,NTRII
             WRITE (iunout,'(/1X,I4,1X,1P,6E12.4)')
      .                               I,(XTRIAN(NECKE(J,I)),
      .                                  YTRIAN(NECKE(J,I)),J=1,3)
-163       CONTINUE
+  163     CONTINUE
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) ' NGITT SET TO ',NGITT
 
@@ -779,10 +792,14 @@ C  SIDE 3-1-4
             END IF
             J = INMTIT(IS,ITET)
             IF ((NTBAR(IS,ITET) == 0) .AND. (ILIIN(J) <= 0)) THEN
+              IF ((ILIIN(J) < 0) .AND. (ILSWCH(J) < 1000)) THEN
+c  transparent surfaces, that switch into additional cells, are legal.
+c  all other transparent cell faces must either have a neighbor, or a surface boundary condition.
                 WRITE (iunout,*) 'SIDE',IS,' OF TETRAHEDRON ',ITET,
      .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
                 LERROR = .TRUE.
               END IF
+            END IF
           END DO
         END DO
 
@@ -804,7 +821,7 @@ C
           WRITE (iunout,*) ' NUMBER OF TETRAHEDRA = ',NTET
           DO ITET=1,NTET
             WRITE (iunout,*)
-            WRITE (iunout,*) ' TETRAEDER ',ITET
+            WRITE (iunout,*) ' TETRAHEDRON ',ITET
             DO J=1,4
               IC=NTECK(J,ITET)
               WRITE (iunout,'(1X,I6,3ES12.4)')
@@ -857,7 +874,7 @@ C  GENERAL GEOMETRY OPTION: NOTHING TO DONE HERE
 C
       end select
 C
-C  SET GEOMETRICAL CONTANTS FOR IGNORABLE Y OR POLOIDAL CO-ORDINATE
+C  SET GEOMETRICAL CONSTANTS FOR IGNORABLE Y OR POLOIDAL COORDINATE
 C  THESE MAY BE REVISED IF A 2ND (Y- OR POL.) GRID IS DEFINED BELOW
 C
       IF (LEVGEO.EQ.1) THEN
@@ -892,7 +909,7 @@ C
         CALL EIRENE_LEER(1)
       ENDIF
 C
-C  SET GEOMETRICAL CONTANTS FOR IGNORABLE Z CO-ORDINATE
+C  SET GEOMETRICAL CONSTANTS FOR IGNORABLE Z COORDINATE
 C  THESE MAY BE REVISED IF A 3RD (Z- OR TOR.) GRID IS DEFINED BELOW
 C
 C  A) IN TOROIDAL APPROXIMATION:
@@ -922,7 +939,7 @@ C
         DPHI=1./(2.*ALPHA)
 C
 C  ROA IS THE LARGE RADIUS OF THE TORUS
-C  (RMTOR,0,0) IS THE ORIGIN OF LOCAL CO-ORDINATE SYSTEM IN
+C  (RMTOR,0,0) IS THE ORIGIN OF LOCAL COORDINATE SYSTEM IN
 C              EACH TOROIDAL CELL
 C  RMTOR SUCH THAT VOLUME OF TORUS = VOLUME OF THE NTTRAM SEGMENTS
 C  AT PRESENT: FULLFILLED AT SURFACE DEFINED BY (RAA,EP1OT,ELLOT)
@@ -933,10 +950,10 @@ C              OR AT A POLYGON WITH XDIFF=0. (IF THERE IS ONE)
 C  SET ZSURF EVEN IF NLTOR=FALSE, FOR 3D GEOMETRY PLOTS
         DO 170 J=1,NTTRA
           ZSURF(J)=ZIA*DEGRAD+(J-1)/DPHI
-170     CONTINUE
+  170   CONTINUE
         DO 172 J=1,NTTRAM
           ZZONE(J)=0.5*(ZSURF(J)+ZSURF(J+1))
-172     CONTINUE
+  172   CONTINUE
         RORIG=RMTOR
 C
 C  B) IN CYLIND. APPROXIMATION:
@@ -952,7 +969,7 @@ C
 C
         RORIG=0.
 C
-C  C) IN TORUS CO-ORDINATES
+C  C) IN TORUS COORDINATES
 C
       ELSEIF (NLTRT) THEN
         ZDF=(ZAA-ZIA)*DEGRAD
@@ -986,7 +1003,7 @@ C
         CALL EIRENE_LEER(1)
       ENDIF
 C
-C  SET SURFACE AREA OF NON DEFAULT STANDARD SURFACES
+C  SET SURFACE AREA OF NON-DEFAULT STANDARD SURFACES
 C
       select case (LEVGEO)
       case (1)
@@ -1001,7 +1018,7 @@ C
             ELSEIF (NLTRT) THEN
             ENDIF
           ENDIF
-180     CONTINUE
+  180   CONTINUE
 
       case (4)
         DO ISTS=1,NSTSI
@@ -1125,7 +1142,7 @@ C
 C
 C   POLOIDAL OR Y-GRID
 C
-200   CONTINUE
+  200 CONTINUE
 C
 C  IF NLSYMP, Y-GRID MUST BE SYMMETRIC: PSURF(I)=PSURF(NP2ND-I+1)
 C
@@ -1135,7 +1152,7 @@ C   Y-GRID
         IF (INDGRD(IND).LE.4) THEN
           CALL EIRENE_GRID_1(PSURF,NP2ND,NPSEP,NPPLA,YIA,YGA,YAA,YYA,2)
 C       ELSEIF (INDGRD(IND).EQ.5) THEN
-C** TAKE Y GRID DATA FROM USER SUPPLIED SUBROUTINE
+C** TAKE Y GRID DATA FROM USER-SUPPLIED SUBROUTINE
 C TO BE WRITTEN
 C         CALL PROUSR (PSURF,2+4*NPLS+3,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,0._D
 C       ELSEIF (INDGRD(IND).EQ.6) THEN
@@ -1145,7 +1162,8 @@ C         CALL PROFR (PSURF,2+4*NPLS+5,1,1,NP2ND)
         ENDIF
 C
         DO 210 J=1,NP2NDM
-210       PHZONE(J)=(PSURF(J)+PSURF(J+1))/2.
+          PHZONE(J)=(PSURF(J)+PSURF(J+1))/2.
+  210   CONTINUE
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
@@ -1163,14 +1181,14 @@ C
           ND=NPSEP
           DO 211 J=1,ND
             PSURF(J)=(YIA+DBLE((J-1))/DBLE(ND-1)*(YGA-YIA))*DEGRAD
-211       CONTINUE
+  211     CONTINUE
           DO 212 J=ND+1,NP2ND
             PSURF(J)=(YGA+DBLE(J-ND)/DBLE(NP2ND-ND)*(YAA-YGA))*DEGRAD
-212       CONTINUE
+  212     CONTINUE
         ELSEIF (INDGRD(IND).EQ.2) THEN
           DO 213 J=1,NP2ND
             PSURF(J)=(YIA+(J-1)/DBLE(NP2NDM)*(YAA-YIA))*DEGRAD
-213       CONTINUE
+  213     CONTINUE
         ELSE
           WRITE (iunout,*) 'INVALID OPTION ENCOUNTERED IN SUBR. GRID'
           WRITE (iunout,*) 'INDGRD(2),LEVGEO ',INDGRD(IND),LEVGEO
@@ -1180,7 +1198,7 @@ C
         DO 215 J=1,NP2ND
           COSPH(J)=COS(PSURF(J))
           SINPH(J)=SIN(PSURF(J))
-215     CONTINUE
+  215   CONTINUE
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
@@ -1213,8 +1231,8 @@ C
             YPOL(IRP,IP)=Y3
             XPOL(IR,IP)=X4
             YPOL(IR,IP)=Y4
-1250      CONTINUE
-1240    CONTINUE
+ 1250     CONTINUE
+ 1240   CONTINUE
 C
         CALL EIRENE_SNEIGH
 
@@ -1229,21 +1247,22 @@ C
             WRITE (iunout,*) ' JA = ',1,' JE = ',NR1ST
             WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(K,I),YPOL(K,I),
      .             K=1,NR1ST)
-219       CONTINUE
+  219     CONTINUE
         ENDIF
 C
         DO 220 K=1,NRPLG
-          DO 220 I=1,NR1STM
+          DO I=1,NR1STM
             VVTX(I,K)=XPOL(I+1,K)-XPOL(I,K)
             VVTY(I,K)=YPOL(I+1,K)-YPOL(I,K)
-220     CONTINUE
+          END DO
+  220   CONTINUE
 C
         DO 221 K=1,NRPLG
           BGLP(1,K)=0.
           DO 222 I=1,NR1STM
             BGLP(I+1,K)=BGLP(I,K)+SQRT(VVTX(I,K)**2+VVTY(I,K)**2)
-222       CONTINUE
-221     CONTINUE
+  222     CONTINUE
+  221   CONTINUE
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(2)
@@ -1253,7 +1272,7 @@ C
             WRITE (iunout,*) 'K = ',K
             WRITE (iunout,'(/1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
             CALL EIRENE_LEER(1)
-223       CONTINUE
+  223     CONTINUE
         ENDIF
 C
 C   CALCULATE THE OUTER NORMALS OF POLYGONS
@@ -1267,23 +1286,24 @@ C
               PPLNX(I,K)=1.
               PPLNY(I,K)=-VVTX(I,K)/VVTY(I,K)
             ENDIF
-225       CONTINUE
-          DO 224 I=1,NR1STM
+  225     CONTINUE
+          DO I=1,NR1STM
             PLABS=SQRT(PPLNX(I,K)**2+PPLNY(I,K)**2)
             PPLNX(I,K)=PPLNX(I,K)/PLABS
             PPLNY(I,K)=PPLNY(I,K)/PLABS
-224     CONTINUE
+          END DO
+  224   CONTINUE
 C
         DO 227 I=1,NR1STM
-        DO 227 J=1,NPPLG
-          DO 227 K=NPOINT(1,J),NPOINT(2,J)
+         DO J=1,NPPLG
+          DO K=NPOINT(1,J),NPOINT(2,J)
             KUP=K+1
             KDN=K
             IF (KUP.GT.NPOINT(2,J)) THEN
               KUP=K
               KDN=K-1
             ENDIF
-226         XD=XPOL(I+1,KUP)-XPOL(I+1,KDN)
+  226       XD=XPOL(I+1,KUP)-XPOL(I+1,KDN)
             YD=YPOL(I+1,KUP)-YPOL(I+1,KDN)
             IF (XD*XD+YD*YD.LT.EPS30) THEN
               IF (KUP.LT.NPOINT(2,J)) THEN
@@ -1296,17 +1316,21 @@ C
             XS=SIGN(1._DP,XD*PPLNX(I,K)+YD*PPLNY(I,K))
             PPLNX(I,K)=PPLNX(I,K)*XS
             PPLNY(I,K)=PPLNY(I,K)*XS
-227     CONTINUE
+          END DO
+         END DO
+  227   CONTINUE
 C
 C  IDENTIFY DEAD CELLS IN GRID CUTS
 C
         IT=1
         DO 229 IR=1,NR1ST-1
-        DO 229 J=1,NPPLG-1
-          DO 229 IP=NPOINT(2,J),NPOINT(1,J+1)-1
+         DO J=1,NPPLG-1
+          DO IP=NPOINT(2,J),NPOINT(1,J+1)-1
             NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             NSTGRD(NCELL)=2
-229     CONTINUE
+          END DO
+         END DO
+  229   CONTINUE
 C
       case (4:)
 C
@@ -1314,7 +1338,7 @@ C
       end select
 C
 C  1ST AND 2ND GRID DEFINED
-C  SET SURFACE AREA OF NON DEFAULT STANDARD SURFACES
+C  SET SURFACE AREA OF NON-DEFAULT STANDARD SURFACES
 C
 C  RADIAL (1ST GRID) SURFACES. OVERWRITE EARLIER VALUES FROM
 C  CALL EIRENE_GRID(1)
@@ -1334,7 +1358,7 @@ C
             ELSEIF (NLTRT) THEN
             ENDIF
           ENDIF
-280     CONTINUE
+  280   CONTINUE
       case (2:3)
         DO 290 ISTS=1,NSTSI
           IF (INUMP(ISTS,1).NE.0) THEN
@@ -1351,12 +1375,12 @@ cdr         write (iunout,*) ' area for surface ',nlj
                 SAREA(NLJ)=SAREA(NLJ)+(BGL(IR,IP+1)-BGL(IR,IP))*XS
 cdr             write (iunout,'(2i6,2es12.4)')
 cdr  .             ir, ip, BGL(IR,IP+1)-BGL(IR,IP), xs
-291           CONTINUE
+  291         CONTINUE
               SAREA(NLJ)=SAREA(NLJ)*TANAL/ALPHA*PI2A
 cdr           write (iunout,*) 'sarea ', nlj, SAREA(NLJ)
             ENDIF
           ENDIF
-290     CONTINUE
+  290   CONTINUE
       case default
 C TO BE WRITTEN
       end select
@@ -1377,17 +1401,17 @@ C
               DO 286 IR=IRPTA(ISTS,1),IRPTE(ISTS,1)-1
                 XS=(RSURF(IR+1)+RSURF(IR))*0.5+RMTOR
                 SAREA(NLJ)=SAREA(NLJ)+(RSURF(IR+1)-RSURF(IR))*XS
-286           CONTINUE
+  286         CONTINUE
               SAREA(NLJ)=SAREA(NLJ)*TANAL/ALPHA*PI2A
             ELSEIF (NLTRT) THEN
               SAREA(NLJ)=0.
               DO 287 IR=IRPTA(ISTS,1),IRPTE(ISTS,1)-1
                 XS=(RSURF(IR+1)+RSURF(IR))*0.5*2.*PIA
                 SAREA(NLJ)=SAREA(NLJ)+(RSURF(IR+1)-RSURF(IR))*XS
-287           CONTINUE
+  287         CONTINUE
             ENDIF
           ENDIF
-285     CONTINUE
+  285   CONTINUE
       case (2:3)
         DO 295 ISTS=1,NSTSI
           IF (INUMP(ISTS,2).NE.0) THEN
@@ -1401,17 +1425,17 @@ C
               DO 296 IR=IRPTA(ISTS,1),IRPTE(ISTS,1)-1
                 XS=(XPOL(IR+1,IP)+XPOL(IR,IP))*0.5+RMTOR
                 SAREA(NLJ)=SAREA(NLJ)+(BGLP(IR+1,IP)-BGLP(IR,IP))*XS
-296           CONTINUE
+  296         CONTINUE
               SAREA(NLJ)=SAREA(NLJ)*TANAL/ALPHA*PI2A
             ELSEIF (NLTRT) THEN
               SAREA(NLJ)=0.
               DO 297 IR=IRPTA(ISTS,1),IRPTE(ISTS,1)-1
                 XS=(XPOL(IR+1,IP)+XPOL(IR,IP))*0.5*2.*PIA
                 SAREA(NLJ)=SAREA(NLJ)+(BGLP(IR+1,IP)-BGLP(IR,IP))*XS
-297           CONTINUE
+  297         CONTINUE
             ENDIF
           ENDIF
-295     CONTINUE
+  295   CONTINUE
       case default
 C TO BE WRITTEN
       end select
@@ -1431,16 +1455,16 @@ C
 C
 C   TOROIDAL OR Z-GRID
 C
-300   CONTINUE
+  300 CONTINUE
 C
 C  IF NLSYMT, Z-GRID MUST BE SYMMETRIC
 C
       IF (NLTRZ) THEN
-C   Z-GRID, CARTHESIAN
+C   Z-GRID, CARTESIAN
         IF (INDGRD(IND).LE.4) THEN
           CALL EIRENE_GRID_1(ZSURF,NT3RD,NTSEP,NTTRA,ZIA,ZGA,ZAA,ZZA,3)
 C       ELSEIF (INDGRD(IND).EQ.5) THEN
-C** TAKE Z GRID DATA FROM USER SUPPLIED SUBROUTINE
+C** TAKE Z GRID DATA FROM USER-SUPPLIED SUBROUTINE
 C TO BE WRITTEN
 C         CALL PROUSR (ZSURF,2+4*NPLS+3,0._DP,0._DP,0._DP,0._DP,0._DP,0._DP,0._D
 C       ELSEIF (INDGRD(IND).EQ.6) THEN
@@ -1450,7 +1474,8 @@ C         CALL PROFR (ZSURF,2+4*NPLS+5,1,1,NT3RD)
         ENDIF
 C
         DO 310 J=1,NT3RDM
-310       ZZONE(J)=(ZSURF(J)+ZSURF(J+1))/2.
+          ZZONE(J)=(ZSURF(J)+ZSURF(J+1))/2.
+  310   CONTINUE
 C
 C     ELSEIF (NLTRA) THEN
 C   GRID FOR TOROIDAL APPROXIMATION OF CYLINDER: ALREADY DONE IN CALL EIRENE_GRID(1)
@@ -1497,15 +1522,15 @@ C
 C
       RETURN
 C
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 3RD GRID.  ZAA > ZIA ?'
       WRITE (iunout,*) 'ZIA,ZAA,NTTRA,ROA= ',ZIA,ZAA,NTTRA,ROA
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 2ND GRID.  YAA > YIA ?'
       WRITE (iunout,*) 'YIA,YAA = ',YIA,YAA
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 1ST GRID.  RAA > RIA ?'
       WRITE (iunout,*) 'RIA,RAA = ',RIA,RAA
       WRITE (iunout,*) 'RIA,RAA = ',RIA,RAA

@@ -2,21 +2,21 @@
 
       IMPLICIT NONE
 
-c  skip optional comment lines, starting with *, 
+c  skip optional comment lines, starting with *,
 c  after an input block starts *** .....
 c
 c  input:  IREAD  =0: next input card is to be read from IUNIN
 c          IREAD  =1: next input card is already given on ZEILE
 c  output: IREAD  =1: always
-c          ZEILE    : contains content of next input card 
+c          ZEILE    : contains content of next input card
 c                     which is not a comment (not starting with "*").
 c
 c
       INTEGER :: IREAD,IUNIN
       CHARACTER(72) :: ZEILE, ZEILE_IN, ZEILE_OUT
 
-331   CONTINUE
-      IF (IREAD.EQ.0) THEN 
+  331 CONTINUE
+      IF (IREAD.EQ.0) THEN
         READ (IUNIN,'(A72)') ZEILE_OUT
       ELSE
         ZEILE_IN=ZEILE
@@ -28,11 +28,11 @@ c
 C       WRITE (iunout,......)
         GOTO 331
       ENDIF
-     
+
       ZEILE=ZEILE_OUT
 
 c  now on exit:  iread=1:
 c  next read must come from ZEILE:  READ(ZEILE, FORMAT) ....
-c 
+c
        return
        end

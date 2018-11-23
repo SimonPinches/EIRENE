@@ -1,23 +1,23 @@
- 
+
       subroutine EIRENE_remove_char (inchar, outchar ,remchar)
- 
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comprt, only : iunout
- 
+
       implicit none
- 
+
       character(len=*), intent(in) :: inchar, remchar
       character(len=*), intent(out) :: outchar
       integer :: lin, lout, i, io
- 
+
       lout = len(outchar)
       outchar = repeat(' ',lout)
- 
+
       lin=len_trim(inchar)
- 
+
       io=0
- 
+
       do i=1,lin
         if (index(remchar,inchar(i:i)) == 0) then
            io = io + 1
@@ -32,6 +32,6 @@
            outchar(io:io) = inchar(i:i)
         end if
       end do
- 
+
       return
       end subroutine EIRENE_remove_char

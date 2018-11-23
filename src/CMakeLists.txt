@@ -4,14 +4,12 @@ cmake_minimum_required(VERSION 2.8)
 project(EIRENE Fortran)
 
 # Adds compiler flags to all build types.
-if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "-fp-model source")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
-elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS "-fdefault-real-8 -fdefault-double-8 -fno-range-check")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(CMAKE_Fortran_FLAGS "-O3")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
-elseif ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
-  set(CMAKE_Fortran_FLAGS "-r8")
 endif()
 
 # Libraries used for plotting
@@ -159,13 +157,14 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
                    ${src_photons} ${plotpath} ${src_sampling} 
                    ${src_scoring} ${src_startup-routines} 
                    ${src_surface-processes} ${src_tetrahedra} 
-                   ${userpath} ${src_volume-processes} 
-                   ${src_xdr-dummy})
+                   ${userpath} ${src_volume-processes})
 
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
   target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+else()
+  target_link_libraries(eirene EIRENE)
 endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
@@ -202,7 +201,7 @@ if(DOXYGEN_FOUND)
                    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../doc
                    COMMENT "Generating documentation with Doxygen" VERBATIM)
   message("-----------------------------------------------------")
-  message("To generate the documentation, type \"make docs\"")
+  message("To generate the documentation, type \"make doc\"")
   message("-----------------------------------------------------")
 endif()
 

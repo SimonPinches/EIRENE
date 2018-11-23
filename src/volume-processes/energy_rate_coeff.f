@@ -17,7 +17,7 @@ cdr  26.11.15: additional parameter IC in call to H_colrad,
 cdr            for later use to identify "visited cells"
 cdr  sept. 16: started to add extrapolation options. not ready....
 cdr  jan.  18: call driver routine for CR models: colrad.f
-cdr            tbd:  eletron energy loss rates can change sign. 
+cdr            tbd:  eletron energy loss rates can change sign.
 cdr            Be careful with log(e_src). Routine should only be called with
 cdr            LEXP=.true.
 
@@ -30,9 +30,9 @@ cdr            LEXP=.true.
 ! erate is a rate coefficient weighted with an energy, e.g. an energy cost,
 !       or energy gain.
 ! It must be positive, because also ln(erate) or log(erate) is used,
-!    in certain data formats.   
+!    in certain data formats.
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
-!   as well as a shift (if any) by potential energy loss rate 
+!   as well as a shift (if any) by potential energy loss rate
 !   (e.g. conversion from electron cooling rate to radiation loss rate)
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtcew%ifit'
@@ -47,6 +47,7 @@ cdr            LEXP=.true.
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!   ic:        cell number (e.g. for internal CR models).
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return erate=energy weighted rate coefficient in eV*cm**3/sec
@@ -55,8 +56,8 @@ cdr            LEXP=.true.
 !                  currently hard wired: 1e-8.
 !                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
-! to be done:         
-!              
+! to be done:
+!
 !              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
@@ -84,7 +85,7 @@ cdr            LEXP=.true.
      .                  dsub    = 18.420680744_dp,      !ln(1e8), hard wired. But should come from database
      .                  xlnelch =-43.2777390821         !ln(elcha)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar 
+      integer :: ip1, ip2, iflavor, ivar
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -128,7 +129,7 @@ c.............................................................
         else
           erate=res
         endif
-        
+
 cdr missing: iftflg < 100:  multiply density,  else: not
 
 
@@ -150,9 +151,9 @@ c  extrapolation data: for 1d polynomial fits
      .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
      .                           trcamd)
 
-! RES is ln(energy-rate), with energy-rate >0.  
+! RES is ln(energy-rate), with energy-rate >0.
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
-! as well as shift (if any) by potential energy loss rate 
+! as well as shift (if any) by potential energy loss rate
 
         if (lexp) then
           erate = exp(max(-100._dp,res))
@@ -196,9 +197,9 @@ c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
      .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx,
      .        trcamd)
 
-! RES is ln(energy-rate), with energy-rate >0.  
+! RES is ln(energy-rate), with energy-rate >0.
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
-! as well as shift (if any) by potential energy loss rate 
+! as well as shift (if any) by potential energy loss rate
 
         if (lexp) then
           erate = exp(max(-100._dp,res))
@@ -233,7 +234,7 @@ c  in this database model erate is strictly positive, and log10(erate) is return
         end if
 
 c  deal with bremsstrahlung. currently we assume that bremsstrahlung (free-free)
-c  electron energy cost is included in the rates, if they come from ADAS. 
+c  electron energy cost is included in the rates, if they come from ADAS.
 c  (PRB coefficients contain bremsstrahlung, but PLT do not.)
 
 c  tbd: So subtract this part in read_tab2d already, not here nor in calling routine.
@@ -268,10 +269,9 @@ c..............................................................
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        
+
         iflavor = reacdat(ir)%rtcew%crm%iflav
         ivar = reacdat(ir)%rtcew%crm%ivarst
-
 
         CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 
@@ -279,10 +279,10 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 !  it is a gain. For negative (i.e. gain) rates, the log(e-rate) return is not possible.
 !  energy-rate coefficient should always only be called with LEXP=.TRUE. for such processes
 
-        IF (LEXP) then 
+        IF (LEXP) then
           erate = res
         elseif (res.gt.0.0) then
-          erate = log(res) 
+          erate = log(res)
         else
           write (iunout,*) 'wrong sign from cr model'
           write (iunout,*) 'p1,p2,erate ',pp1,pp2,res
@@ -295,7 +295,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
       return
 
-990   continue
+  990 continue
       write (iunout,*) 'Proprietary (unfinished) option ifit=4 '
       write (iunout,*) 'encountered in routine: energy-rate-coeff.f '
       call eirene_exit_own(1)

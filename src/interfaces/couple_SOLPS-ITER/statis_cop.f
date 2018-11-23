@@ -1,8 +1,8 @@
 CDR:  evaluate standard deviation for specific tallies needed for coupling
 CDR   which would not be available otherwise.
 cdr   in early 2014 the sum over atomic (a) molecular (m) and test ion (i) components
-cdr   for particle, momentum and energy sources was removed here, so this routine is currently 
-cdr   empty. 
+cdr   for particle, momentum and energy sources was removed here, so this routine is currently
+cdr   empty.
 cdr   These standard deviations are now, together with other linear combinations of default
 cdr   tallies, obtained "on the fly" by scoring per history, (in upfcop).
 
@@ -12,9 +12,9 @@ cdr   tallies, obtained "on the fly" by scoring per history, (in upfcop).
 !PB  17.11.05  USAGE OF SIGMA_COP CHANGED
 !PB            SIGMA_COP(      1:  NPLSI) : STATISTICS FOR MOMENTUM SOURCES
 !PB            SIGMA_COP(NPLSI+1:2*NPLSI) : STATISTICS FOR PARTICLE SOURCES
-!PB            SIGMA_COP(2*NPLSI+1)       : STATISTICS FOR ELECTRON ENERGY SOURCES  
-!PB            SIGMA_COP(2*NPLSI+2)       : STATISTICS FOR ION ENERGY SOURCES  
-cdr:  2015: all old preprogrammed sigma_cop removed.  COPV is a default tally, 
+!PB            SIGMA_COP(2*NPLSI+1)       : STATISTICS FOR ELECTRON ENERGY SOURCES
+!PB            SIGMA_COP(2*NPLSI+2)       : STATISTICS FOR ION ENERGY SOURCES
+cdr:  2015: all old preprogrammed sigma_cop removed.  COPV is a default tally,
 cdr         and hence has its default variance options.
 C
 C
@@ -36,7 +36,7 @@ C
       INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
       LOGICAL, INTENT(IN) :: LP, LT
 
-      INTEGER, ALLOCATABLE, SAVE :: IND(:,:),   IIND(:),    INDSS(:,:)
+      INTEGER, ALLOCATABLE :: IND(:,:), IIND(:), INDSS(:,:)
       REAL(DP) :: SD(0:NRTAL), SDD(0:NRTAL)
       REAL(DP) :: XNM, SD2, DS, ZFLUXQ, SD2S, SDS, SDI, SDE, D2S, SG,
      .          DSA, DD, D, SG2, DA, SD1, SD1S
@@ -93,7 +93,7 @@ C
       END DO
 C
 C
-1020  CONTINUE
+ 1020 CONTINUE
       RETURN
 C
       ENTRY EIRENE_STATS2_COP(XN,FSIG,ZFLUX)
@@ -102,7 +102,7 @@ C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1
 C           (=1, FALLS NUR EIN BEITRAG UNGLEICH 0, ODER (KUENSTLICH
 C            ERZWUNGEN) FALLS GAR KEIN BEITRAG UNGLEICH NULL)
 C  2. FALL  NEGATIVE UND POSITIVE BEITRAGE KOMMEN VOR:
-C           LT. FORMEL SIND AUCH WERTE GROESSER 1  MOEGLICH.
+C           LT. FORMEL SIND AUCH WERTE GROESSER 1 MOEGLICH.
 C
       XNM=XN-1.
       IF (XNM.LE.0.) RETURN
@@ -110,6 +110,6 @@ C
 C
       IF (NCPVI.EQ.0) GOTO 2200
 C
-2200  CONTINUE
+ 2200 CONTINUE
       RETURN
       END

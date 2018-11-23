@@ -7,7 +7,10 @@ c    at point x,y,z, in cell icell
 c  current options:
 c  default    :  use input background tallies. B-field is constant per cell
 c  indpro(5)=8:  user provided B-field
-c  LBSMO (?)  :  apparently: only in case of levgeo=4, interpolation in triangles
+c  LBSMO (?)  :  apparently: only in case of levgeo=4,5 interpolation in triangles, tetrahedra
+cpb              switch used for interpolation of magnetic field input tally
+cdr              from cell vertices to a local x,y,z point inside a cell.
+cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
 
       subroutine eirene_bfield (icell, x, y, z, bx, by, bz, bf,l)
 
@@ -53,6 +56,6 @@ cdr    use logical input flag L:  return COM value or local value
          BF=BFIN(ICELL)
 
       END IF
-      
+
       return
       end subroutine eirene_bfield

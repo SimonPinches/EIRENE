@@ -1,11 +1,11 @@
- 
- 
+
+
       SUBROUTINE EIRENE_SCHNITP(X1,Y1,X2,Y2,X3,Y3,X4,Y4,EX,EY)
- 
+
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X1, Y1, X2, Y2, X3, Y3, X4, Y4
       REAL(DP), INTENT(OUT) :: EX, EY
 

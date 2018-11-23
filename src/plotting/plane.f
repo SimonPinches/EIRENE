@@ -7,9 +7,9 @@ C  PLOT PLANE, SECTION INSIDE A BOX
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: A0, A1, A2, A3, RL, EPS
       INTEGER, INTENT(IN) :: N1, IO, NUM
       REAL(DP), INTENT(IN) :: AL(N1,*),  XL(N1,*),  YL(N1,*),  ZL(N1,*),
@@ -18,8 +18,8 @@ C
      .                      XL3(N1,*), YL3(N1,*), ZL3(N1,*)
       LOGICAL NF
       REAL(DP) :: P(3,36), XYZG(3,36), ANGLE(36), CORD(108), PS(3)
-      REAL(DP) :: B1, B2, B3, DET, EIRENE_DETER, TEST, T, DX, DY, DZ, 
-     .            HELP, XMIT, YMIT, ZMIT, PI, ANG, X1, X2, Y1, Y2, 
+      REAL(DP) :: B1, B2, B3, DET, EIRENE_DETER, TEST, T, DX, DY, DZ,
+     .            HELP, XMIT, YMIT, ZMIT, PI, ANG, X1, X2, Y1, Y2,
      .            Z1, Z2
       INTEGER :: K, J, IPOINT, IP, ILN, I, II, ISORT, ICOUNT, ICHECK,
      .           IS
@@ -69,7 +69,7 @@ C
             XYZG(3,IS+1)=P(3,I)
             IS=IS+1
           ENDIF
-10      CONTINUE
+   10   CONTINUE
       ELSEIF (RL.GT.-10.) THEN
         ILN=-RL
         DO 20 I=1,ILN
@@ -94,13 +94,13 @@ C  CHECKE, OB ALLE ANDEREN LINEAREN UNGLEICHUNGEN ERFUELLT SIND
               TEST=PS(1)*XL(K,NUM)+PS(2)*YL(K,NUM)+
      .             PS(3)*ZL(K,NUM)+AL(K,NUM)
               IF (TEST.GT.EPS) GOTO 21
-40          CONTINUE
+   40       CONTINUE
             IS=IS+1
             XYZG(1,IS)=PS(1)
             XYZG(2,IS)=PS(2)
             XYZG(3,IS)=PS(3)
-21        CONTINUE
-20      CONTINUE
+   21     CONTINUE
+   20   CONTINUE
       ENDIF
 C
       IF (IS.LE.2) THEN
@@ -116,7 +116,7 @@ C
       DO 200 I=1,IS
          XMIT=XMIT+XYZG(1,I)
          YMIT=YMIT+XYZG(2,I)
-200      ZMIT=ZMIT+XYZG(3,I)
+  200    ZMIT=ZMIT+XYZG(3,I)
       XMIT=XMIT/DBLE(IS)
       YMIT=YMIT/DBLE(IS)
       ZMIT=ZMIT/DBLE(IS)
@@ -125,21 +125,21 @@ C     BESTIMME DIE WINKEL
       PI=4.*ATAN(1.)
       ICHECK=0
       ICOUNT=0
-150   IF ((ABS(A2).LT.1.E-6.AND.ABS(A3).LT.1.E-6).OR.ICHECK.GT.1) THEN
+  150 IF ((ABS(A2).LT.1.E-6.AND.ABS(A3).LT.1.E-6).OR.ICHECK.GT.1) THEN
         DO 300 I=1,IS
           ANGLE(I)=ATAN2((XYZG(3,I)-ZMIT),(XYZG(2,I)-YMIT))/PI*180.
-300     CONTINUE
+  300   CONTINUE
         ICHECK=1
       ELSEIF ((ABS(A1).LT.1.E-6.AND.ABS(A3).LT.1.E-6).OR.
      .        MOD(ICHECK,2).EQ.1) THEN
         DO 400 I=1,IS
           ANGLE(I)=ATAN2((XYZG(3,I)-ZMIT),(XYZG(1,I)-XMIT))/PI*180.
-400     CONTINUE
+  400   CONTINUE
         ICHECK=2
       ELSE
         DO 500 I=1,IS
           ANGLE(I)=ATAN2((XYZG(2,I)-YMIT),(XYZG(1,I)-XMIT))/PI*180.
-500     CONTINUE
+  500   CONTINUE
         ICHECK=3
       ENDIF
 C
@@ -152,15 +152,15 @@ C     SORTIERE NACH WINKELN
             ISORT=J
             ANG=ANGLE(J)
           ENDIF
-610     CONTINUE
+  610   CONTINUE
         DO 620 J=1,3
           HELP=XYZG(J,I)
           XYZG(J,I)=XYZG(J,ISORT)
-620       XYZG(J,ISORT)=HELP
+  620     XYZG(J,ISORT)=HELP
         HELP=ANGLE(I)
         ANGLE(I)=ANGLE(ISORT)
         ANGLE(ISORT)=HELP
-600   CONTINUE
+  600 CONTINUE
 C
       ICOUNT=ICOUNT+1
       DO 700 I=1,IS-1
@@ -169,14 +169,14 @@ C
      .        (XYZG(1,I)-XYZG(1,J))**2+(XYZG(2,I)-XYZG(2,J))**2+
      .        (XYZG(3,I)-XYZG(3,J))**2.GT.1.E-6.AND.
      .         ICOUNT.LT.3) GOTO 150
-700   CONTINUE
+  700 CONTINUE
 C
       II=0
       DO 1000 I=1,IS
         DO 1100 J=1,3
           II=II+1
-1100      CORD(II)=XYZG(J,I)
-1000  CONTINUE
+ 1100     CORD(II)=XYZG(J,I)
+ 1000 CONTINUE
       CALL EIRENE_PL3Q(CORD,IS,IO,NF)
 C
       RETURN

@@ -9,8 +9,8 @@ cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nx
 !pb  MAY 16  nrds -> nrei
 cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb...
 cdr           (to remove redundant dummy gr routines)
-cdr  Nov. 17: This routine has become pretty much a mess. 
-cdr           It must be cleaned up and documented. 
+cdr  Nov. 17: This routine has become pretty much a mess.
+cdr           It must be cleaned up and documented.
 
 
 
@@ -154,7 +154,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT(NPRS)
 cdr
-c  indicate: first entry to eirene has now been done. 
+c  indicate: first entry to eirene has now been done.
 c  calls to find_param, set_parmod(1),... have already been done above
         inentry = 0
 
@@ -231,7 +231,7 @@ C
       END IF  ! MY_PE == 0
 C
 C  each internal iteration or internal time-step (fixed plasma) starts here
-101   CONTINUE
+  101 CONTINUE
 C  IITER=... , ITIME=...
 
       CALL EIRENE_PLNXTB(3,'EIRENE.F')
@@ -276,7 +276,7 @@ C 2: SPECIES SOURCE SAMPLING
           DO ISTRAI=1,NSTRAI
             NSPEZ(ISTRAI)=MAX(0,NSPEZ(ISTRAI))
           ENDDO
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .           'NON-ANALOGUE SOURCE SPECIES SAMPLING TURNED OFF'
 C 3: SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF
           WMINS=1.D30
@@ -321,18 +321,18 @@ C
         IF (NFILEK.EQ.2.OR.NFILEK.EQ.3) THEN
          CALL EIRENE_RREC
           WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .           'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
           DO 162 ISTRAI=1,NSTRAI
             WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
      .                              ' NPTS(MOD)= ',NRECOM(ISTRAI)
             NPTS(ISTRAI)=NRECOM(ISTRAI)
-162       CONTINUE
+  162     CONTINUE
         ENDIF
 C
 C  IF NLERG:
 C  PERFORM A RUN, ONE-SPEED, COLLISION-LESS, UNTIL TIME-LIMIT
-C  FOR CELL VOLUME ESTIMATION FROM ERGODIC PRINZIPLE
+C  FOR CELL VOLUME ESTIMATION FROM ERGODIC PRINCIPLE
 C
         IF (NLERG) CALL EIRENE_ERGOD
 C
@@ -353,23 +353,23 @@ C
         CALL EIRENE_OUTPLA(0)
 C
         TIME=EIRENE_SECOND_OWN()
-C       WRITE (iunout,*) 
+C       WRITE (iunout,*)
 C    .        'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
         CALL EIRENE_LEER(1)
 C
 C               2.         PLOT GEOMETRY
 C
-200     CONTINUE
+  200   CONTINUE
         IF (IITER.GT.1.OR.ITIMV.GT.1) GOTO 300  ! GEOMETRY PLOT ONLY ONCE
 
-C     TIMI=EIRENE_SECOND_OWN()
-      CALL EIRENE_PLT2D
-C     TIME=EIRENE_SECOND_OWN()
-C     WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
+C       TIMI=EIRENE_SECOND_OWN()
+        CALL EIRENE_PLT2D
+C       TIME=EIRENE_SECOND_OWN()
+C       WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION
 C
-300   CONTINUE
+  300   CONTINUE
 
       END IF   ! MY_PE == 0
 
@@ -382,7 +382,7 @@ C  MAIN  MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
 C
 C               4.         OUTPUT , INTERFACE  AND PLOTTING
 C
-400   CONTINUE
+  400 CONTINUE
 C
 C  POST-PROCESSING: OUTPUT FOR SELECTED STRATA AND/OR SUM OVER STRATA
 C
@@ -394,7 +394,7 @@ C
      .        CALL EIRENE_OUTEIR(ISTRA)
           IF (PLTSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.PLTSRC(0)))
      .        CALL EIRENE_PLTEIR(ISTRA)
-450   CONTINUE
+  450 CONTINUE
 C
 
 
@@ -415,15 +415,15 @@ C  LAST CALL TO INTERFACING ROUTINE (GLOBAL BALANCES, ETC)
 C
       IF (NMODE.GT.0) CALL EIRENE_IF4COP
 C
-!dr   IF (NFILEN.EQ.2.OR.NFILEN.EQ.7) RETURN
 C
 C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS
 C  FOR NEXT RUN  AND WRITE THEM ON FT 14
 C
       IF (NFILEK.EQ.1.OR.NFILEK.EQ.3) THEN
+c  this should not be done in a "read run" (NFILEN=2 or =7)
 c   achtung !!!!!!!!!!!!!
-c   fuer parallele version noch nicht richtig
-c   noch mal ganz scharf nachdenken !!!!!!!!
+c   not ready for parallel mode
+c
         CALL EIRENE_WRREC
       ENDIF
 
@@ -492,9 +492,10 @@ C  HENCE: RESET IITER TO 1
 
 C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
       IF (PLIDL.AND.(MY_PE == 0)) THEN
-         CALL EIRENE_MASBOX
+        CALL EIRENE_MASBOX
      .          ('OUTPUT OPTION: IDL, PER STRATUM ')
         call eirene_outidlconf
+        call eirene_outidlsrf
         call eirene_outidlpla
         call eirene_outidltal
       END IF
@@ -540,8 +541,8 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POST PROCESSING
          CALL EIRENE_LOCAT2        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LOCATE
          CALL EIRENE_SAMSF2        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.SAMSRF
          CALL EIRENE_STATS3        ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.STATIS
-         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LININT  
-         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM  
+         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS FROM  SUBR.LININT
+         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM
 C
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF

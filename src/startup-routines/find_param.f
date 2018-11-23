@@ -8,7 +8,7 @@ c    Later these parameters NPARMI may be modified, but NPARM >= NPARMI must be 
 C
 !pb  11.12.06:  allow letters 'f' or 't' in case name of fem or tetrahedron
 !pb             calculation
-!pb  27.12.06:  bug fix: increase NSTS in case of time dependent mode
+!pb  27.12.06:  bug fix: increase NSTS in case of time-dependent mode
 !pb  15.01.07:  additional line in input block 4 defining HYDKIN model
 !pb  02.03.07:  NUMSEC=4 introduced
 !pb  20.03.07:  include input block written by HYDKIN model
@@ -32,6 +32,8 @@ cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures
 cdr                              multiple ion velocities in case of BGK non-lin. colisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
+cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
+cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 C
       SUBROUTINE EIRENE_FIND_PARAM
 C
@@ -53,8 +55,8 @@ C
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
-     .           NITER0, K, NTPER, NTTRA, NCOOR, NTET,
-     .           NT3RD, NTSEP, NTRII, NP2ND, I, J, NPPER, NPSEP, NPPLA,
+     .           NITER0, NTPER, NTTRA, NCOOR, NTET,
+     .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPII, NCOPIE, NREAC_ADD,
      .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
@@ -63,11 +65,13 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           LINES, NCHTAL, MOD_ADDV, NO_COMPO, 
-     .           NO_CONTRIB, ISP, ITP, IRATIO
+     .           NCHTAL, MOD_ADDV, NUM_COMPO,
+     .           NUM_CONTRIB, ISP, ITP, IRATIO,
+     .           I, J, K,
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD,
+     .           NREAC_LINES
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1, D1, D2
-      REAL(DP), ALLOCATABLE :: ENERGY(:,:)
+     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH
@@ -77,7 +81,7 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT, LHYDDEF, LADAPT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: LEMISS, NLEMIS
+      LOGICAL :: NLEMIS
       LOGICAL :: LMULTI, LMULVI   ! multiple ion temperatures (per species) multiple ion velocities (per species)
       CHARACTER(420) :: CASENAME, FILENAME, ULINE
       character(420) :: ZEILE, FILE45
@@ -143,13 +147,12 @@ C  STATISTICS
 C  ATOMIC DATA
       NREAC=1
       NREAC_ADD=0
-      NREAC_LINES=0
       NREC=1
       NREI=1
       NRCX=1
       NREL=1
       NRPI=1
-C  LINE-OF-SIDE-DIAGNOSTICS
+C  LINE-OF-SIGHT DIAGNOSTICS
       NCHOR=0
       NCHEN=0
       NPRNL=0
@@ -157,7 +160,7 @@ C  LINE-OF-SIDE-DIAGNOSTICS
       NSRPR=0
 C  2D CFD INTERFACE
 
-cdr STORAGE FOR COUPLING TO 2D CFD CODES: COMMON 2D GRID SIZE, BACKGOUND FLUIDS, TARGET RECYCLING
+cdr STORAGE FOR COUPLING TO 2D CFD CODES: COMMON 2D GRID SIZE, BACKGROUND FLUIDS, TARGET RECYCLING
 C   CORRECT PARAMETERS  MUST BE SET IN INTERFACING TO CFD CODE, MODULE.  INTERFACES/COUPLE_../IF0PRM.f
 c   ONLY INITIALIZE HERE  (e.g. for stand alone runs or code coupling to other than 2D CFD codes)
       NDX=0
@@ -239,7 +242,6 @@ C  read and write header
       WRITE (IUNOUT,'(A72)') ZEILE
       CALL EIRENE_LEER(1)
 
-
 c  skip further comments in header
       DO WHILE (ZEILE(1:1).EQ.'*')
         READ (IUNIN,'(A72)') ZEILE
@@ -253,13 +255,14 @@ c  skip further comments in header
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
         LDEFSTOR = .TRUE.  ! INDICATES: STORAGE OPTIMIZATION INPUT CARD IS READ
-C   READ OPTIONAL INPUT CARD FOR STRAGE HANDLING.
+C   READ OPTIONAL INPUT CARD FOR STORAGE HANDLING.
 C   OTHERWISE: USE DEFAULTS DEFINED ABOVE.
         READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL,NREAC_ADD
         READ (IUNIN,'(A72)') ZEILE
       ENDIF
 C
+      call fix_logical_input(zeile,14)
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
      .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH
@@ -268,8 +271,9 @@ C  NSTORAM IS REDEFINED, FINALLY EITHER =0  (A&M STORAGE SAVE MODE)
 C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       NSTORAM = MIN(NSTORAM,9)
       IF (NSTORAM < 9) NSTORAM = 0
+      NOPTM1 = MAX(NOPTM1,1)
 
-      WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE '
+      WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE'
 
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .NE. '*')
@@ -299,7 +303,9 @@ C  RADIAL MESH
       IREAD=0
       IF (NLRAD) THEN
 C
-        READ (IUNIN,6665) NLSLB,NLCRC,NLELL,NLTRI,NLPLG,
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,8)
+        READ (ZEILE,6665) NLSLB,NLCRC,NLELL,NLTRI,NLPLG,
      .                    NLFEM,NLTET,NLGEN
         READ (IUNIN,6666) NR1ST,NRSEP,NRPLG,NPPLG,NRKNOT,NCOOR
         N1ST = MAX(N1ST,NR1ST)
@@ -323,7 +329,7 @@ C
             READ (IUNIN,6666) (NP1,NP2,K=1,NPPLG)
             DO 212 I=1,NR1ST
               READ (IUNIN,6664) (XP,YP,    J=1,NRPLG)
-212         CONTINUE
+  212       CONTINUE
           ENDIF
 
           IF (NLFEM .OR. NLTET) THEN
@@ -493,7 +499,9 @@ C
       END DO
       READ (ZEILE,6665) NLTOR
 C
-      READ (IUNIN,6665) NLTRZ,NLTRA,NLTRT
+      READ (IUNIN,'(A72)') ZEILE
+      call fix_logical_input(zeile,3)
+      READ (ZEILE,6665) NLTRZ,NLTRA,NLTRT
       READ (IUNIN,6666) NT3RD,NTSEP,NTTRA,NTPER
       IF (INDGRD(3).LE.5) THEN
         READ (IUNIN,6664) ZIA,ZGA,ZAA,ZZA,ROA
@@ -548,7 +556,7 @@ C
 C  READ DATA FOR NON-DEFAULT SURFACE MODELS ON STANDARD SURFACES
 C  300--349
 C
-      WRITE (iunout,*) '*3A.  NON-DEFAULT STANDARD SURFACES'
+      WRITE (iunout,*) '*** 3A. DATA FOR NON-DEFAULT STANDARD SURFACES'
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
@@ -564,7 +572,7 @@ C  FIND START OF NEXT INPUT BLOCK: 3B
 C
 C  READ DATA FOR ADDITIONAL SURFACES 350--399
 C
-      WRITE (iunout,*) '*3B.   ADDITIONAL SURFACES           '
+      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES           '
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -582,8 +590,8 @@ C
 C  READ DATA FOR SPECIES SPECIFICATION AND ATOMIC PHYSICS MODULE
 C  400--499
 C
-      WRITE (iunout,*) '*** 4. DATA FOR SPECIES SPECIFICATION AND   '
-      WRITE (iunout,*) '       ATOMIC PHYSICS MODULE                '
+      WRITE (iunout,*) '*** 4. DATA FOR SPECIES SPECIFICATION AND'
+      WRITE (iunout,*) '       ATOMIC PHYSICS MODULE'
 
 ! CHECK FOR INCLUDE LINE
       READ (IUNIN,'(A420)') ZEILE
@@ -601,7 +609,7 @@ c   read block 4 and block 5 from external include file, stream fort.2
         IUNIN = 2+ifoff
         OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
 c  read comment lines on external A&M data file FILE45, stream fort.2
-401     READ (IUNIN,'(A72)') ZEILE
+  401   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 401
         IREAD=1  ! now ZEILE contains the first non-comment line from fort.2
         GOTO 402
@@ -613,7 +621,7 @@ C
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
       READ (IUNIN,'(A420)') ZEILE
 
-402   CALL EIRENE_UPPERCASE(ZEILE)
+  402 CALL EIRENE_UPPERCASE(ZEILE)
       IEND=INDEX(ZEILE,'DEFAULT')
       LHYDDEF =.FALSE.
 cdr ............................................
@@ -650,7 +658,7 @@ C
 
 cdr  start reading species specification block 4a,4b,4c,4d
       WRITE (iunout,*)
-     .  '*4A.   NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
+     .  '*** 4A. NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       READ (IUNIN,*) NATMI
       NATM = MAX(NATM,NATMI)
 
@@ -659,11 +667,12 @@ cdr  start reading species specification block 4a,4b,4c,4d
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+cdr     READ (ZEILE(12:17),'(2I3)') NMASSA(IATM),NCHARA(IATM)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cdr  read 2 cards per reaction assigned to IATM.  I.e.:  NRC*NATMI*2 cards
 cpb......................................
-cdr:  try to identify if there are so-called NON-LINEAR BKG collisions, input flag IBGK:
+cdr:  try to identify if there are so-called NONLINEAR BGK collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
@@ -684,7 +693,7 @@ C
 C  READ NEUTRAL MOLECULES SPECIES CARDS
 C
       WRITE (iunout,*)
-     .  '*4B.   NEUTRAL MOLECULE SPECIES CARDS, NMOLI SPECIES'
+     .  '*** 4B. NEUTRAL MOLECULE SPECIES CARDS, NMOLI SPECIES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -696,6 +705,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+cdr     READ (ZEILE(12:14),'(I3)') NMASSM(IMOL)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -719,7 +729,8 @@ cpb.......................................
 C
 C  READ TEST PARTICLE IONS SPECIES CARDS
 C
-      WRITE (iunout,*) '*4C.   TEST IONS SPECIES CARDS, NIONI SPECIES '
+      WRITE (iunout,*)
+     . '*** 4C. TEST IONS SPECIES CARDS, NIONI SPECIES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -731,6 +742,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+cdr     READ (ZEILE(12:14),'(I3)') NMASSI(IION)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -764,6 +776,7 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
         PART_NAME(ISPZ)(1:8) = ZEILE(4:11)
+cdr
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -787,11 +800,11 @@ cpb.......................................
 C
 C  READ DATA FOR PLASMA BACKGROUND, 500--599
 C
-500   WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND            '
+  500 WRITE (iunout,*) '*** 5. DATA FOR PLASMA BACKGROUND'
 C
 C  READ BULK IONS SPECIES CARDS
 C
-      WRITE (iunout,*) '*5A.   BULK ION SPECIES CARDS, NPLSI SPECIES '
+      WRITE (iunout,*) '*** 5A. BULK ION SPECIES CARDS, NPLSI SPECIES'
 
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -840,7 +853,6 @@ cdr  this next line is probably not needed.
 cdr  ico > 0 indicates: at least one bulk species has a special
 cdr  background data model,  fort.., saha, corona, ...etc...
       IF (ICO > 0) NREAC=NREAC+1
-
 
 cdr ..................................................................
       IF (LHYDDEF) THEN
@@ -927,46 +939,44 @@ cdr here should come an error exit: unfinished option, proprietary version only.
 cdr ..................................................................
 
       READ (IUNIN,'(A72)') ZEILE
-      WRITE (IUNOUT,*) '*5B.   PLASMA BACKGROUND DATA '
-
+      WRITE (IUNOUT,*) '*** 5B. PLASMA BACKGROUND DATA'
       DO WHILE (ZEILE(1:1) == '*')
          READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
 cdr to be done: synchronisation of options for Ti and Vi.
-cdr these next 2 lines for Ti(ipls) have historically been just opposite to Vi options.
+cdr these next 2 lines for Ti(ipls) have historically been just opposite to V_IN options.
 !pb   NPLSTI = 1
 !pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
 
-      NPLSTI = NPLS  !dr now same as for Vi.  Good
+      NPLSTI = NPLS  !dr now same as for V_IN.  Good
 cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to synchronize with Vi
-      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from Vi logic. Bad
+      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from V_IN logic. Bad
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
-        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
+        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY'
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
         IF (LMULTI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
           NPLSTI = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
-
-cdr these next 2 lines for Vi(ipls)
+cdr these next 2 lines for V_IN(ipls)
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 
       IF ((NPLS > 1) .AND. (NPLSV == 1)) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
-        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
+        WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY'
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
         IF (LMULVI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE  PRESENT'
+          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE  PRESENT'
           NPLSV = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
@@ -983,13 +993,12 @@ C  FIND START OF NEXT INPUT BLOCK: 6
       DO
         READ (IUNIN,'(A72)') ZEILE
         IF ((ZEILE(1:3) == '***') .AND.
-!     ,      (INDEX(ZEILE,'6.') > 0)) EXIT
      ,      (INDEX(ZEILE,'6') > 0)) EXIT
       END DO
 C
 C  READ  DATA FOR REFLECTION MODEL  600--699
 C
-      WRITE (iunout,*) '*** 6. GENERAL DATA FOR REFLECTION MODEL    '
+      WRITE (iunout,*) '*** 6. GENERAL DATA FOR REFLECTION MODEL'
 C
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1000,7 +1009,7 @@ C
       IF (NLTRIM) THEN
         READ (IUNIN,'(A72)') ZEILE
         IF (INDEX(ZEILE,'PATH')+INDEX(ZEILE,'path').NE.0) THEN
-C  PATH SPECIFICATION FOR DATA BASE FOUND
+C  PATH SPECIFICATION FOR DATABASE FOUND
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE ((INDEX(ZEILE,'ON')+INDEX(ZEILE,'on')) > 0)
             NFR=NFR+1
@@ -1087,7 +1096,7 @@ C
 C
 C     READ ADDITIONAL DATA FOR SOME SPECIFIC ZONES
 C
-      WRITE (iunout,*) '*** 8. ADDITIONAL DATA FOR SPECIFIC ZONES '
+      WRITE (iunout,*) '*** 8. ADDITIONAL DATA FOR SPECIFIC ZONES'
 
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:3) .NE. '***')
@@ -1097,7 +1106,7 @@ C
 C
 C  READ DATA FOR STATISTICS AND NONANALOG MODEL, 900--999
 C
-      WRITE (iunout,*) '*** 9. DATA FOR STATISTIC AND NONANALOG MODEL '
+      WRITE (iunout,*) '*** 9. DATA FOR STATISTIC AND NONANALOG MODEL'
 
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .NE. '*')
@@ -1105,7 +1114,7 @@ C
       END DO
 C
 C  DATA FOR STANDARD DEVIATION
-      WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION '
+      WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION'
       READ (IUNIN,6666) NSIGVI,NSIGSI,NSIGCI,NSIGI_BGK,NSIGI_COP
       NSD = MAX(NSD,NSIGVI)
       NSDW = MAX(NSDW,NSIGSI)
@@ -1120,8 +1129,9 @@ C  FIND START OF NEXT INPUT BLOCK: 10
 C
 C   READ DATA FOR ADDITIONAL AND SURFACE-AVERAGED TALLIES
       WRITE (iunout,*)
-     .  '*** 10. DATA FOR ADDITIONAL TALLIES, COLLISION '
-      WRITE (iunout,*) '        ESTIMATORS AND ALGEBRAIC EXPRESSIONS'
+     . '*** 10. DATA FOR ADDITIONAL TALLIES, COLLISION'
+      WRITE (iunout,*)
+     . '        ESTIMATORS AND ALGEBRAIC EXPRESSIONS'
 C
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1135,37 +1145,37 @@ C
       NADS = MAX(NADS,NADSI)
       NALS = MAX(NALS,NALSI)
 C
-      WRITE (iunout,*) '*** 10A. DATA FOR ADDITIONAL TALLIES           '
+      WRITE (iunout,*) '*** 10A. DATA FOR ADDITIONAL TALLIES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:2) .NE. '**')
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      WRITE (iunout,*) '*** 10B. DATA FOR COLLISION ESTIMATORS         '
+      WRITE (iunout,*) '*** 10B. DATA FOR COLLISION ESTIMATORS'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:2) .NE. '**')
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      WRITE (iunout,*) '*** 10C. DATA FOR ALGEBRAIC EXPRESSIONS     '
+      WRITE (iunout,*) '*** 10C. DATA FOR ALGEBRAIC EXPRESSIONS'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:2) .NE. '**')
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      WRITE (iunout,*) '*** 10D. DATA FOR ADDITIONAL SURFACE TALLIES   '
+      WRITE (iunout,*) '*** 10D. DATA FOR ADDITIONAL SURFACE TALLIES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:2) .NE. '**')
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      WRITE (iunout,*) '*** 10E. DATA FOR ALGEBRAIC SURFACE TALLIES '
+      WRITE (iunout,*) '*** 10E. DATA FOR ALGEBRAIC SURFACE TALLIES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:2) .NE. '**')
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-      WRITE (iunout,*) '*** 10F. DATA FOR SPECTRA '
+      WRITE (iunout,*) '*** 10F. DATA FOR SPECTRA'
       READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:3) .NE. '***') THEN
         READ (IUNIN,'(A72)') ZEILE
@@ -1177,7 +1187,7 @@ C
 C   READ DATA FOR NUMERICAL AND GRAPHICAL OUTPUT 1100--1199
 C
       WRITE (iunout,*)
-     .  '*** 11. DATA FOR NUMERICAL AND GRAPHICAL OUTPUT  '
+     .  '*** 11. DATA FOR NUMERICAL AND GRAPHICAL OUTPUT'
 C
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1242,7 +1252,12 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
         DO J=0, NSTRAI, 60
           READ (IUNIN,*)
         END DO
-        IF (LRPSCUT) READ (IUNIN,*)
+
+cdr wrong place for this card here
+        IF (LRPSCUT) READ (IUNIN,*) !dr if the "raps-cut option flags" would be
+                                    !dr read only below (3d plots and nlraps) then
+                                    !dr this exception would not be needed at all.
+
         DO J=1,NVOLPL
           READ (IUNIN,'(A72)') ZEILE
           DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -1250,9 +1265,9 @@ C   READ PLTSRC (60 LOGICALS PER LINE)
           END DO
           READ (ZEILE,6666) NSP
           NPLT = MAX(NPLT, NSP)
-c
-
-          READ (IUNIN,6665) PLTL2D,PLTL3D
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_logical_input(zeile,2)
+          READ (ZEILE,6665) PLTL2D,PLTL3D
           READ (IUNIN,*)
           IF (PLTL2D) THEN
             READ (IUNIN,*)
@@ -1279,130 +1294,110 @@ C  SKIP INPUT LINES, UNTIL INPUT BLOCK 12 STARTS
 C
 C  READ DATA FOR DIAGNOSTIC MODULE  1200--1299
 C
-      WRITE (iunout,*) '*** 12. DATA FOR DIAGNOSTIC MODULE '
+      WRITE (iunout,*) '*** 12. DATA FOR DIAGNOSTIC MODULE'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
+      IREAD=1
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NO_LINES transitions, each may consist of NO_CONTRIB 
-c  parent state contributions
+c  read up to NUM_LINES transitions (volumetric line emissions),
+c  Each LINE may consist of NUM_CONTRIB
+c  for different parent (donor) state components.
+c  Identify the block of LINES and COMPONENTS available in this run
+C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       NADV_ADD = 0
       NLEMIS = .FALSE.
-      NO_LINES = 0
+      NUM_LINES = 0
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
-! EMISSIVITY LINES DEFINED IN INPUT
-        LINES = 0
+CDR AT LEAST ONE (OR MORE) VOLUMETRIC LINE EMISSIVITY TALLY DEFINED IN INPUT BLOCK 12
+cdr as additional output tally ADDV(...).
+        IREAC_ADD = 0
         NLEMIS = .TRUE.
-        READ (IUNIN,6666) NO_LINES, MOD_ADDV
-        DO I=1, NO_LINES
+c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
+        READ (IUNIN,6666) NUM_LINES, MOD_ADDV
+        DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
           END DO
-          READ (IUNIN,6666) NO_COMPO
+          READ (IUNIN,6666) NUM_COMPO  ! components of line ILINE
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
-            NADV_ADD = MAX(NADV_ADD,NO_COMPO)
-          ELSE 
-            NADV_ADD = NADV_ADD + NO_COMPO + 1
+cdr  minimal storage, but each time when a new lines comes,
+cdr  the emissivity profiles on ADDV must be re-calculated
+            NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
+          ELSE
+cdr  all possible emissivity profiles are kept on ADDV tallies.
+            NADV_ADD =     NADV_ADD +(NUM_COMPO + 1)
           END IF
-          DO J=1, NO_COMPO
+          DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
-            READ (IUNIN,*) NO_CONTRIB           
-            LINES = LINES + NO_CONTRIB
-            DO K = 1, NO_CONTRIB
+            READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
+            IREAC_ADD = IREAC_ADD + NUM_CONTRIB
+cdr  specify all required contributions explicitly.
+cdr  In the old default with was automatically detected
+cdr     from mass and charge states/numbers of hydrogenic particles.
+cdr     And only one set of emission data for all contributions was used,
+cdr     plus one or two population ratios.
+cdr     Now we provide storage for one additional AM data set for each contribution,
+cdr     plus one or two population ratios.
+            DO KCONTR = 1, NUM_CONTRIB
               READ (IUNIN,'(3I6,1X,A6)') ISP, ITP, IRATIO, FNAME
-              IF (INDEX(FNAME,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+              IF (INDEX(FNAME,'ADAS')  .NE. 0 .OR.
+     .            INDEX(FNAME,'TAB2D') .NE. 0) READ (IUNIN,*)
+cdr do we require a QSS population ratio for this contribution?
               IF (IRATIO > 0) THEN
-                LINES = LINES + 1
+                IREAC_ADD = IREAC_ADD + 1
                 READ (IUNIN,'(18X,1X,A6)') FRATIO
-                IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
+cdr skip one more input line in case of TAB2D or ADAS input
+                IF (INDEX(FRATIO,'ADAS')  .NE. 0  .OR.
+     .              INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
+cdr do we require a second QSS population ratio for this contribution?
                 IF (IRATIO == 2) THEN
-                  LINES = LINES + 1
+                  IREAC_ADD = IREAC_ADD + 1
                   READ (IUNIN,*)
                   READ (IUNIN,'(18X,1X,A6)') FRATIO
-                  IF (INDEX(FRATIO,'ADAS') .NE. 0) READ (IUNIN,*)
-                END IF  
-              END IF
-            END DO
-          END DO
-        END DO
+                  IF (INDEX(FRATIO,'ADAS')  .NE. 0 .OR.
+     .                INDEX(FRATIO,'TAB2D') .NE. 0)  READ (IUNIN,*)
+                END IF
+              END IF  !  IRATIO
+            END DO    !  NUM_CONTRIB   (POSSIBLE D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
+          END DO      !  NUM_COMPO     (E.G.  GROUND STATE
+        END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
-! ADD 1 FOR TOTAL
-        IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
-        NADV = NADV + NADV_ADD 
-        NREAC = NREAC + LINES
+c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
+        NADV = NADV + NADV_ADD
+        NREAC = NREAC + IREAC_ADD
 
         READ (IUNIN,'(A72)') ZEILE
       END IF
-      
+
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
 
+cdr this next condition for old default: better also check for nchtal=2 ??
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
-      IF (NLEMIS.AND.(NO_LINES == 0)) THEN
-! USE DEFAULT LINES FOR EMISSIVITY
+      IF (NLEMIS.AND.(NUM_LINES == 0)) THEN
+! USE OLD HYDROGENIC DEFAULT LINES FOR EMISSIVITY
         MOD_ADDV = 0
-        NADV=NADV+10
-        NO_LINES = 6
-        NO_COMPO = 6
-! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
-        NO_CONTRIB = NATMI + NPLSI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI
-        NREAC = NREAC + NO_CONTRIB*NO_COMPO
-            
-      END IF
+        NADV=NADV +7
+        NUM_LINES = 6
+        NUM_COMPO = 6
+! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+        NUM_CONTRIB =
+     .   NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI
+cdr  ?? perhaps: in old default only one line possible at a time?
+cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
+        NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
 
-
-C  PROVIDE STORAGE ON ADDITIONAL TALLY ADDV, FOR ONE MORE SET OF A&M FIT COEFFS OR TABLES.
-C  FOR REDUCED POPUL. COEFF. IN SGNAL LINE OF SIGHT INTEGRATION 
-      IF (NCHORI > 0) THEN
-!pb     NREAC=NREAC+1
-        NADV=NADV+10
- 
-C  DETERMINE THE NUMBER OF DIFFERENT EMISSION PROFILES
-        IF (.FALSE.) THEN
-        ALLOCATE (ENERGY(2,NCHORI))
-        ENERGY = 0._DP
-        LINES = 0
-
-        DO J = 1, NCHORI
-          READ (IUNIN,*)
-          READ (IUNIN,'(12I6)') NCHTAL
-          READ (IUNIN,*)
-          READ (IUNIN,'(6e12.4)') EMIN1, EMAX1
-          READ (IUNIN,*)
-          READ (IUNIN,*)
-          IF (NCHTAL == 2) THEN
-            LEMISS = .FALSE.
-            DO I = 1, LINES
-              D1 = ABS((EMIN1-ENERGY(1,I))/(ENERGY(1,I)+1.E-30_DP))
-              D2 = ABS((EMAX1-ENERGY(2,I))/(ENERGY(2,I)+1.E-30_DP))
-              IF ((D1 <= 1.E-5_DP) .AND. (D2 <= 1.E-5_DP)) THEN
-                LEMISS = .TRUE.
-                EXIT
-              END IF
-            END DO
-            IF (.NOT.LEMISS) THEN
-              LINES = LINES + 1
-              ENERGY(1,LINES) = EMIN1
-              ENERGY(2,LINES) = EMAX1
-            END IF
-          END IF
-        END DO
-
-C  INCREASE NUMBER OF REACTIONS FOR REACTIONS NEEDED IN CALCULATION
-C  OF EMISSION PROFILES
-          NREAC = NREAC + LINES*6 + 3
-
-          DEALLOCATE (ENERGY)
-        END IF
       END IF
 
 C  SKIP READING REST OF THIS BLOCK
@@ -1413,9 +1408,9 @@ C  SKIP READING REST OF THIS BLOCK
 C
 C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
-      IREAD=0  ! fix by XB
+      IREAD=0
       WRITE (iunout,*)
-     .  '*** 13. DATA FOR ITERATIVE AND TIME DEP. OPTION '
+     .  '*** 13. DATA FOR ITERATIVE AND TIME DEP. OPTION'
 
 C
       READ (IUNIN,6666) NPRNLI, NINITL_READ, NPRMUL
@@ -1433,7 +1428,7 @@ C   SNAPSHOT TALLIES AND CENSUS ARRAY
       NSNVI=0
       IF (NPRNLI > 0) THEN
         READ (IUNIN,'(A72)') ZEILE
-        IREAD=1  ! fix by XB
+        IREAD=1
         IF (ZEILE(1:1).NE.'*') THEN
           READ (IUNIN,*)
 C   READ DATA FOR SNAPSHOT TALLIES
@@ -1459,19 +1454,17 @@ cdr  tbd:  when reading fort 15 (census), the size is determined by the
 cdr        size of that file, (IPRNL) not by NPRNL
 
 C  SKIP READING REST OF THIS BLOCK
-      IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE  ! fix by XB
+      IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:3) .NE. '***')
         READ (IUNIN,'(A72)') ZEILE
       END DO
-
-
 
 C
 C  INPUT BLOCK 14 BEGIN
 C
 C  READ DATA IN INTERFACING SUBROUTINE INFCOP  1400 -- 1499
 C
-      WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP" '
+      WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"'
       IF (NMODE.EQ.0) THEN
         READ (IUNIN,6666) NAINI,NCOPII,NCOPIE
         NCPVI=NCOPIE
@@ -1481,11 +1474,11 @@ C
         CALL EIRENE_IF0PRM(IUNIN,IUNOUT)
       ENDIF
 
-cdr  some parameters may have gotten changed in IF0PRM,  case specific
+cdr  some parameters may have gotten changed in IF0PRM, case-specific
       NAIN = MAX(NAIN,NAINI)
       NCPV = MAX(NCPV,NCPVI)
 
-cdr  due to these changes there, also some derived storage parmeters may have changed....
+cdr  due to these changes there, also some derived storage parameters may have changed....
       NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
 
 
@@ -1543,7 +1536,7 @@ cdr species
       WRITE (iunout,'(a14,i8)') 'NCV         = ',NCV
 
       CALL EIRENE_LEER(1)
-      WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS" '
+      WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS"'
       WRITE (iunout,'(a14,i8)') 'NREAC       = ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
 C     WRITE (iunout,'(a14,i8)') 'NREC        = ',NREC
@@ -1587,11 +1580,11 @@ C
 C
       RETURN
 C
-6664  FORMAT (6E12.4)
-6665  FORMAT (12(5L1,1X))
-6666  FORMAT (12I6)
+ 6664 FORMAT (6E12.4)
+ 6665 FORMAT (12(5L1,1X))
+ 6666 FORMAT (12I6)
 C
-6999  WRITE (IUNOUT,*) 'Empty input file found!'
+ 6999 WRITE (IUNOUT,*) 'Empty input file found!'
       WRITE (IUNOUT,*)
      . 'Either remove it or replace it with a correct file.'
       CALL EIRENE_EXIT_OWN(1)

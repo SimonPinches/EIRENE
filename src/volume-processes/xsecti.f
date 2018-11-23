@@ -12,15 +12,15 @@ c          (was ok already for call to xstei)
 ! 22.03.07: PI reactions revised
 ! 25.03.07: 3rd and 4th secondary introduced
 ! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
-! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
 ! 23.02.14: call to xstcx: additional arguments: pls  (for H.4 option)
 ! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 cdr  oct.14:  pls made allocatable
-cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing) 
-cdr  oct.14:  further syncronization with xsectm,xsecta,
+cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing)
+cdr  oct.14:  further synchronization with xsectm,xsecta,
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
-cdr  apr.16:  accmas and accinv set explicitly also for reaction -9 
+cdr  apr.16:  accmas and accinv set explicitly also for reaction -9
 cdr           (was missing, but accidentally correct)
 
 !pb  APR  16:  pplds  -> pplei
@@ -29,6 +29,9 @@ cdr           (was missing, but accidentally correct)
 !pb  MAY  16:  tabds1 -> tabds1
 !pb  JUL  16:  ehvds1 -> ehvds1
 cdr  sept 16:  nidsi  -> nieii
+cdr  aug.18:   process kk=-9, default KER changed from 0.5 to 0.8  (=0.4 per particle)
+cdr            to better sync with HYDHEL original data.
+cdr  sept 18:  rationalization for nhvrei flags for default reaction:  same as -KK
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -45,32 +48,32 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), ALLOCATABLE :: PLS(:)
       REAL(DP) :: FACTKK, CHRDF0, RMASS, DEIMIN,
-     .          EHEAVY, EELEC, EBULK, COU, EIRENE_RATE_COEFF, 
+     .          EHEAVY, EELEC, EBULK, COU, EIRENE_RATE_COEFF,
      .          ACCMAS, ACCINV,DE_10
 
       INTEGER :: ICOUNT, IA1, IP2, IPLS, ITEST, IIO, IION, IDSC1,
      .           NRC, J, IPLS1, IPLS2, IATM, KK, IATM1, IATM2, ITYPB,
-     .           ISPZB, III, IDSC, IREL, IBGK_SP, 
-     .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL, 
+     .           ISPZB, III, IDSC, IREL, IBGK_SP,
+     .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL,
      .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
       ALLOCATE (PLS(NSTORDR))
 
 
-cdr: set hard wired lower density for H.4 type fits
+cdr: set hard-wired lower density for H.4 type fits
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
-10      CONTINUE
+   10   CONTINUE
       END IF
- 
+
 C
 C
 C  SET TEST IONIC SPECIES ATOMIC AND MOLECULAR DATA;
@@ -96,7 +99,7 @@ C
      .      NPRT(NSPAM+IION).GT.1) THEN
 C  APPLY THE DEFAULT MODEL FOR H2+ DISSOCIATION
 C  USE NPRT.GT.1 TO DISTINGUISH ATOMIC FROM MOLECULAR IONS
- 
+
 C  FIRST: FIND SECONDARY SPECIES INDICES:
           IATM1=0
           IATM2=0
@@ -109,13 +112,13 @@ C  H2+:
                 IATM1=IATM
                 IATM2=IATM
               ENDIF
-21          CONTINUE
+   21       CONTINUE
             DO 23 IPLS=1,NPLSI
               IF (NMASSP(IPLS).EQ.1.AND.NCHARP(IPLS).EQ.1) THEN
                 IPLS1=IPLS
                 IPLS2=IPLS
               ENDIF
-23          CONTINUE
+   23       CONTINUE
 C  HD+:
           ELSEIF (NMASSI(IION).EQ.3) THEN
             DO 31 IATM=1,NATMI
@@ -124,14 +127,14 @@ C  HD+:
               ELSEIF (NMASSA(IATM).EQ.2) THEN
                 IATM2=IATM
               ENDIF
-31          CONTINUE
+   31       CONTINUE
             DO 33 IPLS=1,NPLSI
               IF (NMASSP(IPLS).EQ.1.AND.NCHRGP(IPLS).EQ.1) THEN
                 IPLS1=IPLS
               ELSEIF (NMASSP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN
                 IPLS2=IPLS
               ENDIF
-33          CONTINUE
+   33       CONTINUE
 C  D2+:
           ELSEIF (NMASSI(IION).EQ.4) THEN
 C  TEST: D2+ OR HT+, USE TEXTS(IION)
@@ -142,13 +145,13 @@ C  D2+ TEST ION IDENTIFIED
                   IATM1=IATM
                   IATM2=IATM
                 ENDIF
-41            CONTINUE
+   41         CONTINUE
               DO 43 IPLS=1,NPLSI
                 IF (NMASSP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN
                   IPLS1=IPLS
                   IPLS2=IPLS
                 ENDIF
-43            CONTINUE
+   43         CONTINUE
             ELSEIF (INDEX(TEXTS(NSPAM+IION),'H').NE.0.OR.
      .              INDEX(TEXTS(NSPAM+IION),'T').NE.0) THEN
 C  HT+ TEST ION IDENTIFIED
@@ -158,14 +161,14 @@ C  HT+ TEST ION IDENTIFIED
                 ELSEIF (NMASSA(IATM).EQ.3) THEN
                   IATM2=IATM
                 ENDIF
-46            CONTINUE
+   46         CONTINUE
               DO 47 IPLS=1,NPLSI
                 IF (NMASSP(IPLS).EQ.1.AND.NCHRGP(IPLS).EQ.1) THEN
                   IPLS1=IPLS
                 ELSEIF (NMASSP(IPLS).EQ.3.AND.NCHRGP(IPLS).EQ.1) THEN
                   IPLS2=IPLS
                 ENDIF
-47            CONTINUE
+   47         CONTINUE
             ELSE
               CALL EIRENE_LEER(2)
               WRITE (iunout,*) 'TEST ION NO ',IION,
@@ -181,14 +184,14 @@ C  DT+:
               ELSEIF (NMASSA(IATM).EQ.3) THEN
                 IATM2=IATM
               ENDIF
-51          CONTINUE
+   51       CONTINUE
             DO 53 IPLS=1,NPLSI
               IF (NMASSP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN
                 IPLS1=IPLS
               ELSEIF (NMASSP(IPLS).EQ.3.AND.NCHRGP(IPLS).EQ.1) THEN
                 IPLS2=IPLS
               ENDIF
-53          CONTINUE
+   53       CONTINUE
 C  T2+:
           ELSEIF (NMASSI(IION).EQ.6) THEN
             DO 61 IATM=1,NATMI
@@ -196,13 +199,13 @@ C  T2+:
                 IATM1=IATM
                 IATM2=IATM
               ENDIF
-61          CONTINUE
+   61       CONTINUE
             DO 63 IPLS=1,NPLSI
               IF (NMASSP(IPLS).EQ.3.AND.NCHRGP(IPLS).EQ.1) THEN
                 IPLS1=IPLS
                 IPLS2=IPLS
               ENDIF
-63          CONTINUE
+   63       CONTINUE
           ENDIF
           ITEST=IATM1*IATM2*IPLS1*IPLS2
           IF (ITEST.EQ.0) GOTO 76
@@ -210,7 +213,7 @@ C
 C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, LABELED -8, -9 AND -10.
 C
 C  FIRST PROCESS (MAY BE SPLIT INTO 1A AND 1B)  H2+  -->  H + H+ :  DEFAULT PROCESS NO. KK=-8
-          KK=-8 
+          KK=-8
           IF (IATM1.NE.IATM2) THEN
             FACTKK=0.5
             ICOUNT=1
@@ -221,7 +224,7 @@ C  FIRST PROCESS (MAY BE SPLIT INTO 1A AND 1B)  H2+  -->  H + H+ :  DEFAULT PROC
 C
           IA1=IATM1
           IP2=IPLS2
-7000      ACCMAS=0.D0
+ 7000     ACCMAS=0.D0
           ACCINV=0.D0
           IDSC1=IDSC1+1
           NREII=NREII+1
@@ -253,23 +256,20 @@ C
             DO 73 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-8,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
-73          CONTINUE
+   73       CONTINUE
             EELEI1(IREI,1:NSBOX)=-10.5
+C           EPOTEI(IREI)=1.9   !  default for EDPOTI for this diss. excit. reaction)
 C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             EHVEI1(IREI,1:NSBOX)=8.6
             NREAEI(IREI) = -8
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -8
-            NREAHV(IREI) = -4
+            NHVREI(IREI) = -8
           ELSE ! storage save mode
-!pb  in storage save mode EELEI1 has dimensions (NREI,1)
-!pb            EELEI1(IREI,1:NSBOX)=-10.5
             EELEI1(IREI,1)=-10.5
             EHVEI1(IREI,1)=8.6
             NREAEI(IREI) = -8
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -8
-            NREAHV(IREI) = -4
+            NHVREI(IREI) = -8
           END IF
 
           FACREI(IREI,1) = FACTKK
@@ -282,7 +282,7 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
           ENDIF
 
 C  SECOND PROCESS,  H2+ --> H+ +  H+ + e :  DEFAULT PROCESS NO. KK=-9
-cdr   KER = 0.5, ETH = -15.5  or KER=2 times 0.5 ??
+cdr   KER = 0.8, ETH = -15.5, I.E. KER=0.4 PER PARTICLE
           KK=-9
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -313,22 +313,21 @@ C
             DO 71 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-9,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
-71          CONTINUE
+   71       CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=-15.5
-C  TRANSFERRED KINETIC ENERGY: 0.5 EV
-            EHVEI1(IREI,1:NSBOX)=0.5
+C           EPOTEI(IREI) = 14.7!  default for EDPOTI for this diss ionis. reaction)
+C  TRANSFERRED KINETIC ENERGY: 0.8  (=0.4 EV PER PARTICLE)
+            EHVEI1(IREI,1:NSBOX)=0.8
             NREAEI(IREI) = -9
-            JEREAEI(IREI) = 1
-            NELREI(IREI) = -9
-            NREAHV(IREI) = -5
+            NELREI(IREI) = -9   !  electron energy loss model
+            NHVREI(IREI) = -9   !  KER model for process KK=-9
           ELSE  ! storage save mode
             EELEI1(IREI,1)=-15.5
-            EHVEI1(IREI,1)=0.5
+            EHVEI1(IREI,1)=0.8
             NREAEI(IREI) = -9
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -9
-            NREAHV(IREI) = -5
+            NHVREI(IREI) = -9
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
@@ -351,7 +350,7 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
 
           EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS   ! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.  
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS   ! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.
           EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
           EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
 
@@ -372,7 +371,7 @@ C
             DO 72 J=1,NSBOX
               COU = EIRENE_RATE_COEFF(-10,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
-72          CONTINUE
+   72       CONTINUE
 C  NO RADIATION LOSS INCLUDED
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
@@ -380,27 +379,25 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
 C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
             EHVEI1(IREI,1:NSBOX)=DE_10*TEIN(1:NSBOX)
             NREAEI(IREI) = -10
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -10
-            NREAHV(IREI) = -6
+            NHVREI(IREI) = -10
           ELSE ! storage save mode
-cdr 
+cdr
 cdr here: eelds1 und ehvds1 set in felee1 ?  there 0.88 times tein, i.e. not constant.
 cdr
             NREAEI(IREI) = -10
-            JEREAEI(IREI) = 1
             NELREI(IREI) = -10
-            NREAHV(IREI) = -6
+            NHVREI(IREI) = -10
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
 C
-76        CONTINUE
+   76     CONTINUE
 C
           NIEII(IION)=IDSC1
 C
 C
-C  NON DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
+C  NON-DEFAULT ELEC. IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 90 NRC=1,NRCI(IION)
@@ -427,7 +424,7 @@ C
             CALL EIRENE_XSTEI(RMASS,IREI,IIO,
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
      .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
-90        CONTINUE
+   90     CONTINUE
           NIEII(IION)=IDSC1
         ENDIF
 C
@@ -440,8 +437,8 @@ C
         ENDDO
 
 
-100   CONTINUE
- 
+  100 CONTINUE
+
 C   SECONDLY: DEAL WITH CX (CHARGE EXCHANGE) COLLISIONS
 
 C  TENTATIVELY ASSUME: NO CHARGE EXCHANGE BETWEEN IION AND ANY IPLS
@@ -455,7 +452,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NICXI(IION)=0
 C
-C  NON DEFAULT CX MODEL:
+C  NON-DEFAULT CX MODEL:
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 130 NRC=1,NRCI(IION)
@@ -491,7 +488,7 @@ C  CX PROCESS IDENTIFIED
      .                        IFRST,ISCND,EBULK,CHRDF0,
      .                        ISCDE,IESTM,KK,FACTKK,PLS)
 C
-130       CONTINUE
+  130     CONTINUE
 C
           NICXI(IION)=IDSC
 C  NO CX MODEL DEFINED
@@ -506,7 +503,7 @@ C
           LGICX(IION,0,0)=LGICX(IION,0,0)+LGICX(IION,IICX,0)
         ENDDO
 C
-200   CONTINUE
+  200 CONTINUE
 C
 C   ELASTIC COLLISIONS
 C
@@ -520,7 +517,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NIELI(IION)=0
 C
-C  NON DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL:  240--
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 230 NRC=1,NRCI(IION)
@@ -539,11 +536,11 @@ C  BULK PARTICLE INDEX
             LGIEL(IION,IDSC,0)=IREL
             LGIEL(IION,IDSC,1)=IPLS
 C
-C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TESTPARTICLES
+C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             IF (IBGKI(IION,NRC).NE.0) THEN
               IF (NPBGKI(IION).EQ.0) THEN
 C  IION HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
-C  DO THIS HERE: IION IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
+C  DO THIS HERE: IION IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
                 NPBGKI(IION)=IBGK_SP
@@ -553,11 +550,11 @@ C  DO THIS HERE: IION IS BGK-SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLI
               ELSE
                 GOTO 999
               ENDIF
-C  SELF OR CROSS COLLISION?
+C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKI(IION,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKI(IION,NRC),3,3)
               IF (ITYPB.NE.3.OR.ISPZB.NE.IION) THEN
-C  CROSS COLLISION !
+C  CROSS-COLLISION !
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKI(IION,NRC)
                 ELSE
@@ -565,7 +562,7 @@ C  CROSS COLLISION !
                 ENDIF
               ENDIF
             ENDIF
-C  BGK-COLLISION PARAMETERS DONE
+C  BGK COLLISION PARAMETERS DONE
 C
             III=NSPAM+IION
             IPL=IPLS
@@ -576,8 +573,8 @@ C
      .                 ISCDE,IESTM,
      .                 KK,FACTKK,PLS)
 C
-230       CONTINUE
- 
+  230     CONTINUE
+
           NIELI(IION)=IDSC
         ENDIF
 C
@@ -586,14 +583,14 @@ C
         LGIEL(IION,0,0)=0.
         DO 280 IIEL=1,NIELI(IION)
           LGIEL(IION,0,0)=LGIEL(IION,0,0)+LGIEL(IION,IIEL,0)
-280     CONTINUE
+  280   CONTINUE
 C
 C
-300   CONTINUE
+  300 CONTINUE
 C
 C   GENERAL HEAVY PARTICLE IMPACT COLLISIONS
 C
- 
+
       DO IION=1,NIONI
         IDSC=0
         LGIPI(IION,0,0)=0
@@ -604,7 +601,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NIPII(IION)=0
 C
-C  NON DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL:  130--190
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO NRC=1,NRCI(IION)
@@ -678,7 +675,7 @@ C
             DO 870 IIEI=1,NIEII(IION)
               IREI=LGIEI(IION,IIEI)
               CALL EIRENE_XSTEI_2(IREI)
-870         CONTINUE
+  870       CONTINUE
           ENDIF
 C
 C
@@ -692,7 +689,7 @@ C
               IRCX=LGICX(IION,IICX,0)
               IPL =LGICX(IION,IICX,1)
               CALL EIRENE_XSTCX_2(IRCX,IPL)
-890         CONTINUE
+  890       CONTINUE
           ENDIF
 C
 C
@@ -706,7 +703,7 @@ C
               IREL=LGIEL(IION,IIEL,0)
               IPL =LGIEL(IION,IIEL,1)
               CALL EIRENE_XSTEL_2(IREL,IPL)
-895         CONTINUE
+  895       CONTINUE
           ENDIF
 C
           CALL EIRENE_LEER(2)
@@ -719,47 +716,48 @@ C
               IRPI=LGIPI(IION,IIPI,0)
               IPL =LGIPI(IION,IIPI,1)
               CALL EIRENE_XSTPI_2(IRPI,IPL)
-885         CONTINUE
+  885       CONTINUE
           ENDIF
- 
+
         ENDIF
 C
-1000  CONTINUE
- 
+ 1000 CONTINUE
+
       DEALLOCATE (PLS)
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTI: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ION IMPACT COLLISION'
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTI: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ELASTIC COLLISION '
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTI: EXIT CALLED'
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK,IION,IPLS ',KK,IION,IPLS
-994   CONTINUE
+      CALL EIRENE_EXIT_OWN(1)
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTI.'
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IION = ',IION
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTI: EXIT CALLED'
       WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE  '
-      WRITE (iunout,*) 'OF POST COLLISION SAMPLING FLAG ISCDEA'
+      WRITE (iunout,*) 'OF POST-COLLISION SAMPLING FLAG ISCDEA'
       WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENY '
       CALL EIRENE_EXIT_OWN(1)
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'SPECIES CONFLICT FOR BGK COLLISIONS. IION,IREL '
       WRITE (iunout,*) IION,IREL,IPLS
       CALL EIRENE_EXIT_OWN(1)

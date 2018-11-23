@@ -1,0 +1,215 @@
+.tag_database: &tag_database
+    stage: tag
+    only: 
+        - master
+    except: 
+        - schedules
+    before_script:
+        # Install required programs
+        - apt-get update && apt-get -y install git openssh-client
+        # Configure git user information
+        - git config --global user.email "noreply@src.ipp.kfa-juelich.de"
+        - git config --global user.name "GitLab CI"
+        # Run ssh-agent (inside the build environment)
+        - eval $(ssh-agent -s)
+        # Add the required SSH keys to the agent store
+        # We're using tr to fix line endings which makes ed25519 keys work
+        # without extra base64 encoding.
+        - echo "${SSH_KEY_EIRENE_DEPLOY}" | tr -d '\r' | ssh-add - > /dev/null
+        # Create the SSH directory and give it the right permissions
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Use ssh-keyscan to scan the keys of your private servers.
+        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+        # Change origin push URL to get write access to EIRENE repository
+        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+    script:
+        - cd Database/AMdata
+        # Identify latest database change via tag and check for new commits
+        # only since then
+        - TAG=$(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
+        - if [ -n "$TAG" ];
+          then
+            REV_RANGE="$TAG..";
+          fi
+        - COMMITS=$(git log --reverse --pretty=format:%H $REV_RANGE $DATABASE.tex)
+        # For each database commit add tag "database-date" with date of commit
+        #   if same tag name exist already, add enumerated suffix
+        - for COMMIT in $COMMITS; 
+          do
+            DATE=$(git show -s --format=%ad --date=short $COMMIT);
+            SUFFIX=$(git tag -l $DATABASE-$DATE* | wc -l);
+            if [[ "$SUFFIX" > 0 ]];
+            then
+              DATE="${DATE}_$SUFFIX";
+            fi;
+            git tag -a -m "$DATABASE update" $DATABASE-$DATE $COMMIT;
+            git push origin $DATABASE-$DATE;
+          done
+
+tag_database_amjuel:
+    <<: *tag_database
+    variables:
+        DATABASE: "amjuel"
+
+tag_database_hydhel:
+    <<: *tag_database
+    variables:
+        DATABASE: "hydhel"
+
+tag_database_h2vibr:
+    <<: *tag_database
+    variables:
+        DATABASE: "h2vibr"
+
+tag_database_methane:
+    <<: *tag_database
+    variables:
+        DATABASE: "methane"
+
+.deploy_database_website: &deploy_database_website
+    stage: deploy
+    only: 
+        refs:
+            - tags
+        # use from GitLab version >= 11.0
+        #variables:
+        #    - $CI_COMMIT_TAG == /^$DATABASE-.*$/
+        # would be ideal to trigger job only if tag is latest
+        # not (yet) supported by GitLab
+        #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
+    before_script:
+        # Install required programs
+        - apt-get update && apt-get -y install git latexmk texlive-generic-recommended texlive-fonts-recommended openssh-client
+        # Run ssh-agent (inside the build environment)
+        - eval $(ssh-agent -s)
+        # Add the required SSH keys to the agent store
+        # We're using tr to fix line endings which makes ed25519 keys work
+        # without extra base64 encoding.
+        - echo "${SSH_KEY_WEBSITE}" | tr -d '\r' | ssh-add - > /dev/null
+        # Create the SSH directory and give it the right permissions
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Use ssh-keyscan to scan the keys of your private servers.
+        - ssh-keyscan apps.fz-juelich.de >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        # Download figures of database pdf
+        # Build pdf
+        # Upload tex, pdf
+        # "if" only needed as long as GitLab version < 11.0
+        - if [[ "$CI_COMMIT_TAG" == $DATABASE-* ]];
+          then
+            git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/eirene-database-figures.git;
+            mkdir -p eirene-database-figures/$DATABASE;
+            cd eirene-database-figures/$DATABASE;
+            TEX_FILE=../../Database/AMdata/$DATABASE.tex;
+            latexmk -silent -pdfdvi -e '$dvipdf = "dvipdfmx %O -o %D %S"' $TEX_FILE;
+            rsync -t -e ssh $TEX_FILE $DATABASE.pdf eirene@apps.fz-juelich.de:/var/www/eirene;
+          fi
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_TAG"
+        paths:
+            - eirene-database-figures/$DATABASE/$DATABASE.pdf
+            - Database/AMdata/$DATABASE.tex
+
+deploy_database_website_amjuel:
+    <<: *deploy_database_website
+    variables:
+        DATABASE: "amjuel"
+
+deploy_database_website_hydhel:
+    <<: *deploy_database_website
+    variables:
+        DATABASE: "hydhel"
+
+deploy_database_website_h2vibr:
+    <<: *deploy_database_website
+    variables:
+        DATABASE: "h2vibr"
+
+deploy_database_website_methane:
+    <<: *deploy_database_website
+    variables:
+        DATABASE: "methane"
+
+.deploy_database_hydkin: &deploy_database_hydkin
+    stage: deploy
+    only: 
+        refs:
+            - tags
+        # use from GitLab version >= 11.0
+        #variables:
+        #    - $CI_COMMIT_TAG == /^$DATABASE-.*$/
+        # would be ideal to trigger job only if tag is latest
+        # not (yet) supported by GitLab
+        #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
+    before_script:
+        # Install required programs
+        - apt-get update && apt-get -y install git ant default-jdk openssh-client
+        # Configure git user information
+        - git config --global user.email "noreply@src.ipp.kfa-juelich.de"
+        - git config --global user.name "GitLab CI"
+        # Run ssh-agent (inside the build environment)
+        - eval $(ssh-agent -s)
+        # Add the required SSH keys to the agent store
+        # We're using tr to fix line endings which makes ed25519 keys work
+        # without extra base64 encoding.
+        - echo "${SSH_KEY_HYDKIN_DEPLOY}" | tr -d '\r' | ssh-add - > /dev/null
+        - echo "${SSH_KEY_WEBSITE}" | tr -d '\r' | ssh-add - > /dev/null
+        # Create the SSH directory and give it the right permissions
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Use ssh-keyscan to scan the keys of your private servers.
+        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - ssh-keyscan apps.fz-juelich.de >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+    script:
+        # Clone HYDKIN
+        # Change origin push URL to get write access to HYDKIN repository
+        # Compute HYDKIN input und html from EIRENE databases
+        # Commit and push changes on HYDKIN input and html
+        # Upload HYDKIN input and html files on HYDKIN website
+        # "if" only needed as long as GitLab version < 11.0
+        - if [[ "$CI_COMMIT_TAG" == $DATABASE-* ]];
+          then
+            git clone git@src.ipp.kfa-juelich.de:hydkin/hydkin.git;
+            cd hydkin/tex2hyd;
+            TEX_FILE=../../Database/AMdata/$DATABASE.tex;
+            ./ex_prog.sh -d h0 -p "$DATABASE" $TEX_FILE ./output/;
+            ./ex_prog.sh -spec -p "$DATABASE" $TEX_FILE ./output/ specific;
+            if [[ "$(git diff --exit-code --quiet; echo $?)" != 0 ]];
+            then
+              git add ../plotform/index_*.html ../inputdir*/*.txt;
+              git commit -m 'Automated database update following on EIRENE repository database update.';
+              git push origin;
+              rsync -t -e ssh ../inputdir/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir;
+              rsync -t -e ssh ../inputdir_amjuel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_amjuel;
+              rsync -t -e ssh ../inputdir_hydhel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_hydhel;
+              rsync -t -e ssh ../plotform/index_*.html eirene@apps.fz-juelich.de:/var/www/hydkin/plotform;
+            fi;
+            git tag -a -m "$DATABASE update" $CI_COMMIT_TAG;
+            git push origin $CI_COMMIT_TAG;
+          fi
+
+deploy_database_hydkin_amjuel:
+    <<: *deploy_database_hydkin
+    variables:
+        DATABASE: "amjuel"
+
+deploy_database_hydkin_hydhel:
+    <<: *deploy_database_hydkin
+    variables:
+        DATABASE: "hydhel"
+
+deploy_database_hydkin_h2vibr:
+    <<: *deploy_database_hydkin
+    variables:
+        DATABASE: "h2vibr"
+
+deploy_database_hydkin_methane:
+    <<: *deploy_database_hydkin
+    variables:
+        DATABASE: "methane"
+

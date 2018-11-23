@@ -1,29 +1,30 @@
 cdr  may 2017:  preparing for storage reduction by elimination of unnecessary input tallies:
-cdr             commenting, 
-cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local, 
+cdr             commenting,
+cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local,
 cdr             rather than public
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 
       MODULE EIRMOD_COMUSR
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
-     P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS
- 
+     P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS,
+     P          EIRENE_COMUSR_REINIT
+
       INTEGER, SAVE ::
      P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
       INTEGER, PUBLIC, SAVE ::
      P NPLPRM  ! nplprm, is also used in setprm, for a storage test.
-c 
-      INTEGER, SAVE ::               
+c
+      INTEGER, SAVE ::
      P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
- 
+
       REAL(DP), ALLOCATABLE, PUBLIC, SAVE ::
 C  NPLPRM, REAL.
 C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
@@ -38,14 +39,14 @@ C  NSFPRM
 C  NPLPR2, REAL.
 C  THIS SECOND SET OF DATA ARE DERIVED INPUT PROFILES, SET IN SUBROUTINE PLASMA_DERIV
 C  (STRICTLY ALSO DEIN (ELECTRON DENSITY) FROM THE NPLPR1 BLOCK ABOVE
-C   IS SUCH A DERIVED QUANTITY)  
+C   IS SUCH A DERIVED QUANTITY)
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
      R        BVIN(:,:), PARMOM(:,:), EDRIFT(:,:),
      R        BXPERP(:), BYPERP(:),
 C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
      R        DION(:),   DATM(:),     DMOL(:),   DPLS(:),    DPHOT(:)
- 
+
 !  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES
       REAL(DP), TARGET, ALLOCATABLE, PUBLIC, SAVE ::
      R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSPH(:), RMASSP(:)
@@ -65,14 +66,14 @@ C     PLASMA PROFILES ON CELL VERTICES
      .        BFINCORNER(:),   BVINCORNER(:,:),
      .        EXCORNER(:),     EYCORNER(:),     EZCORNER(:),
      .        EFCORNER(:),     POTCORNER(:)
- 
+
       REAL(DP), PUBLIC, SAVE :: TVAC, DVAC, VVAC, ALLOC
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TEDTEDX(:), TEDTEDY(:), TEDTEDZ(:)
- 
+
       CHARACTER(8), ALLOCATABLE, PUBLIC, SAVE :: TEXTS(:)
- 
+
 C  MUSR, INTEGER
       INTEGER, PUBLIC, SAVE ::
      I         NSPH  , NPHOTI, NPHOTIM, NPHOTI_IN,
@@ -92,7 +93,7 @@ C  MUSR, INTEGER
      I         MPLSTI(:), MPLSV(:)
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
- 
+
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
      L         LGVAC(:,:), LGDFT(:)
@@ -104,7 +105,7 @@ C  LUSR, LOGICAL
      L         LTESMO, LTISMO, LDESMO, LDISMO,
      L         LVSMO,  LBSMO,  LESMO,  LPOTSMO
 
- 
+
 C FROM HERE ON: NO EQUIVALENCE
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         IADVE(:),  IADVS(:), IADVT(:),  IADRC(:),
@@ -116,29 +117,29 @@ C FROM HERE ON: NO EQUIVALENCE
      I         NFRSTP(:), NADDP(:), NSPAN(:),  NSPEN(:),
      I         NSPANW(:), NSPENW(:)
 
- 
+
       INTEGER, PUBLIC, SAVE ::
      I         NPRLL, NMODE,  NTCPU,
      I         NFILE, NFILEN, NFILEM, NFILEL, NFILEK, NFILEJ,
      I         NITER, IITER,  NTIME,  ITIMV
- 
+
 !      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_COMUSR (ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
 
       IF (.NOT.ALLOCATED(LSMOPRO))  ALLOCATE (LSMOPRO(12))
 
       IF (ICAL == 1) THEN
- 
+
         IF (ALLOCATED(TEIN)) RETURN
 c
         NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD  ! background data, set in plasma.f, 17 arrays
@@ -177,15 +178,15 @@ cdr     ALLOCATE (ADIN(NAIN,NRAD))    !  ital=-12. Not yet. done later below, ic
 c NPLPR2
         ALLOCATE (TEINL(NRAD))
         ALLOCATE (TIINL(NPLSTI,NRAD))
-        ALLOCATE (BVIN(NPLSV,NRAD))   ! ital=nn   
-        ALLOCATE (PARMOM(NPLS,NRAD))  ! ital=nn 
+        ALLOCATE (BVIN(NPLSV,NRAD))   ! ital=nn
+        ALLOCATE (PARMOM(NPLS,NRAD))  ! ital=nn
         ALLOCATE (BXPERP(NRAD))       ! ital=-16
         ALLOCATE (BYPERP(NRAD))       ! ital=-17
         ALLOCATE (EDRIFT(NPLS,NRAD))  !  ital=-13
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
 
-        
+
         ALLOCATE (RMASSA(MAX(1,NATM)))
         ALLOCATE (RMASSM(MAX(1,NMOL)))
         ALLOCATE (RMASSI(MAX(1,NION)))
@@ -202,12 +203,12 @@ c NPLPR2
         ALLOCATE (DMOL(MAX(1,NMOL)))
         ALLOCATE (DPLS(MAX(1,NPLS)))
         ALLOCATE (DPHOT(MAX(1,NPHOT)))
- 
+
 c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
         ALLOCATE (TEDTEDX(NRTAL))  ! ital=nn
         ALLOCATE (TEDTEDY(NRTAL))  ! ital=nn
         ALLOCATE (TEDTEDZ(NRTAL))  ! ital=nn
- 
+
         ALLOCATE (TEXTS(NSPZ))
 c  integer  species and background tally data
         ALLOCATE (NMASSA(MAX(1,NATM)))
@@ -261,14 +262,14 @@ c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
         ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
- 
+
       ELSE IF (ICAL == 2) THEN
 c  NAIN: first dimension of adin is now fixed.  correct nplprm with nain*nrad
         IF (ALLOCATED(ADIN)) RETURN
- 
+
         NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
         NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD
         ALLOCATE (ADIN(NAIN,NRAD))
@@ -284,31 +285,31 @@ c  NCPV, NBGV are now set
         ALLOCATE (IBGRC(NBGV))
 
       ELSE IF (ICAL == 3) THEN
- 
+
         IF (ALLOCATED(FLXOUT)) RETURN
- 
+
         NSFPRM=2*NLMPGS
         ALLOCATE (FLXOUT(NLMPGS))
         ALLOCATE (SAREA(NLMPGS))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .         ' COMUSR(3) ',NSFPRM*8
- 
+
       END IF
- 
+
       CALL EIRENE_INIT_COMUSR(ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMUSR
 
 
- 
+
       SUBROUTINE EIRENE_ALLOC_CORNERS(IUNOUT)
 
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: N1DIM(12)
       INTEGER :: NTOT, ICO
-      
+
 
       IF (ALLOCATED(CORNER_PROFILES)) RETURN
 
@@ -323,7 +324,7 @@ cdr  are there any FEM interpolated background tallies in this run?
       IF (LBSMO)  NTOT = NTOT + 4
       IF (LESMO)  NTOT = NTOT + 4
       IF (LPOTSMO)  NTOT = NTOT + 1
-      
+
       IF (NTOT > 0) THEN
 cdr  allocate storage for background tallies on cell vertices
 cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
@@ -412,13 +413,13 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
       CORNER_PROFILES = 0._DP
 
       END SUBROUTINE EIRENE_ALLOC_CORNERS
- 
+
 
 
       SUBROUTINE EIRENE_DEALLOC_COMUSR
 C
       IF (.NOT.ALLOCATED(TEIN)) RETURN
- 
+
       DEALLOCATE (TEIN)
       DEALLOCATE (TIIN)
       DEALLOCATE (DEIN)
@@ -452,7 +453,7 @@ c
       DEALLOCATE (FLXOUT)
       DEALLOCATE (SAREA)
 
-      
+
       DEALLOCATE (RMASSA)
       DEALLOCATE (RMASSM)
       DEALLOCATE (RMASSI)
@@ -469,11 +470,11 @@ c
       DEALLOCATE (DMOL)
       DEALLOCATE (DPLS)
       DEALLOCATE (DPHOT)
- 
+
       DEALLOCATE (TEDTEDX)
       DEALLOCATE (TEDTEDY)
       DEALLOCATE (TEDTEDZ)
- 
+
       DEALLOCATE (TEXTS)
       DEALLOCATE (NMASSA)
       DEALLOCATE (NCHARA)
@@ -533,7 +534,7 @@ c
       DEALLOCATE (LGDFT)
       DEALLOCATE (LSPCCLL)
       DEALLOCATE (LSMOPRO)
- 
+
 !pb      IF (NBACK_SPEC > 0) DEALLOCATE (BACK_SPEC)
       IF (ALLOCATED(BACK_SPEC)) DEALLOCATE (BACK_SPEC)
 
@@ -541,10 +542,10 @@ c
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMUSR
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_COMUSR(ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
       INTEGER, SAVE :: IFIRST=0
 
@@ -561,9 +562,9 @@ c
 
         IFIRST = 1
       ENDIF
- 
+
       IF (ICAL == 1) THEN
- 
+
         TEIN   = 0._DP
         TIIN   = 0._DP
         DEIN   = 0._DP
@@ -576,7 +577,7 @@ c
         BZIN   = 0._DP
         BFIN   = 0._DP
         VOL    = 0._DP       ! ital=-14
-        WGHT   = 1._DP     
+        WGHT   = 1._DP
         BXPERP = 0._DP
         BYPERP = 0._DP
         EXIN   = 0._DP
@@ -592,7 +593,7 @@ c
         DEINL  = 0._DP
         DIINL  = 0._DP
 
-        
+
         RMASSA = 0._DP
         RMASSM = 0._DP
         RMASSI = 0._DP
@@ -609,11 +610,11 @@ c
         DMOL   = 0._DP
         DPLS   = 0._DP
         DPHOT  = 0._DP
- 
+
         TEDTEDX = 0._DP
         TEDTEDY = 0._DP
         TEDTEDZ = 0._DP
- 
+
         TEXTS  = ' '
         NMASSA = 0
         NCHARA = 0
@@ -664,7 +665,7 @@ c
         LGVAC  = .FALSE.
         LGDFT  = .FALSE.
         LSPCCLL = .FALSE.
- 
+
       ELSE IF (ICAL == 2) THEN
 c  at this call: first dimension of adin is known, as well as size of cop and bgk tallies
         ADIN   = 0._DP      ! ital=-12
@@ -677,15 +678,20 @@ c  at this call: first dimension of adin is known, as well as size of cop and bg
         IBGVS  = 0
         IBGVT  = 0
         IBGRC  = 0
- 
+
       ELSE IF (ICAL == 3) THEN
- 
+
         FLXOUT = 0._DP
         SAREA  = 666._DP
- 
+
       END IF
- 
+
       RETURN
+
+      ENTRY EIRENE_COMUSR_REINIT
+      IFIRST = 0
+      RETURN
+
       END SUBROUTINE EIRENE_INIT_COMUSR
- 
+
       END MODULE EIRMOD_COMUSR

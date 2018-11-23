@@ -14,15 +14,15 @@ cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 cdr july 17:  comments re. call to user routine: calstr_usr.
 cpb Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
 
-C> \brief Collect results from worker processes onto master process of 
+C> \brief Collect results from worker processes onto master process of
 C> stratum
 C>
-C> This subroutine is called from MCARLO.f, from within strata loop, at 
-C> the end of each stratum, if there are more then one processor 
+C> This subroutine is called from MCARLO.f, from within strata loop, at
+C> the end of each stratum, if there are more then one processor
 C> working on any strata.
 C>
-C> It collects data from processors belonging to one particular stratum 
-C> istra (COMPRT) and stores merged data for output tallies for stratum 
+C> It collects data from processors belonging to one particular stratum
+C> istra (COMPRT) and stores merged data for output tallies for stratum
 C> istra on the master process for this stratum npesta(istra).
 C>
 C> Input via modules:
@@ -33,8 +33,8 @@ C> - tallies
       SUBROUTINE EIRENE_CALSTR
 
       USE EIRMOD_PRECISION, ONLY: DP
-      USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS, NSTRA, 
-     .                          NLMPGS, NRTALS, NCPV_STAT, NCV, NLIMPS, 
+      USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS, NSTRA,
+     .                          NLMPGS, NRTALS, NCPV_STAT, NCV, NLIMPS,
      .                          NRTAL, NADSPC, NVOLTL, NSDW, NSD, NSRFTL
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
       USE EIRMOD_COMSOU, ONLY: NLSRON
@@ -43,7 +43,7 @@ C> - tallies
       USE EIRMOD_COMPRT, ONLY: ISTRA
       USE EIRMOD_CPES, ONLY: MY_PE, NPESTA, NPESTR, PROCFORSTRA
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
-      USE EIRMOD_CSDVI_COP, ONLY: EE_COP, EES_COP, SDVIA_COP, SGMS_COP, 
+      USE EIRMOD_CSDVI_COP, ONLY: EE_COP, EES_COP, SDVIA_COP, SGMS_COP,
      .                            SIGMA_COP, STV_COP, STVS_COP
       USE EIRMOD_CSDVI_BGK, ONLY: EE_BGK, EES_BGK, NBGV_STAT, SDVIA_BGK,
      .                            SGMS_BGK, SIGMA_BGK, STV_BGK, STVS_BGK
@@ -63,10 +63,10 @@ C> - tallies
      .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm),lhelpm(0:nmol), lhelpi(0:nion),
-     .           lhelpp(0:npls), lhelpph(0:nphot), 
+     .           lhelpp(0:npls), lhelpph(0:nphot),
      .           use_split
 
-C Perform split only if there is in total more then one master process. 
+C Perform split only if there is in total more than one master process.
 C Otherwise use mpi_comm_world as communicator to avoid unnecessary
 C split.
       if ( all( npesta == 0 .or. .not. nlsron ) ) then
@@ -86,7 +86,7 @@ C split.
       end if
 
 C This subroutine is only called if PROCFORSTR(ISTRA,MY_PE), check is duplication.
-C Could not check for NPESTR(ISTRA) > 1 be moved outside of this subroutine.
+C Could not check whether NPESTR(ISTRA) > 1 can be moved outside of this subroutine.
       if( npestr(istra) > 1 .and. procforstra(istra,my_pe)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
@@ -96,14 +96,16 @@ c
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
 C Would it make more sense to turn my_pe_gr into a logical?
 C Need to clarify what eirene_calstr_usr does with my_pe_gr.
-c   
+c
         my_pe_gr = my_pe-npesta(istra)
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
      .              nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
 
         allocate (help(mxdim))
-        
+
+cdr missing: wtotph ??
+
         call mpi_reduce(WTOTM(0:nmoli,istra),helpm,nmoli+1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) WTOTM(0:nmoli,istra) = helpm(0:nmoli)
@@ -426,6 +428,7 @@ csw
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) LOGION(0:nioni,ISTRA) = lhelpi(0:nioni)
 
+cdr why do we need if(...) here, and not above ?
         if (nphoti > 0) then
           call mpi_reduce(LOGPHOT(0:nphoti,ISTRA),lhelpph,NPHOTI+1,
      .         mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
@@ -435,12 +438,12 @@ csw
         call mpi_reduce(LOGPLS(0:nplsi,ISTRA),lhelpp,NPLSI+1,
      .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) LOGPLS(0:nplsi,ISTRA) = lhelpp(0:nplsi)
-        
+
         deallocate(lhelp)
 c
-c  collect user or case specific information from all Pes that worked on
+c  collect user or case-specific information from all PEs that worked on
 c  stratum no. ISTRA.  Depends on ...usr.f  or ...cop.f routines.
-c  Strictly there should also be an analogue  call to eirene_calstr_cop.f 
+c  Strictly there should also be an analogue call to eirene_calstr_cop.f
 
         call mpi_barrier(icomgrp(istra),ier)
         call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
@@ -454,4 +457,3 @@ c  Strictly there should also be an analogue  call to eirene_calstr_cop.f
       if (allocated(dummyv)) deallocate (dummyv)
       RETURN
       END
-

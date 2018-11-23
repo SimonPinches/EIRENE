@@ -1,5 +1,5 @@
 cdr called from find_param.f in initialization phase,
-cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0) 
+cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0)
 C
 cdr Read block 14 from interfacing routines (not from eirene_input.f)
 c   this version: couple_dummy, i.e. only dummy interfacing routines.
@@ -12,9 +12,9 @@ c   NAOT  :
 c   NCPV  :
 c   NKNOT :
 C   NTRII :
-C   NCPVI :  no. of special couple tallies    
+C   NCPVI :  no. of special couple tallies
 
-c  also set: NDX,NDY,NFL, NDXP, NDYP  
+c  also set: NDX,NDY,NFL, NDXP, NDYP
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN,IUNOUT)
 
@@ -51,7 +51,7 @@ C  NUMBER OF PARTS PER TARGET RECYCLING SOURCE
         NPTRGT=SUM(NTGPRT)
         DO IT=1,NTARGI
           DO IPRT=1,NTGPRT(IT)
- 331        READ (IUNIN,'(A72)') ZEILE
+  331       READ (IUNIN,'(A72)') ZEILE
             IF (ZEILE(1:1).EQ.'*') THEN
               GOTO 331
             ENDIF
@@ -80,8 +80,8 @@ C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
-C                                          AND IN SUBR. COLLIDE)     
-      NCPVI=3*NPLS+4
+C                                          AND IN SUBR. COLLIDE)
+      NCPVI=NPLS
       NCPV = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
@@ -112,9 +112,9 @@ C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
 
       CLOSE (UNIT=33)
       CLOSE (UNIT=34)
-      
+
       NKNOT=NRKNOT
       NTRI=NTRII+1
-      
+
       RETURN
       END

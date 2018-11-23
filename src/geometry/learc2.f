@@ -11,7 +11,7 @@ C                             BY POLYGONAL LINES.
 
 C  SEARCH 2ND GRID INDEX IPOLG
 
-C  THIS SUBROUTINE FINDS THE POLODIAL POLYGON CELL INDEX "IPOLG"
+C  THIS SUBROUTINE FINDS THE POLOIDAL POLYGON CELL INDEX "IPOLG"
 C  ASSUMING (knowing) THAT POINT (X,Y) IS IN THE RADIAL ZONE "NR",
 C  I.E. SEARCH ONLY BETWEEN THE TWO NEIGHBORING "RADIAL" POLYGONS NR AND NR+1
 
@@ -110,9 +110,9 @@ cdr   prepare arrays, independent of x,y
         ALLOCATE (D14(N1STS,N2NDS))
         ALLOCATE (D32(N1STS,N2NDS))
         ALLOCATE (D34(N1STS,N2NDS))
-        DO 10 N=1,NR1STM
-          DO 10 K=1,NPPLG
-            DO 10 L=NPOINT(1,K),NPOINT(2,K)-1
+        DO N=1,NR1STM
+          DO K=1,NPPLG
+            DO L=NPOINT(1,K),NPOINT(2,K)-1
               X1(N,L)=XPOL(N,L)
               Y1(N,L)=YPOL(N,L)
               X2(N,L)=XPOL(N,L+1)
@@ -142,7 +142,9 @@ C
               D32(N,L)=SQRT(UX(N,L)*UX(N,L)+UY(N,L)*UY(N,L))
               D34(N,L)=SQRT(VX2*VX2+VY2*VY2)
               D14(N,L)=SQRT(WX2*WX2+WY2*WY2)
-10      CONTINUE
+            END DO
+          END DO
+        END DO
       ENDIF
 C
 C  END OF IFIRST LOOP
@@ -151,7 +153,7 @@ c...............................................................................
 C
       INUM=0
 C
-      DO 100 K=1,NPPLG
+      DO K=1,NPPLG
       DO 101 L=NPOINT(1,K),NPOINT(2,K)-1
         XMX2=X-X2(NR,L)
         YMY2=Y-Y2(NR,L)
@@ -166,14 +168,15 @@ C
         ERR4(L)=(YMY1-VY1(NR,L)*ERR3(L))*DWY(NR,L)
         ERR5(L)=ERR1(L)+ERR2(L)
         ERR6(L)=ERR3(L)+ERR4(L)
-101   CONTINUE
+  101 CONTINUE
 
       IF (LEVGEO .EQ. 2) THEN
-        DO 102 L=NPOINT(1,K),NPOINT(2,K)-1
-102       ERR6(L)=0.
+        DO L=NPOINT(1,K),NPOINT(2,K)-1
+          ERR6(L)=0.
+        END DO
       ENDIF
 
-      DO 100 L=NPOINT(1,K),NPOINT(2,K)-1
+       DO L=NPOINT(1,K),NPOINT(2,K)-1
         IF (ERR4(L).GT.1.D30) THEN
           X2N=XPOL(NR,L)
           Y2N=YPOL(NR,L)
@@ -219,12 +222,13 @@ C
           IM=NR
           LM=L
         ENDIF
-100   CONTINUE
+       END DO
+      END DO
 C
       ERRMIN=1.D30
       IF (INUM.NE.1) THEN
 C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
-        DO 110 K=1,NPPLG
+        DO K=1,NPPLG
         DO 111 L=NPOINT(1,K),NPOINT(2,K)-1
           XMX1=X-X1(NR,L)
           YMY1=Y-Y1(NR,L)
@@ -242,7 +246,7 @@ C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
           ERR2(L)=ABS(DX2+DX3-D32(NR,L))
           ERR3(L)=ABS(DX3+DX4-D34(NR,L))
           ERR4(L)=ABS(DX1+DX4-D14(NR,L))
-111     CONTINUE
+  111   CONTINUE
 
         IF (LEVGEO .EQ. 2) THEN
 !PB          ERR1(L)=ERRMIN
@@ -251,7 +255,7 @@ C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
           ERR3=ERRMIN
         ENDIF
 
-        DO 110 L=NPOINT(1,K),NPOINT(2,K)-1
+        DO L=NPOINT(1,K),NPOINT(2,K)-1
           IF (ERR1(L).LT.ERRMIN) THEN
             IMARK=NR
             LMARK=L
@@ -272,7 +276,8 @@ C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
             LMARK=L
             ERRMIN=ERR4(L)
           ENDIF
-110     CONTINUE
+         END DO
+        END DO
         IM=IMARK
         LM=LMARK
       ENDIF

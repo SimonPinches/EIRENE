@@ -1,7 +1,7 @@
 cdr  12.5.2015:  move general interface driver routine "EIRSRT" up, own routine.
 cdr:             check: is eirsrt universal, then: move even further up to "main routines".
-cdr  09.02.2016:  done ! syncronization of eirsrt.f started, but not completed fully
-c  jan 2017: syncronisation with corresponding version in couple_SOLPS-ITER,
+cdr  09.02.2016:  done ! synchronization of eirsrt.f started, but not completed fully
+c  jan 2017: synchronisation with corresponding version in couple_SOLPS-ITER,
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
 C
@@ -77,7 +77,7 @@ C
         PVX(IN)=PVX(IN)/PVPV
         PVY(IN)=PVY(IN)/PVPV
 C
-1     CONTINUE
+    1 CONTINUE
       RETURN
       END
 

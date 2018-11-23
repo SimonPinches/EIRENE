@@ -7,12 +7,14 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
-cdr may 2017  : lower cuf off density for H.12 data: 1e8.
+cdr may 2017  : lower cut-off density for H.12 data: 1e8.
 c               for lower densities: AMJUEL Data collapse to
 c               Corona rates or Corona population coefficients.
+cdr aug 2017  : try more precise species identification, use NPRT(ispz)= ??
+c               unfinished
 
 
       SUBROUTINE EIRENE_BA_ALPHA (IST,IAD1,IAD2,IAD3,IAD4,IAD5,IAD6,
@@ -28,8 +30,7 @@ C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
 C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
-C  IADS: SUM OVER ALL CONTRINUTIONS
-c
+C  IADS: SUM OVER ALL CONTRIBUTIONS
 C
 C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
@@ -69,7 +70,7 @@ C
       REAL(DP) :: DM(0:8,0:8) ! diatomic hydrogenic molecule H2,D2,T2,HD,HT,DT
       REAL(DP) :: DI2(0:8,0:8) ! diatomic hydr. mol. ion H2+, D2+,...,DT+
       REAL(DP) :: DI3(0:8,0:8)! triatomic hydr. mol. ion H3+, ...,D2T+
-      REAL(DP) :: DN(0:8,0:8) ! negativ hydr. ion H-,D- T-
+      REAL(DP) :: DN(0:8,0:8) ! negative hydr. ion H-,D- T-
 
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP) :: RHMH2(0:8), RH2PH2(0:8,0:8), RH3PH2(0:8),
@@ -178,6 +179,7 @@ C  H(n=3)/H(n=1)
             DA(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H+
         REAC='2.1.8a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -190,6 +192,7 @@ C  H(n=3)/H+
             DB(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H2(g)
         REAC='2.2.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -202,6 +205,7 @@ C  H(n=3)/H2(g)
             DM(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H2+(g)
         REAC='2.2.14a  '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -214,6 +218,7 @@ C  H(n=3)/H2+(g)
             DI2(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H3+
         REAC='2.2.15a  '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -226,6 +231,7 @@ C  H(n=3)/H3+
             DI3(J-1,I-1)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(J,I)
           ENDDO
         ENDDO
+C
 C  H(n=3)/H-
         REAC='7.2a     '
         REACDAT(NREACI+1)%LOTH = .FALSE.
@@ -301,10 +307,10 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
         H123='H.12'
         REAC='2.0c     '
         CRC='OT '
-c  If H2+ from ion conversion alone
+c  IF H2+ from ion conversion alone
 C  H.11 2.0c INCLUDES  ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
 C  H.11 2.0b INCLUDES  ION CONVERION (CX) ON H2(V=0) ONLY
-c  If H2+  also from multi-step electron impact ionisation --> explicit ne dependence
+c  IF H2+  also from multi-step electron impact ionisation --> explicit ne dependence
 C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
 C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
 C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY
@@ -414,9 +420,9 @@ C   COLLAPSE DATA TO DENSITY INDEPENDENT H.2, H.8, H.11 CORONA VALUES
 C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUPLE POLYNOMAL FIT.
 CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS ASYMPTOTICS
         JEND=8
-        IF (DEF.LE.0.0) THEN 
+        IF (DEF.LE.0.0) THEN
           JEND=0
-C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEFF=DEF/(8.0*LOG(10.0)) 
+C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEFF=DEF/(8.0*LOG(10.0))
 C       ELSEIF (DEFF.GT.1.0) THEN
         ENDIF
 C
@@ -437,7 +443,7 @@ C
             DIO2=DIO2+ DI2(I,J)*TEI*DEJ
             DIO3=DIO3+ DI3(I,J)*TEI*DEJ
             DNM =DNM + DN(I,J)*TEI*DEJ
-150     CONTINUE
+  150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
         DMO =EXP(DMO)
@@ -453,7 +459,7 @@ C  (ONLY TE-DEPENDENT)
         DO 160 I=0,8
           TEI=TEF**I
           RATIO7=RATIO7+RHMH2(I)*TEI
-160     CONTINUE
+  160   CONTINUE
         RATIO7=EXP(RATIO7)
 
 C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATION
@@ -465,7 +471,7 @@ C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATIO
           DO 170 I=0,8
             TEI=TEF**I
             RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
-170     CONTINUE
+  170   CONTINUE
         RATIO2=EXP(RATIO2)
 
 C  RATIO OF DENSITIES: H3+ TO H2, = [RATIO3  * NH2+/NE]
@@ -476,7 +482,7 @@ C  (ONLY TE-DEPENDENT)
         DO 180 I=0,8
           TEI=TEF**I
           RATIO3=RATIO3+RH3PH2(I)*TEI
-180     CONTINUE
+  180   CONTINUE
         RATIO3=EXP(RATIO3)
 
 
@@ -494,7 +500,7 @@ C  ATOMIC NEUTRAL HYDR.: NCHAR=NPRT=1,NCHRG=0
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD1=SIGADD1+DDA*FAC32
-200     CONTINUE
+  200   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
@@ -521,7 +527,7 @@ C
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD2=SIGADD2+DPP*FAC32
-205     CONTINUE
+  205   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from atomic hydr. ions in TEST IONS
@@ -532,12 +538,13 @@ C  DIATOMIC NEUTRAL HYDR. MOL: NCHAR=NPRT=2,NCHRG=0
 C  LINEAR IN PDENM: (DISSOCIATION OF H2)
 C
         DO 210 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(IMOL).NE.2) GOTO 210
           DDM=DMO*PDENM(IMOL,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD3=SIGADD3+DDM*FAC32
-210     CONTINUE
+  210   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from neutral diatomic hydr. molec. in BULK IONS
@@ -550,6 +557,9 @@ C
 C  DIATOMIC NEUTRAL HYDR. MOL ION: NCHAR=NPRT=2,NCHRG=1
 C
 C       DO 215 IION=1,NIONI
+C  further rule out: He+, He++
+C         ISPZ= ??
+C         IF (NCHARI(IION).NE.2.OR.NCHRGI(IION).NE.1.OR.NPRT(ISPZ).NE.2) GOTO 215
 C         IF (NCHARI(IION).NE.2) GOTO 215
 C         DDI2=DIO2*PDENI(IION,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
@@ -562,12 +572,13 @@ C
 C  REVISED: USE (PDENM * DENSITY RATIO H2+/H2) NOW, INSTEAD OF PDENI
 
         DO 215 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(IMOL).NE.2) GOTO 215
           DDI2=DIO2*PDENM(IMOL,NCELC)*RATIO2
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD4=SIGADD4+DDI2*FAC32
-215     CONTINUE
+  215   CONTINUE
 C
 C  CHANNEL 5
 C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
@@ -588,12 +599,13 @@ C
 C  REVISED: USE (PDENM * DENSITY RATIO H-/H2) NOW, INSTEAD OF PDENI
 C
         DO 220 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(IMOL).NE.2) GOTO 220
           DDN=DNM*PDENM(IMOL,NCELC)*RATIO7
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD5=SIGADD5+DDN*FAC32
-220     CONTINUE
+  220   CONTINUE
 C
 C  CHANNEL 6
 C  H ALPHA SOURCE RATE:  PHOTONS/SEC/CM**3
@@ -601,10 +613,22 @@ C  LINEAR IN PDENI (DISSOCIATIVE RECOMBINATION OF H3+)
 C
 C  TRIATOMIC HYDR. ION: NCHAR=NPRT=3,NCHRG=1
 
+
+C       DO 230 IION=1,NIONI
+C         ISPZ= ??
+C         IF (NCHARI(IION).NE.3.OR.NCHRGI(IION).NE.1.OR.NPRT(ISPZ).NE.3) GOTO 230
+C         DDI3=DIO3*PDENI(IION,NCELC)
+C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
+C  SIGADD: PHOTONS/SEC/CM**3
+C         SIGADD6=SIGADD6+DDI3*FAC32
+C230     CONTINUE
+
+C  REVISED.
 c  USE (PDENM * RATIO H3+/H2),INSTEAD OF PDENI
 C  AND RATIO H3+/H2 = RATIO3 * H2+/NE = RATIO3 * RATIO2 * NH2/NE
 
         DO 230 IMOL=1,NMOLI
+C	  ISPZ= ?? but should be unique: only hydrogenic molecules can have ncharm=2
           IF (NCHARM(NMOLI).NE.2) GOTO 230
           DDI3=DIO3*PDENM(IMOL,NCELC)*RATIO3
 C  APPLY FURTHER FACTOR NH2+/NE = NH2*RATIO2/NE
@@ -612,9 +636,9 @@ C  APPLY FURTHER FACTOR NH2+/NE = NH2*RATIO2/NE
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD6=SIGADD6+DDI3*FAC32
-230     CONTINUE
+  230   CONTINUE
 C
-500     CONTINUE
+  500   CONTINUE
 C
 C
         SIGADD=SIGADD1+SIGADD2+SIGADD3+SIGADD4+SIGADD5+SIGADD6
@@ -638,7 +662,7 @@ cdr tbd: rausziehen hinter 1000, ist eh nur constanter faktor facte, only total 
 C
         POWALF =POWALF +SIGADD *FACTE*VOL(NCELL)
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
 cdr at this place we know: voltal(icoarse)=sum(vol(ifine))
 
@@ -791,7 +815,7 @@ csw 19apr07
       ifirst=0
       return
 csw
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. BA_ALPHA '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',

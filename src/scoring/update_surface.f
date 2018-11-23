@@ -7,9 +7,9 @@ c  EMITTED : update tallies PRF_A_B(iout,msurf) and ERF_A_B(iout,msurf)
 c  A code-letter for incident type of particle: A, M, I, P, PH
 c  B code-letter for emitted type of particle :  AT, ML, IO, PL, PHT
 c  iout:  species index for emitted particle
- 
+
       SUBROUTINE EIRENE_UPDATE_SURFACE (ITOLD,WGHTSG,IND)
- 
+
 C       PARTICLE FLUXES (WEIGHT=WGHTSG),     score POT.., PRF...
 C       ENERGY FLUXES   (E0*WGHTSG),         score EOT.., ERF...
 
@@ -39,13 +39,13 @@ c  lmetspw(ispz):  species ispz is emitted, emitted flux tally is scored.
       USE EIRMOD_COMUSR
       USE EIRMOD_CSPEZ
       USE EIRMOD_CSDVI
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ITOLD, IND
       REAL(dp), INTENT(IN) :: WGHTSG
       REAL(dp) ::             EWGHTSG
- 
+
       IF (MSURF .LE. 0) RETURN
 
       EWGHTSG=E0*WGHTSG
@@ -60,9 +60,9 @@ C  INCIDENT PHOTONS
         IF (LPOTPHT) POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WGHTSG
 
         IF (MSURFG.GT.0) THEN
-          IF (LEOTPHT) 
+          IF (LEOTPHT)
      .      EOTPHT(IPHOT,MSURFG)=EOTPHT(IPHOT,MSURFG)+EWGHTSG
-          IF (LPOTPHT) 
+          IF (LPOTPHT)
      .      POTPHT(IPHOT,MSURFG)=POTPHT(IPHOT,MSURFG)+WGHTSG
         ENDIF
         IF (LEOTPHT .OR. LPOTPHT) LMETSPW(IPHOT) = .TRUE.
@@ -113,7 +113,7 @@ C  INCIDENT BULK IONS
 
       CASE(2)
 C  re-emitted fluxes
-c  a photon is re-emitted. currently only foreseen for incident photons 
+c  a photon is re-emitted. currently only foreseen for incident photons
       IF (ITYP.EQ.0) THEN
         LOGPHOT(IPHOT,ISTRA)=.TRUE.
         IF (ITOLD.EQ.0) THEN
@@ -306,10 +306,10 @@ c  no tallies for emitted bulk particles
       case default  ! ind
         goto 999
       end select ! ind
- 
+
       RETURN
 
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR EXIT IN UPDATE_SURFACE'
       WRITE (IUNOUT,*) 'IND,ITOLD,ITYP ',IND,ITOLD,ITYP
       CALL EIRENE_EXIT_OWN(1)

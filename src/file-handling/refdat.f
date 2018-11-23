@@ -10,15 +10,15 @@ c          iun =21+ifoff  (input stream for TRIM.dat)
 
 C  This is the old (and default) model for reading TRIM conditional quantile tables, for reflection.
 
-c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B 
+c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B
 c  as selected in input block 6.
 C
 C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE CARLO CODES,
 C  DATA ARE STORED IN CONDITIONAL QUANTILE FORMAT (E.G. TRIM)
 C
-C  distinct from rdtrim.f this routines reads one single file containing many 
-C  (in this present version: NHD6=12) 
-C  fixed target-projectile combinations, hard wired in the following order
+C  distinct from rdtrim.f this routines reads one single file containing many
+C  (in this present version: NHD6=12)
+C  fixed target-projectile combinations, hard-wired in the following order
 C
 C    IFILE=1  H ON FE
 C    IFILE=2  D ON FE
@@ -35,7 +35,7 @@ C    IFILE=10 HE ON W
 C    IFILE=11 H ON W
 C    IFILE=12 T ON W
 C
-C  
+C
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -43,7 +43,7 @@ C
       USE EIRMOD_CREF
       USE EIRMOD_CSPEI
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(OUT) :: TMM(*), TCC(*), WMM(*), WCC(*)
@@ -58,7 +58,7 @@ C
         WRITE (iunout,*) 'NHD6= ',NHD6
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-C  HARD WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files. 
+C  HARD-WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files.
       NRECL=1092
 
       TML(1)=1._DP
@@ -115,10 +115,10 @@ C  HARD WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files.
         TCC(J)=TCL(J)
         WMM(J)=WML(J)
         WCC(J)=WCL(J)
-10    CONTINUE
+   10 CONTINUE
 
-c  INE=12 incident energies 
-c  (not to be confused with the nhd6=12 projectile -target cases)
+c  INE=12 incident energies
+c  (not to be confused with the nhd6=12 projectile-target cases)
       INE=12
       INEM=INE-1
 
@@ -135,7 +135,8 @@ c  (not to be confused with the nhd6=12 projectile -target cases)
       ENAR(11)=2000._DP
       ENAR(12)=5000._DP
       DO 11 I=1,INEM
-11      DENAR(I)=1./(ENAR(I+1)-ENAR(I))
+        DENAR(I)=1./(ENAR(I+1)-ENAR(I))
+   11 CONTINUE
 
       INW=7
       INWM=INW-1
@@ -148,7 +149,8 @@ c  (not to be confused with the nhd6=12 projectile -target cases)
       WIAR(6)=COS(80._DP*PID180)
       WIAR(7)=COS(85._DP*PID180)
       DO 12 I=1,INWM
-12      DWIAR(I)=1._DP/(WIAR(I+1)-WIAR(I))
+        DWIAR(I)=1._DP/(WIAR(I+1)-WIAR(I))
+   12 CONTINUE
 C
       INR=5
       INRM=INR-1
@@ -158,7 +160,8 @@ C
       RAAR(4)=0.7_DP
       RAAR(5)=0.9_DP
       DO 15 I=1,INRM
-15      DRAAR(I)=1./(RAAR(I+1)-RAAR(I))
+        DRAAR(I)=1./(RAAR(I+1)-RAAR(I))
+   15 CONTINUE
 C
       IF (INE*INW*IFLR.GT.NH0 .OR.
      .    INE*INW*INR*IFLR.GT.NH1  .OR.
@@ -172,19 +175,19 @@ C
       DO IFILE=1, NDBNAMES
         IF (INDEX(DBHANDLE(IFILE),'TRIM') /= 0) EXIT
       END DO
- 
+
       IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASENAME FOR TRIM DEFINED '
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
+        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR TRIM DEFINED '
+        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       IUN=21+ifoff
       OPEN (UNIT=IUN,FILE=DBFNAME(IFILE))
       REWIND IUN
 C
 
-C  IFLR=12, HARD WIRED
+C  IFLR=12, HARD-WIRED
       DO 1 IFILE=1,IFLR
         DO 2 I1=1,INE
           I=0
@@ -192,36 +195,42 @@ C  IFLR=12, HARD WIRED
 !  7 + 7*5 + 7*5*5 + 7*5*5+5 = 1092
           READ (IUN,661) (FELD(J),J=1,NRECL)
 c  7: reflection coefficients for each of the 7 incident angles
-          DO 3 I2=1,INW
+          DO I2=1,INW
             I=I+1
             HFTR0(I1,I2,IFILE)=FELD(I)
-3         CONTINUE
+          END DO
 c  7*5: energy quantiles
-          DO 4 I2=1,INW
-            DO 4 I3=1,INR
+          DO I2=1,INW
+            DO I3=1,INR
               I=I+1
               HFTR1(I1,I2,I3,IFILE)=FELD(I)
-4         CONTINUE
+            END DO
+          END DO
 c  7*5*5:  polar angle quantiles
-          DO 5 I2=1,INW
-            DO 5 I3=1,INR
-              DO 5 I4=1,INR
+          DO I2=1,INW
+            DO I3=1,INR
+              DO I4=1,INR
                 I=I+1
                 HFTR2(I1,I2,I3,I4,IFILE)=FELD(I)
-5         CONTINUE
+              END DO
+            END DO
+          END DO
 c  7*5*5*5:  azimuthal angle quantiles
-          DO 6 I2=1,INW
-            DO 6 I3=1,INR
-              DO 6 I4=1,INR
-                DO 6 I5=1,INR
+          DO I2=1,INW
+            DO I3=1,INR
+              DO I4=1,INR
+                DO I5=1,INR
                   I=I+1
                   HFTR3(I1,I2,I3,I4,I5,IFILE)=FELD(I)
-6         CONTINUE
-2       CONTINUE
-1     CONTINUE
+                END DO
+              END DO
+            END DO
+          END DO
+    2   CONTINUE
+    1 CONTINUE
 C
 
-661   FORMAT (4E20.12)
+  661 FORMAT (4E20.12)
 
 
       RETURN

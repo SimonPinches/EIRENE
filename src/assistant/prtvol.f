@@ -2,7 +2,7 @@ cdr jan 2017 :  started to syncronize with prttal. should be largely identical
 c               added: 1d output onto stream ifile, also for VOL tally.
 c               more comments, better formats for large grids.
 cdr jun 2017 :  sync. with prttal. Also 1D printout on separate output streams.
-C 
+C
 C  INPUT:  T1,T2,T3:         TALLY TEXT, SPECIES AND UNITS, RESP.
 C          PROF:             TALLY DATA, ON 1d ARRAX PROF(1:NRAD)
 C          X:                X-COORDINATE: ONLY FOR 1D STANDARD GRIDS
@@ -27,7 +27,7 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
       REAL(DP), INTENT(IN) :: PROF(*),X(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE
@@ -38,12 +38,12 @@ C
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
      .           NTTS
       CHARACTER(1) :: TL(72)
- 
+
       DATA TL/72*'='/
 C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       DATA ISTREAM/6,50,20,21,29,30,31,32,33,10,11,12,13,14,15/
       SAVE
- 
+
       CALL EIRENE_LEER(3)
       WRITE (iunout,'(72A1)') TL
       WRITE (iunout,'(72A1)') TL
@@ -90,7 +90,7 @@ C   NR: AVERAGED VALUE
           IF (NTT.GT.NR) THEN
 C  ADDITIONAL CELL REGION
             WRITE (IFILE,'(72A1)') TL
-            WRITE (IFILE,56) 
+            WRITE (IFILE,56)
             DO IRAD=NR+1,NTT
               WRITE (IFILE,57) IRAD-NR, PROF(IRAD)
             ENDDO
@@ -144,29 +144,29 @@ C
           IJ=1
           IR=0
           WRITE (iunout,7) JP
-110       DO 111 JR=IJ,NRM
+  110     DO 111 JR=IJ,NRM
             IC=JR+((JP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
             K(IR)=JR
             H(IR)=PROF(IC)
             IF (IR.GE.NCOL) GOTO 112
-111       CONTINUE
-112       CONTINUE
+  111     CONTINUE
+  112     CONTINUE
           IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
           IR=0
           IF (IJ.LE.NRM) GOTO 110
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
-11      CONTINUE
+   11   CONTINUE
         WRITE (iunout,*) TL
-1     CONTINUE
+    1 CONTINUE
       WRITE (iunout,*) TL
       IF (IFLAG.GT.3) GOTO 10000
 C
 C  2 D PROFILES
 C
-1000  CONTINUE
+ 1000 CONTINUE
 C
       IF (IFLAG.LE.1) GOTO 2000
       IF (NR.LE.1.AND.NP.LE.1) GOTO 2000
@@ -183,22 +183,22 @@ C
           WRITE (iunout,77) JT
           IJ=1
           IP=0
-220       DO 222 JP=IJ,NPM
+  220     DO 222 JP=IJ,NPM
             IC=NR+((JP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IP=IP+1
             IJ=IJ+1
             K(IP)=JP
             H(IP)=PROF(IC)
             IF (IP.GE.NCOL) GOTO 223
-222       CONTINUE
-223       CONTINUE
+  222     CONTINUE
+  223     CONTINUE
           IF (IP.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IP,IUNOUT)
 C         WRITE (iunout,64) (K(I),H(I),I=1,IP)
           IP=0
           IF (IJ.LE.NPM) GOTO 220
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
-2       CONTINUE
+    2   CONTINUE
         WRITE (iunout,*) TL
       ENDIF
 C
@@ -212,22 +212,22 @@ C
           WRITE (iunout,7) JP
           IJ=1
           IR=0
-330       DO 333 JR=IJ,NRM
+  330     DO 333 JR=IJ,NRM
             IC=JR+((JP-1)+(NT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
             K(IR)=JR
             H(IR)=PROF(IC)
             IF (IR.GE.NCOL) GOTO 334
-333       CONTINUE
-334       CONTINUE
+  333     CONTINUE
+  334     CONTINUE
           IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
 C         WRITE (iunout,64) (K(I),H(I),I=1,IR)
           IR=0
           IF (IJ.LE.NRM) GOTO 330
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
-3       CONTINUE
+    3   CONTINUE
         WRITE (iunout,*) TL
       ENDIF
 C
@@ -241,29 +241,29 @@ C
           WRITE (iunout,77) JT
           IJ=1
           IR=0
-440       DO 444 JR=IJ,NRM
+  440     DO 444 JR=IJ,NRM
             IC=JR+((NP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
             K(IR)=JR
             H(IR)=PROF(IC)
             IF (IR.GE.NCOL) GOTO 445
-444       CONTINUE
-445       CONTINUE
+  444     CONTINUE
+  445     CONTINUE
           IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
 C         WRITE (iunout,64) (K(I),H(I),I=1,IR)
           IR=0
           IF (IJ.LE.NRM) GOTO 440
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
-4       CONTINUE
+    4   CONTINUE
         WRITE (iunout,*) TL
       ENDIF
       IF (IFLAG.GT.3) GOTO 10000
 C
 C  1 D PROFILES
 C
-2000  CONTINUE
+ 2000 CONTINUE
 C
       IF (IFLAG.LE.0) GOTO 3000
 C  RADIAL PROFILE, POLOIDALLY AND TOROIDALLY AVERAGED
@@ -275,15 +275,15 @@ C
         IF (NP.GT.1.AND.NT.GT.1) WRITE (iunout,8883)
         IJ=1
         IR=0
-1110    DO 1111 JR=IJ,NRM
+ 1110   DO 1111 JR=IJ,NRM
           IC=JR+((NP-1)+(NT-1)*N2DEL)*N1DEL+IADD
           IR=IR+1
           IJ=IJ+1
           K(IR)=JR
           H(IR)=PROF(IC)
           IF (IR.GE.NCOL) GOTO 1112
-1111    CONTINUE
-1112    CONTINUE
+ 1111   CONTINUE
+ 1112   CONTINUE
         IF (IR.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IR,IUNOUT)
 C       WRITE (iunout,64) (K(I),H(I),I=1,IR)
         IR=0
@@ -301,15 +301,15 @@ C
         IF (NR.GT.1.AND.NT.GT.1) WRITE (iunout,8882)
         IJ=1
         IP=0
-1220    DO 1222 JP=IJ,NPM
+ 1220   DO 1222 JP=IJ,NPM
           IC=NR+((JP-1)+(NT-1)*N2DEL)*N1DEL+IADD
           IP=IP+1
           IJ=IJ+1
           K(IP)=JP
           H(IP)=PROF(IC)
           IF (IP.GE.NCOL) GOTO 1223
-1222    CONTINUE
-1223    CONTINUE
+ 1222   CONTINUE
+ 1223   CONTINUE
         IF (IP.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IP,IUNOUT)
 C       WRITE (iunout,64) (K(I),H(I),I=1,IP)
         IP=0
@@ -327,15 +327,15 @@ C
         IF (NR.GT.1.AND.NP.EQ.1) WRITE (iunout,881)
         IF (NR.EQ.1.AND.NP.GT.1) WRITE (iunout,882)
         IF (NR.GT.1.AND.NP.GT.1) WRITE (iunout,8881)
-1330    DO 1333 JT=IJ,NTM
+ 1330   DO 1333 JT=IJ,NTM
           IC=NR+((NP-1)+(JT-1)*N2DEL)*N1DEL+IADD
           IT=IT+1
           IJ=IJ+1
           K(IT)=JT
           H(IT)=PROF(IC)
           IF (IT.GE.NCOL) GOTO 1334
-1333    CONTINUE
-1334    CONTINUE
+ 1333   CONTINUE
+ 1334   CONTINUE
         IF (IT.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IT,IUNOUT)
 C       WRITE (iunout,64) (K(I),H(I),I=1,IT)
         IT=0
@@ -345,7 +345,7 @@ C       WRITE (iunout,64) (K(I),H(I),I=1,IT)
       ENDIF
       IF (IFLAG.GT.3) GOTO 10000
 C
-3000  CONTINUE
+ 3000 CONTINUE
       IC=NR+((NP-1)+(NT-1)*N2DEL)*N1DEL+IADD
       WRITE (iunout,8888) PROF(IC)
       WRITE (iunout,*) TL
@@ -362,40 +362,40 @@ C  ADDITIONAL CELLS
       ENDIF
       IJ=NS+1
       IA=0
-550   DO 555 JA=IJ,NTT
+  550 DO 555 JA=IJ,NTT
         IC=JA
         IA=IA+1
         IJ=IJ+1
         K(IA)=JA-NS
         H(IA)=PROF(IC)
         IF (IA.GE.NCOL) GOTO 556
-555   CONTINUE
-556   CONTINUE
+  555 CONTINUE
+  556 CONTINUE
       IF (IA.GT.0) CALL EIRENE_WRITE_TALLY (K,H,IA,IUNOUT)
 C     WRITE (iunout,64) (K(IC),H(IC),IC=1,IA)
       IA=0
       IF (IJ.LE.NTT) GOTO 550
       CALL EIRENE_LEER(2)
 C
-5     FORMAT (1X,I6,2X,2(1PE12.4,2X))
-55    FORMAT (1X,'TOTAL VALUE ',1PE12.4)
-56    FORMAT (1X,'ADDITIONAL CELLS ')
-57    FORMAT (1X,I6,2X,1PE12.4)
+    5 FORMAT (1X,I6,2X,2(1PE12.4,2X))
+   55 FORMAT (1X,'TOTAL VALUE ',1PE12.4)
+   56 FORMAT (1X,'ADDITIONAL CELLS ')
+   57 FORMAT (1X,I6,2X,1PE12.4)
 
-7     FORMAT (1X,'Y- OR POLOIDAL SEGMENT NUMBER ',I4)
-77    FORMAT (1X,'Z- OR TOROIDAL SEGMENT NUMBER ',I4)
-777   FORMAT (1X,'STANDARD MESH BLOCK NUMBER ',I4)
-7777  FORMAT (1X,'ADDITIONAL CELLS ')
-81    FORMAT (1X,'X- OR RADIAL PROFILE ')
-82    FORMAT (1X,'Y- OR POLOIDAL PROFILE ')
-83    FORMAT (1X,'Z- OR TOROIDAL PROFILE ')
-881   FORMAT (1X,'X- OR RADIAL TOTAL ')
-882   FORMAT (1X,'Y- OR POLOIDAL TOTAL ')
-883   FORMAT (1X,'Z- OR TOROIDAL TOTAL ')
-8881  FORMAT (1X,'X- OR RAD. AND Y- OR POL. TOTAL ',1PE12.4)
-8882  FORMAT (1X,'X- OR RAD. AND Z- OR TOR. TOTAL ',1PE12.4)
-8883  FORMAT (1X,'Y- OR POL. AND Z- OR TOR. TOTAL ',1PE12.4)
-8888  FORMAT (1X,'BLOCK TOTAL ',1PE12.4)
+    7 FORMAT (1X,'Y- OR POLOIDAL SEGMENT NUMBER ',I4)
+   77 FORMAT (1X,'Z- OR TOROIDAL SEGMENT NUMBER ',I4)
+  777 FORMAT (1X,'STANDARD MESH BLOCK NUMBER ',I4)
+ 7777 FORMAT (1X,'ADDITIONAL CELLS ')
+   81 FORMAT (1X,'X- OR RADIAL PROFILE ')
+   82 FORMAT (1X,'Y- OR POLOIDAL PROFILE ')
+   83 FORMAT (1X,'Z- OR TOROIDAL PROFILE ')
+  881 FORMAT (1X,'X- OR RADIAL TOTAL ')
+  882 FORMAT (1X,'Y- OR POLOIDAL TOTAL ')
+  883 FORMAT (1X,'Z- OR TOROIDAL TOTAL ')
+ 8881 FORMAT (1X,'X- OR RAD. AND Y- OR POL. TOTAL ',1PE12.4)
+ 8882 FORMAT (1X,'X- OR RAD. AND Z- OR TOR. TOTAL ',1PE12.4)
+ 8883 FORMAT (1X,'Y- OR POL. AND Z- OR TOR. TOTAL ',1PE12.4)
+ 8888 FORMAT (1X,'BLOCK TOTAL ',1PE12.4)
       RETURN
 
 
@@ -409,7 +409,7 @@ c  1 .le.NR.le.6 is already verified in calling program.
       REAL(DP), INTENT(IN) :: H(6)
       INTEGER, INTENT(IN)  :: K(6),NR,IUNOUT
 
-      IF (K(NR).LT.1E4) THEN 
+      IF (K(NR).LT.1E4) THEN
         WRITE (iunout,64) (K(I),H(I),I=1,NR)
       ELSEIF (K(NR).LT.1E5) THEN
         WRITE (iunout,65) (K(I),H(I),I=1,NR)
@@ -417,9 +417,9 @@ c  1 .le.NR.le.6 is already verified in calling program.
         WRITE (iunout,66) (K(I),H(I),I=1,NR)
       ENDIF
 
-64    FORMAT (1X,6(I4,2X,1PE12.4,2X))
-65    FORMAT (1X,6(I5,2X,1PE12.4,2X))
-66    FORMAT (1X,6(I6,2X,1PE12.4,2X))
+   64 FORMAT (1X,6(I4,2X,1PE12.4,2X))
+   65 FORMAT (1X,6(I5,2X,1PE12.4,2X))
+   66 FORMAT (1X,6(I6,2X,1PE12.4,2X))
 
       END SUBROUTINE EIRENE_WRITE_TALLY
 

@@ -33,6 +33,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
+!   ic:        cell number
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units
@@ -62,17 +63,17 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
       logical, intent(in) :: lexp
 
       real(dp) :: orate, EIRENE_sngl_poly, dum(9),
-     .            pp1, rc1min,  rc1max,fp1(6),
-     .            pp2, rc2min,  rc2max,fp2(6),
+     .            pp1, rc1min,  rc1max, fp1(6),
+     .            pp2, rc2min,  rc2max, fp2(6),
      .                 rrc2min, rrc2max,
      .            O_SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
-C  transformation of parameters
-     .                  dsub    = 18.420680744_dp       !ln(1e8)
+c  transformation of parameters p1 and p2:
+     .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar           
+      integer :: ip1, ip2, iflavor, ivar
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -112,6 +113,7 @@ c.............................................................
         orate = reacdat(ir)%oth%poly%dblpol(1,1)
 
 cdr   missing: iftflg < 100:  multiply density,  else: not
+
 cdr   lexp missing
 
 c.............................................................
@@ -129,7 +131,7 @@ c  extrapolation data:  for 1d polynomial fits
         jfex1mx = reacdat(ir)%oth%jfex1mx
 
         orate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
-     .                   p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
+     .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
      .                   trcamd)
 
 C       if (.not. lexp)  orate=orate
@@ -145,8 +147,8 @@ c..............................................................
 c  extrapolation data:  for 2d polynomial fits
         rc1min  = reacdat(ir)%oth%rc1min
         rc1max  = reacdat(ir)%oth%rc1max
-        rc2min  = reacdat(ir)%oth%rc2min
-        rc2max  = reacdat(ir)%oth%rc2max
+        rc2min  = reacdat(ir)%oth%rc2min  ! IF H.4 HERE 1E8, ALREADY SET IN CALLING PROGRAM
+        rc2max  = reacdat(ir)%oth%rc2max  ! if H.4 HERE 1E16, NOT YET SET.
         fp1(1:3)= reacdat(ir)%oth%fp1l
         fp1(4:6)= reacdat(ir)%oth%fp1r
         fp2(1:3)= reacdat(ir)%oth%fp2b
@@ -198,7 +200,6 @@ C  assume here: tabulated data are log10  (to be generalized)
           orate = xln10*orate     !    convert from log10(orate) to ln(orate)
 
         end if
-
 cdr this unit conversion must be wrong in case lexp !!
 
 
@@ -227,15 +228,16 @@ c..............................................................
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
+
         iflavor = reacdat(ir)%oth%crm%iflav
         ivar = reacdat(ir)%oth%crm%ivarst
 
-        CALL EIRENE_COLRAD(IR, IC, IFLAVOR, IVAR, PP1, PP2, O_SCR)
+        CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, O_SCR)
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
-        orate=o_scr 
-        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0 
+        orate=o_scr
+        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0
 
       end if
 

@@ -4,7 +4,7 @@ c  not intended for 3rd party use.
 c  last modified: jan 2017
 
       SUBROUTINE EIRENE_OUTIDLTAL
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -25,7 +25,7 @@ c  last modified: jan 2017
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
 C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:),TALAV(:),TALTOT(:)
@@ -41,7 +41,7 @@ C
 !         WRITE (IUNOUT,*) ' THIS CASE IS NOT YET FORESEEN '
 !         WRITE (IUNOUT,*) ' NO DATA WRITTEN '
 !         RETURN
-!      END IF   
+!      END IF
 
       MXSPZ = MAXVAL(NFSTVI(1:NTALV))
       MXSPZ = MAX(MXSPZ, NATM, NMOL, NION, NPHOT, NADV, NALV)
@@ -54,14 +54,14 @@ C
       FORMA=REPEAT(' ',50)
       FORMA='(6X,   A25)'
       WRITE (FORMA(5:7),'(I3)') MXSPZ
-      
+
       FORME=REPEAT(' ',50)
       FORME='(I10,   ES25.7)'
-      WRITE (FORME(6:8),'(I3)') MXSPZ 
-      
+      WRITE (FORME(6:8),'(I3)') MXSPZ
+
       FORME2=REPEAT(' ',50)
       FORME2='(6X,   ES25.7)'
-      WRITE (FORME2(5:7),'(I3)') MXSPZ 
+      WRITE (FORME2(5:7),'(I3)') MXSPZ
 
       LFIRST=.TRUE.
 C
@@ -69,7 +69,7 @@ C ISTRA IS THE STRATUM NUMBER. ISTRA=0 STANDS FOR: SUM OVER STRATA
 
       DO ISTR = 0, NSTRAI
         ISTRA=ISTR
-      
+
         IF ((ISTRA == 0) .AND. (NSMSTRA /= 1)) CYCLE
 C
         IF (XMCP(ISTRA).LT.1.) CYCLE
@@ -119,11 +119,11 @@ C  PRINT VOLUME AVERAGED TALLIES
 C
           NFTI=1
           NFTE=NFSTVI(ITAL)
-          
+
           IF (ITAL == NTALA) THEN
             NFTE = SUM(VERIFY(TXTSPC(1:NADV,NTALA),' '))
           END IF
-         
+
           DO 119 K=NFTI,NFTE
             CALL EIRENE_FETCH_OUTAU (OUTAUI,ITAL,K,ISTRA,IUNOUT)
 C
@@ -139,12 +139,12 @@ C
             ELSE
               DO 110 I=1,NSBOX_TAL
                 VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,I)
-110           CONTINUE
+  110         CONTINUE
           END IF
 
             TALTOT(K)=OUTAUI
             TALAV(K)=TALTOT(K)/VOLTOT
- 119      CONTINUE
+  119     CONTINUE
 C
           FNAME = 'outtal_   '
           WRITE (FNAME(8:9),'(i0)') ITAL
@@ -157,10 +157,10 @@ C
      .            ACCESS='SEQUENTIAL',POSITION='APPEND')
           END IF
 
-          WRITE (IOUT,'(A)') 
+          WRITE (IOUT,'(A)')
      .      '+++++++++++++++++++++++++++++++++++++++++++++++++'
           WRITE (IOUT,'(A,I6)') 'ISTRA = ',ISTRA
-          WRITE (IOUT,'(A)') 
+          WRITE (IOUT,'(A)')
      .      '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
           WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
@@ -179,19 +179,19 @@ C
           WRITE (IOUT,'(A)') 'MEAN'
           WRITE (IOUT,FORME2) (TALAV(K), K=NFTI, NFTE)
 
-          WRITE (IOUT,'(A)') 
+          WRITE (IOUT,'(A)')
      .      '================================================='
           DO I=1, NSBOX
-            IF (ANY(ABS(VECTOR(I,NFTI:NFTE)) > EPS30)) 
-     .        WRITE (IOUT,FORME) I,(VECTOR(I,K), K=NFTI, NFTE) 
+            IF (ANY(ABS(VECTOR(I,NFTI:NFTE)) > EPS30))
+     .        WRITE (IOUT,FORME) I,(VECTOR(I,K), K=NFTI, NFTE)
           END DO
-          WRITE (IOUT,'(A)') 
+          WRITE (IOUT,'(A)')
      .      '================================================='
 
           CLOSE (UNIT=IOUT)
 C
-100     CONTINUE
-      
+  100   CONTINUE
+
         LFIRST = .FALSE.
 
       END DO
@@ -199,6 +199,6 @@ C
       DEALLOCATE (VECTOR)
       DEALLOCATE (TALTOT)
       DEALLOCATE (TALAV)
- 
+
       RETURN
       END

@@ -4,12 +4,15 @@ cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
 !pb  11.04.08: remove restriction NTTRA<100
 cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
-cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces 
- 
+cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces
+cdr  may 2018: plarr (surface normal) only for levgeo 2 and levgeo 3.
+cdr            if levgeo=2 and nlcrc: then polygon grid may not be defined.
+cdr             tbd: print warning...
+
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
- 
+
       SUBROUTINE EIRENE_PLT2D
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -34,11 +37,11 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
 C
       INTEGER,PARAMETER :: NTXHST=20
- 
+
       REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
       REAL(DP) :: TET(4,3), EBENE(4), CTPNTS(4,3)
@@ -54,7 +57,7 @@ C
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
       INTEGER, ALLOCATABLE :: IFARB(:,:), IDASH(:,:), ICPSPZ(:)
       INTEGER :: ICP, ISTR, IC, IC1, IC2, NCTPNT, IDUMMY, ICT, IEN,
-     .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA, 
+     .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA,
      .           NT, ICOLOR, NU, J, ISYM, IFLAG, IERR, IWRIT,
      .           IR, IP, ISTS, IN, IY, IB, IT, IA, NRET, I, NSW, ISW,
      .           ISP, IHELP, K, IFL, ISYM_ERR, IRA, IRE, IPA, IPE,
@@ -63,7 +66,7 @@ C
       CHARACTER(20) :: TXTHST(NTXHST)
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
       CHARACTER(6) :: CH
- 
+
       SAVE
       DATA ABSMAX,ORDMAX/21.,21./
       DATA XNULL,YNULL/9.,4./,XWN,YWN/0.,0./
@@ -87,7 +90,7 @@ C
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR. 
+     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
      .            'INT.GRID SURFACE(19)',
      .            'DIFFUSION STEP(20)  '/
@@ -138,7 +141,7 @@ C  ZEICHNE NETZLINIEN EIN
 C  MACHE GRADE GRENZEN
       FITX=.FALSE.
       FITY=.FALSE.
- 
+
       MINX=-1.
       MAXX=1.
       MINY=-1.
@@ -220,7 +223,7 @@ C  X-Z-PLANE
             IF (NLSPLT(NU)) IFARB(NU,:) = 2
           END DO
         ELSEIF (PLCUT(1)) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .    'PLT2D: LEVGEO=1, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
         ENDIF
 
@@ -316,7 +319,7 @@ C  Y-Z PLANE
             ENDIF
           ENDIF
         END DO
- 
+
         call grnwpn(1)
         do j=1,nsurf
           if (nstgrd(j).eq.1) then
@@ -352,12 +355,12 @@ C  Y-Z PLANE
             CALL GRFILL(5,XPS,YPS,1,1)
           ENDIF
         enddo
- 
+
         IF (ALLOCATED(IFARB)) THEN
           DEALLOCATE (IFARB)
           DEALLOCATE (IDASH)
         END IF
- 
+
 
         CALL GRDSH(1.,0.,1.)
 C
@@ -400,9 +403,9 @@ C  X-Z-PLANE
                 CALL GRDSH(1.,0.,1.)
                 GOTO 137
               ENDIF
-135         CONTINUE
-136         CALL GRDSH(0.2,0.5,0.2)
-137         CONTINUE
+  135       CONTINUE
+  136       CALL GRDSH(0.2,0.5,0.2)
+  137       CONTINUE
             IF (NLSPLT(NU)) CALL GRNWPN(2)
 C  PLOT AT Y=CH2Z0 , TO BE WRITTEN. PRESENTLY AT Y=0
             IF (CH2Z0.NE.0.) THEN
@@ -443,7 +446,7 @@ C
      .             (NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
             ENDIF
             CALL GRNWPN(1)
-134       CONTINUE
+  134     CONTINUE
           CALL GRDSH(1.,0.,1.)
 C
         ELSEIF (PLCUT(3)) THEN
@@ -461,9 +464,9 @@ C    X-Y PLANE
                 CALL GRDSH(1.,0.,1.)
                 GOTO 143
               ENDIF
-141         CONTINUE
-142         CALL GRDSH(0.2,0.5,0.2)
-143         CONTINUE
+  141       CONTINUE
+  142       CALL GRDSH(0.2,0.5,0.2)
+  143       CONTINUE
             IF (NLSPLT(NU)) CALL GRNWPN(2)
             DM=0.1
             RS=RSURF(NU)
@@ -477,14 +480,14 @@ C    X-Y PLANE
                 XX(I)=XX(I)+RMTOR
               ENDDO
             ENDIF
-            CALL EIRENE_PLTLNE 
+            CALL EIRENE_PLTLNE
      .           (NRET,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
             CALL GRNWPN(1)
-140       CONTINUE
+  140     CONTINUE
           CALL GRDSH(1.,0.,1.)
 
         ELSEIF (PLCUT(1)) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .     'PLT2D: LEVGEO=2, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
 
         ENDIF
@@ -514,7 +517,7 @@ C
                 ISWC(NSW+1)=MIN(NPOINT(2,NPPLG),IRPTE(J,2))
                 NSW=NSW+1
               ENDIF
-1561        CONTINUE
+ 1561       CONTINUE
 
 C           IF (TRCPLT) WRITE (IUNOUT,*) 'plt2d: plot pol surf. ',nu,nsw
             IF (TRCPLT.AND.NSW.GT.0) THEN
@@ -524,32 +527,32 @@ C           IF (TRCPLT) WRITE (IUNOUT,*) 'plt2d: plot pol surf. ',nu,nsw
 C
 C  SORTIEREN, NACH "POLOIDALEM BEGIN" < "POLOIDALEM ENDE"
             IF (NSW.EQ.0) GOTO 1597
-157         ISW=0
+  157       ISW=0
             DO 159 I=1,NSW-3,2
               IF (ISWC(I).GT.ISWC(I+2)) THEN
                 ISW=ISW+1
- 
+
                 IHELP=ISWC(I)
                 ISWC(I)=ISWC(I+2)
                 ISWC(I+2)=IHELP
                 IHELP=ISWC(I+1)
                 ISWC(I+1)=ISWC(I+3)
                 ISWC(I+3)=IHELP
- 
+
                 IHELP=ICLR(I)
                 ICLR(I)=ICLR(I+2)
                 ICLR(I+2)=IHELP
                 IHELP=ICLR(I+1)
                 ICLR(I+1)=ICLR(I+3)
                 ICLR(I+3)=IHELP
- 
+
                 IHELP=IDSH(I)
                 IDSH(I)=IDSH(I+2)
                 IDSH(I+2)=IHELP
                 IHELP=IDSH(I+1)
                 IDSH(I+1)=IDSH(I+3)
                 IDSH(I+3)=IHELP
- 
+
                 IHELP=INON(I)
                 INON(I)=INON(I+2)
                 INON(I+2)=IHELP
@@ -557,13 +560,13 @@ C  SORTIEREN, NACH "POLOIDALEM BEGIN" < "POLOIDALEM ENDE"
                 INON(I+1)=INON(I+3)
                 INON(I+3)=IHELP
               ENDIF
-159         CONTINUE
+  159       CONTINUE
             IF (ISW.GT.0) GOTO 157
 C  SORTIEREN FERTIG
 C
             I=0
-1581        I=I+1
-1585        IF (ISWC(I).EQ.ISWC(I+1)) THEN
+ 1581       I=I+1
+ 1585       IF (ISWC(I).EQ.ISWC(I+1)) THEN
               ICLR(I)=ICLR(I+1)
               IDSH(I)=IDSH(I+1)
               INON(I)=INON(I+1)
@@ -572,13 +575,13 @@ C
                 ICLR(J-1)=ICLR(J)
                 IDSH(J-1)=IDSH(J)
                 INON(J-1)=INON(J)
-1596          CONTINUE
+ 1596         CONTINUE
               NSW=NSW-1
               IF (I.LT.NSW) GOTO 1585
             ENDIF
             IF (I.LT.NSW-1) GOTO 1581
 C
-1597        CONTINUE
+ 1597       CONTINUE
             NSW=NSW+1
             ISWC(NSW)=100000
             ICLR(NSW)=1
@@ -609,12 +612,12 @@ C
 C
                 IF (IN.EQ.0) IN=4
                 GOTO (151,152,153,154,155),IN
-151               CONTINUE
+  151             CONTINUE
                     CALL GRDRW (REAL(XTN,KIND(1.E0)),
      .                          REAL(YTN,KIND(1.E0)))
                     IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
                     GOTO 156
-152               CONTINUE
+  152             CONTINUE
                     CALL GRDRW(REAL(XT,KIND(1.E0)),
      .                         REAL(YT,KIND(1.E0)))
                     CALL GRJMP(REAL(XTN,KIND(1.E0)),
@@ -624,7 +627,7 @@ C
                       CALL EIRENE_STCOOR (XTN,YTN,1)
                     END IF
                     GOTO 156
-153               CONTINUE
+  153             CONTINUE
                     CALL GRJMP(REAL(XT,KIND(1.E0)),
      .                         REAL(YT,KIND(1.E0)))
                     CALL GRDRW(REAL(XTN,KIND(1.E0)),
@@ -634,12 +637,12 @@ C
                       CALL EIRENE_STCOOR (XTN,YTN,1)
                     END IF
                     GOTO 156
-154               CONTINUE
+  154             CONTINUE
                     CALL GRJMP(REAL(XTN,KIND(1.E0)),
      .                         REAL(YTN,KIND(1.E0)))
                     IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
                     GOTO 156
-155               CONTINUE
+  155             CONTINUE
                     CALL GRJMP(REAL(XT,KIND(1.E0)),
      .                         REAL(YT,KIND(1.E0)))
                     CALL GRDRW(REAL(XT2,KIND(1.E0)),
@@ -649,7 +652,7 @@ C
                       CALL EIRENE_STCOOR (XT2,YT2,1)
                     END IF
                     GOTO 156
-156             CONTINUE
+  156           CONTINUE
 C
                 IF (IFL.GT.0.AND.K.EQ.ISWC(ISW)) THEN
                   IF (.NOT.NLSPLT(NU)) CALL GRNWPN (ICLR(ISW))
@@ -664,11 +667,11 @@ C
                 ENDIF
 C
 C
-150         CONTINUE
+  150       CONTINUE
             CALL GRNWPN(1)
-158       CONTINUE
+  158     CONTINUE
           CALL GRDSH(1.,0.,1.)
- 
+
 c  fill in isolated cells (defined in couple_... or any other user
 c  segment): all cells j with nstgrd(j)=1
           call grclp(1)
@@ -692,6 +695,11 @@ c  segment): all cells j with nstgrd(j)=1
             ENDIF
           enddo
           call grclp(0)
+
+
+C  PLOT ARROWS TO INDICATE SURFACE NORMAL
+C
+
           IF (PLARR) THEN
             CALL GRNWPN(2)
             do ir=1,nr1st
@@ -765,9 +773,9 @@ C  IP FOUND. NOW CHECK, IF THAT WAS A NON DEFAULT SURFACE SEGMENT
                   CALL GRDSH(1.,0.,1.)
                   GOTO 1547
                 ENDIF
-1545          CONTINUE
-1546          CALL GRDSH(0.2,0.5,0.2)
-1547          CONTINUE
+ 1545         CONTINUE
+ 1546         CALL GRDSH(0.2,0.5,0.2)
+ 1547         CONTINUE
 C  NOW PLOT THAT RADIAL SURFACE
               XW1=XPOL(NU,IP)
               IF (NLTRZ) THEN
@@ -792,13 +800,13 @@ C  NOW PLOT THAT RADIAL SURFACE
      .               (NTTRA,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
 C             ELSEIF (NLTRT) THEN
               ENDIF
-1549        CONTINUE
+ 1549       CONTINUE
             CALL GRNWPN(1)
-1544      CONTINUE
+ 1544     CONTINUE
           CALL GRDSH(1.,0.,1.)
 
         ELSEIF (PLCUT(1)) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .     'PLT2D: LEVGEO=3, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
 
 C
@@ -840,7 +848,7 @@ C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD.FLAECHE)
               dsd(j)=((xx(1)-xx(2))**2+(yy(1)-yy(2))**2)**0.5
               p=p+dsd(j)
               CALL EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
-1020        CONTINUE
+ 1020       CONTINUE
             CALL GRNWPN(1)
             IF (PLNUMV) THEN
 C  Write number of triangle
@@ -863,13 +871,13 @@ c  r: radius des inkreises des dreiecks
      .             (REAL(X,KIND(1.E0)),REAL(Y,KIND(1.E0)),6,CH)
               call grchrc(0.3,0.,idummy)
             ENDIF
-1010      CONTINUE
+ 1010     CONTINUE
           CALL GRDSH (1.,0.,1.)
           CALL GRNWPN (1)
- 
+
         ELSEIF (PLCUT(2)) THEN
 C
-C  X-Z PLOT  
+C  X-Z PLOT
           Y=CH2Z0
           IF (NLTOR) THEN
             IF (NLTRZ) THEN
@@ -892,7 +900,7 @@ C  X-Z PLOT
               GOTO 990
             ENDIF
           ENDIF
- 
+
           DO I=1,NTRII
             DO J=1,3
               IECKE2 = J+1
@@ -901,7 +909,7 @@ C  X-Z PLOT
               YY(1)=YTRIAN(NECKE(J,I))
               XX(2)=XTRIAN(NECKE(IECKE2,I))
               YY(2)=YTRIAN(NECKE(IECKE2,I))
- 
+
 C  CHECK IF Y IS ENCLOSED BY YY(1) AND YY(2)
 C  Y=CH2Z0 INTERSECTS WITH TRIANGLE
               IF ((MIN(YY(1),YY(2)) <= Y) .AND.
@@ -993,8 +1001,8 @@ C
               GOTO 1647
             ENDIF
           ENDDO
-1646      CALL GRDSH(0.2,0.5,0.2)
-1647      CONTINUE
+ 1646     CALL GRDSH(0.2,0.5,0.2)
+ 1647     CONTINUE
           TET(1,1:3) = (/ XTETRA(NTECK(1,NU)),
      .                    YTETRA(NTECK(1,NU)),
      .                    ZTETRA(NTECK(1,NU)) /)
@@ -1031,7 +1039,7 @@ C
 C
       ENDIF
 C
-170   IF (.NOT.PL2ND.OR..NOT.NLPOL.OR.PLCUT(2))   GOTO 200
+  170 IF (.NOT.PL2ND.OR..NOT.NLPOL.OR.PLCUT(2))   GOTO 200
 C
 C  PLOT POLOIDAL GRID
 C
@@ -1134,15 +1142,15 @@ C Y-Z-PLANE
             END DO
           ENDIF
         END DO
- 
+
         IF (ALLOCATED(IFARB)) THEN
           DEALLOCATE (IFARB)
           DEALLOCATE (IDASH)
         END IF
- 
+
         CALL GRDSH(1.,0.,1.)
 C
-      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  !AND POLOIDAL GRID
+      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  ! AND POLOIDAL GRID
 C
         DO 176 NU=NPLINP,NPLOTP,NPLDLP
           IF (NLSPLT(N1ST+NU)) CALL GRNWPN(2)
@@ -1166,7 +1174,7 @@ C  DEAL WITH NONDEFAULT POLOIDAL SURFACES, SPECIAL COLORS, LINE STYLES
               ISWC(NSW+1)=MIN(IEN,IRPTE(J,1))
               NSW=NSW+1
             ENDIF
-177       CONTINUE
+  177     CONTINUE
 C         IF (TRCPLT) WRITE (IUNOUT,*) 'plt2d: plot pol surf. ',nu,nsw
           IF (TRCPLT.AND.NSW.GT.0) THEN
             WRITE (IUNOUT,*) 'PLT2D: POLOIDAL SURF. No ',NU
@@ -1175,25 +1183,25 @@ C         IF (TRCPLT) WRITE (IUNOUT,*) 'plt2d: plot pol surf. ',nu,nsw
 C
 C  SORTIEREN, NACH "RADIALEM BEGIN" < "RADIALEM ENDE"
           IF (NSW.EQ.0) GOTO 1797
-179       ISW=0
+  179     ISW=0
           DO 178 I=1,NSW-3,2
             IF (ISWC(I).GT.ISWC(I+2)) THEN
               ISW=ISW+1
- 
+
               IHELP=ISWC(I)
               ISWC(I)=ISWC(I+2)
               ISWC(I+2)=IHELP
               IHELP=ISWC(I+1)
               ISWC(I+1)=ISWC(I+3)
               ISWC(I+3)=IHELP
- 
+
               IHELP=ICLR(I)
               ICLR(I)=ICLR(I+2)
               ICLR(I+2)=IHELP
               IHELP=ICLR(I+1)
               ICLR(I+1)=ICLR(I+3)
               ICLR(I+3)=IHELP
- 
+
               IHELP=IDSH(I)
               IDSH(I)=IDSH(I+2)
               IDSH(I+2)=IHELP
@@ -1208,13 +1216,13 @@ C  SORTIEREN, NACH "RADIALEM BEGIN" < "RADIALEM ENDE"
               INON(I+1)=INON(I+3)
               INON(I+3)=IHELP
             ENDIF
-178       CONTINUE
+  178     CONTINUE
 
           IF (ISW.GT.0) GOTO 179
 C
           I=0
-1781      I=I+1
-1785      IF (ISWC(I).EQ.ISWC(I+1)) THEN
+ 1781     I=I+1
+ 1785     IF (ISWC(I).EQ.ISWC(I+1)) THEN
             ICLR(I)=ICLR(I+1)
             IDSH(I)=IDSH(I+1)
             INON(I)=INON(I+1)
@@ -1223,13 +1231,13 @@ C
               ICLR(J-1)=ICLR(J)
               IDSH(J-1)=IDSH(J)
               INON(J-1)=INON(J)
-1796        CONTINUE
+ 1796       CONTINUE
             NSW=NSW-1
             IF (I.LT.NSW) GOTO 1785
           ENDIF
           IF (I.LT.NSW-1) GOTO 1781
 C
-1797      CONTINUE
+ 1797     CONTINUE
           NSW=NSW+1
           ISWC(NSW)=100000
           ICLR(NSW)=1
@@ -1258,12 +1266,12 @@ C
 C
             IF (IN.EQ.0) IN=4
             GOTO (171,172,173,174,175),IN
-171           CONTINUE
+  171         CONTINUE
                 CALL GRDRW
      .          (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
                 GOTO 1752
-172           CONTINUE
+  172         CONTINUE
                 CALL
      .          GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
                 CALL
@@ -1273,7 +1281,7 @@ C
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
                 GOTO 1752
-173           CONTINUE
+  173         CONTINUE
                 CALL
      .          GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
                 CALL
@@ -1283,12 +1291,12 @@ C
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
                 GOTO 1752
-174           CONTINUE
+  174         CONTINUE
                 CALL
      .          GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
                 GOTO 1752
-175           CONTINUE
+  175         CONTINUE
                 CALL
      .          GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
                 CALL
@@ -1298,7 +1306,7 @@ C
                   CALL EIRENE_STCOOR (XT2,YT2,1)
                 END IF
                 GOTO 1752
-1752      CONTINUE
+ 1752     CONTINUE
 C
           IF (IFL.GT.0.AND.I.EQ.ISWC(ISW)) THEN
             IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
@@ -1313,10 +1321,10 @@ C
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
           ENDIF
 C
-1751      CONTINUE
+ 1751     CONTINUE
           CALL GRNWPN(1)
 C  POLOIDAL SURFACE NO. NU IS NOW PLOTTED
-176     CONTINUE
+  176   CONTINUE
 
 
         CALL GRDSH(1.,0.,1.)
@@ -1357,7 +1365,7 @@ C
 C
 C  PLOT 3RD GRID (Z OR TOROIDAL)
 C
-200   IF (.NOT.PL3RD.OR..NOT.NLTOR.OR.PLCUT(3))  GOTO 220
+  200 IF (.NOT.PL3RD.OR..NOT.NLTOR.OR.PLCUT(3))  GOTO 220
 C
       IF (NLTRZ.AND.LEVGEO.EQ.1) THEN
 C Y-Z-PLANE
@@ -1389,9 +1397,9 @@ C X-Z-PLANE
               CALL GRDSH(1.,0.,1.)
               GOTO 207
             ENDIF
-205       CONTINUE
-206       CALL GRDSH(0.2,0.5,0.2)
-207       CONTINUE
+  205     CONTINUE
+  206     CALL GRDSH(0.2,0.5,0.2)
+  207     CONTINUE
           IF (NLSPLT(N1ST+N2ND+NU)) CALL GRNWPN(2)
           ZW1=ZSURF(NU)
           IF (PLCUT(1)) THEN
@@ -1408,7 +1416,7 @@ C X-Z-PLANE
             CALL EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
           ENDIF
           CALL GRNWPN(1)
-204     CONTINUE
+  204   CONTINUE
         CALL GRDSH(1.,0.,1.)
 C
       ELSE
@@ -1418,7 +1426,7 @@ C
       ENDIF
 C
 C
-220   CONTINUE
+  220 CONTINUE
 C
 C   PLOT  ADDITIONAL SURFACES
 C
@@ -1449,9 +1457,9 @@ C
           CALL EIRENE_PLTADD(1,NLIMI)
         ENDIF
 C
-250   CONTINUE
+  250 CONTINUE
 C
-300   CONTINUE
+  300 CONTINUE
 C
       IF (.NOT.NLPL3D) GOTO 400
 C
@@ -1466,7 +1474,7 @@ C
 C  IF NLTRA: 3D PLOTTING IS DONE IN THE LOCAL CO-ORD. SYSTEM NO. ITHPL
       ITHPL=ITH
 C
-400   CONTINUE
+  400 CONTINUE
 
       DEALLOCATE (XX)
       DEALLOCATE (YY)
@@ -1486,7 +1494,7 @@ C
       XN=XN2D
       YN=YN2D
       FX=FX2D
-      FY=FY2D 
+      FY=FY2D
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
         IF (.NOT.NLPL3D) CALL GRSCLV (
@@ -1518,13 +1526,13 @@ C  FX=FY=1.
           XN3=XN2+1.5/FX
           YNP=ORDMAX+0.65/FY
         ENDIF
- 
+
         CALL GRNWPN(1)
         CALL GRSPTS (22)
         CALL GRFONT(-2)
         CALL GRTXT (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)),21,
      .              'EIRENE TEST PARTICLES')
- 
+
         IC=1
         IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
         ICPSPZ=0
@@ -1542,7 +1550,7 @@ C  FX=FY=1.
           CALL GRTXT
      .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
-505     CONTINUE
+  505   CONTINUE
         DO 510 I=1,NATMI
           ISP=NSPH+I
           IF (NHSTS(ISP).EQ.-1) GOTO 510
@@ -1557,7 +1565,7 @@ C  FX=FY=1.
           CALL GRTXT
      .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
-510     CONTINUE
+  510   CONTINUE
         DO 511 I=1,NMOLI
           ISP=NSPA+I
           IF (NHSTS(ISP).EQ.-1) GOTO 511
@@ -1572,7 +1580,7 @@ C  FX=FY=1.
           CALL GRTXT
      .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
-511     CONTINUE
+  511   CONTINUE
         DO 512 I=1,NIONI
           ISP=NSPAM+I
           IF (NHSTS(ISP).EQ.-1) GOTO 512
@@ -1587,8 +1595,8 @@ C  FX=FY=1.
           CALL GRTXT
      .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
-512     CONTINUE
- 
+  512   CONTINUE
+
         YNP=YNP-0.75/FY
         CALL GRNWPN(1)
         CALL GRJMP (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
@@ -1597,7 +1605,7 @@ C  FX=FY=1.
         YNP=YNP-0.75/FY
         CALL GRTXT (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)),24,
      .              'HOST MEDIUM (BACKGROUND)')
- 
+
         DO 513 I=1,NPLSI
           ISP=NSPAMI+I
           IF (NHSTS(ISP).EQ.-1) GOTO 513
@@ -1611,15 +1619,15 @@ C  FX=FY=1.
           CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
           CALL GRTXT (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
-513     CONTINUE
- 
+  513   CONTINUE
+
         IC=IC+1
         ICP=MOD(IC,7)
         IF (ICP.EQ.0) ICP=7
         ICPSPZ(0)=ICP
         CALL GRSPTS (16)
         CALL GRFONT(-1)
- 
+
         IF (.NOT.NLPL3D)
      .     CALL GRSCLV(REAL(XMI2D,KIND(1.E0)),REAL(YMI2D,KIND(1.E0)),
      .                 REAL(XMA2D,KIND(1.E0)),REAL(YMA2D,KIND(1.E0)))
@@ -1629,13 +1637,13 @@ C  WRITE TRACK DATA
 C
       LWR = .TRUE.
       DO I = 1, 8
-        IF (-ISYM == ISYPLT(I)) LWR = .FALSE. 
+        IF (-ISYM == ISYPLT(I)) LWR = .FALSE.
       END DO
       IF (TRCHST .AND. LWR) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TXTHST(ISYM)
         IF (ISPZ.GT.0.AND.ISPZ.LE.NSPZ) THEN
-          IF (ISYM.EQ.1.OR..NOT.NLTRC)  
+          IF (ISYM.EQ.1.OR..NOT.NLTRC)
      .      CALL EIRENE_MASJ1('NPANU   ',NPANU)
           WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
         ELSE
@@ -1767,20 +1775,20 @@ C
      .   CALL GRJMP (REAL(XWO,KIND(1.E0)),REAL(YWO,KIND(1.E0)))
       IF (ILINIE.EQ.0.OR.NHSTS(ISPZ).EQ.-1) GOTO 404
       GOTO (401,402,403,404,405),IN
-401     CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+  401   CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
         GOTO 406
-402     CALL GRDRW (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+  402   CALL GRDRW (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
         CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
         GOTO 406
-403     CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+  403   CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
         CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
         GOTO 406
-404     CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+  404   CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
         GOTO 406
-405     CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+  405   CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
         CALL GRDRW (REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
         GOTO 406
-406   CONTINUE
+  406 CONTINUE
 C
 C  PLOT SYMBOL
 C
@@ -1793,12 +1801,12 @@ C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
      .                   ISPL(ISYM))
             GOTO 409
           ENDIF
-408     CONTINUE
-409     CONTINUE
+  408   CONTINUE
+  409   CONTINUE
       ENDIF
- 
+
 C  CONTINUE PRINTOUT AFTER TRAJECTORY PLOT
- 
+
       IF (NLTRC.AND.TRCHST.AND.LWR) THEN
         WRITE (iunout,*) 'ICOLOR,IN,ISYM,IFLAG,NHSTS ',
      .                    ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ)
@@ -1808,23 +1816,23 @@ C
       IF (ICOL.EQ.1) CALL GRDSH(1.,0.,1.)
       CALL GRNWPN(1)
 C
-410   CONTINUE
+  410 CONTINUE
       XWO=XWN
       YWO=YWN
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'OPTION IN PLT2D NOT READY: X- OR RADIAL GRID'
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'OPTION IN PLT2D NOT READY: Y- OR POLOIDAL GRID'
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'OPTION IN PLT2D NOT READY: Z- OR TOROIDAL GRID'
       CALL EIRENE_EXIT_OWN(1)
- 
+
 C     following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_PLT2D_REINIT
       ABSMAX = 21.
       ORDMAX = 21
@@ -1841,5 +1849,5 @@ csw 20oct08
       if(allocated(ifarb)) deallocate(ifarb)
 csw
       return
- 
+
       END

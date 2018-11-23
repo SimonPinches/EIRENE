@@ -1,7 +1,15 @@
 cdr  comments
 
+cdr  may 18: some comments tried......NOT FINISHED
 
-      subroutine eirene_emissivity(ist, lstart, lend)
+
+
+      subroutine eirene_emissivity(istr, lstart, lend)
+
+cdr  probably something to fill ADDV tallies with emissivities, stratum ISTR
+cdr  for lines lstart to lend ?? Contained parts of old routines Ba_alpha,....,Ly-Beta.
+cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
+
 
 
       use eirmod_precision
@@ -24,50 +32,60 @@ cdr  comments
 
       implicit none
 
-      integer, intent(in) :: ist, lstart, lend
-      integer :: i, j, k, iads, iadv, isp(3), itp(3), iratio, irc,
+      integer, intent(in) :: istr, lstart, lend
+      integer :: i, j, k, iline, jcomp, kcontr,
+     .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
-      real(dp) :: density(3), sigadd, add, ratio, powalf, powalfs, 
-     .            einstein, trans_en, DE, TE, TEF, DEF, rate, 
-     .            EIRENE_OTHER_RATE_COEFF, 
-     .            ratio2
+      real(dp) :: density(3), sigadd, add, powalf, powalfs,
+     .            einstein, trans_en, DE, TE, TEF, DEF, popcf,
+     .            EIRENE_OTHER_RATE_COEFF,
+     .            ratio1, ratio2
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
       CHARACTER(6) :: CISTRA
+      character(len=:), allocatable :: ctest2
 
       CALL EIRENE_LEER(2)
-      CALL EIRENE_FTCRI(IST,CISTRA)
-      IF (IST.GT.0) CALL EIRENE_MASBOX
+      CALL EIRENE_FTCRI(ISTR,CISTRA)
+      IF (ISTR.GT.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR STRATUM NO. '//CISTRA)
-      IF (IST.EQ.0) CALL EIRENE_MASBOX
+      IF (ISTR.EQ.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR SUM OVER STRATA')
       CALL EIRENE_LEER(1)
+
       WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
 
       do i = lstart, lend
-        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY ' //
-     .                 EMIS_LINES(I)%LINE_NAME // ':'
+        ILINE=I
+        ctest2 = adjustl(trim(emis_lines(iline)%line_name))
+        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':'
+
         write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
         write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
 
+        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY '
+
+
         einstein = emis_lines(i)%einstein
 C  ENERGY FACTOR FOR POWER LOSS (W)
         trans_en = emis_lines(i)%trans_en * elcha
+
+cdr initialize sum over components
         iads = emis_lines(i)%iadv_total
         addv(iads,:) = 0._dp
-
-
         powalfs = 0._dp
-        do j = 1, emis_lines(i)%no_compo
+
+cdr run over components
+        do j = 1, emis_lines(i)%num_compo
           iadv = emis_lines(i)%compo(j)%iadv
           addv(iadv,:) = 0._dp
           sigadd = 0._dp
           powalf = 0._dp
-            
-          do k = 1, emis_lines(i)%compo(j)%no_contrib
+
+          do k = 1, emis_lines(i)%compo(j)%num_contrib
             isp = emis_lines(i)%compo(j)%contrib(k)%isp
             itp = emis_lines(i)%compo(j)%contrib(k)%itp
             iratio = emis_lines(i)%compo(j)%contrib(k)%iratio
@@ -90,9 +108,9 @@ C
 
               TE=TEIN(NCELL)
               DE=DEIN(NCELL)
-              
+
               DEF=LOG(DE)
-              TEF=LOG(TE)
+              TEF=max(-2.30_DP,LOG(TE)) ! cut-off at 0.1 eV
 
               do idens = 1, ndens
                 select case (itp(idens))
@@ -111,8 +129,8 @@ C
                   case default
                     density(idens) = 0._dp
                     if (lwrite) then
-                      write (iunout,*) ' ERROR IN EMISSIVITY' 
-                      write (iunout,*) 
+                      write (iunout,*) ' ERROR IN EMISSIVITY'
+                      write (iunout,*)
      .                  ' WRONG PARTICLE TYPE SPECIFIED FOR'
                       write (iunout,*) ' line ',i,
      .                   emis_lines(i)%line_name
@@ -123,22 +141,35 @@ C
                     end if
                 end select
               end do
-  
-c  density is the "true" parent density         
-c  density(1) is taken as parent density. fetch reduced population coefficent
-              rate = EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
-              add = rate*density(1)
-c  density ratio, if true parent density is not available (or in QSS mode)
-c  then: ratio converts from density(1) to density 
-              if (iratio > 0) then 
+c  population coefficient, relative to density(1)
+              popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
+              add = popcf*density(1)
 
-                ratio = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
-     .                                          TEF,DEF,.TRUE.,1)
-                add = add*ratio
-c  second conversion to jet another parent density
-c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2
+c  density ratio, if true parent density is not available (or in QSS mode)
+c  then: ratio1 converts from density(1) to density
+c  density is the "true" parent density for this component.
+c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
+c  and density ratio  ratio1="density"/"density(1)" will be applied,
+c  to turn density(1) into "density"
+c  e.g. density    = H2+
 c       density(1) = H2
-c       ratio      = H2+/H2(Te,ne) (CR equilibrium)
+c       ratio1     = [H2+]/[H2]
+c  this works when the second species involved in loss and gain
+c  for species H2+ from H2 is the same, here: electron density, and hence cancels.
+              if (iratio > 0) then
+
+                ratio1 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
+     .                                          TEF,DEF,.TRUE.,1)
+                add = add*ratio1
+c
+c  second conversion to yet another parent density
+c  e.g: density    = H3+.   = [H2+] * [H2/ne] *ratio2 = [H2] * ratio1 * [H2/ne] *ratio2
+c       density(1) = H2
+c       ratio1     = H2+/H2(Te,ne) (CR equilibrium)
+c       ratio2     = .....
+c  this works when the second species involved in loss and gain rate
+c  for species H3+ from H2+ is not the same,
+c  here: electron density, and H2 density, hence: does not cancel.
                 if (iratio == 2) then
                   ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,
      .                                             TEF,DEF,.TRUE.,1)
@@ -147,7 +178,7 @@ c       ratio      = H2+/H2(Te,ne) (CR equilibrium)
               end if
 
 cdr so far: add is scored on the fine grid cell "ncell".
-cdr         add volume weighted contribution to coarse cell "ncelc"
+cdr         add volume-weighted contribution to coarse cell "ncelc"
               sigadd = add * einstein * vol(ncell)
 
               addv(iadv,ncelc) = addv(iadv,ncelc) + sigadd
@@ -155,24 +186,24 @@ cdr         add volume weighted contribution to coarse cell "ncelc"
 
               powalf = powalf + sigadd
             end do               ! ncell
-      
-          end do ! k contributions of component j of line i
 
-cdr addv was volume weighted (extensive) sum. now divide by coarse cell volume
-cdr      to turn it into an intensive score:  [...] per cm**3  
-          addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal) 
+          end do ! k contributions (summed) of component j of line iline
+
+cdr addv was volume-weighted (extensive) sum. now divide by coarse cell volume
+cdr      to turn it into an intensive score:  [...] per cm**3
+          addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal)
      .                             / voltal(1:nsbox_tal)
 
           powalf = powalf * trans_en
           powalfs = powalfs + powalf
 
-          WRITE (iunout,'(A50,2ES16.7)') ' COUPL. TO ' // 
+          WRITE (iunout,'(A50,2ES16.7)') ' COUPL. TO ' //
      .                     TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
      .                    ,POWALF/TRANS_EN*ELCHA,POWALF
 
           DUMMY(1:NSBOX_TAL) = ADDV(IADV,1:NSBOX_TAL)
           CALL EIRENE_INTTAL
-     .         (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADV,IST),
+     .         (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADV,ISTR),
      .          NR1TAL,NP2TAL,NT3TAL,NBMLT)
           ADDV(IADV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
@@ -182,33 +213,40 @@ cdr      to turn it into an intensive score:  [...] per cm**3
           TXTSPC(IADV,NTALA) =TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
           TXTUNT(IADV,NTALA) ='PHOTONS/S/CM**3         '
 
-        end do ! j components of line i
+          WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV
 
-        addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal) 
+        end do ! j components of line ILINE are done
+
+cdr  now sum over compontents: on tally ADDV(IADS)
+        call eirene_leer(1)
+        addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal)
      .                           / voltal(1:nsbox_tal)
 
-        WRITE (iunout,'(A50,2ES16.7)') 
-     ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) ' 
+        WRITE (iunout,'(A50,2ES16.7)')
+     ,                  ' TOTAL FLUX (AMP) AND POWER (WATT) '
      .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
-        CALL EIRENE_LEER(2)
 
         DUMMY(1:NSBOX_TAL) = ADDV(IADS,1:NSBOX_TAL)
         CALL EIRENE_INTTAL
-     .       (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,IST),
+     .       (DUMMY,VOLTAL,1,1,NSBOX_TAL,ADDVI(IADS,ISTR),
      .        NR1TAL,NP2TAL,NT3TAL,NBMLT)
         ADDV(IADS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
 
-        TXTTAL(IADS,NTALA) =TXTTAL(IADV,NTALA)
-        TXTSPC(IADS,NTALA) ='SUM_OVER_ALL            '
+        TXTTAL(IADS,NTALA) =REPEAT(' ',72)
+        TXTTAL(IADS,NTALA) ='SUM OVER COMPONENTS  '
+        TXTSPC(IADS,NTALA) ='  '
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
+        WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS
 
-      end do ! line i
+        CALL EIRENE_LEER(2)
+
+      end do ! line no. ILINE
 
 C
-C  WRITE ON STREAM 11 DATA FOR STRATUM NO. IST
+C  WRITE ON STREAM 11 DATA FOR STRATUM NO. ISTR
       IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-        IESTR=IST
-        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+        IESTR=ISTR
+        CALL EIRENE_WRSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -224,9 +262,9 @@ C
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 
 C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
-      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
-        IESTR=IST
-        CALL EIRENE_WRSTRT(IST,NSTRAI,NESTM1,NESTM2,NADSPC,
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
+        IESTR=ISTR
+        CALL EIRENE_WRSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,

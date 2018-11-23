@@ -1,8 +1,8 @@
 C
 C
 C
-      SUBROUTINE
-     .  EIRENE_PAREBE(EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,EPS)
+      SUBROUTINE EIRENE_PAREBE
+     .  (EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,EPS)
 **********************************************************************
 *                                                     1. JUNI 1988   *
 *     Inde = 2 ===> Es liegen 2 parallele Ebenen zur u2,-u3 Ebene vor*
@@ -18,12 +18,12 @@ C
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: B0, B1, B2, B3, C0, C1, C2, C3
       REAL(DP), INTENT(IN) :: LAMBDA( 3 ), EV(3,3), EPS,
      >                      M(3), NUE
       REAL(DP) :: NORM, P(3), U(3)
- 
+
 C
 C     DATA              EPS  / 5.D-10 /
 C
@@ -33,7 +33,7 @@ C
       U(2) = 0.0
       U(3) = 0.0
 *
-*     Aufstellen des Normalenvektors:'
+*     Aufstellen des Normalenvektors:
 *
       B1 = EV(1,1) * U(1)
       B2 = EV(2,1) * U(1)
@@ -63,7 +63,7 @@ C
       U(2) = 0.0
       U(3) = 0.0
 *
-*     Aufstellen des Normalenvektors:'
+*     Aufstellen des Normalenvektors:
 *
       C1 = EV(1,1) * U(1)
       C2 = EV(2,1) * U(1)

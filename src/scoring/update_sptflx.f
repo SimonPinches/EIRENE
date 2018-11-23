@@ -24,10 +24,10 @@ c  INPUT:
 c  incident type :                      itold  (parameter list)
 c  weight of sputtered particle:        wgh    (parameter list)
 
-c  ind=1:  type and species index of sputtered particle may not be not known: 
+c  ind=1:  type and species index of sputtered particle may not be not known:
 c          Update only total sputtered fluxes resolved by outgoing flux particle type.
 c          These total sputter tallies may contain sputtered (emitted) fluxes which are not
-c          identified eirene test particles, i.e. these totals may be larger 
+c          identified eirene test particles, i.e. these totals may be larger
 c          than the sum over emitted species
 c          of species resolved sputtered tallies.
 c  ind=2:  Type and species index of sputtered particle is known:  update both: total and species resolved fluxes

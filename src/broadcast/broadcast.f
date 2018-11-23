@@ -37,10 +37,16 @@ cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice.  removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR) 
+c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
+cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
+cdr            nhcol_store
+cdr            m_hcol(nreac)
+cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
+cdr            NHVREI  (formerly: NREAHV)
+cdr            NHVRPI  (formerly: NRHVPI)
 
       SUBROUTINE EIRENE_BROADCAST
-cdr 
+cdr
 c     tbd: some text here, about logic of this code ??
 c
 cdr
@@ -67,6 +73,7 @@ cdr
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
+      USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMSPL
@@ -102,15 +109,14 @@ c     for the trace ion module
 c     ------------------------------------------------------------     c
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
-cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as exception?  
+cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as exception?
       IF (MY_PE .NE. 0) THEN
         CALL EIRENE_DISTRIB_PARM
         CALL EIRENE_ALLOC_COMUSR(0)
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         CALL EIRENE_ALLOCATE_MODULES
-!PB        IUNOUT = 7   ! reset to 0 in alloc_comprt  ??
-      Else
+      ELSE
         CALL MPI_BCAST (LSMOPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       END IF
@@ -229,18 +235,44 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
 
       CALL MPI_BCAST (LLOGAU,NLOGAU,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BCAST (DTIMV,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (DTIMVI,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (DTIMVN,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TIME0,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RPART,NPRNL*NPARTT,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RPARTC,NPRNL*NPARTT,MPI_REAL8,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RPARTW,NPRNL+1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPRNLI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPRNLI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPRNLS,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPRNL ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPTST ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NTMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ITMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPART,NPRNL*MPARTT,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IPARTC,NPRNL*MPARTT,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPRNLS,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       IF (ALLOCATED(RCMSIG)) THEN
         CALL MPI_BCAST (RCMSIG,NCMSIG,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (FUFFER,NCHOR*NCHEN,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ENERGY,NCHEN,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ICMSIG,MCMSIG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (NLSTCHR,NCHOR,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
+     .                   0,MPI_COMM_WORLD,ier)
       END IF
-      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)      
+      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  additional output tallies added by code itself (rather than via input block 14).
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-      IF (NO_LINES > 0) THEN
+      IF (NUM_LINES > 0) THEN
         CALL EIRENE_BROAD_EMIS_LINES
       END IF
 
@@ -303,7 +335,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (FACREI,NREI*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACRCX,NRCX*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  EI post collision species distribution 
+c  EI post-collision species distribution
       CALL MPI_BCAST (PELEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATEI,NREI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLEI,NREI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -313,7 +345,7 @@ c  EI post collision species distribution
       CALL MPI_BCAST (P2ND,NREI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  PI post collision species distribution 
+c  PI post-collision species distribution
       CALL MPI_BCAST (PELPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PATPI,NRPI*NATMP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (PMLPI,NRPI*NMOLP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -323,25 +355,25 @@ c  PI post collision species distribution
       CALL MPI_BCAST (P2NP,NRPI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-c  EI post collision energetics
+c  EI post-collision energetics
       CALL MPI_BCAST (EELEI1,NREI*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVEI1,NREI*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
-c  RC post collision energetics
+c  RC post-collision energetics
       CALL MPI_BCAST (EELRC1,NREC*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
-c  PI post collision energetics
+c  PI post-collision energetics
       CALL MPI_BCAST (EELPI1,NRPI*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EPLPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
-c  CX post collision energetics
+c  CX post-collision energetics
       CALL MPI_BCAST (EPLCX3,NRCX*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
-c  EL post collision energetics
+c  EL post-collision energetics
       CALL MPI_BCAST (EPLEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 
@@ -425,25 +457,30 @@ c  EL post collision energetics
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSEPRC,5*NREC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (NREACX,NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NELRCX,NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  FLAGS FOR PI TYPE REACTIONS:
       CALL MPI_BCAST (NREAPI,NRPI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NREAEL,NREL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NREAEI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NREARC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (JEREAEI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (JEREARC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NELREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (JELREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NREAHV,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NELREL,NREL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NELRRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (JELRRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NELRPI,NRPI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (JELRPI,NRPI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NELRCX,NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NHVRPI,NRPI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  FLAGS FOR EL TYPE REACTIONS:
+      CALL MPI_BCAST (NREAEL,NREL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NELREL,NREL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  FLAGS FOR RC TYPE REACTIONS:
+      CALL MPI_BCAST (NREARC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NELRRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (JELRRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  FLAGS FOR EI TYPE REACTIONS:
+      CALL MPI_BCAST (NREAEI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NELREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (JELREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NHVREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  FLAGS FOR OT TYPE REACTIONS:
       CALL MPI_BCAST (NELROT,NROT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREAOT,NROT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NRHVPI,NRPI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (IPATEI,NREI*NATMP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPMLEI,NREI*NMOLP,MPI_INTEGER,
@@ -460,6 +497,7 @@ c  EL post collision energetics
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPPLPI,NRPI*NPLSP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+c
       CALL MPI_BCAST (LGACX,NATMP*(NRCX+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGMCX,NMOLP*(NRCX+1)*2,MPI_INTEGER,
@@ -492,22 +530,22 @@ cdr   old data structure CREAC has been replaced by more general data structure 
 
 
       DO IR=-11, NREAC
-c interaction potential, differential cross sections, etc.
+c interaction potential, differential cross-sections, etc.
         CALL MPI_BCAST (REACDAT(IR)%LPOT,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
-c total cross sections
+c total cross-sections
         CALL MPI_BCAST (REACDAT(IR)%LCRS,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
 c reaction rate coefficients
         CALL MPI_BCAST (REACDAT(IR)%LRTC,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
-c momentum weighted rate coefficients
+c momentum-weighted rate coefficients
         CALL MPI_BCAST (REACDAT(IR)%LRTCMW,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
-c energy weighted rate coefficients
+c energy-weighted rate coefficients
         CALL MPI_BCAST (REACDAT(IR)%LRTCEW,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
-c other data, such as population coefficients, CR-density ratios,....
+c other data, such as population coefficients, CR density ratios,....
         CALL MPI_BCAST (REACDAT(IR)%LOTH,1,MPI_LOGICAL,
      .                  0,MPI_COMM_WORLD,ier)
 c ??
@@ -536,7 +574,7 @@ c  data for interaction potential
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
         END IF
-c  data for cross sections, cm**2
+c  data for cross-sections, cm**2
         IF (REACDAT(IR)%LCRS) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
@@ -554,7 +592,7 @@ c  data for rate coefficients, cm**3/s
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
         END IF
-c  data for momentum weighted rate coefficients  g cm/s cm**3/s
+c  data for momentum-weighted rate coefficients  g cm/s cm**3/s
         IF (REACDAT(IR)%LRTCMW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
@@ -563,7 +601,7 @@ c  data for momentum weighted rate coefficients  g cm/s cm**3/s
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
         END IF
-c  data for energy weighted rate coefficients,  eV cm**3-s
+c  data for energy-weighted rate coefficients,  eV cm**3-s
         IF (REACDAT(IR)%LRTCEW) THEN
           IF (MY_PE .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
@@ -601,11 +639,11 @@ c  data for photon line transport
       CALL MPI_BCAST (FREACP,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FREACPH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMM,NMOL*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMI,NION*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMP,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (FLDLMPH,NPHOT*NREAC,MPI_REAL8,0,
+      CALL MPI_BCAST (EDPOTA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (EDPOTM,NMOL*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (EDPOTI,NION*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (EDPOTP,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (EDPOTPH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EELECA,NATM*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EELECM,NMOL*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -726,6 +764,11 @@ c  data for photon line transport
       CALL MPI_BCAST (IBGKPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
+      CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
 
       CALL MPI_BCAST (NADDI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -948,7 +991,7 @@ cdr dimensioning of LCUT array corrected:
           DO IRF=1,NREF
             CHELP(IAN+1:IAN+8) = TRANSFER(TDMPAR(IPLS)%TDM%FNAME(IRF),
      .                                    CHELP)
-            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H2(IRF),
+            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H123(IRF),
      .                                    CHELP)
             CHELP(IAN+13:IAN+21) = TRANSFER(
      .                        TDMPAR(IPLS)%TDM%REACTION(IRF),CHELP)
@@ -975,7 +1018,7 @@ csw
             ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%H2(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%H123(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
 csw
@@ -992,8 +1035,8 @@ csw
           DO IRF=1,NREF
             TDMPAR(IPLS)%TDM%FNAME(IRF) = TRANSFER(CHELP(IAN+1:IAN+8),
      .            TDMPAR(IPLS)%TDM%FNAME(IRF))
-            TDMPAR(IPLS)%TDM%H2(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
-     .            TDMPAR(IPLS)%TDM%H2(IRF))
+            TDMPAR(IPLS)%TDM%H123(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
+     .            TDMPAR(IPLS)%TDM%H123(IRF))
             TDMPAR(IPLS)%TDM%REACTION(IRF) =
      .            TRANSFER(CHELP(IAN+13:IAN+21),
      .            TDMPAR(IPLS)%TDM%REACTION(IRF))
@@ -1307,7 +1350,6 @@ C  variances for sum over strata
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         END IF
 
-
         nnrot=0
         do iphot=1,nphoti
           if(nrcph(iphot) > 0) then
@@ -1339,7 +1381,7 @@ C  variances for sum over strata
 
 c     distribute seppis arrays all over the world
 !      call eirene_broadcast_tim()
-c	
+c
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 cOS   now call the octree-builder to build an octree on every node except
@@ -1364,7 +1406,7 @@ c     on the "root" node, where this is already done via timea0 after input
       INTEGER :: IER, ND, ND2
 
 C.....................................................................
-cdr broadcast A&M data, general for a process , independent of data structure RP%IFIT
+cdr broadcast A&M data, general for a process, independent of data structure RP%IFIT
       CALL MPI_BCAST (RP%IFIT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (RP%JFEX1MN,1,MPI_INTEGER,
@@ -1458,7 +1500,7 @@ C                  or     2D  (RP%IFIT=2)
           IF (associated(RP%POLY)) THEN ! IYS 27.02.2015
             IF (associated(RP%POLY%DBLPOL)) THEN
               IF (ND.ne.UBOUND(RP%POLY%DBLPOL,1) .and.
-     #             ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
+     &             ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
                 DEALLOCATE(RP%POLY%DBLPOL)
                 NULLIFY(RP%POLY%DBLPOL)
                 ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
@@ -1536,7 +1578,7 @@ C.....................................................................
           ENDIF
           IF (ASSOCIATED(RP%ADAS%TAB2D)) THEN
             IF ((RP%ADAS%NTEMP.ne.UBOUND(RP%ADAS%TAB2D,1)) .or.
-     #         (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%TAB2D,2))) THEN
+     &          (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%TAB2D,2))) THEN
               DEALLOCATE (RP%ADAS%TAB2D)
               NULLIFY (RP%ADAS%TAB2D)
               ALLOCATE (RP%ADAS%TAB2D(RP%ADAS%NTEMP,RP%ADAS%NDENS))
@@ -1627,6 +1669,13 @@ cdr  internal CR Model
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (RP%CRM%IVARST,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
+C STUFF TO TRANSFER POPULATION ESCAPE FACTORS INTO INTERNAL CRM ROUTINES
+        CALL MPI_BCAST (RP%CRM%IROW_ESC,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%ICOL_ESC,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (RP%CRM%POP_ESC,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
 
 C.....................................................................
       ELSE
@@ -1639,55 +1688,57 @@ cdr     INVALID RP%IFIT
 
 
       SUBROUTINE EIRENE_BROAD_EMIS_LINES
-      
-      INTEGER :: I, J, K, NO_COMPO, NO_CONTRIB
+
+      INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB
       TYPE(TCONTRIB) :: CNT
 
-!      IF (MY_PE /= 0) THEN
+!     IF (MY_PE /= 0) THEN
         IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
-          ALLOCATE (EMIS_LINES(NO_LINES))
+          ALLOCATE (EMIS_LINES(NUM_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NO_COMPO = 0         
+          EMIS_LINES%NUM_COMPO = 0
         END IF
-!      END IF
+!     END IF
 
-      DO I = 1, NO_LINES
+      DO I = 1, NUM_LINES
 
         CALL MPI_BCAST (EMIS_LINES(I)%LINE_NAME,80,MPI_CHARACTER,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%NO_COMPO,1,MPI_INTEGER,
+        CALL MPI_BCAST (EMIS_LINES(I)%NUM_COMPO,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%IADV_TOTAL,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%EINSTEIN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%POP_ESC,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
 
-        NO_COMPO = EMIS_LINES(I)%NO_COMPO
+        NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
 
         IF (MY_PE /= 0) THEN
-          ALLOCATE (EMIS_LINES(I)%COMPO(NO_COMPO))
+          ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
         END IF
 
-        DO J = 1, NO_COMPO
+        DO J = 1, NUM_COMPO
           CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%COMPO_NAME,80,
      .                    MPI_CHARACTER,0,MPI_COMM_WORLD,ier)
-          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%NO_CONTRIB,1,
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB,1,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
           CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%IADV,1,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-          NO_CONTRIB = EMIS_LINES(I)%COMPO(J)%NO_CONTRIB
+          NUM_CONTRIB = EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB
 
           IF (MY_PE /= 0) THEN
-            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NO_CONTRIB))
+            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
           END IF
 
-          DO K = 1, NO_CONTRIB
-        
+          DO K = 1, NUM_CONTRIB
+
             IF (MY_PE == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
 
             CALL MPI_BCAST (CNT%ISP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1705,9 +1756,9 @@ cdr     INVALID RP%IFIT
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%FRATIO,2*8,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%H2,4,MPI_CHARACTER,
+            CALL MPI_BCAST (CNT%H123,4,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%RAT_H2,2*4,MPI_CHARACTER,
+            CALL MPI_BCAST (CNT%RAT_H123,2*4,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%ELEMENT,2,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
@@ -1721,13 +1772,13 @@ cdr     INVALID RP%IFIT
      .                      0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
-            
+
             IF (MY_PE /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
 
           END DO
         END DO
 
-        
+
       END DO
 
       RETURN

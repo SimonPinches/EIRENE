@@ -1,6 +1,9 @@
 c
+c  this version: find vibrational temeperatur of H2.
+c  i.e. H2(v) must be treated as separate molec. species
+c
       SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
-     .              TXTTL,TXTSP,TXTUN,ILAST,*)
+     .                  TXTTL,TXTSP,TXTUN,ILAST,*)
 
 C  USER SUPPLIED POST-PROCESSED TALLY NO. ICOUNT, FOR STRATUM ISTRA,
 C  STORED ON VECTOR. (ISTRA IS KNOWN FROM COMMON COMPRT)
@@ -8,7 +11,7 @@ C
 C  RETURN 1:       DO NOT PRINTOUT VOLUME AVERAGED TALLY "VECTOR"
 C                  VECTOR NEEDS NOT BE RETURNED. INSTEAD, THE POST-
 C                  PROCESSED TALLY CAN ALSO BE PUT ONTO THE ADDITIONAL TALLY
-C                  STORAGES (ADDV,COLV,...) IF STORAGE IS PROVIDED 
+C                  STORAGES (ADDV,COLV,...) IF STORAGE IS PROVIDED
 C                  AND IF THE PARAMETERS NADVI, NCLVI, ETC. IN BLOCK 10A, OR 10B,
 C                  ARE PROPERLY SET.
 C  RETURN  :       PRINTOUT VOLUME AVERAGED TALLY VECTOR(I), I=1,NRAD,
@@ -31,13 +34,14 @@ C
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 
       character(len=*) :: txttl,txtsp,txtun
+
       TXTTL=' '
       TXTSP=' '
       TXTUN=' '
-      
+
 C
 C  WRITE DIRECTLY ONTO OUTPUT STREAM IUNOUT, I.E.: NOT: RETURN 1, BUT: RETURN
- 
+
       ILAST=0
-      RETURN 
+      RETURN
       END

@@ -1,7 +1,7 @@
 C
- 
-      SUBROUTINE
-     .  EIRENE_FL2O(A00,A1,A2,A3,A4,A5,A6,A7,A8,A9,INDE,X0,Y0,Z0,
+
+      SUBROUTINE EIRENE_FL2O
+     .               (A00,A1,A2,A3,A4,A5,A6,A7,A8,A9,INDE,X0,Y0,Z0,
      >                CX,CY,CZ,R,B0,B1,B2,B3,C0,C1,C2,C3,EPSIN)
 C
 C***********************************************************************
@@ -132,23 +132,24 @@ C
       B(1) = A1/2.
       B(2) = A2/2.
       B(3) = A3/2.
- 
+
       AM4(1:3,1:3) = A
       AM4(4,1:3) = B
       AM4(1:3,4) = B
       AM4(4,4) = C
- 
+
       ICOUNT=1
-  4   CONTINUE
+    4 CONTINUE
 C
 C     PRUEFEN, OB ALLE ZEILEN DER MATRIX A GLEICH NULL SIND
 C
       DIM = 0
 C
-      DO 2, I=1,3
-         DO 2, J=1,3
+      DO I=1,3
+         DO J=1,3
             IF ( ABS( A(I,J) ) .GT. EPS ) DIM = 1
-   2  CONTINUE
+         END DO
+      END DO
 C
 C
       IF ( DIM .EQ. 0 ) THEN
@@ -174,7 +175,7 @@ C
 C
          INDE = 1
          GOTO 999
- 
+
       ELSE
 C
 C        BERECHNUNG DER EIGENWERTE UND EIGENVEKTOREN VON A
@@ -184,7 +185,8 @@ C        WRITE (iunout,*) ' LAMBDA ',(LAMBDA(I),I=1,3)
 C        WRITE (iunout,*) ' EV '
 C        WRITE (iunout,*) ((EV(I,J),J=1,3),I=1,3)
          DO 4814 I=1,3
-4814     IF (ABS(LAMBDA(I)).LT.EPS) LAMBDA(I)=0.
+           IF (ABS(LAMBDA(I)).LT.EPS) LAMBDA(I)=0.
+ 4814    END DO
          LAMORI = LAMBDA
 C
 C        NORMIEREN DER EIGENVEKTOREN
@@ -193,8 +195,8 @@ C
             NORM = SQRT( EV(1,I)**2 + EV(2,I)**2 + EV(3,I)**2 )
             DO 11, J = 1,3
                IF (NORM.GT.EPS)     EV(J,I) = EV(J,I)/NORM
-  11        CONTINUE
-  7      CONTINUE
+   11       CONTINUE
+    7    CONTINUE
 C
       ENDIF
 C
@@ -213,9 +215,9 @@ C
          DO 8, I = 1,3
             DO 9, J = 1,3
                   A(I,J) = -1. * A(I,J)
-  9         CONTINUE
+    9       CONTINUE
             B(I) = - B(I)
-  8      CONTINUE
+    8    CONTINUE
          C = -1. * C
          ICOUNT=2
          GOTO 4
@@ -230,7 +232,7 @@ C     Es sind INULL Eigenwerte Null
 C
       DO 6, I = 1,3
          B(I) = -B(I)
- 6    CONTINUE
+    6 CONTINUE
 C
 C     Das Gleichungssystem Am=b ist loesbar, wenn Rang(A) = Rang(AB)
 C     Das Gleichungssystem wird wird mit dem QR - Algorithmus geloest.
@@ -244,17 +246,17 @@ C     WRITE (iunout,*) ' M ',M
 C
       DO 17, I = 1,3
          B(I) = -B(I)
-17    CONTINUE
+   17 CONTINUE
 C
       DIM = 0
       DO 18, I = 1,3
          IF (ABS(RES(I)).GT.EPS) DIM = DIM + 1
- 18   CONTINUE
+   18 CONTINUE
       IF (DIM.EQ.0) THEN
 C        Gleichungssystem ist loesbar!
 C        d.h. singulaeres Gebilde ist nicht leer.
 C        eine Loesung : M(I)
- 
+
 C                T
 C        NUE := B  M + C
 C
@@ -273,12 +275,12 @@ C
          NORM = 0.D0
          DO 30, I = 1,3
             NORM = EV(I,1)* EV(I,1) + NORM
- 30      CONTINUE
+   30    CONTINUE
          NORM = SQRT(NORM)
 C
          DO 40, I = 1,3
             EV(I,1) = EV(I,1) /NORM
- 40      CONTINUE
+   40    CONTINUE
 C
 C
 C        Ermittlung, welchen Typs die algebraische Gleichung ist
@@ -306,16 +308,15 @@ C                 EINSCHALIGES HYPERBOLOID
                ELSE
 C                 KEGEL
                   INDE = 8
-                  CALL
-     .  EIRENE_KEGEL(EV,LAMBDA,0._DP,M,X0,Y0,Z0,CX,CY,CZ,R,EPS)
+                  CALL EIRENE_KEGEL
+     .             (EV,LAMBDA,0._DP,M,X0,Y0,Z0,CX,CY,CZ,R,EPS)
                ENDIF
             ELSE
                IF (NUE.LT.-EPS) THEN
 C                 ELLIPTISCHER ZYLINDER
                   INDE = 5
-                  CALL
-     .  EIRENE_ELLZYL(EV,LAMBDA,NUE,M,X0,Y0,Z0,CX,CY,CZ,R,INDE,
-     .                        EPS)
+                  CALL EIRENE_ELLZYL
+     .             (EV,LAMBDA,NUE,M,X0,Y0,Z0,CX,CY,CZ,R,INDE,EPS)
                ELSEIF (ABS(NUE).LT.EPS) THEN
 C                 1 GERADE
 C                 INDE = ?????????????????????????????????
@@ -327,8 +328,8 @@ C                 X3-ACHSE
 C              2 SICH SCHNEIDENDE EBENEN
 C              SCHNITTGERADE = X3-ACHSE
                INDE = 3
-               CALL
-     .  EIRENE_SCHEBE(EV,LAMBDA,0._DP,M,B0,B1,B2,B3,C0,C1,C2,C3)
+               CALL EIRENE_SCHEBE
+     .          (EV,LAMBDA,0._DP,M,B0,B1,B2,B3,C0,C1,C2,C3)
             ELSEIF (ABS(LAMBDA(3)).LT.EPS) THEN
 C              HYPERBOLISCHER ZYLINDER
                INDE = 6
@@ -340,9 +341,8 @@ C              HYPERBOLISCHER ZYLINDER
 C                 ZWEI PARALLELE EBENEN
 C                 PARALLEL ZUR X2 - X3- EBENE
                   INDE = 2
-                  CALL
-     .  EIRENE_PAREBE(EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,
-     .                        EPS)
+                  CALL EIRENE_PAREBE
+     .             (EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,EPS)
                ELSEIF (ABS(NUE).LT.EPS) THEN
 C                 DOPPELEBENE
 C                 X2 - X3 -EBENE
@@ -376,12 +376,12 @@ C
          P(3) = 0.
          DO 80, I = 1,3
             P(3) = P(3) + EV(I,3) * B(I)
-  80     CONTINUE
+   80    CONTINUE
          IF (P(3).GT.0.D0) THEN
             P(3) = -P(3)
             DO 90, I = 1,3
                EV(I,3) = -1.D0 * EV(I,3)
-  90        CONTINUE
+   90       CONTINUE
          ENDIF
 C
 C        Normalform:
@@ -396,12 +396,12 @@ C
          NORM = 0.D0
          DO 95, I = 1,3
             NORM = EV(I,1)* EV(I,1) + NORM
- 95      CONTINUE
+   95    CONTINUE
          NORM = SQRT(NORM)
 C
          DO 100, I = 1,3
             EV(I,1) = EV(I,1) /NORM
- 100     CONTINUE
+  100    CONTINUE
 C
 C        Scheitelpunkt:
 C        M = (-p1/lambda(1)) * ev1 + 1./ (2.(p3) *
@@ -454,12 +454,12 @@ C
          NORM = 0.D0
          DO 140, I = 1,3
             NORM = EV(I,1)* EV(I,1) + NORM
- 140     CONTINUE
+  140    CONTINUE
          NORM = SQRT(NORM)
 C
          DO 150, I = 1,3
             EV(I,1) = EV(I,1) /NORM
- 150     CONTINUE
+  150    CONTINUE
 C
 C
 C     Scheitelpunkt:
@@ -468,7 +468,7 @@ C         + 1./2./p3 * (p1**2 / lambda(1) + p2**2/lambda(2)-c)*ev3
 C                  t                     t
 C     mit p1 := ev1  * b    und p2 := ev2  *b
 C
- 
+
          DO 160, I = 1,2
             P(I) = 0.D0
             DO 170, J = 1,3
@@ -481,11 +481,11 @@ C
      F             (-P(2)/LAMBDA(2)) * EV(I,2) +
      F             1.D0/ (2. * P(3)) * ( P(1) ** 2 / LAMBDA(1)
      F                  + P(2)**2/LAMBDA(2) - C) * EV(I,3)
- 180     CONTINUE
+  180    CONTINUE
 C
 C        Transformationsformel:
 C        X = (ev1,ev2,ev3) * x + m
       ENDIF
- 999  CONTINUE
+  999 CONTINUE
 C
       END

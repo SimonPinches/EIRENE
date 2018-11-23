@@ -9,15 +9,15 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y, Z
       INTEGER, INTENT(IN) :: N
       LOGICAL, INTENT(OUT) :: L
       REAL(DP) :: XMS1, XMS2, XMS3, XLS1, XLS2, XLS3
       INTEGER :: I
- 
+
       L=.TRUE.
       IF (RLB(N).EQ.1..OR.RLB(N).EQ.1.5) THEN
                L=L.AND.XLIMS1(1,N).LE.X.AND.X.LE.XLIMS2(1,N)
@@ -28,13 +28,13 @@ C
         DO 1 I=1,ILIN(N)
            L=L.AND.
      .       ALIMS(I,N)+XLIMS(I,N)*X+YLIMS(I,N)*Y+ZLIMS(I,N)*Z.LE.0.
-1       CONTINUE
+    1   CONTINUE
         DO 2 I=1,ISCN(N)
            L=L.AND.
      .        ALIMS0(I,N)+XLIMS1(I,N)*X+YLIMS1(I,N)*Y+ZLIMS1(I,N)*Z
      .       +XLIMS2(I,N)*X*X+YLIMS2(I,N)*Y*Y+ZLIMS2(I,N)*Z*Z
      .       +XLIMS3(I,N)*X*Y+YLIMS3(I,N)*X*Z+ZLIMS3(I,N)*Y*Z.LE.0.
-2       CONTINUE
+    2   CONTINUE
       ELSEIF (RLB(N).GE.3.) THEN
         XMS1=X*PS13(1,N)+Y*PS13(2,N)+Z*PS13(3,N)+P1A(N)
         XLS1=X*PS23(1,N)+Y*PS23(2,N)+Z*PS23(3,N)+P2A(N)
