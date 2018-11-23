@@ -37,7 +37,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units
-!   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ...units
+!   not lexp:  return orate=log_e(rate coefficient) with rate coefficient in ...units
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
 !              currently hard wired: factor 1e-8.  p2 --> p2*factor
 !              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.

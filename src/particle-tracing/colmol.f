@@ -45,7 +45,7 @@ cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
 cdr analog cascading NLCASCAD: started to document,
-cdr        syncronize and re-activate option, not ready !!
+cdr        synchronize and re-activate option, not ready !!
 c   this version: prepare cascading at collisions,
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators

@@ -1,4 +1,4 @@
-cdr jan 2017 :  started to syncronize with prttal. should be largely identical
+cdr jan 2017 :  started to synchronize with prttal. should be largely identical
 c               added: 1d output onto stream ifile, also for VOL tally.
 c               more comments, better formats for large grids.
 cdr jun 2017 :  sync. with prttal. Also 1D printout on separate output streams.
