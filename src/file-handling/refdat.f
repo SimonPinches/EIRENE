@@ -13,7 +13,7 @@ C  This is the old (and default) model for reading TRIM conditional quantile tab
 c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B 
 c  as selected in input block 6.
 C
-C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE-CARLO CODES,
+C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE CARLO CODES,
 C  DATA ARE STORED IN CONDITIONAL QUANTILE FORMAT (E.G. TRIM)
 C
 C  distinct from rdtrim.f this routines reads one single file containing many 

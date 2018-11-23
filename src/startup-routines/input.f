@@ -5356,7 +5356,7 @@ C
 
 
 C
-C  SETUP TABLE OF CONTRIBUTIONS OF MONTE-CARLO PARTICLES TO BACKGROUND SPECIES
+C  SETUP TABLE OF CONTRIBUTIONS OF MONTE CARLO PARTICLES TO BACKGROUND SPECIES
 C
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
@@ -5473,7 +5473,7 @@ C
 
       NBACK_SPEC = 0
 
-c  number of spectra directly estimated from Monte-Carlo trajectories
+c  number of spectra directly estimated from Monte Carlo trajectories
 
       NADSPC_S = 0   !  surface-based
       NADSPC_C = 0   !  cell-based

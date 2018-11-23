@@ -24,10 +24,10 @@ cdr  Jan. 2014:
 !pb JUL   16:   ehvds1 -> ehvei1
 
 
-cdr Aug.16  :   minor syncronisation with xstpi.f. 
+cdr Aug.16  :   minor synchronisation with xstpi.f.
 cdr Sept.16 :   Started to implement H.3 rate coeff. 
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
-cdr May 17  :   TABEI1: safety cut off for TEE at 0.1 eV, 
+cdr May 17  :   TABEI1: safety cut-off for TEE at 0.1 eV,
 cdr 	        (rather than the eirene default TVAC (=0.02 eV), added in more cases
 cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 !pb Juli 17 :   LHCOL removed

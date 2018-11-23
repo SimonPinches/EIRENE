@@ -135,7 +135,7 @@ C...................................................
         IF ((NCHTAL(ICHORI).EQ.1) .OR. (NCHTAL(ICHORI).EQ.4)) THEN
 
 CDR  nchtal=4 is an unfinished option (spectra estimated directly from
-CDR           Monte-Carlo trajectories. Currently disabled in SGNAL.F
+CDR           Monte Carlo trajectories. Currently disabled in SGNAL.F
 cdr           So at this point: NCHTAL=1, CX energy-resolved spectra.
 
           IF (NSPSPZ(ICHORI).EQ.0) THEN

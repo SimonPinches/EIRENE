@@ -1,5 +1,4 @@
 C  sept 2014: few minor comments
-c  derf: external ?
 c  
 c  "weight" moved to argument list as "WGHTVS"  (removed: use parmmod, use comprt, use ccona)
 c  drift vector: vxwl,vywl,vzwl,vwl:  intent(in). Do not modify ! (rather than intent(inout))
@@ -11,7 +10,7 @@ c  drift vector: vxwl,vywl,vzwl,vwl:  intent(in). Do not modify ! (rather than i
 C
 C  FETCH A NEW VELOCITY FROM A MAXWELLIAN FLUX AT A SURFACE GIVEN
 C  BY THE NORMAL: CX,CY,CZ
-C  METHOD:  WEIGHTED SAMPLING FROM NON-DRIFTING MAXWELLIAN AT NON-ANALOG TEMPERATURE
+C  METHOD: WEIGHTED SAMPLING FROM NON-DRIFTING MAXWELLIAN AT NON-ANALOG TEMPERATURE
 C
 C  THE MAXWELLIAN IS DEFINED BY A TEMPERATURE TIWL (EV) AND A
 C  DRIFT VECTOR VXWL,VYWL,VZWL (CM/SEC). VWL IS THE VECTOR
@@ -48,11 +47,11 @@ C     USE EIRMOD_COMPRT
       REAL(DP) :: ARBV, A1, A2, A3, A4, A5, A6, 
      .          VLLX, VLLY, VLLZ, VMX, SHIFT,
      .          CCM, FNOM, VMXSQ, FACTOR, VELSQ, VELSH, 
-     .          VFKT, VLX, RCCM, ZARG, ZARG2, VXDR, VYDR, VZDR, DERF,
-     .          PISQ,SQ2I
+     .          VFKT, VLX, RCCM, ZARG, ZARG2, VXDR, VYDR, VZDR,
+     .          PISQ, SQ2I
       REAL(DP), EXTERNAL :: RANF_EIRENE
-      DATA PISQ/1.772454/  ! sqrt(pi)
-      DATA SQ2I/0.707107/  ! 1/sqrt(2)
+      DATA PISQ/1.772454_DP/  ! sqrt(pi)
+      DATA SQ2I/0.707107_DP/  ! 1/sqrt(2)
 C
 C---------------------------------------------------------------------
 C
@@ -84,7 +83,7 @@ C
       VLLY=FM2(INIV1)*ZARG+VYDR
       VLLZ=FM3(INIV1)*ZARG+VZDR
       INIV1=INIV1-1
-C  WEIGHT CORRECTION DUE TO DRIFT-COMPONENT VXDR IN MAXWELLIAN FLUX:
+C  WEIGHT CORRECTION DUE TO DRIFT COMPONENT VXDR IN MAXWELLIAN FLUX:
 C  NORMALIZED DRIFT COMPONENT    VMX=VXDR/ZARG2
 C  NORMALIZED THERMAL COMPONENT  VLX=VLLX/ZARG2
 
@@ -97,7 +96,7 @@ C  IN CASE OF STATIONARY MAXWELLIAN: NOTHING MORE TO BE DONE
 C         WRITE (iunout,*) 'WARNING FROM SUBR. VELOCS:'
 C         WRITE (iunout,*) 'MACH NUMBER PERP. TO TARGET TOO LARGE FOR'
 C         WRITE (iunout,*) 'RANDOM SAMPLING ALGORITHM, M-PERP= ',VMX
-C         WRITE (iunout,*) 'ARTIFICIAL CUT OFF IS USED! '
+C         WRITE (iunout,*) 'ARTIFICIAL CUT-OFF IS USED! '
 C         CCM=0.95
 C         VMX=CCM/0.6026
 CDR USE REJECTION TECHNIQUE RATHER THAN WEIGHT CORRECTION TECHNIQUE
@@ -125,7 +124,7 @@ CDR
 C
         VMXSQ=-VMX*VMX
         FNOM=EXP(VLX*(VMX+VMX-CCM*VLX))*RCCM
-        FACTOR=FNOM/(1.+VMX*PISQ*(1.+DERF(VMX))/EXP(VMXSQ))
+        FACTOR=FNOM/(1.+VMX*PISQ*(1.+ERF(VMX))/EXP(VMXSQ))
         WGHTVS=WGHTVS*FACTOR
       ENDIF
 

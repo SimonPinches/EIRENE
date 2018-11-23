@@ -91,9 +91,9 @@ C
 C
 C     SUCHE NACH DEM 1. OPERATOR IM TEILSTRING
 C
-   10    CONTINUE
-         I=I+1
-         POS=INDEX(FAKTOR, ausdru(I:I))
+   10 CONTINUE
+      I=I+1
+      POS=INDEX(FAKTOR, ausdru(I:I))
       IF (POS .LE. 0 .AND. I .LT. omega) GOTO 10
  
       IF (I .EQ. BEGINN) THEN
@@ -114,53 +114,53 @@ C
 C
 C        REPEAT-1
 C
-   30       CONTINUE
+   30    CONTINUE
  
 C
 C           SUCHE NACH DEM 2. OPERATOR IM TEILSTRING
 C           REPEAT-2
 C
-   20          CONTINUE
-               I=I+1
-               POS=INDEX(FAKTOR,ausdru(I:I))
-            IF (POS .LE. 0  .AND.  I .LT. omega) GOTO 20
+   20    CONTINUE
+         I=I+1
+         POS=INDEX(FAKTOR,ausdru(I:I))
+         IF (POS .LE. 0  .AND.  I .LT. omega) GOTO 20
 C
 C           UNTIL-2 : BIS TEILSTRING VOLLSTAENDIG DURCHLAUFEN ODER
 C                     WEITEREN OPERATOR IM TEILSTRING GEFUNDEN
 C
-            IF (POS .GT. 0) THEN
+         IF (POS .GT. 0) THEN
 C
 C              WEITEREN OPERATOR IN TEILSTRING GEFUNDEN,
 C              POSITION UND RANGBESTIMMUNG DES OPERATORS
 C
-               OPER2=I
-               RANGE2=POS/2
+            OPER2=I
+            RANGE2=POS/2
 C
 C              UEBERPRUEFEN, OB NOCH EIN OPERATOR IM TEILSTRING
 C              GESUCHT WERDEN MUSS, ODER EINE ZERLEGUNG ERFOLGEN KANN
 C
-               IF (RANGE2 .LT. RANGE1 .AND. .NOT. PREFIX) THEN
-                  BEGINN=OPER1+1
-                  OPER1=OPER2
-                  RANGE1=RANGE2
-               ELSEIF (RANGE2 .EQ. RANGE1  .AND.  RANGE1 .EQ. 0
+            IF (RANGE2 .LT. RANGE1 .AND. .NOT. PREFIX) THEN
+               BEGINN=OPER1+1
+               OPER1=OPER2
+               RANGE1=RANGE2
+            ELSEIF (RANGE2 .EQ. RANGE1  .AND.  RANGE1 .EQ. 0
      >                  .AND. .NOT. PREFIX) THEN
-                  BEGINN=OPER1+1
-                  OPER1=OPER2
-                  RANGE1=RANGE2
-               ELSE
-                  ENDE=OPER2-1
-                  ERFOLG=.TRUE.
-C                 zerlegung von beginn bis ende
-               ENDIF
- 
+               BEGINN=OPER1+1
+               OPER1=OPER2
+               RANGE1=RANGE2
             ELSE
+               ENDE=OPER2-1
+               ERFOLG=.TRUE.
+C                 zerlegung von beginn bis ende
+            ENDIF
+ 
+         ELSE
 C
 C              ES IST KEIN WEITERER OPERATOR IN TEILSTRING VORHANDEN,
 C              DIE POSITION DES LETZTEN OPERATORS IST OPER1
 C
-               ERFOLG=.TRUE.
-            ENDIF
+            ERFOLG=.TRUE.
+         ENDIF
          IF ( .NOT. ERFOLG) GOTO 30
 C
 C        UNTIL-1 : BIS EINE ZERLEGUNG ERFOLGEN DARF
