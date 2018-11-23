@@ -19,8 +19,8 @@ cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) direct
 
 cdr     Reaction identifyer KK is defined twice, within same routine veloel.
 cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
-cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.  
-cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)                 
+cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.
+cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)
 C
 C
       SUBROUTINE EIRENE_XSTEL(IREL,ISP,IPL,
@@ -45,7 +45,7 @@ C    DEFEL(IREL)
 C    EEFEL(IREL)
 C    IESTEL(IREL,...)
 C
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -65,7 +65,7 @@ C
       REAL(DP) :: CF(9)
       REAL(DP) :: ADD, ADDL, ADDT, FCTKKL, ADDTL, PMASS, TMASS, COU,
      .            EIRENE_RATE_COEFF,
-     .            EIRENE_ENERGY_RATE_COEFF, 
+     .            EIRENE_ENERGY_RATE_COEFF,
      .            TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
@@ -91,7 +91,7 @@ C
       ADDT=PMASS/RMASSP(IPL)
       ADDTL=LOG(ADDT)
       ADDEL(IREL,IPL) = ADDTL
-      
+
       IPLTI = MPLSTI(IPL)
 
 C..................................................................
@@ -104,7 +104,7 @@ cdr  differential cross section or interaction potential for collision kinetics
 cdr                          !  this should become = iftflg(kk,0),
 cdr
 cdr                          !  set here: pot(1:9,irel)=reacdat(kk):.....
-      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN      
+      ELSEIF (EIRENE_IDEZ(MODCLF(KK),1,5).EQ.0) THEN
 cdr  use diffusion cross section and diffusion rate coeff. for transport
         modcol(5,0,irel)=0   !  isotropic scattering IN COM
         if (NPBGKP(IPL,1).eq.0) then
@@ -112,11 +112,11 @@ cdr  use diffusion cross section and diffusion rate coeff. for transport
           WRITE (IUNOUT,*) 'KK, IREL ',KK,IREL
           WRITE (IUNOUT,*) 'NO SCATTERING ANGLE INFORMATION PROVIDED'
           WRITE (IUNOUT,*) 'BUT ALSO NO BGK RELAXATION.'
-          WRITE (IUNOUT,*) 'USE ISOTROPIC SCATTERING'    
+          WRITE (IUNOUT,*) 'USE ISOTROPIC SCATTERING'
         endif
 
 cdr  or
-cdr  use 0.5*(diffusion cross section) and 0.5*(diffusion rate coeff.) for transport 
+cdr  use 0.5*(diffusion cross section) and 0.5*(diffusion rate coeff.) for transport
 c       modcol(5,0,irel) =-1, scattering angle =PI IN COM (=exchange of identity in LAB)
       ENDIF
 C
@@ -146,7 +146,7 @@ C  2.C)
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
-          
+
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
           IF (MODC.EQ.1) THEN
 C           NEND=1
@@ -155,7 +155,7 @@ C           NEND=1
               TII=TIINL(IPLTI,J)+ADDTL
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
-245         CONTINUE
+  245       CONTINUE
           ELSEIF (MODC.EQ.2) THEN
 C           NEND=9
 C  2.C) RATE COEFFICIENT(TI,EBEAM)
@@ -170,7 +170,7 @@ C       NEND=9
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 ! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
-              tii = max(-2.3_dp,tii) 
+              tii = max(-2.3_dp,tii)
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -195,8 +195,8 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
         MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN 
-                
+        IF (NSTORDR >= NRAD) THEN
+
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
@@ -211,7 +211,7 @@ C         JEREAEL(IREL) = 9
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for EL'
           write (iunout,*) 'in case modc=3  (n,T-dependence).'
-          GOTO 995 
+          GOTO 995
         ENDIF
 
       ELSE
@@ -221,7 +221,7 @@ C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
 
       FACREL(IREL,1) = FACTKK
       FACREL(IREL,2) = LOG(FACTKK)
- 
+
       DEFEL(IREL)=LOG(CVELI2*PMASS)
       EEFEL(IREL)=LOG(CVELI2*TMASS)
 C
@@ -250,7 +250,7 @@ c        WITH WEIGHTING/REJECTION
           IF (NSTORDR >= NRAD) THEN
             DO 251 J=1,NSBOX
               EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
-251         CONTINUE
+  251       CONTINUE
             NELREL(IREL) = -1
           ELSE
             NELREL(IREL) = -1
@@ -267,7 +267,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             DO 252 J=1,NSBOX
               EPLEL3(IREL,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-252         CONTINUE
+  252       CONTINUE
             NELREL(IREL) = -3
           ELSE
             NELREL(IREL) = -3
@@ -277,12 +277,12 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
           WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
-          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '  
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
               EPLEL3(IREL,J,1)=EBULK+EDRIFT(IPL,J)
-2511        CONTINUE
+ 2511       CONTINUE
             NELREL(IREL) = -2
           ELSE
             NELREL(IREL) = -2
@@ -321,7 +321,7 @@ C  STORAGE SAVING MODE ?
           IF (NSTORDR >= NRAD) THEN
 C  NO
 C           NSTORDT=9 HERE
-      
+
             IF (MODC.EQ.1) THEN
 C             NEND=1
 C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
@@ -332,7 +332,7 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
                 EPLEL3(IREL,J,1)=EIRENE_ENERGY_RATE_COEFF
      .                          (KREAD,J,TII,
      .                           0._DP,.FALSE.,0)*DIIN(IPL,J)*ADD
-254           CONTINUE
+  254         CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
 C  ENERGY RATE COEFFICIENT(TI,EBEAM)
@@ -357,7 +357,7 @@ c old
 
                 EPLEL3(IREL,J,1:9) = CF(1:9)
                 EPLEL3(IREL,J,1) = EPLEL3(IREL,J,1)+DIINL(IPL,J)+ADDL
-257           CONTINUE
+  257         CONTINUE
             ENDIF
 
           ELSE  ! STORAGE SAVING MODE, no pre-defined tallies eplel3
@@ -425,7 +425,7 @@ C
         WRITE (iunout,*) 'THIS IS ALSO BGK COLLISION NO. IBGK= ',IBGK
         MODCOL(5,0,IREL)=-1
         IF (NPBGKP(IPL,2).EQ.0)
-     .      WRITE (iunout,*) 'SELF COLLISION      ' 
+     .      WRITE (iunout,*) 'SELF COLLISION      '
         IF (NPBGKP(IPL,2).NE.0) THEN
           ITYPB=EIRENE_IDEZ(NPBGKP(IPL,2),1,3)
           ISPZB=EIRENE_IDEZ(NPBGKP(IPL,2),3,3)
@@ -461,11 +461,11 @@ C
 
       RETURN
 C
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEL, SPECIES ISP: '
       WRITE (iunout,*) ISP,IREL
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEL: EXIT CALLED '
       WRITE (iunout,*)
      .  'STORAGE SAVING MODE NOT READY; KK, IREL'

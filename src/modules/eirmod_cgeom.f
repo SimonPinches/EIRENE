@@ -1,67 +1,67 @@
       MODULE EIRMOD_CGEOM
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM, 
+
+      PUBLIC :: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM,
      P          EIRENE_INIT_CGEOM,
      P          CELL_ELEM, CELL_LIST
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        RCGM1(:), RCGM2(:,:),   AREAG(:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R VOLADD(:), VOLCOR(:), VOLG(:), VOLTAL(:), VOLTOT,
      R AREA(:),   CELDIA(:), XCOM(:), YCOM(:),
      R XPOINT(:), YPOINT(:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R XPOL(:,:), YPOL(:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NPOINT(:,:),   NSTGRD(:), NGHPLS(:,:,:),
      I NGHPOL(:,:,:), NCLTAL(:), INDPOINT(:,:), NOPNT(:)
- 
+
       INTEGER, PUBLIC, SAVE :: NCGM1, NCGM2, NNODES
 
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L LDAMCEL(:)
- 
+
       TYPE :: CELL_ELEM
         INTEGER :: NOCELL
         TYPE(CELL_ELEM), POINTER :: NEXT_CELL
       END TYPE CELL_ELEM
- 
+
       TYPE :: CELL_LIST
         TYPE(CELL_ELEM), POINTER :: PCELL
       END TYPE CELL_LIST
- 
+
       TYPE(CELL_LIST), ALLOCATABLE, SAVE, PUBLIC :: COORCELL(:)
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CGEOM(ICAL)
 c  allocate storage for geometrical arrays.
 c  parameter NRAD: size of grid. NRADS: size of grid after possible elimination
-c                                       of storage, in module parmmod.f (FLAG: NGEOM_USR) 
- 
+c                                       of storage, in module parmmod.f (FLAG: NGEOM_USR)
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
       IF (ICAL == 1) THEN
          IF (ALLOCATED(RCGM1)) RETURN
- 
+
          NCGM1 = NADD+NBMAX+7*NRAD+NRTAL+1
          NCGM2 = 2*N1STS*N2NDPLGS
-c  real arrays 
+c  real arrays
          ALLOCATE (RCGM1(NCGM1))
          ALLOCATE (RCGM2(N1STS,2*N2NDPLGS))
-c  integer arrays 
+c  integer arrays
          ALLOCATE (NPOINT(2,NPPART))
          ALLOCATE (NSTGRD(NRAD))
          ALLOCATE (NGHPLS(4,N1STS,N2NDPLGS))
@@ -69,15 +69,15 @@ c  integer arrays
          ALLOCATE (NCLTAL(NRAD))
          ALLOCATE (INDPOINT(N1STS,N2NDPLGS))
          ALLOCATE (NOPNT(NRAD))
- 
+
          ALLOCATE (COORCELL(NRAD))
 
          ALLOCATE (LDAMCEL(NRAD))
- 
+
          WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CGEOM(1) ',(NCGM1+2*N1STS*N2NDPLGS)*8 +
      .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLGS)*4 + nrad*4
- 
+
          VOLADD => RCGM1(1 : NADD)
          VOLTAL => RCGM1(1+NADD : NADD+NRTAL)
          VOLCOR => RCGM1(1+NADD+NRTAL : NADD+NRTAL+NBMAX)
@@ -95,32 +95,32 @@ c  integer arrays
          YPOINT => RCGM1(1+NADD+NRTAL+NBMAX+6*NRAD :
      .                     NADD+NRTAL+NBMAX+7*NRAD)
          VOLTOT => RCGM1(1+NADD+NRTAL+NBMAX+7*NRAD)
- 
+
          XPOL => RCGM2(:,1:N2NDPLGS)
          YPOL => RCGM2(:,1+N2NDPLGS:2*N2NDPLGS)
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
          IF (ALLOCATED(AREAG)) RETURN
          ALLOCATE (AREAG(NLMPGS))
          WRITE (55+IFOFF,'(A,T25,I15)') ' CGEOM(2) ',NLMPGS*8
- 
+
       END IF
- 
- 
+
+
       CALL EIRENE_INIT_CGEOM (ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CGEOM
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CGEOM
- 
+
       IF (.NOT.ALLOCATED(RCGM1)) RETURN
- 
+
       DEALLOCATE (RCGM1)
       DEALLOCATE (RCGM2)
- 
+
       DEALLOCATE (NPOINT)
       DEALLOCATE (NSTGRD)
       DEALLOCATE (NGHPLS)
@@ -128,27 +128,27 @@ c  integer arrays
       DEALLOCATE (NCLTAL)
       DEALLOCATE (INDPOINT)
       DEALLOCATE (NOPNT)
- 
+
       DEALLOCATE (COORCELL)
 
       DEALLOCATE (LDAMCEL)
- 
+
       DEALLOCATE (AREAG)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CGEOM
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CGEOM(ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: I
- 
+
       IF (ICAL == 1) THEN
- 
+
          RCGM1    = 0._DP
          RCGM2    = 0._DP
- 
+
          NPOINT   = 0
          NSTGRD   = 0
          NGHPLS   = 0
@@ -156,26 +156,20 @@ c  integer arrays
          NCLTAL   = 0
          INDPOINT = 0
          NOPNT = 0
- 
+
          DO I=1,NRAD
             NULLIFY (COORCELL(I)%PCELL)
          END DO
 
          LDAMCEL = .FALSE.
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
          AREAG = 0._DP
- 
+
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CGEOM
- 
+
       END MODULE EIRMOD_CGEOM
- 
- 
- 
- 
- 
- 

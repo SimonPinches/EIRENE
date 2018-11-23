@@ -1,5 +1,5 @@
- 
- 
+
+
       FUNCTION EIRENE_VDION (I)
       USE EIRMOD_PRECISION
       IMPLICIT NONE

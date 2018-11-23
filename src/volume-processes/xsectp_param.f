@@ -1,10 +1,10 @@
 C  IDENTIFY PARAMETER NREC (STORAGE FOR VOLUME RECOMBINATION PROCESSES)
 C
 C  june 2015:  added: default single step vol.rec. process  e + He+ --> He(1S)+ rad.
-c              rate taken from Janev et al., 1987, Process 2.3.13. 
+c              rate taken from Janev et al., 1987, Process 2.3.13.
 C
       SUBROUTINE EIRENE_XSECTP_PARAM
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -15,9 +15,9 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: NRC, IATM, IPLS, KK
 C
 C
@@ -38,7 +38,7 @@ C
 C
                 NREC=NREC+1
               ENDIF
-52          CONTINUE
+   52       CONTINUE
 C
           ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN ! HE+ DEFAULT RECOMBINATION MODEL
 
@@ -52,7 +52,7 @@ C  (BORN-COULOMB APPROXIMATION), SIMILAR EXPRESSION AS FOR HYDROGEN DEFAULT RECO
 C
                 NREC=NREC+1
               ENDIF
-54          CONTINUE
+   54       CONTINUE
           ENDIF
 C
 C  NON DEFAULT MODEL:  240--
@@ -65,14 +65,14 @@ C
 C  RECOMBINATION MODEL FOR BULK IONS
             NREC=NREC+1
 C
-82        CONTINUE
+   82     CONTINUE
 C
 C  NO MODEL DEFINED
         ELSE
         ENDIF
 C
 C
-1000  CONTINUE
+ 1000 CONTINUE
 C
       RETURN
 C

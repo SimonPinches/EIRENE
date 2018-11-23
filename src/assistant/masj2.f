@@ -15,8 +15,8 @@ C*DK MASJ2
         fj=j
         WRITE (iunout,80) A,I,fj
       ENDIF
-60    FORMAT (1X,A16,2(3X,I6))
-70    FORMAT (1X,A16,(3X,I6,3X,I8))
-80    FORMAT (1X,A16,(3X,I6,3X,1pe12.4))
+   60 FORMAT (1X,A16,2(3X,I6))
+   70 FORMAT (1X,A16,(3X,I6,3X,I8))
+   80 FORMAT (1X,A16,(3X,I6,3X,1pe12.4))
       RETURN
       END

@@ -2,70 +2,70 @@ cdr Nov. 17  commenting started
 cdr July 18  remove nsteff, redundant
 
       MODULE EIRMOD_CPES
- 
+
       USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_CPES, EIRENE_DEALLOC_CPES, EIRENE_INIT_CPES
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
 cdr  npesta(istra): master processor for ISTRA
 cdr  npestr(istra): total no. of processor working on ISTRA
      I         NPESTR(:), NPESTA(:)
 
       INTEGER, PUBLIC, SAVE :: NPRS, MY_PE
- 
+
       LOGICAL, PUBLIC, SAVE :: NLIDENT
 
 CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       LOGICAL,ALLOCATABLE,SAVE,PUBLIC :: PROCFORSTRA(:,:)
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CPES
- 
+
       IF (ALLOCATED(NPESTR)) RETURN
- 
+
       ALLOCATE (NPESTR(NSTRA))
       ALLOCATE (NPESTA(NSTRA))
 
       ALLOCATE(PROCFORSTRA(NSTRA,0:NPRS-1))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CPES ',2*NSTRA*4 + NSTRA*NPRS*4
- 
+
       CALL EIRENE_INIT_CPES
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CPES
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CPES
- 
+
       IF (.NOT.ALLOCATED(NPESTR)) RETURN
- 
+
       DEALLOCATE (NPESTR)
       DEALLOCATE (NPESTA)
 
       DEALLOCATE(PROCFORSTRA)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CPES
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CPES
- 
+
       NPESTR = 0
       NPESTA = 0
 
       PROCFORSTRA=.TRUE. !VK
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CPES
- 
+
       END MODULE EIRMOD_CPES

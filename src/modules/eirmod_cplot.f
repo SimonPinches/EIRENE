@@ -1,41 +1,41 @@
 cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
-cdr  aug. 17:  PLARGL introduced. Separate options for 
+cdr  aug. 17:  PLARGL introduced. Separate options for
 cdr            spectrally resolved plot (plspec)
-cdr            and for line of side spatially resolved plot (plargl) 
+cdr            and for line of side spatially resolved plot (plargl)
       MODULE EIRMOD_CPLOT
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CPLOT, EIRENE_DEALLOC_CPLOT, 
+
+      PUBLIC :: EIRENE_ALLOC_CPLOT, EIRENE_DEALLOC_CPLOT,
      P          EIRENE_INIT_CPLOT
- 
+
       REAL(DP), PUBLIC, SAVE ::
      R CH2X0, CH2Y0, CH2Z0, CH2MX, CH2MY,
      R CH3X0, CH3Y0, CH3Z0, CH3MX, CH3MY, CH3MZ,
      R XN2D,  YN2D,  FX2D,  FY2D,  RAPSDEL
- 
+
       REAL(DP), PUBLIC,SAVE ::
      R CUTPLANE(4)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TALZMI(:), TALZMA(:),
      R TALXMI(:), TALXMA(:),
      R TALYMI(:), TALYMA(:),
      R TALW1(:),  TALW2(:),
      R FCABS1(:), FCABS2(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NPLINR, NPLOTR, NPLDLR, NPLINP, NPLOTP, NPLDLP,
      I NPLINT, NPLOTT, NPLDLT,
      I NVOLPL,
      I ISYPLT(8), ILINIE, IRAPS, NRAPS, IPLANE,
      I IPRADR, IPPOLR, IPTORR
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NPTALI(:,:),
      I NSPTAL(:),   ISPTAL(:,:),
@@ -44,15 +44,15 @@ cdr            and for line of side spatially resolved plot (plargl)
      I NPLI13(:,:), NPLO13(:,:),
      I NPLI23(:,:), NPLO23(:,:),
      I NHSTS(:)
- 
+
       LOGICAL, PUBLIC, SAVE ::
      L NLPL2D, NLPL3D,
      L PL1ST,  PL2ND,  PL3RD,  PLADD,   PLHST,   PLCUT(3),
-     L PLCHOR, PLSPEC, PLARGL, 
+     L PLCHOR, PLSPEC, PLARGL,
      L PLSTOR, PLNUMV,  PLNUMS,  PLARR,
      L LPRADR, LPPOLR, LPTORR, LRAPS3D, LR3DCON, LRPSCUT,
      L PLIDL,  PLVTK
- 
+
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L PLTSRC(:),
      L PLTL2D(:), PLTL3D(:), PLTLLG(:), PLTLER(:),
@@ -60,14 +60,14 @@ cdr            and for line of side spatially resolved plot (plargl)
      L LHIST3(:), LCNTR3(:), LSMOT3(:), LRAPS3(:),
      L LVECT3(:), LRPVC3(:),
      L LPRAD3(:), LPPOL3(:), LPTOR3(:)
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CPLOT
- 
+
       IF (ALLOCATED(TALZMI)) RETURN
- 
+
       ALLOCATE (TALZMI(NPTAL))
       ALLOCATE (TALZMA(NPTAL))
       ALLOCATE (TALXMI(NPTAL))
@@ -78,7 +78,7 @@ cdr            and for line of side spatially resolved plot (plargl)
       ALLOCATE (TALW2(NPTAL))
       ALLOCATE (FCABS1(NPTAL))
       ALLOCATE (FCABS2(NPTAL))
- 
+
       ALLOCATE (NPTALI(NPTAL,NPLT))
       ALLOCATE (NSPTAL(NPTAL))
       ALLOCATE (ISPTAL(NPTAL,NPLT))
@@ -91,7 +91,7 @@ cdr            and for line of side spatially resolved plot (plargl)
       ALLOCATE (NPLI23(NPTAL,NPLT))
       ALLOCATE (NPLO23(NPTAL,NPLT))
       ALLOCATE (NHSTS(0:NSPZ))
- 
+
       ALLOCATE (PLTSRC(0:NSTRA))
       ALLOCATE (PLTL2D(NPTAL))
       ALLOCATE (PLTL3D(NPTAL))
@@ -108,22 +108,22 @@ cdr            and for line of side spatially resolved plot (plargl)
       ALLOCATE (LPRAD3(NPTAL))
       ALLOCATE (LPPOL3(NPTAL))
       ALLOCATE (LPTOR3(NPTAL))
- 
+
       CALL EIRENE_INIT_CPLOT
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CPLOT ',10*NPTAL*8 + (10*NPLT+1)*NPTAL*4 +
      .                (NSTRA+1+15)*NPTAL+NSPZ*4
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_ALLOC_CPLOT
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CPLOT
- 
+
       IF (.NOT.ALLOCATED(TALZMI)) RETURN
- 
+
       DEALLOCATE (TALZMI)
       DEALLOCATE (TALZMA)
       DEALLOCATE (TALXMI)
@@ -134,7 +134,7 @@ cdr            and for line of side spatially resolved plot (plargl)
       DEALLOCATE (TALW2)
       DEALLOCATE (FCABS1)
       DEALLOCATE (FCABS2)
- 
+
       DEALLOCATE (NPTALI)
       DEALLOCATE (NSPTAL)
       DEALLOCATE (ISPTAL)
@@ -147,7 +147,7 @@ cdr            and for line of side spatially resolved plot (plargl)
       DEALLOCATE (NPLI23)
       DEALLOCATE (NPLO23)
       DEALLOCATE (NHSTS)
- 
+
       DEALLOCATE (PLTSRC)
       DEALLOCATE (PLTL2D)
       DEALLOCATE (PLTL3D)
@@ -165,12 +165,12 @@ cdr            and for line of side spatially resolved plot (plargl)
       DEALLOCATE (LPPOL3)
       DEALLOCATE (LPTOR3)
       RETURN
- 
+
       END SUBROUTINE EIRENE_DEALLOC_CPLOT
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CPLOT
- 
+
       TALZMI = 0._DP
       TALZMA = 0._DP
       TALXMI = 0._DP
@@ -181,9 +181,9 @@ cdr            and for line of side spatially resolved plot (plargl)
       TALW2  = 0._DP
       FCABS1 = 0._DP
       FCABS2 = 0._DP
- 
+
       CUTPLANE = 0._DP
- 
+
       NPTALI = 0
       NSPTAL = 0
       ISPTAL = 0
@@ -196,7 +196,7 @@ cdr            and for line of side spatially resolved plot (plargl)
       NPLI23 = 0
       NPLO23 = 0
       NHSTS  = 0
- 
+
       NLPL2D  = .FALSE.
       NLPL3D  = .FALSE.
       PL1ST   = .FALSE.
@@ -220,7 +220,7 @@ cdr            and for line of side spatially resolved plot (plargl)
       LRPSCUT = .FALSE.
       PLIDL   = .FALSE.
       PLVTK   = .FALSE.
- 
+
       PLTSRC = .FALSE.
       PLTL2D = .FALSE.
       PLTL3D = .FALSE.
@@ -237,14 +237,14 @@ cdr            and for line of side spatially resolved plot (plargl)
       LPRAD3 = .FALSE.
       LPPOL3 = .FALSE.
       LPTOR3 = .FALSE.
- 
+
       XN2D=-8.
       YN2D=12.
       FX2D=1.
       FY2D=1.
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_INIT_CPLOT
- 
+
       END MODULE EIRMOD_CPLOT

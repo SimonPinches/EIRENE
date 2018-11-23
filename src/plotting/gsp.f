@@ -1,15 +1,15 @@
 C
 C
       SUBROUTINE EIRENE_GSP (P1,P2,R1,R2,Q1,Q2,S1,S2,XLA,XMU,EPS)
- 
+
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: P1, P2, R1, R2, Q1, Q2, S1, S2, EPS
       REAL(DP), INTENT(OUT) :: XLA, XMU
       REAL(DP) :: S3, R3, PK1, PK2, PK3, XNO
- 
+
       S3=0.
       R3=0.
       PK1=R2*S3-R3*S2

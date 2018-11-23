@@ -2,7 +2,7 @@ cdr  oct 16:  levgeo=1, error exit due to round off errors removed,
 cdr                     now: "save landing of lost particle".
 cdr           prevents random error exits in very long (parallel) runs.
 C
-Cdr:  at some point in time: included LDAMCEL  
+Cdr:  at some point in time: included LDAMCEL
 cdr   (indicator for "damaged cells" in 2D (x-y) plane.
 cdr   LDAMCEL is set in initialization phase
 
@@ -22,7 +22,7 @@ C
 C   INPUT:
 C
 C       X00,Y00,Z00: STARTING POINT FOR THIS TRACK
-C     ZRAD  = DISTANCE (CM) 
+C     ZRAD  = DISTANCE (CM)
 C                TO NEXT RADIAL SURFACE OF 1D STANDARD MESH
 C             OR TO NEXT ADDITIONAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
 C             OR TO NEXT TOROIDAL SURFACE, TRAVELED IN RADIAL CELL NRCELL
@@ -75,21 +75,21 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
      .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
      .          TWIN1, XT, Y000, TSS, X0T, Y0T
-      INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1, 
+      INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS, 
+     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
-     .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1, 
+     .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1,
      .           NJC, IST, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
-cdr logicals for intersection with poloidal surfaces 
+cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS), LHITP0
       LOGICAL :: lnincz
       SAVE
@@ -135,7 +135,7 @@ C       NTCELL=1
 C
 10000 CONTINUE
 C
-CDR NOV.99: ADDED BECAUSE OF FOLION OPTION, 
+CDR NOV.99: ADDED BECAUSE OF FOLION OPTION,
 C           WITH DEFAULT B-FIELD (IN Z DIRECTION)
 C
       IF (ABS(VELZ).EQ.1.D0) THEN
@@ -191,10 +191,10 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
      .                                 VELY*PPLNY(IR,MPTEST))
                 JUPC(NCOUP)=1
                 ZRD=T1
-2           CONTINUE
+    2       CONTINUE
 
           ENDIF
-3       CONTINUE
+    3   CONTINUE
         IF (NCOUP.GT.0.AND.LUPC(MAX(1,NCOUP)).NE.MPSURF) THEN
 C  REENTRY FOUND, REDUCE ZRAD TO T1
 C  NCOUP=1 AT THIS POINT
@@ -235,7 +235,7 @@ C  NO REENTRY FOUND
           GOTO 5000
         ENDIF
 C
-10      CONTINUE
+   10   CONTINUE
 C
 C  PARTICLE INSIDE STANDARD MESH, RADIAL CELL NO. NRCELL
 C
@@ -287,7 +287,7 @@ C
               GOTO 4711
             ENDIF
           ENDDO
-4711      CONTINUE
+ 4711     CONTINUE
         ENDIF
 C
 C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
@@ -329,7 +329,7 @@ C
             mtsurf=0
             NCOUP=NCOUPE
             GOTO 311
- 
+
           ELSEIF (ldamcel(itc).or.(ityp==3)) THEN
 C
 C  STOP TRACK ANYHOW
@@ -388,7 +388,7 @@ C
         MPSURF=0
         NINCY=0
 C
-311     CONTINUE
+  311   CONTINUE
 #ifdef TRACE
         IF (NLTRC) THEN
           WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
@@ -405,7 +405,7 @@ C
         GOTO 5000
 C
 C
-30      CONTINUE
+   30   CONTINUE
 C
 C  LAST CELL, TRACK DOES NOT END ON A POLOIDAL SURFACE
 C
@@ -429,7 +429,7 @@ C
         MPSURF=0
         NINCY=0
 C
-31      CONTINUE
+   31   CONTINUE
         NCOUP=NCOUPE
 #ifdef TRACE
         IF (NLTRC) THEN
@@ -495,7 +495,7 @@ C   JJC    : SURFACEINDEX
 C   J1     : CELLINDEX
 C   NJC    : ENDINDEX
           J1=NPCELL
-100       JJC=J1
+  100     JJC=J1
           IF (NINCY.EQ.1) JJC=JJC+1
 C   TIMESTEP FROM X00,Y00 TO THETA-SURFACE, THETA=WIN
           GS=SINPH(JJC)
@@ -516,7 +516,7 @@ C
 C
 C   LAST THETA-CELL
 C
-150       NCOUP=NCOUP+1
+  150     NCOUP=NCOUP+1
           JUPC(NCOUP)=NJC
           ALPD(NCOUP)=ZRAD-TWIN1
           X00=X000
@@ -555,7 +555,7 @@ C
               IF (LHITP(J)) WRITE (iunout,*) 'LHITP=TRUE FOR ',J
             ENDIF
 #endif
-112       CONTINUE
+  112     CONTINUE
 
 C  PARTICLE EXACTLY ON A (PLANE) POLOIDAL SURFACE
           IF (NLSRFY) THEN
@@ -598,11 +598,11 @@ C
               IF (I.EQ.1) NCOUP=NCOUP-1
             ENDIF
           ENDIF
-114     CONTINUE
+  114   CONTINUE
 C
 C   REARRANGE THE FLIGHT TIMES IN ASCENDING ORDER
 C
-115     ISW=0
+  115   ISW=0
         DO 120 J=1,NCOUP-1
           IF (ALPD(J).GT.ALPD(J+1)) THEN
             ISW=ISW+1
@@ -619,7 +619,7 @@ C
             MUPC(J)=MUPC(J+1)
             MUPC(J+1)=NHELP
           ENDIF
-120     CONTINUE
+  120   CONTINUE
         IF (ISW.GT.0.AND.NCOUP.GT.2) GOTO 115
 #ifdef TRACE
         IF (NLTRC.AND.NCOUP.GT.0) THEN
@@ -655,7 +655,7 @@ C
               MUPC(J+1)=NHELP
             ENDIF
           ENDIF
-125     CONTINUE
+  125   CONTINUE
 C
 C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
 C
@@ -692,7 +692,7 @@ C
             GOTO 131
           ENDIF
 C
-130     CONTINUE
+  130   CONTINUE
 C
 C  LAST CELL, TRACK DOES NOT END ON A POLOIDAL SURFACE
 C
@@ -716,7 +716,7 @@ C
         MPSURF=0
         NINCY=0
 C
-131       CONTINUE
+  131     CONTINUE
           NCOUP=NCOUPE
 #ifdef TRACE
           IF (NLTRC) THEN
@@ -773,7 +773,7 @@ C  TIME FROM Y00 TO PSURF
               ENDIF
             ENDIF
           ENDIF
-2903    CONTINUE
+ 2903   CONTINUE
         IF (NCOUP.GT.0.AND.LUPC(MAX(1,NCOUP)).NE.MPSURF) THEN
 C  REENTRY FOUND, REDUCE ZRAD TO F
 C  NCOUP=1 AT THIS POINT
@@ -834,7 +834,7 @@ C  CHECK VALID RANGE ON MRSURF
 C
 C  PARTICLE IN STANDARD MESH, RADIAL CELL NRCELL
 C
-2900    CONTINUE
+ 2900   CONTINUE
         Y000=Y00+VELY*ZRAD
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 'Y000,Y00,ZRAD ',Y000,Y00,ZRAD
@@ -859,7 +859,7 @@ C  J2: SURFACE INDEX
 C
         NLSRFY=.FALSE.
 C
-3000    CONTINUE
+ 3000   CONTINUE
         IF (J2.LE.0.OR.J2.GT.NP2ND) THEN
           WRITE (iunout,*) 'ERROR IN TIMEP ',J2,J1,VELY
           RETURN  ! changed to avoid job crash in long runs
@@ -915,7 +915,7 @@ C  NEXT CELL
 C
 C  LAST CELL
 C
-3100    CONTINUE
+ 3100   CONTINUE
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
 #endif
@@ -937,7 +937,7 @@ C
 C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
 C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
-5000  CONTINUE
+ 5000 CONTINUE
 #ifdef TRACE
       IF (NLTRC) WRITE (iunout,*) 'NCOUP= ',NCOUP
 #endif
@@ -953,13 +953,13 @@ C
      .                      NPANU,J,IADD+J,ALPD(J),JUPC(J)
         ENDIF
 #ifdef TRACE
-        IF (NLTRC) THEN 
+        IF (NLTRC) THEN
           JJ=J+IADD
           WRITE (iunout,*) 'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
      .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
         ENDIF
 #endif
-5100  CONTINUE
+ 5100 CONTINUE
 C
       IF (ICOUT.LT.NCOUT.AND.MPSURF.EQ.0) THEN
         ICOUT=ICOUT+1
@@ -995,7 +995,7 @@ C
         NCOUNT(ICOU)=NCOUNS(ICOU)
 C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
 C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
-5110  CONTINUE
+ 5110 CONTINUE
       IF (MPSURF.EQ.0.AND.ABS(SUM-ZRADS).GT.EPS10) THEN
         WRITE (iunout,*) 'ERROR IN TIMEP: NPANU,SUM,ZRADS ',
      .                               NPANU,SUM,ZRADS
@@ -1006,12 +1006,12 @@ C
       ZRAD=SUM
       RETURN
 C
-9990  CONTINUE
+ 9990 CONTINUE
       WRITE (iunout,*) 'ERROR IN TIMEP ',J2,J1,VELY
       WRITE (iunout,*) 'J2 OUT OF RANGE, NP2ND= ',NP2ND
       RETURN  ! changed to avoid job crash in long runs
 !     CALL EIRENE_EXIT_OWN(1)
-9991   CONTINUE
+ 9991  CONTINUE
       WRITE (iunout,*)
      .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'
       CALL EIRENE_EXIT_OWN(1)

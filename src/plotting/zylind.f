@@ -18,9 +18,9 @@ C  D.H. ILEFT (IRIGHT) <= 4 ENTSPRICHT DEM SCHNITT MIT EINER EBENE.
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, T1, T2, RAD,
      .                      PHIAN, PHIEN
       REAL(DP), INTENT(IN) :: AL(10), AR(10)
@@ -39,7 +39,7 @@ C
       ALLOCATE (YP(NAPK))
       ALLOCATE (XPS(NAPK))
       ALLOCATE (YPS(NAPK))
- 
+
       IF (NK.EQ.1) THEN
         DT=0.
       ELSE
@@ -98,7 +98,7 @@ C  VON PHIAN BIS PHIEN
         P(1,J)=XK*BX+YK*CX
         P(2,J)=XK*BY+YK*CY
         P(3,J)=XK*BZ+YK*CZ
-1     CONTINUE
+    1 CONTINUE
 C  SETZTE EINEN VERSCHIEBUNGSVEKTOR AUF DER ZYLINDERACHSE
 C  INNERHALB DES BEREICHES T1----T2, FUER SHNITT-OPTION
       PXS=X0+(T1+T2)/2.*VX
@@ -121,19 +121,19 @@ C PLOTTE DIE KREISSTUECKE, NK STUECK
             PXX=P(1,J)+PX
             PYY=P(2,J)+PY
             PZZ=P(3,J)+PZ
-3           CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+    3       CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1
           xps(jj)=xp(jj)
           yps(jj)=yp(jj)
-7       continue
+    7   continue
         CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES ZYLINDERS EIN
         IF ((I.EQ.1.OR.I.EQ.NK).AND.NF) CALL
      .  GRFILL(NA+1,XPS,YPS,1,1)
         IF (IO.GE.2) CALL GRNWPN(1)
-2     CONTINUE
+    2 CONTINUE
 C
 C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
 C
@@ -147,7 +147,7 @@ C  SETZE NEUEN KREIS UM 0-PUNKT, MIT NP STUETZSTELLEN
         P(1,J)=XK*BX+YK*CX
         P(2,J)=XK*BY+YK*CY
         P(3,J)=XK*BZ+YK*CZ
-6     CONTINUE
+    6 CONTINUE
 C
       IF (NK.EQ.1) RETURN
       IA=1
@@ -165,7 +165,7 @@ C
           PY=Y0+T*VY
           PZ=Z0+T*VZ
           CALL EIRENE_PL3D (P(1,J)+PX,P(2,J)+PY,P(3,J)+PZ,XP(I),YP(I))
-4       CONTINUE
+    4   CONTINUE
         IF (IRIGHT.NE.0) THEN
           CALL EIRENE_SHNITT
      .  (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,NK)
@@ -173,15 +173,15 @@ C
         do 9 jj=1,nk
           xps(jj)=xp(jj)
           yps(jj)=yp(jj)
-9       continue
+    9   continue
         CALL GRLN (XPS,YPS,NK)
-5     CONTINUE
- 
+    5 CONTINUE
+
       DEALLOCATE (P)
       DEALLOCATE (XP)
       DEALLOCATE (YP)
       DEALLOCATE (XPS)
       DEALLOCATE (YPS)
- 
+
       RETURN
       END

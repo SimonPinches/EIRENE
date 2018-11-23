@@ -27,20 +27,20 @@ C
       IF (X.LT.R(NS,1)-1.D-12) GOTO 20
 
 cdr  this loop should be replaced with a binary search
-13    DO 10 J=2,N
+   13 DO 10 J=2,N
         I=J
         IF (X-R(NS,J).LE.0.0) GOTO 15
-10    CONTINUE
+   10 CONTINUE
 
 
       NNN=N
       IF (X.GT.R(NS,N)+1.D-12) GOTO 20
 
 
-15    EIRENE_LEARCA2=I-1
+   15 EIRENE_LEARCA2=I-1
       RETURN
 C
-20    WRITE (iunout,*) 'X OUT OF RANGE IN LEARCA2'
+   20 WRITE (iunout,*) 'X OUT OF RANGE IN LEARCA2'
       WRITE (iunout,*)  X,NNN,R(NS,NNN)
       WRITE (iunout,*) 'LEARCA2= ',NNN,' RETURNED TO SUBR. ',TEXT
       EIRENE_LEARCA2=NNN

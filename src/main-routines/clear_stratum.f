@@ -9,11 +9,11 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
       USE EIRMOD_CSDVI_COP
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: ISPC
- 
+
       IESTR=-1
 C  TALLIES
       ESTIMV=0.
@@ -41,7 +41,7 @@ C  COP-ARRAYS
       SIGMA_COP=0.D0
       SDVIA_COP=0.D0
 C  SPECTRA
-      DO ISPC=1,NADSPC       
+      DO ISPC=1,NADSPC
         IF (NSIGI_SPC > 0) THEN
           ESTIML(ISPC)%SDV = 0._DP
           ESTIML(ISPC)%SGM = 0._DP
@@ -52,7 +52,7 @@ C  SPECTRA
         ESTIML(ISPC)%STVS = 0._DP
         ESTIML(ISPC)%GGS = 0._DP
       END DO
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_CLEAR_STRATUM
