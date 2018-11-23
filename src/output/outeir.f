@@ -149,7 +149,7 @@ C
       ENDIF
 
       CALL EIRENE_MASAGE
-     .  ('NUMBER OF MONTE-CARLO HISTORIES               ')
+     .  ('NUMBER OF MONTE CARLO HISTORIES               ')
       CALL EIRENE_MASR1('NHIST=  ',XMCP(ISTRA))
       CALL EIRENE_LEER(3)
 C

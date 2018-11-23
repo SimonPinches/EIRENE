@@ -1,9 +1,9 @@
 chf Nov.  18 :  samvol_usr added, for levgeo=10 option
-cdr Jan   18 : only notational change, to distuingish surface substrata from volume substrata
+cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
 cdr            replaces explicit expression.
-cdr 21.10.14 : bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
+cdr 21.10.14 : bug fix: spectral cut-off flag ICCT set to zero for default vol.rec (KK=0)
 cdr           -->now runs again on eirene default vol.rec model.
 cdr 30.10.14 :  lplssr true even if npts=0, to allow setting up volume source tallies,
 cdr             even if npts=0 for the vol-rec stratum
@@ -59,7 +59,7 @@ C
      .            VX, VY, VZ, VPARA, EELRC,
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
-     .            EIRENE_BREMS,XC,YC,ZC
+     .            EIRENE_BREMS, XC, YC, ZC
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IC1, IC2, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
@@ -81,7 +81,7 @@ C    THE SOURCE STRENGTH FLUX(ISTRA) IS MODIFIED FOR THE
 C    STRATA WITH NLVOL(ISTRA)=.TRUE.
 C
 C  AT ENTRY SAMVL1:
-C    THE INITIAL CO-ORDINATES OF A TEST FLIGHT ARE SAMPLED,
+C    THE INITIAL COORDINATES OF A TEST FLIGHT ARE SAMPLED,
 C    AND THE CELL NUMBERS ARE COMPUTED
 C
       ENTRY EIRENE_SAMVL0
@@ -134,7 +134,7 @@ C
           IRRC=LGPRC(IPLS,IIRC)
           KK=NREARC(IRRC)
           ICCT=0
-C  SPECTRAL CUT OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
+C  SPECTRAL CUT-OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
           IF (KK.GT.0) THEN
             ICCT=NREACT(KK)
           ENDIF
@@ -153,7 +153,7 @@ c  and then into source rate amp per cell, factor di * vol
                 ADD=EIRENE_FTABRC1(IRRC,J)*DIIN(IPLS,J)*VOL(J)*ELCHA
               END IF
             END IF
-C  SPECTRAL CUT OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
+C  SPECTRAL CUT-OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
             IF (ICCT > 0)
      .        ADD = ADD*(XINTLEFT(ICCT,J) +
      .                   XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
@@ -560,8 +560,8 @@ c  split quadrangle into two triangles,
 c  then 1st: sample triangle according to its relative area,
 c  then 2nd: sample uniformly within this triangle
         IT=1
-        DO 56 IR=1,NR1ST-1
-        DO 56 IP=1,NP2ND-1
+        DO IR=1,NR1ST-1
+         DO IP=1,NP2ND-1
           IND=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
           X1=XPOL(IR,IP)
           X2=XPOL(IR,IP+1)
@@ -577,7 +577,8 @@ c  then 2nd: sample uniformly within this triangle
           Y2=YPOL(IR,IP)
           Y3=YPOL(IR+1,IP+1)
           ASIMP(2,IND)=0.5*(X1*(Y2-Y3)+X2*(Y3-Y1)+X3*(Y1-Y2))
-   56   CONTINUE
+         END DO
+        END DO
       end select
 C
       RETURN
@@ -735,7 +736,7 @@ C
       CALL EIRENE_NCELLN(NCELL,NRCELL,NPCELL,NTCELL,NACELL,NBLOCK,
      .            NR1ST,NP2ND,NT3RD,NBMLT,NLRAD,NLPOL,NLTOR)
 C
-C  FIND TOROIDAL CO-ORDINATE IN NTCELL
+C  FIND TOROIDAL COORDINATE IN NTCELL
 C
       IF (.NOT.NLTOR) THEN
 C       NTCELL=1
@@ -768,7 +769,7 @@ C         Z0=??, TO BE FOUND FROM X01,PHI LATER
         ENDIF
       ENDIF
 C
-C  FIND RADIAL AND POLOIDAL CO-ORDINATE
+C  FIND RADIAL AND POLOIDAL COORDINATE
 C
       select case (LEVGEO)
       case (1)
@@ -781,13 +782,13 @@ C
 C..........................................................................
       case (2)
         IF (NLCRC) THEN
-C  POLOIDAL CO-ORDINATE
+C  POLOIDAL COORDINATE
           IF (NLPOL) THEN
             WINK=PSURF(NPCELL)+RANF_EIRENE( )*PS21(NPCELL)
           ELSEIF (.NOT.NLPOL) THEN
             WINK=RANF_EIRENE( )*PI2A
           ENDIF
-C  RADIAL CO-ORDINATE
+C  RADIAL COORDINATE
           RR=SQRT(RQ(NRCELL)+RANF_EIRENE( )*RQ21(NRCELL))
 C
           X0=RR*COS(WINK)
@@ -796,13 +797,13 @@ C
 CDR NOT READY. STRICKLY, THETA AND R ARE CORRELATED. USE
 CDR            MARGINAL AND CONDITIONAL DISTRIBUTION F1(R) AND
 CDR            F2(PHI, GIVEN R)
-C  POLOIDAL CO-ORDINATE
+C  POLOIDAL COORDINATE
           IF (NLPOL) THEN
             WINK=PSURF(NPCELL)+RANF_EIRENE( )*PS21(NPCELL)
           ELSEIF (.NOT.NLPOL) THEN
             WINK=RANF_EIRENE( )*PI2A
           ENDIF
-C  RADIAL CO-ORDINATE
+C  RADIAL COORDINATE
           RR=SQRT(RQ(NRCELL)+RANF_EIRENE( )*RQ21(NRCELL))
 C
           RRI=RSURF(NRCELL)

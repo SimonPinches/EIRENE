@@ -63,37 +63,41 @@ C
             RMA=MAX(RMA,AORIG(I))
           END DO
         END DO
-c       write (6,*) ' rmi, rma ',rmi, rma
+c       write (iunout,*) ' rmi, rma ',rmi, rma
       ELSEIF (LEVGEO .LE. 2.AND.LPTOR3(IBLD)) THEN
         IT=1
         IF (NLTOR) IT=IPROJ3(IBLD,ICURV)
         IF (IT.LE.0.OR.IT.GT.NT3RD) IT=1
         DO 21 IR=1,IXX-1
-          DO 21 IP=1,IYY-1
+          DO IP=1,IYY-1
             I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             RMI=MIN(RMI,AORIG(I))
             RMA=MAX(RMA,AORIG(I))
+          END DO
    21   CONTINUE
       ELSEIF (LEVGEO .LE. 2.AND.LPPOL3(IBLD)) THEN
         IP=1
         IF (NLPOL) IP=IPROJ3(IBLD,ICURV)
         IF (IP.LE.0.OR.IP.GT.NP2ND) IP=1
         DO 23 IR=1,IXX-1
-          DO 23 IT=1,IYY-1
+          DO IT=1,IYY-1
             I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             RMI=MIN(RMI,AORIG(I))
             RMA=MAX(RMA,AORIG(I))
+          END DO
    23   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
         IT=1
         IF (NLTOR) IT=IPROJ3(IBLD,ICURV)
         IF (IT.LE.0.OR.IT.GT.NT3RD) IT=1
         DO 20 IR=1,NR1ST-1
-        DO 20 IPART=1,NPPLG
-          DO 20 IP=NPOINT(1,IPART),NPOINT(2,IPART)-1
+         DO IPART=1,NPPLG
+          DO IP=NPOINT(1,IPART),NPOINT(2,IPART)-1
             I=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
             RMI=MIN(RMI,AORIG(I))
             RMA=MAX(RMA,AORIG(I))
+          END DO
+         END DO
    20   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
         DO 22 I=1,NTRII
@@ -102,7 +106,7 @@ c       write (6,*) ' rmi, rma ',rmi, rma
    22   CONTINUE
       ELSE
         WRITE (iunout,*) 'MISSING OPTION IN ISOLNE: RMI,RMA '
-        WRITE (iunout,*) 'PLOT ABANDONNED '
+        WRITE (iunout,*) 'PLOT ABANDONED '
         RETURN
       ENDIF
 C
@@ -115,7 +119,7 @@ C
         ALLOCATE (A(N1ST+N2ND,N2ND+N3RD))
         CALL EIRENE_CELINT(AORIG,A,LOGL,IBLD,ICURV,N1ST+N2ND,IERR)
       ENDIF
-c     write (6,*) ' nach celint, ierr ',ierr
+c     write (iunout,*) ' nach celint, ierr ',ierr
       IF (IERR.GT.0) RETURN
 C
 C  SEARCH FOR XMIN,XMAX,YMIN,YMAX
@@ -135,8 +139,8 @@ C
         XMAX = PSURF(NP2ND)
         YMIN = ZSURF(1)
         YMAX = ZSURF(NT3RD)
-c       write (6,*) ' xmin, xmax ',xmin,xmax
-c 	    write (6,*) ' ymin, ymax ',ymin, ymax
+c       write (iunout,*) ' xmin, xmax ',xmin,xmax
+c 	    write (iunout,*) ' ymin, ymax ',ymin,ymax
       ELSEIF (LEVGEO.EQ.1.AND.LPTOR3(IBLD)) THEN
         XMIN = RHOSRF(1)
         XMAX = RHOSRF(NR1ST)
@@ -186,7 +190,7 @@ C  SEARCH ON WHOLE MESH
       ELSE
         WRITE (iunout,*)
      .    'MISSING OPTION IN ISOLNE: XMIN,XMAX,YMIN,YMAX '
-        WRITE (iunout,*) 'PLOT ABANDONNED '
+        WRITE (iunout,*) 'PLOT ABANDONED '
         RETURN
       ENDIF
 C
@@ -205,7 +209,7 @@ C
      .             REAL(XMAX,KIND(1.E0)),REAL(YMAX,KIND(1.E0)))
       CALL GRAXS (7,'X=3,Y=3',6,'R (CM)',6,'Z (CM)')
 C
-C  SCALE FACTORS: USER CO-ORDINATES TO CM:
+C  SCALE FACTORS: USER COORDINATES TO CM:
 C  X-DIRECTION:
       SCLFCX=((10.+DX*FAK)-10.)/(XMAX-XMIN)
 C  Y-DIRECTION:
@@ -230,33 +234,38 @@ C
           CALL GRJMP(real(XPOL(IR,1),KIND(1.E0)),
      .               real(YPOL(IR,1),KIND(1.E0)))
           DO 9 IP = 2,NP2ND
-    9       CALL GRDRW(real(XPOL(IR,IP),KIND(1.E0)),
+            CALL GRDRW(real(XPOL(IR,IP),KIND(1.E0)),
      .                 real(YPOL(IR,IP),KIND(1.E0)))
+    9     CONTINUE
     7   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
         CALL GRJMP(real(XPOL(1,NPOINT(1,1)),KIND(1.E0)),
      .             real(YPOL(1,NPOINT(1,1)),KIND(1.E0)))
           DO 10 IR=2,NR1ST
-   10       CALL GRDRW (real(XPOL(IR,NPOINT(1,1)),KIND(1.E0)),
+            CALL GRDRW (real(XPOL(IR,NPOINT(1,1)),KIND(1.E0)),
      .                  real(YPOL(IR,NPOINT(1,1)),KIND(1.E0)))
+   10     CONTINUE
 C
         CALL GRJMP (real(XPOL(1,NPOINT(2,NPPLG)),KIND(1.E0)),
      .              real(YPOL(1,NPOINT(2,NPPLG)),KIND(1.E0)))
         DO 11 IR=2,NR1ST
           NP=NPOINT(2,NPPLG)
-   11     CALL GRDRW (real(XPOL(IR,NP),KIND(1.E0)),
+          CALL GRDRW (real(XPOL(IR,NP),KIND(1.E0)),
      .                real(YPOL(IR,NP),KIND(1.E0)))
+   11   CONTINUE
         DO 15 I=1,NPPLG
           CALL GRJMP (real(XPOL(1,NPOINT(1,I)),KIND(1.E0)),
      .                real(YPOL(1,NPOINT(1,I)),KIND(1.E0)))
           DO 12 IP=NPOINT(1,I),NPOINT(2,I)
-   12       CALL GRDRW (real(XPOL(1,IP),KIND(1.E0)),
+            CALL GRDRW (real(XPOL(1,IP),KIND(1.E0)),
      .                  real(YPOL(1,IP),KIND(1.E0)))
+   12     CONTINUE
           CALL GRJMP (real(XPOL(NR1ST,NPOINT(1,I)),KIND(1.E0)),
      .                real(YPOL(NR1ST,NPOINT(1,I)),KIND(1.E0)))
           DO 13 IP=NPOINT(1,I),NPOINT(2,I)
-   13       CALL GRDRW (real(XPOL(NR1ST,IP),KIND(1.E0)),
+            CALL GRDRW (real(XPOL(NR1ST,IP),KIND(1.E0)),
      .                  real(YPOL(NR1ST,IP),KIND(1.E0)))
+   13     CONTINUE
    15   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
         DO ITR=1,NTRII
@@ -281,7 +290,7 @@ C
         ENDDO
       ELSE
         WRITE (iunout,*) 'MISSING OPTION IN ISOLNE: PLOT GRID BOUNDARY '
-        WRITE (iunout,*) 'PLOT ABANDONNED '
+        WRITE (iunout,*) 'PLOT ABANDONED '
         IF (ALLOCATED(A)) DEALLOCATE (A)
         IF (ALLOCATED(AA)) DEALLOCATE (AA)
         RETURN
@@ -319,7 +328,7 @@ C
           IF (MOD(IS,IISO).EQ.1) ICOLOR=ICOLOR+1
           CALL GRNWPN(ICOLOR)
           DO 1100 IR=1,IXX-1
-          DO 1100 IP=1,IYY-1
+           DO IP=1,IYY-1
             A1=A(IR,IP)
             A2=A(IR+1,IP)
             A3=A(IR+1,IP+1)
@@ -369,6 +378,7 @@ C               WRITE (iunout,*) ' EIN ZUSAETZLICHER PUNKT EINGEGEBEN '
                 IC=0
               ENDIF
             ENDIF
+           END DO
  1100     CONTINUE
           IF (IC.GT.0) CALL EIRENE_XYPLOT (XY,IC)
  1000   CONTINUE
@@ -379,8 +389,8 @@ C               WRITE (iunout,*) ' EIN ZUSAETZLICHER PUNKT EINGEGEBEN '
           IF (MOD(IS,IISO).EQ.1) ICOLOR=ICOLOR+1
           CALL GRNWPN(ICOLOR)
           DO 110 IR=1,NR1ST-1
-          DO 110 IPART=1,NPPLG
-          DO 110 IP=NPOINT(1,IPART),NPOINT(2,IPART)-1
+           DO IPART=1,NPPLG
+           DO IP=NPOINT(1,IPART),NPOINT(2,IPART)-1
             A1=A(IR,IP)
             A2=A(IR+1,IP)
             A3=A(IR+1,IP+1)
@@ -430,6 +440,8 @@ C               WRITE (iunout,*) ' EIN ZUSAETZLICHER PUNKT EINGEGEBEN '
                 IC=0
               ENDIF
             ENDIF
+           END DO
+           END DO
   110     CONTINUE
           IF (IC.GT.0) CALL EIRENE_XYPLOT (XY,IC)
   100   CONTINUE
@@ -492,7 +504,7 @@ C               WRITE (iunout,*) ' EIN ZUSAETZLICHER PUNKT EINGEGEBEN '
         ENDDO
       ELSE
         WRITE (iunout,*) 'MISSING OPTION IN ISOLNE: PLOT CONTOURS '
-        WRITE (iunout,*) 'PLOT ABANDONNED '
+        WRITE (iunout,*) 'PLOT ABANDONED '
         IF (ALLOCATED(A)) DEALLOCATE (A)
         IF (ALLOCATED(AA)) DEALLOCATE (AA)
         RETURN

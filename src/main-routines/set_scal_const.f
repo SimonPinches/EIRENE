@@ -1,4 +1,4 @@
-cdr   enforce a re-scaling of all output tallies (for a given stratum ISTR)
+cdr   enforce a rescaling of all output tallies (for a given stratum ISTR)
 cdr   such that a specified particular response takes a given value SCALV,
 cdr   rather than employing the default scaling with source strength FLUX.
 cdr   The particular reference response is coded in
@@ -32,14 +32,13 @@ C
       REAL(DP), INTENT(IN) :: SCLTAL(N1DIM,*)
       REAL(DP), INTENT(OUT) :: ZVOLIN(*), ZVOLIW(*)
 
-      INTEGER :: IS, IT, IC, I1, I2, I3, IA, IB, NBLCKA, IADD, IGFF,
-     .           INDX
+      INTEGER :: IS, IT, IC, I1, I2, I3, IA, IB, NBLCKA, IADD, IGFF
       REAL(DP) :: VALUE, VAL, FLX
 
 C  FACTOR FOR FLUXES (AMP) (INPUT FLUX "FLUXT" IS IN AMP)
       FLXFAC(ISTR)=0.
       IF (SCALV(ISTR).NE.0.D0) THEN
-C  NON DEFAULT SCALING OPTION
+C  NON-DEFAULT SCALING OPTION
         IS=ISCLS(ISTR)
         IT=ISCLT(ISTR)
         IC=ISCL1(ISTR)
@@ -66,7 +65,6 @@ c
           IF (IC.LT.0.OR.IC.GT.NSBOX_TAL) GOTO 207
           IADD=NADDV(IT)
           IGFF=NFIRST(IT)
-          INDX=IADD+(IC-1)*IGFF+IS
           IF (SCLTAL(1,IT).EQ.1) THEN
             VALUE=ESTIMV(IADD+IS,IC)/VOLTAL(IC)/ELCHA
           ELSEIF (SCLTAL(1,IT).EQ.2) THEN
@@ -109,10 +107,10 @@ C  TOTAL TEST PARTICLE FLUX (AMP)
       CALL EIRENE_MASR1 ('FLUXT=  ',FLUXT(ISTR))
       CALL EIRENE_LEER(2)
 C
-C  ZONE IN-DEPENDENT SCALING FACTORS
+C  ZONE-INDEPENDENT SCALING FACTORS
       ZWW=FLXFAC(ISTR)
       ZW=FLXFAC(ISTR)/ELCHA
-C  ZONE DEPENDENT SCALING FACTORS
+C  ZONE-DEPENDENT SCALING FACTORS
       DO 206 IC=1,NSBOX_TAL
         ZVOLIN(IC)=0.
         ZVOLIW(IC)=0.
