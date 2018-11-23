@@ -34,7 +34,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
 !              currently hard-wired: 1e-8.
 !             (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
-! to be done:  
+! to be done:
 !              ip2shft option: currently hard-wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
@@ -61,7 +61,7 @@ c  transformation of parameters p1 and p2:
      .                  dsub    = 18.420680744_dp       !ln(1e8), hard-wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar          
+      integer :: ip1, ip2, iflavor, ivar
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -214,7 +214,7 @@ c..............................................................
 c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
-        
+
         iflavor = reacdat(ir)%rtc%crm%iflav
         ivar = reacdat(ir)%rtc%crm%ivarst
 
@@ -222,10 +222,10 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
-        if (lexp) then 
+        if (lexp) then
           rate = res
         elseif (res.gt.0.0) then
-          rate = log(res) 
+          rate = log(res)
         else
           write (iunout,*) 'wrong sign from cr model'
           write (iunout,*) 'p1,p2,rate ',pp1,pp2,res

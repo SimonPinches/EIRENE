@@ -64,14 +64,14 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         CALL EIRENE_LEER(1)
       END IF
 
-      if (ncont == 0) then 
+      if (ncont == 0) then
         call EIRENE_leer(1)
         write (iunout,*) 'No contours specified in blocks 3a,3b'
         write (iunout,*)
      .    'No input file fort.78 for FEM mesh generator written '
         call EIRENE_leer(2)
         return
-      endif  
+      endif
 
 
       IF (.NOT.ALLOCATED(NCONPOINT)) THEN
@@ -481,7 +481,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
           YCONTOUR(IPO,ICO) = PARTCONT(IWEN,IWL,2)
         END IF
 
-1000    CONTINUE
+ 1000   CONTINUE
       ENDDO    ! END OF DO ICONT.... LOOP
       NCONTOUR=ICO
 

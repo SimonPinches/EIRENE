@@ -1,6 +1,6 @@
 cdr:  njump=3 option: continue new flight from previously found
 cdr                   intersection with cell boundary. used from levgeo=10
-C icts introduced, 
+C icts introduced,
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 cdr   may 17:  commenting. tbd: commenting in particular of tetrahedra-grid part.
 cdr  march 18: variable LHITP (meaning analogue as in timep.F). Had another name
@@ -104,9 +104,9 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: PT
       REAL(DP) :: A(3,3), B(3), AB(3,3), PTS(4)
       REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, EIRENE_SARRUS, AX, AY, V,
@@ -136,12 +136,12 @@ C
       LOGICAL :: LCTS(4)
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
- 
+
       EQUIVALENCE (LCTS(1),LCT1), (LCTS(2),LCT2),
      .            (LCTS(3),LCT3), (LCTS(4),LCT4)
       EQUIVALENCE (PTS(1),PT1),   (PTS(2),PT2),
      .            (PTS(3),PT3),   (PTS(4),PT4)
- 
+
       DATA ITSIDE /1,2,3,
      .             1,4,2,
      .             2,4,3,
@@ -183,8 +183,8 @@ C-------------------------------------------------------------------
 C
 C****SLAB MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
-      IF (ABS(VELX)<= EPS30) THEN 
-c  zero velocity in x direction, i.e. flight purely in y-z-direction 
+      IF (ABS(VELX)<= EPS30) THEN
+c  zero velocity in x direction, i.e. flight purely in y-z-direction
         IPOLGN=IPOLG
         NCOUP=1
         ALPD(NCOUP)=PT
@@ -225,7 +225,7 @@ C                       BEFORE REACHING THIS NEXT X-GRID BOUNDARY
         ENDIF
         PT=TST
         MRSURF=IR
-5       CONTINUE
+    5   CONTINUE
       ELSE
 C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
         DO 10 IR=1,NR1ST
@@ -244,7 +244,7 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
             PT=TST
             MRSURF=IR
           ENDIF
-10      CONTINUE
+   10   CONTINUE
         IF (MRSURF.EQ.0) NINCX=0
       ENDIF
 #ifdef TRACE
@@ -256,7 +256,7 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       RETURN
 C
 C
-100   CONTINUE
+  100 CONTINUE
 C
 C---------------------------------------------------------------------
       IF (LEVGEO.GT.2) GOTO 6000
@@ -308,33 +308,33 @@ C  FIND NEXT SURFACE MRSURF
       PS=PT
       MS=0
       IS=0
-200   DO 205 IR=NRI,NR1ST
+  200 DO 205 IR=NRI,NR1ST
         IF (INMP1I(IR,0,0).NE.0) THEN
           MRSURF=IR
           GOTO 204
         ENDIF
-205   CONTINUE
+  205 CONTINUE
       PT=PS
       MRSURF=MS
       RETURN
 C
 C  CHECK SURFACE: MRSURF
 C
-204   IF (MRSURF.EQ.1) GO TO 201
-      IF (TIMINT(MRSURF).GT.0.0) GO TO 303
-203   ZR=RQ(MRSURF)
+  204 IF (MRSURF.EQ.1) GOTO 201
+      IF (TIMINT(MRSURF).GT.0.0) GOTO 303
+  203 ZR=RQ(MRSURF)
 C  CHECK FOR ROOT
       ZEP1=ZAB2*(ZC1-ZR)
-      IF (ZEP1.LT.1.0) GO TO 202
+      IF (ZEP1.LT.1.0) GOTO 202
 C  NO ROOT - PATH IN OTHER DIRECTION. THIS MUST BE THE
 C  OUTWARD DIRECTION NOW, DUE TO CONVEXITY OF THE MESH
       IF (NRI.GT.0) GOTO 310
-201   CONTINUE
+  201 CONTINUE
       NINCX=1
       MRSURF=MRSURF+1
-      IF (NJUMP.EQ.0) GO TO 203
-      GO TO 303
-202   CONTINUE
+      IF (NJUMP.EQ.0) GOTO 203
+      GOTO 303
+  202 CONTINUE
 C
 C  RESET BRANCH MARKER
       NJUMP=1
@@ -347,15 +347,15 @@ C  INTERSECTION TIMES
 C
 CL              3.         RETURN RESULT
 C
-300   CONTINUE
+  300 CONTINUE
 C
 C  CHECK SIGN OF RESULT
-      IF(ZEP1.GT.0.0) GO TO 301
+      IF(ZEP1.GT.0.0) GOTO 301
 C  ONE ROOT NEGATIVE OR ZERO
       PT=MAX(ZT1,ZT2)
       GOTO 310
 C
-301   CONTINUE
+  301 CONTINUE
       PT=ZT1
       TIMINT(MRSURF)=ZT2
 
@@ -365,10 +365,10 @@ c  ONE FURTHER VALID INTERSECTION FOUND: SAVE THIS FOR NEXT TIME:
       GOTO 310
 C
 C  ROOT ALREADY KNOWN
-303   PT=TIMINT(MRSURF)
+  303 PT=TIMINT(MRSURF)
       GOTO 310
 C
-310   CONTINUE
+  310 CONTINUE
       IF (NRI.EQ.0) THEN
         RETURN
       ELSE
@@ -381,7 +381,7 @@ C
         GOTO 200
       ENDIF
 C
-1000  CONTINUE
+ 1000 CONTINUE
 C
 C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
@@ -389,10 +389,10 @@ C
         WRITE (iunout,*) 'NRCELL.LE.0 IN TIMER: NOT READY '
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
- 
+
 C  PARTICLE OUTSIDE GRID OPTION NOT READY, SEE NLCRC
       NRI=0
- 
+
 C  COEFFICIENTS OF QUADRATIC
       IF (NJUMP.EQ.0) THEN
 C  SAVE STARTING POINT, FLIGHT DIRECTION, FOR LATER CALLS ALONG SAME TRACK.
@@ -432,13 +432,13 @@ C   TEST FOR DIRECTION. CASE:.NOT.NLSRFX, NRCELL KNOWN
         ENDIF
       ENDIF
 C
-2000  CONTINUE
+ 2000 CONTINUE
       MRSURF=NRCELL
       IF (NINCX.EQ.1) MRSURF=MRSURF+1
-1100  ZB=(XX0-EP1(MRSURF))*VVELX+YVY/ELLQ(MRSURF)
+ 1100 ZB=(XX0-EP1(MRSURF))*VVELX+YVY/ELLQ(MRSURF)
 C
-1200  IF(MRSURF.EQ.1) GO TO 2010
-      IF(TIMINT(MRSURF).GT.0.0) GO TO 3030
+ 1200 IF(MRSURF.EQ.1) GOTO 2010
+      IF(TIMINT(MRSURF).GT.0.0) GOTO 3030
       ESURF=XX0-EP1(MRSURF)
       DSRF=ELLQ(MRSURF)
       ZA=VELXQ+VELYQ/DSRF
@@ -449,15 +449,15 @@ C
       ZR=RQ(MRSURF)
       ZEP1=ZAB2*(ZC1-ZR)
 C  CHECK FOR ROOT
-      IF(ZEP1.LT.1.0) GO TO 2020
+      IF(ZEP1.LT.1.0) GOTO 2020
 C  NO ROOT - PATH IN OTHER DIRECTION
 C  MUST BE OUTWARD, BECAUSE OF CONVEXITY OF MESH
-2010  CONTINUE
+ 2010 CONTINUE
       NINCX=1
       MRSURF=MRSURF+1
-      IF (NJUMP.EQ.0.) GO TO 1100
-      GO TO 3030
-2020  CONTINUE
+      IF (NJUMP.EQ.0.) GOTO 1100
+      GOTO 3030
+ 2020 CONTINUE
 C
 C  RESET BRANCH MARKER
       NJUMP=1
@@ -476,15 +476,15 @@ C
 C---------------------------------------------------------------------
 CL              3.         RETURN RESULT
 C
-3000  CONTINUE
+ 3000 CONTINUE
 C
 C  CHECK SIGN OF RESULT
-      IF(ZEP1.GT.0.0) GO TO 3010
+      IF(ZEP1.GT.0.0) GOTO 3010
 C  ONE ROOT NEGATIVE OR ZERO
       PT=MAX(ZT1,ZT2)
       GOTO 3100
 C
-3010  CONTINUE
+ 3010 CONTINUE
 C  BOTH ROOTS POSITIVE - RETURN ONE AND SAVE OTHER
       PT=ZT1
       TIMINT(MRSURF)=ZT2
@@ -493,11 +493,11 @@ C  BOTH ROOTS POSITIVE - RETURN ONE AND SAVE OTHER
       GOTO 3100
 C
 C  ROOT ALREADY KNOWN
-3030  PT=TIMINT(MRSURF)
+ 3030 PT=TIMINT(MRSURF)
       GOTO 3100
- 
+
 C
-3100  CONTINUE
+ 3100 CONTINUE
       XTEST=X0+PT*VELX
       YTEST=Y0+PT*VELY
       IF (NLPOL) IPOLGN=EIRENE_LEARC2(XTEST,YTEST,NRCELL,NPANU,'TIMER')
@@ -521,7 +521,7 @@ CPB        GOTO 2000
 C
 C     POLYGONS
 C
-6000  CONTINUE
+ 6000 CONTINUE
 C
       IF (LEVGEO.GT.3) GOTO 8000
 C
@@ -541,7 +541,7 @@ C  SET INDICES OF STARTING CELL
         IF (.NOT.NLPOL) IP=IPOLG
 
         IF (NJUMP.EQ.1) THEN
-C  CONTINUATION OF A TRAJECTORY WITH SAME STARTING POINT AND SAME DIRECTION 
+C  CONTINUATION OF A TRAJECTORY WITH SAME STARTING POINT AND SAME DIRECTION
           IR=ICELLR
           IP=IPOLGN
           IF (NINCX.EQ.1) LNGB1=.FALSE.
@@ -572,7 +572,7 @@ C  CONTINUATION OF A TRAJECTORY WITH SAME STARTING POINT AND SAME DIRECTION
 C
         NCOUP=0
 C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
-6001    CONTINUE
+ 6001   CONTINUE
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
      .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
@@ -828,13 +828,13 @@ C
 C
           DO 6012 J=1,NPPLG
             DO 6012 K=NPOINT(1,J),NPOINT(2,J)-1
-             
+
               IF (I.EQ.MPOL.and.K.EQ.JPOL) cycle
-           
+
               V1=(YPOL(I,K+1)-Y0)*VELX-(XPOL(I,K+1)-X0)*VELY
               V2=(YPOL(I,K)-Y0)*VELX-(XPOL(I,K)-X0)*VELY
 ! allow only intersection with non-default radial standard surfaces
-! no checking for intersection with default parts of the grid. 
+! no checking for intersection with default parts of the grid.
 ! Only: non-def. parts are checked.
 
               LHITP(K)=(V1*V2.LE.0.) .AND. (INMP1I(I,K,0) /= 0)
@@ -842,7 +842,7 @@ C
 C   COMPUTE THE FLIGHT TIMES TO THE INTERSECTION POINTS
 C
               if (.not.lhitp(k)) cycle
- 
+
               T1=((XPOL(I,K)-X0)*VPLY(I,K)-(YPOL(I,K)-Y0)*VPLX(I,K))
      .           /(VELX*VPLY(I,K)-VELY*VPLX(I,K)+EPS60)
               IF (T1.GT.0.) THEN
@@ -850,9 +850,9 @@ C
                 TIMPOL(I,NTIM(I))=T1
                 IIMPOL(I,NTIM(I))=K
               ENDIF
-6012      CONTINUE
+ 6012     CONTINUE
 C
-6015      ISW=0
+ 6015     ISW=0
           DO 6020 J=1,NTIM(I)-1
             IF (TIMPOL(I,J).LT.TIMPOL(I,J+1)) THEN
               ISW=ISW+1
@@ -863,7 +863,7 @@ C
               IIMPOL(I,J)=IIMPOL(I,J+1)
               IIMPOL(I,J+1)=IHELP
             ENDIF
-6020      CONTINUE
+ 6020     CONTINUE
           IF (ISW.GT.0.AND.NTIM(I).GT.2) GOTO 6015
 #ifdef TRACE
           IF (NLTRC) THEN
@@ -883,7 +883,7 @@ C  FIND PT, MRSURF, IPOLGN
             IPOLGN=IIMPOL(I,NTIM(I))
           ENDIF
         ENDIF
-6100  CONTINUE
+ 6100 CONTINUE
 C
 C  FIND NINCX
       NINCX=0
@@ -903,7 +903,7 @@ C
       RETURN
 C
 C
-8000  CONTINUE
+ 8000 CONTINUE
 C
       IF (LEVGEO.GT.4) GOTO 10000
 C
@@ -917,7 +917,7 @@ C
 #endif
 C
       IF (NJUMP.EQ.0) THEN
-8001    CONTINUE
+ 8001   CONTINUE
         IZELL = NRCELL
         IPOLGO=0
         IF (NLSRFX) THEN
@@ -925,7 +925,7 @@ C
         ENDIF
 C     ELSEIF (NJUMP.EQ.1) THEN
       ENDIF
- 
+
       IF (NRCELL > 0) THEN
 #ifdef TRACE
         IF (NLTRC) THEN
@@ -940,7 +940,7 @@ C     ELSEIF (NJUMP.EQ.1) THEN
         TM=0.
         IF (IZELL.EQ.0) GOTO 9999
 C
-8020    CONTINUE
+ 8020   CONTINUE
         DO 8010,J=1,3
           IF (J.NE.IPOLGO) THEN
             RICHTX = VTRIX(J,IZELL)
@@ -985,7 +985,7 @@ C  SEITENNUMMER DES NEUEN DREIECKS
               ENDIF
             ENDIF
           ENDIF
-8010    CONTINUE
+ 8010   CONTINUE
 C
 #ifdef TRACE
         IF (NLTRC)
@@ -1014,7 +1014,7 @@ C   IZELL and IPOLGO of next triangle are now given
 C
 C   THIS IS DONE FOR NJUMP=0 AND NJUMP=1
 C
-8050  CONTINUE
+ 8050 CONTINUE
       NLSRFX=.FALSE.
       NJUMP=1
       MRSURF=NRCELL
@@ -1047,12 +1047,12 @@ C  on non-default surface (add. or. std.): ISTS=INMTI(IPOLGN,NRCELL)
      .  ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .    NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
- 
+
       RETURN
       END IF
- 
+
 C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
- 
+
       IF (.NOT.ALLOCATED(ITRINO)) THEN
         NSTS_CELL = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
         ALLOCATE (ITRINO(NSTS_CELL))
@@ -1068,7 +1068,7 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
           END DO
         END DO
       END IF
- 
+
       XX = X0
       YY = Y0
       PT=1.E30_DP
@@ -1082,7 +1082,7 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
         JPOL=0
       END IF
       MRSURF=0
- 
+
       DO I=1, NSTS_CELL
         IZELL=ITRINO(I)
         J=ISIDNO(I)
@@ -1109,7 +1109,7 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
           ENDIF
         ENDIF
       END DO
- 
+
       IF (ISTS_CELL > 0) THEN
 !  REENTRY FOUND
         NLSRFX=.TRUE.
@@ -1124,11 +1124,11 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
       END IF
- 
+
       RETURN
 C
 10000 CONTINUE
- 
+
       IF (LEVGEO > 5) GOTO 12000
 C
 C  MESH OF TETRAHEDRA, FULL 3D DISCRETIZATION OF COMPUTATIONAL VOLUME
@@ -1151,7 +1151,7 @@ C       ELSEIF (NJUMP.EQ.1) THEN
           WRITE (iunout,*) ' VELX,VELY,VELZ ',VELX,VELY,VELZ
         ENDIF
 #endif
- 
+
         XX = X0
         YY = Y0
         ZZ = Z0
@@ -1316,9 +1316,9 @@ C  ON NON-DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
 #endif
- 
+
         RETURN
- 
+
       ELSE
 C
 C  PARTICLE IS OUTSIDE STANDARD MESH, IN ADDITIONAL CELL NACELL
@@ -1328,7 +1328,7 @@ C
 CDR  PREPARE SOME GRID DATA FOR FINDING RE-ENTRY INTO GRID OF TETRAHEDA
 CDR  ONLY ONCE FOR ALL FUTURE TRAJECTORIES.
 
-C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).   
+C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).
           ITFRST = 1
 !    find number of boundary tetrahedra
           NTETSUR = COUNT(NTBAR(1:4,1:NTET) == 0)
@@ -1338,12 +1338,12 @@ C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).
             DO IS = 1,4
               IF (NTBAR(IS,ITET) == 0) THEN
                 IOB = IOB + 1
-!    side IS of tetrahedron ITET belongs to boundary 
+!    side IS of tetrahedron ITET belongs to boundary
                 IDROB(IOB,:) = (/ ITET,IS /)
               END IF
             END DO
           END DO
- 
+
           ALLOCATE (ISEEOB(0:NLIMI,NTETSUR/NBITS+1))
           ISEEOB = 0
           ISEEOB(0,:) = -1
@@ -1394,11 +1394,11 @@ CDR  LOOP OVER ADDITIONAL SURFACES
               END DO
             END DO
           END IF
-        END IF   ! ITFRST == 0 PART. NOW: ITFRST = 1 
- 
+        END IF   ! ITFRST == 0 PART. NOW: ITFRST = 1
+
         PT=1.D30
         MRSURF=0
- 
+
         TIMT=1.D30
         NTMZ=0
         NTMS=0
@@ -1456,7 +1456,7 @@ C  SEITENNUMMER DES NEUEN DREIECKS
           ENDIF
 #endif
         END IF
- 
+
         NLSRFX=.FALSE.
         NJUMP=1
         MRSURF=NTMZ
@@ -1471,7 +1471,7 @@ C  SEITENNUMMER DES NEUEN DREIECKS
       END IF
 
       RETURN
- 
+
 12000 CONTINUE
 C
 C  GENERAL GEOMETRY OPTION: PROVIDE FLIGHT TIME IN CURRENT CELL
@@ -1498,7 +1498,7 @@ c              coincides with this "virtual radial" surface.
       END IF
 C
 
-      
+
 C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
       IF (NJUMP.EQ.3.or.njump.eq.0) then
         TIM=0.
@@ -1510,7 +1510,7 @@ C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
         WRITE (iunout,*)                        NJUMP,TIM,ZT
       ENDIF
 #endif
-      
+
 c     if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
 
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
@@ -1524,7 +1524,7 @@ cdr  but this is not one of the "radial" non-default standard surfaces defined i
         NINCX=NEWCEL-NRCELL
 cdr  make sure that mrsurf is not pointing to any of the defined non-default standard surfaces
 cdr  but why not just mrsurf=0 ???
-cdr  in cases levgeo ne 10, mrsurf is the next grid surface label, 
+cdr  in cases levgeo ne 10, mrsurf is the next grid surface label,
 c    no matter if non-default (3a) or not.
         MRSURF=NRMSRF
 c
@@ -1547,9 +1547,9 @@ cdr
 #endif
 
       RETURN
- 
+
 C
-9999  CONTINUE
+ 9999 CONTINUE
       WRITE (iunout,*) 'ERROR IN TIMER, EXIT CALLED AT 9999'
       WRITE (iunout,*) 'NPANU ', NPANU
       CALL EIRENE_EXIT_OWN(1)

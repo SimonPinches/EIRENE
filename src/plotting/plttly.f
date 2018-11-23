@@ -1,6 +1,6 @@
 C  10.6.05:  L_SAME:  USE SAME FRAME AS IN PREVIOUS CALL
 C  8.8.06 :  GRPP taken out
-Cdr sept.17:  plot options logx are not available. 
+Cdr sept.17:  plot options logx are not available.
 C             But would be good for spectra, at least
 C
       SUBROUTINE EIRENE_PLTTLY
@@ -15,16 +15,16 @@ C    input
 c
 c
 c   l_same  :  plot one more curve (or histogram) into previous picture
-c              if true :  add the tally text under the previous legend 
+c              if true :  add the tally text under the previous legend
 c              if false:  make a new picture, and new frame
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CCONA
       USE EIRMOD_CPLMSK
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: N1BAR, N1DIM
       REAL(DP), INTENT(IN) :: X(*), VBAR(N1BAR,*),
      .                      YMN(*), YMX(*), YMNLG(*), YMXLG(*)
@@ -34,7 +34,7 @@ c              if false:  make a new picture, and new frame
       LOGICAL, INTENT(IN) :: LHIST
       CHARACTER(LEN=*), INTENT(IN) :: TXTTAL(*),TXTSPC(*),TXTUNT(*),
      .                                TXTRUN, TXHEAD
- 
+
       REAL(DP) :: YA, YMINY, YMY, AA, FM, ST1, ST2, FP, DMINY, DMAXY,
      .          XMI, XMA
       REAL(DP) :: XMIN, XMAX, YMIN, YMAX
@@ -48,7 +48,7 @@ C
       IKURV=0
       DO 1 I=1,NKURV
         IF (LPLOT(I)) IKURV=IKURV+1
-1     CONTINUE
+    1 CONTINUE
       IF (IKURV.EQ.0) RETURN
 C
       MINX=XMI
@@ -59,7 +59,7 @@ C
         IF (.NOT.LPLOT(I)) GOTO 3
         MINY=MIN(MINY,REAL(YMN(I),SP))
         MAXY=MAX(MAXY,REAL(YMX(I),SP))
-3     CONTINUE
+    3 CONTINUE
 C
       IF (LOGY) THEN
         DMAXY=MAXY
@@ -100,7 +100,7 @@ cdr  use FZJ proprietary GR plot software
         CALL GRSCLC (0.,0.,39.5,28.7)
         CALL GRSCLV (0.,0.,39.5,28.7)
       END IF
- 
+
       DO 2 I=1,NKURV
         IF (.NOT.LPLOT(I)) GOTO 2
         IPEN1=IPEN1+1
@@ -124,9 +124,9 @@ cdr  use FZJ proprietary GR plot software
         WRITE (CHR,'(1P,E10.3)') YMNLG(I)
         CALL GRTXTC (10,CHR)
         YA=YA-1.0
-2     CONTINUE
+    2 CONTINUE
       CALL GRNWPN(1)
- 
+
       IF (L_SAME) THEN
 ! RESTORE SCALING
         CALL GRSCLC (PRMSAVE(1),PRMSAVE(2),PRMSAVE(3),PRMSAVE(4))
@@ -175,8 +175,8 @@ C
         DO 20 ICURV=1,NKURV
           IF (.NOT.LPLOT(ICURV)) GOTO 20
           DO 21 I=IR1(ICURV),IR2(ICURV)-1,IRS(ICURV)
-21          Y(I,ICURV)=LOG10(MAX(YMINY,Y(I,ICURV)))
-20      CONTINUE
+   21       Y(I,ICURV)=LOG10(MAX(YMINY,Y(I,ICURV)))
+   20   CONTINUE
       ENDIF
 C
 C  PLOT !
@@ -223,7 +223,7 @@ C  PLOT LINES
           CALL
      .  GRJMP(REAL(X(I1),KIND(1.E0)),REAL(Y(I1,I),KIND(1.E0)))
           DO 33 J=I1+IS,I2,IS
-33          CALL GRDRW
+   33       CALL GRDRW
      .  (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)))
 C  PLOT SYMBOLS
           ISY=IPEN2+1
@@ -264,11 +264,11 @@ C  PLOT ERROR BARS
               CALL GRDRW
      .  (REAL(X(J),KIND(1.E0)),REAL(ST2,KIND(1.E0)))
             ENDIF
-40        CONTINUE
+   40     CONTINUE
         ENDIF
-50    CONTINUE
+   50 CONTINUE
       CALL GRNWPN(1)
- 
+
       CALL GRCHRC (0.3,0.,16)
 C
       RETURN

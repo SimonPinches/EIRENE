@@ -1,5 +1,5 @@
 c  070709  some comments, some internal names changed
- 
+
       SUBROUTINE EIRENE_B_PROJI(B,EB,V,V_PARALLEL,V_PERP,PHI)
 C
 C  INVERSE OF B_PROJ: GIVEN B(3), V_PARALLEL, V_PERP AND PHI
@@ -19,7 +19,7 @@ C
       REAL(DP), INTENT(INOUT) :: EB(3),V(3)
       REAL(DP) :: V_P(3), E1(3), E2(3), E3(3)
       REAL(DP) :: BNI, VNI, B12I, B12
- 
+
       BNI=1./SQRT(SUM(B*B)+1.D-30)
       EB=B*BNI
 C

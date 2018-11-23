@@ -2,21 +2,21 @@
 cdr  April 2017:  NEXCS added to logicals (something from Vlad for photons?),
 cdr               nlogau=38
 cdr  Jan. 2018:   NLEMIS added, nlogau=39
- 
+
       MODULE EIRMOD_CLOGAU
- 
+
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_CLOGAU
- 
+
       INTEGER, PUBLIC, PARAMETER :: NLOGAU=39
- 
+
       LOGICAL, PUBLIC, TARGET, SAVE :: LLOGAU(NLOGAU)
- 
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L NLSCL,  NLDRFT, NLCRR,  NLTEST, NLANA,  NLERG,  NLMOVIE, NLPLAS,
      L NLRAD,  NLSLB,  NLCRC,  NLELL,  NLTRI,  NLPLG,  NLGEN,
@@ -24,16 +24,16 @@ cdr  Jan. 2018:   NLEMIS added, nlogau=39
      L NLPOL,  NLPLY,  NLPLA,  NLPLP,
      L NLTOR,  NLTRZ,  NLTRA,  NLTRT,
      L NLMLT,  NLADD,
-     L NLTRIM, NLONE,  NLDFST, NLOLDRAN, 
+     L NLTRIM, NLONE,  NLDFST, NLOLDRAN,
      L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
      L NEXVS,  NLEMIS
 C    L NLFREE0, NLFREE1
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CLOGAU
- 
+
       NLSCL   => LLOGAU(1)
       NLDRFT  => LLOGAU(2)
       NLCRR   => LLOGAU(3)
@@ -74,10 +74,10 @@ C     NLFREE0 => LLOGAU(31) ! NOT IN USE
       NLSHRT13 => LLOGAU(36)
       NLWRMSH  => LLOGAU(37)
       NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
-      NLEMIS   => LLOGAU(39) 
- 
+      NLEMIS   => LLOGAU(39)
+
       LLOGAU = .FALSE.
- 
+
       END SUBROUTINE EIRENE_ALLOC_CLOGAU
- 
+
       END MODULE EIRMOD_CLOGAU

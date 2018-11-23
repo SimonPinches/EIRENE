@@ -12,6 +12,6 @@ C*DK HEADNG
       DATA U/72*'='/
       WRITE (iunout,'(1X,A)') A
       WRITE (iunout,60) (U(I),I=1,N)
-60    FORMAT (1X,72A1)
+   60 FORMAT (1X,72A1)
       RETURN
       END

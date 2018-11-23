@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
                SUBROUTINE EIRENE_SUBTIT(AUSDRU, AKTLEN, HILFE)
 C-----------------------------------------------------------------------
@@ -11,24 +11,24 @@ C     ELIMINATION VON BLANKS UND SUBTITUTION VON '**' DURCH '^'
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
- 
+
 C
 C     EIN/AUSGABEPARAMETER :
 C
          INTEGER, INTENT(INOUT) :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          CHARACTER(*), INTENT(INOUT) :: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
          CHARACTER(*), INTENT(INOUT) :: HILFE
 C           : HILFSSTRING, DER FUER ZUWEISUNGEN BENOETIGT WIRD
- 
+
 C
 C     HILFSVARIABLEN :
 C
          INTEGER :: I, POS
- 
+
 C
 C     ELIMINATION VON BLANKS
 C

@@ -19,21 +19,21 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_CCONA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: NK, NP, NA, IO, NUM, ILEFT, IRIGHT, NDP
       REAL(DP), INTENT(IN) :: AL(*), AR(*), PHIAN(NDP,*), PHIEN(NDP,*),
      .                      TAR(NK)
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, RAD
       INTEGER, INTENT(IN) :: IPART(NK)
       LOGICAL, INTENT(IN) :: NF
- 
+
       REAL(DP) :: XK, YK, PHI, PI, PXS, PYS, PZS, PHAN, BA, BB, BC,
      .          T, PX, PHIDEG, PY, PZ, PXX, PYY, PZZ, CZ, BX, BY, BZ,
      .          AX, AY, AZ, CX, CY, PHID, DANG
       INTEGER :: J, I, IP, IA, IE, JP, JJ, ILFT, IRGHT, NAPK
- 
+
       REAL(DP), ALLOCATABLE :: P(:,:), XP(:), YP(:)
       REAL(SP), ALLOCATABLE :: XPS(:), YPS(:)
 C
@@ -126,20 +126,20 @@ C  INNERHALB DES BEREICHES T1----T2, FUER SHNITT-OPTION
               PXX=P(1,J)+PX
               PYY=P(2,J)+PY
               PZZ=P(3,J)+PZ
-3             CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+    3         CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
           ENDIF
           IF (IO.GE.2) CALL GRNWPN(IO)
           do 7 jj=1,na+1
             xps(jj)=xp(jj)
             yps(jj)=yp(jj)
-7         continue
+    7     continue
           CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES ZYLINDERS EIN
           IF ((I.EQ.1.OR.I.EQ.NK).AND.NF) CALL
      .  GRFILL(NA+1,XPS,YPS,1,1)
           IF (IO.GE.2) CALL GRNWPN(1)
-10      CONTINUE
-2     CONTINUE
+   10   CONTINUE
+    2 CONTINUE
 C
 C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
 C
@@ -153,7 +153,7 @@ C  SETZE NEUEN KREIS UM 0-PUNKT, MIT NP STUETZSTELLEN
         P(1,J)=XK*BX+YK*CX
         P(2,J)=XK*BY+YK*CY
         P(3,J)=XK*BZ+YK*CZ
-6     CONTINUE
+    6 CONTINUE
 C
       IA=1
       IE=NK
@@ -169,7 +169,7 @@ C
             JP=JP+1
             CALL
      .  EIRENE_SHNITT(P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,J,J,JP)
-11        CONTINUE
+   11     CONTINUE
         ENDIF
         DO 4 I=IA,IE
           DO 12 IP=1,IPART(I)
@@ -182,9 +182,9 @@ C
             CALL EIRENE_PL3D
      .  (P(1,J)+PX,P(2,J)+PY,P(3,J)+PZ,XP(JP),YP(JP))
             GOTO 4
-12        CONTINUE
+   12     CONTINUE
           GOTO 14
-4       CONTINUE
+    4   CONTINUE
         IF (IRIGHT.NE.0) THEN
           DO 13 IP=1,IPART(NK)
             IF (PHIDEG.LT.PHIAN(NK,IP).OR.PHIDEG.GT.PHIEN(NK,IP))
@@ -192,23 +192,23 @@ C
             JP=JP+1
             CALL EIRENE_SHNITT
      .  (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,JP)
-13        CONTINUE
+   13     CONTINUE
         ENDIF
-14      CONTINUE
+   14   CONTINUE
         IF (JP.GT.1) THEN
           do 9 jj=1,jp
             xps(jj)=xp(jj)
             yps(jj)=yp(jj)
-9         continue
+    9     continue
           CALL GRLN (XPS,YPS,JP)
         endif
-5     CONTINUE
- 
+    5 CONTINUE
+
       DEALLOCATE (P)
       DEALLOCATE (XP)
       DEALLOCATE (YP)
       DEALLOCATE (XPS)
       DEALLOCATE (YPS)
- 
+
       RETURN
       END

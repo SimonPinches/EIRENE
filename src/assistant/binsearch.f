@@ -6,19 +6,19 @@ c     * ferner: falls x<=xx(1) i=1, und falls x>=xx(n) i=n      *
 c     * *********************************************************
       use EIRMOD_PRECISION
       implicit none
- 
+
       integer, intent(in) :: n
       integer, intent(out) :: i
       real(dp), intent(in) :: xx(n), x
       integer :: bl, bm, bu
- 
+
 c  savest version:
 c  all tests included
       entry EIRENE_binsearch_0(xx,n,x,i)
- 
+
       bl=0
       bu=n+1
- 
+
       if (xx(n).ge.xx(1)) then
 ! monoton increasing
         if(x.le.xx(1))then
@@ -58,15 +58,15 @@ c  binary search
       end if
 c
       return
- 
+
 c  fast version:
 c  we already know: a)  xx is monotonically increasing (not decreasing)
 c                   b)  x  lies between xx(1) and xx(n)
       entry EIRENE_binsearch_2(xx,n,x,i)
- 
+
       bl=0
       bu=n+1
- 
+
 c  binary search
       do while (bu-bl.gt.1)
         bm=(bu+bl)*0.5
@@ -78,6 +78,6 @@ c  binary search
       end do
 c
       i=bl
- 
+
       return
       end

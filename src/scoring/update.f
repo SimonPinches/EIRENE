@@ -17,7 +17,7 @@ C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
-c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
+c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
 cdr dec.15: tracklength estimators for heavy test particle post-collision energies
@@ -39,7 +39,7 @@ cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
 cdr          branch "code-combine (p.b.), plus some naming conventions re-enforced
 cdr          tbd: entry update_photons now own routine: update_phot. to be integrated still.
 
- 
+
 C
       SUBROUTINE EIRENE_UPDATE (XSTOR2,XSTORV2,IFLAG)
 C
@@ -55,11 +55,11 @@ C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD (=NCLTAL(IRDO))
 C
 C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
 
-C  IFLAG=1:  
-C  IFLAG=2:  
-C  IFLAG=3:  
+C  IFLAG=1:
+C  IFLAG=2:
+C  IFLAG=3:
 C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
-C  IFLAG=5: 
+C  IFLAG=5:
 
 C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUAL BACKGROUND SPECIES)
 C
@@ -71,9 +71,9 @@ C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
 C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS" (MISSING SPECIES INDEX)
-C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS 
+C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
-  
+
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -89,7 +89,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_CZT1
       USE EIRMOD_CCONA
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -115,18 +115,18 @@ C PI PROCESSES
       INTEGER ::      IXPI,IRPI
 C EI PROCESSES
       INTEGER ::      IXEI,IREI
- 
+
       REAL(DP) :: EIRENE_VDION
 
 C  TAKE CARE OF SCORING OF PHOTONS
-      
+
       IF (ITYP.EQ.0) THEN
         CALL EIRENE_UPDPHOT(XSTOR2,XSTORV2,IFLAG)
         RETURN
       END IF
 
 C
-C  ESTIMATORS 
+C  ESTIMATORS
 C
 C
       WV=WEIGHT/VEL
@@ -136,9 +136,9 @@ C
       IF (NCPVI.GT.0) CALL EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
       IF ((NPBGK.GT.0).AND.LBGKV)
      .   CALL EIRENE_UPTBGK(XSTOR2,XSTORV2,WV,NPBGK,IFLAG)
- 
+
       IF (IUPDTE == 2) RETURN
- 
+
 C
       VELQ=VEL*VEL
 C
@@ -161,13 +161,13 @@ C  PARTICLE, MOMENTUM AND ENERGY DENSITY ESTIMATORS
 C
         IF (LEDENX) EDENX(IRD)=EDENX(IRD)+WTRE0
         IF (LPDENX) PDENX(IRD)=PDENX(IRD)+WTR
-        IF (LEDENX.OR.LPDENX) 
+        IF (LEDENX.OR.LPDENX)
      .      LMETSP(NMETOFF+IXSPZ)=.TRUE.
- 
+
         IF (LVXDENX) VXDENX(IRD)=VXDENX(IRD)+WTRV*VELX
         IF (LVYDENX) VYDENX(IRD)=VYDENX(IRD)+WTRV*VELY
         IF (LVZDENX) VZDENX(IRD)=VZDENX(IRD)+WTRV*VELZ
-        IF (LVXDENX.OR.LVYDENX.OR.LVZDENX) 
+        IF (LVXDENX.OR.LVYDENX.OR.LVZDENX)
      .      LMETSP(NMETOFF+IXSPZ)=.TRUE.
 C
 C  ESTIMATORS FOR SOURCES AND SINKS
@@ -330,7 +330,7 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
-                IF (LEXPL) THEN 
+                IF (LEXPL) THEN
                   EXPL(IPL2,IRD) = EXPL(IPL2,IRD) + WTRSIG*E0
                   LMETSP(NSPAMI+IPL2) = .TRUE.
                 END IF
@@ -338,8 +338,8 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
             ENDIF
           ENDIF
 C
-44      CONTINUE
-43      CONTINUE
+   44   CONTINUE
+   43   CONTINUE
 C
 C  ELASTIC NEUTRAL BULK-ION COLLISION CONTRIBUTION
 C
@@ -350,9 +350,9 @@ C  DEFAULT TRACKLENGTH ESTIMATOR
           IPLS=LGXEL(IXSPZ,IXEL,1)
 C  DO NOT UPDATE BGK SOURCE RATE TALLIES HERE
           IBGK=NPBGKP(IPLS,1)
-C  ELASTIC REACTION IXEL, BETWEEN SPECIES IXSPZ/IPLS: 
-C  IPLS IS A BGK VIRTUAL BACKGROUND SPECIES. 
-C  CONTRIBUTIONS TO PXX, PXPL ARE IDENTICALLY ZERO 
+C  ELASTIC REACTION IXEL, BETWEEN SPECIES IXSPZ/IPLS:
+C  IPLS IS A BGK VIRTUAL BACKGROUND SPECIES.
+C  CONTRIBUTIONS TO PXX, PXPL ARE IDENTICALLY ZERO
 C  EXX AND EXPL SHOULD NOT BE UPDATED HERE, BECAUSE THEY ARE SUMMED OVER SPECIES.
           IF (IBGK.NE.0) GOTO 61
 
@@ -380,15 +380,15 @@ C           END IF
 C
           IF (LEX) THEN
             IF (IESTEL(IREL,3).NE.0) THEN
- 
+
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
 C  COMPENSATE SUBTRACTED PRE COLLISION RATES HERE
- 
+
               IF (LEXX) EXX(IRD)=EXX(IRD)+WTRSIG*E0
             ELSE
 C
 C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION)
-C     THIS APPROXIMATION CORRESPONDS TO VELOCITY INDEPENDENT COLLISION RATES, 
+C     THIS APPROXIMATION CORRESPONDS TO VELOCITY INDEPENDENT COLLISION RATES,
 C     SUCH AS E.G. THOSE USED FOR BGK APPROXIMATIONS TO NEUTRAL-NEUTRAL COLLISIONS
 C  AVERAGE ENERGY OF POST COLLISION PARTICLE IS THAT OF PRE COLLISION BULK
 C
@@ -409,8 +409,8 @@ C  SECOND SECONDARY: = INCIDENT TEST PARTICLE IXSPZ REMAINS SAME PARTICLE BY DEF
             ENDIF
           ENDIF
 C
-61      CONTINUE
-60      CONTINUE
+   61   CONTINUE
+   60   CONTINUE
 C
 C.............................................................
 C  ELECTRON IMPACT COLLISION CONTRIBUTION:  EL + IXSPZ --> ....
@@ -448,7 +448,7 @@ C  POST COLLISION CONTRIBUTIONS
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
- 
+
             DO IM=1,IPMLEI(IREI,0)
               IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
@@ -457,7 +457,7 @@ C  POST COLLISION CONTRIBUTIONS
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
- 
+
             DO II=1,IPIOEI(IREI,0)
               IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
@@ -466,7 +466,7 @@ C  POST COLLISION CONTRIBUTIONS
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
- 
+
             DO IP=1,IPPLEI(IREI,0)
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -475,7 +475,7 @@ C  POST COLLISION CONTRIBUTIONS
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
- 
+
           ENDIF
 C
 C  PARTICLE BALANCE ESTIMATORS DONE.
@@ -485,7 +485,7 @@ C
           IF (IESTEI(IREI,3).EQ.0) THEN
             IF (LEXEL) EXEL(IRD)=EXEL(IRD)+WTRSIG*ESIGEI(IREI,5)
           ENDIF
- 
+
           IF (LEX) THEN
             IF (IESTEI(IREI,3).NE.0) THEN
 C
@@ -510,25 +510,25 @@ cdr  Must be fragmented into individual ipl contributions
                   EXPL(IPL,IRD)=EXPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 END DO
-              END IF 
+              END IF
 C
             ENDIF
           ENDIF
-55      CONTINUE
- 
-57      CONTINUE
+   55   CONTINUE
+
+   57   CONTINUE
 C
 C........................................................
 C  PLASMA ION IMPACT CONTRIBUTION: IPLS + IXSPZ --> ......
 C........................................................
 C
         IF (LGXPI(IXSPZ,0,0).EQ.0) GOTO 59
- 
+
         DO 58  IXPI=1,NXPII
           IRPI=LGXPI(IXSPZ,IXPI,0)
           IPLS=LGXPI(IXSPZ,IXPI,1)
           LOGPLS(IPLS,ISTRA)=.TRUE.
- 
+
           WTRSIG=WTR*SIGVPI(IRPI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -578,7 +578,7 @@ C
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             ENDDO
- 
+
             DO IP=1,IPPLPI(IRPI,0)
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -587,7 +587,7 @@ C
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             ENDDO
- 
+
           ENDIF
 C
 C  PARTICLE BALANCE ESTIMATORS DONE.
@@ -597,7 +597,7 @@ C
           IF (IESTPI(IRPI,3).EQ.0) THEN
             IF (LEXEL) EXEL(IRD)=EXEL(IRD)+WTRSIG*ESIGPI(IRPI,5)
           ENDIF
- 
+
           IF (LEX) THEN
             IF (IESTPI(IRPI,3).NE.0) THEN
 C
@@ -625,9 +625,9 @@ cdr  Must be fragmented into individual ipl contributions
               END IF
             ENDIF
           ENDIF
-58      CONTINUE
- 
-59      CONTINUE
+   58   CONTINUE
+
+   59   CONTINUE
 C
 C.........................................................................
 C
@@ -643,7 +643,7 @@ C  PROJECTIONS, FIND PARALLEL COMPONENTS
 C
 C
         IF (LMXPL) THEN
- 
+
           CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF,.FALSE.)
 
           DO IPL=1,NPLSI
@@ -663,13 +663,13 @@ C
 
 c  set parameters for parallel momentum of incident bulk particle
 c  val_parb   : parallel velocity component, incl. sign, relavive to B
-c  vsig_parb  : parallel momentum, modulus (always positive)  
+c  vsig_parb  : parallel momentum, modulus (always positive)
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
             vion=EIRENE_vdion(irdo)
             VAL_PARB(1:NPLSI) =VION
             VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
      .                          SIGN(1._DP,VION)
-            
+
           ELSE IF ((INDPRO(4) == 8) .OR. (INDPRO(5) == 8)) THEN
 C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
             DO IPL=1,NPLSI
@@ -679,21 +679,21 @@ C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
             END DO
           ELSE
             VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
           END IF
 c
 c  set parameters for parallel momentum of incident neutral particle
 c  v0_parb   : parallel velocity component, incl. sign, relavive to B
-c  parmom_0  : parallel momentum   
+c  parmom_0  : parallel momentum
           V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
           PARMOM_0=V0_PARB*CNDYNX
 C                       *SIGN(1._DP,VAL_PARB(IPL))  !this sign factor is applied below
 C  WITH WITH FACTOR: NO MATTER HOW THE SIGN OF PARALLEL MOMENTUM IS DEFINED:
-C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND  
+C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND
 C     |PARMOM_0| IS ADDED TO IPL MOMENTUM (SOURCE),  IF THE NEUTRAL V_PAR
 C                     HAS THE SAME SIGN AS THE IPL PLASMA ION V_PAR.
-c     |PARMOM_0| IS SUBTRACTED IF IT HAS OPPOSITE SIGN 
-        
+c     |PARMOM_0| IS SUBTRACTED IF IT HAS OPPOSITE SIGN
+
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM SPECIES IXSPZ
 C
@@ -725,8 +725,8 @@ C  NEW BULK ION IPL
      .                      SIGN(1._DP,VAL_PARB(IPL))
               LMETSP(NSPAMI+IPL)=.TRUE.
             ENDIF
-156       CONTINUE
-159       CONTINUE
+  156     CONTINUE
+  159     CONTINUE
 C
 C  ELECTRON IMPACT CONTRIBUTION
 C
@@ -735,7 +735,7 @@ C
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 161
- 
+
             IF (PPLEI(IREI,0).GT.0) THEN
               DO 162 IPL=1,NPLSI
                 P=PPLEI(IREI,IPL)
@@ -746,9 +746,9 @@ C  NEW BULK ION IPL
      .                          SIGN(1._DP,VAL_PARB(IPL))
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 ENDIF
-162           CONTINUE
+  162         CONTINUE
             ENDIF
-161       CONTINUE
+  161     CONTINUE
 C
 C  ION IMPACT CONTRIBUTION: NOT READY
 C
@@ -763,8 +763,8 @@ C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION)
             IBGK=NPBGKP(IPLS,1)
 C
             IF (IBGK.NE.0) GOTO 181
-C  THIS SPECIES IS A BGK VIRTUAL BACKGROUND SPECIES. 
-C  MAPL NEEDS NOT BE UPDATED HERE, ALTHOUGH IT WOULD NOT CAUSE PROBLEMS, BECAUSE 
+C  THIS SPECIES IS A BGK VIRTUAL BACKGROUND SPECIES.
+C  MAPL NEEDS NOT BE UPDATED HERE, ALTHOUGH IT WOULD NOT CAUSE PROBLEMS, BECAUSE
 C       DISTINCT FROM EAPL THIS TALLY DOES HAVE A BULK SPECIES INDEX.
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -778,11 +778,11 @@ C
             MXPL(IPL2,IRD)=MXPL(IPL2,IRD)+WTRSIG*PARMOM_0*
      .                     SIGN(1._DP,VAL_PARB(IPL2))
             LMETSP(NSPAMI+IPL2)=.TRUE.
-181       CONTINUE
-180       CONTINUE
+  181     CONTINUE
+  180     CONTINUE
 C
         END IF
-51    CONTINUE
+   51 CONTINUE
       RETURN
 
       entry EIRENE_update_reinit

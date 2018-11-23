@@ -1,5 +1,5 @@
 cdr
-c  at entry WRPLAM:    
+c  at entry WRPLAM:
 C  write plasma (background) data, source distribution and atomic data
 C  onto unit fort.13.
 C
@@ -15,10 +15,10 @@ C  IFLG = 0  :  do NOT read COMSOU in call RPLAM_LONG
 c  IFLG > 0  :
 
 cdr  NLSHRT13  :  VIA COMMON CLOGAU. MEANING: write "long vs. short" version of fort.13
-C                 DEFAULT: FALSE, 
+C                 DEFAULT: FALSE,
 cdr  EXCEPT:
-cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13. 
- 
+cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
+
       SUBROUTINE EIRENE_WRPLAM(TRCFLE,IFLG)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -30,7 +30,7 @@ cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
 
       IF (NLSHRT13) THEN
         CALL EIRENE_WRPLAM_SHRT (TRCFLE)
-      ELSE 
+      ELSE
         CALL EIRENE_WRPLAM_LONG (TRCFLE,IFLG)
       ENDIF
       RETURN
@@ -42,7 +42,7 @@ c.............................................
 
       IF (NLSHRT13) THEN
         CALL EIRENE_RPLAM_SHRT (TRCFLE)
-      ELSE 
+      ELSE
         CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG)
       ENDIF
       RETURN

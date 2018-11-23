@@ -1,20 +1,20 @@
       SUBROUTINE EIRENE_READ_TETRA (CASENAME)
- 
+
 !pb 05.12.06: structure COORTET is build up from tetrahedra
 !pb 07.12.06: set itethand to default value 1
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
       USE EIRMOD_CLGIN
       USE EIRMOD_CGRID
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       CHARACTER*(*), INTENT(IN) :: CASENAME
       CHARACTER(100) :: FILENAME, ZEILE
-      INTEGER :: LL, I, IND, IT, IS, IER, NRK, 
+      INTEGER :: LL, I, IND, IT, IS, IER, NRK,
      .           IC, J, JS, JT, IP1, i1, i2, i3, i4
       INTEGER :: ITSIDE(3,4), IP(3), JP(3)
       TYPE(TET_ELEM), POINTER :: CUR
@@ -23,65 +23,65 @@ C
      .             1,4,2,
      .             2,4,3,
      .             3,4,1/
- 
+
       LL=LEN_TRIM(CASENAME)
- 
+
       FILENAME=CASENAME(1:LL) // '.npco_char'
       OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
- 
+
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
          READ (30+ifoff,'(A100)') ZEILE
       END DO
- 
+
       READ (ZEILE,*) NRK
- 
+
       IF (NRK /= NCOORD) THEN
         WRITE (iunout,*) ' NCOORD IS WRONG IN EIRENE INPUT FILE'
         WRITE (iunout,*) ' CHECK FOR CORRECT NUMBER IN FILE ',FILENAME
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       DO I=1,NCOORD
         READ(30+ifoff,*) IND, XTETRA(I), YTETRA(I), ZTETRA(I)
       END DO
- 
+
       CLOSE (UNIT=30+ifoff)
- 
+
       FILENAME=CASENAME(1:LL) // '.elemente'
       OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
- 
+
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
          READ (30+ifoff,'(A100)') ZEILE
       END DO
- 
+
       READ (ZEILE,*) NTET
- 
+
       IF (NTET > NR1ST) THEN
         WRITE (iunout,*) ' NR1ST IS WRONG IN EIRENE INPUT FILE'
         WRITE (iunout,*) ' CHECK FOR CORRECT NUMBER IN FILE ',FILENAME
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       DO I=1,NTET
-        READ (30+ifoff,*) IND, NTECK(1,I), NTECK(2,I), 
+        READ (30+ifoff,*) IND, NTECK(1,I), NTECK(2,I),
      .                         NTECK(3,I), NTECK(4,I)
       END DO
- 
+
       CLOSE (UNIT=30+ifoff)
- 
+
       FILENAME=CASENAME(1:LL) // '.neighbors'
       OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
- 
+
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
          READ (30+ifoff,'(A100)') ZEILE
       END DO
- 
+
       DO I=1,NTET
         READ (30+ifoff,*) IND, NTBAR(1,I), NTSEITE(1,I), INMTIT(1,I),
      .                   NTBAR(2,I), NTSEITE(2,I), INMTIT(2,I),
@@ -96,9 +96,9 @@ C
         IF (INMTIT(3,I) /= 0) INMTIT(3,I) = ABS(INMTIT(3,I)) + NLIM
         IF (INMTIT(4,I) /= 0) INMTIT(4,I) = ABS(INMTIT(4,I)) + NLIM
       END DO
- 
+
       CLOSE (UNIT=30+ifoff)
- 
+
       IER = 0
       IF ((MAXVAL(NTECK(1:4,1:NTET)) > NCOORD) .OR.
      .    (MINVAL(NTECK(1:4,1:NTET)) <= 0 )) THEN
@@ -106,14 +106,14 @@ C
      .                   ' TETRAHEDRA FOUND '
         IER = 2
       END IF
- 
+
       IF (.NOT.ALLOCATED(COORTET)) THEN
         ALLOCATE (COORTET(NCOORD))
         DO I=1,NCOORD
           NULLIFY(COORTET(I)%PTET)
         END DO
       END IF
- 
+
       DO IT=1,NTET
         DO IS=1,4
           IC = NTECK(IS,IT)
@@ -128,20 +128,20 @@ C
           end if
         ENDDO
       ENDDO
- 
+
 !for testing
- 
+
 !PB      ntbar = 0
 !PB      ntseite = 0
 
       call EIRENE_suche_nachbarn
- 
+
       FILENAME=CASENAME(1:LL) // '.neighbors.out'
       OPEN (UNIT=30+ifoff,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
- 
+
       write (30+ifoff,'(i10)') ntet
- 
+
       DO I=1,NTET
         i1 = 0
         i2 = 0
@@ -158,7 +158,7 @@ C
      .           NTBAR(4,I), NTSEITE(4,I), i4
       END DO
       close (unit=30+ifoff)
- 
+
       DO IT=1,NTET
         DO IS=1,4
           IF (NTBAR(IS,IT).EQ.0.AND.INMTIT(IS,IT).EQ.0) THEN
@@ -212,10 +212,10 @@ C
           ENDIF
         ENDDO
       ENDDO
- 
+
       IF (IER /= 0) CALL EIRENE_EXIT_OWN(1)
- 
+
       itethand = 1
- 
+
       RETURN
       END SUBROUTINE EIRENE_READ_TETRA

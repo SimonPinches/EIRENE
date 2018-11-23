@@ -23,7 +23,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CTRIG
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: AORIG(*), BORIG(*)
@@ -33,7 +33,7 @@ C
       LOGICAL, INTENT(IN) :: LOGL, TRC
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP) :: XL, XM, BETRAG
       REAL(DP), ALLOCATABLE :: YWERT(:,:), YWERT1(:,:),
      .                       ZWERT(:,:), ZWERT1(:,:)
@@ -66,7 +66,7 @@ C
       NRAPS2=NRAPS2+nvplot
       nraps=nraps+1
       IRAPS=IRAPS+1
-!pb 
+!pb
 !pb find index of first RAPS plot, to be used for scaling with FCABS
 
       IFC = 1
@@ -120,8 +120,8 @@ C  PROJECTION INTO X,Z PLANE
             WRITE (NRAPS+ifoff,*) BETRAG
             YWERT(IR,IT)=YWERT(IR,IT)/(BETRAG+1.D-20)
             ZWERT(IR,IT)=ZWERT(IR,IT)/(BETRAG+1.D-20)
-3100      CONTINUE
-1100    CONTINUE
+ 3100     CONTINUE
+ 1100   CONTINUE
 C
 C
 C  PROJECTION INTO X,Y PLANE,  CARTHESIAN
@@ -137,8 +137,8 @@ C  PROJECTION INTO X,Y PLANE,  CARTHESIAN
             WRITE (NRAPS+ifoff,*) BETRAG
             YWERT(IR,IP)=YWERT(IR,IP)/(BETRAG+1.D-20)
             ZWERT(IR,IP)=ZWERT(IR,IP)/(BETRAG+1.D-20)
-3101      CONTINUE
-1101    CONTINUE
+ 3101     CONTINUE
+ 1101   CONTINUE
 C
 C  PROJECTION INTO X,Y PLANE, POLAR OR GENERAL CURVILINEAR (POLYGON)
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.NLPOL
@@ -154,9 +154,9 @@ C  PROJECTION INTO X,Y PLANE, POLAR OR GENERAL CURVILINEAR (POLYGON)
               WRITE (NRAPS+ifoff,*) BETRAG
               YWERT(IR,IP)=YWERT(IR,IP)/(BETRAG+1.D-20)
               ZWERT(IR,IP)=ZWERT(IR,IP)/(BETRAG+1.D-20)
-30          CONTINUE
-20        CONTINUE
-10      CONTINUE
+   30       CONTINUE
+   20     CONTINUE
+   10   CONTINUE
 C
       ELSEIF (LEVGEO.EQ.4) THEN
         DO 60 I=1,NRKNOT
@@ -168,7 +168,7 @@ C
           WRITE (NRAPS+ifoff,*) BETRAG
           YWERT1(I,1)=YWERT1(I,1)/(BETRAG+1.D-20)
           ZWERT1(I,1)=ZWERT1(I,1)/(BETRAG+1.D-20)
-60      CONTINUE
+   60   CONTINUE
 C
       ELSE
         WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSVEC: PLOT ABANDONNED '
@@ -188,11 +188,11 @@ C
       OPEN (UNIT=NRAPS2+ifoff,file=ch(1:lench),
      .                  ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND NRAPS2+ifoff
- 
+
       WRITE(NRAPS2+ifoff,'(1X,A5,8X,A4,50(11X,I1))') '-1111',
      .'PFEI',1,3,1,1,1
 C
- 
+
       IF ((LEVGEO.EQ.1).AND.NLPOL
      .     .AND.LPTOR3(IBLD)) THEN
 C
@@ -277,12 +277,12 @@ C  SIDE 8
               ENDIF
             ENDIF
             CYCLE IPLOOP1
-101         CONTINUE
+  101       CONTINUE
             ywert(IR,IP)=ywert(IR,IP)*xl*0.9
             zwert(IR,IP)=zwert(IR,IP)*xl*0.9
           ENDDO IPLOOP1
         ENDDO
- 
+
         I=0
         DO IR=1,NR1ST
           DO IP=1,NP2ND
@@ -294,7 +294,7 @@ C  SIDE 8
      .             zwert(IR,IP)*fcabs2(ifc),0.,0.,0.
           enddo
         enddo
- 
+
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.NLPOL
      .        .AND.LPTOR3(IBLD)) THEN
 C
@@ -380,13 +380,13 @@ C  SIDE 8
                 ENDIF
               ENDIF
               CYCLE IPLOOP2
-100           CONTINUE
+  100         CONTINUE
               ywert(IR,IP)=ywert(IR,IP)*xl*0.9
               zwert(IR,IP)=zwert(IR,IP)*xl*0.9
             ENDDO IPLOOP2
           ENDDO
         ENDDO
- 
+
         I=0
         DO IR=1,NR1ST
           DO IPART=1,NPPLG
@@ -400,14 +400,14 @@ C  SIDE 8
             enddo
           enddo
         enddo
- 
+
       ELSEIF (LEVGEO.EQ.4) THEN
         DO 41 I=1,NRKNOT
           DO 51 J=0,30
             DO 51 K=1,2
             ZUORD(I,J,K) = 0
-51        CONTINUE
-41      CONTINUE
+   51     CONTINUE
+   41   CONTINUE
         DO 40 J=1,NTRII
           DO 50 I=1,3
             ZUORD(NECKE(I,J),0,1) = ZUORD(NECKE(I,J),0,1) + 1
@@ -418,8 +418,8 @@ c zuord darf maximal 30 werden
             endif
             ZUORD(NECKE(I,J),ZUORD(NECKE(I,J),0,1),1) = J
             ZUORD(NECKE(I,J),ZUORD(NECKE(I,J),0,1),2) = I
-50        CONTINUE
-40      CONTINUE
+   50     CONTINUE
+   40   CONTINUE
         DO 61 I=1,NRKNOT
           IF (ZUORD(I,0,1).LT.1) THEN
             WRITE (iunout,*) 'ERROR IN RPSVEC: POINT ',I,' NOT IN MESH'
@@ -444,18 +444,18 @@ c
               zwert1(i,1)=zwert1(i,1)*xl*0.9
               goto 61
             endif
-70        CONTINUE
+   70     CONTINUE
 c   no intersection found.
 c   point I is on a boundary, and the vector is pointing outside
 c   the computational volume. don't plot it.
           YWERT1(I,1) = 0.
           YWERT1(I,1) = 0.
-61      continue
- 
+   61   continue
+
         DO I=1,NRKNOT
           BETRAG=SQRT(YWERT1(I,1)**2+ZWERT1(I,1)**2)
           IF (BETRAG .GT. 1.D-5)
-     .    WRITE(nraps2+ifoff,'(I6,1P,5E12.4)') 
+     .    WRITE(nraps2+ifoff,'(I6,1P,5E12.4)')
      .          I,YWERT1(I,1)*fcabs1(ifc),
      .            ZWERT1(I,1)*fcabs2(ifc),0.,0.,0.
         enddo

@@ -14,7 +14,7 @@ c
 c reads casename.zplasma
 c
       SUBROUTINE EIRENE_PROUSR (PRO,INDX,P0,P1,P2,P3,P4,P5,PROVAC,N)
-C 
+C
 C  EXAMPLE:
 C     P0 : CENTRAL VALUE
 C     P1 : STARTING RADIUS FOR POLYNOMIAL
@@ -61,8 +61,8 @@ c just in case...:
          close(fp+ifoff)
          return
       endif
-csw      
-      
+csw
+
 c read in plasma data from fort.31 ?
       if (.not.allocated(plas_indep)) then
         allocate(plas_indep(11,nrad))
@@ -87,7 +87,7 @@ c read in plasma data from fort.31 ?
 
 
 c misc plasma data:
-        write(sstr,'(a20)') 
+        write(sstr,'(a20)')
      .          '*** MISC PLASMA DATA'
         CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
         if(ier /=0) then
@@ -113,7 +113,7 @@ c     .       i,te,ne,bx,by,bz,ex,ey,ez,pot,psi
 !pb           read(fp+ifoff,'(i7,7(1x,e14.7))') idum,plas_indep(1:10,j)
            read(fp+ifoff,*) idum,plas_indep(1:10,j)
 
-           bnorm=sqrt(plas_indep(3,j)**2 + plas_indep(4,j)**2 + 
+           bnorm=sqrt(plas_indep(3,j)**2 + plas_indep(4,j)**2 +
      .                plas_indep(5,j)**2)
            if (bnorm < eps12) then
               plas_indep(3,j) = 0._dp
@@ -133,7 +133,7 @@ c     .       i,te,ne,bx,by,bz,ex,ey,ez,pot,psi
 c loop over species:
         do i=1,nplsi
            write(cstr2,'(i2.2)') i
-           write(sstr,'(a23)') 
+           write(sstr,'(a23)')
      .          '*** ION #'//cstr2//' PLASMA DATA'
            CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
            if(ier /=0) then
@@ -141,7 +141,7 @@ c loop over species:
 !pb              close(fp+ifoff)
 !pb              call EIRENE_exit_own(1)
               write(*,*) 'using zero plasma and fluxes'
-              write (iunout,*) 
+              write (iunout,*)
               cycle
            endif
 
@@ -185,7 +185,7 @@ c sort in values
            if (nmassp(ipls) /= inmass(i)) cycle
            if (ncharp(ipls) /= inchar(i)) cycle
            if (nchrgp(ipls) /= inchrg(i)) cycle
-           
+
            ipl = i
            exit
         end do
@@ -194,14 +194,14 @@ c sort in values
           write (iunout,*) ' NO MATCHING SPECIES FOUND IN PLASMA FILE'
           write (iunout,*) ' FOR IPLS = ',ipls, ' INDEX = ',indx
           write (iunout,*) ' PROFILE IS SET TO 0 '
-          write (iunout,*) 
+          write (iunout,*)
           pro(1:n) = 0._dp
           return
         end if
       end if
 c
       if(indx == 0) then
-c te         
+c te
          pro(1:n) = plas_indep(1,1:n)
          indar_indep(1) = indar_indep(1)+1
 
@@ -222,7 +222,7 @@ c vx
 
       elseif (indx == 1+3*npls) then
 c vy
-         pro(1:n) = plas_dep(4,1:n,ipl)     
+         pro(1:n) = plas_dep(4,1:n,ipl)
          indar_dep(4) = indar_dep(4) + 1
 
       elseif (indx == 1+4*npls) then
@@ -256,7 +256,7 @@ c bf
 
       else
          write (iunout,*) ' prousr: no data provided for index ',indx
-         write (iunout,*) 
+         write (iunout,*)
          pro(1:n) = 0._dp
       endif
 

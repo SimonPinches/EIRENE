@@ -32,7 +32,7 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
       read (30+ifoff,*)
       read (30+ifoff,*)
 
-1     continue
+    1 continue
       read (30+ifoff,'(a110)',end=99) zeile
       i0=index(zeile,'(')
       i0e=index(zeile,')')
@@ -60,7 +60,7 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
       goto 1
 
 
-99    continue
+   99 continue
       ndxa=ndxa-1
       ndya=ndya-1
 C
@@ -74,11 +74,11 @@ C
           Y3(IX)=bz(ix,iy,4)
           X4(IX)=br(ix,iy,3)
           Y4(IX)=bz(ix,iy,3)
-1014    CONTINUE
+ 1014   CONTINUE
         CALL EIRENE_MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,
      .       PUX,PUY,PVX,PVY,NDXA,
      .       NR1ST,IY)
-1015  CONTINUE
+ 1015 CONTINUE
 C
 C SEARCH FOR THE CUTS
 C
@@ -131,7 +131,7 @@ c
 C     do j=1,ndya+1
 C       write (iunout,*)
 C       write (iunout,*) 'in geomd polygon ',j
-C       write (iunout,'(1p,6e12.4)') 
+C       write (iunout,'(1p,6e12.4)')
 C    .        (xpol(j,i),ypol(j,i),i=1,npoint(2,nplp))
 C     enddo
 C

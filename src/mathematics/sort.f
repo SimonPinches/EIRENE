@@ -22,7 +22,7 @@ C
       REAL(DP), INTENT(IN) :: EPS
       INTEGER, INTENT(OUT) :: INULL
       LOGICAL, INTENT(OUT) :: NOPOS
- 
+
       REAL(DP) :: HILFL( 3 ), HILFEV( 3,3 ), MERK
       INTEGER :: J, L, I, K
 C

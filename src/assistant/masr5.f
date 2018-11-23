@@ -7,6 +7,6 @@ C*DK MASR5
       CHARACTER(40), INTENT(IN) :: A
       REAL(DP), INTENT(IN) :: B, C, D, E, F
       WRITE (iunout,60) A,B,C,D,E,F
-60    FORMAT (1X,A40/1X,5(1PE12.4,3X))
+   60 FORMAT (1X,A40/1X,5(1PE12.4,3X))
       RETURN
       END

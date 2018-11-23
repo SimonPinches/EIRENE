@@ -6,31 +6,31 @@ cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
 cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
-cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added  
+cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
 
 C  This routine is called from CFD PLASMA CODE and provides the entry point into EIRENE.
 
 C................................................................................................
-cc  ltime = .true.: 
+cc  ltime = .true.:
 C
-C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN: 
-C     
+C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN:
+C
 C    IFIRST=0  (A RESTART)
 
-C      CALL EIRENE_EIRENE(..)     (main-routines), call input,....., 
+C      CALL EIRENE_EIRENE(..)     (main-routines), call input,.....,
 C                                                  set IITER=ITNR
 C
 C   LATER CALLS  (IFIRST.GT.1) (INSIDE A B2 CYCLING):
 C
-C      CALL EIRENE_COUPLE  (entry to EIRENE  main-routines, bypassing some  
+C      CALL EIRENE_COUPLE  (entry to EIRENE  main-routines, bypassing some
 C                           initialization stuff. Currently only in case LTIME=T)
 
 C.................................................................................................
 
 
-cc   ltime = .false.:   ONLY CALLING: EIRENE_EIRENE(..)     (main-routines), call input,....., 
+cc   ltime = .false.:   ONLY CALLING: EIRENE_EIRENE(..)     (main-routines), call input,.....,
 C                                                           set IITER=ITNR
 C                       BOTH FOR IFIRST=0 (RESTART) AND IFIRST.GE.1 (INSIDE A B2 CYCLING)
 CDR
@@ -40,11 +40,11 @@ C
      .                  B2BRM_in,B2RD_in,B2Q_in,B2VP_in,STEP_CPU_in)
 
 C   INPUT:
-C     LSTOP: 
+C     LSTOP:
 C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
-C     
+C
 C   ONLY FOR EIRENE ENERGY BALANCE DIAGNOSTICS:
 C     B2BRM:  TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
 C     B2RD :  TOTAL (LINE) RADIATION LOSS IN PREVIOUS B2 STEP
@@ -100,7 +100,7 @@ C
       logical :: ltrigger
 
       REAL(DP) :: FLUXS(NSTRA)
-      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG, 
+      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
      .            EIRENE_RESET_SECOND, DUMMY,
      .            EIRENE_SECOND_OWN, DTIMVO
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
@@ -138,12 +138,12 @@ csw 28feb2011 mpi
         ltrigger=.true.
         call mpi_bcast(ltrigger,1,MPI_LOGICAL,
      .                 0,MPI_COMM_WORLD,ierr_mpi)
-      endif    
+      endif
       call mpi_bcast(lstop,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ierr_mpi)
       call mpi_bcast(ltime,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ierr_mpi)
       call mpi_bcast(deltat,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
      .               ierr_mpi)
-      call mpi_bcast(fluxes,nstra,MPI_DOUBLE_PRECISION, 
+      call mpi_bcast(fluxes,nstra,MPI_DOUBLE_PRECISION,
      .               0,MPI_COMM_WORLD,ierr_mpi)
       call mpi_bcast(b2brm,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,
      .               ierr_mpi)
@@ -240,7 +240,7 @@ C
               FLUX(ISTRA)=FLUXS(ISTRA)
             ENDIF
           ENDDO
-C  RESCALE CENSUS ARRAY FLUX, DUE TO DIFFERENT TIME STEPS IN PREVIOUS AND CURRENT EIRENE STEP 
+C  RESCALE CENSUS ARRAY FLUX, DUE TO DIFFERENT TIME STEPS IN PREVIOUS AND CURRENT EIRENE STEP
           IF (DTIMVN.NE.DTIMVO) THEN
             FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
 C
@@ -273,7 +273,7 @@ C
         RETURN   ! time dep. option done
 c.....................................................................
 C
-C  MAIN ENTRY POINT FROM B2 INTO EIRENE, IN CASE OF TIME-INDEPENDENT RUNS  
+C  MAIN ENTRY POINT FROM B2 INTO EIRENE, IN CASE OF TIME-INDEPENDENT RUNS
 C
       ELSEIF (.NOT.LTIME) THEN
 
@@ -282,10 +282,10 @@ C
 C
         IF (IFIRST.GE.1) GOTO 10000
 C
-C  FIRST CALL IN PRESENT RUN. 
+C  FIRST CALL IN PRESENT RUN.
 C  1) INITIALIZE EIRENE
 C  2) CALL EIRENE
-C  3) PREPARE ARRAYS FOR SEMI-IMPLICIT "SHORT CYCLE" CORRECTION. 
+C  3) PREPARE ARRAYS FOR SEMI-IMPLICIT "SHORT CYCLE" CORRECTION.
 C             STORE SOME A&M RATES FROM PRESENT STEP, FOR NEXT STEP
 
 csw mpi
@@ -313,7 +313,7 @@ csw mpi
         endif
 csw
 
-10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
+   10   CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
 csw 17feb2011
 c        if(itnr > 1 .and. rank_mpi==0) then
@@ -367,7 +367,7 @@ C
           END IF
         END DO
 
-! determine index of rate storage which has been used in the previous iteration 
+! determine index of rate storage which has been used in the previous iteration
         IST_RATE = ITS(IFRSTR)
 
 ! reduce counters of rate storages for all new calculated strata
@@ -381,7 +381,7 @@ C
 ! check how often storage IST_RATE is still used
         ISTH = 0
         IF (IST_RATE > 0) ISTH= ITS_COUNT(IST_RATE)
-        
+
         IF (ISTH < 1) THEN
 ! rate storage can be used again
         ELSE
@@ -395,8 +395,8 @@ C
           END IF
           IST_RATE = ISTNEW
         END IF
-        
-        WHERE (NLSRON) 
+
+        WHERE (NLSRON)
           ITS = IST_RATE
         END WHERE
 
@@ -412,14 +412,14 @@ cdr
 cdr  now start to store rates from present cycle, for future short cycle corrections
 cdr
 cdr  to be done
-cdr  all these "short cycle data" should only be computed 
+cdr  all these "short cycle data" should only be computed
 cdr  if "short cycle" option is turned on at all
 
 C
-C  CURRENT RUN: STORE ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR 
-C               SOME OR ALL IPLS 
-C                                       
-C                                       
+C  CURRENT RUN: STORE ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR
+C               SOME OR ALL IPLS
+C
+C
           DO JPLS=1,NPLSI
             IPLSTI= MPLSTI(JPLS)
             DO IN=1,NDXY
@@ -429,7 +429,7 @@ C
           ENDDO
 C
 C  NEXT: ATOMS, EI RATES: SPLODA, SEEODA, SEIODA
-C               
+C
 cdr  correct energy exchange with bulk ions: e0* eplei(irei,ipls,1)+ eheavy* eplei(irei,ipls,2)
 cdr  sum over ipls:                          e0* eplei(irei,0,1)   + eheavy *eplei(irei,0,2)
 cdr  e0 is taken as center of mass (COM)energy (as appropriate in ei processes, but not in pi processes)
@@ -456,7 +456,7 @@ C
    21     CONTINUE
          ENDDO
         ENDDO
-C                                       
+C
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: ATOMS, EI-PROCESSES, FROM IATM,
 C                                      SUM OVER ALL EI PROCESSES
@@ -488,7 +488,7 @@ C
          DO JPLS=1,NPLSI
           DO IIEI=1,NIEII(JION)
            IREI=LGIEI(JION,IIEI)
-!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect, 
+!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
           DO IN=1,NDXY
@@ -557,7 +557,7 @@ C
          DO JPLS=1,NPLSI
           DO IIEI=1,NIEII(JION)
            IREI=LGIEI(JION,IIEI)
-!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect, 
+!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
           DO IN=1,NDXY
@@ -623,7 +623,7 @@ C                                         SUM OVER ALL IPLS
           DO IMEI=1,NMEII(JMOL)
            IREI=LGMEI(JMOL,IMEI)
 !pb 09022106         ESIG=EPLEI(IREI,2)  this was incorrect,
-cdr                     because it was already summed over ipls 
+cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2) ! only KER -part is corrected in short cycle
           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
@@ -638,7 +638,7 @@ cdr                     because it was already summed over ipls
          END DO
         END DO
 
-        END IF   ! (not llst) 
+        END IF   ! (not llst)
 C
 C
         B2BREM=B2BRM
@@ -691,13 +691,13 @@ C
 C
         CALL EIRENE_SETAMD(2)
 C
-C  IN PLASMA_DERIV THE BACKGROUND PLASMA STATE HAS BEEN 
+C  IN PLASMA_DERIV THE BACKGROUND PLASMA STATE HAS BEEN
 C  WRITTEN TO FORT.13
 C  NFILEL HAS BEEN CHANGED TO NFILEL = 3 OR 9
 C  ==> PLASMA AND REACTION DATA ARE READ IN SUBR. INPUT
-C  NOW SAVE REACTION DATA AS WELL IN ORDER TO HAVE A 
+C  NOW SAVE REACTION DATA AS WELL IN ORDER TO HAVE A
 C  CONSISTENT PLASMA STATE ON FORT.13
-C  
+C
         IF ((NFILEL >=1) .AND. (NFILEL <=5)) THEN
           NFILEL=3
           CALL EIRENE_WRPLAM(TRCFLE,0)
@@ -724,7 +724,7 @@ cdr
 cdr  to be done
 cdr  all these "short cycle data" should only be computed if short cycle is turned on at all
 C
-C  NEW RUN: ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR ALL IPLS 
+C  NEW RUN: ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR ALL IPLS
 C
         DO JPLS=1,NPLSI
           IPLSTI= MPLSTI(JPLS)
@@ -736,7 +736,7 @@ C
 C
 C
 C  NEXT: ATOMS, EI RATES: SPLNWA, SEENWA, SEINWA
-C          
+C
 cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
 cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
@@ -756,7 +756,7 @@ C                                     SUM OVER ALL EI PROCESSES
                 SPLNWA(IN,JATM,JPLS)=SPLNWA(IN,JATM,JPLS)+
      .                          EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
               END IF
-102       CONTINUE
+  102     CONTINUE
           END DO
   101    END DO
         END DO
@@ -795,7 +795,7 @@ C
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
   108      CONTINUE
-107     CONTINUE
+  107   CONTINUE
          END DO
         END DO
 C
@@ -852,7 +852,7 @@ C
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
   118      CONTINUE
-117     CONTINUE
+  117   CONTINUE
          END DO
         END DO
 C
@@ -908,7 +908,7 @@ csw
         IF (LSTP.or.ANY(NLSRON(1:NSTRAI))) THEN
            IFIRST=0
            LPLASM=.TRUE.
-           LSTP=LSTOP    
+           LSTP=LSTOP
            ITNR=ITNR+1
            GOTO 10
         END IF
@@ -927,7 +927,7 @@ C
 
         RETURN
 
-CDR     ENDIF   !(IFIRST=1, IFIRST.GE.1 BRANCHING)  
+CDR     ENDIF   !(IFIRST=1, IFIRST.GE.1 BRANCHING)
 C
       ENDIF  !(LTIME)
 

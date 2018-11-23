@@ -5,9 +5,9 @@
      .                   N1BAR,N1DIM,L_SAME)
 
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: N1BAR, N1DIM
       REAL(DP), INTENT(IN) :: X(*), VBAR(N1BAR,*),
      .                      YMN(*), YMX(*), YMNLG(*), YMXLG(*)
@@ -21,6 +21,6 @@
      .                                TXTRUN, TXHEAD
 
       IERR = 0
- 
+
       RETURN
       END

@@ -1,8 +1,9 @@
-cdr Jan   18 : only notational change, to distuingish surface substrata from volume substrata
+chf Nov.  18 :  samvol_usr added, for levgeo=10 option
+cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
 cdr            replaces explicit expression.
-cdr 21.10.14 : bug fix: spectral cut off flag ICCT set to zero for default vol.rec (KK=0)
+cdr 21.10.14 : bug fix: spectral cut-off flag ICCT set to zero for default vol.rec (KK=0)
 cdr           -->now runs again on eirene default vol.rec model.
 cdr 30.10.14 :  lplssr true even if npts=0, to allow setting up volume source tallies,
 cdr             even if npts=0 for the vol-rec stratum
@@ -21,7 +22,7 @@ C  JET 2005, PATCH 1: NEW ARGUMENTS EFWL AND SHWL IN PARAMETER LIST
 c                     AT ENTRY SMVOL1 AND SMUSR1
 C
       SUBROUTINE EIRENE_SAMVOL
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -42,7 +43,7 @@ C
       USE EIRMOD_PHOTON
       IMPLICIT NONE
 C
- 
+
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*),
      .                         VXWL(*), VYWL(*), VZWL(*),
      .                         EFWL(*), WEISPZ(*)
@@ -54,11 +55,11 @@ C
      .                               IFREC(:)
       REAL(DP) :: ZEP1, X1, Y1, X2, Y2, X3, Y3, RR, RRI, WINK,
      .            ZRM1, CNORM, EPR, ELR, RRD, RRN, ZZ, X01, Z1, Z2, Z3,
-     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CDYN, 
-     .            VX, VY, VZ, VPARA, EELRC, 
+     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CDYN,
+     .            VX, VY, VZ, VPARA, EELRC,
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
-     .            EIRENE_BREMS,XC,YC,ZC
+     .            EIRENE_BREMS, XC, YC, ZC
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IC1, IC2, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
      .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
@@ -80,17 +81,17 @@ C    THE SOURCE STRENGTH FLUX(ISTRA) IS MODIFIED FOR THE
 C    STRATA WITH NLVOL(ISTRA)=.TRUE.
 C
 C  AT ENTRY SAMVL1:
-C    THE INITIAL CO-ORDINATES OF A TEST FLIGHT ARE SAMPLED,
+C    THE INITIAL COORDINATES OF A TEST FLIGHT ARE SAMPLED,
 C    AND THE CELL NUMBERS ARE COMPUTED
 C
       ENTRY EIRENE_SAMVL0
 C
- 
+
       IF (.NOT.ALLOCATED(FREC)) THEN
- 
+
 C  LPLSSR(IPLS):
 C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
- 
+
         ALLOCATE (LPLSSR(NPLSI))
         LPLSSR = .FALSE.
         DO ISTR=1,NSTRAI
@@ -98,7 +99,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
-c  nspez out of range: Set volumetric sources for ALL species 
+c  nspez out of range: Set volumetric sources for ALL species
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
@@ -133,8 +134,8 @@ C
           IRRC=LGPRC(IPLS,IIRC)
           KK=NREARC(IRRC)
           ICCT=0
-C  SPECTRAL CUT OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
-          IF (KK.GT.0) THEN 
+C  SPECTRAL CUT-OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
+          IF (KK.GT.0) THEN
             ICCT=NREACT(KK)
           ENDIF
           DO 3 J=1,NSBOX
@@ -152,16 +153,16 @@ c  and then into source rate amp per cell, factor di * vol
                 ADD=EIRENE_FTABRC1(IRRC,J)*DIIN(IPLS,J)*VOL(J)*ELCHA
               END IF
             END IF
-C  SPECTRAL CUT OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
+C  SPECTRAL CUT-OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
             IF (ICCT > 0)
      .        ADD = ADD*(XINTLEFT(ICCT,J) +
      .                   XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
 
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
-3       CONTINUE
-2     CONTINUE
- 
+    3     CONTINUE
+    2 CONTINUE
+
 C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
       DO 4 IPLS=1,NPLSI
         IF (LGPRC(IPLS,0).EQ.0) GOTO 4
@@ -174,8 +175,8 @@ C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
           SREC(0,0)   =SREC(0,0)   +SREC(IPLS,IRRC)
           DO 5 J=1,NSBOX
             FREC(IFPLS,0,J)=FREC(IFPLS,0,J)+FREC(IFPLS,IIRC,J)
-5         CONTINUE
-4     CONTINUE
+    5     CONTINUE
+    4 CONTINUE
 C
 C
       IF (TRCSOU.AND.IFPLS.GT.0) THEN
@@ -195,7 +196,7 @@ C
             KK=NREARC(IRRC)
 
             ICCT=0
-            IF (KK.GT.0) THEN 
+            IF (KK.GT.0) THEN
               ICCT=NREACT(KK)
             ENDIF
             DO 6 J=1,NSBOX
@@ -211,12 +212,12 @@ C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
 
                 EIO(IPLS,IRRC)=EIO(IPLS,IRRC)-ADD
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
-                 
+
 CDR  position x0,y0,z0 is not yet known here
 cdr  take center of gravity in cell, if needed (last parameter (logical) in bfield.f
                 xc=0.
                 yc=0.
-                zc=0.                
+                zc=0.
                 CALL EIRENE_BFIELD (J, XC,YC,ZC, BX,BY,BZ, BF,.FALSE.)
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,J,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
@@ -240,7 +241,7 @@ cdr  take center of gravity in cell, if needed (last parameter (logical) in bfie
                 MOM(IPLS,IRRC)=MOM(IPLS,IRRC)-ADD
                 MOM(IPLS,0)   =MOM(IPLS,0   )-ADD
               ENDIF
-6         CONTINUE
+    6     CONTINUE
 C
 C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
           DO 8 IIRC=1,NPRCI(IPLS)
@@ -248,7 +249,7 @@ C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
             KK=NREARC(IRRC)
 
             ICCT=0
-            IF (KK.GT.0) THEN 
+            IF (KK.GT.0) THEN
               ICCT=NREACT(KK)
             ENDIF
             DO J=1,NSBOX
@@ -267,11 +268,11 @@ C  SPECTRAL CUT OFF (PHOTONS ONLY)
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
 
               ENDIF
-              
+
               EEL(IPLS,IRRC)=EEL(IPLS,IRRC)+ADD
               EEL(IPLS,0   )=EEL(IPLS,0   )+ADD
-            ENDDO   !  nsbox loop 
-8         CONTINUE  !  irrc loop 
+            ENDDO   !  nsbox loop
+    8     CONTINUE  !  irrc loop
 
 cdr  testing internal CR model, using amjuel and h_colrad rates, nrrc=2,
 cdr  with scaling factor 0.5 each. ....TEST OK, FEB 18, out again.
@@ -282,9 +283,9 @@ c    .         dein(j),lgvac(j,1),nstgrd(j)
 c          enddo
 cdr   endif
 
-7       CONTINUE    !  npls loop
+    7   CONTINUE    !  npls loop
 
-C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS) 
+C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS)
         TOT_BREMS = 0._DP
         DO IPLS=1,NPLSI
           IF (NCHRGP(IPLS) == 0) CYCLE
@@ -312,12 +313,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC, SREC         ',
      .                   TEXTS(ISPZ),IRRC,-SREC(IPLS,IRRC))
-11        CONTINUE
+   11     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT., SREC(IPLS,0) ',
      .                   TEXTS(ISPZ),0   ,-SREC(IPLS,0))
           ENDIF
-10      CONTINUE
+   10   CONTINUE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RECOMBINATION ION ENERGY LOSS (WATT): '
         DO 12 IPLS=1,NPLSI
@@ -327,12 +328,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC,EIO           ',
      .                   TEXTS(ISPZ),IRRC,EIO(IPLS,IRRC))
-13        CONTINUE
+   13     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT.,EIO(IPLS,0)   ',
      .                   TEXTS(ISPZ),0   ,EIO(IPLS,0))
           ENDIF
-12      CONTINUE
+   12   CONTINUE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RECOMBINATION ELECTRON ENERGY LOSS (WATT): '
         DO 14 IPLS=1,NPLSI
@@ -342,12 +343,12 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC,EEL           ',
      .                   TEXTS(ISPZ),IRRC,EEL(IPLS,IRRC))
-15        CONTINUE
+   15     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT.,EEL(IPLS,0)   ',
      .                   TEXTS(ISPZ),0   ,EEL(IPLS,0))
           ENDIF
-14      CONTINUE
+   14   CONTINUE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RECOMBINATION PARALLEL MOMENTUM LOSS : '
         DO 16 IPLS=1,NPLSI
@@ -357,21 +358,21 @@ C
             IRRC=LGPRC(IPLS,IIRC)
             CALL EIRENE_MASAJR('IPLS,IRRC,MOM           ',
      .                   TEXTS(ISPZ),IRRC,MOM(IPLS,IRRC))
-17        CONTINUE
+   17     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
             CALL EIRENE_MASAJR('IPLS,TOT.,MOM(IPLS,0)   ',
      .                   TEXTS(ISPZ),0   ,MOM(IPLS,0))
           ENDIF
-16      CONTINUE
+   16   CONTINUE
         CALL EIRENE_LEER(1)
- 
+
         WRITE (iunout,*) 'BREMSSTRAHLUNG (WATT): '
         DO IPLS=1,NPLSI
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           CALL EIRENE_MASAJR('IPLS,TOT.BREMSSTRAHLUNG ',
      .                 TEXTS(ISPZ),0   ,TOT_BREMS(IPLS))
         END DO
- 
+
       ENDIF    !trcsou
 C
 C  SET TOTAL SOURCE STRENGTH FOR STRATA WITH NLVOL(ISTRA)=.TRUE.,
@@ -387,7 +388,7 @@ C
           IPLSTI = MPLSTI(IPLS)
           SUMM=0.D0
           EISUMM=0.D0
-C  VOLUMETRIC SUB-STRATA  
+C  VOLUMETRIC SUB-STRATA
           DO 53 IVOLSI=1,NSRFSI(ISTRA)
             IVL=IVOLSI
             SUM=0.D0
@@ -470,7 +471,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 IT1=1
                 IT2=2
               ENDIF
- 
+
               ISTEP=SORIND(IVL,ISTRA)
               IFPLS=IFREC(IPLS)
               DO 52 IIRC=1,NPRCI(IPLS)
@@ -501,8 +502,8 @@ C  INDIRECT ADDRESSING
                         EISUM=EISUM-
      .                   (1.5*TIIN(IPLSTI,NCELL)+EDRIFT(IPLS,NCELL))*REC
                       ENDIF
-51              CONTINUE
-52            CONTINUE   ! summing over irrc
+   51           CONTINUE
+   52         CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN
                 WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '
@@ -526,7 +527,7 @@ c
               SUMM=SUMM+SUM
               EISUMM=EISUMM+EISUM
             ENDIF
-53        CONTINUE
+   53     CONTINUE
 C
           IF (SUMM.GT.0.D0) THEN
             FLUX(ISTRA)=SUMM
@@ -540,7 +541,7 @@ C
             CALL EIRENE_LEER(1)
           ENDIF
         ENDIF
-50    CONTINUE
+   50 CONTINUE
 C
 C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
       select case (LEVGEO)
@@ -548,19 +549,19 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
         IF (NLPOL) THEN
           DO 54 IP=1,NP2NDM
             PS21(IP)=PSURF(IP+1)-PSURF(IP)
-54        CONTINUE
+   54     CONTINUE
         ENDIF
         DO 55 IR=1,NR1STM
           RQ21(IR)=RQ(IR+1)-RQ(IR)
-55      CONTINUE
+   55   CONTINUE
 
       case (3)
-c  split quadrangle into two triangles, 
-c  then 1st: sample triangle according to its relative area, 
-c  then 2nd: sample uniform within this triangle
+c  split quadrangle into two triangles,
+c  then 1st: sample triangle according to its relative area,
+c  then 2nd: sample uniformly within this triangle
         IT=1
-        DO 56 IR=1,NR1ST-1
-        DO 56 IP=1,NP2ND-1
+        DO IR=1,NR1ST-1
+         DO IP=1,NP2ND-1
           IND=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
           X1=XPOL(IR,IP)
           X2=XPOL(IR,IP+1)
@@ -576,7 +577,8 @@ c  then 2nd: sample uniform within this triangle
           Y2=YPOL(IR,IP)
           Y3=YPOL(IR+1,IP+1)
           ASIMP(2,IND)=0.5*(X1*(Y2-Y3)+X2*(Y3-Y1)+X3*(Y1-Y2))
-56      CONTINUE
+         END DO
+        END DO
       end select
 C
       RETURN
@@ -619,7 +621,7 @@ C  TENTATIVELY ASSUME: A BULK ION WILL BE GENERATED
       ITYP=4
 C
       IF (.NOT.NLPLS(ISTRA)) GOTO 999
- 
+
       IF (ISTROLD /= ISTRA) THEN
         ISTROLD=ISTRA
         IPLS=NSPEZ(ISTRA)
@@ -648,7 +650,7 @@ C
             IT1=1
             IT2=2
           ENDIF
- 
+
           ISTEP=SORIND(IVL,ISTRA)
           IFPLS=IFREC(IPLS)
           DO IIRC=1,NPRCI(IPLS)
@@ -694,10 +696,10 @@ cdr analog sampling, no weighting
         IC1=0
         IC2=ICMX(NVLM)
         ZEP1=RANF_EIRENE()*VSOURC(NVLM,IC2)
- 
+
         IL=0
         IU=IC2
- 
+
 c  binary search
         DO WHILE (IU-IL.gt.1)
           IM=(IU+IL)*0.5
@@ -709,22 +711,22 @@ c  binary search
         END DO
 c
         ICELL=IU
- 
+
         NCELL=ISOURC(NVLM,ICELL)
       ELSE
- 
-cdr non-analog sampling.  
+
+cdr non-analog sampling.
 cdr Here use uniform distribution of cell indices and weighting
 cdr tbd: correlation sampling: use previous (reference) distribution and weighting
-cdr      rather than uniform sampling. 
+cdr      rather than uniform sampling.
         IC1=0
         IC2=ICMX(NVLM)
- 
+
         ICELL = MIN(INT(1+RANF_EIRENE()*(IC2-1)),IC2)
         NCELL = ISOURC(NVLM,ICELL)
- 
+
         WEIGHT=(VSOURC(NVLM,ICELL)-VSOURC(NVLM,ICELL-1))*VSMXI(NVLM)*IC2
- 
+
       END IF
 C
       IF (NCELL.GT.NSURF) GOTO 991
@@ -734,7 +736,7 @@ C
       CALL EIRENE_NCELLN(NCELL,NRCELL,NPCELL,NTCELL,NACELL,NBLOCK,
      .            NR1ST,NP2ND,NT3RD,NBMLT,NLRAD,NLPOL,NLTOR)
 C
-C  FIND TOROIDAL CO-ORDINATE IN NTCELL
+C  FIND TOROIDAL COORDINATE IN NTCELL
 C
       IF (.NOT.NLTOR) THEN
 C       NTCELL=1
@@ -767,7 +769,7 @@ C         Z0=??, TO BE FOUND FROM X01,PHI LATER
         ENDIF
       ENDIF
 C
-C  FIND RADIAL AND POLOIDAL CO-ORDINATE
+C  FIND RADIAL AND POLOIDAL COORDINATE
 C
       select case (LEVGEO)
       case (1)
@@ -780,13 +782,13 @@ C
 C..........................................................................
       case (2)
         IF (NLCRC) THEN
-C  POLOIDAL CO-ORDINATE
+C  POLOIDAL COORDINATE
           IF (NLPOL) THEN
             WINK=PSURF(NPCELL)+RANF_EIRENE( )*PS21(NPCELL)
           ELSEIF (.NOT.NLPOL) THEN
             WINK=RANF_EIRENE( )*PI2A
           ENDIF
-C  RADIAL CO-ORDINATE
+C  RADIAL COORDINATE
           RR=SQRT(RQ(NRCELL)+RANF_EIRENE( )*RQ21(NRCELL))
 C
           X0=RR*COS(WINK)
@@ -795,13 +797,13 @@ C
 CDR NOT READY. STRICKLY, THETA AND R ARE CORRELATED. USE
 CDR            MARGINAL AND CONDITIONAL DISTRIBUTION F1(R) AND
 CDR            F2(PHI, GIVEN R)
-C  POLOIDAL CO-ORDINATE
+C  POLOIDAL COORDINATE
           IF (NLPOL) THEN
             WINK=PSURF(NPCELL)+RANF_EIRENE( )*PS21(NPCELL)
           ELSEIF (.NOT.NLPOL) THEN
             WINK=RANF_EIRENE( )*PI2A
           ENDIF
-C  RADIAL CO-ORDINATE
+C  RADIAL COORDINATE
           RR=SQRT(RQ(NRCELL)+RANF_EIRENE( )*RQ21(NRCELL))
 C
           RRI=RSURF(NRCELL)
@@ -815,7 +817,7 @@ C
         ELSEIF (NLTRI) THEN
           GOTO 999
         ENDIF
-C...................................................................  
+C...................................................................
       case (3)
         IF (.NOT.NLPOL) THEN
           GOTO 999
@@ -845,7 +847,7 @@ C   POINT TO BE SAMPLED WITHIN TRIANGLE 2
         Z3=0.
         CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,ZZ)
 
-C...................................................................  
+C...................................................................
       case (4)
         X1=XTRIAN(NECKE(1,NCELL))
         X2=XTRIAN(NECKE(2,NCELL))
@@ -875,9 +877,9 @@ C.................................................................
      .  EIRENE_FPOLYT_4(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,X0,Y0,Z0)
 C....................................................................
       case (10)
-        WRITE (iunout,*) 'ERROR EXIT FROM SAMVOL. LEVGEO ',LEVGEO
-        WRITE (iunout,*) 'TO BE DONE: RETURN CENTER OF GRAVITY IN NCELL'
-        CALL EIRENE_EXIT_OWN(1)
+chf added Nov. 2018
+        CALL EIRENE_SAMVOL_USR(NCELL,X0,Y0,Z0)
+        NRCELL=NCELL
       end select
 C
       IF (NLTRA) THEN
@@ -897,7 +899,7 @@ C  NEXT: ANALOG SPECIES INDEX DISTRIBUTION: WEISPZ(IPL)
 C
       DO 630 ISPZ=1,NSPZ
         WEISPZ(ISPZ)=-1.
-630   CONTINUE
+  630 CONTINUE
 C
 C  NOT IN USE ANYMORE
 C  CURRENTLY: ONLY SINGLE SPECIES VOLUME SOURCES POSSIBLE
@@ -910,14 +912,14 @@ C           IFPLS=IFREC(IPLS)
 C           WEISPZ(IPL)=(FREC(IFPLS,0,1))/
 C    .                  (FREC(0,  0,1))
 C           IF (WEISPZ(IPL).LT.0) GOTO 991
-640       CONTINUE
+  640     CONTINUE
 C       ELSE
 C         DO 645 IPL=1,NPLSI
 C           IFPLS=IFREC(IPLS)
 C           WEISPZ(IPL)=(FREC(IFPLS,0,NCELL)-FREC(IFPLS,0,NCELL-1))/
 C     .                 (FREC(0,    0,NCELL)-FREC(0,    0,NCELL-1))
 C           IF (WEISPZ(IPL).LT.0) GOTO 991
-645       CONTINUE
+  645     CONTINUE
 C       ENDIF
 C     ENDIF
 C
@@ -940,27 +942,27 @@ C
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMVOL'
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'SAMPLING ERROR IN SAMVOL'
       WRITE (iunout,*) 'NCELL,NSURF,NSBOX ',NCELL,NSURF,NSBOX
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'SORIND (=IRRC) OUT OF RANGE IN SAMVOL'
       WRITE (iunout,*) 'IRRC,NREC ',IRRC,NREC
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'UNWRITTEN OPTION IN SAMVOL'
       CALL EIRENE_EXIT_OWN(1)
- 
+
 C     the following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_SAMVOL_REINIT
- 
+
       ISTROLD = -1
- 
+
       DEALLOCATE (LPLSSR)
       DEALLOCATE (FREC)
       DEALLOCATE (VSOURC)
@@ -971,7 +973,7 @@ C     the following ENTRY is for reinitialization of EIRENE (DMH)
       DEALLOCATE (ISOURC)
       DEALLOCATE (ICMX)
       DEALLOCATE (IFREC)
- 
+
       return
- 
+
       END

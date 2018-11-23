@@ -1,29 +1,29 @@
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
- 
- 
+
+
       FUNCTION EIRENE_FEPLCX3 (IRCX,K)
-c  RETURN mean energy (EV) of impacting (heavy) bulk particle IPLS, 
-c  cx reaction no. IRCX, 
+c  RETURN mean energy (EV) of impacting (heavy) bulk particle IPLS,
+c  cx reaction no. IRCX,
 c  cell no. K
 c  ipls:  via common
 
 CDR  SEPT 15:  OPTION KK > 0  CORRECT ???
 CDR  KK IS A FLAG, SET IN XSTCX (FOR NON-DEFAULT) OR IN XSECTA (FOR DEFAULT) CX MODELS
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IRCX, K
-      REAL(DP) :: PLS, ADD, EPCX, EIRENE_FEPLCX3, 
+      REAL(DP) :: PLS, ADD, EPCX, EIRENE_FEPLCX3,
      .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
- 
+
       EIRENE_FEPLCX3=0.D0
       KK=NELRCX(IRCX)
       IPLSTI=MPLSTI(IPLS)
@@ -48,6 +48,6 @@ CDR   ???????
         ADD=EPLCX3(IRCX,1,1)
         EIRENE_FEPLCX3=EPCX*DIIN(IPLS,K)*ADD
       END IF
- 
+
       RETURN
       END

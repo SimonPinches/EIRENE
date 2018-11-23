@@ -11,6 +11,6 @@ C
       IF (RAD.GE.0.) GOTO 1
       EIRENE_HYPP=1.D50
       RETURN
-1     EIRENE_HYPP=-E/(2.*C)+SQRT(RAD)
+    1 EIRENE_HYPP=-E/(2.*C)+SQRT(RAD)
       RETURN
       END

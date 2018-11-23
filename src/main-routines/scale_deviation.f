@@ -1,21 +1,21 @@
       SUBROUTINE EIRENE_SCALE_DEVIATION (ISTR, ZWW, ZW, ZVOLNT, ZVOLWT,
      .                     ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CSDVI
       USE EIRMOD_CGRID
       USE EIRMOD_COUTAU
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTR, N1DIM
       REAL(DP), INTENT(IN) :: ZWW, ZW, ZVOLNT, ZVOLWT
       REAL(DP), INTENT(IN) :: SCLTAL(N1DIM,*)
       REAL(DP), INTENT(IN) :: ZVOLIN(*), ZVOLIW(*)
- 
+
       INTEGER :: ISDV, ITAL, ICELL, ISPZ
- 
+
       DO 900 ISDV=1,NSIGCI
 !pb 16.07.2013        DO 901 ITAL=1,NTALR
         DO 901 ITAL=1,NTALV
@@ -28,7 +28,7 @@
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZVOLIN(ICELL)*
      .                             XMCP(ISTR)
-902         CONTINUE
+  902       CONTINUE
             SGMCS(1,ISDV)=SGMCS(1,ISDV)*ZVOLNT*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZVOLNT*XMCP(ISTR)
           ELSEIF (SCLTAL(ISPZ,ITAL).EQ.2) THEN
@@ -37,7 +37,7 @@
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZW*
      .                             XMCP(ISTR)
-903         CONTINUE
+  903       CONTINUE
             SGMCS(1,ISDV)=SGMCS(1,ISDV)*ZW*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZW*XMCP(ISTR)
           ELSEIF (SCLTAL(ISPZ,ITAL).EQ.3) THEN
@@ -46,7 +46,7 @@
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZVOLIW(ICELL)*
      .                             XMCP(ISTR)
-904         CONTINUE
+  904       CONTINUE
             SGMCS(1,ISDV)=SGMCS(1,ISDV)*ZVOLWT*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZVOLWT*XMCP(ISTR)
           ELSEIF (SCLTAL(ISPZ,ITAL).EQ.4) THEN
@@ -55,11 +55,11 @@
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZWW*
      .                             XMCP(ISTR)
-905         CONTINUE
+  905       CONTINUE
             SGMCS(1,ISDV)=SGMCS(1,ISDV)*ZWW*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZWW*XMCP(ISTR)
           ENDIF
-901     CONTINUE
+  901   CONTINUE
 C
 !pb 16.07.2013        DO 911 ITAL=1,NTALR
         DO 911 ITAL=1,NTALV
@@ -72,7 +72,7 @@ C
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZVOLIN(ICELL)*
      .                             XMCP(ISTR)
-912         CONTINUE
+  912       CONTINUE
             SGMCS(2,ISDV)=SGMCS(2,ISDV)*ZVOLNT*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZVOLNT*XMCP(ISTR)
           ELSEIF (SCLTAL(ISPZ,ITAL).EQ.2) THEN
@@ -81,7 +81,7 @@ C
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZW*
      .                             XMCP(ISTR)
-913         CONTINUE
+  913       CONTINUE
             SGMCS(2,ISDV)=SGMCS(2,ISDV)*ZW*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZW*XMCP(ISTR)
           ELSEIF (SCLTAL(ISPZ,ITAL).EQ.3) THEN
@@ -90,7 +90,7 @@ C
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZVOLIW(ICELL)*
      .                             XMCP(ISTR)
-914         CONTINUE
+  914       CONTINUE
             SGMCS(2,ISDV)=SGMCS(2,ISDV)*ZVOLWT*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZVOLWT*XMCP(ISTR)
           ELSEIF (SCLTAL(ISPZ,ITAL).EQ.4) THEN
@@ -99,13 +99,13 @@ C
      .                             XMCP(ISTR)
               SIGMAC(0,ISDV,ICELL)=SIGMAC(0,ISDV,ICELL)*ZWW*
      .                             XMCP(ISTR)
-915         CONTINUE
+  915       CONTINUE
             SGMCS(2,ISDV)=SGMCS(2,ISDV)*ZWW*XMCP(ISTR)
             SGMCS(0,ISDV)=SGMCS(0,ISDV)*ZWW*XMCP(ISTR)
           ENDIF
-911     CONTINUE
-900   CONTINUE
- 
+  911   CONTINUE
+  900 CONTINUE
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_SCALE_DEVIATION

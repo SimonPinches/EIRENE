@@ -7,9 +7,9 @@ C            THE CENSUS ARRAY
 !             RPARTC(NPRNL,1:NPARTT) --> RPARTC(1:NPARTT,NPRNL)
 !             IPARTC(NPRNL,1:MPARTT) --> IPARTC(1:MPARTT,NPRNL)
 cdr Jan 2016 : comments,  and: stop scoring census not only after total number
-cdr            of allowed census scores is reached, 
+cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
- 
+
       SUBROUTINE EIRENE_TIMCOL (PR,*,*)
 C
 C  COLLISION WITH "TIME SURFACE", FIND NEW CO-ORDINATES
@@ -24,30 +24,30 @@ C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NLIM, NPARTT, NPRNL
       USE EIRMOD_COMUSR, ONLY: ISPEZ, NSNVI
-      USE EIRMOD_CESTIM, ONLY: LEOTPHT, LEOTAT, LEOTIO, LEOTML, 
-     >                         LPOTPHT, LPOTAT, LPOTIO, LPOTML, 
-     >                         LSPUMP, 
-     >                         EOTPHT, EOTAT, EOTIO, EOTML, 
-     >                         POTPHT, POTAT, POTIO, POTML, 
+      USE EIRMOD_CESTIM, ONLY: LEOTPHT, LEOTAT, LEOTIO, LEOTML,
+     >                         LPOTPHT, LPOTAT, LPOTIO, LPOTML,
+     >                         LSPUMP,
+     >                         EOTPHT, EOTAT, EOTIO, EOTML,
+     >                         POTPHT, POTAT, POTIO, POTML,
      >                         SPUMP
       USE EIRMOD_CCONA, ONLY: PI2A
       USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLTRA
       USE EIRMOD_CUPD, ONLY: NNTCLL, X00, X01, Y00, Z00, Z01
       USE EIRMOD_CGRID, ONLY: RMTOR
-      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, IPLS, ISPZ, 
-     >                         ITYP, IPERID, IPOLG, IPOLGN, IPSTT, 
+      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, IPLS, ISPZ,
+     >                         ITYP, IPERID, IPOLG, IPOLGN, IPSTT,
      >                         ISTRA, E0, LGLAST, MSURF, MSURFG,
-     >                         MASURF, MRSURF, MPSURF, MTSURF, NLSRFX, 
-     >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI, 
-     >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ, 
+     >                         MASURF, MRSURF, MPSURF, MTSURF, NLSRFX,
+     >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI,
+     >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ,
      >                         WEIGHT, X0, Y0, Z0
-      USE EIRMOD_COMNNL, ONLY: IPART, IPRNLI, IPRNLS, ITMSTP, NPRNLS, 
+      USE EIRMOD_COMNNL, ONLY: IPART, IPRNLI, IPRNLS, ITMSTP, NPRNLS,
      >                         NTMSTP, RPART, TIME0
       USE EIRMOD_CLGIN, ONLY: NSTSI
       USE EIRMOD_CSDVI, ONLY: LMETSPW
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: PR
       INTEGER  :: IND
       REAL(DP) :: DIST, WGHTSG
@@ -95,7 +95,7 @@ CDR   rather than fixed horizon at 100 meters in x-y plane
         goto 112
       endif
 c-dpc
-C  
+C
 C  TOTAL NO. OF SCORES ON CENSUS
       IPRNLI=IPRNLI+1
 C  NO. OF SCORES ON CENSUS FOR PRESENT STRATUM ISTRA
@@ -115,14 +115,14 @@ cdr   if (iprnli <= nprnl) then
 
         RPART(1:NPARTT,IPRNLI)=RPSTT(1:NPARTT)
         IPART(1:MPARTT,IPRNLI)=IPSTT(1:MPARTT)
-      end if 
- 
+      end if
+
 C  DON'T SCORE ON CENSUS ANY MORE FOR THIS STRATUM
       if (iprnls > nprnls(istra)) iprnls = nprnls(istra)
       if (iprnli > nprnl)         iprnli = nprnl
 
 C
-112   continue
+  112 continue
 
 C  DECIDE: CONTINUE OR STOP TRAJECTORY
       IF (NTMSTP.GE.0.AND.ITMSTP.GE.NTMSTP) THEN
