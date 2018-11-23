@@ -33,18 +33,18 @@ C
       USE EIRMOD_PHOTON
       USE EIRMOD_CPES
       USE EIRMOD_CSDVI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: WMIN, XMP, XCP
       INTEGER, INTENT(IN) :: NPRIN
       INTEGER, INTENT(INOUT) :: IGASF, IGAST
       INTEGER, SAVE :: IFIRST=0, NPANOLD=0
       INTEGER :: MODREF, ISPZO,
      .           IMAT, IREFL, MSS, IDUMMY
-      REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND, 
+      REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND,
      .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT, 
+     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT,
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1
@@ -54,7 +54,7 @@ C
 C
 C---------------------------------------------------------------------
 C
- 
+
 C
 C  INITIALIZE SURFACE REFLECTION MODELS FOR PHOTONS
 C
@@ -113,7 +113,7 @@ CDR BDRF MODEL, WITH GAUSSIAN LOBE IN SPECULAR PART AND LAMBERTIAN IN THERMAL PA
 
 cdr reflected (specular) fraction
       PRFCF=max(0.,(min(1.,RECYCF(ISPZ,MSURF))))
-cdr prfct: total reemitted  fraction. 
+cdr prfct: total reemitted  fraction.
 cdr pabs : (1-recyct) is the absorbed fraction
       PRFCT=max(0.,(min(1.,RECYCT(ISPZ,MSURF))))
       PABS=1.-PRFCT
@@ -121,7 +121,7 @@ cdr prfct is cumulated SUM of emitted (Lambertian) and specular reflected (BDRF)
 cdr cumulative distribution of (spec-ref)-(lambert)-(absorb) fractions: prfcf,prfct,1.0
       prfcf=min(prfcf,prfct)
       plambert=prfct-prfcf
-      
+
 
 
 
@@ -141,7 +141,7 @@ C   TENTATIVELY ASSUME  REFLECTION
       LGPART=.TRUE.
 
 C   CHECK FOR ABSORPTION, LAMBERTIAN OR SPECULAR COMPONENT
-      ZEP1=ranf_eirene()     
+      ZEP1=ranf_eirene()
       IF (ZEP1.GT.PRFCT) THEN
 C   ABSORPTION
         GOTO 700
@@ -154,7 +154,7 @@ C   COSINE OF ANGLE OF INCIDENCE against outer normal
       IF (COSIN.LT.0.D0) GOTO 993
       ENDIF
 
- 
+
 c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
       ELSE
@@ -170,13 +170,13 @@ C   CHECK IF WALL REFLECTION DATA FOR IPHOT INCIDENT ON
 C   XWALL/ZWALL ARE AVAILABLE
 C
 C  CARBON OR MOLYBDENUM ?
- 
+
       IMAT = 2
- 
+
 C
       THETA = ACOS(COSIN)*RADDEG
       XLAMBDA = hpcl/E0*10._DP*1.E7_DP
- 
+
       CALL EIRENE_REFLECT_HOLLMANN (THETA, XLAMBDA, IMAT, IREFL,
      .                              THETA_OUT,ALPHA_OUT, RPROB)
 C

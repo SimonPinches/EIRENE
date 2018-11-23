@@ -1,5 +1,5 @@
-cdr  Nov. 2015: added option: LEVGEO=1 AND LPRAD3 (Y-Z CONTOUR PLOT AT FIXED X) 
- 
+cdr  Nov. 2015: added option: LEVGEO=1 AND LPRAD3 (Y-Z CONTOUR PLOT AT FIXED X)
+
       SUBROUTINE EIRENE_ISOLNE (AORIG,IBLD,ICURV,
      .                   IXX,IYY,XX,YY,
      .                   TEXT1,TEXT2,TEXT3,
@@ -20,7 +20,7 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: AORIG(*)
@@ -30,7 +30,7 @@ C
       LOGICAL, INTENT(IN) :: LOGL, TRC
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP) :: ZINT, SCLFCX, SCLFCY, RAMIN, RAMAX, FAK, CM, DX, DY,
      .          A1, A2, A3, A4, ACMIN, ACMAX, DA, ACONT, RMI, XMIN,
      .          XMAX, YMIN, YMAX, RMA, X1, X2, AA1, AA2
@@ -541,6 +541,6 @@ C
 C
       IF (ALLOCATED(A)) DEALLOCATE (A)
       IF (ALLOCATED(AA)) DEALLOCATE (AA)
- 
+
       RETURN
       END

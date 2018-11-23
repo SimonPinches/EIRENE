@@ -2,7 +2,7 @@
 !pb  18.07.08  CALCULATION OF CELL VOLUMES CORRECTED FOR PARTIAL TORI
 C
       SUBROUTINE EIRENE_VOLUME (IND)
- 
+
 C  CALCULATE VOLUME-ELEMENTS FOR VOLUME AVERAGED TALLIES
 C  THE CELL VOLUMES VOL MUST BE THOSE SEEN BY THE TESTPARTICLES
 C  I.E. NOT NECESSARLY THE TRUE ONES.
@@ -45,14 +45,14 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CTETRA
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IND
       REAL(DP), ALLOCATABLE, SAVE :: AREAP(:,:)
       REAL(DP) :: AREA1(0:N1ST)
       REAL(DP) :: PC1(3), PC2(3), PC3(3), PC4(3)
-      REAL(DP) :: AREAR, VOLSR, EIRENE_CAL_VOL, TWOTHIRD, VSAVE, FAC2, 
+      REAL(DP) :: AREAR, VOLSR, EIRENE_CAL_VOL, TWOTHIRD, VSAVE, FAC2,
      .          FAC3,
      .          PI2AT, AELL, DONE, DNULL, SY, X1, X2, Y1, XNULL, SX,
      .          EIRENE_ARTRIA, AR, XC, Y2, X3, Y3, X4, Y4
@@ -60,7 +60,7 @@ C
      .           IT, NCELLJ, NCELL, IPP, I1ST, IRAD, IR, IFLAG, J,
      .           IP, JP, IN, K, IRP
 !pb      SAVE
- 
+
 C     IND=1: 1-ST GRID, RAD. RESOLUTION
 C     IND=2: 2-ND GRID, POL. RESOLUTION
 C     IND=3: 3-RD GRID, TOR. RESOLUTION
@@ -71,7 +71,7 @@ C
   100 CONTINUE
 C
       IF (.NOT.ALLOCATED(AREAP)) ALLOCATE (AREAP(N1STS,N2NDPLGS))
- 
+
       DO 101 IRAD=1,NRAD
         VOL(IRAD)=0.
   101 CONTINUE
@@ -254,7 +254,7 @@ C  CENTER OF MASS
           XTCEN(ITET)=XTCEN(ITET)*0.25D0
           YTCEN(ITET)=YTCEN(ITET)*0.25D0
           ZTCEN(ITET)=ZTCEN(ITET)*0.25D0
- 
+
           IC1 = NTECK(1,ITET)
           IC2 = NTECK(2,ITET)
           IC3 = NTECK(3,ITET)
@@ -439,7 +439,7 @@ C
 C                 CALL EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
-                END IF  
+                END IF
   265     CONTINUE
         ELSEIF (NLTRA) THEN
 !PB          PI2AT=TANAL/ALPHA*PI2A
@@ -464,7 +464,7 @@ C                 CALL EXIT_OWN(1)
 C                 CALL EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
-                END IF  
+                END IF
   267     CONTINUE
         ELSEIF (NLTRZ) THEN
           DO 268 I=1,NR1STM
@@ -487,7 +487,7 @@ C                 CALL EXIT_OWN(1)
                   END IF
                 ELSE
                   VOL(NCELL) = 0._DP
-                END IF  
+                END IF
   268     CONTINUE
         ENDIF
 C
@@ -542,7 +542,7 @@ C
           IF (VOLADD(J-NSURF).GT.0.D0) VOL(J)=VOLADD(J-NSURF)
   411   CONTINUE
       ENDIF
- 
+
       DEALLOCATE (AREAP)
 C
       RETURN

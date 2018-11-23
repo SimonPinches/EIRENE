@@ -8,15 +8,15 @@ C                           INTEGRATION FROM A=-1 TO B=1
 C                           TRANSFORMED TO A=0,B=1, AND
 C                           W(X)=1./SQRT(X)/SQRT(1-X)
 C
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: RS, ER, B, P(*)
       REAL(DP), INTENT(OUT) :: RESULT
       INTEGER, INTENT(IN) :: IFLAG, N, IGAUS
- 
+
       REAL(DP) :: AR(128), AFI(128)
       INTEGER :: NFI
       COMMON /CFI/ AR,AFI,NFI

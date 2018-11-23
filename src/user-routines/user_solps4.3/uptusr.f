@@ -37,7 +37,7 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
-     .                        XSTORV2(NSTORV,N2ND+N3RD), 
+     .                        XSTORV2(NSTORV,N2ND+N3RD),
      .                        WV
       INTEGER, INTENT(IN) :: IFLAG
       INTEGER ::   ICOU,K,IRD,IACX,IRCX, IRDO,nti,nte,ia,
@@ -45,7 +45,7 @@ C
       REAL(DP) ::  DIST,WTR,WTRSIG
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
      .            VSIG_PERP(NPLS), VAL_PERP(NPLS),
-     .            V0_PARB,PARMOM_0, 
+     .            V0_PARB,PARMOM_0,
      .            V0_PERP,PERPMOM_0
 
 C
@@ -73,15 +73,15 @@ C
           IRDO=NRCELL+NUPC(ICOU)*NR1P2+NBLCKA
           IRD=NCLTAL(IRDO)
 c  set parallel plasma flow parameters
-c  assume here: bvin, parmom are set in plasma_deriv. 
+c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
           VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-          VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
+          VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
 C  for the time being: no perpendicular plasma flow.
          VAL_PERP(1:NPLSI) =0.0
-         VSIG_PERP(1:NPLSI)=0.0 
-                  
- 
+         VSIG_PERP(1:NPLSI)=0.0
+
+
 C
 cdr       IF (LGVAC(IRDO,0)) GOTO 200
 C
@@ -89,7 +89,7 @@ C
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
             XSTORV(:)  = XSTORV2(:,ICOU)
           endif
-          
+
 C
 C
           IF (LGACX(IATM,0,0).EQ.0) GOTO 590
@@ -119,7 +119,7 @@ c  sign:  for neutrals.
 ccc
 ccc  next: parallel momentum exchange rates due to CX, ATOMS
 ccc
- 
+
              V0_PARB=VEL*
      .               (VELX*BXIN(IRDO)+VELY*BYIN(IRDO)+VELZ*BZIN(IRDO))
              PARMOM_0=V0_PARB*CNDYNA(IATM)
@@ -144,7 +144,7 @@ C
 
 c  tally addv(ia+4*natm+...): currently free.
 
-C  PREVIOUS INCIDENT BULK ION IPLS, NOW LOST FOR BULK 
+C  PREVIOUS INCIDENT BULK ION IPLS, NOW LOST FOR BULK
             ADDV(IA+5*NATM+IPLS,IRD)=ADDV(IA+5*NATM+IPLS,IRD)-
      .                               WTRSIG*VSIG_PARB(IPLS)
 c  volumetric incident neutral par. momentum rate due to charge exchange
@@ -189,10 +189,10 @@ C
           WTR=WV*DIST
           IRDO=NRCELL+NUPC(ICOU)*NR1P2+NBLCKA
           IRD=NCLTAL(IRDO)
-c  assume here: bvin, parmom are set in plasma_deriv. 
+c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
           VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-          VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)       
+          VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
 C
           IF (LGVAC(IRDO,0)) GOTO 1200
 C
@@ -200,7 +200,7 @@ C
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
             XSTORV(:)  = XSTORV2(:,ICOU)
           endif
-          
+
 C
 C
           IF (LGMCX(IMOL,0,0).EQ.0) GOTO 1590
@@ -264,7 +264,7 @@ C
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
             XSTORV(:)  = XSTORV2(:,ICOU)
           endif
-          
+
 C
 C
           IF (LGMEL(IMOL,0,0).EQ.0) GOTO 2590
@@ -308,6 +308,3 @@ C
 C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
       RETURN
       END
- 
- 
- 

@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
           SUBROUTINE EIRENE_OPERAT(AUSDRU,AKTLEN,OTOREN,ERROR)
 C-----------------------------------------------------------------------
@@ -11,40 +11,40 @@ C     UEBERPRUEFUNG EINER REGELVERLETZUNG BEI OPERATOREN
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
- 
+
 C
 C     KONSTANTENDEKLARATION
 C
          CHARACTER(5), PARAMETER :: FAKTOR='^*/+-'
- 
+
 C
 C     EINGABEPARAMETER :
 C
          INTEGER, INTENT(IN) :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          CHARACTER(*), INTENT(IN) :: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
 C
 C     EIN/AUSGABEPARAMETER :
 C
          INTEGER, INTENT(INOUT) :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
+
 C
 C     AUSGABEPARAMETER :
 C
          INTEGER, INTENT(OUT) :: OTOREN
 C           : ANZAHL DER OPERATOREN IN AUSDRU
- 
+
 C
 C     HILFSVARIABLEN :
 C
          INTEGER :: I, POS
- 
+
       OTOREN=0
- 
+
       I=1
 C
 C     REPEAT
@@ -84,7 +84,7 @@ C
             OTOREN=OTOREN-1
          ENDIF
       ENDIF
- 
+
       IF (INDEX(FAKTOR,AUSDRU(AKTLEN:AKTLEN)).GT. 0  .AND.
      >     ERROR .EQ. 0) THEN
 C
@@ -92,7 +92,7 @@ C        AUSDRU ENDET MIT EINEM OPERATOR
 C
          ERROR=10
       ENDIF
- 
+
       DO 20, I=1,AKTLEN-1
 C
 C        DIE ENDGUELTIGE ANZAHL DER OPERATOREN ERGIBT SICH AUS

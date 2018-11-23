@@ -38,7 +38,7 @@ cdr             ei process: started to check for H.3, H.1 options for EI process
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 cdr Jan. 18:    This entire routine is largely unfinished. Photon transport
-cdr             with eirene currently not possible. 
+cdr             with eirene currently not possible.
 cdr             Started to prepare re-activating this option: for now: comments only
 
 C

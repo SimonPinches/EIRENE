@@ -1,6 +1,6 @@
 cdr  sept.2015:  nlscl scaling option for rpartc (weights of census scores),
-cdr              but not for census flux FLUX(NSTRAI) ???  to be done ?? 
-cdr              added census fluxes resolved wrt. species and stratum 
+cdr              but not for census flux FLUX(NSTRAI) ???  to be done ??
+cdr              added census fluxes resolved wrt. species and stratum
 cdr              currently only for diagnostic printout, but should be used
 cdr              also for stratifying re-sampling to preserve species specific
 cdr              fluxes exactly
@@ -26,27 +26,27 @@ C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NATM, NION, NMOL, NPHOT, NPARTT,
      >                          NSTRA
-      USE EIRMOD_COMUSR, ONLY: ISPEZI, ITIMV, NATMI, NIONI, NMOLI, 
-     >                         NPHOTI, NFILEJ, NPRT, NSPA, NSPAM, NSPH, 
+      USE EIRMOD_COMUSR, ONLY: ISPEZI, ITIMV, NATMI, NIONI, NMOLI,
+     >                         NPHOTI, NFILEJ, NPRT, NSPA, NSPAM, NSPH,
      >                         NTIME, TEXTS
       USE EIRMOD_CCONA, ONLY: EPS10, EPS60
       USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLPLAS
       USE EIRMOD_CPLOT, ONLY: PLTSRC
       USE EIRMOD_CTRCEI, ONLY: TRCPLT, TRCGRD, TRCCEN
-      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, ISPZ, ISTRA, 
+      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, ISPZ, ISTRA,
      >                         IPSTT, ITYP, IUNOUT, NPANU, RPSTT, WEIGHT
-      USE EIRMOD_COMNNL, ONLY: DTIMV, IPART, IPARTC, IPRNL, IPRNLI, 
+      USE EIRMOD_COMNNL, ONLY: DTIMV, IPART, IPARTC, IPRNL, IPRNLI,
      >                         NPTST, RPART, RPARTC, RPARTW, TIME0
-      USE EIRMOD_COMSOU, ONLY: FLUX, NLSRON, NMINPTS, NPTS, NSTRAI, 
+      USE EIRMOD_COMSOU, ONLY: FLUX, NLSRON, NMINPTS, NPTS, NSTRAI,
      >                         NSRFSI, SORWGT
       USE EIRMOD_COUTAU, ONLY: FASCL, FISCL, FMSCL, FLXFAC, FPHSCL, XMCP
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: SGMTOT(NSTRA),FLX(NSTRA),
      .            ADDA(0:NATM,0:NSTRA),ADDM(0:NMOL,0:NSTRA),
      .            ADDI(0:NION,0:NSTRA),ADDPH(0:NPHOT,0:NSTRA)
-      REAL(DP) :: FLXQ, FCT, SGMREL, SGMTQN, ADDS, ADD, ADDP, SGMTQ1, 
+      REAL(DP) :: FLXQ, FCT, SGMREL, SGMTQN, ADDS, ADD, ADDP, SGMTQ1,
      .            SUMM, WEIGHT0
       INTEGER :: ISTRAO, NPANUO, ISTRAI, I
 C
@@ -104,7 +104,7 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
         NPTS(NSTRAI)=IPRNL
         NMINPTS(NSTRAI)=IPRNL  !ENFORCE: FULL RE-LOCATION OF ALL PARTICLES FROM OLD CENSUS
       ENDIF
- 
+
       FLUX(NSTRAI)=0.
       RPARTW(0)=0.0
       DO 130 ISTRAI=1,NSTRAI
@@ -132,13 +132,13 @@ C  SET "ATOMIC" FLUXES ONTO CENSUS ARRAY
 C  APPLY PART. BALANCE CORRECTION SCALING, IF NLSCL, FOR THE TOTAL CENSUS FLUX
 
 C  THIS IS ALREADY DONE ON "TIME SURFACE" TALLY ELSEWHERE, AS IT IS ON ANY OTHER SURFACE
-C  BUT DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..), 
+C  BUT DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..),
 C  AND THE SPECIES-TYPE RESOLVED FLUXES ADDPH, ADDA, ADDM, ADDI
 
       DO 140  I=1,IPRNL
         RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
         IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
-        
+
 cdr     IPAN=IPART(1,I)  ! particle number of score I on census
 cdr     ISTR=IPART(8,I)  ! stratum  number of score I on census = ISTRA
 cdr     ITYP=ISPEZI(IPART(9,I),-1)
@@ -149,13 +149,13 @@ cdr     ITYP=ISPEZI(IPART(9,I),-1)
           IPHOT=ISPEZI(ISPZ,0)
           WEIGHT=WEIGHT0*FPHSCL(ISTRA)
           ADDP=WEIGHT0*FLXFAC(ISTRA)
-          ADD=ADDP*NPRT(IPHOT)          
+          ADD=ADDP*NPRT(IPHOT)
           ADDPH(IPHOT,ISTRA)=ADDPH(IPHOT,ISTRA)+ADDP
         ELSEIF (ITYP.EQ.1) THEN
           IATM=ISPEZI(ISPZ,1)
           WEIGHT=WEIGHT0*FASCL(ISTRA)
           ADDP=WEIGHT0*FLXFAC(ISTRA)
-          ADD=ADDP*NPRT(NSPH+IATM)        
+          ADD=ADDP*NPRT(NSPH+IATM)
           ADDA(IATM,ISTRA)=ADDA(IATM,ISTRA)+ADDP
         ELSEIF (ITYP.EQ.2) THEN
           IMOL=ISPEZI(ISPZ,2)
@@ -253,14 +253,14 @@ C
         SORWGT(1,NSTRAI)=1.D0
       ENDIF
 
-C  SET ARRAYS OF CENSUS PARTICLE COORDINATES 
+C  SET ARRAYS OF CENSUS PARTICLE COORDINATES
 C  FOR RE-SAMPLING (SUBR. LOCATE) IN NEXT TIMESTEP.
 C  WEIGHT OF RE-SAMPLED PARTICLE = 1.0, SINCE ORIGINAL CENSUS PARTICLE
 C  WEIGHT IS ALREADY ACCOUNTED FOR IN RE-SAMPLING DISTRIBUTION RPARTW
       RPARTC(1:NPARTT,1:IPRNL)=RPART(1:NPARTT,1:IPRNL)
       IPARTC(1:MPARTT,1:IPRNL)=IPART(1:MPARTT,1:IPRNL)
 C
-C Such loops can be optimised by changing IPSTT to a pointer on IPARTC, 
+C Such loops can be optimised by changing IPSTT to a pointer on IPARTC,
 C similar situation in collect_census.f
       DO I=1,IPRNL
         IPSTT(1:MPARTT)=IPARTC(1:MPARTT,I)
@@ -285,17 +285,17 @@ C
       WRITE (IUNOUT,*) '"ATOMIC" FLUX AT CENSUS (AMP):'
       CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
       CALL EIRENE_MASR1('+-%     ',SGMREL)
-      
+
       CALL EIRENE_LEER(2)
-C     
+C
       IF (TRCCEN) THEN
         CALL EIRENE_MASBOX
      .          ('DETAILED CENSUS FLUXES, PER SPECIES, STRATUM ')
-        
+
 
         DO 950 ISTRAI=1,NSTRAI
           CALL EIRENE_LEER(1)
-          WRITE (IUNOUT,*) 'STRATUM NO. ISTRA=', ISTRAI 
+          WRITE (IUNOUT,*) 'STRATUM NO. ISTRA=', ISTRAI
           CALL EIRENE_LEER(1)
           SUMM=ADDA(0,ISTRAI)+ADDM(0,ISTRAI)+ADDI(0,ISTRAI)+
      .         ADDPH(0,ISTRAI)
@@ -303,15 +303,15 @@ C
             WRITE (IUNOUT,*) 'NO FLUXES FROM THIS STRATUM ON CENSUS '
             GOTO 950
           ENDIF
-          
+
 C   PRINT ADDA(IATM) FOR ISTRAI
-          IF  (ADDA(0,ISTRAI).GT.0.0) THEN    
+          IF  (ADDA(0,ISTRAI).GT.0.0) THEN
             WRITE (IUNOUT,*) 'ATOM FLUX AT CENSUS (AMP):'
             DO IATM = 1, NATMI
-              WRITE (IUNOUT,'(A10,ES12.4)') 
+              WRITE (IUNOUT,'(A10,ES12.4)')
      .               TEXTS(NSPH+IATM), ADDA(IATM,ISTRAI)
-            END DO          
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            END DO
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .               'TOTAL     ',ADDA(0,ISTRAI)
             CALL EIRENE_LEER(1)
           ENDIF
@@ -320,10 +320,10 @@ C   PRINT ADDM(IMOL) FOR ISTRAI
           IF  (ADDM(0,ISTRAI).GT.0.0) THEN
             WRITE (IUNOUT,*) 'MOLECULE FLUX AT CENSUS (AMP):'
             DO IMOL = 1, NMOLI
-              WRITE (IUNOUT,'(A10,ES12.4)') 
+              WRITE (IUNOUT,'(A10,ES12.4)')
      .               TEXTS(NSPA+IMOL), ADDM(IMOL,ISTRAI)
-            END DO          
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            END DO
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .               'TOTAL     ',ADDM(0,ISTRAI)
             CALL EIRENE_LEER(1)
           ENDIF
@@ -332,10 +332,10 @@ C   PRINT ADDI(IION) FOR ISTRAI
           IF  (ADDI(0,ISTRAI).GT.0.0) THEN
             WRITE (IUNOUT,*) 'TEST-ION FLUX AT CENSUS (AMP):'
             DO IION = 1, NIONI
-              WRITE (IUNOUT,'(A10,ES12.4)') 
+              WRITE (IUNOUT,'(A10,ES12.4)')
      .               TEXTS(NSPAM+IION), ADDI(IION,ISTRAI)
-            END DO          
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            END DO
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .               'TOTAL     ',ADDI(0,ISTRAI)
             CALL EIRENE_LEER(1)
           ENDIF
@@ -344,15 +344,15 @@ C   PRINT ADDPH(IPHOT) FOR ISTRAI
           IF  (ADDPH(0,ISTRAI).GT.0.0) THEN
             WRITE (IUNOUT,*) 'PHOTON FLUX AT CENSUS (AMP):'
             DO IPHOT = 1, NPHOTI
-              WRITE (IUNOUT,'(A10,ES12.4)') 
+              WRITE (IUNOUT,'(A10,ES12.4)')
      .               TEXTS(IPHOT), ADDPH(IPHOT,ISTRAI)
-            END DO          
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            END DO
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .             'TOTAL     ',ADDPH(0,ISTRAI)
             CALL EIRENE_LEER(1)
           ENDIF
 
-  950   CONTINUE        
+  950   CONTINUE
         CALL EIRENE_LEER(2)
 
         WRITE (IUNOUT,*) 'SUM OVER STRATA'
@@ -362,15 +362,15 @@ C   PRINT ADDPH(IPHOT) FOR ISTRAI
           WRITE (IUNOUT,*) 'NO FLUXES ON CENSUS '
           GOTO 960
         ENDIF
-         
+
 C   PRINT ADDA(IATM) FOR ISTRAI=0
         IF  (ADDA(0,0).GT.0.0) THEN
           WRITE (IUNOUT,*) 'ATOM FLUX AT CENSUS (AMP):'
           DO IATM = 1, NATMI
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .             TEXTS(NSPH+IATM), ADDA(IATM,0)
-          END DO          
-          WRITE (IUNOUT,'(A10,ES12.4)') 
+          END DO
+          WRITE (IUNOUT,'(A10,ES12.4)')
      .             'TOTAL     ',ADDA(0,0)
           CALL EIRENE_LEER(1)
         ENDIF
@@ -379,10 +379,10 @@ C   PRINT ADDM(IMOL) FOR ISTRAI=0
         IF  (ADDM(0,0).GT.0.0) THEN
           WRITE (IUNOUT,*) 'MOLECULE FLUX AT CENSUS (AMP):'
           DO IMOL = 1, NMOLI
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .             TEXTS(NSPA+IMOL), ADDM(IMOL,0)
-          END DO          
-          WRITE (IUNOUT,'(A10,ES12.4)') 
+          END DO
+          WRITE (IUNOUT,'(A10,ES12.4)')
      .             'TOTAL     ',ADDM(0,0)
           CALL EIRENE_LEER(1)
         ENDIF
@@ -391,10 +391,10 @@ C   PRINT ADDI(IION) FOR ISTRAI=0
         IF  (ADDI(0,0).GT.0.0) THEN
           WRITE (IUNOUT,*) 'TEST-ION FLUX AT CENSUS (AMP):'
           DO IION = 1, NIONI
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .             TEXTS(NSPAM+IION), ADDI(IION,0)
-          END DO          
-          WRITE (IUNOUT,'(A10,ES12.4)') 
+          END DO
+          WRITE (IUNOUT,'(A10,ES12.4)')
      .             'TOTAL     ',ADDI(0,0)
           CALL EIRENE_LEER(1)
         ENDIF
@@ -403,16 +403,16 @@ C   PRINT ADDPH(IPHOT) FOR ISTRAI=0
         IF  (ADDPH(0,0).GT.0.0) THEN
           WRITE (IUNOUT,*) 'PHOTON FLUX AT CENSUS (AMP):'
           DO IPHOT = 1, NPHOTI
-            WRITE (IUNOUT,'(A10,ES12.4)') 
+            WRITE (IUNOUT,'(A10,ES12.4)')
      .             TEXTS(IPHOT), ADDPH(IPHOT,0)
-          END DO          
-          WRITE (IUNOUT,'(A10,ES12.4)') 
+          END DO
+          WRITE (IUNOUT,'(A10,ES12.4)')
      .             'TOTAL     ',ADDPH(0,0)
           CALL EIRENE_LEER(1)
         ENDIF
 
   960   CONTINUE
- 
+
       ENDIF  !TRCCEN
 
       WRITE (IUNOUT,*) '...............................................'

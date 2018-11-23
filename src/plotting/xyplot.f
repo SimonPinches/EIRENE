@@ -1,9 +1,9 @@
 C
 C
       SUBROUTINE EIRENE_XYPLOT (XY,NC)
- 
+
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
 C
       REAL(SP), INTENT(INOUT) :: XY(*)

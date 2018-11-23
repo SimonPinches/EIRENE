@@ -29,7 +29,7 @@ C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                          ELNAME, IZ1, 
+     .                          ELNAME, IZ1,
      .                          IROW_ESC, ICOL_ESC, POP_ESC)
 c
 c  open data stream 29 and read atomic dataset no. IR
@@ -122,8 +122,8 @@ C          5 for other quantities, population densities, etc.. (ISW=11,12)
 c
 c
 C       IFTFLG(IR,IH) DEFAULTS:
- 
-C           CASE IH=0  (H.0):                    
+
+C           CASE IH=0  (H.0):
 C       IFTFLG(IR,0)   =2,  FOR INTERACTION POTENTIAL (GEN. MORSE)
 
 C           CASE  IH=1  (H.1):
@@ -799,7 +799,7 @@ c
         END IF
 c
 c  currently foreseen asymptotic data identifiers in data files:
-c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX, 
+c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX,
 c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
 c                    P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
@@ -822,7 +822,7 @@ c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
           LGR2MIN = .TRUE.
 c  old default: 2nd-order polynomial beyond valid range, with coefs. FPL2
-          IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5 
+          IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5
 c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
           IF (IF2MN == 0) IF2MN = 4
         END IF
@@ -830,7 +830,7 @@ c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
           LGR2MAX = .TRUE.
 c  old default: 2nd-order polynomial beyond valid range, with coefs. FPr2
-          IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5 
+          IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5
 c  default extrapolation from r2mx (by constant continuation) will be: jfex2mx=4
           IF (IF2MX == 0) IF2MX = 4
         END IF
@@ -946,7 +946,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2L
         JFEX2MN = IF2MN
-        IF (LGR2MIN .AND. LGC2MIN .AND. (JFEX2MN == 0)) 
+        IF (LGR2MIN .AND. LGC2MIN .AND. (JFEX2MN == 0))
 ! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .         JFEX2MN = 5
       END IF
@@ -975,7 +975,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGC2MAX) FP2(4:6) = FP2R
         JFEX2MX = IF2MX
         IF (LGR2MAX .AND. LGC2MAX .AND. (JFEX2MX == 0))
-! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .        JFEX2MX = 5
       END IF
 C
@@ -1033,13 +1033,13 @@ c  called from slreac, after the original fit coefficients for reaction IR
 c  are read.
 c  At this point an extrapolation card ZEILE belonging to this reaction IR
 c  has already been found.
-c  
+c
 c  This routine:
-c  Reads validity range from atomic data file: 
-c  Search in ZEILE for key1, key2 and return: RNG, IFX 
+c  Reads validity range from atomic data file:
+c  Search in ZEILE for key1, key2 and return: RNG, IFX
 
 c  key1:  'ELABMIN', 'ELABMAX',   'T1MIN','T1MAX','E2MIN','E2MAX',
-C         'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=, 
+C         'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=,
 C                     read RNG (unformatted, real)
 c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
 

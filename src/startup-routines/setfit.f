@@ -8,7 +8,7 @@ c                   anymore.
       USE EIRMOD_CADGEO
       USE EIRMOD_CCONA
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
 C
       LOGICAL, INTENT(IN) :: TRCSUR
@@ -68,7 +68,7 @@ C  X IS IGNORABLE, IN BOTH SURFACES: I AND IE
             XR=YLIMS2(1,IE)
             YL=ZLIMS1(1,IE)
             YR=ZLIMS2(1,IE)
- 
+
             XP1=P1(2,I)
             XP2=P2(2,I)
             YP1=P1(3,I)
@@ -97,7 +97,7 @@ C  Y IS IGNORABLE, IN BOTH SURFACES: I AND IE
             XR=XLIMS2(1,IE)
             YL=ZLIMS1(1,IE)
             YR=ZLIMS2(1,IE)
- 
+
             XP1=P1(1,I)
             XP2=P2(1,I)
             YP1=P1(3,I)
@@ -126,7 +126,7 @@ C  Z IS IGNORABLE, IN BOTH SURFACES: I AND IE
             XR=XLIMS2(1,IE)
             YL=YLIMS1(1,IE)
             YR=YLIMS2(1,IE)
- 
+
             XP1=P1(1,I)
             XP2=P2(1,I)
             YP1=P1(2,I)
@@ -149,7 +149,7 @@ C  IS SURFACE IE GIVEN BY TWO-POINT OPTION ?
         TWOPOINT=.FALSE.
         IF (P3(1,IE).GE.1.D50.OR.P3(2,IE).GE.1.D50.OR.
      .      P3(3,IE).GE.1.D50) TWOPOINT=.TRUE.
- 
+
           IF ((RLB(IE).EQ.1..OR.RLB(IE).EQ.1.5).AND..NOT.TWOPOINT) THEN
 C  TRY TO CONNECT SURFACE I TO POINTS ON BOUNDARY BOX OF SURFACE IE
           IS=0
@@ -257,7 +257,7 @@ C  SCHNITTPUNKTE MIT Y=YL AND Y=YR
               ENDIF
             ENDIF
           ENDIF
- 
+
           ELSEIF ((RLB(IE).EQ.1..OR.RLB(IE).EQ.1.5).AND.TWOPOINT) THEN
 C  TRY TO CONNECT SURFACE I TO SURFACE IE
             IS=1
@@ -423,7 +423,7 @@ C
 C
 C  TWO POINT OPTION FINISHED. P1,P2 REDEFINED
 C  ALL OTHER SURFACE COEFFICIENTS ALSO REDEFINED
- 
+
 C  NOW: GENERAL SECOND ORDER EQUATION, RLB=1., FOR SURFACE I
 C
     2   CONTINUE

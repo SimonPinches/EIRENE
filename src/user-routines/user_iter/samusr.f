@@ -20,30 +20,30 @@ C
       INTEGER, INTENT(OUT) :: IRUSR, IPUSR, ITUSR, IAUSR, IBUSR
 
 C  CALLED IN INITIALIZATION PHASE
-C  E.G. TO INITIALIZE SAMPLING ON SURFACE 
+C  E.G. TO INITIALIZE SAMPLING ON SURFACE
       ENTRY EIRENE_SM0USR
      .  (is1,is2,sorad1,sorad2,sorad3,sorad4,sorad5,sorad6)
       return
 
 C.............................................................................
-C  CALLED FROM SUBR. SAMSRF, FOR SURFACE SAMPLING 
+C  CALLED FROM SUBR. SAMSRF, FOR SURFACE SAMPLING
       ENTRY EIRENE_SM1USR (NLSF,X0,Y0,Z0,
      .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
 
 
-C  RETURN BIRTH POINT OF TEST PARTICLE 
+C  RETURN BIRTH POINT OF TEST PARTICLE
       x0 = 0._dp
       y0 = 0._dp
       z0 = 0._dp
-C  RETURN CELL NO. INFORMATION AT BIRTH POINT 
+C  RETURN CELL NO. INFORMATION AT BIRTH POINT
       irusr = 0
       ipusr = 0
       itusr = 0
       iausr = 0
       ibusr = 0
-C  RETURN BACKGROUND MEDIUM PARAMETERS AT BIRTHPOINT 
+C  RETURN BACKGROUND MEDIUM PARAMETERS AT BIRTHPOINT
       tiwl(1:nplsti) = 0._dp
       tewl = 0._dp
       diwl(1:nplsi) = 0._dp
@@ -53,6 +53,6 @@ C  RETURN BACKGROUND MEDIUM PARAMETERS AT BIRTHPOINT
       efwl(1:nplsi) = 0._dp
       shwl = 0._dp
       weispz(1:nspz) = 0._dp
- 
+
       RETURN
       END

@@ -22,7 +22,7 @@ C  JET 2005, PATCH 1: NEW ARGUMENTS EFWL AND SHWL IN PARAMETER LIST
 c                     AT ENTRY SMVOL1 AND SMUSR1
 C
       SUBROUTINE EIRENE_SAMVOL
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -43,7 +43,7 @@ C
       USE EIRMOD_PHOTON
       IMPLICIT NONE
 C
- 
+
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*),
      .                         VXWL(*), VYWL(*), VZWL(*),
      .                         EFWL(*), WEISPZ(*)
@@ -55,8 +55,8 @@ C
      .                               IFREC(:)
       REAL(DP) :: ZEP1, X1, Y1, X2, Y2, X3, Y3, RR, RRI, WINK,
      .            ZRM1, CNORM, EPR, ELR, RRD, RRN, ZZ, X01, Z1, Z2, Z3,
-     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CDYN, 
-     .            VX, VY, VZ, VPARA, EELRC, 
+     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CDYN,
+     .            VX, VY, VZ, VPARA, EELRC,
      .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
      .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
      .            EIRENE_BREMS,XC,YC,ZC
@@ -86,12 +86,12 @@ C    AND THE CELL NUMBERS ARE COMPUTED
 C
       ENTRY EIRENE_SAMVL0
 C
- 
+
       IF (.NOT.ALLOCATED(FREC)) THEN
- 
+
 C  LPLSSR(IPLS):
 C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
- 
+
         ALLOCATE (LPLSSR(NPLSI))
         LPLSSR = .FALSE.
         DO ISTR=1,NSTRAI
@@ -99,7 +99,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
-c  nspez out of range: Set volumetric sources for ALL species 
+c  nspez out of range: Set volumetric sources for ALL species
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
@@ -135,7 +135,7 @@ C
           KK=NREARC(IRRC)
           ICCT=0
 C  SPECTRAL CUT OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
-          IF (KK.GT.0) THEN 
+          IF (KK.GT.0) THEN
             ICCT=NREACT(KK)
           ENDIF
           DO 3 J=1,NSBOX
@@ -162,7 +162,7 @@ C  SPECTRAL CUT OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
     3     CONTINUE
     2 CONTINUE
- 
+
 C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
       DO 4 IPLS=1,NPLSI
         IF (LGPRC(IPLS,0).EQ.0) GOTO 4
@@ -196,7 +196,7 @@ C
             KK=NREARC(IRRC)
 
             ICCT=0
-            IF (KK.GT.0) THEN 
+            IF (KK.GT.0) THEN
               ICCT=NREACT(KK)
             ENDIF
             DO 6 J=1,NSBOX
@@ -212,12 +212,12 @@ C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
 
                 EIO(IPLS,IRRC)=EIO(IPLS,IRRC)-ADD
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
-                 
+
 CDR  position x0,y0,z0 is not yet known here
 cdr  take center of gravity in cell, if needed (last parameter (logical) in bfield.f
                 xc=0.
                 yc=0.
-                zc=0.                
+                zc=0.
                 CALL EIRENE_BFIELD (J, XC,YC,ZC, BX,BY,BZ, BF,.FALSE.)
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,J,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
@@ -249,7 +249,7 @@ C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
             KK=NREARC(IRRC)
 
             ICCT=0
-            IF (KK.GT.0) THEN 
+            IF (KK.GT.0) THEN
               ICCT=NREACT(KK)
             ENDIF
             DO J=1,NSBOX
@@ -268,11 +268,11 @@ C  SPECTRAL CUT OFF (PHOTONS ONLY)
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
 
               ENDIF
-              
+
               EEL(IPLS,IRRC)=EEL(IPLS,IRRC)+ADD
               EEL(IPLS,0   )=EEL(IPLS,0   )+ADD
-            ENDDO   !  nsbox loop 
-    8     CONTINUE  !  irrc loop 
+            ENDDO   !  nsbox loop
+    8     CONTINUE  !  irrc loop
 
 cdr  testing internal CR model, using amjuel and h_colrad rates, nrrc=2,
 cdr  with scaling factor 0.5 each. ....TEST OK, FEB 18, out again.
@@ -285,7 +285,7 @@ cdr   endif
 
     7   CONTINUE    !  npls loop
 
-C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS) 
+C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS)
         TOT_BREMS = 0._DP
         DO IPLS=1,NPLSI
           IF (NCHRGP(IPLS) == 0) CYCLE
@@ -365,14 +365,14 @@ C
           ENDIF
    16   CONTINUE
         CALL EIRENE_LEER(1)
- 
+
         WRITE (iunout,*) 'BREMSSTRAHLUNG (WATT): '
         DO IPLS=1,NPLSI
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           CALL EIRENE_MASAJR('IPLS,TOT.BREMSSTRAHLUNG ',
      .                 TEXTS(ISPZ),0   ,TOT_BREMS(IPLS))
         END DO
- 
+
       ENDIF    !trcsou
 C
 C  SET TOTAL SOURCE STRENGTH FOR STRATA WITH NLVOL(ISTRA)=.TRUE.,
@@ -388,7 +388,7 @@ C
           IPLSTI = MPLSTI(IPLS)
           SUMM=0.D0
           EISUMM=0.D0
-C  VOLUMETRIC SUB-STRATA  
+C  VOLUMETRIC SUB-STRATA
           DO 53 IVOLSI=1,NSRFSI(ISTRA)
             IVL=IVOLSI
             SUM=0.D0
@@ -471,7 +471,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 IT1=1
                 IT2=2
               ENDIF
- 
+
               ISTEP=SORIND(IVL,ISTRA)
               IFPLS=IFREC(IPLS)
               DO 52 IIRC=1,NPRCI(IPLS)
@@ -556,8 +556,8 @@ C  PREPARE SOME GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING IN STANDARD MESH CELLS
    55   CONTINUE
 
       case (3)
-c  split quadrangle into two triangles, 
-c  then 1st: sample triangle according to its relative area, 
+c  split quadrangle into two triangles,
+c  then 1st: sample triangle according to its relative area,
 c  then 2nd: sample uniformly within this triangle
         IT=1
         DO 56 IR=1,NR1ST-1
@@ -620,7 +620,7 @@ C  TENTATIVELY ASSUME: A BULK ION WILL BE GENERATED
       ITYP=4
 C
       IF (.NOT.NLPLS(ISTRA)) GOTO 999
- 
+
       IF (ISTROLD /= ISTRA) THEN
         ISTROLD=ISTRA
         IPLS=NSPEZ(ISTRA)
@@ -649,7 +649,7 @@ C
             IT1=1
             IT2=2
           ENDIF
- 
+
           ISTEP=SORIND(IVL,ISTRA)
           IFPLS=IFREC(IPLS)
           DO IIRC=1,NPRCI(IPLS)
@@ -695,10 +695,10 @@ cdr analog sampling, no weighting
         IC1=0
         IC2=ICMX(NVLM)
         ZEP1=RANF_EIRENE()*VSOURC(NVLM,IC2)
- 
+
         IL=0
         IU=IC2
- 
+
 c  binary search
         DO WHILE (IU-IL.gt.1)
           IM=(IU+IL)*0.5
@@ -710,22 +710,22 @@ c  binary search
         END DO
 c
         ICELL=IU
- 
+
         NCELL=ISOURC(NVLM,ICELL)
       ELSE
- 
-cdr non-analog sampling.  
+
+cdr non-analog sampling.
 cdr Here use uniform distribution of cell indices and weighting
 cdr tbd: correlation sampling: use previous (reference) distribution and weighting
-cdr      rather than uniform sampling. 
+cdr      rather than uniform sampling.
         IC1=0
         IC2=ICMX(NVLM)
- 
+
         ICELL = MIN(INT(1+RANF_EIRENE()*(IC2-1)),IC2)
         NCELL = ISOURC(NVLM,ICELL)
- 
+
         WEIGHT=(VSOURC(NVLM,ICELL)-VSOURC(NVLM,ICELL-1))*VSMXI(NVLM)*IC2
- 
+
       END IF
 C
       IF (NCELL.GT.NSURF) GOTO 991
@@ -816,7 +816,7 @@ C
         ELSEIF (NLTRI) THEN
           GOTO 999
         ENDIF
-C...................................................................  
+C...................................................................
       case (3)
         IF (.NOT.NLPOL) THEN
           GOTO 999
@@ -846,7 +846,7 @@ C   POINT TO BE SAMPLED WITHIN TRIANGLE 2
         Z3=0.
         CALL EIRENE_FPOLYT_3(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X0,Y0,ZZ)
 
-C...................................................................  
+C...................................................................
       case (4)
         X1=XTRIAN(NECKE(1,NCELL))
         X2=XTRIAN(NECKE(2,NCELL))
@@ -955,13 +955,13 @@ C
   999 CONTINUE
       WRITE (iunout,*) 'UNWRITTEN OPTION IN SAMVOL'
       CALL EIRENE_EXIT_OWN(1)
- 
+
 C     the following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_SAMVOL_REINIT
- 
+
       ISTROLD = -1
- 
+
       DEALLOCATE (LPLSSR)
       DEALLOCATE (FREC)
       DEALLOCATE (VSOURC)
@@ -972,7 +972,7 @@ C     the following ENTRY is for reinitialization of EIRENE (DMH)
       DEALLOCATE (ISOURC)
       DEALLOCATE (ICMX)
       DEALLOCATE (IFREC)
- 
+
       return
- 
+
       END

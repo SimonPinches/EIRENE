@@ -1,11 +1,11 @@
-cdr 150423   comments added. Noted that storage tests for volume and surface tallies 
+cdr 150423   comments added. Noted that storage tests for volume and surface tallies
 cdr          are removed  (now elsewhere?)
 cdr          to be done: nvoltl vs. ntalv  (nvoltl: number of living 1d tallies,
 cdr                      counting individual species indices as one 1D tally
 cdr          check:      nfirst(ital): which value for removed tallies?  storage ? used ?
 
-cdr dec 15:  energy balance tallies for bulk ions: now have a species index (ipls): 
-cdr          tallies 38,44,50,56,84  
+cdr dec 15:  energy balance tallies for bulk ions: now have a species index (ipls):
+cdr          tallies 38,44,50,56,84
 cdr june 17: comments
 
 C
@@ -33,23 +33,23 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CTEXT
       USE EIRMOD_CTRCEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: RSAVE
       INTEGER :: ISAVE, NTESTP, J, ITAL, NLSTTL, NLSTTW
       INTEGER :: NPLPRM_TEST
       LOGICAL :: LEXTALV(NTALV), LEXTALS(NTALS),
      .           LEXGENA, LEXGENM, LEXGENI, LEXGENPH
 C
- 
+
       IF (NSTORDT.LT.1 .OR. NSTORDT.GT.9) THEN
         WRITE (iunout,*)
      .    'POSSIBLE STORAGE CONFLICT. NSTORDT OUT OF RANGE '
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
- 
- 
+
+
 C  SWITCH OFF SOME VOLUME AVERAGED OUTPUT TALLIES AUTOMATICALLY;
 C  TRY TO KEEP ONLY THOSE TALLIES THAT ARE NEEDED FOR THE TYPE OF
 C  SPECIES PRESENT IN THE PARTICULAR CASE.
@@ -57,12 +57,12 @@ c   e.g.  no photon tallies unless photons are included (NPHOT>0)
 c   e.g.  no test-ion tallies unless test ions are included (NION>0)
 c   e.g.  no generation limit tallies unless there is, indeed a
 c         generation limit activated
- 
+
       LEXGENA  = ANY(NGENA(1:NATM) /= 0)
       LEXGENM  = ANY(NGENM(1:NMOL) /= 0)
       LEXGENI  = ANY(NGENI(1:NION) /= 0)
       LEXGENPH = ANY(NGENPH(1:NPHOT) /= 0)
- 
+
       LEXTALV(1)  =  NATM>0
       LEXTALV(2)  =  NMOL>0
       LEXTALV(3)  =  NION>0
@@ -71,63 +71,63 @@ c         generation limit activated
       LEXTALV(6)  =  NMOL>0
       LEXTALV(7)  =  NION>0
       LEXTALV(8)  =  NPHOT>0
- 
+
       LEXTALV(9)  =  NATM>0
       LEXTALV(10) =  NATM>0
       LEXTALV(11) = (NATM>0).and.(NMOL>0)
       LEXTALV(12) = (NATM>0).and.(NION>0)
       LEXTALV(13) = (NATM>0).and.(NPHOT>0)
       LEXTALV(14) = (NATM>0).and.(NPLS>0)
- 
+
       LEXTALV(15) =  NMOL>0
       LEXTALV(16) = (NMOL>0).and.(NATM>0)
       LEXTALV(17) =  NMOL>0
       LEXTALV(18) = (NMOL>0).and.(NION>0)
       LEXTALV(19) = (NMOL>0).and.(NPHOT>0)
       LEXTALV(20) = (NMOL>0).and.(NPLS>0)
- 
+
       LEXTALV(21) =  NION>0
       LEXTALV(22) = (NION>0).and.(NATM>0)
       LEXTALV(23) = (NION>0).and.(NMOL>0)
       LEXTALV(24) =  NION>0
       LEXTALV(25) = (NION>0).and.(NPHOT>0)
       LEXTALV(26) = (NION>0).and.(NPLS>0)
- 
+
       LEXTALV(27) =  NPHOT>0
       LEXTALV(28) = (NPHOT>0).and.(NATM>0)
       LEXTALV(29) = (NPHOT>0).and.(NMOL>0)
       LEXTALV(30) = (NPHOT>0).and.(NION>0)
       LEXTALV(31) =  NPHOT>0
       LEXTALV(32) = (NPHOT>0).and.(NPLS>0)
- 
+
       LEXTALV(33) =                NATM>0
       LEXTALV(34) =                NATM>0
       LEXTALV(35) = (NMOL>0) .and.(NATM>0)
       LEXTALV(36) = (NION>0) .and.(NATM>0)
       LEXTALV(37) = (NPHOT>0).and.(NATM>0)
       LEXTALV(38) = (NPLS>0) .and.(NATM>0)
- 
+
       LEXTALV(39) =                NMOL>0
       LEXTALV(40) = (NATM>0) .and.(NMOL>0)
       LEXTALV(41) =                NMOL>0
       LEXTALV(42) = (NION>0) .and.(NMOL>0)
       LEXTALV(43) = (NPHOT>0).and.(NMOL>0)
       LEXTALV(44) = (NPLS>0) .and.(NMOL>0)
- 
+
       LEXTALV(45) =                NION>0
       LEXTALV(46) = (NATM>0) .and.(NION>0)
       LEXTALV(47) = (NMOL>0) .and.(NION>0)
       LEXTALV(48) =                NION>0
       LEXTALV(49) = (NPHOT>0).and.(NION>0)
       LEXTALV(50) = (NPLS>0) .and.(NION>0)
- 
+
       LEXTALV(51) =               NPHOT>0
       LEXTALV(52) = (NATM>0).and.(NPHOT>0)
       LEXTALV(53) = (NMOL>0).and.(NPHOT>0)
       LEXTALV(54) = (NION>0).and.(NPHOT>0)
       LEXTALV(55) =               NPHOT>0
       LEXTALV(56) = (NPLS<0).and.(NPHOT>0)
- 
+
       LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally (update.f)
       LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally   (collide.f)
       LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
@@ -156,13 +156,13 @@ C  PRIMARY SOURCE RATES, PARTICLES
       LEXTALV(77) = NION>0
       LEXTALV(78) = NPHOT>0
       LEXTALV(79) = NPLS>0
-C  PRIMARY SOURCE RATES, ENERGY 
+C  PRIMARY SOURCE RATES, ENERGY
       LEXTALV(80) = NATM>0
       LEXTALV(81) = NMOL>0
       LEXTALV(82) = NION>0
       LEXTALV(83) = NPHOT>0
       LEXTALV(84) = NPLS>0
-C  MOMENTRUM DENSITY, X DIRECTION 
+C  MOMENTRUM DENSITY, X DIRECTION
       LEXTALV(85) = NATM>0
       LEXTALV(86) = NMOL>0
       LEXTALV(87) = NION>0
@@ -184,20 +184,20 @@ C  PARALLEL (TO B-FIELD) MOMENTUM SOURCE RATES
       LEXTALV(100) = (NPLS>0) .AND. (NPHOT>0)
 
 C  CURRENTLY THE LAST DEFAULT TALLY IS TALLY NO. 100
- 
+
 C  LMISTALV(ITAL) = FALSE: TALLY HAS BEEN DEACTIVATED BY INPUT FLAGS SET IN INPUT BLOCK 11
-C  DEFAULT: LMISTALV=.FALSE. FOR ALL TALLIES, I.E. "ALL TALLIES ARE LIVING" 
+C  DEFAULT: LMISTALV=.FALSE. FOR ALL TALLIES, I.E. "ALL TALLIES ARE LIVING"
       LIVTALV = LEXTALV .AND. .NOT.LMISTALV
 
-C  LMISTALV = TRUE: TURNING OFF A TALLY IN BLOCK 11 IS ONLY POSSIBLE 
+C  LMISTALV = TRUE: TURNING OFF A TALLY IN BLOCK 11 IS ONLY POSSIBLE
 C                   IF THE CORRESPONDING TYPE OF PARTICLE EXISTS
       LMISTALV = LMISTALV .AND. LEXTALV
- 
+
       LEA  = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL      ! ATOM PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
-      LEM  = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL      ! MOLECULE PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
-      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL      ! TEST ION PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
-      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL ! PHOTON PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ? 
- 
+      LEM  = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL      ! MOLECULE PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL      ! TEST ION PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL ! PHOTON PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+
 C
 C  LEADING DIMENSIONS OF FIELDS IN COMMON BLOCK CESTIM AND COUTAU
 C                (i.e. of volume- or surface averaged output tallies)
@@ -335,7 +335,7 @@ C  SET NLSTTL: NUMBER OF LAST LIVING TALLY (MAY BE LESS THAN 100)
           NADDV(J)=NADDV(J-1)
         END IF
     2 CONTINUE
- 
+
       IF (LIVTALV(NTALV)) NLSTTL = NTALV
 C
 C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
@@ -344,7 +344,7 @@ C  TOTAL NUMBER OF VOLUME AVERAGED TALLIES
 
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR VOLUME AVERAGED TALLIES
-cdr  NOW OUT , TEST NOT CARRIED OUT ANY MORE, PERHAPS BECAUSE OF TALLY REDUCTION 
+cdr  NOW OUT , TEST NOT CARRIED OUT ANY MORE, PERHAPS BECAUSE OF TALLY REDUCTION
 cdr  (LIVTALV(ITAL) OPTION TO REMOVE TALLIES.
 cdr
 cdr   NTEST=NADDV(NTALV)+NFIRST(NTALV)
@@ -352,9 +352,9 @@ cdr   NTESTI=NADDI(NTALV)+NFRSTI(NTALV)
 cdr   NTEST=NTEST*NRTAL
 cdr   NTESTI=NTESTI*NSTRAP
 C
-c  now do the same for surface averaged tallies, incident, emitted, sputtered 
+c  now do the same for surface averaged tallies, incident, emitted, sputtered
 c  three times similar structure, 25 tallies each. sputter tallies: total by emitted type and species missing
-c  surface tallies:  incident bulk ions resolved wrt. emitted type and species missing 
+c  surface tallies:  incident bulk ions resolved wrt. emitted type and species missing
 C   1 --25  particle fluxes
       LEXTALS(1) =                (NATM>0)  ! outgoing, atoms
 
@@ -363,7 +363,7 @@ C   1 --25  particle fluxes
       LEXTALS(4) = (NION>0)  .and.(NATM>0)
       LEXTALS(5) = (NPHOT>0) .and.(NATM>0)
       LEXTALS(6) = (NPLS>0)  .and.(NATM>0)
- 
+
       LEXTALS(7) =                (NMOL>0)
 
       LEXTALS(8) = (NATM>0)  .and.(NMOL>0)
@@ -371,7 +371,7 @@ C   1 --25  particle fluxes
       LEXTALS(10) =(NION>0)  .and.(NMOL>0)
       LEXTALS(11) =(NPHOT>0) .and.(NMOL>0)
       LEXTALS(12) =(NPLS>0)  .and.(NMOL>0)
- 
+
       LEXTALS(13) =               (NION>0)
 
       LEXTALS(14) =(NATM>0)  .and.(NION>0)
@@ -379,7 +379,7 @@ C   1 --25  particle fluxes
       LEXTALS(16) =               (NION>0)
       LEXTALS(17) =(NPHOT>0) .and.(NION>0)
       LEXTALS(18) =(NPLS>0)  .and.(NION>0)
- 
+
       LEXTALS(19) =               (NPHOT>0)
 
       LEXTALS(20) =(NATM>0)  .and.(NPHOT>0)
@@ -387,7 +387,7 @@ C   1 --25  particle fluxes
       LEXTALS(22) =(NION>0)  .and.(NPHOT>0)
       LEXTALS(23) =               (NPHOT>0)
       LEXTALS(24) =(NPLS>0)  .and.(NPHOT>0)
- 
+
       LEXTALS(25) =               (NPLS>0)
 
 C   26 --> 50  energy fluxes
@@ -398,7 +398,7 @@ C   26 --> 50  energy fluxes
       LEXTALS(29) =(NION>0)  .and.(NATM>0)
       LEXTALS(30) =(NPHOT>0) .and.(NATM>0)
       LEXTALS(31) =(NPLS>0)  .and.(NATM>0)
- 
+
       LEXTALS(32) =               (NMOL>0)
 
       LEXTALS(33) =(NATM>0)  .and.(NMOL>0)
@@ -406,7 +406,7 @@ C   26 --> 50  energy fluxes
       LEXTALS(35) =(NION>0)  .and.(NMOL>0)
       LEXTALS(36) =(NPHOT>0) .and.(NMOL>0)
       LEXTALS(37) =(NPLS>0)  .and.(NMOL>0)
- 
+
       LEXTALS(38) =               (NION>0)
 
       LEXTALS(39) =(NATM>0)  .and.(NION>0)
@@ -414,7 +414,7 @@ C   26 --> 50  energy fluxes
       LEXTALS(41) =               (NION>0)
       LEXTALS(42) =(NPHOT>0) .and.(NION>0)
       LEXTALS(43) =(NPLS>0)  .and.(NION>0)
- 
+
       LEXTALS(44) =               (NPHOT>0)
 
       LEXTALS(45) =(NATM>0)  .and.(NPHOT>0)
@@ -422,7 +422,7 @@ C   26 --> 50  energy fluxes
       LEXTALS(47) =(NION>0)  .and.(NPHOT>0)
       LEXTALS(48) =               (NPHOT>0)
       LEXTALS(49) =(NPLS>0)  .and.(NPHOT>0)
- 
+
       LEXTALS(50) =               (NPLS>0)
 
 C  SPUTTERED FLUXES; BY INGOING TYPE AND OUTGOING SPECIES
@@ -432,7 +432,7 @@ C  SPUTTERED FLUXES; BY INGOING TYPE AND OUTGOING SPECIES
       LEXTALS(54) = (NPHOT>0) .AND.(NATM>0)  !PH-AT
       LEXTALS(55) = (NPLS>0)  .AND.(NATM>0)  !P -AT
 
-      LEXTALS(56) = (NATM>0)  .AND.(NMOL>0)  
+      LEXTALS(56) = (NATM>0)  .AND.(NMOL>0)
       LEXTALS(57) =                (NMOL>0)
       LEXTALS(58) = (NION>0)  .AND.(NMOL>0)
       LEXTALS(59) = (NPHOT>0) .AND.(NMOL>0)
@@ -440,21 +440,21 @@ C  SPUTTERED FLUXES; BY INGOING TYPE AND OUTGOING SPECIES
 
       LEXTALS(61) = (NATM>0)  .AND.(NION>0)
       LEXTALS(62) = (NMOL>0)  .AND.(NION>0)
-      LEXTALS(63) =                (NION>0) 
+      LEXTALS(63) =                (NION>0)
       LEXTALS(64) = (NPHOT>0) .AND.(NION>0)
       LEXTALS(65) = (NPLS>0)  .AND.(NION>0)
 
       LEXTALS(66) = (NATM>0)  .AND.(NPHOT>0)
       LEXTALS(67) = (NMOL>0)  .AND.(NPHOT>0)
       LEXTALS(68) = (NION>0)  .AND.(NPHOT>0)
-      LEXTALS(69) =                (NPHOT>0) 
+      LEXTALS(69) =                (NPHOT>0)
       LEXTALS(70) = (NPLS>0)  .AND.(NPHOT>0)
 
       LEXTALS(71) = (NATM>0)  .AND.(NPLS>0)
       LEXTALS(72) = (NMOL>0)  .AND.(NPLS>0)
       LEXTALS(73) = (NION>0)  .AND.(NPLS>0)
       LEXTALS(74) = (NPHOT>0) .AND.(NPLS>0)
-      LEXTALS(75) =                (NPLS>0) 
+      LEXTALS(75) =                (NPLS>0)
 
 C  SPUTTERED FLUX; TOTAL BY INGOING TYPE
       LEXTALS(76) = (NATM>0)
@@ -468,7 +468,7 @@ C  SPUTTERED FLUX; TOTAL, NOT SCALED BY NLSCL OPTION
       LEXTALS(NTLSA) = NADS>0
       LEXTALS(NTLSR) = NALS>0
       LEXTALS(NTALS) = NSPZ>0
- 
+
       LIVTALS = LEXTALS .AND. .NOT.LMISTALS
       LMISTALS = LMISTALS .AND. LEXTALS
 C
@@ -497,7 +497,7 @@ C
       NFRSTW(23)=NPHOT
       NFRSTW(24)=NPHOT
       NFRSTW(25)=NPLS
- 
+
       NFRSTW(26)=NATM
       NFRSTW(27)=NATM
       NFRSTW(28)=NATM
@@ -523,7 +523,7 @@ C
       NFRSTW(48)=NPHOT
       NFRSTW(49)=NPHOT
       NFRSTW(50)=NPLS
- 
+
       NFRSTW(51)=NATM
       NFRSTW(52)=NATM
       NFRSTW(53)=NATM
@@ -558,7 +558,7 @@ C  TOTAL SPUTTER TALLY
       NFRSTW(81)=0
 
       NFRSTW(NTLSA)=NADS  !  no. 82, additional surface tallies
-      NFRSTW(NTLSR)=NALS  !  no. 83, additional algebr. surface tally 
+      NFRSTW(NTLSR)=NALS  !  no. 83, additional algebr. surface tally
 C  last surface tally
       NFRSTW(NTALS)=NSPZ  !  SPUMP
 C
@@ -581,39 +581,39 @@ C
           NADDW(J)=NADDW(J-1)
         END IF
     3 CONTINUE
- 
+
       IF (LIVTALS(NTALS)) NLSTTW = NTALS
- 
+
 C  TOTAL NUMBER OF SURFACE AVERAGED TALLIES
 !pb   NSRFTL=NADDW(NTALS)+NFRSTW(NTALS)
       NSRFTL=NADDW(NTALS)+NFRSTW(NLSTTW)
 
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR SURFACE AVERAGED TALLIES
-cdr  NOW OUT, TEST IS NOT CARRIED OUT ANY MORE, PERHAPS BECAUSE OF TALLY REDUCTION 
+cdr  NOW OUT, TEST IS NOT CARRIED OUT ANY MORE, PERHAPS BECAUSE OF TALLY REDUCTION
 cdr  (LIVTALS(ITAL) OPTION TO REMOVE TALLIES?
-cdr 
+cdr
 cdr   NTEST=NADDW(NTALS)+NFRSTW(NTALS)
 cdr   NTESTI=NDDWI(NTALS)+NFRTWI(NTALS)
 cdr   NTEST=NTEST*NLMPGS
 cdr   NTESTI=NTESTI*NSTRAP
- 
+
       CALL EIRENE_ALLOC_CESTIM(2)
       CALL EIRENE_ASSOCIATE_CESTIM
- 
+
 C
-C  CHECK LENGTH OF ALLOCATABLE ARRAYS, WHICH ARE I/O IN DUMP FILES, 
+C  CHECK LENGTH OF ALLOCATABLE ARRAYS, WHICH ARE I/O IN DUMP FILES,
 c  E.G. FORT.10,  FORT.11, ETC....
 C
 C
       IF (.FALSE.) THEN
 cdr  March 2017: checking of allocatable array sizes has been deactivated,
 cdr              at some point in time.
-cdr              Probable reason:  it did not work properly together with 
+cdr              Probable reason:  it did not work properly together with
 cdr              compiler optimization. And in case of estimv, estims
 cdr              arrays: apparently some parts may have been moved to cemetery,
 cdr              so that the programed size checks would not work anyway.
-cdr  unresolved story.....          
+cdr  unresolved story.....
 c.......................................................
 c  standard deviation volume averaged tallies
       RSAVE=SGMS(NSD)
@@ -635,7 +635,7 @@ c  standard deviation surface averaged tallies
       ENDIF
       SGMWS(NSDW)=RSAVE
 C
-c  volume averaged output tallies.  Note: some volume tallies are removed from 
+c  volume averaged output tallies.  Note: some volume tallies are removed from
 c  the run  (put to cemeteryv), see eirmod_cestim.f
       RSAVE=MPHPL(NPHOT,NRTAL)
       MPHPL(NPHOT,NRTAL)=1.234567
@@ -646,7 +646,7 @@ C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
       MPHPL(NPHOT,NRTAL)=RSAVE
 C
-c  surface averaged output tallies. Note: some surface tallies are removed from 
+c  surface averaged output tallies. Note: some surface tallies are removed from
 c  the run  (put to cemeterys), see eirmod_cestim.f
       RSAVE=SPUMP(NSPZ,NLMPGS)
       SPUMP(NSPZ,NLMPGS)=1.234567
@@ -714,7 +714,7 @@ C  --> 22 rather than 18 background tallies
       NFRSTP(2)=NPLSTI
       NFRSTP(3)=0       ! # DEIN,  DERIVED QUANTITY
       NFRSTP(4)=NPLS    ! DIIN
-      NFRSTP(5)=NPLSV   
+      NFRSTP(5)=NPLSV
       NFRSTP(6)=NPLSV
       NFRSTP(7)=NPLSV
       NFRSTP(8)=0       ! BX
@@ -724,22 +724,22 @@ C  --> 22 rather than 18 background tallies
       NFRSTP(12)=NAIN   ! ADIN
       NFRSTP(13)=NPLS   ! # EDRIFT,  DERIVED QUANTITY
       NFRSTP(14)=0      ! VOL
-      NFRSTP(15)=NSPZMC ! WEIGHT WINDOW, UNUSED  
+      NFRSTP(15)=NSPZMC ! WEIGHT WINDOW, UNUSED
       NFRSTP(16)=0      ! # BX_PERP,  DERIVED QUANTITY
-      NFRSTP(17)=0      ! # BY_PERP,  DERIVED QUANTITY 
+      NFRSTP(17)=0      ! # BY_PERP,  DERIVED QUANTITY
       NFRSTP(18)=0      ! EX
-      NFRSTP(19)=0      ! EY 
+      NFRSTP(19)=0      ! EY
       NFRSTP(20)=0      ! EZ
       NFRSTP(21)=0      ! EF
       NFRSTP(22)=0      ! POT
 C
 C  NTALI=22?  number of input tallies  (19 PRIMARY + 3 DERIVED)
-cdr there are many more derived input tallies. 
-cdr since primary and derived input tallies got mixed up anyway, 
+cdr there are many more derived input tallies.
+cdr since primary and derived input tallies got mixed up anyway,
 cdr to do: change ntali, add other derived input tallies, here, and in settxt.
 cdr be careful:
 cdr in some places in code the numbering  of input tallies is hard coded.
-cdr (algtal, plaout,....) 
+cdr (algtal, plaout,....)
 C
       DO 5 J=1,NTALI
         NFRSTP(J)=MAX0(1,NFRSTP(J))
@@ -752,15 +752,15 @@ C
       NTESTP=NADDP(NTALI)+NFRSTP(NTALI)
       NTESTP=NTESTP*NRAD
 
-cdr  correct for the derived tallies mixed into primary input tallies.  
+cdr  correct for the derived tallies mixed into primary input tallies.
       NPLPRM_TEST=NPLPRM + (2+NPLS)*NRAD
       IF (NTESTP.NE.NPLPRM_TEST) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NPLPRM'
         WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM_TEST
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-c............................................................................. 
- 
+c.............................................................................
+
       IF (TRCTAL) THEN
         CALL EIRENE_LEER(2)
         WRITE(IUNOUT,*) 'VOLUME AVERAGED TALLIES CALCULATED IN THIS RUN'
@@ -770,7 +770,7 @@ c.............................................................................
           IF (LIVTALV(ITAL))
      .      WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
         END DO
- 
+
         IF (.NOT.ALL(LIVTALV)) THEN
           CALL EIRENE_LEER(2)
           WRITE(IUNOUT,*) 'VOLUME AVERAGED TALLIES NOT CALCULATED ',
@@ -782,7 +782,7 @@ c.............................................................................
      .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
           END DO
         END IF
- 
+
         IF (ANY(LMISTALV)) THEN
           CALL EIRENE_LEER(2)
           WRITE(IUNOUT,*) 'VOLUME AVERAGED TALLIES EXPLICITLY ',
@@ -794,7 +794,7 @@ c.............................................................................
      .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
           END DO
         END IF
- 
+
         CALL EIRENE_LEER(2)
         WRITE(IUNOUT,*)'SURFACE AVERAGED TALLIES CALCULATED IN THIS RUN'
         CALL EIRENE_LEER(1)
@@ -803,7 +803,7 @@ c.............................................................................
           IF (LIVTALS(ITAL))
      .      WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTLW(1,ITAL)
         END DO
- 
+
         IF (.NOT.ALL(LIVTALS)) THEN
           CALL EIRENE_LEER(2)
           WRITE(IUNOUT,*) 'SURFACE AVERAGED TALLIES NOT CALCULATED ',
@@ -815,7 +815,7 @@ c.............................................................................
      .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTLW(1,ITAL)
           END DO
         END IF
- 
+
         IF (ANY(LMISTALS)) THEN
           CALL EIRENE_LEER(2)
           WRITE(IUNOUT,*) 'SURFACE AVERAGED TALLIES EXPLICITLY ',
@@ -827,14 +827,10 @@ c.............................................................................
      .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTLW(1,ITAL)
           END DO
         END IF
- 
+
         CALL EIRENE_LEER(1)
- 
+
       END IF
 C
       RETURN
       END
- 
- 
- 
- 

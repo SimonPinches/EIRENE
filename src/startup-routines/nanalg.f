@@ -17,14 +17,14 @@ C
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSPL
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: RSPLIT(N1ST)
       REAL(DP) :: XMAXR1, ZR1, ZR2
       INTEGER :: IR, IP, IT, IRT, IRP, IA, IRA, IRD, J, MMXRAD, MAXR1,
      .           JR, JS
- 
+
 C---------------------------------------------------------------------
       NODES=0
       RSPLIT=0.D0

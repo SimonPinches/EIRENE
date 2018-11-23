@@ -1,24 +1,24 @@
       MODULE EIRMOD_CADGEO
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CADGEO, EIRENE_DEALLOC_CADGEO, 
+
+      PUBLIC :: EIRENE_ALLOC_CADGEO, EIRENE_DEALLOC_CADGEO,
      P          EIRENE_INIT_CADGEO
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NPLIM,  NADGEO, MADGEO
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        RADGEO(:,:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I         IADGEO(:,:)
- 
+
 C NADGEO, REAL
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R A0LM(:),     A1LM(:),     A2LM(:),     A3LM(:),     A4LM(:),
@@ -35,34 +35,34 @@ C NADGEO, REAL
      R PS24(:,:),   PS34(:,:),   PS35(:,:),   PS45(:,:),
      R P1A(:),      P2A(:),      P1B(:),      P2B(:),
      R P1C(:),      P2C(:)
- 
+
 C MADGEO, INTEGER
       INTEGER, PUBLIC, POINTER, SAVE ::
      I ILIN(:),     ISCN(:)
- 
+
       INTEGER, PUBLIC, SAVE :: NLIMI
- 
+
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L RLBNOT(:)
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CADGEO
- 
+
       IF (ALLOCATED(RADGEO)) RETURN
- 
+
       NPLIM=10+14*9+10+12*3
       NADGEO=NLIM*NPLIM
       MADGEO=NLIM*2
- 
+
       ALLOCATE (RADGEO(NPLIM,NLIM))
       ALLOCATE (IADGEO(2,NLIM))
       ALLOCATE (RLBNOT(NLIM))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CADGEO ',NLIM*(NPLIM+1)*8 + 2*NLIM*4
- 
+
       A0LM => RADGEO(1,:)
       A1LM => RADGEO(2,:)
       A2LM => RADGEO(3,:)
@@ -109,36 +109,34 @@ C MADGEO, INTEGER
       P2B => RADGEO(180,:)
       P1C => RADGEO(181,:)
       P2C => RADGEO(182,:)
- 
+
       ILIN => IADGEO(1,:)
       ISCN => IADGEO(2,:)
- 
+
       CALL EIRENE_INIT_CADGEO
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CADGEO
- 
+
       SUBROUTINE EIRENE_DEALLOC_CADGEO
- 
+
       IF (.NOT.ALLOCATED(RADGEO)) RETURN
- 
+
       DEALLOCATE (RADGEO)
       DEALLOCATE (IADGEO)
       DEALLOCATE (RLBNOT)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CADGEO
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CADGEO
- 
+
       RADGEO = 0.D0
       IADGEO = 0
       RLBNOT = .FALSE.
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CADGEO
- 
+
       END MODULE EIRMOD_CADGEO
- 
- 

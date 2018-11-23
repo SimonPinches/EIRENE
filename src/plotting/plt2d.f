@@ -4,15 +4,15 @@ cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
 !pb  11.04.08: remove restriction NTTRA<100
 cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
-cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces 
+cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces
 cdr  may 2018: plarr (surface normal) only for levgeo 2 and levgeo 3.
 cdr            if levgeo=2 and nlcrc: then polygon grid may not be defined.
-cdr             tbd: print warning... 
- 
+cdr             tbd: print warning...
+
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
- 
+
       SUBROUTINE EIRENE_PLT2D
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -37,11 +37,11 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
- 
+
       IMPLICIT NONE
 C
       INTEGER,PARAMETER :: NTXHST=20
- 
+
       REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
       REAL(DP) :: TET(4,3), EBENE(4), CTPNTS(4,3)
@@ -57,7 +57,7 @@ C
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
       INTEGER, ALLOCATABLE :: IFARB(:,:), IDASH(:,:), ICPSPZ(:)
       INTEGER :: ICP, ISTR, IC, IC1, IC2, NCTPNT, IDUMMY, ICT, IEN,
-     .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA, 
+     .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA,
      .           NT, ICOLOR, NU, J, ISYM, IFLAG, IERR, IWRIT,
      .           IR, IP, ISTS, IN, IY, IB, IT, IA, NRET, I, NSW, ISW,
      .           ISP, IHELP, K, IFL, ISYM_ERR, IRA, IRE, IPA, IPE,
@@ -66,7 +66,7 @@ C
       CHARACTER(20) :: TXTHST(NTXHST)
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
       CHARACTER(6) :: CH
- 
+
       SAVE
       DATA ABSMAX,ORDMAX/21.,21./
       DATA XNULL,YNULL/9.,4./,XWN,YWN/0.,0./
@@ -90,7 +90,7 @@ C
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR. 
+     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
      .            'INT.GRID SURFACE(19)',
      .            'DIFFUSION STEP(20)  '/
@@ -141,7 +141,7 @@ C  ZEICHNE NETZLINIEN EIN
 C  MACHE GRADE GRENZEN
       FITX=.FALSE.
       FITY=.FALSE.
- 
+
       MINX=-1.
       MAXX=1.
       MINY=-1.
@@ -223,7 +223,7 @@ C  X-Z-PLANE
             IF (NLSPLT(NU)) IFARB(NU,:) = 2
           END DO
         ELSEIF (PLCUT(1)) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .    'PLT2D: LEVGEO=1, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
         ENDIF
 
@@ -319,7 +319,7 @@ C  Y-Z PLANE
             ENDIF
           ENDIF
         END DO
- 
+
         call grnwpn(1)
         do j=1,nsurf
           if (nstgrd(j).eq.1) then
@@ -355,12 +355,12 @@ C  Y-Z PLANE
             CALL GRFILL(5,XPS,YPS,1,1)
           ENDIF
         enddo
- 
+
         IF (ALLOCATED(IFARB)) THEN
           DEALLOCATE (IFARB)
           DEALLOCATE (IDASH)
         END IF
- 
+
 
         CALL GRDSH(1.,0.,1.)
 C
@@ -480,14 +480,14 @@ C    X-Y PLANE
                 XX(I)=XX(I)+RMTOR
               ENDDO
             ENDIF
-            CALL EIRENE_PLTLNE 
+            CALL EIRENE_PLTLNE
      .           (NRET,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
             CALL GRNWPN(1)
   140     CONTINUE
           CALL GRDSH(1.,0.,1.)
 
         ELSEIF (PLCUT(1)) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .     'PLT2D: LEVGEO=2, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
 
         ENDIF
@@ -531,28 +531,28 @@ C  SORTIEREN, NACH "POLOIDALEM BEGIN" < "POLOIDALEM ENDE"
             DO 159 I=1,NSW-3,2
               IF (ISWC(I).GT.ISWC(I+2)) THEN
                 ISW=ISW+1
- 
+
                 IHELP=ISWC(I)
                 ISWC(I)=ISWC(I+2)
                 ISWC(I+2)=IHELP
                 IHELP=ISWC(I+1)
                 ISWC(I+1)=ISWC(I+3)
                 ISWC(I+3)=IHELP
- 
+
                 IHELP=ICLR(I)
                 ICLR(I)=ICLR(I+2)
                 ICLR(I+2)=IHELP
                 IHELP=ICLR(I+1)
                 ICLR(I+1)=ICLR(I+3)
                 ICLR(I+3)=IHELP
- 
+
                 IHELP=IDSH(I)
                 IDSH(I)=IDSH(I+2)
                 IDSH(I+2)=IHELP
                 IHELP=IDSH(I+1)
                 IDSH(I+1)=IDSH(I+3)
                 IDSH(I+3)=IHELP
- 
+
                 IHELP=INON(I)
                 INON(I)=INON(I+2)
                 INON(I+2)=IHELP
@@ -671,7 +671,7 @@ C
             CALL GRNWPN(1)
   158     CONTINUE
           CALL GRDSH(1.,0.,1.)
- 
+
 c  fill in isolated cells (defined in couple_... or any other user
 c  segment): all cells j with nstgrd(j)=1
           call grclp(1)
@@ -806,7 +806,7 @@ C             ELSEIF (NLTRT) THEN
           CALL GRDSH(1.,0.,1.)
 
         ELSEIF (PLCUT(1)) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .     'PLT2D: LEVGEO=3, RADIAL GRID IN Y-Z-PLANE NOT MEANINGFUL'
 
 C
@@ -874,10 +874,10 @@ c  r: radius des inkreises des dreiecks
  1010     CONTINUE
           CALL GRDSH (1.,0.,1.)
           CALL GRNWPN (1)
- 
+
         ELSEIF (PLCUT(2)) THEN
 C
-C  X-Z PLOT  
+C  X-Z PLOT
           Y=CH2Z0
           IF (NLTOR) THEN
             IF (NLTRZ) THEN
@@ -900,7 +900,7 @@ C  X-Z PLOT
               GOTO 990
             ENDIF
           ENDIF
- 
+
           DO I=1,NTRII
             DO J=1,3
               IECKE2 = J+1
@@ -909,7 +909,7 @@ C  X-Z PLOT
               YY(1)=YTRIAN(NECKE(J,I))
               XX(2)=XTRIAN(NECKE(IECKE2,I))
               YY(2)=YTRIAN(NECKE(IECKE2,I))
- 
+
 C  CHECK IF Y IS ENCLOSED BY YY(1) AND YY(2)
 C  Y=CH2Z0 INTERSECTS WITH TRIANGLE
               IF ((MIN(YY(1),YY(2)) <= Y) .AND.
@@ -1142,12 +1142,12 @@ C Y-Z-PLANE
             END DO
           ENDIF
         END DO
- 
+
         IF (ALLOCATED(IFARB)) THEN
           DEALLOCATE (IFARB)
           DEALLOCATE (IDASH)
         END IF
- 
+
         CALL GRDSH(1.,0.,1.)
 C
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  ! AND POLOIDAL GRID
@@ -1187,21 +1187,21 @@ C  SORTIEREN, NACH "RADIALEM BEGIN" < "RADIALEM ENDE"
           DO 178 I=1,NSW-3,2
             IF (ISWC(I).GT.ISWC(I+2)) THEN
               ISW=ISW+1
- 
+
               IHELP=ISWC(I)
               ISWC(I)=ISWC(I+2)
               ISWC(I+2)=IHELP
               IHELP=ISWC(I+1)
               ISWC(I+1)=ISWC(I+3)
               ISWC(I+3)=IHELP
- 
+
               IHELP=ICLR(I)
               ICLR(I)=ICLR(I+2)
               ICLR(I+2)=IHELP
               IHELP=ICLR(I+1)
               ICLR(I+1)=ICLR(I+3)
               ICLR(I+3)=IHELP
- 
+
               IHELP=IDSH(I)
               IDSH(I)=IDSH(I+2)
               IDSH(I+2)=IHELP
@@ -1494,7 +1494,7 @@ C
       XN=XN2D
       YN=YN2D
       FX=FX2D
-      FY=FY2D 
+      FY=FY2D
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
         IF (.NOT.NLPL3D) CALL GRSCLV (
@@ -1526,13 +1526,13 @@ C  FX=FY=1.
           XN3=XN2+1.5/FX
           YNP=ORDMAX+0.65/FY
         ENDIF
- 
+
         CALL GRNWPN(1)
         CALL GRSPTS (22)
         CALL GRFONT(-2)
         CALL GRTXT (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)),21,
      .              'EIRENE TEST PARTICLES')
- 
+
         IC=1
         IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
         ICPSPZ=0
@@ -1596,7 +1596,7 @@ C  FX=FY=1.
      .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
   512   CONTINUE
- 
+
         YNP=YNP-0.75/FY
         CALL GRNWPN(1)
         CALL GRJMP (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
@@ -1605,7 +1605,7 @@ C  FX=FY=1.
         YNP=YNP-0.75/FY
         CALL GRTXT (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)),24,
      .              'HOST MEDIUM (BACKGROUND)')
- 
+
         DO 513 I=1,NPLSI
           ISP=NSPAMI+I
           IF (NHSTS(ISP).EQ.-1) GOTO 513
@@ -1620,14 +1620,14 @@ C  FX=FY=1.
           CALL GRTXT (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
      .                TEXTS(ISP))
   513   CONTINUE
- 
+
         IC=IC+1
         ICP=MOD(IC,7)
         IF (ICP.EQ.0) ICP=7
         ICPSPZ(0)=ICP
         CALL GRSPTS (16)
         CALL GRFONT(-1)
- 
+
         IF (.NOT.NLPL3D)
      .     CALL GRSCLV(REAL(XMI2D,KIND(1.E0)),REAL(YMI2D,KIND(1.E0)),
      .                 REAL(XMA2D,KIND(1.E0)),REAL(YMA2D,KIND(1.E0)))
@@ -1637,13 +1637,13 @@ C  WRITE TRACK DATA
 C
       LWR = .TRUE.
       DO I = 1, 8
-        IF (-ISYM == ISYPLT(I)) LWR = .FALSE. 
+        IF (-ISYM == ISYPLT(I)) LWR = .FALSE.
       END DO
       IF (TRCHST .AND. LWR) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TXTHST(ISYM)
         IF (ISPZ.GT.0.AND.ISPZ.LE.NSPZ) THEN
-          IF (ISYM.EQ.1.OR..NOT.NLTRC)  
+          IF (ISYM.EQ.1.OR..NOT.NLTRC)
      .      CALL EIRENE_MASJ1('NPANU   ',NPANU)
           WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
         ELSE
@@ -1804,9 +1804,9 @@ C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
   408   CONTINUE
   409   CONTINUE
       ENDIF
- 
+
 C  CONTINUE PRINTOUT AFTER TRAJECTORY PLOT
- 
+
       IF (NLTRC.AND.TRCHST.AND.LWR) THEN
         WRITE (iunout,*) 'ICOLOR,IN,ISYM,IFLAG,NHSTS ',
      .                    ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ)
@@ -1830,9 +1830,9 @@ C
   992 CONTINUE
       WRITE (iunout,*) 'OPTION IN PLT2D NOT READY: Z- OR TOROIDAL GRID'
       CALL EIRENE_EXIT_OWN(1)
- 
+
 C     following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_PLT2D_REINIT
       ABSMAX = 21.
       ORDMAX = 21
@@ -1849,5 +1849,5 @@ csw 20oct08
       if(allocated(ifarb)) deallocate(ifarb)
 csw
       return
- 
+
       END

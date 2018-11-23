@@ -3,7 +3,7 @@ C  march 12: optimize calculations for surface tallies
 cdr jan  18: comments
 C
       SUBROUTINE EIRENE_STATIS
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -15,9 +15,9 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XN, FSIG, ZFLUX
       INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
       LOGICAL, INTENT(IN) :: LP, LT
@@ -39,17 +39,17 @@ C
 C
 C
       ENTRY EIRENE_STATS0
- 
+
       IMETCL = 0
       NCLMT = 0
       NCLMTS = 0
       LMETSP = .FALSE.
- 
+
       IMETWL = 0
       NWLMT = 0
       NWLMTS = 0
       LMETSPW = .FALSE.
- 
+
       IF (NSIGI.EQ.0) RETURN
 C
       IF (.NOT.ALLOCATED(IADD)) THEN
@@ -70,7 +70,7 @@ C
         SD2=0._DP
         SDC=0._DP
       END IF
- 
+
 C  FILL IIND, INDSS ARRAYS FOR THOSE "AVERAGE" CELLS, TO WHICH "REAL"
 C  CELL IR ALSO CONTRIBUTES
 C  IIND: HOW MANY CELLS
@@ -114,7 +114,7 @@ C
       NP2=NPIN
       NT3=NTIN
       NRW=NSIN
- 
+
       IF ((NSIGVI > 0) .OR. (NSIGCI > 0)) THEN
 C  THE PRESENT HISTORY HAS TOUCHED NCLMT CELLS.
 C  IT CONTRIBUTES ADDITIONALLY TO FURTHER CELLS (CONTAINING AVERAGES)
@@ -215,7 +215,7 @@ C  PRESENT HISTORY
             VECTOR(ICO)=VECTOR(ICO)+ESTIMV(INP+IS,IR)
  1015     CONTINUE
         ENDIF
- 
+
         SD1S = 0.D0
 C  FILL ARRAY SD WITH THE INDIVIDUAL CONTRIBUTION FROM THIS HISTROY,
 C  IN EACH CELL THAT HAS BEEN TOUCHED BY THIS HISTORY
@@ -233,7 +233,7 @@ C  I.E., AVERAGES OVER COORDINATES OR OVER THE ENTIRE COMPUTATIONAL DOMAIN
             SD(IRU)=SD(IRU)+SD1
           END DO
         END DO
- 
+
         DO ICO = 1,NCLMTS
           IR = ICLMT(ICO)
           SD1=SD(IR)
@@ -242,7 +242,7 @@ C  I.E., AVERAGES OVER COORDINATES OR OVER THE ENTIRE COMPUTATIONAL DOMAIN
         END DO
         SGMS(IC)=SGMS(IC)+SD1S*SD1S
  1012 CONTINUE
-c  updating of statistical variance (once per flight) for volume tallies: done 
+c  updating of statistical variance (once per flight) for volume tallies: done
 
 C
 C  update statistical variance for surface tallies, once after each flight
@@ -267,14 +267,14 @@ c  only for species igs
             IF (LMETSPW(NSPANW(ITL)+IGS-1)) ISCO = 1
           END IF
         END IF
-        IF (ISCO == 0) GOTO 1022  ! do not score tally ITL, 
+        IF (ISCO == 0) GOTO 1022  ! do not score tally ITL,
 c                                   because no relevant species in this trajectory
 
 c  fill 'vector'
 c  vector is cumulated contribution after present flight no. n
-c   
+c
         IF (IGS.NE.0) THEN
-c  
+c
           DO 1023 ICO=1,NWLMT
 c  tally is for single species igs
             IR = IWLMT(ICO)
@@ -299,7 +299,7 @@ c  sdvia  is cumulated contribution after previous flight no. n-1 (previous call
         SD1S=0.
         DO 1021 ICO=1,NWLMT
           IR = IWLMT(ICO)
-c  
+c
           SD1=VECTOR(ICO)-SDVIAW(IC,IR)
           SD1S=SD1S+SD1
           SIGMAW(IC,IR)=SIGMAW(IC,IR)+SD1*SD1
@@ -627,9 +627,9 @@ C ABSOLUTE STANDARD DEVIATION AND COVARIANCES
  2312 CONTINUE
 C
  2400 RETURN
- 
+
       ENTRY EIRENE_STATS3
- 
+
       IF (ALLOCATED(IADD)) THEN
          DEAllOCATE (IADD)
          DEAllOCATE (IGFF)
@@ -645,6 +645,6 @@ C
          DEAllOCATE (SD)
          DEAllOCATE (SDC)
       END IF
- 
+
       RETURN
       END

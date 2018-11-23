@@ -5,7 +5,7 @@ C
      .                   TEXT1,TEXT2,TEXT3,LOGL,
      .                   ZMA,ZMI,W1,W2,
      .                   HEAD,RUNID,TXHEAD,TRC)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CPLOT
@@ -13,11 +13,11 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
 C
       INTEGER, PARAMETER :: LAR=46*128*128
- 
+
       REAL(DP), INTENT(IN) :: XX(*), YY(*)
       REAL(DP), INTENT(INOUT) :: ARR(*)
       REAL(DP), INTENT(IN) :: ZMA, ZMI, W1, W2
@@ -25,7 +25,7 @@ C
       LOGICAL, INTENT(IN) :: LOGL,TRC
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP) :: REMIN, REMAX, XMT, DX, YMI, YMA, RMI, RMA, AAR, XMINN,
      .          XMAXN, YMINN, YMAXN, YMT, XMI, XMA
 !pb      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)

@@ -21,8 +21,8 @@ c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
 cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
-cdr Dec.15  :  bug fix pi reaction and cascading was wrong: 
-cdr            irei, rather than irpi, and p2nd 
+cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
+cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
@@ -30,7 +30,7 @@ cdr         :  see also corresponding corrections/changes in update for tracklen
 cdr DEC. 15 :  bulk ion energy estimators: species resolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
 
-cdr            tbd:  check setting of iestm..flags for collision estimators. 
+cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
 
 
@@ -44,19 +44,19 @@ cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
 
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
-cdr analog cascading NLCASCAD: started to document, 
+cdr analog cascading NLCASCAD: started to document,
 cdr        syncronize and re-activate option, not ready !!
-c   this version: prepare cascading at collisions, 
+c   this version: prepare cascading at collisions,
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators
 c   started for colatm, and ei processes.
 c   not sure if ispz is known, NOW
-cdr tbd: 
+cdr tbd:
 c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
 c   cascading with CX: define analogue PTOT
-c   cascading with PI: identical to EI ?? 
+c   cascading with PI: identical to EI ??
 
-cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0) 
+cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
 cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
 cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
@@ -102,9 +102,9 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       REAL(DP), INTENT(OUT) :: COLTYP
       REAL(DP) :: DUMT(3), DUMV(3)
@@ -118,18 +118,18 @@ C
      .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
-Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS. 
+Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
- 
- 
+
+
 csw add n 2lines
       INTEGER :: iaot,irot,kk,updf,t1
       real(dp):: sump
 csw external
       real(dp), external :: ranf_eirene
- 
+
       SAVE
 
 C  INCIDENT SPECIES: IOLD
@@ -272,7 +272,7 @@ csw no  coll.estim.
             call EIRENE_exit_own(1)
 c           call PH_POST_ENERGY(ncllo,kk,mode,il,
 c    .           iold,0,velxo,velyo,velzo,velo,e0o,ityp)
- 
+
           SELECT CASE(ITYP)
 C
           CASE(0)
@@ -341,7 +341,7 @@ csw no coll.estim.
 c new energy?
 c         call PH_POST_ENERGY(ncllo,kk,mode,il,
 c    .           iold,0,velxo,velyo,velzo,velo,e0o,ityp)
- 
+
           SELECT CASE(ITYP)
 C
           CASE(0)

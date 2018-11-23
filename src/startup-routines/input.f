@@ -1,6 +1,6 @@
 cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
 cdr  sept.18:   XDR format options for fort.13 stream: removed.
-cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
+cdr  apr. 18:   fully connected and tested: trchktm option, in block 11.
 cdr  july 17 :  GR cleanup: wrmesh option split into writing and plotting
 cdr  june  17:  NSIGV_COP=0, removing a hidden link to case-specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
@@ -180,7 +180,7 @@ C
 
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
       TYPE(TCONTRIB) :: CNT
-      
+
       INTERFACE
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
@@ -189,7 +189,7 @@ C
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
@@ -1410,7 +1410,7 @@ C  Normal start of reading database A&M processes
       CALL EIRENE_LEER(1)
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(0)
-!pbcrm      
+!pbcrm
       IREAD = 0
 C
   411 IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
@@ -1548,8 +1548,8 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           READ (IUNIN,'(A80)') ZEILE
 cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
 ! CHECK FOR POPULATION ESCAPE FACTORS
-! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND, 
-! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION. 
+! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND,
+! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION.
           IF (VERIFY(ZEILE,'+-.edED0123456789 ') > 0) THEN
 ! "ZEILE" CONTAINS NEXT REACTION LINE
             WRITE (IUNOUT,*)  'No POP_ESC found for internal CR Model'
@@ -1564,7 +1564,7 @@ cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal 
             READ (ZEILE,66665) IROW_ESC, ICOL_ESC, POP_ESC
             WRITE (IUNOUT,*)  'POP_ESC found for CR Model reaction '
             WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
-            WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+            WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')
      .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
      .                    ' POP_ESC',     POP_ESC
             IREAD = 0
@@ -2037,8 +2037,8 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
 ! counter for additional reaction cards possibly needed for "density models".
-      IDMDL = 0 
-c  loop over background species (except: electrons) 
+      IDMDL = 0
+c  loop over background species (except: electrons)
       DO 511 JPLS=1,NPLSI
         ISPZ=NSPAMI+JPLS
         READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(JPLS),NCHARP(JPLS),
@@ -2208,7 +2208,7 @@ C
       DO I=1,NSPZ
         CALL EIRENE_UPPERCASE (TEXTS(I))
       END DO
-       
+
 C
   520 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') THEN
@@ -3201,7 +3201,7 @@ C    .      ... WRONG INPUT !
           END IF
 
           ESPEC => ESTIML(J)
-          
+
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3579,16 +3579,16 @@ cdr read volumetric emission profile data
             READ (IUNIN,'(A80)') ZEILE
             write (IUNOUT,'(A80)') ZEILE
           END DO
-cdr  further below, a particular emission profile is identified 
+cdr  further below, a particular emission profile is identified
 cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
 cdr  or, if that fails, by its energy (and EMIN1 flag)
           IROW_ESC = 0
           ICOL_ESC = 0
           POP_ESC = 1._DP
           READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
-          READ (IUNIN,6666) NUM_COMPO, IROW_ESC, ICOL_ESC 
-          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
-     .                      EMIS_LINES(ILINE)%TRANS_EN, 
+          READ (IUNIN,6666) NUM_COMPO, IROW_ESC, ICOL_ESC
+          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN,
+     .                      EMIS_LINES(ILINE)%TRANS_EN,
      .                      EMIS_LINES(ILINE)%ENERGY,
      .                                        POP_ESC
           IF ((IROW_ESC <= 0) .OR. (ICOL_ESC <= 0)) POP_ESC=1._DP
@@ -3600,37 +3600,37 @@ cdr  or, if that fails, by its energy (and EMIN1 flag)
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
 cdr       IADV = IADV + 1
-c  if mod_addv=0: reset storage needs for each line 
+c  if mod_addv=0: reset storage needs for each line
 c                 back to nadvi+1..nadvi+num_compo+1,
 c                 i.e. addv tallies are only saved for one line at a time.
-cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1 
-          IF (MOD_ADDV == 0) IADV = NADVI 
+cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1
+          IF (MOD_ADDV == 0) IADV = NADVI
 
-          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + num_COMPO+1 
+          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + num_COMPO+1
 
           IF (NUM_COMPO > 0) THEN
             ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
 
             DO JCOMP=1,NUM_COMPO
 
-              READ (IUNIN,'(A72)') 
+              READ (IUNIN,'(A72)')
      .              EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME
-              READ (IUNIN,6666) NUM_CONTRIB 
+              READ (IUNIN,6666) NUM_CONTRIB
               EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
-              ALLOCATE 
+              ALLOCATE
      .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
 cdr  for each new component: store emission profile on addv(iadv)
               IADV = IADV + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
-              
-cdr  now we dwell on the contributions: 
+
+cdr  now we dwell on the contributions:
 cdr  e.g. different isotopes,... but same rates, same population factors in each component
-              DO KCONTR = 1, NUM_CONTRIB    
+              DO KCONTR = 1, NUM_CONTRIB
                 CNT%ISP = -1
                 CNT%ITP = -1
                 READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
-     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO, 
-     .             CNT%FNAME,              
+     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO,
+     .             CNT%FNAME,
      .             CNT%H123, CNT%REACTION, CNT%CR
 
                 IF (INDEX(CNT%FNAME,'ADAS')  .NE. 0 .OR.
@@ -3644,15 +3644,15 @@ cdr  e.g. different isotopes,... but same rates, same population factors in each
 
 cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1.
 cdr  If density n_B of parent state for upper level is not amongst the densities
-cdr  known in this run, 
+cdr  known in this run,
 cdr  but is in an (QSS) equilibrium with such a density n_A instead.
                 IF (CNT%IRATIO > 0) THEN
 cdr  read QSS density ratio n_B/n_A(Te,ne). Then the
 cdr  upper state population is n_B *pop_B(upper)= n_A * ratio * pop_B(upper)
                   READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
-     .             CNT%FRATIO(1), 
-     .             CNT%RAT_H123(1), CNT%RAT_REACTION(1), CNT%RAT_CR(1) 
-    
+     .             CNT%FRATIO(1),
+     .             CNT%RAT_H123(1), CNT%RAT_REACTION(1), CNT%RAT_CR(1)
+
                   IF (INDEX(CNT%FRATIO(1),'ADAS')  .NE. 0 .OR.
      .                INDEX(CNT%FRATIO(1),'TAB2D') .NE. 0) THEN
                     READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
@@ -3666,16 +3666,16 @@ cdr   Read a second density ratio.
 cdr   It may turn out that, after reading the first density ratio,
 cdr   that now the new parent density n_A is still not amongst the density
 cdr   known to eirene in this run. Then read a second density ratio.
-cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+. 
-cdr   See routine emissivity.f for further explanations. 
+cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+.
+cdr   See routine emissivity.f for further explanations.
                   IF (CNT%IRATIO == 2) THEN
                     READ (IUNIN,6666) CNT%ISP(2),CNT%ITP(2),
      .                                CNT%ISP(3),CNT%ITP(3)
                     READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
-     .               CNT%FRATIO(2), 
+     .               CNT%FRATIO(2),
      .               CNT%RAT_H123(2), CNT%RAT_REACTION(2), CNT%RAT_CR(2)
 
-                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR. 
+                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR.
      .                  INDEX(CNT%FRATIO(2),'TAB2D') .NE. 0) THEN
                       READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
      .                                             CNT%IZ_RAT(2)
@@ -3686,9 +3686,9 @@ cdr   See routine emissivity.f for further explanations.
                     END IF
                   END IF
 
-                ELSE 
-                  CNT%FRATIO       = '' 
-                  CNT%RAT_H123     = '' 
+                ELSE
+                  CNT%FRATIO       = ''
+                  CNT%RAT_H123     = ''
                   CNT%RAT_REACTION = ''
                   CNT%RAT_CR       = ''
                   CNT%RAT_ELEMENT  = ''
@@ -3699,9 +3699,9 @@ cdr   See routine emissivity.f for further explanations.
                 CNT%IRC_RAT = 0
                 EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
               END DO  !  kcontr
-         
+
             END DO    ! jcomp
-c  increase counter iadv, for next line, because sum over comp. 
+c  increase counter iadv, for next line, because sum over comp.
 c                         is stored on num_compo+1
             IADV=IADV+1
           END IF      ! if jcomp.gt.0
@@ -3714,7 +3714,7 @@ c                         is stored on num_compo+1
 cdr  allocate storage and fill structure EMIS-LINES
 cdr  such that old default options are recovered.
 cdr This is exclusive: as soon as at least one emission profile is
-cdr read from block "12.0", no default emissivities are set at all. 
+cdr read from block "12.0", no default emissivities are set at all.
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3754,7 +3754,7 @@ cdr  once per contribution
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%ELEMENT, CNT%IZ, 
+     .              CNT%ELEMENT, CNT%IZ,
      .              IROW_ESC, ICOL_ESC, POP_ESC )
 c  pop_esc factor is the same for all components and contributions
             H123 = CNT%H123
@@ -3763,7 +3763,7 @@ c  pop_esc factor is the same for all components and contributions
      .           INDEX(FILNAM,'CR') > 0) THEN
               WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
               WRITE (IUNOUT,*)  'EMISS. LINE',ILINE,'TYPE ',H123
-              WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+              WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')
      .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
      .                    ' POP_ESC',     POP_ESC
             ENDIF
@@ -3781,13 +3781,13 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
      .              CNT%RAT_REACTION(IR),CNT%RAT_CR(IR),
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR), 
+     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR),
      .              IROW_ESC, ICOL_ESC, POP_ESC )
 
                 emis_lines
      .           (iline)%compo(jcomp)%contrib(kcontr)%irc_rat(ir) = nrc
               end do  ! number of QSS ratios
-            end if           
+            end if
           end do   !kcontr
         end do     !jcomp
       end do       !iline
@@ -3829,7 +3829,7 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
             READ (IUNIN,'(A400)') ZEILE
            IREAD=1
           END IF
-        END IF        
+        END IF
 
         READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
@@ -5307,7 +5307,7 @@ C  THIS POINT IS ONLY REACHED WITH NFILEL=3 IF NLSHRT13=.T.
 c  (SHORT VERSION OF FORT.13 ONLY).
 C  READ ONLY PLASMA DATA OF THOSE BACKGROUND SPECIES
 C  WHICH ARE NOT CONTAINED IN EXTERNAL PLASMA CODE,
-C  I.E. ONLY THOSE WHICH ARE NEEDED FOR INTERNAL EIRENE CYCLING (NON-LINEARITIES) 
+C  I.E. ONLY THOSE WHICH ARE NEEDED FOR INTERNAL EIRENE CYCLING (NON-LINEARITIES)
         IF (NFILEL.EQ.3) CALL EIRENE_RPLAM(TRCFLE,0)
 
 
@@ -5329,7 +5329,7 @@ C
 
 
 C
-      ELSEIF (NFILEL.EQ.2.OR.NFILEL.EQ.3.OR.NFILEL.EQ.4) THEN 
+      ELSEIF (NFILEL.EQ.2.OR.NFILEL.EQ.3.OR.NFILEL.EQ.4) THEN
 C
 C  READ PLASMA DATA, ATOMIC DATA, SOURCE DATA FROM FT13
 C

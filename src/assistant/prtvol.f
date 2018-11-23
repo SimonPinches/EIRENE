@@ -2,7 +2,7 @@ cdr jan 2017 :  started to syncronize with prttal. should be largely identical
 c               added: 1d output onto stream ifile, also for VOL tally.
 c               more comments, better formats for large grids.
 cdr jun 2017 :  sync. with prttal. Also 1D printout on separate output streams.
-C 
+C
 C  INPUT:  T1,T2,T3:         TALLY TEXT, SPECIES AND UNITS, RESP.
 C          PROF:             TALLY DATA, ON 1d ARRAX PROF(1:NRAD)
 C          X:                X-COORDINATE: ONLY FOR 1D STANDARD GRIDS
@@ -27,7 +27,7 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
       REAL(DP), INTENT(IN) :: PROF(*),X(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE
@@ -38,12 +38,12 @@ C
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
      .           NTTS
       CHARACTER(1) :: TL(72)
- 
+
       DATA TL/72*'='/
 C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       DATA ISTREAM/6,50,20,21,29,30,31,32,33,10,11,12,13,14,15/
       SAVE
- 
+
       CALL EIRENE_LEER(3)
       WRITE (iunout,'(72A1)') TL
       WRITE (iunout,'(72A1)') TL
@@ -90,7 +90,7 @@ C   NR: AVERAGED VALUE
           IF (NTT.GT.NR) THEN
 C  ADDITIONAL CELL REGION
             WRITE (IFILE,'(72A1)') TL
-            WRITE (IFILE,56) 
+            WRITE (IFILE,56)
             DO IRAD=NR+1,NTT
               WRITE (IFILE,57) IRAD-NR, PROF(IRAD)
             ENDDO
@@ -409,7 +409,7 @@ c  1 .le.NR.le.6 is already verified in calling program.
       REAL(DP), INTENT(IN) :: H(6)
       INTEGER, INTENT(IN)  :: K(6),NR,IUNOUT
 
-      IF (K(NR).LT.1E4) THEN 
+      IF (K(NR).LT.1E4) THEN
         WRITE (iunout,64) (K(I),H(I),I=1,NR)
       ELSEIF (K(NR).LT.1E5) THEN
         WRITE (iunout,65) (K(I),H(I),I=1,NR)

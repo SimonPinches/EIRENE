@@ -8,9 +8,9 @@ C  CALLED FROM CONE
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: A(*)
       REAL(DP), INTENT(OUT) :: XP(*),YP(*)
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, ALF, T1, T2,
@@ -22,9 +22,9 @@ C
      .          RAD1, RAD2, PX1, PY1, PZ1
       INTEGER :: J, IX
       LOGICAL LERR
- 
+
       DATA EPS12 /1.E-12/
- 
+
       LERR=.FALSE.
       IX=IXS-1
       RAD1=T1*TAN(ALF)

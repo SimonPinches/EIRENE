@@ -5,19 +5,19 @@ cdr aug 18 :  XMCT removed from read/write ft11, but still in coutau.
 cdr           Perhaps to be simplified: Move XMCT into storage for
 cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_COUTAU, EIRENE_DEALLOC_COUTAU, 
+
+      PUBLIC :: EIRENE_ALLOC_COUTAU, EIRENE_DEALLOC_COUTAU,
      .          EIRENE_INIT_COUTAU, EIRENE_FETCH_OUTAU,
-     .          EIRENE_WRITE_COUTAU, EIRENE_READ_COUTAU, 
+     .          EIRENE_WRITE_COUTAU, EIRENE_READ_COUTAU,
      .          EIRENE_INIT_COUTAU_REINIT
- 
+
 ! INTEGRALS OF VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PDENAI(:,:), PDENMI(:,:), PDENII(:,:), PDENPHI(:,:),
@@ -49,7 +49,7 @@ cdr           writing on ft14.
      R VYDENAI(:,:), VYDENMI(:,:), VYDENII(:,:), VYDENPHI(:,:),
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
- 
+
 ! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
@@ -74,21 +74,21 @@ cdr           writing on ft14.
      R EOTPLI(:,:)
 ! INTEGRALS OF SURFACE TALLIES: SPUTTERING
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:), 
+     R SPTAATI(:,:), SPTMATI(:,:), SPTIATI(:,:), SPTPHATI(:,:),
      R SPTPATI(:,:),
-     R SPTAMLI(:,:), SPTMMLI(:,:), SPTIMLI(:,:), SPTPHMLI(:,:), 
+     R SPTAMLI(:,:), SPTMMLI(:,:), SPTIMLI(:,:), SPTPHMLI(:,:),
      R SPTPMLI(:,:),
-     R SPTAIOI(:,:), SPTMIOI(:,:), SPTIIOI(:,:), SPTPHIOI(:,:), 
+     R SPTAIOI(:,:), SPTMIOI(:,:), SPTIIOI(:,:), SPTPHIOI(:,:),
      R SPTPIOI(:,:),
-     R SPTAPHTI(:,:), SPTMPHTI(:,:), SPTIPHTI(:,:), SPTPHPHTI(:,:), 
+     R SPTAPHTI(:,:), SPTMPHTI(:,:), SPTIPHTI(:,:), SPTPHPHTI(:,:),
      R SPTPPHTI(:,:),
-     R SPTAPLI(:,:), SPTMPLI(:,:), SPTIPLI(:,:), SPTPHPLI(:,:), 
+     R SPTAPLI(:,:), SPTMPLI(:,:), SPTIPLI(:,:), SPTPHPLI(:,:),
      R SPTPPLI(:,:),
-     R sptatti(:), sptmtti(:), sptitti(:), sptphtti(:), sptpltti(:),   
+     R sptatti(:), sptmtti(:), sptitti(:), sptphtti(:), sptpltti(:),
      R SPTTTI(:),
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
- 
+
 ! INTEGRAL VALUES, global balances, scaling
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
@@ -97,27 +97,27 @@ cdr           writing on ft14.
      R XMCP(:),     XMCT(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
      R PTRASH(:),   ETRASH(:),
      R FASCL(:),    FMSCL(:),    FISCL(:),    FPHSCL(:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NADDI(:),  NFRSTI(:), NDDWI(:),  NFRTWI(:),
      I NFSTVI(:), NFSTWI(:), NFSTPI(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NOUTA1, NOUTA2, NOUTAS, NOUTAU, NOUTTL
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_COUTAU
- 
+
       IF (ALLOCATED(PDENAI)) RETURN
- 
+
       NOUTA1 = NVLTLP*NSTRAP
       NOUTA2 = NSFTLP*NSTRAP
       NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+15)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
       NOUTTL = 3*(NTALV+NTALS)+NTALI
- 
+
       ALLOCATE (PDENAI(0:NATM,0:NSTRA))
       ALLOCATE (PDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (PDENII(0:NION,0:NSTRA))
@@ -155,7 +155,7 @@ cdr  volumetric particles source tallies, from incident photons, sources for e,a
       ALLOCATE (PPHIOI(0:NION,0:NSTRA))
       ALLOCATE (PPHPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PPHPLI(0:NPLS,0:NSTRA))
- 
+
       ALLOCATE (EAELI(0:NSTRA))
       ALLOCATE (EAATI(0:NSTRA))
       ALLOCATE (EAMLI(0:NSTRA))
@@ -238,7 +238,7 @@ cdr             tally for electron source missing ??
       ALLOCATE (MMPLI(0:NPLS,0:NSTRA))
       ALLOCATE (MIPLI(0:NPLS,0:NSTRA))
       ALLOCATE (MPHPLI(0:NPLS,0:NSTRA))
- 
+
 cdr surface-averaged tallies
 cdr  note: distinct from volumetric sources, these are ordered here
 cdr  by receiving species
@@ -339,13 +339,13 @@ cdr  surface incident fluxes of bulk ions (no fluxes emitted for bulk ions from 
       ALLOCATE (ADDSI(0:NADS,0:NSTRA))
       ALLOCATE (ALGSI(0:NALS,0:NSTRA))
       ALLOCATE (SPUMPI(0:NSPZ,0:NSTRA))
- 
+
       ALLOCATE (WTOTA(0:NATM,0:NSTRA))
       ALLOCATE (WTOTM(0:NMOL,0:NSTRA))
       ALLOCATE (WTOTI(0:NION,0:NSTRA))
       ALLOCATE (WTOTPH(0:NPHOT,0:NSTRA))
       ALLOCATE (WTOTP(0:NPLS,0:NSTRA))
-      
+
       ALLOCATE (WTOTE(0:NSTRA))
 
 
@@ -355,7 +355,7 @@ cdr  etote still missing ??
       ALLOCATE (ETOTI(0:NSTRA))
       ALLOCATE (ETOTPH(0:NSTRA))
       ALLOCATE (ETOTP(0:NSTRA))
-      
+
       ALLOCATE (XMCP(0:NSTRA))
       ALLOCATE (XMCT(0:NSTRA))
       ALLOCATE (FLUXT(0:NSTRA))
@@ -367,7 +367,7 @@ cdr  etote still missing ??
       ALLOCATE (FMSCL(0:NSTRA))
       ALLOCATE (FISCL(0:NSTRA))
       ALLOCATE (FPHSCL(0:NSTRA))
- 
+
       ALLOCATE (NADDI(NTALV))
       ALLOCATE (NFRSTI(NTALV))
       ALLOCATE (NDDWI(NTALS))
@@ -375,11 +375,11 @@ cdr  etote still missing ??
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
       ALLOCATE (NFSTPI(NTALI))
- 
-cdr  coutau still contains xmct, but NOUTAU does not. 
+
+cdr  coutau still contains xmct, but NOUTAU does not.
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' COUTAU ',(NOUTAU+NSTRAP)*8 + NOUTTL*4
- 
+
       NADDI  = 0
       NFRSTI = 0
       NDDWI  = 0
@@ -390,15 +390,15 @@ cdr  coutau still contains xmct, but NOUTAU does not.
 csw 19mar2013
       xmct=0.0
       xmcp=0
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COUTAU
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_COUTAU
- 
+
       IF (.NOT.ALLOCATED(PDENAI)) RETURN
- 
+
       DEALLOCATE (PDENAI)
       DEALLOCATE (PDENMI)
       DEALLOCATE (PDENII)
@@ -431,7 +431,7 @@ csw 19mar2013
       DEALLOCATE (PPHIOI)
       DEALLOCATE (PPHPHTI)
       DEALLOCATE (PPHPLI)
- 
+
       DEALLOCATE (EAELI)
       DEALLOCATE (EAATI)
       DEALLOCATE (EAMLI)
@@ -500,7 +500,7 @@ csw 19mar2013
       DEALLOCATE (MMPLI)
       DEALLOCATE (MIPLI)
       DEALLOCATE (MPHPLI)
- 
+
       DEALLOCATE (POTATI)
       DEALLOCATE (PRFAAI)
       DEALLOCATE (PRFMAI)
@@ -585,7 +585,7 @@ csw 19mar2013
       DEALLOCATE (ADDSI)
       DEALLOCATE (ALGSI)
       DEALLOCATE (SPUMPI)
- 
+
       DEALLOCATE (WTOTA)
       DEALLOCATE (WTOTM)
       DEALLOCATE (WTOTI)
@@ -608,7 +608,7 @@ csw 19mar2013
       DEALLOCATE (FMSCL)
       DEALLOCATE (FISCL)
       DEALLOCATE (FPHSCL)
- 
+
       DEALLOCATE (NADDI)
       DEALLOCATE (NFRSTI)
       DEALLOCATE (NDDWI)
@@ -616,24 +616,24 @@ csw 19mar2013
       DEALLOCATE (NFSTVI)
       DEALLOCATE (NFSTWI)
       DEALLOCATE (NFSTPI)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COUTAU
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_COUTAU(LOGARR)
- 
+
       LOGICAL, INTENT(IN) :: LOGARR(NSTRA)
       INTEGER :: ISTRA
       INTEGER, SAVE :: IFRST=0
- 
+
       DO ISTRA=0,NSTRA
- 
+
         IF (ISTRA >= 1 .AND. IFRST > 0) THEN
           IF (.NOT. LOGARR(ISTRA)) CYCLE
         END IF
 
-cdr particle densities 
+cdr particle densities
         PDENAI(:,ISTRA)  = 0._DP
         PDENMI(:,ISTRA)  = 0._DP
         PDENII(:,ISTRA)  = 0._DP
@@ -644,7 +644,7 @@ cdr  energy densities
         EDENII(:,ISTRA)  = 0._DP
         EDENPHI(:,ISTRA) = 0._DP
 
-cdr volumetric tallies for particle balance, sources from atoms for el, a,m,i,ph,pl 
+cdr volumetric tallies for particle balance, sources from atoms for el, a,m,i,ph,pl
         PAELI(ISTRA)     = 0._DP
         PAATI(:,ISTRA)   = 0._DP
         PAMLI(:,ISTRA)   = 0._DP
@@ -673,7 +673,7 @@ cdr
         PPHPHTI(:,ISTRA) = 0._DP
         PPHPLI(:,ISTRA)  = 0._DP
 
-cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,pl 
+cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,pl
         EAELI(ISTRA)   = 0._DP
         EAATI(ISTRA)   = 0._DP
         EAMLI(ISTRA)   = 0._DP
@@ -751,7 +751,7 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         MMPLI(:,ISTRA)    = 0._DP
         MIPLI(:,ISTRA)    = 0._DP
         MPHPLI(:,ISTRA)    = 0._DP
- 
+
         POTATI(:,ISTRA) = 0._DP
         PRFAAI(:,ISTRA) = 0._DP
         PRFMAI(:,ISTRA) = 0._DP
@@ -836,7 +836,7 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         ADDSI(:,ISTRA)  = 0._DP
         ALGSI(:,ISTRA)  = 0._DP
         SPUMPI(:,ISTRA) = 0._DP
- 
+
         WTOTA(:,ISTRA)  = 0._DP
         WTOTM(:,ISTRA)  = 0._DP
         WTOTI(:,ISTRA)  = 0._DP
@@ -857,826 +857,826 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         FMSCL(ISTRA)  = 0._DP
         FISCL(ISTRA)  = 0._DP
         FPHSCL(ISTRA)  = 0._DP
- 
+
 !pb     IF (IFRST == 0) THEN
           XMCP(ISTRA)   = 0._DP
           XMCT(ISTRA)   = 0._DP
 !pb     END IF
- 
+
       END DO
       IFRST = 1
- 
+
       RETURN
- 
+
 C     The following ENTRY is for reinitialization of EIRENE
- 
+
       ENTRY EIRENE_INIT_COUTAU_REINIT
       IFRST = 0
       return
       END SUBROUTINE EIRENE_INIT_COUTAU
- 
- 
+
+
       SUBROUTINE EIRENE_WRITE_COUTAU (OUTAU,IUNOUT)
       REAL(DP) :: OUTAU(:)
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: IA, IE
- 
+
       IF (SIZE(OUTAU) < NOUTAU) THEN
         WRITE (iunout,*)
      .  ' SIZE OF ARRAY OUTAU TOO SMALL IN WRITE_COUTAU '
         WRITE (iunout,*) ' OUTAU(',NOUTAU,') REQUIRED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       IA = 1
       IE = IA - 1 + SIZE(PDENAI)
       OUTAU(IA:IE) = PACK(PDENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENMI)
       OUTAU(IA:IE) = PACK(PDENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENII)
       OUTAU(IA:IE) = PACK(PDENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENPHI)
       OUTAU(IA:IE) = PACK(PDENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENAI)
       OUTAU(IA:IE) = PACK(EDENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENMI)
       OUTAU(IA:IE) = PACK(EDENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENII)
       OUTAU(IA:IE) = PACK(EDENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENPHI)
       OUTAU(IA:IE) = PACK(EDENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAELI)
       OUTAU(IA:IE) = PACK(PAELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAATI)
       OUTAU(IA:IE) = PACK(PAATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAMLI)
       OUTAU(IA:IE) = PACK(PAMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAIOI)
       OUTAU(IA:IE) = PACK(PAIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAPHTI)
       OUTAU(IA:IE) = PACK(PAPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAPLI)
       OUTAU(IA:IE) = PACK(PAPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMELI)
       OUTAU(IA:IE) = PACK(PMELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMATI)
       OUTAU(IA:IE) = PACK(PMATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMMLI)
       OUTAU(IA:IE) = PACK(PMMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMIOI)
       OUTAU(IA:IE) = PACK(PMIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMPHTI)
       OUTAU(IA:IE) = PACK(PMPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMPLI)
       OUTAU(IA:IE) = PACK(PMPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIELI)
       OUTAU(IA:IE) = PACK(PIELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIATI)
       OUTAU(IA:IE) = PACK(PIATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIMLI)
       OUTAU(IA:IE) = PACK(PIMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIIOI)
       OUTAU(IA:IE) = PACK(PIIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIPHTI)
       OUTAU(IA:IE) = PACK(PIPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIPLI)
       OUTAU(IA:IE) = PACK(PIPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHELI)
       OUTAU(IA:IE) = PACK(PPHELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHATI)
       OUTAU(IA:IE) = PACK(PPHATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHMLI)
       OUTAU(IA:IE) = PACK(PPHMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHIOI)
       OUTAU(IA:IE) = PACK(PPHIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHPHTI)
       OUTAU(IA:IE) = PACK(PPHPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHPLI)
       OUTAU(IA:IE) = PACK(PPHPLI ,.TRUE.)
- 
- 
- 
- 
+
+
+
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAELI)
       OUTAU(IA:IE) = PACK(EAELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAATI)
       OUTAU(IA:IE) = PACK(EAATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAMLI)
       OUTAU(IA:IE) = PACK(EAMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAIOI)
       OUTAU(IA:IE) = PACK(EAIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAPHTI)
       OUTAU(IA:IE) = PACK(EAPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAPLI)
       OUTAU(IA:IE) = PACK(EAPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMELI)
       OUTAU(IA:IE) = PACK(EMELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMATI)
       OUTAU(IA:IE) = PACK(EMATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMMLI)
       OUTAU(IA:IE) = PACK(EMMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMIOI)
       OUTAU(IA:IE) = PACK(EMIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMPHTI)
       OUTAU(IA:IE) = PACK(EMPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMPLI)
       OUTAU(IA:IE) = PACK(EMPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIELI)
       OUTAU(IA:IE) = PACK(EIELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIATI)
       OUTAU(IA:IE) = PACK(EIATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIMLI)
       OUTAU(IA:IE) = PACK(EIMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIIOI)
       OUTAU(IA:IE) = PACK(EIIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIPHTI)
       OUTAU(IA:IE) = PACK(EIPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIPLI)
       OUTAU(IA:IE) = PACK(EIPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHELI)
       OUTAU(IA:IE) = PACK(EPHELI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHATI)
       OUTAU(IA:IE) = PACK(EPHATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHMLI)
       OUTAU(IA:IE) = PACK(EPHMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHIOI)
       OUTAU(IA:IE) = PACK(EPHIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHPHTI)
       OUTAU(IA:IE) = PACK(EPHPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHPLI)
       OUTAU(IA:IE) = PACK(EPHPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDVI)
       OUTAU(IA:IE) = PACK(ADDVI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(COLVI)
       OUTAU(IA:IE) = PACK(COLVI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SNAPVI)
       OUTAU(IA:IE) = PACK(SNAPVI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(COPVI)
       OUTAU(IA:IE) = PACK(COPVI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(BGKVI)
       OUTAU(IA:IE) = PACK(BGKVI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ALGVI)
       OUTAU(IA:IE) = PACK(ALGVI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENAI)
       OUTAU(IA:IE) = PACK(PGENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENMI)
       OUTAU(IA:IE) = PACK(PGENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENII)
       OUTAU(IA:IE) = PACK(PGENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENPHI)
       OUTAU(IA:IE) = PACK(PGENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENAI)
       OUTAU(IA:IE) = PACK(EGENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENMI)
       OUTAU(IA:IE) = PACK(EGENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENII)
       OUTAU(IA:IE) = PACK(EGENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENPHI)
       OUTAU(IA:IE) = PACK(EGENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENAI)
       OUTAU(IA:IE) = PACK(VGENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENMI)
       OUTAU(IA:IE) = PACK(VGENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENII)
       OUTAU(IA:IE) = PACK(VGENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENPHI)
       OUTAU(IA:IE) = PACK(VGENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPATI)
       OUTAU(IA:IE) = PACK(PPATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPMLI)
       OUTAU(IA:IE) = PACK(PPMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPIOI)
       OUTAU(IA:IE) = PACK(PPIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPPHTI)
       OUTAU(IA:IE) = PACK(PPPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPPLI)
       OUTAU(IA:IE) = PACK(PPPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPATI)
       OUTAU(IA:IE) = PACK(EPATI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPMLI)
       OUTAU(IA:IE) = PACK(EPMLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPIOI)
       OUTAU(IA:IE) = PACK(EPIOI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPPHTI)
       OUTAU(IA:IE) = PACK(EPPHTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPPLI)
       OUTAU(IA:IE) = PACK(EPPLI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENAI)
       OUTAU(IA:IE) = PACK(VXDENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENMI)
       OUTAU(IA:IE) = PACK(VXDENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENII)
       OUTAU(IA:IE) = PACK(VXDENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENPHI)
       OUTAU(IA:IE) = PACK(VXDENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENAI)
       OUTAU(IA:IE) = PACK(VYDENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENMI)
       OUTAU(IA:IE) = PACK(VYDENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENII)
       OUTAU(IA:IE) = PACK(VYDENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENPHI)
       OUTAU(IA:IE) = PACK(VYDENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENAI)
       OUTAU(IA:IE) = PACK(VZDENAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENMI)
       OUTAU(IA:IE) = PACK(VZDENMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENII)
       OUTAU(IA:IE) = PACK(VZDENII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENPHI)
       OUTAU(IA:IE) = PACK(VZDENPHI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MAPLI)
       OUTAU(IA:IE) = PACK(MAPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MMPLI)
       OUTAU(IA:IE) = PACK(MMPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MIPLI)
       OUTAU(IA:IE) = PACK(MIPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MPHPLI)
       OUTAU(IA:IE) = PACK(MPHPLI,.TRUE.)
- 
- 
- 
- 
+
+
+
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTATI)
       OUTAU(IA:IE) = PACK(POTATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAAI)
       OUTAU(IA:IE) = PACK(PRFAAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMAI)
       OUTAU(IA:IE) = PACK(PRFMAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIAI)
       OUTAU(IA:IE) = PACK(PRFIAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHAI)
       OUTAU(IA:IE) = PACK(PRFPHAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPAI)
       OUTAU(IA:IE) = PACK(PRFPAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTMLI)
       OUTAU(IA:IE) = PACK(POTMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAMI)
       OUTAU(IA:IE) = PACK(PRFAMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMMI)
       OUTAU(IA:IE) = PACK(PRFMMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIMI)
       OUTAU(IA:IE) = PACK(PRFIMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHMI)
       OUTAU(IA:IE) = PACK(PRFPHMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPMI)
       OUTAU(IA:IE) = PACK(PRFPMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTIOI)
       OUTAU(IA:IE) = PACK(POTIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAII)
       OUTAU(IA:IE) = PACK(PRFAII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMII)
       OUTAU(IA:IE) = PACK(PRFMII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIII)
       OUTAU(IA:IE) = PACK(PRFIII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHII)
       OUTAU(IA:IE) = PACK(PRFPHII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPII)
       OUTAU(IA:IE) = PACK(PRFPII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTPHTI)
       OUTAU(IA:IE) = PACK(POTPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAPHTI)
       OUTAU(IA:IE) = PACK(PRFAPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMPHTI)
       OUTAU(IA:IE) = PACK(PRFMPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIPHTI)
       OUTAU(IA:IE) = PACK(PRFIPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHPHTI)
       OUTAU(IA:IE) = PACK(PRFPHPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPPHTI)
       OUTAU(IA:IE) = PACK(PRFPPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTPLI)
       OUTAU(IA:IE) = PACK(POTPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTATI)
       OUTAU(IA:IE) = PACK(EOTATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAAI)
       OUTAU(IA:IE) = PACK(ERFAAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMAI)
       OUTAU(IA:IE) = PACK(ERFMAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIAI)
       OUTAU(IA:IE) = PACK(ERFIAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHAI)
       OUTAU(IA:IE) = PACK(ERFPHAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPAI)
       OUTAU(IA:IE) = PACK(ERFPAI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTMLI)
       OUTAU(IA:IE) = PACK(EOTMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAMI)
       OUTAU(IA:IE) = PACK(ERFAMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMMI)
       OUTAU(IA:IE) = PACK(ERFMMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIMI)
       OUTAU(IA:IE) = PACK(ERFIMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHMI)
       OUTAU(IA:IE) = PACK(ERFPHMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPMI)
       OUTAU(IA:IE) = PACK(ERFPMI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTIOI)
       OUTAU(IA:IE) = PACK(EOTIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAII)
       OUTAU(IA:IE) = PACK(ERFAII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMII)
       OUTAU(IA:IE) = PACK(ERFMII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIII)
       OUTAU(IA:IE) = PACK(ERFIII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHII)
       OUTAU(IA:IE) = PACK(ERFPHII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPII)
       OUTAU(IA:IE) = PACK(ERFPII,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTPHTI)
       OUTAU(IA:IE) = PACK(EOTPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAPHTI)
       OUTAU(IA:IE) = PACK(ERFAPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMPHTI)
       OUTAU(IA:IE) = PACK(ERFMPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIPHTI)
       OUTAU(IA:IE) = PACK(ERFIPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHPHTI)
       OUTAU(IA:IE) = PACK(ERFPHPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPPHTI)
       OUTAU(IA:IE) = PACK(ERFPPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTPLI)
       OUTAU(IA:IE) = PACK(EOTPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAATI)
       OUTAU(IA:IE) = PACK(SPTAATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMATI)
       OUTAU(IA:IE) = PACK(SPTMATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIATI)
       OUTAU(IA:IE) = PACK(SPTIATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHATI)
       OUTAU(IA:IE) = PACK(SPTPHATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPATI)
       OUTAU(IA:IE) = PACK(SPTPATI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAMLI)
       OUTAU(IA:IE) = PACK(SPTAMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMMLI)
       OUTAU(IA:IE) = PACK(SPTMMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIMLI)
       OUTAU(IA:IE) = PACK(SPTIMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHMLI)
       OUTAU(IA:IE) = PACK(SPTPHMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPMLI)
       OUTAU(IA:IE) = PACK(SPTPMLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAIOI)
       OUTAU(IA:IE) = PACK(SPTAIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMIOI)
       OUTAU(IA:IE) = PACK(SPTMIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIIOI)
       OUTAU(IA:IE) = PACK(SPTIIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHIOI)
       OUTAU(IA:IE) = PACK(SPTPHIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPIOI)
       OUTAU(IA:IE) = PACK(SPTPIOI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAPHTI)
       OUTAU(IA:IE) = PACK(SPTAPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMPHTI)
       OUTAU(IA:IE) = PACK(SPTMPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIPHTI)
       OUTAU(IA:IE) = PACK(SPTIPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHPHTI)
       OUTAU(IA:IE) = PACK(SPTPHPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPPHTI)
       OUTAU(IA:IE) = PACK(SPTPPHTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAPLI)
       OUTAU(IA:IE) = PACK(SPTAPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMPLI)
       OUTAU(IA:IE) = PACK(SPTMPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIPLI)
       OUTAU(IA:IE) = PACK(SPTIPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHPLI)
       OUTAU(IA:IE) = PACK(SPTPHPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPPLI)
       OUTAU(IA:IE) = PACK(SPTPPLI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTATTI)
       OUTAU(IA:IE) = PACK(SPTATTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMTTI)
       OUTAU(IA:IE) = PACK(SPTMTTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTITTI)
       OUTAU(IA:IE) = PACK(SPTITTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHTTI)
       OUTAU(IA:IE) = PACK(SPTPHTTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPLTTI)
       OUTAU(IA:IE) = PACK(SPTPLTTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTTTI)
       OUTAU(IA:IE) = PACK(SPTTTI,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDSI)
       OUTAU(IA:IE) = PACK(ADDSI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ALGSI)
       OUTAU(IA:IE) = PACK(ALGSI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPUMPI)
       OUTAU(IA:IE) = PACK(SPUMPI,.TRUE.)
- 
- 
- 
- 
+
+
+
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTA)
       OUTAU(IA:IE) = PACK(WTOTA ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTM)
       OUTAU(IA:IE) = PACK(WTOTM ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTI)
       OUTAU(IA:IE) = PACK(WTOTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTPH)
       OUTAU(IA:IE) = PACK(WTOTPH ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTP)
       OUTAU(IA:IE) = PACK(WTOTP ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTE)
       OUTAU(IA:IE) = PACK(WTOTE ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTA)
       OUTAU(IA:IE) = PACK(ETOTA ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTM)
       OUTAU(IA:IE) = PACK(ETOTM ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTI)
       OUTAU(IA:IE) = PACK(ETOTI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTPH)
       OUTAU(IA:IE) = PACK(ETOTPH ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTP)
       OUTAU(IA:IE) = PACK(ETOTP ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(XMCP)
       OUTAU(IA:IE) = PACK(XMCP  ,.TRUE.)
@@ -1684,786 +1684,786 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(FLUXT)
       OUTAU(IA:IE) = PACK(FLUXT ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FLXFAC)
       OUTAU(IA:IE) = PACK(FLXFAC,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EELFI)
       OUTAU(IA:IE) = PACK(EELFI ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PTRASH)
       OUTAU(IA:IE) = PACK(PTRASH,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETRASH)
       OUTAU(IA:IE) = PACK(ETRASH,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FASCL)
       OUTAU(IA:IE) = PACK(FASCL ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FMSCL)
       OUTAU(IA:IE) = PACK(FMSCL ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FISCL)
       OUTAU(IA:IE) = PACK(FISCL ,.TRUE.)
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FPHSCL)
       OUTAU(IA:IE) = PACK(FPHSCL ,.TRUE.)
- 
+
       IF (IE /= NOUTAU) THEN
         WRITE (iunout,*) ' ERROR IN WRITE_COUTAU '
         WRITE (iunout,*) ' NOUTAU = ',NOUTAU,' IE = ',IE
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_WRITE_COUTAU
- 
- 
+
+
       SUBROUTINE EIRENE_READ_COUTAU (OUTAU, IUNOUT)
       REAL(DP) :: OUTAU(:)
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: IA, IE
- 
+
       IF (SIZE(OUTAU) < NOUTAU) THEN
         WRITE (iunout,*)
      .  ' SIZE OF ARRAY OUTAU TOO SMALL IN READ_COUTAU '
         WRITE (iunout,*) ' OUTAU(',NOUTAU,') REQUIRED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       IA = 1
       IE = IA - 1 + SIZE(PDENAI)
       PDENAI = RESHAPE(OUTAU(IA:IE),SHAPE(PDENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENMI)
       PDENMI = RESHAPE(OUTAU(IA:IE),SHAPE(PDENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENII)
       PDENII = RESHAPE(OUTAU(IA:IE),SHAPE(PDENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENPHI)
       PDENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(PDENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENAI)
       EDENAI = RESHAPE(OUTAU(IA:IE),SHAPE(EDENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENMI)
       EDENMI = RESHAPE(OUTAU(IA:IE),SHAPE(EDENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENII)
       EDENII = RESHAPE(OUTAU(IA:IE),SHAPE(EDENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENPHI)
       EDENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(EDENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAELI)
       PAELI  = RESHAPE(OUTAU(IA:IE),SHAPE(PAELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAATI)
       PAATI  = RESHAPE(OUTAU(IA:IE),SHAPE(PAATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAMLI)
       PAMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PAMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAIOI)
       PAIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(PAIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAPHTI)
       PAPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PAPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PAPLI)
       PAPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PAPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMELI)
       PMELI  = RESHAPE(OUTAU(IA:IE),SHAPE(PMELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMATI)
       PMATI  = RESHAPE(OUTAU(IA:IE),SHAPE(PMATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMMLI)
       PMMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PMMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMIOI)
       PMIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(PMIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMPHTI)
       PMPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PMPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PMPLI)
       PMPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PMPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIELI)
       PIELI  = RESHAPE(OUTAU(IA:IE),SHAPE(PIELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIATI)
       PIATI  = RESHAPE(OUTAU(IA:IE),SHAPE(PIATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIMLI)
       PIMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PIMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIIOI)
       PIIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(PIIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIPHTI)
       PIPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PIPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PIPLI)
       PIPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PIPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHELI)
       PPHELI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPHELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHATI)
       PPHATI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPHATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHMLI)
       PPHMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPHMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHIOI)
       PPHIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPHIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHPHTI)
       PPHPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PPHPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHPLI)
       PPHPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPHPLI ))
- 
- 
- 
- 
+
+
+
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAELI)
       EAELI  = RESHAPE(OUTAU(IA:IE),SHAPE(EAELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAATI)
       EAATI  = RESHAPE(OUTAU(IA:IE),SHAPE(EAATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAMLI)
       EAMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EAMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAIOI)
       EAIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(EAIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAPHTI)
       EAPHTI  = RESHAPE(OUTAU(IA:IE),SHAPE(EAPHTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EAPLI)
       EAPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EAPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMELI)
       EMELI  = RESHAPE(OUTAU(IA:IE),SHAPE(EMELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMATI)
       EMATI  = RESHAPE(OUTAU(IA:IE),SHAPE(EMATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMMLI)
       EMMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EMMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMIOI)
       EMIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(EMIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMPHTI)
       EMPHTI  = RESHAPE(OUTAU(IA:IE),SHAPE(EMPHTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EMPLI)
       EMPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EMPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIELI)
       EIELI  = RESHAPE(OUTAU(IA:IE),SHAPE(EIELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIATI)
       EIATI  = RESHAPE(OUTAU(IA:IE),SHAPE(EIATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIMLI)
       EIMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EIMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIIOI)
       EIIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(EIIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIPHTI)
       EIPHTI  = RESHAPE(OUTAU(IA:IE),SHAPE(EIPHTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EIPLI)
       EIPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EIPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHELI)
       EPHELI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPHELI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHATI)
       EPHATI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPHATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHMLI)
       EPHMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPHMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHIOI)
       EPHIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPHIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHPHTI)
       EPHPHTI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPHPHTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHPLI)
       EPHPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPHPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDVI)
       ADDVI  = RESHAPE(OUTAU(IA:IE),SHAPE(ADDVI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(COLVI)
       COLVI  = RESHAPE(OUTAU(IA:IE),SHAPE(COLVI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SNAPVI)
       SNAPVI = RESHAPE(OUTAU(IA:IE),SHAPE(SNAPVI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(COPVI)
       COPVI  = RESHAPE(OUTAU(IA:IE),SHAPE(COPVI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(BGKVI)
       BGKVI  = RESHAPE(OUTAU(IA:IE),SHAPE(BGKVI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ALGVI)
       ALGVI  = RESHAPE(OUTAU(IA:IE),SHAPE(ALGVI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENAI)
       PGENAI = RESHAPE(OUTAU(IA:IE),SHAPE(PGENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENMI)
       PGENMI = RESHAPE(OUTAU(IA:IE),SHAPE(PGENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENII)
       PGENII = RESHAPE(OUTAU(IA:IE),SHAPE(PGENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENPHI)
       PGENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(PGENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENAI)
       EGENAI = RESHAPE(OUTAU(IA:IE),SHAPE(EGENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENMI)
       EGENMI = RESHAPE(OUTAU(IA:IE),SHAPE(EGENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENII)
       EGENII = RESHAPE(OUTAU(IA:IE),SHAPE(EGENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENPHI)
       EGENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(EGENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENAI)
       VGENAI = RESHAPE(OUTAU(IA:IE),SHAPE(VGENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENMI)
       VGENMI = RESHAPE(OUTAU(IA:IE),SHAPE(VGENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENII)
       VGENII = RESHAPE(OUTAU(IA:IE),SHAPE(VGENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENPHI)
       VGENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(VGENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPATI)
       PPATI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPMLI)
       PPMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPIOI)
       PPIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPPHTI)
       PPPHTI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPPHTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PPPLI)
       PPPLI  = RESHAPE(OUTAU(IA:IE),SHAPE(PPPLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPATI)
       EPATI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPATI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPMLI)
       EPMLI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPMLI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPIOI)
       EPIOI  = RESHAPE(OUTAU(IA:IE),SHAPE(EPIOI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPPHTI)
       EPPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(EPPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EPPLI)
       EPPLI = RESHAPE(OUTAU(IA:IE),SHAPE(EPPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENAI)
       VXDENAI = RESHAPE(OUTAU(IA:IE),SHAPE(VXDENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENMI)
       VXDENMI = RESHAPE(OUTAU(IA:IE),SHAPE(VXDENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENII)
       VXDENII = RESHAPE(OUTAU(IA:IE),SHAPE(VXDENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENPHI)
       VXDENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(VXDENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENAI)
       VYDENAI = RESHAPE(OUTAU(IA:IE),SHAPE(VYDENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENMI)
       VYDENMI = RESHAPE(OUTAU(IA:IE),SHAPE(VYDENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENII)
       VYDENII = RESHAPE(OUTAU(IA:IE),SHAPE(VYDENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VYDENPHI)
       VYDENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(VYDENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENAI)
       VZDENAI = RESHAPE(OUTAU(IA:IE),SHAPE(VZDENAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENMI)
       VZDENMI = RESHAPE(OUTAU(IA:IE),SHAPE(VZDENMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENII)
       VZDENII = RESHAPE(OUTAU(IA:IE),SHAPE(VZDENII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENPHI)
       VZDENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(VZDENPHI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MAPLI)
       MAPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MAPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MMPLI)
       MMPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MMPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MIPLI)
       MIPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MIPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(MPHPLI)
       MPHPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MPHPLI))
- 
- 
- 
+
+
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTATI)
       POTATI = RESHAPE(OUTAU(IA:IE),SHAPE(POTATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAAI)
       PRFAAI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFAAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMAI)
       PRFMAI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFMAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIAI)
       PRFIAI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFIAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHAI)
       PRFPHAI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPHAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPAI)
       PRFPAI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTMLI)
       POTMLI = RESHAPE(OUTAU(IA:IE),SHAPE(POTMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAMI)
       PRFAMI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFAMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMMI)
       PRFMMI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFMMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIMI)
       PRFIMI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFIMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHMI)
       PRFPHMI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPHMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPMI)
       PRFPMI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTIOI)
       POTIOI = RESHAPE(OUTAU(IA:IE),SHAPE(POTIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAII)
       PRFAII = RESHAPE(OUTAU(IA:IE),SHAPE(PRFAII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMII)
       PRFMII = RESHAPE(OUTAU(IA:IE),SHAPE(PRFMII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIII)
       PRFIII = RESHAPE(OUTAU(IA:IE),SHAPE(PRFIII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHII)
       PRFPHII = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPHII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPII)
       PRFPII = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTPHTI)
       POTPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(POTPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFAPHTI)
       PRFAPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFAPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFMPHTI)
       PRFMPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFMPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFIPHTI)
       PRFIPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFIPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPHPHTI)
       PRFPHPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPHPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PRFPPHTI)
       PRFPPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(PRFPPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(POTPLI)
       POTPLI = RESHAPE(OUTAU(IA:IE),SHAPE(POTPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTATI)
       EOTATI = RESHAPE(OUTAU(IA:IE),SHAPE(EOTATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAAI)
       ERFAAI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFAAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMAI)
       ERFMAI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFMAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIAI)
       ERFIAI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFIAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHAI)
       ERFPHAI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPHAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPAI)
       ERFPAI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPAI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTMLI)
       EOTMLI = RESHAPE(OUTAU(IA:IE),SHAPE(EOTMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAMI)
       ERFAMI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFAMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMMI)
       ERFMMI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFMMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIMI)
       ERFIMI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFIMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHMI)
       ERFPHMI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPHMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPMI)
       ERFPMI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPMI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTIOI)
       EOTIOI = RESHAPE(OUTAU(IA:IE),SHAPE(EOTIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAII)
       ERFAII = RESHAPE(OUTAU(IA:IE),SHAPE(ERFAII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMII)
       ERFMII = RESHAPE(OUTAU(IA:IE),SHAPE(ERFMII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIII)
       ERFIII = RESHAPE(OUTAU(IA:IE),SHAPE(ERFIII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHII)
       ERFPHII = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPHII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPII)
       ERFPII = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPII))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTPHTI)
       EOTPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(EOTPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFAPHTI)
       ERFAPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFAPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFMPHTI)
       ERFMPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFMPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFIPHTI)
       ERFIPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFIPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPHPHTI)
       ERFPHPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPHPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ERFPPHTI)
       ERFPPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(ERFPPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EOTPLI)
       EOTPLI = RESHAPE(OUTAU(IA:IE),SHAPE(EOTPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAATI)
       SPTAATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMATI)
       SPTMATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIATI)
       SPTIATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHATI)
       SPTPHATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPATI)
       SPTPATI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPATI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAMLI)
       SPTAMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMMLI)
       SPTMMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIMLI)
       SPTIMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHMLI)
       SPTPHMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPMLI)
       SPTPMLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPMLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAIOI)
       SPTAIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMIOI)
       SPTMIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIIOI)
       SPTIIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHIOI)
       SPTPHIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPIOI)
       SPTPIOI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPIOI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAPHTI)
       SPTAPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMPHTI)
       SPTMPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIPHTI)
       SPTIPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHPHTI)
       SPTPHPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPPHTI)
       SPTPPHTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPPHTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTAPLI)
       SPTAPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTAPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMPLI)
       SPTMPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTIPLI)
       SPTIPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTIPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHPLI)
       SPTPHPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPPLI)
       SPTPPLI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPPLI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTATTI)
       SPTATTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTATTI))
-  
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTMTTI)
       SPTMTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTMTTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTITTI)
       SPTITTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTITTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPHTTI)
       SPTPHTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPHTTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTPLTTI)
       SPTPLTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTPLTTI))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTTTI)
       SPTTTI = RESHAPE(OUTAU(IA:IE),SHAPE(SPTTTI))
@@ -2471,62 +2471,62 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDSI)
       ADDSI  = RESHAPE(OUTAU(IA:IE),SHAPE(ADDSI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ALGSI)
       ALGSI  = RESHAPE(OUTAU(IA:IE),SHAPE(ALGSI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(SPUMPI)
       SPUMPI = RESHAPE(OUTAU(IA:IE),SHAPE(SPUMPI))
- 
- 
- 
- 
+
+
+
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTA)
       WTOTA  = RESHAPE(OUTAU(IA:IE),SHAPE(WTOTA ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTM)
       WTOTM  = RESHAPE(OUTAU(IA:IE),SHAPE(WTOTM ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTI)
       WTOTI  = RESHAPE(OUTAU(IA:IE),SHAPE(WTOTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTPH)
       WTOTPH = RESHAPE(OUTAU(IA:IE),SHAPE(WTOTPH))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTP)
       WTOTP  = RESHAPE(OUTAU(IA:IE),SHAPE(WTOTP ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTE)
       WTOTE  = RESHAPE(OUTAU(IA:IE),SHAPE(WTOTE ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTA)
       ETOTA  = RESHAPE(OUTAU(IA:IE),SHAPE(ETOTA ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTM)
       ETOTM  = RESHAPE(OUTAU(IA:IE),SHAPE(ETOTM ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTI)
       ETOTI  = RESHAPE(OUTAU(IA:IE),SHAPE(ETOTI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTPH)
       ETOTPH = RESHAPE(OUTAU(IA:IE),SHAPE(ETOTPH))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETOTP)
       ETOTP  = RESHAPE(OUTAU(IA:IE),SHAPE(ETOTP ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(XMCP)
       XMCP   = RESHAPE(OUTAU(IA:IE),SHAPE(XMCP  ))
@@ -2534,53 +2534,53 @@ C     The following ENTRY is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(FLUXT)
       FLUXT  = RESHAPE(OUTAU(IA:IE),SHAPE(FLUXT ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FLXFAC)
       FLXFAC = RESHAPE(OUTAU(IA:IE),SHAPE(FLXFAC))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(EELFI)
       EELFI  = RESHAPE(OUTAU(IA:IE),SHAPE(EELFI ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(PTRASH)
       PTRASH = RESHAPE(OUTAU(IA:IE),SHAPE(PTRASH))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(ETRASH)
       ETRASH = RESHAPE(OUTAU(IA:IE),SHAPE(ETRASH))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FASCL)
       FASCL  = RESHAPE(OUTAU(IA:IE),SHAPE(FASCL ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FMSCL)
       FMSCL  = RESHAPE(OUTAU(IA:IE),SHAPE(FMSCL ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FISCL)
       FISCL  = RESHAPE(OUTAU(IA:IE),SHAPE(FISCL ))
- 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(FPHSCL)
       FPHSCL  = RESHAPE(OUTAU(IA:IE),SHAPE(FPHSCL ))
- 
+
       IF (IE /= NOUTAU) THEN
         WRITE (iunout,*) ' ERROR IN READ_COUTAU '
         WRITE (iunout,*) ' NOUTAU = ',NOUTAU,' IE = ',IE
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_READ_COUTAU
- 
- 
+
+
       SUBROUTINE EIRENE_FETCH_OUTAU (OUTAU,ITAL,ISP,ISTRA,IUNOUT)
       REAL(DP) :: OUTAU
       INTEGER, INTENT(IN) :: ITAL, ISP, ISTRA, IUNOUT
- 
+
       SELECT CASE (ITAL)
       CASE (1)
         OUTAU = PDENAI(ISP,ISTRA)
@@ -2787,8 +2787,8 @@ C     The following ENTRY is for reinitialization of EIRENE
         WRITE (iunout,*) ' 0 RETURNED '
         OUTAU = 0
       END SELECT
- 
+
       RETURN
       END SUBROUTINE EIRENE_FETCH_OUTAU
- 
+
       END MODULE EIRMOD_COUTAU

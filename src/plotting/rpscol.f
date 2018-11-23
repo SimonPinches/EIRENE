@@ -34,7 +34,7 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: AORIG(*)
@@ -44,7 +44,7 @@ C
       LOGICAL, INTENT(IN) :: LOGL, TRC
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP), ALLOCATABLE :: YWERT(:,:),ywert1(:,:), BORIG(:)
       REAL(DP) :: WMIN, WMAX
       INTEGER :: IR, IERR, IT, I, IPART, IP, ICASE, IRD
@@ -110,7 +110,7 @@ C  3D MESH, TETRAHEDRA, PROJECTION INTO PLANE
       IF (ZMA .NE. 666.) WMAX = MAX(ZMA, WMAX)
       WRITE (60+ifoff,*) WMIN, WMAX
       WRITE (60+ifoff,*)
- 
+
       IF (IERR.GT.0) THEN
         IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
         IF (ALLOCATED(YWERT1)) DEALLOCATE (YWERT1)
@@ -118,7 +118,7 @@ C  3D MESH, TETRAHEDRA, PROJECTION INTO PLANE
       END IF
 C
       IF (ICASE.EQ.1) THEN
- 
+
          do ir=1,nr1st
             do ip=1,np2nd
                do it=1,nt3rd
@@ -132,8 +132,8 @@ C
                enddo
             enddo
          enddo
- 
- 
+
+
       ELSEIF (LEVGEO.LE.2.AND.LPPOL3(IBLD)) THEN
         LPPOLR=.TRUE.
         IPPOLR=MAX(1,IPROJ3(IBLD,ICURV))
@@ -219,9 +219,6 @@ C
 C
       IF (ALLOCATED(YWERT)) DEALLOCATE (YWERT)
       IF (ALLOCATED(YWERT1)) DEALLOCATE (YWERT1)
- 
+
       RETURN
       END
- 
- 
- 

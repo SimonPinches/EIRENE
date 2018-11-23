@@ -30,9 +30,9 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_module_avltree
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: IR, IP, IPART, JP, K, IC, IN, NPUNKT, IPPLG
       TYPE(CELL_ELEM), POINTER :: CUR
       type(TAVLTree), pointer :: baum
@@ -49,15 +49,15 @@ C
           ENDDO
         ENDDO
 
-c  ncorner: number of cell vertices in case of 2d cartesian grid: levgeo=1      
+c  ncorner: number of cell vertices in case of 2d cartesian grid: levgeo=1
         NCORNER = IC
 
 C.........................................................................
 
-      
+
       case (2:3)
 cdr  warning: here we use polygon grid structure also in case of LEVGEO=2
- 
+
         DO IR=1,NR1ST
           DO IP=1,NP2ND
             NGHPOL(1,IR,IP)=0
@@ -70,7 +70,7 @@ cdr  warning: here we use polygon grid structure also in case of LEVGEO=2
             NGHPLS(4,IR,IP)=0
           ENDDO
         ENDDO
- 
+
         DO IR=1,NR1STM
           DO K=1,NPPLG
             DO IP=NPOINT(1,K),NPOINT(2,K)
@@ -136,7 +136,7 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
     1       ENDDO
           ENDDO
         ENDDO
- 
+
         baum => EIRENE_NewTree()
         NNODES=0
 
@@ -195,7 +195,7 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
               END DO
             END DO
           END DO
-          
+
         else
         DO IR=1,NR1STM
           DO K=1,NPPLG
@@ -204,7 +204,7 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
 ! IR, IP
               IC=NNODES+1
               inserted=.false.
-              call EIRENE_insert (baum, xpol(ir,ip), ypol(ir,ip), 
+              call EIRENE_insert (baum, xpol(ir,ip), ypol(ir,ip),
      .                            0._DP, 1._DP, ic, inserted)
               IF (INSERTED) THEN
                 NNODES=NNODES+1
@@ -266,11 +266,11 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
         ENDDO
         end if ! if (.true.)
 
-c  ncorner: number of cell vertices in case of polygon grids: levgeo=2,3      
+c  ncorner: number of cell vertices in case of polygon grids: levgeo=2,3
         NCORNER = NNODES
 
         call EIRENE_DestroyTree(baum)
- 
+
 C       WRITE (iunout,*) '  IR    IP    S1    S2    S3    S4'
 C       DO IR=1,NR1STM
 C         DO IP=1,NP2NDM
@@ -278,11 +278,7 @@ C           WRITE (iunout,'(6I6)') IR,IP,(NGHPOL(K,IR,IP),K=1,4)
 C           WRITE (iunout,'(6I6)') IR,IP,(NGHPLS(K,IR,IP),K=1,4)
 C         ENDDO
 C       ENDDO
- 
+
       end select
-  
+
       END
- 
- 
- 
- 

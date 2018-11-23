@@ -21,7 +21,7 @@ C                                IX=1,NX-1, IY=1,NY, IZ=1,NZ-1
 C
       USE EIRMOD_PRECISION
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: J, M, N, NX, NY, NZ, NB
       REAL(DP), INTENT(INOUT) :: A(M,*)
 C     REAL(DP), INTENT(IN) :: VOL(*)

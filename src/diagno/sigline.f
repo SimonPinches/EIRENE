@@ -5,14 +5,14 @@ cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 1
 cdr          is not functional in this version, distinct from the manual description
 cdr          currently lines can only be identified by their central energy PEN (EMIN1)
 cdr          and input parameter EMAX1 is not used at all.
-cpb Feb 17:  refresh ADDV tallies (volumetric line emissivities) 
+cpb Feb 17:  refresh ADDV tallies (volumetric line emissivities)
 c            not only for new stratum, but also when
 c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
 cdr Jan 18:  parameter ICHORI added
 c   june 18: renamed from sigha (hydrogen only) to sigline (generalized,
 c            any transition line)
-c            
+c
 C
       SUBROUTINE EIRENE_SIGLINE(INIT,JJJ,ZDS,PEN,PSIG,
      .                          DUMMY2,ARGST,ICHORI)
@@ -23,8 +23,8 @@ cdr new version:  the lines, components and contributions are specified in input
 
 cdr old version (up to May 2018):
 c    Currently there are up to 6 contributions to each particular pre-programmed
-c    transition (depending on population coefficient data stored 
-c    in file AMJUEL, section H.11 and H.12) 
+c    transition (depending on population coefficient data stored
+c    in file AMJUEL, section H.11 and H.12)
 c  aug.16: available transitions in H-atom:
 c          ly-alpha  (2 - 1)
 c          ly-beta   (3 - 1)
@@ -66,9 +66,9 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMUSR
       USE EIRMOD_COMSIG
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: INIT, JJJ, ICHORI
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
@@ -114,7 +114,7 @@ C
       ncelc=ncltal(ncell)
 
       IF (LNO == 0) THEN
-! NO MATCHING EMISSION LINE FOUND 
+! NO MATCHING EMISSION LINE FOUND
         PSIG(0) = 0._DP
         IF (LARGST) ARGST(0,JJJ) = 0._DP
       ELSE
@@ -133,9 +133,9 @@ c  sum over components of line LNO
       END IF
 C
       RETURN
- 
+
 C     Following lines added for reinitialisation of eirene (DMH)
- 
+
       ENTRY EIRENE_SIGLINE_REINIT
       ISTOLD = -1
       ITROLD = -1

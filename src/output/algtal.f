@@ -3,7 +3,7 @@ cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 C
       SUBROUTINE EIRENE_ALGTAL
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -15,7 +15,7 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
 C
       REAL(DP), ALLOCATABLE :: VEC1(:), VEC2(:), RESULT(:,:)
@@ -35,20 +35,20 @@ C     CALCULATE ALGEBRAIC VOLUME TALLIES
 C
 C
       IF (NALVI+NALSI <= 0) RETURN
- 
+
       IF (.NOT.LALGV.AND.NALVI.GT.0) THEN
         WRITE (iunout,*) ' ALGV IS SWITCHED OFF '
         WRITE (iunout,*)
      .    ' NO ALGEBRAIC VOLUME TALLIES CAN BE CALCULATED '
         GOTO 300
       END IF
- 
+
       IF (NALVI > 0) THEN
         ALLOCATE (VEC1(MAX(NSBOX_TAL,NLIMPS)))
         ALLOCATE (VEC2(MAX(NSBOX_TAL,NLIMPS)))
         ALLOCATE (RESULT(2,MAX(NSBOX_TAL,NLIMPS)))
       END IF
- 
+
       DO 200 IALV=1,NALVI
 C
         HCHR=CHRTAL(IALV)
@@ -62,7 +62,7 @@ c         WRITE (iunout,*) 'IOP ',IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
     1   CONTINUE
         LFREE1=.TRUE.
         LFREE2=.TRUE.
- 
+
         IF (ANY(IZIF(2,1:NOP)<0).OR.ANY(IZIF(4,1:NOP)<0)) THEN
           ALLOCATE(OP(MAX(NSBOX,NLIMPS)))
           ALLOCATE(WEI(MAX(NSBOX,NLIMPS)))
@@ -305,7 +305,7 @@ C
 C  2. OPERAND
 C
 C
-!pb  Konstante wurde eingelesen          
+!pb  Konstante wurde eingelesen
           IF (IZIF(3,IOP).LT.0) THEN
 cdr test output from algtal:
 !pb         write (iunout,*) 'IOP-CONST ',iop,const(iop)
@@ -475,7 +475,7 @@ C
               EXIT
             END SELECT
 
-cdr  weighted sum over sub-cells: in=ncltal(i) 
+cdr  weighted sum over sub-cells: in=ncltal(i)
             SUMWEI = EPS60
             VEC2 = 0._DP
             DO I=1,NSBOX
@@ -616,7 +616,7 @@ C  STORE RESULT IN ALGV
   120   DO 150 J=1,NSBOX_TAL
           ALGV(IALV,J)=RESULT(II,J)
   150   CONTINUE
- 
+
   160   CONTINUE
         IF (ALLOCATED(OP)) THEN
           DEALLOCATE(OP)
@@ -630,16 +630,16 @@ C
 C     CALCULATE ALGEBRAIC SURFACE TALLIES
 C
   300 CONTINUE
- 
+
       IF (.NOT.LALGS.AND.NALSI.GT.0) THEN
         WRITE (iunout,*) ' ALGS IS SWITCHED OFF '
         WRITE (iunout,*)
      .    ' NO ALGEBRAIC SURFACE TALLIES CAN BE CALCULATED '
         RETURN
       END IF
- 
+
 !pb      IF (NLIMPS.GT.NRAD) GOTO 999
- 
+
       IF (NALSI > 0) THEN
         IF (.NOT.ALLOCATED(VEC1)) THEN
           ALLOCATE (VEC1(NLIMPS))
@@ -878,7 +878,7 @@ C  STORE RESULT IN ALGS
         ENDIF
 C
   500 CONTINUE
- 
+
       DEALLOCATE (VEC1)
       DEALLOCATE (VEC2)
       DEALLOCATE (RESULT)

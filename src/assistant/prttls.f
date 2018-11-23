@@ -15,7 +15,7 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
       REAL(DP), INTENT(IN) :: PROF(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE,
@@ -27,11 +27,11 @@ C
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
      .           IRM, IPM, ITM
       CHARACTER(1) :: TL(72)
- 
+
       DATA TL/72*'='/
       DATA ISTREAM/6,50,20,21,29,30,31,32,33,10,11,12,13,14,15/
       SAVE
- 
+
       CALL EIRENE_LEER(3)
       WRITE (iunout,*) TL
       WRITE (iunout,*) TL

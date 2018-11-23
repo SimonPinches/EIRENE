@@ -2,7 +2,7 @@ cdr  april 2016:  looked at current default random number generator.
 cdr               it seems to be a rather trivial congruential generator,
 cdr               even without additive constant  (c=0.0)
 cdr               very likely that this generator must be removed urgently !
-cdr               maybe the original generator (nloldran) H1rn is superior by far 
+cdr               maybe the original generator (nloldran) H1rn is superior by far
 
 cdr April 2017:  references found, see F. James,
 c       ref.: review paper  F. James, CPC, 60 (1990) 329,  for both generators

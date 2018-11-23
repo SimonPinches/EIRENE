@@ -1,7 +1,7 @@
 cdr   enforce a re-scaling of all output tallies (for a given stratum ISTR)
 cdr   such that a specified particular response takes a given value SCALV,
 cdr   rather than employing the default scaling with source strength FLUX.
-cdr   The particular reference response is coded in 
+cdr   The particular reference response is coded in
 c       ISCLS                            (SPECIES NUMBER)
 c       ISCLT                            (TALLY NUMBER)
 c       ISCL1, ISCL2,ISCL3,ISCLB,ISCLA   (CELL NUMBER)
@@ -20,22 +20,22 @@ C
       USE EIRMOD_CESTIM
       USE EIRMOD_CCONA
       USE EIRMOD_CGEOM
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTR, N1DIM
       REAL(DP), INTENT(IN) :: WTT
       REAL(DP), INTENT(OUT) :: ZWW, ZW, ZVOLNT, ZVOLWT
-! ONLY SCLTAL(1,..) IS USED SO FAR. 
+! ONLY SCLTAL(1,..) IS USED SO FAR.
 ! THIS RULES OUT RESCALING TALLIES NTALA (=57),NTALB,NTALM,NTALT,NTALC,NTALR (=62),
-!              
-      REAL(DP), INTENT(IN) :: SCLTAL(N1DIM,*)  
+!
+      REAL(DP), INTENT(IN) :: SCLTAL(N1DIM,*)
       REAL(DP), INTENT(OUT) :: ZVOLIN(*), ZVOLIW(*)
- 
+
       INTEGER :: IS, IT, IC, I1, I2, I3, IA, IB, NBLCKA, IADD, IGFF,
      .           INDX
       REAL(DP) :: VALUE, VAL, FLX
- 
+
 C  FACTOR FOR FLUXES (AMP) (INPUT FLUX "FLUXT" IS IN AMP)
       FLXFAC(ISTR)=0.
       IF (SCALV(ISTR).NE.0.D0) THEN
@@ -59,7 +59,7 @@ cdr  Currently tallies .ge. ntala=57 cannot be used for rescaling.
 cdr  This is too restrictive.  Tallies 63 -- 100 should be fine.
 cdr  Only tallies between 57 and 62 (algebr. tallies) should be excluded.
 cdr  Even those may be possible choices, when SCLTAL is used with proper
-cdr  1st index below, rather than only SCLTAL(1,..).   
+cdr  1st index below, rather than only SCLTAL(1,..).
           IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 207
 c
           IF (IS.LT.0.OR.IS.GT.NFSTVI(IT)) GOTO 207
@@ -123,6 +123,6 @@ C  ZONE DEPENDENT SCALING FACTORS
   206 CONTINUE
       ZVOLNT=ZW /VOLTOT
       ZVOLWT=ZWW/VOLTOT
- 
+
       RETURN
       END SUBROUTINE EIRENE_SET_SCAL_CONST

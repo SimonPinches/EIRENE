@@ -4,7 +4,7 @@ c              Interpolation at grid boundaries ?
 c              tbd: Compare with routine plotting/celint.f, remove duplicated code
 
 
-      subroutine eirene_cell_to_corner (f, fcorner) 
+      subroutine eirene_cell_to_corner (f, fcorner)
 
 c  interpolate cell-averaged tallies onto cell vertices
 c  FOR EACH CELL VERTEX USE INVERSE DISTANCE TO NEIGHBORING CELL CELL-CENTERS (com)
@@ -20,7 +20,7 @@ c  FOR WEIGHTING
       USE eirmod_CPOLYG
       USE eirmod_CLOGAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      
+
       implicit none
 
       real(dp), intent(in) :: f(:)
@@ -32,44 +32,44 @@ c  FOR WEIGHTING
      .           it
       TYPE(CELL_ELEM), POINTER :: CUR
 
-c  2d cartesian x-y- grid      
-      if ((levgeo == 1) 
+c  2d cartesian x-y- grid
+      if ((levgeo == 1)
      .    .and. nlrad .and. nlpol.and..not.nltor) then
-c  ready for 2d x-y- slab grid.  
+c  ready for 2d x-y- slab grid.
 
          nrk = indpoint(nr1st,np2nd)
          allocate(volsum(nrk))
          fcorner = 0._dp
          volsum = 0._dp
 
-         IT = 1 
+         IT = 1
          DO IR=1,NR1STM
-           XC = 0.5_DP * (RSURF(IR) + RSURF(IR+1)) 
+           XC = 0.5_DP * (RSURF(IR) + RSURF(IR+1))
            DO IP=1,NP2NDM
-             YC = 0.5_DP * (PSURF(IP) + PSURF(IP+1)) 
+             YC = 0.5_DP * (PSURF(IP) + PSURF(IP+1))
              IN = IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2
 
              IC1 = INDPOINT(IR,IP)
              dist1 = 1._DP/SQRT((XC-RSURF(IR))**2+
-     .                          (YC-PSURF(IP))**2) 
+     .                          (YC-PSURF(IP))**2)
              FCORNER(IC1) = FCORNER(IC1) + F(IN)*DIST1
              VOLSUM(IC1) = VOLSUM(IC1) + DIST1
 
              IC2 = INDPOINT(IR+1,IP)
              dist2 = 1._DP/SQRT((XC-RSURF(IR+1))**2+
-     .                          (YC-PSURF(IP))**2) 
+     .                          (YC-PSURF(IP))**2)
              FCORNER(IC2) = FCORNER(IC2) + F(IN)*DIST2
              VOLSUM(IC2) = VOLSUM(IC2) + DIST2
 
              IC3 = INDPOINT(IR+1,IP+1)
              dist3 = 1._DP/SQRT((XC-RSURF(IR+1))**2+
-     .                          (YC-PSURF(IP+1))**2) 
+     .                          (YC-PSURF(IP+1))**2)
              FCORNER(IC3) = FCORNER(IC3) + F(IN)*DIST3
              VOLSUM(IC3) = VOLSUM(IC3) + DIST3
 
              IC4 = INDPOINT(IR,IP+1)
              dist4 = 1._DP/SQRT((XC-RSURF(IR))**2+
-     .                          (YC-PSURF(IP+1))**2) 
+     .                          (YC-PSURF(IP+1))**2)
              FCORNER(IC4) = FCORNER(IC4) + F(IN)*DIST4
              VOLSUM(IC4) = VOLSUM(IC4) + DIST4
            END DO  ! ip
@@ -79,17 +79,17 @@ c  ready for 2d x-y- slab grid.
          deallocate (volsum)
 
 c  2d cartesian x-z grid
-      elseif ((levgeo == 1) 
-     .    .and. nlrad .and..not.nlpol.and.nltor.and.nltrz) then 
+      elseif ((levgeo == 1)
+     .    .and. nlrad .and..not.nlpol.and.nltor.and.nltrz) then
 c   TO BE DONE: 2d  x,z grid
          goto 999
 c  2d polar x-phi grid
-      elseif ((levgeo == 1) 
-     .    .and. nlrad .and..not.nlpol.and.nltor.and.nltra) then 
+      elseif ((levgeo == 1)
+     .    .and. nlrad .and..not.nlpol.and.nltor.and.nltra) then
 c   TO BE DONE: 2d  x,phi grid
          goto 999
-      elseif ((levgeo == 1) 
-     .    .and. nlrad .and.nlpol.and.nltor) then 
+      elseif ((levgeo == 1)
+     .    .and. nlrad .and.nlpol.and.nltor) then
 c   TO BE DONE: 3d  x,y,z  or x,y,phi grid
          goto 999
 
@@ -119,7 +119,7 @@ c  2d  r-theta grid, cell vertices along a coordinate line are given as polygons
                END DO
                FCORNER(IC) = FCORNER(IC) / (AGES+EPS60)
              END DO  ! ip
-           END DO  ! ipart 
+           END DO  ! ipart
          END DO  ! ir
 
 c  2d  r-theta grid, cell vertices along a coordinate line are straight lines
@@ -128,9 +128,9 @@ c   TO BE DONE: 2d  r,theta grid, but no polygons
          goto 999
       elseif ((levgeo == 3) .and. .not. nlpol) then
 c   TO BE DONE: 1d  r grid of polygons
-         goto 999     
+         goto 999
 
-c  2d grid of triangles         
+c  2d grid of triangles
       elseif (levgeo == 4) then
 
          allocate(volsum(nrknot))
@@ -139,7 +139,7 @@ c  2d grid of triangles
          do i=1,ntrii
            do j=1,3
              DIST=1._DP/SQRT((XTRIAN(NECKE(J,I))-XCOM(I))**2+
-     .                       (YTRIAN(NECKE(J,I))-YCOM(I))**2)  
+     .                       (YTRIAN(NECKE(J,I))-YCOM(I))**2)
              volsum(necke(j,i)) = volsum(necke(j,i)) + dist
              fcorner(necke(j,i)) = fcorner(necke(j,i)) + dist*f(i)
            end do
@@ -150,7 +150,7 @@ c  2d grid of triangles
 
 c  3d grid of tetrahedra
       elseif (levgeo.eq.5) then
-         
+
          allocate(volsum(ncoord))
          volsum = eps60
          fcorner(1:ncoord) = 0.
@@ -158,7 +158,7 @@ c  3d grid of tetrahedra
            do j=1,4
              dist=1._dp/sqrt((xtetra(nteck(j,i))-xtcen(i))**2 +
      .                       (ytetra(nteck(j,i))-ytcen(i))**2 +
-     .                       (ztetra(nteck(j,i))-ztcen(i))**2) 
+     .                       (ztetra(nteck(j,i))-ztcen(i))**2)
              volsum(nteck(j,i))=volsum(nteck(j,i))+dist
              fcorner(nteck(j,i)) = fcorner(nteck(j,i)) + dist*f(i)
            enddo
@@ -168,7 +168,7 @@ c  3d grid of tetrahedra
 
       else
         goto 999
-      endif 
+      endif
 
       return
 
@@ -180,4 +180,3 @@ c  3d grid of tetrahedra
 
       return
       end subroutine  eirene_cell_to_corner
-         

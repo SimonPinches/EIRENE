@@ -93,7 +93,7 @@ cdr or     read limpos, onetwo
             read(iunin,*) xpolpos(i),ypolpos(i)
           end if
         end do
-C 
+C
         first=.false.
 !       write(iunout,*) 'GEOMETRY FOR'
 !       write(iunout,'(a80)') geometry_comment
@@ -180,7 +180,7 @@ c*** Check whether this segment is marked as a target edge
                       write(iunout,*) 'geousr_biased:',
      ,                             ' something is wrong with ',
      ,                             'the target chain definition.'
-                      write(iunout,*) 
+                      write(iunout,*)
      .                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
                       call EIRENE_exit_own(1)

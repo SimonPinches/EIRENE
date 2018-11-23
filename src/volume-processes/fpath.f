@@ -15,13 +15,13 @@ cdr 31.10.14 :  speedup of final cut-off evaluations
 
 cdr note:       sgnl_poly evaluations are just the 8th-order polynomial,
 cdr             plus rcmin,rcmax consideration.
-cdr             unless rcmin,rcmax are set (as it is the case currently here), 
-cdr             there is no need to call  --> move to in-line 
+cdr             unless rcmin,rcmax are set (as it is the case currently here),
+cdr             there is no need to call  --> move to in-line
 cdr 06.08.15 :  arguments added to vecusr
 cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
-cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option 
+cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 
 
@@ -39,11 +39,11 @@ cdr             ei process: started to check for H.3, H.1 options for EI process
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 
-cdr nov. 17:    unified version of fpatha, fpathm and fpathi, 
+cdr nov. 17:    unified version of fpatha, fpathm and fpathi,
 cdr             manually adapted from original branch "code-combine", aug. 16, (p.b.)
-cdr dec  17:    bug fix: pvelq(iplsv), rather than pvelq(ipls) 
+cdr dec  17:    bug fix: pvelq(iplsv), rather than pvelq(ipls)
 cdr             probably no effect so far, because iplsv = ipls ?always?
-cdr             
+cdr
 
 C
       FUNCTION EIRENE_FPATH (K,CFLAG,JCOU,NCOU)
@@ -57,9 +57,9 @@ C   INPUT:
 C   IXSPZ     :  SPECIES INDEX (POINTER: IATM, IMOL, IION, IPHOT) (INPUT VIA COMMON)
 C   K         :  CURRENT GRID CELL
 C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
-C                COORDINATES WITH DIFFERENT CELL NUMBER K. 
+C                COORDINATES WITH DIFFERENT CELL NUMBER K.
 C                THIS CURRENT CALL IS CALL NO. JCOU.
- 
+
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST-COLLISION STATES
 C           CFLAG(1,...): EI
@@ -91,20 +91,20 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CESTIM , ONLY: LEX
       USE EIRMOD_CTRCEI , ONLY: TRCAMD
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: CFLAG(7,MSTOR0)
       INTEGER, INTENT(IN) :: K,JCOU,NCOU
- 
+
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
       REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATH,
-     .          EIRENE_CROSS, 
+     .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
-     .          EIRENE_ENERGY_RATE_COEFF, 
+     .          EIRENE_ENERGY_RATE_COEFF,
      .          CEL,CXS, VEFFQ,VEFF,
      .          TBEL, TBCX, TBPI, TBOT,
      .          SIGMAX,  EHEAVY,
@@ -116,9 +116,9 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI1,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
-     .          EIRENE_FTABCX3, EIRENE_FTABPI3, 
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
-!pb  
+!pb
      .          EIRENE_FPATHPH,
 
      .          RCMIN, RCMAX,
@@ -148,13 +148,13 @@ C
 C   LOCAL PLASMA PARAMETERS
 C
       DENEL=DEIN(K)
-      
+
       DO 2 IPLS=1,NPLSI
         ZTI(IPLS)=ZT1(IPLS,K)
     2   DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE REFERENCE FRAMES 
+C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE REFERENCE FRAMES
 C
       PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLS
@@ -245,7 +245,7 @@ c
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 
-! Scale log collision energy to projectile energy for proper isotope, for rate coefficient, 
+! Scale log collision energy to projectile energy for proper isotope, for rate coefficient,
 ! i.e. use neutral particle mass.
 C
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)=T
@@ -278,7 +278,7 @@ C  Set hard-wired MINIMUM PROJECTILE ENERGY: 0.1 EV
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
           ENDIF
           SIGVPI(IRPI)=EXP(EXPO)
-          END IF        
+          END IF
 
 C  MODEL 3:
         ELSEIF (MODCOL(4,2,IRPI).EQ.3) THEN
@@ -567,10 +567,10 @@ C  BEAM - BEAM RATE, IGNORE THERMAL ION ENERGY
         ELSE
           GOTO 995
         ENDIF
- 
+
         SIGMAX=MAX(SIGMAX,SIGVEL(IREL))
         SIGELT=SIGELT+SIGVEL(IREL)
- 
+
         IF (IBGK.NE.0) SIGBGK=SIGBGK+SIGVEL(IREL)
 C
 C  2.) BULK ION ENERGY LOSS RATE:
@@ -650,7 +650,7 @@ C
           END IF
         END DO
       END IF
- 
+
       IF (SIGPIT.GT.0._DP) THEN
         DO IXPI=1,NXPII
           IRPI=LGXPI(IXSPZ,IXPI,0)
@@ -660,7 +660,7 @@ C
           END IF
         END DO
       END IF
- 
+
       IF (SIGCXT.GT.0._DP) THEN
         DO IXCX=1,NXCXI
           IRCX=LGXCX(IXSPZ,IXCX,0)
@@ -689,13 +689,13 @@ C
 C
       RETURN
   990 CONTINUE
-      WRITE (iunout,*) 
+      WRITE (iunout,*)
      .  'ERROR IN FPATH: INCONSISTENT ELEC. IMP. DATA'
       WRITE (iunout,*) 'ITYP,IXSPZ,IREI,MODCOL(1,J,IREI),J=1,4 '
       WRITE (iunout,*) ITYP,IXSPZ,IREI,(MODCOL(1,J,IREI),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 
+      WRITE (iunout,*)
      .  'ERROR IN FPATH: INCONSISTENT ION IMP. DATA'
       WRITE (iunout,*) 'ITYP,IXSPZ,IRPI,MODCOL(4,J,IRPI),J=1,4 '
       WRITE (iunout,*) ITYP,IXSPZ,IRPI,(MODCOL(4,J,IRPI),J=1,4)

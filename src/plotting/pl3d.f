@@ -1,14 +1,14 @@
 C
 C
       SUBROUTINE EIRENE_PL3D(PX,PY,PZ,PP1,PP2)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CPL3D
       USE EIRMOD_CPLOT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: PX, PY, PZ
       REAL(DP), INTENT(OUT) :: PP1, PP2
       REAL(DP) :: FXI, FZETA, X, Y, Z, COP, COT, SIP, SIT, PPY11, PPX11,
@@ -20,10 +20,10 @@ C
       INTEGER :: IFIRST, IPBOX
       SAVE
       DATA IFIRST,IPBOX/0,0/
- 
+
       FXI(X,Y) = (F10+F11*X)+F12*Y
       FZETA(X,Y,Z) = ((F00+F01*X)+F02*Y)+F03*Z
- 
+
       X=PX
       Y=PY
       Z=PZ
@@ -113,12 +113,12 @@ C
 C
       PP1 = FXI(X,Z)
       PP2 = FZETA(X,Z,Y)
- 
+
 C     the following ENTRY is for reintialization of EIRE (DMH)
- 
+
       ENTRY EIRENE_PL3D_REINIT
       IFIRST = 0
       IPBOX = 0
       return
- 
+
       END

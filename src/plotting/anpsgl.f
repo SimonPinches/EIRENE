@@ -18,9 +18,9 @@ C             MAXL  BIN FIXED(15)                                  *
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(SP), INTENT(IN) ::  MIN, MAX
       INTEGER, INTENT(INOUT) :: IERR
       INTEGER, INTENT(OUT) :: MINL, MAXL

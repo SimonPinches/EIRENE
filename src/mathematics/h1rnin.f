@@ -1,23 +1,23 @@
-cdr  Initializes random number generator H1RN  ( = RANMAR, F. James, see below) 
+cdr  Initializes random number generator H1RN  ( = RANMAR, F. James, see below)
 *
 cdr   SUBROUTINE H1RNIN(IJ,KL)
 cdr   IMPLICIT NONE
 cdr   INTEGER, INTENT(IN,OUT) :: IJ, KL
-cdr Version in eirene until April 2017: take 2 input seeds, 
+cdr Version in eirene until April 2017: take 2 input seeds,
 cdr and produce 4 smaller input seeds from them.
 
 cdr April 2017: back to original suggestions by F. James
-cdr Take only one seed IJKL, then first make 2 smaller (IJ, KL), 
+cdr Take only one seed IJKL, then first make 2 smaller (IJ, KL),
 cdr then 4 yet smaller  (I,J,K,L) from it.
 cdr IJKL must be not larger then 900.000.000, each seed then produces an
 cdr      independent random sequence of length
-cdr 
-      SUBROUTINE H1RNIN(IJKL) 
-cdr F. James, "A review of pseudorandom number generators", 
+cdr
+      SUBROUTINE H1RNIN(IJKL)
+cdr F. James, "A review of pseudorandom number generators",
 cdr           Comp. Physics Communications 60 (1990) 329 - 344
-cdr Subroutine RMARIN, p340. 
+cdr Subroutine RMARIN, p340.
 cdr legal seed range 0<= IJKL<= 900.000.000 already enforced in calling
-cdr routine    
+cdr routine
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
@@ -34,11 +34,11 @@ cdr  next 5 lines: status of generator, initialized with IJKL
 cdr   IJ = IABS(IJ)
 cdr   KL = IABS(KL)
 
-cdr   IJ = MOD(IJ,31329)   I do not know where this comes from. 
-cdr                        change back to original generator from 
+cdr   IJ = MOD(IJ,31329)   I do not know where this comes from.
+cdr                        change back to original generator from
 cdr                        F. James, CPC 60 (1990) 329 - 344, page 340
 
-      IJ = IJKL/30082  
+      IJ = IJKL/30082
       KL = IJKL-30082*IJ    ! = MOD(IJKL,30082)
 c
       I  = MOD(IJ/177, 177) + 2

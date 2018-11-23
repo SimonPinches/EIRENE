@@ -7,8 +7,8 @@ CDR  this routine evaluates ("side on") helium atom ("He") emissivities,
 cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
 cdr  line of sight (ARGST).
 c    Currently there are up to 2 contributions to each particular preprogrammed
-c    transition (depending on population coefficient data stored 
-c    in file AMJUEL, section H.11 and H.12 
+c    transition (depending on population coefficient data stored
+c    in file AMJUEL, section H.11 and H.12
 c  aug.16: available transitions in H-atom:
 c          ba-alpha  (3S - 2P, singlet,  728 nm)
 c          ba-alpha  (3S - 2P, triplet,  706 nm)

@@ -4,9 +4,9 @@ C
 !                  IGJUM2 in case of bit arrays
 ! 1.02.08  Bugfix: check of IGJUM1 replaced by check of IGJUM2
 !                  Bug was relevant for switching of IGJUM2 in case of bit arrays
- 
+
       SUBROUTINE EIRENE_SETEQ
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -14,9 +14,9 @@ C
       USE EIRMOD_CADGEO
       USE EIRMOD_CTRCEI
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: SG
       INTEGER :: NLBT, IEQ, J, IDIMP, K, I, IEQ1
       LOGICAL EIRENE_BITGET
@@ -77,7 +77,7 @@ C
 C  NEXT: NON DEFAULT STANDARD SURFACES
 C  JUMLIM=0 FOR STANDARD SURFACES, ONLY LGJUM2 IS USED IN TIME-ROUTINES
 C
- 
+
 !pb apparently not needed as IGJUM2 refers to second order additional
 !pb surfaces only
       IF (.FALSE.) THEN
@@ -159,7 +159,7 @@ C  LGJUM2: ASSOCIATIVE
           END IF
         END DO
       END IF
- 
+
 !pb apparently not needed as IGJUM2 refers to second order additional
 !pb surfaces only
       IF (.FALSE.) THEN

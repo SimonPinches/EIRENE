@@ -1,26 +1,26 @@
       MODULE EIRMOD_CINIT
- 
+
 !  sep-05: specifications for databases added, ndbnames, dbhandle, dbfname
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CINIT, EIRENE_DEALLOC_CINIT, 
+
+      PUBLIC :: EIRENE_ALLOC_CINIT, EIRENE_DEALLOC_CINIT,
      .          EIRENE_INIT_CINIT,
      .          TDENMODEL, TDENMODAR
- 
+
       INTEGER, PUBLIC, SAVE ::
      I         NCINIT, MCINIT, LCINIT
- 
+
       REAL(DP),  PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCINIT(:)
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ICINIT(:)
       LOGICAL, PUBLIC, TARGET, SAVE :: LCNIT(4)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R EP1IN,  EP1CH,  EP1OT,  EXEP1,
      R ELLIN,  ELLOT,  ELLCH,  EXELL,
@@ -30,24 +30,24 @@
      R B0,     B1,     B2,     B3,     B4,    B5,
      R VL0,    VL1,    VL2,    VL3,    VL4,   VL5,
      R EF0,    EF1,    EF2,    EF3,    EF4,   EF5
-     
- 
+
+
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R TI0(:),TI1(:),TI2(:),TI3(:),TI4(:),TI5(:),
      R VX0(:),VX1(:),VX2(:),VX3(:),VX4(:),VX5(:),
      R VY0(:),VY1(:),VY2(:),VY3(:),VY4(:),VY5(:),
      R VZ0(:),VZ1(:),VZ2(:),VZ3(:),VZ4(:),VZ5(:),
      R DI0(:),DI1(:),DI2(:),DI3(:),DI4(:),DI5(:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I INDPRO(:),INDGRD(:),INDSRC(:)
- 
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L NLMACH,NLMLTI,NLMLV,NLPITCH
- 
+
       CHARACTER(66), PUBLIC, SAVE :: CASENAME
       CHARACTER(10), PUBLIC, ALLOCATABLE, SAVE :: CDENMODEL(:)
- 
+
       TYPE TDENMODEL
         REAL(DP) :: G_BOLTZ, DELTAE, A_CORONA, DVAL, TVAL,
      R              VXVAL, VYVAl, VZVAL, DFACTOR, TFACTOR,
@@ -59,38 +59,38 @@
         CHARACTER(9), POINTER :: REACTION(:)
         CHARACTER(3), POINTER :: CR(:)
       END TYPE
- 
+
       TYPE TDENMODAR
         TYPE(TDENMODEL), POINTER :: TDM
       END TYPE
- 
+
       TYPE(TDENMODAR), PUBLIC, ALLOCATABLE, SAVE :: TDMPAR(:)
- 
+
       INTEGER, PUBLIC, PARAMETER ::
      I NDBNAMES=17
- 
+
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
- 
+
       CONTAINS
- 
+
       SUBROUTINE EIRENE_ALLOC_CINIT
- 
+
       IF (ALLOCATED(RCINIT)) RETURN
- 
+
       NCINIT=42+30*NPLS
       MCINIT=12+3+NSTRA
       LCINIT=3
- 
+
       ALLOCATE (RCINIT(NCINIT))
       ALLOCATE (ICINIT(MCINIT))
       ALLOCATE (CDENMODEL(NPLS))
       ALLOCATE (TDMPAR(NPLS))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +
      .                NPLS*LEN(CDENMODEL(1))
- 
+
       EP1IN  => RCINIT(1)
       EP1CH  => RCINIT(2)
       EP1OT  => RCINIT(3)
@@ -163,32 +163,32 @@
       DI3    => RCINIT(43+27*npls : 42+28*NPLS)
       DI4    => RCINIT(43+28*npls : 42+29*NPLS)
       DI5    => RCINIT(43+29*npls : 42+30*NPLS)
- 
+
       INDPRO => ICINIT( 1 : 12)
       INDGRD => ICINIT(13 : 15)
       INDSRC => ICINIT(16 : 15+NSTRA)
- 
+
       NLMACH => LCNIT(1)
       NLMLTI => LCNIT(2)
       NLMLV  => LCNIT(3)
       NLPITCH=> LCNIT(4)
- 
+
       CALL EIRENE_INIT_CINIT
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_ALLOC_CINIT
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CINIT
       INTEGER :: I
- 
+
       IF (.NOT.ALLOCATED(RCINIT)) RETURN
- 
+
       DEALLOCATE (RCINIT)
       DEALLOCATE (ICINIT)
       DEALLOCATE (CDENMODEL)
- 
+
       DO I=1,NPLS
         IF (ASSOCIATED(TDMPAR(I)%TDM)) THEN
           DEALLOCATE (TDMPAR(I)%TDM%ISP)
@@ -202,15 +202,15 @@
         END IF
       END DO
       DEALLOCATE (TDMPAR)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CINIT
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CINIT
 
       INTEGER :: I
- 
+
       RCINIT = 0._DP
       ICINIT = 0
       LCNIT  = .FALSE.
@@ -229,7 +229,7 @@ C
       TRIIN=1._DP
       TRIOT=1._DP
       TRICH=1._DP
- 
+
 C
 C  INITIALIZE DATABASE NAMES
 C
@@ -250,7 +250,7 @@ C
       DBHANDLE(15) = 'HYDCRS'
       DBHANDLE(16) = 'HYDREA'
       DBHANDLE(17) = 'TAB2D '
- 
+
       DBFNAME = REPEAT(' ',LEN(DBFNAME(1)))
       DBFNAME(1) = 'AMJUEL'
       DBFNAME(2) = 'METHANE'
@@ -274,8 +274,8 @@ C
       DBFNAME(15) = 'HYDCRS'
       DBFNAME(16) = ' '
       DBFNAME(17) = ' '
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CINIT
- 
+
       END MODULE EIRMOD_CINIT

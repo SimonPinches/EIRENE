@@ -131,7 +131,7 @@ c
 C     do j=1,ndya+1
 C       write (iunout,*)
 C       write (iunout,*) 'in geomd polygon ',j
-C       write (iunout,'(1p,6e12.4)') 
+C       write (iunout,'(1p,6e12.4)')
 C    .        (xpol(j,i),ypol(j,i),i=1,npoint(2,nplp))
 C     enddo
 C

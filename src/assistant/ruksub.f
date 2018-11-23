@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
         SUBROUTINE EIRENE_RUKSUB(TEIL, IPART, PART, IARITH, ARITH,
      .  HILFE)
@@ -13,43 +13,43 @@ C     ZERLEGUNG
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
- 
+
 C
 C     KONSTANTENDEKLARATION :
 C
          CHARACTER(10), PARAMETER :: ZIFFER='0123456789'
- 
+
 C
 C     EINGABEPARAMETER :
 C
          INTEGER, INTENT(IN) :: TEIL
 C           : AKTUELLE ANZAHL DER ZERLEGUNGEN
- 
+
 C
 C     EIN/AUSGABEPARAMETER :
 C
          CHARACTER(*), INTENT(INOUT) :: PART(*)
 C           : FELD VON STRINGS, AUF DENEN DIE EINZELNEN
 C             ELEMENTARZERLEGUNGEN FESTGEHALTEN WERDEN
- 
+
          INTEGER, INTENT(INOUT) :: IPART(*)
 C           : AKTUELLE LAENGEN VON PART(ZMAX)
- 
+
          CHARACTER(*), INTENT(INOUT) :: ARITH(*)
 C           : FELD VON STRINGS, AUF DENEN DIE TEIL-TE GENERATION
 C             VON AUSDRU FESTGEHALTEN WIRD
- 
+
          INTEGER, INTENT(INOUT) :: IARITH(*)
 C           : AKTUELLE LAENGEN VON ARITH(ZMAX)
- 
+
          CHARACTER(*), INTENT(INOUT) :: HILFE
 C           : HILFSSTRING, DER FUER ZUWEISUNGEN BENOETIGT WIRD
- 
+
 C
 C     HILFSVARIABLEN :
 C
          INTEGER :: I, J
- 
+
       DO 10, J=1,TEIL
 C
 C        ERSETZEN VON '^' DURCH '**' IN PART(J)
@@ -91,7 +91,7 @@ C
                   HILFE=PART(J)(1:I-1)//'Z'//
      >                   PART(J)(I:IPART(J))//' '
                ENDIF
- 
+
                I=I+2
                IPART(J)=IPART(J)+1
                PART(J)=HILFE
@@ -111,7 +111,7 @@ C
                   HILFE=ARITH(J)(1:I-1)//'Z'//
      >                   ARITH(J)(I:IARITH(J))//' '
                ENDIF
- 
+
                I=I+2
                IARITH(J)=IARITH(J)+1
                ARITH(J)=HILFE
@@ -119,7 +119,7 @@ C
             I=I+1
             GOTO 50
          ENDIF
- 
+
    10    CONTINUE
 C
 C     ENDE VON RUKSUB

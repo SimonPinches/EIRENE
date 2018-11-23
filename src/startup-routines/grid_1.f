@@ -17,12 +17,12 @@ C
       INTEGER, INTENT(IN) :: NT, IL
       INTEGER, INTENT(INOUT) :: N2, N3
       INTEGER :: ND1, ND2, J
- 
+
       IF (C2.LT.C1) GOTO 991
       IF (C3.LT.C2) GOTO 992
- 
+
 C  IS THERE A 3RD SECTION ?
- 
+
       IF (CT.GT.C3.AND.N3.GT.1.AND.N3.LT.NT) THEN
 C YES. KNOTS IN THIS SECTION:
         ND2=NT-N3+1
@@ -44,7 +44,7 @@ C NO.
         C3=C2
         N2=N3
       ENDIF
- 
+
       DO 101 J=1,N2
         C(J)=C1+DBLE(J-1)/DBLE(N2-1)*(C2-C1)
   101 CONTINUE

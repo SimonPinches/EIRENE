@@ -1,5 +1,5 @@
 C  OCT 03: return best guess, even if R out of range, rather than exit
-C  Sept.2015: allow N<=nr1stm, rather than N<nr1stm   
+C  Sept.2015: allow N<=nr1stm, rather than N<nr1stm
 C
       FUNCTION EIRENE_AREAA (R,N,ARCA,Y,EP1R,ELLR)
 C
@@ -27,9 +27,9 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CGRID
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: R
       REAL(DP), INTENT(OUT) :: ARCA, Y, EP1R, ELLR
       INTEGER, INTENT(IN) :: N

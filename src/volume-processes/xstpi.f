@@ -4,7 +4,7 @@
 ! 01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
 ! 20.01.14:  H.4 option for pi rate coefficients (e.g. CR rates: p + H-minus)
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
-C            additional argument  CHRDF0, also in calling routines 
+C            additional argument  CHRDF0, also in calling routines
 c 23.02.14:  additional argument IPL (was ISP, now ISP is incident test particle)
 c            this fixes bug in printout texts(isp)
 C            Option 4.3C: now ready,  lgvac for IPL, not for electrons.  corrected !
@@ -36,12 +36,12 @@ C   NREAPI(IRPI) = KK DURING MC RUN. THIS ESTABLISHES LINK BETWEEN IRPI AND KK, 
 C  RETURNS:
 C    MODCOL(4,...)
 C    TABPI3(IRPI,NCELL,...)  1/s per incident test particle
-C    EPLPI3(IRPI,NCELL,...) eV/s per incident test particle 
+C    EPLPI3(IRPI,NCELL,...) eV/s per incident test particle
 C    DEFPI(IRPI)
 C    EEFPI(IRPI)
 C    IESTPI(IRPI,...)
 C
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -63,17 +63,17 @@ C
      .            ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
-     .            ACCINM, ACCMSP, ACCINV, 
-     .            EFLAG, EIRENE_FEHVPI3, 
+     .            ACCINM, ACCMSP, ACCINV,
+     .            EFLAG, EIRENE_FEHVPI3,
      .            EIRENE_FEELPI1,
-     .            EIRENE_RATE_COEFF, 
-     .            EIRENE_ENERGY_RATE_COEFF, 
+     .            EIRENE_RATE_COEFF,
+     .            EIRENE_ENERGY_RATE_COEFF,
      .            EI, EA, EN, TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEPI4, NSEPI5, NEND, J, IO, IA, 
+      INTEGER :: NSEPI4, NSEPI5, NEND, J, IO, IA,
      .           ITYP1, ISPZ1, INUM1,
      .           IML, IM, MODC, IIO, IPLTI, IP, IAT,
-     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR, IMIN, IMAX, 
+     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR, IMIN, IMAX,
      .           IRAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
@@ -97,7 +97,7 @@ c  In case of more than one secondary (either test or bulk particle)
 c  we distribute the total kinetic energy release (KER, eV) per reaction
 c  over the secondaries, proportional to their inverse masses.
 c  this is stricly correct for reactions with two secondaries.
- 
+
 C ACCUMULATED MASS OF SECONDARIES: ACCMAS (AMU)
 C ACCUMULATED INVERSE MASS OF SECONDARIES: ACCINV (1/AMU)
       ACCMAS=0.D0
@@ -192,7 +192,7 @@ C  NO P2NP HERE; P2NP ONLY COUNTS TEST PARTICLE SECONDARIES
           EPLPI(IRPI,IPP,2)=1./RMASSP(IPP)
         END IF
       END DO
- 
+
       IF (ABS(ACCMAS-XLFTMAS).GT.1.D-10) THEN
         WRITE (IUNOUT,*) 'MESSAGE FROM XSTPI.F: '
         WRITE (IUNOUT,*) 'FOR INCIDENT TEST SPECIES ',TEXTS(ISP)
@@ -275,9 +275,9 @@ C  2.B)
 C  2.C)
         IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
 C   STORAGE SAVING MODE ?
-        IF (NSTORDR >= NRAD) THEN 
+        IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
-          
+
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
           IF (MODC.EQ.1) THEN
 C           NEND=1
@@ -296,7 +296,7 @@ C           NEND=9
             fp1(1:3) = rt%fp1l
             fp1(4:6) = rt%fp1r
             fp2(1:3) = rt%fp2b
-            fp2(4:6) = rt%fp2t  
+            fp2(4:6) = rt%fp2t
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
@@ -325,8 +325,8 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
         MODCOL(4,2,IRPI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
-        IF (NSTORDR >= NRAD) THEN 
-                
+        IF (NSTORDR >= NRAD) THEN
+
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
@@ -339,14 +339,14 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for PI'
           write (iunout,*) 'in case modc=3  (n,T-dependence).'
-          GOTO 995 
+          GOTO 995
         ENDIF
 
       ELSE
 C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
         IF (MODCOL(4,2,IRPI).NE.3) GOTO 996
       ENDIF
- 
+
       FACRPI(IRPI,1) = FACTKK
       FACRPI(IRPI,2) = LOG(FACTKK)
 
@@ -405,7 +405,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'MODIFIED TREATMENT OF BULK ION IMPACT '
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
           WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
-          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOPI) '  
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOPI) '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -445,11 +445,11 @@ C  ION ENERGY-AVERAGED RATE AVAILABLE AS REACTION NO. "KREAD"
           MODCOL(4,4,IRPI)=MODC
           IF (MODC.EQ.1) NEND=1
           IF (MODC.EQ.2) NEND=NSTORDT
-C  STORAGE SAVING MODE ? 
+C  STORAGE SAVING MODE ?
           IF (NSTORDR >= NRAD) THEN
 C  NO
 C           NSTORDT=9 HERE
-      
+
             IF (MODC.EQ.1) THEN
 C             NEND=1
 C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
@@ -463,13 +463,13 @@ C  ENERGY RATE COEFFICIENT(TI, EBEAM=0)
   254         CONTINUE
             ELSEIF (MODC.EQ.2) THEN
 C             NEND=9
-C  ENERGY RATE COEFFICIENT(TI,EBEAM) 
+C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               ADDL=LOG(FACTKK)-ADDTL
               rt => reacdat(kread)%rtcew
               fp1(1:3) = rt%fp1l
               fp1(4:6) = rt%fp1r
               fp2(1:3) = rt%fp2b
-              fp2(4:6) = rt%fp2t    
+              fp2(4:6) = rt%fp2t
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
@@ -616,7 +616,7 @@ C  CONVERT SECONDARY SPECIES DISTRIBUTION P2NP(IRPI)  INTO
 C  CUMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW).
 
 
-C  ATOM SECONDARIES 
+C  ATOM SECONDARIES
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
         PATPI(IRPI,0)=PATPI(IRPI,0)+
@@ -632,7 +632,7 @@ C  MOLECULE SECONDARIES
         P2NP(IRPI,IM)=P2NP(IRPI,IM-1)+
      +                      P2NP(IRPI,IM)
   520 CONTINUE
-C  TEST ION SECONDARIES 
+C  TEST ION SECONDARIES
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
         PIOPI(IRPI,0)=PIOPI(IRPI,0)+
@@ -649,7 +649,7 @@ C
 C  TOTAL NUMBER OF TEST PARTICLE SECONDARIES
       P2NPI(IRPI)=PATPI(IRPI,0)+PMLPI(IRPI,0)+
      .            PIOPI(IRPI,0)
- 
+
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2NP
 C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION
 C          FOR TEST PARTICLE SECONDARIES
@@ -674,7 +674,7 @@ C
       WRITE (iunout,*) 'HEAVY PARTICLE COLLISION WITH BULK IONS IPLS:'
       WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL)
       CALL EIRENE_LEER(1)
- 
+
       WRITE (iunout,*) 'BACKGROUND SECONDARIES:'
 
 C  ARE SECONDARY ELECTRONS INVOLVED?
@@ -818,7 +818,7 @@ C
         ENDIF
       ENDIF
 
-  880 CONTINUE 
+  880 CONTINUE
 
       CALL EIRENE_LEER(1)
 
@@ -836,7 +836,7 @@ C
      .                  MODCOL(4,1,IRPI),MODCOL(4,2,IRPI),
      .                  MODCOL(4,3,IRPI),MODCOL(4,4,IRPI)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                  FACRPI(IRPI,1) 
+     .                  FACRPI(IRPI,1)
       CALL EIRENE_LEER(1)
 
 
