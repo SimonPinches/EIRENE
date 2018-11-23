@@ -463,7 +463,7 @@ C   FIRSTLY FIND POINT NUMBER IPOINT
         ENDIF
         ISECT=IPOINT
 C
-C   NEXT FIND CO-ORDINATES AND CELL INDICES,
+C   NEXT FIND COORDINATES AND CELL INDICES,
 C   LOCAL BACKGROUND TEMPERATURES TIWL AND TEWL, AND
 C   LOCAL PLASMA DRIFT VELOCITIES VXWL,VYWL,VZWL FOR EACH BULK
 C   ION SPECIES IPLS=1,NPLSI
@@ -1292,7 +1292,7 @@ C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
 C
             IF (TIWD.LE.0.) TIWD=ABS(EMAX)
-            NFLAG=2   !  sample from (drifting) maxwellian, no cross section weighting
+            NFLAG=2   !  sample from (drifting) maxwellian, no cross-section weighting
             IDUM=1
             DUMT(1)=SQRT(TIWD/RMASSI(IION))*CVEL2A
             DUMT(2)=DUMT(1)

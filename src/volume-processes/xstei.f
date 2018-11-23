@@ -220,7 +220,7 @@ C
       PELEI(IREI)=PELEI(IREI)+CHRDIF
 C
 C
-C  1.) CROSS SECTION(TE) : NOT NEEDED
+C  1.) CROSS-SECTION(TE) : NOT NEEDED
 C
 C
 C..................................................................

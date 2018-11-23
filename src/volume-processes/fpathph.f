@@ -9,7 +9,7 @@ C               added: jcou,ncou
 !pb             BGK iteration
 !pb  22.03.07:  PI reactions revised
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
-cdr  oct.14  :  syncronized with fpathm, fpathi
+cdr  oct.14  :  synchronized with fpathm, fpathi
 
 cdr 31.10.14 :  speedup of final cut off evaluations
 
@@ -187,7 +187,7 @@ cdr       kk   = nreaot(irot)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
 cdr       ireac=modcol(7,1,irot)
-cdr  ireac entspricht "typ" in Getcoeff - cross section (lorentz, vdw, ...)
+cdr  ireac entspricht "typ" in Getcoeff - cross-section (lorentz, vdw, ...)
 cdr  allerdings kann hier der "querschnitt" von hintergrundparametern abhaengen
           call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
           sigv=sigv*diin(ipls,k)

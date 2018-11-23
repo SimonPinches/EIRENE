@@ -17,7 +17,7 @@ cdr 150407:  orientation of B field made optional, additional input
 cdr           flags ibrad,ibpol,ibtor in block 14.
 CDR 150419    THIS ROUTINE WAS OBTAINED MY MERGING COUPLE_B2.5 AND COUPLE_TRIA
 cdr           from FZJ repositories at 2011.
-cdr           now: syncronize again with COUPLE_tria from 2015 master branch started:
+cdr           now: synchronize again with COUPLE_tria from 2015 master branch started:
 cdr           comments, cleanup, nomenclature --> ITRI  (loops 1111,....)
 
 
@@ -51,7 +51,7 @@ cdr              which radiation estimate?
 cdr              should involve only the net source?
 
 c......................................................................
-CDR JAN 17:   re-syncronize with couple_tria, identify differences:
+CDR JAN 17:   re-synchronize with couple_tria, identify differences:
 
 c                    additional here:  mpi stuff from S. Wiesen
 c                    chpm,...allocatable
@@ -619,7 +619,7 @@ CDR  SET THE NCPVI= NPLSI COUPLE TALLIES
         ICPVE(IPLS)=1
         ICPRC(IPLS)=1
         TXTTAL(IPLS,NTALM)=
-     .  'ENERGY WEIGHTED CX RATE OF ATOMS WITH IPLS                  '
+     .  'ENERGY-WEIGHTED CX RATE OF ATOMS WITH IPLS                  '
         TXTSPC(IPLS,NTALM)=TEXTS(NSPAMI+IPLS)
         TXTUNT(IPLS,NTALM)='AMP                     '
       ENDDO
@@ -2167,8 +2167,8 @@ C
       IIPLS=NPLSI
       IEPLS=1
       DO 3040 IPRT=1,NTGPRT(ITARG)
-C  NINCT= 1: PLASMA FLUX IN SAME   DIRECTION AS B2 CO-ORDINATE
-C  NINCT=-1: PLASMA FLUX IN OPPOS. DIRECTION AS B2 CO-ORDINATE
+C  NINCT= 1: PLASMA FLUX IN SAME   DIRECTION AS B2 COORDINATE
+C  NINCT=-1: PLASMA FLUX IN OPPOS. DIRECTION AS B2 COORDINATE
 C  BRAAMS X-CELL CONTAINING THE TARGET DATA (BOUNDARY CONDITIONS)
 C  (SURFACE CENTERED, EAST OR NORTH) (AFTER INDEX MAPPING)
 C  (E.G. SURFACE NO.0 AND SURFACE NO. NX) AT TARGETS.
@@ -5212,7 +5212,7 @@ C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
 
             END IF
 
-!  both triangles outside mesh --> don't know - do nothing
+!  both triangles outside mesh --> do not know - do nothing
           END IF
 
        END  SUBROUTINE CORRECTNSS

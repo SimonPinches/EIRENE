@@ -3,7 +3,7 @@ C  NOTE:
 C  distinct from the other variances (volume tallies, surface tallies, bgk and cop tallies)
 c  here in case of spectra tallies the variances are contained in the same structure (ESTIML)
 c  as the tallies themselves.
-c  nomenclature, however has been syncronized (oct. 2014)
+c  nomenclature, however has been synchronized (oct. 2014)
 c  e.g.  ESTIML(ISPC)%SGM  <--> sigma, sigmaw
 c        ESTIML(ISPC)%SDV  <--> sdvia, sdviaw
 c  etc.
