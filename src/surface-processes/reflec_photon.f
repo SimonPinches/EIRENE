@@ -81,7 +81,7 @@ C
 C
 C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING):  out.
 C  tbd:  introduce counter of max. possible random numbers used up to this point
-C  see report Kalos, 1955, on correlated sampling, syncronisation...
+C  see report Kalos, 1955, on correlated sampling, synchronisation...
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
 C  re-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION

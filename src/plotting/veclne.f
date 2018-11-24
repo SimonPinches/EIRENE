@@ -144,7 +144,7 @@ cdr  use FZJ proprietary GR plot software
      .             REAL(XMAX,KIND(1.E0)),REAL(YMAX,KIND(1.E0)))
       CALL GRAXS (7,'X=3,Y=3',6,'R (CM)',6,'Z (CM)')
 C
-C  SCALE FACTORS: USER CO-ORDINATES TO CM:
+C  SCALE FACTORS: USER COORDINATES TO CM:
 C  X-DIRECTION:
       SCLFCX=((10.+DX*FAK)-10.)/(XMAX-XMIN)
 C  Y-DIRECTION:
