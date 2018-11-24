@@ -3,7 +3,7 @@ cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by EDPOT arrays,
 cdr           for potential energy difference in reactions.
 cdr           The old fluid limit critical Knudsen number is now defined
 cdr           via negative ngen..(..) flags
-cdr Apr. 18: further pointer, targets set for photons, towards code syncronisation
+cdr Apr. 18: further pointer, targets set for photons, towards code synchronisation
 cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
@@ -17,7 +17,7 @@ cdr  MXCOLLS --> MSTOR0
 !                    via dimensioning IFTFLG(-11:NREAC,0:5)
 !  30.08.06: data structure for reaction data redefined
 !  12.10.06: modcol revised
-!  19.12.06: test functions added which allow to test if a rate-coefficient
+!  19.12.06: test functions added which allow to test if a rate coefficient
 !            is defined via ADAS database
 !  02.03.07: remove ESCD2* arrays
 !  02.03.07: fourth secondary group specifier introduced
@@ -1788,7 +1788,7 @@ c
 
       CASE (1)
         IF (REACDAT(IR)%LCRS) THEN
-          WRITE (IUNOUT,*) ' CROSS SECTION ALREADY SPECIFIED',
+          WRITE (IUNOUT,*) ' CROSS-SECTION ALREADY SPECIFIED',
      .                     ' FOR REACTION', IR
           DEALLOCATE (REA)
           IF (IR < 0) RETURN
@@ -1883,7 +1883,7 @@ c
 
       CASE (8:10)
         IF (REACDAT(IR)%LRTCEW) THEN
-          WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' ENERGY-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (REA)
           IF (IR < 0) RETURN
@@ -2022,13 +2022,13 @@ c  rate coefficients
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-c  momentum weighted rate coefficients
+c  momentum-weighted rate coefficients
         IF (REACDAT(IR)%LRTCMW) THEN
            rea => REACDAT(IR)%RTCMW
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-c  energy weighted rate coefficients
+c  energy-weighted rate coefficients
         IF (REACDAT(IR)%LRTCEW) THEN
            rea => REACDAT(IR)%RTCEW
            call eirene_free_fit_form (rea)

@@ -410,7 +410,7 @@
       relation = EIRENE_cmp(x, y, z,
      .                      node%xco, node%yco, node%zco, node%dist)
       IF (relation == EQUAL) THEN
-         ! Don't insert dublicate key/value
+         ! Do not insert dublicate key/value
          inserted = .FALSE.
          ind = node%ind
          retnode => node

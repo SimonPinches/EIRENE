@@ -12,7 +12,7 @@ cdr            but instead do so also for each stratum, and for the scores per s
 
       SUBROUTINE EIRENE_TIMCOL (PR,*,*)
 C
-C  COLLISION WITH "TIME SURFACE", FIND NEW CO-ORDINATES
+C  COLLISION WITH "TIME SURFACE", FIND NEW COORDINATES
 C  UPDATE (TIME-) SURFACE TALLIES
 C  UPDATE USER SUPPLIED SNAPSHOT ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
@@ -117,7 +117,7 @@ cdr   if (iprnli <= nprnl) then
         IPART(1:MPARTT,IPRNLI)=IPSTT(1:MPARTT)
       end if
 
-C  DON'T SCORE ON CENSUS ANY MORE FOR THIS STRATUM
+C  DO NOT SCORE ON CENSUS ANY MORE FOR THIS STRATUM
       if (iprnls > nprnls(istra)) iprnls = nprnls(istra)
       if (iprnli > nprnl)         iprnli = nprnl
 

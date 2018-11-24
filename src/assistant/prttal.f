@@ -1,9 +1,9 @@
 cdr  aug. 2016: added x coordinate, only for printing 1D profiles on file IFILE
 cdr             to be done: exclude levgeo .gt. 3 from this 1D output format.
 
-cdr  jan. 2017: syncronize with prtvol started (goal: remove special case prtvol)
+cdr  jan. 2017: synchronize with prtvol started (goal: remove special case prtvol)
 cdr  june 2017: bug fix, printed tally output, calls to eirene_write_tally
-cdr  jun. 2017: fully syncronized with prtvol, except printed text
+cdr  jun. 2017: fully synchronized with prtvol, except printed text
 C
 C  INPUT:  T1,T2,T3:         TALLY TEXT, SPECIES AND UNITS, RESP.
 C          PROF:             TALLY DATA, ON 1d ARRAX PROF(1:NRAD)

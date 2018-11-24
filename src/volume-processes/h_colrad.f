@@ -10,9 +10,9 @@ cdr             popcof and matrix solver LAX, GALPD extended to handle
 c               up to three right hand sides (parent states) simultaneously
 c               rather than inverting the matrix three times.
 cdr   July  17: bug fix in function mmdei (exp. integr.)
-cdr             A typo during syncronisation with solps-iter.
+cdr             A typo during synchronisation with solps-iter.
 cdr             correct: z=0.25 *y, rather then z=0.25+0*y
-cdr:  April 17: syncronized with version from solps-iter: spelling errors in comments,
+cdr:  April 17: synchronized with version from solps-iter: spelling errors in comments,
 cdr             use EIRMOD_PRECISION instead of real*8
 cdr             (this may complicate stand alone use, outside eirene)
 cdr             call "exit_own" rather than "stop", further cleanup...
@@ -64,7 +64,7 @@ c
 c   ALPHA(N): H+    ->  H*(N)  three-body recombination from H+
 c                              (inverse to S: elect. impact ionization)
 c   BETA(N) : H+    ->  H*(N)  radiative rec. from H+
-C   EBETA      :                  CORRESPONDING ENERGY WEIGHTED RATE
+C   EBETA      :                  CORRESPONDING ENERGY-WEIGHTED RATE
 c   C(1,N)  : H(1)  ->  H*(N)  excitation from ground state
 C   Q_EXT(N)   : ???   ->  H*(N)  external source
 
@@ -267,7 +267,7 @@ C***********************************************************************
      .                  ,lopaque)
 C
 C     RATE COEFFICIENTS FOR ATOMIC HYDROGEN
-CDR   ALSO: ERATE, ENERGY WEIGHTED RATE FOR RAD. RECOMB.
+CDR   ALSO: ERATE, ENERGY-WEIGHTED RATE FOR RAD. RECOMB.
 C
 C
 C
@@ -491,7 +491,7 @@ c   next: radiative recombination: BETA
       XP=UH/TEMP/P**2
         EP=UH/P**2
         CALL EIRENE_CLBETA(XP,P,XS,EXS) ! return XS,EXS for rad. rec. rate and
-c                                  electron energy weighted rate, both: into P state at T= temp,
+c                                  electron energy-weighted rate, both: into P state at T= temp,
 
 
         BETA(I) = 5.197D-14*(UH/TEMP)**.5/P   *XS
@@ -977,7 +977,7 @@ c   output:
 C      S=  normalized rate coeff for rad rec to state P,
 C          then in calling routine ratcof:
 c          BETA(P) =5.197D-14*(UH/TEMP)**.5/P * S      = 5.197D-14*(EP/TEMP)**.5 * S
-C      ES= normalized electron energy weighted rate coefficient
+C      ES= normalized electron energy-weighted rate coefficient
 C          then in calling routine ratcof:
 c          EBETA(P)=5.197D-14*(UH/TEMP)**.5/P * EP* ES = 5.197D-14*(EP/TEMP)**.5 * EP *ES
 C
@@ -1027,7 +1027,7 @@ C***********************************************************************
 
 
       FUNCTION EIRENE_GAUNT4(X)
-c  same as gaunt3, but for energy weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
+c  same as gaunt3, but for energy-weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
 c  gaunt4= u * gaunt3,  and additional pre-factor Ep = UH/(p^2), additional to (EP/T)^...
 
 cdr careful: integration of gaunt4 fails above Te gt 4500 eV
@@ -1240,7 +1240,7 @@ C***********************************************************************
      &                    R0,R1,DENSEL,LUP,LIM,
      &                    F,R_EXT,Q_EXT,L_EXT,E_AT,
      &                    ALPCR,      SCR,    SCR_EXT,   !  ordinary rate coeffcients
-     &                    E_ALPCR,  E_SCR,  E_SCR_EXT    !  electron energy weighted rate coefficients
+     &                    E_ALPCR,  E_SCR,  E_SCR_EXT    !  electron energy-weighted rate coefficients
 ctt  &                   ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T  !  radiation energy losses only, for consistency testing
      &                    )
 C
