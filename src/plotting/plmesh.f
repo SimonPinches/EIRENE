@@ -71,7 +71,7 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       ENDDO
 
       if (ncont == 0) return
-      
+
       IF (.NOT.ALLOCATED(NCONPOINT)) THEN
         ALLOCATE (NCONPOINT(NCONT))
         ALLOCATE (XCONTOUR(MAXPOIN,NCONT))
@@ -342,7 +342,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
               irip(j,2)=ih
             ENDIF
           ENDDO
-          
+
         ENDDO
 
         IF ((PARTCONT(1,1,1) .NE. PARTCONT(IPOIN,2,1)) .OR.
@@ -378,7 +378,7 @@ c  last point on contour
           call grDRW(REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)))
         END IF
 
-1000    CONTINUE
+ 1000   CONTINUE
       ENDDO    ! END OF DO ICONT.... LOOP
 
 

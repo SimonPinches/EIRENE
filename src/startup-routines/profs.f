@@ -8,14 +8,14 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: PRO0, PRO1, SEP, PROVAC
       REAL(DP), INTENT(OUT) :: PRO(*)
       REAL(DP) :: EIRENE_AREAA, ARCA, AR, ELLR, YR, EP1R, RHOSEP
       INTEGER :: EIRENE_LEARCA, J, NLOCAL, JM1
- 
+
       RHOSEP=SEP
       IF (LEVGEO.LE.3) THEN
         IF (RRA.GT.RAA) THEN
@@ -42,7 +42,7 @@ C
         NLOCAL=NR1ST
         DO 25 J=1,NLOCAL-1
           PRO(J)=PRO0
-25      CONTINUE
+   25   CONTINUE
         PRO(NR1ST)=0.
         RETURN
       ENDIF
@@ -51,8 +51,8 @@ C
         IF (RHOZNE(J).GT.RHOSEP) GOTO 15
         PRO(J)=PRO0
         GOTO 20
-15      PRO(J)=PRO1
-20    CONTINUE
+   15   PRO(J)=PRO1
+   20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
       END

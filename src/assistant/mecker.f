@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
                 SUBROUTINE EIRENE_MECKER(ERROR)
 C-----------------------------------------------------------------------
@@ -13,14 +13,14 @@ C-----------------------------------------------------------------------
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
 C
 C     EINGABEPARAMETER :
 C
          INTEGER, INTENT(IN) :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
- 
+
+
       IF     (ERROR .EQ.  1) THEN
         WRITE(iunout,*) 'DER AUSDRUCK ENTHAELT EIN UNGUELTIGES ZEICHEN.'
       ELSEIF (ERROR .EQ.  2) THEN

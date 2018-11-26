@@ -10,14 +10,14 @@ c          iun =21+ifoff  (input stream for TRIM.dat)
 
 C  This is the old (and default) model for reading TRIM conditional quantile tables, for reflection.
 
-c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B 
+c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B
 c  as selected in input block 6.
 C
-C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE-CARLO CODES,
+C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE CARLO CODES,
 C  DATA ARE STORED IN CONDITIONAL QUANTILE FORMAT (E.G. TRIM)
 C
-C  distinct from rdtrim.f this routines reads one single file containing many 
-C  (in this present version: NHD6=12) 
+C  distinct from rdtrim.f this routines reads one single file containing many
+C  (in this present version: NHD6=12)
 C  fixed target-projectile combinations, hard-wired in the following order
 C
 C    IFILE=1  H ON FE
@@ -35,7 +35,7 @@ C    IFILE=10 HE ON W
 C    IFILE=11 H ON W
 C    IFILE=12 T ON W
 C
-C  
+C
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -43,7 +43,7 @@ C
       USE EIRMOD_CREF
       USE EIRMOD_CSPEI
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(OUT) :: TMM(*), TCC(*), WMM(*), WCC(*)
@@ -115,9 +115,9 @@ C  HARD-WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files.
         TCC(J)=TCL(J)
         WMM(J)=WML(J)
         WCC(J)=WCL(J)
-10    CONTINUE
+   10 CONTINUE
 
-c  INE=12 incident energies 
+c  INE=12 incident energies
 c  (not to be confused with the nhd6=12 projectile-target cases)
       INE=12
       INEM=INE-1
@@ -175,13 +175,13 @@ C
       DO IFILE=1, NDBNAMES
         IF (INDEX(DBHANDLE(IFILE),'TRIM') /= 0) EXIT
       END DO
- 
+
       IF (IFILE > NDBNAMES) THEN
         WRITE (IUNOUT,*) ' NO DATABASE NAME FOR TRIM DEFINED '
         WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       IUN=21+ifoff
       OPEN (UNIT=IUN,FILE=DBFNAME(IFILE))
       REWIND IUN
@@ -230,7 +230,7 @@ c  7*5*5*5:  azimuthal angle quantiles
     1 CONTINUE
 C
 
-661   FORMAT (4E20.12)
+  661 FORMAT (4E20.12)
 
 
       RETURN

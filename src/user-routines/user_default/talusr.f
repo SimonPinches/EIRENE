@@ -14,8 +14,8 @@ c
       TXTTL=' '
       TXTSP=' '
       TXTUN=' '
-      
- 
+
+
       ILAST=0
-      return 
+      return
       end

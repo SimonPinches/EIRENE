@@ -37,7 +37,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units
-!   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ...units
+!   not lexp:  return orate=log_e(rate coefficient) with rate coefficient in ...units
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
 !              currently hard wired: factor 1e-8.  p2 --> p2*factor
 !              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.
@@ -73,7 +73,7 @@ c  transformation of parameters p1 and p2:
      .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar           
+      integer :: ip1, ip2, iflavor, ivar
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -236,8 +236,8 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
-        orate=o_scr 
-        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0 
+        orate=o_scr
+        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0
 
       end if
 

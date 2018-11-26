@@ -8,7 +8,7 @@
 !pb  25.07.07: periodicity in y-direction for LEVGEO=3 introduced
 !pb  07.07.09: setting of NLSRFA added
 cdr  29.07.17: added lgpart=false on absorbing surfaces (otherwise problems
-cdr            with trace ions onto absorbing surfaces. corresponding fix in folion. 
+cdr            with trace ions onto absorbing surfaces. corresponding fix in folion.
 cdr  Nov. 17 : lmetspw arguments corrected
 C
       SUBROUTINE EIRENE_STDCOL (ISTS,IDIMM,SG,*,*)
@@ -53,7 +53,7 @@ C
      .          Y0SA, Z0SA, COSROT, SINROT, VELX_OLD, DST0, DSTT, FR,
      .          SINPHI, COSPHI, VCOS, VELS
        INTEGER :: IDUM, IAN, IEN, NDUM,
-     .           EIRENE_LEARCA, EIRENE_LEARC1, 
+     .           EIRENE_LEARCA, EIRENE_LEARC1,
      .           EIRENE_LEARC2, MSURFO,
      .           IR, M, IP, IST, MSURFE, NACLLS, ICOS, IWEI, MSURFS
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -132,13 +132,13 @@ C
       ENDIF
 C
       IWEI=ILSIDE(MSURF)*ICOS
-!pb   IF (IWEI.LT.0) GOTO 300  
+!pb   IF (IWEI.LT.0) GOTO 300
 
-cdr 
+cdr
 cdr: july 17: by removing this statement from here
 cdr           the ilside options for geometry debugging are partially disabled
 cdr           at least for absorbing surfaces, for which now code segment 300...ff is
-cdr           bypassed.  
+cdr           bypassed.
 
       IF (ILIIN(MSURF).EQ.2) GOTO 400  ! ABSORPTION
 C
@@ -311,7 +311,7 @@ C
 C  SWITCHING DONE
 C
       IF (IWEI.LT.0) GOTO 300
- 
+
       IF (NLTRC.AND.EIRENE_IDEZ(ILIIN(MSURF),1,2).LE.4)
      .  CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
 C
@@ -335,9 +335,9 @@ c  a) find (outer) surface normal vector at point of intersection X0E,Y0E,Z0E
 c     on non-default standard surface MSURFE, (e.g. for surface reflection routines)
 c  b) if iliin.gt.3: this is a periodicity surface.
 c
-c     In this case additionally change particle position, cell number, 
+c     In this case additionally change particle position, cell number,
 c     and velocity of particle accordingly.
-c     Note: this periodicity is ready only for some geometry options 
+c     Note: this periodicity is ready only for some geometry options
 c           and surfaces
 c
 c
@@ -368,7 +368,7 @@ C
 C  RADIAL (or X- ) SURFACE, ALSO: SURFACES IN TRIANGULA,
 C                            TETRAHEDAL AND GENERAL (usr) GRIDS
 C
-100   CONTINUE
+  100 CONTINUE
 C
       select case (LEVGEO)
       case (1)
@@ -494,7 +494,7 @@ C     VL_PAR=(/VLXPAR,VLYPAR,VLZPAR/)
 
 C  POLOIDAL SURFACE  MPSURF
 C
-150   CONTINUE
+  150 CONTINUE
 C
       select case (LEVGEO)
       case (1)
@@ -565,7 +565,7 @@ C  NEW CELL NUMBERS
 C
 C  TOROIDAL SURFACE
 C
-200   CONTINUE
+  200 CONTINUE
 C
       IF (NLTRZ) THEN
         CRTX=0.
@@ -622,9 +622,9 @@ C         CRTZ=?
       ENDIF
       RETURN 2
 C
-C  MIXED X-Y GRID SURFACE,  idimm=4  
+C  MIXED X-Y GRID SURFACE,  idimm=4
 C
-250   CONTINUE
+  250 CONTINUE
       IF (NLSRFX) GOTO 100
       IF (NLSRFY) GOTO 150
       WRITE (iunout,*) ' ERROR IN STDNOR,',
@@ -632,7 +632,7 @@ C
       CALL EIRENE_EXIT_OWN(1)
 C
 C
-300   CONTINUE
+  300 CONTINUE
 C
 C  IWEI.LT.0, I.E., ILIIN OPTION IS OVERRULED FROM THIS SIDE
 C
@@ -719,12 +719,12 @@ C
 C  ABSORBING SURFACE
 C  UPDATE FLUXES IN ESCAPE (DO NOT SET WEIGHT=0.D0 HERE), AND STOP THEN.
 C
-400   CONTINUE
+  400 CONTINUE
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
       LGPART=.FALSE.
       RETURN 2
 C
-500   CONTINUE
+  500 CONTINUE
       IF (NLTRA) X01=X0+RMTOR
       X00=X0
       Y00=Y0
@@ -733,7 +733,7 @@ C
       RETURN 2
 
 C
-992   CONTINUE
+  992 CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
      .  ('ERROR IN STDNOR,  PROJECTION TO V_PAR, V_PERP   ')
@@ -741,13 +741,13 @@ C
      .  ('PROBABLY ILL DEFINED B-FIELD WRT. PARTICLE SPEED')
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       RETURN
-998   CONTINUE
+  998 CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
      .  ('ERROR IN STDNOR,  UNWRITTEN PERIODICITY OPTION   ')
       WRITE (iunout,*) 'MSURF ',MSURF
       RETURN
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'ERROR IN STDCOL, WRONG CELL SWITCHING '
       WRITE (iunout,*) 'NPANU, MSURF = ',NPANU,MSURF
       CALL EIRENE_EXIT_OWN(1)

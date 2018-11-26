@@ -1,6 +1,6 @@
 c
 c  this version: find vibrational temeperatur of H2.
-c  i.e. H2(v) must be treated as separate molec. species 
+c  i.e. H2(v) must be treated as separate molec. species
 c
       SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
      .                  TXTTL,TXTSP,TXTUN,ILAST,*)
@@ -11,7 +11,7 @@ C
 C  RETURN 1:       DO NOT PRINTOUT VOLUME AVERAGED TALLY "VECTOR"
 C                  VECTOR NEEDS NOT BE RETURNED. INSTEAD, THE POST-
 C                  PROCESSED TALLY CAN ALSO BE PUT ONTO THE ADDITIONAL TALLY
-C                  STORAGES (ADDV,COLV,...) IF STORAGE IS PROVIDED 
+C                  STORAGES (ADDV,COLV,...) IF STORAGE IS PROVIDED
 C                  AND IF THE PARAMETERS NADVI, NCLVI, ETC. IN BLOCK 10A, OR 10B,
 C                  ARE PROPERLY SET.
 C  RETURN  :       PRINTOUT VOLUME AVERAGED TALLY VECTOR(I), I=1,NRAD,
@@ -44,11 +44,11 @@ C
       integer, intent(in) :: icount
       integer, intent(out) :: ilast
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
-C      
-      real(dp) :: EN(15),YLD(15),RESULT(20)          
+C
+      real(dp) :: EN(15),YLD(15),RESULT(20)
       integer :: IC,  IAD, IRC , IFAIL, IESTR
       REAL(DP), ALLOCATABLE :: OUTAU(:)
-C  ENERGIES ABOVE pot. MINUMUM OF 15 VIBR. LEVELS, IN H2 ELECTR. GROUND STATE            
+C  ENERGIES ABOVE pot. MINUMUM OF 15 VIBR. LEVELS, IN H2 ELECTR. GROUND STATE
       DATA EN/0.269,0.785,1.270,1.726,2.151,2.546,2.911,3.246,
      .        3.551,3.826,4.071,4.286,4.470,4.625,4.749/
 

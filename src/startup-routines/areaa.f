@@ -1,5 +1,5 @@
 C  OCT 03: return best guess, even if R out of range, rather than exit
-C  Sept.2015: allow N<=nr1stm, rather than N<nr1stm   
+C  Sept.2015: allow N<=nr1stm, rather than N<nr1stm
 C
       FUNCTION EIRENE_AREAA (R,N,ARCA,Y,EP1R,ELLR)
 C
@@ -27,9 +27,9 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CGRID
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: R
       REAL(DP), INTENT(OUT) :: ARCA, Y, EP1R, ELLR
       INTEGER, INTENT(IN) :: N
@@ -45,7 +45,7 @@ C
 C
       ELLR=ELL(N)+RRN*(ELL(NP)-ELL(N))
       EP1R=EP1(N)+RRN*(EP1(NP)-EP1(N))
- 100  Y=ELLR*R
+  100 Y=ELLR*R
 C
       APB=R+Y+EPS60
       XL1=(R-Y)/APB
@@ -58,10 +58,10 @@ C
 C
       RETURN
 C
-998   WRITE (IUNOUT,*)
+  998 WRITE (IUNOUT,*)
      .  'ERROR IN FUNCTION EIRENE_AREAA: N, NR1STM ',N,NR1STM
       CALL EIRENE_EXIT_OWN(1)
-999   WRITE (IUNOUT,*) 'ERROR IN FUNCTION EIRENE_AREAA: R,N ',R,N
+  999 WRITE (IUNOUT,*) 'ERROR IN FUNCTION EIRENE_AREAA: R,N ',R,N
       IF (R.LT.RSURF(N)) THEN
         ELLR=ELL(N)
         EP1R=EP1(N)

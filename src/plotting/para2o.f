@@ -10,7 +10,7 @@ C
       IF (RAD.GE.0.) GOTO 1
       EIRENE_PARA2O=1.D50
       RETURN
-1     Y=SQRT(RAD)
+    1 Y=SQRT(RAD)
       EIRENE_PARA2O=Y-DH
       RETURN
       END

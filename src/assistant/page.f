@@ -6,6 +6,6 @@ C*DK PAGE
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       WRITE (iunout,60)
-60    FORMAT ('1         ')
+   60 FORMAT ('1         ')
       RETURN
       END

@@ -7,14 +7,14 @@ c
       USE EIRMOD_CLGIN
       USE EIRMOD_CGRID
       USE EIRMOD_CADGEO
- 
+
       IMPLICIT NONE
- 
+
       integer :: iout, j, iad_cell, icos, ists
 
       OPEN (NEWUNIT=IOUT,FILE='srf_properties',FORM='FORMATTED',
      .      ACCESS='SEQUENTIAL')
-      
+
       do ists = 1, nstsi
         j = nlim + ists
         iad_cell = 0
@@ -49,5 +49,5 @@ c
       end if
 
       close (iout)
-      
+
       end  subroutine eirene_outidlsrf

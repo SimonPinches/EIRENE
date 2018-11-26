@@ -4,7 +4,7 @@ C
 C 0710: provide value of cross-section for reaction K
 C       K=0 means no cross-section available for this reaction
 c       k=-1,-2,-3:  default (hard-wired) CX cross-sections
-c 0315: increase kk>=-10 to kk>=-11 for He ei process, to fully reserve k=-1 
+c 0315: increase kk>=-10 to kk>=-11 for He ei process, to fully reserve k=-1
 c       for H+p CX as default process
 
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
@@ -29,34 +29,34 @@ C  K=-3:  He + He++ --> He++ + He   CROSS-SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
 
-C  FOR -11 <= K <= -4  VARIOUS DEFAULT EI PROCESSES FOR H, H2, H2+, HE 
-C                      CURRENTLY ONLY RATE COEFF, SO NO DATA HERE. 
+C  FOR -11 <= K <= -4  VARIOUS DEFAULT EI PROCESSES FOR H, H2, H2+, HE
+C                      CURRENTLY ONLY RATE COEFF, SO NO DATA HERE.
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CTRCEI, ONLY: TRCAMD
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: AL, FACT
       INTEGER, INTENT(IN) :: K, IR
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
       REAL(DP) :: B(8), FP(6)
       REAL(DP) :: EIRENE_CROSS,
      .            ALMIN,ALMAX,COUMIN,COUMAX,
-     .            EXPO, EIRENE_EXTRAP, E, XI, 
+     .            EXPO, EIRENE_EXTRAP, E, XI,
      .            EIRENE_SNGL_POLY
       INTEGER :: I
       type(poly_data), pointer :: rpp
       type(fit_forms), pointer :: rpc
- 
+
 C
       IF ((K >= -11) .AND. (K <= NREAC)) THEN
 
         IF (K == 0) THEN
-        
+
           EIRENE_CROSS = 0._DP
           WRITE (IUNOUT,*) 'ERROR IN CROSS '
           WRITE (iunout,*) 'CALLED FROM ',TEXT
@@ -81,9 +81,9 @@ C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
      .                            RPC%JFEX1MN,RPC%JFEX1MX,
      .                            TRCAMD)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
- 
+
           EIRENE_CROSS = EIRENE_CROSS*FACT
- 
+
         ELSE IF (IFTFLG(K,1) == 3) THEN
 
 C  default extrapolation ifexmn=-1 not yet available
@@ -92,7 +92,7 @@ C  ELAB BELOW MINIMUM ENERGY FOR FIT:
           ALMAX=REACDAT(K)%CRS%RC1MAX
           IF (AL.LT.ALMIN) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
-       
+
             E = EXP(ALMIN)
             XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
@@ -101,7 +101,7 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
               COUMIN = COUMIN + B(I+1)*(1.D0-XI/E)**I
             END DO
             COUMIN = COUMIN * 1.D-13/(XI*E)
-            
+
             FP(1:3) = REACDAT(K)%CRS%FP1L
             EIRENE_CROSS=EIRENE_EXTRAP(AL,ALMIN,COUMIN,
      .                   REACDAT(K)%CRS%JFEX1MN,
@@ -112,7 +112,7 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
 C  ELAB ABOVE MAXIMUM ENERGY FOR FIT:
           ELSEIF (AL.GT.ALMAX) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX(K,1)
-     
+
             E = EXP(ALMAX)
             XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
@@ -130,7 +130,7 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX(K,1)
             EIRENE_CROSS = EIRENE_CROSS*FACT
 
 C  ELAB IS WITHIN VALID RANGE OF FIT EXPRESSION
-C  EVALUATE FIT EXPRESSION IFTFLG=3:  
+C  EVALUATE FIT EXPRESSION IFTFLG=3:
           ELSE
             E = EXP(AL)
             XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)

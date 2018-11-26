@@ -49,9 +49,9 @@ c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
 
 c  input:
-c    nlmlti (via cinit.f):  all bulk ions have own temperature Ti, on Ti(iplsti), 
+c    nlmlti (via cinit.f):  all bulk ions have own temperature Ti, on Ti(iplsti),
 c                           set new Ti for ipls
-c    nlmlv  (via cinit.f):  all bulk ions have own velocity, Vx,Vy,Vz, on V*(iplsv) 
+c    nlmlv  (via cinit.f):  all bulk ions have own velocity, Vx,Vy,Vz, on V*(iplsv)
 c                           set new flow velocity for ipls
 
 c    icall:               :
@@ -102,9 +102,9 @@ c   LGVAC(...,0)     : background vacuum flag
       use EIRMOD_csdvi_cop
       use EIRMOD_comsou
       use EIRMOD_cspei
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ICALL
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI,
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
@@ -118,7 +118,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .           I, J, JEND,
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
- 
+
       TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
 
@@ -136,7 +136,7 @@ c   LGVAC(...,0)     : background vacuum flag
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
@@ -146,7 +146,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
       end interface
- 
+
       FP1 = 0._DP
       FP2 = 0._DP
       RC1MIN = -HUGE(1._DP)
@@ -157,9 +157,9 @@ c   LGVAC(...,0)     : background vacuum flag
       JFEX1MX = 0
       JFEX2MN = 0
       JFEX2MX = 0
- 
+
 cdr
- 
+
       IBS = 0
       DO IPLS=1,NPLSI
         IPLSTI=MPLSTI(IPLS)
@@ -199,24 +199,24 @@ c   check: itold ge 0 and itold.le 3
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
- 
+
           ALLOCATE (BASE_DENSITY(NRAD))
           ALLOCATE (BASE_TEMP(NRAD))
           CALL EIRENE_GET_BASE_DENSITY(1)
- 
+
           IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
           IF (NLMLV) THEN
             VXIN(IPLSV,:)=VXIN(IOLDV,:)
             VYIN(IPLSV,:)=VYIN(IOLDV,:)
             VZIN(IPLSV,:)=VZIN(IOLDV,:)
           END IF
- 
+
           DO IR=1,NSBOX
             DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))
           ENDDO
           DEALLOCATE (BASE_DENSITY)
           DEALLOCATE (BASE_TEMP)
- 
+
           IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
             FOUND = .TRUE.
             DO IR=1,NSBOX
@@ -231,9 +231,9 @@ c   check: itold ge 0 and itold.le 3
               END IF
             ENDDO
           END IF
- 
+
         ELSEIF (INDEX(CDENMODEL(IPLS),'CONSTANT') > 0) THEN
- 
+
           IF (NLMLTI) TIIN(IPLSTI,:)=MAX(TVAC,TDMPAR(IPLS)%TDM%TVAL)
           DIIN(IPLS,:)=MAX(DVAC,TDMPAR(IPLS)%TDM%DVAL)
           IF (NLMLV) THEN
@@ -241,18 +241,18 @@ c   check: itold ge 0 and itold.le 3
             VYIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VYVAL
             VZIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VZVAL
           END IF
- 
+
         ELSEIF (INDEX(CDENMODEL(IPLS),'MULTIPLY') > 0) THEN
 c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-          
+
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
- 
+
           ALLOCATE (BASE_DENSITY(NRAD))
           ALLOCATE (BASE_TEMP(NRAD))
           CALL EIRENE_GET_BASE_DENSITY(1)
- 
+
           DO IR=1,NSBOX
             IF (NLMLTI) TIIN(IPLSTI,IR)=MAX(TVAC,BASE_TEMP(IR)*
      .                             TDMPAR(IPLS)%TDM%TFACTOR)
@@ -264,26 +264,26 @@ c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
               VZIN(IPLSV,IR)=VZIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
             END IF
           ENDDO
- 
+
           DEALLOCATE (BASE_DENSITY)
           DEALLOCATE (BASE_TEMP)
- 
+
         ELSEIF (INDEX(CDENMODEL(IPLS),'BOLTZMANN') > 0) THEN
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
- 
+
           ALLOCATE (BASE_DENSITY(NRAD))
           ALLOCATE (BASE_TEMP(NRAD))
           CALL EIRENE_GET_BASE_DENSITY(1)
- 
+
           IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
           IF (NLMLV) THEN
             VXIN(IPLSV,:)=VXIN(IOLDV,:)
             VYIN(IPLSV,:)=VYIN(IOLDV,:)
             VZIN(IPLSV,:)=VZIN(IOLDV,:)
           END IF
- 
+
           FOUND = .TRUE.
           DO IR=1,NSBOX
             BOLTZFAC=0._DP
@@ -291,7 +291,7 @@ c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
      .        BOLTZFAC=TDMPAR(IPLS)%TDM%G_BOLTZ*
      .                 EXP(-TDMPAR(IPLS)%TDM%DELTAE/BASE_TEMP(IR))
             DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))*BOLTZFAC
- 
+
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
@@ -304,15 +304,15 @@ c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
                 END IF
               END IF
             END IF
- 
+
           ENDDO
           DEALLOCATE (BASE_DENSITY)
           DEALLOCATE (BASE_TEMP)
         END IF
       END DO
- 
+
 c......................................................................
- 
+
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
@@ -332,7 +332,7 @@ C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
         DEPLS=DEIN(J)
         LGVAC(J,NPLS+1)=TEPLS.LE.TVAC.OR.DEPLS.LE.DVAC
         LGVAC(J,0)     =LGVAC(J,0).AND.LGVAC(J,NPLS+1)
-5102  CONTINUE
+ 5102 CONTINUE
 
 c.....................................................................
 C
@@ -344,14 +344,14 @@ C
       ALLOCATE (BASE_DENSITY(NRAD))
       ALLOCATE (BASE_TEMP(NRAD))
       DO IPLS=1,NPLSI
- 
+
         IF (LEN_TRIM(CDENMODEL(IPLS)) == 0) CYCLE
- 
+
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
- 
+
         SELECT CASE (CDENMODEL(IPLS))
- 
+
         CASE ('SAHA      ')
 !PB   TO BE WRITTEN
           WRITE (iunout,*) ' DENSITY PROFILE ACCORDING TO SAHA IS NOT ',
@@ -359,21 +359,21 @@ C
           WRITE (iunout,*) ' CHOOSE DIFFERENT OPTION FOR ION ',
      .                'DENSITY ',IPLS
           CALL EIRENE_EXIT_OWN(1)
-c...............................................................saha: done 
+c...............................................................saha: done
         CASE ('CORONA    ')
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
- 
+
           CALL EIRENE_GET_BASE_DENSITY(1)
- 
+
           IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
           IF (NLMLV) THEN
             VXIN(IPLSV,:)=VXIN(IOLDV,:)
             VYIN(IPLSV,:)=VYIN(IOLDV,:)
             VZIN(IPLSV,:)=VZIN(IOLDV,:)
           END IF
- 
+
           REACDAT(NREACI+1)%LRTC = .FALSE.
           CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(1),
      .                 TDMPAR(IPLS)%TDM%H123(1),
@@ -397,7 +397,7 @@ c  these two processes for the given "ground state" density BASE_DENSITY
 
             DIIN(IPLS,IR)=BASE_DENSITY(IR)*RCORONA*DEIN(IR)*AM1
             DIIN(IPLS,IR)=MAX(DVAC,DIIN(IPLS,IR))
- 
+
 cdr  what is this?  background spectrum ?
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
@@ -411,7 +411,7 @@ cdr  what is this?  background spectrum ?
                 END IF
               END IF
             END IF
- 
+
           END DO
 c...............................................................corona: done
 
@@ -481,7 +481,7 @@ c  only temperature dependence in reduced population coefficient
                 endif
                 SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
                 SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
- 
+
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                   IF (LSPCCLL(IR)) THEN
                     CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
@@ -513,7 +513,7 @@ c  only temperature dependence in reduced population coefficient
                     END IF
                   END IF
                 END IF
- 
+
               END DO
 
             CASE (12)!  H.12 format, reduced population coefficient from AMJUEL
@@ -555,7 +555,7 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
                 endif
                 SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
                 SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
- 
+
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                   IF (LSPCCLL(IR)) THEN
                     CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
@@ -587,7 +587,7 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
                     END IF
                   END IF
                 END IF
- 
+
               END DO  ! IR
             CASE DEFAULT
               WRITE (iunout,*) ' H.',ISW,
@@ -595,7 +595,7 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
             END SELECT  !ISW
           END DO   ! IRE
 
-c  scale merged contributions from all contributing densities 
+c  scale merged contributions from all contributing densities
           DIIN(IPLS,:)=MAX(DVAC,DIIN(IPLS,:))
           if (nlmlti) then
             TIIN(IPLSTI,:)=MAX(TVAC,TIIN(IPLSTI,:)/(SUMNI(:)+eps60))
@@ -606,11 +606,11 @@ c  scale merged contributions from all contributing densities
             VZIN(IPLSV,:)=VZIN(IPLSV,:)/(SUMMNI(:)+eps60)
           endif
 c .................................................................colrad done
- 
+
         CASE DEFAULT
 !  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
- 
+
       END DO
       IF (ALLOCATED(SUMNI)) THEN
         DEALLOCATE (SUMNI)
@@ -618,14 +618,14 @@ c .................................................................colrad done
       END IF
       DEALLOCATE (BASE_DENSITY)
       DEALLOCATE (BASE_TEMP)
- 
+
       NBACK_SPEC = IBS
 
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
 C
 C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BPERP, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
- 
+
 C  SET DRIFT ENERGY (EV)
       DO J=1,NSBOX
         DO IPLS=1,NPLSI
@@ -663,8 +663,8 @@ C
            BXP = 0._DP
            BYP = 0._DP
         END IF
-        
-C  CHECK ORIENTATION, SET B_PERP SUCH THAT B_PERP CROSS B_PAR > 0  
+
+C  CHECK ORIENTATION, SET B_PERP SUCH THAT B_PERP CROSS B_PAR > 0
         IF (BXIN(J)*BYP-BXP*BYIN(J) < 0._DP) THEN
            BXP = -BXP
            BYP = -BYP
@@ -676,7 +676,7 @@ C  NORMALIZE
       END DO
 
 
- 
+
       DO 5103 J=1,NSBOX
 C  SET 'VACUUM REGION FLAGS'
 C  LGVAC(...,0)  VACUUM, NO REACTION RATES AT ALL
@@ -689,8 +689,8 @@ C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
           DIPLS=DIIN(IPLS,J)
           LGVAC(J,IPLS)=EMPLS.LE.TVAC.OR.DIPLS.LE.DVAC
           LGVAC(J,0)   =LGVAC(J,0).AND.LGVAC(J,IPLS)
-5106    CONTINUE
-5103  CONTINUE
+ 5106   CONTINUE
+ 5103 CONTINUE
 
       IF (LEVGEO.EQ.3) THEN
         DO 5161 I=1,NPPLG-1
@@ -742,10 +742,10 @@ C
 C
           ZTNI=MAX(DVAC,MIN(DIIN(IPLS,J),1.E20_DP))
           DIINL(IPLS,J)=LOG(ZTNI)
-5205  CONTINUE
+ 5205 CONTINUE
 C
 
- 
+
 !     INTERPOLATE PLASMA PROFILES TO CELL VERTICES
 
       CALL EIRENE_ALLOC_CORNERS(IUNOUT)
@@ -789,8 +789,8 @@ C
         call eirene_cell_to_corner(EZIN,EZCORNER)
         call eirene_cell_to_corner(EFIN,EFCORNER)
       END IF
-     
- 
+
+
 C
 C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
@@ -799,28 +799,28 @@ C
       IF ((NFILEL ==1) .OR. (NFILEL ==3) .OR. (NFILEL ==4)) THEN
          CALL EIRENE_WRPLAM(TRCFLE,0)
       END IF
- 
 
- 
- 
+
+
+
       RETURN
- 
+
       CONTAINS
- 
+
       SUBROUTINE EIRENE_GET_BASE_DENSITY(IRE)
 c  input: ire, number of density that contributes to the
 c              evaluation of the expression for the selected species
 c              ipls with special density/temperature option
       INTEGER, INTENT(IN) :: IRE
       INTEGER :: IG, IT, ISTRA, ITYP
- 
+
       BASE_DENSITY = 0._DP
       BASE_TEMP = 0._DP
- 
+
       IF (ICALL > 0) THEN
- 
+
 C FOR CALLS AFTER PARTICLE TRACING
- 
+
         ISTRA = TDMPAR(IPLS)%TDM%ISTR(IRE)
         ITYP  = TDMPAR(IPLS)%TDM%ITP(IRE)
         IF (ISTRA.EQ.IESTR.OR.ITYP.EQ.4) THEN
@@ -860,7 +860,7 @@ C  NOTHING TO BE DONE
           RETURN
         ENDIF
       END IF   ! ICALL > 0
- 
+
       SELECT CASE (TDMPAR(IPLS)%TDM%ITP(IRE))
       CASE(0)
         IF (ASSOCIATED(PDENPH)) THEN
@@ -916,20 +916,20 @@ C  NOTHING TO BE DONE
         WRITE (IUNOUT,*) ' CHECK INPUT AND RERUN CASE '
         CALL EIRENE_EXIT_OWN(1)
       END SELECT
- 
+
       END SUBROUTINE EIRENE_GET_BASE_DENSITY
- 
- 
- 
+
+
+
       SUBROUTINE EIRENE_GET_SPECTRUM (ICELL,IRE,SPEC,FOUND)
- 
+
       INTEGER, INTENT(IN) :: ICELL, IRE
       TYPE(EIRENE_SPECTRUM), INTENT(OUT) :: SPEC
       LOGICAL, INTENT(OUT) :: FOUND
       INTEGER :: ISPC
- 
+
       FOUND = .FALSE.
- 
+
       DO ISPC = 1, NADSPC
         IF ((ESTIML(ISPC)%ISRFCLL == 2) .AND.
      .      (ESTIML(ISPC)%ISPCSRF == ICELL) .AND.
@@ -939,7 +939,7 @@ C  NOTHING TO BE DONE
             DEALLOCATE (SPEC%SPC)
             DEALLOCATE (SPEC%SDV)
             DEALLOCATE (SPEC%SGM)
-          END IF    
+          END IF
           ALLOCATE (SPEC%SPC(0:ESTIML(ISPC)%NSPC+1))
           ALLOCATE (SPEC%SDV(0:ESTIML(ISPC)%NSPC+1))
           ALLOCATE (SPEC%SGM(0:ESTIML(ISPC)%NSPC+1))
@@ -947,9 +947,8 @@ C  NOTHING TO BE DONE
           FOUND = .TRUE.
         END IF
       END DO
- 
+
       END SUBROUTINE EIRENE_GET_SPECTRUM
- 
- 
+
+
       END SUBROUTINE EIRENE_PLASMA_DERIV
- 

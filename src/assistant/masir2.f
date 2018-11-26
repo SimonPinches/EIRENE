@@ -22,7 +22,7 @@ C
          DO 2 K=N0,N1
             WRITE (iunout,'(1X,I4,1X,A1,12(1X,10I1))') K,'I',
      .            (NLFLD(K,J),J=JA,JE)
-2        CONTINUE
-1     CONTINUE
+    2    CONTINUE
+    1 CONTINUE
       RETURN
       END

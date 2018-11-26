@@ -49,7 +49,7 @@ cdr           New arguments in update_surface.
 cdr           update_surface also called for outgoing bulk particle fluxes
 cdr feb 18 :  M.R.:  bug fix re WEIGHT in one-by-one resampling from census.
 cdr           (was proprietary option, no effects for 3rd parties).
-cdr mar 18 :  prepare missing option: MSURF in case of levgeo=5 plus additional surfaces 
+cdr mar 18 :  prepare missing option: MSURF in case of levgeo=5 plus additional surfaces
 cdr
 
       SUBROUTINE EIRENE_LOCATE
@@ -66,7 +66,7 @@ c
 c
 
 C
-C  LOCATE MONTE-CARLO PARTICLE
+C  LOCATE MONTE CARLO PARTICLE
 C
 C  CALLED AT ENTRY LOCAT0 AT INITIALISATION FOR EACH STRATUM ISTRA
 C     PURPOSE: PRECOMPUTING SOME QUANTITIES TO SPEED UP RANDOM SAMPLING
@@ -194,7 +194,7 @@ C
 
       DO 1 ISPZ=1,NSPZ
         WEISPZ(ISPZ)=-1.
-1     CONTINUE
+    1 CONTINUE
 C
       SUMM = SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA))
 c  at this point: SUMM .gt.0 already verified in calling routine (NLSRON)
@@ -203,7 +203,7 @@ c  at this point: SUMM .gt.0 already verified in calling routine (NLSRON)
       DO 4 ISOUR=1,NSRFSI(ISTRA)
         SUM1=SUM1+SORWGT(ISOUR,ISTRA)
         WMM(ISOUR)=SUM1/SUMM
-4     CONTINUE
+    4 CONTINUE
 C
 C  PREPARE SOME DATA FOR ENERGY SAMPLING AND HISTORY INITIALIZATION
 C
@@ -229,7 +229,7 @@ C
           IUPSOR(ISRFS)=0
           IICSOR(ISRFS)=0
         ENDIF
-5     CONTINUE
+    5 CONTINUE
 C
       SNORM=SQRT(SORCTX(ISTRA)**2+SORCTY(ISTRA)**2+SORCTZ(ISTRA)**2)
       IF (SNORM.GT.EPS10) THEN
@@ -248,7 +248,7 @@ C
         WRITE (iunout,*) 'ISRFS,IICSOR(I),ITISOR(I),IFPSOR(I),IUPSOR(I)'
         DO 6 I=1,NSRFSI(ISTRA)
           WRITE (iunout,*) I,IICSOR(I),ITISOR(I),IFPSOR(I),IUPSOR(I)
-6       CONTINUE
+    6   CONTINUE
       ENDIF
 C
 C  PREPARE SOME DATA FOR SPECIES SAMPLING
@@ -341,7 +341,7 @@ C   RANDOM SEARCH IN RPARTW ARRAY:  "bootstrapping"
 C   BINARY SEARCH
           I1=0
           I2=IPRNL
-9         IM=(I1+I2)/2
+    9     IM=(I1+I2)/2
           IF(A.LT.RPARTW(IM)) THEN
             I2=IM
             GOTO 9
@@ -413,7 +413,7 @@ C Volume source
             LOGION(IION,ISTRA)=.TRUE.
           CASE( 4 )
 C Surface source parameter set below
-C add part for volume source (see above), i.e. check whether needed or 
+C add part for volume source (see above), i.e. check whether needed or
 C elseif below can be used.
           CASE( 0 )
 C Volume source
@@ -458,12 +458,12 @@ C   FIRSTLY FIND POINT NUMBER IPOINT
           ZV=RANF_EIRENE( )
           DO 21 IPOINT=1,NLIMSQ
             IF (ZV.LT.WMM(IPOINT)) GOTO 22
-21        CONTINUE
-22        CONTINUE
+   21     CONTINUE
+   22     CONTINUE
         ENDIF
         ISECT=IPOINT
 C
-C   NEXT FIND CO-ORDINATES AND CELL INDICES,
+C   NEXT FIND COORDINATES AND CELL INDICES,
 C   LOCAL BACKGROUND TEMPERATURES TIWL AND TEWL, AND
 C   LOCAL PLASMA DRIFT VELOCITIES VXWL,VYWL,VZWL FOR EACH BULK
 C   ION SPECIES IPLS=1,NPLSI
@@ -503,9 +503,9 @@ C   FIRST FIND SOURCE-SURFACE NUMBER ISURF
           ZV=RANF_EIRENE( )
           DO 51 ISURF=1,NLIMSQ
             IF (ZV.LT.WMM(ISURF)) GOTO 52
-51        CONTINUE
+   51     CONTINUE
           ISURF=NLIMSQ
-52        CONTINUE
+   52     CONTINUE
         ENDIF
         ISECT=ISURF
 C
@@ -520,7 +520,7 @@ C
           IF (.NOT.LGPART) RETURN
         ELSE
           SELECT CASE( INDIM(ISURF,ISTRA) )
-            CASE( 1 ) 
+            CASE( 1 )
               NLSRFX=.TRUE.
             CASE( 2 )
               NLSRFY=.TRUE.
@@ -645,7 +645,7 @@ C
           CALL EIRENE_STDNOR
      .  (X0,Y0,Z0,INDIM(ISURF,ISTRA),SCOS,MSURF,*55,*55)
         ENDIF
-55      CONTINUE
+   55   CONTINUE
 C
 C  VOLUME SOURCE MODEL  71---90
 C
@@ -656,9 +656,9 @@ C  SUBSTRATA OF VOLUME SOURCE: IVOLM
           ZV=RANF_EIRENE( )
           DO 71 IVOLM=1,NLIMSQ
             IF (ZV.LT.WMM(IVOLM)) GOTO 72
-71        CONTINUE
+   71     CONTINUE
           IVOLM = NLIMSQ
-72        CONTINUE
+   72     CONTINUE
         ENDIF
         ISECT=IVOLM
         CALL EIRENE_SAMVL1(IVOLM,
@@ -733,9 +733,9 @@ C  SPECIES SAMPLING FROM DATM
             DO 102 I=1,NATMIM
               IATM=I
               IF (FR.LE.DATM(IATM)) GOTO 101
-102         CONTINUE
+  102       CONTINUE
             IATM=NATMI
-101         CONTINUE
+  101       CONTINUE
             IF (NSPEZ(ISTRA).LT.0) THEN
 C  WEIGHT CORRECTION
               DAT=DATD(IATM)
@@ -751,9 +751,9 @@ C  ANALOG SPECIES SAMPLING FROM WEISPZ
               IF (WEISPZ(IATM).LT.0.D0) GOTO 999
               SUMM=SUMM+WEISPZ(IATM)
               IF (FR.LE.SUMM) GOTO 111
-112         CONTINUE
+  112       CONTINUE
             IATM=NATMI
-111         CONTINUE
+  111       CONTINUE
           ENDIF
           RSQDV2=RSQDVA(IATM)*SQ2I
 
@@ -775,9 +775,9 @@ C  NONANALOG SPECIES SAMPLING
             DO 104 I=1,NMOLIM
               IMOL=I
               IF (FR.LE.DMOL(IMOL)) GOTO 103
-104         CONTINUE
+  104       CONTINUE
             IMOL=NMOLI
-103         CONTINUE
+  103       CONTINUE
 C  WEIGHT CORRECTION
             IF (NSPEZ(ISTRA).LT.0) THEN
               DML=DMLD(IMOL)
@@ -793,9 +793,9 @@ C  ANALOG SPECIES SAMPLING
               IF (WEISPZ(IMOL).LT.0.D0) GOTO 999
               SUMM=SUMM+WEISPZ(IMOL)
               IF (FR.LE.SUMM) GOTO 113
-114         CONTINUE
+  114       CONTINUE
             IMOL=NMOLI
-113         CONTINUE
+  113       CONTINUE
           ENDIF
           RSQDV2=RSQDVM(IMOL)*SQ2I
 
@@ -817,9 +817,9 @@ C  NONANALOG SPECIES SAMPLING
             DO 106 I=1,NIONIM
               IION=I
               IF (FR.LE.DION(IION)) GOTO 105
-106         CONTINUE
+  106       CONTINUE
             IION=NIONI
-105         CONTINUE
+  105       CONTINUE
 C  WEIGHT CORRECTION
             IF (NSPEZ(ISTRA).LT.0) THEN
               DIO=DIOD(IION)
@@ -835,9 +835,9 @@ C  ANALOG SPECIES SAMPLING
               IF (WEISPZ(IION).LT.0.D0) GOTO 999
               SUMM=SUMM+WEISPZ(IION)
               IF (FR.LE.SUMM) GOTO 115
-116         CONTINUE
+  116       CONTINUE
             IION=NIONI
-115         CONTINUE
+  115       CONTINUE
           ENDIF
           RSQDV2=RSQDVI(IION)*SQ2I
 
@@ -860,9 +860,9 @@ C  NON-ANALOG SPECIES SAMPLING, SKIP SAMPLING IN CASE NPLSI=1
             DO 108 I=1,NPLSIM
               IPLS=I
               IF (FR.LE.DPLS(IPLS)) GOTO 107
-108         CONTINUE
+  108       CONTINUE
             IPLS=NPLSI
-107         CONTINUE
+  107       CONTINUE
 C  WEIGHT CORRECTION
             IF (NSPEZ(ISTRA).LT.0) THEN
               DPL=DPLD(IPLS)
@@ -878,9 +878,9 @@ C  ANALOG SPECIES SAMPLING, SKIP SAMPLING IN CASE NPLSI=1
               IF (WEISPZ(IPLS).LT.0.D0) GOTO 999
               SUMM=SUMM+WEISPZ(IPLS)
               IF (FR.LE.SUMM) GOTO 117
-118         CONTINUE
+  118       CONTINUE
             IPLS=NPLSI
-117         CONTINUE
+  117       CONTINUE
           ENDIF
           RSQDV2=RSQDVP(IPLS)*SQ2I
 
@@ -902,9 +902,9 @@ C  SPECIES SAMPLING FROM DPHOT, SKIP SAMPLING IN CASE NPHOTI=1
             DO 1021 I=1,NPHOTIM
               IPHOT=I
               IF (FR.LE.DPHOT(IPHOT)) GOTO 1011
-1021        CONTINUE
+ 1021       CONTINUE
             IPHOT=NPHOTI
-1011        CONTINUE
+ 1011       CONTINUE
             IF (NSPEZ(ISTRA).LT.0) THEN
 C  WEIGHT CORRECTION
               DPH=DPHD(IPHOT)
@@ -920,9 +920,9 @@ C  ANALOG SPECIES SAMPLING FROM WEISPZ, SKIP SAMPLING IN CASE NPHOTI=1
               IF (WEISPZ(IPHOT).LT.0.D0) GOTO 999
               SUMM=SUMM+WEISPZ(IPHOT)
               IF (FR.LE.SUMM) GOTO 1111
-1121        CONTINUE
+ 1121       CONTINUE
             IPHOT=NPHOTI
-1111        CONTINUE
+ 1111       CONTINUE
           ENDIF
           RSQDV2=0.
       END SELECT
@@ -1292,7 +1292,7 @@ C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
 C
             IF (TIWD.LE.0.) TIWD=ABS(EMAX)
-            NFLAG=2   !  sample from (drifting) maxwellian, no cross section weighting
+            NFLAG=2   !  sample from (drifting) maxwellian, no cross-section weighting
             IDUM=1
             DUMT(1)=SQRT(TIWD/RMASSI(IION))*CVEL2A
             DUMT(2)=DUMT(1)
@@ -1364,7 +1364,7 @@ C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
                   DO 550 IP=1,NPLSI
                     VPWL(IP)=SQRT(VXWL(IP)**2+VYWL(IP)**2+VZWL(IP)**2)
 C                   DIWL(IP)=DIWL(IP)
-550               CONTINUE
+  550             CONTINUE
                   ESHET=NCHRGP(IPLS)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                    NCHRGP,GAMMA,CUR,NPLSI,MSURF)
                 ELSE
@@ -1611,7 +1611,7 @@ C  SPLITTING DONE.
 C
 C  CHEMICAL SPUTTERING
 C
-4711        IF (WGHTSC.GT.0..AND.ISSPTC.GT.0) THEN
+ 4711       IF (WGHTSC.GT.0..AND.ISSPTC.GT.0) THEN
 C  CHEMICAL SPUTTERING, RESTORE CHEMICALLY SPUTTERED PARTICLE PARAMETERS
 C  SCORE ALL RELEVANT TALLIES
               ISPZ=ISSPTC
@@ -1683,7 +1683,7 @@ C  SPLITTING DONE
 C
 C  RESTORE INCIDENT PARTICLE, FOR SURFACE REFLECTION ROUTINE
 C
-4712        CONTINUE
+ 4712       CONTINUE
 
 csw 10jan2012
 cvk       IF (ILSPT(MSURF).NE.0) THEN
@@ -1702,7 +1702,7 @@ C
 C
 C  NEXT: CALL REFLECTION MODEL
 C
-540         CONTINUE
+  540       CONTINUE
             CALL EIRENE_REFLC1 (WMINS,FMASS,FCHAR,NPRT(ISPZ),
      .                   ISRF(ISPZ,MSURF),ISRT(ISPZ,MSURF))
             ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -1796,7 +1796,7 @@ C  SAMPLE IIRC (AND HENCE: IRRC) FROM CUMDIS
                   ENDIF
                 ENDDO
                 IIRC=NPRCI(IPLS)
-560             IRRC=LGPRC(IPLS,IIRC)
+  560           IRRC=LGPRC(IPLS,IIRC)
               ENDIF
             ELSE
 C  RECOMBINATION PROCESS IRRC IS KNOWN FOR THIS SUBSTRATUM
@@ -1843,7 +1843,7 @@ C  IS THERE A TEST SECONDARY ?
               GOTO 999
             ENDIF
 C
-570         CONTINUE
+  570       CONTINUE
 C  IS THERE A 2ND SECONDARY ?
 C
 C   BULK SECONDARY ?
@@ -1883,7 +1883,7 @@ C  TEST SECONDARY ?
             ENDIF
 
 C  EXACTLY ONE TEST PARTICLE SECONDARY HAS NOW BEEN IDENTIFIED
-580         CONTINUE
+  580       CONTINUE
             IF (ITYP.GE.4.OR.ITYP.LT.0) GOTO 999
             ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
@@ -2198,7 +2198,7 @@ C  TALLIES FOR SECONDARY ELECTRONS  (TO BE DONE)
 C
       END SELECT
 C
-5000  CONTINUE
+ 5000 CONTINUE
 
 !  PARTICLE TYPE AND SPECIES HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES
@@ -2319,7 +2319,7 @@ C  TOROIDAL CELL NO. MAY BE WRONG
 
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: ILSIDE OF SOURCE SURFACE IS 0.'
       WRITE (iunout,*)
      .  'THUS NO OUTER NORMAL CAN BE DEFINED. EXIT CALLED'
@@ -2328,41 +2328,41 @@ C
       WRITE (iunout,*) 'MSURF,ISTSF,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  MSURF,ITRSF,NRCELL,NPCELL,NTCELL
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: INCONSISTENT INPUT FLAGS   '
       WRITE (iunout,*) 'MSURF = ',MSURF
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: RADON-NIKODYM CONDITION    '
       WRITE (iunout,*) 'VIOLATED FOR NON-ANALOG SOURCE SPECIES SAMPLING'
       WRITE (iunout,*) 'CHECK DATM,DMOL,DION OR DPLS ARRAYS (BLOCK) 6 '
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'PARTICLE LAUNCHED OUTSIDE THE COMPUTATIONAL BOX'
       WRITE (iunout,*) 'OR WITH INVALID CELL INDICES'
       WRITE (iunout,*) 'NPANU,X0,Y0,Z0 ',NPANU,X0,Y0,Z0
       WRITE (iunout,*) 'NRCELL,NPCELL,NTCELL,NBLOCK,NACELL ',
      .                  NRCELL,NPCELL,NTCELL,NBLOCK,NACELL
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'BULK ION LAUNCHED IN WRONG DIRECTION'
       WRITE (iunout,*) 'NPANU,VXWL,VYWL,VZWL ',
      .                  NPANU,VXWL(IPLS),VYWL(IPLS),VZWL(IPLS)
       WRITE (iunout,*) '      CRTX,CRTY,CRTZ ',CRTX,CRTY,CRTZ
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*)
      .  'TEST PARTICLE LAUNCHED WITH INVALID CELL INDICES'
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       WEIGHT=0.
       LGPART=.FALSE.
       RETURN
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: NEMODS,ITYP= ',
      .                  NEMODS(ISTRA),ITYP
       WRITE (iunout,*) 'INVALID OPTION. TIWD= ',TIWD
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: TYPE OR SPECIES OUT OF RANGE'
       CALL EIRENE_EXIT_OWN(1)
       END

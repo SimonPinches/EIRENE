@@ -17,28 +17,28 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
 
 
       MODULE EIRMOD_COMPRT
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_COMPRT, EIRENE_DEALLOC_COMPRT,
      P          EIRENE_INIT_COMPRT, EVENT_TYPE
- 
+
       TYPE :: EVENT_TYPE
         INTEGER :: NCELL, ITYP, ISPEZ, IFLAG
         REAL(DP) :: E0, WEIGHT
       END TYPE EVENT_TYPE
- 
+
       TYPE(EVENT_TYPE), PUBLIC, SAVE :: LAST_EVENT
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RPST(:)
- 
+
       REAL(DP), PUBLIC, POINTER, SAVE :: RPSTT(:)
- 
+
 C NPARTT PARTICLE COORDINATES FOR CENSUS ARRAY
 C NPARTC PARTICLE COORDINATES, REAL, (E.G.: SPLITTING)
 C NPARTT AND NPARTC ARE SET IN EIRMOD_PARMMOD, CURRENTLY:
@@ -51,26 +51,26 @@ C NPARTC=12
      R XGENER  ! UP TO HERE: STORE FULL PARTICLE INFORMATION
 
 C  SOME FURTHER REAL VARIABLES USED ALONG PARTICLE TRAJECTORY
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TIMINT(:), TIMPOL(:,:)
- 
+
       REAL(DP), PUBLIC, SAVE ::
      R TL,     TT,     TS,     TF,     ZT,         ZDT1,
      R CRTX,   CRTY,   CRTZ,   SCOS,   SCOS_SAVE,  WGHTSP, WGHTSC,
      R CRTXG,  CRTYG,  CRTZG
- 
+
       REAL(DP), PUBLIC, SAVE ::
      R VEL_MEAN, VELX_MEAN, VELY_MEAN, VELZ_MEAN, E0_MEAN
- 
+
       REAL(DP), PUBLIC, SAVE :: STEMIS, STWEI, DE0_RAYL, DE0_RAYR
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: E0_RAY(:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: IPSTD(:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE :: IPST(:), IPSTT(:)
- 
+
 C MPARTT PARTICLE COORDINATES, REDUCED SET FOR CENSUS ARRAY
 C MPARTC PARTICLE COORDINATES, FULL SET, INTEGER, (E.G.: SPLITTING)
 C MPARTT AND MPARTC ARE SET IN EIRMOD_PARMMOD, CURRENTLY:
@@ -87,23 +87,23 @@ C MPARTC=14
      I MSURFG
 
 C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NTIM(:), IIMPOL(:,:), IIMINT(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NRCELL, NPCELL, NTCELL, NACELL, NBLOCK, NBLCKA, NSTCLL,
      I IC_NEUT, IC_ION,
      I ITYP,   IATM,   IMOL,   IION,   IPLS,   IPHOT,
      I ICOL,   IPOLGN, NINCX,  NINCY,  NINCZ,  NINCA,  NJUMP,
      I NIMINT, ITRJ,
- 
+
 c  unrelated to particle trajectories:  IO streams
      I IUNIN,  IUNOUT, IVTKOUT
 
       DATA IUNIN / 1 /  ! must be known already during compile time.
 c                       ! better: move iunin, iunout, etc.. to parmmod ??
- 
+
 !     VARIABLES FOR UNIFIED SUBROUTINES
       INTEGER, PUBLIC, SAVE ::
      I IXSPZ, NMETOFF
@@ -112,33 +112,33 @@ c                       ! better: move iunin, iunout, etc.. to parmmod ??
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
      L NLTRC,  NLTRJ
- 
 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_COMPRT(NPRS)
 
       INTEGER, INTENT(IN) :: NPRS
- 
+
       IF (ALLOCATED(RPST)) RETURN
- 
+
       ALLOCATE (RPST(NPARTC))
       ALLOCATE (IPSTD(MPARTC+1))
- 
+
       ALLOCATE (TIMINT(NRADS))
       ALLOCATE (TIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (NTIM(NRADS))
       ALLOCATE (IIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (IIMINT(NRADS))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' COMPRT ',(NPARTC+NRADS+N1STS*N2NDPLGS)*8 +
      .                 (MPARTC+1+NRADS+N1STS*N2NDPLGS+NRADS)*4
- 
+
       RPSTT => RPST      !  full (1: npartc) particle information, real
- 
+
       X0     => RPST( 1)
       Y0     => RPST( 2)
       Z0     => RPST( 3)
@@ -153,11 +153,11 @@ c                       ! better: move iunin, iunout, etc.. to parmmod ??
 c  up to here: for census, npartt
       XGENER => RPST(12)
 c  up to here: for splitting, npartc
- 
+
       IPST  => IPSTD(2:MPARTC+1)  !  full (2: mpartc+1) particle information, integer
 
       IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census
- 
+
       NPANU  => IPSTD( 1)
       IPOLG  => IPSTD( 2)
       IPERID => IPSTD( 3)
@@ -175,43 +175,43 @@ c  up to here: for census, mpartt
       MSURF  => IPSTD(14)
 c  up to here: for splitting, mpartc
       MSURFG => IPSTD(15)
- 
+
       CALL EIRENE_INIT_COMPRT (NPRS)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMPRT
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_COMPRT
- 
+
       IF (.NOT.ALLOCATED(RPST)) RETURN
- 
+
       DEALLOCATE (RPST)
       DEALLOCATE (IPSTD)
- 
+
       DEALLOCATE (TIMINT)
       DEALLOCATE (TIMPOL)
       DEALLOCATE (NTIM)
       DEALLOCATE (IIMPOL)
       DEALLOCATE (IIMINT)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMPRT
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_COMPRT (NPRS)
 
       INTEGER, INTENT(IN) :: NPRS
- 
+
       RPST   = 0._DP
       IPSTD  = 0
- 
+
       TIMINT = 0._DP
       TIMPOL = 0._DP
       NTIM   = 0
       IIMPOL = 0
       IIMINT = 0
- 
+
       TL     = 0._DP
       TT     = 0._DP
       TS     = 0._DP
@@ -228,7 +228,7 @@ c  up to here: for splitting, mpartc
       CRTXG  = 0._DP
       CRTYG  = 0._DP
       CRTZG  = 0._DP
- 
+
       NRCELL = 0
       NPCELL = 0
       NTCELL = 0
@@ -255,7 +255,7 @@ c  up to here: for splitting, mpartc
       NIMINT = 0
       ITRJ   = 0
 
- 
+
       LGPART = .FALSE.
       LGLAST = .FALSE.
       LGTIME = .FALSE.
@@ -265,14 +265,14 @@ c  up to here: for splitting, mpartc
       NLSRFA = .FALSE.
       NLTRC  = .FALSE.
       NLTRJ  = .FALSE.
- 
+
       LAST_EVENT%IFLAG  = 0
       LAST_EVENT%NCELL  = 0
       LAST_EVENT%ITYP   = 0
       LAST_EVENT%ISPEZ  = 0
       LAST_EVENT%E0     = 0._DP
       LAST_EVENT%WEIGHT = 0._DP
- 
+
       DE0_RAYL = 0._DP
       DE0_RAYR = 0._DP
 
@@ -281,9 +281,9 @@ c     IUNIN = 1
       IUNOUT = 6 + IFOFF
       IF (NPRS > 1) IUNOUT = 7 + IFOFF
       IVTKOUT= 28
-      
-            
+
+
       RETURN
       END SUBROUTINE EIRENE_INIT_COMPRT
- 
+
       END MODULE EIRMOD_COMPRT

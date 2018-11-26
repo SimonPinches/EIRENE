@@ -292,7 +292,7 @@ C  CELL I ALREADY TESTED BEFORE ?
               INUM=INUM+1
               IM = I
             ENDIF
-5           HELPCUR(J)%P => HELPCUR(J)%P%NEXT
+    5       HELPCUR(J)%P => HELPCUR(J)%P%NEXT
           ENDDO
         ENDDO
         IF (IM.LT.1.OR.IM.GT.NTRII) THEN
@@ -354,16 +354,16 @@ C
               D12(I,L)=SQRT((XPOL(I,L)-XPOL(I,L+1))**2+
      .                      (YPOL(I,L)-YPOL(I,L+1))**2)
               D12I(I,L)=1./(ABS(D12(I,L))+EPS60)
-2           CONTINUE
-1         CONTINUE
+    2       CONTINUE
+    1     CONTINUE
           DO 3 I=1,NR1STM
 !pb            DO 4 L=1,NP2ND
             DO 4 L=1,NRPLG
               D14(I,L)=SQRT((XPOL(I,L)-XPOL(I+1,L))**2+
      .                      (YPOL(I,L)-YPOL(I+1,L))**2)
               D14I(I,L)=1./(ABS(D14(I,L))+EPS60)
-4           CONTINUE
-3         CONTINUE
+    4       CONTINUE
+    3     CONTINUE
 C
           ALLOCATE(HEADS4(100,100))
           ALLOCATE (OBSC(N1ST,N2ND))
@@ -635,7 +635,7 @@ C  OPPOSITE ORIENTATION: ALL D NEGATIVE ?
               LM=L
               GOTO 25
             ENDIF
-25          CONTINUE
+   25       CONTINUE
 C   CHECK SECOND TRIANGLE
             O13 =-O31
             O34 =-(X4-X)*(Y3-Y)+(Y4-Y)*(X3-X)
@@ -660,14 +660,14 @@ C  OPPOSITE ORIENTATION: ALL D NEGATIVE ?
               LM=L
               GOTO 27
             ENDIF
-27          CONTINUE
+   27       CONTINUE
             IF (INTR1+INTR2.EQ.1) THEN
               INUM=INUM+1
               GOTO 20
             ENDIF
             ENDIF
 C
-20          HELPP => HELPP%NEXT
+   20       HELPP => HELPP%NEXT
           ENDDO
         ENDDO
 C
@@ -676,7 +676,7 @@ C
 C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
 C  FIRST TRY RADIAL SURFACES
 C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
-500     CONTINUE
+  500   CONTINUE
         IMARK = -1
         LMARK = -1
         DO J=1,4
@@ -685,7 +685,7 @@ C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
             I = HELPP%IX
             L = HELPP%IY
 !pb121         IF (L.GT.NP2NDM) GOTO 21
-121         IF (L.GT.NRPLG-1) GOTO 21
+  121       IF (L.GT.NRPLG-1) GOTO 21
             XMX1=X-XPOL(I,L)
             YMY1=Y-YPOL(I,L)
             XMX2=X-XPOL(I,L+1)
@@ -698,7 +698,7 @@ C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
               LMARK=L
               ERRMIN=ERR1
             ENDIF
-21          CONTINUE
+   21       CONTINUE
             IF (I .EQ. NR1STM) THEN
               I = I+1
               GOTO 121
@@ -714,13 +714,13 @@ C  THIS SECTION ALSO: IF LOGX, CHECK ON RADIAL SURFACE IA
 C
 C  NEXT TRY POLOIDAL SURFACES
 C  THIS SECTION ALSO: IF LOGY, CHECK ON POLOID. SURFACE IA  (750...)
-700     CONTINUE
+  700   CONTINUE
         DO J=1,4
           HELPP => HELPCUR4(J)%P
           DO WHILE (ASSOCIATED(HELPP))
             I = HELPP%IX
             L = HELPP%IY
-221         IF ((I .LT. IAN) .OR. (I .GT. IEN)) GOTO 22
+  221       IF ((I .LT. IAN) .OR. (I .GT. IEN)) GOTO 22
             XMX1=X-XPOL(I,L)
             YMY1=Y-YPOL(I,L)
             XMX4=X-XPOL(I+1,L)
@@ -733,7 +733,7 @@ C  THIS SECTION ALSO: IF LOGY, CHECK ON POLOID. SURFACE IA  (750...)
               LMARK=L
               ERRMIN=ERR4
             ENDIF
-22          CONTINUE
+   22       CONTINUE
             DO KH=1,NPPLG
               IF (L .EQ. NPOINT(2,KH)-1) THEN
                 L = L + 1
@@ -748,7 +748,7 @@ C  THIS SECTION ALSO: IF LOGY, CHECK ON POLOID. SURFACE IA  (750...)
         IF (ERRMIN.LE.EPS10) GOTO 1000
         GOTO 800
 C
-750     CONTINUE
+  750   CONTINUE
         DO J=1,4
           HELPP => HELPCUR4(J)%P
           DO WHILE (ASSOCIATED(HELPP))
@@ -767,14 +767,14 @@ C
               LMARK=IA
               ERRMIN=ERR7
             ENDIF
-23          HELPP => HELPP%NEXT
+   23       HELPP => HELPP%NEXT
           ENDDO
         ENDDO
         IM=IMARK
         LM=LMARK
         IF (ERRMIN.LE.EPS10) GOTO 1000
 C
-800     CONTINUE
+  800   CONTINUE
         IF (INUM.EQ.0.AND.ERRMIN.GT.EPS10) THEN
           CALL EIRENE_MASAGE
      .               ('X,Y OUT OF RANGE IN LEARC1                   ')
@@ -795,7 +795,7 @@ C
           CALL EIRENE_LEER(1)
         ENDIF
 C
-1000    CONTINUE
+ 1000   CONTINUE
 C
         EIRENE_LEARC1=IM
         IPO=LM
@@ -819,7 +819,7 @@ C
           XEQ=XE*XE
           ATQ=XEQ+YQ/ELLQ(I)
           IF (ATQ.LT.RQ(I)) GOTO 15
-10      CONTINUE
+   10   CONTINUE
         IF (ATQ.LE.RQ(I)+EPS12) GOTO 15
 C
         CALL EIRENE_MASAGE
@@ -830,7 +830,7 @@ C
         CALL EIRENE_LEER(1)
 CDR     CALL EIRENE_EXIT_OWN(1)
 C
-15      CONTINUE
+   15   CONTINUE
         EIRENE_LEARC1=IM
 C
 C::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -846,12 +846,12 @@ C
         IM=1
         IF (NR1ST.LT.2) GOTO 250
 
-cdr  we should do a binary search here. or just call learca1 
+cdr  we should do a binary search here. or just call learca1
         DO 200 J=IA,IE
           I=J+1
           IM=J
           IF (X.LT.RSURF(I)) GOTO 250
-200     CONTINUE
+  200   CONTINUE
         IF (X.LE.RSURF(I)+EPS12) GOTO 250
 C
         CALL EIRENE_MASAGE
@@ -862,7 +862,7 @@ C
         CALL EIRENE_LEER(1)
 CDR     CALL EIRENE_EXIT_OWN(1)
 C
-250     CONTINUE
+  250   CONTINUE
         EIRENE_LEARC1=IM
 C
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

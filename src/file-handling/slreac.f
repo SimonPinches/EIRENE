@@ -29,7 +29,7 @@ C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                          ELNAME, IZ1, 
+     .                          ELNAME, IZ1,
      .                          IROW_ESC, ICOL_ESC, POP_ESC)
 c
 c  open data stream 29 and read atomic dataset no. IR
@@ -122,8 +122,8 @@ C          5 for other quantities, population densities, etc.. (ISW=11,12)
 c
 c
 C       IFTFLG(IR,IH) DEFAULTS:
- 
-C           CASE IH=0  (H.0):                    
+
+C           CASE IH=0  (H.0):
 C       IFTFLG(IR,0)   =2,  FOR INTERACTION POTENTIAL (GEN. MORSE)
 
 C           CASE  IH=1  (H.1):
@@ -614,11 +614,11 @@ C  AT THIS POINT: FILNAM= AMJUEL, HYDHEL, H2VIBR, METHAN, i.e. single or double 
 
 CC  now identify proper dataset within file FILNAM
 
-100   READ (29+ifoff,'(A80)',END=990) ZEILE
+  100 READ (29+ifoff,'(A80)',END=990) ZEILE
       IF (INDEX(ZEILE,'##BEGIN DATA HERE##').EQ.0) GOTO 100
 
       LAST_TEX=REPEAT(' ',80)
-1     READ (29+ifoff,'(A80)',END=990) ZEILE
+    1 READ (29+ifoff,'(A80)',END=990) ZEILE
 !ITER IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
 !PB      IF (INDEX(ZEILE,H123).EQ.0 .or.
 !PB  .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
@@ -630,7 +630,7 @@ CC  now identify proper dataset within file FILNAM
      .      (INDEX(ZEILE,SECTION) .EQ. 0)) GOTO 1
       END IF
 C
-2     READ (29+ifoff,'(A80)',END=990) ZEILE
+    2 READ (29+ifoff,'(A80)',END=990) ZEILE
 !ITER IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
       IF (INDEX(ZEILE,'H.').NE.0 .and.
      .    INDEX(ZEILE,'section').NE.0) GOTO 990
@@ -643,7 +643,7 @@ C
       IF (ISW.EQ.0.OR.ISW.EQ.1.OR.ISW.EQ.2.OR.ISW.EQ.5.OR.ISW.EQ.8.OR.
      .    ISW.EQ.11) THEN
 
-3       READ (29+ifoff,'(A80)',END=990) ZEILE
+    3   READ (29+ifoff,'(A80)',END=990) ZEILE
         INDFF=INDEX(ZEILE,FITFLAG)
         IF (INDEX(ZEILE,CHR)+INDFF.EQ.0) GOTO 3
 c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
@@ -666,9 +666,9 @@ C  THREE LINES WITH THREE DATA PER LINE
 !ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
               IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
               READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
-4           CONTINUE
+    4       CONTINUE
             READ (29+ifoff,'(A80)',END=990) ZEILE
-9         CONTINUE
+    9     CONTINUE
         END IF
 C
 
@@ -688,7 +688,7 @@ C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
 C READ 3 BLOCKS "J" OF DATA. each block contains 9 LINES, 3 numbers per line, i.e. 3 sub blocks
         DO 11 J=0,2
-16        READ (29+ifoff,'(A80)',END=990) ZEILE
+   16     READ (29+ifoff,'(A80)',END=990) ZEILE
 C  SEARCH FOR STRING 'fit-flag'  or 'Index'
           INDFF=INDEX(ZEILE,'fit-flag')
           IF (INDEX(ZEILE,'Index')+INDFF.EQ.0) GOTO 16
@@ -709,9 +709,9 @@ C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1
 c    first  index I: I-th block, vertical, Temp. dependence
 c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
 c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
-17          CONTINUE
+   17       CONTINUE
           END IF
-11      CONTINUE
+   11   CONTINUE
         READ (29+ifoff,'(A80)',END=990) ZEILE
 C   AT THIS POINT WE HAVE STORED FOR REACTION ir: , DATA TYPE iflg: 0,...,5
 C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
@@ -724,7 +724,7 @@ C  DOUBLE PARAMETER POLYNOMIAL FITS: DONE
 C
       ENDIF
 
-1000  CONTINUE
+ 1000 CONTINUE
 
 C  NEXT: READ ASYMPTOTICS INFORMATION FROM ATOMIC DATA FILE
 C        HYDHEL, AMJUEL, H2VIBR, METHANE.
@@ -799,7 +799,7 @@ c
         END IF
 c
 c  currently foreseen asymptotic data identifiers in data files:
-c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX, 
+c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX,
 c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
 c                    P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
@@ -822,7 +822,7 @@ c  default extrapolation from r1mx (by constant continuation) will be: jfex1mx=4
           CALL EIRENE_READ_RANGE (ULINE,C2L,'EXT-FLG',R2MN,IF2MN)
           LGR2MIN = .TRUE.
 c  old default: 2nd-order polynomial beyond valid range, with coefs. FPL2
-          IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5 
+          IF (IF2MN == 0 .AND. LGC2MIN) IF2MN = 5
 c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
           IF (IF2MN == 0) IF2MN = 4
         END IF
@@ -830,7 +830,7 @@ c  default extrapolation from r2mn (by constant continuation) will be: jfex2mn=4
           CALL EIRENE_READ_RANGE (ULINE,C2R,'EXT-FLG',R2MX,IF2MX)
           LGR2MAX = .TRUE.
 c  old default: 2nd-order polynomial beyond valid range, with coefs. FPr2
-          IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5 
+          IF (IF2MX == 0 .AND. LGC2MAX) IF2MX = 5
 c  default extrapolation from r2mx (by constant continuation) will be: jfex2mx=4
           IF (IF2MX == 0) IF2MX = 4
         END IF
@@ -946,7 +946,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR2MIN) RC2MIN = LOG(R2MN)
         IF (LGC2MIN) FP2(1:3) = FP2L
         JFEX2MN = IF2MN
-        IF (LGR2MIN .AND. LGC2MIN .AND. (JFEX2MN == 0)) 
+        IF (LGR2MIN .AND. LGC2MIN .AND. (JFEX2MN == 0))
 ! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .         JFEX2MN = 5
       END IF
@@ -975,11 +975,11 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGC2MAX) FP2(4:6) = FP2R
         JFEX2MX = IF2MX
         IF (LGR2MAX .AND. LGC2MAX .AND. (JFEX2MX == 0))
-! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE 
+! DEFAULT EXTRAPOLATION=EXP(FP(1)+FP(2)*PARM+FP(3)*PARM**2), 2ND ORDER ON LOG SCALE
      .        JFEX2MX = 5
       END IF
 C
-2000  CONTINUE
+ 2000 CONTINUE
 
       CALL
      .  EIRENE_SET_REACTION_DATA   ! this routine sets only "POLY" data
@@ -993,16 +993,16 @@ C
 C
       RETURN
 C
-990   WRITE (iunout,*) ' NO DATA FOUND FOR REACTION ',H123,' ',REAC,
+  990 WRITE (iunout,*) ' NO DATA FOUND FOR REACTION ',H123,' ',REAC,
      .                 ' IN DATA SET ',FILNAM
       WRITE (iunout,*) ' IR,MODCLF(IR) ',IR,MODCLF(IR)
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
-991   WRITE (iunout,*) ' INVALID CONSTANT IN SLREAC. CONST= ',CONST
+  991 WRITE (iunout,*) ' INVALID CONSTANT IN SLREAC. CONST= ',CONST
       WRITE (iunout,*) ' CHECK "REACTION CARDS" FOR REACTION NO. ',IR
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
-6664  FORMAT (6E12.4)
+ 6664 FORMAT (6E12.4)
 
       CONTAINS
 
@@ -1033,13 +1033,13 @@ c  called from slreac, after the original fit coefficients for reaction IR
 c  are read.
 c  At this point an extrapolation card ZEILE belonging to this reaction IR
 c  has already been found.
-c  
+c
 c  This routine:
-c  Reads validity range from atomic data file: 
-c  Search in ZEILE for key1, key2 and return: RNG, IFX 
+c  Reads validity range from atomic data file:
+c  Search in ZEILE for key1, key2 and return: RNG, IFX
 
 c  key1:  'ELABMIN', 'ELABMAX',   'T1MIN','T1MAX','E2MIN','E2MAX',
-C         'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=, 
+C         'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=,
 C                     read RNG (unformatted, real)
 c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
 

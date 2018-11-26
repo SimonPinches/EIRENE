@@ -34,4 +34,3 @@ C> transfer to the external code
       INTEGER, INTENT(IN) :: ISTRA
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
-

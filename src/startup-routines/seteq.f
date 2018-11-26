@@ -4,9 +4,9 @@ C
 !                  IGJUM2 in case of bit arrays
 ! 1.02.08  Bugfix: check of IGJUM1 replaced by check of IGJUM2
 !                  Bug was relevant for switching of IGJUM2 in case of bit arrays
- 
+
       SUBROUTINE EIRENE_SETEQ
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -14,9 +14,9 @@ C
       USE EIRMOD_CADGEO
       USE EIRMOD_CTRCEI
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: SG
       INTEGER :: NLBT, IEQ, J, IDIMP, K, I, IEQ1
       LOGICAL EIRENE_BITGET
@@ -72,12 +72,12 @@ C
           WRITE (iunout,*) 'EQUATION OF SURFACE NO. ',IEQ
           CALL EIRENE_LEER(1)
         ENDIF
-1     CONTINUE
+    1 CONTINUE
 C
 C  NEXT: NON DEFAULT STANDARD SURFACES
 C  JUMLIM=0 FOR STANDARD SURFACES, ONLY LGJUM2 IS USED IN TIME-ROUTINES
 C
- 
+
 !pb apparently not needed as IGJUM2 refers to second order additional
 !pb surfaces only
       IF (.FALSE.) THEN
@@ -94,7 +94,7 @@ C  SEARCH ONLY IN THE SAME (RADIAL, POLOIDAL OR TOROIDAL) GRID
         IEQ=0
         DO 11 I=1,NSTSI
           IF (INUMP(I,IDIMP).EQ.IEQ1) IEQ=NLIM+I
-11      CONTINUE
+   11   CONTINUE
         IF (NLIMPB >= NLIMPS) THEN
           IGJUM2(J,IEQ)=1
           IGJUM2(IEQ,J)=1
@@ -108,7 +108,7 @@ C  SEARCH ONLY IN THE SAME (RADIAL, POLOIDAL OR TOROIDAL) GRID
           WRITE (iunout,*) 'EQUATION OF SURFACE NO. ',IEQ
           CALL EIRENE_LEER(1)
         ENDIF
-10    CONTINUE
+   10 CONTINUE
       END IF  !pb
 C
 C  LGJUM1: COMMUTATIVE
@@ -159,7 +159,7 @@ C  LGJUM2: ASSOCIATIVE
           END IF
         END DO
       END IF
- 
+
 !pb apparently not needed as IGJUM2 refers to second order additional
 !pb surfaces only
       IF (.FALSE.) THEN
@@ -184,7 +184,7 @@ C  LGJUM2: ASSOCIATIVE
             END IF
           END DO
         END IF
-200   CONTINUE
+  200 CONTINUE
       END IF
       RETURN
       END
