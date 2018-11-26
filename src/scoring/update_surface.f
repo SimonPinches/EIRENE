@@ -246,7 +246,7 @@ c... from an incident bulk ion
           goto 999
         ENDIF
 
-c  a test-ion is reemitted
+c  a test ion is reemitted
       ELSEIF (ITYP.EQ.3) THEN
         LOGION(IION,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN

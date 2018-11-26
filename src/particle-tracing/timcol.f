@@ -157,6 +157,7 @@ cdr out ini
         ENDIF
 cdr out end
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
+c spatial resolution on time-surface is not available. MSURFG ?
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.
         RETURN 2
