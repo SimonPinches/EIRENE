@@ -579,8 +579,10 @@ C         Reserved for default, see below
       SELECT CASE (NFILEL)
         CASE (1)
           IF (NLSHRT13) THEN
-            WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA' 
-            WRITE (iunout,*) '       NEEDED FOR INTERNAL EIRENE CYCLING'
+            WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA,' 
+            WRITE (iunout,*) '       STARTING FROM SPECIES NUMBER'
+            WRITE (iunout,*) '       NFLA+1 (COUPLING VARIABLE, BLOCK'
+            WRITE (iunout,*) '       14),'
           ELSE
             WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -590,8 +592,9 @@ C         Reserved for default, see below
         CASE (2)
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
-            WRITE (iunout,*) '       PLASMA DATA NEEDED FOR INTERNAL' 
-            WRITE (iunout,*) '       EIRENE CYCLING'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -600,16 +603,17 @@ C         Reserved for default, see below
         CASE (3)
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
-            WRITE (iunout,*) '       PLASMA DATA NEEDED FOR INTERNAL'
-            WRITE (iunout,*) '       EIRENE CYCLING'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
           ENDIF
           WRITE (iunout,*) '       FROM FILE FT13 AND'
           IF (NLSHRT13) THEN
-            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA NEEDED FOR'
-            WRITE (iunout,*) '       INTERNAL EIRENE CYCLING'
+            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
           ELSE
             WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -619,15 +623,16 @@ C         Reserved for default, see below
         CASE (4)
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
-            WRITE (iunout,*) '       PLASMA DATA NEEDED FOR INTERNAL'
-            WRITE (iunout,*) '       EIRENE CYCLING'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA'
           END IF
           WRITE (iunout,*) '       FROM FILE FT13 AND'
           IF (NLSHRT13) THEN
-            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA NEEDED FOR'
-            WRITE (iunout,*) '       INTERNAL EIRENE CYCLING'
+            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
           ELSE
             WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
