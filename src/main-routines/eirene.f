@@ -300,7 +300,7 @@ C  AND CARRY THEM OUT
      .                                ' NPTS(MOD)= ',NRECOM(ISTRAI)
               NPTS(ISTRAI)=NRECOM(ISTRAI)
 162         CONTINUE
-          CASE (5:6)
+          CASE (4:5)
 C read stratum run time from prvious run
             CALL EIRENE_RREC
         END SELECT
@@ -394,11 +394,8 @@ C
 C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS FOR NEXT 
 C  RUN AND WRITE THEM TOGETHER WITH THE STRATUM RUN TIME ON FT 14
 C
-      IF (NFILEK.EQ.1.OR.NFILEK.EQ.3.OR.NFILEK.EQ.4.OR.NFILEK.EQ.6) THEN
+      IF (NFILEK.EQ.1.OR.NFILEK.EQ.3.OR.NFILEK.EQ.5) THEN
 c  this should not be done in a "read run" (NFILEN=2 or =7)
-c   achtung !!!!!!!!!!!!!
-c   not ready for parallel mode
-c
         CALL EIRENE_WRREC
       ENDIF
 
