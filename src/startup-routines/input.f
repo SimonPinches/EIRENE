@@ -644,27 +644,43 @@ C         Reserved for default, see below
       END SELECT
       IF (NFILEL.NE.0) CALL EIRENE_LEER(1)
 
-      IF (NFILEK.EQ.1) THEN
-        WRITE (iunout,*)
-     .    '       EIRENE SAVES DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*) '       MODIFICATIONS ON FILE FT14'
-      ELSEIF (NFILEK.EQ.2) THEN
-        WRITE (iunout,*)
-     .    '       EIRENE READS DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*)
-     .    '       MODIFICATIONS FROM FILE FT14, AND CARRIES'
-        WRITE (iunout,*) '       THEM OUT IN THIS RUN'
-      ELSEIF (NFILEK.EQ.3) THEN
-        WRITE (iunout,*)
-     .    '       EIRENE READS OLD DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*)
-     .    '       MODIFICATIONS FROM FILE FT14, AND CARRIES'
-        WRITE (iunout,*) '       THEM OUT IN THIS RUN'
-        WRITE (iunout,*)
-     .    '       EIRENE SAVES NEW DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*)
-     .    '       MODIFICATIONS ON FILE FT14 FOR NEXT RUN'
-      ENDIF
+      SELECT CASE (NFILEK)
+        CASE (1)
+          WRITE (iunout,*)
+     .      '       EIRENE SAVES DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*) 
+     .      '       MODIFICATIONS AND RUN TIME PER STRATUM ON FILE FT14'
+        CASE (2)
+          WRITE (iunout,*)
+     .      '       EIRENE READS DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*)
+     .      '       MODIFICATIONS AND RUN TIME PER STARTUM FROM FILE'
+          WRITE (iunout,*) 
+     .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
+        CASE (3)
+          WRITE (iunout,*)
+     .      '       EIRENE READS OLD DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*)
+     .      '       MODIFICATIONS AND RUN TIME PER STARTUM FROM FILE'
+          WRITE (iunout,*) 
+     .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
+          WRITE (iunout,*)
+     .      '       EIRENE SAVES NEW DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*)
+     .      '       MODIFICATIONS AND RUN TIME PER STRATUM ON FILE FT14'
+          WRITE (iunout,*) '       FOR NEXT RUN'
+        CASE (4)
+          WRITE (iunout,*)
+     .      '       EIRENE READS OLD RUN TIME PER STRATUM FROM FILE'
+          WRITE (iunout,*) '       FT14'
+        CASE (5)
+          WRITE (iunout,*)
+     .      '       EIRENE READS OLD RUN TIME PER STARTUM FROM FILE'
+          WRITE (iunout,*) '       FT14'
+          WRITE (iunout,*)
+     .      '       EIRENE SAVES NEW RUN TIME PER STRATUM ON FILE FT14'
+          WRITE (iunout,*) '       FOR NEXT RUN'
+      END SELECT
       IF (NFILEK.NE.0) CALL EIRENE_LEER(1)
 
       IF (NFILEJ.EQ.1.AND.NTIME.GT.0) THEN

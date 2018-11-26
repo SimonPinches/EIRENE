@@ -36,6 +36,7 @@ C> - tallies
       USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS, NSTRA,
      .                          NLMPGS, NRTALS, NCPV_STAT, NCV, NLIMPS,
      .                          NRTAL, NADSPC, NVOLTL, NSDW, NSD, NSRFTL
+      USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
       USE EIRMOD_COMSOU, ONLY: NLSRON
       USE EIRMOD_CESTIM, ONLY: ESTIML, ESTIMS, ESTIMV
@@ -131,11 +132,9 @@ C
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) XMCP(istra) = helpc
 
-csw 19feb2013, added XMCT
         call mpi_reduce(XMCT(istra),helpc,1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
         if (my_pe_gr==0) XMCT(istra) = helpc
-csw
 
         call mpi_reduce(PTRASH(istra),helpc,1,
      .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)

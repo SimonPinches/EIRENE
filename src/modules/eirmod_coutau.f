@@ -1,9 +1,6 @@
 c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
-cdr aug 18 :  XMCT removed from read/write ft11, but still in coutau.
-cdr           Perhaps to be simplified: Move XMCT into storage for
-cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
 
       USE EIRMOD_PRECISION
@@ -94,7 +91,7 @@ cdr           writing on ft14.
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
      R ETOTA(:),    ETOTM(:),    ETOTI(:),    ETOTP(:),    ETOTPH(:),
-     R XMCP(:),     XMCT(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
+     R XMCP(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
      R PTRASH(:),   ETRASH(:),
      R FASCL(:),    FMSCL(:),    FISCL(:),    FPHSCL(:)
 
@@ -357,7 +354,6 @@ cdr  etote still missing ??
       ALLOCATE (ETOTP(0:NSTRA))
 
       ALLOCATE (XMCP(0:NSTRA))
-      ALLOCATE (XMCT(0:NSTRA))
       ALLOCATE (FLUXT(0:NSTRA))
       ALLOCATE (FLXFAC(0:NSTRA))
       ALLOCATE (EELFI(0:NION,0:NSTRA))
@@ -375,11 +371,10 @@ cdr  etote still missing ??
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
       ALLOCATE (NFSTPI(NTALI))
-
-cdr  coutau still contains xmct, but NOUTAU does not.
+ 
       WRITE (55+IFOFF,'(A,T25,I15)')
-     .       ' COUTAU ',(NOUTAU+NSTRAP)*8 + NOUTTL*4
-
+     .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
+ 
       NADDI  = 0
       NFRSTI = 0
       NDDWI  = 0
@@ -388,7 +383,6 @@ cdr  coutau still contains xmct, but NOUTAU does not.
       NFSTWI = 0
       NFSTPI = 0
 csw 19mar2013
-      xmct=0.0
       xmcp=0
 
       RETURN
@@ -598,7 +592,6 @@ csw 19mar2013
       DEALLOCATE (ETOTP)
       DEALLOCATE (ETOTPH)
       DEALLOCATE (XMCP)
-      DEALLOCATE (XMCT)
       DEALLOCATE (FLUXT)
       DEALLOCATE (FLXFAC)
       DEALLOCATE (EELFI)
@@ -860,7 +853,6 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
 
 !pb     IF (IFRST == 0) THEN
           XMCP(ISTRA)   = 0._DP
-          XMCT(ISTRA)   = 0._DP
 !pb     END IF
 
       END DO
