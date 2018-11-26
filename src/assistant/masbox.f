@@ -8,13 +8,13 @@ C*DK MASBOX
       CHARACTER(*), INTENT(IN) :: STRING
       CHARACTER(80) :: AST(5)
       INTEGER :: I, J, ILEN
- 
+
       DO I=1,5
         DO J=1,80
           AST(I)(J:J)=' '
         ENDDO
       ENDDO
- 
+
       ILEN=LEN(STRING)
       DO I=1,ILEN+6
         AST(1)(I:I)='*'

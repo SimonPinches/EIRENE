@@ -1,15 +1,15 @@
- 
- 
+
+
       SUBROUTINE EIRENE_MAKE_TETRA_48 (INDCO)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CLGIN
- 
+
       IMPLICIT NONE
- 
+
       INTEGER,INTENT(IN) :: INDCO(27)
       INTEGER :: ITET, JTET, IS, JS
       REAL(DP), SAVE :: FEM_KOOR(3,27) = reshape(
@@ -40,13 +40,13 @@
      .   -1._dp,  1._dp,  1._dp,
      .    0._dp,  1._dp,  1._dp,
      .    1._dp,  1._dp,  1._dp /), (/ 3, 27 /))
- 
+
       IF (NTET+48 > NTETRA) THEN
         WRITE (iunout,*) ' ALLOWED NUMBER OF TETRAHEDRA EXCEEDED '
         WRITE (iunout,*) ' INCREASE NTETRA '
         CALL EIRENE_EXIT_OWN(1)
       END IF
- 
+
       NTECK(1,NTET+1) = INDCO(1)
       NTECK(2,NTET+1) = INDCO(2)
       NTECK(3,NTET+1) = INDCO(11)
@@ -61,7 +61,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+1) = 0.25_DP* (FEM_KOOR(3,1)+FEM_KOOR(3,2)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(1),INDCO(2),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+1) = NTET+34
         NTSEITE(2,NTET+1) = 2
@@ -73,8 +73,8 @@
         NTBAR(1:4,NTET+1) = -1
         NTSEITE(1:4,NTET+1) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+2) = INDCO(2)
       NTECK(2,NTET+2) = INDCO(3)
       NTECK(3,NTET+2) = INDCO(11)
@@ -89,7 +89,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+2) = 0.25_DP* (FEM_KOOR(3,2)+FEM_KOOR(3,3)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(2),INDCO(3),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+2) = NTET+33
         NTSEITE(2,NTET+2) = 2
@@ -101,8 +101,8 @@
         NTBAR(1:4,NTET+2) = -1
         NTSEITE(1:4,NTET+2) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+3) = INDCO(3)
       NTECK(2,NTET+3) = INDCO(12)
       NTECK(3,NTET+3) = INDCO(11)
@@ -117,7 +117,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+3) = 0.25_DP* (FEM_KOOR(3,3)+FEM_KOOR(3,12)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(3),INDCO(12),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+3) = NTET+16
         NTSEITE(2,NTET+3) = 2
@@ -129,8 +129,8 @@
         NTBAR(1:4,NTET+3) = -1
         NTSEITE(1:4,NTET+3) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+4) = INDCO(12)
       NTECK(2,NTET+4) = INDCO(21)
       NTECK(3,NTET+4) = INDCO(11)
@@ -145,7 +145,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+4) = 0.25_DP* (FEM_KOOR(3,12)+FEM_KOOR(3,21)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(12),INDCO(21),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+4) = NTET+15
         NTSEITE(2,NTET+4) = 2
@@ -157,8 +157,8 @@
         NTBAR(1:4,NTET+4) = -1
         NTSEITE(1:4,NTET+4) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+5) = INDCO(21)
       NTECK(2,NTET+5) = INDCO(20)
       NTECK(3,NTET+5) = INDCO(11)
@@ -173,7 +173,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+5) = 0.25_DP* (FEM_KOOR(3,21)+FEM_KOOR(3,20)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(21),INDCO(20),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+5) = NTET+42
         NTSEITE(2,NTET+5) = 2
@@ -185,8 +185,8 @@
         NTBAR(1:4,NTET+5) = -1
         NTSEITE(1:4,NTET+5) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+6) = INDCO(20)
       NTECK(2,NTET+6) = INDCO(19)
       NTECK(3,NTET+6) = INDCO(11)
@@ -201,7 +201,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+6) = 0.25_DP* (FEM_KOOR(3,20)+FEM_KOOR(3,19)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(20),INDCO(19),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+6) = NTET+41
         NTSEITE(2,NTET+6) = 2
@@ -213,8 +213,8 @@
         NTBAR(1:4,NTET+6) = -1
         NTSEITE(1:4,NTET+6) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+7) = INDCO(19)
       NTECK(2,NTET+7) = INDCO(10)
       NTECK(3,NTET+7) = INDCO(11)
@@ -229,7 +229,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+7) = 0.25_DP* (FEM_KOOR(3,19)+FEM_KOOR(3,10)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(19),INDCO(10),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+7) = NTET+28
         NTSEITE(2,NTET+7) = 2
@@ -241,8 +241,8 @@
         NTBAR(1:4,NTET+7) = -1
         NTSEITE(1:4,NTET+7) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+8) = INDCO(10)
       NTECK(2,NTET+8) = INDCO(1)
       NTECK(3,NTET+8) = INDCO(11)
@@ -257,7 +257,7 @@
      .                          FEM_KOOR(2,11)+FEM_KOOR(2,14))
       TTCEN(NTET+8) = 0.25_DP* (FEM_KOOR(3,10)+FEM_KOOR(3,1)+
      .                          FEM_KOOR(3,11)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(10),INDCO(1),INDCO(11),INDCO(14))) THEN
         NTBAR(2,NTET+8) = NTET+27
         NTSEITE(2,NTET+8) = 2
@@ -269,8 +269,8 @@
         NTBAR(1:4,NTET+8) = -1
         NTSEITE(1:4,NTET+8) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+9) = INDCO(3)
       NTECK(2,NTET+9) = INDCO(6)
       NTECK(3,NTET+9) = INDCO(15)
@@ -285,7 +285,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+9) = 0.25_DP* (FEM_KOOR(3,3)+FEM_KOOR(3,6)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(3),INDCO(6),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+9) = NTET+40
         NTSEITE(2,NTET+9) = 2
@@ -297,8 +297,8 @@
         NTBAR(1:4,NTET+9) = -1
         NTSEITE(1:4,NTET+9) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+10) = INDCO(6)
       NTECK(2,NTET+10) = INDCO(9)
       NTECK(3,NTET+10) = INDCO(15)
@@ -313,7 +313,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+10) = 0.25_DP* (FEM_KOOR(3,6)+FEM_KOOR(3,9)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(6),INDCO(9),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+10) = NTET+39
         NTSEITE(2,NTET+10) = 2
@@ -325,8 +325,8 @@
         NTBAR(1:4,NTET+10) = -1
         NTSEITE(1:4,NTET+10) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+11) = INDCO(9)
       NTECK(2,NTET+11) = INDCO(18)
       NTECK(3,NTET+11) = INDCO(15)
@@ -341,7 +341,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+11) = 0.25_DP* (FEM_KOOR(3,9)+FEM_KOOR(3,18)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(9),INDCO(18),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+11) = NTET+24
         NTSEITE(2,NTET+11) = 2
@@ -353,8 +353,8 @@
         NTBAR(1:4,NTET+11) = -1
         NTSEITE(1:4,NTET+11) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+12) = INDCO(18)
       NTECK(2,NTET+12) = INDCO(27)
       NTECK(3,NTET+12) = INDCO(15)
@@ -369,7 +369,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+12) = 0.25_DP* (FEM_KOOR(3,18)+FEM_KOOR(3,27)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(18),INDCO(27),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+12) = NTET+23
         NTSEITE(2,NTET+12) = 2
@@ -381,8 +381,8 @@
         NTBAR(1:4,NTET+12) = -1
         NTSEITE(1:4,NTET+12) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+13) = INDCO(27)
       NTECK(2,NTET+13) = INDCO(24)
       NTECK(3,NTET+13) = INDCO(15)
@@ -397,7 +397,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+13) = 0.25_DP* (FEM_KOOR(3,27)+FEM_KOOR(3,24)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(27),INDCO(24),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+13) = NTET+44
         NTSEITE(2,NTET+13) = 2
@@ -409,8 +409,8 @@
         NTBAR(1:4,NTET+13) = -1
         NTSEITE(1:4,NTET+13) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+14) = INDCO(24)
       NTECK(2,NTET+14) = INDCO(21)
       NTECK(3,NTET+14) = INDCO(15)
@@ -425,7 +425,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+14) = 0.25_DP* (FEM_KOOR(3,24)+FEM_KOOR(3,21)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(24),INDCO(21),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+14) = NTET+43
         NTSEITE(2,NTET+14) = 2
@@ -437,8 +437,8 @@
         NTBAR(1:4,NTET+14) = -1
         NTSEITE(1:4,NTET+14) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+15) = INDCO(21)
       NTECK(2,NTET+15) = INDCO(12)
       NTECK(3,NTET+15) = INDCO(15)
@@ -453,7 +453,7 @@
      .                          FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+15) = 0.25_DP* (FEM_KOOR(3,21)+FEM_KOOR(3,12)+
      .                          FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(21),INDCO(12),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+15) = NTET+4
         NTSEITE(2,NTET+15) = 2
@@ -465,8 +465,8 @@
         NTBAR(1:4,NTET+15) = -1
         NTSEITE(1:4,NTET+15) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+16) = INDCO(12)
       NTECK(2,NTET+16) = INDCO(3)
       NTECK(3,NTET+16) = INDCO(15)
@@ -481,7 +481,7 @@
      .                           FEM_KOOR(2,15)+FEM_KOOR(2,14))
       TTCEN(NTET+16) = 0.25_DP* (FEM_KOOR(3,12)+FEM_KOOR(3,3)+
      .                           FEM_KOOR(3,15)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(12),INDCO(3),INDCO(15),INDCO(14))) THEN
         NTBAR(2,NTET+16) = NTET+3
         NTSEITE(2,NTET+16) = 2
@@ -493,8 +493,8 @@
         NTBAR(1:4,NTET+16) = -1
         NTSEITE(1:4,NTET+16) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+17) = INDCO(9)
       NTECK(2,NTET+17) = INDCO(8)
       NTECK(3,NTET+17) = INDCO(17)
@@ -509,7 +509,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+17) = 0.25_DP* (FEM_KOOR(3,9)+FEM_KOOR(3,8)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(9),INDCO(8),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+17) = NTET+38
         NTSEITE(2,NTET+17) = 2
@@ -521,8 +521,8 @@
         NTBAR(1:4,NTET+17) = -1
         NTSEITE(1:4,NTET+17) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+18) = INDCO(8)
       NTECK(2,NTET+18) = INDCO(7)
       NTECK(3,NTET+18) = INDCO(17)
@@ -537,7 +537,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+18) = 0.25_DP* (FEM_KOOR(3,8)+FEM_KOOR(3,7)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(8),INDCO(7),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+18) = NTET+37
         NTSEITE(2,NTET+18) = 2
@@ -549,8 +549,8 @@
         NTBAR(1:4,NTET+18) = -1
         NTSEITE(1:4,NTET+18) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+19) = INDCO(7)
       NTECK(2,NTET+19) = INDCO(16)
       NTECK(3,NTET+19) = INDCO(17)
@@ -565,7 +565,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+19) = 0.25_DP* (FEM_KOOR(3,7)+FEM_KOOR(3,16)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(7),INDCO(16),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+19) = NTET+32
         NTSEITE(2,NTET+19) = 2
@@ -577,8 +577,8 @@
         NTBAR(1:4,NTET+19) = -1
         NTSEITE(1:4,NTET+19) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+20) = INDCO(16)
       NTECK(2,NTET+20) = INDCO(25)
       NTECK(3,NTET+20) = INDCO(17)
@@ -593,7 +593,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+20) = 0.25_DP* (FEM_KOOR(3,16)+FEM_KOOR(3,25)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(16),INDCO(25),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+20) = NTET+31
         NTSEITE(2,NTET+20) = 2
@@ -605,8 +605,8 @@
         NTBAR(1:4,NTET+20) = -1
         NTSEITE(1:4,NTET+20) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+21) = INDCO(25)
       NTECK(2,NTET+21) = INDCO(26)
       NTECK(3,NTET+21) = INDCO(17)
@@ -621,7 +621,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+21) = 0.25_DP* (FEM_KOOR(3,25)+FEM_KOOR(3,26)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(25),INDCO(26),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+21) = NTET+46
         NTSEITE(2,NTET+21) = 2
@@ -633,8 +633,8 @@
         NTBAR(1:4,NTET+21) = -1
         NTSEITE(1:4,NTET+21) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+22) = INDCO(26)
       NTECK(2,NTET+22) = INDCO(27)
       NTECK(3,NTET+22) = INDCO(17)
@@ -649,7 +649,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+22) = 0.25_DP* (FEM_KOOR(3,26)+FEM_KOOR(3,27)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(26),INDCO(27),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+22) = NTET+45
         NTSEITE(2,NTET+22) = 2
@@ -661,8 +661,8 @@
         NTBAR(1:4,NTET+22) = -1
         NTSEITE(1:4,NTET+22) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+23) = INDCO(27)
       NTECK(2,NTET+23) = INDCO(18)
       NTECK(3,NTET+23) = INDCO(17)
@@ -677,7 +677,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+23) = 0.25_DP* (FEM_KOOR(3,27)+FEM_KOOR(3,18)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(27),INDCO(18),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+23) = NTET+12
         NTSEITE(2,NTET+23) = 2
@@ -689,8 +689,8 @@
         NTBAR(1:4,NTET+23) = -1
         NTSEITE(1:4,NTET+23) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+24) = INDCO(18)
       NTECK(2,NTET+24) = INDCO(9)
       NTECK(3,NTET+24) = INDCO(17)
@@ -705,7 +705,7 @@
      .                           FEM_KOOR(2,17)+FEM_KOOR(2,14))
       TTCEN(NTET+24) = 0.25_DP* (FEM_KOOR(3,18)+FEM_KOOR(3,9)+
      .                           FEM_KOOR(3,17)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(18),INDCO(9),INDCO(17),INDCO(14))) THEN
         NTBAR(2,NTET+24) = NTET+11
         NTSEITE(2,NTET+24) = 2
@@ -717,8 +717,8 @@
         NTBAR(1:4,NTET+24) = -1
         NTSEITE(1:4,NTET+24) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+25) = INDCO(7)
       NTECK(2,NTET+25) = INDCO(4)
       NTECK(3,NTET+25) = INDCO(13)
@@ -733,7 +733,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+25) = 0.25_DP* (FEM_KOOR(3,7)+FEM_KOOR(3,4)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(7),INDCO(4),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+25) = NTET+36
         NTSEITE(2,NTET+25) = 2
@@ -745,8 +745,8 @@
         NTBAR(1:4,NTET+25) = -1
         NTSEITE(1:4,NTET+25) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+26) = INDCO(4)
       NTECK(2,NTET+26) = INDCO(1)
       NTECK(3,NTET+26) = INDCO(13)
@@ -761,7 +761,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+26) = 0.25_DP* (FEM_KOOR(3,4)+FEM_KOOR(3,1)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(4),INDCO(1),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+26) = NTET+35
         NTSEITE(2,NTET+26) = 2
@@ -773,8 +773,8 @@
         NTBAR(1:4,NTET+26) = -1
         NTSEITE(1:4,NTET+26) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+27) = INDCO(1)
       NTECK(2,NTET+27) = INDCO(10)
       NTECK(3,NTET+27) = INDCO(13)
@@ -789,7 +789,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+27) = 0.25_DP* (FEM_KOOR(3,1)+FEM_KOOR(3,10)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(1),INDCO(10),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+27) = NTET+8
         NTSEITE(2,NTET+27) = 2
@@ -801,8 +801,8 @@
         NTBAR(1:4,NTET+27) = -1
         NTSEITE(1:4,NTET+27) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+28) = INDCO(10)
       NTECK(2,NTET+28) = INDCO(19)
       NTECK(3,NTET+28) = INDCO(13)
@@ -817,7 +817,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+28) = 0.25_DP* (FEM_KOOR(3,10)+FEM_KOOR(3,19)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(10),INDCO(19),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+28) = NTET+7
         NTSEITE(2,NTET+28) = 2
@@ -829,7 +829,7 @@
         NTBAR(1:4,NTET+28) = -1
         NTSEITE(1:4,NTET+28) = -1
       END IF
- 
+
       NTECK(1,NTET+29) = INDCO(19)
       NTECK(2,NTET+29) = INDCO(22)
       NTECK(3,NTET+29) = INDCO(13)
@@ -844,7 +844,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+29) = 0.25_DP* (FEM_KOOR(3,19)+FEM_KOOR(3,22)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(19),INDCO(22),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+29) = NTET+48
         NTSEITE(2,NTET+29) = 2
@@ -856,8 +856,8 @@
         NTBAR(1:4,NTET+29) = -1
         NTSEITE(1:4,NTET+29) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+30) = INDCO(22)
       NTECK(2,NTET+30) = INDCO(25)
       NTECK(3,NTET+30) = INDCO(13)
@@ -872,7 +872,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+30) = 0.25_DP* (FEM_KOOR(3,22)+FEM_KOOR(3,25)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(22),INDCO(25),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+30) = NTET+47
         NTSEITE(2,NTET+30) = 2
@@ -884,8 +884,8 @@
         NTBAR(1:4,NTET+30) = -1
         NTSEITE(1:4,NTET+30) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+31) = INDCO(25)
       NTECK(2,NTET+31) = INDCO(16)
       NTECK(3,NTET+31) = INDCO(13)
@@ -900,7 +900,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+31) = 0.25_DP* (FEM_KOOR(3,25)+FEM_KOOR(3,16)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(25),INDCO(16),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+31) = NTET+20
         NTSEITE(2,NTET+31) = 2
@@ -912,8 +912,8 @@
         NTBAR(1:4,NTET+31) = -1
         NTSEITE(1:4,NTET+31) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+32) = INDCO(16)
       NTECK(2,NTET+32) = INDCO(7)
       NTECK(3,NTET+32) = INDCO(13)
@@ -928,7 +928,7 @@
      .                           FEM_KOOR(2,13)+FEM_KOOR(2,14))
       TTCEN(NTET+32) = 0.25_DP* (FEM_KOOR(3,16)+FEM_KOOR(3,7)+
      .                           FEM_KOOR(3,13)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(16),INDCO(7),INDCO(13),INDCO(14))) THEN
         NTBAR(2,NTET+32) = NTET+19
         NTSEITE(2,NTET+32) = 2
@@ -940,8 +940,8 @@
         NTBAR(1:4,NTET+32) = -1
         NTSEITE(1:4,NTET+32) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+33) = INDCO(3)
       NTECK(2,NTET+33) = INDCO(2)
       NTECK(3,NTET+33) = INDCO(5)
@@ -956,7 +956,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+33) = 0.25_DP* (FEM_KOOR(3,3)+FEM_KOOR(3,2)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(3),INDCO(2),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+33) = NTET+2
         NTSEITE(2,NTET+33) = 2
@@ -968,8 +968,8 @@
         NTBAR(1:4,NTET+33) = -1
         NTSEITE(1:4,NTET+33) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+34) = INDCO(2)
       NTECK(2,NTET+34) = INDCO(1)
       NTECK(3,NTET+34) = INDCO(5)
@@ -984,7 +984,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+34) = 0.25_DP* (FEM_KOOR(3,2)+FEM_KOOR(3,1)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(2),INDCO(1),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+34) = NTET+1
         NTSEITE(2,NTET+34) = 2
@@ -996,8 +996,8 @@
         NTBAR(1:4,NTET+34) = -1
         NTSEITE(1:4,NTET+34) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+35) = INDCO(1)
       NTECK(2,NTET+35) = INDCO(4)
       NTECK(3,NTET+35) = INDCO(5)
@@ -1012,7 +1012,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+35) = 0.25_DP* (FEM_KOOR(3,1)+FEM_KOOR(3,4)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(1),INDCO(4),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+35) = NTET+26
         NTSEITE(2,NTET+35) = 2
@@ -1024,8 +1024,8 @@
         NTBAR(1:4,NTET+35) = -1
         NTSEITE(1:4,NTET+35) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+36) = INDCO(4)
       NTECK(2,NTET+36) = INDCO(7)
       NTECK(3,NTET+36) = INDCO(5)
@@ -1040,7 +1040,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+36) = 0.25_DP* (FEM_KOOR(3,4)+FEM_KOOR(3,7)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(4),INDCO(7),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+36) = NTET+25
         NTSEITE(2,NTET+36) = 2
@@ -1052,8 +1052,8 @@
         NTBAR(1:4,NTET+36) = -1
         NTSEITE(1:4,NTET+36) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+37) = INDCO(7)
       NTECK(2,NTET+37) = INDCO(8)
       NTECK(3,NTET+37) = INDCO(5)
@@ -1068,7 +1068,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+37) = 0.25_DP* (FEM_KOOR(3,7)+FEM_KOOR(3,8)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(7),INDCO(8),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+37) = NTET+18
         NTSEITE(2,NTET+37) = 2
@@ -1080,8 +1080,8 @@
         NTBAR(1:4,NTET+37) = -1
         NTSEITE(1:4,NTET+37) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+38) = INDCO(8)
       NTECK(2,NTET+38) = INDCO(9)
       NTECK(3,NTET+38) = INDCO(5)
@@ -1096,7 +1096,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+38) = 0.25_DP* (FEM_KOOR(3,8)+FEM_KOOR(3,9)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(8),INDCO(9),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+38) = NTET+17
         NTSEITE(2,NTET+38) = 2
@@ -1108,8 +1108,8 @@
         NTBAR(1:4,NTET+38) = -1
         NTSEITE(1:4,NTET+38) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+39) = INDCO(9)
       NTECK(2,NTET+39) = INDCO(6)
       NTECK(3,NTET+39) = INDCO(5)
@@ -1124,7 +1124,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+39) = 0.25_DP* (FEM_KOOR(3,9)+FEM_KOOR(3,6)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(9),INDCO(6),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+39) = NTET+10
         NTSEITE(2,NTET+39) = 2
@@ -1136,8 +1136,8 @@
         NTBAR(1:4,NTET+39) = -1
         NTSEITE(1:4,NTET+39) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+40) = INDCO(6)
       NTECK(2,NTET+40) = INDCO(3)
       NTECK(3,NTET+40) = INDCO(5)
@@ -1152,7 +1152,7 @@
      .                           FEM_KOOR(2,5)+FEM_KOOR(2,14))
       TTCEN(NTET+40) = 0.25_DP* (FEM_KOOR(3,6)+FEM_KOOR(3,3)+
      .                           FEM_KOOR(3,5)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(6),INDCO(3),INDCO(5),INDCO(14))) THEN
         NTBAR(2,NTET+40) = NTET+9
         NTSEITE(2,NTET+40) = 2
@@ -1164,8 +1164,8 @@
         NTBAR(1:4,NTET+40) = -1
         NTSEITE(1:4,NTET+40) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+41) = INDCO(19)
       NTECK(2,NTET+41) = INDCO(20)
       NTECK(3,NTET+41) = INDCO(23)
@@ -1180,7 +1180,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+41) = 0.25_DP* (FEM_KOOR(3,19)+FEM_KOOR(3,20)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(19),INDCO(20),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+41) = NTET+6
         NTSEITE(2,NTET+41) = 2
@@ -1192,8 +1192,8 @@
         NTBAR(1:4,NTET+41) = -1
         NTSEITE(1:4,NTET+41) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+42) = INDCO(20)
       NTECK(2,NTET+42) = INDCO(21)
       NTECK(3,NTET+42) = INDCO(23)
@@ -1208,7 +1208,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+42) = 0.25_DP* (FEM_KOOR(3,20)+FEM_KOOR(3,21)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(20),INDCO(21),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+42) = NTET+5
         NTSEITE(2,NTET+42) = 2
@@ -1220,8 +1220,8 @@
         NTBAR(1:4,NTET+42) = -1
         NTSEITE(1:4,NTET+42) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+43) = INDCO(21)
       NTECK(2,NTET+43) = INDCO(24)
       NTECK(3,NTET+43) = INDCO(23)
@@ -1236,7 +1236,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+43) = 0.25_DP* (FEM_KOOR(3,21)+FEM_KOOR(3,24)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(21),INDCO(24),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+43) = NTET+14
         NTSEITE(2,NTET+43) = 2
@@ -1248,8 +1248,8 @@
         NTBAR(1:4,NTET+43) = -1
         NTSEITE(1:4,NTET+43) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+44) = INDCO(24)
       NTECK(2,NTET+44) = INDCO(27)
       NTECK(3,NTET+44) = INDCO(23)
@@ -1264,7 +1264,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+44) = 0.25_DP* (FEM_KOOR(3,24)+FEM_KOOR(3,27)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(24),INDCO(27),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+44) = NTET+13
         NTSEITE(2,NTET+44) = 2
@@ -1276,8 +1276,8 @@
         NTBAR(1:4,NTET+44) = -1
         NTSEITE(1:4,NTET+44) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+45) = INDCO(27)
       NTECK(2,NTET+45) = INDCO(26)
       NTECK(3,NTET+45) = INDCO(23)
@@ -1292,7 +1292,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+45) = 0.25_DP* (FEM_KOOR(3,27)+FEM_KOOR(3,26)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(27),INDCO(26),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+45) = NTET+22
         NTSEITE(2,NTET+45) = 2
@@ -1304,8 +1304,8 @@
         NTBAR(1:4,NTET+45) = -1
         NTSEITE(1:4,NTET+45) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+46) = INDCO(26)
       NTECK(2,NTET+46) = INDCO(25)
       NTECK(3,NTET+46) = INDCO(23)
@@ -1320,7 +1320,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+46) = 0.25_DP* (FEM_KOOR(3,26)+FEM_KOOR(3,25)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(26),INDCO(25),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+46) = NTET+21
         NTSEITE(2,NTET+46) = 2
@@ -1332,8 +1332,8 @@
         NTBAR(1:4,NTET+46) = -1
         NTSEITE(1:4,NTET+46) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+47) = INDCO(25)
       NTECK(2,NTET+47) = INDCO(22)
       NTECK(3,NTET+47) = INDCO(23)
@@ -1348,7 +1348,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+47) = 0.25_DP* (FEM_KOOR(3,25)+FEM_KOOR(3,22)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(25),INDCO(22),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+47) = NTET+30
         NTSEITE(2,NTET+47) = 2
@@ -1360,8 +1360,8 @@
         NTBAR(1:4,NTET+47) = -1
         NTSEITE(1:4,NTET+47) = -1
       END IF
- 
- 
+
+
       NTECK(1,NTET+48) = INDCO(22)
       NTECK(2,NTET+48) = INDCO(19)
       NTECK(3,NTET+48) = INDCO(23)
@@ -1376,7 +1376,7 @@
      .                           FEM_KOOR(2,23)+FEM_KOOR(2,14))
       TTCEN(NTET+48) = 0.25_DP* (FEM_KOOR(3,22)+FEM_KOOR(3,19)+
      .                           FEM_KOOR(3,23)+FEM_KOOR(3,14))
- 
+
       IF (COORD_TEST(INDCO(22),INDCO(19),INDCO(23),INDCO(14))) THEN
         NTBAR(2,NTET+48) = NTET+29
         NTSEITE(2,NTET+48) = 2
@@ -1388,8 +1388,8 @@
         NTBAR(1:4,NTET+48) = -1
         NTSEITE(1:4,NTET+48) = -1
       END IF
- 
- 
+
+
       DO ITET = NTET+1, NTET+48
         DO IS = 1,4
           JTET = NTBAR(IS,ITET)         ! NUMBER OF NEIGHBORING TETRAHEDRON
@@ -1402,35 +1402,34 @@
           END IF
         END DO
       END DO
- 
+
       NTET = NTET+48
- 
+
       RETURN
- 
+
       CONTAINS
- 
+
       SUBROUTINE EIRENE_EINFUEGEN (IC,ITET)
         INTEGER, INTENT(IN) :: IC, ITET
         TYPE(TET_ELEM), POINTER :: CUR
- 
+
         ALLOCATE (CUR)
         CUR%NOTET = ITET
         CUR%NEXT_TET => COORTET(IC)%PTET
         COORTET(IC)%PTET => CUR
         MCLSTR = MCLSTR+1
       END SUBROUTINE EIRENE_EINFUEGEN
- 
- 
+
+
       FUNCTION COORD_TEST (I1,I2,I3,I4)
         INTEGER, INTENT(IN) :: I1,I2,I3,I4
         LOGICAL COORD_TEST
         LOGICAL LTEST
- 
+
         LTEST= (I1==I2) .OR. (I1==I3) .OR. (I1==I4) .OR.
      .         (I2==I3) .OR. (I2==I4) .OR. (I3==I4)
         COORD_TEST = .NOT. LTEST
         RETURN
       END FUNCTION COORD_TEST
- 
+
       END
- 

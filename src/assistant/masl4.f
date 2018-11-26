@@ -8,6 +8,6 @@ C*DK MASL4
       CHARACTER(*), INTENT(IN) :: A
       LOGICAL, INTENT(IN) :: B, C, D, E
       WRITE (iunout,60) A,B,C,D,E
-60    FORMAT (1X,A,5X,4L3)
+   60 FORMAT (1X,A,5X,4L3)
       RETURN
       END

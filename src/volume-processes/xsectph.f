@@ -1,12 +1,12 @@
 Cdr  analog xsecta, xsectm,.... printout to be sync.  And: call xstot. But not ot processes
 cdr  Unfinished code, for photons.
 c
-Cdr  in xsectp, there only call to xstrc.f.  
+Cdr  in xsectp, there only call to xstrc.f.
 cdr  At present: is seems to be just the other way round.
 C
       SUBROUTINE EIRENE_XSECTPH
 C
-C  TABLE FOR CROSS SECTION AND REACTION RATES FOR PHOTONS
+C  TABLE FOR CROSS-SECTION AND REACTION RATES FOR PHOTONS
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

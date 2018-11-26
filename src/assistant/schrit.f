@@ -1,6 +1,6 @@
- 
- 
- 
+
+
+
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_SCHRIT(AUSDRU, AKTLEN, ALPHA, OMEGA, TEIL,
      >                  IPART, PART, IARITH, ARITH)
@@ -22,68 +22,68 @@ C     EIN/AUSGABEPARAMETER :
 C
          INTEGER, INTENT(INOUT) :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          CHARACTER(*), INTENT(INOUT) :: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
          INTEGER, INTENT(INOUT) :: TEIL
 C           : AKTUELLE ANZAHL DER ZERLEGUNGEN
- 
+
          INTEGER, INTENT(INOUT) :: ALPHA
 C           : POSITION DES ERSTEN ZEICHENS VOM TEILAUSDRUCK
- 
+
          INTEGER, INTENT(INOUT) :: OMEGA
 C           : POSITION DES LETZTEN ZEICHENS VOM TEILAUSDRUCK
- 
+
          CHARACTER(*), INTENT(INOUT) :: PART(*)
 C           : FELD VON STRINGS, AUF DENEN DIE EINZELNEN
 C             ELEMENTARZERLEGUNGEN FESTGEHALTEN WERDEN
- 
+
          INTEGER, INTENT(INOUT) :: IPART(*)
 C           : AKTUELLE LAENGEN VON PART(ZMAX)
- 
+
          CHARACTER(*), INTENT(INOUT) :: ARITH(*)
 C           : FELD VON STRINGS, AUF DENEN DIE TEIL-TE GENERATION
 C             VON AUSDRU FESTGEHALTEN WIRD
- 
+
          INTEGER, INTENT(INOUT) :: IARITH(*)
 C           : AKTUELLE LAENGEN VON ARITH(ZMAX)
- 
+
 C
 C     LOKALE VARIABLEN :
 C
          INTEGER :: BEGINN
 C           : POSITION IN AUSDRU, BEI DER DIE ZERLEGUNG BEGINNT
- 
+
          INTEGER :: ENDE
 C           : POSITION IN AUSDRU, BEI DER DIE ZERLEGUNG BEENDET WIRD
- 
+
          INTEGER :: OPER1
 C           : POSITION DES 1. OPERATORS IN AUSDRU
- 
+
          INTEGER :: OPER2
 C           : POSITION DES 2. OPERATORS IN AUSDRU
- 
+
          INTEGER :: RANGE1
 C           : RANG DES 1. OPERATORS
- 
+
          INTEGER :: RANGE2
 C           : RANG DES 2. OPERATORS
- 
+
          LOGICAL :: ERFOLG
 C           : GIBT AN, OB EINE ZERLEGUNG ERFOLGEN DARF
- 
+
          LOGICAL :: PREFIX
 C           : GIBT AN, OB 1.OPERAND IN AUSDRUCK EIN PRAEFIX BESITZT
- 
+
          CHARACTER(2) :: TEILCH
 C           : INHALT VON TEIL
- 
+
 C
 C     HILFSVARIABLEN :
 C
          INTEGER :: I, POS
- 
+
       BEGINN=ALPHA
       ENDE=OMEGA
       ERFOLG=.FALSE.
@@ -91,11 +91,11 @@ C
 C
 C     SUCHE NACH DEM 1. OPERATOR IM TEILSTRING
 C
-10       CONTINUE
-         I=I+1
-         POS=INDEX(FAKTOR, ausdru(I:I))
+   10 CONTINUE
+      I=I+1
+      POS=INDEX(FAKTOR, ausdru(I:I))
       IF (POS .LE. 0 .AND. I .LT. omega) GOTO 10
- 
+
       IF (I .EQ. BEGINN) THEN
          PREFIX=.TRUE.
       ELSE
@@ -104,63 +104,63 @@ C
 C
 C     WHILE : SOLANGE TEILSTRING EINEN OPERATOR ENTHAELT
 C
-60    IF (POS .GT. 0) THEN
+   60 IF (POS .GT. 0) THEN
 C
 C        POSITION UND RANGBESTIMMUNG DES OPERATORS
 C
          OPER1=I
          RANGE1=POS/2
- 
+
 C
 C        REPEAT-1
 C
-30          CONTINUE
- 
+   30    CONTINUE
+
 C
 C           SUCHE NACH DEM 2. OPERATOR IM TEILSTRING
 C           REPEAT-2
 C
-20             CONTINUE
-               I=I+1
-               POS=INDEX(FAKTOR,ausdru(I:I))
-            IF (POS .LE. 0  .AND.  I .LT. omega) GOTO 20
+   20    CONTINUE
+         I=I+1
+         POS=INDEX(FAKTOR,ausdru(I:I))
+         IF (POS .LE. 0  .AND.  I .LT. omega) GOTO 20
 C
 C           UNTIL-2 : BIS TEILSTRING VOLLSTAENDIG DURCHLAUFEN ODER
 C                     WEITEREN OPERATOR IM TEILSTRING GEFUNDEN
 C
-            IF (POS .GT. 0) THEN
+         IF (POS .GT. 0) THEN
 C
 C              WEITEREN OPERATOR IN TEILSTRING GEFUNDEN,
 C              POSITION UND RANGBESTIMMUNG DES OPERATORS
 C
-               OPER2=I
-               RANGE2=POS/2
+            OPER2=I
+            RANGE2=POS/2
 C
 C              UEBERPRUEFEN, OB NOCH EIN OPERATOR IM TEILSTRING
 C              GESUCHT WERDEN MUSS, ODER EINE ZERLEGUNG ERFOLGEN KANN
 C
-               IF (RANGE2 .LT. RANGE1 .AND. .NOT. PREFIX) THEN
-                  BEGINN=OPER1+1
-                  OPER1=OPER2
-                  RANGE1=RANGE2
-               ELSEIF (RANGE2 .EQ. RANGE1  .AND.  RANGE1 .EQ. 0
+            IF (RANGE2 .LT. RANGE1 .AND. .NOT. PREFIX) THEN
+               BEGINN=OPER1+1
+               OPER1=OPER2
+               RANGE1=RANGE2
+            ELSEIF (RANGE2 .EQ. RANGE1  .AND.  RANGE1 .EQ. 0
      >                  .AND. .NOT. PREFIX) THEN
-                  BEGINN=OPER1+1
-                  OPER1=OPER2
-                  RANGE1=RANGE2
-               ELSE
-                  ENDE=OPER2-1
-                  ERFOLG=.TRUE.
-C                 zerlegung von beginn bis ende
-               ENDIF
- 
+               BEGINN=OPER1+1
+               OPER1=OPER2
+               RANGE1=RANGE2
             ELSE
+               ENDE=OPER2-1
+               ERFOLG=.TRUE.
+C                 zerlegung von beginn bis ende
+            ENDIF
+
+         ELSE
 C
 C              ES IST KEIN WEITERER OPERATOR IN TEILSTRING VORHANDEN,
 C              DIE POSITION DES LETZTEN OPERATORS IST OPER1
 C
-               ERFOLG=.TRUE.
-            ENDIF
+            ERFOLG=.TRUE.
+         ENDIF
          IF ( .NOT. ERFOLG) GOTO 30
 C
 C        UNTIL-1 : BIS EINE ZERLEGUNG ERFOLGEN DARF
@@ -208,11 +208,11 @@ C
 C
 C        SUCHE NACH DEM 1. OPERATOR IM TEILSTRING
 C
-50          CONTINUE
+   50       CONTINUE
             I=I+1
             POS=INDEX(FAKTOR, AUSDRU(I:I))
          IF (POS .LE. 0 .AND. I .LT. OMEGA) GOTO 50
- 
+
       GOTO 60
       ENDIF
 C

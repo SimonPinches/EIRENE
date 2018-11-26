@@ -1,7 +1,7 @@
 C
 C
       SUBROUTINE EIRENE_FIVEC(ER,B,IFLAG,P)
- 
+
 C  VECTORIZED VERSION OF FUNCTION FI FOR GAUSS MEHLER QUADRATURE
 C  EVALUATE EFFECTIVE POTENTIAL FUNCTION AT AR(I),I=1,NFI
 C  NOTE: NFI.LE.128 IS NOT CHECKED, BUT USED
@@ -10,22 +10,22 @@ C     --------------
 C  IFLAG=1:  H+ + H
 C  IFLAG=2:  H+ + NOBLE GASES , H+ + H2, HE+ + HE
 C
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: ER, B, P(*)
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: RI, G1, SS, EX, EX2, RR, REFF, EMRR, G2, V,
      .          R, R2, B2, RLOW, G, RMI, EPS
       INTEGER :: IFI
- 
+
       REAL(DP) :: AR(128), AFI(128)
       INTEGER :: NFI
       COMMON /CFI/ AR,AFI,NFI
- 
+
       B2=B*B
 C
       IF(IFLAG.EQ.1) THEN
@@ -53,7 +53,7 @@ C  FIND V=V(R)
             V=27.211*((RI-(1.+RI)*EX2-(1.+R)*EX)/SS+RI)
           ENDIF
           AFI(IFI)=1.-V/ER-B2/R2
-1       CONTINUE
+    1   CONTINUE
 C
       ELSEIF(IFLAG.EQ.2) THEN
 C  INTERACTION POTENTIAL V(R): H+ + NOBLE GASES, (MORSE LIKE POTENTIAL)
@@ -82,7 +82,7 @@ C
             V=EPS*(EX2-(EX+EX))
           ENDIF
           AFI(IFI)=1.-V/ER-B2/R2
-2       CONTINUE
+    2   CONTINUE
 C
       ELSE
         WRITE (iunout,*)

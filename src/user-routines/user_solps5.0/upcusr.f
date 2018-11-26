@@ -1,5 +1,5 @@
 C  user supplied collision estimator.
-C  called from folion, folneut, at a collision event in cell NCELL 
+C  called from folion, folneut, at a collision event in cell NCELL
 C
       SUBROUTINE EIRENE_UPCUSR(WS,IND)
 C
@@ -32,7 +32,7 @@ C
 C  FOR PARTICLE DENSITY IN CELL NO. NCELL
 C     COLV(1,NCELL)=COLV(1,NCELL)+WS
 
-C   THIS VERSION: 
+C   THIS VERSION:
 C   TALLY 1:   ATOM DENSITY
 C   TALLY 2:   POST COLLISION BULK ION CX ENERGY LOSS RATE
 C              E0 IS THE ENERGY SAMPLED FOR THE POST COLLISION PARTICLE
@@ -68,15 +68,15 @@ C
 C  TALLY 1: PARTICLE DENSITY (FOR TESTING/VERIFICATION)
           if (ind.eq.1) COLV(IATM,IRD)=COLV(IATM,IRD)+WS
 C  TALLY 3: CX INCIDENT NEUTRAL ENERGY COLLISION RATE
-          if (ind.eq.1) then 
+          if (ind.eq.1) then
             COLV(2*NATM+IATM,IRD)=COLV(2*NATM+IATM,IRD)-
-     .                            WSSIG*E0 
-C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE, PRE COLLISION LOSS       
+     .                            WSSIG*E0
+C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE, PRE COLLISION LOSS
             COLV(3*NATM+IATM,IRD)=COLV(3*NATM+IATM,IRD)-
      .                            WSSIG*E0
           endif
-C  TALLY 2:  CX- INCIDENT ION ENERGY COLLISION RATE, POST COLLISION atoms, only from pre collision atoms       
-          if (ind.eq.2.and.ityp_save.eq.1) then 
+C  TALLY 2:  CX- INCIDENT ION ENERGY COLLISION RATE, POST COLLISION atoms, only from pre collision atoms
+          if (ind.eq.2.and.ityp_save.eq.1) then
             COLV(1*NATM+IATM,IRD)=COLV(1*NATM+IATM,IRD)+
      .                            WEIGHT*E0
 C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE,  POST COLLISION GAIN
@@ -84,8 +84,8 @@ C  TALLY 4:  CX- NET ION ENERGY COLLISION RATE,  POST COLLISION GAIN
      .                            WEIGHT*E0
             ityp_save=0
           endif
-560     CONTINUE
-590   CONTINUE
+  560   CONTINUE
+  590 CONTINUE
 C
       RETURN
       END

@@ -31,12 +31,12 @@ cdr there are various variants of initializer RMARIN, taking either
 cdr one, two or 4 input seeds.
 cdr currently we take one seed, 0<=ise<=900.000.000,
 cdr then produce two smaller integer seeds iseed1,iseed2 from that,
-cdr in SUBR. H1RNIN, and initialize the status of H1RN with the content of 
+cdr in SUBR. H1RNIN, and initialize the status of H1RN with the content of
 cdr Common RASET1 (full 102 words)
 
          if (ise <= 0) then
            if (ifirst == 0) then
-cdr this default seed produces the 4 small Marsaglia-Zaman seeds. 
+cdr this default seed produces the 4 small Marsaglia-Zaman seeds.
 c   Loc.cit. F.James, CPC (1990)
              iseed = 54217137
              call h1rnin(iseed)

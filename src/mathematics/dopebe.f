@@ -17,7 +17,7 @@ C
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: LAMBDA( 3 ), EV(3,3), EPS,
      >                       M(3), NUE
       REAL(DP), INTENT(OUT) :: B0, B1, B2, B3

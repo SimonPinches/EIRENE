@@ -1,4 +1,4 @@
-CDR  2014  : PROGRAMMING AND NOTATION SYNCRONIZED WITH VELOCX.F
+CDR  2014  : PROGRAMMING AND NOTATION SYNCHRONIZED WITH VELOCX.F
 CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
 cdr  sept.17:sync with veloel,velocx. Prepare bgk relaxation. perhaps ready: nflag=2
 C
@@ -21,7 +21,7 @@ C  K   : .NE.0 :CELL INDEX FOR LOCAL BULK ION TI AND V_DRIFT
 C  note: Ti has already been converted into thermal velocity units: zrg(ipls,k) in [cm/s]
 
 C  K   : .EQ.0 :TX,TY,TZ,V-DRIFT_X,Y,Z ARE NOT FROM LOCAL BULK ION
-C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE 
+C               SPECIES IPLS PARAMETERS, BUT EXPLICITLY DEFINED IN THE
 C               PARAMETERS DUMT AND DUMV, RESPECTIVELY.
 c  note: here dumt must also be in thermal velocity units
 
@@ -49,15 +49,15 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CLAST
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: RMASS, ZEP_IN
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRPI
 
-      REAL(DP) :: EIRENE_FEHVPI3, VXISO, VYISO, VZISO, EHEAVY, 
+      REAL(DP) :: EIRENE_FEHVPI3, VXISO, VYISO, VZISO, EHEAVY,
      .            VX, VY, VZ,
      .            CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS, VREL,VRELQ,
      .            VXI, VYI, VZI,
@@ -68,7 +68,7 @@ C
       INTEGER :: ISPZI, ISPZM, ISPZA
       INTEGER :: ICOUNT, J, JJ, IRL, IREAC
       INTEGER :: IFIRST = 0
- 
+
       SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
@@ -85,7 +85,7 @@ C
       IF (IFLRPI(IRPI).EQ.0.AND.NFLAG.NE.2) THEN
         IFLRPI(IRPI)=-1
 C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY
-C  IS CROSS SECTION AVAILABLE?
+C  IS CROSS-SECTION AVAILABLE?
         IREAC=MODCOL(4,1,IRPI)
         IF (IREAC.EQ.0) GOTO 1
 C CURRENTLY: HARD WIRED SEARCH RANGE
@@ -97,7 +97,7 @@ C CURRENTLY: HARD WIRED SEARCH RANGE
 c  elab:  here ln(E), with E from 1.0 to 1e5 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
 
-c  find cross section at ENERGY ELAB from a fit or table. 
+c  find cross-section at ENERGY ELAB from a fit or table.
           CPI=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'VELOPI 1')
 
           vrq=exp(elab-defpi(IRPI))
@@ -123,7 +123,7 @@ c  find cross section at ENERGY ELAB from a fit or table.
         ENDIF
         CALL EIRENE_LEER(1)
       ENDIF
-1     CONTINUE
+    1 CONTINUE
 
 c  preparations for process IRPI done. Start sampling procedure here.
 C
@@ -155,7 +155,7 @@ c  drift velocity, cm/s
           VYDR=0.D0
           VZDR=0.D0
         ENDIF
-      ELSE 
+      ELSE
         GOTO 999
       ENDIF
 C
@@ -168,7 +168,7 @@ C
 
 c   start random sampling here
 
-123   CONTINUE
+  123 CONTINUE
       IF (INIV2.LE.0) CALL EIRENE_FGAUSS
 C
 C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN (m=0;s=1)
@@ -196,7 +196,7 @@ C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONS
 C
       IF (NFLAG.EQ.2) THEN
 C
-        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S. 
+        VXI=VXN   ! INCIDENT ION VELOCITY; CM/S.
         VYI=VYN
         VZI=VZN
 
@@ -207,8 +207,8 @@ C
 C
 C   ALL OTHER DISTRIBUTIONS
 C
-C   WEIGHT CORRECTION DUE TO ENERGY DEPENDENCE IN CROSS SECTION
-C   OR: REJECTION     DUE TO ENERGY DEPENDENCE IN CROSS SECTION
+C   WEIGHT CORRECTION DUE TO ENERGY DEPENDENCE IN CROSS-SECTION
+C   OR: REJECTION     DUE TO ENERGY DEPENDENCE IN CROSS-SECTION
 C   PRESENT VERSION: REJECTION
         VRELQ=MAX((VXN-VX)**2+(VYN-VY)**2+(VZN-VZ)**2,EPS30)
         VREL=SQRT(VRELQ)
@@ -237,7 +237,7 @@ C  REJECT
 c  rejection loop failed, too many attempts.
             WRITE (iunout,*)
      .        'ICOUNT TOO LARGE ( > 500) IN VELOPI. ACCEPT SAMPLE '
-cdr............................................................   
+cdr............................................................
 cdr  test output only
 cdr         ELLAB=EXP(ELAB)
 cdr         WRITE (iunout,*) 'NPANU, IREAC, IRPI, ELAB(EV),icell ',
@@ -249,7 +249,7 @@ C  ACCEPT
             NPMEAN(IRPI)=NPMEAN(IRPI)+1
           ENDIF
 C       ELSEIF (NLWEIGHT) THEN
- 
+
         ELSE
 C  FOR SOME REASON SGPVMX COULD NOT BE FOUND, or rejection is too inefficient.
 C  SO USE WEIGHTING RATHER THAN REJECTION
@@ -265,20 +265,20 @@ C
 C
 C  STEP 1 FINISHED, INCIDENT BULK "ION'S" (IPLS) VELOCITY IS SET: VXI,VYI,VZI
 C
-200   CONTINUE
+  200 CONTINUE
 C
 C  STEP 2:
 
 C assume: scattering angle = 0 in COM, (as for EI collisions)
 C         or: isotropic,  or PI.
-C         given the scattering angle, the KER is added 
-C         
+C         given the scattering angle, the KER is added
 C
- 
-C  DETERMINE NEXT GENERATION TEST PARTICLE, 
+C
+
+C  DETERMINE NEXT GENERATION TEST PARTICLE,
 C  BY SAMPLING FROM CUMULATIV DISTRIB: P2NP(IRPI,...)
 C  AND FIND EFRAC: FRACTION OF KER (=EDISS) ASSIGNED TO THE SAMPLED SECONDARY
- 
+
       IF ((ZEP_IN > 0._DP) .AND. (ZEP_IN <= 1._DP)) THEN
         ZEP3 = ZEP_IN
       ELSE
@@ -301,9 +301,9 @@ C
         DO 448 IATM=1,NATMIM
           ISPZA=NSPH+IATM
           IF (ZEP3.LE.P2NP(IRPI,ISPZA)) GOTO 449
-448     CONTINUE
+  448   CONTINUE
         IATM=NATMI
-449     CONTINUE
+  449   CONTINUE
         CVRSS=CVRSSA(IATM)
         RSQDV=RSQDVA(IATM)
         EFRAC=EATPI(IRPI,IATM,2)
@@ -316,9 +316,9 @@ C
         DO 458 IMOL=1,NMOLIM
           ISPZM=NSPA+IMOL
           IF (ZEP3.LE.P2NP(IRPI,ISPZM)) GOTO 459
-458     CONTINUE
+  458   CONTINUE
         IMOL=NMOLI
-459     CONTINUE
+  459   CONTINUE
         CVRSS=CVRSSM(IMOL)
         RSQDV=RSQDVM(IMOL)
         EFRAC=EMLPI(IRPI,IMOL,2)
@@ -331,9 +331,9 @@ C
         DO 468 IION=1,NIONIM
           ISPZI=NSPAM+IION
           IF (ZEP3.LE.P2NP(IRPI,ISPZI)) GOTO 469
-468     CONTINUE
+  468   CONTINUE
         IION=NIONI
-469     CONTINUE
+  469   CONTINUE
         CVRSS=CVRSSI(IION)
         RSQDV=RSQDVI(IION)
         EFRAC=EIOPI(IRPI,IION,2)
@@ -358,7 +358,7 @@ C  SYSTEM
 c  this is to be done. currently: no pi secondaries, and if so, then
 c  ediss is added to incident test particle velocity, rather COM. compare to el, and ei
 C
- 
+
       IF (EDISS.GT.0.D0) THEN
 C
 C  NEXT LINES: E-NEW=E-OLD+EDIS, ON AVERAGE
@@ -390,7 +390,7 @@ C
 C
       RETURN
 C
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*)
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)

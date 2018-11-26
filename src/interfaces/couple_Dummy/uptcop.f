@@ -8,5 +8,5 @@ C
       REAL(DP), INTENT(IN) :: X(MSTOR1,MSTOR2,N2ND+N3RD),
      .                      X2(NSTORV,N2ND+N3RD), W
       INTEGER, INTENT(IN) :: IFLAG
- 
+
       END

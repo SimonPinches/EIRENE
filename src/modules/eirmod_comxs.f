@@ -3,7 +3,7 @@ cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by EDPOT arrays,
 cdr           for potential energy difference in reactions.
 cdr           The old fluid limit critical Knudsen number is now defined
 cdr           via negative ngen..(..) flags
-cdr Apr. 18: further pointer, targets set for photons, towards code syncronisation
+cdr Apr. 18: further pointer, targets set for photons, towards code synchronisation
 cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
 cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
@@ -11,13 +11,13 @@ cdr
 cdr  MXCOLLS --> MSTOR0
 
       MODULE EIRMOD_COMXS
- 
+
 !  jan-05: natprc_2,..... introduced
 !  07.12.05: bugfix: IFTFLG is now available for default reactions too
 !                    via dimensioning IFTFLG(-11:NREAC,0:5)
 !  30.08.06: data structure for reaction data redefined
 !  12.10.06: modcol revised
-!  19.12.06: test functions added which allow to test if a rate-coefficient
+!  19.12.06: test functions added which allow to test if a rate coefficient
 !            is defined via ADAS database
 !  02.03.07: remove ESCD2* arrays
 !  02.03.07: fourth secondary group specifier introduced
@@ -27,7 +27,7 @@ cdr  MXCOLLS --> MSTOR0
 !            database option
 !
 cdr sometime between 2004 and 2007 the atomic data structure was revised.
-cdr 
+cdr
 cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
@@ -48,33 +48,33 @@ cdr            first: rationalize naming of integer flags for collision models
 cdr            nhvrei, nhvrpi, for KER (heavy particle post collision kinetics)
 cdr            remove redundant flags: JEREARC  (UNUSED)
 cdr            remove redundant flags: JEREAEI  (UNUSED)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_COMXS, EIRENE_DEALLOC_COMXS,
-     .          EIRENE_INIT_CMDTA,    
+     .          EIRENE_INIT_CMDTA,
      .          EIRENE_WRITE_CMDTA, EIRENE_READ_CMDTA,
-     .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF, 
+     .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF,
      .          EIRENE_GET_REACTION, EIRENE_SET_REACTION_DATA,
      .          EIRENE_FREE_REACDAT,
 cdr
      .          LINE_DATA, POLY_DATA, ADAS_DATA, HYDKIN_DATA,
      .          COLRAD_DATA,
-     .          REACTION_DATA, 
+     .          REACTION_DATA,
      .          FIT_FORMS,
      .          REACTION_INPUT_LINE,
 cdr
      .          EIRENE_IS_RTC_TAB2D,
-     .          EIRENE_IS_RTCEW_TAB2D, 
+     .          EIRENE_IS_RTCEW_TAB2D,
      .          EIRENE_IS_RTCMW_TAB2D,
 c
-     .          EIRENE_ALLOC_FIT_FORM   
- 
+     .          EIRENE_ALLOC_FIT_FORM
+
       TYPE LINE_DATA
         REAL(DP) :: E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21
         REAL(DP) :: C6A(12)
@@ -83,20 +83,20 @@ c
         CHARACTER(2) :: KENN(12)
         CHARACTER(50) :: REACNAME
       END TYPE LINE_DATA
- 
+
       TYPE ADAS_DATA
         INTEGER :: NDENS, NTEMP
         REAL(DP), POINTER :: DENS(:), TEMP(:), TAB2D(:,:)
         REAL(DP), POINTER :: DDE(:), DTE(:)
       END TYPE ADAS_DATA
- 
+
 !pb  IFEXMN, IFEXMX, RCMN, RCMX, FPARM removed from POLY_DATA
 cdr  The extrapolation options are now made available generally, for all typs of A&M data input
 
       TYPE POLY_DATA
         REAL(DP), POINTER :: DBLPOL(:,:)
       END TYPE POLY_DATA
- 
+
       TYPE HYDKIN_DATA
         INTEGER :: NTEMPS
         REAL(DP), POINTER :: TEMPS(:), RATES(:), RATIO(:)
@@ -108,7 +108,7 @@ cdr  The extrapolation options are now made available generally, for all typs of
         INTEGER :: IFLAV, IVARST, IROW_ESC, ICOL_ESC
         REAL(DP) :: POP_ESC
       END TYPE COLRAD_DATA
- 
+
       TYPE FIT_FORMS
         INTEGER :: IFIT
         TYPE(POLY_DATA),   POINTER :: POLY
@@ -117,11 +117,11 @@ cdr  The extrapolation options are now made available generally, for all typs of
         TYPE(HYDKIN_DATA), POINTER :: HYD
         TYPE(COLRAD_DATA), POINTER :: CRM
 c
-        REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX 
+        REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX
         REAL(DP) :: FP1L(3), FP1R(3), FP2B(3), FP2T(3)
         INTEGER  :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       END TYPE FIT_FORMS
- 
+
       TYPE REACTION_DATA
         TYPE(FIT_FORMS), POINTER :: POT, CRS, RTC, RTCMW, RTCEW,
      T                              OTH, PHR
@@ -131,7 +131,7 @@ c
         REAL(DP) :: RTMAX, ERTMAX
         INTEGER :: NOSEC
       END TYPE REACTION_DATA
- 
+
       TYPE REACTION_INPUT_LINE
         INTEGER :: NO, MT, MP, IZ, JFEX1MN, JFEX1MX, NCONST,
      .             JFEX2MN, JFEX2MX, IROW_ESC, ICOL_ESC
@@ -143,16 +143,16 @@ c
         CHARACTER(3) :: REACTYP
         CHARACTER(2) :: ELEMENT
       END TYPE REACTION_INPUT_LINE
- 
+
       TYPE(LINE_DATA), POINTER, PUBLIC, SAVE :: REACTION
       INTEGER, PUBLIC, SAVE :: IDREAC
- 
+
       TYPE(REACTION_DATA), ALLOCATABLE, PUBLIC, SAVE :: REACDAT(:)
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        XSTOR(:,:), XSTORV(:)
 
-cdr  local (on the flight) atomic-moleculer reaction data 
+cdr  local (on the flight) atomic-moleculer reaction data
       REAL(DP), PUBLIC, POINTER, SAVE ::
 c  reaction rates, by reaction
      R SIGVCX(:),   SIGVPI(:),   SIGVEI(:),   SIGVEL(:),
@@ -165,13 +165,13 @@ c  totals
      R SIGBGK,
 c  inverse mean free path
      R ZMFPI
- 
+
       REAL(DP), PUBLIC, SAVE :: ZMFPTHI, TDGTEMX
- 
+
 csw added OTHER (OT) reactions
       REAL(DP), PUBLIC, POINTER, SAVE :: SIGVOT(:),   ESIGOT(:,:),
      R SIGOTT
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TABEI1(:,:),   TABRC1(:,:),
      R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),
@@ -179,28 +179,28 @@ csw added OTHER (OT) reactions
      R ADDPI(:,:),    ADDCX(:,:),    ADDEL(:,:)
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R FACRRC(:,:), FACRPI(:,:), FACREL(:,:), FACREI(:,:), FACRCX(:,:) 
+     R FACRRC(:,:), FACRPI(:,:), FACREL(:,:), FACREI(:,:), FACRCX(:,:)
 
-c  secondaries, species distribution, for EI and PI processes 
+c  secondaries, species distribution, for EI and PI processes
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R PELEI(:),  PATEI(:,:), PMLEI(:,:), PIOEI(:,:), PPLEI(:,:),
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
 c  ...and cumulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelot1, el and cx processes have no secondary electrons
      R EHVEI1(:,:),   EHVPI3(:,:,:),
      R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLOT3(:,:,:)
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EATEI(:,:,:), EMLEI(:,:,:), EIOEI(:,:,:), EPLEI(:,:,:),
      R EATPI(:,:,:), EMLPI(:,:,:), EIOPI(:,:,:), EPLPI(:,:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
      I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I NAEII(:),    NMEII(:),    NIEII(:),  NPHEII(:),
      I NACXI(:),    NMCXI(:),    NICXI(:),  NPHCXI(:),
@@ -213,24 +213,24 @@ c  ...and cumulated distributions thereof, for species sampling
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NXEII, NXCXI, NXELI, NXPII,
      I NPBGKX
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),
      I NACXIM(:),   NMCXIM(:),   NICXIM(:),
      I NAELIM(:),   NMELIM(:),   NIELIM(:),
      I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),
      I NPRCI(:),    NPRCIM(:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NATPRC(:),  NMLPRC(:), NIOPRC(:), NPLPRC(:), NPHPRC(:),
      I NATPRC_2(:),  NMLPRC_2(:), NIOPRC_2(:), NPLPRC_2(:), NPHPRC_2(:),
      I N1STX(:,:), N2NDX(:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NSEACX(:,:,:), NSEMCX(:,:,:), NSEICX(:,:,:),
      I NSEAEL(:,:,:), NSEMEL(:,:,:), NSEIEL(:,:,:),
      I NSEPRC(:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NREACX(:),NREAPI(:),NREAEL(:),
      I NREAEI(:),NREARC(:),
@@ -241,7 +241,7 @@ c  ...and cumulated distributions thereof, for species sampling
      I IPIOEI(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
      I IPIOPI(:,:),IPPLPI(:,:)
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I LGACX(:,:,:),LGMCX(:,:,:),
      I LGICX(:,:,:),LGPHCX(:,:,:),
@@ -256,14 +256,14 @@ c  ...and cumulated distributions thereof, for species sampling
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
       INTEGER, PUBLIC, POINTER, SAVE ::
      I LGXCX(:,:,:), LGXEI(:,:), LGXEL(:,:,:), LGXPI(:,:,:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NRPII, NREII, NRCXI, NRELI, NRRCI, NRBGI
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NSTOR1, NSTOR,  NSTORV, NTAB, NDAT, NMDTA, MMDTA, NAMF, MAMF,
      I MSTOR0, MSTOR1, MSTOR2
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DELPOT(:),   FACREA(:,:),
      R FREACA(:,:), FREACM(:,:), FREACI(:,:), FREACP(:,:), FREACPH(:,:),
@@ -271,7 +271,7 @@ c  ...and cumulated distributions thereof, for species sampling
      R EELECA(:,:), EELECM(:,:), EELECI(:,:), EELECP(:,:), EELECPH(:,:),
      R EBULKA(:,:), EBULKM(:,:), EBULKI(:,:), EBULKP(:,:), EBULKPH(:,:),
      R ESCD1A(:,:), ESCD1M(:,:), ESCD1I(:,:), ESCD1P(:,:), ESCD1PH(:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I ISWR(:),     MODCLF(:),   MASSP(:),    MASST(:),
      I IFTFLG(:,:),
@@ -285,34 +285,34 @@ c  ...and cumulated distributions thereof, for species sampling
      I ISCDEA(:,:), ISCDEM(:,:), ISCDEI(:,:), ISCDEP(:,:), ISCDEPH(:,:),
      I IESTMA(:,:), IESTMM(:,:), IESTMI(:,:), IESTMPH(:,:),
      I IBGKA (:,:), IBGKM (:,:), IBGKI (:,:), IBGKPH (:,:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NREACI, NHCOL_STORE
 
       INTEGER, PUBLIC, SAVE :: MAXSPC(0:4)
-      
+
       INTEGER, ALLOCATABLE, PUBLIC, SAVE :: M_HCOL(:)
- 
+
       CHARACTER(50), PUBLIC, ALLOCATABLE, SAVE :: REAC_NAME(:)
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_COMXS (ICAL)
 CDR
-C  AUTOMATED ALLOCATION OF STORAGE FOR A&M DATA STRUCTURES AND ARRAYS. 
+C  AUTOMATED ALLOCATION OF STORAGE FOR A&M DATA STRUCTURES AND ARRAYS.
 C  CALLED FROM:  ALLOCATE_MODULES.F
-C  ICAL=1: ... 
+C  ICAL=1: ...
 C  ICAL=2: ...
- 
+
       INTEGER, INTENT(IN) :: ICAL
       INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
       INTEGER(IL) :: MEM
 
       IF (ICAL == 1) THEN
- 
+
         IF (ALLOCATED(XSTORV)) RETURN
- 
+
         NSTORV = 8
 C
         NAMF=9*11*11+11+2*(2*11+6*11)+
@@ -320,9 +320,9 @@ C
         MAMF=NREAC*(      8+ 8*NPHOT+ 8*NATM+ 8*NMOL+ 8*NION+ 6*NPLS)+
      P       1*NATM+ 1*NMOL+ 1*NION+ 1*NPLS+ 1 +
      P       (12+NREAC)*10
- 
+
         ALLOCATE (XSTORV(NSTORV))
- 
+
         SIGCXT  => XSTORV(1)
         SIGPIT  => XSTORV(2)
         SIGEIT  => XSTORV(3)
@@ -331,7 +331,7 @@ C
         SIGTOT  => XSTORV(6)
         SIGBGK  => XSTORV(7)
         ZMFPI   => XSTORV(8)
- 
+
         ALLOCATE (NAEII(NATM))
         ALLOCATE (NMEII(NMOL))
         ALLOCATE (NIEII(NION))
@@ -379,7 +379,7 @@ cdr apparently missing: ...M arrays for photon test particles
         ALLOCATE (NPBGKI(NION))
         ALLOCATE (NPBGKPH(NPHOT))
         ALLOCATE (NPBGKP(NPLS,2))
- 
+
         ALLOCATE (NSEACX(NATM,NPLS,5))
         ALLOCATE (NSEMCX(NMOL,NPLS,5))
         ALLOCATE (NSEICX(NION,NPLS,5))
@@ -387,7 +387,7 @@ cdr apparently missing: ...M arrays for photon test particles
         ALLOCATE (NSEAEL(NATM,NPLS,5))
         ALLOCATE (NSEMEL(NMOL,NPLS,5))
         ALLOCATE (NSEIEL(NION,NPLS,5))
- 
+
         ALLOCATE (DELPOT(NREAC))
 
         ALLOCATE (FACREA(-11:NREAC,2))
@@ -432,7 +432,7 @@ cdr
         ALLOCATE (ESCD1I(NION,NREAC))
         ALLOCATE (ESCD1P(NPLS,NREAC))
         ALLOCATE (ESCD1PH(NPHOT,NREAC))
- 
+
         ALLOCATE (ISWR(NREAC))
         ALLOCATE (MODCLF(NREAC))
         ALLOCATE (MASSP(NREAC))
@@ -495,7 +495,7 @@ cdr
         ALLOCATE (IBGKM (NMOL,NREAC))
         ALLOCATE (IBGKI (NION,NREAC))
         ALLOCATE (IBGKPH(NPHOT,NREAC))
- 
+
         ALLOCATE (REAC_NAME(NREAC))
 cdr  -11 ... -1   : internal default atomic-molecular data
 cdr    1 ... NREAC: atomic/molecular data read from external data files, input block 4
@@ -507,21 +507,21 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
      .                      9_IL*(NATM+NMOL+NION)+4_IL*NPLS+
      .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
      .                      NREAC*LEN(REAC_NAME(1)) + NREAC*4_IL
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
- 
- 
+
+
       ELSE IF (ICAL == 2) THEN
- 
+
         IF (ALLOCATED(XSTOR)) RETURN
-C  DIMENSION OF FULL REACTION SPECIFIC ARRAYS: CFLAG, MODCOL,.... 
+C  DIMENSION OF FULL REACTION SPECIFIC ARRAYS: CFLAG, MODCOL,....
         MSTOR0 = MAX(NRPI, NREI, NRCX, NREL, NREC, NROT)
 C  FIRST DIMENSION OF XSTOR ARRAY
         MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NROT)
 C  SECOND DIMENSION OF XSTOR ARRAY
         MSTOR2 = 24
- 
+
         NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
      .           2*(NREL+NRCX+NRPI)+5*NREI+
@@ -555,31 +555,31 @@ C  LG... ARRAYS
      P        2*(NATMP+NMOLP+NIONP      )*(NREL+1)+
      P          (                  NPLSP)*(NREC+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRPI+1)
- 
- 
 
- 
+
+
+
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
- 
+
         SIGVCX => XSTOR(:,1)
         SIGVPI => XSTOR(:,2)
         SIGVEI => XSTOR(:,3)
         SIGVEL => XSTOR(:,4)
         SIGVOT => XSTOR(:,22)
- 
+
         ESIGCX => XSTOR(:,5:6)
         ESIGPI => XSTOR(:,7:11)
         ESIGEI => XSTOR(:,12:16)
         ESIGEL => XSTOR(:,17:18)
         ESIGOT => XSTOR(:,23:24)
- 
+
         VSIGCX => XSTOR(:,19)
         VSIGPI => XSTOR(:,20)
         VSIGEL => XSTOR(:,21)
 cdr     vsigei  : still missing
 cdr     vsigot  : still missing
- 
- 
+
+
         ALLOCATE (TABEI1(NREI,NSTORDR))
         ALLOCATE (TABRC1(NREC,NSTORDR))
         ALLOCATE (TABPI3(NRPI,NSTORDR,NSTORDT))
@@ -591,19 +591,19 @@ cdr     vsigot  : still missing
         ALLOCATE (FDLMEL(NREL))
 
 c  factors for scaling reaction rates to other target (ipls) masses
-c  (only for heavy particle impact reaction) 
+c  (only for heavy particle impact reaction)
         ALLOCATE (ADDPI(NRPI,NPLS))
         ALLOCATE (ADDCX(NRCX,NPLS))
         ALLOCATE (ADDEL(NREL,NPLS))
 
 c  factors for scaling reaction processes
-        ALLOCATE (FACRRC(NREC,2)) 
-        ALLOCATE (FACRPI(NRPI,2)) 
-        ALLOCATE (FACREL(NREL,2)) 
+        ALLOCATE (FACRRC(NREC,2))
+        ALLOCATE (FACRPI(NRPI,2))
+        ALLOCATE (FACREL(NREL,2))
         ALLOCATE (FACREI(NREI,2))
-        ALLOCATE (FACRCX(NRCX,2)) 
- 
-c  secondaries, EI processes 
+        ALLOCATE (FACRCX(NRCX,2))
+
+c  secondaries, EI processes
         ALLOCATE (PELEI(NREI))
         ALLOCATE (PATEI(NREI,0:NATM))
         ALLOCATE (PMLEI(NREI,0:NMOL))
@@ -616,10 +616,10 @@ c  secondaries, PI processes
         ALLOCATE (PATPI(NRPI,0:NATM))
         ALLOCATE (PMLPI(NRPI,0:NMOL))
         ALLOCATE (PIOPI(NRPI,0:NION))
-        ALLOCATE (PPLPI(NRPI,0:NPLS))       
-        ALLOCATE (P2NP(NRPI,0:NSPZ))        
+        ALLOCATE (PPLPI(NRPI,0:NPLS))
+        ALLOCATE (P2NP(NRPI,0:NSPZ))
         ALLOCATE (P2NPI(NRPI))
- 
+
         ALLOCATE (EELEI1(NREI,NSTORDR))
         ALLOCATE (EHVEI1(NREI,NSTORDR))
 
@@ -632,10 +632,10 @@ c  secondaries, PI processes
 
         ALLOCATE (EPLCX3(NRCX,NSTORDR,NSTORDT))
         ALLOCATE (EPLEL3(NREL,NSTORDR,NSTORDT))
- 
+
 
         ALLOCATE (EPLOT3(NROT,NSTORDR,NSTORDT))
- 
+
         ALLOCATE (EATPI(NRPI,0:NATM,2))
         ALLOCATE (EMLPI(NRPI,0:NMOL,2))
         ALLOCATE (EIOPI(NRPI,0:NION,2))
@@ -645,16 +645,16 @@ c  secondaries, PI processes
         ALLOCATE (EMLEI(NREI,0:NMOL,2))
         ALLOCATE (EIOEI(NREI,0:NION,2))
         ALLOCATE (EPLEI(NREI,0:NPLS,2))
- 
+
         ALLOCATE (MODCOL(7,0:4,MSTOR0))
 
-c   flags for collision or tracklength estimators, 
+c   flags for collision or tracklength estimators,
 c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (IESTCX(NRCX,3))
         ALLOCATE (IESTEL(NREL,3))
         ALLOCATE (IESTPI(NRPI,3))
         ALLOCATE (IESTEI(NREI,3))
- 
+
         ALLOCATE (NATPRC(NREC))
         ALLOCATE (NMLPRC(NREC))
         ALLOCATE (NIOPRC(NREC))
@@ -669,9 +669,9 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
 
         ALLOCATE (N1STX(NRCX,3))
         ALLOCATE (N2NDX(NRCX,3))
- 
+
         ALLOCATE (NSEPRC(NREC,5))
- 
+
         ALLOCATE (NREACX(NRCX))
         ALLOCATE (NREAPI(NRPI))
         ALLOCATE (NREAEL(NREL))
@@ -691,8 +691,8 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (NREACT(NREAC))
         ALLOCATE (NHVRPI(NRPI))
 c  again: some arrays for species distribution of secondaries
-c         derived from P..EI and P..PI, above. 
-c         for speeding up scoring in update, collide 
+c         derived from P..EI and P..PI, above.
+c         for speeding up scoring in update, collide
         ALLOCATE (IPATEI(NREI,0:NATM))
         ALLOCATE (IPMLEI(NREI,0:NMOL))
         ALLOCATE (IPIOEI(NREI,0:NION))
@@ -722,26 +722,26 @@ c
 
         MEM = (MSTOR1*MSTOR2+NMDTA)*8_IL +
      .                      MMDTA*4_IL
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMXS(2) ', MEM
- 
+
       END IF
- 
+
       CALL EIRENE_INIT_CMDTA (ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMXS
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_COMXS
- 
+
       IF (.NOT.ALLOCATED(XSTOR)) RETURN
- 
+
       DEALLOCATE (XSTOR)
       DEALLOCATE (XSTORV)
- 
- 
+
+
       DEALLOCATE (TABEI1)
       DEALLOCATE (TABRC1)
       DEALLOCATE (TABPI3)
@@ -754,12 +754,12 @@ c
       DEALLOCATE (ADDCX)
       DEALLOCATE (ADDEL)
 
-      DEALLOCATE (FACRRC) 
-      DEALLOCATE (FACRPI) 
-      DEALLOCATE (FACREL) 
+      DEALLOCATE (FACRRC)
+      DEALLOCATE (FACRPI)
+      DEALLOCATE (FACREL)
       DEALLOCATE (FACREI)
-      DEALLOCATE (FACRCX) 
- 
+      DEALLOCATE (FACRCX)
+
       DEALLOCATE (PELEI)
       DEALLOCATE (PATEI)
       DEALLOCATE (PMLEI)
@@ -774,7 +774,7 @@ c
       DEALLOCATE (P2NP)
       DEALLOCATE (P2NEI)
       DEALLOCATE (P2NPI)
- 
+
       DEALLOCATE (EELEI1)
       DEALLOCATE (EHVEI1)
       DEALLOCATE (EELRC1)
@@ -784,7 +784,7 @@ c
       DEALLOCATE (EPLCX3)
       DEALLOCATE (EPLEL3)
       DEALLOCATE (EPLOT3)
- 
+
       DEALLOCATE (EATPI)
       DEALLOCATE (EMLPI)
       DEALLOCATE (EIOPI)
@@ -794,7 +794,7 @@ c
       DEALLOCATE (EMLEI)
       DEALLOCATE (EIOEI)
       DEALLOCATE (EPLEI)
- 
+
       DEALLOCATE (MODCOL)
 
       DEALLOCATE (IESTCX)
@@ -843,7 +843,7 @@ c
       DEALLOCATE (NPBGKI)
       DEALLOCATE (NPBGKPH)
       DEALLOCATE (NPBGKP)
- 
+
       DEALLOCATE (NATPRC_2)
       DEALLOCATE (NMLPRC_2)
       DEALLOCATE (NIOPRC_2)
@@ -858,7 +858,7 @@ c
 
       DEALLOCATE (N1STX)
       DEALLOCATE (N2NDX)
- 
+
       DEALLOCATE (NSEACX)
       DEALLOCATE (NSEMCX)
       DEALLOCATE (NSEICX)
@@ -866,7 +866,7 @@ c
       DEALLOCATE (NSEMEL)
       DEALLOCATE (NSEIEL)
       DEALLOCATE (NSEPRC)
- 
+
       DEALLOCATE (NREACX)
       DEALLOCATE (NREAPI)
       DEALLOCATE (NREAEL)
@@ -916,7 +916,7 @@ c
       DEALLOCATE (LGMPI)
       DEALLOCATE (LGIPI)
       DEALLOCATE (LGPHPI)
- 
+
       DEALLOCATE (DELPOT)
 
       DEALLOCATE (FACREA)
@@ -951,7 +951,7 @@ c
       DEALLOCATE (ESCD1I)
       DEALLOCATE (ESCD1P)
       DEALLOCATE (ESCD1PH)
- 
+
       DEALLOCATE (ISWR)
       DEALLOCATE (MODCLF)
       DEALLOCATE (MASSP)
@@ -1016,24 +1016,24 @@ c
       DEALLOCATE (IBGKPH)
 
       DEALLOCATE (REAC_NAME)
- 
+
       CALL EIRENE_FREE_REACDAT
 
 
       DEALLOCATE (M_HCOL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMXS
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CMDTA (ICAL)
 cdr  initialize (nullify) A&M data
 cdr  ical=1:  ??
 cdr  ical=2:  ??
- 
+
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: IREAC, IL
- 
+
       IF (ICAL == 1) THEN
         NAEII   = 0
         NMEII   = 0
@@ -1065,14 +1065,14 @@ cdr  ical=2:  ??
         NPBGKM  = 0
         NPBGKI  = 0
         NPBGKP  = 0
- 
+
         NSEACX  = 0
         NSEMCX  = 0
         NSEICX  = 0
         NSEAEL  = 0
         NSEMEL  = 0
         NSEIEL  = 0
- 
+
         DELPOT  = 0._DP
         FACREA(:,1) = 1._DP
         FACREA(:,2) = 0._DP
@@ -1105,10 +1105,10 @@ cdr  ical=2:  ??
         ESCD1I  = 0._DP
         ESCD1P  = 0._DP
         ESCD1PH = 0._DP
- 
+
         ZMFPTHI = 0._DP
         TDGTEMX = 1.E-30_DP
- 
+
         ISWR    = 0
         MODCLF  = 0
         MASSP   = 0
@@ -1162,13 +1162,13 @@ cdr  ical=2:  ??
         IBGKM   = 0
         IBGKI   = 0
         IBGKPH  = 0
- 
+
         REAC_NAME = REPEAT(' ',LEN(REAC_NAME(1)))
- 
+
         idreac  = 0
- 
+
         XSTORV  = 0._DP
- 
+
 cdr  ireac=-11, to ireac=-1   : minimal (hard coded) set of default reactions
 cdr  ireac=1    to ireac=nreac: reaction data sets read from external files
         DO IREAC= -11, NREAC
@@ -1198,14 +1198,14 @@ c  reaction threshold (if any)
           NULLIFY(REACDAT(IREAC)%PHR)
         END DO
 
- 
+
         NHCOL_STORE = 0
         M_HCOL = 0
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         XSTOR  = 0._DP
- 
+
         TABEI1  = 0._DP
         TABRC1  = 0._DP
         TABPI3  = 0._DP
@@ -1220,15 +1220,15 @@ c  reaction threshold (if any)
 
         FACRRC(:,1) = 1._DP
         FACRRC(:,2) = 0._DP
-        FACRPI(:,1) = 1._DP 
-        FACRPI(:,2) = 0._DP 
-        FACREL(:,1) = 1._DP 
-        FACREL(:,2) = 0._DP 
+        FACRPI(:,1) = 1._DP
+        FACRPI(:,2) = 0._DP
+        FACREL(:,1) = 1._DP
+        FACREL(:,2) = 0._DP
         FACREI(:,1) = 1._DP
         FACREI(:,2) = 0._DP
         FACRCX(:,1) = 1._DP
         FACRCX(:,2) = 0._DP
- 
+
         PELEI   = 0._DP
         PATEI   = 0._DP
         PMLEI   = 0._DP
@@ -1243,7 +1243,7 @@ c  reaction threshold (if any)
         P2NP    = 0._DP
         P2NEI   = 0._DP
         P2NPI   = 0._DP
- 
+
         EELEI1  = 0._DP
         EHVEI1  = 0._DP
         EELRC1  = 0._DP
@@ -1253,7 +1253,7 @@ c  reaction threshold (if any)
         EPLCX3  = 0._DP
         EPLEL3  = 0._DP
         EPLOT3  = 0._DP
- 
+
         EATPI   = 0._DP
         EMLPI   = 0._DP
         EIOPI   = 0._DP
@@ -1262,13 +1262,13 @@ c  reaction threshold (if any)
         EMLEI   = 0._DP
         EIOEI   = 0._DP
         EPLEI   = 0._DP
- 
+
         MODCOL  = 0
         IESTCX  = 0
         IESTEL  = 0
         IESTPI  = 0
         IESTEI  = 0
- 
+
         NATPRC  = 0
         NMLPRC  = 0
         NIOPRC  = 0
@@ -1281,7 +1281,7 @@ c  reaction threshold (if any)
         NPHPRC_2= 0
         N1STX   = 0
         N2NDX   = 0
- 
+
         NRPII   = 0
         NREII   = 0
         NRCXI   = 0
@@ -1289,7 +1289,7 @@ c  reaction threshold (if any)
         NRRCI   = 0
         NRBGI   = 0
         NSEPRC  = 0
- 
+
         NREACX  = 0
         NREAPI  = 0
         NREAEL  = 0
@@ -1329,33 +1329,33 @@ c  reaction threshold (if any)
         LGAPI   = 0
         LGMPI   = 0
         LGIPI   = 0
- 
+
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CMDTA
- 
- 
+
+
       SUBROUTINE EIRENE_WRITE_CMDTA
 cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input block 1)
- 
+
       WRITE (13+IFOFF)
      . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
- 
+
      . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
- 
+
      . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
- 
+
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
      . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
- 
+
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
      . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
@@ -1366,9 +1366,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
      . N1STX  ,N2NDX  ,
- 
+
      . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
- 
+
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
      . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
@@ -1376,30 +1376,30 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
- 
+
       RETURN
       END SUBROUTINE EIRENE_WRITE_CMDTA
- 
- 
+
+
       SUBROUTINE EIRENE_READ_CMDTA
- 
+
       READ (13+IFOFF)
      . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
      . FDLMPI ,FDLMCX ,FDLMEL ,
      . ADDPI  ,ADDCX  ,ADDEL  ,
      . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
- 
+
      . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
- 
+
      . EELEI1 ,EELRC1 ,EELPI1 ,
      . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLOT3 ,
- 
+
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
      . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
- 
+
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
      . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
@@ -1410,9 +1410,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
      . N1STX  ,N2NDX  ,
- 
+
      . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
- 
+
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
      . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
@@ -1420,18 +1420,18 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
- 
+
       RETURN
       END SUBROUTINE EIRENE_READ_CMDTA
- 
- 
 
- 
- 
+
+
+
+
       SUBROUTINE EIRENE_WRITE_CMAMF
- 
+
       INTEGER :: IR
- 
+
       WRITE (13+IFOFF)
      . DELPOT, FACREA,
      . FREACA, FREACM, FREACI, FREACP, FREACPH,
@@ -1439,7 +1439,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . EELECA, EELECM, EELECI, EELECP, EELECPH,
      . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
- 
+
      . NREACI, ISWR,   MODCLF, MASSP,  MASST,  IFTFLG,
      . NRCP,   NRCA,   NRCM,   NRCI, NRCPH,
      . IREACA, IREACM, IREACI, IREACP, IREACPH,
@@ -1450,9 +1450,9 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ISCD4A, ISCD4M, ISCD4I, ISCD4P, ISCD4PH,
      . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
      . IESTMA, IESTMM, IESTMI, IESTMPH, IBGKA , IBGKM , IBGKI, IBGKPH
- 
+
       DO IR=1,NREACI
-        WRITE (13+IFOFF) 
+        WRITE (13+IFOFF)
      .             REACDAT(IR)%LPOT,
      .             REACDAT(IR)%LCRS,
      .             REACDAT(IR)%LRTC,
@@ -1481,47 +1481,47 @@ c
         IF (REACDAT(IR)%LPHR)   CALL
      .  EIRENE_WRITE_FIT_FORM(REACDAT(IR)%PHR)
       END DO
- 
+
       RETURN
- 
+
       CONTAINS
- 
+
         SUBROUTINE EIRENE_WRITE_FIT_FORM (RP)
         TYPE(FIT_FORMS),POINTER :: RP
- 
+
         WRITE (13+IFOFF) RP%IFIT
- 
+
         IF (RP%IFIT < 0) THEN
 ! DATA FOR PHOTONIC LINE SHAPE, BROADENING.  SPECIAL FORMAT
           WRITE (13+IFOFF) RP%LINE%E0, RP%LINE%E1, RP%LINE%AIK,
      .               RP%LINE%G1, RP%LINE%G2, RP%LINE%C2,
      .               RP%LINE%C3, RP%LINE%C4, RP%LINE%C6,
      .               RP%LINE%B12, RP%LINE%B21, RP%LINE%C6A
-          WRITE (13+IFOFF) RP%LINE%IGND, RP%LINE%IRCART, 
+          WRITE (13+IFOFF) RP%LINE%IGND, RP%LINE%IRCART,
      .               RP%LINE%IPROFILETYPE,
      .               RP%LINE%IFREMD, RP%LINE%NRJPRT, RP%LINE%IPLSC6,
      .               RP%LINE%IMESS
           WRITE (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
- 
+
         ELSE IF (1<=RP%IFIT .AND. RP%IFIT <= 2) THEN
 ! DATA FOR FIT EXPRESSIONS  (E.G. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
           WRITE (13+IFOFF) UBOUND(RP%POLY%DBLPOL)
           WRITE (13+IFOFF)        RP%POLY%DBLPOL
- 
+
         ELSE IF (RP%IFIT == 3) THEN
 ! DATA FOR 2D TABULATED A&M ENTRIES   (2-parameter tables, e.g. ADAS)
           WRITE (13+IFOFF) RP%ADAS%NDENS,RP%ADAS%NTEMP
           WRITE (13+IFOFF) RP%ADAS%DENS,RP%ADAS%TEMP,RP%ADAS%TAB2D,
-     .                     RP%ADAS%DDE,RP%ADAS%DTE 
+     .                     RP%ADAS%DDE,RP%ADAS%DTE
         ELSE IF (RP%IFIT == 4) THEN
 ! DATA FOR 1D TABULATED A&M ENTRIES   (single parameter tables, e.g. HYDKIN)
           WRITE (13+IFOFF) RP%HYD%NTEMPS
           WRITE (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
      .                     RP%HYD%REAC_STRING,RP%HYD%REACNAME,
-     .                     RP%HYD%RPRT 
+     .                     RP%HYD%RPRT
         ELSE IF (RP%IFIT == 5) THEN
-! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
-          WRITE (13+IFOFF) RP%CRM%IFLAV, 
+! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES
+          WRITE (13+IFOFF) RP%CRM%IFLAV,
      .                     RP%CRM%IVARST,
      .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
           WRITE (13+IFOFF) RP%CRM%POP_ESC
@@ -1529,20 +1529,20 @@ c
 
         END IF
 
-cdr options for extrapolation from data tables or from validity range of fits. 
+cdr options for extrapolation from data tables or from validity range of fits.
         WRITE (13+IFOFF) RP%RC1MIN, RP%RC1MAX, RP%RC2MIN, RP%RC2MAX,
      .                   RP%FP1L(3), RP%FP1R(3), RP%FP2B(3), RP%FP2T(3),
      .                   RP%JFEX1MN, RP%JFEX1MX, RP%JFEX2MN, RP%JFEX2MX
- 
+
         END SUBROUTINE EIRENE_WRITE_FIT_FORM
- 
+
       END SUBROUTINE EIRENE_WRITE_CMAMF
- 
- 
+
+
       SUBROUTINE EIRENE_READ_CMAMF
- 
+
       INTEGER :: IR
- 
+
       READ (13+IFOFF)
      . DELPOT, FACREA,
      . FREACA, FREACM, FREACI, FREACP, FREACPH,
@@ -1550,7 +1550,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
      . EELECA, EELECM, EELECI, EELECP, EELECPH,
      . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
- 
+
      . NREACI, ISWR,   MODCLF, MASSP,  MASST,  IFTFLG,
      . NRCP,   NRCA,   NRCM,   NRCI, NRCPH,
      . IREACA, IREACM, IREACI, IREACP, IREACPH,
@@ -1561,9 +1561,9 @@ cdr options for extrapolation from data tables or from validity range of fits.
      . ISCD4A, ISCD4M, ISCD4I, ISCD4P, ISCD4PH,
      . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
      . IESTMA, IESTMM, IESTMI, IESTMPH, IBGKA , IBGKM , IBGKI, IBGKPH
- 
+
       DO IR=1,NREACI
-        READ (13+IFOFF) 
+        READ (13+IFOFF)
      .            REACDAT(IR)%LPOT,
      .            REACDAT(IR)%LCRS,
      .            REACDAT(IR)%LRTC,
@@ -1576,28 +1576,28 @@ cdr options for extrapolation from data tables or from validity range of fits.
      .            REACDAT(IR)%RTMAX,
      .            REACDAT(IR)%ERTMAX,
      .            REACDAT(IR)%NOSEC
- 
+
         IF (REACDAT(IR)%LPOT) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%POT)
         IF (REACDAT(IR)%LCRS) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%CRS)
         IF (REACDAT(IR)%LRTC) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%RTC)
-        IF (REACDAT(IR)%LRTCMW) 
+        IF (REACDAT(IR)%LRTCMW)
      .    CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%RTCMW)
-        IF (REACDAT(IR)%LRTCEW) 
+        IF (REACDAT(IR)%LRTCEW)
      .    CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%RTCEW)
         IF (REACDAT(IR)%LOTH) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%OTH)
         IF (REACDAT(IR)%LPHR) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%PHR)
       END DO
- 
- 
+
+
       RETURN
       CONTAINS
- 
+
         SUBROUTINE EIRENE_READ_FIT_FORM (RP)
         TYPE(FIT_FORMS),POINTER :: RP
         INTEGER :: ND, ND2, NT
- 
+
         READ (13+IFOFF) RP%IFIT
- 
+
         IF (RP%IFIT < 0) THEN
 ! DATA FOR PHOTONIC LINE
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)
@@ -1605,21 +1605,21 @@ cdr options for extrapolation from data tables or from validity range of fits.
      .              RP%LINE%G1, RP%LINE%G2, RP%LINE%C2,
      .              RP%LINE%C3, RP%LINE%C4, RP%LINE%C6,
      .              RP%LINE%B12, RP%LINE%B21, RP%LINE%C6A
-          READ (13+IFOFF) RP%LINE%IGND, RP%LINE%IRCART, 
+          READ (13+IFOFF) RP%LINE%IGND, RP%LINE%IRCART,
      .              RP%LINE%IPROFILETYPE,
      .              RP%LINE%IFREMD, RP%LINE%NRJPRT, RP%LINE%IPLSC6,
      .              RP%LINE%IMESS
           READ (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
- 
+
         ELSE IF (1<= RP%IFIT .AND. RP%IFIT <= 2) THEN
 ! DATA FOR FIT EXPRESSIONS  (POLYNOMIAL, E.G. IN CASE OF HYDHEL DATABASE)
           IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
           IF (ASSOCIATED(RP%POLY%DBLPOL)) DEALLOCATE (RP%POLY%DBLPOL)
- 
+
           READ (13+IFOFF) ND,ND2
           ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
           READ (13+IFOFF) RP%POLY%DBLPOL
- 
+
         ELSE IF (RP%IFIT == 3) THEN
 ! DATA FOR 2D TABULATED A&M ENTRIES  (2-parameter tables, E.G. ADAS)
           READ (13+IFOFF) RP%ADAS%NDENS,RP%ADAS%NTEMP
@@ -1631,7 +1631,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
           ALLOCATE (RP%ADAS%DDE(ND))
           ALLOCATE (RP%ADAS%DTE(NT))
           READ (13+IFOFF) RP%ADAS%DENS,RP%ADAS%TEMP,RP%ADAS%TAB2D,
-     .                    RP%ADAS%DDE, RP%ADAS%DTE 
+     .                    RP%ADAS%DDE, RP%ADAS%DTE
 
         ELSE IF (RP%IFIT == 4) THEN
 ! DATA FOR 1D TABULATED a&m ENTRIES  (single parameter table, E.G. HYDKIN)
@@ -1642,45 +1642,45 @@ cdr options for extrapolation from data tables or from validity range of fits.
           ALLOCATE (RP%HYD%RATIO(NT))
           READ (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
      .               RP%HYD%REAC_STRING,RP%HYD%REACNAME,
-     .               RP%HYD%RPRT 
+     .               RP%HYD%RPRT
         ELSE IF (RP%IFIT == 5) THEN
-! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES 
+! DATA FOR COLLISIONAL RADIATIVE MODEL A&M ENTRIES
           IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
-          READ (13+IFOFF) RP%CRM%IFLAV, 
+          READ (13+IFOFF) RP%CRM%IFLAV,
      .                    RP%CRM%IVARST,
      .                    RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
           READ (13+IFOFF) RP%CRM%POP_ESC
         ELSE
 
         END IF
- 
+
         READ (13+IFOFF) RP%RC1MIN, RP%RC1MAX, RP%RC2MIN, RP%RC2MAX,
      .                  RP%FP1L(3), RP%FP1R(3), RP%FP2B(3), RP%FP2T(3),
      .                  RP%JFEX1MN, RP%JFEX1MX, RP%JFEX2MN, RP%JFEX2MX
- 
+
         END SUBROUTINE EIRENE_READ_FIT_FORM
- 
+
       END SUBROUTINE EIRENE_READ_CMAMF
- 
- 
-
- 
 
 
- 
- 
+
+
+
+
+
+
       SUBROUTINE EIRENE_GET_REACTION (IR)
- 
+
       INTEGER, INTENT(IN) :: IR
- 
+
       REACTION => REACDAT(IR)%PHR%LINE
- 
+
       IDREAC = IR
- 
+
       RETURN
       END SUBROUTINE EIRENE_GET_REACTION
- 
- 
+
+
       SUBROUTINE EIRENE_SET_REACTION_DATA
      .           (IR,ISW,IFTFL,RDATA,IUNOUT,LTEST,
 c  from here on: optional input parameters
@@ -1691,14 +1691,14 @@ c  from here on: optional input parameters
 c  set reaction data structure REACDAT, for reaction no. IR.
 c  here only:  1D or 2D polygonial fits for reaction data.
 c               RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
-c  and:                          NULLIFY REACDAT(IR)%...%ADAS 
-c  and:                          NULLIFY REACDAT(IR)%...%LINE 
-c  and:                          NULLIFY REACDAT(IR)%...%HYD 
+c  and:                          NULLIFY REACDAT(IR)%...%ADAS
+c  and:                          NULLIFY REACDAT(IR)%...%LINE
+c  and:                          NULLIFY REACDAT(IR)%...%HYD
 c
-c  1) called from READ_PHTDBK 
+c  1) called from READ_PHTDBK
 c  2) called from SLREAC, option "CONST"
 c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
- 
+
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IR, ISW, IFTFL, IUNOUT
       INTEGER, OPTIONAL, INTENT(IN) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
@@ -1711,13 +1711,13 @@ c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
       REAL(DP) :: CTEST
       TYPE(POLY_DATA), POINTER :: REA
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)
- 
+
       NDIM = 9
       IF (MOD(IFTFL,100) == 10) NDIM = 1
- 
+
       NDIM2 = 1
       IF (COUNT(ISW2D == ISW) > 0) NDIM2=9
- 
+
       IF (LTEST) THEN
 !pb        DO J = 1, NDIM2
 !pb          CTEST = SUM(ABS(RDATA(1:NDIM,J)))
@@ -1738,23 +1738,23 @@ c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
            CALL EIRENE_EXIT_OWN(1)
         END IF
       END IF
- 
+
       IF (PRESENT(ETH) .AND. (REACDAT(IR)%ETH == 0._DP))
      .    REACDAT(IR)%ETH = ETH
       IF (PRESENT(RTMAX) .AND. (REACDAT(IR)%RTMAX == 0._DP))
      .    REACDAT(IR)%RTMAX = RTMAX
       IF (PRESENT(ERTMAX) .AND. (REACDAT(IR)%ERTMAX == -HUGE(1._DP)))
      .    REACDAT(IR)%ERTMAX = -HUGE(1._DP)
- 
+
       ALLOCATE (REA)
       ALLOCATE (REA%DBLPOL(1:NDIM,1:NDIM2))
- 
+
       REA%DBLPOL(1:NDIM,1:NDIM2) = RDATA(1:NDIM,1:NDIM2)
       IFIT = 1
       IF (NDIM2 == 9) IFIT = 2
- 
+
       SELECT CASE(ISW)
- 
+
       CASE (0)
         IF (REACDAT(IR)%LPOT) THEN
           WRITE (IUNOUT,*) ' POTENTIAL ALREADY SPECIFIED FOR REACTION',
@@ -1785,10 +1785,10 @@ cdr  allocate, initialize, default asymptotics
         IF (PRESENT(JFEX2MN)) REACDAT(IR)%POT%JFEX2MN = JFEX2MN
         IF (PRESENT(JFEX2MX)) REACDAT(IR)%POT%JFEX2MX = JFEX2MX
 c
-        
+
       CASE (1)
         IF (REACDAT(IR)%LCRS) THEN
-          WRITE (IUNOUT,*) ' CROSS SECTION ALREADY SPECIFIED',
+          WRITE (IUNOUT,*) ' CROSS-SECTION ALREADY SPECIFIED',
      .                     ' FOR REACTION', IR
           DEALLOCATE (REA)
           IF (IR < 0) RETURN
@@ -1803,7 +1803,7 @@ cdr  allocate, initialize, default asymptotics
         REACDAT(IR)%CRS%IFIT = IFIT
 c  extrapolation options
 c
-        
+
         IF (PRESENT(RC1MIN)) REACDAT(IR)%CRS%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%CRS%RC1MAX = RC1MAX
         IF (PRESENT(RC2MIN)) REACDAT(IR)%CRS%RC2MIN = RC2MIN
@@ -1817,7 +1817,7 @@ c
         IF (PRESENT(JFEX2MN)) REACDAT(IR)%CRS%JFEX2MN = JFEX2MN
         IF (PRESENT(JFEX2MX)) REACDAT(IR)%CRS%JFEX2MX = JFEX2MX
 c
-         
+
       CASE (2:4)
         IF (REACDAT(IR)%LRTC) THEN
           WRITE (IUNOUT,*) ' RATE COEFFICIENT ALREADY SPECIFIED',
@@ -1835,7 +1835,7 @@ cdr  allocate, initialize, default asymptotics
         REACDAT(IR)%RTC%IFIT = IFIT
 c  extrapolation options
 c
-        
+
         IF (PRESENT(RC1MIN)) REACDAT(IR)%RTC%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%RTC%RC1MAX = RC1MAX
         IF (PRESENT(RC2MIN)) REACDAT(IR)%RTC%RC2MIN = RC2MIN
@@ -1849,7 +1849,7 @@ c
         IF (PRESENT(JFEX2MN)) REACDAT(IR)%RTC%JFEX2MN = JFEX2MN
         IF (PRESENT(JFEX2MX)) REACDAT(IR)%RTC%JFEX2MX = JFEX2MX
 
-         
+
       CASE (5:7)
         IF (REACDAT(IR)%LRTCMW) THEN
           WRITE (IUNOUT,*) ' MOMEMTUM WEIGHTED RATE COEFFICIENT',
@@ -1867,7 +1867,7 @@ cdr  allocate, initialize, default asymptotics
         REACDAT(IR)%RTCMW%IFIT = IFIT
 c  extrapolation options
 c
-        
+
         IF (PRESENT(RC1MIN)) REACDAT(IR)%RTCMW%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%RTCMW%RC1MAX = RC1MAX
         IF (PRESENT(RC2MIN)) REACDAT(IR)%RTCMW%RC2MIN = RC2MIN
@@ -1880,10 +1880,10 @@ c
         IF (PRESENT(JFEX1MX)) REACDAT(IR)%RTCMW%JFEX1MX = JFEX1MX
         IF (PRESENT(JFEX2MN)) REACDAT(IR)%RTCMW%JFEX2MN = JFEX2MN
         IF (PRESENT(JFEX2MX)) REACDAT(IR)%RTCMW%JFEX2MX = JFEX2MX
-         
+
       CASE (8:10)
         IF (REACDAT(IR)%LRTCEW) THEN
-          WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' ENERGY-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (REA)
           IF (IR < 0) RETURN
@@ -1898,7 +1898,7 @@ cdr  allocate, initialize, default asymptotics
         REACDAT(IR)%RTCEW%IFIT = IFIT
 c  extrapolation options
 c
-       
+
         IF (PRESENT(RC1MIN)) REACDAT(IR)%RTCEW%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%RTCEW%RC1MAX = RC1MAX
         IF (PRESENT(RC2MIN)) REACDAT(IR)%RTCEW%RC2MIN = RC2MIN
@@ -1912,7 +1912,7 @@ c
         IF (PRESENT(JFEX2MN)) REACDAT(IR)%RTCEW%JFEX2MN = JFEX2MN
         IF (PRESENT(JFEX2MX)) REACDAT(IR)%RTCEW%JFEX2MX = JFEX2MX
 c
-         
+
       CASE (11:12)
         IF (REACDAT(IR)%LOTH) THEN
           WRITE (IUNOUT,*) ' OTHER POLYNOMIAL FIT COEFFICIENTS',
@@ -1943,57 +1943,57 @@ c  extrapolation options
         IF (PRESENT(JFEX2MN)) REACDAT(IR)%OTH%JFEX2MN = JFEX2MN
         IF (PRESENT(JFEX2MX)) REACDAT(IR)%OTH%JFEX2MX = JFEX2MX
 c
- 
+
       CASE DEFAULT
         WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPCIFIED '
         WRITE (IUNOUT,*) ' REACTION NO. ', IR
         WRITE (IUNOUT,*) ' REACTION TYPE H.', ISW
         CALL EIRENE_EXIT_OWN(1)
       END SELECT
- 
+
       RETURN
       END SUBROUTINE EIRENE_SET_REACTION_DATA
- 
-CDR  NEXT THREE ROUTINES: PROBABALY NOT NEEDED ? 
+
+CDR  NEXT THREE ROUTINES: PROBABALY NOT NEEDED ?
       FUNCTION EIRENE_IS_RTC_TAB2D (IREAC) RESULT(RES)
 c  something special about adas ?  unused !
- 
+
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
- 
+
       RES = .FALSE.
       IF (REACDAT(IREAC)%LRTC) THEN
         RES = REACDAT(IREAC)%RTC%IFIT == 3
       END IF
- 
+
       END FUNCTION EIRENE_IS_RTC_TAB2D
- 
- 
+
+
       FUNCTION EIRENE_IS_RTCEW_TAB2D (IREAC) RESULT(RES)
 cdr   only used for adding/subtracting bremsstrahlung
- 
+
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
- 
+
       RES = .FALSE.
       IF (REACDAT(IREAC)%LRTCEW) THEN
         RES = REACDAT(IREAC)%RTCEW%IFIT == 3
       END IF
- 
+
       END FUNCTION EIRENE_IS_RTCEW_TAB2D
- 
- 
+
+
       FUNCTION EIRENE_IS_RTCMW_TAB2D (IREAC) RESULT(RES)
 cdr  something special about adas ?  unused !
- 
+
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
- 
+
       RES = .FALSE.
       IF (REACDAT(IREAC)%LRTCMW) THEN
         RES = REACDAT(IREAC)%RTCMW%IFIT == 3
       END IF
- 
+
       END FUNCTION EIRENE_IS_RTCMW_TAB2D
 
 
@@ -2022,13 +2022,13 @@ c  rate coefficients
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-c  momentum weighted rate coefficients
+c  momentum-weighted rate coefficients
         IF (REACDAT(IR)%LRTCMW) THEN
            rea => REACDAT(IR)%RTCMW
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
-c  energy weighted rate coefficients
+c  energy-weighted rate coefficients
         IF (REACDAT(IR)%LRTCEW) THEN
            rea => REACDAT(IR)%RTCEW
            call eirene_free_fit_form (rea)
@@ -2095,7 +2095,7 @@ c  photonic reaction
 
       END SUBROUTINE EIRENE_FREE_FIT_FORM
 
-      
+
 
       SUBROUTINE EIRENE_ALLOC_FIT_FORM (RP)
 
@@ -2109,7 +2109,7 @@ c  photonic reaction
         NULLIFY (RP%HYD)
         NULLIFY (RP%CRM)
 
-c  default asymptotics 
+c  default asymptotics
         RP%RC1MIN = -HUGE(1._DP)
         RP%RC1MAX =  HUGE(1._DP)
         RP%RC2MIN = -HUGE(1._DP)

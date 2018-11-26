@@ -29,7 +29,7 @@ cdr Then avoid second (default) call from input.f
       READ (IUNIN,'(A80)') ZEILE    !  geometry comment
 
       CALL EIRENE_UPPERCASE(ZEILE)
-      
+
       IF (INDEX(ZEILE,'GENERAL') /= 0) THEN
         CALL EIRENE_GEOUSR_GENERAL
       ELSEIF (INDEX(ZEILE,'BIASED_GARCHING') /= 0) THEN
@@ -39,11 +39,10 @@ c  no card: "geometry comment" found in input block 14.
         BACKSPACE(IUNIN)
         CALL EIRENE_GEOUSR_BIASED
       END IF
- 
+
       RETURN
       END
 
 
 C
 C
-

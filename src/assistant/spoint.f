@@ -9,11 +9,11 @@ C           T:    LAMBDA
 C
       USE EIRMOD_PRECISION
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: A0, A1, A2, A3, X, Y, Z, XR, YR, ZR
       REAL(DP), INTENT(OUT) :: P(3), T
       REAL(DP) :: XNEN
- 
+
       XNEN=A1*XR+A2*YR+A3*ZR
       IF (ABS(XNEN).LT.1.D-30) THEN
         P(1)=1.D60

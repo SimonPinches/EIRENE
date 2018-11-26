@@ -90,7 +90,7 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
       lrdcut = .false.
 
 !pb      DO I = 1, 4
-      DO 
+      DO
         read (30,'(A80)') line
         if (.not.lrdcut) then
           call eirene_uppercase (line)
@@ -110,12 +110,12 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
             npoint(1,1) = 1
             ipart = ncut+1
             lrdcut = .true.
-          end if 
+          end if
         end if
         if (index(line,'=======') /= 0) exit
       END DO
 
-1     continue
+    1 continue
       read (30,'(a110)',end=99) zeile
       i0=index(zeile,'(')
       i0e=index(zeile,')')
@@ -143,7 +143,7 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
       goto 1
 
 
-99    continue
+   99 continue
       ndxa=ndxa-1
       ndya=ndya-1
 C
@@ -222,16 +222,16 @@ C
           Y3(IX)=YPOL(IY+1,IX)
           X4(IX)=XPOL(IY+1,IX+1)
           Y4(IX)=YPOL(IY+1,IX+1)
-1014    CONTINUE
+ 1014   CONTINUE
 C
         CALL EIRENE_MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,
      .                NDXA,NR1ST,IY)
-1015  CONTINUE
+ 1015 CONTINUE
 c
 C     do j=1,ndya+1
 C       write (iunout,*)
 C       write (iunout,*) 'in geomd polygon ',j
-C       write (iunout,'(1p,6e12.4)') 
+C       write (iunout,'(1p,6e12.4)')
 C    .        (xpol(j,i),ypol(j,i),i=1,npoint(2,nplp))
 C     enddo
 C
@@ -259,7 +259,7 @@ C
       REAL(DP), INTENT(OUT) :: PUX(*),PUY(*),PVX(*),PVY(*)
 C
 C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
-      REAL(DP) :: 
+      REAL(DP) ::
      R  X1(NDX),Y1(NDX),X2(NDX),Y2(NDX),X3(NDX),Y3(NDX),
      R  X4(NDX),Y4(NDX)
 C
@@ -289,7 +289,7 @@ C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
        nniso = -1 !pb
        OPEN (UNIT=30,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=100) !VK
       REWIND 30
-3366  FORMAT(/)
+ 3366 FORMAT(/)
       read(30,*)
       do
         read (30,'(A80)') LINE
@@ -302,12 +302,12 @@ C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
 
       read(30,*,ERR=100,END=100) dimxh,dimyh,nncut
       if(nncut.gt.10) stop 'Increase array sizes for cut'
-      read(30,*,ERR=100,END=100) 
+      read(30,*,ERR=100,END=100)
      r     (nxcut1(i),nxcut2(i),nycut1(i),nycut2(i),i=1,nncut)
       if (nncut.gt.2) then
          read(30,*,ERR=100,END=100) nniso
          if(nniso.gt.10) stop 'Increase array sizes for insulating cut'
-         read(30,*,ERR=100,END=100) 
+         read(30,*,ERR=100,END=100)
      r            (nxiso1(i),nxiso2(i),nyiso1(i),nyiso2(i),i=1,nniso)
       ELSE
        NNISO=0 !VK
@@ -316,19 +316,19 @@ C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
 C    ANZAHL DER TEILSTUECKE PRO POLYGON
       NPLP = MAX((NNCUT/2)*3,1)
 C    COMPUTE WIDTH OF INSULATING CUT FOR DOUBLE NULL
-      NWISO=NXISO2(1)-NXISO1(1)     
+      NWISO=NXISO2(1)-NXISO1(1)
 C     PRINT MESSAGE AND CHECK
       CALL EIRENE_LEER (1)
-      CALL EIRENE_MASJ4 ('GEOMD: NNCUT, NNISO, NPLP, NWISO', 
+      CALL EIRENE_MASJ4 ('GEOMD: NNCUT, NNISO, NPLP, NWISO',
      w                           NNCUT, NNISO, NPLP, NWISO)
       IF(NNCUT.NE.0.AND.NNCUT.NE.2.AND.NNCUT.NE.4) THEN
         WRITE(IUNOUT,*) "WARNING FROM GEOMD: UNKNOWN TOPOLOGY"
         WRITE(IUNOUT,*) " NNCUT ",NNCUT
-      END IF      
+      END IF
       IF(NNCUT.EQ.4.AND.NNISO.NE.1) THEN
         WRITE(IUNOUT,*) "WARNING FROM GEOMD: UNKNOWN TOPOLOGY"
         WRITE(IUNOUT,*) " NNCUT, NNISO ",NNCUT,NNISO
-      END IF      
+      END IF
       IF(NNCUT.EQ.2) THEN
        IF(NXCUT1(1).NE.NXCUT2(2)-1.OR.
      .    NXCUT1(2).NE.NXCUT2(1)-1) THEN
@@ -366,7 +366,7 @@ C    READING OF POLYGON DATA
           READ (30,*,ERR=100,END=100) DUMMI(1),
      .                   DUMMI(2),YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
-12      CONTINUE
+   12   CONTINUE
        ENDIF
        IF (IX.EQ.nxcut1(1)) THEN
         DO 14 IY = 1, DIMYH
@@ -377,14 +377,14 @@ C    READING OF POLYGON DATA
      .                  DUMMI(2),YPOL(IY,IX)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100) 
+          READ (30,*,ERR=100,END=100)
      .                  XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
      .                                XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*,ERR=100,END=100) 
+          READ (30,*,ERR=100,END=100)
      .                  YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
      .                                YPOL(dimyh+1,IX),YPOL(IY,IX)
          ENDIF
-14      CONTINUE
+   14   CONTINUE
        ENDIF
        IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(2)-1)) THEN
         DO 16 IY = 1, DIMYH
@@ -400,7 +400,7 @@ C    READING OF POLYGON DATA
           READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
-16      CONTINUE
+   16   CONTINUE
        ENDIF
        IF (IX.EQ.nxcut1(2)) THEN
         DO 18 IY = 1, DIMYH
@@ -411,14 +411,14 @@ C    READING OF POLYGON DATA
      .                  DUMMI(2),YPOL(IY,IX+1)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100) 
+          READ (30,*,ERR=100,END=100)
      .                  XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
      .                                XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*,ERR=100,END=100) 
+          READ (30,*,ERR=100,END=100)
      .                  YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
      .                                YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
          ENDIF
-18      CONTINUE
+   18   CONTINUE
        ENDIF
        IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
         DO 22 IY = 1, DIMYH
@@ -434,7 +434,7 @@ C    READING OF POLYGON DATA
           READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
      .                   YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
-22      CONTINUE
+   22   CONTINUE
        ENDIF
        IF (IX.EQ.dimxh) THEN
         DO 24 IY = 1, DIMYH
@@ -445,18 +445,18 @@ C    READING OF POLYGON DATA
      .                  YPOL(IY,IX+2)
          ENDIF
          IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100) 
+          READ (30,*,ERR=100,END=100)
      .                  XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
      .                                XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*,ERR=100,END=100) 
+          READ (30,*,ERR=100,END=100)
      .                  YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
      .                                YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
          ENDIF
-24      CONTINUE
+   24   CONTINUE
        ENDIF
-10    CONTINUE
+   10 CONTINUE
 
-3333  FORMAT(4E15.7)
+ 3333 FORMAT(4E15.7)
 
 C   ANFANGSPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
       NPOINT(1,1)=1
@@ -497,12 +497,12 @@ C
           Y3(IX)=YPOL(IY+1,IX)
           X4(IX)=XPOL(IY+1,IX+1)
           Y4(IX)=YPOL(IY+1,IX+1)
-1014    CONTINUE
+ 1014   CONTINUE
 C
         CALL EIRENE_MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,
      .                       PUX,PUY,PVX,PVY,NDXA,
      .                       NR1ST,IY)
-1015  CONTINUE
+ 1015 CONTINUE
 C
       NP=NPOINT(2,NPLP)
       DO 1020 J=1,NDYA+1
@@ -512,10 +512,10 @@ C
           IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
           IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
         END DO
-1020  CONTINUE
+ 1020 CONTINUE
       RETURN
 
- 100  WRITE(IUNOUT,*) "COULD NOT OPEN FORT.30. ",
+  100 WRITE(IUNOUT,*) "COULD NOT OPEN FORT.30. ",
      w                "SKIP READING THE B2 GEOMETRY" !VK
 
 *//END GEOMD_LINDA//
@@ -556,7 +556,7 @@ C  GEOMETRY DATA: CELL VERTICES (SONNET ---> EIRENE)
       lrdcut = .false.
 
 !pb      DO I = 1, 4
-      DO 
+      DO
         read (30,'(A200)') line
         if (.not.lrdcut) then
           call eirene_uppercase (line)
@@ -576,12 +576,12 @@ C  GEOMETRY DATA: CELL VERTICES (SONNET ---> EIRENE)
             npoint(1,1) = 1
             ipart = ncut+1
             lrdcut = .true.
-          end if 
+          end if
         end if
         if (index(line,'=======') /= 0) exit
       END DO
 
-1     continue
+    1 continue
       read (30,'(a200)',end=99) zeile
       i0=index(zeile,'(')
       i0e=index(zeile,')')
@@ -609,7 +609,7 @@ C  GEOMETRY DATA: CELL VERTICES (SONNET ---> EIRENE)
       goto 1
 
 
-99    continue
+   99 continue
       ndxa=ndxa-1
       ndya=ndya-1
 C
@@ -688,16 +688,16 @@ C
           Y3(IX)=YPOL(IY+1,IX)
           X4(IX)=XPOL(IY+1,IX+1)
           Y4(IX)=YPOL(IY+1,IX+1)
-1014    CONTINUE
+ 1014   CONTINUE
 C
         CALL EIRENE_MSHPROJ (X1,Y1,X2,Y2,X3,Y3,X4,Y4,PUX,PUY,PVX,PVY,
      .                NDXA,NR1ST,IY)
-1015  CONTINUE
+ 1015 CONTINUE
 c
 C     do j=1,ndya+1
 C       write (iunout,*)
 C       write (iunout,*) 'in geomd polygon ',j
-C       write (iunout,'(1p,6e12.4)') 
+C       write (iunout,'(1p,6e12.4)')
 C    .        (xpol(j,i),ypol(j,i),i=1,npoint(2,nplp))
 C     enddo
 C
@@ -762,7 +762,7 @@ C
         PVX(IN)=PVX(IN)/PVPV
         PVY(IN)=PVY(IN)/PVPV
 C
-1     CONTINUE
+    1 CONTINUE
       RETURN
       END
 
@@ -829,26 +829,26 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
             DO 213 IX = IINIV,IENDV
               INB=IX-(IPART-1)*(NCUTL-NCUTB)
               DUMMY(IX,IY)=FIELD(INB,IY,IFL)
-213         CONTINUE
+  213       CONTINUE
             DUMMY(IINID,IY) = FIELD(INB+1,IY,IFL)
-            IF (IENDD.NE.IINID) 
+            IF (IENDD.NE.IINID)
      .          DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IFL)
-212       CONTINUE
-211     CONTINUE
+  212     CONTINUE
+  211   CONTINUE
         DO IY=0,NDYA+1
           DO IX=0,NDXA+1
             FIELD(IX,IY,IFL)=DUMMY(IX,IY)
           END DO
         END DO
 C
-500   CONTINUE
+  500 CONTINUE
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. INDMAP: THIS SUBR. IS VALID ONLY'
       WRITE (iunout,*) 'NCUTB>=0 BUT NCUTB = ',NCUTB
       CALL EIRENE_EXIT_OWN(1)
-991   WRITE (iunout,*) 
+  991 WRITE (iunout,*)
      .  'ERROR IN SUBR. INDMAP: INCONSISTENCY IN NUMBER OF '
       WRITE (iunout,*) 'ZONES PER CUT FROM LINDA GEOMETRY DETECTED.  '
       WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
@@ -911,26 +911,26 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
             DO 213 IX = IINIV,IENDV
               INB=IX-(IPART-1)*(NCUTL-NCUTB)
               DUMMY(INB,IY)=FIELD(IX,IY,IFL,ISTR)
-213         CONTINUE
+  213       CONTINUE
             DUMMY(INB+1,IY)=FIELD(IINID,IY,IFL,ISTR)
             IF (IENDD.NE.IINID)
      .          DUMMY(INB+NCUTB,IY)=FIELD(IENDD,IY,IFL,ISTR)
-212       CONTINUE
-211     CONTINUE
+  212     CONTINUE
+  211   CONTINUE
         DO IY=0,NDYA+1
           DO IX=0,NDXA+1
             FIELD(IX,IY,IFL,ISTR)=DUMMY(IX,IY)
           END DO
         END DO
 C
-500   CONTINUE
+  500 CONTINUE
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. INDMPI: THIS SUBR. IS VALID ONLY'
       WRITE (iunout,*) 'NCUTB>=0 BUT NCUTB = ',NCUTB
       CALL EIRENE_EXIT_OWN(1)
-991   WRITE (iunout,*) 
+  991 WRITE (iunout,*)
      .  'ERROR IN SUBR. INDMPI: INCONSISTENCY IN NUMBER OF'
       WRITE (iunout,*) 'ZONES PER CUT FROM LINDA GEOMETRY DETECTED. '
       WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
@@ -956,7 +956,7 @@ C=======================================================================
       character(50) :: form
       character(200) :: zeile
 
-cdr  construct the proper format for reading from file FORT(KARD)  
+cdr  construct the proper format for reading from file FORT(KARD)
 cdr  character string FORM replaces old card: 910  FORMAT(5(E16.8))
 c
       form = repeat(' ',50)
@@ -978,7 +978,7 @@ c     write (6,*) 'plasm: detected format ', form
           END DO
           IF( (LIM+4).EQ.ND1 )     GOTO 110
           READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
-110     CONTINUE
+  110   CONTINUE
        END DO
       END DO
   500 RETURN
@@ -1027,8 +1027,8 @@ C
 C  SAVE EIRENE TALLIES, SCALE PER UNIT FLUX (AMP), ON COMMON BRASCL
 C  WTOTP IS NEGATIVE IN EIRENE (SINK FOR IONS).
 C
-C  STRATA WHICH ARE SPECIFIED BY INPUT BLOCK 14 
-C     (SOURCES DEFINED FROM PLASMA CODE DATA DIRECTLY) 
+C  STRATA WHICH ARE SPECIFIED BY INPUT BLOCK 14
+C     (SOURCES DEFINED FROM PLASMA CODE DATA DIRECTLY)
 C     ARE RESCALED HERE TO UNIT SOURCE STRENGTH (FLXI)
 
 c  added in Nov. 15: ipls resolved ion energy sources eapl,empl,eipl
@@ -1077,7 +1077,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               PAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
-          IF (LPMPL) THEN 
+          IF (LPMPL) THEN
             IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -1100,7 +1100,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             ENDIF
           ENDIF
 
-          IF (LEAPL) THEN 
+          IF (LEAPL) THEN
           IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
 !PB         ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
@@ -1112,7 +1112,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           ENDIF
 
-          IF (LEMPL) THEN 
+          IF (LEMPL) THEN
           IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB         ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
@@ -1124,7 +1124,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           ENDIF
 
-          IF (LEIPL) THEN 
+          IF (LEIPL) THEN
           IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB         ALLOCATE(CPMUL)
             CPMUL => EIRENE_NEW_MULARR()
@@ -1208,7 +1208,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             EMELS(ISTRAI)%PSIM => CPSIM
           ENDIF
         ENDIF
-        IF (LEIEL) THEN 
+        IF (LEIEL) THEN
           IF (EIEL(IN) .NE. 0.D0) THEN
 !PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -1302,4 +1302,3 @@ C
 C
 C
 C
-

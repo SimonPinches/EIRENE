@@ -7,6 +7,6 @@ C*DK MASAGE
       IMPLICIT NONE
       CHARACTER(*), INTENT(IN) :: A
       WRITE (iunout,60) A
- 60   FORMAT (1X,A)
+   60 FORMAT (1X,A)
       RETURN
       END

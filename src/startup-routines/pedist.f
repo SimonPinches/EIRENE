@@ -1,25 +1,25 @@
 cdr  In NPRLL = 1 mode, it is currently ruled out that one processor deals
 cdr  with more than one stratum, except in the serial case (only one processor)
-cdr  To generalize this, some coding in MCARLO.f and perhaps elsewhere 
+cdr  To generalize this, some coding in MCARLO.f and perhaps elsewhere
 cdr  may need to be adjusted...
 
 C
 C> \brief Allocation of MPI processes to strata
 C>
 C> Allocates the available MPI processes to strata.
-C> Allocation of CPU time to strata may be done according different 
-C> criteria (load balancing, variance minimization via stratification, 
-C> ...). Two standard techniques are implemented in EIRENE and can be 
+C> Allocation of CPU time to strata may be done according different
+C> criteria (load balancing, variance minimization via stratification,
+C> ...). Two standard techniques are implemented in EIRENE and can be
 C> controlled via the block 1 input parameter NPRLL.
-C> The default set-up is a simple "embarrassingly parallel" scheme as 
-C> typical for Monte Carlo codes. An more advanced method using a 
-C> proportional allocation (NPRLL == 1) to attempt variance minimization 
-C> See EIRENE manual, "stratified source sampling". 
+C> The default set-up is a simple "embarrassingly parallel" scheme as
+C> typical for Monte Carlo codes. An more advanced method using a
+C> proportional allocation (NPRLL == 1) to attempt variance minimization
+C> See EIRENE manual, "stratified source sampling".
 C> when applying stratification is also available.
-C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR) 
+C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR)
 C> can be used (NPRLL == -1).
 C>
-C> Within this subroutine three arrays are set that define the entire 
+C> Within this subroutine three arrays are set that define the entire
 C> parallelisation of EIRENE.
 C> - PROCFORSTRA(ISTRA,IPE):   if .TRUE.: process IPE works on stratum ISTRA
 C> - NPESTR(ISTRA): number of processes calculating stratum ISTRA
@@ -48,7 +48,7 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
 C> \brief "Embarrassingly parallel" scheme.
 C>
 C> Here, all strata are calculated by all processes. XTIM remains
-C> unchanged. 
+C> unchanged.
       SUBROUTINE EIRENE_PEDIST_EMBPARALL
       USE EIRMOD_COMSOU, ONLY: NLSRON
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
@@ -71,17 +71,17 @@ C> unchanged.
 
 C> \brief Proportional allocation scheme.
 C>
-C> Here, the aim is a "proportional allocation", see EIRENE manual, 
-C> "stratified source sampling". 
+C> Here, the aim is a "proportional allocation", see EIRENE manual,
+C> "stratified source sampling".
 C>
-C> As long as there are more processes than strata the distribution of 
-C> processes to strata is done according to the distribution of 
+C> As long as there are more processes than strata the distribution of
+C> processes to strata is done according to the distribution of
 C> computation time.
 C>
 C> If there are fewer processes than strata:
 C> - Case A: only one process: all strata to this single process
-C> - Case B: several processes: asign a process to each stratum. Some 
-C>   processes may receive more than one stratum. Do not assign several 
+C> - Case B: several processes: asign a process to each stratum. Some
+C>   processes may receive more than one stratum. Do not assign several
 C>   processes to one stratum.
       SUBROUTINE EIRENE_PEDIST_PROPALLOC( XTIM, XX1 )
       USE EIRMOD_PRECISION, ONLY: DP
@@ -94,21 +94,21 @@ C>   processes to one stratum.
       USE EIRMOD_COUTAU, ONLY: XMCP
  
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
       REAL(DP) :: TIMPE(0:NSTRA), TSTRPE(NSTRA,0:NPRS-1)
       REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
       INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT,n
       INTEGER, DIMENSION(1) :: NSTRPE(0:NPRS-1)
- 
+
       PROCFORSTRA = .FALSE.
 
       IF (NPRS == 1) THEN
 
 ! 1 PROCESSOR: ALL STRATA ARE DONE BY PROCESSOR 0
 !              XTIM REMAINS UNCHANGED
-        
+
         PROCFORSTRA(:,0) = NLSRON
         NPESTA = 0
         NPESTR = 1
@@ -119,7 +119,7 @@ C>   processes to one stratum.
 ! ROUND ROBIN DISTRIBUTION OF PROCESSORS
 ! EACH PROCESSOR CAN CALCULATE SEVERAL STRATA
 ! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
-! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME       
+! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME
         NPESTR = 1
         TSTRPE = 0._DP
         IPE = -1
@@ -163,9 +163,9 @@ C>   processes to one stratum.
 ! calculate mean cpu time per stratum
         sumtim=xtim(0)
         TMEAN=SUMTIM/FLOAT(NPRS)
- 
+
         WRITE (iunout,*) ' SUMTIM = ',SUMTIM,' MEAN TIME = ',TMEAN
- 
+
         NPRS_OPT=0
         NPRS_FREE=NPRS
 
@@ -189,9 +189,9 @@ C>   processes to one stratum.
           DO ISTRA=1,NSTRA
             WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
           ENDDO
- 
+
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
-        
+
 ! distribute free processors to strata by their optimal number of processors
           FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
      .               (REAL(NPRS_OPT,KIND(1.D0))+eps30))
@@ -206,7 +206,7 @@ C>   processes to one stratum.
 
         else
 
-csw attempting better work load balancing           
+csw attempting better work load balancing
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstra
             timpe(istra) = max(xtim(istra)-tmean,0.d0)/tmean
@@ -221,20 +221,20 @@ csw attempting better work load balancing
           enddo
 
           do istra=1,nstra
-            write(iunout,'(a,2i6,2(1x,e13.6))') 
+            write(iunout,'(a,2i6,2(1x,e13.6))')
      .              'XMCT ',istra,npestr(istra),xmct(istra),xmcp(istra)
           enddo
         endif
- 
+
 csw 14jul2011
-        do while (nprs_free < 0) 
+        do while (nprs_free < 0)
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
           i=maxloc(npestr,dim=1)
           npestr(i)=npestr(i)-1
           nprs_free=nprs_free+1
         enddo
 csw
- 
+
 ! if there are still free processors left, distribute them to all
 ! strata with more than tmean cpu time assigned to them using a
 ! daisy chain mechanism
@@ -257,11 +257,11 @@ csw 14jul2011
           call eirene_exit_own(1)
         endif
 csw
- 
+
 ! assign each processor the numbers ISTRA of the strata it shall work on
         IPE=0
         DO ISTRA=1,NSTRA
-          DO K=1,NPESTR(ISTRA)          
+          DO K=1,NPESTR(ISTRA)
             NSTRPE(IPE)=ISTRA
             PROCFORSTRA(ISTRA,IPE) = .TRUE.
             IPE=IPE+1
@@ -270,7 +270,7 @@ csw
         WRITE (iunout,*) 'pedist:  proc. IPE works on stratum ISTRA '
         WRITE (iunout,*) ' IPE, ISTRA '
         WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
- 
+
 ! for each stratum define the number of the first processor NPESTA
 ! NPESTA(istra) is the "Master processor" for stratum no. ISTRA.
 
@@ -284,7 +284,7 @@ csw
         WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM '
         WRITE (iunout,*) ' ISTRA, NPESTA '
         WRITE (iunout,'(12I6)') (I,NPESTA(I),I=1,NSTRA)
- 
+
         XTIM(1:NSTRA) = XX1
         CALL EIRENE_MASAGE
      .    ('REDEFINED CPU TIME ASSIGNED TO STRATA (SEC) :')
@@ -292,14 +292,14 @@ csw
           CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
         END DO
 
-C Rescaling of particles per stratum, to keep total particle number 
+C Rescaling of particles per stratum, to keep total particle number
 C independent of parallelisation (strong scaling approach):
         WHERE ( NPESTR > 1 )
           NPTS = NPTS / NPESTR
         END WHERE
 
-      END IF  
- 
+      END IF
+
       RETURN
       END SUBROUTINE EIRENE_PEDIST_PROPALLOC
 

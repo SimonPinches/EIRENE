@@ -20,10 +20,10 @@ cdr      T :  use H1RN, which is RANMAR, F. James, CPC, 60 (1990) 329, sec 3.3
 c             A legal seed must be 0<=ise<=900.000.000
 cdr      F :  use old IBM (1968) generator
 c             A legal seed must be 1<=ise<=2147483647 (=2**31-1)
-C            ISE:   old reference seed, 
-C                   from which the current status of random generator is set 
+C            ISE:   old reference seed,
+C                   from which the current status of random generator is set
 C                   and from which new seed should result in a deterministic way
-c                   
+c
 
       USE EIRMOD_PRECISION
       USE EIRMOD_CLOGAU
@@ -58,7 +58,7 @@ c  no legal seed available
            call eirene_exit_own(1)
          endif
 c
-c  set a new seed iseed 
+c  set a new seed iseed
 c  Return a "derived seed" for a fresh sequence for random number starting from there
 c  call ranf with seed ISEED=ISE
          ran=ranf_eirene()   !  switch to a next seed, by wasting a call to ranf().

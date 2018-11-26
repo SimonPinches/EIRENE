@@ -32,7 +32,7 @@ C
         FI1(J)=ZCPHI
         FI2(J)=ZSPHI*ZSTHET
         FI3(J)=ZSPHI*ZCTHET
-100   CONTINUE
+  100 CONTINUE
       INIV3=IRNDVC
       RETURN
       END

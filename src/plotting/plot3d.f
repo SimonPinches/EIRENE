@@ -14,8 +14,8 @@ C             YY(J),J=1,NY Y GRID BOUNDARIES
 C  ARR(IJ) IS THEN SET ONTO 2D ARRAY FALT(I,J)
 C
 C
-C  LPOLAR: R-THETA CO-ORDINATES
-C  LKARTH: X-Y     CO-ORDINATES
+C  LPOLAR: R-THETA COORDINATES
+C  LKARTH: X-Y     COORDINATES
 C
 C  FALT-->XZY (3,...)
 C
@@ -25,9 +25,9 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XX(*), YY(*)
       REAL(DP), INTENT(INOUT) :: ARR(*)
       REAL(DP), INTENT(IN) :: ZMI, ZMA, W1, W2
@@ -36,7 +36,7 @@ C
       CHARACTER(72), INTENT(IN) :: TEXT1
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
       CHARACTER(72), INTENT(IN) :: HEAD, RUNID, TXHEAD
- 
+
       REAL(DP) :: XMINN, XMAXN, DXXX, YMINN, YMAXN
 
       REAL :: FALT(N1STS,N2NDPLGS),
@@ -62,12 +62,12 @@ C
         DO 1 I=1,N1STS
           DO 1 J=1,N2NDPLGS
             FALT(I,J)=-75.75E20
-1       CONTINUE
+    1   CONTINUE
 C
         IF (LOGL) THEN
           DO 3 J=1,IZ
             ARR(J)=LOG10(MAX(1.E-48_DP,ARR(J)))
-3         CONTINUE
+    3     CONTINUE
         ENDIF
 C
 C  SET ONTO 2D ARRAY FOR PLOTTING
@@ -78,7 +78,7 @@ C
             FALT(I,J)=DXXX
             X(I,J)=XPOL(I,J)
             Y(I,J)=YPOL(I,J)
-20      CONTINUE
+   20   CONTINUE
 C
         IXM=NX-1
         IYM=NY-1
@@ -100,7 +100,7 @@ C
           XMAX=MAX(XMAX,X(J,I))
           YMIN=MIN(YMIN,Y(J,I))
           YMAX=MAX(YMAX,Y(J,I))
-25      CONTINUE
+   25   CONTINUE
 C
         REMIN=ZMI
         REMAX=ZMA
@@ -119,7 +119,7 @@ C
         DO 30 I=1,IYM
           FALT(J,I)=MIN(REMAX,FALT(J,I))
           FALT(J,I)=MAX(REMIN,FALT(J,I))
-30      CONTINUE
+   30   CONTINUE
 C
 C  PLOT SMOOTH SURFACE
 C
@@ -194,7 +194,7 @@ C
       CALL GRTXT (1.,REAL(YH-3.,KIND(1.E0)),10,'MIN. VALUE')
       WRITE (CH,'(1P,E10.3)') FMIN
       CALL GRTXT (1.,REAL(YH-3.5,KIND(1.E0)),10,CH)
- 
+
       DEALLOCATE (AR)
 C
       RETURN

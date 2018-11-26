@@ -15,7 +15,7 @@ C                           J=4: ERROR ,J GT IZIF
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I, J, IZIF
       INTEGER :: EIRENE_IDEZ, K, IZ, IQ, IT, IDIF
- 
+
       IDIF=IZIF-J+1
       IF (IDIF.LE.0) THEN
         CALL EIRENE_MASAGE
@@ -27,7 +27,7 @@ C                           J=4: ERROR ,J GT IZIF
         IT=10**(IZIF-K)
         IQ=IZ/IT
         IZ=IZ-IQ*IT
-1     CONTINUE
+    1 CONTINUE
       EIRENE_IDEZ=IQ
       RETURN
       END

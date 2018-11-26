@@ -6,7 +6,7 @@ c  0707: new, for PI processes, copied and adapted from feelei1.f
 
 
 CDR TO BE DONE:  when kk >0  then on the fly evaluation of rate coeff. is
-cdr              repeated here. This should be avoided, by returning the energy weighted rate,
+cdr              repeated here. This should be avoided, by returning the energy-weighted rate,
 cdr              rather than the mean electron energy itself.
 
 
@@ -17,7 +17,7 @@ C  this is the "on the fly", storage saving, version to eliminate
 C  pre-computed array EELPI1(irpi,k) from this run
 
 cdr  find electron energy loss for PI process no. IRPI,  energy in eV
-c    locally in cell K, for process kk= nelrpi(irpi) 
+c    locally in cell K, for process kk= nelrpi(irpi)
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -25,15 +25,15 @@ c
       USE EIRMOD_CCONA
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IRPI, K
       REAL(DP) :: EIRENE_FEELPI1, PLS, DEIMIN, EE,
      .            EIRENE_FTABPI3,
      .            ELPI, EIRENE_ENERGY_RATE_COEFF, DELE
       INTEGER :: KK
- 
+
       EIRENE_FEELPI1=0.D0
       KK=NELRPI(IRPI)
 
@@ -52,7 +52,7 @@ c  non default models, data from external databases
           ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)
           EIRENE_FEELPI1=-ELPI*DEIN(K)*FACRPI(IRPI,1)/
      .                   (EIRENE_FTABPI3(IRPI,K)+EPS60)
-        ELSEIF(JELRPI(IRPI) == 9) THEN   !  Te, ne dependence. 
+        ELSEIF(JELRPI(IRPI) == 9) THEN   !  Te, ne dependence.
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
           ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.FALSE.,1)
@@ -68,6 +68,6 @@ CDR: missing still:  EB,Te dependence
           EIRENE_FEELPI1=EIRENE_FEELPI1+DELE
         END IF
       END IF
- 
+
       RETURN
       END

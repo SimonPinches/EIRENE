@@ -109,7 +109,7 @@ c
            write(iunout,*) '!---------------------------------!'
            root2 = 0._DP
         endif
-		
+
     	dummy = (-sqrt(root1) - b_xi)
         if ( abs(dummy) > EPS30 ) then
           xip = 2._dp*c_xi /

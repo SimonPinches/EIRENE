@@ -1,14 +1,14 @@
- 
- 
+
+
       SUBROUTINE EIRENE_TET_STEP (IS,ITET,ISIDE,NRS)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_COMUSR
       USE EIRMOD_CTETRA
       USE EIRMOD_CSTEP
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IS, ITET, ISIDE
       INTEGER, INTENT(INOUT) :: NRS
       REAL(DP) :: EIRENE_ARTRI3
@@ -18,9 +18,9 @@
      .             1,4,2,
      .             2,4,3,
      .             3,4,1/
- 
+
 ! SIDE ISIDE OF TETRAHEDRON ITET BELONGS TO STEPFUNCTION ISTEP
- 
+
       NRS=NRS+1
       I1=NTECK(ITSIDE(1,ISIDE),ITET)
       I2=NTECK(ITSIDE(2,ISIDE),ITET)
@@ -34,6 +34,6 @@
       ITSTEP(IS,NRS)=1
       IASTEP(IS,NRS)=0
       IBSTEP(IS,NRS)=1
- 
+
       RETURN
       END
