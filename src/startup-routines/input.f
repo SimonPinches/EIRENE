@@ -433,8 +433,7 @@ C
       call fix_logical_input(zeile,16)
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
-     .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLSHRT13
+     .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....
@@ -573,36 +572,76 @@ C         Reserved for default, see below
       ENDIF
       IF (NFILEM.NE.0) CALL EIRENE_LEER(1)
 
-      IF (NFILEL.EQ.1) THEN
-        WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION'
-      ELSEIF (NFILEL.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA FROM'
-        WRITE (iunout,*) '       FILE FT13 '
-      ELSEIF (NFILEL.EQ.3) THEN
-        WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA FROM'
-        WRITE (iunout,*) '       FILE FT13  AND '
-        WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION'
-      ELSEIF (NFILEL.EQ.4) THEN
-        WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA'
-        WRITE (iunout,*) '       FROM FILE FT13 AND'
-        WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION'
-        WRITE (iunout,*)
-     .  '       SOURCE DISTRIBUTION IS NEWLY DETERMINED'
-      ENDIF
+      IF (NFILEL.GE.6.AND.NFILEL.LE.9) THEN
+        NFILEL = NFILEL - 5
+        NLSHRT13 = .TRUE.
+      END IF
+      SELECT CASE (NFILEL)
+        CASE (1)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA,' 
+            WRITE (iunout,*) '       STARTING FROM SPECIES NUMBER'
+            WRITE (iunout,*) '       NFLA+1 (COUPLING VARIABLE, BLOCK'
+            WRITE (iunout,*) '       14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          END IF
+          WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
+          WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+        CASE (2)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          ENDIF
+          WRITE (iunout,*) '       FROM FILE FT13 '
+        CASE (3)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          ENDIF
+          WRITE (iunout,*) '       FROM FILE FT13 AND'
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
+          ELSE
+            WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          END IF
+          WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
+          WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+        CASE (4)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA'
+          END IF
+          WRITE (iunout,*) '       FROM FILE FT13 AND'
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
+          ELSE
+            WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          END IF
+          WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
+          WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+          WRITE (iunout,*) '       SOURCE DISTRIBUTION IS NEWLY'
+          WRITE (iunout,*) '       DETERMINED'
+      END SELECT
       IF (NFILEL.NE.0) CALL EIRENE_LEER(1)
 
       IF (NFILEK.EQ.1) THEN
@@ -5244,7 +5283,7 @@ cdr  VOLTAL on coarser grid
 
 C
 cpb add nlshrt13
-      IF ((NFILEL.LE.1) .OR. (NFILEL == 6) .OR. NLSHRT13) THEN
+      IF ((NFILEL.LE.1) .OR. NLSHRT13) THEN
 C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS
 C
@@ -5329,7 +5368,7 @@ C
 
 
 C
-      ELSEIF (NFILEL.EQ.2.OR.NFILEL.EQ.3.OR.NFILEL.EQ.4) THEN
+      ELSEIF (NFILEL.GE.2.AND.NFILEL.LE.4) THEN
 C
 C  READ PLASMA DATA, ATOMIC DATA, SOURCE DATA FROM FT13
 C

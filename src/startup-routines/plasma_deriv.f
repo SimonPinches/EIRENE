@@ -795,9 +795,8 @@ C
 C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
-
-      IF ((NFILEL >=1) .AND. (NFILEL <=4)) THEN
-cdr      NFILEL=3  probably wrong,  jan. 2016
+ 
+      IF ((NFILEL ==1) .OR. (NFILEL ==3) .OR. (NFILEL ==4)) THEN
          CALL EIRENE_WRPLAM(TRCFLE,0)
       END IF
 
