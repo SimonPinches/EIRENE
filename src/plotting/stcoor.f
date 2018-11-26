@@ -3,7 +3,7 @@ C
       SUBROUTINE EIRENE_STCOOR (X,Y,IFL)
 c  instor: zaehler, instor-ter aufruf
 c  ifl: flag:=0, first point, .ne.0: else, npl2d(instor)=ifl
-c  x,y: co-ordinaten des punktes, stored on xpl2d(instor),ypl2d(instor)
+c  x,y: coordinaten des punktes, stored on xpl2d(instor),ypl2d(instor)
 C
 c  alle teilstuecke stehen hintereinander auf xpl2d,ypl2d
 c  zum entwirren:NUMSUR(inums,..) array

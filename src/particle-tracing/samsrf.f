@@ -14,18 +14,18 @@ c          pointer to species of step function
 C  june 13: some comments, clean up, further checks and error exits.
 C           DELR REMOVED FROM LOOP 3010
 C           ELSTEP and SHSTEP added in definition of default step function
-C  oct. 14: some preliminary options for correlation sampling removed,
+C  oct. 14: some preliminary options for correlation sampling removed, 
 C           back to development branch
 c  may  15: argument in first call to vecusr: ipls, rather than iplsv, now everywhere
 c  aug. 15: arguments in vecusr added: ncell, x0, y0, z0
 C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTION OPTION
 CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
 cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic prinout
-cdr dec.17: cleanup, comments
+cdr dec.17: cleanup, comments 
 C
       SUBROUTINE EIRENE_SAMSRF
 C
-C  THIS SUBROUTINE SAMPLES THE INITIAL CO-ORDINATES OF A PARTICLE
+C  THIS SUBROUTINE SAMPLES THE INITIAL COORDINATES OF A PARTICLE
 C  HISTORY, WHICH STARTS ON A SURFACE
 C
       USE EIRMOD_PRECISION
@@ -47,23 +47,23 @@ C
       USE EIRMOD_CSTEP
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
-
+ 
       IMPLICIT NONE
-
+ 
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, VXWL(*), VYWL(*), VZWL(*),
      .                         TIWL(*), DIWL(*), EFWL(*), WEISPZ(*)
       INTEGER, INTENT(IN) :: NLSF
       REAL(DP) :: ZZ(3)
       REAL(DP) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, ELLZZ1, EP1ZZ1,
      .          WINK, XR,  DELR, CS,  FL, DET,
-     .          X0TEST, Y0TEST, Z0TEST,
+     .          X0TEST, Y0TEST, Z0TEST, 
      .          S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
-     .          RNF, ZH,  DELTA, ZM, XLAMDA,
+     .          RNF, ZH,  DELTA, ZM, XLAMDA, 
      .          CTETHA, GAMMA, CUR, TESH, RANDIF,
      .          VX,VY,VZ,XC,YC,ZC,
      .          EIRENE_STEP0,EIRENE_STEP1,EIRENE_STEP
 C      REAL(DP) :: BABS
-      INTEGER :: ISID, IDUM, EIRENE_LEARC1, NDUM, EIRENE_LEARC2, NT,
+      INTEGER :: ISID, IDUM, EIRENE_LEARC1, NDUM, EIRENE_LEARC2, NT, 
      .           IEN, IAN,
      .           EIRENE_LEARCA, ITET, ISGRD1, IS2, IP, ISTEP, ISGRD2,
      .           IS1, ISGRD3, NSMX, K, NL3J, ISTR, ISR, NL2J, NL1J,
@@ -90,13 +90,13 @@ C
 C  INITIALIZE DATA FOR SURFACE SAMPLING FOR STRATUM NO. ISTRAI
 C
       ENTRY EIRENE_SAMSF0
-
+ 
       DO ISTRAI=1,NSTRAI
-
+ 
       IF (.NOT.NLSRF(ISTRAI)) CYCLE
-
+ 
       IERROR=0
-
+ 
       IF (.NOT.ALLOCATED(INDTEC)) THEN
         ALLOCATE (INDTEC(3*NSRFS,NSTRA))
         ALLOCATE (ALEFT(3,NSRFS,NSTRA))
@@ -149,12 +149,12 @@ c  sample 2nd and 3rd coordinate, evalute 1st coordinate
         ENDIF
 
 C  set sampling distributions for 2 of the three coordinates x,y,z
-c  2 coordinates are sampled,
-c  the third coordinate is evaluated from surface equation
+c  2 coordinates are sampled, 
+c  the third coordinate is evaluated from surface equation 
         NL1J=ISRFS
         NL2J=NL1J+NSRFS
         NL3J=NL2J+NSRFS
-c  FLAG FOR SPATIAL SAMPLING IS CODED ON INDTEC
+c  FLAG FOR SPATIAL SAMPLING IS CODED ON INDTEC 
 c  (ORIGINALLY: THIS WAS INPUT FLAG SORLIM --> ISOR)
         INDTEC(NL1J,ISTRAI)=EIRENE_IDEZ(ISOR,1,4)
         INDTEC(NL2J,ISTRAI)=EIRENE_IDEZ(ISOR,2,4)
@@ -208,10 +208,10 @@ C  AT SOME GIVEN TOROIDAL (Z) POSITION IT
 C  SCALE FLUX DENSITY WITH A TOROIDAL LENGTH, I.E.
 C  WITH: DELTA-Z = LENGTH IN TOROIDAL OR Z-DIRECTION: EITHER "ZDF" OR "2 PI R"
 
-!  INDSRF IS THE SURFACE NUMBER OF THIS SURFACE SOURCE SEGMENT.
+!  INDSRF IS THE SURFACE NUMBER OF THIS SURFACE SOURCE SEGMENT. 
 !         IT CAN BE EITHER AN ADDITIONAL SURFACE (1,...NLIM)
 !         OR A NON-DEFAULT STANDARD SURFACE (THEN  NLIM+1...NLIM+NSTS)
-
+ 
             INDSRF = 0
 C  Y0:
             IF (INDIM(ISRFS,ISTRAI).NE.2.OR..NOT.NLPOL) THEN
@@ -231,7 +231,7 @@ C  Z0:
             ELSEIF (INDIM(ISRFS,ISTRAI).EQ.3.AND.NLTOR) THEN
               IT=INSOR(ISRFS,ISTRAI)
               WRITE (iunout,*) 'DEF. STEP FUNCTIONS ONLY AVAILABLE FOR'
-              WRITE (iunout,*) 'SAMPLING OF RADIAL (OR X-) CO-ORDINATE'
+              WRITE (iunout,*) 'SAMPLING OF RADIAL (OR X-) COORDINATE'
               WRITE (iunout,*) 'ON A POLOIDAL (OR Y-) SURFACE '
               WRITE (iunout,*) 'DEFINE STEP FUNCTION ELSEWHERE, ',
      .                         'EG. IN SAMUSR'
@@ -241,7 +241,7 @@ C  Z0:
 C
 C  CURRENTLY: IN STANDARD GEOMETRY BLOCK  IBLOCK=1
 C
-
+ 
             select case (LEVGEO)
             case (1)
               KAN=1
@@ -371,10 +371,10 @@ C
                 TISTEP(IPLSTI,ISTEP,K)=TIIN(IPLSTI,NCELL)
                 IF (INDPRO(4) == 8) THEN
 cdr  no spatial information x0,y0,z0 of birth point available here for vecusr.
-c    set drift velocities at cell center
+c    set drift velocities at cell center 
                   XC=0.
                   YC=0.
-                  ZC=0.
+                  ZC=0. 
                   CALL EIRENE_VECUSR(2,NCELL,XC,YC,ZC,VX,VY,VZ,IPLS,
      .                               .FALSE.)
 
@@ -419,7 +419,7 @@ c  NO DEFAULT STEP FUNCTIONS AVAILABLE FOR Y OR Z SURFACE SOURCES
 C
           ELSEIF (INDTEC(NL2J,ISTRAI).EQ.4) THEN
             WRITE (iunout,*) 'DEFAULT STEP FUNCTIONS ONLY AVAILABLE FOR'
-            WRITE (iunout,*) 'SAMPLING OF RADIAL CO-ORDINATE '
+            WRITE (iunout,*) 'SAMPLING OF RADIAL COORDINATE '
             WRITE (iunout,*)
      .        'DEFINE STEP FUNCTION ELSEWHERE, EG. IN SAMUSR'
             WRITE (iunout,*) 'CALL EXIT '
@@ -427,7 +427,7 @@ C
 C
           ELSEIF (INDTEC(NL3J,ISTRAI).EQ.4) THEN
             WRITE (iunout,*) 'DEFAULT STEP FUNCTIONS ONLY AVAILABLE FOR'
-            WRITE (iunout,*) 'SAMPLING OF RADIAL CO-ORDINATE '
+            WRITE (iunout,*) 'SAMPLING OF RADIAL COORDINATE '
             WRITE (iunout,*)
      .        'DEFINE STEP FUNCTION ELSEWHERE, EG. IN SAMUSR'
             WRITE (iunout,*) 'CALL EXIT '
@@ -463,9 +463,9 @@ c  sheath factor given on step function shstep along target?
                 ESHFLX(IPLS)=ESHFLX(IPLS)+
      .               FF*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*NCHRGP(IPLS)
               ELSE
-c  employ default eirene sheath model.
+c  employ default eirene sheath model. 
 c    to be done. plasma flow velocity v..step should first be projected
-c    towards surface normal.
+c    towards surface normal. 
                 GAMMA=0.
                 CUR=0.
                 TESH=TESTEP(ISTEP,K)
@@ -497,10 +497,10 @@ C
      .               K,RRSTEP(ISTEP,K),
      .               (FLSTEP(IPLSD(IPL),ISTEP,K),IPL=1,NANZ)
     4     CONTINUE
-
+ 
           WRITE (iunout,'(1X,I4,1P,2E12.4)') NSMX,RRSTEP(ISTEP,NSMX)
           CALL EIRENE_LEER(1)
-
+ 
           WRITE (iunout,*) 'FLUXES: PART., KINET., SHEATH; INTEGRATED:'
           DO 5 IPL=1,NANZ
             CALL EIRENE_MASJ1R('IP,FLUX      [A]',
@@ -603,9 +603,9 @@ C
         ENDIF
 C
         IF (INDIM(ISRFS,ISTRAI).EQ.3) THEN
-C  SOURCE ON TOROIDAL (Z=CONST) SURFACE:
-C                  SAMPLE FIRST AND SECOND CO-ORDINATE,
-C                  COMPUTE THIRD CO-ORDINATE
+C  SOURCE ON TOROIDAL (Z=CONST) SURFACE: 
+C                  SAMPLE FIRST AND SECOND COORDINATE,
+C                  COMPUTE THIRD COORDINATE
 C
           INDTEC(NL3J,ISTRAI)=0
 C
@@ -634,7 +634,7 @@ C
               BRGHT(1,ISRFS,ISTRAI)=RRSTEP(ISTEP,NSMAX(ISTEP))
             ELSE
               WRITE (iunout,*) ' ERROR IN SAMSRF '
-              WRITE (iunout,*)
+              WRITE (iunout,*) 
      .           ' INDIM=4 ONLY FORESEEN WITH STEP FUNCTION '
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
@@ -690,7 +690,7 @@ C
               RANDIF=XE(1,ISRFS,ISTRAI)-XI(1,ISRFS,ISTRAI)
               IF (ABS(RANDIF-1.0).GE.1.0D-4) THEN
                 DO IPL=1,NANZ
-                  WRITE (IUNOUT,*)
+                  WRITE (IUNOUT,*) 
      .              'TRUNCATED FLUX ONTO SOURCE SURFACE [A] ',
      .                   IPLSD(IPL),RANDIF*FLX(IPLSD(IPL))
                 END DO
@@ -738,9 +738,9 @@ C
     1 CONTINUE
 C
       IF (TRCSOU) CALL EIRENE_LEER(2)
-
+ 
       END DO    ! STRATA LOOP
-
+ 
       RETURN
 C
       ENTRY EIRENE_SAMSF1
@@ -759,7 +759,7 @@ C
       WEISPZ(1:NSPZ)=-1.
 C
 C   USER SUPPLIED GENERATOR FOR X0,Y0,Z0. ONLY ONE CALL
-C   FOR ALL 3 CO-ORDINATES. SUBR. SURTST IS NOT CALLED!
+C   FOR ALL 3 COORDINATES. SUBR. SURTST IS NOT CALLED!
 C
       IF (SORLIM(NLSF,ISTRA).LT.0.D0) THEN
         CALL EIRENE_SM1USR(NLSF,X0,Y0,Z0,
@@ -787,7 +787,7 @@ C   DELTA DISTRIBUTION AT CENTER OF INTERVALL
    10   CONTINUE
           ZZ(J)=(ALEFT(J,NLSF,ISTRA)+BRGHT(J,NLSF,ISTRA))*0.5
           GOTO 1000
-C   UNIFORM DISTRIBUTION IN THIS CO-ORDINATE
+C   UNIFORM DISTRIBUTION IN THIS COORDINATE
    20   CONTINUE
           ZZ(J)=RANF_EIRENE( )*(BRGHT(J,NLSF,ISTRA)-
      .          ALEFT(J,NLSF,ISTRA))+ALEFT(J,NLSF,ISTRA)
@@ -851,7 +851,7 @@ C Z0 IS IRRELEVANT HERE, AND IS DETERMINED LATER FROM PHI
 C Z0 IS IRRELEVANT HERE, AND IS DETERMINED LATER FROM PHI
         ENDIF
 
-c
+c  
         IF (SORLIM(NLSF,ISTRA).LT.0.D0) GOTO 2000
 C
         IF (JCALC.EQ.1) THEN
@@ -911,9 +911,9 @@ C  CARRY OUT RANGE TEST FOR X0?
             LGPART=.FALSE.
             RETURN
           ENDIF
-
+ 
         ELSEIF (JCALC.EQ.2) THEN
-C    FIND Y CO-ORDINATE Y0 FROM X=X0 AND Z=Z0 ON SURFACE NO. MASURF
+C    FIND Y COORDINATE Y0 FROM X=X0 AND Z=Z0 ON SURFACE NO. MASURF
           X0=ZZ(1)
           IF (NLTRA.AND.ILTR.EQ.0) THEN
 C  FIND Z0, NT,  FROM X0,PHI
@@ -978,9 +978,9 @@ C  CARRY OUT RANGE TEST FOR Y0?
             LGPART=.FALSE.
             RETURN
           ENDIF
-
+ 
         ELSEIF (JCALC.EQ.3) THEN
-C    FIND Z CO-ORDINATE Z0 FROM X=X0 AND Y=Y0 ON SURFACE NO. MASURF
+C    FIND Z COORDINATE Z0 FROM X=X0 AND Y=Y0 ON SURFACE NO. MASURF
           X0=ZZ(1)
           Y0=ZZ(2)
           IF ((NLTRA.OR.NLTRT).AND.ILTR.EQ.0) GOTO 9931
@@ -1045,8 +1045,8 @@ C
 C
       ELSEIF (INDIM(NLSF,ISTRA).EQ.1) THEN
 C  BIRTH POINT ON STANDARD RADIAL SURFACE  MRSURF
-C  Y- OR POLOIDAL AND Z- OR TOROIDAL CO-ORDINATES MUST BE SAMPLED
-C  X-OR RADIAL CO-ORDINATE IS COMPUTED FROM SURFACE EQUATION
+C  Y- OR POLOIDAL AND Z- OR TOROIDAL COORDINATES MUST BE SAMPLED
+C  X-OR RADIAL COORDINATE IS COMPUTED FROM SURFACE EQUATION
 C  SPECIAL CASE: LEVGEO=5: SAMPLE ON SURFACE IN 3D, DISCRETISED BY
 C                SET OF TRIANGLES (SELECTED SIDES OF TETRAHEDRA)
         NLSRFX=.TRUE.
@@ -1095,7 +1095,7 @@ C  SAMPLING ON SURFACE COMPOSED OF TRIANGLE SIDES
           BL=ZZ(2)
           IF (MRSURF < 0) MRSURF=ABS(MRSURF) + NLIM
           IF (ISTEP.LE.0) THEN
-C  NO STEP FUNCTION,
+C  NO STEP FUNCTION, 
             DO I=1,SURF_TRIAN(MRSURF)%NUMTR
               IF (BL.LE.SURF_TRIAN(MRSURF)%BGLT(I+1)) GOTO 1503
             END DO
@@ -1123,7 +1123,7 @@ C  USE STEP FUNCTION ISTEP
             IF (IS1 > 3) IS1 = 1
             X0=XTRIAN(NECKE(IS1,ITRI))-D*VVX*VVI
             Y0=YTRIAN(NECKE(IS1,ITRI))-D*VVY*VVI
-          END IF
+          END IF  
         case (5)
 C  SAMPLING ON A SURFACE COMPOSED OF TETRAHEDRON SIDES
           IF (ISTEP.LE.0) GOTO 995
@@ -1229,7 +1229,7 @@ C
       ELSEIF (INDIM(NLSF,ISTRA).EQ.4) THEN
 C  LEVGEO=3,4:
 C     BIRTH POINT ON MIX OF STANDARD RADIAL AND POLOIDAL SURFACES
-C     ARC-LENGTH CO-ORDINATE IS SAMPLED FROM STEP FUNCTION
+C     ARC-LENGTH COORDINATE IS SAMPLED FROM STEP FUNCTION
 C  LEVGEO=5:
 C     TRIANGULAR SURFACE SEGMENT IS SAMPLED FROM STEP FUNCTION
 C     UNIFORM DISTRIBUTION WITHIN SURFACE SEGMENT
@@ -1274,7 +1274,7 @@ C
             IF (IS1 > 3) IS1 = 1
             X0=XTRIAN(NECKE(IS1,ITRI))-D*VVX*VVI
             Y0=YTRIAN(NECKE(IS1,ITRI))-D*VVY*VVI
-          END IF
+          END IF  
         ELSEIF (LEVGEO.EQ.5) THEN
           IF (ISTEP.LE.0) GOTO 995
           NLSRFX=.TRUE.
@@ -1327,7 +1327,7 @@ C  X0,Y0,Z0 AND PHI ARE GIVEN NOW.
 C  MAKE SURE, THAT THESE ARE IN PROPER PERIODICITY BLOCK
 C
       IF (NLTRA.AND.ILTR.GT.0) THEN
-C  Z0 IS A CARTESIAN CO-ORDINATE IN LOCAL SYSTEM ILTR
+C  Z0 IS A CARTESIAN COORDINATE IN LOCAL SYSTEM ILTR
 C  BIRTHPOINT IS ON ADDITIONAL SURFACE (BECAUSE ILTR.NE.0)
 C  FIND PHI,NT AND THEN X0,Z0 IN CELL NT
         CALL EIRENE_FZRTOR(X0,Z0,ILTR,XR,PHI,NT,.FALSE.,0)
@@ -1533,10 +1533,10 @@ C                              IN SAMPLED CELL NCELL
           TIWL(IPLS)=TIIN(IPLSTI,NCELL)
           IF (INDPRO(4) == 8) THEN
 cdr  no spatial information x0,y0,z0 of birth point available here for vecusr.
-c    set drift velocities at cell center
+c    set drift velocities at cell center 
             XC=0.
             YC=0.
-            ZC=0.
+            ZC=0. 
             CALL EIRENE_VECUSR (2,NCELL,XC,YC,ZC,VX,VY,VZ,IPLS,
      .                          .FALSE.)
             VXWL(IPLS)=VX

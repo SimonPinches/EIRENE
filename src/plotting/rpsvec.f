@@ -447,7 +447,7 @@ c
    70     CONTINUE
 c   no intersection found.
 c   point I is on a boundary, and the vector is pointing outside
-c   the computational volume. don't plot it.
+c   the computational volume. do not plot it.
           YWERT1(I,1) = 0.
           YWERT1(I,1) = 0.
    61   continue

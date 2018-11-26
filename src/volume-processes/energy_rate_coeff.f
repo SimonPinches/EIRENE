@@ -1,6 +1,6 @@
 !pb  22.11.06: flag ip2shft for shift of second parameter to rate_coeff introduced
 !pb  24.11.06: get extrapolation parameters for polynomial fit only
-!pb  30.11.06: divide energy weighted rate coefficient by ELCHA to get correct units
+!pb  30.11.06: divide energy-weighted rate coefficient by ELCHA to get correct units
 
 c  to be done: h_colrad called twice per cell ??
 c              re-use erate from previous call to rate_coeff
@@ -24,7 +24,7 @@ cdr            LEXP=.true.
       function EIRENE_energy_rate_coeff (ir, ic, p1, p2, lexp, ip2shft)
      .                            result (erate)
 
-!  evaluate energy weighted rate coefficient, eV/s per incident particle,
+!  evaluate energy-weighted rate coefficient, eV/s per incident particle,
 !  and return this as "erate"
 
 ! erate is a rate coefficient weighted with an energy, e.g. an energy cost,
@@ -50,8 +50,8 @@ cdr            LEXP=.true.
 !   ic:        cell number (e.g. for internal CR models).
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
-!   lexp:      return erate=energy weighted rate coefficient in eV*cm**3/sec
-!   not lexp:  return erate=log_e(erate coefficient) with rate-coefficient in cm**3/sec
+!   lexp:      return erate=energy-weighted rate coefficient in eV*cm**3/sec
+!   not lexp:  return erate=log_e(erate coefficient) with rate coefficient in cm**3/sec
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
 !                  currently hard wired: 1e-8.
 !                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
@@ -108,7 +108,7 @@ cdr            LEXP=.true.
       end interface
 
       if (.not.reacdat(ir)%lrtcew) then
-        write (iunout,*) ' no data for energy weighted rate',
+        write (iunout,*) ' no data for energy-weighted rate',
      .                   ' coefficient available for reaction ',ir
         call EIRENE_exit_own(1)
       end if
@@ -120,8 +120,8 @@ c.............................................................
 
       if (mod(iftflg(ir,4),100) == 10) then
 
-!  SET A CONSTANT ENERGY WEIGHTED RATE COEFFICIENT.
-!  re-use format "poly":  LN of energy weighted rate.
+!  SET A CONSTANT ENERGY-WEIGHTED RATE COEFFICIENT.
+!  re-use format "poly":  LN of energy-weighted rate.
         res = reacdat(ir)%rtcew%poly%dblpol(1,1)
 
         if (lexp) then
@@ -137,7 +137,7 @@ c.............................................................
 
       elseif (reacdat(ir)%rtcew%ifit == 1) then
 
-!  SINGLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE), FOR LN(ENERGY WEIGHTED RATE)
+!  SINGLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE), FOR LN(ENERGY-WEIGHTED RATE)
 
 c  extrapolation data: for 1d polynomial fits
         rc1min  = reacdat(ir)%rtcew%rc1min
@@ -166,7 +166,7 @@ c..............................................................
 
       else if (reacdat(ir)%rtcew%ifit == 2) then
 
-!  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(ENERGY WEIGHTED RATE)
+!  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(ENERGY-WEIGHTED RATE)
 
 c  extrapolation data:  for 2d polynomial fits
         rc1min  = reacdat(ir)%rtcew%rc1min
@@ -211,7 +211,7 @@ c..............................................................
 
       else if (reacdat(ir)%rtcew%ifit == 3) then
 
-! 2D TABULAR INPUT,  FOR LOG10 OF ENERGY WEIGHTED RATE,  joule*cm^3/s
+! 2D TABULAR INPUT,  FOR LOG10 OF ENERGY-WEIGHTED RATE,  joule*cm^3/s
 ! E.G.: ADAS adf11 PLT and PRB FILES
 cdr  extrapolation data: for 2d tabulated data, option not ready
 cdr  to be added here
@@ -275,7 +275,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
         CALL EIRENE_COLRAD(IR, IFLAVOR, IVAR, IC, PP1, PP2, RES)
 
-!  electron energy weighted loss rates are taken positive in CRM COLRAD, and negative if
+!  electron energy-weighted loss rates are taken positive in CRM COLRAD, and negative if
 !  it is a gain. For negative (i.e. gain) rates, the log(e-rate) return is not possible.
 !  energy-rate coefficient should always only be called with LEXP=.TRUE. for such processes
 

@@ -1,6 +1,6 @@
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 cdr  27.09.15:  renamed from fehvds1 to fehvei1,
-cdr  KK<0 cases still to be syncronized with ftabei1, feelei1, etc.
+cdr  KK<0 cases still to be synchronized with ftabei1, feelei1, etc.
 cdr  nelrei, nhvrei,
 cdr  01.01.16:  documented
 cdr             more unified numbering of reactions: kk= nreaei(irei),
