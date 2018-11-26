@@ -69,8 +69,6 @@ C
       USE EIRMOD_MPI
 
       IMPLICIT NONE
-
-!      INCLUDE 'mpif.h'
 C
       CHARACTER(6) :: CIS
       CHARACTER(10) :: CDATE, CTIME

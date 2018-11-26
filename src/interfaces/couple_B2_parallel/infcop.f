@@ -121,7 +121,6 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
 
       IMPLICIT NONE
 
-      include 'mpif.h'
       integer :: ier,istrx,irank,istrr, irnk
       real*8, allocatable :: dumvec(:)
       real*8, allocatable :: save_estimv(:,:),save_estims(:,:),

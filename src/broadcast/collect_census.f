@@ -38,7 +38,6 @@ c
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, peflux,

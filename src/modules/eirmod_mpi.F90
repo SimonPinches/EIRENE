@@ -3,7 +3,6 @@ module eirmod_mpi
 #ifdef USE_MPI
   use mpi ! IGNORE
   implicit none
-!#include 'mpif.h'
 
 #if MPI_VERSION < 3
 ! MPI libraries with MPI version 3 are available on all platforms.

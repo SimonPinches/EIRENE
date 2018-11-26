@@ -117,8 +117,6 @@ C
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
-C
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
         INTEGER                   :: IN, IDION
