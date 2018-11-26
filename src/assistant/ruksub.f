@@ -120,7 +120,7 @@ C
             GOTO 50
          ENDIF
 
-   10    CONTINUE
+   10 CONTINUE
 C
 C     ENDE VON RUKSUB
 C

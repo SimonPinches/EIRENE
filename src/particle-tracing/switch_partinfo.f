@@ -10,7 +10,7 @@ c                                     mfp evaluation (fpath)
 c  and a for scoring a number of surface tallies (locate, escape, ...)
 
 c  It is called from: LOCATE (for primary source particles),
-c          and after: COLLIDE and REFLEC (for new post collision species)
+c          and after: COLLIDE and REFLEC (for new post-collision species)
 c
 c  Input:  istra, ityp, iphot, iatm, imol, iion, ipls
 c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion

@@ -87,7 +87,7 @@ C
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
      .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1,
-     .           NJC, IST, ITEST, JSH, NN ,IN, itc
+     .           NJC, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
 cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS), LHITP0
@@ -293,7 +293,6 @@ C
 C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
 C
         TSS=0.
-        IST=0
         DO J=1,NCOUP
           ALPD(J)=ALPD(J)-TSS
           TSS=TSS+ALPD(J)
@@ -660,7 +659,6 @@ C
 C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
 C
         TSS=0.
-        IST=0
         DO 130 J=1,NCOUP
           ALPD(J)=ALPD(J)-TSS
           TSS=TSS+ALPD(J)

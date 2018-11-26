@@ -18,8 +18,8 @@ c
 c     distinct from Ba_alpha etc, routines:
 !WZ:  The emissivity can be computed for 5 different wavelengths,
 !     controlled from calling routine over REAC1 and REAC2.
-!     No hard wired REAC, but input parameters
-!     But hard wired: read H.12, OT, from AMJUEL
+!     No hard-wired REAC, but input parameters
+!     But hard-wired: read H.12, OT, from AMJUEL
 c
 C
 C STORAGE FOR THE 3 ADDITIONAL TALLIES IAD1,IAD2 and IADS SHOULD HAVE BEEN PROVIDED

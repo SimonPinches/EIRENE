@@ -654,7 +654,6 @@ c  read parameter for type of fitting expression from data file
         ENDIF
 C  read only one constant:  (FIT-FLAG = 10, 110, ....)
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
-!ITER     IND=INDEX(ZEILE,CHR(1:1))
           IND=INDEX(ZEILE,CHR(2:2))
           READ (ZEILE((IND+2):80),'(E20.12)') CREACD(1,1)
         ELSE
@@ -663,7 +662,6 @@ C  THREE LINES WITH THREE DATA PER LINE
           DO 9 J=0,2
             IND=0
             DO 4 I=1,3
-!ITER         IND=IND+INDEX(ZEILE((IND+1):80),CHR(1:1))
               IND=IND+INDEX(ZEILE((IND+1):80),CHR(2:2))
               READ (ZEILE((IND+2):80),'(E20.12)') CREACD(J*3+I,1)
     4       CONTINUE
@@ -706,10 +704,10 @@ C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
             DO 17 I=1,9
 C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1,K+2
               READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
+   17       CONTINUE
 c    first  index I: I-th block, vertical, Temp. dependence
 c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
 c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
-   17       CONTINUE
           END IF
    11   CONTINUE
         READ (29+ifoff,'(A80)',END=990) ZEILE

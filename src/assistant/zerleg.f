@@ -95,7 +95,7 @@ C
 C           BESTIMME ERSTES ZEICHEN IM ERSTEN INNERSTEN KLAMMERAUSDRUCK
 C
             POS=0
-   11          POS=INDEX( AUSDRU(POS+1:OMEGA), '(' ) +POS
+   11       POS=INDEX( AUSDRU(POS+1:OMEGA), '(' ) +POS
             IF ( INDEX ( AUSDRU(POS+1:OMEGA), '(' ) .GT. 0 ) GOTO 11
             ALPHA=POS+1
 C

@@ -16,7 +16,7 @@ C
       REAL(DP) :: C, C1, C2, C3, C4, CAL, SAL, CN, ANG, PI
       INTEGER :: I, J
 
-      DATA PI/3.141592654/
+      DATA PI/3.141592654_DP/
 
       C1=CC1
       C2=CC2
@@ -29,11 +29,12 @@ C  NORMALIZE ROTATION AXIS
           WRITE (iunout,*)
      .    'WARNING: INVALID ROTATION AXIS IN SUBR. SETROT'
           WRITE (iunout,*) 'NO ROTATION CARRIED OUT'
-          DO 1 J=1,3
-            DO 1 I=1,3
+          DO J=1,3
+            DO I=1,3
               AFF(I,J)=0.
               AFFI(I,J)=0.
-    1     CONTINUE
+            END DO
+          END DO
           DO 2 J=1,3
             AFF(J,J)=1.
             AFFI(J,J)=1.

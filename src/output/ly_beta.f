@@ -10,7 +10,7 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
 
@@ -27,7 +27,7 @@ C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
 C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
-C  IADS: SUM OVER ALL CONTRINUTIONS
+C  IADS: SUM OVER ALL CONTRIBUTIONS
 C
 C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
