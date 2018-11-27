@@ -171,7 +171,7 @@ C      REAL(DP) :: B_NU, pla
      .           JATM, JMOL, JION, JPLS, JPHOT, JSPZ,
      .           ISECT, IDUMM, ICOS, NFLAG, NCELLT,
      .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
-     .           IPLTI, IROT, KK,
+     .           IPLTI, IRPH, KK,
      .           ITYP_OLD, IGASP_OLD, IGASC_OLD
 C      INTEGER :: ILOOP, IPLSTI, NLOOP
       INTEGER, SAVE :: NLIMSQ
@@ -1903,166 +1903,11 @@ C  MONOENERGETIC, ISOTROP
               VELZ=FI3(INIV3)
               INIV3=INIV3-1
 
-            ELSEIF (ITYP.EQ.0.AND.NEMOD1.EQ.9) THEN
+cdr:  at this place formerly: options ityp=0, nemod1=9:
+cdr   core saturation options for photon emission, left over from
+cdr   high pressure discharge lamb applications. Now removed
 
-c  this option: only for photon test particles
-c  cut off "black part". this is the part of the emission line which will
-c  be reabsorbed within the same cell. hence it will not contribute to any
-c  radiation transport
-C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
-              KK = NREARC(IRRC)
-              call EIRENE_get_reaction(kk)
-              e00=reaction%e0
-              ipl=reaction%ignd
-              VEL=CLIGHT
-! Achtung!!!!!!!!!
-! irot =1 ist falsch, wenn das Photon mehrere Reaktionen ausfuehren kann
-              irot=1
-!  has this cell already been done?
-              IF (X1LINE(IVOLM,NCELL) < 0._DP) THEN
-!  no. find energy interval to be excluded
-                e0=e00
-                zmfp_e00=EIRENE_fpathph(ncell,cflag,1,1)
-                zmfp_cut = TDGTEMX*celdia(ncell)
-                if (zmfp_e00 > zmfp_cut) then
-! mean free path at linecenter is large compared to cell diameter
-! line is not thick  =>  sample from whole line
-                  x1line(ivolm,ncell) = huge(1._dp)
-                  x2line(ivolm,ncell) = 0._dp
-
-                else
-
-! mean free path at linecenter is small compared to cell diameter
-! line is thick  =>  sample from wings only
-
-! suche linkes Ende des Intervalls
-                  call EIRENE_PH_GETCOEFF
-     .             (kk,iphot,0,ncell,ipl,fac_e00,res)
-                  if (hwvdw < eps30) hwvdw = e00 - eps6
-                  fac_e0 = fac_e00
-                  zmfp_e0 = zmfp_e00
-                  xl = e00
-                  yl = zmfp_e00
-                  do while (zmfp_e0 < zmfp_cut)
-                    xr = xl
-                    yr = yl
-                    xl = xl-hwvdw
-                    e0 = xl
-                    call EIRENE_PH_GETCOEFF
-     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
-                    zmfp_e0 = zmfp_e00*fac_e00/fac_e0
-                    yl = zmfp_e0
-                    if (xl < hwvdw) exit
-                  end do
-
-                  e0 = xl
-
-                  do while ((yl-yr)/yl > 1.E-3_dp)
-                    xm = (xr + xl) * 0.5_dp
-                    e0 = xm
-                    call EIRENE_PH_GETCOEFF
-     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
-                    zmfp_e0 = zmfp_e00*fac_e00/fac_e0
-                    ym = zmfp_e0
-                    if (ym < zmfp_cut) then
-                      xr = xm
-                      yr = ym
-                    else if (ym > zmfp_cut) then
-                      xl = xm
-                      yl = ym
-                    else           ! getroffen
-                      xl = xm
-                      xr = xm
-                      exit
-                    end if
-                  end do
-                  x1line(ivolm,ncell) = xl
-
-! suche rechtes Ende des Intervalls
-                  xr = e00
-                  yr = zmfp_e00
-                  zmfp_e0 = zmfp_e00
-                  do while (zmfp_e0 < zmfp_cut)
-                    xl = xr
-                    yl = yr
-                    xr = xr+hwvdw
-                    e0 = xr
-                    call EIRENE_PH_GETCOEFF
-     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
-                    zmfp_e0 = zmfp_e00*fac_e00/fac_e0
-                    yr = zmfp_e0
-                  end do
-
-                  do while ((yr-yl)/yr > 1.E-3_dp)
-                    xm = (xr + xl) * 0.5_dp
-                    e0 = xm
-                    call EIRENE_PH_GETCOEFF
-     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
-                    zmfp_e0 = zmfp_e00*fac_e00/fac_e0
-                    ym = zmfp_e0
-                    if (ym < zmfp_cut) then
-                      xl = xm
-                      yl = ym
-                    else if (ym > zmfp_cut) then
-                      xr = xm
-                      yr = ym
-                    else           ! getroffen
-                      xl = xm
-                      xr = xm
-                      exit
-                    end if
-                  end do
-                  x2line(ivolm,ncell) = xr
-
-                endif ! X1LINE(EV), X2LINE(EV) FOR CELL NCELL DONE
-                xleft = x1line(ivolm,ncell)
-                xright = x2line(ivolm,ncell)
-
-              END IF ! NEMOD1=9 OPTION for photons prepared
-
-!  now apply nemod1=9 option for ityp=0
-
-C  PHOTON EMISSION PROFILE OPTIONS 0-9
-C  SAMPLE ONLY FROM LINE PROFILES WITHOUT DOPPLER CONTRIBUTION
-C  I.E., IN THE REST FRAME OF THE EMITTING ATOM
-C  SAVE VELOCITY OF EMITTING (BULK) PARTICLE FOR LATER DOPPLER CORRECTION
-              VEL_B=VEL
-              VELX_B=VELX
-              VELY_B=VELY
-              VELZ_B=VELZ
-C  SAMPLE ISOTROPIC EMISSION OF PHOTON IN REST FRAME OF EMITTING PARTICLE
-              VEL=CLIGHT
-              IF (INIV3.EQ.0) CALL EIRENE_FISOTR
-              VELX=FI1(INIV3)
-              VELY=FI2(INIV3)
-              VELZ=FI3(INIV3)
-              INIV3=INIV3-1
-C  EMITTER VELOCITY COMPONENT IN DIRECTION OF LIGHT EMISSION
-              VN=VEL_B*(VELX_B*VELX+VELY_B*VELY+VELZ_B*VELZ)
-
-C  SAMPLE THE ENERGY (FREQUENCY) OF THE PHOTON
-C  IN CASE OF ZEEMAN SPLITTING, THIS IS CONDITIONAL
-C  ON THE DIRECTION OF EMISSION
-              KK = NREARC(IRRC)
-              E0=EIRENE_PH_ENERGY(NCELL,KK,IPLS,VN,NL_ADD_DOPPLER)
-C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)
-              IF (NL_ADD_DOPPLER) THEN
-!  line shape profiles with doppler not yet done for nemod1=9 option
-                WRITE (iunout,*) 'LOCATE: NEMOD1 =9 OPTION NOT READY  '
-                WRITE (iunout,*) '        FOR DOPPLER BROADENED LINES '
-                CALL EIRENE_EXIT_OWN(1)
-!               E0=E0*(1._DP+VN/CLIGHT)
-              ENDIF
-
-              if ((e0 > x1line(ivolm,ncell)) .and.
-     .            (e0 < x2line(ivolm,ncell))) then
-                lgpart = .false.
-                weight = 0._dp
-              end IF
-C  nemod1=9 option FOR PHOTONS finished.
-
-!  NEXT: PHOTON DEFAULT OPTION: NEMOD1 IS NOT =9 AND NOT =1
-!        SAME AS NEMOD=9, BUT WITHOUT CUT-OFF OF BLACK PART
+!  NEXT: PHOTON DEFAULT OPTION: 
 
             ELSEIF (ITYP.EQ.0) THEN
 

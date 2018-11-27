@@ -185,7 +185,7 @@ C
           DO 82 NRC=1,NRCP(IPLS)
             KK=IREACP(IPLS,NRC)
 csw check photonic process
-            if(iswr(kk)==7) then    ! OT Processes
+            if(iswr(kk)==7) then    ! PH Processes
                idsc=idsc+1
                nrrci=nrrci+1
                IF (NRRCI.GT.NREC) GOTO 992
@@ -205,9 +205,9 @@ C  RECOMBINATION MODEL FOR BULK IONS
               IRRC=NRRCI
               LGPRC(IPLS,IDSC)=IRRC
 cdr  for notational consistency: here should come a call to routine xstrc,
-cdr  for rc type processes
-cdr  as already in case of xsecta, xsectm, xsecti, etc..
-cdr  there for the corresponding ei,el,cx and pi processes
+cdr  for RC type processes
+cdr  as already in case of xsecta, xsectm, xsecti, etc..,
+cdr  There for the corresponding ei,el,cx and pi processes
 cdr  this next stuff should go into xstrc.f
               ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
               ISPZ=EIRENE_IDEZ(ISCD1P(IPLS,NRC),3,3)

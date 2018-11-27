@@ -18,6 +18,7 @@ cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot,
 cdr           but is for surface tally pointers
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
+cdr  nov.18:  notational clenaup: separate OT from PH (photonic) processes
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -67,7 +68,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
      I NSD,    NSDW,   NCV
 
       INTEGER, PUBLIC, SAVE ::
-     I NREAC,  NREC,   NREI,   NRCX,   NREL,   NRPI,   NROT
+     I NREAC,  NREC,   NREI,   NRCX,   NREL,   NRPI,   NRPH
 
       INTEGER, PUBLIC, SAVE ::
      I NHD1,   NHD2,   NHD3,   NHD4,   NHD5,   NHD6
@@ -395,6 +396,7 @@ c  collision processes
       INT_PARM( 40) = NRCX
       INT_PARM( 41) = NREL
       INT_PARM( 42) = NRPI
+      INT_PARM(134) = NRPH
 c  surface reflection model
       INT_PARM( 43) = NHD1
       INT_PARM( 44) = NHD2
@@ -512,7 +514,6 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
 
       INT_PARM(133) = NPLT
 
-      INT_PARM(134) = NROT
       INT_PARM(135) = NADSPC
 
       INT_PARM(136) = NPLSTI
@@ -587,6 +588,7 @@ c  species indices (1st dimension) of output tallies
       NRCX        = INT_PARM( 40)
       NREL        = INT_PARM( 41)
       NRPI        = INT_PARM( 42)
+      NRPH        = INT_PARM(134)
 
       NHD1        = INT_PARM( 43)
       NHD2        = INT_PARM( 44)
@@ -701,7 +703,6 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
 
       NPLT        = INT_PARM(133)
 
-      NROT        = INT_PARM(134)
       NADSPC      = INT_PARM(135)
 
       NPLSTI      = INT_PARM(136)
