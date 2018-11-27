@@ -74,8 +74,6 @@ C
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
-
       REAL(DP), INTENT(IN) :: DT
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR

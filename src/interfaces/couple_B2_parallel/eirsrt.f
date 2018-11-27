@@ -63,10 +63,9 @@ C     B2VP :  VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO WORK DONE BY EL
       USE EIRMOD_CSPEI
       USE EIRMOD_BRASCL
       use eirmod_eirbra
+      use eirmod_mpi
 
       IMPLICIT NONE
-c
-      include 'mpif.h'
 C
       REAL(DP), INTENT(IN) :: FLUXES_in(NSTRA)
       REAL(DP), INTENT(IN) :: DELTAT_in, B2BRM, B2RD, B2Q, B2VP,STEP_CPU

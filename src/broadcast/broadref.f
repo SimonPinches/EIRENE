@@ -10,7 +10,6 @@ cdr        combinations, read from one single file:  TRIM.dat
       USE EIRMOD_MPI
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       INTEGER :: IER
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
