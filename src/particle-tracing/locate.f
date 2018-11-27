@@ -9,7 +9,7 @@ c  nov.05:  step functions shstep and elstep connected.
 c           shwl in parameter list for calls to smvol1, smpnt1, smsrf1.
 c           shstep overrules all other sheath options, if shstep (=shwl) gt.0
 c           elstep is now nemod1=8,9  (was previously: -2, -3, but this
-c           could not be chosen in input, due to use of IDEZ function for nemods
+c           could not be chosen in input, due to use of IDEZ function for nemods)
 c
 !PB 12.01.06: index "ind" added to update_spectrum indicating particle starts on surface
 !PB 02.03.06: store startpoint of trajectory
@@ -17,7 +17,7 @@ cdr 12.05.06: argument vn added to ph_energy, for doppler+motional stark effect
 c             directly to be included in line shape sampling
 !pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
 !pb           spatial resolution of sptpl and spttot added
-!pb  8.11.06: set timestep index for time dependent mode
+!pb  8.11.06: set timestep index for time-dependent mode
 cdr         : as SORLIM can be negative, to call SAMUSR for spatial coordinates.
 cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS(SORLIM)
 !pb 08.11.06: definition of splitting arrays changed
@@ -32,7 +32,7 @@ cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS
 c
 cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species index)
 cdr 24.09.14: levgeo=2, surface normal on radial surface from algebraic relation, rather than from polygon
-cdr           levgeo=2 and 1D run: no polygons are set any more.
+cdr           levgeo=2 and 1D run: no polygons are set anymore.
 cdr oct   14: weight now as argument in velocs (not via comprt).
 CDR           RSQDV2:  factor for Mach number conversion to cm/s
 cdr           also: scoring sputter tallies revised, igasp,igasc=0 option:
@@ -168,10 +168,11 @@ C      REAL(DP) :: B_NU, pla
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
      .           I2, IM, I1, IMP, NPANUO, ILINE, ISURF, ITRSF,
      .           IPOINT, ISOUR, ISRFS, I, ISTEP,
+     .           JATM, JMOL, JION, JPLS, JPHOT, JSPZ,
      .           ISECT, IDUMM, ICOS, NFLAG, NCELLT,
      .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
      .           IPLTI, IROT, KK,
-     .           ITYP_OLD, IGASP_OLD,IGASC_OLD
+     .           ITYP_OLD, IGASP_OLD, IGASC_OLD
 C      INTEGER :: ILOOP, IPLSTI, NLOOP
       INTEGER, SAVE :: NLIMSQ
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -192,8 +193,8 @@ C
         ALLOCATE (IFPSOR(NSRFS))
       END IF
 
-      DO 1 ISPZ=1,NSPZ
-        WEISPZ(ISPZ)=-1.
+      DO 1 JSPZ=1,NSPZ
+        WEISPZ(JSPZ)=-1.
     1 CONTINUE
 C
       SUMM = SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA))
@@ -322,7 +323,7 @@ C  =SAMPLE STARTING POINT FOR  ATOMS, MOLECULES OR IONS=
 C  =====================================================
 C
       LGTIME=NPRNLI.GT.0
-C  DISTANCE TO "TIME-SURFACE"
+C  DISTANCE TO "TIME SURFACE"
       IF (.NOT.LGTIME) THEN
         DTIMVI=1.D30
       ELSEIF (LGTIME) THEN
@@ -392,7 +393,7 @@ C
           WEIGHT=1.D0
         ENDIF
 
-!pb  set number of timestep for time dependent mode
+!pb  set number of time steps for time-dependent mode
         ITMSTP=1
 C
         SELECT CASE( ITYP )
@@ -497,7 +498,7 @@ C   SURFACE SOURCE MODEL  51---70
 C
       ELSEIF (NLSRF(ISTRA)) THEN
 C
-C   FIRST FIND SOURCE-SURFACE NUMBER ISURF
+C   FIRST FIND SOURCE SURFACE NUMBER ISURF
         ISURF=1
         IF (NLIMSQ.GT.1) THEN
           ZV=RANF_EIRENE( )
@@ -719,8 +720,8 @@ C
 C Atoms:
           IF (NSPEZ(ISTRA).LT.0) THEN
 C  CHECK RADON-NIKODYM CONDITION FOR NON-ANALOG SAMPLING
-            DO IATM=1,NATMI
-              IF (DATD(IATM).LE.0.D0.AND.WEISPZ(IATM).GT.0.D0) THEN
+            DO JATM=1,NATMI
+              IF (DATD(JATM).LE.0.D0.AND.WEISPZ(JATM).GT.0.D0) THEN
                 GOTO 992
               ENDIF
             ENDDO
@@ -761,8 +762,8 @@ C  ANALOG SPECIES SAMPLING FROM WEISPZ
 C Molecules:
           IF (NSPEZ(ISTRA).LT.0) THEN
 C  CHECK RADON-NIKODYM CONDITION FOR NON-ANALOG SAMPLING
-            DO IMOL=1,NMOLI
-              IF (DMLD(IMOL).LE.0.D0.AND.WEISPZ(IMOL).GT.0.D0) THEN
+            DO JMOL=1,NMOLI
+              IF (DMLD(JMOL).LE.0.D0.AND.WEISPZ(JMOL).GT.0.D0) THEN
                 GOTO 992
               ENDIF
             ENDDO
@@ -803,8 +804,8 @@ C  ANALOG SPECIES SAMPLING
 C Test ions:
           IF (NSPEZ(ISTRA).LT.0) THEN
 C  CHECK RADON-NIKODYM CONDITION FOR NON-ANALOG SAMPLING
-            DO IION=1,NIONI
-              IF (DIOD(IION).LE.0.D0.AND.WEISPZ(IION).GT.0.D0) THEN
+            DO JION=1,NIONI
+              IF (DIOD(JION).LE.0.D0.AND.WEISPZ(JION).GT.0.D0) THEN
                 GOTO 992
               ENDIF
             ENDDO
@@ -845,8 +846,8 @@ C  ANALOG SPECIES SAMPLING
 C Bulk ions:
           IF (NSPEZ(ISTRA).LT.0) THEN
 C  CHECK RADON-NIKODYM CONDITION FOR NON-ANALOG SAMPLING
-            DO IPLS=1,NPLSI
-              IF (DPLD(IPLS).LE.0.D0.AND.WEISPZ(IPLS).GT.0.D0) THEN
+            DO JPLS=1,NPLSI
+              IF (DPLD(JPLS).LE.0.D0.AND.WEISPZ(JPLS).GT.0.D0) THEN
                 GOTO 992
               ENDIF
             ENDDO
@@ -888,8 +889,8 @@ C  ANALOG SPECIES SAMPLING, SKIP SAMPLING IN CASE NPLSI=1
 C Photons:
           IF (NSPEZ(ISTRA).LT.0) THEN
 C  CHECK RADON-NIKODYM CONDITION FOR NON-ANALOG SAMPLING
-            DO IPHOT=1,NPHOTI
-              IF (DPHD(IPHOT).LE.0.D0.AND.WEISPZ(IPHOT).GT.0.D0) THEN
+            DO JPHOT=1,NPHOTI
+              IF (DPHD(JPHOT).LE.0.D0.AND.WEISPZ(JPHOT).GT.0.D0) THEN
                 GOTO 992
               ENDIF
             ENDDO
@@ -1317,7 +1318,7 @@ C
 C
 C  BULK IONS?   500  ---  599
 C
-C  SOURCE DEFINED BY PRE COLLISION RATE OF BULK PARTICLES
+C  SOURCE DEFINED BY PRE-COLLISION RATE OF BULK PARTICLES
 C  THE RESULTING TEST PARTICLES MAY BE EITHER ATOMS, MOLECULES OR TEST
 C  IONS. IN THIS CASE NOT THE TOTAL TEST PARTICLE FLUX BUT THE
 C  THE TOTAL BULK ION FLUX IS SCALED TO A PRESCRIBED VALUE
@@ -1418,9 +1419,9 @@ C
 C  UPDATE PARTICLE EFFLUX  ONTO SURFACE MSURF
 C  UPDATE ENERGY FLUX ONTO SURFACE MSURF
 C
-C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
+C  SPATIAL RESOLUTION ON NON-DEFAULT STANDARD SURFACE?
 C  FIND MSURFG, THE POSITION FOR STORING THE LOCAL FLUX ON THE
-C               SURFACE AVERAGED TALLY ARRAYS
+C               SURFACE-AVERAGED TALLY ARRAYS
 C  FIND FLX:  THE FLUX TO THIS SURFACE ELEMENT TO BE USED FOR
 C             CHEMICAL SPUTTERING LFUX DEPENDENCE
             IF (MSURF.GT.NLIM.AND.NLMPGS.GT.NLIMPS) THEN
@@ -1449,11 +1450,11 @@ C             CHEMICAL SPUTTERING LFUX DEPENDENCE
 C  WTOTP, ETOTP: INTEGRAL FLUXES FOR SCALING
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
-C  NEW (2004) VOLUME AVERAGED TALLIES
+C  NEW (2004) VOLUME-AVERAGED TALLIES
 C  PPPL, EPPL AND THEIR INTEGRALS: ALSO FOR GLOBAL PARTICLE BALANCE
             IF (LPPPL) PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
             IF (LEPPL) EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
-C  SURFACE AVERAGED TALLIES (NOTE: FLUXES HERE COUNTED POSITIVE,
+C  SURFACE-AVERAGED TALLIES (NOTE: FLUXES HERE COUNTED POSITIVE,
 C                            BUT INTEGRALS OF OUTGOING SURFACE FLUXES
 C                            POTPLI,... ARE TAKEN NEGATIVE).
 C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
@@ -1486,11 +1487,11 @@ csw 10jan2011
 CVK       IF (ILSPT(MSURF).NE.0) THEN
 !pb  allow for bulk particle to sputter at transparent surface
 !pb  because of gap between outer plasma surface and wall in SOLPS
-            IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN !VK from AK's locate
+            IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN !VK from AK locate
 csw
 
 cdr  ilspt=0 in case of transparent surfaces was a safety procedure in subr. input.f
-cdr  this has now been bypassed. Better: do that in couple_b2 (case specific), but not in eirene itself
+cdr  this has now been bypassed. Better: do that in couple_b2 (case-specific), but not in eirene itself
 
 C  SAVE INCIDENT PARTICLE'S SPEED AND ENERGY
               E0S=E0
@@ -1566,7 +1567,7 @@ C
               ENDIF
 C
 cdr  species index of physically sputtered particle is known.
-cdr  update total and sputtered species resolved sputtered fluxes
+cdr  update total and sputtered species-resolved sputtered fluxes
 
               CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,2)
 C
@@ -1640,7 +1641,7 @@ C
               ENDIF
 C
 cdr  species index of physically sputtered particle is known.
-cdr  update total and sputtered species resolved sputtered fluxes
+cdr  update total and sputtered species-resolved sputtered fluxes
 
               CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,2)
               IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSC,2)
@@ -1935,8 +1936,8 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
 ! line is thick  =>  sample from wings only
 
 ! suche linkes Ende des Intervalls
-                  call
-     .    EIRENE_PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac_e00,res)
+                  call EIRENE_PH_GETCOEFF
+     .             (kk,iphot,0,ncell,ipl,fac_e00,res)
                   if (hwvdw < eps30) hwvdw = e00 - eps6
                   fac_e0 = fac_e00
                   zmfp_e0 = zmfp_e00
@@ -1947,8 +1948,8 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                     yr = yl
                     xl = xl-hwvdw
                     e0 = xl
-                    call
-     .    EIRENE_PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac_e0,res)
+                    call EIRENE_PH_GETCOEFF
+     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
                     zmfp_e0 = zmfp_e00*fac_e00/fac_e0
                     yl = zmfp_e0
                     if (xl < hwvdw) exit
@@ -1959,8 +1960,8 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                   do while ((yl-yr)/yl > 1.E-3_dp)
                     xm = (xr + xl) * 0.5_dp
                     e0 = xm
-                    call
-     .    EIRENE_PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac_e0,res)
+                    call EIRENE_PH_GETCOEFF
+     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
                     zmfp_e0 = zmfp_e00*fac_e00/fac_e0
                     ym = zmfp_e0
                     if (ym < zmfp_cut) then
@@ -1986,8 +1987,8 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                     yl = yr
                     xr = xr+hwvdw
                     e0 = xr
-                    call
-     .    EIRENE_PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac_e0,res)
+                    call EIRENE_PH_GETCOEFF
+     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
                     zmfp_e0 = zmfp_e00*fac_e00/fac_e0
                     yr = zmfp_e0
                   end do
@@ -1995,8 +1996,8 @@ C  REJECTION PREPARED FOR BLACK BODY CONTRIBUTION
                   do while ((yr-yl)/yr > 1.E-3_dp)
                     xm = (xr + xl) * 0.5_dp
                     e0 = xm
-                    call
-     .    EIRENE_PH_GETCOEFF(kk,iphot,0,ncell,ipl,fac_e0,res)
+                    call EIRENE_PH_GETCOEFF
+     .               (kk,iphot,0,ncell,ipl,fac_e0,res)
                     zmfp_e0 = zmfp_e00*fac_e00/fac_e0
                     ym = zmfp_e0
                     if (ym < zmfp_cut) then
@@ -2061,7 +2062,7 @@ C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)
 C  nemod1=9 option FOR PHOTONS finished.
 
 !  NEXT: PHOTON DEFAULT OPTION: NEMOD1 IS NOT =9 AND NOT =1
-!        SAME AS NEMOD=9, BUT WITHOUT CUT OFF OF BLACK PART
+!        SAME AS NEMOD=9, BUT WITHOUT CUT-OFF OF BLACK PART
 
             ELSEIF (ITYP.EQ.0) THEN
 
@@ -2111,7 +2112,7 @@ c
 c  put spectrum no. 1, and use energy range from input block 10F
 c             if (nadspc < 1) then
 c               write (iunout,*) 'locate: no storage for spectr. no. 1  '
-c               call exit_own(1)
+c               call eirene_exit_own(1)
 c             endif
 c             msurf=estiml(1)%ispcsrf
 c             call update_spectrum (1._dp,1,0)
@@ -2155,7 +2156,7 @@ C
 C
 C  NLPNT,NLLNE,NLSRF,NLVOL DONE.
 C
-C  VOLUME TALLIES FOR TEST-SECONDARIES
+C  VOLUME TALLIES FOR TEST SECONDARIES
           SELECT CASE (ITYP)
             CASE (1)
               LOGATM(IATM,ISTRA)=.TRUE.
@@ -2253,7 +2254,7 @@ C  FIND SIGN SG OF FLIGHT RELATIVE TO SURFACE NORMAL
         ELSEIF ((LEVGEO==4) .OR. (LEVGEO==5)) THEN
           SG = 1
         ELSEIF (LEVGEO==10) THEN
-C  IN USER SUPPLIED GEOMETRY OPTION: NRCELL MUST BE CORRECT ALREADY
+C  IN USER-SUPPLIED GEOMETRY OPTION: NRCELL MUST BE CORRECT ALREADY
 C                                    MRSURF IS NOT NCESSARILY TRANSFERRED
           SG = 1
         ENDIF

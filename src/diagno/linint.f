@@ -9,7 +9,7 @@ cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from di
 c
 c    July 17 :  distinguish flags for output with spectral resolution from
 c               output with spatial resolution along LOS.
-c               Made  ARGST allocatable, conditional on  PRARGL,PLARGL
+c               Made ARGST allocatable, conditional on PRARGL,PLARGL
 cdr             plargl only, if prargl. To be done in input.f
 CDR             ditto: made allocatable AA, XNTG, VPLOT
 CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
@@ -82,7 +82,7 @@ C
      .           MSURFS, NTCLLS, J, JJJ, IPOLGS, IPERID_2,
      .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2,
      .           IPERID_1,
-     .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, MX_COMPO, ND
+     .           EIRENE_LEARC1, I, IM, NCELC, NCH, MX_COMPO, ND
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
       REAL(DP), ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)
@@ -338,7 +338,6 @@ C
       IPHOT=0
       ISPZ=0
       NPANU=0
-      ISAVE=0
 C
 C NEXT: FIND STARTING POINT FOR INTEGRATION, CELL NUMBERS
 C       START SEARCH AT C2. CELL NUMBERS OF C2:

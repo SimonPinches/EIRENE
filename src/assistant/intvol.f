@@ -1,5 +1,8 @@
 Cdr Jan 2017:  start to synchronize with inttal. goal: should
 C              become identical, if weighting function "VOL == 1"
+C   some unused variables (VR, VRTP,....) intentionally retained here,
+C   to facilitate the future combination of intvol and inttal into a single
+C   routine.
 C
 C*DK INTVOL
       SUBROUTINE EIRENE_INTVOL (A,J,M,N,YINT,NX,NY,NZ,NB)

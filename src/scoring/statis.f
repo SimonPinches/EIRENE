@@ -27,9 +27,9 @@ C
      .                              IADDW(:),   IGFFW(:),
      .                              IADDC(:,:), IGFFC(:,:),
      .                              IND(:,:),   IIND(:),    INDSS(:,:)
-      REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DA1, DD11, D2, DD12,
-     .          ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD, DA2,
-     .          D2S11, D2S22, D2S12, SG12, SG1, DSA1, DSA2,
+      REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
+     .          ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD,
+     .          D2S11, D2S22, D2S12, SG12, SG1,
      .          SAV, SD1S, SD1, XNM
       INTEGER :: ISCO2, NR1, NP2, NT3, INP, IGF, IC,
      .           I, IRU, IIN, J, IR, IGS,
@@ -169,35 +169,41 @@ C  USE SYMMETRY IN POLOIDAL/Y AND/OR TOROIDAL/Z COORDINATE
           NSYM=NP2
           NSYH=(NSYM-1)/2
           DO 1003 IG=IGI,IGE
-          DO 1003 IR=1,NR1
-          DO 1003 IT=1,NT3
-          DO 1003 IP=1,NSYH
-                J1=IR+((IT-1)*NP2+IP-1)*NR1
-                J2=IR+((IT-1)*NP2+NSYM-IP-1)*NR1
-                SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
-                ESTIMV(INP+IG,J1)=SAV
-                ESTIMV(INP+IG,J2)=SAV
+            DO IR=1,NR1
+              DO IT=1,NT3
+                DO IP=1,NSYH
+                  J1=IR+((IT-1)*NP2+IP-1)*NR1
+                  J2=IR+((IT-1)*NP2+NSYM-IP-1)*NR1
+                  SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
+                  ESTIMV(INP+IG,J1)=SAV
+                  ESTIMV(INP+IG,J2)=SAV
+                END DO
+              END DO
+            END DO
  1003     CONTINUE
         ENDIF
         IF (LT) THEN
           NSYM=NT3
           NSYH=(NSYM-1)/2
           DO 1004 IG=IGI,IGE
-          DO 1004 IR=1,NR1
-          DO 1004 IP=1,NP2
-          DO 1004 IT=1,NSYH
-                J1=IR+((IT-1)*NP2+IP-1)*NR1
-                J2=IR+((NSYM-IT-1)*NP2+IP-1)*NR1
-                SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
-                ESTIMV(INP+IG,J1)=SAV
-                ESTIMV(INP+IG,J2)=SAV
+            DO IR=1,NR1
+              DO IP=1,NP2
+                DO IT=1,NSYH
+                  J1=IR+((IT-1)*NP2+IP-1)*NR1
+                  J2=IR+((NSYM-IT-1)*NP2+IP-1)*NR1
+                  SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
+                  ESTIMV(INP+IG,J1)=SAV
+                  ESTIMV(INP+IG,J2)=SAV
+                END DO
+              END DO
+            END DO
  1004     CONTINUE
         ENDIF
  1005   CONTINUE
 C
 C  FILL ARRAY VECTOR, EITHER FOR SUM OVER SPECIES OR FOR INDIVIDUAL SPECIES
 C  VECTOR IS FILLED ONLY FOR THOSE CELLS,
-C  WHICH HAVE BEEN TOUCHED BY THIS HISTROY
+C  WHICH HAVE BEEN TOUCHED BY THIS HISTORY
 C  VECTOR CONTAINS THE SUM FROM ALL HISTORIES IN THESE CELLS UP TO THE
 C  PRESENT HISTORY
         IF (IGS.NE.0) THEN
@@ -210,14 +216,15 @@ C  PRESENT HISTORY
             VECTOR(ICO)=0.
  1014     CONTINUE
           DO 1015 IS=1,IGF
-          DO 1015 ICO=1,NCLMT
+           DO ICO=1,NCLMT
             IR = ICLMT(ICO)
             VECTOR(ICO)=VECTOR(ICO)+ESTIMV(INP+IS,IR)
+           END DO
  1015     CONTINUE
         ENDIF
 
         SD1S = 0.D0
-C  FILL ARRAY SD WITH THE INDIVIDUAL CONTRIBUTION FROM THIS HISTROY,
+C  FILL ARRAY SD WITH THE INDIVIDUAL CONTRIBUTION FROM THIS HISTORY,
 C  IN EACH CELL THAT HAS BEEN TOUCHED BY THIS HISTORY
         DO ICO = 1,NCLMT
           IR = ICLMT(ICO)
@@ -286,9 +293,10 @@ c  tally is for sum over species
             VECTOR(ICO)=0.
  1024     CONTINUE
           DO 1025 IS=1,IGF
-          DO 1025 ICO=1,NWLMT
+           DO ICO=1,NWLMT
             IR = IWLMT(ICO)
             VECTOR(ICO)=VECTOR(ICO)+ESTIMS(INP+IS,IR)
+           END DO
  1025     CONTINUE
         ENDIF
 
@@ -307,7 +315,7 @@ c
  1021   CONTINUE
         SGMWS(IC)=SGMWS(IC)+SD1S*SD1S
  1022 CONTINUE
-c  sigma  now is cumulated squared contribution after flight no. n
+c  sigma now is cumulated squared contribution after flight no. n
 C
  1030 CONTINUE
 C
@@ -357,28 +365,34 @@ C
             NSYM=NP2
             NSYH=(NSYM-1)/2
             DO 1033 IG=IGI,IGE
-            DO 1033 IR=1,NR1
-            DO 1033 IT=1,NT3
-            DO 1033 IP=1,NSYH
+             DO IR=1,NR1
+              DO IT=1,NT3
+               DO IP=1,NSYH
                   J1=IR+((IT-1)*NP2+IP-1)*NR1
                   J2=IR+((IT-1)*NP2+NSYM-IP-1)*NR1
                   SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
                   ESTIMV(INP+IG,J1)=SAV
                   ESTIMV(INP+IG,J2)=SAV
+               END DO
+              END DO
+             END DO
  1033       CONTINUE
           ENDIF
           IF (LT) THEN
             NSYM=NT3
             NSYH=(NSYM-1)/2
             DO 1034 IG=IGI,IGE
-            DO 1034 IR=1,NR1
-            DO 1034 IP=1,NP2
-            DO 1034 IT=1,NSYH
+             DO IR=1,NR1
+              DO IP=1,NP2
+               DO IT=1,NSYH
                   J1=IR+((IT-1)*NP2+IP-1)*NR1
                   J2=IR+((NSYM-IT-1)*NP2+IP-1)*NR1
                   SAV=(ESTIMV(INP+IG,J1)+ESTIMV(INP+IG,J2))*0.5
                   ESTIMV(INP+IG,J1)=SAV
                   ESTIMV(INP+IG,J2)=SAV
+               END DO
+              END DO
+             END DO
  1034       CONTINUE
           ENDIF
  1035     CONTINUE
@@ -393,9 +407,10 @@ C
               VECTRC(I,ICO)=0.
  1044       CONTINUE
             DO 1045 IS=1,IGF
-            DO 1045 ICO=1,NCLMT
+             DO ICO=1,NCLMT
               IR = ICLMT(ICO)
               VECTRC(I,ICO)=VECTRC(I,ICO)+ESTIMV(INP+IS,IR)
+             END DO
  1045       CONTINUE
           ENDIF
  1037   CONTINUE
@@ -447,7 +462,7 @@ C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1
 C           (=1, FALLS NUR EIN BEITRAG UNGLEICH 0, ODER (KUENSTLICH
 C            ERZWUNGEN) FALLS GAR KEIN BEITRAG UNGLEICH NULL)
 C  2. FALL  NEGATIVE UND POSITIVE BEITRAGE KOMMEN VOR:
-C           LT. FORMEL SIND AUCH WERTE GROESSER 1  MOEGLICH.
+C           LT. FORMEL SIND AUCH WERTE GROESSER 1 MOEGLICH.
 C
       XNM=XN-1.
       IF (XNM.LE.0.D0) RETURN
@@ -468,8 +483,9 @@ C
             VECTOR(IR)=0.
  2114     CONTINUE
           DO 2115 IS=1,IGF
-          DO 2115 IR=1,NSB
+           DO IR=1,NSB
             VECTOR(IR)=VECTOR(IR)+ESTIMV(INP+IS,IR)
+           END DO
  2115     CONTINUE
         ENDIF
 C  tally is now on vector
@@ -489,7 +505,7 @@ C
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMA(IC,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
+C RELATIVE STANDARD DEVIATION FOR CURRENT STRATUM
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA(IC,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA
@@ -528,8 +544,9 @@ c  tally for sum over species
             VECTOR(IR)=0.
  2214     CONTINUE
           DO 2215 IS=1,IGF
-          DO 2215 IR=1,NRW
+           DO IR=1,NRW
             VECTOR(IR)=VECTOR(IR)+ESTIMS(INP+IS,IR)
+           END DO
  2215     CONTINUE
         ENDIF
 
@@ -539,7 +556,7 @@ c  tally for sum over species
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMAW(IC,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION FOR CURRENT STRATUM
+C RELATIVE STANDARD DEVIATION FOR CURRENT STRATUM
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMAW(IC,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA
@@ -576,8 +593,9 @@ C
               VECTRC(I,IR)=0.
  2314       CONTINUE
             DO 2315 IS=1,IGF
-            DO 2315 IR=1,NSB
+             DO IR=1,NSB
               VECTRC(I,IR)=VECTRC(I,IR)+ESTIMV(INP+IS,IR)
+             END DO
  2315       CONTINUE
           ENDIF
  2317   CONTINUE
@@ -602,8 +620,6 @@ C
           DD12=D1*D2
           DD11=D1*D1
           DD22=D2*D2
-          DA1=ABS(D1)
-          DA2=ABS(D2)
           SG12=         SIGMAC(0,IC,IR)-DD12/XN
           SG1 =MAX(0._DP,SIGMAC(1,IC,IR)-DD11/XN)
           SG2 =MAX(0._DP,SIGMAC(2,IC,IR)-DD22/XN)
@@ -616,8 +632,6 @@ C ABSOLUTE STANDARD DEVIATION AND COVARIANCES
         D2S12=DS1*DS2
         D2S11=DS1*DS1
         D2S22=DS2*DS2
-        DSA1=ABS(DS1)
-        DSA2=ABS(DS2)
         SG12=         SGMCS(0,IC)-D2S12/XN
         SG1 =MAX(0._DP,SGMCS(1,IC)-D2S11/XN)
         SG2 =MAX(0._DP,SGMCS(2,IC)-D2S22/XN)
