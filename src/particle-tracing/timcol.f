@@ -7,12 +7,12 @@ C            THE CENSUS ARRAY
 !             RPARTC(NPRNL,1:NPARTT) --> RPARTC(1:NPARTT,NPRNL)
 !             IPARTC(NPRNL,1:MPARTT) --> IPARTC(1:MPARTT,NPRNL)
 cdr Jan 2016 : comments,  and: stop scoring census not only after total number
-cdr            of allowed census scores is reached, 
+cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
- 
+
       SUBROUTINE EIRENE_TIMCOL (PR,*,*)
 C
-C  COLLISION WITH "TIME SURFACE", FIND NEW CO-ORDINATES
+C  COLLISION WITH "TIME SURFACE", FIND NEW COORDINATES
 C  UPDATE (TIME-) SURFACE TALLIES
 C  UPDATE USER SUPPLIED SNAPSHOT ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
@@ -24,30 +24,31 @@ C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NLIM, NPARTT, NPRNL
       USE EIRMOD_COMUSR, ONLY: ISPEZ, NSNVI
-      USE EIRMOD_CESTIM, ONLY: LEOTPHT, LEOTAT, LEOTIO, LEOTML, 
-     >                         LPOTPHT, LPOTAT, LPOTIO, LPOTML, 
-     >                         LSPUMP, 
-     >                         EOTPHT, EOTAT, EOTIO, EOTML, 
-     >                         POTPHT, POTAT, POTIO, POTML, 
+      USE EIRMOD_CESTIM, ONLY: LEOTPHT, LEOTAT, LEOTIO, LEOTML,
+     >                         LPOTPHT, LPOTAT, LPOTIO, LPOTML,
+     >                         LSPUMP,
+     >                         EOTPHT, EOTAT, EOTIO, EOTML,
+     >                         POTPHT, POTAT, POTIO, POTML,
      >                         SPUMP
       USE EIRMOD_CCONA, ONLY: PI2A
       USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLTRA
       USE EIRMOD_CUPD, ONLY: NNTCLL, X00, X01, Y00, Z00, Z01
       USE EIRMOD_CGRID, ONLY: RMTOR
-      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, IPLS, ISPZ, 
-     >                         ITYP, IPERID, IPOLG, IPOLGN, IPSTT, 
+      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, IPLS, ISPZ,
+     >                         ITYP, IPERID, IPOLG, IPOLGN, IPSTT,
      >                         ISTRA, E0, LGLAST, MSURF, MSURFG,
-     >                         MASURF, MRSURF, MPSURF, MTSURF, NLSRFX, 
-     >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI, 
-     >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ, 
-     >                         WEIGHT, X0, Y0, Z0
-      USE EIRMOD_COMNNL, ONLY: IPART, IPRNLI, IPRNLS, ITMSTP, NPRNLS, 
+     >                         MASURF, MRSURF, MPSURF, MTSURF, NLSRFX,
+     >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI,
+     >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ,
+     >                         WEIGHT, X0, Y0, Z0,
+     >                         IUNOUT     
+      USE EIRMOD_COMNNL, ONLY: IPART, IPRNLI, IPRNLS, ITMSTP, NPRNLS,
      >                         NTMSTP, RPART, TIME0
       USE EIRMOD_CLGIN, ONLY: NSTSI
       USE EIRMOD_CSDVI, ONLY: LMETSPW
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: PR
       INTEGER  :: IND
       REAL(DP) :: DIST, WGHTSG
@@ -82,20 +83,20 @@ C
 C  UPDATE SNAPSHOT ESTIMATORS
       IF (NSNVI.GT.0) CALL EIRENE_UPNUSR
 C
-c-dpc
+cdpc
 CDR:  this must be generalized, towards a more general horizon
 CDR   rather than fixed horizon at 100 meters in x-y plane
       dist=sqrt(x0**2+y0**2)
       if(dist.gt.1e4) then
-        write(*,*) 'timcol: ERROR!  dist = ',dist,
+        write(iunout,*) 'timcol: ERROR!  dist = ',dist,
      1   ' (particle more than 100 m from the origin)'
-        write(*,*) 'npanu,x0,y0,z0,velx,vely,velz ',
+        write(iunout,*) 'npanu,x0,y0,z0,velx,vely,velz ',
      1   npanu,x0,y0,z0,velx,vely,velz
         weight=0.
         goto 112
       endif
-c-dpc
-C  
+cdpc
+C
 C  TOTAL NO. OF SCORES ON CENSUS
       IPRNLI=IPRNLI+1
 C  NO. OF SCORES ON CENSUS FOR PRESENT STRATUM ISTRA
@@ -115,21 +116,21 @@ cdr   if (iprnli <= nprnl) then
 
         RPART(1:NPARTT,IPRNLI)=RPSTT(1:NPARTT)
         IPART(1:MPARTT,IPRNLI)=IPSTT(1:MPARTT)
-      end if 
- 
-C  DON'T SCORE ON CENSUS ANY MORE FOR THIS STRATUM
+      end if
+
+C  DO NOT SCORE ON CENSUS ANYMORE FOR THIS STRATUM
       if (iprnls > nprnls(istra)) iprnls = nprnls(istra)
       if (iprnli > nprnl)         iprnli = nprnl
 
 C
-112   continue
+  112 continue
 
 C  DECIDE: CONTINUE OR STOP TRAJECTORY
       IF (NTMSTP.GE.0.AND.ITMSTP.GE.NTMSTP) THEN
 C
 C  DO NOT CONTINUE THIS TRACK
-C  UPDATE PARTICLE EFFLUX  ONTO TIME-SURFACE MSURF=NLIM+NSTSI
-C  UPDATE ENERGY FLUX ONTO TIME-SURFACE MSURF=NLIM+NSTSI
+C  UPDATE PARTICLE EFFLUX ONTO TIME SURFACE MSURF=NLIM+NSTSI
+C  UPDATE ENERGY FLUX ONTO TIME SURFACE MSURF=NLIM+NSTSI
 C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
@@ -156,6 +157,7 @@ cdr out ini
         ENDIF
 cdr out end
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
+c spatial resolution on time-surface is not available. MSURFG ?
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.
         RETURN 2

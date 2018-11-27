@@ -1,18 +1,18 @@
       SUBROUTINE EIRENE_OUTLST
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CCONA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CLAST
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: SMMEAN
       INTEGER :: IWR, IRCX, IREL, IRPI
 
-C  1) EFFICIENCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI 
+C  1) EFFICIENCY OF REJECTION SAMPLING IN VELOCX, VELOEL, VELOPI
       call EIRENE_leer(1)
       iwr=0
       do ircx=1,nrcxi
@@ -25,7 +25,7 @@ C  1) EFFICIENCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI
           endif
           SMMEAN=xcmean(ircx)/(ncmean(ircx)+eps60)
           CALL EIRENE_MASJ2R('IRCX, NCMEAN, SMMEAN    ',
-     .                        IRCX, NCMEAN(IRCX),SMMEAN) 
+     .                        IRCX, NCMEAN(IRCX),SMMEAN)
         endif
       enddo
       call EIRENE_leer(1)
@@ -40,7 +40,7 @@ C  1) EFFICIENCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI
           endif
           SMMEAN=xemean(irel)/(nemean(irel)+eps60)
           CALL EIRENE_MASJ2R('IREL, NEMEAN, SMMEAN    ',
-     .                        IREL, NEMEAN(IREL),SMMEAN) 
+     .                        IREL, NEMEAN(IREL),SMMEAN)
         endif
       enddo
       call EIRENE_leer(1)
@@ -55,7 +55,7 @@ C  1) EFFICIENCY OF RECECTION SAMPLING IN VELOCX, VELOEL, VELOPI
           endif
           SMMEAN=xpmean(irpi)/(npmean(irpi)+eps60)
           CALL EIRENE_MASJ2R('IRPI, NPMEAN, SMMEAN    ',
-     .                        IRPI, NPMEAN(IRPI),SMMEAN) 
+     .                        IRPI, NPMEAN(IRPI),SMMEAN)
         endif
       enddo
       call EIRENE_leer(1)

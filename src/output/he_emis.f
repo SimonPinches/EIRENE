@@ -14,13 +14,13 @@ C     AND WRITTEN ONTO TALLIES ADDV(IAD1,IAD2),... FOR STRATUM NO. IST
 C     IAD1: CONTRIBUTION LINEAR IN He   -ATOM      DENSITY
 C     IAD2: CONTRIBUTION LINEAR IN He+  -ION       DENSITY
 C     IADS: SUM OVER ALL CONTRINUTIONS
-c  
+c
 c     distinct from Ba_alpha etc, routines:
 !WZ:  The emissivity can be computed for 5 different wavelengths,
 !     controlled from calling routine over REAC1 and REAC2.
-!     No hard wired REAC, but input parameters
-!     But hard wired: read H.12, OT, from AMJUEL
-c     
+!     No hard-wired REAC, but input parameters
+!     But hard-wired: read H.12, OT, from AMJUEL
+c
 C
 C STORAGE FOR THE 3 ADDITIONAL TALLIES IAD1,IAD2 and IADS SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+3)
@@ -239,9 +239,9 @@ C   COLLAPSE DATA TO DENSITY INDEPENDENT H.2, H.8, H.11 CORONA VALUES
 C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUPLE POLYNOMAL FIT.
 CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS ASYMPTOTICS
         JEND=8
-        IF (DEF.LE.0.0) THEN 
+        IF (DEF.LE.0.0) THEN
           JEND=0
-C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEFF=DEF/(8.0*LOG(10.0)) 
+C  NORMALIZATION OF FIT COEFF. TO BE DONE,  DEFF=DEF/(8.0*LOG(10.0))
 C       ELSEIF (DEFF.GT.1.0) THEN
         ENDIF
 C
@@ -254,7 +254,7 @@ C
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
             DPL =DPL + DB(I,J)*TEI*DEJ
-150     CONTINUE
+  150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
 C
@@ -262,7 +262,7 @@ C     CHANNEL 1
 !WZ:  He emission source rate SIGADD:  PHOTONS/SEC/CM**3
 C     LINEAR IN PDENA (IONIZATION)
 
- 
+
 !WZ:  atomic neutral He: NCHAR=2,NPRT=1,NCHRG=0
 
         DO 200 IATM=1,NATMI
@@ -271,7 +271,7 @@ C     LINEAR IN PDENA (IONIZATION)
 C  RADIATIVE TRANSITION PROB.  (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD1=SIGADD1+DDA*EINSTEIN
-200     CONTINUE
+  200   CONTINUE
 C
 C     CHANNEL 2
 !WZ:  He emission source rate SIGADD:  PHOTONS/SEC/CM**3
@@ -285,12 +285,12 @@ C
 C  RADIATIVE TRANSITION PROB.  (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD2=SIGADD2+DPP*EINSTEIN
-205     CONTINUE
+  205   CONTINUE
 
 c...............................................................................
 C     to be done: contributions from atomic He ions in TEST IONS
 
-500     CONTINUE
+  500   CONTINUE
 C
 C
         SIGADD=SIGADD1+SIGADD2
@@ -306,7 +306,7 @@ cdr tbd: rausziehen hinter 1000, ist eh nur constanter faktor E_DIFF, only total
 C
         POWALF =POWALF +SIGADD *E_DIFF*VOL(NCELL)
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
 cdr at this place we know: voltal(icoarse)=sum(vol(ifine))
 
@@ -416,7 +416,7 @@ C
       ifirst=0
       return
 
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. HE_EMIS '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',

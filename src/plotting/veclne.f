@@ -33,7 +33,7 @@ C
       CHARACTER(72), INTENT(IN) :: HEAD, RUNID, TXHEAD
       CHARACTER(72), INTENT(OUT) :: TEXT1
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
- 
+
       REAL(DP) :: SCLFCX, SCLFCY, VMIN, VMAX, DX, DY, CM, FAK, BRFL,
      .          D, DIAMETER, XM, YM, VX, VY, VABS, XMIN, XMAX, YMIN,
      .          YMAX, PLFL
@@ -83,7 +83,7 @@ C  SUFFICIENT TO SEARCH ON OUTERMOST RADIAL SURFACE (BECAUSE: CONVEX)
           XMAX = MAX(XMAX,XPOL(IXXE,IP))
           YMIN = MIN(YMIN,YPOL(IXXE,IP))
           YMAX = MAX(YMAX,YPOL(IXXE,IP))
-5       CONTINUE
+    5   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.NLPOL) THEN
 C  SEARCH ON WHOLE MESH
         IXXI=MAX(1,IXXI)
@@ -99,7 +99,7 @@ C  SEARCH ON WHOLE MESH
           YMIN=MIN(YMIN,YPOL(IR,NP1),YPOL(IR,NP2))
           XMAX=MAX(XMAX,XPOL(IR,NP1),XPOL(IR,NP2))
           YMAX=MAX(YMAX,YPOL(IR,NP1),YPOL(IR,NP2))
-1       CONTINUE
+    1   CONTINUE
 C
         DO 4 IPART=1,NPPLG
           DO 2 IP=NPOINT(1,IPART),NPOINT(2,IPART)
@@ -108,15 +108,15 @@ C
             YMIN=MIN(YMIN,YPOL(IXXI,IP))
             XMAX=MAX(XMAX,XPOL(IXXI,IP))
             YMAX=MAX(YMAX,YPOL(IXXI,IP))
-2         CONTINUE
+    2     CONTINUE
           DO 3 IP=NPOINT(1,IPART),NPOINT(2,IPART)
             IF (IP.LT.IYYI.OR.IP.GT.IYYE) GOTO 3
             XMIN=MIN(XMIN,XPOL(IXXE,IP))
             YMIN=MIN(YMIN,YPOL(IXXE,IP))
             XMAX=MAX(XMAX,XPOL(IXXE,IP))
             YMAX=MAX(YMAX,YPOL(IXXE,IP))
-3         CONTINUE
-4       CONTINUE
+    3     CONTINUE
+    4   CONTINUE
       ELSEIF (LEVGEO.EQ.4) THEN
 C  SEARCH ON WHOLE MESH
         DO I=1,NRKNOT
@@ -144,7 +144,7 @@ cdr  use FZJ proprietary GR plot software
      .             REAL(XMAX,KIND(1.E0)),REAL(YMAX,KIND(1.E0)))
       CALL GRAXS (7,'X=3,Y=3',6,'R (CM)',6,'Z (CM)')
 C
-C  SCALE FACTORS: USER CO-ORDINATES TO CM:
+C  SCALE FACTORS: USER COORDINATES TO CM:
 C  X-DIRECTION:
       SCLFCX=((10.+DX*FAK)-10.)/(XMAX-XMIN)
 C  Y-DIRECTION:
@@ -172,35 +172,39 @@ C
             CALL GRDRW(REAL(XPOL(IR,IP),KIND(1.E0)),
      .                 REAL(YPOL(IR,IP),KIND(1.E0)))
           END DO
-7       CONTINUE
+    7   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.NLPOL) THEN
         NP1=MAX(IYYI,NPOINT(1,1))
         NP2=MIN(IYYE,NPOINT(2,NPPLG))
         CALL GRJMP(REAL(XPOL(IXXI,NP1),KIND(1.E0)),
      .             REAL(YPOL(IXXI,NP1),KIND(1.E0)))
           DO 10 IR=IXXI+1,IXXE
-10          CALL GRDRW (REAL(XPOL(IR,NP1),KIND(1.E0)),
+            CALL GRDRW (REAL(XPOL(IR,NP1),KIND(1.E0)),
      .                  REAL(YPOL(IR,NP1),KIND(1.E0)))
+   10     CONTINUE
 C
         CALL GRJMP (REAL(XPOL(IXXI,NP2),KIND(1.E0)),
      .              REAL(YPOL(IXXI,NP2),KIND(1.E0)))
         DO 11 IR=IXXI+1,IXXE
-11        CALL GRDRW (REAL(XPOL(IR,NP2),KIND(1.E0)),
+          CALL GRDRW (REAL(XPOL(IR,NP2),KIND(1.E0)),
      .                REAL(YPOL(IR,NP2),KIND(1.E0)))
+   11   CONTINUE
         DO 15 I=1,NPPLG
           NP1=MAX(IYYI,NPOINT(1,I))
           NP2=MIN(IYYE,NPOINT(2,I))
           CALL GRJMP (REAL(XPOL(IXXI,NP1),KIND(1.E0)),
      .                REAL(YPOL(IXXI,NP1),KIND(1.E0)))
           DO 12 IP=NP1,NP2
-12          CALL GRDRW (REAL(XPOL(IXXI,IP),KIND(1.E0)),
+            CALL GRDRW (REAL(XPOL(IXXI,IP),KIND(1.E0)),
      .                  REAL(YPOL(IXXI,IP),KIND(1.E0)))
+   12     CONTINUE
           CALL GRJMP (REAL(XPOL(IXXE,NPOINT(1,I)),KIND(1.E0)),
      .                REAL(YPOL(IXXE,NPOINT(1,I)),KIND(1.E0)))
           DO 13 IP=NP1,NP2
-13          CALL GRDRW (REAL(XPOL(IXXE,IP),KIND(1.E0)),
+            CALL GRDRW (REAL(XPOL(IXXE,IP),KIND(1.E0)),
      .                  REAL(YPOL(IXXE,IP),KIND(1.E0)))
-15      CONTINUE
+   13     CONTINUE
+   15   CONTINUE
       ELSEIF (LEVGEO.EQ.4) THEN
         DO ITR=1,NTRII
 c   .true.or. .... added, to plot all triangles, not only those with no neighbor
@@ -234,15 +238,16 @@ C 1. SEARCH FOR MINIMA AND MAXIMA
           VMIN=1.D60
           VMAX=-1.D60
           DO 900 IR=IXXI,IXXE-1
-          DO 900 IP=IYYI,IYYE-1
+           DO IP=IYYI,IYYE-1
             IRAD = IR + (IP-1)*NR1ST
             VABS = SQRT(AORIG(IRAD)**2 + BORIG(IRAD)**2)
             VMIN = MIN(VMIN,VABS)
             VMAX = MAX(VMAX,VABS)
-900       CONTINUE
+           END DO
+  900     CONTINUE
 C 2. SCALING
           DO 1100 IR=IXXI,IXXE-1
-          DO 1100 IP=IXXI,IYYE-1
+           DO IP=IXXI,IYYE-1
             IRAD = IR + (IP-1)*NR1ST
             VX = (AORIG(IRAD) / VMAX)
             VY = (BORIG(IRAD) / VMAX)
@@ -255,7 +260,8 @@ C 3. PLOT VECTOR
             call grarrw(REAL(xm,KIND(1.E0)),REAL(ym,KIND(1.E0)),
      .                  REAL(xm+vx,KIND(1.E0)),REAL(ym+vy,KIND(1.E0)),
      .                  REAL(PLFL,KIND(1.E0)),REAL(BRFL,KIND(1.E0)),1)
-1100      CONTINUE
+           END DO
+ 1100     CONTINUE
 C
       ELSEIF ((LEVGEO.EQ.2.AND.NLPOL).OR.
      .         LEVGEO.EQ.3) THEN
@@ -265,7 +271,7 @@ C 1. SEARCH FOR MINIMA AND MAXIMA
           VMAX=-1.D60
           DIAMETER=1.D60
           DO 901 IR=IXXI,IXXE-1
-          DO 901 IP=IXXI,IYYE-1
+           DO IP=IXXI,IYYE-1
             IRAD = IR + (IP-1)*NR1ST
             D=SQRT((XPOL(IR,IP)-XPOL(IR+1,IP+1))**2+
      .             (YPOL(IR,IP)-YPOL(IR+1,IP+1))**2)
@@ -285,7 +291,8 @@ C 3. PLOT VECTOR
             call grarrw(REAL(xm,KIND(1.E0)),REAL(ym,KIND(1.E0)),
      .                  REAL(xm+vx,KIND(1.E0)),REAL(ym+vy,KIND(1.E0)),
      .                  REAL(PLFL,KIND(1.E0)),REAL(BRFL,KIND(1.E0)),1)
-901       CONTINUE
+           END DO
+  901     CONTINUE
 C
       ELSEIF (LEVGEO.EQ.4) THEN
 C
@@ -296,7 +303,7 @@ C 1. SEARCH FOR MINIMA AND MAXIMA
             VABS = SQRT(AORIG(IR)**2 + BORIG(IR)**2)
             VMIN = MIN(VMIN,VABS)
             VMAX = MAX(VMAX,VABS)
-1500      CONTINUE
+ 1500     CONTINUE
 C 2. SCALING
           DO 1700 IR=1,NTRII
             VX = 10 * (AORIG(IR) / VMAX)
@@ -310,10 +317,10 @@ C 3. PLOT VECTOR
             call grarrw(REAL(xm,KIND(1.E0)),REAL(ym,KIND(1.E0)),
      .                  REAL(xm+vx,KIND(1.E0)),REAL(ym+vy,KIND(1.E0)),
      .                  REAL(PLFL,KIND(1.E0)),REAL(BRFL,KIND(1.E0)),1)
-1700      CONTINUE
+ 1700     CONTINUE
       ENDIF
 C
-2000  CONTINUE
+ 2000 CONTINUE
 C
 C     WRITE TEXT, MAXIMUM AND MINIMUM VALUE ONTO THE PLOT
 C

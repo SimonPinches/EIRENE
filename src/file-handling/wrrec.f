@@ -1,43 +1,35 @@
-C
+C> \brief Evaluate EIRENE recommendations for a next run of the same
+C>        model
+C> 
+C> 1. find NRECOM(istra): recommended number of test particles for next MC cycle.
+C> 2. find RATIO(istra) : ratio between used and recommended no. of particles.
+C>     (the procedure should approach RATIO approx 1.0, after cycling.
+C> 3. write NRECOM, RATIO and XMCT on stream 14.
+C>
+C> At entry rrec:
+C> - read NRECOM, RATIO, XMCT from stream 14.
       SUBROUTINE EIRENE_WRREC
 C
-C  EVALUATE EIRENE RECOMMENDATIONS FOR A NEXT RUN OF THE SAME MODEL
-C 
-C   find NRECOM(istra):  recommended number of test particles for next MC cycle.
-c   find RATIO(istra) :  ratio between used and recommended no. of particles.
-c   (the procedure should approach RATIO approx 1.0, after cycling. 
-c
-c   write NRECOM and RATIO on stream 14.
-c
-c  (at entry rrec:  
-c    read NRECOM and RATIO from stream 14.  
-C
-C
-cmr: Aug.18:
-C XMCT need to be used or stored here, somehow, somewhere...
-C not stored in FT 11 any more.
 cdr:  Aug 18:  xmct is not used here at all. Instead CPUFAC is just somehow
 cdr            infered by other considerations.
 C
-C XMCT need to be used or stored here, somehow, somewhere...
-C not stored in FT 11 any more.
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CAI
-      USE EIRMOD_CCONA
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMSOU
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
+      USE EIRMOD_CAI, ONLY: NRECOM, RATIO, XMCT
+      USE EIRMOD_CCONA, ONLY: EPS60
+      USE EIRMOD_CTRCEI, ONLY: TRCFLE, TRCREC
+      USE EIRMOD_COMSOU, ONLY: NPTS, NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_COUTAU
- 
+      USE EIRMOD_COUTAU, ONLY: FLXFAC, FLUXT, WTOTA, WTOTI, WTOTM,
+     >                         WTOTP, XMCP
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: WSUM, FTOT, XNSUM
       INTEGER :: NREQ, ISTRA
       REAL(DP) :: WTOTT(NSTRA),WMEAN(NSTRA),WREC(NSTRA),XNEXP(NSTRA),
      .            CPUFAC(NSTRA)
- 
+
       OPEN (UNIT=14+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 14+ifoff
 C
@@ -60,7 +52,7 @@ C
         WSUM=WSUM+WTOTT(ISTRA)
         NREQ=NREQ+NPTS(ISTRA)
         FTOT=FTOT+FLUXT(ISTRA)
-100   CONTINUE
+  100 CONTINUE
 C
 C  PROPORTIONAL ALLOCATION: RECOMMENDED REL. WEIGHT PER STRATUM: WREC
 C                           EXPECTED REL. NO. OF PARTICLES NEEDED: XNEXP
@@ -85,7 +77,7 @@ cdr  instead of cpufac one should use XMCT(istra) information
         CPUFAC(ISTRA)=XMCP(ISTRA)/(DBLE(NPTS(ISTRA))+EPS60)
         XNEXP(ISTRA)=XNEXP(ISTRA)/(CPUFAC(ISTRA)+EPS60)
         XNSUM=XNSUM+XNEXP(ISTRA)
-200   CONTINUE
+  200 CONTINUE
       DO 300 ISTRA=1,NSTRAI
         RATIO(ISTRA)=0.
         IF (XMCP(ISTRA).LE.0.D0) GOTO 300
@@ -96,11 +88,12 @@ C  CONVERT XNEXP TO AN INTEGER
         IF (XNEXP(ISTRA)-DBLE(NRECOM(ISTRA)).GT.0.5)
      .      NRECOM(ISTRA)=NRECOM(ISTRA)+1
         RATIO(ISTRA)=WREC(ISTRA)/(WTOTT(ISTRA)/(WSUM+EPS60)+EPS60)
-300   CONTINUE
+  300 CONTINUE
 C
-350   CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 14: RATIO,NRECOM '
+  350 CONTINUE
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 14: RATIO, NRECOM, XMCT'
       WRITE (14+ifoff) RATIO,NRECOM
+      WRITE (14+ifoff) XMCT
 C
       IF (.NOT.TRCREC.OR.NSTRAI.EQ.1) GOTO 1000
       CALL EIRENE_PAGE
@@ -124,9 +117,9 @@ C
       DO 400 ISTRA=1,NSTRAI
         WRITE (iunout,'(1X,I2,8X,I6,4X,I6,5X,1P,E12.4)')
      .                ISTRA,NPTS(ISTRA),NRECOM(ISTRA),RATIO(ISTRA)
-400   CONTINUE
+  400 CONTINUE
       CALL EIRENE_LEER(2)
-1000  CONTINUE
+ 1000 CONTINUE
 C
 C  STRATIFIED SOURCE SAMPLING ASSESSMENT FINISHED
 C
@@ -140,8 +133,9 @@ C
 C
       OPEN (UNIT=14+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 14+ifoff
-      IF (TRCFLE) WRITE (iunout,*) 'READ 14: RATIO,NRECOM '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 14: RATIO, NRECOM, XMCT'
       READ (14+ifoff) RATIO,NRECOM
+      READ (14+ifoff) XMCT
 C
       RETURN
       END

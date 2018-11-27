@@ -50,17 +50,17 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
       USE EIRMOD_CTETRA
- 
+
       IMPLICIT NONE
 C
       TYPE(CELL_ELEM), POINTER :: CUR
- 
+
       INTEGER, INTENT(IN) :: IBLD, ICURV, N1DIM
       INTEGER, INTENT(OUT) :: IERR
       REAL(DP), INTENT(IN) :: AORIG(*)
       REAL(DP), INTENT(OUT) :: YWERT(N1DIM,*)
       LOGICAL, INTENT(IN) :: LOGL
- 
+
       REAL(DP) :: TEILA(4), TEILWERT(4), VOLSUM(NCOORD)
       REAL(DP) :: IY, JX, KY, LX, MY
       REAL(DP) :: AX, AY, FX,
@@ -72,12 +72,12 @@ C
      .            dist8, summedist
       REAL(DP), ALLOCATABLE, SAVE :: XSTGRD(:)
       INTEGER :: ZUORD(NKNOT,0:50)
-      INTEGER :: K, I, J, IT, IR, IP, 
-     .           IRD, IPART, 
+      INTEGER :: K, I, J, IT, IR, IP,
+     .           IRD, IPART,
      .           IC, IN, IRM1, IPM1, ITM1,
      .           IN1, IN2, IN3, IN4, IN5, IN6, IN7, IN8, INTA
 C
- 
+
       IF ((LEVGEO <= 3) .AND. .NOT.ALLOCATED(XSTGRD)) THEN
         ALLOCATE (XSTGRD(NRAD))
         WHERE (NSTGRD > 0)
@@ -86,7 +86,7 @@ C
           XSTGRD = 1._DP
         END WHERE
       END IF
- 
+
       IERR=0
 C   X-Z PLOT ON Y=CONST PLANE
       IF ((LEVGEO.EQ.1.OR.LEVGEO.EQ.2).AND.LPPOL3(IBLD)) THEN
@@ -100,7 +100,7 @@ C   WERTEBEARBEITUNG
             DO 3101,J=1,4
               TEILA(J) = 0.
               TEILWERT(J) = 0.
-3101        CONTINUE
+ 3101       CONTINUE
 C  UNTEN RECHTS
             IF ((IR .NE. 1) .AND. (IT .NE. 1)) THEN
 C             AKTUELLER PUNKT LIEGT NICHT AUF DEM 1. POLYGON
@@ -162,10 +162,10 @@ C
             YWERT(IR,IT) = 0.
             DO 3103,J=1,4
               YWERT(IR,IT) = YWERT(IR,IT) + TEILA(J)/AGES*TEILWERT(J)
-3103        CONTINUE
+ 3103       CONTINUE
             IF (LOGL) YWERT(IR,IT)=LOG10(MAX(1.E-48_DP,YWERT(IR,IT)))
-3100      CONTINUE
-1100    CONTINUE
+ 3100     CONTINUE
+ 1100   CONTINUE
 C
 C   X-Y PLOT ON Z=CONST PLANE
       ELSEIF (LEVGEO.EQ.1.AND.LPTOR3(IBLD)) THEN
@@ -179,7 +179,7 @@ C   WERTEBEARBEITUNG
             DO 3111,J=1,4
               TEILA(J) = 0.
               TEILWERT(J) = 0.
-3111        CONTINUE
+ 3111       CONTINUE
 C           UNTEN RECHTS
             IF ((IR .NE. 1) .AND. (IP .NE. 1)) THEN
 C             AKTUELLER PUNKT LIEGT NICHT AUF DEM 1. POLYGON
@@ -241,10 +241,10 @@ C
             YWERT(IR,IP) = 0.
             DO 3113,J=1,4
               YWERT(IR,IP) = YWERT(IR,IP) + TEILA(J)/AGES*TEILWERT(J)
-3113        CONTINUE
+ 3113       CONTINUE
             IF (LOGL) YWERT(IR,IP)=LOG10(MAX(1.E-48_DP,YWERT(IR,IP)))
-3110      CONTINUE
-1110    CONTINUE
+ 3110     CONTINUE
+ 1110   CONTINUE
 
 C   Y-Z PLOT ON X=CONST PLANE
       ELSEIF (LEVGEO.EQ.1.AND.LPRAD3(IBLD)) THEN
@@ -259,7 +259,7 @@ C   WERTEBEARBEITUNG
             DO 3121,J=1,4
               TEILA(J) = 0.
               TEILWERT(J) = 0.
-3121        CONTINUE
+ 3121       CONTINUE
 C  UNTEN RECHTS
             IF ((IP .NE. 1) .AND. (IT .NE. 1)) THEN
 C             AKTUELLER PUNKT LIEGT NICHT AUF DEM 1. POLYGON
@@ -321,10 +321,10 @@ C
             YWERT(IP,IT) = 0.
             DO 3123,J=1,4
               YWERT(IP,IT) = YWERT(IP,IT) + TEILA(J)/AGES*TEILWERT(J)
-3123        CONTINUE
+ 3123       CONTINUE
             IF (LOGL) YWERT(IP,IT)=LOG10(MAX(1.E-48_DP,YWERT(IP,IT)))
-3120      CONTINUE
-1120    CONTINUE
+ 3120     CONTINUE
+ 1120   CONTINUE
 C
 C  X-Y-Z PLOT (CUBE)
       ELSEIF (LEVGEO.EQ.1.AND.NLTRZ
@@ -414,7 +414,7 @@ c berechnung der seiten
      .              dist2*vorig(ir-1,ip,1)   +
      .              dist3*vorig(ir,ip-1,1)   +
      .              dist4*vorig(ir,ip,1))/summedist
- 
+
                irm1=ir-1
                ipm1=ip-1
                it=nt3rd-1
@@ -459,7 +459,7 @@ c berechnung der seiten
      .              dist2*vorig(ir-1,1,it)   +
      .              dist3*vorig(ir,1,it-1)   +
      .              dist4*vorig(ir,1,it))/summedist
- 
+
                irm1=ir-1
                ip=np2nd-1
                itm1=it-1
@@ -504,7 +504,7 @@ c berechnung der seiten
      .              dist2*vorig(1,ip-1,it)   +
      .              dist3*vorig(1,ip,it-1)   +
      .              dist4*vorig(1,ip,it))/summedist
- 
+
                ir=nr1st-1
                ipm1=ip-1
                itm1=it-1
@@ -539,7 +539,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,1,it) = (dist1*vorig(1,1,it-1) +
      .           dist2*vorig(1,1,it))/summedist
- 
+
             ir=nr1st-1
             ip=1
             itm1=it-1
@@ -550,7 +550,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,1,it) = (dist1*vorig(nr1st-1,1,it-1) +
      .           dist2*vorig(nr1st-1,1,it))/summedist
- 
+
             ir=1
             ip=np2nd-1
             itm1=it-1
@@ -561,7 +561,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,np2nd,it) = (dist1*vorig(1,np2nd-1,it-1) +
      .           dist2*vorig(1,np2nd-1,it))/summedist
- 
+
             ir=nr1st-1
             ip=np2nd-1
             itm1=it-1
@@ -574,9 +574,9 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,np2nd,it) = (dist1*vorig(nr1st-1,np2nd-1,it-1) +
      .           dist2*vorig(nr1st-1,np2nd-1,it))/summedist
- 
+
          enddo
- 
+
          do ir=2,nr1st-1
             irm1=ir-1
             ip=1
@@ -588,7 +588,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,1,1) = (dist1*vorig(ir-1,1,1) +
      .           dist2*vorig(ir,1,1))/summedist
- 
+
             irm1=ir-1
             ip=1
             it=nt3rd-1
@@ -599,7 +599,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,1,nt3rd) = (dist1*vorig(ir-1,1,nt3rd-1) +
      .           dist2*vorig(ir,1,nt3rd-1))/summedist
- 
+
             irm1=ir-1
             ip=np2nd-1
             it=1
@@ -610,7 +610,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,np2nd,1) = (dist1*vorig(ir-1,np2nd-1,1) +
      .           dist2*vorig(ir,np2nd-1,1))/summedist
- 
+
             irm1=ir-1
             ip=np2nd-1
             it=nt3rd-1
@@ -623,9 +623,9 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(ir,np2nd,nt3rd) = (dist1*vorig(ir-1,np2nd-1,nt3rd-1) +
      .           dist2*vorig(ir,np2nd-1,nt3rd-1))/summedist
- 
+
          enddo
- 
+
          do ip=2,np2nd-1
             ir=1
             ipm1=ip-1
@@ -637,7 +637,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,ip,1) = (dist1*vorig(1,ip-1,1) +
      .           dist2*vorig(1,ip,1))/summedist
- 
+
             ir=1
             ipm1=ip-1
             it=nt3rd-1
@@ -648,7 +648,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(1,ip,nt3rd) = (dist1*vorig(1,ip-1,nt3rd-1) +
      .           dist2*vorig(1,ip,nt3rd-1))/summedist
- 
+
             ir=nr1st-1
             ipm1=ip-1
             it=1
@@ -659,7 +659,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,ip,1) = (dist1*vorig(nr1st-1,ip-1,1) +
      .           dist2*vorig(nr1st-1,ip,1))/summedist
- 
+
             ir=nr1st-1
             ipm1=ip-1
             it=nt3rd-1
@@ -672,7 +672,7 @@ c berechnung der kanten
             summedist = dist1+dist2+eps60
             value(nr1st,ip,nt3rd) = (dist1*vorig(nr1st-1,ip-1,nt3rd-1) +
      .           dist2*vorig(nr1st-1,ip,nt3rd-1))/summedist
- 
+
          enddo
 c berechnung der ecken
          in1=1+((1-1)+(1-1)*NP2T3)*NR1P2
@@ -702,7 +702,7 @@ c  fertig, zurueck auf ywert
                enddo
             enddo
          enddo
- 
+
       ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.LPTOR3(IBLD)) THEN
 C
         IT=1
@@ -727,9 +727,9 @@ C
               END DO
               YWERT(IR,IP) = YWERT(IR,IP) / (AGES+EPS60)
               IF (LOGL) YWERT(IR,IP)=LOG10(MAX(1.E-48_DP,YWERT(IR,IP)))
-30          CONTINUE
-20        CONTINUE
-10      CONTINUE
+   30       CONTINUE
+   20     CONTINUE
+   10   CONTINUE
 C
       ELSEIF ((LEVGEO.EQ.4.AND.LPTOR3(IBLD)) .OR.
      .        (LEVGEO.EQ.5.AND.LRPSCUT)) THEN
@@ -739,14 +739,14 @@ C
           YWERT(I,1) = 0.
           DO 51 J=0,20
             ZUORD(I,J) = 0
-51        CONTINUE
-41      CONTINUE
+   51     CONTINUE
+   41   CONTINUE
         DO 40 J=1,NTRII
           DO 50 I=1,3
             ZUORD(NECKE(I,J),0) = ZUORD(NECKE(I,J),0) + 1
             ZUORD(NECKE(I,J),ZUORD(NECKE(I,J),0)) = J
-50        CONTINUE
-40      CONTINUE
+   50     CONTINUE
+   40   CONTINUE
         DO 60 I=1,NRKNOT
           GESA = 0
           DO 70 J=1,ZUORD(I,0)
@@ -755,7 +755,7 @@ C
      .                      (YTRIAN(I)-YCOM(K))**2)
             GESA = GESA + DIST
             YWERT(I,1) = YWERT(I,1) + DIST * AORIG(K)
-70        CONTINUE
+   70     CONTINUE
           IF (GESA .NE. 0) THEN
             YWERT(I,1) = YWERT(I,1)/GESA
           ELSE
@@ -763,7 +763,7 @@ C
             YWERT(I,1) = YWERT(I,1)
           ENDIF
           IF (LOGL) YWERT(I,1)=LOG10(MAX(1.E-48_DP,YWERT(I,1)))
-60      CONTINUE
+   60   CONTINUE
 C
 C
       ELSEIF (LEVGEO.EQ.5.AND..NOT.LRPSCUT) THEN

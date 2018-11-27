@@ -10,7 +10,7 @@ c  called from routine plasma.f, indpro=5 option
 c  input:  indx  : indicates which input tally (e.g. Te, ni, vx, etc...)
 c          provac: eirene default vacuum value (e.g. dvac, tvac, etc...)
 c          N     : N=NSURF, standard grid without additional cell region
-C 
+C
 C  EXAMPLE:
 C     P0 : CENTRAL VALUE
 C     P1 : STARTING RADIUS FOR POLYNOMIAL
@@ -29,6 +29,6 @@ C
       INTEGER, INTENT(IN) :: INDX, N
 
       PRO(1:N)=0.0
- 
+
       RETURN
       END

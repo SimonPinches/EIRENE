@@ -33,51 +33,51 @@ C
 C
       READ (IUNIN,'(A80)') ZEILE
       READ (IUNIN,'(3I6)') NADMOD,NASMOD,NORMOD
- 
+
       DO I=1,NADMOD
         READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
- 
+
         SELECT CASE(IPUNKT)
- 
+
         CASE DEFAULT
            WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
            WRITE (iunout,*) 'INPUT LINE READING'
            WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
            WRITE (iunout,*) ' IS IGNORED '
- 
+
         CASE (1)
            P1(1,NRS)=XCOOR
            P1(2,NRS)=YCOOR
            P1(3,NRS)=ZCOOR
- 
+
         CASE (2)
            P2(1,NRS)=XCOOR
            P2(2,NRS)=YCOOR
            P2(3,NRS)=ZCOOR
- 
+
         CASE (3)
            P3(1,NRS)=XCOOR
            P3(2,NRS)=YCOOR
            P3(3,NRS)=ZCOOR
- 
+
         CASE (4)
            P4(1,NRS)=XCOOR
            P4(2,NRS)=YCOOR
            P4(3,NRS)=ZCOOR
- 
+
         CASE (5)
            P5(1,NRS)=XCOOR
            P5(2,NRS)=YCOOR
            P5(3,NRS)=ZCOOR
- 
+
         CASE (6)
            P6(1,NRS)=XCOOR
            P6(2,NRS)=YCOOR
            P6(3,NRS)=ZCOOR
- 
+
         END SELECT
       ENDDO
- 
+
       DO I=1,NASMOD
         READ (IUNIN,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
         IF (IPUNKT.EQ.1) THEN
@@ -93,7 +93,7 @@ C
           WRITE (iunout,*) ' IS IGNORED '
         ENDIF
       ENDDO
- 
+
       DO I = 1, NORMOD
         READ (IUNIN,'(5I6)') IDIR,IR,IP
         IF (IDIR == 1) THEN

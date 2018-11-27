@@ -7,9 +7,9 @@ C   L.DEVROYE, "NON UNIFORM RANDOM VARIATE GENERATION", SPRINGER
 C   1986, P 568
 C
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP) :: D(4)
       REAL(DP), INTENT(IN) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3,
      .                        X4, Y4, Z4

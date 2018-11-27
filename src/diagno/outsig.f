@@ -3,7 +3,7 @@ c              plot of spectra vs. energy /wavelength: conditional on plspec
 C
 C*DK OUTSIG
       SUBROUTINE EIRENE_OUTSIG(ENSAVE,L_CHOR)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -15,12 +15,12 @@ C*DK OUTSIG
       USE EIRMOD_CTEXT
       USE EIRMOD_PHOTON
       USE EIRMOD_CPLMSK
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: ENSAVE(NCHOR,NCHEN)
       LOGICAL, INTENT(IN) :: L_CHOR(NCHOR)
- 
+
       REAL(DP) :: XPLEN(NCHEN)
       REAL(DP) :: DUMFFD(NCHEN),WLDUMFFD(NCHEN),
      .            DELENE(NCHEN),DELWL(NCHEN),
@@ -42,10 +42,10 @@ C
 
       IF (.NOT.PLSPEC) GOTO 1
 
-CDR  PREPARE SOME STUFF FOR PROPRIETARY GR-GRPAHICS SOFTWARE.
+CDR  PREPARE SOME STUFF FOR PROPRIETARY GR-GRAPHICS SOFTWARE.
 C
 C  NULLPUNKT AUF DEM PAPIER
- 
+
       X0PL=10.
       Y0PL=3.
 C  ACHSENLAENGEN
@@ -72,8 +72,8 @@ C  MACHE GRADE GRENZEN, X-ACHSE (Y ACHSE, NUR WENN TALZMI=TALZMA=666.)
 C  NEW FRAME FOR EACH PICTURE IN PLTTLY
       L_SAME=.FALSE.
 
-1     CONTINUE
- 
+    1 CONTINUE
+
       DO 100  ICHORI=1,NCHORI
         IF (.NOT.L_CHOR(ICHORI)) GOTO 100
 C
@@ -103,8 +103,8 @@ C
           TXHEAD(1:44) =
      .      'DETECTOR SIGNALS VIA SPECTRA ALONG LOS'
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
-          CALL
-     .  EIRENE_HEADNG('He emission SIGNAL: #/S/CM2/STERAD  ',33)
+          CALL EIRENE_HEADNG
+     .     ('He emission SIGNAL: #/S/CM2/STERAD  ',33)
           TXHEAD(1:33) =
      .      'He emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
@@ -128,20 +128,20 @@ C
      .               XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI))
         DO 30 I=1,NCHNI
           ENERGY(I)=ENSAVE(ICHORI,I)
-30      CONTINUE
+   30   CONTINUE
 C...................................................
-C  ENERGY RESOLVED CX SPECTRA, ATOMS.  100 -- 199
+C  ENERGY-RESOLVED CX SPECTRA, ATOMS.  100 -- 199
 C...................................................
         IF ((NCHTAL(ICHORI).EQ.1) .OR. (NCHTAL(ICHORI).EQ.4)) THEN
 
 CDR  nchtal=4 is an unfinished option (spectra estimated directly from
 CDR           Monte Carlo trajectories. Currently disabled in SGNAL.F
-cdr           So at this point: NCHTAL=1, CX energy resolved spectra.
+cdr           So at this point: NCHTAL=1, CX energy-resolved spectra.
 
           IF (NSPSPZ(ICHORI).EQ.0) THEN
             TEXTS(1)=TEXTSS
           ENDIF
- 
+
           IF (NCHTAL(ICHORI).EQ.4) THEN
             DO I=2,NCHNI-1
               DEL1=ENERGY(I+1)-ENERGY(I)
@@ -156,7 +156,7 @@ C  FIRST INTERVAL (HALF SIZE)
 C  LAST INTERVAL (HALF SIZE)
 !pb           DELENE(NCHNI)=0.5*(ENERGY(NCHNI)-ENERGY(NCHNI-1))
               DELENE(NCHNI)=ENERGY(NCHNI)-ENERGY(NCHNI-1)
- 
+
             ELSE
               DELENE(1) = 0._DP
             END IF
@@ -169,9 +169,9 @@ C
             DUMFFD(I)=MAX(1.E-10_DP,AH)
             IF (NCHTAL(ICHORI).EQ.4) SUM=SUM+AH*DELENE(I)
             XPLEN(I)=ENERGY(I)
-70        CONTINUE
-c   printing:  conditional on prspec          
-          IF (PRSPEC) THEN 
+   70     CONTINUE
+c   printing:  conditional on prspec
+          IF (PRSPEC) THEN
             CALL EIRENE_MASRR2('ENERGY,CXFLUX         ',
      .                          ENERGY,DUMFFD,NCHNI)
             IF (NCHTAL(ICHORI).EQ.4) THEN
@@ -190,10 +190,10 @@ c   printing:  conditional on prspec
           ENDIF
 C
 C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
-c   plotting:  conditional on plspec 
+c   plotting:  conditional on plspec
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
-C  INITALIZE NEW PICTURE
+C  INITIALIZE NEW PICTURE
             IF (NSPNEW(ICHORI).EQ.1) THEN
               IF (NSPSCL(ICHORI).EQ.0) THEN
                 LOGX=.FALSE.
@@ -231,7 +231,7 @@ C  PLOT
      .           1,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
      .           LSDVI,XMI,XMA,YMNLG2,YMXLG2,LPLOT2,.TRUE.,IERR,
      .           NCHNI,NCHNI,L_SAME)
-          ENDIF  ! CX ENERGY RESOLVED PLOTS DONE.
+          ENDIF  ! CX ENERGY-RESOLVED PLOTS DONE.
 C
           TEXTS(1)=TSAFE
 C..............................................
@@ -242,7 +242,7 @@ C
           DUMTIL=FUFFER(ICHORI,1)
           CALL EIRENE_MASR1('H emiss ',DUMTIL)
           CALL EIRENE_LEER(2)
- 
+
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
 C
           DUMTIL=FUFFER(ICHORI,1)
@@ -253,11 +253,11 @@ C...............................................
 C  PHOTONS, SPECTRALLY RESOLVED SIDE ON SPECTRA.  300-- 399
 C...............................................
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
- 
+
           IF (NSPSPZ(ICHORI).EQ.0) THEN
             TEXTS(1)=TEXTSS
           ENDIF
- 
+
           DO I=2,NCHNI-1
             DEL1=ENERGY(I+1)-ENERGY(I)
             DEL2=ENERGY(I)-ENERGY(I-1)
@@ -268,11 +268,11 @@ C  FIRST INTERVAL (HALF SIZE)
             DELENE(1)=0.5*(ENERGY(2)-ENERGY(1))
 C  LAST INTERVAL (HALF SIZE)
             DELENE(NCHNI)=0.5*(ENERGY(NCHNI)-ENERGY(NCHNI-1))
- 
+
           ELSE
             DELENE(1) = 0._DP
           END IF
- 
+
 C  INTEGRATE SPECTRA, IN ENERGY PICTURE: SUM
 C  SET ORDINATES, FOR PLOT AND PRINTOUT: DUMFFD
           SUM=0._DP
@@ -281,10 +281,10 @@ C  SET ORDINATES, FOR PLOT AND PRINTOUT: DUMFFD
             DUMFFD(NCHNI-I+1)=MAX(1.E-30_DP,AH)
             SUM=SUM+AH*DELENE(I)
 c           write (iunout,*) 'outsig ',delene(i),energy(i),AH,Sum
-310       CONTINUE
- 
+  310     CONTINUE
+
 C  CONVERT FROM ENERGY TO WAVELENGTH
- 
+
 C  1.) INVERT SCALE, FOR CONVERSION TO WAVELENGTH:
           DEL_HELP=DELENE
           DO I=1,NCHNI
@@ -297,8 +297,8 @@ C  2.)  CONVERT FROM EV TO NM
      .            WLSHFT=HPCL/ESHIFT(ICHORI)*1.D7
           DO 370 I=1,NCHNI
             XPLEN(NCHNI-I+1)=HPCL/ENERGY(I)*1.D7-WLSHFT
-370       CONTINUE
- 
+  370     CONTINUE
+
           DO I=2,NCHNI-1
             DEL1=XPLEN(I+1)-XPLEN(I)
             DEL2=XPLEN(I)-XPLEN(I-1)
@@ -308,7 +308,7 @@ C  FIRST INTERVAL (HALF SIZE)
           DELWL(1)=0.5*(XPLEN(2)-XPLEN(1))
 C  LAST INTERVAL (HALF SIZE)
           DELWL(NCHNI)=0.5*(XPLEN(NCHNI)-XPLEN(NCHNI-1))
- 
+
 C  3.)  CONVERT SPECTRAL DENSITY FROM EV TO NM
           WLDUMFFD=DUMFFD*DELWL/DELENE
 C
@@ -324,7 +324,7 @@ C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
 c  plotting:  conditional on plspec
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
-C  INITALIZE NEW PICTURE
+C  INITIALIZE NEW PICTURE
             IF (NSPNEW(ICHORI).EQ.1) THEN
               IF (NSPSCL(ICHORI).EQ.0) THEN
                 LOGX=.FALSE.
@@ -366,15 +366,15 @@ C  PLOT, IN WAVELENGTH SCALE
 C
           TEXTS(1)=TSAFE
 C
- 
+
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           write (iunout,*)
      .           'printout for user-defined line integral '
           write (iunout,*) 'still to be written in subr. outsig '
         ENDIF
- 
-100   CONTINUE
+
+  100 CONTINUE
       CALL EIRENE_LEER(2)
- 
+
       RETURN
       END

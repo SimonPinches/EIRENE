@@ -10,9 +10,10 @@ C*DK MASRR4
       REAL(DP), INTENT(IN) :: B(N), C(N), D(N), E(N), F(N)
       INTEGER :: J
       WRITE (iunout,60) A
-60    FORMAT (1X,A22)
-      DO 5 J=1,N
-5        WRITE (iunout,61) J,B(J),C(J),D(J),E(J),F(J)
-61    FORMAT (1X,I4,1X,5(1PE12.4,3X))
+   60 FORMAT (1X,A22)
+      DO J=1,N
+        WRITE (iunout,61) J,B(J),C(J),D(J),E(J),F(J)
+      END DO
+   61 FORMAT (1X,I4,1X,5(1PE12.4,3X))
       RETURN
       END

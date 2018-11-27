@@ -1,10 +1,10 @@
 C
 C
       SUBROUTINE EIRENE_INVERT(A,AI)
- 
+
       USE EIRMOD_PRECISION
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: A(3,3)
       REAL(DP), INTENT(OUT) :: AI(3,3)
       REAL(DP) :: DET

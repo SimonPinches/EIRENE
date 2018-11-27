@@ -9,10 +9,10 @@
       ENTRY EIRENE_IF4COP
       END
 
-C> \brief Any property requirering hand-over in parallel part.
+C> \brief Any property requiring hand-over in parallel part.
 C>
 C> This interfacing routine is called in the parallel part of EIRENE
-C> after the broadcase of any other quantity and before MCARLO.
+C> after the broadcast of any other quantity and before MCARLO.
       SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
       RETURN
       END SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
@@ -31,6 +31,6 @@ C> At call data are expected for stratum ISTRA. There they may be
 C> further prepared (e.g. normalized, or scaled to other units) for
 C> transfer to the external code
       SUBROUTINE EIRENE_INFCOP_POST_STRATUM(ISTRA)
+      INTEGER, INTENT(IN) :: ISTRA
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
-

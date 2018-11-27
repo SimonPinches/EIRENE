@@ -1,48 +1,50 @@
 cdr  Aug. 2016:  generalized (ifexmx<0 enabled), two new parameters in list for fct. extrap
 
-cdr  this function evaluates the standard single parameter 8th order polynomial
-cdr  fits for cross section and rate coefficients, used in the 
+cdr  this function evaluates the standard single parameter 8th-order polynomial
+cdr  fits for cross-section and rate coefficients, used in the
 cdr  HYDHEL  (Janev, Langer et al, Springer, 1987)
-cdr  METHANE (Ehrhardt, Langer et al, PPPL report) 
+cdr  METHANE (Ehrhardt, Langer et al, PPPL report)
 cdr  databases. See references in online manual.
 cdr  the same fit format is also used most of the time in the eirene-home
 cdr  databases amjuel, h2vibr,
 
-      function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp, 
-     .                                   ifexmn, ifexmx,trc)
+      function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp,
+     .                                   ifexmn, ifexmx, trc)
      .                   result(cou)
 c  input:
-c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1)) 
+c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1))
 c  al    : argument of fit, log(parm)
 c  rcmin : left boundary of valid range of PARM
 c  rcmax : right boundary of valid range of PARM
 c  fpp   : parameters for extrapolation from valid range
 c  ifexmn: flag for choice of left (low end) extrapolation expression
-c  ifexmx: flag for choice of right (high end) extrapolation expression 
+c  ifexmx: flag for choice of right (high end) extrapolation expression
 cdr           ifex=0:  constant extrapolation
-cdr           ifex<0:  find extrapolation parameters here, and call extrap.f
-cdr           ifex>0:  find parameters boundary, and call extrap.f 
- 
+cdr           ifex<0:  determine extrapolation parameters here (linear extrapolation),
+cdr                    and call extrap.f with model IFEX=3
+cdr           ifex>0:  evaluate fit  at corresponding boundary, 
+cdr                    and call extrap.f with model IFEX
+
       use EIRMOD_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       implicit none
- 
+
       real(dp), intent(in) :: cf(9), fpp(6)
       real(dp), intent(in) :: al, rcmin, rcmax
       integer, intent(in) :: ifexmn, ifexmx
       real(dp) :: p1, cou, fp(6), s01, s02, ds12, expo1, expo2, ccxm1,
-     .            ccxm2, almin,almax,coumin,coumax, 
+     .            ccxm2, almin,almax,coumin,coumax,
      .            EIRENE_extrap
       integer :: ii, if8, ifex
       logical :: trc
 
       p1=al
- 
+
       if (p1 < rcmin) then
- 
-C  PARM BELOW MINIMUM PARAMETER FOR POLYNOM FIT:
- 
+
+C  PARM BELOW MINIMUM PARAMETER FOR POLYNOMIAL FIT:
+
         FP = FPP
 
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN
@@ -57,7 +59,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(par
             IF8=9-II
             EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at left boundary -->EXPO1=log(fit)
             EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(1.25*parleft), parleft= left boundary
- 1        CONTINUE
+    1     CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
           FP(1)=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
@@ -68,10 +70,10 @@ C  Linear extrapolation on log-log scale
           ALMIN =RCMIN
           COUMIN=EXP(EXPO1)
 
-        ELSEIF  (IFEXMN.GT.0) THEN
-C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN  
-C  IFEXMN IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmn
-          
+        ELSEIF (IFEXMN.GT.0) THEN
+C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN
+C  IFEXMN IS .GT. 0, use pre-programmed extrapolation scheme no. ifexmn
+
           coumin = cf(9)
           do ii = 8, 1, -1
             coumin = coumin * RCMIN + cf(ii)
@@ -90,21 +92,21 @@ C  WHAT TO WE DO NOW ???
           GOTO 100
 
         ENDIF
- 
+
         COU=EIRENE_EXTRAP(P1,ALMIN,COUMIN,IFEX,FP(1),FP(2),FP(3))
         cou = log(cou)
         return
- 
+
       elseif (p1 > rcmax) then
- 
+
 C  PARM IS ABOVE MAXIMUM VALID PARAMETER FOR FIT:
- 
+
         FP = FPP
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX
         IF (IFEXMX.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(parm)
           S01=RCMAX
-          S02=LOG(0.75_DP)+RCMAX   ! use parm=exp(rcmin) and 0.75*parm for extrapolation 
+          S02=LOG(0.75_DP)+RCMAX   ! use parm=exp(rcmin) and 0.75*parm for extrapolation
           DS12=S02-S01
           EXPO1=CF(9)
           EXPO2=CF(9)
@@ -112,7 +114,7 @@ C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(par
             IF8=9-II
             EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at right boundary -->EXPO1=log(fit)
             EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(0.75*parright), parright= right boundary
-2         CONTINUE
+    2     CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
           FP(4)=CCXM1+(CCXM2-CCXM1)/DS12*(-S01)
@@ -123,10 +125,10 @@ C  Linear extrapolation on log-log scale
           ALMAX =RCMAX
           COUMAX=EXP(EXPO1)
 
-        ELSEIF (IFEXMX.GT.0) THEN 
-C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN  
-C  IFEXMX IS .GT. 0,  use preprogrammed extrapolation scheme no. ifexmx   
-          
+        ELSEIF (IFEXMX.GT.0) THEN
+C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN
+C  IFEXMX IS .GT. 0, use pre-programmed extrapolation scheme no. ifexmx
+
           COUMAX = cf(9)
           do ii = 8, 1, -1
             coumax = coumax * RCMAX + cf(ii)
@@ -149,17 +151,17 @@ C  WHAT TO WE DO NOW ???
         COU=EIRENE_EXTRAP(P1,ALMAX,COUMAX,IFEX,FP(4),FP(5),FP(6))
         cou = log(cou)
         return
- 
+
       ENDIF
- 
+
 C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
- 
-100   cou = cf(9)
- 
+
+  100 cou = cf(9)
+
       do ii = 8, 1, -1
         cou = cou * p1 + cf(ii)
       end do
- 
+
 
       return
       end function EIRENE_sngl_poly

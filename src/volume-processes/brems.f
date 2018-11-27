@@ -2,9 +2,9 @@
      .         result(res)
 
 cdr   bremsstrahlung, for ions of charge Zi,
-cdr   in a bath of electrons at Te, ne. 
+cdr   in a bath of electrons at Te, ne.
 
-c  input: 
+c  input:
 c  Te, electron temperature, eV
 c  Ti, ion temperature, eV  (not used)
 c  Zi, charge number of ions.
@@ -15,10 +15,10 @@ c  ne, electron density,  #/cm^3
 
       REAL(DP), INTENT(IN) :: TE,NE,ZI
       REAL(DP) :: EIRENE_NGFFMH_B, brems, RES
-      
-     
+
+
 c  bremsstrahlung in W, per ion, based on free-free gaunt factors
-c  formula from ADAS, see function ngffmh_b 
+c  formula from ADAS, see function ngffmh_b
       BREMS = 1.54E-32_DP * TE**0.5 * ZI**2 *
      .        eirene_ngffmh_B(ZI**2 * 13.6_DP/TE) *ne
 
@@ -28,8 +28,8 @@ c  formula from ADAS, see function ngffmh_b
       end function eirene_brems
 
 
-c  free free gaunt factor routine, obtained from Martin O'Mullane in 2007 
-c  slightly adapted to use eirene precision convention (eirmod_precision) 
+c  free free gaunt factor routine, obtained from Martin O'Mullane in 2007
+c  slightly adapted to use eirene precision convention (eirmod_precision)
 
        FUNCTION EIRENE_NGFFMH_B(GAM2)
 !pb    IMPLICIT REAL*8(A-H,O-Z)
@@ -43,7 +43,7 @@ C  VERSION:  1.0
 C
 C  PURPOSE:
 C
-C  EVALUATES ELECTRON TEMPERATURE AND FREQUENCY AVERAGED HYDROGENIC
+C  EVALUATES ELECTRON TEMPERATURE- AND FREQUENCY-AVERAGED HYDROGENIC
 C  FREE FREE GAUNT FACTOR.
 C  OBTAINED FROM INTERPOLATION OF KARZAS & LATTER (1959) FIG.6
 C  FOR -3<LOG10(Z0*Z0*IH/KTE)<1. OUTSIDE THIS RANGE A VERY APPROXIMATE
@@ -52,7 +52,7 @@ C
 C  INPUT:
 C       GAM2=Z0*Z0*IH/KTE
 C  OUTPUT:
-C       NGFFMH=MAXWELL AND FREQUENCY AVERAGED FREE-FREE GAUNT FACTOR.
+C       NGFFMH=MAXWELL- AND FREQUENCY-AVERAGED FREE-FREE GAUNT FACTOR.
 C  ********* H.P.SUMMERS, JET         12 JAN 1987    ******************
 C-----------------------------------------------------------------------
 C
@@ -70,7 +70,7 @@ C-----------------------------------------------------------------------
        REAL(DP), INTENT(IN) :: GAM2
        REAL(DP) :: EIRENE_NGFFMH_B, GAM2L
        INTEGER :: K
- 
+
 !PB    DIMENSION GAM2LA(17),GA(17)
        REAL(DP) :: GAM2LA(17),GA(17)
        DATA GAM2LA/-3.0D0,-2.75D0,-2.50D0,-2.25D0,-2.00D0,-1.75D0,
@@ -79,7 +79,7 @@ C-----------------------------------------------------------------------
        DATA GA/1.139D0,1.151D0,1.167D0,1.189D0,1.215D0,1.248D0,1.283D0,
      &1.326D0,1.370D0,1.411D0,1.431D0,1.436D0,1.433D0,1.415D0,1.379D0,
      &1.338D0,1.296D0/
- 
+
        GAM2L=DLOG10(GAM2)
        IF(GAM2L.LE.-3.0D0)GO TO 30
        IF(GAM2L.GE.1.0D0)GO TO 40
@@ -103,4 +103,3 @@ C  EXTRAPOLATION FOR LOW GAM2
    40  EIRENE_NGFFMH_B=1.0D0+0.296D0/GAM2L
        RETURN
        END
- 

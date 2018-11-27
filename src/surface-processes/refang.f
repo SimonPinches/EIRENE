@@ -12,7 +12,7 @@ C           COSM: 2ND PARAMETER FOR ANGULAR DISTRIBUTION
 C           CRTXR,CRTYR,CRTZR: MODIFIED SURFACE NORMAL REFERENCE VECTOR FOR RE-EMISSION
 C           SNORM: =0. IF NO MODIFIED SURFACE NORMAL (THEN: USE DEFAULT: CRTX,CRTY,CRTZ)
 C           NMODEL: FLAG, FOR SELECTION OF ANGULAR DISTRIBUTION MODEL
-C           
+C
 C   OUTPUT: VELX,VELY,VELZ VIA COMPRT
 C
       USE EIRMOD_PRECISION
@@ -20,17 +20,17 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CRAND
       USE EIRMOD_COMPRT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: COSP, COSM, CRTXR, CRTYR, CRTZR, SNORM
       INTEGER, INTENT(IN) :: NMODEL
       REAL(DP) :: A, ZCPHI, ZCTHET, ZSTHET, VX, VY, VZ, ZPHI,
      .            ZTHET, CRTXL, CRTYL, CRTZL, COSIN, ZSPHI
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ICOUNT
- 
-C  DO WE HAVE A MODIFIED OUTER SURFACE NORMAL ? 
+
+C  DO WE HAVE A MODIFIED OUTER SURFACE NORMAL ?
 C  THIS CAN ALSO BE USED FOR GAUSSIAN LOBE BI-DRECTIONAL REFLECTION FUNCTION
       IF (SNORM.GE.EPS10) THEN
         CRTXL=CRTXR
@@ -58,15 +58,15 @@ C   POLAR ANGLE: MODIFIED COSINE WITH CUT OFF COSM
       ELSE
 C   POLAR ANGLE: FROM GAUSSIAN, St. dev.= COSP , with cut off COSM, done by rejection sampling
         ICOUNT=0
-410     IF (INIV2.EQ.0) CALL EIRENE_FGAUSS
+  410   IF (INIV2.EQ.0) CALL EIRENE_FGAUSS
 
 cdr  this sampling from Gaussian is currently highly inefficient.
 cdr  a) due to rejection
-cdr  b) because a full triple of Gaussian random numbers is generated, but just the first 
+cdr  b) because a full triple of Gaussian random numbers is generated, but just the first
 cdr     component is used
 
         ZPHI=COSP*FG1(INIV2)
-        INIV2=INIV2-1        
+        INIV2=INIV2-1
         ICOUNT=ICOUNT+1
 C   CUT OFF ANGLE: COSM (RADIANS)
         IF (ICOUNT.GT.1000) THEN
@@ -75,7 +75,7 @@ C   CUT OFF ANGLE: COSM (RADIANS)
           GOTO 420
         ENDIF
         IF (ABS(ZPHI).GT.COSM) GOTO 410
-420     ZCPHI=COS(ZPHI)
+  420   ZCPHI=COS(ZPHI)
       ENDIF
 C
       ZSPHI=SQRT(1.-ZCPHI*ZCPHI)

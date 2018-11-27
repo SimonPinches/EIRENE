@@ -1,12 +1,12 @@
 Cdr  analog xsecta, xsectm,.... printout to be sync.  And: call xstot. But not ot processes
 cdr  Unfinished code, for photons.
 c
-Cdr  in xsectp, there only call to xstrc.f.  
+Cdr  in xsectp, there only call to xstrc.f.
 cdr  At present: is seems to be just the other way round.
 C
       SUBROUTINE EIRENE_XSECTPH
 C
-C  TABLE FOR CROSS SECTION AND REACTION RATES FOR PHOTONS
+C  TABLE FOR CROSS-SECTION AND REACTION RATES FOR PHOTONS
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -35,7 +35,7 @@ C
         IF (NRCPH(IPHOT).EQ.0) THEN
           PHV_NPHOTI(IPHOT)=0
 C
-C  NON DEFAULT "OT" MODEL:
+C  NON-DEFAULT "OT" MODEL:
 C
         ELSEIF(NRCPH(IPHOT) > 0) THEN
           DO NRC=1,NRCPH(IPHOT)
@@ -45,7 +45,7 @@ C
             IDOT=IDOT+1
             NREAOT(IDOT) = KK
             CALL EIRENE_PH_XSECTPH (IPHOT,NRC,IDSC)
-CDR  HERE SHOULD BE CALL TO XSTOT  GENERAL ROUTINE FOR OT PROCESSES
+CDR  HERE SHOULD BE CALL TO XSTOT GENERAL ROUTINE FOR OT PROCESSES
           ENDDO
           PHV_NPHOTI(IPHOT)=IDSC
 C  NO "OT" MODEL DEFINED

@@ -9,7 +9,7 @@ C               added: jcou,ncou
 !pb             BGK iteration
 !pb  22.03.07:  PI reactions revised
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
-cdr  oct.14  :  syncronized with fpathm, fpathi
+cdr  oct.14  :  synchronized with fpathm, fpathi
 
 cdr 31.10.14 :  speedup of final cut off evaluations
 
@@ -38,7 +38,7 @@ cdr             ei process: started to check for H.3, H.1 options for EI process
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 cdr Jan. 18:    This entire routine is largely unfinished. Photon transport
-cdr             with eirene currently not possible. 
+cdr             with eirene currently not possible.
 cdr             Started to prepare re-activating this option: for now: comments only
 
 C
@@ -117,7 +117,7 @@ C
 
       DO 2 IPLS=1,NPLSI
         ZTI(IPLS)=ZT1(IPLS,K)
-2       DENIO(IPLS)=DIIN(IPLS,K)
+    2   DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
 C            PVELQ(IPLS) IS SQUARED THE PHOTON VELOCITY IN THESE FRAMES
@@ -141,12 +141,12 @@ C
         ELSE
           PVELQ(IPLS)=PVELQ0
         ENDIF
-3     CONTINUE
+    3 CONTINUE
 C
 csw
 csw OT processes (photonic reactions)
 csw
-60    CONTINUE
+   60 CONTINUE
       if(phv_lgphot(iphot,0,0) == 0) goto 70
       do 61 ipot=1,phv_nphoti(iphot)
         irot=phv_lgphot(iphot,ipot,0)  !  -->  lgxot, mit x=ph, irot entspricht: irei, ircx, ....
@@ -187,7 +187,7 @@ cdr       kk   = nreaot(irot)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
 cdr       ireac=modcol(7,1,irot)
-cdr  ireac entspricht "typ" in Getcoeff - cross section (lorentz, vdw, ...)
+cdr  ireac entspricht "typ" in Getcoeff - cross-section (lorentz, vdw, ...)
 cdr  allerdings kann hier der "querschnitt" von hintergrundparametern abhaengen
           call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
           sigv=sigv*diin(ipls,k)
@@ -233,13 +233,13 @@ C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
         ELSE
           GOTO 997
         ENDIF
-61    CONTINUE
+   61 CONTINUE
 
-70    CONTINUE
+   70 CONTINUE
 c
 C     TOTAL
 C
-100   CONTINUE
+  100 CONTINUE
 
 C
 C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
@@ -262,7 +262,7 @@ C
       ENDIF
 C
       RETURN
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*)
      .  'ERROR IN FPATHPH: INCONSISTENT PHOTON COLL. DATA'
       WRITE (iunout,*) 'ITYP,IPHOT,IROT,MODCOL(7,J,IROT),J=1,4 '

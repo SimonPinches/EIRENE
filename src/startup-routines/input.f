@@ -1,19 +1,20 @@
+cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
 cdr  sept.18:   XDR format options for fort.13 stream: removed.
-cdr  apr. 18:   fully connected and tested: trchktm option, in block 11. 
-cdr  july 17 :  GR cleanup: wrmesh option splitt into writing and plotting
-cdr  june  17:  NSIGV_COP=0, removing a hidden link to case specific coupling routines
+cdr  apr. 18:   fully connected and tested: trchktm option, in block 11.
+cdr  july 17 :  GR cleanup: wrmesh option split into writing and plotting
+cdr  june  17:  NSIGV_COP=0, removing a hidden link to case-specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
 cdr             added: logical NEXVS   (default: F. Unclear meaning, so far...)
-c               added: logical TRCRNF  (trace-back for random seeds for correlated sampling)
+c               added: logical TRCRNF  (traceback for random seeds for correlated sampling)
 cdr  sept. 16:  extend options for extrapolations for A&M data beyond range
 cdr             of tables or validity range fit expressions.
 
 !               rename RMN and RMX to R1MN, R1MX, add R2MN, R2MX for range
 !               of second variable in fit or data table
-!               same with jfexmn,jfexmx  (parameters to select extrapolation scheme)
+!               same with jfexmn,jfexmx (parameters to select extrapolation scheme)
 
 !pb  June  16:  default for NPLSTI changed from 1 to NPLS
-cdr             indpro(2) and indpro(4): try to syncronize the meaning, to be done
+cdr             indpro(2) and indpro(4): try to synchronize the meaning, to be done
 cdr  june  16:  comments, disable accidental use of HYDKIN interface,
 cdr             option lhyddef. error exit. Tests of that interface options started.
 !cd  jan   16:  reset census start time to time0, even for time0=0.
@@ -21,7 +22,7 @@ cdr             option lhyddef. error exit. Tests of that interface options star
 !cd  dec.  15:  jj-nlim, rather than jj-nlimi, for non.dev.std. surfaces
 !    april 15:  esptcr, esptsr: sputtered particle energy flags introduced
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
-!               (same in find-param)
+!               (same in find_param)
 !cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
 !cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
 !               some minor changes at transition from end of block ***3 and re-entry to block ***6
@@ -48,9 +49,9 @@ cdr             option lhyddef. error exit. Tests of that interface options star
 !pb             read_token
 !pb  01.12.06:  bug fix: advance line in input for tetrahedra
 !pb  09.10.06:  save NZADD for higher timesteps
-!dr  20.04.06:  fort.10 added as density-model in block 5.
-!dr             Also other density model may now refere to test-
-!dr             particle tallies, for post-processing and iteration
+!dr  20.04.06:  fort.10 added as density model in block 5.
+!dr             Also other density model may now refere to test
+!dr             particle tallies, for postprocessing and iteration
 !pb  02.03.06:  NLRAY: switch on raytracing method for stratum
 !pb  20.01.06:  line of sight for cell based spectrum introduced
 !pb  12.01.06:  flag for cell based spectrum added in block 10F
@@ -179,7 +180,7 @@ C
 
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
       TYPE(TCONTRIB) :: CNT
-      
+
       INTERFACE
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
@@ -188,7 +189,7 @@ C
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
@@ -207,8 +208,8 @@ C
      .          XSH, YSH, ZSH,
      .          ALROT, REFNRM,
      .          DPP, R1MN, R1MX, R2MN, R2MX,
-     .          SPCMN, SPCMX,SPC_SHIFT,
-     .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
+     .          SPCMN, SPCMX, SPC_SHIFT,
+     .          SPCPLT_X, SPCPLT_Y, SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM, ESCD2A, ESCD2M, ESCD2I, ESCD2PH, ESCD2P,
      .          RC1MIN, RC1MAX, RC2MIN, RC2MAX, POP_ESC
 
@@ -223,6 +224,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           NTLVF, NSRF, NTLS, I1000, NSP, NTL, ICHORI, IRAD,
      .           ILIMPS, ISS, ILA, IB, INC, NSOPT, IIN, IEN, ITEND,
      .           EIRENE_ILLZ, IZ, ISTREAM, ITALI, IBEND,
+     .           JATM, JMOL, JION, JPHOT, JPLS, JTRJ, JSPZ,
      .           NO, IGO, IRPTA3, IRPTE2, IRPTE3, ITINI, IH, IDIMP,
      .           JDUMMY, IRPTA1, IRPTA2, IRPTE1, NLJ, I1, I2, I3,
      .           NTIME0, IERROR, IREAD, I, ISTS, J, IST,
@@ -235,10 +237,10 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ, ITLVOUT, NTLVOUT,
      .           ITLSOUT, NTLSOUT, IPLSTI, IPLSV, IFILE, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
+     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO,
      .           IUNIN_SAVE, NLOGIN, NINITL_READ, NPRMUL, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB,NS,NA, ISTR,
+     .           NB, NS, NA, ISTR, IOPT,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC
       INTEGER, SAVE :: NZADD, NITER0
@@ -285,14 +287,14 @@ C  13,14, AND 15 AND IUNIN
 C
       IF (IITER.GT.1) THEN
         CALL EIRENE_MASBOX
-     .   ('NEXT ITERATION STARTS, SKIP READING INPUT FILE ')
+     .   ('NEXT ITERATION STARTS, SKIP READING INPUT FILE')
         CALL EIRENE_MASJ1('IITER   ',IITER)
         GOTO 4000
       ENDIF
 
       IF (ITIMV.GT.1) THEN
         CALL EIRENE_MASBOX
-     .   ('NEXT TIME-CYCLE STARTS, SKIP READING INPUT FILE ')
+     .   ('NEXT TIME CYCLE STARTS, SKIP READING INPUT FILE ')
         CALL EIRENE_MASJ1('ITIMV   ',ITIMV)
         GOTO 4000
       ENDIF
@@ -357,11 +359,11 @@ C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
 C
       CALL EIRENE_LEER(2)
 C
-99    CONTINUE
+   99 CONTINUE
 C
 C  READ TEXT DESCRIBING THE RUN, 100--199
 C
-100   CONTINUE
+  100 CONTINUE
 C
 
       CALL DATE_AND_TIME(CDATE,CTIME)
@@ -378,7 +380,7 @@ C
       READ (IUNIN,'(A72)') TXTRUN
       WRITE (iunout,'(1X,A)') trim(TXTRUN)
       CALL EIRENE_LEER(1)
-109   READ (IUNIN,'(A72)') ZEILE
+  109 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1).EQ.'*') THEN
         IF (ZEILE(1:3).NE.'***') WRITE (iunout,'(1X,A)') trim(ZEILE)
         CALL EIRENE_LEER(1)
@@ -427,10 +429,11 @@ C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
 C...........................................................................
 c   done with this optional "storage save mode card"
 C
+* For gfortran: it does not accept empty field for logicals
+      call fix_logical_input(zeile,16)
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
-     .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLSHRT13
+     .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....
@@ -479,7 +482,7 @@ C  READING OF INPUT BLOCK 1 DONE
       NFILEJ=EIRENE_IDEZ(NFILE,5,5)
       CALL EIRENE_LEER(2)
       CALL EIRENE_MASAGE
-     .  ('*** 1. DATA FOR OPERATING MODE                   ')
+     .  ('*** 1. DATA FOR OPERATING MODE                 ')
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
       WRITE (IUNOUT,*) '       NUMBER OF PROCESSORS NPRS= ',NPRS
@@ -531,101 +534,157 @@ C         Reserved for default, see below
      .  ('       INTERFACING ROUTINE INFCOP IS NOT CALLED')
       ENDIF
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPUTIME '
+      WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPUTIME'
       WRITE (iunout,*) '       OF ',NTCPU,' SECONDS'
       CALL EIRENE_LEER(1)
 
       IF (NFILEN.EQ.1) THEN
-        WRITE (iunout,*) '       EIRENE SAVES OUTPUT DATA '
+        WRITE (iunout,*) '       EIRENE SAVES OUTPUT DATA'
         WRITE (iunout,*) '       ON FILES FT10 AND FT11 AFTER'
         WRITE (iunout,*)
-     .    '       HAVING COMPUTED THE PARTICLE HISTORIES '
+     .    '       HAVING COMPUTED THE PARTICLE HISTORIES'
       ELSEIF (NFILEN.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS OUTPUT DATA FROM '
+        WRITE (iunout,*) '       EIRENE READS OUTPUT DATA FROM'
         WRITE (iunout,*)
-     .    '       AN EARLIER RUN FROM FILES FT10 AND FT11 '
-        WRITE (iunout,*) '       NO NEW HISTORIES ARE COMPUTED       '
+     .    '       AN EARLIER RUN FROM FILES FT10 AND FT11'
+        WRITE (iunout,*) '       NO NEW HISTORIES ARE COMPUTED'
       ELSEIF (NFILEN.EQ.6) THEN
-        WRITE (iunout,*) '       EIRENE SAVES OUTPUT DATA '
+        WRITE (iunout,*) '       EIRENE SAVES OUTPUT DATA'
         WRITE (iunout,*) '       ON FILES FT10 AND FT11 AFTER'
         WRITE (iunout,*)
-     .    '       HAVING COMPUTED THE PARTICLE HISTORIES '
-        WRITE (iunout,*) '       FOR THE SUM OVER STRATA TALLIES ONLY '
+     .    '       HAVING COMPUTED THE PARTICLE HISTORIES'
+        WRITE (iunout,*) '       FOR THE SUM OVER STRATA TALLIES ONLY'
       ELSEIF (NFILEN.EQ.7) THEN
-        WRITE (iunout,*) '       EIRENE READS OUTPUT DATA FROM '
+        WRITE (iunout,*) '       EIRENE READS OUTPUT DATA FROM'
         WRITE (iunout,*)
-     .    '       AN EARLIER RUN FROM FILES FT10 AND FT11 '
-        WRITE (iunout,*) '       FOR THE SUM OVER STRATA TALLIES ONLY '
-        WRITE (iunout,*) '       NO NEW HISTORIES ARE COMPUTED       '
+     .    '       AN EARLIER RUN FROM FILES FT10 AND FT11'
+        WRITE (iunout,*) '       FOR THE SUM OVER STRATA TALLIES ONLY'
+        WRITE (iunout,*) '       NO NEW HISTORIES ARE COMPUTED'
       ENDIF
       IF (NFILEN.NE.0) CALL EIRENE_LEER(1)
 
       IF (NFILEM.EQ.1) THEN
-        WRITE (iunout,*) '       EIRENE SAVES GEOMETRICAL DATA '
+        WRITE (iunout,*) '       EIRENE SAVES GEOMETRICAL DATA'
         WRITE (iunout,*) '       ON FILE FT12'
       ELSEIF (NFILEM.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS GEOMETRICAL DATA FROM '
-        WRITE (iunout,*) '       AN EARLIER RUN FROM FILE FT12 '
+        WRITE (iunout,*) '       EIRENE READS GEOMETRICAL DATA FROM'
+        WRITE (iunout,*) '       AN EARLIER RUN FROM FILE FT12'
       ENDIF
       IF (NFILEM.NE.0) CALL EIRENE_LEER(1)
 
-      IF (NFILEL.EQ.1) THEN
-        WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-      ELSEIF (NFILEL.EQ.2) THEN
-        WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA      '
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA FROM'
-        WRITE (iunout,*) '       FILE FT13 '
-      ELSEIF (NFILEL.EQ.3) THEN
-        WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA '
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA FROM'
-        WRITE (iunout,*) '       FILE FT13  AND '
-        WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-      ELSEIF (NFILEL.EQ.4) THEN
-        WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA      '
-        WRITE (iunout,*) '       FROM FILE FT13 AND'
-        WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
-        WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
-        WRITE (iunout,*)
-     .    '       ON FILE FT13 AT END OF RUN, I.E., AFTER'
-        WRITE (iunout,*) '       LAST TIMESTEP OR ITERATION '
-        WRITE (iunout,*)
-     .  '       SOURCE DISTRIBUTION IS NEWLY DETERMINED'
-      ENDIF
+      IF (NFILEL.GE.6.AND.NFILEL.LE.9) THEN
+        NFILEL = NFILEL - 5
+        NLSHRT13 = .TRUE.
+      END IF
+      SELECT CASE (NFILEL)
+        CASE (1)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA,' 
+            WRITE (iunout,*) '       STARTING FROM SPECIES NUMBER'
+            WRITE (iunout,*) '       NFLA+1 (COUPLING VARIABLE, BLOCK'
+            WRITE (iunout,*) '       14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          END IF
+          WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
+          WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+        CASE (2)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          ENDIF
+          WRITE (iunout,*) '       FROM FILE FT13 '
+        CASE (3)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          ENDIF
+          WRITE (iunout,*) '       FROM FILE FT13 AND'
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
+          ELSE
+            WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          END IF
+          WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
+          WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+        CASE (4)
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
+            WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
+            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
+            WRITE (iunout,*) '       BLOCK 14),'
+          ELSE
+            WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA'
+          END IF
+          WRITE (iunout,*) '       FROM FILE FT13 AND'
+          IF (NLSHRT13) THEN
+            WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
+          ELSE
+            WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
+            WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
+          END IF
+          WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
+          WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+          WRITE (iunout,*) '       SOURCE DISTRIBUTION IS NEWLY'
+          WRITE (iunout,*) '       DETERMINED'
+      END SELECT
       IF (NFILEL.NE.0) CALL EIRENE_LEER(1)
 
-      IF (NFILEK.EQ.1) THEN
-        WRITE (iunout,*)
-     .    '       EIRENE SAVES DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*) '       MODIFICATIONS ON FILE FT14'
-      ELSEIF (NFILEK.EQ.2) THEN
-        WRITE (iunout,*)
-     .    '       EIRENE READS DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*)
-     .    '       MODIFICATIONS FROM FILE FT14, AND CARRIES'
-        WRITE (iunout,*) '       THEM OUT IN THIS RUN'
-      ELSEIF (NFILEK.EQ.3) THEN
-        WRITE (iunout,*)
-     .    '       EIRENE READS OLD DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*)
-     .    '       MODIFICATIONS FROM FILE FT14, AND CARRIES'
-        WRITE (iunout,*) '       THEM OUT IN THIS RUN'
-        WRITE (iunout,*)
-     .    '       EIRENE SAVES NEW DATA FOR RECOMMENDED INPUT'
-        WRITE (iunout,*)
-     .    '       MODIFICATIONS ON FILE FT14 FOR NEXT RUN'
-      ENDIF
+      SELECT CASE (NFILEK)
+        CASE (1)
+          WRITE (iunout,*)
+     .      '       EIRENE SAVES DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*) 
+     .      '       MODIFICATIONS AND RUN TIME PER STRATUM ON FILE FT14'
+        CASE (2)
+          WRITE (iunout,*)
+     .      '       EIRENE READS DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*)
+     .      '       MODIFICATIONS AND RUN TIME PER STARTUM FROM FILE'
+          WRITE (iunout,*) 
+     .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
+        CASE (3)
+          WRITE (iunout,*)
+     .      '       EIRENE READS OLD DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*)
+     .      '       MODIFICATIONS AND RUN TIME PER STARTUM FROM FILE'
+          WRITE (iunout,*) 
+     .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
+          WRITE (iunout,*)
+     .      '       EIRENE SAVES NEW DATA FOR RECOMMENDED INPUT'
+          WRITE (iunout,*)
+     .      '       MODIFICATIONS AND RUN TIME PER STRATUM ON FILE FT14'
+          WRITE (iunout,*) '       FOR NEXT RUN'
+        CASE (4)
+          WRITE (iunout,*)
+     .      '       EIRENE READS OLD RUN TIME PER STRATUM FROM FILE'
+          WRITE (iunout,*) '       FT14'
+        CASE (5)
+          WRITE (iunout,*)
+     .      '       EIRENE READS OLD RUN TIME PER STARTUM FROM FILE'
+          WRITE (iunout,*) '       FT14'
+          WRITE (iunout,*)
+     .      '       EIRENE SAVES NEW RUN TIME PER STRATUM ON FILE FT14'
+          WRITE (iunout,*) '       FOR NEXT RUN'
+      END SELECT
       IF (NFILEK.NE.0) CALL EIRENE_LEER(1)
 
       IF (NFILEJ.EQ.1.AND.NTIME.GT.0) THEN
-        WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT '
+        WRITE (iunout,*) '       EIRENE SAVES SNAPSHOT POPULATION AT'
         WRITE (iunout,*) '       END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.2) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FROM'
@@ -638,30 +697,30 @@ C         Reserved for default, see below
         WRITE (iunout,*) '       AT END OF LAST TIMESTEP ON FILE FT15'
       ELSEIF (NFILEJ.EQ.3.AND.NTIME.EQ.0) THEN
         WRITE (iunout,*) '       EIRENE READS SNAPSHOT POPULATION FOR'
-        WRITE (iunout,*) '       FIRST TIMESTEP FROM  FILE FT15 '
+        WRITE (iunout,*) '       FIRST TIMESTEP FROM FILE FT15'
         WRITE (iunout,*) '       NO FURTHER SNAPSHOP PRODUCED'
         WRITE (iunout,*) '       DUE TO NTIME=0'
       ENDIF
       IF (NFILEJ.NE.0) CALL EIRENE_LEER(1)
 
       IF (NITER.GE.1) THEN
-        WRITE (iunout,*) '       EIRENE RUN IN ITERATIVE MODE.      '
+        WRITE (iunout,*) '       EIRENE RUN IN ITERATIVE MODE.'
         WRITE (iunout,*) '       ITERATIONS: ',IITER,' TO ',NITER
         WRITE (iunout,*)
      .    '       SUBROUTINE "MODUSR" IS CALLED AFTER EACH'
-        WRITE (iunout,*) '       ITERATION '
+        WRITE (iunout,*) '       ITERATION'
       ELSE
-        WRITE (iunout,*) '       EIRENE RUN IN NON-ITERATIVE MODE     '
+        WRITE (iunout,*) '       EIRENE RUN IN NON-ITERATIVE MODE'
       ENDIF
       CALL EIRENE_LEER(1)
       IF (NTIME.GE.1) THEN
-        WRITE (iunout,*) '       EIRENE RUN IN TIME DEP. MODE.       '
+        WRITE (iunout,*) '       EIRENE RUN IN TIME DEP. MODE.'
         WRITE (iunout,*) '       TIME CYCLES: ',ITIMV,' TO ',NTIME
         WRITE (iunout,*)
      .    '       SUBROUTINE "TMSUSR" IS CALLED AFTER EACH'
-        WRITE (iunout,*) '       TIME CYCLE '
+        WRITE (iunout,*) '       TIME CYCLE'
       ELSE
-        WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE         '
+        WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF
       CALL EIRENE_LEER(1)
 C
@@ -671,7 +730,7 @@ C
 C
 C  READ DATA FOR STANDARD MESH, 200---299
 C
-200   CONTINUE
+  200 CONTINUE
 C
       IF (IREAD == 0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
@@ -679,7 +738,7 @@ C
       CALL EIRENE_LEER(1)
       IREAD=0
 C
-201   READ (IUNIN,'(A72)') ZEILE
+  201 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') THEN
         WRITE (iunout,'(1X,A)') trim(ZEILE)
         CALL EIRENE_LEER(1)
@@ -690,14 +749,17 @@ C
 C INPUT SUB-BLOCK 2A
 C
 C  RADIAL MESH
-210   READ (IUNIN,'(A72)') ZEILE
+  210 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') THEN
         GOTO 210
       ENDIF
       READ (ZEILE,6665) NLRAD
       IF (NLRAD) THEN
 C
-        READ (IUNIN,6665) NLSLB,NLCRC,NLELL,NLTRI,NLPLG,NLFEM,NLTET,
+* For gfortran: it does not accept empty field for logicals
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,8)
+        READ (ZEILE,6665) NLSLB,NLCRC,NLELL,NLTRI,NLPLG,NLFEM,NLTET,
      .                    NLGEN
 
 ! CHECK GEOMETRY SWITCHES
@@ -711,8 +773,8 @@ C
        IF (NLTET) ILOGS = ILOGS + 1
        IF (NLGEN) ILOGS = ILOGS + 1
        IF ((ILOGS == 0) .OR. (ILOGS > 1)) THEN
-         WRITE (IUNOUT,*) ' ERROR IN GEOMETRY SPECIFICATION '
-         WRITE (IUNOUT,*) ' ONE AND ONLY ONE OF THE FOLLOWING ',
+         WRITE (IUNOUT,*) ' ERROR IN GEOMETRY SPECIFICATION'
+         WRITE (IUNOUT,*) ' ONE AND ONLY ONE OF THE FOLLOWING',
      .                    ' FLAGS MAY BE .TRUE. '
          WRITE (IUNOUT,*) 'NLSLB = ',NLSLB
          WRITE (IUNOUT,*) 'NLCRC = ',NLCRC
@@ -744,8 +806,8 @@ C
             READ(IUNIN,6664) XPCOR,YPCOR,ZPCOR,PLREFL
             READ (IUNIN,6666) (NPOINT(1,K),NPOINT(2,K),K=1,NPPLG)
             DO 212 I=1,NR1ST
-              READ (IUNIN,6664) (XPOL(I,J),YPOL(I,J),    J=1,NRPLG)
-212         CONTINUE
+              READ (IUNIN,6664) (XPOL(I,J),YPOL(I,J),J=1,NRPLG)
+  212       CONTINUE
             IF (PLREFL.GT.0.D0) NR1ST=NR1ST+1
           ENDIF
           IF (NLFEM .OR. NLTET) THEN
@@ -754,10 +816,10 @@ C
             CLAB = ZEILE(1:4)
             CALL EIRENE_UPPERCASE(CLAB)
             IF (INDEX(ZEILE,'CASE')==0) THEN
-              WRITE (IUNOUT,*) ' ERROR IN GEOMETRY SPECIFICATION '
+              WRITE (IUNOUT,*) ' ERROR IN GEOMETRY SPECIFICATION'
               WRITE (IUNOUT,*)
-     .          ' TRIANGLE OR TETRAHEDRON GRID SWITCHED ON '
-              WRITE (IUNOUT,*) ' BUT NO CASENAME SPECIFIED '
+     .          ' TRIANGLE OR TETRAHEDRON GRID SWITCHED ON'
+              WRITE (IUNOUT,*) ' BUT NO CASENAME SPECIFIED'
               CALL EIRENE_EXIT_OWN(1)
             END IF
 
@@ -796,8 +858,8 @@ CDR  SKIP READING COMMENT INPUT CARDS STARTING WITH *
           IPOS1=INDEX(ZEILE,'T')
           IPOS2=INDEX(ZEILE,'F')
           IF (IPOS1.GT.0.OR.IPOS2.GT.0) THEN
-            WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 2A '
-            WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED '
+            WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 2A'
+            WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED'
             READ (ZEILE,'(L1)') NLPOL
             IREAD = 0
             GOTO 222
@@ -815,20 +877,17 @@ C
 C  POLOIDAL MESH
 C
 C INPUT SUB-BLOCK 2B
-C
-220   IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
 
-CDR SKIP READING COMMENT INPUT CARDS STARTING WITH *
-      IF (ZEILE(1:1) .EQ. '*') THEN
-        READ (IUNIN,'(A72)') ZEILE
-        IREAD = 1
-        GOTO 220
-      END IF
+      IREAD=0
+      CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
 
       READ (ZEILE,6665) NLPOL
       IREAD = 0
 C
-222   READ (IUNIN,6665) NLPLY,NLPLA,NLPLP
+  222 READ (IUNIN,'(A72)') ZEILE
+* For gfortran: it does not accept empty field for logicals
+      call fix_logical_input(zeile,3)
+      READ (ZEILE,6665) NLPLY,NLPLA,NLPLP
       READ (IUNIN,6666) NP2ND,NPSEP,NPPLA,NPPER
       IF (INDGRD(2).LE.5) THEN
         READ (IUNIN,6664) YIA,YGA,YAA,YYA
@@ -845,7 +904,10 @@ C
       READ (ZEILE,6665) NLTOR
       IREAD=0
 C
-      READ (IUNIN,6665) NLTRZ,NLTRA,NLTRT
+      READ (IUNIN,'(A80)') ZEILE
+* For gfortran: it does not accept empty field for logicals
+      call fix_logical_input(zeile,3)
+      READ (ZEILE,6665) NLTRZ,NLTRA,NLTRT
       READ (IUNIN,6666) NT3RD,NTSEP,NTTRA,NTPER
       IF (INDGRD(3).LE.5) THEN
         READ (IUNIN,6664) ZIA,ZGA,ZAA,ZZA,ROA
@@ -858,9 +920,6 @@ C INPUT SUB-BLOCK 2D
 C
       IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
-C240  READ (IUNIN,'(A72)') ZEILE
-C     IF (ZEILE(1:1) .EQ. '*') GOTO 240
-C     IREAD=1
       READ (ZEILE,6665) NLMLT
       IREAD=0
 C
@@ -872,7 +931,7 @@ C
         NBMLT=1
         VOLCOR(1)=1.D0
 C  FIND START OF NEXT INPUT BLOCK: 2E. SEARCH FOR *, T OR F
-241     READ (IUNIN,'(A72)') ZEILE
+  241   READ (IUNIN,'(A72)') ZEILE
         CALL EIRENE_UPPERCASE(ZEILE)
         IPOS0=INDEX(ZEILE,'*')
         IPOS1=INDEX(ZEILE,'T')
@@ -883,7 +942,7 @@ C  FIND START OF NEXT INPUT BLOCK: 2E. SEARCH FOR *, T OR F
 C
 C  ADDITIONAL CELLS OUTSIDE STANDARD MESH
 C
-250   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
+  250 IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
 C
 C INPUT SUB-BLOCK 2E
 C
@@ -899,7 +958,7 @@ C
         READ (IUNIN,6664) (VOLADD(NM),NM=1,NRADD)
       ELSE
 C  FIND START OF NEXT INPUT BLOCK: 3A
-252     READ (IUNIN,'(A72)') ZEILE
+  252   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:3) .NE. '***') GOTO 252
         IREAD=1
       ENDIF
@@ -921,12 +980,12 @@ C
 C  * 3A: READ DATA FOR NON-DEFAULT SURFACE MODELS ON STANDARD SURFACES
 C  300--349
 C
-300   CONTINUE
+  300 CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL
      .  EIRENE_MASAGE('*** 3A. DATA FOR NON-DEFAULT STANDARD SURFACES')
-310   READ (IUNIN,'(A72)') ZEILE
+  310 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 310
       IREAD=1
       READ(ZEILE,6666) NSTSI
@@ -947,24 +1006,24 @@ C
         IF (.NOT.(NLFEM.OR.NLTET.OR.NLGEN)) THEN
 
         IF ((IDIMP == 1) .AND. (INUMP(ISTS,IDIMP) > N1ST)) THEN
-          WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT '
+            WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
           WRITE (iunout,*) ' SURFACE ',ISTS
-          WRITE (iunout,*) ' NUMBER OF RADIAL SURFACE > N1ST '
-          WRITE (iunout,*) ' CHECK INPUT FILE '
+            WRITE (iunout,*) ' NUMBER OF RADIAL SURFACE > N1ST'
+            WRITE (iunout,*) ' CHECK INPUT FILE'
           CALL EIRENE_EXIT_OWN(1)
         ELSEIF ((IDIMP == 2) .AND. (INUMP(ISTS,IDIMP) > N2ND)) THEN
-          WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT '
+            WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
           WRITE (iunout,*) ' SURFACE ',ISTS
-          WRITE (iunout,*) ' NUMBER OF POLOIDAL SURFACE > N2ND '
-          WRITE (iunout,*) ' CHECK INPUT FILE '
+            WRITE (iunout,*) ' NUMBER OF POLOIDAL SURFACE > N2ND'
+            WRITE (iunout,*) ' CHECK INPUT FILE'
           CALL EIRENE_EXIT_OWN(1)
         ELSEIF ((IDIMP == 3) .AND.
-     .          ((NLTOR.AND.(INUMP(ISTS,IDIMP) > N3RD)) .OR.
-     .           (NLTRA.AND.(INUMP(ISTS,IDIMP) > NTTRA)))) THEN
-          WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT '
+     .            ((NLTOR.AND.(INUMP(ISTS,IDIMP) > N3RD)) .OR.
+     .             (NLTRA.AND.(INUMP(ISTS,IDIMP) > NTTRA)))) THEN
+          WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
           WRITE (iunout,*) ' SURFACE ',ISTS
-          WRITE (iunout,*) ' NUMBER OF TOROIDAL SURFACE > N3RD '
-          WRITE (iunout,*) ' CHECK INPUT FILE '
+            WRITE (iunout,*) ' NUMBER OF TOROIDAL SURFACE > N3RD'
+            WRITE (iunout,*) ' CHECK INPUT FILE'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -974,7 +1033,7 @@ C  OLD INPUT VERSION BEGIN
         IF (IDIMP.EQ.1.AND.IRPTA1.NE.IRPTE1) THEN
           WRITE (iunout,*) 'WARNING FROM INPUT BLOCK 3A, ISTS= ',ISTS
           WRITE (iunout,*) 'NEW INPUT FOR IRPTA,IRPTE....'
-          WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+          WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
           IRPTA2=IRPTA1
           IRPTE2=IRPTE1
           IRPTA1=INUMP(ISTS,1)
@@ -1049,12 +1108,12 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         IF (ABS(ILCOL(NLJ)).EQ.7) THEN
           WRITE (iunout,*) 'COLOUR FLAG ILCOL CHANGED FOR SURFACE NO. ',
      .                      NLJ
-          WRITE (iunout,*) 'COLOUR NO. 7 IS RESERVED FOR "NON-ANALOGUE'
+          WRITE (iunout,*) 'COLOUR NO. 7 IS RESERVED FOR "NON-ANALOG'
           WRITE (iunout,*)
      .      'SURFACES" (SPLITTING, R.R., WEIGHT WINDOWS,..)'
           ILCOL(NLJ)=ILCOL(NLJ)-2
         ENDIF
-312     READ (IUNIN,'(A72)') ZEILE
+  312   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1).EQ.'*') THEN
 C  NO LOCAL SURFACE INTERACTION MODEL FOUND, USE: DEFAULT
@@ -1090,7 +1149,7 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
             WRITE (iunout,*) 'WARNING: SPUTTERING AT NON-DEF. SURFACE ',
      .                        ISTS
             WRITE (iunout,*)
-     .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
+     .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ'
             WRITE (iunout,*)
      .        'DEFAULT MODEL: "NO SPUTTERING" IS USED.'
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
@@ -1098,16 +1157,16 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           ENDIF
         ENDIF
 C
-314     CONTINUE
+  314   CONTINUE
 C
-311   CONTINUE
+  311 CONTINUE
 C
 C  * 3B: READ DATA FOR ADDITIONAL SURFACES 350--399
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 3B. DATA FOR ADDITIONAL SURFACES           ')
-350   READ (IUNIN,'(A72)') ZEILE
+  350 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1).EQ.'*') THEN
         WRITE (iunout,'(1X,A)') trim(ZEILE)
         GOTO 350
@@ -1120,8 +1179,8 @@ C
       IF (NLIMI.GT.0) THEN
         DO 353 I=1,NLIMI
           IHELP(I)=IGJUM0(I)
-353     CONTINUE
-351     READ (IUNIN,'(A72)') ZEILE
+  353   CONTINUE
+  351   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:3).EQ.'CH0') THEN
           IREAD=0
@@ -1130,7 +1189,7 @@ C
         ENDIF
         DO 352 I=1,NLIMI
           IGJUM0(I)=IHELP(I)
-352     CONTINUE
+  352   CONTINUE
       ENDIF
 C
       DO 360 I=1,NLIMI
@@ -1142,7 +1201,7 @@ C
         WRITE (iunout,'(1X,A)') trim(TXTSFL(I))
         IREAD=0
         IF (IGJUM0(I).NE.0) THEN
-361       READ (IUNIN,'(A72)') ZEILE
+  361     READ (IUNIN,'(A72)') ZEILE
           IREAD=1
           IF (ZEILE(1:1).EQ.'*') GOTO 369
           IF (ZEILE(1:9).EQ.'TRANSFORM') GOTO 368
@@ -1150,7 +1209,7 @@ C
         ENDIF
 C
 C   GENERAL SURFACE DATA
-362     READ (IUNIN,'(A72)') ZEILE
+  362   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:3).EQ.'CH1') THEN
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM1,0,NLIMPS,I,NLIMPS)
@@ -1215,18 +1274,18 @@ C  READ BOUNDARY DATA
           DO 363 J=1,ILIN(I)
             READ (IUNIN,6664) ALIMS(J,I),XLIMS(J,I),YLIMS(J,I),
      .                        ZLIMS(J,I)
-363       CONTINUE
+  363     CONTINUE
           DO 364 J=1,ISCN(I)
             READ (IUNIN,6664) ALIMS0(J,I),XLIMS1(J,I),YLIMS1(J,I),
      .                        ZLIMS1(J,I),XLIMS2(J,I),YLIMS2(J,I)
             READ (IUNIN,6664) ZLIMS2(J,I),XLIMS3(J,I),YLIMS3(J,I),
      .                        ZLIMS3(J,I)
-364       CONTINUE
+  364     CONTINUE
         ENDIF
 C
 C READ LOCAL SURFACE INTERACTION MODEL FOR SURFACE NO. I
 C
-367     READ (IUNIN,'(A72)') ZEILE
+  367   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1).EQ.'*') THEN
 C  SKIP READING LOCAL SURFACE INTERACTION MODEL, USE: DEFAULT
@@ -1263,14 +1322,14 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
           ELSEIF (ILSPT(I).NE.0) THEN
             WRITE (iunout,*) 'WARNING: SPUTTERING FOR ADD. SURFACE ',I
             WRITE (iunout,*)
-     .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
+     .        'BUT NO PARAMETERS RECYCS, RECYCC ARE READ'
+            WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED.'
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
             ILSPT(I)=0
           ENDIF
         ENDIF
 C
-368     IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
+  368   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:9).NE.'TRANSFORM') GOTO 369
 C
@@ -1306,20 +1365,20 @@ C  ROTATION
         ENDIF
         GOTO 368
 C
-369     CONTINUE
+  369   CONTINUE
 C
-360   CONTINUE
+  360 CONTINUE
 C
 C  READ DATA FOR SPECIES SPECIFICATION AND ATOMIC PHYSICS MODULE
 C  400--499
 C
-400   CONTINUE
+  400 CONTINUE
 C
 C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
       IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       IREAD=0
       IF ((ZEILE(1:3) .NE. '***') .OR. (INDEX(ZEILE,'4.') == 0)) THEN
-        WRITE (IUNOUT,*) 'INPUT ERROR, BLOCK *** 4. NOT FOUND '
+        WRITE (IUNOUT,*) 'INPUT ERROR, BLOCK *** 4. NOT FOUND'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 
@@ -1340,9 +1399,9 @@ C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
       IF (I1 > 0) THEN
 
 C  "Include" found. Skip all the rest of block 4 and 5 of input file (fort.iunin),
-C   and read this information only from the "include-file" instead,
+C   and read this information only from the "include" file instead
 C   stream: 2+ifoff
-C   Zeile  = INLCUDE 'FILE45'
+C   Zeile  = INCLUDE 'FILE45'
 C
         LINCL45 = .TRUE.
 C
@@ -1359,7 +1418,7 @@ C
         CALL EIRENE_LEER(1)
         OPEN (IUNIN,FILE=FILE45,FORM='FORMATTED',ACCESS='SEQUENTIAL')
 c  read comment lines on external A&M data file FILE45, stream fort.2
-401     READ (IUNIN,'(A72)') ZEILE
+  401   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 401
         IREAD=1
         GOTO 402
@@ -1374,7 +1433,7 @@ C
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
 
       READ (IUNIN,'(A72)') ZEILE  ! THIS IS THE FIRST NON-COMMENT LINE
-402   CALL EIRENE_UPPERCASE(ZEILE)
+  402 CALL EIRENE_UPPERCASE(ZEILE)
 
 chk.................................................................
 C  special only in case of HYDKIN INTERFACE: find string "DEFAULT"
@@ -1406,16 +1465,14 @@ C  Normal start of reading database A&M processes
       CALL EIRENE_LEER(1)
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(0)
-      IL = 0
-!pbcrm      
+!pbcrm
       IREAD = 0
 C
-411   IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
+  411 IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
-        IL = IL + 1
         READ (ZEILE,66661) IR,FILNAM,H123
         IEND = 16
 
@@ -1435,7 +1492,7 @@ C  PUT THIS FLAG ON REAC2.
      .         (ZEILE(IEND:),' ',REAC2,ITOK,IER,.FALSE.)
           IF (IER > 0) THEN
             WRITE (iunout,*)
-     .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG '
+     .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG'
             CALL EIRENE_EXIT_OWN(1)
           END IF
 C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
@@ -1467,7 +1524,7 @@ C
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CRC,ITOK,IER,.FALSE.)
         IEND = IEND + ITOK
         IF (IER > 0) THEN
-          WRITE (iunout,*) ' CRC-STRING FOR REACTION ',IR,' TOO LONG '
+          WRITE (iunout,*) ' CRC STRING FOR REACTION ',IR,' TOO LONG'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -1491,7 +1548,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           WRITE (iunout,*) ' ERROR READING MT FOR REACTION ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-!  READ DPP,  potential energy increment in energy weighted rate
+!  READ DPP,  potential energy increment in energy-weighted rate
         CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
         IEND = IEND + ITOK
         READ (CHR,'(E12.4)') DPP
@@ -1542,15 +1599,15 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           IZ = 0
         END IF
 
-        IF (INDEX(ZEILE,'CRM') .NE. 0) THEN
+        IF (INDEX(ZEILE,'CR') .NE. 0) THEN
           READ (IUNIN,'(A80)') ZEILE
 cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
-! CHECK FOR POPULATION ESCAPE  FACTORS
-! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND, 
-! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION. 
+! CHECK FOR POPULATION ESCAPE FACTORS
+! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND,
+! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION.
           IF (VERIFY(ZEILE,'+-.edED0123456789 ') > 0) THEN
 ! "ZEILE" CONTAINS NEXT REACTION LINE
-            WRITE (IUNOUT,*)  'NO POP_ESC FOUND FOR CRM'
+            WRITE (IUNOUT,*)  'No POP_ESC found for internal CR Model'
             WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
             IREAD = 1
             IROW_ESC = 0
@@ -1560,9 +1617,9 @@ cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal 
 ! only integer or reals found in string ZEILE
 ! READ POPULATION ESCAPE FACTOR, FOR TRANSITION "UPPER=IROW --> LOWER=ICOL"
             READ (ZEILE,66665) IROW_ESC, ICOL_ESC, POP_ESC
-            WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
+            WRITE (IUNOUT,*)  'POP_ESC found for CR Model reaction '
             WRITE (IUNOUT,*)  'REACTION',IR,'TYPE ',H123
-            WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+            WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')
      .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
      .                    ' POP_ESC',     POP_ESC
             IREAD = 0
@@ -1574,7 +1631,6 @@ C  POP. ESC. FACTORS ARE ONLY AVAILABLE FOR INTERNAL CRM MODELS
           ICOL_ESC = 0
           POP_ESC = 1.0
         END IF
-
 
 C  SAVE SOME OF THE INPUT FLAGS FOR LATER
 C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
@@ -1628,7 +1684,7 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           ENDIF
 
         else
-! identifier "P" found in H123. Data for photon processes! No assymptotics available
+! identifier "P" found in H123. Data for photon processes! No asymptotics available
 ! set defaults
           RC1MIN=-20.
           RC1MAX= 20.
@@ -1647,275 +1703,276 @@ C       FILNAM=CONST:   REAC2 = FTFLAG
 C       ELSE:           REAC2 = 'REAC' AS READ IN. (UP TO 50 CHARACTERS)
 C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC2,CRC,
-     .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
+     .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC)
+     .               ELNAME,IZ,                 ! additional input card read for TAB2D/ADAS format
+     .               IROW_ESC,ICOL_ESC,POP_ESC) ! (optional) additional input card read CR  internal models
         GOTO 411
       ENDIF
 C
-420   WRITE (iunout,*)
-     .  '*4A.   NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
+  420 WRITE (iunout,*)
+     . '*** 4A. NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       READ (IUNIN,*) NATMI
       WRITE (iunout,*) '       NATMI= ',NATMI
       CALL EIRENE_LEER(1)
       NATMI_IN = NATMI
 C
       NSPH=NPHOTI
-      DO 421 IATM=1,NATMI
-        ISPZ=NSPH+IATM
-        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSA(IATM),NCHARA(IATM),
-     .                       NDUMM1, NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
+      DO 421 JATM=1,NATMI
+        ISPZ=NSPH+JATM
+        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSA(JATM),NCHARA(JATM),
+     .                       NDUMM1,NDUMM2,  !NPRT=1, NCHRGA=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
-     .                       NRCA(IATM),NFOLA(IATM),NGENA(IATM),
+     .                       NRCA(JATM),NFOLA(JATM),NGENA(JATM),
      .                       NHSTS(ISPZ)
 C  DEFAULTS FOR ATOMIC SPECIES:
         NPRT(ISPZ)=1
-        DO 422 K=1,NRCA(IATM)
+        DO 422 K=1,NRCA(JATM)
           IF (NUMSEC .LT. 3) THEN
-            READ (IUNIN,6666) IREACA(IATM,K),IBULKA(IATM,K),
-     .                        ISCD1A(IATM,K),ISCD2A(IATM,K),
-     .                        ISCDEA(IATM,K),IESTMA(IATM,K),
-     .                        IBGKA(IATM,K)
+            READ (IUNIN,6666) IREACA(JATM,K),IBULKA(JATM,K),
+     .                        ISCD1A(JATM,K),ISCD2A(JATM,K),
+     .                        ISCDEA(JATM,K),IESTMA(JATM,K),
+     .                        IBGKA(JATM,K)
           ELSE IF (NUMSEC .EQ. 3) THEN
-            READ (IUNIN,6666) IREACA(IATM,K),IBULKA(IATM,K),
-     .                        ISCD1A(IATM,K),ISCD2A(IATM,K),
-     .                        ISCD3A(IATM,K),
-     .                        ISCDEA(IATM,K),IESTMA(IATM,K),
-     .                        IBGKA(IATM,K)
+            READ (IUNIN,6666) IREACA(JATM,K),IBULKA(JATM,K),
+     .                        ISCD1A(JATM,K),ISCD2A(JATM,K),
+     .                        ISCD3A(JATM,K),
+     .                        ISCDEA(JATM,K),IESTMA(JATM,K),
+     .                        IBGKA(JATM,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1A = ',ISCD1A(IATM,K)
-            WRITE (iunout,*) ' ISCD2A = ',ISCD2A(IATM,K)
-            WRITE (iunout,*) ' ISCD3A = ',ISCD3A(IATM,K)
-            WRITE (iunout,*) ' ISCDEA = ',ISCDEA(IATM,K)
-            WRITE (iunout,*) ' IESTMA = ',IESTMA(IATM,K)
-            WRITE (iunout,*) ' IBGKA  = ',IBGKA(IATM,K)
+            WRITE (iunout,*) ' ISCD1A = ',ISCD1A(JATM,K)
+            WRITE (iunout,*) ' ISCD2A = ',ISCD2A(JATM,K)
+            WRITE (iunout,*) ' ISCD3A = ',ISCD3A(JATM,K)
+            WRITE (iunout,*) ' ISCDEA = ',ISCDEA(JATM,K)
+            WRITE (iunout,*) ' IESTMA = ',IESTMA(JATM,K)
+            WRITE (iunout,*) ' IBGKA  = ',IBGKA(JATM,K)
           ELSE IF (NUMSEC .EQ. 4) THEN
-            READ (IUNIN,6666) IREACA(IATM,K),IBULKA(IATM,K),
-     .                        ISCD1A(IATM,K),ISCD2A(IATM,K),
-     .                        ISCD3A(IATM,K),ISCD4A(IATM,K),
-     .                        ISCDEA(IATM,K),IESTMA(IATM,K),
-     .                        IBGKA(IATM,K)
+            READ (IUNIN,6666) IREACA(JATM,K),IBULKA(JATM,K),
+     .                        ISCD1A(JATM,K),ISCD2A(JATM,K),
+     .                        ISCD3A(JATM,K),ISCD4A(JATM,K),
+     .                        ISCDEA(JATM,K),IESTMA(JATM,K),
+     .                        IBGKA(JATM,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1A = ',ISCD1A(IATM,K)
-            WRITE (iunout,*) ' ISCD2A = ',ISCD2A(IATM,K)
-            WRITE (iunout,*) ' ISCD3A = ',ISCD3A(IATM,K)
-            WRITE (iunout,*) ' ISCD4A = ',ISCD4A(IATM,K)
-            WRITE (iunout,*) ' ISCDEA = ',ISCDEA(IATM,K)
-            WRITE (iunout,*) ' IESTMA = ',IESTMA(IATM,K)
-            WRITE (iunout,*) ' IBGKA  = ',IBGKA(IATM,K)
+            WRITE (iunout,*) ' ISCD1A = ',ISCD1A(JATM,K)
+            WRITE (iunout,*) ' ISCD2A = ',ISCD2A(JATM,K)
+            WRITE (iunout,*) ' ISCD3A = ',ISCD3A(JATM,K)
+            WRITE (iunout,*) ' ISCD4A = ',ISCD4A(JATM,K)
+            WRITE (iunout,*) ' ISCDEA = ',ISCDEA(JATM,K)
+            WRITE (iunout,*) ' IESTMA = ',IESTMA(JATM,K)
+            WRITE (iunout,*) ' IBGKA  = ',IBGKA(JATM,K)
           END IF
-          LMULTI = LMULTI .OR. (IBGKA(IATM,K) /= 0)
-          READ (IUNIN,6664) EELECA(IATM,K),EBULKA(IATM,K),
-     .                      ESCD1A(IATM,K),ESCD2A,
-     .                      FREACA(IATM,K),EDPOTA(IATM,K)
-cdr  .                      FLDLMA(IATM,K)  removed, now controlled by negative ngena
-          ESCD1A(IATM,K) = ESCD1A(IATM,K)+ESCD2A
+          LMULTI = LMULTI .OR. (IBGKA(JATM,K) /= 0)
+          READ (IUNIN,6664) EELECA(JATM,K),EBULKA(JATM,K),
+     .                      ESCD1A(JATM,K),ESCD2A,
+     .                      FREACA(JATM,K),EDPOTA(JATM,K)
+cdr  .                      FLDLMA(JATM,K)  removed, now controlled by negative ngena
+          ESCD1A(JATM,K) = ESCD1A(JATM,K)+ESCD2A
           NSC = 0
-          IF (ISCD3A(IATM,K) > 0) NSC = 3
-          IF (ISCD4A(IATM,K) > 0) NSC = 4
+          IF (ISCD3A(JATM,K) > 0) NSC = 3
+          IF (ISCD4A(JATM,K) > 0) NSC = 4
           IF (NSC > 0) THEN
-            IF ((REACDAT(IREACA(IATM,K))%NOSEC > 0) .AND.
-     .          (REACDAT(IREACA(IATM,K))%NOSEC /= NSC)) THEN
+            IF ((REACDAT(IREACA(JATM,K))%NOSEC > 0) .AND.
+     .          (REACDAT(IREACA(JATM,K))%NOSEC /= NSC)) THEN
               WRITE (IUNOUT,*) ' INCONSISTENCY FOUND CONCERNING',
-     .              ' REACTION ',IREACA(IATM,K)
+     .              ' REACTION ',IREACA(JATM,K)
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
-     .              ' PREVIOUSLY WAS ',REACDAT(IREACA(IATM,K))%NOSEC
+     .              ' PREVIOUSLY WAS ',REACDAT(IREACA(JATM,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
               WRITE (IUNOUT,*) ' USE',
-     .              MAX(REACDAT(IREACA(IATM,K))%NOSEC,NSC),
-     .              ' SECONDARIES '
-              REACDAT(IREACA(IATM,K))%NOSEC =
-     .              MAX(REACDAT(IREACA(IATM,K))%NOSEC,NSC)
+     .              MAX(REACDAT(IREACA(JATM,K))%NOSEC,NSC),
+     .              ' SECONDARIES'
+              REACDAT(IREACA(JATM,K))%NOSEC =
+     .              MAX(REACDAT(IREACA(JATM,K))%NOSEC,NSC)
             ELSE
-              REACDAT(IREACA(IATM,K))%NOSEC = NSC
+              REACDAT(IREACA(JATM,K))%NOSEC = NSC
             END IF
           END IF
-422     CONTINUE
-421   CONTINUE
+  422   CONTINUE
+  421 CONTINUE
 C
 C  READ NEUTRAL MOLECULES SPECIES CARDS
 C
       READ (IUNIN,*)
       WRITE (iunout,*)
-     .  '*4B.   NEUTRAL MOLECULE SPECIES CARDS, NMOLI SPECIES'
-430   READ (IUNIN,*) NMOLI
+     . '*** 4B. NEUTRAL MOLECULE SPECIES CARDS, NMOLI SPECIES'
+  430 READ (IUNIN,*) NMOLI
       WRITE (iunout,*) '       NMOLI= ',NMOLI
       CALL EIRENE_LEER(1)
       NMOLI_IN=NMOLI
       NSPA=NSPH+NATMI
-      DO 431 IMOL=1,NMOLI
-        ISPZ=NSPA+IMOL
-        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSM(IMOL),NCHARM(IMOL),
+      DO 431 JMOL=1,NMOLI
+        ISPZ=NSPA+JMOL
+        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSM(JMOL),NCHARM(JMOL),
      .                       NPRT(ISPZ),NDUMM,   !NCHRGM=0, DEFAULT
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
-     .                       NRCM(IMOL),NFOLM(IMOL),NGENM(IMOL),
+     .                       NRCM(JMOL),NFOLM(JMOL),NGENM(JMOL),
      .                       NHSTS(ISPZ)
         IF (ISRT(ISPZ,1).LT.0) THEN
           WRITE (iunout,*) 'INPUT ERROR IN BLOCK 4B '
-          WRITE (iunout,*) 'MOLECULAR SPECIES ',IMOL,':'
+          WRITE (iunout,*) 'MOLECULAR SPECIES ',JMOL,':'
           WRITE (iunout,*) 'ISRT LT 0 OPTION IS NOT AVAILABLE ANYMORE'
           WRITE (iunout,*) 'PROBABLY YOU MEAN: ISRT= ',NMOLI+1
           IERROR=IERROR+1
         ENDIF
-        DO 432 K=1,NRCM(IMOL)
+        DO 432 K=1,NRCM(JMOL)
           IF (NUMSEC .LT. 3) THEN
-            READ (IUNIN,6666) IREACM(IMOL,K),IBULKM(IMOL,K),
-     .                        ISCD1M(IMOL,K),ISCD2M(IMOL,K),
-     .                        ISCDEM(IMOL,K),IESTMM(IMOL,K),
-     .                        IBGKM(IMOL,K)
+            READ (IUNIN,6666) IREACM(JMOL,K),IBULKM(JMOL,K),
+     .                        ISCD1M(JMOL,K),ISCD2M(JMOL,K),
+     .                        ISCDEM(JMOL,K),IESTMM(JMOL,K),
+     .                        IBGKM(JMOL,K)
           ELSE IF (NUMSEC .EQ. 3) THEN
-            READ (IUNIN,6666) IREACM(IMOL,K),IBULKM(IMOL,K),
-     .                        ISCD1M(IMOL,K),ISCD2M(IMOL,K),
-     .                        ISCD3M(IMOL,K),
-     .                        ISCDEM(IMOL,K),IESTMM(IMOL,K),
-     .                        IBGKM(IMOL,K)
+            READ (IUNIN,6666) IREACM(JMOL,K),IBULKM(JMOL,K),
+     .                        ISCD1M(JMOL,K),ISCD2M(JMOL,K),
+     .                        ISCD3M(JMOL,K),
+     .                        ISCDEM(JMOL,K),IESTMM(JMOL,K),
+     .                        IBGKM(JMOL,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1M = ',ISCD1M(IMOL,K)
-            WRITE (iunout,*) ' ISCD2M = ',ISCD2M(IMOL,K)
-            WRITE (iunout,*) ' ISCD3M = ',ISCD3M(IMOL,K)
-            WRITE (iunout,*) ' ISCDEM = ',ISCDEM(IMOL,K)
-            WRITE (iunout,*) ' IESTMM = ',IESTMM(IMOL,K)
-            WRITE (iunout,*) ' IBGKM  = ',IBGKM(IMOL,K)
+            WRITE (iunout,*) ' ISCD1M = ',ISCD1M(JMOL,K)
+            WRITE (iunout,*) ' ISCD2M = ',ISCD2M(JMOL,K)
+            WRITE (iunout,*) ' ISCD3M = ',ISCD3M(JMOL,K)
+            WRITE (iunout,*) ' ISCDEM = ',ISCDEM(JMOL,K)
+            WRITE (iunout,*) ' IESTMM = ',IESTMM(JMOL,K)
+            WRITE (iunout,*) ' IBGKM  = ',IBGKM(JMOL,K)
           ELSE IF (NUMSEC .EQ. 4) THEN
-            READ (IUNIN,6666) IREACM(IMOL,K),IBULKM(IMOL,K),
-     .                        ISCD1M(IMOL,K),ISCD2M(IMOL,K),
-     .                        ISCD3M(IMOL,K),ISCD4M(IMOL,K),
-     .                        ISCDEM(IMOL,K),IESTMM(IMOL,K),
-     .                        IBGKM(IMOL,K)
+            READ (IUNIN,6666) IREACM(JMOL,K),IBULKM(JMOL,K),
+     .                        ISCD1M(JMOL,K),ISCD2M(JMOL,K),
+     .                        ISCD3M(JMOL,K),ISCD4M(JMOL,K),
+     .                        ISCDEM(JMOL,K),IESTMM(JMOL,K),
+     .                        IBGKM(JMOL,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1M = ',ISCD1M(IMOL,K)
-            WRITE (iunout,*) ' ISCD2M = ',ISCD2M(IMOL,K)
-            WRITE (iunout,*) ' ISCD3M = ',ISCD3M(IMOL,K)
-            WRITE (iunout,*) ' ISCD4M = ',ISCD4M(IMOL,K)
-            WRITE (iunout,*) ' ISCDEM = ',ISCDEM(IMOL,K)
-            WRITE (iunout,*) ' IESTMM = ',IESTMM(IMOL,K)
-            WRITE (iunout,*) ' IBGKM  = ',IBGKM(IMOL,K)
+            WRITE (iunout,*) ' ISCD1M = ',ISCD1M(JMOL,K)
+            WRITE (iunout,*) ' ISCD2M = ',ISCD2M(JMOL,K)
+            WRITE (iunout,*) ' ISCD3M = ',ISCD3M(JMOL,K)
+            WRITE (iunout,*) ' ISCD4M = ',ISCD4M(JMOL,K)
+            WRITE (iunout,*) ' ISCDEM = ',ISCDEM(JMOL,K)
+            WRITE (iunout,*) ' IESTMM = ',IESTMM(JMOL,K)
+            WRITE (iunout,*) ' IBGKM  = ',IBGKM(JMOL,K)
           END IF
-          LMULTI = LMULTI .OR. (IBGKM(IMOL,K) /= 0)
-          READ (IUNIN,6664) EELECM(IMOL,K),EBULKM(IMOL,K),
-     .                      ESCD1M(IMOL,K),ESCD2M,
-     .                      FREACM(IMOL,K),EDPOTM(IMOL,K)
+          LMULTI = LMULTI .OR. (IBGKM(JMOL,K) /= 0)
+          READ (IUNIN,6664) EELECM(JMOL,K),EBULKM(JMOL,K),
+     .                      ESCD1M(JMOL,K),ESCD2M,
+     .                      FREACM(JMOL,K),EDPOTM(JMOL,K)
 cdr  for backward compatibility:  formerly: two KER values, now one total is used.
-          ESCD1M(IMOL,K) = ESCD1M(IMOL,K)+ESCD2M
+          ESCD1M(JMOL,K) = ESCD1M(JMOL,K)+ESCD2M
           NSC = 0
-          IF (ISCD3M(IMOL,K) > 0) NSC = 3
-          IF (ISCD4M(IMOL,K) > 0) NSC = 4
+          IF (ISCD3M(JMOL,K) > 0) NSC = 3
+          IF (ISCD4M(JMOL,K) > 0) NSC = 4
           IF (NSC > 0) THEN
-            IF ((REACDAT(IREACM(IMOL,K))%NOSEC > 0) .AND.
-     .          (REACDAT(IREACM(IMOL,K))%NOSEC /= NSC)) THEN
+            IF ((REACDAT(IREACM(JMOL,K))%NOSEC > 0) .AND.
+     .          (REACDAT(IREACM(JMOL,K))%NOSEC /= NSC)) THEN
               WRITE (IUNOUT,*) ' INCONSISTENCY FOUND CONCERNING',
-     .              ' REACTION ',IREACM(IMOL,K)
+     .              ' REACTION ',IREACM(JMOL,K)
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
-     .              ' PREVIOUSLY WAS ',REACDAT(IREACM(IMOL,K))%NOSEC
+     .              ' PREVIOUSLY WAS ',REACDAT(IREACM(JMOL,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
               WRITE (IUNOUT,*) ' USE ',
-     .              MAX(REACDAT(IREACM(IMOL,K))%NOSEC,NSC),
-     .              ' SECONDARIES '
-              REACDAT(IREACM(IMOL,K))%NOSEC =
-     .              MAX(REACDAT(IREACM(IMOL,K))%NOSEC,NSC)
+     .              MAX(REACDAT(IREACM(JMOL,K))%NOSEC,NSC),
+     .              ' SECONDARIES'
+              REACDAT(IREACM(JMOL,K))%NOSEC =
+     .              MAX(REACDAT(IREACM(JMOL,K))%NOSEC,NSC)
             ELSE
-              REACDAT(IREACM(IMOL,K))%NOSEC = NSC
+              REACDAT(IREACM(JMOL,K))%NOSEC = NSC
             END IF
           END IF
-432     CONTINUE
-431   CONTINUE
+  432   CONTINUE
+  431 CONTINUE
 C
 C  READ TEST PARTICLE IONS SPECIES CARDS
 C
       READ (IUNIN,*)
-      WRITE (iunout,*) '*4C.   TEST IONS SPECIES CARDS, NIONI SPECIES '
-440   READ (IUNIN,*) NIONI
+      WRITE (iunout,*) '*** 4C. TEST IONS SPECIES CARDS, NIONI SPECIES'
+  440 READ (IUNIN,*) NIONI
       WRITE (iunout,*) '       NIONI= ',NIONI
       CALL EIRENE_LEER(1)
       NIONI_IN=NIONI
       NSPAM=NSPH+NATMI+NMOLI
-      DO 441 IION=1,NIONI
-        ISPZ=NSPAM+IION
-        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSI(IION),NCHARI(IION),
-     .                       NPRT(ISPZ),NCHRGI(IION),
+      DO 441 JION=1,NIONI
+        ISPZ=NSPAM+JION
+        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSI(JION),NCHARI(JION),
+     .                       NPRT(ISPZ),NCHRGI(JION),
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
-     .                       NRCI(IION),NFOLI(IION),NGENI(IION),
+     .                       NRCI(JION),NFOLI(JION),NGENI(JION),
      .                       NHSTS(ISPZ)
-        DO 442 K=1,NRCI(IION)
+        DO 442 K=1,NRCI(JION)
           IF (NUMSEC .LT. 3) THEN
-            READ (IUNIN,6666) IREACI(IION,K),IBULKI(IION,K),
-     .                        ISCD1I(IION,K),ISCD2I(IION,K),
-     .                        ISCDEI(IION,K),IESTMI(IION,K),
-     .                        IBGKI(IION,K)
+            READ (IUNIN,6666) IREACI(JION,K),IBULKI(JION,K),
+     .                        ISCD1I(JION,K),ISCD2I(JION,K),
+     .                        ISCDEI(JION,K),IESTMI(JION,K),
+     .                        IBGKI(JION,K)
           ELSE IF (NUMSEC .EQ. 3) THEN
-            READ (IUNIN,6666) IREACI(IION,K),IBULKI(IION,K),
-     .                        ISCD1I(IION,K),ISCD2I(IION,K),
-     .                        ISCD3I(IION,K),
-     .                        ISCDEI(IION,K),IESTMI(IION,K),
-     .                        IBGKI(IION,K)
+            READ (IUNIN,6666) IREACI(JION,K),IBULKI(JION,K),
+     .                        ISCD1I(JION,K),ISCD2I(JION,K),
+     .                        ISCD3I(JION,K),
+     .                        ISCDEI(JION,K),IESTMI(JION,K),
+     .                        IBGKI(JION,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*) ' THREE SECONDARY GROUPS FOR SPECIES ',
      .                    TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1I = ',ISCD1I(IION,K)
-            WRITE (iunout,*) ' ISCD2I = ',ISCD2I(IION,K)
-            WRITE (iunout,*) ' ISCD3I = ',ISCD3I(IION,K)
-            WRITE (iunout,*) ' ISCDEI = ',ISCDEI(IION,K)
-            WRITE (iunout,*) ' IESTMI = ',IESTMI(IION,K)
-            WRITE (iunout,*) ' IBGKI  = ',IBGKI(IION,K)
+            WRITE (iunout,*) ' ISCD1I = ',ISCD1I(JION,K)
+            WRITE (iunout,*) ' ISCD2I = ',ISCD2I(JION,K)
+            WRITE (iunout,*) ' ISCD3I = ',ISCD3I(JION,K)
+            WRITE (iunout,*) ' ISCDEI = ',ISCDEI(JION,K)
+            WRITE (iunout,*) ' IESTMI = ',IESTMI(JION,K)
+            WRITE (iunout,*) ' IBGKI  = ',IBGKI(JION,K)
           ELSE IF (NUMSEC .EQ. 4) THEN
-            READ (IUNIN,6666) IREACI(IION,K),IBULKI(IION,K),
-     .                        ISCD1I(IION,K),ISCD2I(IION,K),
-     .                        ISCD3I(IION,K),ISCD4I(IION,K),
-     .                        ISCDEI(IION,K),IESTMI(IION,K),
-     .                        IBGKI(IION,K)
+            READ (IUNIN,6666) IREACI(JION,K),IBULKI(JION,K),
+     .                        ISCD1I(JION,K),ISCD2I(JION,K),
+     .                        ISCD3I(JION,K),ISCD4I(JION,K),
+     .                        ISCDEI(JION,K),IESTMI(JION,K),
+     .                        IBGKI(JION,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*) ' FOUR SECONDARY GROUPS FOR SPECIES ',
      .                    TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1I = ',ISCD1I(IION,K)
-            WRITE (iunout,*) ' ISCD2I = ',ISCD2I(IION,K)
-            WRITE (iunout,*) ' ISCD3I = ',ISCD3I(IION,K)
-            WRITE (iunout,*) ' ISCD4I = ',ISCD4I(IION,K)
-            WRITE (iunout,*) ' ISCDEI = ',ISCDEI(IION,K)
-            WRITE (iunout,*) ' IESTMI = ',IESTMI(IION,K)
-            WRITE (iunout,*) ' IBGKI  = ',IBGKI(IION,K)
+            WRITE (iunout,*) ' ISCD1I = ',ISCD1I(JION,K)
+            WRITE (iunout,*) ' ISCD2I = ',ISCD2I(JION,K)
+            WRITE (iunout,*) ' ISCD3I = ',ISCD3I(JION,K)
+            WRITE (iunout,*) ' ISCD4I = ',ISCD4I(JION,K)
+            WRITE (iunout,*) ' ISCDEI = ',ISCDEI(JION,K)
+            WRITE (iunout,*) ' IESTMI = ',IESTMI(JION,K)
+            WRITE (iunout,*) ' IBGKI  = ',IBGKI(JION,K)
           END IF
-          LMULTI = LMULTI .OR. (IBGKI(IION,K) /= 0)
-          READ (IUNIN,6664) EELECI(IION,K),EBULKI(IION,K),
-     .                      ESCD1I(IION,K),ESCD2I,
-     .                      FREACI(IION,K),EDPOTI(IION,K)
-          ESCD1I(IION,K) = ESCD1I(IION,K)+ESCD2I
+          LMULTI = LMULTI .OR. (IBGKI(JION,K) /= 0)
+          READ (IUNIN,6664) EELECI(JION,K),EBULKI(JION,K),
+     .                      ESCD1I(JION,K),ESCD2I,
+     .                      FREACI(JION,K),EDPOTI(JION,K)
+          ESCD1I(JION,K) = ESCD1I(JION,K)+ESCD2I
           NSC = 0
-          IF (ISCD3I(IION,K) > 0) NSC = 3
-          IF (ISCD4I(IION,K) > 0) NSC = 4
+          IF (ISCD3I(JION,K) > 0) NSC = 3
+          IF (ISCD4I(JION,K) > 0) NSC = 4
           IF (NSC > 0) THEN
-            IF ((REACDAT(IREACI(IION,K))%NOSEC > 0) .AND.
-     .          (REACDAT(IREACI(IION,K))%NOSEC /= NSC)) THEN
+            IF ((REACDAT(IREACI(JION,K))%NOSEC > 0) .AND.
+     .          (REACDAT(IREACI(JION,K))%NOSEC /= NSC)) THEN
               WRITE (IUNOUT,*) ' INCONSISTENCY FOUND CONCERNING',
-     .              ' REACTION ',IREACI(IION,K)
+     .              ' REACTION ',IREACI(JION,K)
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
-     .              ' PREVIOUSLY WAS ',REACDAT(IREACI(IION,K))%NOSEC
+     .              ' PREVIOUSLY WAS ',REACDAT(IREACI(JION,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
               WRITE (IUNOUT,*) ' USE ',
-     .              MAX(REACDAT(IREACI(IION,K))%NOSEC,NSC),
-     .              ' SECONDARIES '
-              REACDAT(IREACI(IION,K))%NOSEC =
-     .              MAX(REACDAT(IREACI(IION,K))%NOSEC,NSC)
+     .              MAX(REACDAT(IREACI(JION,K))%NOSEC,NSC),
+     .              ' SECONDARIES'
+              REACDAT(IREACI(JION,K))%NOSEC =
+     .              MAX(REACDAT(IREACI(JION,K))%NOSEC,NSC)
             ELSE
-              REACDAT(IREACI(IION,K))%NOSEC = NSC
+              REACDAT(IREACI(JION,K))%NOSEC = NSC
             END IF
           END IF
-442     CONTINUE
-441   CONTINUE
+  442   CONTINUE
+  441 CONTINUE
 C
       READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:3) == '***') THEN
@@ -1926,96 +1983,96 @@ C
       END IF
       IREAD=0
       WRITE (iunout,*)
-     .  '*4D.   NEUTRAL PHOTONS SPECIES CARDS, NPHOTI SPECIES'
+     . '*** 4D. NEUTRAL PHOTONS SPECIES CARDS, NPHOTI SPECIES'
       READ (IUNIN,*) NPHOTI
       WRITE (iunout,*) '       NPHOTI= ',NPHOTI
       CALL EIRENE_LEER(1)
       NPHOTI_IN=NPHOTI
 C
-      DO 451 IPHOT=1,NPHOTI
-        ISPZ=IPHOT
+      DO 451 JPHOT=1,NPHOTI
+        ISPZ=JPHOT
         READ (IUNIN,66666) I,TEXTS(ISPZ),NDUMM1,NDUMM2,
      .                       NDUMM3,NDUMM4,
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
-     .                       NRCPH(IPHOT),NFOLPH(IPHOT),NGENPH(IPHOT),
+     .                       NRCPH(JPHOT),NFOLPH(JPHOT),NGENPH(JPHOT),
      .                       NHSTS(ISPZ)
 C  DEFAULTS FOR PHOTONIC SPECIES:
         NPRT(ISPZ)=1
-        DO 452 K=1,NRCPH(IPHOT)
+        DO 452 K=1,NRCPH(JPHOT)
           IF (NUMSEC .LT. 3) THEN
-            READ (IUNIN,6666) IREACPH(IPHOT,K),IBULKPH(IPHOT,K),
-     .                        ISCD1PH(IPHOT,K),ISCD2PH(IPHOT,K),
-     .                        ISCDEPH(IPHOT,K),IESTMPH(IPHOT,K),
-     .                        IBGKPH(IPHOT,K)
+            READ (IUNIN,6666) IREACPH(JPHOT,K),IBULKPH(JPHOT,K),
+     .                        ISCD1PH(JPHOT,K),ISCD2PH(JPHOT,K),
+     .                        ISCDEPH(JPHOT,K),IESTMPH(JPHOT,K),
+     .                        IBGKPH(JPHOT,K)
           ELSE IF (NUMSEC .EQ. 3) THEN
-            READ (IUNIN,6666) IREACPH(IPHOT,K),IBULKPH(IPHOT,K),
-     .                        ISCD1PH(IPHOT,K),ISCD2PH(IPHOT,K),
-     .                        ISCD3PH(IPHOT,K),
-     .                        ISCDEPH(IPHOT,K),IESTMPH(IPHOT,K),
-     .                        IBGKPH(IPHOT,K)
+            READ (IUNIN,6666) IREACPH(JPHOT,K),IBULKPH(JPHOT,K),
+     .                        ISCD1PH(JPHOT,K),ISCD2PH(JPHOT,K),
+     .                        ISCD3PH(JPHOT,K),
+     .                        ISCDEPH(JPHOT,K),IESTMPH(JPHOT,K),
+     .                        IBGKPH(JPHOT,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1PH = ',ISCD1PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCD2PH = ',ISCD2PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCD3PH = ',ISCD3PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCDEPH = ',ISCDEPH(IPHOT,K)
-            WRITE (iunout,*) ' IESTMPH = ',IESTMPH(IPHOT,K)
-            WRITE (iunout,*) ' IBGKPH  = ',IBGKPH(IPHOT,K)
+            WRITE (iunout,*) ' ISCD1PH = ',ISCD1PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCD2PH = ',ISCD2PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCD3PH = ',ISCD3PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCDEPH = ',ISCDEPH(JPHOT,K)
+            WRITE (iunout,*) ' IESTMPH = ',IESTMPH(JPHOT,K)
+            WRITE (iunout,*) ' IBGKPH  = ',IBGKPH(JPHOT,K)
           ELSE IF (NUMSEC .EQ. 4) THEN
-            READ (IUNIN,6666) IREACPH(IPHOT,K),IBULKPH(IPHOT,K),
-     .                        ISCD1PH(IPHOT,K),ISCD2PH(IPHOT,K),
-     .                        ISCD3PH(IPHOT,K),ISCD4PH(IPHOT,K),
-     .                        ISCDEPH(IPHOT,K),IESTMPH(IPHOT,K),
-     .                        IBGKPH(IPHOT,K)
+            READ (IUNIN,6666) IREACPH(JPHOT,K),IBULKPH(JPHOT,K),
+     .                        ISCD1PH(JPHOT,K),ISCD2PH(JPHOT,K),
+     .                        ISCD3PH(JPHOT,K),ISCD4PH(JPHOT,K),
+     .                        ISCDEPH(JPHOT,K),IESTMPH(JPHOT,K),
+     .                        IBGKPH(JPHOT,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1PH = ',ISCD1PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCD2PH = ',ISCD2PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCD3PH = ',ISCD3PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCD4PH = ',ISCD4PH(IPHOT,K)
-            WRITE (iunout,*) ' ISCDEPH = ',ISCDEPH(IPHOT,K)
-            WRITE (iunout,*) ' IESTMPH = ',IESTMPH(IPHOT,K)
-            WRITE (iunout,*) ' IBGKPH  = ',IBGKPH(IPHOT,K)
+            WRITE (iunout,*) ' ISCD1PH = ',ISCD1PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCD2PH = ',ISCD2PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCD3PH = ',ISCD3PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCD4PH = ',ISCD4PH(JPHOT,K)
+            WRITE (iunout,*) ' ISCDEPH = ',ISCDEPH(JPHOT,K)
+            WRITE (iunout,*) ' IESTMPH = ',IESTMPH(JPHOT,K)
+            WRITE (iunout,*) ' IBGKPH  = ',IBGKPH(JPHOT,K)
           END IF
-          LMULTI = LMULTI .OR. (IBGKPH(IPHOT,K) /= 0)
-          READ (IUNIN,6664) EELECPH(IPHOT,K),EBULKPH(IPHOT,K),
-     .                      ESCD1PH(IPHOT,K),ESCD2PH,
-     .                      FREACPH(IPHOT,K),EDPOTPH(IPHOT,K)
-cdr  .                      FLDLMPH(IPHOT,K)  removed. now controlled by negative ngenph
-          ESCD1PH(IPHOT,K) = ESCD1PH(IPHOT,K)+ESCD2PH
+          LMULTI = LMULTI .OR. (IBGKPH(JPHOT,K) /= 0)
+          READ (IUNIN,6664) EELECPH(JPHOT,K),EBULKPH(JPHOT,K),
+     .                      ESCD1PH(JPHOT,K),ESCD2PH,
+     .                      FREACPH(JPHOT,K),EDPOTPH(JPHOT,K)
+cdr  .                      FLDLMPH(JPHOT,K)  removed. now controlled by negative ngenph
+          ESCD1PH(JPHOT,K) = ESCD1PH(JPHOT,K)+ESCD2PH
           NSC = 0
-          IF (ISCD3PH(IPHOT,K) > 0) NSC = 3
-          IF (ISCD4PH(IPHOT,K) > 0) NSC = 4
+          IF (ISCD3PH(JPHOT,K) > 0) NSC = 3
+          IF (ISCD4PH(JPHOT,K) > 0) NSC = 4
           IF (NSC > 0) THEN
-            IF ((REACDAT(IREACPH(IPHOT,K))%NOSEC > 0) .AND.
-     .          (REACDAT(IREACPH(IPHOT,K))%NOSEC /= NSC)) THEN
+            IF ((REACDAT(IREACPH(JPHOT,K))%NOSEC > 0) .AND.
+     .          (REACDAT(IREACPH(JPHOT,K))%NOSEC /= NSC)) THEN
               WRITE (IUNOUT,*) ' INCONSISTENCY FOUND CONCERNING',
-     .              ' REACTION ',IREACPH(IPHOT,K)
+     .              ' REACTION ',IREACPH(JPHOT,K)
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
-     .              ' PREVIOUSLY WAS ',REACDAT(IREACPH(IPHOT,K))%NOSEC
+     .              ' PREVIOUSLY WAS ',REACDAT(IREACPH(JPHOT,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
               WRITE (IUNOUT,*) ' USE ',
-     .              MAX(REACDAT(IREACPH(IPHOT,K))%NOSEC,NSC),
-     .              ' SECONDARIES '
-              REACDAT(IREACPH(IPHOT,K))%NOSEC =
-     .              MAX(REACDAT(IREACPH(IPHOT,K))%NOSEC,NSC)
+     .              MAX(REACDAT(IREACPH(JPHOT,K))%NOSEC,NSC),
+     .              ' SECONDARIES'
+              REACDAT(IREACPH(JPHOT,K))%NOSEC =
+     .              MAX(REACDAT(IREACPH(JPHOT,K))%NOSEC,NSC)
             ELSE
-              REACDAT(IREACPH(IPHOT,K))%NOSEC = NSC
+              REACDAT(IREACPH(JPHOT,K))%NOSEC = NSC
             END IF
           END IF
-452     CONTINUE
-451   CONTINUE
+  452   CONTINUE
+  451 CONTINUE
 C
 C  READ DATA FOR PLASMA BACKGROUND, 500--599
 C
-500   CONTINUE
+  500 CONTINUE
 C
-      IF (IREAD == 0)  READ (IUNIN,'(A72)') ZEILE
+      IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
 C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       CALL EIRENE_MASAGE
      .  ('*** 5. DATA FOR PLASMA BACKGROUND            ')
@@ -2025,8 +2082,8 @@ C  READ BULK IONS SPECIES CARDS
 C
       READ (IUNIN,'(A72)') ZEILE
 C     WRITE (iunout,'(1X,A)') trim(ZEILE)
-      WRITE (iunout,*) '*5A.   BULK ION SPECIES CARDS, NPLSI SPECIES '
-510   READ (IUNIN,'(A72)') ZEILE
+      WRITE (iunout,*) '*** 5A. BULK ION SPECIES CARDS, NPLSI SPECIES'
+  510 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 510
       READ(ZEILE,6666) NPLSI
       WRITE (iunout,*) '       NPLSI= ',NPLSI
@@ -2034,163 +2091,163 @@ C     WRITE (iunout,'(1X,A)') trim(ZEILE)
       NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
-! counter for  additional reaction cards possibly needed for "density models".
-      IDMDL = 0 
-c  loop over background species (except: electrons) 
-      DO 511 IPLS=1,NPLSI
-        ISPZ=NSPAMI+IPLS
-        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(IPLS),NCHARP(IPLS),
-     .                       NPRT(ISPZ),NCHRGP(IPLS),
+! counter for additional reaction cards possibly needed for "density models".
+      IDMDL = 0
+c  loop over background species (except: electrons)
+      DO 511 JPLS=1,NPLSI
+        ISPZ=NSPAMI+JPLS
+        READ (IUNIN,66666) I,TEXTS(ISPZ),NMASSP(JPLS),NCHARP(JPLS),
+     .                       NPRT(ISPZ),NCHRGP(JPLS),
      .                       ISRF(ISPZ,1),ISRT(ISPZ,1),NUMSEC,
-     .                       NRCP(IPLS),NDUMM1,NDUMM2,
+     .                       NRCP(JPLS),NDUMM1,NDUMM2,
      .                       NHSTS(ISPZ),NDUMM4,
-     .                       CDENMODEL(IPLS),NRE
-        CALL EIRENE_UPPERCASE (CDENMODEL(IPLS))
-        DO 512 K=1,NRCP(IPLS)
+     .                       CDENMODEL(JPLS),NRE
+        CALL EIRENE_UPPERCASE (CDENMODEL(JPLS))
+        DO 512 K=1,NRCP(JPLS)
           IF (NUMSEC .LT. 3) THEN
-            READ (IUNIN,6666) IREACP(IPLS,K),IBULKP(IPLS,K),
-     .                        ISCD1P(IPLS,K),ISCD2P(IPLS,K),
-     .                        ISCDEP(IPLS,K)
+            READ (IUNIN,6666) IREACP(JPLS,K),IBULKP(JPLS,K),
+     .                        ISCD1P(JPLS,K),ISCD2P(JPLS,K),
+     .                        ISCDEP(JPLS,K)
           ELSE IF (NUMSEC .EQ. 3) THEN
-            READ (IUNIN,6666) IREACP(IPLS,K),IBULKP(IPLS,K),
-     .                        ISCD1P(IPLS,K),ISCD2P(IPLS,K),
-     .                        ISCD3P(IPLS,K),ISCDEP(IPLS,K)
+            READ (IUNIN,6666) IREACP(JPLS,K),IBULKP(JPLS,K),
+     .                        ISCD1P(JPLS,K),ISCD2P(JPLS,K),
+     .                        ISCD3P(JPLS,K),ISCDEP(JPLS,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1P = ',ISCD1P(IPLS,K)
-            WRITE (iunout,*) ' ISCD2P = ',ISCD2P(IPLS,K)
-            WRITE (iunout,*) ' ISCD3P = ',ISCD3P(IPLS,K)
-            WRITE (iunout,*) ' ISCDEP = ',ISCDEP(IPLS,K)
+            WRITE (iunout,*) ' ISCD1P = ',ISCD1P(JPLS,K)
+            WRITE (iunout,*) ' ISCD2P = ',ISCD2P(JPLS,K)
+            WRITE (iunout,*) ' ISCD3P = ',ISCD3P(JPLS,K)
+            WRITE (iunout,*) ' ISCDEP = ',ISCDEP(JPLS,K)
           ELSE IF (NUMSEC .EQ. 4) THEN
-            READ (IUNIN,6666) IREACP(IPLS,K),IBULKP(IPLS,K),
-     .                        ISCD1P(IPLS,K),ISCD2P(IPLS,K),
-     .                        ISCD3P(IPLS,K),ISCD4P(IPLS,K),
-     .                        ISCDEP(IPLS,K)
+            READ (IUNIN,6666) IREACP(JPLS,K),IBULKP(JPLS,K),
+     .                        ISCD1P(JPLS,K),ISCD2P(JPLS,K),
+     .                        ISCD3P(JPLS,K),ISCD4P(JPLS,K),
+     .                        ISCDEP(JPLS,K)
             WRITE (iunout,*) ' WARNING !!! '
             WRITE (iunout,*)
      .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
-            WRITE (iunout,*) ' ISCD1P = ',ISCD1P(IPLS,K)
-            WRITE (iunout,*) ' ISCD2P = ',ISCD2P(IPLS,K)
-            WRITE (iunout,*) ' ISCD3P = ',ISCD3P(IPLS,K)
-            WRITE (iunout,*) ' ISCD4P = ',ISCD4P(IPLS,K)
-            WRITE (iunout,*) ' ISCDEP = ',ISCDEP(IPLS,K)
+            WRITE (iunout,*) ' ISCD1P = ',ISCD1P(JPLS,K)
+            WRITE (iunout,*) ' ISCD2P = ',ISCD2P(JPLS,K)
+            WRITE (iunout,*) ' ISCD3P = ',ISCD3P(JPLS,K)
+            WRITE (iunout,*) ' ISCD4P = ',ISCD4P(JPLS,K)
+            WRITE (iunout,*) ' ISCDEP = ',ISCDEP(JPLS,K)
           END IF
-          READ (IUNIN,6664) EELECP(IPLS,K),EBULKP(IPLS,K),
-     .                      ESCD1P(IPLS,K),ESCD2P,
-     .                      FREACP(IPLS,K),EDPOTP(IPLS,K)
-          ESCD1P(IPLS,K) = ESCD1P(IPLS,K)+ESCD2P
+          READ (IUNIN,6664) EELECP(JPLS,K),EBULKP(JPLS,K),
+     .                      ESCD1P(JPLS,K),ESCD2P,
+     .                      FREACP(JPLS,K),EDPOTP(JPLS,K)
+          ESCD1P(JPLS,K) = ESCD1P(JPLS,K)+ESCD2P
 c
 cdr  deal with non-default number of secondaries, NSC > 2
           NSC = 0
-          IF (ISCD3P(IPLS,K) > 0) NSC = 3
-          IF (ISCD4P(IPLS,K) > 0) NSC = 4
+          IF (ISCD3P(JPLS,K) > 0) NSC = 3
+          IF (ISCD4P(JPLS,K) > 0) NSC = 4
           IF (NSC > 0) THEN
-            IF ((REACDAT(IREACP(IPLS,K))%NOSEC > 0) .AND.
-     .          (REACDAT(IREACP(IPLS,K))%NOSEC /= NSC)) THEN
+            IF ((REACDAT(IREACP(JPLS,K))%NOSEC > 0) .AND.
+     .          (REACDAT(IREACP(JPLS,K))%NOSEC /= NSC)) THEN
               WRITE (IUNOUT,*) ' INCONSISTENCY FOUND CONCERNING',
-     .              ' REACTION ',IREACP(IPLS,K)
+     .              ' REACTION ',IREACP(JPLS,K)
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
-     .              ' PREVIOUSLY WAS ',REACDAT(IREACP(IPLS,K))%NOSEC
+     .              ' PREVIOUSLY WAS ',REACDAT(IREACP(JPLS,K))%NOSEC
               WRITE (IUNOUT,*) ' NUMBER OF SECONDARIES FOUND',
      .              ' NOW IS         ',NSC
               WRITE (IUNOUT,*) ' USE ',
-     .              MAX(REACDAT(IREACP(IPLS,K))%NOSEC,NSC),
-     .              ' SECONDARIES '
-              REACDAT(IREACP(IPLS,K))%NOSEC =
-     .              MAX(REACDAT(IREACP(IPLS,K))%NOSEC,NSC)
+     .              MAX(REACDAT(IREACP(JPLS,K))%NOSEC,NSC),
+     .              ' SECONDARIES'
+              REACDAT(IREACP(JPLS,K))%NOSEC =
+     .              MAX(REACDAT(IREACP(JPLS,K))%NOSEC,NSC)
             ELSE
 
-              REACDAT(IREACP(IPLS,K))%NOSEC = NSC
+              REACDAT(IREACP(JPLS,K))%NOSEC = NSC
             END IF
 cdr  NSC: number of secondaries. But here: 0,1,2 secondaries all have NSC=0 ??
           END IF
 c
-512     CONTINUE
-        IF (LEN_TRIM(CDENMODEL(IPLS)) > 0) THEN
-          ALLOCATE (TDMPAR(IPLS)%TDM)
-          TDMPAR(IPLS)%TDM%NRE=MAX(NRE,1)
-          ALLOCATE (TDMPAR(IPLS)%TDM%ISP(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%ITP(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(TDMPAR(IPLS)%TDM%NRE))
+  512   CONTINUE
+        IF (LEN_TRIM(CDENMODEL(JPLS)) > 0) THEN
+          ALLOCATE (TDMPAR(JPLS)%TDM)
+          TDMPAR(JPLS)%TDM%NRE=MAX(NRE,1)
+          ALLOCATE (TDMPAR(JPLS)%TDM%ISP(TDMPAR(JPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(JPLS)%TDM%ITP(TDMPAR(JPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(JPLS)%TDM%ISTR(TDMPAR(JPLS)%TDM%NRE))
 cdr only if needed: for additional A&M data structure on REACDAT
 cdr                 so far only for "DENSITYMODELS":
-          ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%H123(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(TDMPAR(IPLS)%TDM%NRE))
-          ALLOCATE (TDMPAR(IPLS)%TDM%CR(TDMPAR(IPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(JPLS)%TDM%FNAME(TDMPAR(JPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(JPLS)%TDM%H123(TDMPAR(JPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(JPLS)%TDM%REACTION(TDMPAR(JPLS)%TDM%NRE))
+          ALLOCATE (TDMPAR(JPLS)%TDM%CR(TDMPAR(JPLS)%TDM%NRE))
 
-          SELECT CASE (CDENMODEL(IPLS))
+          SELECT CASE (CDENMODEL(JPLS))
           CASE ('FORT.13   ')
-            READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1)
+            READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1)
 c  default: only for bulk ions
-                              TDMPAR(IPLS)%TDM%ITP(1)=4
+                              TDMPAR(JPLS)%TDM%ITP(1)=4
           CASE ('FORT.10   ')
-            READ (IUNIN,6666) TDMPAR(IPLS)%TDM%ISP(1),
-     .                        TDMPAR(IPLS)%TDM%ITP(1),
-     .                        TDMPAR(IPLS)%TDM%ISTR(1)
+            READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1),
+     .                        TDMPAR(JPLS)%TDM%ITP(1),
+     .                        TDMPAR(JPLS)%TDM%ISTR(1)
           CASE ('CONSTANT  ')
-            READ (IUNIN,6664) TDMPAR(IPLS)%TDM%TVAL,
-     .                        TDMPAR(IPLS)%TDM%DVAL,
-     .                        TDMPAR(IPLS)%TDM%VXVAL,
-     .                        TDMPAR(IPLS)%TDM%VYVAL,
-     .                        TDMPAR(IPLS)%TDM%VZVAL
+            READ (IUNIN,6664) TDMPAR(JPLS)%TDM%TVAL,
+     .                        TDMPAR(JPLS)%TDM%DVAL,
+     .                        TDMPAR(JPLS)%TDM%VXVAL,
+     .                        TDMPAR(JPLS)%TDM%VYVAL,
+     .                        TDMPAR(JPLS)%TDM%VZVAL
           CASE ('MULTIPLY  ')
             READ (IUNIN,'(3I6,6x,3E12.4)')
-     .           TDMPAR(IPLS)%TDM%ISP(1),
-     .           TDMPAR(IPLS)%TDM%ITP(1),
-     .           TDMPAR(IPLS)%TDM%ISTR(1),
-     .           TDMPAR(IPLS)%TDM%DFACTOR,
-     .           TDMPAR(IPLS)%TDM%TFACTOR,
-     .           TDMPAR(IPLS)%TDM%VFACTOR
-                 TDMPAR(IPLS)%TDM%ITP(1)=4
+     .           TDMPAR(JPLS)%TDM%ISP(1),
+     .           TDMPAR(JPLS)%TDM%ITP(1),
+     .           TDMPAR(JPLS)%TDM%ISTR(1),
+     .           TDMPAR(JPLS)%TDM%DFACTOR,
+     .           TDMPAR(JPLS)%TDM%TFACTOR,
+     .           TDMPAR(JPLS)%TDM%VFACTOR
+                 TDMPAR(JPLS)%TDM%ITP(1)=4
           CASE ('SAHA      ')
 !PB   TO BE WRITTEN
           CASE ('BOLTZMANN ')
             READ (IUNIN,'(3I6,6x,2E12.4)')
-     .           TDMPAR(IPLS)%TDM%ISP(1),
-     .           TDMPAR(IPLS)%TDM%ITP(1),
-     .           TDMPAR(IPLS)%TDM%ISTR(1),
-     .           TDMPAR(IPLS)%TDM%G_BOLTZ,
-     .           TDMPAR(IPLS)%TDM%DELTAE
+     .           TDMPAR(JPLS)%TDM%ISP(1),
+     .           TDMPAR(JPLS)%TDM%ITP(1),
+     .           TDMPAR(JPLS)%TDM%ISTR(1),
+     .           TDMPAR(JPLS)%TDM%G_BOLTZ,
+     .           TDMPAR(JPLS)%TDM%DELTAE
           CASE ('CORONA    ')
             IDMDL = IDMDL + 1  !  ONE MORE H.2 REACTION data set
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
-     .           TDMPAR(IPLS)%TDM%ISP(1),
-     .           TDMPAR(IPLS)%TDM%ITP(1),
-     .           TDMPAR(IPLS)%TDM%ISTR(1),
-     .           TDMPAR(IPLS)%TDM%FNAME(1),
-     .           TDMPAR(IPLS)%TDM%H123(1),
-     .           TDMPAR(IPLS)%TDM%REACTION(1),
-     .           TDMPAR(IPLS)%TDM%CR(1),
-     .           TDMPAR(IPLS)%TDM%A_CORONA
-            IF (INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.2') == 0) THEN
+     .           TDMPAR(JPLS)%TDM%ISP(1),
+     .           TDMPAR(JPLS)%TDM%ITP(1),
+     .           TDMPAR(JPLS)%TDM%ISTR(1),
+     .           TDMPAR(JPLS)%TDM%FNAME(1),
+     .           TDMPAR(JPLS)%TDM%H123(1),
+     .           TDMPAR(JPLS)%TDM%REACTION(1),
+     .           TDMPAR(JPLS)%TDM%CR(1),
+     .           TDMPAR(JPLS)%TDM%A_CORONA
+            IF (INDEX(TDMPAR(JPLS)%TDM%H123(1),'H.2') == 0) THEN
               WRITE (iunout,*)
-     .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL '
-              WRITE (iunout,*) ' ONLY H.2 REACTIONS ARE PERMITTED '
-              WRITE (iunout,*) ' IPLS = ',IPLS
+     .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL'
+              WRITE (iunout,*) ' ONLY H.2 REACTIONS ARE PERMITTED'
+              WRITE (iunout,*) ' IPLS = ',JPLS
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD    ')
             IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
-            DO I=1, TDMPAR(IPLS)%TDM%NRE
+            DO I=1, TDMPAR(JPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
-     .             TDMPAR(IPLS)%TDM%ISP(I),
-     .             TDMPAR(IPLS)%TDM%ITP(I),
-     .             TDMPAR(IPLS)%TDM%ISTR(I),
-     .             TDMPAR(IPLS)%TDM%FNAME(I),
-     .             TDMPAR(IPLS)%TDM%H123(I),
-     .             TDMPAR(IPLS)%TDM%REACTION(I),
-     .             TDMPAR(IPLS)%TDM%CR(I)
-              IF (INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.11') == 0 .AND.
-     .            INDEX(TDMPAR(IPLS)%TDM%H123(1),'H.12') == 0) THEN
+     .             TDMPAR(JPLS)%TDM%ISP(I),
+     .             TDMPAR(JPLS)%TDM%ITP(I),
+     .             TDMPAR(JPLS)%TDM%ISTR(I),
+     .             TDMPAR(JPLS)%TDM%FNAME(I),
+     .             TDMPAR(JPLS)%TDM%H123(I),
+     .             TDMPAR(JPLS)%TDM%REACTION(I),
+     .             TDMPAR(JPLS)%TDM%CR(I)
+              IF (INDEX(TDMPAR(JPLS)%TDM%H123(1),'H.11') == 0 .AND.
+     .            INDEX(TDMPAR(JPLS)%TDM%H123(1),'H.12') == 0) THEN
                 WRITE (iunout,*)
-     .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL '
-                WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS '
-                WRITE (IUNOUT,*) ' ARE PERMITTED '
-                WRITE (iunout,*) ' IPLS = ',IPLS
+     .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL'
+                WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS'
+                WRITE (IUNOUT,*) ' ARE PERMITTED'
+                WRITE (iunout,*) ' IPLS = ',JPLS
                 CALL EIRENE_EXIT_OWN(1)
               END IF
             END DO
@@ -2198,26 +2255,31 @@ c  default: only for bulk ions
 !PB  NOTHING TO BE DONE
           END SELECT
         END IF
-511   CONTINUE   ! nplsi
+  511 CONTINUE   ! nplsi
 cdr  additional reaction cards due to density models: idmdl
 cdr   nreaci=nreaci=idmdl  ??
+      CALL EIRENE_LEER(1)
 C
       DO I=1,NSPZ
         CALL EIRENE_UPPERCASE (TEXTS(I))
       END DO
-       
+
 C
-520   READ (IUNIN,'(A72)') ZEILE
+  520 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') THEN
 C       WRITE (iunout,'(1x,a)') trim(ZEILE)
         GOTO 520
       ENDIF
       CALL EIRENE_MASAGE
-     .  ('*5B.   PLASMA BACKGROUND DATA                ')
+     .  ('*** 5B. PLASMA BACKGROUND DATA               ')
       CALL EIRENE_LEER(1)
       READ (ZEILE,6666) (INDPRO(J),J=1,12)
 
       DO J=1,12
+C  Indicate "smoothed" input tallies (interpolation into cells)
+C  amongst the 12 input tallies read here.
+C  formerly: LSMOPRO(J) flag.
+C  Smoothing is currently only for tallies 1 to 7.
         IF (ABS(INDPRO(J)) > 100) THEN
           LSMOPRO(J) = .TRUE.
           INDPRO(J) = MOD(INDPRO(J),100)
@@ -2267,14 +2329,14 @@ C  Ti profile(s)
         ELSE
 C  ONLY ONE COMMON ION TEMPERATURE FOR ALL SPECIES
           READ (IUNIN,6664)  TI0(1),TI1(1),TI2(1),TI3(1),TI4(1),TI5(1)
-          DO 530 IPLS=2,NPLSTI
-            TI0(IPLS)=TI0(1)
-            TI1(IPLS)=TI1(1)
-            TI2(IPLS)=TI2(1)
-            TI3(IPLS)=TI3(1)
-            TI4(IPLS)=TI4(1)
-            TI5(IPLS)=TI5(1)
-530       CONTINUE
+          DO 530 JPLS=2,NPLSTI
+            TI0(JPLS)=TI0(1)
+            TI1(JPLS)=TI1(1)
+            TI2(JPLS)=TI2(1)
+            TI3(JPLS)=TI3(1)
+            TI4(JPLS)=TI4(1)
+            TI5(JPLS)=TI5(1)
+  530     CONTINUE
         ENDIF
       ENDIF
 
@@ -2316,7 +2378,7 @@ C  READ NPLSI SETS OF INPUT PARAMETERS, ONE FOR EACH SPECIES IPLS
         END IF
       ENDIF
 
-c  pitch - or B-field profile
+c  pitch or B-field profile
 c                              !  default:                B-FIELD WITH BX=0
       NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B-FIELD WITH BY=0
 
@@ -2324,14 +2386,14 @@ c                              !  default:                B-FIELD WITH BX=0
       IF (INDPRO(5).LE.5)
      .  READ (IUNIN,6664) B0,B1,B2,B3,B4,B5
 
-c  cell volume -profile
+c  cell volume -profile card, OPTIONAL
 
       IF (INDPRO(12).LE.5) THEN
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
         IREAD=1
         IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) THEN
-          WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 5 '
-          WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED '
+          WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 5'
+          WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED'
           VL0=0
         ELSE
           READ (ZEILE,6664) VL0,VL1,VL2,VL3,VL4,VL5
@@ -2362,9 +2424,9 @@ cdr  subr. EIRENE_SETUP_HYDKIN_REACTIONS moved to folder: unfinished_business
 cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       ENDIF
 C
-C  READ  DATA FOR REFLECTION MODEL  600--699
+C  READ DATA FOR REFLECTION MODEL  600--699
 C
-600   CONTINUE
+  600 CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       IREAD=0
@@ -2373,7 +2435,7 @@ C
      .  ('*** 6. GENERAL DATA FOR REFLECTION MODEL    ')
       CALL EIRENE_LEER(1)
 C
-610   READ (IUNIN,'(A72)') ZEILE
+  610 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 610
       READ (ZEILE,6665) NLTRIM
       IREAD=0
@@ -2384,16 +2446,17 @@ c  read TRIM reflection datasets A_on_B
         READ (IUNIN,'(A420)') ZEILE
         IREAD=1
         IF (INDEX(ZEILE,'PATH')+INDEX(ZEILE,'path').EQ.0) THEN
-C  NO PATH SPECIFIED FOR REFLECTION DATA BASE
+C  NO PATH SPECIFIED FOR REFLECTION DATABASE
           WRITE (iunout,*)
-     .      ' NO PATH SPECIFIED FOR TRIM REFLECTION DATA BASE '
-          WRITE (iunout,*) ' OLD TRIM DATABASE VERSION USED '
+     .      ' NO PATH SPECIFIED FOR TRIM REFLECTION DATABASE'
+          WRITE (iunout,*) ' OLD TRIM DATABASE VERSION USED'
+          CALL EIRENE_LEER(1)
           LTRIM_OLD=.TRUE.
 C  TAKE OLD "TRIM.DAT" FILE WITH NHD6=12 TARGET-PROJECTILE COMBINATIONS
 C           "TRIM.DAT" IS EXPECTED ON INPUT STREAM IUN=(21+IFOFF) (SUBR. REFDAT.F)
-C  SKIP LINES CONTAINING SPECIFICATIONS FOR DATA BASES AND
+C  SKIP LINES CONTAINING SPECIFICATIONS FOR DATABASES AND
 C  CONTINUE READING with DATD
-615       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
+  615     IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             READ (IUNIN,'(A72)') ZEILE
             GOTO 615
           ELSE
@@ -2402,7 +2465,7 @@ C  NEXT VALID INPUT CARD FOUND
             GOTO 620
           ENDIF
         ELSE
-C  PATH SPECIFICATION FOR DATA BASE FOUND
+C  PATH SPECIFICATION FOR DATABASE FOUND
           LTRIM_OLD=.FALSE.
           READ (ZEILE(7:),'(A400)') PATH
           PATH=ADJUSTL(PATH)
@@ -2418,7 +2481,7 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
 C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
 C         NFR=0  !dr now already set above
           READ (IUNIN,'(A72)') ZEILE
-625       IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
+  625     IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             NFR=NFR+1
             READ (ZEILE,'(A72)') RFILNM
             FILE(I2:)=RFILNM
@@ -2437,7 +2500,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
         ENDIF
       ENDIF
 
-620   CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
+  620 CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
 
       IF (ASSOCIATED(REFFILES)) THEN
 c  TRIM files for NFR target projectile combinations are requested.
@@ -2469,14 +2532,17 @@ cdr AT THIS POINT: IFLR=NFR OR IFLR=0 ??
 c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
 
       IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
-      READ (ZEILE,6664) (DATD(IATM),IATM=1,NATMI_IN)
+      READ (ZEILE,6664) (DATD(JATM),JATM=1,MIN(NATMI_IN,6))
       IREAD=0
-      READ (IUNIN,6664) (DMLD(IMOL),IMOL=1,NMOLI_IN)
-      READ (IUNIN,6664) (DIOD(IION),IION=1,NIONI_IN)
-      READ (IUNIN,6664) (DPLD(IPLS),IPLS=1,NPLSI_IN)
+      IF (NATMI_IN.GT.6) THEN
+        READ (IUNIN,6664) (DATD(JATM),JATM=7,NATMI_IN)
+      ENDIF
+      READ (IUNIN,6664) (DMLD(JMOL),JMOL=1,NMOLI_IN)
+      READ (IUNIN,6664) (DIOD(JION),JION=1,NIONI_IN)
+      READ (IUNIN,6664) (DPLD(JPLS),JPLS=1,NPLSI_IN)
       IF (NPHOTI > 0)   !dr try to make this more logic: always read dphd.
 cdr                     !dr backward compatible ?
-     .  READ (IUNIN,6664) (DPHD(IPHOT),IPHOT=1,NPHOTI_IN)
+     .  READ (IUNIN,6664) (DPHD(JPHOT),JPHOT=1,NPHOTI_IN)
 
 c  next: read universal surface reflection model flags
       READ (IUNIN,6664) ERMIN,ERCUT,RPROB0,RINTEG(1),EINTEG(1),AINTEG(1)
@@ -2569,11 +2635,12 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
                 ico = 1
               else
                 call EIRENE_leer(2)
-                write (iunout,*) ' WARNING !! '
+                write (iunout,*) ' WARNING !!'
                 write (iunout,*)
-     .             ' ambigous species names found in surface ',
-     .             'model "',REFCUR%REFNAME,'"'
-                write (iunout,*) varname,'is modified for species ',ispz
+     .           ' ambiguous species names found in surface model "',
+     .                       REFCUR%REFNAME,'"'
+                write (iunout,*)
+     .           varname,' is modified for species ',ispz
               end if
             end if
           end do     ! end of "is"-loop
@@ -2645,7 +2712,7 @@ c  not a species card, hence: a sputer model card
           if ((ideflt_spez > 0) .and. (ispz < 0)) then
             write (iunout,*)
      .        ' wrong card in species dep. reflection model'
-            write (iunout,'(1x,A)') trim(zeile)
+            write (iunout,'(1x,a)') trim(zeile)
           end if
           READ (IUNIN,'(A72)') ZEILE
           IREAD=1
@@ -2667,16 +2734,17 @@ C
         REFCUR%NEXT => REFLIST
         REFLIST => REFCUR
       END DO
+      CALL EIRENE_LEER(1)
 C
 C  READ DATA FOR PRIMARY SOURCE  700--799
 C
-700   CONTINUE
+  700 CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 7. DATA FOR PRIMARY SOURCES, NSTRAI STRATA   ')
 C
-710   READ (IUNIN,'(A72)') ZEILE
+  710 READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:1) .EQ. '*') GOTO 710
       READ (ZEILE,6666) NSTRAI
@@ -2708,9 +2776,10 @@ C
           READ (ZEILE,'(A72)') TXTSOU(ISTRA)
           IREAD=0
         ENDIF
-713     READ (IUNIN,'(A72)') ZEILE
+  713   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1) .EQ. '*') GOTO 713
+        call fix_logical_input(zeile,4)
         READ (ZEILE,6665) NLAVRP(I),NLAVRT(I),NLSYMP(I),NLSYMT(I)
 C    .                   ,NLRAY(I)
                           NLRAY(I)=.FALSE.  ! CDR: UNFINISHED PROPRIETARY OPTION
@@ -2736,17 +2805,21 @@ C APPLY MULTIPLIER AMPTS TO SELECTED MC PARTICLE NUMBER RANGE
         END IF
 C
 
-csw if npts < 0 --> npts = infty
+csw if npts < 0 --> npts = infinity
         if(npts(istra).lt.0) npts(istra) = huge(1)-1
 
         READ (IUNIN,66662) FLUX(ISTRA),SCALV(ISTRA),IVLSF(ISTRA),
      .                    ISCLS(ISTRA),ISCLT(ISTRA),ISCL1(ISTRA),
      .                    ISCL2(ISTRA),ISCL3(ISTRA),ISCLB(ISTRA),
      .                    ISCLA(ISTRA)
-        READ (IUNIN,6665) NLATM(ISTRA),NLMOL(ISTRA),NLION(I),NLPLS(I),
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,5)
+        READ (ZEILE,6665) NLATM(ISTRA),NLMOL(ISTRA),NLION(I),NLPLS(I),
      .                    NLPHOT(ISTRA)
         READ (IUNIN,6666) NSPEZ(ISTRA)
-        READ (IUNIN,6665) NLPNT(ISTRA),NLLNE(ISTRA),
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,5)
+        READ (ZEILE,6665) NLPNT(ISTRA),NLLNE(ISTRA),
      .                    NLSRF(ISTRA),NLVOL(ISTRA),NLCNS(ISTRA)
 C  SAME FOR POINT, LINE, SURFACE AND VOLUME SOURCES
         READ (IUNIN,6666) NSRFSI(ISTRA)
@@ -2764,22 +2837,22 @@ C  SAME FOR POINT, LINE, SURFACE AND VOLUME SOURCES
      .                      NBSOR(J,I),NASOR(J,I),NISOR(J,I),ISTOR(J,I)
           READ (IUNIN,6664) SORAD1(J,I),SORAD2(J,I),SORAD3(J,I),
      .                      SORAD4(J,I),SORAD5(J,I),SORAD6(J,I)
-715     CONTINUE
+  715   CONTINUE
 C  VELOCITY SPACE DISTRIBUTION
         READ (IUNIN,6664) SORENI(ISTRA),SORENE(I),SORVDX(I),SORVDY(I),
      .                    SORVDZ(ISTRA)
         READ (IUNIN,6664) SORCOS(I),SORMAX(I),SORCTX(I),SORCTY(I),
      .                    SORCTZ(ISTRA),RAYFRAC(ISTRA)
 C
-712   CONTINUE
+  712 CONTINUE
 C
       READ (IUNIN,*)
 C     READ ADDITIONAL DATA FOR SOME SPECIFIC ZONES
 C
-800   CONTINUE
+  800 CONTINUE
 C
       CALL EIRENE_MASAGE ('*** 8. ADDITIONAL DATA FOR SPECIFIC ZONES ')
-810   READ (IUNIN,'(A72)') ZEILE
+  810 READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:1) .EQ. '*') GOTO 810
       READ (ZEILE,6666) NZADD
@@ -2792,7 +2865,7 @@ C
       NULLIFY(VOLLIST)
       DO 811 I=1,NZADD
 CDR  skip reading optional comment lines
-814     READ (IUNIN,'(A72)') ZEILE
+  814   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1) .EQ. '*') GOTO 814
 CDR
@@ -2801,7 +2874,7 @@ CDR
         IF (INI.GT.NRAD.OR.INI.LE.0) GOTO 998
         IF (INE.GT.NRAD) GOTO 998
         IF (INE.LE.0) INE=INI
-812     READ (IUNIN,'(A72)') ZEILE
+  812   READ (IUNIN,'(A72)') ZEILE
 C  IGJUM3 FLAG
         IF (ZEILE(1:3).EQ.'CH3') THEN
           INILGJ=MAX(1,MIN(NOPTIM,INI))
@@ -2817,7 +2890,7 @@ C  IGJUM3 FLAG
               CALL EIRENE_DEKEYB
      .                    (ZEILE(4:72),IGJUM3,0,NOPTIM,IN,NLIMPB,NBITS)
             END IF
-821       CONTINUE
+  821     CONTINUE
           GOTO 812
 C  TEMPERATURE
         ELSEIF (ZEILE(1:1).EQ.'T') THEN
@@ -2828,7 +2901,7 @@ C  TEMPERATURE
             TEMPCUR%IN = IN
             TEMPCUR%NEXT => TEMPLIST
             TEMPLIST => TEMPCUR
-822       CONTINUE
+  822     CONTINUE
           GOTO 812
 C  DENSITY
         ELSEIF (ZEILE(1:1).EQ.'D') THEN
@@ -2838,7 +2911,7 @@ C  DENSITY
             DENCUR%IN = IN
             DENCUR%NEXT => DENLIST
             DENLIST => DENCUR
-823       CONTINUE
+  823     CONTINUE
           GOTO 812
 C  VELOCITY (CM/SEC OR MACH)
         ELSEIF ((ZEILE(1:1).EQ.'V'.AND.ZEILE(2:2).NE.'L')
@@ -2855,7 +2928,7 @@ C  VELOCITY (CM/SEC OR MACH)
             VELCUR%IN = IN
             VELCUR%NEXT => VELLIST
             VELLIST => VELCUR
-824       CONTINUE
+  824     CONTINUE
           GOTO 812
 C  VOLUME
         ELSEIF (ZEILE(1:2).EQ.'VL') THEN
@@ -2865,7 +2938,7 @@ C  VOLUME
             VOLCUR%IN = IN
             VOLCUR%NEXT => VOLLIST
             VOLLIST => VOLCUR
-825       CONTINUE
+  825     CONTINUE
           GOTO 812
         ELSEIF (ZEILE(1:1).EQ.'*') THEN
           IREAD=1
@@ -2873,18 +2946,18 @@ C  VOLUME
         ELSE
           GOTO 998
         ENDIF
-811   CONTINUE
+  811 CONTINUE
 
 C
 C  READ DATA FOR STATISTICS AND NON-ANALOG MODEL, 900--999
 C
-900   CONTINUE
+  900 CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 9. DATA FOR STATISTIC AND NON-ANALOG MODEL   ')
 C
-910   IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
+  910 IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       IREAD = 0
       IF (ZEILE(1:1) .EQ. '*') GOTO 910
 C  DATA FOR CONDITIONAL EXPECTATION ESTIMATOR
@@ -2893,6 +2966,7 @@ C  read 60 or more logical flags
       ALLOCATE (LOGRDH(NLOGIN))
       LOGRDH = .FALSE.
       DO J=1, NLOGIN, 60
+        call fix_logical_input(zeile,60)
         READ (ZEILE,6665) LOGRDH(J:MIN(J+59,NLOGIN))
         READ (IUNIN,'(A72)') ZEILE
       END DO
@@ -2912,7 +2986,7 @@ C  DEFAULT: ???
       NPRCSF=MIN0(NLIMPS,NPRCSF)
 c  read 12 or more integer flags
       IPRCSF=1
-911   CONTINUE
+  911 CONTINUE
       IF (IPRCSF.LE.NPRCSF) THEN
         READ (IUNIN,6666) (IPRSF(J),J=1,12)
         DO J=1,12
@@ -2958,7 +3032,7 @@ C  DATA FOR BIAS SAMPLING
 C  DATA FOR STANDARD DEVIATION
       READ (IUNIN,*)
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION '
+      WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION'
       READ (IUNIN,6666) NSIGVI,NSIGSI,NSIGCI,NSIGI_BGK,NSIGI_COP,
      .                  NSIGI_SPC
       WRITE (iunout,*) '       NSIGVI,NSIGSI,NSIGCI= ',
@@ -2969,32 +3043,33 @@ C  DATA FOR STANDARD DEVIATION
       CALL EIRENE_LEER(1)
       DO 913 J=1,NSIGVI
         READ (IUNIN,6666) IGH(J),IIH(J)
-913   CONTINUE
+  913 CONTINUE
       DO 914 J=1,NSIGSI
         READ (IUNIN,6666) IGHW(J),IIHW(J)
-914   CONTINUE
+  914 CONTINUE
       DO 915 J=1,NSIGCI
         READ (IUNIN,6666) IGHC(1,J),IIHC(1,J),IGHC(2,J),IIHC(2,J)
-915   CONTINUE
+  915 CONTINUE
 C
 C   READ DATA FOR ADDITIONAL AND SURFACE-AVERAGED TALLIES
       READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 10. DATA FOR ADDITIONAL TALLIES, COLLISION   ')
       CALL EIRENE_MASAGE
-     .  ('        ESTIMATORS  AND ALGEBRAIC EXPRESSIONS    ')
+     .  ('        ESTIMATORS AND ALGEBRAIC EXPRESSIONS     ')
 C
-1010  READ (IUNIN,'(A72)') ZEILE
+ 1010 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 1010
       READ (ZEILE,6666) NADVI,NCLVI,NALVI,NADSI,NALSI,NADSPC
-      WRITE (iunout,*) '        NADVI,NCLVI,NALVI= ',
-     .                     NADVI,NCLVI,NALVI
-      WRITE (iunout,*) '        NADSI,NALSI,NADSPC=',
-     .                     NADSI,NALSI,NADSPC
+      CALL EIRENE_LEER(1)
+      WRITE (iunout,*) '       NADVI,NCLVI,NALVI   = ',
+     .                         NADVI,NCLVI,NALVI
+      WRITE (iunout,*) '       NADSI,NALSI,NADSPC  = ',
+     .                         NADSI,NALSI,NADSPC
       CALL EIRENE_LEER(1)
 C
 C
-1000  CONTINUE
+ 1000 CONTINUE
 C
       READ (IUNIN,*)
       CALL
@@ -3005,12 +3080,12 @@ C
       ALLOCATE (TXTUTA(NADVI))
 
       DO 1020 J=1,NADVI
-1021    READ (IUNIN,'(A72)') ZEILE
+ 1021   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1021
         READ (ZEILE,6666) IADVE(J),IADVS(J),IADVT(J),IADRC(J)
         READ (IUNIN,'(A72)') TXTTLA(J)
         READ (IUNIN,'(2A24)') TXTSCA(J),TXTUTA(J)
-1020  CONTINUE
+ 1020 CONTINUE
 
       READ (IUNIN,*)
       CALL
@@ -3019,45 +3094,45 @@ C
       ALLOCATE (TXTSCC(NCLVI))
       ALLOCATE (TXTUTC(NCLVI))
       DO 1030 J=1,NCLVI
-1031    READ (IUNIN,'(A72)') ZEILE
+ 1031   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1031
         READ (ZEILE,6666) ICLVE(J),ICLVS(J),ICLVT(J),ICLRC(J)
         READ (IUNIN,'(A72)') TXTTLC(J)
         READ (IUNIN,'(2A24)') TXTSCC(J),TXTUTC(J)
-1030  CONTINUE
+ 1030 CONTINUE
       READ (IUNIN,*)
       CALL EIRENE_MASAGE('*** 10C. DATA FOR ALGEBRAIC EXPRESSIONS     ')
       ALLOCATE (TXTTLR(NALVI))
       ALLOCATE (TXTSCR(NALVI))
       ALLOCATE (TXTUTR(NALVI))
       DO 1040 J=1,NALVI
-1041    READ (IUNIN,'(A72)') ZEILE
+ 1041   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1041
         READ (ZEILE,'(A72)') CHRTAL(J)
         READ (IUNIN,'(A72)') TXTTLR(J)
         READ (IUNIN,'(2A24)') TXTSCR(J),TXTUTR(J)
-1040  CONTINUE
+ 1040 CONTINUE
 C
       READ (IUNIN,*)
       CALL
      .  EIRENE_MASAGE('*** 10D. DATA FOR ADDITIONAL SURFACE TALLIES   ')
       DO 1050 J=1,NADSI
-1051    READ (IUNIN,'(A72)') ZEILE
+ 1051   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1051
         READ (ZEILE,6666) IADSE(J),IADSS(J),IADST(J),IADSC(J)
         READ (IUNIN,'(A72)') TXTTLW(J,NTLSA)
         READ (IUNIN,'(2A24)') TXTSPW(J,NTLSA),TXTUNW(J,NTLSA)
-1050  CONTINUE
+ 1050 CONTINUE
 C
       READ (IUNIN,*)
       CALL EIRENE_MASAGE('*** 10E. DATA FOR ALGEBRAIC SURFACE TALLIES ')
       DO 1060 J=1,NALSI
-1061    READ (IUNIN,'(A72)') ZEILE
+ 1061   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1061
         READ (ZEILE,'(A72)') CHRTLS(J)
         READ (IUNIN,'(A72)') TXTTLW(J,NTLSR)
         READ (IUNIN,'(2A24)') TXTSPW(J,NTLSR),TXTUNW(J,NTLSR)
-1060  CONTINUE
+ 1060 CONTINUE
 C
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
@@ -3084,7 +3159,7 @@ c
           READ (ZEILE,'(12I6)') ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS,
      .                          ISRFCLL, IDIREC
           READ (IUNIN,'(6E12.4)') SPCMN, SPCMX, SPC_SHIFT,
-     .                             SPCPLT_X,SPCPLT_Y,SPCPLT_SAME
+     .                            SPCPLT_X, SPCPLT_Y, SPCPLT_SAME
           SPCVX = 0._DP
           SPCVY = 0._DP
           SPCVZ = 0._DP
@@ -3097,18 +3172,18 @@ c
             IF (ISRFCLL == 0) THEN
               WRITE (IUNOUT,*) ' SPECTRUM NUMBER ',J
               WRITE (IUNOUT,*) ' DEFINITION OF LINE OF SIGHT FOR',
-     .                         ' SURFACE SPECTRUM IS NOT FORESEEN '
+     .                         ' SURFACE SPECTRUM IS NOT FORESEEN'
               WRITE (IUNOUT,*) ' SPECIFICATION OF DIRECTION IS',
-     .                         ' IGNORED '
+     .                         ' IGNORED'
               IDIREC = 0
             END IF
           END IF
 
 cdr  better: first discriminate by isrfcll,  then, for each value of isrfcll: do the rest
-c   isrcfll=0 : surface averaged tally
-c   isrfcll=1 : volume averaged tally, integrated over all directions
-c   isrfcll=2 : volume averaged tally, along a specific direction
-c  it seems: surface averaged directional tallies: not yet forseen
+c   isrcfll=0 : surface-averaged tally
+c   isrfcll=1 : volume-averaged tally, integrated over all directions
+c   isrfcll=2 : volume-averaged tally, along a specific direction
+c  it seems: surface-averaged directional tallies: not yet forseen
 c  one may try to score coefficients of orthogonal angular expansion, per energy bin.
 
           IF (ISPSRF > 0) THEN
@@ -3117,7 +3192,7 @@ C  SPECTRUM AT AN ADDITIONAL SURFACE
               WRITE (iunout,*)
      .          ' SURFACE INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
-              WRITE (iunout,*) ' SURFACE NUMBER = ',ISPSRF
+              WRITE (iunout,*) ' SURFACE NUMBER  = ',ISPSRF
               IERROR = IERROR + 1
             END IF
 C  SPECTRUM IN CELL, POSSIBLY ALONG A CERTAIN DIRECTION
@@ -3127,7 +3202,7 @@ cdr:  next 2 lines: why different condition for cell based spectra cell numbers 
               WRITE (iunout,*)
      .          ' CELL INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
-              WRITE (iunout,*) ' CELL NUMBER = ',ISPSRF
+              WRITE (iunout,*) ' CELL NUMBER     = ',ISPSRF
               IERROR = IERROR + 1
             END IF
           ELSEIF (ISPSRF < 0) THEN
@@ -3137,7 +3212,7 @@ C  SPECTRUM AT A NON-DEFAULT STANDARD SURFACE
               WRITE (iunout,*)
      .          ' SURFACE INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
-              WRITE (iunout,*) ' SURFACE NUMBER = ',ISPSRF
+              WRITE (iunout,*) ' SURFACE NUMBER  = ',ISPSRF
               IERROR = IERROR + 1
             ELSEIF (ISRFCLL == 0) THEN
               ISPSRF = NLIM+ISPSRF
@@ -3147,13 +3222,13 @@ C    .          ((ISRFCLL == 2) .AND. (ISPSRF < 0))) THEN
 C    .      ... WRONG INPUT !
             END IF
           ELSEIF (ISPSRF == 0) THEN
-            WRITE (iunout,*) ' SURFACE OR CELL INDEX = 0: NOT FORESEEN '
+            WRITE (iunout,*) ' SURFACE OR CELL INDEX = 0: NOT FORESEEN'
             WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
             IERROR = IERROR + 1
           END IF
 
           IF ((IPTYP < 0) .OR. (IPTYP > 4)) THEN
-            WRITE (iunout,*) ' PARTICLE TYPE ',IPTYP,' NOT FORESEEN '
+            WRITE (iunout,*) ' PARTICLE TYPE ',IPTYP,' NOT FORESEEN'
             WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
             IERROR = IERROR + 1
           ELSE
@@ -3167,21 +3242,21 @@ C    .      ... WRONG INPUT !
      .        .AND.((IPSPZ < 0).OR.(IPSPZ > NIONI))) .OR.
      .          ((IPTYP == 4)
      .        .AND.((IPSPZ < 0).OR.(IPSPZ > NPLSI)))) THEN
-              WRITE (iunout,*) ' PARTICLE SPECIES INDEX OUT OF BOUNDS '
+              WRITE (iunout,*) ' PARTICLE SPECIES INDEX OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
-              WRITE (iunout,*) ' SPECIES NUMBER = ',IPSPZ
+              WRITE (iunout,*) ' SPECIES NUMBER  = ',IPSPZ
               IERROR = IERROR + 1
             END IF
           END IF
 
           IF ((ISRFCLL == 0) .AND. (ISPTYP > 2)) THEN
-            WRITE (IUNOUT,*) ' WRONG TYPE OF SPECTRUM SPECIFIED '
+            WRITE (IUNOUT,*) ' WRONG TYPE OF SPECTRUM SPECIFIED'
             WRITE (IUNOUT,*) ' SPECTRUM NUMBER = ',J
-            WRITE (IUNOUT,*) ' SPECTRUM TYPE = ',ISPTYP
+            WRITE (IUNOUT,*) ' SPECTRUM TYPE   = ',ISPTYP
           END IF
 
           ESPEC => ESTIML(J)
-          
+
           ESPEC%ISPCSRF = ISPSRF
           ESPEC%IPRTYP = IPTYP
           ESPEC%IPRSP = IPSPZ
@@ -3264,7 +3339,7 @@ cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
 C
 C   READ DATA FOR NUMERICAL AND GRAPHICAL OUTPUT 1100--1199
 C
-1100  CONTINUE
+ 1100 CONTINUE
 C
       IF (IREAD == 0) READ (IUNIN,*)
       CALL EIRENE_LEER(1)
@@ -3272,8 +3347,10 @@ C
      .  ('*** 11. DATA FOR NUMERICAL AND GRAPHICAL OUTPUT  ')
 c
 c  search for input block 11a
-1110  READ (IUNIN,'(A72)') ZEILE
+ 1110 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 1110
+* For gfortran: it does not accept empty field for logical
+      call fix_logical_input(zeile,35)
       READ (ZEILE,6665) TRCPLT,TRCHST,TRCNAL,TRCMOD,TRCSIG,
      .                  TRCGRD,TRCSUR,TRCREF,TRCFLE,TRCAMD,
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
@@ -3284,16 +3361,20 @@ cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
 CPB  ACTIVATE SPECIES RESOLVED CPU CONSUMPTION OPTION
      .                  TRCHKTIM
-      READ (IUNIN,6665) (TRCSRC(J),J=0,NSTRA)
+      do I = 0, NSTRA, 60
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,60)
+        READ (ZEILE,6665) (TRCSRC(J),J=I,MIN(I+59,NSTRA))
+      end do
 C
       READ (IUNIN,6666) NVOLPR, NSPCPR
+      CALL EIRENE_LEER(1)
       IF(NVOLPR > NVLPR) THEN
          WRITE (iunout,*) 'NVOLPR > NVLPR, EXIT.'
          WRITE (iunout,*) ' NVOLPR, NVLPR ', NVOLPR, NVLPR
          CALL EIRENE_EXIT_OWN(1)
       ENDIF
       WRITE (iunout,*) '        NVOLPR= ',NVOLPR
-      CALL EIRENE_LEER(1)
       DO 1120 J=1,NVOLPR
         READ (IUNIN,6666) NTLV,NFLGV,NSPZV1,NSPZV2,NTLVF
         IF (NTLV.LT.-NTALI.OR.NTLV.GT.NTALV) GOTO 990
@@ -3304,7 +3385,7 @@ cdr  output stream for particular tallies: allow only ntlv>=70
         NSPEZV(J,1)=NSPZV1
         NSPEZV(J,2)=NSPZV2
         NTLVFL(J)  =NTLVF
-1120  CONTINUE
+ 1120 CONTINUE
 C
       READ (IUNIN,6666) NSURPR
       IF(NSURPR > NSRPR) THEN
@@ -3314,12 +3395,11 @@ C
       ENDIF
 C
       WRITE (iunout,*) '        NSURPR= ',NSURPR
-      CALL EIRENE_LEER(1)
       DO 1130 J=1,NSURPR
         READ (IUNIN,6666) NSRF,NTLS,NFLGS,NSPZS1,NSPZS2,NTLSF
 c  negative surface numbers may be used for non-default standard surfaces
         IF (NSRF.LT.0) NSRF=NLIM+IABS(NSRF)
-c  zero as surface number for time-horizon
+c  zero as surface number for time horizon
         IF (NSRF.EQ.0.AND.NLIM+NSTSI.LT.NLIMPS) NSRF=NLIM+NSTSI+1
 
         IF (NSRF.LE.0.OR.NSRF.GT.NLIMPS) GOTO 991
@@ -3329,11 +3409,11 @@ c  zero as surface number for time-horizon
         NSPEZS(J,1)=NSPZS1
         NSPEZS(J,2)=NSPZS2
         NTLSFL(J)=NTLSF
-1130  CONTINUE
+ 1130 CONTINUE
 
 c  overrule default switching on/off of volume-averaged tallies
 
-1131  READ (IUNIN,'(A72)') ZEILE
+ 1131 READ (IUNIN,'(A72)') ZEILE
       CALL EIRENE_UPPERCASE(ZEILE)
       IREAD=1
       IF ((ZEILE(1:1) .NE.'*') .AND. (SCAN(ZEILE,'FT') == 0)) THEN
@@ -3382,13 +3462,13 @@ C EITHER A COMMENT LINE, OR THE NEXT INPUT CARD (LOGICALS FOR PLOTTING) IS ON 'z
 c  reading 'switch tallies off' done
       END IF
 
-
 C  search for input block 11b
 
-1132  IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
+ 1132 IF (IREAD == 0) READ (IUNIN,'(A72)') ZEILE
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1132
 C  2D GEOMETRY PLOT
+      call fix_logical_input(zeile,16)
       READ (ZEILE,6665) PL1ST,PL2ND,PL3RD,PLADD,PLHST,
      .                  PLCUT(1),PLCUT(2),PLCUT(3),PLBOX,PLSTOR,
      .                  PLNUMV,PLNUMS,PLARR,LRPSCUT,PLIDL,
@@ -3399,11 +3479,11 @@ C  3D GEOMETRY PLOT
       DO 1140 J=1,5
         READ (IUNIN,6662) PL3A(J),TEXTLA(J),IPLTA(J),
      .                (IPLAA(J,I),IPLEA(J,I),I=1,IPLTA(J))
-1140   CONTINUE
+ 1140  CONTINUE
       DO 1141 J=1,3
         READ (IUNIN,6662) PL3S(J),TEXTLS(J),IPLTS(J),
      .                (IPLAS(J,I),IPLES(J,I),I=1,IPLTS(J))
-1141  CONTINUE
+ 1141 CONTINUE
 C
       READ (IUNIN,6664) CH2MX,CH2MY,      CH2X0,CH2Y0,CH2Z0
       READ (IUNIN,6664) CH3MX,CH3MY,CH3MZ,CH3X0,CH3Y0,CH3Z0
@@ -3415,7 +3495,7 @@ C
 
 c  search for input block 11c
 
-1151  READ (IUNIN,'(A72)') ZEILE
+ 1151 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 1151
 C  DATA FOR PLOTS OF VOLUME-AVERAGED TALLIES
       READ (ZEILE,6666) NVOLPL
@@ -3426,7 +3506,11 @@ C
      .  CALL EIRENE_MASPRM('NPTAL',5,NPTAL,'NVOLPT',6,NVOLPL,IERROR)
 C
       IF (NVOLPL.LE.0) GOTO 1175
-      READ (IUNIN,6665) (PLTSRC(J),J=0,NSTRA)
+      DO I = 0, NSTRA, 60
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,60)
+        READ (ZEILE,6665) (PLTSRC(J),J=I,MIN(I+59,NSTRA))
+      END DO
 C
       IF (LRPSCUT) THEN
         READ (IUNIN,6664) CUTPLANE(1:4)
@@ -3435,9 +3519,9 @@ C
      .      (CUTPLANE(2)*CUTPLANE(3) > 0._DP) .OR.
      .      (CUTPLANE(2)*CUTPLANE(4) > 0._DP) .OR.
      .      (CUTPLANE(3)*CUTPLANE(4) > 0._DP)) THEN
-          WRITE (iunout,*) ' PLANE IS NOT PARALLEL TO ONE AXIS '
-          WRITE (iunout,*) ' CUTTING OF TETRAHEDRA ABANDONED '
-          WRITE (iunout,*) ' LRPSCUT SET TO .FALSE. '
+          WRITE (iunout,*) ' PLANE IS NOT PARALLEL TO ONE AXIS'
+          WRITE (iunout,*) ' CUTTING OF TETRAHEDRA ABANDONED'
+          WRITE (iunout,*) ' LRPSCUT SET TO .FALSE.'
           LRPSCUT = .FALSE.
         END IF
       END IF
@@ -3448,17 +3532,21 @@ C
       RAPSDEL=-HUGE(1._DP)
 C
       DO 1150 J=1,NVOLPL
-1152    READ (IUNIN,'(A72)') ZEILE
+ 1152   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1152
         READ (ZEILE,6666) NSP
         IF (NSP.GT.NPLT)
      .    CALL EIRENE_MASPRM('NPLT',4,NPLT,'NSP',3,NSP,IERROR)
         NSPTAL(J)=NSP
-        READ (IUNIN,6665) PLTL2D(J),PLTL3D(J),PLTLLG(J),PLTLER(J)
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_logical_input(zeile,4)
+        READ (ZEILE,6665) PLTL2D(J),PLTL3D(J),PLTLLG(J),PLTLER(J)
         READ (IUNIN,6664) TALZMI(J),TALZMA(J),TALXMI(J),TALXMA(J),
      .                    TALYMI(J),TALYMA(J)
         IF (PLTL2D(J)) THEN
-          READ (IUNIN,6665) LHIST2(J),LSMOT2(J)
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_logical_input(zeile,2)
+          READ (ZEILE,6665) LHIST2(J),LSMOT2(J)
           DO 1160 I=1,NSPTAL(J)
             READ (IUNIN,6666) ISPTAL(J,I),NTL,
      .                        NPLIN2(J,I),NPLOT2(J,I),NPLDL2(J,I)
@@ -3466,20 +3554,24 @@ C
             NPTALI(J,I)=NTL
             NPLIN2(J,I) = MAX(NPLIN2(J,I),1)
             NPLDL2(J,I) = MAX(NPLDL2(J,I),1)
-1160      CONTINUE
+ 1160     CONTINUE
         ENDIF
         IF (PLTL3D(J)) THEN
-          READ (IUNIN,6665) LHIST3(J),LCNTR3(J),LSMOT3(J),
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_logical_input(zeile,8)
+          READ (ZEILE,6665) LHIST3(J),LCNTR3(J),LSMOT3(J),
      .                      LRAPS3(J),LVECT3(J),LRPVC3(J),
      .                      LRPS3D,LRPSCN
-          READ (IUNIN,6665) LPRAD3(J),LPPOL3(J),LPTOR3(J)
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_logical_input(zeile,3)
+          READ (ZEILE,6665) LPRAD3(J),LPPOL3(J),LPTOR3(J)
           DO 1161 I=1,NSPTAL(J)
             READ (IUNIN,6666) ISPTAL(J,I),NTL,IPROJ3(J,I),
      .                        NPLI13(J,I),NPLO13(J,I),
      .                        NPLI23(J,I),NPLO23(J,I),IPLN
             IF (NTL.LT.-NTALI.OR.NTL.GT.NTALV.OR.NTL.EQ.0) GOTO 990
             NPTALI(J,I)=NTL
-1161      CONTINUE
+ 1161     CONTINUE
           READ (IUNIN,6664) TALW1(J),TALW2(J),FCABS1(J),FCABS2(J),
      .                      RPSDL
           IF (FCABS1(J).LE.0.0D0) FCABS1(J)=1.0D0
@@ -3489,29 +3581,29 @@ C
           IPLANE=MAX(IPLANE,IPLN)
           RAPSDEL=MAX(RAPSDEL,RPSDL)
         ENDIF
-1150  CONTINUE
+ 1150 CONTINUE
       IF (NLTRA) RAPSDEL=RAPSDEL*DEGRAD
 C
 C  SKIP INPUT LINES, UNTIL INPUT BLOCK 12 STARTS
-1175  READ (IUNIN,'(A72)') ZEILE
+ 1175 READ (IUNIN,'(A72)') ZEILE
       IREAD=1
       IF (ZEILE(1:3) .EQ. '***') GOTO 1205
       GOTO 1175
 C
 C  READ DATA FOR DIAGNOSTIC MODULE  1200--1299
 C
-1200  CONTINUE
+ 1200 CONTINUE
 C
-1205  CALL EIRENE_MASAGE
+ 1205 CALL EIRENE_MASAGE
      .  ('*** 12. DATA FOR DIAGNOSTIC MODULE              ')
-1210  READ (IUNIN,'(A72)') ZEILE
+ 1210 READ (IUNIN,'(A72)') ZEILE
       IREAD=0
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
 c June 18: new: more general option for definition of emission lines (in NCHTAL=2 option)
 
 cdr  read further atomic/molecular data: population coefficients, QSS ratios, etc
-cdr       needed for setting up volumetric line emissivity profils
+cdr       needed for setting up volumetric line emissivity profiles
 cdr       as further add. tally ADDV (additional to those already defined in block 10a)
 cdr       The ADDV tallies may then be used for line of sight integration, along
 cdr       the CHORDS defined further below.
@@ -3534,22 +3626,24 @@ cdr read volumetric emission profile data
           ALLOCATE (EMIS_LINES(NUM_LINES))
           EMIS_LINES%LINE_NAME = REPEAT(' ',80)
           EMIS_LINES%NUM_COMPO = 0
+          WRITE (IUNOUT,*) 'FURTHER EMISSIVITY PROFILES SET:'
         END IF
         DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
             READ (IUNIN,'(A80)') ZEILE
+            write (IUNOUT,'(A80)') ZEILE
           END DO
-cdr  further below, a particular emission profile is identified 
+cdr  further below, a particular emission profile is identified
 cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
 cdr  or, if that fails, by its energy (and EMIN1 flag)
           IROW_ESC = 0
           ICOL_ESC = 0
           POP_ESC = 1._DP
           READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
-          READ (IUNIN,6666) NUM_COMPO, IROW_ESC, ICOL_ESC 
-          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN, 
-     .                      EMIS_LINES(ILINE)%TRANS_EN, 
+          READ (IUNIN,6666) NUM_COMPO, IROW_ESC, ICOL_ESC
+          READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN,
+     .                      EMIS_LINES(ILINE)%TRANS_EN,
      .                      EMIS_LINES(ILINE)%ENERGY,
      .                                        POP_ESC
           IF ((IROW_ESC <= 0) .OR. (ICOL_ESC <= 0)) POP_ESC=1._DP
@@ -3561,37 +3655,37 @@ cdr  or, if that fails, by its energy (and EMIN1 flag)
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
 cdr       IADV = IADV + 1
-c  if mod_addv=0: reset storage needs for each line 
+c  if mod_addv=0: reset storage needs for each line
 c                 back to nadvi+1..nadvi+num_compo+1,
 c                 i.e. addv tallies are only saved for one line at a time.
-cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1 
-          IF (MOD_ADDV == 0) IADV = NADVI 
+cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1
+          IF (MOD_ADDV == 0) IADV = NADVI
 
-          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + num_COMPO+1 
+          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + num_COMPO+1
 
           IF (NUM_COMPO > 0) THEN
             ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
 
             DO JCOMP=1,NUM_COMPO
 
-              READ (IUNIN,'(A72)') 
+              READ (IUNIN,'(A72)')
      .              EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME
-              READ (IUNIN,6666) NUM_CONTRIB 
+              READ (IUNIN,6666) NUM_CONTRIB
               EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
-              ALLOCATE 
+              ALLOCATE
      .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
 cdr  for each new component: store emission profile on addv(iadv)
               IADV = IADV + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
-              
-cdr  now we dwell on the contributions: 
-cdr  e.g. different isotops,... but same rates, same population factors in each component             
-              DO KCONTR = 1, NUM_CONTRIB    
+
+cdr  now we dwell on the contributions:
+cdr  e.g. different isotopes,... but same rates, same population factors in each component
+              DO KCONTR = 1, NUM_CONTRIB
                 CNT%ISP = -1
                 CNT%ITP = -1
                 READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
-     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO, 
-     .             CNT%FNAME,              
+     .             CNT%ISP(1), CNT%ITP(1), CNT%IRATIO,
+     .             CNT%FNAME,
      .             CNT%H123, CNT%REACTION, CNT%CR
 
                 IF (INDEX(CNT%FNAME,'ADAS')  .NE. 0 .OR.
@@ -3605,15 +3699,15 @@ cdr  e.g. different isotops,... but same rates, same population factors in each 
 
 cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1.
 cdr  If density n_B of parent state for upper level is not amongst the densities
-cdr  known in this run, 
+cdr  known in this run,
 cdr  but is in an (QSS) equilibrium with such a density n_A instead.
                 IF (CNT%IRATIO > 0) THEN
 cdr  read QSS density ratio n_B/n_A(Te,ne). Then the
 cdr  upper state population is n_B *pop_B(upper)= n_A * ratio * pop_B(upper)
                   READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
-     .             CNT%FRATIO(1), 
-     .             CNT%RAT_H123(1), CNT%RAT_REACTION(1), CNT%RAT_CR(1) 
-    
+     .             CNT%FRATIO(1),
+     .             CNT%RAT_H123(1), CNT%RAT_REACTION(1), CNT%RAT_CR(1)
+
                   IF (INDEX(CNT%FRATIO(1),'ADAS')  .NE. 0 .OR.
      .                INDEX(CNT%FRATIO(1),'TAB2D') .NE. 0) THEN
                     READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
@@ -3627,16 +3721,16 @@ cdr   Read a second density ratio.
 cdr   It may turn out that, after reading the first density ratio,
 cdr   that now the new parent density n_A is still not amongst the density
 cdr   known to eirene in this run. Then read a second density ratio.
-cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+. 
-cdr   See routine emissivity.f for further explanations. 
+cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+.
+cdr   See routine emissivity.f for further explanations.
                   IF (CNT%IRATIO == 2) THEN
                     READ (IUNIN,6666) CNT%ISP(2),CNT%ITP(2),
      .                                CNT%ISP(3),CNT%ITP(3)
                     READ (IUNIN,'(18X,1X,A6,1X,A4,A9,A3)')
-     .               CNT%FRATIO(2), 
+     .               CNT%FRATIO(2),
      .               CNT%RAT_H123(2), CNT%RAT_REACTION(2), CNT%RAT_CR(2)
 
-                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR. 
+                    IF (INDEX(CNT%FRATIO(2),'ADAS')  .NE. 0  .OR.
      .                  INDEX(CNT%FRATIO(2),'TAB2D') .NE. 0) THEN
                       READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
      .                                             CNT%IZ_RAT(2)
@@ -3647,9 +3741,9 @@ cdr   See routine emissivity.f for further explanations.
                     END IF
                   END IF
 
-                ELSE 
-                  CNT%FRATIO       = '' 
-                  CNT%RAT_H123     = '' 
+                ELSE
+                  CNT%FRATIO       = ''
+                  CNT%RAT_H123     = ''
                   CNT%RAT_REACTION = ''
                   CNT%RAT_CR       = ''
                   CNT%RAT_ELEMENT  = ''
@@ -3660,9 +3754,9 @@ cdr   See routine emissivity.f for further explanations.
                 CNT%IRC_RAT = 0
                 EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
               END DO  !  kcontr
-         
+
             END DO    ! jcomp
-c  increase counter iadv, for next line, because sum over comp. 
+c  increase counter iadv, for next line, because sum over comp.
 c                         is stored on num_compo+1
             IADV=IADV+1
           END IF      ! if jcomp.gt.0
@@ -3675,7 +3769,7 @@ c                         is stored on num_compo+1
 cdr  allocate storage and fill structure EMIS-LINES
 cdr  such that old default options are recovered.
 cdr This is exclusive: as soon as at least one emission profile is
-cdr read from block "12.0", no default emissivities are set at all. 
+cdr read from block "12.0", no default emissivities are set at all.
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
@@ -3705,7 +3799,9 @@ cdr  once, for all components and contributions.
         IROW_ESC = EMIS_LINES(ILINE)%IROW_ESC
         ICOL_ESC = EMIS_LINES(ILINE)%ICOL_ESC
         POP_ESC  = EMIS_LINES(ILINE)%POP_ESC
+cdr  once per component, for all contributions
         do jcomp = 1, emis_lines(iline)%num_compo
+cdr  once per contribution
           do kcontr = 1, emis_lines(iline)%compo(jcomp)%num_contrib
             cnt = emis_lines(iline)%compo(jcomp)%contrib(kcontr)
             nrc = nrc + 1
@@ -3713,16 +3809,16 @@ cdr  once, for all components and contributions.
      .              CNT%REACTION,CNT%CR,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%ELEMENT, CNT%IZ, 
+     .              CNT%ELEMENT, CNT%IZ,
      .              IROW_ESC, ICOL_ESC, POP_ESC )
 c  pop_esc factor is the same for all components and contributions
             H123 = CNT%H123
             FILNAM= CNT%FNAME
             IF ((IROW_ESC > 0) .AND. (ICOL_ESC > 0) .AND.
-     .           INDEX(FILNAM,'CRM') > 0) THEN
+     .           INDEX(FILNAM,'CR') > 0) THEN
               WRITE (IUNOUT,*)  'POP_ESC FOUND FOR CRM '
               WRITE (IUNOUT,*)  'EMISS. LINE',ILINE,'TYPE ',H123
-              WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')  
+              WRITE (IUNOUT,'(A11,I3,A3,I3,A8,1E12.4)')
      .                    ' TRANSITION ',IROW_ESC,'-->',ICOL_ESC,
      .                    ' POP_ESC',     POP_ESC
             ENDIF
@@ -3740,13 +3836,13 @@ cdr  zero, one or two QSS population ratios, in addition to line emissivity ?
      .              CNT%RAT_REACTION(IR),CNT%RAT_CR(IR),
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR), 
+     .              CNT%RAT_ELEMENT(IR), CNT%IZ_RAT(IR),
      .              IROW_ESC, ICOL_ESC, POP_ESC )
 
                 emis_lines
      .           (iline)%compo(jcomp)%contrib(kcontr)%irc_rat(ir) = nrc
               end do  ! number of QSS ratios
-            end if           
+            end if
           end do   !kcontr
         end do     !jcomp
       end do       !iline
@@ -3757,7 +3853,8 @@ c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 opt
       READ (ZEILE,6666) NCHORI,NCHENI
       NCHOR = NCHORI
       NCHEN = NCHENI
-      WRITE (iunout,*) '        NCHORI,NCHENI= ',NCHORI,NCHENI
+      CALL EIRENE_LEER(1)
+      WRITE (iunout,'(1x,a,2i5)') 'NCHORI,NCHENI= ',NCHORI,NCHENI
       CALL EIRENE_LEER(1)
       IF (IABS(NCHENI).GT.NCHEN)
      .    CALL EIRENE_MASPRM
@@ -3787,7 +3884,7 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
             READ (IUNIN,'(A400)') ZEILE
            IREAD=1
           END IF
-        END IF        
+        END IF
 
         READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
@@ -3799,9 +3896,11 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
         READ (IUNIN,66664) ICHORD(ICHORI),
      .                     XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI)
         NLSTCHR(ICHORI) = ISTCHR > 0  ! automatically add directional cell-based spectra, along line of sight
-1220  CONTINUE
-      READ (IUNIN,6665) PLCHOR,PLSPEC,PRSPEC,PLARGL,PRARGL
-1230  CONTINUE
+ 1220 CONTINUE
+      READ (IUNIN,'(A72)') ZEILE
+      call fix_logical_input(zeile,5)
+      READ (ZEILE,6665) PLCHOR,PLSPEC,PRSPEC,PLARGL,PRARGL
+ 1230 CONTINUE
 C  SKIP READING REST OF THIS BLOCK
       READ (IUNIN,'(A72)') ZEILE
       IREAD=0
@@ -3810,7 +3909,7 @@ C  SKIP READING REST OF THIS BLOCK
 C
 C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
-1300  CONTINUE
+ 1300 CONTINUE
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       IREAD=0
@@ -3833,6 +3932,7 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       ELSE
         WRITE (iunout,*) '        NPRNLI= ',NPRNLI
       ENDIF
+      CALL EIRENE_LEER(1)
 
       IF (NPRNLI.LE.0.OR.NTIME.EQ.0) THEN
 C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
@@ -3858,6 +3958,7 @@ C  DATA FOR DEFAULT TIME HORIZON
         NPTST=0
         NTMSTP=1
         NSNVI=0
+        IREAD=0
         GOTO 1350
       ENDIF
 cdr  skip reading further comment lines...tbd
@@ -3865,19 +3966,21 @@ c
       READ (ZEILE,6666) NPTST,NTMSTP
       IREAD=0
 
-C   ENFORE ONE-BY-ONE RELAUNCH FROM CENSUS, IN CASE NLMOVIE
+C   ENFORCE ONE-BY-ONE RELAUNCH FROM CENSUS, IN CASE NLMOVIE
       IF (NLMOVIE.AND.NPTST.GE.0) THEN
         WRITE (IUNOUT,*) 'NPTST RESET TO -1, BECAUSE OF NLMOVIE OPTION'
         NPTST=-1
       ENDIF
 
       READ (IUNIN,6664) DTIMV,TIME0
+      IREAD=0
 c
 C   READ DATA FOR SNAPSHOT TALLIES
       READ (IUNIN,*)
       CALL EIRENE_MASAGE
      .  ('*** 13A. DATA FOR SNAPSHOT TALLIES           ')
       READ (IUNIN,6666) NSNVI
+      IREAD=0
       WRITE (iunout,*) '        NSNVI= ',NSNVI
       CALL EIRENE_LEER(1)
       IF (NSNVI.GT.0) THEN
@@ -3886,7 +3989,7 @@ C   READ DATA FOR SNAPSHOT TALLIES
         ALLOCATE (TXTUTT(NSNVI))
       ENDIF
       DO 1320 J=1,NSNVI
-1321    READ (IUNIN,'(A72)') ZEILE
+ 1321   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1) .EQ. '*') GOTO 1321
         READ (ZEILE,6666) ISNVE(J),ISNVS(J),ISNVT(J),ISNRC(J)
@@ -3895,13 +3998,13 @@ C   READ DATA FOR SNAPSHOT TALLIES
 !       READ (IUNIN,'(2A24)') TXTSPC(J,NTALT),TXTUNT(J,NTALT)
         READ (IUNIN,'(A72)') TXTTLT(J)
         READ (IUNIN,'(2A24)') TXTSCT(J),TXTUTT(J)
-1320  CONTINUE
+ 1320 CONTINUE
 C
       IF (NTIME.LE.0) THEN
         WRITE (iunout,*) 'ERROR IN INPUT: TIME DEP. MODE BUT NTIME.LE.0'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-1350  CONTINUE
+ 1350 CONTINUE
 C  SKIP READING REST OF THIS BLOCK
       IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:3).NE.'***') GOTO 1350
@@ -3996,8 +4099,8 @@ C
           DTIMVO=DTIMV
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
-          WRITE (iunout,*) 'READ FROM FILE FORT 15 '
-          WRITE (iunout,*) 'PARTICLES AND FLUX RETRIEVED FOR '
+          WRITE (iunout,*) 'READ FROM FILE FORT 15'
+          WRITE (iunout,*) 'PARTICLES AND FLUX RETRIEVED FOR'
           WRITE (iunout,*) 'INITIAL DISTRIBUTION AT T0= ',TIME0
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
           CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
@@ -4005,7 +4108,7 @@ C
           IF (DTIMVN.NE.DTIMVO) THEN
             FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
 C
-            WRITE (iunout,*) 'FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW '
+            WRITE (iunout,*) 'FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW'
             CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
             CALL EIRENE_LEER(1)
           ENDIF
@@ -4021,8 +4124,8 @@ C Would gain performance by turning RPSTT into a pointer
               TIME=TIME0
               RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
             ENDDO
-            WRITE (iunout,*) 'PARTICLE CLOCK RESET '
-            WRITE (iunout,*) 'FIRST TIMESTEP RUNS FROM TIM1 TO TIM2:  '
+            WRITE (iunout,*) 'PARTICLE CLOCK RESET'
+            WRITE (iunout,*) 'FIRST TIMESTEP RUNS FROM TIM1 TO TIM2:'
             CALL EIRENE_MASR2('TIM1, TIM2      ',TIME0,TIME0+DTIMV)
             CALL EIRENE_LEER(2)
           ENDIF
@@ -4076,13 +4179,13 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
           ENDIF
         ENDIF
       ENDIF
-1399  CONTINUE
+ 1399 CONTINUE
 C
-1500  IF (IERROR.GT.0) THEN
-        WRITE (iunout,*) IERROR,' INPUT OR PARAMETER ERRORS DETECTED '
+ 1500 IF (IERROR.GT.0) THEN
+        WRITE (iunout,*) IERROR,' INPUT OR PARAMETER ERRORS DETECTED'
         WRITE (iunout,*)
-     .    ' SEE THE ERRORMESSAGES LISTED ABOVE AND CORRECT '
-        WRITE (iunout,*) ' THE ERRORS BEFORE RE-EXECUTION '
+     .   ' SEE THE ERROR MESSAGES LISTED ABOVE AND CORRECT'
+        WRITE (iunout,*) ' THE ERRORS BEFORE RE-EXECUTION'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
@@ -4090,10 +4193,10 @@ C
 
 
 C
-6662  FORMAT (L1,1X,A24,1X,I1,1X,4(2I3,1X))
-6664  FORMAT (6E12.4)
-6665  FORMAT (12(5L1,1X))
-6666  FORMAT (12I6)
+ 6662 FORMAT (L1,1X,A24,1X,I1,1X,4(2I3,1X))
+ 6664 FORMAT (6E12.4)
+ 6665 FORMAT (12(5L1,1X))
+ 6666 FORMAT (12I6)
 66661 FORMAT (I3,1X,A6,1X,A4,A9,A3,2I3,3E12.4)
 66662 FORMAT (2E12.4,10I6)
 66664 FORMAT (I6,6X,5E12.4)
@@ -4121,33 +4224,33 @@ C
         IF (INDPRO(1).NE.3.AND.INDPRO(1).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(1),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' FINITE ELEMENT MESH '
+          WRITE (iunout,*) ' FINITE ELEMENT MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(1) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(1) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(1)=3
         ENDIF
         IF (INDPRO(2).NE.3.AND.INDPRO(2).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(2),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' FINITE ELEMENT MESH '
+          WRITE (iunout,*) ' FINITE ELEMENT MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(2) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(2) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(2)=3
         ENDIF
         IF (INDPRO(3).NE.3.AND.INDPRO(3).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(3),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' FINITE ELEMENT MESH '
+          WRITE (iunout,*) ' FINITE ELEMENT MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(3) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(3) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(3)=3
         ENDIF
         IF (INDPRO(4).NE.3.AND.INDPRO(4).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(4),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' FINITE ELEMENT MESH '
+          WRITE (iunout,*) ' FINITE ELEMENT MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(4) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(4) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(4)=3
         ENDIF
       ENDIF
@@ -4158,33 +4261,33 @@ C
         IF (INDPRO(1).NE.3.AND.INDPRO(1).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(1),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' TETRAHEDRON MESH '
+          WRITE (iunout,*) ' TETRAHEDRON MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(1) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(1) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(1)=3
         ENDIF
         IF (INDPRO(2).NE.3.AND.INDPRO(2).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(2),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' TETRAHEDRON MESH '
+          WRITE (iunout,*) ' TETRAHEDRON MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(2) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(2) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(2)=3
         ENDIF
         IF (INDPRO(3).NE.3.AND.INDPRO(3).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(3),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' TETRAHEDRON MESH '
+          WRITE (iunout,*) ' TETRAHEDRON MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(3) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(3) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(3)=3
         ENDIF
         IF (INDPRO(4).NE.3.AND.INDPRO(4).LT.5) THEN
           WRITE (iunout,*) ' PROFILE OPTION ',INDPRO(4),
      .                     ' NOT FORESEEN FOR'
-          WRITE (iunout,*) ' TETRAHEDRON MESH '
+          WRITE (iunout,*) ' TETRAHEDRON MESH'
           WRITE (iunout,*)
-     .      ' INDPRO(4) IS SET TO 3 <=> CONSTANT PROFILE '
+     .      ' INDPRO(4) IS SET TO 3 <=> CONSTANT PROFILE'
           INDPRO(4)=3
         ENDIF
       ENDIF
@@ -4199,7 +4302,7 @@ C
       IF (.NOT.NLADD) NRADD=0
       IF (.NOT.NLMLT) NBMLT=1
 
-C  DEFAULT:  NO COARSE GRAINING OR REFINING OF GRID
+C  DEFAULT:  NO COARSE-GRAINING OR REFINING OF GRID
 C            THESE SETTINGS MAY BE ALTERED LATER, E.G. IN IF0COP.
       DO IN=1,NRAD
         NCLTAL(IN)=IN
@@ -4222,22 +4325,22 @@ C
         RINTEG(J)=RINTEG(1)
         EINTEG(J)=EINTEG(1)
         AINTEG(J)=AINTEG(1)
-        DO ISPZ=1,NSPZ
-          ISRS(ISPZ,J)=ISRS(1,J)
-          ISRC(ISPZ,J)=ISRC(1,J)
-          TRANSP(ISPZ,1,J)=TRANSP(1,1,J)
-          TRANSP(ISPZ,2,J)=TRANSP(1,2,J)
-          RECYCF(ISPZ,J)=RECYCF(1,J)
-          RECYCT(ISPZ,J)=RECYCT(1,J)
-          RECPRM(ISPZ,J)=RECPRM(1,J)
-          EXPPL(ISPZ,J)=EXPPL(1,J)
-          EXPEL(ISPZ,J)=EXPEL(1,J)
-          EXPIL(ISPZ,J)=EXPIL(1,J)
-          RECYCS(ISPZ,J)=RECYCS(1,J)
-          RECYCC(ISPZ,J)=RECYCC(1,J)
-          SPTPRM(ISPZ,J)=SPTPRM(1,J)
-          ESPUTS(ISPZ,J)=ESPUTS(1,J)
-          ESPUTC(ISPZ,J)=ESPUTC(1,J)
+        DO JSPZ=1,NSPZ
+          ISRS(JSPZ,J)=ISRS(1,J)
+          ISRC(JSPZ,J)=ISRC(1,J)
+          TRANSP(JSPZ,1,J)=TRANSP(1,1,J)
+          TRANSP(JSPZ,2,J)=TRANSP(1,2,J)
+          RECYCF(JSPZ,J)=RECYCF(1,J)
+          RECYCT(JSPZ,J)=RECYCT(1,J)
+          RECPRM(JSPZ,J)=RECPRM(1,J)
+          EXPPL(JSPZ,J)=EXPPL(1,J)
+          EXPEL(JSPZ,J)=EXPEL(1,J)
+          EXPIL(JSPZ,J)=EXPIL(1,J)
+          RECYCS(JSPZ,J)=RECYCS(1,J)
+          RECYCC(JSPZ,J)=RECYCC(1,J)
+          SPTPRM(JSPZ,J)=SPTPRM(1,J)
+          ESPUTS(JSPZ,J)=ESPUTS(1,J)
+          ESPUTC(JSPZ,J)=ESPUTC(1,J)
         end do
       end do
 
@@ -4310,7 +4413,7 @@ C
           SURFLIST => SURFLIST%NEXT
           DEALLOCATE(SURFCUR)
         END DO
-        WRITE (iunout,*) ' EXECUTION IS STOPPED '
+        WRITE (iunout,*) ' EXECUTION IS STOPPED'
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
@@ -4323,8 +4426,8 @@ c  non-default standard surfaces have a negative surface index on printout
         ILCOL(J)=MAX0(1,IABS(ILCOL(J)))
 
         IF ((ILIIN(J).LE.0.OR.ILIIN(J).GE.4).AND.(ILSPT(J).NE.0)) THEN
-          WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
-     .      ' IS TRANSPARENT OR PERIODIC BUT IS USED TO SPUTTER '
+          WRITE (IUNOUT,'(1X,A,I4,A)') 'WARNING: SURFACE NO. ',JJ,
+     .      ' IS TRANSPARENT OR PERIODIC BUT IS USED TO SPUTTER'
         END IF
 
         ISPUT(1,J)=EIRENE_IDEZ(ILSPT(J),1,2)
@@ -4336,12 +4439,12 @@ c  non-default standard surfaces have a negative surface index on printout
         IF (ILIIN(J).LE.0) TRANSP(:,2,J)=0.D0
 
         IF (ISPUT(1,J).NE.0.AND.ALL(RECYCS(:,J).EQ.0._DP)) THEN
-          WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
+          WRITE (IUNOUT,'(1X,A,I4,1x,A,A)') 'WARNING: SURFACE NO. ',JJ,
      .                     'HAS A PHYSICAL SPUTTER MODEL, BUT ',
      .                     'SPUTTER YIELD IS SCALED TO ZERO (RECYCS=0)'
         ENDIF
         IF (ISPUT(2,J).NE.0.AND.ALL(RECYCC(:,J).EQ.0._DP)) THEN
-          WRITE (IUNOUT,*) 'WARNING: SURFACE NO. ',JJ,
+          WRITE (IUNOUT,'(1X,A,I4,1x,A,A)') 'WARNING: SURFACE NO. ',JJ,
      .                     'HAS A CHEMICAL SPUTTER MODEL, BUT ',
      .                     'SPUTTER YIELD IS SCALED TO ZERO (RECYCC=0)'
         ENDIF
@@ -4351,11 +4454,11 @@ C
         SAVE=ZNML(J)
         ZNML(J)=DBLE(IDINT(SAVE/100.D0))
         ZNCL(J)=SAVE-100.*ZNML(J)
-        DO 2001 ISPZ=1,NSPZ
-          ISRF(ISPZ,J)=ISRF(ISPZ,1)
-          ISRT(ISPZ,J)=ISRT(ISPZ,1)
-2001    CONTINUE
-2000  CONTINUE
+        DO 2001 JSPZ=1,NSPZ
+          ISRF(JSPZ,J)=ISRF(JSPZ,1)
+          ISRT(JSPZ,J)=ISRT(JSPZ,1)
+ 2001   CONTINUE
+ 2000 CONTINUE
 C
       INMP1I=0
       INMP2I=0
@@ -4390,13 +4493,13 @@ C
         ENDIF
 C
         IF (ILSWCH(NLJ).NE.0.AND.ILIIN(NLJ).GT.0) THEN
-          DO ISPZ=1,NSPZ
-            IF (TRANSP(ISPZ,1,NLJ).NE.0..OR.TRANSP(ISPZ,2,NLJ).NE.0.)
+          DO JSPZ=1,NSPZ
+            IF (TRANSP(JSPZ,1,NLJ).NE.0..OR.TRANSP(JSPZ,2,NLJ).NE.0.)
      .      THEN
               WRITE (iunout,*)
      .          'EXIT FROM TIMEA0: SURFACE NO. ISTS OPERATING'
               WRITE (iunout,*)
-     .          'A SWITCH BUT IS SOMETIMES TRANSPARENT AND '
+     .          'A SWITCH BUT IS SOMETIMES TRANSPARENT AND'
               WRITE (iunout,*)
      .          'SOMETIMES REFLECTING (SEMI-TRANSPARENCY OPTION)'
               WRITE (iunout,*)
@@ -4421,7 +4524,7 @@ C  RADIAL SURFACE
               END DO
             END DO
           ENDIF
-2014    CONTINUE
+ 2014   CONTINUE
 C  POLOIDAL SURFACE
         DO 2016 JP=1,NP2ND
           IF (JP.EQ.INUMP(ISTS,2)) THEN
@@ -4434,7 +4537,7 @@ C  POLOIDAL SURFACE
               END DO
             END DO
           ENDIF
-2016    CONTINUE
+ 2016   CONTINUE
 C  TOROIDAL SURFACE
         DO 2018 KT=1,NT3RD
           IF (KT.EQ.INUMP(ISTS,3)) THEN
@@ -4452,9 +4555,9 @@ C  TOROIDAL SURFACE
               END DO
             END IF
           ENDIF
-2018    CONTINUE
+ 2018   CONTINUE
 C
-2019  CONTINUE
+ 2019 CONTINUE
 C
       NLSYMT(0)=.TRUE.
       NLSYMP(0)=.TRUE.
@@ -4484,7 +4587,7 @@ C
         ENDIF
         NLSYMT(0)=NLSYMT(0).AND.NLSYMT(ISTRA)
         NLSYMP(0)=NLSYMP(0).AND.NLSYMP(ISTRA)
-2028  CONTINUE
+ 2028 CONTINUE
 C
 C
 C  SPECIES INDEX DISTRIBUTION OF PRIMARY SOURCE PARTICLES
@@ -4525,66 +4628,66 @@ C
       END DO
 C
 C  NORMALISE DISTRIBUTION AND CUMULATIVE DISTRIBUTION
-      DO IION=1,NIONI
-        DIOD(IION)=DIOD(IION)/(SI+1.D-60)
-        DION(IION)=DION(IION)/(SI+1.D-60)
+      DO JION=1,NIONI
+        DIOD(JION)=DIOD(JION)/(SI+1.D-60)
+        DION(JION)=DION(JION)/(SI+1.D-60)
       END DO
-      DO IMOL=1,NMOLI
-        DMLD(IMOL)=DMLD(IMOL)/(SM+1.D-60)
-        DMOL(IMOL)=DMOL(IMOL)/(SM+1.D-60)
+      DO JMOL=1,NMOLI
+        DMLD(JMOL)=DMLD(JMOL)/(SM+1.D-60)
+        DMOL(JMOL)=DMOL(JMOL)/(SM+1.D-60)
       END DO
-      DO IATM=1,NATMI
-        DATD(IATM)=DATD(IATM)/(SA+1.D-60)
-        DATM(IATM)=DATM(IATM)/(SA+1.D-60)
+      DO JATM=1,NATMI
+        DATD(JATM)=DATD(JATM)/(SA+1.D-60)
+        DATM(JATM)=DATM(JATM)/(SA+1.D-60)
       END DO
-      DO IPLS=1,NPLSI
-        DPLD(IPLS)=DPLD(IPLS)/(SPP+1.D-60)
-        DPLS(IPLS)=DPLS(IPLS)/(SPP+1.D-60)
+      DO JPLS=1,NPLSI
+        DPLD(JPLS)=DPLD(JPLS)/(SPP+1.D-60)
+        DPLS(JPLS)=DPLS(JPLS)/(SPP+1.D-60)
       END DO
-      DO IPHOT=1,NPHOTI
-        DPHD(IPHOT)=DPHD(IPHOT)/(SPH+1.D-60)
-        DPHOT(IPHOT)=DPHOT(IPHOT)/(SPH+1.D-60)
+      DO JPHOT=1,NPHOTI
+        DPHD(JPHOT)=DPHD(JPHOT)/(SPH+1.D-60)
+        DPHOT(JPHOT)=DPHOT(JPHOT)/(SPH+1.D-60)
       END DO
 C
 C
-C  ATOMIC WEIGHT OF TEST IONS  =RMASSI(IION)
-      DO IION=1,NIONI
-        RMASSI(IION)=NMASSI(IION)*PMASSA
-        RSQDVI(IION)=1._DP/SQRT(RMASSI(IION))*CVELAA
-        CVRSSI(IION)=RMASSI(IION)*CVELI2
-        ALMASI(IION)=LOG10(RMASSI(IION))
-        CNDYNI(IION)=AMUA*RMASSI(IION)
+C  ATOMIC WEIGHT OF TEST IONS  =RMASSI(JION)
+      DO JION=1,NIONI
+        RMASSI(JION)=NMASSI(JION)*PMASSA
+        RSQDVI(JION)=1._DP/SQRT(RMASSI(JION))*CVELAA
+        CVRSSI(JION)=RMASSI(JION)*CVELI2
+        ALMASI(JION)=LOG10(RMASSI(JION))
+        CNDYNI(JION)=AMUA*RMASSI(JION)
       END DO
-C  ATOMIC WEIGHT OF ATOMS  =RMASSA(IATM)
-      DO IATM=1,NATMI
-        RMASSA(IATM)=NMASSA(IATM)*PMASSA
-        RSQDVA(IATM)=1._DP/SQRT(RMASSA(IATM))*CVELAA
-        CVRSSA(IATM)=RMASSA(IATM)*CVELI2
-        ALMASA(IATM)=LOG10(RMASSA(IATM))
-        CNDYNA(IATM)=AMUA*RMASSA(IATM)
+C  ATOMIC WEIGHT OF ATOMS  =RMASSA(JATM)
+      DO JATM=1,NATMI
+        RMASSA(JATM)=NMASSA(JATM)*PMASSA
+        RSQDVA(JATM)=1._DP/SQRT(RMASSA(JATM))*CVELAA
+        CVRSSA(JATM)=RMASSA(JATM)*CVELI2
+        ALMASA(JATM)=LOG10(RMASSA(JATM))
+        CNDYNA(JATM)=AMUA*RMASSA(JATM)
       END DO
 C  ATOMIC WEIGHT OF MOLECULES
-      DO IMOL=1,NMOLI
-        RMASSM(IMOL)=NMASSM(IMOL)*PMASSA
-        RSQDVM(IMOL)=1._DP/SQRT(RMASSM(IMOL))*CVELAA
-        CVRSSM(IMOL)=RMASSM(IMOL)*CVELI2
-        ALMASM(IMOL)=LOG10(RMASSM(IMOL))
-        CNDYNM(IMOL)=AMUA*RMASSM(IMOL)
+      DO JMOL=1,NMOLI
+        RMASSM(JMOL)=NMASSM(JMOL)*PMASSA
+        RSQDVM(JMOL)=1._DP/SQRT(RMASSM(JMOL))*CVELAA
+        CVRSSM(JMOL)=RMASSM(JMOL)*CVELI2
+        ALMASM(JMOL)=LOG10(RMASSM(JMOL))
+        CNDYNM(JMOL)=AMUA*RMASSM(JMOL)
       END DO
 C  ATOMIC WEIGHT OF BULK IONS
-      DO IPLS=1,NPLSI
-        RMASSP(IPLS)=NMASSP(IPLS)*PMASSA
+      DO JPLS=1,NPLSI
+        RMASSP(JPLS)=NMASSP(JPLS)*PMASSA
 csw check photon in bulk
-        if(rmassp(ipls) > 0._DP) then
-          RSQDVP(IPLS)=1._DP/SQRT(RMASSP(IPLS))*CVELAA
-          CVRSSP(IPLS)=RMASSP(IPLS)*CVELI2
-          ALMASP(IPLS)=LOG10(RMASSP(IPLS))
-          CNDYNP(IPLS)=AMUA*RMASSP(IPLS)
+        if(rmassp(jpls) > 0._DP) then
+          RSQDVP(JPLS)=1._DP/SQRT(RMASSP(JPLS))*CVELAA
+          CVRSSP(JPLS)=RMASSP(JPLS)*CVELI2
+          ALMASP(JPLS)=LOG10(RMASSP(JPLS))
+          CNDYNP(JPLS)=AMUA*RMASSP(JPLS)
         else
-          rsqdvp(ipls)=0.
-          cvrssp(ipls)=0.
-          almasp(ipls)=0.
-          cndynp(ipls)=0.
+          rsqdvp(jpls)=0.
+          cvrssp(jpls)=0.
+          almasp(jpls)=0.
+          cndynp(jpls)=0.
         endif
 csw end check
       END DO
@@ -4700,7 +4803,7 @@ C
 C  ADDITIONAL INPUT FOR THIS RUN COMES FROM EITHER
 C  ANOTHER CODE (DATA FILE) OR FROM AN EARLIER RUN OF EIRENE
 C
-3000  CONTINUE
+ 3000 CONTINUE
 C
 C  INPUT BLOCK 14 BEGIN
 C
@@ -4714,11 +4817,12 @@ C
       IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
 
       IF (IREAD.EQ.0) READ (IUNIN,*)
+      CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
      .  ('*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"   ')
       IF (NMODE.EQ.0) THEN
 C  STAND ALONE RUN, READ BLOCK *** 14 HERE
-        WRITE (iunout,*) '        SUBR. INFCOP NOT CALLED. '
+        WRITE (iunout,*) '        SUBR. INFCOP NOT CALLED.'
         READ (IUNIN,6666) NAINI,NCOPII,NCOPIE
         NCPVI=NCOPIE
         WRITE (iunout,*) '        NAINI, NCPVI = ',NAINI,NCPVI
@@ -4732,12 +4836,12 @@ C  STAND ALONE RUN, READ BLOCK *** 14 HERE
         ENDIF
         CALL EIRENE_ALLOC_CCOUPL(2)
         DO 3020 J=1,NAINI
-3021      READ (IUNIN,'(A72)') ZEILE
+ 3021     READ (IUNIN,'(A72)') ZEILE
           IF (ZEILE(1:1) .EQ. '*') GOTO 3021
           READ (ZEILE,6666) NAINS(J),NAINT(J)
           READ (IUNIN,'(A72)') TXTPLS(J,NTALN)
           READ (IUNIN,'(2A24)') TXTPSP(J,NTALN),TXTPUN(J,NTALN)
-3020    CONTINUE
+ 3020   CONTINUE
 
       ELSEIF (NMODE.NE.0) THEN
 C  COUPLED RUN, READ BLOCK *** 14 IN INTERFACING ROUTINE INFCOP (ENTRY IF0COP)
@@ -4792,7 +4896,7 @@ C
           IF (LMISTALV(IIH(J))) THEN
             WRITE (iunout,*)
      .        ' NO STATISTICS IS DONE FOR VOLUME TALLY NO. ',IIH(J)
-            WRITE (iunout,*) ' BECAUSE TALLY HAS BEEN SWITCHED OFF '
+            WRITE (iunout,*) ' BECAUSE TALLY HAS BEEN SWITCHED OFF'
             IGH(J)=IGH(NSIGVI)
             IIH(J)=IIH(NSIGVI)
             NSIGVI=NSIGVI-1
@@ -4808,7 +4912,7 @@ C
           IF (LMISTALS(IIHW(J))) THEN
             WRITE (iunout,*)
      .        ' NO STATISTICS IS DONE FOR SURFACE TALLY NO. ',IIHW(J)
-            WRITE (iunout,*) ' BECAUSE TALLY HAS BEEN SWITCHED OFF '
+            WRITE (iunout,*) ' BECAUSE TALLY HAS BEEN SWITCHED OFF'
             IGHW(J)=IGHW(NSIGSI)
             IIHW(J)=IIHW(NSIGSI)
             NSIGSI=NSIGSI-1
@@ -4823,9 +4927,9 @@ C
         DO WHILE (J <= NSIGCI)
           IF (LMISTALV(IIHC(1,J)) .OR. LMISTALV(IIHC(2,J))) THEN
             WRITE (iunout,*)
-     .        ' NO CORRELATION COEFFICIENT IS CALCULATED ',
+     .        ' NO CORRELATION COEFFICIENT IS CALCULATED',
      .        ' BETWEEN TALLIES ',IIHC(1,J),' AND ',IIHC(2,J)
-            WRITE (iunout,*) ' BECAUSE TALLIES HAVE BEEN SWITCHED OFF '
+            WRITE (iunout,*) ' BECAUSE TALLIES HAVE BEEN SWITCHED OFF'
             IGHC(1,J)=IGHC(1,NSIGCI)
             IIHC(1,J)=IIHC(1,NSIGCI)
             IGHC(2,J)=IGHC(2,NSIGCI)
@@ -4849,7 +4953,7 @@ CDR  TALLIES ARE ALSO DEFAULT TALLIES, and hence standard deviations are availab
         IGH(NSIGVI+1 : NSIGVI+3*NPLSI+4) = (/ (I,I=1,3*NPLSI+4) /)
         NSIGVI = NSIGVI + 3*NPLSI+4
         WRITE (IUNOUT,*) ' STANDARD DEVIATION SWITCHED ON FOR',
-     .                   ' COUPLING TALLY '
+     .                   ' COUPLING TALLY'
         WRITE (IUNOUT,*) ' NSIGVI SET TO ', NSIGVI
       END IF
 C
@@ -4996,7 +5100,7 @@ C
         IF (NPHOTI > 0) CALL EIRENE_PH_INIT(2)
 C
 C   MODIFY SOME GEOMETRICAL DATA, USER-SUPPLIED ROUTINE
-Cstartup-routines/input.f
+C
         CALL EIRENE_GEOUSR
 
         IF (LEVGEO == 4) CALL EIRENE_CUT_ADS_CELL
@@ -5019,7 +5123,7 @@ C
         CALL EIRENE_SETEQ
 C
 C   WRITE A LIST OF CLOSED POLYGONIAL LINES, DETERMINED
-C   FROM EIRENE ADDITIONAL AND NON DEFAULT STANDARD SURFACES
+C   FROM EIRENE ADDITIONAL AND NON-DEFAULT STANDARD SURFACES
 C  (WITH THEIR ORIENTATION)
 C   ONTO STREAM 78+IFOFF
 C   FOR FURTHER USE IN TRIANGULARISATION CODES, WHICH MAY THEN
@@ -5050,7 +5154,7 @@ C
           DO J=1,NSOPT
             DO 8005 I=1,NLIMI
               LHELP(I) = IGJUM3(J,I)==0
-8005        CONTINUE
+ 8005       CONTINUE
             IIN=EIRENE_ILLZ(NLIMI,LHELP,1)+1
             IEN=NLIMI-EIRENE_ILLZ(NLIMI,LHELP,-1)
             NLIMII(J)=IIN
@@ -5060,7 +5164,7 @@ C
 
         ELSEIF (NLIMPB < NLIMPS) THEN
 C  now try the same thing but with bit arithmetic, in case of storage
-c  saving mode (igjum3-array stored in single bit integer format)
+c  saving mode (igjum3 array stored in single bit integer format)
 
           DO J=1,NSOPT
             IIN = 1
@@ -5112,7 +5216,7 @@ C   SAVE GEOMETRICAL DATA ON FILE FT12
 C
         DO 8006 IRAD=1,NSBOX
           VOLG(IRAD)=VOL(IRAD)
-8006    CONTINUE
+ 8006   CONTINUE
 C
         DO ILIMPS=1,NLMPGS
           AREAG(ILIMPS)=SAREA(ILIMPS)
@@ -5128,7 +5232,7 @@ C
 C
         DO 8010 IRAD=1,NSBOX
           VOL(IRAD)=VOLG(IRAD)
-8010    CONTINUE
+ 8010   CONTINUE
 C
         DO ILIMPS=1,NLMPGS
           SAREA(ILIMPS)=AREAG(ILIMPS)
@@ -5139,7 +5243,7 @@ C
 C
       DO 8011 IS=1,NLIMPS
         IF (ILACLL(IS).NE.0.AND..NOT.NLADD) THEN
-          WRITE (iunout,*) 'ADDITIONAL CELL SWITCHES DEFINED, BUT NO '
+          WRITE (iunout,*) 'ADDITIONAL CELL SWITCHES DEFINED, BUT NO'
           WRITE (iunout,*) 'ADDITIONAL CELLS DEFINED'
           ISS=IS
           IF (ISS.GT.NLIM) ISS=-(ISS-NLIM)
@@ -5155,11 +5259,11 @@ C
           WRITE (iunout,*) 'CHECK INPUT BLOCKS 2D AND 2E'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
-8011  CONTINUE
+ 8011 CONTINUE
 
 
 C
-4000  CONTINUE
+ 4000 CONTINUE
 C
 
 
@@ -5195,7 +5299,7 @@ cdr  VOLTAL on coarser grid
 
 C
 cpb add nlshrt13
-      IF ((NFILEL.LE.1) .OR. (NFILEL == 6) .OR. NLSHRT13) THEN
+      IF ((NFILEL.LE.1) .OR. NLSHRT13) THEN
 C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS
 C
@@ -5254,7 +5358,11 @@ C
         CALL EIRENE_PLAUSR
 
 
-
+C  THIS POINT IS ONLY REACHED WITH NFILEL=3 IF NLSHRT13=.T.
+c  (SHORT VERSION OF FORT.13 ONLY).
+C  READ ONLY PLASMA DATA OF THOSE BACKGROUND SPECIES
+C  WHICH ARE NOT CONTAINED IN EXTERNAL PLASMA CODE,
+C  I.E. ONLY THOSE WHICH ARE NEEDED FOR INTERNAL EIRENE CYCLING (NON-LINEARITIES)
         IF (NFILEL.EQ.3) CALL EIRENE_RPLAM(TRCFLE,0)
 
 
@@ -5276,7 +5384,7 @@ C
 
 
 C
-      ELSEIF (NFILEL.EQ.2.OR.NFILEL.EQ.3.OR.NFILEL.EQ.4) THEN 
+      ELSEIF (NFILEL.GE.2.AND.NFILEL.LE.4) THEN
 C
 C  READ PLASMA DATA, ATOMIC DATA, SOURCE DATA FROM FT13
 C
@@ -5303,28 +5411,28 @@ C
 
 
 C
-C  SETUP TABLE OF CONTRIBUTIONS OF MONTE-CARLO PARTICLES TO BACKGROUND SPECIES
+C  SETUP TABLE OF CONTRIBUTIONS OF MONTE CARLO PARTICLES TO BACKGROUND SPECIES
 C
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
-      DO IPLS = 1, NPLSI
-        IF ((LEN_TRIM(CDENMODEL(IPLS)) > 0) .AND.
-     .      (INDEX(CDENMODEL(IPLS),'CONSTANT') == 0)) THEN
-          DO IRE = 1, TDMPAR(IPLS)%TDM%NRE
-            ITYP = TDMPAR(IPLS)%TDM%ITP(IRE)
-            ISPZ = IADTYP(ITYP) + TDMPAR(IPLS)%TDM%ISP(IRE)
-            ISPZ_BACK(ISPZ,IPLS) = 1
+      DO JPLS = 1, NPLSI
+        IF ((LEN_TRIM(CDENMODEL(JPLS)) > 0) .AND.
+     .      (INDEX(CDENMODEL(JPLS),'CONSTANT') == 0)) THEN
+          DO IRE = 1, TDMPAR(JPLS)%TDM%NRE
+            ITYP = TDMPAR(JPLS)%TDM%ITP(IRE)
+            ISPZ = IADTYP(ITYP) + TDMPAR(JPLS)%TDM%ISP(IRE)
+            ISPZ_BACK(ISPZ,JPLS) = 1
           END DO
         END IF
       END DO
 
       CALL EIRENE_LEER(2)
-      WRITE (IUNOUT,*) ' LIST OF CONTRIBUTIONS TO BACKGROUND SPECIES '
-      DO ISPZ = 1, NSPZ
-        DO IPLS = 1, NPLSI
-          IF (ISPZ_BACK(ISPZ,IPLS) > 0)
-     .      WRITE (IUNOUT,*) TEXTS(ISPZ), ' CONTRIBUTES TO ',
-     .                       TEXTS(NSPAMI+IPLS)
+      WRITE (IUNOUT,*) ' LIST OF CONTRIBUTIONS TO BACKGROUND SPECIES'
+      DO JSPZ = 1, NSPZ
+        DO JPLS = 1, NPLSI
+          IF (ISPZ_BACK(JSPZ,JPLS) > 0)
+     .      WRITE (IUNOUT,*) TEXTS(JSPZ), ' CONTRIBUTES TO ',
+     .                       TEXTS(NSPAMI+JPLS)
         END DO
       END DO
 C
@@ -5363,7 +5471,7 @@ C
             WRITE (iunout,*)  ISWICH(1,J),ISWICH(2,J),ISWICH(3,J),
      .                   ISWICH(4,J),ISWICH(5,J),ISWICH(6,J)
           ENDIF
-7701    CONTINUE
+ 7701   CONTINUE
         CALL EIRENE_LEER(2)
         CALL EIRENE_MASIR2('IGJUM0 ',IGJUM0,1,1,1,1,NLIMPS)
         CALL EIRENE_LEER(1)
@@ -5393,7 +5501,7 @@ C
         DO 7702 J=1,NSOPT
           CALL EIRENE_MASJ3
      .  ('J,NLIMII,NLIMIE          ',J,NLIMII(J),NLIMIE(J))
-7702    CONTINUE
+ 7702   CONTINUE
 C
       ENDIF
 
@@ -5405,10 +5513,10 @@ C
       IF (.NOT.ALLOCATED(TRAJ)) THEN
         ALLOCATE (TRAJ(NCHORI+NTRJ))
 
-        DO ITRJ = 1, NCHORI+NTRJ
-          ALLOCATE(TRAJ(ITRJ)%TRJ)
-          TRAJ(ITRJ)%TRJ%NCOU_CELL = 0
-          NULLIFY(TRAJ(ITRJ)%TRJ%CELLS)
+        DO JTRJ = 1, NCHORI+NTRJ
+          ALLOCATE(TRAJ(JTRJ)%TRJ)
+          TRAJ(JTRJ)%TRJ%NCOU_CELL = 0
+          NULLIFY(TRAJ(JTRJ)%TRJ%CELLS)
         END DO
       END IF
 
@@ -5420,7 +5528,7 @@ C
 
       NBACK_SPEC = 0
 
-c  number of spectra directly estimated from Monte-Carlo trajectories
+c  number of spectra directly estimated from Monte Carlo trajectories
 
       NADSPC_S = 0   !  surface-based
       NADSPC_C = 0   !  cell-based
@@ -5456,34 +5564,50 @@ C
 C
 C  ERROR EXITS
 C
-990   CONTINUE
-      WRITE (iunout,*) 'TALLY NUMBER FOR PRINTOUT OR PLOT OF '
+  990 CONTINUE
+      WRITE (iunout,*) 'TALLY NUMBER FOR PRINTOUT OR PLOT OF'
       WRITE (iunout,*) 'VOLUME-AVERAGED TALLIES OUT OF RANGE'
       CALL EIRENE_EXIT_OWN(1)
-991   CONTINUE
+  991 CONTINUE
       WRITE (iunout,*) 'TALLY NUMBER FOR PRINTOUT OF SURFACE-AVERAGED'
       WRITE (iunout,*) 'TALLIES OUT OF RANGE'
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*)
-     .  'FINITE ELEMENT OPTION USED, BUT GRID INDICATOR '
-      WRITE (iunout,*) 'LESS THAN 6. '
+     .  'FINITE ELEMENT OPTION USED, BUT GRID INDICATOR'
+      WRITE (iunout,*) 'LESS THAN 6.'
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*)
      .  'INCONSISTENCY WRT. SURFACE REFLECTION DATABASE, BLOCK 6 '
       CALL EIRENE_EXIT_OWN(1)
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR IN INPUT: NRPLG.NE.NP2ND, BUT NLPOL=TRUE'
       WRITE (iunout,*) 'NRPLG,NP2ND ',NRPLG,NP2ND
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'ERROR IN INPUT: ',
      .            'WRONG UNIT NUMBER FOR OUTPUT OF TALLY SPECIFIED'
       WRITE (iunout,*) 'NTLV,NTLVF',NTLV,NTLVF
       CALL EIRENE_EXIT_OWN(1)
-998   CONTINUE
-      WRITE (iunout,*) 'ERROR IN INPUT BLOCK FOR ADDITIONAL DATA FOR  '
+  998 CONTINUE
+      WRITE (iunout,*) 'ERROR IN INPUT BLOCK FOR ADDITIONAL DATA FOR'
       WRITE (iunout,*) 'SPECIFIC ZONES FOUND AT ZONE NO. ',I
       CALL EIRENE_EXIT_OWN(1)
       END
+c=======================================================================
+      subroutine fix_logical_input(a,l)
+cxb: * For gfortran: it does not accept empty field for logicals
+c      Fill up empty spaces with 'f'
+      implicit none
+      character*(*) a
+      integer l
+      integer i,j
+      j=1
+      do i=1,l !{
+        if(a(j:j).eq.' ') a(j:j)='f'
+        j=j+1
+        if(mod(i,5).eq.0) j=j+1
+      end do !}
+c      write (iunout,'(a,a)') 'zeile :',trim(a)   !###
+      end

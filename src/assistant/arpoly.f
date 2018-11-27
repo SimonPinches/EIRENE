@@ -20,7 +20,7 @@ C
       REAL(DP) :: A1, B1, C1, A2, B2, C2, RHO1, RHO2, AREAD1, AREAD2,
      .          XCD1, YCD1, XCD2, YCD2
       INTEGER :: IP1, J, JP1, I, NM1, MEM1, IN
- 
+
       MEM1=ME-1
       NM1=N-1
       DO 10 J=MI,MEM1
@@ -47,7 +47,7 @@ C  CENTER OF MASS
           YCD2=(Y(J,I)+Y(JP1,I)+Y(JP1,IP1))/3.
           XCOM(IN)=(XCD1*AREAD1 + XCD2*AREAD2) / (AREA2(J,I)+1.E-60_DP)
           YCOM(IN)=(YCD1*AREAD1 + YCD2*AREAD2) / (AREA2(J,I)+1.E-60_DP)
-20      CONTINUE
-10    CONTINUE
+   20   CONTINUE
+   10 CONTINUE
       RETURN
       END

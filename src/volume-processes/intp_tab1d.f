@@ -6,19 +6,19 @@ cdr  binary search in table. linear extrapolation outside range of table
 cdr  Nov. 15: argument p2 removed, added: ip1:  indicator for extrapolation or interpolation
 cdr           ip1: as in intp_tab2d (2d tables)
 cdr      tbd:  generalize to general 1d tables, not just hydkin_data
-cdr            
- 
+cdr
+
       use EIRMOD_precision
       use EIRMOD_comxs, only: hydkin_data
- 
+
       implicit none
- 
+
       type(hydkin_data), pointer :: tb
       real(dp), intent(in) :: p1
       integer, intent(out) :: ip1
       real(dp) :: res
       integer :: ite
- 
+
       if (p1 <= tb%temps(1)) then
         ite = 1
         ip1 = -1
@@ -29,8 +29,8 @@ cdr
         call EIRENE_binsearch_2 (tb%temps, tb%ntemps, p1, ite)
         ip1 = 0
       end if
- 
+
       res = tb%rates(ite) + (p1-tb%temps(ite))*tb%ratio(ite)
- 
+
       return
       end function EIRENE_intp_tab1d

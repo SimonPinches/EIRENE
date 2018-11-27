@@ -1,4 +1,4 @@
- 
+
       SUBROUTINE MPI_send (buffer,cnt,datatype,dest,tag,comm,ier)
       IMPLICIT NONE
       integer, intent(out) :: ier

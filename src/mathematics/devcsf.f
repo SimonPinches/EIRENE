@@ -1,5 +1,5 @@
- 
- 
+
+
       SUBROUTINE EIRENE_DEVCSF(N,A,LDA,EVAL,EVEC,LDEVEC)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
@@ -9,19 +9,18 @@
       INTEGER :: IERR, I
       REAL(DP), ALLOCATABLE :: EVEC1(:,:),EVAL1(:),
      .                         FV1(:),FV2(:)
- 
- 
+
       ALLOCATE (EVEC1(LDA,LDA))
       ALLOCATE (EVAL1(LDA))
       ALLOCATE (FV1(LDA))
       ALLOCATE (FV2(LDA))
- 
+
       CALL EIRENE_RS(LDA,N,A,EVAL1,1,EVEC1,FV1,FV2,IERR)
       DO 10,I=1,N
          EVAL(I) = EVAL1(N-I+1)
          EVEC(1:LDEVEC,I) = EVEC1(1:LDEVEC,N-I+1)
-10    CONTINUE
- 
+   10 CONTINUE
+
       DEALLOCATE (EVEC1)
       DEALLOCATE (EVAL1)
       DEALLOCATE (FV1)

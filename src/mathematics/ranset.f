@@ -31,19 +31,19 @@ cdr there are various variants of initializer RMARIN, taking either
 cdr one, two or 4 input seeds.
 cdr currently we take one seed, 0<=ise<=900.000.000,
 cdr then produce two smaller integer seeds iseed1,iseed2 from that,
-cdr in SUBR. H1RNIN, and initialize the status of H1RN with the content of 
+cdr in SUBR. H1RNIN, and initialize the status of H1RN with the content of
 cdr Common RASET1 (full 102 words)
 
          if (ise <= 0) then
            if (ifirst == 0) then
-cdr this default seed produces the 4 small Marsaglia-Zaman seeds. 
+cdr this default seed produces the 4 small Marsaglia-Zaman seeds.
 c   Loc.cit. F.James, CPC (1990)
              iseed = 54217137
              call h1rnin(iseed)
 !   else  seed is already set, do nothing
            else
              write (iunout,*) 'RANSET.F: '
-             write (iunout,*) 'no initializatin of random generator'
+             write (iunout,*) 'no initialization of random generator'
              write (iunout,*) 'continue sequence without new seed'
            end if
          else  ! here: ise > 0
@@ -53,17 +53,16 @@ cdr  900000000 is the maximum value for the single input seed initialization. Lo
          end if
 
 
-
 cdr  initializing the old IBM (1968) generator
       ELSE
 
          if (ise <= 0) then
            if (ifirst == 0) then
              iseed = 9876543
-!   else  seed is already set, do nothing, some older seed is already available
+!   else seed is already set, do nothing, some older seed is already available
            else
              write (iunout,*) 'RANSET.F: '
-             write (iunout,*) 'no initializatin of random generator'
+             write (iunout,*) 'no initialization of random generator'
              write (iunout,*) 'continue sequence without new seed'
            end if
          else  ! here: ise > 0

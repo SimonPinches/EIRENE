@@ -2,7 +2,7 @@
 
 c Nov.07 copied from old code halpha.f: fulcher band emission removed.
 c        (fulcher contribution still in old halpha.f)
-C 
+C
 !dr  Aug. 12: derived from Ba_alpha.f, just atomic transition data
 !dr           changed from 3-->2  to 3-->1
 C
@@ -10,7 +10,7 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
 
@@ -27,7 +27,7 @@ C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
 C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
-C  IADS: SUM OVER ALL CONTRINUTIONS
+C  IADS: SUM OVER ALL CONTRIBUTIONS
 C
 C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
@@ -56,7 +56,7 @@ C I.E. STORAGE CHECKS: NADV GE NADVI+7 ARE ALREADY DONE ELSEWHERE
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
       USE EIRMOD_CTEXT
- 
+
       IMPLICIT NONE
 C
       INTEGER, INTENT(IN) :: IAD1, IAD2, IAD3, IAD4, IAD5, IAD6,
@@ -249,7 +249,7 @@ C  PLUS IF THE PRODUCTION AND LOSS RATES ARE THE SAME AS THOSE USED TO PRODUCE T
 C  RATIO FITS  (see: AMJUEL database)
 
 C  or:
-C  IF THESE SPECIES ARE NOT INCLUDED AT ALL, 
+C  IF THESE SPECIES ARE NOT INCLUDED AT ALL,
 C  BUT THE CORRESPONDING MULTISTEP RATES CONTAINING THEM
 C  AS CONDENSED INTERMEDIATE STATES ARE USED
 C  FOR THE TRANSPORTED SPECIES (H2) TO WHICH THESE "MINORITES" ARE COUPLED.
@@ -277,7 +277,7 @@ C
 C  NEXT: H3+/H2  (COUPLED TO H2(V)
 C  H.11 4.0a vs Te, T_H2=T_H2+=0.1 IN H3+ PROD. RATE CONSTANT
 C               THE DISTINCTION BETWEEN H2 AND H2(V) IS MADE
-C               BY THE ADDITIONAL MULTIPLICATIVE FACTOR RATIO2=H2P/H2 
+C               BY THE ADDITIONAL MULTIPLICATIVE FACTOR RATIO2=H2P/H2
 C
         FILNAM='AMJUEL  '
         H123='H.11'
@@ -423,7 +423,7 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
             DIO2=DIO2+ DI2(I,J)*TEI*DEJ
             DIO3=DIO3+ DI3(I,J)*TEI*DEJ
             DNM =DNM + DN(I,J)*TEI*DEJ
-150     CONTINUE
+  150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
         DMO =EXP(DMO)
@@ -439,7 +439,7 @@ C  (ONLY TE-DEPENDENT)
         DO 160 I=0,8
           TEI=TEF**I
           RATIO7=RATIO7+RHMH2(I)*TEI
-160     CONTINUE
+  160   CONTINUE
         RATIO7=EXP(RATIO7)
 
 C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATION
@@ -451,7 +451,7 @@ C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATIO
           DO 170 I=0,8
             TEI=TEF**I
             RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
-170     CONTINUE
+  170   CONTINUE
         RATIO2=EXP(RATIO2)
 
 C  RATIO OF DENSITIES: H3+ TO H2, = [RATIO3  * NH2+/NE]
@@ -462,7 +462,7 @@ C  (ONLY TE-DEPENDENT)
         DO 180 I=0,8
           TEI=TEF**I
           RATIO3=RATIO3+RH3PH2(I)*TEI
-180     CONTINUE
+  180   CONTINUE
         RATIO3=EXP(RATIO3)
 
 
@@ -480,7 +480,7 @@ C  ATOMIC NEUTRAL HYDR.: NCHAR=NPRT=1,NCHRG=0
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD1=SIGADD1+DDA*FAC31
-200     CONTINUE
+  200   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
@@ -507,7 +507,7 @@ C
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD2=SIGADD2+DPP*FAC31
-205     CONTINUE
+  205   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from atomic hydr. ions in TEST IONS
@@ -523,7 +523,7 @@ C
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD3=SIGADD3+DDM*FAC31
-210     CONTINUE
+  210   CONTINUE
 
 c...............................................................................
 C  to be done: contributions from neutral diatomic hydr. molec. in BULK IONS
@@ -553,7 +553,7 @@ C  REVISED: USE (PDENM * DENSITY RATIO H2+/H2) NOW, INSTEAD OF PDENI
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD4=SIGADD4+DDI2*FAC31
-215     CONTINUE
+  215   CONTINUE
 C
 C  CHANNEL 5
 C  LY-BETA SOURCE RATE:  PHOTONS/SEC/CM**3
@@ -579,7 +579,7 @@ C
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD5=SIGADD5+DDN*FAC31
-220     CONTINUE
+  220   CONTINUE
 C
 C  CHANNEL 6
 C  LY-BETA SOURCE RATE:  PHOTONS/SEC/CM**3
@@ -598,9 +598,9 @@ C  APPLY FURTHER FACTOR NH2+/NE = NH2*RATIO2/NE
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->1 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
           SIGADD6=SIGADD6+DDI3*FAC31
-230     CONTINUE
+  230   CONTINUE
 C
-500     CONTINUE
+  500   CONTINUE
 C
 C
         SIGADD=SIGADD1+SIGADD2+SIGADD3+SIGADD4+SIGADD5+SIGADD6
@@ -624,7 +624,7 @@ C
 C
         POWALF =POWALF +SIGADD *FACTE*VOL(NCELL)
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
       ADDV(IAD1,1:NSBOX_TAL)=ADDV(IAD1,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
       ADDV(IAD2,1:NSBOX_TAL)=ADDV(IAD2,1:NSBOX_TAL)/VOLTAL(1:NSBOX_TAL)
@@ -775,7 +775,7 @@ csw 19apr07
       ifirst=0
       return
 csw
-999   CONTINUE
+  999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. LY-BETA  '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILBALE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',

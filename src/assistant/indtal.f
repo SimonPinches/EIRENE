@@ -28,7 +28,7 @@ C  FURTHER (TO SPEED UP SUBR.STATIS)
 C
 C
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: M, NX, NY, NZ, NB
       INTEGER, INTENT(OUT) :: IND(M,8)
       INTEGER :: IX, IY, IZ, NIR, NIRT, NIRTP, IADD, K, IR, IJ, IK,
@@ -38,16 +38,17 @@ C
 C NS: NUMBER OF STANDARD MESH CELLS
       NS=NX*NY*NZ*NB
 C
-      DO 10 I=1,M
-        DO 10 J=1,8
+      DO I=1,M
+        DO J=1,8
           IND(I,J)=0
-10    CONTINUE
+        END DO
+      END DO
 C
 C  additional cells contribute only to themselves
 C
       DO 11 I=NS+1,M
         IND(I,1)=I
-11    CONTINUE
+   11 CONTINUE
 C
       IF (NS.EQ.0) RETURN
 C
@@ -59,7 +60,7 @@ C
       NXM=MAX(1,NX-1)
       NYM=MAX(1,NY-1)
       NZM=MAX(1,NZ-1)
- 
+
 C  LOOP OVER STANDARD MESH BLOCKS
       DO 1000 IB=1,NB
       IADD=(IB-1)*NX*NY*NZ
@@ -75,9 +76,9 @@ C
             IND(K,2)=NIR
             IND(K,6)=NIRT
             IND(K,8)=NIRTP
-102       CONTINUE
-101     CONTINUE
-100   CONTINUE
+  102     CONTINUE
+  101   CONTINUE
+  100 CONTINUE
 C
       DO 200 IZ=1,NZM
         NIPR=NX+((NY-1)+(IZ-1)*N2DEL)*N1DEL+IADD
@@ -88,9 +89,9 @@ C
             IND(K,1)=K
             IND(K,3)=NIP
             IND(K,5)=NIPR
-202       CONTINUE
-201     CONTINUE
-200   CONTINUE
+  202     CONTINUE
+  201   CONTINUE
+  200 CONTINUE
 C
       DO 300 IX=1,NXM
         NITP=IX+((NY-1)+(NZ-1)*N2DEL)*N1DEL+IADD
@@ -101,16 +102,16 @@ C
             IND(K,1)=K
             IND(K,4)=NIT
             IND(K,7)=NITP
-302       CONTINUE
-301     CONTINUE
-300   CONTINUE
+  302     CONTINUE
+  301   CONTINUE
+  300 CONTINUE
 C
-1000  CONTINUE
+ 1000 CONTINUE
 C  teste: gibt es ein ir, fuer verschiedene j aber gleiche ind(ir,j)
 C         dann wuerde naemlich in statis doppelt gezaehlt
 C         falls weniger als 3 dimensionen, kann sowas vorkommen.
       DO 2000 J=1,8
-2000  continue
+ 2000 continue
       do 2001 ir=1,ns
         do j=1,8
           ij=ind(ir,j)
@@ -122,14 +123,14 @@ C         falls weniger als 3 dimensionen, kann sowas vorkommen.
             endif
           enddo
         enddo
-2001  continue
+ 2001 continue
 C
       do 2002 ir=1,ns
         do j=1,8
           ij=ind(ir,j)
         enddo
-2002  continue
- 
+ 2002 continue
+
 C
       RETURN
       END

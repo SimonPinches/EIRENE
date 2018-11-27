@@ -36,7 +36,7 @@ C
 C     DATA              EPS  / 5.D-10 /
 cdr  noch nicht fertig
 !     write (iunout,*) 'exit in subr. kugel '
-!     call exit_own(1)
+!     call eirene_exit_own(1)
 *
       A3 = A(1:3,1:3)
       DD = EIRENE_SARRUS(A3)
@@ -54,31 +54,31 @@ cdr  noch nicht fertig
       D4 = EIRENE_SARRUS(A3)
 *
       AA = A(1,1)*D1 - A(2,1)*D2 + A(3,1)*D3 - A(4,1)*D4
- 
+
       ADD = AA / (LAMBDA(1)*LAMBDA(2)*LAMBDA(3))
- 
+
       CX = SQRT(-1.D0/LAMBDA(1)*ADD)
       CY = SQRT(-1.D0/LAMBDA(2)*ADD)
       CZ = SQRT(-1.D0/LAMBDA(3)*ADD)
       R = (CX + CY + CZ) / 3.D0
- 
+
       A3(1:3,1) = A(1:3,4)
       A3(1:3,2:3) = A(1:3,2:3)
       X0 = - EIRENE_SARRUS(A3) / DD
- 
+
       A3(1:3,1) = A(1:3,1)
       A3(1:3,2) = A(1:3,4)
       A3(1:3,3) = A(1:3,3)
       Y0 = - EIRENE_SARRUS(A3) / DD
- 
+
       A3(1:3,1) = A(1:3,1)
       A3(1:3,2) = A(1:3,2)
       A3(1:3,3) = A(1:3,4)
       Z0 = - EIRENE_SARRUS(A3) / DD
- 
+
       WRITE (iunout,*) ' IN KUGEL, ELLIPSOID '
       WRITE (iunout,*) ' X0,Y0,Z0 ',X0,Y0,Z0
       WRITE (iunout,*) ' CX,CY,CZ ',CX,CY,CZ
       WRITE (iunout,*) ' R ',R
- 
+
       END

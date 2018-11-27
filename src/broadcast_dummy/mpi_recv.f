@@ -1,4 +1,4 @@
- 
+
       SUBROUTINE MPI_recv (buffer,cnt,datatype,source,tag,comm,st,ier)
       IMPLICIT NONE
       integer, intent(out) :: ier,st

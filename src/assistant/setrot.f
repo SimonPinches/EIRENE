@@ -9,15 +9,15 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: AFF(3,3),AFFI(3,3)
       REAL(DP), INTENT(IN) :: CC1, CC2, CC3, CC4
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: C, C1, C2, C3, C4, CAL, SAL, CN, ANG, PI
       INTEGER :: I, J
- 
-      DATA PI/3.141592654/
- 
+
+      DATA PI/3.141592654_DP/
+
       C1=CC1
       C2=CC2
       C3=CC3
@@ -29,15 +29,16 @@ C  NORMALIZE ROTATION AXIS
           WRITE (iunout,*)
      .    'WARNING: INVALID ROTATION AXIS IN SUBR. SETROT'
           WRITE (iunout,*) 'NO ROTATION CARRIED OUT'
-          DO 1 J=1,3
-            DO 1 I=1,3
+          DO J=1,3
+            DO I=1,3
               AFF(I,J)=0.
               AFFI(I,J)=0.
-1         CONTINUE
+            END DO
+          END DO
           DO 2 J=1,3
             AFF(J,J)=1.
             AFFI(J,J)=1.
-2         CONTINUE
+    2     CONTINUE
           RETURN
         ENDIF
         CN=SQRT(C)

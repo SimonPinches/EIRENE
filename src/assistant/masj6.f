@@ -8,6 +8,6 @@ C*DK MASJ6
       CHARACTER(48), INTENT(IN) :: A
       INTEGER, INTENT(IN) :: I, J, K, L, M, N
       WRITE (iunout,60) A,I,J,K,L,M,N
-60    FORMAT (1X,A48/1X,6(I6,3X))
+   60 FORMAT (1X,A48/1X,6(I6,3X))
       RETURN
       END

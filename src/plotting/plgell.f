@@ -19,9 +19,9 @@ C                                PROBABLY LESS THEN N)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_CCONA
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: THETA(*)
       REAL(DP), INTENT(OUT) :: XX(*), YY(*)
       REAL(DP), INTENT(IN) :: AHALB, EP, ELL, TRI, DM
@@ -64,7 +64,7 @@ C   NO!
         YY(ICOU)=YNEW
         XOLD=XX(ICOU)
         YOLD=YY(ICOU)
-100   CONTINUE
+  100 CONTINUE
 C
       NRET=ICOU
       RETURN

@@ -7,7 +7,7 @@ c           ener  :  energy parameter for identifying a particular emission prof
 c  output:  lno   :  "line number", i.e. the volumetric emission profile.
 
 cdr  so far: guessing:
-cdr currently called from SIGLINE (former Balmer and Lyman line of side routines)
+cdr currently called from SIGLINE (former Balmer and Lyman line of sight routines)
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
 cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
 cdr       or a new internal iteration (time stepping, non-linear BGK iterations)
@@ -16,17 +16,17 @@ cdr from here we call EMISSIVITY.F  (similar to former Ba_alpha.f,...etc.)
 cdr to fill ADDV tallies, and to write them onto fort.11, for stratum ISTR.
 
 cdr may 18:  try to identify the line LNO,
-cdr          or (old options) as specified by input flags 
+cdr          or (old options) as specified by input flags
 cdr                                       ICHORI  (line of sight number)
 cdr                                       ENER    (flag for selecting a particular line)
 
 cdr          this is done by trying to find a match of 'ch_line_name(ichori)'
 cdr          read from block 12 for chord ICHORI
 cdr          with 'emis_lines(i)%line_name'
-cdr          If this is not successful, then we try to use the ENER identifyer,
+cdr          If this is not successful, then we try to use the ENER identifier,
 cdr          which may have been read in input for emission profiles
 cdr          or set from old default hydrogenic line models (setup_default_emissivity).
-cdr          The latter is done whenever there are chords and no emissivities 
+cdr          The latter is done whenever there are chords and no emissivities
 cdr          have been read from external files.
 
 cdr          Then fill the appropriate additional tallies ADDV
@@ -50,7 +50,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       USE EIRMOD_COMPRT
 
       implicit none
-      
+
       integer, intent(in) :: istr, ichori
       real(dp), intent(in) :: ener
       integer, intent(out) :: lno
@@ -63,7 +63,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       found = .false.
 
       if (ichori.gt. 0) then
-cdr  for ichori <= 0: bypass ichori, 
+cdr  for ichori <= 0: bypass ichori,
 cdr  to set volumetric emission profiles on ADDV array, also without any chords.
 
       if (len_trim(ch_line_name(ichori)) > 0) then
@@ -80,7 +80,7 @@ cdr  to set volumetric emission profiles on ADDV array, also without any chords.
         end do
 CDR
         IF (FOUND) THEN
-          WRITE (IUNOUT,*) 'EMISSION LINE identified by NAME,', 
+          WRITE (IUNOUT,*) 'EMISSION LINE identified by NAME,',
      .                     ' iline=',LNO
           WRITE (IUNOUT,*) 'name: ',CTEST2   ! =CTEST1
         ELSE
@@ -107,7 +107,7 @@ CDR
         end do
 CDR
         IF  (FOUND) THEN
-          WRITE (IUNOUT,*) 'EMISSION LINE identified by ENERGY,', 
+          WRITE (IUNOUT,*) 'EMISSION LINE identified by ENERGY,',
      .                     ' iline=',LNO
           WRITE (IUNOUT,*) 'ENERGY: ',ener_il
         ELSE
@@ -144,19 +144,19 @@ C  NOTHING TO BE DONE
      .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
       ELSE
-        WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' // 
+        WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' //
      .                   'DATA FOR STRATUM ISTRA= ', ISTR
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. FIND_EMIS_LINE ABANDONNED'
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. FIND_EMIS_LINE ABANDONED'
         RETURN
       ENDIF
-C      
+C
       if (mod_addv == 0) then
 c ADDV is overwritten when a new line comes, within a run.
 c Thus recalculate the new emissivity profile on ADDV
          call eirene_emissivity(istr, lno, lno)
 c     else
-c Sufficiently large storage on ADDV additional tally array, 
-c for all lines and components. No need to reset ADDV tallies.    
+c Sufficiently large storage on ADDV additional tally array,
+c for all lines and components. No need to reset ADDV tallies.
       end if
 
       return

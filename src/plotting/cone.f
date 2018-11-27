@@ -18,9 +18,9 @@ C  D.H. ILEFT (IRIGHT) <= 4 ENTSPRICHT DEM SCHNITT MIT EINER EBENE.
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, T1, T2
       REAL(DP), INTENT(IN) :: AL(10), AR(10)
       INTEGER, INTENT(IN) :: NK, NP, NA, IO, NUM, ILEFT, IRIGHT
@@ -110,19 +110,19 @@ C PLOTTE DIE KREISE
           PXX=XK*BX+YK*CX+PX
           PYY=XK*BY+YK*CY+PY
           PZZ=XK*BZ+YK*CZ+PZ
-3         CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+    3     CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1
           xps(jj)=xp(jj)
           yps(jj)=yp(jj)
-7       continue
+    7   continue
         CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES CONES EIN
         IF ((I.EQ.1.OR.I.EQ.NK).AND.NF) CALL
      .  GRFILL(NA+1,XPS,YPS,1,1)
         IF (IO.GE.2) CALL GRNWPN(1)
-2     CONTINUE
+    2 CONTINUE
 C
 C  SETZE NEUEN KREIS UM 0-PUNKT, MIT NP STUETZSTELLEN
       DANG=2.*PI/DBLE(NP)
@@ -151,7 +151,7 @@ C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
           PYY=XK*BY+YK*CY
           PZZ=XK*BZ+YK*CZ
           CALL EIRENE_PL3D (PXX+PX,PYY+PY,PZZ+PZ,XP(I),YP(I))
-4       CONTINUE
+    4   CONTINUE
         IF (IRIGHT.NE.0) THEN
           CALL
      .  EIRENE_SCCONE(X0,Y0,Z0,VX,VY,VZ,ALF,TH,T2,BX,BY,BZ,CX,CY,CZ,
@@ -160,14 +160,14 @@ C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
         do 9 jj=1,nk
           xps(jj)=xp(jj)
           yps(jj)=yp(jj)
-9       continue
+    9   continue
         CALL GRLN (XPS,YPS,NK)
-5     CONTINUE
- 
+    5 CONTINUE
+
       DEALLOCATE (XP)
       DEALLOCATE (YP)
       DEALLOCATE (XPS)
       DEALLOCATE (YPS)
- 
+
       RETURN
       END

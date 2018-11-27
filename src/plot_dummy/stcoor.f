@@ -1,12 +1,12 @@
       SUBROUTINE EIRENE_STCOOR (X,Y,IFL)
 
       USE EIRMOD_PRECISION
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: X, Y
       INTEGER, INTENT(IN) :: IFL
- 
+
       ENTRY EIRENE_STCOOR_REINIT
 
       return

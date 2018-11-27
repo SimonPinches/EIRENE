@@ -47,8 +47,8 @@ c just in case...:
          close(fp+ifoff)
          return
       endif
-csw      
-      
+csw
+
 c read in plasma data from fort.31 ?
       if (.not.allocated(plas)) then
         allocate(plas(11,nrad,0:npls))
@@ -61,7 +61,7 @@ c read in plasma data from fort.31 ?
 
 
 c misc plasma data:
-        write(sstr,'(a20)') 
+        write(sstr,'(a20)')
      .          '*** MISC PLASMA DATA'
         CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
         if(ier /=0) then
@@ -112,7 +112,7 @@ c     .          te,ne,bx,by,bz,pot,psi
 c loop over species:
         do i=1,npls
            write(cstr2,'(i2.2)') i
-           write(sstr,'(a23)') 
+           write(sstr,'(a23)')
      .          '*** ION #'//cstr2//' PLASMA DATA'
            CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
            if(ier /=0) then
@@ -154,7 +154,7 @@ c
 c sort in values
 c
       if(indx == 0) then
-c te         
+c te
          pro(1:n) = plas(1,1:n,0)
          indar(1) = indar(1)+1
 c     WARNING!: Assume te is always called before Ti an Vi
@@ -189,7 +189,7 @@ c vx
 
       elseif (indx == 1+3*npls) then
 c vy
-         pro(1:n) = plas(5,1:n,iplsv)     
+         pro(1:n) = plas(5,1:n,iplsv)
          indar(5) = indar(5) + 1
 
       elseif (indx == 1+4*npls) then
