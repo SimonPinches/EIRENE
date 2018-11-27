@@ -68,10 +68,10 @@ C           CFLAG(3,...): CX
 C           CFLAG(4,...): PI
 C           CFLAG(5,...): EL
 C           CFLAG(6,...): RC
-c           CFLAG(7,...): OT
+c           CFLAG(7,...): PH  PHOTONIC PROCESSES
 C
 C   FLAG FOR POST-COLLISION DISTRIBUTION IN VELOCITY SPACE
-C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IROT
+C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IRPH
 C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
 C                                                   SPECIES ALLOWED)
 C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
@@ -124,7 +124,7 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .          RCMIN, RCMAX,
      .          ERATE
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
-     .                 IXCX, IRCX, IXOT, IROT,
+     .                 IXCX, IRCX, IXPH, IRPH,
      .           J, KK, IPLSTI,
      .           IPLSV, IREAC
 
