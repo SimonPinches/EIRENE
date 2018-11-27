@@ -36,7 +36,7 @@ module mod_eirene_xs
   integer, save, allocatable :: ireaca(:,:),ireacm(:,:),ireacp(:,:)
   integer, save, allocatable :: nmassa(:),nchara(:),nmassm(:),ncharm(:),nmassp(:),ncharp(:)
   integer, save, allocatable :: nrca(:),nrcm(:),nrcp(:),massp(:),masst(:)
-  character(len=8), save, allocatable :: texta(:),textm(:),textp(:)  
+  character(len=8), save, allocatable :: texta(:),textm(:),textp(:)
 
   integer, save, allocatable :: iftflg(:,:), iadas(:),iswr(:),modclf(:)
   real*8, save, allocatable :: creac(:,:,:)
@@ -77,7 +77,7 @@ contains
 
     ! read atoms, block4
     write(sstr,'(a7)') '** 4a '
-    call locstr(fp1,sstr,ier)    
+    call locstr(fp1,sstr,ier)
     if(ier /=0) call serror(sstr)
     call skipasterisk(fp1,ier)
     if(ier /=0) call serror('skipasterisks')
@@ -100,7 +100,7 @@ contains
        do k=1,nrca(iatm)
           READ (fp1,'(12I6)') IREACA(IATM,K), idum, idum, idum, idum, idum, idum
           read (fp1,'(6e12.4)') rdum,rdum,rdum,rdum,rdum,rdum
-          
+
           kk = ireaca(iatm,k)
           call read_reac(kk)
        enddo
@@ -109,7 +109,7 @@ contains
 
     ! read molecules, block4
     write(sstr,'(a7)') '** 4b '
-    call locstr(fp1,sstr,ier)    
+    call locstr(fp1,sstr,ier)
     if(ier /=0) call serror(sstr)
     call skipasterisk(fp1,ier)
     if(ier /=0) call serror('skipasterisks')
@@ -132,7 +132,7 @@ contains
        do k=1,nrcm(imol)
           READ (fp1,'(12I6)') IREACm(Imol,K), idum, idum, idum, idum, idum, idum
           read (fp1,'(6e12.4)') rdum,rdum,rdum,rdum,rdum,rdum
-          
+
           kk = ireacm(imol,k)
           call read_reac(kk)
        enddo
@@ -140,7 +140,7 @@ contains
 
     ! read bulk particles, block5
     write(sstr,'(a7)') '*** 5. '
-    call locstr(fp1,sstr,ier)    
+    call locstr(fp1,sstr,ier)
     if(ier /=0) call serror(sstr)
     call skipasterisk(fp1,ier)
     if(ier /=0) call serror('skipasterisks')
@@ -163,9 +163,9 @@ contains
        do k=1,nrcp(ipls)
           READ (fp1,'(12I6)') IREACp(Ipls,K), idum, idum, idum, idum, idum, idum
           read (fp1,'(6e12.4)') rdum,rdum,rdum,rdum,rdum,rdum
-          
+
           kk = ireacp(ipls,k)
-          call read_reac(kk)          
+          call read_reac(kk)
        enddo
     enddo
 
@@ -210,14 +210,14 @@ contains
     character(len=80) :: SF_DB='edge2d/data/eirene/Surfacedata/'
     character(len=80) :: ADD_DB='edge2d/data/eirene/Additionals/'
     character(len=80) :: ADAS_DB='edge2d/data/adas'
-    logical :: lex    
-    
+    logical :: lex
+
     inquire(file='eirene.input', exist=lex)
     if(.not.lex) then
        ierr = 1
        return
     endif
-    
+
 
     !c     A&M data
     write(path,'(a)') trim(home)//trim(am_db)
@@ -225,7 +225,7 @@ contains
     call lfile (trim(path)//'h2vibr.tex', 'H2VIBR')
     call lfile (trim(path)//'hydhel.tex', 'HYDHEL')
     call lfile (trim(path)//'methane.tex', 'METHANE')
-    call lfile (trim(path)//'spectral.tex', 'SPECTR')         
+    call lfile (trim(path)//'spectral.tex', 'SPECTR')
     write(path,'(a)') trim(home)//trim(adas_db)
     call lfile (trim(path), 'ADAS')
 
@@ -233,17 +233,17 @@ contains
     write(path,'(a)') trim(home)//trim(sf_db)
     call lfile (trim(path)//'SPUTER', 'SPUTER')
     call lfile (trim(path)//'TRIM/trim.dat', 'fort.521')
-         
+
     !c     additional data (photons, etc..)
     write(path,'(a)') trim(home)//trim(add_db)
     call lfile (trim(path)//'PHOTON', 'PHOTON')
     call lfile (trim(path)//'POLARI', 'POLARI')
     call lfile (trim(path)//'graphite_ext.dat', 'graphite_ext.dat')
-    call lfile (trim(path)//'mo_ext.dat', 'mo_ext.dat')         
+    call lfile (trim(path)//'mo_ext.dat', 'mo_ext.dat')
 
     ierr = 0
   end subroutine eirene_xs_linkdb
-  
+
 
   subroutine lfile(src,dst)
     implicit none
@@ -251,19 +251,19 @@ contains
     integer :: ier
     logical :: lex
     integer, external :: link,unlink,symlnk,getcwd
-    
+
     if(leirxs_debug) then
        write(ifeirxs,'(a,a,a)') 'eirene_link_file: ',trim(src),' --> ',trim(dst)
     endif
-    
+
     inquire(file=trim(src), exist=lex)
     if(.not.lex) then
        write(*,*) 'mod_eirene_xs: error: src does not exist:'
        write(*,*) src
        stop
     endif
-    
-    
+
+
     ier = unlink(trim(dst))
     ier = symlnk(trim(src),trim(dst))
     if(ier /= 0) then
@@ -271,7 +271,7 @@ contains
        stop
     endif
   end subroutine lfile
-  
+
 
   subroutine read_reac(kk)
     implicit none
@@ -291,7 +291,7 @@ contains
     ier = symlnk(trim('eirene.input'),trim('temp'))
     open (unit=fp2,file='temp',access='sequential',form='formatted')
     write(sstr,'(a7)') '*** 4. '
-    call locstr(fp2,sstr,ier)    
+    call locstr(fp2,sstr,ier)
     if(ier /=0) call serror(sstr)
     call skipasterisk(fp2,ier)
     if(ier /=0) call serror('skipasterisks')
@@ -337,8 +337,8 @@ contains
           read(fp2,'(6e12.4)',iostat=ier) rdum,rdum,rdum,rdum,rdum,rdum,rdum,rdum,rdum
           if(ier /= 0) call serror('read_reac')
        endif
-       
-    enddo    
+
+    enddo
     close(fp2)
     ier = unlink(trim('temp'))
   end subroutine read_reac
@@ -348,7 +348,7 @@ contains
     ! ih: nimbus species, ih > 0: fuel
     !                     ih < 0: impurity
     ! (see eirene.species)
-    ! 
+    !
     ! iswrr: collision type
     !  1 : EI/DS (el.impact)
     !  2 :
@@ -397,7 +397,7 @@ contains
     rcp=0.
 
     ! atoms
-    do i=1,nrca(iatm)       
+    do i=1,nrca(iatm)
        kk = ireaca(iatm,i)
        if(iswrr /= iswr(kk)) cycle
        nchar = nchara(iatm)
@@ -639,7 +639,7 @@ contains
     ENDIF
 
 ! check adas
-    if(iadas(ir) /= 0) return         
+    if(iadas(ir) /= 0) return
 
 ! constant?
     IF (LCONST) THEN
@@ -667,7 +667,7 @@ contains
 
        call locstr(fpdb,'##BEGIN DATA HERE##',ier)
        if(ier /=0) call serror('slreac_xs(2)')
-       
+
        do
           READ (fpdb,'(A80)',iostat=ier) ZEILE
           if(ier /= 0) call serror('slreac_xs(3)')
@@ -675,7 +675,7 @@ contains
           IF (INDEX(ZEILE,H123).ne.0) exit
        enddo
 !C
-       do 
+       do
           READ (fpdb,'(A80)',iostat=ier) ZEILE
           if(ier /=0) call serror('slreac_xs(4)')
 
@@ -898,7 +898,7 @@ contains
           !C  RATE COEFFICIENT: (CM^3/S)
           CALL myCDEF (TEINL,1,1,KK,COUN,NSBOX,CF,.TRUE.,.FALSE.,.TRUE.)
        END IF
-       
+
        IF (IFTFLG(KK,2) < 100) THEN
           DO J=1,NSBOX
              TABDS1(IREI,J)=COUN(1,J)*DEIN(J)*FACTKK
@@ -1049,10 +1049,10 @@ contains
              END DO
           ENDIF
        else
-          !csw adas branch                                                       
+          !csw adas branch
           do j =1,nsbox
              CALL ADAS_eirene( ncharp(ipls), iadas(kk), 89, adasuser, izmax, 0, 0.00E+00 , 60       , ifeirxs , 0,  sngl(tein(j)) , sngl(tein(j)),  sngl(dein(j)) ,1 ,(/ 0.E0 /) ,(/ 1.E0 /), SVI , SA4(1)  , RTA4(1)  , PT04, PTA4(1), IER )
-             
+
              IF( IER.NE.0 ) then
                 write(*,*) ' eirene_xs_RC: adas error, ier=',ier
                 stop
@@ -1063,7 +1063,7 @@ contains
                 tabrc1(irrc,j) = 0.
              endif
           enddo
-                     
+
        endif
 
     ENDIF
@@ -1134,7 +1134,7 @@ contains
     MODC=myIDEZ(MODCLF(KK),3,5)
     IF (MODC.GE.1.AND.MODC.LE.2) THEN
        modcol32=modc
-       !MODCOL(3,2,ISP,IPL)=MODC       
+       !MODCOL(3,2,ISP,IPL)=MODC
        IF (MODC.EQ.1) NEND=1
        IF (MODC.EQ.2) NEND=NSTORDT
        DO  J=1,NSBOX
@@ -1352,7 +1352,7 @@ contains
                 endif
              else
                 ih2iatm(ih) = ispc
-             endif             
+             endif
              if( ih2izz(ih) .gt. 0) then
                 if(leirxs_debug) then
                    write(ifeirxs,*) ' eirene_xs_read_species WARN:'
@@ -1362,7 +1362,7 @@ contains
              else
                 ih2izz(ih) = izz
                 izz2ih(izz) = ih
-             endif             
+             endif
           endif
 
           if(itypfuel(i) .eq. 2) then
@@ -1384,7 +1384,7 @@ contains
              else
                 ih2izz(ih) = izz
                 izz2ih(izz) = ih
-             endif             
+             endif
           endif
 
           if(itypfuel(i) .eq. 3) then
@@ -1406,7 +1406,7 @@ contains
              else
                 ih2izz(ih) = izz
                 izz2ih(izz) = ih
-             endif             
+             endif
           endif
 
           if(ipls .gt. 0) then
@@ -1428,9 +1428,9 @@ contains
              else
                 ih2izz(ih) = izz
                 izz2ih(izz) = ih
-             endif             
+             endif
           endif
-          
+
        enddo
     enddo
 
@@ -1475,9 +1475,9 @@ contains
              else
                 iz2izz(iz) = izz
                 izz2iz(izz) = iz
-             endif             
+             endif
           endif
-          
+
           if(itypimps(i) .eq. 2) then
              if( iz2imol(iz) .gt. 0) then
                 if(leirxs_debug) then
@@ -1497,9 +1497,9 @@ contains
              else
                 iz2izz(iz) = izz
                 izz2iz(izz) = iz
-             endif             
+             endif
           endif
-               
+
           if(itypimps(i) .eq. 3) then
              if( iz2iion(iz) .gt. 0) then
                 if(leirxs_debug) then
@@ -1519,9 +1519,9 @@ contains
              else
                 iz2izz(iz) = izz
                 izz2iz(izz) = iz
-             endif             
+             endif
           endif
-          
+
           if(ipls .gt. 0) then
              if( iz2ipls(iz) .gt. 0) then
                 if(leirxs_debug) then
@@ -1541,9 +1541,9 @@ contains
              else
                 iz2izz(iz) = izz
                 izz2iz(izz) = iz
-             endif             
+             endif
           endif
-          
+
        enddo
     enddo
     lreadspecies = .true.
@@ -1578,7 +1578,7 @@ contains
     if(allocated(iz2izz)) deallocate(iz2izz)
     if(allocated(izz2ih)) deallocate(izz2ih)
     if(allocated(izz2iz)) deallocate(izz2iz)
-    
+
     lreadspecies = .false.
   end subroutine eirene_xs_dealloc_species
 
@@ -1590,7 +1590,7 @@ contains
     character(*), intent(in) :: sstr
     character(256) :: line,mystr
     integer :: ierror,ilen
-    
+
     ier=1
     rewind(fp)
     write(mystr,'(a)') adjustl(sstr)
@@ -1598,7 +1598,7 @@ contains
     do
        read(fp,'(a)',iostat=ierror) line
        if(ierror /= 0) return
-       
+
        if( index(line,mystr(1:ilen)) /= 0) then
           ier = 0
           return
@@ -1617,7 +1617,7 @@ contains
     do
        read(fp,'(a)',iostat=ierror) line
        if(ierror /= 0) return
-          
+
        if(index(line,'*') /= 1) then
           ier=0
           backspace(fp)
@@ -1698,11 +1698,11 @@ contains
     real*8 :: dummp(9)
     real*8 :: ccxm1, ccxm2, expo1, expo2, fpar1, fpar2, fpar3, s01,s02, ds12, ctest, extrap
     integer :: i, jj, kk, ifex, j, ii, icell
-    
+
     if(k <=0 ) then
        write(*,*) 'mycdefn: k <=0'
        stop
-    endif    
+    endif
 
     !c  k>0:
     !c  data from array creac(9,0:9,k)
@@ -1732,7 +1732,7 @@ contains
        enddo
 
        do  icell=1,nte
-!          if (al(icell).lt.rcmn(k,2)) then             
+!          if (al(icell).lt.rcmn(k,2)) then
 !             !c  determine extrapolation coefficients for linear extrap. in ln(<s*v>)
 !             s01=rcmn(k,2)
 !             s02=log(2.)+rcmn(k,2)
@@ -1769,7 +1769,7 @@ contains
              enddo
              if (lexp) cou(1,icell)=exp(max(dble(-100.),cou(1,icell)))
 !          endif
-         
+
        enddo
     endif
     return
@@ -1794,7 +1794,7 @@ contains
     idif=izif-j+1
     if (idif.le.0) then
        write(*,*) 'error in function myidez            '
-       stop       
+       stop
     endif
     iz=i
     do  k=1,idif
@@ -1934,7 +1934,7 @@ contains
     res=cross
     RETURN
   END FUNCTION eirene_xs_CROSS
-  
+
   real*8 FUNCTION myEXTRAP(ELAB,IFLAG,FP1,FP2,FP3) result(res)
     !C
     !C  NOTE:

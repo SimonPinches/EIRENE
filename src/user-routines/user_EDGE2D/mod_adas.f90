@@ -18,9 +18,9 @@ module mod_adas
   ! common cadas1
   INTEGER*4 :: IYEAR , IDYEAR
   CHARACTER(len=80) :: USERID
-  
+
   ! common cadas2
-  integer, parameter ::  ITDIM=55 , IDDIM=30 , IZDIM=28 , ISDIM=5 , IPDIM=7 
+  integer, parameter ::  ITDIM=55 , IDDIM=30 , IZDIM=28 , ISDIM=5 , IPDIM=7
   real*4 :: ZRAL  (ITDIM,IDDIM,IZDIM,ISDIM)
   real*4 ::  ZCAL  (ITDIM,IDDIM,IZDIM,ISDIM)
   real*4 ::  ZSAL  (ITDIM,IDDIM,IZDIM,ISDIM)
@@ -33,7 +33,7 @@ module mod_adas
   real*4 :: ZPLSL0(ITDIM,IDDIM,ISDIM)
   real*4 :: ZTEL(ITDIM,IPDIM,ISDIM)
   real*4 :: ZNEL(IDDIM,IPDIM,ISDIM)
-  
+
   INTEGER :: ITMAX(IPDIM,ISDIM),  IDMAX(IPDIM,ISDIM),  IZ0A(ISDIM),  ISMAX
   CHARACTER(len=8) :: ZLINFO(IZDIM,IPDIM,ISDIM)
 
@@ -128,7 +128,7 @@ contains
     character(len=80), intent(in) :: user
     INTEGER*4, intent(in) :: IZ0    , IYR        , IDYR       , IZMAX, &
          IFORCE , ICHAN      , IOUT       , IADAS, nh
-    integer*4 :: I, IH 
+    integer*4 :: I, IH
     !C
     real*4, intent(in) :: ecut,te,ti,de,dh(nh),hmass(nh)
     real*4, intent(out) :: sa0,sa(IZMAX),rta(IZMAX),pta0,pta(IZMAX)
@@ -260,7 +260,7 @@ contains
     RETURN
   END SUBROUTINE ADAS_EIRENE
 
-  
+
   SUBROUTINE ADASRE_eirene( IZ0 , ECUT , ICHAN , IOUT , IFORCE , IER )
     IMPLICIT NONE
     !C
@@ -571,7 +571,7 @@ contains
     REAL*8 ::     DTEVD(ITDIM)                , DDENSD(ITDIM)
     real*8 ::     DCOEFD(ITDIM,ITDIM,ITDIM)   , ZDATA(ITDIM)
     real*8 ::     COFINT(INTP)
-    INTEGER*4 ::  IT     , ID       , IZ      , IP ,  ITMAXD , IDMAXD   , IZMAXD  
+    INTEGER*4 ::  IT     , ID       , IZ      , IP ,  ITMAXD , IDMAXD   , IZMAXD
     !C
     !C--- FIXED INTERPOLATION VALUES AS D2DATA INTERPOLATION IS NOT WANTED --
     !C
@@ -588,7 +588,7 @@ contains
     !C
     !C-------------------------------- READ ADAS ----------------------------
     !C
-    CALL D2DATA_eirene( YEAR          , YEARDF    , MESS   , IFAIL & 
+    CALL D2DATA_eirene( YEAR          , YEARDF    , MESS   , IFAIL &
          , IZ0           , 0         , ICLASS , INTP   , IEVCUT &
          , ITDIM         , ITMAXD    , IDMAXD , IZMAXD &
          , TEINT(1)      , DEINT(1) &
@@ -1524,7 +1524,7 @@ contains
 !!$         , DENSE( IDDIM , IPDIM , ISDIM ) &
 !!$         , ITMAX( IPDIM , ISDIM ) &
 !!$         , IDMAX( IPDIM , ISDIM ) &
-!!$         , ZLINFO( IZDIM , IPDIM , ISDIM ) 
+!!$         , ZLINFO( IZDIM , IPDIM , ISDIM )
 !!$    !C
 !!$    !C-----------------------------------------------------------------------
 !!$    !C
@@ -1777,7 +1777,7 @@ contains
           ELSE
              IX(K)=IX(K)+IR
           ENDIF
-          
+
           IF(IR.GT.1)THEN
              IR=(IR+1)/2
              cycle l1
@@ -1867,21 +1867,21 @@ contains
   END SUBROUTINE SRCHB_EIRENE
 
   !CX  Port of JET3090 version to UNIX by L. Horton 3/8/95
-  !CX 
-  SUBROUTINE D2DATA_eirene( YEAR   , YEARDF , TITLF  , IFAIL, &              
+  !CX
+  SUBROUTINE D2DATA_eirene( YEAR   , YEARDF , TITLF  , IFAIL, &
        IZ0    , IZ1    , ICLASS , ITMAX  , IEVCUT,&
-       ITDIMD , ITMAXD , IDMAXD , IZMAXD ,&  
-       DTEV   , DDENS ,&                               
-       DTEVD  , DDENSD , DRCOFD , ZDATA ,&             
-       DRCOFI )                                               
+       ITDIMD , ITMAXD , IDMAXD , IZMAXD ,&
+       DTEV   , DDENS ,&
+       DTEVD  , DDENSD , DRCOFD , ZDATA ,&
+       DRCOFI )
     IMPLICIT none
-    !C                                                                       
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
-    !C PURPOSE : TO EXTRACT 'SANC0' COLLISIONAL DIELECTRONIC DATA            
-    !C                                                                       
-    !C NOTE    : THE SOURCE DATA IS STORED AS FOLLOWS:         
-    !C                                                                       
+    !C
+    !C PURPOSE : TO EXTRACT 'SANC0' COLLISIONAL DIELECTRONIC DATA
+    !C
+    !C NOTE    : THE SOURCE DATA IS STORED AS FOLLOWS:
+    !C
     !C   (1) $ADASUSER/<DEFADF>/acd<YR>/acd<YR>_<ELEMENT SYMBOL>.dat
     !C   (2) $ADASUSER/<DEFADF>/scd<YR>/scd<YR>_<ELEMENT SYMBOL>.dat
     !C   (3) $ADASUSER/<DEFADF>/ccd<YR>/ccd<YR>_<ELEMENT SYMBOL>.dat
@@ -1889,116 +1889,116 @@ contains
     !C   (5) $ADASUSER/<DEFADF>/plt<YR>/plt<YR>_<ELEMENT SYMBOL>_ev<CUT>.dat
     !C   (6) $ADASUSER/<DEFADF>/prc<YR>/prc<YR>_<ELEMENT SYMBOL>_ev<CUT>.dat
     !C   (7) $ADASUSER/<DEFADF>/pls<YR>/pls<YR>_<ELEMENT SYMBOL>.dat
-    !C                                                                              
-    !C           IF <CUT> = 0 THEN _ev<CUT> IS DELETED FROM ABOVE FILES.  
-    !C                                                                       
-    !C INPUT  : (C*2)  YEAR      = YEAR OF DATA                              
-    !C          (C*2)  YEARDF    = DEFAULT YEAR OF DATA IF REQUESTED YEAR    
-    !C                             DOES NOT EXIST.                           
-    !C          (I*4)  IZ0       = NUCLEAR CHARGE                            
-    !C          (I*4)  IZ1       = MINIMUM ION CHARGE + 1                    
-    !C          (I*4)  ICLASS    = CLASS OF DATA (1 - 7)                     
-    !C          (I*4)  ITMAX     = NUMBER OF ( DTEV() , DDENS() ) PAIRS      
-    !C          (I*4)  IEVCUT    = ENERGY CUT-OFF (EV)                       
-    !C          (I*4)  ITDIMD    = MAXIMUM NUMBER OF DATA TEMP & DENS        
-    !C          (R*8)  DTEV()    = DLOG10(ELECTRON TEMPERATURES (EV))        
-    !C          (R*8)  DDENS()   = DLOG10(ELECTRON DENSITIES (CM-3))         
-    !C                                                                       
-    !C OUTPUT : (C**)  TITLF     = INFORMATION STRING                        
-    !C          (I*4)  ITMAXD    = NUMBER OF DATA DTEVD()                    
-    !C          (I*4)  IDMAXD    = NUMBER OF DATA DDENS()                    
-    !C          (I*4)  IZMAXD    = NUMBER OF DATA ZDATA()                    
-    !C          (I*4)  ZDATA()   = Z1 CHARGES IN DATASET                     
+    !C
+    !C           IF <CUT> = 0 THEN _ev<CUT> IS DELETED FROM ABOVE FILES.
+    !C
+    !C INPUT  : (C*2)  YEAR      = YEAR OF DATA
+    !C          (C*2)  YEARDF    = DEFAULT YEAR OF DATA IF REQUESTED YEAR
+    !C                             DOES NOT EXIST.
+    !C          (I*4)  IZ0       = NUCLEAR CHARGE
+    !C          (I*4)  IZ1       = MINIMUM ION CHARGE + 1
+    !C          (I*4)  ICLASS    = CLASS OF DATA (1 - 7)
+    !C          (I*4)  ITMAX     = NUMBER OF ( DTEV() , DDENS() ) PAIRS
+    !C          (I*4)  IEVCUT    = ENERGY CUT-OFF (EV)
+    !C          (I*4)  ITDIMD    = MAXIMUM NUMBER OF DATA TEMP & DENS
+    !C          (R*8)  DTEV()    = DLOG10(ELECTRON TEMPERATURES (EV))
+    !C          (R*8)  DDENS()   = DLOG10(ELECTRON DENSITIES (CM-3))
+    !C
+    !C OUTPUT : (C**)  TITLF     = INFORMATION STRING
+    !C          (I*4)  ITMAXD    = NUMBER OF DATA DTEVD()
+    !C          (I*4)  IDMAXD    = NUMBER OF DATA DDENS()
+    !C          (I*4)  IZMAXD    = NUMBER OF DATA ZDATA()
+    !C          (I*4)  ZDATA()   = Z1 CHARGES IN DATASET
     !C          (I*4)  IFAIL     = -1   IF ROUTINE SUCCESSFUL BUT THE DEFAULT
-    !C                                  YEAR FOR THE DATA WAS USED.          
+    !C                                  YEAR FOR THE DATA WAS USED.
     !C                           = 0    IF ROUTINE SUCCESSFUL - DATA FOR THE
-    !C                                  REQUESTED YEAR USED.                 
-    !C                           = 1    IF ROUTINE OPEN STATEMENT FAILED     
-    !C          (R*8)  DTEVD()   = DLOG10(DATA ELECTRON TEMPERATURES (EV))   
-    !C          (R*8)  DDENSD()  = DLOG10(DATA ELECTRON DENSITIES (CM-3))    
-    !C          (R*8)  DRCOFD()  = DLOG10(DATA RATE COEFFICIENTS (CM-3/S))   
-    !C          (R*8)  DRCOFI()  = INTERPOLATION OF DRCOFD(,,) FOR           
-    !C                             DTEV() & DDENS()                          
-    !C                                                                       
-    !C PROGRAM: (C*2)  XFESYM    = FUNCTION - SEE ROUTINES SECTION BELOW            
+    !C                                  REQUESTED YEAR USED.
+    !C                           = 1    IF ROUTINE OPEN STATEMENT FAILED
+    !C          (R*8)  DTEVD()   = DLOG10(DATA ELECTRON TEMPERATURES (EV))
+    !C          (R*8)  DDENSD()  = DLOG10(DATA ELECTRON DENSITIES (CM-3))
+    !C          (R*8)  DRCOFD()  = DLOG10(DATA RATE COEFFICIENTS (CM-3/S))
+    !C          (R*8)  DRCOFI()  = INTERPOLATION OF DRCOFD(,,) FOR
+    !C                             DTEV() & DDENS()
+    !C
+    !C PROGRAM: (C*2)  XFESYM    = FUNCTION - SEE ROUTINES SECTION BELOW
     !C          (C*2)  ESYM      = ELEMENT SYMBOL FOR NUCLEAR CHARGE IZ0
-    !C          (C*60) USERID    = USER ID UNDER WHICH ADAS DATA IS STORED   
-    !C          (C*60) DSNAME    = FILE NAME ( SEE ABOVE TYPES )             
-    !C          (C*80) STRING    = GENERAL VARIABLE                          
-    !C          (C*80) BLANK     = BLANK STRING                              
-    !C          (C*2)  YEARSV    = LAST YEAR USED IN THIS ROUTINE            
-    !C          (I*4)  IREAD     = INPUT STREAM FOR OPEN STATEMENT           
-    !C          (I*4)  IZ0SV     = LAST IZ0 USED IN THIS ROUTINE             
-    !C          (I*4)  ICLSV     = LAST ICLASS USED IN THIS ROUTINE          
-    !C          (I*4)  INDXZ1    = LOCATION OF IZ1 IN ZDATA()                
-    !C          (I*4)  LCK       = MUST BE GREATER THAN 'ITMAXD' & 'IDMAXD'  
-    !C                             & 'ITMAX' - ARRAY SIZE FOR SPLINE CALCS.  
-    !C          (R*8)  A()       = GENERAL ARRAY                             
-    !C          (R*8)  DRCOF0(,) = INTERPOLATION OF DRCOFD(,,) W.R.T DTEV()  
-    !C          (L*8)  LEXIST    = TRUE --- FILE TO OPEN EXISTS ELSE NOT     
-    !C                                                                       
-    !C PE BRIDEN = ADDED VARIABLES (14/01/91)                                
-    !C                                                                       
-    !C          (I*4)  L1      = PARAMETER = 1                               
-    !C          (I*4)  IOPT    = DEFINES THE BOUNDARY DERIVATIVES FOR THE    
-    !C                             SPLINE ROUTINE 'XXSPLE', SEE 'XXSPLE'.    
-    !C                                                                       
+    !C          (C*60) USERID    = USER ID UNDER WHICH ADAS DATA IS STORED
+    !C          (C*60) DSNAME    = FILE NAME ( SEE ABOVE TYPES )
+    !C          (C*80) STRING    = GENERAL VARIABLE
+    !C          (C*80) BLANK     = BLANK STRING
+    !C          (C*2)  YEARSV    = LAST YEAR USED IN THIS ROUTINE
+    !C          (I*4)  IREAD     = INPUT STREAM FOR OPEN STATEMENT
+    !C          (I*4)  IZ0SV     = LAST IZ0 USED IN THIS ROUTINE
+    !C          (I*4)  ICLSV     = LAST ICLASS USED IN THIS ROUTINE
+    !C          (I*4)  INDXZ1    = LOCATION OF IZ1 IN ZDATA()
+    !C          (I*4)  LCK       = MUST BE GREATER THAN 'ITMAXD' & 'IDMAXD'
+    !C                             & 'ITMAX' - ARRAY SIZE FOR SPLINE CALCS.
+    !C          (R*8)  A()       = GENERAL ARRAY
+    !C          (R*8)  DRCOF0(,) = INTERPOLATION OF DRCOFD(,,) W.R.T DTEV()
+    !C          (L*8)  LEXIST    = TRUE --- FILE TO OPEN EXISTS ELSE NOT
+    !C
+    !C PE BRIDEN = ADDED VARIABLES (14/01/91)
+    !C
+    !C          (I*4)  L1      = PARAMETER = 1
+    !C          (I*4)  IOPT    = DEFINES THE BOUNDARY DERIVATIVES FOR THE
+    !C                             SPLINE ROUTINE 'XXSPLE', SEE 'XXSPLE'.
+    !C
     !C          (L*4)  LSETX   = .TRUE.  => SET UP SPLINE PARAMETERS RELATING
-    !C                                      TO X-AXIS.                       
-    !C                           .FALSE. => DO NOT SET UP SPLINE PARAMETERS  
-    !C                                      RELATING TO X-AXIS.              
+    !C                                      TO X-AXIS.
+    !C                           .FALSE. => DO NOT SET UP SPLINE PARAMETERS
+    !C                                      RELATING TO X-AXIS.
     !C                                      (I.E. THEY WERE SET IN A PREVIOUS
-    !C                                            CALL )                     
-    !C                           (VALUE SET TO .FALSE. BY 'XXSPLE')          
-    !C                                                                       
-    !C                                                                       
-    !C          (R*8)  DY()    = SPLINE INTERPOLATED DERIVATIVES             
-    !C                                                                       
-    !C          (R*8 ADAS FUNCTION - 'R8FUN1' ( X -> X) )                    
-    !C                                                                       
-    !C PE BRIDEN = ADDED VARIABLES (23/04/93)                                
-    !C                                                                       
-    !C          (I*4 ADAS FUNCTION - 'I4UNIT' (OUTPUT STREAM))               
-    !C                                                                       
-    !C AUTHOR : JAMES SPENCE (TESSELLA SUPPORT SERVICES PLC)                 
-    !C          K1/0/80                                                      
-    !C          JET  EXT. 4866                                               
-    !C                                                                       
-    !C DATE   : 22/02/90                                                     
-    !C                                                                       
+    !C                                            CALL )
+    !C                           (VALUE SET TO .FALSE. BY 'XXSPLE')
+    !C
+    !C
+    !C          (R*8)  DY()    = SPLINE INTERPOLATED DERIVATIVES
+    !C
+    !C          (R*8 ADAS FUNCTION - 'R8FUN1' ( X -> X) )
+    !C
+    !C PE BRIDEN = ADDED VARIABLES (23/04/93)
+    !C
+    !C          (I*4 ADAS FUNCTION - 'I4UNIT' (OUTPUT STREAM))
+    !C
+    !C AUTHOR : JAMES SPENCE (TESSELLA SUPPORT SERVICES PLC)
+    !C          K1/0/80
+    !C          JET  EXT. 4866
+    !C
+    !C DATE   : 22/02/90
+    !C
     !C DATE   : 21/08/90 PE BRIDEN - REVISION: SEQUA(43) CHANGED ('TE'->'TC')
-    !C                                                                       
-    !C DATE   : 08/10/90 PE BRIDEN - REVISION: RENAMED SUBROUTINE            
-    !C                                                                       
+    !C
+    !C DATE   : 08/10/90 PE BRIDEN - REVISION: RENAMED SUBROUTINE
+    !C
     !C DATE   : 12/11/90 PE BRIDEN - CORRECTION: MOVE THE SETTING OF 'INDXZ1'
-    !C                                           TO AFTER THE  '20 CONTINUE' 
-    !C                                           STATEMENT.   ALSO SAVE  THE 
-    !C                                           VALUE OF 'IZ1MIN'.          
-    !C                                                                       
+    !C                                           TO AFTER THE  '20 CONTINUE'
+    !C                                           STATEMENT.   ALSO SAVE  THE
+    !C                                           VALUE OF 'IZ1MIN'.
+    !C
     !C DATE   : 14/01/91 PE BRIDEN - ADAS91:     CALLS TO NAG SPLINE ROUTINES
     !C                                           'E01BAF' & 'E02BBF' REPLACED
     !C                                           BY  CALLS   TO  ADAS  SPLINE
-    !C                                           ROUTINE 'XXSPLN'.           
-    !C                                                                       
+    !C                                           ROUTINE 'XXSPLN'.
+    !C
     !C DATE   : 25/06/91 PE BRIDEN - CORRECTION: CHANGED FOLLOWING DIMENSION:
-    !C                                            'DIMENSION DRCOFI(ITDIMD)' 
-    !C                                           TO                          
-    !C                                            'DIMENSION DRCOFI(ITMAX)'  
-    !C                                                                       
-    !C DATE   : 07/08/91 PE BRIDEN - ADDED ERROR HANDLING IF THE OPEN STATE- 
-    !C                               MENT FAILS. (IFAIL=1 RETURNED)          
-    !C                                                                       
+    !C                                            'DIMENSION DRCOFI(ITDIMD)'
+    !C                                           TO
+    !C                                            'DIMENSION DRCOFI(ITMAX)'
+    !C
+    !C DATE   : 07/08/91 PE BRIDEN - ADDED ERROR HANDLING IF THE OPEN STATE-
+    !C                               MENT FAILS. (IFAIL=1 RETURNED)
+    !C
     !C DATE   : 27/04/92 PE BRIDEN - ADDED DEFAULT YEAR FOR DATA IF REQUESTED
-    !C                               YEAR DOES NOT EXIST. (ADDED 'YEARDF')   
-    !C                               INTRODUCED IFAIL = -1 IF DEFAULT YEAR   
-    !C                               WAS USED AND NOT THE REQUESTED YEAR.    
-    !C                                                                       
-    !C DATE   : 10/03/93 PE BRIDEN - ALLOWED INPUT DATA SETS TO BE ACCESSED  
-    !C                               FROM ANY USERID (DEFAULT = JETSHP)      
-    !C                               - INTRODUCED USERID VARIABLE AND CALL   
-    !C                                 TO XXUID.                             
-    !C                                                                       
-    !C DATE   : 23/04/93 PE BRIDEN - ADDED I4UNIT FUNCTION TO WRITE          
+    !C                               YEAR DOES NOT EXIST. (ADDED 'YEARDF')
+    !C                               INTRODUCED IFAIL = -1 IF DEFAULT YEAR
+    !C                               WAS USED AND NOT THE REQUESTED YEAR.
+    !C
+    !C DATE   : 10/03/93 PE BRIDEN - ALLOWED INPUT DATA SETS TO BE ACCESSED
+    !C                               FROM ANY USERID (DEFAULT = JETSHP)
+    !C                               - INTRODUCED USERID VARIABLE AND CALL
+    !C                                 TO XXUID.
+    !C
+    !C DATE   : 23/04/93 PE BRIDEN - ADDED I4UNIT FUNCTION TO WRITE
     !C                               STATEMENTS FOR SCREEN MESSAGES
     !C
     !C UPDATE:  24/05/93 - PE BRIDEN - ADAS91: CHANGED I4UNIT(0)-> I4UNIT(-1)
@@ -2008,225 +2008,225 @@ contains
     !C                                         IN RANGE (I.E. <= LCK).
     !C
     !C DATE   : 17/03/95 LD HORTON - MODIFIED FOR UNIX.  CLEANED UP FILE
-    !C                               HANDLING        
+    !C                               HANDLING
     !C
-    !C DATE   :  3/08/95 LD HORTON - REPLACED XXSPLN WITH XXSPLE  
-    !C                                                                       
+    !C DATE   :  3/08/95 LD HORTON - REPLACED XXSPLN WITH XXSPLE
+    !C
     !C DATE   :  6/12/95 LD HORTON - MOVED LINTRP TO BE LOCAL TO MAINTAIN
     !C                               COMPATIBILITY WITH MAINFRAME
-    !C                                                                       
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
+    !C
     INTEGER, parameter ::  L1=1, MCLASS=7,iread=4999,lck=100
-    !C                                                                       
-    !C                                                                       
+    !C
+    !C
     integer*4, intent(in) :: iz0,iz1,iclass,itmax,ievcut,itdimd
     CHARACTER(len=2), intent(in) :: YEAR, YEARDF
-    real*8, intent(in) :: DTEV(ITMAX)   , DDENS(ITMAX)                           
+    real*8, intent(in) :: DTEV(ITMAX)   , DDENS(ITMAX)
     character(len=*), intent(out) ::  TITLF
     integer*4, intent(out) :: itmaxd,idmaxd,izmaxd,ifail
-    real*8, intent(out) :: ZDATA(ITDIMD)         
+    real*8, intent(out) :: ZDATA(ITDIMD)
     real*8, intent(out) ::  DTEVD(ITDIMD) , DDENSD(ITDIMD)
     real*8, intent(out) ::  DRCOFD(ITDIMD,ITDIMD,ITDIMD), DRCOFI(ITMAX)
 
-    INTEGER ::  I4UNIT,izmax,iz1max,id,it,iz,indxz1                           
-    INTEGER ::  IOPT                                                   
-    INTEGER ::   LENF1, LENF2, LENF3, LENF4, LENF5, LENF6                                                 
-    real*8 ::  A(LCK)                                                 
-    REAL*8 ::  DY(LCK)                                                
-    real*8 ::  DRCOF0(LCK,LCK)                                        
-    LOGICAL ::  LINTRP(LCK)   
-    !C                                                                       
+    INTEGER ::  I4UNIT,izmax,iz1max,id,it,iz,indxz1
+    INTEGER ::  IOPT
+    INTEGER ::   LENF1, LENF2, LENF3, LENF4, LENF5, LENF6
+    real*8 ::  A(LCK)
+    REAL*8 ::  DY(LCK)
+    real*8 ::  DRCOF0(LCK,LCK)
+    LOGICAL ::  LINTRP(LCK)
+    !C
     character(len=2) :: YEARSV='  ',ESYM,XFESYM*2
     character(len=6) :: EVCUT
     character(len=5) :: defadf
     character(len=80) :: USERID, DSNAME, STRING, BLANKS
     CHARACTER(len=3) :: CLASS(MCLASS) = (/'acd', 'scd', 'ccd', 'prb', 'plt', 'prc', 'pls'/)
 
-    LOGICAL ::  LEXIST  , LSETX                                        
-    !C                                                                       
-    EXTERNAL  ::  R8FUN1                                                  
-    !C                                                                       
-    integer, save :: IZ1MIN                                                 
-    !C                                                                       
+    LOGICAL ::  LEXIST  , LSETX
+    !C
+    EXTERNAL  ::  R8FUN1
+    !C
+    integer, save :: IZ1MIN
+    !C
     !C------SET DEFAULT DIRECTORY--------------------------------------------------------
-    !C 
-    PARAMETER (DEFADF='adf11')                                                    
-    !C                                                                       
+    !C
+    PARAMETER (DEFADF='adf11')
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
-    integer, save ::  IZ0SV=0,ICLSV=0,IEVSV=0                                                
+    !C
+    integer, save ::  IZ0SV=0,ICLSV=0,IEVSV=0
 
     !C
     !C------DIMENSION CHECK--------------------------------------------------
     !C
     IF (LCK.LT.ITMAX) STOP ' D2DATA ERROR: ITMAX > 100 (LCK): DECREASE ITMAX'
-    !C                                                                       
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
-    IF(.not.(YEAR.EQ.YEARSV.AND.IZ0.EQ.IZ0SV.AND.ICLASS.EQ.ICLSV.AND.IEVCUT.EQ.IEVSV)) then                                      
-       YEARSV = YEAR                                                    
-       IZ0SV  = IZ0                                                     
-       ICLSV  = ICLASS                                                  
-       IEVSV  = IEVCUT                                                  
-       IFAIL  = 0                                                       
-       !C                                                                       
+    !C
+    IF(.not.(YEAR.EQ.YEARSV.AND.IZ0.EQ.IZ0SV.AND.ICLASS.EQ.ICLSV.AND.IEVCUT.EQ.IEVSV)) then
+       YEARSV = YEAR
+       IZ0SV  = IZ0
+       ICLSV  = ICLASS
+       IEVSV  = IEVCUT
+       IFAIL  = 0
+       !C
        !C------ENERGY CUTOFF----------------------------------------------------
-       !C                                                                       
-       IF( IEVCUT.GT.0 ) THEN                                            
-          WRITE(EVCUT,1050) IEVCUT                                      
+       !C
+       IF( IEVCUT.GT.0 ) THEN
+          WRITE(EVCUT,1050) IEVCUT
           CALL XXSLEN(EVCUT,LENF5,LENF6)
        END IF
-       !C                                                                       
+       !C
        !C------GET ADAS DATA SOURCE USERID--------------------------------------
-       !C                                                                       
-       USERID = '?'                                                     
-       CALL XXUID(USERID)                                               
-       CALL XXSLEN(USERID,LENF1,LENF2)                                            
-       !C                                                                       
+       !C
+       USERID = '?'
+       CALL XXUID(USERID)
+       CALL XXSLEN(USERID,LENF1,LENF2)
+       !C
        !C------ELEMENT NAME-----------------------------------------------------
-       !C                                                                       
-       ESYM = XFESYM(IZ0)                                 
-       CALL XXSLEN(ESYM,LENF3,LENF4)                                                    
-       !C                                                                       
+       !C
+       ESYM = XFESYM(IZ0)
+       CALL XXSLEN(ESYM,LENF3,LENF4)
+       !C
        !C------FILE NAME--------------------------------------------------------
-       !C                                                                       
+       !C
        do
           DSNAME=USERID(LENF1:LENF2)//'/'//DEFADF//'/'//CLASS(ICLASS)// &
                YEARSV//'/'//CLASS(ICLASS)//YEARSV//'_'// &
-               ESYM(LENF3:LENF4)//'.dat'                                           
-          IF ((ICLASS.GE.4.AND.ICLASS.LE.6) .AND. IEVCUT.NE.0) THEN                                        
+               ESYM(LENF3:LENF4)//'.dat'
+          IF ((ICLASS.GE.4.AND.ICLASS.LE.6) .AND. IEVCUT.NE.0) THEN
              DSNAME=USERID(LENF1:LENF2)//'/'//DEFADF//'/'//CLASS(ICLASS)// &
                   YEARSV//'/'//CLASS(ICLASS)//YEARSV//'_'// &
                   ESYM(LENF3:LENF4)//'_ev'//EVCUT(LENF5:LENF6)//'.dat'
           ENDIF
-          !C                                                                       
-          !C------PE BRIDEN - MODIFICATION 27/04/92 - INCLUSION OF DEFAULT YEAR -  
-          !C                                                                       
+          !C
+          !C------PE BRIDEN - MODIFICATION 27/04/92 - INCLUSION OF DEFAULT YEAR -
+          !C
           !C------DOES FILE TO BE OPEN EXIST OR NOT--------------------------------
-          !C                                                                       
-          INQUIRE(FILE=DSNAME,EXIST=LEXIST)                                
-          !C                                                                       
-          IF ( (.NOT.LEXIST) .AND. (YEARSV.NE.YEARDF) ) THEN              
-             WRITE(I4UNIT(-1),1060) DSNAME , YEARDF                      
-             IFAIL  = -1                                                
+          !C
+          INQUIRE(FILE=DSNAME,EXIST=LEXIST)
+          !C
+          IF ( (.NOT.LEXIST) .AND. (YEARSV.NE.YEARDF) ) THEN
+             WRITE(I4UNIT(-1),1060) DSNAME , YEARDF
+             IFAIL  = -1
              YEARSV = YEARDF
-             cycle                                 
+             cycle
           ENDIF
           exit
        enddo
-       !C                                                                       
-       IF( .NOT.LEXIST ) GOTO 9999                                      
-       !C                                                                       
-       TITLF=BLANKS                                                     
-       WRITE(TITLF,1000) DSNAME                                         
-       !C                                                                       
-       !C------PE BRIDEN - END OF MODIFICATION 27/04/92                         
-       !C                                                                       
+       !C
+       IF( .NOT.LEXIST ) GOTO 9999
+       !C
+       TITLF=BLANKS
+       WRITE(TITLF,1000) DSNAME
+       !C
+       !C------PE BRIDEN - END OF MODIFICATION 27/04/92
+       !C
        !C------READ FILE # IREAD------------------------------------------------
-       !C                                                                       
-       !C       OPEN(UNIT=IREAD,FILE=DSNAME,ACTION='READ',ERR=9999)             
-       OPEN(UNIT=IREAD,FILE=DSNAME,ERR=9999)                            
-       !C                                                                       
-       READ(IREAD,1010) IZMAX , IDMAXD , ITMAXD , IZ1MIN , IZ1MAX       
-       !C                                                                       
-       READ(IREAD,1020) STRING                                          
-       READ(IREAD,1040) ( DDENSD(ID) , ID = 1 , IDMAXD )                
-       READ(IREAD,1040) ( DTEVD(IT)  , IT = 1 , ITMAXD )                
-       !C                                                                       
-       IZMAXD = 0                                                       
-       DO IZ = IZ1MIN , IZ1MAX                                      
-          IZMAXD = IZMAXD + 1                                           
-          ZDATA(IZMAXD) = IZ                                            
-          !C         IF( IZ .EQ. IZ1 ) INDXZ1 = IZ                                 
-          READ(IREAD,1020)STRING                                        
-          DO IT = 1 , ITMAXD                                        
+       !C
+       !C       OPEN(UNIT=IREAD,FILE=DSNAME,ACTION='READ',ERR=9999)
+       OPEN(UNIT=IREAD,FILE=DSNAME,ERR=9999)
+       !C
+       READ(IREAD,1010) IZMAX , IDMAXD , ITMAXD , IZ1MIN , IZ1MAX
+       !C
+       READ(IREAD,1020) STRING
+       READ(IREAD,1040) ( DDENSD(ID) , ID = 1 , IDMAXD )
+       READ(IREAD,1040) ( DTEVD(IT)  , IT = 1 , ITMAXD )
+       !C
+       IZMAXD = 0
+       DO IZ = IZ1MIN , IZ1MAX
+          IZMAXD = IZMAXD + 1
+          ZDATA(IZMAXD) = IZ
+          !C         IF( IZ .EQ. IZ1 ) INDXZ1 = IZ
+          READ(IREAD,1020)STRING
+          DO IT = 1 , ITMAXD
              READ(IREAD,1040) ( DRCOFD(IZMAXD,IT,ID) , ID = 1 , IDMAXD )
           enddo
        enddo
-       !C                                                                       
-       CLOSE(IREAD)                                                        
+       !C
+       CLOSE(IREAD)
        !C
        TITLF = STRING
-       !C                                                                       
+       !C
        !C------INTERPOLATE USING SPLINES (NAG ALGORITHM)------------------------
-       !C                                                                       
+       !C
        IF ( (LCK.LT.ITMAXD) .OR. (LCK.LT.IDMAXD) ) STOP ' D2DATA ERROR: ITMAXD AND/OR IDMAXD > 100 (LCK): INCREASE LCK'
        !C
 
     endif
-    !C                                                                       
+    !C
     !C------PE BRIDEN - CORRECTION 12/11/90 - SET INDXZ1 AFTER '20 CONTINUE'-
-    !C                                                                       
-    INDXZ1 = IZ1 - IZ1MIN + 1                                        
-    !C                                                                       
+    !C
+    INDXZ1 = IZ1 - IZ1MIN + 1
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
-    !C                                                                       
-    !C>>>>>>INTERPOLATE DRCOFD(,,,) W.R.T TEMPERATURE                        
-    !C                                                                       
-    LSETX = .TRUE.                                                    
-    IOPT  = -1                                                        
-    !C                                                                       
-    DO ID = 1 , IDMAXD        
+    !C
+    !C
+    !C>>>>>>INTERPOLATE DRCOFD(,,,) W.R.T TEMPERATURE
+    !C
+    LSETX = .TRUE.
+    IOPT  = -1
+    !C
+    DO ID = 1 , IDMAXD
        !csw
        if(indxz1 <= 0) cycle
        !csw
-       !C                                                                       
-       DO IT = 1 , ITMAXD                                   
-         A(IT) = DRCOFD(INDXZ1,IT,ID)                          
+       !C
+       DO IT = 1 , ITMAXD
+         A(IT) = DRCOFD(INDXZ1,IT,ID)
        enddo
-       !C                                                                       
-       CALL XXSPLE( LSETX  , IOPT  , R8FUN1       , &               
+       !C
+       CALL XXSPLE( LSETX  , IOPT  , R8FUN1       , &
             ITMAXD , DTEVD , A            ,&
-            ITMAX  , DTEV  , DRCOF0(1,ID) ,&                
-            DY     , LINTRP )                                                
-       !C                                                                       
+            ITMAX  , DTEV  , DRCOF0(1,ID) ,&
+            DY     , LINTRP )
+       !C
     enddo
-    !C                                                                       
-    !C>>>>>>INTERPOLATE ABOVE RESULT W.R.T DENSITY                           
-    !C                                                                       
-    LSETX = .TRUE.                                                    
-    IOPT  = -1                                                        
-    !C                                                                       
-    DO IT = 1 , ITMAX                                          
-       !C                                                                       
-       DO ID = 1 , IDMAXD                                   
-          A(ID) = DRCOF0(IT,ID)                                 
+    !C
+    !C>>>>>>INTERPOLATE ABOVE RESULT W.R.T DENSITY
+    !C
+    LSETX = .TRUE.
+    IOPT  = -1
+    !C
+    DO IT = 1 , ITMAX
+       !C
+       DO ID = 1 , IDMAXD
+          A(ID) = DRCOF0(IT,ID)
        enddo
-       !C                                                                       
-       CALL XXSPLE( LSETX  , IOPT      , R8FUN1     , &             
-            IDMAXD , DDENSD    , A          ,&              
-            L1     , DDENS(IT) , DRCOFI(IT) ,&              
-            DY     , LINTRP )                                                
-       !C                                                                       
+       !C
+       CALL XXSPLE( LSETX  , IOPT      , R8FUN1     , &
+            IDMAXD , DDENSD    , A          ,&
+            L1     , DDENS(IT) , DRCOFI(IT) ,&
+            DY     , LINTRP )
+       !C
     enddo
-    !C                                                                       
-    RETURN                                                           
-    !C                                                                       
+    !C
+    RETURN
+    !C
     !C-----------------------------------------------------------------------
-    !C DATA SET OPENING/EXISTENCE ERROR HANDLING                             
+    !C DATA SET OPENING/EXISTENCE ERROR HANDLING
     !C-----------------------------------------------------------------------
-    !C                                                                       
-9999 IFAIL  = 1                                                       
-    YEARSV = '  '                                                    
-    IZ0SV  = 0                                                       
-    ICLSV  = 0                                                       
-    RETURN                                                           
-    !C                                                                       
+    !C
+9999 IFAIL  = 1
+    YEARSV = '  '
+    IZ0SV  = 0
+    ICLSV  = 0
+    RETURN
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
-1000 FORMAT('FILE = ',1A60)                                           
-1010 FORMAT(5I5)                                                      
-1020 FORMAT(1A80)                                                     
-1040 FORMAT(8F10.5)                                                   
-1050 FORMAT(I6)                                                       
-1060 FORMAT(1X,'NOTE: REQUESTED DATASET - ',A50,' DOES NOT EXIST.'/ 7 X,      'USING DEFAULT YEAR (',A2,') DATASET INSTEAD'/)  
-    !C                                                                       
+    !C
+1000 FORMAT('FILE = ',1A60)
+1010 FORMAT(5I5)
+1020 FORMAT(1A80)
+1040 FORMAT(8F10.5)
+1050 FORMAT(I6)
+1060 FORMAT(1X,'NOTE: REQUESTED DATASET - ',A50,' DOES NOT EXIST.'/ 7 X,      'USING DEFAULT YEAR (',A2,') DATASET INSTEAD'/)
+    !C
     !C-----------------------------------------------------------------------
-    !C                                                                       
+    !C
   END SUBROUTINE D2DATA_EIRENE
-  
+
 
 
 end module mod_adas

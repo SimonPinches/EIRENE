@@ -234,7 +234,7 @@ contains
     !C                              N
     table(24,3) = 14.
     table(24,4) = 7.
-    table(24,5) = 24.    
+    table(24,5) = 24.
     elemstr(24) = 'N'
 
 
@@ -350,7 +350,7 @@ contains
           iproj = 3
        case(5)
           ! DT/DT+
-          iproj = 4          
+          iproj = 4
           a1=a1/2.
        case(3)
           ! T/T+
@@ -368,8 +368,8 @@ contains
     end select
 
     ia = int(a2)
-    itarg = itargtab(ia)    
-    
+    itarg = itargtab(ia)
+
     if(ldebug) then
        write(ifeck,'(a)') '------------------------------------'
        write(ifeck,'(4a)') 'RF1ECK: ',elemstr(iproj),' on ',elemstr(itarg)
@@ -402,7 +402,7 @@ contains
     if(ldebug) then
        write(ifeck,*) ' COSPOL=',cospol
     endif
-    
+
     !if(cospol < -.999) cospol = -.999
     !if(cospol > +.999) cospol = +.999
 
@@ -446,7 +446,7 @@ contains
                    ewscal = e-0.20
              end select
              if(ewscal < 0.) ewscal = 0.001
-             rn = 1.125*ewscal-0.225*ewscal**2.78-0.2             
+             rn = 1.125*ewscal-0.225*ewscal**2.78-0.2
           endif
 
           if(e>1.5) then
@@ -483,7 +483,7 @@ contains
                 case(5,6,7)
                    rn=0.459*e**(-0.3)
                    re=0.313*e**(-0.417)
-                end select                
+                end select
              else
                 select case(iproj)
                 case(1,2)
@@ -493,7 +493,7 @@ contains
                    rn=411.0*e**(-1.22)
                    re=743.0*e**(-1.476)
                 case(4)
-                   rn=320.0*e**(-1.22) 
+                   rn=320.0*e**(-1.22)
                    re=589.0*e**(-1.476)
                 case(5,6,7)
                    rn=274.0*e**(-1.22)
@@ -504,7 +504,7 @@ contains
              ! low energy scaling rules for H (Eckstein 1984)
              ! D/T missing
              rn = 0.348*e-0.00146*e**4.777-0.156
-             if(rn < 0.) then               
+             if(rn < 0.) then
                 rn=0.001
              endif
              if(rn > 1.) rn=1.0
@@ -522,7 +522,7 @@ contains
                 re = 0.07-0.18*aloge
              else
                 re = -0.25*aloge
-             endif             
+             endif
           else
              ! low energy scaling rules for H (Eckstein 1984)
              ! D/T missing
@@ -587,7 +587,7 @@ contains
        else
           ! all other walls
           rn = 0.1885-0.2265*aloge
-          
+
           if(epskev > 0.1) then
              re = 0.07-0.18*aloge
           else
@@ -710,7 +710,7 @@ contains
     cosp=cospn
     sinp=sinpn
     cost=costn !0
-    sint=sintn !1    
+    sint=sintn !1
     ! turn polar axis & sample azimuthal angle
     call eck_didimo(coskt,cosp,sinp,cost,sint)
 
@@ -735,7 +735,7 @@ contains
        write(ifeck,'(a,4(1x,e14.7))') 'e0:  ',e0
        write(ifeck,'(a,4(1x,e14.7))') 'vel: ',velx,vely,velz,velx**2+vely**2+velz**2
     endif
-    
+
   end subroutine rf1eck
 
 
@@ -823,7 +823,7 @@ contains
     !if(abs(cosp) >= 0.999d0) then
     !   cosp=sign(0.999d0,cosp)
     !elseif(abs(cosp) <= 0.001d0) then
-    !   cosp=sign(0.001d0,cosp)      
+    !   cosp=sign(0.001d0,cosp)
     !endif
     !sinp=sign(sqrt(1.0d0-cosp**2),sinp)
 
@@ -844,10 +844,10 @@ contains
     e=e*tiwd
 
     et=e
-    
+
     avsou2 = (1.d0*tewd+tiwd)/2.d0
     e=et+.5*nmass*avsou2
-    
+
     e=e+eshet
 
 
@@ -869,7 +869,7 @@ contains
     v  = (ax*vy - ay*vx) / (ry*vx-rx*vy+1.d-60)
     if(v >= 0. .and. v <= 1.) then
        if(abs(vx) > abs(vy)) then
-          t = (ax+v*rx)/vx          
+          t = (ax+v*rx)/vx
        else
           t = (ay+v*ry)/vy
        endif
@@ -913,8 +913,8 @@ contains
          3.0215E+00,3.1062E+00,3.1973E+00,3.2961E+00,3.4038E+00,3.5225E+00,&
          3.6546E+00,3.8037E+00,3.9754E+00,4.1769E+00,4.4228E+00,4.7374E+00,&
          5.1755E+00,5.9152E+00,1.0000E+01 /)
-    
-    
+
+
     real*4, dimension(128), parameter :: alt = &
          (/ 2.0985E-01,2.5824E-01,2.8969E-01,3.1303E-01,3.3144E-01,3.4647E-01,&
          3.5903E-01,3.6968E-01,3.7880E-01,3.8667E-01,3.9349E-01,3.9940E-01,&
@@ -938,12 +938,12 @@ contains
          8.4704E-02,7.8904E-02,7.3083E-02,6.7221E-02,6.1341E-02,5.5414E-02,&
          4.9461E-02,4.3470E-02,3.7429E-02,3.1364E-02,2.5237E-02,1.9070E-02,&
          1.2862E-02,6.5623E-03/)
-    
+
     integer, parameter :: modo = 2
 
     real*4 :: c,fint,x,h,xmin,delta,c1,f,y
     integer :: k
-    
+
     C=sngl(myRANF())
     select case(modo)
     case(1)
@@ -993,7 +993,7 @@ contains
     integer, parameter :: modulo =  268435456
     integer, parameter :: moltip =   41475557
     integer, parameter :: period =   67108864
-    
+
     rand = rand*moltip
     rand = ibclr(rand,31)
     rand = mod(rand,modulo)
