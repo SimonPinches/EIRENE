@@ -362,7 +362,7 @@ C
         ENDDO
    10   ISUM=SUM(NPRNLS(1:NSTRAI))
         IF (ISUM.NE.NPRNLI) THEN
-C  ROUND OFF ERRORS
+C  ROUND-OFF ERRORS
           NMX=0
           NPX=-1
           DO ISTRA=1,NSTRAI
@@ -382,7 +382,7 @@ C  ROUND OFF ERRORS
         ENDDO
       ENDIF
 C
-C  ASSIGN PE'S TO STRATA
+C  ASSIGN PEs TO STRATA
 C
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then

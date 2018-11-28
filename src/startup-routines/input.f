@@ -483,7 +483,6 @@ C  READING OF INPUT BLOCK 1 DONE
      .  ('*** 1. DATA FOR OPERATING MODE                 ')
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
-      WRITE (IUNOUT,*) '       NUMBER OF PROCESSORS NPRS= ',NPRS
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_MASAGE('       MPI USER DEFINED')
@@ -495,6 +494,7 @@ C         Reserved for default, see below
           CALL EIRENE_MASAGE('       MPI "EMBARRASSINGLY PARALLEL"')
           NPRLL = 0
       END SELECT
+      WRITE (IUNOUT,*) '       NUMBER OF PROCESSES NPRS= ',NPRS
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE

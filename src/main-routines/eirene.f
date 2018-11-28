@@ -328,7 +328,7 @@ C  AND CARRY THEM OUT
               NPTS(ISTRAI)=NRECOM(ISTRAI)
 162         CONTINUE
           CASE (4:5)
-C read stratum run time from prvious run
+C read stratum run time from previous run
             CALL EIRENE_RREC
         END SELECT
 C
