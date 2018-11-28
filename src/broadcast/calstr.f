@@ -18,7 +18,7 @@ C> \brief Collect results from worker processes onto master process of
 C> stratum
 C>
 C> This subroutine is called from MCARLO.f, from within strata loop, at
-C> the end of each stratum, if there are more then one processor
+C> the end of each stratum, if there are more than one processor
 C> working on any strata.
 C>
 C> It collects data from processors belonging to one particular stratum
@@ -210,7 +210,7 @@ c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
 
 C
 C
-c  all other volume averaged tallies: estimv
+c  all other volume-averaged tallies: estimv
         allocate (helpv(nrtal+1), dummyv(nrtal+1))
         do ir=1,nvoltl
           dummyv(1:nrtal) = estimv(ir,1:nrtal)
@@ -219,7 +219,7 @@ c  all other volume averaged tallies: estimv
           if (my_pe_gr==0) estimv(ir,1:nrtal) = helpv(1:nrtal)
         end do
 
-c  all surface averaged tallies: estims
+c  all surface-averaged tallies: estims
         do ir=1,nsrftl
           dummys(1:nlmpgs) = estims(ir,1:nlmpgs)
           call mpi_reduce(dummys,helps,nlmpgs,
@@ -227,7 +227,7 @@ c  all surface averaged tallies: estims
           if (my_pe_gr==0) estims(ir,1:nlmpgs) = helps(1:nlmpgs)
         end do
 
-c   energy resolved ("spectra") tallies
+c   energy-resolved ("spectra") tallies
         do ispc=1,nadspc
           ns = estiml(ispc)%nspc
           allocate (helpest(ns+2))
@@ -236,7 +236,7 @@ c   energy resolved ("spectra") tallies
      .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
           if (my_pe_gr==0) estiml(ispc)%spc(0:ns+1)=helpest(1:ns+2)
 
-c  standard deviation of energy resolved "spectra"
+c  standard deviation of energy-resolved "spectra"
           if (nsigi_spc > 0) then
             call mpi_reduce(estiml(ispc)%sdv,helpest,
      .                      estiml(ispc)%nspc+2,
@@ -261,7 +261,7 @@ c  standard deviation of energy resolved "spectra"
           deallocate (helpest)
         end do   !nadspc
 
-C  standard deviation of volume averaged tallies
+C  standard deviation of volume-averaged tallies
         if (nsd > 0) then
           do ir=1,nsd
             dummyv(1:nrtal+1) = sdvi1(ir,1:nrtal+1)
@@ -271,7 +271,7 @@ C  standard deviation of volume averaged tallies
           end do
         end if
 
-C  standard deviation of surface averaged tallies
+C  standard deviation of surface-averaged tallies
         if (nsdw > 0) then
           do ir=1,nsdw
             dummys(1:nlimps+1) = sdvi2(ir,1:nlimps+1)
@@ -281,7 +281,7 @@ C  standard deviation of surface averaged tallies
           end do
         end if
 
-C  covariances between two volume averaged tallies
+C  covariances between two volume-averaged tallies
         if (ncv > 0) then
           do i=0,2
             do j=1,ncv
