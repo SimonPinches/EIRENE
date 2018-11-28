@@ -11,6 +11,7 @@ cdr             would be activated.
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
 !pb  MAY  16:  nrds   -> nrei
+cdr  Nov. 18:  nrot   -> nrph
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -42,7 +43,7 @@ C
         NREI=0
         NREC=0
         NBGV=0
-        NROT=0
+        NRPH=0
         CALL EIRENE_XSECTA_PARAM
         CALL EIRENE_XSECTM_PARAM
         CALL EIRENE_XSECTI_PARAM
@@ -55,7 +56,7 @@ C
         NREI=MAX(1,NREI)
         NREC=MAX(1,NREC)
         NBGV=MAX(1,NBGV)
-        NROT=MAX(1,NROT)
+        NRPH=MAX(1,NRPH)
 
         CALL EIRENE_SET_PARMMOD(2)
         CALL EIRENE_ALLOC_COMXS(2)

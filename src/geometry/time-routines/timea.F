@@ -595,10 +595,9 @@ c  call octree function to plot the tree recursive
       RETURN
 
 C
-      ENTRY
-     .  EIRENE_TIMEA1(MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
-     .             VXX,VYY,VZZ,VV,
-     .             MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
+      ENTRY EIRENE_TIMEA1
+     . (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
+     .  VXX,VYY,VZZ,VV,MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
 
 !pb 08.01.14
       LCNDEXP = .FALSE.

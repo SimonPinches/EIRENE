@@ -3,10 +3,10 @@ C  loop over all surfaces selected in input block 11 for printout
 
 cdr Feb. 2015:  total sputer tallies now included, resolved wrt. incident type
 cdr these total tallies may include sputtering of unidentified wall material,
-cdr  hence may be different from the totals obtained by sum over sputtered species resolved fluxes
+cdr  hence may be different from the totals obtained by sum over sputtered species-resolved fluxes
 cdr  e.g. sptatot may be larger than summt, etc....
 
-cdr SEPT.2014:  PRINTPOUT OF SPUTTERED FLUXES REVISED
+cdr SEPT.2014:  PRINTOUT OF SPUTTERED FLUXES REVISED
 cdr  total sputter fluxes spttot(msurf) added.
 CDR  TO BE DONE:
 cdr  total sputter flux tallies resolved wrt. incident type to be added:
@@ -26,7 +26,7 @@ c            This is for surface do loop "do 10000"
 c 16.12.05:  variance for adds tally:  printout activated
 c
 c 16.01.06:  bug fix: suma1, suma2, etc... initialized (=0)
-c            otherwise problems due to new options for de-activation of tallies
+c            otherwise problems due to new options for deactivation of tallies
 C 07.12.06:  some comments introduced to clarify status with iliin=-3 option
 C 18.04.16:  reduced string length to match variable, J.Lore
 C
@@ -152,7 +152,7 @@ C
 C
         IF (I.GT.NLIM.AND.LEVGEO.LE.4.AND.NLMPGS.NE.NLIMPS) THEN
 C
-C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
+C  SPATIAL RESOLUTION ON NON-DEFAULT STANDARD SURFACE?
           HELP=0.D0
           ISTS=I-NLIM
 C
@@ -270,7 +270,7 @@ C  TOROIDAL SURFACE
      .                  IRPTA(ISTS,1),IRPTE(ISTS,1),IRPTA(ISTS,2),
      .                  IRPTE(ISTS,2),1,1)
                 CALL EIRENE_MASAGE
-     .            ('IDENTICAL ZERO, NOT PRINTED                  ')
+     .            ('IDENTICALLY ZERO, NOT PRINTED                ')
                 CALL EIRENE_LEER(2)
               END IF
             END IF
@@ -380,7 +380,7 @@ C   INCIDENT FLUXES, POSITIVE PARTIAL FLUXES, NET FLUXES
 C  *****************************************************
 C
 C
-C   SURFACE AVERAGED TALLY NO.1 AND NO.26
+C   SURFACE-AVERAGED TALLY NO.1 AND NO.26
 C
         SUMMT=0.
         SUMME=0.
@@ -419,7 +419,7 @@ C
           ENDIF
    21   CONTINUE
 C
-C   SURFACE AVERAGED TALLY NO.7 AND NO.32
+C   SURFACE-AVERAGED TALLY NO.7 AND NO.32
 C
         SUMM1(:,ISTRA)=0._DP
         SUMM2(:,ISTRA)=0._DP
@@ -449,7 +449,7 @@ C
           ENDIF
    23   CONTINUE
 C
-C   SURFACE AVERAGED TALLY NO.13 AND NO.38
+C   SURFACE-AVERAGED TALLY NO.13 AND NO.38
 C
         SUMI1(:,ISTRA)=0._DP
         SUMI2(:,ISTRA)=0._DP
@@ -479,7 +479,7 @@ C
           ENDIF
    25   CONTINUE
 C
-C   SURFACE AVERAGED TALLY NO 19 and NO 44
+C   SURFACE-AVERAGED TALLY NO 19 and NO 44
 C
         SUMPH1(:,ISTRA)=0._DP
         SUMPH2(:,ISTRA)=0._DP
@@ -509,7 +509,7 @@ C
           ENDIF
         ENDDO
 C
-C   SURFACE AVERAGED TALLY NO.25 AND NO.50
+C   SURFACE-AVERAGED TALLY NO.25 AND NO.50
 C
         SUMP1(:,ISTRA)=0._DP
         SUMP2(:,ISTRA)=0._DP
@@ -552,7 +552,7 @@ C
 C
         IF (ILIIN(I).GT.0) THEN
           WRITE (iunout,*) 'FLUX INCIDENT ON SURFACE:'
-C  SURFACE AVERAGED TALLY NO. 1
+C  SURFACE-AVERAGED TALLY NO. 1
           IF (SUMA.NE.0.D0) THEN
             WRITE (iunout,*) 'INCIDENT: ATOMS'
             CALL
@@ -803,7 +803,7 @@ C  SURFACE AVERAGED TALLY NO. 38
      .  EIRENE_MASYR1('ST.DEV.% ',VARI2,LGVRI2,ISTRA,0,NION,0,NSTRA,
      .                   TEXTS(NSPAM+1))
           ENDIF
-C  SURFACE AVERAGED TALLY NO. 19
+C  SURFACE-AVERAGED TALLY NO. 19
           IF (SUMPH.NE.0.D0) THEN
             WRITE (iunout,*) 'PHOTONS'
             CALL
@@ -821,7 +821,7 @@ C  SURFACE AVERAGED TALLY NO. 44
      .                   NSTRA,TEXTS(0+1))
           ENDIF
 
-C  SURFACE AVERAGED TALLY NO. 25
+C  SURFACE-AVERAGED TALLY NO. 25
           IF (SUMP.NE.0.D0) THEN
             CALL EIRENE_LEER(1)
             WRITE (iunout,*)
@@ -848,7 +848,6 @@ C  SURFACE AVERAGED TALLY NO. 50
           CALL EIRENE_MASR1 ('NET PFLX',SUMMT)
           CALL EIRENE_MASR1 ('NET EFLX',SUMME)
 
-
         ENDIF
 C
 C  INDEPENDENT OF VALUE AND SIGN OF ILIIN:
@@ -864,7 +863,7 @@ C
       ENDIF
 C
 C  ******************************************
-C   RE-EMITTED FLUXES, NEGATIVE PARTIAL FLUXES
+C   REEMITTED FLUXES, NEGATIVE PARTIAL FLUXES
 C  ******************************************
 C
 C   FIRST: FROM INCIDENT ATOMS
@@ -876,7 +875,7 @@ C
       SUMI=0._DP
       SUMPH=0._DP
 C
-C   SURFACE AVERAGED TALLY NO.2 AND NO.27
+C   SURFACE-AVERAGED TALLY NO.2 AND NO.27
 C
       SUMA1(:,ISTRA)=0._DP
       SUMA2(:,ISTRA)=0._DP
@@ -907,7 +906,7 @@ C
   121 CONTINUE
 C
 C
-C   SURFACE AVERAGED TALLY NO.8 AND NO.33
+C   SURFACE-AVERAGED TALLY NO.8 AND NO.33
 C
       SUMM1(:,ISTRA)=0._DP
       SUMM2(:,ISTRA)=0._DP
@@ -2048,7 +2047,7 @@ C
 C
         IF (ILIIN(I).GT.0) THEN
           WRITE (iunout,*)
-     .      'TOTAL RE-EMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
+     .      'TOTAL REEMITTED "ATOMIC" FLUXES, AMPERE AND WATT'
           IF (SUMMTP.GT.0._DP) WRITE (iunout,*)
      .      '(EXCLUDING CONTRIB. FROM INCIDENT BULK IONS)'
           CALL EIRENE_MASR1 ('TOT.PFLX',SUMMTA+SUMMTM+SUMMTI+SUMMTPH)
@@ -2076,7 +2075,7 @@ C
       TTSPTP  = 0._DP
       TTSPT   = 0._DP
 C
-C   SURFACE AVERAGED TALLY NO.51
+C   SURFACE-AVERAGED TALLY NO.51
 C
       SUMMT=0.
       SUMMA=0.
@@ -2086,7 +2085,7 @@ C
         IF (LSPTAAT) SUMA1(IATM,ISTRA)=SPTAAT(IATM,I)
         SUMMT=SUMMT+SUMA1(IATM,ISTRA)
         SUMMA=SUMMA+SUMA1(IATM,ISTRA)
-  202   CONTINUE
+  202 CONTINUE
 C
       DO 221 N=1,NSIGSI
         IF (IIHW(N).EQ.51) THEN

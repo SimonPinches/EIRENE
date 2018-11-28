@@ -11,7 +11,6 @@
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       integer :: ier
 
       if (my_pe > 0) then

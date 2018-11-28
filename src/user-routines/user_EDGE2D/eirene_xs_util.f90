@@ -5,7 +5,7 @@ subroutine eirene_xs_init_driver(np,nh,nz,lread)
   integer, intent(in) :: np,nh,nz
   logical, intent(out) :: lread
   integer :: ierr
-  
+
   if(.not.linit) then
      call eirene_xs_linkdb(ierr)
      if(ierr /= 0) then
@@ -33,7 +33,7 @@ end subroutine eirene_xs_dealloc_driver
 subroutine GetEireneXS(k,ihh,aneut,eneut,vneut,aion,vion,driftc,svi,dsvi,scx,dscx,smi,dsmi,smd,dsmd,svr,dsvr,de,te,ti,ierr)
   use mod_eirene_xs
   implicit none
-  integer,intent(in):: k,ihh      
+  integer,intent(in):: k,ihh
   real*8, intent(in) :: aneut,eneut,vneut(3),aion,vion,driftc(3),de,ti,te
   real*8,intent(out):: svi,dsvi,scx,dscx,smi,dsmi,smd,dsmd,svr,dsvr
   integer, intent(out) :: ierr
@@ -41,11 +41,11 @@ subroutine GetEireneXS(k,ihh,aneut,eneut,vneut,aion,vion,driftc,svi,dsvi,scx,dsc
   real*8 :: vi(3),v0(3),di,tep,tem,tip,tim,vneu
   real*8 :: svi1,svi2,smi1,smi2,smd1,smd2,scx1,scx2,svr1,svr2
   integer :: iswrr,ih
-  real*8, parameter :: dlinrat=0.01  
+  real*8, parameter :: dlinrat=0.01
 
   ! prepare data
   di=de
-  vneu = sqrt(2.d0*eneut/aneut/1.04394d-12) 
+  vneu = sqrt(2.d0*eneut/aneut/1.04394d-12)
   v0(1:3) = vneu*vneut(1:3)
   vi(1:3) = vion*driftc(1:3)
   tep = te*(1.d0+dlinrat)
@@ -98,7 +98,7 @@ subroutine GetEireneXS(k,ihh,aneut,eneut,vneut,aion,vion,driftc,svi,dsvi,scx,dsc
   svr2 = rcp(1)
   rdsvr= (svr1-svr2)/2./te/dlinrat
 
-  
+
   svi=rsvi
   dsvi=rdsvi
   scx=rscx

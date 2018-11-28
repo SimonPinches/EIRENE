@@ -1,5 +1,5 @@
 C  28.6.05
-C nnrot --> nrot, for subr. find_param, setamd, after removing phv_nrota,
+C nnrot --> nrPH, for subr. find_param, setamd, after removing phv_nrota,
 C                 and phv_nrotph
 C
       SUBROUTINE EIRENE_XSECTPH_PARAM
@@ -11,7 +11,7 @@ C
       USE EIRMOD_PHOTON
       IMPLICIT NONE
 csw
-csw  PHOTON COLLISION, OT - type
+csw  PHOTON COLLISION, PH - type
 csw
       integer :: iphot,nrc,kk
 
@@ -20,17 +20,17 @@ csw
             do nrc=1,nrcph(iphot)
                kk=ireacph(iphot,nrc)
                if(iswr(kk) == 7) then
-                 NROT=NROT+1
+                 NRPH=NRPH+1
                endif
             enddo
          endif
       enddo
 cdr
-c  this call is still necessary because not all OT-process data
+c  this call is still necessary because not all PH-process data
 c  have already been moved to module COMXS.
 C  Still some clean-up work to be done
 cdr
-      call EIRENE_PH_ALLOC_XSECTPH(nrot)
+      call EIRENE_PH_ALLOC_XSECTPH(nrph)
 
       RETURN
 

@@ -9,7 +9,7 @@ module mod_nimbus_xs
   integer :: xtfct_idqh
 
   logical,save, public :: lflag_icx=.false.
-  
+
 
   !C============================== DATA FOR MOLECULAR PROCESSES =========
   !C
@@ -119,9 +119,9 @@ module mod_nimbus_xs
       -3.909402993006E-03, &
       1.738776657690E-04, &
       -3.252844486351E-06/)
-  
+
   !C                    MICROSCOPIC CROSS SECTION OF REACTION
-  !C                    (H+)+H-->H+(H+) IS GIVEN   
+  !C                    (H+)+H-->H+(H+) IS GIVEN
   real*8, parameter, dimension(9) :: r318 = &
        (/ -3.274123792568E+01, &
        -8.916456579806E-02, &
@@ -293,7 +293,7 @@ contains
 
     SVCX=SIGCX * S
     RETURN
-    
+
   end subroutine nimxs_cxsig
 
   real*8 function nimxs_cxsig_integrate(atarg,a,ens,ti,ip) result(rrate)
@@ -373,7 +373,7 @@ contains
     RETURN
   END SUBROUTINE PNFIT
 
- 
+
   real*8 FUNCTION XTFCT(X) result(res)
     implicit none
     real*8, intent(in) :: x

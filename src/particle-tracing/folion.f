@@ -751,7 +751,7 @@ ctest     a=fnueqi(1.d14,200.d0)
 ctest     a=a*(1.+1./16.)**0.5-a*1.5*200./0.1
 ctest     aa=fnueqi_1(0.1d0,1.d14,200.d0,1,1)
 ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
-ctest     write (6,*) 'a,aa,aaa', a,aa,aaa
+ctest     write (iunout,*) 'a,aa,aaa', a,aa,aaa
 ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 

@@ -1,35 +1,27 @@
-C
+C> \brief Evaluate EIRENE recommendations for a next run of the same
+C>        model
+C> 
+C> 1. find NRECOM(istra): recommended number of test particles for next MC cycle.
+C> 2. find RATIO(istra) : ratio between used and recommended no. of particles.
+C>     (the procedure should approach RATIO approx 1.0, after cycling.
+C> 3. write NRECOM, RATIO and XMCT on stream 14.
+C>
+C> At entry rrec:
+C> - read NRECOM, RATIO, XMCT from stream 14.
       SUBROUTINE EIRENE_WRREC
 C
-C  EVALUATE EIRENE RECOMMENDATIONS FOR A NEXT RUN OF THE SAME MODEL
-C
-C   find NRECOM(istra):  recommended number of test particles for next MC cycle.
-c   find RATIO(istra) :  ratio between used and recommended no. of particles.
-c   (the procedure should approach RATIO approx 1.0, after cycling.
-c
-c   write NRECOM and RATIO on stream 14.
-c
-c  (at entry rrec:
-c    read NRECOM and RATIO from stream 14.
-C
-C
-cmr: Aug.18:
-C XMCT need to be used or stored here, somehow, somewhere...
-C not stored in FT 11 any more.
 cdr:  Aug 18:  xmct is not used here at all. Instead CPUFAC is just somehow
 cdr            infered by other considerations.
 C
-C XMCT need to be used or stored here, somehow, somewhere...
-C not stored in FT 11 any more.
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CAI
-      USE EIRMOD_CCONA
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMSOU
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
+      USE EIRMOD_CAI, ONLY: NRECOM, RATIO, XMCT
+      USE EIRMOD_CCONA, ONLY: EPS60
+      USE EIRMOD_CTRCEI, ONLY: TRCFLE, TRCREC
+      USE EIRMOD_COMSOU, ONLY: NPTS, NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_COUTAU
+      USE EIRMOD_COUTAU, ONLY: FLXFAC, FLUXT, WTOTA, WTOTI, WTOTM,
+     >                         WTOTP, XMCP
 
       IMPLICIT NONE
 
@@ -99,8 +91,9 @@ C  CONVERT XNEXP TO AN INTEGER
   300 CONTINUE
 C
   350 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 14: RATIO,NRECOM '
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 14: RATIO, NRECOM, XMCT'
       WRITE (14+ifoff) RATIO,NRECOM
+      WRITE (14+ifoff) XMCT
 C
       IF (.NOT.TRCREC.OR.NSTRAI.EQ.1) GOTO 1000
       CALL EIRENE_PAGE
@@ -140,8 +133,9 @@ C
 C
       OPEN (UNIT=14+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 14+ifoff
-      IF (TRCFLE) WRITE (iunout,*) 'READ 14: RATIO,NRECOM '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 14: RATIO, NRECOM, XMCT'
       READ (14+ifoff) RATIO,NRECOM
+      READ (14+ifoff) XMCT
 C
       RETURN
       END

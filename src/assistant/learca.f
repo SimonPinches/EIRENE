@@ -32,10 +32,8 @@ cdr  this loop should be replaced with a binary search
         IF (X-R(NS,J).LE.0.0) GOTO 15
    10 CONTINUE
 
-
       NNN=N
       IF (X.GT.R(NS,N)+1.D-12) GOTO 20
-
 
    15 EIRENE_LEARCA=I-1
       RETURN
