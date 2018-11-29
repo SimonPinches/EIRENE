@@ -4,9 +4,7 @@
       use EIRMOD_cinit
       use EIRMOD_comprt, only: iunout
       use EIRMOD_cpes, only: MY_PE
-#ifdef USE_MPI
-      use mpi ! IGNORE
-#endif
+      use EIRMOD_mpi
       implicit none
 
       private
@@ -18,7 +16,9 @@
       real(dp), save, dimension(9, 16) :: graphite
       real(dp), save, dimension(9, 16) :: mo
       real(dp), external :: ranf_eirene
-      integer ::  ierr
+#ifdef USE_MPI
+      integer :: ierr
+#endif
       contains
 
       subroutine EIRENE_init_refl_hlm()
@@ -29,14 +29,14 @@
         DO IFILE=1, NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),'gr_ext') /= 0) EXIT
         END DO
- 
+
         IF (IFILE > NDBNAMES) THEN
-          WRITE (IUNOUT,*) 
+          WRITE (IUNOUT,*)
      .      ' NO DATABASE NAME FOR graphite.ext.dat DEFINED'
           WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
           CALL EIRENE_EXIT_OWN(1)
         END IF
- 
+
         OPEN (UNIT=23,FILE=DBFNAME(IFILE))
  
         do i = 1, 9
@@ -52,13 +52,13 @@
         DO IFILE=1, NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),'mo_ext') /= 0) EXIT
         END DO
- 
+
         IF (IFILE > NDBNAMES) THEN
           WRITE (IUNOUT,*) ' NO DATABASE NAME FOR mo.ext.dat DEFINED'
           WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
           CALL EIRENE_EXIT_OWN(1)
         END IF
- 
+
         OPEN (UNIT=23,FILE=DBFNAME(IFILE))
         do i = 1, 9
           read(unit = 23, fmt = *)
@@ -69,12 +69,13 @@
         close(unit = 23)
       endif
 #ifdef USE_MPI
-      call mpi_bcast(graphite, size(graphite), MPI_REAL8, 0, 
+      call mpi_bcast(graphite, size(graphite),
+     &               MPI_DOUBLE_PRECISION, 0,
      &               MPI_COMM_WORLD, ierr)
-      call mpi_bcast(mo, size(mo), MPI_REAL8, 0,
+      call mpi_bcast(mo, size(mo), MPI_DOUBLE_PRECISION, 0,
      &               MPI_COMM_WORLD, ierr)
 #endif
- 
+
       end subroutine EIRENE_init_refl_hlm
 
       subroutine EIRENE_interpolate(theta_i, lambda_in, mat, theta_0,
