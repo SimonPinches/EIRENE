@@ -59,7 +59,7 @@ C> - tallies
      .            helps(nlmpgs+1), helpc
       real(dp) :: dummys(nlmpgs+1)
       real(dp), allocatable :: dummyw(:), helpw(:)
-      integer :: icomgrp(nstra)
+      integer :: calstr_comm
       integer :: ier1, ier, ir, i, ispc, my_pe_gr,
      .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
@@ -71,13 +71,13 @@ C Perform split only if there is in total more than one master process.
 C Otherwise use mpi_comm_world as communicator to avoid unnecessary
 C split.
       if ( all( npesta == 0 .or. .not. nlsron ) ) then
-        icomgrp(istra) = mpi_comm_world
+        calstr_comm = mpi_comm_world
         use_split = .FALSE.
       else
 !pb     istra is a pointer, type check failure with Intel compiler under Windows
         istr = istra
         call mpi_comm_split (mpi_comm_world,istr,my_pe-npesta(istra),
-     .                       icomgrp(istra),ier)
+     .                       calstr_comm,ier)
         if (ier /= mpi_success) then
           call eirene_masage
      .    ('ERROR IN SUBROUTINE EIRENE_CALSTR at mpi_comm_split.')
@@ -92,7 +92,7 @@ C Could not check whether NPESTR(ISTRA) > 1 can be moved outside of this subrout
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
 
-        call mpi_barrier(icomgrp(istra),ier)
+        call mpi_barrier(calstr_comm,ier)
 c
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
 C Would it make more sense to turn my_pe_gr into a logical?
@@ -108,104 +108,103 @@ c
 cdr missing: wtotph ??
 
         call mpi_reduce(WTOTM(0:nmoli,istra),helpm,nmoli+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTM(0:nmoli,istra) = helpm(0:nmoli)
 
         call mpi_reduce(WTOTA(0:natmi,istra),helpa,natmi+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTA(0:natmi,istra) = helpa(0:natmi)
 
         call mpi_reduce(WTOTI(0:nioni,istra),helpi,nioni+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTI(0:nioni,istra) = helpi(00:nioni)
 
         call mpi_reduce(WTOTP(0:nplsi,istra),helpp,nplsi+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTP(0:nplsi,istra) = helpp(0:nplsi)
 
         call mpi_reduce(WTOTE(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTE(istra) = helpc
-C
-C
+
         call mpi_reduce(XMCP(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) XMCP(istra) = helpc
 
         call mpi_reduce(XMCT(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) XMCT(istra) = helpc
 
         call mpi_reduce(PTRASH(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PTRASH(istra) = helpc
 
         call mpi_reduce(ETRASH(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) ETRASH(istra) = helpc
 
         call mpi_reduce(ETOTA(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) ETOTA(istra) = helpc
 
         call mpi_reduce(ETOTM(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) ETOTM(istra) = helpc
 
         call mpi_reduce(ETOTI(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) ETOTI(istra) = helpc
 
         call mpi_reduce(ETOTP(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) ETOTP(istra) = helpc
 
         call mpi_reduce(EELFI(0:nioni,istra),helpi,nioni+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EELFI(0:nioni,istra) = helpi(0:nioni)
 
 c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
         call mpi_reduce(PPATI(0:natmi,istra),helpa,natmi+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PPATI(0:natmi,istra) = helpa(0:natmi)
 
         call mpi_reduce(PPMLI(0:nmoli,istra),helpm,nmoli+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PPMLI(0:nmoli,istra) = helpm(0:nmoli)
 
         call mpi_reduce(PPIOI(0:nioni,istra),helpi,nioni+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PPIOI(0:nioni,istra) = helpi(0:nioni)
 
         if (nphoti > 0) then
           call mpi_reduce(PPPHTI(0:nphoti,istra),helpph,nphoti+1,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) PPPHTI(0:nphoti,istra) = helpph(0:nphoti)
         end if
 
         call mpi_reduce(PPPLI(0:nplsi,istra),helpp,nplsi+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
 c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
         call mpi_reduce(EPATI(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPATI(istra) = helpc
 
         call mpi_reduce(EPMLI(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPMLI(istra) = helpc
 
         call mpi_reduce(EPIOI(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPIOI(istra) = helpc
 
         call mpi_reduce(EPPHTI(istra),helpc,1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPPHTI(istra) = helpc
 
         call mpi_reduce(EPPLI(0:nplsi,istra),helpp,nplsi+1,
-     .       mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
 C
@@ -215,7 +214,7 @@ c  all other volume-averaged tallies: estimv
         do ir=1,nvoltl
           dummyv(1:nrtal) = estimv(ir,1:nrtal)
           call mpi_reduce(dummyv,helpv,nrtal,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) estimv(ir,1:nrtal) = helpv(1:nrtal)
         end do
 
@@ -223,7 +222,7 @@ c  all surface-averaged tallies: estims
         do ir=1,nsrftl
           dummys(1:nlmpgs) = estims(ir,1:nlmpgs)
           call mpi_reduce(dummys,helps,nlmpgs,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) estims(ir,1:nlmpgs) = helps(1:nlmpgs)
         end do
 
@@ -233,28 +232,28 @@ c   energy-resolved ("spectra") tallies
           allocate (helpest(ns+2))
           call mpi_reduce(estiml(ispc)%spc(0:ns+1),helpest,
      .                    estiml(ispc)%nspc+2,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) estiml(ispc)%spc(0:ns+1)=helpest(1:ns+2)
 
 c  standard deviation of energy-resolved "spectra"
           if (nsigi_spc > 0) then
             call mpi_reduce(estiml(ispc)%sdv,helpest,
      .                      estiml(ispc)%nspc+2,
-     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0)
      .        estiml(ispc)%sdv(0:ns+1) = helpest(1:ns+2)
 
             call mpi_reduce(estiml(ispc)%sgm,helpest,
      .                      estiml(ispc)%nspc+2,
-     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0)
      .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
 
 !            call mpi_reduce(estiml(ispc)%sgms,helpest,1,
-!     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+!     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
 !            if (my_pe_gr==0) estiml(ispc)%sgms = helpest(1)
             call mpi_reduce(estiml(ispc)%sgms,helpc,1,
-     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0) estiml(ispc)%sgms = helpc
           end if
 
@@ -266,7 +265,7 @@ C  standard deviation of volume-averaged tallies
           do ir=1,nsd
             dummyv(1:nrtal+1) = sdvi1(ir,1:nrtal+1)
             call mpi_reduce(dummyv,helpv,nrtal+1,
-     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0) sdvi1(ir,1:nrtal+1) = helpv(1:nrtal+1)
           end do
         end if
@@ -276,7 +275,7 @@ C  standard deviation of surface-averaged tallies
           do ir=1,nsdw
             dummys(1:nlimps+1) = sdvi2(ir,1:nlimps+1)
             call mpi_reduce(dummys,helps,nlimps+1,
-     .           mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0) sdvi2(ir,1:nlimps+1) = helps(1:nlimps+1)
           end do
         end if
@@ -287,24 +286,24 @@ C  covariances between two volume-averaged tallies
             do j=1,ncv
               dummyv(1:nrtal) = sigmac(i,j,1:nrtal)
               call mpi_reduce(dummyv,helpv,nrtal,
-     .             mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .             mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
               if (my_pe_gr==0) sigmac(i,j,1:nrtal) = helpv(1:nrtal)
             end do
           end do
 
           dummyv(1:ncv) = sgmcs(0,1:ncv)
           call mpi_reduce(dummyv,helpv,ncv,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) sgmcs(0,1:ncv) = helpv(1:ncv)
 
           dummyv(1:ncv) = sgmcs(1,1:ncv)
           call mpi_reduce(dummyv,helpv,ncv,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) sgmcs(1,1:ncv) = helpv(1:ncv)
 
           dummyv(1:ncv) = sgmcs(2,1:ncv)
           call mpi_reduce(dummyv,helpv,ncv,
-     .         mpi_double_precision,mpi_sum,0,icomgrp(istra),ier1)
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
         end if
 
@@ -317,41 +316,41 @@ csw 09nov2012 reduce csdvi_cop
             dummyw(1:nrtals) = sigma_cop(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) sigma_cop(i,1:nrtals) = helpw(1:nrtals)
 
             dummyw(1:nrtals) = stv_cop(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) stv_cop(i,1:nrtals) = helpw(1:nrtals)
 
             dummyw(1:nrtals) = sdvia_cop(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) sdvia_cop(i,1:nrtals) = helpw(1:nrtals)
 
             dummyw(1:nrtals) = ee_cop(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) ee_cop(i,1:nrtals) = helpw(1:nrtals)
           enddo
 
           call mpi_reduce(sgms_cop(1:ncpv_stat),helpv,ncpv_stat,
      .                    mpi_double_precision,mpi_sum,
-     .                    0,icomgrp(istra),ier1)
+     .                    0,calstr_comm,ier1)
           if (my_pe_gr==0) sgms_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
 
           call mpi_reduce(stvs_cop(1:ncpv_stat),helpv,ncpv_stat,
      .                    mpi_double_precision,mpi_sum,
-     .                    0,icomgrp(istra),ier1)
+     .                    0,calstr_comm,ier1)
           if (my_pe_gr==0) stvs_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
 
           call mpi_reduce(ees_cop(1:ncpv_stat),helpv,ncpv_stat,
      .                    mpi_double_precision,mpi_sum,
-     .                    0,icomgrp(istra),ier1)
+     .                    0,calstr_comm,ier1)
           if (my_pe_gr==0) ees_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
 
           deallocate(dummyw)
@@ -368,41 +367,41 @@ csw 09nov2012 reduce csdvi_bgk
             dummyw(1:nrtals) = sigma_bgk(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) sigma_bgk(i,1:nrtals) = helpw(1:nrtals)
 
             dummyw(1:nrtals) = stv_bgk(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) stv_bgk(i,1:nrtals) = helpw(1:nrtals)
 
             dummyw(1:nrtals) = sdvia_bgk(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) sdvia_bgk(i,1:nrtals) = helpw(1:nrtals)
 
             dummyw(1:nrtals) = ee_bgk(i,1:nrtals)
             call mpi_reduce(dummyw,helpw,nrtals,
      .                      mpi_double_precision,mpi_sum,
-     .                      0,icomgrp(istra),ier1)
+     .                      0,calstr_comm,ier1)
             if(my_pe_gr==0) ee_bgk(i,1:nrtals) = helpw(1:nrtals)
           enddo
 
           call mpi_reduce(sgms_bgk(1:nbgv_stat),helpv,nbgv_stat,
      .                    mpi_double_precision,mpi_sum,
-     .                    0,icomgrp(istra),ier1)
+     .                    0,calstr_comm,ier1)
           if (my_pe_gr==0) sgms_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
 
           call mpi_reduce(stvs_bgk(1:nbgv_stat),helpv,nbgv_stat,
      .                    mpi_double_precision,mpi_sum,
-     .                    0,icomgrp(istra),ier1)
+     .                    0,calstr_comm,ier1)
           if (my_pe_gr==0) stvs_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
 
           call mpi_reduce(ees_bgk(1:nbgv_stat),helpv,nbgv_stat,
      .                    mpi_double_precision,mpi_sum,
-     .                    0,icomgrp(istra),ier1)
+     .                    0,calstr_comm,ier1)
           if (my_pe_gr==0) ees_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
 
           deallocate(dummyw)
@@ -416,26 +415,26 @@ csw
         allocate (lhelp(mxdim))
 
         call mpi_reduce(LOGMOL(0:nmoli,ISTRA),lhelpm,NMOLI+1,
-     .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
+     .       mpi_logical,mpi_LOR,0,calstr_comm,ier1)
         if (my_pe_gr==0) LOGMOL(0:nmoli,ISTRA) = lhelpm(0:nmoli)
 
         call mpi_reduce(LOGATM(0:natmi,ISTRA),lhelpa,NATMI+1,
-     .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
+     .       mpi_logical,mpi_LOR,0,calstr_comm,ier1)
         if (my_pe_gr==0) LOGATM(0:natmi,ISTRA) = lhelpa(0:natmi)
 
         call mpi_reduce(LOGION(0:nioni,ISTRA),lhelpi,NIONI+1,
-     .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
+     .       mpi_logical,mpi_LOR,0,calstr_comm,ier1)
         if (my_pe_gr==0) LOGION(0:nioni,ISTRA) = lhelpi(0:nioni)
 
 cdr why do we need if(...) here, and not above ?
         if (nphoti > 0) then
           call mpi_reduce(LOGPHOT(0:nphoti,ISTRA),lhelpph,NPHOTI+1,
-     .         mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
+     .         mpi_logical,mpi_LOR,0,calstr_comm,ier1)
           if (my_pe_gr==0) LOGPHOT(0:nphoti,ISTRA) = lhelpph(0:nphoti)
         end if
 
         call mpi_reduce(LOGPLS(0:nplsi,ISTRA),lhelpp,NPLSI+1,
-     .       mpi_logical,mpi_LOR,0,icomgrp(istra),ier1)
+     .       mpi_logical,mpi_LOR,0,calstr_comm,ier1)
         if (my_pe_gr==0) LOGPLS(0:nplsi,ISTRA) = lhelpp(0:nplsi)
 
         deallocate(lhelp)
@@ -444,12 +443,12 @@ c  collect user or case-specific information from all PEs that worked on
 c  stratum no. ISTRA.  Depends on ...usr.f  or ...cop.f routines.
 c  Strictly there should also be an analogue call to eirene_calstr_cop.f
 
-        call mpi_barrier(icomgrp(istra),ier)
-        call eirene_calstr_usr (my_pe_gr, icomgrp(istra))
+        call mpi_barrier(calstr_comm,ier)
+        call eirene_calstr_usr (my_pe_gr, calstr_comm)
 
       endif
 
-      if (use_split) call mpi_comm_free (icomgrp(istra),ier)
+      if (use_split) call mpi_comm_free (calstr_comm,ier)
       call mpi_barrier(mpi_comm_world,ier)
 
       if (allocated(helpv)) deallocate (helpv)
