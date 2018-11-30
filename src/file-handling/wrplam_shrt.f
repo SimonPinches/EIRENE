@@ -26,6 +26,7 @@ cdr         non-linear iterations.
 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: IFOFF, NRAD
+      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN
       USE EIRMOD_CCOUPL, ONLY: NFLA
       USE EIRMOD_COMPRT,ONLY:IUNOUT
@@ -39,15 +40,9 @@ cdr         non-linear iterations.
         OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
         REWIND 13+ifoff
         IF(.NOT.ASSOCIATED(NFLA)) THEN
-#ifndef HPUX
          WRITE(iunout,*)
      w         "ERROR IN WRPLAM_SHRT: NFLA WAS NOT ASSOCIATED. ",
-     w         "NO DATA WILL BE STORED IN FORT.13"
-#else
-         WRITE(iunout,*)
-     w         "ERROR IN WRPLAM_SHRT: NFLA WAS NOT ASSOCIATED. ",
-     w         "NO DATA WILL BE STORED IN FTN13"
-#endif
+     w         "NO DATA WILL BE STORED IN ", FORT, "13"
          RETURN
         END IF
 cdr  only write plasma background data for species, which are not already
@@ -72,25 +67,15 @@ C ........................................................................
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o      STATUS='OLD',IOSTAT=IO)
       IF(IO.NE.0) THEN
-#ifndef HPUX
-        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FORT.13'
-#else
-        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FTN13'
-#endif
+        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
         RETURN
       END IF
 
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN
-#ifndef HPUX
         WRITE(IUNOUT,*)
      w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
-     w       "NO DATA WILL BE STORED IN FORT.13"
-#else
-        WRITE(IUNOUT,*)
-     w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
-     w       "NO DATA WILL BE STORED IN FTN13"
-#endif
+     w       "NO DATA WILL BE STORED IN ", FORT, "13"
         RETURN
       END IF
 
@@ -109,13 +94,8 @@ C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
      R         VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
      R         VZIN(NFLA+1:NPLSI,1:NRAD)
          IF(IO.NE.0) GOTO 200
-#ifndef HPUX
          IF (TRCFLE) WRITE (iunout,*)
-     w                'RPLAM: BGK BACKGROUND IS READ FROM FORT.13'
-#else
-         IF (TRCFLE) WRITE (iunout,*)
-     w                'RPLAM: BGK BACKGROUND IS READ FROM FTN13'
-#endif
+     w                'RPLAM: BGK BACKGROUND IS READ FROM ', FORT, '13'
 csw        END IF !IF(IO.EQ.0) THEN
        END IF
 csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
@@ -124,13 +104,8 @@ csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
 
   200 CONTINUE
 
-#ifndef HPUX
-       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FORT.13',
+       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13',
      w                 'ZERO BACKGROUND WILL BE ASSIGNED'
-#else
-       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FTN13',
-     w                 'ZERO BACKGROUND WILL BE ASSIGNED'
-#endif
        TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
        DIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
        VXIN(NFLA+1:NPLSI,1:NRAD)=0._DP

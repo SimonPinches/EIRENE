@@ -791,11 +791,7 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
 !  CARTESIAN PLANE
-#ifndef HPUX
-        write (iunout,*) 'testoutput from fort.29 in infcop'
-#else
-        write (iunout,*) 'testoutput from ftn29 in infcop'
-#endif
+        write (iunout,*) 'testoutput from ', FORT, '29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
@@ -843,13 +839,8 @@ C
 C
       ELSE
         CALL EIRENE_LEER(1)
-#ifndef HPUX
         WRITE (iunout,*)
-     .    ' NO FILE FORT.29 WITH MODIFIED GRID INFO FOUND '
-#else
-        WRITE (iunout,*)
-     .    ' NO FILE FTN29 WITH MODIFIED GRID INFO FOUND '
-#endif
+     .    ' NO FILE ', FORT, '29 WITH MODIFIED GRID INFO FOUND '
         WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
      .                   ' GRID IS USED '
         WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL '
@@ -1479,11 +1470,7 @@ C
       IF (NLPLAS) THEN
         WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON BRAEIR'
       ELSE
-#ifndef HPUX
-        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON FORT.31'
-#else
-        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON FTN31'
-#endif
+        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON ', FORT, '31'
       ENDIF
 C  SKIP READING PLASMA, IF NLPLAS
       IF (NLPLAS) GOTO 2100
