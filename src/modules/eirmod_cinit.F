@@ -71,6 +71,12 @@
 
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
+C> Default output file prefix
+#ifndef HPUX
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FORT.'
+#else
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FTN'
+#endif
 
       CONTAINS
 
@@ -260,11 +266,10 @@ C
       DBFNAME(6) = 'PHOTON'
       DBFNAME(7) = 'PHTNEW'
       DBFNAME(8) = 'SPUTER'
-      DBFNAME(9)(1:5) = 'fort.'
       if (21+ifoff >= 100) then
-        write (DBFNAME(9)(6:8),'(I3)') 21+ifoff
+        write (DBFNAME(9),'(A,I3)') FORT, 21+ifoff
       else
-        write (DBFNAME(9)(6:7),'(I2)') 21+ifoff
+        write (DBFNAME(9),'(A,I2)') FORT, 21+ifoff
       endif
       DBFNAME(10) = 'POLARI'
       DBFNAME(11) = 'graphite_ext.dat'
