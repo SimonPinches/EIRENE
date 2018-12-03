@@ -480,7 +480,7 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
           CYCLE
         ENDIF
 
-        IF (PROCFORSTRA(ISTRA,MY_PE)) THEN
+        IF (CALC_STRATUM(ISTRA)) THEN
 
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
@@ -908,10 +908,9 @@ c    for this stratum
 c
 C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary
 C MPI_BARRIER calls have been removed.
-       IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
-C
-C Should not the following be done only for process rank zero as it
-C got collected from all other ranks already?
+         IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
+
+         IF (I_AM_LEADER(ISTRA)) THEN
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
@@ -1173,19 +1172,13 @@ C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
 
           IF (NFILEN.EQ.1) THEN
-csw 18jul2011
-csw 08mar2013 added check nprs < nstrai
-cdr npesta is the master processor for stratum no ISTRA
-            if(nprs==1.or.(nprs > 1 .and. npesta(istra)==my_pe)
-     .                .or.(nprs > 1 .and. nprs < nstrai) ) then
-              CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+            CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
-            endif
           ENDIF
 C
 C  UPDATE TALLIES FOR  "SUM OVER STRATA"
@@ -1232,7 +1225,8 @@ C
      .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA '
           WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
           CALL EIRENE_LEER(2)
-        END IF ! PROCFORSTRA(ISTRA,MY_PE)
+        END IF ! I_AM_LEADER(ISTRA)
+       END IF ! CALC_STRATUM(ISTRA)
       END DO ! ISTR
 C
 C*** STRATA LOOP FINISHED *******************************************

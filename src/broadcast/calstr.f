@@ -42,7 +42,7 @@ C> - tallies
       USE EIRMOD_CESTIM, ONLY: ESTIML, ESTIMS, ESTIMV
       USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
       USE EIRMOD_COMPRT, ONLY: ISTRA
-      USE EIRMOD_CPES, ONLY: MY_PE, NPESTA, NPESTR, PROCFORSTRA
+      USE EIRMOD_CPES, ONLY: MY_PE, NPESTA, NEED_CALSTR, CALC_STRATUM
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
       USE EIRMOD_CSDVI_COP, ONLY: EE_COP, EES_COP, SDVIA_COP, SGMS_COP,
      .                            SIGMA_COP, STV_COP, STVS_COP
@@ -87,8 +87,8 @@ C split.
       end if
 
 C This subroutine is only called if PROCFORSTR(ISTRA,MY_PE), check is duplication.
-C Could not check whether NPESTR(ISTRA) > 1 can be moved outside of this subroutine.
-      if( npestr(istra) > 1 .and. procforstra(istra,my_pe)) then
+C Could not check whether need_calstr(istra) can be moved outside of this subroutine.
+      if( need_calstr(istra) .and. calc_stratum(istra)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
 
