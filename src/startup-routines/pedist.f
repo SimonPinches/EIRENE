@@ -86,11 +86,12 @@ C>   processes to one stratum.
       SUBROUTINE EIRENE_PEDIST_PROPALLOC( XTIM, XX1 )
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NSTRA
+      USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_CCONA, ONLY: EPS30
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
       USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_COUTAU, ONLY: XMCT, XMCP
+      USE EIRMOD_COUTAU, ONLY: XMCP
 
       IMPLICIT NONE
 
@@ -167,22 +168,6 @@ C>   processes to one stratum.
 
         NPRS_OPT=0
         NPRS_FREE=NPRS
-
-
-
-C XMCT not stored on fort.11 any more (better place fort.14)
-C Without activating fort.11:
-C 1st iteration, XMCT == 0
-C 2nd iteration, XMCT value of 1st iteration
-C etc.
-c
-cdr  reading from fort.11 was only done in pure "read-runs",
-cdr  for modified printout, initialization, post processing, etc..
-cdr  I.e., without any Monte Carlo execution.
-cdr  The use of XMCT for parallelisation optimization therefore
-cdr  only worked within a single run
-cdr  (but perhaps over many internal or external iterations)
-cdr  until COUTAU was deallocated again.
 
         if(xmct(0) <= 0.0 ) then
           DO ISTRA=1,NSTRA

@@ -45,6 +45,8 @@ c    distrib_parm
      P         MPARTC=14, MPARTT=10
 csw 13apr07
       integer, public, save :: IFOFF = 0
+C> Indicates whether output files 'output.*' should be appended or overwritten
+      LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.
 
       INTEGER, PUBLIC, SAVE ::
      I N1ST,   N2ND,   N3RD,   NADD,   NTOR,

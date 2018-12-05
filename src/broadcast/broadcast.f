@@ -87,7 +87,6 @@ cdr
       USE EIRMOD_MPI
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
      .           imerk
       REAL(DP) :: RHELP(3)
