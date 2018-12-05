@@ -2177,22 +2177,23 @@ cdr                 so far only for "DENSITYMODELS":
           ALLOCATE (TDMPAR(JPLS)%TDM%REACTION(TDMPAR(JPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(JPLS)%TDM%CR(TDMPAR(JPLS)%TDM%NRE))
 
+C needs trim, check if possible...
           SELECT CASE (CDENMODEL(JPLS))
-          CASE ('FORT.13   ')
+          CASE (FORT//'13')
             READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1)
 c  default: only for bulk ions
                               TDMPAR(JPLS)%TDM%ITP(1)=4
-          CASE ('FORT.10   ')
+          CASE (FORT//'10')
             READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1),
      .                        TDMPAR(JPLS)%TDM%ITP(1),
      .                        TDMPAR(JPLS)%TDM%ISTR(1)
-          CASE ('CONSTANT  ')
+          CASE ('CONSTANT')
             READ (IUNIN,6664) TDMPAR(JPLS)%TDM%TVAL,
      .                        TDMPAR(JPLS)%TDM%DVAL,
      .                        TDMPAR(JPLS)%TDM%VXVAL,
      .                        TDMPAR(JPLS)%TDM%VYVAL,
      .                        TDMPAR(JPLS)%TDM%VZVAL
-          CASE ('MULTIPLY  ')
+          CASE ('MULTIPLY')
             READ (IUNIN,'(3I6,6x,3E12.4)')
      .           TDMPAR(JPLS)%TDM%ISP(1),
      .           TDMPAR(JPLS)%TDM%ITP(1),
@@ -2201,16 +2202,16 @@ c  default: only for bulk ions
      .           TDMPAR(JPLS)%TDM%TFACTOR,
      .           TDMPAR(JPLS)%TDM%VFACTOR
                  TDMPAR(JPLS)%TDM%ITP(1)=4
-          CASE ('SAHA      ')
+          CASE ('SAHA')
 !PB   TO BE WRITTEN
-          CASE ('BOLTZMANN ')
+          CASE ('BOLTZMANN')
             READ (IUNIN,'(3I6,6x,2E12.4)')
      .           TDMPAR(JPLS)%TDM%ISP(1),
      .           TDMPAR(JPLS)%TDM%ITP(1),
      .           TDMPAR(JPLS)%TDM%ISTR(1),
      .           TDMPAR(JPLS)%TDM%G_BOLTZ,
      .           TDMPAR(JPLS)%TDM%DELTAE
-          CASE ('CORONA    ')
+          CASE ('CORONA')
             IDMDL = IDMDL + 1  !  ONE MORE H.2 REACTION data set
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(JPLS)%TDM%ISP(1),
@@ -2228,7 +2229,7 @@ c  default: only for bulk ions
               WRITE (iunout,*) ' IPLS = ',JPLS
               CALL EIRENE_EXIT_OWN(1)
             END IF
-          CASE ('COLRAD    ')
+          CASE ('COLRAD')
             IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
             DO I=1, TDMPAR(JPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
@@ -4097,7 +4098,7 @@ C
           DTIMVO=DTIMV
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
-          WRITE (iunout,*) 'READ FROM FILE FORT 15'
+          WRITE (iunout,*) 'READ FROM FILE ', FORT, '15'
           WRITE (iunout,*) 'PARTICLES AND FLUX RETRIEVED FOR'
           WRITE (iunout,*) 'INITIAL DISTRIBUTION AT T0= ',TIME0
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
@@ -4161,7 +4162,8 @@ C Only read census from file if exactly one stratum is a census stratum
           ISTR = ISTR_A(1)
           CALL EIRENE_RSNAP( ISTR )
 C
-          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE FORT 15 '
+          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE ', FORT, 
+     .                     '15'
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
           CALL EIRENE_MASR1('FLUX    ',FLUX(ISTR))
 C

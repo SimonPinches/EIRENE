@@ -16,6 +16,7 @@ C        else  do also read data from COMSOU
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
+      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CZT1
@@ -129,7 +130,8 @@ C  LUSR, LOGICAL
         DEALLOCATE (RDUM)
         DEALLOCATE (IDUM)
         DEALLOCATE (lDUM)
-        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13'
+        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM ', 
+     .                               FORT, '13'
       END IF
 
 cdr:  this CSTEP reading should go into iflg=0 branch, as it belongs to primary source
