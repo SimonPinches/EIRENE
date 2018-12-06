@@ -1,4 +1,4 @@
-cdr:   evalute algebraic expression of tallies, as specified in
+cdr:   evaluate algebraic expression of tallies, as specified in
 cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 C
@@ -271,7 +271,7 @@ c  electr. Potential
               EXIT
             END SELECT
 
-cdr  weighted sum over sub-cells: in=ncltal(i)
+cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC1 = 0._DP
             DO I=1,NSBOX
@@ -475,7 +475,7 @@ C
               EXIT
             END SELECT
 
-cdr  weighted sum over sub-cells: in=ncltal(i)
+cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC2 = 0._DP
             DO I=1,NSBOX

@@ -663,10 +663,10 @@ C
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
             write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
      .                                          ale,alw,aln,als,alx
-! cell-centered unit vector along poloidal direcion
+! cell-centered unit vector along poloidal direction
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
-! cell-centered unit vector along "radial" (grad psi) direcion,
+! cell-centered unit vector along "radial" (grad psi) direction,
 !                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)

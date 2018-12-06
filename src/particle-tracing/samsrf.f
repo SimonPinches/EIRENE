@@ -6,12 +6,12 @@ C              now return shwl, efwl(ipls) for use in locate.f
 C              in locate: new options nemod1=8,9 for using efwl(ipls)
 C              efwl(ipls) is the kinetic ion energy flux (W) at sheath entrance
 C  nov.14.05: bug fix, v.k., istra --> istep for aleft(1,....) (twice)
-C  may 06: sampling on 2nd order additional surface modified:
+C  may 06: sampling on 2nd-order additional surface modified:
 C          sign of determinant is now sampled. rejection with respect to bounding box
 c  aug 06: new option SORIND.gt.100 for step functions introducted. 3rd digit is now
 c          pointer to species of step function
 !pb 22.03.07: LEVGEO=6 --> LEVGEO=10
-C  june 13: some comments, clean up, further checks and error exits.
+C  june 13: some comments, clean-up, further checks and error exits.
 C           DELR REMOVED FROM LOOP 3010
 C           ELSTEP and SHSTEP added in definition of default step function
 C  oct. 14: some preliminary options for correlation sampling removed,
@@ -121,7 +121,7 @@ c  number of surface for current surface source segment
 C  HAS THIS SURFACE SOURCE A PRE-PROGRAMMED DISTRIBUTION
 C
         IF (ISOR.LE.0) THEN
-C  NO. USER DEFINED SOURCE SAMPLING. NOW INITIALIZE USER-SUPPLIED SOURCE SAMPLING
+C  NO. USER-DEFINED SOURCE SAMPLING. NOW INITIALIZE USER-SUPPLIED SOURCE SAMPLING
           ISR=ISRFS
           ISTR=ISTRAI
           CALL EIRENE_SM0USR(ISR,ISTR,
@@ -235,7 +235,7 @@ C  Z0:
               WRITE (iunout,*) 'ON A POLOIDAL (OR Y-) SURFACE '
               WRITE (iunout,*) 'DEFINE STEP FUNCTION ELSEWHERE, ',
      .                         'EG. IN SAMUSR'
-              WRITE (iunout,*) 'CALL EXIT '
+              WRITE (iunout,*) 'CALL EIRENE_EXIT '
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C
@@ -448,7 +448,7 @@ c  PREPARE SOME STEP FUNCTION DIAGNOSTIC OUTPUT (SAME FOR DEFAULT OR EXTERNAL ST
 C
         IF (TRCSOU.AND.ISTEP.GT.0) THEN
           NSMX=NSMAX(ISTEP)
-C  IDENTIFY THOSE BULK SPECIES WITH NON-ZERO FLUX
+C  IDENTIFY THOSE BULK SPECIES WITH NONZERO FLUX
           FLX=0.
           EKFLX=0.
           ESHFLX=0.
@@ -551,7 +551,7 @@ C
               case (5)
                 WRITE (iunout,*) ' ERROR IN SAMSRF '
                 WRITE (iunout,*)
-     .            ' SAMPLING ON NONDEFAULT STANDARD X-SURFACE '
+     .            ' SAMPLING ON NON-DEFAULT STANDARD X-SURFACE '
                 WRITE (iunout,*) ' IS NOT FORESEEN FOR THIS LEVGEO '
                 WRITE (iunout,*) ' EXCEPT FOR STEP FUNCTION OPTIONS '
                 CALL EIRENE_EXIT_OWN(1)
@@ -758,7 +758,7 @@ C
 C
       WEISPZ(1:NSPZ)=-1.
 C
-C   USER SUPPLIED GENERATOR FOR X0,Y0,Z0. ONLY ONE CALL
+C   USER-SUPPLIED GENERATOR FOR X0,Y0,Z0. ONLY ONE CALL
 C   FOR ALL 3 COORDINATES. SUBR. SURTST IS NOT CALLED!
 C
       IF (SORLIM(NLSF,ISTRA).LT.0.D0) THEN
@@ -886,7 +886,7 @@ C  SECOND ORDER IN X
                 CALL EIRENE_SURTST(X0,Y0,Z0,MASURF,LOGTST)
                 IF (.NOT.LOGTST) THEN
                   IF (ICOUNT.LE.1000) GOTO 100
-                  WRITE (IUNOUT,*) 'PROBABLY ILL DEFINED SURFACE '
+                  WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
                   RETURN
@@ -953,7 +953,7 @@ C  SECOND ORDER IN Y
                 CALL EIRENE_SURTST(X0,Y0,Z0,MASURF,LOGTST)
                 IF (.NOT.LOGTST) THEN
                   IF (ICOUNT.LE.1000) GOTO 100
-                  WRITE (IUNOUT,*) 'PROBABLY ILL DEFINED SURFACE '
+                  WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
                   RETURN
@@ -1009,7 +1009,7 @@ C  SECOND ORDER IN Z
                 CALL EIRENE_SURTST(X0,Y0,Z0,MASURF,LOGTST)
                 IF (.NOT.LOGTST) THEN
                   IF (ICOUNT.LE.1000) GOTO 100
-                  WRITE (IUNOUT,*) 'PROBABLY ILL DEFINED SURFACE '
+                  WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
                   RETURN
@@ -1633,7 +1633,7 @@ C
       WRITE (iunout,*) 'ERROR IN SAMSRF. EXIT CALLED'
       WRITE (iunout,*) 'CHECK INPUT OF SORLIM, BECAUSE EIRENE TRIES TO'
       WRITE (iunout,*)
-     .  'COMPUTE MORE THAN ONE VARIABLES FROM THE SURFACE'
+     .  'COMPUTE MORE THAN ONE VARIABLE FROM THE SURFACE'
       WRITE (iunout,*) 'EQUATION'
       CALL EIRENE_EXIT_OWN(1)
   998 CONTINUE

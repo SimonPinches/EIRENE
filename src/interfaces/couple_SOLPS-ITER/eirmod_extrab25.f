@@ -544,7 +544,7 @@ cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
         wldnek(i,istra)=0.
         wldnep(i,istra)=0.
         wldpeb(i,istra)=0.
-        !c*** hlp accumulates the power taken away with re-emitted particles
+        !c*** hlp accumulates the power taken away with reemitted particles
         hlp=0.
         do j=1,natmi
           if (leotat)  wldnek(i,istra)=wldnek(i,istra)+eotat(j,i)

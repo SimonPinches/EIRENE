@@ -167,7 +167,7 @@ cdr USE FZJ PROPRIETARY GR PLOTTING SOFTWARE
 C
       ELSE
         WRITE (iunout,*) 'INVALID OPTION IN PLOT3D  '
-        WRITE (iunout,*) '3D-PLOT ABANDONED  '
+        WRITE (iunout,*) '3D PLOT ABANDONED  '
         RETURN
       ENDIF
 C

@@ -3,7 +3,7 @@
 cdr  21.09.15: default process rate coeff KK=-1 (ei on He) now moved to KK=-11, to avoid conflict
 cdr            with default cross-section KK=-1 (cx on H)
 cdr            default process kk=-10 (diss rec of H2+) slightly changed,
-cdr            to enable external database model which is truely identical to default model
+cdr            to enable external database model which is truly identical to default model
 
 CDR TO BE DONE:  when kk >0  then on the fly evaluation of rate coeff. is
 cdr              repeated here. This should be avoided, by returning the energy-weighted rate,
@@ -73,7 +73,7 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             EIRENE_FEELEI1=-EIONHE   !  DEFAULT PROCESS KK=-1  HE+E --> HE+ +2E
         END SELECT
 
-c  non default models, data from external databases, KK=KREAD for el. energy-weighted rates
+c  non-default models, data from external databases, KK=KREAD for el. energy-weighted rates
       ELSE IF (KK > 0) THEN
         IF (JELREI(IREI) == 1) THEN  !  Te dependence
           ELEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)

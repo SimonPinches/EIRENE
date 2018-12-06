@@ -46,7 +46,7 @@ cdr         non-linear iterations.
         RETURN
       END IF
 cdr  only write plasma background data for species, which are not already
-cdr  transfered via Common BRAEIR
+cdr  transfered via common BRAEIR
       IF(NFLA.LT.NPLSI) THEN
         WRITE (13+ifoff,IOSTAT=IO)
      w           TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
@@ -67,14 +67,15 @@ C ........................................................................
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o      STATUS='OLD',IOSTAT=IO)
       IF(IO.NE.0) THEN
-        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
+        WRITE(iunout,*)
+     w   'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
         RETURN
       END IF
 
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN
         WRITE(IUNOUT,*)
-     w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
+     w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED. ",
      w       "NO DATA WILL BE STORED IN ", FORT, "13"
         RETURN
       END IF
@@ -104,8 +105,9 @@ csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
 
   200 CONTINUE
 
-      WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13',
-     w                'ZERO BACKGROUND WILL BE ASSIGNED'
+      WRITE(iunout,*) 
+     w 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13: ',
+     w 'ZERO BACKGROUND WILL BE ASSIGNED'
       TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
       DIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
       VXIN(NFLA+1:NPLSI,1:NRAD)=0._DP

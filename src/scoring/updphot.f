@@ -20,7 +20,7 @@ C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
 c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
-cdr dec.15: tracklength estimators for heavy test particle post collision energies
+cdr dec.15: tracklength estimators for heavy test particle post-collision energies
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
@@ -56,7 +56,7 @@ C  IFLAG=3:
 C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
 C  IFLAG=5:
 
-C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUEL BACKGROUND SPECIES)
+C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUAL BACKGROUND SPECIES)
 C
 C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
 C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
@@ -65,7 +65,7 @@ C  C) NPBGKP (IPLS,1):  IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION
 C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
-C          IONS WITH ENERGY SOURCES FOR VIRTUEL BACKGROUND "IONS"  (MISSING SPECIES INDEX)
+C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS"  (MISSING SPECIES INDEX)
 C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
 
@@ -237,7 +237,7 @@ cdr  do this check in initialisation, only once
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
 C
-C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
+C  POST-COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C
 cdr-test    goto 133
 !pb         IF (PHV_N1STOTph(iphot,IRPH,3).NE.0) THEN
@@ -369,7 +369,7 @@ cdr         IF (LEPHEL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*E0  vermutl. falsch
 cdr  gibt es schon ESIGPH ? ist dann IRPH das richtige argument ?
 cdr         IF (LEPHPL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*ESIGPH(IRPH)
 C
-C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
+C  POST-COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 
 !dr       IF (PHV_N1STOTph(iphot,IRPH,3).NE.0) THEN
 !dr PHV_N1STOTph(iphot,IRPH,3) does not include bulk

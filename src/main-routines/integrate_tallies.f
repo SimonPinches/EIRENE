@@ -1,4 +1,4 @@
-cdr dec 15:  added species resolution wrt. energy volume taalies for bulk ions
+cdr dec 15:  added species resolution wrt. energy volume tallies for bulk ions
 cdr          eapl, empl, eipl, ephpl, eppl
 
 C
@@ -24,7 +24,7 @@ C
 
 C
 C
-C   INTEGRATE VOLUME AVERAGED PROFILES   450 --- 459
+C   INTEGRATE VOLUME-AVERAGED PROFILES   450 --- 459
 C
       IF (LPAEL) THEN
         DUMMY(1:NSBOX_TAL) = PAEL(1:NSBOX_TAL)

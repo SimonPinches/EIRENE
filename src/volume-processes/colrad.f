@@ -194,7 +194,7 @@ c  population coefficients, coupling to H+ ion
             case (16)                     ! H.4  2.1.8e
               h_stor(i,icell) = pop0(6)
 c  population coefficients, coupling to external source of excitation (e.g. photons)
-c  only availabel if L_EXT=.TRUE. in call to H_COLRAD
+c  only available if L_EXT=.TRUE. in call to H_COLRAD
             case (17)                     ! H.4  2.1.5PHa
               h_stor(i,icell) = pop_ext(3)
             case (18)                     ! H.4  2.1.5PHb

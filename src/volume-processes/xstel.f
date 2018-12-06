@@ -6,7 +6,7 @@ cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
 
 cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
 cdr    oct.14: bug fix: use kread rather than kk in eplel3.
-cdr    oct.14: remove pls array, synconize with xstcx started
+cdr    oct.14: remove pls array, synchronize with xstcx started
 cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 cdr   jan .17: modcol(5,0,irel):  flag for differential cross-section model, rather than =kk.
@@ -17,7 +17,7 @@ cdr   jan .17: modcol(5,0,irel):  flag for differential cross-section model, rat
 !              modcol(5,0,irel)=1,2,...: interaction potential is given via fit parameters
 cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) directly.
 
-cdr     Reaction identifyer KK is defined twice, within same routine veloel.
+cdr     Reaction identifier KK is defined twice, within same routine veloel.
 cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
 cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.
 cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)
@@ -169,7 +169,7 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
               tii = max(-2.3_dp,tii)
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
@@ -425,16 +425,16 @@ C
         WRITE (iunout,*) 'THIS IS ALSO BGK COLLISION NO. IBGK= ',IBGK
         MODCOL(5,0,IREL)=-1
         IF (NPBGKP(IPL,2).EQ.0)
-     .      WRITE (iunout,*) 'SELF COLLISION      '
+     .      WRITE (iunout,*) 'SELF-COLLISION      '
         IF (NPBGKP(IPL,2).NE.0) THEN
           ITYPB=EIRENE_IDEZ(NPBGKP(IPL,2),1,3)
           ISPZB=EIRENE_IDEZ(NPBGKP(IPL,2),3,3)
           IF (ITYPB.EQ.1)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH ATOM     ',ISPZB
+     .      WRITE (iunout,*) 'CROSS-COLLISION WITH ATOM     ',ISPZB
           IF (ITYPB.EQ.2)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH MOLECULE ',ISPZB
+     .      WRITE (iunout,*) 'CROSS-COLLISION WITH MOLECULE ',ISPZB
           IF (ITYPB.EQ.3)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH TEST ION ',ISPZB
+     .      WRITE (iunout,*) 'CROSS-COLLISION WITH TEST ION ',ISPZB
         ENDIF
       ENDIF
 

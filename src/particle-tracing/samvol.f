@@ -1,4 +1,4 @@
-chf Nov.  18 :  samvol_usr added, for levgeo=10 option
+chf Nov.  18 : samvol_usr added, for levgeo=10 option
 cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
@@ -10,7 +10,7 @@ cdr             even if npts=0 for the vol-rec stratum
 
 cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2203.07: LEVGEO=6 --> LEVGEO=10
-!pb  2710.06: use flux set by user defined sampling routine
+!pb  2710.06: use flux set by user-defined sampling routine
 !pb  1001.06: ENTRY SAMVOL_REINIT added for reinitialsation of Eirene
 !pb  1812.06: calculate bremsstrahlung
 !pb  2408.06: set output values for DIWL and SHWL
@@ -205,7 +205,7 @@ c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
                 IF (REC.LE.0.D0) GOTO 6
                 ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
-C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
+C  SPECTRAL CUT-OFF, CURRENTLY ONLY FOR PHOTONS
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
@@ -262,7 +262,7 @@ C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
                 END IF
 c  Turn eV/s/particle into Watt/cell
                 ADD=EELRC*DIIN(IPLS,J)*VOL(J)*ELCHA
-C  SPECTRAL CUT OFF (PHOTONS ONLY)
+C  SPECTRAL CUT-OFF (PHOTONS ONLY)
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
@@ -587,7 +587,7 @@ C  AT THIS POINT: CALLED FROM PARTICLE LOOP TO INITIALIZE TEST FLIGHT
 C
       ENTRY EIRENE_SAMVL1
      .      (NVLM,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
-C  USER SUPPLIED SOURCE
+C  USER-SUPPLIED SOURCE
 C
       IF (SORLIM(NVLM,ISTRA).LT.0) THEN
         CALL EIRENE_SM1USR(NVLM,X0,Y0,Z0,

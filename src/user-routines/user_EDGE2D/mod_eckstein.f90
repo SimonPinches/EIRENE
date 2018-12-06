@@ -241,7 +241,7 @@ contains
     ! init random generator
     rand=666
 
-    ! energy of particles re-emitted as atoms
+    ! energy of particles reemitted as atoms
     ! <0. : use dissociation energy from table(:,7)
     eatmd = 0.025d0
     eatmd = 0.03d0

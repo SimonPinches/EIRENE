@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
+c      Saha, Boltzmann, Corona, col-rad, file (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "Colrad", "Saha": need electron density as
+c              "Corona", "col-rad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05

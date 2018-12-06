@@ -74,11 +74,11 @@ C
         ENDIF
     1 CONTINUE
 C
-C  NEXT: NON DEFAULT STANDARD SURFACES
-C  JUMLIM=0 FOR STANDARD SURFACES, ONLY LGJUM2 IS USED IN TIME-ROUTINES
+C  NEXT: NON-DEFAULT STANDARD SURFACES
+C  JUMLIM=0 FOR STANDARD SURFACES, ONLY LGJUM2 IS USED IN TIME ROUTINES
 C
 
-!pb apparently not needed as IGJUM2 refers to second order additional
+!pb apparently not needed as IGJUM2 refers to second-order additional
 !pb surfaces only
       IF (.FALSE.) THEN
       DO 10 J=NLIM+1,NLIM+NSTSI
@@ -160,7 +160,7 @@ C  LGJUM2: ASSOCIATIVE
         END DO
       END IF
 
-!pb apparently not needed as IGJUM2 refers to second order additional
+!pb apparently not needed as IGJUM2 refers to second-order additional
 !pb surfaces only
       IF (.FALSE.) THEN
       DO 200 J=NLIM+1,NLIM+NSTSI

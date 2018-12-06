@@ -23,7 +23,7 @@ C                                  IS PERFORMED
 C              = 0, IF TRACK OUTSIDE RADIAL MESH
 C                   IF MRSURF .NE. 0 THEN
 C                   REENTRY FOUND AT RADIAL SURFACE MRSURF.
-C                   OTHERWISE: REENTRY AT NON DEFAULT
+C                   OTHERWISE: REENTRY AT NON-DEFAULT
 C                   POLOIDAL SURFACES IS SEARCHED FOR IN THIS CALL
 C     NPCELL =
 C     IPCELL =

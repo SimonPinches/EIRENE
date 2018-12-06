@@ -30,7 +30,7 @@ cdr  CALL EIRENE_EIRENE and CALL_EIRENE_COUPLE
 cdr  are preprogrammed in the main interfacing routine EIRSRT.f ,
 cdr  for some frequently used coupled applications (with B2, B2.5, etc..)
 cdr  The parameters DT, NLM, NLL, ITNR, MPI_INIT... are then
-cdr  set from the external code, or in EIRSRT, and are problem specific.
+cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
 
       USE EIRMOD_PRECISION
@@ -45,7 +45,7 @@ C
 C
       CALL EIRENE_PLSTRT
 C
-C  call eirene, to carry out a "stand alone eirene run"
+C  call eirene, to carry out a "standalone eirene run"
       NLM=.FALSE.
 C  time step set internally from input file
       DT=0._DP
