@@ -43,8 +43,8 @@ cdr         non-linear iterations.
         WRITE(iunout,*)
      w         "ERROR IN WRPLAM_SHRT: NFLA WAS NOT ASSOCIATED. ",
      w         "NO DATA WILL BE STORED IN ", FORT, "13"
-         RETURN
-        END IF
+        RETURN
+      END IF
 cdr  only write plasma background data for species, which are not already
 cdr  transfered via Common BRAEIR
       IF(NFLA.LT.NPLSI) THEN
