@@ -191,13 +191,13 @@ C  POLOIDAL SURFACE
                 sum1=0
                 np=1
                 do nr=1,nr1st
-                do nt=1,nt3rd
-                  MSURFG=NR+(NT-1)*NR1P2
-                  MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
-                  NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
-                  HELP(ncell)=HELPP(MSURFG)
-                  sum1=sum1+HELPP(msurfg)
-                ENDDO
+                  do nt=1,nt3rd
+                    MSURFG=NR+(NT-1)*NR1P2
+                    MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
+                    NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
+                    HELP(ncell)=HELPP(MSURFG)
+                    sum1=sum1+HELPP(msurfg)
+                  ENDDO
                 ENDDO
                 N1=NR1ST
                 N2=1
@@ -207,13 +207,13 @@ C  RADIAL SURFACE
                 sum1=0
                 NR=1
                 do np=1,np2nd
-                do nt=1,nt3rd
-                  MSURFG=NP+(NT-1)*NP2T3
-                  MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
-                  NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
-                  HELP(ncell)=HELPP(MSURFG)
-                  sum1=sum1+HELPP(msurfg)
-                ENDDO
+                  do nt=1,nt3rd
+                    MSURFG=NP+(NT-1)*NP2T3
+                    MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
+                    NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
+                    HELP(ncell)=HELPP(MSURFG)
+                    sum1=sum1+HELPP(msurfg)
+                  ENDDO
                 ENDDO
                 N1=1
                 N2=NP2ND
@@ -223,13 +223,13 @@ C  TOROIDAL SURFACE
                 sum1=0
                 nt=1
                 do nr=1,nr1st
-                do np=1,np2nd
-                  MSURFG=Nr+(Np-1)*Nr1p2
-                  MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
-                  NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
-                  HELP(ncell)=HELPP(MSURFG)
-                  sum1=sum1+HELPP(msurfg)
-                ENDDO
+                  do np=1,np2nd
+                    MSURFG=Nr+(Np-1)*Nr1p2
+                    MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
+                    NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
+                    HELP(ncell)=HELPP(MSURFG)
+                    sum1=sum1+HELPP(msurfg)
+                  ENDDO
                 ENDDO
                 N1=NR1ST
                 N2=NP2ND
@@ -323,9 +323,9 @@ C  SPECTRA
      .               10._DP**ESTIML(ISPC)%SPCMAX
                 WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
               ELSE
-              WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
+                WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
      .               ESTIML(ISPC)%SPCMIN
-              WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
+                WRITE (IOUT,'(A15,5X,ES12.4)') ' MAXIMAL ENERGY ',
      .               ESTIML(ISPC)%SPCMAX
                 WRITE (IOUT,'(A)') ' LINEAR SPACING'
               END IF
@@ -2822,7 +2822,7 @@ C  SURFACE AVERAGED TALLY NO. 74
 
         CALL EIRENE_LEER (1)
         WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT PHOTONS '
-        CALL EIRENE_MASR1 ('SPTPHTOT ',SPTPHTOT(I))
+        CALL EIRENE_MASR1 ('SPTPHTOT',SPTPHTOT(I))
         DO N=1,NSIGSI
           IF (IIHW(N).EQ.79) THEN
              CALL EIRENE_MASR1 ('ST.DEV.%',SIGMAW(N,I))
@@ -3013,7 +3013,7 @@ C  SURFACE AVERAGED TALLY NO. 75
 
         CALL EIRENE_LEER (1)
         WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT BULK IONS '
-        CALL EIRENE_MASR1 ('SPTPLTOT ',SPTPLTOT(I))
+        CALL EIRENE_MASR1 ('SPTPLTOT',SPTPLTOT(I))
         DO N=1,NSIGSI
           IF (IIHW(N).EQ.80) THEN
              CALL EIRENE_MASR1 ('ST.DEV.%',SIGMAW(N,I))
@@ -3023,7 +3023,6 @@ C  SURFACE AVERAGED TALLY NO. 75
 
       END IF  ! TTTT
   210 CONTINUE
-
 
       TTSPT = TTSPTA + TTSPTM + TTSPTI + TTSPTPH + TTSPTP
 
@@ -3037,7 +3036,7 @@ C  SURFACE AVERAGED TALLY NO. 75
         IF (ABS(TTSPTA) > EPS10) CALL EIRENE_MASR1 ('ATOMS   ',TTSPTA)
         IF (ABS(TTSPTM) > EPS10) CALL EIRENE_MASR1 ('MOLEC.  ',TTSPTM)
         IF (ABS(TTSPTI) > EPS10) CALL EIRENE_MASR1 ('TESTIONS',TTSPTI)
-        IF (ABS(TTSPTPH) > EPS10) CALL EIRENE_MASR1 ('PHOTONS ',TTSPTPH)
+        IF (ABS(TTSPTPH) > EPS10)CALL EIRENE_MASR1 ('PHOTONS ',TTSPTPH)
         IF (ABS(TTSPTP) > EPS10) CALL EIRENE_MASR1 ('BULKIONS',TTSPTP)
 
         CALL EIRENE_LEER(1)

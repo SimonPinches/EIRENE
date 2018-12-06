@@ -2960,7 +2960,7 @@ CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
 
           DO 7558 IFL=1,NFLA
             TEST=CHPS(IFL)/(SNIS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in sni,ifl ',test,ifl
+            write (iunout,*) ' global change in sni,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGP) THEN
               LSTP3=.TRUE.
               LTEST=.FALSE.  !  stop short cycle mode. Full new set of  trajectories.
@@ -2970,7 +2970,7 @@ CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
      .                          ISTRAI,IFL
             ENDIF
             TEST=CHMOS(IFL)/(SMOS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in smo,ifl ',test,ifl
+            write (iunout,*) ' global change in smo,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGMOM) THEN
               LSTP3=.TRUE.
               LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
@@ -2982,7 +2982,7 @@ CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
  7558     CONTINUE
 
           TEST=CHEES/(SEES+1.D-60)*100.
-            write (iunout,*) ' global change in see,ifl ',test,ifl
+          write (iunout,*) ' global change in see,ifl ',test,ifl
           IF (ABS(TEST).GT.CHGEE) THEN
             LSTP3=.TRUE.
             LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.

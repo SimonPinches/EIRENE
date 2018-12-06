@@ -738,7 +738,7 @@ cdr there are many more derived input tallies.
 cdr since primary and derived input tallies got mixed up anyway,
 cdr to do: change ntali, add other derived input tallies, here, and in settxt.
 cdr be careful:
-cdr in some places in code the numbering  of input tallies is hard coded.
+cdr in some places in code the numbering of input tallies is hard coded.
 cdr (algtal, plaout,....)
 C
       DO 5 J=1,NTALI

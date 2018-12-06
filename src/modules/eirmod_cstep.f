@@ -6,7 +6,7 @@ C    ELSTEP: total ion energy flux   at sheath entrance (s.e.)
 C    RRSTEP: abszissa, i.e. arclength along target (cm)
 c
 c  JET-2005: patch 1
-c  9.9.05:  new step function parameters:
+c  9.9.05: new step function parameters:
 c    festep,fistep,shstep,vpstep,mcstep
 c    festep: electron energy flux at sheath entrance (s.e.) is festep*testep
 c            e.g.: flstep=4.5= 2 + 2.5 (2: maxwellian energy flux, 2.5: sheath)
@@ -22,7 +22,7 @@ c
 c   there is now a certain redundancy of information on plasma
 c   conditions along target surfaces. This may facilitate consistency
 c   checks for boundary conditions in case of coupling to edge plasma codes.
-C  11.11.05:  ve and eltot introduced, to provide energy flux step function
+C  11.11.05: ve and eltot introduced, to provide energy flux step function
 c
 c
       USE EIRMOD_PRECISION

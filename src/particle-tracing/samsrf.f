@@ -55,10 +55,10 @@ C
       INTEGER, INTENT(IN) :: NLSF
       REAL(DP) :: ZZ(3)
       REAL(DP) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, ELLZZ1, EP1ZZ1,
-     .          WINK, XR,  DELR, CS,  FL, DET,
+     .          WINK, XR, DELR, CS, FL, DET,
      .          X0TEST, Y0TEST, Z0TEST,
      .          S, AN, P, Q, VVX, D, VVI, VVY, BL, PH,
-     .          RNF, ZH,  DELTA, ZM, XLAMDA,
+     .          RNF, ZH, DELTA, ZM, XLAMDA,
      .          CTETHA, GAMMA, CUR, TESH, RANDIF,
      .          VX,VY,VZ,XC,YC,ZC,
      .          EIRENE_STEP0,EIRENE_STEP1,EIRENE_STEP
@@ -140,7 +140,7 @@ c  sample 2nd and 3rd coordinate, evalute 1st coordinate
           IF (INGRDA(ISRFS,ISTRAI,1).NE.INGRDE(ISRFS,ISTRAI,1)) THEN
             WRITE (iunout,*) 'WARNING FROM SAMSF0, ISTRAI= ',ISTRAI
             WRITE (iunout,*) 'NEW INPUT FOR INGRDA,INGRDE....'
-            WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+            WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
             INGRDA(ISRFS,ISTRAI,2)=INGRDA(ISRFS,ISTRAI,1)
             INGRDE(ISRFS,ISTRAI,2)=INGRDE(ISRFS,ISTRAI,1)
             INGRDA(ISRFS,ISTRAI,1)=INSOR(ISRFS,ISTRAI)

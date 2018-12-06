@@ -86,9 +86,6 @@ C  INTEGRATE OVER ALL THREE COORDINATES: YRTP
             YR=YR+A(J,K)
             YRT=YRT+A(J,K)
             YRTP=YRTP+A(J,K)
-
-
-
   102     CONTINUE
           A(J,NIR)=YR
   101   CONTINUE
@@ -109,8 +106,6 @@ C  INTEGRATE OVER POLOIDAL AND RADIAL COORDINATE: YPR
             K=IX+((IY-1)+(IZ-1)*N2DEL)*N1DEL+IADD
             YP=YP+A(J,K)
             YPR=YPR+A(J,K)
-
-
   202     CONTINUE
           A(J,NIP)=YP
   201   CONTINUE
@@ -130,8 +125,6 @@ C  INTEGRATE OVER TOROIDAL AND POLOIDAL COORDINATE: YTP
             K=IX+((IY-1)+(IZ-1)*N2DEL)*N1DEL+IADD
             YT=YT+A(J,K)
             YTP=YTP+A(J,K)
-
-
   302     CONTINUE
           A(J,NIT)=YT
   301   CONTINUE

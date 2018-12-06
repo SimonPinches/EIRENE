@@ -4,7 +4,7 @@ cdr            the fluxes outside the range of spectra.
 cpb  30.7.04:  deal with switched off tallies
 cdr  10.6.05:  further modifications of plot for spectra (text,
 c              total, plot vs. wavelength, plot 2 spectra into same frame
-c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop--> sgms_bgk
+c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop --> sgms_bgk
 !pb  18.12.06: general checking of XMCP removed to allow plots of
 !              input tallies even is no Monte Carlo particle has been followed
 !    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
@@ -14,7 +14,7 @@ C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
-cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !
+cdr  Aug.15  : scaling of spectrum tallies: hard wired options. To be done !
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
@@ -530,7 +530,7 @@ C
             ENDIF
 C
 C  IN CASE OF LSMOT2, SET ZONE CENTERED ABSCISSA
-C  GRID FROM SURFACE CENTERED  GRID  "X"
+C  GRID FROM SURFACE CENTERED GRID  "X"
 C
             IF (LSMOT2(IBLD)) THEN
               DO 137 J=1,NRAD-1
@@ -676,7 +676,7 @@ C  SYMMETRY CONDITION AT POLAR ANGLE THETA=YIA AND THETA=2*PI+YIA
 C  NOT READY: IXTL3 NOT DEFINED HERE. ENFORCE SYMMETRY AUTOMATICALLY EARLIER
 C             IF (LEVGEO.EQ.2.AND.IYTL3.EQ.NP2ND) THEN
 C               DO 1036 I=1,IXTL3
-C1036             VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
+C 1036            VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
 C             ENDIF
  1040       CONTINUE
 C
@@ -932,7 +932,7 @@ C
 C
 10000 CONTINUE
 
-C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
+C  LOOP IBLD FINISHED, NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
 C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED
 C        PLOTTING IS NOT YET CONDITIONED BY FLAGS

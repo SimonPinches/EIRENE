@@ -69,7 +69,7 @@ C
      .            TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
-     .           IBGK,ISPZB,ITYPB
+     .           IBGK, ISPZB, ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
@@ -274,10 +274,10 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           END IF
         ELSE ! EBULK GT.0
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTEL: IREL ', IREL
-          WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
+          WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS'
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
-          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
-          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '
+          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN'
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL)'
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -303,7 +303,7 @@ c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
           IF (EIRENE_IDEZ(IESTM,3,3).NE.1) THEN
             WRITE (iunout,*)
-     .        'COLLISION ESTIMATOR ENFORCED FOR ION ENERGY '
+     .        'COLLISION ESTIMATOR ENFORCED FOR ION ENERGY'
             WRITE (iunout,*) 'IN ELASTIC COLLISION IREL= ',IREL
             WRITE (iunout,*) 'BECAUSE NO ENERGY-WEIGHTED RATE AVAILABLE'
           ENDIF
@@ -373,7 +373,7 @@ c old
         ENDIF
         ENDIF
       ELSE
-        WRITE (iunout,*) 'NSEEL4 ILL-DEFINED IN XSTEL '
+        WRITE (iunout,*) 'NSEEL4 ILL-DEFINED IN XSTEL'
         WRITE (iunout,*) 'check parameter ISCDE for process irel ',irel
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
@@ -393,17 +393,17 @@ C
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE '
+     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
-        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR '
+        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         IESTEL(IREL,2)=1
       ENDIF
       IF (IESTEL(IREL,3).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE '
+     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
-        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR '
+        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         IESTEL(IREL,3)=1
       ENDIF
       RETURN

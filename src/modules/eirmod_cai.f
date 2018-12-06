@@ -1,7 +1,7 @@
 C> \brief Run time optimisation storage
 C>
-C> This module stores all variables that are required to allow an 
-C> optimisation of the run time based on some simple quantities of a 
+C> This module stores all variables that are required to allow an
+C> optimisation of the run time based on some simple quantities of a
 C> previous run.
       MODULE EIRMOD_CAI
 

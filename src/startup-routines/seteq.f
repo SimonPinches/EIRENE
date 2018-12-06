@@ -164,7 +164,7 @@ C  LGJUM2: ASSOCIATIVE
 !pb surfaces only
       IF (.FALSE.) THEN
       DO 200 J=NLIM+1,NLIM+NSTSI
-        DO 200 I=NLIM+1,NLIM+NSTSI
+       DO 200 I=NLIM+1,NLIM+NSTSI
         IF (NLIMPB >= NLIMPS) THEN
           IF (IGJUM1(J,I).NE.0) IGJUM1(I,J)=1
           DO K=NLIM+1,NLIM+NSTSI

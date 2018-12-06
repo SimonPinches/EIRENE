@@ -28,7 +28,7 @@ c  only non-zero entries are printed.
       IF (KE.EQ.0) RETURN
       WRITE (iunout,60) A
    60 FORMAT (1X,A9)
-    5    WRITE (iunout,61) (KK(K),B(KKK(K),I2),K=1,KE)
+    5 WRITE (iunout,61) (KK(K),B(KKK(K),I2),K=1,KE)
    61 FORMAT (3(1X,1A8,1PE12.4,2X))
       RETURN
       END

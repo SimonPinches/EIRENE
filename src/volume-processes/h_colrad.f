@@ -1,6 +1,6 @@
 cdr   feb   18: sync with h_colrad, H,H2 CRM, Sawada-Fujimoto-Reiter
 cdr             cleaned up, more comments.
-cdr             added lopaque, ebeta,e_alpcr
+cdr             added lopaque, ebeta, e_alpcr
 cdr      tbd:  avoid 3rd right  hand side in popcof if Q_ext==0: done. l_ext
 cdr      tbd:  better do: gauss laguerre integration of gaunt3 and gaunt4 ?
 cdr      tbd:  avoid execution of develop-tests: e_alpcr_T, e-scr_T,....: done. ctt
@@ -11,7 +11,7 @@ c               up to three right hand sides (parent states) simultaneously
 c               rather than inverting the matrix three times.
 cdr   July  17: bug fix in function mmdei (exp. integr.)
 cdr             A typo during synchronisation with solps-iter.
-cdr             correct: z=0.25 *y, rather then z=0.25+0*y
+cdr             correct: z=0.25*y, rather then z=0.25+0*y
 cdr:  April 17: synchronized with version from solps-iter: spelling errors in comments,
 cdr             use EIRMOD_PRECISION instead of real*8
 cdr             (this may complicate stand alone use, outside eirene)
@@ -487,8 +487,8 @@ c   next: radiative recombination: BETA
 
       DO 602 I=1,40
 
-      P=I
-      XP=UH/TEMP/P**2
+        P=I
+        XP=UH/TEMP/P**2
         EP=UH/P**2
         CALL EIRENE_CLBETA(XP,P,XS,EXS) ! return XS,EXS for rad. rec. rate and
 c                                  electron energy-weighted rate, both: into P state at T= temp,
@@ -1024,7 +1024,6 @@ C***********************************************************************
      .               (U+1.)**(7./3.))*EXP(-X)
       RETURN
       END
-
 
       FUNCTION EIRENE_GAUNT4(X)
 c  same as gaunt3, but for energy-weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
@@ -1646,7 +1645,7 @@ C
       DO 10 I=1,NG
 C
 C        ===============================================================
-C        Pivot-Element suchen  (  Zeile IZ,  Spalte KS )
+C        Pivot-Element suchen  ( Zeile IZ,  Spalte KS )
 C        ===============================================================
 C
          AP=0

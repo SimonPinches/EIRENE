@@ -160,7 +160,7 @@ C  SPECTRAL CUT-OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
 
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
-    3     CONTINUE
+    3   CONTINUE
     2 CONTINUE
 
 C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
@@ -175,7 +175,7 @@ C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
           SREC(0,0)   =SREC(0,0)   +SREC(IPLS,IRRC)
           DO 5 J=1,NSBOX
             FREC(IFPLS,0,J)=FREC(IFPLS,0,J)+FREC(IFPLS,IIRC,J)
-    5     CONTINUE
+    5   CONTINUE
     4 CONTINUE
 C
 C
@@ -506,17 +506,17 @@ C  INDIRECT ADDRESSING
    52         CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN
-                WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '
+                WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR:'
                 WRITE (IUNOUT,*) 'ISTRA, IVOLSI, IPLS, ISTEP ',
      .                            ISTRA, IVL   , IPLS, ISTEP
                 WRITE (IUNOUT,*) 'EITHER: ISTEP OUT OF RANGE IN SAMVOL'
-                WRITE (IUNOUT,*) 'OR:  DENSITY OF RECOMBINING IPLS = 0 '
+                WRITE (IUNOUT,*) 'OR: DENSITY OF RECOMBINING IPLS = 0'
                 SORWGT(IVL,ISTRA)=0.D0
                 GOTO 53
               ENDIF
               SORWGT(IVL,ISTRA)=SUM
               CALL EIRENE_LEER(1)
-              WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED '
+              WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED'
               CALL EIRENE_MASJ2R
      .          ('IVOLSI,ISTRA,SORWGT     ',IVOLSI,ISTRA,SUM)
               IF (TRCSOU) THEN
@@ -531,9 +531,9 @@ c
 C
           IF (SUMM.GT.0.D0) THEN
             FLUX(ISTRA)=SUMM
-            WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED '
-            CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX     ',
-     .                   ISTRA,FLUX(ISTRA),EISUMM)
+            WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED'
+            CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX    ',
+     .                          ISTRA,FLUX(ISTRA),EISUMM)
             CALL EIRENE_LEER(1)
           ELSE
             FLUX(ISTRA)=0.D0

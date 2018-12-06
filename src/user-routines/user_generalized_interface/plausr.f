@@ -62,7 +62,6 @@ c
       inchar = 0
       inchrg = 0
 
-
       ll=len_trim(casename)
       filename=casename(1:ll) // '.plasma'
       open (unit=fp+ifoff,file=filename,access='sequential',
@@ -345,7 +344,6 @@ C
 
 c     enddo istra
       ENDDO
-
 
       DEALLOCATE (KSTEP)
       DEALLOCATE (INOSRC)

@@ -194,7 +194,7 @@ C
 cdr  asymptotics parameters already read from input block 4?
 cdr  if not:  try to read from external A&M data file
 cdr  in either case: store these on data structure REACDAT, in call to: set_reaction_data(IR,...)
-      INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+      INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                            RC2MIN, RC2MAX, FP2(6)
 cdr
@@ -872,7 +872,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           WRITE (IUNOUT,*) 'IFLG = ',if1mn
           IF (IF1MN.EQ.4)
-     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MIN) THEN
           WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '

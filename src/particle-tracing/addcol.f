@@ -266,9 +266,9 @@ C
 C
       IF (ILIIN(MASURF).LT.0) THEN
         IF (ILIIN(MASURF).EQ.-1) then
-	  colflag = .true.
-	  RETURN 1
-	endif
+           colflag = .true.
+           RETURN 1
+        endif
         RETURN 2
       ENDIF
 C

@@ -91,8 +91,8 @@ C  IONIZATION POTENTIAL OF NEUTRAL HYDROGEN MOLECULE, EV
 C  IONIZATION POTENTIAL OF NEUTRAL HELIUM ATOM, EV
       EIONHE=24.588_DP
 
-cdr: some constants for Coulomb collisions,  set by JS, 2007, in SI units.
-c   Dielectric constant, F/m  (FARAD/M) in SI units
+cdr: some constants for Coulomb collisions, set by JS, 2007, in SI units.
+c   Dielectric constant, F/m (FARAD/M) in SI units
       EPSILON0 = 8.8542E-12_DP
 c   Permeability of vacuum, H/m (HENRY/M) in SI units
       MY0 = 4._DP*PIA*1.e-7_DP
