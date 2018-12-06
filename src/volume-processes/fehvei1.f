@@ -71,7 +71,7 @@ cdr this code corresponds to jhvrei=1
         EHVEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.FALSE.,0)
         EHVEI=EXP(MAX(-100._DP,EHVEI+FACREI(IREI,2)))
         EIRENE_FEHVEI1=EHVEI*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
-c  else: jhvrei=9:   densiy dependent KER, to be written
+c  else: jhvrei=9:   density-dependent KER, to be written
 
       ELSE IF (KK == 0) THEN  ! flag jhvrei is still missing.
          EIRENE_FEHVEI1 = EHVEI1(IREI,1) ! currently: only constant KER option

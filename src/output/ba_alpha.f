@@ -307,12 +307,12 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
         H123='H.12'
         REAC='2.0c     '
         CRC='OT '
-c  IF H2+ from ion conversion alone
-C  H.11 2.0c INCLUDES ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
-C  H.11 2.0b INCLUDES ION CONVERION (CX) ON H2(V=0) ONLY
-c  IF H2+  also from multi-step electron impact ionisation --> explicit ne dependence
-C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
-C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
+c  If H2+ from ion conversion alone
+C  H.11 2.0c INCLUDES ION CONVERSION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
+C  H.11 2.0b INCLUDES ION CONVERSION (CX) ON H2(V=0) ONLY
+c  If H2+  also from multi-step electron impact ionisation --> explicit ne dependence
+C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V)
+C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V=0) ONLY
 C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY
 C
 C
@@ -361,7 +361,7 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN BA_ALPHA: DATA FOR STRATUM ISTRA= ',
      .                    IST
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. BA_ALPHA ABANDONNED'
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. BA_ALPHA ABANDONED'
         RETURN
       ENDIF
 C
@@ -416,8 +416,8 @@ CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS
 
 C   DEFAULT LOW DENSITY ASYMPTOTICS IN AMJUEL FORMAT:
 C   AT DEF <= 0.  (I.E. DE <= 1E8),
-C   COLLAPSE DATA TO DENSITY INDEPENDENT H.2, H.8, H.11 CORONA VALUES
-C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUPLE POLYNOMAL FIT.
+C   COLLAPSE DATA TO DENSITY-INDEPENDENT H.2, H.8, H.11 CORONA VALUES
+C   I.E. TO THE FIRST COLUMN ONLY OF 9 X 9 DOUBLE POLYNOMAL FIT.
 CDR SHOULD STILL BE GENERALIZED TO OTHER DATA FORMATS ASYMPTOTICS
         JEND=8
         IF (DEF.LE.0.0) THEN
@@ -504,7 +504,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
-C  e.g. due to bgk -iterations.  Careful: no double counting !
+C  e.g. due to bgk iterations.  Careful: no double-counting !
 C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201

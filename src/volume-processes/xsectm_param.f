@@ -247,7 +247,7 @@ C
             IF (ISWR(KK).NE.5) GOTO 230
 C
             NREL=NREL+1
-C  BGK SELF AND CROSS COLLISIONS?
+C  BGK, SELF- AND CROSS-COLLISIONS?
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
                 NBGK=NBGK+3

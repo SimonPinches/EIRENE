@@ -8,7 +8,7 @@ cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
 cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
-cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
+cdr  Dec. 15:  species-resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
 cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI

@@ -11,7 +11,7 @@ c  surface crossing: here tracklength estim. collapses to a collision estim.
 
 c  isc:    =0: update surface-averaged spectra,
 c       ind:  =1: particle incident on surface
-c       ind:  =2: particle re-emitted from surface
+c       ind:  =2: particle reemitted from surface
 
 c  isc:  =1,2: else (update cell based spectra)
 c       isc =1:  score in coarse (scoring) grid

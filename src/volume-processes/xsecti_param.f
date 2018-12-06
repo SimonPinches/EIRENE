@@ -207,7 +207,7 @@ C
 C
             NREL=NREL+1
 
-C  BGK SELF AND CROSS COLLISIONS?
+C  BGK, SELF- AND CROSS-COLLISIONS?
             IF (IBGKI(IION,NRC).NE.0) THEN
               IF (NPBGKI(IION).EQ.0) THEN
                 NBGK=NBGK+3

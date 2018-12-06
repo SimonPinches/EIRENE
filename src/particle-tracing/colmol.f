@@ -27,8 +27,8 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species resolved.
-cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
+cdr DEC. 15 :  bulk ion energy estimators: species-resolved.
+cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
@@ -86,7 +86,7 @@ C                           TRANSITION NEUTRAL-->ION (IF CALLED
 C                           BY FOLNEUT), OR
 C                           TRANSITION ION-->NEUTRAL (IF CALLED
 C                           BY FOLION)
-C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST COLL. SCORING.
+C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
 C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
 C
       USE EIRMOD_PRECISION
@@ -171,7 +171,7 @@ C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION
         IMETCL(NCELL) = NCLMT
       END IF
 C
-C  ABSORPTION BIASSING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES
+C  ABSORPTION BIASING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES
 
 C  SUPPRESS THOSE IREI PROCESSES WITH ZERO
 C                      TEST PARTICLE SECONDARIES
@@ -182,7 +182,7 @@ C                      TEST PARTICLE SECONDARIES
       NEII_RED=0
 
       IF (WEIGHT.LT.WMINV) THEN
-C  WEIGHT ALREADY TOO SMALL, NO SUPPRESION OF ABSORPTION
+C  WEIGHT ALREADY TOO SMALL, NO SUPPRESSION OF ABSORPTION
         NEII_RED=NMEII(IOLD)
         LGEI_RED(:)=LGMEI(IOLD,:)
       ELSE

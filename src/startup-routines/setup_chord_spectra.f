@@ -88,7 +88,7 @@ C
 
       IF (NTOT_CELL == 0) RETURN
 
-!  there are 'NTOT_CELL' FURTHER CELL BASED SPECTRA TO BE ADDED TO SPECTRUM TALLIES
+!  there are 'NTOT_CELL' FURTHER CELL-BASED SPECTRA TO BE ADDED TO SPECTRUM TALLIES
 
 !  SAVE SPECTRA SPECIFIED VIA INPUT
 
@@ -130,7 +130,7 @@ C  SAVE ESTIML, SMESTL,...
 
       END IF
 
-!  set up additional arrays for cell based spectra
+!  set up additional arrays for cell-based spectra
 
       NTOTSP = NADSPC + NTOT_CELL
 

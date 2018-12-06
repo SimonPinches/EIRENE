@@ -1,4 +1,4 @@
-cdr dec 15:  added species resolution wrt. energy volume taalies for bulk ions
+cdr dec 15:  added species resolution wrt. energy volume tallies for bulk ions
 cdr          eapl, empl, eipl, ephpl, eppl
 
 C

@@ -3,9 +3,9 @@
 C
       SUBROUTINE EIRENE_VOLUME (IND)
 
-C  CALCULATE VOLUME-ELEMENTS FOR VOLUME-AVERAGED TALLIES
-C  THE CELL VOLUMES VOL MUST BE THOSE SEEN BY THE TESTPARTICLES
-C  I.E. NOT NECESSARLY THE TRUE ONES.
+C  CALCULATE VOLUME ELEMENTS FOR VOLUME-AVERAGED TALLIES
+C  THE CELL VOLUMES VOL MUST BE THOSE SEEN BY THE TEST PARTICLES
+C  I.E. NOT NECESSARILY THE TRUE ONES.
 C  ONE COMMON FACTOR (LENGTH OF THE CELL IN IGNORABLE
 C  DIMENSION) ACTS LIKE A SCALING FACTOR FOR THESE TALLIES.
 C
@@ -387,7 +387,7 @@ C
               IF (VOL(NCELL).GE.0.D0) GOTO 262
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
               CALL EIRENE_MASJ2('J,I             ',I,J)
-C             CALL EXIT_OWN(1)
+C             CALL EIRENE_EXIT_OWN(1)
   262     CONTINUE
         ELSEIF (NLTRZ) THEN
           DO 260 I=1,NR1STM
@@ -436,7 +436,7 @@ C
                   IF (VOL(NCELL).GE.0.D0) GOTO 265
                   WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
                   CALL EIRENE_MASJ2('J,I             ',I,J)
-C                 CALL EXIT_OWN(1)
+C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
                 END IF
@@ -461,7 +461,7 @@ C                 CALL EXIT_OWN(1)
                   IF (VOL(NCELL).GE.0.D0) GOTO 267
                   WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
                   CALL EIRENE_MASJ2('J,I             ',I,J)
-C                 CALL EXIT_OWN(1)
+C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
                 END IF

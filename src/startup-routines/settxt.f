@@ -15,7 +15,7 @@ C  Main call: SETTXT
 C  Set first (leading) dimension of tally arrays: nfstvi, nfstwi.
 C  Entry    : STTXT1
 C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
-c                                 for pointers to large tally-arrays
+c                                 for pointers to large tally arrays
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -156,7 +156,7 @@ C        TXTTAL MAY BE OVERWRITTEN IN SUBR. INFCOP
       TXTTAL(1,NTALM)=
      . 'ADDITIONAL TALLIES FOR INTERFACING, SUBR. INFCOP.F          '
 C  TALLY NTALB=61 (SEE PARMMOD.F)
-C        ADDITIONAL TALLIES FOR ITERATIVE MODE (BGK-ITERATION)
+C        ADDITIONAL TALLIES FOR ITERATIVE MODE (BGK ITERATION)
       TXTTAL(1,NTALB)=
      . 'ADDITIONAL TALLIES FOR ITERATIVE MODE, SUBR. UPTBGK.F       '
 C  TALLY NTALB=62 (SEE PARMMOD.F)

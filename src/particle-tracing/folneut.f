@@ -6,7 +6,7 @@ cdr           started: implementation of QSS branch: folstat_neut.f  not ready
 cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
 cdr           PR = prob to reach the next cell boundary.
 cdr           In case of geometrical multi-steps within one macro step
-cdr           (NCOU.GT.1) use PR rather then AX(2)=1, when leaving the NCOU loop
+cdr           (NCOU.GT.1) use PR rather than AX(2)=1, when leaving the NCOU loop
 c
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)

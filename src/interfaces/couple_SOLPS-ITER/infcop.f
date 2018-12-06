@@ -30,8 +30,8 @@ cdr                 apparently not used: vvdiag.
 cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell wise.
 
 
-cdr  start to use species resolved energy tallies.
-cdr  nov.15:  eapl,empl,eipl:  now species resolved
+cdr  start to use species-resolved energy tallies.
+cdr  nov.15:  eapl,empl,eipl:  now species-resolved
 cdr           --> eppl_cop, eploda get an additional species index ipls
 C
 cdr  dec. 15: not ready.  started to comment, and to extend copv tallies
@@ -223,7 +223,7 @@ C
      .            CHMOM(:,:)
       REAL(DP) :: DI(NPLS), VP(NPLS)
 
-cdr for species dependent global particle balance
+cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
       REAL(DP) :: SSN(NFL),SSNI(NFL),BALANN(NFL),TOTN(NFL),RN(NFL)
 

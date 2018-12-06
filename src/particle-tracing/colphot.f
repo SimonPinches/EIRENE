@@ -27,8 +27,8 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species resolved.
-cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
+cdr DEC. 15 :  bulk ion energy estimators: species-resolved.
+cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).

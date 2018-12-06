@@ -1,5 +1,5 @@
 c
-c  this version: find vibrational temeperatur of H2.
+c  this version: find vibrational temperature of H2.
 c  i.e. H2(v) must be treated as separate molec. species
 c
       SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,

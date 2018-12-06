@@ -11,9 +11,9 @@ C               added: jcou,ncou
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  synchronized with fpathm, fpathi
 
-cdr 31.10.14 :  speedup of final cut off evaluations
+cdr 31.10.14 :  speedup of final cut-off evaluations
 
-cdr note:       sgnl_poly evaluations are just the 8th order polynom,
+cdr note:       sgnl_poly evaluations are just the 8th-order polynomial,
 cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here),
 cdr             there is no need to call  --> move to in-line
@@ -245,9 +245,9 @@ C
   100 CONTINUE
 
 C
-C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  CUT-OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
-C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
+C  CURRENTLY: CUT-OFF AT 1E-10 TIMES SIGMAX
 C
       IF (SIGPHT.GT.0._DP) THEN
         DO IRPH=1,NRPH

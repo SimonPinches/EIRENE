@@ -3,7 +3,7 @@ c                 because otherwise in iterative mode a stratum cannot be
 c                 re-activated, once it was de-activated in a particlar iteration.
 c                 v.kotov
 c  19.12.05:  bug: no printout of surface tally std. dev., for sum over strata
-c             bug fix: here in macrlo.f: sigmaw = stvw and sgmws=stvws added
+c             bug fix: here in mcarlo.f: sigmaw = stvw and sgmws=stvws added
 c             also needed for this bug fix: clear_sumostra, stat_sumostra
 
 !PB 02.03.06: storing of trajectories

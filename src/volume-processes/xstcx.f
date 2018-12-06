@@ -224,7 +224,7 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-cdr  safety cut off at TI= 0.1 eV. (TVAC=0.02)
+cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(-2.3_dp,tii)
 c  evaluate 2 parametric fit,
 c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII.

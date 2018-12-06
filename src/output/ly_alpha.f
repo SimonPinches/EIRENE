@@ -10,7 +10,7 @@ C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
 c             to be done: full species consistency checks
 cdr nov.  2016: name, species and units of additional tallies added.
-c               slreac: A&M assymptocis (default) parameters added.
+c               slreac: A&M asymptotics (default) parameters added.
 c               H3+ ratio (ratio3) of rates added to amjuel, H.11, 4.0a
 c               some further comments added
 
@@ -27,7 +27,7 @@ C  IAD3: CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  IAD4: CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
 C  IAD5: CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
 C  IAD6: CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
-C  IADS: SUM OVER ALL CONTRINUTIONS
+C  IADS: SUM OVER ALL CONTRIBUTIONS
 C
 C STORAGE FOR THE 7 ADDITIONAL TALLIES IAD1,....IAD7 SHOULD HAVE BEEN PROVIDED
 C AUTOMATICALLY IN THE INITIALIZATION PHASE, FOR ADDV(NADVI+1:NADVI+7)
@@ -301,11 +301,11 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
         REAC='2.0c     '
         CRC='OT '
 c  H2+ from ion conversion alone
-C  H.11 2.0c INCLUDES ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
-C  H.11 2.0b INCLUDES ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.11 2.0c INCLUDES ION CONVERSION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
+C  H.11 2.0b INCLUDES ION CONVERSION (CX) ON H2(V=0) ONLY
 c  H2+  also from multi-step electron impact ionisation --> explicit ne dependence
-C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
-C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V)
+C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V=0) ONLY
 C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY
 C
 C
@@ -354,7 +354,7 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN LY-ALPHA : DATA FOR STRATUM ISTRA= ',
      .                    IST
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. LY-ALPHA ABANDONNED'
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. LY-ALPHA ABANDONED'
         RETURN
       ENDIF
 C
@@ -484,7 +484,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
-C  e.g. due to bgk -iterations. Careful: no double counting !
+C  e.g. due to bgk iterations. Careful: no double-counting !
 C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
@@ -715,7 +715,7 @@ C
       TXTUNT(IAD3,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IAD4,NTALA) ='LY_ALPHA, H ALPHA SOURCE RATE             '
-      TXTSPC(IAD4,NTALA) ='DIAT.MOL.IONS       '
+      TXTSPC(IAD4,NTALA) ='DIATOMIC MOL.IONS       '
       TXTUNT(IAD4,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IAD5,NTALA) ='LY_ALPHA, H ALPHA SOURCE RATE             '
@@ -723,7 +723,7 @@ C
       TXTUNT(IAD5,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IAD6,NTALA) ='LY_ALPHA, H ALPHA SOURCE RATE             '
-      TXTSPC(IAD6,NTALA) ='TRIAT.MOL.IONS      '
+      TXTSPC(IAD6,NTALA) ='TRIATOMIC MOL.IONS      '
       TXTUNT(IAD6,NTALA) ='PHOTONS/S/CM**3         '
 
       TXTTAL(IADS,NTALA) ='LY_ALPHA, H ALPHA SOURCE RATE             '
@@ -777,7 +777,7 @@ csw 19apr07
 csw
   999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. LY-ALPHA  '
-      WRITE (IUNOUT,*) 'NO STORAGE AVAILBALE ON ADDITIONAL TALLY ADDV '
+      WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',
      .             IAD1,IAD2,IAD3,IAD4,
      .             IAD5,IAD6,IADS

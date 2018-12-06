@@ -29,7 +29,7 @@ cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 
 CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
 cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCOPI)
 cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures,
-cdr                              multiple ion velocities in case of BGK non-lin. colisions
+cdr                              multiple ion velocities in case of BGK non-lin. collisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
 cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.

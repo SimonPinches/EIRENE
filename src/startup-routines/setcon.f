@@ -98,20 +98,20 @@ c   Permeability of vacuum, H/m (HENRY/M) in SI units
       MY0 = 4._DP*PIA*1.e-7_DP
 C   Coulomb Logarithm
       COULOMBLOG = 13.5
-C   Faktor for thermal velocity, m/s  (cdr: to be eliminated, use cvel2a instead)
+c   Factor for thermal velocity, m/s  (cdr: to be eliminated, use cvel2a instead)
 cdr = cvel2a/100.
       FAKVTH = sqrt(EV_TO_J/AMUAKG)
-c Faktor for Lambda (Fokker Planck Collisions)
+c   Factor for Lambda (Fokker-Planck Collisions)
 !pb   FAKLAM = CoulombLog*ELCHA**4*1.E6_DP/   ! changed by JS in 11.07
       FAKLAM = CoulombLog*ELCHA**4*1.E12_DP/
      .           ( AMUAKG**2*4._DP*PIA*EPSILON0**2 )
 
-c Faktor for temperature relaxation time (s)
+c   Factor for temperature relaxation time (s)
       FAKTAUT = CoulombLog*ELCHA**4*1.E6_DP/
      .   ( 3._DP*SQRT(2._DP)*PIA*SQRT(PIA)*EPSILON0**2*sqrt(AMUAKG) )
 C
 C
-C  SETUP PERIODIC TABLE OF ELEMENTS
+C  SET UP PERIODIC TABLE OF ELEMENTS
 
       CALL EIRENE_SET_PTE_ELEMENT( 1,'Hydrogen     ','H ',1.0_DP,1.0_DP)
       CALL EIRENE_SET_PTE_ELEMENT( 2,'Helium       ','He',4.0_DP,2.0_DP)

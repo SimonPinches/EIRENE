@@ -1417,7 +1417,7 @@ C
 C  ???
         IF (LDAMCEL(NCELL)) GOTO 9912  ! damaged cell, stop particle
 
-cdr:  try to distinguish: transparent or not. Use arrays "transp(ispz...)
+cdr:  try to distinguish: transparent or not. Use arrays "transp(ispz...)"
 cdr:  indf=1: transparent, indf=2: non-transparent
 
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)

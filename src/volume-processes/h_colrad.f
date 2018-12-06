@@ -11,7 +11,7 @@ c               up to three right hand sides (parent states) simultaneously
 c               rather than inverting the matrix three times.
 cdr   July  17: bug fix in function mmdei (exp. integr.)
 cdr             A typo during synchronisation with solps-iter.
-cdr             correct: z=0.25*y, rather then z=0.25+0*y
+cdr             correct: z=0.25*y, rather than z=0.25+0*y
 cdr:  April 17: synchronized with version from solps-iter: spelling errors in comments,
 cdr             use EIRMOD_PRECISION instead of real*8
 cdr             (this may complicate stand alone use, outside eirene)

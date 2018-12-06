@@ -133,7 +133,7 @@ c         generation limit activated
       LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
       LEXTALV(NTALM) = NCPV>0
       LEXTALV(NTALB) = NBGV>0
-      LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, post processing
+      LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, postprocessing
 C  GENERATION LIMIT TALLIES
 C  some of these tallies may be
 c  turned off, depending upon whether generation limits
@@ -162,7 +162,7 @@ C  PRIMARY SOURCE RATES, ENERGY
       LEXTALV(82) = NION>0
       LEXTALV(83) = NPHOT>0
       LEXTALV(84) = NPLS>0
-C  MOMENTRUM DENSITY, X DIRECTION
+C  MOMENTUM DENSITY, X DIRECTION
       LEXTALV(85) = NATM>0
       LEXTALV(86) = NMOL>0
       LEXTALV(87) = NION>0
@@ -292,17 +292,17 @@ C  PRIMARY SOURCE TALLIES, ENERGY
       NFIRST(82)=0
       NFIRST(83)=0
       NFIRST(84)=NPLS
-C  MOMENTRUM DENSITY, X DIRECTION
+C  MOMENTUM DENSITY, X DIRECTION
       NFIRST(85)=NATM
       NFIRST(86)=NMOL
       NFIRST(87)=NION
       NFIRST(88)=NPHOT
-C  MOMENTRUM DENSITY, Y DIRECTION
+C  MOMENTUM DENSITY, Y DIRECTION
       NFIRST(89)=NATM
       NFIRST(90)=NMOL
       NFIRST(91)=NION
       NFIRST(92)=NPHOT
-C  MOMENTRUM DENSITY, Z DIRECTION
+C  MOMENTUM DENSITY, Z DIRECTION
       NFIRST(93)=NATM
       NFIRST(94)=NMOL
       NFIRST(95)=NION
@@ -344,7 +344,7 @@ C  TOTAL NUMBER OF VOLUME-AVERAGED TALLIES
 
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR VOLUME-AVERAGED TALLIES
-cdr  NOW OUT , TEST NOT CARRIED OUT ANY MORE, PERHAPS BECAUSE OF TALLY REDUCTION
+cdr  NOW OUT, TEST NOT CARRIED OUT ANYMORE, PERHAPS BECAUSE OF TALLY REDUCTION
 cdr  (LIVTALV(ITAL) OPTION TO REMOVE TALLIES.
 cdr
 cdr   NTEST=NADDV(NTALV)+NFIRST(NTALV)
@@ -590,8 +590,8 @@ C  TOTAL NUMBER OF SURFACE-AVERAGED TALLIES
 
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR SURFACE-AVERAGED TALLIES
-cdr  NOW OUT, TEST IS NOT CARRIED OUT ANY MORE, PERHAPS BECAUSE OF TALLY REDUCTION
-cdr  (LIVTALS(ITAL) OPTION TO REMOVE TALLIES?
+cdr  NOW OUT, TEST IS NOT CARRIED OUT ANYMORE, PERHAPS BECAUSE OF TALLY REDUCTION
+cdr  LIVTALS(ITAL) OPTION TO REMOVE TALLIES?
 cdr
 cdr   NTEST=NADDW(NTALS)+NFRSTW(NTALS)
 cdr   NTESTI=NDDWI(NTALS)+NFRTWI(NTALS)
@@ -612,7 +612,7 @@ cdr              at some point in time.
 cdr              Probable reason:  it did not work properly together with
 cdr              compiler optimization. And in case of estimv, estims
 cdr              arrays: apparently some parts may have been moved to cemetery,
-cdr              so that the programed size checks would not work anyway.
+cdr              so that the programmed size checks would not work anyway.
 cdr  unresolved story.....
 c.......................................................
 c  standard deviation volume-averaged tallies
@@ -635,8 +635,8 @@ c  standard deviation surface-averaged tallies
       ENDIF
       SGMWS(NSDW)=RSAVE
 C
-c  volume-averaged output tallies.  Note: some volume tallies are removed from
-c  the run  (put to cemeteryv), see eirmod_cestim.f
+c  volume-averaged output tallies. Note: some volume tallies are removed from
+c  the run (put to cemeteryv), see eirmod_cestim.f
       RSAVE=MPHPL(NPHOT,NRTAL)
       MPHPL(NPHOT,NRTAL)=1.234567
       write (iunout,*) nvoltl,nrtal
@@ -647,7 +647,7 @@ C       CALL EIRENE_EXIT_OWN(1)
       MPHPL(NPHOT,NRTAL)=RSAVE
 C
 c  surface-averaged output tallies. Note: some surface tallies are removed from
-c  the run  (put to cemeterys), see eirmod_cestim.f
+c  the run (put to cemeterys), see eirmod_cestim.f
       RSAVE=SPUMP(NSPZ,NLMPGS)
       SPUMP(NSPZ,NLMPGS)=1.234567
       write (iunout,*) nsrftl,nlmpgs
@@ -738,7 +738,7 @@ cdr there are many more derived input tallies.
 cdr since primary and derived input tallies got mixed up anyway,
 cdr to do: change ntali, add other derived input tallies, here, and in settxt.
 cdr be careful:
-cdr in some places in code the numbering of input tallies is hard coded.
+cdr in some places in code the numbering of input tallies is hard-coded.
 cdr (algtal, plaout,....)
 C
       DO 5 J=1,NTALI

@@ -106,7 +106,7 @@ C  NOTHING TO BE DONE
         ELSE
           WRITE (iunout,*) 'ERROR IN OUTEIR: DATA FOR STRATUM ISTRA= ',
      .                     ISTRA
-          WRITE (iunout,*) 'ARE NOT AVAILABLE. PRINTOUT ABANDONNED'
+          WRITE (iunout,*) 'ARE NOT AVAILABLE. PRINTOUT ABANDONED'
           CYCLE
          ENDIF
 C

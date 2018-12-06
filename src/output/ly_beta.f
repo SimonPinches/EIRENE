@@ -301,11 +301,11 @@ C  NEXT : H2+/H2  (COUPLED TO H2(V))
         REAC='2.0c     '
         CRC='OT '
 c  H2+ from ion conversion alone
-C  H.11 2.0c INCLUDES ION CONVERION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
-C  H.11 2.0b INCLUDES ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.11 2.0c INCLUDES ION CONVERSION (CX) ON H2(V) ne=np,Te=Tp, E_H2=E_H2+=0.1
+C  H.11 2.0b INCLUDES ION CONVERSION (CX) ON H2(V=0) ONLY
 c  H2+  also from multi-step electron impact ionisation --> explicit ne dependence
-C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V)
-C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERION (CX) ON H2(V=0) ONLY
+C  H.12 2.0c INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V)
+C  H.12 2.0b INCLUDES ELECTRON IMPACT IONISATION AND ION CONVERSION (CX) ON H2(V=0) ONLY
 C  H.12 2.0a INCLUDES ELECTRON IMPACT IONISATION ON H2(V=0) ONLY
 C
 C
@@ -354,7 +354,7 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN LY-BETA : DATA FOR STRATUM ISTRA= ',
      .                    IST
-        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. LY-BETA ABANDONNED'
+        WRITE (IUNOUT,*) 'ARE NOT AVAILABLE. LY-BETA ABANDONED'
         RETURN
       ENDIF
 C
@@ -484,7 +484,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
-C  e.g. due to bgk -iterations. Careful: no double counting !
+C  e.g. due to bgk iterations. Careful: no double-counting !
 C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
@@ -777,7 +777,7 @@ csw 19apr07
 csw
   999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. LY-BETA  '
-      WRITE (IUNOUT,*) 'NO STORAGE AVAILBALE ON ADDITIONAL TALLY ADDV '
+      WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
       WRITE (IUNOUT,*) 'STORAGE REQUESTED FOR IADV= ',
      .             IAD1,IAD2,IAD3,IAD4,
      .             IAD5,IAD6,IADS

@@ -241,7 +241,7 @@ C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
-cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
+cdr  safety cut-off at TE= 0.1 eV. (TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,0._DP,.TRUE.,0)
             TABEI1(IREI,J)=COU*FACTKK
@@ -250,7 +250,7 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
      .        TABEI1(IREI,J)=TABEI1(IREI,J)*DEIN(J)
           END DO
           NREAEI(IREI) = KK
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
+        ELSE ! NOT SUFFICIENT STORAGE ON TABEI1
           NREAEI(IREI) = KK
         ENDIF
         MODCOL(1,2,IREI)=1
@@ -271,10 +271,10 @@ C  TO BE WRITTEN
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
-cdr  safety cut off at TE= 0.1 eV. (note: TVAC=0.02)
+cdr  safety cut-off at TE= 0.1 eV. (note: TVAC=0.02)
               TEE = max(-2.3_dp,TEE)
 c  evaluate 2 parametric fit,
-c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
+c  collapse this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
@@ -284,7 +284,7 @@ cdr  not ready, tabei1 --> tabei3 to be done.
 C             TABEI3(IREI,J,1:9) = CF(1:9)
 C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
           END DO
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI3
+        ELSE ! NOT SUFFICIENT STORAGE ON TABEI3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 
         ENDIF
@@ -298,9 +298,9 @@ C  2.D) RATE COEFFICIENT(TE,NE)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
-cdr  safety cut off at Te= 0.1 eV. (note: TVAC=0.02)
+cdr  safety cut-off at Te= 0.1 eV. (note: TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
-cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
+cdr  safety cut-off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
@@ -308,7 +308,7 @@ cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. D
             TABEI1(IREI,J)=EXP(TB)
           END DO
           NREAEI(IREI) = KK
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
+        ELSE ! NOT SUFFICIENT STORAGE ON TABEI1
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           NREAEI(IREI) = KK
         ENDIF
@@ -336,7 +336,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
                   EELEI1(IREI,J)=EELEC
   101           CONTINUE
                 NELREI(IREI)=0
-              ELSE ! NOT SUFFICIENT STORADE ON EELEI1
+              ELSE ! NOT SUFFICIENT STORAGE ON EELEI1
                 NELREI(IREI)=0
                 JELREI(IREI)=-1
                 EELEI1(IREI,1)=EELEC
@@ -351,14 +351,14 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
                   EELEI1(IREI,J)=-1.5*TEIN(J)
   103           CONTINUE
                 NELREI(IREI)=0
-              ELSE ! NOT SUFFICIENT STORADE ON EELEI1
+              ELSE ! NOT SUFFICIENT STORAGE ON EELEI1
                 JELREI(IREI)=-2
                 NELREI(IREI)=0
               END IF
               MODCOL(1,4,IREI)=1
 
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
+C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE), NO. KREAD
                 KREAD=EELEC
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 998
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
@@ -378,9 +378,9 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                     JELREI(IREI)=1
                   ENDIF
                   MODCOL(1,4,IREI)=1
-C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,EBEAM)
+C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,EBEAM)
 C        TO BE WRITTEN
-C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
+C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,NE)
                 ELSEIF (MODC.EQ.3) THEN
                   IF (NSTORDR >= NRAD) THEN
                     FCTKKL=LOG(FACTKK)
@@ -445,7 +445,7 @@ C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
 
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
+C  4.B3)  ENERGY RATE = EN.-WEIGHTED RATE(TE)
         KREAD=EHEAVY
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         FACREI(IREI,1)=FACTKK
@@ -478,7 +478,7 @@ C
       IF (IESTEI(IREI,1).NE.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR PART.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTEI(IREI,1)=0
@@ -486,7 +486,7 @@ C
       IF (IESTEI(IREI,2).NE.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTEI(IREI,2)=0
@@ -696,15 +696,15 @@ C
       CALL EIRENE_LEER(1)
 
       IF (IESTEI(IREI,1).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART. BALANCE '
       IF (IESTEI(IREI,2).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM. BALANCE '
       IF (IESTEI(IREI,3).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN. BALANCE '
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
-      WRITE (iunout,*) 'PROCESS NO. KK ',NREAEI(IREI)
+      WRITE (IUNOUT,*) 'PROCESS NO. KK ',NREAEI(IREI)
       WRITE (IUNOUT,*) 'MODCOL         ',
      .                  MODCOL(1,1,IREI),MODCOL(1,2,IREI),
      .                  MODCOL(1,3,IREI),MODCOL(1,4,IREI)

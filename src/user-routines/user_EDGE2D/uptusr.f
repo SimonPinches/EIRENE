@@ -10,7 +10,7 @@ C|                           ALLOCATABLE, SAVE to speed up       |
 C|                           subroutine call (save time in       |
 C|                           storage allocation)                 |
 C| 16/07/2010   D.Harting    Added two variables to eirene_user  |
-C|                           namelist for use of fluxdependency  |
+C|                           namelist for use of flux dependency |
 C|                           in chemical sputtering.             |
 C+---------------------------------------------------------------+
       USE EIRMOD_PRECISION
