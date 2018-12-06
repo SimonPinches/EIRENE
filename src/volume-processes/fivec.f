@@ -26,7 +26,7 @@ C
       INTEGER :: NFI
       COMMON /CFI/ AR,AFI,NFI
       SAVE /CFI/
- 
+
       B2=B*B
 C
       IF(IFLAG.EQ.1) THEN

@@ -152,7 +152,7 @@ csw
    60 CONTINUE
       if(phv_lgphot(iphot,0,0) == 0) goto 70
       do 61 ipph=1,phv_nphoti(iphot)
-        IRPH=phv_lgphot(iphot,ipph,0)  !  -->  lgxph, mit x=ph, IRPH entspricht: irei, ircx, ....
+        IRPH=phv_lgphot(iphot,ipph,0)  !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
         ipls =phv_lgphot(iphot,ipph,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
         il   =phv_lgphot(iphot,ipph,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
 cdr     il wird hier nirgends verwendet! kann ev. ganz raus aus photonenmodul

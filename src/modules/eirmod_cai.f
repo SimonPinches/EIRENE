@@ -4,20 +4,20 @@ C> This module stores all variables that are required to allow an
 C> optimisation of the run time based on some simple quantities of a 
 C> previous run.
       MODULE EIRMOD_CAI
- 
+
       USE EIRMOD_PRECISION, ONLY: DP
- 
+
       IMPLICIT NONE
 
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_CAI, EIRENE_DEALLOC_CAI, EIRENE_INIT_CAI
- 
+
 C> Ratio between used and recommended no. of particles.
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: RATIO(:)
 C> Run time global and each stratum.
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: XMCT(:)
- 
+
 C> Recommended number of test particles for next MC cycle.
       INTEGER, PUBLIC, ALLOCATABLE, SAVE :: NRECOM(:)
 
@@ -25,7 +25,7 @@ C> Recommended number of test particles for next MC cycle.
 
 
       SUBROUTINE EIRENE_ALLOC_CAI
- 
+
       USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
 
       IF (ALLOCATED(RATIO)) RETURN

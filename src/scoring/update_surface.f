@@ -14,8 +14,10 @@ C       PARTICLE FLUXES (WEIGHT=WGHTSG),     score POT.., PRF...
 C       ENERGY FLUXES   (E0*WGHTSG),         score EOT.., ERF...
 
 c  input:
-c  itold:  type of incident particle
+c
 c  ind=1:  score incident currents
+c    itold:  type of incident particle
+c    ispez  (iatm, imol, iion, ipls, iphot): of incident particle
 c    msurf:  surface index
 c    msurfg:  sub-segment of surface MSURF, for spatial resolution on surface
 c    E0:     energy (eV) of incident particle

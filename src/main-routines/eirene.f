@@ -423,6 +423,9 @@ C  RUN AND WRITE THEM TOGETHER WITH THE STRATUM RUN TIME ON FT 14
 C
       IF (NFILEK.EQ.1.OR.NFILEK.EQ.3.OR.NFILEK.EQ.5) THEN
 c  this should not be done in a "read run" (NFILEN=2 or =7)
+cdr careful:
+cdr probably not ready for parallel mode
+c
         CALL EIRENE_WRREC
       ENDIF
 
