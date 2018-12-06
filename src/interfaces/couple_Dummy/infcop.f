@@ -7,7 +7,7 @@
       ENTRY EIRENE_IF2COP(I1)
       ENTRY EIRENE_IF3COP(I1,I2,I3)
       ENTRY EIRENE_IF4COP
-      END
+      END SUBROUTINE
 
 C> \brief Any property requiring hand-over in parallel part.
 C>
