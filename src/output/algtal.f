@@ -701,7 +701,7 @@ C  KONSTANTE WURDE EINGELESEN
             DO 315 I=1,NLIMPS
 !PB           VEC1(I)=CONST(IOP)
               VEC1(I)=CONST(IC)
-  315        CONTINUE
+  315       CONTINUE
 C
           ELSE
 C  ZWISCHENERGEBNIS HOLEN
@@ -761,7 +761,7 @@ C  ZWISCHENERGEBNIS HOLEN
               DO 340 I=1,NLIMPS
                 VEC2(I)=RESULT(1,I)
                 IIND(IZIF(3,IOP))=0
-  340          CONTINUE
+  340         CONTINUE
               LFREE1=.TRUE.
             ELSEIF (IIND(IZIF(3,IOP)).EQ.2) THEN
               DO 341 I=1,NLIMPS

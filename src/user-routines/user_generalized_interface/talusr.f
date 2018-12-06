@@ -37,7 +37,6 @@ c
       TXTSP=' '
       TXTUN=' '
 
-
       ilast=1
 
       if (istra > 0) then
@@ -117,7 +116,6 @@ c
          write (fp1+ifoff,'(i10,2es16.7)')
      .          itr, algv(2*nplsi+1,itr), algv(2*nplsi+2,itr)
       end do
-
 
       do ip = 1, 2*nplsi+2
 

@@ -86,7 +86,7 @@ c  atomic surface tallies
 cdr  ?? scaling with bulk flux?
 cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
 
-            IF (LSPUMP) SPUMP (NSPH+IATM,J)=SPUMP (NSPH+IATM,J)*FATM
+            IF (LSPUMP) SPUMP(NSPH+IATM,J)=SPUMP(NSPH+IATM,J)*FATM
   310     CONTINUE
 
  2101   CONTINUE
@@ -176,7 +176,7 @@ C
             IF (LSPTPHML) SPTPHML(IMOL,J)=SPTPHML(IMOL,J)*FPHOT
 cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPML) SPTPML(IMOL,J)=SPTPML(IMOL,J)*FMOL
-            IF (LSPUMP) SPUMP (NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
+            IF (LSPUMP) SPUMP(NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
   315     CONTINUE
  2115   CONTINUE
 
@@ -353,7 +353,7 @@ C  SURFACE AVERAGED TALLIES
             IF (LSPTPHPHT) SPTPHPHT(IPHOT,J)=SPTPHPHT(IPHOT,J)*FPHOT
 cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPPHT) SPTPPHT(IPHOT,J)=SPTPPHT(IPHOT,J)*FPHOT
-            IF (LSPUMP) SPUMP (IPHOT,J)=SPUMP (IPHOT,J)*FPHOT
+            IF (LSPUMP) SPUMP(IPHOT,J)=SPUMP(IPHOT,J)*FPHOT
           END DO
         END DO
 

@@ -1089,38 +1089,38 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
 
           IF (LEAPL) THEN
-          IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
-            EAPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
+              EAPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
           IF (LEMPL) THEN
-          IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
-            EMPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
+              EMPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
 
           IF (LEIPL) THEN
-          IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
+            IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
 !PB          ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
-            EIPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
+              EIPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
 
           IF (LMAPL) THEN

@@ -255,7 +255,6 @@ c  up to here: for splitting, mpartc
       NIMINT = 0
       ITRJ   = 0
 
-
       LGPART = .FALSE.
       LGLAST = .FALSE.
       LGTIME = .FALSE.

@@ -178,7 +178,7 @@ C
       XLAMBDA = hpcl/E0*10._DP*1.E7_DP
 
       CALL EIRENE_REFLECT_HOLLMANN (THETA, XLAMBDA, IMAT, IREFL,
-     .                              THETA_OUT,ALPHA_OUT, RPROB)
+     .                              THETA_OUT, ALPHA_OUT, RPROB)
 C
   130 CONTINUE
 C

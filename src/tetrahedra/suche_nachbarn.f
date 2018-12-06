@@ -46,12 +46,12 @@ C      INTEGER :: IC
                         endif
                       end do jloop
                       cycle jsloop
-                      end do iloop
-                          NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
-                          NTSEITE(IS,ITET) = JS
-                          NTBAR(JS,JTET) = ITET
-                          NTSEITE(JS,JTET) = IS
-                          EXIT WHLOOP
+                     end do iloop
+                    NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
+                    NTSEITE(IS,ITET) = JS
+                    NTBAR(JS,JTET) = ITET
+                    NTSEITE(JS,JTET) = IS
+                    EXIT WHLOOP
                   END IF
                 END DO JSLOOP ! JS
               END IF

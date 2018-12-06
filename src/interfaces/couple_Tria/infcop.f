@@ -1330,7 +1330,6 @@ c  reset scoring grid parameters back to fine tally grid
 
       NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
 
-
 C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
       DO ITRI=1,NTRII
         DO IS=1,3
@@ -1582,7 +1581,7 @@ C  distinct from B2.5: these velocities are surface centered in b2
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (UPB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
-C   same in B2 and in B2.5:  these ENERGY fluxes are surface centered
+C  same in B2 and in B2.5: these ENERGY fluxes are surface centered
       CALL EIRENE_INDMAP (FEIXB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FEIYB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
@@ -1720,7 +1719,6 @@ C       VLINTF(ITRI)=1.
 C
 C  SET SAME ION TEMPERATURE FOR ALL EIRENE BACKGROUND SPECIES
 C
-
       DO 2150 IPLSTI=1,NPLSTI
       DO 2150 ITRI=1,NSBOX
         TIINTF(IPLSTI,ITRI)=TIINTF(1,ITRI)
@@ -2917,6 +2915,7 @@ C
         ALLOCATE (RESSEI(0:NSTRA))
 
         ALLOCATE (FLXEIR(NSTRA))
+
         CALL EIRENE_ALLOC_BRASPOI
         CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA,IFOFF)
 C
@@ -3323,7 +3322,6 @@ cdr  only one bulk ion species per volume source stratum supported
                   lhit(inc) = .true.
                 end if
 
-
 ! ALL INPUT TALLIES, TAB.., FTAB.., VOL, ARE ON UNDERLYING FINE GRID.
 ! and hence: RECADD,PIADD,EIADD,EEADD also on fine grid.
 !  here we scale with volume of triangle cell
@@ -3491,7 +3489,6 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
                 ENDIF  ! LCOARSE OPTION
               ENDDO  !IY LOOP
             ENDDO  !IX LOOP
-
 
 cdr  build alternative source rates, from corresponding copv tallies
 cdr  scored in UPDLIN.
@@ -3936,17 +3933,17 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
 
           DO 7558 IFL=1,NFLA
             TEST=CHPS(IFL)/(SNIS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in sni,ifl ',test,ifl
+            write (iunout,*) ' global change in sni,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGP) THEN
               LSTP3=.TRUE.
-              LTEST=.FALSE.  !  stop short cycle mode. Full new set of  trajectories.
+              LTEST=.FALSE.  !  stop short cycle mode. Full new set of trajectories.
               WRITE (iunout,*) 'STOP SHORT CYCLE: PART. SOURCES: ',
      .                     SNIS(IFL),CHPS(IFL),TEST
               WRITE (iunout,*) 'STRATUM ISTRAI, SPECIES IFL ',
      .                          ISTRAI,IFL
             ENDIF
             TEST=CHMOS(IFL)/(SMOS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in smo,ifl ',test,ifl
+            write (iunout,*) ' global change in smo,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGMOM) THEN
               LSTP3=.TRUE.
               LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
@@ -3958,7 +3955,7 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
  7558     CONTINUE
 
           TEST=CHEES/(SEES+1.D-60)*100.
-            write (iunout,*) ' global change in see,ifl ',test,ifl
+          write (iunout,*) ' global change in see,ifl ',test,ifl
           IF (ABS(TEST).GT.CHGEE) THEN
             LSTP3=.TRUE.
             LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
@@ -3967,7 +3964,7 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
             WRITE (iunout,*) 'STRATUM ISTRAI ',ISTRAI
           ENDIF
           TEST=CHEIS/(SEIS+1.D-60)*100.
-            write (iunout,*) ' global change in sei,ifl ',test,ifl
+          write (iunout,*) ' global change in sei,ifl ',test,ifl
           IF (ABS(TEST).GT.CHGEI) THEN
             LSTP3=.TRUE.
             LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
@@ -4375,7 +4372,6 @@ C
         SHEAI(I)=0.
         DO IPRT=1,NTGPRT(I)
           fniprt = 0.
-
           IF (NIXY(I,IPRT).EQ.1) THEN
 C  BALANCE CONTRIB. X-GRID REC. SOURCE
             NPBS=NDT(I,IPRT)
@@ -4400,22 +4396,21 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
             DO 10132 IY=NTIN(I,IPRT),NTEN(I,IPRT)-1
               DO 10131 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
                 IF (NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL).GT.0) THEN
-                SFNIT(I,IFL)=SFNIT(I,IFL)-
+                  SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)
 
-                write (37,*) iprt, npbs, iy,
-     .                       FNIXB(NPBS,IY,IFL)
-                fniprt = fniprt + FNIXB(NPBS,IY,IFL)
-
+                  write (37,*) iprt, npbs, iy,
+     .                         FNIXB(NPBS,IY,IFL)
+                  fniprt = fniprt + FNIXB(NPBS,IY,IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions
 cdr unfinished:  need to account for charge state of ion species IFL
-                SHEAE(I)=SHEAE(I)+TEB(NPBC,IY)*
-     .           NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)*
-     .           (-DELTA_SHEATHXB(NPBS,IY))
-                SHEAI(I)=SHEAI(I)+TEB(NPBC,IY)*
-     .           NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)*
-     .           DELTA_SHEATHXB(NPBS,IY)
+                  SHEAE(I)=SHEAE(I)+TEB(NPBC,IY)*
+     .             NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)*
+     .             (-DELTA_SHEATHXB(NPBS,IY))
+                  SHEAI(I)=SHEAI(I)+TEB(NPBC,IY)*
+     .             NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)*
+     .             DELTA_SHEATHXB(NPBS,IY)
 cdr  sheath done
                 ELSE
                   WRITE (iunout,*)
@@ -4440,12 +4435,12 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
               IF (LLCUT(IX)) GOTO 10135
               DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
                 IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0.) THEN
-                SFNIT(I,IFL)=SFNIT(I,IFL)-
+                  SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
-                write (37,*) iprt, ix,NDT(I,IPRT),
-     .                       FNIYB(IX,NDT(I,IPRT),IFL)
-                fniprt = fniprt + FNIYB(IX,NDT(I,IPRT),IFL)
+                  write (37,*) iprt, ix,NDT(I,IPRT),
+     .                         FNIYB(IX,NDT(I,IPRT),IFL)
+                  fniprt = fniprt + FNIYB(IX,NDT(I,IPRT),IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions
 cdr unfinished:  need to account for charge state of ion species IFL
@@ -4752,7 +4747,7 @@ C
 
 
 
-C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
+C DEFINE NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
        SUBROUTINE CORRECTNSS
 
          IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.

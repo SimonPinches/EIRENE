@@ -211,12 +211,12 @@ c..............................................................
 
       else if (reacdat(ir)%rtcew%ifit == 3) then
 
-! 2D TABULAR INPUT,  FOR LOG10 OF ENERGY-WEIGHTED RATE,  joule*cm^3/s
+! 2D TABULAR INPUT, FOR LOG10 OF ENERGY-WEIGHTED RATE, joule*cm^3/s
 ! E.G.: ADAS adf11 PLT and PRB FILES
 cdr  extrapolation data: for 2d tabulated data, option not ready
 cdr  to be added here
 
-!  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
+!  currently hard wired: input parameters pp1, pp2 and table coefficients are log10
 
 c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
@@ -252,10 +252,10 @@ c..............................................................
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 
-! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
+! currently hard wired: input parameters q1 and table coefficients are neither ln nor log10
 
         pp1 = exp(p1)
-C  assume here: tabulated data are neither ln nor log10  (to be generalized)
+C  assume here: tabulated data are neither ln nor log10 (to be generalized)
         res = eirene_intp_tab1d(reacdat(ir)%rtcew%hyd,pp1,ip1)
 
 !  lexp option not connected here !

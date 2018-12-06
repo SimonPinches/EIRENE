@@ -1448,7 +1448,6 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       ENDIF
       NPRNL = MAX(NPRNL,NPRNLI)
 
-
 cdr        NPRNL is only valid for writing census arrays onto fort.15
 cdr  tbd:  when reading fort 15 (census), the size is determined by the
 cdr        size of that file, (IPRNL) not by NPRNL

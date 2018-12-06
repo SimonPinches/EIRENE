@@ -126,7 +126,7 @@ c  tentatively assume: a next generation particle will be born
 
 c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_NEUT=IC_ION
-C  XGENER:  COUNTER FOR GENERATION LIMIT
+C  XGENER: COUNTER FOR GENERATION LIMIT
       XGENER=0.D0
 
   100 LGPART=.TRUE.

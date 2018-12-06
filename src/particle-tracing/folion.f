@@ -276,7 +276,7 @@ c  check orientation of parallel motion relative to radial coordinate
         NRCELL_OLD=NRCELL
 
         select case (levgeo)
-	case(1)
+        case(1)
           SG=SIGN(1._DP,VLXPAR)
           IF (SG.LT.0) THEN
             NRCELL=MRSURF-1

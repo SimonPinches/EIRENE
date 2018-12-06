@@ -23,7 +23,7 @@ C  ***INITIALIZATION
       M1=M+1
       N1=N+1
       DO J=1,N
-      Q(M2,J)=J
+        Q(M2,J)=J
         A(J)=0.
       END DO
       DO 3 I=1,M
@@ -36,7 +36,7 @@ C  ***INITIALIZATION
     3 CONTINUE
 C  ***COMPUTE MARGINAL COSTS
       DO J=1,N1
-      SUM=0.
+       SUM=0.
        DO I=1,M
         SUM=SUM+Q(I,J)
        END DO
@@ -130,8 +130,8 @@ C  ***PIVOT ON Q(OUT,IN)
 C  ***INTERCHANGE ROWS IN STAGE I
       KL=KL+1
       DO 24 J=KR,N2
-      B=Q(OUT,J)
-      Q(OUT,J)=Q(KOUNT,J)
+        B=Q(OUT,J)
+        Q(OUT,J)=Q(KOUNT,J)
         Q(KOUNT,J)=B
    24 CONTINUE
    25 IF(KOUNT+KR.NE.N1) GO TO 6

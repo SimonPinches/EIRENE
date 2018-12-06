@@ -408,7 +408,7 @@ C  ERROR
        XN=XPOL(IXN,IYN)
        YN=YPOL(IXN,IYN)
        IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
-     w                          "CAN NOT FIND A NEAREST POINT"
+     w                          "CANNOT FIND A NEAREST POINT"
       END SUBROUTINE  FIND_NEAREST_NDS
 
       END subroutine eirene_geousr_biased

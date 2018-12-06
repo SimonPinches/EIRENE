@@ -389,7 +389,7 @@ C
         DO 21 IAEI=1,NAEII(IATM)
           IREI=LGAEI(IATM,IAEI)
           IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 21
-            DO IN=1,NDXY
+          DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SPLODA(IN,IATM,IPLS)=RTIS%SPLODA(IN,IATM,IPLS)+
      .                        TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
@@ -397,7 +397,7 @@ C
               RTIS%SPLODA(IN,IATM,IPLS)=RTIS%SPLODA(IN,IATM,IPLS)+
      .                        EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
             END IF
-            ENDDO
+          ENDDO
    21   CONTINUE
 C
 C
@@ -407,17 +407,17 @@ C
         DO 25 IATM=1,NATMI
         DO 25 IAEI=1,NAEII(IATM)
           IREI=LGAEI(IATM,IAEI)
-            DO IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
-                  RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
+          DO IN=1,NDXY
+            IF (NSTORDR >= NRAD) THEN
+                RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
      .                                        EELEI1(IREI,IN)*
      .                                        TABEI1(IREI,IN)
-              ELSE
-                RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
+            ELSE
+              RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
      .                                        EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
-              END IF
-            ENDDO
+            END IF
+          ENDDO
    25   CONTINUE
 C
 C
@@ -497,15 +497,15 @@ C
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
           ESIG=EPLEI(IREI,IPLS,2)  ! only KER -part is corrected in short cycle
-            DO IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
-                RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
+          DO IN=1,NDXY
+            IF (NSTORDR >= NRAD) THEN
+              RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
      .                        TABEI1(IREI,IN)*ESIG
-              ELSE
-                RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
+            ELSE
+              RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
-              END IF
-            ENDDO
+            END IF
+          ENDDO
    29   CONTINUE
 C
 C
@@ -534,17 +534,17 @@ C
         DO 35 IMOL=1,NMOLI
         DO 35 IMEI=1,NMEII(IMOL)
           IREI=LGMEI(IMOL,IMEI)
-            DO IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
+          DO IN=1,NDXY
+            IF (NSTORDR >= NRAD) THEN
                 RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
      .                                          EELEI1(IREI,IN)*
      .                                          TABEI1(IREI,IN)
-              ELSE
-                RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
+            ELSE
+              RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
      .                                        EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
-              ENDIF
-            ENDDO
+            ENDIF
+          ENDDO
    35   CONTINUE
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI-PROCESSES, FROM IMOL

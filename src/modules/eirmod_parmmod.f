@@ -76,7 +76,6 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
       INTEGER, PUBLIC, SAVE ::
      I NCHOR,  NCHEN, NUM_LINES
 
-
       INTEGER, PUBLIC, SAVE ::
      I NDX,    NDY,    NFL,    NDXP,   NDYP,   NPTRGT
 
@@ -134,7 +133,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
       PRIVATE :: EIRENE_SPEC_TO_SPEC
       TYPE EIRENE_SPECTRUM
         REAL(DP) :: SPCMIN, SPCMAX, SPCDEL, SPCDELI, ESP_MIN,
-     .              ESP_MAX, ESP_00, SPC_XPLT,SPC_YPLT,SPC_SAME,
+     .              ESP_MAX, ESP_00, SPC_XPLT, SPC_YPLT, SPC_SAME,
      .              SPCVX, SPCVY, SPCVZ
         REAL(DP) :: SPCS, SGMS, STVS, GGS
         INTEGER :: NSPC, ISPCTYP, ISPCSRF, IPRTYP, IPRSP, IMETSP,

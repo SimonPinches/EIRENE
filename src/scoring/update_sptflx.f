@@ -30,7 +30,7 @@ c          These total sputter tallies may contain sputtered (emitted) fluxes wh
 c          identified eirene test particles, i.e. these totals may be larger
 c          than the sum over emitted species
 c          of species resolved sputtered tallies.
-c  ind=2:  Type and species index of sputtered particle is known:  update both: total and species resolved fluxes
+c  ind=2:  Type and species index of sputtered particle is known: update both: total and species resolved fluxes
 c          only in case IND=2:
 c          sputtered (emitted) particle type:            ityp   (common)
 c          sputtered (emitted) particle species:         iphot,iatm,imol,iion,ipls  (common)

@@ -25,7 +25,7 @@ cdr                                 KK = 0: else, simple models (via jelrrc)
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: PLS, DELE, EE, EIRENE_FEELRC1, ZX,corsum,
+      REAL(DP) :: PLS, DELE, EE, EIRENE_FEELRC1, ZX, corsum,
      .            EIRENE_FTABRC1,
      .            DEIMIN, ELRC, EIRENE_ENERGY_RATE_COEFF, BREMS, Z,
      .            eirene_brems
