@@ -371,10 +371,10 @@ cdr  etote still missing ??
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
       ALLOCATE (NFSTPI(NTALI))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
- 
+
       NADDI  = 0
       NFRSTI = 0
       NDDWI  = 0
