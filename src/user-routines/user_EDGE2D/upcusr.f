@@ -1,6 +1,6 @@
       SUBROUTINE EIRENE_UPCUSR(WS,IND)
 C
-C  USER SUPPLIED COLLISION ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
 C
 C+---------------------------------------------------------------+
 C| Modifications:                                                |

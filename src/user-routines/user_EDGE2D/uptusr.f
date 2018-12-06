@@ -1,6 +1,6 @@
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
-C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
 C
 C+---------------------------------------------------------------+
 C| Modifications:                                                |

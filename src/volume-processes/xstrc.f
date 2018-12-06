@@ -5,7 +5,7 @@ cdr  currently this routine is not called for RC processes, only for PH processe
 
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr
-cdr  to replace       ISWR==6, non default RC part, as called from XSECTP.F
+cdr  to replace       ISWR==6, non-default RC part, as called from XSECTP.F
 cdr  already done for ISWR==7 (photonic reaction part).
 cdr  Prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
 cdr  e.g.   ISWR==6  (RC)                    H+    +  e   --> H    (+ rad.)

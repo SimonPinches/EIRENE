@@ -81,7 +81,7 @@ c  number of volumetric input tallies: ntali = 22
       FORME2='(6X,   ES25.7)'
       WRITE (FORME2(5:7),'(I3)') MXSPZ
 C
-C  PRINT INPUT VOLUME AVERAGED TALLIES
+C  PRINT INPUT VOLUME-AVERAGED TALLIES
 C
       NXM=MAX(1,NR1STM)
       NYM=MAX(1,NP2NDM)

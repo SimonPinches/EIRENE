@@ -10,7 +10,7 @@ cdr             even if npts=0 for the vol-rec stratum
 
 cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2203.07: LEVGEO=6 --> LEVGEO=10
-!pb  2710.06: use flux set by user defined sampling routine
+!pb  2710.06: use flux set by user-defined sampling routine
 !pb  1001.06: ENTRY SAMVOL_REINIT added for reinitialsation of Eirene
 !pb  1812.06: calculate bremsstrahlung
 !pb  2408.06: set output values for DIWL and SHWL
@@ -587,7 +587,7 @@ C  AT THIS POINT: CALLED FROM PARTICLE LOOP TO INITIALIZE TEST FLIGHT
 C
       ENTRY EIRENE_SAMVL1
      .      (NVLM,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
-C  USER SUPPLIED SOURCE
+C  USER-SUPPLIED SOURCE
 C
       IF (SORLIM(NVLM,ISTRA).LT.0) THEN
         CALL EIRENE_SM1USR(NVLM,X0,Y0,Z0,

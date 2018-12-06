@@ -485,7 +485,7 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
       SELECT CASE( NPRLL )
         CASE( -1 )
-          CALL EIRENE_MASAGE('       MPI USER DEFINED')
+          CALL EIRENE_MASAGE('       MPI USER-DEFINED')
 C       CASE( 0 )
 C         Reserved for default, see below
         CASE( 1 )

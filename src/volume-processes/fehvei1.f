@@ -64,7 +64,7 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             GOTO 999
         END SELECT
 
-c  non default models, data from external databases
+c  non-default models, data from external databases
       ELSE IF (KK > 0) THEN
 cdr flag jhvrei is still missing. how to we know whether to use density parameter pls ?
 cdr this code corresponds to jhvrei=1

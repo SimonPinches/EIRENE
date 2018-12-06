@@ -29,7 +29,7 @@ c
 c june 05:  new: modchm=6: Haasz/Davis 1998 formula (no flx. dep)
 c           new: modchm=7: Haasz/Davis 1998 formula with flux. dep
 c
-c     new: user defined sputter model: modpys/modchm=9 (was: =3)
+c     new: user-defined sputter model: modpys/modchm=9 (was: =3)
 c
 c           merging of flx. dep A6/A7 in roth formula for chem. sput. removed again
 c           now modchm=2 is back to "flux dep option A6" (Roth) (as it already
@@ -107,7 +107,7 @@ C                              "REVISED BOHDANSKY FORMULAR",
 C                              ECKSTEIN, W., et.al., IPP 9/117 (Garching, 1993)
 C                              FITTING PARAMETERS READ FROM FILE "sputer",
 C                              STREAM 33, LOC.CIT.
-C                 MODPYS = 9:  USER SUPPLIED SPUTTER MODEL, CALL SPTUSR
+C                 MODPYS = 9:  USER-SUPPLIED SPUTTER MODEL, CALL SPTUSR
 C
 C            itsput(2,msurf) = MODCHM
 C                 MODCHM = 0:  NO CHEM. SPUTTERING (DEFAULT)
@@ -117,7 +117,7 @@ C                              J.ROTH, J.NUCL.MAT 266-269 (1999) 51-57
 C                              FLUX DEP. OPTION A6
 C                 MODCHM = 6:  HAASZ/DAVIS FORMULA w/o flux dep.
 C                 MODCHM = 7:  HAASZ/DAVIS FORMULA with flux dep.
-C                 MODCHM = 9:  USER SUPPLIED SPUTTER MODEL, CALL SPTUSR
+C                 MODCHM = 9:  USER-SUPPLIED SPUTTER MODEL, CALL SPTUSR
 C            EWALL(MSURF)= ENWALL
 C    IGASP: SPECIES INDEX FLAG FOR PHYS. SPUTTERED PARTICLE
 C    IGASC: SPECIES INDEX FLAG FOR CHEM. SPUTTERED PARTICLE
@@ -597,7 +597,7 @@ C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
         ENDIF
 C
       ELSEIF (MODPYS.EQ.9) THEN
-C  USER SUPPLIED SPUTTER MODEL
+C  USER-SUPPLIED SPUTTER MODEL
         CALL EIRENE_SP1USR
 C
       ENDIF
@@ -844,7 +844,7 @@ C  Haasz-Davis formula, 1998, with flx. dep from Roth, Nucl.Fus 2004
          C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
          yield2=C * EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(9)
-C  USER SUPPLIED SPUTTER MODEL
+C  USER-SUPPLIED SPUTTER MODEL
         CALL EIRENE_SP1USR
       CASE DEFAULT
         write (iunout,*) 'error in sputer.f. modchm ?? ',modchm

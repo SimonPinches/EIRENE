@@ -1255,7 +1255,7 @@ csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
         IF (NPRS > 1) THEN
-C This is very case specific and my be different for each plasma code.
+C This is very case-specific and my be different for each plasma code.
 C Introducing another interfacing subroutine within the strata-loop
 C solves this issue much more flexible.
 C This if block needs to go into the if3cop, if relevant for the

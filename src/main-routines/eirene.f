@@ -462,7 +462,7 @@ C
 
       IF (NCHORI.GT.0) CALL EIRENE_DIAGNO
 
-csw  user defined output
+csw  user-defined output
       CALL EIRENE_OUTUSR
 
       END IF   ! MY_PE == 0

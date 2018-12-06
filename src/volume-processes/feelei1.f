@@ -73,7 +73,7 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             EIRENE_FEELEI1=-EIONHE   !  DEFAULT PROCESS KK=-1  HE+E --> HE+ +2E
         END SELECT
 
-c  non default models, data from external databases, KK=KREAD for el. energy-weighted rates
+c  non-default models, data from external databases, KK=KREAD for el. energy-weighted rates
       ELSE IF (KK > 0) THEN
         IF (JELREI(IREI) == 1) THEN  !  Te dependence
           ELEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)

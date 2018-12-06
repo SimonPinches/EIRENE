@@ -16,7 +16,7 @@ C> typical for Monte Carlo codes. An more advanced method using a
 C> proportional allocation (NPRLL == 1) to attempt variance minimization
 C> See EIRENE manual, "stratified source sampling".
 C> when applying stratification is also available.
-C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR)
+C> Furthermore, a user-defined set-up (subroutine EIRENE_PEDIST_USR)
 C> can be used (NPRLL == -1).
 C>
 C> Within this subroutine three arrays are set that define the entire

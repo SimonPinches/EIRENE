@@ -266,7 +266,7 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
 C  PRE-COLLISION ESTIMATOR FOR EMML,
-C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
+C  PRE- AND POST-COLLISION ESTIMATOR FOR EMPL AND EMEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEMML) EMML(NCELL)=EMML(NCELL)-WEIGHT*E0
@@ -276,7 +276,7 @@ cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER.
           IF (LEMPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
+cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -309,7 +309,7 @@ Cdr  PTOT=0,1,2,etc..., = integer, number of next generation test particles
 CC.......................................................................
         IF (.NOT.NLCASCAD) GOTO 351  !  EI PROCESS CASCADING  MOL
 cdr
-c    splitting of post collision particles, i.e. create a true cascade
+c    splitting of post-collision particles, i.e. create a true cascade
 
 cdr  ANALOGUE SAMPLING, I.E. SPLITTING, IN CASE OF MORE THAN ONE SECONDARY.
         IF (NLEVEL+PTOT <= MAXLEVEL) THEN   ! there is still storage for splitting
@@ -365,7 +365,7 @@ C  NUMBER OF NODES AT THIS LEVEL
               ENDIF
             END DO
           END DO  ! LOOP OVER ALL POTENTIAL SECONDARIES DONE
-C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST COLLISION PARAMETERS
+C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST-COLLISION PARAMETERS
 C  ON SPLITTING ARRAYS.
 
 !  REMOVE LAST PARTICLE FROM STORAGE AS ITS TRAJECTORY WILL BE CONTINUED NOW
@@ -845,7 +845,7 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLPI(IRPI,0)
 C
 C  PRE- COLLISION ESTIMATOR FOR EMML,
-C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
+C  PRE- AND POST-COLLISION ESTIMATOR FOR EMPL AND EMEL
         IF (IESTPI(IRPI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEMML) EMML(NCELL)=EMML(NCELL)-WEIGHT*E0
