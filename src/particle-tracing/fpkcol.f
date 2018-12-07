@@ -53,26 +53,13 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_COMXS
-      USE EIRMOD_CVARUSR
- 
+
       IMPLICIT NONE
 
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
-cdr  old code was:
-c    .            D_VELPAR(1:NPLSI),
-c    .            D_VELPER(1:NPLSI),
-c    .            D_E0NEW_tmp(1:NPLSI)
-cdr: I beliefe this is now wrong  (old code correct ?) 
-cdr  argument IPL in these arrays is in the range 1:NPLS, 
-cdr  because LGIEL(..,..1) is.
-     .            D_VELPAR(1:NIELI(IION)),
-     .            D_VELPER(1:NIELI(IION)),
-     .            D_E0NEW_tmp(1:NIELI(IION))
-
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL, IPLTI, IDSC
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
       REAL(DP), EXTERNAL :: RANF_EIRENE
-
 C  SAVE INCIDENT SPECIES: IOLD
       IOLD=IION
       E0OLD=E0
@@ -132,50 +119,40 @@ C
 C
 C
       IF (DUR.GT.0.D0) THEN
-
-c  second minimal collision model: change velocities according to
-c  the expectation values of the change
-c  SIGPAR is the sign of the parallel velocity with respect to the
-c  magnetic field
-
-        D_VELPAR    = 0.0
-        D_VELPER    = 0.0
-        D_E0NEW_tmp = 0.0
-
-        DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
-          IPL = LGIEL(IION,IDSC,1)
-          D_VELPAR(IPL) = dVelPrl_dt(IPL)*DUR   ! in cm/s
-          D_VELPER(IPL) = dVelPerp_dt(IPL)*DUR  ! in cm/s
-
-          D_E0NEW_tmp(IPL)= CVELI2*RMASSI(IION)*
-     >                      ((SIGPAR*VELPAR + D_VELPAR(IPL))**2
-     >                    + (VELPER + D_VELPER(IPL))**2)
-     >                    - E0
-        END DO
-
-        VELPAR = SIGPAR*VELPAR + SUM(D_VELPAR)
-        SIGPAR = SIGN(1.0,VELPAR)
-        VELPAR = ABS(VELPAR)
-        VELPER = VELPER + SUM(D_VELPER)
-        veltotal = SQRT(VELPAR**2 + VELPER**2)
-
-        E0NEW = CVELI2*RMASSI(IION)*veltotal**2
-        VNEW = RSQDVI(IOLD)*SQRT(E0NEW)
+C
+C  FLIGHT WITH PARALLEL VELOCITY VEL=VELPAR (CM/SEC)
+C  PARALLEL DISTANCE ZT (CM)
+C  ENERGY RELAXATION CONSTANT TAUE
+C
+cdr to be done: proper new energy, according to weighting by fnuiar(ipl)
+cdr relaxation towards a weighted mean background energy
+cdr currently: arbitrary 1.5*Tiin(1,...)
+        E0NEW=E0OLD*EXP(-DUR/TAUE)+1.5*TIIN(1,NCELL)*(1.-EXP(-DUR/TAUE))
+        VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
+        EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
+cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
+cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
+cdr  temprature(ipls), even different sign.
+cdr
         EWG = WEIGHT*(E0NEW-E0OLD)
-        EIIO(NCELLT) = EIIO(NCELLT)+EWG
-        DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
-          IPL = LGIEL(IION,IDSC,1)
-          IF (D_E0NEW_tmp(IPL).NE.0.0) THEN
-            EIPL(IPL,NCELLT) = EIPL(IPL,NCELLT)
-     >                   - EWG*D_E0NEW_tmp(IPL)/(SUM(D_E0NEW_tmp)+EPS60)
-          END IF
+        FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
+        DO IPL = 1, NPLSI
+          EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-EWG*FNUIAR(IPL)/FNUI
         END DO
+C
 
-        FAC    = SQRT(E0NEW/E0OLD)
-        E0PAR  = E0PAR*FAC*FAC ! ratio of the particle velocity before and after the collision
-
+        FAC=SQRT(E0NEW/E0OLD)
+C in this particlar case: retain old pitch: velpar/velper. No pitch angle scattering so far.
+        VELPAR=VELPAR*FAC
+        VELPER=VELPER*FAC
+        E0PAR=E0PAR*FAC*FAC
+      ELSE
+        WRITE (IUNOUT,*) 'NEGATIVE TIMESTEP IN FPKCOL '
+        WRITE (IUNOUT,*) 'KILL PARTICLE '
+        WRITE (IUNOUT,*) 'NPANU, ZT, VEL ',NPANU,ZT,VEL
+        GOTO 999
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
 c  gets new B-field
@@ -185,8 +162,7 @@ c  gets new B-field
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
 
 C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
-c  FHa IND.EQ.2 or IND.EQ.3 means that the velocity is updated in
-c  EIRENE_NEWFIELD
+
       IF (IND.EQ.2.OR.IND.EQ.3) GOTO 300
 
 C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
