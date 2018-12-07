@@ -9,8 +9,6 @@
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
 
-      real(DP),allocatable,public,save :: dVelPrl_dt(:), dVelPerp_dt(:)
-
 
       contains
 
@@ -18,11 +16,6 @@
 
       implicit none
       integer, intent(in) :: ical
-
-      IF (allocated(dVelPrl_dt)) RETURN
-
-      allocate(dVelPrl_dt(1:NPLS))
-      allocate(dVelPerp_dt(1:NPLS))
 
       if (ical == 1) then
 
@@ -41,9 +34,6 @@
 
       implicit none
 
-      deallocate(dVelPrl_dt)
-      deallocate(dVelPerp_dt)
-
       return
       end subroutine eirene_dealloc_cvarusr
 
@@ -52,9 +42,6 @@
 
       implicit none
       integer, intent(in) :: ical
-
-      dVelPrl_dt  = 0._DP
-      dVelPerp_dt = 0._DP
 
       if (ical == 1) then
 

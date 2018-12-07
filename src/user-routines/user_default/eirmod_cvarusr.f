@@ -1,51 +1,24 @@
       module eirmod_cvarusr
 
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IION
-      USE EIRMOD_COMXS, ONLY: NIELI
+      USE EIRMOD_PARMMOD
 
       IMPLICIT NONE
 
       private
 
-      real(dp), allocatable, public :: dVelPrl_dt(:), dVelPerp_dt(:)
-      real(dp), allocatable, public :: df_dChiPrl(:), dg_dChiPrl(:)
-      real(dp), allocatable, public :: dg_dChiPerp(:), nue(:)
-      real(dp), public  :: veltotal, rCPrlOld, rCPerpOld
-      real(dp), public  :: alphaPrl, alphaPerp
-      integer, public :: npanuSave
-
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
-
 
 
       contains
 
-      subroutine eirene_alloc_cvarusr(ical)
+      subroutine eirene_alloc_cvarusr (ical)
 
       implicit none
       integer, intent(in) :: ical
 
       if (ical == 1) then
-C Reallocation needed if IION changes and NIELI(IION) different
-C May be done at a better location
-        if (allocated(dVelPrl_dt)) then
-          if (size(dVelPrl_dt) /= NIELI(IION)) then
-            call eirene_dealloc_cvarusr
-          end if
-        end if
 
-        if (.not.allocated(dVelPrl_dt)) then
-          allocate(dVelPrl_dt(1:NIELI(IION)))
-          allocate(dVelPerp_dt(1:NIELI(IION)))
-          allocate(df_dChiPrl(1:NIELI(IION)))
-          allocate(dg_dChiPrl(1:NIELI(IION)))
-          allocate(dg_dChiPerp(1:NIELI(IION)))
-          allocate(nue(1:NIELI(IION)))
-          rCPrlOld  = 1.0E-12
-          rCPerpOld = 1.0E-12
-          npanuSave = 0
-        end if
       else if (ical == 2) then
 
       end if
@@ -61,13 +34,6 @@ C May be done at a better location
 
       implicit none
 
-         deallocate(dVelPrl_dt)
-         deallocate(dVelPerp_dt)
-         deallocate(df_dChiPrl)
-         deallocate(dg_dChiPrl)
-         deallocate(dg_dChiPerp)
-         deallocate(nue)
-
       return
       end subroutine eirene_dealloc_cvarusr
 
@@ -78,13 +44,6 @@ C May be done at a better location
       integer, intent(in) :: ical
 
       if (ical == 1) then
-
-         dVelPrl_dt  = 0.0
-         dVelPerp_dt = 0.0
-         df_dChiPrl  = 0.0
-         dg_dChiPrl  = 0.0
-         dg_dChiPerp = 0.0
-         nue = 1.D-30
 
       else if (ical == 2) then
 
