@@ -52,11 +52,17 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !  PUSH PARTICLES
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
-
-
-
-
-
+C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
+c  April 2015:  call to escape at periodicidy surfaces:  with reduced velocity, lcart=f
+c               no gyro phase sampling then.
+c               also for proper printout from chctrc for trace ions.
+c   
+c  njump=3, for internal grid surface und timusr. reset time=0
+c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
+cdr Nov. 15:  check again bgk solution for energy relaxation: mass factor, exponent ??
+cdr           also: manual. to be done: remove static loop from folneut and folion.
+c   Nov. 15:  fnui collision frequency: retain individual frequencies, for
+c             all background species: fnuiar(ipls)
 
 
 C  .......................................................................................
@@ -140,6 +146,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
+      USE EIRMOD_CVARUSR
 
       IMPLICIT NONE
 
@@ -168,6 +175,7 @@ C      REAL(DP) :: TI
      .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
       LOGICAL :: LCNDEXP
 
+      REAL(DP) :: VelPrlBG, DItmp, TItmp
 
 c  no conditional expectation estimators for test ions
 
@@ -266,6 +274,11 @@ c  using the reduced (guiding centre) velocity to find orientation
 C  relative to surface, and possibly correct side of surface, i.e. cell
 c  number
 
+
+
+c***********************************************************************
+c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES - START
+c***********************************************************************
 
       IF (NLSRFX) THEN
 
@@ -734,51 +747,12 @@ C     LATER: VELPAR --> VEL_GC
 C
 C FNUI: collision frequency with background ions.
 
-      FNUI   = 1.D-30
+C  get new TF and data for the FP collision carried out in fpkcol
+      CALL EIRENE_PREPARE_FPKCOL(TF)
 
-
-      IF (NRC.GE.0) THEN
-        DO IPL=1,NPLSI
-          IPLTI=MPLSTI(IPL)
-ctest     ti=200
-ctest     ni=1e14
-ctest     ea=0.1
-ctest     iion=1
-ctest     ipls=1
-ctest     nmassi(1)=16.
-ctest     nmassp(1)=1.
-ctest     a=fnueqi(1.d14,200.d0)
-ctest     a=a*(1.+1./16.)**0.5-a*1.5*200./0.1
-ctest     aa=fnueqi_1(0.1d0,1.d14,200.d0,1,1)
-ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
-ctest     write (iunout,*) 'a,aa,aaa', a,aa,aaa
-ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
-ctest     stop
-
-C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
-C  Set Coulomb collisions (energy relaxation) frequencies.
-C  Exclude vacuum region and virtual neutral background species
-          IF (.NOT.LGVAC(NCELL,IPL) .AND. (NCHRGP(IPL) > 0) ) THEN
-            FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
-            FNUI=FNUI+FNUIAR(IPL)
-          END IF
-
-        ENDDO
-      ENDIF
-C TAUE: RELAXATION TIME
-      TAUE=1./FNUI
-C STEPSIZE=0.1*VEL_PARALLEL*TAUE, I.E. 10 COULOMB COLLISIONS PER RELAX.TIME
-C TF: DISTANCE UNTIL NEXT COULOMB COLLISION
-C DELFAC: INCREASE STEPSIZE AS E0 APPROACHES 1.5 * TI
-      TIFAC  = MAX(TVAC,TIIN(1,NCELL))
-      DELFAC =1.5_DP*TIFAC/ABS(E0-1.5_DP*TIFAC+EPS60)
-C  DELTA_T = TAUE*0.1*DELFAC
-C  DELTA_S = DELTA_T * VELPAR  ! = TF
-C     USE VELGS INSTEAD OF VEL, BECAUSE ORBIT IS COMPUTED WITH REDUCED (GC) VELOCITY
-C     LATER: VELPAR --> VEL_GC
-      TF=TAUE*VELPAR*0.1*DELFAC
-      if (nldfst) tf=1.E-5_DP*vel
-
+C  FHa: What happens here? - Detlev said it can be commented out (16-03-01)
+c      if (nldfst) tf=1.E-5_DP*vel
+ 
       IF (TF.LT.ZTST) THEN
         ZTST=TF
         ZDT1=TF
@@ -1623,7 +1597,10 @@ c  2016: back to the correct formula (as in eighties) without that exponent
       XMUA=nMASSI(ION)
       XMUB=nMASSP(IPL)
       FACT=XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**0.5
-      FNUEQI_1=FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
+C  FHa:  new (corrected) version of energy relaxation
+C     FNUEQI_1 corresponds to \tilde \nu_\epsilon of the EIRENE manual,
+C     compare eq. (11.104), v11/2009
+      FNUEQI_1 = 2*XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**1.5
       RETURN
       END FUNCTION FNUEQI_1
 
@@ -1665,7 +1642,274 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
       END FUNCTION DPSI_CHAND
 
 
-      END
+      SUBROUTINE EIRENE_PREPARE_FPKCOL(TF)
+
+C     FHa: Subroutine to prepare data for the Fokker-Planck collision in the slightly
+C     extended model where the trace ion velocity changes in agreement with the
+C     change of the expectation values (next step after the minimal collision model
+C     where only the energy is relaxed)
+
+cdr Aug 18:  presumably: 
+cdr return dvelprl_dt(ipls) and dvelperb_dt(ipls), for use in fpkcol, 
+cdr as well as TF  (time step for next PF collision)
+
+      implicit none
+
+      integer :: IPL, IPLTI, IDSC
+
+      real(DP) :: TF
+      real(DP) :: alpha, ub, Chi, Lambda, dChi_dt
+      real(DP) :: DPrl, DPerp
+      real(DP) :: Bt(1:3), Vt(1:3)
+      real(DP) :: vtot, ChiPrl, ChiPerp
+      real(DP) :: SumPrl, SumPerp01, SumPerp02
+      real(DP) :: DVelPrl, dDprl_dVelPrl
+      real(DP) :: dDprl_dChiPrl, dDprl_dChiPerp
+      real(DP) :: dDperp_dChiPrl, dDperp_dChiPerp
+      real(DP) :: TF01, TF02, TF03, TF04, TF05
+      real(DP) :: vAveThBG, DVelMin
+      real(DP) :: alphaPrl0, alphaPerp0
+      real(DP) :: relChangePrl, relChangePerp
+      real(DP) :: dv_dt_min
+      real(DP) :: ExpChi2, FakVel_dt, FakDprl_dChi, FakDperp_dChi, 
+     >            Fakd_dChi
+      real(DP) :: EIRENE_VDION
+
+      logical :: newParticle
+
+      CALL EIRENE_ALLOC_CVARUSR(1)
+
+      alpha      = 0.2 ! factor for the ratio v/dv_dt*Delta t, should be significantly smaller than 1
+      alphaPrl0  = 0.2
+      alphaPerp0 = 0.2
+      TF     = 1.0E+30
+      TF01   = 1.0E+30
+      TF02   = 1.0E+30
+      TF03   = 1.0E+30
+      TF04   = 1.0E+30
+      TF05   = 1.0E+30
+      SumPrl = 0.0
+      SumPerp01 = 0.0
+      SumPerp02 = 0.0
+      vAveThBG  = 0.0
+      newParticle = .FALSE.
+
+! entered if new particle is created
+      IF (npanuSave .NE. NPANU) THEN
+        npanuSave = NPANU
+        alphaPrl  = alphaPrl0
+        alphaPerp = alphaPerp0
+        newParticle = .TRUE.
+      END IF
+
+      DO IDSC = 1, NIELI(IION) ! loop over number of elastic collisions
+        IPL = LGIEL(IION,IDSC,1)
+        IPLTI = MPLSTI(IPL)
+
+cdr:  here we should also exclude neutral background particles from virtual
+cdr   BGK species. Otherwise we carry out false coulomb collisions with them as well
+CDR     IF (NCHRGP(IPL).LT.1) CYCLE
+
+! check that density and temperatures are set properly
+        IF ((LGVAC(NCELL,IPL)).OR.(TIIN(IPLTI,NCELL).LT.TVAC)) THEN
+
+
+          CYCLE
+        ELSE
+          DItmp = DIIN(IPL,NCELL)
+          TItmp = TIIN(IPLTI,NCELL)
+        END IF
+
+c  get the parallel part of the background velocity, cm/s
+        IF (INDPRO(4) == 8) THEN
+          IF(IPL.EQ.1) THEN
+            VelPrlBG=EIRENE_VDION(NCELL)
+          ELSE
+            VelPrlBG=0.D0
+          END IF
+        ELSE
+          VelPrlBG = (BXIN(NCELL)*VXIN(IPL,NCELL)+
+     >                BYIN(NCELL)*VYIN(IPL,NCELL)+
+     >                BZIN(NCELL)*VZIN(IPL,NCELL))
+        END IF
+
+        ub = CVELAA*sqrt(TItmp/RMASSP(IPL))
+
+cdr  strickly: here we should move the entire test particle velocity vector
+cdr  into the plasma frame of IPL (not just the parallel component
+cdr  of the plasma flow)
+cdr  not just the parallel component. 
+        DVelPrl = SIGPAR*VELPAR - VelPrlBG
+
+cdr  here we confuse the parallel (to B) velocites with the
+cdr  parallel to initial v_rel_test velocity.
+cdr  All in all this collision term is only correct for a 1D problem,
+cdr  in which both the test particle velocity and the plasma flow
+cdr  are in the same direction.
+
+
+        ChiPrl  = DVelPrl/ub
+        ChiPerp = VELPER/ub
+cdr in what follows: chiprl and chiperp are used as if these
+cdr are the par and perp velocities relative to the initial test particle velocities.
+cdr  
+
+        Chi = sqrt(ChiPerp**2 + ChiPrl**2)
+        ExpChi2 = exp(-Chi**2)
+        Lambda = DItmp*NCHRGI(IION)**2*NCHRGP(IPL)**2/RMASSP(IPL)**2*
+     >           FAKLAM
+
+        CALL D_coeff(Chi,DPrl,DPerp)
+
+        DPrl  = Lambda/ub*DPrl
+        DPerp = Lambda/ub*DPerp
+
+c  both dVelPrl_dt and dVelPerp_dt in cm/s!
+        FakVel_dt = -DPrl/ub**2*(1.0_DP + RMASSI(IION)/RMASSP(IPL))
+        dVelPrl_dt(IPL)  = FakVel_dt*DVelPrl
+        dVelPerp_dt(IPL) = FakVel_dt*
+     >                     VELPER 
+     >                     +DPerp/(2.0_DP*VELPER)
+
+        FakDprl_dChi = (4.0_DP*Lambda/(ub*PISQ)*ExpChi2 - 3.0_DP*Dprl)/
+     >                 Chi**2
+        dDprl_dChiPrl   = FakDprl_dChi*ChiPrl
+        dDprl_dChiPerp  = FakDprl_dChi*ChiPerp
+
+        FakDperp_dChi = ((1.5_DP/Chi - Chi)*Dprl 
+     >                   -2.0_DP*Lambda/(Chi*ub*PISQ)*ExpChi2)/Chi
+        dDperp_dChiPrl = FakDperp_dChi*ChiPrl
+        dDperp_dChiPerp = FakDperp_dChi*ChiPerp
+
+        Fakd_dChi = -(1.0_DP + RMASSI(IION)/RMASSP(IPL))/ub
+        df_dChiPrl(IPL) = Fakd_dChi*
+     >                    (Dprl + ChiPrl*dDprl_dChiPrl)
+
+        dg_dChiPrl(IPL) = Fakd_dChi*
+     >                    ChiPerp*dDprl_dChiPrl 
+     >                    +0.5_DP/(ub*ChiPerp)*dDperp_dChiPrl
+
+        dg_dChiPerp(IPL) = Fakd_dChi*
+     >                     (Dprl + ChiPerp*dDprl_dChiPerp)
+     >                     +0.5_DP/(ub*ChiPerp)*dDperp_dChiPerp 
+     >                     -Dperp/(2.0_DP*ub*ChiPerp**2)
+
+        SumPrl    = SumPrl + df_dChiPrl(IPL)*dVelPrl_dt(IPL)/ub
+        SumPerp01 = SumPerp01 + dg_dChiPerp(IPL)*dVelPerp_dt(IPL)/ub
+        SumPerp02 = SumPerp02 + dg_dChiPrl(IPL)*dVelPrl_dt(IPL)/ub
+
+        nue(IPL) = abs(2.0_DP*(RMASSI(IION)/RMASSP(IPL)*Dprl/ub**2 
+     >                   -2.0_DP*Lambda/(PISQ*ub**3*Chi**2)*ExpChi2))
+
+        vAveThBG = vAveThBG + nue(IPL)*ub
+      END DO
+
+      IF (MAXVAL(nue).GT.1.D-30) THEN
+        vAveThBG = abs(vAveThBG/sum(nue))
+        DVelMin  = vAveThBG*1.0E-04
+
+! these are the lengths according to the change of the derivatives of the velocities
+        TF01 = abs(alphaPrl*VELPAR*sum(dVelPrl_dt)/SumPrl)
+        TF02 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp01)
+        TF03 = abs(alphaPerp*VELPAR*sum(dVelPerp_dt)/SumPerp02)
+! these are the lengths according to the change of the chis
+        TF04 = abs(alpha*vAveThBG*VELPAR/sum(dVelPrl_dt))
+        TF05 = abs(alpha*vAveThBG*VELPAR/sum(dVelPerp_dt))
+
+! this is the minimal change of the velocities below which stationarity is assumed (to be checked!)
+        dv_dt_min = 1.0E-03*DVelMin*sum(nue)
+
+        IF (abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
+          TF = min(TF01,TF04)
+        ELSE IF (abs(sum(dVelPrl_dt)) .LT. dv_dt_min) THEN
+          TF = min(TF02,TF03,TF05)
+        ELSE
+          TF = min(TF01,TF02,TF03,TF04,TF05)
+        END IF
+
+! adjust the limit parameters for the change of the derivatives
+! (if the Taylor expansion does not yield good enough results)
+        relChangePrl  = ABS((sum(dVelPrl_dt)-rCPrlOld)/rCPrlOld)
+        relChangePerp = ABS((sum(dVelPerp_dt)-rCPerpOld)/rCPerpOld)
+
+        IF (TF.EQ.TF01 .AND. .NOT.newParticle) THEN
+          IF (relChangePrl .LT. alphaPrl0) THEN
+            alphaPrl = alphaPrl*1.25
+          ELSE
+            alphaPrl = alphaPrl*0.5
+          END IF
+        ELSE
+          alphaPrl = max(alphaPrl*0.5,alphaPrl0)
+        END IF
+        IF ((TF.EQ.TF02 .OR. TF.EQ.TF03) .AND. .NOT. newParticle) THEN
+          IF (relChangePerp .LT. alphaPerp0) THEN
+            alphaPerp = alphaPerp*1.25
+          ELSE
+            alphaPerp = alphaPerp*0.5
+          END IF
+        ELSE
+          alphaPerp = max(alphaPerp*0.5,alphaPerp0)
+        END IF
+
+! if the absolute change is below the limit value set TF so that the v_perp
+! is changed by 1/100 of the thermal background velocity
+        IF (abs(sum(dVelPrl_dt))  .LT. dv_dt_min .AND.
+     >      abs(sum(dVelPerp_dt)) .LT. dv_dt_min) THEN
+          TF = 1.0E-02*vAveThBG*VELPAR/abs(sum(dVelPerp_dt))
+        END IF
+
+        rCPrlOld  = sum(dVelPrl_dt)
+        rCPerpOld = sum(dVelPerp_dt)
+! to avoid division by zero a few lines up
+        IF (ABS(rCPrlOld).LT.1D-12) rCPrlOld = 1D-12
+        IF (ABS(rCPerpOld).LT.1D-12) rCPerpOld = 1D-12
+      ELSE
+C No collision
+        TF = 1.D+30
+      END IF
+      END SUBROUTINE EIRENE_PREPARE_FPKCOL
+
+      subroutine D_coeff(X,D1,D2)
+
+*     ------------------------------------------------------------     *
+*     --Parallel diffusion coefficient for Maxwellian background -     *
+*     --From D. Reiser                                                 *
+*     ------------------------------------------------------------     *
+*     compare notes DR2015: D1 = ub/Lambda*D_prl, D2 = ub/Lambda*D_perp
+
+      IMPLICIT NONE
+      REAL(DP):: X,X2,X3,X4,P0,P1,SQPI
+      REAL(DP):: D1,D2
+      PARAMETER(SQPI=1.772453851) ! sqrt(pi)
+
+!      if (X.ge.0.4) then
+         X2 = X*X
+         X3 = X*X2
+         P0 = Erf(X)
+         P1 = 2*exp(-X2)/SQPI
+         D1 = P0/X3-P1/X2
+         D2 = 0.5*P1/X2+P0/X-0.5*P0/X3
+!      else
+!         X2 = X*X
+!         X4 = X2*X2
+!         D1 = (4./3.-4./5.*X2+2./7.*X4)/SQPI
+!         D2 = (4./3.-4./15.*X2+2./35.*X4)/SQPI
+!      end if
+
+      return
+
+      end subroutine D_coeff
+
+      END SUBROUTINE EIRENE_FOLION
+
+
+
+
+
+
+
+
+
 
       SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
