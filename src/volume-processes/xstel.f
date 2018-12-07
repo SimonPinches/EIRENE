@@ -6,7 +6,7 @@ cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
 
 cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
 cdr    oct.14: bug fix: use kread rather than kk in eplel3.
-cdr    oct.14: remove pls array, synconize with xstcx started
+cdr    oct.14: remove pls array, synchronize with xstcx started
 cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 cdr   jan .17: modcol(5,0,irel):  flag for differential cross-section model, rather than =kk.
@@ -17,7 +17,7 @@ cdr   jan .17: modcol(5,0,irel):  flag for differential cross-section model, rat
 !              modcol(5,0,irel)=1,2,...: interaction potential is given via fit parameters
 cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) directly.
 
-cdr     Reaction identifyer KK is defined twice, within same routine veloel.
+cdr     Reaction identifier KK is defined twice, within same routine veloel.
 cdr     This risky exception can be removed by: modcol(5,0,irel)=iftflg(kk,0),
 cdr     and by providing the potential p(1:9,irel) here, rather than in veloel.
 cdr  nov. 17:  added: parameter pls (as in xstcx,xstpi,...)
@@ -69,7 +69,7 @@ C
      .            TB, TII,
      .            FP1(6),FP2(6)
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
-     .           IBGK,ISPZB,ITYPB
+     .           IBGK, ISPZB, ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
@@ -169,7 +169,7 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
               tii = max(-2.3_dp,tii)
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
@@ -274,10 +274,10 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           END IF
         ELSE ! EBULK GT.0
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTEL: IREL ', IREL
-          WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS '
+          WRITE (iunout,*) 'MODIFIED TREATMENT OF ELASTIC COLLISIONS'
           WRITE (iunout,*) 'SAMPLE FROM MAXWELLIAN WITH T = ',EBULK/1.5
-          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
-          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL) '
+          WRITE (iunout,*) 'RATHER THAN WITH T = TIIN'
+          WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOEL)'
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
@@ -303,7 +303,7 @@ c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
           IF (EIRENE_IDEZ(IESTM,3,3).NE.1) THEN
             WRITE (iunout,*)
-     .        'COLLISION ESTIMATOR ENFORCED FOR ION ENERGY '
+     .        'COLLISION ESTIMATOR ENFORCED FOR ION ENERGY'
             WRITE (iunout,*) 'IN ELASTIC COLLISION IREL= ',IREL
             WRITE (iunout,*) 'BECAUSE NO ENERGY-WEIGHTED RATE AVAILABLE'
           ENDIF
@@ -373,7 +373,7 @@ c old
         ENDIF
         ENDIF
       ELSE
-        WRITE (iunout,*) 'NSEEL4 ILL-DEFINED IN XSTEL '
+        WRITE (iunout,*) 'NSEEL4 ILL-DEFINED IN XSTEL'
         WRITE (iunout,*) 'check parameter ISCDE for process irel ',irel
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
@@ -393,17 +393,17 @@ C
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE '
+     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
-        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR '
+        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         IESTEL(IREL,2)=1
       ENDIF
       IF (IESTEL(IREL,3).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE '
+     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
-        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR '
+        WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         IESTEL(IREL,3)=1
       ENDIF
       RETURN
@@ -425,16 +425,16 @@ C
         WRITE (iunout,*) 'THIS IS ALSO BGK COLLISION NO. IBGK= ',IBGK
         MODCOL(5,0,IREL)=-1
         IF (NPBGKP(IPL,2).EQ.0)
-     .      WRITE (iunout,*) 'SELF COLLISION      '
+     .      WRITE (iunout,*) 'SELF-COLLISION      '
         IF (NPBGKP(IPL,2).NE.0) THEN
           ITYPB=EIRENE_IDEZ(NPBGKP(IPL,2),1,3)
           ISPZB=EIRENE_IDEZ(NPBGKP(IPL,2),3,3)
           IF (ITYPB.EQ.1)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH ATOM     ',ISPZB
+     .      WRITE (iunout,*) 'CROSS-COLLISION WITH ATOM     ',ISPZB
           IF (ITYPB.EQ.2)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH MOLECULE ',ISPZB
+     .      WRITE (iunout,*) 'CROSS-COLLISION WITH MOLECULE ',ISPZB
           IF (ITYPB.EQ.3)
-     .      WRITE (iunout,*) 'CROSS COLLISION WITH TEST ION ',ISPZB
+     .      WRITE (iunout,*) 'CROSS-COLLISION WITH TEST ION ',ISPZB
         ENDIF
       ENDIF
 

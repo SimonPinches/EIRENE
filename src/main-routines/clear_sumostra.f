@@ -30,14 +30,14 @@ C  ARRAYS: EE,FF,....
       EES    = 0._DP
       FF     = 0._DP
       FFS    = 0._DP
-C  BGK-ARRAYS:
+C  BGK ARRAYS:
       IF (NSIGI_BGK.GT.0) THEN
         STVS_BGK=0._DP
         EES_BGK=0._DP
         STV_BGK=0._DP
         EE_BGK=0._DP
       ENDIF
-C  COP-ARRAYS:
+C  COP ARRAYS:
       IF (NSIGI_COP.GT.0) THEN
         STVS_COP=0._DP
         EES_COP=0._DP

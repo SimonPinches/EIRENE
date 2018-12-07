@@ -23,7 +23,7 @@ C                                  IS PERFORMED
 C              = 0, IF TRACK OUTSIDE RADIAL MESH
 C                   IF MRSURF .NE. 0 THEN
 C                   REENTRY FOUND AT RADIAL SURFACE MRSURF.
-C                   OTHERWISE: REENTRY AT NON DEFAULT
+C                   OTHERWISE: REENTRY AT NON-DEFAULT
 C                   POLOIDAL SURFACES IS SEARCHED FOR IN THIS CALL
 C     NPCELL =
 C     IPCELL =
@@ -305,7 +305,7 @@ C  STOP HISTORY AT NON-DEFAULT STANDARD SURFACE J2
           ITCELL=NTCELL
           Z01=ZSURF(J2)
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*)
+          IF (NLTRC) WRITE (iunout,*)
      .              'STOP AT MTSURF ',MTSURF
 #endif
           GOTO 5000
@@ -321,7 +321,7 @@ C  LAST CELL
 C
 
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
+      IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
 #endif
 
       NTCELL=J1

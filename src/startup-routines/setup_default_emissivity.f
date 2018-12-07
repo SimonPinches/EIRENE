@@ -18,7 +18,7 @@ cdr  number of contributions:  detected from input file,
 cdr                            as in old ba... ly... routines
 cdr                           (there sum over contributions only
 cdr                            on ADDV tallies),
-cdr  hard coded here: use pop.coeffs from amjuel H.12, and
+cdr  hard-coded here: use pop.coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
 cdr
@@ -70,7 +70,7 @@ C  RADIATIVE TRANSITION RATE (1/S)
 c  transition energy
       EMIS_LINES(1)%TRANS_EN = RY *
      .                        (1._dp/(2._DP*2._DP)-1._DP/(3._DP*3._DP))
-C  identifyer of Line:
+C  identifier of Line:
       EMIS_LINES(1)%ENERGY = 1.8889_DP
       EMIS_LINES(1)%POP_ESC = 1.0_DP
       EMIS_LINES(1)%IROW_ESC = 0
@@ -812,7 +812,7 @@ C  H(n=5)/H3+
       CNT%FRATIO(1)       = 'AMJUEL  '
       CNT%RAT_H123(1)     = 'H.11'
       CNT%RAT_REACTION(1) = '4.0a     '
-      CNT%RAT_CR (1)      = 'OT '
+      CNT%RAT_CR(1)       = 'OT '
       CNT%ISP(2)          = 1
       CNT%ITP(2)          = 2
       CNT%ISP(3)          = 1

@@ -1,4 +1,4 @@
-chf Nov.  18 :  samvol_usr added, for levgeo=10 option
+chf Nov.  18 : samvol_usr added, for levgeo=10 option
 cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
 cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
@@ -10,7 +10,7 @@ cdr             even if npts=0 for the vol-rec stratum
 
 cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2203.07: LEVGEO=6 --> LEVGEO=10
-!pb  2710.06: use flux set by user defined sampling routine
+!pb  2710.06: use flux set by user-defined sampling routine
 !pb  1001.06: ENTRY SAMVOL_REINIT added for reinitialsation of Eirene
 !pb  1812.06: calculate bremsstrahlung
 !pb  2408.06: set output values for DIWL and SHWL
@@ -160,7 +160,7 @@ C  SPECTRAL CUT-OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
 
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
-    3     CONTINUE
+    3   CONTINUE
     2 CONTINUE
 
 C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
@@ -175,7 +175,7 @@ C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
           SREC(0,0)   =SREC(0,0)   +SREC(IPLS,IRRC)
           DO 5 J=1,NSBOX
             FREC(IFPLS,0,J)=FREC(IFPLS,0,J)+FREC(IFPLS,IIRC,J)
-    5     CONTINUE
+    5   CONTINUE
     4 CONTINUE
 C
 C
@@ -205,7 +205,7 @@ c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
                 IF (REC.LE.0.D0) GOTO 6
                 ADD=(1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J))*REC
-C  SPECTRAL CUT OFF, CURRENTLY ONLY FOR PHOTONS
+C  SPECTRAL CUT-OFF, CURRENTLY ONLY FOR PHOTONS
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
@@ -262,7 +262,7 @@ C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
                 END IF
 c  Turn eV/s/particle into Watt/cell
                 ADD=EELRC*DIIN(IPLS,J)*VOL(J)*ELCHA
-C  SPECTRAL CUT OFF (PHOTONS ONLY)
+C  SPECTRAL CUT-OFF (PHOTONS ONLY)
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
@@ -506,17 +506,17 @@ C  INDIRECT ADDRESSING
    52         CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN
-                WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR: '
+                WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR:'
                 WRITE (IUNOUT,*) 'ISTRA, IVOLSI, IPLS, ISTEP ',
      .                            ISTRA, IVL   , IPLS, ISTEP
                 WRITE (IUNOUT,*) 'EITHER: ISTEP OUT OF RANGE IN SAMVOL'
-                WRITE (IUNOUT,*) 'OR:  DENSITY OF RECOMBINING IPLS = 0 '
+                WRITE (IUNOUT,*) 'OR: DENSITY OF RECOMBINING IPLS = 0'
                 SORWGT(IVL,ISTRA)=0.D0
                 GOTO 53
               ENDIF
               SORWGT(IVL,ISTRA)=SUM
               CALL EIRENE_LEER(1)
-              WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED '
+              WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED'
               CALL EIRENE_MASJ2R
      .          ('IVOLSI,ISTRA,SORWGT     ',IVOLSI,ISTRA,SUM)
               IF (TRCSOU) THEN
@@ -531,9 +531,9 @@ c
 C
           IF (SUMM.GT.0.D0) THEN
             FLUX(ISTRA)=SUMM
-            WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED '
-            CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX     ',
-     .                   ISTRA,FLUX(ISTRA),EISUMM)
+            WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED'
+            CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX    ',
+     .                          ISTRA,FLUX(ISTRA),EISUMM)
             CALL EIRENE_LEER(1)
           ELSE
             FLUX(ISTRA)=0.D0
@@ -587,7 +587,7 @@ C  AT THIS POINT: CALLED FROM PARTICLE LOOP TO INITIALIZE TEST FLIGHT
 C
       ENTRY EIRENE_SAMVL1
      .      (NVLM,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
-C  USER SUPPLIED SOURCE
+C  USER-SUPPLIED SOURCE
 C
       IF (SORLIM(NVLM,ISTRA).LT.0) THEN
         CALL EIRENE_SM1USR(NVLM,X0,Y0,Z0,

@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
+c      Saha, Boltzmann, Corona, col-rad, file (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "Colrad", "Saha": need electron density as
+c              "Corona", "col-rad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -762,18 +762,18 @@ C
       END IF
 
       IF (LDISMO) THEN
-	call eirene_cell_to_corner(DEIN,DEINCORNER)
+        call eirene_cell_to_corner(DEIN,DEINCORNER)
         do ipls = 1, npls
- 	  call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
+          call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
         end do
       END IF
 
       IF (LVSMO) THEN
         do iplsv = 1, nplsv
- 	  call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
- 	  call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
- 	  call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
- 	  call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
+          call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
+          call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
+          call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
+          call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
         end do
       END IF
 

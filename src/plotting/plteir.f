@@ -4,7 +4,7 @@ cdr            the fluxes outside the range of spectra.
 cpb  30.7.04:  deal with switched off tallies
 cdr  10.6.05:  further modifications of plot for spectra (text,
 c              total, plot vs. wavelength, plot 2 spectra into same frame
-c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop--> sgms_bgk
+c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop --> sgms_bgk
 !pb  18.12.06: general checking of XMCP removed to allow plots of
 !              input tallies even is no Monte Carlo particle has been followed
 !    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
@@ -14,7 +14,7 @@ C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
-cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !
+cdr  Aug.15  : scaling of spectrum tallies: hard-wired options. To be done !
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
@@ -83,7 +83,7 @@ C
         WRITE (iunout,*) 'PLTEIR CALLED, ISTRA, XMCP: ',
      .                                   ISTRA,XMCP(ISTRA)
         IF (XMCP(ISTRA).EQ.0.0) THEN
-          WRITE (iunout,*) 'PLOTTING ABANDONNED FOR ALL OUTPUT TALLIES'
+          WRITE (iunout,*) 'PLOTTING ABANDONED FOR ALL OUTPUT TALLIES'
         ENDIF
       ENDIF
 C
@@ -155,7 +155,7 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (iunout,*) 'ERROR IN PLTEIR: DATA FOR STRATUM ISTRA= ',
      .                    ISTRA
-        WRITE (iunout,*) 'ARE NOT AVAILABLE. PLOTS ABANDONNED'
+        WRITE (iunout,*) 'ARE NOT AVAILABLE. PLOTS ABANDONED'
         RETURN
       ENDIF
 
@@ -170,21 +170,21 @@ C
       WRITE (HEAD(13:15),'(I3)') ISTRA
       ENDIF
 C
-      HEAD0='VOLUME AVERAGED BACKGROUND TALLY, INPUT
+      HEAD0='VOLUME-AVERAGED BACKGROUND TALLY, INPUT
      .           '
-      HEAD1='DEFAULT VOLUME AVERAGED TALLY, TRACKLENGTH ESTIMATED
+      HEAD1='DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
      .           '
-      HEAD2='ADDITIONAL VOLUME AVERAGED TALLY, TRACKLENGTH ESTIMATED
+      HEAD2='ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
      .           '
-      HEAD3='ADDITIONAL VOLUME AVERAGED TALLY, COLLISION ESTIMATED
+      HEAD3='ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED
      .           '
-      HEAD4='VOLUME AVERAGED TALLY, SNAPSHOT ESTIMATED
+      HEAD4='VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED
      .           '
-      HEAD5='VOLUME AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
+      HEAD5='VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
      .           '
       HEAD6='BGK TALLY
      .           '
-      HEAD7='ALGEBRAIC FUNCTION OF VOLUME AVERAGED TALLIES
+      HEAD7='ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES
      .           '
       HEAD8='RELATIVE STANDARD DEVIATION
      .           '
@@ -474,7 +474,7 @@ C  EQUIDISTANT IN LOG SCALE
                 DO I=IA,IE
                   XXP2D(I)=EXP(XI+(I-IA)/DEL*(XE-XI))
                 ENDDO
-C  USER DEFINED ABSCISSA, XXP2D_USR
+C  USER-DEFINED ABSCISSA, XXP2D_USR
               ELSEIF (XMI.GT.XMA.AND.(XMI.LE.0.OR.XMA.LE.0)) THEN
                 DO I=IA,IE
                   XXP2D(I)=XXP2D_USR(I,IBLD)
@@ -490,7 +490,7 @@ C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1.ST (RADIAL) GRID
 C
             IXSET2=0
             IF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2) THEN
-C   USE RADIAL SURFACE CENTERED GRID "RHOSRF"
+C   USE RADIAL SURFACE-CENTERED GRID "RHOSRF"
 C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
               DO 130 I=1,NR1ST
                 XXP2D(I)=RHOSRF(I)
@@ -529,8 +529,8 @@ C
               GOTO 1000
             ENDIF
 C
-C  IN CASE OF LSMOT2, SET ZONE CENTERED ABSCISSA
-C  GRID FROM SURFACE CENTERED  GRID  "X"
+C  IN CASE OF LSMOT2, SET ZONE-CENTERED ABSCISSA
+C  GRID FROM SURFACE-CENTERED GRID "X"
 C
             IF (LSMOT2(IBLD)) THEN
               DO 137 J=1,NRAD-1
@@ -676,7 +676,7 @@ C  SYMMETRY CONDITION AT POLAR ANGLE THETA=YIA AND THETA=2*PI+YIA
 C  NOT READY: IXTL3 NOT DEFINED HERE. ENFORCE SYMMETRY AUTOMATICALLY EARLIER
 C             IF (LEVGEO.EQ.2.AND.IYTL3.EQ.NP2ND) THEN
 C               DO 1036 I=1,IXTL3
-C1036             VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
+C 1036            VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
 C             ENDIF
  1040       CONTINUE
 C
@@ -932,7 +932,7 @@ C
 C
 10000 CONTINUE
 
-C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
+C  LOOP IBLD FINISHED, NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
 C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED
 C        PLOTTING IS NOT YET CONDITIONED BY FLAGS
@@ -1023,7 +1023,7 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
         TXHEAD(32:42)='INTEGRAL: '
         WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%SPCS
         IERR=0
-C  MANY SPECTRA INTO ONE PICTURE_
+C  MANY SPECTRA INTO ONE PICTURE
         L_SAME=ESTIML(ISPC)%SPC_SAME .NE. 1.D0
 C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
         IF (ISPC.EQ.1) L_SAME=.FALSE.
@@ -1040,7 +1040,7 @@ C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
 
 C  NOW REPEAT SAME PLOTS, BUT VS. WAVELENGTH
       IF (NPHOTI > 0) THEN
-CDR TO BE DONE: DISTUINGISH BETWEEN PHOTON AND PARTICLE SPECTRA
+CDR TO BE DONE: DISTINGUISH BETWEEN PHOTON AND PARTICLE SPECTRA
 
       DO ISPC=1,NADSPC
         ITP=ESTIML(ISPC)%IPRTYP

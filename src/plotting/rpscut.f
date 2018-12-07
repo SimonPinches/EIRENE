@@ -82,7 +82,7 @@
       integer :: ic, i, nump1, nump2, noedge, jc, no_side, nxt_tet
 
       nkanten = 0
-! für jede Koordinate
+! fuer jede Koordinate
       do ic=1,ncoord
 
 ! durchsuche die Kanten der angrenzenden Tetraeder
@@ -107,7 +107,7 @@
             if (tetra_kanten(noedge,itet) /= 0) cycle
 ! die Kante ist neu
           jc = nteck(nump2,itet)
-            nkanten = nkanten+1
+          nkanten = nkanten+1
           kanten(1,nkanten) = ic
           kanten(2,nkanten) = jc
           tetra_kanten(noedge,itet) = nkanten
@@ -116,7 +116,7 @@
 
           akt_tet = itet
           akt_edge = noedge
-            no_side = angrenzende_seiten(1,akt_edge)
+          no_side = angrenzende_seiten(1,akt_edge)
           isi = 0
           do
             nxt_tet = ntbar(no_side,akt_tet)
@@ -166,7 +166,7 @@
      .           (/ 1,2,  1,3,  1,4,  2,3,  2,4,  3,4 /), (/ 2, 6 /) )
 
       nkanten = 0
-! für jeden Tetraeder
+! fuer jeden Tetraeder
       do itet=1,ntet
 
 ! durchsuche die Kanten des Tetraeders

@@ -1,4 +1,4 @@
-C  sept.2014: very minor coding clean up.
+C  sept.2014: very minor coding clean-up.
 C
       SUBROUTINE EIRENE_FMAXWL
 C

@@ -70,7 +70,7 @@ C
           GOTO 4711
         ELSE
           WRITE (iunout,*) ' NONSENSE IN ZYLPLN   JS = ',JS
-          WRITE (iunout,*) ' PLOT OF THIS SURFACE ABANDONNED '
+          WRITE (iunout,*) ' PLOT OF THIS SURFACE ABANDONED '
           RETURN
         ENDIF
       ENDIF

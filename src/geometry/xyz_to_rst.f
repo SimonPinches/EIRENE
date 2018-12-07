@@ -110,7 +110,7 @@ c
            root2 = 0._DP
         endif
 
-    	dummy = (-sqrt(root1) - b_xi)
+        dummy = (-sqrt(root1) - b_xi)
         if ( abs(dummy) > EPS30 ) then
           xip = 2._dp*c_xi /
      .        (-sqrt(root1) - b_xi)
@@ -118,12 +118,12 @@ c
           xip = 0._DP
         endif
 c
-     	dummy = ( sqrt(root2) - b_eta)
+        dummy = ( sqrt(root2) - b_eta)
         if ( abs(dummy) > EPS30 ) then
            etap = 2._dp*c_eta /dummy
-    	else
+        else
            etap = 0._DP
-    	endif
+        endif
 
         r = xip
         s = etap

@@ -187,7 +187,7 @@ cdr one profile ipls set at a time
         DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         GOTO 130
   122   CALL EIRENE_PROFE (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                             DI4(IPLS),DI5(IPLS),DVAC)
+     .                   DI4(IPLS),DI5(IPLS),DVAC)
         DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         GOTO 130
   123   CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)
@@ -222,8 +222,6 @@ cdr first dimension of arrays:  always NPLS
   127 CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
       GOTO 1130
  1130 CONTINUE
-
-
 
 C  DRIFT VELOCITY
       IND=INDPRO(4)

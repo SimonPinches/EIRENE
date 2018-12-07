@@ -27,8 +27,8 @@ cdr            rather than p2np, were used also for PI reactions. now corrected
 
 cdr         :  further: collision estimators for PI processes, e§pl and e§el tallies: activated
 cdr         :  see also corresponding corrections/changes in update for tracklength estimators
-cdr DEC. 15 :  bulk ion energy estimators: species resolved.
-cdr            not ready: esigei(4, ...), esigpi(4,...) must be species resolved.
+cdr DEC. 15 :  bulk ion energy estimators: species-resolved.
+cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved.
 
 cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
@@ -86,7 +86,7 @@ C                           TRANSITION NEUTRAL-->ION (IF CALLED
 C                           BY FOLNEUT), OR
 C                           TRANSITION ION-->NEUTRAL (IF CALLED
 C                           BY FOLION)
-C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST COLL. SCORING.
+C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
 C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
 C
       USE EIRMOD_PRECISION
@@ -171,7 +171,7 @@ C  PARALLEL MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION
         IMETCL(NCELL) = NCLMT
       END IF
 C
-C  ABSORPTION BIASSING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES
+C  ABSORPTION BIASING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES
 
 C  SUPPRESS THOSE IREI PROCESSES WITH ZERO
 C                      TEST PARTICLE SECONDARIES
@@ -182,7 +182,7 @@ C                      TEST PARTICLE SECONDARIES
       NEII_RED=0
 
       IF (WEIGHT.LT.WMINV) THEN
-C  WEIGHT ALREADY TOO SMALL, NO SUPPRESION OF ABSORPTION
+C  WEIGHT ALREADY TOO SMALL, NO SUPPRESSION OF ABSORPTION
         NEII_RED=NMEII(IOLD)
         LGEI_RED(:)=LGMEI(IOLD,:)
       ELSE
@@ -266,7 +266,7 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLEI(IREI,0)
 C
 C  PRE-COLLISION ESTIMATOR FOR EMML,
-C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
+C  PRE- AND POST-COLLISION ESTIMATOR FOR EMPL AND EMEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEMML) EMML(NCELL)=EMML(NCELL)-WEIGHT*E0
@@ -276,7 +276,7 @@ cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER.
           IF (LEMPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr:  this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
+cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -309,7 +309,7 @@ Cdr  PTOT=0,1,2,etc..., = integer, number of next generation test particles
 CC.......................................................................
         IF (.NOT.NLCASCAD) GOTO 351  !  EI PROCESS CASCADING  MOL
 cdr
-c    splitting of post collision particles, i.e. create a true cascade
+c    splitting of post-collision particles, i.e. create a true cascade
 
 cdr  ANALOGUE SAMPLING, I.E. SPLITTING, IN CASE OF MORE THAN ONE SECONDARY.
         IF (NLEVEL+PTOT <= MAXLEVEL) THEN   ! there is still storage for splitting
@@ -365,7 +365,7 @@ C  NUMBER OF NODES AT THIS LEVEL
               ENDIF
             END DO
           END DO  ! LOOP OVER ALL POTENTIAL SECONDARIES DONE
-C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST COLLISION PARAMETERS
+C  FOR ALL SECONDARIES WE HAVE CALLED VELOEI, AND STORED POST-COLLISION PARAMETERS
 C  ON SPLITTING ARRAYS.
 
 !  REMOVE LAST PARTICLE FROM STORAGE AS ITS TRAJECTORY WILL BE CONTINUED NOW
@@ -845,7 +845,7 @@ C  ABSORBED WEIGHT: WEIABS
 C       WEIABS=WEIGHT*PPLPI(IRPI,0)
 C
 C  PRE- COLLISION ESTIMATOR FOR EMML,
-C  PRE- AND POST COLLISION ESTIMATOR FOR EMPL AND EMEL
+C  PRE- AND POST-COLLISION ESTIMATOR FOR EMPL AND EMEL
         IF (IESTPI(IRPI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEMML) EMML(NCELL)=EMML(NCELL)-WEIGHT*E0

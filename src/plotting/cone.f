@@ -99,18 +99,18 @@ C PLOTTE DIE KREISE
      .  EIRENE_SCCONE(X0,Y0,Z0,VX,VY,VZ,ALF,TH,T2,BX,BY,BZ,CX,CY,CZ,
      .                DANG,AR,IRIGHT,XP,YP,1,NA+1,1)
         ELSE
-        PX=X0+T*VX
-        PY=Y0+T*VY
-        PZ=Z0+T*VZ
-        RAD=T*TAN(ALF)
-        DO 3 J=1,NA+1
-          PHI=(J-1)*DANG
-          XK=RAD*COS(PHI)
-          YK=RAD*SIN(PHI)
-          PXX=XK*BX+YK*CX+PX
-          PYY=XK*BY+YK*CY+PY
-          PZZ=XK*BZ+YK*CZ+PZ
-    3     CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+          PX=X0+T*VX
+          PY=Y0+T*VY
+          PZ=Z0+T*VZ
+          RAD=T*TAN(ALF)
+          DO 3 J=1,NA+1
+            PHI=(J-1)*DANG
+            XK=RAD*COS(PHI)
+            YK=RAD*SIN(PHI)
+            PXX=XK*BX+YK*CX+PX
+            PYY=XK*BY+YK*CY+PY
+            PZZ=XK*BZ+YK*CZ+PZ
+    3       CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1

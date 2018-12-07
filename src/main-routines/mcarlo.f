@@ -3,7 +3,7 @@ c                 because otherwise in iterative mode a stratum cannot be
 c                 re-activated, once it was de-activated in a particlar iteration.
 c                 v.kotov
 c  19.12.05:  bug: no printout of surface tally std. dev., for sum over strata
-c             bug fix: here in macrlo.f: sigmaw = stvw and sgmws=stvws added
+c             bug fix: here in mcarlo.f: sigmaw = stvw and sgmws=stvws added
 c             also needed for this bug fix: clear_sumostra, stat_sumostra
 
 !PB 02.03.06: storing of trajectories
@@ -353,7 +353,7 @@ C  TO CPU TIME ASSIGNED TO EACH STRATUM
 C
       IF (NPRNLI.GT.0) THEN
         WRITE(iunout,*) 'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED'
-        WRITE(iunout,*) 'ON CENSUS (TIME DEP MODE): '
+        WRITE(iunout,*) 'ON CENSUS (TIME DEP MODE):'
         WRITE(iunout,*) 'PROP. TO CPU-TIME ALLOCATED FOR EACH STRATUM'
         DO  ISTRA=1,NSTRAI
           XFACT=XTIM(ISTRA)/XX1 !VKMPI
@@ -1255,7 +1255,7 @@ csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
         IF (NPRS > 1) THEN
-C This is very case specific and my be different for each plasma code.
+C This is very case-specific and my be different for each plasma code.
 C Introducing another interfacing subroutine within the strata-loop
 C solves this issue much more flexible.
 C This if block needs to go into the if3cop, if relevant for the

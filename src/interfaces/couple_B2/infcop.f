@@ -663,10 +663,10 @@ C
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
             write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
      .                                          ale,alw,aln,als,alx
-! cell-centered unit vector along poloidal direcion
+! cell-centered unit vector along poloidal direction
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
-! cell-centered unit vector along "radial" (grad psi) direcion,
+! cell-centered unit vector along "radial" (grad psi) direction,
 !                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
@@ -994,7 +994,7 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch:  poloidal velocity (i.e. cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
 c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
@@ -2883,7 +2883,7 @@ CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
 
           DO 7558 IFL=1,NFLA
             TEST=CHPS(IFL)/(SNIS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in sni,ifl ',test,ifl
+            write (iunout,*) ' global change in sni,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGP) THEN
               LSTP3=.TRUE.
               LTEST=.FALSE.  !  stop short cycle mode. Full new set of  trajectories.
@@ -2893,7 +2893,7 @@ CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
      .                          ISTRAI,IFL
             ENDIF
             TEST=CHMOS(IFL)/(SMOS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in smo,ifl ',test,ifl
+            write (iunout,*) ' global change in smo,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGMOM) THEN
               LSTP3=.TRUE.
               LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
@@ -2905,7 +2905,7 @@ CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
  7558     CONTINUE
 
           TEST=CHEES/(SEES+1.D-60)*100.
-            write (iunout,*) ' global change in see,ifl ',test,ifl
+          write (iunout,*) ' global change in see,ifl ',test,ifl
           IF (ABS(TEST).GT.CHGEE) THEN
             LSTP3=.TRUE.
             LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.

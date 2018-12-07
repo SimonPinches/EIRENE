@@ -46,7 +46,7 @@ c   electron energy losses per collision from the default PI processes
      .       'BUT THERE SHOULD BE NO DEFAULT PI PROCESSES '
         CALL EIRENE_EXIT_OWN(1)
 
-c  non default models, data from external databases
+c  non-default models, data from external databases
       ELSE IF (KK > 0) THEN
         IF (JELRPI(IRPI) == 1) THEN  !  Te dependence
           ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)

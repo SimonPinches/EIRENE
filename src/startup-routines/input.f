@@ -485,7 +485,7 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
       SELECT CASE( NPRLL )
         CASE( -1 )
-          CALL EIRENE_MASAGE('       MPI USER DEFINED')
+          CALL EIRENE_MASAGE('       MPI USER-DEFINED')
 C       CASE( 0 )
 C         Reserved for default, see below
         CASE( 1 )
@@ -3358,7 +3358,7 @@ c  search for input block 11a
 CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
 cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
-CPB  ACTIVATE SPECIES RESOLVED CPU CONSUMPTION OPTION
+CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
      .                  TRCHKTIM
       do I = 0, NSTRA, 60
         READ (IUNIN,'(A72)') ZEILE

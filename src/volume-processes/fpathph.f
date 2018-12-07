@@ -11,9 +11,9 @@ C               added: jcou,ncou
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
 cdr  oct.14  :  synchronized with fpathm, fpathi
 
-cdr 31.10.14 :  speedup of final cut off evaluations
+cdr 31.10.14 :  speedup of final cut-off evaluations
 
-cdr note:       sgnl_poly evaluations are just the 8th order polynom,
+cdr note:       sgnl_poly evaluations are just the 8th-order polynomial,
 cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here),
 cdr             there is no need to call  --> move to in-line
@@ -58,7 +58,7 @@ C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
 C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
 
 C   OUTPUT: COMMON COMLCA
-C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
+C           CFLAG: FLAG FOR SAMPLING OF POST-COLLISION STATES
 C           CFLAG(1,...): EI
 C           CFLAG(2,...): NOT IN USE, was DS process class in very old versions
 C           CFLAG(3,...): CX
@@ -67,7 +67,7 @@ C           CFLAG(5,...): EL
 C           CFLAG(6,...): RC
 c           CFLAG(7,...): PH    (photonic processes, formerly: OT)
 C
-C   FLAG FOR POST COLLISION DISTRIBUTION IN VELOCITY SPACE
+C   FLAG FOR POST-COLLISION DISTRIBUTION IN VELOCITY SPACE
 C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IRPH
 C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
 C                                                   SPECIES ALLOWED)
@@ -245,9 +245,9 @@ C
   100 CONTINUE
 
 C
-C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  CUT-OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
-C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
+C  CURRENTLY: CUT-OFF AT 1E-10 TIMES SIGMAX
 C
       IF (SIGPHT.GT.0._DP) THEN
         DO IRPH=1,NRPH
@@ -269,6 +269,6 @@ C
       WRITE (iunout,*)
      .  'ERROR IN FPATHPH: INCONSISTENT PHOTON COLL. DATA'
       WRITE (iunout,*) 'ITYP,IPHOT,IRPH,MODCOL(7,J,IRPH),J=1,4 '
-      WRITE (iunout,*) ITYP, IPHOT,IRPH,(MODCOL(7,J,IRPH),J=1,4)
+      WRITE (iunout,*)  ITYP,IPHOT,IRPH,(MODCOL(7,J,IRPH),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
       END

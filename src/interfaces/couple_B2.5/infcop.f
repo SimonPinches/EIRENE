@@ -1,6 +1,6 @@
 cdr Nov 2017: clean-up, comments. Sync. between couple_B2.5, vs. 2008,
 cdr           with couple_B2, Nov. 17 git master.
-c             1) remove FNIX_YB, FNIY_XB 
+c             1) remove FNIX_YB, FNIY_XB
 c             2) add input: mshfrm
 c             3) remove printout of sputter fluxes, after end of global balances
 c             4) additional species index (ipls) in eapl,empl,eipl
@@ -15,7 +15,7 @@ c             CPPV --> MPPL_COP
 c             ELTEST, EMAXW,... for a target energy flux as interpreted from B2 output.
 c            12) bug fix re vol.rec., only one ipls per stratum is supported
 c                code was correct in solps4.3, and garching versions of couple_b2/b2.5
-c            
+c
 c
 cdr           This is master version for all other versions of infcop.f
 
@@ -33,7 +33,7 @@ C                                                           TRANSP,
 C                                                           DUMMY
 C
 C   THIS VERSION: $COUPLE_B2.5  JAN. 2018
-c                 proprietary version of FZJ, for local B2.5 code versions   
+c                 proprietary version of FZJ, for local B2.5 code versions
 C
 C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
@@ -119,9 +119,9 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
       USE EIRMOD_CTRIG
-C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)  
+C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       USE EIRMOD_BRAEIR
-C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)             
+C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_EIRBRA
       USE EIRMOD_BRASCL
 
@@ -145,8 +145,8 @@ C
       TYPE(CELLMUL), POINTER :: CPMUL
 C
       REAL(DP) :: SEES0(NSTRA), SEIS0(NSTRA)
-      REAL(DP), ALLOCATABLE, SAVE :: 
-     .            CHPM(:,:), CHEEM(:), CHEIM(:), 
+      REAL(DP), ALLOCATABLE, SAVE ::
+     .            CHPM(:,:), CHEEM(:), CHEIM(:),
      .            CHMOM(:,:)
       REAL(DP) :: DI(NPLS), VP(NPLS)
 
@@ -154,16 +154,16 @@ cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
       REAL(DP) :: SSN(NFL),SSNI(NFL),BALANN(NFL),TOTN(NFL),RN(NFL)
 
-C pppl_cop, mppl_cop, eppl_cop and epel_cop are the exact 
-c volumetric source tallies, 
-c while default tallies pppl, mppl, eppl and epel are 
-c the corresponding tallies scored from random sampling in eirene  
-      REAL(DP), ALLOCATABLE, SAVE :: 
+C pppl_cop, mppl_cop, eppl_cop and epel_cop are the exact
+c volumetric source tallies,
+c while default tallies pppl, mppl, eppl and epel are
+c the corresponding tallies scored from random sampling in eirene
+      REAL(DP), ALLOCATABLE, SAVE ::
      .            PPPL_COP(:,:), MPPL_COP(:,:),
      .            EPPL_COP(:,:), EPEL_COP(:)
 C
 c  for short cycle correction terms, in vol. rec. strata.
-      REAL(DP), ALLOCATABLE, SAVE :: 
+      REAL(DP), ALLOCATABLE, SAVE ::
      .            PPLODA(:,:), CPVODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
 C
@@ -176,18 +176,18 @@ C
 
       REAL(DP), SAVE :: SCALM, SCALE, SCALI, SEES, SEIS,
      .          SFEISY, SFEESY, RECADD, RECTOT,
-     .          EEADD, EIADD, PIADD, 
+     .          EEADD, EIADD, PIADD,
      .          SMOCL, CHEES, CHEIS, SNICL,
-     .          SIGNUM, 
+     .          SIGNUM,
      .          SSE, BALANI, BALANE, SSEE, SSI, RE, RI, RNT, TOT,
      .          TOTI, TOTE, BALAN, RRBC,
      .          SSEI, SFEIEX, SFEEEX, SFEENY, SFEIWX, VVBC,
-     .          UUBC, UPBC, RBC, UDBC, VL, V, T, 
+     .          UUBC, UPBC, RBC, UDBC, VL, V, T,
      .          BX, BY, BZ, BN, TEST,
      .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP,
      .          TES, TIS,
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
-     .          FLX, ESUM, DR, VR, VTEST, VTEST2, EADD, 
+     .          FLX, ESUM, DR, VR, VTEST, VTEST2, EADD,
      .          EMAXW, ESHEATH, SI,
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI,
      .          CHI, CHP, CHE, CS, THMAX, EESHT, EEMAX,
@@ -195,7 +195,7 @@ C
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFEEWX, SFEINY, PM1, DRR, VDBC
 
-      INTEGER, SAVE :: J, IRC, JC, INC, IADD, 
+      INTEGER, SAVE :: J, IRC, JC, INC, IADD,
      .           IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
      .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
@@ -208,7 +208,7 @@ C
      .           MINSPEZ, MAXSPEZ
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
-      REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1, 
+      REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,
      .            EIRENE_SHEATH, EIRENE_EMAXW
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
@@ -223,7 +223,7 @@ C
      . CHPS(:),    SNIS(:),    CHMOS(:),  SMOS(:),  SCALN(:),
      . SNIS0(:,:), SMOS0(:,:),
 c
-     . RESSNI(:,:),  RESSMO(:,:), 
+     . RESSNI(:,:),  RESSMO(:,:),
      . RESSEE(:), RESSEI(:)
      .,FLXEIR(:)
 
@@ -260,9 +260,9 @@ C
 99990 CONTINUE
 
       call eirene_leer(2)
-      write (iunout,*) 'Subr. INFCOP called ' 
+      write (iunout,*) 'Subr. INFCOP called '
       write (iunout,*) 'This is a proprietary FZJ version of an '
-      write (iunout,*) 'interfacing code to B2, B2.5 plasma solvers.' 
+      write (iunout,*) 'interfacing code to B2, B2.5 plasma solvers.'
       write (iunout,*) 'NOT ready for 3rd parties'
       call eirene_leer(2)
 C
@@ -278,7 +278,7 @@ C
 
         ALLOCATE (PPPL_COP(NPLS,NRAD))
         ALLOCATE (MPPL_COP(NPLS,NRAD))
-        ALLOCATE (EPPL_COP(NPLS,NRAD)) 
+        ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 
         ALLOCATE (PPLODA(NPLS,NRAD))
@@ -397,7 +397,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2.5 INTO EIRENE
 C  HERE: B2.5 VOLUME TALLIES
         READ (IUNIN,'(I6)') NAINB
-C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12  
+C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
         NAIN = MAX(NAIN,NAINB)
         CALL EIRENE_ALLOC_CCOUPL(2)
         WRITE (iunout,*) '        NAINI = ',NAINB
@@ -547,12 +547,12 @@ C
 c  unit vector parallel to B field, in poloidal section
         ALLOCATE (PUX(NRAD))
         ALLOCATE (PUY(NRAD))
-c  only for inclined target option: 
+c  only for inclined target option:
         ALLOCATE (PUXE(NRAD))
         ALLOCATE (PUYE(NRAD))
         ALLOCATE (PUXN(NRAD))
         ALLOCATE (PUYN(NRAD))
-c  unit vector perp. to B field, in poloidal section 
+c  unit vector perp. to B field, in poloidal section
         ALLOCATE (PVX(NRAD))
         ALLOCATE (PVY(NRAD))
 c  only for inclined target option:
@@ -654,7 +654,7 @@ C
             ALE=ALPHXB(IX,IY)
             ALW=ALPHXB(IX-1,IY)
             IF (MAX(ALE,ALW)-MIN(ALE,ALW) > PIA) THEN
-              write (iunout,*) 'modulus 2PI used', ale,alw 
+              write (iunout,*) 'modulus 2PI used', ale,alw
               AL=MIN(ALE,ALW)
               ALW=MAX(ALE,ALW)
               ALE=AL+PI2A
@@ -916,7 +916,7 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch:  poloidal velocity (i.e. cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
 c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
@@ -1384,7 +1384,7 @@ C
 C
 C  INITIALISE FUNCTION STEP (FOR RANDOM SAMPLING ALONG TARGET)
 C  SET SOME SOURCE PARAMETERS EXPLICITLY TO ENFORCE INPUT CONSISTENCY
-C  also: sum over species: flstep(0,...), elstep(0,...) will be set. 
+C  also: sum over species: flstep(0,...), elstep(0,...) will be set.
 C
       FLUX(ITARG)=EIRENE_STEP(IIPLS,IEPLS,NRWL(ITARG),ITARG)
 C
@@ -1403,7 +1403,7 @@ C
       INDIM(1,ITARG)=4
       IF (INDSRC(ITARG).NE.6) THEN
         I34=EIRENE_IDEZ(INT(SORLIM(1,ITARG)),3,3)
-        SORLIM(1,ITARG)=I34*100+04   !sample with step fct. 
+        SORLIM(1,ITARG)=I34*100+04   !sample with step fct.
       ELSEIF (INDSRC(ITARG).EQ.6) THEN
 C  SORLIM DEFAULT WAS 0.D0
         SORLIM(1,ITARG)=0204
@@ -2066,7 +2066,7 @@ C  CORRECTION FOR ELECTRON IMPACT DISSOCIATION OF MOLECULES FINISHED
 
 C
 C  SHORT LOOP CORRECTION FOR VOLUME RECOMBINATION PROCESSES  (UNFINISHED)
-C            
+C
 
         PPLODA=0.D0
         CPMUL => PPPL_COPS(ISTRAI)%PMUL
@@ -2112,7 +2112,7 @@ C
 C  ADD CONTRIBUTIONS TO SOURCE RATES, FROM PRIMARY VOLUME RECOMBINATION SOURCE
 C
         PPPL_COP = 0.D0
-        MPPL_COP = 0.D0  
+        MPPL_COP = 0.D0
         EPPL_COP = 0.D0
         EPEL_COP = 0.D0
 
@@ -2250,7 +2250,7 @@ C
               DO 7541 IY=1,NDYA
                 INN=IY+(IX-1)*NR1ST
                 IN=NCLTAL(INN)
-                SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI) + 
+                SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI) +
      .                           (EAPL(IPLS,IN)+EMPL(IPLS,IN)+
      .                            EIPL(IPLS,IN)+EPPL_COP(IPLS,IN))*
      .                            VOLTAL(IN)
@@ -2327,7 +2327,7 @@ C
             WRITE (iunout,*) 'STOP SHORT CYCLE: ALL B2 TIMESTEPS DONE '
 
           ELSE   ! DO AT LEAST ONE MORE TIME STEP
-CDR  DECIDE FOR THIS CURRENT STRATUM ISTRAI: 
+CDR  DECIDE FOR THIS CURRENT STRATUM ISTRAI:
 CDR     SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
 
 
@@ -2427,7 +2427,7 @@ C
       IRC=3
 C  WRITE RCCPL
       WRITE (11,REC=IRC) RCCPL
-      IF (TRCINT.OR.TRCFLE)   
+      IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  RCCPL,   IRC= ',IRC
 C     IRC=3   STILL
 C  WRITE ICCPL1
@@ -2440,29 +2440,29 @@ C  WRITE ICCPL1
           IF (JC == NOUTAU) THEN
             IRC=IRC+1
             WRITE (11,REC=IRC) IHELP
-            IF (TRCINT.OR.TRCFLE) 
+            IF (TRCINT.OR.TRCFLE)
      .          WRITE (iunout,*) 'WRITE 11  ICCPL1,  IRC= ',IRC
             JC=0
           END IF
         END DO
       END DO
-c  write last (incomplete) record of ICCPL1 
+c  write last (incomplete) record of ICCPL1
       IF (JC > 0) THEN
         IHELP(JC+1:NOUTAU) = 0   ! fill up last record, up to full length NOUTAU
         IRC=IRC+1
         WRITE (11,REC=IRC) IHELP
-        IF (TRCINT.OR.TRCFLE)   
+        IF (TRCINT.OR.TRCFLE)
      .      WRITE (iunout,*) 'WRITE 11  ICCPL1,  IRC= ',IRC
       END IF
       DEALLOCATE (IHELP)
 C  WRITE ICCPL2
       IRC=IRC+1
       WRITE (11,REC=IRC) ICCPL2
-      IF (TRCINT.OR.TRCFLE)   
+      IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  ICCPL2,  IRC= ',IRC
       IRC=IRC+1
       WRITE (11,REC=IRC) LCCPL
-      IF (TRCINT.OR.TRCFLE)   
+      IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  LCCPL,   IRC= ',IRC
 C
 !pb  LSTP is dummy argument to entry IF3COP, thus not available here
@@ -2662,7 +2662,7 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
                 SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)
 
-cdr sheath contributions: count negative for electrons, positive for ions 
+cdr sheath contributions: count negative for electrons, positive for ions
 cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(NDT(I,IPRT),IY)*
      .           NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)*
@@ -2692,7 +2692,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
                 SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
-cdr sheath contributions: count negative for electrons, positive for ions 
+cdr sheath contributions: count negative for electrons, positive for ions
 cdr unfinished:  need to account for charge state of ion species IFL
                 SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
      .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
@@ -2849,7 +2849,7 @@ C
         DO ITARG=1,NTARGI
           IF (ANY(SFNIT(ITARG,1:NFLA).NE.0.0)) THEN
           DO IFL=1,NFLA
-             WRITE(iunout,'(A,I0,A,I0,A,ES12.4)') 'TARGET ', ITARG, 
+             WRITE(iunout,'(A,I0,A,I0,A,ES12.4)') 'TARGET ', ITARG,
      .                      ', NI(IFL =',IFL,') ',SFNIT(ITARG,IFL)
           ENDDO
           ENDIF

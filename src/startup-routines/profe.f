@@ -42,7 +42,7 @@ C
         ENDIF
 C
 C FIND modified RADIAL SURFACE LABELING COORDINATES RHO      AT "SEP"  :RHOSEP
-C                                                         AND AT "RIN0" :RHO0
+C                                                        AND AT "RIN0" :RHO0
 C
         IF (LEVGEO.EQ.2) THEN
           JM1=EIRENE_LEARCA(RHOSEP,RSURF,1,NLOCAL,1,'PROFE       ')

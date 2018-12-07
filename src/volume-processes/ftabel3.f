@@ -21,7 +21,7 @@ c          on background parameters, not on test particle energy.
 C  EVEN THAT MAY NOT BE TRUE:::
 c
 c
-c  hard wired: cut off (density) parameter for fits: 1e8
+c  hard-wired: cut-off (density) parameter for fits: 1e8
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

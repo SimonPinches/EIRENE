@@ -1,6 +1,6 @@
 C> \brief Evaluate EIRENE recommendations for a next run of the same
 C>        model
-C> 
+C>
 C> 1. find NRECOM(istra): recommended number of test particles for next MC cycle.
 C> 2. find RATIO(istra) : ratio between used and recommended no. of particles.
 C>     (the procedure should approach RATIO approx 1.0, after cycling.

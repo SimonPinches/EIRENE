@@ -74,7 +74,7 @@ cdr  increments for tally number iadv
         IA1=NATMI+NMOLI     !  RADIAL ENERGY FLUX
         IA2=2*IA1           !  POLOIDAL CURRENT
         IA3=3*IA1           !  POLOIDAL ENERGY FLUX
-        IA4=4*IA1           !  FLUX (ANGULAR AVERAGED)
+        IA4=4*IA1           !  FLUX (ANGLE-AVERAGED)
       ENDIF
 
 
@@ -111,7 +111,7 @@ C  particle current, poloidal component (CM/SEC)
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin
+c    can be found from default tallies: vden_xzy scalar product bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 C  particle flux, integrated over all directions
@@ -143,7 +143,7 @@ C  particle current, poloidal component (CM/SEC)
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin
+c    can be found from default tallies: vden_xzy scalar product bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 c::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -170,7 +170,7 @@ C
 c  score additional tally: ion conversion rate.  (cx molecules)
 
 C
-C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

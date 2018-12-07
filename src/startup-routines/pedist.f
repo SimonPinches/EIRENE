@@ -16,7 +16,7 @@ C> typical for Monte Carlo codes. An more advanced method using a
 C> proportional allocation (NPRLL == 1) to attempt variance minimization
 C> See EIRENE manual, "stratified source sampling".
 C> when applying stratification is also available.
-C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR)
+C> Furthermore, a user-defined set-up (subroutine EIRENE_PEDIST_USR)
 C> can be used (NPRLL == -1).
 C>
 C> Within this subroutine three arrays are set that define the entire
@@ -168,22 +168,6 @@ C>   processes to one stratum.
 
         NPRS_OPT=0
         NPRS_FREE=NPRS
-
-
-
-C XMCT not stored on fort.11 any more (better place fort.14)
-C Without activating fort.11:
-C 1st iteration, XMCT == 0
-C 2nd iteration, XMCT value of 1st iteration
-C etc.
-c
-cdr  reading from fort.11 was only done in pure "read-runs",
-cdr  for modified printout, initialization, post processing, etc..
-cdr  I.e., without any Monte Carlo execution.
-cdr  The use of XMCT for parallelisation optimization therefore
-cdr  only worked within a single run
-cdr  (but perhaps over many internal or external iterations)
-cdr  until COUTAU was deallocated again.
 
         if(xmct(0) <= 0.0_DP) then
           DO ISTRA=1,NSTRA

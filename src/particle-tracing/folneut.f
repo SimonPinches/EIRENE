@@ -6,7 +6,7 @@ cdr           started: implementation of QSS branch: folstat_neut.f  not ready
 cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
 cdr           PR = prob to reach the next cell boundary.
 cdr           In case of geometrical multi-steps within one macro step
-cdr           (NCOU.GT.1) use PR rather then AX(2)=1, when leaving the NCOU loop
+cdr           (NCOU.GT.1) use PR rather than AX(2)=1, when leaving the NCOU loop
 c
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
@@ -126,7 +126,7 @@ c  tentatively assume: a next generation particle will be born
 
 c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_NEUT=IC_ION
-C  XGENER:  COUNTER FOR GENERATION LIMIT
+C  XGENER: COUNTER FOR GENERATION LIMIT
       XGENER=0.D0
 
   100 LGPART=.TRUE.
@@ -749,7 +749,7 @@ C         MSURFG= ??
      .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
 
-C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
+C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
       case (10)
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN

@@ -236,6 +236,6 @@ C
   999 CONTINUE
       WRITE (iunout,*) 'NOT ENOUGH STORAGE FOR 3D HISTOGRAM PLOT'
       WRITE (iunout,*) 'REDUCE PLOT AREA '
-      WRITE (iunout,*) 'PLOT ABANDONNED'
+      WRITE (iunout,*) 'PLOT ABANDONED'
       RETURN
       END
