@@ -16,7 +16,7 @@ C> typical for Monte Carlo codes. An more advanced method using a
 C> proportional allocation (NPRLL == 1) to attempt variance minimization
 C> See EIRENE manual, "stratified source sampling".
 C> when applying stratification is also available.
-C> Furthermore, a user defined set-up (subroutine EIRENE_PEDIST_USR)
+C> Furthermore, a user-defined set-up (subroutine EIRENE_PEDIST_USR)
 C> can be used (NPRLL == -1).
 C>
 C> Within this subroutine three arrays are set that define the entire
@@ -92,7 +92,7 @@ C>   processes to one stratum.
       USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_COUTAU, ONLY: XMCP
- 
+
       IMPLICIT NONE
 
       REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
@@ -169,10 +169,10 @@ C>   processes to one stratum.
         NPRS_OPT=0
         NPRS_FREE=NPRS
 
-        if(xmct(0) <= 0.0 ) then
+        if(xmct(0) <= 0.0_DP) then
           DO ISTRA=1,NSTRA
             delt=xtim(istra)
-            IF (delt/tmean.GE.1.E-5) THEN
+            IF (delt/tmean.GE.1.E-5_DP) THEN
 ! a stratum that has got computation time gets at least 1 processor
               NPESTR(ISTRA)=1
               NPRS_FREE=NPRS_FREE-1
@@ -193,14 +193,15 @@ C>   processes to one stratum.
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
 ! distribute free processors to strata by their optimal number of processors
-          FACP=MIN(1.D0,REAL(NPRS_FREE,KIND(1.D0))/
-     .               (REAL(NPRS_OPT,KIND(1.D0))+eps30))
+          FACP=MIN(1.0_DP,REAL(NPRS_FREE,KIND(1.0_DP))/
+     .                   (REAL(NPRS_OPT,KIND(1.0_DP))+eps30))
           write (iunout,*) ' facp ',facp
           DO ISTRA=1,NSTRA
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
             NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
           ENDDO
-          WRITE (iunout,*) ' NPESTR ',(NPESTR(ISTRA),ISTRA=1,NSTRA)
+          WRITE (iunout,*) ' NPESTR '
+          WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRA)
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
 
@@ -209,9 +210,9 @@ C>   processes to one stratum.
 csw attempting better work load balancing
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstra
-            timpe(istra) = max(xtim(istra)-tmean,0.d0)/tmean
-            if(xtim(istra) > 0.) then
-             facp=max(1.0, dble(nprs)*xmct(istra)/xmct(0))
+            timpe(istra) = max(xtim(istra)-tmean,0.0_DP)/tmean
+            if(xtim(istra) > 0._DP) then
+             facp=max(1.0_dp, dble(nprs)*xmct(istra)/xmct(0))
              n=int(facp)
              npestr(istra)=n
              nprs_free=nprs_free-n
@@ -242,7 +243,7 @@ csw
         DO WHILE (NPRS_FREE.GT.0)
           ISTRA=ISTRA+1
           IF (ISTRA.GT.NSTRA) ISTRA=1
-          IF (TIMPE(ISTRA).GT.1.E-10) THEN
+          IF (TIMPE(ISTRA).GT.1.E-10_DP) THEN
             NPESTR(ISTRA)=NPESTR(ISTRA)+1
             NPRS_FREE=NPRS_FREE-1
           ENDIF

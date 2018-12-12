@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
+c      Saha, Boltzmann, Corona, col-rad, file (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "Colrad", "Saha": need electron density as
+c              "Corona", "col-rad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -165,150 +165,151 @@ cdr
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
 
-        IF (INDEX(CDENMODEL(IPLS),'FORT.13') > 0) THEN
+        SELECT CASE (CDENMODEL(IPLS))
+          CASE (FORT//'13')
 
 cdr  read all plasma background data (all ipls), each time. Better: move outside IPLS loop.
-          CALL EIRENE_ALLOC_BCKGRND
-          ALLOCATE(DEINTF(NRAD))
-          OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-          REWIND 13+ifoff
-          READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
-     .                        VXINTF,VYINTF,VZINTF
-          IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
-          CLOSE (UNIT=13+ifoff)
+            CALL EIRENE_ALLOC_BCKGRND
+            ALLOCATE(DEINTF(NRAD))
+            OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+            REWIND 13+ifoff
+            READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
+     .                                VXINTF,VYINTF,VZINTF
+            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
+            CLOSE (UNIT=13+ifoff)
 
-          IF (IO.EQ.0) THEN
-            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
-            IOLDTI=MPLSTI(IOLD)
-            IOLDV=MPLSV(IOLD)
-            IF (NLMLTI) TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
-            DIIN(IPLS,:)=DIINTF(IOLD,:)
-            IF (NLMLV) THEN
-              VXIN(IPLSV,:)=VXINTF(IOLDV,:)
-              VYIN(IPLSV,:)=VYINTF(IOLDV,:)
-              VZIN(IPLSV,:)=VZINTF(IOLDV,:)
-            END IF
-          ENDIF
-          DEALLOCATE(DEINTF)
+            IF (IO.EQ.0) THEN
+              IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
+              IOLDTI=MPLSTI(IOLD)
+              IOLDV=MPLSV(IOLD)
+              IF (NLMLTI) TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
+              DIIN(IPLS,:)=DIINTF(IOLD,:)
+              IF (NLMLV) THEN
+                VXIN(IPLSV,:)=VXINTF(IOLDV,:)
+                VYIN(IPLSV,:)=VYINTF(IOLDV,:)
+                VZIN(IPLSV,:)=VZINTF(IOLDV,:)
+              END IF
+            ENDIF
+            DEALLOCATE(DEINTF)
 
-        ELSEIF (INDEX(CDENMODEL(IPLS),'FORT.10') > 0) THEN
+          CASE (FORT//'10')
 
 c   itold = ??
 c   check: itold ge 0 and itold.le 3
-          IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-          IOLDTI=MPLSTI(IOLD)
-          IOLDV=MPLSV(IOLD)
+            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+            IOLDTI=MPLSTI(IOLD)
+            IOLDV=MPLSV(IOLD)
 
-          ALLOCATE (BASE_DENSITY(NRAD))
-          ALLOCATE (BASE_TEMP(NRAD))
-          CALL EIRENE_GET_BASE_DENSITY(1)
+            ALLOCATE (BASE_DENSITY(NRAD))
+            ALLOCATE (BASE_TEMP(NRAD))
+            CALL EIRENE_GET_BASE_DENSITY(1)
 
-          IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
-          IF (NLMLV) THEN
-            VXIN(IPLSV,:)=VXIN(IOLDV,:)
-            VYIN(IPLSV,:)=VYIN(IOLDV,:)
-            VZIN(IPLSV,:)=VZIN(IOLDV,:)
-          END IF
-
-          DO IR=1,NSBOX
-            DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))
-          ENDDO
-          DEALLOCATE (BASE_DENSITY)
-          DEALLOCATE (BASE_TEMP)
-
-          IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
-            FOUND = .TRUE.
-            DO IR=1,NSBOX
-              IF (LSPCCLL(IR)) THEN
-                CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
-                IF (FOUND) THEN
-                  IBS = IBS + 1
-                  SPEC%IPRTYP = 4
-                  SPEC%IPRSP = IPLS
-                  BACK_SPEC(IBS) = SPEC
-                END IF
-              END IF
-            ENDDO
-          END IF
-
-        ELSEIF (INDEX(CDENMODEL(IPLS),'CONSTANT') > 0) THEN
-
-          IF (NLMLTI) TIIN(IPLSTI,:)=MAX(TVAC,TDMPAR(IPLS)%TDM%TVAL)
-          DIIN(IPLS,:)=MAX(DVAC,TDMPAR(IPLS)%TDM%DVAL)
-          IF (NLMLV) THEN
-            VXIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VXVAL
-            VYIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VYVAL
-            VZIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VZVAL
-          END IF
-
-        ELSEIF (INDEX(CDENMODEL(IPLS),'MULTIPLY') > 0) THEN
-c         ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
-          IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-
-          IOLDTI=MPLSTI(IOLD)
-          IOLDV=MPLSV(IOLD)
-
-          ALLOCATE (BASE_DENSITY(NRAD))
-          ALLOCATE (BASE_TEMP(NRAD))
-          CALL EIRENE_GET_BASE_DENSITY(1)
-
-          DO IR=1,NSBOX
-            IF (NLMLTI) TIIN(IPLSTI,IR)=MAX(TVAC,BASE_TEMP(IR)*
-     .                             TDMPAR(IPLS)%TDM%TFACTOR)
-            DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR)*
-     .                             TDMPAR(IPLS)%TDM%DFACTOR)
+            IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
             IF (NLMLV) THEN
-              VXIN(IPLSV,IR)=VXIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
-              VYIN(IPLSV,IR)=VYIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
-              VZIN(IPLSV,IR)=VZIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
+              VXIN(IPLSV,:)=VXIN(IOLDV,:)
+              VYIN(IPLSV,:)=VYIN(IOLDV,:)
+              VZIN(IPLSV,:)=VZIN(IOLDV,:)
             END IF
-          ENDDO
 
-          DEALLOCATE (BASE_DENSITY)
-          DEALLOCATE (BASE_TEMP)
-
-        ELSEIF (INDEX(CDENMODEL(IPLS),'BOLTZMANN') > 0) THEN
-          IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-          IOLDTI=MPLSTI(IOLD)
-          IOLDV=MPLSV(IOLD)
-
-          ALLOCATE (BASE_DENSITY(NRAD))
-          ALLOCATE (BASE_TEMP(NRAD))
-          CALL EIRENE_GET_BASE_DENSITY(1)
-
-          IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
-          IF (NLMLV) THEN
-            VXIN(IPLSV,:)=VXIN(IOLDV,:)
-            VYIN(IPLSV,:)=VYIN(IOLDV,:)
-            VZIN(IPLSV,:)=VZIN(IOLDV,:)
-          END IF
-
-          FOUND = .TRUE.
-          DO IR=1,NSBOX
-            BOLTZFAC=0._DP
-            IF (TIIN(IOLDTI,IR).GT.TVAC)
-     .        BOLTZFAC=TDMPAR(IPLS)%TDM%G_BOLTZ*
-     .                 EXP(-TDMPAR(IPLS)%TDM%DELTAE/BASE_TEMP(IR))
-            DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))*BOLTZFAC
+            DO IR=1,NSBOX
+              DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))
+            ENDDO
+            DEALLOCATE (BASE_DENSITY)
+            DEALLOCATE (BASE_TEMP)
 
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
-              IF (LSPCCLL(IR)) THEN
-                CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
-                IF (FOUND) THEN
-                  IBS = IBS + 1
-                  SPEC%SPC = SPEC%SPC * BOLTZFAC
-                  SPEC%IPRTYP = 4
-                  SPEC%IPRSP = IPLS
-                  BACK_SPEC(IBS) = SPEC
+              FOUND = .TRUE.
+              DO IR=1,NSBOX
+                IF (LSPCCLL(IR)) THEN
+                  CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
+                  IF (FOUND) THEN
+                    IBS = IBS + 1
+                    SPEC%IPRTYP = 4
+                    SPEC%IPRSP = IPLS
+                    BACK_SPEC(IBS) = SPEC
+                  END IF
                 END IF
-              END IF
+              ENDDO
             END IF
 
-          ENDDO
-          DEALLOCATE (BASE_DENSITY)
-          DEALLOCATE (BASE_TEMP)
-        END IF
+          CASE ('CONSTANT')
+
+            IF (NLMLTI) TIIN(IPLSTI,:)=MAX(TVAC,TDMPAR(IPLS)%TDM%TVAL)
+            DIIN(IPLS,:)=MAX(DVAC,TDMPAR(IPLS)%TDM%DVAL)
+            IF (NLMLV) THEN
+              VXIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VXVAL
+              VYIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VYVAL
+              VZIN(IPLSV,:)=TDMPAR(IPLS)%TDM%VZVAL
+            END IF
+
+          CASE ('MULTIPLY')
+c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
+            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+
+            IOLDTI=MPLSTI(IOLD)
+            IOLDV=MPLSV(IOLD)
+
+            ALLOCATE (BASE_DENSITY(NRAD))
+            ALLOCATE (BASE_TEMP(NRAD))
+            CALL EIRENE_GET_BASE_DENSITY(1)
+
+            DO IR=1,NSBOX
+              IF (NLMLTI) TIIN(IPLSTI,IR)=MAX(TVAC,BASE_TEMP(IR)*
+     .                                        TDMPAR(IPLS)%TDM%TFACTOR)
+              DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR)*
+     .                               TDMPAR(IPLS)%TDM%DFACTOR)
+              IF (NLMLV) THEN
+                VXIN(IPLSV,IR)=VXIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
+                VYIN(IPLSV,IR)=VYIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
+                VZIN(IPLSV,IR)=VZIN(IOLDV,IR)*TDMPAR(IPLS)%TDM%VFACTOR
+              END IF
+            ENDDO
+
+            DEALLOCATE (BASE_DENSITY)
+            DEALLOCATE (BASE_TEMP)
+
+          CASE ('BOLTZMANN')
+            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+            IOLDTI=MPLSTI(IOLD)
+            IOLDV=MPLSV(IOLD)
+
+            ALLOCATE (BASE_DENSITY(NRAD))
+            ALLOCATE (BASE_TEMP(NRAD))
+            CALL EIRENE_GET_BASE_DENSITY(1)
+
+            IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
+            IF (NLMLV) THEN
+              VXIN(IPLSV,:)=VXIN(IOLDV,:)
+              VYIN(IPLSV,:)=VYIN(IOLDV,:)
+              VZIN(IPLSV,:)=VZIN(IOLDV,:)
+            END IF
+
+            FOUND = .TRUE.
+            DO IR=1,NSBOX
+              BOLTZFAC=0._DP
+              IF (TIIN(IOLDTI,IR).GT.TVAC)
+     .          BOLTZFAC=TDMPAR(IPLS)%TDM%G_BOLTZ*
+     .                   EXP(-TDMPAR(IPLS)%TDM%DELTAE/BASE_TEMP(IR))
+              DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))*BOLTZFAC
+
+              IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
+                IF (LSPCCLL(IR)) THEN
+                  CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
+                  IF (FOUND) THEN
+                    IBS = IBS + 1
+                    SPEC%SPC = SPEC%SPC * BOLTZFAC
+                    SPEC%IPRTYP = 4
+                    SPEC%IPRSP = IPLS
+                    BACK_SPEC(IBS) = SPEC
+                  END IF
+                END IF
+              END IF
+
+            ENDDO
+            DEALLOCATE (BASE_DENSITY)
+            DEALLOCATE (BASE_TEMP)
+        END SELECT
       END DO
 
 c......................................................................
@@ -761,18 +762,18 @@ C
       END IF
 
       IF (LDISMO) THEN
-	call eirene_cell_to_corner(DEIN,DEINCORNER)
+        call eirene_cell_to_corner(DEIN,DEINCORNER)
         do ipls = 1, npls
- 	  call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
+          call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
         end do
       END IF
 
       IF (LVSMO) THEN
         do iplsv = 1, nplsv
- 	  call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
- 	  call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
- 	  call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
- 	  call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
+          call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
+          call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
+          call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
+          call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
         end do
       END IF
 
@@ -795,7 +796,7 @@ C
 C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
- 
+
       IF ((NFILEL ==1) .OR. (NFILEL ==3) .OR. (NFILEL ==4)) THEN
          CALL EIRENE_WRPLAM(TRCFLE,0)
       END IF

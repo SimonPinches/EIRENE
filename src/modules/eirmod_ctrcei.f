@@ -1,6 +1,6 @@
 cdr may 17:   add trcrnf: diagnostics from random number generation,
 cdr           correlated sampling etc.
-cdr mar 18:   add trchktm (species resolved cpu consumption),
+cdr mar 18:   add trchktm (species-resolved cpu consumption),
 cdr           read in first line block 11.
 cdr           and remove (deactivate) the unused trcdbg... flags inherited from
 cdr           V.K. proprietary versions

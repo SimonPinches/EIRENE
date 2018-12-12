@@ -276,7 +276,7 @@ c  check orientation of parallel motion relative to radial coordinate
         NRCELL_OLD=NRCELL
 
         select case (levgeo)
-	case(1)
+        case(1)
           SG=SIGN(1._DP,VLXPAR)
           IF (SG.LT.0) THEN
             NRCELL=MRSURF-1
@@ -1132,7 +1132,7 @@ C         MSURFG= ??
      .                                        (ISTS,1,SG,*104,*380)
         ENDIF
 
-C  ESCAPE TO GRID SURFACE ON USER DEFINED GEOMETRY BLOCK: MRSURF
+C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
       case (10)
         ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
         IF (NLRAD.AND.ISTS.NE.0) THEN
@@ -1417,7 +1417,7 @@ C
 C  ???
         IF (LDAMCEL(NCELL)) GOTO 9912  ! damaged cell, stop particle
 
-cdr:  try to distinguish: transparent or not. Use arrays "transp(ispz...)
+cdr:  try to distinguish: transparent or not. Use arrays "transp(ispz...)"
 cdr:  indf=1: transparent, indf=2: non-transparent
 
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)

@@ -26,9 +26,10 @@ cdr         non-linear iterations.
 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: IFOFF, NRAD
+      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN
       USE EIRMOD_CCOUPL, ONLY: NFLA
-      USE EIRMOD_COMPRT,ONLY:IUNOUT
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT NONE
 
@@ -36,24 +37,24 @@ cdr         non-linear iterations.
       INTEGER IO
 
 
-        OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-        REWIND 13+ifoff
-        IF(.NOT.ASSOCIATED(NFLA)) THEN
-         WRITE(iunout,*)
+      OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+      REWIND 13+ifoff
+      IF(.NOT.ASSOCIATED(NFLA)) THEN
+        WRITE(iunout,*)
      w         "ERROR IN WRPLAM_SHRT: NFLA WAS NOT ASSOCIATED. ",
-     w         "NO DATA WILL BE STORED IN FORT.13"
-         RETURN
-        END IF
+     w         "NO DATA WILL BE STORED IN ", FORT, "13"
+        RETURN
+      END IF
 cdr  only write plasma background data for species, which are not already
-cdr  transfered via Common BRAEIR
-        IF(NFLA.LT.NPLSI) THEN
-          WRITE (13+ifoff,IOSTAT=IO)
+cdr  transfered via common BRAEIR
+      IF(NFLA.LT.NPLSI) THEN
+        WRITE (13+ifoff,IOSTAT=IO)
      w           TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
      w           VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
      w           VZIN(NFLA+1:NPLSI,1:NRAD)
-       END IF
+      END IF
 
-       CLOSE (UNIT=13+ifoff)
+      CLOSE (UNIT=13+ifoff)
 
       RETURN
 C .......................................................................
@@ -66,19 +67,20 @@ C ........................................................................
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o      STATUS='OLD',IOSTAT=IO)
       IF(IO.NE.0) THEN
-        WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FORT.13'
+        WRITE(iunout,*)
+     w   'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
         RETURN
       END IF
 
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN
         WRITE(IUNOUT,*)
-     w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED ",
-     w       "NO DATA WILL BE STORED IN FORT.13"
+     w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED. ",
+     w       "NO DATA WILL BE STORED IN ", FORT, "13"
         RETURN
       END IF
 
-       IF(NFLA.LT.NPLSI) THEN
+      IF(NFLA.LT.NPLSI) THEN
 C FIRST TRY TO READ IN THE OLD "LONG" FORMAT
 csw 02jan2012 NO! will kill DIIN coming from B2.5 by memory transfer..
 csw         READ (13,IOSTAT=IO) TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN
@@ -87,30 +89,31 @@ csw          WRITE(IUNOUT,*) "WARNING FROM RPLAM: ",
 csw     w                 "THE DATA IS READ IN THE OLD (LONG) FORMAT"
 csw         ELSE
 C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
-          REWIND 13+ifoff
-          READ (13+ifoff,IOSTAT=IO)
+        REWIND 13+ifoff
+        READ (13+ifoff,IOSTAT=IO)
      R        TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
      R        VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
      R        VZIN(NFLA+1:NPLSI,1:NRAD)
-          IF(IO.NE.0) GOTO 200
-          IF (TRCFLE) WRITE (iunout,*)
-     w                'RPLAM: BGK BACKGROUND IS READ FROM FORT.13'
-csw        END IF !IF(IO.EQ.0) THEN
-       END IF
+        IF(IO.NE.0) GOTO 200
+        IF (TRCFLE) WRITE (iunout,*)
+     w   'RPLAM: BGK BACKGROUND IS READ FROM ', FORT, '13'
+csw     END IF !IF(IO.EQ.0) THEN
+      END IF
 csw      CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
       CLOSE (UNIT=13+ifoff)
       RETURN
 
   200 CONTINUE
 
-       WRITE(iunout,*) 'ERROR IN RPLAM_SHRT: CANNOT READ FORT.13',
-     w                 'ZERO BACKGROUND WILL BE ASSIGNED'
-       TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
-       DIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
-       VXIN(NFLA+1:NPLSI,1:NRAD)=0._DP
-       VYIN(NFLA+1:NPLSI,1:NRAD)=0._DP
-       VZIN(NFLA+1:NPLSI,1:NRAD)=0._DP
+      WRITE(iunout,*) 
+     w 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13: ',
+     w 'ZERO BACKGROUND WILL BE ASSIGNED'
+      TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
+      DIIN(NFLA+1:NPLSI,1:NRAD)=0._DP
+      VXIN(NFLA+1:NPLSI,1:NRAD)=0._DP
+      VYIN(NFLA+1:NPLSI,1:NRAD)=0._DP
+      VZIN(NFLA+1:NPLSI,1:NRAD)=0._DP
 
-       RETURN
+      RETURN
 
       END SUBROUTINE EIRENE_WRPLAM_SHRT

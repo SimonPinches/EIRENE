@@ -1,4 +1,4 @@
-cdr  Dec. 15: added allocatable public array fnuiar(npls): species dependent
+cdr  Dec. 15: added allocatable public array fnuiar(npls): species-dependent
 cdr                                 collision frequency, for FP collisions
 
       MODULE EIRMOD_CFPLK

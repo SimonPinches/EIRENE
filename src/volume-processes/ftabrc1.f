@@ -1,7 +1,7 @@
 !pb  22.11.06: flag (T/F) for shift of first parameter to rate_coeff introduced.
-c              this transformation of parameter PLS is now done in rate-coeff.f
+c              this transformation of parameter PLS is now done in rate_coeff.f
 
-cdr check dsub, cut off etc....
+cdr check dsub, cut-off etc....
 
 
       FUNCTION EIRENE_FTABRC1 (IRRC,K)
@@ -11,9 +11,8 @@ c         in cell no. K
 c  Include density factor, if rate_coeff is in cm*3/s  (controlled by fitting flag iftflg)
 
 
-
-c  hard wired: cut off (density) parameter for H.4 fits: 1e8
-c  hard wired: density parameter in fit scaled by DSUB=1e-8, done in rate_coeff.f
+c  hard-wired: cut-off (density) parameter for H.4 fits: 1e8
+c  hard-wired: density parameter in fit scaled by DSUB=1e-8, done in rate_coeff.f
 
 
       USE EIRMOD_PRECISION
@@ -53,7 +52,7 @@ c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
 c  kk >  0
       ELSE
 
-cdr  automatic cut off at density 1E8: collaps fit to Corona value.
+cdr  automatic cut-off at density 1E8: collapse fit to Corona value.
         DEIMIN=LOG(1.D8)
         PLS=MAX(DEIMIN,DEINL(K))
 

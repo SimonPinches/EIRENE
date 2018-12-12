@@ -64,14 +64,14 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             GOTO 999
         END SELECT
 
-c  non default models, data from external databases
+c  non-default models, data from external databases
       ELSE IF (KK > 0) THEN
 cdr flag jhvrei is still missing. how to we know whether to use density parameter pls ?
 cdr this code corresponds to jhvrei=1
         EHVEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.FALSE.,0)
         EHVEI=EXP(MAX(-100._DP,EHVEI+FACREI(IREI,2)))
         EIRENE_FEHVEI1=EHVEI*DEIN(K)/(EIRENE_FTABEI1(IREI,K)+EPS60)
-c  else: jhvrei=9:   densiy dependent KER, to be written
+c  else: jhvrei=9:   density-dependent KER, to be written
 
       ELSE IF (KK == 0) THEN  ! flag jhvrei is still missing.
          EIRENE_FEHVEI1 = EHVEI1(IREI,1) ! currently: only constant KER option

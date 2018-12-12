@@ -469,7 +469,7 @@ C  (ONLY TE-DEPENDENT)
 
 C
 C  CHANNEL 1
-C  H DELTA SOURCE RATE:  PHOTONS/SEC/CM**3
+C  H DELTA SOURCE RATE: PHOTONS/SEC/CM**3
 C  LINEAR IN PDENA (IONIZATION)
 
 
@@ -485,7 +485,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
-C  e.g. due to bgk iterations.  Careful: no double-counting !
+C  e.g. due to bgk iterations. Careful: no double-counting !
 C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
@@ -493,7 +493,7 @@ C          DDA=DAT*DIIN(IPLS,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 6-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
 C          SIGADD1=SIGADD1+DDA*FAC62
-C201     CONTINUE
+C  201   CONTINUE
 c...............................................................................
 C
 C  CHANNEL 2
@@ -542,7 +542,7 @@ C         DDI2=DIO2*PDENI(IION,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 6-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
 C         SIGADD4=SIGADD4+DDI2*FAC62
-C215     CONTINUE
+C  215   CONTINUE
 
 C  to be done: contributions from  diatomic hydr. molec ion. in BULK IONS
 C
@@ -569,7 +569,7 @@ C         DDN=DNM*PDENI(IION,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 6-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
 C         SIGADD5=SIGADD5+DDN*FAC62
-C220    CONTINUE
+C  220  CONTINUE
 
 C
 C  REVISED: USE (PDENM * DENSITY RATIO H-/H2) NOW, INSTEAD OF PDENI

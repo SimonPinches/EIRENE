@@ -4,7 +4,6 @@
       USE EIRMOD_MPI
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       INTEGER, INTENT(IN) :: IESTR
       INTEGER :: IER
 

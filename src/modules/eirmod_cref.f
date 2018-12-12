@@ -40,7 +40,7 @@ c                              true:
 c                                 use old trim reflection data file,
 c                                 nhd6=12 projectile-target combinations in
 c                                 one single data file TRIM.DAT
-c                                 NHD6=12: hard wired in: FIND_PARAM.f
+c                                 NHD6=12: hard-wired in: FIND_PARAM.f
 c                              false:
 c                                 read NFR different trim data files A_on_B
 c                                 path and names "A_on_B" as specified in input.f

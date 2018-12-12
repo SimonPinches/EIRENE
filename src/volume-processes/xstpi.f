@@ -300,7 +300,7 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii) ! this is another cut off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(-2.3_dp,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old

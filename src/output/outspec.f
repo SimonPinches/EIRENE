@@ -139,9 +139,9 @@ c  directional spectra in cell
      .           10._DP**ESTIML(ISPC)%SPCMAX
           WRITE (IOUT,'(A)') ' LOGARITHMIC SPACING'
         ELSE
-        WRITE (IOUT,'(A20,5X,ES12.4)') ' MINIMAL ENERGY (EV) ',
+          WRITE (IOUT,'(A20,5X,ES12.4)') ' MINIMAL ENERGY (EV) ',
      .         ESTIML(ISPC)%SPCMIN
-        WRITE (IOUT,'(A20,5X,ES12.4)') ' MAXIMAL ENERGY (EV) ',
+          WRITE (IOUT,'(A20,5X,ES12.4)') ' MAXIMAL ENERGY (EV) ',
      .         ESTIML(ISPC)%SPCMAX
           WRITE (IOUT,'(A)') ' LINEAR SPACING'
         END IF

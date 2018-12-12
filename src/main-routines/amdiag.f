@@ -160,7 +160,7 @@ c  no interacting particle species found
           TXTPLS(IAIN,NTALN) =
      .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
      .      //' KK='//CN1
-          TXTPSP(IAIN,NTALN) = 'un-identified species   '
+          TXTPSP(IAIN,NTALN) = 'unidentified species    '
           TXTPUN(IAIN,NTALN) = ' '
           goto 3000
         ENDIF
@@ -263,7 +263,7 @@ c  no interacting particle species found
           TXTPLS(IAIN,NTALN) =
      .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
      .      //' KK='//CN1
-          TXTPSP(IAIN,NTALN) = 'un-identified species   '
+          TXTPSP(IAIN,NTALN) = 'unidentified species    '
           TXTPUN(IAIN,NTALN) = ' '
           goto 3000
   172     CONTINUE
@@ -375,7 +375,7 @@ c  no interacting particle species found
           TXTPLS(IAIN,NTALN) =
      .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
      .      //' KK='//CN1
-          TXTPSP(IAIN,NTALN) = 'un-identified species   '
+          TXTPSP(IAIN,NTALN) = 'unidentified species    '
           TXTPUN(IAIN,NTALN) = ' '
           GOTO 3000
   174     CONTINUE
@@ -485,7 +485,7 @@ c  no interacting particle species found
           TXTPLS(IAIN,NTALN) =
      .      'HEAVY PARTICLE REACTION RATE COEFFICIENT IRPI ='//CNO
      .      //' KK='//CN1
-          TXTPSP(IAIN,NTALN) = 'un-identified species   '
+          TXTPSP(IAIN,NTALN) = 'unidentified species    '
           TXTPUN(IAIN,NTALN) = ' '
           GOTO 3000
   176     CONTINUE
@@ -569,7 +569,7 @@ c  no interacting particle species found
           TXTPLS(IAIN,NTALN) =
      .      'RECOMBINATION REACTION RATE COEFFICIENT IRRC ='//CNO
      .      //' KK='//CN1
-          TXTPSP(IAIN,NTALN) = 'un-identified species   '
+          TXTPSP(IAIN,NTALN) = 'unidentified species    '
           TXTPUN(IAIN,NTALN) = ' '
           goto 3000
         ENDIF

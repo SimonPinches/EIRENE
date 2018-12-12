@@ -22,7 +22,7 @@ c  ifexmx: flag for choice of right (high end) extrapolation expression
 cdr           ifex=0:  constant extrapolation
 cdr           ifex<0:  determine extrapolation parameters here (linear extrapolation),
 cdr                    and call extrap.f with model IFEX=3
-cdr           ifex>0:  evaluate fit  at corresponding boundary, 
+cdr           ifex>0:  evaluate fit at corresponding boundary,
 cdr                    and call extrap.f with model IFEX
 
       use EIRMOD_precision

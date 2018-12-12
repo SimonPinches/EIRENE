@@ -36,14 +36,14 @@ cdr            LEXP=.true.
 !   (e.g. conversion from electron cooling rate to radiation loss rate)
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtcew%ifit'
-!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, AMJUEL, H.8)
-!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.9, AMJUEL, H.10,...)
-!  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
+!  ifit=1:   single polynomial fit, use P1, (e.g. HYDHEL, AMJUEL, H.8)
+!  ifit=2:   double polynomial fit, use P1, P2, (e.g. HYDHEL, H.9, AMJUEL, H.10,...)
+!  ifit=3:   interpolation in 2 parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
 !            (currently here also energy rates, erate  for this particular option.
 !            More logical if the latter are moved
-!            to routine "eirene_energy-rate-coeff"
+!            to routine "eirene_energy_rate_coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
@@ -53,12 +53,12 @@ cdr            LEXP=.true.
 !   lexp:      return erate=energy-weighted rate coefficient in eV*cm**3/sec
 !   not lexp:  return erate=log_e(erate coefficient) with rate coefficient in cm**3/sec
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
-!                  currently hard wired: 1e-8.
+!                  currently hard-wired: 1e-8.
 !                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
 ! to be done:
 !
-!              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
+!              ip2shft option: currently hard-wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
@@ -82,7 +82,7 @@ cdr            LEXP=.true.
      .                 rrc2min, rrc2max
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
-     .                  dsub    = 18.420680744_dp,      !ln(1e8), hard wired. But should come from database
+     .                  dsub    = 18.420680744_dp,      !ln(1e8), hard-wired. But should come from database
      .                  xlnelch =-43.2777390821         !ln(elcha)
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar
@@ -151,7 +151,7 @@ c  extrapolation data: for 1d polynomial fits
      .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
      .                           trcamd)
 
-! RES is ln(energy-rate), with energy-rate >0.
+! RES is ln(energy rate), with energy rate >0.
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
 ! as well as shift (if any) by potential energy loss rate
 
@@ -197,7 +197,7 @@ c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
      .        rrc2min, rrc2max, fp2, jfex2mn, jfex2mx,
      .        trcamd)
 
-! RES is ln(energy-rate), with energy-rate >0.
+! RES is ln(energy rate), with energy rate >0.
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
 ! as well as shift (if any) by potential energy loss rate
 
@@ -211,12 +211,12 @@ c..............................................................
 
       else if (reacdat(ir)%rtcew%ifit == 3) then
 
-! 2D TABULAR INPUT,  FOR LOG10 OF ENERGY-WEIGHTED RATE,  joule*cm^3/s
+! 2D TABULAR INPUT, FOR LOG10 OF ENERGY-WEIGHTED RATE, Joule*cm^3/s
 ! E.G.: ADAS adf11 PLT and PRB FILES
 cdr  extrapolation data: for 2d tabulated data, option not ready
 cdr  to be added here
 
-!  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
+!  currently hard-wired: input parameters pp1, pp2 and table coefficients are log10
 
 c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
@@ -252,10 +252,10 @@ c..............................................................
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 
-! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
+! currently hard-wired: input parameters q1 and table coefficients are neither ln nor log10
 
         pp1 = exp(p1)
-C  assume here: tabulated data are neither ln nor log10  (to be generalized)
+C  assume here: tabulated data are neither ln nor log10 (to be generalized)
         res = eirene_intp_tab1d(reacdat(ir)%rtcew%hyd,pp1,ip1)
 
 !  lexp option not connected here !
@@ -277,7 +277,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
 !  electron energy-weighted loss rates are taken positive in CRM COLRAD, and negative if
 !  it is a gain. For negative (i.e. gain) rates, the log(e-rate) return is not possible.
-!  energy-rate coefficient should always only be called with LEXP=.TRUE. for such processes
+!  energy rate coefficient should always only be called with LEXP=.TRUE. for such processes
 
         IF (LEXP) then
           erate = res
@@ -297,7 +297,7 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
   990 continue
       write (iunout,*) 'Proprietary (unfinished) option ifit=4 '
-      write (iunout,*) 'encountered in routine: energy-rate-coeff.f '
+      write (iunout,*) 'encountered in routine: energy_rate_coeff.f '
       call eirene_exit_own(1)
 
       end function EIRENE_energy_rate_coeff

@@ -3,6 +3,7 @@
 !  sep-05: specifications for databases added, ndbnames, dbhandle, dbfname
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
+cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ext
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
@@ -71,6 +72,12 @@
 
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
+C> Default output file prefix
+#ifndef HPUX
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FORT.'
+#else
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FTN'
+#endif
 
       CONTAINS
 
@@ -243,8 +250,8 @@ C
       DBHANDLE(8) = 'SPUTER'
       DBHANDLE(9) = 'TRIM  '
       DBHANDLE(10) = 'POLARI'
-      DBHANDLE(11) = 'gr_ext'
-      DBHANDLE(12) = 'mo_ext'
+      DBHANDLE(11) = 'free'
+      DBHANDLE(12) = 'free'
       DBHANDLE(13) = 'ADAS  '
       DBHANDLE(14) = 'HYDRTC'
       DBHANDLE(15) = 'HYDCRS'
@@ -260,15 +267,14 @@ C
       DBFNAME(6) = 'PHOTON'
       DBFNAME(7) = 'PHTNEW'
       DBFNAME(8) = 'SPUTER'
-      DBFNAME(9)(1:5) = 'fort.'
       if (21+ifoff >= 100) then
-        write (DBFNAME(9)(6:8),'(I3)') 21+ifoff
+        write (DBFNAME(9),'(A,I3)') FORT, 21+ifoff
       else
-        write (DBFNAME(9)(6:7),'(I2)') 21+ifoff
+        write (DBFNAME(9),'(A,I2)') FORT, 21+ifoff
       endif
       DBFNAME(10) = 'POLARI'
-      DBFNAME(11) = 'graphite_ext.dat'
-      DBFNAME(12) = 'mo_ext.dat'
+      DBFNAME(11) = 'free'
+      DBFNAME(12) = 'free'
       DBFNAME(13) = ' '
       DBFNAME(14) = 'HYDRTC'
       DBFNAME(15) = 'HYDCRS'

@@ -1,15 +1,15 @@
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 cdr  Jan. 2014:  minor bug in printout corrected
-cdr  currently this routine is not called for RC processes, only for OT processes
+cdr  currently this routine is not called for RC processes, only for PH processes
 
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr
-cdr  to replace       ISWR==6, non default RC part, as called from XSECTP.F
+cdr  to replace       ISWR==6, non-default RC part, as called from XSECTP.F
 cdr  already done for ISWR==7 (photonic reaction part).
 cdr  Prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
 cdr  e.g.   ISWR==6  (RC)                    H+    +  e   --> H    (+ rad.)
-cdr  e.g.   ISWR==7  (OT)                    H(n=2)       --> Ly-alpha (+H(n=1))
+cdr  e.g.   ISWR==7  (PH)                    H(n=2)       --> Ly-alpha (+H(n=1))
 cdr
 c    ipls: incident bulk
 c    nrc : index of reaction in list of all reactions for IPLS

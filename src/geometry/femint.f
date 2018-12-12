@@ -191,7 +191,7 @@ c  Local coordinates r,s,t,u  are already set in previous call
 
       else
 
-        write (iunout,*) 'error in femint, un-written levgeo option'
+        write (iunout,*) 'error in femint, unwritten levgeo option'
         call eirene_exit_own(1)
 
       end if

@@ -7,7 +7,7 @@ C           reactions with zero test particle secondaries
 C           now connected for: colatm, colmol, colion
 C           still to be done: include other processes, and colphot
 C 2.2.06:  wghtO set at suppression of absorption, for collision estimators.
-C 2.2.06:  REMOVED: OT PROCESSES FOR ATOMS
+C 2.2.06:  REMOVED: PH PROCESSES FOR ATOMS
 C          GENERATION LIMIT FOR POST-COLLISION ATOMS FROM PHOTONS: REMOVED
 C 10.3.06: bug fix: LGEI_RED(NREI) --> LGEI_RED(0:NREI)
 C          (some compilers had been unhappy with this)
@@ -122,10 +122,10 @@ cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
       INTEGER ::
      .           IICX, IIEI, IIPI, IIEL,
 c    .           IMCX, IMEI, IMPI, IMEL,
-c    .           IACX, IAEI, IAPI, IAEL, IAOT,
+c    .           IACX, IAEI, IAPI, IAEL, IAPH,
 c    .
      .           IOLD, NOLD,
-     .           IRCX, IREI, IRPI, IREL, IROT,
+     .           IRCX, IREI, IRPI, IREL, IRPH,
      .           IBGK, IP, NFLAG,
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)

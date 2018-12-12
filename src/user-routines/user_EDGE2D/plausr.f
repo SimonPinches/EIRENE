@@ -7,7 +7,7 @@ C| --------                                                      |
 C| reads target plasma information from casename.zplasma         |
 C| sets step-functions                                           |
 C| reads also neutral particle fluxes from 'eirene.chemFluxDep'  |
-C| and sets FLXOUT for fluxdependency of chemical sputtering.    |
+C| and sets FLXOUT for flux dependency of chemical sputtering.   |
 C+---------------------------------------------------------------+
 C| Modifications:                                                |
 C| --------------                                                |
@@ -230,7 +230,7 @@ cswx
       enddo
 
 
-c now read species dependent target data
+c now read species-dependent target data
       DO ISTRA=1,NSTRAI
          IF (.NOT.NLSRF(ISTRA)) CYCLE
          DO ISRFS=1,NSRFSI(ISTRA)
@@ -725,7 +725,7 @@ c     cleanup
          write (iunout,*) ' no additional input tally available '
          write (iunout,*) ' for PSI-function'
          write (iunout,*) ' calculation of B field from PSI function'
-         write (iunout,*) ' abandonned '
+         write (iunout,*) ' abandoned '
          return
       end if
 

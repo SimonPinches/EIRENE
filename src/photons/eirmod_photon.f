@@ -29,9 +29,9 @@ cdr new data structure REACDAT. Try to re-connect photonic reactions to
 cdr rest of code, unify notation....
 cdr
 cdr jan 18:  note: ph_xsectp is still there.
-cdr          But corresponds to what would be called XSTOT?,
+cdr          But corresponds to what would be called XSTPH?,
 cdr         (what is XSTRC?)
-cdr
+cdr nov 18: notational cleanup: nrot -> nrph. but what is nnrot?
 cdr
 !................................................................................
 
@@ -197,7 +197,7 @@ C  This requires evaluation of the absorption line shape profiles "iptype"
 C  current version: iptype=0,1,2,3,4,5,6,7,8,9,10,11
 
 c  input:
-c          kkin: nrearc(irrc), nreaot(irot), reaction number from input block 4
+c          kkin: nrearc(irrc), nreaph(irph), reaction number from input block 4
 c          isp :            = iphot, iatm (redundant?)
 c          ity :  (=ityp),  = 0: test photons point of view
 c          ity :  (=ityp),  = 1: test atoms point of view (out)
@@ -2766,10 +2766,10 @@ c EIRENE utilities:
 
 
       SUBROUTINE EIRENE_PH_ALLOC_XSECTPH(nnrot)
-c  some parameters for OT processes are already in COMXS
+c  some parameters for PH processes are already in COMXS
 c  and arrays are allocated there. Some remain here. still needs
 c  clean-up.
-c  nnrot  == nrot !! because no more OT processes in XSECTA
+c  nnrot  == nrph !! because no more PH processes in XSECTA
 
       IMPLICIT NONE
       integer, intent(in) :: nnrot
@@ -2872,24 +2872,24 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
             write (iunout,*) ' in ph_xsectph, nstordr>nrad ',idsc
             IPL0TI=MPLSTI(IPL0)
             DO J=1,NSBOX
-              EPLOT3(Idsc,J,1)=1.5*TIIN(IPL0TI,J)+EDRIFT(IPL0,J)
+              EPLPH3(Idsc,J,1)=1.5*TIIN(IPL0TI,J)+EDRIFT(IPL0,J)
             ENDDO
-            NELROT(Idsc) = -3
+            NELRPH(Idsc) = -3
           ELSE
             write (iunout,*) ' in ph_xsectph, nstordr<nrad '
-            NELROT(Idsc) = -3
+            NELRPH(Idsc) = -3
           END IF
         ELSE
           write (iunout,*) ' in ph_xsectph, nseot4=0, ebulk > 0 '
           IF (NSTORDR >= NRAD) THEN
             write (iunout,*) ' in ph_xsectph, nstordr>nrad '
             DO 251 J=1,NSBOX
-              EPLOT3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
+              EPLPH3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
   251       CONTINUE
-            NELROT(Idsc) = -2
+            NELRPH(Idsc) = -2
           ELSE
-            NELROT(Idsc) = -2
-            EPLOT3(Idsc,1,1)=EBULK
+            NELRPH(Idsc) = -2
+            EPLPH3(Idsc,1,1)=EBULK
             write (iunout,*) ' in ph_xsectph, nstordr<nrad '
           END IF
         ENDIF
@@ -2904,11 +2904,11 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             IPL0TI=MPLSTI(IPL0)
             DO 252 J=1,NSBOX
-              EPLOT3(Idsc,J,1)=1.5*TIIN(IPL0TI,J)+EDRIFT(IPL0,J)
+              EPLPH3(Idsc,J,1)=1.5*TIIN(IPL0TI,J)+EDRIFT(IPL0,J)
   252       CONTINUE
-            NELROT(Idsc) = -3
+            NELRPH(Idsc) = -3
           ELSE
-            NELROT(Idsc) = -3
+            NELRPH(Idsc) = -3
           END IF
         ELSE
           WRITE (iunout,*) 'WARNING FROM SUBR. xsectph '
@@ -2918,12 +2918,12 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
             DO 2511 J=1,NSBOX
-              EPLOT3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
+              EPLPH3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
  2511       CONTINUE
-            NELROT(Idsc) = -2
+            NELRPH(Idsc) = -2
           ELSE
-            NELROT(Idsc) = -2
-            EPLOT3(Idsc,1,1)=EBULK
+            NELRPH(Idsc) = -2
+            EPLPH3(Idsc,1,1)=EBULK
           END IF
         ENDIF
         MODCOL(7,4,IDSC)=1

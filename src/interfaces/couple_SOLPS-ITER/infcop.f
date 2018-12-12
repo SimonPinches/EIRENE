@@ -30,8 +30,8 @@ cdr                 apparently not used: vvdiag.
 cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell wise.
 
 
-cdr  start to use species resolved energy tallies.
-cdr  nov.15:  eapl,empl,eipl:  now species resolved
+cdr  start to use species-resolved energy tallies.
+cdr  nov.15:  eapl,empl,eipl:  now species-resolved
 cdr           --> eppl_cop, eploda get an additional species index ipls
 C
 cdr  dec. 15: not ready.  started to comment, and to extend copv tallies
@@ -194,8 +194,7 @@ csw 26jan2011 extra B25
 csw
       use eirmod_mpi
       IMPLICIT NONE
-csw mpi
-!      include 'mpif.h'
+c
       integer :: ier,istrx,irank,istrr, irnk
       real*8, allocatable :: dumvec(:)
       real*8, allocatable :: save_estimv(:,:),save_estims(:,:),
@@ -224,7 +223,7 @@ C
      .            CHMOM(:,:)
       REAL(DP) :: DI(NPLS), VP(NPLS)
 
-cdr for species dependent global particle balance
+cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
       REAL(DP) :: SSN(NFL),SSNI(NFL),BALANN(NFL),TOTN(NFL),RN(NFL)
 
@@ -792,7 +791,7 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
 !  CARTESIAN PLANE
-        write (iunout,*) 'testoutput from fort.29 in infcop'
+        write (iunout,*) 'testoutput from ', FORT, '29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
@@ -841,7 +840,7 @@ C
       ELSE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    ' NO FILE FORT.29 WITH MODIFIED GRID INFO. FOUND '
+     .    ' NO FILE ', FORT, '29 WITH MODIFIED GRID INFO FOUND '
         WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
      .                   ' GRID IS USED '
         WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL '
@@ -974,7 +973,7 @@ C  BUILD NSTGRD ARRAY OF "BLOCKED" TRIANGLES FROM XAISO ARRAY FROM FORT.29
       ENDIF
 C
 C
-C  DETERMINE THE ARRAY INMTI FOR ALL NON DEFAULT STD. SURFACES
+C  DETERMINE THE ARRAY INMTI FOR ALL NON-DEFAULT STD. SURFACES
 C  ISTS=INMTI(ISIDE,NRCELL), ISIDE=1, 2, OR 3
 C
       ICOG = 0
@@ -1179,7 +1178,7 @@ C  THE SURFACE
                       IF (ABS(TEST).LT.1.D-4) THEN
                         IF (ICOU.EQ.2) THEN
 C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
-C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
+C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
                           IGJUM0(I)=1
                           ICOG=ICOG+1
                           INSPAT(ISCS,ITRI)=ICOG
@@ -1204,7 +1203,7 @@ C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
                       IF (ABS(TEST).LT.1.D-4) THEN
                         IF (ICOU.EQ.2) THEN
 C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
-C  AND REPLACE IT BY NON DEFAULT STD. SURFACE
+C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
                           IGJUM0(I)=1
                           ICOG=ICOG+1
                           INSPAT(ISCS,ITRI)=ICOG
@@ -1261,7 +1260,7 @@ C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
 C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
 C                 NCELL=NCLTAL(ITRI)
       IF (LCOARSE) THEN
-      	write (iunout,*) 'SCORING OF VOLUME AVERAGED TALLIES  '
+      	write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
         write (iunout,*) 'IS ON COARSE GRID CELLS NCELL ONLY. '
       DO ITRI=1,NTRII
         IY=IYTRI(ITRI)
@@ -1276,7 +1275,7 @@ C                 NCELL=NCLTAL(ITRI)
       ENDDO
 
       ELSEIF (.NOT.LCOARSE) THEN
-        write (iunout,*) 'SCORING OF VOLUME AVERAGED TALLIES  '
+        write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
         write (iunout,*) 'IS ON FINE (TRIA) GRID ONLY. '
 C                 NCLTAL(ITRI)=ITRI
         DO ITRI=1,NTRII
@@ -1471,7 +1470,7 @@ C
       IF (NLPLAS) THEN
         WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON BRAEIR'
       ELSE
-        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON FORT.31'
+        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON ', FORT, '31'
       ENDIF
 C  SKIP READING PLASMA, IF NLPLAS
       IF (NLPLAS) GOTO 2100
@@ -5139,7 +5138,7 @@ C
 
 
 
-C DEFINE  NORMAL DIRECTION FOR SURFACE AVERAGED TALLIES (SEE FOLNEUT.F)
+C DEFINE  NORMAL DIRECTION FOR SURFACE-AVERAGED TALLIES (SEE FOLNEUT.F)
        SUBROUTINE CORRECTNSS
 
          IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.

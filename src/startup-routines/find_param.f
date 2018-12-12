@@ -29,7 +29,7 @@ cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 
 CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
 cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCOPI)
 cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures,
-cdr                              multiple ion velocities in case of BGK non-lin. colisions
+cdr                              multiple ion velocities in case of BGK non-lin. collisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
 cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
@@ -182,9 +182,9 @@ C  NOPTM1=1   USE REGULAR INTEGER ARITHMETIC (8 BIT PER INTEGER)
 C  NOPTM1= ???   DO WHAT ??  DEFAULT  ?  LDEFSTOR ?
       NOPTM1=1
 
-C  USER DEFINED GEOMETRY (LEVGEO=10)?
-C  NGEOM_USR = 1  ==> STORAGE PROVIDED FOR USER DEFINED GEOMETRY OPTION
-C  NGEOM_USR = 0  ==> NO STORAGE FOR USER DEFINED GEOMETRY
+C  USER-DEFINED GEOMETRY (LEVGEO=10)?
+C  NGEOM_USR = 1  ==> STORAGE PROVIDED FOR USER-DEFINED GEOMETRY OPTION
+C  NGEOM_USR = 0  ==> NO STORAGE FOR USER-DEFINED GEOMETRY
       NGEOM_USR=0   ! LDEFSTOR:  SHOULD BE MADE DEPENDENT ON WHETHER LEVGEO=10 OR NOT
 
 C  Input from coupling routine
@@ -1449,7 +1449,6 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
       ENDIF
       NPRNL = MAX(NPRNL,NPRNLI)
-
 
 cdr        NPRNL is only valid for writing census arrays onto fort.15
 cdr  tbd:  when reading fort 15 (census), the size is determined by the

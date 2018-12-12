@@ -1,7 +1,7 @@
 cdr    dec. 15:  added species index ipls, for volumetric energy source tallies for bulk ions
 cdr              eapl,empl,eipl,ephpl
 cdr   24.09.14:  scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected
-c  spring 2014:  new sputter tallies introduced: emitted species resolved
+c  spring 2014:  new sputter tallies introduced: emitted species-resolved
 C  15.02.05 :    double printout: fatm2,....taken out. use only getscl4, not getscl
 C   6. 7.05 :    call ph_integrate for photon-background tallies taken out.
 C                no more additional photon background tallies active
@@ -10,7 +10,7 @@ C  15.12.05 :    rescaling connected to spump surface tally
 
       SUBROUTINE EIRENE_SCALE_TALLIES (ISTRA)
 C
-C  RESCALE TRACKLENGTH ESTIMATED VOLUME AVERAGED TALLIES
+C  RESCALE TRACKLENGTH-ESTIMATED VOLUME-AVERAGED TALLIES
 C  WITH PARTICLE BALANCE CORRECTION FACTORS FATM,FMOL,FION,FPHOT
 C  TO ENFORCE PERFECT GLOBAL PARTICLE BALANCE
 C
@@ -86,14 +86,14 @@ c  atomic surface tallies
 cdr  ?? scaling with bulk flux?
 cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
 
-            IF (LSPUMP) SPUMP (NSPH+IATM,J)=SPUMP (NSPH+IATM,J)*FATM
+            IF (LSPUMP) SPUMP(NSPH+IATM,J)=SPUMP(NSPH+IATM,J)*FATM
   310     CONTINUE
 
  2101   CONTINUE
 
         if (lsptatot) sptatot = sptatot * fatm
 
-c  integrated atomic tallies, both volumetric and surface averaged
+c  integrated atomic tallies, both volumetric and surface-averaged
         DO 2111 IATM=0,NATMI
           PDENAI(IATM,ISTRA)=PDENAI(IATM,ISTRA)*FATM
           EDENAI(IATM,ISTRA)=EDENAI(IATM,ISTRA)*FATM
@@ -176,7 +176,7 @@ C
             IF (LSPTPHML) SPTPHML(IMOL,J)=SPTPHML(IMOL,J)*FPHOT
 cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPML) SPTPML(IMOL,J)=SPTPML(IMOL,J)*FMOL
-            IF (LSPUMP) SPUMP (NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
+            IF (LSPUMP) SPUMP(NSPA+IMOL,J)=SPUMP(NSPA+IMOL,J)*FMOL
   315     CONTINUE
  2115   CONTINUE
 
@@ -333,7 +333,7 @@ C
             IF (LVYDENPH) VYDENPH(IPHOT,J)=VYDENPH(IPHOT,J)*FPHOT
             IF (LVZDENPH) VZDENPH(IPHOT,J)=VZDENPH(IPHOT,J)*FPHOT
           END DO
-C  SURFACE AVERAGED TALLIES
+C  SURFACE-AVERAGED TALLIES
           DO J=1,NLIMPS
             IF (LPOTPHT)  POTPHT (IPHOT,J)=POTPHT (IPHOT,J)*FPHOT
             IF (LPRFAPHT) PRFAPHT(IPHOT,J)=PRFAPHT(IPHOT,J)*FATM
@@ -353,7 +353,7 @@ C  SURFACE AVERAGED TALLIES
             IF (LSPTPHPHT) SPTPHPHT(IPHOT,J)=SPTPHPHT(IPHOT,J)*FPHOT
 cdr  ?? scaling with bulk flux ??
 cdr         IF (LSPTPPHT) SPTPPHT(IPHOT,J)=SPTPPHT(IPHOT,J)*FPHOT
-            IF (LSPUMP) SPUMP (IPHOT,J)=SPUMP (IPHOT,J)*FPHOT
+            IF (LSPUMP) SPUMP(IPHOT,J)=SPUMP(IPHOT,J)*FPHOT
           END DO
         END DO
 
@@ -411,7 +411,7 @@ cdr     IF (NPHOTI > 0)
 cdr  .    CALL PH_INTEGRATE(ISTRA,FLXFAC(ISTRA)/ELCHA,
 cdr  .                    fphot,fatm,fmol,fion)
 C
-C  ADDITIONAL TRACKLENGTH ESTIMATED TALLIES
+C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES
 C
         IF (LADDV) THEN
           DO 423 IADV=1,NADVI
@@ -433,7 +433,7 @@ C
   423     CONTINUE
         END IF
 C
-C  ADDITIONAL COLLISION ESTIMATED TALLIES
+C  ADDITIONAL COLLISION-ESTIMATED TALLIES
 C
         IF (LCOLV) THEN
           DO 426 ICLV=1,NCLVI
@@ -481,7 +481,7 @@ C
   435     CONTINUE
         END IF
 C
-C  TALLIES FOR BGK SELF COLLISION ITERATIONS
+C  TALLIES FOR BGK SELF-COLLISION ITERATIONS
 C
         IF (LBGKV) THEN
           DO 437 IBGV=1,NBGVI

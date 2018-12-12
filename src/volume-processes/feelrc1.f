@@ -25,7 +25,7 @@ cdr                                 KK = 0: else, simple models (via jelrrc)
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IRRC, K
-      REAL(DP) :: PLS, DELE, EE, EIRENE_FEELRC1, ZX,corsum,
+      REAL(DP) :: PLS, DELE, EE, EIRENE_FEELRC1, ZX, corsum,
      .            EIRENE_FTABRC1,
      .            DEIMIN, ELRC, EIRENE_ENERGY_RATE_COEFF, BREMS, Z,
      .            eirene_brems
@@ -67,9 +67,9 @@ cdr                                 KK = 0: else, simple models (via jelrrc)
           GOTO 999
         END IF
 c
-c  in some case (e.g. ADAS electron cooling rate tables), bremstrahlung is
+c  in some case (e.g. ADAS electron cooling rate tables), bremsstrahlung is
 c  added on top of free-bound radiation. Subtract this contribution here,
-c  to avoid double counting.
+c  to avoid double-counting.
 c
         LADAS = EIRENE_IS_RTCEW_TAB2D(KK)  ! ifit=3 <--> ladas.
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN

@@ -464,28 +464,28 @@ C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
       NPOINT(2,1)=nxcut1(1)+1
       IF (NNCUT.EQ.0) NPOINT(2,1)=dimxh+1
 C   ANFANGSPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
-      NPOINT(1,2)=nxcut2(nncut)+1
+        NPOINT(1,2)=nxcut2(nncut)+1
 C   ENDPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
-      NPOINT(2,2)=nxcut2(nncut-1)+1
+        NPOINT(2,2)=nxcut2(nncut-1)+1
 C   ANFANGSPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
-      NPOINT(1,3)=nxcut2(nncut-1)+2
+        NPOINT(1,3)=nxcut2(nncut-1)+2
 C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
-      IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
-      IF (NNCUT.EQ.4) THEN
-       NPOINT(2,3)=NXISO1(1)+3
+        IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
+        IF (NNCUT.EQ.4) THEN
+          NPOINT(2,3)=NXISO1(1)+3
 C   ANFANGSPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
-       NPOINT(1,4)=nxiso2(1)+4-NWISO
+          NPOINT(1,4)=nxiso2(1)+4-NWISO
 C   ENDPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
-       NPOINT(2,4)=nxcut1(3)+4-NWISO
+          NPOINT(2,4)=nxcut1(3)+4-NWISO
 C   ANFANGSPUNKT DES FUNFTEN TEILSTUECKS DES I-TEN POLYGONS
-       NPOINT(1,5)=nxcut2(2)+4-NWISO
+          NPOINT(1,5)=nxcut2(2)+4-NWISO
 C   ENDPUNKT DES FUNFTEN TEILSTUECKS DES I-TEN POLYGONS
-       NPOINT(2,5)=nxcut1(4)+5-NWISO
+          NPOINT(2,5)=nxcut1(4)+5-NWISO
 C   ANFANGSPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
-       NPOINT(1,6)=nxcut2(1)+5-NWISO
+          NPOINT(1,6)=nxcut2(1)+5-NWISO
 C   ENDPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
-       NPOINT(2,6)=dimxh+6-NWISO
-      END IF
+          NPOINT(2,6)=dimxh+6-NWISO
+      ENDIF
 C
       DO 1015 IY=1,NDYA
         DO 1014 IX=1,NDXA
@@ -607,7 +607,6 @@ C  GEOMETRY DATA: CELL VERTICES (SONNET ---> EIRENE)
 
       read (30,*)
       goto 1
-
 
    99 continue
       ndxa=ndxa-1
@@ -832,7 +831,7 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
   213       CONTINUE
             DUMMY(IINID,IY) = FIELD(INB+1,IY,IFL)
             IF (IENDD.NE.IINID)
-     .          DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IFL)
+     >       DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IFL)
   212     CONTINUE
   211   CONTINUE
         DO IY=0,NDYA+1
@@ -1101,39 +1100,39 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
 
           IF (LEAPL) THEN
-          IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
-            EAPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+            IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
+!PB           ALLOCATE(CPMUL)
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = EAPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => EAPLS(ISTRAI)%PMUL
+              EAPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
 
           IF (LEMPL) THEN
-          IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
-            EMPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+            IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
+!PB           ALLOCATE(CPMUL)
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = EMPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => EMPLS(ISTRAI)%PMUL
+              EMPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
 
           IF (LEIPL) THEN
-          IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPMUL)
-            CPMUL => EIRENE_NEW_MULARR()
-            CPMUL%IART = IPLS
-            CPMUL%ICM = IN
-            CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
-            CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
-            EIPLS(ISTRAI)%PMUL => CPMUL
-          ENDIF
+            IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
+!PB           ALLOCATE(CPMUL)
+              CPMUL => EIRENE_NEW_MULARR()
+              CPMUL%IART = IPLS
+              CPMUL%ICM = IN
+              CPMUL%VALUEM = EIPL(IPLS,IN)*FLXI
+              CPMUL%NXTMUL => EIPLS(ISTRAI)%PMUL
+              EIPLS(ISTRAI)%PMUL => CPMUL
+            ENDIF
           ENDIF
 
           IF (LMAPL) THEN
@@ -1188,7 +1187,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
       ENDDO
 
       DO IN=1,NSBOX_TAL
-    	IF (LEAEL) THEN
+        IF (LEAEL) THEN
           IF (EAEL(IN) .NE. 0.D0) THEN
 !PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
@@ -1243,13 +1242,13 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%NXTMUL => EDENAS(ISTRAI)%PMUL
               EDENAS(ISTRAI)%PMUL => CPMUL
             ENDIF
-	      ENDIF
+          ENDIF
         ENDDO
       ENDDO
 
       DO IMOL=1,NMOLI
         DO IN=1,NSBOX_TAL
-	      IF (LPDENM) THEN
+          IF (LPDENM) THEN
             IF (PDENM(IMOL,IN) .NE. 0.D0) THEN
 !PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -1265,7 +1264,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
       DO IION=1,NIONI
         DO IN=1,NSBOX_TAL
-	      IF (LPDENI) THEN
+          IF (LPDENI) THEN
             IF (PDENI(IION,IN) .NE. 0.D0) THEN
 !PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
@@ -1281,7 +1280,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
       DO ICPV=1,NCPVI
         DO IN=1,NSBOX_TAL
-	      IF (LCOPV) THEN
+          IF (LCOPV) THEN
             IF (COPV(ICPV,IN) .NE. 0.D0) THEN
 !PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()

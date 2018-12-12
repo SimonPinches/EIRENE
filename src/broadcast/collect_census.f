@@ -38,7 +38,6 @@ c
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
       real(dp) :: ra, peflux,
@@ -174,7 +173,7 @@ cdr where currently these numbers are hard-coded.
      .                   ibuf,icosend,idistrib,MPI_INTEGER,
      .                   0,MPI_COMM_WORLD,ier)
         if (my_pe == 0) then
-           ipart = ibuf
+          ipart = ibuf
         end if
 
         iprnli = itotal
@@ -287,7 +286,7 @@ c                           restricted to this processor iu
           write (iunout,'(A7,i10)') 'total  ', sum(icopro(0:nprs-1))
 
 
-! setup displacements for distribution of random numbers, for each processor IPE
+! set up displacements for distribution of random numbers, for each processor IPE
 ! idistrib(ipe) contains the number of random samples summed up until processor ipe-1, ipe=1,nprs-1
 ! idistrib(ipe)+1 is the initial storage for resampled particles from processor ipe
           idistrib(0) = 0
