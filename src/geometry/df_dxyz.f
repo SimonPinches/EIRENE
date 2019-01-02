@@ -146,9 +146,9 @@ c: to be done: check for valid range of r,s,t,u ?
 
         if ( abs(dummy) > eps30 ) then
            jm1 = jm1 / dummy
-	else
-	   jm1 = 0._DP
-	endif
+        else
+           jm1 = 0._DP
+        endif
 
         drdx = jm1(1,1)
         dsdx = jm1(1,2)

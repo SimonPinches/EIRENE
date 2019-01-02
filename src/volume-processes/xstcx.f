@@ -202,9 +202,9 @@ C       NEND=1
         IF (NSTORDR >= NRAD) THEN
           DO 245 J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-              TII=TIINL(IPLTI,J)+ADDTL
-              COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
-              TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
+            TII=TIINL(IPLTI,J)+ADDTL
+            COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
+            TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
   245     CONTINUE
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
@@ -224,7 +224,7 @@ C       NEND=9
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-cdr  safety cut off at TI= 0.1 eV. (TVAC=0.02)
+cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(-2.3_dp,tii)
 c  evaluate 2 parametric fit,
 c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII.

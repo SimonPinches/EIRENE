@@ -36,7 +36,7 @@ cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R          CEMETERYV(:,:), CEMETERYS(:,:)
 
-C  NESTM1, REAL, VOLUME AVERAGED TALLIES
+C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENA(:,:), PDENM(:,:), PDENI(:,:), PDENPH(:,:),
      R EDENA(:,:), EDENM(:,:), EDENI(:,:), EDENPH(:,:),
@@ -74,7 +74,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      R VXDENX(:), VYDENX(:),  VZDENX(:),
      R MXPL(:,:), PXX(:,:),   EXX(:)
 
-C  NESTM2, REAL, SURFACE AVERAGED TALLIES
+C  NESTM2, REAL, SURFACE-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R POTAT(:,:),
      R PRFAAT(:,:), PRFMAT(:,:), PRFIAT(:,:), PRFPHAT(:,:),
@@ -142,7 +142,7 @@ C  FROM HERE: NO POINTERS ?
      L LIVTALV(:), LIVTALS(:)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LMISTALV(:), LMISTALS(:)
-c  logical, for each volume averaged tally.
+c  logical, for each volume-averaged tally.
 c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPDENA, LPDENM, LPDENI, LPDENPH,
@@ -197,7 +197,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
-c  logical, for each surface averaged tally, particle flux.
+c  logical, for each surface-averaged tally, particle flux.
 c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPOTAT,
@@ -237,7 +237,7 @@ C
 C
      L LMSPOTPL
 C
-c  logical, for each surface averaged tally, energy flux.
+c  logical, for each surface-averaged tally, energy flux.
 c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LEOTAT,
@@ -354,7 +354,7 @@ C
 
       SUBROUTINE EIRENE_ASSOCIATE_CESTIM
 
-C  VOLUME AVERAGED TALLIES:
+C  VOLUME-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMV
 C     if tally is deactivated in this run: Pointer to CEMETERYV
 
@@ -882,9 +882,9 @@ c  ntalr =62
       END IF
 
 
-C  SURFACE AVERAGED TALLIES
+C  SURFACE-AVERAGED TALLIES
 
-C  SURFACE AVERAGED TALLIES:
+C  SURFACE-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMS
 C     if tally is deactivated in this run: Pointer to CEMETERYS
       IF (LPOTAT) THEN
@@ -1321,7 +1321,6 @@ C
       RETURN
       END SUBROUTINE EIRENE_ASSOCIATE_CESTIM
 
-
       SUBROUTINE EIRENE_DEALLOC_CESTIM
       INTEGER :: I
 C
@@ -1389,7 +1388,7 @@ C
         LMISTALV = .FALSE.
         LMISTALS = .FALSE.
 
-! volume averaged tallies
+! volume-averaged tallies
 
         LPDENA   => LIVTALV(1)
         LPDENM   => LIVTALV(2)
@@ -1492,7 +1491,6 @@ C
         LMIPL    => LIVTALV(99)
         LMPHPL   => LIVTALV(100)
 
-
         LMSPDENA   => LMISTALV(1)
         LMSPDENM   => LMISTALV(2)
         LMSPDENI   => LMISTALV(3)
@@ -1594,7 +1592,7 @@ C
         LMSMIPL    => LMISTALV(99)
         LMSMPHPL   => LMISTALV(100)
 
-! surface averaged tallies
+! surface-averaged tallies
 
         LPOTAT    => LIVTALS(1)
         LPRFAAT   => LIVTALS(2)
@@ -1646,37 +1644,37 @@ C
         LERFPHPHT => LIVTALS(48)
         LERFPPHT  => LIVTALS(49)
         LEOTPL    => LIVTALS(50)
-        LSPTAAT    => LIVTALS(51)
-        LSPTAML    => LIVTALS(52)
-        LSPTAIO    => LIVTALS(53)
-        LSPTAPHT   => LIVTALS(54)
-        LSPTAPL    => LIVTALS(55)
-        LSPTMAT    => LIVTALS(56 )
-        LSPTMML    => LIVTALS(57)
-        LSPTMIO    => LIVTALS(58)
-        LSPTMPHT   => LIVTALS(59)
-        LSPTMPL    => LIVTALS(60)
-        LSPTIAT    => LIVTALS(61)
-        LSPTIML    => LIVTALS(62)
-        LSPTIIO    => LIVTALS(63)
-        LSPTIPHT   => LIVTALS(64)
-        LSPTIPL    => LIVTALS(65)
-        LSPTPHAT    => LIVTALS(66)
-        LSPTPHML    => LIVTALS(67)
-        LSPTPHIO    => LIVTALS(68)
-        LSPTPHPHT   => LIVTALS(69)
-        LSPTPHPL    => LIVTALS(70)
-        LSPTPAT    => LIVTALS(71)
-        LSPTPML    => LIVTALS(72)
-        LSPTPIO    => LIVTALS(73)
-        LSPTPPHT   => LIVTALS(74)
-        LSPTPPL    => LIVTALS(75)
-        LSPTATOT   => LIVTALS(76)
-        LSPTMTOT   => LIVTALS(77)
-        LSPTITOT   => LIVTALS(78)
-        LSPTPHTOT  => LIVTALS(79)
-        LSPTPLTOT  => LIVTALS(80)
-        LSPTTOT    => LIVTALS(81)
+        LSPTAAT   => LIVTALS(51)
+        LSPTAML   => LIVTALS(52)
+        LSPTAIO   => LIVTALS(53)
+        LSPTAPHT  => LIVTALS(54)
+        LSPTAPL   => LIVTALS(55)
+        LSPTMAT   => LIVTALS(56)
+        LSPTMML   => LIVTALS(57)
+        LSPTMIO   => LIVTALS(58)
+        LSPTMPHT  => LIVTALS(59)
+        LSPTMPL   => LIVTALS(60)
+        LSPTIAT   => LIVTALS(61)
+        LSPTIML   => LIVTALS(62)
+        LSPTIIO   => LIVTALS(63)
+        LSPTIPHT  => LIVTALS(64)
+        LSPTIPL   => LIVTALS(65)
+        LSPTPHAT  => LIVTALS(66)
+        LSPTPHML  => LIVTALS(67)
+        LSPTPHIO  => LIVTALS(68)
+        LSPTPHPHT => LIVTALS(69)
+        LSPTPHPL  => LIVTALS(70)
+        LSPTPAT   => LIVTALS(71)
+        LSPTPML   => LIVTALS(72)
+        LSPTPIO   => LIVTALS(73)
+        LSPTPPHT  => LIVTALS(74)
+        LSPTPPL   => LIVTALS(75)
+        LSPTATOT  => LIVTALS(76)
+        LSPTMTOT  => LIVTALS(77)
+        LSPTITOT  => LIVTALS(78)
+        LSPTPHTOT => LIVTALS(79)
+        LSPTPLTOT => LIVTALS(80)
+        LSPTTOT   => LIVTALS(81)
         LADDS     => LIVTALS(82)
         LALGS     => LIVTALS(83)
         LSPUMP    => LIVTALS(84)

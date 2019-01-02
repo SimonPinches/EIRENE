@@ -3,7 +3,7 @@ C  this entire routine is probabaly redundant, as well as all bgkv_stat tallies
 c   ALL TALLIES bgkv (ntalb=61), pdena, edena,pdenm,edenm are now also default tallies,
 c               and their variances are available by default variance routines.
 c   bgkv tallies: currently coincide with vxden*,vyden*,vzden* momentum densities.
-c   But we may need special BGKV tallies in case of velolcity dep rates, or
+c   But we may need special BGKV tallies in case of velocity-dependent rates, or
 c   ES-BGK extensions. Even then: special variances may not be needed, because
 c   BGKV is a regular tally and variances are computed by default eirene variance routines.
 C
@@ -248,7 +248,7 @@ C   STATISTICS FOR BGKV
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMA_BGK(IBGV,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION
+C RELATIVE STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA_BGK(IBGV,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA
@@ -286,7 +286,7 @@ C   STATISTICS FOR PDENA
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMA_BGK(IBGV,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION
+C RELATIVE STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA_BGK(IBGV,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA
@@ -324,7 +324,7 @@ C   STATISTICS FOR EDENA
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMA_BGK(IBGV,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION
+C RELATIVE STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA_BGK(IBGV,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA
@@ -362,7 +362,7 @@ C   STATISTICS FOR PDENM
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMA_BGK(IBGV,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION
+C RELATIVE STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA_BGK(IBGV,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA
@@ -400,7 +400,7 @@ C   STATISTICS FOR EDENM
           DD=D*D
           DA=ABS(D)
           SG2=MAX(0._DP,SIGMA_BGK(IBGV,IR)-DD/XN)
-C RELATIV STANDARD DEVIATION
+C RELATIVE STANDARD DEVIATION
           SG=SQRT(SG2)/(DA+EPS60)
           SIGMA_BGK(IBGV,IR)=SG*FSIG
 C CUMULATED VARIANCE FOR SUM OVER STRATA

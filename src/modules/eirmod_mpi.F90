@@ -171,7 +171,7 @@ module eirmod_mpi
     use eirmod_precision
     implicit none
     integer, intent(out) :: ier
-    real(DP)  :: buffer
+    real(dp)  :: buffer
     integer, intent(in) :: cnt,datatype,root,comm
     ier = MPI_SUCCESS
   end subroutine

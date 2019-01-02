@@ -1,4 +1,4 @@
-!pb 19.12.06: write minimum and maximum value onto RAPS log-file
+!pb 19.12.06: write minimum and maximum value onto RAPS logfile
 C
       SUBROUTINE EIRENE_RPSCOL (AORIG,IBLD,ICURV,
      .                   I1,I2,XX,YY,
@@ -212,7 +212,7 @@ C  icase=5
         enddo
 C
       ELSE
-        WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSCOL: PLOT ABANDONNED '
+        WRITE (iunout,*) 'UNWRITTEN OPTION IN RPSCOL: PLOT ABANDONED '
       ENDIF
 C
       CLOSE (UNIT=NRAPS+ifoff)

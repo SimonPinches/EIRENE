@@ -6,7 +6,7 @@ cdr               other surface scoring (e.g. update_surface)
 c
 cdr       ind=1: FOR TOTAL TALLIES (due to sputtering by "incident" particles)
 cdr              ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
-cdr       ind=2: additionally: re-emitted sputtered fluxes,
+cdr       ind=2: additionally: reemitted sputtered fluxes,
 cdr              resolved wrt. species of emitted particle
 
 
@@ -16,7 +16,7 @@ cdr              resolved wrt. species of emitted particle
 
 cdr  score sputtered fluxes on
 cdr            sputtered flux tallies SP_A_OT(MSURF)  (_A_: type of incident particle), IND=1, IND=2)
-cdr        and sputtered (re-emitted) particle species resolved tallies:  SP_A_B(MSURF) IND=2
+cdr        and sputtered (reemitted) particle species-resolved tallies:  SP_A_B(MSURF) IND=2
 
 C  present version: resolved with respect to incidence species type (for nlscl option)
 C  and also resolved wrt.  emitted species type and species
@@ -29,8 +29,8 @@ c          Update only total sputtered fluxes resolved by outgoing flux particle
 c          These total sputter tallies may contain sputtered (emitted) fluxes which are not
 c          identified eirene test particles, i.e. these totals may be larger
 c          than the sum over emitted species
-c          of species resolved sputtered tallies.
-c  ind=2:  Type and species index of sputtered particle is known:  update both: total and species resolved fluxes
+c          of species-resolved sputtered tallies.
+c  ind=2:  Type and species index of sputtered particle is known: update both: total and species-resolved fluxes
 c          only in case IND=2:
 c          sputtered (emitted) particle type:            ityp   (common)
 c          sputtered (emitted) particle species:         iphot,iatm,imol,iion,ipls  (common)

@@ -68,7 +68,7 @@ C  MIT DER EBENE. ALAMDA MUSS POSITIV SEIN, SONST FALSCHE EINGABE
             ALAMDA=(-A(1)-(A(2)*PXX1+A(3)*PYY1+A(4)*PZZ1))/XN
             IF (ALAMDA.LT.0.) THEN
               WRITE (iunout,*) 'ERROR IN SUBR. SCCONE. SET ALAMDA=0.'
-              WRITE (iunout,*) 'NO INTERSECTION IN POSITIV DIRECTION'
+              WRITE (iunout,*) 'NO INTERSECTION IN POSITIVE DIRECTION'
               WRITE (iunout,*) 'WITH PLANE '
               ALAMDA=0.
               LERR=.TRUE.

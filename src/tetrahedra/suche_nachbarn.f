@@ -22,7 +22,7 @@ C      INTEGER :: IC
 
       DO ITET=1,NTET      ! FOR ALL TETRAHEDRA
         DO IS=1,4         ! AND FOR ALL SIDES OF EACH TETRAHEDRON
-          IF (NTBAR(IS,ITET) == 0) THEN   ! IF IT HAS NO NEIGHBOR JET
+          IF (NTBAR(IS,ITET) == 0) THEN   ! IF IT HAS NO NEIGHBOR YET
             IP(1)=NTECK(ITSIDE(1,IS),ITET)
             IP(2)=NTECK(ITSIDE(2,IS),ITET)
             IP(3)=NTECK(ITSIDE(3,IS),ITET)
@@ -46,12 +46,12 @@ C      INTEGER :: IC
                         endif
                       end do jloop
                       cycle jsloop
-                      end do iloop
-                          NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
-                          NTSEITE(IS,ITET) = JS
-                          NTBAR(JS,JTET) = ITET
-                          NTSEITE(JS,JTET) = IS
-                          EXIT WHLOOP
+                     end do iloop
+                    NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
+                    NTSEITE(IS,ITET) = JS
+                    NTBAR(JS,JTET) = ITET
+                    NTSEITE(JS,JTET) = IS
+                    EXIT WHLOOP
                   END IF
                 END DO JSLOOP ! JS
               END IF

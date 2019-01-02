@@ -115,8 +115,8 @@ C SPEED UP OF SUBROUTINE STATIS
 
 c  arrays updated on the fly, to speed up statistical variance calculations in statis.f
 c  lmetsp(i1) : logical, indicator, whether for any particular trajectory a
-c               volume averaged tally has been scored with species (first) index "i1"
-c  lmetspw(i1): ditto, for surface averaged tallies
+c               volume-averaged tally has been scored with species (first) index "i1"
+c  lmetspw(i1): ditto, for surface-averaged tallies
         ALLOCATE (LMETSP(NSPZTOT))
         ALLOCATE (LMETSPW(NSPZTOTW))
 

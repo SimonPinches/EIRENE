@@ -62,7 +62,6 @@ c
       inchar = 0
       inchrg = 0
 
-
       ll=len_trim(casename)
       filename=casename(1:ll) // '.plasma'
       open (unit=fp+ifoff,file=filename,access='sequential',
@@ -185,7 +184,7 @@ c     read step functions
          END DO  ! i
       END DO ! ipls
 
-c now read species dependent target data
+c now read species-dependent target data
       DO ISTRA=1,NSTRAI
          IF (.NOT.NLSRF(ISTRA)) CYCLE
          DO ISRFS=1,NSRFSI(ISTRA)
@@ -345,7 +344,6 @@ C
 
 c     enddo istra
       ENDDO
-
 
       DEALLOCATE (KSTEP)
       DEALLOCATE (INOSRC)

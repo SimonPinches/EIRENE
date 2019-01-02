@@ -88,10 +88,10 @@ cdr  use FZJ proprietary GR plot software
         CALL GRTXT (1.,27.5,IT,TXTRUN)
         IT=LEN(TXHEAD)
         CALL GRTXT (1.,26.75,IT,TXHEAD)
-        CALL GRTXT (1.,26.,15,'MIN. ABSZISSA =')
+        CALL GRTXT (1.,26.,15,'MIN. ABSCISSA =')
         WRITE (CHR12,'(1P,E12.4)') XMI
         CALL GRTXTC (12,CHR12)
-        CALL GRTXT (1.,25.5,15,'MAX. ABSZISSA =')
+        CALL GRTXT (1.,25.5,15,'MAX. ABSCISSA =')
         WRITE (CHR12,'(1P,E12.4)') XMA
         CALL GRTXTC (12,CHR12)
         YA=24.75

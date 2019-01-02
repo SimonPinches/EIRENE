@@ -22,6 +22,7 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
       USE EIRMOD_CLGIN
@@ -68,7 +69,7 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         call EIRENE_leer(1)
         write (iunout,*) 'No contours specified in blocks 3a,3b'
         write (iunout,*)
-     .    'No input file fort.78 for FEM mesh generator written '
+     .    'No input file ', FORT, '78 for FEM mesh generator written '
         call EIRENE_leer(2)
         return
       endif
@@ -488,7 +489,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
 
       call EIRENE_leer(1)
       write (iunout,*)
-     .  'input file fort.78 for FEM mesh generator written'
+     .  'input file ', FORT, '78 for FEM mesh generator written'
       call EIRENE_leer(2)
 
 cdr

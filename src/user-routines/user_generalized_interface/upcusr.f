@@ -1,14 +1,14 @@
-C  user supplied collision estimator.
+C  user-supplied collision estimator.
 C  called from folion, folneut
 C
       SUBROUTINE EIRENE_UPCUSR(WS,IND)
 C
-C  USER SUPPLIED COLLISION ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
 C
 C  ON INPUT:
 C     WS=WEIGHT/SIGTOT=WEIGHT/(VEL*ZMFPI)=WEIGHT/(VEL*SIGMA,MACR.)
 C     IND =1  PRE-COLLISION ESTIMATOR,  called prior to call to subr. COLLIDE
-C     IND =2  POST COLLISION ESTIMATOR, called after call to subr. COLLIDE
+C     IND =2  POST-COLLISION ESTIMATOR, called after call to subr. COLLIDE
 C
 C
       USE EIRMOD_PRECISION

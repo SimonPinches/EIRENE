@@ -4,7 +4,7 @@ c Nov.07 copied from old code halpha.f: fulcher band emission removed.
 c        (fulcher contribution still in old halpha.f)
 C
 !dr  Aug. 12: derived from Ba_alpha.f, just atomic transition data
-!dr           changed from 3-->2  to 5-->2
+!dr           changed from 3-->2 to 5-->2
 C
 C march 2015: comments included from earlier private version
 c             energy factor fact --> 'FACTE'
@@ -486,7 +486,7 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C  to be done: contributions from neutral atomic hydr. sitting in BULK
-C  e.g. due to bgk iterations.  Careful: no double-counting !
+C  e.g. due to bgk iterations. Careful: no double-counting !
 C        DO 201 Ipls=1,Nplsi
 C          ISPZ=...
 C          IF (NCHARP(IPLS).NE.1.OR.NCHRGP(IPLS).NE.0.OR.NPRT(ISPZ).NE.1) GOTO 201
@@ -494,7 +494,7 @@ C          DDA=DAT*DIIN(IPLS,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 3-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
 C          SIGADD1=SIGADD1+DDA*FAC32
-C201     CONTINUE
+C  201   CONTINUE
 c...............................................................................
 C
 C  CHANNEL 2
@@ -543,7 +543,7 @@ C         DDI2=DIO2*PDENI(IION,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 5-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
 C         SIGADD4=SIGADD4+DDI2*FAC52
-C215     CONTINUE
+C  215  CONTINUE
 
 C  to be done: contributions from  diatomic hydr. molec ion. in BULK IONS
 C
@@ -570,7 +570,7 @@ C         DDN=DNM*PDENI(IION,NCELC)
 C  RADIATIVE TRANSITION PROB. LEVEL 4-->2 (1/SEC)
 C  SIGADD: PHOTONS/SEC/CM**3
 C         SIGADD5=SIGADD5+DDN*FAC42
-C220    CONTINUE
+C  220  CONTINUE
 
 C
 C  REVISED: USE (PDENM * DENSITY RATIO H-/H2) NOW, INSTEAD OF PDENI

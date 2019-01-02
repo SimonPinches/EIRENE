@@ -11,5 +11,8 @@ cdr
 
       INTEGER, INTENT(IN) :: N
       REAL(DP), INTENT(OUT) :: X,Y,Z
+      x=0._DP
+      y=0._DP
+      z=0._DP
       RETURN
       END

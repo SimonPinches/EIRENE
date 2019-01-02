@@ -89,7 +89,7 @@ C  MUSR, INTEGER
      I         NMASSI(:), NCHARI(:), NCHRGI(:), NFOLI(:), NGENI(:),
      I         NMASSP(:), NCHARP(:), NCHRGP(:),
      I         NFOLPH(:), NGENPH(:),
-     I         NPRT(:),   ISPEZ(:,:,:,:,:,:),     ISPEZI(:,:),
+     I         NPRT(:),   ISPEZ(:,:,:,:,:,:),   ISPEZI(:,:),
      I         MPLSTI(:), MPLSV(:)
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
@@ -105,7 +105,6 @@ C  LUSR, LOGICAL
      L         LTESMO, LTISMO, LDESMO, LDISMO,
      L         LVSMO,  LBSMO,  LESMO,  LPOTSMO
 
-
 C FROM HERE ON: NO EQUIVALENCE
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         IADVE(:),  IADVS(:), IADVT(:),  IADRC(:),
@@ -116,7 +115,6 @@ C FROM HERE ON: NO EQUIVALENCE
      I         IADSE(:),  IADSS(:), IADST(:),  IADSC(:),
      I         NFRSTP(:), NADDP(:), NSPAN(:),  NSPEN(:),
      I         NSPANW(:), NSPENW(:)
-
 
       INTEGER, PUBLIC, SAVE ::
      I         NPRLL, NMODE,  NTCPU,
@@ -130,13 +128,11 @@ C FROM HERE ON: NO EQUIVALENCE
 
       CONTAINS
 
-
       SUBROUTINE EIRENE_ALLOC_COMUSR (ICAL)
 
       INTEGER, INTENT(IN) :: ICAL
 
-
-      IF (.NOT.ALLOCATED(LSMOPRO))  ALLOCATE (LSMOPRO(12))
+      IF (.NOT.ALLOCATED(LSMOPRO)) ALLOCATE (LSMOPRO(12))
 
       IF (ICAL == 1) THEN
 
@@ -182,10 +178,9 @@ c NPLPR2
         ALLOCATE (PARMOM(NPLS,NRAD))  ! ital=nn
         ALLOCATE (BXPERP(NRAD))       ! ital=-16
         ALLOCATE (BYPERP(NRAD))       ! ital=-17
-        ALLOCATE (EDRIFT(NPLS,NRAD))  !  ital=-13
+        ALLOCATE (EDRIFT(NPLS,NRAD))  ! ital=-13
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
-
 
         ALLOCATE (RMASSA(MAX(1,NATM)))
         ALLOCATE (RMASSM(MAX(1,NMOL)))
@@ -210,7 +205,7 @@ c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
         ALLOCATE (TEDTEDZ(NRTAL))  ! ital=nn
 
         ALLOCATE (TEXTS(NSPZ))
-c  integer  species and background tally data
+c  integer species and background tally data
         ALLOCATE (NMASSA(MAX(1,NATM)))
         ALLOCATE (NCHARA(MAX(1,NATM)))
         ALLOCATE (NFOLA(MAX(1,NATM)))
@@ -592,7 +587,6 @@ c
         EDRIFT = 0._DP
         DEINL  = 0._DP
         DIINL  = 0._DP
-
 
         RMASSA = 0._DP
         RMASSM = 0._DP

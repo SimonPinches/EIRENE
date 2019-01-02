@@ -90,7 +90,7 @@ c                     converged neutral fluxes.
       real(dp) :: neutralFluxFileVersion
 c     replicate old sputtered flux arrays sptpl, sptat, sptml, sptio, sptpht
 c     for the moment these are filled with values from sptpltot, sptatot,sptmtot,sptitot,sptphtot
-c     in the future it is better to pass particle resolved sputtered fluxes
+c     in the future it is better to pass particle-resolved sputtered fluxes
 c     from sptXY X=PH,I,A,M,P Y=PHT,IO,AT,ML,PL
       real(dp),dimension(npls,nlimps)  :: sptpl
       real(dp),dimension(natm,nlimps)  :: sptat

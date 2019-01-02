@@ -1,6 +1,6 @@
 CDK USER
 C
-C   USER SUPPLIED SUBROUTINES
+C   USER-SUPPLIED SUBROUTINES
 C
 C           ************
 C           *  EDGE2D  *  (fem-interface)

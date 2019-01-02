@@ -14,20 +14,22 @@ C       PARTICLE FLUXES (WEIGHT=WGHTSG),     score POT.., PRF...
 C       ENERGY FLUXES   (E0*WGHTSG),         score EOT.., ERF...
 
 c  input:
-c  itold:  type of incident particle
+c
 c  ind=1:  score incident currents
+c    itold:  type of incident particle
+c    ispez  (iatm, imol, iion, ipls, iphot): of incident particle
 c    msurf:  surface index
 c    msurfg:  sub-segment of surface MSURF, for spatial resolution on surface
 c    E0:     energy (eV) of incident particle
 c    WGHTSG:   stat. weight of incident particle WEIGHT* PROB* SIGN.
 
-c  ind=2:  score re-emitted currents
+c  ind=2:  score reemitted currents
 c    ityp :  type of emitted particle
 c    ispez  (iatm, imol, iion, ipls, iphot): of emitted particle
 c    msurf:  surface index
 c    msurfg:  sub-segment of surface MSURF, for spatial resolution on surface
-c    E0:     energy (eV) of re-emitted particle
-c    WGHTSG:   stat. weight of re-emitted particle* PROB* SIGN.
+c    E0:     energy (eV) of reemitted particle
+c    WGHTSG:   stat. weight of reemitted particle* PROB* SIGN.
 
 c  output:
 c  lmetspw(ispz):  species ispz is emitted, emitted flux tally is scored.
@@ -112,8 +114,8 @@ C  INCIDENT BULK IONS
 
 
       CASE(2)
-C  re-emitted fluxes
-c  a photon is re-emitted. currently only foreseen for incident photons
+C  reemitted fluxes
+c  a photon is reemitted. currently only foreseen for incident photons
       IF (ITYP.EQ.0) THEN
         LOGPHOT(IPHOT,ISTRA)=.TRUE.
         IF (ITOLD.EQ.0) THEN
@@ -134,7 +136,7 @@ c... from an incident photon
           goto 999
         ENDIF
 
-c  an atom is re-emitted...
+c  an atom is reemitted...
       ELSEIF (ITYP.EQ.1) THEN
         LOGATM(IATM,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN
@@ -190,7 +192,7 @@ c... from an incident bulk ion
           goto 999
         ENDIF
 
-c  a molecule is re-emitted
+c  a molecule is reemitted
       ELSEIF (ITYP.EQ.2) THEN
         LOGMOL(IMOL,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN

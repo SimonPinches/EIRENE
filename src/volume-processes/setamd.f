@@ -3,7 +3,7 @@ cdr  nov. 15:  comments,  irds --> irei
 cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk
 cdr             secondaries.
 cdr             This is temporarily necessary, as a consequence of making the
-cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
+cdr             (bulk) ion energy sources eapl, empl, eipl species-dependent
 cdr             We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
@@ -192,9 +192,9 @@ cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI RE
       END DO
 
       if (ierror > 0) then
-         write (iunout,*) 'only a temporary fail safe step'
+         write (iunout,*) 'only a temporary fail-safe step'
          write (iunout,*) 'contact eirene group at fzj, if this occurs'
-         write (iunout,*) 'CALCULATION ABANDONNED '
+         write (iunout,*) 'CALCULATION ABANDONED '
          CALL EIRENE_EXIT_OWN(1)
       end if
 

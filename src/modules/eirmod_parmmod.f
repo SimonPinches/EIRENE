@@ -8,7 +8,7 @@ cpb  surface tallies ntals, increased from 79 to 84 (even more sputter tallies)
 cdr  naming conventions for variance tallies also for spectra tallies
 cdr  spcint --> spcs
 cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
-cdr  Dec. 15:  species resolved energy tallies for pl (bulk ion) energy balance.
+cdr  Dec. 15:  species-resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
 cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
@@ -76,7 +76,6 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
       INTEGER, PUBLIC, SAVE ::
      I NCHOR,  NCHEN, NUM_LINES
 
-
       INTEGER, PUBLIC, SAVE ::
      I NDX,    NDY,    NFL,    NDXP,   NDYP,   NPTRGT
 
@@ -134,7 +133,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
       PRIVATE :: EIRENE_SPEC_TO_SPEC
       TYPE EIRENE_SPECTRUM
         REAL(DP) :: SPCMIN, SPCMAX, SPCDEL, SPCDELI, ESP_MIN,
-     .              ESP_MAX, ESP_00, SPC_XPLT,SPC_YPLT,SPC_SAME,
+     .              ESP_MAX, ESP_00, SPC_XPLT, SPC_YPLT, SPC_SAME,
      .              SPCVX, SPCVY, SPCVZ
         REAL(DP) :: SPCS, SGMS, STVS, GGS
         INTEGER :: NSPC, ISPCTYP, ISPCSRF, IPRTYP, IPRSP, IMETSP,
@@ -244,12 +243,12 @@ C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
 
         NTALI=22   ! total number of VOLUME INPUT TALLIES:
 c                    INCREASED IN 2014 FROM 21 TO 22
-c  additional volume averaged input tallies
+c  additional volume-averaged input tallies
         NTALN=12
         NTALO=14
 
-        NTALV=100  ! total number of VOLUME AVERAGED OUTPUT TALLIES
-c  additional volume averaged output tallies
+        NTALV=100  ! total number of VOLUME-AVERAGED OUTPUT TALLIES
+c  additional volume-averaged output tallies
         NTALA=57
         NTALC=58
         NTALT=59
@@ -257,13 +256,13 @@ c  additional volume averaged output tallies
         NTALB=61
         NTALR=62
 
-! SURFACE AVERAGED OUTPUT TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)
+! SURFACE-AVERAGED OUTPUT TALLIES: INCREASED IN 2014 FROM 59 TO 84 (MORE SPUTTER TALLIES)
         NTALS=84
-c  additional surface averaged output tallies
+c  additional surface-averaged output tallies
         NTLSA=NTALS-2
         NTLSR=NTALS-1
 
-C  MAX SPECIES INDEX IN SURFACE AVERAGED OUTPUT TALLIES
+C  MAX SPECIES INDEX IN SURFACE-AVERAGED OUTPUT TALLIES
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
 
         NSPZ=NPHOT+NATM+NMOL+NION+NPLS  ! TOTAL NUMBER OF MC SPECIES PLUS BULK
@@ -271,7 +270,7 @@ C  MAX SPECIES INDEX IN SURFACE AVERAGED OUTPUT TALLIES
         NSPZMC=NPHOT+NATM+NMOL+NION     ! TOTAL NUMBER OF MC SPECIES
 
 
-C  TOTAL NUMBER OF SURFACE AVERAGED TALLIES
+C  TOTAL NUMBER OF SURFACE-AVERAGED TALLIES
 C  SET IN SETPRM ACCORDING TO THE LIVING TALLIES SPECIFIED IN LIVTALS
         NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+6+
      P        1*NADSP+1*NALSP+1*NSPZP
@@ -316,7 +315,7 @@ C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, for standard deviation 
 C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, for standard deviation estimators
         NSPZTOTW= NSPZ+NADS+NALS
 
-C  TOTAL NUMBER OF VOLUME AVERAGED OUTPUT TALLIES
+C  TOTAL NUMBER OF VOLUME-AVERAGED OUTPUT TALLIES
 C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
 
         NVLTLP=6*NATMP+6*NMOLP+6*NIONP+6*NPHOTP+1*NADVP+1*NCLVP+

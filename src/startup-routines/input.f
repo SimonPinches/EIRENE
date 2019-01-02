@@ -483,10 +483,9 @@ C  READING OF INPUT BLOCK 1 DONE
      .  ('*** 1. DATA FOR OPERATING MODE                 ')
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
-      WRITE (IUNOUT,*) '       NUMBER OF PROCESSORS NPRS= ',NPRS
       SELECT CASE( NPRLL )
         CASE( -1 )
-          CALL EIRENE_MASAGE('       MPI USER DEFINED')
+          CALL EIRENE_MASAGE('       MPI USER-DEFINED')
 C       CASE( 0 )
 C         Reserved for default, see below
         CASE( 1 )
@@ -495,6 +494,7 @@ C         Reserved for default, see below
           CALL EIRENE_MASAGE('       MPI "EMBARRASSINGLY PARALLEL"')
           NPRLL = 0
       END SELECT
+      WRITE (IUNOUT,*) '       NUMBER OF PROCESSES NPRS= ',NPRS
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE
@@ -1003,27 +1003,27 @@ C
 
         IF (.NOT.(NLFEM.OR.NLTET.OR.NLGEN)) THEN
 
-        IF ((IDIMP == 1) .AND. (INUMP(ISTS,IDIMP) > N1ST)) THEN
+          IF ((IDIMP == 1) .AND. (INUMP(ISTS,IDIMP) > N1ST)) THEN
             WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
-          WRITE (iunout,*) ' SURFACE ',ISTS
+            WRITE (iunout,*) ' SURFACE ',ISTS
             WRITE (iunout,*) ' NUMBER OF RADIAL SURFACE > N1ST'
             WRITE (iunout,*) ' CHECK INPUT FILE'
-          CALL EIRENE_EXIT_OWN(1)
-        ELSEIF ((IDIMP == 2) .AND. (INUMP(ISTS,IDIMP) > N2ND)) THEN
+            CALL EIRENE_EXIT_OWN(1)
+          ELSEIF ((IDIMP == 2) .AND. (INUMP(ISTS,IDIMP) > N2ND)) THEN
             WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
-          WRITE (iunout,*) ' SURFACE ',ISTS
+            WRITE (iunout,*) ' SURFACE ',ISTS
             WRITE (iunout,*) ' NUMBER OF POLOIDAL SURFACE > N2ND'
             WRITE (iunout,*) ' CHECK INPUT FILE'
-          CALL EIRENE_EXIT_OWN(1)
-        ELSEIF ((IDIMP == 3) .AND.
+            CALL EIRENE_EXIT_OWN(1)
+          ELSEIF ((IDIMP == 3) .AND.
      .            ((NLTOR.AND.(INUMP(ISTS,IDIMP) > N3RD)) .OR.
      .             (NLTRA.AND.(INUMP(ISTS,IDIMP) > NTTRA)))) THEN
-          WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
-          WRITE (iunout,*) ' SURFACE ',ISTS
+            WRITE (iunout,*) ' ERROR IN SPECIFICATION OF NON-DEFAULT'
+            WRITE (iunout,*) ' SURFACE ',ISTS
             WRITE (iunout,*) ' NUMBER OF TOROIDAL SURFACE > N3RD'
             WRITE (iunout,*) ' CHECK INPUT FILE'
-          CALL EIRENE_EXIT_OWN(1)
-        END IF
+            CALL EIRENE_EXIT_OWN(1)
+          END IF
 
         END IF
 C
@@ -2177,22 +2177,23 @@ cdr                 so far only for "DENSITYMODELS":
           ALLOCATE (TDMPAR(JPLS)%TDM%REACTION(TDMPAR(JPLS)%TDM%NRE))
           ALLOCATE (TDMPAR(JPLS)%TDM%CR(TDMPAR(JPLS)%TDM%NRE))
 
+C needs trim, check if possible...
           SELECT CASE (CDENMODEL(JPLS))
-          CASE ('FORT.13   ')
+          CASE (FORT//'13')
             READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1)
 c  default: only for bulk ions
                               TDMPAR(JPLS)%TDM%ITP(1)=4
-          CASE ('FORT.10   ')
+          CASE (FORT//'10')
             READ (IUNIN,6666) TDMPAR(JPLS)%TDM%ISP(1),
      .                        TDMPAR(JPLS)%TDM%ITP(1),
      .                        TDMPAR(JPLS)%TDM%ISTR(1)
-          CASE ('CONSTANT  ')
+          CASE ('CONSTANT')
             READ (IUNIN,6664) TDMPAR(JPLS)%TDM%TVAL,
      .                        TDMPAR(JPLS)%TDM%DVAL,
      .                        TDMPAR(JPLS)%TDM%VXVAL,
      .                        TDMPAR(JPLS)%TDM%VYVAL,
      .                        TDMPAR(JPLS)%TDM%VZVAL
-          CASE ('MULTIPLY  ')
+          CASE ('MULTIPLY')
             READ (IUNIN,'(3I6,6x,3E12.4)')
      .           TDMPAR(JPLS)%TDM%ISP(1),
      .           TDMPAR(JPLS)%TDM%ITP(1),
@@ -2201,16 +2202,16 @@ c  default: only for bulk ions
      .           TDMPAR(JPLS)%TDM%TFACTOR,
      .           TDMPAR(JPLS)%TDM%VFACTOR
                  TDMPAR(JPLS)%TDM%ITP(1)=4
-          CASE ('SAHA      ')
+          CASE ('SAHA')
 !PB   TO BE WRITTEN
-          CASE ('BOLTZMANN ')
+          CASE ('BOLTZMANN')
             READ (IUNIN,'(3I6,6x,2E12.4)')
      .           TDMPAR(JPLS)%TDM%ISP(1),
      .           TDMPAR(JPLS)%TDM%ITP(1),
      .           TDMPAR(JPLS)%TDM%ISTR(1),
      .           TDMPAR(JPLS)%TDM%G_BOLTZ,
      .           TDMPAR(JPLS)%TDM%DELTAE
-          CASE ('CORONA    ')
+          CASE ('CORONA')
             IDMDL = IDMDL + 1  !  ONE MORE H.2 REACTION data set
             READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3,E12.4)')
      .           TDMPAR(JPLS)%TDM%ISP(1),
@@ -2228,7 +2229,7 @@ c  default: only for bulk ions
               WRITE (iunout,*) ' IPLS = ',JPLS
               CALL EIRENE_EXIT_OWN(1)
             END IF
-          CASE ('COLRAD    ')
+          CASE ('COLRAD')
             IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
             DO I=1, TDMPAR(JPLS)%TDM%NRE
               READ (IUNIN,'(3I6,1X,A6,1X,A4,A9,A3)')
@@ -2721,8 +2722,8 @@ C
         IF (ideflt_sput.le.0.and.REFCUR%JLSPT.NE.0) THEN
           WRITE (iunout,*) 'WARNING: SPUTTERING FOR MODEL ',
      .                      REFCUR%REFNAME
-          WRITE (iunout,*) 'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
-          WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
+          WRITE (iunout,*) 'BUT NO PARAMETERS RECYCS, RECYCC ARE READ'
+          WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED.'
           WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
           REFCUR%JLSPT=0
         ENDIF
@@ -3357,7 +3358,7 @@ c  search for input block 11a
 CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
 cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
-CPB  ACTIVATE SPECIES RESOLVED CPU CONSUMPTION OPTION
+CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
      .                  TRCHKTIM
       do I = 0, NSTRA, 60
         READ (IUNIN,'(A72)') ZEILE
@@ -3477,7 +3478,7 @@ C  3D GEOMETRY PLOT
       DO 1140 J=1,5
         READ (IUNIN,6662) PL3A(J),TEXTLA(J),IPLTA(J),
      .                (IPLAA(J,I),IPLEA(J,I),I=1,IPLTA(J))
- 1140  CONTINUE
+ 1140 CONTINUE
       DO 1141 J=1,3
         READ (IUNIN,6662) PL3S(J),TEXTLS(J),IPLTS(J),
      .                (IPLAS(J,I),IPLES(J,I),I=1,IPLTS(J))
@@ -4097,7 +4098,7 @@ C
           DTIMVO=DTIMV
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
-          WRITE (iunout,*) 'READ FROM FILE FORT 15'
+          WRITE (iunout,*) 'READ FROM FILE ', FORT, '15'
           WRITE (iunout,*) 'PARTICLES AND FLUX RETRIEVED FOR'
           WRITE (iunout,*) 'INITIAL DISTRIBUTION AT T0= ',TIME0
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
@@ -4161,7 +4162,8 @@ C Only read census from file if exactly one stratum is a census stratum
           ISTR = ISTR_A(1)
           CALL EIRENE_RSNAP( ISTR )
 C
-          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE FORT 15 '
+          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE ', FORT, 
+     .                     '15'
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
           CALL EIRENE_MASR1('FLUX    ',FLUX(ISTR))
 C
@@ -5264,8 +5266,6 @@ C
  4000 CONTINUE
 C
 
-
-
 !  NOTHING IS DONE IF ARRAYS FOR BACKGROUND ARE ALREADY ALLOCATED
       IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
 
@@ -5363,8 +5363,6 @@ C  WHICH ARE NOT CONTAINED IN EXTERNAL PLASMA CODE,
 C  I.E. ONLY THOSE WHICH ARE NEEDED FOR INTERNAL EIRENE CYCLING (NON-LINEARITIES)
         IF (NFILEL.EQ.3) CALL EIRENE_RPLAM(TRCFLE,0)
 
-
-
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
@@ -5409,7 +5407,7 @@ C
 
 
 C
-C  SETUP TABLE OF CONTRIBUTIONS OF MONTE CARLO PARTICLES TO BACKGROUND SPECIES
+C  SET UP TABLE OF CONTRIBUTIONS OF MONTE CARLO PARTICLES TO BACKGROUND SPECIES
 C
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 

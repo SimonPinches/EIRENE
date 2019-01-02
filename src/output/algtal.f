@@ -1,4 +1,4 @@
-cdr:   evalute algebraic expression of tallies, as specified in
+cdr:   evaluate algebraic expression of tallies, as specified in
 cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 C
@@ -271,7 +271,7 @@ c  electr. Potential
               EXIT
             END SELECT
 
-cdr  weighted sum over sub-cells: in=ncltal(i)
+cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC1 = 0._DP
             DO I=1,NSBOX
@@ -475,7 +475,7 @@ C
               EXIT
             END SELECT
 
-cdr  weighted sum over sub-cells: in=ncltal(i)
+cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC2 = 0._DP
             DO I=1,NSBOX
@@ -701,7 +701,7 @@ C  KONSTANTE WURDE EINGELESEN
             DO 315 I=1,NLIMPS
 !PB           VEC1(I)=CONST(IOP)
               VEC1(I)=CONST(IC)
-  315        CONTINUE
+  315       CONTINUE
 C
           ELSE
 C  ZWISCHENERGEBNIS HOLEN
@@ -761,7 +761,7 @@ C  ZWISCHENERGEBNIS HOLEN
               DO 340 I=1,NLIMPS
                 VEC2(I)=RESULT(1,I)
                 IIND(IZIF(3,IOP))=0
-  340          CONTINUE
+  340         CONTINUE
               LFREE1=.TRUE.
             ELSEIF (IIND(IZIF(3,IOP)).EQ.2) THEN
               DO 341 I=1,NLIMPS

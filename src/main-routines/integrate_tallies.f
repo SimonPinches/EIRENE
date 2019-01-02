@@ -1,4 +1,4 @@
-cdr dec 15:  added species resolution wrt. energy volume taalies for bulk ions
+cdr dec 15:  added species resolution wrt. energy volume tallies for bulk ions
 cdr          eapl, empl, eipl, ephpl, eppl
 
 C
@@ -24,7 +24,7 @@ C
 
 C
 C
-C   INTEGRATE VOLUME AVERAGED PROFILES   450 --- 459
+C   INTEGRATE VOLUME-AVERAGED PROFILES   450 --- 459
 C
       IF (LPAEL) THEN
         DUMMY(1:NSBOX_TAL) = PAEL(1:NSBOX_TAL)
@@ -828,8 +828,8 @@ C
       IF (LBGKV) THEN
         DO 459 IBGV=1,NBGVI
           DUMMY(1:NSBOX_TAL) = BGKV(IBGV,1:NSBOX_TAL)
-          CALL EIRENE_INTTAL
-     .  (DUMMY,VOLTAL,1,1,NSBOX_TAL,BGKVI(IBGV,ISTRA),
+          CALL EIRENE_INTTAL(DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                 BGKVI(IBGV,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           BGKV(IBGV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
   459   CONTINUE
