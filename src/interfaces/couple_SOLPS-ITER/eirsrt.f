@@ -356,6 +356,7 @@ csw mpi
 csw     NDXY=(NDXA-1)*NR1ST+NDYA  ! this version: triang. grids only
         NDXY=NTRII
 C
+CDR why alloc short cycle data, even if no short cycle is done ??
         CALL EIRENE_ALLOC_BRASCL
 
 ! find new calculated stratum with smallest number
@@ -485,8 +486,8 @@ C                                         SUM OVER ALL IPLS
 C
         DO JATM=1,NATMI
          DO JPLS=1,NPLSI
-          DO IIEI=1,NIEII(JION)
-           IREI=LGIEI(JION,IIEI)
+          DO IAEI=1,NAEII(JATM)
+           IREI=LGAEI(JATM,IAEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
