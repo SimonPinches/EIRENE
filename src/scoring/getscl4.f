@@ -1,6 +1,6 @@
 C  oct.2014  only comments added
-cdr  aug 2016  comments only: 
-cdr            potati, potmli, potioi and potphi (OUTGOING FLUXES) 
+cdr  aug 2016  comments only:
+cdr            potati, potmli, potioi and potphi (OUTGOING FLUXES)
 cdr            include also the fluxes onto census.
 cdr  hence: in t-dep mode and nlscl=T, total particle balances should be exact
 cdr  to be done: apply that scaling also to flux and weights in census for re-sampling
@@ -79,7 +79,7 @@ C
       P(3,3)=PIIOI(0,ISTRA)+POTIOI(0,ISTRA)+PRFIII(0,ISTRA)+
      .       PGENII(0,ISTRA)
       P(3,4)=0._DP
-Cdr PHOTONIC TALLIES ARE CURRENTLY NOT INCLUDED IN RESCALING. TO BE DONE 
+Cdr PHOTONIC TALLIES ARE CURRENTLY NOT INCLUDED IN RESCALING. TO BE DONE
 CDR FC(4) SHOULD ALWAYS TURN OUT TO BE EXACTLY 1.0
       P(4,1)=0._DP
       P(4,2)=0._DP
@@ -98,14 +98,14 @@ C
         LCOLM(I)=P(1,I)**2+P(2,I)**2+P(3,I)**2+P(4,I)**2.GT.EPS30
         IF (LROW(I)) IROW=IROW+1
         IF (LCOLM(I)) ICOL=ICOL+1
-1     CONTINUE
+    1 CONTINUE
 C
       IF (IROW.EQ.0) THEN
-C  NO ROW IS NON ZERO, I.E. NO PARTICLES FOLLOWED
+C  NO ROW IS NONZERO, I.E. NO PARTICLES FOLLOWED
         GOTO 1000
 C
       ELSEIF (IROW.EQ.1) THEN
-C  ONLY ONE ROW (NO. I) IS NON ZERO, I.E., ONLY ATOMS, ONLY MOLECULES
+C  ONLY ONE ROW (NO. I) IS NONZERO, I.E., ONLY ATOMS, ONLY MOLECULES
 C                                    OR  ONLY TEST IONS ARE FOLLOWED
          DO 10 I=1,4
            IF (LROW(I)) THEN
@@ -119,14 +119,14 @@ C                                    OR  ONLY TEST IONS ARE FOLLOWED
                FC(4)=B(I)/P(I,4)
              ENDIF
            ENDIF
-10       CONTINUE
+   10    CONTINUE
 C
 C
       ELSEIF (IROW.EQ.2) THEN
-C  TWO ROWS ARE NON ZERO
+C  TWO ROWS ARE NONZERO
         J1=0
         J2=0
-C  DETERMINE THE INDICES FOR THE NON ZERO ROWS
+C  DETERMINE THE INDICES FOR THE NONZERO ROWS
         DO 20 J=1,4
           IF (LROW(J)) THEN
             IF (J1.EQ.0) THEN
@@ -135,19 +135,19 @@ C  DETERMINE THE INDICES FOR THE NON ZERO ROWS
               J2=J
             ENDIF
           ENDIF
-20      CONTINUE
+   20   CONTINUE
 C
         IF (ICOL.EQ.1) THEN
-C  ONLY ONE COLUMN IS NON ZERO
+C  ONLY ONE COLUMN IS NONZERO
           DO 30 I=1,4
             IF (LCOLM(I)) FC(I)=B(J1)/P(J1,I)
-30        CONTINUE
+   30     CONTINUE
 C
         ELSE
-C  MORE THAN ONE COLUMN IS NON ZERO
+C  MORE THAN ONE COLUMN IS NONZERO
           I1=0
           I2=0
-C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
+C  DETERMINE THE INDICES FOR THE FIRST TWO NONZERO COLUMNS
           DO 40 I=1,4
             IF (LCOLM(I)) THEN
               IF (I1.EQ.0) THEN
@@ -157,7 +157,7 @@ C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
                 EXIT
               ENDIF
             ENDIF
-40        CONTINUE
+   40     CONTINUE
 C
 ! nur spalten rechts von spalte i2 koennen noch werte enthalten
           DO I=I2+1,4
@@ -178,7 +178,7 @@ C
 C
 C
       ELSEIF (IROW.EQ.3) THEN
-C  THREE ROWS ARE NON ZERO
+C  THREE ROWS ARE NONZERO
 C
 C  DETERMINE THE ROW WHICH IS COMPLETELY ZERO
         JOUT = 0
@@ -187,7 +187,7 @@ C  DETERMINE THE ROW WHICH IS COMPLETELY ZERO
         END DO
 
         IF (ICOL.EQ.1) THEN
-C  ONLY ONE COLUMN IS NON ZERO
+C  ONLY ONE COLUMN IS NONZERO
           J1=1
           IF (JOUT.EQ.1) J1=2
           DO  I=1,4
@@ -195,13 +195,13 @@ C  ONLY ONE COLUMN IS NON ZERO
           END DO
 
         ELSEIF (ICOL.EQ.2) THEN
-C  TWO COLUMNS ARE NON ZERO
+C  TWO COLUMNS ARE NONZERO
           J1=1
           IF (JOUT.EQ.J1) J1=J1+1
           J2=J1+1
           IF (JOUT.EQ.J2) J2=J2+1
 
-C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
+C  DETERMINE THE INDICES FOR THE FIRST TWO NONZERO COLUMNS
           I1=0
           DO I=1,4
             IF (LCOLM(I)) THEN
@@ -226,7 +226,7 @@ C  DETERMINE THE INDICES FOR THE FIRST TWO NON ZERO COLUMNS
 
         ELSE
 
-C  AT LEAST THREE COLUMNS ARE NON ZERO
+C  AT LEAST THREE COLUMNS ARE NONZERO
           IF (ICOL.EQ.4) THEN
             DO J=1,4
               B(J)=B(J)-P(J,4)
@@ -292,17 +292,17 @@ C  AT LEAST THREE COLUMNS ARE NON ZERO
 C
 C
       ELSEIF (IROW.EQ.4) THEN
-C  ALL ROWS ARE NON ZERO
+C  ALL ROWS ARE NONZERO
 C
         IF (ICOL.EQ.1) THEN
           DO 50 I=1,4
             IF (LCOLM(I)) FC(I)=B(I)/P(1,I)
-50        CONTINUE
+   50     CONTINUE
 C
         ELSEIF (ICOL.EQ.2) THEN
           I1=0
           I2=0
-C  DETERMINE THE INDICES FOR THE NON ZERO COLUMNS
+C  DETERMINE THE INDICES FOR THE NONZERO COLUMNS
           DO 60 I=1,4
             IF (LCOLM(I)) THEN
               IF (I1.EQ.0) THEN
@@ -311,7 +311,7 @@ C  DETERMINE THE INDICES FOR THE NON ZERO COLUMNS
                 I2=I
               ENDIF
             ENDIF
-60        CONTINUE
+   60     CONTINUE
 C
           FNEN=P(1,I1)*P(2,I2)-P(2,I1)*P(1,I2)
           IF (ABS(FNEN).GT.EPS12) THEN
@@ -397,13 +397,13 @@ C  THE WHOLE MATRIX IS TO BE USED
         ENDIF
       ENDIF
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
 !  FOR THE TIME BEING
 
       CALL EIRENE_LEER(1)
       WRITE (iunout,*)
-     .  'EIRENE RECOMMENDED RESCALING OF VOLUME AVERAGED '
+     .  'EIRENE RECOMMENDED RESCALING OF VOLUME-AVERAGED '
       WRITE (iunout,*) 'TALLIES DUE TO STATISTICAL ERRORS IN BALANCE '
       CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
      .             FC(1),FC(2),FC(3),FC(4))

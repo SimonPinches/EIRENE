@@ -1,42 +1,42 @@
 c   march 19, 2006:  corrected pointer for spttot in "associate_cestim"
 !   20.06.07:        deallocate ESTIML and SMESTL
 cdr 14.10.14:        naming of arrays in smestl adapted to those of other eirene std. dev. tallies
-cdr                  two further tallies introduced (gg, stv) for stand. dev. 
+cdr                  two further tallies introduced (gg, stv) for stand. dev.
 cdr                  of sum over strata
 cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
 cdr mar 17:  comments added
 cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
- 
+
       MODULE EIRMOD_CESTIM
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CESTIM, EIRENE_DEALLOC_CESTIM, 
+
+      PUBLIC :: EIRENE_ALLOC_CESTIM, EIRENE_DEALLOC_CESTIM,
      P          EIRENE_ASSOCIATE_CESTIM,
      P          EIRENE_INIT_CESTIM
- 
+
 !      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: ESTIML(:)
 !      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: SMESTL(:)
-      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE :: 
+      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      .        ESTIML(:)
-      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE :: 
+      TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      .        SMESTL(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NESTM1, NESTM2, NESTIM
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        ESTIMV(:,:), ESTIMS(:,:)
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R          CEMETERYV(:,:), CEMETERYS(:,:)
- 
-C  NESTM1, REAL, VOLUME AVERAGED TALLIES
+
+C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENA(:,:), PDENM(:,:), PDENI(:,:), PDENPH(:,:),
      R EDENA(:,:), EDENM(:,:), EDENI(:,:), EDENPH(:,:),
@@ -65,7 +65,7 @@ c  more recent tallies  63 --100
      R VYDENA(:,:), VYDENM(:,:), VYDENI(:,:), VYDENPH(:,:),
      R VZDENA(:,:), VZDENM(:,:), VZDENI(:,:), VZDENPH(:,:),
      R MAPL(:,:), MMPL(:,:), MIPL(:,:), MPHPL(:,:)
- 
+
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENX(:),  EDENX(:),
@@ -74,7 +74,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      R VXDENX(:), VYDENX(:),  VZDENX(:),
      R MXPL(:,:), PXX(:,:),   EXX(:)
 
-C  NESTM2, REAL, SURFACE AVERAGED TALLIES
+C  NESTM2, REAL, SURFACE-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R POTAT(:,:),
      R PRFAAT(:,:), PRFMAT(:,:), PRFIAT(:,:), PRFPHAT(:,:),
@@ -113,37 +113,37 @@ C
 C
      R EOTPL(:,:),
 C
-     R SPTAAT(:,:), SPTMAT(:,:), SPTIAT(:,:), SPTPHAT(:,:), 
+     R SPTAAT(:,:), SPTMAT(:,:), SPTIAT(:,:), SPTPHAT(:,:),
      R SPTPAT(:,:),
-     R SPTAML(:,:), SPTMML(:,:), SPTIML(:,:), SPTPHML(:,:), 
+     R SPTAML(:,:), SPTMML(:,:), SPTIML(:,:), SPTPHML(:,:),
      R SPTPML(:,:),
-     R SPTAIO(:,:), SPTMIO(:,:), SPTIIO(:,:), SPTPHIO(:,:), 
-     R SPTPIO(:,:), 
-     R SPTAPHT(:,:), SPTMPHT(:,:), SPTIPHT(:,:), SPTPHPHT(:,:), 
-     R SPTPPHT(:,:), 
-     R SPTAPL(:,:), SPTMPL(:,:), SPTIPL(:,:), SPTPHPL(:,:), 
+     R SPTAIO(:,:), SPTMIO(:,:), SPTIIO(:,:), SPTPHIO(:,:),
+     R SPTPIO(:,:),
+     R SPTAPHT(:,:), SPTMPHT(:,:), SPTIPHT(:,:), SPTPHPHT(:,:),
+     R SPTPPHT(:,:),
+     R SPTAPL(:,:), SPTMPL(:,:), SPTIPL(:,:), SPTPHPL(:,:),
      R SPTPPL(:,:),
-! next: incident type: atoms, molecs., test ions, photons, bulk ions, 
+! next: incident type: atoms, molecs., test ions, photons, bulk ions,
 ! but no emitted species index, only surface index
-! analog to spttot, but: a,m,i,pl,ph, in tally name, incident type resolved     
-     R sptatot(:), sptmtot(:), sptitot(:), sptphtot(:), sptpltot(:),  
-     R SPTTOT(:),   
+! analog to spttot, but: a,m,i,pl,ph, in tally name, incident type resolved
+     R sptatot(:), sptmtot(:), sptitot(:), sptphtot(:), sptpltot(:),
+     R SPTTOT(:),
 C
      R ADDS(:,:),  ALGS(:,:),
      R SPUMP(:,:)
- 
+
 C  FROM HERE: NO POINTERS ?
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NFIRST(:), NADDV(:),
      I IRESC1(:), IRESC2(:),
      I NFRSTW(:), NADDW(:)
- 
+
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LIVTALV(:), LIVTALS(:)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LMISTALV(:), LMISTALS(:)
-c  logical, for each volume averaged tally.
-c  either active tally (if true) or de-activated tally, no storage (if false)  
+c  logical, for each volume-averaged tally.
+c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPDENA, LPDENM, LPDENI, LPDENPH,
      L LEDENA, LEDENM, LEDENI, LEDENPH,
@@ -166,15 +166,15 @@ c  either active tally (if true) or de-activated tally, no storage (if false)
      L LVYDENA, LVYDENM, LVYDENI, LVYDENPH,
      L LVZDENA, LVZDENM, LVZDENI, LVZDENPH,
      L LMAPL,  LMMPL,  LMIPL,  LMPHPL
- 
+
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
-      LOGICAL, PUBLIC, POINTER, SAVE :: 
+      LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPDENX,  LEDENX,
      L LPXEL,   LPXAT,   LPXML,   LPXIO, LPXPL,
      L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
      L LMXPL,   LPXX,    LEXX
- 
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LMSPDENA, LMSPDENM, LMSPDENI, LMSPDENPH,
      L LMSEDENA, LMSEDENM, LMSEDENI, LMSEDENPH,
@@ -197,8 +197,8 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
-c  logical, for each surface averaged tally, particle flux.
-c  either active tally (if true) or de-activated tally, no storage (if false)   
+c  logical, for each surface-averaged tally, particle flux.
+c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPOTAT,
      L LPRFAAT, LPRFMAT, LPRFIAT, LPRFPHAT,
@@ -217,7 +217,7 @@ C
      L LPRFPPHT,
 C
      L LPOTPL
- 
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LMSPOTAT,
      L LMSPRFAAT, LMSPRFMAT, LMSPRFIAT, LMSPRFPHAT,
@@ -237,7 +237,7 @@ C
 C
      L LMSPOTPL
 C
-c  logical, for each surface averaged tally, energy flux.
+c  logical, for each surface-averaged tally, energy flux.
 c  either active tally (if true) or de-activated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LEOTAT,
@@ -256,10 +256,10 @@ C
 C
      L LSPTAAT,  LSPTMAT,  LSPTIAT,  LSPTPHAT,  LSPTPAT,
      L LSPTAML,  LSPTMML,  LSPTIML,  LSPTPHML,  LSPTPML,
-     L LSPTAIO,  LSPTMIO,  LSPTIIO,  LSPTPHIO,  LSPTPIO, 
-     L LSPTAPHT, LSPTMPHT, LSPTIPHT, LSPTPHPHT, LSPTPPHT, 
+     L LSPTAIO,  LSPTMIO,  LSPTIIO,  LSPTPHIO,  LSPTPIO,
+     L LSPTAPHT, LSPTMPHT, LSPTIPHT, LSPTPHPHT, LSPTPPHT,
      L LSPTAPL,  LSPTMPL,  LSPTIPL,  LSPTPHPL,  LSPTPPL,
-     L Lsptatot, Lsptmtot, Lsptitot, Lsptpltot, Lsptphtot,   
+     L Lsptatot, Lsptmtot, Lsptitot, Lsptpltot, Lsptphtot,
      L LSPTTOT,
 
      L LADDS,  LALGS,
@@ -282,82 +282,82 @@ C
 C
      L LMSSPTAAT,  LMSSPTMAT,  LMSSPTIAT,  LMSSPTPHAT,  LMSSPTPAT,
      L LMSSPTAML,  LMSSPTMML,  LMSSPTIML,  LMSSPTPHML,  LMSSPTPML,
-     L LMSSPTAIO,  LMSSPTMIO,  LMSSPTIIO,  LMSSPTPHIO,  LMSSPTPIO, 
-     L LMSSPTAPHT, LMSSPTMPHT, LMSSPTIPHT, LMSSPTPHPHT, LMSSPTPPHT, 
+     L LMSSPTAIO,  LMSSPTMIO,  LMSSPTIIO,  LMSSPTPHIO,  LMSSPTPIO,
+     L LMSSPTAPHT, LMSSPTMPHT, LMSSPTIPHT, LMSSPTPHPHT, LMSSPTPPHT,
      L LMSSPTAPL,  LMSSPTMPL,  LMSSPTIPL,  LMSSPTPHPL,  LMSSPTPPL,
      L LMSSPTTOT,
-     L Lmssptatot, Lmssptmtot, Lmssptitot, Lmssptpltot, Lmssptphtot,   
+     L Lmssptatot, Lmssptmtot, Lmssptitot, Lmssptpltot, Lmssptphtot,
      L LMSADDS,  LMSALGS,
      L LMSSPUMP
- 
-!  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES 
+
+!  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES
       LOGICAL, PUBLIC, TARGET, SAVE :: LEA, LEM, LEIO, LEPH
 
-!  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES: ENERGY RATE TALLIES 
+!  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES: ENERGY RATE TALLIES
       LOGICAL, PUBLIC, POINTER, SAVE :: LEX
 C
 
 
- 
+
 C
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CESTIM(ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
       IF (ICAL == 1) THEN
- 
+
         IF (ALLOCATED(LIVTALV)) RETURN
- 
+
         ALLOCATE (LIVTALV(NTALV))
         ALLOCATE (LIVTALS(NTALS))
         ALLOCATE (LMISTALV(NTALV))
         ALLOCATE (LMISTALS(NTALS))
- 
+
         ALLOCATE (NFIRST(NTALV))
         ALLOCATE (NADDV(NTALV))
         ALLOCATE (IRESC1(NTALV))
         ALLOCATE (IRESC2(NTALV))
         ALLOCATE (NFRSTW(NTALS))
         ALLOCATE (NADDW(NTALS))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CESTIM(1) ',4*(NTALV+NTALS) + (4*NTALV+2*NTALS)*4
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         IF (ALLOCATED(ESTIMV)) RETURN
- 
+
         NESTM1=NVOLTL*NRTAL
         NESTM2=NSRFTL*NLMPGS
         NESTIM=NESTM1+NESTM2
- 
+
         ALLOCATE (ESTIMV(NVOLTL,NRTAL))
         ALLOCATE (ESTIMS(NSRFTL,NLMPGS))
- 
+
         ALLOCATE (CEMETERYV(0:0,NRTAL))
         ALLOCATE (CEMETERYS(0:0,NLMPGS))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .      ' CESTIM(2) ',(NESTIM+NRTAL+NLMPGS)*8
- 
+
       END IF
- 
+
       CALL EIRENE_INIT_CESTIM(ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CESTIM
- 
- 
+
+
       SUBROUTINE EIRENE_ASSOCIATE_CESTIM
- 
-C  VOLUME AVERAGED TALLIES:  
+
+C  VOLUME-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMV
 C     if tally is deactivated in this run: Pointer to CEMETERYV
- 
+
       IF (LPDENA) THEN
         PDENA => ESTIMV(NADDV(1)+1:NADDV(2),:)
       ELSE
@@ -378,7 +378,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         PDENPH => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LEDENA) THEN
         EDENA => ESTIMV(NADDV(5)+1:NADDV(6),:)
       ELSE
@@ -399,7 +399,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         EDENPH => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LPAEL) THEN
         PAEL => ESTIMV(NADDV(10),:)
       ELSE
@@ -430,7 +430,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         PAPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LPMEL) THEN
         PMEL => ESTIMV(NADDV(16),:)
       ELSE
@@ -461,7 +461,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         PMPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LPIEL) THEN
         PIEL => ESTIMV(NADDV(22),:)
       ELSE
@@ -492,7 +492,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         PIPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LPPHEL) THEN
         PPHEL => ESTIMV(NADDV(28),:)
       ELSE
@@ -523,7 +523,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         PPHPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LEAEL) THEN
         EAEL => ESTIMV(NADDV(34),:)
       ELSE
@@ -554,7 +554,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         EAPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LEMEL) THEN
         EMEL => ESTIMV(NADDV(40),:)
       ELSE
@@ -585,7 +585,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         EMPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LEIEL) THEN
         EIEL => ESTIMV(NADDV(46),:)
       ELSE
@@ -616,7 +616,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         EIPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LEPHEL) THEN
         EPHEL => ESTIMV(NADDV(52),:)
       ELSE
@@ -647,7 +647,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       ELSE
         EPHPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LADDV) THEN
 c  ntala =57
         ADDV => ESTIMV(NADDV(NTALA)+1:NADDV(NTALA+1),:)
@@ -684,7 +684,7 @@ c  ntalr =62
       ELSE
         ALGV => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LPGENA) THEN
         PGENA => ESTIMV(NADDV(63)+1:NADDV(64),:)
       ELSE
@@ -745,7 +745,7 @@ c  ntalr =62
       ELSE
         VGENPH => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LPPAT) THEN
         PPAT => ESTIMV(NADDV(75)+1:NADDV(76),:)
       ELSE
@@ -771,7 +771,7 @@ c  ntalr =62
       ELSE
         PPPL => CEMETERYV(0:0,:)
       END IF
- 
+
       IF (LEPAT) THEN
         EPAT => ESTIMV(NADDV(81),:)
       ELSE
@@ -880,13 +880,13 @@ c  ntalr =62
       ELSE
         MPHPL => CEMETERYV(0:0,:)
       END IF
- 
- 
-C  SURFACE AVERAGED TALLIES
- 
-C  SURFACE AVERAGED TALLIES:  
+
+
+C  SURFACE-AVERAGED TALLIES
+
+C  SURFACE-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMS
-C     if tally is deactivated in this run: Pointer to CEMETERYS 
+C     if tally is deactivated in this run: Pointer to CEMETERYS
       IF (LPOTAT) THEN
         POTAT => ESTIMS(1:NADDW(2),:)
       ELSE
@@ -1317,11 +1317,10 @@ C
       ELSE
         SPUMP => CEMETERYS(0:0,:)
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_ASSOCIATE_CESTIM
- 
- 
+
       SUBROUTINE EIRENE_DEALLOC_CESTIM
       INTEGER :: I
 C
@@ -1329,7 +1328,7 @@ C
          DEALLOCATE (ESTIMV)
          DEALLOCATE (ESTIMS)
          IF (NADSPC > 0) THEN
-c  spectra tallies: standard deviation 
+c  spectra tallies: standard deviation
            DO I=1,NADSPC
              DEALLOCATE(ESTIML(I)%SPC)
              IF (ASSOCIATED(ESTIML(I)%SDV)) THEN
@@ -1362,35 +1361,35 @@ cdr  heinke frerichs, juli 2016
          DEALLOCATE (IRESC2)
          DEALLOCATE (NFRSTW)
          DEALLOCATE (NADDW)
- 
+
          DEALLOCATE (CEMETERYV)
          DEALLOCATE (CEMETERYS)
       END IF
- 
+
       IF (ALLOCATED(LIVTALV)) THEN
          DEALLOCATE (LIVTALV)
          DEALLOCATE (LIVTALS)
          DEALLOCATE (LMISTALV)
          DEALLOCATE (LMISTALS)
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CESTIM
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CESTIM(ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
 C
       IF (ICAL == 1) THEN
- 
+
         LIVTALV = .TRUE.
         LIVTALS = .TRUE.
         LMISTALV = .FALSE.
         LMISTALS = .FALSE.
- 
-! volume averaged tallies
- 
+
+! volume-averaged tallies
+
         LPDENA   => LIVTALV(1)
         LPDENM   => LIVTALV(2)
         LPDENI   => LIVTALV(3)
@@ -1491,8 +1490,7 @@ C
         LMMPL    => LIVTALV(98)
         LMIPL    => LIVTALV(99)
         LMPHPL   => LIVTALV(100)
- 
- 
+
         LMSPDENA   => LMISTALV(1)
         LMSPDENM   => LMISTALV(2)
         LMSPDENI   => LMISTALV(3)
@@ -1593,9 +1591,9 @@ C
         LMSMMPL    => LMISTALV(98)
         LMSMIPL    => LMISTALV(99)
         LMSMPHPL   => LMISTALV(100)
- 
-! surface averaged tallies
- 
+
+! surface-averaged tallies
+
         LPOTAT    => LIVTALS(1)
         LPRFAAT   => LIVTALS(2)
         LPRFMAT   => LIVTALS(3)
@@ -1646,41 +1644,41 @@ C
         LERFPHPHT => LIVTALS(48)
         LERFPPHT  => LIVTALS(49)
         LEOTPL    => LIVTALS(50)
-        LSPTAAT    => LIVTALS(51)
-        LSPTAML    => LIVTALS(52)
-        LSPTAIO    => LIVTALS(53)
-        LSPTAPHT   => LIVTALS(54)
-        LSPTAPL    => LIVTALS(55)
-        LSPTMAT    => LIVTALS(56 )
-        LSPTMML    => LIVTALS(57)
-        LSPTMIO    => LIVTALS(58)
-        LSPTMPHT   => LIVTALS(59)
-        LSPTMPL    => LIVTALS(60)
-        LSPTIAT    => LIVTALS(61)
-        LSPTIML    => LIVTALS(62)
-        LSPTIIO    => LIVTALS(63)
-        LSPTIPHT   => LIVTALS(64)
-        LSPTIPL    => LIVTALS(65)
-        LSPTPHAT    => LIVTALS(66)
-        LSPTPHML    => LIVTALS(67)
-        LSPTPHIO    => LIVTALS(68)
-        LSPTPHPHT   => LIVTALS(69)
-        LSPTPHPL    => LIVTALS(70)
-        LSPTPAT    => LIVTALS(71)
-        LSPTPML    => LIVTALS(72)
-        LSPTPIO    => LIVTALS(73)
-        LSPTPPHT   => LIVTALS(74)
-        LSPTPPL    => LIVTALS(75)
-        LSPTATOT   => LIVTALS(76)
-        LSPTMTOT   => LIVTALS(77)
-        LSPTITOT   => LIVTALS(78)
-        LSPTPHTOT  => LIVTALS(79)
-        LSPTPLTOT  => LIVTALS(80)
-        LSPTTOT    => LIVTALS(81)
+        LSPTAAT   => LIVTALS(51)
+        LSPTAML   => LIVTALS(52)
+        LSPTAIO   => LIVTALS(53)
+        LSPTAPHT  => LIVTALS(54)
+        LSPTAPL   => LIVTALS(55)
+        LSPTMAT   => LIVTALS(56)
+        LSPTMML   => LIVTALS(57)
+        LSPTMIO   => LIVTALS(58)
+        LSPTMPHT  => LIVTALS(59)
+        LSPTMPL   => LIVTALS(60)
+        LSPTIAT   => LIVTALS(61)
+        LSPTIML   => LIVTALS(62)
+        LSPTIIO   => LIVTALS(63)
+        LSPTIPHT  => LIVTALS(64)
+        LSPTIPL   => LIVTALS(65)
+        LSPTPHAT  => LIVTALS(66)
+        LSPTPHML  => LIVTALS(67)
+        LSPTPHIO  => LIVTALS(68)
+        LSPTPHPHT => LIVTALS(69)
+        LSPTPHPL  => LIVTALS(70)
+        LSPTPAT   => LIVTALS(71)
+        LSPTPML   => LIVTALS(72)
+        LSPTPIO   => LIVTALS(73)
+        LSPTPPHT  => LIVTALS(74)
+        LSPTPPL   => LIVTALS(75)
+        LSPTATOT  => LIVTALS(76)
+        LSPTMTOT  => LIVTALS(77)
+        LSPTITOT  => LIVTALS(78)
+        LSPTPHTOT => LIVTALS(79)
+        LSPTPLTOT => LIVTALS(80)
+        LSPTTOT   => LIVTALS(81)
         LADDS     => LIVTALS(82)
         LALGS     => LIVTALS(83)
         LSPUMP    => LIVTALS(84)
- 
+
         LMSPOTAT    => LMISTALS(1)
         LMSPRFAAT   => LMISTALS(2)
         LMSPRFMAT   => LMISTALS(3)
@@ -1765,25 +1763,25 @@ C
         LMSADDS     => LMISTALS(82)
         LMSALGS     => LMISTALS(83)
         LMSSPUMP    => LMISTALS(84)
- 
+
         NFIRST = 0
         NADDV  = 0
         IRESC1 = 0
         IRESC2 = 0
         NFRSTW = 0
         NADDW  = 0
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         ESTIMV = 0._DP
         ESTIMS = 0._DP
- 
+
         CEMETERYV = 0._DP
         CEMETERYS = 0._DP
- 
+
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CESTIM
- 
+
       END MODULE EIRMOD_CESTIM

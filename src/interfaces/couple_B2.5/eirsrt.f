@@ -1,18 +1,23 @@
 !pb APR   16:   pplds  -> pplei
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
-cdr Nov   16    finalizing notational syncronisation (..DS.. (legacy) --> ..EI..)
+cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI..)
 cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
 cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
-cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added  
+cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
 
 C  This routine is called from CFD PLASMA CODE and provides the entry point into EIRENE.
+
+C................................................................................................
+cc  ltime = .true.:
 C
-C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN: 
+C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN:
+C
+C    IFIRST=0  (A RESTART)
 
 C      CALL EIRENE(..)     (main-routines)
 C
@@ -26,11 +31,11 @@ C
      .                  B2BRM,B2RD,B2Q,B2VP)
 
 C   INPUT:
-C     LSTOP: 
-C     LTIME: TIME DEPENDENT MODE. PREPARE TIME DEPENDENT OPTIONS,
+C     LSTOP:
+C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
-C     
+C
 C   ONLY FOR EIRENE ENERGY BALANCE DIAGNOSTICS:
 C     B2BRM:  TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
 C     B2RD :  TOTAL (LINE) RADIATION LOSS IN PREVIOUS B2 STEP
@@ -70,11 +75,13 @@ C
       LOGICAL, INTENT(IN) :: LSTOP, LTIME
 
       REAL(DP) :: FLUXS(NSTRA)
-      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG, 
+      REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
      .            EIRENE_RESET_SECOND, DUMMY,
      .            EIRENE_SECOND_OWN, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
-     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST
+     .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
+     .           JATM, JMOL, JION, JPLS,
+     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       INTEGER, ALLOCATABLE :: IHELP(:)
       LOGICAL :: LSTP, LLST, LPLASM
@@ -103,7 +110,7 @@ C
           CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -121,9 +128,9 @@ C
             WRITE (iunout,*) 'LTIME=TRUE, BUT NTIME = ', NTIME
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
-          DO 3 ISTRA=1,NSTRAI
-            FLUXS(ISTRA)=FLUX(ISTRA)
-3         CONTINUE
+          DO 3 ISTRAI=1,NSTRAI
+            FLUXS(ISTRAI)=FLUX(ISTRAI)
+    3     CONTINUE
           IFIRST=1
 
 
@@ -157,14 +164,15 @@ C  STRATUM NSTRAI IS RESCALED WITH RATIO OF OLD TO NEW TIMESTEP
 C
 C     RETURN TO PLASMA CODE THE PROFILES WITH FLUX(ISTRA) (AMP)
 C
-          DO ISTRA=NTARGI+1,NSTRAI-1
+          DO ISTRAI=NTARGI+1,NSTRAI-1
+            ISTRA = ISTRAI
             IF (FLUXES(ISTRA).NE.0.) THEN
               FLUX(ISTRA)=FLUXS(ISTRA)*FLUXES(ISTRA)*ELCHA
             ELSE
               FLUX(ISTRA)=FLUXS(ISTRA)
             ENDIF
           ENDDO
-C  RESCALE CENSUS ARRAY FLUX, DUE TO DIFFERENT TIME STEPS IN PREVIOUS AND CURRENT EIRENE STEP 
+C  RESCALE CENSUS ARRAY FLUX, DUE TO DIFFERENT TIME STEPS IN PREVIOUS AND CURRENT EIRENE STEP
           IF (DTIMVN.NE.DTIMVO) THEN
             FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
 C
@@ -190,13 +198,14 @@ C
           ENDIF
         ENDIF
         CALL EIRENE_LEER(2)
-        WRITE(*,*) 'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+        WRITE(iunout,*)
+     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
         CALL EIRENE_LEER(2)
 C
         RETURN   ! time dep. option done
 c.....................................................................
 C
-C  MAIN ENTRY POINT FROM B2 INTO EIRENE, IN CASE OF TIME-INDEPENDENT RUNS  
+C  MAIN ENTRY POINT FROM B2 INTO EIRENE, IN CASE OF TIME-INDEPENDENT RUNS
 C
       ELSEIF (.NOT.LTIME) THEN
 
@@ -205,16 +214,16 @@ C
 C
         IF (IFIRST.GE.1) GOTO 10000
 C
-C  FIRST CALL IN PRESENT RUN. 
+C  FIRST CALL IN PRESENT RUN.
 C  1) INITIALIZE EIRENE
 C  2) CALL EIRENE
-C  3) PREPARE ARRAYS FOR SEMI-IMPLICIT "SHORT CYCLE" CORRECTION. 
+C  3) PREPARE ARRAYS FOR SEMI-IMPLICIT "SHORT CYCLE" CORRECTION.
 C             STORE SOME A&M RATES FROM PRESENT STEP, FOR NEXT STEP
 
         CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -227,7 +236,7 @@ C
         LLST=LSTOP
         ITNR=1
 
-10      CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
+   10   CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
 
         CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
 C
@@ -255,16 +264,16 @@ cdr
 cdr  now start to store rates from present cycle, for future short cycle corrections
 cdr
 cdr  to be done
-cdr  all these "short cycle data" should only be computed 
+cdr  all these "short cycle data" should only be computed
 cdr  if "short cycle" option is turned on at all
 
 C
-C  CURRENT RUN: STORE ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR 
-C               SOME OR ALL IPLS 
-C                                       
+C  CURRENT RUN: STORE ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR
+C               SOME OR ALL IPLS
 C
-          DO IPLS=1,NPLSI
-            IPLSTI=MPLSTI(IPLS)
+C
+          DO JPLS=1,NPLSI
+            IPLSTI= MPLSTI(JPLS)
             DO IN=1,NDXY
 !pb              RTIS%SEIOD(IN,IPLS)=DIIN(IPLS,IN)*
 !pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
@@ -275,7 +284,7 @@ C
           ENDDO
 C
 C  NEXT: ATOMS, EI RATES: SPLODA, SEEODA, SEIODA
-C               
+C
 cdr  correct energy exchange with bulk ions: e0* eplei(irei,ipls,1)+ eheavy* eplei(irei,ipls,2)
 cdr  sum over ipls:                          e0* eplei(irei,0,1)   + eheavy *eplei(irei,0,2)
 cdr  e0 is taken as center of mass (COM)energy (as appropriate in ei processes, but not in pi processes)
@@ -285,41 +294,44 @@ C
 C  CURRENT RUN: PARTICLE RATE: ATOMS, EI-PROCESSES, FROM IATM TO IPLS,
 C                                     SUM OVER ALL EI PROCESSES
 C
-        DO 21 IATM=1,NATMI
-        DO 21 IPLS=1,NPLSI
-        DO 21 IAEI=1,NAEII(IATM)
-          IREI=LGAEI(IATM,IAEI)
-          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 21
+        DO JATM=1,NATMI
+         DO JPLS=1,NPLSI
+          DO 21 IAEI=1,NAEII(JATM)
+           IREI=LGAEI(JATM,IAEI)
+           IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 21
           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-                RTIS%SPLODA(IN,IATM,IPLS)=RTIS%SPLODA(IN,IATM,IPLS)+
-     .                        TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              RTIS%SPLODA(IN,JATM,JPLS)=RTIS%SPLODA(IN,JATM,JPLS)+
+     .                        TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             ELSE
-                RTIS%SPLODA(IN,IATM,IPLS)=RTIS%SPLODA(IN,IATM,IPLS)+
-     .                        EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              RTIS%SPLODA(IN,JATM,JPLS)=RTIS%SPLODA(IN,JATM,JPLS)+
+     .                        EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
           ENDDO
-21      CONTINUE
+   21     CONTINUE
+         ENDDO
+        ENDDO
 C
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: ATOMS, EI-PROCESSES, FROM IATM,
 C                                      SUM OVER ALL EI PROCESSES
 C
-        DO 25 IATM=1,NATMI
-        DO 25 IAEI=1,NAEII(IATM)
-          IREI=LGAEI(IATM,IAEI)
+        DO JATM=1,NATMI
+         DO IAEI=1,NAEII(JATM)
+          IREI=LGAEI(JATM,IAEI)
             DO IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
-                  RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
+                RTIS%SEEODA(IN,JATM)=RTIS%SEEODA(IN,JATM)+
      .                                        EELEI1(IREI,IN)*
      .                                        TABEI1(IREI,IN)
               ELSE
-                RTIS%SEEODA(IN,IATM)=RTIS%SEEODA(IN,IATM)+
-     .                        EIRENE_FEELEI1(IREI,IN)*
-     .                        EIRENE_FTABEI1(IREI,IN)
+              RTIS%SEEODA(IN,JATM)=RTIS%SEEODA(IN,JATM)+
+     .                                        EIRENE_FEELEI1(IREI,IN)*
+     .                                        EIRENE_FTABEI1(IREI,IN)
               END IF
             ENDDO
-25      CONTINUE
+         ENDDO
+        ENDDO
 C
 C
 C
@@ -327,23 +339,25 @@ C  CURRENT RUN: ION ENERGY EXCHANGE RATE: ATOMS, EI-PROCESSES, FROM IATM
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
 C
-        DO 24 IATM=1,NATMI
-        DO 24 IPLS=1,NPLSI
-        DO 24 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
-!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect, 
+        DO JATM=1,NATMI
+         DO JPLS=1,NPLSI
+          DO IAEI=1,NAEII(JATM)
+           IREI=LGAEI(JATM,IAEI)
+!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-          ESIG=EPLEI(IREI,IPLS,2)  ! only KER -part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-                RTIS%SEIODA(IN,IATM)=RTIS%SEIODA(IN,IATM)+
+                RTIS%SEIODA(IN,JATM)=RTIS%SEIODA(IN,JATM)+
      .                  TABEI1(IREI,IN)*ESIG
             ELSE
-                RTIS%SEIODA(IN,IATM)=RTIS%SEIODA(IN,IATM)+
+                RTIS%SEIODA(IN,JATM)=RTIS%SEIODA(IN,JATM)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
           ENDDO
-24      CONTINUE
+          ENDDO
+         ENDDO
+        ENDDO
 c....................................................................
 C
 C  NEXT: TEST IONS, EI RATES: SPLODI, SEEODI, SEIODI
@@ -352,124 +366,134 @@ C
 C  CURRENT RUN: PARTICLE RATE: TEST IONS, EI-PROCESSES, FROM IION TO IPLS,
 C                                     SUM OVER ALL EI PROCESSES
 C
-        DO 27 IION=1,NIONI
-        DO 27 IPLS=1,NPLSI
-          DO 27 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
+        DO JION=1,NIONI
+         DO JPLS=1,NPLSI
+          DO 27 IIEI=1,NIEII(JION)
+           IREI=LGIEI(JION,IIEI)
 c
-          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 27
-          DO  IN=1,NDXY
+           IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 27
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-                RTIS%SPLODI(IN,IION,IPLS)=RTIS%SPLODI(IN,IION,IPLS)+
-     .                             TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              RTIS%SPLODI(IN,JION,JPLS)=RTIS%SPLODI(IN,JION,JPLS)+
+     .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             ELSE
-                RTIS%SPLODI(IN,IION,IPLS)=RTIS%SPLODI(IN,IION,IPLS)+
-     .                  EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              RTIS%SPLODI(IN,JION,JPLS)=RTIS%SPLODI(IN,JION,JPLS)+
+     .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             ENDIF
           ENDDO
-27      CONTINUE
+   27     CONTINUE
+         END DO
+        END DO
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: TEST IONS, EI-PROCESSES, FROM IION,
 C                                      SUM OVER ALL EI PROCESSES
-        DO 26 IION=1,NIONI
-        DO 26 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
+        DO JION=1,NIONI
+          DO IIEI=1,NIEII(JION)
+            IREI=LGIEI(JION,IIEI)
             DO IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
                 ESIG=EELEI1(IREI,IN)
-                RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+
-     .                               TABEI1(IREI,IN)*ESIG
+                RTIS%SEEODI(IN,JION)=RTIS%SEEODI(IN,JION)+
+     .                         TABEI1(IREI,IN)*ESIG
               ELSE
                 ESIG=EIRENE_FEELEI1(IREI,IN)
-                RTIS%SEEODI(IN,IION)=RTIS%SEEODI(IN,IION)+
-     .                               EIRENE_FTABEI1(IREI,IN)*ESIG
+                RTIS%SEEODI(IN,JION)=RTIS%SEEODI(IN,JION)+
+     .                         EIRENE_FTABEI1(IREI,IN)*ESIG
               END IF
             ENDDO
-26      CONTINUE
+          ENDDO
+        ENDDO
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: TEST IONS, EI-PROCESSES, FROM IION
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
 C
-        DO 29 IION=1,NIONI
-        DO 29 IPLS=1,NPLSI
-        DO 29 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
-!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect, 
+        DO JION=1,NIONI
+         DO JPLS=1,NPLSI
+          DO IIEI=1,NIEII(JION)
+           IREI=LGIEI(JION,IIEI)
+!pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-          ESIG=EPLEI(IREI,IPLS,2)  ! only KER -part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-                RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
-     .                  TABEI1(IREI,IN)*ESIG
+              RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
+     .                        TABEI1(IREI,IN)*ESIG
             ELSE
-                RTIS%SEIODI(IN,IION)=RTIS%SEIODI(IN,IION)+
+              RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
           ENDDO
-29      CONTINUE
+          END DO
+         END DO
+        END DO
 C
 C
 C  NEXT: MOLECULES, EI RATES: SPLODM, SEEODM, SEIODM
 C
-        DO 47 IMOL=1,NMOLI
-        DO 47 IPLS=1,NPLSI
-          DO 47 IMEI=1,NMEII(IMOL)
-            IREI=LGMEI(IMOL,IMEI)
-            IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 47
+        DO JMOL=1,NMOLI
+         DO JPLS=1,NPLSI
+          DO 47 IMEI=1,NMEII(JMOL)
+           IREI=LGMEI(JMOL,IMEI)
+           IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 47
             DO IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
-                RTIS%SPLODM(IN,IMOL,IPLS)=RTIS%SPLODM(IN,IMOL,IPLS)+
-     .                             TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              RTIS%SPLODM(IN,JMOL,JPLS)=RTIS%SPLODM(IN,JMOL,JPLS)+
+     .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
               ELSE
-                RTIS%SPLODM(IN,IMOL,IPLS)=RTIS%SPLODM(IN,IMOL,IPLS)+
-     .                  EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              RTIS%SPLODM(IN,JMOL,JPLS)=RTIS%SPLODM(IN,JMOL,JPLS)+
+     .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
               END IF
             ENDDO
-47      CONTINUE
+   47     CONTINUE
+         END DO
+        END DO
 C
 C
 C  CURRENT RUN: ELECTRON COOLING RATE: MOLECULES, EI-PROCESSES, FROM IMOL,
 C                                      SUM OVER ALL EI PROCESSES
 C
-        DO 35 IMOL=1,NMOLI
-        DO 35 IMEI=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMEI)
+        DO JMOL=1,NMOLI
+         DO IMEI=1,NMEII(JMOL)
+          IREI=LGMEI(JMOL,IMEI)
             DO IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
-                  RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
+                RTIS%SEEODM(IN,JMOL)=RTIS%SEEODM(IN,JMOL)+
      .                                          EELEI1(IREI,IN)*
-     .                                        TABEI1(IREI,IN)
+     .                                          TABEI1(IREI,IN)
               ELSE
-                RTIS%SEEODM(IN,IMOL)=RTIS%SEEODM(IN,IMOL)+
+              RTIS%SEEODM(IN,JMOL)=RTIS%SEEODM(IN,JMOL)+
      .                                        EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
-              ENDIF
-            ENDDO
-35      CONTINUE
+            END IF
+          END DO
+         END DO
+        END DO
 C
 C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI-PROCESSES, FROM IMOL
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
-        DO 49 IMOL=1,NMOLI
-        DO 49 IPLS=1,NPLSI
-        DO 49 IMEI=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMEI)
+        DO JMOL=1,NMOLI
+         DO JPLS=1,NPLSI
+          DO IMEI=1,NMEII(JMOL)
+           IREI=LGMEI(JMOL,IMEI)
 !pb 09022106         ESIG=EPLEI(IREI,2)  this was incorrect,
-cdr                     because it was already summed over ipls 
-          ESIG=EPLEI(IREI,IPLS,2) ! only KER -part is corrected in short cycle
+cdr                     because it was already summed over ipls
+           ESIG=EPLEI(IREI,JPLS,2) ! only KER -part is corrected in short cycle
           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-                RTIS%SEIODM(IN,IMOL)=RTIS%SEIODM(IN,IMOL)+
+              RTIS%SEIODM(IN,JMOL)=RTIS%SEIODM(IN,JMOL)+
      .                        TABEI1(IREI,IN)*ESIG
             ELSE
-                RTIS%SEIODM(IN,IMOL)=RTIS%SEIODM(IN,IMOL)+
+              RTIS%SEIODM(IN,JMOL)=RTIS%SEIODM(IN,JMOL)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-          ENDDO
-49      CONTINUE
+           END DO
+          END DO
+         END DO
+        END DO
 
-        END IF   ! (not llst) 
+        END IF   ! (not llst)
 C
 C
         B2BREM=B2BRM
@@ -530,10 +554,10 @@ cdr
 cdr  to be done
 cdr  all these "short cycle data" should only be computed if short cycle is turned on at all
 C
-C  NEW RUN: ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR ALL IPLS 
+C  NEW RUN: ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR ALL IPLS
 C
-        DO IPLS=1,NPLSI
-          IPLSTI= MPLSTI(IPLS)
+        DO JPLS=1,NPLSI
+          IPLSTI= MPLSTI(JPLS)
           DO IN=1,NDXY
 !pb            SEINW(IN,IPLS)=DIIN(IPLS,IN)*
 !pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
@@ -545,145 +569,158 @@ C
 C
 C
 C  NEXT: ATOMS, EI RATES: SPLNWA, SEENWA, SEINWA
-C          
+C
 cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
 cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
 C
 C  NEXT RUN: PARTICLE RATE: ATOMS, EI-PROCESSES, FROM IATM TO IPLS,
 C                                     SUM OVER ALL EI PROCESSES
-        DO 101 IATM=1,NATMI
-        DO 101 IPLS=1,NPLSI
-          DO 102 IAEI=1,NAEII(IATM)
-            IREI=LGAEI(IATM,IAEI)
-            IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 101
+        DO JATM=1,NATMI
+         DO 101 JPLS=1,NPLSI
+          DO IAEI=1,NAEII(JATM)
+            IREI=LGAEI(JATM,IAEI)
+            IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 101
             DO 102 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
-                SPLNWA(IN,IATM,IPLS)=SPLNWA(IN,IATM,IPLS)+
-     .                          TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+                SPLNWA(IN,JATM,JPLS)=SPLNWA(IN,JATM,JPLS)+
+     .                          TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
               ELSE
-                SPLNWA(IN,IATM,IPLS)=SPLNWA(IN,IATM,IPLS)+
-     .                          EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+                SPLNWA(IN,JATM,JPLS)=SPLNWA(IN,JATM,JPLS)+
+     .                          EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
               END IF
-102       CONTINUE
-101     CONTINUE
-
+  102       CONTINUE
+          END DO
+  101    END DO
+        END DO
 C
-        DO 105 IATM=1,NATMI
-          DO 105 IAEI=1,NAEII(IATM)
-            IREI=LGAEI(IATM,IAEI)
+        DO JATM=1,NATMI
+          DO IAEI=1,NAEII(JATM)
+            IREI=LGAEI(JATM,IAEI)
             DO 105 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
-                SEENWA(IN,IATM)=SEENWA(IN,IATM)+EELEI1(IREI,IN)*
+                SEENWA(IN,JATM)=SEENWA(IN,JATM)+EELEI1(IREI,IN)*
      .                                          TABEI1(IREI,IN)
               ELSE
-                SEENWA(IN,IATM)=SEENWA(IN,IATM)+EIRENE_FEELEI1(IREI,IN)*
+                SEENWA(IN,JATM)=SEENWA(IN,JATM)+EIRENE_FEELEI1(IREI,IN)*
      .                                          EIRENE_FTABEI1(IREI,IN)
               END IF
-105     CONTINUE
+  105       CONTINUE
+          END DO
+        END DO
 
 cdr  no seinwa, because only KER part is in short cycle correction for EI processes
-cdr             and for atoms this is identical == 0.0
+cdr             and for atoms this is identically 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES
 C
-        DO 107 IION=1,NIONI
-        DO 107 IPLS=1,NPLSI
-        DO 107 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
-          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 107
+        DO JION=1,NIONI
+         DO JPLS=1,NPLSI
+          DO 107 IIEI=1,NIEII(JION)
+           IREI=LGIEI(JION,IIEI)
+           IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 107
           DO 108 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-              SPLNWI(IN,IION,IPLS)=SPLNWI(IN,IION,IPLS)+
-     .                             TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              SPLNWI(IN,JION,JPLS)=SPLNWI(IN,JION,JPLS)+
+     .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             ELSE
-              SPLNWI(IN,IION,IPLS)=SPLNWI(IN,IION,IPLS)+
-     .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              SPLNWI(IN,JION,JPLS)=SPLNWI(IN,JION,JPLS)+
+     .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
-108       CONTINUE
-107     CONTINUE
+  108      CONTINUE
+  107     CONTINUE
+         END DO
+        END DO
 C
 C
-        DO 106 IION=1,NIONI
-          DO 106 IIEI=1,NIEII(IION)
-            IREI=LGIEI(IION,IIEI)
+        DO JION=1,NIONI
+          DO IIEI=1,NIEII(JION)
+            IREI=LGIEI(JION,IIEI)
             DO 106 IN=1,NDXY
               IF (NSTORDR >= NRAD) THEN
-                SEENWI(IN,IION)=SEENWI(IN,IION)+EELEI1(IREI,IN)*
+                SEENWI(IN,JION)=SEENWI(IN,JION)+EELEI1(IREI,IN)*
      .                                          TABEI1(IREI,IN)
               ELSE
-                SEENWI(IN,IION)=SEENWI(IN,IION)+EIRENE_FEELEI1(IREI,IN)*
+                SEENWI(IN,JION)=SEENWI(IN,JION)+EIRENE_FEELEI1(IREI,IN)*
      .                                          EIRENE_FTABEI1(IREI,IN)
               END IF
-106     CONTINUE
+  106       CONTINUE
+          END DO
+        END DO
 C
-
-        DO 109 IION=1,NIONI
-        DO 109 IPLS=1,NPLSI
-        DO 109 IIEI=1,NIEII(IION)
-          IREI=LGIEI(IION,IIEI)
+        DO JION=1,NIONI
+         DO JPLS=1,NPLSI
+          DO IIEI=1,NIEII(JION)
+           IREI=LGIEI(JION,IIEI)
 !pb 09022016          ESIG=EPLEI(IREI,2)
 cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
 cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
-          ESIG=EPLEI(IREI,IPLS,2)
+           ESIG=EPLEI(IREI,JPLS,2)
           DO 110 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-              SEINWI(IN,IION)=SEINWI(IN,IION)+TABEI1(IREI,IN)*ESIG
+              SEINWI(IN,JION)=SEINWI(IN,JION)+TABEI1(IREI,IN)*ESIG
             ELSE
-              SEINWI(IN,IION)=SEINWI(IN,IION)+
+              SEINWI(IN,JION)=SEINWI(IN,JION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-110       CONTINUE
-109     CONTINUE
+  110      CONTINUE
+          END DO
+         END DO
+        END DO
 C
 C  NEW: MOLECULES, EI PROCESSES
 C
-        DO 117 IMOL=1,NMOLI
-        DO 117 IPLS=1,NPLSI
-        DO 117 IMEI=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMEI)
-          IF (PPLEI(IREI,IPLS).EQ.0.) GOTO 117
+        DO JMOL=1,NMOLI
+         DO JPLS=1,NPLSI
+          DO 117 IMEI=1,NMEII(JMOL)
+           IREI=LGMEI(JMOL,IMEI)
+           IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 117
           DO 118 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-              SPLNWM(IN,IMOL,IPLS)=SPLNWM(IN,IMOL,IPLS)+
-     .                             TABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              SPLNWM(IN,JMOL,JPLS)=SPLNWM(IN,JMOL,JPLS)+
+     .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             ELSE
-              SPLNWM(IN,IMOL,IPLS)=SPLNWM(IN,IMOL,IPLS)+
-     .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,IPLS)
+              SPLNWM(IN,JMOL,JPLS)=SPLNWM(IN,JMOL,JPLS)+
+     .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
-118       CONTINUE
-117     CONTINUE
+  118      CONTINUE
+  117     CONTINUE
+         END DO
+        END DO
 C
 C
-        DO 115 IMOL=1,NMOLI
-        DO 115 IMEI=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMEI)
+        DO JMOL=1,NMOLI
+         DO IMEI=1,NMEII(JMOL)
+          IREI=LGMEI(JMOL,IMEI)
           DO 116 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-              SEENWM(IN,IMOL)=SEENWM(IN,IMOL)+EELEI1(IREI,IN)*
+              SEENWM(IN,JMOL)=SEENWM(IN,JMOL)+EELEI1(IREI,IN)*
      .                                        TABEI1(IREI,IN)
             ELSE
-              SEENWM(IN,IMOL)=SEENWM(IN,IMOL)+EIRENE_FEELEI1(IREI,IN)*
+              SEENWM(IN,JMOL)=SEENWM(IN,JMOL)+EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
             END IF
-116       CONTINUE
-115     CONTINUE
+  116     CONTINUE
+         END DO
+        END DO
 
-        DO 119 IMOL=1,NMOLI
-        DO 119 IPLS=1,NPLSI
-        DO 119 IMEI=1,NMEII(IMOL)
-          IREI=LGMEI(IMOL,IMEI)
-          ESIG=EPLEI(IREI,IPLS,2)
+        DO JMOL=1,NMOLI
+         DO JPLS=1,NPLSI
+          DO IMEI=1,NMEII(JMOL)
+           IREI=LGMEI(JMOL,IMEI)
+           ESIG=EPLEI(IREI,JPLS,2)
           DO 120 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-              SEINWM(IN,IMOL)=SEINWM(IN,IMOL)+TABEI1(IREI,IN)*ESIG
+              SEINWM(IN,JMOL)=SEINWM(IN,JMOL)+TABEI1(IREI,IN)*ESIG
             ELSE
-              SEINWM(IN,IMOL)=SEINWM(IN,IMOL)+
+              SEINWM(IN,JMOL)=SEINWM(IN,JMOL)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-120       CONTINUE
-119     CONTINUE
+  120      CONTINUE
+          END DO
+         END DO
+        END DO
 C
         B2BREM=B2BRM
         B2RAD=B2RD

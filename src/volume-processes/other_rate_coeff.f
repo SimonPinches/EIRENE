@@ -22,14 +22,14 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtc%ifit'
 !  Only ifit=2 and ifit=3 tested so far. Caution!
-!  ifit=1:   single polynom fit, use P1, (e.g. HYDHEL, H.2)
-!  ifit=2:   double polynom fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4, H.12,...)
+!  ifit=1:   single polynomial fit, use P1, (e.g. HYDHEL, H.2)
+!  ifit=2:   double polynomial fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4, H.12,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
 !            (currently here also other rates, orate  for this particular option.
 !            More logical if the latter are moved
-!            to routine "eirene_energy-rate-coeff"
+!            to routine "eirene_energy_rate_coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
@@ -37,14 +37,14 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !   p1:        first parameter (usually:  log_e temperature,...)
 !   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
 !   lexp:      return orate=rate coefficient in ... units
-!   not lexp:  return orate=log_e(rate coefficient) with rate-coefficient in ...units
+!   not lexp:  return orate=log_e(rate coefficient) with rate coefficient in ...units
 !   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
-!              currently hard wired: factor 1e-8.  p2 --> p2*factor
+!              currently hard-wired: factor 1e-8.  p2 --> p2*factor
 !              Currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3.
 !              emissivity.f relies on the current use of ip2shft in the tested cases!
 
 ! to be done:  lexp option for ifit=4, ifit=5 not written.
-!              ip2shft option: currently hard wired only for ifit=2 and shift = 1e-8
+!              ip2shft option: currently hard-wired only for ifit=2 and shift = 1e-8
 !              what happens if later call with other shift ?  coding to be reconsidered !
 
 !              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
@@ -70,10 +70,10 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
 c  transformation of parameters p1 and p2:
-     .                  dsub    = 18.420680744_dp       !ln(1e8), hard wired. But should come from database
+     .                  dsub    = 18.420680744_dp       !ln(1e8), hard-wired. But should come from database
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
-      integer :: ip1, ip2, iflavor, ivar           
+      integer :: ip1, ip2, iflavor, ivar
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -186,7 +186,7 @@ c..............................................................
 cdr  extrapolation data: for 2d tabulated data, option not ready
 cdr  to be added here
 
-!  currently hard wired:  input parameters pp1, pp2 and table coefficients are log10
+!  currently hard-wired:  input parameters pp1, pp2 and table coefficients are log10
 
 c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
         pp1 = xlog10e*p1
@@ -211,7 +211,7 @@ c..............................................................
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 
-! currently hard wired:  input parameters q1 and table coefficients are neither ln nor log10
+! currently hard-wired:  input parameters q1 and table coefficients are neither ln nor log10
 
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
@@ -236,8 +236,8 @@ c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
 
 !  lexp option was not connected here, but used in xstei.f ! corrected, Oct. 28th 2015
 
-        orate=o_scr 
-        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0 
+        orate=o_scr
+        if (.not.lexp) orate = log(o_scr)  ! check o_scr > 0
 
       end if
 

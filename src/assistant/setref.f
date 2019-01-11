@@ -10,13 +10,13 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: AFF(3,3),AFFI(3,3)
       REAL(DP), INTENT(IN) :: CC1, CC2, CC3
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: C, C1, C2, C3, CN
       INTEGER :: I, J
- 
+
       C1=CC1
       C2=CC2
       C3=CC3
@@ -27,15 +27,16 @@ C  NORMALIZE ROTATION AXIS
           WRITE (iunout,*)
      .    'WARNING: INVALID REFLEC. PLANE IN SUBR. SETREF'
           WRITE (iunout,*) 'NO REFLECTION CARRIED OUT'
-          DO 1 J=1,3
-            DO 1 I=1,3
+          DO J=1,3
+            DO I=1,3
               AFF(I,J)=0.
               AFFI(I,J)=0.
-1         CONTINUE
+            END DO
+          END DO
           DO 2 J=1,3
             AFF(J,J)=1.
             AFFI(J,J)=1.
-2         CONTINUE
+    2     CONTINUE
           RETURN
         ENDIF
         CN=SQRT(C)
@@ -51,10 +52,11 @@ C  NORMALIZE ROTATION AXIS
         AFF(1,3)=  -2.*C1*C3
         AFF(2,3)=  -2.*C2*C3
         AFF(3,3)=1.-2.*C3*C3
-        DO 10 I=1,3
-          DO 10 J=1,3
+        DO I=1,3
+          DO J=1,3
             AFFI(I,J)=AFF(I,J)
-10      CONTINUE
+          END DO
+        END DO
       ELSE
       ENDIF
       RETURN

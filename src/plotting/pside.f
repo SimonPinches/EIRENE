@@ -1,20 +1,20 @@
 C
 C
       SUBROUTINE EIRENE_PSIDE (G,R,P11,P12,P21,P22,L1,L2,EPS)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CRECH
       USE EIRMOD_CPLOT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: G(4,2), R(4,2)
       REAL(DP), INTENT(IN) :: P11, P12, P21, P22, EPS
       LOGICAL, INTENT(IN) :: L1, L2
       REAL(DP) :: XLA, XP, YP, XMU
       INTEGER :: I, IS
- 
+
       IS=0
       DO 100 I=1,4
       CALL EIRENE_GSP
@@ -61,6 +61,6 @@ C
           ENDIF
         ENDIF
       ENDIF
-100   CONTINUE
+  100 CONTINUE
       RETURN
       END

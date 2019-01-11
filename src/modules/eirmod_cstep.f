@@ -6,7 +6,7 @@ C    ELSTEP: total ion energy flux   at sheath entrance (s.e.)
 C    RRSTEP: abszissa, i.e. arclength along target (cm)
 c
 c  JET-2005: patch 1
-c  9.9.05:  new step function parameters:
+c  9.9.05: new step function parameters:
 c    festep,fistep,shstep,vpstep,mcstep
 c    festep: electron energy flux at sheath entrance (s.e.) is festep*testep
 c            e.g.: flstep=4.5= 2 + 2.5 (2: maxwellian energy flux, 2.5: sheath)
@@ -22,19 +22,19 @@ c
 c   there is now a certain redundancy of information on plasma
 c   conditions along target surfaces. This may facilitate consistency
 c   checks for boundary conditions in case of coupling to edge plasma codes.
-C  11.11.05:  ve and eltot introduced, to provide energy flux step function
+C  11.11.05: ve and eltot introduced, to provide energy flux step function
 c
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CSTEP, EIRENE_DEALLOC_CSTEP, 
+
+      PUBLIC :: EIRENE_ALLOC_CSTEP, EIRENE_DEALLOC_CSTEP,
      P          EIRENE_INIT_CSTEP
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R FLSTEP(:,:,:), ELSTEP(:,:,:), FLTOT(:,:), ELTOT(:,:),
      R VF(:,:,:),  VE(:,:,:),   QUOT(:,:,:),   ADD(:,:,:),
@@ -43,28 +43,28 @@ c
      R VXSTEP(:,:,:), VYSTEP(:,:,:), VZSTEP(:,:,:),
      R DISTEP(:,:,:), FESTEP(:,:),   FISTEP(:,:,:),
      R SHSTEP(:,:),   VPSTEP(:,:,:), MCSTEP(:,:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I IRSTEP(:,:), IPSTEP(:,:), ITSTEP(:,:),
      I IASTEP(:,:), IBSTEP(:,:), IGSTEP(:,:),
      I ISTUF(:),
      I NSMAX(:),    NSPSTI(:),   NSPSTE(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      .   NSTPP1, NSTPP2, NSTPP3 , NSTPP4
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CSTEP
- 
+
       IF (ALLOCATED(FLSTEP)) RETURN
- 
+
       NSTPP1=(NSPZ+1)*NSTEP*NGITT
       NSTPP2=NSTEP*NGITT
       NSTPP3=NPLS*NSTEP*NGITT
       NSTPP4=(NSPZ+1)*NSTEP
- 
+
       ALLOCATE (FLSTEP(0:NSPZ,NSTEP,NGITT))
       ALLOCATE (ELSTEP(0:NSPZ,NSTEP,NGITT))
       ALLOCATE (FLTOT (0:NSPZ,NSTEP))
@@ -89,7 +89,7 @@ c  next 5 tallies added sept. 05     !dr
       ALLOCATE (FISTEP(NPLS,NSTEP,NGITT))
       ALLOCATE (MCSTEP(NPLS,NSTEP,NGITT))
       ALLOCATE (VPSTEP(NPLSV,NSTEP,NGITT))
- 
+
       ALLOCATE (IRSTEP(NSTEP,NGITT))
       ALLOCATE (IPSTEP(NSTEP,NGITT))
       ALLOCATE (ITSTEP(NSTEP,NGITT))
@@ -100,22 +100,22 @@ c  next 5 tallies added sept. 05     !dr
       ALLOCATE (NSMAX(NSTEP))
       ALLOCATE (NSPSTI(NSTEP))
       ALLOCATE (NSPSTE(NSTEP))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+3*NSTPP3 +
      .                  (NPLSTI+4*NPLSV)*NSTPP2)*8 +
      .                 (6*NSTPP2+4*NSTEP)*4
- 
+
       CALL EIRENE_INIT_CSTEP
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CSTEP
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CSTEP
- 
+
       IF (.NOT.ALLOCATED(FLSTEP)) RETURN
- 
+
       DEALLOCATE (FLSTEP)
       DEALLOCATE (ELSTEP)
       DEALLOCATE (FLTOT)
@@ -138,7 +138,7 @@ c  next 5 tallies added sept. 05     !dr
       DEALLOCATE (FISTEP)
       DEALLOCATE (MCSTEP)
       DEALLOCATE (VPSTEP)
- 
+
       DEALLOCATE (IRSTEP)
       DEALLOCATE (IPSTEP)
       DEALLOCATE (ITSTEP)
@@ -149,13 +149,13 @@ c  next 5 tallies added sept. 05     !dr
       DEALLOCATE (NSMAX)
       DEALLOCATE (NSPSTI)
       DEALLOCATE (NSPSTE)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CSTEP
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CSTEP
- 
+
       FLSTEP = 0._DP
       ELSTEP = 0._DP
       FLTOT  = 0._DP
@@ -178,7 +178,7 @@ c  next 5 tallies added sept. 05     !dr
       SHSTEP = 0._DP
       MCSTEP = 0._DP
       VPSTEP = 0._DP
- 
+
       IRSTEP = 0
       IPSTEP = 0
       ITSTEP = 0
@@ -189,8 +189,8 @@ c  next 5 tallies added sept. 05     !dr
       NSMAX  = 0
       NSPSTI = 0
       NSPSTE = 0
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CSTEP
- 
+
       END MODULE EIRMOD_CSTEP

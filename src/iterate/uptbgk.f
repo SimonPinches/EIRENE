@@ -2,34 +2,34 @@ cdr Aug. 2015: revisited:  comments,...
 c
 c  code segment: bgk
 c
-c  only needed, if some test particle species are labeled as "bgk-species"
+c  only needed, if some test particle species are labeled as "bgk species"
 c               with one or more elastic non-linear self interactions
 c               to be treated by iteration.
 c               This segment contains a routine UPTBGK which updates the tallies
 c               required for iteration (carried out in MODBGK).
 c
 C  CURRENTLY:  3 TALLIES ARE SCORED PER BGK COLLISION SPECIES,IBGK_SP, IBGK_SP=1,NRBGI/3
-c              On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion) 
+c              On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion)
 c              ibgk_sp=npbgk, and update three tallies for bgk species no. ibgk_sp.
 c
-c  no not confuse: ibgk is the bgk-reaction number, the bgk-reactions form a 
+c  do not confuse: ibgk is the bgk reaction number, the bgk reactions form a
 c                  subset of the elastic reactions, IREL=1,NREL.
 c
-c                  ibgk_sp is the counter for the number of those test-particle species 
+c                  ibgk_sp is the counter for the number of those test-particle species
 c                  which have at least one BGK collision.
 c                  For each test-particle species ibgk_sp there are currently
-c                  three so called additional "bgk-tallies" scored
+c                  three so-called additional "bgk tallies" scored
 c                  (by default: the transport flux vector components).
- 
-c  Note:  for velocity dependent BGK collision rates probably 5 tallies per bgk-collision (ibgk)
+
+c  Note:  for velocity-dependent BGK collision rates probably 5 tallies per bgk collision (ibgk)
 c         need to be scored, rather than the three per bgk species (ibgk_sp),
 c         to enforce the 5 collision invariants by iteration.
-c  Note:  for ES-BGK models (correct Prantl number models) more than 3 bgk tallies
+c  Note:  for ES-BGK models (correct Prandtl number models) more than 3 bgk tallies
 c         are needed per BGK species ibgk_sp (non-diagonal pressure tensor elements)
 c
 c  A routine (MODBGK) carries out the iterations at the end of an iteration step.
 
-c  The standard deviations for the "bgk-tallies" are
+c  The standard deviations for the "bgk tallies" are
 c  computed in subroutine STATIS_BGK   ??? why  ???
 C
 c
@@ -38,7 +38,7 @@ c
 C
 C  UPDATE BGK-SPECIFIC TALLIES, TRACKLENGTH ESTIMATORS
 C
-C  INPUT:  NPBGK IDENTIFIER FOR THE BGK-SPECIES 
+C  INPUT: NPBGK IDENTIFIER FOR THE BGK SPECIES
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -52,7 +52,7 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_COMXS
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                      XSTORV2(NSTORV,N2ND+N3RD)
       REAL(DP), INTENT(IN) :: WV
@@ -69,13 +69,13 @@ C
 C  FIND TEST PARTICLE SPECIES FLAG (TYPE ITP, TEXT 'TXT') FOR BGK SPECIES NO. IBGK_SP
         IFIRST=1
 C  NUMBER OF (ADDITIONAL) BGK TALLIES: NRBGI
-C  NUMBER OF BGK-SPECIES:  NSBGK
+C  NUMBER OF BGK SPECIES: NSBGK
         NSBGK=NRBGI/3
         DO IBGK_SP=1,NSBGK
           ITP=0
           DO ISP=1,NATMI
             IF (NPBGKA(ISP).EQ.IBGK_SP) THEN
-C  ISP IS ONE OF THE ATOMIC TEST SPECIES WHICH HAVE AT LEAST ONE BKG COLLISION
+C  ISP IS ONE OF THE ATOMIC TEST SPECIES WHICH HAVE AT LEAST ONE BGK COLLISION
               ITP=1
               IAT=ISP
               TXT=TEXTS(NSPH+IAT)
@@ -84,7 +84,7 @@ C  ISP IS ONE OF THE ATOMIC TEST SPECIES WHICH HAVE AT LEAST ONE BKG COLLISION
           ENDDO
           DO ISP=1,NMOLI
             IF (NPBGKM(ISP).EQ.IBGK_SP) THEN
-C  ISP IS ONE OF THE MOLECULAR TEST SPECIES WHICH HAVE AT LEAST ONE BKG COLLISION
+C  ISP IS ONE OF THE MOLECULAR TEST SPECIES WHICH HAVE AT LEAST ONE BGK COLLISION
               ITP=2
               IML=ISP
               TXT=TEXTS(NSPA+IML)
@@ -93,7 +93,7 @@ C  ISP IS ONE OF THE MOLECULAR TEST SPECIES WHICH HAVE AT LEAST ONE BKG COLLISIO
           ENDDO
           DO ISP=1,NIONI
             IF (NPBGKI(ISP).EQ.IBGK_SP) THEN
-C  ISP IS ONE OF THE TEST ION SPECIES WHICH HAVE AT LEAST ONE BKG COLLISION
+C  ISP IS ONE OF THE TEST ION SPECIES WHICH HAVE AT LEAST ONE BGK COLLISION
               ITP=3
               IIO=ISP
               TXT=TEXTS(NSPAM+IIO)
@@ -104,9 +104,9 @@ C  PHOTONIC BGK COLLISIONS:  TO BE DONE ??
 
           WRITE (iunout,*) 'SPECIES ERROR IN UPTBGK'
           CALL EIRENE_EXIT_OWN(1)
-1         CONTINUE
+    1     CONTINUE
 C
-C  BGK-SPECIES NO. IBGK_SP
+C  BGK SPECIES NO. IBGK_SP
           IUPD1=(IBGK_SP-1)*3+1
           IUPD2=(IBGK_SP-1)*3+2
           IUPD3=(IBGK_SP-1)*3+3
@@ -129,19 +129,19 @@ C  BGK-SPECIES NO. IBGK_SP
 cdr: this species index increment should be set in input.f,
 cdr  like all the others
 cdr  sequence:  test species, bulk species, add tallies, alg. tallies, collest tallies,
-cdr             cop tallies, bgk tallies. 
+cdr             cop tallies, bgk tallies.
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI+NCPVI
 C
 C  END OF IFIRST BLOCK
       ENDIF
 C
-C  UPDATE BGK TALLIES FOR THE NPBGK "BGK-SPECIES"
-C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV-TALLY, 
-C  THREE TALLIES PER BGK-SPECIES CONTRIBUTING IN BGK PROCESSES.
+C  UPDATE BGK TALLIES FOR THE NPBGK "BGK SPECIES"
+C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV TALLY,
+C  THREE TALLIES PER BGK SPECIES CONTRIBUTING IN BGK PROCESSES.
 C
       IBGK_SP=NPBGK
 C  FROM CALLING PROGRAM: IBGK_SP.NE.0, I.E. FOR THIS TEST PARTICLE (IATM, IMOL OR IION)
-C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED. 
+C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
       IUPD1=(IBGK_SP-1)*3+1
       IUPD2=(IBGK_SP-1)*3+2
       IUPD3=(IBGK_SP-1)*3+3
@@ -155,16 +155,16 @@ C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
         WTRVY=WTRV*VELY
         WTRVZ=WTRV*VELZ
 ! cdr: May 2017.
-! BGKV output tallies are now identical with the default 
+! BGKV output tallies are now identical with the default
 !      VXDEN..., VYDEN..., VZDEN... tallies. Compare UPDATE.f, identical code!
-!      
+!
         IRDO=NRCELL+NUPC(I)*NR1P2+NBLCKA
         IRD=NCLTAL(IRDO)
         BGKV(IUPD1,IRD)=BGKV(IUPD1,IRD)+WTRVX
         BGKV(IUPD2,IRD)=BGKV(IUPD2,IRD)+WTRVY
         BGKV(IUPD3,IRD)=BGKV(IUPD3,IRD)+WTRVZ
-51    CONTINUE
- 
+   51 CONTINUE
+
       RETURN
 
 csw 19apr07

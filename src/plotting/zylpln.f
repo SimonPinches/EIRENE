@@ -2,14 +2,14 @@ C
 C
       SUBROUTINE EIRENE_ZYLPLN
      .  (ZX0,ZY0,ZZ0,ZVX,ZVY,ZVZ,RZYL,JS,NZAD,NINNE,NIN)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_CCONA
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN) :: ZX0, ZY0, ZZ0, ZVX, ZVY, ZVZ, RZYL
@@ -24,7 +24,7 @@ C
       INTEGER :: IPAR(20)
       INTEGER :: ISORT, IPART, IMIN, IANG, IZ, IE, JP, IMAX, ITEST,
      .           I, IHILF
- 
+
 C
       PHID=180.-ACOS(1./SQRT(2.))*RADDEG
 C     PHID=0.
@@ -42,7 +42,7 @@ C  DREHACHSE (0,0,1)X(ZVX,ZVY,ZVZ)
       C2=ZVX/(BETC+EPS60)
       C3=0.
 C  DREHMATRIX NACH KORN & KORN
-4711  CONTINUE
+ 4711 CONTINUE
       EC=1.-COSD
       AFF(1,1)=COSD+EC*C1*C1
       AFF(1,2)=EC*C1*C2-C3*SIND
@@ -70,7 +70,7 @@ C
           GOTO 4711
         ELSE
           WRITE (iunout,*) ' NONSENSE IN ZYLPLN   JS = ',JS
-          WRITE (iunout,*) ' PLOT OF THIS SURFACE ABANDONNED '
+          WRITE (iunout,*) ' PLOT OF THIS SURFACE ABANDONED '
           RETURN
         ENDIF
       ENDIF
@@ -133,7 +133,7 @@ C  EBENE IST UNTERE BEGRENZUNG
           ENDIF
         ENDIF
 C
-100   CONTINUE
+  100 CONTINUE
 C
       IF (TMIN*TMAX.GT.0.) THEN
         IF (ABS(TMIN).GT.ABS(TMAX)) THEN
@@ -168,11 +168,11 @@ C
           B2=YLIMS(I,JS)
           IANG=IANG+2
           CALL EIRENE_SECANG (B0,B1,B2,RZYL,ANGLE(IANG-1),ANGLE(IANG))
-110     CONTINUE
+  110   CONTINUE
         WRITE (iunout,*) ' ANGLE VOR SORT ',(ANGLE(I),I=1,IANG)
 C
 C  SORTIERE WINKEL
-120     ISORT=0
+  120   ISORT=0
         DO 115 I=1,IANG-1
           IF (ANGLE(I+1).LT.ANGLE(I)) THEN
             PHIH=ANGLE(I)
@@ -180,7 +180,7 @@ C  SORTIERE WINKEL
             ANGLE(I+1)=PHIH
             ISORT=ISORT+1
           ENDIF
-115     CONTINUE
+  115   CONTINUE
         IF (ISORT.GT.0) GOTO 120
         WRITE (iunout,*) ' ANGLE NACH SORT ',(ANGLE(I),I=1,IANG)
 C
@@ -202,11 +202,11 @@ C         WRITE (iunout,*) ' PHI,X,Y,Z, ',PHI,X,Y,Z
      .           ZLIMS(IE,JS)*Z
 C           WRITE (iunout,*) ' IE,TEST ',IE,TEST
             IF (TEST.GT.0.) GOTO 130
-125       CONTINUE
+  125     CONTINUE
           IPART=IPART+1
           PHIAN(IZ,IPART)=ANGLE(I)
           PHIEN(IZ,IPART)=ANGLE(I+1)
-130     CONTINUE
+  130   CONTINUE
         TAR(IZ)=T
         IPAR(IZ)=IPART
 C
@@ -214,7 +214,7 @@ C
         WRITE (iunout,'(1X,1P,2E12.4)')
      .    (PHIAN(IZ,JP),PHIEN(IZ,JP),JP=1,IPART)
 C
-200   CONTINUE
+  200 CONTINUE
 C
 C
       CALL EIRENE_ROTADD (AFFI,AFF,JS,JS)

@@ -3,8 +3,8 @@ cdr sept. 15: bug fix:   after re-sampling (with replacement) from census, the w
 cdr                      sampled census particles is set to 1.0, rather than keeping the old weight.
 cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
 cdr                      and the weight stored on census during particle tracing is the probability mass of index "i"
-cdr  
-cdr  addph,adda,addm,addi: type resolved census fluxes added for diagnostics.
+cdr
+cdr  addph,adda,addm,addi: type-resolved census fluxes added for diagnostics.
 cdr:  Aug. 2015 comments added
 cdr March 18:  cleanup M.R., use RPRTT and IPRTT pointer more consistently.
 cdr            But now: rpartt must be transfered back to rpart or rpartc census arrays.
@@ -19,16 +19,16 @@ c It then tries to combine these onto a single new census.
 c If the combined census from all processors contains too many particles, then the
 c reduction is done by re-sampling, just like in subr. locate for re-launch from census.
 c
-cdr  so far unused information: 
-c from subr. calstr.f:  
+cdr  so far unused information:
+c from subr. calstr.f:
 c npesta(istr) this the no. of the master processor for stratum istr
 c npestr(istr) is the number of processors dealing with istr
 c
 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NPARTT, NPRNL
-      USE EIRMOD_COMNNL, ONLY: IPRNLI, IPART, IPARTC, RPART, RPARTC, 
-     >                         RPARTW 
+      USE EIRMOD_COMNNL, ONLY: IPRNLI, IPART, IPARTC, RPART, RPARTC,
+     >                         RPARTW
       USE EIRMOD_COUTAU, ONLY: FLXFAC
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMUSR, ONLY: ISPEZI, NPRT, NSPH, NSPA, NSPAM
@@ -38,10 +38,9 @@ c
 
       IMPLICIT NONE
 
-!      INCLUDE 'mpif.h'
       real(dp), allocatable :: rpselect(:), rand(:), rdistrib(:),
      .                         rscat(:), rbuf(:,:)
-      real(dp) :: ra, peflux, 
+      real(dp) :: ra, peflux,
      .            totflux, sumrpw, sclfac, add,
      .            totrpw,
      .            addph, adda, addm, addi
@@ -70,7 +69,7 @@ c
 
       DO I=1,IPRNLI
         RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
-! WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE 
+! WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE
 ! RESCALING FACTORS FATM, FMOL, FION, FPHOT.  DONE LATER IN TMSTEP.
         IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
         ITYP=ISPEZI(ISPZ,-1)
@@ -106,9 +105,9 @@ c  rpartw(i) is the cumulative, scaled, flux distribution on census accumulated 
       call eirene_masr4('at. flx.: addph, adda, addm, addi',
      .                   addph, adda, addm, addi)
 
-      
+
 c     pefluxp(my_pe)=peflux
-      
+
 
 ! transfer maximum possible rpartw to processor 0
 
@@ -129,10 +128,10 @@ c  cumulated number of census scores, and census atomic flux, summed from all PE
 ! THERE IS ENOUGH STORAGE for all scores from all processors.
 !                          send all particles to processor 0
 
-cmr fix:   
+cmr fix:
 cdr Here we now trust that npartt and mpartt are properly set.
 cdr A corresponding check should be implemented in eirmod_parmmod,
-cdr where currently these numbers are hard coded. 
+cdr where currently these numbers are hard-coded.
         allocate (rbuf(npartt,nprnl))
         allocate (ibuf(mpartt,nprnl))
         rbuf = 0._dp
@@ -174,13 +173,13 @@ cdr where currently these numbers are hard coded.
      .                   ibuf,icosend,idistrib,MPI_INTEGER,
      .                   0,MPI_COMM_WORLD,ier)
         if (my_pe == 0) then
-           ipart = ibuf
+          ipart = ibuf
         end if
 
         iprnli = itotal
 
         if (my_pe == 0) then
-          write (iunout,*) 
+          write (iunout,*)
      .           ' There is enough storage for collected census'
           write (iunout,*) ' No bootstrapping done in "collect_census"'
           write (iunout,*) ' total no. of scores on census ', itotal
@@ -195,7 +194,7 @@ cdr where currently these numbers are hard coded.
       else  ! here: itotal > nprnl:  carry out some condensation:
 !                                    sample exactly nprnl scores from the full set of itotal scores
         if (my_pe == 0) then
-          write (iunout,*) 
+          write (iunout,*)
      .           ' There is not enough storage for collected census '
           write (iunout,*) ' bootstrapping done in "collect_census"'
           write (iunout,*) ' itotal, nprnl = ',itotal,nprnl
@@ -209,24 +208,24 @@ cdr where currently these numbers are hard coded.
         if (my_pe == 0) then
           rpselect(-1) = 0._dp
 !cdr  start with my_pe=0, flux to census (in amp, not atomic flux!)
-          rpselect(0) = RPARTW(iprnli)  
+          rpselect(0) = RPARTW(iprnli)
         end if
 
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 ! fetch the total flux from all the individual processors
 ! damit wird obiges rpselect(0) nochmal ueberschrieben
         call mpi_gather(rpartw(iprnli),1,MPI_REAL8,
-     .                  rpselect(0:nprs-1),1,MPI_REAL8,0,   
+     .                  rpselect(0:nprs-1),1,MPI_REAL8,0,
      .                  MPI_COMM_WORLD,ier)
 
         if (my_pe == 0) then
-! build accumulated flux distribution for all processores on my_pe=0
+! build accumulated flux distribution for all processors on my_pe=0
 cdr rpselect(0) war schon gesetzt.
           do ipe=1, nprs-1
             rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
           end do
 
-          write (iunout,*) 'total cumulated flux on census (AMP) ' 
+          write (iunout,*) 'total cumulated flux on census (AMP) '
           write (iunout,*) 'rpselect '
           write (iunout,'(i6,es12.4)') (ipe,rpselect(ipe),ipe=0,nprs-1)
 
@@ -253,7 +252,7 @@ cdr rpselect(0) war schon gesetzt.
 c  binary search amongst processors
               DO WHILE (IU-IL.gt.1)
                 IM=(IU+IL)*0.5
-                if (im.gt.nprs-1) then 
+                if (im.gt.nprs-1) then
                   write (iunout,*) 'error in do while, collect census'
                   call eirene_exit_own(1)
                 endif
@@ -273,7 +272,7 @@ c  rand(i) is the reduced random number, for sampling within sub-census iu only
             iranpro(i) = iu
             rand(i) = ra - rpselect(iu-1)
 c
-c  for each random number i the processor iu is identified (iu=iranpro(i)), 
+c  for each random number i the processor iu is identified (iu=iranpro(i)),
 c  random number rand(i) set for sampling from census
 c                           restricted to this processor iu
           end do
@@ -287,8 +286,8 @@ c                           restricted to this processor iu
           write (iunout,'(A7,i10)') 'total  ', sum(icopro(0:nprs-1))
 
 
-! setup displacements for distribution of random numbers, for each processor IPE
-! idistrib(ipe) contains the number of random samples summed up until processor ipe-1, ipe=1,nprs-1 
+! set up displacements for distribution of random numbers, for each processor IPE
+! idistrib(ipe) contains the number of random samples summed up until processor ipe-1, ipe=1,nprs-1
 ! idistrib(ipe)+1 is the initial storage for resampled particles from processor ipe
           idistrib(0) = 0
           do ipe = 1, nprs-1
@@ -298,7 +297,7 @@ c                           restricted to this processor iu
             write (iunout,*) 'ipe,idistrib(ipe),I ',ipe,idistrib(ipe)
           enddo
 
-! assign random numbers to their corresponding processors, 
+! assign random numbers to their corresponding processors,
 ! store them in rdistrib, one such array for each processor ipe
           allocate (rdistrib(nprnl))
           do i = 1, nprnl
@@ -316,11 +315,11 @@ c                           restricted to this processor iu
           do ipe=1,nprs
             write (iunout,*) 'ipe,idistrib(ipe),II ',ipe,idistrib(ipe)
           enddo
-      
+
 c   now we know: for each random number i: i=1,nprnl
 c         iu=iranpro(i)  : use this on processor iu
-c         
-c                   
+c
+c
 
         end if
 
@@ -370,8 +369,8 @@ c  binary search
           end do
 
 
-c  rpartc, ipartc will later be used in tmstep to store census  [rpart,ipart] for 
-c  re-sampling in locate at next time-step
+c  rpartc, ipartc will later be used in tmstep to store census  [rpart,ipart] for
+c  re-sampling in locate at next time step
 c  here we abuse this storage to for the re-sampled census per stratum.
           rpartc(:,i) = rpart(:,iu)
           ipartc(:,i) = ipart(:,iu)
@@ -414,7 +413,7 @@ cdr diagnose resampling procedure:
         write (iunout,*) ' total, sumrpw  ', sumrpw
         call eirene_masr4('at. flx.: addph, adda, addm, addi',
      .                     addph, adda, addm, addi)
-        
+
 c       sumrpwp(ipe)=sumrpw
 
 !          write (iunout,*) i, ra, iu
@@ -422,7 +421,7 @@ c       sumrpwp(ipe)=sumrpw
 !          write (iunout,'(6es12.4,/,6es12.4)') rpartc(:,i)
 
 
-    
+
 
 ! send re-sampled particles to processor 0
 c  combine all the resampled census from all processors into a single one: rpart, ipart

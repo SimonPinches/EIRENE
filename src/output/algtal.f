@@ -1,4 +1,4 @@
-cdr:   evalute algebraic expression of tallies, as specified in
+cdr:   evaluate algebraic expression of tallies, as specified in
 cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 
@@ -24,7 +24,7 @@ cdr            (scoring) grid:  ICELL=NCLTAL(IC), IC=1,NSBOX, ICELL=1,NSBOX_TAL
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
 C
       REAL(DP), ALLOCATABLE :: VEC1(:), VEC2(:), RESULT(:,:), VECCOR(:),
@@ -59,20 +59,20 @@ C     CALCULATE ALGEBRAIC VOLUME TALLIES
 C
 C
       IF (NALVI+NALSI <= 0) RETURN
- 
+
       IF (.NOT.LALGV.AND.NALVI.GT.0) THEN
         WRITE (iunout,*) ' ALGV IS SWITCHED OFF '
         WRITE (iunout,*)
      .    ' NO ALGEBRAIC VOLUME TALLIES CAN BE CALCULATED '
         GOTO 300
       END IF
- 
+
       IF (NALVI > 0) THEN
         ALLOCATE (VEC1(MAX(NSBOX_TAL,NLIMPS)))
         ALLOCATE (VEC2(MAX(NSBOX_TAL,NLIMPS)))
         ALLOCATE (RESULT(2,MAX(NSBOX_TAL,NLIMPS)))
       END IF
- 
+
       DO 200 IALV=1,NALVI
 C
         HCHR=CHRTAL(IALV)
@@ -83,10 +83,10 @@ C
           IIND(IOP)=0
 cdr test output from algtal:
 c         WRITE (iunout,*) 'IOP ',IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
-1       CONTINUE
+    1   CONTINUE
         LFREE1=.TRUE.
         LFREE2=.TRUE.
- 
+
         IF (ANY(IZIF(2,1:NOP)<0).OR.ANY(IZIF(4,1:NOP)<0)) THEN
           ALLOCATE(OP(MAX(NSBOX,NLIMPS)))
           ALLOCATE(WEI(MAX(NSBOX,NLIMPS)))
@@ -112,7 +112,7 @@ c           write (iunout,*) 'IOP-CONST ',izif(2,iop),const(izif(2,iop))
             DO 15 I=1,NSBOX_TAL
 !PB              VEC1(I)=CONST(IOP)
               VEC1(I)=CONST(IC)
-15          CONTINUE
+   15       CONTINUE
 
           ELSEIF (IZIF(2,IOP).GT.0) THEN
 c  fetch an output tally from ESTIMV
@@ -129,7 +129,7 @@ c  fetch an output tally from ESTIMV
             ELSE
               DO 10 I=1,NSBOX_TAL
                 VEC1(I)=ESTIMV(NADDV(IZIF(2,IOP))+IZIF(1,IOP),I)
-10            CONTINUE
+   10         CONTINUE
             END IF
 C
           ELSEIF (IZIF(2,IOP).LT.0) THEN
@@ -145,7 +145,7 @@ c  1ST OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
 cdr  input tally(itl,:) is returned as OP(:), 
 cdr  weighting fct is returned as WEI(:).              
 
-cdr  weighted sum over sub-cells: in=ncltal(i)
+cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC1 = 0._DP
             DO I=1,NSBOX
@@ -163,13 +163,13 @@ C  ZWISCHENERGEBNIS HOLEN
               DO 20 I=1,NSBOX_TAL
                 VEC1(I)=RESULT(1,I)
                 IIND(IZIF(1,IOP))=0
-20            CONTINUE
+   20         CONTINUE
               LFREE1=.TRUE.
             ELSEIF (IIND(IZIF(1,IOP)).EQ.2) THEN
               DO 21 I=1,NSBOX_TAL
                 VEC1(I)=RESULT(2,I)
                 IIND(IZIF(1,IOP))=0
-21            CONTINUE
+   21         CONTINUE
               LFREE2=.TRUE.
             ELSE
               GOTO 92
@@ -179,7 +179,7 @@ C
 C  2. OPERAND
 C
 C
-!pb  Konstante wurde eingelesen          
+!pb  Konstante wurde eingelesen
           IF (IZIF(3,IOP).LT.0) THEN
 cdr test output from algtal:
 !pb         write (iunout,*) 'IOP-CONST ',iop,const(iop)
@@ -188,7 +188,7 @@ c           write (iunout,*) 'IOP-CONST ',ic,const(ic)
             DO 35 I=1,NSBOX_TAL
 !pb           VEC2(I)=CONST(IOP)
               VEC2(I)=CONST(IC)
-35          CONTINUE
+   35       CONTINUE
 C
 C  TALLY HOLEN
           ELSEIF (IZIF(4,IOP).GT.0) THEN
@@ -205,7 +205,7 @@ C  TALLY HOLEN
             ELSE
               DO 30 I=1,NSBOX_TAL
                 VEC2(I)=ESTIMV(NADDV(IZIF(4,IOP))+IZIF(3,IOP),I)
-30            CONTINUE
+   30         CONTINUE
             END IF
 C
           ELSEIF (IZIF(4,IOP).LT.0) THEN
@@ -221,7 +221,7 @@ c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
 cdr  input tally(itl,:) is returned as OP(:), 
 cdr  weighting fct is returned as WEI(:).
      
-cdr  weighted sum over sub-cells: in=ncltal(i) 
+cdr  weighted sum over subcells: in=ncltal(i) 
             SUMWEI = EPS60
             VEC2 = 0._DP
             DO I=1,NSBOX
@@ -239,13 +239,13 @@ C  ZWISCHENERGEBNIS HOLEN
               DO 40 I=1,NSBOX_TAL
                 VEC2(I)=RESULT(1,I)
                 IIND(IZIF(3,IOP))=0
-40            CONTINUE
+   40         CONTINUE
               LFREE1=.TRUE.
             ELSEIF (IIND(IZIF(3,IOP)).EQ.2) THEN
               DO 41 I=1,NSBOX_TAL
                 VEC2(I)=RESULT(2,I)
                 IIND(IZIF(3,IOP))=0
-41            CONTINUE
+   41         CONTINUE
               LFREE2=.TRUE.
             ELSE
               GOTO 92
@@ -272,35 +272,36 @@ C
 !         IF (OPER(IOP).EQ.'+ ') THEN
             DO 50 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)+VEC2(I)
-50          CONTINUE
+  50        CONTINUE
           CASE ('- ')
 !         ELSEIF (OPER(IOP).EQ.'- ') THEN
             DO 60 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)-VEC2(I)
-60          CONTINUE
+  60        CONTINUE
           CASE ('* ')
 !         ELSEIF (OPER(IOP).EQ.'* ') THEN
             DO 70 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)*VEC2(I)
-70          CONTINUE
+  70        CONTINUE
           CASE ('/ ')
 !         ELSEIF (OPER(IOP).EQ.'/ ') THEN
             DO 81 I=1,NSBOX_TAL
               IF (VEC2(I).NE.0.D0) GOTO 82
-81          CONTINUE
+  81        CONTINUE
 C  DIVISION BY IDENTICALLY ZERO TALLY. ALGEBR. TALLY CANNOT BE EVALUATED. RETURN ZERO TALLY
             DO 83 I=1,NSBOX_TAL
               RESULT(II,I)=0.
-83          CONTINUE
+  83        CONTINUE
             GOTO 120
-82          DO 80 I=1,NSBOX_TAL
+  82        DO 80 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)/(VEC2(I)+EPS30)
-80          CONTINUE
+  80        CONTINUE
+
           CASE ('^ ')
 !         ELSEIF (OPER(IOP).EQ.'^ ') THEN
             DO 85 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)**VEC2(I)
-85          CONTINUE
+  85        CONTINUE
           CASE ('QA', 'QB', 'QC')
 ! dF/dX, dF/dY, dF/dZ
             DO I=1,NSBOX_TAL
@@ -356,7 +357,7 @@ cdr  test output for specific cell "icell"
 c         write (iunout,*) 'iop, k=icell ',result(II,icell)
           GOTO 100
 C
-90        CONTINUE
+   90     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*) ' TALLY NUMBER OUT OF RANGE '
           WRITE (iunout,*)
@@ -364,7 +365,7 @@ C
           WRITE (iunout,*) CHRTAL(IALV)
           GOTO 160
 C
-91        CONTINUE
+   91     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*) ' SPECIES INDEX OUT OF RANGE '
           WRITE (iunout,*)
@@ -372,7 +373,7 @@ C
           WRITE (iunout,*) CHRTAL(IALV)
           GOTO 160
 C
-92        CONTINUE
+   92     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*) ' WRONG NUMBER OF INTERMEDIATE RESULT FOUND '
           WRITE (iunout,*) CHRTAL(IALV)
@@ -380,7 +381,7 @@ C
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 160
 C
-93        CONTINUE
+   93     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*) ' OPERATOR NOT FORESEEN '
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
@@ -389,7 +390,7 @@ C
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 160
 C
-94        CONTINUE
+   94     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*)
      .      ' ARGUMENTS OF OPERATION HAVE DIFFERENT SPACING '
@@ -399,7 +400,7 @@ C
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 160
 C
-95        CONTINUE
+   95     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*)
      .      ' OPERAND OF ALGEBRAIC EXPRESSION IS SWITCHED OFF'
@@ -432,36 +433,36 @@ C
           GOTO 160
 C
 C
-100     CONTINUE
+  100   CONTINUE
 C
 C  STORE RESULT IN ALGV
-120     DO 150 J=1,NSBOX_TAL
+  120   DO 150 J=1,NSBOX_TAL
           ALGV(IALV,J)=RESULT(II,J)
-150     CONTINUE
- 
-160     CONTINUE
+  150   CONTINUE
+
+  160   CONTINUE
         IF (ALLOCATED(OP)) THEN
           DEALLOCATE(OP)
           DEALLOCATE(WEI)
           DEALLOCATE(SUMWEI)
         END IF
 C
-200   CONTINUE
+  200 CONTINUE
 C
 C
 C     CALCULATE ALGEBRAIC SURFACE TALLIES
 C
- 300  CONTINUE
- 
+  300 CONTINUE
+
       IF (.NOT.LALGS.AND.NALSI.GT.0) THEN
         WRITE (iunout,*) ' ALGS IS SWITCHED OFF '
         WRITE (iunout,*)
      .    ' NO ALGEBRAIC SURFACE TALLIES CAN BE CALCULATED '
         RETURN
       END IF
- 
+
 !pb      IF (NLIMPS.GT.NRAD) GOTO 999
- 
+
       IF (NALSI > 0) THEN
         IF (.NOT.ALLOCATED(VEC1)) THEN
           ALLOCATE (VEC1(NLIMPS))
@@ -486,7 +487,7 @@ C
         DO 301 IOP=1,NOP
           IIND(IOP)=0
 C         WRITE (iunout,*) IOP,OPER(IOP),(IZIF(J,IOP),J=1,4)
-301    CONTINUE
+  301  CONTINUE
        LFREE1=.TRUE.
        LFREE2=.TRUE.
 C
@@ -513,7 +514,7 @@ C  TALLY HOLEN
               IINDEX=NADDW(IZIF(2,IOP))*NLMPGS+(I-1)*NFRSTW(IZIF(2,IOP))
      .              +IZIF(1,IOP)+NESTM1
               VEC1(I)=ESTIMS(NADDW(IZIF(2,IOP))+IZIF(1,IOP),I)
-310         CONTINUE
+  310       CONTINUE
             ENDIF
 C
 C
@@ -523,7 +524,7 @@ C  KONSTANTE WURDE EINGELESEN
             DO 315 I=1,NLIMPS
 !PB           VEC1(I)=CONST(IOP)
               VEC1(I)=CONST(IC)
-315          CONTINUE
+  315       CONTINUE
 C
           ELSE
 C  ZWISCHENERGEBNIS HOLEN
@@ -531,13 +532,13 @@ C  ZWISCHENERGEBNIS HOLEN
               DO 320 I=1,NLIMPS
                 VEC1(I)=RESULT(1,I)
                 IIND(IZIF(1,IOP))=0
-320           CONTINUE
+  320         CONTINUE
               LFREE1=.TRUE.
             ELSEIF (IIND(IZIF(1,IOP)).EQ.2) THEN
               DO 321 I=1,NLIMPS
                 VEC1(I)=RESULT(2,I)
                 IIND(IZIF(1,IOP))=0
-321           CONTINUE
+  321         CONTINUE
               LFREE2=.TRUE.
             ELSE
               GOTO 392
@@ -565,7 +566,7 @@ C  TALLY HOLEN
               IINDEX=NADDW(IZIF(4,IOP))*NLMPGS+(I-1)*NFRSTW(IZIF(4,IOP))
      .              +IZIF(3,IOP)+NESTM1
               VEC2(I)=ESTIMS(NADDW(IZIF(4,IOP))+IZIF(3,IOP),I)
-330         CONTINUE
+  330       CONTINUE
             ENDIF
 C
 C
@@ -575,7 +576,7 @@ C  KONSTANTE WURDE EINGELESEN
             DO 335 I=1,NLIMPS
 !PB           VEC2(I)=CONST(IOP)
               VEC2(I)=CONST(IC)
-335         CONTINUE
+  335       CONTINUE
 C
           ELSE
 C  ZWISCHENERGEBNIS HOLEN
@@ -583,13 +584,13 @@ C  ZWISCHENERGEBNIS HOLEN
               DO 340 I=1,NLIMPS
                 VEC2(I)=RESULT(1,I)
                 IIND(IZIF(3,IOP))=0
-340            CONTINUE
+  340         CONTINUE
               LFREE1=.TRUE.
             ELSEIF (IIND(IZIF(3,IOP)).EQ.2) THEN
               DO 341 I=1,NLIMPS
                 VEC2(I)=RESULT(2,I)
                 IIND(IZIF(3,IOP))=0
-341           CONTINUE
+  341         CONTINUE
               LFREE2=.TRUE.
             ELSE
               GOTO 392
@@ -613,59 +614,59 @@ C
           IF (OPER(IOP).EQ.'+') THEN
             DO 350 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)+VEC2(I)
-350         CONTINUE
+  350       CONTINUE
           ELSEIF (OPER(IOP).EQ.'-') THEN
             DO 360 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)-VEC2(I)
-360         CONTINUE
+  360       CONTINUE
           ELSEIF (OPER(IOP).EQ.'*') THEN
             DO 370 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)*VEC2(I)
-370         CONTINUE
+  370       CONTINUE
           ELSEIF (OPER(IOP).EQ.'/') THEN
             DO 381 I=1,NLIMPS
               IF (VEC2(I).NE.0.D0) GOTO 382
-381         CONTINUE
+  381       CONTINUE
 C  DIVISION BY ZERO TALLY. ALGEBR. TALLY IRRELEVANT. RETURN ZERO TALLY
             DO 383 I=1,NLIMPS
               RESULT(II,I)=0.
-383         CONTINUE
+  383       CONTINUE
             GOTO 420
-382         DO 380 I=1,NLIMPS
+  382       DO 380 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)/(VEC2(I)+EPS30)
-380         CONTINUE
+  380       CONTINUE
           ELSEIF (OPER(IOP).EQ.'^') THEN
             DO 385 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)**VEC2(I)
-385         CONTINUE
+  385       CONTINUE
           ELSE
             GOTO 393
           ENDIF
 C
           GOTO 400
 C
-390       CONTINUE
+  390     CONTINUE
           WRITE (iunout,*) ' TALLY NUMBER OUT OF RANGE '
           WRITE (iunout,*)
      .      ' CHECK INPUT FOR ADDITIONAL SURFACE TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           GOTO 500
 C
-391       CONTINUE
+  391     CONTINUE
           WRITE (iunout,*) ' SPECIES INDEX OUT OF RANGE '
           WRITE (iunout,*)
      .      ' CHECK INPUT FOR ADDITIONAL SURFACE TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           GOTO 500
 C
-392       CONTINUE
+  392     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGEBR '
           WRITE (iunout,*) ' WRONG NUMBER OF INTERMEDIATE RESULT FOUND '
           WRITE (iunout,*) CHRTLS(IALS)
           WRITE (iunout,'(1X,A,4I4)')
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 500
-393       CONTINUE
+  393     CONTINUE
 C
           WRITE (iunout,*) ' OPERATOR NOT FORESEEN '
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
@@ -674,7 +675,7 @@ C
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 500
 C
-395       CONTINUE
+  395     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*)
      .      ' OPERAND OF ALGEBRAIC EXPRESSION IS SWITCHED OFF'
@@ -685,29 +686,29 @@ C
           GOTO 500
 C
 C
-400     CONTINUE
+  400   CONTINUE
 C
 C  STORE RESULT IN ALGS
-420     CONTINUE
+  420   CONTINUE
         IF (LLMPS) THEN
           DO 440 J=1,NLIMPS
             IF (LLIMPS(J)) ALGS(IALS,J)=RESULT(II,1)
-440       CONTINUE
+  440     CONTINUE
         ELSE
           DO 450 J=1,NLIMPS
             ALGS(IALS,J)=RESULT(II,J)
-450       CONTINUE
+  450     CONTINUE
         ENDIF
 C
-500   CONTINUE
- 
+  500 CONTINUE
+
       DEALLOCATE (VEC1)
       DEALLOCATE (VEC2)
       DEALLOCATE (RESULT)
       IF (NALSI > 0) DEALLOCATE (LLIMPS)
 C
       RETURN
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'STORAGE CONFLICT IN ALGTAL, BECAUSE NRAD<NLIMPS'
       CALL EIRENE_EXIT_OWN(1)
       return

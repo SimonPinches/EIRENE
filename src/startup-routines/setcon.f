@@ -7,12 +7,12 @@ c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CCONA
- 
+
       IMPLICIT NONE
- 
- 
+
+
       CALL EIRENE_ALLOC_CCONA
- 
+
 C   CONSTANTS
 C  ELECTRON CHARGE [EV]
       ELCHA=1.6022D-19
@@ -40,7 +40,7 @@ C  ATOMIC MASS UNIT [G]
 C  PROTON, ELECTRON MASS [AMU]
       PMASSA=1.0073D0
       PMASSE=5.448D-4
-C  CONVERT CROSS SECTIONS FROM ATOMIC UNITS TO CM**2
+C  CONVERT CROSS-SECTIONS FROM ATOMIC UNITS TO CM**2
       AU_TO_CM2=5.29177E-9**2
 C  NUMERICAL PRECISION PARAMETERS
       EPS60=1.D-60
@@ -77,7 +77,7 @@ C       ALSO: TO CONVERT A KINETIC ENERGY E0 [EV] INTO A VELOCITY CM/S
 C  VEL(CM/S)=CVELAA*SQRT(E0(EV)/RMASS(AMU)), CVELAA=1.38912E6
       CVELAA=SQ2*CVEL2A
 
-C  VELQ (CM/S)^2 = E0 /(CVELI2*RMASS(AMU)),  CVELI2=5.182275E-13                 
+C  VELQ (CM/S)^2 = E0 /(CVELI2*RMASS(AMU)),  CVELI2=5.182275E-13
       CVELI2=1._DP/CVELAA/CVELAA
 
       EFACT=CVELI2*PMASSA
@@ -91,28 +91,28 @@ C  IONIZATION POTENTIAL OF NEUTRAL HYDROGEN MOLECULE, EV
 C  IONIZATION POTENTIAL OF NEUTRAL HELIUM ATOM, EV
       EIONHE=24.588_DP
 
-cdr: some constants for Coulomb collisions,  set by JS, 2007, in SI units. 
-c   Dielectric constant, F/m  (FARAD/M) in SI units
-      EPSILON0 = 8.8542E-12_DP 
+cdr: some constants for Coulomb collisions, set by JS, 2007, in SI units.
+c   Dielectric constant, F/m (FARAD/M) in SI units
+      EPSILON0 = 8.8542E-12_DP
 c   Permeability of vacuum, H/m (HENRY/M) in SI units
       MY0 = 4._DP*PIA*1.e-7_DP
-C   Coulomb Logarithm 
+C   Coulomb Logarithm
       COULOMBLOG = 13.5
-C   Faktor for thermal velocity, m/s  (cdr: to be eliminated, use cvel2a instead)
-cdr = cvel2a/100. 
+c   Factor for thermal velocity, m/s  (cdr: to be eliminated, use cvel2a instead)
+cdr = cvel2a/100.
       FAKVTH = sqrt(EV_TO_J/AMUAKG)
-c Faktor for Lambda (Fokker Planck Collisions)
+c   Factor for Lambda (Fokker-Planck Collisions)
 !pb   FAKLAM = CoulombLog*ELCHA**4*1.E6_DP/   ! changed by JS in 11.07
       FAKLAM = CoulombLog*ELCHA**4*1.E12_DP/
      .           ( AMUAKG**2*4._DP*PIA*EPSILON0**2 )
 
-c Faktor for temperature relaxation time (s)
+c   Factor for temperature relaxation time (s)
       FAKTAUT = CoulombLog*ELCHA**4*1.E6_DP/
      .   ( 3._DP*SQRT(2._DP)*PIA*SQRT(PIA)*EPSILON0**2*sqrt(AMUAKG) )
 C
 C
-C  SETUP PERIODIC TABLE OF ELEMENTS
- 
+C  SET UP PERIODIC TABLE OF ELEMENTS
+
       CALL EIRENE_SET_PTE_ELEMENT( 1,'Hydrogen     ','H ',1.0_DP,1.0_DP)
       CALL EIRENE_SET_PTE_ELEMENT( 2,'Helium       ','He',4.0_DP,2.0_DP)
       CALL EIRENE_SET_PTE_ELEMENT( 3,'Lithium      ','Li',6.9_DP,3.0_DP)
@@ -335,7 +335,7 @@ C  SETUP PERIODIC TABLE OF ELEMENTS
      .     (112,'Deuterium    ','D ',2.0_DP,1.0_DP)
       CALL EIRENE_SET_PTE_ELEMENT
      .     (113,'Tritium      ','T ',3.0_DP,1.0_DP)
- 
+
       RETURN
 C
       END

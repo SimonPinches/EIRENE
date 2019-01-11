@@ -1,10 +1,10 @@
-! 20.11.09: use NSBOX as number of accounted cells instead of NTRII in order to 
-!           generalize the routine 
+! 20.11.09: use NSBOX as number of accounted cells instead of NTRII in order to
+!           generalize the routine
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
-C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -35,7 +35,7 @@ C
       INTEGER :: IPL, JPLS, ISR, ISTEP, IIRC, IU, IPLSTI, IRRC, IN, INC
       INTEGER, SAVE :: IFIRST, ISTROLD=-1
       DATA IFIRST/0/
- 
+
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
         ALLOCATE (CNDYNP(NPLS))
@@ -67,7 +67,7 @@ C
      .          (IPLS /= JPLS)) CYCLE
             IPLSTI= MPLSTI(IPLS)
             DO ISR=1, NSRFSI(ISTRA)
-              ISTEP = SORIND(ISR,ISTRA) 
+              ISTEP = SORIND(ISR,ISTRA)
               DO 7472 IIRC=1,NPRCI(IPLS)
                 IRRC=LGPRC(IPLS,IIRC)
                 IF ((ISTEP > 0) .AND. (ISTEP /= IRRC)) CYCLE
@@ -102,21 +102,21 @@ C
                 WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
                 CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
      .                      SUMN,SUMM,SUMEI,SUMEE)
-7472          CONTINUE
+ 7472         CONTINUE
             END DO
-7473      CONTINUE
+ 7473     CONTINUE
         END IF
 
         IF (LCOPV) THEN
           IU = UBOUND(COPV,1)
 
-          IF (IU >= NPLSI) 
+          IF (IU >= NPLSI)
      .      COPV(1:NPLSI,:) = PPPL_COP(1:NPLSI,:)
-          IF (IU >= 2*NPLSI) 
+          IF (IU >= 2*NPLSI)
      .      COPV(NPLSI+1:2*NPLSI,:) = CPPV(1:NPLSI,:)
-          IF (IU >= 2*NPLSI+1) 
+          IF (IU >= 2*NPLSI+1)
      .      COPV(2*NPLSI+1,:) = EPPL_COP(:)
-          IF (IU >= 2*NPLSI+2) 
+          IF (IU >= 2*NPLSI+2)
      .      COPV(2*NPLSI+2,:) = EPEL(:)
         END IF
 
@@ -131,6 +131,3 @@ C
 
       RETURN
       END
- 
- 
- 

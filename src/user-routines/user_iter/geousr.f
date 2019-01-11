@@ -7,7 +7,7 @@ C
 C   PREPARE/MODIFY GEOMETRICAL DATA, OUTSIDE STANDARD INPUT OPTIONS
 C   CALLED FROM SUBR. INPUT, AFTER READING FORMATED INPUT FILE
 C
-C   ALSO BEST HERE: CASE SPECIFIC SPEED-UP OF GEOMETRICAL WORK
+C   ALSO BEST HERE: CASE-SPECIFIC SPEED-UP OF GEOMETRICAL WORK
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -29,7 +29,7 @@ cdr Then avoid second (default) call from input.f
       READ (IUNIN,'(A80)') ZEILE    !  geometry comment
 
       CALL EIRENE_UPPERCASE(ZEILE)
-      
+
       IF (INDEX(ZEILE,'GENERAL') /= 0) THEN
         CALL EIRENE_GEOUSR_GENERAL
       ELSEIF (INDEX(ZEILE,'BIASED_GARCHING') /= 0) THEN
@@ -39,7 +39,7 @@ c  no card: "geometry comment" found in input block 14.
         BACKSPACE(IUNIN)
         CALL EIRENE_GEOUSR_BIASED
       END IF
- 
+
       RETURN
       END
 
@@ -49,7 +49,7 @@ C
 C
       SUBROUTINE EIRENE_GEOUSR_GENERAL
 C
-C   PREPARE DATA FOR LIMITER-SURFACES
+C   PREPARE DATA FOR LIMITER SURFACES
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -75,51 +75,51 @@ C
 C
 !      READ (IUNIN,'(A80)') ZEILE
       READ (IUNIN,'(3I6)') NADMOD,NASMOD,NORMOD
- 
+
       DO I=1,NADMOD
         READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
- 
+
         SELECT CASE(IPUNKT)
- 
+
         CASE DEFAULT
-           WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
+           WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR '
            WRITE (iunout,*) 'INPUT LINE READING'
            WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
            WRITE (iunout,*) ' IS IGNORED '
- 
+
         CASE (1)
            P1(1,NRS)=XCOOR
            P1(2,NRS)=YCOOR
            P1(3,NRS)=ZCOOR
- 
+
         CASE (2)
            P2(1,NRS)=XCOOR
            P2(2,NRS)=YCOOR
            P2(3,NRS)=ZCOOR
- 
+
         CASE (3)
            P3(1,NRS)=XCOOR
            P3(2,NRS)=YCOOR
            P3(3,NRS)=ZCOOR
- 
+
         CASE (4)
            P4(1,NRS)=XCOOR
            P4(2,NRS)=YCOOR
            P4(3,NRS)=ZCOOR
- 
+
         CASE (5)
            P5(1,NRS)=XCOOR
            P5(2,NRS)=YCOOR
            P5(3,NRS)=ZCOOR
- 
+
         CASE (6)
            P6(1,NRS)=XCOOR
            P6(2,NRS)=YCOOR
            P6(3,NRS)=ZCOOR
- 
+
         END SELECT
       ENDDO
- 
+
       DO I=1,NASMOD
         READ (IUNIN,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
         IF (IPUNKT.EQ.1) THEN
@@ -129,13 +129,13 @@ C
           P2(1,NAS)=XPOL(NSSIR,NSSIP)
           P2(2,NAS)=YPOL(NSSIR,NSSIP)
         ELSE
-          WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
+          WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR '
           WRITE (iunout,*) 'INPUT LINE READING'
           WRITE (iunout,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
           WRITE (iunout,*) ' IS IGNORED '
         ENDIF
       ENDDO
- 
+
       DO I = 1, NORMOD
         READ (IUNIN,'(5I6)') IDIR,IR,IP
         IF (IDIR == 1) THEN
@@ -169,7 +169,7 @@ C             LGJUM2(J,J)=.TRUE. FUER FLAECHEN ZWEITER ORDNUNG
 C
 C
 C
-C  SET SOME VOLUMES EXPLIZIT
+C  SET SOME VOLUMES EXPLICITLY
 C
 C
 C  MODIFY REFLECTION MODEL AT TARGET PLATES
@@ -179,7 +179,7 @@ C       do isp=1,natmi+nmoli+nioni
 C         recyct(isp,i)=1.
 C       enddo
 C     enddo
- 
+
       RETURN
       END
 
@@ -228,259 +228,264 @@ c*** At the first invocation, read the data from the Eirene input file
 c*** and define the grid corners
 c
       IF (NLPLG) THEN
-      if(first) then
+        if(first) then
 !pb        read(iunin,'(a80)') geometry_comment
-        do i=1,8
-          onetwo(i)=0
-          limpos(i)=0
-        end do
+          do i=1,8
+            onetwo(i)=0
+            limpos(i)=0
+          end do
 C INNER LEFT TARGET
-        xpolpos(1)=1
-        ypolpos(1)=npoint(1,1)
-        xpolpos(2)=nr1st
-        ypolpos(2)=npoint(1,1)
+          xpolpos(1)=1
+          ypolpos(1)=npoint(1,1)
+          xpolpos(2)=nr1st
+          ypolpos(2)=npoint(1,1)
 C OUTER RIGHT TARGET
-        if(npplg.le.3) then
-          xpolpos(3)=1
-          ypolpos(3)=npoint(2,npplg)
-        else if(npplg.eq.6) then
-          xpolpos(3)=1
-          ypolpos(3)=npoint(2,3)-1
-        end if
-        if(npplg.le.3) then
-          xpolpos(4)=nr1st
-          ypolpos(4)=npoint(2,npplg)
-        else if(npplg.eq.6) then
-          xpolpos(4)=nr1st
-          ypolpos(4)=npoint(2,3)-1
-        end if
+          if(npplg.le.3) then
+            xpolpos(3)=1
+            ypolpos(3)=npoint(2,npplg)
+          else if(npplg.eq.6) then
+            xpolpos(3)=1
+            ypolpos(3)=npoint(2,3)-1
+          end if
+          if(npplg.le.3) then
+            xpolpos(4)=nr1st
+            ypolpos(4)=npoint(2,npplg)
+          else if(npplg.eq.6) then
+            xpolpos(4)=nr1st
+            ypolpos(4)=npoint(2,3)-1
+          end if
 
-        if(npplg.eq.6) then
+          if(npplg.eq.6) then
 C OUTER LEFT TARGET
-          xpolpos(5)=1
-          ypolpos(5)=npoint(1,4)+1
-          xpolpos(6)=nr1st
-          ypolpos(6)=npoint(1,4)+1
+            xpolpos(5)=1
+            ypolpos(5)=npoint(1,4)+1
+            xpolpos(6)=nr1st
+            ypolpos(6)=npoint(1,4)+1
 C INNER RIGHT TARGET
-          xpolpos(7)=1
-          ypolpos(7)=npoint(2,6)
-          xpolpos(8)=nr1st
-          ypolpos(8)=npoint(2,6)
-        end if
+            xpolpos(7)=1
+            ypolpos(7)=npoint(2,6)
+            xpolpos(8)=nr1st
+            ypolpos(8)=npoint(2,6)
+          end if
 
 csw 03sep2013
-        READ (IUNIN,'(2I6)') NADMOD,NASMOD
-        WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
+          READ (IUNIN,'(2I6)') NADMOD,NASMOD
+          WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
 
-        DO I=1,NADMOD
-          READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+          DO I=1,NADMOD
+            READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
 
-          GOTO (1,2,3,4,5,6),IPUNKT
-          WRITE (iunout,*) 'WRONG POINTNUMBER IN INFCOP '
-          WRITE (iunout,*) 'INPUT LINE READING'
-          WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-          WRITE (iunout,*) ' IS IGNORED '
-          GOTO 10
+            GOTO (1,2,3,4,5,6),IPUNKT
+            WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
+            WRITE (iunout,*) 'INPUT LINE READING'
+            WRITE (iunout,'(2I6,1P,3E12.4)')
+     .                                  NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+            WRITE (iunout,*) ' IS IGNORED '
+            GOTO 10
 
-    1     CONTINUE
-          P1(1,NRS)=XCOOR
-          P1(2,NRS)=YCOOR
-          P1(3,NRS)=ZCOOR
-          GOTO 10
+    1       CONTINUE
+            P1(1,NRS)=XCOOR
+            P1(2,NRS)=YCOOR
+            P1(3,NRS)=ZCOOR
+            GOTO 10
 
-    2     CONTINUE
-          P2(1,NRS)=XCOOR
-          P2(2,NRS)=YCOOR
-          P2(3,NRS)=ZCOOR
-          GOTO 10
+    2       CONTINUE
+            P2(1,NRS)=XCOOR
+            P2(2,NRS)=YCOOR
+            P2(3,NRS)=ZCOOR
+            GOTO 10
 
-    3     CONTINUE
-          P3(1,NRS)=XCOOR
-          P3(2,NRS)=YCOOR
-          P3(3,NRS)=ZCOOR
-          GOTO 10
+    3       CONTINUE
+            P3(1,NRS)=XCOOR
+            P3(2,NRS)=YCOOR
+            P3(3,NRS)=ZCOOR
+            GOTO 10
 
-    4     CONTINUE
-          P4(1,NRS)=XCOOR
-          P4(2,NRS)=YCOOR
-          P4(3,NRS)=ZCOOR
-          GOTO 10
+    4       CONTINUE
+            P4(1,NRS)=XCOOR
+            P4(2,NRS)=YCOOR
+            P4(3,NRS)=ZCOOR
+            GOTO 10
 
-    5     CONTINUE
-          P5(1,NRS)=XCOOR
-          P5(2,NRS)=YCOOR
-          P5(3,NRS)=ZCOOR
-          GOTO 10
+    5       CONTINUE
+            P5(1,NRS)=XCOOR
+            P5(2,NRS)=YCOOR
+            P5(3,NRS)=ZCOOR
+            GOTO 10
 
-    6      CONTINUE
-          P6(1,NRS)=XCOOR
-          P6(2,NRS)=YCOOR
-          P6(3,NRS)=ZCOOR
+    6       CONTINUE
+            P6(1,NRS)=XCOOR
+            P6(2,NRS)=YCOOR
+            P6(3,NRS)=ZCOOR
 
-   10     CONTINUE
-        ENDDO
+   10       CONTINUE
+          ENDDO
 C
 csw
 
-        normalcase=.true.
+          normalcase=.true.
 csw 03sep2013        do i=1,max(npplg/3,1)*4
-        do i=1,NASMOD
+          do i=1,NASMOD
 
 cdr either read onetwo, limpos
 cdr or     read limpos, onetwo
 
 csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
-          read(iunin,*) limpos(i),onetwo(i)
-          if(onetwo(i).lt.0) then
-            normalcase=.false.
-            onetwo(i)=-onetwo(i)
-            read(iunin,*) xpolpos(i),ypolpos(i)
-          end if
-        end do
-        first=.false.
-!       write(iunout,*) 'GEOMETRY FOR'
-!       write(iunout,'(a80)') geometry_comment
-        N=max(npplg/3,1)*4
+            read(iunin,*) limpos(i),onetwo(i)
+            if(onetwo(i).lt.0) then
+              normalcase=.false.
+              onetwo(i)=-onetwo(i)
+              read(iunin,*) xpolpos(i),ypolpos(i)
+            end if
+          end do
+          first=.false.
+!         write(iunout,*) 'GEOMETRY FOR'
+!         write(iunout,'(a80)') geometry_comment
+          N=max(npplg/3,1)*4
 csw 03sep2013
-        IF(NASMOD.NE.N) THEN
-          WRITE(iunout,*) "WARNING: NASMOD.NE.npplg", NASMOD,npplg
-          DO I=1,NASMOD
-           WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
+          IF(NASMOD.NE.N) THEN
+            WRITE(iunout,*) "WARNING: NASMOD.NE.npplg", NASMOD,npplg
+            DO I=1,NASMOD
+              WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
      w                   ONETWO(I),LIMPOS(I)
-          END DO
+            END DO
 csw
 
 cdr  NASMOD = N = max(npplg/3,1)*4
-        elseif (npplg.le.3) then
-          if(onetwo(1).eq.0) then
-            write(iunout,*) 'Geometry fixup skipped'
-            goto 1001
+          elseif (npplg.le.3) then
+            if(onetwo(1).eq.0) then
+              write(iunout,*) 'Geometry fixup skipped'
+              goto 1001
+            end if
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+          else if (npplg.eq.6) then
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
+          else
+            write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
           end if
-
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-        else if (npplg.eq.6) then
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
-        else
-          write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
         end if
-      end if
 c
 c*** Switch off the additional surfaces corresponding to the targets,
 c*** that is, the surfaces between the ones to be linked to the grid
 c*** corners.
 c
-      n=max(npplg/3,1)*4
+        n=max(npplg/3,1)*4
 c      print '(/(2i8))',(limpos(i),onetwo(i),i=1,n)
 csw 03sep2013      do 990 i=1,n
-      do 990 i=1,nasmod
-        if(onetwo(i).eq.2) then
-          m=limpos(i)
-          hlp_p1=p2(1,m)
-          hlp_p2=p2(2,m)
-c          print *,'onetwo=2. igjum0= ',igjum0(j),',  i,hlp_p1,hlp_p2 =
-c          print *,i,hlp_p1,hlp_p2
-          do 980 l=1,nlimi
-            do j=1,nlimi
-              hlp_found=.false.
-c              print *,'lgjum0,j,m = ',lgjum0(j),j,m
-              if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
-                if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
+        do 990 i=1,nasmod
+          if(onetwo(i).eq.2) then
+            m=limpos(i)
+            hlp_p1=p2(1,m)
+            hlp_p2=p2(2,m)
+c           print *,'onetwo=2. igjum0= ',igjum0(j),',  i,hlp_p1,hlp_p2 =
+c           print *,i,hlp_p1,hlp_p2
+            do 980 l=1,nlimi
+              do j=1,nlimi
+                hlp_found=.false.
+c               write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
+                if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
+                  if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
      .                             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
-                  hlp_found=.true.
-                  hlp_p1=p2(1,j)
-                  hlp_p2=p2(2,j)
-                else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
+                    hlp_found=.true.
+                    hlp_p1=p2(1,j)
+                    hlp_p2=p2(2,j)
+                  else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
      .                             abs(hlp_p2-p2(2,j)).le.hlp_tol) then
-                hlp_found=.true.
-                hlp_p1=p1(1,j)
-                hlp_p2=p1(2,j)
-              end if
-              if(hlp_found) then
-c                print *,j,hlp_p1,hlp_p2
+                    hlp_found=.true.
+                    hlp_p1=p1(1,j)
+                    hlp_p2=p1(2,j)
+                  end if
+                  if(hlp_found) then
+c                   write (iunout,*) j,hlp_p1,hlp_p2
 c*** Check whether this segment is marked as a target edge
-                do k=1,n
-                  if(j.eq.limpos(k)) then
-                    if(onetwo(k).eq.1) then
-                      go to 990
-                    else
-                      write(iunout,*) 'geousr_biased:',
-     ,                             ' something is wrong with ',
-     ,                             'the target chain definition.'
-                      write(iunout,*) 
-     .                      'Check the data on the target edges ',
+                    do k=1,n
+                      if(j.eq.limpos(k)) then
+                        if(onetwo(k).eq.1) then
+                          go to 990
+                        else
+                          write(iunout,*) 'geousr_biased:',
+     ,                               ' something is wrong with ',
+     ,                               'the target chain definition.'
+                          write(iunout,*)
+     ,                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
-                        call EIRENE_exit_own(1)
+                          call EIRENE_EXIT_OWN(1)
+                        end if
                       end if
-                    end if
-                  end do
+                    end do
 c*** Switch off the segment
-                  igjum0(j)=1
-                  print *,'geousr_biased: segment ',j,'  is turned off'
-                  go to 980
+                    igjum0(j)=1
+                    write (iunout,*) 'geousr_biased: segment ',j,
+     ,                                              '  is turned off'
+                    go to 980
+                  end if
                 end if
-              end if
-            end do
+              end do
 c*** The chain is broken
-            print *,'geousr_biased: the chain is broken'
-            go to 990
- 980      continue
-        end if
- 990  continue
- 1001 continue
+              write (iunout,*) 'geousr_biased: the chain is broken'
+              go to 990
+  980       continue
+          end if
+  990   continue
+ 1001   continue
 C
 C  ANFANG: MODIFY GEOMETRY
 C
 csw 03sep2013      do i=1,max(npplg/3,1)*4
-      do i=1,nasmod
-        select case(onetwo(i))
-        case(1)
-          p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
-          p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        case(2) 
-          p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
-          p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        CASE(10)
-          CALL FIND_NEAREST_NDS(p1(1,limpos(i)),p1(2,limpos(i)),
-     .                          XN,YN,J,IXN,IYN)
-          WRITE(iunout,*) "REPLACE i, limpos, p1(1), p1(2)",
+        do i=1,nasmod
+          select case(onetwo(i))
+          case(1)
+            p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
+            p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
+          case(2)
+            p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
+            p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
+          CASE(10)
+            CALL FIND_NEAREST_NDS(p1(1,limpos(i)),p1(2,limpos(i)),
+     .                            XN,YN,J,IXN,IYN)
+            WRITE(iunout,'(a,2i5,2e16.8)')
+     w               "REPLACE i, limpos, p1(1), p1(2)",
      w                i, limpos(i), p1(1,limpos(i)), p1(2,limpos(i))
-          WRITE(iunout,*) "...WITH NEAREST, INDS, IX, IY, XN, YN",
-     w               j,IXN,IYN,XN,YN
-          p1(1,limpos(i))=XN
-          p1(2,limpos(i))=YN
-        CASE(20)
-          CALL FIND_NEAREST_NDS(p2(1,limpos(i)),p2(2,limpos(i)),
-     .                          XN,YN,J,IXN,IYN)
-          WRITE(iunout,*) "REPLACE i, limpos, p2(1), p2(2)",
+            WRITE(iunout,'(a,3i5,2e16.8)')
+     w               "...WITH NEAREST, INDS, IX, IY, XN, YN",
+     w                j,IXN,IYN,XN,YN
+            p1(1,limpos(i))=XN
+            p1(2,limpos(i))=YN
+          CASE(20)
+            CALL FIND_NEAREST_NDS(p2(1,limpos(i)),p2(2,limpos(i)),
+     .                            XN,YN,J,IXN,IYN)
+            WRITE(iunout,'(a,2i5,2e16.8)')
+     w               "REPLACE i, limpos, p2(1), p2(2)",
      w                i, limpos(i), p2(1,limpos(i)), p2(2,limpos(i))
-          WRITE(iunout,*) "...WITH NEAREST, INDS, IX, IY, XN, YN",
-     w               j,IXN,IYN,XN,YN
-          p2(1,limpos(i))=XN
-          p2(2,limpos(i))=YN
-        end select
-      end do
+            WRITE(iunout,'(a,3i5,2e16.8)')
+     w               "...WITH NEAREST, INDS, IX, IY, XN, YN",
+     w                j,IXN,IYN,XN,YN
+            p2(1,limpos(i))=XN
+            p2(2,limpos(i))=YN
+          end select
+        end do
 c=====================================================
 C  ABSCHALTEN NICHT ERREICHBARER ODER DOPPELT VORHANDENER FLAECHEN
 C
@@ -501,46 +506,46 @@ C
 C   LGJUM3(J,I)=.TRUE. :
 C   ABSCHALTEN DER FLAECHE I, FALLS TEILCHEN IN ZELLE J SITZT
 C
-      IF (NOPTIM >= NSURF) THEN
+        IF (NOPTIM >= NSURF) THEN
 
-      if(normalcase) then
-        write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
-        if (nlimpb.ge.nlimps) then
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              IGJUM3(J,I)=1
-            end do
-          end do
-        else
-          nbits=bit_size(1)
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-            end do
-          end do
-        endif
-      else
-        write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
-        if (nlimpb.ge.nlimps) then
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              IGJUM3(J,I)=0
-            end do
-          end do
-        else
-          nbits=bit_size(1)
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
-            end do
-          end do
-        endif
-      endif
-      END IF
+          if(normalcase) then
+            write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
+            if (nlimpb.ge.nlimps) then
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  IGJUM3(J,I)=1
+                end do
+              end do
+            else
+              nbits=bit_size(1)
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+                end do
+              end do
+            endif
+          else
+            write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+            if (nlimpb.ge.nlimps) then
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  IGJUM3(J,I)=0
+                end do
+              end do
+            else
+              nbits=bit_size(1)
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
+                end do
+              end do
+            endif
+          endif
+        END IF
 
       END IF
 C
-C  SET SOME VOLUMES EXPLIZIT
+C  SET SOME VOLUMES EXPLICITLY
 C
 C
 C  MODIFY REFLECTION MODEL AT TARGET PLATES
@@ -600,7 +605,7 @@ C  ERROR
        XN=XPOL(IXN,IYN)
        YN=YPOL(IXN,IYN)
        IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
-     w                          "CAN NOT FIND A NEAREST POINT"
+     w                          "CANNOT FIND A NEAREST POINT"
       END SUBROUTINE  FIND_NEAREST_NDS
 
       END subroutine eirene_geousr_biased
@@ -613,7 +618,7 @@ c
 c  version : 12.03.98 21:02
 c
 c======================================================================
-C***  PREPARE DATA FOR LIMITER-SURFACES
+C***  PREPARE DATA FOR LIMITER SURFACES
 c======================================================================
       USE EIRMOD_PRECISION
       use EIRMOD_PARMMOD
@@ -633,7 +638,7 @@ c======================================================================
       logical :: first, normalcase, hlp_found
       integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
       character(80) :: geometry_comment
-      REAL(DP), PARAMETER :: hlp_tol=0.001
+      REAL(DP), PARAMETER :: hlp_tol=0.001_DP
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
       save first,onetwo,limpos,geometry_comment
@@ -643,166 +648,168 @@ c*** At the first invocation, read the data from the Eirene input file
 c*** and define the grid corners
 c
       IF (NLPLG) THEN
-      if(first) then
+        if(first) then
 !pb        read(iunin,'(a80)') geometry_comment
-        do i=1,8
-          onetwo(i)=0
-          limpos(i)=0
-        end do
+          do i=1,8
+            onetwo(i)=0
+            limpos(i)=0
+          end do
 C INNER LEFT TARGET
-        xpolpos(1)=1
-        ypolpos(1)=npoint(1,1)
-        xpolpos(2)=nr1st
-        ypolpos(2)=npoint(1,1)
+          xpolpos(1)=1
+          ypolpos(1)=npoint(1,1)
+          xpolpos(2)=nr1st
+          ypolpos(2)=npoint(1,1)
 C OUTER RIGHT TARGET
-        if(npplg.le.3) then
-          xpolpos(3)=1
-          ypolpos(3)=npoint(2,npplg)
-        else if(npplg.eq.6) then
-          xpolpos(3)=1
-          ypolpos(3)=npoint(2,3)-1
-        end if
-        if(npplg.le.3) then
-          xpolpos(4)=nr1st
-          ypolpos(4)=npoint(2,npplg)
-        else if(npplg.eq.6) then
-          xpolpos(4)=nr1st
-          ypolpos(4)=npoint(2,3)-1
-        end if
-
-        if(npplg.eq.6) then
-C OUTER LEFT TARGET
-          xpolpos(5)=1
-          ypolpos(5)=npoint(1,4)+1
-          xpolpos(6)=nr1st
-          ypolpos(6)=npoint(1,4)+1
-C INNER RIGHT TARGET
-          xpolpos(7)=1
-          ypolpos(7)=npoint(2,6)
-          xpolpos(8)=nr1st
-          ypolpos(8)=npoint(2,6)
-        end if
-
-        normalcase=.true.
-        do i=1,max(npplg/3,1)*4
-          read(iunin,*) onetwo(i),limpos(i)
-          if(onetwo(i).lt.0) then
-            normalcase=.false.
-            onetwo(i)=-onetwo(i)
-            read(iunin,*) xpolpos(i),ypolpos(i)
+          if(npplg.le.3) then
+            xpolpos(3)=1
+            ypolpos(3)=npoint(2,npplg)
+          else if(npplg.eq.6) then
+            xpolpos(3)=1
+            ypolpos(3)=npoint(2,3)-1
           end if
-        end do
-        first=.false.
+          if(npplg.le.3) then
+            xpolpos(4)=nr1st
+            ypolpos(4)=npoint(2,npplg)
+          else if(npplg.eq.6) then
+            xpolpos(4)=nr1st
+            ypolpos(4)=npoint(2,3)-1
+          end if
+
+          if(npplg.eq.6) then
+C OUTER LEFT TARGET
+            xpolpos(5)=1
+            ypolpos(5)=npoint(1,4)+1
+            xpolpos(6)=nr1st
+            ypolpos(6)=npoint(1,4)+1
+C INNER RIGHT TARGET
+            xpolpos(7)=1
+            ypolpos(7)=npoint(2,6)
+            xpolpos(8)=nr1st
+            ypolpos(8)=npoint(2,6)
+          end if
+
+          normalcase=.true.
+          do i=1,max(npplg/3,1)*4
+            read(iunin,*) onetwo(i),limpos(i)
+            if(onetwo(i).lt.0) then
+              normalcase=.false.
+              onetwo(i)=-onetwo(i)
+              read(iunin,*) xpolpos(i),ypolpos(i)
+            end if
+          end do
+          first=.false.
 !        write(iunout,*) 'GEOMETRY FOR'
 !        write(iunout,'(a80)') geometry_comment
-        if (npplg.le.3) then
-          if(onetwo(1).eq.0) then
-            write(iunout,*) 'Geometry fixup skipped'
-            goto 1001
+          if (npplg.le.3) then
+            if(onetwo(1).eq.0) then
+              write(iunout,*) 'Geometry fixup skipped'
+              goto 1001
+            end if
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+          else if (npplg.eq.6) then
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
+     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
+          else
+            write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
           end if
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-        else if (npplg.eq.6) then
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1     '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
-        else
-          write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
         end if
-      end if
 c
 c*** Switch off the additional surfaces corresponding to the targets,
 c*** that is, the surfaces between the ones to be linked to the grid
 c*** corners.
 c
-      n=max(npplg/3,1)*4
-c      print '(/(2i8))',(limpos(i),onetwo(i),i=1,n)
-      do 990 i=1,n
-        if(onetwo(i).eq.2) then
-          m=limpos(i)
-          hlp_p1=p2(1,m)
-          hlp_p2=p2(2,m)
-c          print *,'onetwo=2. igjum0= ',igjum0(j),',  i,hlp_p1,hlp_p2 =
-c          print *,i,hlp_p1,hlp_p2
-          do 980 l=1,nlimi
-            do j=1,nlimi
-              hlp_found=.false.
-c              print *,'lgjum0,j,m = ',lgjum0(j),j,m
-              if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
-                if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
-     .                             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
-                  hlp_found=.true.
-                  hlp_p1=p2(1,j)
-                  hlp_p2=p2(2,j)
-                else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
+        n=max(npplg/3,1)*4
+c      write (iunout,'(/(2i8))') (limpos(i),onetwo(i),i=1,n)
+        do 990 i=1,n
+          if(onetwo(i).eq.2) then
+            m=limpos(i)
+            hlp_p1=p2(1,m)
+            hlp_p2=p2(2,m)
+c          write (iunout,*) 'onetwo=2. igjum0= ',igjum0(j),
+c     .     ',  i,hlp_p1,hlp_p2 = '
+c          write (iunout,*) i,hlp_p1,hlp_p2
+            do 980 l=1,nlimi
+              do j=1,nlimi
+                hlp_found=.false.
+c              write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
+                if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
+                  if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
+     .                            abs(hlp_p2-p1(2,j)).le.hlp_tol) then
+                    hlp_found=.true.
+                    hlp_p1=p2(1,j)
+                    hlp_p2=p2(2,j)
+                  else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
      .                             abs(hlp_p2-p2(2,j)).le.hlp_tol) then
-                hlp_found=.true.
-                hlp_p1=p1(1,j)
-                hlp_p2=p1(2,j)
-              end if
-              if(hlp_found) then
-c                print *,j,hlp_p1,hlp_p2
+                    hlp_found=.true.
+                    hlp_p1=p1(1,j)
+                    hlp_p2=p1(2,j)
+                  end if
+                  if(hlp_found) then
+c                write (iunout,*) j,hlp_p1,hlp_p2
 c*** Check whether this segment is marked as a target edge
-                do k=1,n
-                  if(j.eq.limpos(k)) then
-                    if(onetwo(k).eq.1) then
-                      go to 990
-                    else
-                      write(iunout,*) 'geousr_biased:',
-     ,                             ' something is wrong with ',
-     ,                             'the target chain definition.'
-                      write(iunout,*) 
-     .                      'Check the data on the target edges ',
+                    do k=1,n
+                      if(j.eq.limpos(k)) then
+                        if(onetwo(k).eq.1) then
+                          go to 990
+                        else
+                          write(iunout,*) 'geousr_biased:',
+     ,                               ' something is wrong with ',
+     ,                               'the target chain definition.'
+                          write(iunout,*)
+     ,                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
-                        call EIRENE_exit_own(1)
+                          call EIRENE_EXIT_OWN(1)
+                        end if
                       end if
-                    end if
-                  end do
+                    end do
 c*** Switch off the segment
-                  igjum0(j)=1
-                  print *,'geousr_biased: segment ',j,'  is turned off'
-                  go to 980
+                    igjum0(j)=1
+                    write (iunout,*) 'geousr_biased: segment ',j,
+     .                                              '  is turned off'
+                    go to 980
+                  end if
                 end if
-              end if
-            end do
+              end do
 c*** The chain is broken
-            print *,'geousr_biased: the chain is broken'
-            go to 990
- 980      continue
-        end if
- 990  continue
- 1001 continue
+              write (iunout,*) 'geousr_biased: the chain is broken'
+              go to 990
+  980       continue
+          end if
+  990   continue
+ 1001   continue
 C
 C  ANFANG: MODIFY GEOMETRY
 C
-      do i=1,max(npplg/3,1)*4
-        if(onetwo(i).eq.1) then
-          p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
-          p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        else if(onetwo(i).eq.2) then
-          p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
-          p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        end if
-      end do
+        do i=1,max(npplg/3,1)*4
+          if(onetwo(i).eq.1) then
+            p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
+            p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
+          else if(onetwo(i).eq.2) then
+            p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
+            p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
+          end if
+        end do
 c=====================================================
 C  ABSCHALTEN NICHT ERREICHBARER ODER DOPPELT VORHANDENER FLAECHEN
 C
@@ -823,42 +830,42 @@ C
 C   LGJUM3(J,I)=.TRUE. :
 C   ABSCHALTEN DER FLAECHE I, FALLS TEILCHEN IN ZELLE J SITZT
 C
-      IF (NOPTIM >= NSURF) THEN
+        IF (NOPTIM >= NSURF) THEN
 
-      if(normalcase) then
-        write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
-        if (nlimpb.ge.nlimps) then
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              IGJUM3(J,I)=1
-            end do
-          end do
-        else
-          nbits=bit_size(1)
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-            end do
-          end do
-        endif
-      else
-        write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
-        if (nlimpb.ge.nlimps) then
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              IGJUM3(J,I)=0
-            end do
-          end do
-        else
-          nbits=bit_size(1)
-          do I=1,NLIMI
-            do J=1,NOPTIM
-              call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
-            end do
-          end do
-        endif
-      endif
-      END IF
+          if(normalcase) then
+            write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
+            if (nlimpb.ge.nlimps) then
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  IGJUM3(J,I)=1
+                end do
+              end do
+            else
+              nbits=bit_size(1)
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+                end do
+              end do
+            endif
+          else
+            write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+            if (nlimpb.ge.nlimps) then
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  IGJUM3(J,I)=0
+                end do
+              end do
+            else
+              nbits=bit_size(1)
+              do I=1,NLIMI
+                do J=1,NOPTIM
+                  call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
+                end do
+              end do
+            endif
+          endif
+        END IF
 
       END IF
 C

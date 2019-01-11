@@ -1,13 +1,13 @@
- 
- 
+
+
       SUBROUTINE EIRENE_SUCHE_NACHBARN
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
- 
+
       IMPLICIT NONE
- 
+
       TYPE(TET_ELEM), POINTER :: CUR
 C      TYPE(TET_ELEM), POINTER :: CUR2
       INTEGER :: ITET,IS,JTET,JS,
@@ -19,14 +19,14 @@ C      INTEGER :: IC
      .             1,4,2,
      .             2,4,3,
      .             3,4,1/
- 
+
       DO ITET=1,NTET      ! FOR ALL TETRAHEDRA
         DO IS=1,4         ! AND FOR ALL SIDES OF EACH TETRAHEDRON
-          IF (NTBAR(IS,ITET) == 0) THEN   ! IF IT HAS NO NEIGHBOR JET
+          IF (NTBAR(IS,ITET) == 0) THEN   ! IF IT HAS NO NEIGHBOR YET
             IP(1)=NTECK(ITSIDE(1,IS),ITET)
             IP(2)=NTECK(ITSIDE(2,IS),ITET)
             IP(3)=NTECK(ITSIDE(3,IS),ITET)
- 
+
             CUR => COORTET(IP(1))%PTET
             WHLOOP:DO WHILE (ASSOCIATED(CUR))
               JTET = CUR%NOTET
@@ -46,12 +46,12 @@ C      INTEGER :: IC
                         endif
                       end do jloop
                       cycle jsloop
-                      end do iloop
-                          NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
-                          NTSEITE(IS,ITET) = JS
-                          NTBAR(JS,JTET) = ITET
-                          NTSEITE(JS,JTET) = IS
-                          EXIT WHLOOP
+                     end do iloop
+                    NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
+                    NTSEITE(IS,ITET) = JS
+                    NTBAR(JS,JTET) = ITET
+                    NTSEITE(JS,JTET) = IS
+                    EXIT WHLOOP
                   END IF
                 END DO JSLOOP ! JS
               END IF
@@ -60,7 +60,7 @@ C      INTEGER :: IC
           END IF
         END DO
       END DO
- 
+
 !      DO IC=1,NCOOR
 !        CUR => COORTET(IC)%PTET
 !        DO WHILE (ASSOCIATED(CUR))
@@ -71,13 +71,6 @@ C      INTEGER :: IC
 !        NULLIFY(COORTET(IC)%PTET)
 !      END DO
       WRITE (55+ifoff,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
- 
+
       RETURN
       END
- 
- 
- 
- 
- 
- 
- 

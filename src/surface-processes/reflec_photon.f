@@ -1,5 +1,6 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
+cdr  dec. 18: remove unfinished "hollmann databse model"
 C
 C
       SUBROUTINE EIRENE_REFLEC_photon
@@ -19,7 +20,6 @@ C       ITYP = -1
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_PHOT_REFLEC
       USE EIRMOD_CTRCEI
       USE EIRMOD_CADGEO
       USE EIRMOD_CLGIN
@@ -33,18 +33,18 @@ C
       USE EIRMOD_PHOTON
       USE EIRMOD_CPES
       USE EIRMOD_CSDVI
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: WMIN, XMP, XCP
       INTEGER, INTENT(IN) :: NPRIN
       INTEGER, INTENT(INOUT) :: IGASF, IGAST
       INTEGER, SAVE :: IFIRST=0, NPANOLD=0
       INTEGER :: MODREF, ISPZO,
      .           IMAT, IREFL, MSS, IDUMMY
-      REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND, 
+      REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND,
      .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT, 
+     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT,
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1
@@ -54,7 +54,7 @@ C
 C
 C---------------------------------------------------------------------
 C
- 
+
 C
 C  INITIALIZE SURFACE REFLECTION MODELS FOR PHOTONS
 C
@@ -64,7 +64,7 @@ C
       IFIRST=1
 C
 C  INITIALIZE HOLLMAN REFLECTANCE FUNCTION; OUT
-C     CALL EIRENE_INIT_REFL_HLM
+C     formerly: CALL EIRENE_INIT_REFL_HLM
 C
       IF (TRCREF) THEN
         CALL EIRENE_LEER(2)
@@ -81,7 +81,7 @@ C
 C
 C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING):  out.
 C  tbd:  introduce counter of max. possible random numbers used up to this point
-C  see report Kalos, 1955, on correlated sampling, syncronisation...
+C  see report Kalos, 1955, on correlated sampling, synchronisation...
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
 C  re-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
@@ -102,7 +102,7 @@ C
       XCW=ZNCL(MSURF)
 C
 C
-C   MODREF=0: "PERFECTLY ABSORBING SURFACE, DEFAULT
+C   MODREF=0: "PERFECTLY ABSORBING SURFACE", DEFAULT
 C   MODREF=1: "DATABASE REFLECTION MODEL"  (out)
 C
       IF (MODREF.EQ.1) THEN
@@ -112,49 +112,49 @@ C
 CDR BDRF MODEL, WITH GAUSSIAN LOBE IN SPECULAR PART AND LAMBERTIAN IN THERMAL PART
 
 cdr reflected (specular) fraction
-      PRFCF=max(0.,(min(1.,RECYCF(ISPZ,MSURF))))
-cdr prfct: total reemitted  fraction. 
+        PRFCF=max(0.,(min(1.,RECYCF(ISPZ,MSURF))))
+cdr prfct: total reemitted  fraction.
 cdr pabs : (1-recyct) is the absorbed fraction
-      PRFCT=max(0.,(min(1.,RECYCT(ISPZ,MSURF))))
-      PABS=1.-PRFCT
+        PRFCT=max(0.,(min(1.,RECYCT(ISPZ,MSURF))))
+        PABS=1.-PRFCT
 cdr prfct is cumulated SUM of emitted (Lambertian) and specular reflected (BDRF) part
 cdr cumulative distribution of (spec-ref)-(lambert)-(absorb) fractions: prfcf,prfct,1.0
-      prfcf=min(prfcf,prfct)
-      plambert=prfct-prfcf
-      
+        prfcf=min(prfcf,prfct)
+        plambert=prfct-prfcf
+
 
 
 
 
 cdr parameters for bidirectional reflectance function
-      EXPP=EXPPL(ISPZ,MSURF)
-      EXPE=EXPEL(ISPZ,MSURF)
-      EXPI=EXPIL(ISPZ,MSURF)
+        EXPP=EXPPL(ISPZ,MSURF)
+        EXPE=EXPEL(ISPZ,MSURF)
+        EXPI=EXPIL(ISPZ,MSURF)
 
-      RINTG=RINTEG(MSURF)
-      EINTG=EINTEG(MSURF)
-      AINTG=AINTEG(MSURF)
-      ISPZO=ISPZ
+        RINTG=RINTEG(MSURF)
+        EINTG=EINTEG(MSURF)
+        AINTG=AINTEG(MSURF)
+        ISPZO=ISPZ
 C
 C
 C   TENTATIVELY ASSUME  REFLECTION
-      LGPART=.TRUE.
+        LGPART=.TRUE.
 
 C   CHECK FOR ABSORPTION, LAMBERTIAN OR SPECULAR COMPONENT
-      ZEP1=ranf_eirene()     
-      IF (ZEP1.GT.PRFCT) THEN
+        ZEP1=ranf_eirene()
+        IF (ZEP1.GT.PRFCT) THEN
 C   ABSORPTION
-        GOTO 700
-      ELSEIF (ZEP1.GT.PRFCF) THEN
+          GOTO 700
+        ELSEIF (ZEP1.GT.PRFCF) THEN
 C   LAMBERTIAN (COSINE DISTRIBUTION
-        GOTO 600
-      ELSE
+          GOTO 600
+        ELSE
 C   COSINE OF ANGLE OF INCIDENCE against outer normal
-      COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
-      IF (COSIN.LT.0.D0) GOTO 993
-      ENDIF
+          COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
+          IF (COSIN.LT.0.D0) GOTO 993
+        ENDIF
 
- 
+
 c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
       ELSE
@@ -162,26 +162,7 @@ C  ABSORB THIS PHOTON
         GOTO 700
       ENDIF
 C
-C  DATABASE REFLECTION MODEL STARTS HERE
-C
-100   CONTINUE
-C
-C   CHECK IF WALL REFLECTION DATA FOR IPHOT INCIDENT ON
-C   XWALL/ZWALL ARE AVAILABLE
-C
-C  CARBON OR MOLYBDENUM ?
- 
-      IMAT = 2
- 
-C
-      THETA = ACOS(COSIN)*RADDEG
-      XLAMBDA = hpcl/E0*10._DP*1.E7_DP
- 
-      CALL EIRENE_REFLECT_HOLLMANN (THETA, XLAMBDA, IMAT, IREFL,
-     .                              THETA_OUT,ALPHA_OUT, RPROB)
-C
-130   CONTINUE
-C
+C  UNFINISHED DATABASE MODEL REMOVED HERE OLD STATEMENT LABLES: 100 TO 130.
 C
 C   DECIDE IF PARTICLE IS TO BE REFLECTED OR ABSORBED
 C   (NO THERMAL RE-EMISSION MODEL FOR INCIDENT PHOTONS)
@@ -190,8 +171,13 @@ C
 C  WITH SUPPRESSION OF ABSORPTION
         WABS=WEIGHT*(1.D0-RPROB)
         IF (WABS.GT.0.D0) THEN
-          IF (LSPUMP) SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
-          IF (LSPUMP) LMETSPW(ISPZO) = .TRUE.
+          IF (LSPUMP) THEN 
+            SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
+            IF (MSURFG.GT.0) THEN
+              SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
+            END IF
+            LMETSPW(ISPZO) = .TRUE.
+          ENDIF
         ENDIF
         WEIGHT=WEIGHT-WABS
         IF (WEIGHT.LE.EPS30) GOTO 700
@@ -209,7 +195,7 @@ C  SPECIES OF REFLECTED PARTICLE
 C
 C  ENERGIE (WAVELENGTH):  NOT MODIFIED
 C
-600   CONTINUE
+  600 CONTINUE
 C
 C   LAMBERTIAN (COSINE DISTRIBUTION)
 C
@@ -242,9 +228,14 @@ C
 C
 C  ABSORB PARTICLE AT THIS SURFACE
 C
-700   CONTINUE
-      IF (LSPUMP.AND.(MSURF.GT.0)) THEN
-        SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
+  700 CONTINUE
+      IF (LSPUMP) THEN
+        IF (MSURF.GT.0) THEN
+          SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
+        ENDIF
+        IF (MSURFG.GT.0) THEN
+          SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WEIGHT
+        END IF
         LMETSPW(ISPZO) = .TRUE.
       END IF
       LGPART=.FALSE.
@@ -255,7 +246,7 @@ C
 C  ERROR MESSAGES FROM SUBR. REFLEC_PHOTON
 C
 C
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. REFLEC_PHOTON '
       MSS=MSURF
       IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
@@ -264,7 +255,7 @@ C
       WRITE (iunout,*) 'STOP HISTORY NO. NPANU= ',NPANU
       GOTO 999
 c
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. REFLEC_PHOTON '
       MSS=MSURF
       IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
@@ -273,7 +264,7 @@ c
       WRITE (iunout,*) 'STOP HISTORY NO. NPANU= ',NPANU
       GOTO 999
 C
-999   IF (NLTRC)  CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+  999 IF (NLTRC)  CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       LGPART=.FALSE.
       WEIGHT=0.
       RETURN

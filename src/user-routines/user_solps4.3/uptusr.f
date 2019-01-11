@@ -37,7 +37,7 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
-     .                        XSTORV2(NSTORV,N2ND+N3RD), 
+     .                        XSTORV2(NSTORV,N2ND+N3RD),
      .                        WV
       INTEGER, INTENT(IN) :: IFLAG
       INTEGER ::   ICOU,K,IRD,IACX,IRCX, IRDO,nti,nte,ia,
@@ -45,7 +45,7 @@ C
       REAL(DP) ::  DIST,WTR,WTRSIG
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
      .            VSIG_PERP(NPLS), VAL_PERP(NPLS),
-     .            V0_PARB,PARMOM_0, 
+     .            V0_PARB,PARMOM_0,
      .            V0_PERP,PERPMOM_0
      .           ,DD, VR, VP
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
@@ -93,7 +93,7 @@ C
 C  ATOMS, CX ENERGY
       IF (ITYP.NE.1) GOTO 999
 
-C  CHECK: STORAGE FOR AT LEAST 8 ADDITIONAL TRACKLENGTH ESTIMATED TALLIES?
+C  CHECK: STORAGE FOR AT LEAST 8 ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
       IF (NADV.LT.12*NATMI) THEN
         GOTO 9999
       ELSE
@@ -110,7 +110,7 @@ C
           IRDO=NRCELL+NUPC(ICOU)*NR1P2+NBLCKA
           IRD=NCLTAL(IRDO)
 c  set parallel plasma flow parameters
-c  assume here: bvin, parmom are set in plasma_deriv. 
+c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
 cdr only signum needed: default tbd: signum=1
           IF (LBVIN) THEN
@@ -125,9 +125,9 @@ cdr only signum needed: default tbd: signum=1
           END IF
 C  for the time being: no perpendicular plasma flow.
          VAL_PERP(1:NPLSI) =0.0
-         VSIG_PERP(1:NPLSI)=0.0 
-                  
- 
+         VSIG_PERP(1:NPLSI)=0.0
+
+
 C
 cdr       IF (LGVAC(IRDO,0)) GOTO 200
 C
@@ -135,7 +135,7 @@ C
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
             XSTORV(:)  = XSTORV2(:,ICOU)
           endif
-          
+
 C
 C
           IF (LGACX(IATM,0,0).EQ.0) GOTO 590
@@ -167,7 +167,7 @@ ccc  next: parallel momentum exchange rates due to CX, ATOMS
 ccc
  
              IF (LBXIN.AND.LBYIN.AND.LBZIN) THEN
-             V0_PARB=VEL*
+               V0_PARB=VEL*
      .               (VELX*BXIN(IRDO)+VELY*BYIN(IRDO)+VELZ*BZIN(IRDO))
              ELSE
                V0_PARB=0._DP
@@ -194,7 +194,7 @@ C
 
 c  tally addv(ia+4*natm+...): currently free.
 
-C  PREVIOUS INCIDENT BULK ION IPLS, NOW LOST FOR BULK 
+C  PREVIOUS INCIDENT BULK ION IPLS, NOW LOST FOR BULK
             ADDV(IA+5*NATM+IPLS,IRD)=ADDV(IA+5*NATM+IPLS,IRD)-
      .                               WTRSIG*VSIG_PARB(IPLS)
 c  volumetric incident neutral par. momentum rate due to charge exchange
@@ -207,8 +207,8 @@ c  volumetric net ion parallel momentum loss/gain rate due to charge exchange
      .                      WTRSIG*(-VSIG_PARB(IPLS)+PARMOM_0*
      .                      SIGN(1._DP,VAL_PARB(IPLS)))
 
-560         CONTINUE
-590       CONTINUE
+  560       CONTINUE
+  590     CONTINUE
 
 C  RADIAL GESCHWINDIGKEITSKOMPONENTE  (CM/SEC)
           VR=(VELX*VPX(IRDO)+VELY*VPY(IRDO))*VEL
@@ -219,20 +219,21 @@ C  POLOIDALE GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           ADDV(IA+10*NATM+IATM,IRD)=ADDV(IA+10*NATM+IATM,IRD)+WTR*VP
           ADDV(IA+11*NATM+IATM,IRD)=ADDV(IA+11*NATM+IATM,IRD)+WTR*VP*E0
 
-200   CONTINUE  ! NCOU LOOP
+  200 CONTINUE  ! NCOU LOOP
+
 C
 C
 C
       RETURN
 
-999   CONTINUE
+  999 CONTINUE
 
 
-1000  CONTINUE
+ 1000 CONTINUE
 C  MOLECULES, CX ENERGY
       IF (ITYP.NE.2) GOTO 1999
 
-C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH ESTIMATED TALLIES?
+C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
       IF (NADV.LT.12*NATMI+8*NMOLI) THEN
         GOTO 9999
       ELSE
@@ -248,7 +249,7 @@ C
           WTR=WV*DIST
           IRDO=NRCELL+NUPC(ICOU)*NR1P2+NBLCKA
           IRD=NCLTAL(IRDO)
-c  assume here: bvin, parmom are set in plasma_deriv. 
+c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
 cdr only signum needed: default tbd: signum=1
           IF (LBVIN) THEN
@@ -268,7 +269,7 @@ C
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
             XSTORV(:)  = XSTORV2(:,ICOU)
           endif
-          
+
 C
 C
           IF (LGMCX(IMOL,0,0).EQ.0) GOTO 1590
@@ -295,8 +296,8 @@ ccc
 ccc  next: parallel momentum exchange rates due to CX
 ccc
 
-1560        CONTINUE
-1590      CONTINUE
+ 1560       CONTINUE
+ 1590     CONTINUE
 
 C  RADIAL GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           VR=(VELX*VPX(IRDO)+VELY*VPY(IRDO))*VEL
@@ -307,19 +308,19 @@ C  POLOIDALE GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           ADDV(IA+6*NMOL+IMOL,IRD)=ADDV(IA+6*NMOL+IMOL,IRD)+WTR*VP
           ADDV(IA+7*NMOL+IMOL,IRD)=ADDV(IA+7*NMOL+IMOL,IRD)+WTR*VP*E0
 
-1200  CONTINUE
+ 1200 CONTINUE
 C
 C
 C
       RETURN
 
-1999  CONTINUE
+ 1999 CONTINUE
 
-2000  CONTINUE
+ 2000 CONTINUE
 C  MOLECULES, EL ENERGY
       IF (ITYP.NE.2) GOTO 2999
 
-C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH ESTIMATED TALLIES?
+C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH -STIMATED TALLIES?
       IF (NADV.LT.12*NATMI+12*NMOLI) THEN
         GOTO 9999
       ELSE
@@ -342,7 +343,7 @@ C
             XSTOR(:,:) = XSTOR2(:,:,ICOU)
             XSTORV(:)  = XSTORV2(:,ICOU)
           endif
-          
+
 C
 C
           IF (LGMEL(IMOL,0,0).EQ.0) GOTO 2590
@@ -369,23 +370,20 @@ ccc
 ccc  next: parallel momentum exchange rates due to EL
 ccc
 
-2560        CONTINUE
-2590      CONTINUE
-2200  CONTINUE
+ 2560       CONTINUE
+ 2590     CONTINUE
+ 2200 CONTINUE
 C
 C
 C
       RETURN
 
-2999  CONTINUE
+ 2999 CONTINUE
 
 
 
-9999  CONTINUE
+ 9999 CONTINUE
 
 C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
       RETURN
       END
- 
- 
- 

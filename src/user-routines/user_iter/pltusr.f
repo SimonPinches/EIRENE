@@ -10,6 +10,6 @@ C
       IMPLICIT NONE
       LOGICAL, INTENT(INOUT) :: PLABLE
       INTEGER, INTENT(IN) :: J
- 
+
       RETURN
       END

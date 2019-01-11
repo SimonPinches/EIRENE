@@ -1,6 +1,6 @@
 C> \brief Broadcasts the strata to process distribution.
 C>
-C> It broadcasts the distribution of strata to processes as defined in 
+C> It broadcasts the distribution of strata to processes as defined in
 C> the PEDIST routines.
       SUBROUTINE EIRENE_BROAD_PEDIST(XTIM)
 
@@ -8,9 +8,9 @@ C> the PEDIST routines.
       USE EIRMOD_PARMMOD, ONLY: NSTRA
       USE EIRMOD_COMUSR, ONLY: NPRLL
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
- 
+
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_BROAD_PEDIST_USR( XTIM )
@@ -42,17 +42,17 @@ C> the PEDIST routines.
       SUBROUTINE EIRENE_BROAD_PEDIST_PROPALLOC(XTIM)
       USE EIRMOD_PARMMOD, ONLY: NSTRA
       USE EIRMOD_COMSOU, ONLY: NPTS
-      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS,  
+      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS,
      >                       PROCFORSTRA
       USE EIRMOD_MPI
-      
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
       INTEGER :: IER
- 
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
- 
+
       CALL MPI_BCAST (NPESTR,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPESTA,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPTS,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -60,9 +60,9 @@ C> the PEDIST routines.
 
       CALL MPI_BCAST (PROCFORSTRA,NSTRA*NPRS,MPI_LOGICAL,0,
      .                MPI_COMM_WORLD,ier)
- 
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
- 
+
       RETURN
       END SUBROUTINE EIRENE_BROAD_PEDIST_PROPALLOC
 

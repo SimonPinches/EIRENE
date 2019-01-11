@@ -27,7 +27,7 @@ c
       REAL(DP) :: FLX, TE, TI, DE, MC, FE, FI, FSH, VP, FEL, DUM
       REAL(DP) :: DELR, FL, MCC, FFEL, CS, vx,vy,vz,di,usrval
       real(dp) :: xref, yref, bzref, facbz, x, y, rad, bx, by, bz, bf,
-     .            errbx, errby, errbz, errbf, bxmax, bymax, bzmax, 
+     .            errbx, errby, errbz, errbf, bxmax, bymax, bzmax,
      .            bfmax, dfdx, dfdy, dfdz, xref2, yref2, bzref2, facbz2,
      .            xref3, yref3, bzref3, facbz3
       integer :: nref, icell, EIRENE_learc1, nplcll, ipolg, nref2, nref3
@@ -61,7 +61,6 @@ c
       inmass = 0
       inchar = 0
       inchrg = 0
-      
 
       ll=len_trim(casename)
       filename=casename(1:ll) // '.plasma'
@@ -104,8 +103,8 @@ c firstly, read misc target data
       allocate(fetmp(nlines))
       allocate(fshtmp(nlines))
       do j=1,nlines
-!pb         read(fp+ifoff,'(3i7,3(1x,e14.7))') 
-         read(fp+ifoff,*) 
+!pb         read(fp+ifoff,'(3i7,3(1x,e14.7))')
+         read(fp+ifoff,*)
      .        jj, itritmp(j), isidetmp(j),
      .        tetmp(j), fetmp(j), fshtmp(j)
       enddo
@@ -133,11 +132,11 @@ c firstly, read misc target data
       vptmp = 0._dp
       mctmp = 0._dp
       usrvaltmp = 0._dp
-            
+
       DO IPLS = 1, NPLSI
 c     search target tag in .plasma file
          write(cstr2,'(i2.2)') ipls
-         write(sstr,'(a23)') 
+         write(sstr,'(a23)')
      .          '*** ION #'//cstr2//' TARGET DATA'
          CALL EIRENE_locstr_usr(fp+ifoff,sstr,ier)
          if(ier /=0) then
@@ -145,7 +144,7 @@ c     search target tag in .plasma file
 !            close(fp+ifoff)
 !            call EIRENE_exit_own(1)
             write(iunout,*) 'using zero plasma and fluxes'
-            write(iunout,*) 
+            write(iunout,*)
             cycle
          endif
          read(fp+ifoff,'(a)') line
@@ -169,8 +168,8 @@ c     search target tag in .plasma file
      .                       inmass(ipls),inchar(ipls),inchrg(ipls)
             close(fp+ifoff)
             call EIRENE_exit_own(1)
-         end if 
- 
+         end if
+
 c     read step functions
          READ (fp+ifoff,*) NLINES
          DO I=1, NLINES
@@ -184,8 +183,8 @@ c     read step functions
      .           usrvaltmp(ipls,i)
          END DO  ! i
       END DO ! ipls
- 
-c now read species dependent target data
+
+c now read species-dependent target data
       DO ISTRA=1,NSTRAI
          IF (.NOT.NLSRF(ISTRA)) CYCLE
          DO ISRFS=1,NSRFSI(ISTRA)
@@ -250,7 +249,7 @@ c     get species index/indices IPLAN(ISTEP) --> IPLEN(ISTEP)
      .                 (YTRIAN(NECKE(ISIDE,ITRI))
      .                 -YTRIAN(NECKE(IS1,ITRI)))**2)
                   RRSTEP(ISTEP,KSTEP(ISTEP)+1)=
-     .                 RRSTEP(ISTEP,KSTEP(ISTEP)) + DELR         
+     .                 RRSTEP(ISTEP,KSTEP(ISTEP)) + DELR
                   TESTEP(ISTEP,KSTEP(ISTEP)) = TE
                   FESTEP(ISTEP,KSTEP(ISTEP)) = FE
 C     IF NO SHEATH POTENTIAL SPECIFIED, DERIVE IT FROM ELECTRON ENERGY
@@ -274,7 +273,7 @@ C     FLUX BY SUBTRACTING THE KINETIC CONTRIBUTION 2.0*TE
                      TISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = TI ! eV
                      DISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = DI ! 1/cm**3
                      FISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = FI !   1
-                     VPSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = abs(VP) ! cm/s 
+                     VPSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = abs(VP) ! cm/s
 C     VP OVERRULES MC, IF VP IS GIVEN and MC=0
                      MCC=0.0
                      IF (VP.NE.0.0) THEN
@@ -284,7 +283,7 @@ C     VP OVERRULES MC, IF VP IS GIVEN and MC=0
                      jjj=kstep(istep)
                      IF (MC.EQ.0.) MC=MCC
 !pb                     MCSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = abs(MC) ! 1
-C     THIS NEXT VECTOR IS V-PARALLEL, IN CARTESIAN COORDINATES 			   
+C     THIS NEXT VECTOR IS V-PARALLEL, IN CARTESIAN COORDINATES
                      IF (ABS(VX) > EPS10) THEN
                        VXSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VX
                        VYSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VY
@@ -312,10 +311,10 @@ c              endif inmti
                ENDIF
 
 c           enddo nlines
-            ENDDO 
+            ENDDO
 
 c        enddo isrfs
-         ENDDO 
+         ENDDO
 
          IF (KSTEP(ISTEP) > 0) THEN
             NBIN=KSTEP(ISTEP)+1
@@ -325,7 +324,7 @@ c        enddo isrfs
 
          CALL EIRENE_LEER(1)
          WRITE (6,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ISTRA
-         WRITE (6,*) 
+         WRITE (6,*)
      .' IG,  ARC,     P-FLUX,   E-FLUX,     TE,       TI,    SHEATH/TE'
          ITARG = ISTRA
          DO 6100 IG=1,KSTEP(ISTEP)
@@ -334,7 +333,7 @@ c        enddo isrfs
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
      .             SHSTEP(ITARG,IG)
-6100     CONTINUE
+ 6100    CONTINUE
          WRITE (6,'(1X,I3,1P,1E11.3)') KSTEP(ISTEP)+1,
      .                                 RRSTEP(ITARG,KSTEP(ISTEP)+1)
 C
@@ -346,7 +345,6 @@ C
 c     enddo istra
       ENDDO
 
-      
       DEALLOCATE (KSTEP)
       DEALLOCATE (INOSRC)
       DEALLOCATE (IPLAN)
@@ -372,5 +370,5 @@ c     enddo istra
       close(fp+ifoff)
 
 
- 99   RETURN
+   99 RETURN
       END

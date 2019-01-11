@@ -1,5 +1,5 @@
 !pb  28.06.06: bug fix for NSTORAM=0 and MODC=1
-!pb            FACREA=FACTKK instead of FACREA=log(FACTKK) 
+!pb            FACREA=FACTKK instead of FACREA=log(FACTKK)
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
@@ -24,15 +24,15 @@ cdr  Jan. 2014:
 !pb JUL   16:   ehvds1 -> ehvei1
 
 
-cdr Aug.16  :   minor syncronisation with xstpi.f. 
-cdr Sept.16 :   Started to implement H.3 rate coeff. 
+cdr Aug.16  :   minor synchronisation with xstpi.f.
+cdr Sept.16 :   Started to implement H.3 rate coeff.
 cdr             for high E0, low Te cases. Needs to be added: TABEI3
-cdr May 17  :   TABEI1: safety cut off for TEE at 0.1 eV, 
+cdr May 17  :   TABEI1: safety cut-off for TEE at 0.1 eV,
 cdr 	        (rather than the eirene default TVAC (=0.02 eV), added in more cases
 cdr         :   tbd: to be replaced by a proper Arrhenius form extrapolation
 !pb Juli 17 :   LHCOL removed
 cdr Sept 18 :   JELREI: flags for electron energy loss, in storage save mode only.
-cdr             i.e. only needed in FEELEI1 
+cdr             i.e. only needed in FEELEI1
 
 C
       SUBROUTINE EIRENE_XSTEI(RMASS,IREI,ISP,
@@ -47,10 +47,10 @@ c   rmass: mass of incident test particle
 c   irei: counting index for this particular electron impact collision
 c   isp:  incident test particle species identifier
 c   PLS:   precomputed log of electron density
-  
- 
+
+
 C
-C  SET NON DEFAULT ELECTRON IMPACT COLLISION PROCESS NO. IREI
+C  SET NON-DEFAULT ELECTRON IMPACT COLLISION PROCESS NO. IREI
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -68,15 +68,15 @@ C
       INTEGER, INTENT(IN) :: IREI, ISP, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: EFLAG, CHRDIF, FCTKKL, 
-     .          EIRENE_FEHVEI1, EE, TB, TEE, 
+      REAL(DP) :: EFLAG, CHRDIF, FCTKKL,
+     .          EIRENE_FEHVEI1, EE, TB, TEE,
      .          EIRENE_FEELEI1, EN,
-     .          P2N, EA, EI, 
+     .          P2N, EA, EI,
      .          ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
-     .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU, 
+     .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU,
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF,
-     .          DELE, 
+     .          DELE,
      .          FP1(6),FP2(6)
       INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
      .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
@@ -84,7 +84,7 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
- 
+
       ITYP=EIRENE_IDEZ(IFRST,1,3)
       INUM=EIRENE_IDEZ(IFRST,2,3)
       ISPE=EIRENE_IDEZ(IFRST,3,3)
@@ -102,7 +102,7 @@ C ACCUMULATED MASS OF SECONDARIES: ACCMAS (AMU)
       ACCINP=0.D0
 C
       ICOUNT=1
- 85   CONTINUE
+   85 CONTINUE
 
       IF ((ISPE < 1) .OR. (ISPE > MAXSPC(ITYP))) GOTO 994
 
@@ -212,15 +212,15 @@ C
       CHRDIF=CHRDF0
       DO 83 IIO=1,NIONI
         CHRDIF=CHRDIF+PIOEI(IREI,IIO)*NCHRGI(IIO)
-83    CONTINUE
+   83 CONTINUE
 
       DO 84 IP=1,NPLSI
         CHRDIF=CHRDIF+PPLEI(IREI,IP)*NCHRGP(IP)
-84    CONTINUE
+   84 CONTINUE
       PELEI(IREI)=PELEI(IREI)+CHRDIF
 C
 C
-C  1.) CROSS SECTION(TE) : NOT NEEDED
+C  1.) CROSS-SECTION(TE) : NOT NEEDED
 C
 C
 C..................................................................
@@ -241,7 +241,7 @@ C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
-cdr  safety cut off at TE= 0.1 eV. (TVAC=0.02)
+cdr  safety cut-off at TE= 0.1 eV. (TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,0._DP,.TRUE.,0)
             TABEI1(IREI,J)=COU*FACTKK
@@ -250,7 +250,7 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
      .        TABEI1(IREI,J)=TABEI1(IREI,J)*DEIN(J)
           END DO
           NREAEI(IREI) = KK
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
+        ELSE ! NOT SUFFICIENT STORAGE ON TABEI1
           NREAEI(IREI) = KK
         ENDIF
         MODCOL(1,2,IREI)=1
@@ -267,14 +267,14 @@ C  TO BE WRITTEN
           fp1(1:3) = rt%fp1l
           fp1(4:6) = rt%fp1r
           fp2(1:3) = rt%fp2b
-          fp2(4:6) = rt%fp2t  
+          fp2(4:6) = rt%fp2t
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
-cdr  safety cut off at TE= 0.1 eV. (note: TVAC=0.02)
+cdr  safety cut-off at TE= 0.1 eV. (note: TVAC=0.02)
               TEE = max(-2.3_dp,TEE)
-c  evaluate 2 parametric fit, 
-c  collaps this to a one parameter fit CF for EB dependence, evaluated at TEE.
+c  evaluate 2 parametric fit,
+c  collapse this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tee,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
@@ -284,7 +284,7 @@ cdr  not ready, tabei1 --> tabei3 to be done.
 C             TABEI3(IREI,J,1:9) = CF(1:9)
 C             TABEI3(IREI,J,1)=TABEI3(IREI,J,1)+DEINL(J)+FCTKKL
           END DO
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI3 
+        ELSE ! NOT SUFFICIENT STORAGE ON TABEI3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 
         ENDIF
@@ -298,9 +298,9 @@ C  2.D) RATE COEFFICIENT(TE,NE)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
-cdr  safety cut off at Te= 0.1 eV. (note: TVAC=0.02)
+cdr  safety cut-off at Te= 0.1 eV. (note: TVAC=0.02)
             TEE = max(-2.3_dp,TEE)
-cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
+cdr  safety cut-off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DEINL(J)
@@ -308,7 +308,7 @@ cdr  safety cut off at ne= 1e8 cm**-3 already in PLS(..) from calling program. D
             TABEI1(IREI,J)=EXP(TB)
           END DO
           NREAEI(IREI) = KK
-        ELSE ! NOT SUFFICIENT STORADE ON TABEI1
+        ELSE ! NOT SUFFICIENT STORAGE ON TABEI1
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           NREAEI(IREI) = KK
         ENDIF
@@ -317,7 +317,7 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         IERR=1
         GOTO 996
       ENDIF
- 
+
       FACREI(IREI,1) = FACTKK
       FACREI(IREI,2) = LOG(FACTKK)
 C
@@ -334,9 +334,9 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               IF (NSTORDR >= NRAD) THEN
                 DO 101 J=1,NSBOX
                   EELEI1(IREI,J)=EELEC
-101             CONTINUE
+  101           CONTINUE
                 NELREI(IREI)=0
-              ELSE ! NOT SUFFICIENT STORADE ON EELEI1
+              ELSE ! NOT SUFFICIENT STORAGE ON EELEI1
                 NELREI(IREI)=0
                 JELREI(IREI)=-1
                 EELEI1(IREI,1)=EELEC
@@ -349,16 +349,16 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
                 DO 103 J=1,NSBOX
                   IF (LGVAC(J,NPLS+1)) CYCLE
                   EELEI1(IREI,J)=-1.5*TEIN(J)
-103             CONTINUE
+  103           CONTINUE
                 NELREI(IREI)=0
-              ELSE ! NOT SUFFICIENT STORADE ON EELEI1
+              ELSE ! NOT SUFFICIENT STORAGE ON EELEI1
                 JELREI(IREI)=-2
                 NELREI(IREI)=0
               END IF
               MODCOL(1,4,IREI)=1
 
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
+C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE), NO. KREAD
                 KREAD=EELEC
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 998
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
@@ -370,7 +370,7 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
      .                                TEINL(J),
      .                                0._DP,.TRUE.,0)*DEIN(J)*FACTKK/
      .                                (TABEI1(IREI,J)+EPS60)
-102                 CONTINUE
+  102               CONTINUE
                     NELREI(IREI)=KREAD
                     JELREI(IREI)=1
                   ELSE
@@ -378,9 +378,9 @@ C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE), NO. KREAD
                     JELREI(IREI)=1
                   ENDIF
                   MODCOL(1,4,IREI)=1
-C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,EBEAM)
+C  4.A4) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,EBEAM)
 C        TO BE WRITTEN
-C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE)
+C  4.A5) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,NE)
                 ELSEIF (MODC.EQ.3) THEN
                   IF (NSTORDR >= NRAD) THEN
                     FCTKKL=LOG(FACTKK)
@@ -434,7 +434,7 @@ C  4.B1)  RATE = CONST.*RATECOEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
             EHVEI1(IREI,J)=EHEAVY
-201       CONTINUE
+  201     CONTINUE
           NHVREI(IREI)=0
         ELSE
           NHVREI(IREI)=0
@@ -445,7 +445,7 @@ C     ELSEIF (EFLAG.EQ.1) THEN
 C        NOT A VALID OPTION
 
       ELSEIF (EFLAG.EQ.3) THEN
-C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
+C  4.B3)  ENERGY RATE = EN.-WEIGHTED RATE(TE)
         KREAD=EHEAVY
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         FACREI(IREI,1)=FACTKK
@@ -456,7 +456,7 @@ C  4.B3)  ENERGY RATE = EN.WEIGHTED RATE(TE)
               IF (LGVAC(J,NPLS+1)) CYCLE
               EHVEI1(IREI,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,TEINL(J),
      .             0._DP,.TRUE.,0)*DEIN(J)*FACTKK/(TABEI1(IREI,J)+EPS60)
-202         CONTINUE
+  202       CONTINUE
             NHVREI(IREI)=KREAD
           ELSE
             NHVREI(IREI)=KREAD
@@ -478,7 +478,7 @@ C
       IF (IESTEI(IREI,1).NE.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR PART.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTEI(IREI,1)=0
@@ -486,7 +486,7 @@ C
       IF (IESTEI(IREI,2).NE.0) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM.-BALANCE '
+     .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
         IESTEI(IREI,2)=0
@@ -503,14 +503,14 @@ C  AND
 C  CONVERT SECONDARY SPECIES DISTRIBUTION P2ND(IREI)  INTO
 C  CUMULATIVE DISTRIBUTION (NOT YET NORMALIZED, THIS IS DONE BELOW)
 
-C  ATOM SECONDARIES 
+C  ATOM SECONDARIES
       DO 510 IAT=1,NATMI
         IA=NSPH+IAT
         PATEI(IREI,0)=PATEI(IREI,0)+
      +                      PATEI(IREI,IAT)
         P2ND(IREI,IA)=P2ND(IREI,IA-1)+
      +                      P2ND(IREI,IA)
-510   CONTINUE
+  510 CONTINUE
 C  MOLECULE SECONDARIES
       DO 520 IML=1,NMOLI
         IM=NSPA+IML
@@ -518,34 +518,34 @@ C  MOLECULE SECONDARIES
      +                      PMLEI(IREI,IML)
         P2ND(IREI,IM)=P2ND(IREI,IM-1)+
      +                      P2ND(IREI,IM)
-520   CONTINUE
-C  TEST ION SECONDARIES 
+  520 CONTINUE
+C  TEST ION SECONDARIES
       DO 530 IIO=1,NIONI
         IO=NSPAM+IIO
         PIOEI(IREI,0)=PIOEI(IREI,0)+
      +                      PIOEI(IREI,IIO)
         P2ND(IREI,IO)=P2ND(IREI,IO-1)+
      +                      P2ND(IREI,IO)
-530   CONTINUE
+  530 CONTINUE
 C  BULK SECONDARIES (NOT ON P2ND)
       DO 540 IPP=1,NPLSI
         PPLEI(IREI,0)=PPLEI(IREI,0)+
      +                      PPLEI(IREI,IPP)
-540   CONTINUE
+  540 CONTINUE
 C
 C  TOTAL NUMBER OF SECONDARIES
       P2NEI(IREI)=PATEI(IREI,0)+PMLEI(IREI,0)+
      .            PIOEI(IREI,0)
- 
+
 C  FINALY: NORMALIZE SECONDARY TEST PARTICLE SPECIES DISTRIBUTION P2ND
-C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION 
+C          SUCH THAT IT BECOMES A CUMULATIVE SAMPLING DISTRIBUTION
 C          FOR TEST PARTICLE SECONDARIES
 C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
       P2N=P2ND(IREI,NSPAMI)
       DO 550 ISPZ=NSPH+1,NSPAMI
         IF (P2N.GT.0.D0)
      .  P2ND(IREI,ISPZ)=P2ND(IREI,ISPZ)/P2N
-550   CONTINUE
+  550 CONTINUE
 C
       RETURN
 C
@@ -572,8 +572,8 @@ C
         if (en > ea) imax=irad
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
-875   CONTINUE
- 
+  875 CONTINUE
+
       WRITE (iunout,*) 'BACKGROUND SECONDARIES:'
 
       IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
@@ -597,14 +597,14 @@ C
         END IF
         EI=MIN(EI,EN)
         EA=MAX(EA,EN)
-876   CONTINUE
+  876 CONTINUE
       IF (PPLEI(IREI,0).GT.0.D0) THEN
         WRITE (iunout,*) 'BULK IONS: PPLEI '
         DO 874 IPP=1,NPLSI
           IP=NSPAMI+IPP
           IF (PPLEI(IREI,IPP).NE.0.D0)
      .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLEI(IREI,IPP)
-874     CONTINUE
+  874   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLEI(IREI,0,1),
@@ -614,7 +614,7 @@ C
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLEI(IREI,0,1),
      .                                 ' * E0 + ',EPLEI(IREI,0,2),
      .                                 ' * EHEAVY '
-C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0 
+C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
         ENDIF
@@ -636,7 +636,7 @@ C
           IA=NSPH+IAT
           IF (PATEI(IREI,IAT).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IA),PATEI(IREI,IAT)
-871     CONTINUE
+  871   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EATEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EATEI(IREI,0,1),
@@ -656,7 +656,7 @@ C
           IM=NSPA+IML
           IF (PMLEI(IREI,IML).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLEI(IREI,IML)
-872     CONTINUE
+  872   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EMLEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLEI(IREI,0,1),
@@ -676,7 +676,7 @@ C
           IO=NSPAM+IIO
           IF (PIOEI(IREI,IIO).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IO),PIOEI(IREI,IIO)
-873     CONTINUE
+  873   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
           WRITE (iunout,*) 'ENERGY: EIOEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EIOEI(IREI,0,1),
@@ -691,25 +691,25 @@ C
         ENDIF
       ENDIF
 
-880   CONTINUE 
+  880 CONTINUE
 
       CALL EIRENE_LEER(1)
 
       IF (IESTEI(IREI,1).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR PART. BALANCE '
       IF (IESTEI(IREI,2).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR MOM. BALANCE '
       IF (IESTEI(IREI,3).NE.0)
-     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN.-BALANCE '
+     .   WRITE (IUNOUT,*) 'COLLISION ESTIMATOR FOR EN. BALANCE '
       CALL EIRENE_LEER(1)
 
       WRITE (IUNOUT,*) 'COLLISION MODEL: '
-      WRITE (iunout,*) 'PROCESS NO. KK ',NREAEI(IREI)
+      WRITE (IUNOUT,*) 'PROCESS NO. KK ',NREAEI(IREI)
       WRITE (IUNOUT,*) 'MODCOL         ',
      .                  MODCOL(1,1,IREI),MODCOL(1,2,IREI),
      .                  MODCOL(1,3,IREI),MODCOL(1,4,IREI)
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                  FACREI(IREI,1) 
+     .                  FACREI(IREI,1)
       CALL EIRENE_LEER(1)
 
 
@@ -718,21 +718,21 @@ C
 C
 C-----------------------------------------------------------------------
 C
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI, MODCLF(KK) ',MODCLF(KK)
       WRITE (iunout,*) IREI,KK
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: ISCDE FLAG'
       WRITE (iunout,*) 'IREI, EFLAG ',IREI,EFLAG
       CALL EIRENE_EXIT_OWN(1)
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'
       WRITE (iunout,*) IREI,KREAD
       CALL EIRENE_EXIT_OWN(1)

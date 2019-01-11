@@ -1,6 +1,6 @@
 c  19.12.05:  stvw, stvws = 0   included
       SUBROUTINE EIRENE_CLEAR_SUMOSTRA
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CSPEI
@@ -9,11 +9,11 @@ c  19.12.05:  stvw, stvws = 0   included
       USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMSOU
       USE EIRMOD_CESTIM
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: ISPC
- 
+
 C
 C**** CLEAR WORK AREA FOR SUM OVER STRATA ****************************
 C
@@ -30,21 +30,21 @@ C  ARRAYS: EE,FF,....
       EES    = 0._DP
       FF     = 0._DP
       FFS    = 0._DP
-C  BGK-ARRAYS:
+C  BGK ARRAYS:
       IF (NSIGI_BGK.GT.0) THEN
         STVS_BGK=0._DP
         EES_BGK=0._DP
         STV_BGK=0._DP
         EE_BGK=0._DP
       ENDIF
-C  COP-ARRAYS:
+C  COP ARRAYS:
       IF (NSIGI_COP.GT.0) THEN
         STVS_COP=0._DP
         EES_COP=0._DP
         STV_COP=0._DP
         EE_COP=0._DP
       ENDIF
- 
+
 C  SPECTRA
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         DO ISPC=1,NADSPC
@@ -59,7 +59,7 @@ C  SPECTRA
           SMESTL(ISPC)%GGS = 0._DP
         END DO
       END IF
- 
+
       RETURN
- 
+
       END SUBROUTINE EIRENE_CLEAR_SUMOSTRA

@@ -5,18 +5,19 @@ C  aug. 05: corrected electron energy loss rate for default rec. rate
 !           setting of modcol corrected
 ! 25.03.07: check of mass conservation only for up to two secondaries
 ! 2013    : DSUB (RESCALING OF DENSITY IN H.4 FITS) REMOVED, NOW DONE IN RATE_COEFF.F
-! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOM FITS (ARRAY PLS).
-cdr  oct.14:  pls made allocatable, plus minor syncronisation with other xsect... routines
+! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
+cdr  oct.14:  pls made allocatable, plus minor synchronisation with other xsect... routines
 cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung.
 CDR           bremsstrahlung: new function eirene_brems, replaces gaunt factor function
 cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of rate as for H+ default model.
 cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
 cdr             should not have had any effect, on any run, so far,
 cdr             since this reaction did not exist in EIRENE at all until June 15
-cdr  Jan 18  :  call energy-rate-coeff with lexp=true, because internal colrad (ifit=5)
+cdr  Jan 18  :  call energy_rate_coeff with lexp=true, because internal colrad (ifit=5)
 cdr             option is now available.
-cdr  May 18 :  still missing. low Te cut off (should be done as in xstei, there:
-cdr            0.1 eV, until assypmtotics from database are fully implemented.
+cdr  May 18 :  still missing. low Te cut-off (should be done as in xstei, there:
+cdr            0.1 eV, until asymptotics from database are fully implemented.
+cdr            DEIMIN density cut-off now redundant, due to defaults read from AMJUEL 
 
 C
       SUBROUTINE EIRENE_XSECTP
@@ -52,14 +53,14 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-cdr: set hard wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
+cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the Corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
-10      CONTINUE
+   10   CONTINUE
       END IF
 
 C
@@ -80,7 +81,7 @@ C
           IF (NCHARP(IPLS).EQ.1 .AND. NCHRGP(IPLS).EQ.1) THEN   ! this is now H+, or D+, or T+
 C
 C  DEFAULT HYDROGENIC RECOMBINATION MODEL, for capture on all levels of H
-C  HYDR. RECOMBINATION RATE-COEFFICIENT (1/S/CCM) E + H+ --> H + RAD.
+C  HYDR. RECOMBINATION RATE COEFFICIENT (1/S/CCM) E + H+ --> H + RAD.
 C  GORDEEV ET. AL., PIS'MA ZH. EHKSP. TEOR. FIZ. 25 (1977) 223.
 C
             DO 52 IATM=1,NATMI
@@ -99,14 +100,14 @@ C  rate = rate coeff: <sig v> times electr. density,  1/s per ion
                     TABRC1(IRRC,J)=1.27E-13*ZX**1.5/(ZX+0.59)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
 c                   corsum=0._dp  !  old default: 1.5*Te
-C  correction due to energy dependence in rec. cross section
+C  correction due to energy dependence in rec. cross-section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
 c  corsum approx  0.0 for Te approx 11.43
 c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
-51                CONTINUE
+   51             CONTINUE
                   NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -122,14 +123,14 @@ C
                 MODCOL(6,2,IRRC)=1
                 MODCOL(6,4,IRRC)=1
               ENDIF
-52          CONTINUE
+   52       CONTINUE
 C
             NPRCI(IPLS)=IDSC
 
           ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN  ! this is now He+
 C
 C  DEFAULT HELIUM + RADIATIVE RECOMBINATION MODEL
-C  HELIUM-ION (HE+) RECOMBINATION RATE-COEFFICIENT (1/S/CCM) E + HE+ --> HE(1S) + RAD.
+C  HELIUM ION (HE+) RECOMBINATION RATE COEFFICIENT (1/S/CCM) E + HE+ --> HE(1S) + RAD.
 C  JANEV ET. AL. FORMULA H.2. 2.3.13, BASED ON SOBELMAN 1979
 C  (BORN-COULOMB APPROXIMATION), SIMILAR EXPRESSION AS FOR HYDROGEN DEFAULT RECOMBINATION MODEL
 C
@@ -150,14 +151,14 @@ c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
                     TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
 c                   corsum=0._dp  !  old default: 1.5*Te
-C  correction due to energy dependence in rec. cross section
+C  correction due to energy dependence in rec. cross-section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
 c  corsum approx  0.0 for Te approx 11.5
 c  corsum approx +1.0 for Te --> infty
                     corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
-53                CONTINUE
+   53             CONTINUE
                   NREARC(IRRC) = -2
                   NELRRC(IRRC) = -2
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -173,19 +174,18 @@ C
                 MODCOL(6,2,IRRC)=1
                 MODCOL(6,4,IRRC)=1
               ENDIF
-54          CONTINUE
+   54       CONTINUE
 C
             NPRCI(IPLS)=IDSC
           ENDIF
 C
-C  NON DEFAULT MODEL:  240--
-
+C  NON-DEFAULT MODEL:  240--
 C
         ELSEIF (NRCP(IPLS).GT.0) THEN
           DO 82 NRC=1,NRCP(IPLS)
             KK=IREACP(IPLS,NRC)
 csw check photonic process
-            if(iswr(kk)==7) then    ! OT Processes
+            if(iswr(kk)==7) then    ! PH Processes
                idsc=idsc+1
                nrrci=nrrci+1
                IF (NRRCI.GT.NREC) GOTO 992
@@ -205,9 +205,9 @@ C  RECOMBINATION MODEL FOR BULK IONS
               IRRC=NRRCI
               LGPRC(IPLS,IDSC)=IRRC
 cdr  for notational consistency: here should come a call to routine xstrc,
-cdr  for rc type processes
-cdr  as already in case of xsecta, xsectm, xsecti, etc..
-cdr  there for the corresponding ei,el,cx and pi processes
+cdr  for RC type processes
+cdr  as already in case of xsecta, xsectm, xsecti, etc..,
+cdr  There for the corresponding ei,el,cx and pi processes
 cdr  this next stuff should go into xstrc.f
               ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
               ISPZ=EIRENE_IDEZ(ISCD1P(IPLS,NRC),3,3)
@@ -245,7 +245,7 @@ C  CHECK MASS CONSERVATION
                 IF (RMASSP(IPLS).NE.(RMASS2+RMASS2_2)) GOTO 993
               END IF
 C
-C  1.) CROSS SECTION(TE)
+C  1.) CROSS-SECTION(TE)
 C           NOT NEEDED
 C  2.  RATE COEFFICIENT (CM**3/S) * DENSITY (CM**-3) --> RATE (1/S) per Ion
 C
@@ -259,8 +259,8 @@ cdr  lexp should not be set from mod(iftflg), that has completely different mean
                   LEXP = .NOT. (MOD(IFTFLG(KK,2),100) == 10)
                   DO J=1,NSBOX
 !pb                 IF (LGVAC(J,IPLS)) CYCLE
-cdr  a density independent rate can exist also in a vacuum cell.
-cdr  e.g. spontanuous emission of a line, also treated as "recombination" event
+cdr  a density-independent rate can exist also in a vacuum cell.
+cdr  e.g. spontaneous emission of a line, also treated as "recombination" event
 cdr       by analogy.
                     IF (LGVAC(J,NPLS+1).AND.IFTFLG(KK,2) < 100) CYCLE
                     COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),0._DP,LEXP,0)
@@ -270,7 +270,7 @@ cdr       by analogy.
                   END DO
                   NREARC(IRRC) = KK
                 ELSE
-C  DON'T STORE DATA, BUT COMPUTE THEM WHEN NEEDED
+C  DO NOT STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                 END IF
                 MODCOL(6,2,IRRC)=1
@@ -291,7 +291,7 @@ C  2.D) RATE COEFFICIENT(TE,NE)
 
                   NREARC(IRRC) = KK
                 ELSE
-C  DON'T STORE DATA, BUT COMPUTE THEM WHEN NEEDED
+C  DO NOT STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                 END IF
                 MODCOL(6,2,IRRC)=1
@@ -308,11 +308,11 @@ C
               NSERC5=EIRENE_IDEZ(ISCDEP(IPLS,NRC),5,5)
 
               IF (NSERC5.EQ.0) THEN
-C  4.A)  ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
+C  4.A)  ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATE COEFF.
                 IF (NSTORDR >= NRAD) THEN
                   DO 101 J=1,NSBOX
                     EELRC1(IRRC,J)=-EELECP(IPLS,NRC)*TABRC1(IRRC,J)
-101               CONTINUE
+  101             CONTINUE
                   NELRRC(IRRC) = 0
                 ELSE
                   NELRRC(IRRC) = 0
@@ -322,11 +322,11 @@ C  4.A)  ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
                 MODCOL(6,4,IRRC)=1
 
               ELSEIF (NSERC5.EQ.1) THEN
-C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATECOEFF.
+C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATE COEFF.
                 IF (NSTORDR >= NRAD) THEN
                   DO 102 J=1,NSBOX
                     EELRC1(IRRC,J)=-1.5*TEIN(J)*TABRC1(IRRC,J)
-102               CONTINUE
+  102             CONTINUE
                   NELRRC(IRRC) = 0
                 ELSE
                   NELRRC(IRRC) = 0
@@ -343,7 +343,7 @@ c  special treatment in case bremsstrahlung is contained in energy loss rate
 c  as e.g. the case in ADAS ADF11- PRB files
                 LADAS = EIRENE_IS_RTCEW_TAB2D(KREAD)
                 Z = NCHRGP(IPLS)
-C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE)
+C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE)
                 IF (MODC.EQ.1) THEN
                   IF (NSTORDR >= NRAD) THEN
                     DO J = 1, NSBOX
@@ -352,7 +352,7 @@ C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
      .                               TEINL(J),0._DP,.TRUE.,0)
                       EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
-C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
+C  SUBTRACT BREMSSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)
                       IF (LADAS) THEN
                         IF (LGVAC(J,IPLS)) CYCLE
@@ -373,18 +373,18 @@ c  bremsstrahlung correction done.
                     JELRRC(IRRC)=1
                   END IF
                   MODCOL(6,4,IRRC)=1
-C  4.D)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,EBEAM)
+C  4.D)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,EBEAM)
 C               ELSEIF (MODC.EQ.2) THEN
 C        IRRELEVANT
 C                 MODCOL(6,4,IRRC)=2
-C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.WEIGHTED RATE(TE,NE), eV/s/ion
+C  4.E)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE,NE), eV/s/ion
                 ELSEIF (MODC.EQ.3) THEN
                   IF (NSTORDR >= NRAD) THEN
                     FCTKKL=LOG(FACTKK)
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
 C  change logical from false to true, to avoid log(erate), with erate negative
-C  as it may result from internal CR code H_COL,...., when used with delpot=0.0 
+C  as it may result from internal CR code H_COL,...., when used with delpot=0.0
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
 cdr  .                               TEINL(J),PLS(J),.FALSE.,1)
      .                               TEINL(J),PLS(J),.TRUE.,1)
@@ -393,7 +393,7 @@ cdr  old code, for log(e_rate) return. Not possible with h_colrad, due to sign c
 cdr                   EEMX=MAX(-100._DP,EELRC1(IRRC,J)+DEINL(J))+FCTKKL
 cdr                   EELRC1(IRRC,J)=-EXP(EEMX)
 
-C  SUBTRACT BREMSTRAHLUNG, if it was included in recombination energy loss rate
+C  SUBTRACT BREMSSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)
                       IF (LADAS) THEN
                         IF (LGVAC(J,IPLS)) CYCLE
@@ -429,18 +429,18 @@ C         INTO ELECTRON ENERGY LOSS/GAIN (SIGN CHANGE POSSIBLE)
                     DO 110 J=1,NSBOX
                       EELRC1(IRRC,J)=EELRC1(IRRC,J)+
      .                               DELE*TABRC1(IRRC,J)
- 110                CONTINUE
+  110               CONTINUE
 c  STORAGE SAVING MODE AND DELPOT NE 0.0
 c                 ELSE  ! ??
                   END IF
-C         
+C
                 ENDIF   ! DELPOT
               ENDIF  !  MODC =1 OR =3
             ELSE
               GOTO 997
             ENDIF  !  NSERC5
 C
-82        CONTINUE
+   82     CONTINUE
           NPRCI(IPLS)=IDSC
 C
 C  NO MODEL DEFINED
@@ -513,54 +513,54 @@ C             END IF
      .                  MODCOL(6,1,IRRC),MODCOL(6,2,IRRC),
      .                  MODCOL(6,3,IRRC),MODCOL(6,4,IRRC)
               WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
-     .                     FACRRC(IRRC,1) 
+     .                     FACRRC(IRRC,1)
               CALL EIRENE_LEER(1)
-220         CONTINUE   !irrc for ipls
+  220       CONTINUE   !irrc for ipls
           ENDIF
           CALL EIRENE_LEER(1)
 
         ENDIF  !trcamd
 C
-1000  CONTINUE
+ 1000 CONTINUE
 
       DEALLOCATE (PLS)
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR RECOMBINATION'
       CALL EIRENE_EXIT_OWN(1)
-992   CONTINUE
+  992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'NREC TOO SMALL, CHECK PARAMETER STATEMENTS'
       CALL EIRENE_EXIT_OWN(1)
-993   CONTINUE
+  993 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*) 'MASS CONSERVATION VIOLATED, IPLS,IRRC ',
      .                  IPLS,IRRC
       CALL EIRENE_EXIT_OWN(1)
-994   CONTINUE
+  994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTP.'
       WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
       WRITE (iunout,*) 'IPLS = ',IPLS
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
-996   CONTINUE
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
       WRITE (iunout,*)
      .  'WRONG REACTION INDEX SPECIFIED FOR KREAD IN REACTION KK'
       WRITE (iunout,*) 'KK ',KK
       WRITE (IUNOUT,*) 'KREAD ',KREAD
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: ISCDE FLAG'
       WRITE (iunout,*) 'IRRC, EFLAG ',IRRC,NSERC5
       CALL EIRENE_EXIT_OWN(1)

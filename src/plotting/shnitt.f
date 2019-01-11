@@ -6,21 +6,21 @@ C  CALLED FROM ZYLIND
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: P(3,*), A(*)
       REAL(DP), INTENT(OUT) :: XP(*), YP(*)
       REAL(DP), INTENT(IN) :: PX, PY, PZ, VX, VY, VZ
       INTEGER, INTENT(IN) :: I, JA, JE, IXS
- 
+
       REAL(DP) :: EPS12, XX, YY, ZZ, XN, ALAMDA, ALAM2, DET, ROOT,
      .            ALAM1, AA, BB, CC
       INTEGER :: J, IX
       LOGICAL :: LERR
- 
+
       DATA EPS12 /1.E-12_DP/
- 
+
       LERR=.FALSE.
       IX=IXS-1
 C     WRITE (iunout,*) ' SHNITT  I = ',I
@@ -49,19 +49,19 @@ C  MIT DER EBENE. ALAMDA MUSS POSITIV SEIN, SONST FALSCHE EINGABE
             ALAMDA=(-A(1)-(A(2)*XX+A(3)*YY+A(4)*ZZ))/XN
             IF (ALAMDA.LT.0.) THEN
               WRITE (iunout,*) 'ERROR IN SUBR. SHNITT. SET ALAMDA=0.'
-              WRITE (iunout,*) 'NO INTERSECTION IN POSITIV DIRECTION'
+              WRITE (iunout,*) 'NO INTERSECTION IN POSITIVE DIRECTION'
               WRITE (iunout,*) 'WITH PLANE '
               ALAMDA=0.
               LERR=.TRUE.
             ENDIF
           ENDIF
 C
-101       XX=XX+ALAMDA*VX
+  101     XX=XX+ALAMDA*VX
           YY=YY+ALAMDA*VY
           ZZ=ZZ+ALAMDA*VZ
           IX=IX+1
           CALL EIRENE_PL3D(XX,YY,ZZ,XP(IX),YP(IX))
-100     CONTINUE
+  100   CONTINUE
       ELSEIF (I.GT.4) THEN
 C  SCHNITTKURVE MIT VOLLER GLEICHUNG 2TER ORDNUNG
         AA=(A(5)*VX+A(8)*VY+A(9)*VZ)*VX+(A(6)*VY+A(10)*VZ)*VY+
@@ -135,12 +135,12 @@ C  DECIDE, WHICH ONE OF THE 2 SOLUTIONS TO TAKE
             LERR=.TRUE.
             GOTO 201
           ENDIF
-201       XX=XX+ALAMDA*VX
+  201     XX=XX+ALAMDA*VX
           YY=YY+ALAMDA*VY
           ZZ=ZZ+ALAMDA*VZ
           IX=IX+1
           CALL EIRENE_PL3D(XX,YY,ZZ,XP(IX),YP(IX))
-200     CONTINUE
+  200   CONTINUE
       ENDIF
       RETURN
       END

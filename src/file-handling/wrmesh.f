@@ -1,9 +1,10 @@
 c  nov 03:  use relative distances to find neighbor segment,
 c           otherwise sometimes problems with non-closing polygons encountered.
 cdr june 17:  separate WRMESH (WRITING) and PLMESH (PLOTTING).
+cdr Nov. 18:  fixes from ITER branch
 
       SUBROUTINE EIRENE_WRMESH
-c  create close polygonal contours, from the eirene standard and additional surfaces
+c  create closed polygonal contours, from the eirene standard and additional surfaces
 c  use ILPLG(isurf) flag, from input blocks 3A LEVGEO=3 OR LEVGEO=4,
 C                         or certain additional surfaces, input block 3B,
 c                         0<RLB<2.
@@ -21,6 +22,7 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
       USE EIRMOD_CLGIN
@@ -34,19 +36,20 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       INTEGER, PARAMETER :: MAXPOIN=2000
       REAL(DP) :: partcont(maxpoin,2,2), maxlen
       REAL(DP) :: XPE, YPE, HELP, XT, YT, PHI1, X1, X2, Y1, Y2, PHI2
-      REAL(DP) :: DISTQI,DISTQJ1,DISTQJ2,YMN
+      REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN
       INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
-     .            ICO, IPO, IN, IS, IS1, ITRI
+     .            ICO, IPO, IN, IS, IS1, ITRI, INBT, INBS
       INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
-      LOGICAL  :: LCLOSED
+      LOGICAL  :: LCLOSED, LFOUND
+      LOGICAL, ALLOCATABLE :: FOUND(:,:)
 
 
 
 C ANZAHL DER KONTOUREN BESTIMMEN
-C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
+C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
-      WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED '
+      WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED'
       CALL EIRENE_LEER(1)
 
       NCONT = 0
@@ -62,14 +65,14 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
         CALL EIRENE_LEER(1)
       END IF
 
-      if (ncont == 0) then 
+      if (ncont == 0) then
         call EIRENE_leer(1)
         write (iunout,*) 'No contours specified in blocks 3a,3b'
         write (iunout,*)
-     .    'No input file fort.78 for FEM mesh generator written '
+     .    'No input file ', FORT, '78 for FEM mesh generator written '
         call EIRENE_leer(2)
         return
-      endif  
+      endif
 
 
       IF (.NOT.ALLOCATED(NCONPOINT)) THEN
@@ -84,8 +87,8 @@ C ILPLG WIRD IM INPUT-BLOCK 3 EINGELESEN
         IPOIN = 0
         MAXLEN = 0.
         irip=0
-C AKTUELLE CONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
-C AKTUELLEN CONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
+C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
+C AKTUELLEN KONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
 
 c  ADDITIONAL SURFACES
@@ -98,6 +101,16 @@ C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
      >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
      >          .OR. P3(3,I) .EQ. 1.D55)) THEN
               IPOIN = IPOIN + 1
+              IF (IPOIN.GT.MAXPOIN) THEN
+                WRITE(IUNOUT,*)
+     .           'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .            ICONT
+                WRITE(IUNOUT,*)
+     .           'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                WRITE(IUNOUT,*)
+     .           'CURRENTLY MAXPOIN = ', MAXPOIN
+                CALL EIRENE_EXIT_OWN(1)
+              ENDIF
               IF (A3LM(I) .EQ. 0.) THEN
 C               X,Y-KOORDINATEN
                 PARTCONT(IPOIN,1,1) = P1(1,I)
@@ -125,8 +138,8 @@ C               Y,Z-KOORDINATEN
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
             ELSE
 C  ERROR
-              WRITE(iunout,*) 'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),
-     >                         ILPLG(I),I
+              WRITE(iunout,'(a,f11.4,2i4)')
+     >         'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),ILPLG(I),I
             ENDIF
           ENDIF
         ENDDO
@@ -142,6 +155,16 @@ C  POLOIDAL SURFACES
                 IF ((XPOL(J,INUMP(I,2)) .NE. XPOL(J+1,INUMP(I,2))) .OR.
      >              (YPOL(J,INUMP(I,2)) .NE. YPOL(J+1,INUMP(I,2)))) THEN
                   IPOIN = IPOIN + 1
+                  IF (IPOIN.GT.MAXPOIN) THEN
+                    WRITE(IUNOUT,*)
+     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                ICONT
+                    WRITE(IUNOUT,*)
+     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                    WRITE(IUNOUT,*)
+     .               'CURRENTLY MAXPOIN = ', MAXPOIN
+                    CALL EIRENE_EXIT_OWN(1)
+                  ENDIF
                   PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
                   PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
                   PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
@@ -160,6 +183,16 @@ C  RADIAL SURFACES
                 IF ((XPOL(INUMP(I,1),J) .NE. XPOL(INUMP(I,1),J+1)) .OR.
      >              (YPOL(INUMP(I,1),J) .NE. YPOL(INUMP(I,1),J+1))) THEN
                   IPOIN = IPOIN + 1
+                  IF (IPOIN.GT.MAXPOIN) THEN
+                    WRITE(IUNOUT,*)
+     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                ICONT
+                    WRITE(IUNOUT,*)
+     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                    WRITE(IUNOUT,*)
+     .               'CURRENTLY MAXPOIN = ', MAXPOIN
+                    CALL EIRENE_EXIT_OWN(1)
+                  ENDIF
                   PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
                   PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
                   PARTCONT(IPOIN,2,1) = XPOL(INUMP(I,1),J+1)
@@ -182,15 +215,28 @@ C  ERROR
 
         case (4)
 C  TRIANGLE SIDES
+          ALLOCATE (FOUND(1:3,1:NTRII))
+          FOUND = .FALSE.
           DO ITRI = 1, NTRII
             DO IS = 1, 3
               IN=INMTI(IS,ITRI)
-              IF (IN /= 0) THEN
+              LFOUND=FOUND(IS,ITRI)
+              IF (IN /= 0 .AND. .NOT.LFOUND) THEN
                 IF (ABS(ILPLG(IN)) == ICONT) THEN
                   IUHR=ILPLG(IN)
                   IS1 = IS+1
                   IF (IS1 > 3) IS1=1
                   IPOIN = IPOIN + 1
+                  IF (IPOIN.GT.MAXPOIN) THEN
+                    WRITE(IUNOUT,*)
+     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                ICONT
+                    WRITE(IUNOUT,*)
+     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
+                    WRITE(IUNOUT,*)
+     .               'CURRENTLY MAXPOIN = ', MAXPOIN
+                    CALL EIRENE_EXIT_OWN(1)
+                  ENDIF
                   PARTCONT(IPOIN,1,1) = XTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,1,2) = YTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,2,1) = XTRIAN(NECKE(IS1,ITRI))
@@ -201,18 +247,24 @@ C  TRIANGLE SIDES
                   maxlen = maxlen +
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
-
+                  FOUND(IS,ITRI)=.TRUE.
+                  INBT=NCHBAR(IS,ITRI)
+cwdk Make sure the corresponding side of the neighboring triangle is not found again
+                  IF (INBT.GT.0) THEN
+                    INBS=NSEITE(IS,ITRI)
+                    FOUND(INBS,INBT)=.TRUE.
+                  ENDIF
                 END IF
               END IF
             END DO
           END DO
+          DEALLOCATE (FOUND)
         end select
 
         IF (IPOIN.LE.0) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'
           GOTO 1000
         ENDIF
-
 
 C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
         DO I=1,IPOIN-1
@@ -289,16 +341,19 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
             ENDIF
           ENDDO
           IF (IFOUND.EQ.0) THEN
-            WRITE (iunout,*) 'NO MATCHING POINT FOUND FOR CONTOUR ',
-     >                        ICONT
-            write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
-     >                   partcont(i,1,1),partcont(i,1,2),
-     >                   partcont(i,2,1),partcont(i,2,2)
-            WRITE (iunout,*) 'USE NEXT POINT '
+            WRITE(iunout,*) 'NO MATCHING POINT FOUND FOR CONTOUR ',
+     >                       ICONT
+            write(iunout,'(I4,3(1X,I4),4(1X,G14.7))') i,idiag(i),
+     >                    irip(i,1),irip(i,2),
+     >                    partcont(i,1,1),partcont(i,1,2),
+     >                    partcont(i,2,1),partcont(i,2,2)
+            WRITE(iunout,*) 'USE NEXT POINT '
             IP=I+1
-            write(iunout,*) iP,idiag(iP),irip(ip,1),irip(ip,2),
+            write(iunout,'(I4,3(1X,I4),4(1X,G14.7))') iP,idiag(iP),
+     >                    irip(ip,1),irip(ip,2),
      >                    partcont(iP,1,1),partcont(iP,1,2),
      >                    partcont(iP,2,1),partcont(iP,2,2)
+            CALL EIRENE_LEER(1)
           ENDIF
         ENDDO
 
@@ -313,11 +368,13 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
 
         IF (TRCSUR) THEN
           do i=1,ipoin
-            write(iunout,*) i,idiag(i),irip(i,1),irip(i,2),
+            write(iunout,'(1X,I4,3(1X,I4),4(1X,G14.7))') i,idiag(i),
+     >                   irip(i,1),irip(i,2),
      >                   partcont(i,1,1),partcont(i,1,2),
      >                   partcont(i,2,1),partcont(i,2,2)
           enddo
-        END IF  !  contour no. icont  done.
+          CALL EIRENE_LEER(1)
+        END IF  !  contour no. icont done.
 
 C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
 C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
@@ -361,8 +418,13 @@ C  PUNKT, DER IM UMLAUF DER VORHERGEHENDE IST
             X1 = PARTCONT(IMN,1,1)
             Y1 = PARTCONT(IMN,1,2)
 C  PUNKT, DER IM UMLAUF DER NAECHSTE IST
-            X2 = PARTCONT(IMN+1,2,1)
-            Y2 = PARTCONT(IMN+1,2,2)
+            IF (IMN.LT.IPOIN) THEN
+              X2 = PARTCONT(IMN+1,2,1)
+              Y2 = PARTCONT(IMN+1,2,2)
+            ELSE
+              X2 = PARTCONT(1,2,1)
+              Y2 = PARTCONT(1,2,2)
+            ENDIF
           ENDIF
 
 C  BESTIMME POLARWINKEL VON (X1,Y1) UND (X2,Y2) MIT (XT,YT) ALS URSPRUNG
@@ -420,14 +482,14 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
           YCONTOUR(IPO,ICO) = PARTCONT(IWEN,IWL,2)
         END IF
 
-1000    CONTINUE
+ 1000   CONTINUE
       ENDDO    ! END OF DO ICONT.... LOOP
       NCONTOUR=ICO
 
 
       call EIRENE_leer(1)
       write (iunout,*)
-     .  'input file fort.78 for FEM mesh generator written '
+     .  'input file ', FORT, '78 for FEM mesh generator written'
       call EIRENE_leer(2)
 
 cdr

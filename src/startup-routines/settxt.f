@@ -11,28 +11,28 @@ cdr  oct 18 :  setting text and range for input tallies: moved to own routines:
 cdr            settxt_intal, and setprm_intal, to accomodate also the new input gradient tallies. 
 
       SUBROUTINE EIRENE_SETTXT
-c  Set default texts  (volume tallies: name, species, units), 
-C    ditto: surface and input tallies. 
+c  Set default texts  (volume tallies: name, species, units),
+C    ditto: surface and input tallies.
 C  Main call: SETTXT
 C  Set first (leading) dimension of tally arrays: nfstvi, nfstwi.
 C  Entry    : STTXT1
 C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
-c                                 for pointers to large tally-arrays
-c  
+c                                 for pointers to large tally arrays
+c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
       USE EIRMOD_CLOGAU
- 
+
       IMPLICIT NONE
- 
+
       INTEGER :: IATM, IION, IPLS, IMOL, ISPZ, IPHOT, I, J, N1,
      .           N2, N3, N4, N5, N6, N7, N8, N9, N10, N11
       CHARACTER(24) :: TEXT24
       CHARACTER(72) :: TEXT72
- 
+
       TXTTAL(1,1)='PARTICLE DENSITY (ATOMS)                         '
       TXTTAL(1,2)='PARTICLE DENSITY (MOLECULES)                     '
       TXTTAL(1,3)='PARTICLE DENSITY (TEST IONS)                     '
@@ -138,17 +138,17 @@ c
       TXTTAL(1,56)=
      . 'ENERGY SOURCE (BULK IONS) FROM PHOTON-PLASMA INTERACTION    '
 C  TALLY NTALA=57 (SEE PARMMOD.F)
-C        ADDITIONAL TRACKLENGTH ESTIMATED TALLIES
+C        ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10A
       TXTTAL(1,NTALA)=
      . 'ADDITIONAL TALLIES, TRACKLENGTH ESTIMATOR, SUBR. UPTUSR.F   '
 C  TALLY NTALC=58 (SEE PARMMOD.F)
-C        ADDITIONAL COLLISION ESTIMATED TALLIES
+C        ADDITIONAL COLLISION-ESTIMATED TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10B
       TXTTAL(1,NTALC)=
      . 'ADDITIONAL TALLIES, COLLISION ESTIMATOR, SUBR. UPCUSR.F     '
 C  TALLY NTALT=59 (SEE PARMMOD.F)
-C        ADDITIONAL SNAPSHOT ESTIMATED TALLIES
+C        ADDITIONAL SNAPSHOT-ESTIMATED TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 13B
       TXTTAL(1,NTALT)=
      . 'ADDITIONAL TALLIES, SNAPSHOT ESTIMATOR, SUBR. UPNUSR.F      '
@@ -158,7 +158,7 @@ C        TXTTAL MAY BE OVERWRITTEN IN SUBR. INFCOP
       TXTTAL(1,NTALM)=
      . 'ADDITIONAL TALLIES FOR INTERFACING, SUBR. INFCOP.F          '
 C  TALLY NTALB=61 (SEE PARMMOD.F)
-C        ADDITIONAL TALLIES FOR ITERATIVE MODE (BGK-ITERATION)
+C        ADDITIONAL TALLIES FOR ITERATIVE MODE (BGK ITERATION)
       TXTTAL(1,NTALB)=
      . 'ADDITIONAL TALLIES FOR ITERATIVE MODE, SUBR. UPTBGK.F       '
 C  TALLY NTALB=62 (SEE PARMMOD.F)
@@ -253,7 +253,7 @@ C
         DO 1 I=2,N1MX
           TEXT72=TXTTAL(1,J)
           TXTTAL(I,J)=TEXT72
-1     CONTINUE
+    1 CONTINUE
 C
       TXTUNT(1,1)='CM**-3                  '
       TXTUNT(1,2)='CM**-3                  '
@@ -365,9 +365,9 @@ C  PARALLEL MOMENTUM SOURCES (BULK IONS)
         DO 2 I=2,N1MX
           TEXT24=TXTUNT(1,J)
           TXTUNT(I,J)=TEXT24
-2     CONTINUE
+    2 CONTINUE
 
-C  SURFACE AVERAGED TALLIES
+C  SURFACE-AVERAGED TALLIES
 
 C  PARTICLE FLUXES, INCIDENT AND EMITTED
       TXTTLW(1,1)='PARTICLE FLUX, INCIDENT, ATOMS                   '
@@ -460,7 +460,7 @@ C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10D
 C  TALLY NTLSR=83 (SEE PARMMOD.F)
 C   ADDIT. TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
 C   TXTTLW IS OVERWRITTEN BY INPUT BLOCK 10E
-      TXTTLW(1,83)='ALGEBRAIC EXPRESSION IN SURFACE AVERAGED TALLIES '
+      TXTTLW(1,83)='ALGEBRAIC EXPRESSION IN SURFACE-AVERAGED TALLIES '
 C  PUMPED FLUXES
       TXTTLW(1,84)='PUMPED FLUX BY SPECIES                           '
 C
@@ -493,7 +493,7 @@ C  particle fluxes
       TXTUNW(1,23)='AMP                     '
       TXTUNW(1,24)='AMP                     '
       TXTUNW(1,25)='AMP                     '
-c  energy fluxes 
+c  energy fluxes
       TXTUNW(1,26)='WATT                    '
       TXTUNW(1,27)='WATT                    '
       TXTUNW(1,28)='WATT                    '
@@ -519,7 +519,7 @@ c  energy fluxes
       TXTUNW(1,48)='WATT                    '
       TXTUNW(1,49)='WATT                    '
       TXTUNW(1,50)='WATT                    '
-c  sputter tallies 
+c  sputter tallies
       TXTUNW(1,51)='AMP                     '
       TXTUNW(1,52)='AMP                     '
       TXTUNW(1,53)='AMP                     '
@@ -563,7 +563,6 @@ c  sputter tallies
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
-     
       RETURN
 C
       ENTRY EIRENE_STTXT1
@@ -672,7 +671,7 @@ C     NFSTVI(NTALB) IS DEFINED IN SUBR. XSECT...
       NFSTVI(98)=NPLSI
       NFSTVI(99)=NPLSI
       NFSTVI(100)=NPLSI
- 
+
 C
 C
       NFSTWI(1)=NATMI
@@ -700,7 +699,7 @@ C
       NFSTWI(23)=NPHOTI
       NFSTWI(24)=NPHOTI
       NFSTWI(25)=NPLSI
- 
+
       NFSTWI(26)=NATMI
       NFSTWI(27)=NATMI
       NFSTWI(28)=NATMI
@@ -726,7 +725,7 @@ C
       NFSTWI(48)=NPHOTI
       NFSTWI(49)=NPHOTI
       NFSTWI(50)=NPLSI
- 
+
       NFSTWI(51)=NATMI
       NFSTWI(52)=NATMI
       NFSTWI(53)=NATMI
@@ -763,7 +762,7 @@ C
       NFSTWI(NTALS)=NSPTOT   !  PUMPED FLUX
 C
 C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
- 
+
       N1=NPHOTI
       N2=N1+NATMI
       N3=N2+NMOLI
@@ -776,7 +775,7 @@ C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
       N9=N8+NCPVI
       N10=N9+NBGVI
       N11=N10+NSNVI
- 
+
       NSPAN(1)=N1+1
       NSPAN(2)=N2+1
       NSPAN(3)=N3+1
@@ -837,9 +836,9 @@ C  ADDITIONAL TALLIES
 
 c  additional tracklength estimators
       NSPAN(NTALA)=N5+1
-c  additional collision estimators 
+c  additional collision estimators
       NSPAN(NTALC)=N7+1
-c  additional snapshot estimators 
+c  additional snapshot estimators
       NSPAN(NTALT)=N10+1
 c  additional couple tallies
       NSPAN(NTALM)=N8+1
@@ -890,7 +889,7 @@ c
       NSPAN(98)=N4+1
       NSPAN(99)=N4+1
       NSPAN(100)=N4+1
- 
+
       NSPEN(1)=N2
       NSPEN(2)=N3
       NSPEN(3)=N4
@@ -993,7 +992,7 @@ C  GENERATION LIMIT TALLIES
       NSPEN(98)=N5
       NSPEN(99)=N5
       NSPEN(100)=N5
- 
+
       DO IPHOT=1,NPHOTI
         ISPZ=IPHOT
         TXTSPC(IPHOT,4)=TEXTS(ISPZ)
@@ -1010,7 +1009,7 @@ C  GENERATION LIMIT TALLIES
         TXTSPC(IPHOT,92)=TEXTS(ISPZ)
         TXTSPC(IPHOT,96)=TEXTS(ISPZ)
       END DO
- 
+
       DO 10 IATM=1,NATMI
         ISPZ=NSPH+IATM
         TXTSPC(IATM,1)=TEXTS(ISPZ)
@@ -1026,7 +1025,7 @@ C  GENERATION LIMIT TALLIES
         TXTSPC(IATM,85)=TEXTS(ISPZ)
         TXTSPC(IATM,89)=TEXTS(ISPZ)
         TXTSPC(IATM,93)=TEXTS(ISPZ)
-10    CONTINUE
+   10 CONTINUE
 C
       DO 20 IMOL=1,NMOLI
         ISPZ=NSPA+IMOL
@@ -1043,7 +1042,7 @@ C
         TXTSPC(IMOL,86)=TEXTS(ISPZ)
         TXTSPC(IMOL,90)=TEXTS(ISPZ)
         TXTSPC(IMOL,94)=TEXTS(ISPZ)
-20    CONTINUE
+   20 CONTINUE
 C
       DO 30 IION=1,NIONI
         ISPZ=NSPAM+IION
@@ -1060,7 +1059,7 @@ C
         TXTSPC(IION,87)=TEXTS(ISPZ)
         TXTSPC(IION,91)=TEXTS(ISPZ)
         TXTSPC(IION,95)=TEXTS(ISPZ)
-30    CONTINUE
+   30 CONTINUE
 C
       DO 40 IPLS=1,NPLSI
         ISPZ=NSPAMI+IPLS
@@ -1078,7 +1077,7 @@ C
         TXTSPC(IPLS,98)=TEXTS(ISPZ)
         TXTSPC(IPLS,99)=TEXTS(ISPZ)
         TXTSPC(IPLS,100)=TEXTS(ISPZ)
-40    CONTINUE
+   40 CONTINUE
 C
       TXTSPC(1,9)='ELECTRONS               '
       TXTSPC(1,15)='ELECTRONS               '
@@ -1126,7 +1125,7 @@ cdr also pumped flux SPUMP: now 1:N5  (was: n7+1:n8)
 c
       N6=N5+NADSI
       N7=N6+NALSI
- 
+
       NSPANW(1)=N1+1
       NSPANW(2)=N1+1
       NSPANW(3)=N1+1
@@ -1211,7 +1210,7 @@ c
       NSPANW(82)=N5+1
       NSPANW(83)=N6+1
       NSPANW(84)=1   !PUMPED FLUX
- 
+
       NSPENW(1)=N2
       NSPENW(2)=N2
       NSPENW(3)=N2
@@ -1317,7 +1316,7 @@ c
         TXTSPW(IPHOT,69)=TEXTS(ISPZ)
         TXTSPW(IPHOT,60)=TEXTS(ISPZ)
       END DO
- 
+
       DO IATM=1,NATMI
         ISPZ=NSPH+IATM
         TXTSPW(IATM,1)=TEXTS(ISPZ)
@@ -1399,10 +1398,3 @@ C
 C
       RETURN
       END
- 
- 
- 
- 
- 
- 
- 

@@ -3,7 +3,7 @@ cdr  nov. 15:  comments,  irds --> irei
 cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk
 cdr             secondaries.
 cdr             This is temporarily necessary, as a consequence of making the
-cdr             (bulk) ion energy sources eapl, empl, eipl species dependent
+cdr             (bulk) ion energy sources eapl, empl, eipl species-dependent
 cdr             We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.
 !pb  APR  16:  ipplds -> ipplei, pplds -> pplei
@@ -11,6 +11,7 @@ cdr             would be activated.
 !pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
 !pb  APR  16:  ipiods -> ipioei, piods -> pioei
 !pb  MAY  16:  nrds   -> nrei
+cdr  Nov. 18:  nrot   -> nrph
 C
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
@@ -42,7 +43,7 @@ C
         NREI=0
         NREC=0
         NBGV=0
-        NROT=0
+        NRPH=0
         CALL EIRENE_XSECTA_PARAM
         CALL EIRENE_XSECTM_PARAM
         CALL EIRENE_XSECTI_PARAM
@@ -55,7 +56,7 @@ C
         NREI=MAX(1,NREI)
         NREC=MAX(1,NREC)
         NBGV=MAX(1,NBGV)
-        NROT=MAX(1,NROT)
+        NRPH=MAX(1,NRPH)
 
         CALL EIRENE_SET_PARMMOD(2)
         CALL EIRENE_ALLOC_COMXS(2)
@@ -191,9 +192,9 @@ cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI RE
       END DO
 
       if (ierror > 0) then
-         write (iunout,*) 'only a temporary fail safe step'
+         write (iunout,*) 'only a temporary fail-safe step'
          write (iunout,*) 'contact eirene group at fzj, if this occurs'
-         write (iunout,*) 'CALCULATION ABANDONNED '
+         write (iunout,*) 'CALCULATION ABANDONED '
          CALL EIRENE_EXIT_OWN(1)
       end if
 

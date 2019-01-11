@@ -12,7 +12,6 @@ C
       INTEGER I,J,L,M,N,II,L1,MML,IERR
       REAL(DP) D(N),E2(N)
       REAL(DP) B,C,F,G,H,P,R,S,MACHEP,EIRENE_SMACH
-C     REAL SQRT,ABS,SIGN
 C
 C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE TQLRAT,
 C     ALGORITHM 464, COMM. ACM 16, 689(1973) BY REINSCH.
@@ -49,7 +48,7 @@ C     MODIFIED FOR CFT BY MIKE ESS, CRI, JULY 1980
 C
 C     ------------------------------------------------------------------
 C
-C     ********** MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C     ********** MACHEP IS A MACHINE-DEPENDENT PARAMETER SPECIFYING
 C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
 C
 C                **********
@@ -63,7 +62,8 @@ C
       IF (N .EQ. 1) GO TO 1001
 C
       DO 100 I = 2, N
-  100 E2(I-1) = E2(I)
+      E2(I-1) = E2(I)
+  100 CONTINUE
 C
       F = 0.0
       B = 0.0
@@ -76,7 +76,7 @@ C        H = MACHEP * (ABS(D(L)) + SQRT(E2(L)))
          IF (B .GT. H) GO TO 105
          B = H
          C = B * B
-C     ********** LOOK FOR SMALL SQUARED SUB-DIAGONAL ELEMENT **********
+C     ********** LOOK FOR SMALL SQUARED SUBDIAGONAL ELEMENT **********
   105    DO 110 M = L, N
             IF (E2(M) .LE. C) GO TO 120
 C     ********** E2(N) IS ALWAYS ZERO, SO THERE IS NO EXIT
@@ -99,7 +99,8 @@ C        D(L) = S / (P + SIGN(R,P))
          H = G - D(L)
 C
          DO 140 I = L1, N
-  140    D(I) = D(I) - H
+         D(I) = D(I) - H
+  140    CONTINUE
 C
          F = F + H
 C     ********** RATIONAL QL TRANSFORMATION **********

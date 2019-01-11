@@ -6,14 +6,14 @@ C                       MAPPING PROVIDED BY I_COARSE=NCLTAL(I_FINE)
 C                       ADDITIONAL CELL REGION: NSURF+1,...    ,NSBOX (NRADD CELLS) ON FINE GRID
 C                                               NSURF_TAL+1,...,NSBOX_TAL  ON UNDERLYING COARSE GRID
 C                       THE GRIDS OVERLAP IN CELLS 1,....,NSURF_TAL OF THE COARSE GRID.
-C               TO BE DONE:  SWITCH BETWEEN OLD AND NEW OPTION. 
+C               TO BE DONE:  SWITCH BETWEEN OLD AND NEW OPTION.
 cdr  Aug. 16: 1D grid set for printout on separate tally output streams in 1D cases
 cdr  Jan. 17:  switching between grids (coarse, structured and finer, unstrucutred)
 cdr            new NFLAGV option:  >=0: old (default), use fine grid
 cdr                                < 0: new: coarse grain by averaging onto
 cdr                                          coarser structured grid,
 cdr                                          and use abs(nflagv) as before nflagv.
-cdr to be done: loops 121 and 122 are identical, once i_fine is set. eliminate one of them?  
+cdr to be done: loops 121 and 122 are identical, once i_fine is set. eliminate one of them?
 cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
@@ -23,7 +23,7 @@ C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
 C  This routine prints background tallies as requested in input block 11.
 C  ical=0: called after initialization phase
-C  ical=1: called in post processing phase from iteration loop
+C  ical=1: called in postprocessing phase from iteration loop
 C          Some background parameters
 C          may have been modified due to iteration loop.
 C          Print only the modified tallies.
@@ -44,19 +44,19 @@ C
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ICAL
       REAL(DP), ALLOCATABLE :: HELPP(:),HELPW(:),HELPS(:),X1D(:)
       INTEGER,  ALLOCATABLE :: NCLTPR(:)
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTALW
-      INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL, 
+      INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL,
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
      .           ITALI, K, NF, NFTI, NFTE, KK
  
-C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POST PROCESSING
+C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POSTPROCESSING
 C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
       INTEGER :: JPRTAL(5) = (/-2,-4,-5,-6,-7/)
 C
@@ -103,14 +103,14 @@ cdr to be done: weighting function for gradient tallies. Tentatively set =0
           IF (ANY(JPRTAL == ITAL)) THEN
             CALL EIRENE_LEER (2)
             CALL EIRENE_HEADNG
-     .        ('BACKGROUND TALLIES CHANGED IN POST PROCESSING',45)
+     .        ('BACKGROUND TALLIES CHANGED IN POSTPROCESSING',45)
             EXIT
           END IF
         END DO
 !  NO OUTPUT OF INPUT TALLIES REQUIRED
         IF (IPRV > NVOLPR) RETURN
       END IF
- 
+
 !  IF NVOLPR <= 0 NOTHING TO BE DONE
       IF (NVOLPR <= 0) RETURN
 
@@ -128,10 +128,10 @@ cdr to be done: weighting function for gradient tallies. Tentatively set =0
         ENDDO
       ENDIF
 
-C        
+C
 
 C
-C  PRINT THOSE INPUT VOLUME AVERAGED TALLIES, WHICH HAVE BEEN SELECTED
+C  PRINT THOSE INPUT VOLUME-AVERAGED TALLIES, WHICH HAVE BEEN SELECTED
 
 C  PUT TALLY ITAL ONTO ARRAY HELPP, THIS IS RESOLVED WRT. FINEST GRID
 C
@@ -142,7 +142,7 @@ C
         ITAL=NPRTLV(IPRV)
         IF ((ICAL == 1) .AND. (ALL(JPRTAL .NE. ITAL))) CYCLE
 c  negative tally numbers ital: background (input) tallies, printed here
-c  positive tally numbers ital: output tallies, printed from OUTEIR. 
+c  positive tally numbers ital: output tallies, printed from OUTEIR.
         IF (ITAL.LT.0) THEN
           ITALI=-ITAL
 !  TALLY SWITCHED OFF ?
@@ -239,29 +239,29 @@ c
               GOTO 100
             END SELECT
 
-C  IN CASE OF TWO GRIDS, (COARSE GRAINING)
-C  SWITCH BETWEEN PRINTOUT OF TALLY ITALI EITHER ON UNDERLYING FINE GRID (OLD DEFAULT) 
+C  IN CASE OF TWO GRIDS, (COARSE-GRAINING)
+C  SWITCH BETWEEN PRINTOUT OF TALLY ITALI EITHER ON UNDERLYING FINE GRID (OLD DEFAULT)
 C  OR OF THE AVERAGED (COARSE GRAINED) TALLY ON COARSE GRID
 C  IF NCLTAL(I_FINE)==I_COARSE, EVERYWHERE, THEN THERE IS ONLY ONE GRID
             if (nflagv(iprv).lt.0) then
 c  before printing: reset input tallies onto coarse (structured) grid
               nr1pr  =nr1tal
-              np2pr  =np2tal 
+              np2pr  =np2tal
               nt3pr  =nt3tal
               nsbpr  =nsbox_tal
               nflgpr =-nflagv(iprv)
               do i_fine=1,nsbox
                 ncltpr(i_fine) = ncltal(i_fine)
-              enddo              
+              enddo
             else
 c  default: print on underlying fine grid, or in case there is only one single grid
               nr1pr  =nr1st
-              np2pr  =np2nd 
+              np2pr  =np2nd
               nt3pr  =nt3rd
               nsbpr  =nsbox
               nflgpr =nflagv(iprv)
               do i_fine=1,nsbox
-                ncltpr(i_fine) = i_fine       
+                ncltpr(i_fine) = i_fine
               enddo
             endif
 
@@ -269,76 +269,76 @@ C
 C  SET WEIGHTING FUNCTION HELPW FOR INPUT TALLY ITALI
 C  CURRENTLY INPUT TALLIES ARE GIVEN ON FINE "GEOMETRY MESH", STRUCTURE NR1ST,NP2ND,....
 C  USE NCLTPR(I) = NCELL ARRAY TO COARSE GRAIN ONTO STRUCTURED GRID.
-C  
+C
             TOTALW=0.D0
             HELPW = 0.D0
             HELPS = HELPP ! ORIGINAL INPUT TALLY ON FINE GRID: MOVED TO HELPS
             HELPP = 0.D0  ! BUILD NEW TALLY NOW, ON UNDERLYING COARSER GRID, IF WANTED
 c                         ! otherwise: helpp=helps
             DO 121 IB=1,NBMLT
-              NBLCKA=NSTRD*(IB-1)
+             NBLCKA=NSTRD*(IB-1)
             DO 121 IR=1,NXM
             DO 121 IP=1,NYM
             DO 121 IT=1,NZM
               I_FINE=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
-C  COARSE GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE), 
+C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
-C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE GRAINING IS DONE
+C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE-GRAINING IS DONE
               I=NCLTPR(I_FINE)
               SELECT CASE (ITALI)
               CASE (1)
-C  1) ELECTR. TEMPERATURE: NE*VOLUME WEIGHTED AVERAGES
+C  1) ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
               CASE (2)
-C  2) ION TEMPERTURE: NI(K)*VOLUME WEIGHTED AVERAGES
+C  2) ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (3:4)
-C  3,4) PARTICLE DENSITY PROFILES: VOLUME WEIGHTED AVERAGES
+C  3,4) PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
               CASE (5:7,23)
-C  5,6,7) ION DRIFT VELOCITY: NI(K)*VOLUME WEIGHTED AVERAGES
+C  5,6,7) ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  23) FLOW VELOCITY PARALLEL B
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (8:11)
-C  8,9,10,11) B-FIELD UNIT VECTOR, B-FIELD STRENGTH   " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  8,9,10,11) B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (16:17)
-C  16,17) B_PERP-FIELD: " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  16,17) B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (14)
-C  14) CELL VOLUME  = UN-WEIGHTED SUM
+C  14) CELL VOLUME  = UNWEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
               CASE (12,15)
 C  12) ADDITIONAL TALLY (NO.12) 
 C  15) WEIGHT FUNCTION  (NO.15)
-C  " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (13)
-C  13) ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
+C  13) ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (18:21)
 C  18,19,29,21) E-FIELD UNIT VECTOR, E-FIELD STRENGTH
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)   
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (22)
 C  22) (ELECTRIC) POTENTIAL
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
@@ -353,59 +353,58 @@ C  (25 .. NTALI) GRADIENTS
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT
-121         CONTINUE
-
+  121       CONTINUE
 C
 C  SAME LOOP AGAIN, (IDENTICAL CODE INSIDE LOOP) OVER ADDITIONAL CELL REGION
             DO 122 I_FINE=NSURF+1,NSURF+NRADD
 C             I_FINE=I_FINE
-C  COARSE GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE), 
+C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
-C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE GRAINING IS DONE
+C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE-GRAINING IS DONE
               I=NCLTPR(I_FINE)
               SELECT CASE (ITALI)
               CASE (1)
-C  ELECTR. TEMPERATURE: NE*VOLUME WEIGHTED AVERAGES
+C  ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
               CASE (2)
-C  ION TEMPERTURE: NI(K)*VOLUME WEIGHTED AVERAGES
+C  ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (3:4)
-C  PARTICLE DENSITY PROFILES: VOLUME WEIGHTED AVERAGES
+C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
               CASE (5:7,23)
-C  ION DRIFT VELOCITY: NI(K)*VOLUME WEIGHTED AVERAGES
+C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  FLOW VELOCITY PARALLEL TO B FIELD
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH   " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (16:17)
-C  B_PERP-FIELD: " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (14)
-C  CELL VOLUME  = UN-WEIGHTED SUM
+C  CELL VOLUME  = UNWEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
               CASE (12,15)
 C  ADDITIONAL TALLY (NO.12)
 C  WEIGHT FUNCTION  (NO.15)
-C  " 1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (13)
-C  ION DRIFT ENERGY: NI(K)*VOLUME WEIGHTED AVERAGES
+C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -430,9 +429,9 @@ C  GRADIENTS
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT
-122         CONTINUE
+  122       CONTINUE
 
-C  COARSE GRAINING: NORMALIZE WEIGHTED SUMS BY THEIR WEIGHT
+C  COARSE-GRAINING: NORMALIZE WEIGHTED SUMS BY THEIR WEIGHT
 C  TOTAL OF WEIGHT, FOR TOTAL TALLY AVERAGE TALAV
             DO I=1,NSBPR
               TOTALW=TOTALW+HELPW(I)
@@ -497,7 +496,7 @@ C   SPECIAL TREATMENT FOR PRINTING CELL VOLUMES (INPUT TALLY ITALI=NTALO=14)
             ENDIF
             GOTO 119
 C
-118         CONTINUE
+  118       CONTINUE
 C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICAL ZERO
             CALL
      .        EIRENE_PRTTAL(TXTPLS(K,ITALI),TXTPSP(K,ITALI),
@@ -508,11 +507,11 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICAL ZERO
      .         EIRENE_MASAGE
      .              ('IDENTICAL ZERO, NOT PRINTED                  ')
             CALL EIRENE_LEER(2)
-119       CONTINUE
+  119     CONTINUE
         ENDIF
-100   CONTINUE
+  100 CONTINUE
       CALL EIRENE_LEER(2)
- 
+
       DEALLOCATE (HELPP)
       DEALLOCATE (HELPW)
       DEALLOCATE (HELPS)

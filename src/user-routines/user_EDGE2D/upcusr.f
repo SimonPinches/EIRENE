@@ -1,12 +1,12 @@
       SUBROUTINE EIRENE_UPCUSR(WS,IND)
 C
-C  USER SUPPLIED COLLISION ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
 C
 C+---------------------------------------------------------------+
 C| Modifications:                                                |
 C| --------------                                                |
 C| 16/07/2010   D.Harting    Added two variables to eirene_user  |
-C|                           namelist for use of fluxdependency  |
+C|                           namelist for use of flux dependency |
 C|                           in chemical sputtering.             |
 C+---------------------------------------------------------------+
       USE EIRMOD_PRECISION
@@ -33,14 +33,14 @@ cswx 24sep07
 c                = 0: no wall fluxes are used (old edge2d model)
 c                = 1: only ion fluxes are used
 c                = 2: ion fluxes and neutral fluxes from last eirene iteration are used
-c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give 
+c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give
 c                     converged neutral fluxes.
       logical :: eirene_use_elstepdat_bug
       real*8, allocatable,save :: rdata(:,:)
       integer, allocatable,save :: idata(:,:)
       integer :: i,j
       real*8 :: cosrot, sinrot, my_velx, my_vely, my_velz
-      
+
 c     added rotsav_torcol from old eirene version
 c     was added by sven wiesen to calculate diagnostic file eirene_fbirth
 c     was defined in COMPRT and set in particle-tracing.f
@@ -48,7 +48,7 @@ c     current eirene version does not initialze rotsav_torcol, so the calculatio
 c     here is not correct. Needs to be reinserted to particle tracing if diagnostic
 c     is used again
       real(dp) :: ROTSAV_TORCOL
-      
+
       namelist /eirene_user/eirene_nbirth,eirene_njetto,
      .                      eirene_fbirth,eirene_ftransfer,
      .                      eirene_phi_offsets,
@@ -74,7 +74,7 @@ c default maximum number
 cdmh
       eirene_fstoreneutflux = 'eirene.chemFluxDep'
       eirene_wallFluxModel = 1
-cdmh      
+cdmh
 
         open(unit=9998,file='eirene_user.namelist')
         read(9998,eirene_user)
@@ -90,8 +90,8 @@ c     skip calculation as it is not correct with ROTSAV_TORCOL=0.d0
       return
 
       if(         eirene_nbirth .gt. 0
-     .      .and. ind .eq. 1 
-     .      .and. num .lt. eirene_nbirth 
+     .      .and. ind .eq. 1
+     .      .and. num .lt. eirene_nbirth
      .      .and. weight .gt. 1.d-2
      .      .and. e0.gt.2.e4) then
         num=num+1
@@ -150,7 +150,7 @@ cswx
      .                                'V0/V','E[eV]','W',
      .                                'VX[m/s]','VY[m/s]','VZ[m/s]'
           do i=1,num
-            write(9998,'(i5,i4,20e14.5)') 
+            write(9998,'(i5,i4,20e14.5)')
      .         (idata(i,j), j=1,2),
      .         (rdata(i,j), j=1,9)
           enddo

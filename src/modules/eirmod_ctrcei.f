@@ -1,23 +1,23 @@
-cdr may 17:   add trcrnf: diagnostics from random number generation, 
+cdr may 17:   add trcrnf: diagnostics from random number generation,
 cdr           correlated sampling etc.
-cdr mar 18:   add trchktm (species resolved cpu consumption),
+cdr mar 18:   add trchktm (species-resolved cpu consumption),
 cdr           read in first line block 11.
 cdr           and remove (deactivate) the unused trcdbg... flags inherited from
-cdr           V.K. proprietary versions 
+cdr           V.K. proprietary versions
       MODULE EIRMOD_CTRCEI
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CTRCEI, EIRENE_DEALLOC_CTRCEI, 
+
+      PUBLIC :: EIRENE_ALLOC_CTRCEI, EIRENE_DEALLOC_CTRCEI,
      P          EIRENE_INIT_CTRCEI
- 
+
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE :: LTRCEI(:)
- 
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L TRCPLT, TRCHST, TRCNAL, TRCMOD, TRCSIG,
      L TRCGRD, TRCSUR, TRCREF, TRCFLE, TRCAMD,
@@ -40,34 +40,34 @@ c    L                         TRCDBGG,  !... GEOMETRY ROUTINES
 c    L                         TRCDBGMPI,!... MPI ROUTINES
 c    L                         TRCDBGC   !... COUPLING ROUTINES
 CVK END
- 
+
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: TRCSRC(:)
- 
+
 !pb      INTEGER, PUBLIC, PARAMETER :: NSPEZV_DIM=100
- 
+
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ITRCEI(:)
- 
+
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NPRTLV(:), NPRTLS(:), NPRSRF(:),
      I NVOLPR,    NFLAGV(:), NTLVFL(:),
      I NSURPR,    NFLAGS(:), NTLSFL(:),
      I I1TRC,     I2TRC,     NSPCPR
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NSPEZV(:,:), NSPEZS(:,:)
- 
+
       INTEGER, PUBLIC, SAVE :: MCTRC, LCTRC
- 
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CTRCEI
- 
+
       IF (ALLOCATED(LTRCEI)) RETURN
- 
+
       MCTRC=5+3*NVLPR+4*NSRPR
       LCTRC=26
- 
+
       ALLOCATE (LTRCEI(LCTRC))
       ALLOCATE (ITRCEI(MCTRC))
       ALLOCATE (TRCSRC(0:NSTRA))
@@ -75,12 +75,12 @@ CVK END
       ALLOCATE (NSPEZV(NVLPR,2))
 !pb      ALLOCATE (NSPEZS(NLIMPS,2))
       ALLOCATE (NSPEZS(NSRPR,2))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CTRCEI ',(LCTRC+(NSTRA+1))*4
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CTRCEI ',(MCTRC+2*(NVLPR+NSRPR))*4
- 
+
       TRCPLT => LTRCEI( 1)
       TRCHST => LTRCEI( 2)
       TRCNAL => LTRCEI( 3)
@@ -119,7 +119,7 @@ c     TRCDBGS  => TRCDBG(6)
 c     TRCDBGG  => TRCDBG(7)
 c     TRCDBGMPI=> TRCDBG(8)
 c     TRCDBGC  => TRCDBG(9)
- 
+
 !      NPRTLV => ITRCEI(  1 : 100)
 !      NFLAGV => ITRCEI(101 : 200)
 !      NTLVFL => ITRCEI(201 : 300)
@@ -132,7 +132,7 @@ c     TRCDBGC  => TRCDBG(9)
 !      I1TRC  => ITRCEI(303+4*NLIMPS)
 !      I2TRC  => ITRCEI(304+4*NLIMPS)
 !      NSPCPR => ITRCEI(305+4*NLIMPS)
- 
+
       NPRTLV => ITRCEI(1+0*NVLPR : 1*NVLPR)
       NFLAGV => ITRCEI(1+1*NVLPR : 2*NVLPR)
       NTLVFL => ITRCEI(1+2*NVLPR : 3*NVLPR)
@@ -145,29 +145,29 @@ c     TRCDBGC  => TRCDBG(9)
       I1TRC  => ITRCEI(3+3*NVLPR + 4*NSRPR)
       I2TRC  => ITRCEI(4+3*NVLPR + 4*NSRPR)
       NSPCPR => ITRCEI(5+3*NVLPR + 4*NSRPR)
- 
+
       CALL EIRENE_INIT_CTRCEI
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CTRCEI
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CTRCEI
- 
+
       IF (.NOT.ALLOCATED(LTRCEI)) RETURN
- 
+
       DEALLOCATE (LTRCEI)
       DEALLOCATE (ITRCEI)
       DEALLOCATE (TRCSRC)
       DEALLOCATE (NSPEZV)
       DEALLOCATE (NSPEZS)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CTRCEI
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CTRCEI
- 
+
       LTRCEI = .FALSE.
       ITRCEI = 0
       TRCSRC = .FALSE.
@@ -175,8 +175,8 @@ c     TRCDBGC  => TRCDBG(9)
       NSPEZS = 0
       NFLAGV = 1
 c     TRCDBG=.FALSE. !VK
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CTRCEI
- 
+
       END MODULE EIRMOD_CTRCEI

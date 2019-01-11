@@ -1,22 +1,22 @@
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
- 
- 
+
+
       FUNCTION EIRENE_FEPLEL3 (IREL,K)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IREL, K
-      REAL(DP) :: PLS, ADD, EPEL, EIRENE_FEPLEL3, 
+      REAL(DP) :: PLS, ADD, EPEL, EIRENE_FEPLEL3,
      .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
- 
+
       EIRENE_FEPLEL3=0.D0
       KK=NELREL(IREL)
       IPLSTI=MPLSTI(IPLS)
@@ -41,6 +41,6 @@ C  MEAN ENERGY FROM SINGLE PARAMETER FIT KK
         ADD=EPLEL3(IREL,1,1)
         EIRENE_FEPLEL3=EPEL*DIIN(IPLS,K)*ADD
       END IF
- 
+
       RETURN
       END

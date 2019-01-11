@@ -1,16 +1,16 @@
-cc evaluate local coordinates r,s,t at a carthesian position xp,yp,zp,
+cc evaluate local coordinates r,s,t at a cartesian position xp,yp,zp,
 cc in a cell icell with vertices given by x1,...z4 in cartesian coordinates
 
       subroutine eirene_xyz_to_rst (icell, x1, y1, z1, x2, y2, z2,
      .                              x3, y3, z3,
      .                              x4, y4, z4, xp, yp, zp, r, s, t, u)
 c
-c  AFEM:  course "Advanced Finate Element Methods", 
-c         Department of Aerospace Enginerring Sciences, 
+c  AFEM:  course "Advanced Finite Element Methods",
+c         Department of Aerospace Engineering Sciences,
 c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
 c  IFEM:  course "Introduction to Finite Element Methods"
-c         Department of Aerospace Enginerring Sciences, 
+c         Department of Aerospace Engineering Sciences,
 c         University of Colorado at Boulder
 c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c
@@ -97,20 +97,20 @@ c
 
         root1 =  b_xi*b_xi - 2._dp*j1(icell)*c_xi
         if ( root1 < 0 ) then
-           write(*,*) '!---------------------------------!'
-           write(*,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
-           write(*,*) '!---------------------------------!'
+           write(iunout,*) '!---------------------------------!'
+           write(iunout,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
+           write(iunout,*) '!---------------------------------!'
            root1 = 0._DP
         endif
         root2 =  b_eta*b_eta + 2._dp*j2(icell)*c_eta
         if ( root2 < 0 ) then
-           write(*,*) '!---------------------------------!'
-           write(*,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
-           write(*,*) '!---------------------------------!'
+           write(iunout,*) '!---------------------------------!'
+           write(iunout,*) 'WARNING NEGATIVE ROOT IN XYZ_TO_RST'
+           write(iunout,*) '!---------------------------------!'
            root2 = 0._DP
         endif
-		
-    	dummy = (-sqrt(root1) - b_xi)
+
+        dummy = (-sqrt(root1) - b_xi)
         if ( abs(dummy) > EPS30 ) then
           xip = 2._dp*c_xi /
      .        (-sqrt(root1) - b_xi)
@@ -118,12 +118,12 @@ c
           xip = 0._DP
         endif
 c
-     	dummy = ( sqrt(root2) - b_eta)
+        dummy = ( sqrt(root2) - b_eta)
         if ( abs(dummy) > EPS30 ) then
            etap = 2._dp*c_eta /dummy
-    	else
+        else
            etap = 0._DP
-    	endif
+        endif
 
         r = xip
         s = etap

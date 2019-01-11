@@ -1,5 +1,5 @@
 !pb  21.11.06: index error corrected in defintion of ap%dte
- 
+
       subroutine EIRENE_read_tab2d (ir,reac,isw,iz1)
 
 cdr  purpose:  read a 2d table TAB2D of A&M data, and put them into REACDAT data structure
@@ -7,26 +7,26 @@ cdr            internal eirene reaction no. IR
 cdr
 cdr  input:
 c           ir:           internal reaction number on eirene structure REACDAT
-c           reac:         
+c           reac:
 c           isw:   =0     data for interaction potential                 (not in use)
-c                  =1     data for collision cross section               (not in use)
+c                  =1     data for collision cross-section               (not in use)
 c                  =2-4   data for reaction rate coefficient             (only = 4  in use)
-c                  =5-7   data for momentum weighted rate coefficient    (not in use)
-c                  =8-10  data for energy weighted rate coefficient      (only = 10 in use)
+c                  =5-7   data for momentum-weighted rate coefficient    (not in use)
+c                  =8-10  data for energy-weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
-c           iz1:   particular charge state to be found within data file, 
-c                  which containes charge states in the range  iza,....ize
+c           iz1:   particular charge state to be found within data file,
+c                  which contains charge states in the range  iza,....ize
 
-c 
+c
 c  to be done: units, log-lin, scaling, asymptotics
- 
+
       use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comxs
       use EIRMOD_comprt, only: iunout
- 
+
       implicit none
- 
+
       integer, intent(in) :: ir, isw, iz1
       character(len=*), intent(in) :: reac
       integer :: nz, nde, nte, iza, ize, io, lc, ind, ian, ien,
@@ -44,15 +44,15 @@ c
 cdr   from here on a particular data file format is assumed.
 c
 c     this file format is described in ...
- 
+
       read (29+ifoff,*,iostat=io) nz, nde, nte, iza, ize
- 
+
       if (io .ne. 0) then
         write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE '
         write (iunout,*) ' DIRECTORY IS ',reac
         call EIRENE_exit_own(1)
       end if
- 
+
       if ((iz1 < iza) .or. (iz1 > ize)) then
         write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE '
         write (iunout,*) ' REQUESTED Z1 IS NOT AVAILABLE '
@@ -60,35 +60,35 @@ c     this file format is described in ...
         call EIRENE_exit_own(1)
       end if
 
-c  storage for 2d table, a rate coefficient vs. Te, ne. 
+c  storage for 2d table, a rate coefficient vs. Te, ne.
       allocate (ap)
       allocate (ap%dens(nde))
       allocate (ap%temp(nte))
       allocate (ap%dde(nde))
       allocate (ap%dte(nte))
       allocate (ap%tab2d(nte,nde))
- 
+
       ap%ndens = nde
       ap%ntemp = nte
- 
+
       read (29+ifoff,*)
- 
+
       lc = len_trim(reac)
       if (reac(lc:lc) == 'r') then
         read (29+ifoff,*)
         read (29+ifoff,*)
       end if
- 
+
 ! read densities
       read (29+ifoff,*) (ap%dens(ide),ide=1,nde)
- 
+
 ! read temperatures
       read (29+ifoff,*) (ap%temp(ite),ite=1,nte)
- 
+
 ! find appropriate Z1-block
- 
+
       do
- 
+
 ! read line between data blocks
         read (29+ifoff,'(A132)') zeile
         if (zeile(2:5) == '----') then
@@ -109,26 +109,26 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         end if
 
       end do
- 
+
       do ite = 1, nte
         read (29+ifoff,*) (ap%tab2d(ite,ide), ide = 1,nde)
       end do
- 
+
       close (29+ifoff)
- 
+
 ! set up differenz arrays for first and 2nd independent parameter
- 
+
       do ide=1,nde-1
         ap%dde(ide) = 1._dp / (ap%dens(ide+1) - ap%dens(ide))
       end do
- 
+
       do ite=1,nte-1
         ap%dte(ite) = 1._dp / (ap%temp(ite+1) - ap%temp(ite))
       end do
- 
- 
+
+
       select case (isw)
- 
+
       case (0)
         IF (REACDAT(IR)%LPOT) THEN
           WRITE (IUNOUT,*) ' POTENTIAL ALREADY SPECIFIED FOR REACTION',
@@ -143,10 +143,10 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
         reacdat(ir)%pot%adas => ap
         reacdat(ir)%pot%ifit = 3
- 
+
       case (1)
         IF (REACDAT(IR)%LCRS) THEN
-          WRITE (IUNOUT,*) ' CROSS SECTION ALREADY SPECIFIED',
+          WRITE (IUNOUT,*) ' CROSS-SECTION ALREADY SPECIFIED',
      .                     ' FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
@@ -159,7 +159,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         reacdat(ir)%crs%adas => ap
 
         reacdat(ir)%crs%ifit = 3
- 
+
       case (2:4)
         IF (REACDAT(IR)%LRTC) THEN
           WRITE (IUNOUT,*) ' RATE COEFFICIENT ALREADY SPECIFIED',
@@ -179,10 +179,10 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         REACDAT(IR)%RTC%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTC%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTC%RC2MAX = ap%dens(nde)
- 
+
       case (5:7)
         IF (REACDAT(IR)%LRTCMW) THEN
-          WRITE (IUNOUT,*) ' MOMEMTUM WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' MOMEMTUM-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
@@ -199,10 +199,10 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         REACDAT(IR)%RTCMW%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTCMW%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTCMW%RC2MAX = ap%dens(nde)
- 
+
       case (8:10)
         IF (REACDAT(IR)%LRTCEW) THEN
-          WRITE (IUNOUT,*) ' ENERGY WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' ENERGY-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
@@ -218,7 +218,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         REACDAT(IR)%RTCEW%RC1MAX = ap%temp(nte)
         REACDAT(IR)%RTCEW%RC2MIN = ap%dens(1)
         REACDAT(IR)%RTCEW%RC2MAX = ap%dens(nde)
- 
+
       case (11:12)
         IF (REACDAT(IR)%LOTH) THEN
           WRITE (IUNOUT,*) ' OTHER 2D A&M DATA, E.G. RED. POP. COEF.',
@@ -234,20 +234,20 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
         reacdat(ir)%oth%adas => ap
         reacdat(ir)%oth%ifit = 3
- 
+
       case default
 
         goto 1000
-        
+
       end select
       return
 
-1000  continue
+ 1000 continue
       WRITE (IUNOUT,*) ' ERROR IN "READ_TAB2D" : '
       WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPECIFIED FOR TAB2D OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR
       WRITE (IUNOUT,*) ' REACTION TYPE H.', ISW
       CALL EIRENE_EXIT_OWN(1)
- 
+
       return
       end subroutine EIRENE_read_tab2d

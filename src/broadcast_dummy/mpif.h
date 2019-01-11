@@ -1,8 +1,0 @@
-C  Dummy of an include-file needed by MPI
-      INTEGER :: MPI_COMM_WORLD,
-     .           MPI_DOUBLE_PRECISION,
-     .           MPI_INTEGER,
-     .           MPI_LOGICAL,
-     .           MPI_STATUS_IGNORE,
-     .           MPI_REAL8,
-     .           MPI_SUM

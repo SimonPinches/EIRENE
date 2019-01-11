@@ -1,4 +1,4 @@
-Cdr  Sept. 16: Bug fix:  added option: two or more  constants next to each other
+Cdr  Sept. 16: Bug fix: added option: two or more constants next to each other
 C
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_ALGEBR (TERM,OPER,IZIF,CONST,NOP)
@@ -24,7 +24,7 @@ C     ARGUMENT:
 C
          CHARACTER(*), INTENT(INOUT) :: TERM
 C           : EINZULESENDER AUSDRUCK
- 
+
          CHARACTER(2), INTENT(OUT) :: OPER(*)
          INTEGER, INTENT(OUT) :: IZIF(4,*)
          REAL(DP), INTENT(INOUT) :: CONST(*)
@@ -34,48 +34,48 @@ C     KONSTANTENDEKLARATION :
 C
          INTEGER, PARAMETER :: ZMAX = 20
 C           : ANZAHL DER MAXIMALEN ZERLEGUNGEN
- 
+
          INTEGER, PARAMETER :: MAXLEN = 72
 C           : MAXIMALE STRINGLAENGE
- 
+
 C
 C     LOKALE VARIABLEN :
 C
          INTEGER ::  LAENGE
 C           : AKTUELLE LAENGE VON TERM
- 
+
          CHARACTER(MAXLEN) :: HLFTERM
 C           : HILFSSTRING ZUM UMSPEICHERN
- 
+
          CHARACTER(MAXLEN+2):: AUSDRU
 C           : AUSDRUCK, DER IM UNTERPROGRAMM ZERLEGT WIRD
- 
+
          INTEGER :: AKTLEN
 C           : AKTUELLE LAENGE VON AUSDRU
- 
+
          INTEGER :: TEIL
 C           : AKTUELLE ANZAHL DER ZERLEGUNGEN
- 
+
          CHARACTER(MAXLEN) :: PART(ZMAX)
 C           : FELD VON STRINGS, AUF DENEN DIE EINZELNEN
 C             ELEMENTARZERLEGUNGEN FESTGEHALTEN WERDEN
- 
+
          INTEGER :: IPART(ZMAX)
 C           : AKTUELLE LAENGEN VON PART(ZMAX)
- 
+
          CHARACTER(MAXLEN) :: ARITH(ZMAX)
 C           : FELD VON STRINGS, AUF DENEN DIE TEIL-TE GENERATION
 C             VON AUSDRU FESTGEHALTEN WIRD
- 
+
          INTEGER :: IARITH(ZMAX)
 C           : AKTUELLE LAENGEN VON ARITH(ZMAX)
- 
+
          CHARACTER(MAXLEN) :: HILFE
 C           : ARBEITSSPEICHER FUER UNTERPROGRAMM ZERLEG
- 
+
          INTEGER :: ERROR
 C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
- 
+
 CHR
 CHR      VARIABLEN ZUR MODIFIKATION DES PROGRAMMES
          INTEGER :: NR, ANFANG, ENDE, FELDIND, IK, IKM, IKP
@@ -86,7 +86,7 @@ chr
 C
 C     HILFSVARIABLEN :
 C
-         INTEGER :: I, IC
+         INTEGER :: MAXI, I, IC
 chr
 chr   string, der die neuen variablennamen enthaelt
       buchst='ABCDEFGHIJ'
@@ -108,7 +108,7 @@ chr         vorbereiten des terms fuer die weitere verarbeitung, d.h.
 chr         bringen der operanden in die vom programm verlangte
 chr         zweistellige alphabetische form
             nr=0
-101         anfang=index(term,'<')
+  101       anfang=index(term,'<')
             if (anfang.ne.0) then
                nr=nr+1
                ende=index(term,'>')
@@ -133,18 +133,18 @@ C
 C           ERMITTELN DER LAENGE VON TERM
 C
             LAENGE=LEN_TRIM(TERM)
- 
+
             AUSDRU=TERM
             AKTLEN=LAENGE
- 
+
             CALL EIRENE_ZERLEG(AUSDRU, AKTLEN, IPART, PART, IARITH,
      .                         ARITH, TEIL, HILFE, ERROR)
- 
+
             IF (ERROR .EQ. 0) THEN
 C
 C              AUSGABE DER ZERLEGUNG
 C
- 
+
                NOP=TEIL
                DO 30, I=1,TEIL
 chr               ausgabe der zerlegung in der form:
@@ -214,7 +214,7 @@ chr               als zwischenergebnis
      .                         IZIF(2,I)
                        ENDIF
                      ENDIF
- 
+
                      IF (PART(I)(10:10).NE.'Z') THEN
                        FELDIND=INDEX(BUCHST,PART(I)(10:10))
                        IK=INDEX(ERSETZ(FELDIND),',')
@@ -278,12 +278,12 @@ chr               als zwischenergebnis
                         IZIF(4,I)=0
                      endif
                   endif
-30                CONTINUE
+   30          CONTINUE
             ELSE
 C
 C              AUSGABE DER FEHLERMELDUNG
 C
-               WRITE(iunout,'(2A)') ' FOLGENDE REGELVERLETZUNG ',
+               WRITE(iunout,'(2A)') 'FOLGENDE REGELVERLETZUNG ',
      >                        'WURDE ERKANNT:'
                CALL EIRENE_MECKER(ERROR)
                NOP=0

@@ -4,7 +4,7 @@ cdr Jan 17: remove local allocatable cndyn.. arrays. These are now
 cdr         set in code initialisation phase
 cdr may 18: revised, particle currents, particle flux,...., comments..
 cdr         I am not sure that the rad and pol normal vectors are correct.
-cdr         In solps5.0 we use the underlying polygon grid. 
+cdr         In solps5.0 we use the underlying polygon grid.
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -41,7 +41,7 @@ CDR
       integer :: icou
       real(dp) :: wtr,vr,vp,dist
       DATA IFIRST/0/
- 
+
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
 C
@@ -67,14 +67,14 @@ C
             VPY(IRD)=PLNY(IR,IP)
             VRX(IRD)=PPLNX(IR,IP)
             VRY(IRD)=PPLNY(IR,IP)
-2       CONTINUE
+    2   CONTINUE
 
 cdr  increments for tally number iadv
         IA0=0               !  RADIAL CURRENT
         IA1=NATMI+NMOLI     !  RADIAL ENERGY FLUX
         IA2=2*IA1           !  POLOIDAL CURRENT
         IA3=3*IA1           !  POLOIDAL ENERGY FLUX
-        IA4=4*IA1           !  FLUX (ANGULAR AVERAGED)
+        IA4=4*IA1           !  FLUX (ANGLE-AVERAGED)
       ENDIF
 
 
@@ -110,15 +110,15 @@ C  particle current, poloidal component (CM/SEC)
           if(ia3+iatm.gt.nadv) goto 20
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 
-c  particle current: toroidal component (cm/sec)  
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin  
+c  particle current: toroidal component (cm/sec)
+c    can be found from default tallies: vden_xzy scalar product bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 C  particle flux, integrated over all directions
           if(ia4+iatm.gt.nadv) goto 20
           ADDV(IA4+IATM,IRD)=ADDV(IA4+IATM,IRD)+WTR*VEL
 CDR
-20      CONTINUE
+   20   CONTINUE
 C
 C  MOLECULES
       ELSEIF (ITYP.EQ.2) THEN
@@ -142,8 +142,8 @@ C  particle current, poloidal component (CM/SEC)
           if(ia3+natmi+imol.gt.nadv) goto 200
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 
-c  particle current: toroidal component (cm/sec)  
-c    can be found from default tallies: vden_xzy scalarproduct bxin,....bzin  
+c  particle current: toroidal component (cm/sec)
+c    can be found from default tallies: vden_xzy scalar product bxin,....bzin
 c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 c::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -152,7 +152,7 @@ C  particle flux, integrated over all directions
           if(ia4+NATMI+IMOL.gt.nadv) goto 200
           ADDV(IA4+NATMI+IMOL,IRD)=ADDV(IA4+NATMI+IMOL,IRD)+WTR*VEL
 C
-200     CONTINUE
+  200   CONTINUE
 CDR
 C
 C  TEST IONS
@@ -170,7 +170,7 @@ C
 c  score additional tally: ion conversion rate.  (cx molecules)
 
 C
-C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -219,9 +219,9 @@ C
               IF (LGVAC(IRD,IPLS)) GOTO 560
               WTRSIG=WTR*SIGVCX(IRCX)
               ADDV(1,IRD)=ADDV(1,IRD)+WTRSIG
-560         CONTINUE
-590       CONTINUE
-200     CONTINUE
+  560       CONTINUE
+  590     CONTINUE
+  200   CONTINUE
 C
 C
       ENDIF

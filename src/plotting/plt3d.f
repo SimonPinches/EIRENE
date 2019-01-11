@@ -3,7 +3,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
 
       SUBROUTINE EIRENE_PLT3D
      .  (XR,YR,FAKX,FAKY,ITH,ABSMIN,ABSMAX,ORDMIN,ORDMAX)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -23,13 +23,13 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(OUT) :: XR, YR, FAKX, FAKY,
      .                       ABSMIN, ABSMAX, ORDMIN, ORDMAX
       INTEGER, INTENT(OUT) :: ITH
- 
+
       INTEGER, PARAMETER :: NPLY=501
       REAL(DP) :: AL(10), AR(10), XP(NPLY), YP(NPLY), ZPLOT(N3RD+NTOR),
      .          XSAVE(NPLY,N3RD+NTOR), YSAVE(NPLY,N3RD+NTOR),
@@ -180,7 +180,7 @@ C
 C  PLOT ADDITIONAL SURFACES
 C
 C  IF NLTRA, ASSUME THAT THIS SURFACE IS GIVEN IN LOCAL TOROIDAL SYSTEM
-C            NO. ILTOR. PLOT IS DONE IN CO-ORDINATE SYSTEM OF CELL ITH
+C            NO. ILTOR. PLOT IS DONE IN COORDINATE SYSTEM OF CELL ITH
 C            WHICH WAS SELECTED BY THE INPUT FLAG ANGLE3
 C
       DO 100 I=1,5
@@ -214,18 +214,18 @@ C                       SURFACE
                     DO 51 JJ=IPLAS(3,IPZ),IPLES(3,IPZ)-1
                       NJZ=NJZ+1
                       ILT(NJZ)=JJ
-51                  CONTINUE
+   51               CONTINUE
                   ELSE
                     DO 52 JJ=IPLAS(3,IPZ),NTTRA-1
                       NJZ=NJZ+1
                       ILT(NJZ)=JJ
-52                  CONTINUE
+   52               CONTINUE
                     DO 53 JJ=1,IPLES(3,IPZ)-1
                       NJZ=NJZ+1
                       ILT(NJZ)=JJ
-53                  CONTINUE
+   53               CONTINUE
                   ENDIF
-50              CONTINUE
+   50           CONTINUE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SURFACE NO. ',J,
      .              ' TOROIDALLY PERODIC'
@@ -244,7 +244,7 @@ C                       SURFACE
             ENDIF
           ENDIF
 C
- 
+
           DO IJZ=1,NJZ
           IF (NLTRA) WINJ=ZZONE(ILT(IJZ))
 C
@@ -303,7 +303,7 @@ C  ZYLINDER: GGFLS MEHRERE TEILSTUECKE
      .                         RZYL,NZAD,NINNE,NIN,ILCOL(J),
      .                         IGFIL(J).NE.0,
      .                         J,0,AL,0,AR,PHA,PHE)
-109             CONTINUE
+  109           CONTINUE
 C**KEGEL: BISLANG NUR EIN STUECK MOEGLICH. FINDE ACHSE
               ELSEIF (MERK.EQ.8) THEN
                 IF (TRCPLT) WRITE (iunout,*) 'CX,CY,CZ,RZYL ',
@@ -462,7 +462,7 @@ C**ZYLINDER BEGRENZT VON 2 EBENEN
                        TD=AL(II)
                        AL(II)=AR(II)
                        AR(II)=TD
-15                   CONTINUE
+   15                CONTINUE
                    ENDIF
                    CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                          RZYL,NZAD,NINNE,NIN,
@@ -498,7 +498,7 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
                   ENDIF
                   DO 18 K=1,10
                     AR(K)=AL(K)
-18                CONTINUE
+   18             CONTINUE
                   CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                      RZYL,NZAD,NINNE,NIN,
      .                      ILCOL(J),IGFIL(J).NE.0,
@@ -534,7 +534,7 @@ C**EBENE BEGRENZT DURCH ANDERE EBENEN
               ELSEIF (ILIN(J).EQ.0) THEN
 C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                 IB=0
-20              IB=IB+1
+   20           IB=IB+1
                 CALL EIRENE_FL2O
      .  (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
      .                     ZLIMS1(IB,J),XLIMS2(IB,J),YLIMS2(IB,J),
@@ -582,8 +582,8 @@ C
 C END NJZ LOOP
           ENDDO
 C
-10      CONTINUE
-100   CONTINUE
+   10   CONTINUE
+  100 CONTINUE
 C
 C
 C  PLOTTE DIEJENIGEN FLAECHEN, DIE NICHT AUTOMATISCH
@@ -603,11 +603,11 @@ C
           ENDIF
           WRITE (iunout,*) 'J= ',J
         ENDIF
-200   CONTINUE
+  200 CONTINUE
 C
 C  PLOT SURFACES OF STANDARD MESH
 C
-500   IF (.NOT.(PL3S(1).OR.PL3S(2).OR.PL3S(3))) GOTO 10000
+  500 IF (.NOT.(PL3S(1).OR.PL3S(2).OR.PL3S(3))) GOTO 10000
 C
 C  TOROIDAL GRID
 C
@@ -622,16 +622,16 @@ C
             ELSEIF (J.EQ.2) THEN
               ZPLOT(NJZ)=ZAA
             ENDIF
-3001      CONTINUE
+ 3001     CONTINUE
         ELSE
           DO 3002 J=IPLAS(3,IPZ),NTTRA
             NJZ=NJZ+1
             ZPLOT(NJZ)=ZSURF(J)
-3002      CONTINUE
+ 3002     CONTINUE
           DO 3003 J=2,IPLES(3,IPZ)
             NJZ=NJZ+1
             ZPLOT(NJZ)=ZSURF(J)
-3003      CONTINUE
+ 3003     CONTINUE
         ENDIF
 C
         DO 3100 IZ=1,NJZ
@@ -639,7 +639,7 @@ C
           CALL GRNWPN(1)
           PHI=ZPLOT(IZ)
 C
-C  PHI = CONST , PLOT POLOIDAL CROSS SECTION AT TOROIDAL POSITION PHI
+C  PHI = CONST , PLOT POLOIDAL CROSS-SECTION AT TOROIDAL POSITION PHI
 C
           IST=5
           IS=0
@@ -701,11 +701,11 @@ C
                   ENDIF
 C
                   CALL EIRENE_PL3D(X,Y,Z,XP(J),YP(J))
-1120            CONTINUE
+ 1120           CONTINUE
                 do 1130 jj=1,nr
                   xps(jj)=xp(jj)
                   yps(jj)=yp(jj)
-1130            continue
+ 1130           continue
                 CALL GRLN(XPS,YPS,NR)
 C
 C
@@ -735,13 +735,13 @@ C
                       Z=PHI
                     ENDIF
                     CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
-1165              CONTINUE
+ 1165             CONTINUE
                   do 1162 jj=1,nr
                     xps(jj)=xp(jj)
                     yps(jj)=yp(jj)
-1162              continue
+ 1162             continue
                   CALL GRLN (XPS,YPS,NR)
-1160            CONTINUE
+ 1160           CONTINUE
 C
 C
               ELSE
@@ -749,14 +749,14 @@ C  TO BE WRITTEN
               ENDIF
 C
 C  RADIAL SURFACE IR PLOTTED, NR POINTS
-C  NEXT: SAVE CO-ORDINATES
+C  NEXT: SAVE COORDINATES
 C
               IF (IS+NR/IST+1.LE.NPLY) THEN
                 DO 1200 J=1,NR,IST
                   IS=IS+1
                   XSAVE(IS,IZ)=XP(J)
                   YSAVE(IS,IZ)=YP(J)
-1200            CONTINUE
+ 1200           CONTINUE
 C  LAST POINT:
                 IF (MOD(NR,IST).NE.0) THEN
                   IS=IS+1
@@ -767,11 +767,11 @@ C  LAST POINT:
                 WRITE(iunout,*) ' STORAGE EXCEEDED IN PLT3D, IR= ',IR
               ENDIF
 C
-1100        CONTINUE
+ 1100       CONTINUE
 C
 C  ALL RADIAL SURFACES IN BLOCK IBR DONE
 C
-1000      CONTINUE
+ 1000     CONTINUE
 C
 C  ALL BLOCKS FOR RADIAL SURFACES DONE
 C
@@ -840,15 +840,15 @@ C
                     IF (ASSOCIATED(CUR)) CUR => CUR%NXTPNT
                   END DO
                 END DO
-1320          CONTINUE
-1310        CONTINUE
-1300      CONTINUE
+ 1320         CONTINUE
+ 1310       CONTINUE
+ 1300     CONTINUE
           CH2X0=CH2X0S
           CH2Y0=CH2Y0S
           CH2MX=CH2MXS
           CH2MY=CH2MYS
 C
-3100    CONTINUE
+ 3100   CONTINUE
 C
 C   LINES OF CONSTANT POLOIDAL POSITION
 C
@@ -861,13 +861,13 @@ C
           DO 2000 IZ=2,NJZ
             CALL GRDRW(REAL(XSAVE(J,IZ),KIND(1.E0)),
      .                 REAL(YSAVE(J,IZ),KIND(1.E0)))
-2000    CONTINUE
+ 2000   CONTINUE
         CALL GRDSH(1.,0.,1.)
         CALL GRNWPN(1)
 C
-3000  CONTINUE
+ 3000 CONTINUE
 C
-C  POLOIDAL GRID 
+C  POLOIDAL GRID
 C
       DO IBP=1,IPLTS(2)
         DO IP=IPLAS(2,IBP),IPLES(2,IBP)
@@ -906,7 +906,7 @@ C
 C  TO BE WRITTEN
           ENDIF
         END DO
-      
+
       END DO
 C
 C  RADIAL GRID
@@ -950,7 +950,7 @@ C
 C  TO BE WRITTEN
           ENDIF
         END DO
-      
+
       END DO
 
       CALL GRNWPN(1)
@@ -974,7 +974,7 @@ C
         IF (PL3A(J)) YH=YH-0.5/FAKY
 11000 CONTINUE
 C
-C  RETURN CO-ORDINATES FOR PLOTS OF PARTICLE TRACKS
+C  RETURN COORDINATES FOR PLOTS OF PARTICLE TRACKS
       XR=ABSMIN-6./FAKX
       YR=ORDMAX-0./FAKY
       RETURN

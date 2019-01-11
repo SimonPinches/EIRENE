@@ -1,15 +1,15 @@
-cdr march 18  : bug fix re semi-transp. surfaces. 
+cdr march 18  : bug fix re semi-transp. surfaces.
 cdr             This intermediate bug was introduced in jan 18 commit
 cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
 cdr             semi-transp fluxes: score only incident and emitted current fractions
-cdr             for which surfaces are NOT transparent. 
+cdr             for which surfaces are NOT transparent.
 cdr             update_sptflx: different meaning of flag IND. More consistent
-cdr             now with IND-flag in other surface scoring routines.  
- 
+cdr             now with IND-flag in other surface scoring routines.
+
 cdr nov. 17   :  lmetspw arguments corrected
 cdr sept.17   :  no ion sheath orbit correction at mirror surfaces (=symmetry BC)
 cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
-c                return 3, if icol=1, even for purely absorbing surfaces. 
+c                return 3, if icol=1, even for purely absorbing surfaces.
 c                plus some minor clean-up, commenting.
 c 06.08.15    :  arguments added to vecusr
 c   aug.15    :  periodicity and icol=1, return 3 rather than return 2
@@ -78,8 +78,8 @@ C
       USE EIRMOD_COUTAU
       USE EIRMOD_CTRIG
       USE EIRMOD_CUPD
-      use EIRMOD_cfplk
-      use EIRMOD_csdvi
+      USE EIRMOD_CFPLK
+      USE EIRMOD_CSDVI
 
       IMPLICIT NONE
 
@@ -90,7 +90,7 @@ C
      .          E0TERM, FR2, COSI2, ZVZ, WABS,
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
-     .          VSHETQ, V, VELSH, VC, VCQ, VC2,EIRENE_SHEATH, SPLFLG,
+     .          VSHETQ, V, VELSH, VC, VCQ, VC2, EIRENE_SHEATH, SPLFLG,
      .          VXR, VYR, VZR, VWL, WGHTVS, RATR
       REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
@@ -113,12 +113,12 @@ C  .................
 C
 C  CURRENTLY: ONLY IN CASE (LEVGEO=1, NLTRZ). HENCE: VEL_OLD=VEL_NEW
 C  TO BE WRITTEN: TOROIDICITY AS SPECIAL CASE OF PERIODICITY
-C  ALL FIDELLING WITH VELOCITIES AT PERIODIC SURFACES MUST HAVE BEEN DONE ALREADY IN
-C  CALLING PROGRAMS, E.G. STDNOR.F
+C  ALL FIDDLING WITH VELOCITIES AT PERIODIC SURFACES MUST HAVE BEEN DONE
+C  ALREADY IN CALLING PROGRAMS, E.G. STDNOR.F
 C  CURRENTLY: NO SURFACE TALLIES AT PERIODICITY SURFACES
 
       IF (ILIIN(MSURF).GE.4) THEN
-cdr: unfinished option: store trajectories for later post processing
+cdr: unfinished option: store trajectories for later postprocessing
 cdr: unused
 c       NLTRJ = .FALSE.
 c       TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
@@ -145,10 +145,10 @@ C
       ITYP_OLD=ITYP
       WPR=WEIGHT*PR
 C
-C  UPDATE PARTICLE OUTGOING FLUX  ONTO SURFACE MSURF
+C  UPDATE PARTICLE OUTGOING FLUX ONTO SURFACE MSURF
 C  UPDATE ENERGY OUTGOING FLUX ONTO SURFACE MSURF
 C
-C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
+C  SPATIAL RESOLUTION ON NON-DEFAULT STANDARD SURFACE?
       IF (MSURF.GT.NLIM.AND.NLMPGS.GT.NLIMPS) THEN
         select case (LEVGEO)
         case (:3)
@@ -159,7 +159,7 @@ C  SPATIAL RESOLUTION ON NON DEFAULT STANDARD SURFACE?
           MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
           FLX=FLXOUT(MSURFG)
         case (5)
-cdr  to be written    
+cdr  to be written
 c         MSURFG=NLIM+NSTS+INSPAT(IPOLGN,MRSURF)
 c         FLX=FLXOUT(MSURFG)
         case default
@@ -177,7 +177,7 @@ C
 C  FLUXES ARE UPDATED HERE IN THE FOLLOWING CASES:
 C
 C  FOR NON-TRANSPARENT SURFACES: SCORE INCIDENT FLUX
-C  FOR     TRANSPARENT SURFACES: SCORE ONE SIDED FLUX, ONLY POSITIVE COMPONENT
+C  FOR     TRANSPARENT SURFACES: SCORE ONE-SIDED FLUX, ONLY POSITIVE COMPONENT
 C  FOR     TRANSPARENT SURFACES: SCORE NET FLUX IN CASE OF ILIIN(MSURF)=-3
 C
       IF ((ILIIN(MSURF).LT.0).AND.(SG.LT.0.D0).AND.(ILIIN(MSURF).NE.-3))
@@ -185,7 +185,7 @@ C
 C
 C   HERE: EITHER: ILIIN .GE.0,    NOT TRANSPARENT, SCORE OUTGOING FLUX (WPR >=0 always)
 c             OR: ILIIN.EQ.-3,    TRANSPARENT,     SCORE NET FLUX (WPR contains sign)
-C             OR: SG .GT.0        SCORE ONE SIDED POSITIVE CURRENT EVEN FOR TRANSPARENT SURF.
+C             OR: SG .GT.0        SCORE ONE-SIDED POSITIVE CURRENT EVEN FOR TRANSPARENT SURF.
 
 
       IF (ITYP.EQ.0) THEN
@@ -231,7 +231,7 @@ C  ACCOUNT FOR ELECTROSTATIC SHEATH AT SURFACE FOR TEST IONS
                 ENDIF
                 VPWL(IP)=SQRT(VX**2+VY**2+VZ**2)
                 DIWL(IP)=DIIN(IP,IC)
-30            CONTINUE
+   30         CONTINUE
               ESHET=NCHRGI(IION)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                  NCHRGP,GAMMA,CUR,NPLSI,MSURF)
             ENDIF
@@ -332,7 +332,7 @@ C
       CALL EIRENE_SWITCH_PARTINFO   !  HIER NICHT NOETIG ??
 
 C
-10    CONTINUE
+   10 CONTINUE
 C
 C  ADDITIONAL OUTGOING SURFACE FLUX TALLIES
       IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,1)
@@ -395,7 +395,7 @@ C
 C
       ENDIF ! SPUTTER MODEL DONE, SO FAR. SCORING, SPLITTING ETC. CONTINUED BELOW
 C
-50    CONTINUE
+   50 CONTINUE
 C
 C   ...................................................................
 C   .                                                                 .
@@ -452,8 +452,13 @@ C
 C  NOTHING ELSE TO BE DONE, RETURN
 C
       IF (ILIIN(MSURF).EQ.2.AND..NOT.LTRANS) THEN
-        IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WPR
-        IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
+        IF (LSPUMP) THEN
+          SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WPR
+          IF (MSURFG.GT.0) THEN
+            SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WPR
+          END IF
+          LMETSPW(ISPZ) = .TRUE.
+        ENDIF
 
         NLTRJ = .FALSE.
         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
@@ -524,9 +529,9 @@ C
 C  CONTINUE WITH UNMODIFIED VELOCITY.
 
 C  COMPENSATE INCIDENT SURFACE FLUX TALLY CONTRIBUTIONS
-C  SCORED ABOVE.                                       
+C  SCORED ABOVE.
         CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,-WPR,1)
-        
+
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
         COLFLAG = .TRUE.
@@ -554,14 +559,14 @@ C   .........................
 C
       IF (ILIIN(MSURF).LT.0) THEN
 C
-C  ONE SIDED FLUX: UPDATE ONLY NEGATIVE COMPONENT HERE,
+C  ONE-SIDED FLUX: UPDATE ONLY NEGATIVE COMPONENT HERE,
 C                  POSITIVE COMPONENT, SG.GT.0, WAS ALREADY ON "OT-TALLIES"
 C  IN CASE ILIIN=-3: NET FLUXES HAVE ALREADY BEEN UPDATED ABOVE ON "OT-TALLIES".
 C                    NEED NOT BE UPDATED AGAIN HERE.
 C
-        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3))  GOTO 90 
-C 
-C  HERE:  ILIIN NE -3, AND SG LE 0, SCORE ONE SIDED "NEGATIVE" CURRENTS (WPR <=0)
+        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3))  GOTO 90
+C
+C  HERE:  ILIIN NE -3, AND SG LE 0, SCORE ONE-SIDED "NEGATIVE" CURRENTS (WPR <=0)
 C
 C ITYP_OLD=ITNEW=ITYP
 C
@@ -606,7 +611,7 @@ C
           ENDIF
         ENDIF
 C
-90      CONTINUE
+   90   CONTINUE
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
         colflag = .true.
@@ -614,7 +619,7 @@ C
       ENDIF
 C
 C
-100   CONTINUE
+  100 CONTINUE
 C
 C   .............................
 C   .                           .
@@ -649,7 +654,7 @@ C  .  REFLECTION MODEL 600--699 FOR INCIDENT MOLECULES  .
 C  ......................................................
 C
 C
-600   CONTINUE
+  600 CONTINUE
 C
       IF (ITYP.EQ.2) THEN
 C
@@ -659,7 +664,13 @@ C
 C  WITH SUPPRESSION OF ABSORPTION
           WABS=WEIGHT*(1.D0-RECYCT(ISPZ,MSURF))
           IF (WABS.GT.0.D0) THEN
-            IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WABS
+            IF (LSPUMP) THEN 
+              SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WABS
+              IF (MSURFG.GT.0) THEN
+                SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WABS
+              END IF
+              LMETSPW(ISPZ) = .TRUE.
+            ENDIF
             WEIGHT=WEIGHT-WABS
           ENDIF
           IF (WEIGHT.GT.EPS30) GOTO 610
@@ -670,13 +681,18 @@ C  NO SUPPRESSION OF ABSORPTION
           ZVZ=RANF_EIRENE( )
           IF (ZVZ.LT.RECYCT(ISPZ,MSURF)) GOTO 610
 C  ABSORB THIS PARTICLE
-          IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
-          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
+          IF (LSPUMP) THEN
+            SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+            IF (MSURFG.GT.0) THEN
+              SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+            END IF
+            LMETSPW(ISPZ) = .TRUE.
+          ENDIF
           LGPART=.FALSE.
           RETURN
         ENDIF
 C
-610     CONTINUE
+  610   CONTINUE
 C
 C  NEW SPECIES: AGAIN MOLECULE
 C
@@ -687,13 +703,18 @@ C       ITYP=2
           DO 621 I=1,NMOLI
             IMOL=I
             IF (FR2.LE.DMOL(IMOL)) GOTO 622
-621       CONTINUE
+  621     CONTINUE
           GOTO 995
-622       CONTINUE
+  622     CONTINUE
         ELSEIF (IMOL.EQ.0) THEN
 C  NO THERMAL EMISSION, ABSORB INSTEAD
-          IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
-          IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.  
+          IF (LSPUMP) THEN 
+            SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+            IF (MSURFG.GT.0) THEN
+              SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+            END IF
+            LMETSPW(ISPZ) = .TRUE.
+          ENDIF
           LGPART=.FALSE.
           RETURN
         ELSEIF (IMOL.LT.0) THEN
@@ -713,7 +734,7 @@ C  MONOENERGETIC DISTRIBUTION
           E0=E0TERM
           E0_MEAN=E0
           VEL=RSQDVM(IMOL)*SQRT(E0)
-C   AZIMUTAL ANGLE: EQUIDISTRIBUTION
+C   AZIMUTHAL ANGLE: EQUIDISTRIBUTION
 C   POLAR ANGLE: COSINE
           IF (INIV4.EQ.0) CALL EIRENE_FCOSIN
           VX=FC1(INIV4)
@@ -736,7 +757,7 @@ c are INTENT(IN) !
      .                      CVRSSM(IMOL),
      .                     -CRTX,-CRTY,-CRTZ,
      .                      E0,VELX,VELY,VELZ,VEL)
-          E0_MEAN=2.*TW
+          E0_MEAN=2._DP*TW
         ELSE
           WRITE (iunout,*) 'ERROR IN ESCAPE, EXIT CALLED'
           CALL EIRENE_EXIT_OWN(1)
@@ -762,7 +783,7 @@ C                                             AND SPUTTERED PARTICLES MAY BE FOL
      .    CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC,1)
 C
         IF (WGHTSP.GT.0..AND.ISSPTP.GT.0) THEN
-C  PHYSICAL SPUTTERING, RESTORE PHYSICALY SPUTTERED PARTICLE PARAMETERS
+C  PHYSICAL SPUTTERING, RESTORE PHYSICALLY SPUTTERED PARTICLE PARAMETERS
 C  SCORE ALL RELEVANT TALLIES
 C
 
@@ -806,10 +827,10 @@ C   SPUTTERED PARTICLE HAS SCORED, BUT WILL NOT BE FOLLOWED
 C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
           DO 533 J=1,NPARTC
             RSPLST(J,NLEVEL)=RPST(J)
-533       CONTINUE
+  533     CONTINUE
           DO 534 J=1,MPARTC
             ISPLST(J,NLEVEL)=IPST(J)
-534       CONTINUE
+  534     CONTINUE
 C  NUMBER OF NODES AT THIS LEVEL
           NODES(NLEVEL)=2
 C
@@ -818,7 +839,7 @@ C
 C  SPLITTING FOR PHYSICAL SPUTTERING DONE
 
 C
-4711    IF (WGHTSC.GT.0..AND.ISSPTC.GT.0) THEN
+ 4711   IF (WGHTSC.GT.0..AND.ISSPTC.GT.0) THEN
 C
 C  CHEMICAL SPUTTERING, RESTORE CHEMICALLY SPUTTERED PARTICLE PARAMETERS
 C  SCORE ALL RELEVANT TALLIES
@@ -864,17 +885,17 @@ C   SPUTTERED PARTICLE HAS SCORED, BUT WILL NOT BE FOLLOWED
 C  SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
           DO 535 J=1,NPARTC
             RSPLST(J,NLEVEL)=RPST(J)
-535       CONTINUE
+  535     CONTINUE
           DO 536 J=1,MPARTC
             ISPLST(J,NLEVEL)=IPST(J)
-536       CONTINUE
+  536     CONTINUE
 C  NUMBER OF NODES AT THIS LEVEL
           NODES(NLEVEL)=2
 C
         ENDIF
 C
 C  SPLITTING FOR CHEMICAL SPUTTERING DONE.
-4712    CONTINUE
+ 4712   CONTINUE
 C.................................................................
 C
 C  RESTORE INCIDENT PARTICLE, FOR SURFACE REFLECTION ROUTINE
@@ -938,7 +959,7 @@ C     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
      .    (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) RETURN 1
       RETURN
 C
-995   CONTINUE
+  995 CONTINUE
       WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE IN ESCAPE '
       WRITE (iunout,*) 'IMOL, MSURF ',IMOL,MSURF
       CALL EIRENE_EXIT_OWN(1)

@@ -1,24 +1,24 @@
 cdr  Nov. 2015
 
-cdr  internal energy:  make also ipls species dependent
+cdr  internal energy:  make also ipls species-dependent
 cdr  check for storage (copy) and return, if not enough storage
 cdr  updlin should be made a default eirene option
 cdr  for linear combination of tallies
 
       SUBROUTINE EIRENE_UPDLIN
 
-!  update tallies (currently on: COPV) after completion of 
+!  update tallies (currently on: COPV) after completion of
 !  trajectory. Use linear algebraic expressions of default tallies
-!  
+!
 !  score per history --> automatically variances per history are available
 !                        distinct from aposteriori evaluation of linear combinations
 
 !  current version:
-!    1)   total particle source             (sni=papl+pmpl+pipl      , ICP+1  ,ICP2)  
-!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3) 
+!    1)   total particle source             (sni=papl+pmpl+pipl      , ICP+1  ,ICP2)
+!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3)
 !    3)   total ion energy source           (sei=eapl+empl+eipl      , ICP3+1 ,ICP4)
 !    4)   internal energy source            (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
-!    5)   total electr. energy source       (see=eael+emel+eiel      , ICP5+1) 
+!    5)   total electr. energy source       (see=eael+emel+eiel      , ICP5+1)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -43,7 +43,7 @@ cdr  for linear combination of tallies
       IF (IFIRST == 0) THEN
          ALLOCATE (UAH(NPLS,NRTAL))
          ALLOCATE (EKIN(NPLS,NRTAL))
-         
+
          DO IPL = 1, NPLSI
            IPLV = MPLSV(IPL)
            DO IR = 1, NRAD
@@ -116,7 +116,7 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
       END DO
 
 !  electron energy source (see),  no species index here, copv(icp5+1)
- 
+
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
 
@@ -158,7 +158,7 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
           DO ICO = 1,NCLMT
             IR = ICLMT(ICO)
 
-            COPV(ICP4+IPL,IR) = 0._DP   
+            COPV(ICP4+IPL,IR) = 0._DP
             COPV(ICP4+IPL,IR) = COPV(ICP4+IPL,IR)
      .          - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
      .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))

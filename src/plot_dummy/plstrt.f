@@ -3,4 +3,3 @@ cdr  initialize proprietary EIRENE "GR plotting software"
 
         return
         end
-

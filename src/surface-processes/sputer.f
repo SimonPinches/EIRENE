@@ -1,6 +1,6 @@
-c  apr. 15: For external use of sputer.f: reduce commons, 
+c  apr. 15: For external use of sputer.f: reduce commons,
 c           remove: ccona
-c  feb. 15: Flag: ITA=0: do not even try to sputter with modpys=2, 
+c  feb. 15: Flag: ITA=0: do not even try to sputter with modpys=2,
 c                        if target is not identified.
 c           this avoids huge amounts of irrelevant error messages
 
@@ -10,9 +10,9 @@ C  OCT. 14: WGHTVS (WEIGHT) AND VWL AS ARGUMENT IN SAMPLING ROUTINE VELOCS
 C  Nov. 10  bug fix: use variables for the input of a drift vector to subroutine
 C            VELOCS as these arguments are of INTENT(INOUT) in VELOCS
 
-c aug. 10:  bug fix: selecting of the sputtered molecule by specifying 
-c           ISRC > NATMI in Eirene input resulted in a sputtered atom of 
-c           undefined species.  
+c aug. 10:  bug fix: selecting of the sputtered molecule by specifying
+c           ISRC > NATMI in Eirene input resulted in a sputtered atom of
+c           undefined species.
 c
 c jan. 10:  printout warning in case of missing sputter data: 991
 c jan. 10:  evaluate Q and ETH for Sigmund theory, if missing in DATABASE
@@ -29,7 +29,7 @@ c
 c june 05:  new: modchm=6: Haasz/Davis 1998 formula (no flx. dep)
 c           new: modchm=7: Haasz/Davis 1998 formula with flux. dep
 c
-c     new: user defined sputter model: modpys/modchm=9 (was: =3)
+c     new: user-defined sputter model: modpys/modchm=9 (was: =3)
 c
 c           merging of flx. dep A6/A7 in roth formula for chem. sput. removed again
 c           now modchm=2 is back to "flux dep option A6" (Roth) (as it already
@@ -74,7 +74,7 @@ c may 06:  modifications for: photons do not sputter !
 c march 07: some species flags for chemical sputtering:
 c           programming cleaned up (no change in model)
 
- 
+
       SUBROUTINE EIRENE_SPUTER
 C
 C  GIVEN A PARTICLE: E0,VELX,VELY,VELZ,   HITS A SURFACE
@@ -107,7 +107,7 @@ C                              "REVISED BOHDANSKY FORMULAR",
 C                              ECKSTEIN, W., et.al., IPP 9/117 (Garching, 1993)
 C                              FITTING PARAMETERS READ FROM FILE "sputer",
 C                              STREAM 33, LOC.CIT.
-C                 MODPYS = 9:  USER SUPPLIED SPUTTER MODEL, CALL SPTUSR
+C                 MODPYS = 9:  USER-SUPPLIED SPUTTER MODEL, CALL SPTUSR
 C
 C            itsput(2,msurf) = MODCHM
 C                 MODCHM = 0:  NO CHEM. SPUTTERING (DEFAULT)
@@ -117,7 +117,7 @@ C                              J.ROTH, J.NUCL.MAT 266-269 (1999) 51-57
 C                              FLUX DEP. OPTION A6
 C                 MODCHM = 6:  HAASZ/DAVIS FORMULA w/o flux dep.
 C                 MODCHM = 7:  HAASZ/DAVIS FORMULA with flux dep.
-C                 MODCHM = 9:  USER SUPPLIED SPUTTER MODEL, CALL SPTUSR
+C                 MODCHM = 9:  USER-SUPPLIED SPUTTER MODEL, CALL SPTUSR
 C            EWALL(MSURF)= ENWALL
 C    IGASP: SPECIES INDEX FLAG FOR PHYS. SPUTTERED PARTICLE
 C    IGASC: SPECIES INDEX FLAG FOR CHEM. SPUTTERED PARTICLE
@@ -210,7 +210,7 @@ C     real(dp) :: flxlim
 
 
 C  NPROJ: PROJECTILE IDENTIFIER
-C  NPROJ(7) CORRESPONDS TO SELF SPUTTERING.
+C  NPROJ(7) CORRESPONDS TO SELF-SPUTTERING.
       DATA NPROJ/1,2,3,4,12,16,0,20,40,84,131/
 
 C  NTARG:  TARGET IDENTIFIER
@@ -220,7 +220,7 @@ C  NTARG:  TARGET IDENTIFIER
      .           18474,19578,19779,20782,23892/
       DATA TTARG/'LITHIUM             ', 'BERYLLIUM           ',
      .           'BOR                 ', 'GRAPHITE            ',
-     .           'ALUMINIUM           ', 'SILIZIUM            ',
+     .           'ALUMINIUM           ', 'SILICIUM            ',
      .           'TITANIUM            ', 'VANADIUM            ',
      .           'CHROMIUM            ', 'MANGANESE           ',
      .           'IRON                ', 'COBALT              ',
@@ -267,7 +267,7 @@ C
 
         IF (IFILE > NDBNAMES) THEN
           WRITE (IUNOUT,*) ' NO DATABASE NAME FOR SPUTTERING DEFINED '
-          WRITE (IUNOUT,*) ' CALCULATION ABANDONNED '
+          WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -318,7 +318,7 @@ C  SPUTTERING BY PHOTONS
       DO 1 ISP=1,NSPH
         IPROJ(ISP)=0
         IPROJS(ISP)=0
-1     CONTINUE
+    1 CONTINUE
 C
 C  SPUTTERING BY ATOMS
       DO 10 ISP=NSPH+1,NSPA
@@ -328,17 +328,17 @@ C  SPUTTERING BY ATOMS
         DO IP=1,11
           IF (NMASSA(IAT).EQ.NPROJ(IP)) IPROJ(ISP)=IP
         ENDDO
-C  ANY TARGET DATA FOR SELF SPUTTERING WITH IAT?
+C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IAT?
         DO IT=1,28
           IF (NMASSA(IAT).EQ.NTAMU(IT)) IPROJS(ISP)=IT
         ENDDO
-10    CONTINUE
+   10 CONTINUE
 C
 C  SPUTTERING BY MOLECULES
       DO 20 ISP=NSPA+1,NSPAM
         IPROJ(ISP)=0
         IPROJS(ISP)=0
-20    CONTINUE
+   20 CONTINUE
 C
 C  SPUTTERING BY TEST IONS
       DO 30 ISP=NSPAM+1,NSPAMI
@@ -350,11 +350,11 @@ C  TEST: MOLECULAR OR ATOMIC ION?
         DO IP=1,11
           IF (NMASSI(IIO).EQ.NPROJ(IP)) IPROJ(ISP)=IP
         ENDDO
-C  ANY TARGET DATA FOR SELF SPUTTERING WITH IIO?
+C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IIO?
         DO IT=1,28
           IF (NMASSI(IIO).EQ.NTAMU(IT)) IPROJS(ISP)=IT
         ENDDO
-30    CONTINUE
+   30 CONTINUE
 C
 C  SPUTTERING BY BULK IONS
       DO 40 ISP=NSPAMI+1,NSPTOT
@@ -367,12 +367,12 @@ C  TEST: MOLECULAR OR ATOMIC ION?
           IF (NMASSP(IPL).EQ.NPROJ(IP))
      .    IPROJ(ISP)=IP
         ENDDO
-C  ANY TARGET DATA FOR SELF SPUTTERING WITH IPL?
+C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IPL?
         DO IT=1,28
           IF (NMASSP(IPL).EQ.NTAMU(IT))
      .    IPROJS(ISP)=IT
         ENDDO
-40    CONTINUE
+   40 CONTINUE
 
       ITARG=0
       ISPZSP_DEF=0
@@ -430,7 +430,7 @@ C
         DO ISTSI=1,NSTSI
           ISURF=NLIM+ISTSI
           IF (NTIME.GE.1.AND.ISTSI.EQ.NSTSI) THEN
-            WRITE(iunout,*) -ISTSI,' TIME HORIZON, CENSUS TALLYING ' 
+            WRITE(iunout,*) -ISTSI,' TIME HORIZON, CENSUS TALLYING '
           ELSEIF (ILIIN(ISURF).LE.0) THEN
             WRITE(iunout,*) -ISTSI,' TRANSPARENT SURFACE '
           ELSEIF (ILIIN(ISURF).GE.3) THEN
@@ -503,7 +503,7 @@ C  ENWALL=1.5 TWALL, MEAN ENERGY OF THERMALLY REEMITTED PARTICLES
       ELSE
         GOTO 998
       ENDIF
-      
+
       SE=0.D0
 C
       COSIN=CRTX*VELX+CRTY*VELY+CRTZ*VELZ
@@ -532,7 +532,7 @@ C
 C   FOR THIS PROJECTILE THERE ARE NO DATA IN SPUTTER TABLE, BUT TARGET ITA IS IDENTIFIED
 C   EVALUATE ETF FROM EQ. 7 IN REPORT IPP 9/82
 C   EVALUATE ETH  AND Q FROM EQS. 28 AND 27, RESP. IN REPORT IPP 9/82
-C   I.E. USE SAME "SIGMUND-THEORY APPROXIMATION, AND "V(R)=A*1/R^^6",
+C   I.E. USE SAME "SIGMUND-THEORY APPROXIMATION", AND "V(R)=A*1/R^^6",
 C   AS IT IS ALSO THE CASE FOR REST OF THE SPUTTER DATA IN THIS MODEL
           RM1=FMASS
           RM2=RTAMU(ITA)
@@ -547,7 +547,7 @@ C   AS IT IS ALSO THE CASE FOR REST OF THE SPUTTER DATA IN THIS MODEL
           GZ1Z212=(Z123+Z223)**(0.5)
 C   EQ. 7
           XETF=30.74*(RM1+RM2)/RM2*Z1*Z2*GZ1Z212
-          ETF(ITA,0)=XETF  
+          ETF(ITA,0)=XETF
 C   EQ. 28
           ETH(ITA,0)=(BT1*FM2M1**BT2+BT3*FM2M1**BT4)*ES(ITA)
 C   EQ. 27
@@ -597,7 +597,7 @@ C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
         ENDIF
 C
       ELSEIF (MODPYS.EQ.9) THEN
-C  USER SUPPLIED SPUTTER MODEL
+C  USER-SUPPLIED SPUTTER MODEL
         CALL EIRENE_SP1USR
 C
       ENDIF
@@ -631,7 +631,7 @@ CDR         WRITE (iunout,*) 'SPECIES INDEX, PHYS. SPUTER ? MSURF ',MS
           ISPZP=IATMP+NSPH
         ENDIF
 
-C  IGASP=0 AND ISPZP >0 
+C  IGASP=0 AND ISPZP >0
 C  SPUTTERED PARTICLE SPECIES IS IDENTIFIED
 C  RETURN SPUTTER YIELD, AND THE VELOCITY COORDINATES OF SPUTTERED PARTICLE
 C  FOR SURFACE TALLY SCORING, BUT THEN DO NOT FOLLOW THIS PARTICLE
@@ -668,7 +668,7 @@ C  SAMPLE ENERGY OF SPUTTERED PARTICLE FROM THOMPSON DISTRIBUTION
 C
 C  ANGULAR DISTRIBUTIONS
 C
-1000  CONTINUE
+ 1000 CONTINUE
 C
       IF (ESPTP.LT.0.D0) GOTO 1100
 C
@@ -686,7 +686,7 @@ C
       CALL EIRENE_ROTATF (VXSPTP,VYSPTP,VZSPTP,VX,VY,VZ,CRTX,CRTY,CRTZ)
       GOTO 5000
 C
-1100  CONTINUE
+ 1100 CONTINUE
 C  AT THIS POINT: ESPTP < 0.0, THERMAL (TWALL) DISTRIBUTION OF SPUTTERED PARTICLE
 
       VXR = 0._DP  ! intent(in)
@@ -699,14 +699,14 @@ C  AT THIS POINT: ESPTP < 0.0, THERMAL (TWALL) DISTRIBUTION OF SPUTTERED PARTICL
      .             -CRTX,-CRTY,-CRTZ,
      .             ESPTP,VXSPTP,VYSPTP,VZSPTP,VSPTP)
 C
-2000  CONTINUE
+ 2000 CONTINUE
 C
 C   PHYSICAL SPUTTERING DONE
 C
 C   CHEMICAL SPUTTERING, REEMITTED PARTICLES ARE COSINE DISTRIBUTED AND
 C   THERMAL
 C
-5000  CONTINUE
+ 5000 CONTINUE
 C
 C  NO CHEMICAL SPUTTERING?
 C
@@ -716,7 +716,7 @@ C  FLXSP IS IN #/CM^2/S. CONVERT TO #/M^2/S
       FLX=FLXSP*1.D4
 C
       SELECT CASE (MODCHM)
- 
+
       CASE(1)
 C  CONSTANT SPUTTER YIELD: RECYCS
 C  IS INCIDENT PARTICLE "HYDROGENIC" AND "ATOMIC"?
@@ -774,9 +774,9 @@ cdr  continuous merging of option A6 and A7, as in Warrier code. Out!
 cdr        FLXLIM=1.D30*EXP(-1.4/TWALL)
 cdr        IF (FLX.LE.FLXLIM) THEN ! A6,  else: A7
 
-C  EXPRESSION A.6 FOR C, WEAK-FLUX DEPENDENCE
+C  EXPRESSION A.6 FOR C, WEAK FLUX DEPENDENCE
             IF (MODCHM.EQ.2) C=1._DP/(1._DP+3.E7_DP*EXP(-1.4_DP/TWALL))
-C  EXPRESSION A.7 FOR C, STRONG-FLUX DEPENDENCE
+C  EXPRESSION A.7 FOR C, STRONG FLUX DEPENDENCE
             IF (MODCHM.EQ.3) C=1._DP/(1._DP+3.E-23_DP*FLX)
 C  EXPRESSION A.8 FOR C, new FLUX DEPENDENCE, roth, itpa 2003 st. petersburg
             IF (MODCHM.EQ.4) C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
@@ -826,7 +826,7 @@ C
 cdr
           final=final+yield2*wg(isam)
 cdr
-6000      continue
+ 6000     continue
           yield2=final
 cdr
         ELSE
@@ -844,7 +844,7 @@ C  Haasz-Davis formula, 1998, with flx. dep from Roth, Nucl.Fus 2004
          C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
          yield2=C * EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(9)
-C  USER SUPPLIED SPUTTER MODEL
+C  USER-SUPPLIED SPUTTER MODEL
         CALL EIRENE_SP1USR
       CASE DEFAULT
         write (iunout,*) 'error in sputer.f. modchm ?? ',modchm
@@ -897,8 +897,8 @@ C
 C  PARAMETER FOR ENERGY OF CHEMICALLY SPUTTERED PARTICLE
       ESPTC=ESPUTC(ISPZ,MSURF)  !  OPTION APRIL 2015: PRESCRIBE CONSTANT ENERGY FOR SPUTTERED PARTICLE
 C  USE DEFAULT, WHEN ESPUTC .LE. 0.0
-      IF(ESPTC.LE.TINY(ESPTC))  ESPTC=ENWALL 
-C  
+      IF(ESPTC.LE.TINY(ESPTC)) ESPTC=ENWALL
+C
       IF (ITYPC.EQ.1) THEN
         RSQDV=RSQDVA(IATMC)
         CVRSS=CVRSSA(IATMC)
@@ -913,7 +913,7 @@ C
 C
 C
       IF (ESPTC.GT.0.D0) THEN
-C  MONOENERGETIC CHEMICALLY SPUTTERED PARTICLES 
+C  MONOENERGETIC CHEMICALLY SPUTTERED PARTICLES
         VSPTC=RSQDV*SQRT(ESPTC)
 C
 C  SAMPLE SPEED VECTOR FROM COSINE
@@ -923,7 +923,7 @@ C
         VY=FC2(INIV4)
         VZ=FC3(INIV4)
         INIV4=INIV4-1
-        CALL EIRENE_ROTATF 
+        CALL EIRENE_ROTATF
      .   (VXSPTC,VYSPTC,VZSPTC,VX,VY,VZ,CRTX,CRTY,CRTZ)
         RETURN
 C
@@ -945,7 +945,7 @@ C
 
 20000 RETURN
 C
-991   CONTINUE
+  991 CONTINUE
       ICOUNT=ICOUNT+1
       IF (ICOUNT.GT.10) RETURN
       WRITE (iunout,*) 'ERROR IN SUBR. SPUTER, PHYSICAL SPUTTERING '
@@ -956,7 +956,7 @@ C
       WRITE (iunout,*) 'MSURF = ',MSS
       WRITE (iunout,*) 'DO NOT SPUTTER FOR PARTICLE NO. NPANU= ',NPANU
       RETURN
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SPUTER '
       MSS=MSURF
       IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
@@ -964,7 +964,7 @@ C
       WRITE (iunout,*) 'ENWALL=0 --> TWALL=0. '
       CALL EIRENE_EXIT_OWN(1)
       RETURN
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SPUTER '
       MSS=MSURF
       IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)

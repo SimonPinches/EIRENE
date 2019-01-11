@@ -8,9 +8,9 @@ C  CALLED FROM CONE
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: A(*)
       REAL(DP), INTENT(OUT) :: XP(*),YP(*)
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, VX, VY, VZ, ALF, T1, T2,
@@ -22,9 +22,9 @@ C
      .          RAD1, RAD2, PX1, PY1, PZ1
       INTEGER :: J, IX
       LOGICAL LERR
- 
+
       DATA EPS12 /1.E-12/
- 
+
       LERR=.FALSE.
       IX=IXS-1
       RAD1=T1*TAN(ALF)
@@ -68,7 +68,7 @@ C  MIT DER EBENE. ALAMDA MUSS POSITIV SEIN, SONST FALSCHE EINGABE
             ALAMDA=(-A(1)-(A(2)*PXX1+A(3)*PYY1+A(4)*PZZ1))/XN
             IF (ALAMDA.LT.0.) THEN
               WRITE (iunout,*) 'ERROR IN SUBR. SCCONE. SET ALAMDA=0.'
-              WRITE (iunout,*) 'NO INTERSECTION IN POSITIV DIRECTION'
+              WRITE (iunout,*) 'NO INTERSECTION IN POSITIVE DIRECTION'
               WRITE (iunout,*) 'WITH PLANE '
               ALAMDA=0.
               LERR=.TRUE.
@@ -142,11 +142,11 @@ C  DECIDE, WHICH ONE OF THE 2 SOLUTIONS TO TAKE
           ENDIF
         ENDIF
 C
-101     XX=PXX1+ALAMDA*PX21
+  101   XX=PXX1+ALAMDA*PX21
         YY=PYY1+ALAMDA*PY21
         ZZ=PZZ1+ALAMDA*PZ21
         IX=IX+1
         CALL EIRENE_PL3D(XX,YY,ZZ,XP(IX),YP(IX))
-100   CONTINUE
+  100 CONTINUE
       RETURN
       END

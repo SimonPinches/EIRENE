@@ -1,12 +1,13 @@
-Cdr  analog xsecta, xsectm,.... printout to be sync.  And: call xstot. But not ot processes
+Cdr  analogue to  xsecta, xsectm,.... printout to be sync.  
+cdr  And: call xstph for non-default photonic reaction options. 
 cdr  Unfinished code, for photons.
 c
-Cdr  in xsectp, there only call to xstrc.f.  
+Cdr  in xsectp, there only call to xstrc.f.
 cdr  At present: is seems to be just the other way round.
 C
       SUBROUTINE EIRENE_XSECTPH
 C
-C  TABLE FOR CROSS SECTION AND REACTION RATES FOR PHOTONS
+C  TABLE FOR CROSS-SECTION AND REACTION RATES FOR PHOTONS
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -16,14 +17,14 @@ C
       USE EIRMOD_CTRCEI
       USE EIRMOD_PHOTON
       IMPLICIT NONE
-csw
-csw   PHOTON COLLISIONS, OT - type
-csw
+c 
+cdr   PHOTON COLLISIONS, PH - type  (separate from OT processes, which are
+cdr                                  of H.11, H.12 type, popul. ratios)
+c
       integer :: kk,iphot,idsc,nrc,ipl0,ipl1,ipl2,ityp1,ityp2,ifnd,
-     .    updf,mode, idot
+     .    updf,mode, idph
 
-
-      idot=0
+      IDPH=0
 
       DO IPHOT=1,NPHOTI
         IDSC=0
@@ -35,20 +36,20 @@ C
         IF (NRCPH(IPHOT).EQ.0) THEN
           PHV_NPHOTI(IPHOT)=0
 C
-C  NON DEFAULT "OT" MODEL:
+C  NON-DEFAULT "PH" MODEL:
 C
         ELSEIF(NRCPH(IPHOT) > 0) THEN
           DO NRC=1,NRCPH(IPHOT)
             KK=IREACPH(IPHOT,NRC)
             IF (ISWR(KK).NE.7) CYCLE
             IDSC=IDSC+1
-            IDOT=IDOT+1
-            NREAOT(IDOT) = KK
+            IDPH=IDPH+1
+            NREAPH(IDPH) = KK
             CALL EIRENE_PH_XSECTPH (IPHOT,NRC,IDSC)
-CDR  HERE SHOULD BE CALL TO XSTOT  GENERAL ROUTINE FOR OT PROCESSES
+CDR  HERE SHOULD BE CALL TO XSTPH, GENERAL ROUTINE FOR PH PROCESSES
           ENDDO
           PHV_NPHOTI(IPHOT)=IDSC
-C  NO "OT" MODEL DEFINED
+C  NO "PH" MODEL DEFINED
         ELSE
           PHV_NPHOTI(IPHOT)=0
         ENDIF
@@ -69,12 +70,12 @@ C
 C
           IF(PHV_NPHOTI(iphot).eq.0) then
             CALL EIRENE_LEER(1)
-            WRITE (iunout,*) 'NO "OT"-REACTION FOR THIS PHOTON'
+            WRITE (iunout,*) 'NO "PH"-REACTION FOR THIS PHOTON'
             CALL EIRENE_LEER(1)
           ELSE
             DO IDSC=1,PHV_NPHOTI(IPHOT)
               CALL EIRENE_LEER(1)
-              WRITE (iunout,*) '(OTHER) REACTION NO. IROT= ',IDSC
+              WRITE (iunout,*) '(OTHER) REACTION NO. IRPH= ',IDSC
               CALL EIRENE_LEER(1)
 
                   ipl0=PHV_LGPHOT(iphot,idsc,1)
@@ -88,7 +89,7 @@ C
                   ityp2=PHV_N2NDOTph(iphot,idsc,1)
                   ipl2= PHV_N2NDOTph(iphot,idsc,2)
 
-                  write (iunout,*) 'irot,ipl0,il,kk,updf,mode'
+                  write (iunout,*) 'irph,ipl0,il,kk,updf,mode'
                   write (iunout,*)  idsc,ipl0,ifnd,kk,updf,mode
                   write (iunout,*) 'ityp1,ipl1,ityp2,ipl2'
                   write (iunout,*)  ityp1,ipl1,ityp2,ipl2

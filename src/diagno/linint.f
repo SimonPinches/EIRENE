@@ -1,15 +1,15 @@
 cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
 cdr            added: MX_compo
 cdr Oct 17  :
-cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5       
-cdr                    analogous to H emission lines,             NCHTAL=2 
-cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS 
+cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
+cdr                    analogous to H emission lines,             NCHTAL=2
+cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS
 cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
 cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
 c
 c    July 17 :  distinguish flags for output with spectral resolution from
 c               output with spatial resolution along LOS.
-c               Made  ARGST allocatable, conditional on  PRARGL,PLARGL
+c               Made ARGST allocatable, conditional on PRARGL,PLARGL
 cdr             plargl only, if prargl. To be done in input.f
 CDR             ditto: made allocatable AA, XNTG, VPLOT
 CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
@@ -63,9 +63,9 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_CTEXT
       USE EIRMOD_CPLMSK
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: IFIRST,ICHORI, ICHRD,IPVOT,NBC2,NAC2,ISP,
      .                       NSPI, JEN, NCHNI
       REAL(DP), INTENT(IN) :: C1(3),C2(3),PEN
@@ -79,10 +79,10 @@ C
      .          ZTST, SG, XPIV, X11, PHI11, ZPIV, YPIV, WINK, XD1,
      .          PPMA
       INTEGER :: NBCKAS, NBOCKS, MRSRFS, MPSRFS, MTSRFS, NPCLLS, NACLLS,
-     .           MSURFS, NTCLLS, J, JJ, JJJ, IPOLGS, IPERID_2,
-     .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2, 
+     .           MSURFS, NTCLLS, J, JJJ, IPOLGS, IPERID_2,
+     .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2,
      .           IPERID_1,
-     .           EIRENE_LEARC1, ISAVE, I, IM, NCELC, NCH, MX_COMPO, ND
+     .           EIRENE_LEARC1, I, IM, NCELC, NCH, MX_COMPO, ND
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
       REAL(DP), ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)
@@ -141,29 +141,29 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
           USE EIRMOD_PRECISION
           USE EIRMOD_PARMMOD
           INTEGER, INTENT(IN) :: IFIRST, JJJ
-          REAL(DP), INTENT(INOUT) :: 
+          REAL(DP), INTENT(INOUT) ::
      .              PSIG(0:NSPZ+10),ARGST(0:NSPZ+10,NRAD)
-          REAL(DP), INTENT(IN) ::    
+          REAL(DP), INTENT(IN) ::
      .              ZDS,DUMMY1,DUMMY2,XD0,YD0,ZD0,XD1,YD1,ZD1
         END SUBROUTINE EIRENE_SIGUSR
       END INTERFACE
 
       SAVE
- 
+
       NLTRC=TRCSIG.AND.IFIRST.EQ.0.AND.TRCHST
       NPANU=0
       SCOS=1.
       IPOLG=1
 C
-C  COMPUTE LINE INTEGRATED SIGNAL FOR A GIVEN LOS
+C  COMPUTE LINE-INTEGRATED SIGNAL FOR A GIVEN LOS
 C
       IF (IFIRST.GT.0) GOTO 100
-      
+
 !  ALLOCATE ARGST
       IF (.NOT.ALLOCATED(ARGST)) THEN
         IF (PRARGL.OR.PLARGL) THEN
 cdr  PRARGL/PLARGL: ENABLE STORING, PRINTING AND/OR PLOTTING OF PROFILES ALONG LINES-OF-SIGHT
-cdr  
+cdr
           ND = SIZE(PSIG)-1
           ALLOCATE (ARGST(0:ND,NRAD))
           ALLOCATE (AA(NRAD))
@@ -179,9 +179,9 @@ cdr
       LARGST = SIZE(ARGST,2) >= NSBOX
 
 c.......................................................................
-cdr  some plot stuff for spatially resolved LOS, 
+cdr  some plot stuff for spatially resolved LOS,
 cdr  ...still to be moved to separate routine
-cdr  into folders: plotting, plot_dummy... 
+cdr  into folders: plotting, plot_dummy...
 
       IF (PLARGL) THEN
         IF (.NOT.ALLOCATED(YPLOT)) THEN
@@ -213,7 +213,7 @@ cdr  into folders: plotting, plot_dummy...
         XMA = 0._DP
 C
 C  NULLPUNKT AUF DEM PAPIER
- 
+
         X0PL=10.
         Y0PL=3.
 C  ACHSENLAENGEN
@@ -252,7 +252,7 @@ C
       IF (NLTRA) THEN   ! NLTRA=.TRUE. => discrete toroidal approximation is used.
 C  IF ICHRD=0:
 C  C2(1) R COORDINATES IN THE TORUS SYSTEM (INCL. R0A!)
-C  C2(2) Z COORDINATES (REFERRED TO AS Y-COORDIANTE IN EIRENE)
+C  C2(2) Z COORDINATES (REFERRED TO AS Y-COORDINATE IN EIRENE)
 C  C2(3) ARE TOROIDAL ANGLES IN DEGREES
 C  ELSE
 C  C2 IS A VECTOR GIVEN IN THE LOCAL TOROIDAL CELL IPERID=ICHRD
@@ -271,7 +271,7 @@ C
           ENDIF
 C  FIND TOROIDAL BLOCK NUMBER OF P2
           IPERID_2=EIRENE_LEARCA(PHI22,ZSURF,1,NTTRA,1,'LININT 1 ')
-C  FIND LOCAL CO-ORDINATES IN IPERID_2 FOR C2: X0,Z0
+C  FIND LOCAL COORDINATES IN IPERID_2 FOR C2: X0,Z0
           CALL EIRENE_FZRTRI(X0,Z0,IPERID_2,X22,PHI22,IPERID_2)
           Y0=C2(2)
         ELSE
@@ -290,7 +290,7 @@ C  PIVOT POINT C1:
           ENDIF
 C  FIND TOROIDAL BLOCK NUMBER OF P1
           IPERID_1=EIRENE_LEARCA(PHI11,ZSURF,1,NTTRA,1,'LININT 2 ')
-C  FIND LOCAL CO-ORDINATES IN IPERID_2 FOR C1: X0_2,Z0_2
+C  FIND LOCAL COORDINATES IN IPERID_2 FOR C1: X0_2,Z0_2
           CALL EIRENE_FZRTRI(XPIV,ZPIV,IPERID_2,X11,PHI11,IPERID_1)
           YPIV=C1(2)
 C
@@ -315,10 +315,10 @@ C  C1(3) AND C2(3) Z COORDINATES (CM)
         VELY=C2(2)-C1(2)
         VELZ=C2(3)-C1(3)
 C
-      ELSEIF (NLTRT) THEN   ! NLTRT=.TRUE. => torus co-ordinates R,PHI,THETA. Option not ready.
+      ELSEIF (NLTRT) THEN   ! NLTRT=.TRUE. => torus coordinates R,PHI,THETA. Option not ready.
 C
-C  C1(1) AND C2(1) R COORDINATES IN CYLINDRICAL CO-ORDINATES
-C  C1(2) AND C2(2) Z COORDINATES IN CYLINDRICAL CO-ORDINATES
+C  C1(1) AND C2(1) R COORDINATES IN CYLINDRICAL COORDINATES
+C  C1(2) AND C2(2) Z COORDINATES IN CYLINDRICAL COORDINATES
 C  C1(3) AND C2(3) ARE TOROIDAL ANGLES IN DEGREES
 C
 C  TO BE WRITTEN
@@ -338,7 +338,6 @@ C
       IPHOT=0
       ISPZ=0
       NPANU=0
-      ISAVE=0
 C
 C NEXT: FIND STARTING POINT FOR INTEGRATION, CELL NUMBERS
 C       START SEARCH AT C2. CELL NUMBERS OF C2:
@@ -415,7 +414,7 @@ C
         TRCHST=TRCSAV
       ENDIF
 C
-11    CONTINUE
+   11 CONTINUE
       IF (NLTRA) X01=X0+RMTOR
       X00=X0
       Y00=Y0
@@ -423,7 +422,7 @@ C
       Z01=Z0
 C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS THROUGH TRANSPARENT
 C                            SURFACES FROM THIS POINT
-14    CONTINUE
+   14 CONTINUE
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
       NJUMP=0
       DO I=1,NIMINT
@@ -466,7 +465,7 @@ C       NLPR.....
 C
 C  SCAN OVER SEGMENT
 C
-21    CONTINUE
+   21 CONTINUE
 C
 C  TS:   DISTANCE TO NEXT SURFACE OF STANDARD MESH
 C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
@@ -533,9 +532,9 @@ C     IF (ISRFCL.EQ.2) CALL TIMCOL (...                          )
 C
 C  NO, CONTINUE TRACK
 C
-26    CONTINUE
+   26 CONTINUE
 C
-C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
+C  NEXT CELL - CHECK FOR ESCAPE OR NON-DEFAULT ACTING STANDARD SURFACE
 C
       select case (LEVGEO)
       case (:3)
@@ -594,7 +593,7 @@ C
       IF (NRCELL.GT.NR1STM.OR.NRCELL.LT.1) GOTO 991
       GOTO 21
 C
-38    CONTINUE
+   38 CONTINUE
       IF (ILIIN(MSURF).LE.0) GOTO 14
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
@@ -604,7 +603,7 @@ C     PERIODICITY (inspired by escape.f):
 C
 C  STARTING POINT FOR INTEGRATION FOUND:  SURFACE MSURF
 C
-16    VELX=-VELX
+   16 VELX=-VELX
       VELY=-VELY
       VELZ=-VELZ
 C
@@ -635,7 +634,7 @@ C  TAKE THIS AS STARTING POINT FOR LINE INTEGRATION
 C  THE END POINT FOR LINE INTEGRATION WILL BE FOUND DURING INTEGRATION
 C  LOOP, SEE STATEMENT 380 FF, BELOW
 C
-100   CONTINUE
+  100 CONTINUE
 C
 C  INITIALIZE *TIMER*,*TIMEP*,*TIMET*,*TIMEA* AND SIGNAL DATA
 C
@@ -690,20 +689,20 @@ C
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
             CALL EIRENE_SIGHE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-          CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,      
+          CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
         ELSE
           CALL EIRENE_SIGTST(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ENDIF
       END IF
- 
+
       IF (IFIRST < 0) THEN
         TRAJ(ICHORI)%TRJ%VX = VELX
         TRAJ(ICHORI)%TRJ%VY = VELY
         TRAJ(ICHORI)%TRJ%VZ = VELZ
       END IF
 C
-101   CONTINUE
+  101 CONTINUE
       IF (NLTRA) X01=X0+RMTOR
       X00=X0
       Y00=Y0
@@ -711,7 +710,7 @@ C
       Z01=Z0
 C  CLEAR WORK VARIABLES AND: CONTINUE FLIGHTS THROUGH TRANSPARENT
 C                            SURFACES FROM THIS POINT
-104   CONTINUE
+  104 CONTINUE
       NCELL=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
       NJUMP=0
       DO I=1,NIMINT
@@ -754,7 +753,7 @@ C       NLPR.....
 C
 C  SCAN OVER SEGMENT
 C
-210   CONTINUE
+  210 CONTINUE
 C
 C  TS:   DISTANCE TO NEXT SURFACE OF STANDARD MESH
 C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
@@ -810,7 +809,7 @@ C
       ENDIF
       IF (ZTST.GE.1.D30) GOTO 990
 C
- 
+
       IF (IFIRST < 0) THEN
 CDR WAS PASSIERT HIER ???
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
@@ -823,9 +822,8 @@ CDR WAS PASSIERT HIER ???
           CALL EIRENE_CELL_INSERT(ICHORI,NEW_CELL)
         END DO
       END IF
- 
+
       DO 250 J=1,NCOU
-        JJ=J
         NCELL=NRCELL+NUPC(J)*NR1ST+NBLCKA
         XD0 = X0 + ZT*VELX
         YD0 = Y0 + ZT*VELY
@@ -836,7 +834,7 @@ CDR WAS PASSIERT HIER ???
         YD1 = Y0 + ZT*VELY
         ZD1 = Z0 + ZT*VELZ
         IF (ZDS.LT.0.) GOTO 990
-        
+
 cdr
         JJJ=JJJ+1
         IF (JJJ.GT.NRAD) GOTO 995
@@ -844,7 +842,7 @@ cdr
         IF (LARGST) XNTG(JJJ)=TRACKS+ZDS*0.5
 
         TRACKS=TRACKS+ZDS
-        
+
 C  contribution to line-of-sight integral, segment no. jjj
         IF (IFIRST >= 0) THEN
           IF (NCHTAL(ICHORI).EQ.1) THEN
@@ -863,7 +861,7 @@ C  contribution to line-of-sight integral, segment no. jjj
           ENDIF
         ENDIF
 C
-250   CONTINUE
+  250 CONTINUE
 C
 C  STOP TRACK ?
 C
@@ -873,7 +871,7 @@ C     IF (ISRFCL.EQ.2) CALL TIMCOL (...            *104,*800)
 C
 C  NO, CONTINUE TRACK
 C
-C  NEXT CELL - CHECK FOR ESCAPE OR NON DEFAULT ACTING STANDARD SURFACE
+C  NEXT CELL - CHECK FOR ESCAPE OR NON-DEFAULT ACTING STANDARD SURFACE
 C
       select case (LEVGEO)
       case (:3)
@@ -935,7 +933,7 @@ C
 C
 C   CELL LOOP FINISHED
 C
-380   CONTINUE
+  380 CONTINUE
       IF (ILIIN(MSURF).LE.0) GOTO 104
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
@@ -955,14 +953,14 @@ C
         TRCHST=TRCSAV
       ENDIF
 C
-500   CONTINUE
+  500 CONTINUE
 C
 C  LINE OF SIGHT INTEGRATION IS DONE NOW.
 C  DEALLOCATE ARRAYS IN SIGCX, SIGRAD, ETC...
 C
- 
+
       IF (IFIRST < 0) RETURN
- 
+
       IF (NCHTAL(ICHORI).EQ.1) THEN
         CALL EIRENE_SIGCX (2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
       ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
@@ -1030,9 +1028,9 @@ C
           TXSPEC(IPLOTS)(1:8)='ENERGY ='
           WRITE (TXSPEC(IPLOTS)(9:),'(ES12.4)') PEN
         END IF
- 
+
         IF (JEN == NCHNI) THEN    ! last energy for this present chord?
-C  INITALIZE NEW PICTURE FOR NEW CHORD
+C  INITIALIZE NEW PICTURE FOR NEW CHORD
           IF (NSPSCL(ICHORI).EQ.0) THEN
             LOGX=.FALSE.
             LOGY=.FALSE.
@@ -1059,7 +1057,7 @@ C  INITALIZE NEW PICTURE FOR NEW CHORD
           IF (NCHTAL(ICHORI) == 3)
      .      TXHEAD(1:58) =
      .      'SPECTRAL EMISSIVITY DISTRIBUTION ALONG LINE OF SIGHT      '
- 
+
           CALL EIRENE_PLTTLY (XNTG,YPLOT,VPLOT,YMN2,YMX2,
      .         IR1,IR2,IRS,
      .         IPLOTS,TXTALL,TXSPEC,TXUNIT,TXTRUN,TXHEAD,
@@ -1073,22 +1071,25 @@ C
           WRITE (iunout,*) 'ENERGY (EV): ',PEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), FOR IATM= ',ISP
           DO 530 J=1,JJJ
-530         WRITE (iunout,*) J,XNTG(J),AA(J)
+            WRITE (iunout,*) J,XNTG(J),AA(J)
+  530     CONTINUE
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), CONTRIBUTION ISP= ',ISP
           DO 540 J=1,JJJ
-540         WRITE (iunout,*) J,XNTG(J),AA(J)
+            WRITE (iunout,*) J,XNTG(J),AA(J)
+  540     CONTINUE
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           WRITE (iunout,*) 'ENERGY (EV): ',PEN
           WRITE (iunout,*)  'J,XNTG(J),ARGST(J), FOR IPHOT = ',ISP
           DO 550 J=1,JJJ
-550         WRITE (iunout,*) J,XNTG(J),AA(J)
+            WRITE (iunout,*) J,XNTG(J),AA(J)
+  550     CONTINUE
         ENDIF
       ENDIF
 C
       RETURN
 C
-990   CONTINUE
+  990 CONTINUE
       CALL EIRENE_MASAGE
      .  ('ERROR IN LININT, STEP SIZE.LE.0. OR UNDEFINED  ')
       CALL EIRENE_MASR3 ('ZDT1,ZTST,ZDS=          ',ZDT1,ZTST,ZDS)
@@ -1096,12 +1097,12 @@ C
      .  ('INTEGRATION IN LININT IS STOPPED               ')
       CALL EIRENE_MASJ1 ('CHORD   ',ICHORI)
       GOTO 380
-991   CONTINUE
+  991 CONTINUE
       CALL EIRENE_MASAGE
      .  ('ERROR IN LININT, NRCELL OUT OF RANGE           ')
       CALL EIRENE_MASJ1 ('CHORD   ',ICHORI)
       CALL EIRENE_EXIT_OWN(1)
-995   CONTINUE
+  995 CONTINUE
       CALL EIRENE_MASAGE
      .  ('ERROR IN LININT, NOT ENOUGH STORAGE FOR LINE   ')
       CALL EIRENE_MASAGE
@@ -1120,7 +1121,7 @@ c  these arrays have been allocated for PRSPEC option.
         DEALLOCATE (VPLOT)
         DEALLOCATE (XNTG)
       END IF
- 
+
       RETURN
       END
 
@@ -1129,7 +1130,3 @@ c  these arrays have been allocated for PRSPEC option.
 c  clarify role of ifirst<0 first.
       RETURN
       END
-
-
-       
-

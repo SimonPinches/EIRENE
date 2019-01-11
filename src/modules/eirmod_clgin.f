@@ -1,18 +1,18 @@
       MODULE EIRMOD_CLGIN
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CLGIN, EIRENE_DEALLOC_CLGIN, 
+
+      PUBLIC :: EIRENE_ALLOC_CLGIN, EIRENE_DEALLOC_CLGIN,
      P          EIRENE_INIT_CLGIN,
      P          EIRENE_SET_DEF_SURF_DATA
- 
+
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-cdr  rlwmn, rlwmx: weight window for surface. Currently unused 
+cdr  rlwmn, rlwmx: weight window for surface. Currently unused
      R RLWMN(:),    RLWMX(:),
      R EWALL(:),    EWBIN(:),    TRANSP(:,:,:),
      R FSHEAT(:),
@@ -22,7 +22,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
      R EXPPL(:,:),  EXPEL(:,:),  EXPIL(:,:),
      R RECYCS(:,:),
      R RECYCC(:,:), SPTPRM(:,:), ESPUTS(:,:), ESPUTC(:,:)
- 
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I ILSWCH(:),     ILEQUI(:),     ILTOR(:),
      I ILSIDE(:),     ILIIN(:),      ILREF(:),
@@ -38,21 +38,21 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
      I INMP1I(:,:,:), INMP2I(:,:,:), INMP3I(:,:,:),
      I IGFIL(:),
      I IGJUM0(:),     IGJUM1(:,:),   IGJUM2(:,:),   IGJUM3(:,:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NSTSI,
      I NLIMPB
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CLGIN
- 
+
       IF (ALLOCATED(RLWMN)) RETURN
- 
+
       NLIMPB=NLIMPS/NOPTM1+1
- 
+
       ALLOCATE (RLWMN(0:NLIMPS))
       ALLOCATE (RLWMX(0:NLIMPS))
       ALLOCATE (EWALL(0:NLIMPS))
@@ -72,7 +72,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (SPTPRM(NSPZ,0:NLIMPS))
       ALLOCATE (ESPUTS(NSPZ,0:NLIMPS))
       ALLOCATE (ESPUTC(NSPZ,0:NLIMPS))
- 
+
       ALLOCATE (ILSWCH(0:NLIMPS))
       ALLOCATE (ILEQUI(0:NLIMPS))
       ALLOCATE (ILTOR(0:NLIMPS))
@@ -86,7 +86,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (ILBOX(0:NLIMPS))
       ALLOCATE (ILPLG(0:NLIMPS))
       ALLOCATE (ISPUT(2,0:NLIMPS))
- 
+
       ALLOCATE (NLIMII(NOPTIM))
       ALLOCATE (NLIMIE(NOPTIM))
       ALLOCATE (ISWICH(6,0:NLIMPS))
@@ -103,30 +103,30 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (INMP1I(0:N1ST,0:N2ND,0:N3RD))
       ALLOCATE (INMP2I(0:N1ST,0:N2ND,0:N3RD))
       ALLOCATE (INMP3I(0:N1ST,0:N2ND,0:N3RD))
- 
+
       ALLOCATE (IGFIL(0:NLIMPS))
       ALLOCATE (IGJUM0(0:NLIMPS))
       ALLOCATE (IGJUM1(0:NLIMPS,NLIMPB))
       ALLOCATE (IGJUM2(0:NLIMPS,NLIMPB))
       ALLOCATE (IGJUM3(0:NOPTIM,NLIMPB))
- 
+
       WRITE (55+IFOFF,'(A,T25,I15)')
      .       ' CLGIN ',(NLIMPS+1)*(13*NSPZ+7)*8 +
      .                 (2*NOPTIM+(NLIMPS+1)*(14+9+4*NSPZ)+9*NSTS+
      .                  (N1ST+1)*(N2ND+1)*(N3RD+1)*3)*4 +
      .                 ((NLIMPS+1)*(2+2*NLIMPB)+
      .                  NLIMPB*(NOPTIM+1))*4
- 
+
       CALL EIRENE_INIT_CLGIN
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CLGIN
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CLGIN
- 
+
       IF (.NOT.ALLOCATED(RLWMN)) RETURN
- 
+
       DEALLOCATE (RLWMN)
       DEALLOCATE (RLWMX)
       DEALLOCATE (EWALL)
@@ -146,7 +146,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       DEALLOCATE (SPTPRM)
       DEALLOCATE (ESPUTS)
       DEALLOCATE (ESPUTC)
- 
+
       DEALLOCATE (ILSWCH)
       DEALLOCATE (ILEQUI)
       DEALLOCATE (ILTOR)
@@ -160,7 +160,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       DEALLOCATE (ILBOX)
       DEALLOCATE (ILPLG)
       DEALLOCATE (ISPUT)
- 
+
       DEALLOCATE (NLIMII)
       DEALLOCATE (NLIMIE)
       DEALLOCATE (ISWICH)
@@ -177,19 +177,19 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       DEALLOCATE (INMP1I)
       DEALLOCATE (INMP2I)
       DEALLOCATE (INMP3I)
- 
+
       DEALLOCATE (IGFIL)
       DEALLOCATE (IGJUM0)
       DEALLOCATE (IGJUM1)
       DEALLOCATE (IGJUM2)
       DEALLOCATE (IGJUM3)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CLGIN
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CLGIN
-cdr  rlwmn, rlwmx: weight window, unused. 
+cdr  rlwmn, rlwmx: weight window, unused.
       RLWMN  = 1.E-5_DP
       RLWMX  = 1.E5_DP
 c
@@ -210,7 +210,7 @@ c
       SPTPRM = 0._DP
       ESPUTS = 0._DP
       ESPUTC = 0._DP
- 
+
       ILSWCH = 0
       ILEQUI = 0
       ILTOR  = 0
@@ -224,7 +224,7 @@ c
       ILBOX  = 0
       ILPLG  = 0
       ISPUT  = 0
- 
+
       NLIMII = 0
       NLIMIE = 0
       ISWICH = 0
@@ -241,19 +241,19 @@ c
       INMP1I = 0
       INMP2I = 0
       INMP3I = 0
- 
+
       IGFIL  = 0
       IGJUM0 = 0
       IGJUM1 = 0
       IGJUM2 = 0
       IGJUM3 = 0
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CLGIN
- 
- 
+
+
       SUBROUTINE EIRENE_SET_DEF_SURF_DATA
- 
+
       INTEGER :: NBITS, ISTS, IERROR, J, I
 C
 C  SET DEFAULT 'ADDITIONAL SURFACE' DATA
@@ -279,18 +279,18 @@ C
         IRPTA(ISTS,1)=1
         IRPTE(ISTS,1)=MAX(2,N1ST)
         INUMP(ISTS,1)=0
-C  DEFAULT POLOIDAL INDICES FOR "NON DEFAULT STANDARD SURFACES"
+C  DEFAULT POLOIDAL INDICES FOR "NON-DEFAULT STANDARD SURFACES"
         IRPTA(ISTS,2)=1
         IRPTE(ISTS,2)=MAX(2,N2ND)
         INUMP(ISTS,2)=0
-C  DEFAULT TOROIDAL INDICES FOR "NON DEFAULT STANDARD SURFACES"
+C  DEFAULT TOROIDAL INDICES FOR "NON-DEFAULT STANDARD SURFACES"
         IRPTA(ISTS,3)=1
         IRPTE(ISTS,3)=MAX(2,N3RD)
         INUMP(ISTS,3)=0
       END DO
- 
+
       RETURN
       END SUBROUTINE EIRENE_SET_DEF_SURF_DATA
- 
- 
+
+
       END MODULE EIRMOD_CLGIN

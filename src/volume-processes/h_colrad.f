@@ -1,22 +1,22 @@
 cdr   feb   18: sync with h_colrad, H,H2 CRM, Sawada-Fujimoto-Reiter
 cdr             cleaned up, more comments.
-cdr             added lopaque, ebeta,e_alpcr
+cdr             added lopaque, ebeta, e_alpcr
 cdr      tbd:  avoid 3rd right  hand side in popcof if Q_ext==0: done. l_ext
 cdr      tbd:  better do: gauss laguerre integration of gaunt3 and gaunt4 ?
 cdr      tbd:  avoid execution of develop-tests: e_alpcr_T, e-scr_T,....: done. ctt
-cdr   Jan   18: parameter ICELL removed, icell is now controlled by 
+cdr   Jan   18: parameter ICELL removed, icell is now controlled by
 cdr             new calling CRM-driver routine COLRAD
-cdr             popcof and matrix solver LAX, GALPD extended to handle 
+cdr             popcof and matrix solver LAX, GALPD extended to handle
 c               up to three right hand sides (parent states) simultaneously
 c               rather than inverting the matrix three times.
 cdr   July  17: bug fix in function mmdei (exp. integr.)
-cdr             A typo during syncronisation with solps-iter. 
-cdr             correct: z=0.25 *y, rather then z=0.25+0*y
-cdr:  April 17: syncronized with version from solps-iter: spelling errors in comments,
-cdr             use EIRMOD_PRECISION instead of real*8 
+cdr             A typo during synchronisation with solps-iter.
+cdr             correct: z=0.25*y, rather than z=0.25+0*y
+cdr:  April 17: synchronized with version from solps-iter: spelling errors in comments,
+cdr             use EIRMOD_PRECISION instead of real*8
 cdr             (this may complicate stand alone use, outside eirene)
 cdr             call "exit_own" rather than "stop", further cleanup...
-cdr             remaining differences: 
+cdr             remaining differences:
 cdr                 use eirmod_ccrm (Vlad Kotov) in solps-iter (commented out)
 cdr             lima=34 or lima=40, lima undefined in solps-iter ?
 
@@ -24,8 +24,8 @@ cdr: nov. 2015  added first argument in parameter list: ICELL
 CDR  to be done:  introduce an array 'visited(icell)' and store e-rate, etc..., further possible data
 cdr               for next call to H_colrad, see e.g. fem routine df_xyz.f in geometry block
 cdr               currently this new argument is not yet used.
-cdr  H_COLRAD is called from rate_coef.f, from energy_rate_coef.f, 
-cdr                 and from other_rate_coef.f  
+cdr  H_COLRAD is called from rate_coef.f, from energy_rate_coef.f,
+cdr                 and from other_rate_coef.f
 cdr           to provide ionization, radiation and electron cooling rates, either in a given cell (tbd) or
 cdr           for given Te, ne., as well as reduced CR population coefficients
 c****************************************************************************************************
@@ -43,8 +43,8 @@ C   INPUT:
 C   TEMP      : ELECTRON TEMPERATUR
 C   DENSEL    : ELECTRON DENSITY
 C
-C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)   
-C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules, 
+C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
+C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules,
 C                                     or photo-excitation
 C   LOPAQUE, POP_ESC:  population escape factor
 
@@ -64,7 +64,7 @@ c
 c   ALPHA(N): H+    ->  H*(N)  three-body recombination from H+
 c                              (inverse to S: elect. impact ionization)
 c   BETA(N) : H+    ->  H*(N)  radiative rec. from H+
-C   EBETA      :                  CORRESPONDING ENERGY WEIGHTED RATE
+C   EBETA      :                  CORRESPONDING ENERGY-WEIGHTED RATE
 c   C(1,N)  : H(1)  ->  H*(N)  excitation from ground state
 C   Q_EXT(N)   : ???   ->  H*(N)  external source
 
@@ -84,7 +84,7 @@ ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
 C     USE EIRMOD_CCRM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
- 
+
 C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
       REAL(DP), INTENT(INOUT) :: Q_EXT(40), POP_ESC(40,40)
@@ -94,10 +94,10 @@ C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(OUT) :: E_ALPCR,  E_SCR,   E_SCR_EXT
 ctt   REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T
       REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP2(40)
- 
+
       REAL(DP), SAVE :: A(40,40), E_AT(40), OSC(40,40)
 c     REAL(DP), SAVE :: POP_ESC(40,40)
- 
+
       REAL(DP) :: C(40,40),S(40),F(40,40)
      &           ,SAHA(40),BETA(40),ALPHA(40),EBETA(40)
       REAL(DP) :: R1(40),R0(40),R_EXT(40)
@@ -127,13 +127,13 @@ cdr  better: move lopaque, pop_esc outside this routine. And check always
         CALL EIRENE_EINSTN(OSC,A,E_AT,40,lopaque,POP_ESC)
         IFRST = 1
       END IF
- 
+
 c
 c
 C ATOM
       CALL EIRENE_CLSAHA(TEMP,SAHA)
       CALL EIRENE_RATCOF(TEMP,OSC,SAHA,C,F,S,ALPHA,BETA,EBETA,lopaque)
- 
+
 C
 C***********************************************************************
 C
@@ -143,7 +143,7 @@ C
       CALL EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUPA,LIMA,  ! ebeta is not needed here
      &             R0,R1,R_EXT,
      &                   Q_EXT,L_EXT)
- 
+
 C TRAINS OF ELECTRONICALLY EXCITED H
       DO IP=2,LIMA
 C
@@ -153,7 +153,7 @@ CDR COUPLING TO H ATOMS
         POP1(IP)=R1(IP)*DENSEL
 CDR COUPLING TO EXTERNAL SOURCE Q  FOR H*(N)
         POP2(IP)=R_EXT(IP)
- 
+
       END DO
 C  EFFECTIVE COLLISION RATE COEFFICIENTS, ATOMS
       CALL EIRENE_IONREC(C,S,SAHA,A,ALPHA,BETA,
@@ -171,12 +171,12 @@ ctt  &             ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T
      &              )
 C***********************************************************************
 C
- 
+
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
       RETURN
       END SUBROUTINE EIRENE_H_COLRAD
- 
+
 C**********************************************************************
       SUBROUTINE EIRENE_EINSTN(F,A,E_AT,LIM,LOPAQUE,POP_ESC)
 C
@@ -198,7 +198,7 @@ C
       DO 100 I=1,LIM
         P=I
         E_AT(I)=UH*(1.0-1.0/P**2)
-100   CONTINUE
+  100 CONTINUE
 
       DO 101 I=1,LIM-1
       DO 102 J=I+1,LIM
@@ -267,7 +267,7 @@ C***********************************************************************
      .                  ,lopaque)
 C
 C     RATE COEFFICIENTS FOR ATOMIC HYDROGEN
-CDR   ALSO: ERATE, ENERGY WEIGHTED RATE FOR RAD. RECOMB.
+CDR   ALSO: ERATE, ENERGY-WEIGHTED RATE FOR RAD. RECOMB.
 C
 C
 C
@@ -487,11 +487,11 @@ c   next: radiative recombination: BETA
 
       DO 602 I=1,40
 
-      P=I
-      XP=UH/TEMP/P**2
+        P=I
+        XP=UH/TEMP/P**2
         EP=UH/P**2
         CALL EIRENE_CLBETA(XP,P,XS,EXS) ! return XS,EXS for rad. rec. rate and
-c                                  electron energy weighted rate, both: into P state at T= temp,
+c                                  electron energy-weighted rate, both: into P state at T= temp,
 
 
         BETA(I) = 5.197D-14*(UH/TEMP)**.5/P   *XS
@@ -513,11 +513,11 @@ C  EKIN=  <SIGMA * V * EKIN(ELEC)>   (EV*CM**3/S)
             DO 57 II=1,7
               JJ=8-II
               DCCX=DCCX*ELN+RECOMB(JJ+1,Iii)*JJ
- 57         CONTINUE
+   57       CONTINUE
             EBETA(I)=TEMP*BETA(I)*(DCCX+1.5)
           ENDIF
 
-602   CONTINUE
+  602 CONTINUE
 c
       if (lopaque) beta(1)=0.
 c
@@ -543,9 +543,9 @@ C
       DO 1 J=1,40
       C(I,J)=0.0
     1 F(I,J)=0.0
- 
+
       TE=TEMP*1.1605E4
- 
+
 C*********  1 -> J
       I=1
       P=I
@@ -565,7 +565,7 @@ C*********  2-10 -> J
 
       GG=((P-2.)/8.)**0.25
       C(I,J)=(1.-GG)*CJ+GG*CV
-110   F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+  110 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
 
 
 C*********  I(>11) -> J
@@ -606,7 +606,7 @@ C*********  S  I(>11) ->
   220 S(I)=SV
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COF1N(U,OSC,TE,F,I,J)
 C
@@ -625,7 +625,7 @@ C
 
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
- 
+
       P=I
       Q=J
       X=1-P**2/Q**2
@@ -853,12 +853,12 @@ C
       EGY=E0Y-2*E1Y+E2Y
       EGZ=E0Z-2*E1Z+E2Z
       E2=EGY-EGZ
- 
+
       S=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)
       END IF
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFJS2(TE,W,I)
 C
@@ -875,7 +875,7 @@ C
       DIMENSION G(0:2,40)
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
- 
+
       G(0,1)= 1.1330
       G(1,1)=-0.4059
       G(2,1)= 0.07014
@@ -886,7 +886,7 @@ C
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
   350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
- 
+
 C     IF (I.EQ.1) THEN
       PP=I
       P=1.0
@@ -894,18 +894,18 @@ C     IF (I.EQ.1) THEN
       R=0.45
       Z=R+Y
       RX=-0.59
- 
+
       A=0.0
       DO 223 K=0,2
   223 A=A+G(K,1)/(K+3)
       A=A*1.9603*P
- 
+
       B=0.66667*P**2*(5-0.603)
       C1=2*P**2
       B=B-A*LOG(C1)
       Y1=-Y
       Z1=-Z
- 
+
       E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
       E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
       E2Y=EXP(-Y)*(1.0-EIRENE_GINT(Y))
@@ -916,13 +916,13 @@ C     IF (I.EQ.1) THEN
       EGY=E0Y-2*E1Y+E2Y
       EGZ=E0Z-2*E1Z+E2Z
       E2=EGY+RX*EGZ
- 
+
       W=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)*EXP(13.595/TE*1.1605E4)
      */2.414D15/SQRT(TE**3)
- 
+
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE EIRENE_COFVS(TEMP,S,I)
 C
@@ -936,15 +936,15 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
- 
+
       P=I
       UI=13.595/TEMP/P**2
       UIZ=UI**2.33+4.38*UI**1.72+1.32*UI
       S=9.56D-6/TEMP**1.5*EXP(-UI)/UIZ
- 
+
       RETURN
       END
- 
+
 cdr
       FUNCTION EIRENE_GINT(xX)
       USE EIRMOD_PRECISION
@@ -963,8 +963,8 @@ cdr
      *            (GG(5)+GG(6)*X+GG(7)*X**2+GG(8)*X**3+X**4)
       RETURN
       END
- 
- 
+
+
 C***********************************************************************
       SUBROUTINE EIRENE_CLBETA(XP,P,S,ES)
 C
@@ -977,7 +977,7 @@ c   output:
 C      S=  normalized rate coeff for rad rec to state P,
 C          then in calling routine ratcof:
 c          BETA(P) =5.197D-14*(UH/TEMP)**.5/P * S      = 5.197D-14*(EP/TEMP)**.5 * S
-C      ES= normalized electron energy weighted rate coefficient
+C      ES= normalized electron energy-weighted rate coefficient
 C          then in calling routine ratcof:
 c          EBETA(P)=5.197D-14*(UH/TEMP)**.5/P * EP* ES = 5.197D-14*(EP/TEMP)**.5 * EP *ES
 C
@@ -990,28 +990,28 @@ C
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
       COMMON PP,XPP
       EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4
- 
+
       II=INT(P)
       PP=P
       XPP=XP   !  uh/temp/p**2
- 
+
       A=0.0_DP
       B=20.0_DP
       EPSR=1.0D-4
 cdr   EPSR=1.0D-5  slowed down code by factor of 100 !!
       NMIN=15
       NMAX=511
- 
+
       CALL  EIRENE_AQC8(A,B,EIRENE_GAUNT3,EPSR,NMIN,NMAX, S)
       CALL  EIRENE_AQC8(A,B,EIRENE_GAUNT4,EPSR,NMIN,NMAX,ES)
 C
- 
- 
+
+
       RETURN
       END
- 
+
 C***********************************************************************
- 
+
       FUNCTION EIRENE_GAUNT3(X)
       USE EIRMOD_PRECISION
       IMPLICIT NONE
@@ -1025,9 +1025,8 @@ C***********************************************************************
       RETURN
       END
 
-
       FUNCTION EIRENE_GAUNT4(X)
-c  same as gaunt3, but for energy weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
+c  same as gaunt3, but for energy-weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
 c  gaunt4= u * gaunt3,  and additional pre-factor Ep = UH/(p^2), additional to (EP/T)^...
 
 cdr careful: integration of gaunt4 fails above Te gt 4500 eV
@@ -1042,7 +1041,7 @@ cdr careful: integration of gaunt4 fails above Te gt 4500 eV
      .    (U**2+4./3.*U+1.)/B**(4./3.)/(U+1.)**(7./3.))*EXP(-X)
       RETURN
       END
- 
+
 C***********************************************************************
       SUBROUTINE
      .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
@@ -1051,7 +1050,7 @@ C***********************************************************************
 C
 C     SOLUTION OF RATE EQUATION FOR ATOMIC HYDROGEN
 C
-C  COPY OF ORIGINAL ROUTINE EIRENE_POPCOF FOR SIMULTANEOUS SOLUTION 
+C  COPY OF ORIGINAL ROUTINE EIRENE_POPCOF FOR SIMULTANEOUS SOLUTION
 c  WITH OF UP TO 3 RIGHT HAND SIDES. (DEFAULT: 2: IONISATION, RECOMBINATION)
 c  l_ext: indicate that 3rd right hand side term is requested
 C
@@ -1064,13 +1063,13 @@ C
       REAL(DP) :: BLAX(3,40)
       LOGICAL :: L_EXT
       dimension ip(40)
- 
+
       DO 201 K=2,LUP-1
- 
+
         DO 202 L=2,K
 cdr stoss bevoelkerung von k von unten
   202     W(K,L)=C(L,K)*DENSEL
- 
+
 cc diagonale
 cc entvoelkerung durch stoesse nach unten
         SUMF=0.
@@ -1087,21 +1086,21 @@ cc  spontan nach unten
 cdr entvoelkerung von k: stoesse nach unten, nach oben, ionis, spontan
 cdr                      nach unten
         W(K,K)=-(DENSEL*(SUMF+SUMC+S(K))+SUMA)
- 
+
 cc diagonale fertig
- 
+
         DO 203 L=K+1,LUP
 cdr bevoelkerung durch: stoesse von oben, spontan von oben
   203     W(K,L)=DENSEL*F(L,K)+A(L,K)
- 
+
   201 CONTINUE
 cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
- 
- 
+
+
 c  special treatment letzter zustand lup: 2-->lup, 3-->lup,..., gibt es nur bei excitation, nicht
 c                                  bei de-exit, auch nicht bei rad rec.
       DO 211 L=2,LUP-1
- 
+
   211 W(LUP,L)=C(L,LUP)*DENSEL
 c  beitrag des letzten zustandes lup zu diagonal
       SUMF=0.
@@ -1113,9 +1112,9 @@ c  beitrag des letzten zustandes lup zu diagonal
       SUMA=0.
       DO 312 I=1,LUP-1
   312 SUMA=SUMA+A(LUP,I)
- 
+
       W(LUP,LUP)=-(DENSEL*(SUMF+SUMC+S(LUP))+SUMA)
- 
+
 C  RECHTE SEITEN:
       DO 550 K=2,LUP
 
@@ -1138,7 +1137,7 @@ c  ionisation e + H --> H*
 c  external source: Q_EXT
         W(K,LUP+3)=-Q_EXT(K)
   550 CONTINUE
- 
+
 cdr w besetzt fuer w(i,j) i=2,lup,j=2,lup+3
 cdr OK, AS LONG AS lup<38
 
@@ -1155,10 +1154,10 @@ c  two or three right linearly additive hand side terms?
       DO 3000 J=1,LUP-1
         BLAX(1:ie,J)=WA(J,LUP:LUP+ie-1)
  3000 CONTINUE
- 
+
       CALL EIRENE_LAX_M(WA,40,LUP-1,BLAX,3,ie,0.0,1,IS,VW,IP,ICON)
 c
- 
+
         DO J=1,LUP-1
 coupling to H+
             R0(J+1)   =BLAX(1,J)
@@ -1173,7 +1172,7 @@ coupling to Q_EXT
         ELSE
           R_EXT=0.
         ENDIF
- 
+
       RETURN
       END
 
@@ -1240,9 +1239,9 @@ C***********************************************************************
      &                    R0,R1,DENSEL,LUP,LIM,
      &                    F,R_EXT,Q_EXT,L_EXT,E_AT,
      &                    ALPCR,      SCR,    SCR_EXT,   !  ordinary rate coeffcients
-     &                    E_ALPCR,  E_SCR,  E_SCR_EXT    !  electron energy weighted rate coefficients
+     &                    E_ALPCR,  E_SCR,  E_SCR_EXT    !  electron energy-weighted rate coefficients
 ctt  &                   ,E_ALPCR_T,E_SCR_T,E_SCR_EXT_T  !  radiation energy losses only, for consistency testing
-     &                    ) 
+     &                    )
 C
 C     EFFECTIVE ELECTRON ENERGY LOSS IONIZATION AND RECOMBINATION
 C     RATE COEFFICIENTS FOR ATOMIC HYDROGEN AT DENSITY DENSEL, TEMPERATURE TEMP
@@ -1261,7 +1260,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
-     &          ALPHA(40),BETA(40),EBETA(40), 
+     &          ALPHA(40),BETA(40),EBETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
       LOGICAL :: L_EXT
 
@@ -1328,15 +1327,15 @@ ctt       SUSCR_T=r1(i2)*A(I2,I1)*(-1.)*DE   !  NEGATIVE, RADIATIVE LOSS
 ctt       E_SCR_T=E_SCR_T+SUSCR_T
         ENDDO
       ENDDO
- 
+
 C  for test only.  evaluate second formula for E_SCR,
 C                  using radiation loss E_SCR_T and effective rate SCR
 ctt   UH=13.595
 ctt   DE=(E_AT(1)-UH)  !  POTENTIAL DIFFERENCE IS NEGATIVE,  ELECTRONS LOSE ENERGY IN IONISATION
 ctt   E_SCR_T=E_SCR_T+SCR *DE
- 
+
 C  contribution for "ordinary" coupling to ground state done
- 
+
 
 
 c.....................................H+ RECOMBINATION,  EXTERNAL: H(INF) = CONTIN = H+.........................................
@@ -1414,7 +1413,7 @@ ctt       E_ALPCR_T=E_ALPCR_T+SUSCR_T
 
 C  for test only for lupa=lima=32.  evaluate second formula for E_ALPCR,
 C                  using radiation loss E_ALPCR_T, effective rate ALPCR AND DELPOT
-C  TEST DONE, OK.   
+C  TEST DONE, OK.
 ctt   UH=13.595
 ctt   DEALP=(UH-E_AT(1))  !  ELECTRONS GAIN POTENTIAL ENERGY PER RECOMBINATION EVENT, DEALP IS THEREFORE TAKEN POSITIVE
 ctt   E_ALPCR_TT=E_ALPCR_T+ALPCR *DEALP
@@ -1477,23 +1476,23 @@ ctt       SUSCR_T=R_EXT(i2)*A(I2,I1)*(-1.)*DE
 ctt       E_SCR_EXT_T=E_SCR_EXT_T+SUSCR_T
         ENDDO
       ENDDO
- 
+
 C  for test only.  evaluate second formula for E_SCR_EXT,
 C                  using radiation loss E_SCR_EXT_T and effective rate SCR_EXT
 ctt   UH=13.595
 ctt   DE=(E_AT(1)-UH)
 ctt   E_SCR_EXT_T=E_SCR_EXT_T+SCR_EXT *DE
- 
+
 c  this test only works if in PART III one would set:
 C       DE=(E_AT(1)-E_AT(I2))
 C  But for external sources this is not necessarily the case
 C  test done, 11.01.05,  o.k.,  then test switched off.
- 
- 
- 
+
+
+
       RETURN
       END
- 
+
 C********************************************************************
 C            C(I,J)  FROM  JOHNSON
 C *******************************************************************
@@ -1541,18 +1540,18 @@ C
       CALL EIRENE_EXPI(Y1,E1Y,ICON)
       CALL EIRENE_EXPI(Z1,E1Z,ICON)
       E1Y=-E1Y
- 
+
       E1Z=-E1Z
- 
+
       E2Y=EXP(-Y)-Y*E1Y
       E2Z=EXP(-Z)-Z*E1Z
       E1=(1/Y+0.5)*E1Y-(1/Z+0.5)*E1Z
       E2=E2Y/Y-E2Z/Z
- 
+
       CJ(I,J)=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)
       ELSE
       CJ(I,J)=0.0
- 
+
       END IF
 C
     2 CONTINUE
@@ -1646,7 +1645,7 @@ C
       DO 10 I=1,NG
 C
 C        ===============================================================
-C        Pivot-Element suchen  (  Zeile IZ,  Spalte KS )
+C        Pivot-Element suchen  ( Zeile IZ,  Spalte KS )
 C        ===============================================================
 C
          AP=0
@@ -1657,11 +1656,11 @@ C
                AMN=ABS(A(M,N))
                IF(AMN.GT.AP) THEN
                              AP=AMN
- 
+
                              IZ=M
- 
+
                              KS=N
- 
+
                              ENDIF
     2          CONTINUE
     3      CONTINUE
@@ -1727,7 +1726,7 @@ C
    14    B(1:NBI,II)=R(1:NBI,M)
 C
        RETURN
- 
+
 C     ******************************************************************
 C     MATRIX IST SINGULAER.
 C       -: IER = 1 SETZTEN
@@ -1737,8 +1736,8 @@ C
    15 IER=1
       RETURN
       END
- 
- 
+
+
       subroutine EIRENE_expi(x,ei,icon)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
@@ -1780,9 +1779,9 @@ c icon: error code
       call EIRENE_qromo(f,a,b,s,EIRENE_midpnt,epsr)
       return
       end
- 
- 
- 
+
+
+
 c
       FUNCTION EIRENE_MMDEI (S,IER)
       USE EIRMOD_PRECISION
@@ -1825,7 +1824,7 @@ c     endif
       ier=0
       RETURN
       END
- 
+
       SUBROUTINE EIRENE_QROMO(FUNC,A,B,SS,CHOOSE,epsr)
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -1837,7 +1836,7 @@ c     endif
       external choose,func
       H(1)=1.0D0
       DO 11 J=1,JMAX
- 
+
         CALL CHOOSE(FUNC,A,B,S(J),J)
         IF (J.GE.K) THEN
           CALL EIRENE_POLINT(H(J-KM),S(J-KM),K,0.0d0,SS,DSS)
@@ -1847,10 +1846,10 @@ c     endif
         ENDIF
         S(J+1)=S(J)
         H(J+1)=H(J)/9.
-11    CONTINUE
+   11 CONTINUE
       write(iunout,*) '(W) Too many steps.'
       END
- 
+
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
@@ -1859,17 +1858,17 @@ c     endif
       NS=1
       DIF=ABS(X-XA(1))
       DO 11 I=1,N
- 
+
         DIFT=ABS(X-XA(I))
         IF (DIFT.LT.DIF) THEN
           NS=I
- 
+
           DIF=DIFT
- 
+
         ENDIF
         C(I)=YA(I)
         D(I)=YA(I)
-11    CONTINUE
+   11 CONTINUE
       Y=YA(NS)
       NS=NS-1
       DO 13 M=1,N-1
@@ -1881,19 +1880,19 @@ c     endif
           DEN=W/DEN
           D(I)=HP*DEN
           C(I)=HO*DEN
-12      CONTINUE
+   12   CONTINUE
         IF (2*NS.LT.N-M)THEN
           DY=C(NS+1)
- 
- 
+
+
         ELSE
           DY=D(NS)
- 
- 
+
+
           NS=NS-1
         ENDIF
         Y=Y+DY
-13    CONTINUE
+   13 CONTINUE
       RETURN
       END
 C
@@ -1916,7 +1915,7 @@ C
           X=X+DDEL
           SUM=SUM+FUNC(X)
           X=X+DEL
-11      CONTINUE
+   11   CONTINUE
         S=(S+(B-A)*SUM/TNM)/3.
         IT=3*IT
       ENDIF

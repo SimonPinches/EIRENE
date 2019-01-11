@@ -1,7 +1,7 @@
 C
 C
       SUBROUTINE EIRENE_PLTKI (FCN,XANF,XEND,INN,TRCPLT,LBOX)
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CRECH
@@ -9,18 +9,18 @@ C
       USE EIRMOD_CLMSUR
       USE EIRMOD_CPLOT
       USE EIRMOD_COMPRT, ONLY: IUNOUT
- 
+
       IMPLICIT NONE
- 
+
       REAL(DP), INTENT(IN) :: XANF, XEND
       REAL(DP) :: FCN
       INTEGER, INTENT(OUT) :: INN
       LOGICAL, INTENT(IN) :: TRCPLT,LBOX
- 
+
       REAL(DP) :: XTRAN, YTRAN, XI, ETA, GERAX, GERAY, XG, YG, X, Y, DX,
      .          XP, YP, XX, YY, XXO, YYO, XINC
       INTEGER :: I, ISIDE, IFLAG, IJUMP, INC
- 
+
       XTRAN(XI,ETA)=XI*COSA-ETA*SINA
       YTRAN(XI,ETA)=XI*SINA+ETA*COSA
       GERAY(XG)=(YY-YYO)/(XX-XXO)*XG+YY-XX*(YY-YYO)/(XX-XXO)
@@ -61,7 +61,7 @@ C
          ENDIF
 C        ISIDE=0
          IF (IFLAG.EQ.0.AND.I.NE.1) GOTO 432
-439      IF (I.NE.1) IFLAG=24
+  439    IF (I.NE.1) IFLAG=24
          IF (IFLAG.EQ.0) THEN
             IF (LZR) CALL GRJMP (REAL(XX,KIND(1.E0)),
      .                           REAL(YY,KIND(1.E0)))
@@ -76,24 +76,24 @@ C        ISIDE=0
          ENDIF
          INN=MAX0(INN,IFLAG)
          GOTO 431
-432      GOTO (451,452,453,454),IJUMP
+  432    GOTO (451,452,453,454),IJUMP
          GOTO 439
-451      XP=GERAX(YL2)
+  451    XP=GERAX(YL2)
          YP=YL2
          GOTO 429
-452      XP=XL2
+  452    XP=XL2
 CPB      YP=YTRAN(XP,FCN(XP-XM)+YM)
          YP=GERAY(XL2)
          GOTO 429
-453      XP=XL1
+  453    XP=XL1
 CPB      YP=YTRAN(XP,FCN(XP-XM)+YM)
          YP=GERAY(XL1)
          GOTO 429
-454      XP=GERAX(YL1)
+  454    XP=GERAX(YL1)
          YP=YL1
          GOTO 429
 C
-429      CONTINUE
+  429    CONTINUE
          IF (IFLAG.EQ.0) THEN
             IF (LZR) CALL GRJMP (REAL(XP,KIND(1.E0)),
      .                           REAL(YP,KIND(1.E0)))
@@ -110,6 +110,6 @@ C
          IF (IFLAG.EQ.0) GOTO 439
          IFLAG=0
 C
-431   CONTINUE
+  431 CONTINUE
       RETURN
       END

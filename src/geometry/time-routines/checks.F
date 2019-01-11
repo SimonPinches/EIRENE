@@ -106,19 +106,19 @@ c             define the aufpunkt of the line (this cannot be written
 c             in compact form as we need the entries of POINTS and take
 c             a few things out of matrix B, this cannot be done in range
 c             mode)
-              if (i < 3) then 
+              if (i < 3) then
                 ind = 1
-              else if (i < 6) then 
+              else if (i < 6) then
                 ind = 2
-              else if (i < 9) then 
+              else if (i < 9) then
                 ind = 3
-              else 
-                ind = 4 
+              else
+                ind = 4
               end if
               O(1) = child%B(1,POINTS(1,ind))
               O(2) = child%B(2,POINTS(2,ind))
               O(3) = child%B(3,POINTS(3,ind))
-              
+
 c             define the direction vector
               d = (/0, 0, 0/)
 c             replace the correct element with the corresponding entry
@@ -222,13 +222,13 @@ C                 AND THE DISTANCE "TL" ALONG RAY UNTIL INTERSECTION POINT.
         USE EIRMOD_COMSPL
         USE EIRMOD_COMPRT, ONLY: IUNOUT
         IMPLICIT NONE
-        
+
         INTERFACE
          LOGICAL FUNCTION EIRENE_BITGET(IBIT,N1LOW,N1UP,IROW,JCOL,NBITS)
             INTEGER, INTENT(IN) :: N1LOW, N1UP, IROW, JCOL, NBITS
             INTEGER, INTENT(IN) :: IBIT(N1LOW:N1UP,*)
           END FUNCTION
-          
+
           SUBROUTINE EIRENE_FZRTOR(X,Z,NOLD,XNEW,PH,NNEW,LTEST,NTEST)
             USE EIRMOD_PRECISION
             REAL(DP), INTENT(IN) :: X, Z
@@ -238,31 +238,29 @@ C                 AND THE DISTANCE "TL" ALONG RAY UNTIL INTERSECTION POINT.
             LOGICAL, INTENT(IN) :: LTEST
           END SUBROUTINE
         END INTERFACE
-        
+
         INTEGER, INTENT(in) :: MSURF, NCELL, NLI, NLE, NNTCL, NACTSURFS
         INTEGER, DIMENSION(:), INTENT(in) :: ACTSURFS
         INTEGER, INTENT(out) :: MASURF
-        INTEGER :: NLLLI, LM1, LM2, NNTCLS, NN, I, J, K, ICOUNT, NNR,
+        INTEGER :: NLLLI, NNTCLS, NN, I, J, K, ICOUNT, NNR,
      .             NTNEW
-        
+
         LOGICAL, INTENT(out) :: LCNDEXP
         LOGICAL, INTENT(in) :: NLTRC
         LOGICAL :: LGJ, LTSTCXP
 c        LOGICAL :: LMTSRF(NLIMPS)
-        
+
         REAL(DP), INTENT(in) :: XX, YY, ZZ, VXX, VYY, VZZ, VV, TMT
         REAL(DP), INTENT(out) :: XR, YR, ZR, SG, TL
-        REAL(DP) :: XS, YS, ZS, VXS, VYS, VZS, VVS, TS, 
+        REAL(DP) :: XS, YS, ZS, VXS, VYS, VZS, VVS, TS,
      .              X,  Y,  Z,  VX,  VY,  VZ,  V, T, TADD, TMIN,
      .              VSAVE, VXJ, VZJ, WR, XN, YN, ZN,
      .              XLS1, XLS2, XLS3, XMS1, XMS2, XMS3,
      .              A1, A2, A3, F, G, TMI, TMA, TMX, ROT, TST, TUP,
      .              XXR, PPP
-      
-      LM1=NLI
-      LM2=NLE
+
 c      LMTSRF=.FALSE.
- 
+
 C  TENTATIVELY ASSUME: NO LEGAL INTERSECTION WITH ANY OF THE
 C                      SURFACES J FOR WHICH NLPRCS(J)=TRUE
       LCNDEXP=.FALSE.
@@ -287,13 +285,13 @@ C  WORKING COORDINATES
       VZ=VZZ
       V=VV
       NN=NNTCL
-      
+
       NLLLI=MSURF
 !PB PARTICLE IS ON SURFACE THAT HAS BEEN SWITCHED OF IN INFCOP
       IF(IGJUM0(MSURF).NE.0) NLLLI=0     !VK!!!!!!!!!
       TADD=0.
 C
-1000  TMIN=1.D30
+ 1000 TMIN=1.D30
       TL=1.D30
       MASURF=0
 C
@@ -301,11 +299,11 @@ C  LOOP OVER SURFACE NUMBER, DO 100
 C  --> loop only over the surfaces we have in our lookup table, respect
 c      offset if given
       DO 100 K=1,NACTSURFS
-        
+
 c       get J for the former processing out of the running index K
 c       using an offset (we can jump in the array, if timea1 wants this)
         J = ACTSURFS(K)
-        
+
 C  FIRST ELIMINATE ALL SURFACES WHICH ARE KNOWN A PRIORI TO BE
 C        NOT POSSIBLE CANDIATES  (IGJUM FLAGS)
 C
@@ -361,12 +359,12 @@ C  TENTATIVELY ASSUME: NO LEGAL INTERSECTION WITH SURFACE J WITH DISTANCE
 C                      LARGER THAN TMIN
         LTSTCXP=.FALSE.
         A1=0.
- 
+
 C  FIRST ORDER SURFACE ?
         GOTO (60,63,66),JUMLIM(J)
- 
+
 C  NO. THIS IS A SECOND ORDER SURFACE
- 
+
 C  A1*TMX*TMX+A2*TMX+A3=0
         A1=(A4LM(J)*VX+A7LM(J)*VY+A8LM(J)*VZ)*VX+
      .     (A5LM(J)*VY+A9LM(J)*VZ)*VY+A6LM(J)*VZ*VZ
@@ -404,15 +402,15 @@ C  NO
             LTSTCXP=.TRUE.
           END IF
         END IF
- 
+
 !  AT THIS POINT: EITHER TMI.LE.TMIN, OR LTSTCXP=TRUE
- 
+
         IF (RLB(J).LT.0.) GOTO 21
         IF (RLB(J).GT.0.) GOTO 31
 C
 C  RLB(J) .EQ. 0.  NO FURTHER CONSTRAINS FOR THIS SURFACE. STATEMENT 11---20
 C
-11      IF (TMI.LE.EPS12) GOTO 12
+   11   IF (TMI.LE.EPS12) GOTO 12
         IF (LTSTCXP) THEN
           LCNDEXP =.TRUE.
           GOTO 100
@@ -424,15 +422,15 @@ C
         TMX=TMI
         GOTO 70
 C
-12      IF (TMA.GT.TMIN) THEN
+   12   IF (TMA.GT.TMIN) THEN
           IF (LTSTCXP) LCNDEXP =.TRUE.
           GOTO 100
         END IF
         WR=A2+A1*(TMA+TMA)
-16      XN=X+TMA*VX
+   16   XN=X+TMA*VX
         YN=Y+TMA*VY
         ZN=Z+TMA*VZ
-18      TMX=TMA
+   18   TMX=TMA
         GOTO 70
 C
 C  CHECK BOUNDARY INEQUALITIES OF SURFACE
@@ -441,7 +439,7 @@ C  LGJ=.FALSE.: INTERSECTION POINT IS OUTSIDE THE SPECIFIED AREA
 C
 C  RLB(J) .LT. 0.  STATEMENT 21---30
 C
-21      IF (TMI.LE.EPS12) GOTO 22
+   21   IF (TMI.LE.EPS12) GOTO 22
         WR=A2+A1*(TMI+TMI)
         XN=X+TMI*VX
         YN=Y+TMI*VY
@@ -450,7 +448,7 @@ C
         ICOUNT=1
         GOTO 28
 C
-22      IF (TMA.GT.TMIN) THEN
+   22   IF (TMA.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
             GOTO 100
           ELSE
@@ -458,23 +456,23 @@ C
           END IF
         END IF
         WR=A2+A1*(TMA+TMA)
-26      XN=X+TMA*VX
+   26   XN=X+TMA*VX
         YN=Y+TMA*VY
         ZN=Z+TMA*VZ
         TUP=TMA
         ICOUNT=2
 C
-28      LGJ=.TRUE.
+   28   LGJ=.TRUE.
         IF (ILIN(J).GT.0) THEN
           I=0
-27        I=1+I
+   27     I=1+I
           TST=ALIMS(I,J)+XLIMS(I,J)*XN+YLIMS(I,J)*YN+ZLIMS(I,J)*ZN
           LGJ=TST.LE.0.
           IF (LGJ.AND.I.LT.ILIN(J)) GOTO 27
         ENDIF
         IF (LGJ.AND.ISCN(J).GT.0) THEN
           I=0
-29        I=1+I
+   29     I=1+I
           TST=ALIMS0(I,J)+
      .        XN*(XLIMS1(I,J)+XN*XLIMS2(I,J)+YN*XLIMS3(I,J))+
      .        YN*(YLIMS1(I,J)+YN*YLIMS2(I,J)+ZN*ZLIMS3(I,J))+
@@ -494,7 +492,7 @@ C
 C
 C   RLB(J) .GT. 0.  STATEMENT 31---40
 C
-31      IF (TMI.LE.EPS12) GOTO 32
+   31   IF (TMI.LE.EPS12) GOTO 32
         WR=A2+A1*(TMI+TMI)
         XN=X+TMI*VX
         YN=Y+TMI*VY
@@ -504,14 +502,14 @@ C
      .      ZN.LE.ZLIMS2(1,J).AND.ZN.GE.ZLIMS1(1,J)
         IF (RLBNOT(J)) LGJ=.NOT.LGJ
         IF (NLPRCS(J).AND.LGJ) LCNDEXP=.TRUE.
- 
+
 C  IF DISTANCE TOO LARGE: LOOSE INTEREST IN THIS SURFACE
         IF (LTSTCXP) GOTO 100
- 
+
         TMX=TMI
         IF (LGJ) GOTO 70
 C
-32      IF (TMA.GT.TMIN) THEN
+   32   IF (TMA.GT.TMIN) THEN
           IF (.NOT.NLPRCS(J)) THEN
             GOTO 100
           ELSE
@@ -519,10 +517,10 @@ C
           END IF
         END IF
         WR=A2+A1*(TMA+TMA)
-36      XN=X+TMA*VX
+   36   XN=X+TMA*VX
         YN=Y+TMA*VY
         ZN=Z+TMA*VZ
-38      CONTINUE
+   38   CONTINUE
         IF (RLB(J).LT.2.) THEN
           LGJ=XN.LE.XLIMS2(1,J).AND.XN.GE.XLIMS1(1,J).AND.
      .        YN.LE.YLIMS2(1,J).AND.YN.GE.YLIMS1(1,J).AND.
@@ -544,17 +542,17 @@ C
         ENDIF
         IF (RLBNOT(J)) LGJ=.NOT.LGJ
         IF (NLPRCS(J).AND.LGJ) LCNDEXP=.TRUE.
- 
+
 C  IF DISTANCE TOO LARGE: LOOSE INTEREST IN THIS SURFACE
         IF (LTSTCXP) GOTO 100
- 
+
         TMX=TMA
         IF (LGJ) GOTO 70
         GOTO 100
 C
 C   A1*TMX+A2=0
 C
-40      TMA=-A2/A1
+   40   TMA=-A2/A1
 #ifdef TRACE
         IF (NLTRC)
      .    WRITE (iunout,*) 'TIMEA AT 40, J,TMA,A1,A2 ',J,TMA,A1,A2
@@ -572,7 +570,7 @@ C
 C
 C   A2*TMX+A3=0
 C
-50      IF (A2.EQ.0.) GOTO 100
+   50   IF (A2.EQ.0.) GOTO 100
         TMA=-A3/A2
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 'TIMEA AT 50, J,TMA,A2,A3 ',
@@ -591,7 +589,7 @@ C
 C
 C  A1LM(J).NE.0
 C
-60      CONTINUE
+   60   CONTINUE
         A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
         A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
         IF (A2.EQ.0.) GOTO 100
@@ -614,7 +612,7 @@ C
 C
 C  A2LM(J).NE.0
 C
-63      CONTINUE
+   63   CONTINUE
         A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
         A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
         IF (A2.EQ.0.) GOTO 100
@@ -637,7 +635,7 @@ C
 C
 C  A3LM(J).NE.0
 C
-66      CONTINUE
+   66   CONTINUE
         A2=A1LM(J)*VX+A2LM(J)*VY+A3LM(J)*VZ
         A3=A0LM(J)+A1LM(J)*X+A2LM(J)*Y+A3LM(J)*Z
         IF (A2.EQ.0.) GOTO 100
@@ -662,7 +660,7 @@ C
 C   DATA RETURNED TO CALLING PROGRAM
 C   TENTATIVELY FOR SURFACE NO. J
 C
-70      TL=TMX+TADD
+   70   TL=TMX+TADD
         TMIN=TMX
         XR=XN
         YR=YN
@@ -681,7 +679,7 @@ C
 C
 C  LOOP OVER SURFACE-INDEX FINISHED
 C
-100   CONTINUE
+  100 CONTINUE
 C
 C **********************************************************************
 C
@@ -722,5 +720,5 @@ C
 C  TRANSPARENT, BUT SWITCH AND/OR SURFACE TALLIES
         RETURN
       ENDIF
-      
+
       END SUBROUTINE EIRENE_TIMEA_CheckInter

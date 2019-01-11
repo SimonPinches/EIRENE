@@ -1,5 +1,5 @@
 Cdr  june 17:  gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
-cdr  comments 
+cdr  comments
 C
 C     EIRENE VERSION SVN ....  (Jan.2014)... MOVED TO GIT REPOSITORY
 C
@@ -22,15 +22,15 @@ c    MPI_INIT:
 
 cdr  As an alternative, there are other entry points into EIRENE,
 cdr  to run EIRENE from within other codes, e.g. in iterative mode.
-cdr  These calls are then to SUBR. EIRENE (rather than: PROGR. MAIN) 
+cdr  These calls are then to SUBR. EIRENE (rather than: PROGR. MAIN)
 cdr  or to the entry point EIRENE_COUPLE in SUBR. EIRENE.
 
-cdr  For example: 
-cdr  CALL EIRENE_EIRENE and CALL_EIRENE_COUPLE 
+cdr  For example:
+cdr  CALL EIRENE_EIRENE and CALL_EIRENE_COUPLE
 cdr  are preprogrammed in the main interfacing routine EIRSRT.f ,
 cdr  for some frequently used coupled applications (with B2, B2.5, etc..)
 cdr  The parameters DT, NLM, NLL, ITNR, MPI_INIT... are then
-cdr  set from the external code, or in EIRSRT, and are problem specific.
+cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
 
       USE EIRMOD_PRECISION
@@ -45,7 +45,7 @@ C
 C
       CALL EIRENE_PLSTRT
 C
-C  call eirene, to carry out a "stand alone eirene run"
+C  call eirene, to carry out a "standalone eirene run"
       NLM=.FALSE.
 C  time step set internally from input file
       DT=0._DP

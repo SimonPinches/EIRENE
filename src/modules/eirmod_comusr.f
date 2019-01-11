@@ -1,6 +1,6 @@
 cdr  may 2017:  preparing for storage reduction by elimination of unnecessary input tallies:
-cdr             commenting, 
-cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local, 
+cdr             commenting,
+cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local,
 cdr             rather than public
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 cpb  jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
@@ -12,26 +12,26 @@ cdr             missing:  dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
 
       MODULE EIRMOD_COMUSR
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: EIRENE_ALLOC_COMUSR, EIRENE_DEALLOC_COMUSR,
      P          EIRENE_INIT_COMUSR, 
      P          EIRENE_ALLOC_CORNERS,
      P          EIRENE_ASSOCIATE_COMUSR,
      P          EIRENE_COMUSR_REINIT
- 
+
       INTEGER, SAVE ::
      P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
       INTEGER, PUBLIC, SAVE ::
      P NPLPRM  ! nplprm, is also used in setprm, for a storage test.
-c 
-      INTEGER, SAVE ::               
+c
+      INTEGER, SAVE ::
      P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R         PLSTLS(:,:)
@@ -97,7 +97,7 @@ C  NSFPRM:  SURFACE AVERAGED INPUT TALLIES (BY ABUSE OF LANGUAGE).
 C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
      R        DION(:),   DATM(:),     DMOL(:),   DPLS(:),    DPHOT(:)
- 
+
 !  DECLARATION AS TARGET ARRAYS FOR POINTERS USED BY UNIFIED SUBROUTINES
       REAL(DP), TARGET, ALLOCATABLE, PUBLIC, SAVE ::
      R        RMASSI(:), RMASSA(:),   RMASSM(:), RMASSPH(:), RMASSP(:)
@@ -127,7 +127,7 @@ c  for interpolations
       REAL(DP), PUBLIC, SAVE :: TVAC, DVAC, VVAC, ALLOC
  
       CHARACTER(8), ALLOCATABLE, PUBLIC, SAVE :: TEXTS(:)
- 
+
 C  MUSR, INTEGER
       INTEGER, PUBLIC, SAVE ::
      I         NSPH  , NPHOTI, NPHOTIM, NPHOTI_IN,
@@ -143,11 +143,11 @@ C  MUSR, INTEGER
      I         NMASSI(:), NCHARI(:), NCHRGI(:), NFOLI(:), NGENI(:),
      I         NMASSP(:), NCHARP(:), NCHRGP(:),
      I         NFOLPH(:), NGENPH(:),
-     I         NPRT(:),   ISPEZ(:,:,:,:,:,:),     ISPEZI(:,:),
+     I         NPRT(:),   ISPEZ(:,:,:,:,:,:),   ISPEZI(:,:),
      I         MPLSTI(:), MPLSV(:)
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
- 
+
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
      L         LGVAC(:,:) 
@@ -234,19 +234,18 @@ C  gradients of derived tallies
      I         NPRLL, NMODE,  NTCPU,
      I         NFILE, NFILEN, NFILEM, NFILEL, NFILEK, NFILEJ,
      I         NITER, IITER,  NTIME,  ITIMV
- 
+
 !      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
- 
- 
+
+
       CONTAINS
- 
- 
+
       SUBROUTINE EIRENE_ALLOC_COMUSR (ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
 
       IF (.NOT.ALLOCATED(LSMOPRO))  ALLOCATE (LSMOPRO(NTALG))
 
@@ -263,7 +262,6 @@ C  gradients of derived tallies
 
         LUSR=NRAD*(NPLS+2)+NRAD+NTALI
 
-        
         ALLOCATE (RMASSA(MAX(1,NATM)))
         ALLOCATE (RMASSM(MAX(1,NMOL)))
         ALLOCATE (RMASSI(MAX(1,NION)))
@@ -383,20 +381,20 @@ c  NCPV, NBGV are now set
      .                      4*(NCPV+NBGV)*4            ! BGK AND CPV INTEGERS
 
       ELSE IF (ICAL == 3) THEN
- 
+
         IF (ALLOCATED(FLXOUT)) RETURN
- 
+
         NSFPRM=2*NLMPGS
         ALLOCATE (FLXOUT(NLMPGS))
         ALLOCATE (SAREA(NLMPGS))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .         ' COMUSR(3) ',NSFPRM*8
- 
+
       END IF
- 
+
       CALL EIRENE_INIT_COMUSR(ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMUSR
 
@@ -1119,7 +1117,7 @@ cdr these next two B field tallies should go into LBSMO
       CORNER_PROFILES = 0._DP
 
       END SUBROUTINE EIRENE_ALLOC_CORNERS
- 
+
 
 
       SUBROUTINE EIRENE_DEALLOC_COMUSR
@@ -1137,7 +1135,7 @@ c
       DEALLOCATE (FLXOUT)
       DEALLOCATE (SAREA)
 
-      
+
       DEALLOCATE (RMASSA)
       DEALLOCATE (RMASSM)
       DEALLOCATE (RMASSI)
@@ -1154,7 +1152,6 @@ c
       DEALLOCATE (DMOL)
       DEALLOCATE (DPLS)
       DEALLOCATE (DPHOT)
- 
       DEALLOCATE (TEXTS)
       DEALLOCATE (NMASSA)
       DEALLOCATE (NCHARA)
@@ -1224,10 +1221,10 @@ c
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COMUSR
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_COMUSR(ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
       INTEGER, SAVE :: IFIRST=0
 
@@ -1271,7 +1268,7 @@ c  E field
 
         IFIRST = 1
       ENDIF
- 
+
       IF (ICAL == 1) THEN
 cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         
@@ -1291,7 +1288,6 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         DMOL   = 0._DP
         DPLS   = 0._DP
         DPHOT  = 0._DP
- 
         TEXTS  = ' '
         NMASSA = 0
         NCHARA = 0
@@ -1463,14 +1459,14 @@ c  Cemetery for inactive input tallies (no storage)
         IBGVS  = 0
         IBGVT  = 0
         IBGRC  = 0
- 
+
       ELSE IF (ICAL == 3) THEN
- 
+
         FLXOUT = 0._DP
         SAREA  = 666._DP
- 
+
       END IF
- 
+
       RETURN
 
       ENTRY EIRENE_COMUSR_REINIT
@@ -1478,5 +1474,5 @@ c  Cemetery for inactive input tallies (no storage)
       RETURN
 
       END SUBROUTINE EIRENE_INIT_COMUSR
- 
+
       END MODULE EIRMOD_COMUSR

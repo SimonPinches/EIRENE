@@ -6,10 +6,6 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_MPI
       IMPLICIT NONE
 
-csw mpi
-!      include 'mpif.h'
-csw
-
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_EIRBRA, EIRENE_DEALLOC_EIRBRA,

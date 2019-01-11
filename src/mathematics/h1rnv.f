@@ -2,6 +2,7 @@
       SUBROUTINE H1RNV(RVEC,LEN)
 *
       USE EIRMOD_PRECISION
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: RVEC(1)
       INTEGER, INTENT(IN) :: LEN
@@ -19,9 +20,10 @@
 *
       IF (FIRST) THEN
          IF (FLAG .NE. CHECK) THEN
-            WRITE(6,*) ' H1RNV (RANMAR): CALL H1RNIN OR H1RNIV BEFORE',
+            WRITE(IUNOUT,*)
+     .                 ' H1RNV (RANMAR): CALL H1RNIN OR H1RNIV BEFORE',
      >                 ' CALLING H1RN.'
-            STOP
+            CALL EIRENE_EXIT_OWN(1)
          ELSE
             FIRST = .FALSE.
          ENDIF

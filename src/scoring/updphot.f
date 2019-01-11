@@ -1,13 +1,13 @@
 C  27.6.05 updphot: iadd removed
 C  21.01.06: photon background for test atoms: removed
-C  18.04.06: test ions and atoms: syncronized
+C  18.04.06: test ions and atoms: synchronized
 C            bug fix: V0_para  --> parmom_0 for elastic momentum source
 C                                  contribution from atoms.
 C  10.01.07: parallel momentum exchange tallies MAPL, MMPL, MIPL
 C            included as default EIRENE tallies.
 C            Before these tallies have been updated in problem
 C            specific section UPTCOP, as COPV tallies.
-C  12.02.07: Add user supplied B field and plasma flow option indpro=8
+C  12.02.07: Add user-supplied B field and plasma flow option indpro=8
 C            to evaluation of parallel momentum sources,
 C            Do not use BVIN, PARMOM arrays in this case, because they
 C            may not have been initialized in subr. PLASMA_DERIV
@@ -15,12 +15,12 @@ C            for these options.
 C            Use vsig_parp und val_parp instead.
 C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
-C           entries: atm, mol, ion voll syncronisiert.
+C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
-c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch 
+c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
-cdr dec.15: tracklength estimators for heavy test particle post collision energies 
+cdr dec.15: tracklength estimators for heavy test particle post-collision energies
 cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
@@ -34,7 +34,7 @@ cdr          so no effect on any result.  Few further comments corrected
 !pb APR 16: ipiods -> ipioei, piods -> pioei
 !pb APR 16: pelds -> pelei
 
- 
+
 C
       SUBROUTINE EIRENE_UPDPHOT (XSTOR2,XSTORV2,IFLAG)
 C
@@ -50,25 +50,25 @@ C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD  (=NCLTAL(IRDO))
 C
 C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
 
-C  IFLAG=1:  
-C  IFLAG=2:  
-C  IFLAG=3:  
+C  IFLAG=1:
+C  IFLAG=2:
+C  IFLAG=3:
 C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
-C  IFLAG=5: 
+C  IFLAG=5:
 
-C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUEL BACKGROUND SPECIES) 
+C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUAL BACKGROUND SPECIES)
 C
-C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO CALLED "BGK" SPECIES
+C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
 C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
 C  B) SIGBGK         : TOTAL RATE OF BGK TYPE COLLISIONS. INCIDENT ATOM AND ITS ENERGY IS NOT LOST
 C  C) NPBGKP (IPLS,1):  IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
 C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
-C          IONS WITH ENERGY SOURCES FOR VIRTUEL BACKGROUND "IONS"  (MISSING SPECIES INDEX) 
-C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS 
+C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS"  (MISSING SPECIES INDEX)
+C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
-  
+
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -84,7 +84,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
- 
+
       IMPLICIT NONE
 C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -108,8 +108,9 @@ C CX PROCESSES
       INTEGER ::      IACX,IRCX
       INTEGER ::      IMCX
       INTEGER ::      IICX
-C OT PROCESSES
-      INTEGER ::      IAOT,IROT,UPDF
+C PH PROCESSES
+      INTEGER ::      IAPH,IRPH
+C    .               ,UPDF        ! out, something for stim. emiss ?
 C PI PROCESSES
       INTEGER ::      IAPI,IRPI
       INTEGER ::      IMPI
@@ -118,7 +119,7 @@ C EI PROCESSES
       INTEGER ::      IAEI,IREI
       INTEGER ::      IMEI
       INTEGER ::      IIEI
- 
+
       REAL(DP) :: EIRENE_VDION
 
 
@@ -137,11 +138,11 @@ C
       IF (NADVI.GT.0) CALL EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
       IF (NCPVI.GT.0) CALL EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
 cdr generalise flag NPBGK to mean: model collision term for bi-linear collision
-cdr only in this case: set backgound radiation intensity profiles.
+cdr only in this case: set background radiation intensity profiles.
 cdr   IF (NPBGK.GT.0) CALL ....
 C
       IF (IUPDTE == 2) RETURN
- 
+
       CNDYNPH = EV_TO_ERG/CLIGHT
       VELQ=VEL*VEL
 C
@@ -165,7 +166,7 @@ C
         IF (LEDENPH) EDENPH(IPHOT,IRD)=EDENPH(IPHOT,IRD)+WTRE0
         IF (LPDENPH) PDENPH(IPHOT,IRD)=PDENPH(IPHOT,IRD)+WTR
         IF (LEDENPH.OR.LPDENPH) LMETSP(IPHOT)=.TRUE.
- 
+
         IF (LVXDENPH) VXDENPH(IPHOT,IRD)=VXDENPH(IPHOT,IRD)+WTRV*VELX
         IF (LVYDENPH) VYDENPH(IPHOT,IRD)=VYDENPH(IPHOT,IRD)+WTRV*VELY
         IF (LVZDENPH) VZDENPH(IPHOT,IRD)=VZDENPH(IPHOT,IRD)+WTRV*VELZ
@@ -182,11 +183,11 @@ C
           XSTORV(:)  = XSTORV2(:,I)
         endif
 C
-C  PRE COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
+C  PRE-COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
 C
         IF ((LAST_EVENT%IFLAG == 1) .AND.
      .      (LAST_EVENT%NCELL == IRD)) THEN
- 
+
 ! collision estimator for first cell ("brick") along the track
 ! in case of a collision sample 1 (the whole weight)
 ! in case of no collision sample 0
@@ -196,7 +197,7 @@ C
           ELSE
 !  nothing to be done, sample a 0
           END IF
- 
+
         ELSE
           WTRSIG=WTR*(SIGTOT-SIGBGK)
           IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
@@ -208,26 +209,26 @@ cdr  in analogy to CX processes. better: analogy to PI ? wg. stim emission ?
 C
         IF (PHV_LGPHOT(IPHOT,0,0).EQ.0) GOTO 133
 C  DEFAULT TRACKLENGTH ESTIMATOR
-        DO IAOT=1,PHV_NPHOTI(IPHOT)
-          IROT=PHV_LGPHOT(IPHOT,IAOT,0)
-cdr  check irot=0 in initialisation phase only once
-cdr       if(irot == 0) cycle
+        DO IAPH=1,PHV_NPHOTI(IPHOT)
+          IRPH=PHV_LGPHOT(IPHOT,IAPH,0)
+cdr  check IRPH=0 in initialisation phase only once
+cdr       if(IRPH == 0) cycle
 cdr
-          IPLS=PHV_LGPHOT(IPHOT,IAOT,1)
-          UPDF=PHV_LGPHOT(IPHOT,IAOT,4)
+          IPLS=PHV_LGPHOT(IPHOT,IAPH,1)
+cdr       UPDF=PHV_LGPHOT(IPHOT,IAPH,4)
           LOGPLS(IPLS,ISTRA)=.TRUE.
 C
-          WTRSIG=WTR*SIGVOT(IROT)
+          WTRSIG=WTR*SIGVPH(IRPH)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
-C  COMPENSATE PRE COLLISION RATES HERE
+C  COMPENSATE PRE-COLLISION RATES HERE
 C
-          IF (PHV_IESTOTph(iphot,IROT,1).NE.0) THEN
+          IF (PHV_IESTOTph(iphot,IRPH,1).NE.0) THEN
             IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
 cdr         if(updf==1) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG !prob. wrong
           ELSE
 C
-C  PRE COLLISION RATES, BULK IONS
+C  PRE-COLLISION RATES, BULK IONS
 C
 cdr  if(ipls > 0) then
 cdr  do this check in initialisation, only once
@@ -236,38 +237,38 @@ cdr  do this check in initialisation, only once
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
 C
-C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
+C  POST-COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C
 cdr-test    goto 133
-!pb         IF (PHV_N1STOTph(iphot,IROT,3).NE.0) THEN
-!pb PHV_N1STOTph(iphot,IROT,3) does not include bulk
+!pb         IF (PHV_N1STOTph(iphot,IRPH,3).NE.0) THEN
+!pb PHV_N1STOTph(iphot,IRPH,3) does not include bulk
 C  FIRST SECONDARY:
-              IF (PHV_N1STOTph(iphot,IROT,1).EQ.1) THEN
-                IAT1=PHV_N1STOTph(iphot,IROT,2)
-                INUM=PHV_N1STOTph(iphot,IROT,3)
+              IF (PHV_N1STOTph(iphot,IRPH,1).EQ.1) THEN
+                IAT1=PHV_N1STOTph(iphot,IRPH,2)
+                INUM=PHV_N1STOTph(iphot,IRPH,3)
                 LOGATM(IAT1,ISTRA)=.TRUE.
                 IF (LPPHAT) THEN
                   PPHAT(IAT1,IRD)= PPHAT(IAT1,IRD)+WTRSIG*INUM
                   LMETSP(NSPH+IAT1)=.TRUE.
                 END IF
-              ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.2) THEN
-                IML1=PHV_N1STOTph(iphot,IROT,2)
+              ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.2) THEN
+                IML1=PHV_N1STOTph(iphot,IRPH,2)
                 LOGMOL(IML1,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
                   PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG
                   LMETSP(NSPA+IML1)=.TRUE.
                 END IF
-              ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.3) THEN
-                IIO1=PHV_N1STOTph(iphot,IROT,2)
-                INUM=PHV_N1STOTph(iphot,IROT,3)
+              ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.3) THEN
+                IIO1=PHV_N1STOTph(iphot,IRPH,2)
+                INUM=PHV_N1STOTph(iphot,IRPH,3)
                 LOGION(IIO1,ISTRA)=.TRUE.
                 IF (LPPHIO) THEN
                   PPHIO(IIO1,IRD)= PPHIO(IIO1,IRD)+WTRSIG*INUM
                   LMETSP(NSPAM+IIO1)=.TRUE.
                 END IF
-              ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.4) THEN
-                IPL1=PHV_N1STOTph(iphot,IROT,2)
-C               INUM=PHV_N1STOTph(iphot,IROT,3)
+              ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.4) THEN
+                IPL1=PHV_N1STOTph(iphot,IRPH,2)
+C               INUM=PHV_N1STOTph(iphot,IRPH,3)
                 INUM=1
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LPPHPL) THEN
@@ -281,9 +282,9 @@ cdr  if this bulk is a photon (same as iphot), dann noch eins rauf auf tally
                   LMETSP(NSPAMI+IPL1)=.TRUE.
                 END IF
 csw added branch
-              ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.0) then
-                iph1=phv_n1stotph(iphot,irot,2)
-                inum=phv_n1stotph(iphot,irot,3)
+              ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.0) then
+                iph1=phv_n1stotph(iphot,IRPH,2)
+                inum=phv_n1stotph(iphot,IRPH,3)
 cdr  test iph1 > 0 only once, in initialisation. here: removed
                 if ((inum > 0) .and. (iph1 > 0)) then
                   logphot(iph1,istra)=.true.
@@ -294,36 +295,36 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
                 end if
               ENDIF
 !pb         END IF
- 
-!pb         IF (PHV_N2NDOTph(iphot,IROT,3).NE.0) THEN
-!pb PHV_N2NDOTph(iphot,IROT,3) does not include bulk
+
+!pb         IF (PHV_N2NDOTph(iphot,IRPH,3).NE.0) THEN
+!pb PHV_N2NDOTph(iphot,IRPH,3) does not include bulk
 C  SECOND SECONDARY:
-              IF (PHV_N2NDOTph(iphot,IROT,1).EQ.1) THEN
-                IAT2=PHV_N2NDOTph(iphot,IROT,2)
-                INUM=PHV_N2NDOTph(iphot,IROT,3)
+              IF (PHV_N2NDOTph(iphot,IRPH,1).EQ.1) THEN
+                IAT2=PHV_N2NDOTph(iphot,IRPH,2)
+                INUM=PHV_N2NDOTph(iphot,IRPH,3)
                 LOGATM(IAT2,ISTRA)=.TRUE.
                 IF (LPPHAT) THEN
                   PPHAT(IAT2,IRD)= PPHAT(IAT2,IRD)+WTRSIG*INUM
                   LMETSP(NSPH+IAT2)=.TRUE.
                 END IF
-              ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.2) THEN
-                IML2=PHV_N2NDOTph(iphot,IROT,2)
+              ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.2) THEN
+                IML2=PHV_N2NDOTph(iphot,IRPH,2)
                 LOGMOL(IML2,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
                   PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG
                   LMETSP(NSPA+IML2)=.TRUE.
                 END IF
-              ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.3) THEN
-                IIO2=PHV_N2NDOTph(iphot,IROT,2)
-                INUM=PHV_N2NDOTph(iphot,IROT,3)
+              ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.3) THEN
+                IIO2=PHV_N2NDOTph(iphot,IRPH,2)
+                INUM=PHV_N2NDOTph(iphot,IRPH,3)
                 LOGION(IIO2,ISTRA)=.TRUE.
                 IF (LPPHIO) THEN
                   PPHIO(IIO2,IRD)= PPHIO(IIO2,IRD)+WTRSIG*INUM
                   LMETSP(NSPAM+IIO2)=.TRUE.
                 END IF
-              ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.4) THEN
-                IPL2=PHV_N2NDOTph(iphot,IROT,2)
-C               INUM=PHV_N2NDOTph(iphot,IROT,3)
+              ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.4) THEN
+                IPL2=PHV_N2NDOTph(iphot,IRPH,2)
+C               INUM=PHV_N2NDOTph(iphot,IRPH,3)
                 INUM=1
                 LOGPLS(IPL2,ISTRA)=.TRUE.
                 IF (LPPHPL) THEN
@@ -336,9 +337,9 @@ cdr  if this bulk is a photon (same as iphot), dann noch eins rauf auf tally
                   LMETSP(NSPAMI+IPL2)=.TRUE.
                 END IF
 csw added branch
-              ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.0) then
-                iph2=phv_n2ndotph(iphot,irot,2)
-                inum=phv_n2ndotph(iphot,irot,3)
+              ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.0) then
+                iph2=phv_n2ndotph(iphot,IRPH,2)
+                inum=phv_n2ndotph(iphot,IRPH,3)
 cdr test iph2 > 0 removed, to be done only once in initialisation
                 if ((inum > 0) .and. (iph2 > 0)) then
                   logphot(iph2,istra)=.true.
@@ -354,41 +355,41 @@ C
 C  PARTICLE ESTIMATORS DONE. NEXT: ENERGY ESTIMATORS
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
-C  COMPENSATE PRE COLLISION RATES HERE
+C  COMPENSATE PRE-COLLISION RATES HERE
 C
-          IF (LEPHPHT.AND.(PHV_IESTOTph(iphot,IROT,3).NE.0)) THEN
+          IF (LEPHPHT.AND.(PHV_IESTOTph(iphot,IRPH,3).NE.0)) THEN
             EPHPHT(IRD)=EPHPHT(IRD)          +WTRSIG*E0
 cdr         if(updf==1) EPHPHT(IRD)=EPHPHT(IRD)+WTRSIG*E0 ! verm. falsch
           ELSE
 C
-C  PRE COLLISION RATES, BULK IONS
+C  PRE-COLLISION RATES, BULK IONS
 C
 cdr if(ipls > 0) then : this check only once in initialisation. removed
 cdr         IF (LEPHEL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*E0  vermutl. falsch
-cdr  gibt es schon ESIGOT ? ist dann IROT das richtige argument ?
-cdr         IF (LEPHPL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*ESIGOT(IROT)
+cdr  gibt es schon ESIGPH ? ist dann IRPH das richtige argument ?
+cdr         IF (LEPHPL) EPHPL(IRD)    =EPHPL(IRD)  -WTRSIG*ESIGPH(IRPH)
 C
-C  POST COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
- 
-!dr       IF (PHV_N1STOTph(iphot,IROT,3).NE.0) THEN
-!dr PHV_N1STOTph(iphot,IROT,3) does not include bulk
+C  POST-COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
+
+!dr       IF (PHV_N1STOTph(iphot,IRPH,3).NE.0) THEN
+!dr PHV_N1STOTph(iphot,IRPH,3) does not include bulk
 C  FIRST SECONDARY:
 cdr: erstmal raus. vermutlich muss hier die energie des
 cdr  neuen schwerteilchens stehen, nicht die E0 des IPHOT.
-cdr         IF (PHV_N1STOTph(iphot,IROT,1).EQ.1) THEN
-cdr           IAT1=PHV_N1STOTph(iphot,IROT,2)
+cdr         IF (PHV_N1STOTph(iphot,IRPH,1).EQ.1) THEN
+cdr           IAT1=PHV_N1STOTph(iphot,IRPH,2)
 cdr           LOGATM(IAT1,ISTRA)=.TRUE.
 cdr           IF (LEPHAT) EPHAT(IRD)     = EPHAT(IRD)  +WTRSIG*E0
-C           ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.2) THEN
-C             IML1=PHV_N1STOTph(iphot,IROT,2)
+C           ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.2) THEN
+C             IML1=PHV_N1STOTph(iphot,IRPH,2)
 C             LOGMOL(IML1,ISTRA)=.TRUE.
 C             IF (LEPHML) EPHML(IRD)     = EPHML(IRD)     +WTRSIG*E0
-cdr         ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.3) THEN
-cdr           IIO1=PHV_N1STOTph(iphot,IROT,2)
+cdr         ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.3) THEN
+cdr           IIO1=PHV_N1STOTph(iphot,IRPH,2)
 cdr           LOGION(IIO1,ISTRA)=.TRUE.
 cdr           IF (LEPHIO) EPHIO(IRD)     = EPHIO(IRD)     +WTRSIG*E0
-cdr         ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.4) THEN
-cdr           IPL1=PHV_N1STOTph(iphot,IROT,2)
+cdr         ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.4) THEN
+cdr           IPL1=PHV_N1STOTph(iphot,IRPH,2)
 cdr           LOGPLS(IPL1,ISTRA)=.TRUE.
 cdr           IF (LEPHPL) EPHPL(IRD)     = EPHPL(IRD)   +WTRSIG*E0
 csw added updf check (stim.em)
@@ -398,34 +399,34 @@ cdr           endif
 csw added branch
 cdr: photon scattering, e0_in = e0_out, also: delta scattering,
 cdr  mit eventuell teilchenmultiplikation
-cdr         ELSEIF (PHV_N1STOTph(iphot,IROT,1).EQ.0) THEN
-              IF (PHV_N1STOTph(iphot,IROT,1).EQ.0) THEN
-                IPH1=PHV_N1STOTph(iphot,IROT,2)
-                INUM=PHV_N1STOTph(iphot,IROT,2)
+cdr         ELSEIF (PHV_N1STOTph(iphot,IRPH,1).EQ.0) THEN
+              IF (PHV_N1STOTph(iphot,IRPH,1).EQ.0) THEN
+                IPH1=PHV_N1STOTph(iphot,IRPH,2)
+                INUM=PHV_N1STOTph(iphot,IRPH,2)
 cdr  if(iph1 > 0) then abfrage hier raus, nur in initialisation
                 LOGPHOT(IPH1,ISTRA)=.TRUE.
                 IF (LEPHPHT) EPHPHT(IRD)=EPHPHT(IRD) +WTRSIG*E0*INUM
               ENDIF
 !dr         ENDIF
- 
-!dr     IF (PHV_N2NDOTph(iphot,IROT,3).NE.0) THEN
-!dr PHV_N2NDOTph(iphot,IROT,3) does not include bulk
+
+!dr     IF (PHV_N2NDOTph(iphot,IRPH,3).NE.0) THEN
+!dr PHV_N2NDOTph(iphot,IRPH,3) does not include bulk
 C  SECOND SECONDARY:
 cdr : gleiches problem wie oben E0_out ? bei test photon impact mit E0 ?
-cdr         IF (PHV_N2NDOTph(iphot,IROT,1).EQ.1) THEN
-cdr           IAT2=PHV_N2NDOTph(iphot,IROT,2)
+cdr         IF (PHV_N2NDOTph(iphot,IRPH,1).EQ.1) THEN
+cdr           IAT2=PHV_N2NDOTph(iphot,IRPH,2)
 cdr           LOGATM(IAT2,ISTRA)=.TRUE.
 cdr           IF (LEPHAT) EPHAT(IRD)     = EPHAT(IRD)     +WTRSIG*E0
-C           ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.2) THEN
-C             IML2=PHV_N2NDOTph(iphot,IROT,2)
+C           ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.2) THEN
+C             IML2=PHV_N2NDOTph(iphot,IRPH,2)
 C             LOGMOL(IML2,ISTRA)=.TRUE.
 C             IF (LEPHML) EPHML(IRD)     = EPHML(IRD)     +WTRSIG*E0
-cdr         ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.3) THEN
-cdr           IIO2=PHV_N2NDOTph(iphot,IROT,2)
+cdr         ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.3) THEN
+cdr           IIO2=PHV_N2NDOTph(iphot,IRPH,2)
 cdr           LOGION(IIO2,ISTRA)=.TRUE.
 cdr           IF (LEPHIO) EPHIO(IRD)     = EPHIO(IRD)     +WTRSIG*E0
-cdr         ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.4) THEN
-cdr           IPL2=PHV_N2NDOTph(iphot,IROT,2)
+cdr         ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.4) THEN
+cdr           IPL2=PHV_N2NDOTph(iphot,IRPH,2)
 cdr           LOGPLS(IPL2,ISTRA)=.TRUE.
 cdr           IF (LEPHPL) EPHPL(IRD)     = EPHPL(IRD)     +WTRSIG*E0
 csw added updf check (stim.em)
@@ -433,10 +434,10 @@ cdr           if(updf==1.and.phv_is_plsphot(ipl2)>0) then
 cdr              IF (LEPHPL) EPHPL(IRD)     = EPHPL(IRD)     +WTRSIG*E0
 cdr           endif
 csw added branch
-cdr         ELSEIF (PHV_N2NDOTph(iphot,IROT,1).EQ.0) THEN
-              IF (PHV_N2NDOTph(iphot,IROT,1).EQ.0) THEN
-                IPH2=PHV_N2NDOTph(iphot,IROT,2)
-                INUM=PHV_N2NDOTph(iphot,IROT,3)
+cdr         ELSEIF (PHV_N2NDOTph(iphot,IRPH,1).EQ.0) THEN
+              IF (PHV_N2NDOTph(iphot,IRPH,1).EQ.0) THEN
+                IPH2=PHV_N2NDOTph(iphot,IRPH,2)
+                INUM=PHV_N2NDOTph(iphot,IRPH,3)
 cdr if(iph2 > 0) then  ! dieser test nur in initialisation phase
                 if ((inum > 0) .and. (iph2 > 0)) then
                   LOGPHOT(IPH2,ISTRA)=.TRUE.
@@ -447,8 +448,8 @@ cdr if(iph2 > 0) then  ! dieser test nur in initialisation phase
           ENDIF
 C
        ENDDO
-133    CONTINUE
-131    CONTINUE
+  133  CONTINUE
+  131  CONTINUE
       RETURN
 
       END

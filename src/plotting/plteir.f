@@ -4,7 +4,7 @@ cdr            the fluxes outside the range of spectra.
 cpb  30.7.04:  deal with switched off tallies
 cdr  10.6.05:  further modifications of plot for spectra (text,
 c              total, plot vs. wavelength, plot 2 spectra into same frame
-c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop--> sgms_bgk
+c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop --> sgms_bgk
 !pb  18.12.06: general checking of XMCP removed to allow plots of
 !              input tallies even is no Monte Carlo particle has been followed
 !    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
@@ -14,7 +14,7 @@ C              Turned off for all other particle types
 cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
 cdr            even if other (volumetric) output tallies have already been plotted
 cdr            from same stratum in same call to plteir.
-cdr  Aug.15  : scaling of spectrum tallies:  hard wired options. To be done !  
+cdr  Aug.15  : scaling of spectrum tallies: hard-wired options. To be done !
 C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
@@ -44,11 +44,11 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
- 
+
       IMPLICIT NONE
- 
+
       INTEGER, INTENT(IN) :: ISTRA
- 
+
       REAL(DP), ALLOCATABLE :: VECTOR(:,:),VECSAV(:,:),VSDVI(:,:)
       REAL(DP), ALLOCATABLE :: XSPEC(:),YSPEC(:,:),VSPEC(:,:),
      .          WLSPEC(:),YSPECWL(:,:),VSPECWL(:,:)
@@ -83,14 +83,14 @@ C
         WRITE (iunout,*) 'PLTEIR CALLED, ISTRA, XMCP: ',
      .                                   ISTRA,XMCP(ISTRA)
         IF (XMCP(ISTRA).EQ.0.0) THEN
-          WRITE (iunout,*) 'PLOTTING ABANDONNED FOR ALL OUTPUT TALLIES'
+          WRITE (iunout,*) 'PLOTTING ABANDONED FOR ALL OUTPUT TALLIES'
         ENDIF
       ENDIF
 C
-C  prepare plot frame. 
+C  prepare plot frame.
 
 C  NULLPUNKT AUF DEM PAPIER
- 
+
       X0PL=10.
       Y0PL=3.
 C  ACHSENLAENGEN
@@ -126,7 +126,7 @@ C  PROVIDE EIRENE OUTPUT TALLIES FOR SELECTED STRATUM ISTRA
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTRA
-        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: ' 
+        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: '
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -140,7 +140,7 @@ C  NOTHING TO BE DONE
         ENDIF
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
         IESTR=ISTRA
-        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: ' 
+        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: '
         CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
@@ -155,11 +155,11 @@ C  NOTHING TO BE DONE
       ELSE
         WRITE (iunout,*) 'ERROR IN PLTEIR: DATA FOR STRATUM ISTRA= ',
      .                    ISTRA
-        WRITE (iunout,*) 'ARE NOT AVAILABLE. PLOTS ABANDONNED'
+        WRITE (iunout,*) 'ARE NOT AVAILABLE. PLOTS ABANDONED'
         RETURN
       ENDIF
 
-10    CONTINUE
+   10 CONTINUE
 C
       IF (ISTRA.EQ.0)
      .HEAD='SUM OVER STRATA
@@ -170,21 +170,21 @@ C
       WRITE (HEAD(13:15),'(I3)') ISTRA
       ENDIF
 C
-      HEAD0='VOLUME AVERAGED BACKGROUND TALLY, INPUT
+      HEAD0='VOLUME-AVERAGED BACKGROUND TALLY, INPUT
      .           '
-      HEAD1='DEFAULT VOLUME AVERAGED TALLY, TRACKLENGTH ESTIMATED
+      HEAD1='DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
      .           '
-      HEAD2='ADDITIONAL VOLUME AVERAGED TALLY, TRACKLENGTH ESTIMATED
+      HEAD2='ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
      .           '
-      HEAD3='ADDITIONAL VOLUME AVERAGED TALLY, COLLISION ESTIMATED
+      HEAD3='ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED
      .           '
-      HEAD4='VOLUME AVERAGED TALLY, SNAPSHOT ESTIMATED
+      HEAD4='VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED
      .           '
-      HEAD5='VOLUME AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
+      HEAD5='VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
      .           '
       HEAD6='BGK TALLY
      .           '
-      HEAD7='ALGEBRAIC FUNCTION OF VOLUME AVERAGED TALLIES         
+      HEAD7='ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES
      .           '
       HEAD8='RELATIVE STANDARD DEVIATION
      .           '
@@ -212,7 +212,7 @@ C
           N1SDVI = 1
         END IF
       END IF
- 
+
       DO 10000 IBLD=1,NVOLPL
 C
         IF (PLTL2D(IBLD).OR.PLTL3D(IBLD)) THEN
@@ -230,7 +230,7 @@ C  REDO ALGEBRAIC TALLY IN CASE NFILEN=2 OR NFILEN=7
      .                       ALGVI(IALV,ISTRA),
      .                       NR1TAL,NP2TAL,NT3TAL,NBMLT)
                 ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-105           CONTINUE
+  105         CONTINUE
             ENDIF
             ITL=IABS(JTAL)
 C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
@@ -279,6 +279,7 @@ cdr  ITL = IABS(JTAL)
                 CALL EIRENE_LEER(1)
                 CYCLE
               END IF  
+
               IF (ISPZ.EQ.0) THEN
 cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
                 SELECT CASE (ITL)
@@ -442,11 +443,11 @@ c  sum over species
                   DO 122 I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
      .                              ESTIMV(NADDV(ITL)+K,NCLTAL(I))
-122             CONTINUE
+  122           CONTINUE
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NFT) THEN
                 DO 125 I=1,NRAD
                   VECTOR(I,ICURV)=ESTIMV(NADDV(ITL)+ISPZ,NCLTAL(I))
-125             CONTINUE
+  125           CONTINUE
               ELSE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
@@ -468,8 +469,8 @@ C  CHECK IF STANDARD DEVIATION IS AVAILABLE FOR THIS TALLY
                   LSDVI(ICURV)=.TRUE.
                   DO 127 I=1,NRAD
                     VSDVI(I,ICURV)=SIGMA(N,NCLTAL(I))
-127               CONTINUE
-126             CONTINUE
+  127             CONTINUE
+  126           CONTINUE
               ENDIF
 C
             ENDIF
@@ -477,10 +478,10 @@ C
             IF (PLTL2D(IBLD) .AND. PLTL3D(IBLD)) THEN
               DO 129 I=1,NRAD
                 VECSAV(I,ICURV)=VECTOR(I,ICURV)
-129           CONTINUE
+  129         CONTINUE
             END IF
 C
-110       CONTINUE
+  110     CONTINUE
 C
 C ...................................
 C                                   .
@@ -521,7 +522,7 @@ C  EQUIDISTANT IN LOG SCALE
                 DO I=IA,IE
                   XXP2D(I)=EXP(XI+(I-IA)/DEL*(XE-XI))
                 ENDDO
-C  USER DEFINED ABSCISSA, XXP2D_USR
+C  USER-DEFINED ABSCISSA, XXP2D_USR
               ELSEIF (XMI.GT.XMA.AND.(XMI.LE.0.OR.XMA.LE.0)) THEN
                 DO I=IA,IE
                   XXP2D(I)=XXP2D_USR(I,IBLD)
@@ -537,29 +538,29 @@ C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1.ST (RADIAL) GRID
 C
             IXSET2=0
             IF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2) THEN
-C   USE RADIAL SURFACE CENTERED GRID "RHOSRF" 
+C   USE RADIAL SURFACE-CENTERED GRID "RHOSRF"
 C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
               DO 130 I=1,NR1ST
                 XXP2D(I)=RHOSRF(I)
-130           CONTINUE
+  130         CONTINUE
               DO 131 J=2,NP2ND*NT3RD*NBMLT
                 DO 131 I=1,NR1ST
                   XXP2D(I+(J-1)*NR1ST)=XXP2D(I)
-131            CONTINUE
+  131          CONTINUE
               DO 138 I=NSURF+1,NRAD
-138             XXP2D(I)=0.
+  138           XXP2D(I)=0.
               IXSET2=1
             ELSEIF (LEVGEO.EQ.3) THEN
-C   USE PERPEND. ARCLENGTH "BGLP" IN CASE OF POLYGON GRID, 
+C   USE PERPEND. ARCLENGTH "BGLP" IN CASE OF POLYGON GRID,
 C   ...FOR EACH POLOIDAL AND TOROIDAL POSITION, IF APPLICABLE
               DO 133 I=1,NR1ST
                 DO 133 J=1,NP2ND
                   DO 133 K=1,NT3RD
                     IRAD=I+((J-1)+(K-1)*NP2T3)*NR1P2
                     XXP2D(IRAD)=BGLP(I,J)
-133           CONTINUE
+  133         CONTINUE
               DO 136 I=NSURF+1,NRAD
-136             XXP2D(I)=0.
+  136           XXP2D(I)=0.
               IXSET2=1
             ELSE
 C   NO 2D PLOTOPTIONS AVAILABLE
@@ -567,7 +568,7 @@ C   NO 2D PLOTOPTIONS AVAILABLE
             XMI=XXP2D(NPLIN2(IBLD,1))*(1.+1.E-6)
             XMA=XXP2D(NPLOT2(IBLD,1))/(1.+1.E-6)
 C
-139         CONTINUE
+  139       CONTINUE
 C
             IF (IXSET2.NE.1) THEN
               WRITE (iunout,*) ' NO GRID SET FOR 2D PLOTTING '
@@ -576,13 +577,13 @@ C
               GOTO 1000
             ENDIF
 C
-C  IN CASE OF LSMOT2, SET ZONE CENTERED ABSCISSA
-C  GRID FROM SURFACE CENTERED  GRID  "X"
+C  IN CASE OF LSMOT2, SET ZONE-CENTERED ABSCISSA
+C  GRID FROM SURFACE-CENTERED GRID "X"
 C
             IF (LSMOT2(IBLD)) THEN
               DO 137 J=1,NRAD-1
                 XXP2D(J)=(XXP2D(J)+XXP2D(J+1))*0.5
-137           CONTINUE
+  137         CONTINUE
             ENDIF
 C
             DO 140 ICURV=1,NSPTAL(IBLD)
@@ -626,10 +627,10 @@ C
 C YMNLG2, YMXLG2: REAL MAX/MIN, FOR LEGENDE ON 2D PLOT ONLY
               DO 141 I=I1,I2M,IS
                 YMNLG2(ICURV)=MIN(YMNLG2(ICURV),VECTOR(I,ICURV))
-141           CONTINUE
+  141         CONTINUE
               DO 142 I=I1,I2M,IS
                 YMXLG2(ICURV)=MAX(YMXLG2(ICURV),VECTOR(I,ICURV))
-142           CONTINUE
+  142         CONTINUE
 C
 C YMN2, YMX2: FOR AXIS
               FITY=.TRUE.
@@ -638,7 +639,7 @@ C YMN2, YMX2: FOR AXIS
                 YMN2(ICURV)=TALZMI(IBLD)
                 DO 143 I=1,NRAD
                   VECTOR(I,ICURV)=MAX(YMN2(ICURV),VECTOR(I,ICURV))
-143             CONTINUE
+  143           CONTINUE
                 IF (LOGY) YMN2(ICURV)=YMN2(ICURV)*(1.+1.E-6)
               ELSE
                 YMN2(ICURV)=YMNLG2(ICURV)
@@ -649,12 +650,12 @@ C
                 YMX2(ICURV)=TALZMA(IBLD)
                 DO 144 I=1,NRAD
                   VECTOR(I,ICURV)=MIN(YMX2(ICURV),VECTOR(I,ICURV))
-144             CONTINUE
+  144           CONTINUE
                 IF (LOGY) YMX2(ICURV)=YMX2(ICURV)/(1.+1.E-6)
               ELSE
                 YMX2(ICURV)=YMXLG2(ICURV)
               ENDIF
-140         CONTINUE
+  140       CONTINUE
 C
 C  PLOT ALL CURVES REQUESTED FROM THIS TALLY INTO ONE PICTURE
             DO 150 ICURV=1,NSPTAL(IBLD)
@@ -678,7 +679,7 @@ C  PLOT ALL CURVES REQUESTED FROM THIS TALLY INTO ONE PICTURE
                   TXUNIT(ICURV)=TXTUNT(ISPZ,ITL)
                 ENDIF
               ENDIF
-150         CONTINUE
+  150       CONTINUE
             IERR=0
             L_SAME=.FALSE.
             CALL EIRENE_PLTTLY (XXP2D,VECTOR,VSDVI,YMN2,YMX2,
@@ -702,12 +703,12 @@ C  PLOT ALL CURVES REQUESTED FROM THIS TALLY INTO ONE PICTURE
      .                        ' YMIN= ',YMNLG2(ICURV),
      .                        ' YMAX= ',YMXLG2(ICURV),
      .                        ' LSDVI= ',LSDVI(ICURV)
-160           CONTINUE
+  160         CONTINUE
             ENDIF
 C
           ENDIF
 C
-1000      CONTINUE
+ 1000     CONTINUE
 C
 C   3D PLOT GRID
 C
@@ -717,15 +718,15 @@ C
               IF (PLTL2D(IBLD)) THEN
                 DO 1035 I=1,NRAD
                    VECTOR(I,ICURV)=VECSAV(I,ICURV)
-1035            CONTINUE
+ 1035           CONTINUE
               END IF
 C  SYMMETRY CONDITION AT POLAR ANGLE THETA=YIA AND THETA=2*PI+YIA
 C  NOT READY: IXTL3 NOT DEFINED HERE. ENFORCE SYMMETRY AUTOMATICALLY EARLIER
 C             IF (LEVGEO.EQ.2.AND.IYTL3.EQ.NP2ND) THEN
 C               DO 1036 I=1,IXTL3
-C1036             VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
+C 1036            VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
 C             ENDIF
-1040        CONTINUE
+ 1040       CONTINUE
 C
 C SET QUASIRECTANGULAR PLOT GRIDS XXP3D (IX), IX=1,IXTL3
 C                             AND YYP3D (IY), IY=1,IYTL3
@@ -760,14 +761,14 @@ c  at this point: either lppol3 or lptor3 must be true
 c  set a x-y or a x-z grid, by abuse of notation on xxp3d,yyp3d
                 IXTL3=NR1ST
                 DO 218 I=1,IXTL3
-218               XXP3D(I)=RHOSRF(I)
+  218             XXP3D(I)=RHOSRF(I)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
 c  at this point:  lppol3 must be true, i.e. we need x-z grid
                 IYTL3=NT3RD
                 DO 220 I=1,IYTL3
-220               YYP3D(I)=ZSURF(I)
+  220             YYP3D(I)=ZSURF(I)
                 DO I=1,NR1ST
                   DO J=1,NT3RD
                     XPOL(I,J)=RHOSRF(I)
@@ -780,7 +781,7 @@ c  at this point:  lppol3 must be true, i.e. we need x-z grid
 c  at this point: lptor3 must be true, i.e. we need x-y grid
                 IYTL3=NP2ND
                 DO 221 I=1,IYTL3
-221               YYP3D(I)=PSURF(I)
+  221             YYP3D(I)=PSURF(I)
                 DO I=1,NR1ST
                   DO J=1,NP2ND
                     XPOL(I,J)=RHOSRF(I)
@@ -795,19 +796,19 @@ C
               IF (NLRAD.AND..NOT.LPRAD3(IBLD)) THEN
                 IXTL3=NR1ST
                 DO 223 I=1,IXTL3
-223               XXP3D(I)=RHOSRF(I)
+  223             XXP3D(I)=RHOSRF(I)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
                 IYTL3=NT3RD
                 DO 226 I=1,IYTL3
-226               YYP3D(I)=ZSURF(I)
+  226             YYP3D(I)=ZSURF(I)
                 IYSET3=1
               ENDIF
               IF (NLPOL.AND..NOT.LPPOL3(IBLD)) THEN
                 IYTL3=NP2ND
                 DO 225 I=1,IYTL3-1
-225               YYP3D(I)=0.5*(PSURF(I+1)+PSURF(I))
+  225             YYP3D(I)=0.5*(PSURF(I+1)+PSURF(I))
                 YYP3D(NP2ND)=PSURF(1)+PI2A
                 IYSET3=1
               ENDIF
@@ -817,11 +818,11 @@ C
               IF (LPTOR3(IBLD)) THEN
                 IXTL3=NR1ST
                 DO 228 IX=1,IXTL3
-228               XXP3D(IX)=IX
+  228             XXP3D(IX)=IX
                 IXSET3=1
                 IYTL3=NP2ND
                 DO 230 IX=1,IYTL3
-230               YYP3D(IX)=IX
+  230             YYP3D(IX)=IX
                 IYSET3=1
               ENDIF
 C
@@ -880,7 +881,7 @@ C
               TMIN=TALZMI(IBLD)
               TMAX=TALZMA(IBLD)
 C
-1200          CONTINUE
+ 1200         CONTINUE
 C
 C
 C  CONTOUR PLOTS
@@ -950,7 +951,7 @@ C
                     VECTOR(I,ICURV)=101._DP
                     INULL = INULL + 1
                   END IF
-1222            CONTINUE
+ 1222           CONTINUE
                 LINLOG=.FALSE.
                 TMIN=0.
                 TMAX=100.
@@ -966,7 +967,7 @@ C
                 GOTO 1200
               ENDIF
 C
-1160        CONTINUE
+ 1160       CONTINUE
 C  LOOP ICURV FINISHED
           ENDIF
 C
@@ -979,18 +980,18 @@ C
 C
 10000 CONTINUE
 
-C  LOOP IBLD FINISHED,   NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
+C  LOOP IBLD FINISHED, NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
-C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED 
+C  NEXT: PLOT ENERGY (WAVELENGTH) SPECTRA, IF ANY HAVE BEEN SCORED
 C        PLOTTING IS NOT YET CONDITIONED BY FLAGS
 C        ALL PLOTS FOR ALL SPECTRA ARE ALWAYS DONE
 C
       IF (XMCP(ISTRA).LE.1.0) GOTO 20000
-C 
+C
       DO ISPC=1,NADSPC
 C  THERE ARE NSPS BINS, AND NSPS+1 ENERGY BIN BOUNDARIES
 C  THESE ARE EQUALLY SPACED LINEARLY OR LOGARITHMICALLY
-C       LOGX=ESTIML(ISPC)%LOG 
+C       LOGX=ESTIML(ISPC)%LOG
         NSPS=ESTIML(ISPC)%NSPC
         ALLOCATE (XSPEC(NSPS+1))
         ALLOCATE (YSPEC(NSPS+1,1))
@@ -1009,7 +1010,7 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
           YSPEC(I,1)=ESTIML(ISPC)%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%SGM(I)
         END DO
- 
+
         YMN2(1)=MINVAL(YSPEC(1:NSPS,1))
         YMX2(1)=MAXVAL(YSPEC(1:NSPS,1))
         IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
@@ -1032,7 +1033,7 @@ CDR:  NOT READY: ABUSE SPCPLT FOR MIN MAX ON PLOT, ALWAYS: LIN-LOG SCALE
         XMI=XSPEC(1)
         XMA=XSPEC(NSPS+1)
 
-C  LINEAR OR LOGARITHMIC Y SCALE ?  
+C  LINEAR OR LOGARITHMIC Y SCALE ?
         LOGY=.FALSE.
         FITY=.FALSE.
 
@@ -1042,8 +1043,8 @@ CDR     IF (ESTIML(ISPC)%SPC_YPLT.GT.0.0)  THEN
           LOGY=.TRUE.
           FITY=.TRUE.
         ENDIF
-CDR 
- 
+CDR
+
         IF (ESTIML(ISPC)%ISRFCLL == 0) THEN
          TXTALL(1)='SPECTRUM FOR SURFACE        PARTICLE TYPE        '//
      .             'SPECIES                '
@@ -1055,7 +1056,7 @@ CDR
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%IPRTYP
         WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%IPRSP
         IT = ESTIML(ISPC)%ISPCTYP
-        ITT= ESTIML(ISPC)%ISRFCLL 
+        ITT= ESTIML(ISPC)%ISRFCLL
         TXSPEC=REPEAT(' ',24)
         TXUNIT=REPEAT(' ',24)
         IF (ITT.EQ.0.AND.IT == 1) TXUNIT='AMP/BIN(EV)             '
@@ -1069,8 +1070,8 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
         TXHEAD(1:30)=HEAD9(1:30)
         TXHEAD(32:42)='INTEGRAL: '
         WRITE (TXHEAD(43:55),'(ES12.4)') ESTIML(ISPC)%SPCS
-        IERR=0   
-C  MANY SPECTRA INTO ONE PICTURE_        
+        IERR=0
+C  MANY SPECTRA INTO ONE PICTURE
         L_SAME=ESTIML(ISPC)%SPC_SAME .NE. 1.D0
 C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
         IF (ISPC.EQ.1) L_SAME=.FALSE.
@@ -1082,13 +1083,13 @@ C  ENFORCE NEW FRAME FOR 1ST SPECTRUM
         DEALLOCATE (XSPEC)
         DEALLOCATE (YSPEC)
         DEALLOCATE (VSPEC)
- 
+
       END DO
- 
+
 C  NOW REPEAT SAME PLOTS, BUT VS. WAVELENGTH
       IF (NPHOTI > 0) THEN
-CDR TO BE DONE: DISTUINGISH BETWEEN PHOTON AND PARTICLE SPECTRA
- 
+CDR TO BE DONE: DISTINGUISH BETWEEN PHOTON AND PARTICLE SPECTRA
+
       DO ISPC=1,NADSPC
         ITP=ESTIML(ISPC)%IPRTYP
         IF (ITP.NE.0) CYCLE
@@ -1111,7 +1112,7 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
           YSPEC(I,1)=ESTIML(ISPC)%SPC(I)
           IF (NSIGI_SPC > 0) VSPEC(I,1)=ESTIML(ISPC)%SGM(I)
         END DO
- 
+
 C  PLOT ALSO VS. WAVELENGTH (NM)
         WL00            =HPCL/MAX(1.E-6_DP,SPC00)*1.E7_DP
 C  x axis: cell faces
@@ -1130,11 +1131,11 @@ C  rescaling:  flux/ev to flux/nm
           DW=WLSPEC(I+1)-WLSPEC(I)
           YSPECWL(I,1) = YSPECWL(I,1)*DE/DW
         END DO
- 
+
         DEALLOCATE (XSPEC)
         DEALLOCATE (YSPEC)
         DEALLOCATE (VSPEC)
- 
+
         YMN2(1)=MINVAL(YSPECWL(1:NSPS,1))
         YMX2(1)=MAXVAL(YSPECWL(1:NSPS,1))
         IF (ABS(YMX2(1)-YMN2(1)) < EPS30) YMX2(1) = YMN2(1) + 1._dp
@@ -1162,7 +1163,7 @@ C  rescaling:  flux/ev to flux/nm
         WRITE (TXTALL(1)(43:48),'(I6)') ESTIML(ISPC)%IPRTYP
         WRITE (TXTALL(1)(58:63),'(I6)') ESTIML(ISPC)%IPRSP
         IT = ESTIML(ISPC)%ISPCTYP
-        ITT= ESTIML(ISPC)%ISRFCLL 
+        ITT= ESTIML(ISPC)%ISRFCLL
         TXSPEC=REPEAT(' ',24)
         TXUNIT=REPEAT(' ',24)
         IF (ITT.EQ.0.AND.IT == 1) TXUNIT='AMP/BIN(NM)             '
@@ -1190,17 +1191,17 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
         DEALLOCATE (VSPECWL)
       END DO  !  LOOP OVER PHOTON SPECTRA ENDS HERE
 
-      END IF 
+      END IF
 
 20000 CONTINUE
- 
+
       IF (ALLOCATED(VECTOR)) DEALLOCATE(VECTOR)
       IF (ALLOCATED(VECSAV)) DEALLOCATE(VECSAV)
       IF (ALLOCATED(VSDVI))  DEALLOCATE(VSDVI)
       RETURN
- 
+
 C     the following ENTRY is for reinitialization of EIRENE (DMH)
- 
+
       ENTRY EIRENE_PLTEIR_REINIT
       IFIRST = 0
       return

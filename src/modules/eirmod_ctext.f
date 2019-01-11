@@ -1,43 +1,43 @@
 cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
 
       MODULE EIRMOD_CTEXT
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
-      PUBLIC :: EIRENE_ALLOC_CTEXT, EIRENE_DEALLOC_CTEXT, 
+
+      PUBLIC :: EIRENE_ALLOC_CTEXT, EIRENE_DEALLOC_CTEXT,
      P          EIRENE_INIT_CTEXT
- 
+
       CHARACTER(72), PUBLIC, ALLOCATABLE, SAVE ::
      C TXTSFL(:),   TXTTAL(:,:), TXTPLS(:,:),
      C TXTSOU(:),   TXTSIG(:),
      C TXTTLW(:,:),
      C CHRTAL(:),   CHRTLS(:)
- 
+
       CHARACTER(72), PUBLIC, SAVE :: TXTRUN
- 
+
       CHARACTER(24), PUBLIC, ALLOCATABLE, SAVE ::
      C TXTUNT(:,:), TXTSPC(:,:),
      C TXTPUN(:,:), TXTPSP(:,:),
      C TXTUNW(:,:), TXTSPW(:,:),
      C TEXTLA(:),   TEXTLS(:)
- 
- 
+
+
       CONTAINS
- 
- 
+
+
       SUBROUTINE EIRENE_ALLOC_CTEXT (ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
       IF (ICAL == 1) THEN
- 
+
         IF (ALLOCATED(TXTSFL)) RETURN
- 
+
         ALLOCATE (TXTSFL(NLIMPS))
         ALLOCATE (TXTSOU(NSTRA))
         ALLOCATE (TXTSIG(NCHOR))
@@ -48,39 +48,39 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
         ALLOCATE (TXTSPW(N2MX,NTALS))
         ALLOCATE (TEXTLA(5))
         ALLOCATE (TEXTLS(3))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CTEXT(1) ',(NLIMPS+NSTRA+NCHOR+N2MX*NTALS+NALV+
      .                      NALS)*72 +
      .                     (2*N2MX*NTALS+8)*24
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         IF (ALLOCATED(TXTTAL)) RETURN
- 
+
         ALLOCATE (TXTTAL(N1MX,NTALV))
         ALLOCATE (TXTPLS(N1MX,NTALI))
         ALLOCATE (TXTSPC(N1MX,NTALV))
         ALLOCATE (TXTUNT(N1MX,NTALV))
         ALLOCATE (TXTPSP(N1MX,NTALI))
         ALLOCATE (TXTPUN(N1MX,NTALI))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' CTEXT(2) ',  N1MX*(NTALV+NTALI)*72 +
      .                     2*N1MX*(NTALV+NTALI)*24
- 
+
       END IF
- 
+
       CALL EIRENE_INIT_CTEXT (ICAL)
- 
+
       RETURN
       END SUBROUTINE EIRENE_ALLOC_CTEXT
- 
- 
+
+
       SUBROUTINE EIRENE_DEALLOC_CTEXT
- 
+
       IF (.NOT.ALLOCATED(TXTSFL)) RETURN
- 
+
       DEALLOCATE (TXTSFL)
       DEALLOCATE (TXTTAL)
       DEALLOCATE (TXTPLS)
@@ -97,17 +97,17 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
       DEALLOCATE (TXTSPW)
       DEALLOCATE (TEXTLA)
       DEALLOCATE (TEXTLS)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CTEXT
- 
- 
+
+
       SUBROUTINE EIRENE_INIT_CTEXT (ICAL)
- 
+
       INTEGER, INTENT(IN) :: ICAL
- 
+
       IF (ICAL == 1) THEN
- 
+
         TXTSFL = ' '
         TXTSOU = ' '
         TXTSIG = ' '
@@ -118,21 +118,19 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
         TXTSPW = ' '
         TEXTLA = ' '
         TEXTLS = ' '
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         TXTTAL = ' '
         TXTPLS = ' '
         TXTSPC = ' '
         TXTUNT = ' '
         TXTPSP = ' '
         TXTPUN = ' '
- 
+
       END IF
- 
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CTEXT
- 
+
       END MODULE EIRMOD_CTEXT
- 
- 

@@ -83,14 +83,14 @@ csw
 c                = 0: no wall fluxes are used (old edge2d model)
 c                = 1: only ion fluxes are used
 c                = 2: ion fluxes and neutral fluxes from last eirene iteration are used
-c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give 
+c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give
 c                     converged neutral fluxes.
       logical :: eirene_use_elstepdat_bug
       logical  :: lfound
       real(dp) :: neutralFluxFileVersion
 c     replicate old sputtered flux arrays sptpl, sptat, sptml, sptio, sptpht
 c     for the moment these are filled with values from sptpltot, sptatot,sptmtot,sptitot,sptphtot
-c     in the future it is better to pass particle resolved sputtered fluxes
+c     in the future it is better to pass particle-resolved sputtered fluxes
 c     from sptXY X=PH,I,A,M,P Y=PHT,IO,AT,ML,PL
       real(dp),dimension(npls,nlimps)  :: sptpl
       real(dp),dimension(natm,nlimps)  :: sptat
@@ -112,7 +112,7 @@ csw
 cdmh
       eirene_fstoreneutflux = 'eirene.chemFluxDep'
       eirene_wallFluxModel = 1
-cdmh      
+cdmh
       open(unit=9998,file='eirene_user.namelist')
       read(9998,eirene_user)
       close(9998)
@@ -140,7 +140,7 @@ csw
                 if(  inmti(np,nr) == 2+1 .or.
      .               inmti(np,nr) == 3+1) then
                    msg = nlim+nsts+inspat(np,nr)
-                   
+
                    x1 = xtrian(necke(np,nr))
                    y1 = ytrian(necke(np,nr))
                    if(np == 3) then
@@ -150,7 +150,7 @@ csw
                       x2 = xtrian(necke(np+1,nr))
                       y2 = ytrian(necke(np+1,nr))
                    endif
-                   
+
                    ar = sqrt( (x1-x2)**2 + (y1-y2)**2)
                    xc = (x1+x2)/2.d0
 c     potpl in 1/s/cm
@@ -175,7 +175,7 @@ csw
       write(fp,'(1x,i6)') nstordr
 
       write(fp,'(a)') '* natm,nmol,nion,nphot  :'
-      write(fp,'(4(1x,i6))') natm,nmol,nion,nphot     
+      write(fp,'(4(1x,i6))') natm,nmol,nion,nphot
 
       write(fp,'(a)') '* npls:'
       write(fp,'(3(1x,i6))') npls
@@ -184,7 +184,7 @@ csw
       write(fp,'(3(1x,i6))') nlimps,nlim,nsts
 
 c---------------------------------------
-      write(fp,'(a,i6)') '* BULK SPECIES NPLS = ',npls      
+      write(fp,'(a,i6)') '* BULK SPECIES NPLS = ',npls
       do ipls=1,npls
          ityp=4
          ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -263,8 +263,8 @@ c---------------------------------------
             else
                vdenpara=0.
             endif
-            write(fp,'(i6,20(1x,e14.6))') ir, 
-     .           pdena(iatm,ir),            
+            write(fp,'(i6,20(1x,e14.6))') ir,
+     .           pdena(iatm,ir),
      .           vxdena(iatm,ir),
      .           vydena(iatm,ir),
      .           vzdena(iatm,ir),
@@ -313,7 +313,7 @@ c---------------------------------------
             else
                vdenpara=0.
             endif
-            write(fp,'(i6,20(1x,e14.6))') ir, 
+            write(fp,'(i6,20(1x,e14.6))') ir,
      .           pdenm(imol,ir),
      .           vxdenm(imol,ir),
      .           vydenm(imol,ir),
@@ -362,7 +362,7 @@ c---------------------------------------
             else
                vdenpara=0.
             endif
-            write(fp,'(i6,20(1x,e14.6))') ir, 
+            write(fp,'(i6,20(1x,e14.6))') ir,
      .           pdeni(iion,ir),
      .           vxdeni(iion,ir),
      .           vydeni(iion,ir),
@@ -411,7 +411,7 @@ c---------------------------------------
             else
                vdenpara=0.
             endif
-            write(fp,'(i6,20(1x,e14.6))') ir, 
+            write(fp,'(i6,20(1x,e14.6))') ir,
      .           pdenph(iphot,ir),
      .           vxdenph(iphot,ir),
      .           vydenph(iphot,ir),
@@ -496,7 +496,7 @@ c---------------------------------------
           write(fp,'(i6,20(1x,e14.6))') is, etota(is)
         enddo
       endif
- 
+
       close(fp)
 csw 25oct07
       deallocate(sumpotpl)
@@ -525,7 +525,7 @@ c           find corresponding triangle
                do j=1,3
                   if ((INSPAT(j,i).eq. is -(NLIM+NSTS))
      &                 .and.(INSPAT(j,i).ne.0) )then
-                     if (lfound) then                        
+                     if (lfound) then
                         write(iunout,*)"* EIRENE_OUTUSR:"
                         write(iunout,*)"* Edge twice found"
                         call EIRENE_exit_own(1)
@@ -535,12 +535,12 @@ c           find corresponding triangle
                      np = j
                   endif
                enddo
-            enddo                 
+            enddo
             if ((nr.le.0).or.(np.le.0)) then
-               write(fp,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)') 
+               write(fp,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)')
      &              is,POTAT(iatm,is),nr,np,0
             else
-               write(fp,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)') 
+               write(fp,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)')
      &              is,POTAT(iatm,is),nr,np,INMTI(np,nr)
             endif
          enddo                  !is

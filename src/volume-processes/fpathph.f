@@ -9,11 +9,11 @@ C               added: jcou,ncou
 !pb             BGK iteration
 !pb  22.03.07:  PI reactions revised
 cdr  oct.14  :  ftabcx3 added. Full tests still to be done
-cdr  oct.14  :  syncronized with fpathm, fpathi
+cdr  oct.14  :  synchronized with fpathm, fpathi
 
-cdr 31.10.14 :  speedup of final cut off evaluations
+cdr 31.10.14 :  speedup of final cut-off evaluations
 
-cdr note:       sgnl_poly evaluations are just the 8th order polynom,
+cdr note:       sgnl_poly evaluations are just the 8th-order polynomial,
 cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here),
 cdr             there is no need to call  --> move to in-line
@@ -38,8 +38,10 @@ cdr             ei process: started to check for H.3, H.1 options for EI process
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 cdr Jan. 18:    This entire routine is largely unfinished. Photon transport
-cdr             with eirene currently not possible. 
+cdr             with eirene currently not possible.
 cdr             Started to prepare re-activating this option: for now: comments only
+cdr Nov. 18:    notational cleanup: OT processes --> PH processes, to avoid confusion
+cdr             with OT ("other) processes of type H.11, H.12, population ratios.
 
 C
       FUNCTION EIRENE_FPATHPH (K,CFLAG,JCOU,NCOU)
@@ -56,17 +58,17 @@ C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
 C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
 
 C   OUTPUT: COMMON COMLCA
-C           CFLAG: FLAG FOR SAMPLING OF POST COLLISION STATES
+C           CFLAG: FLAG FOR SAMPLING OF POST-COLLISION STATES
 C           CFLAG(1,...): EI
 C           CFLAG(2,...): NOT IN USE, was DS process class in very old versions
 C           CFLAG(3,...): CX
 C           CFLAG(4,...): PI
 C           CFLAG(5,...): EL
 C           CFLAG(6,...): RC
-c           CFLAG(7,...): OT
+c           CFLAG(7,...): PH    (photonic processes, formerly: OT)
 C
-C   FLAG FOR POST COLLISION DISTRIBUTION IN VELOCITY SPACE
-C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IROT
+C   FLAG FOR POST-COLLISION DISTRIBUTION IN VELOCITY SPACE
+C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IRPH
 C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
 C                                                   SPECIES ALLOWED)
 C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
@@ -95,10 +97,10 @@ C
 
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
-      REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplot3,
+      REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplph3,
      .            DENEL, VX, VY, VZ, PVELQ0, fac,
      .            XC,YC,ZC
-      integer :: il, kk, irot, ipot, j
+      integer :: il, kk, irph, ipph, j
 C
 C  SET DEFAULTS: NO REACTIONS
 C
@@ -117,7 +119,7 @@ C
 
       DO 2 IPLS=1,NPLSI
         ZTI(IPLS)=ZT1(IPLS,K)
-2       DENIO(IPLS)=DIIN(IPLS,K)
+    2   DENIO(IPLS)=DIIN(IPLS,K)
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
 C            PVELQ(IPLS) IS SQUARED THE PHOTON VELOCITY IN THESE FRAMES
@@ -141,31 +143,32 @@ C
         ELSE
           PVELQ(IPLS)=PVELQ0
         ENDIF
-3     CONTINUE
+    3 CONTINUE
 C
+c  PH processes (photonic reactions)
+cdr:  unfinished. Do not use.
+c
 csw
-csw OT processes (photonic reactions)
-csw
-60    CONTINUE
+   60 CONTINUE
       if(phv_lgphot(iphot,0,0) == 0) goto 70
-      do 61 ipot=1,phv_nphoti(iphot)
-        irot=phv_lgphot(iphot,ipot,0)  !  -->  lgxot, mit x=ph, irot entspricht: irei, ircx, ....
-        ipls =phv_lgphot(iphot,ipot,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
-        il   =phv_lgphot(iphot,ipot,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
+      do 61 ipph=1,phv_nphoti(iphot)
+        IRPH=phv_lgphot(iphot,ipph,0)  !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
+        ipls =phv_lgphot(iphot,ipph,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
+        il   =phv_lgphot(iphot,ipph,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
 cdr     il wird hier nirgends verwendet! kann ev. ganz raus aus photonenmodul
-        kk   =phv_lgphot(iphot,ipot,3) !  -->   diese gibt es nicht bei ei, cx, pi prozessen, KK=NREAPI(IRPI) z.b. bei pi
-cdr                                    !        d.h. hier sollte kk=nreaot(irot) verwendet werden
+        kk   =phv_lgphot(iphot,ipph,3) !  -->   diese gibt es nicht bei ei, cx, pi prozessen, KK=NREAPI(IRPI) z.b. bei pi
+cdr                                    !        d.h. hier sollte kk=nreaph(IRPH) verwendet werden
         IF (LGVAC(K,IPLS)) GOTO 61
 C
 C  1.) RATE COEFFICIENT
 C
-        IF (MODCOL(7,2,IROT).EQ.1) THEN
+        IF (MODCOL(7,2,IRPH).EQ.1) THEN
           GOTO 997
-        ELSEIF (MODCOL(7,2,IROT).EQ.2) THEN
+        ELSEIF (MODCOL(7,2,IRPH).EQ.2) THEN
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE. FULL ACCOUNT FOR DOPPLER SHIFT
 
-cdr       kk   = nreaot(irot)
+cdr       kk   = nreaph(IRPH)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
 cdr  getcoeff liefert nun maxw. average ueber Ti(ipls) (background neutrals), z.b. voigt, ....
@@ -177,17 +180,17 @@ cdr  spaeter: allgemein raten (1/s) auch fuer testteilchen (fpatha, fpathm, fpat
 cdr           als neue option einfuehren, analog Aik in xsectp.
             GOTO 997
           endif
-          SIGVOT(irot)=sigv
+          SIGVPH(IRPH)=sigv
           GOTO 997
-        ELSEIF (MODCOL(7,2,   IROT).EQ.4) THEN
+        ELSEIF (MODCOL(7,2,   IRPH).EQ.4) THEN
 C  MODEL 4:
 C  BEAM-BEAM RATE. IGNORE DOPPLER SHIFT DUE TO THERMAL MOTION,
 C                  INCLUDE DOPPLER SHIFT DUE TO DIRECTED MOTION
-cdr       kk   = nreaot(irot)
+cdr       kk   = nreaph(IRPH)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
-cdr       ireac=modcol(7,1,irot)
-cdr  ireac entspricht "typ" in Getcoeff - cross section (lorentz, vdw, ...)
+cdr       ireac=modcol(7,1,IRPH)
+cdr  ireac entspricht "typ" in Getcoeff - cross-section (lorentz, vdw, ...)
 cdr  allerdings kann hier der "querschnitt" von hintergrundparametern abhaengen
           call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
           sigv=sigv*diin(ipls,k)
@@ -200,72 +203,72 @@ cdr  spaeter: allgemein raten (1/s) auch fuer testteilchen (fpatha, fpathm, fpat
 cdr           als neue option einfuehren, analog Aik in xsectp.
             GOTO 997
           endif
-          SIGVOT(irot)=sigv
-cdr       ESIGOT(irot,1)=e0*sigv   ziemlich sicher falsch
+          SIGVPH(IRPH)=sigv
+cdr       ESIGPH(IRPH,1)=e0*sigv   ziemlich sicher falsch
         ELSE
           GOTO 997
         ENDIF
 
-        SIGMAX=MAX(SIGMAX,SIGVOT(IROT))
-        SIGOTT=SIGOTT+SIGVOT(IROT)
+        SIGMAX=MAX(SIGMAX,SIGVPH(IRPH))
+        SIGPHT=SIGPHT+SIGVPH(IRPH)
 C
 C  2.) BULK ION ENERGY LOSS RATE:
 C
-        IF (MODCOL(7,4,IROT).EQ.1) THEN
+        IF (MODCOL(7,4,IRPH).EQ.1) THEN
 C  MODEL 1:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
 C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
           IF (NSTORDR >= NRAD) THEN
-            ESIGOT(IROT,1)=EPLOT3(IROT,K,1)
+            ESIGPH(IRPH,1)=EPLPH3(IRPH,K,1)
           ELSE
-            ESIGOT(IROT,1)=EIRENE_FEPLOT3(IROT,K)
+            ESIGPH(IRPH,1)=EIRENE_FEPLPH3(IRPH,K)
           END IF
-          CFLAG(7,IROT)=2
-        ELSEIF (MODCOL(7,4,IROT).EQ.3) THEN
+          CFLAG(7,IRPH)=2
+        ELSEIF (MODCOL(7,4,IRPH).EQ.3) THEN
 C  MODEL 3:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
-            ESIGOT(IROT,1)=EPLOT3(IROT,K,1)
+            ESIGPH(IRPH,1)=EPLPH3(IRPH,K,1)
           ELSE
-            ESIGOT(IROT,1)=EIRENE_FEPLOT3(IROT,K)
+            ESIGPH(IRPH,1)=EIRENE_FEPLPH3(IRPH,K)
           END IF
-          CFLAG(7,IROT)=1
+          CFLAG(7,IRPH)=1
         ELSE
           GOTO 997
         ENDIF
-61    CONTINUE
+   61 CONTINUE
 
-70    CONTINUE
+   70 CONTINUE
 c
 C     TOTAL
 C
-100   CONTINUE
+  100 CONTINUE
 
 C
-C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  CUT-OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
-C  CURRENTLY: CUT OFF AT 1E-10 TIMES SIGMAX
+C  CURRENTLY: CUT-OFF AT 1E-10 TIMES SIGMAX
 C
-      IF (SIGOTT.GT.0._DP) THEN
-        DO IROT=1,NROT
-          IF (SIGVOT(IROT) .LE. SIGMAX*1.D-10) THEN
-            SIGOTT=SIGOTT-SIGVOT(IROT)
-            SIGVOT(IROT) = 0.D0
+      IF (SIGPHT.GT.0._DP) THEN
+        DO IRPH=1,NRPH
+          IF (SIGVPH(IRPH) .LE. SIGMAX*1.D-10) THEN
+            SIGPHT=SIGPHT-SIGVPH(IRPH)
+            SIGVPH(IRPH) = 0.D0
           END IF
         END DO
       END IF
 
-      SIGTOT=SIGEIT+SIGPIT+SIGCXT+SIGELT+SIGOTT
+      SIGTOT=SIGEIT+SIGPIT+SIGCXT+SIGELT+SIGPHT
       IF (SIGTOT.GT.1.D-20) THEN
         EIRENE_FPATHPH=VEL/SIGTOT
         ZMFPI=1./EIRENE_FPATHPH
       ENDIF
 C
       RETURN
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*)
      .  'ERROR IN FPATHPH: INCONSISTENT PHOTON COLL. DATA'
-      WRITE (iunout,*) 'ITYP,IPHOT,IROT,MODCOL(7,J,IROT),J=1,4 '
-      WRITE (iunout,*) ITYP, IPHOT,IROT,(MODCOL(7,J,IROT),J=1,4)
+      WRITE (iunout,*) 'ITYP,IPHOT,IRPH,MODCOL(7,J,IRPH),J=1,4 '
+      WRITE (iunout,*)  ITYP,IPHOT,IRPH,(MODCOL(7,J,IRPH),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
       END

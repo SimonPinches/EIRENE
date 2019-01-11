@@ -10,12 +10,12 @@ C
       REAL(DP), INTENT(INOUT) :: X1, Z1
       REAL(DP), SAVE :: WO=0.D0, S=0.D0, C=1.D0
       REAL(DP) :: XS
- 
+
       IF (WO.EQ.W3) GOTO 1
       S=SIN(-W3)
       C=COS(-W3)
       WO=W3
-1     CONTINUE
+    1 CONTINUE
 C
       X1=X1+RM
       XS=X1

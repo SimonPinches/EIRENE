@@ -36,8 +36,7 @@ c
       TXTTL=' '
       TXTSP=' '
       TXTUN=' '
-      
- 
+
       ilast=1
 
       if (istra > 0) then
@@ -62,7 +61,7 @@ c
         write (fp2+ifoff,'(A)') '* '
         write (fp2+ifoff,'(A)') '* No. of strata  No. of fluid species'
         write (fp2+ifoff,'(i10,5x,i10)') nstrai, nplsi
-        
+
         allocate (algv_corner(nrknot,nalv))
         allocate (dummy(ntri))
 
@@ -78,52 +77,51 @@ c
       write (fp1+ifoff,'(A,i2.2)') '*** STRATUM #', istra
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
-      
+
       write (fp1+ifoff,'(A)') txtsou(istra)
       write (fp1+ifoff,'(es16.7)') flux(istra)
-      
+
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '*** PARTICLE SOURES '
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
-      
+
       write (fp1+ifoff,'(i10)') ntrii
       do itr = 1, ntrii
-         write (fp1+ifoff,'(i10,2es16.7)') 
+         write (fp1+ifoff,'(i10,2es16.7)')
      .          itr, (algv(ip,itr), ip=1,nplsi)
       end do
-      
+
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '*** MOMENTUM SOURES '
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
-      
+
       write (fp1+ifoff,'(i10)') ntrii
       do itr = 1, ntrii
-         write (fp1+ifoff,'(i10,2es16.7)')  
+         write (fp1+ifoff,'(i10,2es16.7)')
      .          itr, (algv(nplsi+ip,itr), ip=1,nplsi)
       end do
-      
+
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '*** ENERGY SOURES '
       write (fp1+ifoff,'(A)') '* '
       write (fp1+ifoff,'(A)') '* '
-      
+
       write (fp1+ifoff,'(i10)') ntrii
       do itr = 1, ntrii
-         write (fp1+ifoff,'(i10,2es16.7)') 
+         write (fp1+ifoff,'(i10,2es16.7)')
      .          itr, algv(2*nplsi+1,itr), algv(2*nplsi+2,itr)
       end do
-      
 
       do ip = 1, 2*nplsi+2
-         
+
         dummy(1:ntrii) = algv(ip,1:ntrii)
         call eirene_cell_to_corner (dummy, algv_corner(1:nrknot,ip))
-         
+
       end do
 
       write (fp2+ifoff,'(A)') '* '
@@ -131,7 +129,7 @@ c
       write (fp2+ifoff,'(A,i2.2)') '*** STRATUM #', istra
       write (fp2+ifoff,'(A)') '* '
       write (fp2+ifoff,'(A)') '* '
-      
+
       write (fp2+ifoff,'(A)') txtsou(istra)
       write (fp2+ifoff,'(es16.7)') flux(istra)
 
@@ -140,10 +138,10 @@ c
       write (fp2+ifoff,'(A)') '*** PARTICLE SOURES '
       write (fp2+ifoff,'(A)') '* '
       write (fp2+ifoff,'(A)') '* '
-      
+
       write (fp2+ifoff,'(i10)') nrknot
       do itr = 1, nrknot
-        write (fp2+ifoff,'(i10,2es16.7)') itr, 
+        write (fp2+ifoff,'(i10,2es16.7)') itr,
      .         (algv_corner(itr,ip), ip=1,nplsi)
       end do
 
@@ -155,20 +153,20 @@ c
 
       write (fp2+ifoff,'(i10)') nrknot
       do itr = 1, nrknot
-        write (fp2+ifoff,'(i10,2es16.7)') itr, 
+        write (fp2+ifoff,'(i10,2es16.7)') itr,
      .         (algv_corner(itr,nplsi+ip), ip=1,nplsi)
       end do
-      
+
       write (fp2+ifoff,'(A)') '* '
       write (fp2+ifoff,'(A)') '* '
       write (fp2+ifoff,'(A)') '*** ENERGY SOURES '
       write (fp2+ifoff,'(A)') '* '
       write (fp2+ifoff,'(A)') '* '
-      
+
       write (fp2+ifoff,'(i10)') nrknot
       do itr = 1, nrknot
-        write (fp2+ifoff,'(i10,2es16.7)') 
-     .         itr, algv_corner(itr,2*nplsi+1), 
+        write (fp2+ifoff,'(i10,2es16.7)')
+     .         itr, algv_corner(itr,2*nplsi+1),
      .              algv_corner(itr,2*nplsi+2)
       end do
 

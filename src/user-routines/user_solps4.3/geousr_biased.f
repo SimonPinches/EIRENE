@@ -236,7 +236,7 @@ c*** Check whether this segment is marked as a target edge
                       write(iunout,*) 'geousr_biased:',
      ,                             ' something is wrong with ',
      ,                             'the target chain definition.'
-                      write(iunout,*) 
+                      write(iunout,*)
      .                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
                       call EIRENE_exit_own(1)
@@ -253,9 +253,9 @@ c*** Switch off the segment
 c*** The chain is broken
             print *,'geousr_biased: the chain is broken'
             go to 990
- 980      continue
+  980     continue
         end if
- 990  continue
+  990 continue
  1001 continue
 C
 C  ANFANG: MODIFY GEOMETRY
@@ -265,7 +265,7 @@ C
         case(1)
           p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
-        case(2) 
+        case(2)
           p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
 c
@@ -408,8 +408,7 @@ C  ERROR
        XN=XPOL(IXN,IYN)
        YN=YPOL(IXN,IYN)
        IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
-     w                          "CAN NOT FIND A NEAREST POINT"
+     w                          "CANNOT FIND A NEAREST POINT"
       END SUBROUTINE  FIND_NEAREST_NDS
 
       END subroutine eirene_geousr_biased
-

@@ -1,6 +1,6 @@
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
-C  USER SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME AVERAGED
+C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
 C
 C+---------------------------------------------------------------+
 C| Modifications:                                                |
@@ -10,7 +10,7 @@ C|                           ALLOCATABLE, SAVE to speed up       |
 C|                           subroutine call (save time in       |
 C|                           storage allocation)                 |
 C| 16/07/2010   D.Harting    Added two variables to eirene_user  |
-C|                           namelist for use of fluxdependency  |
+C|                           namelist for use of flux dependency |
 C|                           in chemical sputtering.             |
 C+---------------------------------------------------------------+
       USE EIRMOD_PRECISION
@@ -48,7 +48,7 @@ csw
 c                = 0: no wall fluxes are used (old edge2d model)
 c                = 1: only ion fluxes are used
 c                = 2: ion fluxes and neutral fluxes from last eirene iteration are used
-c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give 
+c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give
 c                     converged neutral fluxes.
       logical :: eirene_use_elstepdat_bug
       namelist /eirene_user/eirene_nbirth,eirene_njetto,
@@ -105,7 +105,7 @@ csw
 cdmh
         eirene_fstoreneutflux = 'eirene.chemFluxDep'
         eirene_wallFluxModel = 1
-cdmh      
+cdmh
         open(unit=9998,file='eirene_user.namelist')
         read(9998,eirene_user)
         close(9998)
@@ -134,7 +134,7 @@ c         net sources due CX:
           iacx = 1
           ircx=lgacx(iatm,iacx,0)
           addv(8,ird) = addv(8,ird)+wtr*sigvcx(ircx)*
-     .               (E0 - esigcx(ircx,1))    
+     .               (E0 - esigcx(ircx,1))
         enddo
       endif
       RETURN
