@@ -4,6 +4,9 @@ include:
     - '.update_fork_branches.yml'
     - '.tag_and_deploy.yml'
 
+variables:
+    SERVER_DOMAIN: 'jugit.fz-juelich.de'
+
 before_script:
     # Install required programs
     - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd
@@ -24,7 +27,7 @@ stages:
     except: 
         - schedules
     script:
-        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     artifacts:

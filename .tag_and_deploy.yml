@@ -8,7 +8,7 @@
         # Install required programs
         - apt-get update && apt-get -y install git openssh-client
         # Configure git user information
-        - git config --global user.email "noreply@src.ipp.kfa-juelich.de"
+        - git config --global user.email "noreply@${SERVER_DOMAIN}"
         - git config --global user.name "GitLab CI"
         # Run ssh-agent (inside the build environment)
         - eval $(ssh-agent -s)
@@ -20,10 +20,10 @@
         - mkdir -p ~/.ssh
         - chmod 700 ~/.ssh
         # Use ssh-keyscan to scan the keys of your private servers.
-        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - ssh-keyscan ${SERVER_DOMAIN} >> ~/.ssh/known_hosts
         - chmod 644 ~/.ssh/known_hosts
         # Change origin push URL to get write access to EIRENE repository
-        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+        - git remote set-url --push origin git@${SERVER_DOMAIN}:eirene/eirene.git
     script:
         - cd Database/AMdata
         # Identify latest database change via tag and check for new commits
@@ -101,7 +101,7 @@ tag_database_methane:
         # "if" only needed as long as GitLab version < 11.0
         - if [[ "$CI_COMMIT_TAG" == $DATABASE-* ]];
           then
-            git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/eirene-database-figures.git;
+            git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/eirene-database-figures.git;
             mkdir -p eirene-database-figures/$DATABASE;
             cd eirene-database-figures/$DATABASE;
             TEX_FILE=../../Database/AMdata/$DATABASE.tex;
@@ -149,7 +149,7 @@ deploy_database_website_methane:
         # Install required programs
         - apt-get update && apt-get -y install git ant default-jdk openssh-client
         # Configure git user information
-        - git config --global user.email "noreply@src.ipp.kfa-juelich.de"
+        - git config --global user.email "noreply@${SERVER_DOMAIN}"
         - git config --global user.name "GitLab CI"
         # Run ssh-agent (inside the build environment)
         - eval $(ssh-agent -s)
@@ -162,7 +162,7 @@ deploy_database_website_methane:
         - mkdir -p ~/.ssh
         - chmod 700 ~/.ssh
         # Use ssh-keyscan to scan the keys of your private servers.
-        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - ssh-keyscan ${SERVER_DOMAIN} >> ~/.ssh/known_hosts
         - ssh-keyscan apps.fz-juelich.de >> ~/.ssh/known_hosts
         - chmod 644 ~/.ssh/known_hosts
     script:
@@ -174,7 +174,7 @@ deploy_database_website_methane:
         # "if" only needed as long as GitLab version < 11.0
         - if [[ "$CI_COMMIT_TAG" == $DATABASE-* ]];
           then
-            git clone git@src.ipp.kfa-juelich.de:hydkin/hydkin.git;
+            git clone git@${SERVER_DOMAIN}:hydkin/hydkin.git;
             cd hydkin/tex2hyd;
             TEX_FILE=../../Database/AMdata/$DATABASE.tex;
             ./ex_prog.sh -d h0 -p "$DATABASE" $TEX_FILE ./output/;

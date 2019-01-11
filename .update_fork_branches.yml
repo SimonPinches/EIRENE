@@ -17,10 +17,10 @@
         - chmod 700 ~/.ssh
         # Use ssh-keyscan to scan the keys of your private servers.
         - ssh-keyscan ${REPO_DOMAIN} >> ~/.ssh/known_hosts
-        - ssh-keyscan src.ipp.kfa-juelich.de >> ~/.ssh/known_hosts
+        - ssh-keyscan ${SERVER_DOMAIN} >> ~/.ssh/known_hosts
         - chmod 644 ~/.ssh/known_hosts
         # Change origin push URL to get write access to EIRENE repository
-        - git remote set-url --push origin git@src.ipp.kfa-juelich.de:eirene/eirene.git
+        - git remote set-url --push origin git@${SERVER_DOMAIN}:eirene/eirene.git
 
 update_fork_branches_ITER:
     <<: *update_fork_branches
