@@ -875,7 +875,8 @@ C  POLOIDAL MESH
 C
 C INPUT SUB-BLOCK 2B
 
-      IREAD=0
+!pb   do not change previously defined IREAD
+!pb   IREAD=0
       CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
 
       READ (ZEILE,6665) NLPOL
