@@ -86,7 +86,7 @@ chr
 C
 C     HILFSVARIABLEN :
 C
-         INTEGER :: MAXI, I, IC
+         INTEGER :: I, IC
 chr
 chr   string, der die neuen variablennamen enthaelt
       buchst='ABCDEFGHIJ'
@@ -144,7 +144,6 @@ C
 C
 C              AUSGABE DER ZERLEGUNG
 C
-
                NOP=TEIL
                DO 30, I=1,TEIL
 chr               ausgabe der zerlegung in der form:

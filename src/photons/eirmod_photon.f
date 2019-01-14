@@ -2928,7 +2928,7 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
             EPLPH3(Idsc,1:NSBOX,1)=EBULK
             IF (LEDRIFT) EPLPH3(Idsc,1:NSBOX,1)=
      .                   EPLPH3(Idsc,1:NSBOX,1)+EDRIFT(IPL0,1:NSBOX)
-            NELROT(Idsc) = -2
+            NELRPH(Idsc) = -2
           ELSE
             NELRPH(Idsc) = -2
             EPLPH3(Idsc,1,1)=EBULK
