@@ -563,6 +563,7 @@ c  sputter tallies
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
+     
       RETURN
 C
       ENTRY EIRENE_STTXT1

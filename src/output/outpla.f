@@ -90,9 +90,16 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(22)=0
       TALTYP(23)=0  ! bvin   units ??
       TALTYP(24)=0  ! parmom units ??
+      TALTYP(25)=0  ! psi units ??
+
+      TALTYP(26)=0  ! free26 units ??
+      TALTYP(27)=0  ! free27 units ??
+      TALTYP(28)=0  ! free28 units ??
+      TALTYP(29)=0  ! free29 units ??
+      TALTYP(30)=0  ! free30 units ??
 
 cdr to be done: weighting function for gradient tallies. Tentatively set =0
-      TALTYP(25:NTALI)=0
+      TALTYP(31:NTALI)=0
  
       IF (ICAL == 1) THEN
 !  IS ANY DENSITY MODEL DEFINED ?
@@ -226,8 +233,20 @@ c  check for valid range of tally ITALI
             CASE (24)
               IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = PARMOM(K,1:NSBOX)
+            CASE (25)
+              HELPP(1:NSBOX) = PSI(1:NSBOX)
+            CASE (26)
+              HELPP(1:NSBOX) = FREE26(1:NSBOX)
+            CASE (27)
+              HELPP(1:NSBOX) = FREE27(1:NSBOX)
+            CASE (28)
+              HELPP(1:NSBOX) = FREE28(1:NSBOX)
+            CASE (29)
+              HELPP(1:NSBOX) = FREE29(1:NSBOX)
+            CASE (30)
+              HELPP(1:NSBOX) = FREE30(1:NSBOX)
 c
-            CASE (25:96)  ! ntali=96, constant required here
+            CASE (31:120)  ! ntali=120, constant required here
 !  GRADIENTS
               KK = NADDP(ITALI)+K
               HELPP(1:NSBOX) = PLSTLS(KK,1:NSBOX)
@@ -346,8 +365,38 @@ C  24) PARALLEL TO B FLOW MOMENTUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (25)
+C  25) PSI
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (26)
+C  26) FREE26
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (27)
+C  27) FREE27
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (28)
+C  28) FREE28
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (29)
+C  29) FREE29
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (30)
+C  30) FREE30
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
 
-              CASE (25:96)  ! ntali=96, constant required here
+              CASE (31:120)  ! ntali=120, constant required here
 C  (25 .. NTALI) GRADIENTS
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
@@ -423,7 +472,36 @@ C  PARALLEL TO B FLOW MOMENTUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              CASE (25:96)  ! ntali=96, constant required here
+C  25) PSI
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (26)
+C  26) FREE26
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (27)
+C  27) FREE27
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (28)
+C  28) FREE28
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (29)
+C  29) FREE29
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (30)
+C  30) FREE30
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (31:120)  ! ntali=120, constant required here
 C  GRADIENTS
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0

@@ -58,7 +58,7 @@ C
         VPY=0.
         VRX=0.
         VRY=0.
-        DO I=1,ntrii
+        DO I=1,NTRII
             VPX(I)=PLNXTRI(i)    ! radial unit vector 
             VPY(I)=PLNYTRI(i)    ! => bxperp, byperp
             VRX(I)=PPLNXTRI(i)   ! poloidal unit vector

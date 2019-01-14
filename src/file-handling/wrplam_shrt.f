@@ -12,7 +12,7 @@ cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
 cdr are written/read using I/O stream fort.13
 
 c  if NLSRT13=true : wrplam_short and (entry) rplam_short are called from WRPLAM,
-c  if NLSRT13=false: wrplam_long and (entry)  rplam_long are called from WRPLAM,
+c  if NLSRT13=false: wrplam_long and (entry) rplam_long are called from WRPLAM,
 c
 
 cdr this is the SHORT version of WRPLAM.F
@@ -99,7 +99,6 @@ cdr  have to come last in the list of all background species.
         IF (TRCFLE) WRITE (iunout,*)
      w   'RPLAM: BGK BACKGROUND IS READ FROM ', FORT, '13'
       END IF
-csw   CALL READ_TABEF(TRCFLE) !VK, READS TABEF, SEE CCRM
       CLOSE (UNIT=13+ifoff)
       RETURN
 

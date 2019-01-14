@@ -19,7 +19,8 @@ cdr           fully corresponds to vol tally parameter nspztot,
 cdr           but is for surface tally pointers
 cpb  input tallies   ntali, increased from 22 to 24 (BVIN, PARMOM)
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
-cdr  nov.18:  notational clenaup: separate OT from PH (photonic) processes
+cdr  nov.18:  notational cleanup: separate OT from PH (photonic) processes
+cpb  dez.18:  ntalg, increased from 24 to 30, free slots for future use
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -244,9 +245,10 @@ C                           NTALO: INDEX OF THE CELL VOLUME TALLY
         NALSP=NALS+1
         NSNVP=NSNV+1
 
-        NTALG=24        ! number of VOLUME INPUT TALLIES,  WITHOUT COUNTING GRADIENT TALLIES:
+        NTALG=30        ! number of VOLUME INPUT TALLIES,  WITHOUT COUNTING GRADIENT TALLIES:
 c                         INCREASED IN 2014 FROM 21 TO 22
 c                         INCREASED IN 2018 FROM 22 TO 24
+c                         INCREASED IN 2018 FROM 24 TO 30
         NTALI=NTALG*4   ! total number of VOLUME INPUT TALLIES
 c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ...
 

@@ -22,7 +22,6 @@ C          else   do also read data from COMSOU
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CZT1
@@ -151,14 +150,14 @@ c  read primary source parameters
      .            LCMSOU,NLSYMP,NLSYMT
         IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMSOU,ICMSOU,LCMSOU,...'
         IF (IO /= 0) GOTO 990
-      IF (ALLOCATED(FLSTEP))
+        IF (ALLOCATED(FLSTEP))
      .    READ (13+ifoff,IOSTAT=IO) FLSTEP,ELSTEP,FLTOT,ELTOT,VF,VE,
      .             QUOT,ADD,QUOTI,ADDIV,
      .             TESTEP,TISTEP,RRSTEP,VXSTEP,VYSTEP,VZSTEP,DISTEP,
      .             FESTEP,FISTEP,SHSTEP,VPSTEP,MCSTEP,
      .             IRSTEP,IPSTEP,ITSTEP,IASTEP,IBSTEP,IGSTEP,
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
+        IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
         IF (IO /= 0) GOTO 990
       ELSE
         IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13' 

@@ -662,7 +662,7 @@ C
           END DO
 
 c  set parameters for parallel momentum of incident bulk particle
-c  val_parb   : parallel velocity component, incl. sign, relavive to B
+c  val_parb   : parallel velocity component, incl. sign, relative to B
 c  vsig_parb  : parallel momentum, modulus (always positive)
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
 cdr vdion: for which ipl? 

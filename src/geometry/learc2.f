@@ -154,7 +154,7 @@ C
       INUM=0
 C
       DO K=1,NPPLG
-       DO 101 L=NPOINT(1,K),NPOINT(2,K)-1
+      DO 101 L=NPOINT(1,K),NPOINT(2,K)-1
         XMX2=X-X2(NR,L)
         YMY2=Y-Y2(NR,L)
         DET1=XMX2*UY(NR,L)-YMY2*UX(NR,L)
@@ -168,13 +168,13 @@ C
         ERR4(L)=(YMY1-VY1(NR,L)*ERR3(L))*DWY(NR,L)
         ERR5(L)=ERR1(L)+ERR2(L)
         ERR6(L)=ERR3(L)+ERR4(L)
-  101  CONTINUE
+  101 CONTINUE
 
-       IF (LEVGEO .EQ. 2) THEN
+      IF (LEVGEO .EQ. 2) THEN
         DO L=NPOINT(1,K),NPOINT(2,K)-1
           ERR6(L)=0.
         END DO
-       ENDIF
+      ENDIF
 
        DO L=NPOINT(1,K),NPOINT(2,K)-1
         IF (ERR4(L).GT.1.D30) THEN
@@ -229,7 +229,7 @@ C
       IF (INUM.NE.1) THEN
 C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
         DO K=1,NPPLG
-         DO 111 L=NPOINT(1,K),NPOINT(2,K)-1
+        DO 111 L=NPOINT(1,K),NPOINT(2,K)-1
           XMX1=X-X1(NR,L)
           YMY1=Y-Y1(NR,L)
           XMX2=X-X2(NR,L)
@@ -246,16 +246,16 @@ C  CHECK FOR NEAREST BOUNDARY, BECAUSE NO VALID CELL INDEX FOUND
           ERR2(L)=ABS(DX2+DX3-D32(NR,L))
           ERR3(L)=ABS(DX3+DX4-D34(NR,L))
           ERR4(L)=ABS(DX1+DX4-D14(NR,L))
-  111    CONTINUE
+  111   CONTINUE
 
-         IF (LEVGEO .EQ. 2) THEN
+        IF (LEVGEO .EQ. 2) THEN
 !PB          ERR1(L)=ERRMIN
 !PB          ERR3(L)=ERRMIN
           ERR1=ERRMIN
           ERR3=ERRMIN
-         ENDIF
+        ENDIF
 
-         DO L=NPOINT(1,K),NPOINT(2,K)-1
+        DO L=NPOINT(1,K),NPOINT(2,K)-1
           IF (ERR1(L).LT.ERRMIN) THEN
             IMARK=NR
             LMARK=L

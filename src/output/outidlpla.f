@@ -62,8 +62,14 @@ c  number of volumetric input tallies: ntali = 24(tallies) + 3*24(gradients)
       TALTYP(22)=0
       TALTYP(23)=0
       TALTYP(24)=0
+      TALTYP(25)=0  ! psi
+      TALTYP(26)=0  ! free26
+      TALTYP(27)=0  ! free27
+      TALTYP(28)=0  ! free28
+      TALTYP(29)=0  ! free29
+      TALTYP(30)=0  ! free30
 c  gradients of input tallies
-      TALTYP(25:NTALI)=0
+      TALTYP(31:NTALI)=0
 
       MXSPZ = MAXVAL(NFSTPI(1:NTALI))
 
@@ -157,7 +163,19 @@ c  K  leading dimension of input tally ITAL
             HELPP(1:NSBOX,K) = BVIN(MPLSV(K),1:NSBOX)
           CASE (24)
             HELPP(1:NSBOX,K) = PARMOM(K,1:NSBOX)
-          CASE (25:96)           ! ntali=96, constant required here
+          CASE (25)
+            HELPP(1:NSBOX,K) = PSI(1:NSBOX)
+          CASE (26)
+            HELPP(1:NSBOX,K) = FREE26(1:NSBOX)
+          CASE (27)
+            HELPP(1:NSBOX,K) = FREE27(1:NSBOX)
+          CASE (28)
+            HELPP(1:NSBOX,K) = FREE28(1:NSBOX)
+          CASE (29)
+            HELPP(1:NSBOX,K) = FREE29(1:NSBOX)
+          CASE (30)
+            HELPP(1:NSBOX,K) = FREE30(1:NSBOX)
+          CASE (31:120)          ! ntali=120, constant required here
 !  GRADIENTS
             KK = NADDP(ITAL)+K
             HELPP(1:NSBOX,K) = PLSTLS(KK,1:NSBOX)
@@ -214,9 +232,27 @@ C  ELECTRIC POTENTIAL
             CASE (24)
 C  PARALLEL TO B FLOW MOMENTUM   
               HELPW(I,K)=1.D0
+            CASE (25)
+C  PSI   
+              HELPW(I,K)=1.D0
+            CASE (26)
+C  FREE26   
+              HELPW(I,K)=1.D0
+            CASE (27)
+C  FREE27   
+              HELPW(I,K)=1.D0
+            CASE (28)
+C  FREE28   
+              HELPW(I,K)=1.D0
+            CASE (29)
+C  FREE29   
+              HELPW(I,K)=1.D0
+            CASE (30)
+C  FREE30   
+              HELPW(I,K)=1.D0
 
-            CASE (25:96)  ! ntali=96, constant required here
-C  (25...NTALI) GRADIENTS
+            CASE (31:120)  ! ntali=120, constant required here
+C  (31...NTALI) GRADIENTS
               HELPW(I,K)=1.D0
             END SELECT
             TOTAL=TOTAL+HELPW(I,K)
@@ -262,9 +298,27 @@ C  ELECTRIC POTENTIAL
             CASE (24)
 C  PARALLEL TO B FLOW MOMENTUM   
               HELPW(I,K)=1.D0
+            CASE (25)
+C  PSI   
+              HELPW(I,K)=1.D0
+            CASE (26)
+C  FREE26   
+              HELPW(I,K)=1.D0
+            CASE (27)
+C  FREE27   
+              HELPW(I,K)=1.D0
+            CASE (28)
+C  FREE28   
+              HELPW(I,K)=1.D0
+            CASE (29)
+C  FREE29   
+              HELPW(I,K)=1.D0
+            CASE (30)
+C  FREE30   
+              HELPW(I,K)=1.D0
 
-            CASE (25:96)  ! ntali=96, constant required here
-C  (25:NTALI) GRADIENTS
+            CASE (31:120)  ! ntali=120, constant required here
+C  (31:NTALI) GRADIENTS
               HELPW(I,K)=1.D0
             END SELECT
             TOTAL=TOTAL+HELPW(I,K)

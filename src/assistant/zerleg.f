@@ -165,7 +165,7 @@ C
                      HILFE=AUSDRU(1:ALPHA-2)//AUSDRU(ALPHA:OMEGA)
                   ELSE
                      HILFE=AUSDRU(1:ALPHA-2)//AUSDRU(ALPHA:OMEGA)
-     >                   //AUSDRU(OMEGA+2:AKTLEN)
+     >                    //AUSDRU(OMEGA+2:AKTLEN)
                   ENDIF
                   AKTLEN=AKTLEN-2
                   AUSDRU=HILFE

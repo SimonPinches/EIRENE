@@ -239,7 +239,7 @@ C  H(n=3)/H(n=1)
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              ELNAME, IZ)
+     .              ELNAME,IZ)
 
         chksum = 0._dp
         do
@@ -318,11 +318,11 @@ C           IF (IATM.LE.0.OR.IATM.GT.NATMI) GOTO 100
 C           DO 101 IR=1,NSBOX
 C             RECADD(IATM,IR)=RECADD(IATM,IR)+
 C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
-  101       CONTINUE
-  100   CONTINUE
-        write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
+C 101     CONTINUE
+C 100   CONTINUE
+      write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
      .                      ichori,istra
-        write (iunout,*) 'volumetric emission to be written'
+      write (iunout,*) 'volumetric emission to be written'
 C     ENDIF
 C.................................................................
 C  FOR RADIANCE OF LINE ISP=IPHOT, IN STRATUM ISTR

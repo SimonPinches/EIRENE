@@ -887,9 +887,33 @@ c  flow velocity parallele to B field
 c  parallel to B flow momentum
         OP(1:NSBOX) = PARMOM(K,1:NSBOX)
         WEI(1:NSBOX) = 1._DP
+      CASE (25)
+c  psi
+        OP(1:NSBOX) = PSI(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (26)
+c  free26
+        OP(1:NSBOX) = FREE26(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (27)
+c  free27
+        OP(1:NSBOX) = FREE27(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (28)
+c  free28
+        OP(1:NSBOX) = FREE28(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (29)
+c  free29
+        OP(1:NSBOX) = FREE29(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
+      CASE (30)
+c  free30
+        OP(1:NSBOX) = FREE30(1:NSBOX)
+        WEI(1:NSBOX) = 1._DP
 c  
 c
-      CASE (25:96)   ! ntali=96, constant required here
+      CASE (31:120)   ! ntali=120, constant required here
 !  GRADIENTS
         KK = NADDP(ITL)+K
         OP(1:NSBOX) = PLSTLS(KK,1:NSBOX)

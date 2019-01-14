@@ -1053,6 +1053,7 @@ csw
         DEALLOCATE (CHELP)
 
       END DO
+
       CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
      .               MPI_COMM_WORLD,ier)
 

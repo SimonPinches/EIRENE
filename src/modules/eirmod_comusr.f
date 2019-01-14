@@ -52,6 +52,8 @@ c  derived from primary input profils, in subr. PLASMA_DERIV
 c  (strictly: DEIN is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
+     R        PSI(:),         FREE26(:),      FREE27(:),
+     R        FREE28(:),      FREE29(:),      FREE30(:),
 
 c  optional: gradients of all scalar input tallies.
 c  For the vectorial input tallies (V_IN, B_IN, E_IN) these gradients
@@ -81,7 +83,13 @@ c
      R        DBYPERPDX(:),   DBYPERPDY(:),   DBYPERPDZ(:),
      R        DBVINDX(:,:),   DBVINDY(:,:),   DBVINDZ(:,:),
      R        DPARMOMDX(:,:), DPARMOMDY(:,:), DPARMOMDZ(:,:),
-     R        DEDRIFTDX(:,:), DEDRIFTDY(:,:), DEDRIFTDZ(:,:)
+     R        DEDRIFTDX(:,:), DEDRIFTDY(:,:), DEDRIFTDZ(:,:),
+     R        DPSIDX(:),      DPSIDY(:),      DPSIDZ(:),
+     R        DFREE26DX(:),   DFREE26DY(:),   DFREE26DZ(:),
+     R        DFREE27DX(:),   DFREE27DY(:),   DFREE27DZ(:),
+     R        DFREE28DX(:),   DFREE28DY(:),   DFREE28DZ(:),
+     R        DFREE29DX(:),   DFREE29DY(:),   DFREE29DZ(:),
+     R        DFREE30DX(:),   DFREE30DY(:),   DFREE30DZ(:) 
 
       REAL(DP), ALLOCATABLE, PUBLIC, SAVE ::
 
@@ -122,7 +130,9 @@ c  for interpolations
      .        ADCORNER(:,:),   VOLCORNER(:),    WGHTCORNER(:,:),
 
      .        BXPERPCORNER(:), BYPERPCORNER(:), BVINCORNER(:,:),
-     .        PARMOMCORNER(:,:), EDRIFTCORNER(:,:)
+     .        PARMOMCORNER(:,:), EDRIFTCORNER(:,:),
+     .        PSICORNER(:),    FREE26CORNER(:), FREE27CORNER(:),
+     .        FREE28CORNER(:), FREE29CORNER(:), FREE30CORNER(:)
  
       REAL(DP), PUBLIC, SAVE :: TVAC, DVAC, VVAC, ALLOC
  
@@ -169,7 +179,9 @@ C  (REQUIRES AVAILABILITY OF ...CORNER(:) TALLIES
      L         LPOTSMO,
 C
      L         LBXPSMO,    LBYPSMO,
-     L         LBVSMO,     LPARMOMSMO, LEDRIFTSMO
+     L         LBVSMO,     LPARMOMSMO, LEDRIFTSMO,
+     L         LPSISMO,    LFREE26SMO, LFREE27SMO,
+     L         LFREE28SMO, LFREE29SMO, LFREE30SMO
 
       LOGICAL, PUBLIC, SAVE ::
      L         LDSMO, LVSMO,  LBSMO,  LESMO
@@ -189,6 +201,8 @@ c  electr. field
 c  derived tallies
      L         LBXPERP,    LBYPERP,
      L         LBVIN,      LPARMOM,    LEDRIFT,
+     L         LPSI,       LFREE26,    LFREE27,
+     L         LFREE28,    LFREE29,    LFREE30,
 c  gradient tallies
      L         LDTEDX,     LDTEDY,     LDTEDZ,
      L         LDTIDX,     LDTIDY,     LDTIDZ,
@@ -214,7 +228,13 @@ C  gradients of derived tallies
      L         LDBYPERPDX, LDBYPERPDY, LDBYPERPDZ,
      L         LDBVINDX,   LDBVINDY,   LDBVINDZ,
      L         LDPARMOMDX, LDPARMOMDY, LDPARMOMDZ,
-     L         LDEDRIFTDX, LDEDRIFTDY, LDEDRIFTDZ
+     L         LDEDRIFTDX, LDEDRIFTDY, LDEDRIFTDZ,
+     L         LDPSIDX,    LDPSIDY,    LDPSIDZ,
+     L         LDFREE26DX, LDFREE26DY, LDFREE26DZ,
+     L         LDFREE27DX, LDFREE27DY, LDFREE27DZ,
+     L         LDFREE28DX, LDFREE28DY, LDFREE28DZ,
+     L         LDFREE29DX, LDFREE29DY, LDFREE29DZ,
+     L         LDFREE30DX, LDFREE30DY, LDFREE30DZ
  
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         IADVE(:),  IADVS(:), IADVT(:),  IADRC(:),
@@ -399,7 +419,6 @@ c  NCPV, NBGV are now set
       END SUBROUTINE EIRENE_ALLOC_COMUSR
 
 
- 
       SUBROUTINE EIRENE_ASSOCIATE_COMUSR
 cdr special treatment of Ti:  intlopts.....
 
@@ -525,366 +544,487 @@ cdr special treatment of Ti:  intlopts.....
       ELSE 
         PARMOM => CEMETERYP(0:0,:)
       END IF
-     
+      IF (LPSI) THEN
+        PSI => PLSTLS(NADDP(25)+1,:)
+      ELSE 
+        PSI => CEMETERYP(0,:)
+      END IF
+      IF (LFREE26) THEN
+        FREE26 => PLSTLS(NADDP(26)+1,:)
+      ELSE 
+        FREE26 => CEMETERYP(0,:)
+      END IF
+      IF (LFREE27) THEN
+        FREE27 => PLSTLS(NADDP(27)+1,:)
+      ELSE 
+        FREE27 => CEMETERYP(0,:)
+      END IF
+      IF (LFREE28) THEN
+        FREE28 => PLSTLS(NADDP(28)+1,:)
+      ELSE 
+        FREE28 => CEMETERYP(0,:)
+      END IF
+      IF (LFREE29) THEN
+        FREE29 => PLSTLS(NADDP(29)+1,:)
+      ELSE 
+        FREE29 => CEMETERYP(0,:)
+      END IF
+      IF (LFREE30) THEN
+        FREE30 => PLSTLS(NADDP(30)+1,:)
+      ELSE 
+        FREE30 => CEMETERYP(0,:)
+      END IF
+
+C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30     
       IF (LDTEDX) THEN
-        DTEDX => PLSTLS(NADDP(25)+1,:)
+        DTEDX => PLSTLS(NADDP(31)+1,:)
       ELSE 
         DTEDX => CEMETERYP(0,:)
       END IF
       IF (LDTEDY) THEN
-        DTEDY => PLSTLS(NADDP(26)+1,:)
+        DTEDY => PLSTLS(NADDP(32)+1,:)
       ELSE 
         DTEDY => CEMETERYP(0,:)
       END IF
       IF (LDTEDZ) THEN
-        DTEDZ => PLSTLS(NADDP(27)+1,:)
+        DTEDZ => PLSTLS(NADDP(33)+1,:)
       ELSE 
         DTEDZ => CEMETERYP(0,:)
       END IF
       IF (LDTIDX) THEN
-        DTIDX => PLSTLS(NADDP(28)+1:NADDP(29),:)
+        DTIDX => PLSTLS(NADDP(34)+1:NADDP(35),:)
       ELSE 
         DTIDX => CEMETERYP(0:0,:)
       END IF
       IF (LDTIDY) THEN
-        DTIDY => PLSTLS(NADDP(29)+1:NADDP(30),:)
+        DTIDY => PLSTLS(NADDP(35)+1:NADDP(36),:)
       ELSE 
         DTIDY => CEMETERYP(0:0,:)
       END IF
       IF (LDTIDZ) THEN
-        DTIDZ => PLSTLS(NADDP(30)+1:NADDP(31),:)
+        DTIDZ => PLSTLS(NADDP(36)+1:NADDP(37),:)
       ELSE 
         DTIDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDDEDX) THEN
-        DDEDX => PLSTLS(NADDP(31)+1,:)
+        DDEDX => PLSTLS(NADDP(37)+1,:)
       ELSE 
         DDEDX => CEMETERYP(0,:)
       END IF
       IF (LDDEDY) THEN
-        DDEDY => PLSTLS(NADDP(32)+1,:)
+        DDEDY => PLSTLS(NADDP(38)+1,:)
       ELSE 
         DDEDY => CEMETERYP(0,:)
       END IF
       IF (LDDEDZ) THEN
-        DDEDZ => PLSTLS(NADDP(33)+1,:)
+        DDEDZ => PLSTLS(NADDP(39)+1,:)
       ELSE 
         DDEDZ => CEMETERYP(0,:)
       END IF
       IF (LDDIDX) THEN
-        DDIDX => PLSTLS(NADDP(34)+1:NADDP(35),:)
+        DDIDX => PLSTLS(NADDP(40)+1:NADDP(41),:)
       ELSE 
         DDIDX => CEMETERYP(0:0,:)
       END IF
       IF (LDDIDY) THEN
-        DDIDY => PLSTLS(NADDP(35)+1:NADDP(36),:)
+        DDIDY => PLSTLS(NADDP(41)+1:NADDP(42),:)
       ELSE 
         DDIDY => CEMETERYP(0:0,:)
       END IF
       IF (LDDIDZ) THEN
-        DDIDZ => PLSTLS(NADDP(36)+1:NADDP(37),:)
+        DDIDZ => PLSTLS(NADDP(42)+1:NADDP(43),:)
       ELSE 
         DDIDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVXDX) THEN
-        DVXDX => PLSTLS(NADDP(37)+1:NADDP(38),:)
+        DVXDX => PLSTLS(NADDP(43)+1:NADDP(44),:)
       ELSE 
         DVXDX => CEMETERYP(0:0,:)
       END IF
       IF (LDVXDY) THEN
-        DVXDY => PLSTLS(NADDP(38)+1:NADDP(39),:)
+        DVXDY => PLSTLS(NADDP(44)+1:NADDP(45),:)
       ELSE 
         DVXDY => CEMETERYP(0:0,:)
       END IF
       IF (LDVXDZ) THEN
-        DVXDZ => PLSTLS(NADDP(39)+1:NADDP(40),:)
+        DVXDZ => PLSTLS(NADDP(45)+1:NADDP(46),:)
       ELSE 
         DVXDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVYDX) THEN
-        DVYDX => PLSTLS(NADDP(40)+1:NADDP(41),:)
+        DVYDX => PLSTLS(NADDP(46)+1:NADDP(47),:)
       ELSE 
         DVYDX => CEMETERYP(0:0,:)
       END IF
       IF (LDVYDY) THEN
-        DVYDY => PLSTLS(NADDP(41)+1:NADDP(42),:)
+        DVYDY => PLSTLS(NADDP(47)+1:NADDP(48),:)
       ELSE 
         DVYDY => CEMETERYP(0:0,:)
       END IF
       IF (LDVYDZ) THEN
-        DVYDZ => PLSTLS(NADDP(42)+1:NADDP(43),:)
+        DVYDZ => PLSTLS(NADDP(48)+1:NADDP(49),:)
       ELSE 
         DVYDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVZDX) THEN
-        DVZDX => PLSTLS(NADDP(43)+1:NADDP(44),:)
+        DVZDX => PLSTLS(NADDP(49)+1:NADDP(50),:)
       ELSE 
         DVZDX => CEMETERYP(0:0,:)
       END IF
       IF (LDVZDY) THEN
-        DVZDY => PLSTLS(NADDP(44)+1:NADDP(45),:)
+        DVZDY => PLSTLS(NADDP(50)+1:NADDP(51),:)
       ELSE 
         DVZDY => CEMETERYP(0:0,:)
       END IF
       IF (LDVZDZ) THEN
-        DVZDZ => PLSTLS(NADDP(45)+1:NADDP(46),:)
+        DVZDZ => PLSTLS(NADDP(51)+1:NADDP(52),:)
       ELSE 
         DVZDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDBXDX) THEN
-        DBXDX => PLSTLS(NADDP(46)+1,:)
+        DBXDX => PLSTLS(NADDP(52)+1,:)
       ELSE 
         DBXDX => CEMETERYP(0,:)
       END IF
       IF (LDBXDY) THEN
-        DBXDY => PLSTLS(NADDP(47)+1,:)
+        DBXDY => PLSTLS(NADDP(53)+1,:)
       ELSE 
         DBXDY => CEMETERYP(0,:)
       END IF
       IF (LDBXDZ) THEN
-        DBXDZ => PLSTLS(NADDP(48)+1,:)
+        DBXDZ => PLSTLS(NADDP(54)+1,:)
       ELSE 
         DBXDZ => CEMETERYP(0,:)
       END IF
       IF (LDBYDX) THEN
-        DBYDX => PLSTLS(NADDP(49)+1,:)
+        DBYDX => PLSTLS(NADDP(55)+1,:)
       ELSE 
         DBYDX => CEMETERYP(0,:)
       END IF
       IF (LDBYDY) THEN
-        DBYDY => PLSTLS(NADDP(50)+1,:)
+        DBYDY => PLSTLS(NADDP(56)+1,:)
       ELSE 
         DBYDY => CEMETERYP(0,:)
       END IF
       IF (LDBYDZ) THEN
-        DBYDZ => PLSTLS(NADDP(51)+1,:)
+        DBYDZ => PLSTLS(NADDP(57)+1,:)
       ELSE 
         DBYDZ => CEMETERYP(0,:)
       END IF
       IF (LDBZDX) THEN
-        DBZDX => PLSTLS(NADDP(52)+1,:)
+        DBZDX => PLSTLS(NADDP(58)+1,:)
       ELSE 
         DBZDX => CEMETERYP(0,:)
       END IF
       IF (LDBZDY) THEN
-        DBZDY => PLSTLS(NADDP(53)+1,:)
+        DBZDY => PLSTLS(NADDP(59)+1,:)
       ELSE 
         DBZDY => CEMETERYP(0,:)
       END IF
       IF (LDBZDZ) THEN
-        DBZDZ => PLSTLS(NADDP(54)+1,:)
+        DBZDZ => PLSTLS(NADDP(60)+1,:)
       ELSE 
         DBZDZ => CEMETERYP(0,:)
       END IF
       IF (LDBFDX) THEN
-        DBFDX => PLSTLS(NADDP(55)+1,:)
+        DBFDX => PLSTLS(NADDP(61)+1,:)
       ELSE 
         DBFDX => CEMETERYP(0,:)
       END IF
       IF (LDBFDY) THEN
-        DBFDY => PLSTLS(NADDP(56)+1,:)
+        DBFDY => PLSTLS(NADDP(62)+1,:)
       ELSE 
         DBFDY => CEMETERYP(0,:)
       END IF
       IF (LDBFDZ) THEN
-        DBFDZ => PLSTLS(NADDP(57)+1,:)
+        DBFDZ => PLSTLS(NADDP(63)+1,:)
       ELSE 
         DBFDZ => CEMETERYP(0,:)
       END IF
       IF (LDADINDX) THEN
-        DADINDX => PLSTLS(NADDP(58)+1:NADDP(59),:)
+        DADINDX => PLSTLS(NADDP(64)+1:NADDP(65),:)
       ELSE 
         DADINDX => CEMETERYP(0:0,:)
       END IF
       IF (LDADINDY) THEN
-        DADINDY => PLSTLS(NADDP(59)+1:NADDP(60),:)
+        DADINDY => PLSTLS(NADDP(65)+1:NADDP(66),:)
       ELSE 
         DADINDY => CEMETERYP(0:0,:)
       END IF
       IF (LDADINDZ) THEN
-        DADINDZ => PLSTLS(NADDP(60)+1:NADDP(61),:)
+        DADINDZ => PLSTLS(NADDP(66)+1:NADDP(67),:)
       ELSE 
         DADINDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDEDRIFTDX) THEN
-        DEDRIFTDX => PLSTLS(NADDP(61)+1:NADDP(62),:)
+        DEDRIFTDX => PLSTLS(NADDP(67)+1:NADDP(68),:)
       ELSE 
         DEDRIFTDX => CEMETERYP(0:0,:)
       END IF
       IF (LDEDRIFTDY) THEN
-        DEDRIFTDY => PLSTLS(NADDP(62)+1:NADDP(63),:)
+        DEDRIFTDY => PLSTLS(NADDP(68)+1:NADDP(69),:)
       ELSE 
         DEDRIFTDY => CEMETERYP(0:0,:)
       END IF
       IF (LDEDRIFTDZ) THEN
-        DEDRIFTDZ => PLSTLS(NADDP(63)+1:NADDP(64),:)
+        DEDRIFTDZ => PLSTLS(NADDP(69)+1:NADDP(70),:)
       ELSE 
         DEDRIFTDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVOLDX) THEN
-        DVOLDX => PLSTLS(NADDP(64)+1,:)
+        DVOLDX => PLSTLS(NADDP(70)+1,:)
       ELSE 
         DVOLDX => CEMETERYP(0,:)
       END IF
       IF (LDVOLDY) THEN
-        DVOLDY => PLSTLS(NADDP(65)+1,:)
+        DVOLDY => PLSTLS(NADDP(71)+1,:)
       ELSE 
         DVOLDY => CEMETERYP(0,:)
       END IF
       IF (LDVOLDZ) THEN
-        DVOLDZ => PLSTLS(NADDP(66)+1,:)
+        DVOLDZ => PLSTLS(NADDP(72)+1,:)
       ELSE 
         DVOLDZ => CEMETERYP(0,:)
       END IF
       IF (LDWGHTDX) THEN
-        DWGHTDX => PLSTLS(NADDP(67)+1:NADDP(68),:)
+        DWGHTDX => PLSTLS(NADDP(73)+1:NADDP(74),:)
       ELSE 
         DWGHTDX => CEMETERYP(0:0,:)
       END IF
       IF (LDWGHTDY) THEN
-        DWGHTDY => PLSTLS(NADDP(68)+1:NADDP(69),:)
+        DWGHTDY => PLSTLS(NADDP(74)+1:NADDP(75),:)
       ELSE 
         DWGHTDY => CEMETERYP(0:0,:)
       END IF
       IF (LDWGHTDZ) THEN
-        DWGHTDZ => PLSTLS(NADDP(69)+1:NADDP(70),:)
+        DWGHTDZ => PLSTLS(NADDP(75)+1:NADDP(76),:)
       ELSE 
         DWGHTDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDBXPERPDX) THEN
-        DBXPERPDX => PLSTLS(NADDP(70)+1,:)
+        DBXPERPDX => PLSTLS(NADDP(76)+1,:)
       ELSE 
         DBXPERPDX => CEMETERYP(0,:)
       END IF
       IF (LDBXPERPDY) THEN
-        DBXPERPDY => PLSTLS(NADDP(71)+1,:)
+        DBXPERPDY => PLSTLS(NADDP(77)+1,:)
       ELSE 
         DBXPERPDY => CEMETERYP(0,:)
       END IF
       IF (LDBXPERPDZ) THEN
-        DBXPERPDZ => PLSTLS(NADDP(72)+1,:)
+        DBXPERPDZ => PLSTLS(NADDP(78)+1,:)
       ELSE 
         DBXPERPDZ => CEMETERYP(0,:)
       END IF
       IF (LDBYPERPDX) THEN
-        DBYPERPDX => PLSTLS(NADDP(73)+1,:)
+        DBYPERPDX => PLSTLS(NADDP(79)+1,:)
       ELSE 
         DBYPERPDX => CEMETERYP(0,:)
       END IF
       IF (LDBYPERPDY) THEN
-        DBYPERPDY => PLSTLS(NADDP(74)+1,:)
+        DBYPERPDY => PLSTLS(NADDP(80)+1,:)
       ELSE 
         DBYPERPDY => CEMETERYP(0,:)
       END IF
       IF (LDBYPERPDZ) THEN
-        DBYPERPDZ => PLSTLS(NADDP(75)+1,:)
+        DBYPERPDZ => PLSTLS(NADDP(81)+1,:)
       ELSE 
         DBYPERPDZ => CEMETERYP(0,:)
       END IF
       IF (LDEXDX) THEN
-        DEXDX => PLSTLS(NADDP(76)+1,:)
+        DEXDX => PLSTLS(NADDP(82)+1,:)
       ELSE 
         DEXDX => CEMETERYP(0,:)
       END IF
       IF (LDEXDY) THEN
-        DEXDY => PLSTLS(NADDP(77)+1,:)
+        DEXDY => PLSTLS(NADDP(83)+1,:)
       ELSE 
         DEXDY => CEMETERYP(0,:)
       END IF
       IF (LDEXDZ) THEN
-        DEXDZ => PLSTLS(NADDP(78)+1,:)
+        DEXDZ => PLSTLS(NADDP(84)+1,:)
       ELSE 
         DEXDZ => CEMETERYP(0,:)
       END IF
       IF (LDEYDX) THEN
-        DEYDX => PLSTLS(NADDP(79)+1,:)
+        DEYDX => PLSTLS(NADDP(85)+1,:)
       ELSE 
         DEYDX => CEMETERYP(0,:)
       END IF
       IF (LDEYDY) THEN
-        DEYDY => PLSTLS(NADDP(80)+1,:)
+        DEYDY => PLSTLS(NADDP(86)+1,:)
       ELSE 
         DEYDY => CEMETERYP(0,:)
       END IF
       IF (LDEYDZ) THEN
-        DEYDZ => PLSTLS(NADDP(81)+1,:)
+        DEYDZ => PLSTLS(NADDP(87)+1,:)
       ELSE 
         DEYDZ => CEMETERYP(0,:)
       END IF
       IF (LDEZDX) THEN
-        DEZDX => PLSTLS(NADDP(82)+1,:)
+        DEZDX => PLSTLS(NADDP(88)+1,:)
       ELSE 
         DEZDX => CEMETERYP(0,:)
       END IF
       IF (LDEZDY) THEN
-        DEZDY => PLSTLS(NADDP(83)+1,:)
+        DEZDY => PLSTLS(NADDP(89)+1,:)
       ELSE 
         DEZDY => CEMETERYP(0,:)
       END IF
       IF (LDEZDZ) THEN
-        DEZDZ => PLSTLS(NADDP(84)+1,:)
+        DEZDZ => PLSTLS(NADDP(90)+1,:)
       ELSE 
         DEZDZ => CEMETERYP(0,:)
       END IF
       IF (LDEFDX) THEN
-        DEFDX => PLSTLS(NADDP(85)+1,:)
+        DEFDX => PLSTLS(NADDP(91)+1,:)
       ELSE 
         DEFDX => CEMETERYP(0,:)
       END IF
       IF (LDEFDY) THEN
-        DEFDY => PLSTLS(NADDP(86)+1,:)
+        DEFDY => PLSTLS(NADDP(92)+1,:)
       ELSE 
         DEFDY => CEMETERYP(0,:)
       END IF
       IF (LDEFDZ) THEN
-        DEFDZ => PLSTLS(NADDP(87)+1,:)
+        DEFDZ => PLSTLS(NADDP(93)+1,:)
       ELSE 
         DEFDZ => CEMETERYP(0,:)
       END IF
       IF (LDPOTDX) THEN
-        DPOTDX => PLSTLS(NADDP(88)+1,:)
+        DPOTDX => PLSTLS(NADDP(94)+1,:)
       ELSE 
         DPOTDX => CEMETERYP(0,:)
       END IF
       IF (LDPOTDY) THEN
-        DPOTDY => PLSTLS(NADDP(89)+1,:)
+        DPOTDY => PLSTLS(NADDP(95)+1,:)
       ELSE 
         DPOTDY => CEMETERYP(0,:)
       END IF
       IF (LDPOTDZ) THEN
-        DPOTDZ => PLSTLS(NADDP(90)+1,:)
+        DPOTDZ => PLSTLS(NADDP(96)+1,:)
       ELSE 
         DPOTDZ => CEMETERYP(0,:)
       END IF
       IF (LDBVINDX) THEN
-        DBVINDX => PLSTLS(NADDP(91)+1:NADDP(92),:)
+        DBVINDX => PLSTLS(NADDP(97)+1:NADDP(98),:)
       ELSE 
         DBVINDX => CEMETERYP(0:0,:)
       END IF
       IF (LDBVINDY) THEN
-        DBVINDY => PLSTLS(NADDP(92)+1:NADDP(93),:)
+        DBVINDY => PLSTLS(NADDP(98)+1:NADDP(99),:)
       ELSE 
         DBVINDY => CEMETERYP(0:0,:)
       END IF
       IF (LDBVINDZ) THEN
-        DBVINDZ => PLSTLS(NADDP(93)+1:NADDP(94),:)
+        DBVINDZ => PLSTLS(NADDP(99)+1:NADDP(100),:)
       ELSE 
         DBVINDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDPARMOMDX) THEN
-        DPARMOMDX => PLSTLS(NADDP(94)+1:NADDP(95),:)
+        DPARMOMDX => PLSTLS(NADDP(100)+1:NADDP(101),:)
       ELSE 
         DPARMOMDX => CEMETERYP(0:0,:)
       END IF
       IF (LDPARMOMDY) THEN
-        DPARMOMDY => PLSTLS(NADDP(95)+1:NADDP(96),:)
+        DPARMOMDY => PLSTLS(NADDP(101)+1:NADDP(102),:)
       ELSE 
         DPARMOMDY => CEMETERYP(0:0,:)
       END IF
       IF (LDPARMOMDZ) THEN
-        DPARMOMDZ => PLSTLS(NADDP(96)+1:NINPTL,:)
+        DPARMOMDZ => PLSTLS(NADDP(102)+1:NADDP(103),:)
       ELSE 
         DPARMOMDZ => CEMETERYP(0:0,:)
+      END IF
+      IF (LDPSIDX) THEN
+        DPSIDX => PLSTLS(NADDP(103)+1,:)
+      ELSE 
+        DPSIDX => CEMETERYP(0,:)
+      END IF
+      IF (LDPSIDY) THEN
+        DPSIDY => PLSTLS(NADDP(104)+1,:)
+      ELSE 
+        DPSIDY => CEMETERYP(0,:)
+      END IF
+      IF (LDPSIDZ) THEN
+        DPSIDZ => PLSTLS(NADDP(105)+1,:)
+      ELSE 
+        DPSIDZ => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE26DX) THEN
+        DFREE26DX => PLSTLS(NADDP(106)+1,:)
+      ELSE 
+        DFREE26DX => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE26DY) THEN
+        DFREE26DY => PLSTLS(NADDP(107)+1,:)
+      ELSE 
+        DFREE26DY => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE26DZ) THEN
+        DFREE26DZ => PLSTLS(NADDP(108)+1,:)
+      ELSE 
+        DFREE26DZ => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE27DX) THEN
+        DFREE27DX => PLSTLS(NADDP(109)+1,:)
+      ELSE 
+        DFREE27DX => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE27DY) THEN
+        DFREE27DY => PLSTLS(NADDP(110)+1,:)
+      ELSE 
+        DFREE27DY => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE27DZ) THEN
+        DFREE27DZ => PLSTLS(NADDP(111)+1,:)
+      ELSE 
+        DFREE27DZ => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE28DX) THEN
+        DFREE28DX => PLSTLS(NADDP(112)+1,:)
+      ELSE 
+        DFREE28DX => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE28DY) THEN
+        DFREE28DY => PLSTLS(NADDP(113)+1,:)
+      ELSE 
+        DFREE28DY => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE28DZ) THEN
+        DFREE28DZ => PLSTLS(NADDP(114)+1,:)
+      ELSE 
+        DFREE28DZ => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE29DX) THEN
+        DFREE29DX => PLSTLS(NADDP(115)+1,:)
+      ELSE 
+        DFREE29DX => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE29DY) THEN
+        DFREE29DY => PLSTLS(NADDP(116)+1,:)
+      ELSE 
+        DFREE29DY => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE29DZ) THEN
+        DFREE29DZ => PLSTLS(NADDP(117)+1,:)
+      ELSE 
+        DFREE29DZ => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE30DX) THEN
+        DFREE30DX => PLSTLS(NADDP(118)+1,:)
+      ELSE 
+        DFREE30DX => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE30DY) THEN
+        DFREE30DY => PLSTLS(NADDP(119)+1,:)
+      ELSE 
+        DFREE30DY => CEMETERYP(0,:)
+      END IF
+      IF (LDFREE30DZ) THEN
+        DFREE30DZ => PLSTLS(NADDP(120)+1,:)
+      ELSE 
+        DFREE30DZ => CEMETERYP(0,:)
       END IF
 
       RETURN
@@ -998,7 +1138,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
           NULLIFY(VZINCORNER)
         END IF
         IF (LBVSMO) THEN
-          BVINCORNER => CORNER_PROFILES(:,NADDCOR(22)+1 : NADDCOR(24))
+          BVINCORNER => CORNER_PROFILES(:,NADDCOR(23)+1 : NADDCOR(24))
         ELSE
           NULLIFY(BVINCORNER)
         END IF
@@ -1109,9 +1249,46 @@ cdr these next two B field tallies should go into LBSMO
       END IF
 
       IF (LPARMOMSMO) THEN
-        PARMOMCORNER => CORNER_PROFILES(:,NADDCOR(24+1) : NTOT )
+        PARMOMCORNER => CORNER_PROFILES(:,NADDCOR(24)+1 : NADDCOR(25))
       ELSE
         NULLIFY(PARMOMCORNER)
+      END IF
+
+      IF (LPSISMO) THEN
+        PSICORNER => CORNER_PROFILES(:,NADDCOR(25)+1)
+      ELSE
+        NULLIFY(PSICORNER)
+      END IF
+
+      IF (LFREE26SMO) THEN
+        FREE26CORNER => CORNER_PROFILES(:,NADDCOR(26)+1)
+      ELSE
+        NULLIFY(FREE26CORNER)
+      END IF
+
+      IF (LFREE27SMO) THEN
+        FREE27CORNER => CORNER_PROFILES(:,NADDCOR(27)+1)
+      ELSE
+        NULLIFY(FREE27CORNER)
+      END IF
+
+      IF (LFREE28SMO) THEN
+        FREE28CORNER => CORNER_PROFILES(:,NADDCOR(28)+1)
+      ELSE
+        NULLIFY(FREE28CORNER)
+      END IF
+
+      IF (LFREE29SMO) THEN
+        FREE29CORNER => CORNER_PROFILES(:,NADDCOR(29)+1)
+      ELSE
+        NULLIFY(FREE29CORNER)
+      END IF
+
+      IF (LFREE30SMO) THEN
+!       FREE30CORNER => CORNER_PROFILES(:,NADDCOR(30)+1)
+        FREE30CORNER => CORNER_PROFILES(:,NTOT)
+      ELSE
+        NULLIFY(FREE30CORNER)
       END IF
 
       CORNER_PROFILES = 0._DP
@@ -1152,6 +1329,7 @@ c
       DEALLOCATE (DMOL)
       DEALLOCATE (DPLS)
       DEALLOCATE (DPHOT)
+ 
       DEALLOCATE (TEXTS)
       DEALLOCATE (NMASSA)
       DEALLOCATE (NCHARA)
@@ -1265,6 +1443,15 @@ c  E field
         LEFSMO      => LSMOPRO(21)
         LPOTSMO     => LSMOPRO(22)
 
+c  poloidal B-flux function 
+        LPSISMO  => LSMOPRO(25)
+
+c  free slots
+        LFREE26SMO  => LSMOPRO(26)
+        LFREE27SMO  => LSMOPRO(27)
+        LFREE28SMO  => LSMOPRO(28)
+        LFREE29SMO  => LSMOPRO(29)
+        LFREE30SMO  => LSMOPRO(30)
 
         IFIRST = 1
       ENDIF
@@ -1288,6 +1475,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         DMOL   = 0._DP
         DPLS   = 0._DP
         DPHOT  = 0._DP
+ 
         TEXTS  = ' '
         NMASSA = 0
         NCHARA = 0
@@ -1367,78 +1555,103 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LBVIN      => LIVTALI(23)
         LPARMOM    => LIVTALI(24)
 
-        LDTEDX     => LIVTALI(25)
-        LDTEDY     => LIVTALI(26)
-        LDTEDZ     => LIVTALI(27)
-        LDTIDX     => LIVTALI(28)
-        LDTIDY     => LIVTALI(29)
-        LDTIDZ     => LIVTALI(30)
-        LDDEDX     => LIVTALI(31)
-        LDDEDY     => LIVTALI(32)
-        LDDEDZ     => LIVTALI(33)
-        LDDIDX     => LIVTALI(34)
-        LDDIDY     => LIVTALI(35)
-        LDDIDZ     => LIVTALI(36)
-        LDVXDX     => LIVTALI(37)
-        LDVXDY     => LIVTALI(38)
-        LDVXDZ     => LIVTALI(39)
-        LDVYDX     => LIVTALI(40)
-        LDVYDY     => LIVTALI(41)
-        LDVYDZ     => LIVTALI(42)
-        LDVZDX     => LIVTALI(43)
-        LDVZDY     => LIVTALI(44)
-        LDVZDZ     => LIVTALI(45)
-        LDBXDX     => LIVTALI(46)
-        LDBXDY     => LIVTALI(47)
-        LDBXDZ     => LIVTALI(48)
-        LDBYDX     => LIVTALI(49)
-        LDBYDY     => LIVTALI(50)
-        LDBYDZ     => LIVTALI(51)
-        LDBZDX     => LIVTALI(52)
-        LDBZDY     => LIVTALI(53)
-        LDBZDZ     => LIVTALI(54)
-        LDBFDX     => LIVTALI(55)
-        LDBFDY     => LIVTALI(56)
-        LDBFDZ     => LIVTALI(57)
-        LDADINDX   => LIVTALI(58)
-        LDADINDY   => LIVTALI(59)
-        LDADINDZ   => LIVTALI(60)
-        LDEDRIFTDX => LIVTALI(61)
-        LDEDRIFTDY => LIVTALI(62)
-        LDEDRIFTDZ => LIVTALI(63)
-        LDVOLDX    => LIVTALI(64)
-        LDVOLDY    => LIVTALI(65)
-        LDVOLDZ    => LIVTALI(66)
-        LDWGHTDX   => LIVTALI(67)
-        LDWGHTDY   => LIVTALI(68)
-        LDWGHTDZ   => LIVTALI(69)
-        LDBXPERPDX => LIVTALI(70)
-        LDBXPERPDY => LIVTALI(71)
-        LDBXPERPDZ => LIVTALI(72)
-        LDBYPERPDX => LIVTALI(73)
-        LDBYPERPDY => LIVTALI(74)
-        LDBYPERPDZ => LIVTALI(75)
-        LDEXDX     => LIVTALI(76)
-        LDEXDY     => LIVTALI(77)
-        LDEXDZ     => LIVTALI(78)
-        LDEYDX     => LIVTALI(79)
-        LDEYDY     => LIVTALI(80)
-        LDEYDZ     => LIVTALI(81)
-        LDEZDX     => LIVTALI(82)
-        LDEZDY     => LIVTALI(83)
-        LDEZDZ     => LIVTALI(84)
-        LDEFDX     => LIVTALI(85)
-        LDEFDY     => LIVTALI(86)
-        LDEFDZ     => LIVTALI(87)
-        LDPOTDX    => LIVTALI(88)
-        LDPOTDY    => LIVTALI(89)
-        LDPOTDZ    => LIVTALI(90)
-        LDBVINDX   => LIVTALI(91)
-        LDBVINDY   => LIVTALI(92)
-        LDBVINDZ   => LIVTALI(93)
-        LDPARMOMDX => LIVTALI(94)
-        LDPARMOMDY => LIVTALI(95)
-        LDPARMOMDZ => LIVTALI(96)
+        LPSI    => LIVTALI(25)
+        LFREE26    => LIVTALI(26)
+        LFREE27    => LIVTALI(27)
+        LFREE28    => LIVTALI(28)
+        LFREE29    => LIVTALI(29)
+        LFREE30    => LIVTALI(30)
+
+        LDTEDX     => LIVTALI(31)
+        LDTEDY     => LIVTALI(32)
+        LDTEDZ     => LIVTALI(33)
+        LDTIDX     => LIVTALI(34)
+        LDTIDY     => LIVTALI(35)
+        LDTIDZ     => LIVTALI(36)
+        LDDEDX     => LIVTALI(37)
+        LDDEDY     => LIVTALI(38)
+        LDDEDZ     => LIVTALI(39)
+        LDDIDX     => LIVTALI(40)
+        LDDIDY     => LIVTALI(41)
+        LDDIDZ     => LIVTALI(42)
+        LDVXDX     => LIVTALI(43)
+        LDVXDY     => LIVTALI(44)
+        LDVXDZ     => LIVTALI(45)
+        LDVYDX     => LIVTALI(46)
+        LDVYDY     => LIVTALI(47)
+        LDVYDZ     => LIVTALI(48)
+        LDVZDX     => LIVTALI(49)
+        LDVZDY     => LIVTALI(50)
+        LDVZDZ     => LIVTALI(51)
+        LDBXDX     => LIVTALI(52)
+        LDBXDY     => LIVTALI(53)
+        LDBXDZ     => LIVTALI(54)
+        LDBYDX     => LIVTALI(55)
+        LDBYDY     => LIVTALI(56)
+        LDBYDZ     => LIVTALI(57)
+        LDBZDX     => LIVTALI(58)
+        LDBZDY     => LIVTALI(59)
+        LDBZDZ     => LIVTALI(60)
+        LDBFDX     => LIVTALI(61)
+        LDBFDY     => LIVTALI(62)
+        LDBFDZ     => LIVTALI(63)
+        LDADINDX   => LIVTALI(64)
+        LDADINDY   => LIVTALI(65)
+        LDADINDZ   => LIVTALI(66)
+        LDEDRIFTDX => LIVTALI(67)
+        LDEDRIFTDY => LIVTALI(68)
+        LDEDRIFTDZ => LIVTALI(69)
+        LDVOLDX    => LIVTALI(70)
+        LDVOLDY    => LIVTALI(71)
+        LDVOLDZ    => LIVTALI(72)
+        LDWGHTDX   => LIVTALI(73)
+        LDWGHTDY   => LIVTALI(74)
+        LDWGHTDZ   => LIVTALI(75)
+        LDBXPERPDX => LIVTALI(76)
+        LDBXPERPDY => LIVTALI(77)
+        LDBXPERPDZ => LIVTALI(78)
+        LDBYPERPDX => LIVTALI(79)
+        LDBYPERPDY => LIVTALI(80)
+        LDBYPERPDZ => LIVTALI(81)
+        LDEXDX     => LIVTALI(82)
+        LDEXDY     => LIVTALI(83)
+        LDEXDZ     => LIVTALI(84)
+        LDEYDX     => LIVTALI(85)
+        LDEYDY     => LIVTALI(86)
+        LDEYDZ     => LIVTALI(87)
+        LDEZDX     => LIVTALI(88)
+        LDEZDY     => LIVTALI(89)
+        LDEZDZ     => LIVTALI(90)
+        LDEFDX     => LIVTALI(91)
+        LDEFDY     => LIVTALI(92)
+        LDEFDZ     => LIVTALI(93)
+        LDPOTDX    => LIVTALI(94)
+        LDPOTDY    => LIVTALI(95)
+        LDPOTDZ    => LIVTALI(96)
+        LDBVINDX   => LIVTALI(97)
+        LDBVINDY   => LIVTALI(98)
+        LDBVINDZ   => LIVTALI(99)
+        LDPARMOMDX => LIVTALI(100)
+        LDPARMOMDY => LIVTALI(101)
+        LDPARMOMDZ => LIVTALI(102)
+        LDPSIDX    => LIVTALI(103)
+        LDPSIDY    => LIVTALI(104)
+        LDPSIDZ    => LIVTALI(105)
+        LDFREE26DX => LIVTALI(106)
+        LDFREE26DY => LIVTALI(107)
+        LDFREE26DZ => LIVTALI(108)
+        LDFREE27DX => LIVTALI(109)
+        LDFREE27DY => LIVTALI(110)
+        LDFREE27DZ => LIVTALI(111)
+        LDFREE28DX => LIVTALI(112)
+        LDFREE28DY => LIVTALI(113)
+        LDFREE28DZ => LIVTALI(114)
+        LDFREE29DX => LIVTALI(115)
+        LDFREE29DY => LIVTALI(116)
+        LDFREE29DZ => LIVTALI(117)
+        LDFREE30DX => LIVTALI(118)
+        LDFREE30DY => LIVTALI(119)
+        LDFREE30DZ => LIVTALI(120)
  
       ELSE IF (ICAL == 2) THEN
 c  Active volumetric input tallies

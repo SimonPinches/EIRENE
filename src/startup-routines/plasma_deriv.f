@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, col-rad, file (fort.13, or: fort.10)
+c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "col-rad", "Saha": need electron density as
+c              "Corona", "Colrad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -121,6 +121,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           ITAL, K, KK, NFTI, NFTE
+ 
       TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
 
@@ -858,6 +859,30 @@ C  SMOOTH E-FIELD
 
       IF (LPOTSMO) THEN
         call eirene_cell_to_corner(POT,POTCORNER)
+      END IF
+
+      IF (LPSISMO) THEN
+        call eirene_cell_to_corner(PSI,PSICORNER)
+      END IF
+
+      IF (LFREE26SMO) THEN
+        call eirene_cell_to_corner(FREE26,FREE26CORNER)
+      END IF
+
+      IF (LFREE27SMO) THEN
+        call eirene_cell_to_corner(FREE27,FREE27CORNER)
+      END IF
+
+      IF (LFREE28SMO) THEN
+        call eirene_cell_to_corner(FREE28,FREE28CORNER)
+      END IF
+
+      IF (LFREE29SMO) THEN
+        call eirene_cell_to_corner(FREE29,FREE29CORNER)
+      END IF
+
+      IF (LFREE30SMO) THEN
+        call eirene_cell_to_corner(FREE30,FREE30CORNER)
       END IF
 C
 C  GRADIENTS
