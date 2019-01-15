@@ -109,6 +109,9 @@ tag_database_methane:
         paths:
             - eirene-database-figures/$DATABASE/$DATABASE.pdf
             - Database/AMdata/$DATABASE.tex
+    environment:
+        name: Website/$DATABASE
+        url: http://www.eirene.de/html/$DATABASE.html
 
 deploy_database_website_amjuel:
     <<: *deploy_database_website
@@ -204,6 +207,9 @@ deploy_database_website_methane:
         # Tag and push database update reference tag
         - git tag -a -m "$DATABASE update" $CI_COMMIT_TAG
         - git push origin $CI_COMMIT_TAG
+    environment:
+        name: HYDKIN/$DATABASE
+        url: http://www.hydkin.de/plotform/index_$DATABASE.html
 
 deploy_database_hydkin_amjuel:
     <<: *deploy_database_hydkin
