@@ -70,12 +70,12 @@ tag_database_methane:
 
 .deploy_database_website: &deploy_database_website
     stage: deploy
-    only: 
-        refs:
-            - tags
-        # use from GitLab version >= 11.0
-        #variables:
-        #    - $CI_COMMIT_TAG == /^$DATABASE-.*$/
+    # nice if following would work in future
+    #only: 
+    #    refs:
+    #        - tags
+    #    variables:
+    #        - $CI_COMMIT_TAG =~ /^$DATABASE-.*$/
         # would be ideal to trigger job only if tag is latest
         # not (yet) supported by GitLab
         #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
@@ -96,18 +96,14 @@ tag_database_methane:
         - chmod 644 ~/.ssh/known_hosts
     script:
         # Download figures of database pdf
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/eirene-database-figures.git
         # Build pdf
+        - mkdir -p eirene-database-figures/$DATABASE
+        - cd eirene-database-figures/$DATABASE
+        - TEX_FILE=../../Database/AMdata/$DATABASE.tex
+        - latexmk -silent -pdfdvi -e '$dvipdf = "dvipdfmx %O -o %D %S"' $TEX_FILE
         # Upload tex, pdf
-        # "if" only needed as long as GitLab version < 11.0
-        - if [[ "$CI_COMMIT_TAG" == $DATABASE-* ]];
-          then
-            git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/eirene-database-figures.git;
-            mkdir -p eirene-database-figures/$DATABASE;
-            cd eirene-database-figures/$DATABASE;
-            TEX_FILE=../../Database/AMdata/$DATABASE.tex;
-            latexmk -silent -pdfdvi -e '$dvipdf = "dvipdfmx %O -o %D %S"' $TEX_FILE;
-            rsync -t -e ssh $TEX_FILE $DATABASE.pdf eirene@apps.fz-juelich.de:/var/www/eirene;
-          fi
+        - rsync -t -e ssh $TEX_FILE $DATABASE.pdf eirene@apps.fz-juelich.de:/var/www/eirene
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_TAG"
         paths:
@@ -118,30 +114,50 @@ deploy_database_website_amjuel:
     <<: *deploy_database_website
     variables:
         DATABASE: "amjuel"
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^amjuel-.*/
 
 deploy_database_website_hydhel:
     <<: *deploy_database_website
     variables:
         DATABASE: "hydhel"
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^hydhel-.*/
 
 deploy_database_website_h2vibr:
     <<: *deploy_database_website
     variables:
         DATABASE: "h2vibr"
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^h2vibr-.*/
 
 deploy_database_website_methane:
     <<: *deploy_database_website
     variables:
         DATABASE: "methane"
-
-.deploy_database_hydkin: &deploy_database_hydkin
-    stage: deploy
     only: 
         refs:
             - tags
-        # use from GitLab version >= 11.0
-        #variables:
-        #    - $CI_COMMIT_TAG == /^$DATABASE-.*$/
+        variables:
+            - $CI_COMMIT_TAG =~ /^methane-.*/
+
+.deploy_database_hydkin: &deploy_database_hydkin
+    stage: deploy
+    # nice if following would work in future
+    #only: 
+    #    refs:
+    #        - tags
+    #    variables:
+    #        - $CI_COMMIT_TAG =~ /^$DATABASE-.*$/
         # would be ideal to trigger job only if tag is latest
         # not (yet) supported by GitLab
         #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
@@ -167,49 +183,64 @@ deploy_database_website_methane:
         - chmod 644 ~/.ssh/known_hosts
     script:
         # Clone HYDKIN
-        # Change origin push URL to get write access to HYDKIN repository
+        - git clone git@${SERVER_DOMAIN}:hydkin/hydkin.git
         # Compute HYDKIN input und html from EIRENE databases
+        - cd hydkin/tex2hyd
+        - TEX_FILE=../../Database/AMdata/$DATABASE.tex
+        - ./ex_prog.sh -d h0 -p "$DATABASE" $TEX_FILE ./output/
+        - ./ex_prog.sh -spec -p "$DATABASE" $TEX_FILE ./output/ specific
         # Commit and push changes on HYDKIN input and html
         # Upload HYDKIN input and html files on HYDKIN website
-        # "if" only needed as long as GitLab version < 11.0
-        - if [[ "$CI_COMMIT_TAG" == $DATABASE-* ]];
+        - if [[ "$(git diff --exit-code --quiet; echo $?)" != 0 ]];
           then
-            git clone git@${SERVER_DOMAIN}:hydkin/hydkin.git;
-            cd hydkin/tex2hyd;
-            TEX_FILE=../../Database/AMdata/$DATABASE.tex;
-            ./ex_prog.sh -d h0 -p "$DATABASE" $TEX_FILE ./output/;
-            ./ex_prog.sh -spec -p "$DATABASE" $TEX_FILE ./output/ specific;
-            if [[ "$(git diff --exit-code --quiet; echo $?)" != 0 ]];
-            then
-              git add ../plotform/index_*.html ../inputdir*/*.txt;
-              git commit -m 'Automated database update following on EIRENE repository database update.';
-              git push origin;
-              rsync -t -e ssh ../inputdir/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir;
-              rsync -t -e ssh ../inputdir_amjuel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_amjuel;
-              rsync -t -e ssh ../inputdir_hydhel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_hydhel;
-              rsync -t -e ssh ../plotform/index_*.html eirene@apps.fz-juelich.de:/var/www/hydkin/plotform;
-            fi;
-            git tag -a -m "$DATABASE update" $CI_COMMIT_TAG;
-            git push origin $CI_COMMIT_TAG;
+            git add ../plotform/index_*.html ../inputdir*/*.txt;
+            git commit -m 'Automated database update following on EIRENE repository database update.';
+            git push origin;
+            rsync -t -e ssh ../inputdir/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir;
+            rsync -t -e ssh ../inputdir_amjuel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_amjuel;
+            rsync -t -e ssh ../inputdir_hydhel/* eirene@apps.fz-juelich.de:/var/www/hydkin/inputdir_hydhel;
+            rsync -t -e ssh ../plotform/index_*.html eirene@apps.fz-juelich.de:/var/www/hydkin/plotform;
           fi
+        # Tag and push database update reference tag
+        - git tag -a -m "$DATABASE update" $CI_COMMIT_TAG
+        - git push origin $CI_COMMIT_TAG
 
 deploy_database_hydkin_amjuel:
     <<: *deploy_database_hydkin
     variables:
         DATABASE: "amjuel"
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^amjuel-.*/
 
 deploy_database_hydkin_hydhel:
     <<: *deploy_database_hydkin
     variables:
         DATABASE: "hydhel"
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^hydhel-.*/
 
 deploy_database_hydkin_h2vibr:
     <<: *deploy_database_hydkin
     variables:
         DATABASE: "h2vibr"
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^h2vibr-.*/
 
 deploy_database_hydkin_methane:
     <<: *deploy_database_hydkin
     variables:
         DATABASE: "methane"
-
+    only: 
+        refs:
+            - tags
+        variables:
+            - $CI_COMMIT_TAG =~ /^methane-.*/
