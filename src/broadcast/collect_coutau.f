@@ -26,7 +26,7 @@ c
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NADSPC, NLIMPS, NLMPGS, NRTAL, NSTRA,
      .                          NSMSTRA
-      USE EIRMOD_CPES, ONLY: NPESTA, MY_PE
+      USE EIRMOD_CPES, ONLY: MY_PE, I_AM_LEADER
       USE EIRMOD_COUTAU, ONLY: NOUTAU, EIRENE_WRITE_COUTAU,
      .                         EIRENE_READ_COUTAU
       USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
@@ -34,7 +34,6 @@ c
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CGRID, ONLY: NSBOX_TAL
-      USE EIRMOD_COMSOU, ONLY: NLSRON
       USE EIRMOD_CSDVI, ONLY: NSIGCI, NSIGVI, NSIGSI, NSIGI_SPC
       USE EIRMOD_CSPEI, ONLY: EE, EES, FF, FFS, NIDS, SMESTS, SMESTV,
      .                        STV, STVS, STVC, STVCS, STVW, STVWS, NIDV
@@ -48,7 +47,7 @@ c
       logical, allocatable :: lhelp(:)
 
 C When the current process is a master processes of any stratum it gets imaster= "1".
-      if ( any( npesta == my_pe .and. nlsron ) ) then
+      if (i_am_leader()) then
         imaster = 1
       else
         imaster=MPI_UNDEFINED
