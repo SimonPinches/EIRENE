@@ -254,5 +254,4 @@ coverage_report:
         # Never use in parallel mode, not supported by gcov
         - make coverageReport FFLAGS="-g -fprofile-arcs -ftest-coverage" CONFIG=Coverage
     dependencies: []
-    allow_failure: true
 
