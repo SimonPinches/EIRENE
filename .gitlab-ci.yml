@@ -254,4 +254,8 @@ coverage_report:
         # Never use in parallel mode, not supported by gcov
         - make coverageReport FFLAGS="-g -fprofile-arcs -ftest-coverage" CONFIG=Coverage
     dependencies: []
-
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases/coverage.info
+            - EIRENE-sample-cases/coverageReport
