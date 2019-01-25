@@ -324,7 +324,7 @@ C
         ALLOCATE (NFRSTW(NTALS))
         ALLOCATE (NADDW(NTALS))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CESTIM(1) ',4*(NTALV+NTALS) + (4*NTALV+2*NTALS)*4
 
       ELSE IF (ICAL == 2) THEN
@@ -341,7 +341,7 @@ C
         ALLOCATE (CEMETERYV(0:0,NRTAL))
         ALLOCATE (CEMETERYS(0:0,NLMPGS))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CESTIM(2) ',(NESTIM+NRTAL+NLMPGS)*8
 
       END IF

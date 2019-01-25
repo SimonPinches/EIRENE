@@ -105,7 +105,7 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
      .                  NIDS*NLMPGS + 3*NSDW*NLIMPS + 2*NSD +
      .                  2*NSDW + 3*NCV)*8
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CSPEI ', MEM
 
       CALL EIRENE_INIT_CSPEI

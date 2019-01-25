@@ -258,7 +258,7 @@ c  logicals
         ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
 
       ELSE IF (ICAL == 2) THEN
@@ -287,7 +287,7 @@ c  NCPV, NBGV are now set
         ALLOCATE (FLXOUT(NLMPGS))
         ALLOCATE (SAREA(NLMPGS))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .         ' COMUSR(3) ',NSFPRM*8
 
       END IF

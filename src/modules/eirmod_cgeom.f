@@ -74,7 +74,7 @@ c  integer arrays
 
          ALLOCATE (LDAMCEL(NRAD))
 
-         WRITE (55+IFOFF,'(A,T25,I15)')
+         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' CGEOM(1) ',(NCGM1+2*N1STS*N2NDPLGS)*8 +
      .        (2*NPPART+2*NRAD+8*N1STS*N2NDPLGS)*4 + nrad*4
 
@@ -103,7 +103,7 @@ c  integer arrays
 
          IF (ALLOCATED(AREAG)) RETURN
          ALLOCATE (AREAG(NLMPGS))
-         WRITE (55+IFOFF,'(A,T25,I15)') ' CGEOM(2) ',NLMPGS*8
+         WRITE (IUNMEM,'(A,T25,I15)') ' CGEOM(2) ',NLMPGS*8
 
       END IF
 
