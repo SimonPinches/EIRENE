@@ -97,7 +97,7 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 
       ALLOCATE (CH_LINE_NAME(NCHOR))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' COMSIG ',(NCMSIG+(NCHOR+1)*NCHEN)+8 + (MCMSIG+NCHOR)*4 +
      .                 NCHOR*80
 

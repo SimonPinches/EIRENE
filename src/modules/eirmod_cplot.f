@@ -111,7 +111,7 @@ cdr            and for line of side spatially resolved plot (plargl)
 
       CALL EIRENE_INIT_CPLOT
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CPLOT ',10*NPTAL*8 + (10*NPLT+1)*NPTAL*4 +
      .                (NSTRA+1+15)*NPTAL+NSPZ*4
 

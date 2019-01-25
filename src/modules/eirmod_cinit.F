@@ -94,7 +94,7 @@ C> Default output file prefix
       ALLOCATE (CDENMODEL(NPLS))
       ALLOCATE (TDMPAR(NPLS))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +
      .                NPLS*LEN(CDENMODEL(1))
 

@@ -44,13 +44,13 @@ C
 c
       data nvplot/0/
 C
-      WRITE (60+ifoff,*) RUNID
-      WRITE (60+ifoff,*) TXHEAD
-      WRITE (60+ifoff,*) HEAD
-      WRITE (60+ifoff,*) TEXT1
-      WRITE (60+ifoff,*) TEXT2
-      WRITE (60+ifoff,*) TEXT3
-      WRITE (60+ifoff,*)
+      WRITE (IUNRAPSVEC,*) RUNID
+      WRITE (IUNRAPSVEC,*) TXHEAD
+      WRITE (IUNRAPSVEC,*) HEAD
+      WRITE (IUNRAPSVEC,*) TEXT1
+      WRITE (IUNRAPSVEC,*) TEXT2
+      WRITE (IUNRAPSVEC,*) TEXT3
+      WRITE (IUNRAPSVEC,*)
 c
       nraps2=80
       nvplot=nvplot+1

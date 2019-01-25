@@ -26,7 +26,7 @@ C> Recommended number of test particles for next MC cycle.
 
       SUBROUTINE EIRENE_ALLOC_CAI
 
-      USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
+      USE EIRMOD_PARMMOD, ONLY: IUNMEM, NSTRA
 
       IF (ALLOCATED(RATIO)) RETURN
 
@@ -34,7 +34,7 @@ C> Recommended number of test particles for next MC cycle.
       ALLOCATE (XMCT(0:NSTRA))
       ALLOCATE (NRECOM(NSTRA))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CAI ',NSTRA*(8*2+4)
 
       CALL EIRENE_INIT_CAI

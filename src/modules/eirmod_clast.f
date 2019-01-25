@@ -42,7 +42,7 @@
       ALLOCATE (NPMEAN(NRPI))
       ALLOCATE (IFLRPI(NRPI))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CLAST ',(2*NRCX+2*NREL+2*NRPI)*(8+4)
 
       CALL EIRENE_INIT_CLAST

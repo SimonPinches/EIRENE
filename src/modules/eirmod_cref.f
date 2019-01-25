@@ -78,7 +78,7 @@ C  generalized to become surface specific (allows for different values per surfa
       ALLOCATE (AINTEG(0:NLIMPS))
 
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*500 +
      .                (NHD1*NHD2*NHD6*(1+NHD3*(1+NHD4*(1+NHD5))))*8
 

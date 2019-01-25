@@ -70,7 +70,10 @@ C      INTEGER :: IC
 !        END DO
 !        NULLIFY(COORTET(IC)%PTET)
 !      END DO
-      WRITE (55+ifoff,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
+C Allocation took already place in make_tetra.f, but output within
+C make_tetra.f is difficult. Threfore this location is best for output
+C of the allocated memory:
+      WRITE (IUNMEM,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
 
       RETURN
       END
