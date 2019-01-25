@@ -83,7 +83,7 @@ C
       END IF
 C
       DO 5 IF=1,IRAPS
-        NRPS=60+ifoff+IF
+        NRPS=IUNRAPSVEC+IF
         OPEN (UNIT=NRPS,ACCESS='SEQUENTIAL',FORM='FORMATTED')
         REWIND NRPS
     5 CONTINUE
@@ -120,7 +120,7 @@ C
             do ip=1,np2nd
                do it=1,nt3rd
                   DO IF=1,IRAPS
-                     READ(60+ifoff+IF,*) YWERT(IF)
+                     READ(IUNRAPSVEC+IF,*) YWERT(IF)
                   enddo
                   i = i+1
                   WRITE(19+ifoff,'(I6,1P,50E12.4)')
@@ -176,7 +176,7 @@ cdr     write (iunout,*) ' in rpsout levego=1 and lptorr'
 
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
              DO 105 IF=1,IRAPS
-               READ (60+ifoff+IF,*) YWERT(IF)
+               READ (IUNRAPSVEC+IF,*) YWERT(IF)
   105        CONTINUE
 
              IF (IP .NE. NP2ND) THEN
@@ -230,7 +230,7 @@ C
 
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
             DO 2105 IF=1,IRAPS
-              READ (60+ifoff+IF,*) YWERT(IF)
+              READ (IUNRAPSVEC+IF,*) YWERT(IF)
  2105       CONTINUE
 
             IF (IT .NE. NT3RD) THEN
@@ -286,7 +286,7 @@ C
         ipoints=0
         do ipl=0,iplane-1
           DO IF=1,IRAPS
-            open (60+ifoff+IF)
+            open (IUNRAPSVEC+IF)
           enddo
 
           if (lraps3d.and.lr3dcon) then
@@ -324,7 +324,7 @@ C
 
 C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
                 DO 25 IF=1,IRAPS
-                  READ (60+ifoff+IF,*) YWERT(IF)
+                  READ (IUNRAPSVEC+IF,*) YWERT(IF)
    25           CONTINUE
 
                 IF (IP .NE. NPOINT(2,IPPLG)) THEN
@@ -409,7 +409,7 @@ C  EXCLUDE DEAD CELLS ON FORT.18
    10     CONTINUE
           if (ipl.eq.0) ipoints=i
           DO IF=1,IRAPS
-            close (60+ifoff+IF)
+            close (IUNRAPSVEC+IF)
           enddo
         enddo
         NCO=I
@@ -438,11 +438,11 @@ C NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
         endif
         do ipl=0,iplane-1
           DO IF=1,IRAPS
-            open(60+ifoff+IF)
+            open(IUNRAPSVEC+IF)
           enddo
           DO 40 I=1,NRKNOT
             DO 50 IF=1,IRAPS
-              READ(60+ifoff+IF,*) YWERT(IF)
+              READ(IUNRAPSVEC+IF,*) YWERT(IF)
               if (ywert(if) < valcont(if)) valcont(if) = ywert(if)
    50       CONTINUE
             WRITE(19+ifoff,'(I6,1P,50E12.4)') I+ipl*nrknot,
@@ -461,7 +461,7 @@ C NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHENEN.
             endif
    40     CONTINUE
           DO IF=1,IRAPS
-            close(60+ifoff+IF)
+            close(IUNRAPSVEC+IF)
           enddo
           if (lraps3d.and.lr3dcon) then
             if (ipl < iplane-1) then
@@ -501,7 +501,7 @@ C TO BE DONE: NSTGRD.NE.0 AUSBLENDEN, ANZ NEU BERECHNEN.
         anz=ntet-ntet_collaps
         do i=1,ncoor
           do if=1,iraps
-            read(60+ifoff+if,*) ywert(if)
+            read(IUNRAPSVEC+if,*) ywert(if)
           enddo
           WRITE(19+ifoff,'(I6,1P,50E12.4)') I,(YWERT(IF),IF=1,IRAPS)
           WRITE(17+ifoff,'(I6,1P,3E12.4)')
@@ -700,12 +700,12 @@ C
           igr=igroups+1
           epsrel = (xgeomax-xgeomin+ygeomax-ygeomin)/2.*eps5
           do icont=1,ncontour
-            write(65+ifoff,*) 'xcontour ycontour icont: ',icont
+            write(IUNRAPS,*) 'xcontour ycontour icont: ',icont
             do ipoint = 1,nconpoint(icont)
-               write(65+ifoff,'(2es12.4)') xcontour(ipoint,icont),
+               write(IUNRAPS,'(2es12.4)') xcontour(ipoint,icont),
      .              ycontour(ipoint,icont)
             enddo
-            write(65+ifoff,*)
+            write(IUNRAPS,*)
 c           bereinigte contour erstellen
             xcont(1:nconpoint(icont))=xcontour(1:nconpoint(icont),icont)
             ycont(1:nconpoint(icont))=ycontour(1:nconpoint(icont),icont)
@@ -856,9 +856,9 @@ c     punkt in richtung m verschieben
              endif
             enddo
             do ipl=0,iplane-1
-               write(65+ifoff,*) 'origx origy neux neuy'
+               write(IUNRAPS,*) 'origx origy neux neuy'
                do ipoint=1,ncont-1
-                  write(65+ifoff,'(4es12.4)')
+                  write(IUNRAPS,'(4es12.4)')
      .                 xcont(ipoint), ycont(ipoint),
      .                 phelp(ipoint,1),phelp(ipoint,2)
 c     punkte schreiben

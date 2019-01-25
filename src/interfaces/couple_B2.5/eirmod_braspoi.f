@@ -125,7 +125,7 @@ cdr  purpose ....?
       NULLIFY(COLLECT_SIMARR)
       NULLIFY(COLLECT_MULARR)
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' BRASPOI ',18*NSTRA*8
 
       RETURN

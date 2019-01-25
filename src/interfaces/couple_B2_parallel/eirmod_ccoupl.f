@@ -66,7 +66,7 @@
         ALLOCATE (ICCPL2(MCOUPL2))
         ALLOCATE (LCCPL(LCOUPL))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' CCOUPL ',NCOUPL*8 + (11*NSTEP*NPTRGT+MCOUPL2)*4
      .                   + LCOUPL*4
 

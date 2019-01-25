@@ -110,7 +110,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (IGJUM2(0:NLIMPS,NLIMPB))
       ALLOCATE (IGJUM3(0:NOPTIM,NLIMPB))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CLGIN ',(NLIMPS+1)*(13*NSPZ+7)*8 +
      .                 (2*NOPTIM+(NLIMPS+1)*(14+9+4*NSPZ)+9*NSTS+
      .                  (N1ST+1)*(N2ND+1)*(N3RD+1)*3)*4 +

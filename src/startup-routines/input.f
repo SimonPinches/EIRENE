@@ -1466,7 +1466,8 @@ C  Normal start of reading database A&M processes
 !pbcrm
       IREAD = 0
 C
-  411 IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
+!xpb411 IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
+  411 IF (IREAD == 0) READ (IUNIN,'(A420)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"

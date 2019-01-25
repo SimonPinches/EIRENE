@@ -89,7 +89,7 @@
         ALLOCATE (NLSYMP(0:NSTRA))
         ALLOCATE (NLSYMT(0:NSTRA))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMSOU ',NOMSOU*8 + (MOMSOU+NSRFS*NSTRA*6)*4 +
      .                  (LOMSOU+2*(NSTRA+1))*4
 
