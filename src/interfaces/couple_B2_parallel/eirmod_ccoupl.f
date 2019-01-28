@@ -35,9 +35,6 @@
      I NMODEI, NFILNN, NCUTB_SAVE,
      I NAINB,  NAOTB,  NFULL
 
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I NAINS(:), NAINT(:)
-
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE :: LCCPL(:)
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
@@ -130,11 +127,6 @@
 
       ELSE IF (ICAL == 2) THEN
 
-        IF (ALLOCATED(NAINS)) RETURN
-
-        ALLOCATE (NAINS(NAIN))
-        ALLOCATE (NAINT(NAIN))
-
       END IF
 
       CALL EIRENE_INIT_CCOUPL (ICAL)
@@ -172,9 +164,6 @@
         LCCPL  = .FALSE.
 
       ELSE IF (ICAL == 2) THEN
-
-        NAINS = 0
-        NAINT = 0
 
       END IF
 
