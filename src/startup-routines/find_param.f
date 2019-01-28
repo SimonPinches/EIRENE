@@ -1395,7 +1395,7 @@ cdr this next condition for old default: better also check for nchtal=2 ??
         NUM_COMPO = 6
 ! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
         NUM_CONTRIB =
-     .   NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI + NPLSI
+     .   NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 3*NMOLI + NPLSI
 cdr  ?? perhaps: in old default only one line possible at a time?
 cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
