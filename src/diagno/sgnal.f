@@ -239,7 +239,7 @@ C  H(n=3)/H(n=1)
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              ELNAME,IZ)
+     .              ELNAME, IZ)
 
         chksum = 0._dp
         do

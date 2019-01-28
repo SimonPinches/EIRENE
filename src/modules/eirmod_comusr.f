@@ -10,6 +10,7 @@ cdr             POT  moved into LESMO condition
 cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
 cdr             missing:  dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
+cdr  jan 19  :  nains, naint moved here, formerly: ccoupl
 
       MODULE EIRMOD_COMUSR
 
@@ -271,7 +272,7 @@ C  gradients of derived tallies
       INTEGER, INTENT(IN) :: ICAL
 
 
-      IF (.NOT.ALLOCATED(LSMOPRO))  ALLOCATE (LSMOPRO(NTALG))
+      IF (.NOT.ALLOCATED(LSMOPRO)) ALLOCATE (LSMOPRO(NTALG))
 
       IF (ICAL == 1) THEN
 
@@ -364,7 +365,7 @@ c  logicals
         ALLOCATE (LSPCCLL(NRAD))
         ALLOCATE (LIVTALI(NTALI))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMUSR(1) ', NPLPR2*8 + MUSR*4 + LUSR*4 
 
       ELSE IF (ICAL == 2) THEN
@@ -402,10 +403,11 @@ c  NCPV, NBGV are now set
         ALLOCATE (IBGVT(NBGV))
         ALLOCATE (IBGRC(NBGV))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMUSR(2) ',(NPLPR1+                   ! ACTIVE INPUT TALLIES PLSTLS
      .                      (3+NPLSTI+NPLS)*NRAD)*8 +  ! TEINL,TIINL,DEINL,DIINL
-     .                      4*(NCPV+NBGV)*4            ! BGK AND CPV INTEGERS
+     .                      4*(NCPV+NBGV)*4 +          ! BGK AND CPV INTEGERS
+     .                      2*NAIN*4                   ! NAINS, NAINT
 
       ELSE IF (ICAL == 3) THEN
 
@@ -1091,7 +1093,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ALLOCATE (CORNER_PROFILES(1,1))
       END IF
 
-       WRITE (55+IFOFF,'(A,T25,I15)')
+       WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMUSR(CORNERS) ',SIZE(CORNER_PROFILES)*8
 
       LDSMO = LDESMO .OR. LDISMO 
@@ -1418,13 +1420,49 @@ c
       IF (IFIRST == 0) THEN
         LSMOPRO = .FALSE.
 
-        LTESMO   => LSMOPRO(1)
-        LTISMO   => LSMOPRO(2)
-        LDISMO   => LSMOPRO(3)
-        LVSMO    => LSMOPRO(4)
-        LBSMO    => LSMOPRO(5)
-        LESMO    => LSMOPRO(6)
-        LPOTSMO  => LSMOPRO(7)
+        LTESMO      => LSMOPRO(1)
+        LTISMO      => LSMOPRO(2)
+        LDESMO      => LSMOPRO(3)
+        LDISMO      => LSMOPRO(4)
+c  plasma flow field
+        LVXSMO      => LSMOPRO(5)
+        LVYSMO      => LSMOPRO(6)
+        LVZSMO      => LSMOPRO(7)
+c  plasma flow parallel
+        LBVSMO      => LSMOPRO(23)
+        LPARMOMSMO  => LSMOPRO(24)
+
+c  B field
+        LBXSMO      => LSMOPRO(8)
+        LBYSMO      => LSMOPRO(9)
+        LBZSMO      => LSMOPRO(10)
+        LBFSMO      => LSMOPRO(11)
+
+c  B  perp
+        LBXPSMO     => LSMOPRO(16)
+        LBYPSMO     => LSMOPRO(17)
+
+        LADSMO      => LSMOPRO(12)
+        LEDRIFTSMO  => LSMOPRO(13)
+        LVOLSMO     => LSMOPRO(14)
+        LWGHTSMO    => LSMOPRO(15)
+
+c  E field
+        LEXSMO      => LSMOPRO(18)
+        LEYSMO      => LSMOPRO(19)
+        LEZSMO      => LSMOPRO(20)
+        LEFSMO      => LSMOPRO(21)
+        LPOTSMO     => LSMOPRO(22)
+
+c  poloidal B-flux function 
+        LPSISMO  => LSMOPRO(25)
+
+c  free slots
+        LFREE26SMO  => LSMOPRO(26)
+        LFREE27SMO  => LSMOPRO(27)
+        LFREE28SMO  => LSMOPRO(28)
+        LFREE29SMO  => LSMOPRO(29)
+        LFREE30SMO  => LSMOPRO(30)
 
         IFIRST = 1
       ENDIF
