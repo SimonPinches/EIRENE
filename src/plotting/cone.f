@@ -110,7 +110,8 @@ C PLOTTE DIE KREISE
             PXX=XK*BX+YK*CX+PX
             PYY=XK*BY+YK*CY+PY
             PZZ=XK*BZ+YK*CZ+PZ
-    3       CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+            CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+    3     END DO
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1

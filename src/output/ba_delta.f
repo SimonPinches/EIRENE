@@ -449,9 +449,10 @@ C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATIO
         RATIO2=0
         DO 170 J=0,8
           DEJ=DEF**J
-          DO 170 I=0,8
+          DO I=0,8
             TEI=TEF**I
             RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
+          END DO
   170   CONTINUE
         RATIO2=EXP(RATIO2)
 

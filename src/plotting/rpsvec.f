@@ -402,12 +402,7 @@ C  SIDE 8
         enddo
 
       ELSEIF (LEVGEO.EQ.4) THEN
-        DO 41 I=1,NRKNOT
-          DO 51 J=0,30
-            DO 51 K=1,2
-            ZUORD(I,J,K) = 0
-   51     CONTINUE
-   41   CONTINUE
+        ZUORD(1:NRKNOT,:,:) = 0
         DO 40 J=1,NTRII
           DO 50 I=1,3
             ZUORD(NECKE(I,J),0,1) = ZUORD(NECKE(I,J),0,1) + 1
