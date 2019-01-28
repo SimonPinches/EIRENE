@@ -33,7 +33,7 @@
         MCOUPL2 = 1
         ALLOCATE (ICCPL2(MCOUPL2))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' CCOUPL ',MCOUPL2*4
 
         NFLA       => ICCPL2(1)
