@@ -74,9 +74,11 @@ cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ex
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
 C> Default output file prefix
 #ifndef HPUX
-      CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FORT.'
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT    = 'FORT.'
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT_LC = 'fort.'
 #else
       CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FTN'
+      CHARACTER(*), PUBLIC, PARAMETER :: FORT_LC = 'ftn'
 #endif
 
       CONTAINS
@@ -94,7 +96,7 @@ C> Default output file prefix
       ALLOCATE (CDENMODEL(NPLS))
       ALLOCATE (TDMPAR(NPLS))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +
      .                NPLS*LEN(CDENMODEL(1))
 
@@ -268,9 +270,9 @@ C
       DBFNAME(7) = 'PHTNEW'
       DBFNAME(8) = 'SPUTER'
       if (21+ifoff >= 100) then
-        write (DBFNAME(9),'(A,I3)') FORT, 21+ifoff
+        write (DBFNAME(9),'(A,I3)') FORT_LC, 21+ifoff
       else
-        write (DBFNAME(9),'(A,I2)') FORT, 21+ifoff
+        write (DBFNAME(9),'(A,I2)') FORT_LC, 21+ifoff
       endif
       DBFNAME(10) = 'POLARI'
       DBFNAME(11) = 'free'

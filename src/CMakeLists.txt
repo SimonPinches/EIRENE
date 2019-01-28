@@ -3,13 +3,25 @@
 cmake_minimum_required(VERSION 2.8)
 project(EIRENE Fortran)
 
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE "Release" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Release" "Debug" "Coverage")
+  # "Coverage" only available for GNU compiler
+endif()
+
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS "-fp-model source")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS "-O3")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
+  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
 endif()
 
 # Libraries used for plotting

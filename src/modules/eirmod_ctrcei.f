@@ -76,9 +76,9 @@ CVK END
 !pb      ALLOCATE (NSPEZS(NLIMPS,2))
       ALLOCATE (NSPEZS(NSRPR,2))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CTRCEI ',(LCTRC+(NSTRA+1))*4
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CTRCEI ',(MCTRC+2*(NVLPR+NSRPR))*4
 
       TRCPLT => LTRCEI( 1)

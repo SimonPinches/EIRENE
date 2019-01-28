@@ -35,7 +35,7 @@ c
      P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R         PLSTLS(:,:)
- 
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R          CEMETERYP(:,:)
  
@@ -133,9 +133,9 @@ c  for interpolations
      .        PARMOMCORNER(:,:), EDRIFTCORNER(:,:),
      .        PSICORNER(:),    FREE26CORNER(:), FREE27CORNER(:),
      .        FREE28CORNER(:), FREE29CORNER(:), FREE30CORNER(:)
- 
+
       REAL(DP), PUBLIC, SAVE :: TVAC, DVAC, VVAC, ALLOC
- 
+
       CHARACTER(8), ALLOCATABLE, PUBLIC, SAVE :: TEXTS(:)
 
 C  MUSR, INTEGER
@@ -247,9 +247,13 @@ C  gradients of derived tallies
      I         NSPAN(:),  NSPEN(:),
      I         NSPANW(:), NSPENW(:)
 
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I         NAINS(:), NAINT(:)
+
+
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         INTLOPTS(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I         NPRLL, NMODE,  NTCPU,
      I         NFILE, NFILEN, NFILEM, NFILEL, NFILEK, NFILEJ,
@@ -270,7 +274,7 @@ C  gradients of derived tallies
       IF (.NOT.ALLOCATED(LSMOPRO))  ALLOCATE (LSMOPRO(NTALG))
 
       IF (ICAL == 1) THEN
- 
+
         IF (ALLOCATED(RMASSI)) RETURN
 
         NPLPR2= 3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT ! species (test particle and background) related data
@@ -298,10 +302,10 @@ C  gradients of derived tallies
         ALLOCATE (DMOL(MAX(1,NMOL)))
         ALLOCATE (DPLS(MAX(1,NPLS)))
         ALLOCATE (DPHOT(MAX(1,NPHOT)))
- 
+
         ALLOCATE (TEXTS(NSPZ))
- 
-c  integer  species and background tally data
+
+c  integer species and background tally data
 
         ALLOCATE (NMASSA(MAX(1,NATM)))
         ALLOCATE (NCHARA(MAX(1,NATM)))
@@ -359,12 +363,12 @@ c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
         ALLOCATE (LSPCCLL(NRAD))
         ALLOCATE (LIVTALI(NTALI))
- 
+
         WRITE (55+IFOFF,'(A,T25,I15)')
      .        ' COMUSR(1) ', NPLPR2*8 + MUSR*4 + LUSR*4 
- 
+
       ELSE IF (ICAL == 2) THEN
- 
+
         IF (ALLOCATED(PLSTLS)) RETURN
 
 c
@@ -384,6 +388,9 @@ cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct d
         ALLOCATE (TIINL(NPLSTI,NRAD))
         ALLOCATE (DEINL(NRAD))
         ALLOCATE (DIINL(NPLS,NRAD))
+
+        ALLOCATE (NAINS(NAIN))
+        ALLOCATE (NAINT(NAIN))
 
 c  NCPV, NBGV are now set
         ALLOCATE (ICPVE(NCPV))
@@ -408,7 +415,7 @@ c  NCPV, NBGV are now set
         ALLOCATE (FLXOUT(NLMPGS))
         ALLOCATE (SAREA(NLMPGS))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .         ' COMUSR(3) ',NSFPRM*8
 
       END IF
@@ -1031,13 +1038,13 @@ C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30
       END SUBROUTINE EIRENE_ASSOCIATE_COMUSR
 
 
- 
+
       SUBROUTINE EIRENE_ALLOC_CORNERS(IUNOUT)
 
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: N1DIM(12)
       INTEGER :: NTOT, ICO, NLST, I, J, NLSTTL, NTOT2
-      
+
 
       IF (ALLOCATED(CORNER_PROFILES)) RETURN
 
@@ -1075,7 +1082,7 @@ c  NTOT: total number of smoothed talles, counting also with species index
         NTOT = NADDCOR(NTALG)
         IF (NFRSTP(NLSTTL) > 1) NTOT = NTOT+NFRSTP(NLSTTL)
       END IF
-      
+
       IF (NTOT > 0) THEN
 cdr  allocate storage for background tallies on cell vertices
 cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
@@ -1300,7 +1307,7 @@ cdr these next two B field tallies should go into LBSMO
       SUBROUTINE EIRENE_DEALLOC_COMUSR
 C
       IF (.NOT.ALLOCATED(PLSTLS)) RETURN
- 
+
       DEALLOCATE (PLSTLS)
       DEALLOCATE (CEMETERYP)
 c
@@ -1329,7 +1336,7 @@ c
       DEALLOCATE (DMOL)
       DEALLOCATE (DPLS)
       DEALLOCATE (DPHOT)
- 
+
       DEALLOCATE (TEXTS)
       DEALLOCATE (NMASSA)
       DEALLOCATE (NCHARA)
@@ -1387,11 +1394,13 @@ c
       DEALLOCATE (NSPANW)
       DEALLOCATE (NSPENW)
       DEALLOCATE (INTLOPTS)
+      DEALLOCATE (NAINS)
+      DEALLOCATE (NAINT)
       DEALLOCATE (LGVAC)
       DEALLOCATE (LSPCCLL)
       DEALLOCATE (LSMOPRO)
       DEALLOCATE (LIVTALI)
- 
+
 !pb      IF (NBACK_SPEC > 0) DEALLOCATE (BACK_SPEC)
       IF (ALLOCATED(BACK_SPEC)) DEALLOCATE (BACK_SPEC)
 
@@ -1409,56 +1418,20 @@ c
       IF (IFIRST == 0) THEN
         LSMOPRO = .FALSE.
 
-        LTESMO      => LSMOPRO(1)
-        LTISMO      => LSMOPRO(2)
-        LDESMO      => LSMOPRO(3)
-        LDISMO      => LSMOPRO(4)
-c  plasma flow field
-        LVXSMO      => LSMOPRO(5)
-        LVYSMO      => LSMOPRO(6)
-        LVZSMO      => LSMOPRO(7)
-c  plasma flow parallel
-        LBVSMO      => LSMOPRO(23)
-        LPARMOMSMO  => LSMOPRO(24)
-
-c  B field
-        LBXSMO      => LSMOPRO(8)
-        LBYSMO      => LSMOPRO(9)
-        LBZSMO      => LSMOPRO(10)
-        LBFSMO      => LSMOPRO(11)
-
-c  B  perp
-        LBXPSMO     => LSMOPRO(16)
-        LBYPSMO     => LSMOPRO(17)
-
-        LADSMO      => LSMOPRO(12)
-        LEDRIFTSMO  => LSMOPRO(13)
-        LVOLSMO     => LSMOPRO(14)
-        LWGHTSMO    => LSMOPRO(15)
-
-c  E field
-        LEXSMO      => LSMOPRO(18)
-        LEYSMO      => LSMOPRO(19)
-        LEZSMO      => LSMOPRO(20)
-        LEFSMO      => LSMOPRO(21)
-        LPOTSMO     => LSMOPRO(22)
-
-c  poloidal B-flux function 
-        LPSISMO  => LSMOPRO(25)
-
-c  free slots
-        LFREE26SMO  => LSMOPRO(26)
-        LFREE27SMO  => LSMOPRO(27)
-        LFREE28SMO  => LSMOPRO(28)
-        LFREE29SMO  => LSMOPRO(29)
-        LFREE30SMO  => LSMOPRO(30)
+        LTESMO   => LSMOPRO(1)
+        LTISMO   => LSMOPRO(2)
+        LDISMO   => LSMOPRO(3)
+        LVSMO    => LSMOPRO(4)
+        LBSMO    => LSMOPRO(5)
+        LESMO    => LSMOPRO(6)
+        LPOTSMO  => LSMOPRO(7)
 
         IFIRST = 1
       ENDIF
 
       IF (ICAL == 1) THEN
 cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
-        
+
         RMASSA = 0._DP
         RMASSM = 0._DP
         RMASSI = 0._DP
@@ -1475,7 +1448,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         DMOL   = 0._DP
         DPLS   = 0._DP
         DPHOT  = 0._DP
- 
+
         TEXTS  = ' '
         NMASSA = 0
         NCHARA = 0
@@ -1652,7 +1625,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LDFREE30DX => LIVTALI(118)
         LDFREE30DY => LIVTALI(119)
         LDFREE30DZ => LIVTALI(120)
- 
+
       ELSE IF (ICAL == 2) THEN
 c  Active volumetric input tallies
         PLSTLS = 0._DP
@@ -1663,6 +1636,9 @@ c  Cemetery for inactive input tallies (no storage)
         TIINL  = 0._DP
         DEINL  = 0._DP
         DIINL  = 0._DP
+
+        NAINS = 0
+        NAINT = 0
 
         ICPVE  = 0
         ICPVS  = 0

@@ -746,6 +746,7 @@ C
 C
               ELSE
 C  TO BE WRITTEN
+                NR=0
               ENDIF
 C
 C  RADIAL SURFACE IR PLOTTED, NR POINTS

@@ -533,7 +533,7 @@ C
           IF (SUMM.GT.0.D0) THEN
             FLUX(ISTRA)=SUMM
             WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED'
-            CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX    ',
+            CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX     ',
      .                          ISTRA,FLUX(ISTRA),EISUMM)
             CALL EIRENE_LEER(1)
           ELSE

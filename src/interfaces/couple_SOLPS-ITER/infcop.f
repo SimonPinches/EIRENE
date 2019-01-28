@@ -4958,7 +4958,7 @@ csw mpi 09jun2010
         endif
 
         do istrx=1,nstrai
-          if(procforstra(istrx,my_pe) .and. my_pe /= 0) then
+          if(calc_stratum(istrx) .and. my_pe /= 0) then
             SNIS0(istrx,0) = sum(snis0(istrx,1:nfl))
             SMOS0(istrx,0) = sum(smos0(istrx,1:nfl))
 
@@ -5243,5 +5243,6 @@ C> At call data are expected for stratum ISTRA. There they may be
 C> further prepared (e.g. normalized, or scaled to other units) for
 C> transfer to the external code
       SUBROUTINE EIRENE_INFCOP_POST_STRATUM(ISTRA)
+      integer, intent(in) :: istra
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM

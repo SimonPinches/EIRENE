@@ -102,7 +102,7 @@ cdr           writing on ft14.
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NADDI(:),  NFRSTI(:), NDDWI(:),  NFRTWI(:),
      I NFSTVI(:), NFSTWI(:)
- 
+
       INTEGER, PUBLIC, SAVE ::
      I NOUTA1, NOUTA2, NOUTAS, NOUTAU, NOUTTL
 
@@ -118,7 +118,7 @@ cdr           writing on ft14.
       NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+15)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
       NOUTTL = 3*(NTALV+NTALS)
- 
+
       ALLOCATE (PDENAI(0:NATM,0:NSTRA))
       ALLOCATE (PDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (PDENII(0:NION,0:NSTRA))
@@ -374,9 +374,9 @@ cdr  etote still missing ??
       ALLOCATE (NFRTWI(NTALS))
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
- 
+
 cdr  coutau still contains xmct, but NOUTAU does not. So needs NSTRAP to be added here
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
 
       NADDI  = 0
@@ -611,7 +611,7 @@ csw 19mar2013
       DEALLOCATE (NFRTWI)
       DEALLOCATE (NFSTVI)
       DEALLOCATE (NFSTWI)
- 
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COUTAU
 
@@ -623,7 +623,7 @@ csw 19mar2013
       INTEGER, SAVE :: IFRST=0
 
       DO ISTRA=0,NSTRA
- 
+
         IF ((ISTRA >= 1) .AND. (IFRST > 0)) THEN
           IF (.NOT. LOGARR(ISTRA)) CYCLE
         END IF
@@ -858,7 +858,6 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
 !pb     END IF
 
       END DO
-
       IFRST = 1
 
       RETURN

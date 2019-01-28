@@ -504,7 +504,7 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
      .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
      .                      NREAC*LEN(REAC_NAME(1)) + NREAC*4_IL
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
 
 
@@ -719,7 +719,7 @@ c
         MEM = (MSTOR1*MSTOR2+NMDTA)*8_IL +
      .                      MMDTA*4_IL
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(2) ', MEM
 
       END IF
