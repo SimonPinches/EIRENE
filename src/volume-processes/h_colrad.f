@@ -188,10 +188,12 @@ C     L.C.JOHNSON, ASTROPHYS. J. 174, 227 (1972).
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LIM
       DIMENSION F(40,40)
       DIMENSION A(40,40)
       DIMENSION E_AT(40)
       DIMENSION POP_ESC(40,40)
+      INTEGER I, J
       logical lopaque
 
       UH=13.595
@@ -246,6 +248,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
+      INTEGER I, II, III, J, JJ
 
       TE=TEMP*1.1605E4
 
@@ -275,6 +278,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
       DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
+      INTEGER I, II, III, J, JJ
 
 cdr  above some critical Te0 value the radiative rate coefficients beta become unphysical
 c    perhaps due to numerical integration, or due to fit expression for integrand.
@@ -536,6 +540,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION U(40,40),OSC(40,40),C(40,40),F(40,40)
       DIMENSION S(40),ALPHA(40)
+      INTEGER I, J
 C
       DO 1 I=1,40
       S(I)=0.0
@@ -623,6 +628,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
 
+      INTEGER I, J, ICON
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
 
@@ -702,6 +708,7 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, J, ICON
       P=I
       BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
       Q=J
@@ -745,6 +752,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, J
       UH=13.595
       P=I
       BN=1.4/P*LOG(P)-0.7/P-0.51/P**2+1.16/P**3-0.55/P**4
@@ -779,6 +787,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, N, K, ICON
       DIMENSION G(0:2,40)
 
       G(0,1)=1.1330
@@ -872,6 +881,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, N, K
       DIMENSION G(0:2,40)
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
@@ -936,6 +946,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I
 
       P=I
       UI=13.595/TEMP/P**2
@@ -988,6 +999,7 @@ C
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
+      INTEGER II, NMIN, NMAX
       COMMON PP,XPP
       EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4
 
@@ -1056,13 +1068,15 @@ c  l_ext: indicate that 3rd right hand side term is requested
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LUP, LIM
       REAL(DP)  C(40,40),F(40,40),A(40,40),W(40,40)
      &         ,SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40)
      &         ,       Q_EXT(40),R_EXT(40)
      &         ,VW(40),WA(40,40)
       REAL(DP) :: BLAX(3,40)
+      INTEGER I,J,K,L,IE,ICON,IS
       LOGICAL :: L_EXT
-      dimension ip(40)
+      integer ip(40)
 
       DO 201 K=2,LUP-1
 
@@ -1155,7 +1169,7 @@ c  two or three right linearly additive hand side terms?
         BLAX(1:ie,J)=WA(J,LUP:LUP+ie-1)
  3000 CONTINUE
 
-      CALL EIRENE_LAX_M(WA,40,LUP-1,BLAX,3,ie,0.0,1,IS,VW,IP,ICON)
+      CALL EIRENE_LAX_M(WA,40,LUP-1,BLAX,3,ie,0.0_DP,1,IS,VW,IP,ICON)
 c
 
         DO J=1,LUP-1
@@ -1191,8 +1205,10 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LUP, LIM
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
+      INTEGER I
       LOGICAL :: L_EXT
 C
       DO 5000 I=LUP+1,LIM
@@ -1259,9 +1275,11 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LUP, LIM
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
      &          ALPHA(40),BETA(40),EBETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
+      INTEGER I, I1, I2
       LOGICAL :: L_EXT
 
       DIMENSION EMEAN_REC(41)
@@ -1283,7 +1301,7 @@ C
 C  EFFECTIVE ELECTRON COOLING CORRESPONDING TO
 C  "ORDINARY" COUPLING TO GROUND STATE S(I)
 C
-C  PART I
+C     PART I
 C  1(EXTERN)--> inf.  R1(1)=1
       UH=13.595
       DE=(E_AT(1)-UH)
@@ -1511,6 +1529,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) OSC(40,40),CJ(40,40)
+      INTEGER I, J, ICON
       TE=TEMP*1.1605E4
 C
       DO 1 I=1,40
@@ -1570,9 +1589,11 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
+      integer n1, n,nb, nbi, ifl, is, icon
       real(dp) a(n1,n1),B(nb,*),vw(*)
-      dimension ip(*)
-      dimension iw(100)
+      real(dp) eps
+      integer ip(*)
+      integer iw(100), ier
       if (n1.gt.100) then
         write (iunout,*) 'error in lax'
         call eirene_exit_own(1)
@@ -1611,8 +1632,10 @@ C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
 C***********************************************************************
 C
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER NA, NG, NB, NBI, IW, IER
       DIMENSION A(NA,NA),B(NB,NG),IW(NG)
       DIMENSION HB(NB), R(NB,NG)
+      INTEGER IB, I, K, M, N, IZ, KS, IH, II
       DATA ZERO /1.E-71_DP/
       IER=0
 C
@@ -1747,6 +1770,7 @@ c  +int exp(x)/x,  von -unendl. bis x
 c
 c   PV +int exp(-x)/x von unendl bis -x      x>0 ,  identisch mit
 c   PV +int exp(x)/x von -unendl bis x
+      INTEGER ICON, IER
       REAL(DP) EIRENE_mmdei,dei,xx
 cdr   if (x.gt.0) then
         xx=x
@@ -1773,6 +1797,7 @@ c S
 c err: estim absolut error
 c n  anzahl der functionsaufrufe
 c icon: error code
+      integer nmin, nmax
       real(dp) f
       external f
       external EIRENE_midpnt
@@ -1791,6 +1816,7 @@ c  s muss gt.0, mmdei ist dann: integral (s bis unendlich) von
 c               exp(-t)/t dt
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_MMDEI
+      INTEGER IER
       X=S
       Y=ABS(X)
       Z=0.25_DP*Y
@@ -1830,8 +1856,10 @@ c     endif
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER JMAX, JMAXP, KM, K
       PARAMETER (JMAX=14,JMAXP=JMAX+1,KM=4,K=KM+1)
       DIMENSION S(JMAXP),H(JMAXP)
+      INTEGER J
       REAL(DP) FUNC
       external choose,func
       H(1)=1.0D0
@@ -1853,8 +1881,10 @@ c     endif
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER NMAX, N
       PARAMETER (NMAX=10)
       DIMENSION XA(N),YA(N),C(NMAX),D(NMAX)
+      INTEGER I, NS, M
       NS=1
       DIF=ABS(X-XA(1))
       DO 11 I=1,N
@@ -1899,6 +1929,7 @@ C
       SUBROUTINE EIRENE_MIDPNT(FUNC,A,B,S,N)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER N, IT, J
       external func
       save
       IF (N.EQ.1) THEN
