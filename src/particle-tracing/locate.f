@@ -1037,7 +1037,7 @@ C  .....................................
 C
 C  FIND VELOCITY VECTOR NEXT
 C  .....................................
-!     set tentative "old" particle velocity for VELOCX (unused)
+!  set tentative "old" particle velocity for VELOCX (unused)
       VXO = 0._DP
       VYO = 0._DP
       VZO = 0._DP

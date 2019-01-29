@@ -48,6 +48,7 @@ cdr            NHVRPI  (formerly: NRHVPI)
 cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies but
 cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
+cdr  Jan. 19:  separate routine for broadcast of CCOUPL
 
       SUBROUTINE EIRENE_BROADCAST
 cdr
@@ -1194,6 +1195,8 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
          CALL EIRENE_ALLOC_CCOUPL(1)
          CALL EIRENE_ALLOC_CCOUPL(2)
       END IF
+
+cdr  broadcast arrays for interfacing with B2/B2.5 codes family
       CALL EIRENE_BROAD_CCOUPL
 
       IF (ALLOCATED(NAINS)) THEN
