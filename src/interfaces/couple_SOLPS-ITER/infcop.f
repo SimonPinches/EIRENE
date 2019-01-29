@@ -2048,6 +2048,11 @@ csw 04dec2014 collecting normals for B2.5/B2 cells per triangle
       allocate(plnytri(ntrii))
       allocate(pplnxtri(ntrii))
       allocate(pplnytri(ntrii))
+! in case of a cycle of belows do-loop values may be uninitialized. Therefore,
+      plnxtri = 0
+      plnytri = 0
+      pplnxtri = 0
+      pplnytri = 0
       do it=1,ntrii
         ix=ixtri(it)
         iy=iytri(it)
