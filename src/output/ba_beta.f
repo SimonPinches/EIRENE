@@ -416,7 +416,7 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
         DIO3=0.
         DO 150 J=0,8
           DEJ=DEF**J
-          DO 150 I=0,8
+          DO I=0,8
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
             DPL =DPL + DB(I,J)*TEI*DEJ
@@ -424,6 +424,7 @@ C  SET REDUCED POPULATION COEFFICIENTS FROM AMJUEL FITS
             DIO2=DIO2+ DI2(I,J)*TEI*DEJ
             DIO3=DIO3+ DI3(I,J)*TEI*DEJ
             DNM =DNM + DN(I,J)*TEI*DEJ
+          END DO
   150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
@@ -449,9 +450,10 @@ C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION, COLL. EQUIL. IN VIBRATIO
         RATIO2=0
         DO 170 J=0,8
           DEJ=DEF**J
-          DO 170 I=0,8
+          DO I=0,8
             TEI=TEF**I
             RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
+          END DO
   170   CONTINUE
         RATIO2=EXP(RATIO2)
 

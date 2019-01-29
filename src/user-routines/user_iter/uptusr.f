@@ -59,10 +59,10 @@ C
         VRX=0.
         VRY=0.
         DO I=1,NTRII
-            VPX(I)=PLNXTRI(i)
-            VPY(I)=PLNYTRI(i)
-            VRX(I)=PPLNXTRI(i)
-            VRY(I)=PPLNYTRI(i)
+          VPX(I)=PLNXTRI(i)
+          VPY(I)=PLNYTRI(i)
+          VRX(I)=PPLNXTRI(i)
+          VRY(I)=PPLNYTRI(i)
         END DO
 
 cdr  increments for tally number iadv

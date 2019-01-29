@@ -250,10 +250,11 @@ C
         DPL=0.
         DO 150 J=0,JEND
           DEJ=DEF**J    !  =1.0 FOR J=0
-          DO 150 I=0,8
+          DO I=0,8
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
             DPL =DPL + DB(I,J)*TEI*DEJ
+          END DO
   150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)

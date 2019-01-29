@@ -22,41 +22,35 @@ c
      .              XMI2D,XMA2D,YMI2D,YMA2D,XT2,YT2)
 C
         IF (IN.EQ.0) IN=4
-        GOTO (1481,1482,1483,1484,14852),IN
- 1481     CONTINUE
-            CALL GRDRW
-     .  (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+        SELECT CASE (IN)
+          CASE (1)
+            CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
-            GOTO 1485
- 1482     CONTINUE
+          CASE (2)
             CALL GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
             CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) THEN
               CALL EIRENE_STCOOR(XT,YT,0)
               CALL EIRENE_STCOOR(XTN,YTN,1)
             END IF
-            GOTO 1485
- 1483     CONTINUE
+          CASE (3)
             CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
             CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) THEN
               CALL EIRENE_STCOOR(XT,YT,0)
               CALL EIRENE_STCOOR(XTN,YTN,1)
             END IF
-            GOTO 1485
- 1484     CONTINUE
+          CASE (4)
             CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
-            GOTO 1485
-14852     CONTINUE
+          CASE (5)
             CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
             CALL GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
             IF (LSTORE) THEN
               CALL EIRENE_STCOOR(XT,YT,0)
               CALL EIRENE_STCOOR(XT2,YT2,1)
             END IF
-            GOTO 1485
- 1485   CONTINUE
+        END SELECT
 C
   148 CONTINUE
       return

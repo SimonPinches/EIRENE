@@ -1078,8 +1078,9 @@ C
 C  SAMPLING ON A RADIAL POLYGONIAL SURFACE
           BL=ZZ(2)
           DO 1501 I=1,NPPLG
-            DO 1501 J=NPOINT(1,I),NPOINT(2,I)
-            IF (BL.LE.BGL(MRSURF,J)) GOTO 1502
+            DO J=NPOINT(1,I),NPOINT(2,I)
+              IF (BL.LE.BGL(MRSURF,J)) GOTO 1502
+            END DO
  1501     CONTINUE
           GOTO 996
  1502     CONTINUE

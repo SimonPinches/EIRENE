@@ -186,7 +186,7 @@ C
       DO 100 I=1,5
         IF (.NOT.PL3A(I)) GOTO 100
         DO 10 IP=1,IPLTA(I)
-        DO 10 J=IPLAA(I,IP),IPLEA(I,IP)
+         DO J=IPLAA(I,IP),IPLEA(I,IP)
           IF (J.GT.NLIMI) GOTO 10
           IF (IGJUM0(J).NE.0) THEN
             IF (TRCPLT) THEN
@@ -582,6 +582,7 @@ C
 C END NJZ LOOP
           ENDDO
 C
+         ENDDO
    10   CONTINUE
   100 CONTINUE
 C
@@ -859,9 +860,10 @@ C
           IF (J.GT.ISSTD) CALL GRNWPN(1)
           CALL GRJMP (REAL(XSAVE(J,1),KIND(1.E0)),
      .                REAL(YSAVE(J,1),KIND(1.E0)))
-          DO 2000 IZ=2,NJZ
+          DO IZ=2,NJZ
             CALL GRDRW(REAL(XSAVE(J,IZ),KIND(1.E0)),
      .                 REAL(YSAVE(J,IZ),KIND(1.E0)))
+          END DO
  2000   CONTINUE
         CALL GRDSH(1.,0.,1.)
         CALL GRNWPN(1)

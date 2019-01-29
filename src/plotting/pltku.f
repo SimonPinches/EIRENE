@@ -41,7 +41,8 @@ C
       IFLAG=0
 C
       DO 1 I=1,MLIN
-    1    ALIN(I)=ALIN(I)+ZLIN(I)*ZPLT
+         ALIN(I)=ALIN(I)+ZLIN(I)*ZPLT
+    1 CONTINUE
       DO 2 I=1,MSCN
          A0S(I)=A0S(I)+(A3S(I)+A6S(I)*ZPLT)*ZPLT
          A1S(I)=A1S(I)+A8S(I)*ZPLT

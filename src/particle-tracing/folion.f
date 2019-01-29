@@ -895,7 +895,7 @@ c  for interactions with electrons this is usually irrelevant
 
       IF (IFPATH.NE.1.OR.NRC.LT.0) THEN
         XSTORV(:)=0.D0
-        DO 214 J=1,NCOU
+        DO J=1,NCOU
           JJ=J
 cdr  next 2 lines added, Aug. 18. Strictly not necessary, but safer
 cdr  (allows using NCELL later also in this case).
@@ -908,7 +908,7 @@ cdr  (allows using NCELL later also in this case).
           IF (NLTOR) NTCELL=NCOUNT(J)
 C         VEL=VELS
           GOTO 213
-  214   CONTINUE
+        END DO
       ELSE
 c switch to parallel gc velocity
         IF (LCART) THEN
@@ -922,7 +922,7 @@ c switch to parallel gc velocity
           VEL =VELPAR
           LCART=.FALSE.
         ENDIF
-        DO 212 J=1,NCOU
+        DO J=1,NCOU
           JJ=J
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
           IF (LDAMCEL(NCELL)) GOTO 9912
@@ -956,7 +956,7 @@ C         ELSEIF (JCOL.EQ.0) THEN
 C   CONDITIONAL EXPECTATION ESTIMATOR FOR TEST IONS: TO BE WRITTEN
 C         ENDIF
 C
-  212   CONTINUE
+        END DO
         VELX=VELXS
         VELY=VELYS
         VELZ=VELZS

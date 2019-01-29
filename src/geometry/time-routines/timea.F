@@ -543,18 +543,20 @@ c  create HNF coefficients (normalized vector and distance)
           A3LM(J)=A3LM(J)/XNORM
 
           JUM=JUMLIM(J)
-          GOTO (91,92,93),JUM
-   91       ALM(J)=-A0LM(J)/A1LM(J)
+          SELECT CASE (JUM)
+          CASE (1)
+            ALM(J)=-A0LM(J)/A1LM(J)
             BLM(J)=-A2LM(J)/A1LM(J)
             CLM(J)=-A3LM(J)/A1LM(J)
-          GOTO 97
-   92       ALM(J)=-A0LM(J)/A2LM(J)
+          CASE (2)
+            ALM(J)=-A0LM(J)/A2LM(J)
             BLM(J)=-A1LM(J)/A2LM(J)
             CLM(J)=-A3LM(J)/A2LM(J)
-          GOTO 97
-   93       ALM(J)=-A0LM(J)/A3LM(J)
+          CASE (3)
+            ALM(J)=-A0LM(J)/A3LM(J)
             BLM(J)=-A1LM(J)/A3LM(J)
             CLM(J)=-A2LM(J)/A3LM(J)
+          END SELECT
         ENDIF
    97 CONTINUE
 
