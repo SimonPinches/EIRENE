@@ -121,6 +121,34 @@ test_standalone_1D-H_slab_with_farming:
     dependencies:
         - run_standalone_1D-H_slab_with_farming
 
+# Once INTERFACE and USER are implemented as CMake options, change
+# ITER case makefile and trigger reconfigure here.
+build_standalone_ITER_1573:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies: []
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - binRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+
+
+run_standalone_ITER_1573:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies:
+        - build_standalone_ITER_1573
+
+test_standalone_ITER_1573:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies:
+        - run_standalone_ITER_1573
+
 build_EMC3-EIRENE:
     <<: *build_executable
     variables:
