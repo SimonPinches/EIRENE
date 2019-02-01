@@ -7,7 +7,7 @@ cdr            tallies 38,44,50,56 and 84
 cdr  dec.17:   pumped flux tally SPUMP:  range 1--N5=NSPZ,  rather than N7+1--N8
 cdr            size of array LMETSPW decreased accordingly
 cdr  june 18:  nlemis used to condition some storage setting (FOR REVISED BLOCK 12)
-cdr  oct 18 :  setting text and range for input tallies: moved to own routines:
+cdr  oct 18 :  setting text and storage range for input tallies: moved to own routines:
 cdr            settxt_intal, and setprm_intal, to accomodate also the new input gradient tallies. 
 
       SUBROUTINE EIRENE_SETTXT

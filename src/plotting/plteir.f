@@ -271,7 +271,7 @@ cdr  ITL = IABS(JTAL)
                 VECTOR(I,ICURV)=0.
               ENDDO
 
-!  TALLY SWITCHED OFF ?
+!  INPUT TALLY SWITCHED OFF ?
               IF (.NOT.LIVTALI(ITL)) THEN
                 WRITE (iunout,*) TXTPLS(1,ITL)
                 WRITE (iunout,*) ' TALLY NOT AVAILABLE (PLTEIR)',
@@ -282,6 +282,8 @@ cdr  ITL = IABS(JTAL)
 
               IF (ISPZ.EQ.0) THEN
 cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
+cdr                     and also in case of derivatives.
+cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)

@@ -38,12 +38,14 @@ C
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
 
+C  write those input tallies which are active in the present run
       WRITE (13+ifoff) LIVTALI
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: LIVTALI '
       WRITE (13+ifoff) NFRSTP, NADDP
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: NFRSTP, NADDP '
       WRITE (13+ifoff) PLSTLS
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: input tallies PLSTLS '
+C
       WRITE (13+ifoff)
 C  REAL
      R           FLXOUT,SAREA,
@@ -71,6 +73,7 @@ C  LUSR, LOGICAL
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMAMF,ICMAMF'
       WRITE (13+ifoff) RCZT1,RCZT2,ZT1,ZRG
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCZT1,RCZT2,ZT1,ZRG'
+
 c  write primary source parameters
       WRITE (13+ifoff) RCMSOU,SREC,EIO,EEL,
      .           ICMSOU,INGRDA,INGRDE,NSTRAI,
@@ -96,7 +99,7 @@ C
       READ (13+ifoff,IOSTAT=IO) LIVT
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
       IF (IO /= 0) GOTO 990
-c   verify: same active tallies as in previous write
+c   verify: same active tallies as in previous write?
       DO I=1, NTALI
         IF ((LIVTALI(I).AND.LIVT(I)).OR.
      .      (.NOT.LIVTALI(I).AND..NOT.LIVT(I))) CYCLE

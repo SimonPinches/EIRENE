@@ -870,7 +870,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
-          WRITE (IUNOUT,*) 'IFLG = ',if1mn
+          CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           IF (IF1MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
@@ -899,7 +899,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if1mx
+          CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           IF (IF1MX.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
@@ -928,7 +928,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if2mn
+          CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           IF (IF2MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
@@ -956,7 +956,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if2mx
+          CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           IF (IF2MX.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)

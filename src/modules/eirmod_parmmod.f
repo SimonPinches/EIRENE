@@ -234,7 +234,9 @@ C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
-C                           NTALG: NUMBER OF INPUT TALLIES, EXCLUDING THE OPT. GRADIENT TALLIES
+C                           NTALG: NUMBER OF INPUT TALLIES, 
+C                                  EXCLUDING THE OPTIONAL GRADIENT TALLIES
+C                           NTALI=NTALG+(3*NTALG), FOR THREE DERIVATIVES PER TALLY
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
 C                           NTALO: INDEX OF THE CELL VOLUME TALLY
 
@@ -257,12 +259,12 @@ c                         INCREASED IN 2018 FROM 24 TO 30
         NTALI=NTALG*4   ! total number of VOLUME INPUT TALLIES
 c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ...
 
-c  additional volume-averaged INPUT tallies
+c  additional volume-averaged INPUT tallies at fixed storage locations:
         NTALN=12  ! (ADIN: ADDITIONAL INPUT TALLIES)
         NTALO=14  ! (CELL VOLUME)
 
         NTALV=100  ! total number of VOLUME-AVERAGED OUTPUT TALLIES
-c  additional volume-averaged output tallies
+c  additional volume-averaged output tallies at fixed storage locations
         NTALA=57
         NTALC=58
         NTALT=59
