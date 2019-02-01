@@ -237,6 +237,7 @@ C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
             IF (JTAL.GT.0.AND.XMCP(ISTRA).LE.1) GOTO 10000
 C  PLOT INPUT TALLIES ONLY ONCE PER ITERATION
             IF (JTAL.LT.0.AND.ISAVE.NE.ISTRA) GOTO 10000
+c
             TXHEAD=HEAD0
             IF (JTAL.GT.0)     TXHEAD=HEAD1
             IF (JTAL.EQ.NTALA) TXHEAD=HEAD2
@@ -261,11 +262,13 @@ C
             LSDVI(ICURV)=.FALSE.
             LPLOT2(ICURV)=.FALSE.
             ISPZ=ISPTAL(IBLD,ICURV)
+
             IF (JTAL.LT.0.) THEN
               NF=NFRSTP(ITL)
               DO 111 I=1,NRAD
   111           VECTOR(I,ICURV)=0.
               IF (ISPZ.EQ.0) THEN
+cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -316,7 +319,9 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NF) THEN
+cdr  individual species indices
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -367,6 +372,7 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
@@ -379,6 +385,7 @@ C
                 PLTL3D(IBLD)=.FALSE.
                 GOTO 110
               ENDIF
+
             ELSEIF (JTAL.GE.0) THEN
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)

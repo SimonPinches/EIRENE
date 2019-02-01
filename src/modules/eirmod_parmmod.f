@@ -17,8 +17,10 @@ cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot,
 cdr           but is for surface tally pointers
+cpb  input tallies   ntali, increased from 22 to 24 (BVIN, PARMOM)
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
-cdr  nov.18:  notational clenaup: separate OT from PH (photonic) processes
+cdr  nov.18:  notational cleanup: separate OT from PH (photonic) processes
+cpb  dez.18:  ntalg, increased from 24 to 30, free slots for future use
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -231,8 +233,9 @@ C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
+C                           NTALG: NUMBER OF INPUT TALLIES, EXCLUDING THE OPT. GRADIENT TALLIES
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
-C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
+C                           NTALO: INDEX OF THE CELL VOLUME TALLY
 
         NIONP=NION+1
         NATMP=NATM+1

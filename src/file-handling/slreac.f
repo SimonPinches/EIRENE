@@ -49,8 +49,8 @@ c
 C    FILNAM: read A&M data from file filnam,
 c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
 CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
-C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
-c                        currently available: h_colrad.f
+C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
+c                          currently available: h_colrad.f
 C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
 C
 c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
@@ -870,7 +870,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
-          WRITE (IUNOUT,*) 'IFLG = ',if1mn
+          CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
+C         WRITE (IUNOUT,*) 'IFLG = ',if1mn
           IF (IF1MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)

@@ -3,6 +3,7 @@ cdr             commenting,
 cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local,
 cdr             rather than public
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr             remove redundant tally LGDFT (also from LUSR)
 
       MODULE EIRMOD_COMUSR
 
@@ -58,6 +59,8 @@ C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        CORNER_PROFILES(:,:)
 
+c  storage for setting tallies at cell vertices, rather than cell centres,
+c  for interpolations
       REAL(DP), POINTER, PUBLIC, SAVE ::
      .        TEINCORNER(:),   TIINCORNER(:,:), DEINCORNER(:),
      .        DIINCORNER(:,:),
@@ -96,7 +99,7 @@ C  MUSR, INTEGER
 
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
-     L         LGVAC(:,:), LGDFT(:)
+     L         LGVAC(:,:)
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LSMOPRO(:)
@@ -209,6 +212,7 @@ c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
 
         ALLOCATE (TEXTS(NSPZ))
 c  integer species and background tally data
+
         ALLOCATE (NMASSA(MAX(1,NATM)))
         ALLOCATE (NCHARA(MAX(1,NATM)))
         ALLOCATE (NFOLA(MAX(1,NATM)))
@@ -258,7 +262,6 @@ c  integer species and background tally data
         ALLOCATE (NSPENW(NTALS))
 c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
-        ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
 
         WRITE (IUNMEM,'(A,T25,I15)')
@@ -534,7 +537,6 @@ c
       DEALLOCATE (NAINS)
       DEALLOCATE (NAINT)
       DEALLOCATE (LGVAC)
-      DEALLOCATE (LGDFT)
       DEALLOCATE (LSPCCLL)
       DEALLOCATE (LSMOPRO)
 
@@ -665,7 +667,6 @@ c
         NSPANW = 0
         NSPENW = 0
         LGVAC  = .FALSE.
-        LGDFT  = .FALSE.
         LSPCCLL = .FALSE.
 
       ELSE IF (ICAL == 2) THEN

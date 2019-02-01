@@ -1009,7 +1009,7 @@ cdr dimensioning of LCUT array corrected:
 
         IF (MY_PE > 0) THEN
 csw
-!pb          if(.not.allocated(tdmpar)) then
+!pb       if(.not.allocated(tdmpar)) then
           if(.not.associated(tdmpar(ipls)%tdm)) then
 csw
             ALLOCATE (TDMPAR(IPLS)%TDM)
@@ -1049,6 +1049,7 @@ csw
         DEALLOCATE (CHELP)
 
       END DO
+
       CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
      .               MPI_COMM_WORLD,ier)
 
@@ -1187,7 +1188,6 @@ csw
       CALL MPI_BCAST (NSPEN,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGVAC,NRAD*(NPLS+2),MPI_LOGICAL,0,MPI_COMM_WORLD,
      .                ier)
-      CALL MPI_BCAST (LGDFT,NRAD,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRLL,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception made for this variable
       CALL MPI_BCAST (NTCPU,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1208,6 +1208,8 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
          CALL EIRENE_ALLOC_CCOUPL(1)
          CALL EIRENE_ALLOC_CCOUPL(2)
       END IF
+
+cdr  broadcast arrays for interfacing with B2/B2.5 codes family
       CALL EIRENE_BROAD_CCOUPL
 
       IF (ALLOCATED(NAINS)) THEN
@@ -1219,6 +1221,8 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
 
       CALL EIRENE_BROAD_USR
 
+c  active and inactive tallies:
+C  OUTPUT:
       CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LMISTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)

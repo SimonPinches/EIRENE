@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, col-rad, file (fort.13, or: fort.10)
+c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "col-rad", "Saha": need electron density as
+c              "Corona", "Colrad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -34,7 +34,7 @@ c
 cdr:  may 2015
 cdr:  output tallies for new background: in case of multiple strata: how to get sum over strata?
 cdr:  do we need fort.10 ?
-cdr:  edrift, vdion:  only for ipls=1 available?
+cdr:  in case indpro(4)=8:  edrift, vdion:  only for ipls=1 available?
 cdr:  warnings in case of missing edrift removed: have been too many (one per cell)
 cdr: jan 2016: automated resetting of nfilel to =3 or =9 removed.
 cdr:           (had caused problems with t-dep mode)
