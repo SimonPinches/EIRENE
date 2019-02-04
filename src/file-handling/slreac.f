@@ -24,6 +24,8 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
+cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
+cdr             H, He internal CR codes, formulation I, II (MS resolved or not) 
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -273,7 +275,7 @@ C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         LCONST=.TRUE.
 !  nothing to be done
-      ELSEIF (INDEX(FILNAM,'CRM').NE.0) THEN
+      ELSEIF (INDEX(FILNAM,'CR').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
       ELSE   ! in all other cases: open data file, stream 29+ifoff
@@ -320,7 +322,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' CRM'
+          WRITE (iunout,*) ' CR'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
           WRITE (iunout,*) ' OR '
@@ -553,7 +555,7 @@ C  H.12
       ENDIF
 
 
-      IF (INDEX(FILNAM,'CRM').NE.0) THEN
+      IF (INDEX(FILNAM,'CR').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1,
      .                           IROW_ESC,ICOL_ESC,POP_ESC)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
@@ -606,7 +608,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CRM", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  FILNAM= "CR", "CONST", "ADAS", "HYDRTC", "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................

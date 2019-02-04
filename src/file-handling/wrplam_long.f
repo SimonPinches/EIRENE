@@ -72,6 +72,7 @@ C  LUSR, LOGICAL
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMAMF,ICMAMF'
       WRITE (13+ifoff) RCZT1,RCZT2,ZT1,ZRG
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCZT1,RCZT2,ZT1,ZRG'
+
 c  write primary source parameters
       WRITE (13+ifoff) RCMSOU,SREC,EIO,EEL,
      .           ICMSOU,INGRDA,INGRDE,NSTRAI,
@@ -135,36 +136,39 @@ c  read primary source parameters
      .            LCMSOU,NLSYMP,NLSYMT
         IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMSOU,ICMSOU,LCMSOU,...'
         IF (IO /= 0) GOTO 990
-      ELSE
-        NRDUM = SIZE(RCMSOU) + SIZE(SREC) + SIZE(EIO) + SIZE(EEL)
-        NIDUM = SIZE(ICMSOU) + SIZE(INGRDA) + SIZE(INGRDE) + 1
-        NLDUM = SIZE(LCMSOU) + SIZE(NLSYMP) + SIZE(NLSYMT)
-        ALLOCATE (RDUM(NRDUM))
-        ALLOCATE (IDUM(NIDUM))
-        ALLOCATE (lDUM(NLDUM))
-        READ (13+ifoff) RDUM, IDUM, LDUM
-        DEALLOCATE (RDUM)
-        DEALLOCATE (IDUM)
-        DEALLOCATE (lDUM)
-        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM ', 
-     .                               FORT, '13'
-      END IF
-
-cdr:  this CSTEP reading should go into iflg=0 branch, as it belongs to primary source
-      IF (ALLOCATED(FLSTEP))
+        IF (ALLOCATED(FLSTEP))
      .    READ (13+ifoff,IOSTAT=IO) FLSTEP,ELSTEP,FLTOT,ELTOT,VF,VE,
      .             QUOT,ADD,QUOTI,ADDIV,
      .             TESTEP,TISTEP,RRSTEP,VXSTEP,VYSTEP,VZSTEP,DISTEP,
      .             FESTEP,FISTEP,SHSTEP,VPSTEP,MCSTEP,
      .             IRSTEP,IPSTEP,ITSTEP,IASTEP,IBSTEP,IGSTEP,
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
+        IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
+        IF (IO /= 0) GOTO 990
+      ELSE
+        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13' 
+      END IF
+
 
       CLOSE (UNIT=13+ifoff)
       RETURN
 
  990  CONTINUE
       WRITE (IUNOUT,*) ' ERROR READING FILE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+ 991  CONTINUE
+      WRITE (IUNOUT,*) ' AVAILABLE INPUT TALLIES ARE DIFFERENT FROM',
+     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+ 992  CONTINUE
+      WRITE (IUNOUT,*) ' LEADING DIMENSIONS OF INPUT TALLIES ARE',
+     .                 ' DIFFERENT FROM',
+     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+      CALL EIRENE_EXIT_OWN(1)
+ 993  CONTINUE
+      WRITE (IUNOUT,*) ' STARTING POSITIONS OF INPUT TALLIES ',
+     .                 ' IN ARRAY PLSTLS ARE DIFFERENT FROM',
+     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
       CALL EIRENE_EXIT_OWN(1)
 
       END

@@ -264,11 +264,17 @@ C
             ISPZ=ISPTAL(IBLD,ICURV)
 
             IF (JTAL.LT.0.) THEN
+cdr  here we deal with input tallies (and gradients thereof)
+cdr  ITL = IABS(JTAL)
               NF=NFRSTP(ITL)
-              DO 111 I=1,NRAD
-  111           VECTOR(I,ICURV)=0.
+              DO I=1,NRAD
+                VECTOR(I,ICURV)=0.
+              ENDDO
+
               IF (ISPZ.EQ.0) THEN
 cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
+cdr                     and also in case of derivatives.
+cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -387,17 +393,23 @@ cdr  individual species indices
               ENDIF
 
             ELSEIF (JTAL.GE.0) THEN
+cdr  plot output tallies
+              NFT=NFSTVI(ITL)
+              NF=NFIRST(ITL)
+              DO I=1,NRAD
+                VECTOR(I,ICURV)=0.
+              ENDDO
+
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
                 WRITE (iunout,*) 'TALLY SWITCHED OFF '
                 WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
                 GOTO 10000
               END IF
-              NFT=NFSTVI(ITL)
-              NF=NFIRST(ITL)
+
               IF (ISPZ.EQ.0) THEN
-                DO 121 I=1,NRAD
-  121             VECTOR(I,ICURV)=0.
+c  sum over species
+
                 DO 122 K=1,NFT
                   DO 122 I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
