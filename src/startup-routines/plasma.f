@@ -54,7 +54,7 @@ C
       REAL(DP), ALLOCATABLE :: HELP(:), HELP2(:)
       REAL(DP) :: PUX, PUY, EL, EP, PN, BD, B, BVAC, FACT
       INTEGER :: IB, IAIN, K, JJ, ITALI, ICELL, IND, ISTREAM,
-     .           IP, IT, IA, J, IR, IPLSTI, IPLSV, NDIM
+     .           IP, IT, IA, J, IR, IPLSTI, IPLSV, JPLS, NDIM
 C
 C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(1) /= 9) TEIN = 0.D0
@@ -123,190 +123,199 @@ C  ION TEMPERATURE
       IND=INDPRO(2)
       DO 120 IPLSTI=1,NPLSTI
 cdr one profile iplsti set at a time
-        GOTO (111,112,113,114,115,116,117,120,120),IND
-  111   CALL EIRENE_PROFN (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
-     .                     TI3(IPLSTI),TI4(IPLSTI),TI5(IPLSTI),TVAC)
-        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 120
-  112   CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
+        select case (IND)
+        case (1)
+          CALL EIRENE_PROFN (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
+     .                            TI3(IPLSTI),TI4(IPLSTI),TI5(IPLSTI),
+     .                            TVAC)
+          TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
+        case (2)
+          CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
      .                                 TI4(IPLSTI),TI5(IPLSTI),TVAC)
-        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 120
-  113   CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
+          TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
+        case (3)
+          CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
      .                     TI5(IPLSTI),TVAC)
-        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 120
-  114   CONTINUE
+          TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
+        case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)
-        ISTREAM=TI0(IPLSTI)
-        ITALI=2
-        CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
+          ISTREAM=TI0(IPLSTI)
+          ITALI=2
+          CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
      .              TXTPUN(IPLSTI,ITALI),
      .              HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
      .              3,ISTREAM)
-        TIIN(IPLSTI,1:NSBOX)=HELP(1:NSBOX)
-        GOTO 120
+          TIIN(IPLSTI,1:NSBOX)=HELP(1:NSBOX)
+        case (5)
 c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
-  115   CALL EIRENE_PROUSR (HELP,1+0*NPLS,TI0(IPLSTI),TI1(IPLSTI),
+          CALL EIRENE_PROUSR (HELP,1+0*NPLS,TI0(IPLSTI),TI1(IPLSTI),
      .                      TI2(IPLSTI),TI3(IPLSTI),TI4(IPLSTI),
      .                      TI5(IPLSTI),TVAC,NSURF)
-        TIIN(IPLSTI,1:NSURF)=HELP(1:NSURF)
-        GOTO 120
-  120 CONTINUE
-      GOTO 1120
-
+          TIIN(IPLSTI,1:NSURF)=HELP(1:NSURF)
 cdr all nplsti profiles set in a single call
-
+        case(6)
 c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
-cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
+cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
 !pb Jan 17: 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
-  116 NDIM = SIZE(TIIN,DIM=1)
-      CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
-      GOTO 1120
+          NDIM = SIZE(TIIN,DIM=1)
+          CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        case (7)
 c  INDPRO=7:  tally from PROFR, indx=1, all TIIN fields in one single call
-cdr first dimension of arrays:  NDIM .ne NPLSTI possible ?
+cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
 !pb Jan 17 117     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSBOX)
-  117 NDIM = SIZE(TIIN,DIM=1)
-      CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
-      GOTO 1120
- 1120 CONTINUE
-
-
+          NDIM = SIZE(TIIN,DIM=1)
+          CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        end select
+  120 CONTINUE
 
 C  ION DENSITY
       IND=INDPRO(3)
-      DO 130 IPLS=1,NPLSI
+      DO 130 JPLS=1,NPLSI
+        IPLS=JPLS
         IF (LEN_TRIM(CDENMODEL(IPLS)) > 0) CYCLE
-        GOTO (121,122,123,124,125,126,127,130,130),IND
+        select case (IND)
 cdr one profile ipls set at a time
-  121   CALL EIRENE_PROFN (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
+        case (1)
+          CALL EIRENE_PROFN (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
      .                   DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC)
-        DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 130
-  122   CALL EIRENE_PROFE (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
+          DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+        case (2)
+          CALL EIRENE_PROFE (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
      .                   DI4(IPLS),DI5(IPLS),DVAC)
-        DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 130
-  123   CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)
-        DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 130
-  124   CONTINUE
+          DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+        case (3)
+          CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)
+          DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+        case (4)
 c  INDPRO=4:  read tally from stream DIO(IPLS)
-        ISTREAM=DI0(IPLS)
-        ITALI=4
-        CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
+          ISTREAM=DI0(IPLS)
+          ITALI=4
+          CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
      .              TXTPUN(IPLS,ITALI),
      .              HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
      .              3,ISTREAM)
-        DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
-        GOTO 130
+          DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
+        case (5)
 c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IPLS
-  125   CALL EIRENE_PROUSR (HELP,1+1*NPLS,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                    DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC,NSURF)
-        DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
-        GOTO 130
-  130 CONTINUE
-      GOTO 1130
-
+          CALL EIRENE_PROUSR (HELP,1+1*NPLS,DI0(IPLS),DI1(IPLS),
+     .                        DI2(IPLS),DI3(IPLS),DI4(IPLS),DI5(IPLS),
+     .                        DVAC,NSURF)
+          DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
 cdr all nplsi profiles set in a single call
-
+        case (6)
 c  INDPRO=6:
 cdr first dimension of arrays:  always NPLS
-  126 CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
-      GOTO 1130
+          CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        case (7)
 c  INDPRO=7:
 cdr first dimension of arrays:  always NPLS
-  127 CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
-      GOTO 1130
- 1130 CONTINUE
+          CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        end select
+  130 CONTINUE
 
 C  DRIFT VELOCITY
       IND=INDPRO(4)
       DO 140 IPLSV=1,NPLSV
-        GOTO (131,132,133,134,135,136,137,140,140),IND
+        select case (IND)
+	case (1)
 cdr one vector component profile (vx,vy,vz) iplsv set at a time
-  131   CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
+          CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
      .                   VX3(IPLSV),VX4(IPLSV),VX5(IPLSV),VVAC)
-        VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFN (HELP,VY0(IPLSV),VY1(IPLSV),VY2(IPLSV),
+          VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+          CALL EIRENE_PROFN (HELP,VY0(IPLSV),VY1(IPLSV),VY2(IPLSV),
      .                   VY3(IPLSV),VY4(IPLSV),VY5(IPLSV),VVAC)
-        VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFN (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ2(IPLSV),
+          VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+          CALL EIRENE_PROFN (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ2(IPLSV),
      .                   VZ3(IPLSV),VZ4(IPLSV),VZ5(IPLSV),VVAC)
-        VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 140
-  132   CALL EIRENE_PROFE (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
+          VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        case (2)
+          CALL EIRENE_PROFE (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
      .                   VX4(IPLSV),VX5(IPLSV),VVAC)
-        VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFE (HELP,VY0(IPLSV),VY1(IPLSV),VY2(IPLSV),
+          VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+          CALL EIRENE_PROFE (HELP,VY0(IPLSV),VY1(IPLSV),VY2(IPLSV),
      .                   VY4(IPLSV),VY5(IPLSV),VVAC)
-        VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFE (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ2(IPLSV),
+          VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+          CALL EIRENE_PROFE (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ2(IPLSV),
      .                   VZ4(IPLSV),VZ5(IPLSV),VVAC)
-        VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 140
-  133   CALL EIRENE_PROFS (HELP,VX0(IPLSV),VX1(IPLSV),VX5(IPLSV),VVAC)
-        VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFS (HELP,VY0(IPLSV),VY1(IPLSV),VY5(IPLSV),VVAC)
-        VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        CALL EIRENE_PROFS (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ5(IPLSV),VVAC)
-        VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
-        GOTO 140
-  134   CONTINUE
+          VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        case (3)
+          CALL EIRENE_PROFS (HELP,VX0(IPLSV),VX1(IPLSV),VX5(IPLSV),VVAC)
+          VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+          CALL EIRENE_PROFS (HELP,VY0(IPLSV),VY1(IPLSV),VY5(IPLSV),VVAC)
+          VYIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+          CALL EIRENE_PROFS (HELP,VZ0(IPLSV),VZ1(IPLSV),VZ5(IPLSV),VVAC)
+          VZIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
+        case (4)
 C  INDPRO=4: read tallies from streams VXO(IPLSV), VY0(IPLSV),VZ0(IPLSV)
 c            NOT READY FOR FLOW FIELDS
-        GOTO 140
+        case (5)
 c  INDPRO=5:  tally from PROUSR,
 c             VX: indx=1+2*NPLS, but NPLSV calls, one for each IPLSV
 c             VY: indx=1+3*NPLS, but NPLSV calls, one for each IPLSV
 c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
-  135   CALL EIRENE_PROUSR (HELP,1+2*NPLS,VX0(IPLSV),VX1(IPLSV),
+          CALL EIRENE_PROUSR (HELP,1+2*NPLS,VX0(IPLSV),VX1(IPLSV),
      .                      VX2(IPLSV),VX3(IPLSV),
      .                      VX4(IPLSV),VX5(IPLSV),VVAC,NSURF)
-        VXIN(IPLSV,1:NSURF)=HELP(1:NSURF)
-        CALL EIRENE_PROUSR (HELP,1+3*NPLS,VY0(IPLSV),VY1(IPLSV),
+          VXIN(IPLSV,1:NSURF)=HELP(1:NSURF)
+          CALL EIRENE_PROUSR (HELP,1+3*NPLS,VY0(IPLSV),VY1(IPLSV),
      .                      VY2(IPLSV),VY3(IPLSV),
      .                      VY4(IPLSV),VY5(IPLSV),VVAC,NSURF)
-        VYIN(IPLSV,1:NSURF)=HELP(1:NSURF)
-        CALL EIRENE_PROUSR (HELP,1+4*NPLS,VZ0(IPLSV),VZ1(IPLSV),
+          VYIN(IPLSV,1:NSURF)=HELP(1:NSURF)
+          CALL EIRENE_PROUSR (HELP,1+4*NPLS,VZ0(IPLSV),VZ1(IPLSV),
      .                      VZ2(IPLSV),VZ3(IPLSV),
      .                      VZ4(IPLSV),VZ5(IPLSV),VVAC,NSURF)
-        VZIN(IPLSV,1:NSURF)=HELP(1:NSURF)
-        GOTO 140
+          VZIN(IPLSV,1:NSURF)=HELP(1:NSURF)
+        case (6)
+cdr all nplsv vector component profiles set in a single call
+c  read tally from external data structure, all V.IN fields in one single call
+cdr first dimension of arrays:  always NPLSV
+          CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,
+     .                       NPLSV,NPLSV,NSURF)
+          CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,
+     .                       NPLSV,NPLSV,NSURF)
+          CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,
+     .                       NPLSV,NPLSV,NSURF)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        case (7)
+cdr all nplsv vector component profiles set in a single call
+c  read tally from external data structure, all V.IN fields in one single call
+cdr first dimension of arrays:  always NPLSV
+          CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,
+     .                       NPLSV,NPLSV,NSBOX)
+          CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,
+     .                       NPLSV,NPLSV,NSBOX)
+          CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,
+     .                       NPLSV,NPLSV,NSBOX)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        end select
   140 CONTINUE
 
 C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
 C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
-      IF (NLMACH) THEN
-        DO 1141 IPLS=1,NPLSI
-          IPLSTI=MPLSTI(IPLS)
-          IPLSV=MPLSV(IPLS)
+      IF (NLMACH .AND. (IND <= 5)) THEN
+        DO 1141 JPLS=1,NPLSI
+          IPLSTI=MPLSTI(JPLS)
+          IPLSV=MPLSV(JPLS)
           DO 1142 ICELL=1,NSURF
             FACT=CVEL2A*SQRT((TIIN(IPLSTI,ICELL)+
-     .                        TEIN(ICELL))/RMASSP(IPLS))
+     .                        TEIN(ICELL))/RMASSP(JPLS))
             VXIN(IPLSV,ICELL)=VXIN(IPLSV,ICELL)*FACT
             VYIN(IPLSV,ICELL)=VYIN(IPLSV,ICELL)*FACT
             VZIN(IPLSV,ICELL)=VZIN(IPLSV,ICELL)*FACT
  1142     CONTINUE
  1141   CONTINUE
       ENDIF
-      GOTO 1140
 
-cdr all nplsv vector component profiles set in a single call
-
-c  read tally from external data structure, all V.IN fields in one single call
-cdr first dimension of arrays:  always NPLSV
-  136 CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSURF)
-      CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSURF)
-      CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSURF)
-      GOTO 1140
-
-c  read tally from external data structure, all V.IN fields in one single call
-cdr first dimension of arrays:  always NPLSV
-  137 CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,NPLSV,NPLSV,NSBOX)
-      CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,NPLSV,NPLSV,NSBOX)
-      CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,NPLSV,NPLSV,NSBOX)
-      GOTO 1140
  1140 CONTINUE
 C
 C
@@ -321,25 +330,50 @@ C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
         BFIN=1.
       END IF
 
-      GOTO (141,142,143,144,145,146,147,150,150),IND
+      select case (ind)
 C  HELP IS FIELD LINE PITCH ANGLE: B_POL/B_TOT
-
+      case (1)
 C  INDPRO(5)=1:
-  141   CALL EIRENE_PROFN (HELP,B0,B1,B2,B3,B4,B5,BVAC)
-        GOTO 1400
+        CALL EIRENE_PROFN (HELP,B0,B1,B2,B3,B4,B5,BVAC)
+      case (2)
 C  INDPRO(5)=2:
-  142   CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
-        GOTO 1400
+        CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
+      case (3)   
 C  INDPRO(5)=3:
-  143   CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
+        CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
         CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008) set constant B profile, ONLY INDPRO(5)=3
-        GOTO 1400
+      case (4) 
 C  INDPRO(5)=4: read tally from stream B0:  NOT IN USE
-  144   CONTINUE
-        GOTO 150
+      case (5)
+c  INDPRO(5)=5:  call prousr
+        CALL EIRENE_PROUSR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,
+     .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
+        CALL EIRENE_PROUSR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,
+     .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
+        CALL EIRENE_PROUSR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,
+     .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
+        CALL EIRENE_PROUSR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,
+     .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
+      case (6)
+c  INDPRO(5) =6:  call profr (information comes from interfacing code)
+c                 default (vacuum) parameters in additional cells
+        CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+      case (7)
+c  INDPRO(5) =7:  call profr (information comes from interfacing code)
+c                 include also additional cells
+        CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+      end select
+  150 CONTINUE
 
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
  1400   CONTINUE
+	IF (IND <= 3) then
 C  AT THIS POINT: INDPRO= 1,2, OR =3. HELP2 IS KNOWN ONLY IN CASE INDPRO=3
         IF (LEVGEO.EQ.1) THEN
           DO 1401 J=1,NSURF
@@ -412,33 +446,7 @@ C
      .      'DEFAULT MAGNETIC FIELD (IN Z-DIRECTION) IS USED'
           CALL EIRENE_LEER(1)
         ENDIF
-        GOTO 150
-c  INDPRO(5)=5:  call prousr
-  145   CONTINUE
-        CALL EIRENE_PROUSR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,
-     .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
-        CALL EIRENE_PROUSR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,
-     .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
-        CALL EIRENE_PROUSR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,
-     .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
-        CALL EIRENE_PROUSR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,
-     .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
-        GOTO 150
-c  INDPRO(5) =6:  call profr (information comes from interfacing code)
-c                 default (vacuum) parameters in additional cells
-  146   CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        GOTO 150
-c  INDPRO(5) =7:  call profr (information comes from interfacing code)
-c                 include also additional cells
-  147   CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        GOTO 150
-  150 CONTINUE
+        END IF
 C
 C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
       DO 153 JJ=1,NSBOX
@@ -462,33 +470,37 @@ C
 C  ADDITIONAL INPUT TALLIES
       IND=INDPRO(6)
       DO 160 K=1,NAINI
-        GOTO (151,151,151,151,155,156,157,160,160),IND
+        select case (IND)
+        case (1:4)
 C  DEFAULT: ZERO, only options ind=5,6,7 are available
 c          (transfer from problem-specific codes or external data structures)
-  151   CONTINUE
         DO 1151 J=1,NR1ST
           ADIN(K,J)=0.
  1151   CONTINUE
-        GOTO 160
-  155   CALL EIRENE_PROUSR (HELP,6+1*NPLS+NPLSTI+3*NPLSV,
+        case (5)
+          CALL EIRENE_PROUSR (HELP,6+1*NPLS+NPLSTI+3*NPLSV,
      .                      BD,BD,BD,BD,BD,BD,0._DP,NSURF)
         ADIN(K,1:NSURF)=HELP(1:NSURF)
-        GOTO 160
+        case (6)
+          CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,
+     .                       NAINI,NAIN,NSURF)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        case (7)
+          CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,
+     .                       NAINI,NAIN,NSBOX)
+!pb all species fields have been filled in this call thus exit loop
+          EXIT
+        end select
   160 CONTINUE
-      GOTO 1160
-  156 CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,NAINI,NAIN,NSURF)
-      GOTO 1160
-  157 CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,NAINI,NAIN,NSBOX)
-      GOTO 1160
- 1160 CONTINUE
 C
 C  ELECTRIC FIELD
       IND=INDPRO(7)
-      GOTO (170,170,170,170,175,176,177,170,170),IND
 C  DEFAULT: ZERO, only options ind=5,6,7
 c          (transfer from problem-specific codes or external data structures)
-      goto 170
-  175   CALL EIRENE_PROUSR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,
+      select case (IND)
+      case (5)
+        CALL EIRENE_PROUSR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
         CALL EIRENE_PROUSR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
@@ -496,18 +508,17 @@ c          (transfer from problem-specific codes or external data structures)
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
         CALL EIRENE_PROUSR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
-        GOTO 170
-  176   CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+      case (6)
+        CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        GOTO 170
-  177   CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+      case (7)
+        CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        GOTO 170
-  170 CONTINUE
+      end select
 C
 CDR
 C   SET VACUUM DATA IN ADDITIONAL REGIONS OUTSIDE THE
@@ -525,23 +536,23 @@ C
       ENDIF
       IF (INDPRO(2).LE.6 .OR. INDPRO(2).EQ.9) THEN
         DO J=NSURF+1,NSURF+NRADD
-          DO 17 IPLS=1,NPLSI
-            IPLSTI=MPLSTI(IPLS)
+          DO 17 JPLS=1,NPLSI
+            IPLSTI=MPLSTI(JPLS)
             TIIN(IPLSTI,J)=TVAC
    17     CONTINUE
         ENDDO
       ENDIF
       IF (INDPRO(3).LE.6 .OR. INDPRO(3).EQ.9) THEN
         DO J=NSURF+1,NSURF+NRADD
-          DO 18 IPLS=1,NPLSI
-            DIIN(IPLS,J)=DVAC
+          DO 18 JPLS=1,NPLSI
+            DIIN(JPLS,J)=DVAC
    18     CONTINUE
         ENDDO
       ENDIF
       IF (INDPRO(4).LE.6 .OR. INDPRO(4).EQ.9) THEN
         DO J=NSURF+1,NSURF+NRADD
-          DO 19 IPLS=1,NPLSI
-            IPLSV=MPLSV(IPLS)
+          DO 19 JPLS=1,NPLSI
+            IPLSV=MPLSV(JPLS)
             VXIN(IPLSV,J)=VVAC
             VYIN(IPLSV,J)=VVAC
             VZIN(IPLSV,J)=VVAC
